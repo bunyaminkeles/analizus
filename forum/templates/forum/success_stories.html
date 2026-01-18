@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+
+{% block title %}Başarı Hikayeleri - Analizus{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <div>
+            <h2 class="fw-bold text-white mb-1">
+                <i class="bi bi-trophy text-warning me-2"></i>Başarı Hikayeleri
+            </h2>
+            <p class="text-muted mb-0">Akademik zorlukları aşanların ilham veren deneyimleri</p>
+        </div>
+        {% if user.is_authenticated %}
+        <button class="btn btn-warning rounded-pill px-4 fw-bold" data-bs-toggle="modal" data-bs-target="#shareStoryModal">
+            <i class="bi bi-plus-lg me-1"></i> Hikayeni Paylaş
+        </button>
+        {% endif %}
+    </div>
+
+    <!-- Stories Grid -->
+    <div class="row g-4">
+        {% for story in stories %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100 border-0 shadow-sm" style="background: {% if story.is_featured %}linear-gradient(145deg, #1e293b, #0f172a){% else %}rgba(30, 41, 59, 0.6){% endif %}; border: 1px solid rgba(255, 255, 255, 0.08) !important;">
+                <div class="card-body position-relative p-4">
+                    {% if story.is_featured %}
+                    <div class="position-absolute top-0 end-0 mt-2 me-2">
+                        <span class="badge bg-warning text-dark"><i class="bi bi-star-fill"></i> Haftanın Seçimi</span>
+                    </div>
+                    {% endif %}
+
+                    <!-- User Info -->
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="avatar-circle me-3 bg-secondary d-flex align-items-center justify-content-center text-white fw-bold rounded-circle" style="width: 45px; height: 45px; border: 2px solid {% if story.is_featured %}#ffd700{% else %}#64748b{% endif %};">
+                            {% if story.user.profile.avatar %}
+                                <img src="{{ story.user.profile.avatar.url }}" class="rounded-circle w-100 h-100" style="object-fit: cover;">
+                            {% else %}
+                                {{ story.user.username|slice:":1" }}
+                            {% endif %}
+                        </div>
+                        <div>
+                            <h6 class="text-white mb-0">{{ story.user.get_full_name|default:story.user.username }}</h6>
+                            <small class="text-muted" style="font-size: 0.75rem;">{{ story.user.profile.title }}</small>
+                        </div>
+                    </div>
+
+                    <!-- Quote -->
+                    <div class="mb-4">
+                        <i class="bi bi-quote text-white-50 fs-3 d-block mb-n2"></i>
+                        <p class="text-light fst-italic ps-3 border-start border-3 border-warning border-opacity-25 mb-0">
+                            "{{ story.quote }}"
+                        </p>
+                    </div>
+
+                    <!-- Achievements -->
+                    <div class="mb-3">
+                        {% for item in story.achievements %}
+                        <div class="d-flex align-items-start mb-1 small text-white-50">
+                            <i class="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                            <span>{{ item }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="mt-auto pt-3 border-top border-secondary border-opacity-25 d-flex justify-content-between align-items-center">
+                        <small class="text-muted">{{ story.created_at|date:"d M Y" }}</small>
+                        <div class="text-muted small">
+                            <i class="bi bi-heart-fill text-danger me-1"></i> {{ story.likes_count }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <div class="text-muted">Henüz hikaye paylaşılmamış. İlk sen ol!</div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Modal -->
+{% if user.is_authenticated %}
+<div class="modal fade" id="shareStoryModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark border border-secondary">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title text-white"><i class="bi bi-pencil-square text-warning me-2"></i>Hikayeni Paylaş</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label text-white-50">{{ form.quote.label }}</label>
+                        {{ form.quote }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-white-50">{{ form.achievements_text.label }}</label>
+                        {{ form.achievements_text }}
+                        <div class="form-text text-muted">{{ form.achievements_text.help_text }}</div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label text-white-50">{{ form.resources_text.label }}</label>
+                        {{ form.resources_text }}
+                    </div>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">İptal</button>
+                    <button type="submit" class="btn btn-warning fw-bold">Hikayeyi Yayınla</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

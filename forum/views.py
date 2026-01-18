@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django import forms
 from django.contrib.auth import login
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
@@ -10,8 +11,8 @@ from django.utils import timezone
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET
 from datetime import timedelta
-from .models import Section, Category, Topic, Post, Profile, PrivateMessage, PostLike, Notification, EmailVerification, DailyTip, QuizQuestion, QuizScore
-from .forms import RegisterForm, NewTopicForm, PostForm
+from .models import Section, Category, Topic, Post, Profile, PrivateMessage, PostLike, Notification, EmailVerification, DailyTip, QuizQuestion, QuizScore, SuccessStory, FreelanceJob, JobProposal
+from .forms import RegisterForm, NewTopicForm, PostForm, JobPostForm, ProposalForm
 from .email_utils import send_topic_reply_notification, send_private_message_notification
 
 # --- ANA SAYFA ---
@@ -44,6 +45,14 @@ def home(request):
     # Quiz Sorusu
     quiz_question = QuizQuestion.get_random_question()
 
+    # Haftanın Başarı Hikayesi
+    featured_story = SuccessStory.objects.filter(is_featured=True).first()
+    if not featured_story:
+        featured_story = SuccessStory.objects.order_by('?').first()
+
+    # Freelance Market - Son İlanlar
+    recent_jobs = FreelanceJob.objects.filter(status='open').select_related('owner', 'category').order_by('-created_at')[:5]
+
     context = {
         'sections': sections,
         # İstatistikler
@@ -57,8 +66,169 @@ def home(request):
         'recent_activities': recent_activities,
         'daily_tip': daily_tip,
         'quiz_question': quiz_question,
+        'featured_story': featured_story,
+        'recent_jobs': recent_jobs,
     }
     return render(request, 'forum/home.html', context)
+
+# --- BAŞARI HİKAYELERİ ---
+class SuccessStoryForm(forms.ModelForm):
+    achievements_text = forms.CharField(
+        widget=forms.Textarea(attrs={'rows': 3, 'class': 'form-control bg-dark text-light border-secondary', 'placeholder': 'Örnek:\n- Tezi 3 ayda bitirdim\n- Analiz korkumu yendim'}), 
+        help_text="Her satıra bir başarı maddesi yazınız.", 
+        required=False, 
+        label="Başarılar (Her satıra bir tane)"
+    )
+    resources_text = forms.CharField(
+        widget=forms.Textarea(attrs={'rows': 2, 'class': 'form-control bg-dark text-light border-secondary', 'placeholder': 'Örnek:\n- Analizus Forum\n- YouTube SPSS Serisi'}), 
+        help_text="Kullandığınız kaynakları alt alta yazınız.", 
+        required=False, 
+        label="Kaynaklar"
+    )
+
+    class Meta:
+        model = SuccessStory
+        fields = ['quote']
+        widgets = {
+            'quote': forms.Textarea(attrs={'rows': 3, 'class': 'form-control bg-dark text-light border-secondary', 'placeholder': 'Hikayenizi kısaca anlatın...'}),
+        }
+        labels = {'quote': 'Hikayeniz'}
+
+def success_stories(request):
+    stories = SuccessStory.objects.all().order_by('-is_featured', '-created_at')
+    form = None
+
+    if request.user.is_authenticated:
+        if request.method == 'POST':
+            form = SuccessStoryForm(request.POST)
+            if form.is_valid():
+                story = form.save(commit=False)
+                story.user = request.user
+                # Text alanlarını listeye çevir
+                story.achievements = [line.strip() for line in form.cleaned_data['achievements_text'].split('\n') if line.strip()]
+                story.resources = [line.strip() for line in form.cleaned_data['resources_text'].split('\n') if line.strip()]
+                story.save()
+                messages.success(request, 'Harika! Başarı hikayeniz paylaşıldı.')
+                return redirect('success_stories')
+        else:
+            form = SuccessStoryForm()
+
+    return render(request, 'forum/success_stories.html', {'stories': stories, 'form': form})
+
+# --- FREELANCE MARKET ---
+def job_list(request):
+    jobs = FreelanceJob.objects.filter(status='open').select_related('owner', 'category').order_by('-created_at')
+    return render(request, 'forum/market/job_list.html', {'jobs': jobs})
+
+@login_required
+def post_job(request):
+    if request.method == 'POST':
+        form = JobPostForm(request.POST)
+        if form.is_valid():
+            job = form.save(commit=False)
+            job.owner = request.user
+            job.save()
+            messages.success(request, 'İş ilanı başarıyla oluşturuldu.')
+            return redirect('job_detail', pk=job.pk)
+    else:
+        form = JobPostForm()
+    return render(request, 'forum/market/post_job.html', {'form': form})
+
+@login_required
+def toggle_job_like(request, pk):
+    job = get_object_or_404(FreelanceJob, pk=pk)
+    if request.user in job.likes.all():
+        job.likes.remove(request.user)
+        messages.info(request, "Beğeni geri alındı.")
+    else:
+        job.likes.add(request.user)
+        messages.success(request, "İlan beğenildi!")
+    return redirect('job_detail', pk=pk)
+
+@login_required
+def toggle_job_bookmark(request, pk):
+    job = get_object_or_404(FreelanceJob, pk=pk)
+    if request.user in job.saved_by.all():
+        job.saved_by.remove(request.user)
+        messages.info(request, "İlan kaydedilenlerden çıkarıldı.")
+    else:
+        job.saved_by.add(request.user)
+        messages.success(request, "İlan kaydedildi!")
+    return redirect('job_detail', pk=pk)
+
+@login_required
+def job_detail(request, pk):
+    job = get_object_or_404(FreelanceJob, pk=pk)
+    
+    # Görüntülenme sayısını artır
+    job.views += 1
+    job.save()
+
+    user_proposal = None
+    proposal_form = None
+    
+    # Teklif verme yetkisi kontrolü
+    is_expert = JobProposal.can_propose(request.user)
+    
+    if request.user == job.owner:
+        # İlan sahibi ise teklifleri görsün
+        proposals = job.proposals.select_related('expert', 'expert__profile').all()
+    else:
+        proposals = None
+        # Kullanıcı daha önce teklif vermiş mi?
+        user_proposal = JobProposal.objects.filter(job=job, expert=request.user).first()
+        
+        if is_expert and not user_proposal and job.status == 'open':
+            if request.method == 'POST':
+                proposal_form = ProposalForm(request.POST)
+                if proposal_form.is_valid():
+                    proposal = proposal_form.save(commit=False)
+                    proposal.job = job
+                    proposal.expert = request.user
+                    proposal.save()
+                    
+                    messages.success(request, 'Teklifiniz başarıyla gönderildi!')
+                    return redirect('job_detail', pk=pk)
+            else:
+                proposal_form = ProposalForm()
+
+    is_liked = False
+    is_saved = False
+    if request.user.is_authenticated:
+        is_liked = job.likes.filter(id=request.user.id).exists()
+        is_saved = job.saved_by.filter(id=request.user.id).exists()
+
+    # Benzer İlanlar (Aynı kategorideki diğer açık ilanlar)
+    similar_jobs = FreelanceJob.objects.filter(
+        category=job.category, 
+        status='open'
+    ).exclude(pk=pk).order_by('-created_at')[:3]
+
+    return render(request, 'forum/market/job_detail.html', {
+        'job': job,
+        'proposals': proposals,
+        'user_proposal': user_proposal,
+        'proposal_form': proposal_form,
+        'is_liked': is_liked,
+        'is_saved': is_saved,
+        'is_expert': is_expert,
+        'similar_jobs': similar_jobs
+    })
+
+@login_required
+def my_jobs(request):
+    # Kullanıcının açtığı ilanlar
+    posted_jobs = FreelanceJob.objects.filter(owner=request.user).order_by('-created_at')
+    # Kullanıcının verdiği teklifler
+    my_proposals = JobProposal.objects.filter(expert=request.user).select_related('job').order_by('-created_at')
+    # Kullanıcının kaydettiği ilanlar
+    saved_jobs = request.user.saved_jobs.all().order_by('-created_at')
+    
+    return render(request, 'forum/market/my_jobs.html', {
+        'posted_jobs': posted_jobs,
+        'my_proposals': my_proposals,
+        'saved_jobs': saved_jobs
+    })
 
 # --- BÖLÜM DETAY ---
 def section_detail(request, pk):
@@ -212,7 +382,8 @@ def send_message(request, username):
 # --- PROFİL DETAY ---
 def profile_detail(request, username):
     profile_user = get_object_or_404(User, username=username)
-    return render(request, 'forum/profile_detail.html', {'profile_user': profile_user})
+    posted_jobs = FreelanceJob.objects.filter(owner=profile_user).order_by('-created_at')
+    return render(request, 'forum/profile_detail.html', {'profile_user': profile_user, 'posted_jobs': posted_jobs})
 
 # --- DİĞER ---
 def about(request):

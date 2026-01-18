@@ -458,3 +458,94 @@ class QuizScore(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.total_points} puan"
+
+class SuccessStory(models.Model):
+    """Kullanıcı başarı hikayeleri (Before/After)"""
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='stories')
+    quote = models.TextField(verbose_name="Hikaye Alıntısı")
+    achievements = models.JSONField(default=list, verbose_name="Başarı Maddeleri") 
+    resources = models.JSONField(default=list, verbose_name="Kullanılan Kaynaklar")
+    likes_count = models.IntegerField(default=0)
+    comments_count = models.IntegerField(default=0)
+    is_featured = models.BooleanField(default=False, verbose_name="Haftanın Hikayesi")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Başarı Hikayesi"
+        verbose_name_plural = "Başarı Hikayeleri"
+
+    def __str__(self):
+        return f"{self.user.username} - Başarı Hikayesi"
+
+class FreelanceJob(models.Model):
+    """Kullanıcıların verdiği iş ilanları (Freelance Market)"""
+    STATUS_CHOICES = (
+        ('open', 'Açık (Teklif Bekliyor)'),
+        ('in_progress', 'Devam Ediyor'),
+        ('completed', 'Tamamlandı'),
+        ('cancelled', 'İptal Edildi'),
+    )
+
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posted_jobs', verbose_name="İlan Sahibi")
+    title = models.CharField(max_length=200, verbose_name="İlan Başlığı")
+    description = models.TextField(verbose_name="İş Tanımı")
+    budget_min = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Min Bütçe (TL)")
+    budget_max = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Max Bütçe (TL)")
+    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, related_name='jobs', verbose_name="Kategori")
+    
+    likes = models.ManyToManyField(User, related_name='liked_jobs', blank=True, verbose_name="Beğenenler")
+    saved_by = models.ManyToManyField(User, related_name='saved_jobs', blank=True, verbose_name="Kaydedenler")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='open', verbose_name="Durum")
+    views = models.PositiveIntegerField(default=0, verbose_name="Görüntülenme")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "İş İlanı"
+        verbose_name_plural = "İş İlanları"
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return self.title
+
+    @property
+    def total_likes(self):
+        return self.likes.count()
+
+    @property
+    def proposal_count(self):
+        return self.proposals.count()
+
+class JobProposal(models.Model):
+    """Uzmanların iş ilanlarına verdiği teklifler"""
+    STATUS_CHOICES = (
+        ('pending', 'Beklemede'),
+        ('accepted', 'Kabul Edildi'),
+        ('rejected', 'Reddedildi'),
+    )
+
+    job = models.ForeignKey(FreelanceJob, on_delete=models.CASCADE, related_name='proposals', verbose_name="İlan")
+    expert = models.ForeignKey(User, on_delete=models.CASCADE, related_name='proposals', verbose_name="Uzman")
+    price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Teklif (TL)")
+    duration = models.CharField(max_length=50, verbose_name="Süre (Örn: 3 gün)")
+    message = models.TextField(verbose_name="Ön Yazı")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending', verbose_name="Durum")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Teklif"
+        verbose_name_plural = "Teklifler"
+        unique_together = ('job', 'expert')
+
+    def __str__(self):
+        return f"{self.expert.username} - {self.job.title}"
+
+    @staticmethod
+    def can_propose(user):
+        """Bir kullanıcının teklif verip veremeyeceğini kontrol eder (Expert ve üzeri)"""
+        if not user.is_authenticated: return False
+        if user.is_superuser or user.is_staff: return True
+        
+        # Sadece bu rütbeler teklif verebilir
+        allowed_ranks = ['expert', 'master', 'legend', 'admin']
+        return hasattr(user, 'profile') and user.profile.rank in allowed_ranks

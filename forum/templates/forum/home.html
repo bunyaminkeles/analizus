@@ -233,6 +233,53 @@
     </div>
 </div>
 
+<!-- MARKET WIDGET -->
+<div class="widget-card full-width mb-4" style="border: 1px solid rgba(13, 202, 240, 0.2);">
+    <div class="widget-header" style="color: #0dcaf0; border-bottom: 1px solid rgba(13, 202, 240, 0.1);">
+        <i class="bi bi-briefcase-fill"></i>
+        <span>ANALİZ HİZMETLERİ PAZARI</span>
+    </div>
+    <div class="widget-body p-0" style="max-height: none;">
+        {% for job in recent_jobs %}
+        <div class="job-item d-flex justify-content-between align-items-center p-3" style="border-bottom: 1px solid rgba(255, 255, 255, 0.05);">
+            <div class="d-flex align-items-center gap-3">
+                <div class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25 rounded-pill">
+                    {{ job.category.title }}
+                </div>
+                <div>
+                    <h6 class="mb-0">
+                        <a href="{% url 'job_detail' pk=job.pk %}" class="text-white text-decoration-none fw-bold hover-text-info">
+                            {{ job.title }}
+                        </a>
+                    </h6>
+                    <div class="small text-muted mt-1">
+                        <span class="me-2"><i class="bi bi-person"></i> {{ job.owner.username }}</span>
+                        <span><i class="bi bi-clock"></i> {{ job.created_at|timesince }} önce</span>
+                    </div>
+                </div>
+            </div>
+            <div class="text-end">
+                <div class="text-success fw-bold">₺{{ job.budget_min|floatformat:0 }} - {{ job.budget_max|floatformat:0 }}</div>
+                <small class="text-muted">{{ job.proposal_count }} teklif</small>
+            </div>
+        </div>
+        {% empty %}
+        <div class="p-4 text-center text-muted">
+            <i class="bi bi-briefcase display-4 opacity-25 mb-2 d-block"></i>
+            Henüz açık iş ilanı bulunmuyor.
+        </div>
+        {% endfor %}
+    </div>
+    <div class="card-footer bg-transparent border-0 d-flex justify-content-between p-3">
+        <a href="{% url 'job_list' %}" class="btn btn-sm btn-outline-info rounded-pill px-3">
+            <i class="bi bi-search me-1"></i> İş Ara
+        </a>
+        <a href="{% url 'post_job' %}" class="btn btn-sm btn-info rounded-pill px-3 fw-bold">
+            <i class="bi bi-plus-lg me-1"></i> İlan Ver
+        </a>
+    </div>
+</div>
+
 <!-- ACTIVITY SECTION -->
 <div class="widget-card full-width">
     <div class="widget-header green">
@@ -1001,4 +1048,72 @@ function checkAnswer(btn, correctAnswer) {
     }, 2000);
 }
 </script>
+
+<!-- SUCCESS STORY WIDGET -->
+{% if featured_story %}
+<div class="widget-card full-width" style="background: linear-gradient(145deg, #1e293b, #0f172a); border: 1px solid rgba(255, 215, 0, 0.2);">
+    <div class="widget-header" style="color: #ffd700; border-bottom: 1px solid rgba(255, 215, 0, 0.1);">
+        <i class="bi bi-trophy-fill"></i>
+        <span>HAFTANIN BAŞARI HİKAYESİ</span>
+    </div>
+    <div class="widget-body d-flex align-items-center gap-4 p-4" style="max-height: none;">
+        <!-- Avatar & User -->
+        <div class="text-center" style="min-width: 120px;">
+            <div style="width: 80px; height: 80px; margin: 0 auto 10px; border-radius: 50%; background: #334155; display: flex; align-items: center; justify-content: center; border: 2px solid #ffd700; overflow: hidden;">
+                {% if featured_story.user.profile.avatar %}
+                    <img src="{{ featured_story.user.profile.avatar.url }}" style="width: 100%; height: 100%; object-fit: cover;">
+                {% else %}
+                    <span style="font-size: 2rem; color: #ffd700; font-weight: bold;">{{ featured_story.user.username|slice:":1" }}</span>
+                {% endif %}
+            </div>
+            <h5 style="color: #fff; margin: 0; font-size: 1rem;">{{ featured_story.user.get_full_name|default:featured_story.user.username }}</h5>
+            <small style="color: #94a3b8;">{{ featured_story.user.profile.title }}</small>
+        </div>
+
+        <!-- Content -->
+        <div class="flex-grow-1">
+            <div class="mb-3 position-relative">
+                <i class="bi bi-quote" style="font-size: 2rem; color: rgba(255, 255, 255, 0.1); position: absolute; top: -10px; left: -10px;"></i>
+                <p style="color: #e2e8f0; font-style: italic; margin: 0; padding-left: 25px;">"{{ featured_story.quote }}"</p>
+            </div>
+            
+            <div class="d-flex flex-wrap gap-2 mb-3">
+                {% for item in featured_story.achievements %}
+                <span style="background: rgba(34, 197, 94, 0.2); color: #4ade80; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; border: 1px solid rgba(34, 197, 94, 0.3);">
+                    <i class="bi bi-check-circle-fill me-1"></i> {{ item }}
+                </span>
+                {% endfor %}
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center">
+                <div style="font-size: 0.8rem; color: #64748b;">
+                    <span class="me-3"><i class="bi bi-heart-fill text-danger"></i> {{ featured_story.likes_count }}</span>
+                    <span><i class="bi bi-chat-fill text-info"></i> {{ featured_story.comments_count }}</span>
+                </div>
+                <div class="d-flex gap-2">
+                    {% for res in featured_story.resources %}
+                    <span class="badge bg-secondary bg-opacity-25 text-secondary border border-secondary border-opacity-25 fw-normal" style="font-size: 0.7rem;">
+                        {{ res }}
+                    </span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer Actions -->
+        <div class="d-flex justify-content-between align-items-center border-top border-secondary border-opacity-25 pt-3 mt-2 w-100">
+            <a href="{% url 'success_stories' %}" class="btn btn-sm btn-outline-warning rounded-pill px-3">
+                <i class="bi bi-grid-fill me-1"></i> Tüm Hikayeler
+            </a>
+            <a href="{% url 'success_stories' %}" class="text-white-50 text-decoration-none small hover-text-white">
+                Sen de Paylaş <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- WIDGETS ROW -->
+<div class="widgets-row">
+    <!-- Son Tartışmalar -->
 {% endblock %}

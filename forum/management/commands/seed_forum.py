@@ -7,14 +7,33 @@ from django.utils.text import slugify
 class Command(BaseCommand):
     help = 'Veritabanını temizler ve ANALIZUS içerikleriyle doldurur.'
 
+    def turkish_slugify(self, text):
+        """Türkçe karakterleri düzgünce dönüştüren slug fonksiyonu"""
+        replacements = {
+            'ı': 'i', 'İ': 'i', 'ğ': 'g', 'Ğ': 'g',
+            'ü': 'u', 'Ü': 'u', 'ş': 's', 'Ş': 's',
+            'ö': 'o', 'Ö': 'o', 'ç': 'c', 'Ç': 'c',
+            '&': 've', '/': '-'
+        }
+        for src, dest in replacements.items():
+            text = text.replace(src, dest)
+        return slugify(text)
+
     def handle(self, *args, **kwargs):
-        self.stdout.write(self.style.WARNING('Veritabanı temizleniyor...'))
+        self.stdout.write(self.style.WARNING('DİKKAT: Bu işlem tüm Forum verilerini (Bölümler, Kategoriler, Konular, Mesajlar) SİLECEKTİR!'))
+        confirm = input('Devam etmek istiyor musunuz? (e/h): ')
+        
+        if confirm.lower() != 'e':
+            self.stdout.write(self.style.ERROR('İşlem iptal edildi.'))
+            return
 
         # 1. TEMİZLİK
+        self.stdout.write('Veritabanı temizleniyor...')
         Post.objects.all().delete()
         Topic.objects.all().delete()
         Category.objects.all().delete()
         Section.objects.all().delete()
+        self.stdout.write('Temizlik tamamlandı.')
 
         # 2. KULLANICILAR
         users = []
@@ -405,7 +424,7 @@ class Command(BaseCommand):
             section = Section.objects.create(title=sec_title)
 
             for cat_title, icon, desc, topics_data in categories:
-                slug_val = slugify(cat_title.replace('&', 've').replace('/', '-'))
+                slug_val = self.turkish_slugify(cat_title)
 
                 category = Category.objects.create(
                     section=section,

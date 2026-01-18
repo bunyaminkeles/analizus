@@ -44,4 +44,15 @@ urlpatterns = [
     
     # Section Detail
     path('section/<int:pk>/', views.section_detail, name='section_detail'),
+
+    # Başarı Hikayeleri
+    path('success-stories/', views.success_stories, name='success_stories'),
+
+    # Freelance Market
+    path('market/', views.job_list, name='job_list'),
+    path('market/new/', views.post_job, name='post_job'),
+    path('market/job/<int:pk>/', views.job_detail, name='job_detail'),
+    path('market/job/<int:pk>/like/', views.toggle_job_like, name='toggle_job_like'),
+    path('market/job/<int:pk>/bookmark/', views.toggle_job_bookmark, name='toggle_job_bookmark'),
+    path('market/my-jobs/', views.my_jobs, name='my_jobs'),
 ]
