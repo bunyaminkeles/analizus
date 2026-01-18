@@ -522,8 +522,8 @@ class FreelanceJob(models.Model):
         if not user.is_authenticated: return False
         if user.is_superuser or user.is_staff: return True
         
-        # Rozet Kontrolü (İstatistik Ustası)
-        if hasattr(user, 'profile') and user.profile.badges.filter(slug='istatistik-ustasi').exists():
+        # Rozet Kontrolü (İstatistik Ustası, Başarı veya Uzmanlık)
+        if hasattr(user, 'profile') and user.profile.badges.filter(slug__in=['istatistik-ustasi', 'basari', 'uzmanlik']).exists():
             return True
             
         # Alternatif: Premium üyeler veya belirli rütbeler
@@ -556,12 +556,12 @@ class JobProposal(models.Model):
 
     @staticmethod
     def can_propose(user):
-        """Bir kullanıcının teklif verip veremeyeceğini kontrol eder (Expert ve üzeri)"""
+        """Bir kullanıcının teklif verip veremeyeceğini kontrol eder."""
         if not user.is_authenticated: return False
         if user.is_superuser or user.is_staff: return True
         
-        # Rozet Kontrolü
-        if hasattr(user, 'profile') and user.profile.badges.filter(slug='istatistik-ustasi').exists():
+        # Rozet Kontrolü (İstatistik Ustası, Başarı veya Uzmanlık)
+        if hasattr(user, 'profile') and user.profile.badges.filter(slug__in=['istatistik-ustasi', 'basari', 'uzmanlik']).exists():
             return True
 
         # Sadece bu rütbeler teklif verebilir
