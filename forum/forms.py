@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-from .models import Topic, Post
+from .models import Topic, Post, FreelanceJob, JobProposal
 from django.utils.safestring import mark_safe
 
 # --- 1. KAYIT FORMU ---
@@ -51,4 +51,39 @@ class PostForm(forms.ModelForm):
         fields = ['message']
         widgets = {
             'message': forms.Textarea(attrs={'rows': 5, 'placeholder': 'Cevabınızı yazın...'}),
+        }
+
+# --- 4. İŞ İLANI FORMU ---
+class JobPostForm(forms.ModelForm):
+    class Meta:
+        model = FreelanceJob
+        fields = ['title', 'description', 'budget_min', 'budget_max', 'category']
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'form-control bg-dark text-light border-secondary', 'placeholder': 'Örn: SPSS Veri Analizi'}),
+            'description': forms.Textarea(attrs={'class': 'form-control bg-dark text-light border-secondary', 'rows': 5, 'placeholder': 'İşin detaylarını açıklayın...'}),
+            'budget_min': forms.NumberInput(attrs={'class': 'form-control bg-dark text-light border-secondary', 'placeholder': 'Min'}),
+            'budget_max': forms.NumberInput(attrs={'class': 'form-control bg-dark text-light border-secondary', 'placeholder': 'Max'}),
+            'category': forms.Select(attrs={'class': 'form-select bg-dark text-light border-secondary'}),
+        }
+        labels = {
+            'title': 'İlan Başlığı',
+            'description': 'İş Tanımı',
+            'budget_min': 'Minimum Bütçe (TL)',
+            'budget_max': 'Maksimum Bütçe (TL)',
+            'category': 'Kategori',
+        }
+
+class ProposalForm(forms.ModelForm):
+    class Meta:
+        model = JobProposal
+        fields = ['price', 'duration', 'message']
+        widgets = {
+            'price': forms.NumberInput(attrs={'class': 'form-control bg-dark text-light border-secondary', 'placeholder': 'Teklifiniz (TL)'}),
+            'duration': forms.TextInput(attrs={'class': 'form-control bg-dark text-light border-secondary', 'placeholder': 'Örn: 3 gün'}),
+            'message': forms.Textarea(attrs={'class': 'form-control bg-dark text-light border-secondary', 'rows': 3, 'placeholder': 'Neden sizi seçmeliyim?'}),
+        }
+        labels = {
+            'price': 'Teklif Tutarı (TL)',
+            'duration': 'Tahmini Süre',
+            'message': 'Ön Yazı',
         }

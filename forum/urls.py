@@ -47,4 +47,10 @@ urlpatterns = [
 
     # Başarı Hikayeleri
     path('success-stories/', views.success_stories, name='success_stories'),
+
+    # Freelance Market
+    path('market/', views.job_list, name='job_list'),
+    path('market/new/', views.post_job, name='post_job'),
+    path('market/job/<int:pk>/', views.job_detail, name='job_detail'),
+    path('market/my-jobs/', views.my_jobs, name='my_jobs'),
 ]

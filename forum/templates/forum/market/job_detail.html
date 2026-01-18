@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ job.title }} - Analizus Market{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <!-- İlan Detayları -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm mb-4" style="background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(255, 255, 255, 0.08) !important;">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <h2 class="fw-bold text-white mb-0">{{ job.title }}</h2>
+                        <span class="badge bg-{{ job.status|yesno:'success,secondary' }}">{{ job.get_status_display }}</span>
+                    </div>
+                    
+                    <div class="d-flex gap-3 text-muted small mb-4">
+                        <span><i class="bi bi-tag me-1"></i> {{ job.category.title }}</span>
+                        <span><i class="bi bi-clock me-1"></i> {{ job.created_at|date:"d M Y" }}</span>
+                        <span><i class="bi bi-person me-1"></i> {{ job.owner.username }}</span>
+                    </div>
+
+                    <div class="text-light mb-4" style="white-space: pre-line;">
+                        {{ job.description }}
+                    </div>
+
+                    <div class="bg-dark bg-opacity-50 p-3 rounded border border-secondary border-opacity-25">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-muted">Bütçe Aralığı:</span>
+                            <span class="text-success fw-bold fs-5">₺{{ job.budget_min|floatformat:0 }} - ₺{{ job.budget_max|floatformat:0 }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Teklifler (Sadece İlan Sahibi Görür) -->
+            {% if request.user == job.owner %}
+            <h4 class="text-white mb-3">Gelen Teklifler ({{ proposals.count }})</h4>
+            {% for proposal in proposals %}
+            <div class="card border-0 shadow-sm mb-3" style="background: rgba(30, 41, 59, 0.4);">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <h6 class="text-info fw-bold">{{ proposal.expert.username }} <span class="badge bg-secondary ms-2">{{ proposal.expert.profile.get_rank_display }}</span></h6>
+                        <span class="text-muted small">{{ proposal.created_at|timesince }} önce</span>
+                    </div>
+                    <p class="text-light small mb-2">{{ proposal.message }}</p>
+                    <div class="d-flex justify-content-between align-items-center mt-2">
+                        <div class="text-success fw-bold">₺{{ proposal.price }} <span class="text-muted fw-normal ms-2">({{ proposal.duration }})</span></div>
+                        <a href="{% url 'send_message' username=proposal.expert.username %}" class="btn btn-sm btn-outline-light">Mesaj At</a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-muted">Henüz teklif gelmemiş.</p>
+            {% endfor %}
+            {% endif %}
+
+            <!-- Benzer İlanlar -->
+            {% if similar_jobs %}
+            <div class="mt-5">
+                <h5 class="text-white mb-3"><i class="bi bi-collection text-info me-2"></i>Benzer İlanlar</h5>
+                <div class="list-group">
+                    {% for sjob in similar_jobs %}
+                    <a href="{% url 'job_detail' pk=sjob.pk %}" class="list-group-item list-group-item-action bg-dark text-white border-secondary d-flex justify-content-between align-items-center p-3" style="background: rgba(30, 41, 59, 0.4) !important;">
+                        <div>
+                            <h6 class="mb-1 fw-bold small">{{ sjob.title }}</h6>
+                            <small class="text-muted" style="font-size: 0.75rem;">{{ sjob.created_at|timesince }} önce · {{ sjob.owner.username }}</small>
+                        </div>
+                        <div class="text-end">
+                            <span class="text-success fw-bold small">₺{{ sjob.budget_min|floatformat:0 }}</span>
+                        </div>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Sidebar / Teklif Formu -->
+        <div class="col-lg-4">
+            {% if request.user != job.owner %}
+                {% if user_proposal %}
+                <!-- Zaten Teklif Verilmiş -->
+                <div class="card border-0 shadow-sm bg-success bg-opacity-10 border-success">
+                    <div class="card-body text-center p-4">
+                        <i class="bi bi-check-circle-fill text-success fs-1 mb-3"></i>
+                        <h5 class="text-white">Teklifiniz Gönderildi</h5>
+                        <p class="text-white-50 small">İlan sahibi teklifinizi değerlendiriyor.</p>
+                        <div class="bg-dark bg-opacity-25 p-2 rounded text-start mt-3">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="text-muted small">Tutar:</span>
+                                <span class="text-success fw-bold small">₺{{ user_proposal.price }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span class="text-muted small">Süre:</span>
+                                <span class="text-white small">{{ user_proposal.duration }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% elif is_expert and job.status == 'open' %}
+                <!-- Teklif Formu -->
+                <div class="card border-0 shadow-sm" style="background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(255, 255, 255, 0.08) !important;">
+                    <div class="card-header bg-transparent border-bottom border-secondary border-opacity-25">
+                        <h5 class="text-white mb-0">Teklif Ver</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label class="form-label text-white-50 small">{{ proposal_form.price.label }}</label>
+                                {{ proposal_form.price }}
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-white-50 small">{{ proposal_form.duration.label }}</label>
+                                {{ proposal_form.duration }}
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label text-white-50 small">{{ proposal_form.message.label }}</label>
+                                {{ proposal_form.message }}
+                            </div>
+                            <button type="submit" class="btn btn-success w-100 fw-bold">Teklifi Gönder</button>
+                        </form>
+                    </div>
+                </div>
+                {% elif not is_expert %}
+                <div class="alert alert-warning border-0">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    Sadece <strong>Uzman</strong> rütbesine sahip üyeler teklif verebilir.
+                </div>
+                {% else %}
+                <div class="alert alert-secondary">Bu ilan tekliflere kapalıdır.</div>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

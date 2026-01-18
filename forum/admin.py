@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Section, Category, Topic, Post, Profile, ContactMessage, PrivateMessage, Badge, Notification, Skill, EmailVerification, DailyTip, QuizQuestion, QuizScore
+from .models import Section, Category, Topic, Post, Profile, ContactMessage, PrivateMessage, Badge, Notification, Skill, EmailVerification, DailyTip, QuizQuestion, QuizScore, FreelanceJob, JobProposal
 
 # --- GENEL AYARLAR ---
 admin.site.site_header = "Analizus Komuta Merkezi"
@@ -367,3 +367,16 @@ class QuizScoreAdmin(admin.ModelAdmin):
     list_filter = ('last_played',)
     search_fields = ('user__username',)
     ordering = ('-total_points',)
+
+@admin.register(FreelanceJob)
+class FreelanceJobAdmin(admin.ModelAdmin):
+    list_display = ('title', 'owner', 'category', 'budget_min', 'budget_max', 'status', 'created_at')
+    list_filter = ('status', 'category', 'created_at')
+    search_fields = ('title', 'description', 'owner__username')
+    date_hierarchy = 'created_at'
+
+@admin.register(JobProposal)
+class JobProposalAdmin(admin.ModelAdmin):
+    list_display = ('job', 'expert', 'price', 'duration', 'status', 'created_at')
+    list_filter = ('status', 'created_at')
+    search_fields = ('job__title', 'expert__username', 'message')
