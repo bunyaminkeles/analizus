@@ -870,23 +870,40 @@ def api_submit_quiz_answer(request):
             score.last_played = timezone.now()
             score.save()
             
-            # Rozet Kontrolü (Her 100 doğru cevapta)
-            badge_awarded = False
-            if is_correct and score.correct_answers > 0 and score.correct_answers % 100 == 0:
-                badge, _ = Badge.objects.get_or_create(
-                    slug='istatistik-ustasi',
-                    defaults={
-                        'name': 'İstatistik Ustası',
-                        'description': '100 Quiz sorusunu doğru cevaplayarak kazanılan uzmanlık rozeti. İlan açma yetkisi verir.',
-                        'icon': 'bi-patch-check-fill',
-                        'color': '#ffd700',
-                        'badge_type': 'specialty'
-                    }
-                )
-                if badge not in request.user.profile.badges.all():
-                    request.user.profile.badges.add(badge)
-                    badge_awarded = True
-                    # Rozet kazanıldı mesajı frontend'de gösterilecek
+            # Rozet Kontrolü
+            badge_awarded = None
+            if is_correct and score.correct_answers > 0:
+                # 100 doğru cevap -> Başarı Rozeti
+                if score.correct_answers == 100:
+                    badge, created = Badge.objects.get_or_create(
+                        slug='basari',
+                        defaults={'name': 'Başarı', 'description': '100 quiz sorusunu doğru cevaplayarak kazanıldı.', 'badge_type': 'achievement', 'icon': 'bi-patch-check-fill', 'color': '#10b981'}
+                    )
+                    if created or badge not in request.user.profile.badges.all():
+                        request.user.profile.badges.add(badge)
+                        badge_awarded = badge.name
+                
+                # 200 doğru cevap -> Uzmanlık Rozeti
+                elif score.correct_answers == 200:
+                    badge, created = Badge.objects.get_or_create(
+                        slug='uzmanlik',
+                        defaults={'name': 'Uzmanlık', 'description': '200 quiz sorusunu doğru cevaplayarak kazanıldı.', 'badge_type': 'specialty', 'icon': 'bi-shield-shaded', 'color': '#a855f7'}
+                    )
+                    if created or badge not in request.user.profile.badges.all():
+                        request.user.profile.badges.add(badge)
+                        badge_awarded = badge.name
+
+                # Geçiş için eski rozeti de 100'de ver
+                if score.correct_answers >= 100:
+                    istatistik_ustasi_badge, created = Badge.objects.get_or_create(
+                        slug='istatistik-ustasi',
+                        defaults={'name': 'İstatistik Ustası', 'description': '100+ Quiz sorusunu doğru cevapladı.', 'badge_type': 'specialty', 'icon': 'bi-patch-check-fill', 'color': '#ffd700'}
+                    )
+                    if created or istatistik_ustasi_badge not in request.user.profile.badges.all():
+                        request.user.profile.badges.add(istatistik_ustasi_badge)
+                        if not badge_awarded:  # Eğer zaten bir rozet verilmediyse bunu ata
+                            badge_awarded = istatistik_ustasi_badge.name
+
 
             return JsonResponse({
                 'success': True,
