@@ -516,6 +516,20 @@ class FreelanceJob(models.Model):
     def proposal_count(self):
         return self.proposals.count()
 
+    @staticmethod
+    def can_post(user):
+        """İlan açma yetkisi kontrolü (Rozet veya Rütbe)"""
+        if not user.is_authenticated: return False
+        if user.is_superuser or user.is_staff: return True
+        
+        # Rozet Kontrolü (İstatistik Ustası)
+        if hasattr(user, 'profile') and user.profile.badges.filter(slug='istatistik-ustasi').exists():
+            return True
+            
+        # Alternatif: Premium üyeler veya belirli rütbeler
+        allowed_ranks = ['expert', 'master', 'legend', 'admin']
+        return hasattr(user, 'profile') and (user.profile.rank in allowed_ranks or user.profile.account_type == 'Premium')
+
 class JobProposal(models.Model):
     """Uzmanların iş ilanlarına verdiği teklifler"""
     STATUS_CHOICES = (
@@ -546,6 +560,10 @@ class JobProposal(models.Model):
         if not user.is_authenticated: return False
         if user.is_superuser or user.is_staff: return True
         
+        # Rozet Kontrolü
+        if hasattr(user, 'profile') and user.profile.badges.filter(slug='istatistik-ustasi').exists():
+            return True
+
         # Sadece bu rütbeler teklif verebilir
         allowed_ranks = ['expert', 'master', 'legend', 'admin']
         return hasattr(user, 'profile') and user.profile.rank in allowed_ranks

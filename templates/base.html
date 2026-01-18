@@ -112,8 +112,9 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav mx-auto">
+                    <li class="nav-item px-2"><a class="nav-link" href="#" onclick="openQuizModal()"><i class="bi bi-trophy-fill me-1 text-warning"></i>İstatistik Arena</a></li>
                     <li class="nav-item px-2"><a class="nav-link" href="{% url 'ai_assistant' %}"><i class="bi bi-robot me-1"></i>AI Asistan</a></li>
-                    <li class="nav-item px-2"><a class="nav-link" href="{% url 'success_stories' %}"><i class="bi bi-trophy me-1"></i>Başarı Hikayeleri</a></li>
+                    <li class="nav-item px-2"><a class="nav-link" href="#" onclick="openStoryModal()"><i class="bi bi-star-fill me-1 text-info"></i>Başarı Hikayeleri</a></li>
                     <li class="nav-item px-2"><a class="nav-link" href="{% url 'about' %}">Vizyon 2050</a></li>
                     <li class="nav-item px-2"><a class="nav-link" href="{% url 'contact' %}">İletişim</a></li>
                 </ul>
@@ -176,6 +177,50 @@
         </div>
     </div>
 
+    <!-- QUIZ MODAL -->
+    <div class="modal fade" id="quizModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark border border-secondary shadow-lg">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title text-white"><i class="bi bi-trophy-fill text-warning me-2"></i>İstatistik Arena</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4" id="quizModalBody">
+                    <!-- Soru buraya yüklenecek -->
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-info" role="status"></div>
+                        <p class="mt-2 text-muted">Soru yükleniyor...</p>
+                    </div>
+                </div>
+                <div class="modal-footer border-secondary justify-content-between">
+                    <span class="text-muted small" id="quizScoreDisplay"></span>
+                    <button type="button" class="btn btn-outline-light btn-sm" onclick="loadQuizQuestion()">Sonraki Soru <i class="bi bi-arrow-right"></i></button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SUCCESS STORY MODAL -->
+    <div class="modal fade" id="storyModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content bg-dark border border-secondary shadow-lg" style="background: linear-gradient(145deg, #1e293b, #0f172a);">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title text-warning"><i class="bi bi-star-fill me-2"></i>Haftanın Başarı Hikayesi</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-0" id="storyModalBody">
+                    <div class="text-center py-5">
+                        <div class="spinner-border text-warning" role="status"></div>
+                    </div>
+                </div>
+                <div class="modal-footer border-secondary bg-dark bg-opacity-50">
+                    <a href="{% url 'success_stories' %}" class="btn btn-outline-warning btn-sm">Tüm Hikayeler</a>
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Kapat</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <main class="container py-4 mt-2">
         {% if messages %}
             {% for message in messages %}
@@ -217,6 +262,7 @@
             <span class="ticker-item"><i class="bi bi-people me-2"></i>Yeni Akademik Katılım: 1.250+</span>
             <span class="ticker-item"><i class="bi bi-shield-check me-2"></i>Veri Güvenliği Protokolü v3.0</span>
             <span class="ticker-item"><i class="bi bi-graph-up me-2"></i>Bugün 450+ Veri Seti Analiz Edildi</span>
+            <span class="ticker-item text-warning"><i class="bi bi-trophy me-2"></i>İstatistik Arena'da 100 doğru cevap ver, "İstatistik Ustası" rozetini kap, İlan Verme yetkisi kazan!</span>
         </div>
     </div>
 
@@ -224,6 +270,106 @@
         {% if user.is_authenticated %}
             <script src="{% static 'js/notifications.js' %}?v=2050"></script>
         {% endif %}
+        <script>
+            // QUIZ FUNCTIONS
+            const quizModal = new bootstrap.Modal(document.getElementById('quizModal'));
+            let currentQuestionId = null;
+
+            function openQuizModal() {
+                quizModal.show();
+                loadQuizQuestion();
+            }
+
+            function loadQuizQuestion() {
+                const body = document.getElementById('quizModalBody');
+                body.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-info"></div></div>';
+                
+                fetch('{% url "api_get_quiz_question" %}')
+                    .then(response => response.json())
+                    .then(data => {
+                        if(data.success) {
+                            const q = data.question;
+                            currentQuestionId = q.id;
+                            let html = `
+                                <div class="d-flex justify-content-between mb-3">
+                                    <span class="badge bg-info bg-opacity-25 text-info border border-info border-opacity-25">${q.category}</span>
+                                    <span class="badge bg-secondary border border-secondary">${q.difficulty}</span>
+                                </div>
+                                <h5 class="text-white mb-4" style="line-height: 1.5;">${q.question}</h5>
+                                <div class="d-grid gap-2">
+                            `;
+                            
+                            for (const [key, val] of Object.entries(q.options)) {
+                                html += `<button class="btn btn-outline-light text-start py-2 quiz-opt" onclick="submitAnswer('${key}', this)">
+                                    <span class="fw-bold text-info me-2">${key})</span> ${val}
+                                </button>`;
+                            }
+                            html += '</div><div id="quizResult" class="mt-3"></div>';
+                            body.innerHTML = html;
+                        } else {
+                            body.innerHTML = '<p class="text-center text-danger">Soru yüklenemedi.</p>';
+                        }
+                    });
+            }
+
+            function submitAnswer(answer, btnElement) {
+                // Disable all buttons
+                document.querySelectorAll('.quiz-opt').forEach(btn => btn.disabled = true);
+                
+                fetch('{% url "api_submit_quiz_answer" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify({
+                        question_id: currentQuestionId,
+                        answer: answer
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const resultDiv = document.getElementById('quizResult');
+                    if(data.success) {
+                        if(data.is_correct) {
+                            btnElement.classList.remove('btn-outline-light');
+                            btnElement.classList.add('btn-success');
+                            resultDiv.innerHTML = `<div class="alert alert-success py-2"><i class="bi bi-check-circle-fill me-2"></i>Doğru Cevap! (+10 Puan)</div>`;
+                            if(data.badge_awarded) {
+                                resultDiv.innerHTML += `<div class="alert alert-warning py-2 mt-2 border-warning"><i class="bi bi-award-fill me-2"></i>TEBRİKLER! "İstatistik Ustası" rozeti kazandınız! Artık ilan açabilirsiniz.</div>`;
+                            }
+                        } else {
+                            btnElement.classList.remove('btn-outline-light');
+                            btnElement.classList.add('btn-danger');
+                            resultDiv.innerHTML = `<div class="alert alert-danger py-2">
+                                <i class="bi bi-x-circle-fill me-2"></i>Yanlış. Doğru cevap: <b>${data.correct_answer}</b>
+                                <hr class="my-1 border-danger border-opacity-25">
+                                <small>${data.explanation || ''}</small>
+                            </div>`;
+                        }
+                        document.getElementById('quizScoreDisplay').innerText = `Toplam Doğru: ${data.total_correct}`;
+                    }
+                });
+            }
+
+            // STORY FUNCTIONS
+            const storyModal = new bootstrap.Modal(document.getElementById('storyModal'));
+
+            function openStoryModal() {
+                storyModal.show();
+                const body = document.getElementById('storyModalBody');
+                
+                fetch('{% url "api_get_featured_story" %}')
+                    .then(response => response.json())
+                    .then(data => {
+                        if(data.success) {
+                            body.innerHTML = data.html;
+                        } else {
+                            body.innerHTML = '<p class="text-center text-white p-4">Hikaye bulunamadı.</p>';
+                        }
+                    });
+            }
+        </script>
     {% endblock %}
 </body>
 </html>
