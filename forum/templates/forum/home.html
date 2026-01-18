@@ -21,225 +21,277 @@
 }
 </script>
 
-<div class="analizus-home">
-
-<!-- HERO SECTION WITH STATS INSIDE -->
-<div class="hero-section">
-    <!-- SVG Circuit Background -->
-    <svg class="circuit-svg circuit-left" viewBox="0 0 200 400" preserveAspectRatio="none">
-        <defs>
-            <linearGradient id="cyan-grad-l" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" style="stop-color:#00f0ff;stop-opacity:0.6"/>
-                <stop offset="100%" style="stop-color:#00f0ff;stop-opacity:0"/>
-            </linearGradient>
-        </defs>
-        <path d="M0 40 H60 V20 H100 V40 H140" stroke="url(#cyan-grad-l)" stroke-width="1.5" fill="none"/>
-        <path d="M0 80 H40 V60 H80" stroke="url(#cyan-grad-l)" stroke-width="1.5" fill="none"/>
-        <path d="M0 120 H70 V100 H110 V130" stroke="url(#cyan-grad-l)" stroke-width="1.5" fill="none"/>
-        <path d="M0 180 H50 V160 H90" stroke="url(#cyan-grad-l)" stroke-width="1.5" fill="none"/>
-        <path d="M0 240 H80 V220 H120" stroke="url(#cyan-grad-l)" stroke-width="1.5" fill="none"/>
-        <path d="M0 300 H45 V280 H85 V310" stroke="url(#cyan-grad-l)" stroke-width="1.5" fill="none"/>
-        <path d="M0 360 H65 V340 H105" stroke="url(#cyan-grad-l)" stroke-width="1.5" fill="none"/>
-        <circle cx="60" cy="40" r="4" fill="#00f0ff" class="circuit-node"/>
-        <circle cx="100" cy="20" r="3" fill="#00f0ff" class="circuit-node n2"/>
-        <circle cx="40" cy="80" r="4" fill="#00f0ff" class="circuit-node n3"/>
-        <circle cx="70" cy="120" r="3" fill="#00f0ff" class="circuit-node"/>
-        <circle cx="50" cy="180" r="4" fill="#00f0ff" class="circuit-node n2"/>
-        <circle cx="80" cy="240" r="3" fill="#00f0ff" class="circuit-node n3"/>
-        <circle cx="45" cy="300" r="4" fill="#00f0ff" class="circuit-node"/>
-        <circle cx="65" cy="360" r="3" fill="#00f0ff" class="circuit-node n2"/>
-    </svg>
-
-    <svg class="circuit-svg circuit-right" viewBox="0 0 200 400" preserveAspectRatio="none">
-        <defs>
-            <linearGradient id="cyan-grad-r" x1="100%" y1="0%" x2="0%" y2="0%">
-                <stop offset="0%" style="stop-color:#00f0ff;stop-opacity:0.6"/>
-                <stop offset="100%" style="stop-color:#00f0ff;stop-opacity:0"/>
-            </linearGradient>
-        </defs>
-        <path d="M200 40 H140 V20 H100 V40 H60" stroke="url(#cyan-grad-r)" stroke-width="1.5" fill="none"/>
-        <path d="M200 80 H160 V60 H120" stroke="url(#cyan-grad-r)" stroke-width="1.5" fill="none"/>
-        <path d="M200 120 H130 V100 H90 V130" stroke="url(#cyan-grad-r)" stroke-width="1.5" fill="none"/>
-        <path d="M200 180 H150 V160 H110" stroke="url(#cyan-grad-r)" stroke-width="1.5" fill="none"/>
-        <path d="M200 240 H120 V220 H80" stroke="url(#cyan-grad-r)" stroke-width="1.5" fill="none"/>
-        <path d="M200 300 H155 V280 H115 V310" stroke="url(#cyan-grad-r)" stroke-width="1.5" fill="none"/>
-        <path d="M200 360 H135 V340 H95" stroke="url(#cyan-grad-r)" stroke-width="1.5" fill="none"/>
-        <circle cx="140" cy="40" r="4" fill="#00f0ff" class="circuit-node n3"/>
-        <circle cx="100" cy="20" r="3" fill="#00f0ff" class="circuit-node"/>
-        <circle cx="160" cy="80" r="4" fill="#00f0ff" class="circuit-node n2"/>
-        <circle cx="130" cy="120" r="3" fill="#00f0ff" class="circuit-node n3"/>
-        <circle cx="150" cy="180" r="4" fill="#00f0ff" class="circuit-node"/>
-        <circle cx="120" cy="240" r="3" fill="#00f0ff" class="circuit-node n2"/>
-        <circle cx="155" cy="300" r="4" fill="#00f0ff" class="circuit-node n3"/>
-        <circle cx="135" cy="360" r="3" fill="#00f0ff" class="circuit-node"/>
-    </svg>
-
-    <!-- Corner Glow Dots -->
-    <div class="corner-dot top-left"></div>
-    <div class="corner-dot top-right"></div>
-    <div class="corner-dot bottom-left"></div>
-    <div class="corner-dot bottom-right"></div>
-
-    <!-- Hero Content -->
-    <div class="hero-content">
-        <h1 class="hero-title">ANALİZUS</h1>
-        <p class="hero-subtitle">BİLİMİN IŞIĞINDA VERİYİ YÖNET</p>
-    </div>
-
-    <!-- Stats Pills Inside Hero -->
-    <div class="stats-pills">
-        <div class="stat-pill">
-            <div class="pill-icon cyan"><i class="bi bi-chat-square-text-fill"></i></div>
-            <div class="pill-info">
-                <span class="pill-label">Toplam Konu</span>
-                <span class="pill-value">{{ total_topics }}</span>
+<div class="home-grid-container">
+    <aside class="home-sidebar-left">
+        <!-- Popüler Konular -->
+        <div class="widget-card">
+            <div class="widget-header orange">
+                <i class="bi bi-fire"></i>
+                <span>Popüler Konular</span>
+            </div>
+            <div class="widget-body">
+                {% for topic in popular_topics %}
+                <a href="{% url 'topic_detail' pk=topic.pk %}" class="widget-item">
+                    <div class="item-rank">#{{ forloop.counter }}</div>
+                    <div class="item-content">
+                        <span class="item-title">{{ topic.subject|truncatechars:38 }}</span>
+                        <span class="item-meta"><i class="bi bi-eye"></i> {{ topic.views }} görüntülenme</span>
+                    </div>
+                </a>
+                {% empty %}
+                <p class="empty-text">Henüz popüler konu yok</p>
+                {% endfor %}
             </div>
         </div>
-        <div class="stat-pill">
-            <div class="pill-icon purple"><i class="bi bi-file-text-fill"></i></div>
-            <div class="pill-info">
-                <span class="pill-label">Toplam Gönderi</span>
-                <span class="pill-value">{{ total_posts }}</span>
+
+        <!-- Son Tartışmalar -->
+        <div class="widget-card">
+            <div class="widget-header cyan">
+                <i class="bi bi-chat-dots-fill"></i>
+                <span>Son Tartışmalar</span>
+            </div>
+            <div class="widget-body">
+                {% for topic in recent_topics %}
+                <a href="{% url 'topic_detail' pk=topic.pk %}" class="widget-item">
+                    <div class="item-avatar" style="background: linear-gradient(135deg, {% cycle '#8B5CF6' '#06B6D4' '#EC4899' '#10B981' %}, {% cycle '#6366F1' '#0891B2' '#DB2777' '#059669' %})">
+                        {{ topic.starter.username|slice:":2"|upper }}
+                    </div>
+                    <div class="item-content">
+                        <span class="item-title">{{ topic.subject|truncatechars:38 }}</span>
+                        <span class="item-meta">{{ topic.starter.username }} · {{ topic.created_at|timesince }} önce</span>
+                    </div>
+                </a>
+                {% empty %}
+                <p class="empty-text">Henüz tartışma yok</p>
+                {% endfor %}
             </div>
         </div>
-        <div class="stat-pill">
-            <div class="pill-icon green"><i class="bi bi-people-fill"></i></div>
-            <div class="pill-info">
-                <span class="pill-label">Toplam Üye</span>
-                <span class="pill-value">{{ total_users }}</span>
+
+        <!-- SUCCESS STORY WIDGET -->
+        {% if featured_story %}
+        <div class="widget-card full-width" style="background: linear-gradient(145deg, #1e293b, #0f172a); border: 1px solid rgba(255, 215, 0, 0.2);">
+            <div class="widget-header" style="color: #ffd700; border-bottom: 1px solid rgba(255, 215, 0, 0.1);">
+                <i class="bi bi-trophy-fill"></i>
+                <span>HAFTANIN BAŞARI HİKAYESİ</span>
             </div>
-        </div>
-        <div class="stat-pill">
-            <div class="pill-icon orange"><i class="bi bi-globe2"></i></div>
-            <div class="pill-info">
-                <span class="pill-label">Görüntülenme</span>
-                <span class="pill-value">{{ total_views|default:"0" }}</span>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- CATEGORIES ROW -->
-<div class="categories-row">
-    {% for section in sections %}
-    <a href="{% url 'section_detail' pk=section.pk %}" class="category-card">
-        <div class="category-icon">
-            {% if "Yazılım" in section.title %}<i class="bi bi-code-slash"></i>
-            {% elif "Yöntem" in section.title %}<i class="bi bi-diagram-3-fill"></i>
-            {% elif "Akademi" in section.title %}<i class="bi bi-mortarboard-fill"></i>
-            {% else %}<i class="bi bi-grid-fill"></i>{% endif %}
-        </div>
-        <div class="category-info">
-            <h3>{{ section.title }}</h3>
-            <p>{% if "Yazılım" in section.title %}SPSS, Python, R ve analiz araçları
-            {% elif "Yöntem" in section.title %}İstatistik yöntemler ve teknikler
-            {% elif "Akademi" in section.title %}Akademik kariyer ve araştırma
-            {% else %}Tüm konular ve tartışmalar{% endif %}</p>
-        </div>
-        <div class="category-arrow"><i class="bi bi-chevron-right"></i></div>
-    </a>
-    {% endfor %}
-</div>
-
-<!-- GÜNÜN İPUCU - Floating Card Sağ -->
-{% if daily_tip %}
-<div class="daily-tip-floating" id="dailyTip">
-    <div class="tip-mini-header">
-        <span><i class="bi bi-lightbulb-fill"></i> Günün İpucu</span>
-        <button class="tip-close" onclick="document.getElementById('dailyTip').classList.add('hidden')">&times;</button>
-    </div>
-    <div class="tip-mini-category">{{ daily_tip.get_category_display }}</div>
-    <h5 class="tip-mini-title">{{ daily_tip.title }}</h5>
-    <div class="tip-mini-content">{{ daily_tip.content|truncatewords:20|linebreaks }}</div>
-    <div class="tip-mini-footer">
-        <span class="tip-date">{{ daily_tip.publish_date|date:"d M" }}</span>
-    </div>
-</div>
-{% endif %}
-
-<!-- WIDGETS ROW -->
-<div class="widgets-row">
-    <!-- Son Tartışmalar -->
-    <div class="widget-card">
-        <div class="widget-header cyan">
-            <i class="bi bi-chat-dots-fill"></i>
-            <span>Son Tartışmalar</span>
-        </div>
-        <div class="widget-body">
-            {% for topic in recent_topics %}
-            <a href="{% url 'topic_detail' pk=topic.pk %}" class="widget-item">
-                <div class="item-avatar" style="background: linear-gradient(135deg, {% cycle '#8B5CF6' '#06B6D4' '#EC4899' '#10B981' %}, {% cycle '#6366F1' '#0891B2' '#DB2777' '#059669' %})">
-                    {{ topic.starter.username|slice:":2"|upper }}
+            <div class="widget-body" style="max-height: none;">
+                <!-- Avatar & User -->
+                <div class="text-center" style="min-width: 120px;">
+                    <div style="width: 80px; height: 80px; margin: 0 auto 10px; border-radius: 50%; background: #334155; display: flex; align-items: center; justify-content: center; border: 2px solid #ffd700; overflow: hidden;">
+                        {% if featured_story.user.profile.avatar %}
+                            <img src="{{ featured_story.user.profile.avatar.url }}" style="width: 100%; height: 100%; object-fit: cover;">
+                        {% else %}
+                            <span style="font-size: 2rem; color: #ffd700; font-weight: bold;">{{ featured_story.user.username|slice:":1" }}</span>
+                        {% endif %}
+                    </div>
+                    <h5 style="color: #fff; margin: 0; font-size: 1rem;">{{ featured_story.user.get_full_name|default:featured_story.user.username }}</h5>
+                    <small style="color: #94a3b8;">{{ featured_story.user.profile.title }}</small>
                 </div>
-                <div class="item-content">
-                    <span class="item-title">{{ topic.subject|truncatechars:38 }}</span>
-                    <span class="item-meta">{{ topic.starter.username }} · {{ topic.created_at|timesince }} önce</span>
+
+                <!-- Content -->
+                <div class="flex-grow-1">
+                    <div class="mb-3 mt-3 position-relative">
+                        <i class="bi bi-quote" style="font-size: 2rem; color: rgba(255, 255, 255, 0.1); position: absolute; top: -10px; left: -10px;"></i>
+                        <p style="color: #e2e8f0; font-style: italic; margin: 0; padding-left: 15px;">"{{ featured_story.quote|truncatewords:20 }}"</p>
+                    </div>
                 </div>
+                
+                <!-- Footer Actions -->
+                <div class="d-flex justify-content-between align-items-center border-top border-secondary border-opacity-25 pt-3 mt-3 w-100">
+                    <a href="{% url 'success_stories' %}" class="btn btn-sm btn-outline-warning rounded-pill px-3">
+                        <i class="bi bi-grid-fill me-1"></i> Tüm Hikayeler
+                    </a>
+                    <a href="{% url 'success_stories' %}" class="text-white-50 text-decoration-none small hover-text-white">
+                        Paylaş <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </aside>
+
+    <div class="analizus-home">
+
+        <!-- HERO SECTION WITH STATS INSIDE -->
+        <div class="hero-section">
+            <!-- SVG Circuit Background -->
+            <svg class="circuit-svg circuit-left" viewBox="0 0 200 400" preserveAspectRatio="none">
+                <defs>
+                    <linearGradient id="cyan-grad-l" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" style="stop-color:#00f0ff;stop-opacity:0.6"/>
+                        <stop offset="100%" style="stop-color:#00f0ff;stop-opacity:0"/>
+                    </linearGradient>
+                </defs>
+                <path d="M0 40 H60 V20 H100 V40 H140" stroke="url(#cyan-grad-l)" stroke-width="1.5" fill="none"/>
+                <path d="M0 80 H40 V60 H80" stroke="url(#cyan-grad-l)" stroke-width="1.5" fill="none"/>
+                <path d="M0 120 H70 V100 H110 V130" stroke="url(#cyan-grad-l)" stroke-width="1.5" fill="none"/>
+                <path d="M0 180 H50 V160 H90" stroke="url(#cyan-grad-l)" stroke-width="1.5" fill="none"/>
+                <path d="M0 240 H80 V220 H120" stroke="url(#cyan-grad-l)" stroke-width="1.5" fill="none"/>
+                <path d="M0 300 H45 V280 H85 V310" stroke="url(#cyan-grad-l)" stroke-width="1.5" fill="none"/>
+                <path d="M0 360 H65 V340 H105" stroke="url(#cyan-grad-l)" stroke-width="1.5" fill="none"/>
+                <circle cx="60" cy="40" r="4" fill="#00f0ff" class="circuit-node"/>
+                <circle cx="100" cy="20" r="3" fill="#00f0ff" class="circuit-node n2"/>
+                <circle cx="40" cy="80" r="4" fill="#00f0ff" class="circuit-node n3"/>
+                <circle cx="70" cy="120" r="3" fill="#00f0ff" class="circuit-node"/>
+                <circle cx="50" cy="180" r="4" fill="#00f0ff" class="circuit-node n2"/>
+                <circle cx="80" cy="240" r="3" fill="#00f0ff" class="circuit-node n3"/>
+                <circle cx="45" cy="300" r="4" fill="#00f0ff" class="circuit-node"/>
+                <circle cx="65" cy="360" r="3" fill="#00f0ff" class="circuit-node n2"/>
+            </svg>
+
+            <svg class="circuit-svg circuit-right" viewBox="0 0 200 400" preserveAspectRatio="none">
+                <defs>
+                    <linearGradient id="cyan-grad-r" x1="100%" y1="0%" x2="0%" y2="0%">
+                        <stop offset="0%" style="stop-color:#00f0ff;stop-opacity:0.6"/>
+                        <stop offset="100%" style="stop-color:#00f0ff;stop-opacity:0"/>
+                    </linearGradient>
+                </defs>
+                <path d="M200 40 H140 V20 H100 V40 H60" stroke="url(#cyan-grad-r)" stroke-width="1.5" fill="none"/>
+                <path d="M200 80 H160 V60 H120" stroke="url(#cyan-grad-r)" stroke-width="1.5" fill="none"/>
+                <path d="M200 120 H130 V100 H90 V130" stroke="url(#cyan-grad-r)" stroke-width="1.5" fill="none"/>
+                <path d="M200 180 H150 V160 H110" stroke="url(#cyan-grad-r)" stroke-width="1.5" fill="none"/>
+                <path d="M200 240 H120 V220 H80" stroke="url(#cyan-grad-r)" stroke-width="1.5" fill="none"/>
+                <path d="M200 300 H155 V280 H115 V310" stroke="url(#cyan-grad-r)" stroke-width="1.5" fill="none"/>
+                <path d="M200 360 H135 V340 H95" stroke="url(#cyan-grad-r)" stroke-width="1.5" fill="none"/>
+                <circle cx="140" cy="40" r="4" fill="#00f0ff" class="circuit-node n3"/>
+                <circle cx="100" cy="20" r="3" fill="#00f0ff" class="circuit-node"/>
+                <circle cx="160" cy="80" r="4" fill="#00f0ff" class="circuit-node n2"/>
+                <circle cx="130" cy="120" r="3" fill="#00f0ff" class="circuit-node n3"/>
+                <circle cx="150" cy="180" r="4" fill="#00f0ff" class="circuit-node"/>
+                <circle cx="120" cy="240" r="3" fill="#00f0ff" class="circuit-node n2"/>
+                <circle cx="155" cy="300" r="4" fill="#00f0ff" class="circuit-node n3"/>
+                <circle cx="135" cy="360" r="3" fill="#00f0ff" class="circuit-node"/>
+            </svg>
+
+            <!-- Corner Glow Dots -->
+            <div class="corner-dot top-left"></div>
+            <div class="corner-dot top-right"></div>
+            <div class="corner-dot bottom-left"></div>
+            <div class="corner-dot bottom-right"></div>
+
+            <!-- Hero Content -->
+            <div class="hero-content">
+                <h1 class="hero-title">ANALİZUS</h1>
+                <p class="hero-subtitle">BİLİMİN IŞIĞINDA VERİYİ YÖNET</p>
+            </div>
+
+            <!-- Stats Pills Inside Hero -->
+            <div class="stats-pills">
+                <div class="stat-pill">
+                    <div class="pill-icon cyan"><i class="bi bi-chat-square-text-fill"></i></div>
+                    <div class="pill-info">
+                        <span class="pill-label">Toplam Konu</span>
+                        <span class="pill-value">{{ total_topics }}</span>
+                    </div>
+                </div>
+                <div class="stat-pill">
+                    <div class="pill-icon purple"><i class="bi bi-file-text-fill"></i></div>
+                    <div class="pill-info">
+                        <span class="pill-label">Toplam Gönderi</span>
+                        <span class="pill-value">{{ total_posts }}</span>
+                    </div>
+                </div>
+                <div class="stat-pill">
+                    <div class="pill-icon green"><i class="bi bi-people-fill"></i></div>
+                    <div class="pill-info">
+                        <span class="pill-label">Toplam Üye</span>
+                        <span class="pill-value">{{ total_users }}</span>
+                    </div>
+                </div>
+                <div class="stat-pill">
+                    <div class="pill-icon orange"><i class="bi bi-globe2"></i></div>
+                    <div class="pill-info">
+                        <span class="pill-label">Görüntülenme</span>
+                        <span class="pill-value">{{ total_views|default:"0" }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CATEGORIES ROW -->
+        <div class="categories-row">
+            {% for section in sections %}
+            <a href="{% url 'section_detail' pk=section.pk %}" class="category-card">
+                <div class="category-icon">
+                    {% if "Yazılım" in section.title %}<i class="bi bi-code-slash"></i>
+                    {% elif "Yöntem" in section.title %}<i class="bi bi-diagram-3-fill"></i>
+                    {% elif "Akademi" in section.title %}<i class="bi bi-mortarboard-fill"></i>
+                    {% else %}<i class="bi bi-grid-fill"></i>{% endif %}
+                </div>
+                <div class="category-info">
+                    <h3>{{ section.title }}</h3>
+                    <p>{% if "Yazılım" in section.title %}SPSS, Python, R ve analiz araçları
+                    {% elif "Yöntem" in section.title %}İstatistik yöntemler ve teknikler
+                    {% elif "Akademi" in section.title %}Akademik kariyer ve araştırma
+                    {% else %}Tüm konular ve tartışmalar{% endif %}</p>
+                </div>
+                <div class="category-arrow"><i class="bi bi-chevron-right"></i></div>
             </a>
-            {% empty %}
-            <p class="empty-text">Henüz tartışma yok</p>
             {% endfor %}
         </div>
-    </div>
 
-    <!-- Popüler Konular -->
-    <div class="widget-card">
-        <div class="widget-header orange">
-            <i class="bi bi-fire"></i>
-            <span>Popüler Konular</span>
-        </div>
-        <div class="widget-body">
-            {% for topic in popular_topics %}
-            <a href="{% url 'topic_detail' pk=topic.pk %}" class="widget-item">
-                <div class="item-rank">#{{ forloop.counter }}</div>
-                <div class="item-content">
-                    <span class="item-title">{{ topic.subject|truncatechars:38 }}</span>
-                    <span class="item-meta"><i class="bi bi-eye"></i> {{ topic.views }} görüntülenme</span>
-                </div>
-            </a>
-            {% empty %}
-            <p class="empty-text">Henüz popüler konu yok</p>
-            {% endfor %}
-        </div>
-    </div>
-</div>
-
-
-
-<!-- ACTIVITY SECTION -->
-<div class="widget-card full-width">
-    <div class="widget-header green">
-        <i class="bi bi-lightning-fill"></i>
-        <span>Son Aktiviteler</span>
-    </div>
-    <div class="widget-body activity-body">
-        {% for act in recent_activities %}
-        <div class="activity-item">
-            <div class="activity-avatar">{{ act.created_by.username|slice:":2"|upper }}</div>
-            <div class="activity-content">
-                <b>{{ act.created_by.username }}</b>
-                "<a href="{% url 'topic_detail' pk=act.topic.pk %}">{{ act.topic.subject|truncatechars:35 }}</a>" konusuna yanıt verdi
+        <!-- ACTIVITY SECTION -->
+        <div class="widget-card full-width">
+            <div class="widget-header green">
+                <i class="bi bi-lightning-fill"></i>
+                <span>Son Aktiviteler</span>
             </div>
-            <span class="activity-time">{{ act.created_at|timesince }} önce</span>
+            <div class="widget-body activity-body">
+                {% for act in recent_activities %}
+                <div class="activity-item">
+                    <div class="activity-avatar">{{ act.created_by.username|slice:":2"|upper }}</div>
+                    <div class="activity-content">
+                        <b>{{ act.created_by.username }}</b>
+                        "<a href="{% url 'topic_detail' pk=act.topic.pk %}">{{ act.topic.subject|truncatechars:35 }}</a>" konusuna yanıt verdi
+                    </div>
+                    <span class="activity-time">{{ act.created_at|timesince }} önce</span>
+                </div>
+                {% empty %}
+                <p class="empty-text">Henüz aktivite yok</p>
+                {% endfor %}
+            </div>
         </div>
-        {% empty %}
-        <p class="empty-text">Henüz aktivite yok</p>
-        {% endfor %}
+
+        <!-- Floating Stars -->
+        <div class="floating-star star-1">✦</div>
+        <div class="floating-star star-2">✦</div>
+
     </div>
-</div>
-
-<!-- Floating Stars -->
-<div class="floating-star star-1">✦</div>
-<div class="floating-star star-2">✦</div>
-
 </div>
 
 <style>
+/* ===== NEW GRID LAYOUT ===== */
+.home-grid-container {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 24px;
+}
+
+.home-sidebar-left .widget-card {
+    margin-bottom: 24px;
+}
+.home-sidebar-left .widget-card:last-child {
+    margin-bottom: 0;
+}
+
+@media (max-width: 1200px) {
+    .home-grid-container {
+        grid-template-columns: 1fr;
+    }
+    .home-sidebar-left {
+        order: 2; /* Sidebar altta */
+    }
+    .analizus-home {
+        order: 1; /* Ana içerik üstte */
+    }
+}
+
+
 /* ===== MAIN CONTAINER ===== */
 .analizus-home {
     position: relative;
-    max-width: 1200px;
-    margin: 0 auto;
+    width: 100%; /* Take full width of its grid column */
+    margin: 0;
 }
 
 /* ===== HERO SECTION ===== */
@@ -459,13 +511,6 @@
 }
 
 /* ===== WIDGETS ===== */
-.widgets-row {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
-    margin-bottom: 16px;
-}
-
 .widget-card {
     background: rgba(10, 15, 30, 0.85);
     border: 1px solid rgba(255, 255, 255, 0.08);
@@ -565,290 +610,6 @@
 
 .item-meta i { margin-right: 3px; }
 
-/* ===== İSTATİSTİK ARENA - FLOATING SOL ===== */
-.quiz-floating {
-    position: fixed;
-    top: 100px;
-    left: 20px;
-    width: 280px;
-    background: linear-gradient(145deg, #0f172a 0%, #1e293b 100%);
-    border: 1px solid rgba(168, 85, 247, 0.4);
-    border-radius: 16px;
-    padding: 16px;
-    z-index: 1000;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 0 20px rgba(168, 85, 247, 0.2);
-    animation: quizSlideIn 0.5s ease-out;
-}
-
-.quiz-floating.hidden { display: none; }
-
-@keyframes quizSlideIn {
-    from { opacity: 0; transform: translateX(-50px); }
-    to { opacity: 1; transform: translateX(0); }
-}
-
-.quiz-floating::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, #a855f7, #ec4899);
-    border-radius: 16px 16px 0 0;
-}
-
-.quiz-mini-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-}
-
-.quiz-mini-header span {
-    color: #a855f7;
-    font-size: 0.8rem;
-    font-weight: 600;
-}
-
-.quiz-mini-header i { margin-right: 6px; }
-
-.quiz-close {
-    background: none;
-    border: none;
-    color: #64748b;
-    font-size: 1.2rem;
-    cursor: pointer;
-    padding: 0;
-    line-height: 1;
-}
-
-.quiz-close:hover { color: #ef4444; }
-
-.quiz-mini-category {
-    display: inline-block;
-    background: rgba(168, 85, 247, 0.2);
-    color: #a855f7;
-    padding: 3px 10px;
-    border-radius: 10px;
-    font-size: 0.7rem;
-    margin-bottom: 10px;
-}
-
-.quiz-question {
-    color: #e2e8f0;
-    font-size: 0.85rem;
-    font-weight: 500;
-    margin-bottom: 12px;
-    line-height: 1.4;
-}
-
-.quiz-options {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-
-.quiz-option {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-    padding: 8px 10px;
-    color: #94a3b8;
-    font-size: 0.75rem;
-    text-align: left;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.quiz-option:hover {
-    background: rgba(168, 85, 247, 0.1);
-    border-color: rgba(168, 85, 247, 0.3);
-    color: #e2e8f0;
-}
-
-.quiz-option.correct {
-    background: rgba(34, 197, 94, 0.2);
-    border-color: #22c55e;
-    color: #22c55e;
-}
-
-.quiz-option.wrong {
-    background: rgba(239, 68, 68, 0.2);
-    border-color: #ef4444;
-    color: #ef4444;
-}
-
-.option-letter {
-    background: rgba(168, 85, 247, 0.3);
-    color: #a855f7;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 600;
-    font-size: 0.7rem;
-}
-
-.quiz-footer {
-    margin-top: 10px;
-    padding-top: 10px;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.quiz-difficulty {
-    font-size: 0.7rem;
-    padding: 2px 8px;
-    border-radius: 8px;
-}
-
-.quiz-difficulty.easy {
-    background: rgba(34, 197, 94, 0.2);
-    color: #22c55e;
-}
-
-.quiz-difficulty.medium {
-    background: rgba(245, 158, 11, 0.2);
-    color: #f59e0b;
-}
-
-.quiz-difficulty.hard {
-    background: rgba(239, 68, 68, 0.2);
-    color: #ef4444;
-}
-
-/* Mobilde quiz kartı */
-@media (max-width: 1400px) {
-    .quiz-floating {
-        position: relative;
-        top: auto;
-        left: auto;
-        width: 100%;
-        margin-bottom: 20px;
-    }
-}
-
-/* ===== GÜNÜN İPUCU - FLOATING ===== */
-.daily-tip-floating {
-    position: fixed;
-    top: 100px;
-    right: 20px;
-    width: 280px;
-    background: linear-gradient(145deg, #0f172a 0%, #1e293b 100%);
-    border: 1px solid rgba(16, 185, 129, 0.4);
-    border-radius: 16px;
-    padding: 16px;
-    z-index: 1000;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 0 20px rgba(16, 185, 129, 0.2);
-    animation: tipSlideIn 0.5s ease-out;
-}
-
-.daily-tip-floating.hidden {
-    display: none;
-}
-
-@keyframes tipSlideIn {
-    from { opacity: 0; transform: translateX(50px); }
-    to { opacity: 1; transform: translateX(0); }
-}
-
-.daily-tip-floating::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, #10b981, #06b6d4);
-    border-radius: 16px 16px 0 0;
-}
-
-.tip-mini-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 10px;
-}
-
-.tip-mini-header span {
-    color: #10b981;
-    font-size: 0.8rem;
-    font-weight: 600;
-}
-
-.tip-mini-header i {
-    margin-right: 6px;
-}
-
-.tip-close {
-    background: none;
-    border: none;
-    color: #64748b;
-    font-size: 1.2rem;
-    cursor: pointer;
-    padding: 0;
-    line-height: 1;
-}
-
-.tip-close:hover {
-    color: #ef4444;
-}
-
-.tip-mini-category {
-    display: inline-block;
-    background: rgba(6, 182, 212, 0.2);
-    color: #06b6d4;
-    padding: 3px 10px;
-    border-radius: 10px;
-    font-size: 0.7rem;
-    margin-bottom: 10px;
-}
-
-.tip-mini-title {
-    color: #e2e8f0;
-    font-size: 0.95rem;
-    font-weight: 600;
-    margin-bottom: 8px;
-    line-height: 1.3;
-}
-
-.tip-mini-content {
-    color: #94a3b8;
-    font-size: 0.8rem;
-    line-height: 1.5;
-}
-
-.tip-mini-content p {
-    margin-bottom: 5px;
-}
-
-.tip-mini-footer {
-    margin-top: 10px;
-    padding-top: 10px;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.tip-date {
-    color: #64748b;
-    font-size: 0.7rem;
-}
-
-/* Mobilde gizle veya küçült */
-@media (max-width: 1200px) {
-    .daily-tip-floating {
-        position: relative;
-        top: auto;
-        right: auto;
-        width: 100%;
-        margin-bottom: 20px;
-    }
-}
-
 /* ===== ACTIVITY ===== */
 .activity-body { max-height: 200px; }
 
@@ -927,8 +688,6 @@
 /* ===== RESPONSIVE ===== */
 @media (max-width: 1024px) {
     .categories-row { grid-template-columns: 1fr; }
-    .widgets-row { grid-template-columns: 1fr; }
-    .stats-pills { gap: 8px; }
 }
 
 @media (max-width: 768px) {
@@ -975,71 +734,4 @@ function checkAnswer(btn, correctAnswer) {
 }
 </script>
 
-<!-- SUCCESS STORY WIDGET -->
-{% if featured_story %}
-<div class="widget-card full-width" style="background: linear-gradient(145deg, #1e293b, #0f172a); border: 1px solid rgba(255, 215, 0, 0.2);">
-    <div class="widget-header" style="color: #ffd700; border-bottom: 1px solid rgba(255, 215, 0, 0.1);">
-        <i class="bi bi-trophy-fill"></i>
-        <span>HAFTANIN BAŞARI HİKAYESİ</span>
-    </div>
-    <div class="widget-body d-flex align-items-center gap-4 p-4" style="max-height: none;">
-        <!-- Avatar & User -->
-        <div class="text-center" style="min-width: 120px;">
-            <div style="width: 80px; height: 80px; margin: 0 auto 10px; border-radius: 50%; background: #334155; display: flex; align-items: center; justify-content: center; border: 2px solid #ffd700; overflow: hidden;">
-                {% if featured_story.user.profile.avatar %}
-                    <img src="{{ featured_story.user.profile.avatar.url }}" style="width: 100%; height: 100%; object-fit: cover;">
-                {% else %}
-                    <span style="font-size: 2rem; color: #ffd700; font-weight: bold;">{{ featured_story.user.username|slice:":1" }}</span>
-                {% endif %}
-            </div>
-            <h5 style="color: #fff; margin: 0; font-size: 1rem;">{{ featured_story.user.get_full_name|default:featured_story.user.username }}</h5>
-            <small style="color: #94a3b8;">{{ featured_story.user.profile.title }}</small>
-        </div>
-
-        <!-- Content -->
-        <div class="flex-grow-1">
-            <div class="mb-3 position-relative">
-                <i class="bi bi-quote" style="font-size: 2rem; color: rgba(255, 255, 255, 0.1); position: absolute; top: -10px; left: -10px;"></i>
-                <p style="color: #e2e8f0; font-style: italic; margin: 0; padding-left: 25px;">"{{ featured_story.quote }}"</p>
-            </div>
-            
-            <div class="d-flex flex-wrap gap-2 mb-3">
-                {% for item in featured_story.achievements %}
-                <span style="background: rgba(34, 197, 94, 0.2); color: #4ade80; padding: 4px 10px; border-radius: 20px; font-size: 0.8rem; border: 1px solid rgba(34, 197, 94, 0.3);">
-                    <i class="bi bi-check-circle-fill me-1"></i> {{ item }}
-                </span>
-                {% endfor %}
-            </div>
-
-            <div class="d-flex justify-content-between align-items-center">
-                <div style="font-size: 0.8rem; color: #64748b;">
-                    <span class="me-3"><i class="bi bi-heart-fill text-danger"></i> {{ featured_story.likes_count }}</span>
-                    <span><i class="bi bi-chat-fill text-info"></i> {{ featured_story.comments_count }}</span>
-                </div>
-                <div class="d-flex gap-2">
-                    {% for res in featured_story.resources %}
-                    <span class="badge bg-secondary bg-opacity-25 text-secondary border border-secondary border-opacity-25 fw-normal" style="font-size: 0.7rem;">
-                        {{ res }}
-                    </span>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-        
-        <!-- Footer Actions -->
-        <div class="d-flex justify-content-between align-items-center border-top border-secondary border-opacity-25 pt-3 mt-2 w-100">
-            <a href="{% url 'success_stories' %}" class="btn btn-sm btn-outline-warning rounded-pill px-3">
-                <i class="bi bi-grid-fill me-1"></i> Tüm Hikayeler
-            </a>
-            <a href="{% url 'success_stories' %}" class="text-white-50 text-decoration-none small hover-text-white">
-                Sen de Paylaş <i class="bi bi-arrow-right"></i>
-            </a>
-        </div>
-    </div>
-</div>
-{% endif %}
-
-<!-- WIDGETS ROW -->
-<div class="widgets-row">
-    <!-- Son Tartışmalar -->
 {% endblock %}
