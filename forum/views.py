@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django import forms
+import json
 from django.contrib.auth import login
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
@@ -11,9 +12,10 @@ from django.utils import timezone
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET
 from datetime import timedelta
-from .models import Section, Category, Topic, Post, Profile, PrivateMessage, PostLike, Notification, EmailVerification, DailyTip, QuizQuestion, QuizScore, SuccessStory, FreelanceJob, JobProposal, Skill
+from .models import Section, Category, Topic, Post, Profile, PrivateMessage, PostLike, Notification, EmailVerification, DailyTip, QuizQuestion, QuizScore, SuccessStory, FreelanceJob, JobProposal, Skill, Badge
 from .forms import RegisterForm, NewTopicForm, PostForm, JobPostForm, ProposalForm
 from .email_utils import send_topic_reply_notification, send_private_message_notification
+from django.template.loader import render_to_string
 
 # --- ANA SAYFA ---
 def home(request):
@@ -131,6 +133,10 @@ def job_list(request):
 
 @login_required
 def post_job(request):
+    if not FreelanceJob.can_post(request.user):
+        messages.error(request, "İlan açmak için 'İstatistik Ustası' rozetine sahip olmalı veya Premium üye olmalısınız. Quiz çözerek rozet kazanabilirsiniz!")
+        return redirect('job_list')
+
     if request.method == 'POST':
         form = JobPostForm(request.POST)
         if form.is_valid():
@@ -818,3 +824,90 @@ def admin_dashboard(request):
     }
 
     return render(request, 'forum/admin_dashboard.html', context)
+
+# --- API: QUIZ & STORIES ---
+@login_required
+def api_get_quiz_question(request):
+    """Rastgele bir quiz sorusu getirir"""
+    question = QuizQuestion.get_random_question()
+    if question:
+        data = {
+            'id': question.id,
+            'question': question.question,
+            'options': {
+                'A': question.option_a,
+                'B': question.option_b,
+                'C': question.option_c,
+                'D': question.option_d
+            },
+            'category': question.get_category_display(),
+            'difficulty': question.get_difficulty_display()
+        }
+        return JsonResponse({'success': True, 'question': data})
+    return JsonResponse({'success': False, 'error': 'Soru bulunamadı.'})
+
+@login_required
+def api_submit_quiz_answer(request):
+    """Quiz cevabını kontrol eder ve puan/rozet verir"""
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            question_id = data.get('question_id')
+            answer = data.get('answer')
+            
+            question = get_object_or_404(QuizQuestion, pk=question_id)
+            is_correct = (answer == question.correct_answer)
+            
+            # Puan Güncelleme
+            score, created = QuizScore.objects.get_or_create(user=request.user)
+            score.total_answers += 1
+            if is_correct:
+                score.correct_answers += 1
+                score.total_points += 10
+                score.streak += 1
+            else:
+                score.streak = 0
+            score.last_played = timezone.now()
+            score.save()
+            
+            # Rozet Kontrolü (Her 100 doğru cevapta)
+            badge_awarded = False
+            if is_correct and score.correct_answers > 0 and score.correct_answers % 100 == 0:
+                badge, _ = Badge.objects.get_or_create(
+                    slug='istatistik-ustasi',
+                    defaults={
+                        'name': 'İstatistik Ustası',
+                        'description': '100 Quiz sorusunu doğru cevaplayarak kazanılan uzmanlık rozeti. İlan açma yetkisi verir.',
+                        'icon': 'bi-patch-check-fill',
+                        'color': '#ffd700',
+                        'badge_type': 'specialty'
+                    }
+                )
+                if badge not in request.user.profile.badges.all():
+                    request.user.profile.badges.add(badge)
+                    badge_awarded = True
+                    # Rozet kazanıldı mesajı frontend'de gösterilecek
+
+            return JsonResponse({
+                'success': True,
+                'is_correct': is_correct,
+                'correct_answer': question.correct_answer,
+                'explanation': question.explanation,
+                'new_score': score.total_points,
+                'total_correct': score.correct_answers,
+                'badge_awarded': badge_awarded
+            })
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+    return JsonResponse({'success': False})
+
+def api_get_featured_story(request):
+    """Haftanın başarı hikayesini getirir (Modal için)"""
+    story = SuccessStory.objects.filter(is_featured=True).first()
+    if not story:
+        story = SuccessStory.objects.order_by('?').first()
+    
+    if story:
+        html = render_to_string('forum/partials/story_modal_content.html', {'story': story})
+        return JsonResponse({'success': True, 'html': html})
+    return JsonResponse({'success': False})

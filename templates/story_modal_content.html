@@ -1,0 +1,52 @@
+<div class="p-4">
+    <!-- Kullanıcı Bilgisi -->
+    <div class="d-flex align-items-center mb-4">
+        <div class="position-relative">
+            {% if story.user.profile.avatar %}
+                <img src="{{ story.user.profile.avatar.url }}" class="rounded-circle border border-2 border-warning" width="60" height="60" style="object-fit: cover;">
+            {% else %}
+                <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center border border-2 border-warning" style="width: 60px; height: 60px;">
+                    <span class="text-white fw-bold fs-4">{{ story.user.username|slice:":1" }}</span>
+                </div>
+            {% endif %}
+            <span class="position-absolute bottom-0 end-0 bg-success border border-dark rounded-circle p-1"></span>
+        </div>
+        <div class="ms-3">
+            <h5 class="text-white mb-0 fw-bold">{{ story.user.get_full_name|default:story.user.username }}</h5>
+            <small class="text-muted">{{ story.user.profile.title }}</small>
+        </div>
+    </div>
+
+    <!-- Alıntı -->
+    <div class="mb-4 position-relative bg-dark bg-opacity-50 p-3 rounded border border-secondary border-opacity-25">
+        <i class="bi bi-quote text-white-50 position-absolute top-0 start-0 display-3" style="opacity: 0.1; transform: translate(10px, -10px);"></i>
+        <p class="text-light fst-italic mb-0 position-relative" style="line-height: 1.6; z-index: 1;">
+            "{{ story.quote }}"
+        </p>
+    </div>
+
+    <!-- Başarılar -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-6">
+            <h6 class="text-warning small fw-bold mb-2">BAŞARILAR</h6>
+            <ul class="list-unstyled mb-0 small">
+                {% for item in story.achievements %}
+                <li class="text-white-50 mb-2 d-flex align-items-start">
+                    <i class="bi bi-check-circle-fill text-success me-2 mt-1"></i>
+                    <span>{{ item }}</span>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="col-md-6">
+            <h6 class="text-info small fw-bold mb-2">KAYNAKLAR</h6>
+            <div class="d-flex flex-wrap gap-2">
+                {% for res in story.resources %}
+                <span class="badge bg-secondary bg-opacity-25 text-secondary border border-secondary border-opacity-25 fw-normal">
+                    {{ res }}
+                </span>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
