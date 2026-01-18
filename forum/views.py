@@ -159,6 +159,11 @@ def toggle_job_bookmark(request, pk):
 @login_required
 def job_detail(request, pk):
     job = get_object_or_404(FreelanceJob, pk=pk)
+    
+    # Görüntülenme sayısını artır
+    job.views += 1
+    job.save()
+
     user_proposal = None
     proposal_form = None
     

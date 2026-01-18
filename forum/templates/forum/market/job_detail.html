@@ -17,6 +17,7 @@
                     <div class="d-flex gap-3 text-muted small mb-4">
                         <span><i class="bi bi-tag me-1"></i> {{ job.category.title }}</span>
                         <span><i class="bi bi-clock me-1"></i> {{ job.created_at|date:"d M Y" }}</span>
+                        <span><i class="bi bi-eye me-1"></i> {{ job.views }}</span>
                         <span>
                             <i class="bi bi-person me-1"></i> 
                             <a href="{% url 'send_message' username=job.owner.username %}" class="text-decoration-none text-info" title="Mesaj Gönder">

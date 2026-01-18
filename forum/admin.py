@@ -370,7 +370,7 @@ class QuizScoreAdmin(admin.ModelAdmin):
 
 @admin.register(FreelanceJob)
 class FreelanceJobAdmin(admin.ModelAdmin):
-    list_display = ('title', 'owner', 'category', 'budget_min', 'budget_max', 'status', 'created_at')
+    list_display = ('title', 'owner', 'category', 'budget_min', 'budget_max', 'status', 'views', 'created_at')
     list_filter = ('status', 'category', 'created_at')
     search_fields = ('title', 'description', 'owner__username')
     date_hierarchy = 'created_at'

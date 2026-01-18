@@ -496,6 +496,7 @@ class FreelanceJob(models.Model):
     likes = models.ManyToManyField(User, related_name='liked_jobs', blank=True, verbose_name="Beğenenler")
     saved_by = models.ManyToManyField(User, related_name='saved_jobs', blank=True, verbose_name="Kaydedenler")
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='open', verbose_name="Durum")
+    views = models.PositiveIntegerField(default=0, verbose_name="Görüntülenme")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
