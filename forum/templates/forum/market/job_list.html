@@ -25,6 +25,23 @@
         </div>
     </div>
 
+    <!-- Sıralama Filtresi -->
+    <div class="d-flex justify-content-end mb-4">
+        <div class="dropdown">
+            <button class="btn btn-outline-secondary dropdown-toggle text-white btn-sm" type="button" data-bs-toggle="dropdown">
+                <i class="bi bi-sort-down me-1"></i> Sıralama: 
+                {% if current_sort == 'views' %}En Çok Görüntülenen
+                {% elif current_sort == 'proposals' %}En Çok Teklif Alan
+                {% else %}En Yeni{% endif %}
+            </button>
+            <ul class="dropdown-menu dropdown-menu-dark shadow">
+                <li><a class="dropdown-item {% if current_sort == 'newest' %}active{% endif %}" href="?sort=newest">En Yeni</a></li>
+                <li><a class="dropdown-item {% if current_sort == 'views' %}active{% endif %}" href="?sort=views">En Çok Görüntülenen</a></li>
+                <li><a class="dropdown-item {% if current_sort == 'proposals' %}active{% endif %}" href="?sort=proposals">En Çok Teklif Alan</a></li>
+            </ul>
+        </div>
+    </div>
+
     <div class="row g-4">
         {% for job in jobs %}
         <div class="col-md-6 col-lg-4">
@@ -52,7 +69,8 @@
                             ₺{{ job.budget_min|floatformat:0 }} - ₺{{ job.budget_max|floatformat:0 }}
                         </div>
                         <div class="text-muted small">
-                            <i class="bi bi-people-fill me-1"></i> {{ job.proposal_count }} Teklif
+                            <span class="me-2" title="Görüntülenme"><i class="bi bi-eye"></i> {{ job.views }}</span>
+                            <span title="Teklif Sayısı"><i class="bi bi-people-fill me-1"></i> {{ job.proposal_count }} Teklif</span>
                         </div>
                     </div>
                 </div>

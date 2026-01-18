@@ -11,7 +11,7 @@ from django.utils import timezone
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET
 from datetime import timedelta
-from .models import Section, Category, Topic, Post, Profile, PrivateMessage, PostLike, Notification, EmailVerification, DailyTip, QuizQuestion, QuizScore, SuccessStory, FreelanceJob, JobProposal
+from .models import Section, Category, Topic, Post, Profile, PrivateMessage, PostLike, Notification, EmailVerification, DailyTip, QuizQuestion, QuizScore, SuccessStory, FreelanceJob, JobProposal, Skill
 from .forms import RegisterForm, NewTopicForm, PostForm, JobPostForm, ProposalForm
 from .email_utils import send_topic_reply_notification, send_private_message_notification
 
@@ -117,8 +117,17 @@ def success_stories(request):
 
 # --- FREELANCE MARKET ---
 def job_list(request):
-    jobs = FreelanceJob.objects.filter(status='open').select_related('owner', 'category').order_by('-created_at')
-    return render(request, 'forum/market/job_list.html', {'jobs': jobs})
+    sort = request.GET.get('sort', 'newest')
+    jobs = FreelanceJob.objects.filter(status='open').select_related('owner', 'category')
+
+    if sort == 'views':
+        jobs = jobs.order_by('-views', '-created_at')
+    elif sort == 'proposals':
+        jobs = jobs.annotate(proposal_count_annotated=Count('proposals')).order_by('-proposal_count_annotated', '-created_at')
+    else:
+        jobs = jobs.order_by('-created_at')
+
+    return render(request, 'forum/market/job_list.html', {'jobs': jobs, 'current_sort': sort})
 
 @login_required
 def post_job(request):
@@ -334,22 +343,55 @@ def profile_edit(request):
     user = request.user
     # Profil yoksa oluştur
     profile, created = Profile.objects.get_or_create(user=user)
+    all_skills = Skill.objects.all()
 
     if request.method == 'POST':
-        new_email = request.POST.get('email')
-        if new_email:
-            user.email = new_email
-            user.save()
+        # Kullanıcı Bilgileri
+        user.first_name = request.POST.get('first_name', user.first_name)
+        user.last_name = request.POST.get('last_name', user.last_name)
+        user.email = request.POST.get('email', user.email)
+        user.save()
         
-        # ✅ Email tercihlerini kaydet
+        # Profil Bilgileri
+        profile.title = request.POST.get('title', '')
+        profile.bio = request.POST.get('bio', '')
+        profile.location = request.POST.get('location', '')
+        
+        # Akademik
+        profile.university = request.POST.get('university', '')
+        profile.department = request.POST.get('department', '')
+        profile.academic_title = request.POST.get('academic_title', '')
+
+        # Sosyal Medya
+        profile.website = request.POST.get('website', '')
+        profile.linkedin = request.POST.get('linkedin', '')
+        profile.twitter = request.POST.get('twitter', '')
+        profile.github = request.POST.get('github', '')
+        profile.orcid = request.POST.get('orcid', '')
+        profile.google_scholar = request.POST.get('google_scholar', '')
+
+        # Dosyalar
+        if 'avatar' in request.FILES:
+            profile.avatar = request.FILES['avatar']
+        if 'cover_image' in request.FILES:
+            profile.cover_image = request.FILES['cover_image']
+        
+        # Ayarlar
         profile.email_on_reply = request.POST.get('email_on_reply') == 'on'
         profile.email_on_private_message = request.POST.get('email_on_private_message') == 'on'
+        profile.is_public = request.POST.get('is_public') == 'on'
+        profile.show_email = request.POST.get('show_email') == 'on'
+
+        # Yetenekler (Skills)
+        selected_skills = request.POST.getlist('skills')
+        profile.skills.set(selected_skills)
+
         profile.save()
         
-        messages.success(request, "Profil güncellendi.")
+        messages.success(request, "Profiliniz başarıyla güncellendi.")
         return redirect('profile_edit')
     
-    return render(request, 'forum/profile_edit.html', {'user': user, 'profile': profile})
+    return render(request, 'forum/profile_edit.html', {'user': user, 'profile': profile, 'all_skills': all_skills})
 
 # --- GELEN KUTUSU ---
 @login_required
