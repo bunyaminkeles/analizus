@@ -374,6 +374,7 @@ class FreelanceJobAdmin(admin.ModelAdmin):
     list_filter = ('status', 'category', 'created_at')
     search_fields = ('title', 'description', 'owner__username')
     date_hierarchy = 'created_at'
+    filter_horizontal = ('likes', 'saved_by')
 
 @admin.register(JobProposal)
 class JobProposalAdmin(admin.ModelAdmin):

@@ -493,6 +493,8 @@ class FreelanceJob(models.Model):
     budget_max = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Max Bütçe (TL)")
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, related_name='jobs', verbose_name="Kategori")
     
+    likes = models.ManyToManyField(User, related_name='liked_jobs', blank=True, verbose_name="Beğenenler")
+    saved_by = models.ManyToManyField(User, related_name='saved_jobs', blank=True, verbose_name="Kaydedenler")
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='open', verbose_name="Durum")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -504,6 +506,10 @@ class FreelanceJob(models.Model):
 
     def __str__(self):
         return self.title
+
+    @property
+    def total_likes(self):
+        return self.likes.count()
 
     @property
     def proposal_count(self):

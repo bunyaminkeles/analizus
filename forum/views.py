@@ -135,6 +135,28 @@ def post_job(request):
     return render(request, 'forum/market/post_job.html', {'form': form})
 
 @login_required
+def toggle_job_like(request, pk):
+    job = get_object_or_404(FreelanceJob, pk=pk)
+    if request.user in job.likes.all():
+        job.likes.remove(request.user)
+        messages.info(request, "Beğeni geri alındı.")
+    else:
+        job.likes.add(request.user)
+        messages.success(request, "İlan beğenildi!")
+    return redirect('job_detail', pk=pk)
+
+@login_required
+def toggle_job_bookmark(request, pk):
+    job = get_object_or_404(FreelanceJob, pk=pk)
+    if request.user in job.saved_by.all():
+        job.saved_by.remove(request.user)
+        messages.info(request, "İlan kaydedilenlerden çıkarıldı.")
+    else:
+        job.saved_by.add(request.user)
+        messages.success(request, "İlan kaydedildi!")
+    return redirect('job_detail', pk=pk)
+
+@login_required
 def job_detail(request, pk):
     job = get_object_or_404(FreelanceJob, pk=pk)
     user_proposal = None
@@ -165,6 +187,12 @@ def job_detail(request, pk):
             else:
                 proposal_form = ProposalForm()
 
+    is_liked = False
+    is_saved = False
+    if request.user.is_authenticated:
+        is_liked = job.likes.filter(id=request.user.id).exists()
+        is_saved = job.saved_by.filter(id=request.user.id).exists()
+
     # Benzer İlanlar (Aynı kategorideki diğer açık ilanlar)
     similar_jobs = FreelanceJob.objects.filter(
         category=job.category, 
@@ -176,6 +204,8 @@ def job_detail(request, pk):
         'proposals': proposals,
         'user_proposal': user_proposal,
         'proposal_form': proposal_form,
+        'is_liked': is_liked,
+        'is_saved': is_saved,
         'is_expert': is_expert,
         'similar_jobs': similar_jobs
     })
@@ -186,10 +216,13 @@ def my_jobs(request):
     posted_jobs = FreelanceJob.objects.filter(owner=request.user).order_by('-created_at')
     # Kullanıcının verdiği teklifler
     my_proposals = JobProposal.objects.filter(expert=request.user).select_related('job').order_by('-created_at')
+    # Kullanıcının kaydettiği ilanlar
+    saved_jobs = request.user.saved_jobs.all().order_by('-created_at')
     
     return render(request, 'forum/market/my_jobs.html', {
         'posted_jobs': posted_jobs,
-        'my_proposals': my_proposals
+        'my_proposals': my_proposals,
+        'saved_jobs': saved_jobs
     })
 
 # --- BÖLÜM DETAY ---

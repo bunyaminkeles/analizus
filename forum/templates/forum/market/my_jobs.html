@@ -13,6 +13,9 @@
         <li class="nav-item" role="presentation">
             <button class="nav-link" id="proposals-tab" data-bs-toggle="tab" data-bs-target="#proposals" type="button">Verdiğim Teklifler</button>
         </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="saved-tab" data-bs-toggle="tab" data-bs-target="#saved" type="button">Kaydedilenler</button>
+        </li>
     </ul>
 
     <div class="tab-content" id="myTabContent">
@@ -51,6 +54,25 @@
                 </a>
                 {% empty %}
                 <div class="text-center py-4 text-muted">Henüz teklif vermediniz.</div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Kaydedilen İlanlar -->
+        <div class="tab-pane fade" id="saved" role="tabpanel">
+            <div class="list-group">
+                {% for job in saved_jobs %}
+                <a href="{% url 'job_detail' pk=job.pk %}" class="list-group-item list-group-item-action bg-dark text-white border-secondary d-flex justify-content-between align-items-center p-3">
+                    <div>
+                        <h6 class="mb-1 fw-bold">{{ job.title }}</h6>
+                        <small class="text-muted">{{ job.created_at|date:"d M Y" }} · <span class="text-{{ job.status|yesno:'success,secondary' }}">{{ job.get_status_display }}</span> · {{ job.owner.username }}</small>
+                    </div>
+                    <div class="text-end">
+                        <span class="badge bg-info rounded-pill">{{ job.proposal_count }} Teklif</span>
+                    </div>
+                </a>
+                {% empty %}
+                <div class="text-center py-4 text-muted">Henüz kaydedilmiş ilan yok.</div>
                 {% endfor %}
             </div>
         </div>

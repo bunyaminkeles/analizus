@@ -5,10 +5,11 @@
 {% block meta_description %}{{ profile_user.username }} kullanıcısının Analizus profili. {{ profile_user.profile.title|default:"Akademik Araştırmacı" }}{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center py-5">
-    <div class="col-md-6 col-lg-5">
-        <div class="card shadow-lg border-0 profile-card">
-            <div class="card-body text-center p-5">
+<div class="row py-5">
+    <!-- Profil Kartı (Sol) -->
+    <div class="col-lg-4 mb-4">
+        <div class="card shadow-lg border-0 profile-card h-100">
+            <div class="card-body text-center p-4">
                 
                 <div class="position-relative d-inline-block mb-4">
                     <div class="avatar-glow">
@@ -36,6 +37,19 @@
                 {% if profile_user.profile.badges.exists %}
                 <div class="mb-3">
                     {% render_user_badges profile_user 5 %}
+                </div>
+                {% endif %}
+
+                <!-- Yetenekler -->
+                {% if profile_user.profile.skills.exists %}
+                <div class="mb-4">
+                    <div class="d-flex flex-wrap justify-content-center gap-2">
+                        {% for skill in profile_user.profile.skills.all %}
+                        <span class="badge bg-dark border border-secondary text-light fw-normal" style="font-size: 0.75rem;">
+                            <i class="{{ skill.icon }} me-1" style="color: {{ skill.color }}"></i> {{ skill.name }}
+                        </span>
+                        {% endfor %}
+                    </div>
                 </div>
                 {% endif %}
 
@@ -80,28 +94,71 @@
             </div>
         </div>
     </div>
-</div>
 
-{% if posted_jobs %}
-<div class="row justify-content-center pb-5">
-    <div class="col-md-6 col-lg-5">
-        <h5 class="text-white fw-bold mb-3 ps-2"><i class="bi bi-briefcase text-info me-2"></i>Yayınlanan İlanlar</h5>
-        <div class="list-group shadow-lg">
-            {% for job in posted_jobs %}
-            <a href="{% url 'job_detail' pk=job.pk %}" class="list-group-item list-group-item-action bg-dark text-white border-secondary d-flex justify-content-between align-items-center p-3" style="background: rgba(15, 23, 42, 0.95) !important; border-color: rgba(56, 189, 248, 0.2) !important;">
-                <div>
-                    <h6 class="mb-1 fw-bold small">{{ job.title }}</h6>
-                    <small class="text-muted" style="font-size: 0.75rem;">{{ job.created_at|date:"d M Y" }} · <span class="badge {% if job.status == 'open' %}bg-success{% else %}bg-secondary{% endif %}">{{ job.get_status_display }}</span></small>
+    <!-- Sekmeler (Sağ) -->
+    <div class="col-lg-8">
+        <ul class="nav nav-tabs border-secondary mb-4" id="profileTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="jobs-tab" data-bs-toggle="tab" data-bs-target="#jobs" type="button">
+                    <i class="bi bi-briefcase me-2"></i>İlanlar
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="badges-tab" data-bs-toggle="tab" data-bs-target="#badges" type="button">
+                    <i class="bi bi-award me-2"></i>Rozetler
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="profileTabsContent">
+            <!-- Jobs Tab -->
+            <div class="tab-pane fade show active" id="jobs" role="tabpanel">
+                {% if posted_jobs %}
+                    <div class="list-group shadow-lg">
+                        {% for job in posted_jobs %}
+                        <a href="{% url 'job_detail' pk=job.pk %}" class="list-group-item list-group-item-action bg-dark text-white border-secondary d-flex justify-content-between align-items-center p-3" style="background: rgba(15, 23, 42, 0.95) !important; border-color: rgba(56, 189, 248, 0.2) !important;">
+                            <div>
+                                <h6 class="mb-1 fw-bold small">{{ job.title }}</h6>
+                                <small class="text-muted" style="font-size: 0.75rem;">{{ job.created_at|date:"d M Y" }} · <span class="badge {% if job.status == 'open' %}bg-success{% else %}bg-secondary{% endif %}">{{ job.get_status_display }}</span></small>
+                            </div>
+                            <div class="text-end">
+                                <span class="badge bg-info rounded-pill text-dark" style="font-size: 0.7rem;">{{ job.proposal_count }} Teklif</span>
+                            </div>
+                        </a>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center text-muted py-4">
+                        <i class="bi bi-briefcase display-4 opacity-25 mb-2 d-block"></i>
+                        Bu kullanıcı henüz ilan vermemiş.
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Badges Tab -->
+            <div class="tab-pane fade" id="badges" role="tabpanel">
+                <div class="row g-3">
+                    {% for badge in profile_user.profile.badges.all %}
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center p-3 rounded border border-secondary bg-dark bg-opacity-50 h-100">
+                                <i class="{{ badge.icon }} fs-2 me-3" style="color: {{ badge.color }}"></i>
+                                <div>
+                                    <h6 class="mb-1 text-white">{{ badge.name }}</h6>
+                                    <small class="text-muted" style="font-size: 0.8rem;">{{ badge.description }}</small>
+                                </div>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <div class="col-12 text-center text-muted py-4">
+                            <i class="bi bi-award display-4 opacity-25 mb-2 d-block"></i>
+                            Henüz rozet kazanılmamış.
+                        </div>
+                    {% endfor %}
                 </div>
-                <div class="text-end">
-                    <span class="badge bg-info rounded-pill text-dark" style="font-size: 0.7rem;">{{ job.proposal_count }} Teklif</span>
-                </div>
-            </a>
-            {% endfor %}
+            </div>
         </div>
     </div>
 </div>
-{% endif %}
 
 <style>
     .profile-card {
@@ -130,6 +187,21 @@
 
     .text-neon {
         color: #38bdf8 !important;
+    }
+
+    /* Tab Styles */
+    .nav-tabs .nav-link {
+        color: #94a3b8;
+        border: 1px solid transparent;
+    }
+    .nav-tabs .nav-link:hover {
+        color: #fff;
+        border-color: rgba(255,255,255,0.1);
+    }
+    .nav-tabs .nav-link.active {
+        background-color: #1e293b !important;
+        color: #0dcaf0 !important;
+        border-color: rgba(255, 255, 255, 0.2) rgba(255, 255, 255, 0.2) transparent !important;
     }
 </style>
 {% endblock %}
