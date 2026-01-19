@@ -1,0 +1,54 @@
+{% load forum_extras %}
+<div class="text-center">
+    <div class="mb-3 position-relative d-inline-block">
+        {% if profile_user.profile.avatar %}
+            <img src="{{ profile_user.profile.avatar.url }}" class="rounded-circle border border-info shadow" style="width: 100px; height: 100px; object-fit: cover;">
+        {% else %}
+            <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center mx-auto text-white display-4 shadow border border-dark" style="width: 100px; height: 100px;">
+                {{ profile_user.username|slice:":1"|upper }}
+            </div>
+        {% endif %}
+        <!-- Çevrimiçi durumu simülasyonu -->
+        <span class="position-absolute bottom-0 end-0 p-2 bg-success border border-dark rounded-circle"></span>
+    </div>
+
+    <h4 class="text-white fw-bold mb-1">{{ profile_user.username }}</h4>
+    <p class="text-info small mb-3">{{ profile_user.profile.title|default:"Üye" }}</p>
+
+    <div class="d-flex justify-content-center gap-2 mb-4">
+        <span class="badge bg-dark border border-secondary text-warning">
+            <i class="bi bi-star-fill me-1"></i> {{ profile_user.profile.reputation }} Puan
+        </span>
+        <span class="badge bg-dark border border-secondary text-light">
+            {{ profile_user.profile.get_rank_display }}
+        </span>
+    </div>
+
+    {% if profile_user.profile.bio %}
+        <div class="p-3 rounded bg-black bg-opacity-25 border border-secondary border-opacity-25 mb-4 text-start">
+            <p class="text-light small fst-italic mb-0">"{{ profile_user.profile.bio|truncatechars:100 }}"</p>
+        </div>
+    {% endif %}
+
+    <div class="d-grid gap-2">
+        {% if request.user != profile_user %}
+            <div class="d-flex gap-2">
+                <a href="{% url 'send_message' profile_user.username %}" class="btn btn-primary flex-grow-1" style="background: linear-gradient(45deg, #00d2ff, #3a7bd5); border: none;">
+                    <i class="bi bi-envelope-paper-fill me-2"></i>Mesaj
+                </a>
+                {% if request.user.is_authenticated %}
+                    <button onclick="toggleFollow('{{ profile_user.username }}', this)" class="btn {% if request.user.profile in profile_user.profile.followers.all %}btn-secondary{% else %}btn-outline-info{% endif %}" id="followBtn" title="Takip Et/Bırak">
+                        {% if request.user.profile in profile_user.profile.followers.all %}
+                            <i class="bi bi-person-check-fill"></i>
+                        {% else %}
+                            <i class="bi bi-person-plus-fill"></i>
+                        {% endif %}
+                    </button>
+                {% endif %}
+            </div>
+        {% endif %}
+        <a href="{% url 'profile_detail' profile_user.username %}" class="btn btn-outline-light">
+            <i class="bi bi-person-circle me-2"></i>Tam Profili Görüntüle
+        </a>
+    </div>
+</div>

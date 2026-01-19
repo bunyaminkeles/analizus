@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.db import models
+from django.contrib.contenttypes.models import ContentType
 from django.db.models import Count, Sum, Q
 from django.contrib import messages
 from django.utils import timezone
@@ -431,9 +432,51 @@ def send_message(request, username):
     
     return render(request, 'forum/send_message.html', {'receiver': receiver})
 
+def _check_and_award_trust_badge(request, user):
+    """Tüm doğrulamalar tamamsa Güvenilir Üye rozeti verir"""
+    profile = user.profile
+    if profile.email_verified and profile.phone_verified and profile.linkedin_verified:
+        badge, created = Badge.objects.get_or_create(
+            slug='guvenilir-uye',
+            defaults={
+                'name': 'Güvenilir Üye',
+                'description': 'E-posta, telefon ve LinkedIn doğrulamalarını tamamladı.',
+                'badge_type': 'special',
+                'icon': 'bi-shield-fill-check',
+                'color': '#0ea5e9'
+            }
+        )
+        if badge not in profile.badges.all():
+            profile.badges.add(badge)
+            messages.success(request, 'TEBRİKLER! Tüm doğrulamaları tamamladığınız için "Güvenilir Üye" rozeti kazandınız.')
+
 # --- PROFİL DETAY ---
 def profile_detail(request, username):
     profile_user = get_object_or_404(User, username=username)
+
+    # Doğrulama İşlemleri (POST)
+    if request.method == 'POST' and request.user == profile_user:
+        action = request.POST.get('action')
+        if action == 'verify_phone':
+            phone = request.POST.get('phone')
+            if phone:
+                profile_user.profile.phone_number = phone
+                # Simülasyon: Gerçek SMS entegrasyonu olmadığı için direkt onaylıyoruz
+                profile_user.profile.phone_verified = True
+                profile_user.profile.save()
+                _check_and_award_trust_badge(request, profile_user)
+                messages.success(request, 'Telefon numaranız başarıyla doğrulandı! Güven puanınız arttı.')
+        elif action == 'verify_linkedin':
+            linkedin_url = request.POST.get('linkedin')
+            if linkedin_url:
+                profile_user.profile.linkedin = linkedin_url
+                # Simülasyon: Link girildiyse onaylı sayıyoruz
+                profile_user.profile.linkedin_verified = True
+                profile_user.profile.save()
+                _check_and_award_trust_badge(request, profile_user)
+                messages.success(request, 'LinkedIn hesabınız doğrulandı! Profesyonel görünümünüz güçlendi.')
+        return redirect('profile_detail', username=username)
+
     posted_jobs = FreelanceJob.objects.filter(owner=profile_user).order_by('-created_at')
     
     # Kategori bazlı quiz istatistikleri
@@ -671,6 +714,9 @@ def verify_email(request, token):
     profile, _ = Profile.objects.get_or_create(user=user)
     profile.email_verified = True
     profile.save()
+
+    # Rozet kontrolü
+    _check_and_award_trust_badge(request, user)
 
     # Token'ı kullanılmış olarak işaretle
     verification.is_used = True
@@ -976,6 +1022,16 @@ def api_submit_quiz_answer(request):
             return JsonResponse({'success': False, 'error': str(e)})
     return JsonResponse({'success': False})
 
+def api_get_profile_summary(request, username):
+    """Kullanıcı profil özetini modal için getirir"""
+    profile_user = get_object_or_404(User, username=username)
+    
+    html = render_to_string('forum/partials/profile_modal_content.html', {
+        'profile_user': profile_user, 
+        'request': request
+    })
+    return JsonResponse({'success': True, 'html': html})
+
 def api_get_featured_story(request):
     """Haftanın başarı hikayesini getirir (Modal için)"""
     story = SuccessStory.objects.filter(is_featured=True).first()
@@ -986,3 +1042,31 @@ def api_get_featured_story(request):
         html = render_to_string('forum/partials/story_modal_content.html', {'story': story})
         return JsonResponse({'success': True, 'html': html})
     return JsonResponse({'success': False})
+
+@login_required
+def api_toggle_follow(request, username):
+    """Kullanıcı takip etme/bırakma"""
+    target_user = get_object_or_404(User, username=username)
+    if target_user == request.user:
+        return JsonResponse({'success': False, 'error': 'Kendinizi takip edemezsiniz.'})
+    
+    user_profile = request.user.profile
+    target_profile = target_user.profile
+    
+    if target_profile in user_profile.following.all():
+        user_profile.following.remove(target_profile)
+        is_following = False
+    else:
+        user_profile.following.add(target_profile)
+        is_following = True
+        
+        # Bildirim gönder
+        Notification.objects.create(
+            recipient=target_user,
+            sender=request.user,
+            verb="sizi takip etmeye başladı",
+            content_type=ContentType.objects.get_for_model(target_user),
+            object_id=target_user.id
+        )
+        
+    return JsonResponse({'success': True, 'is_following': is_following, 'follower_count': target_profile.followers.count()})

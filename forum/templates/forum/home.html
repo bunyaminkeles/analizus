@@ -68,7 +68,7 @@
                         </span>
                     </div>
                     <div class="flex-grow-1 overflow-hidden">
-                        <a href="{% url 'profile_detail' username=score.user.username %}" class="text-decoration-none text-light small fw-bold d-block text-truncate">{{ score.user.username }}</a>
+                        <a href="#" onclick="openProfileModal('{{ score.user.username }}'); return false;" class="text-decoration-none text-light small fw-bold d-block text-truncate">{{ score.user.username }}</a>
                         <small class="text-muted d-block text-truncate" style="font-size: 0.65rem;">{{ score.user.profile.title|default:"Üye" }}</small>
                     </div>
                     <div class="text-end ms-2">
@@ -297,21 +297,6 @@
 
 </div>
 
-<!-- WIDGET: Son Teklifler -->
-<div class="widget-card full-width mt-4 proposals-widget">
-    <div class="widget-header orange">
-        <a href="{% if user.is_authenticated %}{% url 'job_list' %}{% else %}{% url 'login' %}{% endif %}" class="d-flex align-items-center w-100 text-decoration-none" style="color: inherit;">
-            <i class="bi bi-handshake me-2"></i>
-            <span>Son Teklifler</span>
-        </a>
-    </div>
-    <div id="widget-latest-proposals" class="widget-body">
-        <div class="p-3 text-center text-muted">
-            <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
-        </div>
-    </div>
-</div>
-
 <!-- WIDGET: Son Analiz İlanları -->
 <div class="widget-card full-width mt-4 jobs-widget">
     <div class="widget-header purple">
@@ -322,7 +307,7 @@
     </div>
     <div class="widget-body">
         {% for job in recent_jobs %}
-        <a href="{% url 'job_detail' pk=job.pk %}" class="widget-item">
+        <a href="{% url 'job_detail' pk=job.pk %}" class="widget-item" target="_blank">
             <div class="item-avatar" style="background: rgba(168, 85, 247, 0.15); color: #a855f7; border: 1px solid rgba(168, 85, 247, 0.3);">
                 <i class="bi bi-graph-up"></i>
             </div>

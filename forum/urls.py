@@ -63,4 +63,5 @@ urlpatterns = [
     path('api/story/featured/', views.api_get_featured_story, name='api_get_featured_story'),
     path('api/widgets/rates/', api_views.widget_market_rates, name='widget_rates'),
     path('api/widgets/proposals/', api_views.widget_latest_proposals, name='widget_proposals'),
+    path('api/follow/<str:username>/', views.api_toggle_follow, name='api_toggle_follow'),
 ]

@@ -206,6 +206,21 @@
         </div>
     </div>
 
+    <!-- PROFILE SUMMARY MODAL -->
+    <div class="modal fade" id="profileModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark border border-secondary shadow-lg" style="background: rgba(15, 23, 42, 0.95);">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title text-white"><i class="bi bi-person-lines-fill text-info me-2"></i>Kullanıcı Kartı</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4" id="profileModalBody">
+                    <div class="text-center py-4"><div class="spinner-border text-info"></div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- SUCCESS STORY MODAL -->
     <div class="modal fade" id="storyModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -368,6 +383,59 @@
                             </div>`;
                         }
                         document.getElementById('quizScoreDisplay').innerText = `Toplam Doğru: ${data.total_correct}`;
+                    }
+                });
+            }
+
+            // PROFILE MODAL FUNCTIONS
+            const profileModal = new bootstrap.Modal(document.getElementById('profileModal'));
+
+            function openProfileModal(username) {
+                profileModal.show();
+                const body = document.getElementById('profileModalBody');
+                body.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-info"></div></div>';
+                
+                // Not: urls.py'da 'api_get_profile_summary' tanımlanmalıdır.
+                fetch(`/api/profile-summary/${username}/`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if(data.success) {
+                            body.innerHTML = data.html;
+                        } else {
+                            body.innerHTML = '<p class="text-center text-danger">Profil yüklenemedi.</p>';
+                        }
+                    });
+            }
+
+            // FOLLOW FUNCTION
+            function toggleFollow(username, btn) {
+                fetch(`/api/follow/${username}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if(data.success) {
+                        if(data.is_following) {
+                            btn.classList.remove('btn-outline-info');
+                            btn.classList.add('btn-secondary');
+                            btn.innerHTML = '<i class="bi bi-person-check-fill"></i>';
+                        } else {
+                            btn.classList.remove('btn-secondary');
+                            btn.classList.add('btn-outline-info');
+                            btn.innerHTML = '<i class="bi bi-person-plus-fill"></i>';
+                        }
+                        
+                        // Profil sayfasındaysak takipçi sayısını güncelle
+                        const countDisplay = document.getElementById('followerCountDisplay');
+                        if (countDisplay && data.follower_count !== undefined) {
+                            countDisplay.innerText = data.follower_count;
+                        }
+                    } else {
+                        alert(data.error || 'İşlem başarısız.');
                     }
                 });
             }
