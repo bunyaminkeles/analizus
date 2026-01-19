@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from . import api_views
 
 urlpatterns = [
     path('', views.home, name='home'),
@@ -60,4 +61,6 @@ urlpatterns = [
     path('api/quiz/random/', views.api_get_quiz_question, name='api_get_quiz_question'),
     path('api/quiz/answer/', views.api_submit_quiz_answer, name='api_submit_quiz_answer'),
     path('api/story/featured/', views.api_get_featured_story, name='api_get_featured_story'),
+    path('api/widgets/rates/', api_views.widget_market_rates, name='widget_rates'),
+    path('api/widgets/proposals/', api_views.widget_latest_proposals, name='widget_proposals'),
 ]

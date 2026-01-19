@@ -375,6 +375,65 @@ LIMIT 10;
 Mevcut sitenize ekleyeceğiniz CSS:
 
 ```css
+/* static/css/sidebar_widgets.css içeriği buraya */
+```
+
+---
+
+## 🔗 URL Yapılandırması (Django)
+
+API endpoint'lerinin çalışması için `forum/urls.py` dosyanıza şu tanımları eklemelisiniz:
+
+```python
+# forum/urls.py
+from django.urls import path
+from . import api_views
+
+urlpatterns = [
+    # ... diğer url desenleri ...
+    path('api/widgets/rates/', api_views.widget_market_rates, name='widget_rates'),
+    path('api/widgets/proposals/', api_views.widget_latest_proposals, name='widget_proposals'),
+]
+```
+
+---
+
+## 🖥️ Template Entegrasyonu (HTML)
+
+Sağ sidebar şablonunuza (örneğin `sidebar_right.html` veya `base.html` içindeki ilgili alana) aşağıdaki yapıyı ekleyin:
+
+```html
+<!-- WIDGET 1: Altınkaynak -->
+<div class="sidebar-widget">
+    <div class="widget-header">
+        <span>💰 Piyasa Durumu</span>
+        <span class="market-badge">CANLI</span>
+    </div>
+    <div id="widget-market-rates">
+        <div class="p-3 text-center text-muted">
+            <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+        </div>
+    </div>
+</div>
+
+<!-- WIDGET 2: Analiz Pazarı Son Teklifler -->
+<div class="sidebar-widget">
+    <div class="widget-header">
+        <span>🤝 Son Teklifler</span>
+    </div>
+    <div id="widget-latest-proposals">
+        <div class="p-3 text-center text-muted">
+            <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Script ve CSS Tanımları (base.html head/body içine) -->
+<link rel="stylesheet" href="{% static 'css/sidebar_widgets.css' %}">
+<script src="{% static 'js/sidebar_widgets.js' %}"></script>
+```
+
+```css
 /* Ana Sayfa Widget'ları */
 .homepage-widgets {
   max-width: 1200px;
