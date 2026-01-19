@@ -37,3 +37,4 @@ sendgrid  # SendGrid Web API için (SMTP yerine)
 daphne
 channels
 channels-redis
+beautifulsoup4
