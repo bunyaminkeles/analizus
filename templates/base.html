@@ -234,9 +234,10 @@
         {% endif %}
         
         <div class="row">
-            <div class="col-lg-10">
+            <div class="{% block main_content_classes %}col-lg-10{% endblock %}">
                 {% block content %}{% endblock %}
             </div>
+            {% block right_sidebar %}
             <div class="col-lg-2">
                 {% block above_sidebar %}{% endblock %}
                 <div class="layout-sidebar-right">
@@ -253,6 +254,7 @@
                     </div>
                 </div>
             </div>
+            {% endblock %}
         </div>
     </main>
 
