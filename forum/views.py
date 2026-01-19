@@ -47,6 +47,9 @@ def home(request):
     # Quiz Sorusu
     quiz_question = QuizQuestion.get_random_question()
 
+    # İstatistik Arena Liderlik Tablosu (Top 5)
+    quiz_leaderboard = QuizScore.objects.select_related('user', 'user__profile').order_by('-correct_answers')[:5]
+
     # Haftanın Başarı Hikayesi
     featured_story = SuccessStory.objects.filter(is_featured=True).first()
     if not featured_story:
@@ -68,6 +71,7 @@ def home(request):
         'recent_activities': recent_activities,
         'daily_tip': daily_tip,
         'quiz_question': quiz_question,
+        'quiz_leaderboard': quiz_leaderboard,
         'featured_story': featured_story,
         'recent_jobs': recent_jobs,
     }
