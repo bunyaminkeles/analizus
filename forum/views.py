@@ -12,7 +12,7 @@ from django.utils import timezone
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET
 from datetime import timedelta
-from .models import Section, Category, Topic, Post, Profile, PrivateMessage, PostLike, Notification, EmailVerification, DailyTip, QuizQuestion, QuizScore, SuccessStory, FreelanceJob, JobProposal, Skill, Badge
+from .models import Section, Category, Topic, Post, Profile, PrivateMessage, PostLike, Notification, EmailVerification, DailyTip, QuizQuestion, QuizScore, SuccessStory, FreelanceJob, JobProposal, Skill, Badge, UserQuizAttempt
 from .forms import RegisterForm, NewTopicForm, PostForm, JobPostForm, ProposalForm
 from .email_utils import send_topic_reply_notification, send_private_message_notification
 from django.template.loader import render_to_string
@@ -431,7 +431,22 @@ def send_message(request, username):
 def profile_detail(request, username):
     profile_user = get_object_or_404(User, username=username)
     posted_jobs = FreelanceJob.objects.filter(owner=profile_user).order_by('-created_at')
-    return render(request, 'forum/profile_detail.html', {'profile_user': profile_user, 'posted_jobs': posted_jobs})
+    
+    # Kategori bazlı quiz istatistikleri
+    quiz_stats = UserQuizAttempt.objects.filter(
+        user=profile_user, 
+        is_correct=True
+    ).values('question__category').annotate(
+        correct_count=Count('id')
+    ).order_by('-correct_count')
+    
+    # Quiz Puanı ve Sıralaması
+    user_score = QuizScore.objects.filter(user=profile_user).first()
+    quiz_rank = None
+    if user_score:
+        quiz_rank = QuizScore.objects.filter(total_points__gt=user_score.total_points).count() + 1
+    
+    return render(request, 'forum/profile_detail.html', {'profile_user': profile_user, 'posted_jobs': posted_jobs, 'quiz_stats': quiz_stats, 'user_score': user_score, 'quiz_rank': quiz_rank})
 
 # --- DİĞER ---
 def about(request):
@@ -858,6 +873,10 @@ def api_submit_quiz_answer(request):
             question = get_object_or_404(QuizQuestion, pk=question_id)
             is_correct = (answer == question.correct_answer)
             
+            # 1. Denemeyi Kaydet (Kategori takibi için)
+            # models.py'ye UserQuizAttempt eklediğinizi varsayıyoruz
+            UserQuizAttempt.objects.create(user=request.user, question=question, is_correct=is_correct)
+
             # Puan Güncelleme
             score, created = QuizScore.objects.get_or_create(user=request.user)
             score.total_answers += 1
@@ -872,7 +891,42 @@ def api_submit_quiz_answer(request):
             
             # Rozet Kontrolü
             badge_awarded = None
+            
             if is_correct and score.correct_answers > 0:
+                
+                # --- KATEGORİ BAZLI ROZETLER (BATCH) ---
+                # İlgili kategorideki toplam doğru sayısı
+                category_correct_count = UserQuizAttempt.objects.filter(
+                    user=request.user, 
+                    question__category=question.category, 
+                    is_correct=True
+                ).count()
+
+                # Kategori Rozet Tanımları (Örnek: 10 doğru cevapta verilir)
+                category_badges = {
+                    'SPSS': {'slug': 'spss-uzmani', 'name': 'SPSS Uzmanı', 'icon': 'bi-bar-chart-fill', 'color': '#3b82f6'},
+                    'Python': {'slug': 'python-ninja', 'name': 'Python Ninja', 'icon': 'bi-code-square', 'color': '#eab308'},
+                    'R': {'slug': 'r-ustadi', 'name': 'R Üstadı', 'icon': 'bi-r-circle', 'color': '#2563eb'},
+                    'Hipotez': {'slug': 'hipotez-avcisi', 'name': 'Hipotez Avcısı', 'icon': 'bi-search', 'color': '#ef4444'},
+                    'Raporlama': {'slug': 'raporlama-guru', 'name': 'Raporlama Gurusu', 'icon': 'bi-file-earmark-text', 'color': '#10b981'},
+                }
+
+                # Soru kategorisi bu listede var mı ve eşik değer (10) geçildi mi?
+                cat_key = question.category # Veya question.get_category_display() model yapısına göre
+                # Not: Eğer category field'ı choice ise display değerini veya key'i kontrol edin.
+                # Burada basitlik adına string eşleşmesi varsayıyoruz.
+                
+                target_badge = category_badges.get(str(cat_key)) # Güvenli erişim
+                
+                if target_badge and category_correct_count >= 10:
+                    cat_badge, created = Badge.objects.get_or_create(
+                        slug=target_badge['slug'],
+                        defaults={'name': target_badge['name'], 'description': f'{cat_key} kategorisinde 10 doğru cevap.', 'badge_type': 'specialty', 'icon': target_badge['icon'], 'color': target_badge['color']}
+                    )
+                    if created or cat_badge not in request.user.profile.badges.all():
+                        request.user.profile.badges.add(cat_badge)
+                        badge_awarded = cat_badge.name
+
                 # 100 doğru cevap -> Başarı Rozeti
                 if score.correct_answers == 100:
                     badge, created = Badge.objects.get_or_create(
@@ -901,7 +955,7 @@ def api_submit_quiz_answer(request):
                     )
                     if created or istatistik_ustasi_badge not in request.user.profile.badges.all():
                         request.user.profile.badges.add(istatistik_ustasi_badge)
-                        if not badge_awarded:  # Eğer zaten bir rozet verilmediyse bunu ata
+                        if not badge_awarded:  # Eğer kategori rozeti verilmediyse bunu göster
                             badge_awarded = istatistik_ustasi_badge.name
 
 

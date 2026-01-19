@@ -443,6 +443,17 @@ class QuizQuestion(models.Model):
         return cls.objects.filter(is_active=True).order_by('?').first()
 
 
+class UserQuizAttempt(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='quiz_attempts')
+    question = models.ForeignKey(QuizQuestion, on_delete=models.CASCADE)
+    is_correct = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = "Quiz Denemesi"
+        verbose_name_plural = "Quiz Denemeleri"
+
 class QuizScore(models.Model):
     """Kullanıcı quiz puanları"""
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='quiz_scores')

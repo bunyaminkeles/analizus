@@ -262,6 +262,34 @@
 
 </div>
 
+<!-- WIDGET: Son Teklifler -->
+<div class="widget-card full-width mt-4 proposals-widget">
+    <div class="widget-header orange">
+        <a href="{% if user.is_authenticated %}{% url 'job_list' %}{% else %}{% url 'login' %}{% endif %}" class="d-flex align-items-center w-100 text-decoration-none" style="color: inherit;">
+            <i class="bi bi-handshake me-2"></i>
+            <span>Son Teklifler</span>
+        </a>
+    </div>
+    <div id="widget-latest-proposals" class="widget-body">
+        <div class="p-3 text-center text-muted">
+            <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+        </div>
+    </div>
+</div>
+
+<!-- WIDGET: Son Analiz İlanları -->
+<div class="widget-card full-width mt-4 jobs-widget">
+    <div class="widget-header purple">
+        <a href="{% if user.is_authenticated %}{% url 'job_list' %}{% else %}{% url 'login' %}{% endif %}" class="d-flex align-items-center w-100 text-decoration-none" style="color: inherit;">
+            <i class="bi bi-bar-chart-line me-2"></i>
+            <span>Analiz Talebi</span>
+        </a>
+    </div>
+    <div id="widget-latest-jobs" class="widget-body">
+        <p class="empty-text">Henüz bir talep bildirilmedi</p>
+    </div>
+</div>
+
 {% endblock %}
 
 
