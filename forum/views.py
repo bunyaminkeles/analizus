@@ -381,6 +381,12 @@ def profile_edit(request):
         profile.orcid = request.POST.get('orcid', '')
         profile.google_scholar = request.POST.get('google_scholar', '')
 
+        # Telefon Numarası Güncelleme
+        new_phone_number = request.POST.get('phone_number', profile.phone_number)
+        if new_phone_number != profile.phone_number:
+            profile.phone_number = new_phone_number
+            profile.phone_verified = False # Numara değişince onayı kaldır
+
         # Dosyalar
         if 'avatar' in request.FILES:
             profile.avatar = request.FILES['avatar']
@@ -451,6 +457,7 @@ def _check_and_award_trust_badge(request, user):
             messages.success(request, 'TEBRİKLER! Tüm doğrulamaları tamamladığınız için "Güvenilir Üye" rozeti kazandınız.')
 
 # --- PROFİL DETAY ---
+@login_required
 def profile_detail(request, username):
     profile_user = get_object_or_404(User, username=username)
 
@@ -462,19 +469,19 @@ def profile_detail(request, username):
             if phone:
                 profile_user.profile.phone_number = phone
                 # Simülasyon: Gerçek SMS entegrasyonu olmadığı için direkt onaylıyoruz
-                profile_user.profile.phone_verified = True
+                profile_user.profile.phone_verified = False
                 profile_user.profile.save()
-                _check_and_award_trust_badge(request, profile_user)
-                messages.success(request, 'Telefon numaranız başarıyla doğrulandı! Güven puanınız arttı.')
+                #_check_and_award_trust_badge(request, profile_user)
+                messages.success(request, 'Telefon numaranız başarıyla kaydedildi. Onay bekleniyor.')
         elif action == 'verify_linkedin':
             linkedin_url = request.POST.get('linkedin')
             if linkedin_url:
                 profile_user.profile.linkedin = linkedin_url
                 # Simülasyon: Link girildiyse onaylı sayıyoruz
-                profile_user.profile.linkedin_verified = True
+                profile_user.profile.linkedin_verified = False
                 profile_user.profile.save()
-                _check_and_award_trust_badge(request, profile_user)
-                messages.success(request, 'LinkedIn hesabınız doğrulandı! Profesyonel görünümünüz güçlendi.')
+                #_check_and_award_trust_badge(request, profile_user)
+                messages.success(request, 'LinkedIn hesabınız kaydedildi. Onay bekleniyor.')
         return redirect('profile_detail', username=username)
 
     posted_jobs = FreelanceJob.objects.filter(owner=profile_user).order_by('-created_at')
