@@ -106,8 +106,7 @@ class Command(BaseCommand):
             "Regresyon Analizi", "Faktör Analizi", "SEM", "Zaman Serisi", "Meta-Analiz", "G*Power"
         ]
         for s in skills_list:
-            Skill.objects.get_or_create(name=s)
-
+            Skill.objects.get_or_create(name=s
         # 3. İÇERİK YAPISI - PART3 DAHİL TÜM İÇERİKLER
 
         # ===== EXCEL & İŞ ZEKASI =====

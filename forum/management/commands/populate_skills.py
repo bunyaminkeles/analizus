@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand
 from forum.models import Skill
+from django.utils.text import slugify
 
 class Command(BaseCommand):
     help = 'Analizus platformu için yetenekler (skills) listesini veritabanına yükler.'
@@ -32,7 +33,10 @@ class Command(BaseCommand):
         
         count = 0
         for skill_name in skills_data:
-            skill, created = Skill.objects.get_or_create(name=skill_name)
+            skill, created = Skill.objects.get_or_create(
+                name=skill_name,
+                defaults={'slug': slugify(skill_name)}
+            )
             if created:
                 count += 1
         
