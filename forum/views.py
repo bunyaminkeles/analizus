@@ -1002,12 +1002,8 @@ def api_get_quiz_question(request):
     if daily_attempt_count >= 25:
         return JsonResponse({'success': False, 'error': 'Günlük 25 soru limitini doldurdunuz. Yarın tekrar bekleriz!'})
 
-    # 2. Daha önce çözülenleri hariç tut
-    attempted_question_ids = UserQuizAttempt.objects.filter(
-        user=request.user
-    ).values_list('question_id', flat=True)
-
-    question = QuizQuestion.objects.filter(is_active=True).exclude(id__in=attempted_question_ids).order_by('?').first()
+    # 2. Daha önce çözülenleri hariç tutma logiği kaldırıldı. Her zaman rastgele bir soru getir.
+    question = QuizQuestion.objects.filter(is_active=True).order_by('?').first()
     
     if question:
         data = {
@@ -1023,7 +1019,7 @@ def api_get_quiz_question(request):
             'difficulty': question.get_difficulty_display()
         }
         return JsonResponse({'success': True, 'question': data})
-    return JsonResponse({'success': False, 'error': 'Tüm soruları çözdünüz! Yeni sorular yakında eklenecek.'})
+    return JsonResponse({'success': False, 'error': 'Veritabanında hiç aktif quiz sorusu bulunmuyor.'})
 
 @login_required
 def api_submit_quiz_answer(request):

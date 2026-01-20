@@ -5,14 +5,14 @@ from forum.models import QuizQuestion
 from forum.services.ai_service import groq_service
 
 class Command(BaseCommand):
-    help = 'Grok AI kullanarak günlük 25 quiz sorusu oluşturur ve veritabanına kaydeder.'
+    help = 'Grok AI kullanarak günlük 20 quiz sorusu oluşturur ve veritabanına kaydeder.'
 
     def handle(self, *args, **kwargs):
         self.stdout.write("Grok AI ile günlük quiz üretimi başlatılıyor...")
 
         # AI için Prompt
         prompt = """
-        Sen uzman bir veri bilimi eğitmenisin. Aşağıdaki alanlarda toplam 25 adet özgün, öğretici ve akademik kalitede çoktan seçmeli quiz sorusu oluştur:
+        Sen uzman bir veri bilimi eğitmenisin. Aşağıdaki alanlarda toplam 20 adet özgün, öğretici ve akademik kalitede çoktan seçmeli quiz sorusu oluştur:
         Alanlar: SPSS, Python, R Programlama, İstatistik, Akademik Yazım, Makine Öğrenmesi.
 
         Çıktıyı SADECE geçerli bir JSON listesi olarak ver. Başka hiçbir metin, açıklama veya markdown formatı kullanma.
