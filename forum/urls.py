@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views
+from . import api_views
 
 urlpatterns = [
     path('', views.home, name='home'),
@@ -36,6 +37,7 @@ urlpatterns = [
 
     # Admin Dashboard
     path('dashboard/', views.admin_dashboard, name='admin_dashboard'),
+    path('dashboard/verify-linkedin/<int:user_id>/', views.admin_verify_linkedin, name='admin_verify_linkedin'),
 
     # Diğer
     path('search/', views.search_result, name='search'),
@@ -52,6 +54,7 @@ urlpatterns = [
     path('market/', views.job_list, name='job_list'),
     path('market/new/', views.post_job, name='post_job'),
     path('market/job/<int:pk>/', views.job_detail, name='job_detail'),
+    path('market/job/<int:pk>/close/', views.close_job, name='close_job'),
     path('market/job/<int:pk>/like/', views.toggle_job_like, name='toggle_job_like'),
     path('market/job/<int:pk>/bookmark/', views.toggle_job_bookmark, name='toggle_job_bookmark'),
     path('market/my-jobs/', views.my_jobs, name='my_jobs'),
@@ -60,4 +63,7 @@ urlpatterns = [
     path('api/quiz/random/', views.api_get_quiz_question, name='api_get_quiz_question'),
     path('api/quiz/answer/', views.api_submit_quiz_answer, name='api_submit_quiz_answer'),
     path('api/story/featured/', views.api_get_featured_story, name='api_get_featured_story'),
+    path('api/widgets/rates/', api_views.widget_market_rates, name='widget_rates'),
+    path('api/widgets/proposals/', api_views.widget_latest_proposals, name='widget_proposals'),
+    path('api/follow/<str:username>/', views.api_toggle_follow, name='api_toggle_follow'),
 ]

@@ -42,6 +42,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/toolbar/prism-toolbar.min.css" rel="stylesheet" />
 
     <link rel="stylesheet" href="{% static 'css/style.css' %}?v=2050">
+    <link rel="stylesheet" href="{% static 'css/sidebar_widgets.css' %}?v=2051">
     
     <style>
         :root {
@@ -97,7 +98,7 @@
 <body>
 
     <!-- BİLDİRİMLERİN GÖRÜNECEĞİ ALAN -->
-    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1080;">
+    <div id="notification-container" class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1080;">
         <!-- Yeni bildirimler buraya JavaScript tarafından eklenecek -->
     </div>
 
@@ -112,11 +113,15 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav mx-auto">
-                    <li class="nav-item px-2"><a class="nav-link" href="#" onclick="openQuizModal()"><i class="bi bi-trophy-fill me-1 text-warning"></i>İstatistik Arena</a></li>
+                    <li class="nav-item px-2">
+                        <a class="nav-link" href="{% if user.is_authenticated %}#{% else %}{% url 'login' %}{% endif %}" {% if user.is_authenticated %}onclick="openQuizModal()"{% endif %}>
+                            <i class="bi bi-trophy-fill me-1 text-warning"></i>İstatistik Arena
+                        </a>
+                    </li>
                     <li class="nav-item px-2"><a class="nav-link" href="{% url 'ai_assistant' %}"><i class="bi bi-robot me-1"></i>AI Asistan</a></li>
                     <li class="nav-item px-2"><a class="nav-link" href="#" onclick="openStoryModal()"><i class="bi bi-star-fill me-1 text-info"></i>Başarı Hikayeleri</a></li>
                     <li class="nav-item px-2"><a class="nav-link" href="{% url 'about' %}">Vizyon 2050</a></li>
-                    <li class="nav-item px-2"><a class="nav-link" href="{% url 'job_list' %}">Analiz Hizmetleri Pazarı</a></li>
+                    <li class="nav-item px-2"><a class="nav-link" href="{% url 'job_list' %}">Hizmetler Pazarı</a></li>
                     <li class="nav-item px-2"><a class="nav-link" href="{% url 'contact' %}">İletişim</a></li>
                 </ul>
                 <div class="d-flex align-items-center">
@@ -201,6 +206,21 @@
         </div>
     </div>
 
+    <!-- PROFILE SUMMARY MODAL -->
+    <div class="modal fade" id="profileModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark border border-secondary shadow-lg" style="background: rgba(15, 23, 42, 0.95);">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title text-white"><i class="bi bi-person-lines-fill text-info me-2"></i>Kullanıcı Kartı</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4" id="profileModalBody">
+                    <div class="text-center py-4"><div class="spinner-border text-info"></div></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- SUCCESS STORY MODAL -->
     <div class="modal fade" id="storyModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -222,16 +242,30 @@
         </div>
     </div>
 
-    <main class="container py-4 mt-2">
+    <main class="{% block main_container %}container{% endblock %} py-4 mt-2" style="min-height: 80vh;">
         {% if messages %}
+            <div class="messages-wrapper">
             {% for message in messages %}
                 <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show rounded-4 border-0 shadow-sm mb-4 bg-dark text-white border border-secondary">
                     {{ message }}
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
                 </div>
             {% endfor %}
+            </div>
         {% endif %}
-        {% block content %}{% endblock %}
+        
+        <div class="row">
+            <div class="{% block main_content_classes %}col-lg-10{% endblock %}">
+                {% block content %}{% endblock %}
+            </div>
+            {% block right_sidebar %}
+            <div class="col-lg-2">
+                {% block above_sidebar %}{% endblock %}
+                <div class="layout-sidebar-right">
+                </div>
+            </div>
+            {% endblock %}
+        </div>
     </main>
 
     <footer class="py-5 mt-5 border-top border-secondary opacity-75 text-center">
@@ -271,6 +305,8 @@
         {% if user.is_authenticated %}
             <script src="{% static 'js/notifications.js' %}?v=2050"></script>
         {% endif %}
+        <script src="{% static 'js/sidebar_widgets.js' %}"></script>
+        <script src="{% static 'js/widget_collapse.js' %}?v=2051"></script>
         <script>
             // QUIZ FUNCTIONS
             const quizModal = new bootstrap.Modal(document.getElementById('quizModal'));
@@ -353,6 +389,59 @@
                 });
             }
 
+            // PROFILE MODAL FUNCTIONS
+            const profileModal = new bootstrap.Modal(document.getElementById('profileModal'));
+
+            function openProfileModal(username) {
+                profileModal.show();
+                const body = document.getElementById('profileModalBody');
+                body.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-info"></div></div>';
+                
+                // Not: urls.py'da 'api_get_profile_summary' tanımlanmalıdır.
+                fetch(`/api/profile-summary/${username}/`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if(data.success) {
+                            body.innerHTML = data.html;
+                        } else {
+                            body.innerHTML = '<p class="text-center text-danger">Profil yüklenemedi.</p>';
+                        }
+                    });
+            }
+
+            // FOLLOW FUNCTION
+            function toggleFollow(username, btn) {
+                fetch(`/api/follow/${username}/`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRFToken': '{{ csrf_token }}',
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if(data.success) {
+                        if(data.is_following) {
+                            btn.classList.remove('btn-outline-info');
+                            btn.classList.add('btn-secondary');
+                            btn.innerHTML = '<i class="bi bi-person-check-fill"></i>';
+                        } else {
+                            btn.classList.remove('btn-secondary');
+                            btn.classList.add('btn-outline-info');
+                            btn.innerHTML = '<i class="bi bi-person-plus-fill"></i>';
+                        }
+                        
+                        // Profil sayfasındaysak takipçi sayısını güncelle
+                        const countDisplay = document.getElementById('followerCountDisplay');
+                        if (countDisplay && data.follower_count !== undefined) {
+                            countDisplay.innerText = data.follower_count;
+                        }
+                    } else {
+                        alert(data.error || 'İşlem başarısız.');
+                    }
+                });
+            }
+
             // STORY FUNCTIONS
             const storyModal = new bootstrap.Modal(document.getElementById('storyModal'));
 
@@ -371,6 +460,9 @@
                     });
             }
         </script>
+        
     {% endblock %}
+
+    
 </body>
 </html>

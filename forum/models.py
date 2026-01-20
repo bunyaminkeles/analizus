@@ -182,6 +182,12 @@ class Profile(models.Model):
     # E-posta doğrulama durumu
     email_verified = models.BooleanField(default=False, verbose_name="E-posta Doğrulandı")
 
+    # Yeni Doğrulama Alanları
+    phone_number = models.CharField(max_length=20, blank=True, default="", verbose_name="Telefon Numarası")
+    phone_verified = models.BooleanField(default=False, verbose_name="Telefon Doğrulandı")
+    linkedin_verified = models.BooleanField(default=False, verbose_name="LinkedIn Doğrulandı")
+    following = models.ManyToManyField('self', related_name='followers', symmetrical=False, blank=True, verbose_name="Takip Edilenler")
+
     def __str__(self):
         return self.user.username
 
@@ -442,6 +448,17 @@ class QuizQuestion(models.Model):
         """Rastgele aktif bir soru döndürür"""
         return cls.objects.filter(is_active=True).order_by('?').first()
 
+
+class UserQuizAttempt(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='quiz_attempts')
+    question = models.ForeignKey(QuizQuestion, on_delete=models.CASCADE)
+    is_correct = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = "Quiz Denemesi"
+        verbose_name_plural = "Quiz Denemeleri"
 
 class QuizScore(models.Model):
     """Kullanıcı quiz puanları"""

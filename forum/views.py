@@ -2,17 +2,19 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django import forms
 import json
 from django.contrib.auth import login
+import re
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.db import models
+from django.contrib.contenttypes.models import ContentType
 from django.db.models import Count, Sum, Q
 from django.contrib import messages
 from django.utils import timezone
 from django.http import JsonResponse
-from django.views.decorators.http import require_GET
+from django.views.decorators.http import require_GET, require_POST
 from datetime import timedelta
-from .models import Section, Category, Topic, Post, Profile, PrivateMessage, PostLike, Notification, EmailVerification, DailyTip, QuizQuestion, QuizScore, SuccessStory, FreelanceJob, JobProposal, Skill, Badge
+from .models import Section, Category, Topic, Post, Profile, PrivateMessage, PostLike, Notification, EmailVerification, DailyTip, QuizQuestion, QuizScore, SuccessStory, FreelanceJob, JobProposal, Skill, Badge, UserQuizAttempt
 from .forms import RegisterForm, NewTopicForm, PostForm, JobPostForm, ProposalForm
 from .email_utils import send_topic_reply_notification, send_private_message_notification
 from django.template.loader import render_to_string
@@ -47,6 +49,9 @@ def home(request):
     # Quiz Sorusu
     quiz_question = QuizQuestion.get_random_question()
 
+    # İstatistik Arena Liderlik Tablosu (Top 5)
+    quiz_leaderboard = QuizScore.objects.select_related('user', 'user__profile').order_by('-correct_answers')[:5]
+
     # Haftanın Başarı Hikayesi
     featured_story = SuccessStory.objects.filter(is_featured=True).first()
     if not featured_story:
@@ -68,6 +73,7 @@ def home(request):
         'recent_activities': recent_activities,
         'daily_tip': daily_tip,
         'quiz_question': quiz_question,
+        'quiz_leaderboard': quiz_leaderboard,
         'featured_story': featured_story,
         'recent_jobs': recent_jobs,
     }
@@ -170,6 +176,21 @@ def toggle_job_bookmark(request, pk):
         job.saved_by.add(request.user)
         messages.success(request, "İlan kaydedildi!")
     return redirect('job_detail', pk=pk)
+
+@login_required
+@require_POST
+def close_job(request, pk):
+    job = get_object_or_404(FreelanceJob, pk=pk, owner=request.user)
+    
+    if job.status == 'open':
+        job.status = 'cancelled'
+        job.save()
+        messages.success(request, 'İlanınız başarıyla kapatılmıştır.')
+    else:
+        messages.warning(request, 'Bu ilan zaten kapalı veya işlemde.')
+        
+    return redirect('job_detail', pk=pk)
+
 
 @login_required
 def job_detail(request, pk):
@@ -370,11 +391,35 @@ def profile_edit(request):
 
         # Sosyal Medya
         profile.website = request.POST.get('website', '')
-        profile.linkedin = request.POST.get('linkedin', '')
+        linkedin = request.POST.get('linkedin', '')
+        profile.linkedin = linkedin
+        if linkedin and 'linkedin.com' in linkedin:
+            profile.linkedin_verified = True
+            profile.save()
+            _check_and_award_trust_badge(request, user)
+        else:
+            profile.linkedin_verified = False
         profile.twitter = request.POST.get('twitter', '')
         profile.github = request.POST.get('github', '')
         profile.orcid = request.POST.get('orcid', '')
         profile.google_scholar = request.POST.get('google_scholar', '')
+
+        # Telefon Numarası Güncelleme
+        new_phone_number = request.POST.get('phone_number')
+        if new_phone_number is not None:
+            new_phone_number = new_phone_number.strip()
+            if new_phone_number != profile.phone_number:
+                if new_phone_number:
+                    clean_number = new_phone_number.replace(' ', '').replace('-', '').replace('(', '').replace(')', '')
+                    if re.match(r'^05\d{9}$', clean_number):
+                        profile.phone_number = clean_number
+                        profile.phone_verified = True
+                        _check_and_award_trust_badge(request, user)
+                    else:
+                        messages.error(request, "Geçersiz telefon numarası. Lütfen '05XXXXXXXXX' formatında giriniz.")
+                else:
+                    profile.phone_number = ""
+                    profile.phone_verified = False
 
         # Dosyalar
         if 'avatar' in request.FILES:
@@ -390,11 +435,25 @@ def profile_edit(request):
 
         # Yetenekler (Skills)
         selected_skills = request.POST.getlist('skills')
+
+        # Kullanıcının eklediği özel yetenekler (Virgülle ayrılmış)
+        custom_skills = request.POST.get('custom_skills')
+        if custom_skills:
+            for skill_name in custom_skills.split(','):
+                skill_name = skill_name.strip()
+                if skill_name:
+                    # Varsa getir (case-insensitive), yoksa oluştur
+                    skill = Skill.objects.filter(name__iexact=skill_name).first()
+                    if not skill:
+                        skill = Skill.objects.create(name=skill_name)
+                    selected_skills.append(str(skill.id))
+
         profile.skills.set(selected_skills)
 
         profile.save()
         
         messages.success(request, "Profiliniz başarıyla güncellendi.")
+        messages.info(request, "Bilgileriniz KVKK kapsamında 3. kişilerle paylaşılmamaktadır.")
         return redirect('profile_edit')
     
     return render(request, 'forum/profile_edit.html', {'user': user, 'profile': profile, 'all_skills': all_skills})
@@ -427,11 +486,86 @@ def send_message(request, username):
     
     return render(request, 'forum/send_message.html', {'receiver': receiver})
 
+def _check_and_award_trust_badge(request, user):
+    """Tüm doğrulamalar tamamsa Güvenilir Üye rozeti verir"""
+    profile = user.profile
+    if profile.email_verified and profile.phone_verified and profile.linkedin_verified:
+        badge, created = Badge.objects.get_or_create(
+            slug='guvenilir-uye',
+            defaults={
+                'name': 'Güvenilir Üye',
+                'description': 'E-posta, telefon ve LinkedIn doğrulamalarını tamamladı.',
+                'badge_type': 'special',
+                'icon': 'bi-shield-fill-check',
+                'color': '#0ea5e9'
+            }
+        )
+        if badge not in profile.badges.all():
+            profile.badges.add(badge)
+            
+            # 50 Puan Hediye
+            score, _ = QuizScore.objects.get_or_create(user=user)
+            score.total_points += 50
+            score.save()
+            
+            messages.success(request, 'TEBRİKLER! Tüm doğrulamaları tamamladığınız için "Güvenilir Üye" rozeti ve 50 Puan kazandınız.')
+
 # --- PROFİL DETAY ---
+@login_required
 def profile_detail(request, username):
     profile_user = get_object_or_404(User, username=username)
+
+    # GİZLİLİK KONTROLÜ: E-posta gösterimi
+    # Eğer görüntüleyen kişi profil sahibi değilse ve kullanıcı e-postasını gizlemişse
+    if request.user != profile_user and hasattr(profile_user, 'profile') and not profile_user.profile.show_email:
+        profile_user.email = ""  # E-postayı gizle
+
+    # Doğrulama İşlemleri (POST)
+    if request.method == 'POST' and request.user == profile_user:
+        action = request.POST.get('action')
+        if action == 'verify_phone':
+            phone = request.POST.get('phone')
+            if phone:
+                clean_number = phone.strip().replace(' ', '').replace('-', '').replace('(', '').replace(')', '')
+                if re.match(r'^05\d{9}$', clean_number):
+                    profile_user.profile.phone_number = clean_number
+                    # Simülasyon: Gerçek SMS entegrasyonu olmadığı için direkt onaylıyoruz
+                    profile_user.profile.phone_verified = True
+                    profile_user.profile.save()
+                    _check_and_award_trust_badge(request, profile_user)
+                    messages.success(request, 'Telefon numaranız başarıyla kaydedildi.')
+                else:
+                    messages.error(request, "Geçersiz telefon numarası. Lütfen '05XXXXXXXXX' formatında giriniz.")
+        elif action == 'verify_linkedin':
+            linkedin_url = request.POST.get('linkedin')
+            if linkedin_url:
+                if 'linkedin.com' in linkedin_url:
+                    profile_user.profile.linkedin = linkedin_url
+                    profile_user.profile.linkedin_verified = True
+                    profile_user.profile.save()
+                    _check_and_award_trust_badge(request, profile_user)
+                    messages.success(request, 'LinkedIn hesabınız başarıyla doğrulandı.')
+                else:
+                    messages.error(request, 'Geçersiz LinkedIn URL.')
+        return redirect('profile_detail', username=username)
+
     posted_jobs = FreelanceJob.objects.filter(owner=profile_user).order_by('-created_at')
-    return render(request, 'forum/profile_detail.html', {'profile_user': profile_user, 'posted_jobs': posted_jobs})
+    
+    # Kategori bazlı quiz istatistikleri
+    quiz_stats = UserQuizAttempt.objects.filter(
+        user=profile_user, 
+        is_correct=True
+    ).values('question__category').annotate(
+        correct_count=Count('id')
+    ).order_by('-correct_count')
+    
+    # Quiz Puanı ve Sıralaması
+    user_score = QuizScore.objects.filter(user=profile_user).first()
+    quiz_rank = None
+    if user_score:
+        quiz_rank = QuizScore.objects.filter(total_points__gt=user_score.total_points).count() + 1
+    
+    return render(request, 'forum/profile_detail.html', {'profile_user': profile_user, 'posted_jobs': posted_jobs, 'quiz_stats': quiz_stats, 'user_score': user_score, 'quiz_rank': quiz_rank})
 
 # --- DİĞER ---
 def about(request):
@@ -653,6 +787,9 @@ def verify_email(request, token):
     profile.email_verified = True
     profile.save()
 
+    # Rozet kontrolü
+    _check_and_award_trust_badge(request, user)
+
     # Token'ı kullanılmış olarak işaretle
     verification.is_used = True
     verification.save()
@@ -769,6 +906,12 @@ def admin_dashboard(request):
         reply_count=Count('posts')
     ).order_by('-views', '-reply_count')[:10]
 
+    # === ONAY BEKLEYENLER (LinkedIn) ===
+    pending_linkedin_verifications = Profile.objects.filter(
+        linkedin__isnull=False,
+        linkedin_verified=False
+    ).exclude(linkedin='').select_related('user')
+
     # === SON AKTİVİTELER ===
     recent_users = User.objects.order_by('-date_joined')[:5]
     recent_topics_list = Topic.objects.select_related('starter', 'category').order_by('-created_at')[:5]
@@ -817,6 +960,9 @@ def admin_dashboard(request):
         # Popüler konular
         'popular_topics': popular_topics,
 
+        # Onay bekleyenler
+        'pending_linkedin_verifications': pending_linkedin_verifications,
+
         # Son aktiviteler
         'recent_users': recent_users,
         'recent_topics_list': recent_topics_list,
@@ -825,11 +971,40 @@ def admin_dashboard(request):
 
     return render(request, 'forum/admin_dashboard.html', context)
 
+
+@staff_member_required
+def admin_verify_linkedin(request, user_id):
+    user_to_verify = get_object_or_404(User, id=user_id)
+    profile = user_to_verify.profile
+    
+    profile.linkedin_verified = True
+    profile.save()
+    
+    # Check for trust badge
+    _check_and_award_trust_badge(request, user_to_verify)
+    
+    messages.success(request, f"{user_to_verify.username} kullanıcısının LinkedIn profili onaylandı.")
+    return redirect('admin_dashboard')
+
+
 # --- API: QUIZ & STORIES ---
 @login_required
 def api_get_quiz_question(request):
     """Rastgele bir quiz sorusu getirir"""
-    question = QuizQuestion.get_random_question()
+    
+    # 1. Günlük Limit Kontrolü (25 Soru)
+    today = timezone.now().date()
+    daily_attempt_count = UserQuizAttempt.objects.filter(
+        user=request.user,
+        created_at__date=today
+    ).count()
+
+    if daily_attempt_count >= 25:
+        return JsonResponse({'success': False, 'error': 'Günlük 25 soru limitini doldurdunuz. Yarın tekrar bekleriz!'})
+
+    # 2. Daha önce çözülenleri hariç tutma logiği kaldırıldı. Her zaman rastgele bir soru getir.
+    question = QuizQuestion.objects.filter(is_active=True).order_by('?').first()
+    
     if question:
         data = {
             'id': question.id,
@@ -844,7 +1019,7 @@ def api_get_quiz_question(request):
             'difficulty': question.get_difficulty_display()
         }
         return JsonResponse({'success': True, 'question': data})
-    return JsonResponse({'success': False, 'error': 'Soru bulunamadı.'})
+    return JsonResponse({'success': False, 'error': 'Veritabanında hiç aktif quiz sorusu bulunmuyor.'})
 
 @login_required
 def api_submit_quiz_answer(request):
@@ -858,6 +1033,10 @@ def api_submit_quiz_answer(request):
             question = get_object_or_404(QuizQuestion, pk=question_id)
             is_correct = (answer == question.correct_answer)
             
+            # 1. Denemeyi Kaydet (Kategori takibi için)
+            # models.py'ye UserQuizAttempt eklediğinizi varsayıyoruz
+            UserQuizAttempt.objects.create(user=request.user, question=question, is_correct=is_correct)
+
             # Puan Güncelleme
             score, created = QuizScore.objects.get_or_create(user=request.user)
             score.total_answers += 1
@@ -872,7 +1051,42 @@ def api_submit_quiz_answer(request):
             
             # Rozet Kontrolü
             badge_awarded = None
+            
             if is_correct and score.correct_answers > 0:
+                
+                # --- KATEGORİ BAZLI ROZETLER (BATCH) ---
+                # İlgili kategorideki toplam doğru sayısı
+                category_correct_count = UserQuizAttempt.objects.filter(
+                    user=request.user, 
+                    question__category=question.category, 
+                    is_correct=True
+                ).count()
+
+                # Kategori Rozet Tanımları (Örnek: 10 doğru cevapta verilir)
+                category_badges = {
+                    'SPSS': {'slug': 'spss-uzmani', 'name': 'SPSS Uzmanı', 'icon': 'bi-bar-chart-fill', 'color': '#3b82f6'},
+                    'Python': {'slug': 'python-ninja', 'name': 'Python Ninja', 'icon': 'bi-code-square', 'color': '#eab308'},
+                    'R': {'slug': 'r-ustadi', 'name': 'R Üstadı', 'icon': 'bi-r-circle', 'color': '#2563eb'},
+                    'Hipotez': {'slug': 'hipotez-avcisi', 'name': 'Hipotez Avcısı', 'icon': 'bi-search', 'color': '#ef4444'},
+                    'Raporlama': {'slug': 'raporlama-guru', 'name': 'Raporlama Gurusu', 'icon': 'bi-file-earmark-text', 'color': '#10b981'},
+                }
+
+                # Soru kategorisi bu listede var mı ve eşik değer (10) geçildi mi?
+                cat_key = question.category # Veya question.get_category_display() model yapısına göre
+                # Not: Eğer category field'ı choice ise display değerini veya key'i kontrol edin.
+                # Burada basitlik adına string eşleşmesi varsayıyoruz.
+                
+                target_badge = category_badges.get(str(cat_key)) # Güvenli erişim
+                
+                if target_badge and category_correct_count >= 10:
+                    cat_badge, created = Badge.objects.get_or_create(
+                        slug=target_badge['slug'],
+                        defaults={'name': target_badge['name'], 'description': f'{cat_key} kategorisinde 10 doğru cevap.', 'badge_type': 'specialty', 'icon': target_badge['icon'], 'color': target_badge['color']}
+                    )
+                    if created or cat_badge not in request.user.profile.badges.all():
+                        request.user.profile.badges.add(cat_badge)
+                        badge_awarded = cat_badge.name
+
                 # 100 doğru cevap -> Başarı Rozeti
                 if score.correct_answers == 100:
                     badge, created = Badge.objects.get_or_create(
@@ -901,7 +1115,7 @@ def api_submit_quiz_answer(request):
                     )
                     if created or istatistik_ustasi_badge not in request.user.profile.badges.all():
                         request.user.profile.badges.add(istatistik_ustasi_badge)
-                        if not badge_awarded:  # Eğer zaten bir rozet verilmediyse bunu ata
+                        if not badge_awarded:  # Eğer kategori rozeti verilmediyse bunu göster
                             badge_awarded = istatistik_ustasi_badge.name
 
 
@@ -918,6 +1132,16 @@ def api_submit_quiz_answer(request):
             return JsonResponse({'success': False, 'error': str(e)})
     return JsonResponse({'success': False})
 
+def api_get_profile_summary(request, username):
+    """Kullanıcı profil özetini modal için getirir"""
+    profile_user = get_object_or_404(User, username=username)
+    
+    html = render_to_string('forum/partials/profile_modal_content.html', {
+        'profile_user': profile_user, 
+        'request': request
+    })
+    return JsonResponse({'success': True, 'html': html})
+
 def api_get_featured_story(request):
     """Haftanın başarı hikayesini getirir (Modal için)"""
     story = SuccessStory.objects.filter(is_featured=True).first()
@@ -928,3 +1152,31 @@ def api_get_featured_story(request):
         html = render_to_string('forum/partials/story_modal_content.html', {'story': story})
         return JsonResponse({'success': True, 'html': html})
     return JsonResponse({'success': False})
+
+@login_required
+def api_toggle_follow(request, username):
+    """Kullanıcı takip etme/bırakma"""
+    target_user = get_object_or_404(User, username=username)
+    if target_user == request.user:
+        return JsonResponse({'success': False, 'error': 'Kendinizi takip edemezsiniz.'})
+    
+    user_profile = request.user.profile
+    target_profile = target_user.profile
+    
+    if target_profile in user_profile.following.all():
+        user_profile.following.remove(target_profile)
+        is_following = False
+    else:
+        user_profile.following.add(target_profile)
+        is_following = True
+        
+        # Bildirim gönder
+        Notification.objects.create(
+            recipient=target_user,
+            sender=request.user,
+            verb="sizi takip etmeye başladı",
+            content_type=ContentType.objects.get_for_model(target_user),
+            object_id=target_user.id
+        )
+        
+    return JsonResponse({'success': True, 'is_following': is_following, 'follower_count': target_profile.followers.count()})
