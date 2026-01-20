@@ -12,7 +12,7 @@ from django.db.models import Count, Sum, Q
 from django.contrib import messages
 from django.utils import timezone
 from django.http import JsonResponse
-from django.views.decorators.http import require_GET
+from django.views.decorators.http import require_GET, require_POST
 from datetime import timedelta
 from .models import Section, Category, Topic, Post, Profile, PrivateMessage, PostLike, Notification, EmailVerification, DailyTip, QuizQuestion, QuizScore, SuccessStory, FreelanceJob, JobProposal, Skill, Badge, UserQuizAttempt
 from .forms import RegisterForm, NewTopicForm, PostForm, JobPostForm, ProposalForm
@@ -176,6 +176,21 @@ def toggle_job_bookmark(request, pk):
         job.saved_by.add(request.user)
         messages.success(request, "İlan kaydedildi!")
     return redirect('job_detail', pk=pk)
+
+@login_required
+@require_POST
+def close_job(request, pk):
+    job = get_object_or_404(FreelanceJob, pk=pk, owner=request.user)
+    
+    if job.status == 'open':
+        job.status = 'cancelled'
+        job.save()
+        messages.success(request, 'İlanınız başarıyla kapatılmıştır.')
+    else:
+        messages.warning(request, 'Bu ilan zaten kapalı veya işlemde.')
+        
+    return redirect('job_detail', pk=pk)
+
 
 @login_required
 def job_detail(request, pk):

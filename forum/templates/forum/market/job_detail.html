@@ -9,9 +9,16 @@
         <div class="col-lg-8">
             <div class="card border-0 shadow-sm mb-4" style="background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(255, 255, 255, 0.08) !important;">
                 <div class="card-body p-4">
+                    {% if job.status == 'cancelled' %}
+                    <div class="alert alert-danger text-center">
+                        <i class="bi bi-x-circle-fill me-2"></i>
+                        Bu ilan sahibi tarafından kapatılmıştır ve artık tekliflere açık değildir.
+                    </div>
+                    {% endif %}
+
                     <div class="d-flex justify-content-between align-items-start mb-3">
                         <h2 class="fw-bold text-white mb-0">{{ job.title }}</h2>
-                        <span class="badge bg-{{ job.status|yesno:'success,secondary' }}">{{ job.get_status_display }}</span>
+                        <span class="badge bg-{{ job.status|yesno:'success,secondary,secondary,danger' }}">{{ job.get_status_display }}</span>
                     </div>
                     
                     <div class="d-flex gap-3 text-muted small mb-4">
@@ -37,13 +44,22 @@
                         </div>
                     </div>
 
-                    <div class="d-flex gap-2 mt-3">
+                    <div class="d-flex gap-2 mt-3 align-items-center">
                         <a href="{% url 'toggle_job_like' pk=job.pk %}" class="btn btn-sm {% if is_liked %}btn-danger{% else %}btn-outline-danger{% endif %} rounded-pill">
                             <i class="bi bi-heart{% if is_liked %}-fill{% endif %} me-1"></i> {{ job.total_likes }}
                         </a>
                         <a href="{% url 'toggle_job_bookmark' pk=job.pk %}" class="btn btn-sm {% if is_saved %}btn-warning{% else %}btn-outline-warning{% endif %} rounded-pill">
                             <i class="bi bi-bookmark{% if is_saved %}-fill{% endif %} me-1"></i> {% if is_saved %}Kaydedildi{% else %}Kaydet{% endif %}
                         </a>
+
+                        {% if user.is_authenticated and job.owner == user and job.status == 'open' %}
+                        <form method="post" action="{% url 'close_job' pk=job.pk %}" class="ms-auto" onsubmit="return confirm('İlanı kapatmak istediğinizden emin misiniz? Bu işlem geri alınamaz.');">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                <i class="bi bi-power me-1"></i> İlanı Kapat
+                            </button>
+                        </form>
+                        {% endif %}
                     </div>
                 </div>
             </div>
