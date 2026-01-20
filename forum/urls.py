@@ -37,6 +37,7 @@ urlpatterns = [
 
     # Admin Dashboard
     path('dashboard/', views.admin_dashboard, name='admin_dashboard'),
+    path('dashboard/verify-linkedin/<int:user_id>/', views.admin_verify_linkedin, name='admin_verify_linkedin'),
 
     # Diğer
     path('search/', views.search_result, name='search'),

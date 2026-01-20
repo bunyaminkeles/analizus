@@ -841,6 +841,12 @@ def admin_dashboard(request):
         reply_count=Count('posts')
     ).order_by('-views', '-reply_count')[:10]
 
+    # === ONAY BEKLEYENLER (LinkedIn) ===
+    pending_linkedin_verifications = Profile.objects.filter(
+        linkedin__isnull=False,
+        linkedin_verified=False
+    ).exclude(linkedin='').select_related('user')
+
     # === SON AKTİVİTELER ===
     recent_users = User.objects.order_by('-date_joined')[:5]
     recent_topics_list = Topic.objects.select_related('starter', 'category').order_by('-created_at')[:5]
@@ -889,6 +895,9 @@ def admin_dashboard(request):
         # Popüler konular
         'popular_topics': popular_topics,
 
+        # Onay bekleyenler
+        'pending_linkedin_verifications': pending_linkedin_verifications,
+
         # Son aktiviteler
         'recent_users': recent_users,
         'recent_topics_list': recent_topics_list,
@@ -896,6 +905,22 @@ def admin_dashboard(request):
     }
 
     return render(request, 'forum/admin_dashboard.html', context)
+
+
+@staff_member_required
+def admin_verify_linkedin(request, user_id):
+    user_to_verify = get_object_or_404(User, id=user_id)
+    profile = user_to_verify.profile
+    
+    profile.linkedin_verified = True
+    profile.save()
+    
+    # Check for trust badge
+    _check_and_award_trust_badge(request, user_to_verify)
+    
+    messages.success(request, f"{user_to_verify.username} kullanıcısının LinkedIn profili onaylandı.")
+    return redirect('admin_dashboard')
+
 
 # --- API: QUIZ & STORIES ---
 @login_required
