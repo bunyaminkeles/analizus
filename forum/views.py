@@ -420,6 +420,19 @@ def profile_edit(request):
 
         # Yetenekler (Skills)
         selected_skills = request.POST.getlist('skills')
+
+        # Kullanıcının eklediği özel yetenekler (Virgülle ayrılmış)
+        custom_skills = request.POST.get('custom_skills')
+        if custom_skills:
+            for skill_name in custom_skills.split(','):
+                skill_name = skill_name.strip()
+                if skill_name:
+                    # Varsa getir (case-insensitive), yoksa oluştur
+                    skill = Skill.objects.filter(name__iexact=skill_name).first()
+                    if not skill:
+                        skill = Skill.objects.create(name=skill_name)
+                    selected_skills.append(str(skill.id))
+
         profile.skills.set(selected_skills)
 
         profile.save()

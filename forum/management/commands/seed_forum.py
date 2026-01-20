@@ -1,7 +1,7 @@
 import random
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
-from forum.models import Section, Category, Topic, Post, Profile
+from forum.models import Section, Category, Topic, Post, Profile, Skill
 from django.utils.text import slugify
 
 class Command(BaseCommand):
@@ -33,6 +33,7 @@ class Command(BaseCommand):
         Topic.objects.all().delete()
         Category.objects.all().delete()
         Section.objects.all().delete()
+        Skill.objects.all().delete()
         self.stdout.write('Temizlik tamamlandı.')
 
         # 2. KULLANICILAR
@@ -93,6 +94,19 @@ class Command(BaseCommand):
             users.append(admin_user)
             if not hasattr(admin_user, 'profile'):
                 Profile.objects.create(user=admin_user, account_type='Expert', title='Sistem Yöneticisi')
+
+        # YETENEKLERİ EKLE
+        self.stdout.write('Yetenekler ekleniyor...')
+        skills_list = [
+            "SPSS", "R Studio", "Stata", "SAS", "Minitab", "EViews", "JASP", "Jamovi", "AMOS", "SmartPLS",
+            "Python", "R", "SQL", "MATLAB", "Julia", "Pandas", "NumPy", "Scikit-learn", "TensorFlow", "PyTorch",
+            "Excel", "Power BI", "Tableau", "QlikView", "Google Data Studio",
+            "MAXQDA", "NVivo", "Atlas.ti",
+            "Akademik Yazım", "Literatür Taraması", "Anket Tasarımı", "Araştırma Yöntemleri", "Etik Kurul Başvurusu",
+            "Regresyon Analizi", "Faktör Analizi", "SEM", "Zaman Serisi", "Meta-Analiz", "G*Power"
+        ]
+        for s in skills_list:
+            Skill.objects.get_or_create(name=s)
 
         # 3. İÇERİK YAPISI - PART3 DAHİL TÜM İÇERİKLER
 
