@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django import forms
 import json
 from django.contrib.auth import login
+import re
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
@@ -375,17 +376,35 @@ def profile_edit(request):
 
         # Sosyal Medya
         profile.website = request.POST.get('website', '')
-        profile.linkedin = request.POST.get('linkedin', '')
+        linkedin = request.POST.get('linkedin', '')
+        profile.linkedin = linkedin
+        if linkedin and 'linkedin.com' in linkedin:
+            profile.linkedin_verified = True
+            profile.save()
+            _check_and_award_trust_badge(request, user)
+        else:
+            profile.linkedin_verified = False
         profile.twitter = request.POST.get('twitter', '')
         profile.github = request.POST.get('github', '')
         profile.orcid = request.POST.get('orcid', '')
         profile.google_scholar = request.POST.get('google_scholar', '')
 
         # Telefon Numarası Güncelleme
-        new_phone_number = request.POST.get('phone_number', profile.phone_number)
-        if new_phone_number != profile.phone_number:
-            profile.phone_number = new_phone_number
-            profile.phone_verified = False # Numara değişince onayı kaldır
+        new_phone_number = request.POST.get('phone_number')
+        if new_phone_number is not None:
+            new_phone_number = new_phone_number.strip()
+            if new_phone_number != profile.phone_number:
+                if new_phone_number:
+                    clean_number = new_phone_number.replace(' ', '').replace('-', '').replace('(', '').replace(')', '')
+                    if re.match(r'^05\d{9}$', clean_number):
+                        profile.phone_number = clean_number
+                        profile.phone_verified = True
+                        _check_and_award_trust_badge(request, user)
+                    else:
+                        messages.error(request, "Geçersiz telefon numarası. Lütfen '05XXXXXXXXX' formatında giriniz.")
+                else:
+                    profile.phone_number = ""
+                    profile.phone_verified = False
 
         # Dosyalar
         if 'avatar' in request.FILES:
@@ -406,6 +425,7 @@ def profile_edit(request):
         profile.save()
         
         messages.success(request, "Profiliniz başarıyla güncellendi.")
+        messages.info(request, "Bilgileriniz KVKK kapsamında 3. kişilerle paylaşılmamaktadır.")
         return redirect('profile_edit')
     
     return render(request, 'forum/profile_edit.html', {'user': user, 'profile': profile, 'all_skills': all_skills})
@@ -454,7 +474,13 @@ def _check_and_award_trust_badge(request, user):
         )
         if badge not in profile.badges.all():
             profile.badges.add(badge)
-            messages.success(request, 'TEBRİKLER! Tüm doğrulamaları tamamladığınız için "Güvenilir Üye" rozeti kazandınız.')
+            
+            # 50 Puan Hediye
+            score, _ = QuizScore.objects.get_or_create(user=user)
+            score.total_points += 50
+            score.save()
+            
+            messages.success(request, 'TEBRİKLER! Tüm doğrulamaları tamamladığınız için "Güvenilir Üye" rozeti ve 50 Puan kazandınız.')
 
 # --- PROFİL DETAY ---
 @login_required
@@ -467,21 +493,27 @@ def profile_detail(request, username):
         if action == 'verify_phone':
             phone = request.POST.get('phone')
             if phone:
-                profile_user.profile.phone_number = phone
-                # Simülasyon: Gerçek SMS entegrasyonu olmadığı için direkt onaylıyoruz
-                profile_user.profile.phone_verified = False
-                profile_user.profile.save()
-                #_check_and_award_trust_badge(request, profile_user)
-                messages.success(request, 'Telefon numaranız başarıyla kaydedildi. Onay bekleniyor.')
+                clean_number = phone.strip().replace(' ', '').replace('-', '').replace('(', '').replace(')', '')
+                if re.match(r'^05\d{9}$', clean_number):
+                    profile_user.profile.phone_number = clean_number
+                    # Simülasyon: Gerçek SMS entegrasyonu olmadığı için direkt onaylıyoruz
+                    profile_user.profile.phone_verified = True
+                    profile_user.profile.save()
+                    _check_and_award_trust_badge(request, profile_user)
+                    messages.success(request, 'Telefon numaranız başarıyla kaydedildi.')
+                else:
+                    messages.error(request, "Geçersiz telefon numarası. Lütfen '05XXXXXXXXX' formatında giriniz.")
         elif action == 'verify_linkedin':
             linkedin_url = request.POST.get('linkedin')
             if linkedin_url:
-                profile_user.profile.linkedin = linkedin_url
-                # Simülasyon: Link girildiyse onaylı sayıyoruz
-                profile_user.profile.linkedin_verified = False
-                profile_user.profile.save()
-                #_check_and_award_trust_badge(request, profile_user)
-                messages.success(request, 'LinkedIn hesabınız kaydedildi. Onay bekleniyor.')
+                if 'linkedin.com' in linkedin_url:
+                    profile_user.profile.linkedin = linkedin_url
+                    profile_user.profile.linkedin_verified = True
+                    profile_user.profile.save()
+                    _check_and_award_trust_badge(request, profile_user)
+                    messages.success(request, 'LinkedIn hesabınız başarıyla doğrulandı.')
+                else:
+                    messages.error(request, 'Geçersiz LinkedIn URL.')
         return redirect('profile_detail', username=username)
 
     posted_jobs = FreelanceJob.objects.filter(owner=profile_user).order_by('-created_at')
@@ -926,7 +958,24 @@ def admin_verify_linkedin(request, user_id):
 @login_required
 def api_get_quiz_question(request):
     """Rastgele bir quiz sorusu getirir"""
-    question = QuizQuestion.get_random_question()
+    
+    # 1. Günlük Limit Kontrolü (25 Soru)
+    today = timezone.now().date()
+    daily_attempt_count = UserQuizAttempt.objects.filter(
+        user=request.user,
+        created_at__date=today
+    ).count()
+
+    if daily_attempt_count >= 25:
+        return JsonResponse({'success': False, 'error': 'Günlük 25 soru limitini doldurdunuz. Yarın tekrar bekleriz!'})
+
+    # 2. Daha önce çözülenleri hariç tut
+    attempted_question_ids = UserQuizAttempt.objects.filter(
+        user=request.user
+    ).values_list('question_id', flat=True)
+
+    question = QuizQuestion.objects.filter(is_active=True).exclude(id__in=attempted_question_ids).order_by('?').first()
+    
     if question:
         data = {
             'id': question.id,
@@ -941,7 +990,7 @@ def api_get_quiz_question(request):
             'difficulty': question.get_difficulty_display()
         }
         return JsonResponse({'success': True, 'question': data})
-    return JsonResponse({'success': False, 'error': 'Soru bulunamadı.'})
+    return JsonResponse({'success': False, 'error': 'Tüm soruları çözdünüz! Yeni sorular yakında eklenecek.'})
 
 @login_required
 def api_submit_quiz_answer(request):
