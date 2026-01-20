@@ -68,7 +68,7 @@
                         </span>
                     </div>
                     <div class="flex-grow-1 overflow-hidden">
-                        <a href="#" onclick="openProfileModal('{{ score.user.username }}'); return false;" class="text-decoration-none text-light small fw-bold d-block text-truncate">{{ score.user.username }}</a>
+                        <a href="{% url 'profile_detail' username=score.user.username %}" class="text-decoration-none text-light small fw-bold d-block text-truncate">{{ score.user.username }}</a>
                         <small class="text-muted d-block text-truncate" style="font-size: 0.65rem;">{{ score.user.profile.title|default:"Üye" }}</small>
                     </div>
                     <div class="text-end ms-2">
