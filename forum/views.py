@@ -487,6 +487,11 @@ def _check_and_award_trust_badge(request, user):
 def profile_detail(request, username):
     profile_user = get_object_or_404(User, username=username)
 
+    # GİZLİLİK KONTROLÜ: E-posta gösterimi
+    # Eğer görüntüleyen kişi profil sahibi değilse ve kullanıcı e-postasını gizlemişse
+    if request.user != profile_user and hasattr(profile_user, 'profile') and not profile_user.profile.show_email:
+        profile_user.email = ""  # E-postayı gizle
+
     # Doğrulama İşlemleri (POST)
     if request.method == 'POST' and request.user == profile_user:
         action = request.POST.get('action')
