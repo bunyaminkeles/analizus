@@ -3,61 +3,56 @@ from django.dispatch import receiver
 from django.urls import reverse
 from django.contrib.contenttypes.models import ContentType
 import logging
+from .utils import send_realtime_notification
 
 logger = logging.getLogger(__name__)
 
-
-def send_realtime_notification(recipient_id, message, url):
-    """WebSocket üzerinden gerçek zamanlı bildirim gönder (opsiyonel)"""
-    try:
-        from asgiref.sync import async_to_sync
-        from channels.layers import get_channel_layer
-
-        channel_layer = get_channel_layer()
-        if channel_layer is None:
-            return  # Channel layer yapılandırılmamış
-
-        group_name = f"notifications_{recipient_id}"
-        async_to_sync(channel_layer.group_send)(
-            group_name,
-            {
-                "type": "notification_message",
-                "message": message,
-                "url": url,
-            },
-        )
-    except Exception as e:
-        # WebSocket hatası olursa sessizce devam et
-        # Bildirim zaten veritabanına kaydedildi
-        logger.warning(f"WebSocket bildirimi gönderilemedi: {e}")
+from .models import Post, PrivateMessage, Notification, PostLike, Topic
+from .models import Profile  # Profile modelini import et
 
 
-from .models import Post, PrivateMessage, Notification, PostLike
+@receiver(post_save, sender=Topic)
+def add_reputation_on_new_topic(sender, instance, created, **kwargs):
+    """Yeni bir konu oluşturulduğunda yazarına +5 puan ver"""
+    if created:
+        try:
+            profile, created_profile = Profile.objects.get_or_create(user=instance.starter)
+            profile.reputation += 5
+            profile.save(update_fields=['reputation'])
+        except Exception as e:
+            logger.error(f"Yeni konu için itibar puanı eklenemedi: {e}")
 
 
 @receiver(post_save, sender=Post)
 def post_save_receiver(sender, instance, created, **kwargs):
-    """Yeni post oluşturulduğunda konu sahibine bildirim gönder"""
-    if created and instance.topic.starter != instance.created_by:
-        recipient = instance.topic.starter
-        message = f"<b>{instance.created_by.username}</b>, '{instance.topic.subject}' konusuna yeni bir yanıt yazdı."
-        url = instance.get_absolute_url()
-
+    """Yeni post oluşturulduğunda ilgili işlemleri yap"""
+    if created:
+        # Cevabı yazan kullanıcıya +2 puan ver
         try:
-            # Notification oluştur
-            content_type = ContentType.objects.get_for_model(instance)
-            Notification.objects.create(
-                recipient=recipient,
-                sender=instance.created_by,
-                verb=message,
-                content_type=content_type,
-                object_id=instance.pk
-            )
-
-            # Gerçek zamanlı bildirim (opsiyonel)
-            send_realtime_notification(recipient.id, message, url)
+            profile, created_profile = Profile.objects.get_or_create(user=instance.created_by)
+            profile.reputation += 2
+            profile.save(update_fields=['reputation'])
         except Exception as e:
-            logger.error(f"Post bildirimi oluşturulamadı: {e}")
+            logger.error(f"Yeni cevap için itibar puanı eklenemedi: {e}")
+
+        # Konu sahibine bildirim gönder (eğer cevap başkası tarafından yazıldıysa)
+        if instance.topic.starter != instance.created_by:
+            recipient = instance.topic.starter
+            message = f"<b>{instance.created_by.username}</b>, '{instance.topic.subject}' konusuna yeni bir yanıt yazdı."
+            url = instance.get_absolute_url()
+
+            try:
+                content_type = ContentType.objects.get_for_model(instance)
+                Notification.objects.create(
+                    recipient=recipient,
+                    sender=instance.created_by,
+                    verb=message,
+                    content_type=content_type,
+                    object_id=instance.pk
+                )
+                send_realtime_notification(recipient.id, message, url)
+            except Exception as e:
+                logger.error(f"Post bildirimi oluşturulamadı: {e}")
 
 
 @receiver(post_save, sender=PrivateMessage)
@@ -66,7 +61,7 @@ def private_message_post_save(sender, instance, created, **kwargs):
     if created:
         recipient = instance.receiver
         message = f"<b>{instance.sender.username}</b>'den yeni bir özel mesajınız var."
-        url = reverse('inbox')
+        url = reverse('send_message', args=[instance.sender.username])
 
         try:
             # Notification oluştur

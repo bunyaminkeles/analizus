@@ -1,6 +1,11 @@
 import requests
 from bs4 import BeautifulSoup
 from django.core.cache import cache
+import logging
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
+
+logger = logging.getLogger(__name__)
 
 def get_altinkaynak_rates():
     """
@@ -62,3 +67,24 @@ def get_altinkaynak_rates():
         ]
 
     return rates
+
+def send_realtime_notification(recipient_id, message, url):
+    """WebSocket üzerinden gerçek zamanlı bildirim gönder (opsiyonel)"""
+    try:
+        channel_layer = get_channel_layer()
+        if channel_layer is None:
+            return  # Channel layer yapılandırılmamış
+
+        group_name = f"notifications_{recipient_id}"
+        async_to_sync(channel_layer.group_send)(
+            group_name,
+            {
+                "type": "notification_message",
+                "message": message,
+                "url": url,
+            },
+        )
+    except Exception as e:
+        # WebSocket hatası olursa sessizce devam et
+        # Bildirim zaten veritabanına kaydedildi
+        logger.warning(f"WebSocket bildirimi gönderilemedi: {e}")

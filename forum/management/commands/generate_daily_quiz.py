@@ -1,34 +1,52 @@
 import json
 import re
 from django.core.management.base import BaseCommand
-from forum.models import QuizQuestion
+from forum.models import QuizQuestion, Category
 from forum.services.ai_service import groq_service
 
 class Command(BaseCommand):
-    help = 'Grok AI kullanarak günlük 20 quiz sorusu oluşturur ve veritabanına kaydeder.'
+    help = 'Groq AI kullanarak günlük 20 quiz sorusu oluşturur ve veritabanına kaydeder.'
 
     def handle(self, *args, **kwargs):
-        self.stdout.write("Grok AI ile günlük quiz üretimi başlatılıyor...")
+        self.stdout.write("Groq AI ile günlük quiz üretimi başlatılıyor...")
+
+        # Kategorileri veritabanından dinamik olarak al
+        try:
+            category_titles = list(Category.objects.values_list('title', flat=True))
+            if not category_titles:
+                self.stdout.write(self.style.ERROR("Veritabanında hiç kategori bulunamadı. Lütfen önce kategorileri oluşturun."))
+                return
+            
+            # Kategorileri bir stringe dönüştür
+            alanlar = ", ".join(category_titles)
+            self.stdout.write(f"Şu alanlar için sorular üretilecek: {alanlar}")
+        except Exception as e:
+            self.stdout.write(self.style.ERROR(f"Kategoriler alınırken hata oluştu: {e}"))
+            return
 
         # AI için Prompt
-        prompt = """
-        Sen uzman bir veri bilimi eğitmenisin. Aşağıdaki alanlarda toplam 20 adet özgün, öğretici ve akademik kalitede çoktan seçmeli quiz sorusu oluştur:
-        Alanlar: SPSS, Python, R Programlama, İstatistik, Akademik Yazım, Makine Öğrenmesi.
+        prompt = f"""
+        Sen uzman bir veri bilimi ve istatistik eğitmenisin. Aşağıdaki alanlarda, her biri için dengeli sayıda olmak üzere, toplam 20 adet özgün, öğretici ve akademik kalitede çoktan seçmeli quiz sorusu oluştur:
+        Alanlar: {alanlar}.
 
-        Çıktıyı SADECE geçerli bir JSON listesi olarak ver. Başka hiçbir metin, açıklama veya markdown formatı kullanma.
+        Çıktıyı SADECE geçerli bir JSON listesi olarak ver. Başka hiçbir metin, açıklama veya markdown formatı kullanma. JSON, bir 'questions' anahtarı altında bir liste içermelidir.
         
         JSON formatı her soru için şöyle olmalıdır:
-        {
-            "question": "Soru metni buraya",
-            "option_a": "A şıkkı",
-            "option_b": "B şıkkı",
-            "option_c": "C şıkkı",
-            "option_d": "D şıkkı",
-            "correct_answer": "A", 
-            "explanation": "Doğru cevabın ve konunun kısa açıklaması",
-            "category": "Kategori Adı (Örn: SPSS, Python, R, Istatistik, Genel)",
-            "difficulty": "Zorluk (Easy, Medium, Hard)"
-        }
+        {{
+          "questions": [
+            {{
+                "question": "Soru metni buraya",
+                "option_a": "A şıkkı",
+                "option_b": "B şıkkı",
+                "option_c": "C şıkkı",
+                "option_d": "D şıkkı",
+                "correct_answer": "A", 
+                "explanation": "Doğru cevabın ve konunun kısa, öğretici açıklaması.",
+                "category": "Kategori Adı (örneğin, {category_titles[0] if category_titles else 'SPSS'})",
+                "difficulty": "Zorluk (easy, medium, hard)"
+            }}
+          ]
+        }}
         """
 
         try:
@@ -41,35 +59,57 @@ class Command(BaseCommand):
 
             response_text = result['response']
 
-            # JSON temizleme (Markdown bloklarını kaldır)
-            json_match = re.search(r'\[.*\]', response_text, re.DOTALL)
+            # JSON temizleme (Markdown bloklarını ve preamble'ı kaldır)
+            json_match = re.search(r'{\s*"questions":\s*\[.*\]\s*}', response_text, re.DOTALL)
             if json_match:
                 json_str = json_match.group(0)
             else:
-                json_str = response_text
+                self.stdout.write(self.style.ERROR("AI yanıtında 'questions' anahtarı ile başlayan geçerli bir JSON yapısı bulunamadı."))
+                self.stdout.write(f"Alınan yanıt: {response_text}")
+                return
 
-            questions_data = json.loads(json_str)
+            data = json.loads(json_str)
+            questions_data = data.get("questions", [])
 
             if not isinstance(questions_data, list):
                 self.stdout.write(self.style.ERROR("AI geçerli bir soru listesi döndürmedi."))
                 return
+            
+            # Modeldeki geçerli choice değerlerini al
+            valid_categories = [choice[0] for choice in QuizQuestion.CATEGORY_CHOICES]
+            valid_difficulties = [choice[0] for choice in QuizQuestion.DIFFICULTY_CHOICES]
 
-            count = 0
-            for q in questions_data:
+            created_count = 0
+            for q_data in questions_data:
+                # Gelen veriyi doğrula ve temizle
+                category = q_data.get('category', 'statistics').lower()
+                if category not in valid_categories:
+                    self.stdout.write(self.style.WARNING(f"Geçersiz kategori '{category}', 'statistics' olarak ayarlandı."))
+                    category = 'statistics'
+
+                difficulty = q_data.get('difficulty', 'medium').lower()
+                if difficulty not in valid_difficulties:
+                    self.stdout.write(self.style.WARNING(f"Geçersiz zorluk '{difficulty}', 'medium' olarak ayarlandı."))
+                    difficulty = 'medium'
+                
+                correct_answer = q_data.get('correct_answer', 'A').upper()
+                if correct_answer not in ['A', 'B', 'C', 'D']:
+                    correct_answer = 'A'
+
                 QuizQuestion.objects.create(
-                    question=q.get('question'),
-                    option_a=q.get('option_a'),
-                    option_b=q.get('option_b'),
-                    option_c=q.get('option_c'),
-                    option_d=q.get('option_d'),
-                    correct_answer=q.get('correct_answer', 'A'),
-                    explanation=q.get('explanation', ''),
-                    category=q.get('category', 'Genel'),
-                    difficulty=q.get('difficulty', 'Medium')
+                    question=q_data.get('question', 'Eksik Soru'),
+                    option_a=q_data.get('option_a', 'Eksik şık'),
+                    option_b=q_data.get('option_b', 'Eksik şık'),
+                    option_c=q_data.get('option_c', 'Eksik şık'),
+                    option_d=q_data.get('option_d', 'Eksik şık'),
+                    correct_answer=correct_answer,
+                    explanation=q_data.get('explanation', ''),
+                    category=category,
+                    difficulty=difficulty
                 )
-                count += 1
+                created_count += 1
 
-            self.stdout.write(self.style.SUCCESS(f"İşlem tamamlandı: {count} yeni soru eklendi."))
+            self.stdout.write(self.style.SUCCESS(f"İşlem tamamlandı: {created_count} yeni soru eklendi."))
 
         except json.JSONDecodeError:
             self.stdout.write(self.style.ERROR("AI yanıtı geçerli bir JSON formatında değil."))

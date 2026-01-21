@@ -467,7 +467,18 @@ def inbox(request):
 # --- ÖZEL MESAJ GÖNDER ---
 @login_required
 def send_message(request, username):
+    # E-posta doğrulama kontrolü
+    if not request.user.profile.email_verified:
+        messages.error(request, 'Özel mesaj gönderebilmek için lütfen e-posta adresinizi doğrulayın.')
+        return redirect('verification_pending')
+
     receiver = get_object_or_404(User, username=username)
+    
+    # Sohbet geçmişini getir
+    chat_messages = PrivateMessage.objects.filter(
+        Q(sender=request.user, receiver=receiver) |
+        Q(sender=receiver, receiver=request.user)
+    ).order_by('created_at')
     
     if request.method == 'POST':
         message_content = request.POST.get('message')
@@ -482,9 +493,9 @@ def send_message(request, username):
             send_private_message_notification(request.user, receiver, message_content)
             
             messages.success(request, f"{receiver.username} kullanıcısına mesajınız gönderildi!")
-            return redirect('profile_detail', username=username)
+            return redirect('send_message', username=username)
     
-    return render(request, 'forum/send_message.html', {'receiver': receiver})
+    return render(request, 'forum/send_message.html', {'receiver': receiver, 'chat_messages': chat_messages})
 
 def _check_and_award_trust_badge(request, user):
     """Tüm doğrulamalar tamamsa Güvenilir Üye rozeti verir"""
@@ -990,36 +1001,51 @@ def admin_verify_linkedin(request, user_id):
 # --- API: QUIZ & STORIES ---
 @login_required
 def api_get_quiz_question(request):
-    """Rastgele bir quiz sorusu getirir"""
-    
-    # 1. Günlük Limit Kontrolü (25 Soru)
-    today = timezone.now().date()
-    daily_attempt_count = UserQuizAttempt.objects.filter(
-        user=request.user,
-        created_at__date=today
-    ).count()
+    """
+    Kullanıcıya o gün cevaplamadığı rastgele bir quiz sorusu getirir.
+    Günlük 20 soru limiti vardır.
+    """
+    try:
+        today = timezone.now().date()
 
-    if daily_attempt_count >= 25:
-        return JsonResponse({'success': False, 'error': 'Günlük 25 soru limitini doldurdunuz. Yarın tekrar bekleriz!'})
+        # Kullanıcının bugün cevapladığı soruların ID'lerini al
+        answered_today_ids = UserQuizAttempt.objects.filter(
+            user=request.user,
+            created_at__date=today
+        ).values_list('question_id', flat=True)
 
-    # 2. Daha önce çözülenleri hariç tutma logiği kaldırıldı. Her zaman rastgele bir soru getir.
-    question = QuizQuestion.objects.filter(is_active=True).order_by('?').first()
-    
-    if question:
-        data = {
-            'id': question.id,
-            'question': question.question,
-            'options': {
-                'A': question.option_a,
-                'B': question.option_b,
-                'C': question.option_c,
-                'D': question.option_d
-            },
-            'category': question.get_category_display(),
-            'difficulty': question.get_difficulty_display()
-        }
-        return JsonResponse({'success': True, 'question': data})
-    return JsonResponse({'success': False, 'error': 'Veritabanında hiç aktif quiz sorusu bulunmuyor.'})
+        # Günlük limiti kontrol et
+        if answered_today_ids.count() >= 20:
+            return JsonResponse({'success': False, 'error': 'Günlük 20 soru limitinizi doldurdunuz. Yarın tekrar bekleriz!'})
+
+        # Bugün cevaplanmamış, rastgele bir aktif soru getir
+        question = QuizQuestion.objects.filter(is_active=True).exclude(id__in=answered_today_ids).order_by('?').first()
+
+        if question:
+            data = {
+                'id': question.id,
+                'question': question.question,
+                'options': {
+                    'A': question.option_a,
+                    'B': question.option_b,
+                    'C': question.option_c,
+                    'D': question.option_d
+                },
+                'category': question.get_category_display(),
+                'difficulty': question.get_difficulty_display()
+            }
+            return JsonResponse({'success': True, 'question': data})
+        else:
+            # Neden soru bulunamadığını kontrol et
+            if QuizQuestion.objects.filter(is_active=True).exists():
+                # Sorular var ama hepsi bugün cevaplanmış
+                return JsonResponse({'success': False, 'error': 'Bugünlük çözülecek soru kalmadı. Yarın tekrar bekleriz!'})
+            else:
+                # Veritabanında hiç aktif soru yok
+                return JsonResponse({'success': False, 'error': 'Sistemde henüz aktif bir soru bulunmuyor.'})
+
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': f'Bir hata oluştu: {str(e)}'})
 
 @login_required
 def api_submit_quiz_answer(request):
@@ -1044,6 +1070,14 @@ def api_submit_quiz_answer(request):
                 score.correct_answers += 1
                 score.total_points += 10
                 score.streak += 1
+                
+                # ANA PROFİL PUANINI GÜNCELLE
+                try:
+                    profile = request.user.profile
+                    profile.reputation += 10
+                    profile.save(update_fields=['reputation'])
+                except Profile.DoesNotExist:
+                    pass # Profil yoksa görmezden gel (normalde olmamalı)
             else:
                 score.streak = 0
             score.last_played = timezone.now()
@@ -1107,11 +1141,11 @@ def api_submit_quiz_answer(request):
                         request.user.profile.badges.add(badge)
                         badge_awarded = badge.name
 
-                # Geçiş için eski rozeti de 100'de ver
-                if score.correct_answers >= 100:
+                # İstatistik Ustası Rozeti (100 Puan)
+                if score.total_points >= 100:
                     istatistik_ustasi_badge, created = Badge.objects.get_or_create(
                         slug='istatistik-ustasi',
-                        defaults={'name': 'İstatistik Ustası', 'description': '100+ Quiz sorusunu doğru cevapladı.', 'badge_type': 'specialty', 'icon': 'bi-patch-check-fill', 'color': '#ffd700'}
+                        defaults={'name': 'İstatistik Ustası', 'description': 'Quizlerde 100+ puan topladı.', 'badge_type': 'specialty', 'icon': 'bi-patch-check-fill', 'color': '#ffd700'}
                     )
                     if created or istatistik_ustasi_badge not in request.user.profile.badges.all():
                         request.user.profile.badges.add(istatistik_ustasi_badge)
@@ -1156,6 +1190,10 @@ def api_get_featured_story(request):
 @login_required
 def api_toggle_follow(request, username):
     """Kullanıcı takip etme/bırakma"""
+    # E-posta doğrulama kontrolü
+    if not request.user.profile.email_verified:
+        return JsonResponse({'success': False, 'error': 'Kullanıcıları takip edebilmek için lütfen e-posta adresinizi doğrulayın.'})
+
     target_user = get_object_or_404(User, username=username)
     if target_user == request.user:
         return JsonResponse({'success': False, 'error': 'Kendinizi takip edemezsiniz.'})

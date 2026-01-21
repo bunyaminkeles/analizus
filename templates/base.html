@@ -133,7 +133,7 @@
                     {% if user.is_authenticated %}
                         <a href="{% url 'inbox' %}" class="nav-link me-3 position-relative text-info">
                             <i class="bi bi-envelope-paper fs-5"></i>   
-                            {% if unread_count and unread_count > 0 %}
+                            {% if unread_private_messages_count and unread_private_messages_count > 0 %}
                                 <span class="position-absolute top-2 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"></span>
                             {% endif %}                         
                         </a>
@@ -141,6 +141,8 @@
                         <div class="nav-item dropdown">
                             <a class="btn btn-outline-light btn-sm dropdown-toggle rounded-pill px-3" href="#" id="userDropdown" data-bs-toggle="dropdown">
                                 <i class="bi bi-person-circle text-primary me-1"></i> {{ user.username }}
+                                <span class="mx-2">|</span>
+                                <i class="bi bi-star-fill text-warning me-1"></i> {{ user_profile.reputation }}
                             </a>
                             <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end shadow-lg mt-2 border-secondary">
                                 <li><a class="dropdown-item" href="{% url 'profile_detail' username=user.username %}"><i class="bi bi-person me-2"></i>Profilim</a></li>
@@ -321,7 +323,10 @@
                 const body = document.getElementById('quizModalBody');
                 body.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-info"></div></div>';
                 
-                fetch('{% url "api_get_quiz_question" %}')
+                // Cache-busting parametresi ekle
+                const url = `{% url "api_get_quiz_question" %}?_=${new Date().getTime()}`;
+
+                fetch(url)
                     .then(response => response.json())
                     .then(data => {
                         if(data.success) {
@@ -344,7 +349,11 @@
                             html += '</div><div id="quizResult" class="mt-3"></div>';
                             body.innerHTML = html;
                         } else {
-                            body.innerHTML = '<p class="text-center text-danger">Soru yüklenemedi.</p>';
+                            // API'den gelen hatayı göster
+                            body.innerHTML = `<div class="text-center py-4">
+                                                <i class="bi bi-info-circle-fill text-warning display-4 mb-3"></i>
+                                                <p class="text-warning">${data.error || 'Soru yüklenemedi.'}</p>
+                                              </div>`;
                         }
                     });
             }
@@ -431,11 +440,20 @@
                             btn.innerHTML = '<i class="bi bi-person-plus-fill"></i>';
                         }
                         
-                        // Profil sayfasındaysak takipçi sayısını güncelle
-                        const countDisplay = document.getElementById('followerCountDisplay');
-                        if (countDisplay && data.follower_count !== undefined) {
-                            countDisplay.innerText = data.follower_count;
+                        // Takipçi ve Takip edilen sayılarını güncelle
+                        const followerCountDisplay = document.getElementById('followerCountDisplay');
+                        if (followerCountDisplay && data.follower_count !== undefined) {
+                            followerCountDisplay.innerText = data.follower_count;
                         }
+
+                        const followingCountDisplay = document.getElementById('followingCountDisplay');
+                        if (followingCountDisplay && data.following_count !== undefined) {
+                            // Bu sayfanın sahibi şu anki kullanıcı ise, onun takip sayısını güncelle
+                            if( '{{ user.username }}' === '{{ profile_user.username }}' ) {
+                                followingCountDisplay.innerText = data.following_count;
+                            }
+                        }
+
                     } else {
                         alert(data.error || 'İşlem başarısız.');
                     }

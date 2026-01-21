@@ -577,8 +577,8 @@ class JobProposal(models.Model):
         if not user.is_authenticated: return False
         if user.is_superuser or user.is_staff: return True
         
-        # Rozet Kontrolü (İstatistik Ustası, Başarı veya Uzmanlık)
-        if hasattr(user, 'profile') and user.profile.badges.filter(slug__in=['istatistik-ustasi', 'basari', 'uzmanlik']).exists():
+        # Rozet Kontrolü (Uzman rozeti olanlar teklif verebilir)
+        if hasattr(user, 'profile') and user.profile.badges.filter(slug='uzman').exists():
             return True
 
         # Sadece bu rütbeler teklif verebilir

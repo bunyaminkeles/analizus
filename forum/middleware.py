@@ -34,7 +34,7 @@ class EmailVerificationMiddleware:
         '/admin/',
         '/static/',
         '/media/',
-        '/api/notifications/',  # Bildirimler AJAX
+        '/api/',  # Tüm API endpoint'leri
     ]
 
     def __init__(self, get_response):

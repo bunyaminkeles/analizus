@@ -40,7 +40,7 @@
                         <div class="small text-muted" style="font-size: 0.7rem;">Takipçi</div>
                     </div>
                     <div class="text-center cursor-pointer" title="Takip Edilen">
-                        <div class="h5 fw-bold mb-0">{{ profile_user.profile.following.count }}</div>
+                        <div class="h5 fw-bold mb-0" id="followingCountDisplay">{{ profile_user.profile.following.count }}</div>
                         <div class="small text-muted" style="font-size: 0.7rem;">Takip</div>
                     </div>
                 </div>
@@ -61,19 +61,21 @@
                 <!-- Rozetler -->
                 {% if profile_user.profile.badges.exists %}
                 <div class="mb-3">
-                    {% render_user_badges profile_user 5 %}
-                </div>
-                {% endif %}
-
-                <!-- Yetenekler -->
-                {% if profile_user.profile.skills.exists %}
-                <div class="mb-4">
                     <div class="d-flex flex-wrap justify-content-center gap-2">
-                        {% for skill in profile_user.profile.skills.all %}
-                        <span class="badge bg-dark border border-secondary text-light fw-normal" style="font-size: 0.75rem;">
-                            <i class="{{ skill.icon }} me-1" style="color: {{ skill.color }}"></i> {{ skill.name }}
-                        </span>
+                        {% for badge in profile_user.profile.badges.all|slice:":5" %}
+                        <div class="badge-wrapper" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ badge.name }}: {{ badge.description }}">
+                            <div class="rounded-circle bg-dark border border-secondary d-flex align-items-center justify-content-center" style="width: 42px; height: 42px; box-shadow: 0 0 8px {{ badge.color }}33;">
+                                <i class="{{ badge.icon }}" style="color: {{ badge.color }}; font-size: 1.2rem;"></i>
+                            </div>
+                        </div>
                         {% endfor %}
+                        {% if profile_user.profile.badges.count > 5 %}
+                        <div class="badge-wrapper" style="cursor: pointer;" onclick="document.getElementById('badges-tab').click()" title="Diğer rozetleri gör">
+                            <div class="rounded-circle bg-dark border border-secondary d-flex align-items-center justify-content-center text-white fw-bold small" style="width: 42px; height: 42px;">
+                                +{{ profile_user.profile.badges.count|add:"-5" }}
+                            </div>
+                        </div>
+                        {% endif %}
                     </div>
                 </div>
                 {% endif %}
@@ -109,8 +111,8 @@
                                 <i class="bi bi-envelope-paper me-2"></i>Mesaj
                             </a>
                             <!-- ✅ TAKİP ET BUTONU -->
-                            <button onclick="toggleFollow('{{ profile_user.username }}', this)" class="btn {% if user.profile in profile_user.profile.followers.all %}btn-secondary{% else %}btn-outline-info{% endif %} rounded-pill shadow-sm py-2 px-3" title="Takip Et/Bırak">
-                                {% if user.profile in profile_user.profile.followers.all %}
+                            <button onclick="toggleFollow('{{ profile_user.username }}', this)" class="btn {% if profile_user in user.profile.following.all %}btn-secondary{% else %}btn-outline-info{% endif %} rounded-pill shadow-sm py-2 px-3" title="Takip Et/Bırak">
+                                {% if profile_user in user.profile.following.all %}
                                     <i class="bi bi-person-check-fill"></i>
                                 {% else %}
                                     <i class="bi bi-person-plus-fill"></i>
@@ -146,6 +148,11 @@
             <li class="nav-item" role="presentation">
                 <button class="nav-link" id="badges-tab" data-bs-toggle="tab" data-bs-target="#badges" type="button">
                     <i class="bi bi-award me-2"></i>Rozetler
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="skills-tab" data-bs-toggle="tab" data-bs-target="#skills" type="button">
+                    <i class="bi bi-lightning-charge me-2"></i>Yetenekler
                 </button>
             </li>
             <li class="nav-item" role="presentation">
@@ -257,6 +264,29 @@
                             Henüz rozet kazanılmamış.
                         </div>
                     {% endfor %}
+                </div>
+            </div>
+
+            <!-- Skills Tab -->
+            <div class="tab-pane fade" id="skills" role="tabpanel">
+                <div class="card border-0 shadow-lg" style="background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(56, 189, 248, 0.2);">
+                    <div class="card-body p-4">
+                        <h5 class="text-white mb-4"><i class="bi bi-lightning-charge-fill me-2 text-warning"></i>Uzmanlık Alanları</h5>
+                        {% if profile_user.profile.skills.exists %}
+                            <div class="d-flex flex-wrap gap-2">
+                                {% for skill in profile_user.profile.skills.all %}
+                                <span class="badge bg-dark border border-secondary text-light p-2 px-3" style="font-size: 0.9rem;">
+                                    <i class="{{ skill.icon }} me-2" style="color: {{ skill.color }}"></i>{{ skill.name }}
+                                </span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="text-center text-muted py-4">
+                                <i class="bi bi-lightning display-4 opacity-25 mb-2 d-block"></i>
+                                Henüz yetenek eklenmemiş.
+                            </div>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
 
