@@ -53,7 +53,7 @@ MIDDLEWARE = [
     'django.middleware.locale.LocaleMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'forum.middleware.EmailVerificationMiddleware',  # E-posta doğrulama kontrolü
+    # 'forum.middleware.EmailVerificationMiddleware',  # E-posta doğrulama kontrolü
 ]
 
 ROOT_URLCONF = 'analizdestek.urls'
