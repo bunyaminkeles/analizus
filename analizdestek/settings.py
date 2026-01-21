@@ -206,8 +206,10 @@ SESSION_SAVE_EVERY_REQUEST = True  # Her istekte session süresini yeniler (akti
 GOOGLE_ANALYTICS_ID = os.getenv('GOOGLE_ANALYTICS_ID', '')
 
 # --- CHANNEL (GERÇEK-ZAMANLI) AYARLARI ---
-if DEBUG:
-    # Geliştirme ortamında, Redis gerektirmeyen basit bir katman kullan
+REDIS_URL = os.environ.get('REDIS_URL')
+
+if DEBUG or not REDIS_URL:
+    # Geliştirme ortamında veya Redis URL yoksa InMemory kullan
     CHANNEL_LAYERS = {
         "default": {
             "BACKEND": "channels.layers.InMemoryChannelLayer"
@@ -219,7 +221,7 @@ else:
         "default": {
             "BACKEND": "channels_redis.core.RedisChannelLayer",
             "CONFIG": {
-                "hosts": [os.environ.get('REDIS_URL', 'redis://127.0.0.1:6379')],
+                "hosts": [REDIS_URL],
             },
         },
     }
