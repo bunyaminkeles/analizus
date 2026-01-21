@@ -40,7 +40,7 @@
                         <div class="small text-muted" style="font-size: 0.7rem;">Takipçi</div>
                     </div>
                     <div class="text-center cursor-pointer" title="Takip Edilen">
-                        <div class="h5 fw-bold mb-0">{{ profile_user.profile.following.count }}</div>
+                        <div class="h5 fw-bold mb-0" id="followingCountDisplay">{{ profile_user.profile.following.count }}</div>
                         <div class="small text-muted" style="font-size: 0.7rem;">Takip</div>
                     </div>
                 </div>
@@ -109,8 +109,8 @@
                                 <i class="bi bi-envelope-paper me-2"></i>Mesaj
                             </a>
                             <!-- ✅ TAKİP ET BUTONU -->
-                            <button onclick="toggleFollow('{{ profile_user.username }}', this)" class="btn {% if user.profile in profile_user.profile.followers.all %}btn-secondary{% else %}btn-outline-info{% endif %} rounded-pill shadow-sm py-2 px-3" title="Takip Et/Bırak">
-                                {% if user.profile in profile_user.profile.followers.all %}
+                            <button onclick="toggleFollow('{{ profile_user.username }}', this)" class="btn {% if profile_user in user.profile.following.all %}btn-secondary{% else %}btn-outline-info{% endif %} rounded-pill shadow-sm py-2 px-3" title="Takip Et/Bırak">
+                                {% if profile_user in user.profile.following.all %}
                                     <i class="bi bi-person-check-fill"></i>
                                 {% else %}
                                     <i class="bi bi-person-plus-fill"></i>

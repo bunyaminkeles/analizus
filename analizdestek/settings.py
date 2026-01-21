@@ -70,7 +70,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'django.template.context_processors.i18n',
-                'forum.context_processors.unread_messages_count',
+                'forum.context_processors.profile_context',  # Profil, bildirimler vb. için
                 'forum.context_processors.google_analytics',  # Google Analytics
             ],
         },

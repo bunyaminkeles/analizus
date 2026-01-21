@@ -990,36 +990,51 @@ def admin_verify_linkedin(request, user_id):
 # --- API: QUIZ & STORIES ---
 @login_required
 def api_get_quiz_question(request):
-    """Rastgele bir quiz sorusu getirir"""
-    
-    # 1. Günlük Limit Kontrolü (25 Soru)
-    today = timezone.now().date()
-    daily_attempt_count = UserQuizAttempt.objects.filter(
-        user=request.user,
-        created_at__date=today
-    ).count()
+    """
+    Kullanıcıya o gün cevaplamadığı rastgele bir quiz sorusu getirir.
+    Günlük 20 soru limiti vardır.
+    """
+    try:
+        today = timezone.now().date()
 
-    if daily_attempt_count >= 25:
-        return JsonResponse({'success': False, 'error': 'Günlük 25 soru limitini doldurdunuz. Yarın tekrar bekleriz!'})
+        # Kullanıcının bugün cevapladığı soruların ID'lerini al
+        answered_today_ids = UserQuizAttempt.objects.filter(
+            user=request.user,
+            created_at__date=today
+        ).values_list('question_id', flat=True)
 
-    # 2. Daha önce çözülenleri hariç tutma logiği kaldırıldı. Her zaman rastgele bir soru getir.
-    question = QuizQuestion.objects.filter(is_active=True).order_by('?').first()
-    
-    if question:
-        data = {
-            'id': question.id,
-            'question': question.question,
-            'options': {
-                'A': question.option_a,
-                'B': question.option_b,
-                'C': question.option_c,
-                'D': question.option_d
-            },
-            'category': question.get_category_display(),
-            'difficulty': question.get_difficulty_display()
-        }
-        return JsonResponse({'success': True, 'question': data})
-    return JsonResponse({'success': False, 'error': 'Veritabanında hiç aktif quiz sorusu bulunmuyor.'})
+        # Günlük limiti kontrol et
+        if answered_today_ids.count() >= 20:
+            return JsonResponse({'success': False, 'error': 'Günlük 20 soru limitinizi doldurdunuz. Yarın tekrar bekleriz!'})
+
+        # Bugün cevaplanmamış, rastgele bir aktif soru getir
+        question = QuizQuestion.objects.filter(is_active=True).exclude(id__in=answered_today_ids).order_by('?').first()
+
+        if question:
+            data = {
+                'id': question.id,
+                'question': question.question,
+                'options': {
+                    'A': question.option_a,
+                    'B': question.option_b,
+                    'C': question.option_c,
+                    'D': question.option_d
+                },
+                'category': question.get_category_display(),
+                'difficulty': question.get_difficulty_display()
+            }
+            return JsonResponse({'success': True, 'question': data})
+        else:
+            # Neden soru bulunamadığını kontrol et
+            if QuizQuestion.objects.filter(is_active=True).exists():
+                # Sorular var ama hepsi bugün cevaplanmış
+                return JsonResponse({'success': False, 'error': 'Bugünlük çözülecek soru kalmadı. Yarın tekrar bekleriz!'})
+            else:
+                # Veritabanında hiç aktif soru yok
+                return JsonResponse({'success': False, 'error': 'Sistemde henüz aktif bir soru bulunmuyor.'})
+
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': f'Bir hata oluştu: {str(e)}'})
 
 @login_required
 def api_submit_quiz_answer(request):
@@ -1044,6 +1059,14 @@ def api_submit_quiz_answer(request):
                 score.correct_answers += 1
                 score.total_points += 10
                 score.streak += 1
+                
+                # ANA PROFİL PUANINI GÜNCELLE
+                try:
+                    profile = request.user.profile
+                    profile.reputation += 10
+                    profile.save(update_fields=['reputation'])
+                except Profile.DoesNotExist:
+                    pass # Profil yoksa görmezden gel (normalde olmamalı)
             else:
                 score.streak = 0
             score.last_played = timezone.now()
