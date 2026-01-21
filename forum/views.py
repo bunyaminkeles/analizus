@@ -467,6 +467,11 @@ def inbox(request):
 # --- ÖZEL MESAJ GÖNDER ---
 @login_required
 def send_message(request, username):
+    # E-posta doğrulama kontrolü
+    if not request.user.profile.email_verified:
+        messages.error(request, 'Özel mesaj gönderebilmek için lütfen e-posta adresinizi doğrulayın.')
+        return redirect('verification_pending')
+
     receiver = get_object_or_404(User, username=username)
     
     if request.method == 'POST':
@@ -1179,6 +1184,10 @@ def api_get_featured_story(request):
 @login_required
 def api_toggle_follow(request, username):
     """Kullanıcı takip etme/bırakma"""
+    # E-posta doğrulama kontrolü
+    if not request.user.profile.email_verified:
+        return JsonResponse({'success': False, 'error': 'Kullanıcıları takip edebilmek için lütfen e-posta adresinizi doğrulayın.'})
+
     target_user = get_object_or_404(User, username=username)
     if target_user == request.user:
         return JsonResponse({'success': False, 'error': 'Kendinizi takip edemezsiniz.'})
