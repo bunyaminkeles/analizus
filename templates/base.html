@@ -448,10 +448,13 @@
 
                         const followingCountDisplay = document.getElementById('followingCountDisplay');
                         if (followingCountDisplay && data.following_count !== undefined) {
+                            // Bu kod bloğunun sadece profil sayfasında çalışmasını garantile
+                            {% if profile_user %}
                             // Bu sayfanın sahibi şu anki kullanıcı ise, onun takip sayısını güncelle
                             if( '{{ user.username }}' === '{{ profile_user.username }}' ) {
                                 followingCountDisplay.innerText = data.following_count;
                             }
+                            {% endif %}
                         }
 
                     } else {

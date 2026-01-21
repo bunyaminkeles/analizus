@@ -35,6 +35,9 @@ class EmailVerificationMiddleware:
         '/static/',
         '/media/',
         '/api/',  # Tüm API endpoint'leri
+        '/verification-pending/', # Doğrulama bekleme sayfası
+        '/verify-email/',         # Token ile doğrulama linki
+        '/resend-verification/',  # Tekrar gönderme linki
     ]
 
     def __init__(self, get_response):
@@ -62,7 +65,7 @@ class EmailVerificationMiddleware:
             if request.path.startswith(prefix):
                 return self.get_response(request)
 
-        # URL adını kontrol et
+        # URL adını kontrol et (yedek olarak kalabilir)
         try:
             from django.urls import resolve
             url_name = resolve(request.path).url_name
