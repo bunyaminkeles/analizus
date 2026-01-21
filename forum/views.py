@@ -1135,11 +1135,11 @@ def api_submit_quiz_answer(request):
                         request.user.profile.badges.add(badge)
                         badge_awarded = badge.name
 
-                # Geçiş için eski rozeti de 100'de ver
-                if score.correct_answers >= 100:
+                # İstatistik Ustası Rozeti (100 Puan)
+                if score.total_points >= 100:
                     istatistik_ustasi_badge, created = Badge.objects.get_or_create(
                         slug='istatistik-ustasi',
-                        defaults={'name': 'İstatistik Ustası', 'description': '100+ Quiz sorusunu doğru cevapladı.', 'badge_type': 'specialty', 'icon': 'bi-patch-check-fill', 'color': '#ffd700'}
+                        defaults={'name': 'İstatistik Ustası', 'description': 'Quizlerde 100+ puan topladı.', 'badge_type': 'specialty', 'icon': 'bi-patch-check-fill', 'color': '#ffd700'}
                     )
                     if created or istatistik_ustasi_badge not in request.user.profile.badges.all():
                         request.user.profile.badges.add(istatistik_ustasi_badge)
