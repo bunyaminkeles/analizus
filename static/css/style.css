@@ -271,3 +271,80 @@ label, .form-label, .asteriskField {
     font-size: 0.9rem;
     color: #ccc;
 }
+
+/* --- TOAST BİLDİRİM (POPUP) DÜZELTMESİ --- */
+/* Bildirimlerin okunabilir olması için koyu tema ayarları */
+.toast {
+    background-color: rgba(30, 41, 59, 0.95) !important; /* Koyu Arka Plan */
+    border: 1px solid var(--neon-blue) !important; /* Neon Çerçeve */
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5) !important;
+    color: #ffffff !important;
+}
+
+.toast-header {
+    background-color: #0f172a !important; /* Başlık Arka Planı */
+    color: var(--neon-blue) !important; /* Başlık Yazısı */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+/* JS içindeki bg-info ve text-dark sınıflarını ezmek için */
+.toast-header.bg-info {
+    background-color: #0f172a !important;
+}
+.toast-header.text-dark {
+    color: var(--neon-blue) !important;
+}
+
+.toast-header .text-muted {
+    color: rgba(255, 255, 255, 0.7) !important; /* Tarih rengini aç */
+}
+
+.toast-header .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%); /* Çarpı ikonunu beyaz yap */
+    opacity: 1;
+}
+
+.toast-body {
+    color: #ffffff !important; /* Mesaj Metni Beyaz */
+    background-color: transparent !important;
+    font-size: 0.95rem;
+}
+
+/* --- SOHBET MESAJLARI (CHAT) STİLLERİ --- */
+/* Ayrı dosya yerine buraya ekleyerek çalışmasını garantiliyoruz */
+.chat-message-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1rem;
+}
+
+.message-bubble {
+    max-width: 80%;
+    padding: 0.75rem 1rem;
+    border-radius: 1rem;
+    position: relative;
+    word-wrap: break-word;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.message-bubble.sent {
+    align-self: flex-end;
+    background: linear-gradient(135deg, var(--neon-blue), #2563eb); /* Site temasına uygun mavi */
+    color: #ffffff;
+    border-bottom-right-radius: 0.25rem;
+}
+
+.message-bubble.received {
+    align-self: flex-start;
+    background-color: #334155; /* Koyu gri */
+    color: #ffffff;
+    border-bottom-left-radius: 0.25rem;
+}
+
+.message-time {
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+    opacity: 0.8;
+    text-align: right;
+}
