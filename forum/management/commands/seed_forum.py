@@ -411,6 +411,24 @@ class Command(BaseCommand):
             },
         ]
 
+        # ===== 2050 VİZYONU: GELECEĞİN TEKNOLOJİLERİ =====
+        future_topics = [
+            {
+                'subject': "Kuantum Bilgisayarlarda Veri Analizi Nasıl Değişecek?",
+                'starter': 'Donanim_Meraklisi',
+                'message': "Klasik bitler yerine Qubit kullanıldığında SPSS veya Python kütüphaneleri tarih mi olacak?",
+                'answer': "Kuantum, olasılıksal hesaplamayı değiştirecek. Şimdiden IBM Qiskit veya Google Cirq öğrenmeye başlamak, 2050 vizyonu için kritik.",
+                'views': 5050,
+            },
+            {
+                'subject': "Neuralink ve Beyin-Bilgisayar Arayüzleri (BCI) Verisi",
+                'starter': 'SaglikIst',
+                'message': "İnsan beyninden doğrudan alınan verilerin analizi için hangi etik kurallar geçerli olacak?",
+                'answer': "Bu, 'Nöro-Etik' alanına giriyor. Veri mahremiyeti artık sadece dijital izler değil, düşünce mahremiyetini de kapsayacak.",
+                'views': 4200,
+            },
+        ]
+
         # 4. KATEGORİ YAPISI OLUŞTUR
         structure = {
             "Yazılımlar": [
@@ -427,6 +445,9 @@ class Command(BaseCommand):
             ],
             "Akademi": [
                 ("Yapay Zeka & Deep Learning", "bi-robot", "Machine Learning, NLP ve AI etiği.", ai_topics),
+            ],
+            "Vizyon 2050": [
+                ("Geleceğin Teknolojileri", "bi-cpu-fill", "Kuantum, BCI ve Uzay Veri Madenciliği.", future_topics),
             ],
         }
 
