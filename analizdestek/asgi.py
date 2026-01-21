@@ -8,16 +8,20 @@ https://docs.djangoproject.com/en/5.2/howto/deployment/asgi/
 """
 
 import os
-
-from channels.auth import AuthMiddlewareStack
-from channels.routing import ProtocolTypeRouter, URLRouter
 from django.core.asgi import get_asgi_application
-import forum.routing
 
+# Django'nun ayarları diğer importlardan ÖNCE yapılandırılmalı.
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'analizdestek.settings')
 
-# Standart HTTP istekleri için Django'nun kendi ASGI uygulamasını al
+# Django'nun temel ASGI uygulamasını erkenden yükleyerek ayarların
+# ve uygulama kayıt defterinin (app registry) hazır olmasını sağla.
 django_asgi_app = get_asgi_application()
+
+# Django ayarları artık hazır olduğuna göre, modellere veya ayarlara
+# ihtiyaç duyan diğer Channels bileşenlerini import edebiliriz.
+from channels.auth import AuthMiddlewareStack
+from channels.routing import ProtocolTypeRouter, URLRouter
+import forum.routing
 
 application = ProtocolTypeRouter({
     # HTTP istekleri Django'ya yönlendirilir

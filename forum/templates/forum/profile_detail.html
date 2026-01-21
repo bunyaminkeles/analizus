@@ -240,10 +240,69 @@
 
             <!-- Badges Tab -->
             <div class="tab-pane fade" id="badges" role="tabpanel">
+
+                <div class="card border-0 shadow-sm mb-4" style="background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(56, 189, 248, 0.2) !important;">
+                    <div class="card-body p-4">
+                        <h5 class="card-title text-info mb-3"><i class="bi bi-stars me-2"></i>Rozetler Nasıl Kazanılır?</h5>
+                        <p class="card-text text-muted mb-4">
+                            Platformdaki aktiviteniz ve başarılarınızla çeşitli rozetler kazanarak profilinizi zenginleştirebilirsiniz. İşte rozet kazanma yolları:
+                        </p>
+                        
+                        <div class="accordion" id="badgeAccordion">
+                            <div class="accordion-item bg-dark border-secondary">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button bg-dark text-white" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne">
+                                        <i class="bi bi-graph-up-arrow me-2 text-primary"></i> 1. Akademik Puana Göre
+                                    </button>
+                                </h2>
+                                <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#badgeAccordion">
+                                    <div class="accordion-body">
+                                        Forumda aktif oldukça (konu açma, cevap yazma vb.) kazandığınız "Akademik Puan" arttıkça sistem tarafından otomatik olarak verilir.
+                                        <ul class="list-group list-group-flush mt-2">
+                                            <li class="list-group-item bg-transparent text-light border-secondary"><strong>Uzman Rozeti (1000 Puan):</strong> Hizmetler Pazarı'nda teklif verme yetkisi kazandırır.</li>
+                                            <li class="list-group-item bg-transparent text-light border-secondary">Diğer puan rozetleri: İlk Adım, Yükselen Yıldız, Bilgi Kaynağı, Profesör, Efsane.</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion-item bg-dark border-secondary">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed bg-dark text-white" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo">
+                                        <i class="bi bi-trophy-fill me-2 text-warning"></i> 2. "İstatistik Arena" Başarısı
+                                    </button>
+                                </h2>
+                                <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#badgeAccordion">
+                                    <div class="accordion-body">
+                                        Quiz'deki performansınıza göre özel rozetler kazanırsınız.
+                                         <ul class="list-group list-group-flush mt-2">
+                                            <li class="list-group-item bg-transparent text-light border-secondary"><strong>İstatistik Ustası:</strong> 100+ doğru cevapla kazanılır ve ilan açma/teklif verme yetkisi sağlar.</li>
+                                            <li class="list-group-item bg-transparent text-light border-secondary"><strong>Kategori Uzmanlığı:</strong> SPSS gibi bir alanda 10+ doğru cevapla kazanırsınız.</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion-item bg-dark border-secondary">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed bg-dark text-white" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree">
+                                        <i class="bi bi-shield-fill-check me-2 text-success"></i> 3. Güven Rozeti
+                                    </button>
+                                </h2>
+                                <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#badgeAccordion">
+                                    <div class="accordion-body">
+                                        Profilinizdeki 3 doğrulama adımını da <strong>(E-posta, Telefon ve LinkedIn)</strong> tamamladığınızda sistem size otomatik olarak <strong>"Güvenilir Üye"</strong> rozeti verir.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <h5 class="text-white mb-3 mt-4">Kazanılan Rozetler</h5>
                 <div class="row g-3">
                     {% for badge in profile_user.profile.badges.all %}
                         <div class="col-md-6">
-                            <div class="d-flex align-items-center p-3 rounded border border-secondary bg-dark bg-opacity-50 h-100">
+                            <div class="d-flex align-items-center p-3 rounded border border-secondary h-100" style="background: rgba(30, 41, 59, 0.7);">
                                 <i class="{{ badge.icon }} fs-2 me-3" style="color: {{ badge.color }}"></i>
                                 <div>
                                     <h6 class="mb-1 text-white">{{ badge.name }}</h6>
