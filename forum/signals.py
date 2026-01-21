@@ -61,7 +61,7 @@ def private_message_post_save(sender, instance, created, **kwargs):
     if created:
         recipient = instance.receiver
         message = f"<b>{instance.sender.username}</b>'den yeni bir özel mesajınız var."
-        url = reverse('inbox')
+        url = reverse('send_message', args=[instance.sender.username])
 
         try:
             # Notification oluştur

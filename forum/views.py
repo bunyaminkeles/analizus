@@ -474,6 +474,12 @@ def send_message(request, username):
 
     receiver = get_object_or_404(User, username=username)
     
+    # Sohbet geçmişini getir
+    chat_messages = PrivateMessage.objects.filter(
+        Q(sender=request.user, receiver=receiver) |
+        Q(sender=receiver, receiver=request.user)
+    ).order_by('created_at')
+    
     if request.method == 'POST':
         message_content = request.POST.get('message')
         if message_content:
@@ -487,9 +493,9 @@ def send_message(request, username):
             send_private_message_notification(request.user, receiver, message_content)
             
             messages.success(request, f"{receiver.username} kullanıcısına mesajınız gönderildi!")
-            return redirect('profile_detail', username=username)
+            return redirect('send_message', username=username)
     
-    return render(request, 'forum/send_message.html', {'receiver': receiver})
+    return render(request, 'forum/send_message.html', {'receiver': receiver, 'chat_messages': chat_messages})
 
 def _check_and_award_trust_badge(request, user):
     """Tüm doğrulamalar tamamsa Güvenilir Üye rozeti verir"""
