@@ -30,14 +30,19 @@ class Command(BaseCommand):
         ]
 
         self.stdout.write("Yetenekler listesi yükleniyor...")
-        
+
         count = 0
         for skill_name in skills_data:
-            skill, created = Skill.objects.get_or_create(
-                name=skill_name,
-                defaults={'slug': slugify(skill_name)}
-            )
-            if created:
-                count += 1
-        
+            slug = slugify(skill_name.replace('ı', 'i').replace('ğ', 'g').replace('ü', 'u').replace('ş', 's').replace('ö', 'o').replace('ç', 'c'))
+            try:
+                skill, created = Skill.objects.update_or_create(
+                    slug=slug,
+                    defaults={'name': skill_name}
+                )
+                if created:
+                    count += 1
+            except Exception:
+                # Zaten varsa atla
+                pass
+
         self.stdout.write(self.style.SUCCESS(f'İşlem tamamlandı! {count} yeni yetenek eklendi.'))
