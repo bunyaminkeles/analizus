@@ -192,20 +192,22 @@ class Profile(models.Model):
         return self.user.username
 
     def update_rank(self):
-        """Puana göre rütbeyi otomatik günceller"""
+        """Toplam puana göre rütbeyi otomatik günceller (Forum + Quiz)"""
+        total = self.total_score  # Forum puanı + Quiz puanı
+
         if self.user.is_superuser or self.user.is_staff:
             self.rank = 'admin'
-        elif self.reputation >= 5000:
+        elif total >= 5000:
             self.rank = 'legend'
-        elif self.reputation >= 2500:
+        elif total >= 2500:
             self.rank = 'master'
-        elif self.reputation >= 1000:
+        elif total >= 1000:
             self.rank = 'expert'
-        elif self.reputation >= 500:
+        elif total >= 500:
             self.rank = 'contributor'
-        elif self.reputation >= 200:
+        elif total >= 200:
             self.rank = 'active'
-        elif self.reputation >= 50:
+        elif total >= 50:
             self.rank = 'member'
         else:
             self.rank = 'newbie'
@@ -227,8 +229,9 @@ class Profile(models.Model):
         return {'icon': icon, 'color': color, 'name': self.get_rank_display()}
 
     def check_and_award_badges(self):
-        """Puana göre otomatik rozet kontrolü ve ödüllendirme"""
-        auto_badges = Badge.objects.filter(points_required__gt=0, points_required__lte=self.reputation)
+        """Toplam puana göre otomatik rozet kontrolü ve ödüllendirme"""
+        total = self.total_score  # Forum puanı + Quiz puanı
+        auto_badges = Badge.objects.filter(points_required__gt=0, points_required__lte=total)
         for badge in auto_badges:
             self.badges.add(badge)
 
@@ -250,6 +253,21 @@ class Profile(models.Model):
             'reputation': self.reputation,
             'badges': self.badges.count(),
         }
+
+    @property
+    def total_score(self):
+        """Forum puanı + Quiz puanı = Toplam Puan"""
+        quiz_points = 0
+        quiz_score = self.user.quiz_scores.first()
+        if quiz_score:
+            quiz_points = quiz_score.total_points
+        return self.reputation + quiz_points
+
+    @property
+    def quiz_points(self):
+        """Sadece quiz puanını döndürür"""
+        quiz_score = self.user.quiz_scores.first()
+        return quiz_score.total_points if quiz_score else 0
 
     def get_full_name(self):
         """Tam adı veya kullanıcı adını döndürür"""
