@@ -193,6 +193,9 @@ JAZZMIN_UI_TWEAKS = {
 SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY', '')
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'Analizus <noreply@analizdestek-ai.onrender.com>')
 
+# Django Auth Password Reset için Backend
+EMAIL_BACKEND = 'forum.backends.SendGridBackend'
+
 # Site URL (e-posta doğrulama linkleri için)
 SITE_URL = os.getenv('SITE_URL', 'https://analizus.com')
 

@@ -26,7 +26,10 @@
                     </div>
 
                     <div class="mb-4 login-field-group">
-                        <label class="text-info fw-bold small mb-2 d-block text-start">Şifre</label>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <label class="text-info fw-bold small mb-2 d-block text-start">Şifre</label>
+                            <a href="{% url 'password_reset' %}" class="small text-muted text-decoration-none" style="font-size: 0.8rem;">Şifremi Unuttum?</a>
+                        </div>
                         <div class="input-container">
                             {{ form.password }}
                         </div>
