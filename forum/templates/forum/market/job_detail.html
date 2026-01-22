@@ -155,9 +155,26 @@
                     </div>
                 </div>
                 {% elif not is_expert %}
-                <div class="alert alert-warning border-0">
-                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
-                    Sadece <strong>Uzman</strong> rütbesine sahip üyeler teklif verebilir.
+                <div class="card border-0 shadow-sm" style="background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(251, 191, 36, 0.3) !important;">
+                    <div class="card-body text-center p-4">
+                        <i class="bi bi-lock-fill text-warning fs-1 mb-3"></i>
+                        <h5 class="text-white mb-2">Teklif Verme Yetkisi Gerekli</h5>
+                        <p class="text-muted small mb-3">{{ can_propose_reason }}</p>
+
+                        <div class="bg-dark bg-opacity-50 p-3 rounded text-start mb-3">
+                            <h6 class="text-info small mb-2">Nasıl Yetki Kazanılır?</h6>
+                            <ul class="list-unstyled text-muted small mb-0">
+                                <li class="mb-1"><i class="bi bi-check-circle text-success me-2"></i>1000+ akademik puan kazan</li>
+                                <li class="mb-1"><i class="bi bi-check-circle text-success me-2"></i>Quiz'de 500 doğru cevap ver</li>
+                                <li class="mb-1"><i class="bi bi-check-circle text-success me-2"></i>10 kez "En Faydalı Cevap" al</li>
+                                <li><i class="bi bi-check-circle text-success me-2"></i>Premium/Uzman hesaba yükselt</li>
+                            </ul>
+                        </div>
+
+                        <a href="{% url 'profile_detail' user.username %}" class="btn btn-outline-warning btn-sm rounded-pill">
+                            <i class="bi bi-person me-1"></i>Profilimi Gör
+                        </a>
+                    </div>
                 </div>
                 {% else %}
                 <div class="alert alert-secondary">Bu ilan tekliflere kapalıdır.</div>

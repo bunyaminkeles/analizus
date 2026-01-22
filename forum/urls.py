@@ -66,4 +66,9 @@ urlpatterns = [
     path('api/widgets/rates/', api_views.widget_market_rates, name='widget_rates'),
     path('api/widgets/proposals/', api_views.widget_latest_proposals, name='widget_proposals'),
     path('api/follow/<str:username>/', api_views.toggle_follow_user, name='api_toggle_follow'),
+
+    # Cron Job Endpoints (External cron services için)
+    path('api/cron/daily-quiz/', api_views.cron_generate_daily_quiz, name='cron_daily_quiz'),
+    path('api/cron/update-badges/', api_views.cron_update_badges_ranks, name='cron_update_badges'),
+    path('api/cron/health/', api_views.cron_health_check, name='cron_health'),
 ]

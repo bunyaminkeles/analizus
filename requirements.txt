@@ -38,3 +38,4 @@ daphne
 channels
 channels-redis
 beautifulsoup4
+groq
