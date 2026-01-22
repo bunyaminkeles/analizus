@@ -196,8 +196,15 @@ def admin_create_or_reset(request):
     Kullanım:
     GET /api/admin-setup/?secret=YOUR_SECRET&username=admin&password=newpassword123&email=admin@example.com
 
-    GÜVENLİK: Bu endpoint'i kullandıktan sonra KALDIRIN veya devre dışı bırakın!
+    Devre dışı bırakmak için: Render'da ADMIN_SETUP_ENABLED=false ayarlayın
     """
+    # Environment variable ile devre dışı bırakılabilir
+    if os.environ.get('ADMIN_SETUP_ENABLED', 'true').lower() == 'false':
+        return JsonResponse({
+            'success': False,
+            'error': 'Bu endpoint devre dışı bırakıldı'
+        }, status=403)
+
     if not _verify_cron_secret(request):
         return JsonResponse({
             'success': False,
