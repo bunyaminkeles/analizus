@@ -277,7 +277,7 @@ def run_initial_setup(request):
 
     try:
         # 1. Kategorileri oluştur
-        call_command('create_categories')
+        call_command('setup_categories')
         results.append('Kategoriler oluşturuldu')
     except Exception as e:
         results.append(f'Kategoriler HATA: {str(e)[:50]}')
@@ -295,13 +295,6 @@ def run_initial_setup(request):
         results.append('Yetenekler oluşturuldu')
     except Exception as e:
         results.append(f'Yetenekler HATA: {str(e)[:50]}')
-
-    try:
-        # 4. Günlük ipuçları
-        call_command('populate_tips')
-        results.append('İpuçları oluşturuldu')
-    except Exception as e:
-        results.append(f'İpuçları HATA: {str(e)[:50]}')
 
     return JsonResponse({
         'success': True,
