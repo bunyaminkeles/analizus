@@ -607,6 +607,53 @@ class QuizScore(models.Model):
         verbose_name = "Quiz Puanı"
         verbose_name_plural = "Quiz Puanları"
 
+    def get_category_stats(self):
+        """Kategori bazında başarı istatistiklerini döndürür"""
+        from django.db.models import Count, Q
+
+        attempts = UserQuizAttempt.objects.filter(user=self.user)
+
+        stats = {}
+        for cat_code, cat_name in QuizQuestion.CATEGORY_CHOICES:
+            cat_attempts = attempts.filter(question__category=cat_code)
+            total = cat_attempts.count()
+            correct = cat_attempts.filter(is_correct=True).count()
+
+            if total > 0:
+                stats[cat_code] = {
+                    'name': cat_name,
+                    'total': total,
+                    'correct': correct,
+                    'percentage': round((correct / total) * 100, 1),
+                }
+
+        return stats
+
+
+class QuizCategoryScore(models.Model):
+    """Kullanıcının kategori bazında quiz performansı"""
+    CATEGORY_CHOICES = QuizQuestion.CATEGORY_CHOICES
+
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='quiz_category_scores')
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, verbose_name="Kategori")
+    correct_answers = models.PositiveIntegerField(default=0, verbose_name="Doğru Cevap")
+    total_answers = models.PositiveIntegerField(default=0, verbose_name="Toplam Cevap")
+    points = models.PositiveIntegerField(default=0, verbose_name="Puan")
+
+    class Meta:
+        verbose_name = "Kategori Quiz Puanı"
+        verbose_name_plural = "Kategori Quiz Puanları"
+        unique_together = ['user', 'category']
+
+    @property
+    def success_rate(self):
+        if self.total_answers == 0:
+            return 0
+        return round((self.correct_answers / self.total_answers) * 100, 1)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.get_category_display()}: %{self.success_rate}"
+
     def __str__(self):
         return f"{self.user.username} - {self.total_points} puan"
 
