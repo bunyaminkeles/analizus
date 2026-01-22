@@ -135,12 +135,24 @@ def job_list(request):
     else:
         jobs = jobs.order_by('-created_at')
 
-    return render(request, 'forum/market/job_list.html', {'jobs': jobs, 'current_sort': sort})
+    # Yetki bilgileri
+    can_post = FreelanceJob.can_post(request.user)
+    can_post_reason = ""
+    if request.user.is_authenticated and hasattr(request.user, 'profile'):
+        _, can_post_reason = request.user.profile.can_post_job()
+
+    return render(request, 'forum/market/job_list.html', {
+        'jobs': jobs,
+        'current_sort': sort,
+        'can_post': can_post,
+        'can_post_reason': can_post_reason,
+    })
 
 @login_required
 def post_job(request):
     if not FreelanceJob.can_post(request.user):
-        messages.error(request, "İlan açmak için 'İstatistik Ustası' rozetine sahip olmalı veya Premium üye olmalısınız. Quiz çözerek rozet kazanabilirsiniz!")
+        can_post, reason = request.user.profile.can_post_job() if hasattr(request.user, 'profile') else (False, "")
+        messages.error(request, f"İlan açmak için yetkiniz yok. {reason}. 500+ puan kazanarak, quiz çözerek veya hesabınızı doğrulayarak ilan açma yetkisi kazanabilirsiniz!")
         return redirect('job_list')
 
     if request.method == 'POST':
@@ -195,25 +207,29 @@ def close_job(request, pk):
 @login_required
 def job_detail(request, pk):
     job = get_object_or_404(FreelanceJob, pk=pk)
-    
+
     # Görüntülenme sayısını artır
     job.views += 1
     job.save()
 
     user_proposal = None
     proposal_form = None
-    
+
     # Teklif verme yetkisi kontrolü
     is_expert = JobProposal.can_propose(request.user)
-    
+    can_propose_reason = ""
+    if request.user.is_authenticated and hasattr(request.user, 'profile'):
+        _, can_propose_reason = request.user.profile.can_propose()
+
     if request.user == job.owner:
         # İlan sahibi ise teklifleri görsün
         proposals = job.proposals.select_related('expert', 'expert__profile').all()
     else:
         proposals = None
         # Kullanıcı daha önce teklif vermiş mi?
-        user_proposal = JobProposal.objects.filter(job=job, expert=request.user).first()
-        
+        if request.user.is_authenticated:
+            user_proposal = JobProposal.objects.filter(job=job, expert=request.user).first()
+
         if is_expert and not user_proposal and job.status == 'open':
             if request.method == 'POST':
                 proposal_form = ProposalForm(request.POST)
@@ -222,7 +238,7 @@ def job_detail(request, pk):
                     proposal.job = job
                     proposal.expert = request.user
                     proposal.save()
-                    
+
                     messages.success(request, 'Teklifiniz başarıyla gönderildi!')
                     return redirect('job_detail', pk=pk)
             else:
@@ -236,7 +252,7 @@ def job_detail(request, pk):
 
     # Benzer İlanlar (Aynı kategorideki diğer açık ilanlar)
     similar_jobs = FreelanceJob.objects.filter(
-        category=job.category, 
+        category=job.category,
         status='open'
     ).exclude(pk=pk).order_by('-created_at')[:3]
 
@@ -248,6 +264,7 @@ def job_detail(request, pk):
         'is_liked': is_liked,
         'is_saved': is_saved,
         'is_expert': is_expert,
+        'can_propose_reason': can_propose_reason,
         'similar_jobs': similar_jobs
     })
 
@@ -499,27 +516,15 @@ def send_message(request, username):
 
 def _check_and_award_trust_badge(request, user):
     """Tüm doğrulamalar tamamsa Güvenilir Üye rozeti verir"""
+    from .signals import check_and_award_trust_badge
     profile = user.profile
-    if profile.email_verified and profile.phone_verified and profile.linkedin_verified:
-        badge, created = Badge.objects.get_or_create(
-            slug='guvenilir-uye',
-            defaults={
-                'name': 'Güvenilir Üye',
-                'description': 'E-posta, telefon ve LinkedIn doğrulamalarını tamamladı.',
-                'badge_type': 'special',
-                'icon': 'bi-shield-fill-check',
-                'color': '#0ea5e9'
-            }
-        )
-        if badge not in profile.badges.all():
-            profile.badges.add(badge)
-            
-            # 50 Puan Hediye
-            score, _ = QuizScore.objects.get_or_create(user=user)
-            score.total_points += 50
-            score.save()
-            
-            messages.success(request, 'TEBRİKLER! Tüm doğrulamaları tamamladığınız için "Güvenilir Üye" rozeti ve 50 Puan kazandınız.')
+    if check_and_award_trust_badge(profile):
+        # Rozet yeni verildi
+        # 50 Puan Hediye
+        score, _ = QuizScore.objects.get_or_create(user=user)
+        score.total_points += 50
+        score.save()
+        messages.success(request, 'TEBRİKLER! Tüm doğrulamaları tamamladığınız için "Güvenilir Üye" rozeti ve 50 Puan kazandınız.')
 
 # --- PROFİL DETAY ---
 @login_required
@@ -575,8 +580,23 @@ def profile_detail(request, username):
     quiz_rank = None
     if user_score:
         quiz_rank = QuizScore.objects.filter(total_points__gt=user_score.total_points).count() + 1
-    
-    return render(request, 'forum/profile_detail.html', {'profile_user': profile_user, 'posted_jobs': posted_jobs, 'quiz_stats': quiz_stats, 'user_score': user_score, 'quiz_rank': quiz_rank})
+
+    # Yetki bilgileri
+    permissions = {}
+    next_badge = None
+    if hasattr(profile_user, 'profile'):
+        permissions = profile_user.profile.get_permissions_summary()
+        next_badge = profile_user.profile.get_next_badge_info()
+
+    return render(request, 'forum/profile_detail.html', {
+        'profile_user': profile_user,
+        'posted_jobs': posted_jobs,
+        'quiz_stats': quiz_stats,
+        'user_score': user_score,
+        'quiz_rank': quiz_rank,
+        'permissions': permissions,
+        'next_badge': next_badge,
+    })
 
 # --- DİĞER ---
 def about(request):

@@ -265,6 +265,122 @@ class Profile(models.Model):
             return self.title
         return self.get_rank_display()
 
+    # ═══════════════════════════════════════════════════════════════════════
+    # YETKİ KONTROL METODLARI
+    # ═══════════════════════════════════════════════════════════════════════
+
+    def can_post_job(self):
+        """İlan açma yetkisi kontrolü"""
+        # Admin/Staff her zaman açabilir
+        if self.user.is_superuser or self.user.is_staff:
+            return True, "Yönetici yetkisi"
+
+        # Premium üyeler açabilir
+        if self.account_type == 'Premium':
+            return True, "Premium üyelik"
+
+        # Belirli rütbeler açabilir (expert ve üstü)
+        allowed_ranks = ['expert', 'master', 'legend', 'admin']
+        if self.rank in allowed_ranks:
+            return True, f"{self.get_rank_display()} rütbesi"
+
+        # Belirli rozetler ile açabilir
+        job_posting_badges = [
+            'bilgi-kaynagi',      # 500 puan
+            'uzman',              # 1000 puan
+            'profesor',           # 2500 puan
+            'efsane',             # 5000 puan
+            'istatistik-ustasi',  # Quiz başarısı
+            'guvenilir-uye',      # Doğrulama tamamlandı
+            'premium-uye',        # Premium rozeti
+            'dogrulanmis-akademisyen',
+            'moderator',
+        ]
+        user_badges = self.badges.filter(slug__in=job_posting_badges)
+        if user_badges.exists():
+            return True, user_badges.first().name
+
+        return False, "İlan açmak için 500+ puan veya özel rozet gerekli"
+
+    def can_propose(self):
+        """Teklif verme yetkisi kontrolü"""
+        # Admin/Staff her zaman verebilir
+        if self.user.is_superuser or self.user.is_staff:
+            return True, "Yönetici yetkisi"
+
+        # Premium üyeler verebilir
+        if self.account_type == 'Premium':
+            return True, "Premium üyelik"
+
+        # Belirli rütbeler verebilir (expert ve üstü)
+        allowed_ranks = ['expert', 'master', 'legend', 'admin']
+        if self.rank in allowed_ranks:
+            return True, f"{self.get_rank_display()} rütbesi"
+
+        # Belirli rozetler ile verebilir
+        proposal_badges = [
+            'uzman',              # 1000 puan
+            'profesor',           # 2500 puan
+            'efsane',             # 5000 puan
+            'cozum-ustasi',       # 10 en iyi cevap
+            'quiz-efsanesi',      # 500 quiz doğru
+            'premium-uye',
+            'dogrulanmis-akademisyen',
+            'moderator',
+        ]
+        user_badges = self.badges.filter(slug__in=proposal_badges)
+        if user_badges.exists():
+            return True, user_badges.first().name
+
+        return False, "Teklif vermek için 1000+ puan veya özel rozet gerekli"
+
+    def get_permissions_summary(self):
+        """Kullanıcının tüm yetkilerinin özetini döndürür"""
+        can_post, post_reason = self.can_post_job()
+        can_prop, prop_reason = self.can_propose()
+
+        return {
+            'can_post_job': can_post,
+            'post_job_reason': post_reason,
+            'can_propose': can_prop,
+            'propose_reason': prop_reason,
+            'is_premium': self.account_type == 'Premium',
+            'is_verified': self.email_verified and self.phone_verified and self.linkedin_verified,
+            'rank': self.rank,
+            'rank_display': self.get_rank_display(),
+            'reputation': self.reputation,
+            'badge_count': self.badges.count(),
+        }
+
+    def get_badges_by_type(self):
+        """Rozetleri türlerine göre gruplar"""
+        badges = self.badges.all()
+        return {
+            'achievement': badges.filter(badge_type='achievement'),
+            'specialty': badges.filter(badge_type='specialty'),
+            'participation': badges.filter(badge_type='participation'),
+            'special': badges.filter(badge_type='special'),
+        }
+
+    def get_next_badge_info(self):
+        """Bir sonraki kazanılabilecek rozet bilgisini döndürür"""
+        from .models import Badge
+        # Puan bazlı rozetler
+        next_badge = Badge.objects.filter(
+            points_required__gt=self.reputation,
+            is_active=True
+        ).order_by('points_required').first()
+
+        if next_badge:
+            points_needed = next_badge.points_required - self.reputation
+            return {
+                'badge': next_badge,
+                'points_needed': points_needed,
+                'progress': int((self.reputation / next_badge.points_required) * 100)
+            }
+        return None
+
+
 class PrivateMessage(models.Model):
     sender = models.ForeignKey(User, related_name='sent_messages', on_delete=models.CASCADE)
     receiver = models.ForeignKey(User, related_name='received_messages', on_delete=models.CASCADE)
@@ -536,16 +652,12 @@ class FreelanceJob(models.Model):
     @staticmethod
     def can_post(user):
         """İlan açma yetkisi kontrolü (Rozet veya Rütbe)"""
-        if not user.is_authenticated: return False
-        if user.is_superuser or user.is_staff: return True
-        
-        # Rozet Kontrolü (İstatistik Ustası, Başarı veya Uzmanlık)
-        if hasattr(user, 'profile') and user.profile.badges.filter(slug__in=['istatistik-ustasi', 'basari', 'uzmanlik']).exists():
-            return True
-            
-        # Alternatif: Premium üyeler veya belirli rütbeler
-        allowed_ranks = ['expert', 'master', 'legend', 'admin']
-        return hasattr(user, 'profile') and (user.profile.rank in allowed_ranks or user.profile.account_type == 'Premium')
+        if not user.is_authenticated:
+            return False
+        if not hasattr(user, 'profile'):
+            return False
+        can_post, _ = user.profile.can_post_job()
+        return can_post
 
 class JobProposal(models.Model):
     """Uzmanların iş ilanlarına verdiği teklifler"""
@@ -574,13 +686,9 @@ class JobProposal(models.Model):
     @staticmethod
     def can_propose(user):
         """Bir kullanıcının teklif verip veremeyeceğini kontrol eder."""
-        if not user.is_authenticated: return False
-        if user.is_superuser or user.is_staff: return True
-        
-        # Rozet Kontrolü (Uzman rozeti olanlar teklif verebilir)
-        if hasattr(user, 'profile') and user.profile.badges.filter(slug='uzman').exists():
-            return True
-
-        # Sadece bu rütbeler teklif verebilir
-        allowed_ranks = ['expert', 'master', 'legend', 'admin']
-        return hasattr(user, 'profile') and user.profile.rank in allowed_ranks
+        if not user.is_authenticated:
+            return False
+        if not hasattr(user, 'profile'):
+            return False
+        can_prop, _ = user.profile.can_propose()
+        return can_prop

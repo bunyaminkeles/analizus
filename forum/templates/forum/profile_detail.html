@@ -247,24 +247,89 @@
 
             <!-- Badges Tab -->
             <div class="tab-pane fade" id="badges" role="tabpanel">
-                <div class="row g-3">
-                    {% for badge in profile_user.profile.badges.all %}
-                        <div class="col-md-6">
-                            <div class="d-flex align-items-center p-3 rounded border border-secondary bg-dark bg-opacity-50 h-100">
-                                <i class="{{ badge.icon }} fs-2 me-3" style="color: {{ badge.color }}"></i>
-                                <div>
-                                    <h6 class="mb-1 text-white">{{ badge.name }}</h6>
-                                    <small class="text-muted" style="font-size: 0.8rem;">{{ badge.description }}</small>
+                {% if profile_user.profile.badges.exists %}
+                    <!-- Başarı Rozetleri -->
+                    {% with achievement_badges=profile_user.profile.badges.all|dictsort:"badge_type" %}
+                    {% regroup profile_user.profile.badges.all by badge_type as badge_groups %}
+
+                    {% for group in badge_groups %}
+                    <div class="mb-4">
+                        <h6 class="text-white mb-3 border-bottom border-secondary pb-2">
+                            {% if group.grouper == 'achievement' %}
+                                <i class="bi bi-trophy-fill text-warning me-2"></i>Başarı Rozetleri
+                            {% elif group.grouper == 'specialty' %}
+                                <i class="bi bi-star-fill text-info me-2"></i>Uzmanlık Rozetleri
+                            {% elif group.grouper == 'participation' %}
+                                <i class="bi bi-heart-fill text-danger me-2"></i>Katılım Rozetleri
+                            {% elif group.grouper == 'special' %}
+                                <i class="bi bi-gem text-purple me-2"></i>Özel Rozetler
+                            {% endif %}
+                            <span class="badge bg-secondary ms-2">{{ group.list|length }}</span>
+                        </h6>
+                        <div class="row g-3">
+                            {% for badge in group.list %}
+                            <div class="col-md-6">
+                                <div class="d-flex align-items-center p-3 rounded border h-100 badge-card" style="background: rgba(15, 23, 42, 0.8); border-color: {{ badge.color }}33 !important;">
+                                    <div class="badge-icon-wrapper me-3" style="background: {{ badge.color }}22; border-radius: 12px; padding: 12px;">
+                                        <i class="{{ badge.icon }} fs-3" style="color: {{ badge.color }}"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h6 class="mb-1 text-white fw-bold">{{ badge.name }}</h6>
+                                        <small class="text-muted" style="font-size: 0.8rem;">{{ badge.description }}</small>
+                                        {% if badge.points_required > 0 %}
+                                        <div class="mt-1">
+                                            <span class="badge bg-dark text-warning" style="font-size: 0.7rem;">
+                                                <i class="bi bi-star-fill me-1"></i>{{ badge.points_required }} Puan
+                                            </span>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% endwith %}
+
+                    <!-- Sonraki Rozet Bilgisi (Sadece profil sahibi için) -->
+                    {% if user == profile_user and next_badge %}
+                    <div class="card border-0 mt-4" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1)); border: 1px dashed rgba(139, 92, 246, 0.3) !important;">
+                        <div class="card-body p-4">
+                            <h6 class="text-white mb-3"><i class="bi bi-bullseye text-purple me-2"></i>Sonraki Hedefiniz</h6>
+                            <div class="d-flex align-items-center">
+                                <div class="me-3" style="background: {{ next_badge.badge.color }}22; border-radius: 12px; padding: 15px;">
+                                    <i class="{{ next_badge.badge.icon }} fs-2" style="color: {{ next_badge.badge.color }}"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h5 class="text-white mb-1">{{ next_badge.badge.name }}</h5>
+                                    <small class="text-muted">{{ next_badge.badge.description }}</small>
+                                    <div class="progress mt-2" style="height: 8px; background: rgba(255,255,255,0.1);">
+                                        <div class="progress-bar" style="width: {{ next_badge.progress }}%; background: linear-gradient(90deg, {{ next_badge.badge.color }}, {{ next_badge.badge.color }}aa);"></div>
+                                    </div>
+                                    <small class="text-info mt-1 d-block">{{ next_badge.points_needed }} puan daha gerekli</small>
                                 </div>
                             </div>
                         </div>
-                    {% empty %}
-                        <div class="col-12 text-center text-muted py-4">
-                            <i class="bi bi-award display-4 opacity-25 mb-2 d-block"></i>
-                            Henüz rozet kazanılmamış.
+                    </div>
+                    {% endif %}
+                {% else %}
+                    <div class="text-center text-muted py-5">
+                        <i class="bi bi-award display-1 opacity-25 mb-3 d-block"></i>
+                        <h5 class="text-white">Henüz rozet kazanılmamış</h5>
+                        <p class="text-muted">Forum aktivitesi ve quiz çözerek rozet kazanabilirsiniz!</p>
+                        {% if user == profile_user %}
+                        <div class="mt-4">
+                            <a href="{% url 'home' %}" class="btn btn-outline-info rounded-pill px-4 me-2">
+                                <i class="bi bi-chat-square-text me-2"></i>Foruma Katıl
+                            </a>
+                            <button onclick="openQuizModal()" class="btn btn-outline-warning rounded-pill px-4">
+                                <i class="bi bi-trophy me-2"></i>Quiz Çöz
+                            </button>
                         </div>
-                    {% endfor %}
-                </div>
+                        {% endif %}
+                    </div>
+                {% endif %}
             </div>
 
             <!-- Skills Tab -->
@@ -292,15 +357,69 @@
 
             <!-- Trust & Verification Tab -->
             <div class="tab-pane fade" id="trust" role="tabpanel">
+                <!-- Yetki Kartları -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <div class="card border-0 h-100" style="background: {% if permissions.can_post_job %}linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(16, 185, 129, 0.1)){% else %}rgba(15, 23, 42, 0.8){% endif %}; border: 1px solid {% if permissions.can_post_job %}rgba(34, 197, 94, 0.3){% else %}rgba(100, 116, 139, 0.3){% endif %} !important;">
+                            <div class="card-body p-4 text-center">
+                                <div class="mb-3">
+                                    {% if permissions.can_post_job %}
+                                        <i class="bi bi-briefcase-fill display-4 text-success"></i>
+                                    {% else %}
+                                        <i class="bi bi-briefcase display-4 text-muted opacity-50"></i>
+                                    {% endif %}
+                                </div>
+                                <h5 class="text-white mb-2">İlan Açma Yetkisi</h5>
+                                {% if permissions.can_post_job %}
+                                    <span class="badge bg-success rounded-pill px-3 py-2">
+                                        <i class="bi bi-check-circle me-1"></i>Aktif
+                                    </span>
+                                    <p class="text-muted small mt-2 mb-0">{{ permissions.post_job_reason }}</p>
+                                {% else %}
+                                    <span class="badge bg-secondary rounded-pill px-3 py-2">
+                                        <i class="bi bi-lock me-1"></i>Kilitli
+                                    </span>
+                                    <p class="text-muted small mt-2 mb-0">500+ puan veya özel rozet gerekli</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card border-0 h-100" style="background: {% if permissions.can_propose %}linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(99, 102, 241, 0.1)){% else %}rgba(15, 23, 42, 0.8){% endif %}; border: 1px solid {% if permissions.can_propose %}rgba(59, 130, 246, 0.3){% else %}rgba(100, 116, 139, 0.3){% endif %} !important;">
+                            <div class="card-body p-4 text-center">
+                                <div class="mb-3">
+                                    {% if permissions.can_propose %}
+                                        <i class="bi bi-send-fill display-4 text-primary"></i>
+                                    {% else %}
+                                        <i class="bi bi-send display-4 text-muted opacity-50"></i>
+                                    {% endif %}
+                                </div>
+                                <h5 class="text-white mb-2">Teklif Verme Yetkisi</h5>
+                                {% if permissions.can_propose %}
+                                    <span class="badge bg-primary rounded-pill px-3 py-2">
+                                        <i class="bi bi-check-circle me-1"></i>Aktif
+                                    </span>
+                                    <p class="text-muted small mt-2 mb-0">{{ permissions.propose_reason }}</p>
+                                {% else %}
+                                    <span class="badge bg-secondary rounded-pill px-3 py-2">
+                                        <i class="bi bi-lock me-1"></i>Kilitli
+                                    </span>
+                                    <p class="text-muted small mt-2 mb-0">1000+ puan veya özel rozet gerekli</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="card border-0 shadow-lg" style="background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(56, 189, 248, 0.2);">
                     <div class="card-body p-4">
                         <h5 class="text-white mb-4"><i class="bi bi-shield-lock-fill me-2 text-info"></i>Hesap Doğrulama Merkezi</h5>
-                        
+
                         {% if user == profile_user %}
-                            <div class="alert alert-info border-0 bg-opacity-10 mb-4">
-                                <i class="bi bi-info-circle-fill me-2"></i>
-                                <strong>Neden Doğrulamalıyım?</strong><br>
-                                Doğrulanmış hesaplar toplulukta %40 daha fazla güven kazanır, ilanlarda öne çıkar ve "Uzman" rütbesine daha hızlı ulaşır.
+                            <div class="alert border-0 mb-4" style="background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.2) !important;">
+                                <i class="bi bi-info-circle-fill me-2 text-info"></i>
+                                <strong class="text-white">Neden Doğrulamalıyım?</strong><br>
+                                <span class="text-muted">Tüm doğrulamaları tamamladığınızda "Güvenilir Üye" rozeti kazanır ve ilan açma yetkisi elde edersiniz!</span>
                             </div>
                         {% endif %}
 

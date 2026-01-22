@@ -2,12 +2,13 @@ from django.db.models.signals import post_save, post_delete, pre_save
 from django.dispatch import receiver
 from django.urls import reverse
 from django.contrib.contenttypes.models import ContentType
+from django.db.models import Count
 import logging
 from .utils import send_realtime_notification
 
 logger = logging.getLogger(__name__)
 
-from .models import Post, PrivateMessage, Notification, PostLike, Topic
+from .models import Post, PrivateMessage, Notification, PostLike, Topic, Badge
 from .models import Profile  # Profile modelini import et
 
 
@@ -123,9 +124,151 @@ def handle_best_answer_reputation(sender, instance, created, **kwargs):
                 profile = instance.created_by.profile
                 profile.reputation += 20
                 profile.save(update_fields=['reputation'])
+                # En İyi Cevap rozeti ver
+                check_and_award_participation_badges(profile)
             elif not instance.is_best_answer and instance._old_is_best_answer:
                 profile = instance.created_by.profile
                 profile.reputation = max(0, profile.reputation - 20)
                 profile.save(update_fields=['reputation'])
         except Exception as e:
             logger.error(f"Best answer reputation güncellenemedi: {e}")
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# OTOMATİK ROZET KAZANMA FONKSİYONLARI
+# ═══════════════════════════════════════════════════════════════════════════
+
+def check_and_award_participation_badges(profile):
+    """Forum aktivitelerine göre katılım rozetlerini kontrol et ve ver"""
+    try:
+        user = profile.user
+
+        # Yardımsever: 10 soruya cevap verdi
+        if user.posts.count() >= 10:
+            badge = Badge.objects.filter(slug='yardimsever').first()
+            if badge:
+                profile.badges.add(badge)
+
+        # Konu Açıcı: 5 konu açtı
+        if user.topics.count() >= 5:
+            badge = Badge.objects.filter(slug='konu-acici').first()
+            if badge:
+                profile.badges.add(badge)
+
+        # En İyi Cevap: Bir cevabı "En Faydalı" seçildi
+        if user.posts.filter(is_best_answer=True).exists():
+            badge = Badge.objects.filter(slug='en-iyi-cevap').first()
+            if badge:
+                profile.badges.add(badge)
+
+        # Çözüm Ustası: 10 kez "En Faydalı Cevap"
+        best_answer_count = user.posts.filter(is_best_answer=True).count()
+        if best_answer_count >= 10:
+            badge = Badge.objects.filter(slug='cozum-ustasi').first()
+            if badge:
+                profile.badges.add(badge)
+
+        # Popüler Yazar: Bir konusu 1000+ görüntülendi
+        if user.topics.filter(views__gte=1000).exists():
+            badge = Badge.objects.filter(slug='populer-yazar').first()
+            if badge:
+                profile.badges.add(badge)
+
+        # Beğenilen Yazar: Toplam 50 beğeni aldı
+        total_likes = sum(p.likes for p in user.posts.all())
+        if total_likes >= 50:
+            badge = Badge.objects.filter(slug='begenilen-yazar').first()
+            if badge:
+                profile.badges.add(badge)
+
+        # Puan bazlı rozetleri de kontrol et
+        profile.check_and_award_badges()
+        profile.update_rank()
+
+    except Exception as e:
+        logger.error(f"Katılım rozeti kontrolünde hata: {e}")
+
+
+def check_and_award_quiz_badges(profile, category=None, correct_count=0, total_correct=0):
+    """Quiz performansına göre rozetleri kontrol et ve ver"""
+    try:
+        # Kategori bazlı rozetler (10 doğru cevap)
+        category_badge_map = {
+            'spss': 'spss-uzmani',
+            'python': 'python-ninja',
+            'r': 'r-ustadi',
+            'statistics': 'istatistik-ustasi',
+            'methodology': 'metodoloji-gurusu',
+        }
+
+        if category and correct_count >= 10:
+            badge_slug = category_badge_map.get(category)
+            if badge_slug:
+                badge = Badge.objects.filter(slug=badge_slug).first()
+                if badge:
+                    profile.badges.add(badge)
+
+        # Quiz Şampiyonu: 100 toplam doğru
+        if total_correct >= 100:
+            badge = Badge.objects.filter(slug='quiz-sampiyonu').first()
+            if badge:
+                profile.badges.add(badge)
+
+        # Quiz Efsanesi: 500 toplam doğru
+        if total_correct >= 500:
+            badge = Badge.objects.filter(slug='quiz-efsanesi').first()
+            if badge:
+                profile.badges.add(badge)
+
+    except Exception as e:
+        logger.error(f"Quiz rozeti kontrolünde hata: {e}")
+
+
+def check_and_award_trust_badge(profile):
+    """Güvenilir üye rozetini kontrol et ve ver"""
+    try:
+        if profile.email_verified and profile.phone_verified and profile.linkedin_verified:
+            badge = Badge.objects.filter(slug='guvenilir-uye').first()
+            if badge:
+                profile.badges.add(badge)
+                return True
+        return False
+    except Exception as e:
+        logger.error(f"Güvenilir üye rozeti kontrolünde hata: {e}")
+        return False
+
+
+# Signal: Yeni konu açıldığında rozet kontrolü
+@receiver(post_save, sender=Topic)
+def check_topic_badges(sender, instance, created, **kwargs):
+    """Yeni konu açıldığında rozet kontrolü"""
+    if created:
+        try:
+            profile = instance.starter.profile
+            check_and_award_participation_badges(profile)
+        except Exception as e:
+            logger.error(f"Konu rozeti kontrolünde hata: {e}")
+
+
+# Signal: Yeni cevap verildiğinde rozet kontrolü
+@receiver(post_save, sender=Post)
+def check_post_badges(sender, instance, created, **kwargs):
+    """Yeni cevap verildiğinde rozet kontrolü"""
+    if created:
+        try:
+            profile = instance.created_by.profile
+            check_and_award_participation_badges(profile)
+        except Exception as e:
+            logger.error(f"Cevap rozeti kontrolünde hata: {e}")
+
+
+# Signal: Beğeni alındığında rozet kontrolü
+@receiver(post_save, sender=PostLike)
+def check_like_badges(sender, instance, created, **kwargs):
+    """Beğeni alındığında rozet kontrolü"""
+    if created:
+        try:
+            profile = instance.post.created_by.profile
+            check_and_award_participation_badges(profile)
+        except Exception as e:
+            logger.error(f"Beğeni rozeti kontrolünde hata: {e}")

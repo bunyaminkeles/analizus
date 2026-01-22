@@ -1,11 +1,14 @@
+import os
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_POST, require_GET
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.urls import reverse
 from django.utils.timesince import timesince
+from django.core.management import call_command
+from django.conf import settings
 from .models import JobProposal, Profile, Notification
 from .utils import send_realtime_notification
 
@@ -71,7 +74,7 @@ def widget_latest_proposals(request):
     """Analiz pazarındaki son teklifleri JSON olarak döner"""
     # Son 5 teklifi getir
     proposals = JobProposal.objects.select_related('job', 'expert').order_by('-created_at')[:5]
-    
+
     data = []
     for p in proposals:
         data.append({
@@ -81,5 +84,101 @@ def widget_latest_proposals(request):
             'price': f"{p.price:,.0f} ₺",
             'time_ago': timesince(p.created_at).split(',')[0] + " önce"
         })
-    
+
     return JsonResponse({'proposals': data})
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# CRON JOB ENDPOINTS
+# Render Cron Jobs veya external cron servisleri (cron-job.org) ile kullanılır
+# ═══════════════════════════════════════════════════════════════════════════
+
+def _verify_cron_secret(request):
+    """Cron job isteklerini doğrular"""
+    # Header veya query param olarak secret key kontrolü
+    secret = request.headers.get('X-Cron-Secret') or request.GET.get('secret')
+    expected_secret = os.environ.get('CRON_SECRET_KEY', 'default-dev-secret-change-in-prod')
+    return secret == expected_secret
+
+
+@require_GET
+def cron_generate_daily_quiz(request):
+    """
+    Günlük quiz soruları üretir.
+
+    Kullanım:
+    - Render Cron Job: GET /api/cron/daily-quiz/?secret=YOUR_SECRET
+    - cron-job.org: Aynı URL, günlük olarak çağrılacak şekilde ayarlayın
+
+    Environment Variables:
+    - CRON_SECRET_KEY: Bu endpoint'i korumak için gizli anahtar
+    - GROQ_API_KEY: Quiz soruları için AI API anahtarı
+    """
+    if not _verify_cron_secret(request):
+        return JsonResponse({
+            'success': False,
+            'error': 'Unauthorized - Invalid or missing secret key'
+        }, status=401)
+
+    try:
+        # Quiz soru sayısı (varsayılan 5)
+        count = int(request.GET.get('count', 5))
+
+        # Management komutunu çağır
+        from io import StringIO
+        out = StringIO()
+        call_command('generate_daily_quiz', count=count, stdout=out)
+
+        return JsonResponse({
+            'success': True,
+            'message': f'{count} quiz sorusu üretim talebi gönderildi',
+            'output': out.getvalue()
+        })
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=500)
+
+
+@require_GET
+def cron_update_badges_ranks(request):
+    """
+    Tüm kullanıcıların rozetlerini ve rütbelerini günceller.
+    Haftalık olarak çalıştırılması önerilir.
+    """
+    if not _verify_cron_secret(request):
+        return JsonResponse({
+            'success': False,
+            'error': 'Unauthorized'
+        }, status=401)
+
+    try:
+        updated_count = 0
+        for profile in Profile.objects.all():
+            profile.check_and_award_badges()
+            profile.update_rank()
+            updated_count += 1
+
+        return JsonResponse({
+            'success': True,
+            'message': f'{updated_count} kullanıcının rozetleri güncellendi'
+        })
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=500)
+
+
+@require_GET
+def cron_health_check(request):
+    """
+    Basit sağlık kontrolü endpoint'i.
+    Cron servislerinin site durumunu kontrol etmesi için.
+    """
+    return JsonResponse({
+        'status': 'healthy',
+        'service': 'Analizus Forum',
+        'version': '1.0'
+    })
