@@ -98,6 +98,10 @@ def _verify_cron_secret(request):
     # Header veya query param olarak secret key kontrolü
     secret = request.headers.get('X-Cron-Secret') or request.GET.get('secret')
     expected_secret = os.environ.get('CRON_SECRET_KEY', 'default-dev-secret-change-in-prod')
+
+    if secret != expected_secret:
+        print(f"CRON AUTH ERROR: Gelen='{secret}', Beklenen='{expected_secret}'")
+
     return secret == expected_secret
 
 
