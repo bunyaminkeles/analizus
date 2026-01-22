@@ -121,8 +121,8 @@ def cron_generate_daily_quiz(request):
         }, status=401)
 
     try:
-        # Quiz soru sayısı (varsayılan 5)
-        count = int(request.GET.get('count', 5))
+        # Quiz soru sayısı (varsayılan 10)
+        count = int(request.GET.get('count', 10))
 
         # Management komutunu çağır
         from io import StringIO
