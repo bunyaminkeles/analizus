@@ -1,1 +1,2 @@
-web: daphne analizdestek.asgi:application -p ${PORT:-8000}
+web: gunicorn analizdestek.wsgi:application --bind 0.0.0.0:$PORT
+release: python manage.py migrate && python manage.py setup_categories && python manage.py create_badges && python manage.py populate_skills
