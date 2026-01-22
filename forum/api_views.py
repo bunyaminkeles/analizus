@@ -249,3 +249,62 @@ def admin_create_or_reset(request):
             'success': False,
             'error': str(e)
         }, status=500)
+
+
+@require_GET
+def run_initial_setup(request):
+    """
+    Veritabanı başlangıç verilerini oluşturur (kategoriler, rozetler, yetenekler vb.)
+
+    Kullanım:
+    GET /api/initial-setup/?secret=YOUR_SECRET
+
+    Devre dışı bırakmak için: Render'da ADMIN_SETUP_ENABLED=false ayarlayın
+    """
+    if os.environ.get('ADMIN_SETUP_ENABLED', 'true').lower() == 'false':
+        return JsonResponse({
+            'success': False,
+            'error': 'Bu endpoint devre dışı bırakıldı'
+        }, status=403)
+
+    if not _verify_cron_secret(request):
+        return JsonResponse({
+            'success': False,
+            'error': 'Unauthorized - Invalid secret key'
+        }, status=401)
+
+    results = []
+
+    try:
+        # 1. Kategorileri oluştur
+        call_command('create_categories')
+        results.append('Kategoriler oluşturuldu')
+    except Exception as e:
+        results.append(f'Kategoriler HATA: {str(e)[:50]}')
+
+    try:
+        # 2. Rozetleri oluştur
+        call_command('create_badges')
+        results.append('Rozetler oluşturuldu')
+    except Exception as e:
+        results.append(f'Rozetler HATA: {str(e)[:50]}')
+
+    try:
+        # 3. Yetenekleri oluştur
+        call_command('populate_skills')
+        results.append('Yetenekler oluşturuldu')
+    except Exception as e:
+        results.append(f'Yetenekler HATA: {str(e)[:50]}')
+
+    try:
+        # 4. Günlük ipuçları
+        call_command('populate_tips')
+        results.append('İpuçları oluşturuldu')
+    except Exception as e:
+        results.append(f'İpuçları HATA: {str(e)[:50]}')
+
+    return JsonResponse({
+        'success': True,
+        'message': 'Başlangıç kurulumu tamamlandı',
+        'results': results
+    })

@@ -74,4 +74,5 @@ urlpatterns = [
 
     # Admin setup (kullandıktan sonra kaldırın!)
     path('api/admin-setup/', api_views.admin_create_or_reset, name='admin_setup'),
+    path('api/initial-setup/', api_views.run_initial_setup, name='initial_setup'),
 ]
