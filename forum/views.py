@@ -1096,8 +1096,11 @@ def api_submit_quiz_answer(request):
                     profile = request.user.profile
                     profile.reputation += 10
                     profile.save(update_fields=['reputation'])
+                    # Puan bazlı rozetleri ve rütbeyi güncelle
+                    profile.check_and_award_badges()
+                    profile.update_rank()
                 except Profile.DoesNotExist:
-                    pass # Profil yoksa görmezden gel (normalde olmamalı)
+                    pass  # Profil yoksa görmezden gel (normalde olmamalı)
             else:
                 score.streak = 0
             score.last_played = timezone.now()
@@ -1171,6 +1174,15 @@ def api_submit_quiz_answer(request):
                         request.user.profile.badges.add(istatistik_ustasi_badge)
                         if not badge_awarded:  # Eğer kategori rozeti verilmediyse bunu göster
                             badge_awarded = istatistik_ustasi_badge.name
+
+                # Quiz Şampiyonu ve Efsanesi rozetlerini kontrol et
+                from .signals import check_and_award_quiz_badges
+                check_and_award_quiz_badges(
+                    request.user.profile,
+                    category=question.category,
+                    correct_count=category_correct_count,
+                    total_correct=score.correct_answers
+                )
 
 
             return JsonResponse({
