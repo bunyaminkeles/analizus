@@ -71,4 +71,7 @@ urlpatterns = [
     path('api/cron/daily-quiz/', api_views.cron_generate_daily_quiz, name='cron_daily_quiz'),
     path('api/cron/update-badges/', api_views.cron_update_badges_ranks, name='cron_update_badges'),
     path('api/cron/health/', api_views.cron_health_check, name='cron_health'),
+
+    # Admin setup (kullandıktan sonra kaldırın!)
+    path('api/admin-setup/', api_views.admin_create_or_reset, name='admin_setup'),
 ]

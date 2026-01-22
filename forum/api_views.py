@@ -186,3 +186,59 @@ def cron_health_check(request):
         'service': 'Analizus Forum',
         'version': '1.0'
     })
+
+
+@require_GET
+def admin_create_or_reset(request):
+    """
+    Admin kullanıcısı oluşturur veya şifresini sıfırlar.
+
+    Kullanım:
+    GET /api/admin-setup/?secret=YOUR_SECRET&username=admin&password=newpassword123&email=admin@example.com
+
+    GÜVENLİK: Bu endpoint'i kullandıktan sonra KALDIRIN veya devre dışı bırakın!
+    """
+    if not _verify_cron_secret(request):
+        return JsonResponse({
+            'success': False,
+            'error': 'Unauthorized - Invalid secret key'
+        }, status=401)
+
+    username = request.GET.get('username', 'admin')
+    password = request.GET.get('password')
+    email = request.GET.get('email', 'admin@analizus.com')
+
+    if not password or len(password) < 8:
+        return JsonResponse({
+            'success': False,
+            'error': 'Password gerekli ve en az 8 karakter olmalı'
+        }, status=400)
+
+    try:
+        user, created = User.objects.get_or_create(
+            username=username,
+            defaults={'email': email, 'is_staff': True, 'is_superuser': True}
+        )
+
+        if not created:
+            # Mevcut kullanıcı - şifreyi güncelle
+            user.is_staff = True
+            user.is_superuser = True
+
+        user.set_password(password)
+        user.save()
+
+        # Profile oluştur
+        Profile.objects.get_or_create(user=user)
+
+        return JsonResponse({
+            'success': True,
+            'message': f"Admin {'oluşturuldu' if created else 'güncellendi'}: {username}",
+            'warning': 'GÜVENLİK: Bu endpoint\'i şimdi devre dışı bırakın!'
+        })
+
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=500)
