@@ -100,7 +100,7 @@ class Command(BaseCommand):
         try:
             completion = self.client.chat.completions.create(
                 messages=[{"role": "user", "content": prompt}],
-                model="llama3-8b-8192",
+                model="llama-3.3-70b-versatile",
             )
             content = completion.choices[0].message.content.strip()
 
@@ -143,7 +143,7 @@ class Command(BaseCommand):
                     {"role": "system", "content": "Sen bir JSON API'sin. Sadece geçerli JSON döndür."},
                     {"role": "user", "content": prompt}
                 ],
-                model="llama3-8b-8192",
+                model="llama-3.3-70b-versatile",
                 response_format={"type": "json_object"} # Groq JSON modu
             )
             
