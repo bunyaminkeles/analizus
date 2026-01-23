@@ -208,7 +208,33 @@ def close_job(request, pk):
         messages.success(request, 'İlanınız başarıyla kapatılmıştır.')
     else:
         messages.warning(request, 'Bu ilan zaten kapalı veya işlemde.')
-        
+
+    return redirect('job_detail', pk=pk)
+
+
+@login_required
+@require_POST
+def accept_proposal(request, pk, proposal_id):
+    """Teklifi kabul et, ilanı askıya al"""
+    job = get_object_or_404(FreelanceJob, pk=pk, owner=request.user)
+    proposal = get_object_or_404(JobProposal, pk=proposal_id, job=job)
+
+    if job.status != 'open':
+        messages.warning(request, 'Bu ilan artık aktif değil.')
+        return redirect('job_detail', pk=pk)
+
+    # Teklifi kabul et
+    proposal.status = 'accepted'
+    proposal.save()
+
+    # Diğer teklifleri reddet
+    job.proposals.exclude(pk=proposal_id).update(status='rejected')
+
+    # İlanı askıya al
+    job.status = 'in_progress'
+    job.save()
+
+    messages.success(request, f'{proposal.expert.username} kullanıcısının teklifi kabul edildi. İlan askıya alındı.')
     return redirect('job_detail', pk=pk)
 
 
