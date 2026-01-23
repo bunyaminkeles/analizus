@@ -35,6 +35,7 @@ def send_email_async(subject, message, recipient_list):
                 return
 
             from_email = settings.DEFAULT_FROM_EMAIL
+            from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'info@analizus.com')
             logger.info(f"📤 SendGrid Web API ile gönderiliyor...")
             print(f"📤 SendGrid Web API ile gönderiliyor...")
             logger.info(f"🔍 FROM_EMAIL: {from_email}")
