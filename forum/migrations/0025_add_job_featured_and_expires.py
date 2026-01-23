@@ -3,6 +3,24 @@
 from django.db import migrations, models
 
 
+def add_expires_at_if_not_exists(apps, schema_editor):
+    from django.db import connection
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            DO $$
+            BEGIN
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns
+                    WHERE table_name='forum_freelancejob' AND column_name='expires_at') THEN
+                    ALTER TABLE forum_freelancejob ADD COLUMN expires_at timestamp with time zone NULL;
+                END IF;
+                IF NOT EXISTS (SELECT 1 FROM information_schema.columns
+                    WHERE table_name='forum_freelancejob' AND column_name='is_featured') THEN
+                    ALTER TABLE forum_freelancejob ADD COLUMN is_featured boolean DEFAULT false NOT NULL;
+                END IF;
+            END $$;
+        """)
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -10,14 +28,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AddField(
-            model_name='freelancejob',
-            name='expires_at',
-            field=models.DateTimeField(blank=True, null=True, verbose_name='Bitiş Tarihi'),
-        ),
-        migrations.AddField(
-            model_name='freelancejob',
-            name='is_featured',
-            field=models.BooleanField(default=False, verbose_name='Öne Çıkarılmış'),
-        ),
+        migrations.RunPython(add_expires_at_if_not_exists, migrations.RunPython.noop),
     ]
