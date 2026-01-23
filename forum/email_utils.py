@@ -64,6 +64,14 @@ def send_email_async(subject, message, recipient_list):
                     print(f"⚠️ Beklenmedik status code: {response.status_code}")
 
         except Exception as e:
+            # SendGrid detaylı hata mesajını yakala (403 nedenini görmek için)
+            if hasattr(e, 'body'):
+                try:
+                    error_body = e.body.decode('utf-8')
+                    logger.error(f"❌ SendGrid API Detayı: {error_body}")
+                    print(f"❌ SendGrid API Detayı: {error_body}")
+                except: pass
+
             logger.error(f"❌ Email gönderim hatası: {e}", exc_info=True)
             print(f"❌ Email gönderim hatası: {e}")
             print(f"❌ Hata tipi: {type(e).__name__}")
