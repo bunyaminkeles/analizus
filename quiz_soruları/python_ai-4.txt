@@ -1,0 +1,222 @@
+[
+  {
+    "question": "Python'da bir fonksiyon tanımlamak için kullanılan anahtar kelime hangisidir?",
+    "option_a": "function",
+    "option_b": "func",
+    "option_c": "def",
+    "option_d": "define",
+    "correct_answer": "C",
+    "category": "python",
+    "difficulty": "easy",
+    "explanation": "Python'da fonksiyonlar `def fonksiyon_adi():` yapısı ile tanımlanır."
+  },
+  {
+    "question": "Lojistik Regresyon (Logistic Regression) modelinin çıktısını 0 ile 1 arasına sıkıştırarak 'olasılık' üretmesini sağlayan fonksiyon hangisidir?",
+    "option_a": "ReLU",
+    "option_b": "Sigmoid",
+    "option_c": "Tanh",
+    "option_d": "Linear",
+    "correct_answer": "B",
+    "category": "ml_algoritmalar",
+    "difficulty": "medium",
+    "explanation": "Sigmoid fonksiyonu, gelen değerleri 'S' eğrisi şeklinde bükerek 0 ile 1 arasına dönüştürür, bu da sınıflandırma için idealdir."
+  },
+  {
+    "question": "Çok sınıflı (Multi-class) bir sınıflandırma probleminde (örn: Kedi, Köpek, Kuş), çıktı katmanındaki olasılıkların toplamının 1 olmasını sağlayan aktivasyon fonksiyonu hangisidir?",
+    "option_a": "Sigmoid",
+    "option_b": "Softmax",
+    "option_c": "ReLU",
+    "option_d": "Leaky ReLU",
+    "correct_answer": "B",
+    "category": "deep_learning",
+    "difficulty": "medium",
+    "explanation": "Softmax, çıktı vektörünü olasılık dağılımına dönüştürür; en yüksek olasılığa sahip sınıf modelin tahmini olur."
+  },
+  {
+    "question": "Boyut İndirgeme (Dimensionality Reduction) ve veri görselleştirme amacıyla kullanılan, verideki varyansı en iyi açıklayan bileşenleri bulan gözetimsiz algoritma hangisidir?",
+    "option_a": "Linear Regression",
+    "option_b": "KNN",
+    "option_c": "PCA (Principal Component Analysis)",
+    "option_d": "Decision Tree",
+    "correct_answer": "C",
+    "category": "ml_temel",
+    "difficulty": "medium",
+    "explanation": "PCA (Temel Bileşenler Analizi), çok boyutlu veriyi (örn: 100 sütun) bilgi kaybını minimumda tutarak daha az boyuta (örn: 2 sütun) indirger."
+  },
+  {
+    "question": "Büyük veri setleri ve modellerle çalışırken, daha önce büyük bir veri setinde (örn: ImageNet) eğitilmiş bir modelin ağırlıklarını alıp, kendi küçük veri setimize uyarlamaya ne ad verilir?",
+    "option_a": "Transfer Learning (Transfer Öğrenme)",
+    "option_b": "Reinforcement Learning",
+    "option_c": "Unsupervised Learning",
+    "option_d": "Scratch Training",
+    "correct_answer": "A",
+    "category": "deep_learning",
+    "difficulty": "easy",
+    "explanation": "Transfer öğrenme, tekerleği yeniden icat etmek yerine, başkalarının eğittiği güçlü modellerin (ResNet, BERT vb.) bilgisini kullanmayı sağlar."
+  },
+  {
+    "question": "Python'da tek satırda döngü kurarak liste oluşturmayı sağlayan (örn: `[x**2 for x in range(10)]`) yapıya ne ad verilir?",
+    "option_a": "Lambda Function",
+    "option_b": "List Comprehension",
+    "option_c": "Generator",
+    "option_d": "Decorator",
+    "correct_answer": "B",
+    "category": "python",
+    "difficulty": "easy",
+    "explanation": "List Comprehension, Python'un en karakteristik ve kod okunabilirliğini artıran pratik özelliklerinden biridir."
+  },
+  {
+    "question": "Bir sınıflandırma modelinin başarısını ölçen ROC Eğrisinin altında kalan alan (AUC - Area Under Curve) 0.5 ise model hakkında ne söylenebilir?",
+    "option_a": "Model mükemmel çalışıyor.",
+    "option_b": "Model rastgele tahmin yapıyor (Yazı-tura atmakla aynı).",
+    "option_c": "Model %50 hata yapıyor.",
+    "option_d": "Veri seti hatalı.",
+    "correct_answer": "B",
+    "category": "ml_temel",
+    "difficulty": "hard",
+    "explanation": "AUC değeri 1'e yaklaştıkça model mükemmelleşir. 0.5 değeri, modelin sınıfları ayırt etme yeteneğinin olmadığını (rastgelelik) gösterir."
+  },
+  {
+    "question": "Gradyan İnişi (Gradient Descent) sırasında, modelin her adımda minimum hataya doğru ne kadar büyük bir adım atacağını belirleyen parametre nedir?",
+    "option_a": "Batch Size",
+    "option_b": "Epoch",
+    "option_c": "Learning Rate (Öğrenme Oranı)",
+    "option_d": "Dropout Rate",
+    "correct_answer": "C",
+    "category": "deep_learning",
+    "difficulty": "medium",
+    "explanation": "Learning Rate çok büyükse model hedefi ıskalar (overshoot), çok küçükse hedefe ulaşması çok uzun sürer."
+  },
+  {
+    "question": "Metin madenciliğinde ve spam filtrelemede sıkça kullanılan, 'özelliklerin birbirinden bağımsız olduğu' varsayımına dayanan olasılık temelli algoritma hangisidir?",
+    "option_a": "Decision Tree",
+    "option_b": "Naive Bayes",
+    "option_c": "K-Means",
+    "option_d": "Linear Regression",
+    "correct_answer": "B",
+    "category": "ml_algoritmalar",
+    "difficulty": "medium",
+    "explanation": "Naive (Saf) Bayes, kelimelerin birbirinden bağımsız olduğunu varsayarak hızlı ve etkili sınıflandırma yapar."
+  },
+  {
+    "question": "Veri setindeki aykırı değerlerden (Outliers) en çok etkilenen (hassas olan) istatistiksel ölçü hangisidir?",
+    "option_a": "Medyan (Ortanca)",
+    "option_b": "Mod (Tepe Değer)",
+    "option_c": "Ortalama (Mean)",
+    "option_d": "Kartiller (Quartiles)",
+    "correct_answer": "C",
+    "category": "ml_temel",
+    "difficulty": "easy",
+    "explanation": "Örneğin maaş ortalaması alınırken, bir milyarderin gruba girmesi ortalamayı çok saptırır ama medyanı çok değiştirmez."
+  },
+  {
+    "question": "Python'da 'Anahtar-Değer' (Key-Value) çiftleri halinde veri saklayan, süslü parantez `{}` ile tanımlanan veri yapısı hangisidir?",
+    "option_a": "List (Liste)",
+    "option_b": "Tuple (Demet)",
+    "option_c": "Set (Küme)",
+    "option_d": "Dictionary (Sözlük)",
+    "correct_answer": "D",
+    "category": "python",
+    "difficulty": "easy",
+    "explanation": "Dictionary, verilere indeks numarasıyla değil, tanımlanan anahtar isimleriyle (örn: `sozluk['isim']`) ulaşmayı sağlar."
+  },
+  {
+    "question": "Destek Vektör Makineleri (SVM) algoritmasında, sınıfları birbirinden ayıran en iyi çizgiye/düzleme ne ad verilir?",
+    "option_a": "Decision Boundary",
+    "option_b": "Hyperplane (Hiperdüzlem)",
+    "option_c": "Regression Line",
+    "option_d": "Centroid",
+    "correct_answer": "B",
+    "category": "ml_algoritmalar",
+    "difficulty": "medium",
+    "explanation": "SVM, iki sınıf arasındaki mesafeyi (margin) maksimize eden optimal hiperdüzlemi bulmaya çalışır."
+  },
+  {
+    "question": "Kelimeleri, anlamlarına göre vektör uzayında sayılara dönüştüren (örn: Kral - Erkek + Kadın = Kraliçe işlemini yapabilen) NLP tekniği hangisidir?",
+    "option_a": "One-Hot Encoding",
+    "option_b": "Word Embeddings (örn: Word2Vec, GloVe)",
+    "option_c": "Stemming",
+    "option_d": "Tokenization",
+    "correct_answer": "B",
+    "category": "nlp",
+    "difficulty": "hard",
+    "explanation": "Word Embeddings, kelimelerin anlamsal ilişkilerini koruyarak onları yoğun vektörler (dense vectors) olarak temsil eder."
+  },
+  {
+    "question": "Pandas ile bir CSV dosyasını okuyup DataFrame'e çevirmek için kullanılan komut hangisidir?",
+    "option_a": "pd.read_csv('dosya.csv')",
+    "option_b": "pd.load_csv('dosya.csv')",
+    "option_c": "pd.import('dosya.csv')",
+    "option_d": "pd.get_csv('dosya.csv')",
+    "correct_answer": "A",
+    "category": "python",
+    "difficulty": "easy",
+    "explanation": "`read_csv`, `read_excel`, `read_json` gibi komutlar Pandas'ın en temel veri okuma fonksiyonlarıdır."
+  },
+  {
+    "question": "Gelecekteki verilerin, eğitim verisinden yanlışlıkla modelin içine sızarak modelin başarısını yapay olarak artırması durumuna ne denir?",
+    "option_a": "Overfitting",
+    "option_b": "Data Leakage (Veri Sızıntısı)",
+    "option_c": "Underfitting",
+    "option_d": "Bias Shift",
+    "correct_answer": "B",
+    "category": "ml_temel",
+    "difficulty": "medium",
+    "explanation": "Örneğin; 'Kredi Onayı' tahmin ederken, onaylandıktan sonra verilen 'Müşteri Numarası'nı girdi olarak verirseniz model %100 bilir ama bu sızıntıdır."
+  },
+  {
+    "question": "Matplotlib kütüphanesi üzerine kurulmuş, daha estetik ve istatistiksel grafikler (Heatmap, Pairplot vb.) çizmeyi kolaylaştıran kütüphane hangisidir?",
+    "option_a": "PyTorch",
+    "option_b": "Seaborn",
+    "option_c": "Scipy",
+    "option_d": "OpenCV",
+    "correct_answer": "B",
+    "category": "python",
+    "difficulty": "easy",
+    "explanation": "Seaborn, daha az kodla daha göze hoş gelen ve karmaşık istatistiksel grafikler oluşturmak için tercih edilir."
+  },
+  {
+    "question": "Bir Sinir Ağında (Neural Network), girdiyi alıp sıkıştırılmış bir temsile (latent space) dönüştürdükten sonra tekrar eski haline getirmeye çalışan mimariye ne ad verilir?",
+    "option_a": "Autoencoder (Otokodlayıcı)",
+    "option_b": "CNN",
+    "option_c": "RNN",
+    "option_d": "Perceptron",
+    "correct_answer": "A",
+    "category": "deep_learning",
+    "difficulty": "medium",
+    "explanation": "Autoencoder'lar gürültü temizleme (denoising), boyut indirgeme ve anomali tespiti gibi gözetimsiz işlerde kullanılır."
+  },
+  {
+    "question": "Tıbbi teşhis (kanser tespiti) gibi 'Hastalığı kaçırmamanın' (False Negative'in düşük olmasının) çok önemli olduğu durumlarda hangi metriğe odaklanılmalıdır?",
+    "option_a": "Precision (Kesinlik)",
+    "option_b": "Recall (Duyarlılık)",
+    "option_c": "Accuracy",
+    "option_d": "Specificity",
+    "correct_answer": "B",
+    "category": "ml_temel",
+    "difficulty": "hard",
+    "explanation": "Recall, 'Gerçekten hasta olanların kaçını yakaladık?' sorusuna cevap verir. Kanserli birine 'sağlamsın' demektense, sağlam birine 'şüphelisin' demek tercih edilir."
+  },
+  {
+    "question": "Python paketlerini (kütüphanelerini) terminal üzerinden yüklemek için kullanılan komut sistemi hangisidir?",
+    "option_a": "git",
+    "option_b": "pip (veya conda)",
+    "option_c": "npm",
+    "option_d": "docker",
+    "correct_answer": "B",
+    "category": "python",
+    "difficulty": "easy",
+    "explanation": "Python'da kütüphane yüklemek için genellikle `pip install paket_adi` komutu kullanılır."
+  },
+  {
+    "question": "Makine öğrenmesinde 'Korelasyon nedensellik (causation) anlamına gelmez' ifadesi neyi anlatır?",
+    "option_a": "İki değişkenin birlikte artması, birinin diğerine sebep olduğu anlamına gelmez.",
+    "option_b": "Korelasyon hesaplamak gereksizdir.",
+    "option_c": "İlişki varsa mutlaka neden-sonuç bağı vardır.",
+    "option_d": "Negatif korelasyon nedenselliktir.",
+    "correct_answer": "A",
+    "category": "ml_temel",
+    "difficulty": "easy",
+    "explanation": "Örneğin; yazın dondurma satışı ve boğulma vakaları birlikte artar (pozitif korelasyon), ama dondurma boğulmaya neden olmaz; ortak neden sıcaklıktır."
+  }
+]

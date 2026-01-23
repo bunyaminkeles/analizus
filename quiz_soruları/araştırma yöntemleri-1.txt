@@ -1,0 +1,222 @@
+[
+  {
+    "question": "Başkalarına ait fikirlerin, verilerin veya eserlerin, kaynak gösterilmeden sanki kendi eseriymiş gibi sunulmasına ne ad verilir?",
+    "option_a": "Fabrication (Uydurma)",
+    "option_b": "Falsification (Çarpıtma)",
+    "option_c": "Plagiarism (İntihal)",
+    "option_d": "Duplication (Tekrar Yayım)",
+    "correct_answer": "C",
+    "category": "etik",
+    "difficulty": "easy",
+    "explanation": "İntihal (aşırma), akademik dürüstlüğe aykırı en temel ihlaldir ve başkasının emeğini kaynak göstermeden sahiplenmek demektir."
+  },
+  {
+    "question": "Bir araştırmada, katılımcıların 'Görüşme' (Mülakat) tekniği ile derinlemesine duygu ve düşüncelerinin alındığı, sayısal verilerden çok sözel verilerin analiz edildiği araştırma türü hangisidir?",
+    "option_a": "Nicel (Quantitative) Araştırma",
+    "option_b": "Nitel (Qualitative) Araştırma",
+    "option_c": "Deneysel Araştırma",
+    "option_d": "Korelasyonel Araştırma",
+    "correct_answer": "B",
+    "category": "arastirma_yontemleri",
+    "difficulty": "easy",
+    "explanation": "Nitel araştırmalar 'Neden?' ve 'Nasıl?' sorularına odaklanarak olguları kendi ortamında derinlemesine inceler."
+  },
+  {
+    "question": "Bir makale veya tezde 'Kaynakça/Referanslar' listesi hazırlanırken en sık kullanılan, sosyal bilimlerde yaygın format hangisidir?",
+    "option_a": "APA (American Psychological Association)",
+    "option_b": "IEEE",
+    "option_c": "SQL",
+    "option_d": "SPSS",
+    "correct_answer": "A",
+    "category": "yazim_kurallari",
+    "difficulty": "easy",
+    "explanation": "Sosyal bilimlerde (Eğitim, Psikoloji, Sosyoloji vb.) en yaygın kullanılan atıf ve kaynakça düzenleme stili APA formatıdır."
+  },
+  {
+    "question": "Araştırmada henüz toplanmamış verileri varmış gibi göstermek veya yapılmamış bir deneyi yapılmış gibi raporlamak hangi etik ihlale girer?",
+    "option_a": "Dilimleme (Salami Slicing)",
+    "option_b": "Uydurma (Fabrication)",
+    "option_c": "Çarpıtma (Falsification)",
+    "option_d": "İntihal",
+    "correct_answer": "B",
+    "category": "etik",
+    "difficulty": "medium",
+    "explanation": "Uydurma (Fabrication), masa başında hayali veri üretmek ve araştırmayı gerçek dışı beyanlarla oluşturmaktır."
+  },
+  {
+    "question": "Anket soruları hazırlanırken 'Hem ders çalışıyor hem de müzik dinlemekten hoşlanıyor musunuz?' şeklinde bir soru sormak neden yanlıştır?",
+    "option_a": "Soru çok uzundur.",
+    "option_b": "Yönlendirici sorudur.",
+    "option_c": "Çift önermeli (Double-barreled) sorudur.",
+    "option_d": "Açık uçlu sorudur.",
+    "correct_answer": "C",
+    "category": "anket_yontemleri",
+    "difficulty": "medium",
+    "explanation": "Tek bir soruda iki farklı konuyu (ders çalışma ve müzik dinleme) sormak, katılımcının hangisine cevap verdiğini belirsizleştirir. Her soru tek bir yargıyı ölçmelidir."
+  },
+  {
+    "question": "Literatür taramasının (Literature Review) temel amacı aşağıdakilerden hangisidir?",
+    "option_a": "Sayfa sayısını artırmak.",
+    "option_b": "Mevcut bilgi birikimini özetleyip araştırmanın hangi boşluğu dolduracağını göstermek.",
+    "option_c": "Sadece ünlü yazarlardan alıntı yapmak.",
+    "option_d": "Veri analizini gerçekleştirmek.",
+    "correct_answer": "B",
+    "category": "literatur",
+    "difficulty": "medium",
+    "explanation": "Literatür taraması, konunun geçmişini, bilinenleri ve bilinmeyenleri ortaya koyarak yapılacak çalışmanın özgün değerini (justification) kanıtlar."
+  },
+  {
+    "question": "Bir çalışmanın sonuçlarının, benzer koşullar altında tekrarlandığında aynı sonuçları verme derecesine ne ad verilir?",
+    "option_a": "Geçerlilik (Validity)",
+    "option_b": "Güvenilirlik (Reliability)",
+    "option_c": "Nesnellik",
+    "option_d": "Etik",
+    "correct_answer": "B",
+    "category": "arastirma_yontemleri",
+    "difficulty": "medium",
+    "explanation": "Güvenilirlik, ölçme aracının tutarlı ve kararlı sonuçlar vermesidir. (Örn: Bir tartının her seferinde aynı ağırlığı göstermesi)."
+  },
+  {
+    "question": "Metin içi atıf yapılırken (Yılmaz vd., 2023) ifadesindeki 'vd.' ne anlama gelir?",
+    "option_a": "Ve diğerleri (ve arkadaşları)",
+    "option_b": "Ve devamı",
+    "option_c": "Veri dosyası",
+    "option_d": "Ve değerlendirenler",
+    "correct_answer": "A",
+    "category": "yazim_kurallari",
+    "difficulty": "easy",
+    "explanation": "Çok yazarlı eserlerde (genelde 3 veya daha fazla), ilk yazarın soyadından sonra 've diğerleri' anlamında 'vd.' (İngilizce: et al.) kısaltması kullanılır."
+  },
+  {
+    "question": "Nitel araştırmalarda, araştırmacının çalışma grubunun içine girerek onlarla birlikte yaşayıp gözlem yaptığı tekniğe ne ad verilir?",
+    "option_a": "Anket",
+    "option_b": "Katılımlı Gözlem",
+    "option_c": "Yapılandırılmış Görüşme",
+    "option_d": "Deney",
+    "correct_answer": "B",
+    "category": "nitel_arastirma",
+    "difficulty": "medium",
+    "explanation": "Katılımlı gözlemde araştırmacı, 'içeriden biri' gibi davranarak grubun doğal davranışlarını ve kültürünü anlamaya çalışır."
+  },
+  {
+    "question": "Tek bir büyük araştırmayı, yayın sayısını artırmak amacıyla parçalara bölüp birden fazla makale olarak yayımlamaya ne ad verilir?",
+    "option_a": "Duplikasyon",
+    "option_b": "Dilimleme (Salami Slicing)",
+    "option_c": "Korsan Yayın",
+    "option_d": "Hayalet Yazarlık",
+    "correct_answer": "B",
+    "category": "etik",
+    "difficulty": "hard",
+    "explanation": "Dilimleme, araştırmanın bütünlüğünü bozarak 'en az yayınlanabilir birim' mantığıyla etik dışı şekilde yayın sayısını şişirmektir."
+  },
+  {
+    "question": "Aşağıdakilerden hangisi 'Birincil Kaynak' (Primary Source) örneğidir?",
+    "option_a": "Ders kitabı",
+    "option_b": "Ansiklopedi maddesi",
+    "option_c": "Özgün bir araştırma makalesi (araştırmacının kendi verileriyle)",
+    "option_d": "Literatür derlemesi (Review article)",
+    "correct_answer": "C",
+    "category": "literatur",
+    "difficulty": "medium",
+    "explanation": "Birincil kaynaklar, bilginin ilk elden üretildiği (deney raporları, anket sonuçları, özgün makaleler) kaynaklardır."
+  },
+  {
+    "question": "Tez veya makalenin başında yer alan, çalışmanın amacını, yöntemini, bulgularını ve sonucunu 150-250 kelime ile özetleyen kısma ne ad verilir?",
+    "option_a": "Giriş (Introduction)",
+    "option_b": "Öz (Abstract)",
+    "option_c": "Önsöz (Preface)",
+    "option_d": "Tartışma (Discussion)",
+    "correct_answer": "B",
+    "category": "tez_yazimi",
+    "difficulty": "easy",
+    "explanation": "Öz (Abstract), okuyucunun metnin tamamını okumadan çalışma hakkında genel bilgi edinmesini sağlayan kısa özettir."
+  },
+  {
+    "question": "Bir görüşmede, araştırmacının önceden hazırladığı soruların dışına çıkabildiği, sohbet tarzında derinleşebildiği görüşme türü hangisidir?",
+    "option_a": "Yapılandırılmış Görüşme",
+    "option_b": "Yarı Yapılandırılmış Görüşme",
+    "option_c": "Anket",
+    "option_d": "Kapalı Uçlu Görüşme",
+    "correct_answer": "B",
+    "category": "gorusme_teknikleri",
+    "difficulty": "medium",
+    "explanation": "Yarı yapılandırılmış görüşmede ana sorular bellidir ancak araştırmacı duruma göre ek sorular (sondalar) sorarak konuyu derinleştirebilir."
+  },
+  {
+    "question": "Araştırmada 'Evren' (Population) ile 'Örneklem' (Sample) arasındaki ilişki nedir?",
+    "option_a": "Evren, örneklemin küçük bir parçasıdır.",
+    "option_b": "Örneklem, evreni temsil etmek üzere seçilen daha küçük bir gruptur.",
+    "option_c": "İkisi de aynı şeydir.",
+    "option_d": "Evren sadece insanlardan, örneklem nesnelerden oluşur.",
+    "correct_answer": "B",
+    "category": "arastirma_yontemleri",
+    "difficulty": "easy",
+    "explanation": "Bütün kitleye ulaşmak zor olduğu için, o kitleyi (evreni) temsil yeteneği olan küçük bir grup (örneklem) üzerinde araştırma yapılır."
+  },
+  {
+    "question": "Deney grubuna uygulanan işlemin etkisini ölçmek için, hiçbir işlem yapılmayan veya standart prosedür uygulanan gruba ne ad verilir?",
+    "option_a": "Müdahale Grubu",
+    "option_b": "Kontrol Grubu",
+    "option_c": "Pilot Grup",
+    "option_d": "Odak Grup",
+    "correct_answer": "B",
+    "category": "arastirma_yontemleri",
+    "difficulty": "medium",
+    "explanation": "Kontrol grubu, bağımsız değişkenin (deneyin) etkisini kıyaslamak için kullanılan referans grubudur."
+  },
+  {
+    "question": "Bilimsel bir araştırmada 'Sınırlılıklar' (Limitations) bölümünde ne yazılmalıdır?",
+    "option_a": "Araştırmanın ne kadar mükemmel olduğu.",
+    "option_b": "Araştırmacının bütçesi.",
+    "option_c": "Araştırmanın kapsamı dışında kalan veya kontrol edilemeyen eksiklikler/zorluklar.",
+    "option_d": "Teşekkür metni.",
+    "correct_answer": "C",
+    "category": "tez_yazimi",
+    "difficulty": "medium",
+    "explanation": "Sınırlılıklar, örneklem büyüklüğü, zaman, ulaşılabilirlik gibi araştırmanın genellenebilirliğini kısıtlayan faktörlerin dürüstçe açıklandığı bölümdür."
+  },
+  {
+    "question": "Nitel verilerin analizinde, metin içerisindeki anlamlı bölümlerin etiketlenerek kategoriler oluşturulmasına ne ad verilir?",
+    "option_a": "Kodlama (Coding)",
+    "option_b": "Regresyon",
+    "option_c": "Örnekleme",
+    "option_d": "Hipotez Testi",
+    "correct_answer": "A",
+    "category": "nitel_arastirma",
+    "difficulty": "medium",
+    "explanation": "Kodlama, ham metin verilerinin (görüşme dökümleri vb.) anlamlı kavramlara ve temalara dönüştürülmesi sürecidir."
+  },
+  {
+    "question": "Bir makalede 'yazarın araştırmaya katkısı olmadığı halde adının yazılması' hangi etik ihlaldir?",
+    "option_a": "Hayalet Yazarlık (Ghost Authorship)",
+    "option_b": "Armağan Yazarlık (Gift/Honorary Authorship)",
+    "option_c": "İntihal",
+    "option_d": "Uydurma",
+    "correct_answer": "B",
+    "category": "etik",
+    "difficulty": "hard",
+    "explanation": "Armağan yazarlık, akademik nüfuzu kullanmak veya jest yapmak amacıyla çalışmaya katkısı olmayan kişilerin yazar listesine eklenmesidir."
+  },
+  {
+    "question": "Likert tipi bir ölçekte (1: Kesinlikle Katılmıyorum ... 5: Kesinlikle Katılıyorum) toplanan veri hangi ölçüm düzeyindedir?",
+    "option_a": "Nominal (Sınıflama)",
+    "option_b": "Ordinal (Sıralama)",
+    "option_c": "Ratio (Oran)",
+    "option_d": "Dichotomous (İkili)",
+    "correct_answer": "B",
+    "category": "arastirma_yontemleri",
+    "difficulty": "medium",
+    "explanation": "Likert ölçeği bir sıralama belirtir (Katılıyorum > Katılmıyorum), ancak şıklar arasındaki matematiksel mesafe kesin eşit olmadığı için Ordinal kabul edilir (İstatistiksel analizlerde sıklıkla Eşit Aralıklı gibi de işlem görür)."
+  },
+  {
+    "question": "Araştırma raporunda, başka bir çalışmadan 'doğrudan alıntı' (blok alıntı) yapılıyorsa ve metin 40 kelimeden uzunsa format nasıl olmalıdır?",
+    "option_a": "Tırnak içinde ve italik yazılmalıdır.",
+    "option_b": "Tırnak kullanılmadan, soldan girintili ayrı bir blok olarak yazılmalıdır.",
+    "option_c": "Dipnot olarak verilmelidir.",
+    "option_d": "Kırmızı renk ile yazılmalıdır.",
+    "correct_answer": "B",
+    "category": "yazim_kurallari",
+    "difficulty": "hard",
+    "explanation": "APA kurallarına göre 40 kelimeyi aşan doğrudan alıntılar tırnak içine alınmaz, ana metinden ayrılarak soldan girintili (indented) bir blok halinde yazılır."
+  }
+]

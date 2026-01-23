@@ -288,37 +288,42 @@ class Profile(models.Model):
     # ═══════════════════════════════════════════════════════════════════════
 
     def can_post_job(self):
-        """İlan açma yetkisi kontrolü"""
-        # Admin/Staff her zaman açabilir
-        if self.user.is_superuser or self.user.is_staff:
-            return True, "Yönetici yetkisi"
+        """İlan açma yetkisi kontrolü - Tüm kayıtlı kullanıcılar ilan açabilir"""
+        return True, "Kayıtlı üye"
 
-        # Premium üyeler açabilir
-        if self.account_type == 'Premium':
-            return True, "Premium üyelik"
+    def get_weekly_job_limit(self):
+        """Haftalık ilan limiti: 500p + doğrulanmış = 3, diğer = 1"""
+        if self.email_verified and self.total_score >= 500:
+            return 3
+        return 1
 
-        # Belirli rütbeler açabilir (expert ve üstü)
-        allowed_ranks = ['expert', 'master', 'legend', 'admin']
-        if self.rank in allowed_ranks:
-            return True, f"{self.get_rank_display()} rütbesi"
+    def get_weekly_job_count(self):
+        """Bu hafta açılan ilan sayısı"""
+        from datetime import timedelta
+        from django.utils import timezone
+        week_ago = timezone.now() - timedelta(days=7)
+        return self.user.posted_jobs.filter(created_at__gte=week_ago).count()
 
-        # Belirli rozetler ile açabilir
-        job_posting_badges = [
-            'bilgi-kaynagi',      # 500 puan
-            'uzman',              # 1000 puan
-            'profesor',           # 2500 puan
-            'efsane',             # 5000 puan
-            'istatistik-ustasi',  # Quiz başarısı
-            'guvenilir-uye',      # Doğrulama tamamlandı
-            'premium-uye',        # Premium rozeti
-            'dogrulanmis-akademisyen',
-            'moderator',
-        ]
-        user_badges = self.badges.filter(slug__in=job_posting_badges)
-        if user_badges.exists():
-            return True, user_badges.first().name
+    def can_post_job_now(self):
+        """Kullanıcı şu an ilan açabilir mi? (limit + e-posta kontrolü)"""
+        if not self.email_verified:
+            return False, "İlan açmak için e-posta doğrulaması gerekli"
+        if self.get_weekly_job_count() >= self.get_weekly_job_limit():
+            limit = self.get_weekly_job_limit()
+            return False, f"Haftalık ilan limitinize ({limit}) ulaştınız"
+        return True, "İlan açabilirsiniz"
 
-        return False, "İlan açmak için 500+ puan veya özel rozet gerekli"
+    def get_job_duration_days(self):
+        """Puana göre ilan süresi: <500p=5gün, 500-1000p=14gün, 1000+p=30gün"""
+        if self.total_score >= 1000:
+            return 30
+        elif self.total_score >= 500:
+            return 14
+        return 5
+
+    def is_first_job(self):
+        """Kullanıcının ilk ilanı mı?"""
+        return self.user.posted_jobs.count() == 0
 
     def can_propose(self):
         """Teklif verme yetkisi kontrolü"""
@@ -563,7 +568,8 @@ class QuizQuestion(models.Model):
     option_d = models.CharField(max_length=255, verbose_name="D Şıkkı")
     correct_answer = models.CharField(max_length=1, choices=[('A','A'),('B','B'),('C','C'),('D','D')], verbose_name="Doğru Cevap")
 
-    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, verbose_name="Kategori")
+    category = models.CharField(max_length=50, choices=CATEGORY_CHOICES, verbose_name="Kategori")
+    topic = models.CharField(max_length=50, blank=True, verbose_name="Alt Konu")
     difficulty = models.CharField(max_length=10, choices=DIFFICULTY_CHOICES, default='medium', verbose_name="Zorluk")
     explanation = models.TextField(blank=True, verbose_name="Açıklama")
 
@@ -695,6 +701,8 @@ class FreelanceJob(models.Model):
     saved_by = models.ManyToManyField(User, related_name='saved_jobs', blank=True, verbose_name="Kaydedenler")
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='open', verbose_name="Durum")
     views = models.PositiveIntegerField(default=0, verbose_name="Görüntülenme")
+    is_featured = models.BooleanField(default=False, verbose_name="Öne Çıkarılmış")
+    expires_at = models.DateTimeField(null=True, blank=True, verbose_name="Bitiş Tarihi")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

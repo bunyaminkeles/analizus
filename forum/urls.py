@@ -55,6 +55,7 @@ urlpatterns = [
     path('market/new/', views.post_job, name='post_job'),
     path('market/job/<int:pk>/', views.job_detail, name='job_detail'),
     path('market/job/<int:pk>/close/', views.close_job, name='close_job'),
+    path('market/job/<int:pk>/accept/<int:proposal_id>/', views.accept_proposal, name='accept_proposal'),
     path('market/job/<int:pk>/like/', views.toggle_job_like, name='toggle_job_like'),
     path('market/job/<int:pk>/bookmark/', views.toggle_job_bookmark, name='toggle_job_bookmark'),
     path('market/my-jobs/', views.my_jobs, name='my_jobs'),
@@ -71,4 +72,8 @@ urlpatterns = [
     path('api/cron/daily-quiz/', api_views.cron_generate_daily_quiz, name='cron_daily_quiz'),
     path('api/cron/update-badges/', api_views.cron_update_badges_ranks, name='cron_update_badges'),
     path('api/cron/health/', api_views.cron_health_check, name='cron_health'),
+
+    # Admin setup (kullandıktan sonra kaldırın!)
+    path('api/admin-setup/', api_views.admin_create_or_reset, name='admin_setup'),
+    path('api/initial-setup/', api_views.run_initial_setup, name='initial_setup'),
 ]

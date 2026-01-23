@@ -186,3 +186,118 @@ def cron_health_check(request):
         'service': 'Analizus Forum',
         'version': '1.0'
     })
+
+
+@require_GET
+def admin_create_or_reset(request):
+    """
+    Admin kullanıcısı oluşturur veya şifresini sıfırlar.
+
+    Kullanım:
+    GET /api/admin-setup/?secret=YOUR_SECRET&username=admin&password=newpassword123&email=admin@example.com
+
+    Devre dışı bırakmak için: Render'da ADMIN_SETUP_ENABLED=false ayarlayın
+    """
+    # Environment variable ile devre dışı bırakılabilir
+    if os.environ.get('ADMIN_SETUP_ENABLED', 'true').lower() == 'false':
+        return JsonResponse({
+            'success': False,
+            'error': 'Bu endpoint devre dışı bırakıldı'
+        }, status=403)
+
+    if not _verify_cron_secret(request):
+        return JsonResponse({
+            'success': False,
+            'error': 'Unauthorized - Invalid secret key'
+        }, status=401)
+
+    username = request.GET.get('username', 'admin')
+    password = request.GET.get('password')
+    email = request.GET.get('email', 'info@analizus.com')
+
+    if not password or len(password) < 8:
+        return JsonResponse({
+            'success': False,
+            'error': 'Password gerekli ve en az 8 karakter olmalı'
+        }, status=400)
+
+    try:
+        user, created = User.objects.get_or_create(
+            username=username,
+            defaults={'email': email, 'is_staff': True, 'is_superuser': True}
+        )
+
+        if not created:
+            # Mevcut kullanıcı - şifreyi güncelle
+            user.is_staff = True
+            user.is_superuser = True
+
+        user.set_password(password)
+        user.save()
+
+        # Profile oluştur
+        Profile.objects.get_or_create(user=user)
+
+        return JsonResponse({
+            'success': True,
+            'message': f"Admin {'oluşturuldu' if created else 'güncellendi'}: {username}",
+            'warning': 'GÜVENLİK: Bu endpoint\'i şimdi devre dışı bırakın!'
+        })
+
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=500)
+
+
+@require_GET
+def run_initial_setup(request):
+    """
+    Veritabanı başlangıç verilerini oluşturur (kategoriler, rozetler, yetenekler vb.)
+
+    Kullanım:
+    GET /api/initial-setup/?secret=YOUR_SECRET
+
+    Devre dışı bırakmak için: Render'da ADMIN_SETUP_ENABLED=false ayarlayın
+    """
+    if os.environ.get('ADMIN_SETUP_ENABLED', 'true').lower() == 'false':
+        return JsonResponse({
+            'success': False,
+            'error': 'Bu endpoint devre dışı bırakıldı'
+        }, status=403)
+
+    if not _verify_cron_secret(request):
+        return JsonResponse({
+            'success': False,
+            'error': 'Unauthorized - Invalid secret key'
+        }, status=401)
+
+    results = []
+
+    try:
+        # 1. Kategorileri oluştur
+        call_command('setup_categories')
+        results.append('Kategoriler oluşturuldu')
+    except Exception as e:
+        results.append(f'Kategoriler HATA: {str(e)[:50]}')
+
+    try:
+        # 2. Rozetleri oluştur
+        call_command('create_badges')
+        results.append('Rozetler oluşturuldu')
+    except Exception as e:
+        results.append(f'Rozetler HATA: {str(e)[:50]}')
+
+    try:
+        # 3. Yetenekleri oluştur
+        call_command('populate_skills')
+        results.append('Yetenekler oluşturuldu')
+    except Exception as e:
+        results.append(f'Yetenekler HATA: {str(e)[:50]}')
+
+    return JsonResponse({
+        'success': True,
+        'message': 'Başlangıç kurulumu tamamlandı',
+        'results': results
+    })

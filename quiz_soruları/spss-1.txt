@@ -1,0 +1,222 @@
+[
+  {
+    "question": "SPSS'te değişkenlerin isimlerini, türlerini, etiketlerini ve ölçüm düzeylerini tanımladığımız pencere hangisidir?",
+    "option_a": "Data View",
+    "option_b": "Variable View",
+    "option_c": "Output View",
+    "option_d": "Syntax Editor",
+    "correct_answer": "B",
+    "category": "arayuz",
+    "difficulty": "easy",
+    "explanation": "Variable View (Değişken Görünümü), veri setindeki değişkenlerin özelliklerinin (isim, tip, ölçek vb.) tanımlandığı kısımdır."
+  },
+  {
+    "question": "Bir anketteki 'Cinsiyet' (Kadın/Erkek) değişkeni SPSS'te hangi ölçüm düzeyi (Measure) ile tanımlanmalıdır?",
+    "option_a": "Scale",
+    "option_b": "Ordinal",
+    "option_c": "Nominal",
+    "option_d": "Interval",
+    "correct_answer": "C",
+    "category": "veri_girisi",
+    "difficulty": "easy",
+    "explanation": "Cinsiyet, kategorik bir değişkendir ve kategoriler arasında bir sıralama (büyüklük/küçüklük) olmadığı için Nominal ölçek kullanılır."
+  },
+  {
+    "question": "SPSS'te yapılan bir analiz sonucunda 'Sig.' (p-value) değeri 0.03 bulunmuştur. Güven düzeyi %95 (alpha=0.05) ise bu sonuç nasıl yorumlanır?",
+    "option_a": "H0 hipotezi kabul edilir.",
+    "option_b": "Anlamsız bir ilişki vardır.",
+    "option_c": "İstatistiksel olarak anlamlı bir fark/ilişki vardır (H0 reddedilir).",
+    "option_d": "Test tekrarlanmalıdır.",
+    "correct_answer": "C",
+    "category": "hipotez_testleri",
+    "difficulty": "medium",
+    "explanation": "Sig. (p) değeri 0.05'ten küçük olduğu için (0.03 < 0.05), H0 hipotezi reddedilir ve sonuç istatistiksel olarak anlamlı bulunur."
+  },
+  {
+    "question": "İki bağımsız grubun ortalamaları arasında anlamlı bir fark olup olmadığını test etmek için hangi analiz kullanılır?",
+    "option_a": "Paired Samples T-Test",
+    "option_b": "One-Way ANOVA",
+    "option_c": "Independent Samples T-Test",
+    "option_d": "Chi-Square Test",
+    "correct_answer": "C",
+    "category": "t_testleri",
+    "difficulty": "medium",
+    "explanation": "İki farklı/bağımsız grubun (örn: Kadınlar ve Erkekler) sayısal bir değişkendeki ortalamalarını karşılaştırmak için Independent Samples T-Test kullanılır."
+  },
+  {
+    "question": "Parametrik test varsayımlarının karşılanmadığı durumda, 'Independent Samples T-Test' yerine kullanılması gereken parametrik olmayan (non-parametric) test hangisidir?",
+    "option_a": "Mann-Whitney U Test",
+    "option_b": "Wilcoxon Signed Rank Test",
+    "option_c": "Kruskal-Wallis H Test",
+    "option_d": "Spearman Correlation",
+    "correct_answer": "A",
+    "category": "non_parametric",
+    "difficulty": "hard",
+    "explanation": "Mann-Whitney U testi, iki bağımsız grubun karşılaştırılmasında Independent Samples T-Test'in parametrik olmayan alternatifidir."
+  },
+  {
+    "question": "Bir ölçeğin iç tutarlılığını (güvenilirliğini) ölçmek için SPSS'te en sık kullanılan katsayı hangisidir?",
+    "option_a": "Pearson Correlation",
+    "option_b": "Cronbach's Alpha",
+    "option_c": "R Square",
+    "option_d": "Beta Coefficient",
+    "correct_answer": "B",
+    "category": "guvenilirlik",
+    "difficulty": "medium",
+    "explanation": "Cronbach's Alpha katsayısı, likert tipi ölçeklerin iç tutarlılığını ve güvenilirliğini ölçmek için kullanılır."
+  },
+  {
+    "question": "Üç veya daha fazla bağımsız grubun ortalamalarını karşılaştırmak için kullanılan parametrik test hangisidir?",
+    "option_a": "Independent T-Test",
+    "option_b": "One-Way ANOVA",
+    "option_c": "Manova",
+    "option_d": "Regression",
+    "correct_answer": "B",
+    "category": "anova",
+    "difficulty": "medium",
+    "explanation": "Tek Yönlü Varyans Analizi (One-Way ANOVA), üç veya daha fazla grubun ortalamaları arasında fark olup olmadığını test eder."
+  },
+  {
+    "question": "Pearson korelasyon katsayısı (r) -0.85 ise, bu iki değişken arasındaki ilişki nasıldır?",
+    "option_a": "Zayıf pozitif ilişki",
+    "option_b": "Güçlü pozitif ilişki",
+    "option_c": "Güçlü negatif ilişki",
+    "option_d": "İlişki yoktur",
+    "correct_answer": "C",
+    "category": "korelasyon",
+    "difficulty": "medium",
+    "explanation": "Korelasyon katsayısı -1'e yaklaştıkça negatif ilişki güçlenir. -0.85 güçlü bir negatif ilişkiyi gösterir."
+  },
+  {
+    "question": "SPSS'te sürekli bir değişkeni kategorik hale getirmek (örneğin: Yaşı, yaş gruplarına çevirmek) için hangi menü kullanılır?",
+    "option_a": "Data > Split File",
+    "option_b": "Transform > Recode into Different Variables",
+    "option_c": "Analyze > Descriptive Statistics",
+    "option_d": "Data > Select Cases",
+    "correct_answer": "B",
+    "category": "veri_manipulasyonu",
+    "difficulty": "medium",
+    "explanation": "Mevcut bir değişkeni gruplayarak yeni bir değişkene atamak için 'Recode into Different Variables' komutu kullanılır."
+  },
+  {
+    "question": "Normallik dağılımını test etmek için aşağıdaki testlerden hangileri kullanılır?",
+    "option_a": "Kolmogorov-Smirnov & Shapiro-Wilk",
+    "option_b": "Levene & Bartlett",
+    "option_c": "Tukey & Bonferroni",
+    "option_d": "Pearson & Spearman",
+    "correct_answer": "A",
+    "category": "varsayimlar",
+    "difficulty": "hard",
+    "explanation": "Verinin normal dağılıp dağılmadığını test etmek için örneklem büyüklüğüne göre Kolmogorov-Smirnov veya Shapiro-Wilk testleri kullanılır."
+  },
+  {
+    "question": "Levene testi sonucunda Sig. değeri 0.01 bulunursa (p < 0.05), bu ne anlama gelir?",
+    "option_a": "Varyanslar homojendir.",
+    "option_b": "Varyanslar homojen değildir (Farklıdır).",
+    "option_c": "Ortalamalar eşittir.",
+    "option_d": "Veri normal dağılmaktadır.",
+    "correct_answer": "B",
+    "category": "varsayimlar",
+    "difficulty": "hard",
+    "explanation": "Levene testi varyansların homojenliğini test eder. p < 0.05 ise H0 reddedilir ve varyansların homojen olmadığı (farklı olduğu) kabul edilir."
+  },
+  {
+    "question": "Basit doğrusal regresyon analizinde 'R Square' (R Kare) değeri 0.60 ise bu neyi ifade eder?",
+    "option_a": "Bağımlı değişkendeki değişimin %60'ı bağımsız değişken tarafından açıklanmaktadır.",
+    "option_b": "Model %40 oranında hatalıdır.",
+    "option_c": "Değişkenler arasında %60 korelasyon vardır.",
+    "option_d": "Sonuç %60 güvenilirdir.",
+    "correct_answer": "A",
+    "category": "regresyon",
+    "difficulty": "medium",
+    "explanation": "Determinasyon katsayısı (R Kare), bağımsız değişkenin bağımlı değişkeni açıklama yüzdesini belirtir."
+  },
+  {
+    "question": "İki kategorik değişken (örneğin: Eğitim durumu ve Sigara kullanımı) arasında ilişki olup olmadığını test etmek için hangi analiz kullanılır?",
+    "option_a": "Pearson Korelasyonu",
+    "option_b": "Chi-Square (Ki-Kare) Bağımsızlık Testi",
+    "option_c": "T-Testi",
+    "option_d": "Faktör Analizi",
+    "correct_answer": "B",
+    "category": "non_parametric",
+    "difficulty": "medium",
+    "explanation": "İki kategorik (nominal veya ordinal) değişken arasındaki ilişkiyi incelemek için Ki-Kare (Chi-Square) testi kullanılır."
+  },
+  {
+    "question": "Aynı grubun, bir eğitim öncesi ve sonrası başarı puanlarını karşılaştırmak için hangi test uygundur?",
+    "option_a": "Independent Samples T-Test",
+    "option_b": "Paired Samples T-Test",
+    "option_c": "One-Way ANOVA",
+    "option_d": "Chi-Square Test",
+    "correct_answer": "B",
+    "category": "t_testleri",
+    "difficulty": "medium",
+    "explanation": "Aynı örneklemden elde edilen iki farklı ölçümü (önce-sonra gibi) karşılaştırmak için Bağımlı Örneklem (Paired Samples) T-Testi kullanılır."
+  },
+  {
+    "question": "SPSS çıktısında (Output) 'Mean Difference' neyi ifade eder?",
+    "option_a": "Standart sapma farkını",
+    "option_b": "Gruplar arası ortalama farkını",
+    "option_c": "Varyans farkını",
+    "option_d": "Güven aralığını",
+    "correct_answer": "B",
+    "category": "descriptive",
+    "difficulty": "easy",
+    "explanation": "Mean Difference, karşılaştırılan iki durum veya grup arasındaki aritmetik ortalama farkını gösterir."
+  },
+  {
+    "question": "Çoklu regresyon analizinde, bağımsız değişkenler arasında yüksek korelasyon olması durumuna ne ad verilir?",
+    "option_a": "Homoscedasticity",
+    "option_b": "Autocorrelation",
+    "option_c": "Multicollinearity (Çoklu Bağlantı)",
+    "option_d": "Normality",
+    "correct_answer": "C",
+    "category": "regresyon",
+    "difficulty": "hard",
+    "explanation": "Çoklu bağlantı (Multicollinearity), bağımsız değişkenlerin birbirleriyle çok yüksek korelasyona sahip olması sorunudur ve modelin güvenilirliğini düşürür."
+  },
+  {
+    "question": "Veri setini sadece belirli bir kritere uyan (örneğin: sadece Kadınlar) kişilerle analiz etmek için hangi menü kullanılır?",
+    "option_a": "Data > Split File",
+    "option_b": "Data > Select Cases",
+    "option_c": "Data > Weight Cases",
+    "option_d": "Transform > Compute Variable",
+    "correct_answer": "B",
+    "category": "veri_manipulasyonu",
+    "difficulty": "medium",
+    "explanation": "Select Cases, analizlerin sadece belirli bir şarta (if condition) uyan gözlemler üzerinde yapılmasını sağlar."
+  },
+  {
+    "question": "Aykırı değerleri (Outliers) tespit etmek için en sık kullanılan grafik türü hangisidir?",
+    "option_a": "Pie Chart",
+    "option_b": "Bar Chart",
+    "option_c": "Boxplot (Kutu Grafiği)",
+    "option_d": "Histogram",
+    "correct_answer": "C",
+    "category": "grafikler",
+    "difficulty": "medium",
+    "explanation": "Boxplot, verinin çeyrekliklerini gösterir ve kutunun bıyıkları dışında kalan noktalar aykırı değer (outlier) olarak kolayca görülür."
+  },
+  {
+    "question": "SPSS Syntax editöründe komutların sonuna konulması zorunlu olan işaret hangisidir?",
+    "option_a": "; (Noktalı virgül)",
+    "option_b": ". (Nokta)",
+    "option_c": ", (Virgül)",
+    "option_d": ": (İki nokta)",
+    "correct_answer": "B",
+    "category": "syntax",
+    "difficulty": "hard",
+    "explanation": "SPSS Syntax dilinde her komut bloğu mutlaka nokta (.) işareti ile bitirilmelidir, aksi takdirde kod çalışmaz."
+  },
+  {
+    "question": "Kaiser-Meyer-Olkin (KMO) testi hangi analiz öncesinde örneklem yeterliliğini ölçmek için yapılır?",
+    "option_a": "Regresyon Analizi",
+    "option_b": "Faktör Analizi",
+    "option_c": "Kümeleme Analizi",
+    "option_d": "T-Testi",
+    "correct_answer": "B",
+    "category": "faktor_analizi",
+    "difficulty": "hard",
+    "explanation": "KMO testi, verinin faktör analizi için uygun olup olmadığını ve örneklem büyüklüğünün yeterliliğini test eder."
+  }
+]

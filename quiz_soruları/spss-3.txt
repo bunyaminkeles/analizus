@@ -1,0 +1,222 @@
+[
+  {
+    "question": "Bir regresyon modelinde 'Adjusted R Square' (Düzeltilmiş R Kare) değeri neden R Square yerine tercih edilir?",
+    "option_a": "Daha yüksek bir değer verdiği için",
+    "option_b": "Modele eklenen gereksiz değişkenler için ceza puanı uygulayarak daha gerçekçi bir açıklayıcılık sunduğu için",
+    "option_c": "Sadece küçük örneklemlerde hesaplanabildiği için",
+    "option_d": "Negatif değer alabildiği için",
+    "correct_answer": "B",
+    "category": "regresyon",
+    "difficulty": "medium",
+    "explanation": "Normal R Kare, modele değişken eklendikçe sürekli artma eğilimindedir. Düzeltilmiş R Kare ise modele katkısı olmayan değişkenler eklendiğinde düşer, bu yüzden model kıyaslamasında daha güvenilirdir."
+  },
+  {
+    "question": "Üç veya daha fazla bağımlı grubun (tekrarlı ölçümlerin) karşılaştırılmasında kullanılan parametrik olmayan test hangisidir?",
+    "option_a": "Kruskal-Wallis Test",
+    "option_b": "Friedman Test",
+    "option_c": "Mann-Whitney U Test",
+    "option_d": "Wilcoxon Signed Rank Test",
+    "correct_answer": "B",
+    "category": "non_parametric",
+    "difficulty": "hard",
+    "explanation": "Repeated Measures ANOVA'nın parametrik olmayan karşılığı Friedman testidir."
+  },
+  {
+    "question": "SPSS'te 'Partial Correlation' (Kısmi Korelasyon) analizi ne işe yarar?",
+    "option_a": "Eksik verileri tamamlayarak korelasyon hesaplar.",
+    "option_b": "İki değişken arasındaki ilişkiyi, üçüncü bir değişkenin etkisini kontrol altında tutarak (sabitleyerek) inceler.",
+    "option_c": "Sadece pozitif korelasyonları gösterir.",
+    "option_d": "Değişkenleri kategorik hale getirir.",
+    "correct_answer": "B",
+    "category": "korelasyon",
+    "difficulty": "medium",
+    "explanation": "Örneğin; dondurma satışı ile boğulma vakaları arasındaki ilişkide 'sıcaklık' değişkeninin etkisini arındırmak için Kısmi Korelasyon kullanılır."
+  },
+  {
+    "question": "Çoklu regresyon analizinde, aykırı değerlerin (Multivariate Outliers) tespiti için hangi istatistik kullanılır?",
+    "option_a": "Cronbach's Alpha",
+    "option_b": "Mahalanobis Distance",
+    "option_c": "Tukey's HSD",
+    "option_d": "Levene Statistic",
+    "correct_answer": "B",
+    "category": "varsayimlar",
+    "difficulty": "hard",
+    "explanation": "Mahalanobis uzaklığı, çok değişkenli analizlerde bir gözlemin merkezden (ortalamalar vektöründen) ne kadar uzak olduğunu gösterir ve çok değişkenli aykırı değerleri bulmak için kullanılır."
+  },
+  {
+    "question": "ANCOVA (Analysis of Covariance) testinin ANOVA'dan temel farkı nedir?",
+    "option_a": "Daha fazla grup karşılaştırabilmesidir.",
+    "option_b": "Bağımlı değişkene etki eden bir 'ortak değişkeni' (covariate) kontrol altına alarak grup farklarına bakmasıdır.",
+    "option_c": "Sadece parametrik olmayan verilerde kullanılmasıdır.",
+    "option_d": "Post-Hoc testlerine ihtiyaç duymamasıdır.",
+    "correct_answer": "B",
+    "category": "anova",
+    "difficulty": "hard",
+    "explanation": "ANCOVA, bağımlı değişken üzerinde etkisi olabilecek sürekli bir dış değişkenin (covariate) etkisini istatistiksel olarak gidererek grupları karşılaştırır."
+  },
+  {
+    "question": "SPSS veri setinde aynı kişinin birden fazla kez girildiği 'Mükerrer Kayıtları' (Duplicate Cases) bulmak için hangi menü kullanılır?",
+    "option_a": "Data > Identify Duplicate Cases",
+    "option_b": "Data > Sort Cases",
+    "option_c": "Analyze > Descriptive Statistics",
+    "option_d": "Transform > Compute Variable",
+    "correct_answer": "A",
+    "category": "veri_yonetimi",
+    "difficulty": "easy",
+    "explanation": "Veri temizleme aşamasında, aynı ID veya özelliklere sahip tekrar eden satırları tespit etmek için 'Identify Duplicate Cases' kullanılır."
+  },
+  {
+    "question": "Bir hipotez testinde 'Type I Error' (Tip 1 Hata) neyi ifade eder?",
+    "option_a": "H0 doğru olduğu halde H0'ı reddetmek (Yanlış pozitif).",
+    "option_b": "H0 yanlış olduğu halde H0'ı kabul etmek (Yanlış negatif).",
+    "option_c": "Veri setinin hatalı girilmesi.",
+    "option_d": "Analizin yarıda kesilmesi.",
+    "correct_answer": "A",
+    "category": "hipotez_testleri",
+    "difficulty": "medium",
+    "explanation": "Tip 1 hata, gerçekte bir fark veya ilişki yokken (H0 doğruyken), varmış gibi (H0 red) sonuç bulmaktır. Alpha düzeyi (0.05) bu hatayı yapma riskidir."
+  },
+  {
+    "question": "SPSS Syntax'ında bir veri setini açmak için kullanılan komut hangisidir?",
+    "option_a": "OPEN DATA",
+    "option_b": "GET FILE",
+    "option_c": "READ FILE",
+    "option_d": "IMPORT DATA",
+    "correct_answer": "B",
+    "category": "syntax",
+    "difficulty": "medium",
+    "explanation": "SPSS'in kendi formatındaki (.sav) dosyaları açmak için kullanılan temel syntax komutu 'GET FILE'dır."
+  },
+  {
+    "question": "Kategorik bir değişkeni (örn: Eğitim Durumu) regresyon analizine sokabilmek için 'Dummy Coding' (Kukla Değişken Kodlaması) yapıldığında, k kategorili bir değişken için kaç adet dummy değişken oluşturulur?",
+    "option_a": "k kadar",
+    "option_b": "k - 1 kadar",
+    "option_c": "k + 1 kadar",
+    "option_d": "k / 2 kadar",
+    "correct_answer": "B",
+    "category": "regresyon",
+    "difficulty": "hard",
+    "explanation": "Dummy kodlamada bir kategori referans alınır, bu yüzden k kategorili bir değişken için k-1 adet yeni (0-1) değişken oluşturulur."
+  },
+  {
+    "question": "Effect Size (Etki Büyüklüğü) hesaplamasında kullanılan 'Cohen's d' değeri 0.8 ve üzeri ise etki nasıldır?",
+    "option_a": "İhmal edilebilir",
+    "option_b": "Küçük etki",
+    "option_c": "Orta etki",
+    "option_d": "Geniş (Büyük) etki",
+    "correct_answer": "D",
+    "category": "descriptive",
+    "difficulty": "medium",
+    "explanation": "Cohen's d için genel kabul gören sınırlar: 0.2 küçük, 0.5 orta, 0.8 ve üzeri büyük etkidir."
+  },
+  {
+    "question": "Verilerin homoscedasticity (eş varyanslılık) varsayımını ihlal etmesi, regresyon analizinde hangi grafikte belli olur?",
+    "option_a": "Histogram",
+    "option_b": "Scatterplot (Residuals vs Predicted Values)",
+    "option_c": "Boxplot",
+    "option_d": "Pie Chart",
+    "correct_answer": "B",
+    "category": "varsayimlar",
+    "difficulty": "hard",
+    "explanation": "Hata terimlerinin (residuals) tahmin edilen değerlere göre dağılım grafiğinde (Scatterplot) huni şeklinde bir görüntü oluşması, varyansların homojen olmadığını (Heteroscedasticity) gösterir."
+  },
+  {
+    "question": "SPSS'te çıktı (Output) dosyasının uzantısı nedir?",
+    "option_a": ".sav",
+    "option_b": ".spv",
+    "option_c": ".sps",
+    "option_d": ".csv",
+    "correct_answer": "B",
+    "category": "dosya_yapisi",
+    "difficulty": "easy",
+    "explanation": ".sav veri dosyası, .sps syntax dosyası, .spv ise analiz sonuçlarının olduğu çıktı dosyasıdır."
+  },
+  {
+    "question": "Non-parametrik testlerde 'Medyan' değerleri karşılaştırılırken, parametrik testlerde ne karşılaştırılır?",
+    "option_a": "Mod",
+    "option_b": "Aralık (Range)",
+    "option_c": "Ortalama (Mean)",
+    "option_d": "Varyans",
+    "correct_answer": "C",
+    "category": "t_testleri",
+    "difficulty": "easy",
+    "explanation": "Parametrik testler (t-testi, ANOVA vb.) ortalamalar üzerinden işlem yaparken, parametrik olmayan testler sıra puanları ve medyanlar üzerinden ilerler."
+  },
+  {
+    "question": "Aşağıdaki korelasyon katsayılarından hangisi 'belirleme katsayısı' (Coefficient of Determination) olarak adlandırılır?",
+    "option_a": "r",
+    "option_b": "r kare (r²)",
+    "option_c": "p değeri",
+    "option_d": "t değeri",
+    "correct_answer": "B",
+    "category": "korelasyon",
+    "difficulty": "medium",
+    "explanation": "Korelasyon katsayısının karesi (r²), bir değişkendeki varyansın ne kadarının diğer değişken tarafından açıklandığını gösterir ve belirleme katsayısı olarak adlandırılır."
+  },
+  {
+    "question": "SPSS'te değişken isimleri (Variable Name) verilirken aşağıdakilerden hangisi YAPILAMAZ?",
+    "option_a": "İsim rakamla başlatılamaz.",
+    "option_b": "Büyük/küçük harf kullanılabilir.",
+    "option_c": "Alt çizgi (_) kullanılabilir.",
+    "option_d": "İsim 64 karakterden uzun olabilir.",
+    "correct_answer": "A",
+    "category": "veri_girisi",
+    "difficulty": "easy",
+    "explanation": "SPSS'te değişken isimleri harfle başlamalıdır, rakam veya özel karakterlerle ($, # hariç) başlayamaz ve boşluk içeremez."
+  },
+  {
+    "question": "Kümeleme (Cluster) analizinde, verilerin hangi kümelere atandığını gösteren 'Dendrogram' grafiği hangi yöntemle elde edilir?",
+    "option_a": "K-Means Clustering",
+    "option_b": "Hierarchical Clustering",
+    "option_c": "Two-Step Clustering",
+    "option_d": "Discriminant Analysis",
+    "correct_answer": "B",
+    "category": "ileri_analiz",
+    "difficulty": "medium",
+    "explanation": "Hiyerarşik kümeleme analizi, kümelerin birleşme aşamalarını ağaç yapısı şeklinde gösteren Dendrogram grafiğini üretir."
+  },
+  {
+    "question": "Bir ölçek geliştirme çalışmasında 'Madde-Toplam Korelasyonu' (Item-Total Correlation) düşük çıkan bir madde için ne yapılmalıdır?",
+    "option_a": "Madde ölçekten çıkarılmalıdır.",
+    "option_b": "Maddenin puanı artırılmalıdır.",
+    "option_c": "Madde ters kodlanmalıdır.",
+    "option_d": "Hiçbir şey yapılmaz.",
+    "correct_answer": "A",
+    "category": "guvenilirlik",
+    "difficulty": "medium",
+    "explanation": "Madde-toplam korelasyonunun düşük olması (genelde <0.30), o maddenin ölçeğin bütünüyle uyumlu olmadığını gösterir ve güvenilirliği artırmak için madde çıkarılır."
+  },
+  {
+    "question": "Ki-Kare (Chi-Square) Uyumluluk İyiliği (Goodness of Fit) testi neyi test eder?",
+    "option_a": "İki değişken arasındaki ilişkiyi.",
+    "option_b": "Gözlenen frekansların, teorik/beklenen frekanslara uyup uymadığını.",
+    "option_c": "Ortalamalar arasındaki farkı.",
+    "option_d": "Varyansların homojenliğini.",
+    "correct_answer": "B",
+    "category": "non_parametric",
+    "difficulty": "medium",
+    "explanation": "Goodness of Fit testi tek bir kategorik değişken için yapılır ve dağılımın beklenen bir dağılıma (örn: eşit dağılım) uyup uymadığını kontrol eder."
+  },
+  {
+    "question": "Standartlaştırılmış Z puanlarının ortalaması ve standart sapması her zaman kaçtır?",
+    "option_a": "Ortalama=1, SD=0",
+    "option_b": "Ortalama=0, SD=1",
+    "option_c": "Ortalama=10, SD=1",
+    "option_d": "Ortalama=100, SD=15",
+    "correct_answer": "B",
+    "category": "descriptive",
+    "difficulty": "easy",
+    "explanation": "Z dönüşümü yapıldığında veriler standart normal dağılıma çekilir; bu dağılımın ortalaması 0, varyansı ve standart sapması 1'dir."
+  },
+  {
+    "question": "Hangi analiz türünde bağımsız değişkenler 'Faktör', bağımlı değişkenler ise 'Bağımlı Değişken' kutusuna atılır?",
+    "option_a": "Korelasyon",
+    "option_b": "ANOVA",
+    "option_c": "Regresyon",
+    "option_d": "Faktör Analizi",
+    "correct_answer": "B",
+    "category": "anova",
+    "difficulty": "easy",
+    "explanation": "SPSS ANOVA arayüzünde grupları belirten kategorik değişkenler 'Factor' kısmına, ölçülen sayısal değişken 'Dependent List' kısmına atılır."
+  }
+]

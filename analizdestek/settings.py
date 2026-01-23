@@ -197,7 +197,7 @@ DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'Analizus <noreply@analizde
 EMAIL_BACKEND = 'forum.backends.SendGridBackend'
 
 # Site URL (e-posta doğrulama linkleri için)
-SITE_URL = os.getenv('SITE_URL', 'https://analizus.com')
+SITE_URL = os.getenv('SITE_URL', 'https://www.analizus.com')
 
 # --- SESSION AYARLARI (Otomatik Logout) ---
 SESSION_COOKIE_AGE = 60 * 60 * 24  # 24 saat (saniye cinsinden)

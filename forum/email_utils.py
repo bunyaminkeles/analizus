@@ -6,7 +6,7 @@ import os
 # SendGrid Web API kullan (SMTP yerine - Render'da SMTP engellenmiş olabilir)
 try:
     from sendgrid import SendGridAPIClient
-    from sendgrid.helpers.mail import Mail, Email, To, Content
+    from sendgrid.helpers.mail import Mail
     SENDGRID_AVAILABLE = True
 except ImportError:
     SENDGRID_AVAILABLE = False
@@ -35,6 +35,7 @@ def send_email_async(subject, message, recipient_list):
                 return
 
             from_email = settings.DEFAULT_FROM_EMAIL
+            from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'info@analizus.com')
             logger.info(f"📤 SendGrid Web API ile gönderiliyor...")
             print(f"📤 SendGrid Web API ile gönderiliyor...")
             logger.info(f"🔍 FROM_EMAIL: {from_email}")
@@ -64,6 +65,14 @@ def send_email_async(subject, message, recipient_list):
                     print(f"⚠️ Beklenmedik status code: {response.status_code}")
 
         except Exception as e:
+            # SendGrid detaylı hata mesajını yakala (403 nedenini görmek için)
+            if hasattr(e, 'body'):
+                try:
+                    error_body = e.body.decode('utf-8')
+                    logger.error(f"❌ SendGrid API Detayı: {error_body}")
+                    print(f"❌ SendGrid API Detayı: {error_body}")
+                except: pass
+
             logger.error(f"❌ Email gönderim hatası: {e}", exc_info=True)
             print(f"❌ Email gönderim hatası: {e}")
             print(f"❌ Hata tipi: {type(e).__name__}")

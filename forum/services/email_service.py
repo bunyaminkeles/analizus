@@ -39,17 +39,17 @@ class EmailService:
         """
         try:
             from sendgrid import SendGridAPIClient
-            from sendgrid.helpers.mail import Mail, Email, To, Content
+            from sendgrid.helpers.mail import Mail
 
             api_key = getattr(settings, 'SENDGRID_API_KEY', '')
             from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@analizus.com')
 
             message = Mail(
-                from_email=Email(from_email),
-                to_emails=To(to_email),
+                from_email=from_email,
+                to_emails=to_email,
                 subject=subject,
-                plain_text_content=Content("text/plain", plain_content),
-                html_content=Content("text/html", html_content)
+                html_content=html_content,
+                plain_text_content=plain_content
             )
 
             sg = SendGridAPIClient(api_key)
@@ -66,6 +66,15 @@ class EmailService:
             logger.error("SendGrid paketi yüklü değil. 'pip install sendgrid' çalıştırın.")
             return False
         except Exception as e:
+            # SendGrid'den dönen detaylı hata mesajını logla (403 nedenini görmek için)
+            if hasattr(e, 'body'):
+                try:
+                    # Hata gövdesi genellikle bytes formatındadır
+                    error_body = e.body.decode('utf-8')
+                    logger.error(f"SendGrid API Hata Detayı: {error_body}")
+                    print(f"SendGrid API Hata Detayı: {error_body}")
+                except Exception:
+                    pass
             logger.error(f"SendGrid e-posta gönderme hatası ({to_email}): {e}")
             return False
 

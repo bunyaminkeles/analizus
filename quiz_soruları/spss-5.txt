@@ -1,0 +1,222 @@
+[
+  {
+    "question": "ANOVA analizinde elde edilen 'Partial Eta Squared' (Kısmi Eta Kare) değeri neyi ifade eder?",
+    "option_a": "Hata oranını.",
+    "option_b": "Gruplar arasındaki farkın etki büyüklüğünü (Effect Size).",
+    "option_c": "Korelasyon katsayısını.",
+    "option_d": "Örneklem büyüklüğünü.",
+    "correct_answer": "B",
+    "category": "anova",
+    "difficulty": "medium",
+    "explanation": "Partial Eta Squared, bağımsız değişkenin bağımlı değişkendeki varyansın ne kadarını açıkladığını gösteren bir etki büyüklüğü ölçüsüdür (0.01 küçük, 0.06 orta, 0.14 büyük etki)."
+  },
+  {
+    "question": "Veri setini 'Geniş Format'tan (Her yıl ayrı sütun) 'Uzun Format'a (Yıllar tek sütun, veriler alt alta) çevirmek için hangi menü kullanılır?",
+    "option_a": "Data > Transpose",
+    "option_b": "Data > Restructure",
+    "option_c": "Data > Split File",
+    "option_d": "Transform > Compute",
+    "correct_answer": "B",
+    "category": "veri_yonetimi",
+    "difficulty": "hard",
+    "explanation": "Restructure Data Wizard, tekrarlı ölçümlerin sütunlarda olduğu (Wide) yapıyı, satırlara (Long) çevirmek veya tam tersini yapmak için kullanılır."
+  },
+  {
+    "question": "SPSS Syntax penceresinde yazılan bir komutun çalışması için genellikle en sona eklenen ve 'işlemi yürüt' anlamına gelen komut hangisidir?",
+    "option_a": "RUN",
+    "option_b": "EXECUTE.",
+    "option_c": "COMPUTE",
+    "option_d": "GO",
+    "correct_answer": "B",
+    "category": "syntax",
+    "difficulty": "medium",
+    "explanation": "SPSS'te bazı dönüşüm komutları (transformations), 'EXECUTE.' komutu gelene kadar veya bir prosedür çalıştırılana kadar beklemede (pending) kalır."
+  },
+  {
+    "question": "2x2'den daha büyük (örn: 3x4) çapraz tablolarda (Crosstabs) kategorik değişkenler arasındaki ilişkinin gücünü ölçmek için hangi katsayı kullanılır?",
+    "option_a": "Phi Coefficient",
+    "option_b": "Cramer's V",
+    "option_c": "Pearson r",
+    "option_d": "Eta",
+    "correct_answer": "B",
+    "category": "korelasyon",
+    "difficulty": "medium",
+    "explanation": "2x2 tablolarda Phi katsayısı kullanılırken, daha büyük tablolarda Cramer's V katsayısı tercih edilir."
+  },
+  {
+    "question": "Eksik verilerin rastgele dağılıp dağılmadığını (MCAR - Missing Completely At Random) test etmek için hangi analiz kullanılır?",
+    "option_a": "Little's MCAR Test",
+    "option_b": "Levene's Test",
+    "option_c": "Mauchly's Test",
+    "option_d": "Box's M Test",
+    "correct_answer": "A",
+    "category": "veri_yonetimi",
+    "difficulty": "hard",
+    "explanation": "Little's MCAR testi, eksik verilerin sistematik bir örüntüye mi sahip olduğunu yoksa tamamen rastgele mi oluştuğunu test eder."
+  },
+  {
+    "question": "SPSS çıktısında Sig. (p) değeri '0.000' olarak görünüyorsa, akademik raporlamada bu nasıl yazılmalıdır?",
+    "option_a": "p = 0.000",
+    "option_b": "p < 0.001",
+    "option_c": "p = 0",
+    "option_d": "p > 0.05",
+    "correct_answer": "B",
+    "category": "raporlama",
+    "difficulty": "easy",
+    "explanation": "İstatistiksel olarak olasılık tam sıfır olamaz. SPSS sadece ilk 3 haneyi gösterir, bu yüzden p < 0.001 (binde birden küçük) şeklinde raporlanır."
+  },
+  {
+    "question": "Metin (String) formatında girilmiş kategorik verileri (örn: 'Kadın', 'Erkek') otomatik olarak sayısal kodlara (1, 2) dönüştürmek için hangi araç kullanılır?",
+    "option_a": "Transform > Automatic Recode",
+    "option_b": "Transform > Compute",
+    "option_c": "Data > Sort Cases",
+    "option_d": "Edit > Replace",
+    "correct_answer": "A",
+    "category": "veri_manipulasyonu",
+    "difficulty": "easy",
+    "explanation": "Automatic Recode, string değişkenleri alfabetik sıraya göre sayısal kodlara dönüştürür ve etiketlerini otomatik atar."
+  },
+  {
+    "question": "Verilerin ortalamadan olan uzaklığını görselleştirmek ve güven aralıklarını göstermek için kullanılan grafik türü hangisidir?",
+    "option_a": "Pie Chart",
+    "option_b": "Error Bar (Hata Çubukları)",
+    "option_c": "Histogram",
+    "option_d": "Scatter Dot",
+    "correct_answer": "B",
+    "category": "grafikler",
+    "difficulty": "medium",
+    "explanation": "Error Bar grafikleri, ortalama etrafındaki varyasyonu (Standart Hata veya %95 Güven Aralığı) görselleştirmek için kullanılır."
+  },
+  {
+    "question": "Regresyon analizinde 'Normal P-P Plot of Regression Standardized Residuals' grafiğindeki noktalar köşegen çizgi üzerinde toplanıyorsa bu ne anlama gelir?",
+    "option_a": "Hatalar (residuals) normal dağılmaktadır.",
+    "option_b": "Model yanlıştır.",
+    "option_c": "Doğrusallık varsayımı ihlal edilmiştir.",
+    "option_d": "Aykırı değerler vardır.",
+    "correct_answer": "A",
+    "category": "varsayimlar",
+    "difficulty": "hard",
+    "explanation": "Noktaların diyagonal çizgiye yakın seyretmesi, regresyon artıklarının (hatalarının) normal dağılım varsayımını karşıladığını gösterir."
+  },
+  {
+    "question": "Bağımsız değişkenlerin, grupları (örn: Kredi verenler vs vermeyenler) ne kadar doğru sınıflandırdığını tahmin etmek için hangi analiz kullanılır?",
+    "option_a": "Factor Analysis",
+    "option_b": "Discriminant Analysis (Diskriminant Analizi)",
+    "option_c": "One-Way ANOVA",
+    "option_d": "Pearson Correlation",
+    "correct_answer": "B",
+    "category": "ileri_analiz",
+    "difficulty": "hard",
+    "explanation": "Diskriminant analizi, bağımsız değişkenleri kullanarak bir bağımlı kategorik değişkene (grup üyeliğine) ait olmayı tahminlemeye çalışır."
+  },
+  {
+    "question": "SPSS'te iki tarih arasındaki gün sayısını (süre) hesaplamak için hangi sihirbaz kullanılır?",
+    "option_a": "Transform > Date and Time Wizard",
+    "option_b": "Analyze > Time Series",
+    "option_c": "Data > Define Dates",
+    "option_d": "Transform > Count Values",
+    "correct_answer": "A",
+    "category": "veri_manipulasyonu",
+    "difficulty": "easy",
+    "explanation": "Date and Time Wizard, tarihlerle toplama/çıkarma yapmak veya süre hesaplamak (Duration) için kullanılan hazır bir araçtır."
+  },
+  {
+    "question": "Parametrik varsayımlar sağlanamadığında veya örneklem sayısı çok az olduğunda, güven aralıklarını ve anlamlılığı tahmin etmek için kullanılan simülasyon yöntemi hangisidir?",
+    "option_a": "Bootstrapping",
+    "option_b": "Forecasting",
+    "option_c": "Molding",
+    "option_d": "Split-Half",
+    "correct_answer": "A",
+    "category": "ileri_analiz",
+    "difficulty": "hard",
+    "explanation": "Bootstrapping, mevcut veri setinden binlerce kez tekrar örnekleme yaparak (resampling) daha sağlam (robust) istatistiksel tahminler üretir."
+  },
+  {
+    "question": "Veri setindeki tüm vakaların değil, sadece %10'luk rastgele bir kısmının analiz edilmesi için hangi menü kullanılır?",
+    "option_a": "Data > Select Cases > Random sample of cases",
+    "option_b": "Data > Split File",
+    "option_c": "Data > Weight Cases",
+    "option_d": "Transform > Random Number Seed",
+    "correct_answer": "A",
+    "category": "veri_yonetimi",
+    "difficulty": "medium",
+    "explanation": "Büyük veri setlerinde pilot analiz yapmak için 'Random sample of cases' seçeneği ile rastgele bir alt küme seçilebilir."
+  },
+  {
+    "question": "Aşağıdakilerden hangisi bir 'Oran' (Ratio) ölçeği örneğidir? (Mutlak sıfır noktası olan)",
+    "option_a": "Sıcaklık (Santigrat)",
+    "option_b": "Aylık Gelir",
+    "option_c": "Eğitim Düzeyi",
+    "option_d": "Zeka Puanı (IQ)",
+    "correct_answer": "B",
+    "category": "veri_girisi",
+    "difficulty": "medium",
+    "explanation": "Gelir 0 olduğunda para yok demektir (mutlak sıfır). Sıcaklık veya IQ'da 0 değeri, özelliğin yokluğunu göstermez (Interval)."
+  },
+  {
+    "question": "Box's M testi hangi analizin varsayımını kontrol etmek için kullanılır?",
+    "option_a": "MANOVA (Varyans-Kovaryans matrislerinin homojenliği)",
+    "option_b": "T-Testi",
+    "option_c": "Ki-Kare",
+    "option_d": "Korelasyon",
+    "correct_answer": "A",
+    "category": "varsayimlar",
+    "difficulty": "hard",
+    "explanation": "MANOVA'da grupların kovaryans matrislerinin eşit olup olmadığını test etmek için Box's M testi kullanılır (Anlamsız çıkması istenir, p>0.05)."
+  },
+  {
+    "question": "Güvenilirlik analizinde 'Split-Half' (Yarıya Bölme) yöntemi ne işe yarar?",
+    "option_a": "Ölçeği iki yarıya bölerek iki parça arasındaki tutarlılığı (korelasyonu) inceler.",
+    "option_b": "Ölçeği kısaltır.",
+    "option_c": "Sadece tek maddelik ölçeklerde kullanılır.",
+    "option_d": "Faktör analizi yapar.",
+    "correct_answer": "A",
+    "category": "guvenilirlik",
+    "difficulty": "medium",
+    "explanation": "Split-Half modeli, maddeleri (örneğin tekler ve çiftler olarak) ikiye ayırır ve bu iki yarının birbiriyle tutarlılığını test eder."
+  },
+  {
+    "question": "SPSS'te 'Variable View' sekmesindeki 'Decimals' sütunu neyi belirler?",
+    "option_a": "Verinin ondalık basamak sayısını (görünüm olarak).",
+    "option_b": "Verinin maksimum değerini.",
+    "option_c": "Verinin sütun genişliğini.",
+    "option_d": "Verinin kayıp değer sayısını.",
+    "correct_answer": "A",
+    "category": "veri_girisi",
+    "difficulty": "easy",
+    "explanation": "Decimals, sayısal değerlerin virgülden sonra kaç basamak gösterileceğini ayarlar (Örn: 2 seçilirse 10.00 görünür)."
+  },
+  {
+    "question": "İki sıra (ordinal) değişken arasında çok sayıda eşit değer (ties) varsa, Spearman yerine hangi korelasyon katsayısı tercih edilmelidir?",
+    "option_a": "Pearson",
+    "option_b": "Kendall's tau-b",
+    "option_c": "Point Biserial",
+    "option_d": "Cronbach Alpha",
+    "correct_answer": "B",
+    "category": "korelasyon",
+    "difficulty": "hard",
+    "explanation": "Örneklem küçükse ve sıralamalarda çok fazla çakışma (aynı sırayı paylaşan değerler) varsa Kendall's tau-b, Spearman'dan daha güvenilir sonuç verir."
+  },
+  {
+    "question": "Outlier analizinde, Z puanı mutlak değer olarak kaçın üzerinde olan veriler genellikle 'aşırı uç değer' kabul edilir?",
+    "option_a": "1.0",
+    "option_b": "1.96",
+    "option_c": "3.0 (veya 3.29)",
+    "option_d": "0.05",
+    "correct_answer": "C",
+    "category": "descriptive",
+    "difficulty": "medium",
+    "explanation": "Standart normal dağılımda, ortalamadan ±3 standart sapma (Z=3) uzaklaşan veriler genellikle aykırı değer olarak işaretlenir."
+  },
+  {
+    "question": "SPSS kısaltmasının (ilk çıkışındaki) orijinal açılımı nedir?",
+    "option_a": "Statistical Product and Service Solutions",
+    "option_b": "Statistical Package for the Social Sciences",
+    "option_c": "System for Probability and Statistical Studies",
+    "option_d": "Social Psychology Statistical Software",
+    "correct_answer": "B",
+    "category": "genel_kultur",
+    "difficulty": "easy",
+    "explanation": "IBM satın alıp adını değiştirse de, orijinal ve en bilinen açılımı 'Statistical Package for the Social Sciences'tır (Sosyal Bilimler için İstatistik Paketi)."
+  }
+]

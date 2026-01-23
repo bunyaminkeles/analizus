@@ -1,0 +1,222 @@
+[
+  {
+    "question": "Faktör analizi sonucunda elde edilen 'Bartlett Küresellik Testi' (Bartlett's Test of Sphericity) anlamlı (p<0.05) çıkarsa bu neyi ifade eder?",
+    "option_a": "Değişkenler arasında korelasyon yoktur, faktör analizi yapılamaz.",
+    "option_b": "Örneklem büyüklüğü yetersizdir.",
+    "option_c": "Korelasyon matrisi birim matris değildir, değişkenler ilişkilidir ve faktör analizi yapılabilir.",
+    "option_d": "Veriler normal dağılmamaktadır.",
+    "correct_answer": "C",
+    "category": "faktor_analizi",
+    "difficulty": "hard",
+    "explanation": "Bartlett testi, değişkenlerin birbirleriyle korelasyon gösterip göstermediğini test eder. Anlamlı çıkması, faktör analizi yapmak için verinin uygun (ilişkili) olduğunu gösterir."
+  },
+  {
+    "question": "One-Way ANOVA testi sonucunda gruplar arasında anlamlı bir fark bulunduğunda, farkın tam olarak hangi gruplar arasında olduğunu belirlemek için hangi işlem yapılır?",
+    "option_a": "Post-Hoc Testleri (Tukey, Scheffe vb.)",
+    "option_b": "Korelasyon Analizi",
+    "option_c": "Regresyon Analizi",
+    "option_d": "Faktör Döndürme (Rotation)",
+    "correct_answer": "A",
+    "category": "anova",
+    "difficulty": "medium",
+    "explanation": "ANOVA sadece 'fark var' der. Farkın kaynağını (örn: Grup A ile Grup C arasında) bulmak için Post-Hoc çoklu karşılaştırma testleri uygulanır."
+  },
+  {
+    "question": "Mevcut iki değişkenin toplamını veya ortalamasını alarak yeni bir değişken oluşturmak için hangi menü kullanılır?",
+    "option_a": "Data > Aggregate",
+    "option_b": "Transform > Compute Variable",
+    "option_c": "Analyze > Descriptive Statistics",
+    "option_d": "Transform > Recode",
+    "correct_answer": "B",
+    "category": "veri_manipulasyonu",
+    "difficulty": "easy",
+    "explanation": "Matematiksel işlemler (toplama, ortalama, formül yazma) yaparak yeni değişken üretmek için 'Compute Variable' menüsü kullanılır."
+  },
+  {
+    "question": "Analiz çıktılarını (Output) kategorik bir değişkene göre (örn: Kadınlar ve Erkekler için ayrı ayrı tablolar halinde) almak için hangi işlem yapılmalıdır?",
+    "option_a": "Data > Select Cases",
+    "option_b": "Data > Split File",
+    "option_c": "Data > Sort Cases",
+    "option_d": "Data > Merge Files",
+    "correct_answer": "B",
+    "category": "veri_manipulasyonu",
+    "difficulty": "medium",
+    "explanation": "Split File komutu, veri setini belirtilen değişkene göre gruplara ayırır ve sonraki analizleri her grup için ayrı ayrı raporlar."
+  },
+  {
+    "question": "Elinizde ham veri yerine frekans tablosu (özetlenmiş veri) varsa, bu frekansları SPSS'e tanıtmak için hangi komut kullanılır?",
+    "option_a": "Data > Weight Cases",
+    "option_b": "Data > Select Cases",
+    "option_c": "Transform > Count Values",
+    "option_d": "Analyze > Frequencies",
+    "correct_answer": "A",
+    "category": "veri_girisi",
+    "difficulty": "hard",
+    "explanation": "Özetlenmiş verilerde, frekans sütununu 'ağırlık' (weight) olarak tanımlamak için 'Weight Cases' kullanılır, böylece SPSS o satırın kaç kez tekrar ettiğini anlar."
+  },
+  {
+    "question": "Ki-Kare (Chi-Square) analizinde, beklenen değeri (expected count) 5'ten küçük olan hücre sayısı %20'yi aşarsa ne yapılmalıdır?",
+    "option_a": "Analiz aynen raporlanır.",
+    "option_b": "Fisher's Exact Test sonucu dikkate alınır veya kategoriler birleştirilir.",
+    "option_c": "T-Testi uygulanır.",
+    "option_d": "Veri setinden bu gözlemler silinir.",
+    "correct_answer": "B",
+    "category": "varsayimlar",
+    "difficulty": "hard",
+    "explanation": "Ki-Kare testinin temel varsayımlarından biri beklenen değerlerin yeterli büyüklükte olmasıdır. Bu varsayım ihlal edilirse Fisher's Exact Test veya 'Likelihood Ratio' kullanılır."
+  },
+  {
+    "question": "Normal dağılım gösteren verilerde, verilerin ne kadarının ortalamadan uzaklaştığını gösteren ölçü hangisidir?",
+    "option_a": "Medyan",
+    "option_b": "Mod",
+    "option_c": "Standart Sapma",
+    "option_d": "Korelasyon Katsayısı",
+    "correct_answer": "C",
+    "category": "descriptive",
+    "difficulty": "easy",
+    "explanation": "Standart sapma, verilerin aritmetik ortalamadan ne kadar saptığının (yayılımının) bir ölçüsüdür."
+  },
+  {
+    "question": "Zaman serisi içeren veya aynı deneklerin üç farklı zamanda ölçüldüğü bir deneyde, ortalamaları karşılaştırmak için hangi test kullanılır?",
+    "option_a": "One-Way ANOVA",
+    "option_b": "Repeated Measures ANOVA",
+    "option_c": "Independent Samples T-Test",
+    "option_d": "Factor Analysis",
+    "correct_answer": "B",
+    "category": "anova",
+    "difficulty": "medium",
+    "explanation": "Aynı katılımcılardan ikiden fazla kez ölçüm alındığında (tekrarlı ölçümler), gruplar bağımlı olduğu için Repeated Measures ANOVA kullanılır."
+  },
+  {
+    "question": "İkili (Binary) Lojistik Regresyon analizinde bağımlı değişkenin yapısı nasıl olmalıdır?",
+    "option_a": "Sürekli (Scale) değişken (örn: Puan)",
+    "option_b": "İki kategorili (Dichotomous) değişken (örn: Hasta/Sağlam)",
+    "option_c": "Sıralı (Ordinal) değişken (örn: Eğitim seviyesi)",
+    "option_d": "Tarih değişkeni",
+    "correct_answer": "B",
+    "category": "regresyon",
+    "difficulty": "hard",
+    "explanation": "Binary Logistic Regression, bağımlı değişkenin sadece iki kategoriye (0 ve 1 gibi) sahip olduğu durumlarda kullanılır."
+  },
+  {
+    "question": "İki kategorik değişkenin frekans dağılımlarını bir tablo halinde görmek (örn: Cinsiyete göre Sigara içme durumu) için hangi analiz seçilir?",
+    "option_a": "Descriptives",
+    "option_b": "Crosstabs (Çapraz Tablo)",
+    "option_c": "Correlate",
+    "option_d": "Explore",
+    "correct_answer": "B",
+    "category": "descriptive",
+    "difficulty": "easy",
+    "explanation": "Crosstabs, iki veya daha fazla kategorik değişkenin kesişimindeki frekansları ve yüzdeleri gösterir."
+  },
+  {
+    "question": "Farklı dosyalardaki aynı kişilere ait farklı değişkenleri tek bir dosyada birleştirmek için hangi komut kullanılır?",
+    "option_a": "Data > Merge Files > Add Cases",
+    "option_b": "Data > Merge Files > Add Variables",
+    "option_c": "Data > Transpose",
+    "option_d": "Data > Split File",
+    "correct_answer": "B",
+    "category": "veri_yonetimi",
+    "difficulty": "medium",
+    "explanation": "Aynı ID'ye sahip kişilerin yeni verilerini (yeni sütunlar) eklemek için 'Add Variables' kullanılır. 'Add Cases' ise yeni kişiler (satırlar) eklemek içindir."
+  },
+  {
+    "question": "Veri setindeki her bir değerin standartlaştırılmış (Z-score) halini yeni bir değişken olarak kaydetmek için en pratik yol hangisidir?",
+    "option_a": "Compute Variable ile formül yazmak",
+    "option_b": "Analyze > Descriptive Statistics > Descriptives (Save standardized values as variables)",
+    "option_c": "Analyze > Compare Means",
+    "option_d": "Transform > Recode",
+    "correct_answer": "B",
+    "category": "veri_manipulasyonu",
+    "difficulty": "medium",
+    "explanation": "Descriptives menüsündeki 'Save standardized values...' kutucuğu işaretlenirse, SPSS otomatik olarak Z puanlarını hesaplayıp veri setine ekler."
+  },
+  {
+    "question": "Verilerin normal dağılıp dağılmadığını görsel olarak incelemek için 'Histogram' üzerine eklenen eğriye ne ad verilir?",
+    "option_a": "Regression Line",
+    "option_b": "Normal Curve",
+    "option_c": "Bar Line",
+    "option_d": "Scatter Line",
+    "correct_answer": "B",
+    "category": "grafikler",
+    "difficulty": "easy",
+    "explanation": "Histogram üzerine eklenen 'Normal Curve' (Normal Dağılım Eğrisi), verinin çan eğrisine ne kadar uyduğunu gösterir."
+  },
+  {
+    "question": "Biri sıralı (ordinal), diğeri sürekli (scale) olan veya her ikisi de sıralı olan iki değişken arasındaki ilişkiyi incelemek için hangi korelasyon katsayısı tercih edilir?",
+    "option_a": "Pearson",
+    "option_b": "Spearman's rho",
+    "option_c": "Eta",
+    "option_d": "Cronbach Alpha",
+    "correct_answer": "B",
+    "category": "korelasyon",
+    "difficulty": "medium",
+    "explanation": "Veriler normal dağılmıyorsa veya sıralı (ordinal) ölçekteyse Pearson yerine Spearman sıra farkları korelasyon katsayısı kullanılır."
+  },
+  {
+    "question": "Sürekli bir değişkeni, belirli kesme noktalarına göre otomatik olarak kategorik hale getirmek (görsel olarak sürükle-bırak yöntemiyle) için hangi araç kullanılır?",
+    "option_a": "Transform > Visual Binning",
+    "option_b": "Transform > Compute",
+    "option_c": "Data > Define Variable Properties",
+    "option_d": "Analyze > Classify",
+    "correct_answer": "A",
+    "category": "veri_manipulasyonu",
+    "difficulty": "medium",
+    "explanation": "Visual Binning, histogram üzerinde kesme noktalarını görerek sürekli değişkenleri gruplandırmayı (binning) sağlar."
+  },
+  {
+    "question": "Anketi cevaplamayan veya boş bırakılan soruları analiz dışı bırakmak için Variable View ekranında hangi sütun ayarlanmalıdır?",
+    "option_a": "Values",
+    "option_b": "Missing",
+    "option_c": "Label",
+    "option_d": "Role",
+    "correct_answer": "B",
+    "category": "veri_girisi",
+    "difficulty": "easy",
+    "explanation": "Missing sütunu, kullanıcı tanımlı kayıp verilerin (örn: -99 = Cevapsız) SPSS tarafından analiz dışı bırakılmasını sağlar."
+  },
+  {
+    "question": "Normal dağılım analizinde 'Skewness' (Çarpıklık) değerinin 0 olması neyi ifade eder?",
+    "option_a": "Dağılımın sağa çarpık olduğunu",
+    "option_b": "Dağılımın sola çarpık olduğunu",
+    "option_c": "Dağılımın tam simetrik olduğunu",
+    "option_d": "Verinin hatalı olduğunu",
+    "correct_answer": "C",
+    "category": "varsayimlar",
+    "difficulty": "medium",
+    "explanation": "Skewness değerinin 0 olması, dağılımın sağa veya sola yatık olmadığını, tam simetrik (normal) olduğunu gösterir."
+  },
+  {
+    "question": "Parametrik olmayan testlerden 'Kruskal-Wallis H Testi', parametrik testlerden hangisinin alternatifidir?",
+    "option_a": "Independent Samples T-Test",
+    "option_b": "Paired Samples T-Test",
+    "option_c": "One-Way ANOVA",
+    "option_d": "Pearson Correlation",
+    "correct_answer": "C",
+    "category": "non_parametric",
+    "difficulty": "hard",
+    "explanation": "Üç veya daha fazla bağımsız grubun karşılaştırılmasında, normallik varsayımı sağlanamıyorsa One-Way ANOVA yerine Kruskal-Wallis H testi kullanılır."
+  },
+  {
+    "question": "Bağımlı iki grup (Önce-Sonra) karşılaştırmasında parametrik varsayımlar sağlanamıyorsa, Paired Samples T-Test yerine hangi test kullanılır?",
+    "option_a": "Mann-Whitney U",
+    "option_b": "Wilcoxon Signed Rank Test",
+    "option_c": "Chi-Square",
+    "option_d": "Kruskal-Wallis",
+    "correct_answer": "B",
+    "category": "non_parametric",
+    "difficulty": "hard",
+    "explanation": "Bağımlı (eşleştirilmiş) gruplar için parametrik olmayan test Wilcoxon İşaretli Sıralar Testidir."
+  },
+  {
+    "question": "Bir regresyon analizinde 'Durbin-Watson' katsayısı hangi varsayımı test etmek için kullanılır?",
+    "option_a": "Normallik (Normality)",
+    "option_b": "Otokorelasyon (Autocorrelation)",
+    "option_c": "Çoklu Bağlantı (Multicollinearity)",
+    "option_d": "Homojenlik (Homogeneity)",
+    "correct_answer": "B",
+    "category": "regresyon",
+    "difficulty": "hard",
+    "explanation": "Durbin-Watson testi, regresyon analizinde hata terimlerinin (residuals) birbirinden bağımsız olup olmadığını (otokorelasyon) test eder. 2'ye yakın olması istenir."
+  }
+]

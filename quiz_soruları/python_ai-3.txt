@@ -1,0 +1,222 @@
+[
+  {
+    "question": "Python'da olası hataları (örn: sıfıra bölme hatası) program çökmeden yakalamak ve yönetmek için kullanılan yapı hangisidir?",
+    "option_a": "if - else",
+    "option_b": "try - except",
+    "option_c": "for - while",
+    "option_d": "def - return",
+    "correct_answer": "B",
+    "category": "python",
+    "difficulty": "easy",
+    "explanation": "Try bloğu içindeki kodda hata oluşursa program durmaz, kontrol Except bloğuna geçer ve alternatif işlem yapılır."
+  },
+  {
+    "question": "İki sinir ağının (Biri sahte veri üreten 'Generator', diğeri sahteyi ayırt eden 'Discriminator') birbirleriyle yarıştığı derin öğrenme mimarisi hangisidir?",
+    "option_a": "CNN",
+    "option_b": "RNN",
+    "option_c": "GAN (Generative Adversarial Networks)",
+    "option_d": "Transformer",
+    "correct_answer": "C",
+    "category": "deep_learning",
+    "difficulty": "hard",
+    "explanation": "GAN'lar, gerçekçi insan yüzleri üretmekten sanat eserleri oluşturmaya kadar birçok 'üretken' (generative) yapay zeka uygulamasının temelidir."
+  },
+  {
+    "question": "Modelin aşırı öğrenmesini (Overfitting) engellemek için, hata fonksiyonuna katsayıların büyüklüğüyle orantılı bir ceza terimi ekleme yöntemine ne denir?",
+    "option_a": "Normalization",
+    "option_b": "Regularization (L1 / L2)",
+    "option_c": "Standardization",
+    "option_d": "Augmentation",
+    "correct_answer": "B",
+    "category": "ml_temel",
+    "difficulty": "hard",
+    "explanation": "L1 (Lasso) ve L2 (Ridge) regülarizasyonu, modelin katsayılarını küçük tutmaya zorlayarak modeli sadeleştirir ve ezberlemeyi zorlaştırır."
+  },
+  {
+    "question": "Python'da Liste (List) ile Demet (Tuple) arasındaki en temel fark nedir?",
+    "option_a": "Listeler değiştirilebilir (mutable), demetler değiştirilemez (immutable).",
+    "option_b": "Listeler sayı tutamaz.",
+    "option_c": "Demetler daha yavaştır.",
+    "option_d": "Hiçbir fark yoktur.",
+    "correct_answer": "A",
+    "category": "python",
+    "difficulty": "medium",
+    "explanation": "Bir listeye sonradan eleman ekleyip çıkarabilirsiniz, ancak bir Tuple tanımlandıktan sonra içeriği değiştirilemez."
+  },
+  {
+    "question": "ChatGPT gibi modern dil modellerinin (LLM) temelini oluşturan ve kelimelerin birbirleriyle ilişkisini 'Attention' (Dikkat) mekanizmasıyla kuran mimari hangisidir?",
+    "option_a": "LSTM",
+    "option_b": "Transformer",
+    "option_c": "CNN",
+    "option_d": "SVM",
+    "correct_answer": "B",
+    "category": "deep_learning",
+    "difficulty": "medium",
+    "explanation": "Transformer mimarisi (Google tarafından 'Attention Is All You Need' makalesiyle tanıtıldı), RNN'lerin yerini alarak NLP alanında devrim yaratmıştır."
+  },
+  {
+    "question": "K-Means kümeleme algoritmasında, ideal küme sayısını (K) belirlemek için kullanılan ve hata grafiğinin kırılma noktasına bakılan yöntem hangisidir?",
+    "option_a": "Elbow Method (Dirsek Yöntemi)",
+    "option_b": "Grid Search",
+    "option_c": "Random Search",
+    "option_d": "Gradient Descent",
+    "correct_answer": "A",
+    "category": "ml_algoritmalar",
+    "difficulty": "medium",
+    "explanation": "Grafikte hata (inertia) değerinin düşüşünün yavaşlamaya başladığı dirsek noktası, optimum küme sayısı olarak seçilir."
+  },
+  {
+    "question": "Python'da bir Sınıf (Class) oluşturulduğunda, nesne ilk yaratılırken çalışan 'kurucu' (constructor) metod hangisidir?",
+    "option_a": "__main__",
+    "option_b": "__init__",
+    "option_c": "__str__",
+    "option_d": "__class__",
+    "correct_answer": "B",
+    "category": "python",
+    "difficulty": "medium",
+    "explanation": "`def __init__(self):` metodu, bir sınıftan nesne türetildiğinde otomatik olarak çalışır ve başlangıç özelliklerini atar."
+  },
+  {
+    "question": "Çok derin sinir ağlarında, gradyanların (türevlerin) geriye doğru gidildikçe küçülüp yok olması ve eğitimin durması sorununa ne ad verilir?",
+    "option_a": "Exploding Gradient",
+    "option_b": "Vanishing Gradient (Kaybolan Gradyan)",
+    "option_c": "Overfitting",
+    "option_d": "Underfitting",
+    "correct_answer": "B",
+    "category": "deep_learning",
+    "difficulty": "hard",
+    "explanation": "Sigmoid gibi fonksiyonlar türevleri 0-1 arasına sıkıştırdığı için, derin ağlarda geriye doğru çarpıldıkça sayılar sıfıra yaklaşır ve öğrenme durur. ReLU bunu çözer."
+  },
+  {
+    "question": "Zayıf öğrenicileri (genellikle karar ağaçlarını) sırayla ekleyerek ve her yeni ağacın bir öncekinin hatalarını düzeltmesini sağlayarak çalışan güçlü algoritma ailesi nedir?",
+    "option_a": "Bagging",
+    "option_b": "Boosting (Örn: XGBoost, LightGBM)",
+    "option_c": "Clustering",
+    "option_d": "Stacking",
+    "correct_answer": "B",
+    "category": "ml_algoritmalar",
+    "difficulty": "hard",
+    "explanation": "Boosting algoritmaları (XGBoost gibi), Kaggle yarışmalarında tablosal verilerde en çok kazanan modellerdir."
+  },
+  {
+    "question": "Python'da bir listenin son elemanına ulaşmak için hangi indeks kullanılır?",
+    "option_a": "list[0]",
+    "option_b": "list[-1]",
+    "option_c": "list[last]",
+    "option_d": "list[end]",
+    "correct_answer": "B",
+    "category": "python",
+    "difficulty": "easy",
+    "explanation": "Python'da negatif indeksleme vardır. -1 son elemanı, -2 sondan ikinci elemanı temsil eder."
+  },
+  {
+    "question": "Bir modelin 'Eğitim hatası düşük' ama 'Test hatası yüksek' ise bu modelde ne tür bir sorun vardır?",
+    "option_a": "Yüksek Bias (High Bias)",
+    "option_b": "Yüksek Varyans (High Variance) / Overfitting",
+    "option_c": "Düşük Varyans",
+    "option_d": "Underfitting",
+    "correct_answer": "B",
+    "category": "ml_temel",
+    "difficulty": "medium",
+    "explanation": "Yüksek varyans, modelin eğitim verisine aşırı uyum sağladığını ancak yeni verilerde dağıldığını (genelleme yapamadığını) gösterir."
+  },
+  {
+    "question": "PyTorch veya TensorFlow'da kullanılan, GPU üzerinde çalışabilen çok boyutlu matrislere genel olarak ne ad verilir?",
+    "option_a": "Vector",
+    "option_b": "Scalar",
+    "option_c": "Tensor",
+    "option_d": "DataFrame",
+    "correct_answer": "C",
+    "category": "deep_learning",
+    "difficulty": "easy",
+    "explanation": "Tensor, skaler (0D), vektör (1D) ve matrislerin (2D) n-boyutlu genelleştirilmiş halidir ve derin öğrenmenin temel veri yapısıdır."
+  },
+  {
+    "question": "Veri setini Eğitim/Test olarak ayırırken, hedef değişkenin (Sınıfların) oranını her iki parçada da korumak için hangi yöntem kullanılır?",
+    "option_a": "Random Split",
+    "option_b": "Stratified Sampling (Tabakalı Örnekleme)",
+    "option_c": "Sequential Split",
+    "option_d": "Batch Split",
+    "correct_answer": "B",
+    "category": "ml_temel",
+    "difficulty": "medium",
+    "explanation": "Eğer veride %10 hasta varsa, Stratified Split hem eğitim hem de test setinde %10 hasta olmasını garanti eder."
+  },
+  {
+    "question": "Python'da bir string, liste veya tuple'ın uzunluğunu (eleman sayısını) veren yerleşik fonksiyon hangisidir?",
+    "option_a": "size()",
+    "option_b": "count()",
+    "option_c": "length()",
+    "option_d": "len()",
+    "correct_answer": "D",
+    "category": "python",
+    "difficulty": "easy",
+    "explanation": "`len([1,2,3])` komutu 3 sonucunu döndürür. Python'un en sık kullanılan fonksiyonlarındandır."
+  },
+  {
+    "question": "Eğitilmiş bir modeli, yeni veri geldiğinde tekrar en baştan eğitmek yerine, mevcut ağırlıkları koruyarak yeni veriye adapte etme işlemine ne denir?",
+    "option_a": "Pre-training",
+    "option_b": "Fine-Tuning (İnce Ayar)",
+    "option_c": "Zero-shot Learning",
+    "option_d": "Encoding",
+    "correct_answer": "B",
+    "category": "deep_learning",
+    "difficulty": "medium",
+    "explanation": "Fine-Tuning, genellikle büyük bir modelin (örn: BERT) genel bilgisini alıp spesifik bir görev (örn: tweet analizi) için az miktarda veriyle özelleştirilmesidir."
+  },
+  {
+    "question": "Görüntü işlemede 'Object Detection' (Nesne Tespiti) ile 'Image Classification' (Görüntü Sınıflandırma) arasındaki temel fark nedir?",
+    "option_a": "Fark yoktur.",
+    "option_b": "Sınıflandırma resimde ne olduğunu söyler; Nesne Tespiti ise ne olduğunu ve nerede olduğunu (Bounding Box) söyler.",
+    "option_c": "Nesne tespiti sadece videolarda çalışır.",
+    "option_d": "Sınıflandırma daha zordur.",
+    "correct_answer": "B",
+    "category": "deep_learning",
+    "difficulty": "easy",
+    "explanation": "Sınıflandırma çıktı olarak 'Kedi' der. Nesne tespiti (örn: YOLO) ise 'Kedi şu koordinatlardaki kutunun içinde' der."
+  },
+  {
+    "question": "Hiperparametre optimizasyonu yaparken, belirlenen tüm olası kombinasyonları tek tek deneyen yöntem hangisidir?",
+    "option_a": "Random Search",
+    "option_b": "Grid Search",
+    "option_c": "Bayesian Optimization",
+    "option_d": "Manual Search",
+    "correct_answer": "B",
+    "category": "ml_temel",
+    "difficulty": "medium",
+    "explanation": "Grid Search, verdiğiniz parametre aralıklarındaki her bir kombinasyonu dener (çok uzun sürer ama garantidir); Random Search ise rastgele seçkiler yapar."
+  },
+  {
+    "question": "Python'da bir metni (string) belirli bir ayıraca göre bölüp listeye dönüştürmek için hangi metot kullanılır?",
+    "option_a": "slice()",
+    "option_b": "strip()",
+    "option_c": "split()",
+    "option_d": "divide()",
+    "correct_answer": "C",
+    "category": "python",
+    "difficulty": "easy",
+    "explanation": "`'a,b,c'.split(',')` komutu `['a', 'b', 'c']` listesini verir."
+  },
+  {
+    "question": "Makine öğrenmesi modellerini internet üzerinden başka uygulamaların kullanımına açmak (Deploy) için en sık kullanılan Python kütüphaneleri hangileridir?",
+    "option_a": "Matplotlib & Seaborn",
+    "option_b": "Flask & FastAPI",
+    "option_c": "NumPy & Pandas",
+    "option_d": "Keras & PyTorch",
+    "correct_answer": "B",
+    "category": "python",
+    "difficulty": "medium",
+    "explanation": "Flask ve FastAPI, ML modelini bir REST API olarak sunarak web sitelerinin veya mobil uygulamaların modelle iletişim kurmasını sağlar."
+  },
+  {
+    "question": "Görüntü verilerini artırmak (elimizdeki resimleri döndürerek, kırparak, rengini değiştirerek çoğaltmak) ve overfitting'i engellemek için kullanılan tekniğe ne denir?",
+    "option_a": "Data Augmentation (Veri Artırma)",
+    "option_b": "Data Cleaning",
+    "option_c": "Feature Extraction",
+    "option_d": "Dimension Reduction",
+    "correct_answer": "A",
+    "category": "deep_learning",
+    "difficulty": "easy",
+    "explanation": "Data Augmentation, eldeki veri az olduğunda suni çeşitlilik yaratarak modelin daha kararlı öğrenmesini sağlar."
+  }
+]
