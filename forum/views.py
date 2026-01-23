@@ -150,9 +150,13 @@ def job_list(request):
 
 @login_required
 def post_job(request):
-    if not FreelanceJob.can_post(request.user):
-        can_post, reason = request.user.profile.can_post_job() if hasattr(request.user, 'profile') else (False, "")
-        messages.error(request, f"İlan açmak için yetkiniz yok. {reason}. 500+ puan kazanarak, quiz çözerek veya hesabınızı doğrulayarak ilan açma yetkisi kazanabilirsiniz!")
+    from datetime import timedelta
+    from django.utils import timezone
+
+    profile = request.user.profile
+    can_post, reason = profile.can_post_job_now()
+    if not can_post:
+        messages.error(request, reason)
         return redirect('job_list')
 
     if request.method == 'POST':
@@ -160,8 +164,12 @@ def post_job(request):
         if form.is_valid():
             job = form.save(commit=False)
             job.owner = request.user
+            job.expires_at = timezone.now() + timedelta(days=profile.get_job_duration_days())
+            if profile.is_first_job():
+                job.is_featured = True
+                messages.info(request, 'İlk ilanınız olduğu için öne çıkarma hediyesi kazandınız!')
             job.save()
-            messages.success(request, 'İş ilanı başarıyla oluşturuldu.')
+            messages.success(request, f'İş ilanı başarıyla oluşturuldu. ({profile.get_job_duration_days()} gün aktif kalacak)')
             return redirect('job_detail', pk=job.pk)
     else:
         form = JobPostForm()
