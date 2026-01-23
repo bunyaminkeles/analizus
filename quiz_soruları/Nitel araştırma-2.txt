@@ -1,0 +1,222 @@
+[
+  {
+    "question": "NVIVO veya MAXQDA'de, farklı gruların (örn: Kadınlar vs Erkekler) belirli temalar hakkında ne sıklıkla konuştuğunu karşılaştırmalı bir tablo olarak görmek için hangi sorgu kullanılır?",
+    "option_a": "Word Frequency Query (Kelime Sıklığı Sorgusu)",
+    "option_b": "Matrix Coding Query (Matris Kodlama Sorgusu)",
+    "option_c": "Text Search Query (Metin Arama Sorgusu)",
+    "option_d": "Coding Comparison (Kodlama Karşılaştırma)",
+    "correct_answer": "B",
+    "category": "yazilim_ileri",
+    "difficulty": "hard",
+    "explanation": "Matris Kodlama Sorgusu, satırlarda kodların (temaların), sütunlarda ise özniteliklerin (cinsiyet, meslek vb.) yer aldığı ve kesişimdeki frekansları gösteren en güçlü analiz aracıdır."
+  },
+  {
+    "question": "Araştırmacının kendi geçmiş deneyimlerinin, ön yargılarının ve inançlarının araştırma sürecine etkisini sürekli sorgulaması ve bunu raporlaması sürecine ne ad verilir?",
+    "option_a": "Reflexivity (Düşünümsellik / Öz-yansıtma)",
+    "option_b": "Triangulation (Çeşitleme)",
+    "option_c": "Saturation (Doyum)",
+    "option_d": "Sampling (Örnekleme)",
+    "correct_answer": "A",
+    "category": "nitel_temeller",
+    "difficulty": "medium",
+    "explanation": "Nitel araştırmada araştırmacı da bir veri toplama aracıdır. Düşünümsellik, araştırmacının sürece olan sübjektif etkisinin farkında olması ve bunu şeffafça paylaşmasıdır."
+  },
+  {
+    "question": "Gömülü Teori (Grounded Theory) analiz sürecinde kodlama aşamaları sırasıyla nasıldır?",
+    "option_a": "Seçici -> Eksenel -> Açık",
+    "option_b": "Açık (Open) -> Eksenel (Axial) -> Seçici (Selective)",
+    "option_c": "Kapalı -> Açık -> Karma",
+    "option_d": "Tematik -> Betimsel -> İstatistiksel",
+    "correct_answer": "B",
+    "category": "kodlama",
+    "difficulty": "hard",
+    "explanation": "Önce veriler parçalanır ve etiketlenir (Açık), sonra kategoriler arası ilişkiler kurulur (Eksenel), en son ana çekirdek kategori bulunarak teori oluşturulur (Seçici)."
+  },
+  {
+    "question": "Kelime Bulutu (Word Cloud) oluştururken, 've', 'ile', 'fakat', 'bir' gibi analize anlam katmayan bağlaçların analiz dışı bırakılması işlemine ne ad verilir?",
+    "option_a": "Stop Words List (Durdurma Kelimeleri Listesi) oluşturma",
+    "option_b": "Lemmatization",
+    "option_c": "Autocoding",
+    "option_d": "Transkripsiyon",
+    "correct_answer": "A",
+    "category": "yazilim",
+    "difficulty": "easy",
+    "explanation": "Stop words listesi, en sık geçen ama içerik açısından anlamsız olan kelimelerin (bağlaçlar, zamirler) frekans sayımından çıkarılmasını sağlar."
+  },
+  {
+    "question": "Nitel araştırmada 'İç Geçerlilik' (Internal Validity) kavramının karşılığı olarak kullanılan ve sonuçların gerçeği yansıtıp yansıtmadığını ifade eden terim hangisidir?",
+    "option_a": "Transferability (Aktarılabilirlik)",
+    "option_b": "Credibility (İnandırıcılık)",
+    "option_c": "Dependability (Tutarlılık)",
+    "option_d": "Confirmability (Teyit Edilebilirlik)",
+    "correct_answer": "B",
+    "category": "guvenilirlik",
+    "difficulty": "medium",
+    "explanation": "Lincoln ve Guba'nın kriterlerine göre, nitel araştırmada iç geçerliliğin karşılığı 'İnandırıcılık'tır (Credibility). Yani katılımcıların dünyasının doğru resmedilip resmedilmediğidir."
+  },
+  {
+    "question": "Braun ve Clarke (2006) tarafından geliştirilen ve nitel analizde en yaygın kullanılan 6 aşamalı analiz yöntemi hangisidir?",
+    "option_a": "Söylem Analizi",
+    "option_b": "Tematik Analiz",
+    "option_c": "İçerik Analizi",
+    "option_d": "Fenomenolojik Analiz",
+    "correct_answer": "B",
+    "category": "nitel_desenler",
+    "difficulty": "medium",
+    "explanation": "Veriyi tanıma, kod üretme, temaları arama, temaları gözden geçirme, temaları tanımlama ve raporlama adımlarından oluşan süreç Tematik Analizdir."
+  },
+  {
+    "question": "NVIVO web tarayıcı eklentisi (NCapture) kullanılarak aşağıdakilerden hangisi veri olarak analiz programına çekilebilir?",
+    "option_a": "Sadece Word dosyaları",
+    "option_b": "Sosyal medya gönderileri (Twitter/X, Facebook), web sayfaları ve PDF'ler",
+    "option_c": "Sadece ses dosyaları",
+    "option_d": "SPSS dosyaları",
+    "correct_answer": "B",
+    "category": "yazilim",
+    "difficulty": "medium",
+    "explanation": "NCapture, web üzerindeki içerikleri (tweetler, yorumlar, haberler) formatını koruyarak NVIVO'ya aktarmayı sağlayan bir araçtır."
+  },
+  {
+    "question": "Araştırma bulgularının ve yorumların, verileri alınan katılımcılara sunularak 'Sizi doğru anlamış mıyım?' diye teyit ettirilmesi işlemine ne denir?",
+    "option_a": "Peer Debriefing (Akran Değerlendirmesi)",
+    "option_b": "Member Checking (Katılımcı Teyidi)",
+    "option_c": "External Audit (Dış Denetim)",
+    "option_d": "Pilot Çalışma",
+    "correct_answer": "B",
+    "category": "guvenilirlik",
+    "difficulty": "medium",
+    "explanation": "Katılımcı teyidi (Member checking), nitel araştırmanın inandırıcılığını artıran en önemli stratejilerden biridir."
+  },
+  {
+    "question": "Metin içindeki 'olumlu', 'olumsuz' veya 'nötr' ifadelerin yazılım tarafından otomatik olarak algılanıp kodlanmasına ne ad verilir?",
+    "option_a": "Sentiment Analysis (Duygu Analizi)",
+    "option_b": "Discourse Analysis",
+    "option_c": "Manual Coding",
+    "option_d": "Transcription",
+    "correct_answer": "A",
+    "category": "yazilim_ileri",
+    "difficulty": "medium",
+    "explanation": "Modern yazılımlar (NVIVO, MAXQDA), doğal dil işleme teknikleriyle metindeki duygu durumunu otomatik olarak puanlayabilir (Auto-coding sentiment)."
+  },
+  {
+    "question": "Sadece 'ne söylendiğine' değil, dilin 'nasıl kullanıldığına', iktidar ilişkilerine ve metnin arkasındaki sosyal yapıya odaklanan analiz türü hangisidir?",
+    "option_a": "İçerik Analizi",
+    "option_b": "Söylem Analizi (Discourse Analysis)",
+    "option_c": "Betimsel Analiz",
+    "option_d": "Vaka Analizi",
+    "correct_answer": "B",
+    "category": "nitel_desenler",
+    "difficulty": "hard",
+    "explanation": "Söylem analizi, dilin sadece bir iletişim aracı değil, sosyal gerçekliği inşa eden bir araç olduğu kabulüne dayanır."
+  },
+  {
+    "question": "MAXQDA veya NVIVO'da kodlar ve kavramlar arasındaki ilişkileri görselleştirmek için çizilen ağ diyagramlarına ne ad verilir?",
+    "option_a": "Frequency Table",
+    "option_b": "Concept Map / Project Map (Kavram Haritası)",
+    "option_c": "Heatmap",
+    "option_d": "Codebook",
+    "correct_answer": "B",
+    "category": "yazilim",
+    "difficulty": "easy",
+    "explanation": "Kavram haritaları, teorik model oluştururken değişkenler ve temalar arasındaki nedensellik veya ilişki bağlarını görselleştirmek için kullanılır."
+  },
+  {
+    "question": "Nitel bir raporda okuyucunun bağlamı tam olarak anlayabilmesi için ortamın, katılımcıların ve sürecin çok detaylı betimlenmesine Clifford Geertz ne ad vermiştir?",
+    "option_a": "Thin Description (Sığ Betimleme)",
+    "option_b": "Thick Description (Yoğun Betimleme)",
+    "option_c": "Abstract (Özet)",
+    "option_d": "Summary",
+    "correct_answer": "B",
+    "category": "nitel_temeller",
+    "difficulty": "hard",
+    "explanation": "Yoğun betimleme, bir davranışın sadece fiziksel olarak ne olduğunu değil, o kültür içindeki anlamını ve bağlamını da (örn: göz kırpma vs tik) anlatmaktır."
+  },
+  {
+    "question": "Odak grup görüşmelerinde, ses kaydı dökümünü yaparken konuşmacıları (Speaker 1, Speaker 2...) yazılıma tanıtmanın en büyük faydası nedir?",
+    "option_a": "Dosya boyutunu küçültür.",
+    "option_b": "Analiz sırasında 'Sadece Ahmet'in söylediklerini getir' veya 'Kadın konuşmacıları analiz et' diyebilmeyi sağlar.",
+    "option_c": "Otomatik kodlama yapar.",
+    "option_d": "Yazım hatalarını düzeltir.",
+    "correct_answer": "B",
+    "category": "yazilim",
+    "difficulty": "medium",
+    "explanation": "Odak gruplarda veriyi 'Case' (Kişi) bazlı sınıflandırmak, grup dinamiklerini ve bireysel katkıları ayrıştırmak için kritiktir."
+  },
+  {
+    "question": "İnsanların yaşadıkları olayları bir hikaye kurgusu (başlangıç-gelişme-sonuç) içinde anlatmalarını inceleyen analiz türü hangisidir?",
+    "option_a": "Tematik Analiz",
+    "option_b": "Narrative Analysis (Anlatı Analizi)",
+    "option_c": "İçerik Analizi",
+    "option_d": "SWOT Analizi",
+    "correct_answer": "B",
+    "category": "nitel_desenler",
+    "difficulty": "medium",
+    "explanation": "Anlatı analizi, bireylerin kimliklerini ve deneyimlerini hikayeler (narratives) yoluyla nasıl inşa ettiklerine odaklanır."
+  },
+  {
+    "question": "Amaçsal örnekleme yöntemlerinden biri olan ve 'birbirinden çok farklı' katılımcıları seçerek ortak temaları bulmayı hedefleyen yöntem hangisidir?",
+    "option_a": "Ölçüt Örnekleme",
+    "option_b": "Maksimum Çeşitlilik Örneklemesi (Maximum Variation Sampling)",
+    "option_c": "Tipik Durum Örneklemesi",
+    "option_d": "Kolayda Örnekleme",
+    "correct_answer": "B",
+    "category": "ornekleme",
+    "difficulty": "medium",
+    "explanation": "Maksimum çeşitlilik, heterojen bir gruptaki (örn: farklı yaş, eğitim, şehir) ortak paydaları (pattern) bulmak için kullanılır, bu da bulguların gücünü artırır."
+  },
+  {
+    "question": "NVIVO'da bir kelimenin metin içinde hangi bağlamda geçtiğini (öncesindeki ve sonrasındaki kelimelerle birlikte) gösteren liste görünümüne ne ad verilir?",
+    "option_a": "Word Cloud",
+    "option_b": "Word Tree (Kelime Ağacı) / KWIC (Key Word In Context)",
+    "option_c": "Matrix",
+    "option_d": "Attribute List",
+    "correct_answer": "B",
+    "category": "yazilim_ileri",
+    "difficulty": "medium",
+    "explanation": "Kelime ağacı, aranan kelimenin kök olduğu ve ondan dallanan cümlelerin görüldüğü, bağlamı anlamayı sağlayan etkili bir görseldir."
+  },
+  {
+    "question": "Nitel araştırmaların raporlanmasında şeffaflığı artırmak için uluslararası alanda kabul gören kontrol listesi (checklist) hangisidir?",
+    "option_a": "CONSORT",
+    "option_b": "COREQ (Consolidated Criteria for Reporting Qualitative Research)",
+    "option_c": "PRISMA",
+    "option_d": "ISO 9001",
+    "correct_answer": "B",
+    "category": "raporlama",
+    "difficulty": "hard",
+    "explanation": "COREQ, özellikle mülakat ve odak grup çalışmalarının raporlanmasında nelerin yer alması gerektiğini (araştırmacı özellikleri, çalışma grubu seçimi, analiz vb.) belirleyen standarttır."
+  },
+  {
+    "question": "Analiz yazılımında bir 'Case' (Vaka) oluşturmak ile bir 'Node/Code' (Kod) oluşturmak arasındaki temel fark nedir?",
+    "option_a": "Fark yoktur.",
+    "option_b": "Kodlar tematik (konu) etiketlerdir; Case'ler ise gözlem birimlerini (insanlar, kurumlar) temsil eder ve özellik (yaş, cinsiyet) atanabilir.",
+    "option_c": "Kodlar sayısal veridir, Case'ler sözel veridir.",
+    "option_d": "Case'ler silinemez.",
+    "correct_answer": "B",
+    "category": "yazilim",
+    "difficulty": "hard",
+    "explanation": "Bu ayrım kritiktir. Konuştukları konuları 'Kod'lara, konuşan kişileri ise 'Case'lere atarız ki kişilerin özelliklerine (Attributes) göre karşılaştırma yapabilelim."
+  },
+  {
+    "question": "Aşağıdakilerden hangisi bir nitel veri analiz programının (CAQDAS) yapabileceklerinden biri DEĞİLDİR?",
+    "option_a": "Büyük veri setlerini organize etmek.",
+    "option_b": "Görselleştirmeler (harita, bulut) yapmak.",
+    "option_c": "Metindeki kavramları otomatik olarak anlamlandırıp %100 doğru bir teori üretmek.",
+    "option_d": "Kodlama frekanslarını saymak.",
+    "correct_answer": "C",
+    "category": "yazilim",
+    "difficulty": "easy",
+    "explanation": "Yazılımlar 'anlamlandırma' yapamaz. İroni, metafor veya derin anlamı çözme ve teoriyi kurma işi tamamen araştırmacının zihinsel emeğine dayalıdır."
+  },
+  {
+    "question": "Verilerin, kodların veya araştırmacının notlarının (memoların) yazılım dosyası içinde kaybolmaması ve her zaman geri çağrılabilmesi hangi veri tabanı avantajıdır?",
+    "option_a": "Manageability (Yönetilebilirlik)",
+    "option_b": "Statistical Power",
+    "option_c": "Randomness",
+    "option_d": "Blindness",
+    "correct_answer": "A",
+    "category": "yazilim",
+    "difficulty": "easy",
+    "explanation": "Kağıt-kalem yöntemine göre yazılımların en büyük avantajı, binlerce sayfalık verinin anında erişilebilir, sorgulanabilir ve yönetilebilir (Data Management) olmasıdır."
+  }
+]

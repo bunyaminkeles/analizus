@@ -1,0 +1,222 @@
+[
+  {
+    "question": "Nitel araştırmalarda, verilerin toplanması sürecinde yeni bilgi elde edilememeye başlandığı ve tekrarın oluştuğu noktaya ne ad verilir?",
+    "option_a": "Kırılma Noktası",
+    "option_b": "Doyum Noktası (Saturation)",
+    "option_c": "Başlangıç Noktası",
+    "option_d": "Aykırı Değer",
+    "correct_answer": "B",
+    "category": "nitel_temeller",
+    "difficulty": "easy",
+    "explanation": "Doyum noktası, araştırmacının artık yeni bir kod veya tema bulamadığı, verilerin kendini tekrar etmeye başladığı ve veri toplamanın sonlandırıldığı aşamadır."
+  },
+  {
+    "question": "NVIVO veya MAXQDA gibi CAQDAS (Bilgisayar Destekli Nitel Veri Analizi) yazılımlarının temel işlevi nedir?",
+    "option_a": "Verileri araştırmacı yerine otomatik olarak analiz etmek ve yorumlamak.",
+    "option_b": "Verileri organize etmek, kodlamak ve geri çağırmayı kolaylaştırmak.",
+    "option_c": "İstatistiksel hipotez testleri yapmak.",
+    "option_d": "Anket verilerini SPSS formatına çevirmek.",
+    "correct_answer": "B",
+    "category": "yazilim",
+    "difficulty": "medium",
+    "explanation": "Bu yazılımlar analizi araştırmacı adına yapmaz; araştırmacının veriyi düzenlemesine, kodlamasına, görselleştirmesine ve karmaşık sorgular yapmasına yardımcı olan araçlardır."
+  },
+  {
+    "question": "İçerik analizinde, metnin görünen, açık ve doğrudan mesajının analiz edilmesine ne ad verilir?",
+    "option_a": "Örtük (Latent) İçerik Analizi",
+    "option_b": "Manifest (Görünen) İçerik Analizi",
+    "option_c": "Söylem Analizi",
+    "option_d": "Betimsel Analiz",
+    "correct_answer": "B",
+    "category": "icerik_analizi",
+    "difficulty": "medium",
+    "explanation": "Manifest analiz, metinde doğrudan yer alan kelimeler ve somut kavramlarla ilgilenir (Örn: 'Demokrasi' kelimesinin kaç kez geçtiği). Örtük analiz ise alt metinle ilgilenir."
+  },
+  {
+    "question": "Nitel araştırmada 'Gömülü Teori' (Grounded Theory) deseninin temel amacı nedir?",
+    "option_a": "Mevcut bir teoriyi test etmek.",
+    "option_b": "Verilerden yola çıkarak tümevarım yoluyla yeni bir teori oluşturmak.",
+    "option_c": "Kültürel bir grubu tasvir etmek.",
+    "option_d": "Değişkenler arası korelasyona bakmak.",
+    "correct_answer": "B",
+    "category": "nitel_desenler",
+    "difficulty": "hard",
+    "explanation": "Glaser ve Strauss tarafından geliştirilen Gömülü Teori, önceden belirlenmiş bir hipotezle başlamaz; veriler toplandıkça teori verinin içinden (gömülü olduğu yerden) çıkarılır."
+  },
+  {
+    "question": "Katılımcının söylediği ifadenin, hiç değiştirilmeden veya yorumlanmadan doğrudan kod adı olarak kullanılmasına ne denir?",
+    "option_a": "Axial Coding (Eksenel Kodlama)",
+    "option_b": "In-Vivo Kodlama",
+    "option_c": "Selective Coding (Seçici Kodlama)",
+    "option_d": "Tematik Kodlama",
+    "correct_answer": "B",
+    "category": "kodlama",
+    "difficulty": "medium",
+    "explanation": "In-Vivo kodlama, katılımcının özgün dilini ve kavramlarını korumak için, onların kullandığı kelimeleri doğrudan kod etiketi olarak kullanmaktır."
+  },
+  {
+    "question": "Bir araştırmacının, araştırma süreci boyunca kendi düşüncelerini, yorumlarını ve metodolojik kararlarını kaydettiği notlara NVIVO/MAXQDA literatüründe ne ad verilir?",
+    "option_a": "Node",
+    "option_b": "Memo",
+    "option_c": "Case",
+    "option_d": "Attribute",
+    "correct_answer": "B",
+    "category": "yazilim",
+    "difficulty": "easy",
+    "explanation": "Memolar (Analitik notlar), araştırmacının veriyle konuşmasıdır; kodlama yaparken aklına gelen fikirleri ve teorik bağlantıları yazdığı alandır."
+  },
+  {
+    "question": "Nitel araştırmada 'Çeşitleme' (Triangulation) neyi ifade eder?",
+    "option_a": "Sadece üç katılımcı ile görüşme yapılmasını.",
+    "option_b": "Araştırma sonuçlarının geçerliliğini artırmak için birden fazla veri kaynağı, yöntem veya araştırmacı kullanılmasını.",
+    "option_c": "Verilerin üçgen şeklinde grafiğe dökülmesini.",
+    "option_d": "Üç farklı yazılımın aynı anda kullanılmasını.",
+    "correct_answer": "B",
+    "category": "nitel_temeller",
+    "difficulty": "medium",
+    "explanation": "Çeşitleme, tek bir yöntemin veya kaynağın yaratabileceği yanlılığı (bias) önlemek için veriyi farklı açılardan doğrulamaktır."
+  },
+  {
+    "question": "NVIVO'da kodların (temaların) saklandığı ve hiyerarşik olarak düzenlendiği temel birime ne ad verilir?",
+    "option_a": "Nodes (Düğümler) / Codes",
+    "option_b": "Sources (Kaynaklar)",
+    "option_c": "Queries (Sorgular)",
+    "option_d": "Classifications",
+    "correct_answer": "A",
+    "category": "yazilim",
+    "difficulty": "easy",
+    "explanation": "NVIVO'da bir metin parçasını etiketlediğiniz kutucuklara 'Node' (yeni sürümlerde Code) denir. Bunlar 'Parent' ve 'Child' olarak hiyerarşik dizilebilir."
+  },
+  {
+    "question": "Aşağıdakilerden hangisi Nitel Araştırmanın doğasına uygun bir örnekleme yöntemidir?",
+    "option_a": "Basit Tesadüfi Örnekleme",
+    "option_b": "Amaçsal (Purposive) Örnekleme",
+    "option_c": "Tabakalı Rastgele Örnekleme",
+    "option_d": "Küme Örneklemesi",
+    "correct_answer": "B",
+    "category": "ornekleme",
+    "difficulty": "easy",
+    "explanation": "Nitel araştırmada amaç temsiliyetten ziyade derinlemesine bilgidir. Bu yüzden zengin bilgi sunacak kişiler özel olarak (amaçsal) seçilir."
+  },
+  {
+    "question": "Ses kayıtlarının analize hazır hale gelmesi için metne dökülmesi işlemine ne ad verilir?",
+    "option_a": "Kodlama (Coding)",
+    "option_b": "Deşifre (Transcription)",
+    "option_c": "Kategorizasyon",
+    "option_d": "Özetleme",
+    "correct_answer": "B",
+    "category": "veri_hazirlama",
+    "difficulty": "easy",
+    "explanation": "Deşifre (Transkripsiyon), görüşme veya odak grup ses kayıtlarının kelimesi kelimesine (verbatim) yazıya geçirilmesi sürecidir."
+  },
+  {
+    "question": "İçerik analizinde, birbirleriyle ilişkili kodların bir araya getirilerek oluşturduğu daha üst, soyut kavramlara ne denir?",
+    "option_a": "Alıntı",
+    "option_b": "Tema (Kategori)",
+    "option_c": "Birim",
+    "option_d": "Değişken",
+    "correct_answer": "B",
+    "category": "icerik_analizi",
+    "difficulty": "medium",
+    "explanation": "Analiz sürecinde: Veri -> Kod -> Kategori/Tema -> Teori/Sonuç hiyerarşisi izlenir. Temalar kodları çatısı altında toplar."
+  },
+  {
+    "question": "MAXQDA veya NVIVO'da, katılımcıların demografik özelliklerini (Yaş, Cinsiyet, Meslek vb.) tanımlamak için kullanılan özelliklere ne ad verilir?",
+    "option_a": "Memos",
+    "option_b": "Variables / Attributes (Değişkenler/Öznitelikler)",
+    "option_c": "Maps",
+    "option_d": "Links",
+    "correct_answer": "B",
+    "category": "yazilim",
+    "difficulty": "hard",
+    "explanation": "Bu özellikler sayesinde 'Sadece kadınların bu konudaki görüşlerini getir' veya 'Gençlerle yaşlıları karşılaştır' gibi sorgular yapılabilir."
+  },
+  {
+    "question": "Bir kültürün veya grubun davranışlarını, inançlarını ve yaşam biçimini yerinde gözlemleyerek tasvir eden nitel desen hangisidir?",
+    "option_a": "Fenomenoloji",
+    "option_b": "Etnografi",
+    "option_c": "Eylem Araştırması",
+    "option_d": "Durum Çalışması",
+    "correct_answer": "B",
+    "category": "nitel_desenler",
+    "difficulty": "medium",
+    "explanation": "Etnografi (Kültür tasviri), araştırmacının uzun süre o ortamda yaşayarak kültürü içeriden anlamaya çalıştığı desendir."
+  },
+  {
+    "question": "Kodlayıcılar arası güvenilirlik (Inter-coder reliability) neyi ölçer?",
+    "option_a": "Yazılımın hatasız çalışıp çalışmadığını.",
+    "option_b": "Farklı araştırmacıların aynı metni bağımsız olarak kodladıklarında ne kadar uyumlu sonuçlara ulaştığını.",
+    "option_c": "Katılımcıların doğru söyleyip söylemediğini.",
+    "option_d": "Anketin iç tutarlılığını.",
+    "correct_answer": "B",
+    "category": "guvenilirlik",
+    "difficulty": "hard",
+    "explanation": "Nitel araştırmada öznelliği azaltmak için, aynı metin iki kişi tarafından kodlanır ve Kappa katsayısı gibi ölçümlerle uyum (güvenilirlik) kontrol edilir."
+  },
+  {
+    "question": "Tümdengelim (Deductive) içerik analizi nasıl başlar?",
+    "option_a": "Doğrudan veriden kod üretilerek başlar.",
+    "option_b": "Önceden belirlenmiş bir teori veya kod listesi ile başlar ve veriler bu listeye göre kodlanır.",
+    "option_c": "Rastgele seçimle başlar.",
+    "option_d": "Hiçbir ön hazırlık olmadan başlar.",
+    "correct_answer": "B",
+    "category": "icerik_analizi",
+    "difficulty": "medium",
+    "explanation": "Tümdengelimci yaklaşımda araştırmacı literatürden veya teoriden hazırladığı bir 'kod defteri' (codebook) ile veriye yaklaşır."
+  },
+  {
+    "question": "Aşağıdakilerden hangisi NVIVO/MAXQDA gibi yazılımlarda 'Görselleştirme' aracı olarak sıkça kullanılır?",
+    "option_a": "T-Testi Tablosu",
+    "option_b": "Kelime Bulutu (Word Cloud)",
+    "option_c": "Regresyon Eğrisi",
+    "option_d": "ANOVA Tablosu",
+    "correct_answer": "B",
+    "category": "yazilim",
+    "difficulty": "easy",
+    "explanation": "Kelime bulutu, metinde en sık geçen kelimeleri büyüklüklerine göre görselleştirerek araştırmacıya hızlı bir fikir (insight) verir."
+  },
+  {
+    "question": "Fenomenolojik araştırmanın temel odak noktası nedir?",
+    "option_a": "Kültürel ritüeller.",
+    "option_b": "Bireylerin bir olguya ilişkin yaşanmış deneyimleri (Lived experience) ve bu deneyime yükledikleri anlamlar.",
+    "option_c": "Sayısal verilerin genellenebilirliği.",
+    "option_d": "Tarihsel belgeler.",
+    "correct_answer": "B",
+    "category": "nitel_desenler",
+    "difficulty": "medium",
+    "explanation": "Fenomenoloji, 'Kanser hastası olmak ne anlama gelir?' veya 'Göçmen olmak nasıl bir histir?' gibi deneyimlerin özüne iner."
+  },
+  {
+    "question": "Bir metin parçasının aynı anda birden fazla koda atanmasına ne denir?",
+    "option_a": "Hatalı Kodlama",
+    "option_b": "Eşzamanlı (Simultaneous) Kodlama",
+    "option_c": "Tekil Kodlama",
+    "option_d": "Ayrık Kodlama",
+    "correct_answer": "B",
+    "category": "kodlama",
+    "difficulty": "hard",
+    "explanation": "Nitel analizde bir cümle birden fazla anlam taşıyabilir; hem 'ekonomik zorluk' hem de 'aile içi dayanışma' koduna aynı anda atanabilir."
+  },
+  {
+    "question": "Araştırmacının ve katılımcıların, var olan bir sorunu çözmek için birlikte çalışıp uygulama-yansıtma döngüleri izledikleri desen hangisidir?",
+    "option_a": "Eylem Araştırması (Action Research)",
+    "option_b": "Biyografi",
+    "option_c": "Tarama Modeli",
+    "option_d": "Meta Analiz",
+    "correct_answer": "A",
+    "category": "nitel_desenler",
+    "difficulty": "medium",
+    "explanation": "Eylem araştırması, sadece durumu anlamayı değil, o durumu değiştirmeyi ve iyileştirmeyi (örn: sınıftaki bir öğrenme sorununu çözmek) hedefler."
+  },
+  {
+    "question": "Nitel verilerin raporlanmasında, araştırmacının yorumlarını desteklemek için en sık başvurduğu kanıt yöntemi nedir?",
+    "option_a": "P değerleri",
+    "option_b": "Katılımcıların doğrudan alıntıları (Direct Quotes)",
+    "option_c": "Pasta Grafikleri",
+    "option_d": "Standart Sapma değerleri",
+    "correct_answer": "B",
+    "category": "raporlama",
+    "difficulty": "easy",
+    "explanation": "Nitel araştırmanın gücü, katılımcının sesini duyurabilmesindedir. Bu nedenle 'Katılımcı A dedi ki: ...' şeklindeki alıntılar temel kanıttır."
+  }
+]

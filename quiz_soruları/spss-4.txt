@@ -1,0 +1,222 @@
+[
+  {
+    "question": "İki kategorik değişkenin (Örn: Seçim öncesi ve sonrası parti tercihi) aynı örneklem üzerindeki değişimini test etmek için kullanılan parametrik olmayan test hangisidir?",
+    "option_a": "Chi-Square Independence Test",
+    "option_b": "McNemar Test",
+    "option_c": "Mann-Whitney U",
+    "option_d": "Fisher's Exact Test",
+    "correct_answer": "B",
+    "category": "non_parametric",
+    "difficulty": "hard",
+    "explanation": "McNemar testi, bağımlı (eşleşmiş) gruplarda kategorik (nominal) verilerin değişimi olup olmadığını test eder (2x2 tablolar için)."
+  },
+  {
+    "question": "SPSS'te karmaşık grafikleri sürükle-bırak yöntemiyle oluşturmak ve önizlemek için kullanılan menü hangisidir?",
+    "option_a": "Graphs > Legacy Dialogs",
+    "option_b": "Graphs > Chart Builder",
+    "option_c": "Analyze > Descriptive Statistics",
+    "option_d": "View > Graphboard",
+    "correct_answer": "B",
+    "category": "grafikler",
+    "difficulty": "easy",
+    "explanation": "Chart Builder, grafik türlerini ve eksenleri görsel olarak düzenleyerek grafik oluşturmayı sağlayan modern arayüzdür."
+  },
+  {
+    "question": "Güvenilirlik analizinde 'Cronbach's Alpha if Item Deleted' sütunu neyi gösterir?",
+    "option_a": "Madde silindiğinde kalan maddelerin ortalamasını.",
+    "option_b": "İlgili madde ölçekten çıkarılırsa, ölçeğin toplam güvenilirlik katsayısının ne olacağını.",
+    "option_c": "Maddenin varyansını.",
+    "option_d": "Maddenin diğer maddelerle korelasyonunu.",
+    "correct_answer": "B",
+    "category": "guvenilirlik",
+    "difficulty": "medium",
+    "explanation": "Bu değer, mevcut Alpha değerinden daha yüksekse, o maddenin ölçekten çıkarılması güvenilirliği artırır anlamına gelir."
+  },
+  {
+    "question": "Tekrarlı Ölçümler ANOVA (Repeated Measures ANOVA) analizinde 'Mauchly's Test of Sphericity' anlamlı çıkarsa (varsayım ihlal edilirse) hangi düzeltme değerlerine bakılır?",
+    "option_a": "Bonferroni & Tukey",
+    "option_b": "Greenhouse-Geisser & Huynh-Feldt",
+    "option_c": "Levene & Bartlett",
+    "option_d": "Pearson & Spearman",
+    "correct_answer": "B",
+    "category": "anova",
+    "difficulty": "hard",
+    "explanation": "Küresellik varsayımı (Sphericity) ihlal edildiğinde serbestlik derecesi düzeltmesi yapan Greenhouse-Geisser veya Huynh-Feldt satırları raporlanır."
+  },
+  {
+    "question": "Çoklu regresyon analizinde, modele en çok katkı sağlayan değişkenleri sırasıyla ekleyip anlamsız olanları çıkaran yönteme ne ad verilir?",
+    "option_a": "Enter Method",
+    "option_b": "Stepwise Method",
+    "option_c": "Hierarchical Method",
+    "option_d": "Remove Method",
+    "correct_answer": "B",
+    "category": "regresyon",
+    "difficulty": "medium",
+    "explanation": "Stepwise (Adımsal) yöntem, istatistiksel kriterlere göre değişkenleri modele otomatik olarak ekler veya çıkarır."
+  },
+  {
+    "question": "Çoklu karşılaştırmalarda (Post-Hoc), yapılan hata oranını (Type I error) kontrol altında tutmak için en katı (muhafazakar) düzeltmeyi yapan test hangisidir?",
+    "option_a": "LSD (Least Significant Difference)",
+    "option_b": "Tukey",
+    "option_c": "Bonferroni",
+    "option_d": "Duncan",
+    "correct_answer": "C",
+    "category": "anova",
+    "difficulty": "hard",
+    "explanation": "Bonferroni düzeltmesi, alpha değerini yapılan test sayısına bölerek (0.05 / k) hatayı en aza indirir ancak fark bulmayı zorlaştırır."
+  },
+  {
+    "question": "Verilerin normal dağılıma uyması için 'Logaritmik Dönüşüm' (Log Transformation) yapmak istiyorsanız hangi fonksiyonu kullanırsınız?",
+    "option_a": "SQRT(variable)",
+    "option_b": "LN(variable) veya LG10(variable)",
+    "option_c": "ABS(variable)",
+    "option_d": "MEAN(variable)",
+    "correct_answer": "B",
+    "category": "veri_manipulasyonu",
+    "difficulty": "medium",
+    "explanation": "Sağa çarpık verileri normale yaklaştırmak için LN (Doğal Logaritma) veya LG10 (10 tabanında logaritma) fonksiyonları Compute Variable menüsünde kullanılır."
+  },
+  {
+    "question": "Bir evren ortalaması ile örneklem ortalaması arasında fark olup olmadığını test etmek (Örn: Sınıfın not ortalaması 50'den farklı mı?) için hangi test kullanılır?",
+    "option_a": "Independent Samples T-Test",
+    "option_b": "One-Sample T-Test",
+    "option_c": "Paired Samples T-Test",
+    "option_d": "One-Way ANOVA",
+    "correct_answer": "B",
+    "category": "t_testleri",
+    "difficulty": "easy",
+    "explanation": "Tek bir grubun ortalamasını bilinen bir sabit değerle (test değeri) karşılaştırmak için Tek Örneklem (One-Sample) T-Testi kullanılır."
+  },
+  {
+    "question": "Faktör analizinde, bir faktörün açıkladığı varyans miktarını gösteren ve genelde 1'den büyük olması beklenen değere ne ad verilir?",
+    "option_a": "Factor Loadings",
+    "option_b": "Eigenvalue (Özdeğer)",
+    "option_c": "Communality",
+    "option_d": "Rotated Component Matrix",
+    "correct_answer": "B",
+    "category": "faktor_analizi",
+    "difficulty": "medium",
+    "explanation": "Eigenvalue (Özdeğer), bir faktörün ne kadar bilgi taşıdığını gösterir. Kaiser kriterine göre özdeğeri 1'den büyük olan faktörler analize dahil edilir."
+  },
+  {
+    "question": "Faktör sayısına karar verirken kullanılan ve özdeğerlerin grafiğini çizerek 'kırılma noktasını' gösteren grafik hangisidir?",
+    "option_a": "Scatter Plot",
+    "option_b": "Scree Plot (Yamaç Grafiği)",
+    "option_c": "Boxplot",
+    "option_d": "Histogram",
+    "correct_answer": "B",
+    "category": "faktor_analizi",
+    "difficulty": "medium",
+    "explanation": "Scree Plot, faktörlerin özdeğerlerini dikey eksende gösterir; eğimin yataylaştığı nokta faktör sayısını belirlemede ipucu verir."
+  },
+  {
+    "question": "Eksik verilerin (Missing Values) yerine serinin ortalamasının atanması işlemine ne ad verilir?",
+    "option_a": "Listwise Deletion",
+    "option_b": "Mean Imputation (Ortalama Atama)",
+    "option_c": "Pairwise Deletion",
+    "option_d": "Regression Imputation",
+    "correct_answer": "B",
+    "category": "veri_yonetimi",
+    "difficulty": "easy",
+    "explanation": "Imputation, eksik verileri doldurma işlemidir. Mean imputation ise eksik gözeneklere o değişkenin genel ortalamasını yazar."
+  },
+  {
+    "question": "Analiz sonucunda elde edilen 'R' değeri (Korelasyon) 0 ise bu ne anlama gelir?",
+    "option_a": "Değişkenler arasında mükemmel bir ilişki vardır.",
+    "option_b": "Değişkenler arasında doğrusal bir ilişki yoktur.",
+    "option_c": "Negatif bir ilişki vardır.",
+    "option_d": "Hata yapılmıştır.",
+    "correct_answer": "B",
+    "category": "korelasyon",
+    "difficulty": "easy",
+    "explanation": "Korelasyon katsayısının 0 olması, iki değişken arasında doğrusal yönde bir ilişkinin bulunmadığını gösterir."
+  },
+  {
+    "question": "SPSS Data View penceresinde satırlar ve sütunlar neyi temsil eder?",
+    "option_a": "Satırlar değişkenleri, sütunlar katılımcıları.",
+    "option_b": "Satırlar katılımcıları (Cases), sütunlar değişkenleri (Variables).",
+    "option_c": "Satırlar analizleri, sütunlar sonuçları.",
+    "option_d": "Her ikisi de değişkenleri.",
+    "correct_answer": "B",
+    "category": "arayuz",
+    "difficulty": "easy",
+    "explanation": "SPSS standart veri girişinde her satır bir gözlem birimini (kişi/anket), her sütun ise bir soruyu/özelliği (değişkeni) temsil eder."
+  },
+  {
+    "question": "Aşağıdaki dosya uzantılarından hangisi SPSS Syntax (Kod) dosyasını ifade eder?",
+    "option_a": ".sav",
+    "option_b": ".spv",
+    "option_c": ".sps",
+    "option_d": ".xml",
+    "correct_answer": "C",
+    "category": "dosya_yapisi",
+    "difficulty": "easy",
+    "explanation": ".sps uzantısı, SPSS komutlarının metin tabanlı olarak saklandığı Syntax dosyaları içindir."
+  },
+  {
+    "question": "Normallik testi için örneklem sayısı 50'den büyükse (n > 50) hangi testin sonucuna bakmak daha uygundur?",
+    "option_a": "Shapiro-Wilk",
+    "option_b": "Kolmogorov-Smirnov",
+    "option_c": "Levene",
+    "option_d": "Anova",
+    "correct_answer": "B",
+    "category": "varsayimlar",
+    "difficulty": "medium",
+    "explanation": "Genel bir kural olarak, küçük örneklemlerde (<50) Shapiro-Wilk, büyük örneklemlerde (>50) Kolmogorov-Smirnov testi tercih edilir."
+  },
+  {
+    "question": "Bir değişkendeki (örn: Yaş) hatalı girilen uç değerleri (örn: 200) filtreleyip sadece mantıklı aralığı (18-99) görmek için hangi işlem yapılabilir?",
+    "option_a": "Data > Select Cases > If condition satisfied",
+    "option_b": "Data > Split File",
+    "option_c": "Analyze > Correlate",
+    "option_d": "Transform > Compute",
+    "correct_answer": "A",
+    "category": "veri_manipulasyonu",
+    "difficulty": "medium",
+    "explanation": "Select Cases menüsünde 'If age >= 18 & age <= 99' gibi bir koşul yazılarak bu aralık dışındaki veriler analizden geçici olarak çıkarılabilir."
+  },
+  {
+    "question": "SPSS'te çıktıları (Output) Word, Excel veya PDF olarak kaydetmek için hangi menü kullanılır?",
+    "option_a": "File > Save As",
+    "option_b": "File > Export",
+    "option_c": "Edit > Copy Special",
+    "option_d": "Data > Export",
+    "correct_answer": "B",
+    "category": "dosya_yapisi",
+    "difficulty": "easy",
+    "explanation": "File > Export menüsü, analiz sonuçlarını .doc, .xls, .pdf gibi yaygın formatlara dönüştürerek dışarı aktarmayı sağlar."
+  },
+  {
+    "question": "Korelasyon analizi yaparken 'korelasyonun neden sonuç ilişkisi belirtmediği' ilkesi neyi ifade eder?",
+    "option_a": "İki değişkenin birlikte değişmesi, birinin diğerine neden olduğu anlamına gelmez.",
+    "option_b": "Korelasyon varsa mutlaka nedensellik vardır.",
+    "option_c": "Korelasyon sadece negatif olabilir.",
+    "option_d": "Regresyon analizi yapılmadan korelasyon hesaplanamaz.",
+    "correct_answer": "A",
+    "category": "korelasyon",
+    "difficulty": "medium",
+    "explanation": "Korelasyon sadece ilişkinin yönünü ve gücünü gösterir; nedensellik (causality) çıkarımı yapmak için deneysel desen veya teorik altyapı gerekir."
+  },
+  {
+    "question": "Doğrusal Regresyon (Linear Regression) analizinin temel varsayımlarından biri olan 'Doğrusallık' (Linearity) nasıl kontrol edilir?",
+    "option_a": "Histogram ile",
+    "option_b": "Scatter Plot (Saçılım Grafiği) ile",
+    "option_c": "Boxplot ile",
+    "option_d": "Bar Chart ile",
+    "correct_answer": "B",
+    "category": "varsayimlar",
+    "difficulty": "medium",
+    "explanation": "Bağımlı ve bağımsız değişken arasındaki ilişkinin doğrusal olup olmadığı en iyi Scatter Plot (Serpilme Diyagramı) ile görselleştirilir."
+  },
+  {
+    "question": "Bir ankette 'Hiç Katılmıyorum (1)' ile 'Tamamen Katılıyorum (5)' arasındaki ölçek türü literatürde ne olarak adlandırılır?",
+    "option_a": "Likert Ölçeği",
+    "option_b": "Guttman Ölçeği",
+    "option_c": "Dikotom Ölçek",
+    "option_d": "Nominal Ölçek",
+    "correct_answer": "A",
+    "category": "veri_girisi",
+    "difficulty": "easy",
+    "explanation": "Derecelendirme yapılarak görüş belirtilen 5'li veya 7'li ölçek tiplerine Likert tipi ölçek denir ve SPSS'te genellikle Scale (veya Ordinal) olarak tanımlanır."
+  }
+]

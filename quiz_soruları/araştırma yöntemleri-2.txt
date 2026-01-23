@@ -1,0 +1,222 @@
+[
+  {
+    "question": "Zor ulaşılan veya gizli kalan gruplarla (örn: madde bağımlıları) çalışırken, bir katılımcının referansıyla diğerine ulaşılan örnekleme yöntemi hangisidir?",
+    "option_a": "Basit Tesadüfi Örnekleme",
+    "option_b": "Tabakalı Örnekleme",
+    "option_c": "Kartopu (Snowball) Örnekleme",
+    "option_d": "Sistematik Örnekleme",
+    "correct_answer": "C",
+    "category": "arastirma_yontemleri",
+    "difficulty": "medium",
+    "explanation": "Kartopu örnekleme, zincirleme bir şekilde katılımcıların birbirini önermesiyle örneklemin büyüdüğü, ulaşılması zor kitleler için ideal bir yöntemdir."
+  },
+  {
+    "question": "Bir deneyde, araştırmacının manipüle ettiği (değiştirdiği) ve sonuca etkisini incelediği değişken türü hangisidir?",
+    "option_a": "Bağımlı Değişken",
+    "option_b": "Bağımsız Değişken",
+    "option_c": "Kontrol Değişkeni",
+    "option_d": "Karıştırıcı Değişken",
+    "correct_answer": "B",
+    "category": "arastirma_yontemleri",
+    "difficulty": "easy",
+    "explanation": "Bağımsız değişken 'neden' konumundadır; araştırmacı tarafından değiştirilir. Bağımlı değişken ise bu değişimden etkilenen 'sonuç'tur."
+  },
+  {
+    "question": "Araştırma sonuçlarının, örneklemden daha büyük bir kitleye (evrene) genellenebilme derecesine ne ad verilir?",
+    "option_a": "İç Geçerlilik",
+    "option_b": "Dış Geçerlilik",
+    "option_c": "Yapı Geçerliliği",
+    "option_d": "Güvenilirlik",
+    "correct_answer": "B",
+    "category": "arastirma_yontemleri",
+    "difficulty": "medium",
+    "explanation": "Dış geçerlilik, elde edilen bulguların laboratuvar veya çalışma grubu dışındaki gerçek dünyaya ne kadar aktarılabileceği ile ilgilidir."
+  },
+  {
+    "question": "Katılımcıların araştırmaya katılmadan önce, araştırmanın amacı, riskleri ve hakları konusunda bilgilendirilip onaylarının alınmasına ne denir?",
+    "option_a": "Etik Kurul İzni",
+    "option_b": "Gizlilik Sözleşmesi",
+    "option_c": "Bilgilendirilmiş Onam (Informed Consent)",
+    "option_d": "Debriefing",
+    "correct_answer": "C",
+    "category": "etik",
+    "difficulty": "easy",
+    "explanation": "Bilgilendirilmiş onam, araştırma etiğinin temelidir; katılımcının neye dahil olduğunu bilerek gönüllü katılımını sağlar."
+  },
+  {
+    "question": "İstatistiksel analizlerde 'Gruplar arasında fark yoktur' veya 'Değişkenler arasında ilişki yoktur' önermesine dayanan hipotez türü hangisidir?",
+    "option_a": "Alternatif Hipotez (H1)",
+    "option_b": "Araştırma Hipotezi",
+    "option_c": "Sıfır/Yokluk Hipotezi (H0)",
+    "option_d": "Yönlü Hipotez",
+    "correct_answer": "C",
+    "category": "arastirma_yontemleri",
+    "difficulty": "medium",
+    "explanation": "H0 (Null Hypothesis), aksi kanıtlanana kadar durumun değişmediğini veya fark olmadığını varsayan, test edilen temel hipotezdir."
+  },
+  {
+    "question": "6-10 kişilik bir grubun, bir moderatör eşliğinde belirli bir konu hakkında tartıştığı nitel veri toplama tekniği hangisidir?",
+    "option_a": "Derinlemesine Görüşme",
+    "option_b": "Odak Grup Görüşmesi (Focus Group)",
+    "option_c": "Vaka Analizi",
+    "option_d": "Anket",
+    "correct_answer": "B",
+    "category": "nitel_arastirma",
+    "difficulty": "easy",
+    "explanation": "Odak grup görüşmeleri, grup dinamiğini kullanarak katılımcıların fikirlerini, tutumlarını ve etkileşimlerini anlamayı hedefler."
+  },
+  {
+    "question": "Dijital ortamdaki makalelere kalıcı erişim sağlamak için verilen ve 'https://doi.org/...' ile başlayan benzersiz kodun adı nedir?",
+    "option_a": "ISBN",
+    "option_b": "ISSN",
+    "option_c": "DOI (Digital Object Identifier)",
+    "option_d": "URL",
+    "correct_answer": "C",
+    "category": "literatur",
+    "difficulty": "easy",
+    "explanation": "DOI, dijital nesneleri etiketlemek için kullanılan kalıcı bir kimlik numarasıdır; web adresi değişse bile dokümana ulaşmayı sağlar."
+  },
+  {
+    "question": "Yazarın daha önce yayınlanmış kendi eserinden, kaynak göstermeden büyük bloklar halinde alıntı yapıp yeni bir eser gibi sunmasına ne ad verilir?",
+    "option_a": "Kendinden İntihal (Self-Plagiarism)",
+    "option_b": "Korsanlık",
+    "option_c": "Hayalet Yazarlık",
+    "option_d": "Atıf Yapma",
+    "correct_answer": "A",
+    "category": "etik",
+    "difficulty": "medium",
+    "explanation": "Kişinin kendi eseri olsa bile, eski çalışmasını yeniymiş gibi sunması veya kaynak göstermemesi akademik dürüstlüğe aykırıdır."
+  },
+  {
+    "question": "Hem nicel (sayısal) hem de nitel (sözel) yöntemlerin aynı araştırmada birlikte kullanılmasına ne ad verilir?",
+    "option_a": "Deneysel Yöntem",
+    "option_b": "Karma Yöntem (Mixed Methods)",
+    "option_c": "Korelasyonel Yöntem",
+    "option_d": "Etnografik Yöntem",
+    "correct_answer": "B",
+    "category": "arastirma_yontemleri",
+    "difficulty": "medium",
+    "explanation": "Karma yöntemler, araştırma problemine daha geniş bir bakış açısı getirmek için nicel verilerin genellenebilirliği ile nitel verilerin derinliğini birleştirir."
+  },
+  {
+    "question": "Asıl araştırmaya başlamadan önce, ölçme araçlarını test etmek ve olası sorunları görmek için küçük bir grupla yapılan ön çalışmaya ne denir?",
+    "option_a": "Son Test",
+    "option_b": "Pilot Uygulama (Pilot Study)",
+    "option_c": "Meta Analiz",
+    "option_d": "Alan Taraması",
+    "correct_answer": "B",
+    "category": "arastirma_yontemleri",
+    "difficulty": "easy",
+    "explanation": "Pilot çalışma, ana araştırmanın 'provası' niteliğindedir; anket sorularının anlaşılırlığını ve süreci test etmeyi sağlar."
+  },
+  {
+    "question": "Bir olayı, kişiyi veya kurumu kendi doğal çerçevesi içinde derinlemesine ve çok yönlü inceleyen araştırma deseni hangisidir?",
+    "option_a": "Tarama Modeli",
+    "option_b": "Durum Çalışması (Case Study)",
+    "option_c": "Deneysel Model",
+    "option_d": "Meta Analiz",
+    "correct_answer": "B",
+    "category": "nitel_arastirma",
+    "difficulty": "medium",
+    "explanation": "Durum çalışması (vaka incelemesi), sınırları belirli bir sistemin (bir okul, bir hasta, bir şirket) detaylı analizidir."
+  },
+  {
+    "question": "Tezin 'Tartışma' (Discussion) bölümünde aşağıdakilerden hangisinin yapılması BEKLENMEZ?",
+    "option_a": "Bulguların literatürdeki diğer çalışmalarla kıyaslanması.",
+    "option_b": "Bulguların ne anlama geldiğinin yorumlanması.",
+    "option_c": "Daha önce bahsedilmeyen tamamen yeni istatistiksel bulguların ilk kez sunulması.",
+    "option_d": "Araştırmanın sınırlılıklarından bahsedilmesi.",
+    "correct_answer": "C",
+    "category": "tez_yazimi",
+    "difficulty": "hard",
+    "explanation": "Tartışma bölümü yorumlama yeridir; yeni veriler ve bulgular 'Bulgular' bölümünde sunulmalıdır. Tartışma'da sürpriz yeni veri verilmez."
+  },
+  {
+    "question": "Evrenin alt gruplara (örn: Cinsiyet, Yaş) ayrıldığı ve her gruptan evrendeki oranına göre rastgele seçim yapıldığı örnekleme türü hangisidir?",
+    "option_a": "Basit Tesadüfi Örnekleme",
+    "option_b": "Tabakalı (Stratified) Örnekleme",
+    "option_c": "Amaçsal Örnekleme",
+    "option_d": "Gelişigüzel Örnekleme",
+    "correct_answer": "B",
+    "category": "arastirma_yontemleri",
+    "difficulty": "medium",
+    "explanation": "Tabakalı örnekleme, alt grupların (örneğin %60 Kadın, %40 Erkek) örneklemde de aynı oranda temsil edilmesini garanti altına alır."
+  },
+  {
+    "question": "Araştırmada geçerliliği artırmak için birden fazla veri toplama aracı, birden fazla araştırmacı veya birden fazla yöntemin kullanılmasına ne ad verilir?",
+    "option_a": "Çeşitleme / Üçgenleme (Triangulation)",
+    "option_b": "Korelasyon",
+    "option_c": "Standartlaştırma",
+    "option_d": "Rastgeleleştirme",
+    "correct_answer": "A",
+    "category": "arastirma_yontemleri",
+    "difficulty": "hard",
+    "explanation": "Çeşitleme (Triangulation), aynı olguyu farklı açılardan inceleyerek önyargıyı azaltmak ve sonuçların doğruluğunu teyit etmek için kullanılır."
+  },
+  {
+    "question": "Bilimsel bir makalenin yayımlanmadan önce, o alandaki uzmanlar tarafından isimsiz olarak incelenip onaylanması sürecine ne ad verilir?",
+    "option_a": "Editör Kontrolü",
+    "option_b": "Akran/Hakem Değerlendirmesi (Peer Review)",
+    "option_c": "İntihal Taraması",
+    "option_d": "Etik Kurul",
+    "correct_answer": "B",
+    "category": "yazim_kurallari",
+    "difficulty": "medium",
+    "explanation": "Peer review, bilimsel kalitenin korunması için makalenin konunun uzmanları (hakemler) tarafından körleme usulüyle denetlenmesidir."
+  },
+  {
+    "question": "Aynı örneklem grubunun uzun yıllar boyunca izlendiği ve verilerin belirli aralıklarla tekrar toplandığı araştırma türü hangisidir?",
+    "option_a": "Kesitsel (Cross-sectional) Araştırma",
+    "option_b": "Boylamsal (Longitudinal) Araştırma",
+    "option_c": "Tarihsel Araştırma",
+    "option_d": "Vaka Çalışması",
+    "correct_answer": "B",
+    "category": "arastirma_yontemleri",
+    "difficulty": "medium",
+    "explanation": "Boylamsal araştırmalar, değişimi ve gelişimi zaman içinde görmek için (örneğin 10 yıl boyunca her yıl ölçüm yaparak) kullanılır."
+  },
+  {
+    "question": "Tez veya raporun sonuna eklenen; anket formları, izin belgeleri, ek tablolar gibi materyallerin bulunduğu bölüme ne ad verilir?",
+    "option_a": "Kaynakça",
+    "option_b": "Ekler (Appendices)",
+    "option_c": "Dizin",
+    "option_d": "Önsöz",
+    "correct_answer": "B",
+    "category": "tez_yazimi",
+    "difficulty": "easy",
+    "explanation": "Metin akışını bozacak kadar detaylı veya hacimli belgeler (ölçek izinleri, ham veri tabloları vb.) 'Ekler' bölümünde sunulur."
+  },
+  {
+    "question": "Genel teorilerden veya hipotezlerden yola çıkarak özel durumları test eden (Genelden özele) akıl yürütme yöntemi hangisidir?",
+    "option_a": "Tümevarım (Induction)",
+    "option_b": "Tümdengelim (Deduction)",
+    "option_c": "Analoji",
+    "option_d": "Betimleme",
+    "correct_answer": "B",
+    "category": "arastirma_yontemleri",
+    "difficulty": "hard",
+    "explanation": "Nicel araştırmaların temeli olan tümdengelim, mevcut teoriyi doğrulamak veya yanlışlamak için veriyi kullanır."
+  },
+  {
+    "question": "Bir makalede kullanılan 'İkincil Veri' (Secondary Data) neyi ifade eder?",
+    "option_a": "Araştırmacının bizzat topladığı verileri.",
+    "option_b": "Başka bir araştırmacı veya kurum tarafından daha önce toplanmış verileri (TÜİK verileri gibi).",
+    "option_c": "Yedek verileri.",
+    "option_d": "Güvenilir olmayan verileri.",
+    "correct_answer": "B",
+    "category": "arastirma_yontemleri",
+    "difficulty": "easy",
+    "explanation": "İkincil veri, araştırmacının kendisinin toplamadığı, hali hazırda var olan veri setleri (nüfus sayımı, hasta kayıtları vb.) üzerinde çalışmasıdır."
+  },
+  {
+    "question": "APA formatına göre kaynakçada 'Kitap' künyesi yazılırken hangi bilgi İTALİK yazılır?",
+    "option_a": "Yazarın soyadı",
+    "option_b": "Yayınevi",
+    "option_c": "Kitabın adı",
+    "option_d": "Basım yılı",
+    "correct_answer": "C",
+    "category": "yazim_kurallari",
+    "difficulty": "medium",
+    "explanation": "APA stilinde kitapların ve dergilerin (makale değil, derginin kendisi) isimleri italik yazılır. Örn: Soyadı, A. (2020). *Kitabın Adı*. Yayınevi."
+  }
+]
