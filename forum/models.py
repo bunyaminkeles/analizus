@@ -293,7 +293,7 @@ class Profile(models.Model):
 
     def get_weekly_job_limit(self):
         """Haftalık ilan limiti: 500p + doğrulanmış = 3, diğer = 1"""
-        if self.email_verified and self.points >= 500:
+        if self.email_verified and self.total_score >= 500:
             return 3
         return 1
 
@@ -315,9 +315,9 @@ class Profile(models.Model):
 
     def get_job_duration_days(self):
         """Puana göre ilan süresi: <500p=5gün, 500-1000p=14gün, 1000+p=30gün"""
-        if self.points >= 1000:
+        if self.total_score >= 1000:
             return 30
-        elif self.points >= 500:
+        elif self.total_score >= 500:
             return 14
         return 5
 
