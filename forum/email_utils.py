@@ -6,7 +6,7 @@ import os
 # SendGrid Web API kullan (SMTP yerine - Render'da SMTP engellenmiş olabilir)
 try:
     from sendgrid import SendGridAPIClient
-    from sendgrid.helpers.mail import Mail, Email, To, Content
+    from sendgrid.helpers.mail import Mail
     SENDGRID_AVAILABLE = True
 except ImportError:
     SENDGRID_AVAILABLE = False
