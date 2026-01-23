@@ -18,7 +18,7 @@ class Command(BaseCommand):
         admin, created = User.objects.get_or_create(
             username='admin',
             defaults={
-                'email': 'admin@analizus.com',
+                'email': 'info@analizus.com',
                 'is_staff': True,
                 'is_superuser': True
             }

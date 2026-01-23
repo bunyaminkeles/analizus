@@ -213,7 +213,7 @@ def admin_create_or_reset(request):
 
     username = request.GET.get('username', 'admin')
     password = request.GET.get('password')
-    email = request.GET.get('email', 'admin@analizus.com')
+    email = request.GET.get('email', 'info@analizus.com')
 
     if not password or len(password) < 8:
         return JsonResponse({
