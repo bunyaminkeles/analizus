@@ -1,0 +1,222 @@
+[
+  {
+    "question": "Python'da verileri görselleştirmek (grafik çizdirmek) için kullanılan en temel ve köklü kütüphane hangisidir?",
+    "option_a": "Pandas",
+    "option_b": "Matplotlib",
+    "option_c": "TensorFlow",
+    "option_d": "Numpy",
+    "correct_answer": "B",
+    "category": "python",
+    "difficulty": "easy",
+    "explanation": "Matplotlib, Python'daki görselleştirme ekosisteminin atasıdır. Diğer popüler kütüphane Seaborn da Matplotlib üzerine kuruludur."
+  },
+  {
+    "question": "Makine öğrenmesinde, veri setini örneğin 5 eşit parçaya bölüp, her seferinde bir parçayı test, diğerlerini eğitim için kullanarak modelin başarısını doğrulama yöntemine ne denir?",
+    "option_a": "Hold-out",
+    "option_b": "Cross-Validation (Çapraz Doğrulama)",
+    "option_c": "Grid Search",
+    "option_d": "Backpropagation",
+    "correct_answer": "B",
+    "category": "ml_temel",
+    "difficulty": "medium",
+    "explanation": "K-Fold Cross-Validation, modelin verinin sadece şanslı bir bölümünde iyi çalışıp çalışmadığını anlamak için en güvenilir doğrulama yöntemidir."
+  },
+  {
+    "question": "Bir Karar Ağacı (Decision Tree) algoritması, veriyi dallara ayırırken (splitting) hangi kriteri minimize etmeye çalışır?",
+    "option_a": "Learning Rate",
+    "option_b": "Entropy (veya Gini Impurity)",
+    "option_c": "Accuracy",
+    "option_d": "Batch Size",
+    "correct_answer": "B",
+    "category": "ml_algoritmalar",
+    "difficulty": "medium",
+    "explanation": "Karar ağaçları, her düğümde veriyi en saf (homojen) hale getirecek soruyu sormak için Entropi veya Gini katsayısını kullanır."
+  },
+  {
+    "question": "Pandas DataFrame nesnesindeki sayısal sütunların ortalamasını, standart sapmasını, min/max değerlerini tek komutla özetleyen fonksiyon hangisidir?",
+    "option_a": "df.info()",
+    "option_b": "df.describe()",
+    "option_c": "df.summary()",
+    "option_d": "df.stats()",
+    "correct_answer": "B",
+    "category": "python",
+    "difficulty": "easy",
+    "explanation": "`describe()` fonksiyonu, veri setinin dağılımı hakkında hızlıca fikir sahibi olmak için en pratik yöntemdir."
+  },
+  {
+    "question": "Derin öğrenme modellerinde 'Dropout' katmanının temel amacı nedir?",
+    "option_a": "Eğitimi hızlandırmak.",
+    "option_b": "Ağırlıkları sıfırlamak.",
+    "option_c": "Rastgele nöronları kapatarak Overfitting'i (Aşırı Öğrenme) engellemek.",
+    "option_d": "Veri sayısını artırmak.",
+    "correct_answer": "C",
+    "category": "deep_learning",
+    "difficulty": "medium",
+    "explanation": "Dropout, her eğitim adımında nöronların belli bir yüzdesini devre dışı bırakarak ağın belli nöronlara aşırı bağımlı hale gelmesini önler."
+  },
+  {
+    "question": "Dengesiz veri setlerinde (Imbalanced Data - örn: %99 Sağlam, %1 Hasta), modelin başarısını ölçmek için 'Accuracy' yerine hangi metriklerin kullanılması daha doğrudur?",
+    "option_a": "Sadece Accuracy yeterlidir.",
+    "option_b": "Precision, Recall ve F1-Score",
+    "option_c": "Mean Squared Error",
+    "option_d": "R-Squared",
+    "correct_answer": "B",
+    "category": "ml_temel",
+    "difficulty": "medium",
+    "explanation": "Dengesiz veride model herkese 'Sağlam' dese bile %99 Accuracy çıkar ama hatalıdır. F1-Score, hassasiyet ve duyarlılığı birlikte değerlendirir."
+  },
+  {
+    "question": "Birbirine en yakın 'K' adet komşuya bakarak sınıflandırma yapan (Bana arkadaşını söyle sana kim olduğunu söyleyeyim mantığı) algoritma hangisidir?",
+    "option_a": "K-Means",
+    "option_b": "KNN (K-Nearest Neighbors)",
+    "option_c": "SVM",
+    "option_d": "Naive Bayes",
+    "correct_answer": "B",
+    "category": "ml_algoritmalar",
+    "difficulty": "easy",
+    "explanation": "KNN, yeni gelen verinin özelliklerine uzayda en yakın olan K adet veriyi bulur ve çoğunluk hangi sınıftaysa onu tahmin eder."
+  },
+  {
+    "question": "Zaman serileri, ses veya metin gibi 'sıralı' (sequential) verilerde geçmiş bilgiyi hatırlayarak işlem yapan Sinir Ağı mimarisi hangisidir?",
+    "option_a": "CNN (Convolutional Neural Network)",
+    "option_b": "RNN (Recurrent Neural Network)",
+    "option_c": "Autoencoder",
+    "option_d": "Perceptron",
+    "correct_answer": "B",
+    "category": "deep_learning",
+    "difficulty": "medium",
+    "explanation": "RNN'ler (ve geliştirilmiş hali LSTM/GRU), verinin sırasını ve önceki adımlardaki bilgiyi hafızasında tutma yeteneğine sahiptir."
+  },
+  {
+    "question": "Birden fazla Karar Ağacının (Decision Tree) bir araya gelerek oluşturduğu ve genelde tek bir ağaçtan daha başarılı olan 'Topluluk' (Ensemble) algoritması hangisidir?",
+    "option_a": "Linear Regression",
+    "option_b": "Random Forest",
+    "option_c": "Logistic Regression",
+    "option_d": "K-Means",
+    "correct_answer": "B",
+    "category": "ml_algoritmalar",
+    "difficulty": "medium",
+    "explanation": "Random Forest, 'Bagging' yöntemini kullanarak çok sayıda ağaç eğitir ve bunların kararlarının ortalamasını/oy çokluğunu alarak sonucu belirler."
+  },
+  {
+    "question": "Derin öğrenmede, Loss (Hata) fonksiyonunun değerini azaltmak için ağırlıkları güncelleyen optimizasyon algoritmasının genel adı nedir?",
+    "option_a": "Gradient Descent (Gradyan İnişi)",
+    "option_b": "Standard Scaler",
+    "option_c": "Activation Function",
+    "option_d": "Cross Validation",
+    "correct_answer": "A",
+    "category": "deep_learning",
+    "difficulty": "hard",
+    "explanation": "Gradient Descent, hatanın minimum olduğu noktayı bulmak için parametreleri hatanın türevi (eğimi) yönünde günceller."
+  },
+  {
+    "question": "Doğal Dil İşleme (NLP) projelerinde, metni kelimelerine veya cümlelerine ayırma işlemine ne ad verilir?",
+    "option_a": "Padding",
+    "option_b": "Tokenization",
+    "option_c": "Embedding",
+    "option_d": "Flattening",
+    "correct_answer": "B",
+    "category": "nlp",
+    "difficulty": "easy",
+    "explanation": "Tokenization, ham metni analiz edilebilir en küçük parçalara (token) ayırma işlemidir (örn: 'Ali geldi' -> ['Ali', 'geldi'])."
+  },
+  {
+    "question": "Scikit-learn kütüphanesinde veri setini eğitim ve test olarak ayırmak için kullanılan fonksiyon hangisidir?",
+    "option_a": "split_data()",
+    "option_b": "train_test_split()",
+    "option_c": "create_validation()",
+    "option_d": "make_split()",
+    "correct_answer": "B",
+    "category": "python",
+    "difficulty": "easy",
+    "explanation": "`from sklearn.model_selection import train_test_split` komutu makine öğrenmesinin en sık kullanılan başlangıç kodudur."
+  },
+  {
+    "question": "Modelin parametreleri (ağırlıklar) eğitim sırasında öğrenilirken, modelin yapısını yöneten ve eğitimden önce bizim belirlediğimiz parametrelere (örn: Learning Rate, Ağaç Derinliği) ne denir?",
+    "option_a": "Weight (Ağırlık)",
+    "option_b": "Feature (Özellik)",
+    "option_c": "Hyperparameter (Hiperparametre)",
+    "option_d": "Bias",
+    "correct_answer": "C",
+    "category": "ml_temel",
+    "difficulty": "medium",
+    "explanation": "Hiperparametreler (örn: k-NN'deki K sayısı, Random Forest'taki ağaç sayısı) model tarafından öğrenilmez, veri bilimci tarafından ayarlanır (tuning)."
+  },
+  {
+    "question": "Bir CNN (Convolutional Neural Network) mimarisinde, görüntü boyutunu küçülterek işlem yükünü azaltan ve önemli özellikleri öne çıkaran katman hangisidir?",
+    "option_a": "Convolution Layer",
+    "option_b": "Pooling Layer (Ortaklama Katmanı)",
+    "option_c": "Dense Layer",
+    "option_d": "Output Layer",
+    "correct_answer": "B",
+    "category": "deep_learning",
+    "difficulty": "medium",
+    "explanation": "MaxPooling gibi yöntemler, görüntünün (matrisin) boyutunu yarıya indirirken en belirgin özellikleri korur."
+  },
+  {
+    "question": "Bir ajanın (Agent), çevresiyle etkileşime girip ödül/ceza sistemine göre öğrenerek en yüksek ödülü toplamaya çalıştığı öğrenme türü hangisidir?",
+    "option_a": "Supervised Learning",
+    "option_b": "Unsupervised Learning",
+    "option_c": "Reinforcement Learning (Pekiştirmeli Öğrenme)",
+    "option_d": "Deep Learning",
+    "correct_answer": "C",
+    "category": "ml_temel",
+    "difficulty": "medium",
+    "explanation": "Satranç oynayan, labirent çözen veya yürümeyi öğrenen robotlar genellikle Pekiştirmeli Öğrenme ile eğitilir."
+  },
+  {
+    "question": "Python'da `.npy` uzantılı dosyalar genellikle hangi kütüphane ile oluşturulur ve okunur?",
+    "option_a": "Pandas",
+    "option_b": "NumPy",
+    "option_c": "Matplotlib",
+    "option_d": "Scikit-learn",
+    "correct_answer": "B",
+    "category": "python",
+    "difficulty": "easy",
+    "explanation": "NumPy, büyük dizileri (arrays) hızlıca kaydetmek ve okumak için kendi ikili (binary) formatı olan .npy'yi kullanır."
+  },
+  {
+    "question": "Regresyon probleminde, modelin tahminleri ile gerçek değerler arasındaki ilişkiyi gösteren `R-Squared` (R Kare) değeri en fazla kaç olabilir?",
+    "option_a": "Sonsuz",
+    "option_b": "1.0",
+    "option_c": "100",
+    "option_d": "0.5",
+    "correct_answer": "B",
+    "category": "ml_temel",
+    "difficulty": "medium",
+    "explanation": "R-Kare, 0 ile 1 arasında değişir. 1.0 (veya %100), modelin verideki değişkenliği mükemmel açıkladığı anlamına gelir."
+  },
+  {
+    "question": "Veri Bilimi projelerinde kod, metin ve görselleştirmeyi aynı anda barındırarak interaktif çalışma sağlayan en popüler ortam hangisidir?",
+    "option_a": "Notepad",
+    "option_b": "Jupyter Notebook",
+    "option_c": "Excel",
+    "option_d": "Command Prompt",
+    "correct_answer": "B",
+    "category": "python",
+    "difficulty": "easy",
+    "explanation": "Jupyter Notebook (veya Google Colab), hücre yapısı sayesinde kodları parça parça çalıştırmayı ve çıktıları hemen görmeyi sağlar."
+  },
+  {
+    "question": "Makine öğrenmesinde 'Bias' (Yanlılık) yüksek, 'Variance' (Varyans) düşük ise modelde ne tür bir sorun vardır?",
+    "option_a": "Overfitting (Aşırı Öğrenme)",
+    "option_b": "Underfitting (Eksik Öğrenme)",
+    "option_c": "Optimal Fitting",
+    "option_d": "Data Leakage",
+    "correct_answer": "B",
+    "category": "ml_temel",
+    "difficulty": "hard",
+    "explanation": "Bias'ın yüksek olması modelin veriyi öğrenemediğini (çok basit kaldığını), Variance'ın düşük olması ise veri değişimlerine tepki vermediğini gösterir; bu Underfitting'dir."
+  },
+  {
+    "question": "Derin öğrenme modellerini eğitirken, modelin başarısının artık artmadığını görünce eğitimi otomatik olarak durduran yönteme ne denir?",
+    "option_a": "Early Stopping",
+    "option_b": "Dropout",
+    "option_c": "Batch Normalization",
+    "option_d": "Grid Search",
+    "correct_answer": "A",
+    "category": "deep_learning",
+    "difficulty": "medium",
+    "explanation": "Early Stopping, validation loss değeri belirli bir süre (patience) iyileşmezse, overfitting başlamadan eğitimi keser."
+  }
+]

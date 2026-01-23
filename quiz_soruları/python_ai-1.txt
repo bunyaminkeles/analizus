@@ -1,0 +1,222 @@
+[
+  {
+    "question": "Python'da tablosal verileri (satır ve sütun) işlemek ve analiz etmek için kullanılan en temel kütüphane hangisidir?",
+    "option_a": "NumPy",
+    "option_b": "Pandas",
+    "option_c": "Matplotlib",
+    "option_d": "Requests",
+    "correct_answer": "B",
+    "category": "python",
+    "difficulty": "easy",
+    "explanation": "Pandas, veri bilimi dünyasında DataFrame yapısı sayesinde veri manipülasyonu ve analizi için standart haline gelmiş kütüphanedir."
+  },
+  {
+    "question": "Makine öğrenmesinde, modelin hem girdileri (features) hem de beklenen çıktıları (labels/targets) görerek eğitildiği öğrenme türü hangisidir?",
+    "option_a": "Gözetimli Öğrenme (Supervised Learning)",
+    "option_b": "Gözetimsiz Öğrenme (Unsupervised Learning)",
+    "option_c": "Pekiştirmeli Öğrenme (Reinforcement Learning)",
+    "option_d": "Kümeleme (Clustering)",
+    "correct_answer": "A",
+    "category": "ml_temel",
+    "difficulty": "easy",
+    "explanation": "Gözetimli öğrenmede veriler etiketlidir; yani model, 'bu girdinin sonucu bu olmalı' bilgisiyle eğitilir (Örn: Ev fiyatı tahmini)."
+  },
+  {
+    "question": "Sayısal hesaplamalar ve çok boyutlu diziler (arrays) üzerinde hızlı işlem yapmak için geliştirilen Python kütüphanesi hangisidir?",
+    "option_a": "Scikit-learn",
+    "option_b": "NumPy",
+    "option_c": "Flask",
+    "option_d": "Seaborn",
+    "correct_answer": "B",
+    "category": "python",
+    "difficulty": "easy",
+    "explanation": "NumPy (Numerical Python), vektör ve matris işlemleri için optimize edilmiştir ve standart Python listelerinden çok daha hızlıdır."
+  },
+  {
+    "question": "Modelin eğitim verisini 'ezberlemesi' ve yeni, görülmemiş verilerde başarısız olması durumuna ne ad verilir?",
+    "option_a": "Underfitting (Eksik Öğrenme)",
+    "option_b": "Overfitting (Aşırı Öğrenme)",
+    "option_c": "Regularization",
+    "option_d": "Convergence",
+    "correct_answer": "B",
+    "category": "ml_temel",
+    "difficulty": "medium",
+    "explanation": "Overfitting, modelin verideki gürültüyü bile öğrenerek genelleme yeteneğini kaybetmesidir. Eğitim başarısı yüksek, test başarısı düşüktür."
+  },
+  {
+    "question": "Bir sinir ağında (Neural Network) doğrusal olmayan (non-linear) karmaşık ilişkileri öğrenebilmek için katmanlar arasına ne eklenir?",
+    "option_a": "Ağırlık (Weight)",
+    "option_b": "Aktivasyon Fonksiyonu (Activation Function)",
+    "option_c": "Bias",
+    "option_d": "Learning Rate",
+    "correct_answer": "B",
+    "category": "deep_learning",
+    "difficulty": "medium",
+    "explanation": "ReLU, Sigmoid veya Tanh gibi aktivasyon fonksiyonları, yapay sinir ağlarına doğrusallığı kırarak karmaşık problemleri çözme yeteneği kazandırır."
+  },
+  {
+    "question": "Scikit-learn kütüphanesinde bir modeli eğitmek için kullanılan standart komut/metot hangisidir?",
+    "option_a": "predict()",
+    "option_b": "train()",
+    "option_c": "fit()",
+    "option_d": "learn()",
+    "correct_answer": "C",
+    "category": "python",
+    "difficulty": "easy",
+    "explanation": "Scikit-learn'deki hemen hemen tüm algoritmalar `model.fit(X_train, y_train)` komutu ile veriye uyum sağlar (eğitilir)."
+  },
+  {
+    "question": "Hedef değişkenin (Target) kategorik olduğu (örn: Kedi/Köpek, Hasta/Sağlıklı) problemler hangi sınıflandırma türüne girer?",
+    "option_a": "Regresyon (Regression)",
+    "option_b": "Sınıflandırma (Classification)",
+    "option_c": "Kümeleme (Clustering)",
+    "option_d": "Boyut İndirgeme",
+    "correct_answer": "B",
+    "category": "ml_temel",
+    "difficulty": "easy",
+    "explanation": "Çıktı bir sayı değil de bir sınıf/etiket ise bu bir sınıflandırma problemidir. Çıktı sürekli bir sayıysa (örn: fiyat) regresyondur."
+  },
+  {
+    "question": "Derin öğrenmede, tüm eğitim veri setinin ağdan bir kez geçip ağırlıkların güncellenmesi sürecine ne ad verilir?",
+    "option_a": "Batch",
+    "option_b": "Iteration",
+    "option_c": "Epoch",
+    "option_d": "Layer",
+    "correct_answer": "C",
+    "category": "deep_learning",
+    "difficulty": "medium",
+    "explanation": "1 Epoch, veri setindeki tüm örneklerin model tarafından bir kez görülmesi demektir."
+  },
+  {
+    "question": "Veri setini 'Eğitim' (Train) ve 'Test' olarak ikiye ayırmamızın temel amacı nedir?",
+    "option_a": "Veri setini küçültüp hızı artırmak.",
+    "option_b": "Modelin görmediği veriler üzerindeki performansını (genelleme yeteneğini) ölçmek.",
+    "option_c": "Daha az bellek kullanmak.",
+    "option_d": "Overfitting'i artırmak.",
+    "correct_answer": "B",
+    "category": "ml_temel",
+    "difficulty": "easy",
+    "explanation": "Modeli eğittiğimiz verilerle test edersek yapay bir başarı elde ederiz. Gerçek performans, modelin hiç görmediği Test setinde belli olur."
+  },
+  {
+    "question": "Pandas'ta bir DataFrame'in ilk 5 satırını hızlıca görmek için hangi fonksiyon kullanılır?",
+    "option_a": "df.show()",
+    "option_b": "df.tail()",
+    "option_c": "df.head()",
+    "option_d": "df.view()",
+    "correct_answer": "C",
+    "category": "python",
+    "difficulty": "easy",
+    "explanation": "df.head() varsayılan olarak ilk 5 satırı getirir. İçine sayı yazılarak (örn: df.head(10)) satır sayısı değiştirilebilir."
+  },
+  {
+    "question": "Verilerde eksik değerler (NaN / Missing Values) olduğunda, bu değerleri ortalama veya medyan ile doldurma işlemine ne ad verilir?",
+    "option_a": "Normalization",
+    "option_b": "Imputation",
+    "option_c": "One-Hot Encoding",
+    "option_d": "Dropout",
+    "correct_answer": "B",
+    "category": "ml_temel",
+    "difficulty": "medium",
+    "explanation": "Imputation, eksik verileri silmek yerine istatistiksel yöntemlerle doldurarak veri kaybını önleme tekniğidir."
+  },
+  {
+    "question": "Görüntü işleme (Image Processing) ve nesne tanıma görevlerinde en başarılı olan Derin Öğrenme mimarisi hangisidir?",
+    "option_a": "RNN (Recurrent Neural Networks)",
+    "option_b": "CNN (Convolutional Neural Networks)",
+    "option_c": "LSTM",
+    "option_d": "Decision Tree",
+    "correct_answer": "B",
+    "category": "deep_learning",
+    "difficulty": "medium",
+    "explanation": "CNN'ler (Evrişimli Sinir Ağları), görüntüdeki desenleri, kenarları ve şekilleri algılamak için özelleşmiş katmanlara sahiptir."
+  },
+  {
+    "question": "Regresyon modellerinin başarısını ölçmek için kullanılan metriklerden hangisi 'hataların karesinin ortalamasının karekökü'dür?",
+    "option_a": "Accuracy",
+    "option_b": "F1 Score",
+    "option_c": "RMSE (Root Mean Squared Error)",
+    "option_d": "Confusion Matrix",
+    "correct_answer": "C",
+    "category": "ml_temel",
+    "difficulty": "medium",
+    "explanation": "RMSE, regresyon hatalarını ölçer ve sonucu hedef değişkenin birimiyle (örn: TL, Metre) aynı ölçekte verir, bu yüzden yorumlaması kolaydır."
+  },
+  {
+    "question": "Kategorik verileri (örn: Renkler: Kırmızı, Mavi) makine öğrenmesi modeline sokabilmek için 0 ve 1'lerden oluşan sütunlara çevirme işlemine ne denir?",
+    "option_a": "Standard Scaler",
+    "option_b": "Label Encoding",
+    "option_c": "One-Hot Encoding",
+    "option_d": "Clustering",
+    "correct_answer": "C",
+    "category": "python",
+    "difficulty": "medium",
+    "explanation": "One-Hot Encoding, kategorik değişkenleri (özellikle sıralı olmayanları) modelin yanlış bir sıralama algılamaması için ayrı sütunlara (dummy variables) böler."
+  },
+  {
+    "question": "Sinir ağlarında eğitimi hızlandırmak ve hatayı minimize etmek için ağırlıkların güncellenme yönünü belirleyen algoritma/yöntem hangisidir?",
+    "option_a": "Forward Propagation",
+    "option_b": "Backpropagation (Geri Yayılım)",
+    "option_c": "MaxPooling",
+    "option_d": "Data Augmentation",
+    "correct_answer": "B",
+    "category": "deep_learning",
+    "difficulty": "hard",
+    "explanation": "Backpropagation, çıktıdaki hatayı (loss) geriye doğru yayarak her bir nöronun ağırlığının ne kadar değiştirilmesi gerektiğini hesaplar."
+  },
+  {
+    "question": "Aşağıdaki algoritmalardan hangisi 'Gözetimsiz Öğrenme' (Unsupervised Learning) örneğidir?",
+    "option_a": "Linear Regression",
+    "option_b": "Logistic Regression",
+    "option_c": "K-Means Clustering",
+    "option_d": "Random Forest",
+    "correct_answer": "C",
+    "category": "ml_temel",
+    "difficulty": "medium",
+    "explanation": "K-Means, verideki etiketleri bilmeden benzer verileri gruplara (kümelere) ayırır."
+  },
+  {
+    "question": "Pandas'ta `df.iloc` ve `df.loc` arasındaki temel fark nedir?",
+    "option_a": "Hiçbir fark yoktur.",
+    "option_b": "iloc satır, loc sütun seçer.",
+    "option_c": "iloc indeks numarasıyla (integer position), loc etiket ismiyle (label) seçim yapar.",
+    "option_d": "loc daha hızlıdır.",
+    "correct_answer": "C",
+    "category": "python",
+    "difficulty": "medium",
+    "explanation": "`iloc[0]` 0. satırı getirirken, `loc['Ahmet']` indeksi 'Ahmet' olan satırı getirir."
+  },
+  {
+    "question": "Derin öğrenmede, çok büyük veri setlerini modele parça parça vererek RAM/GPU belleğini verimli kullanmayı sağlayan parametre nedir?",
+    "option_a": "Epoch Size",
+    "option_b": "Batch Size",
+    "option_c": "Learning Rate",
+    "option_d": "Hidden Layer Size",
+    "correct_answer": "B",
+    "category": "deep_learning",
+    "difficulty": "medium",
+    "explanation": "Batch Size, modelin ağırlıklarını güncellemeden önce kaç tane veri örneğini işleyeceğini belirler (Örn: 32, 64)."
+  },
+  {
+    "question": "Sınıflandırma problemlerinde, modelin ne kadar doğru tahmin yaptığını gösteren; True Positive, False Positive gibi değerleri içeren tabloya ne denir?",
+    "option_a": "Scatter Plot",
+    "option_b": "Confusion Matrix (Karmaşıklık Matrisi)",
+    "option_c": "Correlation Matrix",
+    "option_d": "Box Plot",
+    "correct_answer": "B",
+    "category": "ml_temel",
+    "difficulty": "medium",
+    "explanation": "Confusion Matrix, modelin hangi sınıfları doğru bildiğini, hangilerini birbiriyle karıştırdığını detaylıca gösterir."
+  },
+  {
+    "question": "Farklı ölçekteki özellikleri (örn: Yaş: 0-100, Maaş: 0-10000) benzer aralığa getirmek için yapılan işleme ne denir?",
+    "option_a": "Feature Scaling (Özellik Ölçekleme)",
+    "option_b": "Feature Selection",
+    "option_c": "Ensembling",
+    "option_d": "Hyperparameter Tuning",
+    "correct_answer": "A",
+    "category": "ml_temel",
+    "difficulty": "easy",
+    "explanation": "Ölçekleme (Normalization/Standardization), algoritmaların büyük sayısal değerlere sahip değişkenlerden taraflı etkilenmesini önler."
+  }
+]

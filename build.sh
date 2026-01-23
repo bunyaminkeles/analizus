@@ -19,4 +19,7 @@ python manage.py create_badges
 echo "🎯 Creating skills..."
 python manage.py create_skills
 
+echo "📝 Importing quiz questions..."
+python manage.py import_quiz
+
 echo "✅ Build complete!"
