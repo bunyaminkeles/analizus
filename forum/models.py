@@ -568,7 +568,7 @@ class QuizQuestion(models.Model):
     option_d = models.CharField(max_length=255, verbose_name="D Şıkkı")
     correct_answer = models.CharField(max_length=1, choices=[('A','A'),('B','B'),('C','C'),('D','D')], verbose_name="Doğru Cevap")
 
-    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, verbose_name="Kategori")
+    category = models.CharField(max_length=50, choices=CATEGORY_CHOICES, verbose_name="Kategori")
     topic = models.CharField(max_length=50, blank=True, verbose_name="Alt Konu")
     difficulty = models.CharField(max_length=10, choices=DIFFICULTY_CHOICES, default='medium', verbose_name="Zorluk")
     explanation = models.TextField(blank=True, verbose_name="Açıklama")
