@@ -233,13 +233,14 @@
 
             <!-- Jobs Tab -->
             <div class="tab-pane fade" id="jobs" role="tabpanel">
+                <h6 class="text-white mb-3 ps-2 border-start border-4 border-info">Yayınlanan İlanlar</h6>
                 {% if posted_jobs %}
-                    <div class="list-group shadow-lg">
+                    <div class="list-group shadow-lg mb-5">
                         {% for job in posted_jobs %}
                         <a href="{% url 'job_detail' pk=job.pk %}" class="list-group-item list-group-item-action bg-dark text-white border-secondary d-flex justify-content-between align-items-center p-3" style="background: rgba(15, 23, 42, 0.95) !important; border-color: rgba(56, 189, 248, 0.2) !important;">
                             <div>
                                 <h6 class="mb-1 fw-bold small">{{ job.title }}</h6>
-                                <small class="text-muted" style="font-size: 0.75rem;">{{ job.created_at|date:"d M Y" }} · <span class="badge {% if job.status == 'open' %}bg-success{% else %}bg-secondary{% endif %}">{{ job.get_status_display }}</span></small>
+                                <small class="text-muted" style="font-size: 0.75rem;">{{ job.created_at|date:"d M Y" }} · <span class="badge {% if job.status == 'open' %}bg-success{% elif job.status == 'in_progress' %}bg-warning text-dark{% elif job.status == 'completed' %}bg-primary{% else %}bg-secondary{% endif %}">{{ job.get_status_display }}</span></small>
                             </div>
                             <div class="text-end">
                                 <span class="badge bg-info rounded-pill text-dark" style="font-size: 0.7rem;">{{ job.proposal_count }} Teklif</span>
@@ -248,9 +249,36 @@
                         {% endfor %}
                     </div>
                 {% else %}
-                    <div class="text-center text-muted py-4">
-                        <i class="bi bi-briefcase display-4 opacity-25 mb-2 d-block"></i>
-                        Bu kullanıcı henüz ilan vermemiş.
+                    <div class="text-muted py-3 mb-4 ps-2">
+                        <i class="bi bi-briefcase opacity-50 me-2"></i>Bu kullanıcı henüz ilan vermemiş.
+                    </div>
+                {% endif %}
+
+                <h6 class="text-white mb-3 ps-2 border-start border-4 border-warning">Verilen Teklifler</h6>
+                {% if given_proposals %}
+                    <div class="list-group shadow-lg">
+                        {% for proposal in given_proposals %}
+                        <a href="{% url 'job_detail' pk=proposal.job.pk %}" class="list-group-item list-group-item-action bg-dark text-white border-secondary d-flex justify-content-between align-items-center p-3" style="background: rgba(15, 23, 42, 0.95) !important; border-color: rgba(56, 189, 248, 0.2) !important;">
+                            <div>
+                                <h6 class="mb-1 fw-bold small">{{ proposal.job.title }}</h6>
+                                <small class="text-muted" style="font-size: 0.75rem;">
+                                    {{ proposal.created_at|date:"d M Y" }} · 
+                                    <span class="badge {% if proposal.status == 'accepted' %}bg-success{% elif proposal.status == 'rejected' %}bg-danger{% else %}bg-secondary{% endif %}">
+                                        {{ proposal.get_status_display }}
+                                    </span>
+                                </small>
+                            </div>
+                            <div class="text-end">
+                                <span class="badge bg-dark border border-secondary text-light rounded-pill" style="font-size: 0.7rem;">
+                                    {{ proposal.price }} TL
+                                </span>
+                            </div>
+                        </a>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-muted py-3 ps-2">
+                        <i class="bi bi-send opacity-50 me-2"></i>Bu kullanıcı henüz teklif vermemiş.
                     </div>
                 {% endif %}
             </div>

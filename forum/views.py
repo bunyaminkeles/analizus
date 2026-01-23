@@ -599,8 +599,9 @@ def profile_detail(request, username):
                     messages.error(request, 'Geçersiz LinkedIn URL.')
         return redirect('profile_detail', username=username)
 
-    posted_jobs = FreelanceJob.objects.filter(owner=profile_user).order_by('-created_at')
-    
+    posted_jobs = FreelanceJob.objects.filter(owner=profile_user).order_by('-created_at')[:20]
+    given_proposals = JobProposal.objects.filter(expert=profile_user).select_related('job').order_by('-created_at')[:20]
+
     # Kategori bazlı quiz istatistikleri
     quiz_stats = UserQuizAttempt.objects.filter(
         user=profile_user, 
@@ -625,6 +626,7 @@ def profile_detail(request, username):
     return render(request, 'forum/profile_detail.html', {
         'profile_user': profile_user,
         'posted_jobs': posted_jobs,
+        'given_proposals': given_proposals,
         'quiz_stats': quiz_stats,
         'user_score': user_score,
         'quiz_rank': quiz_rank,
