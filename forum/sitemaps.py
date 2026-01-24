@@ -1,6 +1,6 @@
 from django.contrib.sitemaps import Sitemap
 from django.urls import reverse
-from .models import Topic, Category
+from .models import Topic, Category, FreelanceJob
 
 
 class StaticViewSitemap(Sitemap):
@@ -40,3 +40,18 @@ class CategorySitemap(Sitemap):
 
     def location(self, obj):
         return reverse('category_topics', args=[obj.slug])
+
+
+class JobSitemap(Sitemap):
+    """İş ilanları için sitemap"""
+    changefreq = 'daily'
+    priority = 0.8
+
+    def items(self):
+        return FreelanceJob.objects.filter(status='open').order_by('-created_at')
+
+    def lastmod(self, obj):
+        return obj.created_at
+
+    def location(self, obj):
+        return reverse('job_detail', args=[obj.pk])
