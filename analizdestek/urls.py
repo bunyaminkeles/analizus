@@ -3,12 +3,13 @@ from django.urls import path, include
 from django.contrib.auth import views as auth_views
 from django.contrib.sitemaps.views import sitemap
 from django.views.generic import TemplateView
-from forum.sitemaps import StaticViewSitemap, TopicSitemap, CategorySitemap
+from forum.sitemaps import StaticViewSitemap, TopicSitemap, CategorySitemap, JobSitemap
 
 sitemaps = {
     'static': StaticViewSitemap,
     'topics': TopicSitemap,
     'categories': CategorySitemap,
+    'jobs': JobSitemap,
 }
 
 urlpatterns = [
