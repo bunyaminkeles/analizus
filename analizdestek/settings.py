@@ -199,10 +199,10 @@ EMAIL_BACKEND = 'forum.backends.SendGridBackend'
 # Site URL (e-posta doğrulama linkleri için)
 SITE_URL = os.getenv('SITE_URL', 'https://www.analizus.com')
 
-# --- IYZICO ÖDEME AYARLARI ---
-IYZICO_API_KEY = os.getenv('IYZICO_API_KEY', '')
-IYZICO_SECRET_KEY = os.getenv('IYZICO_SECRET_KEY', '')
-IYZICO_BASE_URL = os.getenv('IYZICO_BASE_URL', 'https://sandbox-api.iyzipay.com')  # Production: https://api.iyzipay.com
+# --- STRIPE ÖDEME AYARLARI ---
+STRIPE_PUBLIC_KEY = os.getenv('STRIPE_PUBLIC_KEY', '')  # pk_test_... veya pk_live_...
+STRIPE_SECRET_KEY = os.getenv('STRIPE_SECRET_KEY', '')  # sk_test_... veya sk_live_...
+STRIPE_WEBHOOK_SECRET = os.getenv('STRIPE_WEBHOOK_SECRET', '')  # whsec_...
 
 # --- SESSION AYARLARI (Otomatik Logout) ---
 SESSION_COOKIE_AGE = 60 * 60 * 24  # 24 saat (saniye cinsinden)
