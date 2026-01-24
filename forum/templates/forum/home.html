@@ -86,46 +86,14 @@
             <div class="widget-header" style="color: #ec4899;">
                 <i class="bi bi-heart-fill"></i>
                 <span>Bizi Destekle</span>
+                <span class="badge bg-warning text-dark ms-auto" style="font-size: 0.6rem;">Yakında</span>
             </div>
-            <div class="widget-body">
-                <p class="text-muted small mb-3">Analizus'u ücretsiz tutmamıza yardımcı olun. Bağışçılara <span class="text-warning">Premium üyelik</span> ve <span style="color: #ec4899;">Destekçi rozeti</span> hediye!</p>
-
-                <!-- Bağış Miktarı Seçimi -->
-                <div class="donation-amounts d-flex gap-2 mb-3">
-                    <button type="button" class="btn btn-sm donation-amount-btn flex-fill" data-amount="25">25₺</button>
-                    <button type="button" class="btn btn-sm donation-amount-btn flex-fill" data-amount="50">50₺</button>
-                    <button type="button" class="btn btn-sm donation-amount-btn flex-fill active" data-amount="100">100₺</button>
-                </div>
-
-                <!-- Özel Miktar -->
+            <div class="widget-body text-center py-4">
                 <div class="mb-3">
-                    <input type="number" id="custom-amount" class="form-control form-control-sm bg-dark text-light border-secondary" placeholder="Özel miktar (min 5₺)" min="5">
+                    <i class="bi bi-heart-fill" style="font-size: 2.5rem; color: #ec4899; opacity: 0.5;"></i>
                 </div>
-
-                {% if not user.is_authenticated %}
-                <!-- Misafir için e-posta -->
-                <div class="mb-3">
-                    <input type="email" id="donation-email" class="form-control form-control-sm bg-dark text-light border-secondary" placeholder="E-posta adresiniz" required>
-                </div>
-                {% endif %}
-
-                <!-- Anonim Seçeneği -->
-                <div class="form-check mb-3">
-                    <input class="form-check-input" type="checkbox" id="anonymous-donation">
-                    <label class="form-check-label small text-muted" for="anonymous-donation">Anonim bağış yap</label>
-                </div>
-
-                <!-- Bağış Butonu -->
-                <button type="button" id="donate-btn" class="btn btn-sm w-100" style="background: linear-gradient(135deg, #ec4899, #8b5cf6); border: none; color: white;">
-                    <i class="bi bi-heart-fill me-1"></i> Bağış Yap
-                </button>
-
-                <!-- Premium Bilgisi -->
-                <div class="mt-3 p-2 rounded" style="background: rgba(236, 72, 153, 0.1); border: 1px solid rgba(236, 72, 153, 0.2);">
-                    <small class="text-muted d-block"><i class="bi bi-gift me-1"></i> <b>25₺</b> = 7 gün Premium</small>
-                    <small class="text-muted d-block"><i class="bi bi-gift me-1"></i> <b>50₺</b> = 30 gün Premium</small>
-                    <small class="text-muted d-block"><i class="bi bi-gift me-1"></i> <b>100₺+</b> = 90 gün Premium</small>
-                </div>
+                <p class="text-muted small mb-2">Bağış sistemi çok yakında aktif olacak!</p>
+                <p class="text-muted small mb-0">Bağışçılara <span class="text-warning">Premium üyelik</span> ve <span style="color: #ec4899;">Destekçi rozeti</span> hediye edilecek.</p>
             </div>
         </div>
 

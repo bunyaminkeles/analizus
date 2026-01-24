@@ -1392,6 +1392,13 @@ def create_donation(request):
     import iyzipay
 
     try:
+        # API anahtarları kontrol et
+        if not settings.IYZICO_API_KEY or not settings.IYZICO_SECRET_KEY:
+            return JsonResponse({
+                'success': False,
+                'error': 'Ödeme sistemi henüz yapılandırılmadı. Lütfen daha sonra tekrar deneyin.'
+            })
+
         data = json.loads(request.body)
         amount = data.get('amount')
         email = data.get('email', '')
