@@ -6,25 +6,8 @@ from django.db import migrations, models
 
 
 def safe_add_columns(apps, schema_editor):
-    from django.db import connection
-    with connection.cursor() as cursor:
-        cursor.execute("""
-            DO $$
-            BEGIN
-                IF NOT EXISTS (SELECT 1 FROM information_schema.columns
-                    WHERE table_name='forum_freelancejob' AND column_name='expires_at') THEN
-                    ALTER TABLE forum_freelancejob ADD COLUMN expires_at timestamp with time zone NULL;
-                END IF;
-                IF NOT EXISTS (SELECT 1 FROM information_schema.columns
-                    WHERE table_name='forum_freelancejob' AND column_name='is_featured') THEN
-                    ALTER TABLE forum_freelancejob ADD COLUMN is_featured boolean DEFAULT false NOT NULL;
-                END IF;
-                IF NOT EXISTS (SELECT 1 FROM information_schema.columns
-                    WHERE table_name='forum_quizquestion' AND column_name='topic') THEN
-                    ALTER TABLE forum_quizquestion ADD COLUMN topic varchar(50) DEFAULT '' NOT NULL;
-                END IF;
-            END $$;
-        """)
+    # Bu fonksiyon artık gerekli değil - alanlar 0028'de ekleniyor
+    pass
 
 
 class Migration(migrations.Migration):
