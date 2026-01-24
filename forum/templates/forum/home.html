@@ -1349,9 +1349,11 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(response => response.json())
         .then(data => {
-            if (data.success && data.checkout_url) {
-                // Stripe Checkout sayfasına yönlendir
-                window.location.href = data.checkout_url;
+            if (data.success && data.checkoutFormContent) {
+                // iyzico checkout formunu göster
+                const formContainer = document.createElement('div');
+                formContainer.innerHTML = data.checkoutFormContent;
+                document.body.appendChild(formContainer);
             } else {
                 alert(data.error || 'Bir hata oluştu.');
                 donateBtn.disabled = false;

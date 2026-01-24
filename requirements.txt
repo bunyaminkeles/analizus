@@ -34,7 +34,7 @@ packaging
 sendgrid  # SendGrid Web API için (SMTP yerine)
 
 # --- ÖDEME SİSTEMLERİ ---
-stripe  # Stripe ödeme entegrasyonu
+iyzipay  # iyzico ödeme entegrasyonu
 
 # --- GERÇEK ZAMANLI (REAL-TIME) ---
 daphne

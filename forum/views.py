@@ -1387,19 +1387,17 @@ def donation_widget_data(request):
 
 @require_POST
 def create_donation(request):
-    """Stripe Checkout Session oluşturur"""
+    """iyzico ödeme formu oluşturur"""
     from django.conf import settings
-    import stripe
+    import iyzipay
 
     try:
         # API anahtarları kontrol et
-        if not settings.STRIPE_SECRET_KEY:
+        if not settings.IYZICO_API_KEY or not settings.IYZICO_SECRET_KEY:
             return JsonResponse({
                 'success': False,
                 'error': 'Ödeme sistemi henüz yapılandırılmadı. Lütfen daha sonra tekrar deneyin.'
             })
-
-        stripe.api_key = settings.STRIPE_SECRET_KEY
 
         data = json.loads(request.body)
         amount = data.get('amount')
@@ -1421,6 +1419,7 @@ def create_donation(request):
             return JsonResponse({'success': False, 'error': 'E-posta adresi gereklidir.'})
 
         # Benzersiz ID'ler oluştur
+        conversation_id = str(uuid.uuid4())[:20]
         payment_id = f"DON-{uuid.uuid4().hex[:12].upper()}"
 
         # Donation kaydı oluştur (pending)
@@ -1430,138 +1429,160 @@ def create_donation(request):
             name=name,
             amount=amount,
             payment_id=payment_id,
+            conversation_id=conversation_id,
             is_anonymous=is_anonymous,
             status='pending'
         )
 
-        # Stripe Checkout Session oluştur
-        success_url = request.build_absolute_uri('/donation/success/') + '?session_id={CHECKOUT_SESSION_ID}'
-        cancel_url = request.build_absolute_uri('/')
+        # iyzico ayarları
+        options = {
+            'api_key': settings.IYZICO_API_KEY,
+            'secret_key': settings.IYZICO_SECRET_KEY,
+            'base_url': settings.IYZICO_BASE_URL
+        }
 
-        checkout_session = stripe.checkout.Session.create(
-            payment_method_types=['card'],
-            line_items=[{
-                'price_data': {
-                    'currency': 'try',
-                    'product_data': {
-                        'name': 'Analizus Bağış',
-                        'description': f'{name or "Anonim"} tarafından yapılan bağış',
-                    },
-                    'unit_amount': int(float(amount) * 100),  # Kuruş cinsinden
-                },
-                'quantity': 1,
-            }],
-            mode='payment',
-            success_url=success_url,
-            cancel_url=cancel_url,
-            customer_email=email,
-            metadata={
+        # Callback URL
+        callback_url = request.build_absolute_uri('/api/donation/callback/')
+
+        # iyzico istek objesi
+        checkout_form_request = {
+            'locale': 'tr',
+            'conversationId': conversation_id,
+            'price': str(amount),
+            'paidPrice': str(amount),
+            'currency': 'TRY',
+            'basketId': payment_id,
+            'paymentGroup': 'PRODUCT',
+            'callbackUrl': callback_url,
+            'enabledInstallments': [1],
+            'buyer': {
+                'id': str(user.id) if user else 'GUEST',
+                'name': name.split()[0] if name else 'Misafir',
+                'surname': name.split()[-1] if name and len(name.split()) > 1 else 'Bağışçı',
+                'gsmNumber': '+905000000000',
+                'email': email,
+                'identityNumber': '11111111111',
+                'registrationAddress': 'Türkiye',
+                'ip': get_client_ip(request),
+                'city': 'Istanbul',
+                'country': 'Turkey',
+            },
+            'shippingAddress': {
+                'contactName': name or 'Bağışçı',
+                'city': 'Istanbul',
+                'country': 'Turkey',
+                'address': 'Türkiye',
+            },
+            'billingAddress': {
+                'contactName': name or 'Bağışçı',
+                'city': 'Istanbul',
+                'country': 'Turkey',
+                'address': 'Türkiye',
+            },
+            'basketItems': [
+                {
+                    'id': payment_id,
+                    'name': 'Analizus Bağış',
+                    'category1': 'Bağış',
+                    'itemType': 'VIRTUAL',
+                    'price': str(amount),
+                }
+            ]
+        }
+
+        # iyzico checkout form oluştur
+        checkout_form = iyzipay.CheckoutFormInitialize().create(checkout_form_request, options)
+        result = checkout_form.read().decode('utf-8')
+        result_json = json.loads(result)
+
+        if result_json.get('status') == 'success':
+            return JsonResponse({
+                'success': True,
+                'checkoutFormContent': result_json.get('checkoutFormContent'),
+                'token': result_json.get('token'),
                 'payment_id': payment_id,
-                'user_id': str(user.id) if user else '',
-                'is_anonymous': str(is_anonymous),
-            }
-        )
+            })
+        else:
+            donation.status = 'failed'
+            donation.save()
+            return JsonResponse({
+                'success': False,
+                'error': result_json.get('errorMessage', 'Ödeme formu oluşturulamadı.')
+            })
 
-        # Stripe session ID'yi kaydet
-        donation.conversation_id = checkout_session.id
-        donation.save(update_fields=['conversation_id'])
-
-        return JsonResponse({
-            'success': True,
-            'checkout_url': checkout_session.url,
-            'session_id': checkout_session.id,
-        })
-
-    except stripe.error.StripeError as e:
-        return JsonResponse({'success': False, 'error': str(e.user_message or e)})
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)})
+
+
+def get_client_ip(request):
+    """İstemci IP adresini al"""
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
 
 
 from django.views.decorators.csrf import csrf_exempt
 
 @csrf_exempt
 def donation_callback(request):
-    """Stripe Webhook handler"""
+    """iyzico ödeme callback'i"""
     from django.conf import settings
-    import stripe
+    import iyzipay
 
-    stripe.api_key = settings.STRIPE_SECRET_KEY
-    payload = request.body
-    sig_header = request.META.get('HTTP_STRIPE_SIGNATURE')
+    if request.method == 'POST':
+        token = request.POST.get('token')
 
-    try:
-        event = stripe.Webhook.construct_event(
-            payload, sig_header, settings.STRIPE_WEBHOOK_SECRET
-        )
-    except ValueError:
-        return JsonResponse({'error': 'Invalid payload'}, status=400)
-    except stripe.error.SignatureVerificationError:
-        return JsonResponse({'error': 'Invalid signature'}, status=400)
+        if not token:
+            return redirect('home')
 
-    # Ödeme başarılı olduğunda
-    if event['type'] == 'checkout.session.completed':
-        session = event['data']['object']
-        payment_id = session.get('metadata', {}).get('payment_id')
+        options = {
+            'api_key': settings.IYZICO_API_KEY,
+            'secret_key': settings.IYZICO_SECRET_KEY,
+            'base_url': settings.IYZICO_BASE_URL
+        }
 
-        if payment_id:
-            try:
-                donation = Donation.objects.get(payment_id=payment_id)
+        # Ödeme sonucunu sorgula
+        checkout_form_result = iyzipay.CheckoutForm().retrieve({
+            'locale': 'tr',
+            'token': token,
+        }, options)
 
-                if donation.status != 'completed':
-                    donation.status = 'completed'
-                    donation.completed_at = timezone.now()
-                    donation.save()
+        result = checkout_form_result.read().decode('utf-8')
+        result_json = json.loads(result)
 
-                    # Premium üyelik ver
-                    donation.grant_premium()
+        basket_id = result_json.get('basketId')
 
-                    # Destekçi rozeti ver
-                    donation.grant_supporter_badge()
+        try:
+            donation = Donation.objects.get(payment_id=basket_id)
 
-            except Donation.DoesNotExist:
-                pass
+            if result_json.get('status') == 'success' and result_json.get('paymentStatus') == 'SUCCESS':
+                donation.status = 'completed'
+                donation.completed_at = timezone.now()
+                donation.save()
 
-    return JsonResponse({'status': 'success'})
+                # Premium üyelik ver
+                donation.grant_premium()
+
+                # Destekçi rozeti ver
+                donation.grant_supporter_badge()
+
+                return redirect('donation_success')
+            else:
+                donation.status = 'failed'
+                donation.save()
+                messages.error(request, 'Ödeme işlemi başarısız oldu.')
+                return redirect('home')
+
+        except Donation.DoesNotExist:
+            messages.error(request, 'Bağış kaydı bulunamadı.')
+            return redirect('home')
+
+    return redirect('home')
 
 
 def donation_success(request):
-    """Başarılı bağış sayfası - Stripe session doğrulaması"""
-    from django.conf import settings
-    import stripe
-
-    session_id = request.GET.get('session_id')
-
-    if session_id and settings.STRIPE_SECRET_KEY:
-        stripe.api_key = settings.STRIPE_SECRET_KEY
-
-        try:
-            # Stripe session'ı kontrol et
-            session = stripe.checkout.Session.retrieve(session_id)
-
-            if session.payment_status == 'paid':
-                payment_id = session.metadata.get('payment_id')
-
-                if payment_id:
-                    try:
-                        donation = Donation.objects.get(payment_id=payment_id)
-
-                        # Webhook henüz tetiklenmemişse burada işle
-                        if donation.status != 'completed':
-                            donation.status = 'completed'
-                            donation.completed_at = timezone.now()
-                            donation.save()
-
-                            # Premium üyelik ver
-                            donation.grant_premium()
-
-                            # Destekçi rozeti ver
-                            donation.grant_supporter_badge()
-
-                    except Donation.DoesNotExist:
-                        pass
-
-        except Exception:
-            pass  # Hata olsa bile sayfayı göster
-
+    """Başarılı bağış sayfası"""
     return render(request, 'forum/donation_success.html')
