@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Section, Category, Topic, Post, Profile, ContactMessage, PrivateMessage, Badge, Notification, Skill, EmailVerification, DailyTip, QuizQuestion, QuizScore, FreelanceJob, JobProposal, JobReview, UserQuizAttempt
+from .models import Section, Category, Topic, Post, Profile, ContactMessage, PrivateMessage, Badge, Notification, Skill, EmailVerification, DailyTip, QuizQuestion, QuizScore, FreelanceJob, JobProposal, JobReview, UserQuizAttempt, Donation
 
 # --- GENEL AYARLAR ---
 admin.site.site_header = "Analizus Komuta Merkezi"
@@ -401,3 +401,60 @@ class JobReviewAdmin(admin.ModelAdmin):
         queryset.update(is_approved=True)
         self.message_user(request, f'{queryset.count()} değerlendirme onaylandı.')
     approve_reviews.short_description = "Seçili değerlendirmeleri onayla"
+
+
+# 14. Bağış Yönetimi
+@admin.register(Donation)
+class DonationAdmin(admin.ModelAdmin):
+    list_display = ('donor_display', 'amount_display', 'status_display', 'premium_days_granted', 'created_at', 'completed_at')
+    list_filter = ('status', 'is_anonymous', 'created_at')
+    search_fields = ('name', 'email', 'user__username', 'payment_id')
+    date_hierarchy = 'created_at'
+    readonly_fields = ('payment_id', 'conversation_id', 'created_at', 'completed_at')
+    ordering = ('-created_at',)
+
+    fieldsets = (
+        ('Bağışçı Bilgileri', {
+            'fields': ('user', 'name', 'email', 'is_anonymous')
+        }),
+        ('Ödeme Bilgileri', {
+            'fields': ('amount', 'status', 'payment_id', 'conversation_id')
+        }),
+        ('Ödüller', {
+            'fields': ('premium_days_granted', 'message')
+        }),
+        ('Tarihler', {
+            'fields': ('created_at', 'completed_at'),
+            'classes': ('collapse',)
+        }),
+    )
+
+    def donor_display(self, obj):
+        if obj.is_anonymous:
+            return format_html('<span style="color: #888;">Anonim</span>')
+        name = obj.name or (obj.user.username if obj.user else obj.email)
+        return format_html('<span style="color: #ec4899;"><i class="bi bi-heart-fill"></i> {}</span>', name)
+    donor_display.short_description = "Bağışçı"
+
+    def amount_display(self, obj):
+        return format_html('<span style="color: #22c55e; font-weight: bold;">{}₺</span>', obj.amount)
+    amount_display.short_description = "Miktar"
+
+    def status_display(self, obj):
+        colors = {
+            'pending': '#ffc107',
+            'completed': '#28a745',
+            'failed': '#dc3545'
+        }
+        icons = {
+            'pending': '⏳',
+            'completed': '✅',
+            'failed': '❌'
+        }
+        return format_html(
+            '<span style="color: {};">{} {}</span>',
+            colors.get(obj.status, '#888'),
+            icons.get(obj.status, ''),
+            obj.get_status_display()
+        )
+    status_display.short_description = "Durum"

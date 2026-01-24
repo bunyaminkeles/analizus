@@ -141,6 +141,7 @@ class Profile(models.Model):
     title = models.CharField(max_length=100, blank=True, default="", verbose_name="Ünvan")
     location = models.CharField(max_length=100, blank=True, default="", verbose_name="Konum")
     account_type = models.CharField(max_length=20, choices=ACCOUNT_TYPES, default='Free')
+    premium_expires_at = models.DateTimeField(null=True, blank=True, verbose_name="Premium Bitiş Tarihi")
     reputation = models.IntegerField(default=0, verbose_name="Akademik Puan")
 
     # Rütbe sistemi
@@ -262,6 +263,15 @@ class Profile(models.Model):
         if quiz_score:
             quiz_points = quiz_score.total_points
         return self.reputation + quiz_points
+
+    @property
+    def is_premium(self):
+        """Premium üyelik aktif mi kontrol et"""
+        if self.account_type != 'Premium':
+            return False
+        if not self.premium_expires_at:
+            return False
+        return self.premium_expires_at > timezone.now()
 
     @property
     def quiz_points(self):
@@ -788,3 +798,117 @@ class JobReview(models.Model):
         if self.job.reviews.filter(is_approved=True).count() >= 2:
             self.job.status = 'completed'
             self.job.save()
+
+
+class Donation(models.Model):
+    """Bağış sistemi için model"""
+    STATUS_CHOICES = (
+        ('pending', 'Bekliyor'),
+        ('completed', 'Tamamlandı'),
+        ('failed', 'Başarısız'),
+    )
+
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='donations', verbose_name="Bağışçı")
+    email = models.EmailField(verbose_name="E-posta")
+    name = models.CharField(max_length=100, blank=True, verbose_name="İsim")
+    amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Miktar (TL)")
+    payment_id = models.CharField(max_length=100, unique=True, verbose_name="Ödeme ID")
+    conversation_id = models.CharField(max_length=100, blank=True, verbose_name="Konuşma ID")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending', verbose_name="Durum")
+    premium_days_granted = models.IntegerField(default=0, verbose_name="Verilen Premium Gün")
+    message = models.TextField(blank=True, verbose_name="Mesaj")
+    is_anonymous = models.BooleanField(default=False, verbose_name="Anonim")
+    created_at = models.DateTimeField(auto_now_add=True)
+    completed_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        verbose_name = "Bağış"
+        verbose_name_plural = "Bağışlar"
+        ordering = ['-created_at']
+
+    def __str__(self):
+        donor = self.name or (self.user.username if self.user else "Anonim")
+        return f"{donor} - {self.amount}₺"
+
+    def get_premium_days(self):
+        """Bağış miktarına göre premium gün hesapla"""
+        amount = float(self.amount)
+        if amount >= 100:
+            return 90
+        elif amount >= 50:
+            return 30
+        elif amount >= 25:
+            return 7
+        return 0
+
+    def grant_premium(self):
+        """Kullanıcıya premium üyelik ver"""
+        if not self.user:
+            return False
+
+        days = self.get_premium_days()
+        if days == 0:
+            return False
+
+        profile = self.user.profile
+        now = timezone.now()
+
+        # Mevcut premium varsa üzerine ekle, yoksa şu andan itibaren başlat
+        if profile.premium_expires_at and profile.premium_expires_at > now:
+            profile.premium_expires_at += timedelta(days=days)
+        else:
+            profile.premium_expires_at = now + timedelta(days=days)
+
+        profile.account_type = 'Premium'
+        profile.save(update_fields=['account_type', 'premium_expires_at'])
+
+        self.premium_days_granted = days
+        self.save(update_fields=['premium_days_granted'])
+
+        return True
+
+    def grant_supporter_badge(self):
+        """Destekçi rozetini ver"""
+        if not self.user:
+            return False
+
+        badge, created = Badge.objects.get_or_create(
+            slug='destekci',
+            defaults={
+                'name': 'Destekçi',
+                'description': 'Platformumuza bağış yaparak destek oldu',
+                'icon': 'bi-heart-fill',
+                'color': '#ec4899',
+                'badge_type': 'special',
+                'points_required': 0,
+            }
+        )
+        self.user.profile.badges.add(badge)
+        return True
+
+    @classmethod
+    def get_total_donations(cls):
+        """Toplam bağış miktarını döndür"""
+        from django.db.models import Sum
+        total = cls.objects.filter(status='completed').aggregate(Sum('amount'))['amount__sum']
+        return total or 0
+
+    @classmethod
+    def get_recent_donors(cls, limit=5):
+        """Son bağışçıları döndür"""
+        return cls.objects.filter(
+            status='completed',
+            is_anonymous=False
+        ).select_related('user').order_by('-completed_at')[:limit]
+
+    @classmethod
+    def get_top_donors(cls, limit=5):
+        """En çok bağış yapanları döndür"""
+        from django.db.models import Sum
+        return cls.objects.filter(
+            status='completed',
+            is_anonymous=False,
+            user__isnull=False
+        ).values('user__username', 'user__id').annotate(
+            total=Sum('amount')
+        ).order_by('-total')[:limit]

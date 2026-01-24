@@ -81,6 +81,54 @@
             </div>
         </div>
 
+        <!-- WIDGET: Bağış Yap -->
+        <div class="widget-card" id="donation-widget">
+            <div class="widget-header" style="color: #ec4899;">
+                <i class="bi bi-heart-fill"></i>
+                <span>Bizi Destekle</span>
+            </div>
+            <div class="widget-body">
+                <p class="text-muted small mb-3">Analizus'u ücretsiz tutmamıza yardımcı olun. Bağışçılara <span class="text-warning">Premium üyelik</span> ve <span style="color: #ec4899;">Destekçi rozeti</span> hediye!</p>
+
+                <!-- Bağış Miktarı Seçimi -->
+                <div class="donation-amounts d-flex gap-2 mb-3">
+                    <button type="button" class="btn btn-sm donation-amount-btn flex-fill" data-amount="25">25₺</button>
+                    <button type="button" class="btn btn-sm donation-amount-btn flex-fill" data-amount="50">50₺</button>
+                    <button type="button" class="btn btn-sm donation-amount-btn flex-fill active" data-amount="100">100₺</button>
+                </div>
+
+                <!-- Özel Miktar -->
+                <div class="mb-3">
+                    <input type="number" id="custom-amount" class="form-control form-control-sm bg-dark text-light border-secondary" placeholder="Özel miktar (min 5₺)" min="5">
+                </div>
+
+                {% if not user.is_authenticated %}
+                <!-- Misafir için e-posta -->
+                <div class="mb-3">
+                    <input type="email" id="donation-email" class="form-control form-control-sm bg-dark text-light border-secondary" placeholder="E-posta adresiniz" required>
+                </div>
+                {% endif %}
+
+                <!-- Anonim Seçeneği -->
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" id="anonymous-donation">
+                    <label class="form-check-label small text-muted" for="anonymous-donation">Anonim bağış yap</label>
+                </div>
+
+                <!-- Bağış Butonu -->
+                <button type="button" id="donate-btn" class="btn btn-sm w-100" style="background: linear-gradient(135deg, #ec4899, #8b5cf6); border: none; color: white;">
+                    <i class="bi bi-heart-fill me-1"></i> Bağış Yap
+                </button>
+
+                <!-- Premium Bilgisi -->
+                <div class="mt-3 p-2 rounded" style="background: rgba(236, 72, 153, 0.1); border: 1px solid rgba(236, 72, 153, 0.2);">
+                    <small class="text-muted d-block"><i class="bi bi-gift me-1"></i> <b>25₺</b> = 7 gün Premium</small>
+                    <small class="text-muted d-block"><i class="bi bi-gift me-1"></i> <b>50₺</b> = 30 gün Premium</small>
+                    <small class="text-muted d-block"><i class="bi bi-gift me-1"></i> <b>100₺+</b> = 90 gün Premium</small>
+                </div>
+            </div>
+        </div>
+
     </aside>
 
     <div class="analizus-home">
@@ -1204,6 +1252,24 @@
 
 }
 
+/* ===== DONATION WIDGET ===== */
+.donation-amount-btn {
+    background: rgba(236, 72, 153, 0.1);
+    border: 1px solid rgba(236, 72, 153, 0.3);
+    color: #ec4899;
+    transition: all 0.2s ease;
+}
+.donation-amount-btn:hover,
+.donation-amount-btn.active {
+    background: rgba(236, 72, 153, 0.25);
+    border-color: #ec4899;
+    color: #fff;
+}
+#donation-widget .form-control:focus {
+    border-color: #ec4899;
+    box-shadow: 0 0 0 2px rgba(236, 72, 153, 0.2);
+}
+
 </style>
 
 <script>
@@ -1251,6 +1317,89 @@ function checkAnswer(btn, correctAnswer) {
     }, 2000);
 
 }
+
+// ===== DONATION WIDGET =====
+document.addEventListener('DOMContentLoaded', function() {
+    const amountBtns = document.querySelectorAll('.donation-amount-btn');
+    const customAmountInput = document.getElementById('custom-amount');
+    const donateBtn = document.getElementById('donate-btn');
+    let selectedAmount = 100;
+
+    // Miktar butonları
+    amountBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            amountBtns.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            selectedAmount = parseInt(this.dataset.amount);
+            customAmountInput.value = '';
+        });
+    });
+
+    // Özel miktar
+    customAmountInput.addEventListener('input', function() {
+        if (this.value) {
+            amountBtns.forEach(b => b.classList.remove('active'));
+            selectedAmount = parseInt(this.value) || 0;
+        }
+    });
+
+    // Bağış butonu
+    donateBtn.addEventListener('click', function() {
+        const amount = customAmountInput.value ? parseInt(customAmountInput.value) : selectedAmount;
+        const emailInput = document.getElementById('donation-email');
+        const email = emailInput ? emailInput.value : '';
+        const isAnonymous = document.getElementById('anonymous-donation').checked;
+
+        if (amount < 5) {
+            alert('Minimum bağış miktarı 5 TL\'dir.');
+            return;
+        }
+
+        {% if not user.is_authenticated %}
+        if (!email) {
+            alert('Lütfen e-posta adresinizi girin.');
+            return;
+        }
+        {% endif %}
+
+        // Butonu devre dışı bırak
+        donateBtn.disabled = true;
+        donateBtn.innerHTML = '<i class="bi bi-hourglass-split me-1"></i> Yükleniyor...';
+
+        // API'ye istek gönder
+        fetch('{% url "create_donation" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({
+                amount: amount,
+                email: email,
+                is_anonymous: isAnonymous
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // iyzico checkout formunu göster
+                const formContainer = document.createElement('div');
+                formContainer.innerHTML = data.checkoutFormContent;
+                document.body.appendChild(formContainer);
+            } else {
+                alert(data.error || 'Bir hata oluştu.');
+                donateBtn.disabled = false;
+                donateBtn.innerHTML = '<i class="bi bi-heart-fill me-1"></i> Bağış Yap';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Bağlantı hatası oluştu.');
+            donateBtn.disabled = false;
+            donateBtn.innerHTML = '<i class="bi bi-heart-fill me-1"></i> Bağış Yap';
+        });
+    });
+});
 
 </script>
 

@@ -33,6 +33,9 @@ typing_extensions
 packaging
 sendgrid  # SendGrid Web API için (SMTP yerine)
 
+# --- ÖDEME SİSTEMLERİ ---
+iyzipay  # iyzico ödeme entegrasyonu
+
 # --- GERÇEK ZAMANLI (REAL-TIME) ---
 daphne
 channels

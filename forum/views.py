@@ -1359,3 +1359,223 @@ def api_toggle_follow(request, username):
         )
         
     return JsonResponse({'success': True, 'is_following': is_following, 'follower_count': target_profile.followers.count()})
+
+
+# --- BAĞIŞ SİSTEMİ ---
+from .models import Donation
+import uuid
+
+def donation_widget_data(request):
+    """Bağış widget'ı için veri döndürür (AJAX)"""
+    total = Donation.get_total_donations()
+    recent_donors = Donation.get_recent_donors(5)
+
+    donors_data = []
+    for d in recent_donors:
+        donors_data.append({
+            'name': d.name or (d.user.username if d.user else 'Anonim'),
+            'amount': float(d.amount),
+            'date': d.completed_at.strftime('%d.%m.%Y') if d.completed_at else '',
+        })
+
+    return JsonResponse({
+        'total': float(total),
+        'recent_donors': donors_data,
+        'donor_count': Donation.objects.filter(status='completed').count(),
+    })
+
+
+@require_POST
+def create_donation(request):
+    """iyzico ödeme formu oluşturur"""
+    from django.conf import settings
+    import iyzipay
+
+    try:
+        data = json.loads(request.body)
+        amount = data.get('amount')
+        email = data.get('email', '')
+        name = data.get('name', '')
+        is_anonymous = data.get('is_anonymous', False)
+
+        if not amount or float(amount) < 5:
+            return JsonResponse({'success': False, 'error': 'Minimum bağış miktarı 5 TL\'dir.'})
+
+        # Giriş yapmış kullanıcı varsa bilgilerini al
+        user = request.user if request.user.is_authenticated else None
+        if user and not email:
+            email = user.email
+        if user and not name:
+            name = user.get_full_name() or user.username
+
+        if not email:
+            return JsonResponse({'success': False, 'error': 'E-posta adresi gereklidir.'})
+
+        # Benzersiz ID'ler oluştur
+        conversation_id = str(uuid.uuid4())[:20]
+        payment_id = f"DON-{uuid.uuid4().hex[:12].upper()}"
+
+        # Donation kaydı oluştur (pending)
+        donation = Donation.objects.create(
+            user=user,
+            email=email,
+            name=name,
+            amount=amount,
+            payment_id=payment_id,
+            conversation_id=conversation_id,
+            is_anonymous=is_anonymous,
+            status='pending'
+        )
+
+        # iyzico ayarları
+        options = {
+            'api_key': settings.IYZICO_API_KEY,
+            'secret_key': settings.IYZICO_SECRET_KEY,
+            'base_url': settings.IYZICO_BASE_URL
+        }
+
+        # Callback URL
+        callback_url = request.build_absolute_uri('/api/donation/callback/')
+
+        # iyzico istek objesi
+        checkout_form_request = {
+            'locale': 'tr',
+            'conversationId': conversation_id,
+            'price': str(amount),
+            'paidPrice': str(amount),
+            'currency': 'TRY',
+            'basketId': payment_id,
+            'paymentGroup': 'PRODUCT',
+            'callbackUrl': callback_url,
+            'enabledInstallments': [1],
+            'buyer': {
+                'id': str(user.id) if user else 'GUEST',
+                'name': name.split()[0] if name else 'Misafir',
+                'surname': name.split()[-1] if name and len(name.split()) > 1 else 'Bağışçı',
+                'gsmNumber': '+905000000000',
+                'email': email,
+                'identityNumber': '11111111111',
+                'registrationAddress': 'Türkiye',
+                'ip': get_client_ip(request),
+                'city': 'Istanbul',
+                'country': 'Turkey',
+            },
+            'shippingAddress': {
+                'contactName': name or 'Bağışçı',
+                'city': 'Istanbul',
+                'country': 'Turkey',
+                'address': 'Türkiye',
+            },
+            'billingAddress': {
+                'contactName': name or 'Bağışçı',
+                'city': 'Istanbul',
+                'country': 'Turkey',
+                'address': 'Türkiye',
+            },
+            'basketItems': [
+                {
+                    'id': payment_id,
+                    'name': 'Analizus Bağış',
+                    'category1': 'Bağış',
+                    'itemType': 'VIRTUAL',
+                    'price': str(amount),
+                }
+            ]
+        }
+
+        # iyzico checkout form oluştur
+        checkout_form = iyzipay.CheckoutFormInitialize().create(checkout_form_request, options)
+        result = checkout_form.read().decode('utf-8')
+        result_json = json.loads(result)
+
+        if result_json.get('status') == 'success':
+            return JsonResponse({
+                'success': True,
+                'checkoutFormContent': result_json.get('checkoutFormContent'),
+                'token': result_json.get('token'),
+                'payment_id': payment_id,
+            })
+        else:
+            donation.status = 'failed'
+            donation.save()
+            return JsonResponse({
+                'success': False,
+                'error': result_json.get('errorMessage', 'Ödeme formu oluşturulamadı.')
+            })
+
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
+
+
+def get_client_ip(request):
+    """İstemci IP adresini al"""
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
+
+
+from django.views.decorators.csrf import csrf_exempt
+
+@csrf_exempt
+def donation_callback(request):
+    """iyzico ödeme callback'i"""
+    from django.conf import settings
+    import iyzipay
+
+    if request.method == 'POST':
+        token = request.POST.get('token')
+
+        if not token:
+            return redirect('home')
+
+        options = {
+            'api_key': settings.IYZICO_API_KEY,
+            'secret_key': settings.IYZICO_SECRET_KEY,
+            'base_url': settings.IYZICO_BASE_URL
+        }
+
+        # Ödeme sonucunu sorgula
+        checkout_form_result = iyzipay.CheckoutForm().retrieve({
+            'locale': 'tr',
+            'token': token,
+        }, options)
+
+        result = checkout_form_result.read().decode('utf-8')
+        result_json = json.loads(result)
+
+        basket_id = result_json.get('basketId')
+
+        try:
+            donation = Donation.objects.get(payment_id=basket_id)
+
+            if result_json.get('status') == 'success' and result_json.get('paymentStatus') == 'SUCCESS':
+                donation.status = 'completed'
+                donation.completed_at = timezone.now()
+                donation.save()
+
+                # Premium üyelik ver
+                donation.grant_premium()
+
+                # Destekçi rozeti ver
+                donation.grant_supporter_badge()
+
+                return redirect('donation_success')
+            else:
+                donation.status = 'failed'
+                donation.save()
+                messages.error(request, 'Ödeme işlemi başarısız oldu.')
+                return redirect('home')
+
+        except Donation.DoesNotExist:
+            messages.error(request, 'Bağış kaydı bulunamadı.')
+            return redirect('home')
+
+    return redirect('home')
+
+
+def donation_success(request):
+    """Başarılı bağış sayfası"""
+    return render(request, 'forum/donation_success.html')
