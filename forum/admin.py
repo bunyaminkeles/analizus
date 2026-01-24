@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Section, Category, Topic, Post, Profile, ContactMessage, PrivateMessage, Badge, Notification, Skill, EmailVerification, DailyTip, QuizQuestion, QuizScore, FreelanceJob, JobProposal, UserQuizAttempt
+from .models import Section, Category, Topic, Post, Profile, ContactMessage, PrivateMessage, Badge, Notification, Skill, EmailVerification, DailyTip, QuizQuestion, QuizScore, FreelanceJob, JobProposal, JobReview, UserQuizAttempt
 
 # --- GENEL AYARLAR ---
 admin.site.site_header = "Analizus Komuta Merkezi"
@@ -387,3 +387,17 @@ class JobProposalAdmin(admin.ModelAdmin):
     list_display = ('job', 'expert', 'price', 'duration', 'status', 'created_at')
     list_filter = ('status', 'created_at')
     search_fields = ('job__title', 'expert__username', 'message')
+
+
+@admin.register(JobReview)
+class JobReviewAdmin(admin.ModelAdmin):
+    list_display = ('job', 'reviewer', 'reviewed_user', 'rating', 'is_approved', 'created_at')
+    list_filter = ('is_approved', 'rating', 'created_at')
+    list_editable = ('is_approved',)
+    search_fields = ('job__title', 'reviewer__username', 'reviewed_user__username', 'comment')
+    actions = ['approve_reviews']
+
+    def approve_reviews(self, request, queryset):
+        queryset.update(is_approved=True)
+        self.message_user(request, f'{queryset.count()} değerlendirme onaylandı.')
+    approve_reviews.short_description = "Seçili değerlendirmeleri onayla"

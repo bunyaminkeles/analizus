@@ -56,6 +56,7 @@ urlpatterns = [
     path('market/job/<int:pk>/', views.job_detail, name='job_detail'),
     path('market/job/<int:pk>/close/', views.close_job, name='close_job'),
     path('market/job/<int:pk>/accept/<int:proposal_id>/', views.accept_proposal, name='accept_proposal'),
+    path('market/job/<int:pk>/review/', views.add_job_review, name='add_job_review'),
     path('market/job/<int:pk>/like/', views.toggle_job_like, name='toggle_job_like'),
     path('market/job/<int:pk>/bookmark/', views.toggle_job_bookmark, name='toggle_job_bookmark'),
     path('market/my-jobs/', views.my_jobs, name='my_jobs'),

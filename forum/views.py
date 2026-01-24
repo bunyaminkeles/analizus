@@ -14,7 +14,7 @@ from django.utils import timezone
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET, require_POST
 from datetime import timedelta
-from .models import Section, Category, Topic, Post, Profile, PrivateMessage, PostLike, Notification, EmailVerification, DailyTip, QuizQuestion, QuizScore, SuccessStory, FreelanceJob, JobProposal, Skill, Badge, UserQuizAttempt
+from .models import Section, Category, Topic, Post, Profile, PrivateMessage, PostLike, Notification, EmailVerification, DailyTip, QuizQuestion, QuizScore, SuccessStory, FreelanceJob, JobProposal, JobReview, Skill, Badge, UserQuizAttempt
 from .forms import RegisterForm, NewTopicForm, PostForm, JobPostForm, ProposalForm
 from .email_utils import send_topic_reply_notification, send_private_message_notification
 from django.template.loader import render_to_string
@@ -290,6 +290,19 @@ def job_detail(request, pk):
         status='open'
     ).exclude(pk=pk).order_by('-created_at')[:3]
 
+    # Review bilgileri
+    reviews = job.reviews.filter(is_approved=True).select_related('reviewer', 'reviewed_user')
+    can_review = False
+    accepted_proposal = job.proposals.filter(status='accepted').first()
+    if request.user.is_authenticated and accepted_proposal:
+        # İlan sahibi veya kabul edilen uzman mı?
+        is_owner = request.user == job.owner
+        is_expert_accepted = request.user == accepted_proposal.expert
+        if (is_owner or is_expert_accepted) and job.status == 'in_progress':
+            # Daha önce review yapmış mı?
+            has_reviewed = job.reviews.filter(reviewer=request.user).exists()
+            can_review = not has_reviewed
+
     return render(request, 'forum/market/job_detail.html', {
         'job': job,
         'proposals': proposals,
@@ -299,8 +312,55 @@ def job_detail(request, pk):
         'is_saved': is_saved,
         'is_expert': is_expert,
         'can_propose_reason': can_propose_reason,
-        'similar_jobs': similar_jobs
+        'similar_jobs': similar_jobs,
+        'reviews': reviews,
+        'can_review': can_review,
+        'accepted_proposal': accepted_proposal
     })
+
+@login_required
+@require_POST
+def add_job_review(request, pk):
+    job = get_object_or_404(FreelanceJob, pk=pk)
+    accepted_proposal = job.proposals.filter(status='accepted').first()
+
+    if not accepted_proposal:
+        messages.error(request, 'Bu ilan için değerlendirme yapılamaz.')
+        return redirect('job_detail', pk=pk)
+
+    # Yetki kontrolü
+    is_owner = request.user == job.owner
+    is_expert = request.user == accepted_proposal.expert
+    if not (is_owner or is_expert):
+        messages.error(request, 'Bu işlem için yetkiniz yok.')
+        return redirect('job_detail', pk=pk)
+
+    # Daha önce review yapmış mı?
+    if job.reviews.filter(reviewer=request.user).exists():
+        messages.warning(request, 'Zaten değerlendirme yapmışsınız.')
+        return redirect('job_detail', pk=pk)
+
+    rating = request.POST.get('rating')
+    comment = request.POST.get('comment', '')[:300]
+
+    if not rating or int(rating) not in range(1, 6):
+        messages.error(request, 'Geçerli bir puan seçin.')
+        return redirect('job_detail', pk=pk)
+
+    # Karşı tarafı bul
+    reviewed_user = accepted_proposal.expert if is_owner else job.owner
+
+    JobReview.objects.create(
+        job=job,
+        reviewer=request.user,
+        reviewed_user=reviewed_user,
+        rating=int(rating),
+        comment=comment
+    )
+
+    messages.success(request, 'Değerlendirmeniz gönderildi. Admin onayından sonra yayınlanacak.')
+    return redirect('job_detail', pk=pk)
+
 
 @login_required
 def my_jobs(request):
@@ -601,6 +661,7 @@ def profile_detail(request, username):
 
     posted_jobs = FreelanceJob.objects.filter(owner=profile_user).order_by('-created_at')[:20]
     given_proposals = JobProposal.objects.filter(expert=profile_user).select_related('job').order_by('-created_at')[:20]
+    received_reviews = JobReview.objects.filter(reviewed_user=profile_user, is_approved=True).select_related('reviewer', 'job').order_by('-created_at')[:20]
 
     # Kategori bazlı quiz istatistikleri
     quiz_stats = UserQuizAttempt.objects.filter(
@@ -627,6 +688,7 @@ def profile_detail(request, username):
         'profile_user': profile_user,
         'posted_jobs': posted_jobs,
         'given_proposals': given_proposals,
+        'received_reviews': received_reviews,
         'quiz_stats': quiz_stats,
         'user_score': user_score,
         'quiz_rank': quiz_rank,

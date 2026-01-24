@@ -765,3 +765,26 @@ class JobProposal(models.Model):
             return False
         can_prop, _ = user.profile.can_propose()
         return can_prop
+
+
+class JobReview(models.Model):
+    """İş tamamlandıktan sonra karşılıklı değerlendirme"""
+    job = models.ForeignKey(FreelanceJob, on_delete=models.CASCADE, related_name='reviews')
+    reviewer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='given_reviews')
+    reviewed_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='received_reviews')
+    rating = models.PositiveSmallIntegerField(choices=[(i, str(i)) for i in range(1, 6)], verbose_name="Puan")
+    comment = models.CharField(max_length=300, blank=True, verbose_name="Yorum")
+    is_approved = models.BooleanField(default=False, verbose_name="Onaylandı")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "İş Değerlendirmesi"
+        verbose_name_plural = "İş Değerlendirmeleri"
+        unique_together = ('job', 'reviewer')
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        # Her iki taraf da onaylı değerlendirme yaptıysa ilanı kapat
+        if self.job.reviews.filter(is_approved=True).count() >= 2:
+            self.job.status = 'completed'
+            self.job.save()
