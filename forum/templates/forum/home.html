@@ -81,33 +81,6 @@
             </div>
         </div>
 
-        <!-- WIDGET: Son Değerlendirmeler -->
-        {% if recent_reviews %}
-        <div class="widget-card">
-            <div class="widget-header" style="color: #22c55e;">
-                <i class="bi bi-star-fill"></i>
-                <span>Son Değerlendirmeler</span>
-            </div>
-            <div class="widget-body p-0">
-                {% for review in recent_reviews %}
-                <div class="p-2 border-bottom border-secondary border-opacity-10">
-                    <div class="d-flex justify-content-between align-items-center mb-1">
-                        <a href="{% url 'profile_detail' username=review.reviewed_user.username %}" class="text-decoration-none text-light small fw-bold">{{ review.reviewed_user.username }}</a>
-                        <div>
-                            {% for i in "12345" %}
-                            <i class="bi bi-star{% if forloop.counter <= review.rating %}-fill text-warning{% else %} text-muted{% endif %}" style="font-size: 0.6rem;"></i>
-                            {% endfor %}
-                        </div>
-                    </div>
-                    {% if review.comment %}
-                    <p class="text-muted small mb-0" style="font-size: 0.7rem;">{{ review.comment|truncatechars:50 }}</p>
-                    {% endif %}
-                </div>
-                {% endfor %}
-            </div>
-        </div>
-        {% endif %}
-
     </aside>
 
     <div class="analizus-home">
@@ -230,6 +203,30 @@
             {% endfor %}
         </div>
 
+        <!-- SON AKTİVİTELER - Sections Altında -->
+        <div class="activity-section mt-4">
+            <div class="widget-card full-width">
+                <div class="widget-header green">
+                    <i class="bi bi-lightning-fill"></i>
+                    <span>Son Aktiviteler</span>
+                </div>
+                <div class="widget-body activity-body">
+                    {% for act in recent_activities %}
+                    <div class="activity-item">
+                        <div class="activity-avatar">{{ act.created_by.username|slice:":2"|upper }}</div>
+                        <div class="activity-content">
+                            <b>{{ act.created_by.username }}</b>
+                            "<a href="{% url 'topic_detail' pk=act.topic.pk %}">{{ act.topic.subject|truncatechars:35 }}</a>" konusuna yanıt verdi
+                        </div>
+                        <span class="activity-time">{{ act.created_at|timesince }} önce</span>
+                    </div>
+                    {% empty %}
+                    <p class="empty-text">Henüz aktivite yok</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
         <!-- Floating Stars -->
         <div class="floating-star star-1">✦</div>
         <div class="floating-star star-2">✦</div>
@@ -241,50 +238,8 @@
 
 {% block above_sidebar %}
 
-<!-- ACTIVITY SECTION -->
-
-<div class="widget-card full-width">
-
-    <div class="widget-header green">
-
-        <i class="bi bi-lightning-fill"></i>
-
-        <span>Son Aktiviteler</span>
-
-    </div>
-
-    <div class="widget-body activity-body">
-
-        {% for act in recent_activities %}
-
-        <div class="activity-item">
-
-            <div class="activity-avatar">{{ act.created_by.username|slice:":2"|upper }}</div>
-
-            <div class="activity-content">
-
-                <b>{{ act.created_by.username }}</b>
-
-                "<a href="{% url 'topic_detail' pk=act.topic.pk %}">{{ act.topic.subject|truncatechars:35 }}</a>" konusuna yanıt verdi
-
-            </div>
-
-            <span class="activity-time">{{ act.created_at|timesince }} önce</span>
-
-        </div>
-
-        {% empty %}
-
-        <p class="empty-text">Henüz aktivite yok</p>
-
-        {% endfor %}
-
-    </div>
-
-</div>
-
-<!-- WIDGET: Son Analiz İlanları -->
-<div class="widget-card full-width mt-4 jobs-widget">
+<!-- WIDGET: Analiz Talebi -->
+<div class="widget-card full-width jobs-widget">
     <div class="widget-header purple">
         <a href="{% if user.is_authenticated %}{% url 'job_list' %}{% else %}{% url 'login' %}{% endif %}" class="d-flex align-items-center w-100 text-decoration-none" style="color: inherit;">
             <i class="bi bi-bar-chart-line me-2"></i>
@@ -315,10 +270,34 @@
     </div>
 </div>
 
+<!-- WIDGET: Son Değerlendirmeler -->
+{% if recent_reviews %}
+<div class="widget-card full-width mt-4">
+    <div class="widget-header" style="color: #22c55e;">
+        <i class="bi bi-star-fill"></i>
+        <span>Son Değerlendirmeler</span>
+    </div>
+    <div class="widget-body p-0">
+        {% for review in recent_reviews %}
+        <div class="p-2 border-bottom border-secondary border-opacity-10">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <a href="{% url 'profile_detail' username=review.reviewed_user.username %}" class="text-decoration-none text-light small fw-bold">{{ review.reviewed_user.username }}</a>
+                <div>
+                    {% for i in "12345" %}
+                    <i class="bi bi-star{% if forloop.counter <= review.rating %}-fill text-warning{% else %} text-muted{% endif %}" style="font-size: 0.6rem;"></i>
+                    {% endfor %}
+                </div>
+            </div>
+            {% if review.comment %}
+            <p class="text-muted small mb-0" style="font-size: 0.7rem;">{{ review.comment|truncatechars:50 }}</p>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endif %}
+
 {% endblock %}
-
-
-
 
 
 {% block extra_js %}
