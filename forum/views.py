@@ -43,8 +43,30 @@ def home(request):
         replies_count=Count('posts')
     ).order_by('-views')[:5]
 
-    # Son aktiviteler (son 10 post)
-    recent_activities = Post.objects.select_related('created_by', 'topic').order_by('-created_at')[:10]
+    # Son aktiviteler (postlar + bağışlar)
+    recent_posts = list(Post.objects.select_related('created_by', 'topic').order_by('-created_at')[:10])
+    recent_donations = list(Donation.objects.filter(status='completed', is_anonymous=False).exclude(user=None).select_related('user').order_by('-completed_at')[:5])
+
+    # Aktiviteleri birleştir
+    recent_activities = []
+    for post in recent_posts:
+        recent_activities.append({
+            'type': 'post',
+            'created_by': post.created_by,
+            'topic': post.topic,
+            'created_at': post.created_at,
+        })
+    for donation in recent_donations:
+        recent_activities.append({
+            'type': 'donation',
+            'created_by': donation.user,
+            'amount': donation.amount,
+            'premium_days': donation.get_premium_days(),
+            'created_at': donation.completed_at,
+        })
+
+    # Tarihe göre sırala
+    recent_activities = sorted(recent_activities, key=lambda x: x['created_at'], reverse=True)[:10]
 
     # Günün İpucu
     daily_tip = DailyTip.get_today_tip()
@@ -1454,7 +1476,7 @@ def create_donation(request):
             'basketId': payment_id,
             'paymentGroup': 'PRODUCT',
             'callbackUrl': callback_url,
-            'enabledInstallments': [1],
+            'enabledInstallments': ['1'],
             'buyer': {
                 'id': str(user.id) if user else 'GUEST',
                 'name': name.split()[0] if name else 'Misafir',
@@ -1491,8 +1513,14 @@ def create_donation(request):
         }
 
         # iyzico checkout form oluştur
+        print(f"[IYZICO] API Key: {settings.IYZICO_API_KEY[:20]}...")
+        print(f"[IYZICO] Base URL: {settings.IYZICO_BASE_URL}")
+        print(f"[IYZICO] Request: {checkout_form_request}")
+
         checkout_form = iyzipay.CheckoutFormInitialize().create(checkout_form_request, options)
         result = checkout_form.read().decode('utf-8')
+        print(f"[IYZICO] Response: {result[:500]}")
+
         result_json = json.loads(result)
 
         if result_json.get('status') == 'success':
@@ -1505,13 +1533,96 @@ def create_donation(request):
         else:
             donation.status = 'failed'
             donation.save()
+            error_msg = result_json.get('errorMessage', 'Ödeme formu oluşturulamadı.')
+            print(f"[IYZICO] Error: {error_msg}")
             return JsonResponse({
                 'success': False,
-                'error': result_json.get('errorMessage', 'Ödeme formu oluşturulamadı.')
+                'error': error_msg
             })
 
     except Exception as e:
+        import traceback
+        print(f"[IYZICO] Exception: {traceback.format_exc()}")
         return JsonResponse({'success': False, 'error': str(e)})
+
+
+def send_donation_thank_you_email(donation):
+    """Bağış sonrası teşekkür e-postası gönder"""
+    from django.core.mail import send_mail
+    from django.conf import settings
+
+    premium_days = donation.get_premium_days()
+    donor_name = donation.name or (donation.user.username if donation.user else "Değerli Bağışçımız")
+
+    subject = f"Teşekkürler! {int(donation.amount)} TL Bağışınız İçin"
+
+    message = f"""Merhaba {donor_name},
+
+{int(donation.amount)} TL tutarındaki bağışınız için çok teşekkür ederiz!
+
+Kazandığınız Ödüller:
+★ {premium_days} Gün Premium Üyelik
+♥ Destekçi Rozeti
+
+Premium üyeliğiniz hesabınıza tanımlandı. Artık tüm premium özelliklerden faydalanabilirsiniz!
+
+Desteğiniz Analizus'u daha iyi bir platform yapmamıza yardımcı oluyor.
+
+Sevgilerle,
+Analizus Ekibi
+
+---
+Bu e-posta otomatik olarak gönderilmiştir.
+https://www.analizus.com
+"""
+
+    html_message = f"""
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #1a1a2e; color: #e2e8f0; padding: 30px; border-radius: 10px;">
+        <div style="text-align: center; margin-bottom: 30px;">
+            <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #ec4899, #8b5cf6); border-radius: 50%; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center;">
+                <span style="font-size: 40px;">❤️</span>
+            </div>
+            <h1 style="color: #ec4899; margin: 0;">Teşekkür Ederiz!</h1>
+        </div>
+
+        <p style="font-size: 16px;">Merhaba <strong>{donor_name}</strong>,</p>
+
+        <p style="font-size: 18px; text-align: center; background: rgba(236, 72, 153, 0.1); padding: 15px; border-radius: 8px; border: 1px solid rgba(236, 72, 153, 0.3);">
+            <span style="color: #ec4899; font-size: 24px; font-weight: bold;">{int(donation.amount)} TL</span><br>
+            <span style="color: #94a3b8;">bağışınız başarıyla tamamlandı!</span>
+        </p>
+
+        <div style="background: rgba(234, 179, 8, 0.1); padding: 20px; border-radius: 8px; margin: 20px 0; border: 1px solid rgba(234, 179, 8, 0.3);">
+            <h3 style="color: #fbbf24; margin-top: 0;">🎁 Kazandığınız Ödüller</h3>
+            <p style="margin: 10px 0;">⭐ <strong style="color: #fbbf24;">{premium_days} Gün Premium Üyelik</strong></p>
+            <p style="margin: 10px 0;">💖 <strong style="color: #ec4899;">Destekçi Rozeti</strong></p>
+        </div>
+
+        <p style="color: #94a3b8;">Premium üyeliğiniz hesabınıza tanımlandı. Artık tüm premium özelliklerden faydalanabilirsiniz!</p>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="https://www.analizus.com" style="background: linear-gradient(135deg, #ec4899, #8b5cf6); color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; font-weight: bold;">Analizus'a Git</a>
+        </div>
+
+        <p style="color: #64748b; font-size: 12px; margin-top: 30px; text-align: center;">
+            Sevgilerle, Analizus Ekibi<br>
+            Bu e-posta otomatik olarak gönderilmiştir.
+        </p>
+    </div>
+    """
+
+    try:
+        send_mail(
+            subject=subject,
+            message=message,
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[donation.email],
+            html_message=html_message,
+            fail_silently=True,
+        )
+        print(f"[DONATION] Teşekkür e-postası gönderildi: {donation.email}")
+    except Exception as e:
+        print(f"[DONATION] E-posta gönderilemedi: {e}")
 
 
 def get_client_ip(request):
@@ -1569,7 +1680,10 @@ def donation_callback(request):
                 # Destekçi rozeti ver
                 donation.grant_supporter_badge()
 
-                return redirect('donation_success')
+                # Teşekkür e-postası gönder
+                send_donation_thank_you_email(donation)
+
+                return redirect(f'/donation/success/?payment_id={donation.payment_id}')
             else:
                 donation.status = 'failed'
                 donation.save()
@@ -1585,4 +1699,17 @@ def donation_callback(request):
 
 def donation_success(request):
     """Başarılı bağış sayfası"""
-    return render(request, 'forum/donation_success.html')
+    payment_id = request.GET.get('payment_id')
+    donation = None
+
+    if payment_id:
+        try:
+            donation = Donation.objects.get(payment_id=payment_id)
+        except Donation.DoesNotExist:
+            pass
+
+    context = {
+        'donation': donation,
+        'premium_days': donation.get_premium_days() if donation else 0,
+    }
+    return render(request, 'forum/donation_success.html', context)

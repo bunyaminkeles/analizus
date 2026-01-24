@@ -18,7 +18,12 @@
 
                     <!-- Başlık -->
                     <h2 class="text-white mb-3">Teşekkür Ederiz!</h2>
-                    <p class="text-muted mb-4">Bağışınız başarıyla tamamlandı. Desteğiniz için çok teşekkür ederiz!</p>
+                    {% if donation %}
+                    <p class="text-muted mb-2">
+                        <span style="color: #ec4899; font-size: 1.5rem; font-weight: bold;">{{ donation.amount|floatformat:0 }} TL</span> bağışınız başarıyla tamamlandı!
+                    </p>
+                    {% endif %}
+                    <p class="text-muted mb-4">Desteğiniz için çok teşekkür ederiz!</p>
 
                     <!-- Kazanılan Ödüller -->
                     <div class="p-3 rounded mb-4" style="background: rgba(236, 72, 153, 0.1); border: 1px solid rgba(236, 72, 153, 0.2);">
@@ -31,7 +36,7 @@
                                      style="width: 50px; height: 50px; background: rgba(234, 179, 8, 0.15); border: 1px solid rgba(234, 179, 8, 0.3);">
                                     <i class="bi bi-star-fill text-warning"></i>
                                 </div>
-                                <p class="small text-muted mb-0">Premium Üyelik</p>
+                                <p class="small text-warning mb-0" style="font-weight: bold;">+{{ premium_days }} Gün Premium</p>
                             </div>
 
                             <!-- Destekçi Rozeti -->
@@ -40,13 +45,14 @@
                                      style="width: 50px; height: 50px; background: rgba(236, 72, 153, 0.15); border: 1px solid rgba(236, 72, 153, 0.3);">
                                     <i class="bi bi-heart-fill" style="color: #ec4899;"></i>
                                 </div>
-                                <p class="small text-muted mb-0">Destekçi Rozeti</p>
+                                <p class="small mb-0" style="color: #ec4899; font-weight: bold;">Destekçi Rozeti</p>
                             </div>
                         </div>
                     </div>
 
                     <!-- Bilgi -->
                     <p class="small text-muted mb-4">
+                        <i class="bi bi-check-circle text-success me-1"></i>
                         Premium üyeliğiniz hesabınıza tanımlandı. Artık tüm premium özelliklerden faydalanabilirsiniz!
                     </p>
 

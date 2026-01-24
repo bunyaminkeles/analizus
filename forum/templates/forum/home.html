@@ -86,14 +86,40 @@
             <div class="widget-header" style="color: #ec4899;">
                 <i class="bi bi-heart-fill"></i>
                 <span>Bizi Destekle</span>
-                <span class="badge bg-warning text-dark ms-auto" style="font-size: 0.6rem;">Yakında</span>
             </div>
-            <div class="widget-body text-center py-4">
-                <div class="mb-3">
-                    <i class="bi bi-heart-fill" style="font-size: 2.5rem; color: #ec4899; opacity: 0.5;"></i>
+            <div class="widget-body">
+                <p class="text-muted small mb-3">Bağışçılara <span class="text-warning">Premium üyelik</span> ve <span style="color: #ec4899;">Destekçi rozeti</span> hediye!</p>
+
+                <!-- Miktar Seçimi -->
+                <div class="d-flex gap-2 mb-3 flex-wrap">
+                    <button type="button" class="btn btn-sm btn-outline-secondary donation-amount-btn" data-amount="50">50 TL</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary donation-amount-btn active" data-amount="100">100 TL</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary donation-amount-btn" data-amount="200">200 TL</button>
                 </div>
-                <p class="text-muted small mb-2">Bağış sistemi çok yakında aktif olacak!</p>
-                <p class="text-muted small mb-0">Bağışçılara <span class="text-warning">Premium üyelik</span> ve <span style="color: #ec4899;">Destekçi rozeti</span> hediye edilecek.</p>
+
+                <!-- Özel Miktar -->
+                <div class="input-group input-group-sm mb-3">
+                    <input type="number" class="form-control" id="custom-amount" placeholder="Özel miktar" min="5">
+                    <span class="input-group-text">TL</span>
+                </div>
+
+                {% if not user.is_authenticated %}
+                <!-- E-posta (giriş yapmamış kullanıcılar için) -->
+                <div class="mb-3">
+                    <input type="email" class="form-control form-control-sm" id="donation-email" placeholder="E-posta adresiniz" required>
+                </div>
+                {% endif %}
+
+                <!-- Anonim Bağış -->
+                <div class="form-check mb-3">
+                    <input type="checkbox" class="form-check-input" id="anonymous-donation">
+                    <label class="form-check-label small text-muted" for="anonymous-donation">Anonim bağış yap</label>
+                </div>
+
+                <!-- Bağış Butonu -->
+                <button type="button" class="btn btn-sm w-100" id="donate-btn" style="background: linear-gradient(135deg, #ec4899, #f472b6); color: white; border: none;">
+                    <i class="bi bi-heart-fill me-1"></i> Bağış Yap
+                </button>
             </div>
         </div>
 
@@ -229,10 +255,18 @@
                 <div class="widget-body activity-body">
                     {% for act in recent_activities %}
                     <div class="activity-item">
-                        <div class="activity-avatar">{{ act.created_by.username|slice:":2"|upper }}</div>
+                        <div class="activity-avatar" {% if act.type == 'donation' %}style="background: linear-gradient(135deg, #ec4899, #f472b6);"{% endif %}>
+                            {{ act.created_by.username|slice:":2"|upper }}
+                        </div>
                         <div class="activity-content">
+                            {% if act.type == 'donation' %}
+                            <b>{{ act.created_by.username }}</b>
+                            <span style="color: #ec4899;"><i class="bi bi-heart-fill"></i> {{ act.amount|floatformat:0 }} TL bağış yaptı</span>
+                            <span class="badge bg-warning text-dark ms-1" style="font-size: 0.6rem;">+{{ act.premium_days }} gün Premium</span>
+                            {% else %}
                             <b>{{ act.created_by.username }}</b>
                             "<a href="{% url 'topic_detail' pk=act.topic.pk %}">{{ act.topic.subject|truncatechars:35 }}</a>" konusuna yanıt verdi
+                            {% endif %}
                         </div>
                         <span class="activity-time">{{ act.created_at|timesince }} önce</span>
                     </div>
@@ -1352,8 +1386,27 @@ document.addEventListener('DOMContentLoaded', function() {
             if (data.success && data.checkoutFormContent) {
                 // iyzico checkout formunu göster
                 const formContainer = document.createElement('div');
-                formContainer.innerHTML = data.checkoutFormContent;
+                formContainer.id = 'iyzico-checkout-container';
                 document.body.appendChild(formContainer);
+
+                // Script'i ayrı olarak çalıştır
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = data.checkoutFormContent;
+
+                // Script elementlerini bul ve çalıştır
+                const scripts = tempDiv.querySelectorAll('script');
+                scripts.forEach(script => {
+                    const newScript = document.createElement('script');
+                    if (script.src) {
+                        newScript.src = script.src;
+                    } else {
+                        newScript.textContent = script.textContent;
+                    }
+                    document.body.appendChild(newScript);
+                });
+
+                // Script olmayan içeriği ekle
+                formContainer.innerHTML = tempDiv.innerHTML.replace(/<script[\s\S]*?<\/script>/gi, '');
             } else {
                 alert(data.error || 'Bir hata oluştu.');
                 donateBtn.disabled = false;
