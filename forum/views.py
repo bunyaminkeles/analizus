@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.db import models
 from django.contrib.contenttypes.models import ContentType
-from django.db.models import Count, Sum, Q
+from django.db.models import Count, Sum, Q, Avg
 from django.contrib import messages
 from django.utils import timezone
 from django.http import JsonResponse
@@ -663,6 +663,12 @@ def profile_detail(request, username):
     given_proposals = JobProposal.objects.filter(expert=profile_user).select_related('job').order_by('-created_at')[:20]
     received_reviews = JobReview.objects.filter(reviewed_user=profile_user, is_approved=True).select_related('reviewer', 'job').order_by('-created_at')[:20]
 
+    # Yıldız ortalaması
+    rating_stats = JobReview.objects.filter(reviewed_user=profile_user, is_approved=True).aggregate(
+        avg_rating=Avg('rating'),
+        total_reviews=Count('id')
+    )
+
     # Kategori bazlı quiz istatistikleri
     quiz_stats = UserQuizAttempt.objects.filter(
         user=profile_user, 
@@ -689,6 +695,7 @@ def profile_detail(request, username):
         'posted_jobs': posted_jobs,
         'given_proposals': given_proposals,
         'received_reviews': received_reviews,
+        'rating_stats': rating_stats,
         'quiz_stats': quiz_stats,
         'user_score': user_score,
         'quiz_rank': quiz_rank,
