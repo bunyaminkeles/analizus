@@ -12,12 +12,12 @@
     "@type": "Organization",
     "name": "Analizus",
     "description": "Akademik Analiz ve Veri Bilimi Topluluğu",
-    "url": "https://analizdestek-ai.onrender.com",
-    "logo": "https://analizdestek-ai.onrender.com/static/images/og-image.png",
+    "url": "https://www.analizus.com",
+    "logo": "https://www.analizus.com/static/images/og-image.png",
     "sameAs": [],
     "potentialAction": {
         "@type": "SearchAction",
-        "target": "https://analizdestek-ai.onrender.com/search/?q={search_term_string}",
+        "target": "https://www.analizus.com/search/?q={search_term_string}",
         "query-input": "required name=search_term_string"
     }
 }
@@ -80,6 +80,33 @@
                 {% endfor %}
             </div>
         </div>
+
+        <!-- WIDGET: Son Değerlendirmeler -->
+        {% if recent_reviews %}
+        <div class="widget-card">
+            <div class="widget-header" style="color: #22c55e;">
+                <i class="bi bi-star-fill"></i>
+                <span>Son Değerlendirmeler</span>
+            </div>
+            <div class="widget-body p-0">
+                {% for review in recent_reviews %}
+                <div class="p-2 border-bottom border-secondary border-opacity-10">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <a href="{% url 'profile_detail' username=review.reviewed_user.username %}" class="text-decoration-none text-light small fw-bold">{{ review.reviewed_user.username }}</a>
+                        <div>
+                            {% for i in "12345" %}
+                            <i class="bi bi-star{% if forloop.counter <= review.rating %}-fill text-warning{% else %} text-muted{% endif %}" style="font-size: 0.6rem;"></i>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% if review.comment %}
+                    <p class="text-muted small mb-0" style="font-size: 0.7rem;">{{ review.comment|truncatechars:50 }}</p>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
 
     </aside>
 
@@ -172,10 +199,10 @@
                     </div>
                 </div>
                 <div class="stat-pill">
-                    <div class="pill-icon orange"><i class="bi bi-globe2"></i></div>
+                    <div class="pill-icon orange"><i class="bi bi-check-circle-fill"></i></div>
                     <div class="pill-info">
-                        <span class="pill-label">Görüntülenme</span>
-                        <span class="pill-value">{{ total_views|default:"0" }}</span>
+                        <span class="pill-label">Tamamlanan İş</span>
+                        <span class="pill-value">{{ completed_jobs|default:"0" }}</span>
                     </div>
                 </div>
             </div>

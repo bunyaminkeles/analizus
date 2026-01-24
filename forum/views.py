@@ -28,7 +28,10 @@ def home(request):
     total_topics = Topic.objects.count()
     total_posts = Post.objects.count()
     total_users = User.objects.count()
-    total_views = Topic.objects.aggregate(total=Sum('views'))['total'] or 0
+    completed_jobs = FreelanceJob.objects.filter(status='completed').count()
+
+    # Son değerlendirmeler (sosyal kanıt)
+    recent_reviews = JobReview.objects.filter(is_approved=True).select_related('reviewer', 'reviewed_user', 'job').order_by('-created_at')[:5]
 
     # Son tartışmalar (son 5 aktif konu)
     recent_topics = Topic.objects.select_related('starter', 'category').annotate(
@@ -66,7 +69,7 @@ def home(request):
         'total_topics': total_topics,
         'total_posts': total_posts,
         'total_users': total_users,
-        'total_views': total_views,
+        'completed_jobs': completed_jobs,
         # Widgetlar
         'recent_topics': recent_topics,
         'popular_topics': popular_topics,
@@ -76,6 +79,7 @@ def home(request):
         'quiz_leaderboard': quiz_leaderboard,
         'featured_story': featured_story,
         'recent_jobs': recent_jobs,
+        'recent_reviews': recent_reviews,
     }
     return render(request, 'forum/home.html', context)
 
