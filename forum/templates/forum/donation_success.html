@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block title %}Bağışınız İçin Teşekkürler - Analizus{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="card bg-dark border-0" style="border: 1px solid rgba(236, 72, 153, 0.3) !important;">
+                <div class="card-body text-center p-5">
+                    <!-- Başarı İkonu -->
+                    <div class="mb-4">
+                        <div class="d-inline-flex align-items-center justify-content-center rounded-circle"
+                             style="width: 80px; height: 80px; background: linear-gradient(135deg, rgba(236, 72, 153, 0.2), rgba(139, 92, 246, 0.2)); border: 2px solid #ec4899;">
+                            <i class="bi bi-heart-fill" style="font-size: 2.5rem; color: #ec4899;"></i>
+                        </div>
+                    </div>
+
+                    <!-- Başlık -->
+                    <h2 class="text-white mb-3">Teşekkür Ederiz!</h2>
+                    {% if donation %}
+                    <p class="text-muted mb-2">
+                        <span style="color: #ec4899; font-size: 1.5rem; font-weight: bold;">{{ donation.amount|floatformat:0 }} TL</span> bağışınız başarıyla tamamlandı!
+                    </p>
+                    {% endif %}
+                    <p class="text-muted mb-4">Desteğiniz için çok teşekkür ederiz!</p>
+
+                    <!-- Kazanılan Ödüller -->
+                    <div class="p-3 rounded mb-4" style="background: rgba(236, 72, 153, 0.1); border: 1px solid rgba(236, 72, 153, 0.2);">
+                        <h6 class="text-white mb-3"><i class="bi bi-gift me-2"></i>Kazandığınız Ödüller</h6>
+
+                        <div class="d-flex justify-content-center gap-4">
+                            <!-- Premium Üyelik -->
+                            <div class="text-center">
+                                <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-2"
+                                     style="width: 50px; height: 50px; background: rgba(234, 179, 8, 0.15); border: 1px solid rgba(234, 179, 8, 0.3);">
+                                    <i class="bi bi-star-fill text-warning"></i>
+                                </div>
+                                <p class="small text-warning mb-0" style="font-weight: bold;">+{{ premium_days }} Gün Premium</p>
+                            </div>
+
+                            <!-- Destekçi Rozeti -->
+                            <div class="text-center">
+                                <div class="d-inline-flex align-items-center justify-content-center rounded-circle mb-2"
+                                     style="width: 50px; height: 50px; background: rgba(236, 72, 153, 0.15); border: 1px solid rgba(236, 72, 153, 0.3);">
+                                    <i class="bi bi-heart-fill" style="color: #ec4899;"></i>
+                                </div>
+                                <p class="small mb-0" style="color: #ec4899; font-weight: bold;">Destekçi Rozeti</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bilgi -->
+                    <p class="small text-muted mb-4">
+                        <i class="bi bi-check-circle text-success me-1"></i>
+                        Premium üyeliğiniz hesabınıza tanımlandı. Artık tüm premium özelliklerden faydalanabilirsiniz!
+                    </p>
+
+                    <!-- Ana Sayfaya Dön -->
+                    <a href="{% url 'home' %}" class="btn px-4" style="background: linear-gradient(135deg, #ec4899, #8b5cf6); border: none; color: white;">
+                        <i class="bi bi-house me-2"></i>Ana Sayfaya Dön
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
