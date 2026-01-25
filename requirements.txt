@@ -42,3 +42,6 @@ channels
 channels-redis
 beautifulsoup4
 groq
+
+# --- SOSYAL MEDYA ---
+tweepy>=4.14.0  # Twitter/X API entegrasyonu

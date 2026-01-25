@@ -41,7 +41,7 @@ class TopicAdmin(admin.ModelAdmin):
     list_filter = ('is_pinned', 'is_closed', 'category', 'created_at')
     search_fields = ('subject', 'starter__username')
     date_hierarchy = 'created_at'
-    actions = ['make_pinned', 'make_unpinned', 'make_closed', 'make_open']
+    actions = ['make_pinned', 'make_unpinned', 'make_closed', 'make_open', 'share_to_twitter']
 
     def subject_link(self, obj):
         return format_html('<b>{}</b>', obj.subject)
@@ -76,6 +76,26 @@ class TopicAdmin(admin.ModelAdmin):
     def make_open(self, request, queryset):
         updated = queryset.update(is_closed=False)
         self.message_user(request, f'{updated} konu açıldı.')
+
+    @admin.action(description='🐦 Twitter\'da paylaş')
+    def share_to_twitter(self, request, queryset):
+        from .services.twitter_service import get_twitter_service, format_topic_tweet
+        from django.conf import settings as django_settings
+
+        service = get_twitter_service()
+        if not service.is_available():
+            self.message_user(request, '❌ Twitter servisi kullanılamıyor. API anahtarlarını kontrol edin.', level='error')
+            return
+
+        site_url = getattr(django_settings, 'SITE_URL', 'https://analizus.com')
+        shared = 0
+        for topic in queryset:
+            tweet_text = format_topic_tweet(topic, site_url)
+            result = service.post_tweet(tweet_text)
+            if result.success:
+                shared += 1
+
+        self.message_user(request, f'🐦 {shared}/{queryset.count()} konu Twitter\'da paylaşıldı.')
 
 # 4. Mesaj (Post) Yönetimi - ✅ DÜZELTİLDİ
 @admin.register(Post)
@@ -316,6 +336,27 @@ class DailyTipAdmin(admin.ModelAdmin):
     date_hierarchy = 'publish_date'
     list_editable = ('is_active',)
     ordering = ('-publish_date',)
+    actions = ['share_to_twitter']
+
+    @admin.action(description='🐦 Twitter\'da paylaş')
+    def share_to_twitter(self, request, queryset):
+        from .services.twitter_service import get_twitter_service, format_daily_tip_tweet
+        from django.conf import settings as django_settings
+
+        service = get_twitter_service()
+        if not service.is_available():
+            self.message_user(request, '❌ Twitter servisi kullanılamıyor.', level='error')
+            return
+
+        site_url = getattr(django_settings, 'SITE_URL', 'https://analizus.com')
+        shared = 0
+        for tip in queryset:
+            tweet_text = format_daily_tip_tweet(tip, site_url)
+            result = service.post_tweet(tweet_text)
+            if result.success:
+                shared += 1
+
+        self.message_user(request, f'🐦 {shared}/{queryset.count()} ipucu Twitter\'da paylaşıldı.')
 
     fieldsets = (
         ('İçerik', {
@@ -381,6 +422,27 @@ class FreelanceJobAdmin(admin.ModelAdmin):
     search_fields = ('title', 'description', 'owner__username')
     date_hierarchy = 'created_at'
     filter_horizontal = ('likes', 'saved_by')
+    actions = ['share_to_twitter']
+
+    @admin.action(description='🐦 Twitter\'da paylaş')
+    def share_to_twitter(self, request, queryset):
+        from .services.twitter_service import get_twitter_service, format_job_tweet
+        from django.conf import settings as django_settings
+
+        service = get_twitter_service()
+        if not service.is_available():
+            self.message_user(request, '❌ Twitter servisi kullanılamıyor.', level='error')
+            return
+
+        site_url = getattr(django_settings, 'SITE_URL', 'https://analizus.com')
+        shared = 0
+        for job in queryset:
+            tweet_text = format_job_tweet(job, site_url)
+            result = service.post_tweet(tweet_text)
+            if result.success:
+                shared += 1
+
+        self.message_user(request, f'🐦 {shared}/{queryset.count()} ilan Twitter\'da paylaşıldı.')
 
 @admin.register(JobProposal)
 class JobProposalAdmin(admin.ModelAdmin):
