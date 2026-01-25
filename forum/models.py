@@ -849,13 +849,11 @@ class Donation(models.Model):
         """Bağış miktarına göre premium gün hesapla"""
         amount = float(self.amount)
         if amount >= 200:
-            return 180
+            return 90   # 200+ TL = 90 gün
         elif amount >= 100:
-            return 90
+            return 30   # 100+ TL = 30 gün
         elif amount >= 50:
-            return 30
-        elif amount >= 25:
-            return 7
+            return 7    # 50+ TL = 7 gün
         return 0
 
     def grant_premium(self):
