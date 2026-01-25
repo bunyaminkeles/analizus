@@ -246,18 +246,3 @@ else:
             },
         },
     }
-
-# --- TWITTER/X API AYARLARI ---
-# Developer Portal: https://developer.twitter.com
-# Free tier: Aylık 1500 tweet yazma hakkı
-TWITTER_ENABLED = os.getenv('TWITTER_ENABLED', 'False').lower() == 'true'
-TWITTER_API_KEY = os.getenv('TWITTER_API_KEY', '')
-TWITTER_API_SECRET = os.getenv('TWITTER_API_SECRET', '')
-TWITTER_ACCESS_TOKEN = os.getenv('TWITTER_ACCESS_TOKEN', '')
-TWITTER_ACCESS_TOKEN_SECRET = os.getenv('TWITTER_ACCESS_TOKEN_SECRET', '')
-TWITTER_BEARER_TOKEN = os.getenv('TWITTER_BEARER_TOKEN', '')
-
-# Otomatik paylaşım ayarları
-TWITTER_AUTO_SHARE_TOPICS = os.getenv('TWITTER_AUTO_SHARE_TOPICS', 'False').lower() == 'true'
-TWITTER_AUTO_SHARE_DAILY_TIPS = os.getenv('TWITTER_AUTO_SHARE_DAILY_TIPS', 'False').lower() == 'true'
-TWITTER_AUTO_SHARE_JOBS = os.getenv('TWITTER_AUTO_SHARE_JOBS', 'False').lower() == 'true'
