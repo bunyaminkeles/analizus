@@ -103,6 +103,9 @@ if not DEBUG:
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
+    # www ve non-www arası session paylaşımı için
+    SESSION_COOKIE_DOMAIN = '.analizus.com'
+    CSRF_COOKIE_DOMAIN = '.analizus.com'
 
 # --- DİĞER AYARLAR ---
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -218,10 +221,12 @@ ALLOWED_ATTACHMENT_TYPES = [
     'application/vnd.openxmlformats-officedocument.presentationml.presentation',
 ]
 
-# --- SESSION AYARLARI (Otomatik Logout) ---
-SESSION_COOKIE_AGE = 60 * 60 * 24  # 24 saat (saniye cinsinden)
-SESSION_EXPIRE_AT_BROWSER_CLOSE = True  # Tarayıcı kapandığında oturum sonlanır
-SESSION_SAVE_EVERY_REQUEST = True  # Her istekte session süresini yeniler (aktif kullanıcılar için)
+# --- SESSION AYARLARI ---
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # Database-backed sessions (çoklu worker için)
+SESSION_COOKIE_AGE = 60 * 60 * 24 * 7  # 7 gün
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Lax'
+SESSION_SAVE_EVERY_REQUEST = True  # Her istekte session süresini yeniler
 
 # --- GOOGLE ANALYTICS ---
 # GA4 Measurement ID (örn: G-XXXXXXXXXX)
