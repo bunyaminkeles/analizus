@@ -49,26 +49,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
             return
 
         # Mesajı veritabanına kaydet
-        msg = await self.save_message(message_text, attachment_url, attachment_name)
-
-        # Mesajı odadaki herkese gönder
-        await self.channel_layer.group_send(
-            self.room_name,
-            {
-                'type': 'chat_message',
-                'message': message_text,
-                'sender_id': self.user.id,
-                'sender_username': self.user.username,
-                'attachment_url': attachment_url,
-                'attachment_name': attachment_name,
-                'attachment_type': msg.get('attachment_type', ''),
-                'timestamp': msg['timestamp'],
-                'message_id': msg['id'],
-            }
-        )
-
-        # Karşı tarafa bildirim gönder (eğer online değilse)
-        await self.send_notification_to_receiver()
+        # Signal otomatik olarak hem bildirimi hem de chat mesajını gönderecek
+        await self.save_message(message_text, attachment_url, attachment_name)
 
     async def chat_message(self, event):
         """Odadan mesaj geldiğinde tarayıcıya gönder"""

@@ -8,6 +8,54 @@ from .utils import send_realtime_notification
 
 logger = logging.getLogger(__name__)
 
+
+def send_chat_message(message_instance):
+    """Chat WebSocket'e mesaj gönder - anlık mesajlaşma için"""
+    try:
+        from channels.layers import get_channel_layer
+        from asgiref.sync import async_to_sync
+
+        channel_layer = get_channel_layer()
+        if not channel_layer:
+            return
+
+        # Benzersiz oda adı oluştur (her iki kullanıcı için aynı)
+        user_ids = sorted([message_instance.sender.id, message_instance.receiver.id])
+        room_name = f'chat_{user_ids[0]}_{user_ids[1]}'
+
+        # Attachment bilgileri
+        attachment_type = ''
+        attachment_url = ''
+        attachment_name = message_instance.attachment_name or ''
+
+        if message_instance.attachment:
+            attachment_url = message_instance.attachment.url
+            if attachment_name:
+                ext = attachment_name.split('.')[-1].lower()
+                if ext in ['jpg', 'jpeg', 'png', 'gif', 'webp']:
+                    attachment_type = 'image'
+                elif ext == 'pdf':
+                    attachment_type = 'pdf'
+                else:
+                    attachment_type = 'document'
+
+        async_to_sync(channel_layer.group_send)(
+            room_name,
+            {
+                'type': 'chat_message',
+                'message': message_instance.message or '',
+                'sender_id': message_instance.sender.id,
+                'sender_username': message_instance.sender.username,
+                'attachment_url': attachment_url,
+                'attachment_name': attachment_name,
+                'attachment_type': attachment_type,
+                'timestamp': message_instance.created_at.strftime('%H:%M'),
+                'message_id': message_instance.id,
+            }
+        )
+    except Exception as e:
+        logger.error(f"Chat WebSocket mesajı gönderilemedi: {e}")
+
 from .models import Post, PrivateMessage, Notification, PostLike, Topic, Badge
 from .models import Profile  # Profile modelini import et
 
@@ -58,7 +106,7 @@ def post_save_receiver(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender=PrivateMessage)
 def private_message_post_save(sender, instance, created, **kwargs):
-    """Yeni özel mesaj geldiğinde bildirim gönder"""
+    """Yeni özel mesaj geldiğinde bildirim gönder ve chat'e düşür"""
     if created:
         recipient = instance.receiver
         message = f"<b>{instance.sender.username}</b>'den yeni bir özel mesajınız var."
@@ -75,8 +123,11 @@ def private_message_post_save(sender, instance, created, **kwargs):
                 object_id=instance.pk
             )
 
-            # Gerçek zamanlı bildirim (opsiyonel)
+            # Gerçek zamanlı bildirim
             send_realtime_notification(recipient.id, message, url)
+
+            # Anlık mesajlaşma - chat kutusuna düşür
+            send_chat_message(instance)
         except Exception as e:
             logger.error(f"Özel mesaj bildirimi oluşturulamadı: {e}")
 
