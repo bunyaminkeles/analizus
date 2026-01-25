@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Section, Category, Topic, Post, Profile, ContactMessage, PrivateMessage, Badge, Notification, Skill, EmailVerification, DailyTip, QuizQuestion, QuizScore, FreelanceJob, JobProposal, JobReview, UserQuizAttempt, Donation
+from .models import Section, Category, Topic, Post, Profile, ContactMessage, PrivateMessage, Badge, Notification, Skill, EmailVerification, DailyTip, QuizQuestion, QuizScore, FreelanceJob, JobProposal, JobReview, UserQuizAttempt, DonationTier, Donation
 
 # --- GENEL AYARLAR ---
 admin.site.site_header = "Analizus Komuta Merkezi"
@@ -403,7 +403,23 @@ class JobReviewAdmin(admin.ModelAdmin):
     approve_reviews.short_description = "Seçili değerlendirmeleri onayla"
 
 
-# 14. Bağış Yönetimi
+# 14. Bağış Katmanları
+@admin.register(DonationTier)
+class DonationTierAdmin(admin.ModelAdmin):
+    list_display = ('name', 'min_amount_display', 'premium_days_display', 'is_active')
+    list_editable = ('is_active',)
+    ordering = ('-min_amount',)
+
+    def min_amount_display(self, obj):
+        return format_html('<span style="color: #22c55e; font-weight: bold;">{}+ TL</span>', obj.min_amount)
+    min_amount_display.short_description = "Minimum Miktar"
+
+    def premium_days_display(self, obj):
+        return format_html('<span style="color: #ffc107; font-weight: bold;">{} gün</span>', obj.premium_days)
+    premium_days_display.short_description = "Premium Süresi"
+
+
+# 15. Bağış Yönetimi
 @admin.register(Donation)
 class DonationAdmin(admin.ModelAdmin):
     list_display = ('donor_display', 'amount_display', 'status_display', 'premium_days_granted', 'created_at', 'completed_at')
