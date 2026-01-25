@@ -3,7 +3,7 @@
 {% block content %}
 <div class="row justify-content-center py-5">
     <div class="col-md-8 col-lg-6">
-        
+
         <!-- Profil Özeti Kartı -->
         <div class="card mb-4 bg-dark border-secondary shadow-lg">
             <div class="card-body text-center p-4">
@@ -17,10 +17,10 @@
                     {% endif %}
                     <span class="position-absolute bottom-0 end-0 p-2 bg-success border border-dark rounded-circle" title="Çevrimiçi"></span>
                 </div>
-                
+
                 <h3 class="text-white fw-bold mb-1">{{ receiver.username }}</h3>
                 <p class="text-info small mb-3">{{ receiver.profile.title|default:"Üye" }}</p>
-                
+
                 <div class="d-flex justify-content-center gap-2 mb-4">
                     <span class="badge bg-dark border border-secondary text-warning">
                         <i class="bi bi-star-fill me-1"></i> {{ receiver.profile.reputation }} Puan
@@ -29,7 +29,7 @@
                         {{ receiver.profile.get_rank_display }}
                     </span>
                 </div>
-                
+
                 <!-- Doğrulama Rozetleri -->
                 <div class="d-flex justify-content-center gap-3 mb-3">
                     {% if receiver.profile.email_verified %}
@@ -42,7 +42,7 @@
                         <i class="bi bi-linkedin text-primary fs-5" title="LinkedIn Doğrulanmış" data-bs-toggle="tooltip"></i>
                     {% endif %}
                 </div>
-                
+
                 {% if receiver.profile.bio %}
                     <div class="p-3 rounded bg-black bg-opacity-25 border border-secondary border-opacity-25">
                         <p class="text-light small fst-italic mb-0">"{{ receiver.profile.bio|truncatechars:120 }}"</p>
@@ -51,17 +51,94 @@
             </div>
         </div>
 
+        <!-- Sohbet Geçmişi -->
+        {% if chat_messages %}
+        <div class="card mb-4 bg-dark border-secondary shadow-lg">
+            <div class="card-header border-secondary bg-transparent py-3">
+                <h5 class="mb-0 text-white"><i class="bi bi-chat-dots-fill me-2 text-info"></i>Sohbet Geçmişi</h5>
+            </div>
+            <div class="card-body p-3" style="max-height: 400px; overflow-y: auto;" id="chat-history">
+                {% for msg in chat_messages %}
+                <div class="d-flex mb-3 {% if msg.sender == request.user %}justify-content-end{% else %}justify-content-start{% endif %}">
+                    <div class="p-3 rounded-3 {% if msg.sender == request.user %}bg-primary text-white{% else %}bg-secondary bg-opacity-25 text-light{% endif %}" style="max-width: 80%;">
+                        <!-- Mesaj İçeriği -->
+                        {% if msg.message %}
+                        <p class="mb-1">{{ msg.message }}</p>
+                        {% endif %}
+
+                        <!-- Dosya Eki -->
+                        {% if msg.attachment %}
+                        <div class="attachment-box mt-2">
+                            {% if msg.get_attachment_type == 'image' %}
+                            <a href="{{ msg.attachment.url }}" target="_blank" class="d-block">
+                                <img src="{{ msg.attachment.url }}" alt="Resim" class="img-fluid rounded" style="max-height: 200px;">
+                            </a>
+                            {% elif msg.get_attachment_type == 'pdf' %}
+                            <a href="{{ msg.attachment.url }}" target="_blank" class="btn btn-sm btn-outline-danger w-100">
+                                <i class="bi bi-file-pdf me-2"></i>{{ msg.attachment_name|truncatechars:25 }}
+                            </a>
+                            {% elif msg.get_attachment_type == 'document' %}
+                            <a href="{{ msg.attachment.url }}" target="_blank" class="btn btn-sm btn-outline-info w-100">
+                                <i class="bi bi-file-earmark-word me-2"></i>{{ msg.attachment_name|truncatechars:25 }}
+                            </a>
+                            {% else %}
+                            <a href="{{ msg.attachment.url }}" target="_blank" class="btn btn-sm btn-outline-secondary w-100">
+                                <i class="bi bi-file-earmark me-2"></i>{{ msg.attachment_name|truncatechars:25 }}
+                            </a>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+
+                        <!-- Zaman -->
+                        <small class="{% if msg.sender == request.user %}text-white-50{% else %}text-muted{% endif %}" style="font-size: 0.7rem;">
+                            {{ msg.created_at|timesince }} önce
+                        </small>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
         <!-- Mesaj Formu -->
         <div class="card bg-dark border-secondary shadow-lg">
             <div class="card-header border-secondary bg-transparent py-3">
                 <h5 class="mb-0 text-white"><i class="bi bi-envelope-paper-fill me-2 text-primary"></i>Mesaj Gönder</h5>
             </div>
             <div class="card-body p-4">
-                <form method="post">
+                <form method="post" enctype="multipart/form-data">
                     {% csrf_token %}
-                    <div class="mb-4">
-                        <textarea name="message" class="form-control bg-dark text-white border-secondary" rows="5" required placeholder="Mesajınızı buraya yazın..."></textarea>
+                    <div class="mb-3">
+                        <textarea name="message" id="message-input" class="form-control bg-dark text-white border-secondary" rows="4" placeholder="Mesajınızı buraya yazın..."></textarea>
                     </div>
+
+                    <!-- Dosya Seçimi -->
+                    <div class="mb-3">
+                        <div class="d-flex gap-2 align-items-center">
+                            <label class="btn btn-outline-secondary" for="file-input" title="Dosya Ekle">
+                                <i class="bi bi-paperclip"></i>
+                            </label>
+                            <input type="file" name="attachment" id="file-input" class="d-none"
+                                   accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png,.gif,.webp">
+                            <span id="file-name" class="text-muted small"></span>
+                            <button type="button" id="clear-file" class="btn btn-sm btn-link text-danger d-none" onclick="clearFile()">
+                                <i class="bi bi-x-circle"></i>
+                            </button>
+                        </div>
+                        <small class="text-muted">PDF, Word, Excel, PowerPoint, Resim (Max 5 MB)</small>
+                    </div>
+
+                    <!-- Dosya Önizleme -->
+                    <div id="file-preview" class="mb-3 d-none">
+                        <div class="p-2 rounded bg-secondary bg-opacity-25 border border-secondary">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="bi bi-file-earmark fs-4 text-info" id="preview-icon"></i>
+                                <span class="text-light" id="preview-name"></span>
+                                <span class="badge bg-secondary ms-auto" id="preview-size"></span>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="d-grid gap-2">
                         <button type="submit" class="btn btn-primary py-2 fw-bold" style="background: linear-gradient(45deg, #00d2ff, #3a7bd5); border: none;">
                             <i class="bi bi-send-fill me-2"></i>Gönder
@@ -73,4 +150,65 @@
 
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const fileInput = document.getElementById('file-input');
+    const fileName = document.getElementById('file-name');
+    const clearBtn = document.getElementById('clear-file');
+    const filePreview = document.getElementById('file-preview');
+    const previewIcon = document.getElementById('preview-icon');
+    const previewName = document.getElementById('preview-name');
+    const previewSize = document.getElementById('preview-size');
+    const chatHistory = document.getElementById('chat-history');
+
+    // Sohbet geçmişini en alta kaydır
+    if (chatHistory) {
+        chatHistory.scrollTop = chatHistory.scrollHeight;
+    }
+
+    fileInput.addEventListener('change', function() {
+        if (this.files.length > 0) {
+            const file = this.files[0];
+            const sizeInMB = (file.size / (1024 * 1024)).toFixed(2);
+
+            // 5 MB kontrolü
+            if (file.size > 5 * 1024 * 1024) {
+                alert('Dosya boyutu 5 MB\'ı geçemez!');
+                this.value = '';
+                return;
+            }
+
+            fileName.textContent = file.name;
+            clearBtn.classList.remove('d-none');
+            filePreview.classList.remove('d-none');
+            previewName.textContent = file.name;
+            previewSize.textContent = sizeInMB + ' MB';
+
+            // İkon seçimi
+            const ext = file.name.split('.').pop().toLowerCase();
+            if (['jpg', 'jpeg', 'png', 'gif', 'webp'].includes(ext)) {
+                previewIcon.className = 'bi bi-file-image fs-4 text-success';
+            } else if (ext === 'pdf') {
+                previewIcon.className = 'bi bi-file-pdf fs-4 text-danger';
+            } else if (['doc', 'docx'].includes(ext)) {
+                previewIcon.className = 'bi bi-file-word fs-4 text-primary';
+            } else if (['xls', 'xlsx'].includes(ext)) {
+                previewIcon.className = 'bi bi-file-excel fs-4 text-success';
+            } else if (['ppt', 'pptx'].includes(ext)) {
+                previewIcon.className = 'bi bi-file-ppt fs-4 text-warning';
+            } else {
+                previewIcon.className = 'bi bi-file-earmark fs-4 text-info';
+            }
+        }
+    });
+
+    window.clearFile = function() {
+        fileInput.value = '';
+        fileName.textContent = '';
+        clearBtn.classList.add('d-none');
+        filePreview.classList.add('d-none');
+    };
+});
+</script>
 {% endblock %}

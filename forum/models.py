@@ -417,10 +417,25 @@ class Profile(models.Model):
 class PrivateMessage(models.Model):
     sender = models.ForeignKey(User, related_name='sent_messages', on_delete=models.CASCADE)
     receiver = models.ForeignKey(User, related_name='received_messages', on_delete=models.CASCADE)
-    message = models.TextField()
+    message = models.TextField(blank=True)  # Opsiyonel - sadece dosya da gönderilebilir
+    attachment = models.FileField(upload_to='chat_attachments/%Y/%m/', blank=True, null=True, verbose_name="Dosya Eki")
+    attachment_name = models.CharField(max_length=255, blank=True, verbose_name="Dosya Adı")
     created_at = models.DateTimeField(auto_now_add=True)
     is_read = models.BooleanField(default=False)
-    
+
+    def get_attachment_type(self):
+        """Dosya tipini döndür (image, pdf, document, other)"""
+        if not self.attachment:
+            return None
+        ext = self.attachment.name.split('.')[-1].lower()
+        if ext in ['jpg', 'jpeg', 'png', 'gif', 'webp']:
+            return 'image'
+        elif ext == 'pdf':
+            return 'pdf'
+        elif ext in ['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx']:
+            return 'document'
+        return 'other'
+
     def __str__(self):
         return f"Message from {self.sender} to {self.receiver}"
 

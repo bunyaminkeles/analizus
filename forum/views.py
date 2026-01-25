@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django import forms
+from django.conf import settings
 import json
 from django.contrib.auth import login
 import re
@@ -610,28 +611,47 @@ def send_message(request, username):
         return redirect('verification_pending')
 
     receiver = get_object_or_404(User, username=username)
-    
+
     # Sohbet geçmişini getir
     chat_messages = PrivateMessage.objects.filter(
         Q(sender=request.user, receiver=receiver) |
         Q(sender=receiver, receiver=request.user)
     ).order_by('created_at')
-    
+
     if request.method == 'POST':
-        message_content = request.POST.get('message')
-        if message_content:
-            PrivateMessage.objects.create(
-                sender=request.user,
-                receiver=receiver,
-                message=message_content
-            )
-            
-            # ✅ EMAIL BİLDİRİMİ GÖNDER
-            send_private_message_notification(request.user, receiver, message_content)
-            
-            messages.success(request, f"{receiver.username} kullanıcısına mesajınız gönderildi!")
+        message_content = request.POST.get('message', '').strip()
+        attachment = request.FILES.get('attachment')
+
+        # En az biri olmalı
+        if not message_content and not attachment:
+            messages.error(request, 'Lütfen bir mesaj yazın veya dosya ekleyin.')
             return redirect('send_message', username=username)
-    
+
+        # Dosya validasyonu
+        if attachment:
+            if attachment.size > settings.MAX_UPLOAD_SIZE:
+                messages.error(request, 'Dosya boyutu 5 MB\'ı geçemez.')
+                return redirect('send_message', username=username)
+            if attachment.content_type not in settings.ALLOWED_ATTACHMENT_TYPES:
+                messages.error(request, 'Bu dosya türü desteklenmiyor. (Resim, PDF, Word, Excel, PowerPoint)')
+                return redirect('send_message', username=username)
+
+        # Mesaj oluştur
+        msg = PrivateMessage.objects.create(
+            sender=request.user,
+            receiver=receiver,
+            message=message_content,
+            attachment=attachment,
+            attachment_name=attachment.name if attachment else ''
+        )
+
+        # ✅ EMAIL BİLDİRİMİ GÖNDER
+        notification_text = message_content if message_content else f"[Dosya: {attachment.name}]"
+        send_private_message_notification(request.user, receiver, notification_text)
+
+        messages.success(request, f"{receiver.username} kullanıcısına mesajınız gönderildi!")
+        return redirect('send_message', username=username)
+
     return render(request, 'forum/send_message.html', {'receiver': receiver, 'chat_messages': chat_messages})
 
 def _check_and_award_trust_badge(request, user):
