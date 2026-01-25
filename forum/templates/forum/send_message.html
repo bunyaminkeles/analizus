@@ -166,6 +166,138 @@ document.addEventListener('DOMContentLoaded', function() {
     const previewSize = document.getElementById('preview-size');
     const chatHistory = document.getElementById('chat-history');
     const messageInput = document.getElementById('message-input');
+    const messageForm = document.querySelector('form');
+    const currentUserId = {{ request.user.id }};
+    const receiverUsername = '{{ receiver.username }}';
+
+    // ═══════════════════════════════════════════════════════════════════
+    // WEBSOCKET BAĞLANTISI
+    // ═══════════════════════════════════════════════════════════════════
+    const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const chatSocket = new WebSocket(wsProtocol + '//' + window.location.host + '/ws/chat/' + receiverUsername + '/');
+
+    chatSocket.onopen = function(e) {
+        console.log('Chat WebSocket bağlantısı kuruldu');
+        // Bağlantı göstergesi
+        document.querySelector('.card-header .badge')?.classList.add('bg-success');
+    };
+
+    chatSocket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        if (data.type === 'chat_message') {
+            appendMessage(data);
+        }
+    };
+
+    chatSocket.onclose = function(e) {
+        console.log('Chat WebSocket bağlantısı kapandı');
+    };
+
+    chatSocket.onerror = function(e) {
+        console.error('WebSocket hatası:', e);
+    };
+
+    // ═══════════════════════════════════════════════════════════════════
+    // MESAJ GÖNDERME (Form submit yerine WebSocket)
+    // ═══════════════════════════════════════════════════════════════════
+    messageForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const message = messageInput.value.trim();
+        const file = fileInput.files[0];
+
+        // Dosya varsa önce yükle, sonra mesaj gönder
+        if (file) {
+            uploadFileAndSend(message, file);
+        } else if (message) {
+            sendMessage(message);
+        }
+    });
+
+    function sendMessage(message, attachmentUrl = '', attachmentName = '') {
+        if (chatSocket.readyState === WebSocket.OPEN) {
+            chatSocket.send(JSON.stringify({
+                'message': message,
+                'attachment_url': attachmentUrl,
+                'attachment_name': attachmentName,
+            }));
+            messageInput.value = '';
+            messageInput.style.height = 'auto';
+            clearFile();
+        } else {
+            // WebSocket kapalıysa normal form submit
+            messageForm.submit();
+        }
+    }
+
+    function uploadFileAndSend(message, file) {
+        const formData = new FormData();
+        formData.append('attachment', file);
+        formData.append('message', message);
+        formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+        // Dosyayı yükle
+        fetch(window.location.href, {
+            method: 'POST',
+            body: formData,
+        })
+        .then(response => {
+            if (response.ok) {
+                // Sayfa yeniden yüklenecek (dosya için)
+                window.location.reload();
+            }
+        })
+        .catch(error => {
+            console.error('Dosya yükleme hatası:', error);
+            messageForm.submit();
+        });
+    }
+
+    // ═══════════════════════════════════════════════════════════════════
+    // MESAJ EKLEME (DOM'a)
+    // ═══════════════════════════════════════════════════════════════════
+    function appendMessage(data) {
+        const isOwn = data.sender_id === currentUserId;
+        const emptyMessage = chatHistory.querySelector('.text-center.py-5');
+        if (emptyMessage) emptyMessage.remove();
+
+        const messageHtml = `
+            <div class="d-flex mb-3 ${isOwn ? 'justify-content-end' : 'justify-content-start'}">
+                <div class="p-2 px-3 rounded-3 ${isOwn ? 'text-white' : 'text-light'}"
+                     style="max-width: 75%; ${isOwn
+                        ? 'background: linear-gradient(135deg, rgba(0, 210, 255, 0.35), rgba(58, 123, 213, 0.35)); border: 1px solid rgba(0, 210, 255, 0.4); box-shadow: 0 2px 8px rgba(0, 210, 255, 0.15);'
+                        : 'background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(255, 255, 255, 0.15);'}">
+                    ${data.message ? `<p class="mb-1 small">${escapeHtml(data.message)}</p>` : ''}
+                    ${data.attachment_url ? getAttachmentHtml(data) : ''}
+                    <small class="text-muted d-block mt-1" style="font-size: 0.65rem;">${data.timestamp}</small>
+                </div>
+            </div>
+        `;
+
+        chatHistory.insertAdjacentHTML('beforeend', messageHtml);
+        chatHistory.scrollTop = chatHistory.scrollHeight;
+    }
+
+    function getAttachmentHtml(data) {
+        if (data.attachment_type === 'image') {
+            return `<div class="mt-2"><a href="${data.attachment_url}" target="_blank"><img src="${data.attachment_url}" alt="Resim" class="img-fluid rounded" style="max-height: 150px;"></a></div>`;
+        } else if (data.attachment_type === 'pdf') {
+            return `<div class="mt-2"><a href="${data.attachment_url}" target="_blank" class="btn btn-sm" style="background: rgba(220, 53, 69, 0.15); color: #dc3545; border: 1px solid rgba(220, 53, 69, 0.3);"><i class="bi bi-file-pdf me-1"></i>${data.attachment_name}</a></div>`;
+        } else if (data.attachment_url) {
+            return `<div class="mt-2"><a href="${data.attachment_url}" target="_blank" class="btn btn-sm" style="background: rgba(0, 210, 255, 0.15); color: #00d2ff; border: 1px solid rgba(0, 210, 255, 0.3);"><i class="bi bi-file-earmark me-1"></i>${data.attachment_name}</a></div>`;
+        }
+        return '';
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    // ═══════════════════════════════════════════════════════════════════
+    // MEVCUT FONKSİYONLAR
+    // ═══════════════════════════════════════════════════════════════════
 
     // Sohbet geçmişini en alta kaydır
     if (chatHistory) {
@@ -176,6 +308,14 @@ document.addEventListener('DOMContentLoaded', function() {
     messageInput.addEventListener('input', function() {
         this.style.height = 'auto';
         this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+    });
+
+    // Enter tuşu ile gönder (Shift+Enter yeni satır)
+    messageInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            messageForm.dispatchEvent(new Event('submit'));
+        }
     });
 
     fileInput.addEventListener('change', function() {
