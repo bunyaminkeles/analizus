@@ -84,7 +84,8 @@ ASGI_APPLICATION = 'analizdestek.asgi.application'
 DATABASES = {
     'default': dj_database_url.config(
         default='sqlite:///' + os.path.join(BASE_DIR, 'db.sqlite3'),
-        conn_max_age=600
+        conn_max_age=0,  # Serverless için: her istekte yeni bağlantı
+        conn_health_checks=True,  # Bağlantı sağlığını kontrol et
     )
 }
 
@@ -102,6 +103,9 @@ if not DEBUG:
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
+    # www ve non-www arası session paylaşımı için
+    SESSION_COOKIE_DOMAIN = '.analizus.com'
+    CSRF_COOKIE_DOMAIN = '.analizus.com'
 
 # --- DİĞER AYARLAR ---
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -204,10 +208,25 @@ IYZICO_API_KEY = os.getenv('IYZICO_API_KEY', '').strip()
 IYZICO_SECRET_KEY = os.getenv('IYZICO_SECRET_KEY', '').strip()
 IYZICO_BASE_URL = os.getenv('IYZICO_BASE_URL', 'sandbox-api.iyzipay.com').strip()  # Production: api.iyzipay.com
 
-# --- SESSION AYARLARI (Otomatik Logout) ---
-SESSION_COOKIE_AGE = 60 * 60 * 24  # 24 saat (saniye cinsinden)
-SESSION_EXPIRE_AT_BROWSER_CLOSE = True  # Tarayıcı kapandığında oturum sonlanır
-SESSION_SAVE_EVERY_REQUEST = True  # Her istekte session süresini yeniler (aktif kullanıcılar için)
+# --- DOSYA YÜKLEME AYARLARI ---
+MAX_UPLOAD_SIZE = 5 * 1024 * 1024  # 5 MB
+ALLOWED_ATTACHMENT_TYPES = [
+    'image/jpeg', 'image/png', 'image/gif', 'image/webp',
+    'application/pdf',
+    'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'application/vnd.ms-excel',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    'application/vnd.ms-powerpoint',
+    'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+]
+
+# --- SESSION AYARLARI ---
+SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # Database-backed sessions (çoklu worker için)
+SESSION_COOKIE_AGE = 60 * 60 * 24 * 7  # 7 gün
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Lax'
+SESSION_SAVE_EVERY_REQUEST = True  # Her istekte session süresini yeniler
 
 # --- GOOGLE ANALYTICS ---
 # GA4 Measurement ID (örn: G-XXXXXXXXXX)

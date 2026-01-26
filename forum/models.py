@@ -417,10 +417,30 @@ class Profile(models.Model):
 class PrivateMessage(models.Model):
     sender = models.ForeignKey(User, related_name='sent_messages', on_delete=models.CASCADE)
     receiver = models.ForeignKey(User, related_name='received_messages', on_delete=models.CASCADE)
-    message = models.TextField()
+    message = models.TextField(blank=True)  # Opsiyonel - sadece dosya da gönderilebilir
+    attachment = models.FileField(upload_to='chat_attachments/%Y/%m/', blank=True, null=True, verbose_name="Dosya Eki")
+    attachment_name = models.CharField(max_length=255, blank=True, verbose_name="Dosya Adı")
     created_at = models.DateTimeField(auto_now_add=True)
     is_read = models.BooleanField(default=False)
-    
+
+    def get_attachment_type(self):
+        """Dosya tipini döndür (image, pdf, document, other)"""
+        if not self.attachment:
+            return None
+        ext = self.attachment.name.split('.')[-1].lower()
+        if ext in ['jpg', 'jpeg', 'png', 'gif', 'webp']:
+            return 'image'
+        elif ext == 'pdf':
+            return 'pdf'
+        elif ext in ['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx']:
+            return 'document'
+        return 'other'
+
+    def get_absolute_url(self):
+        """Mesajın URL'sini döndür (mesajlaşma sayfası)"""
+        from django.urls import reverse
+        return reverse('send_message', args=[self.sender.username])
+
     def __str__(self):
         return f"Message from {self.sender} to {self.receiver}"
 
@@ -800,6 +820,31 @@ class JobReview(models.Model):
             self.job.save()
 
 
+class DonationTier(models.Model):
+    """Bağış katmanları - Admin panelden yönetilebilir"""
+    min_amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Minimum Miktar (TL)")
+    premium_days = models.IntegerField(verbose_name="Premium Gün Sayısı")
+    name = models.CharField(max_length=50, blank=True, verbose_name="Katman Adı")
+    is_active = models.BooleanField(default=True, verbose_name="Aktif")
+
+    class Meta:
+        verbose_name = "Bağış Katmanı"
+        verbose_name_plural = "Bağış Katmanları"
+        ordering = ['-min_amount']  # En yüksekten en düşüğe
+
+    def __str__(self):
+        return f"{self.min_amount}+ TL → {self.premium_days} gün"
+
+    @classmethod
+    def get_premium_days_for_amount(cls, amount):
+        """Verilen miktar için premium gün sayısını döndür"""
+        tier = cls.objects.filter(
+            is_active=True,
+            min_amount__lte=amount
+        ).order_by('-min_amount').first()
+        return tier.premium_days if tier else 0
+
+
 class Donation(models.Model):
     """Bağış sistemi için model"""
     STATUS_CHOICES = (
@@ -831,17 +876,8 @@ class Donation(models.Model):
         return f"{donor} - {self.amount}₺"
 
     def get_premium_days(self):
-        """Bağış miktarına göre premium gün hesapla"""
-        amount = float(self.amount)
-        if amount >= 200:
-            return 180
-        elif amount >= 100:
-            return 90
-        elif amount >= 50:
-            return 30
-        elif amount >= 25:
-            return 7
-        return 0
+        """Bağış miktarına göre premium gün hesapla (DonationTier modelinden)"""
+        return DonationTier.get_premium_days_for_amount(float(self.amount))
 
     def grant_premium(self):
         """Kullanıcıya premium üyelik ver"""
