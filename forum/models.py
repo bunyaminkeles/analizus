@@ -302,8 +302,8 @@ class Profile(models.Model):
         return True, "Kayıtlı üye"
 
     def get_weekly_job_limit(self):
-        """Haftalık ilan limiti: 500p + doğrulanmış = 3, diğer = 1"""
-        if self.email_verified and self.total_score >= 500:
+        """Haftalık ilan limiti: Premium = 3, diğer = 1"""
+        if self.account_type == 'Premium':
             return 3
         return 1
 
