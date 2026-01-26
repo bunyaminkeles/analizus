@@ -149,6 +149,7 @@
                             <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end shadow-lg mt-2 border-secondary">
                                 <li><a class="dropdown-item" href="{% url 'profile_detail' username=user.username %}"><i class="bi bi-person me-2"></i>Profilim</a></li>
                                 <li><a class="dropdown-item" href="{% url 'profile_edit' %}"><i class="bi bi-gear me-2"></i>Profili Düzenle</a></li>
+                                <li><a class="dropdown-item" href="{% url 'my_payments' %}"><i class="bi bi-credit-card me-2"></i>Ödemelerim</a></li>
                                 <li><a class="dropdown-item" href="{% url 'inbox' %}"><i class="bi bi-chat-dots me-2"></i>Gelen Kutusu</a></li>
                                 {% if user.is_staff %}
                                 <li><hr class="dropdown-divider border-secondary"></li>

@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Ödemelerim - Analizus{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h2 class="text-white"><i class="bi bi-credit-card-2-front me-2 text-warning"></i>Ödeme Geçmişim</h2>
+            <p class="text-muted">Yaptığınız bağışlar ve ilan vitrin ödemeleri aşağıda listelenmiştir.</p>
+        </div>
+    </div>
+
+    <!-- İlan Ödemeleri -->
+    <div class="card bg-dark border-secondary shadow-sm mb-5">
+        <div class="card-header border-secondary bg-transparent py-3">
+            <h5 class="text-white mb-0"><i class="bi bi-briefcase me-2 text-info"></i>İlan Vitrin Ödemeleri</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-dark table-hover mb-0 align-middle">
+                    <thead class="table-secondary text-dark">
+                        <tr>
+                            <th>Tarih</th>
+                            <th>İlan Başlığı</th>
+                            <th>Tutar</th>
+                            <th>Ödeme ID</th>
+                            <th>Durum</th>
+                            <th>İşlem</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for payment in job_payments %}
+                        <tr>
+                            <td>{{ payment.created_at|date:"d.m.Y H:i" }}</td>
+                            <td>
+                                <a href="{% url 'job_detail' payment.job.pk %}" class="text-decoration-none text-info fw-bold">
+                                    {{ payment.job.title|truncatechars:40 }}
+                                </a>
+                            </td>
+                            <td class="fw-bold">{{ payment.amount }} TL</td>
+                            <td class="small text-muted font-monospace">{{ payment.payment_id }}</td>
+                            <td>
+                                {% if payment.status == 'success' %}
+                                <span class="badge bg-success bg-opacity-25 text-success border border-success border-opacity-25">Başarılı</span>
+                                {% elif payment.status == 'pending' %}
+                                <span class="badge bg-warning bg-opacity-25 text-warning border border-warning border-opacity-25">Bekliyor</span>
+                                {% else %}
+                                <span class="badge bg-danger bg-opacity-25 text-danger border border-danger border-opacity-25">Başarısız</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if payment.status == 'success' %}
+                                <button class="btn btn-sm btn-outline-light" title="Fatura Görüntüle (Demo)" onclick="alert('Fatura sistemi yakında aktif olacaktır.')">
+                                    <i class="bi bi-receipt"></i>
+                                </button>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-4">Henüz ilan ödemeniz bulunmuyor.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bağışlar -->
+    <div class="card bg-dark border-secondary shadow-sm">
+        <div class="card-header border-secondary bg-transparent py-3">
+            <h5 class="text-white mb-0"><i class="bi bi-heart-fill me-2 text-danger"></i>Bağış Geçmişi</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-dark table-hover mb-0 align-middle">
+                    <thead class="table-secondary text-dark">
+                        <tr>
+                            <th>Tarih</th>
+                            <th>Tutar</th>
+                            <th>Ödeme ID</th>
+                            <th>Kazanılan Premium</th>
+                            <th>Durum</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for donation in donations %}
+                        <tr>
+                            <td>{{ donation.created_at|date:"d.m.Y H:i" }}</td>
+                            <td class="fw-bold text-success">{{ donation.amount }} TL</td>
+                            <td class="small text-muted font-monospace">{{ donation.payment_id }}</td>
+                            <td>
+                                {% if donation.premium_days_granted > 0 %}
+                                <span class="text-warning"><i class="bi bi-star-fill"></i> {{ donation.premium_days_granted }} Gün</span>
+                                {% else %}
+                                -
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if donation.status == 'completed' %}
+                                <span class="badge bg-success bg-opacity-25 text-success border border-success border-opacity-25">Başarılı</span>
+                                {% elif donation.status == 'pending' %}
+                                <span class="badge bg-warning bg-opacity-25 text-warning border border-warning border-opacity-25">Bekliyor</span>
+                                {% else %}
+                                <span class="badge bg-danger bg-opacity-25 text-danger border border-danger border-opacity-25">Başarısız</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-4">Henüz bağış geçmişiniz bulunmuyor.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
