@@ -106,7 +106,8 @@ class Command(BaseCommand):
             "Regresyon Analizi", "Faktör Analizi", "SEM", "Zaman Serisi", "Meta-Analiz", "G*Power"
         ]
         for s in skills_list:
-            Skill.objects.get_or_create(name=s
+            Skill.objects.get_or_create(name=s)
+
         # 3. İÇERİK YAPISI - PART3 DAHİL TÜM İÇERİKLER
 
         # ===== EXCEL & İŞ ZEKASI =====
@@ -429,6 +430,38 @@ class Command(BaseCommand):
             },
         ]
 
+        # ===== ANALİZ PAZARI & FREELANCE (KAZANÇ ODAKLI) =====
+        freelance_topics = [
+            {
+                'subject': "[İLAN] Tıp Fakültesi Tez Analizi İçin SPSS Uzmanı Aranıyor",
+                'starter': 'Klinik_Aras',
+                'message': "Elimde 200 hastalık bir veri seti var. Ki-Kare ve Lojistik Regresyon analizleri yapılacak. Raporlama dahil tekliflerinizi bekliyorum. Bütçe: 5000 TL.",
+                'answer': "Merhaba, Tıp istatistiği konusunda 5 yıllık deneyimim var. Veri setinizi inceleyip 3 gün içinde teslim edebilirim. Özelden referanslarımı iletiyorum.",
+                'views': 2100,
+            },
+            {
+                'subject': "[HİZMET] Power BI ile Kurumsal Dashboard Tasarımı",
+                'starter': 'StratejiAnalisti',
+                'message': "Satış, Stok ve Finans verileriniz için otomatik güncellenen, mobil uyumlu Power BI raporları tasarlıyorum. Örnek çalışmalarım profilimdedir.",
+                'answer': "Merhaba, şirketimiz için bir demo çalışma talep edebilir miyiz? İletişime geçildi.",
+                'views': 1850,
+            },
+            {
+                'subject': "[PROJE] Python ile Web Scraping ve Duygu Analizi",
+                'starter': 'Iletisimci',
+                'message': "Twitter'dan belirli bir hashtag altındaki verileri çekip NLP ile duygu analizi yapacak bir script'e ihtiyacımız var.",
+                'answer': "Bu proje için Selenium ve BERT modelini kullanarak %90 doğrulukla çalışan bir yapı kurabilirim. Detayları konuşalım.",
+                'views': 1540,
+            },
+            {
+                'subject': "[DANIŞMANLIK] Akademik Makale Yazım ve Düzenleme Desteği",
+                'starter': 'AkademikEtik',
+                'message': "Q1 ve Q2 dergiler için istatistiksel raporlama, tablo düzeni ve metodoloji yazımı konusunda danışmanlık veriyorum.",
+                'answer': "Hocam merhaba, çalışmamın metodoloji kısmı için revizyon aldım. Destek olabilir misiniz?",
+                'views': 3200,
+            },
+        ]
+
         # 4. KATEGORİ YAPISI OLUŞTUR
         structure = {
             "Yazılımlar": [
@@ -448,6 +481,9 @@ class Command(BaseCommand):
             ],
             "Vizyon 2050": [
                 ("Geleceğin Teknolojileri", "bi-cpu-fill", "Kuantum, BCI ve Uzay Veri Madenciliği.", future_topics),
+            ],
+            "Analiz Pazarı (Beta)": [
+                ("Freelance Projeler", "bi-briefcase-fill", "Analiz projeleri, iş ilanları ve uzman teklifleri.", freelance_topics),
             ],
         }
 

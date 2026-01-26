@@ -732,6 +732,7 @@ class FreelanceJob(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='open', verbose_name="Durum")
     views = models.PositiveIntegerField(default=0, verbose_name="Görüntülenme")
     is_featured = models.BooleanField(default=False, verbose_name="Öne Çıkarılmış")
+    featured_until = models.DateTimeField(null=True, blank=True, verbose_name="Vitrin Bitiş Tarihi")
     expires_at = models.DateTimeField(null=True, blank=True, verbose_name="Bitiş Tarihi")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

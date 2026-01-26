@@ -45,10 +45,13 @@ class CategorySitemap(Sitemap):
 class JobSitemap(Sitemap):
     """İş ilanları için sitemap"""
     changefreq = 'daily'
-    priority = 0.8
 
     def items(self):
         return FreelanceJob.objects.filter(status='open').order_by('-created_at')
+
+    def priority(self, obj):
+        """Vitrin ilanlarına (1.0) standart ilanlardan (0.8) daha yüksek öncelik ver"""
+        return 1.0 if getattr(obj, 'is_featured', False) else 0.8
 
     def lastmod(self, obj):
         return obj.created_at

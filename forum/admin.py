@@ -376,8 +376,8 @@ class UserQuizAttemptAdmin(admin.ModelAdmin):
 
 @admin.register(FreelanceJob)
 class FreelanceJobAdmin(admin.ModelAdmin):
-    list_display = ('title', 'owner', 'category', 'budget_min', 'budget_max', 'status', 'views', 'created_at')
-    list_filter = ('status', 'category', 'created_at')
+    list_display = ('title', 'owner', 'category', 'status', 'is_featured', 'featured_until', 'views', 'created_at')
+    list_filter = ('status', 'is_featured', 'category', 'created_at')
     search_fields = ('title', 'description', 'owner__username')
     date_hierarchy = 'created_at'
     filter_horizontal = ('likes', 'saved_by')

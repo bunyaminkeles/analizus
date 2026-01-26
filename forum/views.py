@@ -194,7 +194,8 @@ def post_job(request):
             job.expires_at = timezone.now() + timedelta(days=profile.get_job_duration_days())
             if profile.is_first_job():
                 job.is_featured = True
-                messages.info(request, 'İlk ilanınız olduğu için öne çıkarma hediyesi kazandınız!')
+                job.featured_until = timezone.now() + timedelta(days=3)  # 3 gün hediye
+                messages.info(request, 'İlk ilanınız olduğu için 3 gün öne çıkarma hediyesi kazandınız!')
             job.save()
             messages.success(request, f'İş ilanı başarıyla oluşturuldu. ({profile.get_job_duration_days()} gün aktif kalacak)')
             return redirect('job_detail', pk=job.pk)
