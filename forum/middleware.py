@@ -74,3 +74,30 @@ class EmailVerificationMiddleware:
         # Diğer tüm sayfalar için doğrulama gerekli
         messages.warning(request, 'Bu özelliği kullanmak için e-posta adresinizi doğrulamanız gerekiyor.')
         return redirect('verification_pending')
+
+
+class MarkInboxAsReadMiddleware:
+    """
+    Gelen kutusu (inbox) sayfası açıldığında, kullanıcıya gelen
+    tüm okunmamış mesajları otomatik olarak 'okundu' işaretler.
+    """
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        # View çalışmadan önce araya gir
+        if request.user.is_authenticated:
+            try:
+                from django.urls import resolve
+                # Eğer girilen sayfa 'inbox' ise
+                if resolve(request.path).url_name == 'inbox':
+                    from .models import PrivateMessage
+                    # Kullanıcının tüm okunmamış mesajlarını okundu yap
+                    PrivateMessage.objects.filter(
+                        receiver=request.user, 
+                        is_read=False
+                    ).update(is_read=True)
+            except Exception:
+                pass
+        
+        return self.get_response(request)
