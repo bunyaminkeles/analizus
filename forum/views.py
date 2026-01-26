@@ -441,16 +441,17 @@ def promote_job(request, pk):
 
     api_key = getattr(settings, 'IYZICO_API_KEY', None)
     secret_key = getattr(settings, 'IYZICO_SECRET_KEY', None)
-    base_url = getattr(settings, 'IYZICO_BASE_URL', 'https://sandbox-api.iyzipay.com')
+    base_url = getattr(settings, 'IYZICO_BASE_URL', 'sandbox-api.iyzipay.com')
 
     if not api_key or not secret_key:
         messages.error(request, "Ödeme sistemi şu anda aktif değil (API Anahtarları eksik).")
         return redirect('job_detail', pk=pk)
 
-    options = iyzipay.Options()
-    options.api_key = api_key
-    options.secret_key = secret_key
-    options.base_url = base_url
+    options = {
+        'api_key': api_key,
+        'secret_key': secret_key,
+        'base_url': base_url
+    }
 
     conversation_id = str(uuid.uuid4())[:20]
     payment_id = f"JOB-{uuid.uuid4().hex[:12].upper()}"
@@ -1593,10 +1594,11 @@ def create_donation(request):
 
         # iyzico ayarları
         import iyzipay
-        options = iyzipay.Options()
-        options.api_key = getattr(settings, 'IYZICO_API_KEY', '')
-        options.secret_key = getattr(settings, 'IYZICO_SECRET_KEY', '')
-        options.base_url = getattr(settings, 'IYZICO_BASE_URL', 'https://sandbox-api.iyzipay.com')
+        options = {
+            'api_key': getattr(settings, 'IYZICO_API_KEY', ''),
+            'secret_key': getattr(settings, 'IYZICO_SECRET_KEY', ''),
+            'base_url': getattr(settings, 'IYZICO_BASE_URL', 'sandbox-api.iyzipay.com')
+        }
 
         # Callback URL
         callback_url = request.build_absolute_uri('/api/donation/callback/')
@@ -1784,10 +1786,11 @@ def donation_callback(request):
         if not token:
             return redirect('home')
 
-        options = iyzipay.Options()
-        options.api_key = getattr(settings, 'IYZICO_API_KEY', '')
-        options.secret_key = getattr(settings, 'IYZICO_SECRET_KEY', '')
-        options.base_url = getattr(settings, 'IYZICO_BASE_URL', 'https://sandbox-api.iyzipay.com')
+        options = {
+            'api_key': getattr(settings, 'IYZICO_API_KEY', ''),
+            'secret_key': getattr(settings, 'IYZICO_SECRET_KEY', ''),
+            'base_url': getattr(settings, 'IYZICO_BASE_URL', 'sandbox-api.iyzipay.com')
+        }
 
         # Ödeme sonucunu sorgula
         checkout_form_result = iyzipay.CheckoutForm().retrieve({
@@ -1859,10 +1862,11 @@ def job_payment_callback(request):
         if not token:
             return redirect('home')
 
-        options = iyzipay.Options()
-        options.api_key = getattr(settings, 'IYZICO_API_KEY', '')
-        options.secret_key = getattr(settings, 'IYZICO_SECRET_KEY', '')
-        options.base_url = getattr(settings, 'IYZICO_BASE_URL', 'https://sandbox-api.iyzipay.com')
+        options = {
+            'api_key': getattr(settings, 'IYZICO_API_KEY', ''),
+            'secret_key': getattr(settings, 'IYZICO_SECRET_KEY', ''),
+            'base_url': getattr(settings, 'IYZICO_BASE_URL', 'sandbox-api.iyzipay.com')
+        }
 
         checkout_form_result = iyzipay.CheckoutForm().retrieve({'locale': 'tr', 'token': token}, options)
         result = json.loads(checkout_form_result.read().decode('utf-8'))
