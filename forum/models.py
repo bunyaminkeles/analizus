@@ -302,8 +302,8 @@ class Profile(models.Model):
         return True, "Kayıtlı üye"
 
     def get_weekly_job_limit(self):
-        """Haftalık ilan limiti: 500p + doğrulanmış = 3, diğer = 1"""
-        if self.email_verified and self.total_score >= 500:
+        """Haftalık ilan limiti: Premium = 3, diğer = 1"""
+        if self.account_type == 'Premium':
             return 3
         return 1
 
@@ -732,6 +732,7 @@ class FreelanceJob(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='open', verbose_name="Durum")
     views = models.PositiveIntegerField(default=0, verbose_name="Görüntülenme")
     is_featured = models.BooleanField(default=False, verbose_name="Öne Çıkarılmış")
+    featured_until = models.DateTimeField(null=True, blank=True, verbose_name="Vitrin Bitiş Tarihi")
     expires_at = models.DateTimeField(null=True, blank=True, verbose_name="Bitiş Tarihi")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -950,3 +951,21 @@ class Donation(models.Model):
         ).values('user__username', 'user__id').annotate(
             total=Sum('amount')
         ).order_by('-total')[:limit]
+
+class JobPayment(models.Model):
+    """İlan vitrin ödemeleri için model"""
+    STATUS_CHOICES = (
+        ('pending', 'Bekliyor'),
+        ('success', 'Başarılı'),
+        ('failed', 'Başarısız'),
+    )
+
+    job = models.ForeignKey(FreelanceJob, on_delete=models.CASCADE, related_name='payments', verbose_name="İlan")
+    amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Tutar")
+    payment_id = models.CharField(max_length=100, unique=True, verbose_name="Ödeme ID")
+    conversation_id = models.CharField(max_length=100, verbose_name="Konuşma ID")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending', verbose_name="Durum")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.job.title} - {self.amount}₺ - {self.get_status_display()}"
