@@ -437,7 +437,6 @@ def promote_job(request, pk):
     # iyzico ayarları
     from django.conf import settings
     import iyzipay
-    from iyzipay.options import Options
     import uuid
 
     api_key = getattr(settings, 'IYZICO_API_KEY', None)
@@ -448,7 +447,7 @@ def promote_job(request, pk):
         messages.error(request, "Ödeme sistemi şu anda aktif değil (API Anahtarları eksik).")
         return redirect('job_detail', pk=pk)
 
-    options = Options()
+    options = iyzipay.Options()
     options.api_key = api_key
     options.secret_key = secret_key
     options.base_url = base_url
@@ -1593,8 +1592,8 @@ def create_donation(request):
         )
 
         # iyzico ayarları
-        from iyzipay.options import Options
-        options = Options()
+        import iyzipay
+        options = iyzipay.Options()
         options.api_key = getattr(settings, 'IYZICO_API_KEY', '')
         options.secret_key = getattr(settings, 'IYZICO_SECRET_KEY', '')
         options.base_url = getattr(settings, 'IYZICO_BASE_URL', 'https://sandbox-api.iyzipay.com')
@@ -1785,8 +1784,7 @@ def donation_callback(request):
         if not token:
             return redirect('home')
 
-        from iyzipay.options import Options
-        options = Options()
+        options = iyzipay.Options()
         options.api_key = getattr(settings, 'IYZICO_API_KEY', '')
         options.secret_key = getattr(settings, 'IYZICO_SECRET_KEY', '')
         options.base_url = getattr(settings, 'IYZICO_BASE_URL', 'https://sandbox-api.iyzipay.com')
@@ -1861,8 +1859,7 @@ def job_payment_callback(request):
         if not token:
             return redirect('home')
 
-        from iyzipay.options import Options
-        options = Options()
+        options = iyzipay.Options()
         options.api_key = getattr(settings, 'IYZICO_API_KEY', '')
         options.secret_key = getattr(settings, 'IYZICO_SECRET_KEY', '')
         options.base_url = getattr(settings, 'IYZICO_BASE_URL', 'https://sandbox-api.iyzipay.com')
