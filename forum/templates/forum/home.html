@@ -223,6 +223,28 @@
             </div>
         </div>
 
+        <!-- CATEGORIES ROW -->
+        <div class="categories-row">
+            {% for section in sections %}
+            <a href="{% url 'section_detail' pk=section.pk %}" class="category-card">
+                <div class="category-icon">
+                    {% if "Yazılım" in section.title %}<i class="bi bi-code-slash"></i>
+                    {% elif "Yöntem" in section.title %}<i class="bi bi-diagram-3-fill"></i>
+                    {% elif "Akademi" in section.title %}<i class="bi bi-mortarboard-fill"></i>
+                    {% else %}<i class="bi bi-grid-fill"></i>{% endif %}
+                </div>
+                <div class="category-info">
+                    <h3>{{ section.title }}</h3>
+                    <p>{% if "Yazılım" in section.title %}SPSS, Python, R ve analiz araçları
+                    {% elif "Yöntem" in section.title %}İstatistik yöntemler ve teknikler
+                    {% elif "Akademi" in section.title %}Akademik kariyer ve araştırma
+                    {% else %}Tüm konular ve tartışmalar{% endif %}</p>
+                </div>
+                <div class="category-arrow"><i class="bi bi-chevron-right"></i></div>
+            </a>
+            {% endfor %}
+        </div>
+
         <!-- FEATURED JOBS SECTION -->
         {% if featured_jobs %}
         <div class="widget-card full-width mb-4">
@@ -254,28 +276,6 @@
             </div>
         </div>
         {% endif %}
-
-        <!-- CATEGORIES ROW -->
-        <div class="categories-row">
-            {% for section in sections %}
-            <a href="{% url 'section_detail' pk=section.pk %}" class="category-card">
-                <div class="category-icon">
-                    {% if "Yazılım" in section.title %}<i class="bi bi-code-slash"></i>
-                    {% elif "Yöntem" in section.title %}<i class="bi bi-diagram-3-fill"></i>
-                    {% elif "Akademi" in section.title %}<i class="bi bi-mortarboard-fill"></i>
-                    {% else %}<i class="bi bi-grid-fill"></i>{% endif %}
-                </div>
-                <div class="category-info">
-                    <h3>{{ section.title }}</h3>
-                    <p>{% if "Yazılım" in section.title %}SPSS, Python, R ve analiz araçları
-                    {% elif "Yöntem" in section.title %}İstatistik yöntemler ve teknikler
-                    {% elif "Akademi" in section.title %}Akademik kariyer ve araştırma
-                    {% else %}Tüm konular ve tartışmalar{% endif %}</p>
-                </div>
-                <div class="category-arrow"><i class="bi bi-chevron-right"></i></div>
-            </a>
-            {% endfor %}
-        </div>
 
         <!-- SON AKTİVİTELER - Sections Altında -->
         <div class="activity-section mt-4">

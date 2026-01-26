@@ -715,6 +715,9 @@ def profile_edit(request):
 # --- GELEN KUTUSU ---
 @login_required
 def inbox(request):
+    # Sayfa görüntülendiğinde tüm okunmamış mesajları okundu yap
+    PrivateMessage.objects.filter(receiver=request.user, is_read=False).update(is_read=True)
+    
     received_messages = PrivateMessage.objects.filter(receiver=request.user).order_by('-created_at')
     return render(request, 'forum/inbox.html', {'received_messages': received_messages})
 
