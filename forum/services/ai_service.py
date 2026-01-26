@@ -36,7 +36,7 @@ class GroqService:
     def __init__(self):
         self.api_key = settings.GROQ_API_KEY
         self.api_url = "https://api.groq.com/openai/v1/chat/completions"
-        self.model = "llama3-70b-8192"
+        self.model = "llama-3.3-70b-versatile"
 
     def is_available(self):
         """Servis kullanılabilir mi?"""
