@@ -86,6 +86,12 @@ def home(request):
     # Freelance Market - Son İlanlar
     recent_jobs = FreelanceJob.objects.filter(status='open').select_related('owner', 'category').order_by('-created_at')[:5]
 
+    # Vitrin İlanları (Öne Çıkanlar)
+    featured_jobs = FreelanceJob.objects.filter(
+        status='open',
+        is_featured=True
+    ).select_related('owner', 'category').order_by('-created_at')[:4]
+
     context = {
         'sections': sections,
         # İstatistikler
@@ -103,6 +109,7 @@ def home(request):
         'featured_story': featured_story,
         'recent_jobs': recent_jobs,
         'recent_reviews': recent_reviews,
+        'featured_jobs': featured_jobs,
     }
     return render(request, 'forum/home.html', context)
 
