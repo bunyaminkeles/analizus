@@ -1,8 +1,10 @@
 import random
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
-from forum.models import Section, Category, Topic, Post, Profile, Skill
+from forum.models import Section, Category, Topic, Post, Profile, Skill, FreelanceJob
 from django.utils.text import slugify
+from django.utils import timezone
+from datetime import timedelta
 
 class Command(BaseCommand):
     help = 'Veritabanını temizler ve ANALIZUS içerikleriyle doldurur.'
@@ -34,6 +36,7 @@ class Command(BaseCommand):
         Category.objects.all().delete()
         Section.objects.all().delete()
         Skill.objects.all().delete()
+        FreelanceJob.objects.all().delete()
         self.stdout.write('Temizlik tamamlandı.')
 
         # 2. KULLANICILAR
@@ -531,10 +534,73 @@ class Command(BaseCommand):
                         is_best_answer=True
                     )
 
+        # 6. FREELANCE MARKET VERİLERİ (VİTRİN İLANLARI İÇİN)
+        self.stdout.write('Freelance Market verileri oluşturuluyor...')
+        
+        # Kategorileri al
+        cat_spss = Category.objects.filter(title__icontains="SPSS").first()
+        cat_python = Category.objects.filter(title__icontains="Python").first()
+        cat_excel = Category.objects.filter(title__icontains="Excel").first()
+        
+        market_jobs = [
+            {
+                'title': 'Tıp Fakültesi Tez Analizi İçin SPSS Uzmanı Aranıyor',
+                'desc': 'Elimde 200 hastalık bir veri seti var. Ki-Kare ve Lojistik Regresyon analizleri yapılacak. Raporlama dahil tekliflerinizi bekliyorum.',
+                'budget_min': 3000,
+                'budget_max': 5000,
+                'category': cat_spss,
+                'owner': 'Klinik_Aras',
+                'is_featured': True
+            },
+            {
+                'title': 'Python ile Web Scraping ve Duygu Analizi',
+                'desc': 'Twitter\'dan belirli bir hashtag altındaki verileri çekip NLP ile duygu analizi yapacak bir script\'e ihtiyacımız var.',
+                'budget_min': 4000,
+                'budget_max': 7000,
+                'category': cat_python,
+                'owner': 'Iletisimci',
+                'is_featured': True
+            },
+            {
+                'title': 'Kurumsal Power BI Dashboard Tasarımı',
+                'desc': 'Satış ve stok verilerimiz için yönetim paneli tasarlanacak.',
+                'budget_min': 10000,
+                'budget_max': 15000,
+                'category': cat_excel,
+                'owner': 'StratejiAnalisti',
+                'is_featured': False
+            }
+        ]
+        
+        for job_data in market_jobs:
+            owner_name = job_data['owner']
+            owner = user_dict.get(owner_name, users[0])
+            category = job_data['category']
+            
+            if not category:
+                category = Category.objects.first()
+                
+            job = FreelanceJob.objects.create(
+                owner=owner,
+                title=job_data['title'],
+                description=job_data['desc'],
+                budget_min=job_data['budget_min'],
+                budget_max=job_data['budget_max'],
+                category=category,
+                status='open',
+                is_featured=job_data['is_featured'],
+                expires_at=timezone.now() + timedelta(days=30)
+            )
+            
+            if job.is_featured:
+                job.featured_until = timezone.now() + timedelta(days=7)
+                job.save()
+
         # İstatistikleri göster
         total_topics = Topic.objects.count()
         total_posts = Post.objects.count()
         total_users = User.objects.count()
+        total_jobs = FreelanceJob.objects.count()
 
         self.stdout.write(self.style.SUCCESS(f'''
 ╔══════════════════════════════════════════════╗
@@ -543,5 +609,6 @@ class Command(BaseCommand):
 ║  📊 Toplam Konu: {total_topics:<27} ║
 ║  💬 Toplam Gönderi: {total_posts:<24} ║
 ║  👥 Toplam Üye: {total_users:<28} ║
+║  💼 Toplam İlan: {total_jobs:<27} ║
 ╚══════════════════════════════════════════════╝
         '''))
