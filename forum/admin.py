@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Section, Category, Topic, Post, Profile, ContactMessage, PrivateMessage, Badge, Notification, Skill, EmailVerification, DailyTip, QuizQuestion, QuizScore, FreelanceJob, JobProposal, JobReview, UserQuizAttempt, DonationTier, Donation
+from .models import Section, Category, Topic, Post, Profile, ContactMessage, PrivateMessage, Badge, Notification, Skill, EmailVerification, DailyTip, QuizQuestion, QuizScore, FreelanceJob, JobProposal, JobReview, UserQuizAttempt, DonationTier, Donation, JobPayment
 
 # --- GENEL AYARLAR ---
 admin.site.site_header = "Analizus Komuta Merkezi"
@@ -474,3 +474,11 @@ class DonationAdmin(admin.ModelAdmin):
             obj.get_status_display()
         )
     status_display.short_description = "Durum"
+
+@admin.register(JobPayment)
+class JobPaymentAdmin(admin.ModelAdmin):
+    list_display = ('job', 'amount', 'status', 'created_at')
+    list_filter = ('status', 'created_at')
+    search_fields = ('job__title', 'payment_id')
+    readonly_fields = ('payment_id', 'conversation_id', 'created_at')
+    ordering = ('-created_at',)

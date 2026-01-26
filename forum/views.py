@@ -15,7 +15,7 @@ from django.utils import timezone
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET, require_POST
 from datetime import timedelta
-from .models import Section, Category, Topic, Post, Profile, PrivateMessage, PostLike, Notification, EmailVerification, DailyTip, QuizQuestion, QuizScore, SuccessStory, FreelanceJob, JobProposal, JobReview, Skill, Badge, UserQuizAttempt
+from .models import Section, Category, Topic, Post, Profile, PrivateMessage, PostLike, Notification, EmailVerification, DailyTip, QuizQuestion, QuizScore, SuccessStory, FreelanceJob, JobProposal, JobReview, Skill, Badge, UserQuizAttempt, JobPayment
 from .forms import RegisterForm, NewTopicForm, PostForm, JobPostForm, ProposalForm
 from .email_utils import send_topic_reply_notification, send_private_message_notification
 from django.template.loader import render_to_string
@@ -410,6 +410,100 @@ def my_jobs(request):
         'posted_jobs': posted_jobs,
         'my_proposals': my_proposals,
         'saved_jobs': saved_jobs
+    })
+
+@login_required
+def promote_job(request, pk):
+    """İlanı vitrine taşıma (Ödeme Başlatma)"""
+    job = get_object_or_404(FreelanceJob, pk=pk, owner=request.user)
+    
+    # Vitrin Ücreti ve Süresi
+    price = 100.0
+    duration_days = 7
+    
+    # iyzico ayarları
+    from django.conf import settings
+    import iyzipay
+    import uuid
+
+    api_key = getattr(settings, 'IYZICO_API_KEY', None)
+    secret_key = getattr(settings, 'IYZICO_SECRET_KEY', None)
+    base_url = getattr(settings, 'IYZICO_BASE_URL', 'https://sandbox-api.iyzipay.com')
+
+    if not api_key or not secret_key:
+        messages.error(request, "Ödeme sistemi şu anda aktif değil (API Anahtarları eksik).")
+        return redirect('job_detail', pk=pk)
+
+    options = iyzipay.Options()
+    options.api_key = api_key
+    options.secret_key = secret_key
+    options.base_url = base_url
+
+    conversation_id = str(uuid.uuid4())[:20]
+    payment_id = f"JOB-{uuid.uuid4().hex[:12].upper()}"
+    
+    # Ödeme kaydı oluştur
+    JobPayment.objects.create(
+        job=job,
+        amount=price,
+        payment_id=payment_id,
+        conversation_id=conversation_id,
+        status='pending'
+    )
+
+    # Kullanıcı bilgileri
+    user = request.user
+    buyer = {
+        'id': str(user.id),
+        'name': user.first_name or user.username,
+        'surname': user.last_name or 'User',
+        'gsmNumber': user.profile.phone_number if hasattr(user, 'profile') and user.profile.phone_number else '+905000000000',
+        'email': user.email or 'email@analizus.com',
+        'identityNumber': '11111111111',
+        'registrationAddress': 'Turkiye',
+        'ip': get_client_ip(request),
+        'city': 'Istanbul',
+        'country': 'Turkey',
+    }
+
+    # iyzico istek
+    request_obj = {
+        'locale': 'tr',
+        'conversationId': conversation_id,
+        'price': str(price),
+        'paidPrice': str(price),
+        'currency': 'TRY',
+        'basketId': payment_id,
+        'paymentGroup': 'PRODUCT',
+        'callbackUrl': request.build_absolute_uri('/api/job-payment/callback/'), # URL conf'a eklenmeli
+        'enabledInstallments': ['1'],
+        'buyer': buyer,
+        'shippingAddress': {'contactName': buyer['name'], 'city': 'Istanbul', 'country': 'Turkey', 'address': 'Turkiye'},
+        'billingAddress': {'contactName': buyer['name'], 'city': 'Istanbul', 'country': 'Turkey', 'address': 'Turkiye'},
+        'basketItems': [
+            {
+                'id': payment_id,
+                'name': f'Vitrin İlanı: {job.title[:20]}',
+                'category1': 'Hizmet',
+                'itemType': 'VIRTUAL',
+                'price': str(price),
+            }
+        ]
+    }
+
+    checkout_form = iyzipay.CheckoutFormInitialize().create(request_obj, options)
+    result = checkout_form.read().decode('utf-8')
+    result_json = json.loads(result)
+
+    if result_json.get('status') != 'success':
+        messages.error(request, f"Ödeme formu oluşturulamadı: {result_json.get('errorMessage')}")
+        return redirect('job_detail', pk=pk)
+
+    return render(request, 'forum/market/promote_job.html', {
+        'checkout_form_content': result_json.get('checkoutFormContent'),
+        'job': job,
+        'amount': price,
+        'duration': duration_days
     })
 
 # --- BÖLÜM DETAY ---
@@ -1485,11 +1579,10 @@ def create_donation(request):
         )
 
         # iyzico ayarları
-        options = {
-            'api_key': settings.IYZICO_API_KEY,
-            'secret_key': settings.IYZICO_SECRET_KEY,
-            'base_url': settings.IYZICO_BASE_URL
-        }
+        options = iyzipay.Options()
+        options.api_key = getattr(settings, 'IYZICO_API_KEY', '')
+        options.secret_key = getattr(settings, 'IYZICO_SECRET_KEY', '')
+        options.base_url = getattr(settings, 'IYZICO_BASE_URL', 'https://sandbox-api.iyzipay.com')
 
         # Callback URL
         callback_url = request.build_absolute_uri('/api/donation/callback/')
@@ -1741,3 +1834,50 @@ def donation_success(request):
         'premium_days': donation.get_premium_days() if donation else 0,
     }
     return render(request, 'forum/donation_success.html', context)
+
+@csrf_exempt
+def job_payment_callback(request):
+    """İlan ödemesi callback"""
+    from django.conf import settings
+    import iyzipay
+
+    if request.method == 'POST':
+        token = request.POST.get('token')
+        if not token:
+            return redirect('home')
+
+        options = iyzipay.Options()
+        options.api_key = getattr(settings, 'IYZICO_API_KEY', '')
+        options.secret_key = getattr(settings, 'IYZICO_SECRET_KEY', '')
+        options.base_url = getattr(settings, 'IYZICO_BASE_URL', 'https://sandbox-api.iyzipay.com')
+
+        checkout_form_result = iyzipay.CheckoutForm().retrieve({'locale': 'tr', 'token': token}, options)
+        result = json.loads(checkout_form_result.read().decode('utf-8'))
+        basket_id = result.get('basketId')
+
+        try:
+            payment = JobPayment.objects.get(payment_id=basket_id)
+            
+            if result.get('status') == 'success' and result.get('paymentStatus') == 'SUCCESS':
+                payment.status = 'success'
+                payment.save()
+
+                # İlanı güncelle
+                job = payment.job
+                job.is_featured = True
+                # Mevcut süre varsa üstüne ekle, yoksa şimdiden başlat
+                now = timezone.now()
+                start_time = job.featured_until if job.featured_until and job.featured_until > now else now
+                job.featured_until = start_time + timedelta(days=7)
+                job.save()
+
+                messages.success(request, 'Ödeme başarılı! İlanınız vitrine taşındı.')
+                return redirect('job_detail', pk=job.pk)
+            else:
+                payment.status = 'failed'
+                payment.save()
+                messages.error(request, 'Ödeme başarısız oldu.')
+        except JobPayment.DoesNotExist:
+            messages.error(request, 'Ödeme kaydı bulunamadı.')
+            
+    return redirect('home')

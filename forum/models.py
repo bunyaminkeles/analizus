@@ -951,3 +951,21 @@ class Donation(models.Model):
         ).values('user__username', 'user__id').annotate(
             total=Sum('amount')
         ).order_by('-total')[:limit]
+
+class JobPayment(models.Model):
+    """İlan vitrin ödemeleri için model"""
+    STATUS_CHOICES = (
+        ('pending', 'Bekliyor'),
+        ('success', 'Başarılı'),
+        ('failed', 'Başarısız'),
+    )
+
+    job = models.ForeignKey(FreelanceJob, on_delete=models.CASCADE, related_name='payments', verbose_name="İlan")
+    amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Tutar")
+    payment_id = models.CharField(max_length=100, unique=True, verbose_name="Ödeme ID")
+    conversation_id = models.CharField(max_length=100, verbose_name="Konuşma ID")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending', verbose_name="Durum")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.job.title} - {self.amount}₺ - {self.get_status_display()}"
