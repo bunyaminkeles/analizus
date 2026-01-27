@@ -9,7 +9,12 @@ from django.urls import reverse
 from django.utils.timesince import timesince
 from django.core.management import call_command
 from django.conf import settings
-from .models import JobProposal, Profile, Notification
+from django.db.models import Count
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.response import Response
+from .models import JobProposal, Profile, Notification, Topic, Post
+from .serializers import TopicSerializer, PostSerializer, UserSerializer
 from .utils import send_realtime_notification
 
 
@@ -87,6 +92,57 @@ def widget_latest_proposals(request):
 
     return JsonResponse({'proposals': data})
 
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def api_topic_detail(request, pk):
+    """Konu detaylarını ve mesajları getirir"""
+    try:
+        # replies_count annotation'ı TopicSerializer için gerekli
+        topic = Topic.objects.select_related('starter', 'category').annotate(
+            replies_count=Count('posts')
+        ).get(pk=pk)
+    except Topic.DoesNotExist:
+        return Response({'error': 'Konu bulunamadı'}, status=404)
+
+    # Görüntülenme sayısını artır
+    topic.views += 1
+    topic.save()
+
+    posts = topic.posts.select_related('created_by', 'created_by__profile').order_by('created_at')
+    
+    return Response({
+        'topic': TopicSerializer(topic).data,
+        'posts': PostSerializer(posts, many=True).data
+    })
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def api_me(request):
+    """Giriş yapmış kullanıcının bilgilerini döndürür"""
+    serializer = UserSerializer(request.user, context={'request': request})
+    return Response(serializer.data)
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def api_register(request):
+    """Yeni kullanıcı kaydı oluşturur"""
+    username = request.data.get('username')
+    email = request.data.get('email')
+    password = request.data.get('password')
+
+    if not username or not email or not password:
+        return Response({'error': 'Lütfen tüm alanları doldurun.'}, status=400)
+
+    if User.objects.filter(username=username).exists():
+        return Response({'error': 'Bu kullanıcı adı zaten kullanımda.'}, status=400)
+
+    if User.objects.filter(email=email).exists():
+        return Response({'error': 'Bu e-posta adresi zaten kullanımda.'}, status=400)
+
+    user = User.objects.create_user(username=username, email=email, password=password)
+    # Profil signal ile oluşuyor, ancak garanti olsun diye kontrol edilebilir
+    return Response({'success': True, 'message': 'Kayıt başarılı! Giriş yapabilirsiniz.'})
 
 # ═══════════════════════════════════════════════════════════════════════════
 # CRON JOB ENDPOINTS

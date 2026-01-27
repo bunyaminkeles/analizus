@@ -1,10 +1,22 @@
 from django.urls import path
 from . import views
 from . import api_views
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+)
 
 urlpatterns = [
     path('', views.home, name='home'),
+    path('api/home/', views.api_home, name='api_home'),  # ✅ Yeni Next.js Anasayfa API'si
+    path('api/topic/<int:pk>/', api_views.api_topic_detail, name='api_topic_detail'),  # ✅ Yeni Next.js Konu Detay API'si
     path('register/', views.register, name='register'),
+    
+    # JWT Authentication (Next.js Login için)
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),  # Giriş yapıp token al
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'), # Token yenile
+    path('api/me/', api_views.api_me, name='api_me'),  # ✅ Kullanıcı Bilgisi (Next.js için)
+    path('api/register/', api_views.api_register, name='api_register'), # ✅ Kayıt API'si
     
     # Profil
     path('profile/edit/', views.profile_edit, name='profile_edit'),

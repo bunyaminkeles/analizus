@@ -15,10 +15,17 @@ from django.utils import timezone
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET, require_POST
 from datetime import timedelta
-from .models import Section, Category, Topic, Post, Profile, PrivateMessage, PostLike, Notification, EmailVerification, DailyTip, QuizQuestion, QuizScore, SuccessStory, FreelanceJob, JobProposal, JobReview, Skill, Badge, UserQuizAttempt, JobPayment
+from .models import Section, Category, Topic, Post, Profile, PrivateMessage, PostLike, Notification, EmailVerification, DailyTip, QuizQuestion, QuizScore, SuccessStory, FreelanceJob, JobProposal, JobReview, Skill, Badge, UserQuizAttempt, JobPayment, Donation
 from .forms import RegisterForm, NewTopicForm, PostForm, JobPostForm, ProposalForm
 from .email_utils import send_topic_reply_notification, send_private_message_notification
 from django.template.loader import render_to_string
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+from .serializers import (
+    SectionSerializer, TopicSerializer, PostSerializer, FreelanceJobSerializer, 
+    JobReviewSerializer, DailyTipSerializer, QuizQuestionSerializer, QuizScoreSerializer, SuccessStorySerializer
+)
 
 # --- ANA SAYFA ---
 def home(request):
@@ -112,6 +119,71 @@ def home(request):
         'featured_jobs': featured_jobs,
     }
     return render(request, 'forum/home.html', context)
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def api_home(request):
+    """Next.js Frontend için Anasayfa API Endpoint'i"""
+
+    # 1. İstatistikler
+    stats = {
+        'total_topics': Topic.objects.count(),
+        'total_posts': Post.objects.count(),
+        'total_users': User.objects.count(),
+        'completed_jobs': FreelanceJob.objects.filter(status='completed').count()
+    }
+
+    # 2. Bölümler ve Kategoriler
+    sections = Section.objects.all().order_by('order')
+    sections_data = SectionSerializer(sections, many=True).data
+
+    # 3. Popüler Konular
+    popular_topics = Topic.objects.select_related('starter', 'category').annotate(
+        replies_count=Count('posts')
+    ).order_by('-views')[:5]
+    popular_topics_data = TopicSerializer(popular_topics, many=True).data
+
+    # 4. Son Aktiviteler (Sadece Postlar - Basitleştirilmiş)
+    recent_posts = Post.objects.select_related('created_by', 'topic').order_by('-created_at')[:10]
+    recent_activities_data = PostSerializer(recent_posts, many=True).data
+
+    # 5. Günün İpucu
+    daily_tip = DailyTip.get_today_tip()
+    daily_tip_data = DailyTipSerializer(daily_tip).data if daily_tip else None
+
+    # 6. Quiz Liderlik
+    quiz_leaderboard = QuizScore.objects.select_related('user', 'user__profile').order_by('-correct_answers')[:5]
+    quiz_leaderboard_data = QuizScoreSerializer(quiz_leaderboard, many=True).data
+
+    # 7. Freelance İlanlar
+    recent_jobs = FreelanceJob.objects.filter(status='open').select_related('owner', 'category').order_by('-created_at')[:5]
+    recent_jobs_data = FreelanceJobSerializer(recent_jobs, many=True).data
+
+    featured_jobs = FreelanceJob.objects.filter(status='open', is_featured=True).select_related('owner', 'category').order_by('-created_at')[:4]
+    featured_jobs_data = FreelanceJobSerializer(featured_jobs, many=True).data
+
+    # 8. Başarı Hikayesi
+    featured_story = SuccessStory.objects.filter(is_featured=True).first()
+    if not featured_story:
+        featured_story = SuccessStory.objects.order_by('?').first()
+    featured_story_data = SuccessStorySerializer(featured_story).data if featured_story else None
+
+    # 9. Sosyal Kanıt (Reviews)
+    recent_reviews = JobReview.objects.filter(is_approved=True).select_related('reviewer', 'reviewed_user', 'job').order_by('-created_at')[:5]
+    recent_reviews_data = JobReviewSerializer(recent_reviews, many=True).data
+
+    return Response({
+        'stats': stats,
+        'sections': sections_data,
+        'popular_topics': popular_topics_data,
+        'recent_activities': recent_activities_data,
+        'daily_tip': daily_tip_data,
+        'quiz_leaderboard': quiz_leaderboard_data,
+        'recent_jobs': recent_jobs_data,
+        'featured_jobs': featured_jobs_data,
+        'featured_story': featured_story_data,
+        'recent_reviews': recent_reviews_data
+    })
 
 # --- BAŞARI HİKAYELERİ ---
 class SuccessStoryForm(forms.ModelForm):
