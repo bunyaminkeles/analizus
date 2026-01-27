@@ -1,9 +1,9 @@
+
 db.sqlite3
 __pycache__/
 staticfiles/
 .env
 *.pyc
-
 .gitignore
 avatars/keles.png
 .gitignore
@@ -12,3 +12,22 @@ forum/views-claude.py
 forum/templates/forum/home copy.html
 forum/views copy.py
 homepage.png
+
+# Next.js
+# Next.js (Frontend)
+frontend/node_modules
+frontend/.next
+frontend/.env.local
+frontend/.env.development.local
+frontend/.env.test.local
+frontend/.env.production.local
+frontend/out/
+frontend/build/
+frontend/dist/
+frontend/.vercel
+frontend/*.log
+frontend/npm-debug.log*
+frontend/yarn-debug.log*
+frontend/yarn-error.log*
+frontend/pnpm-debug.log*
+frontend/next-env.d.ts
