@@ -44,11 +44,9 @@ def home(request):
         replies_count=Count('posts')
     ).order_by('-views')[:5]
 
-    # Son aktiviteler (postlar + bağışlar)
+    # Son aktiviteler (postlar)
     recent_posts = list(Post.objects.select_related('created_by', 'topic').order_by('-created_at')[:10])
-    recent_donations = list(Donation.objects.filter(status='completed', is_anonymous=False).exclude(user=None).select_related('user').order_by('-completed_at')[:5])
 
-    # Aktiviteleri birleştir
     recent_activities = []
     for post in recent_posts:
         recent_activities.append({
@@ -57,15 +55,7 @@ def home(request):
             'topic': post.topic,
             'created_at': post.created_at,
         })
-    for donation in recent_donations:
-        recent_activities.append({
-            'type': 'donation',
-            'created_by': donation.user,
-            'amount': donation.amount,
-            'premium_days': donation.get_premium_days(),
-            'created_at': donation.completed_at,
-        })
-
+    
     # Tarihe göre sırala
     recent_activities = sorted(recent_activities, key=lambda x: x['created_at'], reverse=True)[:10]
 
@@ -414,14 +404,10 @@ def my_jobs(request):
 
 @login_required
 def my_payments(request):
-    """Kullanıcının ödeme geçmişi (İlanlar ve Bağışlar)"""
-    from .models import Donation
-    
-    donations = Donation.objects.filter(user=request.user).order_by('-created_at')
+    """Kullanıcının ödeme geçmişi (İlanlar)"""
     job_payments = JobPayment.objects.filter(job__owner=request.user).select_related('job').order_by('-created_at')
     
     return render(request, 'forum/my_payments.html', {
-        'donations': donations,
         'job_payments': job_payments
     })
 
