@@ -8,10 +8,16 @@ class ProfileSerializer(serializers.ModelSerializer):
         fields = ['avatar', 'rank', 'title', 'reputation']
 
 class UserSerializer(serializers.ModelSerializer):
-    profile = ProfileSerializer(read_only=True)
+    profile = serializers.SerializerMethodField()
     class Meta:
         model = User
         fields = ['id', 'username', 'first_name', 'last_name', 'profile']
+
+    def get_profile(self, obj):
+        try:
+            return ProfileSerializer(obj.profile).data
+        except Exception:
+            return None
 
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -27,11 +33,14 @@ class SectionSerializer(serializers.ModelSerializer):
 class TopicSerializer(serializers.ModelSerializer):
     starter = UserSerializer(read_only=True)
     category = CategorySerializer(read_only=True)
-    replies_count = serializers.IntegerField(read_only=True)
+    replies_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Topic
-        fields = ['id', 'subject', 'slug', 'starter', 'category', 'views', 'created_at', 'replies_count', 'is_pinned', 'is_closed']
+        fields = ['id', 'subject', 'starter', 'category', 'views', 'created_at', 'replies_count', 'is_pinned', 'is_closed']
+
+    def get_replies_count(self, obj):
+        return getattr(obj, 'replies_count', 0)
 
 class PostSerializer(serializers.ModelSerializer):
     created_by = UserSerializer(read_only=True)

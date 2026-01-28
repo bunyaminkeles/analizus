@@ -1,8 +1,8 @@
+// Dosya: /home/bunyamin/Documents/analizdestek/frontend/app/page.tsx
 "use client";
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 
-// --- Veri Tipleri (Interfaces) ---
 interface Category {
   id: number;
   title: string;
@@ -17,19 +17,12 @@ interface Section {
   categories: Category[];
 }
 
-interface User {
-  username: string;
-  profile?: {
-    avatar?: string;
-  };
-}
-
 interface Topic {
   id: number;
   subject: string;
   views: number;
   replies_count: number;
-  starter: User;
+  starter: { username: string };
   category: Category;
 }
 
@@ -45,15 +38,20 @@ interface HomeData {
   daily_tip: { content: string } | null;
 }
 
-// --- Ana Bileşen ---
 export default function Home() {
   const [data, setData] = useState<HomeData | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // Django API'den verileri çek
-    fetch('http://127.0.0.1:8000/api/home/')
-      .then((res) => res.json())
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/home/`)
+      .then(async (res) => {
+        if (!res.ok) {
+          const text = await res.text();
+          throw new Error(`HTTP ${res.status}: ${text}`);
+        }
+        return res.json();
+      })
       .then((data) => {
         setData(data);
         setLoading(false);

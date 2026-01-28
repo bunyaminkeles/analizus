@@ -13,8 +13,8 @@ from django.db.models import Count
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
-from .models import JobProposal, Profile, Notification, Topic, Post
-from .serializers import TopicSerializer, PostSerializer, UserSerializer
+from .models import JobProposal, Profile, Notification, Topic, Post, Category
+from .serializers import TopicSerializer, PostSerializer, UserSerializer, CategorySerializer
 from .utils import send_realtime_notification
 
 
@@ -114,6 +114,20 @@ def api_topic_detail(request, pk):
     return Response({
         'topic': TopicSerializer(topic).data,
         'posts': PostSerializer(posts, many=True).data
+    })
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def api_category_topics(request, slug):
+    """Kategori detaylarını ve konularını getirir"""
+    category = get_object_or_404(Category, slug=slug)
+    topics = category.topics.select_related('starter', 'category').annotate(
+        replies_count=Count('posts')
+    ).order_by('-is_pinned', '-created_at')
+    
+    return Response({
+        'category': CategorySerializer(category).data,
+        'topics': TopicSerializer(topics, many=True, context={'request': request}).data
     })
 
 @api_view(['GET'])

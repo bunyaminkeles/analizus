@@ -10,6 +10,7 @@ urlpatterns = [
     path('', views.home, name='home'),
     path('api/home/', views.api_home, name='api_home'),  # ✅ Yeni Next.js Anasayfa API'si
     path('api/topic/<int:pk>/', api_views.api_topic_detail, name='api_topic_detail'),  # ✅ Yeni Next.js Konu Detay API'si
+    path('api/forum/<slug:slug>/', api_views.api_category_topics, name='api_category_topics'), # ✅ Kategori API'si
     path('register/', views.register, name='register'),
     
     # JWT Authentication (Next.js Login için)

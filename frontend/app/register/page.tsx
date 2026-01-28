@@ -1,3 +1,4 @@
+// Dosya: /home/bunyamin/Documents/analizdestek/frontend/app/register/page.tsx
 "use client";
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -73,7 +74,7 @@ export default function RegisterPage() {
 
         <form onSubmit={handleRegister} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-1.5">Kullanıcı Adı</label>
+            <label className="block text-sm font-medium text-slate-300 mb-1">Kullanıcı Adı</label>
             <input 
               type="text" name="username" required
               value={formData.username} onChange={handleChange}
@@ -82,7 +83,7 @@ export default function RegisterPage() {
           </div>
           
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-1.5">E-posta</label>
+            <label className="block text-sm font-medium text-slate-300 mb-1">E-posta</label>
             <input 
               type="email" name="email" required
               value={formData.email} onChange={handleChange}
@@ -91,7 +92,7 @@ export default function RegisterPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-1.5">Şifre</label>
+            <label className="block text-sm font-medium text-slate-300 mb-1">Şifre</label>
             <input 
               type="password" name="password" required
               value={formData.password} onChange={handleChange}
@@ -100,7 +101,7 @@ export default function RegisterPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-1.5">Şifre Tekrar</label>
+            <label className="block text-sm font-medium text-slate-300 mb-1">Şifre Tekrar</label>
             <input 
               type="password" name="confirmPassword" required
               value={formData.confirmPassword} onChange={handleChange}
@@ -109,9 +110,8 @@ export default function RegisterPage() {
           </div>
 
           <button 
-            type="submit" 
-            disabled={loading}
-            className="w-full bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white font-bold py-3 rounded-lg transition shadow-lg shadow-blue-500/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            type="submit" disabled={loading}
+            className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-lg transition mt-2"
           >
             {loading ? 'Kaydediliyor...' : 'Kayıt Ol'}
           </button>
