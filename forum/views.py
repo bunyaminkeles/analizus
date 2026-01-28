@@ -75,7 +75,7 @@ def home(request):
 
     # Freelance Market - Son İlanlar
     recent_jobs = FreelanceJob.objects.filter(status='open').select_related('owner', 'category').annotate(
-        proposal_count_annotated=Count('proposals')
+        proposal_count_annotated=Count('proposals', distinct=True)
     ).order_by('-created_at')[:5]
 
     # Vitrin İlanları (Öne Çıkanlar)
@@ -83,7 +83,7 @@ def home(request):
         status='open',
         is_featured=True
     ).select_related('owner', 'category').annotate(
-        proposal_count_annotated=Count('proposals')
+        proposal_count_annotated=Count('proposals', distinct=True)
     ).order_by('-created_at')[:4]
 
     context = {
@@ -155,7 +155,7 @@ def success_stories(request):
 def job_list(request):
     sort = request.GET.get('sort', 'newest')
     jobs = FreelanceJob.objects.filter(status='open').select_related('owner', 'category').annotate(
-        proposal_count_annotated=Count('proposals')
+        proposal_count_annotated=Count('proposals', distinct=True)
     )
 
     if sort == 'views':
@@ -270,6 +270,89 @@ def accept_proposal(request, pk, proposal_id):
 
 
 @login_required
+@require_POST
+def admin_manage_proposal(request, job_pk, proposal_id):
+    """Adminlerin teklifleri yönetmesi (Silme/Reddetme)"""
+    if not (request.user.is_superuser or request.user.is_staff):
+        messages.error(request, "Bu işlem için yetkiniz yok.")
+        return redirect('job_detail', pk=job_pk)
+
+    job = get_object_or_404(FreelanceJob, pk=job_pk)
+    proposal = get_object_or_404(JobProposal, pk=proposal_id, job=job)
+    
+    action = request.POST.get('action') # 'delete' or 'reject'
+    reason_option = request.POST.get('reason_option')
+    custom_reason = request.POST.get('custom_reason')
+    
+    # Sebep belirleme
+    reason_map = {
+        'spam': 'Spam veya yanıltıcı içerik.',
+        'low_quality': 'Düşük kalite veya yetersiz açıklama.',
+        'inappropriate': 'Uygunsuz dil veya içerik.',
+        'irrelevant': 'İlanla ilgisiz teklif.',
+        'other': custom_reason or 'Belirtilmedi.'
+    }
+    
+    reason = reason_map.get(reason_option, custom_reason or 'Topluluk kurallarına aykırılık.')
+    
+    expert = proposal.expert
+    
+    if action == 'delete':
+        # Silme işlemi
+        proposal.delete()
+        
+        # Bildirim gönder (Mesaj)
+        message = f"Sayın {expert.username},\n\n'{job.title}' ilanı için verdiğiniz teklif yöneticiler tarafından silinmiştir.\n\nSebep: {reason}\n\nLütfen topluluk kurallarına dikkat ediniz."
+        
+        PrivateMessage.objects.create(
+            sender=request.user,
+            receiver=expert,
+            message=message
+        )
+        
+        # Bildirim (Notification)
+        Notification.objects.create(
+            recipient=expert,
+            sender=request.user,
+            verb=f"Teklifiniz silindi: {reason}",
+            content_type=ContentType.objects.get_for_model(job),
+            object_id=job.id
+        )
+        
+        messages.success(request, f"Teklif silindi ve kullanıcıya mesaj gönderildi.")
+        
+    elif action == 'reject':
+        # Reddetme işlemi
+        proposal.status = 'rejected'
+        proposal.save()
+        
+        # Bildirim gönder (Mesaj)
+        message = f"Sayın {expert.username},\n\n'{job.title}' ilanı için verdiğiniz teklif yöneticiler tarafından reddedilmiştir.\n\nSebep: {reason}"
+        
+        PrivateMessage.objects.create(
+            sender=request.user,
+            receiver=expert,
+            message=message
+        )
+
+        # Bildirim (Notification)
+        Notification.objects.create(
+            recipient=expert,
+            sender=request.user,
+            verb=f"Teklifiniz reddedildi: {reason}",
+            content_type=ContentType.objects.get_for_model(proposal),
+            object_id=proposal.id
+        )
+        
+        messages.success(request, f"Teklif reddedildi ve kullanıcıya mesaj gönderildi.")
+        
+    else:
+        messages.warning(request, "Geçersiz işlem.")
+
+    return redirect('job_detail', pk=job_pk)
+
+
+@login_required
 def job_detail(request, pk):
     job = get_object_or_404(FreelanceJob, pk=pk)
 
@@ -286,12 +369,14 @@ def job_detail(request, pk):
     if request.user.is_authenticated and hasattr(request.user, 'profile'):
         _, can_propose_reason = request.user.profile.can_propose()
 
-    if request.user == job.owner:
-        # İlan sahibi ise teklifleri görsün
+    # 1. Teklifleri görme yetkisi (İlan sahibi veya Admin)
+    if request.user == job.owner or request.user.is_superuser or request.user.is_staff:
         proposals = job.proposals.select_related('expert', 'expert__profile').all()
     else:
         proposals = None
-        # Kullanıcı daha önce teklif vermiş mi?
+
+    # 2. Teklif verme formu işlemleri (İlan sahibi hariç herkes için kontrol edilir)
+    if request.user != job.owner:
         if request.user.is_authenticated:
             user_proposal = JobProposal.objects.filter(job=job, expert=request.user).first()
 
@@ -397,15 +482,24 @@ def add_job_review(request, pk):
 def my_jobs(request):
     # Kullanıcının açtığı ilanlar
     posted_jobs = FreelanceJob.objects.filter(owner=request.user).order_by('-created_at')
-    # Kullanıcının verdiği teklifler
-    my_proposals = JobProposal.objects.filter(expert=request.user).select_related('job').order_by('-created_at')
+    
+    # Kullanıcının verdiği teklifler (Filtreleme eklendi)
+    status_filter = request.GET.get('status', 'all')
+    my_proposals = JobProposal.objects.filter(expert=request.user).select_related('job')
+    
+    if status_filter in ['pending', 'accepted', 'rejected']:
+        my_proposals = my_proposals.filter(status=status_filter)
+        
+    my_proposals = my_proposals.order_by('-created_at')
+    
     # Kullanıcının kaydettiği ilanlar
     saved_jobs = request.user.saved_jobs.all().order_by('-created_at')
     
     return render(request, 'forum/market/my_jobs.html', {
         'posted_jobs': posted_jobs,
         'my_proposals': my_proposals,
-        'saved_jobs': saved_jobs
+        'saved_jobs': saved_jobs,
+        'current_status': status_filter
     })
 
 @login_required
