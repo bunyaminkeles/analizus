@@ -29,7 +29,7 @@
                         <small class="text-muted">{{ job.created_at|date:"d M Y" }} · <span class="text-{{ job.status|yesno:'success,secondary' }}">{{ job.get_status_display }}</span></small>
                     </div>
                     <div class="text-end">
-                        <span class="badge bg-info rounded-pill">{{ job.num_proposals }} Teklif</span>
+                        <span class="badge bg-info rounded-pill">{{ job.p_count }} Teklif</span>
                     </div>
                 </a>
                 {% empty %}
@@ -81,7 +81,7 @@
                         <small class="text-muted">{{ job.created_at|date:"d M Y" }} · <span class="text-{{ job.status|yesno:'success,secondary' }}">{{ job.get_status_display }}</span> · {{ job.owner.username }}</small>
                     </div>
                     <div class="text-end">
-                        <span class="badge bg-info rounded-pill">{{ job.num_proposals }} Teklif</span>
+                        <span class="badge bg-info rounded-pill">{{ job.p_count }} Teklif</span>
                     </div>
                 </a>
                 {% empty %}
