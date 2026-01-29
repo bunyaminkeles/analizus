@@ -76,7 +76,7 @@ def home(request):
 
     # Freelance Market - Son İlanlar
     recent_jobs = FreelanceJob.objects.filter(status='open').select_related('owner', 'category').annotate(
-        num_proposals=Count('proposals', distinct=True)
+        p_count=Count('proposals', distinct=True)
     ).order_by('-created_at')[:5]
 
     # Vitrin İlanları (Öne Çıkanlar)
@@ -84,7 +84,7 @@ def home(request):
         status='open',
         is_featured=True
     ).select_related('owner', 'category').annotate(
-        num_proposals=Count('proposals', distinct=True)
+        p_count=Count('proposals', distinct=True)
     ).order_by('-created_at')[:4]
 
     context = {
@@ -156,13 +156,13 @@ def success_stories(request):
 def job_list(request):
     sort = request.GET.get('sort', 'newest')
     jobs = FreelanceJob.objects.filter(status='open').select_related('owner', 'category').annotate(
-        num_proposals=Count('proposals', distinct=True)
+        p_count=Count('proposals', distinct=True)
     )
 
     if sort == 'views':
         jobs = jobs.order_by('-views', '-created_at')
     elif sort == 'proposals':
-        jobs = jobs.order_by('-num_proposals', '-created_at')
+        jobs = jobs.order_by('-p_count', '-created_at')
     else:
         jobs = jobs.order_by('-created_at')
 
@@ -483,7 +483,7 @@ def add_job_review(request, pk):
 def my_jobs(request):
     # Kullanıcının açtığı ilanlar
     posted_jobs = FreelanceJob.objects.filter(owner=request.user).annotate(
-        num_proposals=Count('proposals', distinct=True)
+        p_count=Count('proposals', distinct=True)
     ).order_by('-created_at')
     
     # Kullanıcının verdiği teklifler (Filtreleme eklendi)
@@ -497,7 +497,7 @@ def my_jobs(request):
     
     # Kullanıcının kaydettiği ilanlar
     saved_jobs = request.user.saved_jobs.annotate(
-        num_proposals=Count('proposals', distinct=True)
+        p_count=Count('proposals', distinct=True)
     ).order_by('-created_at')
     
     return render(request, 'forum/market/my_jobs.html', {
@@ -875,7 +875,7 @@ def profile_detail(request, username):
         return redirect('profile_detail', username=username)
 
     posted_jobs = FreelanceJob.objects.filter(owner=profile_user).annotate(
-        num_proposals=Count('proposals', distinct=True)
+        p_count=Count('proposals', distinct=True)
     ).order_by('-created_at')[:20]
     given_proposals = JobProposal.objects.filter(expert=profile_user).select_related('job').order_by('-created_at')[:20]
     received_reviews = JobReview.objects.filter(reviewed_user=profile_user, is_approved=True).select_related('reviewer', 'job').order_by('-created_at')[:20]
