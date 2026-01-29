@@ -70,14 +70,17 @@
                 </div>
             </div>
 
-            <!-- Teklifler (Sadece İlan Sahibi Görür) -->
-            {% if request.user == job.owner %}
+            <!-- Teklifler (Sadece İlan Sahibi ve Adminler Görür) -->
+            {% if proposals is not None %}
             <h4 class="text-white mb-3">Gelen Teklifler ({{ proposals.count }})</h4>
             {% for proposal in proposals %}
             <div class="card border-0 shadow-sm mb-3" style="background: rgba(30, 41, 59, 0.4);">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-center">
-                        <h6 class="text-info fw-bold mb-0">{{ proposal.expert.username }} <span class="badge bg-secondary ms-2">{{ proposal.expert.profile.get_rank_display }}</span></h6>
+                        <div class="d-flex align-items-center">
+                            <h6 class="text-info fw-bold mb-0">{{ proposal.expert.username }}</h6>
+                            <span class="badge bg-secondary ms-2 small">{{ proposal.expert.profile.get_rank_display }}</span>
+                        </div>
                         <div>
                             {% if proposal.status == 'accepted' %}
                             <span class="badge bg-success">Kabul Edildi</span>
@@ -92,18 +95,71 @@
                     <p class="text-light small mb-2 mt-2">{{ proposal.message }}</p>
                     <div class="d-flex justify-content-between align-items-center mt-2">
                         <div class="text-success fw-bold">₺{{ proposal.price }} <span class="text-muted fw-normal ms-2">({{ proposal.duration }})</span></div>
-                        <div>
+                        <div class="d-flex align-items-center gap-2">
                             <a href="{% url 'send_message' username=proposal.expert.username %}" class="btn btn-sm btn-outline-light">Mesaj At</a>
-                            {% if job.status == 'open' and proposal.status == 'pending' %}
-                            <form method="post" action="{% url 'accept_proposal' pk=job.pk proposal_id=proposal.pk %}" class="d-inline ms-2">
+                            {% if job.status == 'open' and proposal.status == 'pending' and request.user == job.owner %}
+                            <form method="post" action="{% url 'accept_proposal' pk=job.pk proposal_id=proposal.pk %}" class="d-inline">
                                 {% csrf_token %}
                                 <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('Bu teklifi kabul etmek istediğinize emin misiniz?')">Kabul Et</button>
                             </form>
+                            {% endif %}
+                            {% if request.user.is_superuser or request.user.is_staff %}
+                            <!-- Admin Yönetim Butonları -->
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-outline-danger dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="bi bi-shield-lock"></i> Yönet
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-dark shadow">
+                                    <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#adminManageProposalModal-{{ proposal.pk }}">Teklifi Yönet</a></li>
+                                </ul>
+                            </div>
                             {% endif %}
                         </div>
                     </div>
                 </div>
             </div>
+
+            {% if request.user.is_superuser or request.user.is_staff %}
+            <!-- Admin Yönetim Modalı -->
+            <div class="modal fade" id="adminManageProposalModal-{{ proposal.pk }}" tabindex="-1" aria-labelledby="adminManageProposalLabel-{{ proposal.pk }}" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content bg-dark text-white">
+                        <form method="post" action="{% url 'admin_manage_proposal' job_pk=job.pk proposal_id=proposal.pk %}">
+                            {% csrf_token %}
+                            <div class="modal-header border-secondary">
+                                <h5 class="modal-title" id="adminManageProposalLabel-{{ proposal.pk }}">Teklifi Yönet: {{ proposal.expert.username }}</h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p class="small text-muted">Bu işlem geri alınamaz. Kullanıcıya bildirim gönderilecektir.</p>
+                                <div class="mb-3">
+                                    <label class="form-label">İşlem</label>
+                                    <select name="action" class="form-select bg-secondary text-white border-dark">
+                                        <option value="reject">Reddet</option>
+                                        <option value="delete">Sil</option>
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Sebep</label>
+                                    <select name="reason_option" class="form-select bg-secondary text-white border-dark" onchange="this.value === 'other' ? this.nextElementSibling.style.display='block' : this.nextElementSibling.style.display='none'">
+                                        <option value="spam">Spam veya yanıltıcı içerik</option>
+                                        <option value="low_quality">Düşük kalite veya yetersiz açıklama</option>
+                                        <option value="inappropriate">Uygunsuz dil veya içerik</option>
+                                        <option value="irrelevant">İlanla ilgisiz teklif</option>
+                                        <option value="other">Diğer (Açıklama Girin)</option>
+                                    </select>
+                                    <textarea name="custom_reason" class="form-control bg-secondary text-white border-dark mt-2" rows="2" placeholder="Reddetme/silme sebebini buraya yazın..." style="display:none;"></textarea>
+                                </div>
+                            </div>
+                            <div class="modal-footer border-secondary">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                                <button type="submit" class="btn btn-danger">İşlemi Onayla</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
             {% empty %}
             <p class="text-muted">Henüz teklif gelmemiş.</p>
             {% endfor %}

@@ -75,7 +75,7 @@ def home(request):
 
     # Freelance Market - Son İlanlar
     recent_jobs = FreelanceJob.objects.filter(status='open').select_related('owner', 'category').annotate(
-        proposal_count_annotated=Count('proposals', distinct=True)
+        num_proposals=Count('proposals', distinct=True)
     ).order_by('-created_at')[:5]
 
     # Vitrin İlanları (Öne Çıkanlar)
@@ -83,7 +83,7 @@ def home(request):
         status='open',
         is_featured=True
     ).select_related('owner', 'category').annotate(
-        proposal_count_annotated=Count('proposals', distinct=True)
+        num_proposals=Count('proposals', distinct=True)
     ).order_by('-created_at')[:4]
 
     context = {
@@ -155,13 +155,13 @@ def success_stories(request):
 def job_list(request):
     sort = request.GET.get('sort', 'newest')
     jobs = FreelanceJob.objects.filter(status='open').select_related('owner', 'category').annotate(
-        proposal_count_annotated=Count('proposals', distinct=True)
+        proposal_count=Count('proposals', distinct=True)
     )
 
     if sort == 'views':
         jobs = jobs.order_by('-views', '-created_at')
     elif sort == 'proposals':
-        jobs = jobs.order_by('-proposal_count_annotated', '-created_at')
+        jobs = jobs.order_by('-proposal_count', '-created_at')
     else:
         jobs = jobs.order_by('-created_at')
 
