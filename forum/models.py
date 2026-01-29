@@ -772,10 +772,6 @@ class FreelanceJob(models.Model):
     def total_likes(self):
         return self.likes.count()
 
-    @property
-    def proposal_count(self):
-        return self.proposals.count()
-
     @staticmethod
     def can_post(user):
         """İlan açma yetkisi kontrolü (Rozet veya Rütbe)"""

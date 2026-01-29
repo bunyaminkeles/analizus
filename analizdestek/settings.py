@@ -16,13 +16,21 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-varsayilan-anahtar')
 DEBUG = 'RENDER' not in os.environ
 
 # Sunucu adresini kabul et
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [
+    'analizus.com',
+    'www.analizus.com',
+    'analizdestek-ai.onrender.com',
+    '*.koyeb.app',  # Koyeb için eklendi
+    '127.0.0.1',
+    'localhost',
+]
 
 # CSRF Güvenliği
 CSRF_TRUSTED_ORIGINS = [
     'https://analizus.com',
     'https://www.analizus.com',
     'https://analizdestek-ai.onrender.com',
+    'https://*.koyeb.app', # Koyeb için eklendi
 ]
 
 # --- UYGULAMA TANIMLARI ---
