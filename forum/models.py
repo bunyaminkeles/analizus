@@ -722,6 +722,7 @@ class FreelanceJob(models.Model):
 
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posted_jobs', verbose_name="İlan Sahibi")
     title = models.CharField(max_length=200, verbose_name="İlan Başlığı")
+    reference_number = models.CharField(max_length=20, unique=True, blank=True, null=True, verbose_name="Referans Numarası")
     description = models.TextField(verbose_name="İş Tanımı")
     budget_min = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Min Bütçe (TL)")
     budget_max = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Max Bütçe (TL)")
@@ -744,6 +745,28 @@ class FreelanceJob(models.Model):
 
     def __str__(self):
         return self.title
+
+    def save(self, *args, **kwargs):
+        if not self.reference_number:
+            from django.utils import timezone
+            current_year = timezone.now().year
+
+            last_job_ref = FreelanceJob.objects.filter(
+                created_at__year=current_year, 
+                reference_number__isnull=False
+            ).order_by('-reference_number').values_list('reference_number', flat=True).first()
+
+            new_seq = 1
+            if last_job_ref:
+                try:
+                    last_seq = int(last_job_ref.split('/')[-1])
+                    new_seq = last_seq + 1
+                except (ValueError, IndexError):
+                    pass
+            
+            self.reference_number = f"{current_year}/{new_seq:04d}"
+        
+        super().save(*args, **kwargs)
 
     @property
     def total_likes(self):
@@ -956,6 +979,7 @@ class JobPayment(models.Model):
     """İlan vitrin ödemeleri için model"""
     STATUS_CHOICES = (
         ('pending', 'Bekliyor'),
+        ('pending_confirmation', 'Onay Bekliyor'),
         ('success', 'Başarılı'),
         ('failed', 'Başarısız'),
     )
