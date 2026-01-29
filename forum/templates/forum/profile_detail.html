@@ -254,7 +254,7 @@
                                 <small class="text-muted" style="font-size: 0.75rem;">{{ job.created_at|date:"d M Y" }} · <span class="badge {% if job.status == 'open' %}bg-success{% elif job.status == 'in_progress' %}bg-warning text-dark{% elif job.status == 'completed' %}bg-primary{% else %}bg-secondary{% endif %}">{{ job.get_status_display }}</span></small>
                             </div>
                             <div class="text-end">
-                                <span class="badge bg-info rounded-pill text-dark" style="font-size: 0.7rem;">{{ job.proposal_count }} Teklif</span>
+                                <span class="badge bg-info rounded-pill text-dark" style="font-size: 0.7rem;">{{ job.num_proposals }} Teklif</span>
                             </div>
                         </a>
                         {% endfor %}

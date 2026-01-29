@@ -15,6 +15,7 @@ from django.utils import timezone
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET, require_POST
 from datetime import timedelta
+import uuid
 from .models import Section, Category, Topic, Post, Profile, PrivateMessage, PostLike, Notification, EmailVerification, DailyTip, QuizQuestion, QuizScore, SuccessStory, FreelanceJob, JobProposal, JobReview, Skill, Badge, UserQuizAttempt, JobPayment
 from .forms import RegisterForm, NewTopicForm, PostForm, JobPostForm, ProposalForm
 from .email_utils import send_topic_reply_notification, send_private_message_notification
@@ -155,13 +156,13 @@ def success_stories(request):
 def job_list(request):
     sort = request.GET.get('sort', 'newest')
     jobs = FreelanceJob.objects.filter(status='open').select_related('owner', 'category').annotate(
-        proposal_count=Count('proposals', distinct=True)
+        num_proposals=Count('proposals', distinct=True)
     )
 
     if sort == 'views':
         jobs = jobs.order_by('-views', '-created_at')
     elif sort == 'proposals':
-        jobs = jobs.order_by('-proposal_count', '-created_at')
+        jobs = jobs.order_by('-num_proposals', '-created_at')
     else:
         jobs = jobs.order_by('-created_at')
 
@@ -481,7 +482,9 @@ def add_job_review(request, pk):
 @login_required
 def my_jobs(request):
     # Kullanıcının açtığı ilanlar
-    posted_jobs = FreelanceJob.objects.filter(owner=request.user).order_by('-created_at')
+    posted_jobs = FreelanceJob.objects.filter(owner=request.user).annotate(
+        num_proposals=Count('proposals', distinct=True)
+    ).order_by('-created_at')
     
     # Kullanıcının verdiği teklifler (Filtreleme eklendi)
     status_filter = request.GET.get('status', 'all')
@@ -493,7 +496,9 @@ def my_jobs(request):
     my_proposals = my_proposals.order_by('-created_at')
     
     # Kullanıcının kaydettiği ilanlar
-    saved_jobs = request.user.saved_jobs.all().order_by('-created_at')
+    saved_jobs = request.user.saved_jobs.annotate(
+        num_proposals=Count('proposals', distinct=True)
+    ).order_by('-created_at')
     
     return render(request, 'forum/market/my_jobs.html', {
         'posted_jobs': posted_jobs,
@@ -513,98 +518,57 @@ def my_payments(request):
 
 @login_required
 def promote_job(request, pk):
-    """İlanı vitrine taşıma (Ödeme Başlatma)"""
+    """İlanı vitrine taşıma (IBAN ile Ödeme)"""
     job = get_object_or_404(FreelanceJob, pk=pk, owner=request.user)
     
     # Vitrin Ücreti ve Süresi
     price = 100.0
     duration_days = 7
-    
-    # iyzico ayarları
-    from django.conf import settings
-    import iyzipay
-    import uuid
 
-    api_key = getattr(settings, 'IYZICO_API_KEY', None)
-    secret_key = getattr(settings, 'IYZICO_SECRET_KEY', None)
-    base_url = getattr(settings, 'IYZICO_BASE_URL', 'sandbox-api.iyzipay.com')
-
-    if not api_key or not secret_key:
-        messages.error(request, "Ödeme sistemi şu anda aktif değil (API Anahtarları eksik).")
-        return redirect('job_detail', pk=pk)
-
-    options = {
-        'api_key': api_key,
-        'secret_key': secret_key,
-        'base_url': base_url
-    }
-
-    conversation_id = str(uuid.uuid4())[:20]
-    payment_id = f"JOB-{uuid.uuid4().hex[:12].upper()}"
-    
-    # Ödeme kaydı oluştur
-    JobPayment.objects.create(
-        job=job,
-        amount=price,
-        payment_id=payment_id,
-        conversation_id=conversation_id,
-        status='pending'
-    )
-
-    # Kullanıcı bilgileri
-    user = request.user
-    buyer = {
-        'id': str(user.id),
-        'name': user.first_name or user.username,
-        'surname': user.last_name or 'User',
-        'gsmNumber': user.profile.phone_number if hasattr(user, 'profile') and user.profile.phone_number else '+905000000000',
-        'email': user.email or 'email@analizus.com',
-        'identityNumber': '11111111111',
-        'registrationAddress': 'Turkiye',
-        'ip': get_client_ip(request),
-        'city': 'Istanbul',
-        'country': 'Turkey',
-    }
-
-    # iyzico istek
-    request_obj = {
-        'locale': 'tr',
-        'conversationId': conversation_id,
-        'price': str(price),
-        'paidPrice': str(price),
-        'currency': 'TRY',
-        'basketId': payment_id,
-        'paymentGroup': 'PRODUCT',
-        'callbackUrl': request.build_absolute_uri('/api/job-payment/callback/'), # URL conf'a eklenmeli
-        'enabledInstallments': ['1'],
-        'buyer': buyer,
-        'shippingAddress': {'contactName': buyer['name'], 'city': 'Istanbul', 'country': 'Turkey', 'address': 'Turkiye'},
-        'billingAddress': {'contactName': buyer['name'], 'city': 'Istanbul', 'country': 'Turkey', 'address': 'Turkiye'},
-        'basketItems': [
-            {
-                'id': payment_id,
-                'name': f'Vitrin İlanı: {job.title[:20]}',
-                'category1': 'Hizmet',
-                'itemType': 'VIRTUAL',
-                'price': str(price),
-            }
-        ]
-    }
-
-    checkout_form = iyzipay.CheckoutFormInitialize().create(request_obj, options)
-    result = checkout_form.read().decode('utf-8')
-    result_json = json.loads(result)
-
-    if result_json.get('status') != 'success':
-        messages.error(request, f"Ödeme formu oluşturulamadı: {result_json.get('errorMessage')}")
-        return redirect('job_detail', pk=pk)
-
-    return render(request, 'forum/market/promote_job.html', {
-        'checkout_form_content': result_json.get('checkoutFormContent'),
+    # IBAN sayfasına yönlendir
+    return render(request, 'forum/market/promote_job_iban.html', {
         'job': job,
         'amount': price,
-        'duration': duration_days
+        'duration': duration_days,
     })
+
+@login_required
+@require_POST
+def mark_payment_transferred(request, pk):
+    """Kullanıcının IBAN ödemesini yaptığını bildirmesi."""
+    job = get_object_or_404(FreelanceJob, pk=pk, owner=request.user)
+    
+    # Ödeme kaydı oluştur veya güncelle
+    payment, created = JobPayment.objects.get_or_create(
+        job=job,
+        defaults={
+            'amount': 100.0,
+            'payment_id': f"IBAN-{uuid.uuid4().hex[:12].upper()}",
+            'conversation_id': f"IBAN-{job.pk}",
+            'status': 'pending_confirmation'
+        }
+    )
+    
+    if not created and payment.status not in ['success', 'pending_confirmation']:
+        payment.status = 'pending_confirmation'
+        payment.save()
+    elif not created:
+        messages.info(request, "Daha önce ödeme bildirimi yapmışsınız. Onay bekleniyor.")
+        return redirect('job_detail', pk=pk)
+
+    # Adminlere bildirim gönder
+    admins = User.objects.filter(is_staff=True)
+    for admin in admins:
+        Notification.objects.create(
+            recipient=admin,
+            sender=request.user,
+            verb=f"'{job.title}' (ID: {job.pk}) ilanı için IBAN ödemesi yapıldığını bildirdi.",
+            target=job
+        )
+
+    messages.success(request, "Ödeme bildiriminiz alındı. Yönetici onayından sonra ilanınız vitrine taşınacaktır.")
+    return redirect('job_detail', pk=pk)
+
 
 # --- BÖLÜM DETAY ---
 def section_detail(request, pk):
@@ -910,7 +874,9 @@ def profile_detail(request, username):
                     messages.error(request, 'Geçersiz LinkedIn URL.')
         return redirect('profile_detail', username=username)
 
-    posted_jobs = FreelanceJob.objects.filter(owner=profile_user).order_by('-created_at')[:20]
+    posted_jobs = FreelanceJob.objects.filter(owner=profile_user).annotate(
+        num_proposals=Count('proposals', distinct=True)
+    ).order_by('-created_at')[:20]
     given_proposals = JobProposal.objects.filter(expert=profile_user).select_related('job').order_by('-created_at')[:20]
     received_reviews = JobReview.objects.filter(reviewed_user=profile_user, is_approved=True).select_related('reviewer', 'job').order_by('-created_at')[:20]
 

@@ -63,6 +63,7 @@ urlpatterns = [
     path('market/my-jobs/', views.my_jobs, name='my_jobs'),
     path('my-payments/', views.my_payments, name='my_payments'),
     path('market/job/<int:pk>/promote/', views.promote_job, name='promote_job'),
+    path('market/job/<int:pk>/payment-transferred/', views.mark_payment_transferred, name='mark_payment_transferred'),
     path('api/job-payment/callback/', views.job_payment_callback, name='job_payment_callback'),
 
     # API Endpoints (Quiz & Stories)
