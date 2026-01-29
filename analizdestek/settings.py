@@ -231,7 +231,7 @@ ALLOWED_ATTACHMENT_TYPES = [
 
 # --- SESSION AYARLARI ---
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # Database-backed sessions (çoklu worker için)
-SESSION_COOKIE_AGE = 60 * 60 * 24 * 7  # 7 gün
+SESSION_COOKIE_AGE = 60 * 60 * 24  # 1 gün
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = 'Lax'
 SESSION_SAVE_EVERY_REQUEST = True  # Her istekte session süresini yeniler
