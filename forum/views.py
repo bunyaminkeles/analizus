@@ -538,23 +538,24 @@ def mark_payment_transferred(request, pk):
     """Kullanıcının IBAN ödemesini yaptığını bildirmesi."""
     job = get_object_or_404(FreelanceJob, pk=pk, owner=request.user)
     
-    # Ödeme kaydı oluştur veya güncelle
-    payment, created = JobPayment.objects.get_or_create(
-        job=job,
-        defaults={
-            'amount': 100.0,
-            'payment_id': f"IBAN-{uuid.uuid4().hex[:12].upper()}",
-            'conversation_id': f"IBAN-{job.pk}",
-            'status': 'pending_confirmation'
-        }
-    )
-    
-    if not created and payment.status not in ['success', 'pending_confirmation']:
-        payment.status = 'pending_confirmation'
-        payment.save()
-    elif not created:
+    # Ödeme kaydı kontrol et
+    payment = JobPayment.objects.filter(job=job).order_by('-created_at').first()
+
+    if payment and payment.status in ['success', 'pending_confirmation']:
         messages.info(request, "Daha önce ödeme bildirimi yapmışsınız. Onay bekleniyor.")
         return redirect('job_detail', pk=pk)
+
+    if not payment:
+        payment = JobPayment.objects.create(
+            job=job,
+            amount=100.0,
+            payment_id=f"IBAN-{uuid.uuid4().hex[:12].upper()}",
+            conversation_id=f"IBAN-{job.pk}",
+            status='pending_confirmation'
+        )
+    else:
+        payment.status = 'pending_confirmation'
+        payment.save()
 
     # Adminlere bildirim gönder
     admins = User.objects.filter(is_staff=True)

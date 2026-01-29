@@ -31,3 +31,5 @@ frontend/yarn-debug.log*
 frontend/yarn-error.log*
 frontend/pnpm-debug.log*
 frontend/next-env.d.ts
+PRE_DEPLOYMENT_CHECKLIST.md
+.gitignore
