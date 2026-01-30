@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Section, Category, Topic, Post, Profile, ContactMessage, PrivateMessage, Badge, Notification, Skill, EmailVerification, DailyTip, QuizQuestion, QuizScore, FreelanceJob, JobProposal, JobReview, UserQuizAttempt, DonationTier, Donation, JobPayment
+from .models import Section, Category, Topic, Post, Profile, ContactMessage, PrivateMessage, Badge, Notification, Skill, EmailVerification, DailyTip, QuizQuestion, QuizScore, FreelanceJob, JobProposal, JobReview, UserQuizAttempt, DonationTier, Donation, JobPayment, TopicTag
 
 # --- GENEL AYARLAR ---
 admin.site.site_header = "Analizus Komuta Merkezi"
@@ -34,12 +34,36 @@ class SectionAdmin(admin.ModelAdmin):
         return obj.categories.count()
     category_count.short_description = "Kategori Sayısı"
 
-# 3. Konu (Topic) Yönetimi
+# 3. Konu Etiketi (TopicTag) Yönetimi
+@admin.register(TopicTag)
+class TopicTagAdmin(admin.ModelAdmin):
+    list_display = ('tag_preview', 'name', 'tag_type', 'order', 'topic_count', 'is_active')
+    list_filter = ('tag_type', 'is_active')
+    list_editable = ('order', 'is_active')
+    search_fields = ('name',)
+    prepopulated_fields = {'slug': ('name',)}
+    ordering = ('order', 'name')
+
+    def tag_preview(self, obj):
+        return format_html(
+            '<span style="background: {}; color: white; padding: 4px 12px; border-radius: 12px; font-size: 12px;">'
+            '<i class="{}"></i> {}</span>',
+            obj.color, obj.icon, obj.name
+        )
+    tag_preview.short_description = "Etiket"
+
+    def topic_count(self, obj):
+        return obj.topics.count()
+    topic_count.short_description = "Konu Sayısı"
+
+
+# 4. Konu (Topic) Yönetimi
 @admin.register(Topic)
 class TopicAdmin(admin.ModelAdmin):
-    list_display = ('subject_link', 'category_colored', 'starter', 'created_at', 'views', 'status')
-    list_filter = ('is_pinned', 'is_closed', 'category', 'created_at')
+    list_display = ('subject_link', 'category_colored', 'tags_display', 'starter', 'created_at', 'views', 'status')
+    list_filter = ('is_pinned', 'is_closed', 'category', 'tags', 'created_at')
     search_fields = ('subject', 'starter__username')
+    filter_horizontal = ('tags',)
     date_hierarchy = 'created_at'
     actions = ['make_pinned', 'make_unpinned', 'make_closed', 'make_open']
 
@@ -49,6 +73,20 @@ class TopicAdmin(admin.ModelAdmin):
 
     def category_colored(self, obj):
         return format_html('<span style="color: #00d2ff;">{}</span>', obj.category.title)
+    category_colored.short_description = "Kategori"
+
+    def tags_display(self, obj):
+        tags = obj.tags.all()
+        if not tags:
+            return "-"
+        html_parts = []
+        for tag in tags:
+            html_parts.append(
+                f'<span style="background: {tag.color}; color: white; padding: 2px 8px; '
+                f'border-radius: 10px; font-size: 11px; margin-right: 4px;">{tag.name}</span>'
+            )
+        return format_html(''.join(html_parts))
+    tags_display.short_description = "Etiketler"
 
     def status(self, obj):
         res = []

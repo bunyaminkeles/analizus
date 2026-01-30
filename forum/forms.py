@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-from .models import Topic, Post, FreelanceJob, JobProposal
+from .models import Topic, Post, FreelanceJob, JobProposal, TopicTag
 from django.utils.safestring import mark_safe
 
 # --- 1. KAYIT FORMU ---
@@ -37,9 +37,16 @@ class NewTopicForm(forms.ModelForm):
         label="Mesaj",
         max_length=4000
     )
+    tags = forms.ModelMultipleChoiceField(
+        queryset=TopicTag.objects.filter(is_active=True),
+        widget=forms.CheckboxSelectMultiple(attrs={'class': 'tag-checkbox-list'}),
+        required=False,
+        label="Etiketler"
+    )
+
     class Meta:
         model = Topic
-        fields = ['subject']
+        fields = ['subject', 'tags']
         widgets = {
             'subject': forms.TextInput(attrs={'placeholder': 'Konu Başlığı'}),
         }

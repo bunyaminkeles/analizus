@@ -37,6 +37,15 @@
         <div>
             <span class="badge bg-info text-dark mb-2">{{ topic.category.title }}</span>
             <h1 class="fw-bold text-white display-6">{{ topic.subject }}</h1>
+            {% if topic.tags.exists %}
+            <div class="d-flex flex-wrap gap-2 mt-2">
+                {% for tag in topic.tags.all %}
+                    <span class="badge rounded-pill px-3 py-2" style="background: {{ tag.color }};">
+                        <i class="{{ tag.icon }} me-1"></i>{{ tag.name }}
+                    </span>
+                {% endfor %}
+            </div>
+            {% endif %}
         </div>
     </div>
     <div class="d-flex justify-content-between align-items-center flex-wrap">

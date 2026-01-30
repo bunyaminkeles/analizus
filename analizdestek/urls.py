@@ -4,6 +4,7 @@ from django.contrib.auth import views as auth_views
 from django.contrib.sitemaps.views import sitemap
 from django.views.generic import TemplateView
 from forum.sitemaps import StaticViewSitemap, TopicSitemap, CategorySitemap, JobSitemap
+from forum.views import custom_login
 
 sitemaps = {
     'static': StaticViewSitemap,
@@ -19,9 +20,9 @@ urlpatterns = [
     # Django'nun dahili giriş/çıkış sistemini aktif eder
     path('accounts/', include('django.contrib.auth.urls')),
     
-    # 2. Özel Giriş/Çıkış Sayfaları (Senin belirlediğin şablonlar ile)
-    path('login/', auth_views.LoginView.as_view(template_name='registration/login.html'), name='login'),
-    path('logout/', auth_views.LogoutView.as_view(), name='logout'), # Logout için şablon şart değil, redirect yeterli
+    # 2. Özel Giriş/Çıkış Sayfaları (Rate limited)
+    path('login/', custom_login, name='login'),
+    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
 
     # 3. Forum Uygulaması (En sona koymak çakışmaları önler)
     path('', include('forum.urls')),
