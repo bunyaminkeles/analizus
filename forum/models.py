@@ -1076,7 +1076,7 @@ class BlogPost(models.Model):
     title = models.CharField(max_length=200, verbose_name="Başlık")
     slug = models.SlugField(unique=True, max_length=250)
     excerpt = models.TextField(max_length=300, verbose_name="Özet", help_text="Kısa açıklama (liste görünümünde gösterilir)")
-    content = models.TextField(verbose_name="İçerik")
+    content = models.TextField(verbose_name="İçerik", help_text="Maksimum 50.000 karakter (~8.000 kelime)")
     cover_image = models.ImageField(upload_to='blog/covers/', blank=True, null=True, verbose_name="Kapak Görseli")
 
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='blog_posts', verbose_name="Yazar")
@@ -1108,8 +1108,14 @@ class BlogPost(models.Model):
     def __str__(self):
         return self.title
 
+    def clean(self):
+        from django.core.exceptions import ValidationError
+        if self.content and len(self.content) > 50000:
+            raise ValidationError({'content': f'İçerik 50.000 karakteri aşamaz. Şu an: {len(self.content)} karakter.'})
+
     def save(self, *args, **kwargs):
         from django.utils import timezone
+        self.full_clean()  # Validasyonu çalıştır
         # Yayına alındığında tarih ata
         if self.status == 'published' and not self.published_at:
             self.published_at = timezone.now()
