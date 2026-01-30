@@ -114,6 +114,10 @@ if not DEBUG:
     # www ve non-www arası session paylaşımı için
     SESSION_COOKIE_DOMAIN = '.analizus.com'
     CSRF_COOKIE_DOMAIN = '.analizus.com'
+    # HSTS - HTTP Strict Transport Security
+    SECURE_HSTS_SECONDS = 31536000  # 1 yıl
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
 
 # --- DİĞER AYARLAR ---
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -140,6 +144,9 @@ GROQ_API_KEY = os.getenv('GROQ_API_KEY')
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = 'DENY'
+
+# Rate Limiting
+RATELIMIT_VIEW = 'forum.views.ratelimit_error'
 
 LANGUAGES = [
     ('tr', _('Turkish')),

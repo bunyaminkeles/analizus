@@ -16,10 +16,19 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_GET, require_POST
 from datetime import timedelta
 import uuid
+from django_ratelimit.decorators import ratelimit
+from django_ratelimit.exceptions import Ratelimited
 from .models import Section, Category, Topic, Post, Profile, PrivateMessage, PostLike, Notification, EmailVerification, DailyTip, QuizQuestion, QuizScore, SuccessStory, FreelanceJob, JobProposal, JobReview, Skill, Badge, UserQuizAttempt, JobPayment
 from .forms import RegisterForm, NewTopicForm, PostForm, JobPostForm, ProposalForm
 from .email_utils import send_topic_reply_notification, send_private_message_notification
 from django.template.loader import render_to_string
+
+
+# --- RATE LIMIT HATA SAYFASI ---
+def ratelimit_error(request, exception):
+    """Rate limit aşıldığında gösterilecek hata sayfası"""
+    return render(request, 'forum/ratelimit_error.html', status=429)
+
 
 # --- ANA SAYFA ---
 def home(request):
@@ -180,6 +189,7 @@ def job_list(request):
     })
 
 @login_required
+@ratelimit(key='user', rate='5/h', method='POST', block=True)
 def post_job(request):
     from datetime import timedelta
     from django.utils import timezone
@@ -581,12 +591,12 @@ def section_detail(request, pk):
 def category_topics(request, slug):
     category = get_object_or_404(Category, slug=slug)
     # Pinned konular en üstte, sonra tarihe göre sırala
-    topics = category.topics.annotate(replies_count=Count('posts')).order_by('-is_pinned', '-created_at')
+    topics = category.topics.prefetch_related('tags').annotate(replies_count=Count('posts')).order_by('-is_pinned', '-created_at')
     return render(request, 'forum/category_topics.html', {'category': category, 'topics': topics})
 
 # --- KONU DETAY VE CEVAP YAZMA ---
 def topic_detail(request, pk):
-    topic = get_object_or_404(Topic, pk=pk)
+    topic = get_object_or_404(Topic.objects.prefetch_related('tags'), pk=pk)
     topic.views += 1
     topic.save()
 
@@ -624,6 +634,7 @@ def topic_detail(request, pk):
 
 # --- YENİ KONU AÇMA ---
 @login_required
+@ratelimit(key='user', rate='10/h', method='POST', block=True)
 def new_topic(request, slug):
     category = get_object_or_404(Category, slug=slug)
     if request.method == 'POST':
@@ -633,6 +644,7 @@ def new_topic(request, slug):
             topic.category = category
             topic.starter = request.user
             topic.save()
+            form.save_m2m()  # ManyToMany alanları (tags) kaydet
             # İlk mesajı oluştur
             Post.objects.create(
                 topic=topic,
@@ -645,6 +657,7 @@ def new_topic(request, slug):
     return render(request, 'forum/new_topic.html', {'category': category, 'form': form})
 
 # --- KAYIT ---
+@ratelimit(key='ip', rate='5/h', method='POST', block=True)
 def register(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST)
@@ -668,6 +681,31 @@ def register(request):
     else:
         form = RegisterForm()
     return render(request, 'forum/register.html', {'form': form})
+
+
+# --- GİRİŞ (Rate Limited) ---
+@ratelimit(key='ip', rate='10/m', method='POST', block=True)
+@ratelimit(key='post:username', rate='5/m', method='POST', block=True)
+def custom_login(request):
+    """Rate limited login view"""
+    from django.contrib.auth import authenticate, login as auth_login
+    from django.contrib.auth.forms import AuthenticationForm
+
+    if request.user.is_authenticated:
+        return redirect('home')
+
+    if request.method == 'POST':
+        form = AuthenticationForm(request, data=request.POST)
+        if form.is_valid():
+            user = form.get_user()
+            auth_login(request, user)
+            next_url = request.GET.get('next', 'home')
+            return redirect(next_url)
+    else:
+        form = AuthenticationForm()
+
+    return render(request, 'registration/login.html', {'form': form})
+
 
 # --- PROFİL DÜZENLE ---
 @login_required
@@ -774,6 +812,7 @@ def inbox(request):
 
 # --- ÖZEL MESAJ GÖNDER ---
 @login_required
+@ratelimit(key='user', rate='30/h', method='POST', block=True)
 def send_message(request, username):
     # E-posta doğrulama kontrolü
     if not request.user.profile.email_verified:
@@ -1161,6 +1200,7 @@ def verify_email(request, token):
 
 
 @login_required
+@ratelimit(key='user', rate='3/h', method=['GET', 'POST'], block=True)
 def resend_verification(request):
     """Doğrulama e-postasını tekrar gönder"""
     from .services.email_service import EmailService

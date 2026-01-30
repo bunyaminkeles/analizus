@@ -33,9 +33,54 @@
             <div class="card-body p-4">
                 <form method="post">
                     {% csrf_token %}
-                    
-                    <div class="mb-3 text-white">
-                        {{ form|crispy }}
+
+                    <!-- Konu Başlığı -->
+                    <div class="mb-4">
+                        <label class="form-label text-white fw-bold">
+                            <i class="bi bi-type me-1"></i> Konu Başlığı
+                        </label>
+                        <input type="text" name="subject" class="form-control bg-dark text-white border-secondary"
+                               placeholder="Konu başlığını yazın..." required maxlength="255"
+                               value="{{ form.subject.value|default:'' }}">
+                        {% if form.subject.errors %}
+                            <div class="text-danger small mt-1">{{ form.subject.errors.0 }}</div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Etiketler -->
+                    <div class="mb-4">
+                        <label class="form-label text-white fw-bold">
+                            <i class="bi bi-tags me-1"></i> Etiketler <span class="text-muted fw-normal">(opsiyonel)</span>
+                        </label>
+                        <div class="d-flex flex-wrap gap-2 p-3 rounded" style="background: rgba(0,0,0,0.3);">
+                            {% for tag in form.tags.field.queryset %}
+                                <label class="tag-checkbox-item" style="cursor: pointer;">
+                                    <input type="checkbox" name="tags" value="{{ tag.pk }}"
+                                           class="d-none tag-input"
+                                           {% if tag.pk in form.tags.value %}checked{% endif %}>
+                                    <span class="tag-label px-3 py-2 rounded-pill d-inline-flex align-items-center gap-1"
+                                          style="background: {{ tag.color }}20; border: 1px solid {{ tag.color }}; color: {{ tag.color }}; transition: all 0.2s;">
+                                        <i class="{{ tag.icon }}"></i>
+                                        {{ tag.name }}
+                                    </span>
+                                </label>
+                            {% empty %}
+                                <span class="text-muted">Henüz etiket tanımlanmamış</span>
+                            {% endfor %}
+                        </div>
+                        <small class="text-muted">Kullandığınız yazılım veya konunun durumunu seçin</small>
+                    </div>
+
+                    <!-- Mesaj -->
+                    <div class="mb-4">
+                        <label class="form-label text-white fw-bold">
+                            <i class="bi bi-chat-text me-1"></i> Mesaj
+                        </label>
+                        <textarea name="message" class="form-control bg-dark text-white border-secondary"
+                                  rows="10" placeholder="İçeriği buraya yazın..." required maxlength="4000">{{ form.message.value|default:'' }}</textarea>
+                        {% if form.message.errors %}
+                            <div class="text-danger small mt-1">{{ form.message.errors.0 }}</div>
+                        {% endif %}
                     </div>
 
                     <div class="alert alert-info d-flex align-items-center bg-transparent border-info text-info" role="alert">
@@ -57,4 +102,28 @@
 
     </div>
 </div>
+
+<style>
+.tag-checkbox-item .tag-input:checked + .tag-label {
+    background: var(--tag-color, #6366f1) !important;
+    color: white !important;
+    border-color: transparent !important;
+    box-shadow: 0 0 10px var(--tag-color, #6366f1);
+}
+.tag-checkbox-item:hover .tag-label {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Tag seçimi için renk ayarla
+    document.querySelectorAll('.tag-checkbox-item').forEach(function(item) {
+        const label = item.querySelector('.tag-label');
+        const borderColor = label.style.borderColor;
+        label.style.setProperty('--tag-color', borderColor);
+    });
+});
+</script>
 {% endblock %}

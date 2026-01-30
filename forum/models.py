@@ -34,13 +34,38 @@ class Category(models.Model):
     def __str__(self):
         return self.title
 
+class TopicTag(models.Model):
+    """Konu etiketleri - Yazılım ve durum tag'leri"""
+    TAG_TYPES = (
+        ('software', 'Yazılım'),
+        ('status', 'Durum'),
+        ('other', 'Diğer'),
+    )
+
+    name = models.CharField(max_length=50, verbose_name="Etiket Adı")
+    slug = models.SlugField(unique=True)
+    icon = models.CharField(max_length=50, default="bi-tag", verbose_name="İkon")
+    color = models.CharField(max_length=20, default="#6366f1", verbose_name="Renk")
+    tag_type = models.CharField(max_length=20, choices=TAG_TYPES, default='software', verbose_name="Etiket Türü")
+    order = models.IntegerField(default=0, verbose_name="Sıralama")
+    is_active = models.BooleanField(default=True, verbose_name="Aktif")
+
+    class Meta:
+        verbose_name = "Konu Etiketi"
+        verbose_name_plural = "Konu Etiketleri"
+        ordering = ['order', 'name']
+
+    def __str__(self):
+        return self.name
+
+
 class Topic(models.Model):
     category = models.ForeignKey(Category, related_name='topics', on_delete=models.CASCADE)
     subject = models.CharField(max_length=255)
     starter = models.ForeignKey(User, related_name='topics', on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     views = models.PositiveIntegerField(default=0)
-    # ✅ EKSİK ALANLAR EKLENDİ
+    tags = models.ManyToManyField(TopicTag, blank=True, related_name='topics', verbose_name="Etiketler")
     is_pinned = models.BooleanField(default=False, verbose_name="Sabitlenmiş")
     is_closed = models.BooleanField(default=False, verbose_name="Kilitli")
 

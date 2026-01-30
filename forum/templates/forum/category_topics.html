@@ -58,6 +58,13 @@
                                     {{ topic.subject }}
                                 </a>
                             </h6>
+                            <div class="d-flex align-items-center flex-wrap gap-1 mb-1">
+                                {% for tag in topic.tags.all %}
+                                    <span class="badge rounded-pill" style="background: {{ tag.color }}; font-size: 0.7rem;">
+                                        <i class="{{ tag.icon }} me-1"></i>{{ tag.name }}
+                                    </span>
+                                {% endfor %}
+                            </div>
                             <small class="text-muted d-flex align-items-center">
                                 <span class="badge bg-secondary bg-opacity-25 text-info me-2">{{ topic.starter.username }}</span>
                                 <i class="bi bi-calendar3 me-1"></i> {{ topic.created_at|date:"d M Y" }}
