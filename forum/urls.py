@@ -11,6 +11,11 @@ urlpatterns = [
     path('linkedin/callback/', views.linkedin_callback, name='linkedin_callback'),
     path('linkedin/share-test/', views.linkedin_share_test, name='linkedin_share_test'),
 
+    # Blog
+    path('blog/', views.blog_list, name='blog_list'),
+    path('blog/<slug:slug>/', views.blog_detail, name='blog_detail'),
+    path('blog/<slug:slug>/like/', views.blog_like, name='blog_like'),
+
     path('register/', views.register, name='register'),
     
     # Profil

@@ -18,7 +18,7 @@ from datetime import timedelta
 import uuid
 from django_ratelimit.decorators import ratelimit
 from django_ratelimit.exceptions import Ratelimited
-from .models import Section, Category, Topic, Post, Profile, PrivateMessage, PostLike, Notification, EmailVerification, DailyTip, QuizQuestion, QuizScore, SuccessStory, FreelanceJob, JobProposal, JobReview, Skill, Badge, UserQuizAttempt, JobPayment, SiteSettings
+from .models import Section, Category, Topic, Post, Profile, PrivateMessage, PostLike, Notification, EmailVerification, DailyTip, QuizQuestion, QuizScore, SuccessStory, FreelanceJob, JobProposal, JobReview, Skill, Badge, UserQuizAttempt, JobPayment, SiteSettings, BlogCategory, BlogPost
 from .forms import RegisterForm, NewTopicForm, PostForm, JobPostForm, ProposalForm
 from .email_utils import send_topic_reply_notification, send_private_message_notification
 from django.template.loader import render_to_string
@@ -2071,5 +2071,85 @@ def job_payment_callback(request):
                 messages.error(request, 'Ödeme başarısız oldu.')
         except JobPayment.DoesNotExist:
             messages.error(request, 'Ödeme kaydı bulunamadı.')
-            
+
     return redirect('home')
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# BLOG SİSTEMİ
+# ═══════════════════════════════════════════════════════════════════════════════
+
+def blog_list(request):
+    """Blog ana sayfası - yazı listesi"""
+    posts = BlogPost.objects.filter(status='published').select_related('author', 'category')
+
+    # Kategori filtresi
+    category_slug = request.GET.get('category')
+    if category_slug:
+        posts = posts.filter(category__slug=category_slug)
+
+    # Öne çıkan yazılar
+    featured_posts = posts.filter(is_featured=True)[:3]
+
+    # Kategoriler
+    categories = BlogCategory.objects.annotate(
+        post_count=Count('posts', filter=Q(posts__status='published'))
+    ).filter(post_count__gt=0)
+
+    # Popüler yazılar
+    popular_posts = posts.order_by('-views')[:5]
+
+    context = {
+        'posts': posts,
+        'featured_posts': featured_posts,
+        'categories': categories,
+        'popular_posts': popular_posts,
+        'current_category': category_slug,
+    }
+    return render(request, 'forum/blog/blog_list.html', context)
+
+
+def blog_detail(request, slug):
+    """Blog yazı detay sayfası"""
+    post = get_object_or_404(BlogPost, slug=slug, status='published')
+
+    # Görüntülenme sayısını artır
+    post.views += 1
+    post.save(update_fields=['views'])
+
+    # Kullanıcı beğenmiş mi?
+    is_liked = False
+    if request.user.is_authenticated:
+        is_liked = post.likes.filter(pk=request.user.pk).exists()
+
+    # İlgili yazılar (aynı kategoriden)
+    related_posts = BlogPost.objects.filter(
+        status='published',
+        category=post.category
+    ).exclude(pk=post.pk)[:3]
+
+    context = {
+        'post': post,
+        'is_liked': is_liked,
+        'related_posts': related_posts,
+    }
+    return render(request, 'forum/blog/blog_detail.html', context)
+
+
+@login_required
+@require_POST
+def blog_like(request, slug):
+    """Blog yazısını beğen/beğeniyi kaldır"""
+    post = get_object_or_404(BlogPost, slug=slug, status='published')
+
+    if post.likes.filter(pk=request.user.pk).exists():
+        post.likes.remove(request.user)
+        liked = False
+    else:
+        post.likes.add(request.user)
+        liked = True
+
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({'liked': liked, 'total_likes': post.total_likes})
+
+    return redirect('blog_detail', slug=slug)

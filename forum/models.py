@@ -1043,3 +1043,88 @@ class SiteSettings(models.Model):
     def load(cls):
         obj, _ = cls.objects.get_or_create(pk=1)
         return obj
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# BLOG SİSTEMİ
+# ═══════════════════════════════════════════════════════════════════════════════
+
+class BlogCategory(models.Model):
+    """Blog kategorileri"""
+    name = models.CharField(max_length=100, verbose_name="Kategori Adı")
+    slug = models.SlugField(unique=True)
+    icon = models.CharField(max_length=50, default="bi-folder", verbose_name="İkon")
+    color = models.CharField(max_length=20, default="#00d2ff", verbose_name="Renk")
+    order = models.IntegerField(default=0, verbose_name="Sıra")
+
+    class Meta:
+        verbose_name = "Blog Kategorisi"
+        verbose_name_plural = "Blog Kategorileri"
+        ordering = ['order', 'name']
+
+    def __str__(self):
+        return self.name
+
+
+class BlogPost(models.Model):
+    """Blog yazıları"""
+    STATUS_CHOICES = (
+        ('draft', 'Taslak'),
+        ('published', 'Yayında'),
+    )
+
+    title = models.CharField(max_length=200, verbose_name="Başlık")
+    slug = models.SlugField(unique=True, max_length=250)
+    excerpt = models.TextField(max_length=300, verbose_name="Özet", help_text="Kısa açıklama (liste görünümünde gösterilir)")
+    content = models.TextField(verbose_name="İçerik")
+    cover_image = models.ImageField(upload_to='blog/covers/', blank=True, null=True, verbose_name="Kapak Görseli")
+
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='blog_posts', verbose_name="Yazar")
+    category = models.ForeignKey(BlogCategory, on_delete=models.SET_NULL, null=True, related_name='posts', verbose_name="Kategori")
+
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft', verbose_name="Durum")
+    is_featured = models.BooleanField(default=False, verbose_name="Öne Çıkan")
+
+    views = models.PositiveIntegerField(default=0, verbose_name="Görüntülenme")
+    likes = models.ManyToManyField(User, blank=True, related_name='liked_posts', verbose_name="Beğeniler")
+
+    # SEO
+    meta_title = models.CharField(max_length=70, blank=True, verbose_name="SEO Başlık")
+    meta_description = models.CharField(max_length=160, blank=True, verbose_name="SEO Açıklama")
+
+    # LinkedIn paylaşım takibi
+    shared_to_linkedin = models.BooleanField(default=False, verbose_name="LinkedIn'e Paylaşıldı")
+    linkedin_share_date = models.DateTimeField(null=True, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    published_at = models.DateTimeField(null=True, blank=True, verbose_name="Yayın Tarihi")
+
+    class Meta:
+        verbose_name = "Blog Yazısı"
+        verbose_name_plural = "Blog Yazıları"
+        ordering = ['-published_at', '-created_at']
+
+    def __str__(self):
+        return self.title
+
+    def save(self, *args, **kwargs):
+        from django.utils import timezone
+        # Yayına alındığında tarih ata
+        if self.status == 'published' and not self.published_at:
+            self.published_at = timezone.now()
+        super().save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        from django.urls import reverse
+        return reverse('blog_detail', kwargs={'slug': self.slug})
+
+    @property
+    def reading_time(self):
+        """Tahmini okuma süresi (dakika)"""
+        word_count = len(self.content.split())
+        return max(1, round(word_count / 200))
+
+    @property
+    def total_likes(self):
+        return self.likes.count()

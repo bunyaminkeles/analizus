@@ -1,0 +1,197 @@
+{% extends 'base.html' %}
+
+{% block title %}Blog - Analizus{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header -->
+    <div class="text-center mb-5">
+        <h1 class="fw-bold text-white mb-2">
+            <i class="bi bi-journal-richtext text-info me-2"></i>Analizus Blog
+        </h1>
+        <p class="text-muted">Veri analizi, istatistik ve akademik dünyadan içerikler</p>
+    </div>
+
+    <!-- Öne Çıkan Yazılar -->
+    {% if featured_posts and not current_category %}
+    <div class="mb-5">
+        <h5 class="text-white mb-3"><i class="bi bi-star-fill text-warning me-2"></i>Öne Çıkan Yazılar</h5>
+        <div class="row g-4">
+            {% for post in featured_posts %}
+            <div class="col-md-4">
+                <a href="{% url 'blog_detail' slug=post.slug %}" class="text-decoration-none">
+                    <div class="card h-100 border-0 featured-card" style="background: linear-gradient(135deg, rgba(0, 210, 255, 0.1), rgba(58, 123, 213, 0.1)); border: 1px solid rgba(0, 210, 255, 0.2) !important;">
+                        {% if post.cover_image %}
+                        <img src="{{ post.cover_image.url }}" class="card-img-top" style="height: 160px; object-fit: cover; border-radius: 12px 12px 0 0;">
+                        {% else %}
+                        <div class="card-img-top d-flex align-items-center justify-content-center" style="height: 160px; background: linear-gradient(135deg, #1e293b, #0f172a); border-radius: 12px 12px 0 0;">
+                            <i class="bi bi-journal-text text-info" style="font-size: 3rem; opacity: 0.3;"></i>
+                        </div>
+                        {% endif %}
+                        <div class="card-body">
+                            <span class="badge mb-2" style="background: {{ post.category.color }}20; color: {{ post.category.color }}; border: 1px solid {{ post.category.color }}40;">
+                                <i class="bi {{ post.category.icon }} me-1"></i>{{ post.category.name }}
+                            </span>
+                            <h6 class="card-title text-white fw-bold">{{ post.title }}</h6>
+                            <p class="card-text text-muted small">{{ post.excerpt|truncatechars:80 }}</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="row">
+        <!-- Ana İçerik -->
+        <div class="col-lg-8">
+            <!-- Kategori Filtresi (Mobil) -->
+            <div class="d-lg-none mb-4">
+                <select class="form-select bg-dark text-white border-secondary" onchange="window.location.href=this.value">
+                    <option value="{% url 'blog_list' %}">Tüm Kategoriler</option>
+                    {% for cat in categories %}
+                    <option value="{% url 'blog_list' %}?category={{ cat.slug }}" {% if current_category == cat.slug %}selected{% endif %}>
+                        {{ cat.name }} ({{ cat.post_count }})
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            {% if current_category %}
+            <div class="alert alert-info bg-transparent border-info text-info mb-4">
+                <i class="bi bi-funnel me-2"></i>
+                <strong>{{ posts.first.category.name }}</strong> kategorisindeki yazılar gösteriliyor.
+                <a href="{% url 'blog_list' %}" class="text-info ms-2">Filtreyi Kaldır</a>
+            </div>
+            {% endif %}
+
+            <!-- Yazı Listesi -->
+            {% for post in posts %}
+            <article class="card border-0 mb-4 blog-card" style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255, 255, 255, 0.08) !important;">
+                <div class="row g-0">
+                    {% if post.cover_image %}
+                    <div class="col-md-4">
+                        <a href="{% url 'blog_detail' slug=post.slug %}">
+                            <img src="{{ post.cover_image.url }}" class="img-fluid h-100" style="object-fit: cover; border-radius: 12px 0 0 12px; min-height: 200px;">
+                        </a>
+                    </div>
+                    <div class="col-md-8">
+                    {% else %}
+                    <div class="col-12">
+                    {% endif %}
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <span class="badge" style="background: {{ post.category.color }}20; color: {{ post.category.color }}; border: 1px solid {{ post.category.color }}40;">
+                                    <i class="bi {{ post.category.icon }} me-1"></i>{{ post.category.name }}
+                                </span>
+                                <small class="text-muted">{{ post.published_at|date:"d M Y" }}</small>
+                            </div>
+
+                            <h4 class="card-title mb-2">
+                                <a href="{% url 'blog_detail' slug=post.slug %}" class="text-white text-decoration-none hover-title">
+                                    {{ post.title }}
+                                </a>
+                            </h4>
+
+                            <p class="card-text text-muted mb-3">{{ post.excerpt }}</p>
+
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center">
+                                    <div class="rounded-circle bg-info bg-opacity-10 d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px;">
+                                        <span class="text-info fw-bold small">{{ post.author.username|slice:":1"|upper }}</span>
+                                    </div>
+                                    <span class="text-muted small">{{ post.author.username }}</span>
+                                </div>
+                                <div class="text-muted small">
+                                    <span class="me-3"><i class="bi bi-eye me-1"></i>{{ post.views }}</span>
+                                    <span class="me-3"><i class="bi bi-heart me-1"></i>{{ post.total_likes }}</span>
+                                    <span><i class="bi bi-clock me-1"></i>{{ post.reading_time }} dk</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+            {% empty %}
+            <div class="text-center py-5">
+                <i class="bi bi-journal-x text-muted" style="font-size: 4rem; opacity: 0.3;"></i>
+                <h5 class="text-white mt-3">Henüz yazı yok</h5>
+                <p class="text-muted">Bu kategoride henüz yazı bulunmuyor.</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Kategoriler -->
+            <div class="card border-0 mb-4" style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255, 255, 255, 0.08) !important;">
+                <div class="card-header bg-transparent border-bottom border-secondary border-opacity-25">
+                    <h6 class="mb-0 text-white"><i class="bi bi-folder text-info me-2"></i>Kategoriler</h6>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        <a href="{% url 'blog_list' %}" class="list-group-item list-group-item-action bg-transparent text-white border-0 {% if not current_category %}active bg-info bg-opacity-10{% endif %}">
+                            <i class="bi bi-grid me-2 text-info"></i>Tümü
+                        </a>
+                        {% for cat in categories %}
+                        <a href="{% url 'blog_list' %}?category={{ cat.slug }}" class="list-group-item list-group-item-action bg-transparent text-white border-0 d-flex justify-content-between align-items-center {% if current_category == cat.slug %}active bg-info bg-opacity-10{% endif %}">
+                            <span><i class="bi {{ cat.icon }} me-2" style="color: {{ cat.color }};"></i>{{ cat.name }}</span>
+                            <span class="badge bg-secondary rounded-pill">{{ cat.post_count }}</span>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Popüler Yazılar -->
+            <div class="card border-0" style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255, 255, 255, 0.08) !important;">
+                <div class="card-header bg-transparent border-bottom border-secondary border-opacity-25">
+                    <h6 class="mb-0 text-white"><i class="bi bi-fire text-warning me-2"></i>Popüler Yazılar</h6>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        {% for post in popular_posts %}
+                        <a href="{% url 'blog_detail' slug=post.slug %}" class="list-group-item list-group-item-action bg-transparent border-0 py-3">
+                            <div class="d-flex">
+                                <span class="text-info fw-bold me-3">#{{ forloop.counter }}</span>
+                                <div>
+                                    <h6 class="mb-1 text-white small">{{ post.title|truncatechars:50 }}</h6>
+                                    <small class="text-muted"><i class="bi bi-eye me-1"></i>{{ post.views }} görüntülenme</small>
+                                </div>
+                            </div>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.blog-card {
+    transition: all 0.3s ease;
+    border-radius: 12px;
+}
+.blog-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(0, 210, 255, 0.1);
+    border-color: rgba(0, 210, 255, 0.2) !important;
+}
+.hover-title:hover {
+    color: #00d2ff !important;
+}
+.featured-card {
+    transition: all 0.3s ease;
+    border-radius: 12px;
+}
+.featured-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0, 210, 255, 0.15);
+}
+.list-group-item.active {
+    border-left: 3px solid #00d2ff !important;
+}
+</style>
+{% endblock %}

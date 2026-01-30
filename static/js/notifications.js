@@ -127,10 +127,10 @@ class NotificationManager {
 
         this.container.appendChild(toastEl);
 
-        // Bootstrap Toast'ı başlat - 20 saniye sonra otomatik kapanır
+        // Bootstrap Toast'ı başlat - 10 saniye sonra otomatik kapanır
         const toast = new bootstrap.Toast(toastEl, {
             autohide: true,
-            delay: 20000
+            delay: 10000
         });
         toast.show();
     }

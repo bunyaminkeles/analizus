@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Section, Category, Topic, Post, Profile, ContactMessage, PrivateMessage, Badge, Notification, Skill, EmailVerification, DailyTip, QuizQuestion, QuizScore, FreelanceJob, JobProposal, JobReview, UserQuizAttempt, DonationTier, Donation, JobPayment, TopicTag, SiteSettings
+from .models import Section, Category, Topic, Post, Profile, ContactMessage, PrivateMessage, Badge, Notification, Skill, EmailVerification, DailyTip, QuizQuestion, QuizScore, FreelanceJob, JobProposal, JobReview, UserQuizAttempt, DonationTier, Donation, JobPayment, TopicTag, SiteSettings, BlogCategory, BlogPost
 
 # --- GENEL AYARLAR ---
 admin.site.site_header = "Analizus Komuta Merkezi"
@@ -550,3 +550,101 @@ class SiteSettingsAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         return False
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# BLOG YÖNETİMİ
+# ═══════════════════════════════════════════════════════════════════════════════
+
+@admin.register(BlogCategory)
+class BlogCategoryAdmin(admin.ModelAdmin):
+    list_display = ('name', 'slug', 'color_preview', 'order', 'post_count')
+    list_editable = ('order',)
+    prepopulated_fields = {'slug': ('name',)}
+    ordering = ('order',)
+
+    def color_preview(self, obj):
+        return format_html(
+            '<span style="background: {}; color: white; padding: 3px 10px; border-radius: 4px;">{}</span>',
+            obj.color, obj.color
+        )
+    color_preview.short_description = "Renk"
+
+    def post_count(self, obj):
+        return obj.posts.filter(status='published').count()
+    post_count.short_description = "Yazı Sayısı"
+
+
+@admin.register(BlogPost)
+class BlogPostAdmin(admin.ModelAdmin):
+    list_display = ('title', 'author', 'category', 'status_display', 'is_featured', 'views', 'published_at')
+    list_filter = ('status', 'category', 'is_featured', 'author')
+    search_fields = ('title', 'content', 'excerpt')
+    prepopulated_fields = {'slug': ('title',)}
+    list_editable = ('is_featured',)
+    date_hierarchy = 'published_at'
+    ordering = ('-created_at',)
+
+    fieldsets = (
+        ('İçerik', {
+            'fields': ('title', 'slug', 'excerpt', 'content', 'cover_image')
+        }),
+        ('Kategori & Yazar', {
+            'fields': ('category', 'author')
+        }),
+        ('Yayın Ayarları', {
+            'fields': ('status', 'is_featured', 'published_at')
+        }),
+        ('SEO', {
+            'fields': ('meta_title', 'meta_description'),
+            'classes': ('collapse',)
+        }),
+        ('LinkedIn', {
+            'fields': ('shared_to_linkedin', 'linkedin_share_date'),
+            'classes': ('collapse',)
+        }),
+    )
+
+    readonly_fields = ('views', 'shared_to_linkedin', 'linkedin_share_date')
+
+    def status_display(self, obj):
+        colors = {'draft': '#ffc107', 'published': '#28a745'}
+        icons = {'draft': '📝', 'published': '✅'}
+        return format_html(
+            '<span style="color: {};">{} {}</span>',
+            colors.get(obj.status, '#888'),
+            icons.get(obj.status, ''),
+            obj.get_status_display()
+        )
+    status_display.short_description = "Durum"
+
+    actions = ['publish_posts', 'share_to_linkedin']
+
+    @admin.action(description="Seçili yazıları yayınla")
+    def publish_posts(self, request, queryset):
+        from django.utils import timezone
+        updated = queryset.filter(status='draft').update(status='published', published_at=timezone.now())
+        self.message_user(request, f'{updated} yazı yayınlandı.')
+
+    @admin.action(description="LinkedIn'de paylaş")
+    def share_to_linkedin(self, request, queryset):
+        from .linkedin_utils import linkedin_api
+        from django.utils import timezone
+
+        shared = 0
+        for post in queryset.filter(status='published', shared_to_linkedin=False):
+            text = f"📝 Yeni Blog Yazısı: {post.title}\n\n"
+            text += f"{post.excerpt[:150]}...\n\n"
+            text += "#Analizus #VeriAnalizi #Blog"
+
+            url = f"https://www.analizus.com/blog/{post.slug}/"
+
+            result = linkedin_api.post_share(text=text, url=url, title=post.title, description=post.excerpt[:100])
+
+            if result.get('success'):
+                post.shared_to_linkedin = True
+                post.linkedin_share_date = timezone.now()
+                post.save()
+                shared += 1
+
+        self.message_user(request, f'{shared} yazı LinkedIn\'de paylaşıldı.')
