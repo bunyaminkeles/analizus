@@ -30,7 +30,7 @@ CSRF_TRUSTED_ORIGINS = [
     'https://analizus.com',
     'https://www.analizus.com',
     'https://analizdestek-ai.onrender.com',
-    'https://*.koyeb.app', # Koyeb için eklendi
+    'https://analizus.onrender.com',
 ]
 
 # --- UYGULAMA TANIMLARI ---
