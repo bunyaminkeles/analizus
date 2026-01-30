@@ -1332,6 +1332,21 @@ function checkAnswer(btn, correctAnswer) {
     }, 2000);
 
 }
+
+// IBAN kopyalama fonksiyonu
+function copyText(text, btn) {
+    navigator.clipboard.writeText(text).then(() => {
+        const originalHTML = btn.innerHTML;
+        btn.innerHTML = '<i class="bi bi-check"></i>';
+        btn.classList.remove('btn-outline-info');
+        btn.classList.add('btn-success');
+        setTimeout(() => {
+            btn.innerHTML = originalHTML;
+            btn.classList.remove('btn-success');
+            btn.classList.add('btn-outline-info');
+        }, 2000);
+    });
+}
 </script>
 
 <!-- Bağış Modal -->
@@ -1345,33 +1360,56 @@ function checkAnswer(btn, correctAnswer) {
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Kapat"></button>
             </div>
             <div class="modal-body">
-                <p class="text-muted mb-4">Platformumuzu destekleyerek gelişimine katkıda bulunabilirsiniz. Destekçilerimize özel ayrıcalıklar:</p>
+                <p class="text-muted mb-4">Platformumuzu destekleyerek gelişimine katkıda bulunabilirsiniz.</p>
 
-                <div class="d-flex flex-column gap-2 mb-4">
-                    <div class="d-flex align-items-center gap-2">
-                        <i class="bi bi-check-circle-fill text-success"></i>
-                        <span class="text-white">Premium Üyelik (bağış miktarına göre)</span>
+                <!-- IBAN Bilgileri -->
+                <div class="p-3 rounded mb-4" style="background: rgba(236, 72, 153, 0.1); border: 1px solid rgba(236, 72, 153, 0.3);">
+                    <h6 class="text-white mb-3"><i class="bi bi-bank me-2"></i>Banka Hesap Bilgileri</h6>
+
+                    <div class="mb-3">
+                        <small class="text-muted d-block mb-1">Hesap Sahibi</small>
+                        <div class="d-flex align-items-center">
+                            <span class="text-white fw-bold" id="accountName">Bünyamin Keleş</span>
+                            <button class="btn btn-sm btn-outline-info ms-2 py-0 px-2" onclick="copyText('Bünyamin Keleş', this)" title="Kopyala">
+                                <i class="bi bi-clipboard"></i>
+                            </button>
+                        </div>
                     </div>
-                    <div class="d-flex align-items-center gap-2">
-                        <i class="bi bi-check-circle-fill text-success"></i>
-                        <span class="text-white">Özel Destekçi Rozeti</span>
-                    </div>
-                    <div class="d-flex align-items-center gap-2">
-                        <i class="bi bi-check-circle-fill text-success"></i>
-                        <span class="text-white">Destekçiler Listesinde Yer Alma</span>
+
+                    <div>
+                        <small class="text-muted d-block mb-1">IBAN</small>
+                        <div class="d-flex align-items-center">
+                            <code class="text-warning fs-6" id="ibanNumber">TR73 0003 2000 0000 0079 1034 65</code>
+                            <button class="btn btn-sm btn-outline-info ms-2 py-0 px-2" onclick="copyText('TR730003200000000079103465', this)" title="Kopyala">
+                                <i class="bi bi-clipboard"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
-                <div class="alert alert-info bg-transparent border-info text-info">
+                <!-- Ayrıcalıklar -->
+                <div class="d-flex flex-column gap-2 mb-4">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-check-circle-fill text-success"></i>
+                        <span class="text-white small">Premium Üyelik (bağış miktarına göre)</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-check-circle-fill text-success"></i>
+                        <span class="text-white small">Özel Destekçi Rozeti</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-check-circle-fill text-success"></i>
+                        <span class="text-white small">Destekçiler Listesinde Yer Alma</span>
+                    </div>
+                </div>
+
+                <div class="alert alert-warning bg-transparent border-warning text-warning small mb-0">
                     <i class="bi bi-info-circle me-2"></i>
-                    <small>Ödeme sistemi yakında aktif olacaktır. Şimdilik bize <strong>iletişim</strong> sayfasından ulaşabilirsiniz.</small>
+                    Transfer yaparken açıklama kısmına <strong>kullanıcı adınızı</strong> yazınız. Premium ve rozet 24 saat içinde tanımlanır.
                 </div>
             </div>
             <div class="modal-footer border-secondary">
                 <button type="button" class="btn btn-outline-secondary rounded-pill" data-bs-dismiss="modal">Kapat</button>
-                <a href="{% url 'contact' %}" class="btn btn-primary rounded-pill" style="background: linear-gradient(135deg, #ec4899, #f472b6); border: none;">
-                    <i class="bi bi-envelope me-1"></i>İletişime Geç
-                </a>
             </div>
         </div>
     </div>
