@@ -5,6 +5,12 @@ from . import api_views
 urlpatterns = [
     path('', views.home, name='home'),
     path('health/', views.health_check, name='health_check'),
+
+    # LinkedIn Entegrasyonu
+    path('linkedin/connect/', views.linkedin_connect, name='linkedin_connect'),
+    path('linkedin/callback/', views.linkedin_callback, name='linkedin_callback'),
+    path('linkedin/share-test/', views.linkedin_share_test, name='linkedin_share_test'),
+
     path('register/', views.register, name='register'),
     
     # Profil

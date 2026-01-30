@@ -1014,3 +1014,32 @@ class JobPayment(models.Model):
 
     def __str__(self):
         return f"{self.job.title} - {self.amount}₺ - {self.get_status_display()}"
+
+
+class SiteSettings(models.Model):
+    """Site genelinde tekil ayarlar"""
+    # LinkedIn API
+    linkedin_access_token = models.TextField(blank=True, verbose_name="LinkedIn Access Token")
+    linkedin_person_urn = models.CharField(max_length=100, blank=True, verbose_name="LinkedIn Person URN")
+    linkedin_connected_at = models.DateTimeField(null=True, blank=True, verbose_name="LinkedIn Bağlantı Tarihi")
+
+    # Otomatik Paylaşım Ayarları
+    auto_share_topics = models.BooleanField(default=False, verbose_name="Yeni konuları otomatik paylaş")
+    auto_share_jobs = models.BooleanField(default=False, verbose_name="Yeni ilanları otomatik paylaş")
+
+    class Meta:
+        verbose_name = "Site Ayarı"
+        verbose_name_plural = "Site Ayarları"
+
+    def save(self, *args, **kwargs):
+        # Sadece tek kayıt olsun
+        self.pk = 1
+        super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        pass  # Silmeyi engelle
+
+    @classmethod
+    def load(cls):
+        obj, _ = cls.objects.get_or_create(pk=1)
+        return obj

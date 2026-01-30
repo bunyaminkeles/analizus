@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Section, Category, Topic, Post, Profile, ContactMessage, PrivateMessage, Badge, Notification, Skill, EmailVerification, DailyTip, QuizQuestion, QuizScore, FreelanceJob, JobProposal, JobReview, UserQuizAttempt, DonationTier, Donation, JobPayment, TopicTag
+from .models import Section, Category, Topic, Post, Profile, ContactMessage, PrivateMessage, Badge, Notification, Skill, EmailVerification, DailyTip, QuizQuestion, QuizScore, FreelanceJob, JobProposal, JobReview, UserQuizAttempt, DonationTier, Donation, JobPayment, TopicTag, SiteSettings
 
 # --- GENEL AYARLAR ---
 admin.site.site_header = "Analizus Komuta Merkezi"
@@ -520,3 +520,33 @@ class JobPaymentAdmin(admin.ModelAdmin):
     search_fields = ('job__title', 'payment_id')
     readonly_fields = ('payment_id', 'conversation_id', 'created_at')
     ordering = ('-created_at',)
+
+
+# --- SITE AYARLARI & LINKEDIN ---
+@admin.register(SiteSettings)
+class SiteSettingsAdmin(admin.ModelAdmin):
+    list_display = ('pk', 'linkedin_status', 'auto_share_topics', 'auto_share_jobs')
+    readonly_fields = ('linkedin_connected_at', 'linkedin_person_urn')
+
+    fieldsets = (
+        ('LinkedIn Entegrasyonu', {
+            'fields': ('linkedin_access_token', 'linkedin_person_urn', 'linkedin_connected_at'),
+            'description': '<a href="/linkedin/connect/" class="button" style="padding: 8px 16px; background: #0077b5; color: white; text-decoration: none; border-radius: 4px;">🔗 LinkedIn Hesabı Bağla</a> &nbsp; <a href="/linkedin/share-test/" class="button" onclick="return confirm(\'Test paylaşımı yapılacak. Emin misiniz?\');" style="padding: 8px 16px; background: #28a745; color: white; text-decoration: none; border-radius: 4px;">🧪 Test Paylaşımı Yap</a>'
+        }),
+        ('Otomatik Paylaşım', {
+            'fields': ('auto_share_topics', 'auto_share_jobs'),
+        }),
+    )
+
+    def linkedin_status(self, obj):
+        if obj.linkedin_access_token:
+            return format_html('<span style="color: #28a745;">✅ Bağlı</span>')
+        return format_html('<span style="color: #dc3545;">❌ Bağlı Değil</span>')
+    linkedin_status.short_description = "LinkedIn"
+
+    def has_add_permission(self, request):
+        # Sadece 1 kayıt olabilir
+        return not SiteSettings.objects.exists()
+
+    def has_delete_permission(self, request, obj=None):
+        return False

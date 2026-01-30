@@ -148,6 +148,11 @@ X_FRAME_OPTIONS = 'DENY'
 # Rate Limiting
 RATELIMIT_VIEW = 'forum.views.ratelimit_error'
 
+# LinkedIn API
+LINKEDIN_CLIENT_ID = os.getenv('LINKEDIN_CLIENT_ID', '')
+LINKEDIN_CLIENT_SECRET = os.getenv('LINKEDIN_CLIENT_SECRET', '')
+LINKEDIN_REDIRECT_URI = os.getenv('LINKEDIN_REDIRECT_URI', 'https://www.analizus.com/linkedin/callback/')
+
 LANGUAGES = [
     ('tr', _('Turkish')),
     ('en', _('English')),
