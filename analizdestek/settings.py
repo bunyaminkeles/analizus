@@ -234,7 +234,9 @@ SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # Database-backed sessio
 SESSION_COOKIE_AGE = 60 * 60 * 24  # 1 gün
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = 'Lax'
+SESSION_COOKIE_SECURE = not DEBUG  # Production'da HTTPS zorunlu
 SESSION_SAVE_EVERY_REQUEST = True  # Her istekte session süresini yeniler
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False  # Tarayıcı kapanınca session silinmesin
 
 # --- GOOGLE ANALYTICS ---
 # GA4 Measurement ID (örn: G-XXXXXXXXXX)
