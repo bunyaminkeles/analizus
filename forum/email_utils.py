@@ -124,7 +124,7 @@ Cevap Yazan: {post.created_by.username}
 Mesaj: {post.message[:200]}...
 
 Cevabın tamamını görmek için:
-https://analizdestek-ai.onrender.com/topic/{topic.pk}/
+https://analizus.com/topic/{topic.pk}/
 
 ---
 Bu bir otomatik bildirimdir. Cevap vermek için siteye giriş yapın.
@@ -165,7 +165,7 @@ Mesaj İçeriği:
 {message_content[:300]}...
 
 Mesajı okumak ve cevaplamak için:
-https://analizdestek-ai.onrender.com/inbox/
+https://analizus.com/inbox/
 
 ---
 Bu bir otomatik bildirimdir.
@@ -192,7 +192,7 @@ Merhaba {mentioned_user.username},
 {post.created_by.username} sizi "{topic.subject}" konusunda bahsetti!
 
 Konuya gitmek için:
-https://analizdestek-ai.onrender.com/topic/{topic.pk}/
+https://analizus.com/topic/{topic.pk}/
 
 ---
 Analizus - Akademik Veri Üssü
