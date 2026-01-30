@@ -4,6 +4,7 @@ from . import api_views
 
 urlpatterns = [
     path('', views.home, name='home'),
+    path('health/', views.health_check, name='health_check'),
     path('register/', views.register, name='register'),
     
     # Profil
