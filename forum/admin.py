@@ -577,12 +577,12 @@ class BlogCategoryAdmin(admin.ModelAdmin):
 
 @admin.register(BlogPost)
 class BlogPostAdmin(admin.ModelAdmin):
-    list_display = ('title', 'author', 'category', 'status_display', 'is_featured', 'views', 'published_at')
+    list_display = ('title', 'author', 'category', 'status_display', 'is_featured', 'views', 'created_at')
     list_filter = ('status', 'category', 'is_featured', 'author')
     search_fields = ('title', 'content', 'excerpt')
     prepopulated_fields = {'slug': ('title',)}
     list_editable = ('is_featured',)
-    date_hierarchy = 'published_at'
+    date_hierarchy = 'created_at'
     ordering = ('-created_at',)
 
     fieldsets = (
@@ -593,7 +593,7 @@ class BlogPostAdmin(admin.ModelAdmin):
             'fields': ('category', 'author')
         }),
         ('Yayın Ayarları', {
-            'fields': ('status', 'is_featured', 'published_at')
+            'fields': ('status', 'is_featured')
         }),
         ('SEO', {
             'fields': ('meta_title', 'meta_description'),
@@ -605,7 +605,7 @@ class BlogPostAdmin(admin.ModelAdmin):
         }),
     )
 
-    readonly_fields = ('views', 'shared_to_linkedin', 'linkedin_share_date')
+    readonly_fields = ('views', 'shared_to_linkedin', 'linkedin_share_date', 'published_at')
 
     def status_display(self, obj):
         colors = {'draft': '#ffc107', 'published': '#28a745'}
