@@ -26,7 +26,7 @@
                 <a href="{% url 'job_detail' pk=job.pk %}" class="list-group-item list-group-item-action bg-dark text-white border-secondary d-flex justify-content-between align-items-center p-3">
                     <div>
                         <h6 class="mb-1 fw-bold">{{ job.title }}</h6>
-                        <small class="text-muted">{{ job.created_at|date:"d M Y" }} · <span class="text-{{ job.status|yesno:'success,secondary' }}">{{ job.get_status_display }}</span></small>
+                        <small class="text-muted"><i class="bi bi-hash"></i> {{ job.reference_number }} · {{ job.created_at|date:"d M Y" }} · <span class="text-{{ job.status|yesno:'success,secondary' }}">{{ job.get_status_display }}</span></small>
                     </div>
                     <div class="text-end">
                         <span class="badge bg-info rounded-pill">{{ job.p_count }} Teklif</span>
@@ -52,7 +52,7 @@
                 {% for proposal in my_proposals %}
                 <a href="{% url 'job_detail' pk=proposal.job.pk %}" class="list-group-item list-group-item-action bg-dark text-white border-secondary p-3">
                     <div class="d-flex justify-content-between align-items-center mb-2">
-                        <h6 class="mb-0 fw-bold">{{ proposal.job.title }}</h6>
+                        <h6 class="mb-0 fw-bold">{{ proposal.job.title }} <small class="text-muted fw-normal"><i class="bi bi-hash"></i>{{ proposal.job.reference_number }}</small></h6>
                         <span class="badge 
                             {% if proposal.status == 'pending' %}bg-warning text-dark
                             {% elif proposal.status == 'accepted' %}bg-success
@@ -78,7 +78,7 @@
                 <a href="{% url 'job_detail' pk=job.pk %}" class="list-group-item list-group-item-action bg-dark text-white border-secondary d-flex justify-content-between align-items-center p-3">
                     <div>
                         <h6 class="mb-1 fw-bold">{{ job.title }}</h6>
-                        <small class="text-muted">{{ job.created_at|date:"d M Y" }} · <span class="text-{{ job.status|yesno:'success,secondary' }}">{{ job.get_status_display }}</span> · {{ job.owner.username }}</small>
+                        <small class="text-muted"><i class="bi bi-hash"></i> {{ job.reference_number }} · {{ job.created_at|date:"d M Y" }} · <span class="text-{{ job.status|yesno:'success,secondary' }}">{{ job.get_status_display }}</span> · {{ job.owner.username }}</small>
                     </div>
                     <div class="text-end">
                         <span class="badge bg-info rounded-pill">{{ job.p_count }} Teklif</span>
