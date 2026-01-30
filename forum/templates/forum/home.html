@@ -193,6 +193,15 @@
             </div>
         </div>
 
+        <!-- SLOGAN -->
+        <div class="slogan-banner">
+            <span class="slogan-text">SORU SOR</span>
+            <span class="slogan-dot">·</span>
+            <span class="slogan-text">CEVAP BUL</span>
+            <span class="slogan-dot">·</span>
+            <span class="slogan-text">UZMANLAŞ</span>
+        </div>
+
         <!-- CATEGORIES ROW -->
         <div class="categories-row">
             {% for section in sections %}
@@ -444,7 +453,7 @@
 
     border-radius: 20px;
 
-    padding: 50px 20px 30px;
+    padding: 35px 20px 20px;
 
     margin-bottom: 20px;
 
@@ -538,7 +547,7 @@
 
     text-align: center;
 
-    margin-bottom: 35px;
+    margin-bottom: 20px;
 
 }
 
@@ -596,7 +605,32 @@
 
 }
 
+/* Slogan Banner */
+.slogan-banner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    padding: 18px 20px;
+    margin-bottom: 20px;
+    background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.03), transparent);
+    border-top: 1px solid rgba(0, 240, 255, 0.08);
+    border-bottom: 1px solid rgba(0, 240, 255, 0.08);
+}
 
+.slogan-text {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #94a3b8;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+}
+
+.slogan-dot {
+    font-size: 1.2rem;
+    color: #00f0ff;
+    text-shadow: 0 0 8px rgba(0, 240, 255, 0.5);
+}
 
 /* Stats Pills Inside Hero */
 
@@ -1230,7 +1264,11 @@
 
     .hero-subtitle { font-size: 0.75rem; letter-spacing: 5px; }
 
-    .hero-section { padding: 35px 15px 25px; }
+    .hero-section { padding: 30px 15px 20px; }
+
+    .slogan-banner { gap: 8px; padding: 14px 15px; }
+    .slogan-text { font-size: 0.7rem; letter-spacing: 2px; }
+    .slogan-dot { font-size: 1rem; }
 
     .stat-pill { padding: 6px 14px 6px 6px; }
 
@@ -1255,6 +1293,9 @@
     .stats-pills { flex-direction: column; align-items: center; }
 
     .stat-pill { width: 80%; max-width: 220px; }
+
+    .slogan-text { font-size: 0.6rem; letter-spacing: 1px; }
+    .slogan-dot { font-size: 0.8rem; }
 
 }
 
