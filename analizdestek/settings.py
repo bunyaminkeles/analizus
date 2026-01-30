@@ -250,6 +250,11 @@ SESSION_COOKIE_SECURE = not DEBUG  # Production'da HTTPS zorunlu
 SESSION_SAVE_EVERY_REQUEST = True  # Her istekte session süresini yeniler
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False  # Tarayıcı kapanınca session silinmesin
 
+# --- CSRF AYARLARI ---
+CSRF_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_HTTPONLY = False  # JavaScript'in token'a erişebilmesi için
+CSRF_USE_SESSIONS = False  # Cookie-based CSRF (mobile uyumlu)
+
 # --- GOOGLE ANALYTICS ---
 # GA4 Measurement ID (örn: G-XXXXXXXXXX)
 GOOGLE_ANALYTICS_ID = os.getenv('GOOGLE_ANALYTICS_ID', '')
