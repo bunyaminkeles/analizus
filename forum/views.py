@@ -24,6 +24,13 @@ from .email_utils import send_topic_reply_notification, send_private_message_not
 from django.template.loader import render_to_string
 
 
+# --- HEALTH CHECK (Cron ping için) ---
+@require_GET
+def health_check(request):
+    """Basit health check endpoint - cron job ping için"""
+    return JsonResponse({'status': 'ok'}, status=200)
+
+
 # --- RATE LIMIT HATA SAYFASI ---
 def ratelimit_error(request, exception):
     """Rate limit aşıldığında gösterilecek hata sayfası"""
