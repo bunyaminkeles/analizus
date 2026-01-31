@@ -515,11 +515,42 @@ class DonationAdmin(admin.ModelAdmin):
 
 @admin.register(JobPayment)
 class JobPaymentAdmin(admin.ModelAdmin):
-    list_display = ('job', 'amount', 'status', 'created_at')
-    list_filter = ('status', 'created_at')
+    list_display = ('job', 'amount', 'duration_days', 'status', 'feature_status_display', 'created_at')
+    list_filter = ('status', 'created_at', 'job__feature_status')
     search_fields = ('job__title', 'payment_id')
     readonly_fields = ('payment_id', 'conversation_id', 'created_at')
     ordering = ('-created_at',)
+    actions = ['approve_feature', 'reject_feature']
+
+    def feature_status_display(self, obj):
+        return obj.job.get_feature_status_display()
+    feature_status_display.short_description = "Vitrin Durumu"
+
+    def approve_feature(self, request, queryset):
+        from django.utils import timezone
+        from datetime import timedelta
+        for payment in queryset.filter(status='pending_confirmation'):
+            job = payment.job
+            payment.status = 'success'
+            payment.save()
+            job.is_featured = True
+            job.feature_status = 'approved'
+            now = timezone.now()
+            start_time = job.featured_until if job.featured_until and job.featured_until > now else now
+            job.featured_until = start_time + timedelta(days=payment.duration_days)
+            job.save()
+        self.message_user(request, f'{queryset.count()} ilan vitrine eklendi.')
+    approve_feature.short_description = "Seçili ilanları vitrine ekle (onayla)"
+
+    def reject_feature(self, request, queryset):
+        for payment in queryset.filter(status='pending_confirmation'):
+            job = payment.job
+            payment.status = 'failed'
+            payment.save()
+            job.feature_status = 'rejected'
+            job.save()
+        self.message_user(request, f'{queryset.count()} ilan reddedildi.')
+    reject_feature.short_description = "Seçili ilanları reddet"
 
 
 # --- SITE AYARLARI & LINKEDIN ---

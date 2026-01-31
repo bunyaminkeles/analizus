@@ -111,6 +111,7 @@ class Badge(models.Model):
     color = models.CharField(max_length=20, default="#6366f1", verbose_name="Renk (Hex)")
     badge_type = models.CharField(max_length=20, choices=BADGE_TYPES, default='achievement')
     points_required = models.IntegerField(default=0, verbose_name="Gereken Puan (0=manuel)")
+    can_write_blog = models.BooleanField(default=False, verbose_name="Blog Yazabilir")
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -759,6 +760,14 @@ class FreelanceJob(models.Model):
     views = models.PositiveIntegerField(default=0, verbose_name="Görüntülenme")
     is_featured = models.BooleanField(default=False, verbose_name="Öne Çıkarılmış")
     featured_until = models.DateTimeField(null=True, blank=True, verbose_name="Vitrin Bitiş Tarihi")
+
+    FEATURE_STATUS_CHOICES = (
+        ('none', 'Yok'),
+        ('pending', 'Onay Bekliyor'),
+        ('approved', 'Onaylandı'),
+        ('rejected', 'Reddedildi'),
+    )
+    feature_status = models.CharField(max_length=20, choices=FEATURE_STATUS_CHOICES, default='none', verbose_name="Vitrin Durumu")
     expires_at = models.DateTimeField(null=True, blank=True, verbose_name="Bitiş Tarihi")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -1007,6 +1016,7 @@ class JobPayment(models.Model):
 
     job = models.ForeignKey(FreelanceJob, on_delete=models.CASCADE, related_name='payments', verbose_name="İlan")
     amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Tutar")
+    duration_days = models.PositiveIntegerField(default=7, verbose_name="Vitrin Süresi (Gün)")
     payment_id = models.CharField(max_length=100, unique=True, verbose_name="Ödeme ID")
     conversation_id = models.CharField(max_length=100, verbose_name="Konuşma ID")
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending', verbose_name="Durum")

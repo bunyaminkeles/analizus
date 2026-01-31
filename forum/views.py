@@ -609,16 +609,32 @@ def my_payments(request):
 def promote_job(request, pk):
     """İlanı vitrine taşıma (IBAN ile Ödeme)"""
     job = get_object_or_404(FreelanceJob, pk=pk, owner=request.user)
-    
-    # Vitrin Ücreti ve Süresi
-    price = 100.0
-    duration_days = 7
+
+    # Vitrin sınırı kontrolü (max 4 ilan)
+    MAX_FEATURED_JOBS = 4
+    current_featured_count = FreelanceJob.objects.filter(
+        is_featured=True,
+        status='open'
+    ).count()
+    pending_count = FreelanceJob.objects.filter(
+        feature_status='pending',
+        status='open'
+    ).exclude(pk=pk).count()
+
+    if current_featured_count + pending_count >= MAX_FEATURED_JOBS:
+        messages.warning(request, "Şu anda vitrin dolu. Lütfen daha sonra tekrar deneyiniz.")
+        return redirect('job_detail', pk=pk)
+
+    # Vitrin Paketleri
+    packages = [
+        {'days': 3, 'price': 250},
+        {'days': 7, 'price': 400},
+    ]
 
     # IBAN sayfasına yönlendir
     return render(request, 'forum/market/promote_job_iban.html', {
         'job': job,
-        'amount': price,
-        'duration': duration_days,
+        'packages': packages,
     })
 
 @login_required
@@ -626,7 +642,12 @@ def promote_job(request, pk):
 def mark_payment_transferred(request, pk):
     """Kullanıcının IBAN ödemesini yaptığını bildirmesi."""
     job = get_object_or_404(FreelanceJob, pk=pk, owner=request.user)
-    
+
+    # Paket bilgisi al
+    package = request.POST.get('package', '3')
+    packages = {'3': {'days': 3, 'price': 250}, '7': {'days': 7, 'price': 400}}
+    selected = packages.get(package, packages['3'])
+
     # Ödeme kaydı kontrol et
     payment = JobPayment.objects.filter(job=job).order_by('-created_at').first()
 
@@ -637,14 +658,21 @@ def mark_payment_transferred(request, pk):
     if not payment:
         payment = JobPayment.objects.create(
             job=job,
-            amount=100.0,
+            amount=selected['price'],
+            duration_days=selected['days'],
             payment_id=f"IBAN-{uuid.uuid4().hex[:12].upper()}",
             conversation_id=f"IBAN-{job.pk}",
             status='pending_confirmation'
         )
     else:
+        payment.amount = selected['price']
+        payment.duration_days = selected['days']
         payment.status = 'pending_confirmation'
         payment.save()
+
+    # İlanı onay bekleme durumuna al
+    job.feature_status = 'pending'
+    job.save()
 
     # Adminlere bildirim gönder
     admins = User.objects.filter(is_staff=True)
@@ -2153,3 +2181,46 @@ def blog_like(request, slug):
         return JsonResponse({'liked': liked, 'total_likes': post.total_likes})
 
     return redirect('blog_detail', slug=slug)
+
+
+@login_required
+def blog_create(request):
+    """Blog yazısı oluşturma - Badge gerektirir"""
+    # Blog yazma yetkisi kontrolü
+    profile = request.user.profile
+    can_write = profile.badges.filter(can_write_blog=True).exists()
+
+    if not can_write:
+        messages.warning(request, "Blog yazmak için gerekli rozete sahip değilsiniz.")
+        return redirect('blog_list')
+
+    if request.method == 'POST':
+        title = request.POST.get('title', '').strip()
+        content = request.POST.get('content', '').strip()
+        category_id = request.POST.get('category')
+
+        if not title or not content:
+            messages.error(request, "Başlık ve içerik zorunludur.")
+        else:
+            from django.utils.text import slugify
+            slug = slugify(title)
+            # Slug benzersizliği
+            base_slug = slug
+            counter = 1
+            while BlogPost.objects.filter(slug=slug).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+
+            post = BlogPost.objects.create(
+                title=title,
+                slug=slug,
+                content=content,
+                author=request.user,
+                category_id=category_id if category_id else None,
+                status='draft'  # Admin onayı bekleyecek
+            )
+            messages.success(request, "Blog yazınız oluşturuldu. Yönetici onayından sonra yayınlanacaktır.")
+            return redirect('blog_list')
+
+    categories = BlogCategory.objects.all()
+    return render(request, 'forum/blog/blog_create.html', {'categories': categories})
