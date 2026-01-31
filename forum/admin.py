@@ -530,7 +530,7 @@ class SiteSettingsAdmin(admin.ModelAdmin):
 
     fieldsets = (
         ('LinkedIn Entegrasyonu', {
-            'fields': ('linkedin_access_token', 'linkedin_person_urn', 'linkedin_connected_at'),
+            'fields': ('linkedin_access_token', 'linkedin_person_urn', 'linkedin_organization_id', 'linkedin_connected_at'),
             'description': '<a href="/linkedin/connect/" class="button" style="padding: 8px 16px; background: #0077b5; color: white; text-decoration: none; border-radius: 4px;">🔗 LinkedIn Hesabı Bağla</a> &nbsp; <a href="/linkedin/share-test/" class="button" onclick="return confirm(\'Test paylaşımı yapılacak. Emin misiniz?\');" style="padding: 8px 16px; background: #28a745; color: white; text-decoration: none; border-radius: 4px;">🧪 Test Paylaşımı Yap</a>'
         }),
         ('Otomatik Paylaşım', {
@@ -618,7 +618,12 @@ class BlogPostAdmin(admin.ModelAdmin):
         )
     status_display.short_description = "Durum"
 
-    actions = ['publish_posts', 'share_to_linkedin']
+    actions = ['publish_posts', 'share_to_linkedin', 'reset_linkedin_share']
+
+    @admin.action(description="LinkedIn paylaşım durumunu sıfırla")
+    def reset_linkedin_share(self, request, queryset):
+        updated = queryset.update(shared_to_linkedin=False, linkedin_share_date=None)
+        self.message_user(request, f'{updated} yazının LinkedIn durumu sıfırlandı. Tekrar paylaşılabilir.')
 
     @admin.action(description="Seçili yazıları yayınla")
     def publish_posts(self, request, queryset):
@@ -630,9 +635,17 @@ class BlogPostAdmin(admin.ModelAdmin):
     def share_to_linkedin(self, request, queryset):
         from .linkedin_utils import linkedin_api
         from django.utils import timezone
+        from django.contrib import messages
+
+        total = queryset.count()
+        drafts = queryset.filter(status='draft').count()
+        already_shared = queryset.filter(shared_to_linkedin=True).count()
+        eligible = queryset.filter(status='published', shared_to_linkedin=False)
 
         shared = 0
-        for post in queryset.filter(status='published', shared_to_linkedin=False):
+        errors = []
+
+        for post in eligible:
             text = f"📝 Yeni Blog Yazısı: {post.title}\n\n"
             text += f"{post.excerpt[:150]}...\n\n"
             text += "#Analizus #VeriAnalizi #Blog"
@@ -646,5 +659,16 @@ class BlogPostAdmin(admin.ModelAdmin):
                 post.linkedin_share_date = timezone.now()
                 post.save()
                 shared += 1
+            else:
+                errors.append(f"{post.title}: {result.get('error', 'Bilinmeyen hata')}")
 
-        self.message_user(request, f'{shared} yazı LinkedIn\'de paylaşıldı.')
+        # Detaylı mesaj göster
+        if shared > 0:
+            self.message_user(request, f'✅ {shared} yazı LinkedIn\'de paylaşıldı.', messages.SUCCESS)
+        if drafts > 0:
+            self.message_user(request, f'⚠️ {drafts} yazı taslak durumunda (önce yayınlayın).', messages.WARNING)
+        if already_shared > 0:
+            self.message_user(request, f'ℹ️ {already_shared} yazı zaten paylaşılmış.', messages.INFO)
+        if errors:
+            for err in errors[:3]:  # İlk 3 hatayı göster
+                self.message_user(request, f'❌ Hata: {err}', messages.ERROR)

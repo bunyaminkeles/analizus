@@ -22,7 +22,8 @@ class LinkedInAPI:
 
     def get_authorization_url(self, state='random_state'):
         """OAuth yetkilendirme URL'i oluştur"""
-        scopes = 'openid profile w_member_social'
+        # w_organization_social: Şirket sayfasına paylaşım için gerekli
+        scopes = 'openid profile w_member_social w_organization_social'
         return (
             f"{self.AUTH_URL}?"
             f"response_type=code&"
@@ -75,6 +76,23 @@ class LinkedInAPI:
             return response.json()
         return None
 
+    def get_author_urn(self, access_token):
+        """Paylaşım yapılacak hesabın URN'ini al (şirket veya kişisel)"""
+        from .models import SiteSettings
+        try:
+            site_settings = SiteSettings.objects.first()
+            # Şirket ID varsa şirket sayfasına paylaş
+            if site_settings and site_settings.linkedin_organization_id:
+                return f"urn:li:organization:{site_settings.linkedin_organization_id}"
+        except:
+            pass
+
+        # Şirket ID yoksa kişisel hesaba paylaş
+        user_info = self.get_user_info(access_token)
+        if user_info:
+            return f"urn:li:person:{user_info.get('sub')}"
+        return None
+
     def post_share(self, text, url=None, title=None, description=None, image_url=None):
         """
         LinkedIn'e paylaşım yap
@@ -90,12 +108,10 @@ class LinkedInAPI:
         if not access_token:
             return {'success': False, 'error': 'Access token bulunamadı'}
 
-        # Kullanıcı URN'ini al
-        user_info = self.get_user_info(access_token)
-        if not user_info:
-            return {'success': False, 'error': 'Kullanıcı bilgisi alınamadı'}
-
-        person_urn = f"urn:li:person:{user_info.get('sub')}"
+        # Yazar URN'ini al (şirket veya kişisel)
+        author_urn = self.get_author_urn(access_token)
+        if not author_urn:
+            return {'success': False, 'error': 'Yazar bilgisi alınamadı'}
 
         headers = {
             'Authorization': f'Bearer {access_token}',
@@ -105,7 +121,7 @@ class LinkedInAPI:
 
         # Post body oluştur
         post_data = {
-            "author": person_urn,
+            "author": author_urn,
             "lifecycleState": "PUBLISHED",
             "specificContent": {
                 "com.linkedin.ugc.ShareContent": {

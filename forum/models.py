@@ -1021,6 +1021,7 @@ class SiteSettings(models.Model):
     # LinkedIn API
     linkedin_access_token = models.TextField(blank=True, verbose_name="LinkedIn Access Token")
     linkedin_person_urn = models.CharField(max_length=100, blank=True, verbose_name="LinkedIn Person URN")
+    linkedin_organization_id = models.CharField(max_length=50, blank=True, verbose_name="LinkedIn Şirket ID", help_text="Şirket sayfası URL'sindeki numara (örn: 101597284)")
     linkedin_connected_at = models.DateTimeField(null=True, blank=True, verbose_name="LinkedIn Bağlantı Tarihi")
 
     # Otomatik Paylaşım Ayarları
