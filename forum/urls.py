@@ -13,6 +13,7 @@ urlpatterns = [
 
     # Blog
     path('blog/', views.blog_list, name='blog_list'),
+    path('blog/create/', views.blog_create, name='blog_create'),
     path('blog/<slug:slug>/', views.blog_detail, name='blog_detail'),
     path('blog/<slug:slug>/like/', views.blog_like, name='blog_like'),
 
