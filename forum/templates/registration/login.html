@@ -229,6 +229,12 @@
             color: #ff6b6b;
             font-size: 0.85rem;
         }
+
+        @media (max-width: 991px) {
+            .split-container { flex-direction: column; }
+            .left-half { display: none; }
+            .right-half { flex-basis: 100%; }
+        }
     </style>
 </head>
 <body>
@@ -260,7 +266,7 @@
                     <div class="error-msg">Kullanıcı adı veya şifre hatalı.</div>
                     {% endif %}
 
-                    <form method="post" novalidate>
+                    <form method="post" novalidate id="loginForm">
                         {% csrf_token %}
 
                         <div class="field">
@@ -280,8 +286,19 @@
                             <a href="{% url 'password_reset' %}" class="forgot">Şifremi Unuttum</a>
                         </div>
 
-                        <button type="submit" class="submit-btn">Giriş Yap</button>
+                        <button type="submit" class="submit-btn" id="submitBtn">Giriş Yap</button>
                     </form>
+                    <script>
+                        document.getElementById('loginForm').addEventListener('submit', function(e) {
+                            var btn = document.getElementById('submitBtn');
+                            if (btn.disabled) {
+                                e.preventDefault();
+                                return false;
+                            }
+                            btn.disabled = true;
+                            btn.textContent = 'Giriş yapılıyor...';
+                        });
+                    </script>
 
                     <p class="footer-text">
                         Hesabınız yok mu? <a href="{% url 'register' %}">Hemen Kayıt Ol</a>
