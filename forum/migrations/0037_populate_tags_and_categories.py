@@ -29,60 +29,8 @@ def create_default_tags(apps, schema_editor):
 
 
 def create_new_categories(apps, schema_editor):
-    """Yeni kategori yapısını oluştur"""
-    Section = apps.get_model('forum', 'Section')
-    Category = apps.get_model('forum', 'Category')
-
-    # Yeni bölüm ve kategoriler
-    new_structure = [
-        {
-            'title': 'Analiz Yöntemleri',
-            'order': 1,
-            'categories': [
-                {'title': 'Betimsel & Keşifsel Analiz', 'slug': 'betimsel-kesifsel', 'description': 'Tanımlayıcı istatistikler, frekans dağılımları, grafikler', 'icon_class': 'bi-bar-chart'},
-                {'title': 'Karşılaştırma Testleri', 'slug': 'karsilastirma-testleri', 'description': 't-testi, ANOVA, MANOVA, non-parametrik testler', 'icon_class': 'bi-arrows-collapse'},
-                {'title': 'İlişki Analizi', 'slug': 'iliski-analizi', 'description': 'Korelasyon, regresyon, lojistik regresyon', 'icon_class': 'bi-bezier2'},
-                {'title': 'Boyut İndirgeme', 'slug': 'boyut-indirgeme', 'description': 'Faktör analizi, PCA, kümeleme', 'icon_class': 'bi-layers'},
-                {'title': 'Yapısal Eşitlik', 'slug': 'yapisal-esitlik', 'description': 'SEM, yol analizi, doğrulayıcı faktör analizi', 'icon_class': 'bi-diagram-3'},
-                {'title': 'Nitel Analiz', 'slug': 'nitel-analiz', 'description': 'İçerik analizi, tematik analiz, nitel kodlama', 'icon_class': 'bi-file-text'},
-            ]
-        },
-        {
-            'title': 'Araçlar & Teknik',
-            'order': 2,
-            'categories': [
-                {'title': 'Kurulum & Konfigürasyon', 'slug': 'kurulum-konfigurasyon', 'description': 'Yazılım kurulumu, ayarlar, lisanslama', 'icon_class': 'bi-gear'},
-                {'title': 'Kod & Syntax Paylaşımı', 'slug': 'kod-syntax', 'description': 'Hazır kodlar, syntax örnekleri, scriptler', 'icon_class': 'bi-code-square'},
-                {'title': 'Hata Çözümleri', 'slug': 'hata-cozumleri', 'description': 'Yazılım hataları, error mesajları, troubleshooting', 'icon_class': 'bi-bug'},
-            ]
-        },
-        {
-            'title': 'Akademik Destek',
-            'order': 3,
-            'categories': [
-                {'title': 'Tez & Makale Süreci', 'slug': 'tez-makale', 'description': 'Akademik yazım, dergi seçimi, yayın süreci', 'icon_class': 'bi-journal-text'},
-                {'title': 'Veri Toplama & Örneklem', 'slug': 'veri-toplama', 'description': 'Anket tasarımı, örneklem hesaplama, veri girişi', 'icon_class': 'bi-collection'},
-                {'title': 'Etik & Metodoloji', 'slug': 'etik-metodoloji', 'description': 'Araştırma etiği, metodoloji seçimi, geçerlik-güvenirlik', 'icon_class': 'bi-shield-check'},
-            ]
-        },
-    ]
-
-    for section_data in new_structure:
-        section, created = Section.objects.get_or_create(
-            title=section_data['title'],
-            defaults={'order': section_data['order']}
-        )
-
-        for cat_data in section_data['categories']:
-            Category.objects.get_or_create(
-                slug=cat_data['slug'],
-                defaults={
-                    'section': section,
-                    'title': cat_data['title'],
-                    'description': cat_data['description'],
-                    'icon_class': cat_data['icon_class'],
-                }
-            )
+    """Devre dışı bırakıldı - Section ve Category'ler artık admin panelden yönetiliyor"""
+    pass
 
 
 def reverse_func(apps, schema_editor):
