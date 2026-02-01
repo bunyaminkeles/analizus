@@ -213,6 +213,9 @@ class Profile(models.Model):
     phone_number = models.CharField(max_length=20, blank=True, default="", verbose_name="Telefon Numarası")
     phone_verified = models.BooleanField(default=False, verbose_name="Telefon Doğrulandı")
     linkedin_verified = models.BooleanField(default=False, verbose_name="LinkedIn Doğrulandı")
+
+    # EDU mail ile giriş yapanlara geçici teklif hakkı
+    edu_proposal_expires = models.DateTimeField(null=True, blank=True, verbose_name="EDU Teklif Hakkı Bitiş")
     following = models.ManyToManyField('self', related_name='followers', symmetrical=False, blank=True, verbose_name="Takip Edilenler")
 
     def __str__(self):
@@ -363,6 +366,8 @@ class Profile(models.Model):
 
     def can_propose(self):
         """Teklif verme yetkisi kontrolü"""
+        from django.utils import timezone
+
         # Admin/Staff her zaman verebilir
         if self.user.is_superuser or self.user.is_staff:
             return True, "Yönetici yetkisi"
@@ -370,6 +375,10 @@ class Profile(models.Model):
         # Premium üyeler verebilir
         if self.account_type == 'Premium':
             return True, "Premium üyelik"
+
+        # EDU mail ile geçici teklif hakkı
+        if self.edu_proposal_expires and self.edu_proposal_expires > timezone.now():
+            return True, "EDU mail ayrıcalığı (3 günlük)"
 
         # Belirli rütbeler verebilir (expert ve üstü)
         allowed_ranks = ['expert', 'master', 'legend', 'admin']

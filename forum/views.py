@@ -797,6 +797,8 @@ def custom_login(request):
     """Rate limited login view"""
     from django.contrib.auth import authenticate, login as auth_login
     from django.contrib.auth.forms import AuthenticationForm
+    from django.utils import timezone
+    from datetime import timedelta
 
     if request.user.is_authenticated:
         return redirect('home')
@@ -806,12 +808,62 @@ def custom_login(request):
         if form.is_valid():
             user = form.get_user()
             auth_login(request, user)
+
+            # EDU mail kontrolü
+            _handle_edu_user(user)
+
             next_url = request.GET.get('next', 'home')
             return redirect(next_url)
     else:
         form = AuthenticationForm()
 
     return render(request, 'registration/login.html', {'form': form})
+
+
+def _handle_edu_user(user):
+    """EDU mail ile giriş yapanlara rozet ve teklif hakkı ver"""
+    from django.utils import timezone
+    from datetime import timedelta
+    from .services.email_service import EmailService
+
+    email = user.email.lower() if user.email else ''
+    if not email.endswith('.edu') and not email.endswith('.edu.tr'):
+        return
+
+    profile = getattr(user, 'profile', None)
+    if not profile:
+        return
+
+    # Zaten rozeti varsa atla
+    if profile.badges.filter(slug='dogrulanmis-akademisyen').exists():
+        return
+
+    # Rozet ver
+    badge = Badge.objects.filter(slug='dogrulanmis-akademisyen').first()
+    if badge:
+        profile.badges.add(badge)
+
+    # 3 günlük teklif hakkı
+    profile.edu_proposal_expires = timezone.now() + timedelta(days=3)
+    profile.save(update_fields=['edu_proposal_expires'])
+
+    # Admin DM gönder
+    admin_user = User.objects.filter(is_superuser=True).first()
+    if admin_user:
+        PrivateMessage.objects.create(
+            sender=admin_user,
+            receiver=user,
+            message=(
+                f"Merhaba {user.username},\n\n"
+                "EDU uzantılı mail adresiniz ile giriş yaptığınız için "
+                "\"Doğrulanmış Akademisyen\" rozeti kazandınız! 🎓\n\n"
+                "Ayrıca 3 gün boyunca teklif verme hakkına sahipsiniz.\n\n"
+                "İyi çalışmalar,\nAnalizus Ekibi"
+            )
+        )
+
+    # Mail gönder
+    EmailService.send_edu_welcome_email(user)
 
 
 # --- PROFİL DÜZENLE ---
