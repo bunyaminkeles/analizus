@@ -1,0 +1,134 @@
+{% extends 'base.html' %}
+
+{% block title %}Nasıl Çalışır? - Analizus{% endblock %}
+{% block meta_description %}Analizus platformu nasıl kullanılır? Soru sorma, uzman bulma, istatistik analizi yaptırma ve İstatistik Arena hakkında bilgi edinin.{% endblock %}
+
+{% block main_content_classes %}col-lg-12{% endblock %}
+{% block right_sidebar %}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold text-gradient mb-3">Nasıl Çalışır?</h1>
+        <p class="lead text-muted">Analizus'u kullanarak akademik hedeflerinize ulaşın</p>
+    </div>
+
+    <!-- Adımlar -->
+    <div class="row g-4 mb-5">
+        <!-- Adım 1 -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card bg-dark border-0 h-100 text-center p-4" style="background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(0, 240, 255, 0.2) !important; border-radius: 20px;">
+                <div class="mb-3">
+                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary bg-opacity-10" style="width: 80px; height: 80px; border: 2px solid rgba(0, 240, 255, 0.3);">
+                        <i class="bi bi-person-plus-fill text-info" style="font-size: 2rem;"></i>
+                    </div>
+                </div>
+                <h4 class="text-white mb-3">1. Kayıt Ol</h4>
+                <p class="text-muted">Ücretsiz hesap oluşturun ve topluluğa katılın. E-posta doğrulaması ile hesabınızı aktifleştirin.</p>
+            </div>
+        </div>
+
+        <!-- Adım 2 -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card bg-dark border-0 h-100 text-center p-4" style="background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(168, 85, 247, 0.2) !important; border-radius: 20px;">
+                <div class="mb-3">
+                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-purple bg-opacity-10" style="width: 80px; height: 80px; border: 2px solid rgba(168, 85, 247, 0.3);">
+                        <i class="bi bi-chat-square-text-fill text-purple" style="font-size: 2rem; color: #a855f7;"></i>
+                    </div>
+                </div>
+                <h4 class="text-white mb-3">2. Soru Sor</h4>
+                <p class="text-muted">Forum bölümlerinde sorularınızı paylaşın. SPSS, R, Python veya istatistik yöntemleri hakkında yardım alın.</p>
+            </div>
+        </div>
+
+        <!-- Adım 3 -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card bg-dark border-0 h-100 text-center p-4" style="background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(34, 197, 94, 0.2) !important; border-radius: 20px;">
+                <div class="mb-3">
+                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-success bg-opacity-10" style="width: 80px; height: 80px; border: 2px solid rgba(34, 197, 94, 0.3);">
+                        <i class="bi bi-briefcase-fill text-success" style="font-size: 2rem;"></i>
+                    </div>
+                </div>
+                <h4 class="text-white mb-3">3. Uzman Bul</h4>
+                <p class="text-muted">Hizmetler Pazarı'nda ilanları inceleyin veya kendi projenizi oluşturup teklif alın.</p>
+            </div>
+        </div>
+
+        <!-- Adım 4 -->
+        <div class="col-md-6 col-lg-3">
+            <div class="card bg-dark border-0 h-100 text-center p-4" style="background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(249, 115, 22, 0.2) !important; border-radius: 20px;">
+                <div class="mb-3">
+                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-warning bg-opacity-10" style="width: 80px; height: 80px; border: 2px solid rgba(249, 115, 22, 0.3);">
+                        <i class="bi bi-trophy-fill text-warning" style="font-size: 2rem;"></i>
+                    </div>
+                </div>
+                <h4 class="text-white mb-3">4. Puan Kazan</h4>
+                <p class="text-muted">İstatistik Arena'da quiz çözerek puan kazanın. 1000 puana ulaşın ve kendiniz de hizmet verin.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Özellikler -->
+    <div class="row g-4 mb-5">
+        <div class="col-lg-6">
+            <div class="card bg-dark border-0 p-4" style="background: rgba(30, 41, 59, 0.5); border: 1px solid rgba(255,255,255,0.1) !important; border-radius: 20px;">
+                <h4 class="text-info mb-4"><i class="bi bi-question-circle me-2"></i>Forum Nasıl Kullanılır?</h4>
+                <ul class="list-unstyled text-light">
+                    <li class="mb-3"><i class="bi bi-check-circle-fill text-success me-2"></i>Uygun kategoriyi seçin (Yazılımlar, Yöntemler, Akademi)</li>
+                    <li class="mb-3"><i class="bi bi-check-circle-fill text-success me-2"></i>Açıklayıcı bir başlık yazın</li>
+                    <li class="mb-3"><i class="bi bi-check-circle-fill text-success me-2"></i>Sorununuzu detaylı anlatın, varsa kod veya çıktı ekleyin</li>
+                    <li class="mb-3"><i class="bi bi-check-circle-fill text-success me-2"></i>Topluluktan yanıt bekleyin ve tartışmaya katılın</li>
+                    <li><i class="bi bi-check-circle-fill text-success me-2"></i>Faydalı cevapları beğenerek katkıda bulunanlara puan kazandırın</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card bg-dark border-0 p-4" style="background: rgba(30, 41, 59, 0.5); border: 1px solid rgba(255,255,255,0.1) !important; border-radius: 20px;">
+                <h4 class="text-warning mb-4"><i class="bi bi-briefcase me-2"></i>Hizmetler Pazarı Nasıl Çalışır?</h4>
+                <ul class="list-unstyled text-light">
+                    <li class="mb-3"><i class="bi bi-check-circle-fill text-success me-2"></i><strong>Hizmet Arayanlar:</strong> Projenizi oluşturun, bütçe belirleyin</li>
+                    <li class="mb-3"><i class="bi bi-check-circle-fill text-success me-2"></i><strong>Uzmanlar:</strong> 1000 puan kazanarak teklif verme yetkisi alın</li>
+                    <li class="mb-3"><i class="bi bi-check-circle-fill text-success me-2"></i>Teklifleri inceleyin ve en uygun uzmanı seçin</li>
+                    <li class="mb-3"><i class="bi bi-check-circle-fill text-success me-2"></i>Özel mesaj ile iletişime geçin</li>
+                    <li><i class="bi bi-check-circle-fill text-success me-2"></i>İş tamamlandığında değerlendirme yapın</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- İstatistik Arena -->
+    <div class="card bg-dark border-0 p-5 mb-5 text-center" style="background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(249, 115, 22, 0.1)); border: 1px solid rgba(251, 191, 36, 0.3) !important; border-radius: 20px;">
+        <h3 class="text-warning mb-4"><i class="bi bi-trophy-fill me-2"></i>İstatistik Arena</h3>
+        <p class="lead text-light mb-4">Bilgilerinizi test edin, puan kazanın ve sıralamada yükselin!</p>
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="d-flex flex-wrap justify-content-center gap-4">
+                    <div class="text-center">
+                        <div class="h2 text-warning mb-1">+10</div>
+                        <small class="text-muted">Doğru Cevap</small>
+                    </div>
+                    <div class="text-center">
+                        <div class="h2 text-info mb-1">500</div>
+                        <small class="text-muted">Uzman Rozeti</small>
+                    </div>
+                    <div class="text-center">
+                        <div class="h2 text-success mb-1">1000</div>
+                        <small class="text-muted">Teklif Verme Yetkisi</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="text-center">
+        <a href="{% url 'register' %}" class="btn btn-primary btn-lg px-5 rounded-pill shadow me-3">
+            <i class="bi bi-rocket-takeoff-fill me-2"></i>Hemen Başla
+        </a>
+        <a href="{% url 'home' %}" class="btn btn-outline-light btn-lg px-5 rounded-pill">
+            <i class="bi bi-house-door me-2"></i>Ana Sayfa
+        </a>
+    </div>
+</div>
+{% endblock %}

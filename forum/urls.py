@@ -55,6 +55,7 @@ urlpatterns = [
     # Diğer
     path('search/', views.search_result, name='search'),
     path('hakkimizda/', views.about, name='about'),
+    path('nasil-calisir/', views.how_it_works, name='how_it_works'),
     path('iletisim/', views.contact, name='contact'),
     
     # Section Detail

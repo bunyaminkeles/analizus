@@ -1125,6 +1125,10 @@ def profile_detail(request, username):
 def about(request):
     return render(request, 'forum/about.html')
 
+def how_it_works(request):
+    """Nasıl Çalışır? sayfası"""
+    return render(request, 'forum/how_it_works.html')
+
 def contact(request):
     return render(request, 'forum/contact.html')
 

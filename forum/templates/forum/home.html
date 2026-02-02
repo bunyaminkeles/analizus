@@ -244,24 +244,17 @@
                 <h1 class="hero-title">ANALİZUS</h1>
                 <p class="hero-subtitle">BİLİMİN IŞIĞINDA VERİYİ YÖNET</p>
 
-                <!-- CTA Buttons -->
+                <!-- CTA Buttons - Sadece giriş yapmamış kullanıcılar için -->
+                {% if not user.is_authenticated %}
                 <div class="hero-cta-buttons">
-                    {% if user.is_authenticated %}
-                    <a href="{% url 'job_list' %}" class="cta-btn cta-primary">
-                        <i class="bi bi-briefcase-fill me-2"></i>Proje Bul
-                    </a>
-                    <a href="{% url 'ai_assistant' %}" class="cta-btn cta-secondary">
-                        <i class="bi bi-robot me-2"></i>AI Asistan
-                    </a>
-                    {% else %}
                     <a href="{% url 'register' %}" class="cta-btn cta-primary">
                         <i class="bi bi-rocket-takeoff-fill me-2"></i>Ücretsiz Başla
                     </a>
-                    <a href="{% url 'job_list' %}" class="cta-btn cta-secondary">
-                        <i class="bi bi-search me-2"></i>Hizmetleri Keşfet
+                    <a href="{% url 'how_it_works' %}" class="cta-btn cta-secondary">
+                        <i class="bi bi-question-circle me-2"></i>Nasıl Çalışır?
                     </a>
-                    {% endif %}
                 </div>
+                {% endif %}
             </div>
 
             <!-- Stats Pills Inside Hero -->
