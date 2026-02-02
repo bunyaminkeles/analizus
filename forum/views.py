@@ -167,10 +167,11 @@ def home(request):
         p_count=Count('proposals', distinct=True)
     ).order_by('-created_at')[:5]
 
-    # Vitrin İlanları (Öne Çıkanlar)
+    # Vitrin İlanları (Öne Çıkanlar) - Süresi dolmamış olanlar
     featured_jobs = FreelanceJob.objects.filter(
         status='open',
-        is_featured=True
+        is_featured=True,
+        featured_until__gte=timezone.now()  # Vitrin süresi dolmamış
     ).select_related('owner', 'category').annotate(
         p_count=Count('proposals', distinct=True)
     ).order_by('-created_at')[:4]
@@ -610,11 +611,12 @@ def promote_job(request, pk):
     """İlanı vitrine taşıma (IBAN ile Ödeme)"""
     job = get_object_or_404(FreelanceJob, pk=pk, owner=request.user)
 
-    # Vitrin sınırı kontrolü (max 4 ilan)
+    # Vitrin sınırı kontrolü (max 4 ilan) - Süresi dolmamış olanları say
     MAX_FEATURED_JOBS = 4
     current_featured_count = FreelanceJob.objects.filter(
         is_featured=True,
-        status='open'
+        status='open',
+        featured_until__gte=timezone.now()
     ).count()
     pending_count = FreelanceJob.objects.filter(
         feature_status='pending',
