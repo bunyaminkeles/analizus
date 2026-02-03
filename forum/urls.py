@@ -89,9 +89,7 @@ urlpatterns = [
     path('api/follow/<str:username>/', api_views.toggle_follow_user, name='api_toggle_follow'),
 
     # Bağış Sistemi
-    # path('api/donation/widget/', views.donation_widget_data, name='donation_widget_data'),
-    # path('api/donation/create/', views.create_donation, name='create_donation'),
-    # path('api/donation/callback/', views.donation_callback, name='donation_callback'),
+    path('api/send-support-email/', views.send_support_email, name='send_support_email'),
     path('donation/success/', views.donation_success, name='donation_success'),
 
     # Cron Job Endpoints (External cron services için)

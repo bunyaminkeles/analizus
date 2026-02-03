@@ -18,7 +18,7 @@ from datetime import timedelta
 import uuid
 from django_ratelimit.decorators import ratelimit
 from django_ratelimit.exceptions import Ratelimited
-from .models import Section, Category, Topic, Post, Profile, PrivateMessage, PostLike, Notification, EmailVerification, DailyTip, QuizQuestion, QuizScore, SuccessStory, FreelanceJob, JobProposal, JobReview, Skill, Badge, UserQuizAttempt, JobPayment, SiteSettings, BlogCategory, BlogPost
+from .models import Section, Category, Topic, Post, Profile, PrivateMessage, PostLike, Notification, EmailVerification, DailyTip, QuizQuestion, QuizScore, SuccessStory, FreelanceJob, JobProposal, JobReview, Skill, Badge, UserQuizAttempt, JobPayment, SiteSettings, BlogCategory, BlogPost, DonationTier
 from .forms import RegisterForm, NewTopicForm, PostForm, JobPostForm, ProposalForm
 from .email_utils import send_topic_reply_notification, send_private_message_notification
 from django.template.loader import render_to_string
@@ -2250,3 +2250,105 @@ def blog_create(request):
 
     categories = BlogCategory.objects.all()
     return render(request, 'forum/blog/blog_create.html', {'categories': categories})
+
+
+# --- DESTEK/BAĞI APISI ---
+@login_required
+@require_POST
+def send_support_email(request):
+    """Kullanıcının seçtiği destek paketine göre e-posta gönder"""
+    import os
+    from sendgrid import SendGridAPIClient
+    from sendgrid.helpers.mail import Mail, Content
+    
+    try:
+        # Request'ten veri al
+        data = json.loads(request.body)
+        tier_id = data.get('tier_id')
+        tier_name = data.get('tier_name')
+        tier_amount = data.get('tier_amount')
+        
+        # Validation
+        if not all([tier_id, tier_name, tier_amount]):
+            return JsonResponse({'success': False, 'error': 'Geçersiz veri'}, status=400)
+        
+        # Tier'ı veritabanından kontrol et
+        tier = DonationTier.objects.filter(id=tier_id, is_active=True).first()
+        if not tier:
+            return JsonResponse({'success': False, 'error': 'Paket bulunamadı'}, status=404)
+        
+        user = request.user
+        user_email = user.email
+        username = user.username
+        
+        # E-posta metni
+        email_subject = "Analizus Bağış İşlemi"
+        
+        email_body = f"""
+Merhaba {username},
+
+Analizus'a gösterdiğiniz desteğe teşekkür ederiz! 🙏
+
+Aşağıda bağış yapacağınız banka hesap bilgilerini bulabilirsiniz. Lütfen bu bilgileri kullanarak havale transferi yapınız.
+
+📌 BANKA BİLGİLERİ:
+━━━━━━━━━━━━━━━━━━━━━━━━
+Hesap Sahibi: Bünyamin Keleş
+IBAN: TR73 0003 2000 0000 0079 1034 65
+━━━━━━━━━━━━━━━━━━━━━━━━
+
+⏱️ İŞLEM ADAMLARI:
+1. Yukarıdaki IBAN'a {tier_amount} TL havale ediniz
+2. Transfer yapılırken açıklama bölümüne: "{username} (ilan no: ...)" yazınız
+3. Havale işlemi gerçekleştikten sonra admin tarafından kontrol edilir
+4. Kontrol edildikten sonra Premium paketiniz ve Destekçi Rozeti 24 saat içinde etkinleştirilir
+
+✅ SEÇTİĞİNİZ PAKET: {tier_name}
+   Süre: {tier.premium_days} gün Premium
+
+✅ KAZANACAĞINIZ AYRICALIKLAR:
+• Seçilen destekçi paketine göre süresi içinde ilanlara teklif verebilme
+• Haftada 3 ilan yayınlama hakkı (Normal: 1)
+• Profil üzerinde Destekçi Rozeti
+• Destekçiler listesinde yer alma
+
+Herhangi bir sorunuz varsa info@analizus.com adresine başvurabilirsiniz.
+
+İyi günler,
+Analizus Ekibi
+"""
+        
+        # SendGrid ile gönder
+        try:
+            SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY')
+            if not SENDGRID_API_KEY:
+                print("❌ SENDGRID_API_KEY tanımlı değil!")
+                return JsonResponse({'success': False, 'error': 'E-posta servisi kullanılamıyor'}, status=500)
+            
+            sg = SendGridAPIClient(SENDGRID_API_KEY)
+            
+            message = Mail(
+                from_email='info@analizus.com',
+                to_emails=user_email,
+                subject=email_subject,
+                plain_text_content=email_body
+            )
+            
+            response = sg.send(message)
+            
+            if response.status_code in [200, 202]:
+                print(f"✅ E-posta başarıyla gönderildi: {user_email}")
+                return JsonResponse({'success': True, 'message': 'E-posta gönderildi'})
+            else:
+                print(f"❌ SendGrid hatası: {response.status_code}")
+                return JsonResponse({'success': False, 'error': 'E-posta gönderilemedi'}, status=500)
+                
+        except Exception as e:
+            print(f"❌ E-posta gönderme hatası: {str(e)}")
+            return JsonResponse({'success': False, 'error': f'Hata: {str(e)}'}, status=500)
+    
+    except json.JSONDecodeError:
+        return JsonResponse({'success': False, 'error': 'Geçersiz JSON'}, status=400)
+    except Exception as e:
+        print(f"❌ Beklenmeyen hata: {str(e)}")
+        return JsonResponse({'success': False, 'error': 'Beklenmeyen hata'}, status=500)
