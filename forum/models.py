@@ -387,12 +387,11 @@ class Profile(models.Model):
 
         # Belirli rozetler ile verebilir
         proposal_badges = [
-            'uzman',              # 1000 puan
-            'profesor',           # 2500 puan
-            'efsane',             # 5000 puan
-            'cozum-ustasi',       # 10 en iyi cevap
-            'quiz-efsanesi',      # 500 quiz doğru
-            'premium-uye',
+            'uzman',              # 2500 puan
+            'profesor',           # 5000 puan
+            'efsane',             # 10000 puan
+            'cozum-ustasi',       # 25 en iyi cevap
+            'quiz-efsanesi',      # 1000 quiz doğru
             'dogrulanmis-akademisyen',
             'moderator',
         ]
