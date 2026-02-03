@@ -1564,19 +1564,44 @@ function copyText(text, btn) {
                     </div>
                 </div>
 
+                <!-- Premium Katmanları -->
+                {% if donation_tiers %}
+                <h6 class="text-white mb-3"><i class="bi bi-gem me-2" style="color: #ec4899;"></i>Premium Katmanları</h6>
+                <div class="d-flex flex-column gap-2 mb-3">
+                    {% for tier in donation_tiers %}
+                    <div class="d-flex align-items-center justify-content-between p-2 rounded" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-star-fill" style="color: {% if tier.min_amount >= 500 %}#a855f7{% elif tier.min_amount >= 250 %}#f59e0b{% elif tier.min_amount >= 100 %}#94a3b8{% else %}#cd7f32{% endif %}; font-size: 0.85rem;"></i>
+                            <span class="text-white small fw-bold">{{ tier.name }}</span>
+                        </div>
+                        <div class="text-end">
+                            <span class="text-warning small fw-bold">{{ tier.min_amount|floatformat:0 }}+ TL</span>
+                            <span class="text-muted small mx-1">&rarr;</span>
+                            <span class="text-success small">{{ tier.premium_days }} gün Premium</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
                 <!-- Ayrıcalıklar -->
+                <h6 class="text-white mb-3"><i class="bi bi-unlock-fill me-2 text-success"></i>Ne Kazanırsınız?</h6>
                 <div class="d-flex flex-column gap-2 mb-4">
                     <div class="d-flex align-items-center gap-2">
-                        <i class="bi bi-check-circle-fill text-success"></i>
-                        <span class="text-white small">Premium Üyelik (bağış miktarına göre)</span>
+                        <i class="bi bi-briefcase-fill" style="color: #3b82f6;"></i>
+                        <span class="text-white small">Haftada <strong>3 ilan</strong> yayınlama hakkı <span class="text-muted">(Free: 1)</span></span>
                     </div>
                     <div class="d-flex align-items-center gap-2">
-                        <i class="bi bi-check-circle-fill text-success"></i>
-                        <span class="text-white small">Özel Destekçi Rozeti</span>
+                        <i class="bi bi-send-fill" style="color: #10b981;"></i>
+                        <span class="text-white small">İlanlara <strong>teklif/başvuru</strong> yapabilme</span>
                     </div>
                     <div class="d-flex align-items-center gap-2">
-                        <i class="bi bi-check-circle-fill text-success"></i>
-                        <span class="text-white small">Destekçiler Listesinde Yer Alma</span>
+                        <i class="bi bi-heart-fill" style="color: #ec4899;"></i>
+                        <span class="text-white small">Profilinde özel <strong>Destekçi Rozeti</strong></span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-people-fill" style="color: #f59e0b;"></i>
+                        <span class="text-white small"><strong>Destekçiler listesinde</strong> yer alma</span>
                     </div>
                 </div>
 

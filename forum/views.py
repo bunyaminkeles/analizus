@@ -176,6 +176,9 @@ def home(request):
         p_count=Count('proposals', distinct=True)
     ).order_by('-created_at')[:4]
 
+    # Bağış Katmanları
+    donation_tiers = DonationTier.objects.filter(is_active=True).order_by('min_amount')
+
     context = {
         'sections': sections,
         # İstatistikler
@@ -190,6 +193,7 @@ def home(request):
         'daily_tip': daily_tip,
         'quiz_question': quiz_question,
         'quiz_leaderboard': quiz_leaderboard,
+        'donation_tiers': donation_tiers,
         'featured_story': featured_story,
         'recent_jobs': recent_jobs,
         'recent_reviews': recent_reviews,
@@ -1108,6 +1112,10 @@ def profile_detail(request, username):
         permissions = profile_user.profile.get_permissions_summary()
         next_badge = profile_user.profile.get_next_badge_info()
 
+    # Tüm rozetler ve kazanılma durumu
+    all_badges = Badge.objects.filter(is_active=True).order_by('badge_type', '-points_required', 'name')
+    user_badge_ids = set(profile_user.profile.badges.values_list('id', flat=True)) if hasattr(profile_user, 'profile') else set()
+
     return render(request, 'forum/profile_detail.html', {
         'profile_user': profile_user,
         'posted_jobs': posted_jobs,
@@ -1119,6 +1127,8 @@ def profile_detail(request, username):
         'quiz_rank': quiz_rank,
         'permissions': permissions,
         'next_badge': next_badge,
+        'all_badges': all_badges,
+        'user_badge_ids': user_badge_ids,
     })
 
 # --- DİĞER ---
@@ -1639,71 +1649,14 @@ def api_submit_quiz_answer(request):
             
             if is_correct and score.correct_answers > 0:
                 
-                # --- KATEGORİ BAZLI ROZETLER (BATCH) ---
-                # İlgili kategorideki toplam doğru sayısı
+                # --- KATEGORİ BAZLI ROZETLER ---
                 category_correct_count = UserQuizAttempt.objects.filter(
-                    user=request.user, 
-                    question__category=question.category, 
+                    user=request.user,
+                    question__category=question.category,
                     is_correct=True
                 ).count()
 
-                # Kategori Rozet Tanımları (Örnek: 10 doğru cevapta verilir)
-                category_badges = {
-                    'SPSS': {'slug': 'spss-uzmani', 'name': 'SPSS Uzmanı', 'icon': 'bi-bar-chart-fill', 'color': '#3b82f6'},
-                    'Python': {'slug': 'python-ninja', 'name': 'Python Ninja', 'icon': 'bi-code-square', 'color': '#eab308'},
-                    'R': {'slug': 'r-ustadi', 'name': 'R Üstadı', 'icon': 'bi-r-circle', 'color': '#2563eb'},
-                    'Hipotez': {'slug': 'hipotez-avcisi', 'name': 'Hipotez Avcısı', 'icon': 'bi-search', 'color': '#ef4444'},
-                    'Raporlama': {'slug': 'raporlama-guru', 'name': 'Raporlama Gurusu', 'icon': 'bi-file-earmark-text', 'color': '#10b981'},
-                }
-
-                # Soru kategorisi bu listede var mı ve eşik değer (10) geçildi mi?
-                cat_key = question.category # Veya question.get_category_display() model yapısına göre
-                # Not: Eğer category field'ı choice ise display değerini veya key'i kontrol edin.
-                # Burada basitlik adına string eşleşmesi varsayıyoruz.
-                
-                target_badge = category_badges.get(str(cat_key)) # Güvenli erişim
-                
-                if target_badge and category_correct_count >= 10:
-                    cat_badge, created = Badge.objects.get_or_create(
-                        slug=target_badge['slug'],
-                        defaults={'name': target_badge['name'], 'description': f'{cat_key} kategorisinde 10 doğru cevap.', 'badge_type': 'specialty', 'icon': target_badge['icon'], 'color': target_badge['color']}
-                    )
-                    if created or cat_badge not in request.user.profile.badges.all():
-                        request.user.profile.badges.add(cat_badge)
-                        badge_awarded = cat_badge.name
-
-                # 100 doğru cevap -> Başarı Rozeti
-                if score.correct_answers == 100:
-                    badge, created = Badge.objects.get_or_create(
-                        slug='basari',
-                        defaults={'name': 'Başarı', 'description': '100 quiz sorusunu doğru cevaplayarak kazanıldı.', 'badge_type': 'achievement', 'icon': 'bi-patch-check-fill', 'color': '#10b981'}
-                    )
-                    if created or badge not in request.user.profile.badges.all():
-                        request.user.profile.badges.add(badge)
-                        badge_awarded = badge.name
-                
-                # 200 doğru cevap -> Uzmanlık Rozeti
-                elif score.correct_answers == 200:
-                    badge, created = Badge.objects.get_or_create(
-                        slug='uzmanlik',
-                        defaults={'name': 'Uzmanlık', 'description': '200 quiz sorusunu doğru cevaplayarak kazanıldı.', 'badge_type': 'specialty', 'icon': 'bi-shield-shaded', 'color': '#a855f7'}
-                    )
-                    if created or badge not in request.user.profile.badges.all():
-                        request.user.profile.badges.add(badge)
-                        badge_awarded = badge.name
-
-                # İstatistik Ustası Rozeti (100 Puan)
-                if score.total_points >= 100:
-                    istatistik_ustasi_badge, created = Badge.objects.get_or_create(
-                        slug='istatistik-ustasi',
-                        defaults={'name': 'İstatistik Ustası', 'description': 'Quizlerde 100+ puan topladı.', 'badge_type': 'specialty', 'icon': 'bi-patch-check-fill', 'color': '#ffd700'}
-                    )
-                    if created or istatistik_ustasi_badge not in request.user.profile.badges.all():
-                        request.user.profile.badges.add(istatistik_ustasi_badge)
-                        if not badge_awarded:  # Eğer kategori rozeti verilmediyse bunu göster
-                            badge_awarded = istatistik_ustasi_badge.name
-
-                # Quiz Şampiyonu ve Efsanesi rozetlerini kontrol et
+                # Rozet kontrolü signals üzerinden yapılır (eşik: 50 doğru)
                 from .signals import check_and_award_quiz_badges
                 check_and_award_quiz_badges(
                     request.user.profile,
@@ -1711,6 +1664,21 @@ def api_submit_quiz_answer(request):
                     correct_count=category_correct_count,
                     total_correct=score.correct_answers
                 )
+
+                # Yeni kazanılan rozeti kullanıcıya bildir
+                if category_correct_count == 50:
+                    category_badge_map = {
+                        'SPSS': 'SPSS Uzmanı', 'spss': 'SPSS Uzmanı',
+                        'Python': 'Python Ninja', 'python': 'Python Ninja',
+                        'R': 'R Üstadı', 'r': 'R Üstadı',
+                        'statistics': 'İstatistik Ustası', 'İstatistik': 'İstatistik Ustası',
+                    }
+                    badge_name = category_badge_map.get(str(question.category))
+                    if badge_name:
+                        badge_awarded = badge_name
+
+                if score.correct_answers == 1000:
+                    badge_awarded = 'Quiz Efsanesi'
 
 
             return JsonResponse({
@@ -1781,7 +1749,7 @@ def api_toggle_follow(request, username):
 
 
 # --- BAĞIŞ SİSTEMİ ---
-from .models import Donation
+from .models import Donation, DonationTier
 import uuid
 
 def donation_widget_data(request):
