@@ -6,7 +6,7 @@
     "option_c": "Medyan",
     "option_d": "Varyans",
     "correct_answer": "C",
-    "category": "merkezi_egilim",
+    "category": "İstatistik",
     "difficulty": "easy",
     "explanation": "Medyan (ortanca), veriler sıralandığında tam ortadaki değer olduğu için uç değerlerden etkilenmez; aritmetik ortalama ise bu değerlere karşı oldukça hassastır."
   },
@@ -17,7 +17,7 @@
     "option_c": "Ortalama=0, Standart Sapma=0",
     "option_d": "Ortalama=1, Standart Sapma=1",
     "correct_answer": "B",
-    "category": "dagilimlar",
+    "category": "İstatistik",
     "difficulty": "easy",
     "explanation": "Standart normal dağılım, ortalaması 0 ve standart sapması 1 olacak şekilde normalize edilmiş özel bir normal dağılım türüdür."
   },
@@ -28,7 +28,7 @@
     "option_c": "Ranj / Ortalama",
     "option_d": "Standart Hata / Standart Sapma",
     "correct_answer": "A",
-    "category": "degisim_olculeri",
+    "category": "İstatistik",
     "difficulty": "medium",
     "explanation": "Değişim katsayısı, standart sapmanın ortalamaya oranlanmasıyla hesaplanır ve farklı birimlerdeki verilerin yayılımını karşılaştırmak için kullanılır."
   },
@@ -39,7 +39,7 @@
     "option_c": "Tip I Hata (Alpha)",
     "option_d": "Serbestlik Derecesi",
     "correct_answer": "C",
-    "category": "hipotez_testleri",
+    "category": "İstatistik",
     "difficulty": "medium",
     "explanation": "Tip I Hata, doğru bir H0 hipotezinin yanlışlıkla reddedilmesidir (yalancı pozitif)."
   },
@@ -50,7 +50,7 @@
     "option_c": "Eşit Aralıklı (Interval) Ölçek",
     "option_d": "Oran (Ratio) Ölçeği",
     "correct_answer": "D",
-    "category": "olcek_turleri",
+    "category": "İstatistik",
     "difficulty": "easy",
     "explanation": "Oran ölçeği, gerçek bir sıfır noktasına sahiptir; boy, kilo ve gelir gibi değişkenler bu ölçektedir."
   },
@@ -61,7 +61,7 @@
     "option_c": "İlişki yoktur",
     "option_d": "Mükemmel pozitif ilişki",
     "correct_answer": "B",
-    "category": "korelasyon",
+    "category": "İstatistik",
     "difficulty": "easy",
     "explanation": "-1'e yakın değerler güçlü negatif ilişkiyi, yani bir değişken artarken diğerinin azaldığını gösterir."
   },
@@ -72,7 +72,7 @@
     "option_c": "Örneklem büyüklüğünün 5'ten küçük olması",
     "option_d": "Varyansların heterojen olması",
     "correct_answer": "B",
-    "category": "varsayimlar",
+    "category": "İstatistik",
     "difficulty": "medium",
     "explanation": "Parametrik testler, verilerin normal dağıldığı ve varyansların homojen olduğu varsayımına dayanır."
   },
@@ -83,7 +83,7 @@
     "option_c": "Pearson Korelasyon",
     "option_d": "Ki-Kare Testi",
     "correct_answer": "B",
-    "category": "hipotez_testleri",
+    "category": "İstatistik",
     "difficulty": "medium",
     "explanation": "Farklı bireylerden oluşan iki grubun (örn: Kadın-Erkek) ortalamalarını kıyaslamak için Independent Samples t-test kullanılır."
   },
@@ -94,7 +94,7 @@
     "option_c": "Standart sapmanın karesini",
     "option_d": "Gruplar arası farkın anlamlılığını",
     "correct_answer": "A",
-    "category": "regresyon",
+    "category": "İstatistik",
     "difficulty": "hard",
     "explanation": "R-kare, modelin veriye ne kadar iyi uyduğunu ve bağımsız değişkenlerin hedef değişkeni ne oranda açıkladığını gösterir."
   },
@@ -105,7 +105,7 @@
     "option_c": "Ortalama = Medyan",
     "option_d": "Mod > Ortalama",
     "correct_answer": "A",
-    "category": "dagilimlar",
+    "category": "İstatistik",
     "difficulty": "medium",
     "explanation": "Sağa çarpık dağılımlarda uç değerler sağda (büyük değerlerde) toplandığı için ortalamayı yukarı çeker."
   },
@@ -116,7 +116,7 @@
     "option_c": "Üniform Dağılım",
     "option_d": "Poisson Dağılımı",
     "correct_answer": "B",
-    "category": "teoremler",
+    "category": "İstatistik",
     "difficulty": "medium",
     "explanation": "Merkezi Limit Teoremi, popülasyon dağılımı ne olursa olsun, yeterince büyük örneklemlerde ortalamaların normal dağılacağını söyler."
   },
@@ -127,7 +127,7 @@
     "option_c": "Mann-Whitney U",
     "option_d": "Z-testi",
     "correct_answer": "B",
-    "category": "hipotez_testleri",
+    "category": "İstatistik",
     "difficulty": "easy",
     "explanation": "Analysis of Variance (ANOVA), üç veya daha fazla grup ortalamasının istatistiksel olarak farkını test eder."
   },
@@ -138,7 +138,7 @@
     "option_c": "Kovaryans",
     "option_d": "Ranj",
     "correct_answer": "B",
-    "category": "degisim_olculeri",
+    "category": "İstatistik",
     "difficulty": "easy",
     "explanation": "Varyans, verilerin ortalamadan sapmalarının karelerinin ortalamasıdır; standart sapmanın karesidir."
   },
@@ -149,7 +149,7 @@
     "option_c": "Oran Ölçeğindeki",
     "option_d": "Normal Dağılan",
     "correct_answer": "B",
-    "category": "regresyon",
+    "category": "İstatistik",
     "difficulty": "medium",
     "explanation": "Lojistik regresyon, bir sonucun (Evet/Hayır, Başarılı/Başarısız) olasılığını tahmin etmek için kullanılır."
   },
@@ -160,7 +160,7 @@
     "option_c": "Hata payının karesi",
     "option_d": "Örneklem büyüklüğü",
     "correct_answer": "B",
-    "category": "hipotez_testleri",
+    "category": "İstatistik",
     "difficulty": "hard",
     "explanation": "P-değeri, boş hipotez doğruyken, gözlemlenen sonuçların veya daha uç değerlerin elde edilme olasılığıdır."
   },
@@ -171,7 +171,7 @@
     "option_c": "Ki-Kare (Chi-Square) Bağımsızlık Testi",
     "option_d": "Regresyon",
     "correct_answer": "C",
-    "category": "hipotez_testleri",
+    "category": "İstatistik",
     "difficulty": "medium",
     "explanation": "Cinsiyet ile Sigara Kullanımı (Evet/Hayır) gibi iki kategorik değişken arasındaki ilişki Ki-Kare ile ölçülür."
   },
@@ -182,7 +182,7 @@
     "option_c": "Standart Sapma",
     "option_d": "Çeyrekler Arası Fark",
     "correct_answer": "B",
-    "category": "degisim_olculeri",
+    "category": "İstatistik",
     "difficulty": "easy",
     "explanation": "Ranj (Range), veri setinin yayılımını gösteren en basit ölçüdür: Maksimum - Minimum."
   },
@@ -215,7 +215,7 @@
     "option_c": "Hipotezin kabul edilme şansı",
     "option_d": "Deneydeki katılımcı sayısı",
     "correct_answer": "B",
-    "category": "istatistiksel_kavramlar",
+    "category": "İstatistik",
     "difficulty": "hard",
     "explanation": "Serbestlik derecesi, bir istatistiksel tahmin yaparken feda edilmeyen bağımsız bilgi birimi sayısıdır."
   },

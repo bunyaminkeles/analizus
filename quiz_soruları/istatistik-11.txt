@@ -6,7 +6,7 @@
     "option_c": "Veri setindeki kayıp değerleri silmeyi",
     "option_d": "En hızlı makine öğrenmesi modelini seçmeyi",
     "correct_answer": "B",
-    "category": "deney_tasarimi",
+    "category": "İstatistik",
     "difficulty": "hard",
     "explanation": "P-hacking, analistin istatistiksel olarak anlamlı bir sonuç (p < 0.05) bulana kadar farklı değişkenleri denemesi veya veri alt kümeleriyle oynamasıdır; bu sonuçların geçerliliğini bozar."
   },
@@ -17,7 +17,7 @@
     "option_c": "Korelasyon sadece negatif değerler alabilir.",
     "option_d": "Kovaryans sadece üç değişkenli setlerde hesaplanır.",
     "correct_answer": "B",
-    "category": "korelasyon",
+    "category": "İstatistik",
     "difficulty": "medium",
     "explanation": "Korelasyon, kovaryansın standart sapmaların çarpımına bölünmesiyle elde edilen normalize edilmiş bir versiyonudur."
   },
@@ -28,7 +28,7 @@
     "option_c": "Verilerin gelme olasılığı (likelihood)",
     "option_d": "Hata teriminin karesi",
     "correct_answer": "B",
-    "category": "bayesian_istatistik",
+    "category": "İstatistik",
     "difficulty": "hard",
     "explanation": "Posterior = (Likelihood * Prior) / Evidence. Yeni kanıtlar ışığında başlangıçtaki inancın güncellenmiş halidir."
   },
@@ -39,7 +39,7 @@
     "option_c": "Verilerin sadece hafta sonları toplanması",
     "option_d": "Serinin sürekli sıfır değerini alması",
     "correct_answer": "B",
-    "category": "zaman_serisi",
+    "category": "İstatistik",
     "difficulty": "medium",
     "explanation": "Durağan bir seri, zaman içinde değişmeyen bir ortalamaya ve varyansa sahiptir, bu da tahmini kolaylaştırır."
   },
@@ -50,7 +50,7 @@
     "option_c": "Eksik verileri tahmin etmek için",
     "option_d": "En iyi hiperparametreyi bulmak için",
     "correct_answer": "B",
-    "category": "regresyon",
+    "category": "İstatistik",
     "difficulty": "hard",
     "explanation": "VIF değeri, bir bağımsız değişkenin diğer bağımsız değişkenler tarafından ne kadar açıklandığını ölçer. Genellikle 5 veya 10'un üzeri yüksek bağlantı riskine işaret eder."
   },
@@ -61,7 +61,7 @@
     "option_c": "Verileri normalize etmek için",
     "option_d": "Örneklem büyüklüğünü azaltmak için",
     "correct_answer": "B",
-    "category": "hipotez_testleri",
+    "category": "İstatistik",
     "difficulty": "hard",
     "explanation": "Birden fazla test yapıldığında yanlışlıkla anlamlı sonuç bulma şansı artar. Bonferroni, anlamlılık düzeyini (alfa) test sayısına bölerek bu riski azaltır."
   },
@@ -72,7 +72,7 @@
     "option_c": "Ridge sadece doğrusal modellerde kullanılır.",
     "option_d": "Lasso sadece büyük veri setlerinde çalışır.",
     "correct_answer": "B",
-    "category": "regresyon_duzenlilestirme",
+    "category": "İstatistik",
     "difficulty": "hard",
     "explanation": "Lasso (L1) cezalandırması katsayıları sıfıra indirebilir, bu da modeli daha sade hale getirir (feature selection)."
   },
@@ -83,7 +83,7 @@
     "option_c": "Küme (Cluster) Örneklemesi",
     "option_d": "Kartopu Örneklemesi",
     "correct_answer": "B",
-    "category": "ornekleme",
+    "category": "İstatistik",
     "difficulty": "medium",
     "explanation": "Tabakalı örnekleme, heterojen bir popülasyondan homojen alt gruplar (tabakalar) oluşturarak daha temsili bir örneklem sağlar."
   },
@@ -94,7 +94,7 @@
     "option_c": "Her zaman daha büyük bir değer verdiği için",
     "option_d": "Normal dağılımda kullanılmadığı için",
     "correct_answer": "B",
-    "category": "degisim_olculeri",
+    "category": "İstatistik",
     "difficulty": "hard",
     "explanation": "Standart sapma kare alma işlemi içerdiği için uç değerlerden çok etkilenir. MAD, mutlak farkları ve medyanı kullandığı için uç değerlere karşı çok daha dirençlidir."
   },
@@ -105,7 +105,7 @@
     "option_c": "Ortalama / Standart Sapma",
     "option_d": "Medyan / Mod",
     "correct_answer": "A",
-    "category": "hipotez_testleri",
+    "category": "İstatistik",
     "difficulty": "medium",
     "explanation": "F-değeri, gruplar arasındaki farkın, grup içindeki doğal rastgele değişkenliğe oranını gösterir."
   },
@@ -116,7 +116,7 @@
     "option_c": "Korelasyon",
     "option_d": "Multicollinearity",
     "correct_answer": "B",
-    "category": "regresyon_varsayimlari",
+    "category": "İstatistik",
     "difficulty": "medium",
     "explanation": "Hataların varyansı tüm gözlemler için sabit değilse heteroscedasticity (değişen varyans) sorunu var demektir."
   },
@@ -127,7 +127,7 @@
     "option_c": "Pareto Grafiği",
     "option_d": "Isı Haritası",
     "correct_answer": "B",
-    "category": "gorsellestirme",
+    "category": "İstatistik",
     "difficulty": "easy",
     "explanation": "Box plot, verinin 5 sayılık özetini (min, Q1, medyan, Q3, max) ve uç değerleri gösteren güçlü bir araçtır."
   },
@@ -138,7 +138,7 @@
     "option_c": "Katsayı (Coefficient)",
     "option_d": "R-kare",
     "correct_answer": "B",
-    "category": "hipotez_testleri",
+    "category": "İstatistik",
     "difficulty": "easy",
     "explanation": "Alpha düzeyi (genellikle 0.05), boş hipotezi reddetmek için belirlediğimiz eşik değeridir."
   },
@@ -149,7 +149,7 @@
     "option_c": "Lojistik Dağılım",
     "option_d": "Gamma Dağılımı",
     "correct_answer": "B",
-    "category": "dagilimlar",
+    "category": "İstatistik",
     "difficulty": "medium",
     "explanation": "Binom dağılımı, 'n' adet bağımsız denemede elde edilen başarı sayısının olasılık dağılımıdır."
   },
@@ -160,7 +160,7 @@
     "option_c": "Sadece bilgisayar bilimlerinde",
     "option_d": "Sonuçlar her zaman %100 doğru çıksın diye",
     "correct_answer": "B",
-    "category": "test_secimi",
+    "category": "İstatistik",
     "difficulty": "medium",
     "explanation": "Parametrik olmayan testler (Mann-Whitney, Wilcoxon vb.), verilerin belirli bir dağılıma uyma zorunluluğunu aramaz."
   },
@@ -171,7 +171,7 @@
     "option_c": "Aritmetik ortalamanın her zaman medyandan küçük olması",
     "option_d": "Korelasyonun neden-sonuç ilişkisi olması",
     "correct_answer": "B",
-    "category": "istatistiksel_yaniltmacalar",
+    "category": "İstatistik",
     "difficulty": "hard",
     "explanation": "Alt gruplardaki değişkenlerin birleştirilmesiyle ortaya çıkan yanıltıcı sonuçtur; gizli değişkenlerin etkisinden kaynaklanır."
   },
@@ -182,7 +182,7 @@
     "option_c": "Veri setinin megabayt cinsinden boyutu",
     "option_d": "Kullanılan CPU sayısı",
     "correct_answer": "B",
-    "category": "hipotez_testleri",
+    "category": "İstatistik",
     "difficulty": "hard",
     "explanation": "İstatistiksel güç, bir testin gerçekte var olan bir etkiyi veya farkı yakalayabilme kapasitesidir."
   },
@@ -193,7 +193,7 @@
     "option_c": "Verileri sadece 0 ve 1 arasına çekmek için",
     "option_d": "Sütun isimlerini değiştirmek için",
     "correct_answer": "B",
-    "category": "veri_hazirlama",
+    "category": "İstatistik",
     "difficulty": "medium",
     "explanation": "Gelir gibi sağa çarpık verilerde logaritmik dönüşüm, yüksek değerlerin baskısını azaltarak dağılımı normale yaklaştırır."
   },
@@ -204,7 +204,7 @@
     "option_c": "Gözlem sayısını",
     "option_d": "Korelasyon katsayısını",
     "correct_answer": "B",
-    "category": "regresyon",
+    "category": "İstatistik",
     "difficulty": "medium",
     "explanation": "OLS, gerçek değerler ile tahmin edilen değerler arasındaki farkların (hataların) karelerini minimum yapacak doğruyu bulur."
   },
@@ -215,7 +215,7 @@
     "option_c": "İki grubun ortalamasını kıyaslamak için",
     "option_d": "Sadece finansal borsa verilerinde",
     "correct_answer": "B",
-    "category": "dagilimlar",
+    "category": "İstatistik",
     "difficulty": "hard",
     "explanation": "Örneğin; bir saatte bankaya gelen müşteri sayısı veya bir sayfadaki dizgi hatası sayısı Poisson ile modellenir."
   },
@@ -226,7 +226,7 @@
     "option_c": "Sadece r > 0.95 ise kanıtlar.",
     "option_d": "Sadece tıp alanında kanıtlar.",
     "correct_answer": "B",
-    "category": "temel_mantik",
+    "category": "İstatistik",
     "difficulty": "easy",
     "explanation": "'Correlation does not imply causation'. Üçüncü bir değişken her ikisini de etkiliyor olabilir."
   },
@@ -237,7 +237,7 @@
     "option_c": "Pie Chart",
     "option_d": "Step Chart",
     "correct_answer": "B",
-    "category": "gorsellestirme",
+    "category": "İstatistik",
     "difficulty": "easy",
     "explanation": "Heatmapler, özellikle korelasyon matrislerini veya coğrafi veri yoğunluğunu görselleştirmek için idealdir."
   },
@@ -248,7 +248,7 @@
     "option_c": "Modelin hızını",
     "option_d": "Eksik veri miktarını",
     "correct_answer": "B",
-    "category": "regresyon_varsayimlari",
+    "category": "İstatistik",
     "difficulty": "hard",
     "explanation": "Özellikle zaman serisi regresyonlarında, hataların birbirinden bağımsız olması gerekir. Bu istatistik 2'ye yakınsa otokorelasyon yok kabul edilir."
   },
@@ -259,7 +259,7 @@
     "option_c": "Standart hata her zaman daha büyüktür.",
     "option_d": "Standart hata sadece medyan ile hesaplanır.",
     "correct_answer": "B",
-    "category": "istatistiksel_kavramlar",
+    "category": "İstatistik",
     "difficulty": "hard",
     "explanation": "Standart hata, örneklem ortalamasının gerçek popülasyon ortalamasından ne kadar sapabileceğini ölçer (SE = SD / kök(n))."
   },
@@ -270,7 +270,7 @@
     "option_c": "Sadece 2 değişkenle çalışması",
     "option_d": "Görselleştirilememesi",
     "correct_answer": "B",
-    "category": "regresyon",
+    "category": "İstatistik",
     "difficulty": "hard",
     "explanation": "Tamamen istatistiksel anlamlılığa dayalı değişken ekleme/çıkarma, tesadüfi sonuçlara ve domain bilgisinin ihmaline yol açabilir."
   }
