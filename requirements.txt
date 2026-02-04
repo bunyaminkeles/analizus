@@ -33,7 +33,7 @@ urllib3
 asgiref
 typing_extensions
 packaging
-sendgrid  # SendGrid Web API için (SMTP yerine)
+django-ses  # AWS SES email backend
 
 # --- ÖDEME SİSTEMLERİ ---
 iyzipay  # iyzico ödeme entegrasyonu

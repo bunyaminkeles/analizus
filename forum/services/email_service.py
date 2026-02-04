@@ -1,9 +1,10 @@
 """
-E-posta gönderme servisi - SendGrid Web API
-Render.com'un SMTP engelini aşmak için HTTP tabanlı API kullanılıyor
+E-posta gönderme servisi - AWS SES
+Django'nun email backend'i üzerinden SES kullanılıyor
 """
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
+from django.core.mail import send_mail
 from django.conf import settings
 import logging
 
@@ -11,12 +12,12 @@ logger = logging.getLogger(__name__)
 
 
 class EmailService:
-    """E-posta gönderme işlemlerini yöneten servis (SendGrid Web API)"""
+    """E-posta gönderme işlemlerini yöneten servis (AWS SES)"""
 
     @staticmethod
     def is_configured():
-        """SendGrid API key'in yapılandırılıp yapılandırılmadığını kontrol eder"""
-        return bool(getattr(settings, 'SENDGRID_API_KEY', ''))
+        """AWS SES'in yapılandırılıp yapılandırılmadığını kontrol eder"""
+        return bool(getattr(settings, 'AWS_ACCESS_KEY_ID', ''))
 
     @staticmethod
     def get_base_url():
@@ -24,9 +25,9 @@ class EmailService:
         return getattr(settings, 'SITE_URL', 'http://localhost:8000')
 
     @classmethod
-    def _send_email_via_sendgrid(cls, to_email, subject, html_content, plain_content):
+    def _send_email(cls, to_email, subject, html_content, plain_content):
         """
-        SendGrid Web API ile e-posta gönderir (SMTP yerine HTTP)
+        Django email backend (SES) ile e-posta gönderir
 
         Args:
             to_email: Alıcı e-posta adresi
@@ -38,44 +39,22 @@ class EmailService:
             bool: Gönderim başarılı mı
         """
         try:
-            from sendgrid import SendGridAPIClient
-            from sendgrid.helpers.mail import Mail
-
-            api_key = getattr(settings, 'SENDGRID_API_KEY', '')
             from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@analizus.com')
 
-            message = Mail(
-                from_email=from_email,
-                to_emails=to_email,
+            send_mail(
                 subject=subject,
-                html_content=html_content,
-                plain_text_content=plain_content
+                message=plain_content,
+                from_email=from_email,
+                recipient_list=[to_email],
+                html_message=html_content,
+                fail_silently=False,
             )
 
-            sg = SendGridAPIClient(api_key)
-            response = sg.send(message)
+            logger.info(f"AWS SES ile e-posta gönderildi: {to_email}")
+            return True
 
-            if response.status_code in [200, 201, 202]:
-                logger.info(f"SendGrid ile e-posta gönderildi: {to_email} (status: {response.status_code})")
-                return True
-            else:
-                logger.error(f"SendGrid hata döndürdü: {response.status_code} - {response.body}")
-                return False
-
-        except ImportError:
-            logger.error("SendGrid paketi yüklü değil. 'pip install sendgrid' çalıştırın.")
-            return False
         except Exception as e:
-            # SendGrid'den dönen detaylı hata mesajını logla (403 nedenini görmek için)
-            if hasattr(e, 'body'):
-                try:
-                    # Hata gövdesi genellikle bytes formatındadır
-                    error_body = e.body.decode('utf-8')
-                    logger.error(f"SendGrid API Hata Detayı: {error_body}")
-                    print(f"SendGrid API Hata Detayı: {error_body}")
-                except Exception:
-                    pass
-            logger.error(f"SendGrid e-posta gönderme hatası ({to_email}): {e}")
+            logger.error(f"AWS SES e-posta gönderme hatası ({to_email}): {e}")
             return False
 
     @classmethod
@@ -103,14 +82,14 @@ class EmailService:
 
         # E-posta yapılandırılmamışsa skip et
         if not cls.is_configured():
-            logger.warning(f"SendGrid API key yapılandırılmamış. Kullanıcı: {user.username}")
+            logger.warning(f"AWS SES yapılandırılmamış. Kullanıcı: {user.username}")
             return False
 
         # HTML template
         html_message = render_to_string('forum/emails/verification_email.html', context)
         plain_message = strip_tags(html_message)
 
-        return cls._send_email_via_sendgrid(
+        return cls._send_email(
             to_email=user.email,
             subject=subject,
             html_content=html_message,
@@ -138,13 +117,13 @@ class EmailService:
 
         # E-posta yapılandırılmamışsa skip et
         if not cls.is_configured():
-            logger.warning(f"SendGrid API key yapılandırılmamış. Hoş geldin e-postası gönderilemedi: {user.username}")
+            logger.warning(f"AWS SES yapılandırılmamış. Hoş geldin e-postası gönderilemedi: {user.username}")
             return False
 
         html_message = render_to_string('forum/emails/welcome_email.html', context)
         plain_message = strip_tags(html_message)
 
-        return cls._send_email_via_sendgrid(
+        return cls._send_email(
             to_email=user.email,
             subject=subject,
             html_content=html_message,
@@ -183,4 +162,4 @@ class EmailService:
         """
         plain_content = f"Tebrikler {user.username}! EDU mail ile giriş yaptığınız için Doğrulanmış Akademisyen rozeti kazandınız. 3 gün teklif verme hakkınız var."
 
-        return cls._send_email_via_sendgrid(user.email, subject, html_content, plain_content)
+        return cls._send_email(user.email, subject, html_content, plain_content)
