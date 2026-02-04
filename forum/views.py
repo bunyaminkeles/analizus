@@ -930,8 +930,12 @@ def profile_edit(request):
                     profile.phone_verified = False
 
         # Dosyalar
+        print(f"[DEBUG] request.FILES: {request.FILES}")
+        print(f"[DEBUG] 'avatar' in FILES: {'avatar' in request.FILES}")
         if 'avatar' in request.FILES:
-            profile.avatar = request.FILES['avatar']
+            avatar_file = request.FILES['avatar']
+            print(f"[DEBUG] Avatar dosyası: {avatar_file.name}, boyut: {avatar_file.size}")
+            profile.avatar = avatar_file
         if 'cover_image' in request.FILES:
             profile.cover_image = request.FILES['cover_image']
         
