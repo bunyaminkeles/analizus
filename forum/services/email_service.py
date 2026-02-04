@@ -165,3 +165,22 @@ class EmailService:
         """
         # Aynı verification_email fonksiyonunu kullanabiliriz
         return cls.send_verification_email(user, verification_token)
+
+    @classmethod
+    def send_edu_welcome_email(cls, user):
+        """EDU mail ile giriş yapan kullanıcıya bilgilendirme maili"""
+        if not cls.is_configured():
+            return False
+
+        subject = 'Analizus - Doğrulanmış Akademisyen Rozeti Kazandınız!'
+        html_content = f"""
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2 style="color: #0ea5e9;">Tebrikler {user.username}!</h2>
+            <p>EDU uzantılı mail adresiniz ile giriş yaptığınız için <strong>Doğrulanmış Akademisyen</strong> rozeti kazandınız!</p>
+            <p>Ayrıca <strong>3 gün boyunca teklif verme hakkına</strong> sahipsiniz.</p>
+            <p>İyi çalışmalar,<br>Analizus Ekibi</p>
+        </div>
+        """
+        plain_content = f"Tebrikler {user.username}! EDU mail ile giriş yaptığınız için Doğrulanmış Akademisyen rozeti kazandınız. 3 gün teklif verme hakkınız var."
+
+        return cls._send_email_via_sendgrid(user.email, subject, html_content, plain_content)

@@ -1,94 +1,311 @@
-{% extends 'base.html' %}
-{% load crispy_forms_tags %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giriş Yap - Analizus</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
 
-{% block content %}
-<div class="row justify-content-center align-items-center" style="min-height: 70vh;">
-    <div class="col-md-5 col-lg-4">
-        
-        <div class="card shadow-lg border-0" style="background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 20px;">
-            <div class="card-body p-4 p-md-5">
-                
-                <div class="text-center mb-4">
-                    <div class="fingerprint-wrapper mb-3">
-                        <i class="bi bi-fingerprint display-4 text-info animate-pulse"></i>
+        .split-container {
+            display: flex;
+            height: 100vh;
+        }
+
+        /* Sol Yarı - Görsel */
+        .left-half {
+            flex: 0 0 50%;
+            height: 100%;
+            background-color: #0a1628;
+            background-image: url("{% static 'forum/images/login-hero.jpeg' %}");
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+            position: relative;
+        }
+
+        /* Kenar Blur Efekti */
+        .left-half::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at center, transparent 20%, rgba(10, 22, 40, 0.4) 50%, #0a1628 85%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Yıldız Kayması Çizgisi */
+        .left-half::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background: linear-gradient(180deg, transparent, #ff6b4a, transparent);
+            animation: fall 5s linear infinite;
+            z-index: 2;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-100%);
+            }
+            100% {
+                transform: translateY(100%);
+            }
+        }
+
+        /* Sağ Yarı - Form */
+        .right-half {
+            flex: 0 0 50%;
+            height: 100%;
+            background: #0a1628;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .top-bar {
+            position: absolute;
+            top: 1.5rem;
+            right: 2rem;
+        }
+
+        .back-link {
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .back-link:hover { color: #fff; }
+
+        .form-area {
+            width: 100%;
+            max-width: 360px;
+        }
+
+        .form-box {
+            width: 100%;
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .form-title {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .form-subtitle {
+            color: #ff6b4a;
+            font-size: 0.9rem;
+            margin-top: 0.25rem;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            background: #1a1a1a;
+            border-radius: 10px;
+            padding: 4px;
+            margin-bottom: 2rem;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 0.75rem;
+            text-align: center;
+            color: #555;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .tab.active {
+            background: #252525;
+            color: #fff;
+        }
+
+        .tab:hover:not(.active) { color: #888; }
+
+        /* Form */
+        .field {
+            margin-bottom: 1.25rem;
+        }
+
+        .label {
+            display: block;
+            color: #ff6b4a;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .input-wrap {
+            position: relative;
+        }
+
+        .input-wrap i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #444;
+        }
+
+        .input-wrap input {
+            width: 100%;
+            background: #161616;
+            border: 1px solid #2a2a2a;
+            border-radius: 8px;
+            padding: 0.85rem 1rem 0.85rem 2.75rem;
+            color: #fff;
+            font-size: 0.95rem;
+        }
+
+        .input-wrap input:focus {
+            outline: none;
+            border-color: #ff6b4a;
+        }
+
+        .input-wrap input::placeholder { color: #444; }
+
+        .forgot {
+            display: block;
+            text-align: right;
+            color: #555;
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+            text-decoration: none;
+        }
+        .forgot:hover { color: #ff6b4a; }
+
+        .submit-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #ff6b4a, #e55a3a);
+            border: none;
+            border-radius: 8px;
+            padding: 0.9rem;
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 0.5rem;
+        }
+
+        .submit-btn:hover {
+            box-shadow: 0 5px 20px rgba(255,107,74,0.4);
+        }
+
+        .footer-text {
+            text-align: center;
+            margin-top: 2rem;
+            color: #555;
+            font-size: 0.9rem;
+        }
+
+        .footer-text a {
+            color: #ff6b4a;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .error-msg {
+            background: rgba(255,100,100,0.1);
+            border: 1px solid rgba(255,100,100,0.3);
+            border-radius: 6px;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            color: #ff6b6b;
+            font-size: 0.85rem;
+        }
+
+        @media (max-width: 991px) {
+            .split-container { flex-direction: column; }
+            .left-half { display: none; }
+            .right-half { flex-basis: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="split-container">
+        <!-- Sol Yarı - Görsel -->
+        <div class="left-half"></div>
+
+        <!-- Sağ Yarı - Form -->
+        <div class="right-half">
+            <div class="top-bar">
+                <a href="{% url 'home' %}" class="back-link">
+                    <i class="bi bi-arrow-left"></i> Ana Sayfa
+                </a>
+            </div>
+
+            <div class="form-area">
+                <div class="form-box">
+                    <div class="form-header">
+                        <h1 class="form-title">Hoş Geldiniz</h1>
+                        <p class="form-subtitle">Hesabınıza giriş yapın</p>
                     </div>
-                    <h3 class="fw-bold text-white">Giriş Yap</h3>
+
+                    <div class="tabs">
+                        <a href="{% url 'login' %}" class="tab active">Giriş Yap</a>
+                        <a href="{% url 'register' %}" class="tab">Kayıt Ol</a>
+                    </div>
+
+                    {% if form.errors %}
+                    <div class="error-msg">Kullanıcı adı veya şifre hatalı.</div>
+                    {% endif %}
+
+                    <form method="post" novalidate id="loginForm">
+                        {% csrf_token %}
+
+                        <div class="field">
+                            <label class="label">Kullanıcı Adı</label>
+                            <div class="input-wrap">
+                                <i class="bi bi-person"></i>
+                                <input type="text" name="username" placeholder="kullaniciadi" required>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label class="label">Şifre</label>
+                            <div class="input-wrap">
+                                <i class="bi bi-lock"></i>
+                                <input type="password" name="password" placeholder="••••••••" required>
+                            </div>
+                            <a href="{% url 'password_reset' %}" class="forgot">Şifremi Unuttum</a>
+                        </div>
+
+                        <button type="submit" class="submit-btn" id="submitBtn">Giriş Yap</button>
+                    </form>
+                    <script>
+                        document.getElementById('loginForm').addEventListener('submit', function(e) {
+                            var btn = document.getElementById('submitBtn');
+                            if (btn.disabled) {
+                                e.preventDefault();
+                                return false;
+                            }
+                            btn.disabled = true;
+                            btn.textContent = 'Giriş yapılıyor...';
+                        });
+                    </script>
+
+                    <p class="footer-text">
+                        Hesabınız yok mu? <a href="{% url 'register' %}">Hemen Kayıt Ol</a>
+                    </p>
                 </div>
-
-                <form method="post" novalidate>
-                    {% csrf_token %}
-                    
-                    <div class="mb-4 login-field-group">
-                        <label class="text-info fw-bold small mb-2 d-block text-start">Kullanıcı Adı</label>
-                        <div class="input-container">
-                            {{ form.username }}
-                        </div>
-                    </div>
-
-                    <div class="mb-4 login-field-group">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <label class="text-info fw-bold small mb-2 d-block text-start">Şifre</label>
-                            <a href="{% url 'password_reset' %}" class="small text-muted text-decoration-none" style="font-size: 0.8rem;">Şifremi Unuttum?</a>
-                        </div>
-                        <div class="input-container">
-                            {{ form.password }}
-                        </div>
-                    </div>
-
-                    <div class="d-grid mt-4">
-                        <button type="submit" class="btn btn-primary btn-lg fw-bold rounded-pill shadow-lg border-0 py-2"
-                                style="background: linear-gradient(45deg, #00d2ff, #3a7bd5); transition: 0.3s;">
-                            Sisteme Gir
-                        </button>
-                    </div>
-                </form>
-
-                <div class="text-center mt-4 pt-3 border-top border-secondary border-opacity-25">
-                    <small class="text-muted opacity-75">Hesabın yok mu?</small>
-                    <a href="{% url 'register' %}" class="fw-bold text-warning text-decoration-none ms-1 hover-glow">
-                        Hemen Kayıt Ol
-                    </a>
-                </div>
-                
             </div>
         </div>
     </div>
-</div>
-
-<style>
-    /* 1. Hizalama ve Form Kontrol Fix */
-    .login-field-group input {
-        width: 100% !important; /* Genişliği zorla eşitle */
-        display: block !important;
-        background-color: #1e293b !important;
-        color: #ffffff !important;
-        border: 1px solid rgba(56, 189, 248, 0.4) !important;
-        border-radius: 10px !important;
-        padding: 12px 15px !important;
-        height: auto !important;
-        transition: all 0.3s ease;
-    }
-
-    .login-field-group input:focus {
-        border-color: #00d2ff !important;
-        box-shadow: 0 0 15px rgba(0, 210, 255, 0.3) !important;
-        outline: none;
-    }
-
-    /* 2. Parmak İzi Nabız Efekti */
-    .animate-pulse {
-        animation: pulse-blue 2s infinite;
-        filter: drop-shadow(0 0 5px rgba(0, 210, 255, 0.5));
-    }
-
-    @keyframes pulse-blue {
-        0% { transform: scale(1); opacity: 0.8; }
-        50% { transform: scale(1.05); opacity: 1; filter: drop-shadow(0 0 15px rgba(0, 210, 255, 0.8)); }
-        100% { transform: scale(1); opacity: 0.8; }
-    }
-
-    .hover-glow:hover {
-        text-shadow: 0 0 10px rgba(255, 193, 7, 0.6);
-    }
-</style>
-{% endblock %}
+</body>
+</html>

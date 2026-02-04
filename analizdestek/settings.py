@@ -148,6 +148,11 @@ X_FRAME_OPTIONS = 'DENY'
 # Rate Limiting
 RATELIMIT_VIEW = 'forum.views.ratelimit_error'
 
+# LinkedIn API
+LINKEDIN_CLIENT_ID = os.getenv('LINKEDIN_CLIENT_ID', '')
+LINKEDIN_CLIENT_SECRET = os.getenv('LINKEDIN_CLIENT_SECRET', '')
+LINKEDIN_REDIRECT_URI = os.getenv('LINKEDIN_REDIRECT_URI', 'https://www.analizus.com/linkedin/callback/')
+
 LANGUAGES = [
     ('tr', _('Turkish')),
     ('en', _('English')),
@@ -238,12 +243,17 @@ ALLOWED_ATTACHMENT_TYPES = [
 
 # --- SESSION AYARLARI ---
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # Database-backed sessions (çoklu worker için)
-SESSION_COOKIE_AGE = 60 * 60 * 24  # 1 gün
+SESSION_COOKIE_AGE = 60 * 60 * 2  # 2 saat
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = 'Lax'
 SESSION_COOKIE_SECURE = not DEBUG  # Production'da HTTPS zorunlu
 SESSION_SAVE_EVERY_REQUEST = True  # Her istekte session süresini yeniler
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False  # Tarayıcı kapanınca session silinmesin
+
+# --- CSRF AYARLARI ---
+CSRF_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_HTTPONLY = False  # JavaScript'in token'a erişebilmesi için
+CSRF_USE_SESSIONS = False  # Cookie-based CSRF (mobile uyumlu)
 
 # --- GOOGLE ANALYTICS ---
 # GA4 Measurement ID (örn: G-XXXXXXXXXX)

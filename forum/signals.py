@@ -194,14 +194,14 @@ def check_and_award_participation_badges(profile):
     try:
         user = profile.user
 
-        # Yardımsever: 10 soruya cevap verdi
-        if user.posts.count() >= 10:
+        # Yardımsever: 50 soruya cevap verdi
+        if user.posts.count() >= 50:
             badge = Badge.objects.filter(slug='yardimsever').first()
             if badge:
                 profile.badges.add(badge)
 
-        # Konu Açıcı: 5 konu açtı
-        if user.topics.count() >= 5:
+        # Konu Açıcı: 20 konu açtı
+        if user.topics.count() >= 20:
             badge = Badge.objects.filter(slug='konu-acici').first()
             if badge:
                 profile.badges.add(badge)
@@ -212,23 +212,10 @@ def check_and_award_participation_badges(profile):
             if badge:
                 profile.badges.add(badge)
 
-        # Çözüm Ustası: 10 kez "En Faydalı Cevap"
+        # Çözüm Ustası: 25 kez "En Faydalı Cevap"
         best_answer_count = user.posts.filter(is_best_answer=True).count()
-        if best_answer_count >= 10:
+        if best_answer_count >= 25:
             badge = Badge.objects.filter(slug='cozum-ustasi').first()
-            if badge:
-                profile.badges.add(badge)
-
-        # Popüler Yazar: Bir konusu 1000+ görüntülendi
-        if user.topics.filter(views__gte=1000).exists():
-            badge = Badge.objects.filter(slug='populer-yazar').first()
-            if badge:
-                profile.badges.add(badge)
-
-        # Beğenilen Yazar: Toplam 50 beğeni aldı
-        total_likes = sum(p.likes for p in user.posts.all())
-        if total_likes >= 50:
-            badge = Badge.objects.filter(slug='begenilen-yazar').first()
             if badge:
                 profile.badges.add(badge)
 
@@ -243,30 +230,23 @@ def check_and_award_participation_badges(profile):
 def check_and_award_quiz_badges(profile, category=None, correct_count=0, total_correct=0):
     """Quiz performansına göre rozetleri kontrol et ve ver"""
     try:
-        # Kategori bazlı rozetler (10 doğru cevap)
+        # Kategori bazlı rozetler (50 doğru cevap)
         category_badge_map = {
             'spss': 'spss-uzmani',
             'python': 'python-ninja',
             'r': 'r-ustadi',
             'statistics': 'istatistik-ustasi',
-            'methodology': 'metodoloji-gurusu',
         }
 
-        if category and correct_count >= 10:
+        if category and correct_count >= 50:
             badge_slug = category_badge_map.get(category)
             if badge_slug:
                 badge = Badge.objects.filter(slug=badge_slug).first()
                 if badge:
                     profile.badges.add(badge)
 
-        # Quiz Şampiyonu: 100 toplam doğru
-        if total_correct >= 100:
-            badge = Badge.objects.filter(slug='quiz-sampiyonu').first()
-            if badge:
-                profile.badges.add(badge)
-
-        # Quiz Efsanesi: 500 toplam doğru
-        if total_correct >= 500:
+        # Quiz Efsanesi: 1000 toplam doğru
+        if total_correct >= 1000:
             badge = Badge.objects.filter(slug='quiz-efsanesi').first()
             if badge:
                 profile.badges.add(badge)

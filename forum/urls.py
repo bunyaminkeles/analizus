@@ -5,6 +5,18 @@ from . import api_views
 urlpatterns = [
     path('', views.home, name='home'),
     path('health/', views.health_check, name='health_check'),
+
+    # LinkedIn Entegrasyonu
+    path('linkedin/connect/', views.linkedin_connect, name='linkedin_connect'),
+    path('linkedin/callback/', views.linkedin_callback, name='linkedin_callback'),
+    path('linkedin/share-test/', views.linkedin_share_test, name='linkedin_share_test'),
+
+    # Blog
+    path('blog/', views.blog_list, name='blog_list'),
+    path('blog/create/', views.blog_create, name='blog_create'),
+    path('blog/<slug:slug>/', views.blog_detail, name='blog_detail'),
+    path('blog/<slug:slug>/like/', views.blog_like, name='blog_like'),
+
     path('register/', views.register, name='register'),
     
     # Profil
@@ -43,6 +55,7 @@ urlpatterns = [
     # Diğer
     path('search/', views.search_result, name='search'),
     path('hakkimizda/', views.about, name='about'),
+    path('nasil-calisir/', views.how_it_works, name='how_it_works'),
     path('iletisim/', views.contact, name='contact'),
     
     # Section Detail
@@ -76,9 +89,7 @@ urlpatterns = [
     path('api/follow/<str:username>/', api_views.toggle_follow_user, name='api_toggle_follow'),
 
     # Bağış Sistemi
-    # path('api/donation/widget/', views.donation_widget_data, name='donation_widget_data'),
-    # path('api/donation/create/', views.create_donation, name='create_donation'),
-    # path('api/donation/callback/', views.donation_callback, name='donation_callback'),
+    path('api/send-support-email/', views.send_support_email, name='send_support_email'),
     path('donation/success/', views.donation_success, name='donation_success'),
 
     # Cron Job Endpoints (External cron services için)

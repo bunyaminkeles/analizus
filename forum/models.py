@@ -111,6 +111,7 @@ class Badge(models.Model):
     color = models.CharField(max_length=20, default="#6366f1", verbose_name="Renk (Hex)")
     badge_type = models.CharField(max_length=20, choices=BADGE_TYPES, default='achievement')
     points_required = models.IntegerField(default=0, verbose_name="Gereken Puan (0=manuel)")
+    can_write_blog = models.BooleanField(default=False, verbose_name="Blog Yazabilir")
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -212,6 +213,9 @@ class Profile(models.Model):
     phone_number = models.CharField(max_length=20, blank=True, default="", verbose_name="Telefon Numarası")
     phone_verified = models.BooleanField(default=False, verbose_name="Telefon Doğrulandı")
     linkedin_verified = models.BooleanField(default=False, verbose_name="LinkedIn Doğrulandı")
+
+    # EDU mail ile giriş yapanlara geçici teklif hakkı
+    edu_proposal_expires = models.DateTimeField(null=True, blank=True, verbose_name="EDU Teklif Hakkı Bitiş")
     following = models.ManyToManyField('self', related_name='followers', symmetrical=False, blank=True, verbose_name="Takip Edilenler")
 
     def __str__(self):
@@ -362,6 +366,8 @@ class Profile(models.Model):
 
     def can_propose(self):
         """Teklif verme yetkisi kontrolü"""
+        from django.utils import timezone
+
         # Admin/Staff her zaman verebilir
         if self.user.is_superuser or self.user.is_staff:
             return True, "Yönetici yetkisi"
@@ -370,6 +376,10 @@ class Profile(models.Model):
         if self.account_type == 'Premium':
             return True, "Premium üyelik"
 
+        # EDU mail ile geçici teklif hakkı
+        if self.edu_proposal_expires and self.edu_proposal_expires > timezone.now():
+            return True, "EDU mail ayrıcalığı (3 günlük)"
+
         # Belirli rütbeler verebilir (expert ve üstü)
         allowed_ranks = ['expert', 'master', 'legend', 'admin']
         if self.rank in allowed_ranks:
@@ -377,12 +387,11 @@ class Profile(models.Model):
 
         # Belirli rozetler ile verebilir
         proposal_badges = [
-            'uzman',              # 1000 puan
-            'profesor',           # 2500 puan
-            'efsane',             # 5000 puan
-            'cozum-ustasi',       # 10 en iyi cevap
-            'quiz-efsanesi',      # 500 quiz doğru
-            'premium-uye',
+            'uzman',              # 2500 puan
+            'profesor',           # 5000 puan
+            'efsane',             # 10000 puan
+            'cozum-ustasi',       # 25 en iyi cevap
+            'quiz-efsanesi',      # 1000 quiz doğru
             'dogrulanmis-akademisyen',
             'moderator',
         ]
@@ -759,6 +768,14 @@ class FreelanceJob(models.Model):
     views = models.PositiveIntegerField(default=0, verbose_name="Görüntülenme")
     is_featured = models.BooleanField(default=False, verbose_name="Öne Çıkarılmış")
     featured_until = models.DateTimeField(null=True, blank=True, verbose_name="Vitrin Bitiş Tarihi")
+
+    FEATURE_STATUS_CHOICES = (
+        ('none', 'Yok'),
+        ('pending', 'Onay Bekliyor'),
+        ('approved', 'Onaylandı'),
+        ('rejected', 'Reddedildi'),
+    )
+    feature_status = models.CharField(max_length=20, choices=FEATURE_STATUS_CHOICES, default='none', verbose_name="Vitrin Durumu")
     expires_at = models.DateTimeField(null=True, blank=True, verbose_name="Bitiş Tarihi")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -1007,6 +1024,7 @@ class JobPayment(models.Model):
 
     job = models.ForeignKey(FreelanceJob, on_delete=models.CASCADE, related_name='payments', verbose_name="İlan")
     amount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Tutar")
+    duration_days = models.PositiveIntegerField(default=7, verbose_name="Vitrin Süresi (Gün)")
     payment_id = models.CharField(max_length=100, unique=True, verbose_name="Ödeme ID")
     conversation_id = models.CharField(max_length=100, verbose_name="Konuşma ID")
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending', verbose_name="Durum")
@@ -1014,3 +1032,124 @@ class JobPayment(models.Model):
 
     def __str__(self):
         return f"{self.job.title} - {self.amount}₺ - {self.get_status_display()}"
+
+
+class SiteSettings(models.Model):
+    """Site genelinde tekil ayarlar"""
+    # LinkedIn API
+    linkedin_access_token = models.TextField(blank=True, verbose_name="LinkedIn Access Token")
+    linkedin_person_urn = models.CharField(max_length=100, blank=True, verbose_name="LinkedIn Person URN")
+    linkedin_organization_id = models.CharField(max_length=50, blank=True, verbose_name="LinkedIn Şirket ID", help_text="Şirket sayfası URL'sindeki numara (örn: 101597284)")
+    linkedin_connected_at = models.DateTimeField(null=True, blank=True, verbose_name="LinkedIn Bağlantı Tarihi")
+
+    # Otomatik Paylaşım Ayarları
+    auto_share_topics = models.BooleanField(default=False, verbose_name="Yeni konuları otomatik paylaş")
+    auto_share_jobs = models.BooleanField(default=False, verbose_name="Yeni ilanları otomatik paylaş")
+
+    class Meta:
+        verbose_name = "Site Ayarı"
+        verbose_name_plural = "Site Ayarları"
+
+    def save(self, *args, **kwargs):
+        # Sadece tek kayıt olsun
+        self.pk = 1
+        super().save(*args, **kwargs)
+
+    def delete(self, *args, **kwargs):
+        pass  # Silmeyi engelle
+
+    @classmethod
+    def load(cls):
+        obj, _ = cls.objects.get_or_create(pk=1)
+        return obj
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# BLOG SİSTEMİ
+# ═══════════════════════════════════════════════════════════════════════════════
+
+class BlogCategory(models.Model):
+    """Blog kategorileri"""
+    name = models.CharField(max_length=100, verbose_name="Kategori Adı")
+    slug = models.SlugField(unique=True)
+    icon = models.CharField(max_length=50, default="bi-folder", verbose_name="İkon")
+    color = models.CharField(max_length=20, default="#00d2ff", verbose_name="Renk")
+    order = models.IntegerField(default=0, verbose_name="Sıra")
+
+    class Meta:
+        verbose_name = "Blog Kategorisi"
+        verbose_name_plural = "Blog Kategorileri"
+        ordering = ['order', 'name']
+
+    def __str__(self):
+        return self.name
+
+
+class BlogPost(models.Model):
+    """Blog yazıları"""
+    STATUS_CHOICES = (
+        ('draft', 'Taslak'),
+        ('published', 'Yayında'),
+    )
+
+    title = models.CharField(max_length=200, verbose_name="Başlık")
+    slug = models.SlugField(unique=True, max_length=250)
+    excerpt = models.TextField(max_length=300, verbose_name="Özet", help_text="Kısa açıklama (liste görünümünde gösterilir)")
+    content = models.TextField(verbose_name="İçerik", help_text="Maksimum 50.000 karakter (~8.000 kelime)")
+    cover_image = models.ImageField(upload_to='blog/covers/', blank=True, null=True, verbose_name="Kapak Görseli")
+
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='blog_posts', verbose_name="Yazar")
+    category = models.ForeignKey(BlogCategory, on_delete=models.SET_NULL, null=True, related_name='posts', verbose_name="Kategori")
+
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft', verbose_name="Durum")
+    is_featured = models.BooleanField(default=False, verbose_name="Öne Çıkan")
+
+    views = models.PositiveIntegerField(default=0, verbose_name="Görüntülenme")
+    likes = models.ManyToManyField(User, blank=True, related_name='liked_posts', verbose_name="Beğeniler")
+
+    # SEO
+    meta_title = models.CharField(max_length=70, blank=True, verbose_name="SEO Başlık")
+    meta_description = models.CharField(max_length=160, blank=True, verbose_name="SEO Açıklama")
+
+    # LinkedIn paylaşım takibi
+    shared_to_linkedin = models.BooleanField(default=False, verbose_name="LinkedIn'e Paylaşıldı")
+    linkedin_share_date = models.DateTimeField(null=True, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    published_at = models.DateTimeField(null=True, blank=True, verbose_name="Yayın Tarihi")
+
+    class Meta:
+        verbose_name = "Blog Yazısı"
+        verbose_name_plural = "Blog Yazıları"
+        ordering = ['-published_at', '-created_at']
+
+    def __str__(self):
+        return self.title
+
+    def clean(self):
+        from django.core.exceptions import ValidationError
+        if self.content and len(self.content) > 50000:
+            raise ValidationError({'content': f'İçerik 50.000 karakteri aşamaz. Şu an: {len(self.content)} karakter.'})
+
+    def save(self, *args, **kwargs):
+        from django.utils import timezone
+        self.full_clean()  # Validasyonu çalıştır
+        # Yayına alındığında tarih ata
+        if self.status == 'published' and not self.published_at:
+            self.published_at = timezone.now()
+        super().save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        from django.urls import reverse
+        return reverse('blog_detail', kwargs={'slug': self.slug})
+
+    @property
+    def reading_time(self):
+        """Tahmini okuma süresi (dakika)"""
+        word_count = len(self.content.split())
+        return max(1, round(word_count / 200))
+
+    @property
+    def total_likes(self):
+        return self.likes.count()

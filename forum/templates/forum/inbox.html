@@ -71,25 +71,36 @@
         padding: 20px;
         transition: all 0.3s ease;
     }
-    
+
     .message-card:hover {
         transform: translateY(-3px);
         border-color: rgba(56, 189, 248, 0.5) !important;
         box-shadow: 0 5px 20px rgba(0, 210, 255, 0.2) !important;
     }
-    
+
     .unread-message {
         border-left: 4px solid #00d2ff !important;
         background: rgba(0, 210, 255, 0.05);
     }
-    
+
     .hover-sender {
         transition: all 0.3s ease;
     }
-    
+
     .hover-sender:hover {
         color: #00d2ff !important;
         text-shadow: 0 0 10px rgba(0, 210, 255, 0.5);
     }
 </style>
+
+<script>
+// Inbox sayfasına girildiğinde navbar'daki mesaj badge'ini kaldır
+document.addEventListener('DOMContentLoaded', function() {
+    // Mesaj ikonunun yanındaki kırmızı badge'i bul ve kaldır
+    const inboxBadge = document.querySelector('a[href$="/inbox/"] .bg-danger.rounded-circle');
+    if (inboxBadge) {
+        inboxBadge.remove();
+    }
+});
+</script>
 {% endblock %}

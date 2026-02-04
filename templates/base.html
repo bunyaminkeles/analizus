@@ -6,23 +6,47 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
+    <!-- Performance: Preconnect to critical origins -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+
+    <!-- Theme & PWA Meta -->
+    <meta name="theme-color" content="#0f172a">
+    <meta name="color-scheme" content="dark">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Analizus">
+    <meta name="application-name" content="Analizus">
+    <meta name="msapplication-TileColor" content="#0f172a">
+
     <title>{% block title %}Analizus - Akademik Analiz ve Veri Bilimi Topluluğu{% endblock %}</title>
     <meta name="description" content="{% block meta_description %}SPSS, Python, R Studio ile istatistik analizi, tez yazımı ve akademik araştırma desteği. Türkiye'nin en büyük veri bilimi topluluğu.{% endblock %}">
-    <meta name="keywords" content="SPSS, Python, R Studio, istatistik analizi, tez yazımı, akademik araştırma, veri bilimi, regresyon, ANOVA, t-test">
+    <meta name="keywords" content="SPSS, Python, R Studio, istatistik analizi, tez yazımı, akademik araştırma, veri bilimi, regresyon, ANOVA, t-test, akademik danışmanlık, tez istatistik">
     <meta name="author" content="Analizus">
-    <meta name="robots" content="index, follow">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <meta name="googlebot" content="index, follow">
     <link rel="canonical" href="https://www.analizus.com{% block canonical %}{{ request.path }}{% endblock %}">
 
-    <meta property="og:type" content="website">
+    <!-- Open Graph -->
+    <meta property="og:type" content="{% block og_type %}website{% endblock %}">
     <meta property="og:url" content="https://www.analizus.com{{ request.path }}">
     <meta property="og:title" content="{% block og_title %}Analizus - Akademik Analiz Topluluğu{% endblock %}">
     <meta property="og:description" content="{% block og_description %}SPSS, Python, R ile akademik analiz desteği ve veri bilimi topluluğu.{% endblock %}">
-    <meta property="og:image" content="https://www.analizus.com{% static 'images/og-image.png' %}">
+    <meta property="og:image" content="{% block og_image %}https://www.analizus.com{% static 'images/og-image.png' %}{% endblock %}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
     <meta property="og:locale" content="tr_TR">
+    <meta property="og:site_name" content="Analizus">
 
+    <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Analizus - Akademik Analiz Topluluğu">
-    <meta name="twitter:description" content="SPSS, Python, R ile akademik analiz desteği.">
+    <meta name="twitter:site" content="@analizus">
+    <meta name="twitter:title" content="{% block twitter_title %}Analizus - Akademik Analiz Topluluğu{% endblock %}">
+    <meta name="twitter:description" content="{% block twitter_description %}SPSS, Python, R ile akademik analiz desteği.{% endblock %}">
+    <meta name="twitter:image" content="{% block twitter_image %}https://www.analizus.com{% static 'images/og-image.png' %}{% endblock %}"
 
     {% if GOOGLE_ANALYTICS_ID %}
     <script async src="https://www.googletagmanager.com/gtag/js?id={{ GOOGLE_ANALYTICS_ID }}"></script>
@@ -34,12 +58,19 @@
     </script>
     {% endif %}
 
+    <!-- Critical CSS: Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-okaidia.min.css" rel="stylesheet" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/toolbar/prism-toolbar.min.css" rel="stylesheet" />
+
+    <!-- Icons: Lazy load with font-display swap -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css"></noscript>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"></noscript>
+
+    <!-- Code highlighting: Defer non-critical -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-okaidia.min.css" rel="stylesheet" media="print" onload="this.media='all'">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/toolbar/prism-toolbar.min.css" rel="stylesheet" media="print" onload="this.media='all'">
 
     <link rel="stylesheet" href="{% static 'css/style.css' %}?v=2050">
     <link rel="stylesheet" href="{% static 'css/sidebar_widgets.css' %}?v=2051">
@@ -121,6 +152,9 @@
                     <li class="nav-item px-2"><a class="nav-link" href="{% url 'ai_assistant' %}"><i class="bi bi-robot me-1"></i>AI Asistan</a></li>
                     <li class="nav-item px-2"><a class="nav-link" href="#" onclick="openStoryModal()"><i class="bi bi-star-fill me-1 text-info"></i>Başarı Hikayeleri</a></li>
                     <li class="nav-item px-2"><a class="nav-link" href="{% url 'about' %}">Vizyon 2050</a></li>
+                    <li class="nav-item px-2"><a class="nav-link" href="{% url 'blog_list' %}">
+                        <i class="bi bi-journal-richtext me-1 text-info"></i>Blog
+                    </a></li>
                     <li class="nav-item px-2"><a class="nav-link" href="{% url 'job_list' %}">
                         <i class="bi bi-briefcase-fill me-1 text-success"></i>Hizmetler Pazarı
                     </a></li>
@@ -275,26 +309,48 @@
 
     <footer class="py-5 mt-5 border-top border-secondary opacity-75 text-center">
         <div class="container text-muted small">
+            <div class="mb-3">
+                <a href="https://www.linkedin.com/company/analizus" target="_blank" class="text-muted mx-2 fs-5" title="LinkedIn"><i class="bi bi-linkedin"></i></a>
+                <a href="https://www.youtube.com/@analizus" target="_blank" class="text-muted mx-2 fs-5" title="YouTube"><i class="bi bi-youtube"></i></a>
+            </div>
             <p>&copy; 2026 Analizus - Akademik Veri Üssü | Vizyon 2050</p>
         </div>
     </footer>
 
+    <!-- Critical JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Code highlighting: Defer loading -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/toolbar/prism-toolbar.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js" defer></script>
+
+    <!-- Native lazy loading for images -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add lazy loading to all images that don't have it
+        document.querySelectorAll('img:not([loading])').forEach(function(img) {
+            img.setAttribute('loading', 'lazy');
+        });
+    });
+    </script>
     
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
-    
+    <!-- MathJax: Load only when needed -->
     <script>
       window.MathJax = {
         tex: {
           inlineMath: [['$', '$'], ['\\(', '\\)']],
           displayMath: [['$$', '$$'], ['\\[', '\\]']]
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+          }
         }
       };
     </script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script id="MathJax-script" defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
     <div class="cyber-ticker-wrapper">
         <div class="ticker-content">

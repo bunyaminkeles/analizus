@@ -389,22 +389,50 @@
                     </div>
                     {% endif %}
                 {% else %}
-                    <div class="text-center text-muted py-5">
-                        <i class="bi bi-award display-1 opacity-25 mb-3 d-block"></i>
-                        <h5 class="text-white">Henüz rozet kazanılmamış</h5>
-                        <p class="text-muted">Forum aktivitesi ve quiz çözerek rozet kazanabilirsiniz!</p>
-                        {% if user == profile_user %}
-                        <div class="mt-4">
-                            <a href="{% url 'home' %}" class="btn btn-outline-info rounded-pill px-4 me-2">
-                                <i class="bi bi-chat-square-text me-2"></i>Foruma Katıl
-                            </a>
-                            <button onclick="openQuizModal()" class="btn btn-outline-warning rounded-pill px-4">
-                                <i class="bi bi-trophy me-2"></i>Quiz Çöz
-                            </button>
-                        </div>
-                        {% endif %}
+                    <div class="text-center text-muted py-4 mb-4">
+                        <i class="bi bi-award display-4 opacity-25 mb-2 d-block"></i>
+                        <p class="text-muted mb-0">Henüz rozet kazanılmamış</p>
                     </div>
                 {% endif %}
+
+                    <!-- Tüm Rozetler ve Kazanma Koşulları -->
+                    {% if all_badges %}
+                    <div class="mt-4 pt-4 border-top border-secondary">
+                        <h6 class="text-white mb-3">
+                            <i class="bi bi-collection-fill text-info me-2"></i>Tüm Rozetler ve Kazanma Koşulları
+                            <span class="badge bg-secondary ms-2">{{ all_badges|length }}</span>
+                        </h6>
+
+                        {% regroup all_badges by badge_type as all_badge_groups %}
+                        {% for group in all_badge_groups %}
+                        <div class="mb-3">
+                            <small class="text-uppercase text-muted fw-bold d-block mb-2" style="font-size: 0.7rem; letter-spacing: 1px;">
+                                {% if group.grouper == 'achievement' %}Başarı Rozetleri
+                                {% elif group.grouper == 'specialty' %}Uzmanlık Rozetleri (Quiz)
+                                {% elif group.grouper == 'participation' %}Katılım Rozetleri (Forum)
+                                {% elif group.grouper == 'special' %}Özel Rozetler
+                                {% endif %}
+                            </small>
+                            {% for badge in group.list %}
+                            <div class="d-flex align-items-center p-2 rounded mb-1 {% if badge.id in user_badge_ids %}border{% endif %}" style="background: {% if badge.id in user_badge_ids %}rgba(16, 185, 129, 0.08){% else %}rgba(255,255,255,0.02){% endif %}; {% if badge.id in user_badge_ids %}border-color: {{ badge.color }}44 !important;{% endif %}">
+                                <div class="me-2" style="width: 28px; text-align: center;">
+                                    <i class="{{ badge.icon }}" style="color: {% if badge.id in user_badge_ids %}{{ badge.color }}{% else %}#4b5563{% endif %}; font-size: 1rem;"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <span class="{% if badge.id in user_badge_ids %}text-white{% else %}text-muted{% endif %} small fw-bold">{{ badge.name }}</span>
+                                    <span class="text-muted small ms-2" style="font-size: 0.75rem;">{{ badge.description }}</span>
+                                </div>
+                                {% if badge.id in user_badge_ids %}
+                                <span class="badge bg-success bg-opacity-25 text-success" style="font-size: 0.65rem;">Kazanıldı</span>
+                                {% else %}
+                                <span class="badge bg-dark text-muted" style="font-size: 0.65rem;">Kilitli</span>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
             </div>
 
             <!-- Skills Tab -->

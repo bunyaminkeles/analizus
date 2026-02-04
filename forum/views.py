@@ -18,7 +18,7 @@ from datetime import timedelta
 import uuid
 from django_ratelimit.decorators import ratelimit
 from django_ratelimit.exceptions import Ratelimited
-from .models import Section, Category, Topic, Post, Profile, PrivateMessage, PostLike, Notification, EmailVerification, DailyTip, QuizQuestion, QuizScore, SuccessStory, FreelanceJob, JobProposal, JobReview, Skill, Badge, UserQuizAttempt, JobPayment
+from .models import Section, Category, Topic, Post, Profile, PrivateMessage, PostLike, Notification, EmailVerification, DailyTip, QuizQuestion, QuizScore, SuccessStory, FreelanceJob, JobProposal, JobReview, Skill, Badge, UserQuizAttempt, JobPayment, SiteSettings, BlogCategory, BlogPost, DonationTier
 from .forms import RegisterForm, NewTopicForm, PostForm, JobPostForm, ProposalForm
 from .email_utils import send_topic_reply_notification, send_private_message_notification
 from django.template.loader import render_to_string
@@ -29,6 +29,78 @@ from django.template.loader import render_to_string
 def health_check(request):
     """Basit health check endpoint - cron job ping için"""
     return JsonResponse({'status': 'ok'}, status=200)
+
+
+# --- LINKEDIN ENTEGRASYONU ---
+@staff_member_required
+def linkedin_connect(request):
+    """LinkedIn OAuth başlat"""
+    from .linkedin_utils import linkedin_api
+    import secrets
+    state = secrets.token_urlsafe(16)
+    request.session['linkedin_state'] = state
+    auth_url = linkedin_api.get_authorization_url(state=state)
+    return redirect(auth_url)
+
+
+def linkedin_callback(request):
+    """LinkedIn OAuth callback"""
+    from .linkedin_utils import linkedin_api
+    from django.utils import timezone
+
+    code = request.GET.get('code')
+    state = request.GET.get('state')
+    error = request.GET.get('error')
+
+    if error:
+        messages.error(request, f'LinkedIn bağlantı hatası: {error}')
+        return redirect('admin:index')
+
+    # State kontrolü
+    stored_state = request.session.get('linkedin_state')
+    if state != stored_state:
+        messages.error(request, 'Güvenlik hatası: State uyuşmuyor')
+        return redirect('admin:index')
+
+    # Token al
+    token_data = linkedin_api.exchange_code_for_token(code)
+    if not token_data:
+        messages.error(request, 'Token alınamadı')
+        return redirect('admin:index')
+
+    # Token'ı kaydet
+    site_settings = SiteSettings.load()
+    site_settings.linkedin_access_token = token_data.get('access_token', '')
+    site_settings.linkedin_connected_at = timezone.now()
+
+    # Kullanıcı bilgisi al
+    user_info = linkedin_api.get_user_info(token_data.get('access_token'))
+    if user_info:
+        site_settings.linkedin_person_urn = user_info.get('sub', '')
+
+    site_settings.save()
+
+    messages.success(request, 'LinkedIn hesabı başarıyla bağlandı!')
+    return redirect('admin:forum_sitesettings_change', 1)
+
+
+@staff_member_required
+@require_POST
+def linkedin_share_test(request):
+    """Test paylaşımı yap"""
+    from .linkedin_utils import linkedin_api
+
+    result = linkedin_api.share_custom(
+        text="🚀 Analizus - Akademik Analiz ve Veri Bilimi Topluluğu\n\nTest paylaşımı başarılı!\n\n#Analizus #Test",
+        url="https://www.analizus.com"
+    )
+
+    if result.get('success'):
+        messages.success(request, 'LinkedIn paylaşımı başarılı!')
+    else:
+        messages.error(request, f'Paylaşım hatası: {result.get("error")}')
+
+    return redirect('admin:forum_sitesettings_change', 1)
 
 
 # --- RATE LIMIT HATA SAYFASI ---
@@ -95,13 +167,17 @@ def home(request):
         p_count=Count('proposals', distinct=True)
     ).order_by('-created_at')[:5]
 
-    # Vitrin İlanları (Öne Çıkanlar)
+    # Vitrin İlanları (Öne Çıkanlar) - Süresi dolmamış olanlar
     featured_jobs = FreelanceJob.objects.filter(
         status='open',
-        is_featured=True
+        is_featured=True,
+        featured_until__gte=timezone.now()  # Vitrin süresi dolmamış
     ).select_related('owner', 'category').annotate(
         p_count=Count('proposals', distinct=True)
     ).order_by('-created_at')[:4]
+
+    # Bağış Katmanları
+    donation_tiers = DonationTier.objects.filter(is_active=True).order_by('min_amount')
 
     context = {
         'sections': sections,
@@ -117,6 +193,7 @@ def home(request):
         'daily_tip': daily_tip,
         'quiz_question': quiz_question,
         'quiz_leaderboard': quiz_leaderboard,
+        'donation_tiers': donation_tiers,
         'featured_story': featured_story,
         'recent_jobs': recent_jobs,
         'recent_reviews': recent_reviews,
@@ -537,16 +614,33 @@ def my_payments(request):
 def promote_job(request, pk):
     """İlanı vitrine taşıma (IBAN ile Ödeme)"""
     job = get_object_or_404(FreelanceJob, pk=pk, owner=request.user)
-    
-    # Vitrin Ücreti ve Süresi
-    price = 100.0
-    duration_days = 7
+
+    # Vitrin sınırı kontrolü (max 4 ilan) - Süresi dolmamış olanları say
+    MAX_FEATURED_JOBS = 4
+    current_featured_count = FreelanceJob.objects.filter(
+        is_featured=True,
+        status='open',
+        featured_until__gte=timezone.now()
+    ).count()
+    pending_count = FreelanceJob.objects.filter(
+        feature_status='pending',
+        status='open'
+    ).exclude(pk=pk).count()
+
+    if current_featured_count + pending_count >= MAX_FEATURED_JOBS:
+        messages.warning(request, "Şu anda vitrin dolu. Lütfen daha sonra tekrar deneyiniz.")
+        return redirect('job_detail', pk=pk)
+
+    # Vitrin Paketleri
+    packages = [
+        {'days': 3, 'price': 250},
+        {'days': 7, 'price': 400},
+    ]
 
     # IBAN sayfasına yönlendir
     return render(request, 'forum/market/promote_job_iban.html', {
         'job': job,
-        'amount': price,
-        'duration': duration_days,
+        'packages': packages,
     })
 
 @login_required
@@ -554,7 +648,12 @@ def promote_job(request, pk):
 def mark_payment_transferred(request, pk):
     """Kullanıcının IBAN ödemesini yaptığını bildirmesi."""
     job = get_object_or_404(FreelanceJob, pk=pk, owner=request.user)
-    
+
+    # Paket bilgisi al
+    package = request.POST.get('package', '3')
+    packages = {'3': {'days': 3, 'price': 250}, '7': {'days': 7, 'price': 400}}
+    selected = packages.get(package, packages['3'])
+
     # Ödeme kaydı kontrol et
     payment = JobPayment.objects.filter(job=job).order_by('-created_at').first()
 
@@ -565,14 +664,21 @@ def mark_payment_transferred(request, pk):
     if not payment:
         payment = JobPayment.objects.create(
             job=job,
-            amount=100.0,
+            amount=selected['price'],
+            duration_days=selected['days'],
             payment_id=f"IBAN-{uuid.uuid4().hex[:12].upper()}",
             conversation_id=f"IBAN-{job.pk}",
             status='pending_confirmation'
         )
     else:
+        payment.amount = selected['price']
+        payment.duration_days = selected['days']
         payment.status = 'pending_confirmation'
         payment.save()
+
+    # İlanı onay bekleme durumuna al
+    job.feature_status = 'pending'
+    job.save()
 
     # Adminlere bildirim gönder
     admins = User.objects.filter(is_staff=True)
@@ -697,6 +803,8 @@ def custom_login(request):
     """Rate limited login view"""
     from django.contrib.auth import authenticate, login as auth_login
     from django.contrib.auth.forms import AuthenticationForm
+    from django.utils import timezone
+    from datetime import timedelta
 
     if request.user.is_authenticated:
         return redirect('home')
@@ -706,12 +814,62 @@ def custom_login(request):
         if form.is_valid():
             user = form.get_user()
             auth_login(request, user)
+
+            # EDU mail kontrolü
+            _handle_edu_user(user)
+
             next_url = request.GET.get('next', 'home')
             return redirect(next_url)
     else:
         form = AuthenticationForm()
 
     return render(request, 'registration/login.html', {'form': form})
+
+
+def _handle_edu_user(user):
+    """EDU mail ile giriş yapanlara rozet ve teklif hakkı ver"""
+    from django.utils import timezone
+    from datetime import timedelta
+    from .services.email_service import EmailService
+
+    email = user.email.lower() if user.email else ''
+    if not email.endswith('.edu') and not email.endswith('.edu.tr'):
+        return
+
+    profile = getattr(user, 'profile', None)
+    if not profile:
+        return
+
+    # Zaten rozeti varsa atla
+    if profile.badges.filter(slug='dogrulanmis-akademisyen').exists():
+        return
+
+    # Rozet ver
+    badge = Badge.objects.filter(slug='dogrulanmis-akademisyen').first()
+    if badge:
+        profile.badges.add(badge)
+
+    # 3 günlük teklif hakkı
+    profile.edu_proposal_expires = timezone.now() + timedelta(days=3)
+    profile.save(update_fields=['edu_proposal_expires'])
+
+    # Admin DM gönder
+    admin_user = User.objects.filter(is_superuser=True).first()
+    if admin_user:
+        PrivateMessage.objects.create(
+            sender=admin_user,
+            receiver=user,
+            message=(
+                f"Merhaba {user.username},\n\n"
+                "EDU uzantılı mail adresiniz ile giriş yaptığınız için "
+                "\"Doğrulanmış Akademisyen\" rozeti kazandınız! 🎓\n\n"
+                "Ayrıca 3 gün boyunca teklif verme hakkına sahipsiniz.\n\n"
+                "İyi çalışmalar,\nAnalizus Ekibi"
+            )
+        )
+
+    # Mail gönder
+    EmailService.send_edu_welcome_email(user)
 
 
 # --- PROFİL DÜZENLE ---
@@ -954,6 +1112,10 @@ def profile_detail(request, username):
         permissions = profile_user.profile.get_permissions_summary()
         next_badge = profile_user.profile.get_next_badge_info()
 
+    # Tüm rozetler ve kazanılma durumu
+    all_badges = Badge.objects.filter(is_active=True).order_by('badge_type', '-points_required', 'name')
+    user_badge_ids = set(profile_user.profile.badges.values_list('id', flat=True)) if hasattr(profile_user, 'profile') else set()
+
     return render(request, 'forum/profile_detail.html', {
         'profile_user': profile_user,
         'posted_jobs': posted_jobs,
@@ -965,11 +1127,17 @@ def profile_detail(request, username):
         'quiz_rank': quiz_rank,
         'permissions': permissions,
         'next_badge': next_badge,
+        'all_badges': all_badges,
+        'user_badge_ids': user_badge_ids,
     })
 
 # --- DİĞER ---
 def about(request):
     return render(request, 'forum/about.html')
+
+def how_it_works(request):
+    """Nasıl Çalışır? sayfası"""
+    return render(request, 'forum/how_it_works.html')
 
 def contact(request):
     return render(request, 'forum/contact.html')
@@ -1481,71 +1649,14 @@ def api_submit_quiz_answer(request):
             
             if is_correct and score.correct_answers > 0:
                 
-                # --- KATEGORİ BAZLI ROZETLER (BATCH) ---
-                # İlgili kategorideki toplam doğru sayısı
+                # --- KATEGORİ BAZLI ROZETLER ---
                 category_correct_count = UserQuizAttempt.objects.filter(
-                    user=request.user, 
-                    question__category=question.category, 
+                    user=request.user,
+                    question__category=question.category,
                     is_correct=True
                 ).count()
 
-                # Kategori Rozet Tanımları (Örnek: 10 doğru cevapta verilir)
-                category_badges = {
-                    'SPSS': {'slug': 'spss-uzmani', 'name': 'SPSS Uzmanı', 'icon': 'bi-bar-chart-fill', 'color': '#3b82f6'},
-                    'Python': {'slug': 'python-ninja', 'name': 'Python Ninja', 'icon': 'bi-code-square', 'color': '#eab308'},
-                    'R': {'slug': 'r-ustadi', 'name': 'R Üstadı', 'icon': 'bi-r-circle', 'color': '#2563eb'},
-                    'Hipotez': {'slug': 'hipotez-avcisi', 'name': 'Hipotez Avcısı', 'icon': 'bi-search', 'color': '#ef4444'},
-                    'Raporlama': {'slug': 'raporlama-guru', 'name': 'Raporlama Gurusu', 'icon': 'bi-file-earmark-text', 'color': '#10b981'},
-                }
-
-                # Soru kategorisi bu listede var mı ve eşik değer (10) geçildi mi?
-                cat_key = question.category # Veya question.get_category_display() model yapısına göre
-                # Not: Eğer category field'ı choice ise display değerini veya key'i kontrol edin.
-                # Burada basitlik adına string eşleşmesi varsayıyoruz.
-                
-                target_badge = category_badges.get(str(cat_key)) # Güvenli erişim
-                
-                if target_badge and category_correct_count >= 10:
-                    cat_badge, created = Badge.objects.get_or_create(
-                        slug=target_badge['slug'],
-                        defaults={'name': target_badge['name'], 'description': f'{cat_key} kategorisinde 10 doğru cevap.', 'badge_type': 'specialty', 'icon': target_badge['icon'], 'color': target_badge['color']}
-                    )
-                    if created or cat_badge not in request.user.profile.badges.all():
-                        request.user.profile.badges.add(cat_badge)
-                        badge_awarded = cat_badge.name
-
-                # 100 doğru cevap -> Başarı Rozeti
-                if score.correct_answers == 100:
-                    badge, created = Badge.objects.get_or_create(
-                        slug='basari',
-                        defaults={'name': 'Başarı', 'description': '100 quiz sorusunu doğru cevaplayarak kazanıldı.', 'badge_type': 'achievement', 'icon': 'bi-patch-check-fill', 'color': '#10b981'}
-                    )
-                    if created or badge not in request.user.profile.badges.all():
-                        request.user.profile.badges.add(badge)
-                        badge_awarded = badge.name
-                
-                # 200 doğru cevap -> Uzmanlık Rozeti
-                elif score.correct_answers == 200:
-                    badge, created = Badge.objects.get_or_create(
-                        slug='uzmanlik',
-                        defaults={'name': 'Uzmanlık', 'description': '200 quiz sorusunu doğru cevaplayarak kazanıldı.', 'badge_type': 'specialty', 'icon': 'bi-shield-shaded', 'color': '#a855f7'}
-                    )
-                    if created or badge not in request.user.profile.badges.all():
-                        request.user.profile.badges.add(badge)
-                        badge_awarded = badge.name
-
-                # İstatistik Ustası Rozeti (100 Puan)
-                if score.total_points >= 100:
-                    istatistik_ustasi_badge, created = Badge.objects.get_or_create(
-                        slug='istatistik-ustasi',
-                        defaults={'name': 'İstatistik Ustası', 'description': 'Quizlerde 100+ puan topladı.', 'badge_type': 'specialty', 'icon': 'bi-patch-check-fill', 'color': '#ffd700'}
-                    )
-                    if created or istatistik_ustasi_badge not in request.user.profile.badges.all():
-                        request.user.profile.badges.add(istatistik_ustasi_badge)
-                        if not badge_awarded:  # Eğer kategori rozeti verilmediyse bunu göster
-                            badge_awarded = istatistik_ustasi_badge.name
-
-                # Quiz Şampiyonu ve Efsanesi rozetlerini kontrol et
+                # Rozet kontrolü signals üzerinden yapılır (eşik: 50 doğru)
                 from .signals import check_and_award_quiz_badges
                 check_and_award_quiz_badges(
                     request.user.profile,
@@ -1553,6 +1664,21 @@ def api_submit_quiz_answer(request):
                     correct_count=category_correct_count,
                     total_correct=score.correct_answers
                 )
+
+                # Yeni kazanılan rozeti kullanıcıya bildir
+                if category_correct_count == 50:
+                    category_badge_map = {
+                        'SPSS': 'SPSS Uzmanı', 'spss': 'SPSS Uzmanı',
+                        'Python': 'Python Ninja', 'python': 'Python Ninja',
+                        'R': 'R Üstadı', 'r': 'R Üstadı',
+                        'statistics': 'İstatistik Ustası', 'İstatistik': 'İstatistik Ustası',
+                    }
+                    badge_name = category_badge_map.get(str(question.category))
+                    if badge_name:
+                        badge_awarded = badge_name
+
+                if score.correct_answers == 1000:
+                    badge_awarded = 'Quiz Efsanesi'
 
 
             return JsonResponse({
@@ -1623,7 +1749,7 @@ def api_toggle_follow(request, username):
 
 
 # --- BAĞIŞ SİSTEMİ ---
-from .models import Donation
+from .models import Donation, DonationTier
 import uuid
 
 def donation_widget_data(request):
@@ -1999,5 +2125,230 @@ def job_payment_callback(request):
                 messages.error(request, 'Ödeme başarısız oldu.')
         except JobPayment.DoesNotExist:
             messages.error(request, 'Ödeme kaydı bulunamadı.')
-            
+
     return redirect('home')
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# BLOG SİSTEMİ
+# ═══════════════════════════════════════════════════════════════════════════════
+
+def blog_list(request):
+    """Blog ana sayfası - yazı listesi"""
+    posts = BlogPost.objects.filter(status='published').select_related('author', 'category')
+
+    # Kategori filtresi
+    category_slug = request.GET.get('category')
+    if category_slug:
+        posts = posts.filter(category__slug=category_slug)
+
+    # Öne çıkan yazılar
+    featured_posts = posts.filter(is_featured=True)[:3]
+
+    # Kategoriler
+    categories = BlogCategory.objects.annotate(
+        post_count=Count('posts', filter=Q(posts__status='published'))
+    ).filter(post_count__gt=0)
+
+    # Popüler yazılar
+    popular_posts = posts.order_by('-views')[:5]
+
+    context = {
+        'posts': posts,
+        'featured_posts': featured_posts,
+        'categories': categories,
+        'popular_posts': popular_posts,
+        'current_category': category_slug,
+    }
+    return render(request, 'forum/blog/blog_list.html', context)
+
+
+def blog_detail(request, slug):
+    """Blog yazı detay sayfası"""
+    post = get_object_or_404(BlogPost, slug=slug, status='published')
+
+    # Görüntülenme sayısını artır
+    post.views += 1
+    post.save(update_fields=['views'])
+
+    # Kullanıcı beğenmiş mi?
+    is_liked = False
+    if request.user.is_authenticated:
+        is_liked = post.likes.filter(pk=request.user.pk).exists()
+
+    # İlgili yazılar (aynı kategoriden)
+    related_posts = BlogPost.objects.filter(
+        status='published',
+        category=post.category
+    ).exclude(pk=post.pk)[:3]
+
+    context = {
+        'post': post,
+        'is_liked': is_liked,
+        'related_posts': related_posts,
+    }
+    return render(request, 'forum/blog/blog_detail.html', context)
+
+
+@login_required
+@require_POST
+def blog_like(request, slug):
+    """Blog yazısını beğen/beğeniyi kaldır"""
+    post = get_object_or_404(BlogPost, slug=slug, status='published')
+
+    if post.likes.filter(pk=request.user.pk).exists():
+        post.likes.remove(request.user)
+        liked = False
+    else:
+        post.likes.add(request.user)
+        liked = True
+
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return JsonResponse({'liked': liked, 'total_likes': post.total_likes})
+
+    return redirect('blog_detail', slug=slug)
+
+
+@login_required
+def blog_create(request):
+    """Blog yazısı oluşturma - Badge gerektirir"""
+    # Blog yazma yetkisi kontrolü
+    profile = request.user.profile
+    can_write = profile.badges.filter(can_write_blog=True).exists()
+
+    if not can_write:
+        messages.warning(request, "Blog yazmak için gerekli rozete sahip değilsiniz.")
+        return redirect('blog_list')
+
+    if request.method == 'POST':
+        title = request.POST.get('title', '').strip()
+        content = request.POST.get('content', '').strip()
+        category_id = request.POST.get('category')
+
+        if not title or not content:
+            messages.error(request, "Başlık ve içerik zorunludur.")
+        else:
+            from django.utils.text import slugify
+            slug = slugify(title)
+            # Slug benzersizliği
+            base_slug = slug
+            counter = 1
+            while BlogPost.objects.filter(slug=slug).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+
+            post = BlogPost.objects.create(
+                title=title,
+                slug=slug,
+                content=content,
+                author=request.user,
+                category_id=category_id if category_id else None,
+                status='draft'  # Admin onayı bekleyecek
+            )
+            messages.success(request, "Blog yazınız oluşturuldu. Yönetici onayından sonra yayınlanacaktır.")
+            return redirect('blog_list')
+
+    categories = BlogCategory.objects.all()
+    return render(request, 'forum/blog/blog_create.html', {'categories': categories})
+
+
+# --- DESTEK/BAĞI APISI ---
+@login_required
+@require_POST
+def send_support_email(request):
+    """Kullanıcının seçtiği destek paketine göre e-posta gönder"""
+    import os
+    from sendgrid import SendGridAPIClient
+    from sendgrid.helpers.mail import Mail, Content
+    
+    try:
+        # Request'ten veri al
+        data = json.loads(request.body)
+        tier_id = data.get('tier_id')
+        tier_name = data.get('tier_name')
+        tier_amount = data.get('tier_amount')
+        
+        # Validation
+        if not all([tier_id, tier_name, tier_amount]):
+            return JsonResponse({'success': False, 'error': 'Geçersiz veri'}, status=400)
+        
+        # Tier'ı veritabanından kontrol et
+        tier = DonationTier.objects.filter(id=tier_id, is_active=True).first()
+        if not tier:
+            return JsonResponse({'success': False, 'error': 'Paket bulunamadı'}, status=404)
+        
+        user = request.user
+        user_email = user.email
+        username = user.username
+        
+        # E-posta metni
+        email_subject = "Analizus Bağış İşlemi"
+        
+        email_body = f"""
+Merhaba {username},
+
+Analizus'a gösterdiğiniz desteğe teşekkür ederiz! 🙏
+
+Aşağıda bağış yapacağınız banka hesap bilgilerini bulabilirsiniz. Lütfen bu bilgileri kullanarak havale transferi yapınız.
+
+📌 BANKA BİLGİLERİ:
+━━━━━━━━━━━━━━━━━━━━━━━━
+Hesap Sahibi: Bünyamin Keleş
+IBAN: TR73 0003 2000 0000 0079 1034 65
+━━━━━━━━━━━━━━━━━━━━━━━━
+
+⏱️ İŞLEM ADAMLARI:
+1. Yukarıdaki IBAN'a {tier_amount} TL havale ediniz
+2. Transfer yapılırken açıklama bölümüne: "{username} (ilan no: ...)" yazınız
+3. Havale işlemi gerçekleştikten sonra admin tarafından kontrol edilir
+4. Kontrol edildikten sonra Premium paketiniz ve Destekçi Rozeti 24 saat içinde etkinleştirilir
+
+✅ SEÇTİĞİNİZ PAKET: {tier_name}
+   Süre: {tier.premium_days} gün Premium
+
+✅ KAZANACAĞINIZ AYRICALIKLAR:
+• Seçilen destekçi paketine göre süresi içinde ilanlara teklif verebilme
+• Haftada 3 ilan yayınlama hakkı (Normal: 1)
+• Profil üzerinde Destekçi Rozeti
+• Destekçiler listesinde yer alma
+
+Herhangi bir sorunuz varsa info@analizus.com adresine başvurabilirsiniz.
+
+İyi günler,
+Analizus Ekibi
+"""
+        
+        # SendGrid ile gönder
+        try:
+            SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY')
+            if not SENDGRID_API_KEY:
+                print("❌ SENDGRID_API_KEY tanımlı değil!")
+                return JsonResponse({'success': False, 'error': 'E-posta servisi kullanılamıyor'}, status=500)
+            
+            sg = SendGridAPIClient(SENDGRID_API_KEY)
+            
+            message = Mail(
+                from_email='info@analizus.com',
+                to_emails=user_email,
+                subject=email_subject,
+                plain_text_content=email_body
+            )
+            
+            response = sg.send(message)
+            
+            if response.status_code in [200, 202]:
+                print(f"✅ E-posta başarıyla gönderildi: {user_email}")
+                return JsonResponse({'success': True, 'message': 'E-posta gönderildi'})
+            else:
+                print(f"❌ SendGrid hatası: {response.status_code}")
+                return JsonResponse({'success': False, 'error': 'E-posta gönderilemedi'}, status=500)
+                
+        except Exception as e:
+            print(f"❌ E-posta gönderme hatası: {str(e)}")
+            return JsonResponse({'success': False, 'error': f'Hata: {str(e)}'}, status=500)
+    
+    except json.JSONDecodeError:
+        return JsonResponse({'success': False, 'error': 'Geçersiz JSON'}, status=400)
+    except Exception as e:
+        print(f"❌ Beklenmeyen hata: {str(e)}")
+        return JsonResponse({'success': False, 'error': 'Beklenmeyen hata'}, status=500)

@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Section, Category, Topic, Post, Profile, ContactMessage, PrivateMessage, Badge, Notification, Skill, EmailVerification, DailyTip, QuizQuestion, QuizScore, FreelanceJob, JobProposal, JobReview, UserQuizAttempt, DonationTier, Donation, JobPayment, TopicTag
+from .models import Section, Category, Topic, Post, Profile, ContactMessage, PrivateMessage, Badge, Notification, Skill, EmailVerification, DailyTip, QuizQuestion, QuizScore, FreelanceJob, JobProposal, JobReview, UserQuizAttempt, DonationTier, Donation, JobPayment, TopicTag, SiteSettings, BlogCategory, BlogPost
 
 # --- GENEL AYARLAR ---
 admin.site.site_header = "Analizus Komuta Merkezi"
@@ -515,8 +515,191 @@ class DonationAdmin(admin.ModelAdmin):
 
 @admin.register(JobPayment)
 class JobPaymentAdmin(admin.ModelAdmin):
-    list_display = ('job', 'amount', 'status', 'created_at')
-    list_filter = ('status', 'created_at')
+    list_display = ('job', 'amount', 'duration_days', 'status', 'feature_status_display', 'created_at')
+    list_filter = ('status', 'created_at', 'job__feature_status')
     search_fields = ('job__title', 'payment_id')
     readonly_fields = ('payment_id', 'conversation_id', 'created_at')
     ordering = ('-created_at',)
+    actions = ['approve_feature', 'reject_feature']
+
+    def feature_status_display(self, obj):
+        return obj.job.get_feature_status_display()
+    feature_status_display.short_description = "Vitrin Durumu"
+
+    def approve_feature(self, request, queryset):
+        from django.utils import timezone
+        from datetime import timedelta
+        for payment in queryset.filter(status='pending_confirmation'):
+            job = payment.job
+            payment.status = 'success'
+            payment.save()
+            job.is_featured = True
+            job.feature_status = 'approved'
+            now = timezone.now()
+            start_time = job.featured_until if job.featured_until and job.featured_until > now else now
+            job.featured_until = start_time + timedelta(days=payment.duration_days)
+            job.save()
+        self.message_user(request, f'{queryset.count()} ilan vitrine eklendi.')
+    approve_feature.short_description = "Seçili ilanları vitrine ekle (onayla)"
+
+    def reject_feature(self, request, queryset):
+        for payment in queryset.filter(status='pending_confirmation'):
+            job = payment.job
+            payment.status = 'failed'
+            payment.save()
+            job.feature_status = 'rejected'
+            job.save()
+        self.message_user(request, f'{queryset.count()} ilan reddedildi.')
+    reject_feature.short_description = "Seçili ilanları reddet"
+
+
+# --- SITE AYARLARI & LINKEDIN ---
+@admin.register(SiteSettings)
+class SiteSettingsAdmin(admin.ModelAdmin):
+    list_display = ('pk', 'linkedin_status', 'auto_share_topics', 'auto_share_jobs')
+    readonly_fields = ('linkedin_connected_at', 'linkedin_person_urn')
+
+    fieldsets = (
+        ('LinkedIn Entegrasyonu', {
+            'fields': ('linkedin_access_token', 'linkedin_person_urn', 'linkedin_organization_id', 'linkedin_connected_at'),
+            'description': '<a href="/linkedin/connect/" class="button" style="padding: 8px 16px; background: #0077b5; color: white; text-decoration: none; border-radius: 4px;">🔗 LinkedIn Hesabı Bağla</a> &nbsp; <a href="/linkedin/share-test/" class="button" onclick="return confirm(\'Test paylaşımı yapılacak. Emin misiniz?\');" style="padding: 8px 16px; background: #28a745; color: white; text-decoration: none; border-radius: 4px;">🧪 Test Paylaşımı Yap</a>'
+        }),
+        ('Otomatik Paylaşım', {
+            'fields': ('auto_share_topics', 'auto_share_jobs'),
+        }),
+    )
+
+    def linkedin_status(self, obj):
+        if obj.linkedin_access_token:
+            return format_html('<span style="color: #28a745;">✅ Bağlı</span>')
+        return format_html('<span style="color: #dc3545;">❌ Bağlı Değil</span>')
+    linkedin_status.short_description = "LinkedIn"
+
+    def has_add_permission(self, request):
+        # Sadece 1 kayıt olabilir
+        return not SiteSettings.objects.exists()
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# BLOG YÖNETİMİ
+# ═══════════════════════════════════════════════════════════════════════════════
+
+@admin.register(BlogCategory)
+class BlogCategoryAdmin(admin.ModelAdmin):
+    list_display = ('name', 'slug', 'color_preview', 'order', 'post_count')
+    list_editable = ('order',)
+    prepopulated_fields = {'slug': ('name',)}
+    ordering = ('order',)
+
+    def color_preview(self, obj):
+        return format_html(
+            '<span style="background: {}; color: white; padding: 3px 10px; border-radius: 4px;">{}</span>',
+            obj.color, obj.color
+        )
+    color_preview.short_description = "Renk"
+
+    def post_count(self, obj):
+        return obj.posts.filter(status='published').count()
+    post_count.short_description = "Yazı Sayısı"
+
+
+@admin.register(BlogPost)
+class BlogPostAdmin(admin.ModelAdmin):
+    list_display = ('title', 'author', 'category', 'status_display', 'is_featured', 'views', 'created_at')
+    list_filter = ('status', 'category', 'is_featured', 'author')
+    search_fields = ('title', 'content', 'excerpt')
+    prepopulated_fields = {'slug': ('title',)}
+    list_editable = ('is_featured',)
+    date_hierarchy = 'created_at'
+    ordering = ('-created_at',)
+
+    fieldsets = (
+        ('İçerik', {
+            'fields': ('title', 'slug', 'excerpt', 'content', 'cover_image')
+        }),
+        ('Kategori & Yazar', {
+            'fields': ('category', 'author')
+        }),
+        ('Yayın Ayarları', {
+            'fields': ('status', 'is_featured')
+        }),
+        ('SEO', {
+            'fields': ('meta_title', 'meta_description'),
+            'classes': ('collapse',)
+        }),
+        ('LinkedIn', {
+            'fields': ('shared_to_linkedin', 'linkedin_share_date'),
+            'classes': ('collapse',)
+        }),
+    )
+
+    readonly_fields = ('views', 'shared_to_linkedin', 'linkedin_share_date', 'published_at')
+
+    def status_display(self, obj):
+        colors = {'draft': '#ffc107', 'published': '#28a745'}
+        icons = {'draft': '📝', 'published': '✅'}
+        return format_html(
+            '<span style="color: {};">{} {}</span>',
+            colors.get(obj.status, '#888'),
+            icons.get(obj.status, ''),
+            obj.get_status_display()
+        )
+    status_display.short_description = "Durum"
+
+    actions = ['publish_posts', 'share_to_linkedin', 'reset_linkedin_share']
+
+    @admin.action(description="LinkedIn paylaşım durumunu sıfırla")
+    def reset_linkedin_share(self, request, queryset):
+        updated = queryset.update(shared_to_linkedin=False, linkedin_share_date=None)
+        self.message_user(request, f'{updated} yazının LinkedIn durumu sıfırlandı. Tekrar paylaşılabilir.')
+
+    @admin.action(description="Seçili yazıları yayınla")
+    def publish_posts(self, request, queryset):
+        from django.utils import timezone
+        updated = queryset.filter(status='draft').update(status='published', published_at=timezone.now())
+        self.message_user(request, f'{updated} yazı yayınlandı.')
+
+    @admin.action(description="LinkedIn'de paylaş")
+    def share_to_linkedin(self, request, queryset):
+        from .linkedin_utils import linkedin_api
+        from django.utils import timezone
+        from django.contrib import messages
+
+        total = queryset.count()
+        drafts = queryset.filter(status='draft').count()
+        already_shared = queryset.filter(shared_to_linkedin=True).count()
+        eligible = queryset.filter(status='published', shared_to_linkedin=False)
+
+        shared = 0
+        errors = []
+
+        for post in eligible:
+            text = f"📝 Yeni Blog Yazısı: {post.title}\n\n"
+            text += f"{post.excerpt[:150]}...\n\n"
+            text += "#Analizus #VeriAnalizi #Blog"
+
+            url = f"https://www.analizus.com/blog/{post.slug}/"
+
+            result = linkedin_api.post_share(text=text, url=url, title=post.title, description=post.excerpt[:100])
+
+            if result.get('success'):
+                post.shared_to_linkedin = True
+                post.linkedin_share_date = timezone.now()
+                post.save()
+                shared += 1
+            else:
+                errors.append(f"{post.title}: {result.get('error', 'Bilinmeyen hata')}")
+
+        # Detaylı mesaj göster
+        if shared > 0:
+            self.message_user(request, f'✅ {shared} yazı LinkedIn\'de paylaşıldı.', messages.SUCCESS)
+        if drafts > 0:
+            self.message_user(request, f'⚠️ {drafts} yazı taslak durumunda (önce yayınlayın).', messages.WARNING)
+        if already_shared > 0:
+            self.message_user(request, f'ℹ️ {already_shared} yazı zaten paylaşılmış.', messages.INFO)
+        if errors:
+            for err in errors[:3]:  # İlk 3 hatayı göster
+                self.message_user(request, f'❌ Hata: {err}', messages.ERROR)
