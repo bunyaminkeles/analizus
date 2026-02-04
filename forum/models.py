@@ -7,6 +7,7 @@ from django.contrib.contenttypes.models import ContentType
 import uuid
 from django.utils import timezone
 from datetime import timedelta
+from forum.storage import get_storage
 
 class Section(models.Model):
     title = models.CharField(max_length=100)
@@ -161,8 +162,8 @@ class Profile(models.Model):
     )
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)
-    cover_image = models.ImageField(upload_to='covers/', blank=True, null=True, verbose_name="Kapak Fotoğrafı")
+    avatar = models.ImageField(upload_to='avatars/', storage=get_storage, blank=True, null=True)
+    cover_image = models.ImageField(upload_to='covers/', storage=get_storage, blank=True, null=True, verbose_name="Kapak Fotoğrafı")
     bio = models.TextField(max_length=500, blank=True)
     title = models.CharField(max_length=100, blank=True, default="", verbose_name="Ünvan")
     location = models.CharField(max_length=100, blank=True, default="", verbose_name="Konum")
@@ -452,7 +453,7 @@ class PrivateMessage(models.Model):
     sender = models.ForeignKey(User, related_name='sent_messages', on_delete=models.CASCADE)
     receiver = models.ForeignKey(User, related_name='received_messages', on_delete=models.CASCADE)
     message = models.TextField(blank=True)  # Opsiyonel - sadece dosya da gönderilebilir
-    attachment = models.FileField(upload_to='chat_attachments/%Y/%m/', blank=True, null=True, verbose_name="Dosya Eki")
+    attachment = models.FileField(upload_to='chat_attachments/%Y/%m/', storage=get_storage, blank=True, null=True, verbose_name="Dosya Eki")
     attachment_name = models.CharField(max_length=255, blank=True, verbose_name="Dosya Adı")
     created_at = models.DateTimeField(auto_now_add=True)
     is_read = models.BooleanField(default=False)
@@ -1096,7 +1097,7 @@ class BlogPost(models.Model):
     slug = models.SlugField(unique=True, max_length=250)
     excerpt = models.TextField(max_length=300, verbose_name="Özet", help_text="Kısa açıklama (liste görünümünde gösterilir)")
     content = models.TextField(verbose_name="İçerik", help_text="Maksimum 50.000 karakter (~8.000 kelime)")
-    cover_image = models.ImageField(upload_to='blog/covers/', blank=True, null=True, verbose_name="Kapak Görseli")
+    cover_image = models.ImageField(upload_to='blog/covers/', storage=get_storage, blank=True, null=True, verbose_name="Kapak Görseli")
 
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='blog_posts', verbose_name="Yazar")
     category = models.ForeignKey(BlogCategory, on_delete=models.SET_NULL, null=True, related_name='posts', verbose_name="Kategori")
