@@ -5,6 +5,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db.models import Count
 import logging
 from .utils import send_realtime_notification
+from .mention_utils import parse_mentions
 
 logger = logging.getLogger(__name__)
 
@@ -103,6 +104,32 @@ def post_save_receiver(sender, instance, created, **kwargs):
             except Exception as e:
                 logger.error(f"Post bildirimi oluşturulamadı: {e}")
 
+        # @mention bildirimleri
+        try:
+            mentioned_users = parse_mentions(instance.message)
+            content_type = ContentType.objects.get_for_model(instance)
+            url = instance.get_absolute_url()
+            for mentioned_user in mentioned_users:
+                # Kendini mention edene ve zaten bildirim giden konu sahibine gönderme
+                if mentioned_user == instance.created_by:
+                    continue
+                if mentioned_user == instance.topic.starter:
+                    continue
+                mention_msg = f"<b>{instance.created_by.username}</b>, '{instance.topic.subject}' konusunda sizi etiketledi."
+                Notification.objects.create(
+                    recipient=mentioned_user,
+                    sender=instance.created_by,
+                    verb=mention_msg,
+                    content_type=content_type,
+                    object_id=instance.pk
+                )
+                send_realtime_notification(mentioned_user.id, mention_msg, url)
+                # E-posta bildirimi
+                from .email_utils import send_mention_notification
+                send_mention_notification(mentioned_user, instance, instance.topic)
+        except Exception as e:
+            logger.error(f"Mention bildirimi oluşturulamadı: {e}")
+
 
 @receiver(post_save, sender=PrivateMessage)
 def private_message_post_save(sender, instance, created, **kwargs):
@@ -130,6 +157,27 @@ def private_message_post_save(sender, instance, created, **kwargs):
             send_chat_message(instance)
         except Exception as e:
             logger.error(f"Özel mesaj bildirimi oluşturulamadı: {e}")
+
+        # @mention bildirimleri (özel mesajda 3. kişi etiketlenirse)
+        try:
+            mentioned_users = parse_mentions(instance.message)
+            content_type = ContentType.objects.get_for_model(instance)
+            for mentioned_user in mentioned_users:
+                # Gönderen, alıcı veya kendini mention edene bildirim gönderme
+                if mentioned_user in (instance.sender, instance.receiver):
+                    continue
+                mention_msg = f"<b>{instance.sender.username}</b> bir mesajda sizi etiketledi."
+                mention_url = reverse('send_message', args=[instance.sender.username])
+                Notification.objects.create(
+                    recipient=mentioned_user,
+                    sender=instance.sender,
+                    verb=mention_msg,
+                    content_type=content_type,
+                    object_id=instance.pk
+                )
+                send_realtime_notification(mentioned_user.id, mention_msg, mention_url)
+        except Exception as e:
+            logger.error(f"Özel mesaj mention bildirimi oluşturulamadı: {e}")
 
 
 @receiver(post_save, sender=PostLike)

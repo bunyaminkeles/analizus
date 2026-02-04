@@ -1,5 +1,7 @@
 from django import template
 from django.utils.safestring import mark_safe
+from django.utils.html import escape
+from forum.mention_utils import render_mentions_html
 
 register = template.Library()
 
@@ -91,6 +93,14 @@ def render_user_badges(user, limit=3):
         html_parts.append(f'<span class="text-muted small">+{extra_count}</span>')
 
     return mark_safe(''.join(html_parts))
+
+
+@register.filter(needs_autoescape=True)
+def render_mentions(value, autoescape=True):
+    """@username kalıplarını tıklanabilir profil linklerine dönüştürür"""
+    if autoescape:
+        value = escape(value)
+    return mark_safe(render_mentions_html(value))
 
 
 @register.filter
