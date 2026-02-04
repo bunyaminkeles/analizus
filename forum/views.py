@@ -930,6 +930,9 @@ def profile_edit(request):
                     profile.phone_verified = False
 
         # Dosyalar
+        from django.conf import settings as django_settings
+        print(f"[DEBUG] DEBUG={django_settings.DEBUG}")
+        print(f"[DEBUG] DEFAULT_FILE_STORAGE={getattr(django_settings, 'DEFAULT_FILE_STORAGE', 'NOT SET')}")
         print(f"[DEBUG] request.FILES: {request.FILES}")
         print(f"[DEBUG] 'avatar' in FILES: {'avatar' in request.FILES}")
         if 'avatar' in request.FILES:
