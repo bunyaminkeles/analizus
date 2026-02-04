@@ -210,19 +210,15 @@ JAZZMIN_UI_TWEAKS = {
     }
 }
 
-# --- E-POSTA AYARLARI (AWS SES) ---
-# AWS Simple Email Service (SES) ayarları
-# AWS Console üzerinden bir IAM kullanıcısı oluşturup 'ses:SendRawEmail' yetkisi verin.
-# Ayrıca, gönderim yapacak olan e-posta adresini veya domain'i SES'te doğrulamanız (verify) gerekmektedir.
-EMAIL_BACKEND = 'django_ses.SESBackend'
+# --- E-POSTA AYARLARI ---
+# SendGrid Web API kullanıyoruz (Render free tier SMTP'yi engelliyor)
+# SMTP yerine HTTP API kullandığımız için EMAIL_BACKEND artık kullanılmıyor
+# forum/services/email_service.py içindeki SendGrid Web API kullanılıyor
+SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY', '')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'Analizus <noreply@analizdestek-ai.onrender.com>')
 
-# AWS S3 ayarlarında tanımlı olan kimlik bilgileri (ACCESS_KEY ve SECRET_KEY) tekrar kullanılır.
-# E-posta gönderimi için ayrı bir IAM kullanıcısı tanımladıysanız, yeni değişkenler ekleyebilirsiniz.
-AWS_SES_REGION_NAME = os.getenv('AWS_SES_REGION_NAME', 'eu-central-1') # Örn: eu-central-1, us-east-1
-AWS_SES_REGION_ENDPOINT = f'email.{AWS_SES_REGION_NAME}.amazonaws.com'
-
-# Gönderen e-posta adresi (Bu adres SES'te doğrulanmış olmalıdır)
-DEFAULT_FROM_EMAIL = os.getenv('AWS_SES_FROM_EMAIL', 'Analizus <noreply@analizus.com>')
+# Django Auth Password Reset için Backend
+EMAIL_BACKEND = 'forum.backends.SendGridBackend'
 
 # Site URL (e-posta doğrulama linkleri için)
 SITE_URL = os.getenv('SITE_URL', 'https://www.analizus.com')
@@ -283,38 +279,3 @@ else:
             },
         },
     }
-
-# --- AWS S3 STORAGE (Dosya Uploads) ---
-if os.getenv('AWS_STORAGE_BUCKET_NAME'):
-    # Production: S3 kullan
-    STORAGES = {
-        'default': {
-            'BACKEND': 'storages.backends.s3boto3.S3Boto3Storage',
-            'OPTIONS': {
-                'access_key': os.getenv('AWS_ACCESS_KEY_ID'),
-                'secret_key': os.getenv('AWS_SECRET_ACCESS_KEY'),
-                'bucket_name': os.getenv('AWS_STORAGE_BUCKET_NAME'),
-                'region_name': os.getenv('AWS_S3_REGION_NAME', 'eu-north-1'),
-                'custom_domain': os.getenv('AWS_S3_CUSTOM_DOMAIN'),
-                'location': 'media',
-                'default_acl': 'public-read',
-            }
-        },
-        'staticfiles': {
-            'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
-        }
-    }
-    MEDIA_URL = f"https://{os.getenv('AWS_S3_CUSTOM_DOMAIN')}/media/"
-else:
-    # Lokal: Dosyaları local filesystem'e sakla
-    STORAGES = {
-        'default': {
-            'BACKEND': 'django.core.files.storage.FileSystemStorage',
-        },
-        'staticfiles': {
-            'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage',
-        }
-    }
-    MEDIA_URL = '/media/'
-
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
