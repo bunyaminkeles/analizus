@@ -962,8 +962,14 @@ def profile_edit(request):
 
         profile.skills.set(selected_skills)
 
-        profile.save()
-        
+        try:
+            profile.save()
+            print(f"[DEBUG] Profile saved. Avatar URL: {profile.avatar.url if profile.avatar else 'None'}")
+        except Exception as e:
+            print(f"[DEBUG] SAVE ERROR: {type(e).__name__}: {e}")
+            import traceback
+            traceback.print_exc()
+
         messages.success(request, "Profiliniz başarıyla güncellendi.")
         messages.info(request, "Bilgileriniz KVKK kapsamında 3. kişilerle paylaşılmamaktadır.")
         return redirect('profile_edit')
