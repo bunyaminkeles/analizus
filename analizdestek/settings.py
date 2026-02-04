@@ -286,7 +286,7 @@ else:
     }
 
 # --- AWS S3 STORAGE (Dosya Uploads) ---
-if os.getenv('AWS_ACCESS_KEY_ID'):
+if os.getenv('AWS_STORAGE_BUCKET_NAME'):
     # Production: S3 kullan
     STORAGES = {
         'default': {
