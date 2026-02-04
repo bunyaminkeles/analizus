@@ -46,7 +46,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.sitemaps',  # SEO Sitemap
     # Kendi Uygulamalarımız
-    'storages',         # Django Storages (AWS S3)
     'forum',
     'crispy_forms',
     'crispy_bootstrap5',
