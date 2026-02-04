@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'forum',
     'crispy_forms',
     'crispy_bootstrap5',
+    'storages',  # AWS S3 için
 ]
 
 MIDDLEWARE = [
@@ -279,3 +280,31 @@ else:
             },
         },
     }
+
+# --- AWS S3 MEDYA DOSYALARI ---
+AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
+AWS_STORAGE_BUCKET_NAME = 'analizus-files'
+AWS_S3_REGION_NAME = os.getenv('AWS_S3_REGION_NAME', 'eu-north-1')
+AWS_S3_CUSTOM_DOMAIN = os.getenv('AWS_S3_CUSTOM_DOMAIN', f'{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com')
+
+# S3 Güvenlik ve Performans Ayarları
+AWS_S3_OBJECT_PARAMETERS = {
+    'CacheControl': 'max-age=86400',  # 1 gün cache
+}
+AWS_DEFAULT_ACL = None  # Bucket policy'e bırak
+AWS_S3_FILE_OVERWRITE = False  # Aynı isimli dosyaları ezme
+AWS_QUERYSTRING_AUTH = False  # URL'lerde auth parametresi olmasın (public okuma için)
+
+# Dosya boyutu limiti (5MB)
+AWS_S3_MAX_MEMORY_SIZE = 5 * 1024 * 1024
+
+# Production'da S3, lokalde dosya sistemi
+if not DEBUG and AWS_ACCESS_KEY_ID:
+    # Production: S3 kullan
+    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+    MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/'
+else:
+    # Lokal geliştirme: dosya sistemi kullan
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

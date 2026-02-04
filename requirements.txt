@@ -13,6 +13,8 @@ Markdown
 
 # --- MEDYA & DOSYA ---
 Pillow
+boto3
+django-storages
 
 # --- AI & ANALİZ ---
 openai
