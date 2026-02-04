@@ -88,6 +88,9 @@ urlpatterns = [
     path('api/widgets/proposals/', api_views.widget_latest_proposals, name='widget_proposals'),
     path('api/follow/<str:username>/', api_views.toggle_follow_user, name='api_toggle_follow'),
 
+    # Kullanıcı Arama (@mention autocomplete)
+    path('api/users/search/', views.user_search_api, name='user_search_api'),
+
     # Bağış Sistemi
     path('api/send-support-email/', views.send_support_email, name='send_support_email'),
     path('donation/success/', views.donation_success, name='donation_success'),

@@ -128,7 +128,7 @@
                     </div>
 
                     <div class="post-content text-light opacity-75" style="min-height: 80px; line-height: 1.6;">
-                        {{ post.message|linebreaks }}
+                        {{ post.message|render_mentions|linebreaks }}
                     </div>
 
                     <div class="mt-3 pt-2 border-top border-secondary border-opacity-25 d-flex align-items-center justify-content-between">
@@ -174,8 +174,9 @@
         {% if user.is_authenticated %}
             <form method="post">
                 {% csrf_token %}
-                <div class="mb-3">
+                <div class="mb-3 position-relative">
                     {{ form|crispy }}
+                    <div class="mention-dropdown" id="mention-dropdown"></div>
                 </div>
                 <div class="d-flex justify-content-end">
                     <button type="submit" class="btn btn-primary px-5 py-2 fw-bold rounded-pill">
@@ -227,47 +228,219 @@
         pointer-events: none;
         opacity: 0.7;
     }
+
+    /* @Mention Stilleri */
+    .mention-link {
+        color: #00d2ff;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+    .mention-link:hover {
+        color: #3a7bd5;
+        text-decoration: underline;
+        text-shadow: 0 0 8px rgba(0, 210, 255, 0.4);
+    }
+
+    /* Mention Autocomplete */
+    .mention-dropdown {
+        position: absolute;
+        background: rgba(15, 23, 42, 0.95);
+        border: 1px solid rgba(0, 210, 255, 0.3);
+        border-radius: 8px;
+        max-height: 200px;
+        overflow-y: auto;
+        z-index: 1050;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        display: none;
+    }
+    .mention-dropdown .mention-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        cursor: pointer;
+        transition: background 0.15s;
+        color: #e2e8f0;
+    }
+    .mention-dropdown .mention-item:hover,
+    .mention-dropdown .mention-item.active {
+        background: rgba(0, 210, 255, 0.15);
+    }
+    .mention-dropdown .mention-item img {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+    .mention-dropdown .mention-item .mention-avatar-placeholder {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: rgba(0, 210, 255, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.75rem;
+        color: #00d2ff;
+        font-weight: bold;
+    }
+    .mention-dropdown .mention-item .mention-info {
+        display: flex;
+        flex-direction: column;
+    }
+    .mention-dropdown .mention-item .mention-username {
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
+    .mention-dropdown .mention-item .mention-rank {
+        font-size: 0.7rem;
+        color: #94a3b8;
+    }
 </style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // ═══════════════════════════════════════════════════════════════
+    // AI ÖNERİ BUTONU
+    // ═══════════════════════════════════════════════════════════════
     const aiBtn = document.getElementById('aiSuggestBtn');
-    if (!aiBtn) return;
-
-    aiBtn.addEventListener('click', async function() {
-        const topicId = this.dataset.topicId;
-        const originalText = this.innerHTML;
-
-        // Loading durumu
-        this.classList.add('loading');
-        this.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Düşünüyor...';
-
-        try {
-            const response = await fetch(`/api/ai/suggest/${topicId}/`, {
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
+    if (aiBtn) {
+        aiBtn.addEventListener('click', async function() {
+            const topicId = this.dataset.topicId;
+            const originalText = this.innerHTML;
+            this.classList.add('loading');
+            this.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Düşünüyor...';
+            try {
+                const response = await fetch(`/api/ai/suggest/${topicId}/`, {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                });
+                const data = await response.json();
+                if (response.ok && data.suggestion) {
+                    const textarea = document.querySelector('textarea[name="message"]');
+                    if (textarea) { textarea.value = data.suggestion; textarea.focus(); }
+                } else {
+                    alert(data.error || 'Bir hata oluştu');
                 }
-            });
-
-            const data = await response.json();
-
-            if (response.ok && data.suggestion) {
-                // Textarea'yı bul ve önerilen yanıtı ekle
-                const textarea = document.querySelector('textarea[name="message"]');
-                if (textarea) {
-                    textarea.value = data.suggestion;
-                    textarea.focus();
-                }
-            } else {
-                alert(data.error || 'Bir hata oluştu');
+            } catch (error) {
+                alert('Bağlantı hatası');
+            } finally {
+                this.classList.remove('loading');
+                this.innerHTML = originalText;
             }
-        } catch (error) {
-            alert('Bağlantı hatası');
-        } finally {
-            this.classList.remove('loading');
-            this.innerHTML = originalText;
+        });
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // @MENTION AUTOCOMPLETE
+    // ═══════════════════════════════════════════════════════════════
+    const textarea = document.querySelector('textarea[name="message"]');
+    const dropdown = document.getElementById('mention-dropdown');
+    if (!textarea || !dropdown) return;
+
+    let mentionStart = -1;
+    let activeIndex = -1;
+    let debounceTimer = null;
+
+    textarea.addEventListener('input', function() {
+        const cursorPos = this.selectionStart;
+        const text = this.value.substring(0, cursorPos);
+        const match = text.match(/@(\w*)$/);
+
+        if (match) {
+            mentionStart = cursorPos - match[0].length;
+            const query = match[1];
+            if (query.length >= 1) {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => fetchUsers(query), 300);
+            } else {
+                dropdown.style.display = 'none';
+            }
+        } else {
+            mentionStart = -1;
+            dropdown.style.display = 'none';
         }
     });
+
+    textarea.addEventListener('keydown', function(e) {
+        if (dropdown.style.display === 'none') return;
+        const items = dropdown.querySelectorAll('.mention-item');
+        if (!items.length) return;
+
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            activeIndex = Math.min(activeIndex + 1, items.length - 1);
+            updateActive(items);
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            activeIndex = Math.max(activeIndex - 1, 0);
+            updateActive(items);
+        } else if (e.key === 'Enter' || e.key === 'Tab') {
+            if (activeIndex >= 0 && activeIndex < items.length) {
+                e.preventDefault();
+                selectMention(items[activeIndex].dataset.username);
+            }
+        } else if (e.key === 'Escape') {
+            dropdown.style.display = 'none';
+        }
+    });
+
+    document.addEventListener('click', function(e) {
+        if (!dropdown.contains(e.target) && e.target !== textarea) {
+            dropdown.style.display = 'none';
+        }
+    });
+
+    async function fetchUsers(query) {
+        try {
+            const resp = await fetch(`/api/users/search/?q=${encodeURIComponent(query)}`);
+            const data = await resp.json();
+            if (data.users && data.users.length > 0) {
+                renderDropdown(data.users);
+            } else {
+                dropdown.style.display = 'none';
+            }
+        } catch(err) {
+            dropdown.style.display = 'none';
+        }
+    }
+
+    function renderDropdown(users) {
+        activeIndex = 0;
+        dropdown.innerHTML = users.map((u, i) => {
+            const avatar = u.avatar_url
+                ? `<img src="${u.avatar_url}" alt="${u.username}">`
+                : `<div class="mention-avatar-placeholder">${u.username.charAt(0).toUpperCase()}</div>`;
+            return `<div class="mention-item ${i === 0 ? 'active' : ''}" data-username="${u.username}">
+                ${avatar}
+                <div class="mention-info">
+                    <span class="mention-username">@${u.username}</span>
+                    <span class="mention-rank">${u.rank}</span>
+                </div>
+            </div>`;
+        }).join('');
+        dropdown.style.display = 'block';
+
+        dropdown.querySelectorAll('.mention-item').forEach(item => {
+            item.addEventListener('click', () => selectMention(item.dataset.username));
+        });
+    }
+
+    function updateActive(items) {
+        items.forEach((el, i) => el.classList.toggle('active', i === activeIndex));
+    }
+
+    function selectMention(username) {
+        const before = textarea.value.substring(0, mentionStart);
+        const after = textarea.value.substring(textarea.selectionStart);
+        textarea.value = before + '@' + username + ' ' + after;
+        const newPos = mentionStart + username.length + 2;
+        textarea.setSelectionRange(newPos, newPos);
+        textarea.focus();
+        dropdown.style.display = 'none';
+        mentionStart = -1;
+    }
 });
 </script>
 

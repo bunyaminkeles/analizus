@@ -1250,6 +1250,35 @@ def mark_all_notifications_read(request):
     return JsonResponse({'status': 'ok'})
 
 
+# --- KULLANICI ARAMA API (@mention autocomplete) ---
+@login_required
+@require_GET
+def user_search_api(request):
+    """@mention autocomplete için kullanıcı arama endpoint'i"""
+    q = request.GET.get('q', '').strip()
+    if len(q) < 1:
+        return JsonResponse({'users': []})
+    users = User.objects.filter(
+        username__istartswith=q
+    ).exclude(
+        id=request.user.id
+    ).select_related('profile')[:5]
+    data = []
+    for u in users:
+        avatar_url = ''
+        rank = 'Üye'
+        if hasattr(u, 'profile'):
+            if u.profile.avatar:
+                avatar_url = u.profile.avatar.url
+            rank = u.profile.get_rank_display()
+        data.append({
+            'username': u.username,
+            'avatar_url': avatar_url,
+            'rank': rank,
+        })
+    return JsonResponse({'users': data})
+
+
 # --- AI ASISTAN ---
 @login_required
 def ai_assistant(request):
