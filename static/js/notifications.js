@@ -4,7 +4,8 @@ console.log("--- DEBUG: Bildirim scripti (AJAX) yüklendi. ---");
 class NotificationManager {
     constructor() {
         this.pollInterval = 15000; // 15 saniyede bir kontrol
-        this.seenNotifications = new Set(); // Gösterilmiş bildirimleri takip et
+        this.storageKey = 'analizus_seen_notifications';
+        this.seenNotifications = this.loadSeenNotifications(); // localStorage'dan yükle
         this.init();
     }
 
@@ -18,7 +19,52 @@ class NotificationManager {
         // Periyodik kontrol başlat
         setInterval(() => this.checkNotifications(), this.pollInterval);
 
+        // Eski bildirimleri temizle (7 günden eski)
+        this.cleanupOldNotifications();
+
         console.log("--- DEBUG: AJAX Bildirim sistemi başlatıldı ---");
+    }
+
+    loadSeenNotifications() {
+        // localStorage'dan görülmüş bildirimleri yükle
+        try {
+            const stored = localStorage.getItem(this.storageKey);
+            if (stored) {
+                const data = JSON.parse(stored);
+                // Object formatında saklanıyor: { id: timestamp }
+                return new Map(Object.entries(data));
+            }
+        } catch (e) {
+            console.log("localStorage okuma hatası:", e.message);
+        }
+        return new Map();
+    }
+
+    saveSeenNotifications() {
+        // localStorage'a kaydet
+        try {
+            const obj = Object.fromEntries(this.seenNotifications);
+            localStorage.setItem(this.storageKey, JSON.stringify(obj));
+        } catch (e) {
+            console.log("localStorage yazma hatası:", e.message);
+        }
+    }
+
+    cleanupOldNotifications() {
+        // 7 günden eski bildirimleri temizle
+        const sevenDaysAgo = Date.now() - (7 * 24 * 60 * 60 * 1000);
+        let cleaned = false;
+
+        for (const [id, timestamp] of this.seenNotifications) {
+            if (timestamp < sevenDaysAgo) {
+                this.seenNotifications.delete(id);
+                cleaned = true;
+            }
+        }
+
+        if (cleaned) {
+            this.saveSeenNotifications();
+        }
     }
 
     createContainer() {
@@ -62,11 +108,14 @@ class NotificationManager {
             // Navbar'daki bildirim sayısını güncelle
             this.updateBadge(data.unread_count);
 
-            // Yeni bildirimleri göster
+            // Yeni bildirimleri göster (daha önce gösterilmemişleri)
             data.notifications.forEach(notif => {
-                if (!this.seenNotifications.has(notif.id)) {
+                const notifId = String(notif.id);
+                if (!this.seenNotifications.has(notifId)) {
                     this.showToast(notif);
-                    this.seenNotifications.add(notif.id);
+                    // Bildirimi gösterildi olarak işaretle
+                    this.seenNotifications.set(notifId, Date.now());
+                    this.saveSeenNotifications();
                 }
             });
 
