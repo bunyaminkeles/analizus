@@ -13,7 +13,13 @@
                 
                 <div class="position-relative d-inline-block mb-4">
                     <div class="avatar-glow">
-                        <i class="bi bi-person-circle text-white display-1"></i>
+                        {% if profile_user.profile.avatar %}
+                            <img src="{{ profile_user.profile.avatar.url }}" class="rounded-circle shadow" style="width: 120px; height: 120px; object-fit: cover; border: 3px solid rgba(56, 189, 248, 0.5);">
+                        {% else %}
+                            <div class="rounded-circle d-flex align-items-center justify-content-center text-white shadow" style="width: 120px; height: 120px; font-size: 3rem; background: linear-gradient(135deg, rgba(56, 189, 248, 0.3), rgba(99, 102, 241, 0.3)); border: 3px solid rgba(56, 189, 248, 0.5);">
+                                {{ profile_user.username|slice:":1"|upper }}
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
 

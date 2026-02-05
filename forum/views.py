@@ -930,8 +930,19 @@ def profile_edit(request):
                     profile.phone_verified = False
 
         # Dosyalar
+        from django.conf import settings as django_settings
+        from django.core.files.storage import default_storage
+        print(f"[DEBUG] DEBUG={django_settings.DEBUG}")
+        print(f"[DEBUG] DEFAULT_FILE_STORAGE={getattr(django_settings, 'DEFAULT_FILE_STORAGE', 'NOT SET')}")
+        print(f"[DEBUG] default_storage class: {default_storage.__class__.__name__}")
+        print(f"[DEBUG] request.FILES: {request.FILES}")
+        print(f"[DEBUG] 'avatar' in FILES: {'avatar' in request.FILES}")
         if 'avatar' in request.FILES:
-            profile.avatar = request.FILES['avatar']
+            avatar_file = request.FILES['avatar']
+            print(f"[DEBUG] Avatar dosyası: {avatar_file.name}, boyut: {avatar_file.size}")
+            print(f"[DEBUG] Avatar field storage ÖNCE: {profile.avatar.storage.__class__.__name__ if profile.avatar else 'None'}")
+            profile.avatar = avatar_file
+            print(f"[DEBUG] Avatar field storage SONRA: {profile.avatar.storage.__class__.__name__}")
         if 'cover_image' in request.FILES:
             profile.cover_image = request.FILES['cover_image']
         
@@ -958,8 +969,23 @@ def profile_edit(request):
 
         profile.skills.set(selected_skills)
 
-        profile.save()
-        
+        try:
+            profile.save()
+            print(f"[DEBUG] Profile saved. Avatar URL: {profile.avatar.url if profile.avatar else 'None'}")
+            if profile.avatar:
+                print(f"[DEBUG] Avatar name: {profile.avatar.name}")
+                print(f"[DEBUG] Avatar storage: {profile.avatar.storage.__class__.__name__}")
+                # S3'te var mı kontrol et
+                try:
+                    exists = profile.avatar.storage.exists(profile.avatar.name)
+                    print(f"[DEBUG] S3'te dosya var mı: {exists}")
+                except Exception as check_err:
+                    print(f"[DEBUG] S3 kontrol hatası: {check_err}")
+        except Exception as e:
+            print(f"[DEBUG] SAVE ERROR: {type(e).__name__}: {e}")
+            import traceback
+            traceback.print_exc()
+
         messages.success(request, "Profiliniz başarıyla güncellendi.")
         messages.info(request, "Bilgileriniz KVKK kapsamında 3. kişilerle paylaşılmamaktadır.")
         return redirect('profile_edit')
