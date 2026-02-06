@@ -29,6 +29,19 @@ def yoktez_landing(request):
     if request.method == 'POST':
         form = TezSearchForm(request.POST)
         if form.is_valid():
+            # E-posta doğrulanmış mı?
+            if not user.profile.email_verified:
+                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                    return JsonResponse({
+                        'error': 'Tez tarama için e-posta doğrulaması gereklidir. Profil sayfanızdan e-postanızı doğrulayın.'
+                    }, status=403)
+                return render(request, 'yoktez/landing.html', {
+                    'form': form,
+                    'error': 'Tez tarama için e-posta doğrulaması gereklidir.',
+                    'remaining': remaining,
+                    'daily_limit': daily_limit,
+                })
+
             # Limit aşıldı mı?
             if remaining <= 0:
                 if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
