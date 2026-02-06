@@ -36,11 +36,10 @@ class YokTezScraper:
             options.add_argument('--disable-gpu')
             options.add_argument('--window-size=1920,1080')
 
-        driver_kwargs = {'options': options, 'version_main': 144}
         if settings.CHROME_BINARY_PATH:
-            driver_kwargs['binary_location'] = settings.CHROME_BINARY_PATH
+            options.binary_location = settings.CHROME_BINARY_PATH
 
-        driver = uc.Chrome(**driver_kwargs)
+        driver = uc.Chrome(options=options, version_main=144)
         driver.get(URL)
         time.sleep(3)
         return driver
