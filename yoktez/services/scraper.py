@@ -2,6 +2,7 @@
 YÖK Tez Merkezi scraper service.
 Mevcut yoktez.py'den refactor edildi + yıl-bölme (2000+ sonuç) desteği eklendi.
 """
+import os
 import time
 import re
 import logging
@@ -14,6 +15,13 @@ from django.conf import settings
 
 
 logger = logging.getLogger(__name__)
+
+# Chrome için indirilen ekstra kütüphanelerin yolunu LD_LIBRARY_PATH'e ekle
+_chrome_libs = os.path.join(settings.BASE_DIR, "chrome-libs", "lib")
+if os.path.isdir(_chrome_libs):
+    _ld = os.environ.get("LD_LIBRARY_PATH", "")
+    if _chrome_libs not in _ld:
+        os.environ["LD_LIBRARY_PATH"] = f"{_chrome_libs}:{_ld}" if _ld else _chrome_libs
 
 URL = "https://tez.yok.gov.tr/UlusalTezMerkezi/"
 MAX_RESULTS_PER_PAGE = 2000
