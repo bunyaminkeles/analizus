@@ -115,9 +115,13 @@ if not DEBUG:
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
-    # www ve non-www arası session paylaşımı için
-    SESSION_COOKIE_DOMAIN = '.analizus.com'
-    CSRF_COOKIE_DOMAIN = '.analizus.com'
+    
+    # Sadece ana site (analizus.com) için cookie domain ayarlarını yap
+    if 'analizus.com' in SITE_URL and 'onrender.com' not in SITE_URL:
+        # www ve non-www arası session paylaşımı için
+        SESSION_COOKIE_DOMAIN = '.analizus.com'
+        CSRF_COOKIE_DOMAIN = '.analizus.com'
+
     # HSTS - HTTP Strict Transport Security
     SECURE_HSTS_SECONDS = 31536000  # 1 yıl
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
