@@ -57,7 +57,7 @@ def send_chat_message(message_instance):
     except Exception as e:
         logger.error(f"Chat WebSocket mesajı gönderilemedi: {e}")
 
-from .models import Post, PrivateMessage, Notification, PostLike, Topic, Badge
+from .models import Post, PrivateMessage, Notification, PostLike, Topic, Badge, FreelanceJob
 from .models import Profile  # Profile modelini import et
 
 
@@ -351,3 +351,70 @@ def check_like_badges(sender, instance, created, **kwargs):
             check_and_award_participation_badges(profile)
         except Exception as e:
             logger.error(f"Beğeni rozeti kontrolünde hata: {e}")
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# İŞ İLANI TAMAMLANDIĞINDA BAŞARI HİKAYESİ DAVETİ
+# ═══════════════════════════════════════════════════════════════════════════
+
+@receiver(pre_save, sender=FreelanceJob)
+def capture_old_job_status(sender, instance, **kwargs):
+    """FreelanceJob kaydedilmeden önceki status'u yakala"""
+    if instance.pk:
+        try:
+            old = FreelanceJob.objects.get(pk=instance.pk)
+            instance._old_status = old.status
+        except FreelanceJob.DoesNotExist:
+            instance._old_status = None
+    else:
+        instance._old_status = None
+
+
+@receiver(post_save, sender=FreelanceJob)
+def send_success_story_invitation(sender, instance, created, **kwargs):
+    """İlan completed olduğunda ilan sahibi ve uzmana başarı hikayesi daveti gönder"""
+    if created:
+        return
+
+    old_status = getattr(instance, '_old_status', None)
+    if old_status == 'completed' or instance.status != 'completed':
+        return
+
+    # İlan sahibi
+    owner = instance.owner
+
+    # Kabul edilen teklifteki uzman
+    accepted_proposal = instance.proposals.filter(status='accepted').first()
+    expert = accepted_proposal.expert if accepted_proposal else None
+
+    # AnalizBot kullanıcısını bul
+    from django.contrib.auth import get_user_model
+    User = get_user_model()
+    try:
+        bot_user = User.objects.get(username='AnalizBot')
+    except User.DoesNotExist:
+        logger.warning("AnalizBot kullanıcısı bulunamadı, başarı hikayesi daveti gönderilemedi.")
+        return
+
+    story_url = f"/success-stories/?job={instance.pk}"
+    message_text = (
+        f"Tebrikler! \"{instance.title}\" ilanı başarıyla tamamlandı. 🎉\n\n"
+        f"Deneyiminizi toplulukla paylaşmak ister misiniz? "
+        f"Başarı hikayenizi yazarak diğer kullanıcılara ilham verebilirsiniz.\n\n"
+        f"👉 Hikayenizi yazmak için: {story_url}"
+    )
+
+    recipients = [owner]
+    if expert and expert != owner:
+        recipients.append(expert)
+
+    for recipient in recipients:
+        try:
+            PrivateMessage.objects.create(
+                sender=bot_user,
+                receiver=recipient,
+                message=message_text,
+            )
+            logger.info(f"Başarı hikayesi daveti gönderildi: {recipient.username} (iş: {instance.pk})")
+        except Exception as e:
+            logger.error(f"Başarı hikayesi daveti gönderilemedi ({recipient.username}): {e}")

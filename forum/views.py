@@ -158,9 +158,9 @@ def home(request):
     quiz_leaderboard = QuizScore.objects.select_related('user', 'user__profile').order_by('-correct_answers')[:5]
 
     # Haftanın Başarı Hikayesi
-    featured_story = SuccessStory.objects.filter(is_featured=True).first()
+    featured_story = SuccessStory.objects.filter(is_featured=True, approval_status='approved').first()
     if not featured_story:
-        featured_story = SuccessStory.objects.order_by('?').first()
+        featured_story = SuccessStory.objects.filter(approval_status='approved').order_by('?').first()
 
     # Freelance Market - Son İlanlar
     recent_jobs = FreelanceJob.objects.filter(status='open').select_related('owner', 'category').annotate(
@@ -225,8 +225,17 @@ class SuccessStoryForm(forms.ModelForm):
         labels = {'quote': 'Hikayeniz'}
 
 def success_stories(request):
-    stories = SuccessStory.objects.all().order_by('-is_featured', '-created_at')
+    stories = SuccessStory.objects.filter(approval_status='approved').order_by('-is_featured', '-created_at')
     form = None
+    job = None
+    auto_open_modal = False
+
+    # ?job=<pk> parametresi ile geldiyse ilgili ilanı bul
+    job_id = request.GET.get('job')
+    if job_id:
+        job = FreelanceJob.objects.filter(pk=job_id, status='completed').first()
+        if job and request.user.is_authenticated:
+            auto_open_modal = True
 
     if request.user.is_authenticated:
         if request.method == 'POST':
@@ -237,13 +246,31 @@ def success_stories(request):
                 # Text alanlarını listeye çevir
                 story.achievements = [line.strip() for line in form.cleaned_data['achievements_text'].split('\n') if line.strip()]
                 story.resources = [line.strip() for line in form.cleaned_data['resources_text'].split('\n') if line.strip()]
+
+                # Job bağlantısı
+                post_job_id = request.POST.get('job_id')
+                if post_job_id:
+                    linked_job = FreelanceJob.objects.filter(pk=post_job_id, status='completed').first()
+                    if linked_job:
+                        # Kullanıcı ilan sahibi mi, yoksa kabul edilen uzman mı?
+                        is_owner = linked_job.owner == request.user
+                        is_expert = linked_job.proposals.filter(expert=request.user, status='accepted').exists()
+                        if is_owner or is_expert:
+                            story.job = linked_job
+
+                story.approval_status = 'pending'
                 story.save()
-                messages.success(request, 'Harika! Başarı hikayeniz paylaşıldı.')
+                messages.success(request, 'Hikayeniz gönderildi! Admin onayından sonra yayınlanacaktır.')
                 return redirect('success_stories')
         else:
             form = SuccessStoryForm()
 
-    return render(request, 'forum/success_stories.html', {'stories': stories, 'form': form})
+    return render(request, 'forum/success_stories.html', {
+        'stories': stories,
+        'form': form,
+        'linked_job': job,
+        'auto_open_modal': auto_open_modal,
+    })
 
 # --- FREELANCE MARKET ---
 def job_list(request):
@@ -1761,9 +1788,9 @@ def api_get_profile_summary(request, username):
 
 def api_get_featured_story(request):
     """Haftanın başarı hikayesini getirir (Modal için)"""
-    story = SuccessStory.objects.filter(is_featured=True).first()
+    story = SuccessStory.objects.filter(is_featured=True, approval_status='approved').first()
     if not story:
-        story = SuccessStory.objects.order_by('?').first()
+        story = SuccessStory.objects.filter(approval_status='approved').order_by('?').first()
     
     if story:
         html = render_to_string('forum/partials/story_modal_content.html', {'story': story})

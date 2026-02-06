@@ -730,18 +730,34 @@ class QuizCategoryScore(models.Model):
 
 class SuccessStory(models.Model):
     """Kullanıcı başarı hikayeleri (Before/After)"""
+    APPROVAL_CHOICES = (
+        ('pending', 'Onay Bekliyor'),
+        ('approved', 'Onaylandı'),
+        ('rejected', 'Reddedildi'),
+    )
+
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='stories')
+    job = models.ForeignKey(
+        'FreelanceJob', on_delete=models.SET_NULL,
+        null=True, blank=True, related_name='success_stories',
+        verbose_name="İlgili İş İlanı"
+    )
     quote = models.TextField(verbose_name="Hikaye Alıntısı")
-    achievements = models.JSONField(default=list, verbose_name="Başarı Maddeleri") 
+    achievements = models.JSONField(default=list, verbose_name="Başarı Maddeleri")
     resources = models.JSONField(default=list, verbose_name="Kullanılan Kaynaklar")
     likes_count = models.IntegerField(default=0)
     comments_count = models.IntegerField(default=0)
     is_featured = models.BooleanField(default=False, verbose_name="Haftanın Hikayesi")
+    approval_status = models.CharField(
+        max_length=20, choices=APPROVAL_CHOICES,
+        default='pending', verbose_name="Onay Durumu"
+    )
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         verbose_name = "Başarı Hikayesi"
         verbose_name_plural = "Başarı Hikayeleri"
+        unique_together = ('user', 'job')
 
     def __str__(self):
         return f"{self.user.username} - Başarı Hikayesi"

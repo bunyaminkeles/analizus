@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Section, Category, Topic, Post, Profile, ContactMessage, PrivateMessage, Badge, Notification, Skill, EmailVerification, DailyTip, QuizQuestion, QuizScore, FreelanceJob, JobProposal, JobReview, UserQuizAttempt, DonationTier, Donation, JobPayment, TopicTag, SiteSettings, BlogCategory, BlogPost
+from .models import Section, Category, Topic, Post, Profile, ContactMessage, PrivateMessage, Badge, Notification, Skill, EmailVerification, DailyTip, QuizQuestion, QuizScore, FreelanceJob, JobProposal, JobReview, UserQuizAttempt, DonationTier, Donation, JobPayment, TopicTag, SiteSettings, BlogCategory, BlogPost, SuccessStory
 
 # --- GENEL AYARLAR ---
 admin.site.site_header = "Analizus Komuta Merkezi"
@@ -703,3 +703,52 @@ class BlogPostAdmin(admin.ModelAdmin):
         if errors:
             for err in errors[:3]:  # İlk 3 hatayı göster
                 self.message_user(request, f'❌ Hata: {err}', messages.ERROR)
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# BAŞARI HİKAYELERİ YÖNETİMİ
+# ═══════════════════════════════════════════════════════════════════════════════
+
+@admin.register(SuccessStory)
+class SuccessStoryAdmin(admin.ModelAdmin):
+    list_display = ('user', 'job_link', 'quote_short', 'approval_status_display', 'is_featured', 'created_at')
+    list_filter = ('approval_status', 'is_featured', 'created_at')
+    list_editable = ('is_featured',)
+    search_fields = ('user__username', 'quote', 'job__title')
+    date_hierarchy = 'created_at'
+    ordering = ('-created_at',)
+    actions = ['approve_stories', 'reject_stories']
+
+    def quote_short(self, obj):
+        return obj.quote[:80] + "..." if len(obj.quote) > 80 else obj.quote
+    quote_short.short_description = "Hikaye"
+
+    def job_link(self, obj):
+        if obj.job:
+            return format_html(
+                '<a href="/admin/forum/freelancejob/{}/change/" style="color: #00d2ff;">{}</a>',
+                obj.job.id, obj.job.title[:30]
+            )
+        return "-"
+    job_link.short_description = "İlgili İlan"
+
+    def approval_status_display(self, obj):
+        colors = {'pending': '#ffc107', 'approved': '#28a745', 'rejected': '#dc3545'}
+        icons = {'pending': '⏳', 'approved': '✅', 'rejected': '❌'}
+        return format_html(
+            '<span style="color: {};">{} {}</span>',
+            colors.get(obj.approval_status, '#888'),
+            icons.get(obj.approval_status, ''),
+            obj.get_approval_status_display()
+        )
+    approval_status_display.short_description = "Onay Durumu"
+
+    @admin.action(description='✅ Seçili hikayeleri onayla')
+    def approve_stories(self, request, queryset):
+        updated = queryset.update(approval_status='approved')
+        self.message_user(request, f'{updated} hikaye onaylandı.')
+
+    @admin.action(description='❌ Seçili hikayeleri reddet')
+    def reject_stories(self, request, queryset):
+        updated = queryset.update(approval_status='rejected')
+        self.message_user(request, f'{updated} hikaye reddedildi.')
