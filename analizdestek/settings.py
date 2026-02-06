@@ -20,6 +20,7 @@ ALLOWED_HOSTS = [
     'analizus.com',
     'www.analizus.com',
     'analizdestek-ai.onrender.com',
+    'analizus-dev.onrender.com',  # Geliştirme ortamı
     '*.koyeb.app',  # Koyeb için eklendi
     '127.0.0.1',
     'localhost',
@@ -30,6 +31,7 @@ CSRF_TRUSTED_ORIGINS = [
     'https://analizus.com',
     'https://www.analizus.com',
     'https://analizdestek-ai.onrender.com',
+    'https://analizus-dev.onrender.com', # Geliştirme ortamı
     'https://analizus.onrender.com',
 ]
 
@@ -47,6 +49,7 @@ INSTALLED_APPS = [
     'django.contrib.sitemaps',  # SEO Sitemap
     # Kendi Uygulamalarımız
     'forum',
+    'yoktez',
     'crispy_forms',
     'crispy_bootstrap5',
     'storages',  # AWS S3 için
