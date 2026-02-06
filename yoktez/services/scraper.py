@@ -10,6 +10,8 @@ from bs4 import BeautifulSoup
 from fake_useragent import UserAgent
 import undetected_chromedriver as uc
 from selenium.webdriver.common.by import By
+from django.conf import settings
+
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +35,12 @@ class YokTezScraper:
             options.add_argument('--disable-dev-shm-usage')
             options.add_argument('--disable-gpu')
             options.add_argument('--window-size=1920,1080')
-        driver = uc.Chrome(options=options, version_main=144)
+
+        driver_kwargs = {'options': options, 'version_main': 144}
+        if settings.CHROME_BINARY_PATH:
+            driver_kwargs['binary_location'] = settings.CHROME_BINARY_PATH
+
+        driver = uc.Chrome(**driver_kwargs)
         driver.get(URL)
         time.sleep(3)
         return driver
