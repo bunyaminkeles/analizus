@@ -18,4 +18,4 @@ RUN python manage.py collectstatic --noinput
 
 EXPOSE 8000
 
-CMD ["sh", "-c", "python manage.py migrate && python manage.py setup_categories && python manage.py create_badges && python manage.py populate_skills && python manage.py import_quiz && daphne -b 0.0.0.0 -p ${PORT:-8000} analizdestek.asgi:application"]
+CMD ["sh", "-c", "python manage.py migrate && daphne -b 0.0.0.0 -p ${PORT:-8000} analizdestek.asgi:application"]
