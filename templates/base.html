@@ -144,21 +144,23 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav mx-auto">
-                    <li class="nav-item px-2">
+                    {% if features.quiz %}<li class="nav-item px-2">
                         <a class="nav-link" href="{% if user.is_authenticated %}#{% else %}{% url 'login' %}{% endif %}" {% if user.is_authenticated %}onclick="openQuizModal()"{% endif %}>
                             <i class="bi bi-trophy-fill me-1 text-warning"></i>İstatistik Arena
                         </a>
-                    </li>
-                    <li class="nav-item px-2"><a class="nav-link" href="{% url 'ai_assistant' %}"><i class="bi bi-robot me-1"></i>AI Asistan</a></li>
-                    <li class="nav-item px-2"><a class="nav-link" href="#" onclick="openStoryModal()"><i class="bi bi-star-fill me-1 text-info"></i>Başarı Hikayeleri</a></li>
-                    <li class="nav-item px-2"><a class="nav-link" href="{% url 'about' %}">Vizyon 2050</a></li>
-                    <li class="nav-item px-2"><a class="nav-link" href="{% url 'blog_list' %}">
+                    </li>{% endif %}
+                    {% if features.ai_assistant %}<li class="nav-item px-2"><a class="nav-link" href="{% url 'ai_assistant' %}"><i class="bi bi-robot me-1"></i>AI Asistan</a></li>{% endif %}
+                    {% if features.success_stories %}<li class="nav-item px-2"><a class="nav-link" href="#" onclick="openStoryModal()"><i class="bi bi-star-fill me-1 text-info"></i>Başarı Hikayeleri</a></li>{% endif %}
+                    {% if features.blog %}<li class="nav-item px-2"><a class="nav-link" href="{% url 'blog_list' %}">
                         <i class="bi bi-journal-richtext me-1 text-info"></i>Blog
-                    </a></li>
-                    <li class="nav-item px-2"><a class="nav-link" href="{% url 'job_list' %}">
+                    </a></li>{% endif %}
+                    {% if features.market %}<li class="nav-item px-2"><a class="nav-link" href="{% url 'job_list' %}">
                         <i class="bi bi-briefcase-fill me-1 text-success"></i>Hizmetler Pazarı
-                    </a></li>
-                    <li class="nav-item px-2"><a class="nav-link" href="{% url 'contact' %}">İletişim</a></li>
+                    </a></li>{% endif %}
+                    {% if features.yoktez %}<li class="nav-item px-2"><a class="nav-link" href="{% url 'yoktez:landing' %}">
+                        <i class="bi bi-mortarboard me-1 text-warning"></i>Tez Tarama
+                    </a></li>{% endif %}
+                    <li class="nav-item px-2"><a class="nav-link" href="{% url 'about' %}"><i class="bi bi-info-circle me-1"></i>Hakkımızda</a></li>
                 </ul>
                 <div class="d-flex align-items-center">
                     
@@ -167,12 +169,12 @@
                     </a>
 
                     {% if user.is_authenticated %}
-                        <a href="{% url 'inbox' %}" class="nav-link me-3 position-relative text-info">
-                            <i class="bi bi-envelope-paper fs-5"></i>   
+                        {% if features.messaging %}<a href="{% url 'inbox' %}" class="nav-link me-3 position-relative text-info">
+                            <i class="bi bi-envelope-paper fs-5"></i>
                             {% if unread_private_messages_count and unread_private_messages_count > 0 %}
                                 <span class="position-absolute top-2 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"></span>
-                            {% endif %}                         
-                        </a>
+                            {% endif %}
+                        </a>{% endif %}
                         
                         <div class="nav-item dropdown">
                             <a class="btn btn-outline-light btn-sm dropdown-toggle rounded-pill px-3" href="#" id="userDropdown" data-bs-toggle="dropdown">
@@ -184,7 +186,7 @@
                                 <li><a class="dropdown-item" href="{% url 'profile_detail' username=user.username %}"><i class="bi bi-person me-2"></i>Profilim</a></li>
                                 <li><a class="dropdown-item" href="{% url 'profile_edit' %}"><i class="bi bi-gear me-2"></i>Profili Düzenle</a></li>
                                 <li><a class="dropdown-item" href="{% url 'my_payments' %}"><i class="bi bi-credit-card me-2"></i>Ödemelerim</a></li>
-                                <li><a class="dropdown-item" href="{% url 'inbox' %}"><i class="bi bi-chat-dots me-2"></i>Gelen Kutusu</a></li>
+                                {% if features.messaging %}<li><a class="dropdown-item" href="{% url 'inbox' %}"><i class="bi bi-chat-dots me-2"></i>Gelen Kutusu</a></li>{% endif %}
                                 {% if user.is_staff %}
                                 <li><hr class="dropdown-divider border-secondary"></li>
                                 <li><a class="dropdown-item text-info" href="{% url 'admin_dashboard' %}"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a></li>

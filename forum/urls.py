@@ -6,11 +6,6 @@ urlpatterns = [
     path('', views.home, name='home'),
     path('health/', views.health_check, name='health_check'),
 
-    # LinkedIn Entegrasyonu
-    path('linkedin/connect/', views.linkedin_connect, name='linkedin_connect'),
-    path('linkedin/callback/', views.linkedin_callback, name='linkedin_callback'),
-    path('linkedin/share-test/', views.linkedin_share_test, name='linkedin_share_test'),
-
     # Blog
     path('blog/', views.blog_list, name='blog_list'),
     path('blog/create/', views.blog_create, name='blog_create'),
@@ -51,6 +46,10 @@ urlpatterns = [
     # Admin Dashboard
     path('dashboard/', views.admin_dashboard, name='admin_dashboard'),
     path('dashboard/verify-linkedin/<int:user_id>/', views.admin_verify_linkedin, name='admin_verify_linkedin'),
+    path('dashboard/approve-story/<int:pk>/', views.dashboard_approve_story, name='dashboard_approve_story'),
+    path('dashboard/approve-review/<int:pk>/', views.dashboard_approve_review, name='dashboard_approve_review'),
+    path('dashboard/approve-donation/<int:pk>/', views.dashboard_approve_donation, name='dashboard_approve_donation'),
+    path('dashboard/mark-contact-read/<int:pk>/', views.dashboard_mark_contact_read, name='dashboard_mark_contact_read'),
 
     # Diğer
     path('search/', views.search_result, name='search'),
@@ -98,6 +97,7 @@ urlpatterns = [
     # Cron Job Endpoints (External cron services için)
     path('api/cron/daily-quiz/', api_views.cron_generate_daily_quiz, name='cron_daily_quiz'),
     path('api/cron/update-badges/', api_views.cron_update_badges_ranks, name='cron_update_badges'),
+    path('api/cron/cleanup-yoktez/', api_views.cron_cleanup_yoktez_s3, name='cron_cleanup_yoktez'),
     path('api/cron/health/', api_views.cron_health_check, name='cron_health'),
 
     # Admin setup (kullandıktan sonra kaldırın!)

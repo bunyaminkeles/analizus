@@ -9,6 +9,9 @@ load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Site URL (e-posta doğrulama linkleri için ve ortamı ayırt etmek için)
+SITE_URL = os.getenv('SITE_URL', 'https://www.analizus.com')
+
 # --- GÜVENLİK AYARLARI ---
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-varsayilan-anahtar')
 
@@ -20,6 +23,7 @@ ALLOWED_HOSTS = [
     'analizus.com',
     'www.analizus.com',
     'analizdestek-ai.onrender.com',
+    'analizus-dev.onrender.com',  # Geliştirme ortamı
     '*.koyeb.app',  # Koyeb için eklendi
     '127.0.0.1',
     'localhost',
@@ -30,6 +34,7 @@ CSRF_TRUSTED_ORIGINS = [
     'https://analizus.com',
     'https://www.analizus.com',
     'https://analizdestek-ai.onrender.com',
+    'https://analizus-dev.onrender.com', # Geliştirme ortamı
     'https://analizus.onrender.com',
 ]
 
@@ -47,6 +52,7 @@ INSTALLED_APPS = [
     'django.contrib.sitemaps',  # SEO Sitemap
     # Kendi Uygulamalarımız
     'forum',
+    'yoktez',
     'crispy_forms',
     'crispy_bootstrap5',
     'storages',  # AWS S3 için
@@ -81,6 +87,7 @@ TEMPLATES = [
                 'django.template.context_processors.i18n',
                 'forum.context_processors.profile_context',  # Profil, bildirimler vb. için
                 'forum.context_processors.google_analytics',  # Google Analytics
+                'forum.context_processors.feature_flags',  # Feature Flags
             ],
         },
     },
@@ -112,9 +119,13 @@ if not DEBUG:
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
-    # www ve non-www arası session paylaşımı için
-    SESSION_COOKIE_DOMAIN = '.analizus.com'
-    CSRF_COOKIE_DOMAIN = '.analizus.com'
+    
+    # Sadece ana site (analizus.com) için cookie domain ayarlarını yap
+    if 'analizus.com' in SITE_URL and 'onrender.com' not in SITE_URL:
+        # www ve non-www arası session paylaşımı için
+        SESSION_COOKIE_DOMAIN = '.analizus.com'
+        CSRF_COOKIE_DOMAIN = '.analizus.com'
+
     # HSTS - HTTP Strict Transport Security
     SECURE_HSTS_SECONDS = 31536000  # 1 yıl
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
@@ -141,6 +152,10 @@ OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
 GROQ_API_KEY = os.getenv('GROQ_API_KEY')
 
+# Scraper (Selenium)
+CHROME_BINARY_PATH = os.getenv('CHROME_BINARY_PATH', None)
+
+
 # Güvenlik Headerları
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
@@ -149,10 +164,6 @@ X_FRAME_OPTIONS = 'DENY'
 # Rate Limiting
 RATELIMIT_VIEW = 'forum.views.ratelimit_error'
 
-# LinkedIn API
-LINKEDIN_CLIENT_ID = os.getenv('LINKEDIN_CLIENT_ID', '')
-LINKEDIN_CLIENT_SECRET = os.getenv('LINKEDIN_CLIENT_SECRET', '')
-LINKEDIN_REDIRECT_URI = os.getenv('LINKEDIN_REDIRECT_URI', 'https://www.analizus.com/linkedin/callback/')
 
 LANGUAGES = [
     ('tr', _('Turkish')),
@@ -216,9 +227,6 @@ EMAIL_BACKEND = 'django_ses.SESBackend'
 AWS_SES_REGION_NAME = os.getenv('AWS_SES_REGION_NAME', 'eu-north-1')
 AWS_SES_REGION_ENDPOINT = f'email.{AWS_SES_REGION_NAME}.amazonaws.com'
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'Analizus <noreply@analizus.com>')
-
-# Site URL (e-posta doğrulama linkleri için)
-SITE_URL = os.getenv('SITE_URL', 'https://www.analizus.com')
 
 # --- IYZICO ÖDEME AYARLARI ---
 IYZICO_API_KEY = os.getenv('IYZICO_API_KEY', '').strip()

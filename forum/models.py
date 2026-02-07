@@ -484,6 +484,7 @@ class ContactMessage(models.Model):
     email = models.EmailField()
     subject = models.CharField(max_length=200)
     message = models.TextField()
+    is_read = models.BooleanField(default=False, verbose_name="Okundu")
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
@@ -730,18 +731,34 @@ class QuizCategoryScore(models.Model):
 
 class SuccessStory(models.Model):
     """Kullanıcı başarı hikayeleri (Before/After)"""
+    APPROVAL_CHOICES = (
+        ('pending', 'Onay Bekliyor'),
+        ('approved', 'Onaylandı'),
+        ('rejected', 'Reddedildi'),
+    )
+
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='stories')
+    job = models.ForeignKey(
+        'FreelanceJob', on_delete=models.SET_NULL,
+        null=True, blank=True, related_name='success_stories',
+        verbose_name="İlgili İş İlanı"
+    )
     quote = models.TextField(verbose_name="Hikaye Alıntısı")
-    achievements = models.JSONField(default=list, verbose_name="Başarı Maddeleri") 
+    achievements = models.JSONField(default=list, verbose_name="Başarı Maddeleri")
     resources = models.JSONField(default=list, verbose_name="Kullanılan Kaynaklar")
     likes_count = models.IntegerField(default=0)
     comments_count = models.IntegerField(default=0)
     is_featured = models.BooleanField(default=False, verbose_name="Haftanın Hikayesi")
+    approval_status = models.CharField(
+        max_length=20, choices=APPROVAL_CHOICES,
+        default='pending', verbose_name="Onay Durumu"
+    )
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         verbose_name = "Başarı Hikayesi"
         verbose_name_plural = "Başarı Hikayeleri"
+        unique_together = ('user', 'job')
 
     def __str__(self):
         return f"{self.user.username} - Başarı Hikayesi"
@@ -1037,15 +1054,19 @@ class JobPayment(models.Model):
 
 class SiteSettings(models.Model):
     """Site genelinde tekil ayarlar"""
-    # LinkedIn API
-    linkedin_access_token = models.TextField(blank=True, verbose_name="LinkedIn Access Token")
-    linkedin_person_urn = models.CharField(max_length=100, blank=True, verbose_name="LinkedIn Person URN")
-    linkedin_organization_id = models.CharField(max_length=50, blank=True, verbose_name="LinkedIn Şirket ID", help_text="Şirket sayfası URL'sindeki numara (örn: 101597284)")
-    linkedin_connected_at = models.DateTimeField(null=True, blank=True, verbose_name="LinkedIn Bağlantı Tarihi")
-
     # Otomatik Paylaşım Ayarları
     auto_share_topics = models.BooleanField(default=False, verbose_name="Yeni konuları otomatik paylaş")
     auto_share_jobs = models.BooleanField(default=False, verbose_name="Yeni ilanları otomatik paylaş")
+
+    # Feature Flags
+    feature_blog = models.BooleanField(default=True, verbose_name="Blog")
+    feature_market = models.BooleanField(default=True, verbose_name="Hizmetler Pazarı")
+    feature_ai_assistant = models.BooleanField(default=True, verbose_name="AI Asistan")
+    feature_yoktez = models.BooleanField(default=True, verbose_name="YÖK Tez Tarama")
+    feature_quiz = models.BooleanField(default=True, verbose_name="İstatistik Arena (Quiz)")
+    feature_messaging = models.BooleanField(default=True, verbose_name="Özel Mesajlaşma")
+    feature_donation = models.BooleanField(default=True, verbose_name="Bağış Sistemi")
+    feature_success_stories = models.BooleanField(default=True, verbose_name="Başarı Hikayeleri")
 
     class Meta:
         verbose_name = "Site Ayarı"

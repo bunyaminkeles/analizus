@@ -176,6 +176,32 @@ def cron_update_badges_ranks(request):
 
 
 @require_GET
+def cron_cleanup_yoktez_s3(request):
+    """
+    3 günden eski, sipariş verilmemiş YÖK Tez dosyalarını S3'den siler.
+
+    Kullanım:
+    - GET /api/cron/cleanup-yoktez/?secret=YOUR_SECRET
+    - Günlük cron job olarak çalıştırılmalıdır.
+    """
+    if not _verify_cron_secret(request):
+        return JsonResponse({'success': False, 'error': 'Unauthorized'}, status=403)
+
+    try:
+        from yoktez.services.job_runner import cleanup_expired_s3_files
+        deleted = cleanup_expired_s3_files(days=3)
+        return JsonResponse({
+            'success': True,
+            'deleted_files': deleted,
+        })
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=500)
+
+
+@require_GET
 def cron_health_check(request):
     """
     Basit sağlık kontrolü endpoint'i.

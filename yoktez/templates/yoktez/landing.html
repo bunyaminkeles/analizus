@@ -1,0 +1,300 @@
+{% extends 'base.html' %}
+
+{% block title %}YÖK Tez Tarama - Analizus{% endblock %}
+{% block meta_description %}YÖK Ulusal Tez Merkezi'nde bilim alanı ve anahtar kelimeye göre tez arama servisi.{% endblock %}
+
+{% block main_content_classes %}col-lg-12{% endblock %}
+{% block right_sidebar %}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+    <!-- Hero -->
+    <div class="text-center mb-5">
+        <h1 class="display-5 fw-bold text-white">
+            <i class="bi bi-mortarboard me-2" style="color: #00d2ff;"></i>YÖK Tez Tarama
+        </h1>
+        <p class="lead" style="color: #94a3b8;">
+            Türkiye'nin ulusal tez veritabanında bilim alanına göre arama yapın.
+        </p>
+    </div>
+
+    <!-- Nasıl Çalışır -->
+    <div class="row justify-content-center mb-5">
+        <div class="col-lg-10">
+            <div class="row text-center g-3">
+                <div class="col-md-3">
+                    <div class="p-3" style="background: rgba(21,32,43,0.4); border-radius: 12px; border: 1px solid rgba(0,210,255,0.15);">
+                        <div class="fs-2 mb-2" style="color: #00d2ff;">1</div>
+                        <strong class="text-white d-block mb-1">Bilim Alanı Seçin</strong>
+                        <small style="color: #94a3b8;">Sağlık Yönetimi, Halk Sağlığı vb.</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="p-3" style="background: rgba(21,32,43,0.4); border-radius: 12px; border: 1px solid rgba(167,139,250,0.15);">
+                        <div class="fs-2 mb-2" style="color: #a78bfa;">2</div>
+                        <strong class="text-white d-block mb-1">Keyword Girin</strong>
+                        <small style="color: #94a3b8;">1-3 adet anahtar kelime.</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="p-3" style="background: rgba(21,32,43,0.4); border-radius: 12px; border: 1px solid rgba(0,210,255,0.15);">
+                        <div class="fs-2 mb-2" style="color: #00d2ff;">3</div>
+                        <strong class="text-white d-block mb-1">Demo Sonuç</strong>
+                        <small style="color: #94a3b8;">3 tez ücretsiz gösterilir ve e-postanıza gönderilir.</small>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="p-3" style="background: rgba(21,32,43,0.4); border-radius: 12px; border: 1px solid rgba(167,139,250,0.15);">
+                        <div class="fs-2 mb-2" style="color: #a78bfa;">4</div>
+                        <strong class="text-white d-block mb-1">Tüm Sonuçlar</strong>
+                        <small style="color: #94a3b8;">Daha fazla sonuç için epostanızdaki adımları takip ediniz.</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Arama Formu -->
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="p-4" style="background: rgba(21,32,43,0.6); border: 1px solid rgba(255,255,255,0.1); border-radius: 15px; backdrop-filter: blur(10px);">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4 class="text-white mb-0"><i class="bi bi-search me-2" style="color: #00d2ff;"></i>Tez Arama</h4>
+                    <span class="badge" style="background: rgba({% if remaining > 0 %}0,210,255{% else %}239,68,68{% endif %},0.2); color: {% if remaining > 0 %}#00d2ff{% else %}#fca5a5{% endif %};">
+                        Bugün: {{ remaining }}/{{ daily_limit }} hak
+                    </span>
+                </div>
+
+                {% if error %}
+                <div class="alert mb-3" style="background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3); border-radius: 10px; color: #fca5a5;">
+                    <i class="bi bi-exclamation-triangle me-2"></i>{{ error }}
+                </div>
+                {% endif %}
+
+                <form method="POST" id="tez-search-form">
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label class="form-label text-white">{{ form.konu.label }}</label>
+                        {{ form.konu }}
+                    </div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <label class="form-label text-white">{{ form.keyword1.label }}</label>
+                            {{ form.keyword1 }}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label text-white">{{ form.keyword2.label }}</label>
+                            {{ form.keyword2 }}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label text-white">{{ form.keyword3.label }}</label>
+                            {{ form.keyword3 }}
+                        </div>
+                    </div>
+
+                    <button type="submit" id="btn-search" class="btn btn-lg w-100" {% if remaining <= 0 %}disabled{% endif %}
+                        style="background: linear-gradient(135deg, #00d2ff, #a78bfa); color: #0f172a; font-weight: 600; border: none; border-radius: 10px;">
+                        <i class="bi bi-search me-2"></i>Tez Ara (Demo)
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading -->
+    <div id="loading-section" class="text-center mt-5" style="display:none;">
+        <div class="p-5" style="background: rgba(21,32,43,0.6); border-radius: 15px; border: 1px solid rgba(0,210,255,0.2);">
+            <div class="spinner-border mb-3" style="color: #00d2ff; width: 3rem; height: 3rem;" role="status"></div>
+            <h5 class="text-white mb-2">Lütfen bekleyiniz...</h5>
+            <p style="color: #94a3b8;" id="loading-text">Bu işlem 30-60 saniye sürebilir. Lütfen bekleyin.</p>
+            <div class="progress mt-3 mx-auto" style="height: 4px; max-width: 400px; background: rgba(255,255,255,0.1);">
+                <div id="progress-bar" class="progress-bar progress-bar-striped progress-bar-animated" style="width: 10%; background: linear-gradient(90deg, #00d2ff, #a78bfa);"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sonuçlar -->
+    <div id="results-section" class="mt-5" style="display:none;">
+        <h3 class="text-white mb-4">
+            <i class="bi bi-journal-text me-2" style="color: #00d2ff;"></i>Demo Sonuçlar
+            <span class="badge" style="background: rgba(0,210,255,0.2); color: #00d2ff;">Ücretsiz</span>
+        </h3>
+
+        <div id="demo-results-container"></div>
+
+        <!-- Demo Email Gönder -->
+        <div class="text-center mt-4 p-4" style="background: rgba(21,32,43,0.6); border: 1px solid rgba(0,210,255,0.2); border-radius: 15px;">
+            <button class="btn btn-lg" id="btn-send-demo" style="background: linear-gradient(135deg, #00d2ff, #a78bfa); color: #0f172a; font-weight: 600; border: none; border-radius: 10px;">
+                <i class="bi bi-envelope-check me-2"></i>Kayıtlı E-postama Gönder
+            </button>
+            <p class="mt-2 mb-0" style="color: #64748b; font-size: 0.85rem;">
+                <i class="bi bi-info-circle me-1"></i>Demo sonuçlar <strong>{{ user.email }}</strong> adresine gönderilecektir.
+            </p>
+            <div id="demo-email-success" class="mt-3" style="display:none;">
+                <span class="badge fs-6 p-2" style="background: rgba(34,197,94,0.2); color: #4ade80;">
+                    <i class="bi bi-check-circle me-1"></i>Demo sonuçlar e-postanıza gönderildi!
+                </span>
+            </div>
+        </div>
+
+        <!-- Toplam sonuç bilgisi -->
+        <div class="text-center mt-4 p-3" style="background: rgba(21,32,43,0.4); border: 1px solid rgba(167,139,250,0.2); border-radius: 12px;">
+            <p class="mb-0" style="color: #94a3b8;">
+                Toplam <strong><span id="total-count" style="color: #00d2ff;">0</span></strong> tez bulundu.
+                Tüm sonuçların detayları e-postanızda yer almaktadır.
+            </p>
+        </div>
+    </div>
+
+    <!-- Hata -->
+    <div id="error-section" class="mt-5" style="display:none;">
+        <div class="alert" style="background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.3); border-radius: 12px; color: #fca5a5;">
+            <i class="bi bi-exclamation-triangle me-2"></i>
+            <span id="error-message">Bir hata oluştu.</span>
+        </div>
+    </div>
+
+</div>
+
+<script>
+(function() {
+    const form = document.getElementById('tez-search-form');
+    const btnSearch = document.getElementById('btn-search');
+    const loadingSection = document.getElementById('loading-section');
+    const resultsSection = document.getElementById('results-section');
+    const errorSection = document.getElementById('error-section');
+    const progressBar = document.getElementById('progress-bar');
+    const loadingText = document.getElementById('loading-text');
+    let pollInterval = null;
+    let currentJobId = null;
+
+    {% if job_id %}
+    currentJobId = '{{ job_id }}';
+    startPolling(currentJobId);
+    loadingSection.style.display = 'block';
+    btnSearch.disabled = true;
+    {% endif %}
+
+    // --- FORM SUBMIT ---
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(form);
+        btnSearch.disabled = true;
+        btnSearch.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Başlatılıyor...';
+        loadingSection.style.display = 'block';
+        resultsSection.style.display = 'none';
+        errorSection.style.display = 'none';
+
+        fetch('', {method: 'POST', body: formData, headers: {'X-Requested-With': 'XMLHttpRequest'}})
+        .then(r => r.json())
+        .then(data => {
+            if (data.error) { showError(data.error); resetForm(); return; }
+            if (data.job_id) { currentJobId = data.job_id; startPolling(data.job_id); }
+        })
+        .catch(() => { showError('Bağlantı hatası.'); resetForm(); });
+    });
+
+    // --- POLLING ---
+    function startPolling(jobId) {
+        let progress = 10, elapsed = 0;
+        pollInterval = setInterval(function() {
+            elapsed += 3;
+            progress = Math.min(90, 10 + elapsed * 1.5);
+            progressBar.style.width = progress + '%';
+            if (elapsed > 10) loadingText.textContent = 'Tez bilgileri çekiliyor... ' + elapsed + 's';
+
+            fetch('/yoktez/status/' + jobId + '/')
+            .then(r => r.json())
+            .then(data => {
+                if (data.status === 'completed') {
+                    clearInterval(pollInterval);
+                    progressBar.style.width = '100%';
+                    setTimeout(() => showResults(data, jobId), 500);
+                } else if (data.status === 'failed') {
+                    clearInterval(pollInterval);
+                    showError(data.error || 'Arama sırasında bir hata oluştu.');
+                    resetForm();
+                }
+            }).catch(() => {});
+        }, 3000);
+    }
+
+    // --- SONUÇLARI GÖSTER ---
+    function showResults(data, jobId) {
+        loadingSection.style.display = 'none';
+        resultsSection.style.display = 'block';
+        document.getElementById('total-count').textContent = data.total_results;
+
+        const container = document.getElementById('demo-results-container');
+        container.innerHTML = '';
+
+        if (data.demo_results && data.demo_results.length > 0) {
+            data.demo_results.forEach(function(tez, idx) {
+                container.innerHTML += `
+                <div class="mb-4 p-4" style="background: rgba(21,32,43,0.5); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px;">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="badge" style="background: rgba(0,210,255,0.15); color: #00d2ff;">Tez #${idx+1}</span>
+                        <span class="badge" style="background: rgba(167,139,250,0.15); color: #a78bfa;">${tez.yil||''}</span>
+                    </div>
+                    <h5 class="text-white mb-2">${tez.baslik||''}</h5>
+                    <div class="mb-2" style="color: #94a3b8; font-size: 0.9rem;">
+                        <i class="bi bi-building me-1"></i>${tez.universite||''}
+                        <span class="mx-2">|</span>
+                        <i class="bi bi-tag me-1"></i>${tez.tez_turu||''}
+                        <span class="mx-2">|</span>
+                        <i class="bi bi-hash me-1"></i>${tez.tez_no||''}
+                    </div>
+                    <div style="color: #64748b; font-size: 0.85rem;"><strong>Konu:</strong> ${tez.konu||''}</div>
+                    ${tez.ozet_tr ? `<div class="mt-3 p-3" style="background: rgba(0,0,0,0.2); border-radius: 8px; border-left: 3px solid #00d2ff;">
+                        <small class="text-muted d-block mb-1"><strong>Özet (TR):</strong></small>
+                        <p style="color: #cbd5e1; font-size: 0.9rem; margin: 0;">${tez.ozet_tr.substring(0,300)}${tez.ozet_tr.length>300?'...':''}</p>
+                    </div>` : ''}
+                    ${tez.ozet_en ? `<div class="mt-2 p-3" style="background: rgba(0,0,0,0.2); border-radius: 8px; border-left: 3px solid #a78bfa;">
+                        <small class="text-muted d-block mb-1"><strong>Abstract (EN):</strong></small>
+                        <p style="color: #cbd5e1; font-size: 0.9rem; margin: 0;">${tez.ozet_en.substring(0,300)}${tez.ozet_en.length>300?'...':''}</p>
+                    </div>` : ''}
+                </div>`;
+            });
+        } else {
+            container.innerHTML = '<p class="text-muted text-center">Sonuç bulunamadı.</p>';
+        }
+
+        // Demo email butonu
+        const btnDemo = document.getElementById('btn-send-demo');
+        btnDemo.onclick = function() {
+            btnDemo.disabled = true;
+            btnDemo.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Gönderiliyor...';
+            fetch('/yoktez/send-demo/' + jobId + '/', {
+                method: 'POST',
+                headers: {'X-CSRFToken': '{{ csrf_token }}', 'X-Requested-With': 'XMLHttpRequest'}
+            })
+            .then(r => r.json())
+            .then(d => {
+                if (d.success) {
+                    btnDemo.style.display = 'none';
+                    document.getElementById('demo-email-success').style.display = 'block';
+                } else {
+                    btnDemo.innerHTML = d.error || 'Hata';
+                }
+            });
+        };
+
+        resetForm();
+    }
+
+    function showError(msg) {
+        loadingSection.style.display = 'none';
+        errorSection.style.display = 'block';
+        document.getElementById('error-message').textContent = msg;
+    }
+
+    function resetForm() {
+        btnSearch.disabled = false;
+        btnSearch.innerHTML = '<i class="bi bi-search me-2"></i>Tez Ara (Demo)';
+    }
+})();
+</script>
+{% endblock %}

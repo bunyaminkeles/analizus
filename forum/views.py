@@ -22,6 +22,21 @@ from .models import Section, Category, Topic, Post, Profile, PrivateMessage, Pos
 from .forms import RegisterForm, NewTopicForm, PostForm, JobPostForm, ProposalForm
 from .email_utils import send_topic_reply_notification, send_private_message_notification
 from django.template.loader import render_to_string
+from functools import wraps
+
+
+def feature_required(flag_name):
+    """Decorator: SiteSettings'deki feature flag kapalıysa 404 döner."""
+    def decorator(view_func):
+        @wraps(view_func)
+        def wrapper(request, *args, **kwargs):
+            site = SiteSettings.load()
+            if not getattr(site, f'feature_{flag_name}', True):
+                from django.http import Http404
+                raise Http404
+            return view_func(request, *args, **kwargs)
+        return wrapper
+    return decorator
 
 
 # --- HEALTH CHECK (Cron ping için) ---
@@ -30,77 +45,6 @@ def health_check(request):
     """Basit health check endpoint - cron job ping için"""
     return JsonResponse({'status': 'ok'}, status=200)
 
-
-# --- LINKEDIN ENTEGRASYONU ---
-@staff_member_required
-def linkedin_connect(request):
-    """LinkedIn OAuth başlat"""
-    from .linkedin_utils import linkedin_api
-    import secrets
-    state = secrets.token_urlsafe(16)
-    request.session['linkedin_state'] = state
-    auth_url = linkedin_api.get_authorization_url(state=state)
-    return redirect(auth_url)
-
-
-def linkedin_callback(request):
-    """LinkedIn OAuth callback"""
-    from .linkedin_utils import linkedin_api
-    from django.utils import timezone
-
-    code = request.GET.get('code')
-    state = request.GET.get('state')
-    error = request.GET.get('error')
-
-    if error:
-        messages.error(request, f'LinkedIn bağlantı hatası: {error}')
-        return redirect('admin:index')
-
-    # State kontrolü
-    stored_state = request.session.get('linkedin_state')
-    if state != stored_state:
-        messages.error(request, 'Güvenlik hatası: State uyuşmuyor')
-        return redirect('admin:index')
-
-    # Token al
-    token_data = linkedin_api.exchange_code_for_token(code)
-    if not token_data:
-        messages.error(request, 'Token alınamadı')
-        return redirect('admin:index')
-
-    # Token'ı kaydet
-    site_settings = SiteSettings.load()
-    site_settings.linkedin_access_token = token_data.get('access_token', '')
-    site_settings.linkedin_connected_at = timezone.now()
-
-    # Kullanıcı bilgisi al
-    user_info = linkedin_api.get_user_info(token_data.get('access_token'))
-    if user_info:
-        site_settings.linkedin_person_urn = user_info.get('sub', '')
-
-    site_settings.save()
-
-    messages.success(request, 'LinkedIn hesabı başarıyla bağlandı!')
-    return redirect('admin:forum_sitesettings_change', 1)
-
-
-@staff_member_required
-@require_POST
-def linkedin_share_test(request):
-    """Test paylaşımı yap"""
-    from .linkedin_utils import linkedin_api
-
-    result = linkedin_api.share_custom(
-        text="🚀 Analizus - Akademik Analiz ve Veri Bilimi Topluluğu\n\nTest paylaşımı başarılı!\n\n#Analizus #Test",
-        url="https://www.analizus.com"
-    )
-
-    if result.get('success'):
-        messages.success(request, 'LinkedIn paylaşımı başarılı!')
-    else:
-        messages.error(request, f'Paylaşım hatası: {result.get("error")}')
-
-    return redirect('admin:forum_sitesettings_change', 1)
 
 
 # --- RATE LIMIT HATA SAYFASI ---
@@ -133,34 +77,16 @@ def home(request):
         replies_count=Count('posts')
     ).order_by('-views')[:5]
 
-    # Son aktiviteler (postlar)
-    recent_posts = list(Post.objects.select_related('created_by', 'topic').order_by('-created_at')[:10])
-
-    recent_activities = []
-    for post in recent_posts:
-        recent_activities.append({
-            'type': 'post',
-            'created_by': post.created_by,
-            'topic': post.topic,
-            'created_at': post.created_at,
-        })
-    
-    # Tarihe göre sırala
-    recent_activities = sorted(recent_activities, key=lambda x: x['created_at'], reverse=True)[:10]
-
     # Günün İpucu
     daily_tip = DailyTip.get_today_tip()
 
     # Quiz Sorusu
     quiz_question = QuizQuestion.get_random_question()
 
-    # İstatistik Arena Liderlik Tablosu (Top 5)
-    quiz_leaderboard = QuizScore.objects.select_related('user', 'user__profile').order_by('-correct_answers')[:5]
-
     # Haftanın Başarı Hikayesi
-    featured_story = SuccessStory.objects.filter(is_featured=True).first()
+    featured_story = SuccessStory.objects.filter(is_featured=True, approval_status='approved').first()
     if not featured_story:
-        featured_story = SuccessStory.objects.order_by('?').first()
+        featured_story = SuccessStory.objects.filter(approval_status='approved').order_by('?').first()
 
     # Freelance Market - Son İlanlar
     recent_jobs = FreelanceJob.objects.filter(status='open').select_related('owner', 'category').annotate(
@@ -189,10 +115,8 @@ def home(request):
         # Widgetlar
         'recent_topics': recent_topics,
         'popular_topics': popular_topics,
-        'recent_activities': recent_activities,
         'daily_tip': daily_tip,
         'quiz_question': quiz_question,
-        'quiz_leaderboard': quiz_leaderboard,
         'donation_tiers': donation_tiers,
         'featured_story': featured_story,
         'recent_jobs': recent_jobs,
@@ -224,9 +148,19 @@ class SuccessStoryForm(forms.ModelForm):
         }
         labels = {'quote': 'Hikayeniz'}
 
+@feature_required('success_stories')
 def success_stories(request):
-    stories = SuccessStory.objects.all().order_by('-is_featured', '-created_at')
+    stories = SuccessStory.objects.filter(approval_status='approved').order_by('-is_featured', '-created_at')
     form = None
+    job = None
+    auto_open_modal = False
+
+    # ?job=<pk> parametresi ile geldiyse ilgili ilanı bul
+    job_id = request.GET.get('job')
+    if job_id:
+        job = FreelanceJob.objects.filter(pk=job_id, status='completed').first()
+        if job and request.user.is_authenticated:
+            auto_open_modal = True
 
     if request.user.is_authenticated:
         if request.method == 'POST':
@@ -237,15 +171,34 @@ def success_stories(request):
                 # Text alanlarını listeye çevir
                 story.achievements = [line.strip() for line in form.cleaned_data['achievements_text'].split('\n') if line.strip()]
                 story.resources = [line.strip() for line in form.cleaned_data['resources_text'].split('\n') if line.strip()]
+
+                # Job bağlantısı
+                post_job_id = request.POST.get('job_id')
+                if post_job_id:
+                    linked_job = FreelanceJob.objects.filter(pk=post_job_id, status='completed').first()
+                    if linked_job:
+                        # Kullanıcı ilan sahibi mi, yoksa kabul edilen uzman mı?
+                        is_owner = linked_job.owner == request.user
+                        is_expert = linked_job.proposals.filter(expert=request.user, status='accepted').exists()
+                        if is_owner or is_expert:
+                            story.job = linked_job
+
+                story.approval_status = 'pending'
                 story.save()
-                messages.success(request, 'Harika! Başarı hikayeniz paylaşıldı.')
+                messages.success(request, 'Hikayeniz gönderildi! Admin onayından sonra yayınlanacaktır.')
                 return redirect('success_stories')
         else:
             form = SuccessStoryForm()
 
-    return render(request, 'forum/success_stories.html', {'stories': stories, 'form': form})
+    return render(request, 'forum/success_stories.html', {
+        'stories': stories,
+        'form': form,
+        'linked_job': job,
+        'auto_open_modal': auto_open_modal,
+    })
 
 # --- FREELANCE MARKET ---
+@feature_required('market')
 def job_list(request):
     sort = request.GET.get('sort', 'newest')
     jobs = FreelanceJob.objects.filter(status='open').select_related('owner', 'category').annotate(
@@ -272,6 +225,7 @@ def job_list(request):
         'can_post_reason': can_post_reason,
     })
 
+@feature_required('market')
 @login_required
 @ratelimit(key='user', rate='5/h', method='POST', block=True)
 def post_job(request):
@@ -447,6 +401,7 @@ def admin_manage_proposal(request, job_pk, proposal_id):
     return redirect('job_detail', pk=job_pk)
 
 
+@feature_required('market')
 @login_required
 def job_detail(request, pk):
     job = get_object_or_404(FreelanceJob, pk=pk)
@@ -993,6 +948,7 @@ def profile_edit(request):
     return render(request, 'forum/profile_edit.html', {'user': user, 'profile': profile, 'all_skills': all_skills})
 
 # --- GELEN KUTUSU ---
+@feature_required('messaging')
 @login_required
 def inbox(request):
     # Sayfa görüntülendiğinde tüm okunmamış mesajları okundu yap
@@ -1002,6 +958,7 @@ def inbox(request):
     return render(request, 'forum/inbox.html', {'received_messages': received_messages})
 
 # --- ÖZEL MESAJ GÖNDER ---
+@feature_required('messaging')
 @login_required
 @ratelimit(key='user', rate='30/h', method='POST', block=True)
 def send_message(request, username):
@@ -1166,7 +1123,20 @@ def how_it_works(request):
     return render(request, 'forum/how_it_works.html')
 
 def contact(request):
-    return render(request, 'forum/contact.html')
+    if request.method == 'POST':
+        from .models import ContactMessage
+        try:
+            ContactMessage.objects.create(
+                name=request.POST.get('name', ''),
+                email=request.POST.get('email', ''),
+                subject=request.POST.get('subject', ''),
+                message=request.POST.get('message', ''),
+            )
+            messages.success(request, 'Mesajınız başarıyla gönderildi. En kısa sürede dönüş yapacağız.')
+        except Exception:
+            messages.error(request, 'Mesaj gönderilirken bir hata oluştu. Lütfen tekrar deneyin.')
+        return redirect('about')
+    return redirect('about')
 
 def search_result(request):
     """Arama sonuçları"""
@@ -1306,6 +1276,7 @@ def user_search_api(request):
 
 
 # --- AI ASISTAN ---
+@feature_required('ai_assistant')
 @login_required
 def ai_assistant(request):
     """AI Asistan sayfası"""
@@ -1530,11 +1501,17 @@ def admin_dashboard(request):
         reply_count=Count('posts')
     ).order_by('-views', '-reply_count')[:10]
 
-    # === ONAY BEKLEYENLER (LinkedIn) ===
+    # === ONAY BEKLEYENLER ===
     pending_linkedin_verifications = Profile.objects.filter(
         linkedin__isnull=False,
         linkedin_verified=False
     ).exclude(linkedin='').select_related('user')
+
+    pending_stories = SuccessStory.objects.filter(approval_status='pending').select_related('user')
+    pending_reviews = JobReview.objects.filter(is_approved=False).select_related('reviewer', 'reviewed_user', 'job')
+    from .models import ContactMessage, Donation
+    unread_contacts = ContactMessage.objects.filter(is_read=False).order_by('-created_at')[:20]
+    pending_donations = Donation.objects.filter(status='pending').select_related('user').order_by('-created_at')
 
     # === SON AKTİVİTELER ===
     recent_users = User.objects.order_by('-date_joined')[:5]
@@ -1586,6 +1563,10 @@ def admin_dashboard(request):
 
         # Onay bekleyenler
         'pending_linkedin_verifications': pending_linkedin_verifications,
+        'pending_stories': pending_stories,
+        'pending_reviews': pending_reviews,
+        'unread_contacts': unread_contacts,
+        'pending_donations': pending_donations,
 
         # Son aktiviteler
         'recent_users': recent_users,
@@ -1608,6 +1589,56 @@ def admin_verify_linkedin(request, user_id):
     _check_and_award_trust_badge(request, user_to_verify)
     
     messages.success(request, f"{user_to_verify.username} kullanıcısının LinkedIn profili onaylandı.")
+    return redirect('admin_dashboard')
+
+
+@staff_member_required
+@require_POST
+def dashboard_approve_story(request, pk):
+    story = get_object_or_404(SuccessStory, pk=pk)
+    action = request.POST.get('action', 'approve')
+    if action == 'reject':
+        story.approval_status = 'rejected'
+        messages.info(request, f"{story.user.username} hikayesi reddedildi.")
+    else:
+        story.approval_status = 'approved'
+        messages.success(request, f"{story.user.username} hikayesi onaylandı.")
+    story.save()
+    return redirect('admin_dashboard')
+
+
+@staff_member_required
+@require_POST
+def dashboard_approve_review(request, pk):
+    review = get_object_or_404(JobReview, pk=pk)
+    review.is_approved = True
+    review.save()
+    messages.success(request, f"{review.reviewer.username} değerlendirmesi onaylandı.")
+    return redirect('admin_dashboard')
+
+
+@staff_member_required
+@require_POST
+def dashboard_approve_donation(request, pk):
+    from .models import Donation
+    donation = get_object_or_404(Donation, pk=pk)
+    donation.status = 'completed'
+    donation.completed_at = timezone.now()
+    donation.save()
+    # Model'deki grant_premium() metodunu kullan
+    if donation.user:
+        donation.grant_premium()
+    messages.success(request, f"Bağış onaylandı. {donation.premium_days_granted} gün premium verildi.")
+    return redirect('admin_dashboard')
+
+
+@staff_member_required
+@require_POST
+def dashboard_mark_contact_read(request, pk):
+    from .models import ContactMessage
+    msg = get_object_or_404(ContactMessage, pk=pk)
+    msg.is_read = True
+    msg.save()
     return redirect('admin_dashboard')
 
 
@@ -1761,9 +1792,9 @@ def api_get_profile_summary(request, username):
 
 def api_get_featured_story(request):
     """Haftanın başarı hikayesini getirir (Modal için)"""
-    story = SuccessStory.objects.filter(is_featured=True).first()
+    story = SuccessStory.objects.filter(is_featured=True, approval_status='approved').first()
     if not story:
-        story = SuccessStory.objects.order_by('?').first()
+        story = SuccessStory.objects.filter(approval_status='approved').order_by('?').first()
     
     if story:
         html = render_to_string('forum/partials/story_modal_content.html', {'story': story})
@@ -2188,6 +2219,7 @@ def job_payment_callback(request):
 # BLOG SİSTEMİ
 # ═══════════════════════════════════════════════════════════════════════════════
 
+@feature_required('blog')
 def blog_list(request):
     """Blog ana sayfası - yazı listesi"""
     posts = BlogPost.objects.filter(status='published').select_related('author', 'category')
@@ -2218,6 +2250,7 @@ def blog_list(request):
     return render(request, 'forum/blog/blog_list.html', context)
 
 
+@feature_required('blog')
 def blog_detail(request, slug):
     """Blog yazı detay sayfası"""
     post = get_object_or_404(BlogPost, slug=slug, status='published')
@@ -2245,6 +2278,7 @@ def blog_detail(request, slug):
     return render(request, 'forum/blog/blog_detail.html', context)
 
 
+@feature_required('blog')
 @login_required
 @require_POST
 def blog_like(request, slug):
@@ -2264,6 +2298,7 @@ def blog_like(request, slug):
     return redirect('blog_detail', slug=slug)
 
 
+@feature_required('blog')
 @login_required
 def blog_create(request):
     """Blog yazısı oluşturma - Badge gerektirir"""

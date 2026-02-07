@@ -70,6 +70,15 @@
                         {% endfor %}
                     </div>
 
+                    <!-- Job Badge -->
+                    {% if story.job %}
+                    <div class="mb-3">
+                        <a href="{% url 'job_detail' pk=story.job.pk %}" class="badge bg-info bg-opacity-25 text-info text-decoration-none">
+                            <i class="bi bi-briefcase me-1"></i>{{ story.job.title|truncatechars:40 }}
+                        </a>
+                    </div>
+                    {% endif %}
+
                     <!-- Footer -->
                     <div class="mt-auto pt-3 border-top border-secondary border-opacity-25 d-flex justify-content-between align-items-center">
                         <small class="text-muted">{{ story.created_at|date:"d M Y" }}</small>
@@ -99,7 +108,16 @@
             </div>
             <form method="post">
                 {% csrf_token %}
+                {% if linked_job %}
+                <input type="hidden" name="job_id" value="{{ linked_job.pk }}">
+                {% endif %}
                 <div class="modal-body">
+                    {% if linked_job %}
+                    <div class="alert alert-info bg-info bg-opacity-10 border-info border-opacity-25 mb-3">
+                        <i class="bi bi-briefcase me-1"></i>
+                        <strong>{{ linked_job.title }}</strong> ilanı ile ilgili hikayenizi yazıyorsunuz.
+                    </div>
+                    {% endif %}
                     <div class="mb-3">
                         <label class="form-label text-white-50">{{ form.quote.label }}</label>
                         {{ form.quote }}
@@ -113,14 +131,28 @@
                         <label class="form-label text-white-50">{{ form.resources_text.label }}</label>
                         {{ form.resources_text }}
                     </div>
+                    <div class="form-text text-warning">
+                        <i class="bi bi-info-circle me-1"></i>Hikayeniz admin onayından sonra yayınlanacaktır.
+                    </div>
                 </div>
                 <div class="modal-footer border-secondary">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">İptal</button>
-                    <button type="submit" class="btn btn-warning fw-bold">Hikayeyi Yayınla</button>
+                    <button type="submit" class="btn btn-warning fw-bold">
+                        <i class="bi bi-send me-1"></i>Hikayeyi Gönder
+                    </button>
                 </div>
             </form>
         </div>
     </div>
 </div>
+{% endif %}
+
+{% if auto_open_modal %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var modal = new bootstrap.Modal(document.getElementById('shareStoryModal'));
+    modal.show();
+});
+</script>
 {% endif %}
 {% endblock %}
