@@ -46,6 +46,10 @@ urlpatterns = [
     # Admin Dashboard
     path('dashboard/', views.admin_dashboard, name='admin_dashboard'),
     path('dashboard/verify-linkedin/<int:user_id>/', views.admin_verify_linkedin, name='admin_verify_linkedin'),
+    path('dashboard/approve-story/<int:pk>/', views.dashboard_approve_story, name='dashboard_approve_story'),
+    path('dashboard/approve-review/<int:pk>/', views.dashboard_approve_review, name='dashboard_approve_review'),
+    path('dashboard/approve-donation/<int:pk>/', views.dashboard_approve_donation, name='dashboard_approve_donation'),
+    path('dashboard/mark-contact-read/<int:pk>/', views.dashboard_mark_contact_read, name='dashboard_mark_contact_read'),
 
     # Diğer
     path('search/', views.search_result, name='search'),
