@@ -22,11 +22,10 @@ def feature_required(flag_name):
         return wrapper
     return decorator
 
-# IBAN bilgileri
+# IBAN bilgileri (bağış sistemiyle aynı)
 IBAN_INFO = {
-    'bank': 'Ziraat Bankası',
-    'iban': 'TR00 0000 0000 0000 0000 0000 00',  # Gerçek IBAN ile değiştirilecek
-    'name': 'Analizus',
+    'hesap_sahibi': 'Bünyamin Keleş',
+    'iban': 'TR73 0003 2000 0000 0079 1034 65',
 }
 
 
@@ -158,14 +157,13 @@ def yoktez_order_page(request, job_id):
             'existing_order': existing_order,
         })
 
-    success = False
     if request.method == 'POST':
         form = TezOrderForm(request.POST)
         if form.is_valid():
             abstract_count = min(form.cleaned_data['abstract_count'], job.total_results)
             price = TezOrder.calculate_price(abstract_count)
 
-            TezOrder.objects.create(
+            order = TezOrder.objects.create(
                 user=request.user,
                 search_job=job,
                 abstract_count=abstract_count,
@@ -173,9 +171,12 @@ def yoktez_order_page(request, job_id):
                 payment_note=form.cleaned_data.get('payment_note', ''),
                 status='pending_payment',
             )
-            success = True
+            return render(request, 'yoktez/order.html', {
+                'job': job,
+                'existing_order': order,
+                'success': True,
+            })
 
     return render(request, 'yoktez/order.html', {
         'job': job,
-        'success': success,
     })

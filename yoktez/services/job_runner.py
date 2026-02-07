@@ -1,11 +1,83 @@
 import json
 import threading
 import logging
+import uuid
+import boto3
+from botocore.exceptions import ClientError
 from django.core.mail import EmailMessage
 from django.conf import settings
 from django.utils import timezone
 
 logger = logging.getLogger(__name__)
+
+# Doğru banka bilgileri (bağış sistemiyle aynı)
+BANK_INFO = {
+    'hesap_sahibi': 'Bünyamin Keleş',
+    'iban': 'TR73 0003 2000 0000 0079 1034 65',
+}
+
+
+def _get_s3_client():
+    """Boto3 S3 client döndürür."""
+    return boto3.client(
+        's3',
+        aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+        aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+        region_name=settings.AWS_S3_REGION_NAME,
+    )
+
+
+def _generate_results_txt(tez_list, job, is_demo=True):
+    """Tez sonuçlarını txt formatında oluşturur."""
+    lines = [
+        f"YÖK Tez Arama Sonuçları",
+        f"{'='*60}",
+        f"Bilim Alanı: {job.konu}",
+        f"Anahtar Kelimeler: {', '.join(job.keywords)}",
+        f"Toplam Bulunan Sonuç: {job.total_results}",
+        f"Bu dosyadaki sonuç: {len(tez_list)} tez",
+        f"{'='*60}\n",
+    ]
+
+    for i, tez in enumerate(tez_list, 1):
+        lines.append(f"--- Tez #{i} ---")
+        lines.append(f"Tez No    : {tez.get('tez_no', '')}")
+        lines.append(f"Yıl       : {tez.get('yil', '')}")
+        lines.append(f"Başlık    : {tez.get('baslik', '')}")
+        lines.append(f"Üniversite: {tez.get('universite', '')}")
+        lines.append(f"Tez Türü  : {tez.get('tez_turu', '')}")
+        lines.append(f"Konu      : {tez.get('konu', '')}")
+        if tez.get('ozet_tr'):
+            lines.append(f"Özet (TR) : {tez['ozet_tr']}")
+        if tez.get('ozet_en'):
+            lines.append(f"Özet (EN) : {tez['ozet_en']}")
+        lines.append("")
+
+    lines.append(f"{'='*60}")
+    lines.append(f"Toplam {job.total_results} tez bulundu.")
+    if is_demo:
+        lines.append(f"Daha fazla sonuç için epostanızdaki adımları takip ediniz.")
+    lines.append(f"\n---\nAnalizus - www.analizus.com")
+
+    return "\n".join(lines)
+
+
+def upload_to_s3(content, s3_key):
+    """İçeriği S3'e yükler ve public URL döndürür."""
+    try:
+        s3 = _get_s3_client()
+        s3.put_object(
+            Bucket=settings.AWS_STORAGE_BUCKET_NAME,
+            Key=s3_key,
+            Body=content.encode('utf-8'),
+            ContentType='text/plain; charset=utf-8',
+        )
+        url = f"https://{settings.AWS_S3_CUSTOM_DOMAIN}/{s3_key}"
+        logger.info(f"S3'e yüklendi: {url}")
+        return url
+    except ClientError as e:
+        logger.error(f"S3 yükleme hatası: {e}")
+        return None
 
 
 def run_scraping_job(job_id):
@@ -32,6 +104,17 @@ def run_scraping_job(job_id):
                 total_count=total_count,
             )
 
+            # Demo sonuçları txt olarak S3'e yükle
+            try:
+                txt_content = _generate_results_txt(demo_results, job, is_demo=True)
+                s3_key = f"yoktez/demo/{job.id}.txt"
+                s3_url = upload_to_s3(txt_content, s3_key)
+                if s3_url:
+                    job.demo_file_url = s3_url
+                    job.save(update_fields=['demo_file_url'])
+            except Exception as e:
+                logger.error(f"Demo S3 yükleme hatası: {e}")
+
             logger.info(f"Scraping job {job_id} tamamlandı: {total_count} sonuç")
 
         except Exception as e:
@@ -48,7 +131,8 @@ def run_scraping_job(job_id):
 
 
 def send_demo_email(job):
-    """Demo sonuçları (3 tez) kullanıcının kayıtlı emailine gönder."""
+    """Demo sonuçları txt dosyası olarak kullanıcının emailine gönder.
+    Email body'de tez bilgileri açık olarak yer almaz, txt ek olarak gönderilir."""
     user = job.user
     to_email = user.email
 
@@ -58,43 +142,42 @@ def send_demo_email(job):
 
     subject = f"YÖK Tez Arama - Demo Sonuçlar: {job.konu}"
 
+    # Txt dosya içeriğini oluştur
+    txt_content = _generate_results_txt(job.demo_results, job, is_demo=True)
+
+    # S3'e yükle (henüz yüklenmemişse)
+    s3_url = job.demo_file_url
+    if not s3_url:
+        s3_key = f"yoktez/demo/{job.id}.txt"
+        s3_url = upload_to_s3(txt_content, s3_key)
+        if s3_url:
+            job.demo_file_url = s3_url
+            job.save(update_fields=['demo_file_url'])
+
+    # Email body: Tez bilgileri açık olarak YER ALMAZ
     lines = [
         f"Merhaba {user.first_name or user.username},\n",
-        f"YÖK Tez Tarama aracıyla yaptığınız arama sonuçları aşağıdadır.\n",
+        f"YÖK Tez Tarama aracıyla yaptığınız arama sonuçları hazırlanmıştır.\n",
         f"Bilim Alanı: {job.konu}",
         f"Anahtar Kelimeler: {', '.join(job.keywords)}",
         f"Toplam Bulunan Sonuç: {job.total_results}",
-        f"Gönderilen (Demo): {len(job.demo_results)} tez\n",
-        f"{'='*60}\n",
+        f"Demo Sonuç: {len(job.demo_results)} tez\n",
     ]
 
-    for i, tez in enumerate(job.demo_results, 1):
-        lines.append(f"--- Tez #{i} ---")
-        lines.append(f"Tez No    : {tez.get('tez_no', '')}")
-        lines.append(f"Yıl       : {tez.get('yil', '')}")
-        lines.append(f"Başlık    : {tez.get('baslik', '')}")
-        lines.append(f"Üniversite: {tez.get('universite', '')}")
-        lines.append(f"Tez Türü  : {tez.get('tez_turu', '')}")
-        lines.append(f"Konu      : {tez.get('konu', '')}")
-        if tez.get('ozet_tr'):
-            lines.append(f"Özet (TR) : {tez['ozet_tr']}")
-        if tez.get('ozet_en'):
-            lines.append(f"Özet (EN) : {tez['ozet_en']}")
-        lines.append("")
+    if s3_url:
+        lines.append(f"Demo sonuçlarınızı aşağıdaki linkten indirebilirsiniz:")
+        lines.append(f"  {s3_url}\n")
 
     lines.append(f"{'='*60}")
-    lines.append(f"\nToplam {job.total_results} tez bulundu.")
-    lines.append(f"\n--- TÜM SONUÇLARI ALMAK İÇİN ---")
-    lines.append(f"")
+    lines.append(f"\n--- TÜM SONUÇLARI ALMAK İÇİN ---\n")
     lines.append(f"Fiyatlandırma:")
     lines.append(f"  * İlk 100 abstract  : 250 TL")
     lines.append(f"  * Sonraki her 100   : +100 TL")
     lines.append(f"")
     lines.append(f"Banka Bilgileri:")
-    lines.append(f"  Banka : Ziraat Bankası")
-    lines.append(f"  IBAN  : TR00 0000 0000 0000 0000 0000 00")
-    lines.append(f"  Ad    : Analizus")
-    lines.append(f"  Açıklama: YÖK Tez - {user.username}")
+    lines.append(f"  Hesap Sahibi : {BANK_INFO['hesap_sahibi']}")
+    lines.append(f"  IBAN         : {BANK_INFO['iban']}")
+    lines.append(f"  Açıklama     : YÖK Tez - {user.username}")
     lines.append(f"")
     lines.append(f"Ödeme yaptıktan sonra siparişinizi oluşturun:")
     lines.append(f"  https://www.analizus.com/yoktez/siparis/{job.id}/")
@@ -112,6 +195,12 @@ def send_demo_email(job):
             from_email=settings.DEFAULT_FROM_EMAIL,
             to=[to_email],
         )
+        # Sonuçları txt dosyası olarak ekle
+        email.attach(
+            f"yoktez_demo_{job.konu}.txt",
+            txt_content,
+            'text/plain',
+        )
         email.send()
 
         job.demo_email_sent = True
@@ -122,7 +211,7 @@ def send_demo_email(job):
 
 
 def send_order_results_email(order):
-    """Onaylanan siparişin tüm sonuçlarını kullanıcıya gönder."""
+    """Onaylanan siparişin tüm sonuçlarını txt dosyası olarak S3'e yükleyip kullanıcıya gönder."""
     user = order.user
     job = order.search_job
     to_email = user.email
@@ -131,6 +220,16 @@ def send_order_results_email(order):
         return False
 
     subject = f"YÖK Tez Arama Sonuçları: {job.konu} - {', '.join(job.keywords)}"
+
+    # İstenen sayıda sonucu al
+    results_to_send = job.all_results[:order.abstract_count]
+
+    # Txt dosya oluştur
+    txt_content = _generate_results_txt(results_to_send, job, is_demo=False)
+
+    # S3'e yükle
+    s3_key = f"yoktez/orders/{order.id}.txt"
+    s3_url = upload_to_s3(txt_content, s3_key)
 
     lines = [
         f"Merhaba {user.first_name or user.username},\n",
@@ -141,13 +240,16 @@ def send_order_results_email(order):
         f"Toplam Sonuç: {job.total_results}",
         f"Gönderilen Abstract: {order.abstract_count}",
         f"Ödenen Tutar: {order.total_price} TL\n",
-        f"Sonuçlar bu e-postaya JSON dosyası olarak eklenmiştir.",
-        f"\n---\nAnalizus - www.analizus.com",
     ]
 
+    if s3_url:
+        lines.append(f"Sonuçlarınızı aşağıdaki linkten indirebilirsiniz:")
+        lines.append(f"  {s3_url}\n")
+
+    lines.append(f"Sonuçlar ayrıca bu e-postaya txt dosyası olarak eklenmiştir.")
+    lines.append(f"\n---\nAnalizus - www.analizus.com")
+
     body = "\n".join(lines)
-    results_to_send = job.all_results[:order.abstract_count]
-    json_data = json.dumps(results_to_send, ensure_ascii=False, indent=2)
 
     try:
         email = EmailMessage(
@@ -156,10 +258,11 @@ def send_order_results_email(order):
             from_email=settings.DEFAULT_FROM_EMAIL,
             to=[to_email],
         )
+        # Txt dosya eki
         email.attach(
-            f"yoktez_{job.konu}_{len(results_to_send)}_sonuc.json",
-            json_data,
-            'application/json',
+            f"yoktez_{job.konu}_{len(results_to_send)}_sonuc.txt",
+            txt_content,
+            'text/plain',
         )
         email.send()
 

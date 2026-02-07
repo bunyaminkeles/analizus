@@ -25,6 +25,8 @@ class TezSearchJob(models.Model):
     demo_results = models.JSONField(default=list, blank=True)
     all_results = models.JSONField(default=list, blank=True)
 
+    demo_file_url = models.URLField(max_length=500, blank=True, default='', verbose_name="Demo Dosya URL (S3)")
+
     created_at = models.DateTimeField(auto_now_add=True)
     completed_at = models.DateTimeField(null=True, blank=True)
     demo_email_sent = models.BooleanField(default=False)
