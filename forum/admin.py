@@ -553,30 +553,18 @@ class JobPaymentAdmin(admin.ModelAdmin):
     reject_feature.short_description = "Seçili ilanları reddet"
 
 
-# --- SITE AYARLARI & LINKEDIN ---
+# --- SITE AYARLARI ---
 @admin.register(SiteSettings)
 class SiteSettingsAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'linkedin_status', 'auto_share_topics', 'auto_share_jobs')
-    readonly_fields = ('linkedin_connected_at', 'linkedin_person_urn')
+    list_display = ('pk', 'auto_share_topics', 'auto_share_jobs')
 
     fieldsets = (
-        ('LinkedIn Entegrasyonu', {
-            'fields': ('linkedin_access_token', 'linkedin_person_urn', 'linkedin_organization_id', 'linkedin_connected_at'),
-            'description': '<a href="/linkedin/connect/" class="button" style="padding: 8px 16px; background: #0077b5; color: white; text-decoration: none; border-radius: 4px;">🔗 LinkedIn Hesabı Bağla</a> &nbsp; <a href="/linkedin/share-test/" class="button" onclick="return confirm(\'Test paylaşımı yapılacak. Emin misiniz?\');" style="padding: 8px 16px; background: #28a745; color: white; text-decoration: none; border-radius: 4px;">🧪 Test Paylaşımı Yap</a>'
-        }),
         ('Otomatik Paylaşım', {
             'fields': ('auto_share_topics', 'auto_share_jobs'),
         }),
     )
 
-    def linkedin_status(self, obj):
-        if obj.linkedin_access_token:
-            return format_html('<span style="color: #28a745;">✅ Bağlı</span>')
-        return format_html('<span style="color: #dc3545;">❌ Bağlı Değil</span>')
-    linkedin_status.short_description = "LinkedIn"
-
     def has_add_permission(self, request):
-        # Sadece 1 kayıt olabilir
         return not SiteSettings.objects.exists()
 
     def has_delete_permission(self, request, obj=None):
@@ -630,13 +618,9 @@ class BlogPostAdmin(admin.ModelAdmin):
             'fields': ('meta_title', 'meta_description'),
             'classes': ('collapse',)
         }),
-        ('LinkedIn', {
-            'fields': ('shared_to_linkedin', 'linkedin_share_date'),
-            'classes': ('collapse',)
-        }),
     )
 
-    readonly_fields = ('views', 'shared_to_linkedin', 'linkedin_share_date', 'published_at')
+    readonly_fields = ('views', 'published_at')
 
     def status_display(self, obj):
         colors = {'draft': '#ffc107', 'published': '#28a745'}
@@ -649,60 +633,13 @@ class BlogPostAdmin(admin.ModelAdmin):
         )
     status_display.short_description = "Durum"
 
-    actions = ['publish_posts', 'share_to_linkedin', 'reset_linkedin_share']
-
-    @admin.action(description="LinkedIn paylaşım durumunu sıfırla")
-    def reset_linkedin_share(self, request, queryset):
-        updated = queryset.update(shared_to_linkedin=False, linkedin_share_date=None)
-        self.message_user(request, f'{updated} yazının LinkedIn durumu sıfırlandı. Tekrar paylaşılabilir.')
+    actions = ['publish_posts']
 
     @admin.action(description="Seçili yazıları yayınla")
     def publish_posts(self, request, queryset):
         from django.utils import timezone
         updated = queryset.filter(status='draft').update(status='published', published_at=timezone.now())
         self.message_user(request, f'{updated} yazı yayınlandı.')
-
-    @admin.action(description="LinkedIn'de paylaş")
-    def share_to_linkedin(self, request, queryset):
-        from .linkedin_utils import linkedin_api
-        from django.utils import timezone
-        from django.contrib import messages
-
-        total = queryset.count()
-        drafts = queryset.filter(status='draft').count()
-        already_shared = queryset.filter(shared_to_linkedin=True).count()
-        eligible = queryset.filter(status='published', shared_to_linkedin=False)
-
-        shared = 0
-        errors = []
-
-        for post in eligible:
-            text = f"📝 Yeni Blog Yazısı: {post.title}\n\n"
-            text += f"{post.excerpt[:150]}...\n\n"
-            text += "#Analizus #VeriAnalizi #Blog"
-
-            url = f"https://www.analizus.com/blog/{post.slug}/"
-
-            result = linkedin_api.post_share(text=text, url=url, title=post.title, description=post.excerpt[:100])
-
-            if result.get('success'):
-                post.shared_to_linkedin = True
-                post.linkedin_share_date = timezone.now()
-                post.save()
-                shared += 1
-            else:
-                errors.append(f"{post.title}: {result.get('error', 'Bilinmeyen hata')}")
-
-        # Detaylı mesaj göster
-        if shared > 0:
-            self.message_user(request, f'✅ {shared} yazı LinkedIn\'de paylaşıldı.', messages.SUCCESS)
-        if drafts > 0:
-            self.message_user(request, f'⚠️ {drafts} yazı taslak durumunda (önce yayınlayın).', messages.WARNING)
-        if already_shared > 0:
-            self.message_user(request, f'ℹ️ {already_shared} yazı zaten paylaşılmış.', messages.INFO)
-        if errors:
-            for err in errors[:3]:  # İlk 3 hatayı göster
-                self.message_user(request, f'❌ Hata: {err}', messages.ERROR)
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
