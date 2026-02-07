@@ -104,16 +104,29 @@ def run_scraping_job(job_id):
                 total_count=total_count,
             )
 
-            # Demo sonuçları txt olarak S3'e yükle
+            # Sonuçları txt olarak S3'e yükle
             try:
-                txt_content = _generate_results_txt(demo_results, job, is_demo=True)
-                s3_key = f"yoktez/demo/{job.id}.txt"
-                s3_url = upload_to_s3(txt_content, s3_key)
-                if s3_url:
-                    job.demo_file_url = s3_url
-                    job.save(update_fields=['demo_file_url'])
+                # Demo sonuçları (3 tez)
+                demo_txt = _generate_results_txt(demo_results, job, is_demo=True)
+                demo_s3_key = f"yoktez/demo/{job.id}.txt"
+                demo_s3_url = upload_to_s3(demo_txt, demo_s3_key)
+
+                # TÜM sonuçları da S3'e yükle
+                all_txt = _generate_results_txt(all_results, job, is_demo=False)
+                all_s3_key = f"yoktez/full/{job.id}.txt"
+                all_s3_url = upload_to_s3(all_txt, all_s3_key)
+
+                update_fields = []
+                if demo_s3_url:
+                    job.demo_file_url = demo_s3_url
+                    update_fields.append('demo_file_url')
+                if all_s3_url:
+                    job.all_results_file_url = all_s3_url
+                    update_fields.append('all_results_file_url')
+                if update_fields:
+                    job.save(update_fields=update_fields)
             except Exception as e:
-                logger.error(f"Demo S3 yükleme hatası: {e}")
+                logger.error(f"S3 yükleme hatası: {e}")
 
             logger.info(f"Scraping job {job_id} tamamlandı: {total_count} sonuç")
 
@@ -168,8 +181,13 @@ def send_demo_email(job):
         lines.append(f"Demo sonuçlarınızı aşağıdaki linkten indirebilirsiniz:")
         lines.append(f"  {s3_url}\n")
 
+    # Toplam tez sayısına göre fiyat hesapla
+    from yoktez.models import TezOrder
+    total_price = TezOrder.calculate_price(job.total_results)
+
     lines.append(f"{'='*60}")
     lines.append(f"\n--- TÜM SONUÇLARI ALMAK İÇİN ---\n")
+    lines.append(f"Toplam {job.total_results} abstract için tahmini ücret: {total_price} TL\n")
     lines.append(f"Fiyatlandırma:")
     lines.append(f"  * İlk 100 abstract  : 250 TL")
     lines.append(f"  * Sonraki her 100   : +100 TL")
@@ -316,3 +334,60 @@ def check_overdue_orders():
         logger.warning(f"{overdue.count()} gecikmiş sipariş için admin uyarısı gönderildi")
     except Exception as e:
         logger.error(f"Admin uyarı emaili gönderilemedi: {e}")
+
+
+def delete_from_s3(s3_key):
+    """S3'den tek bir dosyayı siler."""
+    try:
+        s3 = _get_s3_client()
+        s3.delete_object(
+            Bucket=settings.AWS_STORAGE_BUCKET_NAME,
+            Key=s3_key,
+        )
+        logger.info(f"S3'den silindi: {s3_key}")
+        return True
+    except ClientError as e:
+        logger.error(f"S3 silme hatası: {e}")
+        return False
+
+
+def cleanup_expired_s3_files(days=3):
+    """3 günden eski, sipariş oluşturulmamış demo/full dosyalarını S3'den siler.
+    Cron job olarak günlük çalıştırılabilir."""
+    from yoktez.models import TezSearchJob
+
+    cutoff = timezone.now() - timezone.timedelta(days=days)
+
+    # 3 günden eski, sipariş verilmemiş aramalar
+    expired_jobs = TezSearchJob.objects.filter(
+        created_at__lt=cutoff,
+        status='completed',
+    ).exclude(
+        orders__status__in=['pending_payment', 'payment_review', 'approved', 'processing', 'completed']
+    )
+
+    deleted_count = 0
+    for job in expired_jobs:
+        # Demo dosyasını sil
+        if job.demo_file_url:
+            s3_key = f"yoktez/demo/{job.id}.txt"
+            if delete_from_s3(s3_key):
+                job.demo_file_url = ''
+                deleted_count += 1
+
+        # Tüm sonuçlar dosyasını sil
+        if job.all_results_file_url:
+            s3_key = f"yoktez/full/{job.id}.txt"
+            if delete_from_s3(s3_key):
+                job.all_results_file_url = ''
+                deleted_count += 1
+
+        if not job.demo_file_url and not job.all_results_file_url:
+            job.save(update_fields=['demo_file_url', 'all_results_file_url'])
+        elif not job.demo_file_url:
+            job.save(update_fields=['demo_file_url'])
+        elif not job.all_results_file_url:
+            job.save(update_fields=['all_results_file_url'])
+
+    logger.info(f"S3 temizlik: {deleted_count} dosya silindi ({expired_jobs.count()} expired job)")
+    return deleted_count

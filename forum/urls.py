@@ -97,6 +97,7 @@ urlpatterns = [
     # Cron Job Endpoints (External cron services için)
     path('api/cron/daily-quiz/', api_views.cron_generate_daily_quiz, name='cron_daily_quiz'),
     path('api/cron/update-badges/', api_views.cron_update_badges_ranks, name='cron_update_badges'),
+    path('api/cron/cleanup-yoktez/', api_views.cron_cleanup_yoktez_s3, name='cron_cleanup_yoktez'),
     path('api/cron/health/', api_views.cron_health_check, name='cron_health'),
 
     # Admin setup (kullandıktan sonra kaldırın!)
