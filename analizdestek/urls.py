@@ -38,7 +38,10 @@ urlpatterns = [
     path('login/', custom_login, name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
 
-    # 3. Forum Uygulaması (En sona koymak çakışmaları önler)
+    # 3. YÖK Tez Tarama
+    path('yoktez/', include('yoktez.urls')),
+
+    # 4. Forum Uygulaması (En sona koymak çakışmaları önler)
     path('', include('forum.urls')),
     path('i18n/', include('django.conf.urls.i18n')), # DİL MOTORU BURADA
 

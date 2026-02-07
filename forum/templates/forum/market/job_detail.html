@@ -67,6 +67,12 @@
                             </button>
                         </form>
                         {% endif %}
+
+                        {% if user.is_authenticated and job.status == 'completed' %}
+                        <a href="{% url 'success_stories' %}?job={{ job.pk }}" class="btn btn-sm btn-outline-warning rounded-pill ms-auto">
+                            <i class="bi bi-trophy me-1"></i> Başarı Hikayenizi Paylaşın
+                        </a>
+                        {% endif %}
                     </div>
                 </div>
             </div>

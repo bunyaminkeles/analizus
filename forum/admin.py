@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Section, Category, Topic, Post, Profile, ContactMessage, PrivateMessage, Badge, Notification, Skill, EmailVerification, DailyTip, QuizQuestion, QuizScore, FreelanceJob, JobProposal, JobReview, UserQuizAttempt, DonationTier, Donation, JobPayment, TopicTag, SiteSettings, BlogCategory, BlogPost
+from .models import Section, Category, Topic, Post, Profile, ContactMessage, PrivateMessage, Badge, Notification, Skill, EmailVerification, DailyTip, QuizQuestion, QuizScore, FreelanceJob, JobProposal, JobReview, UserQuizAttempt, DonationTier, Donation, JobPayment, TopicTag, SiteSettings, BlogCategory, BlogPost, SuccessStory
 
 # --- GENEL AYARLAR ---
 admin.site.site_header = "Analizus Komuta Merkezi"
@@ -553,30 +553,26 @@ class JobPaymentAdmin(admin.ModelAdmin):
     reject_feature.short_description = "Seçili ilanları reddet"
 
 
-# --- SITE AYARLARI & LINKEDIN ---
+# --- SITE AYARLARI ---
 @admin.register(SiteSettings)
 class SiteSettingsAdmin(admin.ModelAdmin):
-    list_display = ('pk', 'linkedin_status', 'auto_share_topics', 'auto_share_jobs')
-    readonly_fields = ('linkedin_connected_at', 'linkedin_person_urn')
+    list_display = ('pk', 'auto_share_topics', 'auto_share_jobs')
 
     fieldsets = (
-        ('LinkedIn Entegrasyonu', {
-            'fields': ('linkedin_access_token', 'linkedin_person_urn', 'linkedin_organization_id', 'linkedin_connected_at'),
-            'description': '<a href="/linkedin/connect/" class="button" style="padding: 8px 16px; background: #0077b5; color: white; text-decoration: none; border-radius: 4px;">🔗 LinkedIn Hesabı Bağla</a> &nbsp; <a href="/linkedin/share-test/" class="button" onclick="return confirm(\'Test paylaşımı yapılacak. Emin misiniz?\');" style="padding: 8px 16px; background: #28a745; color: white; text-decoration: none; border-radius: 4px;">🧪 Test Paylaşımı Yap</a>'
-        }),
         ('Otomatik Paylaşım', {
             'fields': ('auto_share_topics', 'auto_share_jobs'),
         }),
+        ('Özellik Anahtarları (Feature Flags)', {
+            'description': 'Kapalı olan özellikler kullanıcılara gösterilmez.',
+            'fields': (
+                'feature_blog', 'feature_market', 'feature_ai_assistant',
+                'feature_yoktez', 'feature_quiz', 'feature_messaging',
+                'feature_donation', 'feature_success_stories',
+            ),
+        }),
     )
 
-    def linkedin_status(self, obj):
-        if obj.linkedin_access_token:
-            return format_html('<span style="color: #28a745;">✅ Bağlı</span>')
-        return format_html('<span style="color: #dc3545;">❌ Bağlı Değil</span>')
-    linkedin_status.short_description = "LinkedIn"
-
     def has_add_permission(self, request):
-        # Sadece 1 kayıt olabilir
         return not SiteSettings.objects.exists()
 
     def has_delete_permission(self, request, obj=None):
@@ -630,13 +626,9 @@ class BlogPostAdmin(admin.ModelAdmin):
             'fields': ('meta_title', 'meta_description'),
             'classes': ('collapse',)
         }),
-        ('LinkedIn', {
-            'fields': ('shared_to_linkedin', 'linkedin_share_date'),
-            'classes': ('collapse',)
-        }),
     )
 
-    readonly_fields = ('views', 'shared_to_linkedin', 'linkedin_share_date', 'published_at')
+    readonly_fields = ('views', 'published_at')
 
     def status_display(self, obj):
         colors = {'draft': '#ffc107', 'published': '#28a745'}
@@ -649,12 +641,7 @@ class BlogPostAdmin(admin.ModelAdmin):
         )
     status_display.short_description = "Durum"
 
-    actions = ['publish_posts', 'share_to_linkedin', 'reset_linkedin_share']
-
-    @admin.action(description="LinkedIn paylaşım durumunu sıfırla")
-    def reset_linkedin_share(self, request, queryset):
-        updated = queryset.update(shared_to_linkedin=False, linkedin_share_date=None)
-        self.message_user(request, f'{updated} yazının LinkedIn durumu sıfırlandı. Tekrar paylaşılabilir.')
+    actions = ['publish_posts']
 
     @admin.action(description="Seçili yazıları yayınla")
     def publish_posts(self, request, queryset):
@@ -662,44 +649,51 @@ class BlogPostAdmin(admin.ModelAdmin):
         updated = queryset.filter(status='draft').update(status='published', published_at=timezone.now())
         self.message_user(request, f'{updated} yazı yayınlandı.')
 
-    @admin.action(description="LinkedIn'de paylaş")
-    def share_to_linkedin(self, request, queryset):
-        from .linkedin_utils import linkedin_api
-        from django.utils import timezone
-        from django.contrib import messages
 
-        total = queryset.count()
-        drafts = queryset.filter(status='draft').count()
-        already_shared = queryset.filter(shared_to_linkedin=True).count()
-        eligible = queryset.filter(status='published', shared_to_linkedin=False)
+# ═══════════════════════════════════════════════════════════════════════════════
+# BAŞARI HİKAYELERİ YÖNETİMİ
+# ═══════════════════════════════════════════════════════════════════════════════
 
-        shared = 0
-        errors = []
+@admin.register(SuccessStory)
+class SuccessStoryAdmin(admin.ModelAdmin):
+    list_display = ('user', 'job_link', 'quote_short', 'approval_status_display', 'is_featured', 'created_at')
+    list_filter = ('approval_status', 'is_featured', 'created_at')
+    list_editable = ('is_featured',)
+    search_fields = ('user__username', 'quote', 'job__title')
+    date_hierarchy = 'created_at'
+    ordering = ('-created_at',)
+    actions = ['approve_stories', 'reject_stories']
 
-        for post in eligible:
-            text = f"📝 Yeni Blog Yazısı: {post.title}\n\n"
-            text += f"{post.excerpt[:150]}...\n\n"
-            text += "#Analizus #VeriAnalizi #Blog"
+    def quote_short(self, obj):
+        return obj.quote[:80] + "..." if len(obj.quote) > 80 else obj.quote
+    quote_short.short_description = "Hikaye"
 
-            url = f"https://www.analizus.com/blog/{post.slug}/"
+    def job_link(self, obj):
+        if obj.job:
+            return format_html(
+                '<a href="/admin/forum/freelancejob/{}/change/" style="color: #00d2ff;">{}</a>',
+                obj.job.id, obj.job.title[:30]
+            )
+        return "-"
+    job_link.short_description = "İlgili İlan"
 
-            result = linkedin_api.post_share(text=text, url=url, title=post.title, description=post.excerpt[:100])
+    def approval_status_display(self, obj):
+        colors = {'pending': '#ffc107', 'approved': '#28a745', 'rejected': '#dc3545'}
+        icons = {'pending': '⏳', 'approved': '✅', 'rejected': '❌'}
+        return format_html(
+            '<span style="color: {};">{} {}</span>',
+            colors.get(obj.approval_status, '#888'),
+            icons.get(obj.approval_status, ''),
+            obj.get_approval_status_display()
+        )
+    approval_status_display.short_description = "Onay Durumu"
 
-            if result.get('success'):
-                post.shared_to_linkedin = True
-                post.linkedin_share_date = timezone.now()
-                post.save()
-                shared += 1
-            else:
-                errors.append(f"{post.title}: {result.get('error', 'Bilinmeyen hata')}")
+    @admin.action(description='✅ Seçili hikayeleri onayla')
+    def approve_stories(self, request, queryset):
+        updated = queryset.update(approval_status='approved')
+        self.message_user(request, f'{updated} hikaye onaylandı.')
 
-        # Detaylı mesaj göster
-        if shared > 0:
-            self.message_user(request, f'✅ {shared} yazı LinkedIn\'de paylaşıldı.', messages.SUCCESS)
-        if drafts > 0:
-            self.message_user(request, f'⚠️ {drafts} yazı taslak durumunda (önce yayınlayın).', messages.WARNING)
-        if already_shared > 0:
-            self.message_user(request, f'ℹ️ {already_shared} yazı zaten paylaşılmış.', messages.INFO)
-        if errors:
-            for err in errors[:3]:  # İlk 3 hatayı göster
-                self.message_user(request, f'❌ Hata: {err}', messages.ERROR)
+    @admin.action(description='❌ Seçili hikayeleri reddet')
+    def reject_stories(self, request, queryset):
+        updated = queryset.update(approval_status='rejected')
+        self.message_user(request, f'{updated} hikaye reddedildi.')
