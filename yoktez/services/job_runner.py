@@ -158,15 +158,6 @@ def send_demo_email(job):
     # Txt dosya içeriğini oluştur
     txt_content = _generate_results_txt(job.demo_results, job, is_demo=True)
 
-    # S3'e yükle (henüz yüklenmemişse)
-    s3_url = job.demo_file_url
-    if not s3_url:
-        s3_key = f"yoktez/demo/{job.id}.txt"
-        s3_url = upload_to_s3(txt_content, s3_key)
-        if s3_url:
-            job.demo_file_url = s3_url
-            job.save(update_fields=['demo_file_url'])
-
     # Email body: Tez bilgileri açık olarak YER ALMAZ
     lines = [
         f"Merhaba {user.first_name or user.username},\n",
@@ -175,11 +166,8 @@ def send_demo_email(job):
         f"Anahtar Kelimeler: {', '.join(job.keywords)}",
         f"Toplam Bulunan Sonuç: {job.total_results}",
         f"Demo Sonuç: {len(job.demo_results)} tez\n",
+        f"Demo sonuçlar bu e-postaya txt dosyası olarak eklenmiştir.\n",
     ]
-
-    if s3_url:
-        lines.append(f"Demo sonuçlarınızı aşağıdaki linkten indirebilirsiniz:")
-        lines.append(f"  {s3_url}\n")
 
     # Toplam tez sayısına göre fiyat hesapla
     from yoktez.models import TezOrder
