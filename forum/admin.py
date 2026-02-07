@@ -562,6 +562,14 @@ class SiteSettingsAdmin(admin.ModelAdmin):
         ('Otomatik Paylaşım', {
             'fields': ('auto_share_topics', 'auto_share_jobs'),
         }),
+        ('Özellik Anahtarları (Feature Flags)', {
+            'description': 'Kapalı olan özellikler kullanıcılara gösterilmez.',
+            'fields': (
+                'feature_blog', 'feature_market', 'feature_ai_assistant',
+                'feature_yoktez', 'feature_quiz', 'feature_messaging',
+                'feature_donation', 'feature_success_stories',
+            ),
+        }),
     )
 
     def has_add_permission(self, request):

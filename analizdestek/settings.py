@@ -87,6 +87,7 @@ TEMPLATES = [
                 'django.template.context_processors.i18n',
                 'forum.context_processors.profile_context',  # Profil, bildirimler vb. için
                 'forum.context_processors.google_analytics',  # Google Analytics
+                'forum.context_processors.feature_flags',  # Feature Flags
             ],
         },
     },

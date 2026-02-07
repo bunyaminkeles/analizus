@@ -1,5 +1,5 @@
 from django.conf import settings
-from forum.models import Profile, Notification, PrivateMessage
+from forum.models import Profile, Notification, PrivateMessage, SiteSettings
 
 
 def profile_context(request):
@@ -29,3 +29,20 @@ def profile_context(request):
 def google_analytics(request):
     """Google Analytics ID'yi tüm template'lere geçirir"""
     return {'GOOGLE_ANALYTICS_ID': getattr(settings, 'GOOGLE_ANALYTICS_ID', '')}
+
+
+def feature_flags(request):
+    """Feature flag'leri tüm template'lere geçirir"""
+    site = SiteSettings.load()
+    return {
+        'features': {
+            'blog': site.feature_blog,
+            'market': site.feature_market,
+            'ai_assistant': site.feature_ai_assistant,
+            'yoktez': site.feature_yoktez,
+            'quiz': site.feature_quiz,
+            'messaging': site.feature_messaging,
+            'donation': site.feature_donation,
+            'success_stories': site.feature_success_stories,
+        }
+    }

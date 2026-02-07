@@ -1,11 +1,26 @@
 from django.shortcuts import render, get_object_or_404
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_GET, require_POST
+from functools import wraps
 
 from .forms import TezSearchForm, TezOrderForm
 from .models import TezSearchJob, TezOrder
 from .services.job_runner import run_scraping_job
+
+
+def feature_required(flag_name):
+    """Decorator: SiteSettings'deki feature flag kapalıysa 404 döner."""
+    def decorator(view_func):
+        @wraps(view_func)
+        def wrapper(request, *args, **kwargs):
+            from forum.models import SiteSettings
+            site = SiteSettings.load()
+            if not getattr(site, f'feature_{flag_name}', True):
+                raise Http404
+            return view_func(request, *args, **kwargs)
+        return wrapper
+    return decorator
 
 # IBAN bilgileri
 IBAN_INFO = {
@@ -15,6 +30,7 @@ IBAN_INFO = {
 }
 
 
+@feature_required('yoktez')
 @login_required
 def yoktez_landing(request):
     """Landing page: form + demo arama."""

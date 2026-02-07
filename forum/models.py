@@ -1057,6 +1057,16 @@ class SiteSettings(models.Model):
     auto_share_topics = models.BooleanField(default=False, verbose_name="Yeni konuları otomatik paylaş")
     auto_share_jobs = models.BooleanField(default=False, verbose_name="Yeni ilanları otomatik paylaş")
 
+    # Feature Flags
+    feature_blog = models.BooleanField(default=True, verbose_name="Blog")
+    feature_market = models.BooleanField(default=True, verbose_name="Hizmetler Pazarı")
+    feature_ai_assistant = models.BooleanField(default=True, verbose_name="AI Asistan")
+    feature_yoktez = models.BooleanField(default=True, verbose_name="YÖK Tez Tarama")
+    feature_quiz = models.BooleanField(default=True, verbose_name="İstatistik Arena (Quiz)")
+    feature_messaging = models.BooleanField(default=True, verbose_name="Özel Mesajlaşma")
+    feature_donation = models.BooleanField(default=True, verbose_name="Bağış Sistemi")
+    feature_success_stories = models.BooleanField(default=True, verbose_name="Başarı Hikayeleri")
+
     class Meta:
         verbose_name = "Site Ayarı"
         verbose_name_plural = "Site Ayarları"

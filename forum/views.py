@@ -22,6 +22,21 @@ from .models import Section, Category, Topic, Post, Profile, PrivateMessage, Pos
 from .forms import RegisterForm, NewTopicForm, PostForm, JobPostForm, ProposalForm
 from .email_utils import send_topic_reply_notification, send_private_message_notification
 from django.template.loader import render_to_string
+from functools import wraps
+
+
+def feature_required(flag_name):
+    """Decorator: SiteSettings'deki feature flag kapalıysa 404 döner."""
+    def decorator(view_func):
+        @wraps(view_func)
+        def wrapper(request, *args, **kwargs):
+            site = SiteSettings.load()
+            if not getattr(site, f'feature_{flag_name}', True):
+                from django.http import Http404
+                raise Http404
+            return view_func(request, *args, **kwargs)
+        return wrapper
+    return decorator
 
 
 # --- HEALTH CHECK (Cron ping için) ---
@@ -133,6 +148,7 @@ class SuccessStoryForm(forms.ModelForm):
         }
         labels = {'quote': 'Hikayeniz'}
 
+@feature_required('success_stories')
 def success_stories(request):
     stories = SuccessStory.objects.filter(approval_status='approved').order_by('-is_featured', '-created_at')
     form = None
@@ -182,6 +198,7 @@ def success_stories(request):
     })
 
 # --- FREELANCE MARKET ---
+@feature_required('market')
 def job_list(request):
     sort = request.GET.get('sort', 'newest')
     jobs = FreelanceJob.objects.filter(status='open').select_related('owner', 'category').annotate(
@@ -208,6 +225,7 @@ def job_list(request):
         'can_post_reason': can_post_reason,
     })
 
+@feature_required('market')
 @login_required
 @ratelimit(key='user', rate='5/h', method='POST', block=True)
 def post_job(request):
@@ -383,6 +401,7 @@ def admin_manage_proposal(request, job_pk, proposal_id):
     return redirect('job_detail', pk=job_pk)
 
 
+@feature_required('market')
 @login_required
 def job_detail(request, pk):
     job = get_object_or_404(FreelanceJob, pk=pk)
@@ -929,6 +948,7 @@ def profile_edit(request):
     return render(request, 'forum/profile_edit.html', {'user': user, 'profile': profile, 'all_skills': all_skills})
 
 # --- GELEN KUTUSU ---
+@feature_required('messaging')
 @login_required
 def inbox(request):
     # Sayfa görüntülendiğinde tüm okunmamış mesajları okundu yap
@@ -938,6 +958,7 @@ def inbox(request):
     return render(request, 'forum/inbox.html', {'received_messages': received_messages})
 
 # --- ÖZEL MESAJ GÖNDER ---
+@feature_required('messaging')
 @login_required
 @ratelimit(key='user', rate='30/h', method='POST', block=True)
 def send_message(request, username):
@@ -1242,6 +1263,7 @@ def user_search_api(request):
 
 
 # --- AI ASISTAN ---
+@feature_required('ai_assistant')
 @login_required
 def ai_assistant(request):
     """AI Asistan sayfası"""
@@ -2124,6 +2146,7 @@ def job_payment_callback(request):
 # BLOG SİSTEMİ
 # ═══════════════════════════════════════════════════════════════════════════════
 
+@feature_required('blog')
 def blog_list(request):
     """Blog ana sayfası - yazı listesi"""
     posts = BlogPost.objects.filter(status='published').select_related('author', 'category')
@@ -2154,6 +2177,7 @@ def blog_list(request):
     return render(request, 'forum/blog/blog_list.html', context)
 
 
+@feature_required('blog')
 def blog_detail(request, slug):
     """Blog yazı detay sayfası"""
     post = get_object_or_404(BlogPost, slug=slug, status='published')
@@ -2181,6 +2205,7 @@ def blog_detail(request, slug):
     return render(request, 'forum/blog/blog_detail.html', context)
 
 
+@feature_required('blog')
 @login_required
 @require_POST
 def blog_like(request, slug):
@@ -2200,6 +2225,7 @@ def blog_like(request, slug):
     return redirect('blog_detail', slug=slug)
 
 
+@feature_required('blog')
 @login_required
 def blog_create(request):
     """Blog yazısı oluşturma - Badge gerektirir"""
