@@ -62,29 +62,11 @@ def home(request):
         replies_count=Count('posts')
     ).order_by('-views')[:5]
 
-    # Son aktiviteler (postlar)
-    recent_posts = list(Post.objects.select_related('created_by', 'topic').order_by('-created_at')[:10])
-
-    recent_activities = []
-    for post in recent_posts:
-        recent_activities.append({
-            'type': 'post',
-            'created_by': post.created_by,
-            'topic': post.topic,
-            'created_at': post.created_at,
-        })
-    
-    # Tarihe göre sırala
-    recent_activities = sorted(recent_activities, key=lambda x: x['created_at'], reverse=True)[:10]
-
     # Günün İpucu
     daily_tip = DailyTip.get_today_tip()
 
     # Quiz Sorusu
     quiz_question = QuizQuestion.get_random_question()
-
-    # İstatistik Arena Liderlik Tablosu (Top 5)
-    quiz_leaderboard = QuizScore.objects.select_related('user', 'user__profile').order_by('-correct_answers')[:5]
 
     # Haftanın Başarı Hikayesi
     featured_story = SuccessStory.objects.filter(is_featured=True, approval_status='approved').first()
@@ -118,10 +100,8 @@ def home(request):
         # Widgetlar
         'recent_topics': recent_topics,
         'popular_topics': popular_topics,
-        'recent_activities': recent_activities,
         'daily_tip': daily_tip,
         'quiz_question': quiz_question,
-        'quiz_leaderboard': quiz_leaderboard,
         'donation_tiers': donation_tiers,
         'featured_story': featured_story,
         'recent_jobs': recent_jobs,

@@ -143,108 +143,16 @@
             </div>
         </div>
 
-        <!-- WIDGET: İstatistik Arena Liderleri -->
-        <div class="widget-card">
-            <div class="widget-header" style="color: #ffd700;">
-                <i class="bi bi-trophy-fill"></i>
-                <span>İstatistik Arena Liderleri</span>
-            </div>
-            <div class="widget-body p-0">
-                {% for score in quiz_leaderboard %}
-                <div class="d-flex align-items-center p-2 border-bottom border-secondary border-opacity-10">
-                    <div class="me-2 position-relative">
-                        <div class="rounded-circle bg-dark border border-secondary d-flex align-items-center justify-content-center text-white fw-bold" style="width: 32px; height: 32px; font-size: 0.8rem; overflow: hidden;">
-                            {% if score.user.profile.avatar %}
-                                <img src="{{ score.user.profile.avatar.url }}" class="w-100 h-100" style="object-fit: cover;">
-                            {% else %}
-                                {{ score.user.username|slice:":1"|upper }}
-                            {% endif %}
-                        </div>
-                        <span class="position-absolute top-0 start-0 translate-middle badge rounded-pill bg-warning text-dark border border-dark" style="font-size: 0.5rem; padding: 2px 4px; z-index: 1;">
-                            {{ forloop.counter }}
-                        </span>
-                    </div>
-                    <div class="flex-grow-1 overflow-hidden">
-                        <a href="{% url 'profile_detail' username=score.user.username %}" class="text-decoration-none text-light small fw-bold d-block text-truncate">{{ score.user.username }}</a>
-                        <small class="text-muted d-block text-truncate" style="font-size: 0.65rem;">{{ score.user.profile.title|default:"Üye" }}</small>
-                    </div>
-                    <div class="text-end ms-2">
-                        <span class="badge bg-dark text-warning border border-warning border-opacity-25">{{ score.correct_answers }} D</span>
-                    </div>
-                </div>
-                {% empty %}
-                <div class="p-3 text-center text-muted small">Henüz veri yok</div>
-                {% endfor %}
-            </div>
-        </div>
-
     </aside>
 
     <div class="analizus-home">
 
-        <!-- HERO SECTION WITH STATS INSIDE -->
+        <!-- HERO SECTION -->
         <div class="hero-section">
-            <!-- SVG Circuit Background -->
-            <svg class="circuit-svg circuit-left" viewBox="0 0 200 400" preserveAspectRatio="none">
-                <defs>
-                    <linearGradient id="cyan-grad-l" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" style="stop-color:#00f0ff;stop-opacity:0.6"/>
-                        <stop offset="100%" style="stop-color:#00f0ff;stop-opacity:0"/>
-                    </linearGradient>
-                </defs>
-                <path d="M0 40 H60 V20 H100 V40 H140" stroke="url(#cyan-grad-l)" stroke-width="1.5" fill="none"/>
-                <path d="M0 80 H40 V60 H80" stroke="url(#cyan-grad-l)" stroke-width="1.5" fill="none"/>
-                <path d="M0 120 H70 V100 H110 V130" stroke="url(#cyan-grad-l)" stroke-width="1.5" fill="none"/>
-                <path d="M0 180 H50 V160 H90" stroke="url(#cyan-grad-l)" stroke-width="1.5" fill="none"/>
-                <path d="M0 240 H80 V220 H120" stroke="url(#cyan-grad-l)" stroke-width="1.5" fill="none"/>
-                <path d="M0 300 H45 V280 H85 V310" stroke="url(#cyan-grad-l)" stroke-width="1.5" fill="none"/>
-                <path d="M0 360 H65 V340 H105" stroke="url(#cyan-grad-l)" stroke-width="1.5" fill="none"/>
-                <circle cx="60" cy="40" r="4" fill="#00f0ff" class="circuit-node"/>
-                <circle cx="100" cy="20" r="3" fill="#00f0ff" class="circuit-node n2"/>
-                <circle cx="40" cy="80" r="4" fill="#00f0ff" class="circuit-node n3"/>
-                <circle cx="70" cy="120" r="3" fill="#00f0ff" class="circuit-node"/>
-                <circle cx="50" cy="180" r="4" fill="#00f0ff" class="circuit-node n2"/>
-                <circle cx="80" cy="240" r="3" fill="#00f0ff" class="circuit-node n3"/>
-                <circle cx="45" cy="300" r="4" fill="#00f0ff" class="circuit-node"/>
-                <circle cx="65" cy="360" r="3" fill="#00f0ff" class="circuit-node n2"/>
-            </svg>
-
-            <svg class="circuit-svg circuit-right" viewBox="0 0 200 400" preserveAspectRatio="none">
-                <defs>
-                    <linearGradient id="cyan-grad-r" x1="100%" y1="0%" x2="0%" y2="0%">
-                        <stop offset="0%" style="stop-color:#00f0ff;stop-opacity:0.6"/>
-                        <stop offset="100%" style="stop-color:#00f0ff;stop-opacity:0"/>
-                    </linearGradient>
-                </defs>
-                <path d="M200 40 H140 V20 H100 V40 H60" stroke="url(#cyan-grad-r)" stroke-width="1.5" fill="none"/>
-                <path d="M200 80 H160 V60 H120" stroke="url(#cyan-grad-r)" stroke-width="1.5" fill="none"/>
-                <path d="M200 120 H130 V100 H90 V130" stroke="url(#cyan-grad-r)" stroke-width="1.5" fill="none"/>
-                <path d="M200 180 H150 V160 H110" stroke="url(#cyan-grad-r)" stroke-width="1.5" fill="none"/>
-                <path d="M200 240 H120 V220 H80" stroke="url(#cyan-grad-r)" stroke-width="1.5" fill="none"/>
-                <path d="M200 300 H155 V280 H115 V310" stroke="url(#cyan-grad-r)" stroke-width="1.5" fill="none"/>
-                <path d="M200 360 H135 V340 H95" stroke="url(#cyan-grad-r)" stroke-width="1.5" fill="none"/>
-                <circle cx="140" cy="40" r="4" fill="#00f0ff" class="circuit-node n3"/>
-                <circle cx="100" cy="20" r="3" fill="#00f0ff" class="circuit-node"/>
-                <circle cx="160" cy="80" r="4" fill="#00f0ff" class="circuit-node n2"/>
-                <circle cx="130" cy="120" r="3" fill="#00f0ff" class="circuit-node n3"/>
-                <circle cx="150" cy="180" r="4" fill="#00f0ff" class="circuit-node"/>
-                <circle cx="120" cy="240" r="3" fill="#00f0ff" class="circuit-node n2"/>
-                <circle cx="155" cy="300" r="4" fill="#00f0ff" class="circuit-node n3"/>
-                <circle cx="135" cy="360" r="3" fill="#00f0ff" class="circuit-node"/>
-            </svg>
-
-            <!-- Corner Glow Dots -->
-            <div class="corner-dot top-left"></div>
-            <div class="corner-dot top-right"></div>
-            <div class="corner-dot bottom-left"></div>
-            <div class="corner-dot bottom-right"></div>
-
-            <!-- Hero Content -->
             <div class="hero-content">
                 <h1 class="hero-title">ANALİZUS</h1>
-                <p class="hero-subtitle">BİLİMİN IŞIĞINDA VERİYİ YÖNET</p>
+                <p class="hero-subtitle">Akademik Analiz ve Veri Bilimi Topluluğu</p>
 
-                <!-- CTA Buttons - Sadece giriş yapmamış kullanıcılar için -->
                 {% if not user.is_authenticated %}
                 <div class="hero-cta-buttons">
                     <a href="{% url 'register' %}" class="cta-btn cta-primary">
@@ -257,26 +165,26 @@
                 {% endif %}
             </div>
 
-            <!-- Stats Pills Inside Hero -->
+            <!-- Stats Pills -->
             <div class="stats-pills">
                 <div class="stat-pill">
                     <div class="pill-icon cyan"><i class="bi bi-chat-square-text-fill"></i></div>
                     <div class="pill-info">
-                        <span class="pill-label">Toplam Konu</span>
+                        <span class="pill-label">Konu</span>
                         <span class="pill-value">{{ total_topics }}</span>
                     </div>
                 </div>
                 <div class="stat-pill">
                     <div class="pill-icon purple"><i class="bi bi-file-text-fill"></i></div>
                     <div class="pill-info">
-                        <span class="pill-label">Toplam Gönderi</span>
+                        <span class="pill-label">Gönderi</span>
                         <span class="pill-value">{{ total_posts }}</span>
                     </div>
                 </div>
                 <div class="stat-pill">
                     <div class="pill-icon green"><i class="bi bi-people-fill"></i></div>
                     <div class="pill-info">
-                        <span class="pill-label">Toplam Üye</span>
+                        <span class="pill-label">Üye</span>
                         <span class="pill-value">{{ total_users }}</span>
                     </div>
                 </div>
@@ -288,15 +196,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-
-        <!-- SLOGAN -->
-        <div class="slogan-banner">
-            <span class="slogan-text">SORU SOR</span>
-            <span class="slogan-dot">·</span>
-            <span class="slogan-text">CEVAP BUL</span>
-            <span class="slogan-dot">·</span>
-            <span class="slogan-text">UZMANLAŞ</span>
         </div>
 
         <!-- CATEGORIES ROW -->
@@ -353,42 +252,6 @@
             </div>
         </div>
         {% endif %}
-
-        <!-- SON AKTİVİTELER - Sections Altında -->
-        <div class="activity-section mt-4">
-            <div class="widget-card full-width">
-                <div class="widget-header green">
-                    <i class="bi bi-lightning-fill"></i>
-                    <span>Son Aktiviteler</span>
-                </div>
-                <div class="widget-body activity-body">
-                    {% for act in recent_activities %}
-                    <div class="activity-item">
-                        <div class="activity-avatar" {% if act.type == 'donation' %}style="background: linear-gradient(135deg, #ec4899, #f472b6);"{% endif %}>
-                            {{ act.created_by.username|slice:":2"|upper }}
-                        </div>
-                        <div class="activity-content">
-                            {% if act.type == 'donation' %}
-                            <b>{{ act.created_by.username }}</b>
-                            <span style="color: #ec4899;"><i class="bi bi-heart-fill"></i> {{ act.amount|floatformat:0 }} TL bağış yaptı</span>
-                            <span class="badge bg-warning text-dark ms-1" style="font-size: 0.6rem;">+{{ act.premium_days }} gün Premium</span>
-                            {% else %}
-                            <b>{{ act.created_by.username }}</b>
-                            "<a href="{% url 'topic_detail' pk=act.topic.pk %}">{{ act.topic.subject|truncatechars:35 }}</a>" konusuna yanıt verdi
-                            {% endif %}
-                        </div>
-                        <span class="activity-time">{{ act.created_at|timesince }} önce</span>
-                    </div>
-                    {% empty %}
-                    <p class="empty-text">Henüz aktivite yok</p>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-
-        <!-- Floating Stars -->
-        <div class="floating-star star-1">✦</div>
-        <div class="floating-star star-2">✦</div>
 
     </div>
 </div>
@@ -531,87 +394,11 @@
 
     border-radius: 20px;
 
-    padding: 35px 20px 20px;
+    padding: 30px 20px 20px;
 
     margin-bottom: 20px;
 
-    overflow: hidden;
-
 }
-
-
-
-/* SVG Circuits */
-
-.circuit-svg {
-
-    position: absolute;
-
-    top: 0;
-
-    height: 100%;
-
-    width: 180px;
-
-    pointer-events: none;
-
-}
-
-.circuit-svg.circuit-left { left: 0; }
-
-.circuit-svg.circuit-right { right: 0; }
-
-
-
-.circuit-node {
-
-    filter: drop-shadow(0 0 4px #00f0ff) drop-shadow(0 0 8px #00f0ff);
-
-    animation: node-pulse 2s ease-in-out infinite;
-
-}
-
-.circuit-node.n2 { animation-delay: 0.5s; }
-
-.circuit-node.n3 { animation-delay: 1s; }
-
-
-
-@keyframes node-pulse {
-
-    0%, 100% { opacity: 0.4; }
-
-    50% { opacity: 1; }
-
-}
-
-
-
-/* Corner Dots */
-
-.corner-dot {
-
-    position: absolute;
-
-    width: 6px;
-
-    height: 6px;
-
-    background: #00f0ff;
-
-    border-radius: 50%;
-
-    box-shadow: 0 0 8px #00f0ff, 0 0 16px #00f0ff;
-
-}
-
-.corner-dot.top-left { top: 15px; left: 15px; }
-
-.corner-dot.top-right { top: 15px; right: 15px; }
-
-.corner-dot.bottom-left { bottom: 15px; left: 15px; }
-
-.corner-dot.bottom-right { bottom: 15px; right: 15px; }
 
 
 
@@ -635,13 +422,13 @@
 
     font-family: 'Arial Black', Impact, sans-serif;
 
-    font-size: 5rem;
+    font-size: 3.5rem;
 
     font-weight: 900;
 
-    letter-spacing: 18px;
+    letter-spacing: 14px;
 
-    margin: 0 0 8px;
+    margin: 0 0 6px;
 
     background: linear-gradient(180deg, #ffffff 0%, #00e5ff 50%, #a855f7 100%);
 
@@ -651,19 +438,7 @@
 
     background-clip: text;
 
-    filter: drop-shadow(0 0 30px rgba(0, 229, 255, 0.6)) drop-shadow(0 0 60px rgba(168, 85, 247, 0.3));
-
-    animation: title-glow 3s ease-in-out infinite alternate;
-
-}
-
-
-
-@keyframes title-glow {
-
-    from { filter: drop-shadow(0 0 25px rgba(0, 229, 255, 0.5)) drop-shadow(0 0 50px rgba(168, 85, 247, 0.2)); }
-
-    to { filter: drop-shadow(0 0 40px rgba(0, 229, 255, 0.8)) drop-shadow(0 0 80px rgba(168, 85, 247, 0.4)); }
+    filter: drop-shadow(0 0 20px rgba(0, 229, 255, 0.4));
 
 }
 
@@ -671,15 +446,13 @@
 
 .hero-subtitle {
 
-    font-size: 0.95rem;
+    font-size: 0.85rem;
 
-    color: #475569;
+    color: #64748b;
 
-    letter-spacing: 8px;
+    letter-spacing: 3px;
 
-    text-transform: uppercase;
-
-    margin: 0 0 24px;
+    margin: 0 0 20px;
 
 }
 
@@ -743,34 +516,7 @@
     }
 }
 
-/* Slogan Banner */
-.slogan-banner {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 12px;
-    padding: 18px 20px;
-    margin-bottom: 20px;
-    background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.03), transparent);
-    border-top: 1px solid rgba(0, 240, 255, 0.08);
-    border-bottom: 1px solid rgba(0, 240, 255, 0.08);
-}
-
-.slogan-text {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: #94a3b8;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-}
-
-.slogan-dot {
-    font-size: 1.2rem;
-    color: #00f0ff;
-    text-shadow: 0 0 8px rgba(0, 240, 255, 0.5);
-}
-
-/* Stats Pills Inside Hero */
+/* Stats Pills */
 
 .stats-pills {
 
@@ -1236,129 +982,6 @@
 
 
 
-/* ===== ACTIVITY ===== */
-
-.activity-body { max-height: 200px; }
-
-
-
-.activity-item {
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 10px;
-
-    padding: 10px 0;
-
-    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-
-}
-
-
-
-.activity-item:last-child { border-bottom: none; }
-
-
-
-.activity-avatar {
-
-    width: 34px;
-
-    height: 34px;
-
-    border-radius: 50%;
-
-    background: linear-gradient(135deg, #22c55e, #16a34a);
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    color: #fff;
-
-    font-weight: 700;
-
-    font-size: 0.65rem;
-
-    flex-shrink: 0;
-
-}
-
-
-
-.activity-content {
-
-    flex: 1;
-
-    color: #94a3b8;
-
-    font-size: 0.8rem;
-
-}
-
-
-
-.activity-content b { color: #00f0ff; }
-
-.activity-content a { color: #e2e8f0; text-decoration: none; }
-
-.activity-content a:hover { color: #00f0ff; }
-
-
-
-.activity-time {
-
-    color: #475569;
-
-    font-size: 0.65rem;
-
-    white-space: nowrap;
-
-}
-
-
-
-/* ===== FLOATING STARS ===== */
-
-.floating-star {
-
-    position: fixed;
-
-    font-size: 1.3rem;
-
-    color: #00f0ff;
-
-    text-shadow: 0 0 12px #00f0ff;
-
-    animation: twinkle 3s ease-in-out infinite;
-
-    pointer-events: none;
-
-    z-index: 50;
-
-}
-
-
-
-.floating-star.star-1 { top: 120px; right: 25px; }
-
-.floating-star.star-2 { bottom: 100px; left: 25px; animation-delay: 1.5s; }
-
-
-
-@keyframes twinkle {
-
-    0%, 100% { opacity: 0.3; transform: scale(1) rotate(0deg); }
-
-    50% { opacity: 1; transform: scale(1.15) rotate(180deg); }
-
-}
-
-
 
 /* ===== EMPTY & SCROLLBAR ===== */
 
@@ -1398,15 +1021,11 @@
 
 @media (max-width: 768px) {
 
-    .hero-title { font-size: 3rem; letter-spacing: 10px; }
+    .hero-title { font-size: 2.5rem; letter-spacing: 8px; }
 
-    .hero-subtitle { font-size: 0.75rem; letter-spacing: 5px; }
+    .hero-subtitle { font-size: 0.7rem; letter-spacing: 2px; }
 
-    .hero-section { padding: 30px 15px 20px; }
-
-    .slogan-banner { gap: 8px; padding: 14px 15px; }
-    .slogan-text { font-size: 0.7rem; letter-spacing: 2px; }
-    .slogan-dot { font-size: 1rem; }
+    .hero-section { padding: 24px 15px 16px; }
 
     .stat-pill { padding: 6px 14px 6px 6px; }
 
@@ -1416,24 +1035,17 @@
 
     .pill-label { font-size: 0.55rem; }
 
-    .circuit-svg { width: 100px; }
-
-    .floating-star { display: none; }
-
 }
 
 
 
 @media (max-width: 480px) {
 
-    .hero-title { font-size: 2.2rem; letter-spacing: 6px; }
+    .hero-title { font-size: 1.8rem; letter-spacing: 5px; }
 
     .stats-pills { flex-direction: column; align-items: center; }
 
     .stat-pill { width: 80%; max-width: 220px; }
-
-    .slogan-text { font-size: 0.6rem; letter-spacing: 1px; }
-    .slogan-dot { font-size: 0.8rem; }
 
 }
 
