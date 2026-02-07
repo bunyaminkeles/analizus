@@ -34,3 +34,7 @@ frontend/next-env.d.ts
 PRE_DEPLOYMENT_CHECKLIST.md
 .gitignore
 analizus-logo-00.png
+aws/*
+aws/dist/libreadline.so.6
+awscliv2.zip
+.gitignore
