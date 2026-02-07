@@ -1123,7 +1123,20 @@ def how_it_works(request):
     return render(request, 'forum/how_it_works.html')
 
 def contact(request):
-    return render(request, 'forum/contact.html')
+    if request.method == 'POST':
+        from .models import ContactMessage
+        try:
+            ContactMessage.objects.create(
+                name=request.POST.get('name', ''),
+                email=request.POST.get('email', ''),
+                subject=request.POST.get('subject', ''),
+                message=request.POST.get('message', ''),
+            )
+            messages.success(request, 'Mesajınız başarıyla gönderildi. En kısa sürede dönüş yapacağız.')
+        except Exception:
+            messages.error(request, 'Mesaj gönderilirken bir hata oluştu. Lütfen tekrar deneyin.')
+        return redirect('about')
+    return redirect('about')
 
 def search_result(request):
     """Arama sonuçları"""
@@ -1488,11 +1501,17 @@ def admin_dashboard(request):
         reply_count=Count('posts')
     ).order_by('-views', '-reply_count')[:10]
 
-    # === ONAY BEKLEYENLER (LinkedIn) ===
+    # === ONAY BEKLEYENLER ===
     pending_linkedin_verifications = Profile.objects.filter(
         linkedin__isnull=False,
         linkedin_verified=False
     ).exclude(linkedin='').select_related('user')
+
+    pending_stories = SuccessStory.objects.filter(approval_status='pending').select_related('user')
+    pending_reviews = JobReview.objects.filter(is_approved=False).select_related('reviewer', 'reviewed_user', 'job')
+    from .models import ContactMessage, Donation
+    unread_contacts = ContactMessage.objects.filter(is_read=False).order_by('-created_at')[:20]
+    pending_donations = Donation.objects.filter(status='pending').select_related('user').order_by('-created_at')
 
     # === SON AKTİVİTELER ===
     recent_users = User.objects.order_by('-date_joined')[:5]
@@ -1544,6 +1563,10 @@ def admin_dashboard(request):
 
         # Onay bekleyenler
         'pending_linkedin_verifications': pending_linkedin_verifications,
+        'pending_stories': pending_stories,
+        'pending_reviews': pending_reviews,
+        'unread_contacts': unread_contacts,
+        'pending_donations': pending_donations,
 
         # Son aktiviteler
         'recent_users': recent_users,
@@ -1566,6 +1589,56 @@ def admin_verify_linkedin(request, user_id):
     _check_and_award_trust_badge(request, user_to_verify)
     
     messages.success(request, f"{user_to_verify.username} kullanıcısının LinkedIn profili onaylandı.")
+    return redirect('admin_dashboard')
+
+
+@staff_member_required
+@require_POST
+def dashboard_approve_story(request, pk):
+    story = get_object_or_404(SuccessStory, pk=pk)
+    action = request.POST.get('action', 'approve')
+    if action == 'reject':
+        story.approval_status = 'rejected'
+        messages.info(request, f"{story.user.username} hikayesi reddedildi.")
+    else:
+        story.approval_status = 'approved'
+        messages.success(request, f"{story.user.username} hikayesi onaylandı.")
+    story.save()
+    return redirect('admin_dashboard')
+
+
+@staff_member_required
+@require_POST
+def dashboard_approve_review(request, pk):
+    review = get_object_or_404(JobReview, pk=pk)
+    review.is_approved = True
+    review.save()
+    messages.success(request, f"{review.reviewer.username} değerlendirmesi onaylandı.")
+    return redirect('admin_dashboard')
+
+
+@staff_member_required
+@require_POST
+def dashboard_approve_donation(request, pk):
+    from .models import Donation
+    donation = get_object_or_404(Donation, pk=pk)
+    donation.status = 'completed'
+    donation.completed_at = timezone.now()
+    donation.save()
+    # Model'deki grant_premium() metodunu kullan
+    if donation.user:
+        donation.grant_premium()
+    messages.success(request, f"Bağış onaylandı. {donation.premium_days_granted} gün premium verildi.")
+    return redirect('admin_dashboard')
+
+
+@staff_member_required
+@require_POST
+def dashboard_mark_contact_read(request, pk):
+    from .models import ContactMessage
+    msg = get_object_or_404(ContactMessage, pk=pk)
+    msg.is_read = True
+    msg.save()
     return redirect('admin_dashboard')
 
 

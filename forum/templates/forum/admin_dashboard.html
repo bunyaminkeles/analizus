@@ -99,6 +99,17 @@
     .activity-item:last-child {
         border-bottom: none;
     }
+    #approvalTabs .nav-link {
+        background: rgba(99, 102, 241, 0.1);
+        color: #94a3b8;
+        border: 1px solid rgba(99, 102, 241, 0.2);
+        font-size: 0.85rem;
+    }
+    #approvalTabs .nav-link.active {
+        background: rgba(99, 102, 241, 0.3);
+        color: #fff;
+        border-color: #6366f1;
+    }
 </style>
 {% endblock %}
 
@@ -317,47 +328,179 @@
         </div>
     </div>
 
+    <!-- ===== ONAY MERKEZİ ===== -->
     <div class="row g-4 mb-4">
         <div class="col-lg-12">
-            <div class="dashboard-card h-100">
-                <div class="card-header">
-                    <h5><i class="bi bi-patch-check me-2"></i>Bekleyen Onaylar</h5>
+            <div class="dashboard-card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5><i class="bi bi-patch-check me-2"></i>Onay Merkezi</h5>
+                    <span class="text-muted small">
+                        {% with total=pending_stories.count|add:pending_reviews.count|add:unread_contacts.count|add:pending_donations.count|add:pending_linkedin_verifications.count %}
+                        {{ total }} bekleyen işlem
+                        {% endwith %}
+                    </span>
                 </div>
                 <div class="card-body">
-                    <h6 class="text-white">LinkedIn Onayları</h6>
-                    <div class="table-responsive">
-                        <table class="table table-dashboard table-hover mb-0">
-                            <thead>
-                                <tr>
-                                    <th>Kullanıcı</th>
-                                    <th>LinkedIn Profili</th>
-                                    <th>İşlem</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for profile in pending_linkedin_verifications %}
-                                <tr>
-                                    <td>
-                                        <a href="{% url 'profile_detail' profile.user.username %}" class="text-info text-decoration-none">
-                                            {{ profile.user.username }}
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <a href="{{ profile.linkedin }}" target="_blank" class="text-light text-decoration-none">
-                                            {{ profile.linkedin }}
-                                        </a>
-                                    </td>
-                                    <td>
-                                        <a href="{% url 'admin_verify_linkedin' profile.user.id %}" class="btn btn-sm btn-success">Onayla</a>
-                                    </td>
-                                </tr>
-                                {% empty %}
-                                <tr>
-                                    <td colspan="3" class="text-center text-muted">Bekleyen LinkedIn onayı yok.</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+                    <!-- Sekmeler -->
+                    <ul class="nav nav-pills mb-3 gap-2" id="approvalTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active position-relative" id="stories-tab" data-bs-toggle="pill" data-bs-target="#stories-panel" type="button">
+                                <i class="bi bi-star me-1"></i>Hikayeler
+                                {% if pending_stories.count %}<span class="badge bg-danger ms-1">{{ pending_stories.count }}</span>{% endif %}
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="reviews-tab" data-bs-toggle="pill" data-bs-target="#reviews-panel" type="button">
+                                <i class="bi bi-chat-quote me-1"></i>Değerlendirmeler
+                                {% if pending_reviews.count %}<span class="badge bg-danger ms-1">{{ pending_reviews.count }}</span>{% endif %}
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="contacts-tab" data-bs-toggle="pill" data-bs-target="#contacts-panel" type="button">
+                                <i class="bi bi-envelope me-1"></i>Mesajlar
+                                {% if unread_contacts.count %}<span class="badge bg-danger ms-1">{{ unread_contacts.count }}</span>{% endif %}
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="donations-tab" data-bs-toggle="pill" data-bs-target="#donations-panel" type="button">
+                                <i class="bi bi-heart me-1"></i>Bağışlar
+                                {% if pending_donations.count %}<span class="badge bg-danger ms-1">{{ pending_donations.count }}</span>{% endif %}
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="linkedin-tab" data-bs-toggle="pill" data-bs-target="#linkedin-panel" type="button">
+                                <i class="bi bi-linkedin me-1"></i>LinkedIn
+                                {% if pending_linkedin_verifications.count %}<span class="badge bg-danger ms-1">{{ pending_linkedin_verifications.count }}</span>{% endif %}
+                            </button>
+                        </li>
+                    </ul>
+
+                    <!-- Sekme İçerikleri -->
+                    <div class="tab-content" id="approvalTabsContent">
+
+                        <!-- TAB: Başarı Hikayeleri -->
+                        <div class="tab-pane fade show active" id="stories-panel" role="tabpanel">
+                            <div class="table-responsive">
+                                <table class="table table-dashboard table-hover mb-0">
+                                    <thead><tr><th>Kullanıcı</th><th>Hikaye</th><th>Tarih</th><th>İşlem</th></tr></thead>
+                                    <tbody>
+                                        {% for story in pending_stories %}
+                                        <tr>
+                                            <td><a href="{% url 'profile_detail' story.user.username %}" class="text-info text-decoration-none">{{ story.user.username }}</a></td>
+                                            <td class="text-light">{{ story.quote|truncatechars:80 }}</td>
+                                            <td class="text-muted small">{{ story.created_at|timesince }} önce</td>
+                                            <td>
+                                                <form method="post" action="{% url 'dashboard_approve_story' story.pk %}" class="d-inline">{% csrf_token %}<input type="hidden" name="action" value="approve"><button class="btn btn-sm btn-success">Onayla</button></form>
+                                                <form method="post" action="{% url 'dashboard_approve_story' story.pk %}" class="d-inline ms-1">{% csrf_token %}<input type="hidden" name="action" value="reject"><button class="btn btn-sm btn-outline-danger">Reddet</button></form>
+                                            </td>
+                                        </tr>
+                                        {% empty %}
+                                        <tr><td colspan="4" class="text-center text-muted">Bekleyen hikaye yok</td></tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- TAB: Değerlendirmeler -->
+                        <div class="tab-pane fade" id="reviews-panel" role="tabpanel">
+                            <div class="table-responsive">
+                                <table class="table table-dashboard table-hover mb-0">
+                                    <thead><tr><th>Değerlendiren</th><th>Değerlendirilen</th><th>Puan</th><th>Yorum</th><th>İşlem</th></tr></thead>
+                                    <tbody>
+                                        {% for review in pending_reviews %}
+                                        <tr>
+                                            <td><a href="{% url 'profile_detail' review.reviewer.username %}" class="text-info text-decoration-none">{{ review.reviewer.username }}</a></td>
+                                            <td><a href="{% url 'profile_detail' review.reviewed_user.username %}" class="text-light text-decoration-none">{{ review.reviewed_user.username }}</a></td>
+                                            <td>{% for i in "12345" %}<i class="bi bi-star{% if forloop.counter <= review.rating %}-fill text-warning{% else %} text-muted{% endif %}" style="font-size: 0.7rem;"></i>{% endfor %}</td>
+                                            <td class="text-muted small">{{ review.comment|truncatechars:60 }}</td>
+                                            <td>
+                                                <form method="post" action="{% url 'dashboard_approve_review' review.pk %}" class="d-inline">{% csrf_token %}<button class="btn btn-sm btn-success">Onayla</button></form>
+                                            </td>
+                                        </tr>
+                                        {% empty %}
+                                        <tr><td colspan="5" class="text-center text-muted">Bekleyen değerlendirme yok</td></tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- TAB: İletişim Mesajları -->
+                        <div class="tab-pane fade" id="contacts-panel" role="tabpanel">
+                            <div class="table-responsive">
+                                <table class="table table-dashboard table-hover mb-0">
+                                    <thead><tr><th>Gönderen</th><th>E-posta</th><th>Konu</th><th>Mesaj</th><th>Tarih</th><th>İşlem</th></tr></thead>
+                                    <tbody>
+                                        {% for msg in unread_contacts %}
+                                        <tr>
+                                            <td class="text-light fw-bold">{{ msg.name }}</td>
+                                            <td class="text-muted small">{{ msg.email }}</td>
+                                            <td class="text-info">{{ msg.subject }}</td>
+                                            <td class="text-muted small">{{ msg.message|truncatechars:80 }}</td>
+                                            <td class="text-muted small text-nowrap">{{ msg.created_at|timesince }} önce</td>
+                                            <td>
+                                                <form method="post" action="{% url 'dashboard_mark_contact_read' msg.pk %}" class="d-inline">{% csrf_token %}<button class="btn btn-sm btn-outline-info">Okundu</button></form>
+                                            </td>
+                                        </tr>
+                                        {% empty %}
+                                        <tr><td colspan="6" class="text-center text-muted">Okunmamış mesaj yok</td></tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- TAB: Bağışlar -->
+                        <div class="tab-pane fade" id="donations-panel" role="tabpanel">
+                            <div class="table-responsive">
+                                <table class="table table-dashboard table-hover mb-0">
+                                    <thead><tr><th>Kullanıcı</th><th>Miktar</th><th>Premium</th><th>Tarih</th><th>İşlem</th></tr></thead>
+                                    <tbody>
+                                        {% for donation in pending_donations %}
+                                        <tr>
+                                            <td>
+                                                {% if donation.user %}
+                                                <a href="{% url 'profile_detail' donation.user.username %}" class="text-info text-decoration-none">{{ donation.user.username }}</a>
+                                                {% else %}
+                                                <span class="text-muted">{{ donation.name|default:"Anonim" }}</span>
+                                                {% endif %}
+                                            </td>
+                                            <td class="text-warning fw-bold">{{ donation.amount|floatformat:0 }} TL</td>
+                                            <td class="text-success">{{ donation.premium_days_granted }} gün</td>
+                                            <td class="text-muted small">{{ donation.created_at|timesince }} önce</td>
+                                            <td>
+                                                <form method="post" action="{% url 'dashboard_approve_donation' donation.pk %}" class="d-inline">{% csrf_token %}<button class="btn btn-sm btn-success">Onayla</button></form>
+                                            </td>
+                                        </tr>
+                                        {% empty %}
+                                        <tr><td colspan="5" class="text-center text-muted">Bekleyen bağış yok</td></tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- TAB: LinkedIn -->
+                        <div class="tab-pane fade" id="linkedin-panel" role="tabpanel">
+                            <div class="table-responsive">
+                                <table class="table table-dashboard table-hover mb-0">
+                                    <thead><tr><th>Kullanıcı</th><th>LinkedIn Profili</th><th>İşlem</th></tr></thead>
+                                    <tbody>
+                                        {% for profile in pending_linkedin_verifications %}
+                                        <tr>
+                                            <td><a href="{% url 'profile_detail' profile.user.username %}" class="text-info text-decoration-none">{{ profile.user.username }}</a></td>
+                                            <td><a href="{{ profile.linkedin }}" target="_blank" class="text-light text-decoration-none">{{ profile.linkedin|truncatechars:40 }}</a></td>
+                                            <td><a href="{% url 'admin_verify_linkedin' profile.user.id %}" class="btn btn-sm btn-success">Onayla</a></td>
+                                        </tr>
+                                        {% empty %}
+                                        <tr><td colspan="3" class="text-center text-muted">Bekleyen LinkedIn onayı yok</td></tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>
