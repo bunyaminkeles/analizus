@@ -201,7 +201,6 @@ def send_demo_email(job):
             from_email=settings.DEFAULT_FROM_EMAIL,
             to=[to_email],
         )
-        # Sonuçları txt dosyası olarak ekle
         email.attach(
             f"yoktez_demo_{job.konu}.txt",
             txt_content,
@@ -264,7 +263,6 @@ def send_order_results_email(order):
             from_email=settings.DEFAULT_FROM_EMAIL,
             to=[to_email],
         )
-        # Txt dosya eki
         email.attach(
             f"yoktez_{job.konu}_{len(results_to_send)}_sonuc.txt",
             txt_content,

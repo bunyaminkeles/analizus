@@ -1,6 +1,6 @@
 """
-E-posta gönderme servisi
-Django'nun email backend'i üzerinden gönderim (Gmail SMTP / AWS SES)
+E-posta gönderme servisi - AWS SES
+Django'nun django-ses backend'i üzerinden (HTTP API, SMTP değil)
 """
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
@@ -13,16 +13,12 @@ logger = logging.getLogger(__name__)
 
 
 class EmailService:
-    """E-posta gönderme işlemlerini yöneten servis"""
+    """E-posta gönderme işlemlerini yöneten servis (AWS SES)"""
 
     @staticmethod
     def is_configured():
-        """E-posta backend'inin yapılandırılıp yapılandırılmadığını kontrol eder"""
-        backend = getattr(settings, 'EMAIL_BACKEND', '')
-        if 'ses' in backend.lower():
-            return bool(getattr(settings, 'AWS_ACCESS_KEY_ID', ''))
-        # SMTP backend (Gmail vb.)
-        return bool(getattr(settings, 'EMAIL_HOST_USER', ''))
+        """AWS SES yapılandırılmış mı kontrol eder"""
+        return bool(getattr(settings, 'AWS_ACCESS_KEY_ID', ''))
 
     @staticmethod
     def get_base_url():
@@ -32,18 +28,9 @@ class EmailService:
     @classmethod
     def _send_email(cls, to_email, subject, html_content, plain_content):
         """
-        Django email backend ile e-posta gönderir (arka planda)
-
-        Args:
-            to_email: Alıcı e-posta adresi
-            subject: E-posta konusu
-            html_content: HTML içerik
-            plain_content: Düz metin içerik
-
-        Returns:
-            bool: Gönderim başlatıldı mı
+        AWS SES ile e-posta gönderir (arka planda, HTTP API)
         """
-        from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@analizus.com')
+        from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'Analizus <info@analizus.com>')
 
         def _send():
             try:
@@ -55,7 +42,7 @@ class EmailService:
                     html_message=html_content,
                     fail_silently=False,
                 )
-                logger.info(f"E-posta gönderildi: {to_email}")
+                logger.info(f"E-posta gönderildi (SES): {to_email}")
             except Exception as e:
                 logger.error(f"E-posta gönderme hatası ({to_email}): {e}")
 
@@ -65,16 +52,7 @@ class EmailService:
 
     @classmethod
     def send_verification_email(cls, user, verification_token):
-        """
-        Kullanıcıya e-posta doğrulama linki gönderir
-
-        Args:
-            user: User modeli instance
-            verification_token: EmailVerification modeli instance
-
-        Returns:
-            bool: Gönderim başarılı mı
-        """
+        """Kullanıcıya e-posta doğrulama linki gönderir"""
         verification_url = f"{cls.get_base_url()}/verify-email/{verification_token.token}/"
 
         context = {
@@ -86,12 +64,10 @@ class EmailService:
 
         subject = 'Analizus - E-posta Adresinizi Doğrulayın'
 
-        # E-posta yapılandırılmamışsa skip et
         if not cls.is_configured():
-            logger.warning(f"E-posta yapılandırılmamış. Kullanıcı: {user.username}")
+            logger.warning(f"AWS SES yapılandırılmamış. Kullanıcı: {user.username}")
             return False
 
-        # HTML template
         html_message = render_to_string('forum/emails/verification_email.html', context)
         plain_message = strip_tags(html_message)
 
@@ -104,15 +80,7 @@ class EmailService:
 
     @classmethod
     def send_welcome_email(cls, user):
-        """
-        Doğrulama sonrası hoş geldin e-postası gönderir
-
-        Args:
-            user: User modeli instance
-
-        Returns:
-            bool: Gönderim başarılı mı
-        """
+        """Doğrulama sonrası hoş geldin e-postası gönderir"""
         context = {
             'user': user,
             'site_url': cls.get_base_url(),
@@ -121,9 +89,8 @@ class EmailService:
 
         subject = 'Analizus\'a Hoş Geldiniz!'
 
-        # E-posta yapılandırılmamışsa skip et
         if not cls.is_configured():
-            logger.warning(f"E-posta yapılandırılmamış. Hoş geldin e-postası gönderilemedi: {user.username}")
+            logger.warning(f"AWS SES yapılandırılmamış. Hoş geldin e-postası gönderilemedi: {user.username}")
             return False
 
         html_message = render_to_string('forum/emails/welcome_email.html', context)
@@ -138,17 +105,7 @@ class EmailService:
 
     @classmethod
     def send_resend_verification_email(cls, user, verification_token):
-        """
-        Tekrar doğrulama e-postası gönderir (kullanıcı talep ettiğinde)
-
-        Args:
-            user: User modeli instance
-            verification_token: EmailVerification modeli instance
-
-        Returns:
-            bool: Gönderim başarılı mı
-        """
-        # Aynı verification_email fonksiyonunu kullanabiliriz
+        """Tekrar doğrulama e-postası gönderir"""
         return cls.send_verification_email(user, verification_token)
 
     @classmethod
