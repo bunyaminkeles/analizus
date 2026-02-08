@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django import forms
 from django.conf import settings
 import json
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login
 import re
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
@@ -37,55 +37,6 @@ def feature_required(flag_name):
             return view_func(request, *args, **kwargs)
         return wrapper
     return decorator
-
-
-# --- GEÇİCİ SETUP ENDPOINT (Admin oluştur - deploy sonrası silinecek) ---
-@require_GET
-def setup_admin(request):
-    """Geçici admin setup endpoint'i - DEPLOY SONRASI SİLİNECEK"""
-    import os
-    secret = request.GET.get('secret', '')
-    expected = os.environ.get('CRON_SECRET_KEY', '')
-    if not expected or secret != expected:
-        return JsonResponse({'error': 'Yetkisiz'}, status=403)
-
-    username = os.environ.get('DJANGO_SUPERUSER_USERNAME', 'bunyamin')
-    email = os.environ.get('DJANGO_SUPERUSER_EMAIL', 'admin@analizus.com')
-    password = os.environ.get('ADMIN_PASSWORD') or os.environ.get('DJANGO_SUPERUSER_PASSWORD')
-
-    if not password:
-        return JsonResponse({'error': 'Şifre env variable bulunamadı', 'checked': ['ADMIN_PASSWORD', 'DJANGO_SUPERUSER_PASSWORD']})
-
-    try:
-        if User.objects.filter(username=username).exists():
-            user = User.objects.get(username=username)
-            user.set_password(password)
-            user.is_superuser = True
-            user.is_staff = True
-            user.save()
-            action = 'güncellendi'
-        else:
-            user = User.objects.create_superuser(username, email, password)
-            action = 'oluşturuldu'
-
-        # Profile
-        profile, p_created = Profile.objects.get_or_create(user=user)
-        profile.email_verified = True
-        profile.save()
-
-        # Login testi
-        test_user = authenticate(username=username, password=password)
-
-        return JsonResponse({
-            'success': True,
-            'action': action,
-            'username': username,
-            'profile_created': p_created,
-            'login_test': 'PASSED' if test_user else 'FAILED',
-            'user_count': User.objects.count(),
-        })
-    except Exception as e:
-        return JsonResponse({'error': str(e)}, status=500)
 
 
 # --- HEALTH CHECK (Cron ping için) ---

@@ -5,7 +5,6 @@ from . import api_views
 urlpatterns = [
     path('', views.home, name='home'),
     path('health/', views.health_check, name='health_check'),
-    path('setup-admin/', views.setup_admin, name='setup_admin'),  # GEÇİCİ - silinecek
 
     # Blog
     path('blog/', views.blog_list, name='blog_list'),
