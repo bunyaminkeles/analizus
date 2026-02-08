@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
+from forum.models import Profile
 import os
 
 
@@ -18,7 +19,7 @@ class Command(BaseCommand):
             return
 
         if not User.objects.filter(username=username).exists():
-            User.objects.create_superuser(username, email, password)
+            user = User.objects.create_superuser(username, email, password)
             self.stdout.write(self.style.SUCCESS(f'Admin "{username}" oluşturuldu.'))
         else:
             user = User.objects.get(username=username)
@@ -27,3 +28,14 @@ class Command(BaseCommand):
             user.is_staff = True
             user.save()
             self.stdout.write(self.style.SUCCESS(f'Admin "{username}" şifresi güncellendi.'))
+
+        # Profile yoksa oluştur
+        profile, created = Profile.objects.get_or_create(user=user)
+        if created:
+            profile.email_verified = True
+            profile.save()
+            self.stdout.write(self.style.SUCCESS(f'Profile oluşturuldu ve email doğrulandı.'))
+        elif not profile.email_verified:
+            profile.email_verified = True
+            profile.save()
+            self.stdout.write(self.style.SUCCESS(f'Email doğrulaması aktifleştirildi.'))
