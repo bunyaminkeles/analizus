@@ -1,23 +1,28 @@
 """
-E-posta gönderme servisi - AWS SES
-Django'nun email backend'i üzerinden SES kullanılıyor
+E-posta gönderme servisi
+Django'nun email backend'i üzerinden gönderim (Gmail SMTP / AWS SES)
 """
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.core.mail import send_mail
 from django.conf import settings
 import logging
+import threading
 
 logger = logging.getLogger(__name__)
 
 
 class EmailService:
-    """E-posta gönderme işlemlerini yöneten servis (AWS SES)"""
+    """E-posta gönderme işlemlerini yöneten servis"""
 
     @staticmethod
     def is_configured():
-        """AWS SES'in yapılandırılıp yapılandırılmadığını kontrol eder"""
-        return bool(getattr(settings, 'AWS_ACCESS_KEY_ID', ''))
+        """E-posta backend'inin yapılandırılıp yapılandırılmadığını kontrol eder"""
+        backend = getattr(settings, 'EMAIL_BACKEND', '')
+        if 'ses' in backend.lower():
+            return bool(getattr(settings, 'AWS_ACCESS_KEY_ID', ''))
+        # SMTP backend (Gmail vb.)
+        return bool(getattr(settings, 'EMAIL_HOST_USER', ''))
 
     @staticmethod
     def get_base_url():
@@ -27,7 +32,7 @@ class EmailService:
     @classmethod
     def _send_email(cls, to_email, subject, html_content, plain_content):
         """
-        Django email backend (SES) ile e-posta gönderir
+        Django email backend ile e-posta gönderir (arka planda)
 
         Args:
             to_email: Alıcı e-posta adresi
@@ -36,26 +41,27 @@ class EmailService:
             plain_content: Düz metin içerik
 
         Returns:
-            bool: Gönderim başarılı mı
+            bool: Gönderim başlatıldı mı
         """
-        try:
-            from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@analizus.com')
+        from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@analizus.com')
 
-            send_mail(
-                subject=subject,
-                message=plain_content,
-                from_email=from_email,
-                recipient_list=[to_email],
-                html_message=html_content,
-                fail_silently=False,
-            )
+        def _send():
+            try:
+                send_mail(
+                    subject=subject,
+                    message=plain_content,
+                    from_email=from_email,
+                    recipient_list=[to_email],
+                    html_message=html_content,
+                    fail_silently=False,
+                )
+                logger.info(f"E-posta gönderildi: {to_email}")
+            except Exception as e:
+                logger.error(f"E-posta gönderme hatası ({to_email}): {e}")
 
-            logger.info(f"AWS SES ile e-posta gönderildi: {to_email}")
-            return True
-
-        except Exception as e:
-            logger.error(f"AWS SES e-posta gönderme hatası ({to_email}): {e}")
-            return False
+        thread = threading.Thread(target=_send, daemon=True)
+        thread.start()
+        return True
 
     @classmethod
     def send_verification_email(cls, user, verification_token):
@@ -82,7 +88,7 @@ class EmailService:
 
         # E-posta yapılandırılmamışsa skip et
         if not cls.is_configured():
-            logger.warning(f"AWS SES yapılandırılmamış. Kullanıcı: {user.username}")
+            logger.warning(f"E-posta yapılandırılmamış. Kullanıcı: {user.username}")
             return False
 
         # HTML template
@@ -117,7 +123,7 @@ class EmailService:
 
         # E-posta yapılandırılmamışsa skip et
         if not cls.is_configured():
-            logger.warning(f"AWS SES yapılandırılmamış. Hoş geldin e-postası gönderilemedi: {user.username}")
+            logger.warning(f"E-posta yapılandırılmamış. Hoş geldin e-postası gönderilemedi: {user.username}")
             return False
 
         html_message = render_to_string('forum/emails/welcome_email.html', context)
