@@ -220,6 +220,53 @@
             {% endfor %}
         </div>
 
+        <!-- QUIZ WIDGET -->
+        {% if quiz_question %}
+        <div class="quiz-widget" id="quizWidget">
+            <div class="quiz-header">
+                <div class="quiz-header-left">
+                    <i class="bi bi-lightbulb-fill"></i>
+                    <span>Kendini Test Et</span>
+                </div>
+                <div class="quiz-meta">
+                    <span class="quiz-category-badge" id="quizCategory">{{ quiz_question.get_category_display }}</span>
+                    <span class="quiz-diff-badge diff-{{ quiz_question.difficulty }}" id="quizDifficulty">{{ quiz_question.get_difficulty_display }}</span>
+                </div>
+            </div>
+            <div class="quiz-body">
+                <p class="quiz-question-text" id="quizQuestionText">{{ quiz_question.question }}</p>
+                <div class="quiz-options" id="quizOptions">
+                    <button class="quiz-opt" data-answer="A" data-question-id="{{ quiz_question.id }}" onclick="submitQuizAnswer(this)">
+                        <span class="opt-letter">A</span>
+                        <span class="opt-text">{{ quiz_question.option_a }}</span>
+                    </button>
+                    <button class="quiz-opt" data-answer="B" data-question-id="{{ quiz_question.id }}" onclick="submitQuizAnswer(this)">
+                        <span class="opt-letter">B</span>
+                        <span class="opt-text">{{ quiz_question.option_b }}</span>
+                    </button>
+                    <button class="quiz-opt" data-answer="C" data-question-id="{{ quiz_question.id }}" onclick="submitQuizAnswer(this)">
+                        <span class="opt-letter">C</span>
+                        <span class="opt-text">{{ quiz_question.option_c }}</span>
+                    </button>
+                    <button class="quiz-opt" data-answer="D" data-question-id="{{ quiz_question.id }}" onclick="submitQuizAnswer(this)">
+                        <span class="opt-letter">D</span>
+                        <span class="opt-text">{{ quiz_question.option_d }}</span>
+                    </button>
+                </div>
+                <div class="quiz-feedback" id="quizFeedback" style="display:none;">
+                    <div class="feedback-icon" id="feedbackIcon"></div>
+                    <p class="feedback-text" id="feedbackText"></p>
+                    <p class="feedback-explanation" id="feedbackExplanation"></p>
+                    {% if user.is_authenticated %}
+                    <button class="quiz-next-btn" id="quizNextBtn" onclick="loadNextQuestion()">
+                        <i class="bi bi-arrow-right-circle me-1"></i>Sonraki Soru
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
         <!-- FEATURED JOBS SECTION -->
         {% if featured_jobs %}
         <div class="widget-card full-width mb-4">
@@ -1049,6 +1096,152 @@
 
 }
 
+/* ===== QUIZ WIDGET ===== */
+.quiz-widget {
+    background: linear-gradient(135deg, #0a0f1a 0%, #101829 100%);
+    border: 1px solid rgba(0, 240, 255, 0.15);
+    border-radius: 16px;
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+.quiz-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.quiz-header-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #fbbf24;
+    font-weight: 700;
+    font-size: 0.95rem;
+}
+.quiz-header-left i { font-size: 1.1rem; }
+.quiz-meta { display: flex; gap: 8px; }
+.quiz-category-badge {
+    background: rgba(0, 240, 255, 0.12);
+    color: #00f0ff;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+.quiz-diff-badge {
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+.quiz-diff-badge.diff-easy { background: rgba(34,197,94,0.15); color: #22c55e; }
+.quiz-diff-badge.diff-medium { background: rgba(251,191,36,0.15); color: #fbbf24; }
+.quiz-diff-badge.diff-hard { background: rgba(239,68,68,0.15); color: #ef4444; }
+.quiz-body { padding: 20px; }
+.quiz-question-text {
+    color: #e2e8f0;
+    font-size: 0.95rem;
+    font-weight: 500;
+    line-height: 1.6;
+    margin-bottom: 16px;
+}
+.quiz-options { display: flex; flex-direction: column; gap: 10px; }
+.quiz-opt {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 12px 16px;
+    color: #cbd5e1;
+    font-size: 0.88rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+    width: 100%;
+}
+.quiz-opt:hover:not(:disabled) {
+    background: rgba(0, 240, 255, 0.06);
+    border-color: rgba(0, 240, 255, 0.25);
+    color: #fff;
+    transform: translateX(4px);
+}
+.quiz-opt:disabled { cursor: default; opacity: 0.7; }
+.quiz-opt.correct {
+    background: rgba(34,197,94,0.15) !important;
+    border-color: #22c55e !important;
+    color: #22c55e !important;
+    opacity: 1 !important;
+}
+.quiz-opt.wrong {
+    background: rgba(239,68,68,0.15) !important;
+    border-color: #ef4444 !important;
+    color: #ef4444 !important;
+    opacity: 1 !important;
+}
+.opt-letter {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.75rem;
+    flex-shrink: 0;
+}
+.quiz-opt.correct .opt-letter { background: rgba(34,197,94,0.3); }
+.quiz-opt.wrong .opt-letter { background: rgba(239,68,68,0.3); }
+.opt-text { flex: 1; }
+
+/* Quiz Feedback */
+.quiz-feedback {
+    margin-top: 16px;
+    padding: 16px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    text-align: center;
+}
+.feedback-icon { font-size: 2rem; margin-bottom: 8px; }
+.feedback-text { color: #e2e8f0; font-weight: 600; margin-bottom: 4px; font-size: 0.9rem; }
+.feedback-explanation { color: #94a3b8; font-size: 0.82rem; line-height: 1.5; margin-bottom: 12px; }
+.quiz-next-btn {
+    background: linear-gradient(135deg, #00f0ff 0%, #0099ff 100%);
+    color: #000;
+    border: none;
+    border-radius: 25px;
+    padding: 8px 24px;
+    font-weight: 600;
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.quiz-next-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0,240,255,0.3); }
+.quiz-next-btn:disabled { opacity: 0.5; cursor: default; transform: none; box-shadow: none; }
+
+/* Quiz loading */
+.quiz-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 40px;
+    color: #64748b;
+    font-size: 0.85rem;
+}
+.quiz-loading .spinner-border { width: 1rem; height: 1rem; border-width: 2px; }
+
+@media (max-width: 768px) {
+    .quiz-header { flex-direction: column; gap: 10px; align-items: flex-start; }
+    .quiz-body { padding: 16px; }
+    .quiz-opt { padding: 10px 14px; font-size: 0.82rem; }
+}
+
 /* ===== DONATION WIDGET ===== */
 .donation-amount-btn {
     background: rgba(236, 72, 153, 0.1);
@@ -1080,48 +1273,113 @@
 
 <script>
 
-function checkAnswer(btn, correctAnswer) {
+// Quiz Widget - API entegrasyonu
+const isAuthenticated = {{ user.is_authenticated|yesno:"true,false" }};
 
-    const userAnswer = btn.dataset.answer;
+function getCSRFToken() {
+    const el = document.querySelector('[name=csrfmiddlewaretoken]');
+    if (el) return el.value;
+    const cookie = document.cookie.split(';').find(c => c.trim().startsWith('csrftoken='));
+    return cookie ? cookie.split('=')[1] : '';
+}
 
-    const allOptions = document.querySelectorAll('.quiz-option');
-
-
-
-    // Tüm butonları devre dışı bırak
-
-    allOptions.forEach(opt => {
-
-        opt.disabled = true;
-
-        if (opt.dataset.answer === correctAnswer) {
-
-            opt.classList.add('correct');
-
-        }
-
-    });
-
-
-
-    // Yanlış cevap verdiyse kırmızı yap
-
-    if (userAnswer !== correctAnswer) {
-
-        btn.classList.add('wrong');
-
+function submitQuizAnswer(btn) {
+    if (!isAuthenticated) {
+        window.location.href = '{% url "login" %}?next=/';
+        return;
     }
 
+    const questionId = btn.dataset.questionId;
+    const answer = btn.dataset.answer;
+    const allOpts = document.querySelectorAll('.quiz-opt');
+    allOpts.forEach(o => o.disabled = true);
 
+    fetch('/api/quiz/answer/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() },
+        body: JSON.stringify({ question_id: questionId, answer: answer })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            // Doğru/yanlış göster
+            allOpts.forEach(o => {
+                if (o.dataset.answer === data.correct_answer) o.classList.add('correct');
+            });
+            if (!data.is_correct) btn.classList.add('wrong');
 
-    // 2 saniye sonra kartı gizle
+            // Feedback göster
+            const fb = document.getElementById('quizFeedback');
+            const icon = document.getElementById('feedbackIcon');
+            const text = document.getElementById('feedbackText');
+            const expl = document.getElementById('feedbackExplanation');
 
-    setTimeout(() => {
+            if (data.is_correct) {
+                icon.innerHTML = '&#10003;';
+                icon.style.color = '#22c55e';
+                text.textContent = 'Doğru! +10 puan kazandın';
+                text.style.color = '#22c55e';
+            } else {
+                icon.innerHTML = '&#10007;';
+                icon.style.color = '#ef4444';
+                text.textContent = 'Yanlış! Doğru cevap: ' + data.correct_answer;
+                text.style.color = '#ef4444';
+            }
+            expl.textContent = data.explanation || '';
+            if (data.badge_awarded) {
+                expl.innerHTML += '<br><span style="color:#fbbf24;">&#127942; Yeni rozet: ' + data.badge_awarded + '</span>';
+            }
+            fb.style.display = 'block';
+        }
+    })
+    .catch(() => {
+        allOpts.forEach(o => o.disabled = false);
+    });
+}
 
-        document.getElementById('quizCard').classList.add('hidden');
+function loadNextQuestion() {
+    const btn = document.getElementById('quizNextBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Yükleniyor...';
 
-    }, 2000);
+    fetch('/api/quiz/random/')
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            const q = data.question;
+            document.getElementById('quizQuestionText').textContent = q.question;
+            document.getElementById('quizCategory').textContent = q.category;
 
+            const diffEl = document.getElementById('quizDifficulty');
+            diffEl.textContent = q.difficulty;
+            diffEl.className = 'quiz-diff-badge diff-' + (q.difficulty === 'Kolay' ? 'easy' : q.difficulty === 'Zor' ? 'hard' : 'medium');
+
+            const optContainer = document.getElementById('quizOptions');
+            optContainer.innerHTML = '';
+            ['A','B','C','D'].forEach(letter => {
+                const b = document.createElement('button');
+                b.className = 'quiz-opt';
+                b.dataset.answer = letter;
+                b.dataset.questionId = q.id;
+                b.onclick = function() { submitQuizAnswer(this); };
+                b.innerHTML = '<span class="opt-letter">' + letter + '</span><span class="opt-text">' + q.options[letter] + '</span>';
+                optContainer.appendChild(b);
+            });
+
+            document.getElementById('quizFeedback').style.display = 'none';
+        } else {
+            document.getElementById('feedbackText').textContent = data.error;
+            document.getElementById('feedbackText').style.color = '#fbbf24';
+            document.getElementById('feedbackExplanation').textContent = '';
+            document.getElementById('feedbackIcon').innerHTML = '&#128564;';
+            document.getElementById('feedbackIcon').style.color = '#fbbf24';
+            btn.style.display = 'none';
+        }
+    })
+    .finally(() => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-arrow-right-circle me-1"></i>Sonraki Soru';
+    });
 }
 
 // IBAN kopyalama fonksiyonu
