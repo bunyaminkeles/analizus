@@ -25,4 +25,7 @@ python manage.py create_skills
 echo "📝 Importing quiz questions..."
 python manage.py import_quiz
 
+echo "👤 Creating/updating superuser..."
+python manage.py create_admin
+
 echo "✅ Build complete!"

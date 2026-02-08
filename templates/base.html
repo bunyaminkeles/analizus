@@ -144,11 +144,7 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav mx-auto">
-                    {% if features.quiz %}<li class="nav-item px-2">
-                        <a class="nav-link" href="{% if user.is_authenticated %}#{% else %}{% url 'login' %}{% endif %}" {% if user.is_authenticated %}onclick="openQuizModal()"{% endif %}>
-                            <i class="bi bi-trophy-fill me-1 text-warning"></i>İstatistik Arena
-                        </a>
-                    </li>{% endif %}
+                    <!-- İstatistik Arena ana sayfada widget olarak taşındı -->
                     {% if features.ai_assistant %}<li class="nav-item px-2"><a class="nav-link" href="{% url 'ai_assistant' %}"><i class="bi bi-robot me-1"></i>AI Asistan</a></li>{% endif %}
                     {% if features.success_stories %}<li class="nav-item px-2"><a class="nav-link" href="#" onclick="openStoryModal()"><i class="bi bi-star-fill me-1 text-info"></i>Başarı Hikayeleri</a></li>{% endif %}
                     {% if features.blog %}<li class="nav-item px-2"><a class="nav-link" href="{% url 'blog_list' %}">
@@ -383,7 +379,8 @@
             <span class="ticker-item" style="color: #dfe6e9;">Geçerlik ve Güvenilirlik</span>
             <!-- Puan Bilgileri -->
             <span class="ticker-item text-warning"><i class="bi bi-trophy me-1"></i>1000 puan = Teklif Verme Yetkisi</span>
-            <span class="ticker-item text-success"><i class="bi bi-star me-1"></i>500 puan = Uzman Rozeti</span>
+            
+            <!-- Tekrar - Sürekli döngü için -->
             <!-- Tekrar - Sürekli döngü için -->
             <span class="ticker-item" style="color: #00f0ff;"><i class="bi bi-lightbulb me-1"></i>Bilimin ışığında veriyi yönetin</span>
             <span class="ticker-item" style="color: #a78bfa;"><i class="bi bi-graph-up-arrow me-1"></i>Akademik başarınız için yanınızdayız</span>
@@ -408,7 +405,8 @@
             <span class="ticker-item" style="color: #dfe6e9;">Geçerlik ve Güvenilirlik</span>
             <!-- Puan Bilgileri -->
             <span class="ticker-item text-warning"><i class="bi bi-trophy me-1"></i>1000 puan = Teklif Verme Yetkisi</span>
-            <span class="ticker-item text-success"><i class="bi bi-star me-1"></i>500 puan = Uzman Rozeti</span>
+            
+            <!-- Tekrar - Sürekli döngü için -->
         </div>
     </div>
 
