@@ -41,8 +41,10 @@ class EmailService:
                     html_message=html_content,
                     fail_silently=False,
                 )
+                print(f"✅ E-posta gönderildi: {to_email}")
                 logger.info(f"E-posta gönderildi: {to_email}")
             except Exception as e:
+                print(f"❌ E-posta gönderme hatası ({to_email}): {e}")
                 logger.error(f"E-posta gönderme hatası ({to_email}): {e}")
 
         thread = threading.Thread(target=_send, daemon=True)
@@ -64,6 +66,7 @@ class EmailService:
         subject = 'Analizus - E-posta Adresinizi Doğrulayın'
 
         if not cls.is_configured():
+            print(f"⚠️ E-posta servisi yapılandırılmamış! EMAIL_HOST_PASSWORD boş. Kullanıcı: {user.username}")
             logger.warning(f"E-posta servisi yapılandırılmamış. Kullanıcı: {user.username}")
             return False
 
@@ -89,6 +92,7 @@ class EmailService:
         subject = 'Analizus\'a Hoş Geldiniz!'
 
         if not cls.is_configured():
+            print(f"⚠️ E-posta servisi yapılandırılmamış! Hoş geldin e-postası gönderilemedi: {user.username}")
             logger.warning(f"E-posta servisi yapılandırılmamış. Hoş geldin e-postası gönderilemedi: {user.username}")
             return False
 

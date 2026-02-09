@@ -19,9 +19,15 @@ else
     echo "✓ Database already has $TOPIC_COUNT topics, skipping seed"
 fi
 
-# Setup categories, badges, skills (idempotent)
-echo "🏷️ Setting up categories, badges, skills..."
-python manage.py setup_all --skip-quiz
+# Setup categories, badges, skills (only if no categories exist)
+CATEGORY_COUNT=$(python manage.py shell -c "from forum.models import Category; print(Category.objects.count())" 2>/dev/null | tail -1)
+
+if [ "$CATEGORY_COUNT" -eq "0" ]; then
+    echo "🏷️ Setting up categories, badges, skills..."
+    python manage.py setup_all --skip-quiz
+else
+    echo "✓ Already has $CATEGORY_COUNT categories, skipping setup_all"
+fi
 
 # Import quiz questions from quiz_soruları/ (duplicate-safe)
 echo "🧠 Importing quiz questions..."
