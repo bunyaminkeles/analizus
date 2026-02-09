@@ -185,12 +185,13 @@ def send_demo_email(job):
     lines.append(f"  IBAN         : {BANK_INFO['iban']}")
     lines.append(f"  Açıklama     : YÖK Tez - {user.username}")
     lines.append(f"")
+    site_url = getattr(settings, 'SITE_URL', 'https://www.analizus.com')
     lines.append(f"Ödeme yaptıktan sonra siparişinizi oluşturun:")
-    lines.append(f"  https://www.analizus.com/yoktez/siparis/{job.id}/")
+    lines.append(f"  {site_url}/yoktez/siparis/{job.id}/")
     lines.append(f"")
     lines.append(f"Siparişiniz onaylandıktan sonra sonuçlar 24 saat")
     lines.append(f"içinde bu e-posta adresine gönderilecektir.")
-    lines.append(f"\n---\nAnalizus - www.analizus.com")
+    lines.append(f"\n---\nAnalizus - {site_url}")
 
     body = "\n".join(lines)
 
