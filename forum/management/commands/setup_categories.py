@@ -57,14 +57,16 @@ class Command(BaseCommand):
 
             # 2. ADIM: Şimdi CATEGORY (Alt Başlık) oluştur ve Section'a bağla
             for sub in main["subs"]:
-                Category.objects.get_or_create(
-                    title=sub["title"],
-                    section=section_obj,  # <--- İşte sihirli bağlantı burada!
+                slug = slugify(sub["title"].replace('ı', 'i').replace('İ', 'i'))
+                cat, created = Category.objects.get_or_create(
+                    slug=slug,
                     defaults={
+                        'title': sub["title"],
+                        'section': section_obj,
                         'description': sub["description"],
-                        'slug': slugify(sub["title"].replace('ı', 'i').replace('İ', 'i')) # Türkçe karakter düzeltmesi
                     }
                 )
-                self.stdout.write(f"   - 📦 {sub['title']} eklendi.")
+                action = "eklendi" if created else "zaten vardı"
+                self.stdout.write(f"   - 📦 {sub['title']} ({action})")
 
         self.stdout.write(self.style.SUCCESS('✨ TÜM BÖLÜMLER VE KATEGORİLER HAZIR KOMUTANIM!'))
