@@ -1999,22 +1999,27 @@ def create_donation(request):
 
 
 def send_donation_thank_you_email(donation):
-    """Bağış sonrası teşekkür e-postası gönder"""
-    from django.core.mail import send_mail
+    """Bağış sonrası teşekkür e-postası gönder (SendGrid HTTP API)"""
+    import requests as _requests
     from django.conf import settings
+
+    api_key = getattr(settings, 'SENDGRID_API_KEY', '')
+    if not api_key:
+        print(f"[DONATION] SENDGRID_API_KEY ayarlanmamış! Email gönderilemedi: {donation.email}")
+        return
 
     premium_days = donation.get_premium_days()
     donor_name = donation.name or (donation.user.username if donation.user else "Değerli Bağışçımız")
 
     subject = f"Teşekkürler! {int(donation.amount)} TL Bağışınız İçin"
 
-    message = f"""Merhaba {donor_name},
+    plain_message = f"""Merhaba {donor_name},
 
 {int(donation.amount)} TL tutarındaki bağışınız için çok teşekkür ederiz!
 
 Kazandığınız Ödüller:
-★ {premium_days} Gün Premium Üyelik
-♥ Destekçi Rozeti
+* {premium_days} Gün Premium Üyelik
+* Destekçi Rozeti
 
 Premium üyeliğiniz hesabınıza tanımlandı. Artık tüm premium özelliklerden faydalanabilirsiniz!
 
@@ -2032,7 +2037,7 @@ https://www.analizus.com
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #1a1a2e; color: #e2e8f0; padding: 30px; border-radius: 10px;">
         <div style="text-align: center; margin-bottom: 30px;">
             <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #ec4899, #8b5cf6); border-radius: 50%; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center;">
-                <span style="font-size: 40px;">❤️</span>
+                <span style="font-size: 40px;">&#10084;&#65039;</span>
             </div>
             <h1 style="color: #ec4899; margin: 0;">Teşekkür Ederiz!</h1>
         </div>
@@ -2045,9 +2050,9 @@ https://www.analizus.com
         </p>
 
         <div style="background: rgba(234, 179, 8, 0.1); padding: 20px; border-radius: 8px; margin: 20px 0; border: 1px solid rgba(234, 179, 8, 0.3);">
-            <h3 style="color: #fbbf24; margin-top: 0;">🎁 Kazandığınız Ödüller</h3>
-            <p style="margin: 10px 0;">⭐ <strong style="color: #fbbf24;">{premium_days} Gün Premium Üyelik</strong></p>
-            <p style="margin: 10px 0;">💖 <strong style="color: #ec4899;">Destekçi Rozeti</strong></p>
+            <h3 style="color: #fbbf24; margin-top: 0;">Kazandığınız Ödüller</h3>
+            <p style="margin: 10px 0;">* <strong style="color: #fbbf24;">{premium_days} Gün Premium Üyelik</strong></p>
+            <p style="margin: 10px 0;">* <strong style="color: #ec4899;">Destekçi Rozeti</strong></p>
         </div>
 
         <p style="color: #94a3b8;">Premium üyeliğiniz hesabınıza tanımlandı. Artık tüm premium özelliklerden faydalanabilirsiniz!</p>
@@ -2063,18 +2068,31 @@ https://www.analizus.com
     </div>
     """
 
-    try:
-        send_mail(
-            subject=subject,
-            message=message,
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[donation.email],
-            html_message=html_message,
-            fail_silently=True,
-        )
-        print(f"[DONATION] Teşekkür e-postası gönderildi: {donation.email}")
-    except Exception as e:
-        print(f"[DONATION] E-posta gönderilemedi: {e}")
+    def _send():
+        try:
+            payload = {
+                "personalizations": [{"to": [{"email": donation.email}]}],
+                "from": {"email": settings.DEFAULT_FROM_EMAIL, "name": "Analizus"},
+                "subject": subject,
+                "content": [
+                    {"type": "text/plain", "value": plain_message},
+                    {"type": "text/html", "value": html_message},
+                ]
+            }
+            headers = {
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json",
+            }
+            resp = _requests.post('https://api.sendgrid.com/v3/mail/send', json=payload, headers=headers, timeout=10)
+            if resp.status_code in (200, 202):
+                print(f"[DONATION] Teşekkür e-postası gönderildi: {donation.email}")
+            else:
+                print(f"[DONATION] SendGrid hatası: {resp.status_code} {resp.text}")
+        except Exception as e:
+            print(f"[DONATION] E-posta gönderilemedi: {e}")
+
+    import threading
+    threading.Thread(target=_send, daemon=True).start()
 
 
 def get_client_ip(request):

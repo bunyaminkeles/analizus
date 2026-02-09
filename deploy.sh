@@ -10,23 +10,23 @@ python manage.py migrate --noinput
 python manage.py collectstatic --noinput
 
 # Load seed content (only if database is empty)
-TOPIC_COUNT=$(python manage.py shell -c "from forum.models import Topic; print(Topic.objects.count())" 2>/dev/null | tail -1)
+TOPIC_COUNT=$(python manage.py shell -c "from forum.models import Topic; print(Topic.objects.count())" 2>&1 | grep -oE '^[0-9]+$' | tail -1)
 
-if [ "$TOPIC_COUNT" -eq "0" ]; then
+if [ -n "$TOPIC_COUNT" ] && [ "$TOPIC_COUNT" -gt "0" ]; then
+    echo "✓ Database already has $TOPIC_COUNT topics, skipping seed"
+else
     echo "📚 Database is empty, loading seed content..."
     python manage.py load_seed_content
-else
-    echo "✓ Database already has $TOPIC_COUNT topics, skipping seed"
 fi
 
 # Setup categories, badges, skills (only if no categories exist)
-CATEGORY_COUNT=$(python manage.py shell -c "from forum.models import Category; print(Category.objects.count())" 2>/dev/null | tail -1)
+CATEGORY_COUNT=$(python manage.py shell -c "from forum.models import Category; print(Category.objects.count())" 2>&1 | grep -oE '^[0-9]+$' | tail -1)
 
-if [ "$CATEGORY_COUNT" -eq "0" ]; then
+if [ -n "$CATEGORY_COUNT" ] && [ "$CATEGORY_COUNT" -gt "0" ]; then
+    echo "✓ Already has $CATEGORY_COUNT categories, skipping setup_all"
+else
     echo "🏷️ Setting up categories, badges, skills..."
     python manage.py setup_all --skip-quiz
-else
-    echo "✓ Already has $CATEGORY_COUNT categories, skipping setup_all"
 fi
 
 # Import quiz questions from quiz_soruları/ (duplicate-safe)
@@ -34,13 +34,13 @@ echo "🧠 Importing quiz questions..."
 python manage.py import_quiz
 
 # Load success stories (only if none exist)
-STORY_COUNT=$(python manage.py shell -c "from forum.models import SuccessStory; print(SuccessStory.objects.count())" 2>/dev/null | tail -1)
+STORY_COUNT=$(python manage.py shell -c "from forum.models import SuccessStory; print(SuccessStory.objects.count())" 2>&1 | grep -oE '^[0-9]+$' | tail -1)
 
-if [ "$STORY_COUNT" -eq "0" ]; then
+if [ -n "$STORY_COUNT" ] && [ "$STORY_COUNT" -gt "0" ]; then
+    echo "✓ Already has $STORY_COUNT success stories, skipping"
+else
     echo "🌟 Loading success stories..."
     python manage.py populate_success_stories
-else
-    echo "✓ Already has $STORY_COUNT success stories, skipping"
 fi
 
 echo "✅ Deployment complete!"

@@ -222,14 +222,10 @@ JAZZMIN_UI_TWEAKS = {
     }
 }
 
-# --- E-POSTA AYARLARI (SMTP) ---
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.gmail.com')
-EMAIL_PORT = int(os.getenv('EMAIL_PORT', '465'))
-EMAIL_USE_SSL = True
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
-DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', f'Analizus <{EMAIL_HOST_USER}>')
+# --- E-POSTA AYARLARI (SendGrid HTTP API) ---
+SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY', '')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'admin@analizus.com')
+EMAIL_BACKEND = 'forum.backends.SendGridBackend'
 
 # --- IYZICO ÖDEME AYARLARI ---
 IYZICO_API_KEY = os.getenv('IYZICO_API_KEY', '').strip()
