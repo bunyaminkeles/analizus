@@ -1,5 +1,5 @@
 """
-E-posta gönderme servisi - Brevo SMTP
+E-posta gönderme servisi - Gmail SMTP
 """
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
@@ -12,11 +12,11 @@ logger = logging.getLogger(__name__)
 
 
 class EmailService:
-    """E-posta gönderme işlemlerini yöneten servis (Brevo SMTP)"""
+    """E-posta gönderme işlemlerini yöneten servis (Gmail SMTP)"""
 
     @staticmethod
     def is_configured():
-        """Brevo SMTP yapılandırılmış mı kontrol eder"""
+        """Gmail SMTP yapılandırılmış mı kontrol eder"""
         return bool(getattr(settings, 'EMAIL_HOST_PASSWORD', ''))
 
     @staticmethod
@@ -27,9 +27,9 @@ class EmailService:
     @classmethod
     def _send_email(cls, to_email, subject, html_content, plain_content):
         """
-        Brevo SMTP ile e-posta gönderir (arka planda)
+        Gmail SMTP ile e-posta gönderir (arka planda)
         """
-        from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'Analizus <info@analizus.com>')
+        from_email = settings.DEFAULT_FROM_EMAIL
 
         def _send():
             try:
