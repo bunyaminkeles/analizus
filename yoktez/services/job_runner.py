@@ -151,7 +151,7 @@ def send_demo_email(job):
 
     if not to_email:
         logger.warning(f"Kullanıcının emaili yok: {user.username}")
-        return
+        return False
 
     subject = f"YÖK Tez Arama - Demo Sonuçlar: {job.konu}"
 
@@ -212,8 +212,10 @@ def send_demo_email(job):
         job.demo_email_sent = True
         job.save(update_fields=['demo_email_sent'])
         logger.info(f"Demo email gönderildi: {to_email}")
+        return True
     except Exception as e:
         logger.error(f"Demo email gönderilemedi: {e}")
+        return False
 
 
 def send_order_results_email(order):

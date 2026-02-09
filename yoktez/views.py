@@ -86,7 +86,7 @@ def yoktez_landing(request):
             run_scraping_job(job.id)
 
             if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                return JsonResponse({'status': 'started', 'job_id': str(job.id)})
+                return JsonResponse({'status': 'started', 'job_id': str(job.id), 'remaining': remaining - 1, 'daily_limit': daily_limit})
 
             return render(request, 'yoktez/landing.html', {
                 'form': form,
@@ -133,9 +133,12 @@ def yoktez_send_demo_email(request, job_id):
         return JsonResponse({'error': 'Demo sonuçlar zaten gönderildi.'}, status=400)
 
     from .services.job_runner import send_demo_email
-    send_demo_email(job)
+    result = send_demo_email(job)
 
-    return JsonResponse({'success': True, 'message': f'Demo sonuçlar {request.user.email} adresine gönderildi.'})
+    if result:
+        return JsonResponse({'success': True, 'message': f'Demo sonuçlar {request.user.email} adresine gönderildi.'})
+    else:
+        return JsonResponse({'error': 'E-posta gönderilemedi. Lütfen tekrar deneyin.'}, status=500)
 
 
 @login_required

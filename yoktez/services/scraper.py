@@ -174,10 +174,9 @@ class YokTezScraper:
 
             tezler = self._get_table(driver)
 
-            # Özet çekme (abstract_limit varsa sınırla)
-            fetch_count = len(tezler) if abstract_limit is None else min(abstract_limit, len(tezler))
+            # Özet çekme (her zaman tümü)
             results = []
-            for tez in tezler[:fetch_count]:
+            for tez in tezler:
                 en_abs, tr_abs = self._get_abstract(driver, tez['tez_detay'], tez['tez_no'])
                 results.append({
                     'tez_no': tez['tez_no'],
@@ -188,19 +187,6 @@ class YokTezScraper:
                     'konu': tez['konu'],
                     'ozet_tr': tr_abs,
                     'ozet_en': en_abs,
-                })
-
-            # Kalan tezleri özetsiz ekle
-            for tez in tezler[fetch_count:]:
-                results.append({
-                    'tez_no': tez['tez_no'],
-                    'yil': tez['yil'],
-                    'baslik': tez['baslik'],
-                    'universite': tez['universite'],
-                    'tez_turu': tez['tez_turu'],
-                    'konu': tez['konu'],
-                    'ozet_tr': None,
-                    'ozet_en': None,
                 })
 
             return count, results
