@@ -222,10 +222,13 @@ JAZZMIN_UI_TWEAKS = {
     }
 }
 
-# --- E-POSTA AYARLARI (AWS SES) ---
-EMAIL_BACKEND = 'django_ses.SESBackend'
-AWS_SES_REGION_NAME = os.getenv('AWS_SES_REGION_NAME', 'eu-north-1')
-AWS_SES_REGION_ENDPOINT = f'email.{AWS_SES_REGION_NAME}.amazonaws.com'
+# --- E-POSTA AYARLARI (Brevo SMTP) ---
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp-relay.brevo.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.getenv('BREVO_SMTP_USER', '')
+EMAIL_HOST_PASSWORD = os.getenv('BREVO_SMTP_KEY', '')
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'Analizus <info@analizus.com>')
 
 # --- IYZICO ÖDEME AYARLARI ---

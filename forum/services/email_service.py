@@ -1,6 +1,5 @@
 """
-E-posta gönderme servisi - AWS SES
-Django'nun django-ses backend'i üzerinden (HTTP API, SMTP değil)
+E-posta gönderme servisi - Brevo SMTP
 """
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
@@ -13,12 +12,12 @@ logger = logging.getLogger(__name__)
 
 
 class EmailService:
-    """E-posta gönderme işlemlerini yöneten servis (AWS SES)"""
+    """E-posta gönderme işlemlerini yöneten servis (Brevo SMTP)"""
 
     @staticmethod
     def is_configured():
-        """AWS SES yapılandırılmış mı kontrol eder"""
-        return bool(getattr(settings, 'AWS_ACCESS_KEY_ID', ''))
+        """Brevo SMTP yapılandırılmış mı kontrol eder"""
+        return bool(getattr(settings, 'EMAIL_HOST_PASSWORD', ''))
 
     @staticmethod
     def get_base_url():
@@ -28,7 +27,7 @@ class EmailService:
     @classmethod
     def _send_email(cls, to_email, subject, html_content, plain_content):
         """
-        AWS SES ile e-posta gönderir (arka planda, HTTP API)
+        Brevo SMTP ile e-posta gönderir (arka planda)
         """
         from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'Analizus <info@analizus.com>')
 
@@ -42,7 +41,7 @@ class EmailService:
                     html_message=html_content,
                     fail_silently=False,
                 )
-                logger.info(f"E-posta gönderildi (SES): {to_email}")
+                logger.info(f"E-posta gönderildi: {to_email}")
             except Exception as e:
                 logger.error(f"E-posta gönderme hatası ({to_email}): {e}")
 
@@ -65,7 +64,7 @@ class EmailService:
         subject = 'Analizus - E-posta Adresinizi Doğrulayın'
 
         if not cls.is_configured():
-            logger.warning(f"AWS SES yapılandırılmamış. Kullanıcı: {user.username}")
+            logger.warning(f"E-posta servisi yapılandırılmamış. Kullanıcı: {user.username}")
             return False
 
         html_message = render_to_string('forum/emails/verification_email.html', context)
@@ -90,7 +89,7 @@ class EmailService:
         subject = 'Analizus\'a Hoş Geldiniz!'
 
         if not cls.is_configured():
-            logger.warning(f"AWS SES yapılandırılmamış. Hoş geldin e-postası gönderilemedi: {user.username}")
+            logger.warning(f"E-posta servisi yapılandırılmamış. Hoş geldin e-postası gönderilemedi: {user.username}")
             return False
 
         html_message = render_to_string('forum/emails/welcome_email.html', context)

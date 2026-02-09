@@ -33,8 +33,6 @@ urllib3
 asgiref
 typing_extensions
 packaging
-django-ses  # AWS SES email backend
-resend  # Resend HTTP email API
 
 # --- ÖDEME SİSTEMLERİ ---
 iyzipay  # iyzico ödeme entegrasyonu

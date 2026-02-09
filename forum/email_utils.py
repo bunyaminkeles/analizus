@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 def send_email_async(subject, message, recipient_list):
     """
     Email gönderimini arka planda thread ile yapar (request timeout olmasın).
-    Django EMAIL_BACKEND ayarını kullanır (AWS SES - HTTP API).
+    Django EMAIL_BACKEND ayarını kullanır (Brevo SMTP).
     """
     def _send():
         try:
