@@ -224,7 +224,7 @@ JAZZMIN_UI_TWEAKS = {
 
 # --- E-POSTA AYARLARI (SendGrid HTTP API) ---
 SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY', '')
-DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'admin@analizus.com')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'info@analizus.com')
 EMAIL_BACKEND = 'forum.backends.SendGridBackend'
 
 # --- IYZICO ÖDEME AYARLARI ---
