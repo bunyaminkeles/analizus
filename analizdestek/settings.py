@@ -175,13 +175,15 @@ LOCALE_PATHS = [
 ]
 
 # --- ADMIN PANELİ AYARLARI (JAZZMIN) ---
-JAZZMIN_SETTINGS = {  # DÜZELTME: AZZMIN -> JAZZMIN
+JAZZMIN_SETTINGS = {
     "site_title": "Analizus 2050 Core",
     "site_header": "NEURAL LINK v1.0",
     "site_brand": "Analizus AI",
+    "site_logo_classes": "",
     "welcome_sign": "Sistem Çevrimiçi. Hoş Geldiniz, Komutan.",
     "copyright": "Analizus Ltd.",
     "search_model": ["auth.User", "forum.Topic"],
+    "site_url": "/",
 
     "topmenu_links": [
         {"name": "Ana Siteye Dön", "url": "home", "permissions": ["auth.view_user"]},
@@ -208,6 +210,7 @@ JAZZMIN_SETTINGS = {  # DÜZELTME: AZZMIN -> JAZZMIN
 
 JAZZMIN_UI_TWEAKS = {
     "custom_css": "css/admin_theme.css",
+    "custom_js": "js/admin_custom.js",
     "theme": "solar",   # 2050 Vizyonu için Solar veya Cyborg teması
     "dark_mode_theme": "solar",
     "navbar": "navbar-dark",
