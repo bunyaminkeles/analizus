@@ -1,0 +1,521 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static jazzmin admin_dashboard_tags %}
+
+{% block bodyclass %}{{ block.super }} dashboard{% endblock %}
+{% block content_title %}Dashboard{% endblock %}
+
+{% block breadcrumbs %}{% endblock %}
+
+{% block content %}
+{% get_dashboard_stats as s %}
+
+<div class="admin-dashboard">
+    <!-- Ana İstatistik Kartları -->
+    <div class="row">
+        <div class="col-md-6 col-xl-3 mb-3">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <p class="stat-label mb-1">Toplam Kullanıcı</p>
+                        <h3 class="stat-value mb-2">{{ s.total_users }}</h3>
+                        <span class="stat-change positive">+{{ s.week_users }} bu hafta</span>
+                    </div>
+                    <div class="stat-icon" style="background: rgba(99, 102, 241, 0.2);">
+                        <i class="fas fa-users" style="color: #6366f1;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-xl-3 mb-3">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <p class="stat-label mb-1">Toplam Konu</p>
+                        <h3 class="stat-value mb-2">{{ s.total_topics }}</h3>
+                        <span class="stat-change positive">+{{ s.week_topics }} bu hafta</span>
+                    </div>
+                    <div class="stat-icon" style="background: rgba(16, 185, 129, 0.2);">
+                        <i class="fas fa-comments" style="color: #10b981;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-xl-3 mb-3">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <p class="stat-label mb-1">Toplam Gönderi</p>
+                        <h3 class="stat-value mb-2">{{ s.total_posts }}</h3>
+                        <span class="stat-change positive">+{{ s.week_posts }} bu hafta</span>
+                    </div>
+                    <div class="stat-icon" style="background: rgba(245, 158, 11, 0.2);">
+                        <i class="fas fa-comment-dots" style="color: #f59e0b;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-xl-3 mb-3">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <p class="stat-label mb-1">Toplam Görüntüleme</p>
+                        <h3 class="stat-value mb-2">{{ s.total_views|default:0 }}</h3>
+                        <span class="stat-change neutral">Tüm zamanlar</span>
+                    </div>
+                    <div class="stat-icon" style="background: rgba(236, 72, 153, 0.2);">
+                        <i class="fas fa-eye" style="color: #ec4899;"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bugünkü Özet -->
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="dashboard-card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5><i class="fas fa-calendar-day mr-2"></i>Bugün</h5>
+                    <span class="text-muted small">{{ s.today_users }} yeni kullanıcı, {{ s.today_topics }} konu, {{ s.today_posts }} gönderi</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Grafikler -->
+    <div class="row mb-3">
+        <div class="col-lg-8 mb-3">
+            <div class="dashboard-card h-100">
+                <div class="card-header">
+                    <h5><i class="fas fa-chart-line mr-2"></i>Son 7 Günlük Aktivite</h5>
+                </div>
+                <div class="card-body">
+                    <div style="position: relative; height: 300px; width: 100%;">
+                        <canvas id="activityChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 mb-3">
+            <div class="dashboard-card h-100">
+                <div class="card-header">
+                    <h5><i class="fas fa-envelope-open mr-2"></i>E-posta Durumu</h5>
+                </div>
+                <div class="card-body">
+                    <div style="position: relative; height: 200px; width: 100%;">
+                        <canvas id="verificationChart"></canvas>
+                    </div>
+                    <div class="mt-3">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Doğrulanmış</span>
+                            <span style="color: #10b981; font-weight: bold;">{{ s.verified_users }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span class="text-muted">Doğrulanmamış</span>
+                            <span style="color: #ef4444; font-weight: bold;">{{ s.unverified_users }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Kategori & Aktif Kullanıcılar -->
+    <div class="row mb-3">
+        <div class="col-lg-6 mb-3">
+            <div class="dashboard-card h-100">
+                <div class="card-header">
+                    <h5><i class="fas fa-folder mr-2"></i>Kategori İstatistikleri</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-dashboard table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Kategori</th>
+                                    <th class="text-center">Konu</th>
+                                    <th class="text-center">Gönderi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for cat in s.category_stats %}
+                                <tr>
+                                    <td>{{ cat.title }}</td>
+                                    <td class="text-center">{{ cat.topic_count }}</td>
+                                    <td class="text-center">{{ cat.post_count }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr><td colspan="3" class="text-center text-muted">Henüz kategori yok</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 mb-3">
+            <div class="dashboard-card h-100">
+                <div class="card-header">
+                    <h5><i class="fas fa-trophy mr-2"></i>En Aktif Kullanıcılar (Son 30 Gün)</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-dashboard table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Kullanıcı</th>
+                                    <th class="text-center">Konu</th>
+                                    <th class="text-center">Gönderi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in s.active_users %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="user-avatar-sm mr-2">{{ user.username|slice:":1"|upper }}</div>
+                                            <span class="text-info">{{ user.username }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="text-center">{{ user.recent_topics }}</td>
+                                    <td class="text-center">{{ user.recent_posts }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr><td colspan="3" class="text-center text-muted">Henüz aktivite yok</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Onay Merkezi -->
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="dashboard-card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5><i class="fas fa-check-circle mr-2"></i>Onay Merkezi</h5>
+                    <span class="text-muted small">
+                        {% with total=s.pending_stories.count|add:s.pending_reviews.count|add:s.unread_contacts.count|add:s.pending_donations.count|add:s.pending_linkedin_verifications.count %}
+                        {{ total }} bekleyen işlem
+                        {% endwith %}
+                    </span>
+                </div>
+                <div class="card-body">
+                    <ul class="nav nav-pills mb-3 flex-wrap" id="approvalTabs" role="tablist" style="gap: 0.5rem;">
+                        <li class="nav-item">
+                            <a class="nav-link active position-relative" id="stories-tab" data-toggle="pill" href="#stories-panel" role="tab">
+                                <i class="fas fa-star mr-1"></i>Hikayeler
+                                {% if s.pending_stories.count %}<span class="badge badge-danger ml-1">{{ s.pending_stories.count }}</span>{% endif %}
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="reviews-tab" data-toggle="pill" href="#reviews-panel" role="tab">
+                                <i class="fas fa-quote-left mr-1"></i>Değerlendirmeler
+                                {% if s.pending_reviews.count %}<span class="badge badge-danger ml-1">{{ s.pending_reviews.count }}</span>{% endif %}
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="contacts-tab" data-toggle="pill" href="#contacts-panel" role="tab">
+                                <i class="fas fa-envelope mr-1"></i>Mesajlar
+                                {% if s.unread_contacts.count %}<span class="badge badge-danger ml-1">{{ s.unread_contacts.count }}</span>{% endif %}
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="donations-tab" data-toggle="pill" href="#donations-panel" role="tab">
+                                <i class="fas fa-heart mr-1"></i>Bağışlar
+                                {% if s.pending_donations.count %}<span class="badge badge-danger ml-1">{{ s.pending_donations.count }}</span>{% endif %}
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="linkedin-tab" data-toggle="pill" href="#linkedin-panel" role="tab">
+                                <i class="fab fa-linkedin mr-1"></i>LinkedIn
+                                {% if s.pending_linkedin_verifications.count %}<span class="badge badge-danger ml-1">{{ s.pending_linkedin_verifications.count }}</span>{% endif %}
+                            </a>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content" id="approvalTabsContent">
+                        <!-- Hikayeler -->
+                        <div class="tab-pane fade show active" id="stories-panel" role="tabpanel">
+                            <div class="table-responsive">
+                                <table class="table table-dashboard table-hover mb-0">
+                                    <thead><tr><th>Kullanıcı</th><th>Hikaye</th><th>Tarih</th><th>İşlem</th></tr></thead>
+                                    <tbody>
+                                        {% for story in s.pending_stories %}
+                                        <tr>
+                                            <td class="text-info">{{ story.user.username }}</td>
+                                            <td>{{ story.quote|truncatechars:80 }}</td>
+                                            <td class="text-muted small">{{ story.created_at|timesince }} önce</td>
+                                            <td>
+                                                <form method="post" action="{% url 'dashboard_approve_story' story.pk %}" class="d-inline">{% csrf_token %}<input type="hidden" name="action" value="approve"><button class="btn btn-sm btn-success">Onayla</button></form>
+                                                <form method="post" action="{% url 'dashboard_approve_story' story.pk %}" class="d-inline ml-1">{% csrf_token %}<input type="hidden" name="action" value="reject"><button class="btn btn-sm btn-outline-danger">Reddet</button></form>
+                                            </td>
+                                        </tr>
+                                        {% empty %}
+                                        <tr><td colspan="4" class="text-center text-muted">Bekleyen hikaye yok</td></tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Değerlendirmeler -->
+                        <div class="tab-pane fade" id="reviews-panel" role="tabpanel">
+                            <div class="table-responsive">
+                                <table class="table table-dashboard table-hover mb-0">
+                                    <thead><tr><th>Değerlendiren</th><th>Değerlendirilen</th><th>Puan</th><th>Yorum</th><th>İşlem</th></tr></thead>
+                                    <tbody>
+                                        {% for review in s.pending_reviews %}
+                                        <tr>
+                                            <td class="text-info">{{ review.reviewer.username }}</td>
+                                            <td>{{ review.reviewed_user.username }}</td>
+                                            <td>{% for i in "12345" %}<i class="fas fa-star{% if forloop.counter > review.rating %}" style="color: #475569;{% else %}" style="color: #f59e0b;{% endif %} font-size: 0.7rem;"></i>{% endfor %}</td>
+                                            <td class="text-muted small">{{ review.comment|truncatechars:60 }}</td>
+                                            <td>
+                                                <form method="post" action="{% url 'dashboard_approve_review' review.pk %}" class="d-inline">{% csrf_token %}<button class="btn btn-sm btn-success">Onayla</button></form>
+                                            </td>
+                                        </tr>
+                                        {% empty %}
+                                        <tr><td colspan="5" class="text-center text-muted">Bekleyen değerlendirme yok</td></tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Mesajlar -->
+                        <div class="tab-pane fade" id="contacts-panel" role="tabpanel">
+                            <div class="table-responsive">
+                                <table class="table table-dashboard table-hover mb-0">
+                                    <thead><tr><th>Gönderen</th><th>E-posta</th><th>Konu</th><th>Mesaj</th><th>Tarih</th><th>İşlem</th></tr></thead>
+                                    <tbody>
+                                        {% for msg in s.unread_contacts %}
+                                        <tr>
+                                            <td class="fw-bold">{{ msg.name }}</td>
+                                            <td class="text-muted small">{{ msg.email }}</td>
+                                            <td class="text-info">{{ msg.subject }}</td>
+                                            <td class="text-muted small">{{ msg.message|truncatechars:80 }}</td>
+                                            <td class="text-muted small text-nowrap">{{ msg.created_at|timesince }} önce</td>
+                                            <td>
+                                                <form method="post" action="{% url 'dashboard_mark_contact_read' msg.pk %}" class="d-inline">{% csrf_token %}<button class="btn btn-sm btn-outline-info">Okundu</button></form>
+                                            </td>
+                                        </tr>
+                                        {% empty %}
+                                        <tr><td colspan="6" class="text-center text-muted">Okunmamış mesaj yok</td></tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Bağışlar -->
+                        <div class="tab-pane fade" id="donations-panel" role="tabpanel">
+                            <div class="table-responsive">
+                                <table class="table table-dashboard table-hover mb-0">
+                                    <thead><tr><th>Kullanıcı</th><th>Miktar</th><th>Premium</th><th>Tarih</th><th>İşlem</th></tr></thead>
+                                    <tbody>
+                                        {% for donation in s.pending_donations %}
+                                        <tr>
+                                            <td>
+                                                {% if donation.user %}
+                                                <span class="text-info">{{ donation.user.username }}</span>
+                                                {% else %}
+                                                <span class="text-muted">{{ donation.name|default:"Anonim" }}</span>
+                                                {% endif %}
+                                            </td>
+                                            <td style="color: #f59e0b; font-weight: bold;">{{ donation.amount|floatformat:0 }} TL</td>
+                                            <td style="color: #10b981;">{{ donation.premium_days_granted }} gün</td>
+                                            <td class="text-muted small">{{ donation.created_at|timesince }} önce</td>
+                                            <td>
+                                                <form method="post" action="{% url 'dashboard_approve_donation' donation.pk %}" class="d-inline">{% csrf_token %}<button class="btn btn-sm btn-success">Onayla</button></form>
+                                            </td>
+                                        </tr>
+                                        {% empty %}
+                                        <tr><td colspan="5" class="text-center text-muted">Bekleyen bağış yok</td></tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- LinkedIn -->
+                        <div class="tab-pane fade" id="linkedin-panel" role="tabpanel">
+                            <div class="table-responsive">
+                                <table class="table table-dashboard table-hover mb-0">
+                                    <thead><tr><th>Kullanıcı</th><th>LinkedIn Profili</th><th>İşlem</th></tr></thead>
+                                    <tbody>
+                                        {% for profile in s.pending_linkedin_verifications %}
+                                        <tr>
+                                            <td class="text-info">{{ profile.user.username }}</td>
+                                            <td><a href="{{ profile.linkedin }}" target="_blank" class="text-light">{{ profile.linkedin|truncatechars:40 }}</a></td>
+                                            <td><a href="{% url 'admin_verify_linkedin' profile.user.id %}" class="btn btn-sm btn-success">Onayla</a></td>
+                                        </tr>
+                                        {% empty %}
+                                        <tr><td colspan="3" class="text-center text-muted">Bekleyen LinkedIn onayı yok</td></tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alt Satır: Son Kayıtlar, Son Konular, Rütbe Dağılımı -->
+    <div class="row mb-3">
+        <div class="col-lg-4 mb-3">
+            <div class="dashboard-card h-100">
+                <div class="card-header">
+                    <h5><i class="fas fa-user-plus mr-2"></i>Son Kayıtlar</h5>
+                </div>
+                <div class="card-body p-0">
+                    {% for user in s.recent_users %}
+                    <div class="activity-item px-3">
+                        <div class="d-flex align-items-center">
+                            <div class="user-avatar-sm mr-2">{{ user.username|slice:":1"|upper }}</div>
+                            <div>
+                                <span class="text-info">{{ user.username }}</span>
+                                <div class="text-muted small">{{ user.date_joined|timesince }} önce</div>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="p-3 text-center text-muted">Henüz kullanıcı yok</div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 mb-3">
+            <div class="dashboard-card h-100">
+                <div class="card-header">
+                    <h5><i class="fas fa-comments mr-2"></i>Son Konular</h5>
+                </div>
+                <div class="card-body p-0">
+                    {% for topic in s.recent_topics_list %}
+                    <div class="activity-item px-3">
+                        <span class="text-light">{{ topic.subject|truncatewords:8 }}</span>
+                        <div class="text-muted small">
+                            {{ topic.starter.username }} - {{ topic.created_at|timesince }} önce
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="p-3 text-center text-muted">Henüz konu yok</div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 mb-3">
+            <div class="dashboard-card h-100">
+                <div class="card-header">
+                    <h5><i class="fas fa-chart-bar mr-2"></i>Rütbe Dağılımı</h5>
+                </div>
+                <div class="card-body">
+                    {% for rank in s.rank_distribution %}
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span class="text-light">{{ rank.rank|title }}</span>
+                            <span class="text-muted">{{ rank.count }}</span>
+                        </div>
+                        <div class="progress progress-thin">
+                            <div class="progress-bar bg-info" style="width: {% if s.total_users > 0 %}{% widthratio rank.count s.total_users 100 %}{% else %}0{% endif %}%"></div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Aktivite Grafiği
+    var activityCtx = document.getElementById('activityChart');
+    if (activityCtx) {
+        new Chart(activityCtx.getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: {{ s.chart_labels_json|safe }},
+                datasets: [
+                    {
+                        label: 'Yeni Kullanıcı',
+                        data: {{ s.user_trend_json|safe }},
+                        borderColor: '#6366f1',
+                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    },
+                    {
+                        label: 'Yeni Konu',
+                        data: {{ s.topic_trend_json|safe }},
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    },
+                    {
+                        label: 'Yeni Gönderi',
+                        data: {{ s.post_trend_json|safe }},
+                        borderColor: '#f59e0b',
+                        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { labels: { color: '#94a3b8' } }
+                },
+                scales: {
+                    x: {
+                        grid: { color: 'rgba(99, 102, 241, 0.1)' },
+                        ticks: { color: '#94a3b8' }
+                    },
+                    y: {
+                        grid: { color: 'rgba(99, 102, 241, 0.1)' },
+                        ticks: { color: '#94a3b8' },
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    }
+
+    // E-posta Doğrulama Grafiği
+    var verificationCtx = document.getElementById('verificationChart');
+    if (verificationCtx) {
+        new Chart(verificationCtx.getContext('2d'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Doğrulanmış', 'Doğrulanmamış'],
+                datasets: [{
+                    data: [{{ s.verified_users }}, {{ s.unverified_users }}],
+                    backgroundColor: ['#10b981', '#ef4444'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { color: '#94a3b8' }
+                    }
+                },
+                cutout: '70%'
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

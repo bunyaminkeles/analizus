@@ -1428,152 +1428,14 @@ def resend_verification(request):
 @staff_member_required
 def admin_dashboard(request):
     """Admin için istatistik paneli"""
-    from django.db.models.functions import TruncDate, TruncMonth
-    from collections import OrderedDict
-
-    today = timezone.now().date()
-    last_7_days = today - timedelta(days=7)
-    last_30_days = today - timedelta(days=30)
-
-    # === GENEL İSTATİSTİKLER ===
-    total_users = User.objects.count()
-    total_topics = Topic.objects.count()
-    total_posts = Post.objects.count()
-    total_views = Topic.objects.aggregate(total=Sum('views'))['total'] or 0
-
-    # Bugünkü istatistikler
-    today_users = User.objects.filter(date_joined__date=today).count()
-    today_topics = Topic.objects.filter(created_at__date=today).count()
-    today_posts = Post.objects.filter(created_at__date=today).count()
-
-    # Son 7 gün
-    week_users = User.objects.filter(date_joined__date__gte=last_7_days).count()
-    week_topics = Topic.objects.filter(created_at__date__gte=last_7_days).count()
-    week_posts = Post.objects.filter(created_at__date__gte=last_7_days).count()
-
-    # === KULLANICI ANALİZİ ===
-    # Doğrulanmış/Doğrulanmamış kullanıcılar
-    verified_users = Profile.objects.filter(email_verified=True).count()
-    unverified_users = Profile.objects.filter(email_verified=False).count()
-
-    # Hesap türlerine göre dağılım
-    account_types = Profile.objects.values('account_type').annotate(
-        count=Count('id')
-    ).order_by('-count')
-
-    # Rütbelere göre dağılım
-    rank_distribution = Profile.objects.values('rank').annotate(
-        count=Count('id')
-    ).order_by('-count')
-
-    # === SON 7 GÜNLÜK TREND (Grafik için) ===
-    # Kullanıcı kayıtları
-    user_trend = []
-    topic_trend = []
-    post_trend = []
-    labels = []
-
-    for i in range(6, -1, -1):
-        date = today - timedelta(days=i)
-        labels.append(date.strftime('%d %b'))
-        user_trend.append(User.objects.filter(date_joined__date=date).count())
-        topic_trend.append(Topic.objects.filter(created_at__date=date).count())
-        post_trend.append(Post.objects.filter(created_at__date=date).count())
-
-    # === KATEGORİ ANALİZİ ===
-    category_stats = Category.objects.annotate(
-        topic_count=Count('topics'),
-        post_count=Count('topics__posts')
-    ).order_by('-topic_count')[:10]
-
-    # === EN AKTİF KULLANICILAR (Son 30 gün) ===
-    active_users = User.objects.annotate(
-        recent_posts=Count('posts', filter=Q(posts__created_at__date__gte=last_30_days)),
-        recent_topics=Count('topics', filter=Q(topics__created_at__date__gte=last_30_days))
-    ).filter(
-        Q(recent_posts__gt=0) | Q(recent_topics__gt=0)
-    ).order_by('-recent_posts')[:10]
-
-    # === POPÜLER KONULAR (Son 7 gün) ===
-    popular_topics = Topic.objects.filter(
-        created_at__date__gte=last_7_days
-    ).annotate(
-        reply_count=Count('posts')
-    ).order_by('-views', '-reply_count')[:10]
-
-    # === ONAY BEKLEYENLER ===
-    pending_linkedin_verifications = Profile.objects.filter(
-        linkedin__isnull=False,
-        linkedin_verified=False
-    ).exclude(linkedin='').select_related('user')
-
-    pending_stories = SuccessStory.objects.filter(approval_status='pending').select_related('user')
-    pending_reviews = JobReview.objects.filter(is_approved=False).select_related('reviewer', 'reviewed_user', 'job')
-    from .models import ContactMessage, Donation
-    unread_contacts = ContactMessage.objects.filter(is_read=False).order_by('-created_at')[:20]
-    pending_donations = Donation.objects.filter(status='pending').select_related('user').order_by('-created_at')
-
-    # === SON AKTİVİTELER ===
-    recent_users = User.objects.order_by('-date_joined')[:5]
-    recent_topics_list = Topic.objects.select_related('starter', 'category').order_by('-created_at')[:5]
-    recent_posts = Post.objects.select_related('created_by', 'topic').order_by('-created_at')[:10]
-
-    # === AI KULLANIM İSTATİSTİKLERİ ===
-    from django.core.cache import cache
-    # Bugün AI kullanan kullanıcı sayısını tahmin et
-    ai_usage_today = 0  # Cache'den detaylı bilgi almak için ek kod gerekir
-
-    context = {
-        # Genel İstatistikler
-        'total_users': total_users,
-        'total_topics': total_topics,
-        'total_posts': total_posts,
-        'total_views': total_views,
-
-        # Bugün
-        'today_users': today_users,
-        'today_topics': today_topics,
-        'today_posts': today_posts,
-
-        # Bu hafta
-        'week_users': week_users,
-        'week_topics': week_topics,
-        'week_posts': week_posts,
-
-        # Kullanıcı analizi
-        'verified_users': verified_users,
-        'unverified_users': unverified_users,
-        'account_types': account_types,
-        'rank_distribution': rank_distribution,
-
-        # Grafikler için
-        'chart_labels': labels,
-        'user_trend': user_trend,
-        'topic_trend': topic_trend,
-        'post_trend': post_trend,
-
-        # Kategori analizi
-        'category_stats': category_stats,
-
-        # En aktif kullanıcılar
-        'active_users': active_users,
-
-        # Popüler konular
-        'popular_topics': popular_topics,
-
-        # Onay bekleyenler
-        'pending_linkedin_verifications': pending_linkedin_verifications,
-        'pending_stories': pending_stories,
-        'pending_reviews': pending_reviews,
-        'unread_contacts': unread_contacts,
-        'pending_donations': pending_donations,
-
-        # Son aktiviteler
-        'recent_users': recent_users,
-        'recent_topics_list': recent_topics_list,
-        'recent_posts': recent_posts,
-    }
-
+    from forum.services.dashboard_service import get_dashboard_context
+    context = get_dashboard_context()
+    # Eski template chart_labels/user_trend gibi list bekliyor (json değil)
+    import json
+    context['chart_labels'] = json.loads(context['chart_labels_json'])
+    context['user_trend'] = json.loads(context['user_trend_json'])
+    context['topic_trend'] = json.loads(context['topic_trend_json'])
+    context['post_trend'] = json.loads(context['post_trend_json'])
     return render(request, 'forum/admin_dashboard.html', context)
 
 
@@ -1999,22 +1861,27 @@ def create_donation(request):
 
 
 def send_donation_thank_you_email(donation):
-    """Bağış sonrası teşekkür e-postası gönder"""
-    from django.core.mail import send_mail
+    """Bağış sonrası teşekkür e-postası gönder (SendGrid HTTP API)"""
+    import requests as _requests
     from django.conf import settings
+
+    api_key = getattr(settings, 'SENDGRID_API_KEY', '')
+    if not api_key:
+        print(f"[DONATION] SENDGRID_API_KEY ayarlanmamış! Email gönderilemedi: {donation.email}")
+        return
 
     premium_days = donation.get_premium_days()
     donor_name = donation.name or (donation.user.username if donation.user else "Değerli Bağışçımız")
 
     subject = f"Teşekkürler! {int(donation.amount)} TL Bağışınız İçin"
 
-    message = f"""Merhaba {donor_name},
+    plain_message = f"""Merhaba {donor_name},
 
 {int(donation.amount)} TL tutarındaki bağışınız için çok teşekkür ederiz!
 
 Kazandığınız Ödüller:
-★ {premium_days} Gün Premium Üyelik
-♥ Destekçi Rozeti
+* {premium_days} Gün Premium Üyelik
+* Destekçi Rozeti
 
 Premium üyeliğiniz hesabınıza tanımlandı. Artık tüm premium özelliklerden faydalanabilirsiniz!
 
@@ -2032,7 +1899,7 @@ https://www.analizus.com
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #1a1a2e; color: #e2e8f0; padding: 30px; border-radius: 10px;">
         <div style="text-align: center; margin-bottom: 30px;">
             <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #ec4899, #8b5cf6); border-radius: 50%; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center;">
-                <span style="font-size: 40px;">❤️</span>
+                <span style="font-size: 40px;">&#10084;&#65039;</span>
             </div>
             <h1 style="color: #ec4899; margin: 0;">Teşekkür Ederiz!</h1>
         </div>
@@ -2045,9 +1912,9 @@ https://www.analizus.com
         </p>
 
         <div style="background: rgba(234, 179, 8, 0.1); padding: 20px; border-radius: 8px; margin: 20px 0; border: 1px solid rgba(234, 179, 8, 0.3);">
-            <h3 style="color: #fbbf24; margin-top: 0;">🎁 Kazandığınız Ödüller</h3>
-            <p style="margin: 10px 0;">⭐ <strong style="color: #fbbf24;">{premium_days} Gün Premium Üyelik</strong></p>
-            <p style="margin: 10px 0;">💖 <strong style="color: #ec4899;">Destekçi Rozeti</strong></p>
+            <h3 style="color: #fbbf24; margin-top: 0;">Kazandığınız Ödüller</h3>
+            <p style="margin: 10px 0;">* <strong style="color: #fbbf24;">{premium_days} Gün Premium Üyelik</strong></p>
+            <p style="margin: 10px 0;">* <strong style="color: #ec4899;">Destekçi Rozeti</strong></p>
         </div>
 
         <p style="color: #94a3b8;">Premium üyeliğiniz hesabınıza tanımlandı. Artık tüm premium özelliklerden faydalanabilirsiniz!</p>
@@ -2063,18 +1930,31 @@ https://www.analizus.com
     </div>
     """
 
-    try:
-        send_mail(
-            subject=subject,
-            message=message,
-            from_email=settings.DEFAULT_FROM_EMAIL,
-            recipient_list=[donation.email],
-            html_message=html_message,
-            fail_silently=True,
-        )
-        print(f"[DONATION] Teşekkür e-postası gönderildi: {donation.email}")
-    except Exception as e:
-        print(f"[DONATION] E-posta gönderilemedi: {e}")
+    def _send():
+        try:
+            payload = {
+                "personalizations": [{"to": [{"email": donation.email}]}],
+                "from": {"email": settings.DEFAULT_FROM_EMAIL, "name": "Analizus"},
+                "subject": subject,
+                "content": [
+                    {"type": "text/plain", "value": plain_message},
+                    {"type": "text/html", "value": html_message},
+                ]
+            }
+            headers = {
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json",
+            }
+            resp = _requests.post('https://api.sendgrid.com/v3/mail/send', json=payload, headers=headers, timeout=10)
+            if resp.status_code in (200, 202):
+                print(f"[DONATION] Teşekkür e-postası gönderildi: {donation.email}")
+            else:
+                print(f"[DONATION] SendGrid hatası: {resp.status_code} {resp.text}")
+        except Exception as e:
+            print(f"[DONATION] E-posta gönderilemedi: {e}")
+
+    import threading
+    threading.Thread(target=_send, daemon=True).start()
 
 
 def get_client_ip(request):

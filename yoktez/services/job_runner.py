@@ -151,7 +151,7 @@ def send_demo_email(job):
 
     if not to_email:
         logger.warning(f"Kullanıcının emaili yok: {user.username}")
-        return
+        return False
 
     subject = f"YÖK Tez Arama - Demo Sonuçlar: {job.konu}"
 
@@ -185,12 +185,13 @@ def send_demo_email(job):
     lines.append(f"  IBAN         : {BANK_INFO['iban']}")
     lines.append(f"  Açıklama     : YÖK Tez - {user.username}")
     lines.append(f"")
+    site_url = getattr(settings, 'SITE_URL', 'https://www.analizus.com')
     lines.append(f"Ödeme yaptıktan sonra siparişinizi oluşturun:")
-    lines.append(f"  https://www.analizus.com/yoktez/siparis/{job.id}/")
+    lines.append(f"  {site_url}/yoktez/siparis/{job.id}/")
     lines.append(f"")
     lines.append(f"Siparişiniz onaylandıktan sonra sonuçlar 24 saat")
     lines.append(f"içinde bu e-posta adresine gönderilecektir.")
-    lines.append(f"\n---\nAnalizus - www.analizus.com")
+    lines.append(f"\n---\nAnalizus - {site_url}")
 
     body = "\n".join(lines)
 
@@ -201,7 +202,6 @@ def send_demo_email(job):
             from_email=settings.DEFAULT_FROM_EMAIL,
             to=[to_email],
         )
-        # Sonuçları txt dosyası olarak ekle
         email.attach(
             f"yoktez_demo_{job.konu}.txt",
             txt_content,
@@ -212,8 +212,10 @@ def send_demo_email(job):
         job.demo_email_sent = True
         job.save(update_fields=['demo_email_sent'])
         logger.info(f"Demo email gönderildi: {to_email}")
+        return True
     except Exception as e:
         logger.error(f"Demo email gönderilemedi: {e}")
+        return False
 
 
 def send_order_results_email(order):
@@ -264,7 +266,6 @@ def send_order_results_email(order):
             from_email=settings.DEFAULT_FROM_EMAIL,
             to=[to_email],
         )
-        # Txt dosya eki
         email.attach(
             f"yoktez_{job.konu}_{len(results_to_send)}_sonuc.txt",
             txt_content,

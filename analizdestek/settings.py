@@ -175,13 +175,15 @@ LOCALE_PATHS = [
 ]
 
 # --- ADMIN PANELİ AYARLARI (JAZZMIN) ---
-JAZZMIN_SETTINGS = {  # DÜZELTME: AZZMIN -> JAZZMIN
+JAZZMIN_SETTINGS = {
     "site_title": "Analizus 2050 Core",
     "site_header": "NEURAL LINK v1.0",
     "site_brand": "Analizus AI",
+    "site_logo_classes": "",
     "welcome_sign": "Sistem Çevrimiçi. Hoş Geldiniz, Komutan.",
     "copyright": "Analizus Ltd.",
     "search_model": ["auth.User", "forum.Topic"],
+    "site_url": "/",
 
     "topmenu_links": [
         {"name": "Ana Siteye Dön", "url": "home", "permissions": ["auth.view_user"]},
@@ -208,6 +210,7 @@ JAZZMIN_SETTINGS = {  # DÜZELTME: AZZMIN -> JAZZMIN
 
 JAZZMIN_UI_TWEAKS = {
     "custom_css": "css/admin_theme.css",
+    "custom_js": "js/admin_custom.js",
     "theme": "solar",   # 2050 Vizyonu için Solar veya Cyborg teması
     "dark_mode_theme": "solar",
     "navbar": "navbar-dark",
@@ -222,20 +225,10 @@ JAZZMIN_UI_TWEAKS = {
     }
 }
 
-# --- E-POSTA AYARLARI ---
-# Gmail SMTP (SES sandbox sınırlaması nedeniyle)
-EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
-EMAIL_HOST = os.getenv('EMAIL_HOST', 'smtp.gmail.com')
-EMAIL_PORT = int(os.getenv('EMAIL_PORT', '587'))
-EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'True').lower() == 'true'
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER', '')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
-DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'Analizus <noreply@analizus.com>')
-
-# AWS SES (ileride production erişimi gelince geri dönülebilir)
-# EMAIL_BACKEND = 'django_ses.SESBackend'
-AWS_SES_REGION_NAME = os.getenv('AWS_SES_REGION_NAME', 'eu-north-1')
-AWS_SES_REGION_ENDPOINT = f'email.{AWS_SES_REGION_NAME}.amazonaws.com'
+# --- E-POSTA AYARLARI (SendGrid HTTP API) ---
+SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY', '')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'info@analizus.com')
+EMAIL_BACKEND = 'forum.backends.SendGridBackend'
 
 # --- IYZICO ÖDEME AYARLARI ---
 IYZICO_API_KEY = os.getenv('IYZICO_API_KEY', '').strip()

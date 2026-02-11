@@ -61,7 +61,7 @@
             <div class="p-4" style="background: rgba(21,32,43,0.6); border: 1px solid rgba(255,255,255,0.1); border-radius: 15px; backdrop-filter: blur(10px);">
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <h4 class="text-white mb-0"><i class="bi bi-search me-2" style="color: #00d2ff;"></i>Tez Arama</h4>
-                    <span class="badge" style="background: rgba({% if remaining > 0 %}0,210,255{% else %}239,68,68{% endif %},0.2); color: {% if remaining > 0 %}#00d2ff{% else %}#fca5a5{% endif %};">
+                    <span id="search-limit-badge" class="badge" style="background: rgba({% if remaining > 0 %}0,210,255{% else %}239,68,68{% endif %},0.2); color: {% if remaining > 0 %}#00d2ff{% else %}#fca5a5{% endif %};">
                         Bugün: {{ remaining }}/{{ daily_limit }} hak
                     </span>
                 </div>
@@ -192,7 +192,17 @@
         .then(r => r.json())
         .then(data => {
             if (data.error) { showError(data.error); resetForm(); return; }
-            if (data.job_id) { currentJobId = data.job_id; startPolling(data.job_id); }
+            if (data.job_id) {
+                currentJobId = data.job_id;
+                startPolling(data.job_id);
+                // Hak sayacını güncelle
+                if (data.remaining !== undefined) {
+                    const badge = document.getElementById('search-limit-badge');
+                    badge.textContent = 'Bugün: ' + data.remaining + '/' + data.daily_limit + ' hak';
+                    badge.style.background = data.remaining > 0 ? 'rgba(0,210,255,0.2)' : 'rgba(239,68,68,0.2)';
+                    badge.style.color = data.remaining > 0 ? '#00d2ff' : '#fca5a5';
+                }
+            }
         })
         .catch(() => { showError('Bağlantı hatası.'); resetForm(); });
     });
@@ -277,8 +287,13 @@
                     btnDemo.style.display = 'none';
                     document.getElementById('demo-email-success').style.display = 'block';
                 } else {
-                    btnDemo.innerHTML = d.error || 'Hata';
+                    btnDemo.disabled = false;
+                    btnDemo.innerHTML = '<i class="bi bi-envelope me-2"></i>Tekrar Dene';
                 }
+            })
+            .catch(() => {
+                btnDemo.disabled = false;
+                btnDemo.innerHTML = '<i class="bi bi-envelope me-2"></i>Tekrar Dene';
             });
         };
 
