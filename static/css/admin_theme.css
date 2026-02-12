@@ -14,6 +14,43 @@ select, .form-control, .select2-selection, .select2-container--default .select2-
     border-radius: 8px !important;
 }
 
+/* 2b. ÇOKLU SEÇİM & FİLTRE WIDGET'LARI (İzinler, Gruplar vs.) */
+select option,
+select[multiple] option {
+    background-color: #1e293b !important;
+    color: #e2e8f0 !important;
+    padding: 4px 8px;
+}
+select option:hover,
+select option:checked,
+select[multiple] option:checked {
+    background-color: #00d2ff !important;
+    color: #000 !important;
+}
+/* Django filter_horizontal / filter_vertical widget */
+.selector select {
+    background-color: #1e293b !important;
+    color: #e2e8f0 !important;
+    border: 1px solid rgba(56, 189, 248, 0.3) !important;
+}
+.selector .selector-available h2,
+.selector .selector-chosen h2 {
+    background: rgba(0, 210, 255, 0.15) !important;
+    color: #e2e8f0 !important;
+}
+.selector .selector-filter input {
+    background-color: #1e293b !important;
+    color: #fff !important;
+    border: 1px solid rgba(56, 189, 248, 0.3) !important;
+}
+.selector .selector-filter label {
+    color: #94a3b8 !important;
+}
+.selector-chooser a {
+    background: rgba(0, 210, 255, 0.2) !important;
+    border-radius: 4px;
+}
+
 /* Seçim kutusuna tıklandığında */
 select:focus, .form-control:focus {
     box-shadow: 0 0 10px rgba(0, 210, 255, 0.3) !important;
@@ -136,4 +173,129 @@ input[type="checkbox"] {
     margin-right: 0 !important;
     max-height: 35px !important; /* İkon yüksekliği */
     width: auto;
+}
+
+/* ===== 8. ADMIN DASHBOARD STİLLERİ ===== */
+
+.admin-dashboard .stat-card {
+    background: rgba(15, 23, 42, 0.95) !important;
+    border: 1px solid rgba(99, 102, 241, 0.2) !important;
+    border-radius: 16px !important;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+    box-shadow: none !important;
+}
+.admin-dashboard .stat-card:hover {
+    border-color: rgba(99, 102, 241, 0.5) !important;
+    transform: translateY(-2px);
+}
+.admin-dashboard .stat-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+.admin-dashboard .stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #fff !important;
+}
+.admin-dashboard .stat-label {
+    color: #94a3b8 !important;
+    font-size: 0.875rem;
+}
+.admin-dashboard .stat-change {
+    font-size: 0.75rem;
+    padding: 2px 8px;
+    border-radius: 20px;
+}
+.admin-dashboard .stat-change.positive {
+    background: rgba(16, 185, 129, 0.2);
+    color: #10b981 !important;
+}
+.admin-dashboard .stat-change.neutral {
+    background: rgba(148, 163, 184, 0.2);
+    color: #94a3b8 !important;
+}
+
+.admin-dashboard .dashboard-card {
+    background: rgba(15, 23, 42, 0.95) !important;
+    border: 1px solid rgba(99, 102, 241, 0.2) !important;
+    border-radius: 16px !important;
+    box-shadow: none !important;
+    backdrop-filter: none;
+}
+.admin-dashboard .dashboard-card .card-header {
+    background: transparent !important;
+    border-bottom: 1px solid rgba(99, 102, 241, 0.2) !important;
+    padding: 1rem 1.25rem;
+}
+.admin-dashboard .dashboard-card .card-header h5 {
+    margin: 0;
+    color: #fff !important;
+    font-weight: 600;
+    font-size: 1rem;
+}
+.admin-dashboard .dashboard-card .card-body {
+    background: transparent !important;
+}
+
+.admin-dashboard .progress-thin {
+    height: 6px;
+    border-radius: 3px;
+    background: rgba(99, 102, 241, 0.2);
+}
+
+.admin-dashboard .table-dashboard {
+    color: #e2e8f0 !important;
+}
+.admin-dashboard .table-dashboard th {
+    border-color: rgba(99, 102, 241, 0.2) !important;
+    color: #94a3b8 !important;
+    font-weight: 500;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+}
+.admin-dashboard .table-dashboard td {
+    border-color: rgba(99, 102, 241, 0.1) !important;
+    vertical-align: middle;
+    color: #cbd5e1 !important;
+}
+
+.admin-dashboard .user-avatar-sm {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff !important;
+    font-weight: 600;
+    font-size: 0.875rem;
+    flex-shrink: 0;
+}
+
+.admin-dashboard .activity-item {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+}
+.admin-dashboard .activity-item:last-child {
+    border-bottom: none;
+}
+
+.admin-dashboard #approvalTabs .nav-link {
+    background: rgba(99, 102, 241, 0.1) !important;
+    color: #94a3b8 !important;
+    border: 1px solid rgba(99, 102, 241, 0.2) !important;
+    border-left: 1px solid rgba(99, 102, 241, 0.2) !important;
+    font-size: 0.85rem;
+}
+.admin-dashboard #approvalTabs .nav-link.active {
+    background: rgba(99, 102, 241, 0.3) !important;
+    color: #fff !important;
+    border-color: #6366f1 !important;
 }

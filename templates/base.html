@@ -6,23 +6,47 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
+    <!-- Performance: Preconnect to critical origins -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+
+    <!-- Theme & PWA Meta -->
+    <meta name="theme-color" content="#0f172a">
+    <meta name="color-scheme" content="dark">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Analizus">
+    <meta name="application-name" content="Analizus">
+    <meta name="msapplication-TileColor" content="#0f172a">
+
     <title>{% block title %}Analizus - Akademik Analiz ve Veri Bilimi Topluluğu{% endblock %}</title>
-    <meta name="description" content="{% block meta_description %}SPSS, Python, R Studio ile istatistik analizi, tez yazımı ve akademik araştırma desteği. Türkiye'nin en büyük veri bilimi topluluğu.{% endblock %}">
-    <meta name="keywords" content="SPSS, Python, R Studio, istatistik analizi, tez yazımı, akademik araştırma, veri bilimi, regresyon, ANOVA, t-test">
+    <meta name="description" content="{% block meta_description %}SPSS, Python, R Studio, Nitel analizler ve Ai ile istatistik analizi, tez yazımı ve akademik araştırma desteği. Türkiye'nin en büyük veri bilimi topluluğu.{% endblock %}">
+    <meta name="keywords" content="SPSS, Python, R Studio, istatistik analizi, tez yazımı, akademik araştırma, veri bilimi, regresyon, ANOVA, t-test, akademik danışmanlık, tez istatistik">
     <meta name="author" content="Analizus">
-    <meta name="robots" content="index, follow">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <meta name="googlebot" content="index, follow">
     <link rel="canonical" href="https://www.analizus.com{% block canonical %}{{ request.path }}{% endblock %}">
 
-    <meta property="og:type" content="website">
+    <!-- Open Graph -->
+    <meta property="og:type" content="{% block og_type %}website{% endblock %}">
     <meta property="og:url" content="https://www.analizus.com{{ request.path }}">
     <meta property="og:title" content="{% block og_title %}Analizus - Akademik Analiz Topluluğu{% endblock %}">
-    <meta property="og:description" content="{% block og_description %}SPSS, Python, R ile akademik analiz desteği ve veri bilimi topluluğu.{% endblock %}">
-    <meta property="og:image" content="https://www.analizus.com{% static 'images/og-image.png' %}">
+    <meta property="og:description" content="{% block og_description %}SPSS, Python, Yapay Zeka ve Nitel analizlerile akademik analiz desteği ve veri bilimi topluluğu.{% endblock %}">
+    <meta property="og:image" content="{% block og_image %}https://www.analizus.com{% static 'images/og-image.png' %}{% endblock %}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
     <meta property="og:locale" content="tr_TR">
+    <meta property="og:site_name" content="Analizus">
 
+    <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Analizus - Akademik Analiz Topluluğu">
-    <meta name="twitter:description" content="SPSS, Python, R ile akademik analiz desteği.">
+    <meta name="twitter:site" content="@analizus">
+    <meta name="twitter:title" content="{% block twitter_title %}Analizus - Akademik Analiz Topluluğu{% endblock %}">
+    <meta name="twitter:description" content="{% block twitter_description %}SPSS, Python, R ile akademik analiz desteği.{% endblock %}">
+    <meta name="twitter:image" content="{% block twitter_image %}https://www.analizus.com{% static 'images/og-image.png' %}{% endblock %}"
 
     {% if GOOGLE_ANALYTICS_ID %}
     <script async src="https://www.googletagmanager.com/gtag/js?id={{ GOOGLE_ANALYTICS_ID }}"></script>
@@ -34,12 +58,19 @@
     </script>
     {% endif %}
 
+    <!-- Critical CSS: Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-okaidia.min.css" rel="stylesheet" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/toolbar/prism-toolbar.min.css" rel="stylesheet" />
+
+    <!-- Icons: Lazy load with font-display swap -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css"></noscript>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"></noscript>
+
+    <!-- Code highlighting: Defer non-critical -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-okaidia.min.css" rel="stylesheet" media="print" onload="this.media='all'">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/toolbar/prism-toolbar.min.css" rel="stylesheet" media="print" onload="this.media='all'">
 
     <link rel="stylesheet" href="{% static 'css/style.css' %}?v=2050">
     <link rel="stylesheet" href="{% static 'css/sidebar_widgets.css' %}?v=2051">
@@ -58,7 +89,7 @@
         .cyber-card, .card { background: rgba(30, 41, 59, 0.5); border: 1px solid var(--glass-border); transition: all 0.4s; }
         .cyber-card:hover { transform: translateY(-7px); border-color: var(--neon-blue) !important; }
         .cyber-ticker-wrapper { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(15, 23, 42, 0.9); border-top: 1px solid rgba(0, 210, 255, 0.3); height: 35px; z-index: 9999; overflow: hidden; display: flex; align-items: center; }
-        .ticker-content { display: flex; white-space: nowrap; animation: ticker-animation 40s linear infinite; }
+        .ticker-content { display: flex; white-space: nowrap; animation: ticker-animation 80s linear infinite; }
         .ticker-item { padding: 0 30px; color: var(--neon-blue); font-family: 'Courier New', monospace; font-size: 0.8rem; }
         @keyframes ticker-animation { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
         main { padding-bottom: 60px; }
@@ -113,18 +144,19 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav mx-auto">
-                    <li class="nav-item px-2">
-                        <a class="nav-link" href="{% if user.is_authenticated %}#{% else %}{% url 'login' %}{% endif %}" {% if user.is_authenticated %}onclick="openQuizModal()"{% endif %}>
-                            <i class="bi bi-trophy-fill me-1 text-warning"></i>İstatistik Arena
-                        </a>
-                    </li>
-                    <li class="nav-item px-2"><a class="nav-link" href="{% url 'ai_assistant' %}"><i class="bi bi-robot me-1"></i>AI Asistan</a></li>
-                    <li class="nav-item px-2"><a class="nav-link" href="#" onclick="openStoryModal()"><i class="bi bi-star-fill me-1 text-info"></i>Başarı Hikayeleri</a></li>
-                    <li class="nav-item px-2"><a class="nav-link" href="{% url 'about' %}">Vizyon 2050</a></li>
-                    <li class="nav-item px-2"><a class="nav-link" href="{% url 'job_list' %}">
+                    <!-- İstatistik Arena ana sayfada widget olarak taşındı -->
+                    {% if features.ai_assistant %}<li class="nav-item px-2"><a class="nav-link" href="{% url 'ai_assistant' %}"><i class="bi bi-robot me-1"></i>AI Asistan</a></li>{% endif %}
+                    {% if features.success_stories %}<li class="nav-item px-2"><a class="nav-link" href="#" onclick="openStoryModal()"><i class="bi bi-star-fill me-1 text-info"></i>Başarı Hikayeleri</a></li>{% endif %}
+                    {% if features.blog %}<li class="nav-item px-2"><a class="nav-link" href="{% url 'blog_list' %}">
+                        <i class="bi bi-journal-richtext me-1 text-info"></i>Blog
+                    </a></li>{% endif %}
+                    {% if features.market %}<li class="nav-item px-2"><a class="nav-link" href="{% url 'job_list' %}">
                         <i class="bi bi-briefcase-fill me-1 text-success"></i>Hizmetler Pazarı
-                    </a></li>
-                    <li class="nav-item px-2"><a class="nav-link" href="{% url 'contact' %}">İletişim</a></li>
+                    </a></li>{% endif %}
+                    {% if features.yoktez %}<li class="nav-item px-2"><a class="nav-link" href="{% url 'yoktez:landing' %}">
+                        <i class="bi bi-mortarboard me-1 text-warning"></i>Tez Tarama
+                    </a></li>{% endif %}
+                    <li class="nav-item px-2"><a class="nav-link" href="{% url 'about' %}"><i class="bi bi-info-circle me-1"></i>Hakkımızda</a></li>
                 </ul>
                 <div class="d-flex align-items-center">
                     
@@ -133,12 +165,12 @@
                     </a>
 
                     {% if user.is_authenticated %}
-                        <a href="{% url 'inbox' %}" class="nav-link me-3 position-relative text-info">
-                            <i class="bi bi-envelope-paper fs-5"></i>   
+                        {% if features.messaging %}<a href="{% url 'inbox' %}" class="nav-link me-3 position-relative text-info">
+                            <i class="bi bi-envelope-paper fs-5"></i>
                             {% if unread_private_messages_count and unread_private_messages_count > 0 %}
                                 <span class="position-absolute top-2 start-100 translate-middle p-1 bg-danger border border-light rounded-circle"></span>
-                            {% endif %}                         
-                        </a>
+                            {% endif %}
+                        </a>{% endif %}
                         
                         <div class="nav-item dropdown">
                             <a class="btn btn-outline-light btn-sm dropdown-toggle rounded-pill px-3" href="#" id="userDropdown" data-bs-toggle="dropdown">
@@ -150,11 +182,10 @@
                                 <li><a class="dropdown-item" href="{% url 'profile_detail' username=user.username %}"><i class="bi bi-person me-2"></i>Profilim</a></li>
                                 <li><a class="dropdown-item" href="{% url 'profile_edit' %}"><i class="bi bi-gear me-2"></i>Profili Düzenle</a></li>
                                 <li><a class="dropdown-item" href="{% url 'my_payments' %}"><i class="bi bi-credit-card me-2"></i>Ödemelerim</a></li>
-                                <li><a class="dropdown-item" href="{% url 'inbox' %}"><i class="bi bi-chat-dots me-2"></i>Gelen Kutusu</a></li>
+                                {% if features.messaging %}<li><a class="dropdown-item" href="{% url 'inbox' %}"><i class="bi bi-chat-dots me-2"></i>Gelen Kutusu</a></li>{% endif %}
                                 {% if user.is_staff %}
                                 <li><hr class="dropdown-divider border-secondary"></li>
-                                <li><a class="dropdown-item text-info" href="{% url 'admin_dashboard' %}"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a></li>
-                                <li><a class="dropdown-item text-warning" href="/admin/"><i class="bi bi-shield-lock me-2"></i>Django Admin</a></li>
+                                <li><a class="dropdown-item text-info" href="/admin/"><i class="bi bi-speedometer2 me-2"></i>Admin Dashboard</a></li>
                                 {% endif %}
                                 <li><hr class="dropdown-divider border-secondary"></li>
                                 <li>
@@ -275,26 +306,48 @@
 
     <footer class="py-5 mt-5 border-top border-secondary opacity-75 text-center">
         <div class="container text-muted small">
+            <div class="mb-3">
+                <a href="https://www.linkedin.com/company/analizus" target="_blank" class="text-muted mx-2 fs-5" title="LinkedIn"><i class="bi bi-linkedin"></i></a>
+                <a href="https://www.youtube.com/@analizus" target="_blank" class="text-muted mx-2 fs-5" title="YouTube"><i class="bi bi-youtube"></i></a>
+            </div>
             <p>&copy; 2026 Analizus - Akademik Veri Üssü | Vizyon 2050</p>
         </div>
     </footer>
 
+    <!-- Critical JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Code highlighting: Defer loading -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/toolbar/prism-toolbar.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js" defer></script>
+
+    <!-- Native lazy loading for images -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add lazy loading to all images that don't have it
+        document.querySelectorAll('img:not([loading])').forEach(function(img) {
+            img.setAttribute('loading', 'lazy');
+        });
+    });
+    </script>
     
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/toolbar/prism-toolbar.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js"></script>
-    
+    <!-- MathJax: Load only when needed -->
     <script>
       window.MathJax = {
         tex: {
           inlineMath: [['$', '$'], ['\\(', '\\)']],
           displayMath: [['$$', '$$'], ['\\[', '\\]']]
+        },
+        startup: {
+          ready: function() {
+            MathJax.startup.defaultReady();
+          }
         }
       };
     </script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script id="MathJax-script" defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
     <div class="cyber-ticker-wrapper">
         <div class="ticker-content">
@@ -315,17 +368,18 @@
             <!-- Hizmetler -->
             <span class="ticker-item text-info"><i class="bi bi-mortarboard me-1"></i>Akademik Danışmanlık</span>
             <span class="ticker-item text-warning"><i class="bi bi-file-earmark-text me-1"></i>Tez Analizi</span>
-            <span class="ticker-item text-success"><i class="bi bi-journal-text me-1"></i>Makale Desteği</span>
+            <span class="ticker-item text-success"><i class="bi bi-journal-text me-1"></i>Text editörlüğü</span>
             <!-- Analiz Yöntemleri -->
             <span class="ticker-item" style="color: #fd79a8;">Regresyon</span>
             <span class="ticker-item" style="color: #74b9ff;">ANOVA</span>
             <span class="ticker-item" style="color: #55efc4;">Faktör Analizi</span>
             <span class="ticker-item" style="color: #ffeaa7;">SEM</span>
-            <span class="ticker-item" style="color: #dfe6e9;">Güvenilirlik</span>
-            <span class="ticker-item" style="color: #81ecec;">Meta Analiz</span>
+            <span class="ticker-item" style="color: #a1b1c1;">Bibliyometrik analizi</span>
+            <span class="ticker-item" style="color: #dfe6e9;">Geçerlik ve Güvenilirlik</span>
             <!-- Puan Bilgileri -->
             <span class="ticker-item text-warning"><i class="bi bi-trophy me-1"></i>1000 puan = Teklif Verme Yetkisi</span>
-            <span class="ticker-item text-success"><i class="bi bi-star me-1"></i>500 puan = Uzman Rozeti</span>
+            
+            <!-- Tekrar - Sürekli döngü için -->
             <!-- Tekrar - Sürekli döngü için -->
             <span class="ticker-item" style="color: #00f0ff;"><i class="bi bi-lightbulb me-1"></i>Bilimin ışığında veriyi yönetin</span>
             <span class="ticker-item" style="color: #a78bfa;"><i class="bi bi-graph-up-arrow me-1"></i>Akademik başarınız için yanınızdayız</span>
@@ -341,21 +395,23 @@
             <span class="ticker-item" style="color: #ffe66d;"><strong>SmartPLS</strong></span>
             <span class="ticker-item text-info"><i class="bi bi-mortarboard me-1"></i>Akademik Danışmanlık</span>
             <span class="ticker-item text-warning"><i class="bi bi-file-earmark-text me-1"></i>Tez Analizi</span>
-            <span class="ticker-item text-success"><i class="bi bi-journal-text me-1"></i>Makale Desteği</span>
+            <span class="ticker-item text-success"><i class="bi bi-journal-text me-1"></i>Text editörlüğü</span>
             <span class="ticker-item" style="color: #fd79a8;">Regresyon</span>
             <span class="ticker-item" style="color: #74b9ff;">ANOVA</span>
             <span class="ticker-item" style="color: #55efc4;">Faktör Analizi</span>
             <span class="ticker-item" style="color: #ffeaa7;">SEM</span>
-            <span class="ticker-item" style="color: #dfe6e9;">Güvenilirlik</span>
-            <span class="ticker-item" style="color: #81ecec;">Meta Analiz</span>
+            <span class="ticker-item" style="color: #a1b1c1;">Bibliyometrik analizi</span>
+            <span class="ticker-item" style="color: #dfe6e9;">Geçerlik ve Güvenilirlik</span>
+            <!-- Puan Bilgileri -->
             <span class="ticker-item text-warning"><i class="bi bi-trophy me-1"></i>1000 puan = Teklif Verme Yetkisi</span>
-            <span class="ticker-item text-success"><i class="bi bi-star me-1"></i>500 puan = Uzman Rozeti</span>
+            
+            <!-- Tekrar - Sürekli döngü için -->
         </div>
     </div>
 
     {% block extra_js %}
         {% if user.is_authenticated %}
-            <script src="{% static 'js/notifications.js' %}?v=2050"></script>
+            <script src="{% static 'js/notifications.js' %}?v=2052"></script>
         {% endif %}
         <script src="{% static 'js/sidebar_widgets.js' %}"></script>
         <script src="{% static 'js/widget_collapse.js' %}?v=2051"></script>

@@ -26,10 +26,10 @@
                 <a href="{% url 'job_detail' pk=job.pk %}" class="list-group-item list-group-item-action bg-dark text-white border-secondary d-flex justify-content-between align-items-center p-3">
                     <div>
                         <h6 class="mb-1 fw-bold">{{ job.title }}</h6>
-                        <small class="text-muted">{{ job.created_at|date:"d M Y" }} · <span class="text-{{ job.status|yesno:'success,secondary' }}">{{ job.get_status_display }}</span></small>
+                        <small class="text-muted"><i class="bi bi-hash"></i> {{ job.reference_number }} · {{ job.created_at|date:"d M Y" }} · <span class="text-{{ job.status|yesno:'success,secondary' }}">{{ job.get_status_display }}</span></small>
                     </div>
                     <div class="text-end">
-                        <span class="badge bg-info rounded-pill">{{ job.proposal_count }} Teklif</span>
+                        <span class="badge bg-info rounded-pill">{{ job.p_count }} Teklif</span>
                     </div>
                 </a>
                 {% empty %}
@@ -40,12 +40,25 @@
 
         <!-- Verilen Teklifler -->
         <div class="tab-pane fade" id="proposals" role="tabpanel">
+            <!-- Durum Filtresi -->
+            <div class="d-flex justify-content-center gap-2 mb-4">
+                <a href="?status=all#proposals" class="btn btn-sm {% if current_status == 'all' %}btn-info{% else %}btn-outline-secondary{% endif %}">Tümü</a>
+                <a href="?status=pending#proposals" class="btn btn-sm {% if current_status == 'pending' %}btn-warning{% else %}btn-outline-secondary{% endif %}">Beklemede</a>
+                <a href="?status=accepted#proposals" class="btn btn-sm {% if current_status == 'accepted' %}btn-success{% else %}btn-outline-secondary{% endif %}">Kabul Edildi</a>
+                <a href="?status=rejected#proposals" class="btn btn-sm {% if current_status == 'rejected' %}btn-danger{% else %}btn-outline-secondary{% endif %}">Reddedildi</a>
+            </div>
+
             <div class="list-group">
                 {% for proposal in my_proposals %}
                 <a href="{% url 'job_detail' pk=proposal.job.pk %}" class="list-group-item list-group-item-action bg-dark text-white border-secondary p-3">
                     <div class="d-flex justify-content-between align-items-center mb-2">
-                        <h6 class="mb-0 fw-bold">{{ proposal.job.title }}</h6>
-                        <span class="badge bg-{{ proposal.status|yesno:'warning,success,danger' }}">{{ proposal.get_status_display }}</span>
+                        <h6 class="mb-0 fw-bold">{{ proposal.job.title }} <small class="text-muted fw-normal"><i class="bi bi-hash"></i>{{ proposal.job.reference_number }}</small></h6>
+                        <span class="badge 
+                            {% if proposal.status == 'pending' %}bg-warning text-dark
+                            {% elif proposal.status == 'accepted' %}bg-success
+                            {% elif proposal.status == 'rejected' %}bg-danger
+                            {% endif %}
+                        ">{{ proposal.get_status_display }}</span>
                     </div>
                     <div class="d-flex justify-content-between small">
                         <span class="text-muted">Teklifim: <span class="text-success">₺{{ proposal.price }}</span></span>
@@ -53,7 +66,7 @@
                     </div>
                 </a>
                 {% empty %}
-                <div class="text-center py-4 text-muted">Henüz teklif vermediniz.</div>
+                <div class="text-center py-4 text-muted">Bu filtreye uygun teklif bulunamadı.</div>
                 {% endfor %}
             </div>
         </div>
@@ -65,10 +78,10 @@
                 <a href="{% url 'job_detail' pk=job.pk %}" class="list-group-item list-group-item-action bg-dark text-white border-secondary d-flex justify-content-between align-items-center p-3">
                     <div>
                         <h6 class="mb-1 fw-bold">{{ job.title }}</h6>
-                        <small class="text-muted">{{ job.created_at|date:"d M Y" }} · <span class="text-{{ job.status|yesno:'success,secondary' }}">{{ job.get_status_display }}</span> · {{ job.owner.username }}</small>
+                        <small class="text-muted"><i class="bi bi-hash"></i> {{ job.reference_number }} · {{ job.created_at|date:"d M Y" }} · <span class="text-{{ job.status|yesno:'success,secondary' }}">{{ job.get_status_display }}</span> · {{ job.owner.username }}</small>
                     </div>
                     <div class="text-end">
-                        <span class="badge bg-info rounded-pill">{{ job.proposal_count }} Teklif</span>
+                        <span class="badge bg-info rounded-pill">{{ job.p_count }} Teklif</span>
                     </div>
                 </a>
                 {% empty %}

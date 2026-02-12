@@ -14,12 +14,109 @@
     "description": "Akademik Analiz ve Veri Bilimi Topluluğu",
     "url": "https://www.analizus.com",
     "logo": "https://www.analizus.com/static/images/og-image.png",
-    "sameAs": [],
+    "sameAs": [
+        "https://www.linkedin.com/company/analizus",
+        "https://www.youtube.com/@analizus"
+    ],
+    "contactPoint": {
+        "@type": "ContactPoint",
+        "contactType": "customer service",
+        "availableLanguage": "Turkish"
+    },
     "potentialAction": {
         "@type": "SearchAction",
         "target": "https://www.analizus.com/search/?q={search_term_string}",
         "query-input": "required name=search_term_string"
     }
+}
+</script>
+
+<!-- Schema.org WebSite -->
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Analizus",
+    "alternateName": "Analizus - Akademik Analiz Topluluğu",
+    "url": "https://www.analizus.com",
+    "description": "SPSS, Python, R Studio ile istatistik analizi, tez yazımı ve akademik araştırma desteği platformu",
+    "inLanguage": "tr-TR",
+    "publisher": {
+        "@type": "Organization",
+        "name": "Analizus"
+    },
+    "potentialAction": {
+        "@type": "SearchAction",
+        "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": "https://www.analizus.com/search/?q={search_term_string}"
+        },
+        "query-input": "required name=search_term_string"
+    }
+}
+</script>
+
+<!-- Schema.org FAQPage - Sık Sorulan Sorular -->
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+        {
+            "@type": "Question",
+            "name": "SPSS ile istatistik analizi nasıl yapılır?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Analizus platformunda SPSS ile ilgili detaylı rehberler, forum tartışmaları ve uzman desteği bulabilirsiniz. Temel analizlerden ileri düzey tekniklere kadar tüm konularda yardım alabilirsiniz."
+            }
+        },
+        {
+            "@type": "Question",
+            "name": "Tez için hangi istatistik yöntemini kullanmalıyım?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Araştırma sorunuza ve veri tipinize bağlı olarak farklı yöntemler tercih edilir. Forumda sorunuzu paylaşarak uzmanlardan ücretsiz destek alabilirsiniz."
+            }
+        },
+        {
+            "@type": "Question",
+            "name": "Akademik analiz hizmeti nasıl alabilirim?",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Hizmetler Pazarı bölümünden uzmanların ilanlarını inceleyebilir veya kendi projenizi oluşturarak teklif alabilirsiniz."
+            }
+        }
+    ]
+}
+</script>
+
+<!-- Schema.org ItemList - Hizmetler -->
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "name": "Analizus Hizmetleri",
+    "description": "Akademik analiz ve veri bilimi hizmetleri",
+    "itemListElement": [
+        {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "İstatistik Analizi",
+            "description": "SPSS, R, Python ile veri analizi hizmetleri"
+        },
+        {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Tez Danışmanlığı",
+            "description": "Akademik tez yazımı ve metodoloji desteği"
+        },
+        {
+            "@type": "ListItem",
+            "position": 3,
+            "name": "Veri Bilimi Eğitimi",
+            "description": "İstatistik Arena ile interaktif öğrenme"
+        }
+    ]
 }
 </script>
 
@@ -46,170 +143,100 @@
             </div>
         </div>
 
-        <!-- WIDGET: İstatistik Arena Liderleri -->
-        <div class="widget-card">
-            <div class="widget-header" style="color: #ffd700;">
-                <i class="bi bi-trophy-fill"></i>
-                <span>İstatistik Arena Liderleri</span>
+        <!-- QUIZ WIDGET -->
+        {% if quiz_question %}
+        <div class="quiz-widget" id="quizWidget">
+            <div class="quiz-header">
+                <div class="quiz-header-left">
+                    <i class="bi bi-lightbulb-fill"></i>
+                    <span>Kendini Test Et</span>
+                </div>
+                <div class="quiz-meta">
+                    <span class="quiz-category-badge" id="quizCategory">{{ quiz_question.get_category_display }}</span>
+                    <span class="quiz-diff-badge diff-{{ quiz_question.difficulty }}" id="quizDifficulty">{{ quiz_question.get_difficulty_display }}</span>
+                </div>
             </div>
-            <div class="widget-body p-0">
-                {% for score in quiz_leaderboard %}
-                <div class="d-flex align-items-center p-2 border-bottom border-secondary border-opacity-10">
-                    <div class="me-2 position-relative">
-                        <div class="rounded-circle bg-dark border border-secondary d-flex align-items-center justify-content-center text-white fw-bold" style="width: 32px; height: 32px; font-size: 0.8rem; overflow: hidden;">
-                            {% if score.user.profile.avatar %}
-                                <img src="{{ score.user.profile.avatar.url }}" class="w-100 h-100" style="object-fit: cover;">
-                            {% else %}
-                                {{ score.user.username|slice:":1"|upper }}
-                            {% endif %}
-                        </div>
-                        <span class="position-absolute top-0 start-0 translate-middle badge rounded-pill bg-warning text-dark border border-dark" style="font-size: 0.5rem; padding: 2px 4px; z-index: 1;">
-                            {{ forloop.counter }}
-                        </span>
-                    </div>
-                    <div class="flex-grow-1 overflow-hidden">
-                        <a href="{% url 'profile_detail' username=score.user.username %}" class="text-decoration-none text-light small fw-bold d-block text-truncate">{{ score.user.username }}</a>
-                        <small class="text-muted d-block text-truncate" style="font-size: 0.65rem;">{{ score.user.profile.title|default:"Üye" }}</small>
-                    </div>
-                    <div class="text-end ms-2">
-                        <span class="badge bg-dark text-warning border border-warning border-opacity-25">{{ score.correct_answers }} D</span>
-                    </div>
+            <div class="quiz-body">
+                <p class="quiz-question-text" id="quizQuestionText">{{ quiz_question.question }}</p>
+                <div class="quiz-options" id="quizOptions">
+                    <button class="quiz-opt" data-answer="A" data-question-id="{{ quiz_question.id }}" onclick="submitQuizAnswer(this)">
+                        <span class="opt-letter">A</span>
+                        <span class="opt-text">{{ quiz_question.option_a }}</span>
+                    </button>
+                    <button class="quiz-opt" data-answer="B" data-question-id="{{ quiz_question.id }}" onclick="submitQuizAnswer(this)">
+                        <span class="opt-letter">B</span>
+                        <span class="opt-text">{{ quiz_question.option_b }}</span>
+                    </button>
+                    <button class="quiz-opt" data-answer="C" data-question-id="{{ quiz_question.id }}" onclick="submitQuizAnswer(this)">
+                        <span class="opt-letter">C</span>
+                        <span class="opt-text">{{ quiz_question.option_c }}</span>
+                    </button>
+                    <button class="quiz-opt" data-answer="D" data-question-id="{{ quiz_question.id }}" onclick="submitQuizAnswer(this)">
+                        <span class="opt-letter">D</span>
+                        <span class="opt-text">{{ quiz_question.option_d }}</span>
+                    </button>
                 </div>
-                {% empty %}
-                <div class="p-3 text-center text-muted small">Henüz veri yok</div>
-                {% endfor %}
-            </div>
-        </div>
-
-        <!-- WIDGET: Bağış Yap -->
-        <div class="widget-card" id="donation-widget">
-            <div class="widget-header" style="color: #ec4899;">
-                <i class="bi bi-heart-fill"></i>
-                <span>Bizi Destekle</span>
-            </div>
-            <div class="widget-body">
-                <p class="text-muted small mb-3">Bağışçılara <span class="text-warning">Premium üyelik</span> ve <span style="color: #ec4899;">Destekçi rozeti</span> hediye!</p>
-
-                <!-- Miktar Seçimi -->
-                <div class="d-flex gap-2 mb-3 flex-wrap">
-                    <button type="button" class="btn btn-sm btn-outline-secondary donation-amount-btn" data-amount="50">50 TL</button>
-                    <button type="button" class="btn btn-sm btn-outline-secondary donation-amount-btn active" data-amount="100">100 TL</button>
-                    <button type="button" class="btn btn-sm btn-outline-secondary donation-amount-btn" data-amount="200">200 TL</button>
-                </div>
-
-                <!-- Özel Miktar -->
-                <div class="input-group input-group-sm mb-3">
-                    <input type="number" class="form-control" id="custom-amount" placeholder="Özel miktar" min="5">
-                    <span class="input-group-text">TL</span>
-                </div>
-
-                {% if not user.is_authenticated %}
-                <!-- E-posta (giriş yapmamış kullanıcılar için) -->
-                <div class="mb-3">
-                    <input type="email" class="form-control form-control-sm" id="donation-email" placeholder="E-posta adresiniz" required>
-                </div>
-                {% endif %}
-
-                <!-- Anonim Bağış -->
-                <div class="form-check mb-3">
-                    <input type="checkbox" class="form-check-input" id="anonymous-donation">
-                    <label class="form-check-label small text-muted" for="anonymous-donation">Anonim bağış yap</label>
-                </div>
-
-                <!-- Bağış Butonu -->
-                <button type="button" class="btn btn-sm w-100" id="donate-btn" style="background: linear-gradient(135deg, #ec4899, #f472b6); color: white; border: none;">
-                    <i class="bi bi-heart-fill me-1"></i> Bağış Yap
+                {% if user.is_authenticated %}
+                <button class="quiz-skip-btn" id="quizSkipBtn" onclick="loadNextQuestion()">
+                    <i class="bi bi-skip-forward me-1"></i>Soruyu Geç
                 </button>
+                {% endif %}
+                <div class="quiz-feedback" id="quizFeedback" style="display:none;">
+                    <div class="feedback-icon" id="feedbackIcon"></div>
+                    <p class="feedback-text" id="feedbackText"></p>
+                    <p class="feedback-explanation" id="feedbackExplanation"></p>
+                    {% if user.is_authenticated %}
+                    <button class="quiz-next-btn" id="quizNextBtn" onclick="loadNextQuestion()">
+                        <i class="bi bi-arrow-right-circle me-1"></i>Sonraki Soru
+                    </button>
+                    {% endif %}
+                </div>
             </div>
         </div>
+        {% endif %}
 
     </aside>
 
     <div class="analizus-home">
 
-        <!-- HERO SECTION WITH STATS INSIDE -->
+        <!-- HERO SECTION -->
         <div class="hero-section">
-            <!-- SVG Circuit Background -->
-            <svg class="circuit-svg circuit-left" viewBox="0 0 200 400" preserveAspectRatio="none">
-                <defs>
-                    <linearGradient id="cyan-grad-l" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" style="stop-color:#00f0ff;stop-opacity:0.6"/>
-                        <stop offset="100%" style="stop-color:#00f0ff;stop-opacity:0"/>
-                    </linearGradient>
-                </defs>
-                <path d="M0 40 H60 V20 H100 V40 H140" stroke="url(#cyan-grad-l)" stroke-width="1.5" fill="none"/>
-                <path d="M0 80 H40 V60 H80" stroke="url(#cyan-grad-l)" stroke-width="1.5" fill="none"/>
-                <path d="M0 120 H70 V100 H110 V130" stroke="url(#cyan-grad-l)" stroke-width="1.5" fill="none"/>
-                <path d="M0 180 H50 V160 H90" stroke="url(#cyan-grad-l)" stroke-width="1.5" fill="none"/>
-                <path d="M0 240 H80 V220 H120" stroke="url(#cyan-grad-l)" stroke-width="1.5" fill="none"/>
-                <path d="M0 300 H45 V280 H85 V310" stroke="url(#cyan-grad-l)" stroke-width="1.5" fill="none"/>
-                <path d="M0 360 H65 V340 H105" stroke="url(#cyan-grad-l)" stroke-width="1.5" fill="none"/>
-                <circle cx="60" cy="40" r="4" fill="#00f0ff" class="circuit-node"/>
-                <circle cx="100" cy="20" r="3" fill="#00f0ff" class="circuit-node n2"/>
-                <circle cx="40" cy="80" r="4" fill="#00f0ff" class="circuit-node n3"/>
-                <circle cx="70" cy="120" r="3" fill="#00f0ff" class="circuit-node"/>
-                <circle cx="50" cy="180" r="4" fill="#00f0ff" class="circuit-node n2"/>
-                <circle cx="80" cy="240" r="3" fill="#00f0ff" class="circuit-node n3"/>
-                <circle cx="45" cy="300" r="4" fill="#00f0ff" class="circuit-node"/>
-                <circle cx="65" cy="360" r="3" fill="#00f0ff" class="circuit-node n2"/>
-            </svg>
-
-            <svg class="circuit-svg circuit-right" viewBox="0 0 200 400" preserveAspectRatio="none">
-                <defs>
-                    <linearGradient id="cyan-grad-r" x1="100%" y1="0%" x2="0%" y2="0%">
-                        <stop offset="0%" style="stop-color:#00f0ff;stop-opacity:0.6"/>
-                        <stop offset="100%" style="stop-color:#00f0ff;stop-opacity:0"/>
-                    </linearGradient>
-                </defs>
-                <path d="M200 40 H140 V20 H100 V40 H60" stroke="url(#cyan-grad-r)" stroke-width="1.5" fill="none"/>
-                <path d="M200 80 H160 V60 H120" stroke="url(#cyan-grad-r)" stroke-width="1.5" fill="none"/>
-                <path d="M200 120 H130 V100 H90 V130" stroke="url(#cyan-grad-r)" stroke-width="1.5" fill="none"/>
-                <path d="M200 180 H150 V160 H110" stroke="url(#cyan-grad-r)" stroke-width="1.5" fill="none"/>
-                <path d="M200 240 H120 V220 H80" stroke="url(#cyan-grad-r)" stroke-width="1.5" fill="none"/>
-                <path d="M200 300 H155 V280 H115 V310" stroke="url(#cyan-grad-r)" stroke-width="1.5" fill="none"/>
-                <path d="M200 360 H135 V340 H95" stroke="url(#cyan-grad-r)" stroke-width="1.5" fill="none"/>
-                <circle cx="140" cy="40" r="4" fill="#00f0ff" class="circuit-node n3"/>
-                <circle cx="100" cy="20" r="3" fill="#00f0ff" class="circuit-node"/>
-                <circle cx="160" cy="80" r="4" fill="#00f0ff" class="circuit-node n2"/>
-                <circle cx="130" cy="120" r="3" fill="#00f0ff" class="circuit-node n3"/>
-                <circle cx="150" cy="180" r="4" fill="#00f0ff" class="circuit-node"/>
-                <circle cx="120" cy="240" r="3" fill="#00f0ff" class="circuit-node n2"/>
-                <circle cx="155" cy="300" r="4" fill="#00f0ff" class="circuit-node n3"/>
-                <circle cx="135" cy="360" r="3" fill="#00f0ff" class="circuit-node"/>
-            </svg>
-
-            <!-- Corner Glow Dots -->
-            <div class="corner-dot top-left"></div>
-            <div class="corner-dot top-right"></div>
-            <div class="corner-dot bottom-left"></div>
-            <div class="corner-dot bottom-right"></div>
-
-            <!-- Hero Content -->
             <div class="hero-content">
                 <h1 class="hero-title">ANALİZUS</h1>
-                <p class="hero-subtitle">BİLİMİN IŞIĞINDA VERİYİ YÖNET</p>
+                <p class="hero-subtitle">Akademik Analiz ve Veri Bilimi Topluluğu</p>
+
+                {% if not user.is_authenticated %}
+                <div class="hero-cta-buttons">
+                    <a href="{% url 'register' %}" class="cta-btn cta-primary">
+                        <i class="bi bi-rocket-takeoff-fill me-2"></i>Ücretsiz Başla
+                    </a>
+                    <a href="{% url 'how_it_works' %}" class="cta-btn cta-secondary">
+                        <i class="bi bi-question-circle me-2"></i>Nasıl Çalışır?
+                    </a>
+                </div>
+                {% endif %}
             </div>
 
-            <!-- Stats Pills Inside Hero -->
+            <!-- Stats Pills -->
             <div class="stats-pills">
                 <div class="stat-pill">
                     <div class="pill-icon cyan"><i class="bi bi-chat-square-text-fill"></i></div>
                     <div class="pill-info">
-                        <span class="pill-label">Toplam Konu</span>
+                        <span class="pill-label">Konu</span>
                         <span class="pill-value">{{ total_topics }}</span>
                     </div>
                 </div>
                 <div class="stat-pill">
                     <div class="pill-icon purple"><i class="bi bi-file-text-fill"></i></div>
                     <div class="pill-info">
-                        <span class="pill-label">Toplam Gönderi</span>
+                        <span class="pill-label">Gönderi</span>
                         <span class="pill-value">{{ total_posts }}</span>
                     </div>
                 </div>
                 <div class="stat-pill">
                     <div class="pill-icon green"><i class="bi bi-people-fill"></i></div>
                     <div class="pill-info">
-                        <span class="pill-label">Toplam Üye</span>
+                        <span class="pill-label">Üye</span>
                         <span class="pill-value">{{ total_users }}</span>
                     </div>
                 </div>
@@ -250,7 +277,7 @@
         <div class="widget-card full-width mb-4">
             <div class="widget-header" style="color: #fbbf24;">
                 <i class="bi bi-stars"></i>
-                <span>Öne Çıkan Projeler</span>
+                <span>Uzman Arayan Projeler</span>
                 <a href="{% url 'job_list' %}" class="ms-auto btn btn-sm btn-outline-warning py-0" style="font-size: 0.75rem; border: none;">Tümünü Gör <i class="bi bi-arrow-right"></i></a>
             </div>
             <div class="widget-body">
@@ -268,6 +295,7 @@
                             <div class="d-flex justify-content-between align-items-center small">
                                 <span class="text-secondary"><i class="bi bi-clock"></i> {{ job.created_at|timesince }} önce</span>
                                 <span class="text-primary fw-bold">{{ job.budget_min|floatformat:0 }} ₺</span>
+                                <span class="text-secondary ms-3"><i class="bi bi-people"></i> {{ job.p_count }} Teklif</span>
                             </div>
                         </div>
                     </div>
@@ -277,42 +305,6 @@
         </div>
         {% endif %}
 
-        <!-- SON AKTİVİTELER - Sections Altında -->
-        <div class="activity-section mt-4">
-            <div class="widget-card full-width">
-                <div class="widget-header green">
-                    <i class="bi bi-lightning-fill"></i>
-                    <span>Son Aktiviteler</span>
-                </div>
-                <div class="widget-body activity-body">
-                    {% for act in recent_activities %}
-                    <div class="activity-item">
-                        <div class="activity-avatar" {% if act.type == 'donation' %}style="background: linear-gradient(135deg, #ec4899, #f472b6);"{% endif %}>
-                            {{ act.created_by.username|slice:":2"|upper }}
-                        </div>
-                        <div class="activity-content">
-                            {% if act.type == 'donation' %}
-                            <b>{{ act.created_by.username }}</b>
-                            <span style="color: #ec4899;"><i class="bi bi-heart-fill"></i> {{ act.amount|floatformat:0 }} TL bağış yaptı</span>
-                            <span class="badge bg-warning text-dark ms-1" style="font-size: 0.6rem;">+{{ act.premium_days }} gün Premium</span>
-                            {% else %}
-                            <b>{{ act.created_by.username }}</b>
-                            "<a href="{% url 'topic_detail' pk=act.topic.pk %}">{{ act.topic.subject|truncatechars:35 }}</a>" konusuna yanıt verdi
-                            {% endif %}
-                        </div>
-                        <span class="activity-time">{{ act.created_at|timesince }} önce</span>
-                    </div>
-                    {% empty %}
-                    <p class="empty-text">Henüz aktivite yok</p>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-
-        <!-- Floating Stars -->
-        <div class="floating-star star-1">✦</div>
-        <div class="floating-star star-2">✦</div>
-
     </div>
 </div>
 
@@ -320,37 +312,19 @@
 
 {% block above_sidebar %}
 
-<!-- WIDGET: Analiz Talebi -->
-<div class="widget-card full-width jobs-widget">
-    <div class="widget-header purple">
-        <a href="{% if user.is_authenticated %}{% url 'job_list' %}{% else %}{% url 'login' %}{% endif %}" class="d-flex align-items-center w-100 text-decoration-none" style="color: inherit;">
-            <i class="bi bi-bar-chart-line me-2"></i>
-            <span>Analiz Talebi</span>
-        </a>
+<!-- WIDGET: Bağış Yap -->
+{% if user.is_authenticated %}
+<div class="widget-card" id="donation-widget" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#donationModal">
+    <div class="widget-header" style="color: #ec4899;">
+        <i class="bi bi-heart-fill"></i>
+        <span>Bizi Destekle</span>
     </div>
     <div class="widget-body">
-        {% for job in recent_jobs %}
-        <a href="{% url 'job_detail' pk=job.pk %}" class="widget-item">
-            <div class="item-avatar" style="background: rgba(168, 85, 247, 0.15); color: #a855f7; border: 1px solid rgba(168, 85, 247, 0.3);">
-                <i class="bi bi-graph-up"></i>
-            </div>
-            <div class="item-content">
-                <span class="item-title">{{ job.title|truncatechars:30 }}</span>
-                <span class="item-meta">
-                    <i class="bi bi-person"></i> {{ job.owner.username }}
-                    <span class="mx-1">&bull;</span>
-                    {{ job.created_at|timesince }} önce
-                </span>
-            </div>
-            <div class="text-end ms-2">
-                <span class="badge bg-dark text-white border border-secondary">{{ job.budget_max|floatformat:0 }}₺</span>
-            </div>
-        </a>
-        {% empty %}
-        <p class="empty-text">Henüz bir talep bildirilmedi</p>
-        {% endfor %}
+        <p class="text-muted small mb-2">Platformumuzu destekleyerek gelişimine katkıda bulunun.</p>
+        <p class="text-muted small mb-0">Tüm destekçilerimize <span class="text-warning">Premium üyelik</span> ve <span style="color: #ec4899;">Destekçi rozeti</span> hediye edilecektir.</p>
     </div>
 </div>
+{% endif %}
 
 <!-- WIDGET: Son Değerlendirmeler -->
 {% if recent_reviews %}
@@ -472,87 +446,11 @@
 
     border-radius: 20px;
 
-    padding: 50px 20px 30px;
+    padding: 30px 20px 20px;
 
     margin-bottom: 20px;
 
-    overflow: hidden;
-
 }
-
-
-
-/* SVG Circuits */
-
-.circuit-svg {
-
-    position: absolute;
-
-    top: 0;
-
-    height: 100%;
-
-    width: 180px;
-
-    pointer-events: none;
-
-}
-
-.circuit-svg.circuit-left { left: 0; }
-
-.circuit-svg.circuit-right { right: 0; }
-
-
-
-.circuit-node {
-
-    filter: drop-shadow(0 0 4px #00f0ff) drop-shadow(0 0 8px #00f0ff);
-
-    animation: node-pulse 2s ease-in-out infinite;
-
-}
-
-.circuit-node.n2 { animation-delay: 0.5s; }
-
-.circuit-node.n3 { animation-delay: 1s; }
-
-
-
-@keyframes node-pulse {
-
-    0%, 100% { opacity: 0.4; }
-
-    50% { opacity: 1; }
-
-}
-
-
-
-/* Corner Dots */
-
-.corner-dot {
-
-    position: absolute;
-
-    width: 6px;
-
-    height: 6px;
-
-    background: #00f0ff;
-
-    border-radius: 50%;
-
-    box-shadow: 0 0 8px #00f0ff, 0 0 16px #00f0ff;
-
-}
-
-.corner-dot.top-left { top: 15px; left: 15px; }
-
-.corner-dot.top-right { top: 15px; right: 15px; }
-
-.corner-dot.bottom-left { bottom: 15px; left: 15px; }
-
-.corner-dot.bottom-right { bottom: 15px; right: 15px; }
 
 
 
@@ -566,7 +464,7 @@
 
     text-align: center;
 
-    margin-bottom: 35px;
+    margin-bottom: 20px;
 
 }
 
@@ -576,13 +474,13 @@
 
     font-family: 'Arial Black', Impact, sans-serif;
 
-    font-size: 5rem;
+    font-size: 3.5rem;
 
     font-weight: 900;
 
-    letter-spacing: 18px;
+    letter-spacing: 14px;
 
-    margin: 0 0 8px;
+    margin: 0 0 6px;
 
     background: linear-gradient(180deg, #ffffff 0%, #00e5ff 50%, #a855f7 100%);
 
@@ -592,19 +490,7 @@
 
     background-clip: text;
 
-    filter: drop-shadow(0 0 30px rgba(0, 229, 255, 0.6)) drop-shadow(0 0 60px rgba(168, 85, 247, 0.3));
-
-    animation: title-glow 3s ease-in-out infinite alternate;
-
-}
-
-
-
-@keyframes title-glow {
-
-    from { filter: drop-shadow(0 0 25px rgba(0, 229, 255, 0.5)) drop-shadow(0 0 50px rgba(168, 85, 247, 0.2)); }
-
-    to { filter: drop-shadow(0 0 40px rgba(0, 229, 255, 0.8)) drop-shadow(0 0 80px rgba(168, 85, 247, 0.4)); }
+    filter: drop-shadow(0 0 20px rgba(0, 229, 255, 0.4));
 
 }
 
@@ -612,21 +498,77 @@
 
 .hero-subtitle {
 
-    font-size: 0.95rem;
+    font-size: 0.85rem;
 
-    color: #475569;
+    color: #64748b;
 
-    letter-spacing: 8px;
+    letter-spacing: 3px;
 
-    text-transform: uppercase;
-
-    margin: 0;
+    margin: 0 0 20px;
 
 }
 
+/* Hero CTA Buttons */
+.hero-cta-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+}
 
+.cta-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 14px 32px;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
 
-/* Stats Pills Inside Hero */
+.cta-btn.cta-primary {
+    background: linear-gradient(135deg, #00f0ff 0%, #0099ff 50%, #a855f7 100%);
+    color: #000;
+    box-shadow: 0 4px 20px rgba(0, 240, 255, 0.3), 0 0 40px rgba(0, 240, 255, 0.1);
+}
+
+.cta-btn.cta-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(0, 240, 255, 0.4), 0 0 60px rgba(0, 240, 255, 0.2);
+}
+
+.cta-btn.cta-secondary {
+    background: rgba(255, 255, 255, 0.05);
+    color: #e2e8f0;
+    border: 1px solid rgba(0, 240, 255, 0.3);
+}
+
+.cta-btn.cta-secondary:hover {
+    background: rgba(0, 240, 255, 0.1);
+    border-color: #00f0ff;
+    color: #00f0ff;
+    transform: translateY(-3px);
+}
+
+@media (max-width: 480px) {
+    .hero-cta-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+    .cta-btn {
+        width: 100%;
+        max-width: 280px;
+        justify-content: center;
+        padding: 12px 24px;
+        font-size: 0.9rem;
+    }
+}
+
+/* Stats Pills */
 
 .stats-pills {
 
@@ -1092,129 +1034,6 @@
 
 
 
-/* ===== ACTIVITY ===== */
-
-.activity-body { max-height: 200px; }
-
-
-
-.activity-item {
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 10px;
-
-    padding: 10px 0;
-
-    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-
-}
-
-
-
-.activity-item:last-child { border-bottom: none; }
-
-
-
-.activity-avatar {
-
-    width: 34px;
-
-    height: 34px;
-
-    border-radius: 50%;
-
-    background: linear-gradient(135deg, #22c55e, #16a34a);
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    color: #fff;
-
-    font-weight: 700;
-
-    font-size: 0.65rem;
-
-    flex-shrink: 0;
-
-}
-
-
-
-.activity-content {
-
-    flex: 1;
-
-    color: #94a3b8;
-
-    font-size: 0.8rem;
-
-}
-
-
-
-.activity-content b { color: #00f0ff; }
-
-.activity-content a { color: #e2e8f0; text-decoration: none; }
-
-.activity-content a:hover { color: #00f0ff; }
-
-
-
-.activity-time {
-
-    color: #475569;
-
-    font-size: 0.65rem;
-
-    white-space: nowrap;
-
-}
-
-
-
-/* ===== FLOATING STARS ===== */
-
-.floating-star {
-
-    position: fixed;
-
-    font-size: 1.3rem;
-
-    color: #00f0ff;
-
-    text-shadow: 0 0 12px #00f0ff;
-
-    animation: twinkle 3s ease-in-out infinite;
-
-    pointer-events: none;
-
-    z-index: 50;
-
-}
-
-
-
-.floating-star.star-1 { top: 120px; right: 25px; }
-
-.floating-star.star-2 { bottom: 100px; left: 25px; animation-delay: 1.5s; }
-
-
-
-@keyframes twinkle {
-
-    0%, 100% { opacity: 0.3; transform: scale(1) rotate(0deg); }
-
-    50% { opacity: 1; transform: scale(1.15) rotate(180deg); }
-
-}
-
-
 
 /* ===== EMPTY & SCROLLBAR ===== */
 
@@ -1254,11 +1073,11 @@
 
 @media (max-width: 768px) {
 
-    .hero-title { font-size: 3rem; letter-spacing: 10px; }
+    .hero-title { font-size: 2.5rem; letter-spacing: 8px; }
 
-    .hero-subtitle { font-size: 0.75rem; letter-spacing: 5px; }
+    .hero-subtitle { font-size: 0.7rem; letter-spacing: 2px; }
 
-    .hero-section { padding: 35px 15px 25px; }
+    .hero-section { padding: 24px 15px 16px; }
 
     .stat-pill { padding: 6px 14px 6px 6px; }
 
@@ -1268,22 +1087,181 @@
 
     .pill-label { font-size: 0.55rem; }
 
-    .circuit-svg { width: 100px; }
-
-    .floating-star { display: none; }
-
 }
 
 
 
 @media (max-width: 480px) {
 
-    .hero-title { font-size: 2.2rem; letter-spacing: 6px; }
+    .hero-title { font-size: 1.8rem; letter-spacing: 5px; }
 
     .stats-pills { flex-direction: column; align-items: center; }
 
     .stat-pill { width: 80%; max-width: 220px; }
 
+}
+
+/* ===== QUIZ WIDGET ===== */
+.quiz-widget {
+    background: linear-gradient(135deg, #0a0f1a 0%, #101829 100%);
+    border: 1px solid rgba(0, 240, 255, 0.15);
+    border-radius: 16px;
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+.quiz-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.quiz-header-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #fbbf24;
+    font-weight: 700;
+    font-size: 0.95rem;
+}
+.quiz-header-left i { font-size: 1.1rem; }
+.quiz-meta { display: flex; gap: 8px; }
+.quiz-category-badge {
+    background: rgba(0, 240, 255, 0.12);
+    color: #00f0ff;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+.quiz-diff-badge {
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+.quiz-diff-badge.diff-easy { background: rgba(34,197,94,0.15); color: #22c55e; }
+.quiz-diff-badge.diff-medium { background: rgba(251,191,36,0.15); color: #fbbf24; }
+.quiz-diff-badge.diff-hard { background: rgba(239,68,68,0.15); color: #ef4444; }
+.quiz-body { padding: 14px; }
+.quiz-question-text {
+    color: #e2e8f0;
+    font-size: 0.85rem;
+    font-weight: 500;
+    line-height: 1.5;
+    margin-bottom: 14px;
+}
+.quiz-options { display: flex; flex-direction: column; gap: 10px; }
+.quiz-opt {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 10px;
+    padding: 10px 12px;
+    color: #cbd5e1;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+    width: 100%;
+}
+.quiz-opt:hover:not(:disabled) {
+    background: rgba(0, 240, 255, 0.06);
+    border-color: rgba(0, 240, 255, 0.25);
+    color: #fff;
+    transform: translateX(4px);
+}
+.quiz-opt:disabled { cursor: default; opacity: 0.7; }
+.quiz-opt.correct {
+    background: rgba(34,197,94,0.15) !important;
+    border-color: #22c55e !important;
+    color: #22c55e !important;
+    opacity: 1 !important;
+}
+.quiz-opt.wrong {
+    background: rgba(239,68,68,0.15) !important;
+    border-color: #ef4444 !important;
+    color: #ef4444 !important;
+    opacity: 1 !important;
+}
+.opt-letter {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.75rem;
+    flex-shrink: 0;
+}
+.quiz-opt.correct .opt-letter { background: rgba(34,197,94,0.3); }
+.quiz-opt.wrong .opt-letter { background: rgba(239,68,68,0.3); }
+.opt-text { flex: 1; }
+
+/* Quiz Feedback */
+.quiz-feedback {
+    margin-top: 16px;
+    padding: 16px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    text-align: center;
+}
+.feedback-icon { font-size: 2rem; margin-bottom: 8px; }
+.feedback-text { color: #e2e8f0; font-weight: 600; margin-bottom: 4px; font-size: 0.9rem; }
+.feedback-explanation { color: #94a3b8; font-size: 0.82rem; line-height: 1.5; margin-bottom: 12px; }
+.quiz-next-btn {
+    background: linear-gradient(135deg, #00f0ff 0%, #0099ff 100%);
+    color: #000;
+    border: none;
+    border-radius: 25px;
+    padding: 8px 24px;
+    font-weight: 600;
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.quiz-next-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0,240,255,0.3); }
+.quiz-next-btn:disabled { opacity: 0.5; cursor: default; transform: none; box-shadow: none; }
+
+/* Skip button */
+.quiz-skip-btn {
+    display: block;
+    margin: 12px auto 0;
+    background: none;
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #64748b;
+    border-radius: 20px;
+    padding: 6px 18px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.quiz-skip-btn:hover { color: #94a3b8; border-color: rgba(255,255,255,0.2); }
+
+/* Quiz loading */
+.quiz-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 40px;
+    color: #64748b;
+    font-size: 0.85rem;
+}
+.quiz-loading .spinner-border { width: 1rem; height: 1rem; border-width: 2px; }
+
+@media (max-width: 768px) {
+    .quiz-header { flex-direction: column; gap: 10px; align-items: flex-start; }
+    .quiz-body { padding: 16px; }
+    .quiz-opt { padding: 10px 14px; font-size: 0.82rem; }
 }
 
 /* ===== DONATION WIDGET ===== */
@@ -1317,152 +1295,278 @@
 
 <script>
 
-function checkAnswer(btn, correctAnswer) {
+// Quiz Widget - API entegrasyonu
+const isAuthenticated = {{ user.is_authenticated|yesno:"true,false" }};
 
-    const userAnswer = btn.dataset.answer;
-
-    const allOptions = document.querySelectorAll('.quiz-option');
-
-
-
-    // Tüm butonları devre dışı bırak
-
-    allOptions.forEach(opt => {
-
-        opt.disabled = true;
-
-        if (opt.dataset.answer === correctAnswer) {
-
-            opt.classList.add('correct');
-
-        }
-
-    });
-
-
-
-    // Yanlış cevap verdiyse kırmızı yap
-
-    if (userAnswer !== correctAnswer) {
-
-        btn.classList.add('wrong');
-
-    }
-
-
-
-    // 2 saniye sonra kartı gizle
-
-    setTimeout(() => {
-
-        document.getElementById('quizCard').classList.add('hidden');
-
-    }, 2000);
-
+function getCSRFToken() {
+    const el = document.querySelector('[name=csrfmiddlewaretoken]');
+    if (el) return el.value;
+    const cookie = document.cookie.split(';').find(c => c.trim().startsWith('csrftoken='));
+    return cookie ? cookie.split('=')[1] : '';
 }
 
-// ===== DONATION WIDGET =====
-document.addEventListener('DOMContentLoaded', function() {
-    const amountBtns = document.querySelectorAll('.donation-amount-btn');
-    const customAmountInput = document.getElementById('custom-amount');
-    const donateBtn = document.getElementById('donate-btn');
-    let selectedAmount = 100;
+function submitQuizAnswer(btn) {
+    if (!isAuthenticated) {
+        window.location.href = '{% url "login" %}?next=/';
+        return;
+    }
 
-    // Miktar butonları
-    amountBtns.forEach(btn => {
-        btn.addEventListener('click', function() {
-            amountBtns.forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-            selectedAmount = parseInt(this.dataset.amount);
-            customAmountInput.value = '';
-        });
-    });
+    const questionId = btn.dataset.questionId;
+    const answer = btn.dataset.answer;
+    const allOpts = document.querySelectorAll('.quiz-opt');
+    allOpts.forEach(o => o.disabled = true);
+    const skipBtn = document.getElementById('quizSkipBtn');
+    if (skipBtn) skipBtn.style.display = 'none';
 
-    // Özel miktar
-    customAmountInput.addEventListener('input', function() {
-        if (this.value) {
-            amountBtns.forEach(b => b.classList.remove('active'));
-            selectedAmount = parseInt(this.value) || 0;
-        }
-    });
+    fetch('/api/quiz/answer/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRFToken() },
+        body: JSON.stringify({ question_id: questionId, answer: answer })
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            // Doğru/yanlış göster
+            allOpts.forEach(o => {
+                if (o.dataset.answer === data.correct_answer) o.classList.add('correct');
+            });
+            if (!data.is_correct) btn.classList.add('wrong');
 
-    // Bağış butonu
-    donateBtn.addEventListener('click', function() {
-        const amount = customAmountInput.value ? parseInt(customAmountInput.value) : selectedAmount;
-        const emailInput = document.getElementById('donation-email');
-        const email = emailInput ? emailInput.value : '';
-        const isAnonymous = document.getElementById('anonymous-donation').checked;
+            // Feedback göster
+            const fb = document.getElementById('quizFeedback');
+            const icon = document.getElementById('feedbackIcon');
+            const text = document.getElementById('feedbackText');
+            const expl = document.getElementById('feedbackExplanation');
 
-        if (amount < 5) {
-            alert('Minimum bağış miktarı 5 TL\'dir.');
-            return;
-        }
-
-        {% if not user.is_authenticated %}
-        if (!email) {
-            alert('Lütfen e-posta adresinizi girin.');
-            return;
-        }
-        {% endif %}
-
-        // Butonu devre dışı bırak
-        donateBtn.disabled = true;
-        donateBtn.innerHTML = '<i class="bi bi-hourglass-split me-1"></i> Yükleniyor...';
-
-        // API'ye istek gönder
-        fetch('{% url "create_donation" %}', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': '{{ csrf_token }}'
-            },
-            body: JSON.stringify({
-                amount: amount,
-                email: email,
-                is_anonymous: isAnonymous
-            })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success && data.checkoutFormContent) {
-                // iyzico checkout formunu göster
-                const formContainer = document.createElement('div');
-                formContainer.id = 'iyzico-checkout-container';
-                document.body.appendChild(formContainer);
-
-                // Script'i ayrı olarak çalıştır
-                const tempDiv = document.createElement('div');
-                tempDiv.innerHTML = data.checkoutFormContent;
-
-                // Script elementlerini bul ve çalıştır
-                const scripts = tempDiv.querySelectorAll('script');
-                scripts.forEach(script => {
-                    const newScript = document.createElement('script');
-                    if (script.src) {
-                        newScript.src = script.src;
-                    } else {
-                        newScript.textContent = script.textContent;
-                    }
-                    document.body.appendChild(newScript);
-                });
-
-                // Script olmayan içeriği ekle
-                formContainer.innerHTML = tempDiv.innerHTML.replace(/<script[\s\S]*?<\/script>/gi, '');
+            if (data.is_correct) {
+                icon.innerHTML = '&#10003;';
+                icon.style.color = '#22c55e';
+                text.textContent = 'Doğru! +10 puan kazandın';
+                text.style.color = '#22c55e';
             } else {
-                alert(data.error || 'Bir hata oluştu.');
-                donateBtn.disabled = false;
-                donateBtn.innerHTML = '<i class="bi bi-heart-fill me-1"></i> Bağış Yap';
+                icon.innerHTML = '&#10007;';
+                icon.style.color = '#ef4444';
+                text.textContent = 'Yanlış! Doğru cevap: ' + data.correct_answer;
+                text.style.color = '#ef4444';
             }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Bağlantı hatası oluştu.');
-            donateBtn.disabled = false;
-            donateBtn.innerHTML = '<i class="bi bi-heart-fill me-1"></i> Bağış Yap';
+            expl.textContent = data.explanation || '';
+            if (data.badge_awarded) {
+                expl.innerHTML += '<br><span style="color:#fbbf24;">&#127942; Yeni rozet: ' + data.badge_awarded + '</span>';
+            }
+            fb.style.display = 'block';
+        }
+    })
+    .catch(() => {
+        allOpts.forEach(o => o.disabled = false);
+    });
+}
+
+function loadNextQuestion() {
+    const btn = document.getElementById('quizNextBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Yükleniyor...';
+
+    fetch('/api/quiz/random/')
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            const q = data.question;
+            document.getElementById('quizQuestionText').textContent = q.question;
+            document.getElementById('quizCategory').textContent = q.category;
+
+            const diffEl = document.getElementById('quizDifficulty');
+            diffEl.textContent = q.difficulty;
+            diffEl.className = 'quiz-diff-badge diff-' + (q.difficulty === 'Kolay' ? 'easy' : q.difficulty === 'Zor' ? 'hard' : 'medium');
+
+            const optContainer = document.getElementById('quizOptions');
+            optContainer.innerHTML = '';
+            ['A','B','C','D'].forEach(letter => {
+                const b = document.createElement('button');
+                b.className = 'quiz-opt';
+                b.dataset.answer = letter;
+                b.dataset.questionId = q.id;
+                b.onclick = function() { submitQuizAnswer(this); };
+                b.innerHTML = '<span class="opt-letter">' + letter + '</span><span class="opt-text">' + q.options[letter] + '</span>';
+                optContainer.appendChild(b);
+            });
+
+            document.getElementById('quizFeedback').style.display = 'none';
+            const skipBtn = document.getElementById('quizSkipBtn');
+            if (skipBtn) skipBtn.style.display = 'block';
+        } else {
+            document.getElementById('feedbackText').textContent = data.error;
+            document.getElementById('feedbackText').style.color = '#fbbf24';
+            document.getElementById('feedbackExplanation').textContent = '';
+            document.getElementById('feedbackIcon').innerHTML = '&#128564;';
+            document.getElementById('feedbackIcon').style.color = '#fbbf24';
+            btn.style.display = 'none';
+        }
+    })
+    .finally(() => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-arrow-right-circle me-1"></i>Sonraki Soru';
+    });
+}
+
+// IBAN kopyalama fonksiyonu
+function copyText(text, btn) {
+    navigator.clipboard.writeText(text).then(() => {
+        const originalHTML = btn.innerHTML;
+        btn.innerHTML = '<i class="bi bi-check"></i>';
+        btn.classList.remove('btn-outline-info');
+        btn.classList.add('btn-success');
+        setTimeout(() => {
+            btn.innerHTML = originalHTML;
+            btn.classList.remove('btn-success');
+            btn.classList.add('btn-outline-info');
+        }, 2000);
+    });
+}
+</script>
+
+<!-- Bağış Modal -->
+{% if user.is_authenticated %}
+<div class="modal fade" id="donationModal" tabindex="-1" aria-labelledby="donationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark border border-secondary" style="border-radius: 20px;">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title text-white" id="donationModalLabel">
+                    <i class="bi bi-heart-fill me-2" style="color: #ec4899;"></i>Bizi Destekle
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Kapat"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted mb-4">Platformumuzu destekleyerek gelişimine katkıda bulunabilirsiniz.</p>
+
+                <!-- Premium Katmanları - Seçilebilir -->
+                {% if donation_tiers %}
+                <h6 class="text-white mb-3"><i class="bi bi-gem me-2" style="color: #ec4899;"></i>Destek Paketini Seçiniz</h6>
+                <div class="d-flex flex-column gap-2 mb-4" id="tierSelectionContainer">
+                    {% for tier in donation_tiers %}
+                    <div class="tier-option p-3 rounded cursor-pointer" style="background: rgba(255,255,255,0.05); border: 2px solid rgba(255,255,255,0.1); cursor: pointer; transition: all 0.3s;" data-tier-id="{{ tier.id }}" data-tier-name="{{ tier.name }}" data-tier-amount="{{ tier.min_amount }}">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="form-check">
+                                    <input class="form-check-input tier-radio" type="radio" name="selectedTier" id="tier_{{ tier.id }}" value="{{ tier.id }}" style="cursor: pointer;">
+                                </div>
+                                <label for="tier_{{ tier.id }}" style="cursor: pointer; flex: 1; margin-bottom: 0;">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <i class="bi bi-star-fill" style="color: {% if tier.min_amount >= 500 %}#a855f7{% elif tier.min_amount >= 250 %}#f59e0b{% elif tier.min_amount >= 100 %}#94a3b8{% else %}#cd7f32{% endif %}; font-size: 1rem;"></i>
+                                        <span class="text-white fw-bold">{{ tier.name }}</span>
+                                    </div>
+                                </label>
+                            </div>
+                            <div class="text-end">
+                                <span class="text-warning fw-bold">{{ tier.min_amount|floatformat:0 }} TL</span>
+                                <span class="text-muted mx-1">&rarr;</span>
+                                <span class="text-success small">{{ tier.premium_days }} gün</span>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <!-- Bilgilendirme Kutusu -->
+                <div class="alert alert-info bg-transparent border-info text-info small mb-4" style="font-size: 0.9rem;">
+                    <i class="bi bi-info-circle me-2"></i>
+                    Destek paketinizi seçiniz ve <strong>"Sizi Destekliyorum"</strong> butonuna basınız. Size e-posta yoluyla admin isim ve IBAN bilgileri gönderilecektir. Yapılan havale kontrol edildikten sonra talebiniz işleme konulacaktır.
+                </div>
+
+                <!-- Ayrıcalıklar -->
+                <h6 class="text-white mb-3"><i class="bi bi-unlock-fill me-2 text-success"></i>Ne Kazanırsınız?</h6>
+                <div class="d-flex flex-column gap-2 mb-4">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-send-fill" style="color: #10b981;"></i>
+                        <span class="text-white small">Seçilen destekçi paketine göre süresi içinde ilanlara teklif verebilme</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-briefcase-fill" style="color: #3b82f6;"></i>
+                        <span class="text-white small">Haftada <strong>3 ilan</strong> yayınlama hakkı <span class="text-muted">(Normal: 1)</span></span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-heart-fill" style="color: #ec4899;"></i>
+                        <span class="text-white small">Profil üzerinde özel <strong>Destekçi Rozeti</strong></span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-people-fill" style="color: #f59e0b;"></i>
+                        <span class="text-white small"><strong>Destekçiler listesinde</strong> yer alma</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-secondary d-flex gap-2">
+                <button type="button" class="btn btn-outline-secondary rounded-pill" data-bs-dismiss="modal">Kapat</button>
+                <button type="button" class="btn btn-primary rounded-pill" id="supportBtn" onclick="sendSupportEmail()">
+                    <i class="bi bi-heart-fill me-2"></i>Sizi Destekliyorum
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Tier seçimi için event listener
+document.querySelectorAll('.tier-option').forEach(option => {
+    option.addEventListener('click', function() {
+        document.getElementById('tier_' + this.dataset.tierId).checked = true;
+        document.querySelectorAll('.tier-option').forEach(o => {
+            o.style.borderColor = 'rgba(255,255,255,0.1)';
+            o.style.backgroundColor = 'rgba(255,255,255,0.05)';
         });
+        this.style.borderColor = '#ec4899';
+        this.style.backgroundColor = 'rgba(236,72,153,0.15)';
     });
 });
 
+// Destek e-postası gönder
+function sendSupportEmail() {
+    const selectedTier = document.querySelector('input[name="selectedTier"]:checked');
+    
+    if (!selectedTier) {
+        alert('Lütfen bir destek paketini seçiniz.');
+        return;
+    }
+    
+    const tierName = selectedTier.closest('.tier-option').dataset.tierName;
+    const tierAmount = selectedTier.closest('.tier-option').dataset.tierAmount;
+    
+    // Loading durumu
+    const btn = document.getElementById('supportBtn');
+    const originalText = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Gönderiliyor...';
+    
+    fetch('/api/send-support-email/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        },
+        body: JSON.stringify({
+            tier_id: selectedTier.value,
+            tier_name: tierName,
+            tier_amount: tierAmount
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('✅ E-postanız başarıyla gönderildi! Lütfen e-posta kutunuzu kontrol ediniz.');
+            bootstrap.Modal.getInstance(document.getElementById('donationModal')).hide();
+        } else {
+            alert('❌ Hata: ' + (data.error || 'E-posta gönderilemedi.'));
+        }
+    })
+    .catch(error => {
+        console.error('Hata:', error);
+        alert('❌ E-posta gönderirken bir hata oluştu. Lütfen daha sonra deneyiniz.');
+    })
+    .finally(() => {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
+    });
+}
 </script>
+{% endif %}
 
 {% endblock %}

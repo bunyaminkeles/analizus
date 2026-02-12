@@ -58,9 +58,13 @@ class JobReviewSerializer(serializers.ModelSerializer):
 class FreelanceJobSerializer(serializers.ModelSerializer):
     owner = UserSerializer(read_only=True)
     category = CategorySerializer(read_only=True)
+    proposal_count = serializers.SerializerMethodField()
     class Meta:
         model = FreelanceJob
-        fields = ['id', 'title', 'budget_min', 'budget_max', 'owner', 'category', 'created_at', 'is_featured']
+        fields = ['id', 'title', 'budget_min', 'budget_max', 'owner', 'category', 'created_at', 'is_featured', 'proposal_count']
+
+    def get_proposal_count(self, obj):
+        return obj.proposals.count()
 
 class DailyTipSerializer(serializers.ModelSerializer):
     class Meta:

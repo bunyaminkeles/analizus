@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Section, Category, Topic, Post, Profile, ContactMessage, PrivateMessage, Badge, Notification, Skill, EmailVerification, DailyTip, QuizQuestion, QuizScore, FreelanceJob, JobProposal, JobReview, UserQuizAttempt, DonationTier, Donation, JobPayment
+from .models import Section, Category, Topic, Post, Profile, ContactMessage, PrivateMessage, Badge, Notification, Skill, EmailVerification, DailyTip, QuizQuestion, QuizScore, FreelanceJob, JobProposal, JobReview, UserQuizAttempt, DonationTier, Donation, JobPayment, TopicTag, SiteSettings, BlogCategory, BlogPost, SuccessStory
 
 # --- GENEL AYARLAR ---
 admin.site.site_header = "Analizus Komuta Merkezi"
@@ -34,12 +34,36 @@ class SectionAdmin(admin.ModelAdmin):
         return obj.categories.count()
     category_count.short_description = "Kategori Sayısı"
 
-# 3. Konu (Topic) Yönetimi
+# 3. Konu Etiketi (TopicTag) Yönetimi
+@admin.register(TopicTag)
+class TopicTagAdmin(admin.ModelAdmin):
+    list_display = ('tag_preview', 'name', 'tag_type', 'order', 'topic_count', 'is_active')
+    list_filter = ('tag_type', 'is_active')
+    list_editable = ('order', 'is_active')
+    search_fields = ('name',)
+    prepopulated_fields = {'slug': ('name',)}
+    ordering = ('order', 'name')
+
+    def tag_preview(self, obj):
+        return format_html(
+            '<span style="background: {}; color: white; padding: 4px 12px; border-radius: 12px; font-size: 12px;">'
+            '<i class="{}"></i> {}</span>',
+            obj.color, obj.icon, obj.name
+        )
+    tag_preview.short_description = "Etiket"
+
+    def topic_count(self, obj):
+        return obj.topics.count()
+    topic_count.short_description = "Konu Sayısı"
+
+
+# 4. Konu (Topic) Yönetimi
 @admin.register(Topic)
 class TopicAdmin(admin.ModelAdmin):
-    list_display = ('subject_link', 'category_colored', 'starter', 'created_at', 'views', 'status')
-    list_filter = ('is_pinned', 'is_closed', 'category', 'created_at')
+    list_display = ('subject_link', 'category_colored', 'tags_display', 'starter', 'created_at', 'views', 'status')
+    list_filter = ('is_pinned', 'is_closed', 'category', 'tags', 'created_at')
     search_fields = ('subject', 'starter__username')
+    filter_horizontal = ('tags',)
     date_hierarchy = 'created_at'
     actions = ['make_pinned', 'make_unpinned', 'make_closed', 'make_open']
 
@@ -49,6 +73,20 @@ class TopicAdmin(admin.ModelAdmin):
 
     def category_colored(self, obj):
         return format_html('<span style="color: #00d2ff;">{}</span>', obj.category.title)
+    category_colored.short_description = "Kategori"
+
+    def tags_display(self, obj):
+        tags = obj.tags.all()
+        if not tags:
+            return "-"
+        html_parts = []
+        for tag in tags:
+            html_parts.append(
+                f'<span style="background: {tag.color}; color: white; padding: 2px 8px; '
+                f'border-radius: 10px; font-size: 11px; margin-right: 4px;">{tag.name}</span>'
+            )
+        return format_html(''.join(html_parts))
+    tags_display.short_description = "Etiketler"
 
     def status(self, obj):
         res = []
@@ -477,8 +515,185 @@ class DonationAdmin(admin.ModelAdmin):
 
 @admin.register(JobPayment)
 class JobPaymentAdmin(admin.ModelAdmin):
-    list_display = ('job', 'amount', 'status', 'created_at')
-    list_filter = ('status', 'created_at')
+    list_display = ('job', 'amount', 'duration_days', 'status', 'feature_status_display', 'created_at')
+    list_filter = ('status', 'created_at', 'job__feature_status')
     search_fields = ('job__title', 'payment_id')
     readonly_fields = ('payment_id', 'conversation_id', 'created_at')
     ordering = ('-created_at',)
+    actions = ['approve_feature', 'reject_feature']
+
+    def feature_status_display(self, obj):
+        return obj.job.get_feature_status_display()
+    feature_status_display.short_description = "Vitrin Durumu"
+
+    def approve_feature(self, request, queryset):
+        from django.utils import timezone
+        from datetime import timedelta
+        for payment in queryset.filter(status='pending_confirmation'):
+            job = payment.job
+            payment.status = 'success'
+            payment.save()
+            job.is_featured = True
+            job.feature_status = 'approved'
+            now = timezone.now()
+            start_time = job.featured_until if job.featured_until and job.featured_until > now else now
+            job.featured_until = start_time + timedelta(days=payment.duration_days)
+            job.save()
+        self.message_user(request, f'{queryset.count()} ilan vitrine eklendi.')
+    approve_feature.short_description = "Seçili ilanları vitrine ekle (onayla)"
+
+    def reject_feature(self, request, queryset):
+        for payment in queryset.filter(status='pending_confirmation'):
+            job = payment.job
+            payment.status = 'failed'
+            payment.save()
+            job.feature_status = 'rejected'
+            job.save()
+        self.message_user(request, f'{queryset.count()} ilan reddedildi.')
+    reject_feature.short_description = "Seçili ilanları reddet"
+
+
+# --- SITE AYARLARI ---
+@admin.register(SiteSettings)
+class SiteSettingsAdmin(admin.ModelAdmin):
+    list_display = ('pk', 'auto_share_topics', 'auto_share_jobs')
+
+    fieldsets = (
+        ('Otomatik Paylaşım', {
+            'fields': ('auto_share_topics', 'auto_share_jobs'),
+        }),
+        ('Özellik Anahtarları (Feature Flags)', {
+            'description': 'Kapalı olan özellikler kullanıcılara gösterilmez.',
+            'fields': (
+                'feature_blog', 'feature_market', 'feature_ai_assistant',
+                'feature_yoktez', 'feature_quiz', 'feature_messaging',
+                'feature_donation', 'feature_success_stories',
+            ),
+        }),
+    )
+
+    def has_add_permission(self, request):
+        return not SiteSettings.objects.exists()
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# BLOG YÖNETİMİ
+# ═══════════════════════════════════════════════════════════════════════════════
+
+@admin.register(BlogCategory)
+class BlogCategoryAdmin(admin.ModelAdmin):
+    list_display = ('name', 'slug', 'color_preview', 'order', 'post_count')
+    list_editable = ('order',)
+    prepopulated_fields = {'slug': ('name',)}
+    ordering = ('order',)
+
+    def color_preview(self, obj):
+        return format_html(
+            '<span style="background: {}; color: white; padding: 3px 10px; border-radius: 4px;">{}</span>',
+            obj.color, obj.color
+        )
+    color_preview.short_description = "Renk"
+
+    def post_count(self, obj):
+        return obj.posts.filter(status='published').count()
+    post_count.short_description = "Yazı Sayısı"
+
+
+@admin.register(BlogPost)
+class BlogPostAdmin(admin.ModelAdmin):
+    list_display = ('title', 'author', 'category', 'status_display', 'is_featured', 'views', 'created_at')
+    list_filter = ('status', 'category', 'is_featured', 'author')
+    search_fields = ('title', 'content', 'excerpt')
+    prepopulated_fields = {'slug': ('title',)}
+    list_editable = ('is_featured',)
+    date_hierarchy = 'created_at'
+    ordering = ('-created_at',)
+
+    fieldsets = (
+        ('İçerik', {
+            'fields': ('title', 'slug', 'excerpt', 'content', 'cover_image')
+        }),
+        ('Kategori & Yazar', {
+            'fields': ('category', 'author')
+        }),
+        ('Yayın Ayarları', {
+            'fields': ('status', 'is_featured')
+        }),
+        ('SEO', {
+            'fields': ('meta_title', 'meta_description'),
+            'classes': ('collapse',)
+        }),
+    )
+
+    readonly_fields = ('views', 'published_at')
+
+    def status_display(self, obj):
+        colors = {'draft': '#ffc107', 'published': '#28a745'}
+        icons = {'draft': '📝', 'published': '✅'}
+        return format_html(
+            '<span style="color: {};">{} {}</span>',
+            colors.get(obj.status, '#888'),
+            icons.get(obj.status, ''),
+            obj.get_status_display()
+        )
+    status_display.short_description = "Durum"
+
+    actions = ['publish_posts']
+
+    @admin.action(description="Seçili yazıları yayınla")
+    def publish_posts(self, request, queryset):
+        from django.utils import timezone
+        updated = queryset.filter(status='draft').update(status='published', published_at=timezone.now())
+        self.message_user(request, f'{updated} yazı yayınlandı.')
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# BAŞARI HİKAYELERİ YÖNETİMİ
+# ═══════════════════════════════════════════════════════════════════════════════
+
+@admin.register(SuccessStory)
+class SuccessStoryAdmin(admin.ModelAdmin):
+    list_display = ('user', 'job_link', 'quote_short', 'approval_status_display', 'is_featured', 'created_at')
+    list_filter = ('approval_status', 'is_featured', 'created_at')
+    list_editable = ('is_featured',)
+    search_fields = ('user__username', 'quote', 'job__title')
+    date_hierarchy = 'created_at'
+    ordering = ('-created_at',)
+    actions = ['approve_stories', 'reject_stories']
+
+    def quote_short(self, obj):
+        return obj.quote[:80] + "..." if len(obj.quote) > 80 else obj.quote
+    quote_short.short_description = "Hikaye"
+
+    def job_link(self, obj):
+        if obj.job:
+            return format_html(
+                '<a href="/admin/forum/freelancejob/{}/change/" style="color: #00d2ff;">{}</a>',
+                obj.job.id, obj.job.title[:30]
+            )
+        return "-"
+    job_link.short_description = "İlgili İlan"
+
+    def approval_status_display(self, obj):
+        colors = {'pending': '#ffc107', 'approved': '#28a745', 'rejected': '#dc3545'}
+        icons = {'pending': '⏳', 'approved': '✅', 'rejected': '❌'}
+        return format_html(
+            '<span style="color: {};">{} {}</span>',
+            colors.get(obj.approval_status, '#888'),
+            icons.get(obj.approval_status, ''),
+            obj.get_approval_status_display()
+        )
+    approval_status_display.short_description = "Onay Durumu"
+
+    @admin.action(description='✅ Seçili hikayeleri onayla')
+    def approve_stories(self, request, queryset):
+        updated = queryset.update(approval_status='approved')
+        self.message_user(request, f'{updated} hikaye onaylandı.')
+
+    @admin.action(description='❌ Seçili hikayeleri reddet')
+    def reject_stories(self, request, queryset):
+        updated = queryset.update(approval_status='rejected')
+        self.message_user(request, f'{updated} hikaye reddedildi.')

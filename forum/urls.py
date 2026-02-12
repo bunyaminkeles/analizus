@@ -8,6 +8,14 @@ from rest_framework_simplejwt.views import (
 
 urlpatterns = [
     path('', views.home, name='home'),
+    path('health/', views.health_check, name='health_check'),
+
+    # Blog
+    path('blog/', views.blog_list, name='blog_list'),
+    path('blog/create/', views.blog_create, name='blog_create'),
+    path('blog/<slug:slug>/', views.blog_detail, name='blog_detail'),
+    path('blog/<slug:slug>/like/', views.blog_like, name='blog_like'),
+
     path('api/home/', views.api_home, name='api_home'),  # ✅ Yeni Next.js Anasayfa API'si
     path('api/topic/<int:pk>/', api_views.api_topic_detail, name='api_topic_detail'),  # ✅ Yeni Next.js Konu Detay API'si
     path('api/forum/<slug:slug>/', api_views.api_category_topics, name='api_category_topics'), # ✅ Kategori API'si
@@ -51,10 +59,15 @@ urlpatterns = [
     # Admin Dashboard
     path('dashboard/', views.admin_dashboard, name='admin_dashboard'),
     path('dashboard/verify-linkedin/<int:user_id>/', views.admin_verify_linkedin, name='admin_verify_linkedin'),
+    path('dashboard/approve-story/<int:pk>/', views.dashboard_approve_story, name='dashboard_approve_story'),
+    path('dashboard/approve-review/<int:pk>/', views.dashboard_approve_review, name='dashboard_approve_review'),
+    path('dashboard/approve-donation/<int:pk>/', views.dashboard_approve_donation, name='dashboard_approve_donation'),
+    path('dashboard/mark-contact-read/<int:pk>/', views.dashboard_mark_contact_read, name='dashboard_mark_contact_read'),
 
     # Diğer
     path('search/', views.search_result, name='search'),
     path('hakkimizda/', views.about, name='about'),
+    path('nasil-calisir/', views.how_it_works, name='how_it_works'),
     path('iletisim/', views.contact, name='contact'),
     
     # Section Detail
@@ -69,12 +82,14 @@ urlpatterns = [
     path('market/job/<int:pk>/', views.job_detail, name='job_detail'),
     path('market/job/<int:pk>/close/', views.close_job, name='close_job'),
     path('market/job/<int:pk>/accept/<int:proposal_id>/', views.accept_proposal, name='accept_proposal'),
+    path('market/job/<int:job_pk>/proposal/<int:proposal_id>/manage/', views.admin_manage_proposal, name='admin_manage_proposal'),
     path('market/job/<int:pk>/review/', views.add_job_review, name='add_job_review'),
     path('market/job/<int:pk>/like/', views.toggle_job_like, name='toggle_job_like'),
     path('market/job/<int:pk>/bookmark/', views.toggle_job_bookmark, name='toggle_job_bookmark'),
     path('market/my-jobs/', views.my_jobs, name='my_jobs'),
     path('my-payments/', views.my_payments, name='my_payments'),
     path('market/job/<int:pk>/promote/', views.promote_job, name='promote_job'),
+    path('market/job/<int:pk>/payment-transferred/', views.mark_payment_transferred, name='mark_payment_transferred'),
     path('api/job-payment/callback/', views.job_payment_callback, name='job_payment_callback'),
 
     # API Endpoints (Quiz & Stories)
@@ -85,15 +100,17 @@ urlpatterns = [
     path('api/widgets/proposals/', api_views.widget_latest_proposals, name='widget_proposals'),
     path('api/follow/<str:username>/', api_views.toggle_follow_user, name='api_toggle_follow'),
 
+    # Kullanıcı Arama (@mention autocomplete)
+    path('api/users/search/', views.user_search_api, name='user_search_api'),
+
     # Bağış Sistemi
-    path('api/donation/widget/', views.donation_widget_data, name='donation_widget_data'),
-    path('api/donation/create/', views.create_donation, name='create_donation'),
-    path('api/donation/callback/', views.donation_callback, name='donation_callback'),
+    path('api/send-support-email/', views.send_support_email, name='send_support_email'),
     path('donation/success/', views.donation_success, name='donation_success'),
 
     # Cron Job Endpoints (External cron services için)
     path('api/cron/daily-quiz/', api_views.cron_generate_daily_quiz, name='cron_daily_quiz'),
     path('api/cron/update-badges/', api_views.cron_update_badges_ranks, name='cron_update_badges'),
+    path('api/cron/cleanup-yoktez/', api_views.cron_cleanup_yoktez_s3, name='cron_cleanup_yoktez'),
     path('api/cron/health/', api_views.cron_health_check, name='cron_health'),
 
     # Admin setup (kullandıktan sonra kaldırın!)

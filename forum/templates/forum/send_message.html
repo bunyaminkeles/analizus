@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load forum_extras %}
 
 {% block content %}
 <div class="container-fluid py-4">
@@ -75,7 +76,7 @@
                                 <div class="d-flex mb-3 {% if msg.sender == request.user %}justify-content-end{% else %}justify-content-start{% endif %}">
                                     <div class="p-2 px-3 rounded-3 {% if msg.sender == request.user %}text-white{% else %}text-light{% endif %}" style="max-width: 75%; {% if msg.sender == request.user %}background: linear-gradient(135deg, rgba(0, 210, 255, 0.35), rgba(58, 123, 213, 0.35)); border: 1px solid rgba(0, 210, 255, 0.4); box-shadow: 0 2px 8px rgba(0, 210, 255, 0.15);{% else %}background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(255, 255, 255, 0.15);{% endif %}">
                                         {% if msg.message %}
-                                        <p class="mb-1 small">{{ msg.message }}</p>
+                                        <p class="mb-1 small">{{ msg.message|render_mentions }}</p>
                                         {% endif %}
 
                                         {% if msg.attachment %}
@@ -124,8 +125,9 @@
                                            accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png,.gif,.webp">
 
                                     <!-- Mesaj Input -->
-                                    <div class="flex-grow-1">
+                                    <div class="flex-grow-1 position-relative">
                                         <textarea name="message" id="message-input" class="form-control text-white" rows="1" placeholder="Mesajınızı yazın..." style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(0, 210, 255, 0.3); resize: none;"></textarea>
+                                        <div class="mention-dropdown" id="mention-dropdown"></div>
                                     </div>
 
                                     <!-- Gönder Butonu -->
@@ -156,6 +158,65 @@
 
     </div>
 </div>
+
+<style>
+    .mention-link {
+        color: #00d2ff;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+    .mention-link:hover {
+        color: #3a7bd5;
+        text-decoration: underline;
+    }
+    .mention-dropdown {
+        position: absolute;
+        bottom: 100%;
+        left: 0;
+        right: 0;
+        background: rgba(15, 23, 42, 0.95);
+        border: 1px solid rgba(0, 210, 255, 0.3);
+        border-radius: 8px;
+        max-height: 200px;
+        overflow-y: auto;
+        z-index: 1050;
+        backdrop-filter: blur(10px);
+        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.5);
+        display: none;
+    }
+    .mention-dropdown .mention-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        cursor: pointer;
+        transition: background 0.15s;
+        color: #e2e8f0;
+    }
+    .mention-dropdown .mention-item:hover,
+    .mention-dropdown .mention-item.active {
+        background: rgba(0, 210, 255, 0.15);
+    }
+    .mention-dropdown .mention-item img {
+        width: 28px; height: 28px; border-radius: 50%; object-fit: cover;
+    }
+    .mention-dropdown .mention-item .mention-avatar-placeholder {
+        width: 28px; height: 28px; border-radius: 50%;
+        background: rgba(0, 210, 255, 0.2);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 0.75rem; color: #00d2ff; font-weight: bold;
+    }
+    .mention-dropdown .mention-item .mention-info {
+        display: flex; flex-direction: column;
+    }
+    .mention-dropdown .mention-item .mention-username {
+        font-weight: 600; font-size: 0.85rem;
+    }
+    .mention-dropdown .mention-item .mention-rank {
+        font-size: 0.7rem; color: #94a3b8;
+    }
+</style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -267,7 +328,7 @@ document.addEventListener('DOMContentLoaded', function() {
                      style="max-width: 75%; ${isOwn
                         ? 'background: linear-gradient(135deg, rgba(0, 210, 255, 0.35), rgba(58, 123, 213, 0.35)); border: 1px solid rgba(0, 210, 255, 0.4); box-shadow: 0 2px 8px rgba(0, 210, 255, 0.15);'
                         : 'background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(255, 255, 255, 0.15);'}">
-                    ${data.message ? `<p class="mb-1 small">${escapeHtml(data.message)}</p>` : ''}
+                    ${data.message ? `<p class="mb-1 small">${renderMentions(escapeHtml(data.message))}</p>` : ''}
                     ${data.attachment_url ? getAttachmentHtml(data) : ''}
                     <small class="text-muted d-block mt-1" style="font-size: 0.65rem;">${data.timestamp}</small>
                 </div>
@@ -295,6 +356,10 @@ document.addEventListener('DOMContentLoaded', function() {
         return div.innerHTML;
     }
 
+    function renderMentions(text) {
+        return text.replace(/@(\w+)/g, '<a href="/profile/$1/" class="mention-link" title="@$1">@$1</a>');
+    }
+
     // ═══════════════════════════════════════════════════════════════════
     // MEVCUT FONKSİYONLAR
     // ═══════════════════════════════════════════════════════════════════
@@ -304,14 +369,65 @@ document.addEventListener('DOMContentLoaded', function() {
         chatHistory.scrollTop = chatHistory.scrollHeight;
     }
 
-    // Textarea auto-resize
+    // ═══════════════════════════════════════════════════════════════════
+    // @MENTION AUTOCOMPLETE (auto-resize dahil)
+    // ═══════════════════════════════════════════════════════════════════
+    const mentionDropdown = document.getElementById('mention-dropdown');
+    let mentionStart = -1;
+    let mentionActiveIndex = -1;
+    let mentionDebounce = null;
+
     messageInput.addEventListener('input', function() {
+        const cursorPos = this.selectionStart;
+        const text = this.value.substring(0, cursorPos);
+        const match = text.match(/@(\w*)$/);
+
+        // Auto-resize
         this.style.height = 'auto';
         this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+
+        if (match) {
+            mentionStart = cursorPos - match[0].length;
+            const query = match[1];
+            if (query.length >= 1) {
+                clearTimeout(mentionDebounce);
+                mentionDebounce = setTimeout(() => fetchMentionUsers(query), 300);
+            } else {
+                mentionDropdown.style.display = 'none';
+            }
+        } else {
+            mentionStart = -1;
+            mentionDropdown.style.display = 'none';
+        }
     });
 
     // Enter tuşu ile gönder (Shift+Enter yeni satır)
     messageInput.addEventListener('keydown', function(e) {
+        // Mention dropdown açıksa klavye navigasyonu
+        if (mentionDropdown.style.display !== 'none') {
+            const items = mentionDropdown.querySelectorAll('.mention-item');
+            if (items.length) {
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    mentionActiveIndex = Math.min(mentionActiveIndex + 1, items.length - 1);
+                    updateMentionActive(items);
+                    return;
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    mentionActiveIndex = Math.max(mentionActiveIndex - 1, 0);
+                    updateMentionActive(items);
+                    return;
+                } else if ((e.key === 'Enter' || e.key === 'Tab') && mentionActiveIndex >= 0) {
+                    e.preventDefault();
+                    selectMention(items[mentionActiveIndex].dataset.username);
+                    return;
+                } else if (e.key === 'Escape') {
+                    mentionDropdown.style.display = 'none';
+                    return;
+                }
+            }
+        }
+
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
             messageForm.dispatchEvent(new Event('submit'));
@@ -346,6 +462,61 @@ document.addEventListener('DOMContentLoaded', function() {
                 previewIcon.className = 'bi bi-file-earmark';
                 previewIcon.style.color = '#00d2ff';
             }
+        }
+    });
+
+    async function fetchMentionUsers(query) {
+        try {
+            const resp = await fetch(`/api/users/search/?q=${encodeURIComponent(query)}`);
+            const data = await resp.json();
+            if (data.users && data.users.length > 0) {
+                renderMentionDropdown(data.users);
+            } else {
+                mentionDropdown.style.display = 'none';
+            }
+        } catch(err) {
+            mentionDropdown.style.display = 'none';
+        }
+    }
+
+    function renderMentionDropdown(users) {
+        mentionActiveIndex = 0;
+        mentionDropdown.innerHTML = users.map((u, i) => {
+            const avatar = u.avatar_url
+                ? `<img src="${u.avatar_url}" alt="${u.username}">`
+                : `<div class="mention-avatar-placeholder">${u.username.charAt(0).toUpperCase()}</div>`;
+            return `<div class="mention-item ${i === 0 ? 'active' : ''}" data-username="${u.username}">
+                ${avatar}
+                <div class="mention-info">
+                    <span class="mention-username">@${u.username}</span>
+                    <span class="mention-rank">${u.rank}</span>
+                </div>
+            </div>`;
+        }).join('');
+        mentionDropdown.style.display = 'block';
+        mentionDropdown.querySelectorAll('.mention-item').forEach(item => {
+            item.addEventListener('click', () => selectMention(item.dataset.username));
+        });
+    }
+
+    function updateMentionActive(items) {
+        items.forEach((el, i) => el.classList.toggle('active', i === mentionActiveIndex));
+    }
+
+    function selectMention(username) {
+        const before = messageInput.value.substring(0, mentionStart);
+        const after = messageInput.value.substring(messageInput.selectionStart);
+        messageInput.value = before + '@' + username + ' ' + after;
+        const newPos = mentionStart + username.length + 2;
+        messageInput.setSelectionRange(newPos, newPos);
+        messageInput.focus();
+        mentionDropdown.style.display = 'none';
+        mentionStart = -1;
+    }
+
+    document.addEventListener('click', function(e) {
+        if (!mentionDropdown.contains(e.target) && e.target !== messageInput) {
+            mentionDropdown.style.display = 'none';
         }
     });
 

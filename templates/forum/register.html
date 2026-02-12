@@ -1,101 +1,365 @@
-{% extends 'base.html' %}
-{% load crispy_forms_tags %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kayıt Ol - Analizus</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { height: 100%; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
 
-{% block content %}
-<div class="row justify-content-center align-items-center" style="min-height: 80vh;">
-    <div class="col-md-6 col-lg-5">
-        <div class="card shadow-lg border-0" style="background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 20px;">
-            <div class="card-body p-4 p-md-5">
+        .split-container {
+            display: flex;
+            height: 100vh;
+        }
 
-                <div class="text-center mb-4">
-                    <h2 class="fw-bold text-white">Akademik Katılım</h2>
-                    <p class="text-muted small">Veri Üssü Protokolü v3.0</p>
+        /* Sol Yarı - Görsel */
+        .left-half {
+            flex: 0 0 50%;
+            height: 100%;
+            background-color: #0a1628;
+            background-image: url("{% static 'forum/images/register-hero.jpeg' %}");
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+            position: relative;
+        }
+
+        /* Kenar Blur Efekti */
+        .left-half::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at center, transparent 20%, rgba(10, 22, 40, 0.4) 50%, #0a1628 85%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Yıldız Kayması Çizgisi */
+        .left-half::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 0;
+            height: 100%;
+            width: 4px;
+            background: linear-gradient(180deg, transparent, #ff6b4a, transparent);
+            animation: fall 5s linear infinite;
+            z-index: 2;
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100%); }
+        }
+
+        /* Sağ Yarı - Form */
+        .right-half {
+            flex: 0 0 50%;
+            height: 100%;
+            background: #0a1628;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow-y: auto;
+        }
+
+        .top-bar {
+            position: absolute;
+            top: 1.5rem;
+            right: 2rem;
+        }
+
+        .back-link {
+            color: #666;
+            text-decoration: none;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .back-link:hover { color: #fff; }
+
+        .form-area {
+            width: 100%;
+            max-width: 380px;
+            padding: 2rem 0;
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-title {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .form-subtitle {
+            color: #ff6b4a;
+            font-size: 0.9rem;
+            margin-top: 0.25rem;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            background: #1a1a1a;
+            border-radius: 10px;
+            padding: 4px;
+            margin-bottom: 1.5rem;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 0.75rem;
+            text-align: center;
+            color: #555;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .tab.active {
+            background: #252525;
+            color: #fff;
+        }
+
+        .tab:hover:not(.active) { color: #888; }
+
+        /* Form */
+        .field {
+            margin-bottom: 1rem;
+        }
+
+        .field label {
+            display: block;
+            color: #ff6b4a;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .input-box {
+            position: relative;
+        }
+
+        .input-box i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #444;
+        }
+
+        .field input {
+            width: 100%;
+            background: #161616;
+            border: 1px solid #2a2a2a;
+            border-radius: 8px;
+            padding: 0.8rem 1rem 0.8rem 2.75rem;
+            color: #fff;
+            font-size: 0.9rem;
+        }
+
+        .field input:focus {
+            outline: none;
+            border-color: #ff6b4a;
+        }
+
+        .hint {
+            color: #666;
+            font-size: 0.75rem;
+            margin-top: 0.3rem;
+            padding-left: 0.2rem;
+        }
+
+        .err { list-style: none; padding: 0; margin: 0.2rem 0 0; }
+        .err li { color: #ff6b6b; font-size: 0.75rem; }
+
+        .terms {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.7rem;
+            padding: 0.5rem;
+            margin-top: 1rem;
+        }
+        .terms input {
+            width: 1.1rem;
+            height: 1.1rem;
+            accent-color: #ff6b4a;
+            margin-top: 0.15rem;
+            flex-shrink: 0;
+        }
+        .terms label {
+            color: #888;
+            font-size: 0.8rem;
+            line-height: 1.4;
+        }
+        .terms a {
+            color: #38bdf8;
+            text-decoration: none;
+        }
+        .terms a:hover { text-decoration: underline; }
+
+        .btn {
+            width: 100%;
+            background: linear-gradient(135deg, #ff6b4a, #e55a3a);
+            border: none;
+            border-radius: 8px;
+            padding: 0.9rem;
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+        .btn:hover { box-shadow: 0 5px 20px rgba(255,107,74,0.4); }
+        .btn:disabled { opacity: 0.7; cursor: not-allowed; }
+
+        .footer {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: #888;
+            font-size: 0.9rem;
+        }
+        .footer a {
+            color: #ff6b4a;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .footer a:hover { text-decoration: underline;}
+
+        .modal-content { background: #1a1a1a; border: 1px solid #333; color: #fff; border-radius: 12px; }
+        .modal-header, .modal-footer { border-color: #333; }
+
+        @media (max-width: 991px) {
+            .split-container { flex-direction: column; }
+            .left-half { display: none; }
+            .right-half { flex-basis: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="split-container">
+        <!-- Sol Yarı - Görsel -->
+        <div class="left-half"></div>
+
+        <!-- Sağ Yarı - Form -->
+        <div class="right-half">
+            <div class="top-bar">
+                <a href="{% url 'home' %}" class="back-link">
+                    <i class="bi bi-arrow-left"></i> Ana Sayfa
+                </a>
+            </div>
+
+            <div class="form-area">
+                <div class="form-header">
+                    <h1 class="form-title">Bize Katılın</h1>
+                    <p class="form-subtitle">Veri Üssü Protokolü v3.0</p>
                 </div>
 
-                <form method="post" novalidate>
+                <div class="tabs">
+                    <a href="{% url 'login' %}" class="tab">Giriş Yap</a>
+                    <a href="{% url 'register' %}" class="tab active">Kayıt Ol</a>
+                </div>
+
+                <form method="post">
                     {% csrf_token %}
-
-                    <div class="custom-register-style">
-                        {{ form.username|as_crispy_field }}
-                        {{ form.email|as_crispy_field }}
-                        <div class="mt-2">{{ form.password1|as_crispy_field }}</div>
-                        <div class="mt-2">{{ form.password2|as_crispy_field }}</div>
+                    <div class="field">
+                        <label>Kullanıcı adı*</label>
+                        <div class="input-box">
+                            <i class="bi bi-person"></i>
+                            <input type="text" name="username" value="{{ form.username.value|default:'' }}" required>
+                        </div>
+                        <p class="hint">Zorunlu. 150 karakter ya da daha az.</p>
+                        {% if form.username.errors %}<ul class="err">{% for e in form.username.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
                     </div>
 
-                    <div class="form-check mt-4 d-flex align-items-start gap-2 p-3 rounded" style="background: rgba(255,255,255,0.05);">
-                        <input type="checkbox" name="terms_confirmed" required id="id_terms_confirmed"
-                               class="form-check-input mt-1" style="cursor: pointer; width: 1.25em; height: 1.25em; flex-shrink: 0;">
-                        <label class="form-check-label small text-white ms-2" for="id_terms_confirmed" style="cursor: pointer; line-height: 1.5;">
-                            <a href="#" class="text-info fw-bold text-decoration-underline"
-                               data-bs-toggle="modal" data-bs-target="#termsModal">
-                               Kullanim Sartlarini ve Etik Beyani
-                            </a> okudum, anladim ve kabul ediyorum.*
-                        </label>
+                    <div class="field">
+                        <label>E-Posta Adresi*</label>
+                        <div class="input-box">
+                            <i class="bi bi-envelope"></i>
+                            <input type="email" name="email" value="{{ form.email.value|default:'' }}" required>
+                        </div>
+                        <p class="hint">Geçerli bir e-posta adresi giriniz.</p>
+                        {% if form.email.errors %}<ul class="err">{% for e in form.email.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
                     </div>
 
-                    <div class="d-grid mt-4">
-                        <button type="submit" class="btn btn-primary btn-lg shadow-lg border-0 rounded-pill fw-bold"
-                                style="background: linear-gradient(45deg, #00d2ff, #3a7bd5);">
-                            Kayit Ol
-                        </button>
+                    <div class="field">
+                        <label>Parola*</label>
+                        <div class="input-box">
+                            <i class="bi bi-lock"></i>
+                            <input type="password" name="password1" required>
+                        </div>
+                        {% if form.password1.errors %}<ul class="err">{% for e in form.password1.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
                     </div>
+
+                    <div class="field">
+                        <label>Parola onayı*</label>
+                        <div class="input-box">
+                            <i class="bi bi-lock-fill"></i>
+                            <input type="password" name="password2" required>
+                        </div>
+                        <p class="hint">Doğrulama için aynı parolayı girin.</p>
+                        {% if form.password2.errors %}<ul class="err">{% for e in form.password2.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+                    </div>
+
+                    <div class="terms">
+                        <input type="checkbox" name="terms_confirmed" required id="t">
+                        <label for="t"><a href="#" data-bs-toggle="modal" data-bs-target="#m">Kullanım Şartlarını ve Etik Beyanı</a> okudum, kabul ediyorum.*</label>
+                    </div>
+
+                    <button type="submit" class="btn" id="rb">Kayıt Ol</button>
                 </form>
 
-                <div class="text-center mt-4 pt-3 border-top border-secondary opacity-50">
-                    <small class="text-muted">Zaten uye misiniz?</small>
-                    <a href="{% url 'login' %}" class="fw-bold text-info text-decoration-none ms-1">Giris Yap</a>
+                <p class="footer">Zaten hesabınız var mı? <a href="{% url 'login' %}">Giriş Yap</a></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="m" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" style="color:#ff6b4a;"><i class="bi bi-shield-check me-2"></i>Akademik Etik Protokolü</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" style="max-height:450px;overflow-y:auto;line-height:1.7;font-size:0.95rem;">
+                    <p><strong>1. Şahsi Sorumluluk:</strong> Platformda paylaşılan her türlü veri, yorum ve dosyanın hukuki ve cezai sorumluluğu münhasıran paylaşımı yapan kullanıcıya aittir. Platform yer sağlayıcı konumundadır.</p>
+
+                    <p><strong>2. Uyuşmazlık Reddi:</strong> Platform, kullanıcılar arasında yaşanabilecek akademik, şahsi veya fikri uyuşmazlıklarda taraf değildir ve herhangi bir sorumluluk kabul etmez.</p>
+
+                    <p><strong>3. Sıfır Tolerans:</strong> Din, dil, ırk, cinsiyet ve akademik statü temelli her türlü ayrımcılık, mobbing ve nefret söylemi hesabın süresiz kapatılmasına yol açar.</p>
+
+                    <p><strong>4. Yasal Sınırlar:</strong> Küfür, hakaret, tehdit içeren veya Türk Ceza Kanunu'na aykırı suç unsuru taşıyan paylaşımlar yasaktır.</p>
+
+                    <p><strong>5. Akademik Suistimal Yasağı (Kritik):</strong> Platformun yapay zeka araçlarını veya topluluk desteğini kullanarak ödev, tez, makale veya bildiri gibi akademik metinlerin bütünüyle yazdırılması kesinlikle yasaktır. Bu eylem <strong>"Hayalet Yazarlık" (Ghostwriting)</strong> kapsamına girer ve ağır etik ihlal sayılır.</p>
+
+                    <p><strong>6. AI Kullanım Sınırı:</strong> AI modülünden alınan çıktılar yalnızca fikir verme, yöntem belirleme ve literatür desteği amaçlıdır. Bu çıktıların doğrudan kopyalanarak akademik eser olarak sunulması intihaldir.</p>
+
+                    <p><strong>7. Gizlilik:</strong> Kişisel verileriniz KVKK kapsamında korunur, ancak halka açık alanlarda paylaştığınız verilerin gizliliğinden kullanıcı sorumludur.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn px-4" style="background:#ff6b4a;color:#fff;" data-bs-dismiss="modal">Anladım</button>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<div class="modal fade" id="termsModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content" style="background: #0f172a; border: 1px solid #00d2ff; color: white; border-radius: 15px;">
-            <div class="modal-header border-secondary">
-                <h5 class="modal-title text-info"><i class="bi bi-shield-check me-2"></i>Akademik Etik Protokolu</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body p-4" style="max-height: 450px; overflow-y: auto; font-size: 0.95rem; line-height: 1.6;">
-                <p><strong>1. Sahsi Sorumluluk:</strong> Platformda paylasilan her turlu veri, yorum ve dosyanin hukuki ve cezai sorumlulugu munhasiran paylasimi yapan kullaniciya aittir. Platform yer saglayici konumundadir.</p>
-
-                <p><strong>2. Uyusmazlik Reddi:</strong> Platform, kullanicilar arasinda yasanabilecek akademik, sahsi veya fikri uyusmazliklarda taraf degildir ve herhangi bir sorumluluk kabul etmez.</p>
-
-                <p><strong>3. Sifir Tolerans:</strong> Din, dil, irk, cinsiyet ve akademik statu temelli her turlu ayrimcilik, mobbing ve nefret soylemi hesabin suresiz kapatilmasina yol acar.</p>
-
-                <p><strong>4. Yasal Sinirlar:</strong> Kufur, hakaret, tehdit iceren veya Turk Ceza Kanunu'na aykiri suc unsuru tasiyan paylasimlar yasaktir.</p>
-
-                <p><strong>5. Akademik Suistimal Yasagi (Kritik):</strong> Platformun yapay zeka araclarini veya topluluk destegini kullanarak odev, tez, makale veya bildiri gibi akademik metinlerin butunuyle yazdirilmasi kesinlikle yasaktir. Bu eylem <strong>"Hayalet Yazarlik" (Ghostwriting)</strong> kapsamina girer ve agir etik ihlal sayilir.</p>
-
-                <p><strong>6. AI Kullanim Siniri:</strong> AI modulunden alinan ciktilar yalnizca fikir verme, yontem belirleme ve literatur destegi amaclidir. Bu ciktilarin dogrudan kopyalanarak akademik eser olarak sunulmasi intihaldir.</p>
-
-                <p><strong>7. Gizlilik:</strong> Kisisel verileriniz KVKK kapsaminda korunur, ancak halka acik alanlarda paylastiginiz verilerin gizliliginden kullanici sorumludur.</p>
-            </div>
-            <div class="modal-footer border-secondary">
-                <button type="button" class="btn btn-info btn-sm px-4 fw-bold" data-bs-dismiss="modal">Anladim</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<style>
-    .custom-register-style input {
-        background-color: #1e293b !important;
-        color: #ffffff !important;
-        border: 1px solid rgba(56, 189, 248, 0.4) !important;
-        border-radius: 8px !important;
-    }
-    .custom-register-style label {
-        color: #38bdf8 !important;
-        font-weight: 600;
-        margin-top: 10px;
-    }
-    .custom-register-style .help-block, .custom-register-style .form-text, .custom-register-style ul {
-        color: #94a3b8 !important;
-        font-size: 0.75rem;
-        list-style-type: none;
-        padding-left: 0;
-    }
-</style>
-{% endblock %}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.querySelector('form').addEventListener('submit', function() {
+            var b = document.getElementById('rb');
+            b.disabled = true;
+            b.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>İşleniyor...';
+        });
+    </script>
+</body>
+</html>

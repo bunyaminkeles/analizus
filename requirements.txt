@@ -16,6 +16,8 @@ Markdown
 
 # --- MEDYA & DOSYA ---
 Pillow
+boto3
+django-storages
 
 # --- AI & ANALİZ ---
 openai
@@ -34,7 +36,6 @@ urllib3
 asgiref
 typing_extensions
 packaging
-sendgrid  # SendGrid Web API için (SMTP yerine)
 
 # --- ÖDEME SİSTEMLERİ ---
 iyzipay  # iyzico ödeme entegrasyonu
@@ -45,3 +46,8 @@ channels
 channels-redis
 beautifulsoup4
 groq
+
+# --- YÖK TEZ SCRAPING ---
+undetected-chromedriver
+selenium
+fake-useragent

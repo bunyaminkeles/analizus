@@ -9,6 +9,9 @@ load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Site URL (e-posta doğrulama linkleri için ve ortamı ayırt etmek için)
+SITE_URL = os.getenv('SITE_URL', 'https://www.analizus.com')
+
 # --- GÜVENLİK AYARLARI ---
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-varsayilan-anahtar')
 
@@ -16,13 +19,23 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-varsayilan-anahtar')
 DEBUG = 'RENDER' not in os.environ
 
 # Sunucu adresini kabul et
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [
+    'analizus.com',
+    'www.analizus.com',
+    'analizdestek-ai.onrender.com',
+    'analizus-dev.onrender.com',  # Geliştirme ortamı
+    '*.koyeb.app',  # Koyeb için eklendi
+    '127.0.0.1',
+    'localhost',
+]
 
 # CSRF Güvenliği
 CSRF_TRUSTED_ORIGINS = [
     'https://analizus.com',
     'https://www.analizus.com',
     'https://analizdestek-ai.onrender.com',
+    'https://analizus-dev.onrender.com', # Geliştirme ortamı
+    'https://analizus.onrender.com',
 ]
 
 # --- UYGULAMA TANIMLARI ---
@@ -42,8 +55,10 @@ INSTALLED_APPS = [
     'corsheaders',
     # Kendi Uygulamalarımız
     'forum',
+    'yoktez',
     'crispy_forms',
     'crispy_bootstrap5',
+    'storages',  # AWS S3 için
 ]
 
 MIDDLEWARE = [
@@ -76,6 +91,7 @@ TEMPLATES = [
                 'django.template.context_processors.i18n',
                 'forum.context_processors.profile_context',  # Profil, bildirimler vb. için
                 'forum.context_processors.google_analytics',  # Google Analytics
+                'forum.context_processors.feature_flags',  # Feature Flags
             ],
         },
     },
@@ -107,9 +123,17 @@ if not DEBUG:
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
-    # www ve non-www arası session paylaşımı için
-    SESSION_COOKIE_DOMAIN = '.analizus.com'
-    CSRF_COOKIE_DOMAIN = '.analizus.com'
+    
+    # Sadece ana site (analizus.com) için cookie domain ayarlarını yap
+    if 'analizus.com' in SITE_URL and 'onrender.com' not in SITE_URL:
+        # www ve non-www arası session paylaşımı için
+        SESSION_COOKIE_DOMAIN = '.analizus.com'
+        CSRF_COOKIE_DOMAIN = '.analizus.com'
+
+    # HSTS - HTTP Strict Transport Security
+    SECURE_HSTS_SECONDS = 31536000  # 1 yıl
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
 
 # --- DİĞER AYARLAR ---
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -132,10 +156,18 @@ OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
 GROQ_API_KEY = os.getenv('GROQ_API_KEY')
 
+# Scraper (Selenium)
+CHROME_BINARY_PATH = os.getenv('CHROME_BINARY_PATH', None)
+
+
 # Güvenlik Headerları
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = 'DENY'
+
+# Rate Limiting
+RATELIMIT_VIEW = 'forum.views.ratelimit_error'
+
 
 LANGUAGES = [
     ('tr', _('Turkish')),
@@ -147,13 +179,15 @@ LOCALE_PATHS = [
 ]
 
 # --- ADMIN PANELİ AYARLARI (JAZZMIN) ---
-JAZZMIN_SETTINGS = {  # DÜZELTME: AZZMIN -> JAZZMIN
+JAZZMIN_SETTINGS = {
     "site_title": "Analizus 2050 Core",
     "site_header": "NEURAL LINK v1.0",
     "site_brand": "Analizus AI",
+    "site_logo_classes": "",
     "welcome_sign": "Sistem Çevrimiçi. Hoş Geldiniz, Komutan.",
     "copyright": "Analizus Ltd.",
     "search_model": ["auth.User", "forum.Topic"],
+    "site_url": "/",
 
     "topmenu_links": [
         {"name": "Ana Siteye Dön", "url": "home", "permissions": ["auth.view_user"]},
@@ -180,6 +214,7 @@ JAZZMIN_SETTINGS = {  # DÜZELTME: AZZMIN -> JAZZMIN
 
 JAZZMIN_UI_TWEAKS = {
     "custom_css": "css/admin_theme.css",
+    "custom_js": "js/admin_custom.js",
     "theme": "solar",   # 2050 Vizyonu için Solar veya Cyborg teması
     "dark_mode_theme": "solar",
     "navbar": "navbar-dark",
@@ -194,18 +229,10 @@ JAZZMIN_UI_TWEAKS = {
     }
 }
 
-# --- E-POSTA AYARLARI ---
-# SendGrid Web API kullanıyoruz (Render free tier SMTP'yi engelliyor)
-# SMTP yerine HTTP API kullandığımız için EMAIL_BACKEND artık kullanılmıyor
-# forum/services/email_service.py içindeki SendGrid Web API kullanılıyor
+# --- E-POSTA AYARLARI (SendGrid HTTP API) ---
 SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY', '')
-DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'Analizus <noreply@analizdestek-ai.onrender.com>')
-
-# Django Auth Password Reset için Backend
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'info@analizus.com')
 EMAIL_BACKEND = 'forum.backends.SendGridBackend'
-
-# Site URL (e-posta doğrulama linkleri için)
-SITE_URL = os.getenv('SITE_URL', 'https://www.analizus.com')
 
 # --- IYZICO ÖDEME AYARLARI ---
 IYZICO_API_KEY = os.getenv('IYZICO_API_KEY', '').strip()
@@ -227,10 +254,17 @@ ALLOWED_ATTACHMENT_TYPES = [
 
 # --- SESSION AYARLARI ---
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'  # Database-backed sessions (çoklu worker için)
-SESSION_COOKIE_AGE = 60 * 60 * 24 * 7  # 7 gün
+SESSION_COOKIE_AGE = 60 * 60 * 2  # 2 saat
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = 'Lax'
+SESSION_COOKIE_SECURE = not DEBUG  # Production'da HTTPS zorunlu
 SESSION_SAVE_EVERY_REQUEST = True  # Her istekte session süresini yeniler
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False  # Tarayıcı kapanınca session silinmesin
+
+# --- CSRF AYARLARI ---
+CSRF_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_HTTPONLY = False  # JavaScript'in token'a erişebilmesi için
+CSRF_USE_SESSIONS = False  # Cookie-based CSRF (mobile uyumlu)
 
 # --- GOOGLE ANALYTICS ---
 # GA4 Measurement ID (örn: G-XXXXXXXXXX)
@@ -268,3 +302,32 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
 ]
+
+# --- AWS S3 MEDYA DOSYALARI ---
+AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
+AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
+AWS_STORAGE_BUCKET_NAME = 'analizus-files'
+AWS_S3_REGION_NAME = os.getenv('AWS_S3_REGION_NAME', 'eu-north-1')
+AWS_S3_CUSTOM_DOMAIN = os.getenv('AWS_S3_CUSTOM_DOMAIN', f'{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com')
+
+# S3 Güvenlik ve Performans Ayarları
+AWS_S3_OBJECT_PARAMETERS = {
+    'CacheControl': 'max-age=86400',  # 1 gün cache
+}
+AWS_DEFAULT_ACL = None  # Bucket policy'e bırak
+AWS_S3_FILE_OVERWRITE = False  # Aynı isimli dosyaları ezme
+AWS_QUERYSTRING_AUTH = False  # URL'lerde auth parametresi olmasın (public okuma için)
+
+# Dosya boyutu limiti (5MB)
+AWS_S3_MAX_MEMORY_SIZE = 5 * 1024 * 1024
+
+# Production'da S3, lokalde dosya sistemi
+if not DEBUG and AWS_ACCESS_KEY_ID:
+    # Production: S3 kullan
+    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+    MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/'
+else:
+    # Lokal geliştirme: dosya sistemi kullan
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+

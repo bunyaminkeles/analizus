@@ -5,6 +5,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db.models import Count
 import logging
 from .utils import send_realtime_notification
+from .mention_utils import parse_mentions
 
 logger = logging.getLogger(__name__)
 
@@ -56,7 +57,7 @@ def send_chat_message(message_instance):
     except Exception as e:
         logger.error(f"Chat WebSocket mesajı gönderilemedi: {e}")
 
-from .models import Post, PrivateMessage, Notification, PostLike, Topic, Badge
+from .models import Post, PrivateMessage, Notification, PostLike, Topic, Badge, FreelanceJob
 from .models import Profile  # Profile modelini import et
 
 
@@ -103,6 +104,32 @@ def post_save_receiver(sender, instance, created, **kwargs):
             except Exception as e:
                 logger.error(f"Post bildirimi oluşturulamadı: {e}")
 
+        # @mention bildirimleri
+        try:
+            mentioned_users = parse_mentions(instance.message)
+            content_type = ContentType.objects.get_for_model(instance)
+            url = instance.get_absolute_url()
+            for mentioned_user in mentioned_users:
+                # Kendini mention edene ve zaten bildirim giden konu sahibine gönderme
+                if mentioned_user == instance.created_by:
+                    continue
+                if mentioned_user == instance.topic.starter:
+                    continue
+                mention_msg = f"<b>{instance.created_by.username}</b>, '{instance.topic.subject}' konusunda sizi etiketledi."
+                Notification.objects.create(
+                    recipient=mentioned_user,
+                    sender=instance.created_by,
+                    verb=mention_msg,
+                    content_type=content_type,
+                    object_id=instance.pk
+                )
+                send_realtime_notification(mentioned_user.id, mention_msg, url)
+                # E-posta bildirimi
+                from .email_utils import send_mention_notification
+                send_mention_notification(mentioned_user, instance, instance.topic)
+        except Exception as e:
+            logger.error(f"Mention bildirimi oluşturulamadı: {e}")
+
 
 @receiver(post_save, sender=PrivateMessage)
 def private_message_post_save(sender, instance, created, **kwargs):
@@ -130,6 +157,27 @@ def private_message_post_save(sender, instance, created, **kwargs):
             send_chat_message(instance)
         except Exception as e:
             logger.error(f"Özel mesaj bildirimi oluşturulamadı: {e}")
+
+        # @mention bildirimleri (özel mesajda 3. kişi etiketlenirse)
+        try:
+            mentioned_users = parse_mentions(instance.message)
+            content_type = ContentType.objects.get_for_model(instance)
+            for mentioned_user in mentioned_users:
+                # Gönderen, alıcı veya kendini mention edene bildirim gönderme
+                if mentioned_user in (instance.sender, instance.receiver):
+                    continue
+                mention_msg = f"<b>{instance.sender.username}</b> bir mesajda sizi etiketledi."
+                mention_url = reverse('send_message', args=[instance.sender.username])
+                Notification.objects.create(
+                    recipient=mentioned_user,
+                    sender=instance.sender,
+                    verb=mention_msg,
+                    content_type=content_type,
+                    object_id=instance.pk
+                )
+                send_realtime_notification(mentioned_user.id, mention_msg, mention_url)
+        except Exception as e:
+            logger.error(f"Özel mesaj mention bildirimi oluşturulamadı: {e}")
 
 
 @receiver(post_save, sender=PostLike)
@@ -194,14 +242,14 @@ def check_and_award_participation_badges(profile):
     try:
         user = profile.user
 
-        # Yardımsever: 10 soruya cevap verdi
-        if user.posts.count() >= 10:
+        # Yardımsever: 50 soruya cevap verdi
+        if user.posts.count() >= 50:
             badge = Badge.objects.filter(slug='yardimsever').first()
             if badge:
                 profile.badges.add(badge)
 
-        # Konu Açıcı: 5 konu açtı
-        if user.topics.count() >= 5:
+        # Konu Açıcı: 20 konu açtı
+        if user.topics.count() >= 20:
             badge = Badge.objects.filter(slug='konu-acici').first()
             if badge:
                 profile.badges.add(badge)
@@ -212,23 +260,10 @@ def check_and_award_participation_badges(profile):
             if badge:
                 profile.badges.add(badge)
 
-        # Çözüm Ustası: 10 kez "En Faydalı Cevap"
+        # Çözüm Ustası: 25 kez "En Faydalı Cevap"
         best_answer_count = user.posts.filter(is_best_answer=True).count()
-        if best_answer_count >= 10:
+        if best_answer_count >= 25:
             badge = Badge.objects.filter(slug='cozum-ustasi').first()
-            if badge:
-                profile.badges.add(badge)
-
-        # Popüler Yazar: Bir konusu 1000+ görüntülendi
-        if user.topics.filter(views__gte=1000).exists():
-            badge = Badge.objects.filter(slug='populer-yazar').first()
-            if badge:
-                profile.badges.add(badge)
-
-        # Beğenilen Yazar: Toplam 50 beğeni aldı
-        total_likes = sum(p.likes for p in user.posts.all())
-        if total_likes >= 50:
-            badge = Badge.objects.filter(slug='begenilen-yazar').first()
             if badge:
                 profile.badges.add(badge)
 
@@ -243,30 +278,23 @@ def check_and_award_participation_badges(profile):
 def check_and_award_quiz_badges(profile, category=None, correct_count=0, total_correct=0):
     """Quiz performansına göre rozetleri kontrol et ve ver"""
     try:
-        # Kategori bazlı rozetler (10 doğru cevap)
+        # Kategori bazlı rozetler (50 doğru cevap)
         category_badge_map = {
             'spss': 'spss-uzmani',
             'python': 'python-ninja',
             'r': 'r-ustadi',
             'statistics': 'istatistik-ustasi',
-            'methodology': 'metodoloji-gurusu',
         }
 
-        if category and correct_count >= 10:
+        if category and correct_count >= 50:
             badge_slug = category_badge_map.get(category)
             if badge_slug:
                 badge = Badge.objects.filter(slug=badge_slug).first()
                 if badge:
                     profile.badges.add(badge)
 
-        # Quiz Şampiyonu: 100 toplam doğru
-        if total_correct >= 100:
-            badge = Badge.objects.filter(slug='quiz-sampiyonu').first()
-            if badge:
-                profile.badges.add(badge)
-
-        # Quiz Efsanesi: 500 toplam doğru
-        if total_correct >= 500:
+        # Quiz Efsanesi: 1000 toplam doğru
+        if total_correct >= 1000:
             badge = Badge.objects.filter(slug='quiz-efsanesi').first()
             if badge:
                 profile.badges.add(badge)
@@ -323,3 +351,70 @@ def check_like_badges(sender, instance, created, **kwargs):
             check_and_award_participation_badges(profile)
         except Exception as e:
             logger.error(f"Beğeni rozeti kontrolünde hata: {e}")
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# İŞ İLANI TAMAMLANDIĞINDA BAŞARI HİKAYESİ DAVETİ
+# ═══════════════════════════════════════════════════════════════════════════
+
+@receiver(pre_save, sender=FreelanceJob)
+def capture_old_job_status(sender, instance, **kwargs):
+    """FreelanceJob kaydedilmeden önceki status'u yakala"""
+    if instance.pk:
+        try:
+            old = FreelanceJob.objects.get(pk=instance.pk)
+            instance._old_status = old.status
+        except FreelanceJob.DoesNotExist:
+            instance._old_status = None
+    else:
+        instance._old_status = None
+
+
+@receiver(post_save, sender=FreelanceJob)
+def send_success_story_invitation(sender, instance, created, **kwargs):
+    """İlan completed olduğunda ilan sahibi ve uzmana başarı hikayesi daveti gönder"""
+    if created:
+        return
+
+    old_status = getattr(instance, '_old_status', None)
+    if old_status == 'completed' or instance.status != 'completed':
+        return
+
+    # İlan sahibi
+    owner = instance.owner
+
+    # Kabul edilen teklifteki uzman
+    accepted_proposal = instance.proposals.filter(status='accepted').first()
+    expert = accepted_proposal.expert if accepted_proposal else None
+
+    # AnalizBot kullanıcısını bul
+    from django.contrib.auth import get_user_model
+    User = get_user_model()
+    try:
+        bot_user = User.objects.get(username='AnalizBot')
+    except User.DoesNotExist:
+        logger.warning("AnalizBot kullanıcısı bulunamadı, başarı hikayesi daveti gönderilemedi.")
+        return
+
+    story_url = f"/success-stories/?job={instance.pk}"
+    message_text = (
+        f"Tebrikler! \"{instance.title}\" ilanı başarıyla tamamlandı. 🎉\n\n"
+        f"Deneyiminizi toplulukla paylaşmak ister misiniz? "
+        f"Başarı hikayenizi yazarak diğer kullanıcılara ilham verebilirsiniz.\n\n"
+        f"👉 Hikayenizi yazmak için: {story_url}"
+    )
+
+    recipients = [owner]
+    if expert and expert != owner:
+        recipients.append(expert)
+
+    for recipient in recipients:
+        try:
+            PrivateMessage.objects.create(
+                sender=bot_user,
+                receiver=recipient,
+                message=message_text,
+            )
+            logger.info(f"Başarı hikayesi daveti gönderildi: {recipient.username} (iş: {instance.pk})")
+        except Exception as e:
+            logger.error(f"Başarı hikayesi daveti gönderilemedi ({recipient.username}): {e}")

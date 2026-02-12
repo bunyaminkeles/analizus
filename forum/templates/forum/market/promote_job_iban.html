@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+
+{% block title %}IBAN ile Ödeme - Vitrine Taşı{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm" style="background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(255, 255, 255, 0.1) !important;">
+                <div class="card-header bg-transparent text-center border-bottom border-secondary border-opacity-25 py-3">
+                    <h2 class="fw-bold text-warning mb-0"><i class="bi bi-wallet2 me-2"></i>Banka Transferi ile Öne Çıkar</h2>
+                </div>
+                <div class="card-body p-4 p-md-5">
+                    <div class="alert alert-info bg-primary bg-opacity-10 border-primary border-opacity-25 text-white">
+                        <p class="mb-0"><strong>İlan Başlığı:</strong> {{ job.title }}</p>
+                    </div>
+
+                    <!-- Paket Seçimi -->
+                    <h5 class="text-white mt-4 mb-3"><i class="bi bi-box-seam me-2"></i>Paket Seçin</h5>
+                    <div class="row g-3 mb-4">
+                        {% for pkg in packages %}
+                        <div class="col-6">
+                            <div class="form-check package-card p-3 rounded border border-secondary h-100" style="background: rgba(0,0,0,0.2);">
+                                <input class="form-check-input" type="radio" name="package" id="pkg{{ pkg.days }}" value="{{ pkg.days }}" {% if forloop.first %}checked{% endif %}>
+                                <label class="form-check-label w-100 cursor-pointer" for="pkg{{ pkg.days }}">
+                                    <div class="d-flex flex-column align-items-center text-center">
+                                        <span class="fs-3 fw-bold text-warning">{{ pkg.days }} Gün</span>
+                                        <span class="fs-4 text-success fw-bold">{{ pkg.price }} TL</span>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <p class="text-light">Ödemeyi yaparken, bankanızın 'Açıklama' veya 'Dekont Notu' alanına ilana özel referans numaranızı (<strong>{{ job.reference_number }}</strong>) eklemeyi unutmayın. Bu, ödemenizin daha hızlı onaylanmasını sağlar.</p>
+
+                    <div class="bg-dark bg-opacity-50 p-4 rounded border border-secondary border-opacity-50 mt-3">
+                        <div class="mb-3">
+                            <label class="form-label text-white-50 small">Alıcı Adı Soyadı</label>
+                            <input type="text" class="form-control bg-secondary text-white" value="Bünyamin Keleş" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-white-50 small">IBAN</label>
+                            <div class="input-group">
+                                <input type="text" id="iban" class="form-control bg-secondary text-white" value="TR73 0003 2000 0000 0079 1034 65" readonly>
+                                <button class="btn btn-outline-warning" type="button" onclick="copyToClipboard('#iban')">
+                                    <i class="bi bi-clipboard"></i> Kopyala
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 text-center">
+                        <p class="text-white-50 small">Ödemeyi yaptıktan sonra aşağıdaki butona tıklayarak bize bildirim gönderebilirsiniz. Ödemeniz onaylandıktan sonra ilanınız seçtiğiniz süre boyunca vitrinde gösterilecektir.</p>
+
+                        <form method="post" action="{% url 'mark_payment_transferred' pk=job.pk %}" onsubmit="return confirm('Ödemeyi yaptığınızı onaylıyor musunuz?');" id="paymentForm">
+                            {% csrf_token %}
+                            <input type="hidden" name="package" id="selectedPackage" value="3">
+                            <button type="submit" class="btn btn-success fw-bold px-4 mt-2">
+                                <i class="bi bi-check-circle me-2"></i>Havale Yaptım, Onay Bekliyorum
+                            </button>
+                        </form>
+                        <a href="{% url 'job_detail' pk=job.pk %}" class="btn btn-outline-light mt-3 btn-sm"><i class="bi bi-arrow-left me-2"></i>İlan Detayına Geri Dön</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.package-card { cursor: pointer; transition: all 0.2s; }
+.package-card:hover { border-color: #ffc107 !important; }
+.package-card:has(input:checked) { border-color: #ffc107 !important; background: rgba(255, 193, 7, 0.1) !important; }
+</style>
+
+<script>
+function copyToClipboard(elementId) {
+    var copyText = document.querySelector(elementId);
+    copyText.select();
+    document.execCommand("copy");
+    alert("IBAN kopyalandı!");
+}
+
+document.querySelectorAll('input[name="package"]').forEach(function(radio) {
+    radio.addEventListener('change', function() {
+        document.getElementById('selectedPackage').value = this.value;
+    });
+});
+</script>
+{% endblock %}

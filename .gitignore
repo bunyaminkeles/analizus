@@ -11,6 +11,7 @@ staticfiles/
 
 # Environment Variables
 .env
+.env.example
 .env.local
 
 # Virtual Environment
@@ -40,3 +41,15 @@ frontend/npm-debug.log*
 frontend/yarn-debug.log*
 frontend/yarn-error.log*
 frontend/pnpm-debug.log*
+frontend/next-env.d.ts
+
+# Other
+avatars/keles.png
+forum/views-claude.py
+forum/templates/forum/home copy.html
+forum/views copy.py
+homepage.png
+PRE_DEPLOYMENT_CHECKLIST.md
+analizus-logo-00.png
+aws/
+awscliv2.zip

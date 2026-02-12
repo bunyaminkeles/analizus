@@ -1,0 +1,282 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ post.meta_title|default:post.title }} - Analizus Blog{% endblock %}
+
+{% block extra_head %}
+<meta name="description" content="{{ post.meta_description|default:post.excerpt }}">
+<meta property="og:title" content="{{ post.title }}">
+<meta property="og:description" content="{{ post.excerpt }}">
+<meta property="og:type" content="article">
+{% if post.cover_image %}
+<meta property="og:image" content="{{ request.scheme }}://{{ request.get_host }}{{ post.cover_image.url }}">
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<article class="container py-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-info text-decoration-none">Ana Sayfa</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'blog_list' %}" class="text-info text-decoration-none">Blog</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'blog_list' %}?category={{ post.category.slug }}" class="text-info text-decoration-none">{{ post.category.name }}</a></li>
+            <li class="breadcrumb-item active text-muted" aria-current="page">{{ post.title|truncatechars:30 }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <!-- Ana İçerik -->
+        <div class="col-lg-8">
+            <div class="card border-0" style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255, 255, 255, 0.08) !important; border-radius: 16px;">
+                <!-- Kapak Görseli -->
+                {% if post.cover_image %}
+                <img src="{{ post.cover_image.url }}" class="card-img-top" style="border-radius: 16px 16px 0 0; max-height: 400px; object-fit: cover;">
+                {% endif %}
+
+                <div class="card-body p-4 p-lg-5">
+                    <!-- Kategori & Tarih -->
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <a href="{% url 'blog_list' %}?category={{ post.category.slug }}" class="badge text-decoration-none" style="background: {{ post.category.color }}20; color: {{ post.category.color }}; border: 1px solid {{ post.category.color }}40;">
+                            <i class="bi {{ post.category.icon }} me-1"></i>{{ post.category.name }}
+                        </a>
+                        <span class="text-muted small">
+                            <i class="bi bi-calendar3 me-1"></i>{{ post.published_at|date:"d F Y" }}
+                        </span>
+                    </div>
+
+                    <!-- Başlık -->
+                    <h1 class="text-white fw-bold mb-4" style="font-size: 2rem;">{{ post.title }}</h1>
+
+                    <!-- Yazar & Meta -->
+                    <div class="d-flex justify-content-between align-items-center mb-4 pb-4 border-bottom border-secondary border-opacity-25">
+                        <div class="d-flex align-items-center">
+                            {% if post.author.profile.avatar %}
+                            <img src="{{ post.author.profile.avatar.url }}" class="rounded-circle me-3" style="width: 48px; height: 48px; object-fit: cover;">
+                            {% else %}
+                            <div class="rounded-circle bg-info bg-opacity-10 d-flex align-items-center justify-content-center me-3" style="width: 48px; height: 48px;">
+                                <span class="text-info fw-bold">{{ post.author.username|slice:":1"|upper }}</span>
+                            </div>
+                            {% endif %}
+                            <div>
+                                <a href="{% url 'profile_detail' post.author.username %}" class="text-white text-decoration-none fw-medium">{{ post.author.username }}</a>
+                                <p class="text-muted small mb-0">{{ post.author.profile.title|default:"Yazar" }}</p>
+                            </div>
+                        </div>
+                        <div class="text-muted small">
+                            <span class="me-3"><i class="bi bi-eye me-1"></i>{{ post.views }}</span>
+                            <span><i class="bi bi-clock me-1"></i>{{ post.reading_time }} dk okuma</span>
+                        </div>
+                    </div>
+
+                    <!-- İçerik -->
+                    <div class="blog-content text-light" style="line-height: 1.8; font-size: 1.05rem;">
+                        {{ post.content|safe }}
+                    </div>
+
+                    <!-- Beğeni & Paylaş -->
+                    <div class="d-flex justify-content-between align-items-center mt-5 pt-4 border-top border-secondary border-opacity-25">
+                        <button class="btn {% if is_liked %}btn-danger{% else %}btn-outline-danger{% endif %} rounded-pill px-4" id="likeBtn" onclick="toggleLike()">
+                            <i class="bi bi-heart{% if is_liked %}-fill{% endif %} me-2"></i>
+                            <span id="likeCount">{{ post.total_likes }}</span> Beğeni
+                        </button>
+
+                        <div class="d-flex gap-2">
+                            <a href="https://x.com/analizus" target="_blank" class="btn btn-outline-info btn-sm rounded-circle" title="X'te Takip Et">
+                                <i class="bi bi-twitter-x"></i>
+                            </a>
+                            <a href="https://www.linkedin.com/company/101597284/admin/page-posts/published/" target="_blank" class="btn btn-outline-info btn-sm rounded-circle" title="LinkedIn'de Takip Et">
+                                <i class="bi bi-linkedin"></i>
+                            </a>
+                            <button class="btn btn-outline-info btn-sm rounded-circle" onclick="copyLink()" title="Linki Kopyala">
+                                <i class="bi bi-link-45deg"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- İlgili Yazılar -->
+            {% if related_posts %}
+            <div class="mt-5">
+                <h5 class="text-white mb-4"><i class="bi bi-collection text-info me-2"></i>İlgili Yazılar</h5>
+                <div class="row g-4">
+                    {% for rpost in related_posts %}
+                    <div class="col-md-4">
+                        <a href="{% url 'blog_detail' slug=rpost.slug %}" class="text-decoration-none">
+                            <div class="card h-100 border-0 related-card" style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.08) !important;">
+                                {% if rpost.cover_image %}
+                                <img src="{{ rpost.cover_image.url }}" class="card-img-top" style="height: 120px; object-fit: cover; border-radius: 12px 12px 0 0;">
+                                {% endif %}
+                                <div class="card-body p-3">
+                                    <h6 class="card-title text-white small mb-2">{{ rpost.title|truncatechars:50 }}</h6>
+                                    <small class="text-muted">{{ rpost.published_at|date:"d M Y" }}</small>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Yazar Kartı -->
+            <div class="card border-0 mb-4 sticky-top" style="top: 90px; background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255, 255, 255, 0.08) !important;">
+                <div class="card-body text-center p-4">
+                    {% if post.author.profile.avatar %}
+                    <img src="{{ post.author.profile.avatar.url }}" class="rounded-circle mb-3" style="width: 80px; height: 80px; object-fit: cover; border: 3px solid rgba(0, 210, 255, 0.3);">
+                    {% else %}
+                    <div class="rounded-circle bg-info bg-opacity-10 d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 80px; height: 80px;">
+                        <span class="text-info fw-bold fs-3">{{ post.author.username|slice:":1"|upper }}</span>
+                    </div>
+                    {% endif %}
+
+                    <h5 class="text-white fw-bold mb-1">{{ post.author.username }}</h5>
+                    <p class="text-info small mb-3">{{ post.author.profile.title|default:"Yazar" }}</p>
+
+                    {% if post.author.profile.bio %}
+                    <p class="text-muted small mb-3">{{ post.author.profile.bio|truncatechars:100 }}</p>
+                    {% endif %}
+
+                    <a href="{% url 'profile_detail' post.author.username %}" class="btn btn-outline-info btn-sm rounded-pill w-100">
+                        <i class="bi bi-person me-1"></i>Profili Gör
+                    </a>
+                </div>
+            </div>
+
+            <!-- Blog'a Dön -->
+            <a href="{% url 'blog_list' %}" class="btn btn-outline-secondary w-100 rounded-pill">
+                <i class="bi bi-arrow-left me-2"></i>Tüm Yazılar
+            </a>
+        </div>
+    </div>
+</article>
+
+<style>
+.blog-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    margin: 1rem 0;
+}
+.blog-content h1 {
+    color: #fff;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-top: 2.5rem;
+    margin-bottom: 1.2rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid rgba(0, 210, 255, 0.3);
+}
+.blog-content h2 {
+    color: #fff;
+    font-size: 1.6rem;
+    font-weight: 600;
+    margin-top: 2.2rem;
+    margin-bottom: 1rem;
+    padding-left: 1rem;
+    border-left: 4px solid #00d2ff;
+    background: linear-gradient(90deg, rgba(0, 210, 255, 0.1) 0%, transparent 100%);
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-radius: 0 8px 8px 0;
+}
+.blog-content h3 {
+    color: #00d2ff;
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-top: 1.8rem;
+    margin-bottom: 0.8rem;
+}
+.blog-content h4 {
+    color: #94a3b8;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-top: 1.5rem;
+    margin-bottom: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.blog-content h5, .blog-content h6 {
+    color: #64748b;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-top: 1.2rem;
+    margin-bottom: 0.5rem;
+}
+.blog-content a {
+    color: #00d2ff;
+}
+.blog-content code {
+    background: rgba(0, 210, 255, 0.1);
+    color: #00d2ff;
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+.blog-content pre {
+    background: #0f172a;
+    padding: 1rem;
+    border-radius: 8px;
+    overflow-x: auto;
+}
+.blog-content blockquote {
+    border-left: 4px solid #00d2ff;
+    padding-left: 1rem;
+    margin-left: 0;
+    color: #94a3b8;
+    font-style: italic;
+}
+.related-card {
+    transition: all 0.3s ease;
+    border-radius: 12px;
+}
+.related-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(0, 210, 255, 0.3) !important;
+}
+</style>
+
+<script>
+function toggleLike() {
+    {% if user.is_authenticated %}
+    fetch('{% url "blog_like" slug=post.slug %}', {
+        method: 'POST',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRFToken': '{{ csrf_token }}'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        const btn = document.getElementById('likeBtn');
+        const count = document.getElementById('likeCount');
+        const icon = btn.querySelector('i');
+
+        count.textContent = data.total_likes;
+
+        if (data.liked) {
+            btn.classList.remove('btn-outline-danger');
+            btn.classList.add('btn-danger');
+            icon.classList.remove('bi-heart');
+            icon.classList.add('bi-heart-fill');
+        } else {
+            btn.classList.remove('btn-danger');
+            btn.classList.add('btn-outline-danger');
+            icon.classList.remove('bi-heart-fill');
+            icon.classList.add('bi-heart');
+        }
+    });
+    {% else %}
+    window.location.href = '{% url "login" %}?next={{ request.path }}';
+    {% endif %}
+}
+
+function copyLink() {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+        alert('Link kopyalandı!');
+    });
+}
+</script>
+{% endblock %}
