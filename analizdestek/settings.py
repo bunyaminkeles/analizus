@@ -206,11 +206,11 @@ JAZZMIN_SETTINGS = {
         "forum.Post": "fas fa-comment-dots",
     },
     "show_ui_builder": True,
+    "custom_css": "css/admin_theme_v2.css",
+    "custom_js": "js/admin_custom_v2.js",
 }
 
 JAZZMIN_UI_TWEAKS = {
-    "custom_css": "css/admin_theme.css",
-    "custom_js": "js/admin_custom.js",
     "theme": "darkly",
     "dark_mode_theme": "darkly",
     "navbar": "navbar-dark",
