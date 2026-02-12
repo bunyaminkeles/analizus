@@ -211,10 +211,10 @@ JAZZMIN_SETTINGS = {
 JAZZMIN_UI_TWEAKS = {
     "custom_css": "css/admin_theme.css",
     "custom_js": "js/admin_custom.js",
-    "theme": "solar",   # 2050 Vizyonu için Solar veya Cyborg teması
-    "dark_mode_theme": "solar",
+    "theme": "darkly",
+    "dark_mode_theme": "darkly",
     "navbar": "navbar-dark",
-    "sidebar": "sidebar-dark-info",
+    "sidebar": "sidebar-dark-primary",
     "button_classes": {
         "primary": "btn-primary",
         "secondary": "btn-secondary",

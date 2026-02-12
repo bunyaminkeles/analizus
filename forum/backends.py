@@ -1,5 +1,6 @@
 import base64
 import logging
+import re
 import requests
 from django.conf import settings
 from django.core.mail.backends.base import BaseEmailBackend
@@ -19,6 +20,14 @@ class SendGridBackend(BaseEmailBackend):
                 sent_count += 1
         return sent_count
 
+    @staticmethod
+    def _parse_from_email(raw):
+        """'Display Name <email>' formatından email ve name'i ayırır"""
+        match = re.match(r'^(.+?)\s*<(.+?)>$', raw)
+        if match:
+            return match.group(2).strip(), match.group(1).strip()
+        return raw.strip(), 'Analizus'
+
     def _send(self, email_message):
         api_key = getattr(settings, 'SENDGRID_API_KEY', '')
         if not api_key:
@@ -31,9 +40,10 @@ class SendGridBackend(BaseEmailBackend):
             "Content-Type": "application/json"
         }
 
+        email_addr, sender_name = self._parse_from_email(email_message.from_email)
         data = {
             "personalizations": [{"to": [{"email": recipient} for recipient in email_message.to]}],
-            "from": {"email": email_message.from_email, "name": "Analizus"},
+            "from": {"email": email_addr, "name": sender_name},
             "subject": email_message.subject,
             "content": [{"type": "text/plain", "value": email_message.body}]
         }

@@ -5,10 +5,19 @@ from django.conf import settings
 import requests
 import logging
 import threading
+import re
 
 logger = logging.getLogger(__name__)
 
 SENDGRID_API_URL = 'https://api.sendgrid.com/v3/mail/send'
+
+
+def _parse_from_email(raw):
+    """'Display Name <email>' formatından email ve name'i ayırır"""
+    match = re.match(r'^(.+?)\s*<(.+?)>$', raw)
+    if match:
+        return match.group(2).strip(), match.group(1).strip()
+    return raw.strip(), 'Analizus'
 
 
 def send_email_async(subject, message, recipient_list):
@@ -21,14 +30,14 @@ def send_email_async(subject, message, recipient_list):
         logger.warning(f"SENDGRID_API_KEY ayarlanmamış! Email gönderilemedi: {recipient_list}")
         return
 
-    from_email = settings.DEFAULT_FROM_EMAIL
+    email_addr, sender_name = _parse_from_email(settings.DEFAULT_FROM_EMAIL)
 
     def _send():
         for to_email in recipient_list:
             try:
                 payload = {
                     "personalizations": [{"to": [{"email": to_email}]}],
-                    "from": {"email": from_email, "name": "Analizus"},
+                    "from": {"email": email_addr, "name": sender_name},
                     "subject": subject,
                     "content": [
                         {"type": "text/plain", "value": message},
