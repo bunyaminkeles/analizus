@@ -6,16 +6,16 @@
 {% endblock %}
 {% load crispy_forms_tags %}
 
-{% block title %}Yeni Analiz Başlat | AnalizDestek{% endblock %}
+{% block title %}Yeni Konu/Tartışma Başlat | AnalizDestek{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-lg-8">
         
         <div class="text-center mb-4">
-            <h2 class="fw-bold text-white"><i class="bi bi-pencil-square me-2 text-primary"></i>Yeni Analiz Başlat</h2>
+            <h2 class="fw-bold text-white"><i class="bi bi-pencil-square me-2 text-primary"></i>Yeni Konu/Tartışma Başlat</h2>
             <p class="text-muted">
-                <span class="text-info">{{ category.title }}</span> kategorisine veri girişi yapıyorsunuz.
+                <span class="text-info">{{ category.title }}</span> kategorisine konu açıyorsunuz.
             </p>
         </div>
 
@@ -93,7 +93,7 @@
                     <div class="d-flex justify-content-end gap-3 mt-4">
                         <a href="{% url 'category_topics' category.slug %}" class="btn btn-outline-secondary rounded-pill px-4">İptal</a>
                         <button type="submit" class="btn btn-primary rounded-pill px-5 fw-bold shadow-sm">
-                            <i class="bi bi-send-fill me-2"></i>Veriyi Gönder
+                            <i class="bi bi-send-fill me-2"></i>Mesajı Paylaş
                         </button>
                     </div>
                 </form>

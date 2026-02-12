@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
 from django import forms
 from django.conf import settings
 import json
@@ -1451,7 +1452,7 @@ def admin_verify_linkedin(request, user_id):
     _check_and_award_trust_badge(request, user_to_verify)
     
     messages.success(request, f"{user_to_verify.username} kullanıcısının LinkedIn profili onaylandı.")
-    return redirect('admin_dashboard')
+    return redirect(request.META.get('HTTP_REFERER', reverse('admin_dashboard')))
 
 
 @staff_member_required
@@ -1466,7 +1467,7 @@ def dashboard_approve_story(request, pk):
         story.approval_status = 'approved'
         messages.success(request, f"{story.user.username} hikayesi onaylandı.")
     story.save()
-    return redirect('admin_dashboard')
+    return redirect(request.META.get('HTTP_REFERER', reverse('admin_dashboard')))
 
 
 @staff_member_required
@@ -1476,7 +1477,7 @@ def dashboard_approve_review(request, pk):
     review.is_approved = True
     review.save()
     messages.success(request, f"{review.reviewer.username} değerlendirmesi onaylandı.")
-    return redirect('admin_dashboard')
+    return redirect(request.META.get('HTTP_REFERER', reverse('admin_dashboard')))
 
 
 @staff_member_required
@@ -1491,7 +1492,7 @@ def dashboard_approve_donation(request, pk):
     if donation.user:
         donation.grant_premium()
     messages.success(request, f"Bağış onaylandı. {donation.premium_days_granted} gün premium verildi.")
-    return redirect('admin_dashboard')
+    return redirect(request.META.get('HTTP_REFERER', reverse('admin_dashboard')))
 
 
 @staff_member_required
@@ -1501,7 +1502,7 @@ def dashboard_mark_contact_read(request, pk):
     msg = get_object_or_404(ContactMessage, pk=pk)
     msg.is_read = True
     msg.save()
-    return redirect('admin_dashboard')
+    return redirect(request.META.get('HTTP_REFERER', reverse('admin_dashboard')))
 
 
 # --- API: QUIZ & STORIES ---

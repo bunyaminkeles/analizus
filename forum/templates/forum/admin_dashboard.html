@@ -667,4 +667,16 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
+<script>
+// Bootstrap tab'ları explicit olarak başlat
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('#approvalTabs button[data-bs-toggle="pill"]').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            var tab = new bootstrap.Tab(this);
+            tab.show();
+        });
+    });
+});
+</script>
 {% endblock %}
