@@ -349,7 +349,3 @@ a:hover {
     color: #818cf8 !important;
 }
 
-/* FIX: Admin sekmelerinin içeriğini görünür yap */
-.tab-pane {
-    display: block !important;
-}
