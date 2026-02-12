@@ -10,8 +10,9 @@ body, html {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
 }
 
-/* Tüm admin elementlerinde Inter fontu */
-*, .content-wrapper, .main-sidebar, .navbar, .card, .table, input, select, textarea, button, .btn {
+/* Tüm admin elementlerinde Inter fontu (ikonlar hariç) */
+*:not(i):not(.fas):not(.far):not(.fab):not(.fa):not(.nav-icon):not(.bi),
+.content-wrapper, .main-sidebar, .navbar, .card, .table, input, select, textarea, button, .btn {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important;
 }
 
