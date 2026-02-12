@@ -1,0 +1,8 @@
+{% extends 'admin/base_site.html' %}
+{% load i18n %}
+
+{% block branding %}
+    <a href="{% url 'home' %}" class="navbar-brand">
+        {{ jazzmin.site_brand }}
+    </a>
+{% endblock %}

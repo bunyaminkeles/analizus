@@ -1063,6 +1063,7 @@ class SiteSettings(models.Model):
     feature_market = models.BooleanField(default=True, verbose_name="Hizmetler Pazarı")
     feature_ai_assistant = models.BooleanField(default=True, verbose_name="AI Asistan")
     feature_yoktez = models.BooleanField(default=True, verbose_name="YÖK Tez Tarama")
+    feature_trdizin_scraper = models.BooleanField(default=True, verbose_name="TR Dizin Tarama")
     feature_quiz = models.BooleanField(default=True, verbose_name="İstatistik Arena (Quiz)")
     feature_messaging = models.BooleanField(default=True, verbose_name="Özel Mesajlaşma")
     feature_donation = models.BooleanField(default=True, verbose_name="Bağış Sistemi")

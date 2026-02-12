@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}TR Dizin Gelişmiş Arama{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-10 mx-auto">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h3 class="card-title text-center mb-4">
+                        <i class="bi bi-search-heart me-2 text-info"></i>TR Dizin Gelişmiş Arama
+                    </h3>
+                    
+                    <form method="post" action="{% url 'trdizin_scraper:search' %}">
+                        {% csrf_token %}
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="title_query" class="form-label">Başlıkta Ara</label>
+                                <input type="text" id="title_query" class="form-control" name="title_query" placeholder="Başlık terimleri..." value="{{ title_query|default:'' }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="abstract_query" class="form-label">Özette Ara</label>
+                                <input type="text" id="abstract_query" class="form-control" name="abstract_query" placeholder="Özet terimleri..." value="{{ abstract_query|default:'' }}">
+                            </div>
+                        </div>
+                        
+                        <div class="row g-3 align-items-end mt-2">
+                            <div class="col-md-5">
+                                <label for="start_year" class="form-label">Başlangıç Yılı</label>
+                                <input type="number" id="start_year" name="start_year" class="form-control" placeholder="Örn: 2018" value="{{ start_year|default:'' }}">
+                            </div>
+                            <div class="col-md-5">
+                                <label for="end_year" class="form-label">Bitiş Yılı</label>
+                                <input type="number" id="end_year" name="end_year" class="form-control" placeholder="Örn: 2023" value="{{ end_year|default:'' }}">
+                            </div>
+                            <div class="col-md-2">
+                                <button class="btn btn-primary w-100 mt-3" type="submit">
+                                    <i class="fas fa-search"></i> Ara
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            {% if articles %}
+            <div class="card shadow-sm mt-5">
+                <div class="card-header">
+                    <h4 class="mb-0">Arama Sonuçları: "{{ query }}"</h4>
+                </div>
+                <div class="list-group list-group-flush">
+                    {% for article in articles %}
+                        <div class="list-group-item">
+                            <h5 class="mb-1">{{ article.title }}</h5>
+                            <p class="mb-1 text-muted">
+                                <i class="fas fa-users"></i> {{ article.authors|join:", " }}
+                            </p>
+                            <small class="text-muted">
+                                <i class="fas fa-calendar-alt"></i> {{ article.publication_year }}
+                            </small>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="card-footer text-muted">
+                    Toplam {{ articles|length }} sonuç bulundu.
+                </div>
+            </div>
+            {% endif %}
+
+        </div>
+    </div>
+</div>
+{% endblock %}

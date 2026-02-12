@@ -40,6 +40,7 @@ def feature_flags(request):
             'market': site.feature_market,
             'ai_assistant': site.feature_ai_assistant,
             'yoktez': site.feature_yoktez,
+            'trdizin_scraper': site.feature_trdizin_scraper,
             'quiz': site.feature_quiz,
             'messaging': site.feature_messaging,
             'donation': site.feature_donation,
