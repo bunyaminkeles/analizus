@@ -7,6 +7,7 @@ from django.conf import settings
 import requests
 import logging
 import threading
+import re
 
 logger = logging.getLogger(__name__)
 
@@ -26,16 +27,24 @@ class EmailService:
         """Site URL'sini döndürür"""
         return getattr(settings, 'SITE_URL', 'http://localhost:8000')
 
+    @staticmethod
+    def _parse_from_email(raw):
+        """'Display Name <email>' formatından email ve name'i ayırır"""
+        match = re.match(r'^(.+?)\s*<(.+?)>$', raw)
+        if match:
+            return match.group(2).strip(), match.group(1).strip()
+        return raw.strip(), 'Analizus'
+
     @classmethod
     def _send_email(cls, to_email, subject, html_content, plain_content):
         """SendGrid HTTP API ile e-posta gönderir (arka planda)"""
-        from_email = settings.DEFAULT_FROM_EMAIL
+        email_addr, sender_name = cls._parse_from_email(settings.DEFAULT_FROM_EMAIL)
 
         def _send():
             try:
                 payload = {
                     "personalizations": [{"to": [{"email": to_email}]}],
-                    "from": {"email": from_email, "name": "Analizus"},
+                    "from": {"email": email_addr, "name": sender_name},
                     "subject": subject,
                     "content": [
                         {"type": "text/plain", "value": plain_content},

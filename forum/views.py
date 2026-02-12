@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
 from django import forms
 from django.conf import settings
 import json
@@ -1424,21 +1425,7 @@ def resend_verification(request):
     return redirect('verification_pending')
 
 
-# --- ADMİN DASHBOARD ---
-@staff_member_required
-def admin_dashboard(request):
-    """Admin için istatistik paneli"""
-    from forum.services.dashboard_service import get_dashboard_context
-    context = get_dashboard_context()
-    # Eski template chart_labels/user_trend gibi list bekliyor (json değil)
-    import json
-    context['chart_labels'] = json.loads(context['chart_labels_json'])
-    context['user_trend'] = json.loads(context['user_trend_json'])
-    context['topic_trend'] = json.loads(context['topic_trend_json'])
-    context['post_trend'] = json.loads(context['post_trend_json'])
-    return render(request, 'forum/admin_dashboard.html', context)
-
-
+# --- ADMİN ACTIONS (Django admin dashboard'dan kullanılıyor) ---
 @staff_member_required
 def admin_verify_linkedin(request, user_id):
     user_to_verify = get_object_or_404(User, id=user_id)
@@ -1451,7 +1438,7 @@ def admin_verify_linkedin(request, user_id):
     _check_and_award_trust_badge(request, user_to_verify)
     
     messages.success(request, f"{user_to_verify.username} kullanıcısının LinkedIn profili onaylandı.")
-    return redirect('admin_dashboard')
+    return redirect(request.META.get('HTTP_REFERER', reverse('admin:index')))
 
 
 @staff_member_required
@@ -1466,7 +1453,7 @@ def dashboard_approve_story(request, pk):
         story.approval_status = 'approved'
         messages.success(request, f"{story.user.username} hikayesi onaylandı.")
     story.save()
-    return redirect('admin_dashboard')
+    return redirect(request.META.get('HTTP_REFERER', reverse('admin:index')))
 
 
 @staff_member_required
@@ -1476,7 +1463,7 @@ def dashboard_approve_review(request, pk):
     review.is_approved = True
     review.save()
     messages.success(request, f"{review.reviewer.username} değerlendirmesi onaylandı.")
-    return redirect('admin_dashboard')
+    return redirect(request.META.get('HTTP_REFERER', reverse('admin:index')))
 
 
 @staff_member_required
@@ -1491,7 +1478,7 @@ def dashboard_approve_donation(request, pk):
     if donation.user:
         donation.grant_premium()
     messages.success(request, f"Bağış onaylandı. {donation.premium_days_granted} gün premium verildi.")
-    return redirect('admin_dashboard')
+    return redirect(request.META.get('HTTP_REFERER', reverse('admin:index')))
 
 
 @staff_member_required
@@ -1501,7 +1488,7 @@ def dashboard_mark_contact_read(request, pk):
     msg = get_object_or_404(ContactMessage, pk=pk)
     msg.is_read = True
     msg.save()
-    return redirect('admin_dashboard')
+    return redirect(request.META.get('HTTP_REFERER', reverse('admin:index')))
 
 
 # --- API: QUIZ & STORIES ---

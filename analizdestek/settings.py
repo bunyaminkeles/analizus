@@ -206,15 +206,15 @@ JAZZMIN_SETTINGS = {
         "forum.Post": "fas fa-comment-dots",
     },
     "show_ui_builder": True,
+    "custom_css": "css/admin_theme_v2.css",
+    "custom_js": "js/admin_custom_v2.js",
 }
 
 JAZZMIN_UI_TWEAKS = {
-    "custom_css": "css/admin_theme.css",
-    "custom_js": "js/admin_custom.js",
-    "theme": "solar",   # 2050 Vizyonu için Solar veya Cyborg teması
-    "dark_mode_theme": "solar",
+    "theme": "darkly",
+    "dark_mode_theme": "darkly",
     "navbar": "navbar-dark",
-    "sidebar": "sidebar-dark-info",
+    "sidebar": "sidebar-dark-primary",
     "button_classes": {
         "primary": "btn-primary",
         "secondary": "btn-secondary",
@@ -229,6 +229,17 @@ JAZZMIN_UI_TWEAKS = {
 SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY', '')
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'info@analizus.com')
 EMAIL_BACKEND = 'forum.backends.SendGridBackend'
+
+# SMTP Ayarları (Fallback ve Harici Servisler İçin)
+# Bazı Django bileşenleri veya 3. parti uygulamalar varsayılan SMTP ayarlarına
+# geri dönebilir. Bu ayarlar, bu gibi durumlarda bile SendGrid'in SMTP
+# rölesini kullanarak e-postaların gönderilmesini sağlar.
+EMAIL_HOST = 'smtp.sendgrid.net'
+EMAIL_HOST_USER = 'apikey'  # SendGrid için bu değer sabittir.
+EMAIL_HOST_PASSWORD = os.getenv('SENDGRID_API_KEY')
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
 
 # --- IYZICO ÖDEME AYARLARI ---
 IYZICO_API_KEY = os.getenv('IYZICO_API_KEY', '').strip()
