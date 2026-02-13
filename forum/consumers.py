@@ -49,8 +49,23 @@ class ChatConsumer(AsyncWebsocketConsumer):
             return
 
         # Mesajı veritabanına kaydet
-        # Signal otomatik olarak hem bildirimi hem de chat mesajını gönderecek
-        await self.save_message(message_text, attachment_url, attachment_name)
+        result = await self.save_message(message_text, attachment_url, attachment_name)
+
+        # Doğrudan broadcast yap (signal'a bağımlı değil, event loop güvenli)
+        await self.channel_layer.group_send(
+            self.room_name,
+            {
+                'type': 'chat_message',
+                'message': message_text,
+                'sender_id': self.user.id,
+                'sender_username': self.user.username,
+                'attachment_url': attachment_url,
+                'attachment_name': attachment_name,
+                'attachment_type': result.get('attachment_type', ''),
+                'timestamp': result.get('timestamp', ''),
+                'message_id': result.get('id', 0),
+            }
+        )
 
     async def chat_message(self, event):
         """Odadan mesaj geldiğinde tarayıcıya gönder"""
@@ -78,12 +93,14 @@ class ChatConsumer(AsyncWebsocketConsumer):
     def save_message(self, message_text, attachment_url='', attachment_name=''):
         from .models import PrivateMessage
 
-        msg = PrivateMessage.objects.create(
+        msg = PrivateMessage(
             sender=self.user,
             receiver=self.other_user,
             message=message_text,
             attachment_name=attachment_name,
         )
+        msg._from_websocket = True  # Signal'da çift broadcast'i önle
+        msg.save()
 
         # Attachment type belirleme
         attachment_type = ''
