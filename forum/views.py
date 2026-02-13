@@ -954,9 +954,70 @@ def profile_edit(request):
 def inbox(request):
     # Sayfa görüntülendiğinde tüm okunmamış mesajları okundu yap
     PrivateMessage.objects.filter(receiver=request.user, is_read=False).update(is_read=True)
-    
+
     received_messages = PrivateMessage.objects.filter(receiver=request.user).order_by('-created_at')
     return render(request, 'forum/inbox.html', {'received_messages': received_messages})
+
+
+# --- MESAJ POLLING API ---
+@login_required
+@require_GET
+def api_chat_poll(request, username):
+    """Chat sayfası için polling: son mesaj ID'sinden sonraki yeni mesajları döndür"""
+    after_id = int(request.GET.get('after', 0))
+    receiver = get_object_or_404(User, username=username)
+
+    new_messages = PrivateMessage.objects.filter(
+        Q(sender=request.user, receiver=receiver) | Q(sender=receiver, receiver=request.user),
+        id__gt=after_id
+    ).order_by('created_at')[:50]
+
+    data = []
+    for msg in new_messages:
+        attachment_url = ''
+        attachment_type = ''
+        if msg.attachment:
+            attachment_url = msg.attachment.url
+            attachment_type = msg.get_attachment_type() or ''
+
+        data.append({
+            'id': msg.id,
+            'message': msg.message or '',
+            'sender_id': msg.sender.id,
+            'sender_username': msg.sender.username,
+            'attachment_url': attachment_url,
+            'attachment_name': msg.attachment_name or '',
+            'attachment_type': attachment_type,
+            'timestamp': msg.created_at.strftime('%H:%M'),
+        })
+
+    return JsonResponse({'messages': data})
+
+
+@login_required
+@require_GET
+def api_inbox_poll(request):
+    """Inbox sayfası için polling: yeni okunmamış mesajları döndür"""
+    after_id = int(request.GET.get('after', 0))
+
+    new_messages = PrivateMessage.objects.filter(
+        receiver=request.user,
+        id__gt=after_id,
+    ).select_related('sender').order_by('-created_at')[:20]
+
+    data = []
+    for msg in new_messages:
+        data.append({
+            'id': msg.id,
+            'message': msg.message or '',
+            'sender_username': msg.sender.username,
+            'sender_profile_url': reverse('profile_detail', args=[msg.sender.username]),
+            'reply_url': reverse('send_message', args=[msg.sender.username]),
+            'created_at': msg.created_at.strftime('%d %b %Y - %H:%M'),
+            'is_read': msg.is_read,
+        })
+
+    return JsonResponse({'messages': data})
 
 # --- ÖZEL MESAJ GÖNDER ---
 @feature_required('messaging')
@@ -1006,6 +1067,10 @@ def send_message(request, username):
         # ✅ EMAIL BİLDİRİMİ GÖNDER
         notification_text = message_content if message_content else f"[Dosya: {attachment.name}]"
         send_private_message_notification(request.user, receiver, notification_text)
+
+        # AJAX isteği ise JSON döndür (sayfa yenilenmez)
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({'status': 'ok', 'id': msg.id})
 
         messages.success(request, f"{receiver.username} kullanıcısına mesajınız gönderildi!")
         return redirect('send_message', username=username)

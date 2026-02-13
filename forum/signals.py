@@ -154,7 +154,9 @@ def private_message_post_save(sender, instance, created, **kwargs):
             send_realtime_notification(recipient.id, message, url)
 
             # Anlık mesajlaşma - chat kutusuna düşür
-            send_chat_message(instance)
+            # WebSocket consumer'dan gelen mesajlar zaten doğrudan broadcast edilir
+            if not getattr(instance, '_from_websocket', False):
+                send_chat_message(instance)
         except Exception as e:
             logger.error(f"Özel mesaj bildirimi oluşturulamadı: {e}")
 

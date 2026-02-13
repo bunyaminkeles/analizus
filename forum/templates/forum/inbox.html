@@ -94,13 +94,94 @@
 </style>
 
 <script>
-// Inbox sayfasına girildiğinde navbar'daki mesaj badge'ini kaldır
 document.addEventListener('DOMContentLoaded', function() {
     // Mesaj ikonunun yanındaki kırmızı badge'i bul ve kaldır
     const inboxBadge = document.querySelector('a[href$="/inbox/"] .bg-danger.rounded-circle');
     if (inboxBadge) {
         inboxBadge.remove();
     }
+
+    // ═══════════════════════════════════════════════════════════════════
+    // INBOX POLLING - Yeni mesajları anlık göster
+    // ═══════════════════════════════════════════════════════════════════
+    let lastInboxId = 0;
+    const seenIds = new Set();
+
+    // Mevcut mesajlardan son ID'yi bul
+    {% for msg in received_messages %}
+    seenIds.add({{ msg.id }});
+    {% if forloop.first %}lastInboxId = {{ msg.id }};{% endif %}
+    {% endfor %}
+
+    setInterval(function() {
+        fetch('/api/inbox/poll/?after=' + lastInboxId)
+            .then(r => r.json())
+            .then(data => {
+                if (data.messages && data.messages.length > 0) {
+                    const listGroup = document.querySelector('.list-group');
+                    const emptyState = document.querySelector('.text-center.py-5');
+
+                    data.messages.forEach(msg => {
+                        if (seenIds.has(msg.id)) return;
+                        seenIds.add(msg.id);
+                        lastInboxId = Math.max(lastInboxId, msg.id);
+
+                        // Boş durum mesajını kaldır
+                        if (emptyState) emptyState.remove();
+
+                        // Yeni mesaj kartını oluştur
+                        const card = document.createElement('div');
+                        card.className = 'list-group-item mb-3 border-0 shadow-sm message-card unread-message';
+                        card.style.animation = 'fadeIn 0.4s ease';
+                        card.innerHTML = `
+                            <div class="d-flex w-100 justify-content-between align-items-start mb-2">
+                                <div class="d-flex align-items-center">
+                                    <div class="me-3">
+                                        <i class="bi bi-person-circle fs-2 text-info"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="mb-1 text-white">
+                                            <a href="${msg.sender_profile_url}" class="text-decoration-none text-white hover-sender">
+                                                ${msg.sender_username}
+                                            </a>
+                                        </h5>
+                                        <small class="text-muted">
+                                            <i class="bi bi-clock me-1"></i>${msg.created_at}
+                                        </small>
+                                    </div>
+                                </div>
+                                <span class="badge bg-danger rounded-pill">Yeni</span>
+                            </div>
+                            <p class="mb-2 text-light ps-5">${msg.message.length > 100 ? msg.message.substring(0, 100) + '...' : msg.message}</p>
+                            <div class="ps-5">
+                                <a href="${msg.reply_url}" class="btn btn-sm btn-outline-info rounded-pill px-3">
+                                    <i class="bi bi-reply-fill me-1"></i>Cevapla
+                                </a>
+                            </div>
+                        `;
+
+                        // En üste ekle veya list-group oluştur
+                        if (listGroup) {
+                            listGroup.insertBefore(card, listGroup.firstChild);
+                        } else {
+                            const container = document.querySelector('.container.py-4');
+                            const newList = document.createElement('div');
+                            newList.className = 'list-group';
+                            newList.appendChild(card);
+                            container.appendChild(newList);
+                        }
+
+                        // Mesaj sayısını güncelle
+                        const countBadge = document.querySelector('.badge.bg-info');
+                        if (countBadge) {
+                            const current = parseInt(countBadge.textContent) || 0;
+                            countBadge.textContent = (current + 1) + ' Mesaj';
+                        }
+                    });
+                }
+            })
+            .catch(() => {});
+    }, 5000);
 });
 </script>
 {% endblock %}

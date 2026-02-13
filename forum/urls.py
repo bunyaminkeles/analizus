@@ -20,7 +20,9 @@ urlpatterns = [
     
     # Mesajlaşma
     path('inbox/', views.inbox, name='inbox'),
-    path('send-message/<str:username>/', views.send_message, name='send_message'),  # ✅ YENİ
+    path('send-message/<str:username>/', views.send_message, name='send_message'),
+    path('api/chat/<str:username>/poll/', views.api_chat_poll, name='api_chat_poll'),
+    path('api/inbox/poll/', views.api_inbox_poll, name='api_inbox_poll'),
 
     # Forum
     path('forum/<slug:slug>/', views.category_topics, name='category_topics'),

@@ -232,31 +232,82 @@ document.addEventListener('DOMContentLoaded', function() {
     const receiverUsername = '{{ receiver.username }}';
 
     // ═══════════════════════════════════════════════════════════════════
+    // SON MESAJ ID'sini TAKIP ET (polling için)
+    // ═══════════════════════════════════════════════════════════════════
+    let lastMessageId = 0;
+    let wsConnected = false;
+    const seenMessageIds = new Set();
+
+    // Sayfadaki mevcut mesajlardan son ID'yi al
+    {% if chat_messages %}
+        lastMessageId = {{ chat_messages.last.id }};
+        {% for msg in chat_messages %}
+        seenMessageIds.add({{ msg.id }});
+        {% endfor %}
+    {% endif %}
+
+    // ═══════════════════════════════════════════════════════════════════
     // WEBSOCKET BAĞLANTISI
     // ═══════════════════════════════════════════════════════════════════
     const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const chatSocket = new WebSocket(wsProtocol + '//' + window.location.host + '/ws/chat/' + receiverUsername + '/');
+    let chatSocket = null;
 
-    chatSocket.onopen = function(e) {
-        console.log('Chat WebSocket bağlantısı kuruldu');
-        // Bağlantı göstergesi
-        document.querySelector('.card-header .badge')?.classList.add('bg-success');
-    };
+    function connectWebSocket() {
+        chatSocket = new WebSocket(wsProtocol + '//' + window.location.host + '/ws/chat/' + receiverUsername + '/');
 
-    chatSocket.onmessage = function(e) {
-        const data = JSON.parse(e.data);
-        if (data.type === 'chat_message') {
-            appendMessage(data);
-        }
-    };
+        chatSocket.onopen = function(e) {
+            console.log('Chat WebSocket bağlantısı kuruldu');
+            wsConnected = true;
+        };
 
-    chatSocket.onclose = function(e) {
-        console.log('Chat WebSocket bağlantısı kapandı');
-    };
+        chatSocket.onmessage = function(e) {
+            const data = JSON.parse(e.data);
+            if (data.type === 'chat_message') {
+                // Çift mesajı önle
+                if (data.message_id && seenMessageIds.has(data.message_id)) return;
+                if (data.message_id) {
+                    seenMessageIds.add(data.message_id);
+                    lastMessageId = Math.max(lastMessageId, data.message_id);
+                }
+                appendMessage(data);
+            }
+        };
 
-    chatSocket.onerror = function(e) {
-        console.error('WebSocket hatası:', e);
-    };
+        chatSocket.onclose = function(e) {
+            console.log('Chat WebSocket bağlantısı kapandı');
+            wsConnected = false;
+            // 5 saniye sonra yeniden bağlan
+            setTimeout(connectWebSocket, 5000);
+        };
+
+        chatSocket.onerror = function(e) {
+            console.error('WebSocket hatası:', e);
+            wsConnected = false;
+        };
+    }
+
+    connectWebSocket();
+
+    // ═══════════════════════════════════════════════════════════════════
+    // AJAX POLLING (WebSocket yedek mekanizması)
+    // ═══════════════════════════════════════════════════════════════════
+    setInterval(function() {
+        fetch(`/api/chat/${receiverUsername}/poll/?after=${lastMessageId}`)
+            .then(r => r.json())
+            .then(data => {
+                if (data.messages && data.messages.length > 0) {
+                    data.messages.forEach(msg => {
+                        if (!seenMessageIds.has(msg.id)) {
+                            seenMessageIds.add(msg.id);
+                            lastMessageId = Math.max(lastMessageId, msg.id);
+                            msg.sender_id = msg.sender_id;
+                            appendMessage(msg);
+                        }
+                    });
+                }
+            })
+            .catch(() => {});
+    }, 3000);
 
     // ═══════════════════════════════════════════════════════════════════
     // MESAJ GÖNDERME (Form submit yerine WebSocket)
@@ -276,7 +327,7 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     function sendMessage(message, attachmentUrl = '', attachmentName = '') {
-        if (chatSocket.readyState === WebSocket.OPEN) {
+        if (chatSocket && chatSocket.readyState === WebSocket.OPEN) {
             chatSocket.send(JSON.stringify({
                 'message': message,
                 'attachment_url': attachmentUrl,
@@ -286,8 +337,22 @@ document.addEventListener('DOMContentLoaded', function() {
             messageInput.style.height = 'auto';
             clearFile();
         } else {
-            // WebSocket kapalıysa normal form submit
-            messageForm.submit();
+            // WebSocket kapalıysa AJAX ile gönder
+            const formData = new FormData();
+            formData.append('message', message);
+            formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+            fetch(window.location.href, {
+                method: 'POST',
+                body: formData,
+                headers: {'X-Requested-With': 'XMLHttpRequest'},
+            }).then(() => {
+                messageInput.value = '';
+                messageInput.style.height = 'auto';
+                clearFile();
+                // Polling yeni mesajı yakalayacak
+            }).catch(() => {
+                messageForm.submit();
+            });
         }
     }
 
