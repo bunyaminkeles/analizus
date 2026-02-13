@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     # Kendi Uygulamalarımız
     'forum',
     'yoktez',
+    'trdizin',
     'crispy_forms',
     'crispy_bootstrap5',
     'storages',  # AWS S3 için
