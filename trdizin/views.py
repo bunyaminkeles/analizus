@@ -183,3 +183,4 @@ def trdizin_order_page(request, job_id):
     return render(request, 'trdizin/order.html', {
         'job': job,
     })
+

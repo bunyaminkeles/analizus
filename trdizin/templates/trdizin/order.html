@@ -1,105 +1,136 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
-{% block title %}TR Dizin Sipariş Sayfası{% endblock %}
+{% block title %}Sipariş Oluştur - TR Dizin Yayın Tarama{% endblock %}
+{% block main_content_classes %}col-lg-12{% endblock %}
+{% block right_sidebar %}{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <div class="row">
-        <div class="col-lg-8 offset-lg-2">
-            <div class="card bg-dark-2 border-secondary text-white">
-                <div class="card-header">
-                    <h2 class="h4 mb-0">TR Dizin Yayın Siparişi</h2>
-                </div>
-                <div class="card-body">
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
 
-                    {% if error %}
-                        <div class="alert alert-danger">{{ error }}</div>
-                        <a href="{% url 'trdizin:landing' %}" class="btn btn-primary">Yeni Arama Yap</a>
+            <!-- Başlık -->
+            <div class="text-center mb-4">
+                <h2 class="text-white fw-bold">
+                    <i class="bi bi-cart-check me-2" style="color: #a78bfa;"></i>Sipariş Oluştur
+                </h2>
+                <p style="color: #94a3b8;">Arama sonuçlarınızın tamamını alın.</p>
+            </div>
 
-                    {% elif existing_order %}
-                        <h3 class="h5">Sipariş Durumunuz</h3>
-                        <p>Bu arama için zaten bir sipariş oluşturdunuz.</p>
-                        <ul class="list-group list-group-flush bg-dark mb-3">
-                            <li class="list-group-item bg-dark"><strong>Sipariş ID:</strong> {{ existing_order.id }}</li>
-                            <li class="list-group-item bg-dark"><strong>Durum:</strong> <span class="badge bg-info">{{ existing_order.get_status_display }}</span></li>
-                            <li class="list-group-item bg-dark"><strong>İstenen Yayın:</strong> {{ existing_order.abstract_count }}</li>
-                            <li class="list-group-item bg-dark"><strong>Toplam Tutar:</strong> {{ existing_order.total_price }} TL</li>
-                            <li class="list-group-item bg-dark"><strong>Sipariş Tarihi:</strong> {{ existing_order.created_at|date:"d M Y, H:i" }}</li>
-                        </ul>
-                        {% if success %}
-                            <div class="alert alert-success">Siparişiniz başarıyla alındı. Ödemeniz onaylandıktan sonra sonuçlar e-posta adresinize gönderilecektir.</div>
-                        {% endif %}
-                        <p>Siparişinizle ilgili güncellemeler için e-postanızı kontrol ediniz.</p>
-                        <a href="{% url 'trdizin:landing' %}" class="btn btn-secondary">Yeni Arama Yap</a>
-
-                    {% else %}
-                        <h3 class="h5">Sipariş Detayları</h3>
-                        <p class="text-muted">Aşağıdaki arama sonuçları için tam listeyi sipariş edebilirsiniz.</p>
-                        <div class="card bg-dark border-secondary p-3 mb-3">
-                            <strong>Sorgu:</strong> {{ job.get_query_summary }}<br>
-                            <strong>Toplam Bulunan Yayın:</strong> {{ job.total_results }}
-                        </div>
-
-                        <form method="POST">
-                            {% csrf_token %}
-                            <div class="mb-3">
-                                <label for="id_abstract_count" class="form-label">İstediğiniz Yayın Sayısı</label>
-                                <input type="number" name="abstract_count" value="{{ job.total_results }}" max="{{ job.total_results }}" min="1" class="form-control bg-dark text-white border-secondary" id="id_abstract_count" onchange="updatePrice()">
-                                <small class="form-text text-muted">En fazla {{ job.total_results }} yayın talep edebilirsiniz.</small>
-                            </div>
-                            <div class="mb-3">
-                                <label for="id_payment_note" class="form-label">Ödeme Açıklaması (Opsiyonel)</label>
-                                <textarea name="payment_note" class="form-control bg-dark text-white border-secondary" id="id_payment_note" rows="2" placeholder="Havale dekontu açıklaması, ödeme tarihi vb."></textarea>
-                            </div>
-
-                            <div class="card bg-dark border-secondary p-3 mb-4">
-                                <h5>Ödeme Bilgileri</h5>
-                                <p>Lütfen aşağıdaki banka hesabına ödemeyi yapın ve açıklama kısmına <strong>TR Dizin - {{ user.username }}</strong> yazın.</p>
-                                <ul class="list-unstyled">
-                                    <li><strong>Hesap Sahibi:</strong> BÜNYAMİN KELEŞ</li>
-                                    <li><strong>IBAN:</strong> TR73 0003 2000 0000 0079 1034 65</li>
-                                </ul>
-                                <h5 class="mt-3">Fiyatlandırma</h5>
-                                <ul>
-                                    <li>İlk 100 yayın: <strong>250 TL</strong></li>
-                                    <li>Sonraki her 100 yayın: <strong>+100 TL</strong></li>
-                                </ul>
-                                <h4 class="text-warning mt-2">Hesaplanan Tutar: <span id="total-price">...</span> TL</h4>
-                            </div>
-
-                            <button type="submit" class="btn btn-success w-100">Ödeme Yaptım, Siparişi Oluştur</button>
-                        </form>
-                    {% endif %}
-
+            <!-- Arama Özeti -->
+            <div class="p-4 mb-4" style="background: rgba(21,32,43,0.6); border: 1px solid rgba(0,210,255,0.15); border-radius: 15px;">
+                <h5 class="text-white mb-3"><i class="bi bi-info-circle me-2" style="color: #00d2ff;"></i>Arama Bilgileri</h5>
+                <div class="row" style="color: #94a3b8;">
+                    <div class="col-sm-4 mb-2"><strong>Sorgu:</strong></div>
+                    <div class="col-sm-8 mb-2 text-white">{{ job.get_query_summary }}</div>
+                    <div class="col-sm-4 mb-2"><strong>Toplam Sonuç:</strong></div>
+                    <div class="col-sm-8 mb-2"><span style="color: #00d2ff; font-weight: 600;">{{ job.total_results }}</span> yayın</div>
                 </div>
             </div>
+
+            <!-- Fiyat Tablosu -->
+            <div class="p-4 mb-4" style="background: rgba(21,32,43,0.6); border: 1px solid rgba(167,139,250,0.15); border-radius: 15px;">
+                <h5 class="text-white mb-3"><i class="bi bi-tag me-2" style="color: #a78bfa;"></i>Fiyatlandırma</h5>
+                <table class="table table-dark table-sm mb-0" style="border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; overflow: hidden;">
+                    <tbody>
+                        <tr><td>İlk 100 yayın</td><td class="text-end" style="color: #a78bfa;">250 TL</td></tr>
+                        <tr><td>Sonraki her 100 yayın</td><td class="text-end" style="color: #a78bfa;">+100 TL</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            {% if existing_order %}
+            <!-- Mevcut sipariş var -->
+            <div class="p-4 text-center" style="background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); border-radius: 15px;">
+                <i class="bi bi-check-circle-fill fs-2" style="color: #4ade80;"></i>
+                <h5 class="text-white mt-2">Bu arama için zaten bir siparişiniz var.</h5>
+                <p style="color: #94a3b8;">
+                    Sipariş No: #{{ existing_order.id|truncatechars:12 }}<br>
+                    Durum: <strong style="color: #00d2ff;">{{ existing_order.get_status_display }}</strong>
+                </p>
+            </div>
+
+            {% else %}
+            <!-- Sipariş Formu -->
+            <div class="p-4" style="background: rgba(21,32,43,0.6); border: 1px solid rgba(255,255,255,0.1); border-radius: 15px;">
+                <form method="POST" id="order-form">
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label class="form-label text-white">İstediğiniz Yayın Sayısı</label>
+                        <input type="number" name="abstract_count" id="order-count"
+                               class="form-control bg-dark text-white border-secondary"
+                               value="{{ job.total_results }}" min="1" max="{{ job.total_results }}">
+                        <div class="d-flex justify-content-between mt-1">
+                            <small style="color: #64748b;">Maks: {{ job.total_results }}</small>
+                            <small style="color: #a78bfa; font-weight: 600;">Tutar: <span id="calc-price">0</span> TL</small>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-white">Ödeme Açıklaması</label>
+                        <textarea name="payment_note" class="form-control bg-dark text-white border-secondary" rows="2"
+                                  placeholder="Havale açıklaması, tarih vb."></textarea>
+                    </div>
+
+                    <!-- IBAN -->
+                    <div class="p-3 mb-4" style="background: rgba(0,0,0,0.3); border-radius: 10px; border: 1px solid rgba(0,210,255,0.15);">
+                        <small class="d-block mb-1" style="color: #00d2ff;"><i class="bi bi-bank me-1"></i>Banka Bilgileri</small>
+                        <div style="color: #94a3b8; font-size: 0.9rem;">Hesap Sahibi:</div>
+                        <div style="color: #e2e8f0; font-family: monospace; font-size: 0.95rem;">
+                            Bünyamin Keleş
+                        </div>
+                        <div class="mt-1" style="color: #94a3b8; font-size: 0.9rem;">IBAN:</div>
+                        <div style="color: #e2e8f0; font-family: monospace; font-size: 0.95rem;">
+                            TR73 0003 2000 0000 0079 1034 65
+                        </div>
+                        <small style="color: #64748b;">Açıklama: <strong>TR Dizin - {{ user.username }}</strong></small>
+                    </div>
+
+                    <button type="submit" class="btn btn-lg w-100"
+                        style="background: linear-gradient(135deg, #a78bfa, #f472b6); color: #0f172a; font-weight: 600; border: none; border-radius: 10px;">
+                        <i class="bi bi-cart-check me-2"></i>Sipariş Oluştur
+                    </button>
+
+                    <p class="text-center mt-3 mb-0" style="color: #64748b; font-size: 0.85rem;">
+                        <i class="bi bi-clock me-1"></i>Ödemeniz onaylandıktan sonra sonuçlar <strong>24 saat içinde</strong>
+                        <strong>{{ user.email }}</strong> adresine gönderilecektir.
+                    </p>
+                </form>
+            </div>
+            {% endif %}
+
+            {% if success %}
+            <div class="mt-4 p-4 text-center" style="background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); border-radius: 15px;">
+                <i class="bi bi-check-circle-fill fs-2" style="color: #4ade80;"></i>
+                <h5 class="text-white mt-2">Siparişiniz oluşturuldu!</h5>
+                <p style="color: #94a3b8;">
+                    Ödemeniz onaylandıktan sonra sonuçlar <strong>24 saat içinde</strong>
+                    <strong>{{ user.email }}</strong> adresine gönderilecektir.
+                </p>
+                <a href="{% url 'trdizin:landing' %}" class="btn btn-sm btn-outline-info mt-2">
+                    <i class="bi bi-arrow-left me-1"></i>Yayın Aramaya Dön
+                </a>
+            </div>
+            {% endif %}
+
         </div>
     </div>
 </div>
-{% endblock %}
 
-{% block extra_js %}
 <script>
-function calculatePrice(count) {
-    if (count <= 0) return 0;
-    if (count <= 100) return 250;
-    const extra = count - 100;
-    const extraBlocks = Math.ceil(extra / 100);
-    return 250 + (extraBlocks * 100);
-}
-
 function updatePrice() {
-    const countInput = document.getElementById('id_abstract_count');
-    const priceDisplay = document.getElementById('total-price');
-    if (countInput && priceDisplay) {
-        const count = parseInt(countInput.value, 10);
-        const price = calculatePrice(count);
-        priceDisplay.textContent = price;
+    const count = parseInt(document.getElementById('order-count')?.value) || 0;
+    let price = 0;
+    if (count > 0) {
+        if (count <= 100) price = 250;
+        else price = 250 + Math.ceil((count - 100) / 100) * 100;
     }
+    const el = document.getElementById('calc-price');
+    if (el) el.textContent = price;
 }
-
-document.addEventListener('DOMContentLoaded', function() {
-    updatePrice();
-});
+document.getElementById('order-count')?.addEventListener('input', updatePrice);
+updatePrice();
 </script>
 {% endblock %}
+
