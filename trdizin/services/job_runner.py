@@ -1,4 +1,5 @@
 import logging
+import threading
 from django.utils import timezone
 from django.conf import settings
 from django.core.mail import EmailMessage
@@ -36,6 +37,68 @@ def _generate_dizin_results_txt(publication_list, job, is_demo=True):
     lines.append(f"\n---\nAnalizus - www.analizus.com")
 
     return "\n".join(lines)
+
+
+def run_scraping_job(job_id):
+    """Background thread'de TR Dizin scraping job çalıştır."""
+
+    def _run():
+        from trdizin.models import DizinSearchJob
+        from trdizin.services.scraper import TrDizinScraper
+
+        try:
+            job = DizinSearchJob.objects.get(id=job_id)
+            job.mark_running()
+
+            scraper = TrDizinScraper(headless=True)
+            total_count, demo_results, all_results = scraper.search(
+                query=job.lucene_query,
+                demo_limit=5,
+            )
+
+            job.mark_completed(
+                demo_results=demo_results,
+                all_results=all_results,
+                total_count=total_count,
+            )
+
+            # Sonuçları txt olarak S3'e yükle
+            try:
+                # Demo sonuçları
+                demo_txt = _generate_dizin_results_txt(demo_results, job, is_demo=True)
+                demo_s3_key = f"trdizin/demo/{job.id}.txt"
+                demo_s3_url = upload_to_s3(demo_txt, demo_s3_key)
+
+                # TÜM sonuçları da S3'e yükle
+                all_txt = _generate_dizin_results_txt(all_results, job, is_demo=False)
+                all_s3_key = f"trdizin/full/{job.id}.txt"
+                all_s3_url = upload_to_s3(all_txt, all_s3_key)
+
+                update_fields = []
+                if demo_s3_url:
+                    job.demo_file_url = demo_s3_url
+                    update_fields.append('demo_file_url')
+                if all_s3_url:
+                    job.all_results_file_url = all_s3_url
+                    update_fields.append('all_results_file_url')
+                if update_fields:
+                    job.save(update_fields=update_fields)
+            except Exception as e:
+                logger.error(f"TR Dizin S3 yükleme hatası: {e}")
+
+            logger.info(f"TR Dizin Scraping job {job_id} tamamlandı: {total_count} sonuç")
+
+        except Exception as e:
+            logger.error(f"TR Dizin Scraping job {job_id} başarısız: {e}")
+            try:
+                job = DizinSearchJob.objects.get(id=job_id)
+                job.mark_failed(str(e))
+            except Exception:
+                pass
+
+    thread = threading.Thread(target=_run)
+    thread.daemon = True
+    thread.start()
 
 
 def send_order_results_email(order):
