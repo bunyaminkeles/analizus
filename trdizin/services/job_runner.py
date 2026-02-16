@@ -185,10 +185,17 @@ def send_demo_email(job):
     lines.append(f"  IBAN         : {BANK_INFO['iban']}")
     lines.append(f"  Açıklama     : TR Dizin - {user.username}")
     lines.append(f"")
-    site_url = getattr(settings, 'SITE_URL', 'https://www.analizus.com')
-    lines.append(f"Ödeme yaptıktan sonra siparişinizi oluşturun:")
-    lines.append(f"  {site_url}/trdizin/siparis/{job.id}/")
+    from django.urls import reverse
+
+    site_url = getattr(settings, 'SITE_URL', 'https://www.analizus.com').rstrip('/')
+    # Django reverse ile güvenli URL oluşturma
+    order_path = reverse('trdizin:order_page', args=[job.id])
+    order_url = f"{site_url}{order_path}"
+
+    lines.append(f"Ödeme yaptıktan sonra siparişinizi aşağıdaki linkten oluşturabilirsiniz:")
+    lines.append(f"  {order_url}")
     lines.append(f"")
+    lines.append(f"Not: Ödeme yapmadan sipariş oluşturmanız durumda, siparişiniz dikkate alınmayacaktır.")
     lines.append(f"Siparişiniz onaylandıktan sonra sonuçlar 24 saat")
     lines.append(f"içinde bu e-posta adresine gönderilecektir.")
     lines.append(f"\n---\nAnalizus - {site_url}")

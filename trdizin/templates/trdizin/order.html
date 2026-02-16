@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 
-{% block title %}Sipariş Oluştur - TR Dizin Yayın Tarama{% endblock %}
+{% block title %}Sipariş Oluştur - TR Dizin Tarama{% endblock %}
 {% block main_content_classes %}col-lg-12{% endblock %}
 {% block right_sidebar %}{% endblock %}
 
@@ -21,7 +21,7 @@
             <div class="p-4 mb-4" style="background: rgba(21,32,43,0.6); border: 1px solid rgba(0,210,255,0.15); border-radius: 15px;">
                 <h5 class="text-white mb-3"><i class="bi bi-info-circle me-2" style="color: #00d2ff;"></i>Arama Bilgileri</h5>
                 <div class="row" style="color: #94a3b8;">
-                    <div class="col-sm-4 mb-2"><strong>Sorgu:</strong></div>
+                    <div class="col-sm-4 mb-2"><strong>Arama Kriterleri:</strong></div>
                     <div class="col-sm-8 mb-2 text-white">{{ job.get_query_summary }}</div>
                     <div class="col-sm-4 mb-2"><strong>Toplam Sonuç:</strong></div>
                     <div class="col-sm-8 mb-2"><span style="color: #00d2ff; font-weight: 600;">{{ job.total_results }}</span> yayın</div>
@@ -109,7 +109,7 @@
                     <strong>{{ user.email }}</strong> adresine gönderilecektir.
                 </p>
                 <a href="{% url 'trdizin:landing' %}" class="btn btn-sm btn-outline-info mt-2">
-                    <i class="bi bi-arrow-left me-1"></i>Yayın Aramaya Dön
+                    <i class="bi bi-arrow-left me-1"></i>TR Dizin Aramaya Dön
                 </a>
             </div>
             {% endif %}
@@ -133,4 +133,3 @@ document.getElementById('order-count')?.addEventListener('input', updatePrice);
 updatePrice();
 </script>
 {% endblock %}
-

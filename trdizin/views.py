@@ -153,6 +153,7 @@ def trdizin_order_page(request, job_id):
             'error': 'Bu arama için henüz sonuç yok.',
         })
 
+    # Zaten sipariş var mı?
     existing_order = DizinOrder.objects.filter(search_job=job, user=request.user).first()
     if existing_order:
         return render(request, 'trdizin/order.html', {
@@ -183,4 +184,5 @@ def trdizin_order_page(request, job_id):
     return render(request, 'trdizin/order.html', {
         'job': job,
     })
+
 

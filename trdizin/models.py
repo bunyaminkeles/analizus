@@ -73,7 +73,9 @@ class DizinSearchJob(models.Model):
 
     @staticmethod
     def get_daily_limit(user):
-        """Normal: 3, Premium: 7"""
+        """Admin: ∞, Premium: 7, Normal: 3"""
+        if user.is_staff or user.is_superuser:
+            return 9999  # Effectively unlimited
         if hasattr(user, 'profile') and user.profile.is_premium:
             return 7
         return 3

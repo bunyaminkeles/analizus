@@ -62,7 +62,6 @@
                         <div id="results-list"></div>
                         <div id="results-actions" class="mt-3" style="display: none;">
                             <button id="send-email-btn" class="btn btn-success"><i class="fas fa-envelope"></i> Demo Sonuçları E-posta Gönder</button>
-                            <a href="#" id="order-link" class="btn btn-info" style="display: none;"><i class="fas fa-shopping-cart"></i> Tüm Sonuçlar İçin Sipariş Ver</a>
                         </div>
                         <div id="email-status" class="mt-2"></div>
                     </div>
@@ -89,7 +88,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const spinner = document.getElementById('spinner');
 
     const sendEmailBtn = document.getElementById('send-email-btn');
-    const orderLink = document.getElementById('order-link');
     const emailStatus = document.getElementById('email-status');
 
     let currentJobId = null;
@@ -271,12 +269,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         resultsActions.style.display = 'block';
-        if (data.total_results > 0) {
-            orderLink.href = `/trdizin/siparis/${currentJobId}/`;
-            orderLink.style.display = 'inline-block';
-        } else {
-            orderLink.style.display = 'none';
-        }
+
     }
 
     sendEmailBtn.addEventListener('click', function() {
