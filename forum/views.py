@@ -1064,9 +1064,7 @@ def send_message(request, username):
             attachment_name=attachment.name if attachment else ''
         )
 
-        # ✅ EMAIL BİLDİRİMİ GÖNDER
-        notification_text = message_content if message_content else f"[Dosya: {attachment.name}]"
-        send_private_message_notification(request.user, receiver, notification_text)
+        # Email bildirimi signal (private_message_post_save) tarafından gönderiliyor
 
         # AJAX isteği ise JSON döndür (sayfa yenilenmez)
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
