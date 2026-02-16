@@ -185,6 +185,7 @@ def yoktez_order_page(request, job_id):
 from django.http import HttpResponse
 from django.core.mail import send_mail
 from django.conf import settings
+import socket
 
 def debug_email_test(request):
     """
@@ -202,10 +203,8 @@ def debug_email_test(request):
         return HttpResponse(f"Hata: Admin kullanıcısı aranırken bir sorun oluştu: {e}", status=500)
 
     response_lines = []
-    response_lines.append("<h1>E-posta Gönderim Testi</h1>")
-    response_lines.append("<p>Bu sayfa, Django e-posta ayarlarınızı test etmek için oluşturulmuştur.</p>")
-    response_lines.append(f"<p><b>Test e-postası gönderilecek adres:</b> {recipient_email}</p>")
-    response_lines.append("<hr>")
+    response_lines.append("<h1>E-posta Gönderim Testi (v2)</h1>")
+    response_lines.append(f"<p><b>Test e-postası gönderilecek adres:</b> {recipient_email}</p><hr>")
     
     response_lines.append("<h2>Kullanılan Ayarlar:</h2>")
     response_lines.append("<ul>")
@@ -217,11 +216,38 @@ def debug_email_test(request):
     response_lines.append(f"<li><b>DEFAULT_FROM_EMAIL:</b> {settings.DEFAULT_FROM_EMAIL}</li>")
     response_lines.append("</ul><hr>")
 
-    response_lines.append("<h2>Gönderim Sonucu:</h2>")
+    # --- 1. Adım: Bağlantıyı manuel olarak test et ---
+    response_lines.append("<h2>1. Adım: SMTP Sunucu Bağlantı Testi</h2>")
+    try:
+        host = settings.EMAIL_HOST
+        port = settings.EMAIL_PORT
+        timeout_seconds = 10
+        response_lines.append(f"<p>'{host}:{port}' adresine {timeout_seconds} saniye zaman aşımı ile bağlanılmaya çalışılıyor...</p>")
+        
+        sock = socket.create_connection((host, port), timeout=timeout_seconds)
+        sock.close()
 
+        response_lines.append("<p style='color:green; font-weight:bold;'>✅ Bağlantı Başarılı!</p>")
+        response_lines.append("<p>SMTP sunucusuyla ağ bağlantısı kurulabildi. Şimdi e-posta gönderme deneniyor...</p>")
+        response_lines.append("<hr>")
+
+    except socket.timeout:
+        response_lines.append("<p style='color:red; font-weight:bold;'>❌ HATA: ZAMAN AŞIMI (TIMEOUT)!</p>")
+        response_lines.append(f"<p>Sunucu '{host}:{port}' adresinden {timeout_seconds} saniye içinde bir yanıt vermedi.</p>")
+        response_lines.append("<p><b>Olası Nedenler:</b></p>")
+        response_lines.append("<ul><li><b>`SMTP_HOST` veya `SMTP_PORT` yanlış:</b> Render'daki ortam değişkenlerinizi kontrol edin.</li><li><b>Firewall Engeli:</b> Render'ın sunucuları, bu porta çıkış bağlantısı yapamıyor olabilir. E-posta sağlayıcınızın alternatif portları (örn: 587 yerine 465 veya 2525) olup olmadığını kontrol edin.</li><li><b>SSL/TLS Ayarı Yanlış:</b> Port 587 genellikle TLS, 465 ise SSL kullanır. `settings.py` dosyasındaki mantık buna göre çalışıyor, port numaranızın doğru olduğundan emin olun.</li></ul>")
+        return HttpResponse("<br>".join(response_lines))
+    except Exception as e:
+        response_lines.append("<p style='color:red; font-weight:bold;'>❌ HATA: BAĞLANTI KURULAMADI!</p>")
+        response_lines.append("<p>SMTP sunucusuna bağlanırken beklenmedik bir ağ hatası oluştu:</p>")
+        response_lines.append(f"<pre style='background-color:#f0f0f0; padding:10px; border:1px solid #ccc;'>{e}</pre>")
+        return HttpResponse("<br>".join(response_lines))
+
+    # --- 2. Adım: E-posta göndermeyi dene ---
+    response_lines.append("<h2>2. Adım: E-posta Gönderme (Kimlik Doğrulama) Testi</h2>")
     try:
         sent_count = send_mail(
-            subject='[Analizus] Test Email',
+            subject='[Analizus] Test Email v2',
             message='This is a test email from your Django application. If you received this, your SMTP settings are correct!',
             from_email=settings.DEFAULT_FROM_EMAIL,
             recipient_list=[recipient_email],
@@ -236,8 +262,8 @@ def debug_email_test(request):
 
     except Exception as e:
         response_lines.append("<p style='color:red; font-weight:bold;'>❌ HATA!</p>")
-        response_lines.append("<p>E-posta gönderilirken bir istisna (exception) oluştu:</p>")
+        response_lines.append("<p>E-posta gönderilirken bir istisna (exception) oluştu (Bağlantı başarılıydı, sorun muhtemelen kimlik doğrulama veya izinlerle ilgili):</p>")
         response_lines.append(f"<pre style='background-color:#f0f0f0; padding:10px; border:1px solid #ccc;'>{e}</pre>")
-        response_lines.append("<hr><p><b>Öneri:</b> Lütfen Render panelindeki ortam değişkenlerinizi (environment variables) kontrol edin. Özellikle `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS` ve `DEFAULT_FROM_EMAIL` değerlerinin doğruluğundan emin olun.</p>")
+        response_lines.append("<hr><p><b>Öneri:</b> Lütfen Render panelindeki `SMTP_USER` ve `SMTP_PASS` değişkenlerinizi kontrol edin. Ayrıca `DEFAULT_FROM_EMAIL` adresinin, bu SMTP sunucusu üzerinden e-posta gönderme izni olduğundan emin olun.</p>")
 
     return HttpResponse("<br>".join(response_lines))
