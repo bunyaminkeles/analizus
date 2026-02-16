@@ -27,6 +27,7 @@ class EmailVerificationMiddleware:
         'topic_detail',
         'profile_detail',
         'section_detail',
+        'health_check',
     ]
 
     # Bu URL prefix'leri her zaman izinli
