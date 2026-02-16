@@ -1,63 +1,34 @@
 """
-E-posta bildirim yardımcıları - SendGrid HTTP API
+E-posta bildirim yardımcıları
 """
+from django.core.mail import send_mail
 from django.conf import settings
-import requests
-import logging
 import threading
-import re
+import logging
 
 logger = logging.getLogger(__name__)
 
-SENDGRID_API_URL = 'https://api.sendgrid.com/v3/mail/send'
 
-
-def _parse_from_email(raw):
-    """'Display Name <email>' formatından email ve name'i ayırır"""
-    match = re.match(r'^(.+?)\s*<(.+?)>$', raw)
-    if match:
-        return match.group(2).strip(), match.group(1).strip()
-    return raw.strip(), 'Analizus'
-
-
-def send_email_async(subject, message, recipient_list):
+def send_email_async(subject, message, recipient_list, html_message=None):
     """
-    SendGrid HTTP API ile arka planda email gönderir.
+    Django'nun send_mail fonksiyonunu kullanarak arka planda e-posta gönderir.
     """
-    api_key = getattr(settings, 'SENDGRID_API_KEY', '')
-    if not api_key:
-        print(f"⚠️ SENDGRID_API_KEY ayarlanmamış! Email gönderilemedi: {recipient_list}")
-        logger.warning(f"SENDGRID_API_KEY ayarlanmamış! Email gönderilemedi: {recipient_list}")
-        return
-
-    email_addr, sender_name = _parse_from_email(settings.DEFAULT_FROM_EMAIL)
-
     def _send():
-        for to_email in recipient_list:
-            try:
-                payload = {
-                    "personalizations": [{"to": [{"email": to_email}]}],
-                    "from": {"email": email_addr, "name": sender_name},
-                    "subject": subject,
-                    "content": [
-                        {"type": "text/plain", "value": message},
-                    ]
-                }
-                headers = {
-                    "Authorization": f"Bearer {api_key}",
-                    "Content-Type": "application/json",
-                }
-                resp = requests.post(SENDGRID_API_URL, json=payload, headers=headers, timeout=10)
-
-                if resp.status_code in (200, 202):
-                    print(f"✅ Bildirim e-postası gönderildi: {to_email}")
-                    logger.info(f"Bildirim e-postası gönderildi: {to_email}")
-                else:
-                    print(f"❌ SendGrid hatası ({to_email}): {resp.status_code} {resp.text}")
-                    logger.error(f"SendGrid hatası ({to_email}): {resp.status_code} {resp.text}")
-            except Exception as e:
-                print(f"❌ E-posta gönderim hatası ({to_email}): {e}")
-                logger.error(f"E-posta gönderim hatası ({to_email}): {e}")
+        try:
+            send_mail(
+                subject,
+                message,
+                settings.DEFAULT_FROM_EMAIL,
+                recipient_list,
+                fail_silently=False,
+                html_message=html_message
+            )
+            for recipient in recipient_list:
+                logger.info(f"✅ E-posta başarıyla gönderildi: {recipient}")
+                print(f"✅ E-posta başarıyla gönderildi: {recipient}")
+        except Exception as e:
+            logger.error(f"❌ E-posta gönderim hatası: {e}")
+            print(f"❌ E-posta gönderim hatası: {e}")
 
     thread = threading.Thread(target=_send, daemon=True)
     thread.start()

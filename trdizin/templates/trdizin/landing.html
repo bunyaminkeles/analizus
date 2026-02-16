@@ -1,0 +1,307 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}TR Dizin Gelişmiş Yayın Tarama{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-lg-8 offset-lg-2">
+
+            <div class="card bg-dark border-secondary text-white mb-4">
+                <div class="card-body">
+                    <h1 class="card-title h3 mb-3">TR Dizin Gelişmiş Yayın Tarama</h1>
+                    <p class="card-text text-muted">
+                        TR Dizin'de yer alan yayınları yapısal olarak taramanızı sağlar. Başlık, özet, yazar, anahtar kelime gibi birçok alanda arama yapabilirsiniz.
+                    </p>
+                    <p class="text-muted">
+                        Bu araç demo amaçlıdır. Günlük <strong>{{ daily_limit }}</strong> ücretsiz arama hakkınız bulunmaktadır. Kalan arama hakkınız: <strong>{{ remaining }}</strong>.
+                        <a href="{% url 'job_list' %}" class="text-warning">Premium üyelik</a> ile arama limitinizi 7'ye çıkarabilirsiniz.
+                    </p>
+                </div>
+            </div>
+
+            {% if error %}
+                <div class="alert alert-danger">{{ error }}</div>
+            {% endif %}
+            {% if job_id %}
+                <div class="alert alert-success">
+                    Arama göreviniz başlatıldı! Sonuçlar hazırlanıyor... Lütfen bekleyin. Job ID: {{ job_id }}
+                </div>
+            {% endif %}
+
+            <div class="card bg-dark-2 border-secondary text-white">
+                <div class="card-header">
+                    Arama Kriterleri
+                </div>
+                <div class="card-body">
+                    <form id="dizin-search-form" method="post" action="{% url 'trdizin:landing' %}">
+                        {% csrf_token %}
+                        {{ form.query_parts_json }}
+                        <div id="query-builder"></div>
+                        <div class="d-flex justify-content-between mt-3">
+                            <button type="button" id="add-rule-btn" class="btn btn-secondary"><i class="fas fa-plus"></i> Kriter Ekle</button>
+                            <button type="submit" id="submit-btn" class="btn btn-primary"><i class="fas fa-search"></i> Demo Arama Yap</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div id="results-container" class="mt-4" style="display: none;">
+                <div class="card bg-dark-2 border-secondary text-white">
+                    <div class="card-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span>Arama Sonuçları</span>
+                            <div id="spinner" class="spinner-border spinner-border-sm text-light" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="results-summary" class="mb-3"></div>
+                        <div id="results-list"></div>
+                        <div id="results-actions" class="mt-3" style="display: none;">
+                            <button id="send-email-btn" class="btn btn-success"><i class="fas fa-envelope"></i> Demo Sonuçları E-posta Gönder</button>
+                        </div>
+                        <div id="email-status" class="mt-2"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const builder = document.getElementById('query-builder');
+    const addRuleBtn = document.getElementById('add-rule-btn');
+    const form = document.getElementById('dizin-search-form');
+    const jsonInput = document.querySelector('[name=query_parts_json]');
+    const submitBtn = document.getElementById('submit-btn');
+
+    const resultsContainer = document.getElementById('results-container');
+    const resultsSummary = document.getElementById('results-summary');
+    const resultsList = document.getElementById('results-list');
+    const resultsActions = document.getElementById('results-actions');
+    const spinner = document.getElementById('spinner');
+
+    const sendEmailBtn = document.getElementById('send-email-btn');
+    const emailStatus = document.getElementById('email-status');
+
+    let currentJobId = null;
+
+    const fieldOptions = [
+        { value: 'title', text: 'Başlık' },
+        { value: 'abstract', text: 'Özet' },
+        { value: 'author', text: 'Yazar' },
+        { value: 'keyword', text: 'Anahtar Kelime' },
+        { value: 'journal', text: 'Dergi Adı' },
+        { value: 'institution', text: 'Kurum' },
+        { value: 'year', text: 'Yıl Aralığı (örn: 2020-2022)' },
+        { value: 'language', text: 'Yayın Dili (örn: TUR,ENG)' },
+        { value: 'doi', text: 'DOI' },
+    ];
+
+    function createRule(isFirst = false) {
+        const ruleDiv = document.createElement('div');
+        ruleDiv.className = 'row mb-2 align-items-center';
+
+        const operatorCol = document.createElement('div');
+        operatorCol.className = 'col-md-2';
+        if (!isFirst) {
+            const operatorSelect = document.createElement('select');
+            operatorSelect.className = 'form-select bg-dark text-white border-secondary operator-select';
+            operatorSelect.innerHTML = `
+                <option value="AND">AND</option>
+                <option value="OR">OR</option>
+            `;
+            operatorCol.appendChild(operatorSelect);
+        }
+
+        const fieldCol = document.createElement('div');
+        fieldCol.className = 'col-md-3';
+        const fieldSelect = document.createElement('select');
+        fieldSelect.className = 'form-select bg-dark text-white border-secondary field-select';
+        fieldOptions.forEach(opt => fieldSelect.add(new Option(opt.text, opt.value)));
+        fieldCol.appendChild(fieldSelect);
+
+        const valueCol = document.createElement('div');
+        valueCol.className = 'col-md-6';
+        const valueInput = document.createElement('input');
+        valueInput.type = 'text';
+        valueInput.className = 'form-control bg-dark text-white border-secondary value-input';
+        valueInput.placeholder = 'Değer girin...';
+        valueCol.appendChild(valueInput);
+
+        const removeCol = document.createElement('div');
+        removeCol.className = 'col-md-1';
+        if (!isFirst) {
+            const removeBtn = document.createElement('button');
+            removeBtn.type = 'button';
+            removeBtn.className = 'btn btn-danger btn-sm';
+            removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+            removeBtn.onclick = () => ruleDiv.remove();
+            removeCol.appendChild(removeBtn);
+        }
+
+        ruleDiv.appendChild(operatorCol);
+        ruleDiv.appendChild(fieldCol);
+        ruleDiv.appendChild(valueCol);
+        ruleDiv.appendChild(removeCol);
+
+        builder.appendChild(ruleDiv);
+    }
+
+    function collectData() {
+        const parts = [];
+        const rules = builder.querySelectorAll('.row.mb-2');
+        rules.forEach((rule, index) => {
+            const operator = rule.querySelector('.operator-select')?.value || null;
+            const field = rule.querySelector('.field-select').value;
+            const value = rule.querySelector('.value-input').value.trim();
+
+            if (value) {
+                parts.push({
+                    operator: index === 0 ? null : operator,
+                    field: field,
+                    value: value
+                });
+            }
+        });
+        return parts;
+    }
+
+    addRuleBtn.addEventListener('click', () => createRule());
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const data = collectData();
+        if (data.length === 0) {
+            alert('Lütfen en az bir arama kriteri girin.');
+            return;
+        }
+        jsonInput.value = JSON.stringify(data);
+
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Aranıyor...';
+
+        resultsContainer.style.display = 'block';
+        spinner.style.display = 'block';
+        resultsSummary.innerHTML = '';
+        resultsList.innerHTML = '';
+        resultsActions.style.display = 'none';
+        emailStatus.innerHTML = '';
+
+
+        fetch(form.action, {
+            method: 'POST',
+            body: new FormData(form),
+            headers: {'X-Requested-With': 'XMLHttpRequest'}
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                throw new Error(data.error);
+            }
+            currentJobId = data.job_id;
+            resultsSummary.innerHTML = `<p class="text-info">Arama görevi başlatıldı (ID: ${currentJobId}). Sonuçlar bekleniyor...</p>`;
+            pollStatus();
+        })
+        .catch(error => {
+            resultsSummary.innerHTML = `<p class="text-danger">Hata: ${error.message}</p>`;
+            spinner.style.display = 'none';
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-search"></i> Demo Arama Yap';
+        });
+    });
+
+    function pollStatus() {
+        if (!currentJobId) return;
+
+        const interval = setInterval(() => {
+            fetch(`/trdizin/status/${currentJobId}/`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'completed') {
+                    clearInterval(interval);
+                    spinner.style.display = 'none';
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-search"></i> Demo Arama Yap';
+                    displayResults(data);
+                } else if (data.status === 'failed') {
+                    clearInterval(interval);
+                    spinner.style.display = 'none';
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-search"></i> Demo Arama Yap';
+                    resultsSummary.innerHTML = `<p class="text-danger">Arama başarısız oldu: ${data.error}</p>`;
+                }
+            })
+            .catch(err => {
+                clearInterval(interval);
+                spinner.style.display = 'none';
+                 submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-search"></i> Demo Arama Yap';
+                resultsSummary.innerHTML = `<p class="text-danger">Durum kontrol edilemedi: ${err.message}</p>`;
+            });
+        }, 3000);
+    }
+
+    function displayResults(data) {
+        resultsSummary.innerHTML = `Toplam <strong>${data.total_results}</strong> sonuç bulundu. İlk <strong>${data.demo_results.length}</strong> tanesi aşağıda gösterilmektedir.`;
+
+        if (data.demo_results.length === 0) {
+            resultsList.innerHTML = '<p>Gösterilecek demo sonuç bulunamadı.</p>';
+        } else {
+            let html = '<ul class="list-group list-group-flush">';
+            data.demo_results.forEach(item => {
+                html += `
+                    <li class="list-group-item bg-dark text-white">
+                        <h6 class="mb-1">${item.title || 'Başlık Yok'}</h6>
+                        <small class="text-muted">${item.authors || 'Yazar Yok'} (${item.year || 'Yıl Yok'}) - <em>${item.journal || 'Dergi Yok'}</em></small>
+                        <p class="mt-2 mb-1">${(item.abstract_tr || item.abstract_en || 'Özet yok').substring(0, 200)}...</p>
+                    </li>
+                `;
+            });
+            html += '</ul>';
+            resultsList.innerHTML = html;
+        }
+
+        resultsActions.style.display = 'block';
+
+    }
+
+    sendEmailBtn.addEventListener('click', function() {
+        sendEmailBtn.disabled = true;
+        sendEmailBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Gönderiliyor...';
+        emailStatus.innerHTML = '';
+
+        fetch(`/trdizin/send-demo/${currentJobId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                emailStatus.innerHTML = `<div class="alert alert-success mt-2">${data.message}</div>`;
+            } else {
+                throw new Error(data.error);
+            }
+        })
+        .catch(err => {
+            emailStatus.innerHTML = `<div class="alert alert-danger mt-2">Hata: ${err.message}</div>`;
+            sendEmailBtn.disabled = false;
+        })
+        .finally(() => {
+            sendEmailBtn.innerHTML = '<i class="fas fa-envelope"></i> Demo Sonuçları E-posta Gönder';
+        });
+    });
+
+    createRule(true); // Initial rule
+});
+</script>
+{% endblock %}

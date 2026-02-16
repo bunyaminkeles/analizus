@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     # Kendi Uygulamalarımız
     'forum',
     'yoktez',
+    'trdizin',
     'crispy_forms',
     'crispy_bootstrap5',
     'storages',  # AWS S3 için
@@ -225,20 +226,30 @@ JAZZMIN_UI_TWEAKS = {
     }
 }
 
-# --- E-POSTA AYARLARI (SendGrid HTTP API) ---
-SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY', '')
-DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'info@analizus.com')
-EMAIL_BACKEND = 'forum.backends.SendGridBackend'
+# --- E-POSTA AYARLARI ---
+# Render'da ayarlanmış ortam değişkenlerini kullanıyoruz.
+SMTP_HOST = os.getenv('SMTP_HOST')
+SMTP_PORT = int(os.getenv('SMTP_PORT', 465)) # Port 465 olarak güncellendi
+SMTP_USER = os.getenv('SMTP_USER')
+SMTP_PASS = os.getenv('SMTP_PASS')
 
-# SMTP Ayarları (Fallback ve Harici Servisler İçin)
-# Bazı Django bileşenleri veya 3. parti uygulamalar varsayılan SMTP ayarlarına
-# geri dönebilir. Bu ayarlar, bu gibi durumlarda bile SendGrid'in SMTP
-# rölesini kullanarak e-postaların gönderilmesini sağlar.
-EMAIL_HOST = 'smtp.sendgrid.net'
-EMAIL_HOST_USER = 'apikey'  # SendGrid için bu değer sabittir.
-EMAIL_HOST_PASSWORD = os.getenv('SENDGRID_API_KEY')
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
+# Django'nun standart SMTP backend'ini kullan
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+# SMTP Sunucu Ayarları
+EMAIL_HOST = SMTP_HOST
+EMAIL_PORT = SMTP_PORT
+EMAIL_HOST_USER = SMTP_USER
+EMAIL_HOST_PASSWORD = SMTP_PASS
+if EMAIL_PORT == 587:
+    EMAIL_USE_TLS = True
+    EMAIL_USE_SSL = False
+else:  # Varsayılan olarak 465 ve SSL
+    EMAIL_USE_TLS = False
+    EMAIL_USE_SSL = True
+
+# Gönderen E-posta Adresi
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', SMTP_USER)
 
 
 # --- IYZICO ÖDEME AYARLARI ---

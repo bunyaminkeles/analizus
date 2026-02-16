@@ -41,6 +41,9 @@ urlpatterns = [
     # 3. YÖK Tez Tarama
     path('yoktez/', include('yoktez.urls')),
 
+    # TR Dizin Tarama
+    path('trdizin/', include('trdizin.urls')),
+
     # 4. Forum Uygulaması (En sona koymak çakışmaları önler)
     path('', include('forum.urls')),
     path('i18n/', include('django.conf.urls.i18n')), # DİL MOTORU BURADA

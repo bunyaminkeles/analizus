@@ -1,75 +1,58 @@
 """
-E-posta gönderme servisi - SendGrid HTTP API
+E-posta gönderme servisi - Django Mail
 """
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.conf import settings
-import requests
+from django.core.mail import send_mail
 import logging
 import threading
-import re
 
 logger = logging.getLogger(__name__)
 
-SENDGRID_API_URL = 'https://api.sendgrid.com/v3/mail/send'
-
 
 class EmailService:
-    """E-posta gönderme işlemlerini yöneten servis (SendGrid HTTP API)"""
+    """E-posta gönderme işlemlerini yöneten servis (Django Mail)"""
 
     @staticmethod
     def is_configured():
-        """SendGrid yapılandırılmış mı kontrol eder"""
-        return bool(getattr(settings, 'SENDGRID_API_KEY', ''))
+        """E-posta ayarlarının yapılıp yapılmadığını kontrol eder"""
+        return all([
+            settings.EMAIL_HOST,
+            settings.EMAIL_PORT,
+            settings.EMAIL_HOST_USER,
+            settings.EMAIL_HOST_PASSWORD
+        ])
 
     @staticmethod
     def get_base_url():
         """Site URL'sini döndürür"""
         return getattr(settings, 'SITE_URL', 'http://localhost:8000')
 
-    @staticmethod
-    def _parse_from_email(raw):
-        """'Display Name <email>' formatından email ve name'i ayırır"""
-        match = re.match(r'^(.+?)\s*<(.+?)>$', raw)
-        if match:
-            return match.group(2).strip(), match.group(1).strip()
-        return raw.strip(), 'Analizus'
-
     @classmethod
     def _send_email(cls, to_email, subject, html_content, plain_content):
-        """SendGrid HTTP API ile e-posta gönderir (arka planda)"""
-        email_addr, sender_name = cls._parse_from_email(settings.DEFAULT_FROM_EMAIL)
-
+        """Django'nun send_mail fonksiyonunu kullanarak arka planda e-posta gönderir."""
+        
         def _send():
             try:
-                payload = {
-                    "personalizations": [{"to": [{"email": to_email}]}],
-                    "from": {"email": email_addr, "name": sender_name},
-                    "subject": subject,
-                    "content": [
-                        {"type": "text/plain", "value": plain_content},
-                        {"type": "text/html", "value": html_content},
-                    ]
-                }
-                headers = {
-                    "Authorization": f"Bearer {settings.SENDGRID_API_KEY}",
-                    "Content-Type": "application/json",
-                }
-                resp = requests.post(SENDGRID_API_URL, json=payload, headers=headers, timeout=10)
-
-                if resp.status_code in (200, 202):
-                    print(f"✅ E-posta gönderildi: {to_email}")
-                    logger.info(f"E-posta gönderildi: {to_email}")
-                else:
-                    print(f"❌ SendGrid hatası ({to_email}): {resp.status_code} {resp.text}")
-                    logger.error(f"SendGrid hatası ({to_email}): {resp.status_code} {resp.text}")
+                send_mail(
+                    subject,
+                    plain_content,
+                    settings.DEFAULT_FROM_EMAIL,
+                    [to_email],
+                    html_message=html_content,
+                    fail_silently=False
+                )
+                logger.info(f"✅ E-posta gönderildi: {to_email}")
+                print(f"✅ E-posta gönderildi: {to_email}")
             except Exception as e:
+                logger.error(f"❌ E-posta gönderme hatası ({to_email}): {e}")
                 print(f"❌ E-posta gönderme hatası ({to_email}): {e}")
-                logger.error(f"E-posta gönderme hatası ({to_email}): {e}")
 
         thread = threading.Thread(target=_send, daemon=True)
         thread.start()
         return True
+
 
     @classmethod
     def send_verification_email(cls, user, verification_token):
@@ -86,7 +69,7 @@ class EmailService:
         subject = 'Analizus - E-posta Adresinizi Doğrulayın'
 
         if not cls.is_configured():
-            print(f"⚠️ SendGrid yapılandırılmamış! SENDGRID_API_KEY boş. Kullanıcı: {user.username}")
+            print(f"⚠️ E-posta ayarları yapılmamış! Doğrulama maili gönderilemedi. Kullanıcı: {user.username}")
             return False
 
         html_message = render_to_string('forum/emails/verification_email.html', context)
@@ -111,7 +94,7 @@ class EmailService:
         subject = 'Analizus\'a Hoş Geldiniz!'
 
         if not cls.is_configured():
-            print(f"⚠️ SendGrid yapılandırılmamış! Hoş geldin e-postası gönderilemedi: {user.username}")
+            print(f"⚠️ E-posta ayarları yapılmamış! Hoş geldin e-postası gönderilemedi: {user.username}")
             return False
 
         html_message = render_to_string('forum/emails/welcome_email.html', context)
