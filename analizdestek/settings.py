@@ -227,29 +227,26 @@ JAZZMIN_UI_TWEAKS = {
 }
 
 # --- E-POSTA AYARLARI ---
-# Render'da ayarlanmış ortam değişkenlerini kullanıyoruz.
-SMTP_HOST = os.getenv('SMTP_HOST')
-SMTP_PORT = int(os.getenv('SMTP_PORT', 465))
-SMTP_USER = os.getenv('SMTP_USER')
-SMTP_PASS = os.getenv('SMTP_PASS')
+RESEND_API_KEY = os.getenv('RESEND_API_KEY')
 
-# Django'nun standart SMTP backend'ini kullan
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+if RESEND_API_KEY:
+    # Render'da SMTP bloklu, Resend HTTP API kullan
+    EMAIL_BACKEND = 'forum.backends.ResendBackend'
+else:
+    # Lokal geliştirme: SMTP kullan
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = os.getenv('SMTP_HOST')
+    EMAIL_PORT = int(os.getenv('SMTP_PORT', 465))
+    EMAIL_HOST_USER = os.getenv('SMTP_USER')
+    EMAIL_HOST_PASSWORD = os.getenv('SMTP_PASS')
+    if EMAIL_PORT == 587:
+        EMAIL_USE_TLS = True
+        EMAIL_USE_SSL = False
+    else:
+        EMAIL_USE_TLS = False
+        EMAIL_USE_SSL = True
 
-# SMTP Sunucu Ayarları
-EMAIL_HOST = SMTP_HOST
-EMAIL_PORT = SMTP_PORT
-EMAIL_HOST_USER = SMTP_USER
-EMAIL_HOST_PASSWORD = SMTP_PASS
-if EMAIL_PORT == 587:
-    EMAIL_USE_TLS = True
-    EMAIL_USE_SSL = False
-else:  # Varsayılan olarak 465 ve SSL
-    EMAIL_USE_TLS = False
-    EMAIL_USE_SSL = True
-
-# Gönderen E-posta Adresi
-DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', SMTP_USER)
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'info@analizus.com')
 
 
 # --- IYZICO ÖDEME AYARLARI ---
