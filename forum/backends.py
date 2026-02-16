@@ -22,10 +22,21 @@ class ResendBackend(BaseEmailBackend):
                     "subject": msg.subject,
                     "text": msg.body,
                 }
-                if msg.alternatives:
-                    for content, mimetype in msg.alternatives:
-                        if mimetype == "text/html":
-                            params["html"] = content
+                # EmailMultiAlternatives'da HTML content olabilir
+                for content, mimetype in getattr(msg, 'alternatives', []):
+                    if mimetype == "text/html":
+                        params["html"] = content
+                # Attachment desteği
+                if msg.attachments:
+                    params["attachments"] = []
+                    for attachment in msg.attachments:
+                        filename, content, mimetype = attachment
+                        if isinstance(content, str):
+                            content = content.encode('utf-8')
+                        params["attachments"].append({
+                            "filename": filename,
+                            "content": list(content),
+                        })
                 resend.Emails.send(params)
                 sent += 1
             except Exception as e:
