@@ -241,8 +241,12 @@ EMAIL_HOST = SMTP_HOST
 EMAIL_PORT = SMTP_PORT
 EMAIL_HOST_USER = SMTP_USER
 EMAIL_HOST_PASSWORD = SMTP_PASS
-EMAIL_USE_TLS = False # SSL kullanıldığı için TLS kapatıldı
-EMAIL_USE_SSL = True # Port 465 için SSL/TLS bağlantısı
+if EMAIL_PORT == 587:
+    EMAIL_USE_TLS = True
+    EMAIL_USE_SSL = False
+else:  # Varsayılan olarak 465 ve SSL
+    EMAIL_USE_TLS = False
+    EMAIL_USE_SSL = True
 
 # Gönderen E-posta Adresi
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', SMTP_USER)

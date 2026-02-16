@@ -1,47 +1,46 @@
-# Email Bildirimleri Kurulumu (SendGrid)
+# Email Bildirimleri Kurulumu (SMTP)
 
-## 1. SendGrid Hesabı Oluşturma
+## 1. SMTP Bilgilerini Hazırlama
 
-1. https://signup.sendgrid.com/ adresinden ücretsiz hesap açın
-2. Email adresinizi doğrulayın
+Email göndermek için bir SMTP sunucusuna ihtiyacınız var. Bu bilgileri email sağlayıcınızdan (örn: Hosting.com.tr, Yandex.Mail, Google Workspace) alabilirsiniz.
 
-## 2. API Key Oluşturma
+Gerekli bilgiler:
+- **SMTP Host**: `mail.alanadiniz.com` gibi sunucu adresi
+- **SMTP Port**: Genellikle `465` (SSL için) veya `587` (TLS için)
+- **SMTP User**: `info@alanadiniz.com` gibi tam e-posta adresi
+- **SMTP Pass**: E-posta şifreniz
+- **Güvenlik Türü**: SSL veya TLS
 
-1. https://app.sendgrid.com/settings/api_keys adresine gidin
-2. "Create API Key" butonuna tıklayın
-3. İsim verin (örn: "AnalizDestek Production")
-4. **Full Access** seçin
-5. "Create & View" tıklayın
-6. **API Key'i kopyalayın** (tekrar göremezsiniz!)
-   - Format: `SG.xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx`
+**Örnek (hosting.com.tr):**
+- **Host**: `mail.analizus.com`
+- **Port**: `465`
+- **User**: `info@analizus.com`
+- **Pass**: `-%Yakup1992;-)**`
+- **Güvenlik**: SSL
 
-## 3. Single Sender Verification (Önemli!)
+## 2. Render Environment Variables
 
-SendGrid free tier için gönderici email adresini doğrulamanız gerekir:
-
-1. https://app.sendgrid.com/settings/sender_auth/senders adresine gidin
-2. "Create New Sender" tıklayın
-3. Bilgileri doldurun:
-   - **From Email Address**: Kendi email adresiniz (örn: `bkeles74@gmail.com`)
-   - **From Name**: `AnalizDestek`
-   - **Reply To**: Aynı email
-   - Diğer alanları doldurun
-4. "Save" tıklayın
-5. **Gelen verification emaili onaylayın**
-6. ✅ Doğrulandıktan sonra bu adresten email gönderebilirsiniz
-
-## 4. Render Environment Variables
-
-Render Dashboard → Your Service → Environment sekmesine gidin ve ekleyin:
+Render Dashboard → Your Service → Environment sekmesine gidin ve aşağıdaki değişkenleri ekleyin:
 
 ```
-SENDGRID_API_KEY=SG.your_actual_api_key_here
-DEFAULT_FROM_EMAIL=YourName <youremail@example.com>
+SMTP_HOST=mail.sunucunuz.com
+SMTP_PORT=465
+SMTP_USER=info@alanadiniz.com
+SMTP_PASS=sifreniz
+DEFAULT_FROM_EMAIL="Analizus <info@analizus.com>"
 ```
 
-⚠️ **Önemli**: `DEFAULT_FROM_EMAIL` Single Sender Verification'da doğruladığınız email ile aynı olmalı!
+**Önemli Ayarlar (`analizdestek/settings.py`):**
 
-## 5. Lokal Test (Opsiyonel)
+- `EMAIL_USE_SSL = True` (Eğer port 465 ise)
+- `EMAIL_USE_TLS = False` (Eğer port 465 ise)
+
+- `EMAIL_USE_SSL = False` (Eğer port 587 ise)
+- `EMAIL_USE_TLS = True` (Eğer port 587 ise)
+
+Bu ayarlar `settings.py` içinde `SMTP_PORT` değerine göre otomatik ayarlanır, ancak sunucu yapılandırmanız farklıysa kontrol etmeniz gerekebilir.
+
+## 3. Lokal Test (Opsiyonel)
 
 Lokalde test etmek için `.env` dosyası oluşturun:
 
@@ -52,48 +51,38 @@ nano .env
 
 `.env` içeriği:
 ```
-SENDGRID_API_KEY=SG.your_actual_api_key_here
-DEFAULT_FROM_EMAIL=YourName <youremail@example.com>
+SMTP_HOST=mail.sunucunuz.com
+SMTP_PORT=465
+SMTP_USER=info@alanadiniz.com
+SMTP_PASS=sifreniz
+DEFAULT_FROM_EMAIL="Analizus <info@analizus.com>"
 ```
 
-## 6. Test
+## 4. Test
 
 1. Render'da deploy edin
 2. İki farklı kullanıcıyla test edin:
-   - Kullanıcı A: Konu açsın
+   - Kullanıcı A: Yeni bir konu açsın
    - Kullanıcı B: Konuya cevap yazsın
-   - Kullanıcı A'nın emailine bildirim gitmeli
+   - Kullanıcı A'nın e-posta adresine bildirim gitmeli
 
 3. Özel mesaj testi:
    - Kullanıcı A: Kullanıcı B'ye özel mesaj göndersin
-   - Kullanıcı B'nin emailine bildirim gitmeli
+   - Kullanıcı B'nin e-posta adresine bildirim gitmeli
 
 ## Sorun Giderme
 
 ### Email gitmiyor:
 
 1. **Render loglarını kontrol edin:**
-   ```
-   💌 Özel mesaj email kontrolü: teğmen -> bunyamin
-   📧 Email gönderme başlıyor: ['email@example.com']
-   📤 SMTP bağlantısı kuruluyor...
-   ✅ Email gönderildi: ['email@example.com']
-   ```
+   Loglarda `✅ E-posta başarıyla gönderildi:` mesajını arayın.
 
 2. **Hata mesajları:**
-   - `❌ SENDGRID_API_KEY TANIMLI DEĞİL!` → Render'da env variable ekleyin
-   - `❌ Email gönderim hatası: 401 Unauthorized` → API key yanlış
-   - `❌ Email gönderim hatası: 403 Forbidden` → Single Sender Verification yapılmamış
+   - `[Errno 101] Network is unreachable`: Render, ücretsiz planlarda bazı SMTP portlarını engelleyebilir. Sağlayıcınızın alternatif portları (örn: 2525) destekleyip desteklemediğini kontrol edin veya ücretli bir plana geçmeyi düşünün.
+   - `(535, b'5.7.8 Username and Password not accepted.')`: `SMTP_USER` veya `SMTP_PASS` yanlış.
+   - `[SSL: CERTIFICATE_VERIFY_FAILED]`: Sunucunun SSL sertifikasıyla ilgili bir sorun olabilir.
 
-3. **SendGrid Dashboard:**
-   - https://app.sendgrid.com/email_activity
-   - Son gönderimler ve hataları görebilirsiniz
+3. **SMTP Sağlayıcınızın Paneli:**
+   - E-posta sağlayıcınızın kontrol panelinde gönderim loglarını veya hata kayıtlarını kontrol edin.
+   - Güvenlik ayarlarının dışarıdan bağlantılara izin verdiğinden emin olun. Bazı sağlayıcılar, daha az güvenli uygulamalar için özel "uygulama şifreleri" oluşturmanızı gerektirebilir.
 
-## Limitler
-
-SendGrid Free Tier:
-- ✅ 100 email/gün
-- ✅ Single Sender Verification (1 email adresi)
-- ❌ Custom domain (ücretli planda)
-
-İhtiyacınız varsa ücretli plana geçebilirsiniz.

@@ -1913,13 +1913,11 @@ def create_donation(request):
 
 
 def send_donation_thank_you_email(donation):
-    """Bağış sonrası teşekkür e-postası gönder (SendGrid HTTP API)"""
-    import requests as _requests
-    from django.conf import settings
+    """Bağış sonrası teşekkür e-postası gönderir (Django Mail)"""
+    from .services.email_service import EmailService
 
-    api_key = getattr(settings, 'SENDGRID_API_KEY', '')
-    if not api_key:
-        print(f"[DONATION] SENDGRID_API_KEY ayarlanmamış! Email gönderilemedi: {donation.email}")
+    if not EmailService.is_configured():
+        print(f"[DONATION] E-posta ayarları yapılmamış! Email gönderilemedi: {donation.email}")
         return
 
     premium_days = donation.get_premium_days()
@@ -1927,86 +1925,26 @@ def send_donation_thank_you_email(donation):
 
     subject = f"Teşekkürler! {int(donation.amount)} TL Bağışınız İçin"
 
-    plain_message = f"""Merhaba {donor_name},
+    # HTML içeriğini bir template'den render etmek en iyisidir, ama burada inline olarak bırakıyorum.
+    # Gerçek bir projede, bu HTML'i 'forum/emails/donation_thank_you.html' gibi bir dosyaya taşıyın.
+    context = {
+        'donor_name': donor_name,
+        'amount': int(donation.amount),
+        'premium_days': premium_days,
+    }
+    html_message = render_to_string('forum/emails/donation_thank_you.html', context)
+    plain_message = strip_tags(html_message)
 
-{int(donation.amount)} TL tutarındaki bağışınız için çok teşekkür ederiz!
-
-Kazandığınız Ödüller:
-* {premium_days} Gün Premium Üyelik
-* Destekçi Rozeti
-
-Premium üyeliğiniz hesabınıza tanımlandı. Artık tüm premium özelliklerden faydalanabilirsiniz!
-
-Desteğiniz Analizus'u daha iyi bir platform yapmamıza yardımcı oluyor.
-
-Sevgilerle,
-Analizus Ekibi
-
----
-Bu e-posta otomatik olarak gönderilmiştir.
-https://www.analizus.com
-"""
-
-    html_message = f"""
-    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #1a1a2e; color: #e2e8f0; padding: 30px; border-radius: 10px;">
-        <div style="text-align: center; margin-bottom: 30px;">
-            <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #ec4899, #8b5cf6); border-radius: 50%; margin: 0 auto 15px; display: flex; align-items: center; justify-content: center;">
-                <span style="font-size: 40px;">&#10084;&#65039;</span>
-            </div>
-            <h1 style="color: #ec4899; margin: 0;">Teşekkür Ederiz!</h1>
-        </div>
-
-        <p style="font-size: 16px;">Merhaba <strong>{donor_name}</strong>,</p>
-
-        <p style="font-size: 18px; text-align: center; background: rgba(236, 72, 153, 0.1); padding: 15px; border-radius: 8px; border: 1px solid rgba(236, 72, 153, 0.3);">
-            <span style="color: #ec4899; font-size: 24px; font-weight: bold;">{int(donation.amount)} TL</span><br>
-            <span style="color: #94a3b8;">bağışınız başarıyla tamamlandı!</span>
-        </p>
-
-        <div style="background: rgba(234, 179, 8, 0.1); padding: 20px; border-radius: 8px; margin: 20px 0; border: 1px solid rgba(234, 179, 8, 0.3);">
-            <h3 style="color: #fbbf24; margin-top: 0;">Kazandığınız Ödüller</h3>
-            <p style="margin: 10px 0;">* <strong style="color: #fbbf24;">{premium_days} Gün Premium Üyelik</strong></p>
-            <p style="margin: 10px 0;">* <strong style="color: #ec4899;">Destekçi Rozeti</strong></p>
-        </div>
-
-        <p style="color: #94a3b8;">Premium üyeliğiniz hesabınıza tanımlandı. Artık tüm premium özelliklerden faydalanabilirsiniz!</p>
-
-        <div style="text-align: center; margin-top: 30px;">
-            <a href="https://www.analizus.com" style="background: linear-gradient(135deg, #ec4899, #8b5cf6); color: white; padding: 12px 30px; text-decoration: none; border-radius: 5px; font-weight: bold;">Analizus'a Git</a>
-        </div>
-
-        <p style="color: #64748b; font-size: 12px; margin-top: 30px; text-align: center;">
-            Sevgilerle, Analizus Ekibi<br>
-            Bu e-posta otomatik olarak gönderilmiştir.
-        </p>
-    </div>
-    """
-
-    def _send():
-        try:
-            payload = {
-                "personalizations": [{"to": [{"email": donation.email}]}],
-                "from": {"email": settings.DEFAULT_FROM_EMAIL, "name": "Analizus"},
-                "subject": subject,
-                "content": [
-                    {"type": "text/plain", "value": plain_message},
-                    {"type": "text/html", "value": html_message},
-                ]
-            }
-            headers = {
-                "Authorization": f"Bearer {api_key}",
-                "Content-Type": "application/json",
-            }
-            resp = _requests.post('https://api.sendgrid.com/v3/mail/send', json=payload, headers=headers, timeout=10)
-            if resp.status_code in (200, 202):
-                print(f"[DONATION] Teşekkür e-postası gönderildi: {donation.email}")
-            else:
-                print(f"[DONATION] SendGrid hatası: {resp.status_code} {resp.text}")
-        except Exception as e:
-            print(f"[DONATION] E-posta gönderilemedi: {e}")
-
-    import threading
-    threading.Thread(target=_send, daemon=True).start()
+    try:
+        EmailService._send_email(
+            to_email=donation.email,
+            subject=subject,
+            html_content=html_message,
+            plain_content=plain_message
+        )
+        print(f"[DONATION] Teşekkür e-postası gönderildi: {donation.email}")
+    except Exception as e:
+        print(f"[DONATION] E-posta gönderilemedi: {e}")
 
 
 def get_client_ip(request):
@@ -2279,96 +2217,54 @@ def blog_create(request):
 @require_POST
 def send_support_email(request):
     """Kullanıcının seçtiği destek paketine göre e-posta gönder"""
-    import os
-    from sendgrid import SendGridAPIClient
-    from sendgrid.helpers.mail import Mail, Content
-    
+    from .services.email_service import EmailService
+
     try:
         # Request'ten veri al
         data = json.loads(request.body)
         tier_id = data.get('tier_id')
         tier_name = data.get('tier_name')
         tier_amount = data.get('tier_amount')
-        
+
         # Validation
         if not all([tier_id, tier_name, tier_amount]):
             return JsonResponse({'success': False, 'error': 'Geçersiz veri'}, status=400)
-        
+
         # Tier'ı veritabanından kontrol et
         tier = DonationTier.objects.filter(id=tier_id, is_active=True).first()
         if not tier:
             return JsonResponse({'success': False, 'error': 'Paket bulunamadı'}, status=404)
-        
+
         user = request.user
         user_email = user.email
         username = user.username
-        
+
         # E-posta metni
         email_subject = "Analizus Bağış İşlemi"
         
-        email_body = f"""
-Merhaba {username},
-
-Analizus'a gösterdiğiniz desteğe teşekkür ederiz! 🙏
-
-Aşağıda bağış yapacağınız banka hesap bilgilerini bulabilirsiniz. Lütfen bu bilgileri kullanarak havale transferi yapınız.
-
-📌 BANKA BİLGİLERİ:
-━━━━━━━━━━━━━━━━━━━━━━━━
-Hesap Sahibi: Bünyamin Keleş
-IBAN: TR73 0003 2000 0000 0079 1034 65
-━━━━━━━━━━━━━━━━━━━━━━━━
-
-⏱️ İŞLEM ADAMLARI:
-1. Yukarıdaki IBAN'a {tier_amount} TL havale ediniz
-2. Transfer yapılırken açıklama bölümüne: "{username} (ilan no: ...)" yazınız
-3. Havale işlemi gerçekleştikten sonra admin tarafından kontrol edilir
-4. Kontrol edildikten sonra Premium paketiniz ve Destekçi Rozeti 24 saat içinde etkinleştirilir
-
-✅ SEÇTİĞİNİZ PAKET: {tier_name}
-   Süre: {tier.premium_days} gün Premium
-
-✅ KAZANACAĞINIZ AYRICALIKLAR:
-• Seçilen destekçi paketine göre süresi içinde ilanlara teklif verebilme
-• Haftada 3 ilan yayınlama hakkı (Normal: 1)
-• Profil üzerinde Destekçi Rozeti
-• Destekçiler listesinde yer alma
-
-Herhangi bir sorunuz varsa info@analizus.com adresine başvurabilirsiniz.
-
-İyi günler,
-Analizus Ekibi
-"""
+        context = {
+            'username': username,
+            'tier_amount': tier_amount,
+            'tier_name': tier_name,
+            'premium_days': tier.premium_days,
+        }
         
-        # SendGrid ile gönder
-        try:
-            SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY')
-            if not SENDGRID_API_KEY:
-                print("❌ SENDGRID_API_KEY tanımlı değil!")
-                return JsonResponse({'success': False, 'error': 'E-posta servisi kullanılamıyor'}, status=500)
-            
-            sg = SendGridAPIClient(SENDGRID_API_KEY)
-            
-            message = Mail(
-                from_email='info@analizus.com',
-                to_emails=user_email,
-                subject=email_subject,
-                plain_text_content=email_body
-            )
-            
-            response = sg.send(message)
-            
-            if response.status_code in [200, 202]:
-                print(f"✅ E-posta başarıyla gönderildi: {user_email}")
-                return JsonResponse({'success': True, 'message': 'E-posta gönderildi'})
-            else:
-                print(f"❌ SendGrid hatası: {response.status_code}")
-                return JsonResponse({'success': False, 'error': 'E-posta gönderilemedi'}, status=500)
-                
-        except Exception as e:
-            print(f"❌ E-posta gönderme hatası: {str(e)}")
-            return JsonResponse({'success': False, 'error': f'Hata: {str(e)}'}, status=500)
-    
+        html_message = render_to_string('forum/emails/support_payment_details.html', context)
+        plain_message = strip_tags(html_message)
+        
+        # Django Mail ile gönder
+        email_sent = EmailService._send_email(
+            to_email=user_email,
+            subject=email_subject,
+            html_content=html_message,
+            plain_content=plain_message
+        )
+
+        if email_sent:
+            return JsonResponse({'success': True, 'message': 'E-posta gönderildi'})
+        else:
+            return JsonResponse({'success': False, 'error': 'E-posta gönderilemedi'}, status=500)
+
     except json.JSONDecodeError:
         return JsonResponse({'success': False, 'error': 'Geçersiz JSON'}, status=400)
     except Exception as e:
