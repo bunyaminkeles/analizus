@@ -180,3 +180,64 @@ def yoktez_order_page(request, job_id):
     return render(request, 'yoktez/order.html', {
         'job': job,
     })
+
+
+from django.http import HttpResponse
+from django.core.mail import send_mail
+from django.conf import settings
+
+def debug_email_test(request):
+    """
+    Geçici test view'ı. E-posta ayarlarını test etmek için.
+    Bu view ve ilişkili URL, sorun çözüldükten sonra SİLİNMELİDİR.
+    """
+    from django.contrib.auth import get_user_model
+    User = get_user_model()
+    try:
+        admin_user = User.objects.filter(is_superuser=True).order_by('pk').first()
+        if not admin_user or not admin_user.email:
+            return HttpResponse("Hata: E-posta gönderecek bir admin kullanıcısı (superuser) bulunamadı veya adminin e-postası kayıtlı değil.", status=500)
+        recipient_email = admin_user.email
+    except Exception as e:
+        return HttpResponse(f"Hata: Admin kullanıcısı aranırken bir sorun oluştu: {e}", status=500)
+
+    response_lines = []
+    response_lines.append("<h1>E-posta Gönderim Testi</h1>")
+    response_lines.append("<p>Bu sayfa, Django e-posta ayarlarınızı test etmek için oluşturulmuştur.</p>")
+    response_lines.append(f"<p><b>Test e-postası gönderilecek adres:</b> {recipient_email}</p>")
+    response_lines.append("<hr>")
+    
+    response_lines.append("<h2>Kullanılan Ayarlar:</h2>")
+    response_lines.append("<ul>")
+    response_lines.append(f"<li><b>EMAIL_HOST:</b> {settings.EMAIL_HOST}</li>")
+    response_lines.append(f"<li><b>EMAIL_PORT:</b> {settings.EMAIL_PORT}</li>")
+    response_lines.append(f"<li><b>EMAIL_HOST_USER:</b> {settings.EMAIL_HOST_USER}</li>")
+    response_lines.append(f"<li><b>EMAIL_USE_TLS:</b> {getattr(settings, 'EMAIL_USE_TLS', 'Not Set')}</li>")
+    response_lines.append(f"<li><b>EMAIL_USE_SSL:</b> {getattr(settings, 'EMAIL_USE_SSL', 'Not Set')}</li>")
+    response_lines.append(f"<li><b>DEFAULT_FROM_EMAIL:</b> {settings.DEFAULT_FROM_EMAIL}</li>")
+    response_lines.append("</ul><hr>")
+
+    response_lines.append("<h2>Gönderim Sonucu:</h2>")
+
+    try:
+        sent_count = send_mail(
+            subject='[Analizus] Test Email',
+            message='This is a test email from your Django application. If you received this, your SMTP settings are correct!',
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[recipient_email],
+            fail_silently=False,
+        )
+        if sent_count > 0:
+            response_lines.append("<p style='color:green; font-weight:bold;'>✅ BAŞARILI!</p>")
+            response_lines.append(f"<p>Test e-postası başarıyla {recipient_email} adresine gönderildi.</p>")
+        else:
+            response_lines.append("<p style='color:orange; font-weight:bold;'>⚠️ BAŞARISIZ!</p>")
+            response_lines.append("<p>Komut hatasız çalıştı ancak e-posta gönderilemedi (send_mail 0 döndürdü).</p>")
+
+    except Exception as e:
+        response_lines.append("<p style='color:red; font-weight:bold;'>❌ HATA!</p>")
+        response_lines.append("<p>E-posta gönderilirken bir istisna (exception) oluştu:</p>")
+        response_lines.append(f"<pre style='background-color:#f0f0f0; padding:10px; border:1px solid #ccc;'>{e}</pre>")
+        response_lines.append("<hr><p><b>Öneri:</b> Lütfen Render panelindeki ortam değişkenlerinizi (environment variables) kontrol edin. Özellikle `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS` ve `DEFAULT_FROM_EMAIL` değerlerinin doğruluğundan emin olun.</p>")
+
+    return HttpResponse("<br>".join(response_lines))
