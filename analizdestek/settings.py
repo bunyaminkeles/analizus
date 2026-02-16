@@ -229,7 +229,7 @@ JAZZMIN_UI_TWEAKS = {
 # --- E-POSTA AYARLARI ---
 # Render'da ayarlanmış ortam değişkenlerini kullanıyoruz.
 SMTP_HOST = os.getenv('SMTP_HOST')
-SMTP_PORT = int(os.getenv('SMTP_PORT', 587))
+SMTP_PORT = int(os.getenv('SMTP_PORT', 465)) # Port 465 olarak güncellendi
 SMTP_USER = os.getenv('SMTP_USER')
 SMTP_PASS = os.getenv('SMTP_PASS')
 
@@ -241,8 +241,8 @@ EMAIL_HOST = SMTP_HOST
 EMAIL_PORT = SMTP_PORT
 EMAIL_HOST_USER = SMTP_USER
 EMAIL_HOST_PASSWORD = SMTP_PASS
-EMAIL_USE_TLS = True  # Port 587 için genellikle True
-EMAIL_USE_SSL = False # Port 465 kullanılıyorsa True yapın
+EMAIL_USE_TLS = False # SSL kullanıldığı için TLS kapatıldı
+EMAIL_USE_SSL = True # Port 465 için SSL/TLS bağlantısı
 
 # Gönderen E-posta Adresi
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', SMTP_USER)
