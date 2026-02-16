@@ -11,23 +11,27 @@ logger = logging.getLogger(__name__)
 
 def send_email_async(subject, message, recipient_list, html_message=None):
     """
-    Django'nun send_mail fonksiyonunu kullanarak e-posta gönderir. (Senkronize olarak değiştirildi)
+    Django'nun send_mail fonksiyonunu kullanarak arka planda e-posta gönderir.
     """
-    try:
-        send_mail(
-            subject,
-            message,
-            settings.DEFAULT_FROM_EMAIL,
-            recipient_list,
-            fail_silently=False,
-            html_message=html_message
-        )
-        for recipient in recipient_list:
-            logger.info(f"✅ E-posta başarıyla gönderildi: {recipient}")
-            print(f"✅ E-posta başarıyla gönderildi: {recipient}")
-    except Exception as e:
-        logger.error(f"❌ E-posta gönderim hatası: {e}")
-        print(f"❌ E-posta gönderim hatası: {e}")
+    def _send():
+        try:
+            send_mail(
+                subject,
+                message,
+                settings.DEFAULT_FROM_EMAIL,
+                recipient_list,
+                fail_silently=False,
+                html_message=html_message
+            )
+            for recipient in recipient_list:
+                logger.info(f"✅ E-posta başarıyla gönderildi: {recipient}")
+                print(f"✅ E-posta başarıyla gönderildi: {recipient}")
+        except Exception as e:
+            logger.error(f"❌ E-posta gönderim hatası: {e}")
+            print(f"❌ E-posta gönderim hatası: {e}")
+
+    thread = threading.Thread(target=_send, daemon=True)
+    thread.start()
 
 
 def send_topic_reply_notification(post, topic):
