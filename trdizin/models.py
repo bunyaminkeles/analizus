@@ -48,13 +48,14 @@ class DizinSearchJob(models.Model):
         self.status = 'running'
         self.save(update_fields=['status'])
 
-    def mark_completed(self, demo_results, all_results, total_count):
+    def mark_completed(self, demo_results, all_results, total_count, lucene_query):
         self.status = 'completed'
         self.demo_results = demo_results
         self.all_results = all_results
         self.total_results = total_count
+        self.lucene_query = lucene_query
         self.completed_at = timezone.now()
-        self.save(update_fields=['status', 'demo_results', 'all_results', 'total_results', 'completed_at'])
+        self.save(update_fields=['status', 'demo_results', 'all_results', 'total_results', 'lucene_query', 'completed_at'])
 
     def mark_failed(self, error_msg):
         self.status = 'failed'

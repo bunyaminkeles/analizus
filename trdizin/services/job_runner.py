@@ -50,9 +50,9 @@ def run_scraping_job(job_id):
             job = DizinSearchJob.objects.get(id=job_id)
             job.mark_running()
 
-            scraper = TrDizinScraper(headless=True)
-            total_count, demo_results, all_results = scraper.search(
-                query=job.lucene_query,
+            scraper = TrDizinScraper()
+            total_count, demo_results, all_results, lucene_query = scraper.search(
+                query_parts=job.query_parts,
                 demo_limit=5,
             )
 
@@ -60,6 +60,7 @@ def run_scraping_job(job_id):
                 demo_results=demo_results,
                 all_results=all_results,
                 total_count=total_count,
+                lucene_query=lucene_query,
             )
 
             # Sonuçları txt olarak S3'e yükle
