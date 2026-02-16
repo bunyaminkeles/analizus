@@ -1,7 +1,7 @@
 from django.contrib import admin, messages
 from django.utils import timezone
 from .models import DizinSearchJob, DizinOrder
-from .services.job_runner import send_order_results_email, delete_from_s3
+from .services.job_runner import send_order_results_email
 
 
 @admin.register(DizinSearchJob)
