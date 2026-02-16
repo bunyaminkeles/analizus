@@ -147,21 +147,21 @@ def send_demo_email_async(job_id):
     """Background thread'de demo email gönder."""
     def _run():
         from yoktez.models import TezSearchJob
+        logger.info(f"[async_email] Starting background email task for job {job_id}")
         try:
-            # Modeli thread içinde import et
             job = TezSearchJob.objects.get(id=job_id)
-
-            # Emaili gönder
+            logger.info(f"[async_email] Found job {job_id}, calling send_demo_email.")
             send_demo_email(job)
 
         except TezSearchJob.DoesNotExist:
             logger.error(f"[async_email] Job not found: {job_id}")
         except Exception as e:
-            logger.error(f"[async_email] Job {job_id} için email gönderilemedi: {e}")
+            logger.error(f"[async_email] Unhandled exception in email thread for job {job_id}: {e}", exc_info=True)
 
     thread = threading.Thread(target=_run)
     thread.daemon = True
     thread.start()
+    logger.info(f"[async_email] Email task for job {job_id} has been started in the background.")
 
 
 def send_demo_email(job):
