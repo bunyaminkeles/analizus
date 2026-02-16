@@ -26,8 +26,9 @@ def _generate_dizin_results_txt(publication_list, job, is_demo=True):
         lines.append(f"Dergi     : {pub.get('journal', '')}")
         lines.append(f"Yıl       : {pub.get('year', '')}")
         lines.append(f"DOI       : {pub.get('doi', '')}")
-        if pub.get('abstract'):
-            lines.append(f"Özet      : {pub['abstract']}")
+        abstract = pub.get('abstract_tr') or pub.get('abstract_en') or ''
+        if abstract:
+            lines.append(f"Özet      : {abstract}")
         lines.append("")
 
     lines.append(f"{'='*60}")
@@ -44,13 +45,13 @@ def run_scraping_job(job_id):
 
     def _run():
         from trdizin.models import DizinSearchJob
-        from trdizin.services.scraper import TrDizinScraper
+        from trdizin.services.scraper import TRDizinScraper
 
         try:
             job = DizinSearchJob.objects.get(id=job_id)
             job.mark_running()
 
-            scraper = TrDizinScraper()
+            scraper = TRDizinScraper()
             total_count, demo_results, all_results, lucene_query = scraper.search(
                 query_parts=job.query_parts,
                 demo_limit=5,
@@ -100,6 +101,101 @@ def run_scraping_job(job_id):
     thread = threading.Thread(target=_run)
     thread.daemon = True
     thread.start()
+
+
+def send_demo_email_async(job_id):
+    """Background thread'de demo email gönder."""
+    def _run():
+        from trdizin.models import DizinSearchJob
+        logger.info(f"[trdizin_async_email] Starting background email task for job {job_id}")
+        try:
+            job = DizinSearchJob.objects.get(id=job_id)
+            send_demo_email(job)
+        except DizinSearchJob.DoesNotExist:
+            logger.error(f"[trdizin_async_email] Job not found: {job_id}")
+        except Exception as e:
+            logger.error(f"[trdizin_async_email] Unhandled exception for job {job_id}: {e}", exc_info=True)
+
+    thread = threading.Thread(target=_run)
+    thread.daemon = True
+    thread.start()
+    logger.info(f"[trdizin_async_email] Email task for job {job_id} started in background.")
+
+
+def send_demo_email(job):
+    """Demo sonuçları txt dosyası olarak kullanıcının emailine gönder.
+    Email body'de yayın bilgileri açık olarak yer almaz, txt ek olarak gönderilir."""
+    user = job.user
+    to_email = user.email
+
+    if not to_email:
+        logger.warning(f"Kullanıcının emaili yok: {user.username}")
+        return False
+
+    subject = f"TR Dizin Arama - Demo Sonuçlar: {job.get_query_summary()}"
+
+    demo_txt = _generate_dizin_results_txt(job.demo_results, job, is_demo=True)
+
+    body_lines = [
+        f"Merhaba {user.first_name or user.username},\n",
+        f"TR Dizin aracıyla yaptığınız arama sonuçları hazırlanmıştır.\n",
+        f"Sorgu: {job.get_query_summary()}",
+        f"Toplam Bulunan Sonuç: {job.total_results}",
+        f"Demo Sonuç: {len(job.demo_results)} yayın\n",
+        f"Demo sonuçlar bu e-postaya txt dosyası olarak eklenmiştir.\n",
+    ]
+
+    # Fiyat bilgisi
+    from trdizin.models import DizinOrder
+    total_price = DizinOrder.calculate_price(job.total_results)
+
+    IBAN_INFO = {
+        'hesap_sahibi': 'Bünyamin Keleş',
+        'iban': 'TR73 0003 2000 0000 0079 1034 65',
+    }
+
+    body_lines.append(f"{'='*60}")
+    body_lines.append(f"\n--- TÜM SONUÇLARI ALMAK İÇİN ---\n")
+    body_lines.append(f"Toplam {job.total_results} yayın için tahmini ücret: {total_price} TL\n")
+    body_lines.append(f"Fiyatlandırma:")
+    body_lines.append(f"  * İlk 100 yayın    : 250 TL")
+    body_lines.append(f"  * Sonraki her 100   : +100 TL")
+    body_lines.append(f"")
+    body_lines.append(f"Banka Bilgileri:")
+    body_lines.append(f"  Hesap Sahibi : {IBAN_INFO['hesap_sahibi']}")
+    body_lines.append(f"  IBAN         : {IBAN_INFO['iban']}")
+    body_lines.append(f"  Açıklama     : TR Dizin - {user.username}")
+    body_lines.append(f"")
+    site_url = getattr(settings, 'SITE_URL', 'https://www.analizus.com')
+    body_lines.append(f"Ödeme yaptıktan sonra siparişinizi oluşturun:")
+    body_lines.append(f"  {site_url}/trdizin/siparis/{job.id}/")
+    body_lines.append(f"")
+    body_lines.append(f"Siparişiniz onaylandıktan sonra sonuçlar 24 saat")
+    body_lines.append(f"içinde bu e-posta adresine gönderilecektir.")
+    body_lines.append(f"\n---\nAnalizus - {site_url}")
+
+    try:
+        email = EmailMessage(
+            subject=subject,
+            body="\n".join(body_lines),
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            to=[to_email],
+        )
+        email.attach(
+            f"trdizin_demo_{len(job.demo_results)}_sonuc.txt",
+            demo_txt,
+            'text/plain',
+        )
+        email.send()
+
+        job.demo_email_sent = True
+        job.save(update_fields=['demo_email_sent'])
+
+        logger.info(f"TR Dizin demo email gönderildi: {to_email}")
+        return True
+    except Exception as e:
+        logger.error(f"TR Dizin demo email gönderilemedi: {e}")
+        return False
 
 
 def send_order_results_email(order):
@@ -184,23 +280,24 @@ def cleanup_expired_trdizin_s3_files(days=3):
 
     deleted_count = 0
     for job in expired_jobs:
-        # Demo dosyasını sil
+        job_changed = False
+
         if job.demo_file_url:
             s3_key = f"trdizin/demo/{job.id}.txt"
             if delete_from_s3(s3_key):
                 job.demo_file_url = ''
+                job_changed = True
                 deleted_count += 1
 
-        # Tüm sonuçlar dosyasını sil
         if job.all_results_file_url:
             s3_key = f"trdizin/full/{job.id}.txt"
             if delete_from_s3(s3_key):
                 job.all_results_file_url = ''
+                job_changed = True
                 deleted_count += 1
 
-        # Save changes to the job if any files were deleted
-        if deleted_count > 0:
-            job.save()
+        if job_changed:
+            job.save(update_fields=['demo_file_url', 'all_results_file_url'])
 
     logger.info(f"TR Dizin S3 temizlik: {deleted_count} dosya silindi ({expired_jobs.count()} expired job)")
     return deleted_count

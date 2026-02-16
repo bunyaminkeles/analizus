@@ -29,7 +29,7 @@ class DizinOrderAdmin(admin.ModelAdmin):
     search_fields = ('user__username', 'search_job__id', 'payment_note', 'admin_note', 'id')
     readonly_fields = ('id', 'created_at', 'updated_at', 'approved_at', 'results_email_sent_at', 'search_job')
     list_select_related = ('user', 'search_job')
-    actions = ['mark_approved', 'mark_payment_review', 'mark_cancelled', 'send_results']
+    actions = ['approve_and_send', 'mark_cancelled']
 
     fieldsets = (
         (None, {'fields': ('id', 'user', 'search_job', 'status')}),
@@ -43,35 +43,32 @@ class DizinOrderAdmin(admin.ModelAdmin):
         return obj.search_job.id
     search_job_id.short_description = "Arama ID"
 
-    @admin.action(description='Seçilenleri "Onaylandı" olarak işaretle')
-    def mark_approved(self, request, queryset):
-        updated = queryset.update(status='approved', approved_at=timezone.now())
-        self.message_user(request, f'{updated} sipariş onaylandı.', messages.SUCCESS)
+    def approve_and_send(self, request, queryset):
+        """Seçili siparişleri onayla ve sonuçları emaile gönder."""
+        sent = 0
+        failed = 0
+        for order in queryset.filter(status__in=['pending_payment', 'payment_review']):
+            order.status = 'approved'
+            order.approved_at = timezone.now()
+            order.save(update_fields=['status', 'approved_at'])
 
-    @admin.action(description='Seçilenleri "Ödeme İnceleniyor" olarak işaretle')
-    def mark_payment_review(self, request, queryset):
-        updated = queryset.update(status='payment_review')
-        self.message_user(request, f'{updated} sipariş ödeme incelemesine alındı.', messages.INFO)
+            order.status = 'processing'
+            order.save(update_fields=['status'])
 
-    @admin.action(description='Seçilenleri "İptal" olarak işaretle')
-    def mark_cancelled(self, request, queryset):
-        updated = queryset.update(status='cancelled')
-        self.message_user(request, f'{updated} sipariş iptal edildi.', messages.WARNING)
-
-    @admin.action(description='Seçilen siparişlerin sonuçlarını email ile gönder')
-    def send_results(self, request, queryset):
-        sent_count = 0
-        failed_count = 0
-        for order in queryset.filter(status='approved'):
-            if send_order_results_email(order):
-                sent_count += 1
+            success = send_order_results_email(order)
+            if success:
+                sent += 1
             else:
-                failed_count += 1
+                failed += 1
 
-        if sent_count:
-            self.message_user(request, f'{sent_count} siparişin sonuçları başarıyla gönderildi.', messages.SUCCESS)
-        if failed_count:
-            self.message_user(request, f'{failed_count} sipariş gönderilemedi.', messages.ERROR)
-        if not sent_count and not failed_count:
-            self.message_user(request, 'Sadece "Onaylandı" statüsündeki siparişler gönderilebilir.', messages.WARNING)
+        if sent:
+            messages.success(request, f'{sent} sipariş onaylandı ve sonuçlar gönderildi.')
+        if failed:
+            messages.error(request, f'{failed} sipariş için email gönderilemedi.')
+    approve_and_send.short_description = "Onayla ve sonuçları emaile gönder"
+
+    def mark_cancelled(self, request, queryset):
+        updated = queryset.exclude(status='completed').update(status='cancelled')
+        messages.warning(request, f'{updated} sipariş iptal edildi.')
+    mark_cancelled.short_description = "İptal et"
 
