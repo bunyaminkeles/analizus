@@ -143,6 +143,27 @@ def run_scraping_job(job_id):
     thread.start()
 
 
+def send_demo_email_async(job_id):
+    """Background thread'de demo email gönder."""
+    def _run():
+        from yoktez.models import TezSearchJob
+        try:
+            # Modeli thread içinde import et
+            job = TezSearchJob.objects.get(id=job_id)
+
+            # Emaili gönder
+            send_demo_email(job)
+
+        except TezSearchJob.DoesNotExist:
+            logger.error(f"[async_email] Job not found: {job_id}")
+        except Exception as e:
+            logger.error(f"[async_email] Job {job_id} için email gönderilemedi: {e}")
+
+    thread = threading.Thread(target=_run)
+    thread.daemon = True
+    thread.start()
+
+
 def send_demo_email(job):
     """Demo sonuçları txt dosyası olarak kullanıcının emailine gönder.
     Email body'de tez bilgileri açık olarak yer almaz, txt ek olarak gönderilir."""
@@ -357,11 +378,13 @@ def cleanup_expired_s3_files(days=3):
 
     deleted_count = 0
     for job in expired_jobs:
+        update_fields = []
         # Demo dosyasını sil
         if job.demo_file_url:
             s3_key = f"yoktez/demo/{job.id}.txt"
             if delete_from_s3(s3_key):
                 job.demo_file_url = ''
+                update_fields.append('demo_file_url')
                 deleted_count += 1
 
         # Tüm sonuçlar dosyasını sil
@@ -369,14 +392,11 @@ def cleanup_expired_s3_files(days=3):
             s3_key = f"yoktez/full/{job.id}.txt"
             if delete_from_s3(s3_key):
                 job.all_results_file_url = ''
+                update_fields.append('all_results_file_url')
                 deleted_count += 1
 
-        if not job.demo_file_url and not job.all_results_file_url:
-            job.save(update_fields=['demo_file_url', 'all_results_file_url'])
-        elif not job.demo_file_url:
-            job.save(update_fields=['demo_file_url'])
-        elif not job.all_results_file_url:
-            job.save(update_fields=['all_results_file_url'])
+        if update_fields:
+            job.save(update_fields=update_fields)
 
     logger.info(f"S3 temizlik: {deleted_count} dosya silindi ({expired_jobs.count()} expired job)")
     return deleted_count

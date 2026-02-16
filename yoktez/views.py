@@ -132,13 +132,10 @@ def yoktez_send_demo_email(request, job_id):
     if job.demo_email_sent:
         return JsonResponse({'error': 'Demo sonuçlar zaten gönderildi.'}, status=400)
 
-    from .services.job_runner import send_demo_email
-    result = send_demo_email(job)
+    from .services.job_runner import send_demo_email_async
+    send_demo_email_async(job.id)
 
-    if result:
-        return JsonResponse({'success': True, 'message': f'Demo sonuçlar {request.user.email} adresine gönderildi.'})
-    else:
-        return JsonResponse({'error': 'E-posta gönderilemedi. Lütfen tekrar deneyin.'}, status=500)
+    return JsonResponse({'success': True, 'message': f'Demo sonuçların {request.user.email} adresine gönderilmesi için işlem başlatıldı.'})
 
 
 @login_required
