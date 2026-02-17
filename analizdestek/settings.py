@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'forum',
     'yoktez',
     'trdizin',
+    'openalex',
     'crispy_forms',
     'crispy_bootstrap5',
     'storages',  # AWS S3 için
@@ -229,7 +230,7 @@ JAZZMIN_UI_TWEAKS = {
 # --- E-POSTA AYARLARI ---
 RESEND_API_KEY = os.getenv('RESEND_API_KEY')
 
-if RESEND_API_KEY:
+if RESEND_API_KEY and not DEBUG:
     # Render'da SMTP bloklu, Resend HTTP API kullan
     EMAIL_BACKEND = 'forum.backends.ResendBackend'
 else:
