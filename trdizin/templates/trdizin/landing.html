@@ -44,6 +44,14 @@
                             <button type="submit" id="submit-btn" class="btn btn-primary"><i class="fas fa-search"></i> Demo Arama Yap</button>
                         </div>
                     </form>
+
+                    <!-- Sorgu Önizleme -->
+                    <div id="query-preview" class="query-preview mt-3" style="display: none;">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-check-circle-fill text-success" style="font-size: 0.75rem;"></i>
+                            <span id="query-preview-text" class="query-preview-text"></span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -73,6 +81,30 @@
 {% endblock %}
 
 {% block extra_js %}
+<style>
+.query-preview {
+    background: rgba(0, 240, 255, 0.04);
+    border: 1px solid rgba(0, 240, 255, 0.15);
+    border-radius: 8px;
+    padding: 10px 14px;
+}
+.query-preview-text {
+    font-family: 'Courier New', monospace;
+    font-size: 0.8rem;
+    color: #94a3b8;
+    word-break: break-all;
+}
+.query-preview-text .qp-field {
+    color: #22d3ee;
+}
+.query-preview-text .qp-op {
+    color: #fbbf24;
+    font-weight: 700;
+}
+.query-preview-text .qp-value {
+    color: #e2e8f0;
+}
+</style>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const builder = document.getElementById('query-builder');
@@ -104,6 +136,51 @@ document.addEventListener('DOMContentLoaded', function() {
         { value: 'doi', text: 'DOI' },
     ];
 
+    const queryPreview = document.getElementById('query-preview');
+    const queryPreviewText = document.getElementById('query-preview-text');
+
+    const fieldLabels = {};
+    fieldOptions.forEach(opt => { fieldLabels[opt.value] = opt.text.split(' (')[0]; });
+
+    function updateQueryPreview() {
+        const parts = collectData();
+        if (parts.length === 0) {
+            queryPreview.style.display = 'none';
+            return;
+        }
+
+        let html = '';
+        parts.forEach((part, i) => {
+            if (i > 0 && part.operator) {
+                html += ` <span class="qp-op">${part.operator}</span> `;
+            }
+            const label = fieldLabels[part.field] || part.field;
+            let valueDisplay = part.value;
+
+            if (part.field === 'year') {
+                const years = part.value.split('-');
+                if (years.length === 2) {
+                    valueDisplay = `[${years[0].trim()} TO ${years[1].trim()}]`;
+                }
+            } else if (part.field === 'language') {
+                const langs = part.value.split(',').map(l => `"${l.trim()}"`).join(' OR ');
+                valueDisplay = langs;
+            } else {
+                const words = part.value.trim().split(/\s+/);
+                if (words.length > 1) {
+                    valueDisplay = words.map(w => `"${w}"`).join(' AND ');
+                } else {
+                    valueDisplay = `"${part.value}"`;
+                }
+            }
+
+            html += `<span class="qp-field">${label}</span> : ( <span class="qp-value">${valueDisplay}</span> )`;
+        });
+
+        queryPreviewText.innerHTML = html;
+        queryPreview.style.display = 'block';
+    }
+
     function createRule(isFirst = false) {
         const ruleDiv = document.createElement('div');
         ruleDiv.className = 'row mb-2 align-items-center';
@@ -117,6 +194,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <option value="AND">AND</option>
                 <option value="OR">OR</option>
             `;
+            operatorSelect.addEventListener('change', updateQueryPreview);
             operatorCol.appendChild(operatorSelect);
         }
 
@@ -125,6 +203,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const fieldSelect = document.createElement('select');
         fieldSelect.className = 'form-select bg-dark text-white border-secondary field-select';
         fieldOptions.forEach(opt => fieldSelect.add(new Option(opt.text, opt.value)));
+        fieldSelect.addEventListener('change', updateQueryPreview);
         fieldCol.appendChild(fieldSelect);
 
         const valueCol = document.createElement('div');
@@ -133,6 +212,7 @@ document.addEventListener('DOMContentLoaded', function() {
         valueInput.type = 'text';
         valueInput.className = 'form-control bg-dark text-white border-secondary value-input';
         valueInput.placeholder = 'Değer girin...';
+        valueInput.addEventListener('input', updateQueryPreview);
         valueCol.appendChild(valueInput);
 
         const removeCol = document.createElement('div');
@@ -142,7 +222,7 @@ document.addEventListener('DOMContentLoaded', function() {
             removeBtn.type = 'button';
             removeBtn.className = 'btn btn-danger btn-sm';
             removeBtn.innerHTML = '<i class="fas fa-times"></i>';
-            removeBtn.onclick = () => ruleDiv.remove();
+            removeBtn.onclick = () => { ruleDiv.remove(); updateQueryPreview(); };
             removeCol.appendChild(removeBtn);
         }
 
@@ -173,7 +253,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return parts;
     }
 
-    addRuleBtn.addEventListener('click', () => createRule());
+    addRuleBtn.addEventListener('click', () => { createRule(); updateQueryPreview(); });
 
     form.addEventListener('submit', function(e) {
         e.preventDefault();
