@@ -41,6 +41,7 @@ def feature_flags(request):
             'ai_assistant': site.feature_ai_assistant,
             'yoktez': site.feature_yoktez,
             'trdizin': site.feature_trdizin,
+            'openalex': site.feature_openalex,
             'quiz': site.feature_quiz,
             'messaging': site.feature_messaging,
             'donation': site.feature_donation,

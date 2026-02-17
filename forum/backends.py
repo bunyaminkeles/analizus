@@ -2,7 +2,6 @@
 Resend HTTP API email backend for Django.
 Render SMTP portlarını blokluyor, bu yüzden HTTP API kullanıyoruz.
 """
-import resend
 from django.conf import settings
 from django.core.mail.backends.base import BaseEmailBackend
 
@@ -10,7 +9,9 @@ from django.core.mail.backends.base import BaseEmailBackend
 class ResendBackend(BaseEmailBackend):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        resend.api_key = settings.RESEND_API_KEY
+        import resend
+        self._resend = resend
+        self._resend.api_key = settings.RESEND_API_KEY
 
     def send_messages(self, email_messages):
         sent = 0
@@ -37,7 +38,7 @@ class ResendBackend(BaseEmailBackend):
                             "filename": filename,
                             "content": list(content),
                         })
-                resend.Emails.send(params)
+                self._resend.Emails.send(params)
                 sent += 1
             except Exception as e:
                 if not self.fail_silently:
