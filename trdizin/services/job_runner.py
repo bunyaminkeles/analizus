@@ -1,5 +1,6 @@
 import logging
 import threading
+from datetime import timedelta
 from django.utils import timezone
 from django.conf import settings
 from django.core.mail import EmailMessage
@@ -269,7 +270,7 @@ def cleanup_expired_trdizin_s3_files(days=3):
     DB'ye değil, S3'deki dosya tarihine bakar."""
     import boto3
     deleted_count = 0
-    cutoff = timezone.now() - timezone.timedelta(days=days)
+    cutoff = timezone.now() - timedelta(days=days)
 
     try:
         s3 = boto3.client(

@@ -2,6 +2,7 @@ import json
 import threading
 import logging
 import uuid
+from datetime import timedelta
 import boto3
 from botocore.exceptions import ClientError
 from django.core.mail import EmailMessage
@@ -310,7 +311,7 @@ def check_overdue_orders():
     """24 saat geçmiş onaylı ama gönderilmemiş siparişler için admin'i uyar."""
     from yoktez.models import TezOrder
 
-    cutoff = timezone.now() - timezone.timedelta(hours=24)
+    cutoff = timezone.now() - timedelta(hours=24)
     overdue = TezOrder.objects.filter(
         status='approved',
         approved_at__lt=cutoff,
@@ -365,7 +366,7 @@ def cleanup_expired_s3_files(days=3):
     """3 günden eski yoktez/ altındaki tüm dosyaları S3'den siler.
     DB'ye değil, S3'deki dosya tarihine bakar."""
     deleted_count = 0
-    cutoff = timezone.now() - timezone.timedelta(days=days)
+    cutoff = timezone.now() - timedelta(days=days)
 
     try:
         s3 = _get_s3_client()
