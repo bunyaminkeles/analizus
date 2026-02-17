@@ -1,5 +1,6 @@
 import logging
 import threading
+from datetime import timedelta
 from django.utils import timezone
 from django.conf import settings
 from django.core.mail import EmailMessage
@@ -265,39 +266,42 @@ def send_order_results_email(order):
 
 
 def cleanup_expired_trdizin_s3_files(days=3):
-    """3 günden eski, sipariş oluşturulmamış demo/full dosyalarını S3'den siler.
-    Cron job olarak günlük çalıştırılabilir."""
-
-    cutoff = timezone.now() - timezone.timedelta(days=days)
-
-    # 3 günden eski, sipariş verilmemiş aramalar
-    expired_jobs = DizinSearchJob.objects.filter(
-        created_at__lt=cutoff,
-        status='completed',
-    ).exclude(
-        orders__status__in=['pending_payment', 'payment_review', 'approved', 'processing', 'completed']
-    )
-
+    """3 günden eski trdizin/ altındaki tüm dosyaları S3'den siler.
+    DB'ye değil, S3'deki dosya tarihine bakar."""
+    import boto3
     deleted_count = 0
-    for job in expired_jobs:
-        job_changed = False
+    cutoff = timezone.now() - timedelta(days=days)
 
-        if job.demo_file_url:
-            s3_key = f"trdizin/demo/{job.id}.txt"
-            if delete_from_s3(s3_key):
-                job.demo_file_url = ''
-                job_changed = True
-                deleted_count += 1
+    try:
+        s3 = boto3.client(
+            's3',
+            aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+            aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
+            region_name=settings.AWS_S3_REGION_NAME,
+        )
+        bucket = settings.AWS_STORAGE_BUCKET_NAME
 
-        if job.all_results_file_url:
-            s3_key = f"trdizin/full/{job.id}.txt"
-            if delete_from_s3(s3_key):
-                job.all_results_file_url = ''
-                job_changed = True
-                deleted_count += 1
+        for prefix in ['trdizin/demo/', 'trdizin/full/', 'trdizin/orders/']:
+            paginator = s3.get_paginator('list_objects_v2')
+            for page in paginator.paginate(Bucket=bucket, Prefix=prefix):
+                for obj in page.get('Contents', []):
+                    last_modified = obj['LastModified']
+                    if last_modified < cutoff:
+                        s3.delete_object(Bucket=bucket, Key=obj['Key'])
+                        logger.info(f"S3 temizlik: silindi {obj['Key']}")
+                        deleted_count += 1
+    except Exception as e:
+        logger.error(f"S3 temizlik hatası (trdizin): {e}")
 
-        if job_changed:
-            job.save(update_fields=['demo_file_url', 'all_results_file_url'])
+    # DB'deki URL referanslarını da temizle
+    try:
+        DizinSearchJob.objects.filter(
+            created_at__lt=cutoff,
+        ).exclude(
+            demo_file_url='', all_results_file_url=''
+        ).update(demo_file_url='', all_results_file_url='')
+    except Exception as e:
+        logger.error(f"DB temizlik hatası (trdizin): {e}")
 
-    logger.info(f"TR Dizin S3 temizlik: {deleted_count} dosya silindi ({expired_jobs.count()} expired job)")
+    logger.info(f"S3 temizlik (trdizin): {deleted_count} dosya silindi")
     return deleted_count

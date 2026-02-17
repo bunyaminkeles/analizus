@@ -2,6 +2,7 @@ import json
 import threading
 import logging
 import uuid
+from datetime import timedelta
 import boto3
 from botocore.exceptions import ClientError
 from django.core.mail import EmailMessage
@@ -310,7 +311,7 @@ def check_overdue_orders():
     """24 saat geçmiş onaylı ama gönderilmemiş siparişler için admin'i uyar."""
     from yoktez.models import TezOrder
 
-    cutoff = timezone.now() - timezone.timedelta(hours=24)
+    cutoff = timezone.now() - timedelta(hours=24)
     overdue = TezOrder.objects.filter(
         status='approved',
         approved_at__lt=cutoff,
@@ -362,41 +363,38 @@ def delete_from_s3(s3_key):
 
 
 def cleanup_expired_s3_files(days=3):
-    """3 günden eski, sipariş oluşturulmamış demo/full dosyalarını S3'den siler.
-    Cron job olarak günlük çalıştırılabilir."""
-    from yoktez.models import TezSearchJob
-
-    cutoff = timezone.now() - timezone.timedelta(days=days)
-
-    # 3 günden eski, sipariş verilmemiş aramalar
-    expired_jobs = TezSearchJob.objects.filter(
-        created_at__lt=cutoff,
-        status='completed',
-    ).exclude(
-        orders__status__in=['pending_payment', 'payment_review', 'approved', 'processing', 'completed']
-    )
-
+    """3 günden eski yoktez/ altındaki tüm dosyaları S3'den siler.
+    DB'ye değil, S3'deki dosya tarihine bakar."""
     deleted_count = 0
-    for job in expired_jobs:
-        update_fields = []
-        # Demo dosyasını sil
-        if job.demo_file_url:
-            s3_key = f"yoktez/demo/{job.id}.txt"
-            if delete_from_s3(s3_key):
-                job.demo_file_url = ''
-                update_fields.append('demo_file_url')
-                deleted_count += 1
+    cutoff = timezone.now() - timedelta(days=days)
 
-        # Tüm sonuçlar dosyasını sil
-        if job.all_results_file_url:
-            s3_key = f"yoktez/full/{job.id}.txt"
-            if delete_from_s3(s3_key):
-                job.all_results_file_url = ''
-                update_fields.append('all_results_file_url')
-                deleted_count += 1
+    try:
+        s3 = _get_s3_client()
+        bucket = settings.AWS_STORAGE_BUCKET_NAME
 
-        if update_fields:
-            job.save(update_fields=update_fields)
+        for prefix in ['yoktez/demo/', 'yoktez/full/', 'yoktez/orders/']:
+            paginator = s3.get_paginator('list_objects_v2')
+            for page in paginator.paginate(Bucket=bucket, Prefix=prefix):
+                for obj in page.get('Contents', []):
+                    last_modified = obj['LastModified']
+                    # timezone-aware karşılaştırma
+                    if last_modified < cutoff:
+                        s3.delete_object(Bucket=bucket, Key=obj['Key'])
+                        logger.info(f"S3 temizlik: silindi {obj['Key']}")
+                        deleted_count += 1
+    except Exception as e:
+        logger.error(f"S3 temizlik hatası (yoktez): {e}")
 
-    logger.info(f"S3 temizlik: {deleted_count} dosya silindi ({expired_jobs.count()} expired job)")
+    # DB'deki URL referanslarını da temizle
+    try:
+        from yoktez.models import TezSearchJob
+        TezSearchJob.objects.filter(
+            created_at__lt=cutoff,
+        ).exclude(
+            demo_file_url='', all_results_file_url=''
+        ).update(demo_file_url='', all_results_file_url='')
+    except Exception as e:
+        logger.error(f"DB temizlik hatası (yoktez): {e}")
+
+    logger.info(f"S3 temizlik (yoktez): {deleted_count} dosya silindi")
     return deleted_count
