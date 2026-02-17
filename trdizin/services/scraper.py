@@ -62,7 +62,14 @@ class TRDizinScraper:
                     # Kullanıcı kendi operatörlerini girmiş
                     clause = f'{field} : ( {value} )'
                 else:
-                    clause = f'{field} : ( "{value}" )'
+                    # Çok kelimeli değerleri TR Dizin formatına çevir:
+                    # "halk sağlığı" → "halk" AND "sağlığı"
+                    words = value.split()
+                    if len(words) > 1:
+                        word_str = ' AND '.join(f'"{w}"' for w in words)
+                        clause = f'{field} : ( {word_str} )'
+                    else:
+                        clause = f'{field} : ( "{value}" )'
 
             clauses.append(clause)
 
@@ -82,7 +89,8 @@ class TRDizinScraper:
             if clause_idx < len(clauses):
                 result_parts.append(clauses[clause_idx])
 
-        return ''.join(result_parts)
+        query = ''.join(result_parts)
+        return f'({query})'
 
     def _fetch_page(self, lucene_query, page=1, limit=20, order='publicationYear-DESC'):
         """TR Dizin API'den tek sayfa sonuç çeker."""
