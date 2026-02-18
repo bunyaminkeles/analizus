@@ -38,9 +38,6 @@ urlpatterns = [
     path('login/', custom_login, name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
 
-    # 3. YÖK Tez Tarama
-    path('yoktez/', include('yoktez.urls')),
-
     # TR Dizin Tarama
     path('trdizin/', include('trdizin.urls')),
 

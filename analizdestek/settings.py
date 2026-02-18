@@ -52,7 +52,6 @@ INSTALLED_APPS = [
     'django.contrib.sitemaps',  # SEO Sitemap
     # Kendi Uygulamalarımız
     'forum',
-    'yoktez',
     'trdizin',
     'openalex',
     'crispy_forms',

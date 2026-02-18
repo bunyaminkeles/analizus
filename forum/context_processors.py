@@ -39,7 +39,6 @@ def feature_flags(request):
             'blog': site.feature_blog,
             'market': site.feature_market,
             'ai_assistant': site.feature_ai_assistant,
-            'yoktez': site.feature_yoktez,
             'trdizin': site.feature_trdizin,
             'openalex': site.feature_openalex,
             'quiz': site.feature_quiz,

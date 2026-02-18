@@ -44,8 +44,3 @@ channels-redis
 beautifulsoup4
 groq
 resend
-
-# --- YÖK TEZ SCRAPING ---
-undetected-chromedriver
-selenium
-fake-useragent
