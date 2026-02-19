@@ -29,10 +29,23 @@ class OAIPMHOrderAdmin(admin.ModelAdmin):
 
     actions = ['send_results_email']
 
+    def save_model(self, request, obj, form, change):
+        old_status = None
+        if change:
+            old_status = OAIPMHOrder.objects.filter(pk=obj.pk).values_list('status', flat=True).first()
+        super().save_model(request, obj, form, change)
+        # Status yeni 'approved' yapıldıysa ve henüz mail gönderilmediyse otomatik gönder
+        if obj.status == 'approved' and old_status != 'approved' and not obj.results_email_sent:
+            from .services.job_runner import send_order_results_email
+            if send_order_results_email(obj):
+                self.message_user(request, f"Sonuçlar {obj.user.email} adresine gönderildi.")
+            else:
+                self.message_user(request, "Email gönderilemedi — loglara bakın.", level='error')
+
     def send_results_email(self, request, queryset):
         from .services.job_runner import send_order_results_email
         sent = 0
-        for order in queryset.filter(status='approved', results_email_sent=False):
+        for order in queryset.filter(results_email_sent=False):
             if send_order_results_email(order):
                 sent += 1
         self.message_user(request, f"{sent} sipariş için sonuçlar gönderildi.")
