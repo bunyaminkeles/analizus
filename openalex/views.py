@@ -95,10 +95,16 @@ def openalex_landing(request):
                 errors = form.errors.get('query_parts_json', ['Geçersiz sorgu.'])
                 return JsonResponse({'error': errors[0]}, status=400)
 
+    active_job = AlexSearchJob.objects.filter(
+        user=user,
+        status__in=['pending', 'running'],
+    ).order_by('-created_at').first()
+
     return render(request, 'openalex/landing.html', {
         'form': form,
         'remaining': remaining,
         'daily_limit': daily_limit,
+        'active_job_id': str(active_job.id) if active_job else None,
     })
 
 

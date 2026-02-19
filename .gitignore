@@ -1,5 +1,7 @@
 
 db.sqlite3
+scripts/oai_discover.py
+scripts/oai_endpoints.json
 __pycache__/
 staticfiles/
 .env

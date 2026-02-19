@@ -38,11 +38,16 @@ class NewTopicForm(forms.ModelForm):
         max_length=4000
     )
     tags = forms.ModelMultipleChoiceField(
-        queryset=TopicTag.objects.filter(is_active=True),
+        queryset=TopicTag.objects.none(),  # import-sırasında DB sorgusu çalışmasın
         widget=forms.CheckboxSelectMultiple(attrs={'class': 'tag-checkbox-list'}),
         required=False,
         label="Etiketler"
     )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Form örneği oluşturulurken gerçek queryset'i ata (DB erişimi burada güvenlidir)
+        self.fields['tags'].queryset = TopicTag.objects.filter(is_active=True)
 
     class Meta:
         model = Topic

@@ -52,9 +52,9 @@ INSTALLED_APPS = [
     'django.contrib.sitemaps',  # SEO Sitemap
     # Kendi Uygulamalarımız
     'forum',
-    'yoktez',
     'trdizin',
     'openalex',
+    'oaipmh',
     'crispy_forms',
     'crispy_bootstrap5',
     'storages',  # AWS S3 için

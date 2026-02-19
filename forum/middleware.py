@@ -36,7 +36,6 @@ class EmailVerificationMiddleware:
         '/static/',
         '/media/',
         '/api/',  # Tüm API endpoint'leri
-        '/yoktez/',  # YÖK Tez Tarama
     ]
 
     def __init__(self, get_response):

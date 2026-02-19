@@ -5,7 +5,7 @@ from django.utils import timezone
 from django.conf import settings
 from django.core.mail import EmailMessage
 from trdizin.models import DizinSearchJob
-from yoktez.services.job_runner import delete_from_s3, upload_to_s3
+from forum.s3_utils import delete_from_s3, upload_to_s3
 
 logger = logging.getLogger(__name__)
 
