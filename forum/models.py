@@ -1064,6 +1064,7 @@ class SiteSettings(models.Model):
     feature_ai_assistant = models.BooleanField(default=True, verbose_name="AI Asistan")
     feature_trdizin = models.BooleanField(default=False, verbose_name="TR Dizin Tarama")
     feature_openalex = models.BooleanField(default=True, verbose_name="OpenAlex Yayın Tarama")
+    feature_oaipmh = models.BooleanField(default=True, verbose_name="Üniversite Tez Arşivi (OAI-PMH)")
     feature_quiz = models.BooleanField(default=True, verbose_name="İstatistik Arena (Quiz)")
     feature_messaging = models.BooleanField(default=True, verbose_name="Özel Mesajlaşma")
     feature_donation = models.BooleanField(default=True, verbose_name="Bağış Sistemi")

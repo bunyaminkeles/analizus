@@ -44,3 +44,4 @@ channels-redis
 beautifulsoup4
 groq
 resend
+sickle

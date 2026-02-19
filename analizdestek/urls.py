@@ -44,6 +44,9 @@ urlpatterns = [
     # OpenAlex Yayın Tarama
     path('openalex/', include('openalex.urls')),
 
+    # Üniversite Tez Arşivi (OAI-PMH)
+    path('oaipmh/', include('oaipmh.urls')),
+
     # 4. Forum Uygulaması (En sona koymak çakışmaları önler)
     path('', include('forum.urls')),
     path('i18n/', include('django.conf.urls.i18n')), # DİL MOTORU BURADA

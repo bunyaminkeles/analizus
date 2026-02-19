@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}Sipariş — Üniversite Tez Arşivi{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-lg-7 offset-lg-2">
+
+            <h2 class="mb-4"><i class="bi bi-cart me-2 text-warning"></i>Tez Sonuçları Siparişi</h2>
+
+            <div class="card bg-dark border-secondary text-white mb-4">
+                <div class="card-header">Arama Özeti</div>
+                <div class="card-body">
+                    <p class="mb-1"><strong>Sorgu:</strong> {{ job.get_query_summary }}</p>
+                    <p class="mb-0"><strong>Toplam Sonuç:</strong> {{ job.total_results }} kayıt</p>
+                </div>
+            </div>
+
+            {% if existing_order %}
+            <div class="alert alert-info">
+                <i class="bi bi-info-circle me-2"></i>
+                Bu arama için sipariş oluşturuldu.
+                Durum: <strong>{{ existing_order.get_status_display }}</strong>
+            </div>
+            {% if existing_order.status == 'pending_payment' %}
+            <div class="card bg-dark border-secondary text-white mb-4">
+                <div class="card-header">Ödeme Bilgileri</div>
+                <div class="card-body">
+                    <p><strong>İstenen Kayıt:</strong> {{ existing_order.abstract_count }}</p>
+                    <p><strong>Tutar:</strong> {{ existing_order.total_price }} TL</p>
+                    <hr class="border-secondary">
+                    <p class="mb-1"><strong>Hesap Sahibi:</strong> {{ iban_info.hesap_sahibi }}</p>
+                    <p class="mb-1"><strong>IBAN:</strong> <code>{{ iban_info.iban }}</code></p>
+                    <p class="mb-0"><strong>Açıklama:</strong> ÜniTez - {{ request.user.username }}</p>
+                </div>
+            </div>
+            {% endif %}
+
+            {% else %}
+            <div class="card bg-dark border-secondary text-white mb-4">
+                <div class="card-header">Sipariş Oluştur</div>
+                <div class="card-body">
+                    <p class="text-muted small mb-3">
+                        İstediğiniz kayıt sayısını belirleyin. Ödeme onayından sonra sonuçlar e-posta ile gönderilir.
+                    </p>
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label class="form-label">{{ form.abstract_count.label }}</label>
+                            {{ form.abstract_count }}
+                            <div class="form-text text-muted">Maks: {{ job.total_results }}</div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">{{ form.payment_note.label }}</label>
+                            {{ form.payment_note }}
+                        </div>
+                        <div class="alert alert-secondary">
+                            <strong>Tahmini Tutar: {{ total_price }} TL</strong><br>
+                            <small>İlk 100 kayıt: 250 TL · Her ek 100: +100 TL</small>
+                        </div>
+                        <div class="card bg-dark border-secondary mb-3">
+                            <div class="card-body small">
+                                <p class="mb-1"><strong>Hesap Sahibi:</strong> {{ iban_info.hesap_sahibi }}</p>
+                                <p class="mb-1"><strong>IBAN:</strong> <code>{{ iban_info.iban }}</code></p>
+                                <p class="mb-0"><strong>Açıklama:</strong> ÜniTez - {{ request.user.username }}</p>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-warning">
+                            <i class="bi bi-check-circle me-1"></i>Siparişi Oluştur
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
+
+            <a href="{% url 'oaipmh:landing' %}" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-left me-1"></i>Yeni Arama
+            </a>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

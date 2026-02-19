@@ -190,15 +190,18 @@ def cron_cleanup_s3_files(request):
     try:
         from trdizin.services.job_runner import cleanup_expired_trdizin_s3_files as cleanup_trdizin
         from openalex.services.job_runner import cleanup_expired_openalex_s3_files as cleanup_openalex
+        from oaipmh.services.job_runner import cleanup_expired_oaipmh_s3_files as cleanup_oaipmh
 
         trdizin_deleted = cleanup_trdizin(days=3)
         openalex_deleted = cleanup_openalex(days=3)
+        oaipmh_deleted = cleanup_oaipmh(days=3)
 
         return JsonResponse({
             'success': True,
             'deleted_files': {
                 'trdizin': trdizin_deleted,
                 'openalex': openalex_deleted,
+                'oaipmh': oaipmh_deleted,
             },
         })
     except Exception as e:

@@ -164,6 +164,9 @@
                     {% if features.openalex %}<li class="nav-item px-2"><a class="nav-link" href="{% url 'openalex:landing' %}">
                         <i class="bi bi-search me-1 text-success"></i>OpenAlex Tarama
                     </a></li>{% endif %}
+                    {% if features.oaipmh %}<li class="nav-item px-2"><a class="nav-link" href="{% url 'oaipmh:landing' %}">
+                        <i class="bi bi-mortarboard me-1 text-warning"></i>Üniversite Tezleri
+                    </a></li>{% endif %}
                     <li class="nav-item px-2"><a class="nav-link" href="{% url 'about' %}"><i class="bi bi-info-circle me-1"></i>Hakkımızda</a></li>
                 </ul>
                 <div class="d-flex align-items-center">
