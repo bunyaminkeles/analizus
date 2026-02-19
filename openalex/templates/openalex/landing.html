@@ -372,6 +372,15 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    // Sayfa yüklenince aktif job varsa polling'i devam ettir
+    {% if active_job_id %}
+    currentJobId = '{{ active_job_id }}';
+    spinner.style.display = 'block';
+    resultsSummary.innerHTML = '<p class="text-info">Aramanız arka planda devam ediyor, lütfen bekleyin...</p>';
+    resultsArea.style.display = 'block';
+    pollStatus();
+    {% endif %}
+
     createRule(true); // Initial rule
 });
 </script>

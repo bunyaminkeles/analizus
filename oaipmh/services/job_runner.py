@@ -60,10 +60,14 @@ def run_scraping_job(job_id):
             scraper = OAIPMHScraper()
 
             if job.search_type == 'keyword':
-                universities = University.objects.filter(is_active=True)
+                if job.university_ids:
+                    universities = University.objects.filter(id__in=job.university_ids, is_active=True)
+                else:
+                    universities = University.objects.filter(is_active=True)
                 total_count, demo_results, all_results = scraper.search_keyword(
                     universities=universities,
                     keyword=job.keyword,
+                    abstract_query=job.abstract_query,
                     year_from=job.year_from,
                     year_to=job.year_to,
                     demo_limit=5,

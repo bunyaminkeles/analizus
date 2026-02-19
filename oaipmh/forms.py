@@ -1,14 +1,39 @@
 from django import forms
+from django.db.models import Case, When, IntegerField
 from .models import University
+
+# Türkçe karakterleri ASCII eşdeğeriyle eşleştirerek sıralama anahtarı üretir
+_TR_MAP = str.maketrans('ÇçĞğİıÖöŞşÜü', 'CcGgIiOoSsUu')
+
+
+def _tr_sorted_universities():
+    """Türkçe alfabetik sıraya göre sıralanmış aktif üniversite queryset'i döndürür."""
+    unis = list(University.objects.filter(is_active=True))
+    unis.sort(key=lambda u: u.name.translate(_TR_MAP).lower())
+    preserved = Case(
+        *[When(pk=u.pk, then=i) for i, u in enumerate(unis)],
+        output_field=IntegerField(),
+    )
+    return University.objects.filter(is_active=True).annotate(_order=preserved).order_by('_order')
 
 
 class OAIPMHKeywordForm(forms.Form):
     keyword = forms.CharField(
+        required=False,
         max_length=300,
-        label="Anahtar Kelime",
+        label="Başlık",
         widget=forms.TextInput(attrs={
             'class': 'form-control',
-            'placeholder': 'Başlık veya özette aranacak kelime...',
+            'placeholder': 'Başlıkta aranacak kelime...',
+        })
+    )
+    abstract_query = forms.CharField(
+        required=False,
+        max_length=300,
+        label="Özet",
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Özette aranacak kelime...',
         })
     )
     year_from = forms.IntegerField(
@@ -25,9 +50,18 @@ class OAIPMHKeywordForm(forms.Form):
         max_value=2026,
         widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '2024'}),
     )
+    universities = forms.ModelMultipleChoiceField(
+        queryset=_tr_sorted_universities(),
+        required=False,
+        label="Üniversiteler",
+        help_text="Seçim yapılmazsa tüm üniversitelerde aranır.",
+        widget=forms.CheckboxSelectMultiple(),
+    )
 
     def clean(self):
         cleaned = super().clean()
+        if not cleaned.get('keyword') and not cleaned.get('abstract_query'):
+            raise forms.ValidationError("En az bir arama terimi girilmeli (başlık veya özet).")
         yf = cleaned.get('year_from')
         yt = cleaned.get('year_to')
         if yf and yt and yf > yt:
@@ -37,7 +71,7 @@ class OAIPMHKeywordForm(forms.Form):
 
 class OAIPMHBrowseForm(forms.Form):
     university = forms.ModelChoiceField(
-        queryset=University.objects.filter(is_active=True).order_by('name'),
+        queryset=_tr_sorted_universities(),
         label="Üniversite",
         empty_label="-- Üniversite seçin --",
         widget=forms.Select(attrs={'class': 'form-select'}),

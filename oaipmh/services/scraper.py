@@ -7,7 +7,6 @@ Browse modu: Tek üniversitenin tüm tez kayıtları
 import logging
 import threading
 import requests
-from datetime import datetime
 from sickle import Sickle
 from sickle.oaiexceptions import NoRecordsMatch, OAIError
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
@@ -17,7 +16,9 @@ requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 logger = logging.getLogger(__name__)
 
 MAX_RECORDS_PER_UNI = 500   # keyword modda üniversite başına max kayıt
-TIMEOUT = 15
+CONNECT_TIMEOUT = 10        # TCP bağlantı kurma timeout (saniye)
+READ_TIMEOUT = 20           # Sunucudan veri okuma timeout (saniye)
+THREAD_TIMEOUT = 35         # Üniversite başına hard limit (saniye)
 PER_UNI_DEMO = 2            # keyword modda üniversite başına max demo kayıt
 
 
@@ -28,7 +29,11 @@ def _get_sickle(oai_url):
     session.headers.update({
         'User-Agent': 'Mozilla/5.0 (OAI-Harvest; analizus.com)',
     })
-    return Sickle(oai_url, session=session, timeout=TIMEOUT, max_retries=2)
+    # Sickle 0.7.0'da session parametresi yok; sickle.session'ı doğrudan atıyoruz.
+    # timeout, request_args'a gidiyor ve session.request(timeout=...) olarak iletiliyor.
+    sickle = Sickle(oai_url, timeout=(CONNECT_TIMEOUT, READ_TIMEOUT), max_retries=1)
+    sickle.session = session
+    return sickle
 
 
 def _parse_record(record, university_name=""):
@@ -78,11 +83,15 @@ def _is_thesis(record):
     return any(kw in ' '.join(types) for kw in thesis_keywords)
 
 
-def _keyword_matches(record_dict, keyword):
-    """Başlık veya özette anahtar kelime geçiyor mu?"""
-    kw = keyword.lower()
-    return (kw in record_dict['title'].lower() or
-            kw in record_dict['abstract'].lower())
+def _keyword_matches(record_dict, title_query=None, abstract_query=None):
+    """Başlık/özet filtreleri eşleşiyor mu? AND mantığı: belirtilen her filtre eşleşmeli."""
+    if not title_query and not abstract_query:
+        return True
+    if title_query and title_query.lower() not in record_dict['title'].lower():
+        return False
+    if abstract_query and abstract_query.lower() not in record_dict['abstract'].lower():
+        return False
+    return True
 
 
 def _year_in_range(record_dict, year_from, year_to):
@@ -100,9 +109,11 @@ def _year_in_range(record_dict, year_from, year_to):
 
 class OAIPMHScraper:
 
-    def search_keyword(self, universities, keyword, year_from=None, year_to=None, demo_limit=5):
+    def search_keyword(self, universities, keyword=None, abstract_query=None,
+                       year_from=None, year_to=None, demo_limit=5):
         """
-        Birden fazla üniversitede paralel keyword araması.
+        Birden fazla üniversitede paralel arama.
+        keyword: başlık filtresi, abstract_query: özet filtresi (AND mantığı)
         universities: University queryset veya liste
         Returns: (total_count, demo_results, all_results)
         """
@@ -129,7 +140,7 @@ class OAIPMHScraper:
                         parsed = _parse_record(record, uni.name)
                         if not _year_in_range(parsed, year_from, year_to):
                             continue
-                        if keyword and not _keyword_matches(parsed, keyword):
+                        if not _keyword_matches(parsed, title_query=keyword, abstract_query=abstract_query):
                             continue
                         found.append(parsed)
                     except Exception:
@@ -148,7 +159,7 @@ class OAIPMHScraper:
         for t in threads:
             t.start()
         for t in threads:
-            t.join(timeout=TIMEOUT + 5)
+            t.join(timeout=THREAD_TIMEOUT)
 
         # Yıla göre sırala (yeni → eski)
         all_results.sort(key=lambda r: r.get('year', '0'), reverse=True)

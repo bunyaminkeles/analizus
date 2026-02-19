@@ -1,5 +1,6 @@
 import json
 import logging
+from datetime import timedelta
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, Http404
@@ -56,11 +57,15 @@ def oaipmh_landing(request):
         if search_type == 'keyword':
             form = OAIPMHKeywordForm(request.POST)
             if not form.is_valid():
-                return JsonResponse({'success': False, 'error': str(form.errors)}, status=400)
+                errors = '; '.join([str(e) for errs in form.errors.values() for e in errs])
+                return JsonResponse({'success': False, 'error': errors}, status=400)
+            selected_unis = form.cleaned_data.get('universities')
             job = OAIPMHSearchJob.objects.create(
                 user=request.user,
                 search_type='keyword',
-                keyword=form.cleaned_data['keyword'],
+                keyword=form.cleaned_data.get('keyword', ''),
+                abstract_query=form.cleaned_data.get('abstract_query', ''),
+                university_ids=[u.id for u in selected_unis] if selected_unis else [],
                 year_from=form.cleaned_data.get('year_from'),
                 year_to=form.cleaned_data.get('year_to'),
             )
@@ -77,11 +82,26 @@ def oaipmh_landing(request):
         run_scraping_job(job.id)
         return JsonResponse({'success': True, 'job_id': str(job.id)})
 
+    # 5 dakikadan uzun süre running/pending kalan job'ları stale say → failed yap
+    stale_cutoff = timezone.now() - timedelta(minutes=5)
+    OAIPMHSearchJob.objects.filter(
+        user=request.user,
+        status__in=['pending', 'running'],
+        created_at__lt=stale_cutoff,
+    ).update(status='failed', error_message='Sunucu yeniden başlatıldı veya zaman aşımı.')
+
+    active_job = OAIPMHSearchJob.objects.filter(
+        user=request.user,
+        status__in=['pending', 'running'],
+    ).order_by('-created_at').first()
+
     return render(request, 'oaipmh/landing.html', {
         'keyword_form': OAIPMHKeywordForm(),
         'browse_form': OAIPMHBrowseForm(),
         'daily_limit': daily_limit,
         'remaining': remaining,
+        'active_job_id': str(active_job.id) if active_job else None,
+        'active_job_type': active_job.search_type if active_job else None,
     })
 
 

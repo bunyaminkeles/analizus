@@ -39,7 +39,9 @@ class OAIPMHSearchJob(models.Model):
     search_type = models.CharField(max_length=10, choices=SEARCH_TYPE_CHOICES, default='keyword')
 
     # Keyword modu alanları
-    keyword = models.CharField(max_length=300, blank=True, verbose_name="Anahtar Kelime")
+    keyword = models.CharField(max_length=300, blank=True, verbose_name="Başlık Filtresi")
+    abstract_query = models.CharField(max_length=300, blank=True, verbose_name="Özet Filtresi")
+    university_ids = models.JSONField(default=list, blank=True, verbose_name="Seçili Üniversite ID'leri")
     year_from = models.IntegerField(null=True, blank=True, verbose_name="Başlangıç Yılı")
     year_to = models.IntegerField(null=True, blank=True, verbose_name="Bitiş Yılı")
 
@@ -87,10 +89,16 @@ class OAIPMHSearchJob(models.Model):
 
     def get_query_summary(self):
         if self.search_type == 'keyword':
-            parts = [f'"{self.keyword}"']
+            parts = []
+            if self.keyword:
+                parts.append(f'Başlık:"{self.keyword}"')
+            if self.abstract_query:
+                parts.append(f'Özet:"{self.abstract_query}"')
             if self.year_from or self.year_to:
                 parts.append(f"({self.year_from or '?'}-{self.year_to or '?'})")
-            return ' '.join(parts)
+            if self.university_ids:
+                parts.append(f"[{len(self.university_ids)} üniversite]")
+            return ' | '.join(parts) if parts else 'Genel Tarama'
         else:
             return f"{self.university.name if self.university else '?'} - Tüm Tezler"
 
