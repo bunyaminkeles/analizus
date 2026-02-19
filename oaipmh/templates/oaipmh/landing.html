@@ -249,14 +249,14 @@ function showResults(data) {
             <h6 class="mb-1">${i+1}. ${rec.title || '(Başlık yok)'}</h6>
             <small class="text-muted d-block">${rec.authors || ''} ${rec.year ? '· ' + rec.year : ''} · ${rec.university || ''}</small>
             ${rec.abstract ? `<p class="small text-muted mt-1 mb-0">${rec.abstract.substring(0, 200)}${rec.abstract.length > 200 ? '...' : ''}</p>` : ''}
-            ${rec.link ? `<a href="${rec.link}" target="_blank" class="small text-warning">Kaynağa git →</a>` : ''}
         </div>`;
     });
 
     if (!data.demo_email_sent && data.total_results > 0) {
         document.getElementById('send-email-btn').style.display = 'inline-block';
     }
-    if (data.total_results > 0) {
+    // Sipariş butonu: sadece demo'da gösterilmeyen ek sonuç varsa
+    if (data.total_results > (data.demo_results || []).length) {
         document.getElementById('order-link-area').style.display = 'block';
         document.getElementById('order-link').href = `/oaipmh/siparis/${currentJobId}/`;
     }

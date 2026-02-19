@@ -147,6 +147,9 @@ def oaipmh_order_page(request, job_id):
 
     if job.status != 'completed' or not job.demo_results:
         return redirect('oaipmh:landing')
+    # Demo zaten tüm sonuçları kapsıyorsa sipariş anlamsız
+    if job.total_results <= len(job.demo_results):
+        return redirect('oaipmh:landing')
 
     existing_order = OAIPMHOrder.objects.filter(search_job=job).first()
     total_price = OAIPMHOrder.calculate_price(job.total_results)
