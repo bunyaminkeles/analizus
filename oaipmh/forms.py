@@ -8,14 +8,22 @@ _TR_MAP = str.maketrans('ÇçĞğİıÖöŞşÜü', 'CcGgIiOoSsUu')
 
 def _tr_sorted_universities():
     """Türkçe alfabetik sıraya göre sıralanmış aktif üniversite queryset'i döndürür."""
-    unis = list(University.objects.filter(is_active=True))
-    unis.sort(key=lambda u: u.name.translate(_TR_MAP).lower())
-    preserved = Case(
-        *[When(pk=u.pk, then=i) for i, u in enumerate(unis)],
-        output_field=IntegerField(),
-    )
-    return University.objects.filter(is_active=True).annotate(_order=preserved).order_by('_order')
-
+    # Veritabanı sorgusunu `__init__` içinde yapmak yerine, burada sadece sıralama mantığını
+    # ve temel filtrelemeyi hazırlayabiliriz. Ancak mevcut yapı, `collectstatic` gibi
+    # veritabanı hazır olmadan çalışabilen komutlarda sorun yaratıyor.
+    # Bu nedenle, bu fonksiyonun çağrıldığı yerlerde (`__init__`) veritabanı sorgusu
+    # yapılması daha güvenlidir.
+    try:
+        unis = list(University.objects.filter(is_active=True))
+        unis.sort(key=lambda u: u.name.translate(_TR_MAP).lower())
+        preserved = Case(
+            *[When(pk=u.pk, then=i) for i, u in enumerate(unis)],
+            output_field=IntegerField(),
+        )
+        return University.objects.filter(is_active=True).annotate(_order=preserved).order_by('_order')
+    except Exception:
+        # Eğer veritabanı hazır değilse (örn. migrations öncesi), boş queryset döndür
+        return University.objects.none()
 
 class OAIPMHKeywordForm(forms.Form):
     keyword = forms.CharField(
@@ -51,12 +59,17 @@ class OAIPMHKeywordForm(forms.Form):
         widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '2024'}),
     )
     universities = forms.ModelMultipleChoiceField(
-        queryset=_tr_sorted_universities(),
+        queryset=University.objects.none(),  # Başlangıçta boş queryset
         required=False,
         label="Üniversiteler",
         help_text="Seçim yapılmazsa tüm üniversitelerde aranır.",
         widget=forms.CheckboxSelectMultiple(),
     )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Queryset'i form instance'ı oluşturulurken ata
+        self.fields['universities'].queryset = _tr_sorted_universities()
 
     def clean(self):
         cleaned = super().clean()
@@ -71,11 +84,16 @@ class OAIPMHKeywordForm(forms.Form):
 
 class OAIPMHBrowseForm(forms.Form):
     university = forms.ModelChoiceField(
-        queryset=_tr_sorted_universities(),
+        queryset=University.objects.none(), # Başlangıçta boş queryset
         label="Üniversite",
         empty_label="-- Üniversite seçin --",
         widget=forms.Select(attrs={'class': 'form-select'}),
     )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Queryset'i form instance'ı oluşturulurken ata
+        self.fields['university'].queryset = _tr_sorted_universities()
 
 
 class OAIPMHOrderForm(forms.Form):
