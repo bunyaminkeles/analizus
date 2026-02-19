@@ -15,7 +15,7 @@ requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 logger = logging.getLogger(__name__)
 
-MAX_RECORDS_PER_UNI = 500   # keyword modda üniversite başına max kayıt
+MAX_RECORDS_PER_UNI = 2000  # keyword modda üniversite başına max kayıt
 CONNECT_TIMEOUT = 10        # TCP bağlantı kurma timeout (saniye)
 READ_TIMEOUT = 20           # Sunucudan veri okuma timeout (saniye)
 THREAD_TIMEOUT = 35         # Üniversite başına hard limit (saniye)
@@ -121,6 +121,8 @@ class OAIPMHScraper:
         all_results = []
 
         def _search_one(uni):
+            found = []
+            count = 0
             try:
                 sickle = _get_sickle(uni.oai_url)
                 params = {'metadataPrefix': 'oai_dc'}
@@ -130,30 +132,32 @@ class OAIPMHScraper:
                     params['until'] = f"{year_to}-12-31"
 
                 records = sickle.ListRecords(**params)
-                count = 0
-                found = []
-                for record in records:
-                    if count >= MAX_RECORDS_PER_UNI:
-                        break
-                    count += 1
-                    try:
-                        parsed = _parse_record(record, uni.name)
-                        if not _year_in_range(parsed, year_from, year_to):
+                try:
+                    for record in records:
+                        if count >= MAX_RECORDS_PER_UNI:
+                            break
+                        count += 1
+                        try:
+                            parsed = _parse_record(record, uni.name)
+                            if not _year_in_range(parsed, year_from, year_to):
+                                continue
+                            if not _keyword_matches(parsed, title_query=keyword, abstract_query=abstract_query):
+                                continue
+                            found.append(parsed)
+                        except Exception:
                             continue
-                        if not _keyword_matches(parsed, title_query=keyword, abstract_query=abstract_query):
-                            continue
-                        found.append(parsed)
-                    except Exception:
-                        continue
-
-                with results_lock:
-                    all_results.extend(found)
-                logger.info(f"OAI-PMH keyword [{uni.name}]: {len(found)} eşleşme / {count} kayıt tarandı")
+                except Exception as e:
+                    # Sayfalama hatası (418, 500 vb.) — kısmi sonuçları koru
+                    logger.warning(f"OAI-PMH [{uni.name}] sayfalama hatası ({count} kayıt tarandı): {e}")
 
             except NoRecordsMatch:
                 logger.info(f"OAI-PMH [{uni.name}]: Sonuç yok")
             except Exception as e:
-                logger.warning(f"OAI-PMH [{uni.name}] hata: {e}")
+                logger.warning(f"OAI-PMH [{uni.name}] bağlantı hatası: {e}")
+            finally:
+                with results_lock:
+                    all_results.extend(found)
+                logger.info(f"OAI-PMH keyword [{uni.name}]: {len(found)} eşleşme / {count} kayıt tarandı")
 
         threads = [threading.Thread(target=_search_one, args=(uni,)) for uni in universities]
         for t in threads:
@@ -174,25 +178,28 @@ class OAIPMHScraper:
         Returns: (total_count, demo_results, all_results)
         """
         all_results = []
+        count = 0
         try:
             sickle = _get_sickle(university.oai_url)
             records = sickle.ListRecords(metadataPrefix='oai_dc')
-            count = 0
-            for record in records:
-                count += 1
-                try:
-                    parsed = _parse_record(record, university.name)
-                    if _is_thesis(record):
-                        all_results.append(parsed)
-                except Exception:
-                    continue
-
-            logger.info(f"OAI-PMH browse [{university.name}]: {len(all_results)} tez / {count} toplam kayıt")
+            try:
+                for record in records:
+                    count += 1
+                    try:
+                        parsed = _parse_record(record, university.name)
+                        if _is_thesis(record):
+                            all_results.append(parsed)
+                    except Exception:
+                        continue
+            except Exception as e:
+                logger.warning(f"OAI-PMH browse [{university.name}] sayfalama hatası ({count} kayıt tarandı): {e}")
 
         except NoRecordsMatch:
             logger.info(f"OAI-PMH browse [{university.name}]: Kayıt yok")
         except Exception as e:
-            logger.error(f"OAI-PMH browse [{university.name}] hata: {e}")
+            logger.error(f"OAI-PMH browse [{university.name}] bağlantı hatası: {e}")
+
+        logger.info(f"OAI-PMH browse [{university.name}]: {len(all_results)} tez / {count} toplam kayıt")
 
         # Yıla göre sırala
         all_results.sort(key=lambda r: r.get('year', '0'), reverse=True)
