@@ -26,7 +26,7 @@ def _get_sickle(oai_url):
     })
     # Sickle 0.7.0'da session parametresi yok; sickle.session'ı doğrudan atıyoruz.
     # timeout, request_args'a gidiyor ve session.request(timeout=...) olarak iletiliyor.
-    sickle = Sickle(oai_url, timeout=(CONNECT_TIMEOUT, READ_TIMEOUT), max_retries=1)
+    sickle = Sickle(oai_url, timeout=(CONNECT_TIMEOUT, READ_TIMEOUT), max_retries=1, verify=False)
     sickle.session = session
     return sickle
 
