@@ -51,7 +51,20 @@
                         <span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25">
                             {{ job.category.title }}
                         </span>
-                        <small class="text-muted">{{ job.created_at|timesince }} önce</small>
+                        <div class="text-end">
+                            <small class="text-muted d-block">{{ job.created_at|timesince }} önce</small>
+                            {% if job.expires_at %}
+                                {% with days=job.days_remaining %}
+                                {% if days == 0 %}
+                                <span class="badge bg-danger bg-opacity-25 text-danger" style="font-size:0.7rem;">Son gün!</span>
+                                {% elif days <= 3 %}
+                                <span class="badge bg-warning bg-opacity-25 text-warning" style="font-size:0.7rem;">{{ days }} gün kaldı</span>
+                                {% else %}
+                                <span class="text-muted" style="font-size:0.7rem;">{{ days }} gün kaldı</span>
+                                {% endif %}
+                                {% endwith %}
+                            {% endif %}
+                        </div>
                     </div>
                     
                     <h5 class="card-title text-white fw-bold mb-2">

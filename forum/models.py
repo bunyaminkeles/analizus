@@ -832,6 +832,27 @@ class FreelanceJob(models.Model):
     def total_likes(self):
         return self.likes.count()
 
+    @property
+    def is_expired(self):
+        if self.expires_at and self.status == 'open':
+            return timezone.now() > self.expires_at
+        return False
+
+    @property
+    def days_remaining(self):
+        if not self.expires_at or self.status != 'open':
+            return None
+        delta = self.expires_at - timezone.now()
+        return max(0, delta.days)
+
+    def expire_if_needed(self):
+        """Süresi geçmişse ilanı otomatik kapat. Değiştiyse True döner."""
+        if self.is_expired:
+            self.status = 'cancelled'
+            self.save(update_fields=['status'])
+            return True
+        return False
+
     @staticmethod
     def can_post(user):
         """İlan açma yetkisi kontrolü (Rozet veya Rütbe)"""

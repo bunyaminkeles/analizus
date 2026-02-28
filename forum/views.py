@@ -201,6 +201,10 @@ def success_stories(request):
 # --- FREELANCE MARKET ---
 @feature_required('market')
 def job_list(request):
+    # Süresi dolan açık ilanları otomatik kapat
+    from django.utils import timezone as tz
+    FreelanceJob.objects.filter(status='open', expires_at__lt=tz.now()).update(status='cancelled')
+
     sort = request.GET.get('sort', 'newest')
     jobs = FreelanceJob.objects.filter(status='open').select_related('owner', 'category').annotate(
         p_count=Count('proposals', distinct=True)
@@ -406,6 +410,9 @@ def admin_manage_proposal(request, job_pk, proposal_id):
 @login_required
 def job_detail(request, pk):
     job = get_object_or_404(FreelanceJob, pk=pk)
+
+    # Süresi geçmişse otomatik kapat
+    job.expire_if_needed()
 
     # Görüntülenme sayısını artır
     job.views += 1
