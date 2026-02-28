@@ -50,6 +50,13 @@
     <meta name="twitter:description" content="{% block twitter_description %}SPSS, Python, R ile akademik analiz desteği.{% endblock %}">
     <meta name="twitter:image" content="{% block twitter_image %}https://www.analizus.com{% static 'images/og-image.png' %}{% endblock %}"
 
+    {% if GOOGLE_SITE_VERIFICATION %}
+    <meta name="google-site-verification" content="{{ GOOGLE_SITE_VERIFICATION }}">
+    {% endif %}
+    {% if BING_SITE_VERIFICATION %}
+    <meta name="msvalidate.01" content="{{ BING_SITE_VERIFICATION }}">
+    {% endif %}
+
     {% if GOOGLE_ANALYTICS_ID %}
     <script async src="https://www.googletagmanager.com/gtag/js?id={{ GOOGLE_ANALYTICS_ID }}"></script>
     <script>
@@ -79,7 +86,9 @@
 
     <link rel="stylesheet" href="{% static 'css/style.css' %}?v=2050">
     <link rel="stylesheet" href="{% static 'css/sidebar_widgets.css' %}?v=2051">
-    
+
+    {% block extra_head %}{% endblock %}
+
     <style>
         :root {
             --neon-blue: #00d2ff;
