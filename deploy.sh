@@ -29,9 +29,15 @@ else
     python manage.py setup_all --skip-quiz
 fi
 
-# Import quiz questions from quiz_soruları/ (duplicate-safe)
-echo "🧠 Importing quiz questions..."
-python manage.py import_quiz
+# Import quiz questions (only if not already loaded)
+QUIZ_COUNT=$(python manage.py shell -c "from forum.models import QuizQuestion; print(QuizQuestion.objects.count())" 2>&1 | grep -oE '^[0-9]+$' | tail -1)
+
+if [ -n "$QUIZ_COUNT" ] && [ "$QUIZ_COUNT" -gt "0" ]; then
+    echo "✓ Already has $QUIZ_COUNT quiz questions, skipping import"
+else
+    echo "🧠 Importing quiz questions..."
+    python manage.py import_quiz
+fi
 
 # Load success stories (only if none exist)
 STORY_COUNT=$(python manage.py shell -c "from forum.models import SuccessStory; print(SuccessStory.objects.count())" 2>&1 | grep -oE '^[0-9]+$' | tail -1)
