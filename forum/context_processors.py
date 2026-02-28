@@ -27,8 +27,12 @@ def profile_context(request):
 
 
 def google_analytics(request):
-    """Google Analytics ID'yi tüm template'lere geçirir"""
-    return {'GOOGLE_ANALYTICS_ID': getattr(settings, 'GOOGLE_ANALYTICS_ID', '')}
+    """Google Analytics ID ve site verification kodlarını tüm template'lere geçirir"""
+    return {
+        'GOOGLE_ANALYTICS_ID': getattr(settings, 'GOOGLE_ANALYTICS_ID', ''),
+        'GOOGLE_SITE_VERIFICATION': getattr(settings, 'GOOGLE_SITE_VERIFICATION', ''),
+        'BING_SITE_VERIFICATION': getattr(settings, 'BING_SITE_VERIFICATION', ''),
+    }
 
 
 def feature_flags(request):

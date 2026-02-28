@@ -1,5 +1,5 @@
-# AnalizDestek Robots.txt
-# https://analizdestek-ai.onrender.com
+# Analizus Robots.txt
+# https://www.analizus.com
 
 User-agent: *
 Allow: /
@@ -9,4 +9,4 @@ Disallow: /profile/edit/
 Disallow: /send-message/
 
 # Sitemap
-Sitemap: https://analizdestek-ai.onrender.com/sitemap.xml
+Sitemap: https://www.analizus.com/sitemap.xml
