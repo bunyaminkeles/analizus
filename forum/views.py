@@ -203,7 +203,10 @@ def success_stories(request):
 def job_list(request):
     # Süresi dolan açık ilanları otomatik kapat
     from django.utils import timezone as tz
-    FreelanceJob.objects.filter(status='open', expires_at__lt=tz.now()).update(status='cancelled')
+    from datetime import timedelta
+    now = tz.now()
+    FreelanceJob.objects.filter(status='open', expires_at__lt=now).update(status='cancelled')
+    FreelanceJob.objects.filter(status='open', expires_at__isnull=True, created_at__lt=now - timedelta(days=30)).update(status='cancelled')
 
     sort = request.GET.get('sort', 'newest')
     jobs = FreelanceJob.objects.filter(status='open').select_related('owner', 'category').annotate(
