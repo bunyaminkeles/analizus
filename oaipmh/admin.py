@@ -1,5 +1,7 @@
 from django.contrib import admin
-from .models import University, OAIPMHSearchJob, OAIPMHOrder
+from .models import University, OAIPMHSearchJob
+from openalex.models import AlexSearchJobProxy
+from trdizin.models import DizinSearchJobProxy
 
 
 @admin.register(University)
@@ -18,35 +20,30 @@ class OAIPMHSearchJobAdmin(admin.ModelAdmin):
     readonly_fields = ['id', 'created_at', 'completed_at', 'demo_results', 'all_results']
     raw_id_fields = ['user', 'university']
 
+    def get_query_summary(self, obj):
+        return obj.get_query_summary()
+    get_query_summary.short_description = "Sorgu Özeti"
 
-@admin.register(OAIPMHOrder)
-class OAIPMHOrderAdmin(admin.ModelAdmin):
-    list_display = ['id', 'user', 'abstract_count', 'total_price', 'status', 'results_email_sent', 'created_at']
-    list_filter = ['status', 'results_email_sent']
-    search_fields = ['user__username']
-    readonly_fields = ['id', 'created_at', 'updated_at']
-    raw_id_fields = ['user', 'search_job']
 
-    actions = ['send_results_email']
+@admin.register(AlexSearchJobProxy)
+class AlexSearchJobProxyAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'get_query_summary', 'status', 'total_results', 'created_at')
+    list_filter = ('status', 'created_at')
+    search_fields = ('user__username', 'api_query')
+    readonly_fields = ('id', 'created_at', 'completed_at', 'demo_results', 'all_results', 'demo_file_url', 'all_results_file_url')
 
-    def save_model(self, request, obj, form, change):
-        old_status = None
-        if change:
-            old_status = OAIPMHOrder.objects.filter(pk=obj.pk).values_list('status', flat=True).first()
-        super().save_model(request, obj, form, change)
-        # Status yeni 'approved' yapıldıysa ve henüz mail gönderilmediyse otomatik gönder
-        if obj.status == 'approved' and old_status != 'approved' and not obj.results_email_sent:
-            from .services.job_runner import send_order_results_email
-            if send_order_results_email(obj):
-                self.message_user(request, f"Sonuçlar {obj.user.email} adresine gönderildi.")
-            else:
-                self.message_user(request, "Email gönderilemedi — loglara bakın.", level='error')
+    def get_query_summary(self, obj):
+        return obj.get_query_summary()
+    get_query_summary.short_description = "Sorgu Özeti"
 
-    def send_results_email(self, request, queryset):
-        from .services.job_runner import send_order_results_email
-        sent = 0
-        for order in queryset.filter(results_email_sent=False):
-            if send_order_results_email(order):
-                sent += 1
-        self.message_user(request, f"{sent} sipariş için sonuçlar gönderildi.")
-    send_results_email.short_description = "Seçili siparişlerin sonuçlarını gönder"
+
+@admin.register(DizinSearchJobProxy)
+class DizinSearchJobProxyAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'get_query_summary', 'status', 'total_results', 'created_at')
+    list_filter = ('status', 'created_at')
+    search_fields = ('user__username', 'lucene_query')
+    readonly_fields = ('id', 'created_at', 'completed_at', 'demo_results', 'all_results', 'demo_file_url', 'all_results_file_url')
+
+    def get_query_summary(self, obj):
+        return obj.get_query_summary()
+    get_query_summary.short_description = "Sorgu Özeti"

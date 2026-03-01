@@ -115,17 +115,29 @@ class BibliometricOrder(models.Model):
     total_price = models.DecimalField(max_digits=10, decimal_places=2, default=500, verbose_name='Toplam Tutar (TL)')
 
     @staticmethod
-    def calculate_price(total_records: int) -> int:
+    def calculate_price(total_records: int):
         """
-        0-500 kayıt  → 500 TL
-        Her ek 500   → +400 TL
-        Örnek: 1200 kayıt → 500 + ceil((1200-500)/500)*400 = 1300 TL
+        Fiyatlar SiteSettings'den alınır:
+        0-500      → biblio_price_500
+        501-2000   → biblio_price_2000
+        2001-3000  → biblio_price_3000
+        3001-4000  → biblio_price_4000
+        4001-5000  → biblio_price_5000
+        5000+      → None (admin ile iletişim)
         """
-        import math
+        from forum.models import SiteSettings
+        s = SiteSettings.load()
         if total_records <= 500:
-            return 500
-        extra_blocks = math.ceil((total_records - 500) / 500)
-        return 500 + extra_blocks * 400
+            return s.biblio_price_500
+        elif total_records <= 2000:
+            return s.biblio_price_2000
+        elif total_records <= 3000:
+            return s.biblio_price_3000
+        elif total_records <= 4000:
+            return s.biblio_price_4000
+        elif total_records <= 5000:
+            return s.biblio_price_5000
+        return None  # 5000+ → admin ile iletişim
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending_payment')
 
     payment_note = models.TextField(blank=True, verbose_name='Ödeme Açıklaması')

@@ -138,45 +138,27 @@ def send_demo_email_async(job_id):
 
 
 def send_demo_email(job):
-    """Demo sonuçlarını txt olarak kullanıcıya email ile gönder."""
+    """Arama sonuçlarını (tüm sonuçlar S3 linki ile) kullanıcıya email ile gönder."""
     user = job.user
     to_email = user.email
     if not to_email:
         return False
 
-    subject = f"Üniversite Tez Arşivi - Demo Sonuçlar: {job.get_query_summary()}"
-    demo_txt = _generate_results_txt(job.demo_results, job, is_demo=True)
-
-    from oaipmh.models import OAIPMHOrder
-    total_price = OAIPMHOrder.calculate_price(job.total_results)
+    subject = f"Üniversite Tez Arşivi Arama Sonuçları: {job.get_query_summary()}"
     site_url = getattr(settings, 'SITE_URL', 'https://www.analizus.com')
 
     body_lines = [
         f"Merhaba {user.first_name or user.username},\n",
-        f"Üniversite Tez Arşivi aramasının sonuçları hazırlandı.\n",
+        f"Üniversite Tez Arşivi arama sonuçlarınız hazırlandı.\n",
         f"Sorgu       : {job.get_query_summary()}",
-        f"Toplam Sonuç: {job.total_results}",
-        f"Demo Sonuç  : {len(job.demo_results)} kayıt\n",
-        f"Demo sonuçlar bu e-postaya txt dosyası olarak eklenmiştir.\n",
-        "=" * 60,
-        "\n--- TÜM SONUÇLARI ALMAK İÇİN ---\n",
-        f"Toplam {job.total_results} kayıt için tahmini ücret: {total_price} TL\n",
-        "Fiyatlandırma:",
-        "  * İlk 100 kayıt    : 250 TL",
-        "  * Sonraki her 100  : +100 TL",
-        "",
-        "Banka Bilgileri:",
-        f"  Hesap Sahibi : {IBAN_INFO['hesap_sahibi']}",
-        f"  IBAN         : {IBAN_INFO['iban']}",
-        f"  Açıklama     : ÜniTez - {user.username}",
-        "",
-        "Ödeme yaptıktan sonra siparişinizi oluşturun:",
-        f"  {site_url}/oaipmh/siparis/{job.id}/",
-        "",
-        "Siparişiniz onaylandıktan sonra sonuçlar 24 saat",
-        "içinde bu e-posta adresine gönderilecektir.",
-        f"\n---\nAnalizus - {site_url}",
+        f"Toplam Sonuç: {job.total_results}\n",
     ]
+
+    if job.all_results_file_url:
+        body_lines.append(f"Tüm sonuçlarınızı aşağıdaki linkten indirebilirsiniz (geçici link):")
+        body_lines.append(f"  {job.all_results_file_url}\n")
+
+    body_lines.append(f"\n---\nAnalizus - {site_url}")
 
     try:
         email = EmailMessage(
@@ -185,18 +167,20 @@ def send_demo_email(job):
             from_email=settings.DEFAULT_FROM_EMAIL,
             to=[to_email],
         )
-        email.attach(
-            f"unitez_demo_{len(job.demo_results)}_sonuc.txt",
-            demo_txt,
-            'text/plain',
-        )
+        if not job.all_results_file_url:
+            demo_txt = _generate_results_txt(job.demo_results, job, is_demo=False)
+            email.attach(
+                f"unitez_{len(job.demo_results)}_sonuc.txt",
+                demo_txt,
+                'text/plain',
+            )
         email.send()
         job.demo_email_sent = True
         job.save(update_fields=['demo_email_sent'])
-        logger.info(f"OAI-PMH demo email gönderildi: {to_email}")
+        logger.info(f"OAI-PMH email gönderildi: {to_email}")
         return True
     except Exception as e:
-        logger.error(f"OAI-PMH demo email gönderilemedi: {e}")
+        logger.error(f"OAI-PMH email gönderilemedi: {e}")
         return False
 
 

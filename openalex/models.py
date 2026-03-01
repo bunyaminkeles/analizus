@@ -74,12 +74,12 @@ class AlexSearchJob(models.Model):
 
     @staticmethod
     def get_daily_limit(user):
-        """Admin: ∞, Premium: 7, Normal: 3"""
+        """Admin: ∞, Premium: 7, Normal: 1"""
         if user.is_staff or user.is_superuser:
             return 9999
         if hasattr(user, 'profile') and user.profile.is_premium:
             return 7
-        return 3
+        return 1
 
     def get_query_summary(self):
         parts = []
@@ -148,3 +148,11 @@ class AlexOrder(models.Model):
         if self.status == 'approved' and self.approved_at:
             return timezone.now() > self.approved_at + timedelta(hours=24)
         return False
+
+
+class AlexSearchJobProxy(AlexSearchJob):
+    class Meta:
+        proxy = True
+        app_label = 'oaipmh'
+        verbose_name = 'OpenAlex Arama İşi'
+        verbose_name_plural = 'OpenAlex Arama İşleri'

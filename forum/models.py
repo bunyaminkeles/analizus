@@ -1092,6 +1092,13 @@ class SiteSettings(models.Model):
     feature_success_stories = models.BooleanField(default=True, verbose_name="Başarı Hikayeleri")
     feature_bibliometrics = models.BooleanField(default=True, verbose_name="Bibliometrik Analiz")
 
+    # Bibliometrik Analiz Fiyatlandırma (TL)
+    biblio_price_500 = models.PositiveIntegerField(default=500, verbose_name="0-500 kayıt fiyatı (TL)")
+    biblio_price_2000 = models.PositiveIntegerField(default=900, verbose_name="501-2000 kayıt fiyatı (TL)")
+    biblio_price_3000 = models.PositiveIntegerField(default=1300, verbose_name="2001-3000 kayıt fiyatı (TL)")
+    biblio_price_4000 = models.PositiveIntegerField(default=1700, verbose_name="3001-4000 kayıt fiyatı (TL)")
+    biblio_price_5000 = models.PositiveIntegerField(default=2100, verbose_name="4001-5000 kayıt fiyatı (TL)")
+
     class Meta:
         verbose_name = "Site Ayarı"
         verbose_name_plural = "Site Ayarları"

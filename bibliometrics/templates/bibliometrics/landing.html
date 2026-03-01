@@ -322,18 +322,24 @@
 
     recCount.textContent = `${data.total_records} kayıt`;
     if (data.file_format) fmtBadge.textContent = data.file_format;
-    if (data.price && priceLabel) priceLabel.textContent = `${data.price.toLocaleString('tr-TR')} TL`;
 
-    orderBtn.href = `/bibliometrics/siparis/${jobId}/`;
+    if (data.contact_admin) {
+      if (priceLabel) priceLabel.innerHTML = '<span class="text-danger">Admin ile iletişime geçiniz</span>';
+      orderBtn.href = 'mailto:info@analizus.com?subject=Bibliometrik%20Analiz%20Talebi';
+      orderBtn.innerHTML = '<i class="bi bi-envelope me-1"></i> Admin ile İletişim';
+      orderBtn.classList.replace('btn-warning', 'btn-danger');
+    } else {
+      if (data.price && priceLabel) priceLabel.textContent = `${data.price.toLocaleString('tr-TR')} TL`;
+      orderBtn.href = `/bibliometrics/siparis/${jobId}/`;
+      if (data.has_order) {
+        orderBtn.textContent = 'Siparişi Görüntüle';
+        orderBtn.classList.replace('btn-warning', 'btn-outline-warning');
+      }
+    }
 
     if (data.demo_email_sent) {
       sendDemo.disabled = true;
       demoSent.classList.remove('d-none');
-    }
-
-    if (data.has_order) {
-      orderBtn.textContent = 'Siparişi Görüntüle';
-      orderBtn.classList.replace('btn-warning', 'btn-outline-warning');
     }
   }
 

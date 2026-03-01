@@ -115,6 +115,7 @@ def trdizin_job_status(request, job_id):
     }
     if job.status == 'completed':
         response['demo_results'] = job.demo_results[:3]
+        response['all_results_file_url'] = job.all_results_file_url
     elif job.status == 'failed':
         response['error'] = job.error_message
 
