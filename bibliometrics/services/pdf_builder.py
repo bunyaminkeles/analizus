@@ -1,8 +1,8 @@
 """
 PDF Rapor Oluşturucu (reportlab)
 - Beyaz arka plan, DejaVu font (Türkçe karakter desteği)
-- build_demo_pdf(figures):   3 grafik → demo PDF bytes
-- build_full_pdf(figures):   10 grafik → tam rapor PDF bytes
+- build_demo_pdf(figures):  3 grafik → demo PDF bytes
+- build_full_pdf(figures):  10 grafik → tam rapor PDF bytes
 """
 import io
 import os
@@ -11,103 +11,79 @@ from datetime import date
 
 logger = logging.getLogger(__name__)
 
-# ── Renkler ──────────────────────────────────────────────────────
-C_WHITE   = (1.0, 1.0, 1.0)
-C_LIGHT   = (0.96, 0.97, 0.99)   # hafif mavi-gri header arka planı
-C_NAVY    = (0.05, 0.07, 0.16)   # koyu başlık metni
-C_ACCENT  = (0.0,  0.68, 0.83)   # #00ADCC — mavi vurgu
-C_PURPLE  = (0.50, 0.42, 0.87)   # #7F6BDE
-C_BORDER  = (0.80, 0.84, 0.92)   # çizgi/sınır
-C_MUTED   = (0.45, 0.52, 0.62)   # alt metin
-C_DARK    = (0.13, 0.15, 0.22)   # footer arka planı
+# ── Renkler (RGB 0-1 ölçeği) ─────────────────────────────────────
+C_WHITE  = (1.0,  1.0,  1.0)
+C_LIGHT  = (0.96, 0.97, 0.99)   # hafif mavi-gri header arka planı
+C_NAVY   = (0.07, 0.14, 0.31)   # koyu lacivert başlık
+C_ACCENT = (0.31, 0.47, 0.66)   # Tableau mavi  #4E79A7
+C_ORANGE = (0.95, 0.55, 0.17)   # Tableau turuncu #F28E2B
+C_BORDER = (0.80, 0.84, 0.92)
+C_MUTED  = (0.40, 0.50, 0.60)
+C_DARK   = (0.07, 0.14, 0.31)
 
 # ── Font ─────────────────────────────────────────────────────────
 _FONT_NORMAL = 'Helvetica'
 _FONT_BOLD   = 'Helvetica-Bold'
 
+
 def _register_turkish_fonts():
-    """DejaVu Sans'ı kaydet → Türkçe karakter desteği."""
+    """DejaVu Sans'ı reportlab'e kaydet. Birincil kaynak: matplotlib bundle."""
     global _FONT_NORMAL, _FONT_BOLD
     try:
         from reportlab.pdfbase import pdfmetrics
         from reportlab.pdfbase.ttfonts import TTFont
 
-        candidates = [
+        # matplotlib her zaman DejaVu fontlarını bundle eder — en güvenilir yol
+        import matplotlib
+        mpl_ttf = os.path.join(matplotlib.get_data_path(), 'fonts', 'ttf')
+        regular_path = os.path.join(mpl_ttf, 'DejaVuSans.ttf')
+        bold_path    = os.path.join(mpl_ttf, 'DejaVuSans-Bold.ttf')
+
+        # Sistem fontları (yedek arama sırası)
+        _sys_regular = [
             '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',
             '/usr/share/fonts/dejavu/DejaVuSans.ttf',
             '/usr/share/fonts/truetype/DejaVuSans.ttf',
         ]
-        bold_candidates = [
+        _sys_bold = [
             '/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf',
             '/usr/share/fonts/dejavu/DejaVuSans-Bold.ttf',
             '/usr/share/fonts/truetype/DejaVuSans-Bold.ttf',
         ]
-        # Projedeki fonts/ klasörü varsa öncelikli kullan
-        base = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-        candidates.insert(0, os.path.join(base, 'fonts', 'DejaVuSans.ttf'))
-        bold_candidates.insert(0, os.path.join(base, 'fonts', 'DejaVuSans-Bold.ttf'))
 
-        for path in candidates:
-            if os.path.exists(path):
-                pdfmetrics.registerFont(TTFont('DejaVuSans', path))
-                break
-        for path in bold_candidates:
-            if os.path.exists(path):
-                pdfmetrics.registerFont(TTFont('DejaVuSans-Bold', path))
-                break
+        if not os.path.exists(regular_path):
+            regular_path = next((p for p in _sys_regular if os.path.exists(p)), None)
+        if not os.path.exists(bold_path):
+            bold_path = next((p for p in _sys_bold if os.path.exists(p)), None)
 
-        pdfmetrics.getFont('DejaVuSans')   # kayıt başarılıysa hata vermez
-        _FONT_NORMAL = 'DejaVuSans'
-        _FONT_BOLD   = 'DejaVuSans-Bold'
-        logger.debug('DejaVu Sans kaydedildi — Türkçe desteği aktif')
+        if regular_path and os.path.exists(regular_path):
+            pdfmetrics.registerFont(TTFont('DejaVuSans', regular_path))
+            _FONT_NORMAL = 'DejaVuSans'
+            logger.debug(f'DejaVuSans kaydedildi: {regular_path}')
+
+        if bold_path and os.path.exists(bold_path):
+            pdfmetrics.registerFont(TTFont('DejaVuSans-Bold', bold_path))
+            _FONT_BOLD = 'DejaVuSans-Bold'
+            logger.debug(f'DejaVuSans-Bold kaydedildi: {bold_path}')
+
     except Exception as e:
         logger.warning(f'DejaVu font kaydedilemedi, Helvetica kullanılıyor: {e}')
+
 
 _register_turkish_fonts()
 
 
-# ── Matplotlib → PNG (beyaz tema) ────────────────────────────────
+# ── Matplotlib → PNG ─────────────────────────────────────────────
 
 def _fig_to_image_reader(fig):
     """
-    matplotlib Figure'ı PDF için beyaz arka planlı PNG'ye çevirir.
-    Figürü değiştirmez — geçici axes renk düzeltmesi yapılır.
+    matplotlib Figure → reportlab ImageReader.
+    Analyzer beyaz tema kullandığından ek dönüşüm gerekmez.
     """
     from reportlab.lib.utils import ImageReader
-    import matplotlib
-    matplotlib.use('Agg')
-
-    # Axes renklerini beyaz temaya geçici geç
-    axes_list = fig.get_axes()
-    old_state = []
-    for ax in axes_list:
-        old_state.append({
-            'face':   ax.get_facecolor(),
-            'xcolor': ax.xaxis.label.get_color(),
-            'ycolor': ax.yaxis.label.get_color(),
-            'tcolor': ax.title.get_color(),
-            'xtick':  [t.get_color() for t in ax.get_xticklabels()],
-            'ytick':  [t.get_color() for t in ax.get_yticklabels()],
-        })
-        ax.set_facecolor('#f8f9fc')
-        ax.xaxis.label.set_color('#1a1a2e')
-        ax.yaxis.label.set_color('#1a1a2e')
-        ax.title.set_color('#1a1a2e')
-        ax.tick_params(colors='#2d3748')
-        for spine in ax.spines.values():
-            spine.set_edgecolor('#cbd5e0')
-
     buf = io.BytesIO()
     fig.savefig(buf, format='png', dpi=150, bbox_inches='tight', facecolor='white')
     buf.seek(0)
-
-    # Renkleri geri al
-    for ax, state in zip(axes_list, old_state):
-        ax.set_facecolor(state['face'])
-        ax.xaxis.label.set_color(state['xcolor'])
-        ax.yaxis.label.set_color(state['ycolor'])
-        ax.title.set_color(state['tcolor'])
-
     return ImageReader(buf)
 
 
@@ -119,141 +95,150 @@ def _draw_page_background(c, width, height):
 
 
 def _draw_header(c, width, height, title, subtitle='', page_num=None, total_pages=None):
-    from reportlab.lib.units import cm
+    HEADER_H = 62
 
-    # Arka plan şeridi
+    # Header şeridi
     c.setFillColorRGB(*C_LIGHT)
-    c.rect(0, height - 65, width, 65, fill=1, stroke=0)
+    c.rect(0, height - HEADER_H, width, HEADER_H, fill=1, stroke=0)
 
-    # Alt sınır çizgisi (accent)
+    # Alt accent çizgisi
     c.setStrokeColorRGB(*C_ACCENT)
     c.setLineWidth(3)
-    c.line(0, height - 65, width, height - 65)
+    c.line(0, height - HEADER_H, width, height - HEADER_H)
 
-    # Sol accent blok
+    # Sol accent bar
     c.setFillColorRGB(*C_ACCENT)
-    c.rect(0, height - 65, 5, 65, fill=1, stroke=0)
+    c.rect(0, height - HEADER_H, 6, HEADER_H, fill=1, stroke=0)
 
-    # Başlık
+    # Başlık metni
     c.setFillColorRGB(*C_NAVY)
-    c.setFont(_FONT_BOLD, 15)
-    c.drawString(22, height - 30, title)
+    c.setFont(_FONT_BOLD, 14)
+    c.drawString(22, height - 26, title)
 
     if subtitle:
         c.setFillColorRGB(*C_MUTED)
         c.setFont(_FONT_NORMAL, 9)
-        c.drawString(22, height - 48, subtitle)
+        c.drawString(22, height - 44, subtitle)
 
-    # Sayfa no (sağ üst)
+    # Sayfa no
     if page_num and total_pages:
         c.setFillColorRGB(*C_MUTED)
         c.setFont(_FONT_NORMAL, 8)
-        c.drawRightString(width - 18, height - 32, f'Sayfa {page_num} / {total_pages}')
+        c.drawRightString(width - 18, height - 28, f'Sayfa {page_num} / {total_pages}')
 
-    # Logo (sağ)
+    # Marka (sağ)
     c.setFillColorRGB(*C_ACCENT)
-    c.setFont(_FONT_BOLD, 11)
-    c.drawRightString(width - 18, height - 52, 'ANALIZUS')
+    c.setFont(_FONT_BOLD, 10)
+    c.drawRightString(width - 18, height - 48, 'ANALIZUS')
 
 
 def _draw_footer(c, width):
-    # Üst sınır çizgisi
     c.setStrokeColorRGB(*C_BORDER)
     c.setLineWidth(0.8)
-    c.line(18, 32, width - 18, 32)
+    c.line(18, 30, width - 18, 30)
 
     c.setFillColorRGB(*C_MUTED)
     c.setFont(_FONT_NORMAL, 8)
-    c.drawString(18, 16, f'Analizus — Akademik Veri Ustu  |  analizus.com  |  {date.today().strftime("%d.%m.%Y")}')
-    c.drawRightString(width - 18, 16, 'Bu rapor otomatik olarak olusturulmustur.')
+    today = date.today().strftime('%d.%m.%Y')
+    c.drawString(18, 14, f'Analizus — Akademik Veri Üssü  |  analizus.com  |  {today}')
+    c.drawRightString(width - 18, 14, 'Bu rapor otomatik olarak oluşturulmuştur.')
 
 
 def _draw_cover(c, width, height, is_demo: bool, total_records: int, filename: str):
-    from reportlab.lib.units import cm
-
     _draw_page_background(c, width, height)
 
-    # Üst büyük başlık alanı
+    # ── Üst başlık bandı ──
     c.setFillColorRGB(*C_NAVY)
-    c.rect(0, height - 180, width, 180, fill=1, stroke=0)
+    c.rect(0, height - 190, width, 190, fill=1, stroke=0)
 
-    # Logo
+    # Accent çizgi (bandın altı)
+    c.setStrokeColorRGB(*C_ACCENT)
+    c.setLineWidth(4)
+    c.line(0, height - 190, width, height - 190)
+
+    # Marka
     c.setFillColorRGB(*C_ACCENT)
-    c.setFont(_FONT_BOLD, 26)
-    c.drawCentredString(width / 2, height - 65, 'ANALIZUS')
+    c.setFont(_FONT_BOLD, 28)
+    c.drawCentredString(width / 2, height - 62, 'ANALIZUS')
 
-    c.setFillColorRGB(0.7, 0.85, 1.0)
+    c.setFillColorRGB(0.75, 0.87, 1.0)
     c.setFont(_FONT_NORMAL, 10)
-    c.drawCentredString(width / 2, height - 85, 'Akademik Veri Ustu  —  analizus.com')
+    c.drawCentredString(width / 2, height - 84, 'Akademik Veri Üssü  —  analizus.com')
 
-    # Rapor türü
-    c.setFillColorRGB(1, 1, 1)
+    # Rapor başlığı
+    c.setFillColorRGB(1.0, 1.0, 1.0)
     c.setFont(_FONT_BOLD, 22)
-    c.drawCentredString(width / 2, height - 125, 'Bibliometrik Analiz Raporu')
+    c.drawCentredString(width / 2, height - 128, 'Bibliometrik Analiz Raporu')
 
-    label = 'DEMO RAPOR (3 Analiz)' if is_demo else 'TAM RAPOR (10 Analiz)'
-    label_color = C_PURPLE if is_demo else C_ACCENT
-    c.setFillColorRGB(*label_color)
+    # Rapor türü etiketi
+    label      = 'DEMO RAPOR  (3 Analiz)' if is_demo else 'TAM RAPOR  (10 Analiz)'
+    lbl_color  = C_ORANGE if is_demo else C_ACCENT
+    c.setFillColorRGB(*lbl_color)
     c.setFont(_FONT_BOLD, 13)
-    c.drawCentredString(width / 2, height - 152, label)
+    c.drawCentredString(width / 2, height - 160, label)
 
-    # ── Bilgi kutusu ──
-    box_y = height / 2 - 30
-    box_h = 120
-    box_x = width / 2 - 160
+    # ── Bilgi kartı ──
+    card_w = 330
+    card_h = 128
+    card_x = width / 2 - card_w / 2
+    card_y = height / 2 - card_h / 2 - 20
 
     # Gölge
-    c.setFillColorRGB(0.88, 0.90, 0.95)
-    c.roundRect(box_x + 4, box_y - 4, 320, box_h, 10, fill=1, stroke=0)
+    c.setFillColorRGB(0.86, 0.89, 0.94)
+    c.roundRect(card_x + 5, card_y - 5, card_w, card_h, 10, fill=1, stroke=0)
 
-    # Kart
+    # Kart arka planı
     c.setFillColorRGB(*C_WHITE)
-    c.roundRect(box_x, box_y, 320, box_h, 10, fill=1, stroke=0)
+    c.roundRect(card_x, card_y, card_w, card_h, 10, fill=1, stroke=0)
+
+    # Kart çerçevesi
     c.setStrokeColorRGB(*C_BORDER)
     c.setLineWidth(1)
-    c.roundRect(box_x, box_y, 320, box_h, 10, fill=0, stroke=1)
+    c.roundRect(card_x, card_y, card_w, card_h, 10, fill=0, stroke=1)
 
     # Sol accent bar
     c.setFillColorRGB(*C_ACCENT)
-    c.roundRect(box_x, box_y, 6, box_h, 3, fill=1, stroke=0)
+    c.roundRect(card_x, card_y, 7, card_h, 4, fill=1, stroke=0)
 
-    # İçerik
-    row_y = box_y + box_h - 30
+    # Kart içerikleri
+    row_y = card_y + card_h - 28
+
     def _kv(key, val):
         nonlocal row_y
         c.setFillColorRGB(*C_MUTED)
         c.setFont(_FONT_NORMAL, 9)
-        c.drawString(box_x + 22, row_y, key)
+        c.drawString(card_x + 22, row_y, key)
         c.setFillColorRGB(*C_NAVY)
         c.setFont(_FONT_BOLD, 10)
-        c.drawString(box_x + 130, row_y, str(val)[:45])
-        row_y -= 22
+        c.drawString(card_x + 140, row_y, str(val)[:44])
+        row_y -= 24
 
-    _kv('Toplam Kayit:', f'{total_records:,}')
-    _kv('Dosya:', filename[:42])
-    _kv('Rapor Tarihi:', date.today().strftime('%d.%m.%Y'))
-    _kv('Hazırlayan:', 'Analizus Otomatik Analiz')
+    _kv('Toplam Kayıt:',  f'{total_records:,}')
+    _kv('Dosya:',          filename[:42])
+    _kv('Rapor Tarihi:',   date.today().strftime('%d.%m.%Y'))
+    _kv('Hazırlayan:',     'Analizus Otomatik Analiz')
 
+    # ── Demo uyarı kutusu ──
     if is_demo:
-        note_y = box_y - 50
-        c.setFillColorRGB(*C_LIGHT)
-        c.roundRect(box_x, note_y, 320, 38, 6, fill=1, stroke=0)
-        c.setStrokeColorRGB(*C_PURPLE)
-        c.setLineWidth(1)
-        c.roundRect(box_x, note_y, 320, 38, 6, fill=0, stroke=1)
-        c.setFillColorRGB(*C_PURPLE)
+        note_y = card_y - 58
+        note_h = 42
+        c.setFillColorRGB(1.0, 0.97, 0.91)
+        c.roundRect(card_x, note_y, card_w, note_h, 7, fill=1, stroke=0)
+        c.setStrokeColorRGB(*C_ORANGE)
+        c.setLineWidth(1.2)
+        c.roundRect(card_x, note_y, card_w, note_h, 7, fill=0, stroke=1)
+        c.setFillColorRGB(0.60, 0.35, 0.05)
         c.setFont(_FONT_BOLD, 9)
-        c.drawCentredString(width / 2, note_y + 24, 'Demo: 3 analiz icermektedir.')
+        c.drawCentredString(width / 2, note_y + 27, 'Demo: 3 analiz içermektedir.')
         c.setFont(_FONT_NORMAL, 8)
         c.setFillColorRGB(*C_MUTED)
-        c.drawCentredString(width / 2, note_y + 10, 'Tam rapor (10 analiz) icin siparis olusturunuz → analizus.com')
+        c.drawCentredString(width / 2, note_y + 12,
+                            'Tam rapor (10 analiz) için sipariş oluşturunuz → analizus.com')
 
     _draw_footer(c, width)
 
 
 def _draw_figure_page(c, width, height, fig, analysis_title: str, page_num: int, total_pages: int):
-    from reportlab.lib.units import cm
-
     _draw_page_background(c, width, height)
     _draw_header(c, width, height,
                  title=analysis_title,
@@ -263,23 +248,24 @@ def _draw_figure_page(c, width, height, fig, analysis_title: str, page_num: int,
 
     img_reader = _fig_to_image_reader(fig)
 
-    # Grafik alanı: header (65) ve footer (40) arasındaki boşluk
-    margin = 1.0 * cm
-    content_top    = height - 65 - margin
-    content_bottom = 40 + margin
-    content_width  = width - 2 * margin
-    content_height = content_top - content_bottom
+    # Kullanılabilir alan
+    from reportlab.lib.units import cm
+    margin       = 0.8 * cm
+    content_top  = height - 62 - margin
+    content_bot  = 35 + margin
+    content_w    = width - 2 * margin
+    content_h    = content_top - content_bot
 
     iw, ih = img_reader.getSize()
-    ratio  = min(content_width / iw, content_height / ih)
+    ratio  = min(content_w / iw, content_h / ih)
     draw_w = iw * ratio
     draw_h = ih * ratio
-    x = margin + (content_width - draw_w) / 2
-    y = content_bottom + (content_height - draw_h) / 2
+    x = margin + (content_w - draw_w) / 2
+    y = content_bot + (content_h - draw_h) / 2
 
-    # Gölge
-    c.setFillColorRGB(0.88, 0.90, 0.95)
-    c.roundRect(x + 3, y - 3, draw_w, draw_h, 6, fill=1, stroke=0)
+    # Hafif gölge
+    c.setFillColorRGB(0.87, 0.89, 0.93)
+    c.roundRect(x + 4, y - 4, draw_w, draw_h, 8, fill=1, stroke=0)
 
     # Grafik
     c.drawImage(img_reader, x, y, width=draw_w, height=draw_h,
@@ -288,13 +274,13 @@ def _draw_figure_page(c, width, height, fig, analysis_title: str, page_num: int,
     # İnce çerçeve
     c.setStrokeColorRGB(*C_BORDER)
     c.setLineWidth(0.5)
-    c.roundRect(x, y, draw_w, draw_h, 6, fill=0, stroke=1)
+    c.roundRect(x, y, draw_w, draw_h, 8, fill=0, stroke=1)
 
 
 # ── Public API ───────────────────────────────────────────────────
 
 def build_demo_pdf(figures: list, total_records: int = 0, filename: str = '') -> bytes:
-    """figures: [(title, Figure), ...]  ilk 3 tanesi kullanılır"""
+    """figures: [(title, Figure), ...]  — ilk 3 tanesi kullanılır"""
     A4, cm, canvas_mod, _ = _get_reportlab()
     width, height = A4
 
@@ -322,7 +308,7 @@ def build_demo_pdf(figures: list, total_records: int = 0, filename: str = '') ->
 
 
 def build_full_pdf(figures: list, total_records: int = 0, filename: str = '') -> bytes:
-    """figures: [(title, Figure), ...]  tümü kullanılır"""
+    """figures: [(title, Figure), ...]  — tümü kullanılır"""
     A4, cm, canvas_mod, _ = _get_reportlab()
     width, height = A4
 

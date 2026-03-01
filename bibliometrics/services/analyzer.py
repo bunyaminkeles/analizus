@@ -1,7 +1,7 @@
 """
 10 Bibliometrik Analiz Modülü
+Beyaz/açık tema, çok renkli grafikler, profesyonel görünüm.
 Her fonksiyon (title, matplotlib.figure.Figure) tuple döndürür.
-Koyu tema, Türkçe etiketler.
 """
 import io
 import logging
@@ -9,53 +9,77 @@ from collections import Counter, defaultdict
 
 logger = logging.getLogger(__name__)
 
-# ── Matplotlib backend ayarı (sunucu ortamında display yok) ──
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 
-DARK_BG = '#1a1a2e'
-ACCENT   = '#00d2ff'
-ACCENT2  = '#a78bfa'
-ACCENT3  = '#34d399'
-TEXT_CLR = '#e2e8f0'
-GRID_CLR = '#2d3748'
-
+# ── Beyaz profesyonel tema ──────────────────────────────────────────
 plt.rcParams.update({
-    'figure.facecolor': DARK_BG,
-    'axes.facecolor':   DARK_BG,
-    'axes.edgecolor':   GRID_CLR,
-    'axes.labelcolor':  TEXT_CLR,
-    'xtick.color':      TEXT_CLR,
-    'ytick.color':      TEXT_CLR,
-    'text.color':       TEXT_CLR,
-    'grid.color':       GRID_CLR,
-    'grid.linestyle':   '--',
-    'grid.alpha':       0.5,
-    'font.family':      'DejaVu Sans',
-    'font.size':        10,
+    'figure.facecolor':     'white',
+    'axes.facecolor':       '#f8fafc',
+    'axes.edgecolor':       '#cbd5e0',
+    'axes.labelcolor':      '#1e293b',
+    'xtick.color':          '#475569',
+    'ytick.color':          '#475569',
+    'text.color':           '#1e293b',
+    'grid.color':           '#e2e8f0',
+    'grid.linestyle':       '--',
+    'grid.alpha':           0.8,
+    'font.family':          'DejaVu Sans',
+    'font.size':            11,
+    'axes.titlesize':       15,
+    'axes.titleweight':     'bold',
+    'axes.titlepad':        18,
+    'axes.labelsize':       12,
+    'axes.spines.top':      False,
+    'axes.spines.right':    False,
+    'figure.dpi':           100,
 })
+
+# ── Tableau-10 renk paleti (renk körü dostu, profesyonel) ──────────
+PALETTE = [
+    '#4E79A7',  # Mavi
+    '#F28E2B',  # Turuncu
+    '#E15759',  # Kırmızı
+    '#76B7B2',  # Teal
+    '#59A14F',  # Yeşil
+    '#EDC948',  # Sarı
+    '#B07AA1',  # Mor
+    '#FF9DA7',  # Pembe
+    '#9C755F',  # Kahverengi
+    '#BAB0AC',  # Gri
+    '#4E79A7',  # Tekrar başlar
+    '#F28E2B',
+    '#E15759',
+    '#76B7B2',
+    '#59A14F',
+]
+
+TREND_BLUE  = '#2563EB'
+TREND_RED   = '#DC2626'
+TREND_AMBER = '#D97706'
 
 
 def run_all_analyses(records: list[dict]) -> list[tuple[str, object]]:
-    """
-    Tüm 10 analizi çalıştırır.
-    Returns: [(title, Figure), ...]  — hatalı analizler atlanır
-    """
+    """Tüm 10 analizi çalıştırır. Hatalı analizler atlanır."""
     analyses = [
-        ('Yıllara Göre Yayın Trendi',        lambda: publication_trend(records)),
-        ('En Verimli Yazarlar (Top 15)',       lambda: top_authors(records)),
-        ('Anahtar Kelime Bulutu',              lambda: keyword_cloud(records)),
-        ('En Çok Atıf Alan Yayınlar (Top 10)', lambda: top_cited(records)),
-        ('En Çok Yayın Yapılan Dergiler',      lambda: top_journals(records)),
-        ('Kurum / Ülke Dağılımı (Top 10)',     lambda: top_institutions(records)),
-        ('Yazar İşbirliği Ağı',                lambda: author_collaboration(records)),
-        ('Yayın Türleri Dağılımı',             lambda: publication_types(records)),
-        ('Atıf Analizi ve H-index',            lambda: citation_analysis(records)),
-        ('Yıllık Atıf Trendi',                 lambda: annual_citation_trend(records)),
+        ('Yıllara Göre Yayın Trendi',              lambda: publication_trend(records)),
+        ('Yıllık Büyüme Oranı',                    lambda: publication_growth_rate(records)),
+        ('En Verimli Yazarlar (Top 15)',            lambda: top_authors(records)),
+        ('Lotka Kanunu — Yazar Üretkenliği',        lambda: lotka_law(records)),
+        ('Anahtar Kelime Bulutu',                   lambda: keyword_cloud(records)),
+        ('Anahtar Kelime Eş-Oluşum Ağı',           lambda: keyword_cooccurrence(records)),
+        ('Anahtar Kelime Zaman Trendi',             lambda: keyword_trend(records)),
+        ('En Çok Atıf Alan Yayınlar (Top 10)',      lambda: top_cited(records)),
+        ('En Çok Yayın Yapılan Dergiler',           lambda: top_journals(records)),
+        ('Kurum / Ülke Dağılımı (Top 10)',          lambda: top_institutions(records)),
+        ('Ülke İşbirliği Ağı',                      lambda: country_collaboration(records)),
+        ('Yazar İşbirliği Ağı',                     lambda: author_collaboration(records)),
+        ('Yayın Türleri Dağılımı',                  lambda: publication_types(records)),
+        ('Atıf Analizi ve H-index',                 lambda: citation_analysis(records)),
+        ('Yıllık Atıf Trendi',                      lambda: annual_citation_trend(records)),
     ]
-
     results = []
     for title, fn in analyses:
         try:
@@ -78,18 +102,27 @@ def publication_trend(records: list[dict]):
     sorted_years = sorted(counter.keys())
     counts = [counter[y] for y in sorted_years]
 
-    fig, ax = plt.subplots(figsize=(10, 5))
-    bars = ax.bar(sorted_years, counts, color=ACCENT, alpha=0.8, zorder=2)
-    ax.plot(sorted_years, counts, color=ACCENT2, linewidth=2, marker='o',
-            markersize=5, zorder=3, label='Trend')
+    # Çubuk rengi: değer yoğunluğuna göre mavi gradyan
+    max_c = max(counts) or 1
+    bar_colors = [plt.cm.Blues(0.35 + 0.55 * c / max_c) for c in counts]
 
-    ax.set_xlabel('Yıl')
-    ax.set_ylabel('Yayın Sayısı')
-    ax.set_title('Yıllara Göre Yayın Trendi', fontsize=14, fontweight='bold', pad=15)
+    fig, ax = plt.subplots(figsize=(10, 9))
+    bars = ax.bar(sorted_years, counts, color=bar_colors, width=0.7, zorder=2,
+                  edgecolor='white', linewidth=0.5)
+    ax.plot(sorted_years, counts, color=TREND_RED, linewidth=2.5,
+            marker='o', markersize=7, zorder=3, label='Yayın Trendi', alpha=0.9)
+
+    ax.set_xlabel('Yıl', fontsize=12, labelpad=8)
+    ax.set_ylabel('Yayın Sayısı', fontsize=12, labelpad=8)
+    ax.set_title('Yıllara Göre Yayın Trendi')
     ax.grid(axis='y', zorder=1)
-    ax.legend()
+    ax.legend(fontsize=11)
     _add_bar_labels(ax, bars)
-    fig.tight_layout()
+
+    if len(sorted_years) > 20:
+        ax.tick_params(axis='x', rotation=45)
+
+    fig.tight_layout(pad=2.0)
     return fig
 
 
@@ -101,24 +134,25 @@ def top_authors(records: list[dict], n: int = 15):
         for a in r.get('authors', []):
             if a:
                 author_count[a.strip()] += 1
-
     if not author_count:
         return None
 
     top = author_count.most_common(n)
     names, counts = zip(*top)
+    colors = [PALETTE[i % len(PALETTE)] for i in range(len(names))]
 
-    fig, ax = plt.subplots(figsize=(10, max(5, n * 0.45)))
+    fig, ax = plt.subplots(figsize=(9, max(10, len(names) * 0.75)))
     y_pos = range(len(names))
-    bars = ax.barh(y_pos, counts, color=ACCENT2, alpha=0.85)
+    bars = ax.barh(y_pos, counts, color=colors, alpha=0.9, height=0.7,
+                   edgecolor='white', linewidth=0.5)
     ax.set_yticks(y_pos)
-    ax.set_yticklabels(names, fontsize=9)
+    ax.set_yticklabels(names, fontsize=10)
     ax.invert_yaxis()
-    ax.set_xlabel('Yayın Sayısı')
-    ax.set_title(f'En Verimli Yazarlar (Top {len(names)})', fontsize=14, fontweight='bold', pad=15)
-    ax.grid(axis='x')
+    ax.set_xlabel('Yayın Sayısı', fontsize=12, labelpad=8)
+    ax.set_title(f'En Verimli Yazarlar (Top {len(names)})')
+    ax.grid(axis='x', zorder=1)
     _add_hbar_labels(ax, bars)
-    fig.tight_layout()
+    fig.tight_layout(pad=2.0)
     return fig
 
 
@@ -134,7 +168,6 @@ def keyword_cloud(records: list[dict]):
     all_kw = []
     for r in records:
         all_kw.extend(r.get('keywords', []))
-        # Abstract'tan da kelime çek (ilk 5 kelime hariç, stop-word benzeri)
         words = r.get('abstract', '').split()
         all_kw.extend([w.lower() for w in words if len(w) > 5])
 
@@ -143,18 +176,23 @@ def keyword_cloud(records: list[dict]):
 
     text = ' '.join(all_kw)
     wc = WordCloud(
-        width=900, height=500,
-        background_color=DARK_BG,
-        colormap='cool',
-        max_words=150,
-        prefer_horizontal=0.8,
+        width=1400, height=900,
+        background_color='white',
+        colormap='tab20',
+        max_words=200,
+        prefer_horizontal=0.75,
+        collocations=False,
+        min_font_size=10,
+        max_font_size=120,
     ).generate(text)
 
-    fig, ax = plt.subplots(figsize=(12, 6))
+    fig, ax = plt.subplots(figsize=(10, 9))
     ax.imshow(wc, interpolation='bilinear')
     ax.axis('off')
-    ax.set_title('Anahtar Kelime Bulutu', fontsize=14, fontweight='bold', pad=15)
-    fig.tight_layout()
+    ax.set_facecolor('white')
+    fig.patch.set_facecolor('white')
+    ax.set_title('Anahtar Kelime Bulutu', fontsize=15, fontweight='bold', pad=18)
+    fig.tight_layout(pad=2.0)
     return fig
 
 
@@ -167,19 +205,21 @@ def top_cited(records: list[dict], n: int = 10):
 
     top = sorted(with_citations, key=lambda x: x[1], reverse=True)[:n]
     titles, counts = zip(*top)
-    short_titles = [t[:60] + '…' if len(t) > 60 else t for t in titles]
+    short_titles = [t[:65] + '…' if len(t) > 65 else t for t in titles]
+    colors = [PALETTE[i % len(PALETTE)] for i in range(len(top))]
 
-    fig, ax = plt.subplots(figsize=(11, max(5, n * 0.55)))
+    fig, ax = plt.subplots(figsize=(9, max(10, len(top) * 0.75)))
     y_pos = range(len(short_titles))
-    bars = ax.barh(y_pos, counts, color=ACCENT3, alpha=0.85)
+    bars = ax.barh(y_pos, counts, color=colors, alpha=0.9, height=0.7,
+                   edgecolor='white', linewidth=0.5)
     ax.set_yticks(y_pos)
-    ax.set_yticklabels(short_titles, fontsize=8)
+    ax.set_yticklabels(short_titles, fontsize=9)
     ax.invert_yaxis()
-    ax.set_xlabel('Atıf Sayısı')
-    ax.set_title(f'En Çok Atıf Alan Yayınlar (Top {len(top)})', fontsize=14, fontweight='bold', pad=15)
-    ax.grid(axis='x')
+    ax.set_xlabel('Atıf Sayısı', fontsize=12, labelpad=8)
+    ax.set_title(f'En Çok Atıf Alan Yayınlar (Top {len(top)})')
+    ax.grid(axis='x', zorder=1)
     _add_hbar_labels(ax, bars)
-    fig.tight_layout()
+    fig.tight_layout(pad=2.0)
     return fig
 
 
@@ -193,68 +233,68 @@ def top_journals(records: list[dict], n: int = 10):
     counter = Counter(journals)
     top = counter.most_common(n)
     names, counts = zip(*top)
-    short_names = [n[:55] + '…' if len(n) > 55 else n for n in names]
+    short_names = [nm[:60] + '…' if len(nm) > 60 else nm for nm in names]
+    colors = [PALETTE[i % len(PALETTE)] for i in range(len(top))]
 
-    fig, ax = plt.subplots(figsize=(11, max(5, n * 0.5)))
+    fig, ax = plt.subplots(figsize=(9, max(10, len(top) * 0.75)))
     y_pos = range(len(short_names))
-    bars = ax.barh(y_pos, counts, color=ACCENT, alpha=0.85)
+    bars = ax.barh(y_pos, counts, color=colors, alpha=0.9, height=0.7,
+                   edgecolor='white', linewidth=0.5)
     ax.set_yticks(y_pos)
-    ax.set_yticklabels(short_names, fontsize=9)
+    ax.set_yticklabels(short_names, fontsize=10)
     ax.invert_yaxis()
-    ax.set_xlabel('Yayın Sayısı')
-    ax.set_title(f'En Çok Yayın Yapılan Dergiler / Kaynaklar (Top {len(top)})', fontsize=14, fontweight='bold', pad=15)
-    ax.grid(axis='x')
+    ax.set_xlabel('Yayın Sayısı', fontsize=12, labelpad=8)
+    ax.set_title(f'En Çok Yayın Yapılan Dergiler / Kaynaklar (Top {len(top)})')
+    ax.grid(axis='x', zorder=1)
     _add_hbar_labels(ax, bars)
-    fig.tight_layout()
+    fig.tight_layout(pad=2.0)
     return fig
 
 
 # ─────────────────────────── 6. Kurum / Ülke Dağılımı ───────────────────────────
 
 def top_institutions(records: list[dict], n: int = 10):
-    # Önce ülke dene, yoksa kurum
     country_counter = Counter()
     inst_counter = Counter()
     for r in records:
         if r.get('country'):
             country_counter[r['country'].strip()] += 1
         if r.get('institution'):
-            # İlk kurumu al (noktalı virgülle ayrılmış olabilir)
             inst = r['institution'].split(';')[0].strip()
             if inst:
                 inst_counter[inst] += 1
 
     if country_counter:
         top = country_counter.most_common(n)
-        label = 'Ülke'
         title_str = f'Ülkelere Göre Yayın Dağılımı (Top {min(n, len(top))})'
     elif inst_counter:
         top = inst_counter.most_common(n)
-        label = 'Kurum'
         title_str = f'Kurumlara Göre Yayın Dağılımı (Top {min(n, len(top))})'
     else:
         return None
 
     names, counts = zip(*top)
-    short_names = [nm[:55] + '…' if len(nm) > 55 else nm for nm in names]
+    short_names = [nm[:60] + '…' if len(nm) > 60 else nm for nm in names]
+    colors = [PALETTE[i % len(PALETTE)] for i in range(len(top))]
 
-    fig, ax = plt.subplots(figsize=(11, max(5, len(top) * 0.5)))
+    fig, ax = plt.subplots(figsize=(9, max(10, len(top) * 0.75)))
     y_pos = range(len(short_names))
-    bars = ax.barh(y_pos, counts, color=ACCENT2, alpha=0.85)
+    bars = ax.barh(y_pos, counts, color=colors, alpha=0.9, height=0.7,
+                   edgecolor='white', linewidth=0.5)
     ax.set_yticks(y_pos)
-    ax.set_yticklabels(short_names, fontsize=9)
+    ax.set_yticklabels(short_names, fontsize=10)
     ax.invert_yaxis()
-    ax.set_xlabel('Yayın Sayısı')
-    ax.set_title(title_str, fontsize=14, fontweight='bold', pad=15)
-    ax.grid(axis='x')
+    ax.set_xlabel('Yayın Sayısı', fontsize=12, labelpad=8)
+    ax.set_title(title_str)
+    ax.grid(axis='x', zorder=1)
     _add_hbar_labels(ax, bars)
-    fig.tight_layout()
+    fig.tight_layout(pad=2.0)
     return fig
 
 
 # ─────────────────────────── 7. Yazar İşbirliği Ağı ───────────────────────────
 
-def author_collaboration(records: list[dict], max_authors: int = 30, min_collab: int = 2):
+def author_collaboration(records: list[dict], max_authors: int = 35, min_collab: int = 2):
     try:
         import networkx as nx
     except ImportError:
@@ -273,43 +313,66 @@ def author_collaboration(records: list[dict], max_authors: int = 30, min_collab:
                 pair = tuple(sorted([authors[i], authors[j]]))
                 coauth_count[pair] += 1
 
-    # Yalnızca min_collab ve üzeri işbirliklerini ekle
     for (a1, a2), weight in coauth_count.items():
         if weight >= min_collab:
             G.add_edge(a1, a2, weight=weight)
 
     if G.number_of_nodes() == 0:
-        # min_collab karşılanmıyorsa tüm kenarları ekle
-        for (a1, a2), weight in coauth_count.most_common(50):
+        for (a1, a2), weight in coauth_count.most_common(60):
             G.add_edge(a1, a2, weight=weight)
 
     if G.number_of_nodes() == 0:
         return None
 
-    # En bağlantılı max_authors düğümü tut
     if G.number_of_nodes() > max_authors:
         top_nodes = sorted(G.degree, key=lambda x: x[1], reverse=True)[:max_authors]
-        top_node_names = [n for n, _ in top_nodes]
-        G = G.subgraph(top_node_names).copy()
+        G = G.subgraph([n for n, _ in top_nodes]).copy()
 
-    fig, ax = plt.subplots(figsize=(12, 10))
-    ax.set_facecolor(DARK_BG)
-
-    pos = nx.spring_layout(G, seed=42, k=2.5)
     degrees = dict(G.degree())
-    node_sizes = [300 + degrees[n] * 100 for n in G.nodes()]
+    max_deg = max(degrees.values()) if degrees else 1
+    min_deg = min(degrees.values()) if degrees else 0
+    span = (max_deg - min_deg) or 1
+
+    # Node rengi: derece yoğunluğuna göre (plasma: sarı=az, mor=çok)
+    node_colors = [plt.cm.plasma(0.15 + 0.7 * (degrees[n] - min_deg) / span)
+                   for n in G.nodes()]
+    node_sizes = [250 + degrees[n] * 120 for n in G.nodes()]
     edge_weights = [G[u][v].get('weight', 1) for u, v in G.edges()]
 
-    nx.draw_networkx_edges(G, pos, ax=ax, alpha=0.4, width=[w * 0.8 for w in edge_weights],
-                           edge_color=GRID_CLR)
-    nx.draw_networkx_nodes(G, pos, ax=ax, node_size=node_sizes,
-                           node_color=ACCENT, alpha=0.9)
-    nx.draw_networkx_labels(G, pos, ax=ax, font_size=7,
-                            font_color=TEXT_CLR, font_weight='bold')
+    fig, ax = plt.subplots(figsize=(10, 10))
+    ax.set_facecolor('#f8fafc')
+    fig.patch.set_facecolor('white')
 
-    ax.set_title('Yazar İşbirliği Ağı', fontsize=14, fontweight='bold', pad=15)
+    pos = nx.spring_layout(G, seed=42, k=2.8)
+
+    nx.draw_networkx_edges(G, pos, ax=ax,
+                           alpha=0.35,
+                           width=[min(w * 0.9, 4.0) for w in edge_weights],
+                           edge_color='#94a3b8')
+
+    nx.draw_networkx_nodes(G, pos, ax=ax,
+                           node_size=node_sizes,
+                           node_color=node_colors,
+                           alpha=0.92,
+                           linewidths=0.8,
+                           edgecolors='white')
+
+    # Sadece yüksek dereceli düğümlere etiket
+    degree_threshold = sorted(degrees.values(), reverse=True)[min(19, len(degrees) - 1)]
+    label_dict = {n: n for n, d in degrees.items() if d >= degree_threshold}
+    nx.draw_networkx_labels(G, pos, labels=label_dict, ax=ax,
+                            font_size=8, font_color='#1e293b', font_weight='bold')
+
+    # Renk ölçeği (colorbar)
+    sm = plt.cm.ScalarMappable(cmap=plt.cm.plasma,
+                               norm=plt.Normalize(vmin=min_deg, vmax=max_deg))
+    sm.set_array([])
+    cbar = fig.colorbar(sm, ax=ax, fraction=0.03, pad=0.02)
+    cbar.set_label('Ortak Yazar Sayısı', fontsize=10)
+
+    ax.set_title('Yazar İşbirliği Ağı')
     ax.axis('off')
-    fig.tight_layout()
+    fig.tight_layout(pad=2.0)
     return fig
 
 
@@ -321,42 +384,61 @@ def publication_types(records: list[dict]):
         return None
 
     TYPE_TR = {
-        'article': 'Makale',
-        'review': 'Derleme',
-        'inproceedings': 'Konferans Bildirisi',
+        'article':          'Makale',
+        'review':           'Derleme',
+        'inproceedings':    'Konferans Bildirisi',
         'conference paper': 'Konferans Bildirisi',
-        'book chapter': 'Kitap Bölümü',
-        'book': 'Kitap',
-        'editorial': 'Editoryal',
-        'letter': 'Mektup',
-        'note': 'Not',
-        'short survey': 'Kısa Derleme',
-        'erratum': 'Düzeltme',
+        'book chapter':     'Kitap Bölümü',
+        'book':             'Kitap',
+        'editorial':        'Editoryal',
+        'letter':           'Mektup',
+        'note':             'Not',
+        'short survey':     'Kısa Derleme',
+        'erratum':          'Düzeltme',
+        'preprint':         'Ön Baskı',
+        'dissertation':     'Tez',
+        'dataset':          'Veri Seti',
+        'other':            'Diğer',
     }
     translated = [TYPE_TR.get(t, t.title()) for t in types]
     counter = Counter(translated)
 
     labels = list(counter.keys())
     sizes = list(counter.values())
-    colors = plt.cm.Set2.colors[:len(labels)]
+    # Yeterli farklı renk sağla
+    colors = [PALETTE[i % len(PALETTE)] for i in range(len(labels))]
 
-    fig, ax = plt.subplots(figsize=(8, 6))
+    fig, ax = plt.subplots(figsize=(9, 9))
+    ax.set_facecolor('white')
+    fig.patch.set_facecolor('white')
+
     wedges, texts, autotexts = ax.pie(
-        sizes, labels=None, autopct='%1.1f%%',
-        colors=colors, startangle=140,
-        wedgeprops={'edgecolor': DARK_BG, 'linewidth': 2},
-        pctdistance=0.8,
+        sizes,
+        labels=None,
+        autopct=lambda p: f'{p:.1f}%' if p >= 2 else '',
+        colors=colors,
+        startangle=140,
+        wedgeprops={'edgecolor': 'white', 'linewidth': 2},
+        pctdistance=0.78,
     )
     for at in autotexts:
-        at.set_color(DARK_BG)
-        at.set_fontsize(9)
+        at.set_color('white')
+        at.set_fontsize(10)
         at.set_fontweight('bold')
 
-    ax.legend(wedges, [f'{l} ({s})' for l, s in zip(labels, sizes)],
-              loc='lower center', bbox_to_anchor=(0.5, -0.15),
-              ncol=2, fontsize=9, framealpha=0.3)
-    ax.set_title('Yayın Türleri Dağılımı', fontsize=14, fontweight='bold', pad=15)
-    fig.tight_layout()
+    ax.legend(
+        wedges,
+        [f'{l}  ({s})' for l, s in zip(labels, sizes)],
+        loc='lower center',
+        bbox_to_anchor=(0.5, -0.16),
+        ncol=min(3, len(labels)),
+        fontsize=10,
+        frameon=True,
+        framealpha=0.95,
+        edgecolor='#cbd5e0',
+    )
+    ax.set_title('Yayın Türleri Dağılımı')
+    fig.tight_layout(pad=2.5)
     return fig
 
 
@@ -370,53 +452,66 @@ def citation_analysis(records: list[dict]):
     if not citations:
         return None
 
-    # H-index hesapla
     h = sum(c >= (i + 1) for i, c in enumerate(citations))
     total_cit = sum(citations)
-    mean_cit = total_cit / len(citations)
+    mean_cit = total_cit / len(citations) if citations else 0
 
-    # Atıf dağılımı histogram
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(13, 5))
+    max_c = max(citations) or 1
+    bar_colors = [plt.cm.Blues(0.3 + 0.6 * c / max_c) for c in citations]
+
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 9))
 
     # Sol: Sıralı atıf grafiği (Lotka eğrisi)
-    ax1.bar(range(1, len(citations) + 1), citations, color=ACCENT, alpha=0.75)
-    ax1.axvline(x=h, color=ACCENT2, linewidth=2, linestyle='--', label=f'H-index = {h}')
-    ax1.set_xlabel('Yayın Sırası (atıfa göre)')
-    ax1.set_ylabel('Atıf Sayısı')
-    ax1.set_title('Atıf Dağılımı (Azalan Sıra)', fontsize=12, fontweight='bold')
-    ax1.legend()
-    ax1.grid(axis='y')
+    ax1.bar(range(1, len(citations) + 1), citations,
+            color=bar_colors, alpha=0.9, zorder=2)
+    ax1.axvline(x=h, color=TREND_RED, linewidth=2.5, linestyle='--',
+                label=f'H-index = {h}', zorder=3)
+    ax1.axhline(y=h, color=TREND_AMBER, linewidth=1.5, linestyle=':',
+                alpha=0.7, zorder=3)
+    ax1.fill_betweenx([0, h], [0, 0], [h, h],
+                      alpha=0.07, color=TREND_RED, zorder=1)
+    ax1.set_xlabel('Yayın Sırası (atıfa göre)', fontsize=11, labelpad=8)
+    ax1.set_ylabel('Atıf Sayısı', fontsize=11, labelpad=8)
+    ax1.set_title('Atıf Dağılımı', fontsize=13, fontweight='bold')
+    ax1.legend(fontsize=11)
+    ax1.grid(axis='y', zorder=0)
 
-    # Sağ: İstatistik özet kutusu
-    stats = {
-        'Toplam Yayın': len(records),
-        'Atıflı Yayın': len(citations),
-        f'H-index': h,
-        'Toplam Atıf': total_cit,
-        'Ort. Atıf / Yayın': f'{mean_cit:.1f}',
-        'En Çok Atıf': citations[0] if citations else 0,
-        'Orta Değer (Medyan)': _median(citations),
-    }
-
+    # Sağ: İstatistik özet tablosu
+    stats = [
+        ('Toplam Yayın',          f'{len(records):,}'),
+        ('Atıflı Yayın',          f'{len(citations):,}'),
+        ('H-index',               str(h)),
+        ('Toplam Atıf',           f'{total_cit:,}'),
+        ('Ort. Atıf / Yayın',     f'{mean_cit:.1f}'),
+        ('En Çok Atıf',           f'{citations[0]:,}' if citations else '0'),
+        ('Medyan Atıf',           f'{_median(citations):.0f}'),
+    ]
     ax2.axis('off')
-    table_data = [[k, str(v)] for k, v in stats.items()]
     tbl = ax2.table(
-        cellText=table_data,
+        cellText=[[k, v] for k, v in stats],
         colLabels=['Metrik', 'Değer'],
-        cellLoc='center', loc='center',
-        colWidths=[0.6, 0.4],
+        cellLoc='center',
+        loc='center',
+        colWidths=[0.62, 0.38],
     )
     tbl.auto_set_font_size(False)
     tbl.set_fontsize(11)
-    tbl.scale(1.2, 2.0)
+    tbl.scale(1.1, 2.2)
     for (row, col), cell in tbl.get_celld().items():
-        cell.set_facecolor(DARK_BG if row > 0 else '#16213e')
-        cell.set_edgecolor(GRID_CLR)
-        cell.set_text_props(color=TEXT_CLR if row > 0 else ACCENT)
-    ax2.set_title('Özet İstatistikler', fontsize=12, fontweight='bold', pad=20)
+        if row == 0:
+            cell.set_facecolor('#1e3a5f')
+            cell.set_text_props(color='white', fontweight='bold')
+        elif row % 2 == 0:
+            cell.set_facecolor('#f1f5f9')
+            cell.set_text_props(color='#1e293b')
+        else:
+            cell.set_facecolor('white')
+            cell.set_text_props(color='#1e293b')
+        cell.set_edgecolor('#cbd5e0')
+    ax2.set_title('Özet İstatistikler', fontsize=13, fontweight='bold', pad=20)
 
-    fig.suptitle('Atıf Analizi ve H-index', fontsize=14, fontweight='bold', y=1.01)
-    fig.tight_layout()
+    fig.suptitle('Atıf Analizi ve H-index', fontsize=15, fontweight='bold', y=1.01)
+    fig.tight_layout(pad=2.0)
     return fig
 
 
@@ -433,46 +528,377 @@ def annual_citation_trend(records: list[dict]):
 
     sorted_years = sorted(year_citations.keys())
     total_per_year = [sum(year_citations[y]) for y in sorted_years]
-    mean_per_year = [sum(year_citations[y]) / len(year_citations[y]) for y in sorted_years]
+    mean_per_year  = [sum(year_citations[y]) / len(year_citations[y]) for y in sorted_years]
 
-    fig, ax1 = plt.subplots(figsize=(10, 5))
+    # Çubuk rengi: mavi gradyan (yoğunluğa göre)
+    max_t = max(total_per_year) or 1
+    bar_colors = [plt.cm.Blues(0.35 + 0.55 * t / max_t) for t in total_per_year]
+
+    fig, ax1 = plt.subplots(figsize=(10, 9))
     ax2 = ax1.twinx()
 
-    ax1.bar(sorted_years, total_per_year, color=ACCENT, alpha=0.6, label='Toplam Atıf')
-    ax2.plot(sorted_years, mean_per_year, color=ACCENT2, linewidth=2.5,
-             marker='o', markersize=6, label='Ort. Atıf / Yayın')
+    ax1.bar(sorted_years, total_per_year, color=bar_colors, alpha=0.85,
+            label='Toplam Atıf', width=0.7, zorder=2)
+    ax2.plot(sorted_years, mean_per_year,
+             color=TREND_RED, linewidth=2.5,
+             marker='o', markersize=7, label='Ort. Atıf / Yayın', zorder=3)
 
-    ax1.set_xlabel('Yıl')
-    ax1.set_ylabel('Toplam Atıf Sayısı', color=ACCENT)
-    ax2.set_ylabel('Ortalama Atıf / Yayın', color=ACCENT2)
-    ax1.tick_params(axis='y', labelcolor=ACCENT)
-    ax2.tick_params(axis='y', labelcolor=ACCENT2)
+    ax1.set_xlabel('Yıl', fontsize=12, labelpad=8)
+    ax1.set_ylabel('Toplam Atıf Sayısı', fontsize=12, color='#1e3a5f', labelpad=8)
+    ax2.set_ylabel('Ortalama Atıf / Yayın', fontsize=12, color=TREND_RED, labelpad=8)
+    ax1.tick_params(axis='y', labelcolor='#1e3a5f')
+    ax2.tick_params(axis='y', labelcolor=TREND_RED)
 
     lines1, labels1 = ax1.get_legend_handles_labels()
     lines2, labels2 = ax2.get_legend_handles_labels()
-    ax1.legend(lines1 + lines2, labels1 + labels2, loc='upper left')
-    ax1.set_title('Yıllık Atıf Trendi', fontsize=14, fontweight='bold', pad=15)
-    ax1.grid(axis='y')
-    fig.tight_layout()
+    ax1.legend(lines1 + lines2, labels1 + labels2, loc='upper left', fontsize=11)
+    ax1.set_title('Yıllık Atıf Trendi')
+    ax1.grid(axis='y', zorder=0)
+
+    if len(sorted_years) > 20:
+        ax1.tick_params(axis='x', rotation=45)
+
+    fig.tight_layout(pad=2.0)
+    return fig
+
+
+# ─────────────────────────── 11. Büyüme Oranı ───────────────────────────
+
+def publication_growth_rate(records: list[dict]):
+    years = [r['year'] for r in records if r.get('year') and 1900 < r['year'] < 2100]
+    if not years:
+        return None
+
+    counter = Counter(years)
+    sorted_years = sorted(counter.keys())
+    if len(sorted_years) < 3:
+        return None
+
+    counts = [counter[y] for y in sorted_years]
+
+    growth_years = sorted_years[1:]
+    growth_rates = []
+    for i in range(1, len(counts)):
+        rate = (counts[i] - counts[i - 1]) / counts[i - 1] * 100 if counts[i - 1] else 0
+        growth_rates.append(rate)
+
+    n = sorted_years[-1] - sorted_years[0]
+    cagr = ((counts[-1] / counts[0]) ** (1 / n) - 1) * 100 if n > 0 and counts[0] > 0 else 0
+
+    colors = [PALETTE[0] if r >= 0 else PALETTE[2] for r in growth_rates]
+
+    fig, ax = plt.subplots(figsize=(10, 9))
+    ax.bar(growth_years, growth_rates, color=colors, alpha=0.85,
+           width=0.7, edgecolor='white', zorder=2)
+    ax.axhline(0, color='#64748b', linewidth=0.8, zorder=1)
+    ax.axhline(cagr, color=TREND_RED, linewidth=2.0, linestyle='--',
+               zorder=3, label=f'CAGR = {cagr:+.1f}%')
+
+    ax.set_xlabel('Yıl', fontsize=12, labelpad=8)
+    ax.set_ylabel('Yıllık Büyüme Oranı (%)', fontsize=12, labelpad=8)
+    ax.set_title('Yıllık Yayın Büyüme Oranı')
+    ax.legend(fontsize=11)
+    ax.grid(axis='y', zorder=0)
+
+    ax.text(0.98, 0.97,
+            f'CAGR ({sorted_years[0]}–{sorted_years[-1]}): {cagr:+.1f}%',
+            transform=ax.transAxes, fontsize=11, va='top', ha='right',
+            bbox=dict(boxstyle='round,pad=0.5', facecolor='#f1f5f9',
+                      edgecolor='#cbd5e0', alpha=0.95))
+
+    if len(growth_years) > 20:
+        ax.tick_params(axis='x', rotation=45)
+    fig.tight_layout(pad=2.0)
+    return fig
+
+
+# ─────────────────────────── 12. Lotka Kanunu ───────────────────────────
+
+def lotka_law(records: list[dict]):
+    author_count = Counter()
+    for r in records:
+        for a in r.get('authors', []):
+            if a.strip():
+                author_count[a.strip()] += 1
+    if not author_count:
+        return None
+
+    max_k = min(20, max(author_count.values()))
+    prod_dist = Counter(author_count.values())
+    k_values = list(range(1, max_k + 1))
+    observed = [prod_dist.get(k, 0) for k in k_values]
+    total_authors = sum(observed)
+
+    lotka_norm = sum(1 / k ** 2 for k in k_values)
+    theoretical = [total_authors * (1 / k ** 2) / lotka_norm for k in k_values]
+
+    colors = [PALETTE[i % len(PALETTE)] for i in range(len(k_values))]
+
+    fig, ax = plt.subplots(figsize=(10, 9))
+    ax.bar(k_values, observed, color=colors, alpha=0.85,
+           label='Gözlemlenen', zorder=2, edgecolor='white')
+    ax.plot(k_values, theoretical, color=TREND_RED, linewidth=2.5,
+            marker='s', markersize=7, label='Lotka Teorisi (1/k²)', zorder=3)
+
+    ax.set_xlabel('Yayın Sayısı (k)', fontsize=12, labelpad=8)
+    ax.set_ylabel('Yazar Sayısı', fontsize=12, labelpad=8)
+    ax.set_title('Lotka Kanunu — Yazar Üretkenlik Dağılımı')
+    ax.legend(fontsize=11)
+    ax.grid(axis='y', zorder=0)
+    ax.set_xticks(k_values)
+
+    # Tek yayınlı yazar oranı
+    single_pct = prod_dist.get(1, 0) / len(author_count) * 100 if author_count else 0
+    ax.text(0.98, 0.97,
+            f'Tek yayınlı yazarlar: {single_pct:.1f}%\nToplam yazar: {len(author_count):,}',
+            transform=ax.transAxes, fontsize=10, va='top', ha='right',
+            bbox=dict(boxstyle='round,pad=0.5', facecolor='#f1f5f9',
+                      edgecolor='#cbd5e0', alpha=0.95))
+
+    fig.tight_layout(pad=2.0)
+    return fig
+
+
+# ─────────────────────────── 13. Anahtar Kelime Eş-Oluşum Ağı ───────────────────────────
+
+def keyword_cooccurrence(records: list[dict], max_kw: int = 40, min_cooccur: int = 2):
+    try:
+        import networkx as nx
+    except ImportError:
+        return None
+
+    # Önce en sık geçen anahtar kelimeleri bul
+    all_kw = Counter()
+    for r in records:
+        for k in r.get('keywords', []):
+            k = k.strip().lower()
+            if len(k) > 2:
+                all_kw[k] += 1
+
+    if not all_kw:
+        return None
+
+    top_kw_set = {kw for kw, _ in all_kw.most_common(80)}
+
+    cooccur = Counter()
+    for r in records:
+        kws = list({k.strip().lower() for k in r.get('keywords', [])
+                    if k.strip().lower() in top_kw_set})
+        if len(kws) < 2:
+            continue
+        for i in range(len(kws)):
+            for j in range(i + 1, len(kws)):
+                cooccur[tuple(sorted([kws[i], kws[j]]))] += 1
+
+    G = nx.Graph()
+    for (k1, k2), w in cooccur.items():
+        if w >= min_cooccur:
+            G.add_edge(k1, k2, weight=w)
+
+    if G.number_of_nodes() == 0:
+        for (k1, k2), w in cooccur.most_common(60):
+            G.add_edge(k1, k2, weight=w)
+
+    if G.number_of_nodes() == 0:
+        return None
+
+    if G.number_of_nodes() > max_kw:
+        top_nodes = sorted(G.degree, key=lambda x: x[1], reverse=True)[:max_kw]
+        G = G.subgraph([n for n, _ in top_nodes]).copy()
+
+    degrees = dict(G.degree())
+    max_deg = max(degrees.values()) if degrees else 1
+    min_deg = min(degrees.values()) if degrees else 0
+    span = (max_deg - min_deg) or 1
+
+    node_colors = [plt.cm.YlOrRd(0.2 + 0.75 * (degrees[n] - min_deg) / span)
+                   for n in G.nodes()]
+    node_sizes = [200 + degrees[n] * 80 for n in G.nodes()]
+    edge_weights = [G[u][v].get('weight', 1) for u, v in G.edges()]
+
+    fig, ax = plt.subplots(figsize=(10, 10))
+    ax.set_facecolor('#f8fafc')
+    fig.patch.set_facecolor('white')
+
+    pos = nx.spring_layout(G, seed=42, k=3.0)
+
+    nx.draw_networkx_edges(G, pos, ax=ax, alpha=0.3,
+                           width=[min(w * 0.7, 3.5) for w in edge_weights],
+                           edge_color='#94a3b8')
+    nx.draw_networkx_nodes(G, pos, ax=ax, node_size=node_sizes,
+                           node_color=node_colors, alpha=0.92,
+                           linewidths=0.8, edgecolors='white')
+    nx.draw_networkx_labels(G, pos, ax=ax, font_size=8,
+                            font_color='#1e293b', font_weight='bold')
+
+    sm = plt.cm.ScalarMappable(cmap=plt.cm.YlOrRd,
+                               norm=plt.Normalize(vmin=min_deg, vmax=max_deg))
+    sm.set_array([])
+    cbar = fig.colorbar(sm, ax=ax, fraction=0.03, pad=0.02)
+    cbar.set_label('Bağlantı Sayısı', fontsize=10)
+
+    ax.set_title('Anahtar Kelime Eş-Oluşum Ağı')
+    ax.axis('off')
+    fig.tight_layout(pad=2.0)
+    return fig
+
+
+# ─────────────────────────── 14. Anahtar Kelime Zaman Trendi ───────────────────────────
+
+def keyword_trend(records: list[dict], top_n: int = 8):
+    all_kw = Counter()
+    for r in records:
+        for k in r.get('keywords', []):
+            if k.strip():
+                all_kw[k.strip().lower()] += 1
+
+    if not all_kw:
+        return None
+
+    top_kws = [kw for kw, _ in all_kw.most_common(top_n)]
+    years = sorted({r['year'] for r in records if r.get('year') and 1900 < r['year'] < 2100})
+
+    if len(years) < 3:
+        return None
+
+    from collections import defaultdict
+    year_kw = defaultdict(lambda: defaultdict(int))
+    for r in records:
+        if not r.get('year') or not (1900 < r['year'] < 2100):
+            continue
+        for k in r.get('keywords', []):
+            k = k.strip().lower()
+            if k in top_kws:
+                year_kw[r['year']][k] += 1
+
+    fig, ax = plt.subplots(figsize=(10, 9))
+    plotted = 0
+    for i, kw in enumerate(top_kws):
+        counts = [year_kw[y].get(kw, 0) for y in years]
+        if sum(counts) == 0:
+            continue
+        ax.plot(years, counts, color=PALETTE[i % len(PALETTE)],
+                linewidth=2.5, marker='o', markersize=6,
+                label=kw.title(), alpha=0.9)
+        plotted += 1
+
+    if plotted == 0:
+        plt.close(fig)
+        return None
+
+    ax.set_xlabel('Yıl', fontsize=12, labelpad=8)
+    ax.set_ylabel('Yayın Sayısı', fontsize=12, labelpad=8)
+    ax.set_title(f'Anahtar Kelime Zaman Trendi (Top {plotted})')
+    ax.legend(bbox_to_anchor=(1.01, 1), loc='upper left', fontsize=9,
+              frameon=True, framealpha=0.95, edgecolor='#cbd5e0')
+    ax.grid(True, zorder=0)
+
+    if len(years) > 20:
+        ax.tick_params(axis='x', rotation=45)
+
+    fig.tight_layout(pad=2.0)
+    return fig
+
+
+# ─────────────────────────── 15. Ülke İşbirliği Ağı ───────────────────────────
+
+def country_collaboration(records: list[dict], min_collab: int = 2, max_countries: int = 30):
+    try:
+        import networkx as nx
+    except ImportError:
+        return None
+
+    coauth = Counter()
+    for r in records:
+        raw = r.get('country', '')
+        if not raw:
+            continue
+        countries = list({c.strip() for c in raw.replace(';', ',').split(',') if c.strip()})
+        if len(countries) < 2:
+            continue
+        for i in range(len(countries)):
+            for j in range(i + 1, len(countries)):
+                coauth[tuple(sorted([countries[i], countries[j]]))] += 1
+
+    G = nx.Graph()
+    for (c1, c2), w in coauth.items():
+        if w >= min_collab:
+            G.add_edge(c1, c2, weight=w)
+
+    if G.number_of_nodes() == 0:
+        for (c1, c2), w in coauth.most_common(40):
+            G.add_edge(c1, c2, weight=w)
+
+    if G.number_of_nodes() == 0:
+        return None
+
+    if G.number_of_nodes() > max_countries:
+        top_nodes = sorted(G.degree, key=lambda x: x[1], reverse=True)[:max_countries]
+        G = G.subgraph([n for n, _ in top_nodes]).copy()
+
+    degrees = dict(G.degree())
+    max_deg = max(degrees.values()) if degrees else 1
+    min_deg = min(degrees.values()) if degrees else 0
+    span = (max_deg - min_deg) or 1
+
+    node_colors = [plt.cm.cool(0.15 + 0.7 * (degrees[n] - min_deg) / span)
+                   for n in G.nodes()]
+    node_sizes = [400 + degrees[n] * 150 for n in G.nodes()]
+    edge_weights = [G[u][v].get('weight', 1) for u, v in G.edges()]
+
+    fig, ax = plt.subplots(figsize=(10, 10))
+    ax.set_facecolor('#f8fafc')
+    fig.patch.set_facecolor('white')
+
+    pos = nx.spring_layout(G, seed=42, k=3.5)
+
+    nx.draw_networkx_edges(G, pos, ax=ax, alpha=0.35,
+                           width=[min(w * 0.8, 5.0) for w in edge_weights],
+                           edge_color='#94a3b8')
+    nx.draw_networkx_nodes(G, pos, ax=ax, node_size=node_sizes,
+                           node_color=node_colors, alpha=0.9,
+                           linewidths=0.8, edgecolors='white')
+    nx.draw_networkx_labels(G, pos, ax=ax, font_size=8,
+                            font_color='#1e293b', font_weight='bold')
+
+    sm = plt.cm.ScalarMappable(cmap=plt.cm.cool,
+                               norm=plt.Normalize(vmin=min_deg, vmax=max_deg))
+    sm.set_array([])
+    cbar = fig.colorbar(sm, ax=ax, fraction=0.03, pad=0.02)
+    cbar.set_label('İşbirliği Sayısı', fontsize=10)
+
+    ax.set_title('Ülke İşbirliği Ağı')
+    ax.axis('off')
+    fig.tight_layout(pad=2.0)
     return fig
 
 
 # ─────────────────────────── Yardımcılar ───────────────────────────
 
-def _add_bar_labels(ax, bars):
+def _add_bar_labels(ax, bars, fmt='{:.0f}'):
     for bar in bars:
         h = bar.get_height()
         if h > 0:
-            ax.text(bar.get_x() + bar.get_width() / 2, h + 0.1,
-                    str(int(h)), ha='center', va='bottom', fontsize=8, color=TEXT_CLR)
+            ax.text(
+                bar.get_x() + bar.get_width() / 2,
+                h + max(h * 0.01, 0.1),
+                fmt.format(h),
+                ha='center', va='bottom', fontsize=9,
+                color='#334155', fontweight='bold',
+            )
 
 
-def _add_hbar_labels(ax, bars):
+def _add_hbar_labels(ax, bars, fmt='{:.0f}'):
     for bar in bars:
         w = bar.get_width()
         if w > 0:
-            ax.text(w + 0.05, bar.get_y() + bar.get_height() / 2,
-                    str(int(w)), ha='left', va='center', fontsize=8, color=TEXT_CLR)
+            ax.text(
+                w + max(w * 0.01, 0.05),
+                bar.get_y() + bar.get_height() / 2,
+                fmt.format(w),
+                ha='left', va='center', fontsize=9,
+                color='#334155', fontweight='bold',
+            )
 
 
 def _median(lst: list) -> float:
@@ -485,10 +911,9 @@ def _median(lst: list) -> float:
 
 
 def fig_to_bytes(fig) -> bytes:
-    """matplotlib Figure → PNG bytes"""
+    """matplotlib Figure → PNG bytes (beyaz arka plan)"""
     buf = io.BytesIO()
-    fig.savefig(buf, format='png', dpi=120, bbox_inches='tight',
-                facecolor=DARK_BG)
+    fig.savefig(buf, format='png', dpi=150, bbox_inches='tight', facecolor='white')
     plt.close(fig)
     buf.seek(0)
     return buf.read()
