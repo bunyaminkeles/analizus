@@ -42,7 +42,7 @@
               <i class="bi bi-envelope-paper text-warning me-2 mt-1"></i>
               <div>
                 <div class="text-white fw-semibold small">Email ile Teslim</div>
-                <div class="text-white-50 x-small">Demo (3 grafik) ücretsiz · Tam rapor 150 TL</div>
+                <div class="text-white-50 x-small">Demo (3 grafik) ücretsiz · Tam rapor kayıt sayısına göre ücretli</div>
               </div>
             </div>
           </div>
@@ -152,7 +152,7 @@
                 <h6 class="text-white mb-1">Tam Rapor (10 Analiz)</h6>
                 <p class="text-white-50 small mb-3">
                   Tüm analizler + istatistikler<br>
-                  <strong class="text-warning">150 TL</strong>
+                  <strong class="text-warning" id="priceLabel">—</strong>
                 </p>
                 <a href="#" class="btn btn-warning w-100 fw-bold" id="orderBtn">
                   <i class="bi bi-cart-fill me-1"></i> Sipariş Oluştur
@@ -268,11 +268,12 @@
   const errorArea = document.getElementById('errorArea');
   const errorMsg  = document.getElementById('errorMsg');
   const results   = document.getElementById('resultsPanel');
-  const sendDemo  = document.getElementById('sendDemoBtn');
-  const orderBtn  = document.getElementById('orderBtn');
-  const demoSent  = document.getElementById('demoSentMsg');
-  const recCount  = document.getElementById('recordCount');
-  const fmtBadge  = document.getElementById('formatBadge');
+  const sendDemo   = document.getElementById('sendDemoBtn');
+  const orderBtn   = document.getElementById('orderBtn');
+  const demoSent   = document.getElementById('demoSentMsg');
+  const recCount   = document.getElementById('recordCount');
+  const fmtBadge   = document.getElementById('formatBadge');
+  const priceLabel = document.getElementById('priceLabel');
 
   let currentJobId = null;
   let pollTimer    = null;
@@ -318,6 +319,7 @@
 
     recCount.textContent = `${data.total_records} kayıt`;
     if (data.file_format) fmtBadge.textContent = data.file_format;
+    if (data.price && priceLabel) priceLabel.textContent = `${data.price.toLocaleString('tr-TR')} TL`;
 
     orderBtn.href = `/bibliometrics/siparis/${jobId}/`;
 

@@ -106,6 +106,7 @@ def bibliometrics_job_status(request, job_id):
     elif job.status == 'completed':
         data['demo_pdf_url'] = job.demo_pdf_url
         data['demo_email_sent'] = job.demo_email_sent
+        data['price'] = BibliometricOrder.calculate_price(job.total_records)
         data['has_order'] = job.orders.filter(
             status__in=['pending_payment', 'payment_review', 'approved', 'processing', 'completed']
         ).exists()
