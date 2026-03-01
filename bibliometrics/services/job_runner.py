@@ -352,7 +352,7 @@ def send_order_results_email(order_id: str) -> bool:
             f'Dosya: {job.original_filename}',
             f'Toplam Kayıt: {job.total_records}',
             f'Ödenen Tutar: {order.total_price} TL\n',
-            f'Tam raporunuzu (10 analiz içeren PDF) aşağıdaki linkten indirebilirsiniz:',
+            f'Tam raporunuzu (15 analiz içeren PDF) aşağıdaki linkten indirebilirsiniz:',
             f'  {job.full_pdf_url}\n',
             f'Not: İndirme linki 3 gün geçerlidir.\n',
             f'---',
