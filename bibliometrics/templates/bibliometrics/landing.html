@@ -1,0 +1,403 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Bibliometrik Analiz - Analizus{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+
+  {# ─── Başlık ─── #}
+  <div class="col-12">
+    <div class="card border-0 shadow-lg" style="background: linear-gradient(135deg, #16213e 0%, #1a1a2e 100%); border-left: 4px solid #00d2ff !important;">
+      <div class="card-body p-4">
+        <div class="d-flex align-items-center mb-2">
+          <i class="bi bi-bar-chart-line-fill fs-2 text-info me-3"></i>
+          <div>
+            <h4 class="text-white mb-1 fw-bold">Bibliometrik Analiz</h4>
+            <p class="text-white-50 mb-0 small">WoS, Scopus veya BibTeX verilerinizi yükleyin — 10 analiz, PDF rapor</p>
+          </div>
+        </div>
+
+        <div class="row g-3 mt-2">
+          <div class="col-md-4">
+            <div class="d-flex align-items-start">
+              <i class="bi bi-file-earmark-arrow-up text-info me-2 mt-1"></i>
+              <div>
+                <div class="text-white fw-semibold small">Desteklenen Formatlar</div>
+                <div class="text-white-50 x-small">BibTeX (.bib) · WoS TSV · Scopus CSV</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="d-flex align-items-start">
+              <i class="bi bi-graph-up-arrow text-success me-2 mt-1"></i>
+              <div>
+                <div class="text-white fw-semibold small">10 Bibliometrik Analiz</div>
+                <div class="text-white-50 x-small">Trend · Yazarlar · H-index · Ağ · Kelime Bulutu...</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="d-flex align-items-start">
+              <i class="bi bi-envelope-paper text-warning me-2 mt-1"></i>
+              <div>
+                <div class="text-white fw-semibold small">Email ile Teslim</div>
+                <div class="text-white-50 x-small">Demo (3 grafik) ücretsiz · Tam rapor 150 TL</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {# Günlük limit #}
+        <div class="d-flex align-items-center gap-3 mt-3">
+          <span class="badge bg-dark border border-secondary text-white px-3 py-2">
+            <i class="bi bi-calendar3 me-1 text-info"></i>
+            Günlük Limit: <strong>{{ daily_used }} / {{ daily_limit }}</strong>
+          </span>
+          {% if remaining == 0 %}
+          <span class="badge bg-danger px-3 py-2">Günlük limite ulaşıldı</span>
+          {% else %}
+          <span class="badge bg-success px-3 py-2">{{ remaining }} hakkınız kaldı</span>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {# ─── Yükleme Formu ─── #}
+  <div class="col-12">
+    <div class="card border-secondary" style="background-color: #1a1a2e;">
+      <div class="card-header border-secondary">
+        <h6 class="text-white mb-0"><i class="bi bi-upload me-2 text-info"></i>Veri Dosyası Yükle</h6>
+      </div>
+      <div class="card-body p-4">
+        {% if remaining == 0 %}
+        <div class="alert alert-warning">
+          <i class="bi bi-exclamation-triangle me-2"></i>
+          Günlük analiz limitinize ulaştınız. Yarın tekrar deneyiniz.
+        </div>
+        {% else %}
+        <form id="uploadForm" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div class="mb-3">
+            {{ form.file.label_tag }}
+            {{ form.file }}
+            <div class="form-text text-white-50">{{ form.file.help_text }}</div>
+          </div>
+          <button type="submit" class="btn btn-info fw-bold px-4"
+                  id="submitBtn" {% if remaining == 0 %}disabled{% endif %}>
+            <i class="bi bi-play-fill me-1"></i> Analizi Başlat
+          </button>
+        </form>
+        {% endif %}
+
+        {# İlerleme #}
+        <div id="progressArea" class="mt-4 d-none">
+          <div class="d-flex align-items-center gap-3 mb-2">
+            <div class="spinner-border spinner-border-sm text-info" role="status"></div>
+            <span class="text-white" id="progressText">Dosya işleniyor...</span>
+          </div>
+          <div class="progress" style="height: 6px; background-color: #2d3748;">
+            <div class="progress-bar progress-bar-striped progress-bar-animated bg-info"
+                 id="progressBar" style="width: 30%;"></div>
+          </div>
+        </div>
+
+        {# Hata #}
+        <div id="errorArea" class="mt-3 d-none">
+          <div class="alert alert-danger mb-0" id="errorMsg"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {# ─── Sonuçlar Paneli ─── #}
+  <div class="col-12 d-none" id="resultsPanel">
+    <div class="card border-success" style="background-color: #1a1a2e;">
+      <div class="card-header border-success d-flex justify-content-between align-items-center">
+        <h6 class="text-success mb-0"><i class="bi bi-check-circle-fill me-2"></i>Analiz Tamamlandı</h6>
+        <span class="badge bg-success" id="recordCount"></span>
+      </div>
+      <div class="card-body p-4">
+        <p class="text-white-50 mb-3">
+          <span id="formatBadge" class="badge bg-secondary me-2"></span>
+          Bibliometrik analiziniz tamamlandı. Demo raporu (3 grafik) ücretsiz alabilirsiniz.
+          Tam rapor (10 analiz) için sipariş oluşturunuz.
+        </p>
+
+        <div class="row g-3">
+          {# Demo Email Butonu #}
+          <div class="col-md-6">
+            <div class="card h-100 border-info" style="background-color: #16213e;">
+              <div class="card-body text-center p-4">
+                <i class="bi bi-file-earmark-pdf-fill fs-2 text-info mb-2 d-block"></i>
+                <h6 class="text-white mb-1">Demo Rapor (3 Grafik)</h6>
+                <p class="text-white-50 small mb-3">Yayın Trendi + Yazarlar + Kelime Bulutu<br>
+                  <strong class="text-info">ÜCRETSİZ</strong></p>
+                <button class="btn btn-info w-100 fw-bold" id="sendDemoBtn">
+                  <i class="bi bi-envelope-arrow-up me-1"></i> Demo Emaile Gönder
+                </button>
+                <div class="mt-2 d-none" id="demoSentMsg">
+                  <span class="text-success small"><i class="bi bi-check me-1"></i>Email gönderildi!</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {# Tam Rapor Butonu #}
+          <div class="col-md-6">
+            <div class="card h-100 border-warning" style="background-color: #16213e;">
+              <div class="card-body text-center p-4">
+                <i class="bi bi-file-earmark-richtext fs-2 text-warning mb-2 d-block"></i>
+                <h6 class="text-white mb-1">Tam Rapor (10 Analiz)</h6>
+                <p class="text-white-50 small mb-3">
+                  Tüm analizler + istatistikler<br>
+                  <strong class="text-warning">150 TL</strong>
+                </p>
+                <a href="#" class="btn btn-warning w-100 fw-bold" id="orderBtn">
+                  <i class="bi bi-cart-fill me-1"></i> Sipariş Oluştur
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {# İçerilen analizler #}
+        <div class="mt-4">
+          <h6 class="text-white mb-3">Tam Raporda Yer Alan 10 Analiz:</h6>
+          <div class="row g-2">
+            {% for item in "1234567890" %}
+            {% endfor %}
+            <div class="col-md-6">
+              <ul class="list-unstyled text-white-50 small mb-0">
+                <li><i class="bi bi-check text-success me-1"></i>Yıllara Göre Yayın Trendi</li>
+                <li><i class="bi bi-check text-success me-1"></i>En Verimli Yazarlar (Top 15)</li>
+                <li><i class="bi bi-check text-success me-1"></i>Anahtar Kelime Bulutu</li>
+                <li><i class="bi bi-check text-success me-1"></i>En Çok Atıf Alan Yayınlar</li>
+                <li><i class="bi bi-check text-success me-1"></i>En Çok Yayın Yapılan Dergiler</li>
+              </ul>
+            </div>
+            <div class="col-md-6">
+              <ul class="list-unstyled text-white-50 small mb-0">
+                <li><i class="bi bi-check text-success me-1"></i>Kurum / Ülke Dağılımı</li>
+                <li><i class="bi bi-check text-success me-1"></i>Yazar İşbirliği Ağı</li>
+                <li><i class="bi bi-check text-success me-1"></i>Yayın Türleri Dağılımı</li>
+                <li><i class="bi bi-check text-success me-1"></i>Atıf Analizi + H-index</li>
+                <li><i class="bi bi-check text-success me-1"></i>Yıllık Atıf Trendi</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {# ─── Geçmiş Analizler ─── #}
+  {% if recent_jobs %}
+  <div class="col-12">
+    <div class="card border-secondary" style="background-color: #1a1a2e;">
+      <div class="card-header border-secondary">
+        <h6 class="text-white mb-0"><i class="bi bi-clock-history me-2 text-warning"></i>Geçmiş Analizlerim</h6>
+      </div>
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-dark table-hover mb-0 align-middle">
+            <thead>
+              <tr class="text-white-50 small">
+                <th class="px-3">Dosya</th>
+                <th>Format</th>
+                <th>Kayıt</th>
+                <th>Durum</th>
+                <th>Tarih</th>
+                <th>İşlem</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for job in recent_jobs %}
+              <tr>
+                <td class="px-3">
+                  <span class="text-white small">{{ job.original_filename|truncatechars:40 }}</span>
+                </td>
+                <td>
+                  <span class="badge bg-secondary small">{{ job.get_file_format_display|default:"-" }}</span>
+                </td>
+                <td class="text-white-50 small">{{ job.total_records }}</td>
+                <td>
+                  {% if job.status == 'completed' %}
+                    <span class="badge bg-success">Tamamlandı</span>
+                  {% elif job.status == 'running' %}
+                    <span class="badge bg-info">Çalışıyor</span>
+                  {% elif job.status == 'failed' %}
+                    <span class="badge bg-danger">Başarısız</span>
+                  {% else %}
+                    <span class="badge bg-secondary">Bekliyor</span>
+                  {% endif %}
+                </td>
+                <td class="text-white-50 small">{{ job.created_at|date:"d.m.Y H:i" }}</td>
+                <td>
+                  {% if job.status == 'completed' %}
+                    <a href="{% url 'bibliometrics:order_page' job.id %}"
+                       class="btn btn-sm btn-outline-warning">
+                      <i class="bi bi-cart me-1"></i>Sipariş
+                    </a>
+                  {% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function () {
+  'use strict';
+
+  const form      = document.getElementById('uploadForm');
+  const submitBtn = document.getElementById('submitBtn');
+  const progress  = document.getElementById('progressArea');
+  const progBar   = document.getElementById('progressBar');
+  const progText  = document.getElementById('progressText');
+  const errorArea = document.getElementById('errorArea');
+  const errorMsg  = document.getElementById('errorMsg');
+  const results   = document.getElementById('resultsPanel');
+  const sendDemo  = document.getElementById('sendDemoBtn');
+  const orderBtn  = document.getElementById('orderBtn');
+  const demoSent  = document.getElementById('demoSentMsg');
+  const recCount  = document.getElementById('recordCount');
+  const fmtBadge  = document.getElementById('formatBadge');
+
+  let currentJobId = null;
+  let pollTimer    = null;
+
+  function showError(msg) {
+    errorArea.classList.remove('d-none');
+    errorMsg.textContent = msg;
+    progress.classList.add('d-none');
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = '<i class="bi bi-play-fill me-1"></i> Analizi Başlat';
+  }
+
+  function startPolling(jobId) {
+    currentJobId = jobId;
+    pollTimer = setInterval(() => pollStatus(jobId), 3000);
+  }
+
+  function pollStatus(jobId) {
+    fetch(`/bibliometrics/status/${jobId}/`, {
+      headers: { 'X-Requested-With': 'XMLHttpRequest' }
+    })
+    .then(r => r.json())
+    .then(data => {
+      if (data.status === 'running') {
+        progBar.style.width = '70%';
+        progText.textContent = 'Grafikler ve PDF oluşturuluyor...';
+      } else if (data.status === 'completed') {
+        clearInterval(pollTimer);
+        showResults(jobId, data);
+      } else if (data.status === 'failed') {
+        clearInterval(pollTimer);
+        showError(data.error || 'Analiz başarısız oldu.');
+      }
+    })
+    .catch(() => {});
+  }
+
+  function showResults(jobId, data) {
+    progress.classList.add('d-none');
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = '<i class="bi bi-play-fill me-1"></i> Analizi Başlat';
+    results.classList.remove('d-none');
+
+    recCount.textContent = `${data.total_records} kayıt`;
+    if (data.file_format) fmtBadge.textContent = data.file_format;
+
+    orderBtn.href = `/bibliometrics/siparis/${jobId}/`;
+
+    if (data.demo_email_sent) {
+      sendDemo.disabled = true;
+      demoSent.classList.remove('d-none');
+    }
+
+    if (data.has_order) {
+      orderBtn.textContent = 'Siparişi Görüntüle';
+      orderBtn.classList.replace('btn-warning', 'btn-outline-warning');
+    }
+  }
+
+  // Form gönder
+  if (form) {
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      errorArea.classList.add('d-none');
+      results.classList.add('d-none');
+
+      const fd = new FormData(form);
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Yükleniyor...';
+      progress.classList.remove('d-none');
+      progBar.style.width = '30%';
+      progText.textContent = 'Dosya yükleniyor...';
+
+      fetch('/bibliometrics/', {
+        method: 'POST',
+        headers: { 'X-Requested-With': 'XMLHttpRequest' },
+        body: fd,
+      })
+      .then(r => r.json())
+      .then(data => {
+        if (data.status === 'started') {
+          progBar.style.width = '50%';
+          progText.textContent = 'Analiz başladı, lütfen bekleyin...';
+          startPolling(data.job_id);
+        } else {
+          showError(data.error || 'Bir hata oluştu.');
+        }
+      })
+      .catch(() => showError('Sunucu bağlantı hatası. Lütfen tekrar deneyin.'));
+    });
+  }
+
+  // Demo email gönder
+  if (sendDemo) {
+    sendDemo.addEventListener('click', function () {
+      if (!currentJobId) return;
+      sendDemo.disabled = true;
+      sendDemo.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Gönderiliyor...';
+
+      const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+      fetch(`/bibliometrics/send-demo/${currentJobId}/`, {
+        method: 'POST',
+        headers: {
+          'X-Requested-With': 'XMLHttpRequest',
+          'X-CSRFToken': csrfToken,
+        },
+      })
+      .then(r => r.json())
+      .then(data => {
+        if (data.status === 'sent' || data.status === 'already_sent') {
+          sendDemo.innerHTML = '<i class="bi bi-check me-1"></i>Gönderildi';
+          demoSent.classList.remove('d-none');
+          demoSent.querySelector('span').textContent = data.message || 'Email gönderildi!';
+        } else {
+          sendDemo.disabled = false;
+          sendDemo.innerHTML = '<i class="bi bi-envelope-arrow-up me-1"></i> Demo Emaile Gönder';
+          alert(data.error || 'Email gönderilemedi.');
+        }
+      })
+      .catch(() => {
+        sendDemo.disabled = false;
+        sendDemo.innerHTML = '<i class="bi bi-envelope-arrow-up me-1"></i> Demo Emaile Gönder';
+      });
+    });
+  }
+})();
+</script>
+{% endblock %}

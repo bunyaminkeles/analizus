@@ -33,6 +33,24 @@ def upload_to_s3(content, s3_key):
         return None
 
 
+def upload_bytes_to_s3(content_bytes: bytes, s3_key: str, content_type: str = 'application/octet-stream'):
+    """Binary içeriği (PDF, PNG vb.) S3'e yükler ve public URL döndürür."""
+    try:
+        s3 = _get_s3_client()
+        s3.put_object(
+            Bucket=settings.AWS_STORAGE_BUCKET_NAME,
+            Key=s3_key,
+            Body=content_bytes,
+            ContentType=content_type,
+        )
+        url = f"https://{settings.AWS_S3_CUSTOM_DOMAIN}/{s3_key}"
+        logger.info(f"S3'e yüklendi (binary): {url}")
+        return url
+    except ClientError as e:
+        logger.error(f"S3 binary yükleme hatası: {e}")
+        return None
+
+
 def delete_from_s3(s3_key):
     """S3'den tek bir dosyayı siler."""
     try:

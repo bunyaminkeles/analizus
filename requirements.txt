@@ -24,6 +24,13 @@ pandas
 # sqlparse Django ile gelir ama biz yine de ekleyelim
 sqlparse
 
+# --- BİBLİOMETRİK ANALİZ ---
+matplotlib
+wordcloud
+networkx
+reportlab
+bibtexparser
+
 # --- ARAÇLAR & GÜVENLİK ---
 python-dotenv
 django-ratelimit

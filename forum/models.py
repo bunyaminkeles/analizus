@@ -1090,6 +1090,7 @@ class SiteSettings(models.Model):
     feature_messaging = models.BooleanField(default=True, verbose_name="Özel Mesajlaşma")
     feature_donation = models.BooleanField(default=True, verbose_name="Bağış Sistemi")
     feature_success_stories = models.BooleanField(default=True, verbose_name="Başarı Hikayeleri")
+    feature_bibliometrics = models.BooleanField(default=True, verbose_name="Bibliometrik Analiz")
 
     class Meta:
         verbose_name = "Site Ayarı"
