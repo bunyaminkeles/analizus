@@ -11,14 +11,14 @@ from django.conf import settings
 logger = logging.getLogger(__name__)
 
 
-def run_bibliometric_job(job_id: str, file_content: str) -> None:
+def run_bibliometric_job(job_id: str, file_content) -> None:
     """
     Analiz işini arka planda başlat.
-    file_content: yüklenen dosyanın metin içeriği (str)
+    file_content: str (tek dosya) veya list[str] (çoklu dosya — kayıtlar birleştirilir)
     """
     def _run():
         from bibliometrics.models import BibliometricJob
-        from bibliometrics.services.parser import parse_file
+        from bibliometrics.services.parser import parse_file, _deduplicate_and_filter
         from bibliometrics.services.analyzer import run_all_analyses
         from bibliometrics.services.pdf_builder import build_demo_pdf, build_full_pdf
         from forum.s3_utils import upload_bytes_to_s3
@@ -27,8 +27,17 @@ def run_bibliometric_job(job_id: str, file_content: str) -> None:
             job = BibliometricJob.objects.get(id=job_id)
             job.mark_running()
 
-            # 1. Parse
-            records, fmt = parse_file(file_content)
+            # 1. Parse (tek veya çoklu dosya)
+            contents = file_content if isinstance(file_content, list) else [file_content]
+            all_records = []
+            fmt = 'csv_auto'
+            for content in contents:
+                recs, detected_fmt = parse_file(content)
+                all_records.extend(recs)
+                fmt = detected_fmt  # son dosyanın formatı kayıt edilir
+
+            records = _deduplicate_and_filter(all_records) if len(contents) > 1 else all_records
+
             if not records:
                 job.mark_failed('Dosyadan kayıt okunamadı. Format desteklenmiyor olabilir.')
                 return
@@ -77,6 +86,90 @@ def run_bibliometric_job(job_id: str, file_content: str) -> None:
             logger.error(f'[bibliometrics] Job bulunamadı: {job_id}')
         except Exception as e:
             logger.error(f'[bibliometrics] Job hatası [{job_id}]: {e}', exc_info=True)
+            try:
+                from bibliometrics.models import BibliometricJob
+                job = BibliometricJob.objects.get(id=job_id)
+                job.mark_failed(str(e))
+            except Exception:
+                pass
+
+    thread = threading.Thread(target=_run, daemon=True)
+    thread.start()
+
+
+def run_bibliometric_job_from_openalex(job_id: str) -> None:
+    """
+    OpenAlex AlexSearchJob.all_results verisini kullanarak bibliometrik analiz başlat.
+    Daemon thread içinde çalışır; parse → analyze → PDF → S3 → email akışını yönetir.
+    """
+    def _run():
+        from bibliometrics.models import BibliometricJob
+        from bibliometrics.services.parser import parse_openalex_json
+        from bibliometrics.services.analyzer import run_all_analyses
+        from bibliometrics.services.pdf_builder import build_demo_pdf, build_full_pdf
+        from forum.s3_utils import upload_bytes_to_s3
+
+        try:
+            job = BibliometricJob.objects.select_related('alex_job').get(id=job_id)
+            job.mark_running()
+
+            alex_job = job.alex_job
+            if not alex_job or not alex_job.all_results:
+                job.mark_failed('OpenAlex verisi bulunamadı veya boş.')
+                return
+
+            records = parse_openalex_json(alex_job.all_results)
+            if not records:
+                job.mark_failed('OpenAlex verisinden kayıt okunamadı.')
+                return
+
+            if len(records) < 100:
+                job.mark_failed(
+                    f'Bibliometrik analiz için en az 100 kayıt gereklidir (bulunan: {len(records)}).'
+                )
+                return
+
+            figures = run_all_analyses(records)
+            if not figures:
+                job.mark_failed('Analizler üretilemedi. Veri yetersiz olabilir.')
+                return
+
+            demo_pdf_bytes = build_demo_pdf(
+                figures[:3],
+                total_records=len(records),
+                filename=job.original_filename,
+            )
+            full_pdf_bytes = build_full_pdf(
+                figures,
+                total_records=len(records),
+                filename=job.original_filename,
+            )
+
+            demo_url = upload_bytes_to_s3(
+                demo_pdf_bytes, f'bibliometrics/demo/{job.id}.pdf', 'application/pdf'
+            )
+            full_url = upload_bytes_to_s3(
+                full_pdf_bytes, f'bibliometrics/full/{job.id}.pdf', 'application/pdf'
+            )
+
+            job.mark_completed(
+                total_records=len(records),
+                file_format='openalex_json',
+                demo_pdf_url=demo_url or '',
+                full_pdf_url=full_url or '',
+            )
+
+            logger.info(
+                f'[bibliometrics] OpenAlex job {job_id} tamamlandı. '
+                f'{len(records)} kayıt, {len(figures)} analiz.'
+            )
+
+            send_demo_email_async(str(job.id), demo_pdf_bytes)
+
+        except BibliometricJob.DoesNotExist:
+            logger.error(f'[bibliometrics] Job bulunamadı: {job_id}')
+        except Exception as e:
+            logger.error(f'[bibliometrics] OpenAlex job hatası [{job_id}]: {e}', exc_info=True)
             try:
                 from bibliometrics.models import BibliometricJob
                 job = BibliometricJob.objects.get(id=job_id)

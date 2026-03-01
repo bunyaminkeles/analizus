@@ -24,7 +24,7 @@
               <i class="bi bi-file-earmark-arrow-up text-info me-2 mt-1"></i>
               <div>
                 <div class="text-white fw-semibold small">Desteklenen Formatlar</div>
-                <div class="text-white-50 x-small">BibTeX (.bib) · WoS TSV · Scopus CSV</div>
+                <div class="text-white-50 x-small">BibTeX (.bib) · WoS TSV · Scopus CSV · OpenAlex TXT · Çoklu dosya</div>
               </div>
             </div>
           </div>
@@ -83,6 +83,9 @@
             {{ form.file.label_tag }}
             {{ form.file }}
             <div class="form-text text-white-50">{{ form.file.help_text }}</div>
+            <div id="selectedFilesInfo" class="mt-2 d-none">
+              <small class="text-info"><i class="bi bi-files me-1"></i><span id="selectedFilesText"></span></small>
+            </div>
           </div>
           <button type="submit" class="btn btn-info fw-bold px-4"
                   id="submitBtn" {% if remaining == 0 %}disabled{% endif %}>
@@ -332,6 +335,22 @@
       orderBtn.textContent = 'Siparişi Görüntüle';
       orderBtn.classList.replace('btn-warning', 'btn-outline-warning');
     }
+  }
+
+  // Çoklu dosya: Django FileInput multiple desteklemediği için JS ile ekliyoruz
+  const fileInput = document.querySelector('input[type=file]');
+  const filesInfo = document.getElementById('selectedFilesInfo');
+  const filesText = document.getElementById('selectedFilesText');
+  if (fileInput) {
+    fileInput.setAttribute('multiple', true);
+    fileInput.addEventListener('change', function () {
+      if (this.files && this.files.length > 1) {
+        filesInfo.classList.remove('d-none');
+        filesText.textContent = `${this.files.length} dosya seçildi: ${Array.from(this.files).map(f => f.name).join(', ')}`;
+      } else {
+        filesInfo.classList.add('d-none');
+      }
+    });
   }
 
   // Form gönder

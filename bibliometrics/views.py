@@ -56,21 +56,34 @@ def bibliometrics_landing(request):
             )
             return JsonResponse({'status': 'error', 'error': errors}, status=400)
 
-        uploaded_file = form.cleaned_data['file']
-        try:
-            file_content = uploaded_file.read().decode('utf-8', errors='replace')
-        except Exception as e:
-            return JsonResponse({'status': 'error', 'error': f'Dosya okunamadı: {e}'}, status=400)
+        # Çoklu dosya desteği: tüm yüklenen dosyaları al
+        from .forms import _validate_file
+        uploaded_files = request.FILES.getlist('file')
+        if not uploaded_files:
+            return JsonResponse({'status': 'error', 'error': 'Dosya seçilmedi.'}, status=400)
+
+        file_contents = []
+        filenames = []
+        for uf in uploaded_files:
+            try:
+                _validate_file(uf)
+                content = uf.read().decode('utf-8', errors='replace')
+                file_contents.append(content)
+                filenames.append(uf.name)
+            except Exception as e:
+                return JsonResponse({'status': 'error', 'error': f'{uf.name}: {e}'}, status=400)
+
+        original_filename = ', '.join(filenames) if len(filenames) > 1 else filenames[0]
 
         # Job oluştur
         job = BibliometricJob.objects.create(
             user=user,
-            original_filename=uploaded_file.name,
+            original_filename=original_filename[:255],
         )
 
-        # Arka planda çalıştır
+        # Arka planda çalıştır (çoklu dosya içerikleri birleştirilecek)
         from .services.job_runner import run_bibliometric_job
-        run_bibliometric_job(str(job.id), file_content)
+        run_bibliometric_job(str(job.id), file_contents)
 
         return JsonResponse({
             'status': 'started',
@@ -149,6 +162,83 @@ def bibliometrics_send_demo(request, job_id):
         return JsonResponse({'status': 'error', 'error': 'Email gönderilemedi.'}, status=500)
 
     return JsonResponse({'status': 'sent', 'message': f'{request.user.email} adresine demo rapor gönderildi.'})
+
+
+@login_required
+@feature_required('bibliometrics')
+@require_POST
+def bibliometrics_from_openalex(request, alex_job_id):
+    """
+    OpenAlex arama sonuçlarından bibliometrik analiz başlat.
+    Kullanıcı en az 100 sonuçlu bir AlexSearchJob'a sahip olmalıdır.
+    """
+    from openalex.models import AlexSearchJob
+
+    user = request.user
+
+    if hasattr(user, 'profile') and not user.profile.email_verified:
+        return JsonResponse({'status': 'error', 'error': 'E-posta doğrulaması gereklidir.'}, status=403)
+
+    daily_limit = BibliometricJob.get_daily_limit(user)
+    daily_used = BibliometricJob.daily_count_for_user(user)
+    if daily_used >= daily_limit:
+        return JsonResponse(
+            {'status': 'error', 'error': f'Günlük analiz limitinize ({daily_limit}) ulaştınız.'},
+            status=429,
+        )
+
+    alex_job = get_object_or_404(AlexSearchJob, id=alex_job_id, user=user)
+
+    if alex_job.status != 'completed':
+        return JsonResponse(
+            {'status': 'error', 'error': 'OpenAlex araması henüz tamamlanmadı.'}, status=400
+        )
+
+    if alex_job.total_results < 100:
+        return JsonResponse(
+            {
+                'status': 'error',
+                'error': (
+                    f'Bibliometrik analiz için en az 100 sonuç gereklidir '
+                    f'(bulunan: {alex_job.total_results}).'
+                ),
+            },
+            status=400,
+        )
+
+    if not alex_job.all_results:
+        return JsonResponse(
+            {'status': 'error', 'error': 'OpenAlex verisi bulunamadı.'}, status=400
+        )
+
+    # Aynı OpenAlex araması için başarılı/devam eden bir analiz var mı?
+    existing = BibliometricJob.objects.filter(
+        alex_job=alex_job, user=user
+    ).exclude(status='failed').first()
+    if existing:
+        return JsonResponse({
+            'status': 'exists',
+            'job_id': str(existing.id),
+            'job_status': existing.status,
+            'message': 'Bu arama için zaten bir bibliometrik analiz mevcut.',
+        })
+
+    query_summary = alex_job.get_query_summary()
+    job = BibliometricJob.objects.create(
+        user=user,
+        original_filename=f'OpenAlex: {query_summary}'[:255],
+        source='openalex',
+        alex_job=alex_job,
+    )
+
+    from .services.job_runner import run_bibliometric_job_from_openalex
+    run_bibliometric_job_from_openalex(str(job.id))
+
+    return JsonResponse({
+        'status': 'started',
+        'job_id': str(job.id),
+        'message': 'Bibliometrik analiz başlatıldı.',
+    })
 
 
 @login_required

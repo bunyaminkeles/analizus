@@ -18,13 +18,25 @@ class BibliometricJob(models.Model):
         ('csv_wos', 'Web of Science CSV'),
         ('csv_scopus', 'Scopus CSV'),
         ('csv_auto', 'CSV (Otomatik)'),
+        ('openalex_json', 'OpenAlex (Otomatik)'),
+        ('openalex_txt', 'OpenAlex TXT'),
     )
+
+    SOURCE_UPLOAD = 'upload'
+    SOURCE_OPENALEX = 'openalex'
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='biblio_jobs')
 
     original_filename = models.CharField(max_length=255, blank=True)
     file_format = models.CharField(max_length=20, choices=FORMAT_CHOICES, blank=True)
+    source = models.CharField(max_length=20, default='upload')  # 'upload' | 'openalex'
+    alex_job = models.ForeignKey(
+        'openalex.AlexSearchJob',
+        null=True, blank=True,
+        on_delete=models.SET_NULL,
+        related_name='biblio_jobs',
+    )
     total_records = models.PositiveIntegerField(default=0)
 
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')

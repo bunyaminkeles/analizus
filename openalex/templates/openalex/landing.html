@@ -69,9 +69,44 @@
                         <div id="results-summary" class="mb-3"></div>
                         <div id="results-list"></div>
                         <div id="results-actions" class="mt-3" style="display: none;">
-                            <button id="send-email-btn" class="btn btn-success"><i class="fas fa-envelope"></i> Demo Sonuçları E-posta Gönder</button>
+                            <div class="d-flex flex-wrap gap-2 align-items-start">
+                                <button id="send-email-btn" class="btn btn-success"><i class="fas fa-envelope"></i> Demo Sonuçları E-posta Gönder</button>
+                                <a id="order-btn" href="#" class="btn btn-warning"><i class="fas fa-shopping-cart"></i> Tüm Yayınları Sipariş Et</a>
+                                <button id="biblio-btn" class="btn btn-info d-none"><i class="fas fa-chart-bar"></i> Bibliometrik Analiz İstiyorum</button>
+                            </div>
                         </div>
                         <div id="email-status" class="mt-2"></div>
+                        <div id="biblio-info" class="mt-3 d-none">
+                            <div class="card bg-dark border-info">
+                                <div class="card-body py-3 px-4">
+                                    <h6 class="text-info mb-2"><i class="fas fa-chart-bar me-2"></i>Bibliometrik Analiz — 10 Grafik PDF Rapor</h6>
+                                    <div class="row g-2 mb-3">
+                                        <div class="col-md-6">
+                                            <ul class="list-unstyled text-white-50 small mb-0">
+                                                <li><i class="bi bi-check text-success me-1"></i>Yıllara Göre Yayın Trendi</li>
+                                                <li><i class="bi bi-check text-success me-1"></i>En Verimli Yazarlar (Top 15)</li>
+                                                <li><i class="bi bi-check text-success me-1"></i>Anahtar Kelime Bulutu</li>
+                                                <li><i class="bi bi-check text-success me-1"></i>En Çok Atıf Alan Yayınlar</li>
+                                                <li><i class="bi bi-check text-success me-1"></i>En Çok Yayın Yapılan Dergiler</li>
+                                            </ul>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <ul class="list-unstyled text-white-50 small mb-0">
+                                                <li><i class="bi bi-check text-success me-1"></i>Kurum / Ülke Dağılımı</li>
+                                                <li><i class="bi bi-check text-success me-1"></i>Yazar İşbirliği Ağı</li>
+                                                <li><i class="bi bi-check text-success me-1"></i>Yayın Türleri Dağılımı</li>
+                                                <li><i class="bi bi-check text-success me-1"></i>Atıf Analizi + H-index</li>
+                                                <li><i class="bi bi-check text-success me-1"></i>Yıllık Atıf Trendi</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <p class="text-white-50 small mb-2">
+                                        Demo rapor (3 grafik) ücretsiz emaile gönderilir. Tam rapor (10 analiz) kayıt sayısına göre ücretlidir.
+                                    </p>
+                                    <div id="biblio-status" class="mt-2"></div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -121,6 +156,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const sendEmailBtn = document.getElementById('send-email-btn');
     const emailStatus = document.getElementById('email-status');
+    const orderBtn = document.getElementById('order-btn');
+    const biblioBtn = document.getElementById('biblio-btn');
+    const biblioInfo = document.getElementById('biblio-info');
+    const biblioStatus = document.getElementById('biblio-status');
 
     let currentJobId = null;
 
@@ -340,6 +379,17 @@ document.addEventListener('DOMContentLoaded', function() {
             resultsList.innerHTML = html;
         }
 
+        // Sipariş butonu
+        if (orderBtn) {
+            orderBtn.href = `/openalex/siparis/${currentJobId}/`;
+        }
+
+        // Bibliometrik analiz butonu: sadece 100+ sonuçta göster
+        if (data.total_results >= 100) {
+            biblioBtn.classList.remove('d-none');
+            biblioInfo.classList.remove('d-none');
+        }
+
         resultsActions.style.display = 'block';
     }
 
@@ -371,6 +421,50 @@ document.addEventListener('DOMContentLoaded', function() {
             sendEmailBtn.innerHTML = '<i class="fas fa-envelope"></i> Demo Sonuçları E-posta Gönder';
         });
     });
+
+    // Bibliometrik analiz başlat
+    if (biblioBtn) {
+        biblioBtn.addEventListener('click', function() {
+            if (!currentJobId) return;
+            biblioBtn.disabled = true;
+            biblioBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Başlatılıyor...';
+            biblioStatus.innerHTML = '';
+
+            fetch(`/bibliometrics/from-openalex/${currentJobId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                    'X-Requested-With': 'XMLHttpRequest',
+                }
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.status === 'started') {
+                    biblioBtn.innerHTML = '<i class="bi bi-check-circle-fill me-1"></i> Analiz Başlatıldı';
+                    biblioStatus.innerHTML = `
+                        <div class="alert alert-success mt-2 mb-0 py-2">
+                            Bibliometrik analiz kuyruğa alındı. Demo rapor (3 grafik PDF) hazır olduğunda e-postanıza gönderilecek.
+                            <br><a href="/bibliometrics/" class="alert-link">Bibliometrik analizlerim &rarr;</a>
+                        </div>`;
+                } else if (data.status === 'exists') {
+                    biblioBtn.disabled = false;
+                    biblioBtn.innerHTML = '<i class="fas fa-chart-bar"></i> Bibliometrik Analiz İstiyorum';
+                    biblioStatus.innerHTML = `
+                        <div class="alert alert-info mt-2 mb-0 py-2">
+                            Bu arama için zaten bir analiz mevcut.
+                            <a href="/bibliometrics/" class="alert-link">Görüntüle &rarr;</a>
+                        </div>`;
+                } else {
+                    throw new Error(data.error || 'Bilinmeyen hata');
+                }
+            })
+            .catch(err => {
+                biblioBtn.disabled = false;
+                biblioBtn.innerHTML = '<i class="fas fa-chart-bar"></i> Bibliometrik Analiz İstiyorum';
+                biblioStatus.innerHTML = `<div class="alert alert-danger mt-2 mb-0 py-2">Hata: ${err.message}</div>`;
+            });
+        });
+    }
 
     // Sayfa yüklenince aktif job varsa polling'i devam ettir
     {% if active_job_id %}

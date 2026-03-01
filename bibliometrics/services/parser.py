@@ -28,13 +28,17 @@ EMPTY_RECORD = {
 def detect_format(content: str) -> str:
     """
     Dosya içeriğine göre formatı tahmin eder.
-    Returns: 'bibtex' | 'csv_wos' | 'csv_scopus' | 'csv_auto'
+    Returns: 'bibtex' | 'csv_wos' | 'csv_scopus' | 'openalex_txt' | 'csv_auto'
     """
     stripped = content.strip()
 
     # BibTeX: @ ile başlayan kayıtlar
     if re.search(r'@\w+\s*\{', stripped):
         return 'bibtex'
+
+    # OpenAlex TXT: "--- Yayın #" ile başlayan kayıtlar
+    if '--- Yayın #' in stripped or 'Başlık       :' in stripped:
+        return 'openalex_txt'
 
     # İlk satırı al (header)
     first_line = stripped.split('\n')[0]
@@ -68,6 +72,8 @@ def parse_file(content: str, fmt: str = None) -> tuple[list[dict], str]:
         records = _parse_wos_csv(content)
     elif fmt == 'csv_scopus':
         records = _parse_scopus_csv(content)
+    elif fmt == 'openalex_txt':
+        records = parse_openalex_txt(content)
     else:
         records = _parse_generic_csv(content)
         fmt = 'csv_auto'
@@ -282,6 +288,130 @@ def _parse_generic_csv(content: str) -> list[dict]:
         rec['keywords'] = _split_keywords(kw_raw)
         records.append(rec)
     return records
+
+
+# ─────────────────────────── OpenAlex JSON ───────────────────────────
+
+def parse_openalex_json(records: list) -> list[dict]:
+    """
+    OpenAlex all_results JSON listesini normalize edilmiş bibliometric kayıtlara çevirir.
+    AlexSearchJob.all_results alanından doğrudan beslenir.
+    """
+    result = []
+    for pub in records:
+        rec = {k: (v.copy() if isinstance(v, list) else v) for k, v in EMPTY_RECORD.items()}
+
+        rec['title'] = _clean(pub.get('title', ''))
+        year_raw = pub.get('year', '')
+        rec['year'] = _safe_int(year_raw) if year_raw else None
+        rec['journal'] = _clean(pub.get('journal', ''))
+        rec['abstract'] = _clean(pub.get('abstract', ''))
+        rec['doi'] = _clean(pub.get('doi', ''))
+        rec['cited_by'] = _safe_int(pub.get('cited_by_count', 0))
+        rec['pub_type'] = _clean(pub.get('type', ''))
+        rec['institution'] = _clean(pub.get('institutions', ''))
+
+        # Authors: scraper'da ', '.join() ile birleştirilmiş string
+        authors_raw = pub.get('authors', '')
+        if isinstance(authors_raw, list):
+            rec['authors'] = [_clean(a) for a in authors_raw if a]
+        elif authors_raw:
+            rec['authors'] = [a.strip() for a in str(authors_raw).split(', ') if a.strip()]
+
+        # Keywords + concepts (max 5 concept) birleştir
+        keywords = pub.get('keywords', [])
+        rec['keywords'] = [_clean(k) for k in (keywords if isinstance(keywords, list) else [])]
+        for c in (pub.get('concepts', []) or []):
+            cname = _clean(c) if isinstance(c, str) else _clean(c.get('display_name', ''))
+            if cname and cname not in rec['keywords']:
+                rec['keywords'].append(cname)
+
+        result.append(rec)
+
+    return _deduplicate_and_filter(result)
+
+
+# ─────────────────────────── OpenAlex TXT ───────────────────────────
+
+def parse_openalex_txt(content: str) -> list[dict]:
+    """
+    OpenAlex job_runner tarafından üretilen TXT formatını parse eder.
+
+    Format:
+        --- Yayın #N ---
+        Başlık       : ...
+        Yazarlar     : ...
+        Dergi/Kaynak : ...
+        Yıl          : ...
+        DOI          : ...
+        Tür          : ...
+        Atıf Sayısı  : ...
+        Kurumlar     : ...
+        Anahtar Kel. : ...
+        Özet         : ...
+    """
+    records = []
+    current: dict | None = None
+
+    for line in content.splitlines():
+        line = line.strip()
+        if line.startswith('--- Yayın #'):
+            if current is not None:
+                records.append(current)
+            current = {k: (v.copy() if isinstance(v, list) else v) for k, v in EMPTY_RECORD.items()}
+            continue
+
+        if current is None:
+            continue
+
+        def _val(prefix):
+            return line[len(prefix):].strip() if line.startswith(prefix) else None
+
+        v = _val('Başlık       :')
+        if v is not None:
+            current['title'] = _clean(v)
+            continue
+        v = _val('Yazarlar     :')
+        if v is not None:
+            current['authors'] = [a.strip() for a in v.split(', ') if a.strip()]
+            continue
+        v = _val('Dergi/Kaynak :')
+        if v is not None:
+            current['journal'] = _clean(v)
+            continue
+        v = _val('Yıl          :')
+        if v is not None:
+            current['year'] = _safe_int(v) or None
+            continue
+        v = _val('DOI          :')
+        if v is not None:
+            current['doi'] = _clean(v)
+            continue
+        v = _val('Tür          :')
+        if v is not None:
+            current['pub_type'] = _clean(v)
+            continue
+        v = _val('Atıf Sayısı  :')
+        if v is not None:
+            current['cited_by'] = _safe_int(v)
+            continue
+        v = _val('Kurumlar     :')
+        if v is not None:
+            current['institution'] = _clean(v)
+            continue
+        v = _val('Anahtar Kel. :')
+        if v is not None:
+            current['keywords'] = _split_keywords(v)
+            continue
+        v = _val('Özet         :')
+        if v is not None:
+            current['abstract'] = _clean(v)
+            continue
+
+    if current is not None:
+        records.append(current)
+
+    return _deduplicate_and_filter(records)
 
 
 # ─────────────────────────── Yardımcılar ───────────────────────────
