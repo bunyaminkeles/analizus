@@ -74,12 +74,12 @@ class DizinSearchJob(models.Model):
 
     @staticmethod
     def get_daily_limit(user):
-        """Admin: ∞, Premium: 7, Normal: 3"""
+        """Admin: ∞, Premium: 7, Normal: 1"""
         if user.is_staff or user.is_superuser:
             return 9999  # Effectively unlimited
         if hasattr(user, 'profile') and user.profile.is_premium:
             return 7
-        return 3
+        return 1
 
     def get_query_summary(self):
         """Sorgu parçalarının kısa özeti"""
@@ -149,3 +149,11 @@ class DizinOrder(models.Model):
         if self.status == 'approved' and self.approved_at:
             return timezone.now() > self.approved_at + timezone.timedelta(hours=24)
         return False
+
+
+class DizinSearchJobProxy(DizinSearchJob):
+    class Meta:
+        proxy = True
+        app_label = 'oaipmh'
+        verbose_name = 'TR Dizin Arama İşi'
+        verbose_name_plural = 'TR Dizin Arama İşleri'

@@ -128,7 +128,7 @@ def send_demo_email_async(job_id):
 
 
 def send_demo_email(job):
-    """Demo sonuçları txt dosyası olarak kullanıcının emailine gönder."""
+    """Arama sonuçlarını (tüm sonuçlar S3 linki ile) kullanıcının emailine gönder."""
     user = job.user
     to_email = user.email
 
@@ -136,45 +136,22 @@ def send_demo_email(job):
         logger.warning(f"Kullanıcının emaili yok: {user.username}")
         return False
 
-    subject = f"OpenAlex Arama - Demo Sonuçlar: {job.get_query_summary()}"
-
-    demo_txt = _generate_alex_results_txt(job.demo_results, job, is_demo=True)
+    subject = f"OpenAlex Arama Sonuçları: {job.get_query_summary()}"
+    site_url = getattr(settings, 'SITE_URL', 'https://www.analizus.com')
 
     body_lines = [
         f"Merhaba {user.first_name or user.username},\n",
-        f"OpenAlex aracıyla yaptığınız arama sonuçları hazırlanmıştır.\n",
+        f"OpenAlex arama sonuçlarınız hazırlanmıştır.\n",
         f"Sorgu: {job.get_query_summary()}",
-        f"Toplam Bulunan Sonuç: {job.total_results}",
-        f"Demo Sonuç: {len(job.demo_results)} yayın\n",
-        f"Demo sonuçlar bu e-postaya txt dosyası olarak eklenmiştir.\n",
+        f"Toplam Sonuç: {job.total_results}\n",
     ]
 
-    from openalex.models import AlexOrder
-    total_price = AlexOrder.calculate_price(job.total_results)
+    if job.all_results_file_url:
+        body_lines.append(f"Tüm sonuçlarınızı aşağıdaki linkten indirebilirsiniz (geçici link):")
+        body_lines.append(f"  {job.all_results_file_url}\n")
+    else:
+        demo_txt = _generate_alex_results_txt(job.demo_results, job, is_demo=False)
 
-    IBAN_INFO = {
-        'hesap_sahibi': 'Bünyamin Keleş',
-        'iban': 'TR73 0003 2000 0000 0079 1034 65',
-    }
-
-    body_lines.append(f"{'='*60}")
-    body_lines.append(f"\n--- TÜM SONUÇLARI ALMAK İÇİN ---\n")
-    body_lines.append(f"Toplam {job.total_results} yayın için tahmini ücret: {total_price} TL\n")
-    body_lines.append(f"Fiyatlandırma:")
-    body_lines.append(f"  * İlk 100 yayın    : 250 TL")
-    body_lines.append(f"  * Sonraki her 100   : +100 TL")
-    body_lines.append(f"")
-    body_lines.append(f"Banka Bilgileri:")
-    body_lines.append(f"  Hesap Sahibi : {IBAN_INFO['hesap_sahibi']}")
-    body_lines.append(f"  IBAN         : {IBAN_INFO['iban']}")
-    body_lines.append(f"  Açıklama     : OpenAlex - {user.username}")
-    body_lines.append(f"")
-    site_url = getattr(settings, 'SITE_URL', 'https://www.analizus.com')
-    body_lines.append(f"Ödeme yaptıktan sonra siparişinizi oluşturun:")
-    body_lines.append(f"  {site_url}/openalex/siparis/{job.id}/")
-    body_lines.append(f"")
-    body_lines.append(f"Siparişiniz onaylandıktan sonra sonuçlar 24 saat")
-    body_lines.append(f"içinde bu e-posta adresine gönderilecektir.")
     body_lines.append(f"\n---\nAnalizus - {site_url}")
 
     try:
@@ -184,20 +161,22 @@ def send_demo_email(job):
             from_email=settings.DEFAULT_FROM_EMAIL,
             to=[to_email],
         )
-        email.attach(
-            f"openalex_demo_{len(job.demo_results)}_sonuc.txt",
-            demo_txt,
-            'text/plain',
-        )
+        if not job.all_results_file_url:
+            demo_txt = _generate_alex_results_txt(job.demo_results, job, is_demo=False)
+            email.attach(
+                f"openalex_{len(job.demo_results)}_sonuc.txt",
+                demo_txt,
+                'text/plain',
+            )
         email.send()
 
         job.demo_email_sent = True
         job.save(update_fields=['demo_email_sent'])
 
-        logger.info(f"OpenAlex demo email gönderildi: {to_email}")
+        logger.info(f"OpenAlex email gönderildi: {to_email}")
         return True
     except Exception as e:
-        logger.error(f"OpenAlex demo email gönderilemedi: {e}")
+        logger.error(f"OpenAlex email gönderilemedi: {e}")
         return False
 
 

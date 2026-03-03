@@ -567,10 +567,22 @@ class SiteSettingsAdmin(admin.ModelAdmin):
             'fields': (
                 'feature_blog', 'feature_market', 'feature_ai_assistant',
                 'feature_trdizin', 'feature_openalex', 'feature_oaipmh', 'feature_quiz', 'feature_messaging',
-                'feature_donation', 'feature_success_stories',
+                'feature_donation', 'feature_success_stories', 'feature_bibliometrics',
+            ),
+        }),
+        ('Bibliometrik Analiz Fiyatlandırma', {
+            'description': "5000'den fazla kayıt için kullanıcılara 'admin ile iletişime geçin' mesajı gösterilir.",
+            'fields': (
+                'biblio_price_500', 'biblio_price_2000', 'biblio_price_3000',
+                'biblio_price_4000', 'biblio_price_5000',
             ),
         }),
     )
+
+    def changelist_view(self, request, extra_context=None):
+        from django.shortcuts import redirect
+        obj, _ = SiteSettings.objects.get_or_create(pk=1)
+        return redirect(f'/admin/forum/sitesettings/{obj.pk}/change/')
 
     def has_add_permission(self, request):
         return not SiteSettings.objects.exists()

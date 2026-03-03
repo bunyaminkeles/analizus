@@ -50,5 +50,6 @@ def feature_flags(request):
             'messaging': site.feature_messaging,
             'donation': site.feature_donation,
             'success_stories': site.feature_success_stories,
+            'bibliometrics': site.feature_bibliometrics,
         }
     }

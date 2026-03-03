@@ -109,9 +109,12 @@ class OAIPMHSearchJob(models.Model):
 
     @classmethod
     def get_daily_limit(cls, user):
-        if user.is_staff:
+        """Admin: ∞, Premium: 7, Normal: 1"""
+        if user.is_staff or user.is_superuser:
             return 9999
-        return 3
+        if hasattr(user, 'profile') and user.profile.is_premium:
+            return 7
+        return 1
 
 
 class OAIPMHOrder(models.Model):

@@ -115,6 +115,7 @@ def oaipmh_job_status(request, job_id):
 
     if job.status == 'completed':
         data['demo_results'] = job.demo_results[:3]
+        data['all_results_file_url'] = job.all_results_file_url
         data['demo_email_sent'] = job.demo_email_sent
         data['query_summary'] = job.get_query_summary()
     elif job.status == 'failed':

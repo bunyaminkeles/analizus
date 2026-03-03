@@ -47,6 +47,9 @@ urlpatterns = [
     # Üniversite Tez Arşivi (OAI-PMH)
     path('oaipmh/', include('oaipmh.urls')),
 
+    # Bibliometrik Analiz
+    path('bibliometrics/', include('bibliometrics.urls')),
+
     # 4. Forum Uygulaması (En sona koymak çakışmaları önler)
     path('', include('forum.urls')),
     path('i18n/', include('django.conf.urls.i18n')), # DİL MOTORU BURADA
