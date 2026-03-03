@@ -98,14 +98,25 @@ def _parse_results(html: str) -> tuple[int, list[dict]]:
         tez_no_m = re.search(r'>(\d+)<', user_id_html)
         tez_no = tez_no_m.group(1) if tez_no_m else ''
 
-        # JS string içinde \' veya \" escape edilmiş olabilir, önce unescape et
-        user_id_unescaped = user_id_html.replace("\\'", "'").replace('\\"', '"')
-        # Single veya double quote ile: tezDetay('id','no') veya tezDetay("id","no")
-        detail_m = re.search(r"""tezDetay\(['"]([\w\-+/=]+)['"]\s*,\s*['"]([\w\-+/=]+)['"]\)""", user_id_unescaped)
-        detail_id = detail_m.group(1) if detail_m else ''
-        detail_no = detail_m.group(2) if detail_m else ''
+        # Yöntem 1: JS doc bloğunda doğrudan 'id' ve 'no' alanları
+        id_m = re.search(r'(?<![a-zA-Z])id\s*:\s*"((?:[^"\\]|\\.)*)"', block)
+        no_m = re.search(r'(?<![a-zA-Z])no\s*:\s*"((?:[^"\\]|\\.)*)"', block)
+        detail_id = id_m.group(1) if id_m else ''
+        detail_no = no_m.group(1) if no_m else ''
+
+        # Yöntem 2: userId HTML'indeki onclick=tezDetay('id','no')
         if not detail_id:
-            logger.warning(f'tezDetay onclick bulunamadı, tez_no={tez_no}, userId={user_id_unescaped[:100]}')
+            user_id_unescaped = user_id_html.replace("\\'", "'").replace('\\"', '"')
+            detail_m = re.search(r"""tezDetay\(['"]([\w\-+/=]+)['"]\s*,\s*['"]([\w\-+/=]+)['"]\)""", user_id_unescaped)
+            detail_id = detail_m.group(1) if detail_m else ''
+            detail_no = detail_m.group(2) if detail_m else ''
+
+        if detail_id:
+            logger.info(f'tezDetay bulundu: id={detail_id[:12]}… tez_no={tez_no}')
+        else:
+            # Hangi alanlar var? Tanımlama için ilk blok içeriğini logla
+            field_names = re.findall(r'(\w+)\s*:', block[:500])
+            logger.warning(f'tezDetay parametreler YOK, tez_no={tez_no}, alanlar={field_names}, userId={user_id_html[:120]}')
 
         title_html = _extract_field(block, 'weight')
         # İlk <br> öncesi kısım başlık (İngilizce), sonrası Türkçe
