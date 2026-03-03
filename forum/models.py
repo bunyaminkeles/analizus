@@ -1091,6 +1091,7 @@ class SiteSettings(models.Model):
     feature_donation = models.BooleanField(default=True, verbose_name="Bağış Sistemi")
     feature_success_stories = models.BooleanField(default=True, verbose_name="Başarı Hikayeleri")
     feature_bibliometrics = models.BooleanField(default=True, verbose_name="Bibliometrik Analiz")
+    feature_yoktez = models.BooleanField(default=True, verbose_name="YÖK Tez Arama")
 
     # Bibliometrik Analiz Fiyatlandırma (TL)
     biblio_price_500 = models.PositiveIntegerField(default=500, verbose_name="0-500 kayıt fiyatı (TL)")

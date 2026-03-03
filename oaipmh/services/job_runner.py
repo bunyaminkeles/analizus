@@ -101,6 +101,10 @@ def run_scraping_job(job_id):
                     update_fields.append('all_results_file_url')
                 if update_fields:
                     job.save(update_fields=update_fields)
+                # S3'e yüklendi, DB'deki büyük JSON alanını temizle (Neon tasarrufu)
+                if all_url:
+                    job.all_results = []
+                    job.save(update_fields=['all_results'])
             except Exception as e:
                 logger.error(f"OAI-PMH S3 yükleme hatası: {e}")
 

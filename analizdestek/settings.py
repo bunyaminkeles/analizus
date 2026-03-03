@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'trdizin',
     'openalex',
     'oaipmh',
+    'yoktez',
     'bibliometrics',
     'crispy_forms',
     'crispy_bootstrap5',
