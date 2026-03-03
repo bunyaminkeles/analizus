@@ -98,10 +98,13 @@ def _parse_results(html: str) -> tuple[int, list[dict]]:
         tez_no_m = re.search(r'>(\d+)<', user_id_html)
         tez_no = tez_no_m.group(1) if tez_no_m else ''
 
-        # detail sayfası için onclick parametrelerini çıkar: tezDetay('id','no')
-        detail_m = re.search(r"tezDetay\('([^']+)','([^']+)'\)", user_id_html)
+        # JS string içinde \' olarak escape edilmiş olabilir, önce unescape et
+        user_id_unescaped = user_id_html.replace("\\'", "'").replace('\\"', '"')
+        detail_m = re.search(r"tezDetay\('([^']+)','([^']+)'\)", user_id_unescaped)
         detail_id = detail_m.group(1) if detail_m else ''
         detail_no = detail_m.group(2) if detail_m else ''
+        if not detail_id:
+            logger.warning(f'tezDetay onclick bulunamadı, tez_no={tez_no}')
 
         title_html = _extract_field(block, 'weight')
         # İlk <br> öncesi kısım başlık (İngilizce), sonrası Türkçe
@@ -138,6 +141,7 @@ def _fetch_detail(session, detail_id: str, detail_no: str) -> dict:
         resp.encoding = 'utf-8'
         soup = BeautifulSoup(resp.text, 'html.parser')
         tds = soup.find_all('td')
+        logger.info(f'tezDetay id={detail_id[:8]}… status={resp.status_code} tds={len(tds)}')
 
         result = {}
 

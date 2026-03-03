@@ -350,6 +350,11 @@ LOGGING = {
             'level': 'ERROR',
             'propagate': False,
         },
+        'yoktez': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
     },
     'root': {
         'handlers': ['console'],
