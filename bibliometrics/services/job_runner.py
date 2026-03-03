@@ -2,6 +2,7 @@
 Bibliometrik analiz iş yürütücüsü.
 Daemon thread içinde parse → analyze → PDF → S3 → email akışını yönetir.
 """
+import gc
 import threading
 import logging
 
@@ -62,14 +63,23 @@ def run_bibliometric_job(job_id: str, file_content) -> None:
                 filename=job.original_filename,
             )
 
-            # 5. S3'e yükle
+            # 5. Figürleri serbest bırak (bellek tasarrufu)
+            try:
+                import matplotlib.pyplot as plt
+                plt.close('all')
+            except Exception:
+                pass
+            del figures
+            gc.collect()
+
+            # 6. S3'e yükle
             demo_s3_key = f'bibliometrics/demo/{job.id}.pdf'
             full_s3_key = f'bibliometrics/full/{job.id}.pdf'
 
             demo_url = upload_bytes_to_s3(demo_pdf_bytes, demo_s3_key, 'application/pdf')
             full_url = upload_bytes_to_s3(full_pdf_bytes, full_s3_key, 'application/pdf')
 
-            # 6. Job'ı tamamla
+            # 7. Job'ı tamamla
             job.mark_completed(
                 total_records=len(records),
                 file_format=fmt,
@@ -145,6 +155,16 @@ def run_bibliometric_job_from_openalex(job_id: str) -> None:
                 filename=job.original_filename,
             )
 
+            # Figürleri serbest bırak
+            n_figures = len(figures)
+            try:
+                import matplotlib.pyplot as plt
+                plt.close('all')
+            except Exception:
+                pass
+            del figures
+            gc.collect()
+
             demo_url = upload_bytes_to_s3(
                 demo_pdf_bytes, f'bibliometrics/demo/{job.id}.pdf', 'application/pdf'
             )
@@ -161,7 +181,7 @@ def run_bibliometric_job_from_openalex(job_id: str) -> None:
 
             logger.info(
                 f'[bibliometrics] OpenAlex job {job_id} tamamlandı. '
-                f'{len(records)} kayıt, {len(figures)} analiz.'
+                f'{len(records)} kayıt, {n_figures} analiz.'
             )
 
             send_demo_email_async(str(job.id), demo_pdf_bytes)
