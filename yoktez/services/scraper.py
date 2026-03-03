@@ -98,13 +98,14 @@ def _parse_results(html: str) -> tuple[int, list[dict]]:
         tez_no_m = re.search(r'>(\d+)<', user_id_html)
         tez_no = tez_no_m.group(1) if tez_no_m else ''
 
-        # JS string içinde \' olarak escape edilmiş olabilir, önce unescape et
+        # JS string içinde \' veya \" escape edilmiş olabilir, önce unescape et
         user_id_unescaped = user_id_html.replace("\\'", "'").replace('\\"', '"')
-        detail_m = re.search(r"tezDetay\('([^']+)','([^']+)'\)", user_id_unescaped)
+        # Single veya double quote ile: tezDetay('id','no') veya tezDetay("id","no")
+        detail_m = re.search(r"""tezDetay\(['"]([\w\-+/=]+)['"]\s*,\s*['"]([\w\-+/=]+)['"]\)""", user_id_unescaped)
         detail_id = detail_m.group(1) if detail_m else ''
         detail_no = detail_m.group(2) if detail_m else ''
         if not detail_id:
-            logger.warning(f'tezDetay onclick bulunamadı, tez_no={tez_no}')
+            logger.warning(f'tezDetay onclick bulunamadı, tez_no={tez_no}, userId={user_id_unescaped[:100]}')
 
         title_html = _extract_field(block, 'weight')
         # İlk <br> öncesi kısım başlık (İngilizce), sonrası Türkçe
