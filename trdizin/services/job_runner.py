@@ -179,7 +179,7 @@ def send_demo_email(job):
 
 
 def send_order_results_email(order):
-    """Onaylanan siparişin tüm sonuçlarını txt dosyası olarak S3'e yükleyip kullanıcıya gönder."""
+    """Onaylanan siparişin sonuçlarını S3 linki ile kullanıcıya gönder."""
     user = order.user
     job = order.search_job
     to_email = user.email
@@ -188,16 +188,6 @@ def send_order_results_email(order):
         return False
 
     subject = f"TR Dizin Arama Sonuçları: {job.get_query_summary()}"
-
-    # İstenen sayıda sonucu al
-    results_to_send = job.all_results[:order.abstract_count]
-
-    # Txt dosya oluştur
-    txt_content = _generate_dizin_results_txt(results_to_send, job, is_demo=False)
-
-    # S3'e yükle
-    s3_key = f"trdizin/orders/{order.id}.txt"
-    s3_url = upload_to_s3(txt_content, s3_key)
 
     lines = [
         f"Merhaba {user.first_name or user.username},\n",
@@ -209,11 +199,11 @@ def send_order_results_email(order):
         f"Ödenen Tutar: {order.total_price} TL\n",
     ]
 
-    if s3_url:
+    download_url = job.all_results_file_url
+    if download_url:
         lines.append(f"Sonuçlarınızı aşağıdaki linkten indirebilirsiniz:")
-        lines.append(f"  {s3_url}\n")
+        lines.append(f"  {download_url}\n")
 
-    lines.append(f"Sonuçlar ayrıca bu e-postaya txt dosyası olarak eklenmiştir.")
     lines.append(f"\n---\nAnalizus - www.analizus.com")
 
     body = "\n".join(lines)
@@ -224,11 +214,6 @@ def send_order_results_email(order):
             body=body,
             from_email=settings.DEFAULT_FROM_EMAIL,
             to=[to_email],
-        )
-        email.attach(
-            f"trdizin_{len(results_to_send)}_sonuc.txt",
-            txt_content,
-            'text/plain',
         )
         email.send()
 
