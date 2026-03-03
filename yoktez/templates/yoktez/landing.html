@@ -167,7 +167,7 @@ document.getElementById('yoktez-form').addEventListener('submit', function(e) {
 
 function pollStatus() {
     if (!currentJobId) return;
-    fetch(`{% url 'yoktez:landing' %}`.replace('/yoktez/', `/yoktez/status/${currentJobId}/`))
+    fetch(`/yoktez/status/${currentJobId}/`)
         .then(r => r.json())
         .then(data => {
             if (data.status === 'completed') {
@@ -197,9 +197,11 @@ function showResults(data) {
         list.innerHTML += `
         <div class="border-bottom border-secondary pb-3 mb-3">
             <h6 class="mb-1">${i+1}. ${r.title || '(Başlık yok)'}</h6>
+            ${r.title_tr ? `<div class="text-muted small fst-italic mb-1">${r.title_tr}</div>` : ''}
             <small class="text-muted d-block">
                 ${r.author || ''} ${r.year ? '· ' + r.year : ''} · ${r.university || ''}
                 ${r.thesis_type ? ' · ' + r.thesis_type : ''}
+                ${r.language ? ' · ' + r.language : ''}
             </small>
             <small class="text-muted">Tez No: ${r.tez_no || '-'}</small>
         </div>`;
