@@ -203,6 +203,9 @@ function showResults(data) {
                 ${r.language ? ' · ' + r.language : ''}
             </small>
             <small class="text-muted">Tez No: ${r.tez_no || '-'}</small>
+            ${r.danisman ? `<div class="text-muted small mt-1"><strong>Danışman:</strong> ${r.danisman}</div>` : ''}
+            ${r.abstract_tr ? `<div class="text-light small mt-2" style="line-height:1.5;">${r.abstract_tr}</div>` : ''}
+            ${r.abstract_en ? `<div class="text-muted small mt-1 fst-italic">${r.abstract_en}</div>` : ''}
         </div>`;
     });
 

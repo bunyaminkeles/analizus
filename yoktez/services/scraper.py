@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 BASE_URL = 'https://tez.yok.gov.tr/UlusalTezMerkezi'
 SEARCH_URL = f'{BASE_URL}/SearchTez'
 INIT_URL = f'{BASE_URL}/tarama.jsp'
+DETAIL_URL = f'{BASE_URL}/tezDetay.jsp'
 
 HEADERS = {
     'User-Agent': (
@@ -97,6 +98,11 @@ def _parse_results(html: str) -> tuple[int, list[dict]]:
         tez_no_m = re.search(r'>(\d+)<', user_id_html)
         tez_no = tez_no_m.group(1) if tez_no_m else ''
 
+        # detail sayfası için onclick parametrelerini çıkar: tezDetay('id','no')
+        detail_m = re.search(r"tezDetay\('([^']+)','([^']+)'\)", user_id_html)
+        detail_id = detail_m.group(1) if detail_m else ''
+        detail_no = detail_m.group(2) if detail_m else ''
+
         title_html = _extract_field(block, 'weight')
         # İlk <br> öncesi kısım başlık (İngilizce), sonrası Türkçe
         title_parts = re.split(r'<br\s*/?>', title_html, maxsplit=1)
@@ -105,6 +111,8 @@ def _parse_results(html: str) -> tuple[int, list[dict]]:
 
         records.append({
             'tez_no': tez_no,
+            'detail_id': detail_id,
+            'detail_no': detail_no,
             'author': _extract_field(block, 'name').strip(),
             'title': title,
             'title_tr': title_tr,
@@ -118,6 +126,49 @@ def _parse_results(html: str) -> tuple[int, list[dict]]:
         total = len(records)
 
     return total, records
+
+
+def _fetch_detail(session, detail_id: str, detail_no: str) -> dict:
+    """Tek bir tezin detay sayfasından özet ve ek bilgileri çek."""
+    if not detail_id or not detail_no:
+        return {}
+    try:
+        url = f'{DETAIL_URL}?id={detail_id}&no={detail_no}'
+        resp = session.get(url, timeout=15, headers={'Referer': SEARCH_URL})
+        resp.encoding = 'utf-8'
+        soup = BeautifulSoup(resp.text, 'html.parser')
+        tds = soup.find_all('td')
+
+        result = {}
+
+        # td[6]: başlık + Yazar, Danışman, Yer Bilgisi, Konu, Dizin
+        if len(tds) > 6:
+            lines = tds[6].get_text(separator='\n').split('\n')
+            for line in lines:
+                line = line.strip()
+                if line.startswith('Danışman:'):
+                    result['danisman'] = line[len('Danışman:'):].strip()
+                elif line.startswith('Konu:'):
+                    result['konu'] = line[len('Konu:'):].strip()
+                elif line.startswith('Dizin:'):
+                    result['dizin'] = line[len('Dizin:'):].strip()
+
+        # td[9]: Türkçe özet
+        if len(tds) > 9:
+            ozet_tr = tds[9].get_text(separator=' ').strip()
+            if ozet_tr:
+                result['abstract_tr'] = ozet_tr
+
+        # td[11]: İngilizce özet
+        if len(tds) > 11:
+            ozet_en = tds[11].get_text(separator=' ').strip()
+            if ozet_en:
+                result['abstract_en'] = ozet_en
+
+        return result
+    except Exception as e:
+        logger.warning(f'tezDetay fetch hatası ({detail_id}): {e}')
+        return {}
 
 
 def search(tez_ad='', yazar='', danisman='', universite='',
@@ -161,6 +212,12 @@ def search(tez_ad='', yazar='', danisman='', universite='',
     total, records = _parse_results(response.text)
 
     demo = records[:demo_limit]
+
+    # Demo kayıtları için detay (özet) çek
+    for rec in demo:
+        detail = _fetch_detail(session, rec.get('detail_id', ''), rec.get('detail_no', ''))
+        rec.update(detail)
+
     return total, demo
 
 
@@ -181,5 +238,11 @@ def generate_results_txt(records: list[dict], job) -> str:
         lines.append(f'   Yıl: {r.get("year", "-")} | Tür: {r.get("thesis_type", "-")} | Dil: {r.get("language", "-")}')
         lines.append(f'   Üniversite: {r.get("university", "-")}')
         lines.append(f'   Tez No: {r.get("tez_no", "-")}')
+        if r.get('danisman'):
+            lines.append(f'   Danışman: {r["danisman"]}')
+        if r.get('abstract_tr'):
+            lines.append(f'   Özet: {r["abstract_tr"]}')
+        if r.get('abstract_en'):
+            lines.append(f'   Abstract: {r["abstract_en"]}')
         lines.append('')
     return '\n'.join(lines)
