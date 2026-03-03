@@ -332,6 +332,31 @@ AWS_QUERYSTRING_AUTH = False  # URL'lerde auth parametresi olmasın (public okum
 AWS_S3_MAX_MEMORY_SIZE = 5 * 1024 * 1024
 
 # Production'da S3, lokalde dosya sistemi
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'ERROR',
+        },
+        'django.request': {
+            'handlers': ['console'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'WARNING',
+    },
+}
+
 if not DEBUG and AWS_ACCESS_KEY_ID:
     # Production: S3 kullan
     DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
