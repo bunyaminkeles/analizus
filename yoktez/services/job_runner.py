@@ -72,8 +72,6 @@ def send_demo_email_async(job_id: str) -> None:
         from yoktez.models import YokTezSearchJob
         try:
             job = YokTezSearchJob.objects.get(id=job_id)
-            if not job.demo_results:
-                return
 
             body_lines = [
                 f'YÖK Tez aramanızın sonuçları hazır.',

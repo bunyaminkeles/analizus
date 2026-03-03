@@ -110,8 +110,10 @@ def yoktez_send_demo_email(request, job_id):
     from django.shortcuts import get_object_or_404
     job = get_object_or_404(YokTezSearchJob, id=job_id, user=request.user)
 
-    if job.status != 'completed' or not job.demo_results:
+    if job.status not in ('completed',):
         return JsonResponse({'error': 'Sonuçlar henüz hazır değil.'}, status=400)
+    if job.total_results == 0:
+        return JsonResponse({'error': 'Arama sonucu bulunamadı, gönderilecek bir şey yok.'}, status=400)
     if job.demo_email_sent:
         return JsonResponse({'error': 'Demo sonuçlar zaten gönderildi.'}, status=400)
 

@@ -63,6 +63,17 @@ def _build_form(tez_ad='', yazar='', danisman='', universite='',
     }
 
 
+def _extract_field(block: str, key: str) -> str:
+    """JS doc objesinden bir alanı çıkar: key: "value" """
+    m = re.search(key + r'\s*:\s*"((?:[^"\\]|\\.)*)"', block)
+    return m.group(1) if m else ''
+
+
+def _strip_html(text: str) -> str:
+    """HTML tag'lerini temizle."""
+    return re.sub(r'<[^>]+>', '', text).replace('\\"', '"').replace("\\'", "'").strip()
+
+
 def _parse_results(html: str) -> tuple[int, list[dict]]:
     """HTML'den tez kayıtlarını parse et. (total_count, records) döner."""
     soup = BeautifulSoup(html, 'html.parser')
@@ -77,52 +88,31 @@ def _parse_results(html: str) -> tuple[int, list[dict]]:
 
     records = []
 
-    # WATable JS verisi: var rows = [[...], [...], ...]
-    script_content = ''
-    for script in soup.find_all('script'):
-        if script.string and 'var rows' in script.string:
-            script_content = script.string
-            break
+    # YÖK Tez formatı: var rows = []; ... var doc = { userId:..., name:..., ... }; rows.push(doc);
+    # Her kayıt ayrı bir `var doc = {...};` bloğu olarak gelir.
+    doc_blocks = re.findall(r'var\s+doc\s*=\s*\{(.*?)\};', html, re.DOTALL)
 
-    if script_content:
-        # rows array'ini bul
-        m = re.search(r'var\s+rows\s*=\s*(\[[\s\S]*?\]);', script_content)
-        if m:
-            import json
-            try:
-                rows_raw = m.group(1)
-                rows = json.loads(rows_raw)
-                for row in rows:
-                    if len(row) >= 6:
-                        records.append({
-                            'tez_no': str(row[0]).strip() if row[0] else '',
-                            'author': str(row[1]).strip() if row[1] else '',
-                            'title': str(row[2]).strip() if row[2] else '',
-                            'year': str(row[3]).strip() if row[3] else '',
-                            'university': str(row[4]).strip() if row[4] else '',
-                            'thesis_type': str(row[5]).strip() if row[5] else '',
-                        })
-            except (json.JSONDecodeError, IndexError, TypeError) as e:
-                logger.warning(f'YÖK Tez JSON parse hatası: {e}')
+    for block in doc_blocks:
+        user_id_html = _extract_field(block, 'userId')
+        tez_no_m = re.search(r'>(\d+)<', user_id_html)
+        tez_no = tez_no_m.group(1) if tez_no_m else ''
 
-    # WATable tablosundan fallback parse (JS yoksa)
-    if not records:
-        table = soup.find('table', id='watable')
-        if not table:
-            table = soup.find('table', class_=re.compile('watable|table'))
-        if table:
-            rows = table.find_all('tr')
-            for row in rows[1:]:  # Header satırını atla
-                cells = row.find_all('td')
-                if len(cells) >= 5:
-                    records.append({
-                        'tez_no': cells[0].get_text(strip=True),
-                        'author': cells[1].get_text(strip=True),
-                        'title': cells[2].get_text(strip=True),
-                        'year': cells[3].get_text(strip=True),
-                        'university': cells[4].get_text(strip=True),
-                        'thesis_type': cells[5].get_text(strip=True) if len(cells) > 5 else '',
-                    })
+        title_html = _extract_field(block, 'weight')
+        # İlk <br> öncesi kısım başlık (İngilizce), sonrası Türkçe
+        title_parts = re.split(r'<br\s*/?>', title_html, maxsplit=1)
+        title = _strip_html(title_parts[0])
+        title_tr = _strip_html(title_parts[1]) if len(title_parts) > 1 else ''
+
+        records.append({
+            'tez_no': tez_no,
+            'author': _extract_field(block, 'name').strip(),
+            'title': title,
+            'title_tr': title_tr,
+            'year': _extract_field(block, 'age').strip(),
+            'university': _extract_field(block, 'uni').strip(),
+            'thesis_type': _extract_field(block, 'important').strip(),
+            'language': _extract_field(block, 'height').strip(),
+        })
 
     if not total and records:
         total = len(records)
@@ -185,8 +175,10 @@ def generate_results_txt(records: list[dict], job) -> str:
     ]
     for i, r in enumerate(records, 1):
         lines.append(f'{i}. {r.get("title", "(Başlık yok)")}')
+        if r.get('title_tr'):
+            lines.append(f'   TR: {r["title_tr"]}')
         lines.append(f'   Yazar: {r.get("author", "-")}')
-        lines.append(f'   Yıl: {r.get("year", "-")} | Tür: {r.get("thesis_type", "-")}')
+        lines.append(f'   Yıl: {r.get("year", "-")} | Tür: {r.get("thesis_type", "-")} | Dil: {r.get("language", "-")}')
         lines.append(f'   Üniversite: {r.get("university", "-")}')
         lines.append(f'   Tez No: {r.get("tez_no", "-")}')
         lines.append('')
