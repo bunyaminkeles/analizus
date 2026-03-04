@@ -173,10 +173,6 @@
                             <i class="bi bi-database-fill me-1 text-info"></i>Akademik Veri ve Analiz
                         </a>
                         <ul class="dropdown-menu dropdown-menu-dark">
-                            {% if features.tezanaliz %}
-                            <li><a class="dropdown-item" href="{% url 'tezanaliz:landing' %}">
-                                <i class="bi bi-graph-up-arrow me-2 text-success"></i>Tez Analizi (YÖK)
-                            </a></li>{% endif %}
                             {% if features.oaipmh %}
                             <li><a class="dropdown-item" href="{% url 'oaipmh:landing' %}">
                                 <i class="bi bi-mortarboard me-2 text-warning"></i>Üniversite Tezleri
@@ -193,6 +189,10 @@
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="{% url 'bibliometrics:landing' %}">
                                 <i class="bi bi-bar-chart-line-fill me-2 text-info"></i>Bibliometrik Analiz
+                            </a></li>{% endif %}
+                            {% if features.tezanaliz %}
+                            <li><a class="dropdown-item" href="{% url 'tezanaliz:landing' %}">
+                                <i class="bi bi-graph-up-arrow me-2 text-success"></i>Tez Analizi (YÖK)
                             </a></li>{% endif %}
                         </ul>
                     </li>
