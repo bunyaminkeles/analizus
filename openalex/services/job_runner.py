@@ -90,10 +90,6 @@ def run_scraping_job(job_id):
                     update_fields.append('all_results_file_url')
                 if update_fields:
                     job.save(update_fields=update_fields)
-                # S3'e yüklendi, DB'deki büyük JSON alanını temizle (OOM önlemi)
-                if all_s3_url:
-                    job.all_results = []
-                    job.save(update_fields=['all_results'])
             except Exception as e:
                 logger.error(f"OpenAlex S3 yükleme hatası: {e}")
 
