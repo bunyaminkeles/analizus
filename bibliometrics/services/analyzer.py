@@ -80,6 +80,7 @@ def run_all_analyses(records: list[dict]) -> list[tuple[str, object]]:
         ('Atıf Analizi ve H-index',                 lambda: citation_analysis(records)),
         ('Yıllık Atıf Trendi',                      lambda: annual_citation_trend(records)),
         ('Araştırma Konusu Kümeleri (Topic Map)',    lambda: topic_map(records)),
+        ('Araştırma Boşluğu Haritası (Research Gap)', lambda: research_gap(records)),
     ]
     results = []
     for title, fn in analyses:
@@ -884,6 +885,160 @@ def country_collaboration(records: list[dict], min_collab: int = 2, max_countrie
     ax.set_title('Ülke İşbirliği Ağı')
     ax.axis('off')
     fig.tight_layout(pad=2.0)
+    return fig
+
+
+# ─────────────────────────── 17. Research Gap ───────────────────────────
+
+def research_gap(records: list[dict], top_n: int = 30, recent_years: int = 3):
+    """
+    Research Gap Haritası: Keyword bazında Trend × Atıf Etkisi quadrant analizi.
+    - X ekseni: Yayın trendi (son N yıl vs önceki dönem, normalize)
+    - Y ekseni: Ortalama atıf etkisi (log-scale'den normalize)
+    - Sol-üst kadran (düşen trend + yüksek atıf) = Research Gap fırsatı
+    """
+    import math
+
+    now_year = max((r.get('year') or 0) for r in records if r.get('year'))
+    if not now_year:
+        return None
+
+    cutoff = now_year - recent_years  # son 3 yıl sınırı
+
+    # Her keyword için: eski/yeni yayın sayısı + toplam atıf
+    kw_stats = {}
+    for r in records:
+        year = r.get('year') or 0
+        citations = r.get('cited_by_count') or r.get('cited_by') or 0
+        for k in r.get('keywords', []):
+            k = k.strip().lower()
+            if len(k) < 3:
+                continue
+            if k not in kw_stats:
+                kw_stats[k] = {'old': 0, 'new': 0, 'citations': 0, 'total': 0}
+            kw_stats[k]['total'] += 1
+            kw_stats[k]['citations'] += citations
+            if year > cutoff:
+                kw_stats[k]['new'] += 1
+            else:
+                kw_stats[k]['old'] += 1
+
+    # En az 3 yayında geçen keyword'leri al
+    kw_stats = {k: v for k, v in kw_stats.items() if v['total'] >= 3}
+    if len(kw_stats) < 5:
+        return None
+
+    # Trend skoru: (yeni - eski) / toplam  →  [-1, +1]
+    # Atıf etkisi: ortalama atıf (log1p normalize)
+    points = []
+    for kw, s in kw_stats.items():
+        trend = (s['new'] - s['old']) / s['total']
+        avg_cite = s['citations'] / s['total']
+        points.append({'kw': kw, 'trend': trend, 'impact': avg_cite,
+                       'total': s['total']})
+
+    # Top N (toplam yayın sayısına göre)
+    points = sorted(points, key=lambda x: x['total'], reverse=True)[:top_n]
+
+    if not points:
+        return None
+
+    # Normalize impact için log1p
+    max_impact = max(math.log1p(p['impact']) for p in points) or 1
+    for p in points:
+        p['impact_norm'] = math.log1p(p['impact']) / max_impact
+
+    trends   = [p['trend'] for p in points]
+    impacts  = [p['impact_norm'] for p in points]
+    labels   = [p['kw'] for p in points]
+    sizes    = [80 + p['total'] * 12 for p in points]
+
+    # Medyan kesim noktaları
+    med_trend  = sorted(trends)[len(trends) // 2]
+    med_impact = sorted(impacts)[len(impacts) // 2]
+
+    # Renk: Research Gap (sol-üst) = kırmızı/turuncu, diğerleri gri tonları
+    colors = []
+    gap_indices = []
+    for i, p in enumerate(points):
+        if p['trend'] < med_trend and p['impact_norm'] >= med_impact:
+            colors.append('#E15759')   # Research Gap
+            gap_indices.append(i)
+        elif p['trend'] >= med_trend and p['impact_norm'] >= med_impact:
+            colors.append('#4E79A7')   # Altın Alan
+        elif p['trend'] >= med_trend and p['impact_norm'] < med_impact:
+            colors.append('#76B7B2')   # Yükselen Alan
+        else:
+            colors.append('#BAB0AC')   # Düşen Alan
+
+    fig, ax = plt.subplots(figsize=(13, 9))
+    ax.set_facecolor('#f8fafc')
+    fig.patch.set_facecolor('white')
+
+    # Kadrant arkaplan renkleri
+    ax.axvspan(min(trends) - 0.05, med_trend, ymin=0.5, ymax=1.0,
+               alpha=0.06, color='#E15759')   # Research Gap bölgesi
+    ax.axvspan(med_trend, max(trends) + 0.05, ymin=0.5, ymax=1.0,
+               alpha=0.06, color='#4E79A7')   # Altın bölge
+
+    # Medyan çizgileri
+    ax.axvline(med_trend,  color='#94a3b8', linestyle='--', linewidth=1.2, alpha=0.7)
+    ax.axhline(med_impact, color='#94a3b8', linestyle='--', linewidth=1.2, alpha=0.7)
+
+    # Scatter
+    sc = ax.scatter(trends, impacts, s=sizes, c=colors, alpha=0.82,
+                    edgecolors='white', linewidths=1.0, zorder=3)
+
+    # Etiketler — sadece gap + altın alan (okunabilirlik)
+    labeled = set()
+    for i, p in enumerate(points):
+        if colors[i] in ('#E15759', '#4E79A7') and p['kw'] not in labeled:
+            ax.annotate(p['kw'], (p['trend'], p['impact_norm']),
+                        fontsize=7.5, ha='center', va='bottom',
+                        xytext=(0, 6), textcoords='offset points',
+                        color='#1e293b', fontweight='bold')
+            labeled.add(p['kw'])
+
+    # Kadrant başlıkları
+    xlim = ax.get_xlim()
+    ylim = ax.get_ylim()
+    kw_args = dict(fontsize=9, alpha=0.55, fontstyle='italic')
+    ax.text(med_trend - (med_trend - xlim[0]) * 0.5, ylim[1] * 0.97,
+            '★ RESEARCH GAP', ha='center', color='#E15759', **kw_args)
+    ax.text(med_trend + (xlim[1] - med_trend) * 0.5, ylim[1] * 0.97,
+            'ALTIN ALAN', ha='center', color='#4E79A7', **kw_args)
+    ax.text(med_trend - (med_trend - xlim[0]) * 0.5, med_impact * 0.15,
+            'DÜŞEN ALAN', ha='center', color='#BAB0AC', **kw_args)
+    ax.text(med_trend + (xlim[1] - med_trend) * 0.5, med_impact * 0.15,
+            'YÜKSELİŞTEKİ ALAN', ha='center', color='#76B7B2', **kw_args)
+
+    # Legend
+    from matplotlib.lines import Line2D
+    legend_items = [
+        Line2D([0], [0], marker='o', color='w', markerfacecolor='#E15759',
+               markersize=10, label='Research Gap (fırsat)'),
+        Line2D([0], [0], marker='o', color='w', markerfacecolor='#4E79A7',
+               markersize=10, label='Altın Alan (aktif & etkili)'),
+        Line2D([0], [0], marker='o', color='w', markerfacecolor='#76B7B2',
+               markersize=10, label='Yükselen Alan'),
+        Line2D([0], [0], marker='o', color='w', markerfacecolor='#BAB0AC',
+               markersize=10, label='Düşen Alan'),
+    ]
+    ax.legend(handles=legend_items, loc='lower right', fontsize=8.5,
+              framealpha=0.9, edgecolor='#e2e8f0')
+
+    # Gap keywords listesi (alt açıklama)
+    gap_kws = [points[i]['kw'] for i in gap_indices[:6]]
+    if gap_kws:
+        gap_text = '🎯 Önerilen Araştırma Boşlukları: ' + ' · '.join(gap_kws)
+        fig.text(0.5, 0.01, gap_text, ha='center', fontsize=9,
+                 color='#E15759', fontweight='bold',
+                 bbox=dict(boxstyle='round,pad=0.4', fc='#fff5f5', ec='#E15759', alpha=0.8))
+
+    ax.set_xlabel('Yayın Trendi  (← Azalıyor  |  Artıyor →)', fontsize=11)
+    ax.set_ylabel('Atıf Etkisi  (↑ Yüksek)', fontsize=11)
+    ax.set_title('Araştırma Boşluğu Haritası (Research Gap)', pad=18)
+    fig.subplots_adjust(bottom=0.12, top=0.93, left=0.09, right=0.97)
     return fig
 
 
