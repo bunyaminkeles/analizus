@@ -157,3 +157,13 @@ class OAIPMHOrder(models.Model):
             extra = ((abstract_count - 1) // 100)
             price += extra * 100
         return price
+
+
+from yoktez.models import YokTezSearchJob  # noqa: E402
+
+
+class YokTezSearchJobProxy(YokTezSearchJob):
+    class Meta:
+        proxy = True
+        verbose_name = 'YÖK Tez Araması'
+        verbose_name_plural = 'YÖK Tez Aramaları'

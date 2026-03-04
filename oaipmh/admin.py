@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import University, OAIPMHSearchJob
+from .models import University, OAIPMHSearchJob, YokTezSearchJobProxy
 from openalex.models import AlexSearchJobProxy
 from trdizin.models import DizinSearchJobProxy
 
@@ -43,6 +43,18 @@ class DizinSearchJobProxyAdmin(admin.ModelAdmin):
     list_filter = ('status', 'created_at')
     search_fields = ('user__username', 'lucene_query')
     readonly_fields = ('id', 'created_at', 'completed_at', 'demo_results', 'all_results', 'demo_file_url', 'all_results_file_url')
+
+    def get_query_summary(self, obj):
+        return obj.get_query_summary()
+    get_query_summary.short_description = "Sorgu Özeti"
+
+
+@admin.register(YokTezSearchJobProxy)
+class YokTezSearchJobProxyAdmin(admin.ModelAdmin):
+    list_display = ('id', 'user', 'get_query_summary', 'status', 'total_results', 'created_at')
+    list_filter = ('status', 'created_at')
+    search_fields = ('user__username', 'tez_ad', 'yazar')
+    readonly_fields = ('id', 'created_at', 'completed_at', 'demo_results', 'all_results_file_url')
 
     def get_query_summary(self, obj):
         return obj.get_query_summary()
