@@ -64,6 +64,7 @@ def run_bibliometric_job(job_id: str, file_content) -> None:
             )
 
             # 5. Figürleri serbest bırak (bellek tasarrufu)
+            n_figures = len(figures)
             try:
                 import matplotlib.pyplot as plt
                 plt.close('all')
@@ -90,7 +91,7 @@ def run_bibliometric_job(job_id: str, file_content) -> None:
             # Demo PDF'i bellekte tut (email için — tekrar oluşturma maliyetini önle)
             job._demo_pdf_bytes = demo_pdf_bytes
 
-            logger.info(f'[bibliometrics] Job {job_id} tamamlandı. {len(records)} kayıt, {len(figures)} analiz.')
+            logger.info(f'[bibliometrics] Job {job_id} tamamlandı. {len(records)} kayıt, {n_figures} analiz.')
 
         except BibliometricJob.DoesNotExist:
             logger.error(f'[bibliometrics] Job bulunamadı: {job_id}')
