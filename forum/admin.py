@@ -567,7 +567,7 @@ class SiteSettingsAdmin(admin.ModelAdmin):
             'fields': (
                 'feature_blog', 'feature_market', 'feature_ai_assistant',
                 'feature_trdizin', 'feature_openalex', 'feature_oaipmh', 'feature_quiz', 'feature_messaging',
-                'feature_donation', 'feature_success_stories', 'feature_bibliometrics',
+                'feature_donation', 'feature_success_stories', 'feature_bibliometrics', 'feature_yoktez',
             ),
         }),
         ('Bibliometrik Analiz Fiyatlandırma', {

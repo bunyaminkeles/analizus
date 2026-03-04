@@ -51,5 +51,6 @@ def feature_flags(request):
             'donation': site.feature_donation,
             'success_stories': site.feature_success_stories,
             'bibliometrics': site.feature_bibliometrics,
+            'yoktez': site.feature_yoktez,
         }
     }

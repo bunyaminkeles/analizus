@@ -47,6 +47,9 @@ urlpatterns = [
     # Üniversite Tez Arşivi (OAI-PMH)
     path('oaipmh/', include('oaipmh.urls')),
 
+    # YÖK Tez Arama
+    path('yoktez/', include('yoktez.urls')),
+
     # Bibliometrik Analiz
     path('bibliometrics/', include('bibliometrics.urls')),
 

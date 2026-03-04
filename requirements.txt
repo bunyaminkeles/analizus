@@ -1,6 +1,6 @@
 # --- DJANGO ÇEKİRDEK & SUNUCU ---
 Django>=4.2,<6.0
-gunicorn
+gunicorn>=22.0,<24.0
 dj-database-url
 psycopg2-binary
 whitenoise
