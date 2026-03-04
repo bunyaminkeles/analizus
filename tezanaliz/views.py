@@ -91,13 +91,27 @@ def create_from_yoktez(request, yok_job_id):
     return JsonResponse({'job_id': str(job.id)})
 
 
+STALE_TIMEOUT_MINUTES = 15
+
+
 @login_required
 def tezanaliz_status(request, job_id):
     """
     Analiz iş durumunu döndür.
     GET /tezanaliz/status/<job_id>/
     """
+    from django.utils import timezone
     job = get_object_or_404(TezAnaliz, id=job_id, user=request.user)
+
+    # Stale job tespiti: 15 dakikadan uzun süren pending/running işleri hata yap
+    if job.status in ('pending', 'running'):
+        elapsed = (timezone.now() - job.created_at).total_seconds()
+        if elapsed > STALE_TIMEOUT_MINUTES * 60:
+            job.mark_failed(
+                f'İşlem {STALE_TIMEOUT_MINUTES} dakika içinde tamamlanamadı. '
+                'YÖK Tez sunucusu yavaş yanıt veriyor olabilir. Lütfen tekrar deneyin.'
+            )
+
     data = {
         'status': job.status,
         'total_records': job.total_records,

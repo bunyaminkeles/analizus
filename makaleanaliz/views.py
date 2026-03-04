@@ -65,13 +65,26 @@ def create_from_dizin(request, dizin_job_id):
     return JsonResponse({'job_id': str(job.id)})
 
 
+STALE_TIMEOUT_MINUTES = 10
+
+
 @login_required
 def makaleanaliz_status(request, job_id):
     """
     Analiz iş durumunu döndür.
     GET /makaleanaliz/status/<job_id>/
     """
+    from django.utils import timezone
     job = get_object_or_404(MakaleAnaliz, id=job_id, user=request.user)
+
+    # Stale job tespiti: 10 dakikadan uzun süren işleri hata yap
+    if job.status in ('pending', 'running'):
+        elapsed = (timezone.now() - job.created_at).total_seconds()
+        if elapsed > STALE_TIMEOUT_MINUTES * 60:
+            job.mark_failed(
+                f'İşlem {STALE_TIMEOUT_MINUTES} dakika içinde tamamlanamadı. Lütfen tekrar deneyin.'
+            )
+
     data = {
         'status': job.status,
         'total_records': job.total_records,

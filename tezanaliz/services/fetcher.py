@@ -10,8 +10,9 @@ import re
 logger = logging.getLogger(__name__)
 
 MAX_RECORDS = 300
-PAGE_DELAY = 3.0   # saniye — sayfa istekleri arası
-DETAIL_DELAY = 1.5  # saniye — detay istekleri arası
+PAGE_DELAY = 2.0    # saniye — sayfa istekleri arası
+DETAIL_DELAY = 0.5  # saniye — detay istekleri arası
+JOB_TIMEOUT = 12 * 60  # saniye — toplam iş zaman aşımı (12 dk)
 
 
 def fetch_all(
@@ -20,6 +21,7 @@ def fetch_all(
     max_records=MAX_RECORDS,
     page_delay=PAGE_DELAY,
     detail_delay=DETAIL_DELAY,
+    job_timeout=JOB_TIMEOUT,
 ) -> list[dict]:
     """
     YÖK Tez'den tüm sayfalardaki temel kayıtları çeker,
@@ -99,9 +101,22 @@ def fetch_all(
         return []
 
     # --- Detay çekimi (özet, konu, dizin) ---
+    import time as _time
+    deadline = _time.monotonic() + job_timeout
+
     results = []
     for i, rec in enumerate(all_basic):
-        detail = _fetch_detail(session, rec.get('detail_id', ''), rec.get('detail_no', ''))
+        if _time.monotonic() > deadline:
+            logger.warning(
+                f'[tezanaliz fetcher] Zaman aşımı ({job_timeout}s). '
+                f'{i}/{len(all_basic)} detay tamamlanmıştı, mevcut kayıtlarla devam ediliyor.'
+            )
+            break
+        try:
+            detail = _fetch_detail(session, rec.get('detail_id', ''), rec.get('detail_no', ''))
+        except Exception as e:
+            logger.warning(f'[tezanaliz fetcher] Detay hatası kayıt {i}: {e}')
+            detail = {}
         rec.update(detail)
         results.append(rec)
         if i < len(all_basic) - 1:

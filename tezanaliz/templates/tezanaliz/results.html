@@ -172,29 +172,41 @@
 <script>
 const JOB_ID = '{{ job.id }}';
 const STATUS_URL = '/tezanaliz/status/' + JOB_ID + '/';
+const MAX_POLLS = 115;  // 115 × 8s ≈ 15 dakika
+let pollCount = 0;
+let pollTimer = null;
+
+function showError(msg) {
+    document.getElementById('loading-area').style.display = 'none';
+    const errDiv = document.createElement('div');
+    errDiv.className = 'alert alert-danger';
+    errDiv.innerHTML = '<i class="bi bi-exclamation-triangle me-2"></i><strong>Analiz başarısız:</strong> ' + msg;
+    document.querySelector('.col-lg-10').insertBefore(errDiv, document.getElementById('loading-area'));
+}
 
 function pollStatus() {
+    pollCount++;
+    if (pollCount > MAX_POLLS) {
+        clearInterval(pollTimer);
+        showError('İşlem 15 dakika içinde tamamlanamadı. YÖK Tez sunucusu yavaş yanıt veriyor olabilir. Lütfen tekrar deneyin.');
+        return;
+    }
     fetch(STATUS_URL)
         .then(r => r.json())
         .then(data => {
             if (data.status === 'completed') {
+                clearInterval(pollTimer);
                 location.reload();
             } else if (data.status === 'failed') {
-                document.getElementById('loading-area').style.display = 'none';
-                const errDiv = document.createElement('div');
-                errDiv.className = 'alert alert-danger';
-                errDiv.innerHTML = '<i class="bi bi-exclamation-triangle me-2"></i><strong>Analiz başarısız:</strong> ' + (data.error || 'Bilinmeyen hata');
-                document.querySelector('.col-lg-10').insertBefore(
-                    errDiv,
-                    document.getElementById('loading-area')
-                );
+                clearInterval(pollTimer);
+                showError(data.error || 'Bilinmeyen hata');
             }
             // pending/running → devam et
         })
         .catch(() => {});
 }
 
-setInterval(pollStatus, 8000);
+pollTimer = setInterval(pollStatus, 8000);
 </script>
 {% endif %}
 {% endblock %}
