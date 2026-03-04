@@ -1,37 +1,28 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}YÖK Ulusal Tez Merkezi Arama{% endblock %}
+{% block title %}Tez & Makale Analizi{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
     <div class="row">
         <div class="col-lg-8 offset-lg-2">
 
+            <!-- Başlık -->
             <div class="card bg-dark border-secondary text-white mb-4">
-                <div class="card-body d-flex justify-content-between align-items-start">
-                    <div>
-                        <h1 class="card-title h3 mb-2">
-                            <i class="bi bi-graph-up-arrow me-2 text-success"></i>Tez Analizi
-                        </h1>
-                        <p class="card-text text-muted mb-1">
-                            YÖK Ulusal Tez Merkezi'nde arama yapın, 10+ sonuçta <strong class="text-success">Analiz Yap</strong> butonuyla 7 grafik içeren PDF rapor alın.
-                        </p>
-                        <p class="text-muted small mb-0">
-                            Günlük <strong>{{ daily_limit }}</strong> arama hakkı — Kalan: <strong>{{ remaining }}</strong>
-                        </p>
-                    </div>
-                    {% if features.tezanaliz %}
-                    <a href="{% url 'tezanaliz:landing' %}" class="btn btn-sm btn-outline-success ms-3 text-nowrap">
-                        <i class="bi bi-clock-history me-1"></i>Analizlerim
-                    </a>
-                    {% endif %}
+                <div class="card-body">
+                    <h1 class="card-title h3 mb-2">
+                        <i class="bi bi-graph-up-arrow me-2 text-success"></i>Tez & Makale Analizi
+                    </h1>
+                    <p class="text-muted mb-1">
+                        YÖK Ulusal Tez Merkezi'nde arama yapın.
+                        Verileri indirin veya 10+ sonuçta <strong class="text-success">Analiz Yap</strong> ile 7 grafik içeren PDF rapor alın.
+                    </p>
+                    <p class="text-muted small mb-0">
+                        Günlük <strong>{{ daily_limit }}</strong> arama hakkı — Kalan: <strong>{{ remaining }}</strong>
+                    </p>
                 </div>
             </div>
-
-            {% if error %}
-            <div class="alert alert-danger">{{ error }}</div>
-            {% endif %}
 
             {% if not request.user.profile.email_verified %}
             <div class="alert alert-warning">
@@ -40,10 +31,11 @@
             </div>
             {% else %}
 
+            <!-- Arama Formu -->
             <div class="card bg-dark border-secondary text-white mb-3">
                 <div class="card-header">Arama Kriterleri</div>
                 <div class="card-body">
-                    <form id="yoktez-form" method="post">
+                    <form id="yoktez-form" method="post" action="{% url 'yoktez:landing' %}">
                         {% csrf_token %}
 
                         <div class="row g-3 mb-3">
@@ -110,12 +102,12 @@
                 <div class="card bg-dark border-secondary text-white mb-3">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <span id="results-summary">Sonuçlar</span>
-                        <div class="d-flex gap-2">
+                        <div class="d-flex gap-2 flex-wrap">
                             <button id="send-email-btn" class="btn btn-sm btn-outline-warning" style="display:none;">
                                 <i class="bi bi-envelope me-1"></i>E-posta Gönder
                             </button>
                             <a id="download-btn" href="#" class="btn btn-sm btn-primary" style="display:none;" target="_blank">
-                                <i class="bi bi-download me-1"></i>İndir
+                                <i class="bi bi-download me-1"></i>Verileri İndir
                             </a>
                             <button id="analiz-btn" class="btn btn-sm btn-success" style="display:none;" onclick="startAnaliz(event)">
                                 <i class="bi bi-bar-chart-line me-1"></i>Analiz Yap
@@ -126,12 +118,54 @@
                         <div id="email-sent-alert" class="alert alert-success" style="display:none;">
                             <i class="bi bi-check-circle me-2"></i>Sonuçlar e-posta adresinize gönderildi.
                         </div>
+                        <div id="analiz-info" class="alert alert-success" style="display:none;">
+                            <i class="bi bi-bar-chart-line me-2"></i>
+                            Analiz başlatıldı! <a id="analiz-link" href="#" class="alert-link">Sonuçları buradan takip edin →</a>
+                        </div>
                         <div id="results-list"></div>
                     </div>
                 </div>
             </div>
 
             {% endif %}
+
+            <!-- Geçmiş Analizler -->
+            {% if past_jobs %}
+            <div class="card bg-dark border-secondary text-white mt-2 mb-4">
+                <div class="card-header">
+                    <i class="bi bi-clock-history me-2"></i>Geçmiş Analizlerim
+                </div>
+                <div class="list-group list-group-flush">
+                    {% for job in past_jobs %}
+                    <div class="list-group-item bg-dark border-secondary text-white d-flex justify-content-between align-items-center py-2">
+                        <div>
+                            <div class="small fw-semibold">{{ job.get_query_summary|truncatechars:60 }}</div>
+                            <div class="text-muted" style="font-size:0.75rem;">
+                                {{ job.created_at|date:"d.m.Y H:i" }}
+                                {% if job.status == 'completed' %}· {{ job.total_records }} tez{% endif %}
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            {% if job.status == 'completed' %}
+                                <span class="badge bg-success">Tamamlandı</span>
+                                <a href="{% url 'tezanaliz:results' job.id %}" class="btn btn-sm btn-outline-success">
+                                    <i class="bi bi-eye me-1"></i>Görüntüle
+                                </a>
+                            {% elif job.status == 'running' or job.status == 'pending' %}
+                                <span class="badge bg-warning text-dark">Devam ediyor</span>
+                                <a href="{% url 'tezanaliz:results' job.id %}" class="btn btn-sm btn-outline-warning">
+                                    <i class="bi bi-hourglass-split me-1"></i>Takip Et
+                                </a>
+                            {% else %}
+                                <span class="badge bg-danger">Başarısız</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
         </div>
     </div>
 </div>
@@ -148,6 +182,7 @@ document.getElementById('yoktez-form').addEventListener('submit', function(e) {
     btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Aranıyor...';
     document.getElementById('status-area').style.display = 'block';
     document.getElementById('results-area').style.display = 'none';
+    document.getElementById('analiz-info').style.display = 'none';
 
     fetch("{% url 'yoktez:landing' %}", {
         method: 'POST',
@@ -210,12 +245,8 @@ function showResults(data) {
             <small class="text-muted d-block">
                 ${r.author || ''} ${r.year ? '· ' + r.year : ''} · ${r.university || ''}
                 ${r.thesis_type ? ' · ' + r.thesis_type : ''}
-                ${r.language ? ' · ' + r.language : ''}
             </small>
-            <small class="text-muted">Tez No: ${r.tez_no || '-'}</small>
-            ${r.danisman ? `<div class="text-muted small mt-1"><strong>Danışman:</strong> ${r.danisman}</div>` : ''}
-            ${r.abstract_tr ? `<div class="text-light small mt-2" style="line-height:1.5;">${r.abstract_tr}</div>` : ''}
-            ${r.abstract_en ? `<div class="text-muted small mt-1 fst-italic">${r.abstract_en}</div>` : ''}
+            ${r.abstract_tr ? `<div class="text-light small mt-2">${r.abstract_tr}</div>` : ''}
         </div>`;
     });
 
@@ -227,7 +258,7 @@ function showResults(data) {
         dlBtn.href = data.all_results_file_url;
         dlBtn.style.display = 'inline-block';
     }
-    if (data.total_results >= 10) {
+    if (data.total_results >= 5) {
         document.getElementById('analiz-btn').style.display = 'inline-block';
     }
 }
@@ -246,7 +277,10 @@ function startAnaliz(e) {
     .then(r => r.json())
     .then(data => {
         if (data.job_id) {
-            window.location.href = `/tezanaliz/sonuc/${data.job_id}/`;
+            btn.style.display = 'none';
+            const info = document.getElementById('analiz-info');
+            document.getElementById('analiz-link').href = `/tezanaliz/sonuc/${data.job_id}/`;
+            info.style.display = 'block';
         } else {
             btn.disabled = false;
             btn.innerHTML = '<i class="bi bi-bar-chart-line me-1"></i>Analiz Yap';
