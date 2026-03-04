@@ -79,6 +79,7 @@ def run_all_analyses(records: list[dict]) -> list[tuple[str, object]]:
         ('Yayın Türleri Dağılımı',                  lambda: publication_types(records)),
         ('Atıf Analizi ve H-index',                 lambda: citation_analysis(records)),
         ('Yıllık Atıf Trendi',                      lambda: annual_citation_trend(records)),
+        ('Araştırma Konusu Kümeleri (Topic Map)',    lambda: topic_map(records)),
     ]
     results = []
     for title, fn in analyses:
@@ -706,38 +707,51 @@ def keyword_cooccurrence(records: list[dict], max_kw: int = 40, min_cooccur: int
         top_nodes = sorted(G.degree, key=lambda x: x[1], reverse=True)[:max_kw]
         G = G.subgraph([n for n, _ in top_nodes]).copy()
 
-    degrees = dict(G.degree())
-    max_deg = max(degrees.values()) if degrees else 1
-    min_deg = min(degrees.values()) if degrees else 0
-    span = (max_deg - min_deg) or 1
+    # Community detection (VOSviewer-style cluster renklendirmesi)
+    try:
+        from networkx.algorithms.community import greedy_modularity_communities
+        communities = list(greedy_modularity_communities(G, weight='weight'))
+        node_community = {}
+        for i, comm in enumerate(communities):
+            for node in comm:
+                node_community[node] = i
+    except Exception:
+        node_community = {n: 0 for n in G.nodes()}
 
-    node_colors = [plt.cm.YlOrRd(0.2 + 0.75 * (degrees[n] - min_deg) / span)
+    n_clusters = max(node_community.values()) + 1 if node_community else 1
+    cluster_colors = PALETTE[:n_clusters] if n_clusters <= len(PALETTE) else PALETTE
+
+    degrees = dict(G.degree())
+    node_sizes = [300 + all_kw.get(n, 1) * 60 for n in G.nodes()]
+    node_colors = [cluster_colors[node_community.get(n, 0) % len(cluster_colors)]
                    for n in G.nodes()]
-    node_sizes = [200 + degrees[n] * 80 for n in G.nodes()]
     edge_weights = [G[u][v].get('weight', 1) for u, v in G.edges()]
 
-    fig, ax = plt.subplots(figsize=(10, 10))
+    fig, ax = plt.subplots(figsize=(12, 10))
     ax.set_facecolor('#f8fafc')
     fig.patch.set_facecolor('white')
 
-    pos = nx.spring_layout(G, seed=42, k=3.0)
+    pos = nx.spring_layout(G, seed=42, k=2.5, weight='weight')
 
-    nx.draw_networkx_edges(G, pos, ax=ax, alpha=0.3,
-                           width=[min(w * 0.7, 3.5) for w in edge_weights],
+    nx.draw_networkx_edges(G, pos, ax=ax, alpha=0.25,
+                           width=[min(w * 0.6, 4.0) for w in edge_weights],
                            edge_color='#94a3b8')
     nx.draw_networkx_nodes(G, pos, ax=ax, node_size=node_sizes,
-                           node_color=node_colors, alpha=0.92,
-                           linewidths=0.8, edgecolors='white')
-    nx.draw_networkx_labels(G, pos, ax=ax, font_size=8,
+                           node_color=node_colors, alpha=0.88,
+                           linewidths=1.2, edgecolors='white')
+    nx.draw_networkx_labels(G, pos, ax=ax, font_size=7.5,
                             font_color='#1e293b', font_weight='bold')
 
-    sm = plt.cm.ScalarMappable(cmap=plt.cm.YlOrRd,
-                               norm=plt.Normalize(vmin=min_deg, vmax=max_deg))
-    sm.set_array([])
-    cbar = fig.colorbar(sm, ax=ax, fraction=0.03, pad=0.02)
-    cbar.set_label('Bağlantı Sayısı', fontsize=10)
+    # Cluster legend
+    legend_patches = [
+        mpatches.Patch(color=cluster_colors[i % len(cluster_colors)],
+                       label=f'Küme {i + 1}')
+        for i in range(min(n_clusters, 8))
+    ]
+    ax.legend(handles=legend_patches, loc='lower right', fontsize=8,
+              framealpha=0.85, title='Araştırma Kümeleri', title_fontsize=9)
 
-    ax.set_title('Anahtar Kelime Eş-Oluşum Ağı')
+    ax.set_title('Anahtar Kelime Eş-Oluşum Ağı (VOSviewer-style)')
     ax.axis('off')
     fig.tight_layout(pad=2.0)
     return fig
@@ -869,6 +883,100 @@ def country_collaboration(records: list[dict], min_collab: int = 2, max_countrie
 
     ax.set_title('Ülke İşbirliği Ağı')
     ax.axis('off')
+    fig.tight_layout(pad=2.0)
+    return fig
+
+
+# ─────────────────────────── 16. Topic Map ───────────────────────────
+
+def topic_map(records: list[dict], n_topics: int = 8, top_kw_per_topic: int = 8):
+    """
+    Keyword community detection ile araştırma konusu kümeleri.
+    Her küme bir balon, boyutu o kümede kaç yayın var, rengi küme kimliği.
+    """
+    try:
+        import networkx as nx
+        from networkx.algorithms.community import greedy_modularity_communities
+    except ImportError:
+        return None
+
+    # Keyword frekansı ve co-occurrence
+    all_kw = Counter()
+    for r in records:
+        for k in r.get('keywords', []):
+            k = k.strip().lower()
+            if len(k) > 2:
+                all_kw[k] += 1
+
+    if len(all_kw) < 4:
+        return None
+
+    top_kw_set = {kw for kw, _ in all_kw.most_common(100)}
+
+    cooccur = Counter()
+    for r in records:
+        kws = list({k.strip().lower() for k in r.get('keywords', [])
+                    if k.strip().lower() in top_kw_set})
+        for i in range(len(kws)):
+            for j in range(i + 1, len(kws)):
+                cooccur[tuple(sorted([kws[i], kws[j]]))] += 1
+
+    G = nx.Graph()
+    for (k1, k2), w in cooccur.items():
+        if w >= 2:
+            G.add_edge(k1, k2, weight=w)
+
+    if G.number_of_nodes() < 4:
+        return None
+
+    communities = list(greedy_modularity_communities(G, weight='weight'))
+    communities = sorted(communities, key=len, reverse=True)[:n_topics]
+
+    # Her topluluk için: top keyword'ler + kapsanan yayın sayısı
+    topic_data = []
+    for comm in communities:
+        kws_sorted = sorted(comm, key=lambda k: all_kw.get(k, 0), reverse=True)
+        label_kws = kws_sorted[:top_kw_per_topic]
+        pub_count = sum(all_kw.get(k, 0) for k in kws_sorted[:3])
+        topic_data.append({'keywords': label_kws, 'size': pub_count, 'n_kw': len(comm)})
+
+    if not topic_data:
+        return None
+
+    # Bubble chart
+    fig, ax = plt.subplots(figsize=(14, 8))
+    ax.set_facecolor('#f8fafc')
+    fig.patch.set_facecolor('white')
+
+    import math
+    cols = min(4, len(topic_data))
+    rows = math.ceil(len(topic_data) / cols)
+
+    for idx, topic in enumerate(topic_data):
+        col = idx % cols
+        row = idx // cols
+        x = col * 3.5 + 1.5
+        y = (rows - row) * 2.5
+
+        size = 800 + topic['size'] * 15
+        color = PALETTE[idx % len(PALETTE)]
+
+        ax.scatter(x, y, s=size, color=color, alpha=0.75, zorder=2,
+                   edgecolors='white', linewidths=2)
+
+        label = '\n'.join(topic['keywords'][:5])
+        ax.text(x, y, label, ha='center', va='center',
+                fontsize=7.5, fontweight='bold', color='white',
+                zorder=3, multialignment='center',
+                bbox=dict(boxstyle='round,pad=0.1', fc='none', ec='none'))
+
+        ax.text(x, y - 1.1, f'Küme {idx + 1}  ({topic["n_kw"]} kw)',
+                ha='center', va='top', fontsize=8.5, color='#475569')
+
+    ax.set_xlim(0, cols * 3.5 + 0.5)
+    ax.set_ylim(0, (rows + 0.5) * 2.5)
+    ax.axis('off')
+    ax.set_title('Araştırma Konusu Kümeleri (Topic Map)', pad=18)
     fig.tight_layout(pad=2.0)
     return fig
 
