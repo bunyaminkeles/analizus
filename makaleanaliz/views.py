@@ -85,11 +85,17 @@ def makaleanaliz_status(request, job_id):
                 f'İşlem {STALE_TIMEOUT_MINUTES} dakika içinde tamamlanamadı. Lütfen tekrar deneyin.'
             )
 
+    queue_position = 0
+    if job.status == 'pending':
+        from analizdestek.job_queue import get_queue_position
+        queue_position = get_queue_position('makaleanaliz', str(job.id))
+
     data = {
         'status': job.status,
         'total_records': job.total_records,
         'pdf_url': job.pdf_url,
         'error': job.error_message,
+        'queue_position': queue_position,
     }
     return JsonResponse(data)
 

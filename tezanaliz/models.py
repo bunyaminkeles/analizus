@@ -97,3 +97,34 @@ class TezAnaliz(models.Model):
         if hasattr(user, 'profile') and user.profile.is_premium:
             return 5
         return 1
+
+# ---------------------------------------------------------------------------
+# Proxy modeller — MakaleAnaliz ve Bibliometrik modelleri "Analiz Servisleri"
+# admin bölümünde toplamak için (tablo değişikliği yok)
+# ---------------------------------------------------------------------------
+
+from makaleanaliz.models import MakaleAnaliz  # noqa: E402
+
+
+class MakaleAnalizProxy(MakaleAnaliz):
+    class Meta:
+        proxy = True
+        verbose_name = 'Makale Analizi'
+        verbose_name_plural = 'Makale Analizleri'
+
+
+from bibliometrics.models import BibliometricJob, BibliometricOrder  # noqa: E402
+
+
+class BibliometricJobProxy(BibliometricJob):
+    class Meta:
+        proxy = True
+        verbose_name = 'Bibliometrik Analiz İşi'
+        verbose_name_plural = 'Bibliometrik Analiz İşleri'
+
+
+class BibliometricOrderProxy(BibliometricOrder):
+    class Meta:
+        proxy = True
+        verbose_name = 'Bibliometrik Sipariş'
+        verbose_name_plural = 'Bibliometrik Siparişler'

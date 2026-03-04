@@ -112,11 +112,17 @@ def tezanaliz_status(request, job_id):
                 'YÖK Tez sunucusu yavaş yanıt veriyor olabilir. Lütfen tekrar deneyin.'
             )
 
+    queue_position = 0
+    if job.status == 'pending':
+        from analizdestek.job_queue import get_queue_position
+        queue_position = get_queue_position('tezanaliz', str(job.id))
+
     data = {
         'status': job.status,
         'total_records': job.total_records,
         'pdf_url': job.pdf_url,
         'error': job.error_message,
+        'queue_position': queue_position,
     }
     return JsonResponse(data)
 

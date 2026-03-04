@@ -36,6 +36,12 @@
                             YÖK Tez'den tüm kayıtlar çekiliyor, analizler hesaplanıyor...<br>
                             <small>Bu işlem birkaç dakika sürebilir. Sayfayı kapatabilirsiniz — sonuçlar email ile de gönderilecektir.</small>
                         </p>
+                        <div id="queue-info" class="mt-3" style="display:none;">
+                            <span class="badge bg-warning text-dark fs-6 px-3 py-2">
+                                <i class="bi bi-hourglass-split me-1"></i>
+                                <span id="queue-pos-text">Kuyrukta bekliyorsunuz</span>
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -200,8 +206,19 @@ function pollStatus() {
             } else if (data.status === 'failed') {
                 clearInterval(pollTimer);
                 showError(data.error || 'Bilinmeyen hata');
+            } else if (data.queue_position > 0) {
+                const qInfo = document.getElementById('queue-info');
+                const qText = document.getElementById('queue-pos-text');
+                if (qInfo && qText) {
+                    qInfo.style.display = 'block';
+                    qText.textContent = data.queue_position === 1
+                        ? 'Sıradaki iş sizsiniz, analiz çok yakında başlayacak'
+                        : data.queue_position + '. sıradasınız — önceki analizin bitmesi bekleniyor';
+                }
+            } else {
+                const qInfo = document.getElementById('queue-info');
+                if (qInfo) qInfo.style.display = 'none';
             }
-            // pending/running → devam et
         })
         .catch(() => {});
 }
