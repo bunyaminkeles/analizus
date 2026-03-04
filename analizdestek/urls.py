@@ -56,6 +56,9 @@ urlpatterns = [
     # Tez & Makale Analizi
     path('tezanaliz/', include('tezanaliz.urls', namespace='tezanaliz')),
 
+    # TR Dizin Makale Analizi
+    path('makaleanaliz/', include('makaleanaliz.urls', namespace='makaleanaliz')),
+
     # 4. Forum Uygulaması (En sona koymak çakışmaları önler)
     path('', include('forum.urls')),
     path('i18n/', include('django.conf.urls.i18n')), # DİL MOTORU BURADA

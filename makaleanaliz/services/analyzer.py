@@ -1,5 +1,5 @@
 """
-Tez & Makale Analiz Modülü — 7 analiz
+TR Dizin Makale Analiz Modülü — 7 analiz
 Beyaz/açık tema, profesyonel grafikler.
 Her fonksiyon (title, matplotlib.figure.Figure) tuple döndürür.
 """
@@ -13,6 +13,7 @@ logger = logging.getLogger(__name__)
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+
 plt.rcParams.update({
     'figure.facecolor':     'white',
     'axes.facecolor':       '#f8fafc',
@@ -40,7 +41,7 @@ PALETTE = [
     '#EDC948', '#B07AA1', '#FF9DA7', '#9C755F', '#BAB0AC',
 ]
 
-# İngilizce stopwords (sklearn'deki ile uyumlu genişletilmiş set)
+# İngilizce stopwords
 EN_STOPWORDS = {
     'the', 'of', 'and', 'in', 'a', 'an', 'to', 'is', 'are', 'was', 'were',
     'that', 'for', 'on', 'with', 'as', 'by', 'at', 'from', 'this', 'it',
@@ -75,9 +76,9 @@ def _get_lemmatizer():
             nltk.download('wordnet', quiet=True)
             nltk.download('omw-1.4', quiet=True)
         _lemmatizer = WordNetLemmatizer()
-        logger.info('[tezanaliz] NLTK WordNetLemmatizer yüklendi.')
+        logger.info('[makaleanaliz] NLTK WordNetLemmatizer yüklendi.')
     except Exception as e:
-        logger.warning(f'[tezanaliz] NLTK lemmatizer yüklenemedi, lemmatization atlanıyor: {e}')
+        logger.warning(f'[makaleanaliz] NLTK lemmatizer yüklenemedi, lemmatization atlanıyor: {e}')
         _lemmatizer = None
     _lemmatizer_ready = True
     return _lemmatizer
@@ -97,12 +98,11 @@ def _lemmatize_text(text: str) -> str:
 def _get_english_text(rec: dict) -> str:
     """
     Record'dan İngilizce analiz metni oluştur.
-    abstract_en varsa kullan, yoksa abstract_tr'yi fallback yap.
+    abstract_en varsa kullan, yoksa abstract_tr'ye düş.
     """
     title = rec.get('title', '')
     abstract_en = rec.get('abstract_en', '')
     abstract_tr = rec.get('abstract_tr', '')
-    # İngilizce özet tercih et, yoksa Türkçe'ye düş
     abstract = abstract_en or abstract_tr
     return ' '.join(p for p in [title, abstract] if p)
 
@@ -117,23 +117,27 @@ def _safe_year(rec) -> int | None:
     return None
 
 
-def _normalize_type(raw: str) -> str:
-    r = (raw or '').strip().lower()
-    if 'doktora' in r or 'doctorate' in r or 'phd' in r:
-        return 'Doktora'
-    if 'tıpta' in r or 'tipta' in r or 'uzmanl' in r or 'medicine' in r:
-        return 'Tıpta Uzmanlık'
-    if 'yüksek' in r or 'yuksek' in r or 'master' in r or 'msc' in r:
-        return 'Yüksek Lisans'
-    if r:
-        return raw.strip()
-    return 'Diğer'
+def _normalize_pub_type(raw: str) -> str:
+    r = (raw or '').strip()
+    if not r:
+        return 'Diğer'
+    # TR Dizin tipik yayın türleri
+    r_lower = r.lower()
+    if 'araştırma' in r_lower or 'research' in r_lower or 'özgün' in r_lower:
+        return 'Araştırma Makalesi'
+    if 'derleme' in r_lower or 'review' in r_lower:
+        return 'Derleme'
+    if 'olgu' in r_lower or 'case' in r_lower:
+        return 'Olgu Sunumu'
+    if 'editör' in r_lower or 'editor' in r_lower or 'letter' in r_lower or 'mektup' in r_lower:
+        return 'Editöre Mektup'
+    return r.strip()
 
 
-# ─── 1. Tez Türü Pasta Grafik ────────────────────────────────────────────────
+# ─── 1. Yayın Türü Pasta Grafik ───────────────────────────────────────────────
 
-def thesis_type_chart(records: list[dict]) -> tuple[str, plt.Figure] | None:
-    counts = Counter(_normalize_type(r.get('thesis_type', '')) for r in records)
+def publication_type_chart(records: list[dict]) -> tuple[str, plt.Figure] | None:
+    counts = Counter(_normalize_pub_type(r.get('publication_type', '')) for r in records)
     counts.pop('Diğer', None)
     if not counts:
         return None
@@ -149,23 +153,24 @@ def thesis_type_chart(records: list[dict]) -> tuple[str, plt.Figure] | None:
     )
     for at in autotexts:
         at.set_fontsize(10)
-    ax.set_title('Tez Türlerine Göre Dağılım')
+    ax.set_title('Yayın Türlerine Göre Dağılım')
     fig.tight_layout()
-    return ('Tez Türleri Dağılımı', fig)
+    return ('Yayın Türleri Dağılımı', fig)
 
 
-# ─── 2. Yıl × Tez Türü Stacked Bar ──────────────────────────────────────────
+# ─── 2. Yıl × Yayın Türü Stacked Bar ─────────────────────────────────────────
 
 def type_year_trend(records: list[dict]) -> tuple[str, plt.Figure] | None:
     type_year: dict[str, Counter] = defaultdict(Counter)
     for r in records:
         y = _safe_year(r)
-        t = _normalize_type(r.get('thesis_type', ''))
+        t = _normalize_pub_type(r.get('publication_type', ''))
         if y and t != 'Diğer':
             type_year[t][y] += 1
 
     if not type_year:
-        return None
+        # Fallback: sadece yıl trendi
+        return _simple_year_trend(records)
 
     all_years = sorted({y for c in type_year.values() for y in c})
     if len(all_years) < 2:
@@ -181,43 +186,64 @@ def type_year_trend(records: list[dict]) -> tuple[str, plt.Figure] | None:
         ax.bar(all_years, vals, bottom=bottoms, label=t, color=PALETTE[i], width=0.7)
         bottoms = [b + v for b, v in zip(bottoms, vals)]
 
-    ax.set_title('Yıllara Göre Tez Türü Trendi')
+    ax.set_title('Yıllara Göre Yayın Türü Trendi')
     ax.set_xlabel('Yıl')
-    ax.set_ylabel('Tez Sayısı')
+    ax.set_ylabel('Yayın Sayısı')
     ax.legend(loc='upper left', fontsize=9)
     ax.set_xticks(all_years)
     ax.tick_params(axis='x', rotation=45)
     ax.yaxis.grid(True)
     fig.tight_layout()
-    return ('Yıl × Tez Türü Trendi', fig)
+    return ('Yıl × Yayın Türü Trendi', fig)
 
 
-# ─── 3. Üniversite Üretkenliği ────────────────────────────────────────────────
+def _simple_year_trend(records: list[dict]) -> tuple[str, plt.Figure] | None:
+    year_counts: Counter = Counter()
+    for r in records:
+        y = _safe_year(r)
+        if y:
+            year_counts[y] += 1
+    if len(year_counts) < 2:
+        return None
+    years = sorted(year_counts.keys())
+    counts = [year_counts[y] for y in years]
+    fig, ax = plt.subplots(figsize=(10, 5))
+    ax.bar(years, counts, color=PALETTE[0], width=0.7)
+    ax.set_title('Yıllara Göre Yayın Sayısı')
+    ax.set_xlabel('Yıl')
+    ax.set_ylabel('Yayın Sayısı')
+    ax.set_xticks(years)
+    ax.tick_params(axis='x', rotation=45)
+    ax.yaxis.grid(True)
+    fig.tight_layout()
+    return ('Yıl Trendi', fig)
 
-def university_productivity(records: list[dict]) -> tuple[str, plt.Figure] | None:
+
+# ─── 3. Dergi Üretkenliği ─────────────────────────────────────────────────────
+
+def journal_productivity(records: list[dict]) -> tuple[str, plt.Figure] | None:
     counts = Counter(
-        (r.get('university') or '').strip()
+        (r.get('journal') or '').strip()
         for r in records
-        if (r.get('university') or '').strip()
+        if (r.get('journal') or '').strip()
     )
     if not counts:
         return None
 
     top = counts.most_common(15)
-    labels = [u for u, _ in top]
+    labels = [j for j, _ in top]
     values = [c for _, c in top]
 
-    # Uzun isimleri kısalt
-    labels = [l if len(l) <= 35 else l[:33] + '…' for l in labels]
+    labels = [l if len(l) <= 40 else l[:38] + '…' for l in labels]
 
     fig, ax = plt.subplots(figsize=(9, max(5, len(labels) * 0.45)))
     bars = ax.barh(labels[::-1], values[::-1], color=PALETTE[0])
     ax.bar_label(bars, padding=3, fontsize=9)
-    ax.set_title('Üniversite Bazında Tez Üretkenliği (Top 15)')
-    ax.set_xlabel('Tez Sayısı')
+    ax.set_title('Dergi Bazında Yayın Üretkenliği (Top 15)')
+    ax.set_xlabel('Yayın Sayısı')
     ax.xaxis.grid(True)
     fig.tight_layout()
-    return ('Üniversite Üretkenliği', fig)
+    return ('Dergi Üretkenliği', fig)
 
 
 # ─── 4. TF-IDF Anahtar Kelime Bar ────────────────────────────────────────────
@@ -245,7 +271,7 @@ def keyword_tfidf_chart(records: list[dict]) -> tuple[str, plt.Figure] | None:
         top_words = [feature_names[i] for i in top_idx]
         top_scores = [scores[i] for i in top_idx]
     except Exception as e:
-        logger.warning(f'[tezanaliz] TF-IDF hatası: {e}')
+        logger.warning(f'[makaleanaliz] TF-IDF hatası: {e}')
         return None
 
     fig, ax = plt.subplots(figsize=(9, 6))
@@ -275,7 +301,6 @@ def trend_5year(records: list[dict]) -> tuple[str, plt.Figure] | None:
     years = sorted(year_counts.keys())
     counts = [year_counts[y] for y in years]
 
-    # Büyüme oranı (ilk yıl → son yıl)
     growth_pct = None
     if counts[0] > 0:
         growth_pct = ((counts[-1] - counts[0]) / counts[0]) * 100
@@ -284,7 +309,6 @@ def trend_5year(records: list[dict]) -> tuple[str, plt.Figure] | None:
     ax.plot(years, counts, marker='o', color=PALETTE[0], linewidth=2.5, markersize=8)
     ax.fill_between(years, counts, alpha=0.15, color=PALETTE[0])
 
-    # Büyüme annotation
     if growth_pct is not None:
         direction = '▲' if growth_pct >= 0 else '▼'
         color = '#059669' if growth_pct >= 0 else '#DC2626'
@@ -298,9 +322,9 @@ def trend_5year(records: list[dict]) -> tuple[str, plt.Figure] | None:
             fontweight='bold',
         )
 
-    ax.set_title(f'Son 5 Yıl Tez Trendi ({start_year}–{current_year})')
+    ax.set_title(f'Son 5 Yıl Yayın Trendi ({start_year}–{current_year})')
     ax.set_xlabel('Yıl')
-    ax.set_ylabel('Tez Sayısı')
+    ax.set_ylabel('Yayın Sayısı')
     ax.set_xticks(years)
     ax.yaxis.grid(True)
     fig.tight_layout()
@@ -317,7 +341,7 @@ def lda_topics_chart(records: list[dict]) -> tuple[str, plt.Figure] | None:
             texts.append(t)
 
     if len(texts) < 10:
-        logger.info('[tezanaliz] LDA için yeterli metin yok, atlanıyor.')
+        logger.info('[makaleanaliz] LDA için yeterli metin yok, atlanıyor.')
         return None
 
     try:
@@ -342,7 +366,7 @@ def lda_topics_chart(records: list[dict]) -> tuple[str, plt.Figure] | None:
         )
         lda.fit(dtm)
     except Exception as e:
-        logger.warning(f'[tezanaliz] LDA hatası: {e}')
+        logger.warning(f'[makaleanaliz] LDA hatası: {e}')
         return None
 
     n_top_words = 8
@@ -354,12 +378,11 @@ def lda_topics_chart(records: list[dict]) -> tuple[str, plt.Figure] | None:
         top_idx = topic.argsort()[:-n_top_words - 1:-1]
         words = [feature_names[i] for i in top_idx]
         scores = topic[top_idx]
-        scores = scores / scores.sum()  # normalize
+        scores = scores / scores.sum()
         topic_labels.append(f'Konu {topic_idx + 1}')
         topic_words_list.append(words)
         topic_scores_list.append(scores)
 
-    # Yatay grouped bar grafik
     fig, axes = plt.subplots(1, n_topics, figsize=(4 * n_topics, 5), sharey=False)
     if n_topics == 1:
         axes = [axes]
@@ -379,24 +402,30 @@ def lda_topics_chart(records: list[dict]) -> tuple[str, plt.Figure] | None:
     return ('LDA Konu Modelleme', fig)
 
 
-# ─── 7. İngilizce Kelime Bulutu ───────────────────────────────────────────────
+# ─── 7. Anahtar Kelime Bulutu ─────────────────────────────────────────────────
 
-def subject_wordcloud(records: list[dict]) -> tuple[str, plt.Figure] | None:
+def keyword_wordcloud(records: list[dict]) -> tuple[str, plt.Figure] | None:
     """
-    İngilizce abstract + title kelimelerinden kelime bulutu.
-    Lemmatize edilmiş kelimeler, stopword filtreli.
+    keywords_en tercih edilir. Yoksa abstract_en'den lemmatize kelimeler kullanılır.
     """
     word_freq: Counter = Counter()
 
     for r in records:
-        text = _lemmatize_text(_get_english_text(r))
-        words = re.findall(r'\b[a-zA-Z]{4,}\b', text)
-        for w in words:
+        # 1. Önce keywords_en listesi
+        kws_en = r.get('keywords_en') or []
+        if isinstance(kws_en, list):
+            for kw in kws_en:
+                kw = str(kw).strip().lower()
+                if len(kw) > 2 and kw not in EN_STOPWORDS:
+                    word_freq[kw] += 2  # anahtar kelimelere ağırlık ver
+        # 2. abstract_en'den lemmatize kelimeler ile destekle
+        abstract_text = _lemmatize_text(r.get('abstract_en', '') or r.get('abstract_tr', ''))
+        for w in re.findall(r'\b[a-zA-Z]{4,}\b', abstract_text):
             if w not in EN_STOPWORDS:
                 word_freq[w] += 1
 
-    if len(word_freq) < 10:
-        logger.info('[tezanaliz] Yeterli İngilizce kelime yok, wordcloud atlanıyor.')
+    if len(word_freq) < 5:
+        logger.info('[makaleanaliz] Yeterli anahtar kelime yok, wordcloud atlanıyor.')
         return None
 
     try:
@@ -408,24 +437,25 @@ def subject_wordcloud(records: list[dict]) -> tuple[str, plt.Figure] | None:
             colormap='tab10',
             max_words=80,
             prefer_horizontal=0.8,
+            font_path=None,
         ).generate_from_frequencies(word_freq)
 
         fig, ax = plt.subplots(figsize=(10, 5))
         ax.imshow(wc, interpolation='bilinear')
         ax.axis('off')
-        ax.set_title('Anahtar Kelime Bulutu (İngilizce, Lemmatized)')
+        ax.set_title('Anahtar Kelime Bulutu')
         fig.tight_layout()
         return ('Anahtar Kelime Bulutu', fig)
     except Exception as e:
-        logger.warning(f'[tezanaliz] Wordcloud hatası: {e}')
+        logger.warning(f'[makaleanaliz] Wordcloud hatası: {e}')
         return None
 
 
-# ─── Benzer Tezler (web display, PDF'e girmez) ───────────────────────────────
+# ─── Benzer Makaleler (web display, PDF'e girmez) ────────────────────────────
 
-def compute_similar_theses(records: list[dict], query_text: str, top_n: int = 10) -> list[dict]:
+def compute_similar_articles(records: list[dict], query_text: str, top_n: int = 10) -> list[dict]:
     """
-    Arama sorgusuna en benzer N tezi döndürür.
+    Arama sorgusuna en benzer N makaleyi döndürür.
     TF-IDF cosine similarity kullanır.
     """
     if not query_text or len(records) < 3:
@@ -454,18 +484,17 @@ def compute_similar_theses(records: list[dict], query_text: str, top_n: int = 10
                 continue
             r = records[idx]
             result.append({
-                'title': r.get('title') or r.get('title_tr', ''),
-                'title_tr': r.get('title_tr', ''),
-                'author': r.get('author', ''),
+                'title': r.get('title', ''),
+                'authors': r.get('authors', ''),
                 'year': r.get('year', ''),
-                'university': r.get('university', ''),
-                'thesis_type': _normalize_type(r.get('thesis_type', '')),
-                'tez_no': r.get('tez_no', ''),
+                'journal': r.get('journal', ''),
+                'publication_type': _normalize_pub_type(r.get('publication_type', '')),
+                'doi': r.get('doi', ''),
                 'similarity': round(float(sims[idx]), 3),
             })
         return result
     except Exception as e:
-        logger.warning(f'[tezanaliz] Benzer tez hesaplama hatası: {e}')
+        logger.warning(f'[makaleanaliz] Benzer makale hesaplama hatası: {e}')
         return []
 
 
@@ -476,13 +505,13 @@ def run_all_analyses(records: list[dict]) -> list[tuple[str, plt.Figure]]:
     7 analizi çalıştırır, geçerli (None olmayan) sonuçları döndürür.
     """
     funcs = [
-        thesis_type_chart,
+        publication_type_chart,
         type_year_trend,
-        university_productivity,
+        journal_productivity,
         keyword_tfidf_chart,
         trend_5year,
         lda_topics_chart,
-        subject_wordcloud,
+        keyword_wordcloud,
     ]
 
     figures = []
@@ -492,6 +521,6 @@ def run_all_analyses(records: list[dict]) -> list[tuple[str, plt.Figure]]:
             if result is not None:
                 figures.append(result)
         except Exception as e:
-            logger.error(f'[tezanaliz] {fn.__name__} hatası: {e}', exc_info=True)
+            logger.error(f'[makaleanaliz] {fn.__name__} hatası: {e}', exc_info=True)
 
     return figures

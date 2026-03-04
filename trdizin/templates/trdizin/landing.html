@@ -72,6 +72,13 @@
                             <div class="d-flex flex-wrap gap-2">
                                 <button id="send-email-btn" class="btn btn-success"><i class="fas fa-envelope"></i> Sonuçları E-posta Gönder</button>
                                 <a id="download-btn" href="#" class="btn btn-primary d-none" target="_blank"><i class="fas fa-download"></i> Tüm Sonuçları İndir</a>
+                                <button id="analiz-btn" class="btn btn-info d-none" onclick="startAnaliz(event)">
+                                    <i class="bi bi-bar-chart-line me-1"></i> Analiz Yap
+                                </button>
+                            </div>
+                            <div id="analiz-info" class="alert alert-info mt-2" style="display:none;">
+                                <i class="bi bi-bar-chart-line me-2"></i>
+                                Analiz başlatıldı! <a id="analiz-link" href="#" class="alert-link">Sonuçları buradan takip edin →</a>
                             </div>
                         </div>
                         <div id="email-status" class="mt-2"></div>
@@ -124,6 +131,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const sendEmailBtn = document.getElementById('send-email-btn');
     const downloadBtn = document.getElementById('download-btn');
+    const analizBtn = document.getElementById('analiz-btn');
+    const analizInfo = document.getElementById('analiz-info');
     const emailStatus = document.getElementById('email-status');
 
     let currentJobId = null;
@@ -358,7 +367,39 @@ document.addEventListener('DOMContentLoaded', function() {
 
         resultsActions.style.display = 'block';
 
+        if (data.total_results >= 5) {
+            analizBtn.classList.remove('d-none');
+        }
     }
+
+    window.startAnaliz = function(e) {
+        e.preventDefault();
+        if (!currentJobId) return;
+        analizBtn.disabled = true;
+        analizBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Başlatılıyor...';
+        const csrf = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        fetch(`/makaleanaliz/dizin/${currentJobId}/`, {
+            method: 'POST',
+            headers: {'X-CSRFToken': csrf, 'X-Requested-With': 'XMLHttpRequest'},
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.job_id) {
+                analizBtn.style.display = 'none';
+                document.getElementById('analiz-link').href = `/makaleanaliz/sonuc/${data.job_id}/`;
+                analizInfo.style.display = 'block';
+            } else {
+                analizBtn.disabled = false;
+                analizBtn.innerHTML = '<i class="bi bi-bar-chart-line me-1"></i> Analiz Yap';
+                alert(data.error || 'Analiz başlatılamadı.');
+            }
+        })
+        .catch(err => {
+            analizBtn.disabled = false;
+            analizBtn.innerHTML = '<i class="bi bi-bar-chart-line me-1"></i> Analiz Yap';
+            alert('Bağlantı hatası: ' + err);
+        });
+    };
 
     sendEmailBtn.addEventListener('click', function() {
         sendEmailBtn.disabled = true;

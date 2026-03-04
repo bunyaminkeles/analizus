@@ -1094,6 +1094,13 @@ class SiteSettings(models.Model):
     feature_yoktez = models.BooleanField(default=True, verbose_name="YÖK Tez Arama")
     feature_tezanaliz = models.BooleanField(default=True, verbose_name="Tez & Makale Analizi")
 
+    # Analiz Limitleri
+    analiz_max_records = models.PositiveIntegerField(
+        default=500,
+        verbose_name="Analiz Maks. Kayıt Sayısı",
+        help_text="Tez & Makale Analizi ve TR Dizin Makale Analizi için işlenecek maksimum kayıt sayısı. (default: 500)",
+    )
+
     # Bibliometrik Analiz Fiyatlandırma (TL)
     biblio_price_500 = models.PositiveIntegerField(default=500, verbose_name="0-500 kayıt fiyatı (TL)")
     biblio_price_2000 = models.PositiveIntegerField(default=900, verbose_name="501-2000 kayıt fiyatı (TL)")
