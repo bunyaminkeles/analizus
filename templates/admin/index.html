@@ -356,7 +356,7 @@
 
     <!-- Kuyruk Durumu -->
     {% get_queue_status as q %}
-    <div class="row mb-3">
+    <div class="row mb-3" id="queue-section">
         <div class="col-12">
             <div class="dashboard-card">
                 <div class="card-header d-flex justify-content-between align-items-center">
@@ -564,5 +564,55 @@ document.addEventListener('DOMContentLoaded', function() {
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+// Kuyruk Durumu otomatik yenileme (10 saniyede bir)
+(function() {
+    function renderQueueBadges(data) {
+        var html = '';
+        if (data.running_count) html += '<span class="badge badge-warning mr-1">' + data.running_count + ' çalışıyor</span>';
+        if (data.pending_count) html += '<span class="badge badge-secondary">' + data.pending_count + ' bekliyor</span>';
+        if (!data.running_count && !data.pending_count) html += '<span class="text-success">Kuyruk boş</span>';
+        return html;
+    }
+
+    function renderQueueRows(rows) {
+        if (!rows || rows.length === 0) {
+            return '<div class="p-3 text-center text-muted">Şu anda kuyrukta iş yok.</div>';
+        }
+        var html = '<div class="table-responsive"><table class="table table-dashboard table-hover mb-0"><thead><tr><th>Servis</th><th>Kullanıcı</th><th>Durum</th><th>Başlangıç</th><th>ID</th></tr></thead><tbody>';
+        rows.forEach(function(row) {
+            var badge = row.status === 'running'
+                ? '<span class="badge badge-warning">' + row.status_label + '</span>'
+                : '<span class="badge badge-secondary">' + row.status_label + '</span>';
+            html += '<tr><td>' + row.type + '</td><td class="text-info">' + row.user + '</td><td>' + badge + '</td><td class="text-muted small">' + row.since + ' önce</td><td class="text-muted small font-monospace">' + row.id_short + '…</td></tr>';
+        });
+        html += '</tbody></table></div>';
+        return html;
+    }
+
+    function refreshQueue() {
+        fetch('/api/admin/queue-status/')
+            .then(function(r) { return r.ok ? r.json() : null; })
+            .then(function(data) {
+                if (!data) return;
+                var badgeEl = document.getElementById('queue-badges');
+                var bodyEl = document.getElementById('queue-body');
+                if (badgeEl) badgeEl.innerHTML = renderQueueBadges(data);
+                if (bodyEl) bodyEl.innerHTML = renderQueueRows(data.rows);
+            })
+            .catch(function() {});
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        // Badge ve body elementlerine id ver (template'deki statik içeriği replace etmek için)
+        var cardHeader = document.querySelector('#queue-section .card-header span.text-muted');
+        var cardBody = document.querySelector('#queue-section .card-body');
+        if (cardHeader) cardHeader.id = 'queue-badges';
+        if (cardBody) cardBody.id = 'queue-body';
+        setInterval(refreshQueue, 10000);
+    });
+})();
+</script>
 
 {% endblock %}
