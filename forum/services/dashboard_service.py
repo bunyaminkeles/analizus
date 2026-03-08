@@ -23,11 +23,6 @@ def get_dashboard_context():
     total_posts = Post.objects.count()
     total_views = Topic.objects.aggregate(total=Sum('views'))['total'] or 0
 
-    # Bugünkü istatistikler
-    today_users = User.objects.filter(date_joined__date=today).count()
-    today_topics = Topic.objects.filter(created_at__date=today).count()
-    today_posts = Post.objects.filter(created_at__date=today).count()
-
     # Son 7 gün
     week_users = User.objects.filter(date_joined__date__gte=last_7_days).count()
     week_topics = Topic.objects.filter(created_at__date__gte=last_7_days).count()
@@ -37,26 +32,38 @@ def get_dashboard_context():
     verified_users = Profile.objects.filter(email_verified=True).count()
     unverified_users = Profile.objects.filter(email_verified=False).count()
 
-    account_types = Profile.objects.values('account_type').annotate(
-        count=Count('id')
-    ).order_by('-count')
-
     rank_distribution = Profile.objects.values('rank').annotate(
         count=Count('id')
     ).order_by('-count')
 
     # === SON 7 GÜNLÜK TREND (Grafik için) ===
-    user_trend = []
-    topic_trend = []
-    post_trend = []
-    labels = []
+    from django.db.models.functions import TruncDate
 
+    trend_start = today - timedelta(days=6)
+
+    user_counts = {
+        r['day']: r['cnt']
+        for r in User.objects.filter(date_joined__date__gte=trend_start)
+            .annotate(day=TruncDate('date_joined')).values('day').annotate(cnt=Count('id'))
+    }
+    topic_counts = {
+        r['day']: r['cnt']
+        for r in Topic.objects.filter(created_at__date__gte=trend_start)
+            .annotate(day=TruncDate('created_at')).values('day').annotate(cnt=Count('id'))
+    }
+    post_counts = {
+        r['day']: r['cnt']
+        for r in Post.objects.filter(created_at__date__gte=trend_start)
+            .annotate(day=TruncDate('created_at')).values('day').annotate(cnt=Count('id'))
+    }
+
+    labels, user_trend, topic_trend, post_trend = [], [], [], []
     for i in range(6, -1, -1):
         date = today - timedelta(days=i)
         labels.append(date.strftime('%d %b'))
-        user_trend.append(User.objects.filter(date_joined__date=date).count())
-        topic_trend.append(Topic.objects.filter(created_at__date=date).count())
-        post_trend.append(Post.objects.filter(created_at__date=date).count())
+        user_trend.append(user_counts.get(date, 0))
+        topic_trend.append(topic_counts.get(date, 0))
+        post_trend.append(post_counts.get(date, 0))
 
     # === KATEGORİ ANALİZİ ===
     category_stats = Category.objects.annotate(
@@ -92,15 +99,11 @@ def get_dashboard_context():
         'total_topics': total_topics,
         'total_posts': total_posts,
         'total_views': total_views,
-        'today_users': today_users,
-        'today_topics': today_topics,
-        'today_posts': today_posts,
         'week_users': week_users,
         'week_topics': week_topics,
         'week_posts': week_posts,
         'verified_users': verified_users,
         'unverified_users': unverified_users,
-        'account_types': account_types,
         'rank_distribution': rank_distribution,
         'chart_labels_json': json.dumps(labels),
         'user_trend_json': json.dumps(user_trend),
