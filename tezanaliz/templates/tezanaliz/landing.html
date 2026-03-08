@@ -87,12 +87,21 @@
                 </div>
             </div>
 
+            <!-- Devam eden tarama banner -->
+            <div id="resume-banner" style="display:none;" class="alert alert-info mb-3">
+                <i class="bi bi-arrow-repeat me-2"></i>
+                Devam eden bir tarama var. Sonuçlar hazır olduğunda burada görünecek.
+            </div>
+
             <!-- Yükleniyor -->
             <div id="status-area" style="display:none;" class="mb-3">
                 <div class="card bg-dark border-secondary text-white">
                     <div class="card-body text-center py-4">
                         <div class="spinner-border text-warning mb-3" role="status"></div>
-                        <p class="mb-0">YÖK Tez sunucusundan veri çekiliyor, lütfen bekleyin...</p>
+                        <p class="mb-2">YÖK Tez sunucusundan veri çekiliyor, lütfen bekleyin...</p>
+                        <button id="cancel-btn" class="btn btn-sm btn-outline-danger" onclick="cancelJob()">
+                            <i class="bi bi-x-circle me-1"></i>İptal
+                        </button>
                     </div>
                 </div>
             </div>
@@ -106,7 +115,7 @@
                             <button id="send-email-btn" class="btn btn-sm btn-outline-warning" style="display:none;">
                                 <i class="bi bi-envelope me-1"></i>E-posta Gönder
                             </button>
-                            <a id="download-btn" href="#" class="btn btn-sm btn-primary" style="display:none;" target="_blank">
+                            <a id="download-btn" href="#" class="btn btn-sm btn-primary" style="display:none;">
                                 <i class="bi bi-download me-1"></i>Verileri İndir
                             </a>
                             <button id="analiz-btn" class="btn btn-sm btn-success" style="display:none;" onclick="startAnaliz(event)">
@@ -174,38 +183,47 @@
 let currentJobId = null;
 let pollInterval = null;
 
-function startPolling(jobId) {
-    currentJobId = jobId;
-    document.getElementById('status-area').style.display = 'block';
-    document.getElementById('results-area').style.display = 'none';
-    document.getElementById('search-btn').disabled = true;
-    document.getElementById('search-btn').innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Aranıyor...';
-    if (pollInterval) clearInterval(pollInterval);
-    pollInterval = setInterval(pollStatus, 3000);
-}
-
-function stopPolling() {
-    if (pollInterval) clearInterval(pollInterval);
-    pollInterval = null;
-    currentJobId = null;
-}
-
 // Sayfa yüklenince devam eden job var mı kontrol et (server-side)
 {% if active_job_id %}
-startPolling('{{ active_job_id }}');
+currentJobId = '{{ active_job_id }}';
+sessionStorage.setItem('yoktez_job_id', currentJobId);
+document.getElementById('status-area').style.display = 'block';
+document.getElementById('search-btn').disabled = true;
+document.getElementById('search-btn').innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Aranıyor...';
+pollInterval = setInterval(pollStatus, 3000);
+{% else %}
+// sessionStorage'dan önceki job'ı geri yükle
+(function() {
+    const savedId = sessionStorage.getItem('yoktez_job_id');
+    if (!savedId) return;
+    fetch(`/yoktez/status/${savedId}/`)
+        .then(r => r.ok ? r.json() : null)
+        .then(data => {
+            if (!data) { sessionStorage.removeItem('yoktez_job_id'); return; }
+            currentJobId = savedId;
+            if (data.status === 'completed') {
+                showResults(data);
+            } else if (data.status === 'pending' || data.status === 'running') {
+                showResumeBanner(savedId);
+                document.getElementById('search-btn').disabled = true;
+                document.getElementById('search-btn').innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Aranıyor...';
+                pollInterval = setInterval(pollStatus, 3000);
+            } else {
+                sessionStorage.removeItem('yoktez_job_id');
+            }
+        })
+        .catch(() => {});
+})();
 {% endif %}
-
-// Sayfa terk edilirken uyar
-window.addEventListener('beforeunload', function(e) {
-    if (currentJobId && pollInterval) {
-        e.preventDefault();
-        e.returnValue = '';
-    }
-});
 
 document.getElementById('yoktez-form').addEventListener('submit', function(e) {
     e.preventDefault();
     const form = this;
+    const btn = document.getElementById('search-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Aranıyor...';
+    document.getElementById('status-area').style.display = 'block';
+    document.getElementById('results-area').style.display = 'none';
     document.getElementById('analiz-info').style.display = 'none';
 
     fetch("{% url 'yoktez:landing' %}", {
@@ -216,10 +234,11 @@ document.getElementById('yoktez-form').addEventListener('submit', function(e) {
     .then(r => r.json())
     .then(data => {
         if (data.success) {
-            startPolling(data.job_id);
+            currentJobId = data.job_id;
+            sessionStorage.setItem('yoktez_job_id', currentJobId);
+            pollInterval = setInterval(pollStatus, 3000);
         } else {
             document.getElementById('status-area').style.display = 'none';
-            const btn = document.getElementById('search-btn');
             btn.disabled = false;
             btn.innerHTML = '<i class="bi bi-search me-1"></i>Ara';
             alert(data.error || 'Bir hata oluştu.');
@@ -227,7 +246,6 @@ document.getElementById('yoktez-form').addEventListener('submit', function(e) {
     })
     .catch(err => {
         document.getElementById('status-area').style.display = 'none';
-        const btn = document.getElementById('search-btn');
         btn.disabled = false;
         btn.innerHTML = '<i class="bi bi-search me-1"></i>Ara';
         alert('Bağlantı hatası: ' + err);
@@ -240,12 +258,16 @@ function pollStatus() {
         .then(r => r.json())
         .then(data => {
             if (data.status === 'completed') {
-                stopPolling();
+                clearInterval(pollInterval);
+                pollInterval = null;
                 showResults(data);
                 document.getElementById('search-btn').disabled = false;
                 document.getElementById('search-btn').innerHTML = '<i class="bi bi-search me-1"></i>Ara';
             } else if (data.status === 'failed') {
-                stopPolling();
+                clearInterval(pollInterval);
+                pollInterval = null;
+                sessionStorage.removeItem('yoktez_job_id');
+                document.getElementById('resume-banner').style.display = 'none';
                 document.getElementById('status-area').style.display = 'none';
                 document.getElementById('search-btn').disabled = false;
                 document.getElementById('search-btn').innerHTML = '<i class="bi bi-search me-1"></i>Ara';
@@ -254,7 +276,32 @@ function pollStatus() {
         });
 }
 
+function cancelJob() {
+    if (!currentJobId) return;
+    const csrf = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    fetch(`/yoktez/cancel/${currentJobId}/`, {
+        method: 'POST',
+        headers: {'X-CSRFToken': csrf, 'X-Requested-With': 'XMLHttpRequest'},
+    })
+    .then(() => {
+        clearInterval(pollInterval);
+        pollInterval = null;
+        sessionStorage.removeItem('yoktez_job_id');
+        currentJobId = null;
+        document.getElementById('status-area').style.display = 'none';
+        document.getElementById('resume-banner').style.display = 'none';
+        document.getElementById('search-btn').disabled = false;
+        document.getElementById('search-btn').innerHTML = '<i class="bi bi-search me-1"></i>Ara';
+    });
+}
+
+function showResumeBanner(jobId) {
+    document.getElementById('resume-banner').style.display = 'block';
+    document.getElementById('status-area').style.display = 'none';
+}
+
 function showResults(data) {
+    document.getElementById('resume-banner').style.display = 'none';
     document.getElementById('status-area').style.display = 'none';
     document.getElementById('results-area').style.display = 'block';
     document.getElementById('results-summary').textContent =
@@ -276,26 +323,31 @@ function showResults(data) {
     });
 
     if (data.total_results > 0 && !data.demo_email_sent) {
-        document.getElementById('send-email-btn').style.display = 'inline-block';
+        const emailBtn = document.getElementById('send-email-btn');
+        emailBtn.dataset.jobId = currentJobId;
+        emailBtn.style.display = 'inline-block';
     }
     if (data.all_results_file_url) {
         const dlBtn = document.getElementById('download-btn');
-        dlBtn.href = data.all_results_file_url;
+        dlBtn.href = `/yoktez/download/${currentJobId}/`;
         dlBtn.style.display = 'inline-block';
     }
-    if (data.total_results >= 5) {
-        document.getElementById('analiz-btn').style.display = 'inline-block';
+    if (data.total_results >= 10) {
+        const analizBtn = document.getElementById('analiz-btn');
+        analizBtn.dataset.jobId = currentJobId;
+        analizBtn.style.display = 'inline-block';
     }
 }
 
 function startAnaliz(e) {
     e.preventDefault();
-    if (!currentJobId) return;
     const btn = document.getElementById('analiz-btn');
+    const jobId = btn.dataset.jobId || currentJobId;
+    if (!jobId) { alert('Oturum bilgisi kayboldu, lütfen sayfayı yenileyin.'); return; }
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Başlatılıyor...';
     const csrf = document.querySelector('[name=csrfmiddlewaretoken]').value;
-    fetch(`/tezanaliz/yok/${currentJobId}/`, {
+    fetch(`/tezanaliz/yok/${jobId}/`, {
         method: 'POST',
         headers: {'X-CSRFToken': csrf, 'X-Requested-With': 'XMLHttpRequest'},
     })
@@ -320,11 +372,12 @@ function startAnaliz(e) {
 }
 
 document.getElementById('send-email-btn').addEventListener('click', function() {
-    if (!currentJobId) return;
     const btn = this;
+    const jobId = btn.dataset.jobId || currentJobId;
+    if (!jobId) { alert('Oturum bilgisi kayboldu, lütfen sayfayı yenileyin.'); return; }
     btn.disabled = true;
     const csrf = document.querySelector('[name=csrfmiddlewaretoken]').value;
-    fetch(`/yoktez/send-demo/${currentJobId}/`, {
+    fetch(`/yoktez/send-demo/${jobId}/`, {
         method: 'POST',
         headers: {'X-CSRFToken': csrf, 'X-Requested-With': 'XMLHttpRequest'},
     })
