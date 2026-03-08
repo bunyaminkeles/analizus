@@ -70,18 +70,6 @@
         </div>
     </div>
 
-    <!-- Bugünkü Özet -->
-    <div class="row mb-3">
-        <div class="col-12">
-            <div class="dashboard-card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5><i class="fas fa-calendar-day mr-2"></i>Bugün</h5>
-                    <span class="text-muted small">{{ s.today_users }} yeni kullanıcı, {{ s.today_topics }} konu, {{ s.today_posts }} gönderi</span>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Grafikler -->
     <div class="row mb-3">
         <div class="col-lg-8 mb-3">
@@ -361,6 +349,59 @@
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Kuyruk Durumu -->
+    {% get_queue_status as q %}
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="dashboard-card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5><i class="fas fa-layer-group mr-2"></i>Kuyruk Durumu</h5>
+                    <span class="text-muted small">
+                        {% if q.running_count %}<span class="badge badge-warning mr-1">{{ q.running_count }} çalışıyor</span>{% endif %}
+                        {% if q.pending_count %}<span class="badge badge-secondary">{{ q.pending_count }} bekliyor</span>{% endif %}
+                        {% if not q.total %}<span class="text-success">Kuyruk boş</span>{% endif %}
+                    </span>
+                </div>
+                <div class="card-body p-0">
+                    {% if q.rows %}
+                    <div class="table-responsive">
+                        <table class="table table-dashboard table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Servis</th>
+                                    <th>Kullanıcı</th>
+                                    <th>Durum</th>
+                                    <th>Başlangıç</th>
+                                    <th>ID</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for row in q.rows %}
+                                <tr>
+                                    <td>{{ row.type }}</td>
+                                    <td class="text-info">{{ row.user }}</td>
+                                    <td>
+                                        {% if row.status == 'running' %}
+                                        <span class="badge badge-warning">{{ row.status_label }}</span>
+                                        {% else %}
+                                        <span class="badge badge-secondary">{{ row.status_label }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-muted small">{{ row.created_at|timesince }} önce</td>
+                                    <td class="text-muted small font-monospace">{{ row.id_short }}…</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="p-3 text-center text-muted">Şu anda kuyrukta iş yok.</div>
+                    {% endif %}
                 </div>
             </div>
         </div>

@@ -9,6 +9,83 @@ from collections import Counter, defaultdict
 
 logger = logging.getLogger(__name__)
 
+# ── Türkçe Lemmatization (zeyrek) ──────────────────────────────────
+_tr_analyzer = None
+_tr_stopwords = None
+
+def _get_tr_analyzer():
+    global _tr_analyzer
+    if _tr_analyzer is None:
+        try:
+            import zeyrek
+            _tr_analyzer = zeyrek.MorphAnalyzer()
+        except Exception as e:
+            logger.warning(f'zeyrek yüklenemedi: {e}')
+            _tr_analyzer = False
+    return _tr_analyzer if _tr_analyzer is not False else None
+
+def _get_tr_stopwords():
+    global _tr_stopwords
+    if _tr_stopwords is None:
+        try:
+            import nltk
+            try:
+                _tr_stopwords = set(nltk.corpus.stopwords.words('turkish'))
+            except LookupError:
+                nltk.download('stopwords', quiet=True)
+                _tr_stopwords = set(nltk.corpus.stopwords.words('turkish'))
+        except Exception:
+            _tr_stopwords = set()
+    return _tr_stopwords
+
+def lemmatize_word(word: str) -> str:
+    """Tek Türkçe kelimeyi lemmatize eder. Başarısızsa orijinali döner."""
+    analyzer = _get_tr_analyzer()
+    if not analyzer:
+        return word
+    try:
+        result = analyzer.lemmatize(word)
+        if result and result[0][1]:
+            lemma = result[0][1][0].lower()
+            if len(lemma) >= 2:
+                return lemma
+    except Exception:
+        pass
+    return word
+
+def normalize_keywords(keywords: list[str]) -> list[str]:
+    """
+    Keyword listesini normalize eder:
+    - Stopword filtrele
+    - Tek kelime ise lemmatize et
+    - Çok kelimeli ifadeleri olduğu gibi bırak (makine öğrenmesi vb.)
+    """
+    stopwords = _get_tr_stopwords()
+    result = []
+    for kw in keywords:
+        kw = kw.strip().lower()
+        if not kw or len(kw) < 2:
+            continue
+        if kw in stopwords:
+            continue
+        # Çok kelimeli → olduğu gibi bırak
+        if ' ' in kw:
+            result.append(kw)
+        else:
+            result.append(lemmatize_word(kw))
+    return result
+
+def normalize_abstract_words(abstract: str) -> list[str]:
+    """Abstract'tan anlamlı kelimeleri çıkarır, lemmatize eder."""
+    stopwords = _get_tr_stopwords()
+    words = []
+    for w in abstract.split():
+        w = w.strip('.,;:()[]{}"\'-').lower()
+        if len(w) < 4 or w in stopwords:
+            continue
+        words.append(lemmatize_word(w))
+    return words
+
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -61,8 +138,14 @@ TREND_RED   = '#DC2626'
 TREND_AMBER = '#D97706'
 
 
-def run_all_analyses(records: list[dict]) -> list[tuple[str, object]]:
-    """Tüm 10 analizi çalıştırır. Hatalı analizler atlanır."""
+def run_all_analyses(records: list[dict]) -> list[tuple[str, bytes]]:
+    """
+    Tüm analizleri çalıştırır.
+    Her figür üretilir üretilmez PNG bytes'a çevrilip kapatılır —
+    tüm Figure nesnelerini aynı anda bellekte tutmak yerine sadece
+    hafif PNG bytes listesi saklanır.
+    """
+    import gc as _gc
     analyses = [
         ('Yıllara Göre Yayın Trendi',              lambda: publication_trend(records)),
         ('Yıllık Büyüme Oranı',                    lambda: publication_growth_rate(records)),
@@ -79,15 +162,29 @@ def run_all_analyses(records: list[dict]) -> list[tuple[str, object]]:
         ('Yayın Türleri Dağılımı',                  lambda: publication_types(records)),
         ('Atıf Analizi ve H-index',                 lambda: citation_analysis(records)),
         ('Yıllık Atıf Trendi',                      lambda: annual_citation_trend(records)),
+        ('Araştırma Konusu Kümeleri (Topic Map)',    lambda: topic_map(records)),
+        ('Araştırma Boşluğu Haritası (Research Gap)', lambda: research_gap(records)),
     ]
     results = []
     for title, fn in analyses:
         try:
             fig = fn()
             if fig is not None:
-                results.append((title, fig))
+                buf = io.BytesIO()
+                fig.savefig(buf, format='png', dpi=120, bbox_inches='tight', facecolor='white')
+                buf.seek(0)
+                png_bytes = buf.getvalue()
+                buf.close()
+                plt.close(fig)
+                del fig
+                _gc.collect()
+                results.append((title, png_bytes))
         except Exception as e:
             logger.warning(f'Analiz başarısız [{title}]: {e}')
+            try:
+                plt.close('all')
+            except Exception:
+                pass
     return results
 
 
@@ -167,9 +264,8 @@ def keyword_cloud(records: list[dict]):
 
     all_kw = []
     for r in records:
-        all_kw.extend(r.get('keywords', []))
-        words = r.get('abstract', '').split()
-        all_kw.extend([w.lower() for w in words if len(w) > 5])
+        all_kw.extend(normalize_keywords(r.get('keywords', [])))
+        all_kw.extend(normalize_abstract_words(r.get('abstract', '')))
 
     if not all_kw:
         return None
@@ -670,8 +766,7 @@ def keyword_cooccurrence(records: list[dict], max_kw: int = 40, min_cooccur: int
     # Önce en sık geçen anahtar kelimeleri bul
     all_kw = Counter()
     for r in records:
-        for k in r.get('keywords', []):
-            k = k.strip().lower()
+        for k in normalize_keywords(r.get('keywords', [])):
             if len(k) > 2:
                 all_kw[k] += 1
 
@@ -682,8 +777,8 @@ def keyword_cooccurrence(records: list[dict], max_kw: int = 40, min_cooccur: int
 
     cooccur = Counter()
     for r in records:
-        kws = list({k.strip().lower() for k in r.get('keywords', [])
-                    if k.strip().lower() in top_kw_set})
+        kws = list({k for k in normalize_keywords(r.get('keywords', []))
+                    if k in top_kw_set})
         if len(kws) < 2:
             continue
         for i in range(len(kws)):
@@ -706,38 +801,51 @@ def keyword_cooccurrence(records: list[dict], max_kw: int = 40, min_cooccur: int
         top_nodes = sorted(G.degree, key=lambda x: x[1], reverse=True)[:max_kw]
         G = G.subgraph([n for n, _ in top_nodes]).copy()
 
-    degrees = dict(G.degree())
-    max_deg = max(degrees.values()) if degrees else 1
-    min_deg = min(degrees.values()) if degrees else 0
-    span = (max_deg - min_deg) or 1
+    # Community detection (VOSviewer-style cluster renklendirmesi)
+    try:
+        from networkx.algorithms.community import greedy_modularity_communities
+        communities = list(greedy_modularity_communities(G, weight='weight'))
+        node_community = {}
+        for i, comm in enumerate(communities):
+            for node in comm:
+                node_community[node] = i
+    except Exception:
+        node_community = {n: 0 for n in G.nodes()}
 
-    node_colors = [plt.cm.YlOrRd(0.2 + 0.75 * (degrees[n] - min_deg) / span)
+    n_clusters = max(node_community.values()) + 1 if node_community else 1
+    cluster_colors = PALETTE[:n_clusters] if n_clusters <= len(PALETTE) else PALETTE
+
+    degrees = dict(G.degree())
+    node_sizes = [300 + all_kw.get(n, 1) * 60 for n in G.nodes()]
+    node_colors = [cluster_colors[node_community.get(n, 0) % len(cluster_colors)]
                    for n in G.nodes()]
-    node_sizes = [200 + degrees[n] * 80 for n in G.nodes()]
     edge_weights = [G[u][v].get('weight', 1) for u, v in G.edges()]
 
-    fig, ax = plt.subplots(figsize=(10, 10))
+    fig, ax = plt.subplots(figsize=(12, 10))
     ax.set_facecolor('#f8fafc')
     fig.patch.set_facecolor('white')
 
-    pos = nx.spring_layout(G, seed=42, k=3.0)
+    pos = nx.spring_layout(G, seed=42, k=2.5, weight='weight')
 
-    nx.draw_networkx_edges(G, pos, ax=ax, alpha=0.3,
-                           width=[min(w * 0.7, 3.5) for w in edge_weights],
+    nx.draw_networkx_edges(G, pos, ax=ax, alpha=0.25,
+                           width=[min(w * 0.6, 4.0) for w in edge_weights],
                            edge_color='#94a3b8')
     nx.draw_networkx_nodes(G, pos, ax=ax, node_size=node_sizes,
-                           node_color=node_colors, alpha=0.92,
-                           linewidths=0.8, edgecolors='white')
-    nx.draw_networkx_labels(G, pos, ax=ax, font_size=8,
+                           node_color=node_colors, alpha=0.88,
+                           linewidths=1.2, edgecolors='white')
+    nx.draw_networkx_labels(G, pos, ax=ax, font_size=7.5,
                             font_color='#1e293b', font_weight='bold')
 
-    sm = plt.cm.ScalarMappable(cmap=plt.cm.YlOrRd,
-                               norm=plt.Normalize(vmin=min_deg, vmax=max_deg))
-    sm.set_array([])
-    cbar = fig.colorbar(sm, ax=ax, fraction=0.03, pad=0.02)
-    cbar.set_label('Bağlantı Sayısı', fontsize=10)
+    # Cluster legend
+    legend_patches = [
+        mpatches.Patch(color=cluster_colors[i % len(cluster_colors)],
+                       label=f'Küme {i + 1}')
+        for i in range(min(n_clusters, 8))
+    ]
+    ax.legend(handles=legend_patches, loc='lower right', fontsize=8,
+              framealpha=0.85, title='Araştırma Kümeleri', title_fontsize=9)
 
-    ax.set_title('Anahtar Kelime Eş-Oluşum Ağı')
+    ax.set_title('Anahtar Kelime Eş-Oluşum Ağı (VOSviewer-style)')
     ax.axis('off')
     fig.tight_layout(pad=2.0)
     return fig
@@ -748,9 +856,8 @@ def keyword_cooccurrence(records: list[dict], max_kw: int = 40, min_cooccur: int
 def keyword_trend(records: list[dict], top_n: int = 8):
     all_kw = Counter()
     for r in records:
-        for k in r.get('keywords', []):
-            if k.strip():
-                all_kw[k.strip().lower()] += 1
+        for k in normalize_keywords(r.get('keywords', [])):
+            all_kw[k] += 1
 
     if not all_kw:
         return None
@@ -766,8 +873,7 @@ def keyword_trend(records: list[dict], top_n: int = 8):
     for r in records:
         if not r.get('year') or not (1900 < r['year'] < 2100):
             continue
-        for k in r.get('keywords', []):
-            k = k.strip().lower()
+        for k in normalize_keywords(r.get('keywords', [])):
             if k in top_kws:
                 year_kw[r['year']][k] += 1
 
@@ -869,6 +975,252 @@ def country_collaboration(records: list[dict], min_collab: int = 2, max_countrie
 
     ax.set_title('Ülke İşbirliği Ağı')
     ax.axis('off')
+    fig.tight_layout(pad=2.0)
+    return fig
+
+
+# ─────────────────────────── 17. Research Gap ───────────────────────────
+
+def research_gap(records: list[dict], top_n: int = 30, recent_years: int = 3):
+    """
+    Research Gap Haritası: Keyword bazında Trend × Atıf Etkisi quadrant analizi.
+    - X ekseni: Yayın trendi (son N yıl vs önceki dönem, normalize)
+    - Y ekseni: Ortalama atıf etkisi (log-scale'den normalize)
+    - Sol-üst kadran (düşen trend + yüksek atıf) = Research Gap fırsatı
+    """
+    import math
+
+    now_year = max((r.get('year') or 0) for r in records if r.get('year'))
+    if not now_year:
+        return None
+
+    cutoff = now_year - recent_years  # son 3 yıl sınırı
+
+    # Her keyword için: eski/yeni yayın sayısı + toplam atıf
+    kw_stats = {}
+    for r in records:
+        year = r.get('year') or 0
+        citations = r.get('cited_by_count') or r.get('cited_by') or 0
+        for k in normalize_keywords(r.get('keywords', [])):
+            if len(k) < 3:
+                continue
+            if k not in kw_stats:
+                kw_stats[k] = {'old': 0, 'new': 0, 'citations': 0, 'total': 0}
+            kw_stats[k]['total'] += 1
+            kw_stats[k]['citations'] += citations
+            if year > cutoff:
+                kw_stats[k]['new'] += 1
+            else:
+                kw_stats[k]['old'] += 1
+
+    # En az 3 yayında geçen keyword'leri al
+    kw_stats = {k: v for k, v in kw_stats.items() if v['total'] >= 3}
+    if len(kw_stats) < 5:
+        return None
+
+    # Trend skoru: (yeni - eski) / toplam  →  [-1, +1]
+    # Atıf etkisi: ortalama atıf (log1p normalize)
+    points = []
+    for kw, s in kw_stats.items():
+        trend = (s['new'] - s['old']) / s['total']
+        avg_cite = s['citations'] / s['total']
+        points.append({'kw': kw, 'trend': trend, 'impact': avg_cite,
+                       'total': s['total']})
+
+    # Top N (toplam yayın sayısına göre)
+    points = sorted(points, key=lambda x: x['total'], reverse=True)[:top_n]
+
+    if not points:
+        return None
+
+    # Normalize impact için log1p
+    max_impact = max(math.log1p(p['impact']) for p in points) or 1
+    for p in points:
+        p['impact_norm'] = math.log1p(p['impact']) / max_impact
+
+    trends   = [p['trend'] for p in points]
+    impacts  = [p['impact_norm'] for p in points]
+    labels   = [p['kw'] for p in points]
+    sizes    = [80 + p['total'] * 12 for p in points]
+
+    # Medyan kesim noktaları
+    med_trend  = sorted(trends)[len(trends) // 2]
+    med_impact = sorted(impacts)[len(impacts) // 2]
+
+    # Renk: Research Gap (sol-üst) = kırmızı/turuncu, diğerleri gri tonları
+    colors = []
+    gap_indices = []
+    for i, p in enumerate(points):
+        if p['trend'] < med_trend and p['impact_norm'] >= med_impact:
+            colors.append('#E15759')   # Research Gap
+            gap_indices.append(i)
+        elif p['trend'] >= med_trend and p['impact_norm'] >= med_impact:
+            colors.append('#4E79A7')   # Altın Alan
+        elif p['trend'] >= med_trend and p['impact_norm'] < med_impact:
+            colors.append('#76B7B2')   # Yükselen Alan
+        else:
+            colors.append('#BAB0AC')   # Düşen Alan
+
+    fig, ax = plt.subplots(figsize=(13, 9))
+    ax.set_facecolor('#f8fafc')
+    fig.patch.set_facecolor('white')
+
+    # Kadrant arkaplan renkleri
+    ax.axvspan(min(trends) - 0.05, med_trend, ymin=0.5, ymax=1.0,
+               alpha=0.06, color='#E15759')   # Research Gap bölgesi
+    ax.axvspan(med_trend, max(trends) + 0.05, ymin=0.5, ymax=1.0,
+               alpha=0.06, color='#4E79A7')   # Altın bölge
+
+    # Medyan çizgileri
+    ax.axvline(med_trend,  color='#94a3b8', linestyle='--', linewidth=1.2, alpha=0.7)
+    ax.axhline(med_impact, color='#94a3b8', linestyle='--', linewidth=1.2, alpha=0.7)
+
+    # Scatter
+    sc = ax.scatter(trends, impacts, s=sizes, c=colors, alpha=0.82,
+                    edgecolors='white', linewidths=1.0, zorder=3)
+
+    # Etiketler — sadece gap + altın alan (okunabilirlik)
+    labeled = set()
+    for i, p in enumerate(points):
+        if colors[i] in ('#E15759', '#4E79A7') and p['kw'] not in labeled:
+            ax.annotate(p['kw'], (p['trend'], p['impact_norm']),
+                        fontsize=7.5, ha='center', va='bottom',
+                        xytext=(0, 6), textcoords='offset points',
+                        color='#1e293b', fontweight='bold')
+            labeled.add(p['kw'])
+
+    # Kadrant başlıkları
+    xlim = ax.get_xlim()
+    ylim = ax.get_ylim()
+    kw_args = dict(fontsize=9, alpha=0.55, fontstyle='italic')
+    ax.text(med_trend - (med_trend - xlim[0]) * 0.5, ylim[1] * 0.97,
+            '★ RESEARCH GAP', ha='center', color='#E15759', **kw_args)
+    ax.text(med_trend + (xlim[1] - med_trend) * 0.5, ylim[1] * 0.97,
+            'ALTIN ALAN', ha='center', color='#4E79A7', **kw_args)
+    ax.text(med_trend - (med_trend - xlim[0]) * 0.5, med_impact * 0.15,
+            'DÜŞEN ALAN', ha='center', color='#BAB0AC', **kw_args)
+    ax.text(med_trend + (xlim[1] - med_trend) * 0.5, med_impact * 0.15,
+            'YÜKSELİŞTEKİ ALAN', ha='center', color='#76B7B2', **kw_args)
+
+    # Legend
+    from matplotlib.lines import Line2D
+    legend_items = [
+        Line2D([0], [0], marker='o', color='w', markerfacecolor='#E15759',
+               markersize=10, label='Research Gap (fırsat)'),
+        Line2D([0], [0], marker='o', color='w', markerfacecolor='#4E79A7',
+               markersize=10, label='Altın Alan (aktif & etkili)'),
+        Line2D([0], [0], marker='o', color='w', markerfacecolor='#76B7B2',
+               markersize=10, label='Yükselen Alan'),
+        Line2D([0], [0], marker='o', color='w', markerfacecolor='#BAB0AC',
+               markersize=10, label='Düşen Alan'),
+    ]
+    ax.legend(handles=legend_items, loc='lower right', fontsize=8.5,
+              framealpha=0.9, edgecolor='#e2e8f0')
+
+    # Gap keywords listesi (alt açıklama)
+    gap_kws = [points[i]['kw'] for i in gap_indices[:6]]
+    if gap_kws:
+        gap_text = '🎯 Önerilen Araştırma Boşlukları: ' + ' · '.join(gap_kws)
+        fig.text(0.5, 0.01, gap_text, ha='center', fontsize=9,
+                 color='#E15759', fontweight='bold',
+                 bbox=dict(boxstyle='round,pad=0.4', fc='#fff5f5', ec='#E15759', alpha=0.8))
+
+    ax.set_xlabel('Yayın Trendi  (← Azalıyor  |  Artıyor →)', fontsize=11)
+    ax.set_ylabel('Atıf Etkisi  (↑ Yüksek)', fontsize=11)
+    ax.set_title('Araştırma Boşluğu Haritası (Research Gap)', pad=18)
+    fig.subplots_adjust(bottom=0.12, top=0.93, left=0.09, right=0.97)
+    return fig
+
+
+# ─────────────────────────── 16. Topic Map ───────────────────────────
+
+def topic_map(records: list[dict], n_topics: int = 8, top_kw_per_topic: int = 8):
+    """
+    Keyword community detection ile araştırma konusu kümeleri.
+    Her küme bir balon, boyutu o kümede kaç yayın var, rengi küme kimliği.
+    """
+    try:
+        import networkx as nx
+        from networkx.algorithms.community import greedy_modularity_communities
+    except ImportError:
+        return None
+
+    # Keyword frekansı ve co-occurrence
+    all_kw = Counter()
+    for r in records:
+        for k in normalize_keywords(r.get('keywords', [])):
+            if len(k) > 2:
+                all_kw[k] += 1
+
+    if len(all_kw) < 4:
+        return None
+
+    top_kw_set = {kw for kw, _ in all_kw.most_common(100)}
+
+    cooccur = Counter()
+    for r in records:
+        kws = list({k for k in normalize_keywords(r.get('keywords', []))
+                    if k in top_kw_set})
+        for i in range(len(kws)):
+            for j in range(i + 1, len(kws)):
+                cooccur[tuple(sorted([kws[i], kws[j]]))] += 1
+
+    G = nx.Graph()
+    for (k1, k2), w in cooccur.items():
+        if w >= 2:
+            G.add_edge(k1, k2, weight=w)
+
+    if G.number_of_nodes() < 4:
+        return None
+
+    communities = list(greedy_modularity_communities(G, weight='weight'))
+    communities = sorted(communities, key=len, reverse=True)[:n_topics]
+
+    # Her topluluk için: top keyword'ler + kapsanan yayın sayısı
+    topic_data = []
+    for comm in communities:
+        kws_sorted = sorted(comm, key=lambda k: all_kw.get(k, 0), reverse=True)
+        label_kws = kws_sorted[:top_kw_per_topic]
+        pub_count = sum(all_kw.get(k, 0) for k in kws_sorted[:3])
+        topic_data.append({'keywords': label_kws, 'size': pub_count, 'n_kw': len(comm)})
+
+    if not topic_data:
+        return None
+
+    # Bubble chart
+    fig, ax = plt.subplots(figsize=(14, 8))
+    ax.set_facecolor('#f8fafc')
+    fig.patch.set_facecolor('white')
+
+    import math
+    cols = min(4, len(topic_data))
+    rows = math.ceil(len(topic_data) / cols)
+
+    for idx, topic in enumerate(topic_data):
+        col = idx % cols
+        row = idx // cols
+        x = col * 3.5 + 1.5
+        y = (rows - row) * 2.5
+
+        size = 800 + topic['size'] * 15
+        color = PALETTE[idx % len(PALETTE)]
+
+        ax.scatter(x, y, s=size, color=color, alpha=0.75, zorder=2,
+                   edgecolors='white', linewidths=2)
+
+        label = '\n'.join(topic['keywords'][:5])
+        ax.text(x, y, label, ha='center', va='center',
+                fontsize=7.5, fontweight='bold', color='white',
+                zorder=3, multialignment='center',
+                bbox=dict(boxstyle='round,pad=0.1', fc='none', ec='none'))
+
+        ax.text(x, y - 1.1, f'Küme {idx + 1}  ({topic["n_kw"]} kw)',
+                ha='center', va='top', fontsize=8.5, color='#475569')
+
+    ax.set_xlim(0, cols * 3.5 + 0.5)
+    ax.set_ylim(0, (rows + 0.5) * 2.5)
+    ax.axis('off')
+    ax.set_title('Araştırma Konusu Kümeleri (Topic Map)', pad=18)
     fig.tight_layout(pad=2.0)
     return fig
 

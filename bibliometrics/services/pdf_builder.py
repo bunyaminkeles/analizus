@@ -75,14 +75,17 @@ _register_turkish_fonts()
 
 # ── Matplotlib → PNG ─────────────────────────────────────────────
 
-def _fig_to_image_reader(fig):
+def _fig_to_image_reader(fig_or_bytes):
     """
-    matplotlib Figure → reportlab ImageReader.
-    Analyzer beyaz tema kullandığından ek dönüşüm gerekmez.
+    matplotlib Figure veya PNG bytes → reportlab ImageReader.
+    Analyzer artık PNG bytes döndürüyor (Figure nesnesi değil).
     """
     from reportlab.lib.utils import ImageReader
-    buf = io.BytesIO()
-    fig.savefig(buf, format='png', dpi=150, bbox_inches='tight', facecolor='white')
+    if isinstance(fig_or_bytes, (bytes, bytearray)):
+        buf = io.BytesIO(fig_or_bytes)
+    else:
+        buf = io.BytesIO()
+        fig_or_bytes.savefig(buf, format='png', dpi=120, bbox_inches='tight', facecolor='white')
     buf.seek(0)
     return ImageReader(buf)
 

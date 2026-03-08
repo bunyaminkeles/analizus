@@ -167,21 +167,36 @@
                     {% if features.market %}<li class="nav-item px-2"><a class="nav-link" href="{% url 'job_list' %}">
                         <i class="bi bi-briefcase-fill me-1 text-success"></i>Hizmetler Pazarı
                     </a></li>{% endif %}
-                    {% if features.trdizin %}<li class="nav-item px-2"><a class="nav-link" href="{% url 'trdizin:landing' %}">
-                        <i class="bi bi-journal-check me-1 text-info"></i>TR Dizin Tarama
-                    </a></li>{% endif %}
-                    {% if features.openalex %}<li class="nav-item px-2"><a class="nav-link" href="{% url 'openalex:landing' %}">
-                        <i class="bi bi-search me-1 text-success"></i>OpenAlex Tarama
-                    </a></li>{% endif %}
-                    {% if features.oaipmh %}<li class="nav-item px-2"><a class="nav-link" href="{% url 'oaipmh:landing' %}">
-                        <i class="bi bi-mortarboard me-1 text-warning"></i>Üniversite Tezleri
-                    </a></li>{% endif %}
-                    {% if features.yoktez %}<li class="nav-item px-2"><a class="nav-link" href="{% url 'yoktez:landing' %}">
-                        <i class="bi bi-journal-text me-1 text-warning"></i>YÖK Tez
-                    </a></li>{% endif %}
-                    {% if features.bibliometrics %}<li class="nav-item px-2"><a class="nav-link" href="{% url 'bibliometrics:landing' %}">
-                        <i class="bi bi-bar-chart-line-fill me-1 text-info"></i>Bibliometrik Analiz
-                    </a></li>{% endif %}
+                    {% if features.trdizin or features.openalex or features.oaipmh or features.tezanaliz or features.bibliometrics %}
+                    <li class="nav-item dropdown px-2">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-database-fill me-1 text-info"></i>Akademik Veri ve Analiz
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-dark">
+                            {% if features.oaipmh %}
+                            <li><a class="dropdown-item" href="{% url 'oaipmh:landing' %}">
+                                <i class="bi bi-mortarboard me-2 text-warning"></i>Üniversite Tezleri
+                            </a></li>{% endif %}
+                            {% if features.openalex %}
+                            <li><a class="dropdown-item" href="{% url 'openalex:landing' %}">
+                                <i class="bi bi-search me-2 text-success"></i>OpenAlex Tarama
+                            </a></li>{% endif %}
+                            {% if features.trdizin %}
+                            <li><a class="dropdown-item" href="{% url 'trdizin:landing' %}">
+                                <i class="bi bi-journal-check me-2 text-info"></i>TR Dizin Tarama
+                            </a></li>{% endif %}
+                            {% if features.bibliometrics %}
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'bibliometrics:landing' %}">
+                                <i class="bi bi-bar-chart-line-fill me-2 text-info"></i>Bibliometrik Analiz
+                            </a></li>{% endif %}
+                            {% if features.tezanaliz %}
+                            <li><a class="dropdown-item" href="{% url 'tezanaliz:landing' %}">
+                                <i class="bi bi-graph-up-arrow me-2 text-success"></i>Tez Analizi (YÖK)
+                            </a></li>{% endif %}
+                        </ul>
+                    </li>
+                    {% endif %}
                     <li class="nav-item px-2"><a class="nav-link" href="{% url 'about' %}"><i class="bi bi-info-circle me-1"></i>Hakkımızda</a></li>
                 </ul>
                 <div class="d-flex align-items-center">

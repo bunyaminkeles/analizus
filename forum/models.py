@@ -1092,6 +1092,14 @@ class SiteSettings(models.Model):
     feature_success_stories = models.BooleanField(default=True, verbose_name="Başarı Hikayeleri")
     feature_bibliometrics = models.BooleanField(default=True, verbose_name="Bibliometrik Analiz")
     feature_yoktez = models.BooleanField(default=True, verbose_name="YÖK Tez Arama")
+    feature_tezanaliz = models.BooleanField(default=True, verbose_name="Tez & Makale Analizi")
+
+    # Analiz Limitleri
+    analiz_max_records = models.PositiveIntegerField(
+        default=500,
+        verbose_name="Analiz Maks. Kayıt Sayısı",
+        help_text="Tez & Makale Analizi ve TR Dizin Makale Analizi için işlenecek maksimum kayıt sayısı. (default: 500)",
+    )
 
     # Bibliometrik Analiz Fiyatlandırma (TL)
     biblio_price_500 = models.PositiveIntegerField(default=500, verbose_name="0-500 kayıt fiyatı (TL)")

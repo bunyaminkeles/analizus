@@ -4,6 +4,7 @@ from datetime import timedelta
 from django.utils import timezone
 from django.conf import settings
 from django.core.mail import EmailMessage
+from django.db import close_old_connections
 from openalex.models import AlexSearchJob
 from forum.s3_utils import delete_from_s3, upload_to_s3
 
@@ -47,69 +48,64 @@ def _generate_alex_results_txt(publication_list, job, is_demo=True):
     return "\n".join(lines)
 
 
-def run_scraping_job(job_id):
-    """Background thread'de OpenAlex scraping job çalıştır."""
+def _execute_job(job_id):
+    """Global kuyruk worker'ı tarafından çağrılır — senkron çalışır."""
+    from openalex.models import AlexSearchJob
+    from openalex.services.scraper import OpenAlexScraper
 
-    def _run():
-        from openalex.models import AlexSearchJob
-        from openalex.services.scraper import OpenAlexScraper
+    close_old_connections()
+    try:
+        job = AlexSearchJob.objects.get(id=job_id)
+        job.mark_running()
+
+        scraper = OpenAlexScraper()
+        total_count, demo_results, all_results, api_query = scraper.search(
+            query_parts=job.query_parts,
+            demo_limit=5,
+        )
+
+        close_old_connections()
+        job.mark_completed(
+            demo_results=demo_results,
+            all_results=all_results,
+            total_count=total_count,
+            api_query=api_query,
+        )
 
         try:
-            job = AlexSearchJob.objects.get(id=job_id)
-            job.mark_running()
+            demo_txt = _generate_alex_results_txt(demo_results, job, is_demo=True)
+            demo_s3_url = upload_to_s3(demo_txt, f"openalex/demo/{job.id}.txt")
 
-            scraper = OpenAlexScraper()
-            total_count, demo_results, all_results, api_query = scraper.search(
-                query_parts=job.query_parts,
-                demo_limit=5,
-            )
+            all_txt = _generate_alex_results_txt(all_results, job, is_demo=False)
+            all_s3_url = upload_to_s3(all_txt, f"openalex/full/{job.id}.txt")
 
-            job.mark_completed(
-                demo_results=demo_results,
-                all_results=all_results,
-                total_count=total_count,
-                api_query=api_query,
-            )
-
-            # Sonuçları txt olarak S3'e yükle
-            try:
-                demo_txt = _generate_alex_results_txt(demo_results, job, is_demo=True)
-                demo_s3_key = f"openalex/demo/{job.id}.txt"
-                demo_s3_url = upload_to_s3(demo_txt, demo_s3_key)
-
-                all_txt = _generate_alex_results_txt(all_results, job, is_demo=False)
-                all_s3_key = f"openalex/full/{job.id}.txt"
-                all_s3_url = upload_to_s3(all_txt, all_s3_key)
-
-                update_fields = []
-                if demo_s3_url:
-                    job.demo_file_url = demo_s3_url
-                    update_fields.append('demo_file_url')
-                if all_s3_url:
-                    job.all_results_file_url = all_s3_url
-                    update_fields.append('all_results_file_url')
-                if update_fields:
-                    job.save(update_fields=update_fields)
-                # S3'e yüklendi, DB'deki büyük JSON alanını temizle (OOM önlemi)
-                if all_s3_url:
-                    job.all_results = []
-                    job.save(update_fields=['all_results'])
-            except Exception as e:
-                logger.error(f"OpenAlex S3 yükleme hatası: {e}")
-
-            logger.info(f"OpenAlex Scraping job {job_id} tamamlandı: {total_count} sonuç")
-
+            update_fields = []
+            if demo_s3_url:
+                job.demo_file_url = demo_s3_url
+                update_fields.append('demo_file_url')
+            if all_s3_url:
+                job.all_results_file_url = all_s3_url
+                update_fields.append('all_results_file_url')
+            if update_fields:
+                job.save(update_fields=update_fields)
         except Exception as e:
-            logger.error(f"OpenAlex Scraping job {job_id} başarısız: {e}")
-            try:
-                job = AlexSearchJob.objects.get(id=job_id)
-                job.mark_failed(str(e))
-            except Exception:
-                pass
+            logger.error(f"OpenAlex S3 yükleme hatası: {e}")
 
-    thread = threading.Thread(target=_run)
-    thread.daemon = True
-    thread.start()
+        logger.info(f"OpenAlex Scraping job {job_id} tamamlandı: {total_count} sonuç")
+
+    except Exception as e:
+        logger.error(f"OpenAlex Scraping job {job_id} başarısız: {e}")
+        try:
+            close_old_connections()
+            job = AlexSearchJob.objects.get(id=job_id)
+            job.mark_failed(str(e))
+        except Exception:
+            pass
+
+
+def run_scraping_job(job_id):
+    from analizdestek.job_queue import enqueue
+    enqueue('openalex', str(job_id))
 
 
 def send_demo_email_async(job_id):

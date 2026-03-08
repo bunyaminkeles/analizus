@@ -30,6 +30,9 @@ wordcloud
 networkx
 reportlab
 bibtexparser
+scikit-learn
+nltk
+zeyrek
 
 # --- ARAÇLAR & GÜVENLİK ---
 python-dotenv

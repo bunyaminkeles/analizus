@@ -52,5 +52,6 @@ def feature_flags(request):
             'success_stories': site.feature_success_stories,
             'bibliometrics': site.feature_bibliometrics,
             'yoktez': site.feature_yoktez,
+            'tezanaliz': site.feature_tezanaliz,
         }
     }

@@ -57,6 +57,8 @@ INSTALLED_APPS = [
     'oaipmh',
     'yoktez',
     'bibliometrics',
+    'tezanaliz',
+    'makaleanaliz',
     'crispy_forms',
     'crispy_bootstrap5',
     'storages',  # AWS S3 için

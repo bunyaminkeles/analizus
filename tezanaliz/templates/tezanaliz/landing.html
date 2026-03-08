@@ -1,0 +1,396 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Tez & Makale Analizi{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-lg-8 offset-lg-2">
+
+            <!-- Başlık -->
+            <div class="card bg-dark border-secondary text-white mb-4">
+                <div class="card-body">
+                    <h1 class="card-title h3 mb-2">
+                        <i class="bi bi-graph-up-arrow me-2 text-success"></i>Tez & Makale Analizi
+                    </h1>
+                    <p class="text-muted mb-1">
+                        YÖK Ulusal Tez Merkezi'nde arama yapın.
+                        Verileri indirin veya 10+ sonuçta <strong class="text-success">Analiz Yap</strong> ile 7 grafik içeren PDF rapor alın.
+                    </p>
+                    <p class="text-muted small mb-0">
+                        Günlük <strong>{{ daily_limit }}</strong> arama hakkı — Kalan: <strong>{{ remaining }}</strong>
+                    </p>
+                </div>
+            </div>
+
+            {% if not request.user.profile.email_verified %}
+            <div class="alert alert-warning">
+                <i class="bi bi-envelope-exclamation me-2"></i>
+                Bu aracı kullanabilmek için e-posta adresinizi doğrulamanız gerekmektedir.
+            </div>
+            {% else %}
+
+            <!-- Arama Formu -->
+            <div class="card bg-dark border-secondary text-white mb-3">
+                <div class="card-header">Arama Kriterleri</div>
+                <div class="card-body">
+                    <form id="yoktez-form" method="post" action="{% url 'yoktez:landing' %}">
+                        {% csrf_token %}
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">{{ form.tez_ad.label }}</label>
+                                {{ form.tez_ad }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">{{ form.yazar.label }}</label>
+                                {{ form.yazar }}
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label">{{ form.danisman.label }}</label>
+                                {{ form.danisman }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">{{ form.universite.label }}</label>
+                                {{ form.universite }}
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-4">
+                                <label class="form-label">{{ form.tur.label }}</label>
+                                {{ form.tur }}
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">{{ form.yil_baslangic.label }}</label>
+                                {{ form.yil_baslangic }}
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label">{{ form.yil_bitis.label }}</label>
+                                {{ form.yil_bitis }}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">{{ form.metin.label }}</label>
+                            {{ form.metin }}
+                        </div>
+
+                        <button type="submit" class="btn btn-warning" id="search-btn">
+                            <i class="bi bi-search me-1"></i>Ara
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Devam eden tarama banner -->
+            <div id="resume-banner" style="display:none;" class="alert alert-info mb-3">
+                <i class="bi bi-arrow-repeat me-2"></i>
+                Devam eden bir tarama var. Sonuçlar hazır olduğunda burada görünecek.
+            </div>
+
+            <!-- Yükleniyor -->
+            <div id="status-area" style="display:none;" class="mb-3">
+                <div class="card bg-dark border-secondary text-white">
+                    <div class="card-body text-center py-4">
+                        <div class="spinner-border text-warning mb-3" role="status"></div>
+                        <p class="mb-2">YÖK Tez sunucusundan veri çekiliyor, lütfen bekleyin...</p>
+                        <button id="cancel-btn" class="btn btn-sm btn-outline-danger" onclick="cancelJob()">
+                            <i class="bi bi-x-circle me-1"></i>İptal
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sonuçlar -->
+            <div id="results-area" style="display:none;">
+                <div class="card bg-dark border-secondary text-white mb-3">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span id="results-summary">Sonuçlar</span>
+                        <div class="d-flex gap-2 flex-wrap">
+                            <button id="send-email-btn" class="btn btn-sm btn-outline-warning" style="display:none;">
+                                <i class="bi bi-envelope me-1"></i>E-posta Gönder
+                            </button>
+                            <a id="download-btn" href="#" class="btn btn-sm btn-primary" style="display:none;">
+                                <i class="bi bi-download me-1"></i>Verileri İndir
+                            </a>
+                            <button id="analiz-btn" class="btn btn-sm btn-success" style="display:none;" onclick="startAnaliz(event)">
+                                <i class="bi bi-bar-chart-line me-1"></i>Analiz Yap
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="email-sent-alert" class="alert alert-success" style="display:none;">
+                            <i class="bi bi-check-circle me-2"></i>Sonuçlar e-posta adresinize gönderildi.
+                        </div>
+                        <div id="analiz-info" class="alert alert-success" style="display:none;">
+                            <i class="bi bi-bar-chart-line me-2"></i>
+                            Analiz başlatıldı! <a id="analiz-link" href="#" class="alert-link">Sonuçları buradan takip edin →</a>
+                        </div>
+                        <div id="results-list"></div>
+                    </div>
+                </div>
+            </div>
+
+            {% endif %}
+
+            <!-- Geçmiş Analizler -->
+            {% if past_jobs %}
+            <div class="card bg-dark border-secondary text-white mt-2 mb-4">
+                <div class="card-header">
+                    <i class="bi bi-clock-history me-2"></i>Geçmiş Analizlerim
+                </div>
+                <div class="list-group list-group-flush">
+                    {% for job in past_jobs %}
+                    <div class="list-group-item bg-dark border-secondary text-white d-flex justify-content-between align-items-center py-2">
+                        <div>
+                            <div class="small fw-semibold">{{ job.get_query_summary|truncatechars:60 }}</div>
+                            <div class="text-muted" style="font-size:0.75rem;">
+                                {{ job.created_at|date:"d.m.Y H:i" }}
+                                {% if job.status == 'completed' %}· {{ job.total_records }} tez{% endif %}
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            {% if job.status == 'completed' %}
+                                <span class="badge bg-success">Tamamlandı</span>
+                                <a href="{% url 'tezanaliz:results' job.id %}" class="btn btn-sm btn-outline-success">
+                                    <i class="bi bi-eye me-1"></i>Görüntüle
+                                </a>
+                            {% elif job.status == 'running' or job.status == 'pending' %}
+                                <span class="badge bg-warning text-dark">Devam ediyor</span>
+                                <a href="{% url 'tezanaliz:results' job.id %}" class="btn btn-sm btn-outline-warning">
+                                    <i class="bi bi-hourglass-split me-1"></i>Takip Et
+                                </a>
+                            {% else %}
+                                <span class="badge bg-danger">Başarısız</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+        </div>
+    </div>
+</div>
+
+<script>
+let currentJobId = null;
+let pollInterval = null;
+
+// Sayfa yüklenince devam eden job var mı kontrol et (server-side)
+{% if active_job_id %}
+currentJobId = '{{ active_job_id }}';
+sessionStorage.setItem('yoktez_job_id', currentJobId);
+document.getElementById('status-area').style.display = 'block';
+document.getElementById('search-btn').disabled = true;
+document.getElementById('search-btn').innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Aranıyor...';
+pollInterval = setInterval(pollStatus, 3000);
+{% else %}
+// sessionStorage'dan önceki job'ı geri yükle
+(function() {
+    const savedId = sessionStorage.getItem('yoktez_job_id');
+    if (!savedId) return;
+    fetch(`/yoktez/status/${savedId}/`)
+        .then(r => r.ok ? r.json() : null)
+        .then(data => {
+            if (!data) { sessionStorage.removeItem('yoktez_job_id'); return; }
+            currentJobId = savedId;
+            if (data.status === 'completed') {
+                showResults(data);
+            } else if (data.status === 'pending' || data.status === 'running') {
+                showResumeBanner(savedId);
+                document.getElementById('search-btn').disabled = true;
+                document.getElementById('search-btn').innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Aranıyor...';
+                pollInterval = setInterval(pollStatus, 3000);
+            } else {
+                sessionStorage.removeItem('yoktez_job_id');
+            }
+        })
+        .catch(() => {});
+})();
+{% endif %}
+
+document.getElementById('yoktez-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const form = this;
+    const btn = document.getElementById('search-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Aranıyor...';
+    document.getElementById('status-area').style.display = 'block';
+    document.getElementById('results-area').style.display = 'none';
+    document.getElementById('analiz-info').style.display = 'none';
+
+    fetch("{% url 'yoktez:landing' %}", {
+        method: 'POST',
+        body: new FormData(form),
+        headers: {'X-Requested-With': 'XMLHttpRequest'},
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            currentJobId = data.job_id;
+            sessionStorage.setItem('yoktez_job_id', currentJobId);
+            pollInterval = setInterval(pollStatus, 3000);
+        } else {
+            document.getElementById('status-area').style.display = 'none';
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-search me-1"></i>Ara';
+            alert(data.error || 'Bir hata oluştu.');
+        }
+    })
+    .catch(err => {
+        document.getElementById('status-area').style.display = 'none';
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-search me-1"></i>Ara';
+        alert('Bağlantı hatası: ' + err);
+    });
+});
+
+function pollStatus() {
+    if (!currentJobId) return;
+    fetch(`/yoktez/status/${currentJobId}/`)
+        .then(r => r.json())
+        .then(data => {
+            if (data.status === 'completed') {
+                clearInterval(pollInterval);
+                pollInterval = null;
+                showResults(data);
+                document.getElementById('search-btn').disabled = false;
+                document.getElementById('search-btn').innerHTML = '<i class="bi bi-search me-1"></i>Ara';
+            } else if (data.status === 'failed') {
+                clearInterval(pollInterval);
+                pollInterval = null;
+                sessionStorage.removeItem('yoktez_job_id');
+                document.getElementById('resume-banner').style.display = 'none';
+                document.getElementById('status-area').style.display = 'none';
+                document.getElementById('search-btn').disabled = false;
+                document.getElementById('search-btn').innerHTML = '<i class="bi bi-search me-1"></i>Ara';
+                alert('Arama başarısız: ' + (data.error || 'Bilinmeyen hata'));
+            }
+        });
+}
+
+function cancelJob() {
+    if (!currentJobId) return;
+    const csrf = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    fetch(`/yoktez/cancel/${currentJobId}/`, {
+        method: 'POST',
+        headers: {'X-CSRFToken': csrf, 'X-Requested-With': 'XMLHttpRequest'},
+    })
+    .then(() => {
+        clearInterval(pollInterval);
+        pollInterval = null;
+        sessionStorage.removeItem('yoktez_job_id');
+        currentJobId = null;
+        document.getElementById('status-area').style.display = 'none';
+        document.getElementById('resume-banner').style.display = 'none';
+        document.getElementById('search-btn').disabled = false;
+        document.getElementById('search-btn').innerHTML = '<i class="bi bi-search me-1"></i>Ara';
+    });
+}
+
+function showResumeBanner(jobId) {
+    document.getElementById('resume-banner').style.display = 'block';
+    document.getElementById('status-area').style.display = 'none';
+}
+
+function showResults(data) {
+    document.getElementById('resume-banner').style.display = 'none';
+    document.getElementById('status-area').style.display = 'none';
+    document.getElementById('results-area').style.display = 'block';
+    document.getElementById('results-summary').textContent =
+        `${data.total_results} tez bulundu — İlk ${(data.demo_results || []).length} kayıt`;
+
+    const list = document.getElementById('results-list');
+    list.innerHTML = '';
+    (data.demo_results || []).forEach((r, i) => {
+        list.innerHTML += `
+        <div class="border-bottom border-secondary pb-3 mb-3">
+            <h6 class="mb-1">${i+1}. ${r.title || '(Başlık yok)'}</h6>
+            ${r.title_tr ? `<div class="text-muted small fst-italic mb-1">${r.title_tr}</div>` : ''}
+            <small class="text-muted d-block">
+                ${r.author || ''} ${r.year ? '· ' + r.year : ''} · ${r.university || ''}
+                ${r.thesis_type ? ' · ' + r.thesis_type : ''}
+            </small>
+            ${r.abstract_tr ? `<div class="text-light small mt-2">${r.abstract_tr}</div>` : ''}
+        </div>`;
+    });
+
+    if (data.total_results > 0 && !data.demo_email_sent) {
+        const emailBtn = document.getElementById('send-email-btn');
+        emailBtn.dataset.jobId = currentJobId;
+        emailBtn.style.display = 'inline-block';
+    }
+    if (data.all_results_file_url) {
+        const dlBtn = document.getElementById('download-btn');
+        dlBtn.href = `/yoktez/download/${currentJobId}/`;
+        dlBtn.style.display = 'inline-block';
+    }
+    if (data.total_results >= 10) {
+        const analizBtn = document.getElementById('analiz-btn');
+        analizBtn.dataset.jobId = currentJobId;
+        analizBtn.style.display = 'inline-block';
+    }
+}
+
+function startAnaliz(e) {
+    e.preventDefault();
+    const btn = document.getElementById('analiz-btn');
+    const jobId = btn.dataset.jobId || currentJobId;
+    if (!jobId) { alert('Oturum bilgisi kayboldu, lütfen sayfayı yenileyin.'); return; }
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Başlatılıyor...';
+    const csrf = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    fetch(`/tezanaliz/yok/${jobId}/`, {
+        method: 'POST',
+        headers: {'X-CSRFToken': csrf, 'X-Requested-With': 'XMLHttpRequest'},
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.job_id) {
+            btn.style.display = 'none';
+            const info = document.getElementById('analiz-info');
+            document.getElementById('analiz-link').href = `/tezanaliz/sonuc/${data.job_id}/`;
+            info.style.display = 'block';
+        } else {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-bar-chart-line me-1"></i>Analiz Yap';
+            alert(data.error || 'Analiz başlatılamadı.');
+        }
+    })
+    .catch(err => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-bar-chart-line me-1"></i>Analiz Yap';
+        alert('Bağlantı hatası: ' + err);
+    });
+}
+
+document.getElementById('send-email-btn').addEventListener('click', function() {
+    const btn = this;
+    const jobId = btn.dataset.jobId || currentJobId;
+    if (!jobId) { alert('Oturum bilgisi kayboldu, lütfen sayfayı yenileyin.'); return; }
+    btn.disabled = true;
+    const csrf = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    fetch(`/yoktez/send-demo/${jobId}/`, {
+        method: 'POST',
+        headers: {'X-CSRFToken': csrf, 'X-Requested-With': 'XMLHttpRequest'},
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            btn.style.display = 'none';
+            document.getElementById('email-sent-alert').style.display = 'block';
+        } else {
+            btn.disabled = false;
+            alert(data.error || 'E-posta gönderilemedi.');
+        }
+    });
+});
+</script>
+{% endblock %}

@@ -95,12 +95,18 @@ def bibliometrics_landing(request):
     # Son 10 analiz (geçmiş)
     recent_jobs = BibliometricJob.objects.filter(user=user).order_by('-created_at')[:10]
 
+    active_job = BibliometricJob.objects.filter(
+        user=user,
+        status__in=['pending', 'running'],
+    ).order_by('-created_at').first()
+
     return render(request, 'bibliometrics/landing.html', {
         'daily_limit': daily_limit,
         'daily_used': daily_used,
         'remaining': remaining,
         'recent_jobs': recent_jobs,
         'form': BibliometricUploadForm(),
+        'active_job_id': str(active_job.id) if active_job else None,
     })
 
 
