@@ -10,87 +10,425 @@
 
             <div class="card bg-dark border-secondary text-white mb-4">
                 <div class="card-body">
-                    <h1 class="card-title h3 mb-3">TR Dizin Gelişmiş Yayın Tarama</h1>
-                    <p class="card-text text-muted">
-                        TR Dizin'de yer alan yayınları yapısal olarak taramanızı sağlar. Başlık, özet, yazar, anahtar kelime gibi birçok alanda arama yapabilirsiniz.
+                    <h1 class="card-title h3 mb-2">
+                        <i class="bi bi-journal-text me-2 text-info"></i>TR Dizin Yayın Tarama
+                    </h1>
+                    <p class="card-text text-muted mb-1">
+                        TR Dizin'de başlık, özet, yazar, anahtar kelime gibi alanlarda gelişmiş arama yapın.
+                        10+ sonuçta <strong class="text-info">Analiz Yap</strong> butonuyla grafik içeren PDF rapor alın.
                     </p>
-                    <p class="text-muted">
-                        Arama sonuçlarınızı ücretsiz indirebilirsiniz. Günlük <strong>{{ daily_limit }}</strong> arama hakkınız bulunmaktadır. Kalan: <strong>{{ remaining }}</strong>.
-                        <a href="{% url 'job_list' %}" class="text-warning">Premium üyelik</a> ile günlük 7 aramaya yükseltebilirsiniz.
+                    <p class="text-muted small mb-0">
+                        Günlük <strong>{{ daily_limit }}</strong> arama hakkı — Kalan: <strong>{{ remaining }}</strong>
                     </p>
                 </div>
             </div>
 
             {% if error %}
-                <div class="alert alert-danger">{{ error }}</div>
-            {% endif %}
-            {% if job_id %}
-                <div class="alert alert-success">
-                    Arama göreviniz başlatıldı! Sonuçlar hazırlanıyor... Lütfen bekleyin. Job ID: {{ job_id }}
-                </div>
+            <div class="alert alert-danger">{{ error }}</div>
             {% endif %}
 
-            <div class="card bg-dark-2 border-secondary text-white">
-                <div class="card-header">
-                    Arama Kriterleri
-                </div>
+            {% if not request.user.profile.email_verified %}
+            <div class="alert alert-warning">
+                <i class="bi bi-envelope-exclamation me-2"></i>
+                Bu aracı kullanabilmek için e-posta adresinizi doğrulamanız gerekmektedir.
+            </div>
+            {% else %}
+
+            <div class="card bg-dark border-secondary text-white mb-3">
+                <div class="card-header">Arama Kriterleri</div>
                 <div class="card-body">
-                    <form id="dizin-search-form" method="post" action="{% url 'trdizin:landing' %}">
+                    <form id="dizin-form" method="post">
                         {% csrf_token %}
                         {{ form.query_parts_json }}
                         <div id="query-builder"></div>
+
+                        <div id="query-preview" class="query-preview mt-3" style="display:none;">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="bi bi-check-circle-fill text-success" style="font-size:0.75rem;"></i>
+                                <span id="query-preview-text" class="query-preview-text"></span>
+                            </div>
+                        </div>
+
                         <div class="d-flex justify-content-between mt-3">
-                            <button type="button" id="add-rule-btn" class="btn btn-secondary"><i class="fas fa-plus"></i> Kriter Ekle</button>
-                            <button type="submit" id="submit-btn" class="btn btn-primary"><i class="fas fa-search"></i> Arama Yap</button>
+                            <button type="button" id="add-rule-btn" class="btn btn-secondary btn-sm">
+                                <i class="fas fa-plus me-1"></i>Kriter Ekle
+                            </button>
+                            <button type="submit" class="btn btn-warning" id="search-btn">
+                                <i class="bi bi-search me-1"></i>Ara
+                            </button>
                         </div>
                     </form>
+                </div>
+            </div>
 
-                    <!-- Sorgu Önizleme -->
-                    <div id="query-preview" class="query-preview mt-3" style="display: none;">
-                        <div class="d-flex align-items-center gap-2">
-                            <i class="bi bi-check-circle-fill text-success" style="font-size: 0.75rem;"></i>
-                            <span id="query-preview-text" class="query-preview-text"></span>
-                        </div>
+            <!-- Devam eden tarama banner -->
+            <div id="resume-banner" style="display:none;" class="alert alert-info mb-3">
+                <i class="bi bi-arrow-repeat me-2"></i>
+                Devam eden bir tarama var. Sonuçlar hazır olduğunda burada görünecek.
+            </div>
+
+            <!-- Yükleniyor -->
+            <div id="status-area" style="display:none;" class="mb-3">
+                <div class="card bg-dark border-secondary text-white">
+                    <div class="card-body text-center py-4">
+                        <div class="spinner-border text-warning mb-3" role="status"></div>
+                        <p class="mb-2">TR Dizin'den veri çekiliyor, lütfen bekleyin...</p>
+                        <button id="cancel-btn" class="btn btn-sm btn-outline-danger" onclick="cancelJob()">
+                            <i class="bi bi-x-circle me-1"></i>İptal
+                        </button>
                     </div>
                 </div>
             </div>
 
-            <div id="results-container" class="mt-4" style="display: none;">
-                <div class="card bg-dark-2 border-secondary text-white">
-                    <div class="card-header">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <span>Arama Sonuçları</span>
-                            <div id="spinner" class="spinner-border spinner-border-sm text-light" role="status">
-                                <span class="visually-hidden">Loading...</span>
-                            </div>
+            <!-- Sonuçlar -->
+            <div id="results-area" style="display:none;">
+                <div class="card bg-dark border-secondary text-white mb-3">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span id="results-summary">Sonuçlar</span>
+                        <div class="d-flex gap-2">
+                            <button id="send-email-btn" class="btn btn-sm btn-outline-warning" style="display:none;">
+                                <i class="bi bi-envelope me-1"></i>E-posta Gönder
+                            </button>
+                            <a id="download-btn" href="#" class="btn btn-sm btn-primary" style="display:none;">
+                                <i class="bi bi-download me-1"></i>İndir
+                            </a>
+                            <button id="analiz-btn" class="btn btn-sm btn-info" style="display:none;" onclick="startAnaliz(event)">
+                                <i class="bi bi-bar-chart-line me-1"></i>Analiz Yap
+                            </button>
                         </div>
                     </div>
                     <div class="card-body">
-                        <div id="results-summary" class="mb-3"></div>
-                        <div id="results-list"></div>
-                        <div id="results-actions" class="mt-3" style="display: none;">
-                            <div class="d-flex flex-wrap gap-2">
-                                <button id="send-email-btn" class="btn btn-success"><i class="fas fa-envelope"></i> Sonuçları E-posta Gönder</button>
-                                <a id="download-btn" href="#" class="btn btn-primary d-none" target="_blank"><i class="fas fa-download"></i> Tüm Sonuçları İndir</a>
-                                <button id="analiz-btn" class="btn btn-info d-none" onclick="startAnaliz(event)">
-                                    <i class="bi bi-bar-chart-line me-1"></i> Analiz Yap
-                                </button>
-                            </div>
-                            <div id="analiz-info" class="alert alert-info mt-2" style="display:none;">
-                                <i class="bi bi-bar-chart-line me-2"></i>
-                                Analiz başlatıldı! <a id="analiz-link" href="#" class="alert-link">Sonuçları buradan takip edin →</a>
-                            </div>
+                        <div id="email-sent-alert" class="alert alert-success" style="display:none;">
+                            <i class="bi bi-check-circle me-2"></i>Sonuçlar e-posta adresinize gönderildi.
                         </div>
-                        <div id="email-status" class="mt-2"></div>
+                        <div id="analiz-info" class="alert alert-info" style="display:none;">
+                            <i class="bi bi-bar-chart-line me-2"></i>
+                            Analiz başlatıldı! <a id="analiz-link" href="#" class="alert-link">Sonuçları buradan takip edin →</a>
+                        </div>
+                        <div id="results-list"></div>
                     </div>
                 </div>
             </div>
+
+            {% endif %}
         </div>
     </div>
 </div>
-{% endblock %}
 
-{% block extra_js %}
+<script>
+let currentJobId = null;
+let pollInterval = null;
+
+{% if active_job_id %}
+currentJobId = '{{ active_job_id }}';
+sessionStorage.setItem('trdizin_job_id', currentJobId);
+document.getElementById('status-area').style.display = 'block';
+document.getElementById('search-btn').disabled = true;
+document.getElementById('search-btn').innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Aranıyor...';
+pollInterval = setInterval(pollStatus, 3000);
+{% else %}
+(function() {
+    const savedId = sessionStorage.getItem('trdizin_job_id');
+    if (!savedId) return;
+    fetch(`/trdizin/status/${savedId}/`)
+        .then(r => r.ok ? r.json() : null)
+        .then(data => {
+            if (!data) { sessionStorage.removeItem('trdizin_job_id'); return; }
+            currentJobId = savedId;
+            if (data.status === 'completed') {
+                showResults(data);
+            } else if (data.status === 'pending' || data.status === 'running') {
+                showResumeBanner();
+                document.getElementById('search-btn').disabled = true;
+                document.getElementById('search-btn').innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Aranıyor...';
+                pollInterval = setInterval(pollStatus, 3000);
+            } else {
+                sessionStorage.removeItem('trdizin_job_id');
+            }
+        })
+        .catch(() => {});
+})();
+{% endif %}
+
+document.getElementById('dizin-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const form = this;
+    const data = collectData();
+    if (data.length === 0) { alert('Lütfen en az bir arama kriteri girin.'); return; }
+    document.querySelector('[name=query_parts_json]').value = JSON.stringify(data);
+
+    const btn = document.getElementById('search-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Aranıyor...';
+    document.getElementById('status-area').style.display = 'block';
+    document.getElementById('results-area').style.display = 'none';
+
+    fetch("{% url 'trdizin:landing' %}", {
+        method: 'POST',
+        body: new FormData(form),
+        headers: {'X-Requested-With': 'XMLHttpRequest'},
+    })
+    .then(r => r.json())
+    .then(resp => {
+        if (resp.job_id) {
+            currentJobId = resp.job_id;
+            sessionStorage.setItem('trdizin_job_id', currentJobId);
+            pollInterval = setInterval(pollStatus, 3000);
+        } else {
+            document.getElementById('status-area').style.display = 'none';
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-search me-1"></i>Ara';
+            alert(resp.error || 'Bir hata oluştu.');
+        }
+    })
+    .catch(err => {
+        document.getElementById('status-area').style.display = 'none';
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-search me-1"></i>Ara';
+        alert('Bağlantı hatası: ' + err);
+    });
+});
+
+function pollStatus() {
+    if (!currentJobId) return;
+    fetch(`/trdizin/status/${currentJobId}/`)
+        .then(r => r.json())
+        .then(data => {
+            if (data.status === 'completed') {
+                clearInterval(pollInterval); pollInterval = null;
+                showResults(data);
+                document.getElementById('search-btn').disabled = false;
+                document.getElementById('search-btn').innerHTML = '<i class="bi bi-search me-1"></i>Ara';
+            } else if (data.status === 'failed') {
+                clearInterval(pollInterval); pollInterval = null;
+                sessionStorage.removeItem('trdizin_job_id');
+                document.getElementById('resume-banner').style.display = 'none';
+                document.getElementById('status-area').style.display = 'none';
+                document.getElementById('search-btn').disabled = false;
+                document.getElementById('search-btn').innerHTML = '<i class="bi bi-search me-1"></i>Ara';
+                alert('Arama başarısız: ' + (data.error || 'Bilinmeyen hata'));
+            }
+        });
+}
+
+function cancelJob() {
+    if (!currentJobId) return;
+    const csrf = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    fetch(`/trdizin/cancel/${currentJobId}/`, {
+        method: 'POST',
+        headers: {'X-CSRFToken': csrf, 'X-Requested-With': 'XMLHttpRequest'},
+    })
+    .then(() => {
+        clearInterval(pollInterval); pollInterval = null;
+        sessionStorage.removeItem('trdizin_job_id'); currentJobId = null;
+        document.getElementById('status-area').style.display = 'none';
+        document.getElementById('resume-banner').style.display = 'none';
+        document.getElementById('search-btn').disabled = false;
+        document.getElementById('search-btn').innerHTML = '<i class="bi bi-search me-1"></i>Ara';
+    });
+}
+
+function showResumeBanner() {
+    document.getElementById('resume-banner').style.display = 'block';
+    document.getElementById('status-area').style.display = 'none';
+}
+
+function showResults(data) {
+    document.getElementById('resume-banner').style.display = 'none';
+    document.getElementById('status-area').style.display = 'none';
+    document.getElementById('results-area').style.display = 'block';
+    document.getElementById('results-summary').textContent =
+        `${data.total_results} yayın bulundu — İlk ${(data.demo_results || []).length} kayıt`;
+
+    const list = document.getElementById('results-list');
+    list.innerHTML = '';
+    (data.demo_results || []).forEach((r, i) => {
+        list.innerHTML += `
+        <div class="border-bottom border-secondary pb-3 mb-3">
+            <h6 class="mb-1">${i+1}. ${r.title || '(Başlık yok)'}</h6>
+            <small class="text-muted d-block">
+                ${r.authors || ''} ${r.year ? '· ' + r.year : ''} ${r.journal ? '· <em>' + r.journal + '</em>' : ''}
+            </small>
+            ${r.abstract_tr ? `<div class="text-light small mt-2" style="line-height:1.5;">${r.abstract_tr.substring(0,300)}...</div>` : ''}
+        </div>`;
+    });
+
+    if (data.total_results > 0) {
+        const emailBtn = document.getElementById('send-email-btn');
+        emailBtn.style.display = 'inline-block';
+        emailBtn.dataset.jobId = currentJobId;
+    }
+    if (data.all_results_file_url) {
+        const dlBtn = document.getElementById('download-btn');
+        dlBtn.href = `/trdizin/download/${currentJobId}/`;
+        dlBtn.style.display = 'inline-block';
+    }
+    if (data.total_results >= 10) {
+        const analizBtn = document.getElementById('analiz-btn');
+        analizBtn.dataset.jobId = currentJobId;
+        analizBtn.style.display = 'inline-block';
+    }
+}
+
+function startAnaliz(e) {
+    e.preventDefault();
+    const btn = document.getElementById('analiz-btn');
+    const jobId = btn.dataset.jobId || currentJobId;
+    if (!jobId) { alert('Oturum bilgisi kayboldu, lütfen sayfayı yenileyin.'); return; }
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Başlatılıyor...';
+    const csrf = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    fetch(`/makaleanaliz/dizin/${jobId}/`, {
+        method: 'POST',
+        headers: {'X-CSRFToken': csrf, 'X-Requested-With': 'XMLHttpRequest'},
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.job_id) {
+            btn.style.display = 'none';
+            document.getElementById('analiz-link').href = `/makaleanaliz/sonuc/${data.job_id}/`;
+            document.getElementById('analiz-info').style.display = 'block';
+        } else {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-bar-chart-line me-1"></i>Analiz Yap';
+            alert(data.error || 'Analiz başlatılamadı.');
+        }
+    })
+    .catch(err => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-bar-chart-line me-1"></i>Analiz Yap';
+        alert('Bağlantı hatası: ' + err);
+    });
+}
+
+document.getElementById('send-email-btn').addEventListener('click', function() {
+    const btn = this;
+    const jobId = btn.dataset.jobId || currentJobId;
+    if (!jobId) { alert('Oturum bilgisi kayboldu, lütfen sayfayı yenileyin.'); return; }
+    btn.disabled = true;
+    const csrf = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    fetch(`/trdizin/send-demo/${jobId}/`, {
+        method: 'POST',
+        headers: {'X-CSRFToken': csrf, 'X-Requested-With': 'XMLHttpRequest'},
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) {
+            btn.style.display = 'none';
+            document.getElementById('email-sent-alert').style.display = 'block';
+        } else {
+            btn.disabled = false;
+            alert(data.error || 'E-posta gönderilemedi.');
+        }
+    });
+});
+
+// Query Builder
+const fieldOptions = [
+    { value: 'title', text: 'Başlık' },
+    { value: 'abstract', text: 'Özet' },
+    { value: 'author', text: 'Yazar' },
+    { value: 'keyword', text: 'Anahtar Kelime' },
+    { value: 'journal', text: 'Dergi Adı' },
+    { value: 'institution', text: 'Kurum' },
+    { value: 'year', text: 'Yıl Aralığı (örn: 2020-2022)' },
+    { value: 'language', text: 'Yayın Dili (örn: TUR,ENG)' },
+    { value: 'doi', text: 'DOI' },
+];
+const fieldLabels = {};
+fieldOptions.forEach(opt => { fieldLabels[opt.value] = opt.text.split(' (')[0]; });
+
+const builder = document.getElementById('query-builder');
+
+function updateQueryPreview() {
+    const parts = collectData();
+    const preview = document.getElementById('query-preview');
+    const previewText = document.getElementById('query-preview-text');
+    if (parts.length === 0) { preview.style.display = 'none'; return; }
+    let html = '';
+    parts.forEach((part, i) => {
+        if (i > 0 && part.operator) html += ` <span class="qp-op">${part.operator}</span> `;
+        const label = fieldLabels[part.field] || part.field;
+        let val = part.value;
+        if (part.field === 'year') {
+            const y = val.split('-');
+            if (y.length === 2) val = `[${y[0].trim()} TO ${y[1].trim()}]`;
+        } else if (part.field === 'language') {
+            val = val.split(',').map(l => `"${l.trim()}"`).join(' OR ');
+        } else {
+            const words = val.trim().split(/\s+/);
+            val = words.length > 1 ? words.map(w => `"${w}"`).join(' AND ') : `"${val}"`;
+        }
+        html += `<span class="qp-field">${label}</span> : ( <span class="qp-value">${val}</span> )`;
+    });
+    previewText.innerHTML = html;
+    preview.style.display = 'block';
+}
+
+function createRule(isFirst = false) {
+    const ruleDiv = document.createElement('div');
+    ruleDiv.className = 'row mb-2 align-items-center';
+
+    const operatorCol = document.createElement('div');
+    operatorCol.className = 'col-md-2';
+    if (!isFirst) {
+        const sel = document.createElement('select');
+        sel.className = 'form-select bg-dark text-white border-secondary operator-select';
+        sel.innerHTML = '<option value="AND">AND</option><option value="OR">OR</option>';
+        sel.addEventListener('change', updateQueryPreview);
+        operatorCol.appendChild(sel);
+    }
+
+    const fieldCol = document.createElement('div');
+    fieldCol.className = 'col-md-3';
+    const fieldSel = document.createElement('select');
+    fieldSel.className = 'form-select bg-dark text-white border-secondary field-select';
+    fieldOptions.forEach(opt => fieldSel.add(new Option(opt.text, opt.value)));
+    fieldSel.addEventListener('change', updateQueryPreview);
+    fieldCol.appendChild(fieldSel);
+
+    const valueCol = document.createElement('div');
+    valueCol.className = 'col-md-6';
+    const inp = document.createElement('input');
+    inp.type = 'text';
+    inp.className = 'form-control bg-dark text-white border-secondary value-input';
+    inp.placeholder = 'Değer girin...';
+    inp.addEventListener('input', updateQueryPreview);
+    valueCol.appendChild(inp);
+
+    const removeCol = document.createElement('div');
+    removeCol.className = 'col-md-1';
+    if (!isFirst) {
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className = 'btn btn-danger btn-sm';
+        removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+        removeBtn.onclick = () => { ruleDiv.remove(); updateQueryPreview(); };
+        removeCol.appendChild(removeBtn);
+    }
+
+    ruleDiv.appendChild(operatorCol);
+    ruleDiv.appendChild(fieldCol);
+    ruleDiv.appendChild(valueCol);
+    ruleDiv.appendChild(removeCol);
+    builder.appendChild(ruleDiv);
+}
+
+function collectData() {
+    const parts = [];
+    builder.querySelectorAll('.row.mb-2').forEach((rule, i) => {
+        const operator = rule.querySelector('.operator-select')?.value || null;
+        const field = rule.querySelector('.field-select').value;
+        const value = rule.querySelector('.value-input').value.trim();
+        if (value) parts.push({ operator: i === 0 ? null : operator, field, value });
+    });
+    return parts;
+}
+
+document.getElementById('add-rule-btn').addEventListener('click', () => { createRule(); updateQueryPreview(); });
+createRule(true);
+</script>
+
 <style>
 .query-preview {
     background: rgba(0, 240, 255, 0.04);
@@ -98,339 +436,10 @@
     border-radius: 8px;
     padding: 10px 14px;
 }
-.query-preview-text {
-    font-family: 'Courier New', monospace;
-    font-size: 0.8rem;
-    color: #94a3b8;
-    word-break: break-all;
-}
-.query-preview-text .qp-field {
-    color: #22d3ee;
-}
-.query-preview-text .qp-op {
-    color: #fbbf24;
-    font-weight: 700;
-}
-.query-preview-text .qp-value {
-    color: #e2e8f0;
-}
+.query-preview-text { font-family: 'Courier New', monospace; font-size: 0.8rem; color: #94a3b8; word-break: break-all; }
+.query-preview-text .qp-field { color: #22d3ee; }
+.query-preview-text .qp-op { color: #fbbf24; font-weight: 700; }
+.query-preview-text .qp-value { color: #e2e8f0; }
 </style>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const builder = document.getElementById('query-builder');
-    const addRuleBtn = document.getElementById('add-rule-btn');
-    const form = document.getElementById('dizin-search-form');
-    const jsonInput = document.querySelector('[name=query_parts_json]');
-    const submitBtn = document.getElementById('submit-btn');
 
-    const resultsContainer = document.getElementById('results-container');
-    const resultsSummary = document.getElementById('results-summary');
-    const resultsList = document.getElementById('results-list');
-    const resultsActions = document.getElementById('results-actions');
-    const spinner = document.getElementById('spinner');
-
-    const sendEmailBtn = document.getElementById('send-email-btn');
-    const downloadBtn = document.getElementById('download-btn');
-    const analizBtn = document.getElementById('analiz-btn');
-    const analizInfo = document.getElementById('analiz-info');
-    const emailStatus = document.getElementById('email-status');
-
-    let currentJobId = null;
-
-    const fieldOptions = [
-        { value: 'title', text: 'Başlık' },
-        { value: 'abstract', text: 'Özet' },
-        { value: 'author', text: 'Yazar' },
-        { value: 'keyword', text: 'Anahtar Kelime' },
-        { value: 'journal', text: 'Dergi Adı' },
-        { value: 'institution', text: 'Kurum' },
-        { value: 'year', text: 'Yıl Aralığı (örn: 2020-2022)' },
-        { value: 'language', text: 'Yayın Dili (örn: TUR,ENG)' },
-        { value: 'doi', text: 'DOI' },
-    ];
-
-    const queryPreview = document.getElementById('query-preview');
-    const queryPreviewText = document.getElementById('query-preview-text');
-
-    const fieldLabels = {};
-    fieldOptions.forEach(opt => { fieldLabels[opt.value] = opt.text.split(' (')[0]; });
-
-    function updateQueryPreview() {
-        const parts = collectData();
-        if (parts.length === 0) {
-            queryPreview.style.display = 'none';
-            return;
-        }
-
-        let html = '';
-        parts.forEach((part, i) => {
-            if (i > 0 && part.operator) {
-                html += ` <span class="qp-op">${part.operator}</span> `;
-            }
-            const label = fieldLabels[part.field] || part.field;
-            let valueDisplay = part.value;
-
-            if (part.field === 'year') {
-                const years = part.value.split('-');
-                if (years.length === 2) {
-                    valueDisplay = `[${years[0].trim()} TO ${years[1].trim()}]`;
-                }
-            } else if (part.field === 'language') {
-                const langs = part.value.split(',').map(l => `"${l.trim()}"`).join(' OR ');
-                valueDisplay = langs;
-            } else {
-                const words = part.value.trim().split(/\s+/);
-                if (words.length > 1) {
-                    valueDisplay = words.map(w => `"${w}"`).join(' AND ');
-                } else {
-                    valueDisplay = `"${part.value}"`;
-                }
-            }
-
-            html += `<span class="qp-field">${label}</span> : ( <span class="qp-value">${valueDisplay}</span> )`;
-        });
-
-        queryPreviewText.innerHTML = html;
-        queryPreview.style.display = 'block';
-    }
-
-    function createRule(isFirst = false) {
-        const ruleDiv = document.createElement('div');
-        ruleDiv.className = 'row mb-2 align-items-center';
-
-        const operatorCol = document.createElement('div');
-        operatorCol.className = 'col-md-2';
-        if (!isFirst) {
-            const operatorSelect = document.createElement('select');
-            operatorSelect.className = 'form-select bg-dark text-white border-secondary operator-select';
-            operatorSelect.innerHTML = `
-                <option value="AND">AND</option>
-                <option value="OR">OR</option>
-            `;
-            operatorSelect.addEventListener('change', updateQueryPreview);
-            operatorCol.appendChild(operatorSelect);
-        }
-
-        const fieldCol = document.createElement('div');
-        fieldCol.className = 'col-md-3';
-        const fieldSelect = document.createElement('select');
-        fieldSelect.className = 'form-select bg-dark text-white border-secondary field-select';
-        fieldOptions.forEach(opt => fieldSelect.add(new Option(opt.text, opt.value)));
-        fieldSelect.addEventListener('change', updateQueryPreview);
-        fieldCol.appendChild(fieldSelect);
-
-        const valueCol = document.createElement('div');
-        valueCol.className = 'col-md-6';
-        const valueInput = document.createElement('input');
-        valueInput.type = 'text';
-        valueInput.className = 'form-control bg-dark text-white border-secondary value-input';
-        valueInput.placeholder = 'Değer girin...';
-        valueInput.addEventListener('input', updateQueryPreview);
-        valueCol.appendChild(valueInput);
-
-        const removeCol = document.createElement('div');
-        removeCol.className = 'col-md-1';
-        if (!isFirst) {
-            const removeBtn = document.createElement('button');
-            removeBtn.type = 'button';
-            removeBtn.className = 'btn btn-danger btn-sm';
-            removeBtn.innerHTML = '<i class="fas fa-times"></i>';
-            removeBtn.onclick = () => { ruleDiv.remove(); updateQueryPreview(); };
-            removeCol.appendChild(removeBtn);
-        }
-
-        ruleDiv.appendChild(operatorCol);
-        ruleDiv.appendChild(fieldCol);
-        ruleDiv.appendChild(valueCol);
-        ruleDiv.appendChild(removeCol);
-
-        builder.appendChild(ruleDiv);
-    }
-
-    function collectData() {
-        const parts = [];
-        const rules = builder.querySelectorAll('.row.mb-2');
-        rules.forEach((rule, index) => {
-            const operator = rule.querySelector('.operator-select')?.value || null;
-            const field = rule.querySelector('.field-select').value;
-            const value = rule.querySelector('.value-input').value.trim();
-
-            if (value) {
-                parts.push({
-                    operator: index === 0 ? null : operator,
-                    field: field,
-                    value: value
-                });
-            }
-        });
-        return parts;
-    }
-
-    addRuleBtn.addEventListener('click', () => { createRule(); updateQueryPreview(); });
-
-    form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        const data = collectData();
-        if (data.length === 0) {
-            alert('Lütfen en az bir arama kriteri girin.');
-            return;
-        }
-        jsonInput.value = JSON.stringify(data);
-
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Aranıyor...';
-
-        resultsContainer.style.display = 'block';
-        spinner.style.display = 'block';
-        resultsSummary.innerHTML = '';
-        resultsList.innerHTML = '';
-        resultsActions.style.display = 'none';
-        emailStatus.innerHTML = '';
-
-
-        fetch(form.action, {
-            method: 'POST',
-            body: new FormData(form),
-            headers: {'X-Requested-With': 'XMLHttpRequest'}
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.error) {
-                throw new Error(data.error);
-            }
-            currentJobId = data.job_id;
-            resultsSummary.innerHTML = `<p class="text-info">Arama görevi başlatıldı (ID: ${currentJobId}). Sonuçlar bekleniyor...</p>`;
-            pollStatus();
-        })
-        .catch(error => {
-            resultsSummary.innerHTML = `<p class="text-danger">Hata: ${error.message}</p>`;
-            spinner.style.display = 'none';
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = '<i class="fas fa-search"></i> Arama Yap';
-        });
-    });
-
-    function pollStatus() {
-        if (!currentJobId) return;
-
-        const interval = setInterval(() => {
-            fetch(`/trdizin/status/${currentJobId}/`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'completed') {
-                    clearInterval(interval);
-                    spinner.style.display = 'none';
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = '<i class="fas fa-search"></i> Arama Yap';
-                    displayResults(data);
-                } else if (data.status === 'failed') {
-                    clearInterval(interval);
-                    spinner.style.display = 'none';
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = '<i class="fas fa-search"></i> Arama Yap';
-                    resultsSummary.innerHTML = `<p class="text-danger">Arama başarısız oldu: ${data.error}</p>`;
-                }
-            })
-            .catch(err => {
-                clearInterval(interval);
-                spinner.style.display = 'none';
-                 submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="fas fa-search"></i> Arama Yap';
-                resultsSummary.innerHTML = `<p class="text-danger">Durum kontrol edilemedi: ${err.message}</p>`;
-            });
-        }, 3000);
-    }
-
-    function displayResults(data) {
-        resultsSummary.innerHTML = `Toplam <strong>${data.total_results}</strong> sonuç bulundu. Örnek <strong>${data.demo_results.length}</strong> kayıt aşağıda gösterilmektedir.`;
-        if (downloadBtn && data.all_results_file_url) {
-            downloadBtn.href = data.all_results_file_url;
-            downloadBtn.classList.remove('d-none');
-        }
-
-        if (data.demo_results.length === 0) {
-            resultsList.innerHTML = '<p>Gösterilecek demo sonuç bulunamadı.</p>';
-        } else {
-            let html = '<ul class="list-group list-group-flush">';
-            data.demo_results.forEach(item => {
-                html += `
-                    <li class="list-group-item bg-dark text-white">
-                        <h6 class="mb-1">${item.title || 'Başlık Yok'}</h6>
-                        <small class="text-muted">${item.authors || 'Yazar Yok'} (${item.year || 'Yıl Yok'}) - <em>${item.journal || 'Dergi Yok'}</em></small>
-                        <p class="mt-2 mb-1">${(item.abstract_tr || item.abstract_en || 'Özet yok').substring(0, 200)}...</p>
-                    </li>
-                `;
-            });
-            html += '</ul>';
-            resultsList.innerHTML = html;
-        }
-
-        resultsActions.style.display = 'block';
-
-        if (data.total_results >= 5) {
-            analizBtn.classList.remove('d-none');
-        }
-    }
-
-    window.startAnaliz = function(e) {
-        e.preventDefault();
-        if (!currentJobId) return;
-        analizBtn.disabled = true;
-        analizBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Başlatılıyor...';
-        const csrf = document.querySelector('[name=csrfmiddlewaretoken]').value;
-        fetch(`/makaleanaliz/dizin/${currentJobId}/`, {
-            method: 'POST',
-            headers: {'X-CSRFToken': csrf, 'X-Requested-With': 'XMLHttpRequest'},
-        })
-        .then(r => r.json())
-        .then(data => {
-            if (data.job_id) {
-                analizBtn.style.display = 'none';
-                document.getElementById('analiz-link').href = `/makaleanaliz/sonuc/${data.job_id}/`;
-                analizInfo.style.display = 'block';
-            } else {
-                analizBtn.disabled = false;
-                analizBtn.innerHTML = '<i class="bi bi-bar-chart-line me-1"></i> Analiz Yap';
-                alert(data.error || 'Analiz başlatılamadı.');
-            }
-        })
-        .catch(err => {
-            analizBtn.disabled = false;
-            analizBtn.innerHTML = '<i class="bi bi-bar-chart-line me-1"></i> Analiz Yap';
-            alert('Bağlantı hatası: ' + err);
-        });
-    };
-
-    sendEmailBtn.addEventListener('click', function() {
-        sendEmailBtn.disabled = true;
-        sendEmailBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Gönderiliyor...';
-        emailStatus.innerHTML = '';
-
-        fetch(`/trdizin/send-demo/${currentJobId}/`, {
-            method: 'POST',
-            headers: {
-                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                emailStatus.innerHTML = `<div class="alert alert-success mt-2">${data.message}</div>`;
-            } else {
-                throw new Error(data.error);
-            }
-        })
-        .catch(err => {
-            emailStatus.innerHTML = `<div class="alert alert-danger mt-2">Hata: ${err.message}</div>`;
-            sendEmailBtn.disabled = false;
-        })
-        .finally(() => {
-            sendEmailBtn.innerHTML = '<i class="fas fa-envelope"></i> Sonuçları E-posta Gönder';
-        });
-    });
-
-    createRule(true); // Initial rule
-});
-</script>
 {% endblock %}
