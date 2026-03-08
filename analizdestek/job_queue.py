@@ -8,8 +8,11 @@ Tek process (Daphne ASGI / gunicorn -w 1) için yeterlidir.
 import threading
 import queue
 import logging
+from datetime import timedelta
 
 logger = logging.getLogger(__name__)
+
+STUCK_THRESHOLD_MINUTES = 30  # bu süreyi aşan running joblar stuck sayılır
 
 _job_queue = queue.Queue()
 _worker_lock = threading.Lock()
@@ -30,6 +33,9 @@ def _recover():
         from trdizin.models import DizinSearchJob
         from bibliometrics.models import BibliometricJob
 
+        from django.utils import timezone
+        stuck_cutoff = timezone.now() - timedelta(minutes=STUCK_THRESHOLD_MINUTES)
+
         simple_models = [
             (TezAnaliz, 'tezanaliz'),
             (MakaleAnaliz, 'makaleanaliz'),
@@ -40,9 +46,16 @@ def _recover():
 
         for Model, job_type in simple_models:
             for job in Model.objects.filter(status='running'):
-                job.status = 'pending'
-                job.save(update_fields=['status'])
-                logger.info(f'[job_queue] Recovery: {job_type}/{job.id} running→pending')
+                # Uzun süredir running olan joblar stuck — failed yap
+                if job.updated_at < stuck_cutoff if hasattr(job, 'updated_at') else job.created_at < stuck_cutoff:
+                    job.status = 'failed'
+                    job.error_message = 'Sunucu yeniden başlatıldı, iş tamamlanamadı (30+ dk).'
+                    job.save(update_fields=['status', 'error_message'])
+                    logger.warning(f'[job_queue] Recovery: {job_type}/{job.id} stuck→failed')
+                else:
+                    job.status = 'pending'
+                    job.save(update_fields=['status'])
+                    logger.info(f'[job_queue] Recovery: {job_type}/{job.id} running→pending')
             for job in Model.objects.filter(status='pending').order_by('created_at'):
                 _job_queue.put((job_type, str(job.id)))
                 logger.info(f'[job_queue] Recovery: {job_type}/{job.id} kuyruğa eklendi')
