@@ -300,18 +300,22 @@ function showResults(data) {
         dlBtn.style.display = 'inline-block';
     }
     if (data.total_results >= 10) {
-        document.getElementById('analiz-btn').style.display = 'inline-block';
+        const analizBtn = document.getElementById('analiz-btn');
+        analizBtn.dataset.jobId = currentJobId;
+        analizBtn.style.display = 'inline-block';
     }
+    document.getElementById('send-email-btn').dataset.jobId = currentJobId;
 }
 
 function startAnaliz(e) {
     e.preventDefault();
-    if (!currentJobId) return;
     const btn = document.getElementById('analiz-btn');
+    const jobId = btn.dataset.jobId || currentJobId;
+    if (!jobId) { alert('Oturum bilgisi kayboldu, lütfen sayfayı yenileyin.'); return; }
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Başlatılıyor...';
     const csrf = document.querySelector('[name=csrfmiddlewaretoken]').value;
-    fetch(`/tezanaliz/yok/${currentJobId}/`, {
+    fetch(`/tezanaliz/yok/${jobId}/`, {
         method: 'POST',
         headers: {'X-CSRFToken': csrf, 'X-Requested-With': 'XMLHttpRequest'},
     })
@@ -333,11 +337,12 @@ function startAnaliz(e) {
 }
 
 document.getElementById('send-email-btn').addEventListener('click', function() {
-    if (!currentJobId) return;
     const btn = this;
+    const jobId = btn.dataset.jobId || currentJobId;
+    if (!jobId) { alert('Oturum bilgisi kayboldu, lütfen sayfayı yenileyin.'); return; }
     btn.disabled = true;
     const csrf = document.querySelector('[name=csrfmiddlewaretoken]').value;
-    fetch(`/yoktez/send-demo/${currentJobId}/`, {
+    fetch(`/yoktez/send-demo/${jobId}/`, {
         method: 'POST',
         headers: {'X-CSRFToken': csrf, 'X-Requested-With': 'XMLHttpRequest'},
     })
