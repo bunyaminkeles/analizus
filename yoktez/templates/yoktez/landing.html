@@ -114,7 +114,7 @@
                             <button id="send-email-btn" class="btn btn-sm btn-outline-warning" style="display:none;">
                                 <i class="bi bi-envelope me-1"></i>E-posta Gönder
                             </button>
-                            <a id="download-btn" href="#" class="btn btn-sm btn-primary" style="display:none;" target="_blank">
+                            <a id="download-btn" href="#" class="btn btn-sm btn-primary" style="display:none;">
                                 <i class="bi bi-download me-1"></i>İndir
                             </a>
                             <button id="analiz-btn" class="btn btn-sm btn-success" style="display:none;" onclick="startAnaliz(event)">
@@ -143,10 +143,28 @@ let pollInterval = null;
 // Sayfa yüklenince devam eden job var mı kontrol et (server-side)
 {% if active_job_id %}
 currentJobId = '{{ active_job_id }}';
+sessionStorage.setItem('yoktez_job_id', currentJobId);
 document.getElementById('status-area').style.display = 'block';
 document.getElementById('search-btn').disabled = true;
 document.getElementById('search-btn').innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Aranıyor...';
 pollInterval = setInterval(pollStatus, 3000);
+{% else %}
+// sessionStorage'dan önceki tamamlanmış job'ı geri yükle
+(function() {
+    const savedId = sessionStorage.getItem('yoktez_job_id');
+    if (!savedId) return;
+    fetch(`/yoktez/status/${savedId}/`)
+        .then(r => r.ok ? r.json() : null)
+        .then(data => {
+            if (data && data.status === 'completed') {
+                currentJobId = savedId;
+                showResults(data);
+            } else if (!data || data.status === 'failed') {
+                sessionStorage.removeItem('yoktez_job_id');
+            }
+        })
+        .catch(() => {});
+})();
 {% endif %}
 
 // Sayfa terk edilirken uyar
@@ -175,6 +193,7 @@ document.getElementById('yoktez-form').addEventListener('submit', function(e) {
     .then(data => {
         if (data.success) {
             currentJobId = data.job_id;
+            sessionStorage.setItem('yoktez_job_id', currentJobId);
             pollInterval = setInterval(pollStatus, 3000);
         } else {
             document.getElementById('status-area').style.display = 'none';
