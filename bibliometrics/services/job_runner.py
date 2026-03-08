@@ -70,6 +70,7 @@ def _execute_job(job_id: str) -> None:
         demo_url = upload_bytes_to_s3(demo_pdf_bytes, f'bibliometrics/demo/{job.id}.pdf', 'application/pdf')
         full_url = upload_bytes_to_s3(full_pdf_bytes, f'bibliometrics/full/{job.id}.pdf', 'application/pdf')
 
+        close_old_connections()
         job.mark_completed(
             total_records=len(records),
             file_format=fmt,
@@ -84,6 +85,7 @@ def _execute_job(job_id: str) -> None:
     except Exception as e:
         logger.error(f'[bibliometrics] Job hatası [{job_id}]: {e}', exc_info=True)
         try:
+            close_old_connections()
             job = BibliometricJob.objects.get(id=job_id)
             job.mark_failed(str(e))
         except Exception:
@@ -137,6 +139,7 @@ def _execute_job_openalex(job_id: str) -> None:
         demo_url = upload_bytes_to_s3(demo_pdf_bytes, f'bibliometrics/demo/{job.id}.pdf', 'application/pdf')
         full_url = upload_bytes_to_s3(full_pdf_bytes, f'bibliometrics/full/{job.id}.pdf', 'application/pdf')
 
+        close_old_connections()
         job.mark_completed(
             total_records=len(records),
             file_format='openalex_json',

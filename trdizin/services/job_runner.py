@@ -58,6 +58,7 @@ def _execute_job(job_id):
             demo_limit=5,
         )
 
+        close_old_connections()
         job.mark_completed(
             demo_results=demo_results,
             all_results=all_results,
@@ -89,6 +90,7 @@ def _execute_job(job_id):
     except Exception as e:
         logger.error(f"TR Dizin Scraping job {job_id} başarısız: {e}")
         try:
+            close_old_connections()
             job = DizinSearchJob.objects.get(id=job_id)
             job.mark_failed(str(e))
         except Exception:

@@ -118,6 +118,7 @@ def _execute_job(job_id: str) -> None:
         pdf_url = upload_bytes_to_s3(pdf_bytes, s3_key, 'application/pdf')
 
         # 8. Job'ı tamamla
+        close_old_connections()
         job.mark_completed(total_records=len(records), pdf_url=pdf_url or '')
 
         logger.info(
@@ -131,6 +132,7 @@ def _execute_job(job_id: str) -> None:
     except Exception as e:
         logger.error(f'[tezanaliz] Job hatası [{job_id}]: {e}', exc_info=True)
         try:
+            close_old_connections()
             from tezanaliz.models import TezAnaliz as _TezAnaliz
             _TezAnaliz.objects.get(id=job_id).mark_failed(str(e))
         except Exception:
