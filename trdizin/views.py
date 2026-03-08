@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404
-from django.http import JsonResponse, Http404
+from django.http import JsonResponse, Http404, HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_GET, require_POST
 from functools import wraps
@@ -96,10 +96,16 @@ def trdizin_landing(request):
                 errors = form.errors.get('query_parts_json', ['Geçersiz sorgu.'])
                 return JsonResponse({'error': errors[0]}, status=400)
 
+    active_job = DizinSearchJob.objects.filter(
+        user=user,
+        status__in=['pending', 'running'],
+    ).order_by('-created_at').first()
+
     return render(request, 'trdizin/landing.html', {
         'form': form,
         'remaining': remaining,
         'daily_limit': daily_limit,
+        'active_job_id': str(active_job.id) if active_job else None,
     })
 
 
@@ -184,3 +190,38 @@ def trdizin_order_page(request, job_id):
     })
 
 
+@login_required
+@require_GET
+def trdizin_download(request, job_id):
+    """S3'teki TXT dosyasını proxy ile indirtir (tarayıcıda açmaz)."""
+    import requests as req_lib
+    job = get_object_or_404(DizinSearchJob, id=job_id, user=request.user)
+
+    if not job.all_results_file_url:
+        raise Http404
+
+    try:
+        s3_resp = req_lib.get(job.all_results_file_url, timeout=30, stream=True)
+        s3_resp.raise_for_status()
+    except Exception:
+        raise Http404
+
+    filename = f'trdizin_{job.id}.txt'
+    response = HttpResponse(
+        s3_resp.content,
+        content_type='text/plain; charset=utf-8',
+    )
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+    return response
+
+
+@login_required
+@require_POST
+def trdizin_cancel(request, job_id):
+    """Devam eden taramayı iptal eder."""
+    job = get_object_or_404(DizinSearchJob, id=job_id, user=request.user)
+    if job.status in ('pending', 'running'):
+        job.status = 'failed'
+        job.error_message = 'Kullanıcı tarafından iptal edildi.'
+        job.save(update_fields=['status', 'error_message'])
+    return JsonResponse({'success': True})
