@@ -56,6 +56,7 @@ def fetch_all(
     # --- Sayfa 1 ---
     all_basic = []
     total_count = 0
+    search_result_url = SEARCH_URL  # fallback pagination için
 
     try:
         response = session.post(SEARCH_URL, data=form_data, timeout=30, allow_redirects=False)
@@ -65,29 +66,61 @@ def fetch_all(
                 redirect_url = redirect_url.replace('http://', 'https://', 1)
             if redirect_url:
                 response = session.get(redirect_url, timeout=30)
+                search_result_url = response.url  # final URL — ek sayfalar için kullanılacak
         response.encoding = 'utf-8'
         total_count, page_records = _parse_results(response.text)
         all_basic.extend(page_records)
         logger.info(f'[tezanaliz fetcher] Sayfa 1: {len(page_records)} kayıt, toplam={total_count}')
 
         # --- Ek sayfalar ---
-        # YÖK Tez HTML'inde sayfalama linkleri arar
-        next_page_urls = _find_next_pages(response.text, total_count, len(page_records))
-        for page_url in next_page_urls:
-            if len(all_basic) >= max_records:
-                break
-            time.sleep(page_delay)
-            try:
-                pg_resp = session.get(page_url, timeout=30)
-                pg_resp.encoding = 'utf-8'
-                _, pg_records = _parse_results(pg_resp.text)
-                if not pg_records:
-                    break
-                all_basic.extend(pg_records)
-                logger.info(f'[tezanaliz fetcher] Ek sayfa: {len(pg_records)} kayıt (toplam şimdiye kadar: {len(all_basic)})')
-            except Exception as e:
-                logger.warning(f'[tezanaliz fetcher] Ek sayfa hatası: {e}')
-                break
+        page_size = len(page_records)
+        if page_size > 0 and total_count > page_size and len(all_basic) < max_records:
+            next_page_urls = _find_next_pages(response.text, total_count, page_size)
+
+            if next_page_urls:
+                # HTML'de link bulundu — doğrudan kullan
+                for page_url in next_page_urls:
+                    if len(all_basic) >= max_records:
+                        break
+                    time.sleep(page_delay)
+                    try:
+                        pg_resp = session.get(page_url, timeout=30)
+                        pg_resp.encoding = 'utf-8'
+                        _, pg_records = _parse_results(pg_resp.text)
+                        if not pg_records:
+                            break
+                        all_basic.extend(pg_records)
+                        logger.info(f'[tezanaliz fetcher] Ek sayfa (link): {len(pg_records)} kayıt '
+                                    f'(toplam şimdiye kadar: {len(all_basic)})')
+                    except Exception as e:
+                        logger.warning(f'[tezanaliz fetcher] Ek sayfa hatası: {e}')
+                        break
+            else:
+                # Fallback: ?pg=2, ?pg=3 ... ile dene
+                sep = '&' if '?' in search_result_url else '?'
+                page_num = 2
+                consecutive_empty = 0
+                while len(all_basic) < max_records:
+                    page_url = f'{search_result_url}{sep}pg={page_num}'
+                    time.sleep(page_delay)
+                    try:
+                        pg_resp = session.get(page_url, timeout=30)
+                        pg_resp.encoding = 'utf-8'
+                        _, pg_records = _parse_results(pg_resp.text)
+                        if not pg_records:
+                            consecutive_empty += 1
+                            if consecutive_empty >= 2:
+                                logger.info(f'[tezanaliz fetcher] Sayfa {page_num}: boş döndü, duruluyor.')
+                                break
+                        else:
+                            consecutive_empty = 0
+                            all_basic.extend(pg_records)
+                            logger.info(f'[tezanaliz fetcher] Sayfa {page_num} (pg=): {len(pg_records)} kayıt '
+                                        f'(toplam: {len(all_basic)})')
+                        page_num += 1
+                    except Exception as e:
+                        logger.warning(f'[tezanaliz fetcher] Sayfa {page_num} hatası: {e}')
+                        break
 
     except Exception as e:
         logger.error(f'[tezanaliz fetcher] İlk arama hatası: {e}', exc_info=True)
@@ -159,12 +192,11 @@ def _find_next_pages(html: str, total_count: int, first_page_count: int) -> list
         else:
             urls.append(BASE_URL + '/' + href)
 
-    # Sayfalama linki bulunamazsa, sayfa sayısını tahmin et ve form-based pagination dene
     if not urls and total_count > first_page_count:
         logger.info(
             f'[tezanaliz fetcher] HTML\'de sayfalama linki bulunamadı '
             f'(total={total_count}, first_page={first_page_count}). '
-            f'İlk sayfadaki tüm kayıtlar kullanılacak.'
+            f'Fallback pagination denenecek.'
         )
 
     return urls
