@@ -241,7 +241,8 @@ function showResults(data) {
     }
     if (data.all_results_file_url) {
         const dlBtn = document.getElementById('download-btn');
-        dlBtn.href = data.all_results_file_url;
+        dlBtn.href = `/yoktez/download/${currentJobId}/`;
+        dlBtn.removeAttribute('target');
         dlBtn.style.display = 'inline-block';
     }
     if (data.total_results >= 10) {

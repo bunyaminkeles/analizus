@@ -1,5 +1,5 @@
-from django.shortcuts import render
-from django.http import JsonResponse
+from django.shortcuts import render, get_object_or_404
+from django.http import JsonResponse, HttpResponse, StreamingHttpResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_GET, require_POST
 from django.http import Http404
@@ -108,6 +108,31 @@ def yoktez_job_status(request, job_id):
     elif job.status == 'failed':
         resp['error'] = job.error_message
     return JsonResponse(resp)
+
+
+@login_required
+@require_GET
+def yoktez_download(request, job_id):
+    """S3'teki TXT dosyasını proxy ile indirtir (tarayıcıda açmaz)."""
+    import requests as req_lib
+    job = get_object_or_404(YokTezSearchJob, id=job_id, user=request.user)
+
+    if not job.all_results_file_url:
+        raise Http404
+
+    try:
+        s3_resp = req_lib.get(job.all_results_file_url, timeout=30, stream=True)
+        s3_resp.raise_for_status()
+    except Exception:
+        raise Http404
+
+    filename = f'yoktez_{job.id}.txt'
+    response = HttpResponse(
+        s3_resp.content,
+        content_type='text/plain; charset=utf-8',
+    )
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+    return response
 
 
 @login_required

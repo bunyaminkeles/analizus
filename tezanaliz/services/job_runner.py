@@ -40,17 +40,32 @@ def _execute_job(job_id: str) -> None:
         from forum.models import SiteSettings
         max_records = SiteSettings.load().analiz_max_records or 500
 
-        # 1. Tüm tezleri çek
-        records = fetch_all(
-            tez_ad=job.tez_ad,
-            yazar=job.yazar,
-            universite=job.universite,
-            tur=job.tur or '0',
-            yil_baslangic=job.yil_baslangic,
-            yil_bitis=job.yil_bitis,
-            metin=job.metin,
-            max_records=max_records,
-        )
+        # 1. Tüm tezleri çek — önce yok_job.all_results'dan kullan (cache)
+        records = None
+        yok_job = getattr(job, 'yok_job', None)
+        if yok_job and yok_job.all_results:
+            records = yok_job.all_results
+            logger.info(f'[tezanaliz] yok_job.all_results kullanılıyor ({len(records)} kayıt).')
+
+        if not records:
+            records = fetch_all(
+                tez_ad=job.tez_ad,
+                yazar=job.yazar,
+                universite=job.universite,
+                tur=job.tur or '0',
+                yil_baslangic=job.yil_baslangic,
+                yil_bitis=job.yil_bitis,
+                metin=job.metin,
+                max_records=max_records,
+            )
+            # Gelecek analizlerde kullanmak için yok_job'a kaydet
+            if records and yok_job:
+                try:
+                    yok_job.all_results = records
+                    yok_job.save(update_fields=['all_results'])
+                    logger.info(f'[tezanaliz] {len(records)} kayıt yok_job.all_results\'a kaydedildi.')
+                except Exception as e:
+                    logger.warning(f'[tezanaliz] yok_job.all_results kaydetme hatası: {e}')
 
         if not records:
             job.mark_failed('Tez verisi çekilemedi. Arama kriterlerini genişletin.')

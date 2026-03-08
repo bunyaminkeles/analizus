@@ -9,6 +9,83 @@ from collections import Counter, defaultdict
 
 logger = logging.getLogger(__name__)
 
+# ── Türkçe Lemmatization (zeyrek) ──────────────────────────────────
+_tr_analyzer = None
+_tr_stopwords = None
+
+def _get_tr_analyzer():
+    global _tr_analyzer
+    if _tr_analyzer is None:
+        try:
+            import zeyrek
+            _tr_analyzer = zeyrek.MorphAnalyzer()
+        except Exception as e:
+            logger.warning(f'zeyrek yüklenemedi: {e}')
+            _tr_analyzer = False
+    return _tr_analyzer if _tr_analyzer is not False else None
+
+def _get_tr_stopwords():
+    global _tr_stopwords
+    if _tr_stopwords is None:
+        try:
+            import nltk
+            try:
+                _tr_stopwords = set(nltk.corpus.stopwords.words('turkish'))
+            except LookupError:
+                nltk.download('stopwords', quiet=True)
+                _tr_stopwords = set(nltk.corpus.stopwords.words('turkish'))
+        except Exception:
+            _tr_stopwords = set()
+    return _tr_stopwords
+
+def lemmatize_word(word: str) -> str:
+    """Tek Türkçe kelimeyi lemmatize eder. Başarısızsa orijinali döner."""
+    analyzer = _get_tr_analyzer()
+    if not analyzer:
+        return word
+    try:
+        result = analyzer.lemmatize(word)
+        if result and result[0][1]:
+            lemma = result[0][1][0].lower()
+            if len(lemma) >= 2:
+                return lemma
+    except Exception:
+        pass
+    return word
+
+def normalize_keywords(keywords: list[str]) -> list[str]:
+    """
+    Keyword listesini normalize eder:
+    - Stopword filtrele
+    - Tek kelime ise lemmatize et
+    - Çok kelimeli ifadeleri olduğu gibi bırak (makine öğrenmesi vb.)
+    """
+    stopwords = _get_tr_stopwords()
+    result = []
+    for kw in keywords:
+        kw = kw.strip().lower()
+        if not kw or len(kw) < 2:
+            continue
+        if kw in stopwords:
+            continue
+        # Çok kelimeli → olduğu gibi bırak
+        if ' ' in kw:
+            result.append(kw)
+        else:
+            result.append(lemmatize_word(kw))
+    return result
+
+def normalize_abstract_words(abstract: str) -> list[str]:
+    """Abstract'tan anlamlı kelimeleri çıkarır, lemmatize eder."""
+    stopwords = _get_tr_stopwords()
+    words = []
+    for w in abstract.split():
+        w = w.strip('.,;:()[]{}"\'-').lower()
+        if len(w) < 4 or w in stopwords:
+            continue
+        words.append(lemmatize_word(w))
+    return words
+
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -169,9 +246,8 @@ def keyword_cloud(records: list[dict]):
 
     all_kw = []
     for r in records:
-        all_kw.extend(r.get('keywords', []))
-        words = r.get('abstract', '').split()
-        all_kw.extend([w.lower() for w in words if len(w) > 5])
+        all_kw.extend(normalize_keywords(r.get('keywords', [])))
+        all_kw.extend(normalize_abstract_words(r.get('abstract', '')))
 
     if not all_kw:
         return None
@@ -672,8 +748,7 @@ def keyword_cooccurrence(records: list[dict], max_kw: int = 40, min_cooccur: int
     # Önce en sık geçen anahtar kelimeleri bul
     all_kw = Counter()
     for r in records:
-        for k in r.get('keywords', []):
-            k = k.strip().lower()
+        for k in normalize_keywords(r.get('keywords', [])):
             if len(k) > 2:
                 all_kw[k] += 1
 
@@ -684,8 +759,8 @@ def keyword_cooccurrence(records: list[dict], max_kw: int = 40, min_cooccur: int
 
     cooccur = Counter()
     for r in records:
-        kws = list({k.strip().lower() for k in r.get('keywords', [])
-                    if k.strip().lower() in top_kw_set})
+        kws = list({k for k in normalize_keywords(r.get('keywords', []))
+                    if k in top_kw_set})
         if len(kws) < 2:
             continue
         for i in range(len(kws)):
@@ -763,9 +838,8 @@ def keyword_cooccurrence(records: list[dict], max_kw: int = 40, min_cooccur: int
 def keyword_trend(records: list[dict], top_n: int = 8):
     all_kw = Counter()
     for r in records:
-        for k in r.get('keywords', []):
-            if k.strip():
-                all_kw[k.strip().lower()] += 1
+        for k in normalize_keywords(r.get('keywords', [])):
+            all_kw[k] += 1
 
     if not all_kw:
         return None
@@ -781,8 +855,7 @@ def keyword_trend(records: list[dict], top_n: int = 8):
     for r in records:
         if not r.get('year') or not (1900 < r['year'] < 2100):
             continue
-        for k in r.get('keywords', []):
-            k = k.strip().lower()
+        for k in normalize_keywords(r.get('keywords', [])):
             if k in top_kws:
                 year_kw[r['year']][k] += 1
 
@@ -910,8 +983,7 @@ def research_gap(records: list[dict], top_n: int = 30, recent_years: int = 3):
     for r in records:
         year = r.get('year') or 0
         citations = r.get('cited_by_count') or r.get('cited_by') or 0
-        for k in r.get('keywords', []):
-            k = k.strip().lower()
+        for k in normalize_keywords(r.get('keywords', [])):
             if len(k) < 3:
                 continue
             if k not in kw_stats:
@@ -1058,8 +1130,7 @@ def topic_map(records: list[dict], n_topics: int = 8, top_kw_per_topic: int = 8)
     # Keyword frekansı ve co-occurrence
     all_kw = Counter()
     for r in records:
-        for k in r.get('keywords', []):
-            k = k.strip().lower()
+        for k in normalize_keywords(r.get('keywords', [])):
             if len(k) > 2:
                 all_kw[k] += 1
 
@@ -1070,8 +1141,8 @@ def topic_map(records: list[dict], n_topics: int = 8, top_kw_per_topic: int = 8)
 
     cooccur = Counter()
     for r in records:
-        kws = list({k.strip().lower() for k in r.get('keywords', [])
-                    if k.strip().lower() in top_kw_set})
+        kws = list({k for k in normalize_keywords(r.get('keywords', []))
+                    if k in top_kw_set})
         for i in range(len(kws)):
             for j in range(i + 1, len(kws)):
                 cooccur[tuple(sorted([kws[i], kws[j]]))] += 1

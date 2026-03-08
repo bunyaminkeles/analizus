@@ -28,6 +28,7 @@ class YokTezSearchJob(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     total_results = models.IntegerField(default=0)
     demo_results = models.JSONField(default=list, blank=True)
+    all_results = models.JSONField(default=list, blank=True)
     all_results_file_url = models.URLField(max_length=500, blank=True, default='')
     demo_email_sent = models.BooleanField(default=False)
     error_message = models.TextField(blank=True)
