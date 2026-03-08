@@ -8,6 +8,7 @@ import logging
 
 from django.core.mail import EmailMessage
 from django.conf import settings
+from django.db import close_old_connections
 
 logger = logging.getLogger(__name__)
 
@@ -17,6 +18,7 @@ def _execute_job(job_id: str) -> None:
     Tez analizi işini senkron olarak çalıştırır.
     Global worker thread tarafından çağrılır.
     """
+    close_old_connections()
     from tezanaliz.models import TezAnaliz
     from tezanaliz.services.fetcher import fetch_all
     from tezanaliz.services.analyzer import run_all_analyses, compute_similar_theses

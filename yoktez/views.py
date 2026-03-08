@@ -151,3 +151,15 @@ def yoktez_send_demo_email(request, job_id):
     from .services.job_runner import send_demo_email_async
     send_demo_email_async(str(job.id))
     return JsonResponse({'success': True, 'message': f'Sonuçlar {request.user.email} adresine gönderildi.'})
+
+
+@login_required
+@require_POST
+def yoktez_cancel(request, job_id):
+    """Devam eden taramayı iptal eder."""
+    job = get_object_or_404(YokTezSearchJob, id=job_id, user=request.user)
+    if job.status in ('pending', 'running'):
+        job.status = 'failed'
+        job.error_message = 'Kullanıcı tarafından iptal edildi.'
+        job.save(update_fields=['status', 'error_message'])
+    return JsonResponse({'success': True})

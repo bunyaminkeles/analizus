@@ -8,6 +8,7 @@ import threading
 import logging
 
 from django.core.mail import EmailMessage
+from django.db import close_old_connections
 from django.conf import settings
 
 logger = logging.getLogger(__name__)
@@ -18,6 +19,7 @@ def _execute_job(job_id: str) -> None:
     Makale analizi işini senkron olarak çalıştırır.
     Global worker thread tarafından çağrılır.
     """
+    close_old_connections()
     from makaleanaliz.models import MakaleAnaliz
     from makaleanaliz.services.analyzer import run_all_analyses, compute_similar_articles
     from makaleanaliz.services.pdf_builder import build_pdf

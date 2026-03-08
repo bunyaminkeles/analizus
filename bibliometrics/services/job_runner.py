@@ -8,6 +8,7 @@ import logging
 
 from django.core.mail import EmailMessage
 from django.conf import settings
+from django.db import close_old_connections
 
 logger = logging.getLogger(__name__)
 
@@ -23,6 +24,7 @@ def _execute_job(job_id: str) -> None:
     from bibliometrics.services.pdf_builder import build_demo_pdf, build_full_pdf
     from forum.s3_utils import upload_bytes_to_s3
 
+    close_old_connections()
     file_content = _pending_file_contents.pop(job_id, None)
 
     try:
@@ -90,6 +92,7 @@ def _execute_job(job_id: str) -> None:
 
 def _execute_job_openalex(job_id: str) -> None:
     """Global kuyruk worker'ı tarafından çağrılır — OpenAlex tipi analiz, senkron."""
+    close_old_connections()
     from bibliometrics.models import BibliometricJob
     from bibliometrics.services.parser import parse_openalex_json
     from bibliometrics.services.analyzer import run_all_analyses

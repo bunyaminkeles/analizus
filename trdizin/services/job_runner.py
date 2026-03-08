@@ -4,6 +4,7 @@ from datetime import timedelta
 from django.utils import timezone
 from django.conf import settings
 from django.core.mail import EmailMessage
+from django.db import close_old_connections
 from trdizin.models import DizinSearchJob
 from forum.s3_utils import delete_from_s3, upload_to_s3
 
@@ -46,6 +47,7 @@ def _execute_job(job_id):
     from trdizin.models import DizinSearchJob
     from trdizin.services.scraper import TRDizinScraper
 
+    close_old_connections()
     try:
         job = DizinSearchJob.objects.get(id=job_id)
         job.mark_running()

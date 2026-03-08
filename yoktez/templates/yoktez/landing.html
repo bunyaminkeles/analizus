@@ -106,7 +106,10 @@
                 <div class="card bg-dark border-secondary text-white">
                     <div class="card-body text-center py-4">
                         <div class="spinner-border text-warning mb-3" role="status"></div>
-                        <p class="mb-0">YÖK Tez sunucusundan veri çekiliyor, lütfen bekleyin...</p>
+                        <p class="mb-2">YÖK Tez sunucusundan veri çekiliyor, lütfen bekleyin...</p>
+                        <button id="cancel-btn" class="btn btn-sm btn-outline-danger" onclick="cancelJob()">
+                            <i class="bi bi-x-circle me-1"></i>İptal
+                        </button>
                     </div>
                 </div>
             </div>
@@ -235,6 +238,25 @@ function pollStatus() {
                 alert('Arama başarısız: ' + (data.error || 'Bilinmeyen hata'));
             }
         });
+}
+
+function cancelJob() {
+    if (!currentJobId) return;
+    const csrf = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    fetch(`/yoktez/cancel/${currentJobId}/`, {
+        method: 'POST',
+        headers: {'X-CSRFToken': csrf, 'X-Requested-With': 'XMLHttpRequest'},
+    })
+    .then(() => {
+        clearInterval(pollInterval);
+        pollInterval = null;
+        sessionStorage.removeItem('yoktez_job_id');
+        currentJobId = null;
+        document.getElementById('status-area').style.display = 'none';
+        document.getElementById('resume-banner').style.display = 'none';
+        document.getElementById('search-btn').disabled = false;
+        document.getElementById('search-btn').innerHTML = '<i class="bi bi-search me-1"></i>Ara';
+    });
 }
 
 function showResumeBanner(jobId) {

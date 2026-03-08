@@ -4,6 +4,7 @@ from datetime import timedelta
 from django.utils import timezone
 from django.conf import settings
 from django.core.mail import EmailMessage
+from django.db import close_old_connections
 from openalex.models import AlexSearchJob
 from forum.s3_utils import delete_from_s3, upload_to_s3
 
@@ -52,6 +53,7 @@ def _execute_job(job_id):
     from openalex.models import AlexSearchJob
     from openalex.services.scraper import OpenAlexScraper
 
+    close_old_connections()
     try:
         job = AlexSearchJob.objects.get(id=job_id)
         job.mark_running()

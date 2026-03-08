@@ -1,8 +1,10 @@
 import threading
 import logging
+from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeout
 
 from django.core.mail import EmailMessage
 from django.conf import settings
+from django.db import close_old_connections
 
 logger = logging.getLogger(__name__)
 
@@ -13,22 +15,36 @@ def _execute_job(job_id: str) -> None:
     from yoktez.services.scraper import search, generate_results_txt
     from forum.s3_utils import upload_to_s3
 
+    close_old_connections()
     try:
         job = YokTezSearchJob.objects.get(id=job_id)
         job.status = 'running'
         job.save(update_fields=['status'])
 
-        total, demo_records = search(
-            tez_ad=job.tez_ad,
-            yazar=job.yazar,
-            danisman=job.danisman,
-            universite=job.universite,
-            tur=job.tur or '0',
-            yil_baslangic=job.yil_baslangic,
-            yil_bitis=job.yil_bitis,
-            metin=job.metin,
-            demo_limit=5,
-        )
+        with ThreadPoolExecutor(max_workers=1) as ex:
+            future = ex.submit(
+                search,
+                tez_ad=job.tez_ad,
+                yazar=job.yazar,
+                danisman=job.danisman,
+                universite=job.universite,
+                tur=job.tur or '0',
+                yil_baslangic=job.yil_baslangic,
+                yil_bitis=job.yil_bitis,
+                metin=job.metin,
+                demo_limit=5,
+            )
+            try:
+                total, demo_records = future.result(timeout=300)  # 5 dk max
+            except FuturesTimeout:
+                future.cancel()
+                raise Exception('Zaman aşımı: YÖK Tez 5 dakikadan uzun yanıt vermedi.')
+
+        # İptal edildiyse kaydetme
+        job.refresh_from_db(fields=['status'])
+        if job.status == 'failed':
+            logger.info(f'YÖK Tez job {job_id} iptal edilmişti, sonuç kaydedilmedi.')
+            return
 
         job.status = 'completed'
         job.total_results = total
@@ -70,6 +86,7 @@ def run_yoktez_job(job_id: str) -> None:
 def send_demo_email_async(job_id: str) -> None:
     def _run():
         from yoktez.models import YokTezSearchJob
+        close_old_connections()
         try:
             job = YokTezSearchJob.objects.get(id=job_id)
 
