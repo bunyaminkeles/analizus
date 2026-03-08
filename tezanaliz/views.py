@@ -27,11 +27,17 @@ def tezanaliz_landing(request):
     form = YokTezSearchForm()
     past_jobs = TezAnaliz.objects.filter(user=user).order_by('-created_at')[:8]
 
+    active_job = YokTezSearchJob.objects.filter(
+        user=user,
+        status__in=['pending', 'running'],
+    ).order_by('-created_at').first()
+
     context = {
         'form': form,
         'remaining': remaining,
         'daily_limit': daily_limit,
         'past_jobs': past_jobs,
+        'active_job_id': str(active_job.id) if active_job else None,
     }
     return render(request, 'tezanaliz/landing.html', context)
 

@@ -174,14 +174,38 @@
 let currentJobId = null;
 let pollInterval = null;
 
+function startPolling(jobId) {
+    currentJobId = jobId;
+    document.getElementById('status-area').style.display = 'block';
+    document.getElementById('results-area').style.display = 'none';
+    document.getElementById('search-btn').disabled = true;
+    document.getElementById('search-btn').innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Aranıyor...';
+    if (pollInterval) clearInterval(pollInterval);
+    pollInterval = setInterval(pollStatus, 3000);
+}
+
+function stopPolling() {
+    if (pollInterval) clearInterval(pollInterval);
+    pollInterval = null;
+    currentJobId = null;
+}
+
+// Sayfa yüklenince devam eden job var mı kontrol et (server-side)
+{% if active_job_id %}
+startPolling('{{ active_job_id }}');
+{% endif %}
+
+// Sayfa terk edilirken uyar
+window.addEventListener('beforeunload', function(e) {
+    if (currentJobId && pollInterval) {
+        e.preventDefault();
+        e.returnValue = '';
+    }
+});
+
 document.getElementById('yoktez-form').addEventListener('submit', function(e) {
     e.preventDefault();
     const form = this;
-    const btn = document.getElementById('search-btn');
-    btn.disabled = true;
-    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Aranıyor...';
-    document.getElementById('status-area').style.display = 'block';
-    document.getElementById('results-area').style.display = 'none';
     document.getElementById('analiz-info').style.display = 'none';
 
     fetch("{% url 'yoktez:landing' %}", {
@@ -192,10 +216,10 @@ document.getElementById('yoktez-form').addEventListener('submit', function(e) {
     .then(r => r.json())
     .then(data => {
         if (data.success) {
-            currentJobId = data.job_id;
-            pollInterval = setInterval(pollStatus, 3000);
+            startPolling(data.job_id);
         } else {
             document.getElementById('status-area').style.display = 'none';
+            const btn = document.getElementById('search-btn');
             btn.disabled = false;
             btn.innerHTML = '<i class="bi bi-search me-1"></i>Ara';
             alert(data.error || 'Bir hata oluştu.');
@@ -203,6 +227,7 @@ document.getElementById('yoktez-form').addEventListener('submit', function(e) {
     })
     .catch(err => {
         document.getElementById('status-area').style.display = 'none';
+        const btn = document.getElementById('search-btn');
         btn.disabled = false;
         btn.innerHTML = '<i class="bi bi-search me-1"></i>Ara';
         alert('Bağlantı hatası: ' + err);
@@ -215,12 +240,12 @@ function pollStatus() {
         .then(r => r.json())
         .then(data => {
             if (data.status === 'completed') {
-                clearInterval(pollInterval);
+                stopPolling();
                 showResults(data);
                 document.getElementById('search-btn').disabled = false;
                 document.getElementById('search-btn').innerHTML = '<i class="bi bi-search me-1"></i>Ara';
             } else if (data.status === 'failed') {
-                clearInterval(pollInterval);
+                stopPolling();
                 document.getElementById('status-area').style.display = 'none';
                 document.getElementById('search-btn').disabled = false;
                 document.getElementById('search-btn').innerHTML = '<i class="bi bi-search me-1"></i>Ara';

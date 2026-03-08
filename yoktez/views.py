@@ -82,10 +82,16 @@ def yoktez_landing(request):
     else:
         form = YokTezSearchForm()
 
+    active_job = YokTezSearchJob.objects.filter(
+        user=user,
+        status__in=['pending', 'running'],
+    ).order_by('-created_at').first()
+
     return render(request, 'yoktez/landing.html', {
         'form': form,
         'remaining': remaining,
         'daily_limit': daily_limit,
+        'active_job_id': str(active_job.id) if active_job else None,
     })
 
 

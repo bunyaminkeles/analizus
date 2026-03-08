@@ -281,6 +281,22 @@
   let currentJobId = null;
   let pollTimer    = null;
 
+  // Sayfa yüklenince devam eden job var mı kontrol et (server-side)
+  {% if active_job_id %}
+  startPolling('{{ active_job_id }}');
+  progress.classList.remove('d-none');
+  progBar.style.width = '50%';
+  progText.textContent = 'Analiz arka planda devam ediyor, lütfen bekleyin...';
+  {% endif %}
+
+  // Sayfa terk edilirken uyar
+  window.addEventListener('beforeunload', function(e) {
+    if (currentJobId && pollTimer) {
+      e.preventDefault();
+      e.returnValue = '';
+    }
+  });
+
   function showError(msg) {
     errorArea.classList.remove('d-none');
     errorMsg.textContent = msg;

@@ -140,6 +140,23 @@
 let currentJobId = null;
 let pollInterval = null;
 
+// Sayfa yüklenince devam eden job var mı kontrol et (server-side)
+{% if active_job_id %}
+currentJobId = '{{ active_job_id }}';
+document.getElementById('status-area').style.display = 'block';
+document.getElementById('search-btn').disabled = true;
+document.getElementById('search-btn').innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Aranıyor...';
+pollInterval = setInterval(pollStatus, 3000);
+{% endif %}
+
+// Sayfa terk edilirken uyar
+window.addEventListener('beforeunload', function(e) {
+    if (currentJobId && pollInterval) {
+        e.preventDefault();
+        e.returnValue = '';
+    }
+});
+
 document.getElementById('yoktez-form').addEventListener('submit', function(e) {
     e.preventDefault();
     const form = this;
