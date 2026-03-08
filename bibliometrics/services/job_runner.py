@@ -59,11 +59,6 @@ def _execute_job(job_id: str) -> None:
         full_pdf_bytes = build_full_pdf(figures, total_records=len(records), filename=job.original_filename)
 
         n_figures = len(figures)
-        try:
-            import matplotlib.pyplot as plt
-            plt.close('all')
-        except Exception:
-            pass
         del figures
         gc.collect()
 
@@ -128,11 +123,6 @@ def _execute_job_openalex(job_id: str) -> None:
         full_pdf_bytes = build_full_pdf(figures, total_records=len(records), filename=job.original_filename)
 
         n_figures = len(figures)
-        try:
-            import matplotlib.pyplot as plt
-            plt.close('all')
-        except Exception:
-            pass
         del figures
         gc.collect()
 

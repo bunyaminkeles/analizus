@@ -138,8 +138,14 @@ TREND_RED   = '#DC2626'
 TREND_AMBER = '#D97706'
 
 
-def run_all_analyses(records: list[dict]) -> list[tuple[str, object]]:
-    """Tüm 10 analizi çalıştırır. Hatalı analizler atlanır."""
+def run_all_analyses(records: list[dict]) -> list[tuple[str, bytes]]:
+    """
+    Tüm analizleri çalıştırır.
+    Her figür üretilir üretilmez PNG bytes'a çevrilip kapatılır —
+    tüm Figure nesnelerini aynı anda bellekte tutmak yerine sadece
+    hafif PNG bytes listesi saklanır.
+    """
+    import gc as _gc
     analyses = [
         ('Yıllara Göre Yayın Trendi',              lambda: publication_trend(records)),
         ('Yıllık Büyüme Oranı',                    lambda: publication_growth_rate(records)),
@@ -164,9 +170,21 @@ def run_all_analyses(records: list[dict]) -> list[tuple[str, object]]:
         try:
             fig = fn()
             if fig is not None:
-                results.append((title, fig))
+                buf = io.BytesIO()
+                fig.savefig(buf, format='png', dpi=120, bbox_inches='tight', facecolor='white')
+                buf.seek(0)
+                png_bytes = buf.getvalue()
+                buf.close()
+                plt.close(fig)
+                del fig
+                _gc.collect()
+                results.append((title, png_bytes))
         except Exception as e:
             logger.warning(f'Analiz başarısız [{title}]: {e}')
+            try:
+                plt.close('all')
+            except Exception:
+                pass
     return results
 
 

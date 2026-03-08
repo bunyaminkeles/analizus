@@ -41,6 +41,7 @@ def _execute_job(job_id: str) -> None:
                 raise Exception('Zaman aşımı: YÖK Tez 5 dakikadan uzun yanıt vermedi.')
 
         # İptal edildiyse kaydetme
+        close_old_connections()
         job.refresh_from_db(fields=['status'])
         if job.status == 'failed':
             logger.info(f'YÖK Tez job {job_id} iptal edilmişti, sonuç kaydedilmedi.')
