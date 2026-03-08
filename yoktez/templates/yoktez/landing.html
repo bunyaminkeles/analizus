@@ -95,6 +95,12 @@
                 </div>
             </div>
 
+            <!-- Devam eden tarama banner -->
+            <div id="resume-banner" style="display:none;" class="alert alert-info mb-3">
+                <i class="bi bi-arrow-repeat me-2"></i>
+                Devam eden bir tarama var. Sonuçlar hazır olduğunda burada görünecek.
+            </div>
+
             <!-- Yükleniyor -->
             <div id="status-area" style="display:none;" class="mb-3">
                 <div class="card bg-dark border-secondary text-white">
@@ -149,31 +155,30 @@ document.getElementById('search-btn').disabled = true;
 document.getElementById('search-btn').innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Aranıyor...';
 pollInterval = setInterval(pollStatus, 3000);
 {% else %}
-// sessionStorage'dan önceki tamamlanmış job'ı geri yükle
+// sessionStorage'dan önceki job'ı geri yükle
 (function() {
     const savedId = sessionStorage.getItem('yoktez_job_id');
     if (!savedId) return;
     fetch(`/yoktez/status/${savedId}/`)
         .then(r => r.ok ? r.json() : null)
         .then(data => {
-            if (data && data.status === 'completed') {
-                currentJobId = savedId;
+            if (!data) { sessionStorage.removeItem('yoktez_job_id'); return; }
+            currentJobId = savedId;
+            if (data.status === 'completed') {
                 showResults(data);
-            } else if (!data || data.status === 'failed') {
+            } else if (data.status === 'pending' || data.status === 'running') {
+                // Devam eden tarama — banner göster ve polling başlat
+                showResumeBanner(savedId);
+                document.getElementById('search-btn').disabled = true;
+                document.getElementById('search-btn').innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Aranıyor...';
+                pollInterval = setInterval(pollStatus, 3000);
+            } else {
                 sessionStorage.removeItem('yoktez_job_id');
             }
         })
         .catch(() => {});
 })();
 {% endif %}
-
-// Sayfa terk edilirken uyar
-window.addEventListener('beforeunload', function(e) {
-    if (currentJobId && pollInterval) {
-        e.preventDefault();
-        e.returnValue = '';
-    }
-});
 
 document.getElementById('yoktez-form').addEventListener('submit', function(e) {
     e.preventDefault();
@@ -222,6 +227,8 @@ function pollStatus() {
                 document.getElementById('search-btn').innerHTML = '<i class="bi bi-search me-1"></i>Ara';
             } else if (data.status === 'failed') {
                 clearInterval(pollInterval);
+                sessionStorage.removeItem('yoktez_job_id');
+                document.getElementById('resume-banner').style.display = 'none';
                 document.getElementById('status-area').style.display = 'none';
                 document.getElementById('search-btn').disabled = false;
                 document.getElementById('search-btn').innerHTML = '<i class="bi bi-search me-1"></i>Ara';
@@ -230,7 +237,13 @@ function pollStatus() {
         });
 }
 
+function showResumeBanner(jobId) {
+    document.getElementById('resume-banner').style.display = 'block';
+    document.getElementById('status-area').style.display = 'none';
+}
+
 function showResults(data) {
+    document.getElementById('resume-banner').style.display = 'none';
     document.getElementById('status-area').style.display = 'none';
     document.getElementById('results-area').style.display = 'block';
     document.getElementById('results-summary').textContent =
