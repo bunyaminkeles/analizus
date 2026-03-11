@@ -25,6 +25,7 @@ ALLOWED_HOSTS = [
     'analizdestek-ai.onrender.com',
     'analizus-dev.onrender.com',  # Geliştirme ortamı
     '*.koyeb.app',  # Koyeb için eklendi
+    '89.167.5.224',  # Hetzner
     '127.0.0.1',
     'localhost',
 ]

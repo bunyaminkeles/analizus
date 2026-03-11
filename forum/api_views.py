@@ -212,6 +212,60 @@ def cron_cleanup_s3_files(request):
 
 
 @require_GET
+def admin_queue_status(request):
+    """Admin dashboard için kuyruk durumu JSON endpoint'i (sadece staff)."""
+    if not request.user.is_authenticated or not request.user.is_staff:
+        return JsonResponse({'error': 'Unauthorized'}, status=403)
+
+    from django.utils.timesince import timesince as _timesince
+    try:
+        from tezanaliz.models import TezAnaliz
+        from makaleanaliz.models import MakaleAnaliz
+        from yoktez.models import YokTezSearchJob
+        from openalex.models import AlexSearchJob
+        from trdizin.models import DizinSearchJob
+        from bibliometrics.models import BibliometricJob
+
+        sections = [
+            ('Tez Analizi', TezAnaliz),
+            ('Makale Analizi', MakaleAnaliz),
+            ('YÖK Tez', YokTezSearchJob),
+            ('OpenAlex', AlexSearchJob),
+            ('TR Dizin', DizinSearchJob),
+            ('Bibliometrik', BibliometricJob),
+        ]
+
+        rows = []
+        for label, Model in sections:
+            for job in Model.objects.filter(status='running').select_related('user').order_by('created_at'):
+                rows.append({
+                    'type': label,
+                    'status': 'running',
+                    'status_label': 'Çalışıyor',
+                    'user': job.user.username if job.user_id else '-',
+                    'since': _timesince(job.created_at),
+                    'id_short': str(job.id)[:8],
+                })
+            for job in Model.objects.filter(status='pending').select_related('user').order_by('created_at'):
+                rows.append({
+                    'type': label,
+                    'status': 'pending',
+                    'status_label': 'Bekliyor',
+                    'user': job.user.username if job.user_id else '-',
+                    'since': _timesince(job.created_at),
+                    'id_short': str(job.id)[:8],
+                })
+
+        return JsonResponse({
+            'rows': rows,
+            'running_count': sum(1 for r in rows if r['status'] == 'running'),
+            'pending_count': sum(1 for r in rows if r['status'] == 'pending'),
+        })
+    except Exception as e:
+        return JsonResponse({'rows': [], 'running_count': 0, 'pending_count': 0, 'error': str(e)})
+
+
+@require_GET
 def cron_health_check(request):
     """
     Basit sağlık kontrolü endpoint'i.

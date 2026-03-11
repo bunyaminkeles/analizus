@@ -100,6 +100,7 @@ urlpatterns = [
     path('api/cron/update-badges/', api_views.cron_update_badges_ranks, name='cron_update_badges'),
     path('api/cron/cleanup-s3/', api_views.cron_cleanup_s3_files, name='cron_cleanup_s3'),
     path('api/cron/health/', api_views.cron_health_check, name='cron_health'),
+    path('api/admin/queue-status/', api_views.admin_queue_status, name='admin_queue_status'),
 
     # Admin setup (kullandıktan sonra kaldırın!)
     path('api/admin-setup/', api_views.admin_create_or_reset, name='admin_setup'),
