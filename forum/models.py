@@ -1100,6 +1100,11 @@ class SiteSettings(models.Model):
         verbose_name="Analiz Maks. Kayıt Sayısı",
         help_text="Tez & Makale Analizi ve TR Dizin Makale Analizi için işlenecek maksimum kayıt sayısı. (default: 500)",
     )
+    scrap_max_records = models.PositiveIntegerField(
+        default=5000,
+        verbose_name="Scraping Maks. Kayıt Sayısı",
+        help_text="TR Dizin, OpenAlex ve OAI-PMH scraperlarının çekebileceği maksimum kayıt sayısı. (default: 5000)",
+    )
 
     # Bibliometrik Analiz Fiyatlandırma (TL)
     biblio_price_500 = models.PositiveIntegerField(default=500, verbose_name="0-500 kayıt fiyatı (TL)")

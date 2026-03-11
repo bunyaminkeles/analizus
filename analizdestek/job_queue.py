@@ -1,22 +1,28 @@
 """
 Global analiz iş kuyruğu.
-Aynı anda yalnızca 1 analiz çalışır; diğerleri sırayla beklenir.
+Aynı anda MAX_WORKERS kadar analiz paralel çalışır; fazlası sırayla beklenir.
 
-Mimari: in-memory queue.Queue + tek daemon worker thread.
-Tek process (Daphne ASGI / gunicorn -w 1) için yeterlidir.
+Mimari: in-memory queue.Queue + dispatcher thread + ThreadPoolExecutor.
+Tek process (Daphne ASGI / gunicorn -w 1) için tasarlanmıştır.
 """
 import threading
 import queue
 import logging
+from concurrent.futures import ThreadPoolExecutor
 from datetime import timedelta
+from django.conf import settings
 
 logger = logging.getLogger(__name__)
+
+# Hetzner kapasitesine göre ayarla — settings.py'de JOB_MAX_WORKERS ile override edilebilir
+MAX_WORKERS = getattr(settings, 'JOB_MAX_WORKERS', 5)
 
 STUCK_THRESHOLD_MINUTES = 30  # bu süreyi aşan running joblar stuck sayılır
 
 _job_queue = queue.Queue()
 _worker_lock = threading.Lock()
 _worker_started = False
+_executor: ThreadPoolExecutor | None = None
 
 
 def _recover():
@@ -80,52 +86,68 @@ def _recover():
         logger.warning(f'[job_queue] Recovery atlandı (normal ilk çalıştırmada): {e}')
 
 
-def _worker():
-    """Tek worker thread — işleri sırayla çalıştırır."""
+def _run_job(job_type: str, job_id: str):
+    """Tek bir işi çalıştırır — ThreadPoolExecutor worker thread'inde koşar."""
+    try:
+        logger.info(f'[job_queue] Başlıyor: {job_type}/{job_id}')
+        if job_type == 'tezanaliz':
+            from tezanaliz.services.job_runner import _execute_job
+            _execute_job(job_id)
+        elif job_type == 'makaleanaliz':
+            from makaleanaliz.services.job_runner import _execute_job
+            _execute_job(job_id)
+        elif job_type == 'yoktez':
+            from yoktez.services.job_runner import _execute_job
+            _execute_job(job_id)
+        elif job_type == 'openalex':
+            from openalex.services.job_runner import _execute_job
+            _execute_job(job_id)
+        elif job_type == 'trdizin':
+            from trdizin.services.job_runner import _execute_job
+            _execute_job(job_id)
+        elif job_type == 'bibliometrics':
+            from bibliometrics.services.job_runner import _execute_job
+            _execute_job(job_id)
+        elif job_type == 'bibliometrics_openalex':
+            from bibliometrics.services.job_runner import _execute_job_openalex
+            _execute_job_openalex(job_id)
+        else:
+            logger.warning(f'[job_queue] Bilinmeyen job_type: {job_type}')
+    except Exception as e:
+        logger.error(f'[job_queue] {job_type}/{job_id} hatası: {e}', exc_info=True)
+
+
+def _dispatcher():
+    """
+    Dispatcher thread — kuyruktaki işleri ThreadPoolExecutor'a dağıtır.
+    MAX_WORKERS iş aynı anda çalışabilir; pool dolarsa executor kendi iç kuyruğunda bekletir.
+    """
     _recover()
-    logger.info('[job_queue] Worker başladı, kuyruk dinleniyor...')
+    logger.info(f'[job_queue] Dispatcher başladı, max {MAX_WORKERS} paralel iş destekleniyor.')
     while True:
         job_type, job_id = _job_queue.get()
         try:
-            logger.info(f'[job_queue] Başlıyor: {job_type}/{job_id}')
-            if job_type == 'tezanaliz':
-                from tezanaliz.services.job_runner import _execute_job
-                _execute_job(job_id)
-            elif job_type == 'makaleanaliz':
-                from makaleanaliz.services.job_runner import _execute_job
-                _execute_job(job_id)
-            elif job_type == 'yoktez':
-                from yoktez.services.job_runner import _execute_job
-                _execute_job(job_id)
-            elif job_type == 'openalex':
-                from openalex.services.job_runner import _execute_job
-                _execute_job(job_id)
-            elif job_type == 'trdizin':
-                from trdizin.services.job_runner import _execute_job
-                _execute_job(job_id)
-            elif job_type == 'bibliometrics':
-                from bibliometrics.services.job_runner import _execute_job
-                _execute_job(job_id)
-            elif job_type == 'bibliometrics_openalex':
-                from bibliometrics.services.job_runner import _execute_job_openalex
-                _execute_job_openalex(job_id)
-            else:
-                logger.warning(f'[job_queue] Bilinmeyen job_type: {job_type}')
+            _executor.submit(_run_job, job_type, job_id)
+            logger.info(f'[job_queue] Pool\'a gönderildi: {job_type}/{job_id} (kuyruk≈{_job_queue.qsize()})')
         except Exception as e:
-            logger.error(f'[job_queue] {job_type}/{job_id} hatası: {e}', exc_info=True)
+            logger.error(f'[job_queue] Dispatcher submit hatası: {e}', exc_info=True)
         finally:
             _job_queue.task_done()
 
 
 def start_worker():
-    """Worker thread'i başlat (idempotent — bir kez başlar)."""
-    global _worker_started
+    """Dispatcher thread ve worker pool'u başlat (idempotent — bir kez başlar)."""
+    global _worker_started, _executor
     with _worker_lock:
         if not _worker_started:
-            t = threading.Thread(target=_worker, daemon=True, name='analysis-worker')
+            _executor = ThreadPoolExecutor(
+                max_workers=MAX_WORKERS,
+                thread_name_prefix='job-worker',
+            )
+            t = threading.Thread(target=_dispatcher, daemon=True, name='job-dispatcher')
             t.start()
             _worker_started = True
-            logger.info('[job_queue] Worker thread başlatıldı.')
+            logger.info(f'[job_queue] Dispatcher ve {MAX_WORKERS} worker başlatıldı.')
 
 
 def enqueue(job_type: str, job_id: str):
@@ -139,9 +161,12 @@ def get_queue_position(job_type: str, job_id: str) -> int:
     """
     İşin kuyruk pozisyonunu döndürür.
     0  → çalışıyor veya tamamlandı/başarısız
-    1  → sıradaki (running bittikten hemen çalışacak)
+    1  → sıradaki (bir worker boşalınca hemen çalışacak)
     2+ → bekliyor
     -1 → hesaplanamadı
+
+    Not: MAX_WORKERS iş eş zamanlı çalışabilir. Önünde MAX_WORKERS'tan az running
+    iş varsa pozisyon 1 döner (hemen başlayabilir demektir).
     """
     try:
         from tezanaliz.models import TezAnaliz
@@ -166,11 +191,11 @@ def get_queue_position(job_type: str, job_id: str) -> int:
 
         job = Model.objects.filter(id=job_id, status='pending').first()
         if not job:
-            return 0
+            return 0  # zaten çalışıyor ya da bitti
 
         created_at = job.created_at
 
-        before = (
+        pending_before = (
             TezAnaliz.objects.filter(status='pending', created_at__lt=created_at).count() +
             MakaleAnaliz.objects.filter(status='pending', created_at__lt=created_at).count() +
             YokTezSearchJob.objects.filter(status='pending', created_at__lt=created_at).count() +
@@ -178,7 +203,7 @@ def get_queue_position(job_type: str, job_id: str) -> int:
             DizinSearchJob.objects.filter(status='pending', created_at__lt=created_at).count() +
             BibliometricJob.objects.filter(status='pending', created_at__lt=created_at).count()
         )
-        running = (
+        running_count = (
             TezAnaliz.objects.filter(status='running').count() +
             MakaleAnaliz.objects.filter(status='running').count() +
             YokTezSearchJob.objects.filter(status='running').count() +
@@ -186,7 +211,13 @@ def get_queue_position(job_type: str, job_id: str) -> int:
             DizinSearchJob.objects.filter(status='running').count() +
             BibliometricJob.objects.filter(status='running').count()
         )
-        return before + running + 1
+
+        # Boş worker slotu var mı?
+        free_slots = MAX_WORKERS - running_count
+        if free_slots > 0 and pending_before < free_slots:
+            return 1  # hemen başlayabilir
+
+        return pending_before + 1
 
     except Exception:
         return -1
