@@ -570,6 +570,10 @@ class SiteSettingsAdmin(admin.ModelAdmin):
                 'feature_donation', 'feature_success_stories', 'feature_bibliometrics', 'feature_yoktez',
             ),
         }),
+        ('Scraping & Analiz Limitleri', {
+            'description': 'Scraping: TR Dizin, OpenAlex, OAI-PMH scraperlarının çekebileceği maks. kayıt (default 5000). Analiz: Tez & Makale Analizi için işlenecek maks. kayıt (Render için 500, Hetzner için 2000–5000 önerilir).',
+            'fields': ('scrap_max_records', 'analiz_max_records'),
+        }),
         ('Bibliometrik Analiz Fiyatlandırma', {
             'description': "5000'den fazla kayıt için kullanıcılara 'admin ile iletişime geçin' mesajı gösterilir.",
             'fields': (

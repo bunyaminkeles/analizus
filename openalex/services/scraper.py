@@ -234,8 +234,10 @@ class OpenAlexScraper:
                 logger.error(f"OpenAlex pagination hatası: {e}")
                 break
 
-            # Güvenlik: maksimum 5000 sonuç
-            if len(all_results) >= 5000:
+            # Maksimum sonuç limiti (admin panelinden ayarlanabilir)
+            from forum.models import SiteSettings
+            max_records = SiteSettings.load().scrap_max_records or 5000
+            if len(all_results) >= max_records:
                 logger.info(f"Maksimum sonuç limitine ulaşıldı: {len(all_results)}")
                 break
 
