@@ -260,6 +260,10 @@ IYZICO_API_KEY = os.getenv('IYZICO_API_KEY', '').strip()
 IYZICO_SECRET_KEY = os.getenv('IYZICO_SECRET_KEY', '').strip()
 IYZICO_BASE_URL = os.getenv('IYZICO_BASE_URL', 'sandbox-api.iyzipay.com').strip()  # Production: api.iyzipay.com
 
+# --- İŞ KUYRUĞU AYARLARI ---
+# Paralel iş kuyruğu — Hetzner kapasitesine göre ayarla (default: 5)
+JOB_MAX_WORKERS = int(os.environ.get('JOB_MAX_WORKERS', 5))
+
 # --- DOSYA YÜKLEME AYARLARI ---
 MAX_UPLOAD_SIZE = 5 * 1024 * 1024  # 5 MB
 ALLOWED_ATTACHMENT_TYPES = [
