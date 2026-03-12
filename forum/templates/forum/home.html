@@ -195,6 +195,26 @@
         </div>
         {% endif %}
 
+        <!-- GÜNCEL BİLİM HABERLERİ (Sol Sidebar) -->
+        {% if science_news %}
+        <div class="widget-card" id="science-news-widget">
+            <div class="widget-header" style="color: #38bdf8;">
+                <i class="bi bi-newspaper"></i>
+                <span>Bilim Haberleri</span>
+            </div>
+            <div class="widget-body p-0">
+                {% for item in science_news|slice:":6" %}
+                <a href="{{ item.url }}" target="_blank" rel="noopener noreferrer" class="widget-item news-sidebar-item">
+                    <div class="item-content">
+                        <span class="item-title" style="font-size:0.78rem; -webkit-line-clamp:2;">{{ item.title }}</span>
+                        {% if item.source %}<span class="item-meta" style="color:#38bdf8;"><i class="bi bi-broadcast"></i> {{ item.source }}</span>{% endif %}
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
     </aside>
 
     <div class="analizus-home">
@@ -869,6 +889,69 @@
 
     margin-bottom: 20px;
 
+}
+
+/* === HABER GRID === */
+.news-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+@media (max-width: 900px) {
+    .news-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 600px) {
+    .news-grid { grid-template-columns: 1fr; }
+}
+.news-card {
+    display: block;
+    text-decoration: none;
+    border-radius: 10px;
+    border: 1px solid rgba(56, 189, 248, 0.15);
+    background: rgba(56, 189, 248, 0.04);
+    transition: border-color 0.2s, background 0.2s;
+}
+.news-card:hover {
+    border-color: rgba(56, 189, 248, 0.4);
+    background: rgba(56, 189, 248, 0.1);
+    text-decoration: none;
+}
+.news-card-inner {
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    height: 100%;
+}
+.news-title {
+    font-size: 0.82rem;
+    color: #e2e8f0;
+    margin: 0;
+    line-height: 1.45;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.news-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+    gap: 6px;
+}
+.news-source {
+    font-size: 0.7rem;
+    color: #38bdf8;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 65%;
+}
+.news-date {
+    font-size: 0.68rem;
+    color: #64748b;
+    white-space: nowrap;
 }
 
 

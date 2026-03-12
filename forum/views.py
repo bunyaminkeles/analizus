@@ -109,6 +109,10 @@ def home(request):
     # Bağış Katmanları
     donation_tiers = DonationTier.objects.filter(is_active=True).order_by('min_amount')
 
+    # Güncel Haberler
+    from .news_utils import get_science_news
+    science_news = get_science_news()
+
     context = {
         'sections': sections,
         # İstatistikler
@@ -126,6 +130,7 @@ def home(request):
         'recent_jobs': recent_jobs,
         'recent_reviews': recent_reviews,
         'featured_jobs': featured_jobs,
+        'science_news': science_news,
     }
     return render(request, 'forum/home.html', context)
 
