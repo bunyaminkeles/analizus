@@ -1118,6 +1118,9 @@ class SiteSettings(models.Model):
         verbose_name = "Site Ayarı"
         verbose_name_plural = "Site Ayarları"
 
+    def __str__(self):
+        return "Site Ayarları"
+
     def save(self, *args, **kwargs):
         # Sadece tek kayıt olsun
         self.pk = 1
