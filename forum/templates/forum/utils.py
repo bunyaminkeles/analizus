@@ -1,6 +1,9 @@
+import logging
 import requests
 from bs4 import BeautifulSoup
 from django.core.cache import cache
+
+logger = logging.getLogger(__name__)
 
 def get_altinkaynak_rates():
     """
@@ -49,7 +52,7 @@ def get_altinkaynak_rates():
                 cache.set('market_rates_data', rates, 300)
                 
     except Exception as e:
-        print(f"Scraping hatası: {e}")
+        logger.error(f"Scraping hatası: {e}")
         # Hata durumunda boş liste veya cache'deki eski veriyi döndürebiliriz
         return []
 

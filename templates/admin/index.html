@@ -70,109 +70,16 @@
         </div>
     </div>
 
-    <!-- Grafikler -->
+    <!-- Aktivite Grafiği -->
     <div class="row mb-3">
-        <div class="col-lg-8 mb-3">
-            <div class="dashboard-card h-100">
+        <div class="col-12">
+            <div class="dashboard-card">
                 <div class="card-header">
                     <h5><i class="fas fa-chart-line mr-2"></i>Son 7 Günlük Aktivite</h5>
                 </div>
                 <div class="card-body">
-                    <div style="position: relative; height: 300px; width: 100%;">
+                    <div style="position: relative; height: 260px; width: 100%;">
                         <canvas id="activityChart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-4 mb-3">
-            <div class="dashboard-card h-100">
-                <div class="card-header">
-                    <h5><i class="fas fa-envelope-open mr-2"></i>E-posta Durumu</h5>
-                </div>
-                <div class="card-body">
-                    <div style="position: relative; height: 200px; width: 100%;">
-                        <canvas id="verificationChart"></canvas>
-                    </div>
-                    <div class="mt-3">
-                        <div class="d-flex justify-content-between mb-2">
-                            <span class="text-muted">Doğrulanmış</span>
-                            <span style="color: #10b981; font-weight: bold;">{{ s.verified_users }}</span>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                            <span class="text-muted">Doğrulanmamış</span>
-                            <span style="color: #ef4444; font-weight: bold;">{{ s.unverified_users }}</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Kategori & Aktif Kullanıcılar -->
-    <div class="row mb-3">
-        <div class="col-lg-6 mb-3">
-            <div class="dashboard-card h-100">
-                <div class="card-header">
-                    <h5><i class="fas fa-folder mr-2"></i>Kategori İstatistikleri</h5>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-dashboard table-hover mb-0">
-                            <thead>
-                                <tr>
-                                    <th>Kategori</th>
-                                    <th class="text-center">Konu</th>
-                                    <th class="text-center">Gönderi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for cat in s.category_stats %}
-                                <tr>
-                                    <td>{{ cat.title }}</td>
-                                    <td class="text-center">{{ cat.topic_count }}</td>
-                                    <td class="text-center">{{ cat.post_count }}</td>
-                                </tr>
-                                {% empty %}
-                                <tr><td colspan="3" class="text-center text-muted">Henüz kategori yok</td></tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-6 mb-3">
-            <div class="dashboard-card h-100">
-                <div class="card-header">
-                    <h5><i class="fas fa-trophy mr-2"></i>En Aktif Kullanıcılar (Son 30 Gün)</h5>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-dashboard table-hover mb-0">
-                            <thead>
-                                <tr>
-                                    <th>Kullanıcı</th>
-                                    <th class="text-center">Konu</th>
-                                    <th class="text-center">Gönderi</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for user in s.active_users %}
-                                <tr>
-                                    <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="user-avatar-sm mr-2">{{ user.username|slice:":1"|upper }}</div>
-                                            <span class="text-info">{{ user.username }}</span>
-                                        </div>
-                                    </td>
-                                    <td class="text-center">{{ user.recent_topics }}</td>
-                                    <td class="text-center">{{ user.recent_posts }}</td>
-                                </tr>
-                                {% empty %}
-                                <tr><td colspan="3" class="text-center text-muted">Henüz aktivite yok</td></tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
                     </div>
                 </div>
             </div>
@@ -407,66 +314,31 @@
         </div>
     </div>
 
-    <!-- Alt Satır: Son Kayıtlar, Son Konular, Rütbe Dağılımı -->
+    <!-- Alt Satır: Son Kayıtlar -->
     <div class="row mb-3">
-        <div class="col-lg-4 mb-3">
-            <div class="dashboard-card h-100">
+        <div class="col-12">
+            <div class="dashboard-card">
                 <div class="card-header">
                     <h5><i class="fas fa-user-plus mr-2"></i>Son Kayıtlar</h5>
                 </div>
                 <div class="card-body p-0">
-                    {% for user in s.recent_users %}
-                    <div class="activity-item px-3">
-                        <div class="d-flex align-items-center">
-                            <div class="user-avatar-sm mr-2">{{ user.username|slice:":1"|upper }}</div>
-                            <div>
-                                <span class="text-info">{{ user.username }}</span>
-                                <div class="text-muted small">{{ user.date_joined|timesince }} önce</div>
+                    <div class="row no-gutters">
+                        {% for user in s.recent_users %}
+                        <div class="col-md-4 col-lg-2">
+                            <div class="activity-item px-3">
+                                <div class="d-flex align-items-center">
+                                    <div class="user-avatar-sm mr-2">{{ user.username|slice:":1"|upper }}</div>
+                                    <div>
+                                        <span class="text-info">{{ user.username }}</span>
+                                        <div class="text-muted small">{{ user.date_joined|timesince }} önce</div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
+                        {% empty %}
+                        <div class="col p-3 text-center text-muted">Henüz kullanıcı yok</div>
+                        {% endfor %}
                     </div>
-                    {% empty %}
-                    <div class="p-3 text-center text-muted">Henüz kullanıcı yok</div>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-4 mb-3">
-            <div class="dashboard-card h-100">
-                <div class="card-header">
-                    <h5><i class="fas fa-comments mr-2"></i>Son Konular</h5>
-                </div>
-                <div class="card-body p-0">
-                    {% for topic in s.recent_topics_list %}
-                    <div class="activity-item px-3">
-                        <span class="text-light">{{ topic.subject|truncatewords:8 }}</span>
-                        <div class="text-muted small">
-                            {{ topic.starter.username }} - {{ topic.created_at|timesince }} önce
-                        </div>
-                    </div>
-                    {% empty %}
-                    <div class="p-3 text-center text-muted">Henüz konu yok</div>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-4 mb-3">
-            <div class="dashboard-card h-100">
-                <div class="card-header">
-                    <h5><i class="fas fa-chart-bar mr-2"></i>Rütbe Dağılımı</h5>
-                </div>
-                <div class="card-body">
-                    {% for rank in s.rank_distribution %}
-                    <div class="mb-3">
-                        <div class="d-flex justify-content-between mb-1">
-                            <span class="text-light">{{ rank.rank|title }}</span>
-                            <span class="text-muted">{{ rank.count }}</span>
-                        </div>
-                        <div class="progress progress-thin">
-                            <div class="progress-bar bg-info" style="width: {% if s.total_users > 0 %}{% widthratio rank.count s.total_users 100 %}{% else %}0{% endif %}%"></div>
-                        </div>
-                    </div>
-                    {% endfor %}
                 </div>
             </div>
         </div>
@@ -531,32 +403,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // E-posta Doğrulama Grafiği
-    var verificationCtx = document.getElementById('verificationChart');
-    if (verificationCtx) {
-        new Chart(verificationCtx.getContext('2d'), {
-            type: 'doughnut',
-            data: {
-                labels: ['Doğrulanmış', 'Doğrulanmamış'],
-                datasets: [{
-                    data: [{{ s.verified_users }}, {{ s.unverified_users }}],
-                    backgroundColor: ['#10b981', '#ef4444'],
-                    borderWidth: 0
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: { color: '#94a3b8' }
-                    }
-                },
-                cutout: '70%'
-            }
-        });
-    }
 });
 </script>
 
@@ -610,7 +456,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var cardBody = document.querySelector('#queue-section .card-body');
         if (cardHeader) cardHeader.id = 'queue-badges';
         if (cardBody) cardBody.id = 'queue-body';
-        setInterval(refreshQueue, 10000);
+        setInterval(refreshQueue, 30000);
     });
 })();
 </script>

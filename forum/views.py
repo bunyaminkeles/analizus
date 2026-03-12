@@ -24,6 +24,9 @@ from .forms import RegisterForm, NewTopicForm, PostForm, JobPostForm, ProposalFo
 from .email_utils import send_topic_reply_notification, send_private_message_notification
 from django.template.loader import render_to_string
 from functools import wraps
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def feature_required(flag_name):
@@ -898,17 +901,17 @@ def profile_edit(request):
         # Dosyalar
         from django.conf import settings as django_settings
         from django.core.files.storage import default_storage
-        print(f"[DEBUG] DEBUG={django_settings.DEBUG}")
-        print(f"[DEBUG] DEFAULT_FILE_STORAGE={getattr(django_settings, 'DEFAULT_FILE_STORAGE', 'NOT SET')}")
-        print(f"[DEBUG] default_storage class: {default_storage.__class__.__name__}")
-        print(f"[DEBUG] request.FILES: {request.FILES}")
-        print(f"[DEBUG] 'avatar' in FILES: {'avatar' in request.FILES}")
+        logger.debug(f"DEBUG={django_settings.DEBUG}")
+        logger.debug(f"DEFAULT_FILE_STORAGE={getattr(django_settings, 'DEFAULT_FILE_STORAGE', 'NOT SET')}")
+        logger.debug(f"default_storage class: {default_storage.__class__.__name__}")
+        logger.debug(f"request.FILES: {request.FILES}")
+        logger.debug(f"'avatar' in FILES: {'avatar' in request.FILES}")
         if 'avatar' in request.FILES:
             avatar_file = request.FILES['avatar']
-            print(f"[DEBUG] Avatar dosyası: {avatar_file.name}, boyut: {avatar_file.size}")
-            print(f"[DEBUG] Avatar field storage ÖNCE: {profile.avatar.storage.__class__.__name__ if profile.avatar else 'None'}")
+            logger.debug(f"Avatar dosyası: {avatar_file.name}, boyut: {avatar_file.size}")
+            logger.debug(f"Avatar field storage ÖNCE: {profile.avatar.storage.__class__.__name__ if profile.avatar else 'None'}")
             profile.avatar = avatar_file
-            print(f"[DEBUG] Avatar field storage SONRA: {profile.avatar.storage.__class__.__name__}")
+            logger.debug(f"Avatar field storage SONRA: {profile.avatar.storage.__class__.__name__}")
         if 'cover_image' in request.FILES:
             profile.cover_image = request.FILES['cover_image']
         
@@ -937,20 +940,18 @@ def profile_edit(request):
 
         try:
             profile.save()
-            print(f"[DEBUG] Profile saved. Avatar URL: {profile.avatar.url if profile.avatar else 'None'}")
+            logger.debug(f"Profile saved. Avatar URL: {profile.avatar.url if profile.avatar else 'None'}")
             if profile.avatar:
-                print(f"[DEBUG] Avatar name: {profile.avatar.name}")
-                print(f"[DEBUG] Avatar storage: {profile.avatar.storage.__class__.__name__}")
+                logger.debug(f"Avatar name: {profile.avatar.name}")
+                logger.debug(f"Avatar storage: {profile.avatar.storage.__class__.__name__}")
                 # S3'te var mı kontrol et
                 try:
                     exists = profile.avatar.storage.exists(profile.avatar.name)
-                    print(f"[DEBUG] S3'te dosya var mı: {exists}")
+                    logger.debug(f"S3'te dosya var mı: {exists}")
                 except Exception as check_err:
-                    print(f"[DEBUG] S3 kontrol hatası: {check_err}")
+                    logger.warning(f"S3 kontrol hatası: {check_err}")
         except Exception as e:
-            print(f"[DEBUG] SAVE ERROR: {type(e).__name__}: {e}")
-            import traceback
-            traceback.print_exc()
+            logger.error(f"Profile save error: {type(e).__name__}: {e}", exc_info=True)
 
         messages.success(request, "Profiliniz başarıyla güncellendi.")
         messages.info(request, "Bilgileriniz KVKK kapsamında 3. kişilerle paylaşılmamaktadır.")
@@ -1199,12 +1200,32 @@ def how_it_works(request):
 def contact(request):
     if request.method == 'POST':
         from .models import ContactMessage
+        from .services.email_service import EmailService
+        name = request.POST.get('name', '')
+        email = request.POST.get('email', '')
+        subject = request.POST.get('subject', '')
+        message = request.POST.get('message', '')
         try:
             ContactMessage.objects.create(
-                name=request.POST.get('name', ''),
-                email=request.POST.get('email', ''),
-                subject=request.POST.get('subject', ''),
-                message=request.POST.get('message', ''),
+                name=name,
+                email=email,
+                subject=subject,
+                message=message,
+            )
+            # Admin'e bildirim emaili gönder
+            admin_email = settings.DEFAULT_FROM_EMAIL
+            html_content = (
+                f"<h3>Yeni İletişim Formu Mesajı</h3>"
+                f"<p><b>Ad:</b> {name}</p>"
+                f"<p><b>Email:</b> {email}</p>"
+                f"<p><b>Konu:</b> {subject}</p>"
+                f"<p><b>Mesaj:</b></p><p>{message}</p>"
+            )
+            EmailService._send_email(
+                to_email=admin_email,
+                subject=f"[Analizus İletişim] {subject}",
+                html_content=html_content,
+                plain_content=f"Ad: {name}\nEmail: {email}\nKonu: {subject}\n\n{message}",
             )
             messages.success(request, 'Mesajınız başarıyla gönderildi. En kısa sürede dönüş yapacağız.')
         except Exception:
@@ -1887,13 +1908,13 @@ def create_donation(request):
         }
 
         # iyzico checkout form oluştur
-        print(f"[IYZICO] API Key: {settings.IYZICO_API_KEY[:20]}...")
-        print(f"[IYZICO] Base URL: {settings.IYZICO_BASE_URL}")
-        print(f"[IYZICO] Request: {checkout_form_request}")
+        logger.debug(f"[IYZICO] API Key: {settings.IYZICO_API_KEY[:20]}...")
+        logger.debug(f"[IYZICO] Base URL: {settings.IYZICO_BASE_URL}")
+        logger.debug(f"[IYZICO] Request: {checkout_form_request}")
 
         checkout_form = iyzipay.CheckoutFormInitialize().create(checkout_form_request, options)
         result = checkout_form.read().decode('utf-8')
-        print(f"[IYZICO] Response: {result[:500]}")
+        logger.debug(f"[IYZICO] Response: {result[:500]}")
 
         result_json = json.loads(result)
 
@@ -1908,7 +1929,7 @@ def create_donation(request):
             donation.status = 'failed'
             donation.save()
             error_msg = result_json.get('errorMessage', 'Ödeme formu oluşturulamadı.')
-            print(f"[IYZICO] Error: {error_msg}")
+            logger.error(f"[IYZICO] Error: {error_msg}")
             return JsonResponse({
                 'success': False,
                 'error': error_msg
@@ -1916,7 +1937,7 @@ def create_donation(request):
 
     except Exception as e:
         import traceback
-        print(f"[IYZICO] Exception: {traceback.format_exc()}")
+        logger.error(f"[IYZICO] Exception: {traceback.format_exc()}")
         return JsonResponse({'success': False, 'error': str(e)})
 
 
@@ -1925,7 +1946,7 @@ def send_donation_thank_you_email(donation):
     from .services.email_service import EmailService
 
     if not EmailService.is_configured():
-        print(f"[DONATION] E-posta ayarları yapılmamış! Email gönderilemedi: {donation.email}")
+        logger.warning(f"[DONATION] E-posta ayarları yapılmamış! Email gönderilemedi: {donation.email}")
         return
 
     premium_days = donation.get_premium_days()
@@ -1950,9 +1971,9 @@ def send_donation_thank_you_email(donation):
             html_content=html_message,
             plain_content=plain_message
         )
-        print(f"[DONATION] Teşekkür e-postası gönderildi: {donation.email}")
+        logger.info(f"[DONATION] Teşekkür e-postası gönderildi: {donation.email}")
     except Exception as e:
-        print(f"[DONATION] E-posta gönderilemedi: {e}")
+        logger.error(f"[DONATION] E-posta gönderilemedi: {e}")
 
 
 def get_client_ip(request):
@@ -2276,5 +2297,5 @@ def send_support_email(request):
     except json.JSONDecodeError:
         return JsonResponse({'success': False, 'error': 'Geçersiz JSON'}, status=400)
     except Exception as e:
-        print(f"❌ Beklenmeyen hata: {str(e)}")
+        logger.error(f"Beklenmeyen hata: {str(e)}")
         return JsonResponse({'success': False, 'error': 'Beklenmeyen hata'}, status=500)

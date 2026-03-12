@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, Http404
 from django.views.decorators.http import require_POST, require_GET
 from django.utils import timezone
+from django_ratelimit.decorators import ratelimit
 
 from forum.models import SiteSettings
 from .models import University, OAIPMHSearchJob, OAIPMHOrder
@@ -34,6 +35,7 @@ def _check_email_verified(request):
 
 
 @login_required
+@ratelimit(key='user', rate='10/h', method='POST', block=True)
 def oaipmh_landing(request):
     _feature_check()
 

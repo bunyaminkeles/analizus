@@ -9,10 +9,6 @@ import threading
 import requests
 from sickle import Sickle
 from sickle.oaiexceptions import NoRecordsMatch, OAIError
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
-
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
-
 logger = logging.getLogger(__name__)
 
 MAX_RECORDS_PER_UNI = 2000  # keyword modda üniversite başına max kayıt
@@ -25,7 +21,6 @@ PER_UNI_DEMO = 2            # keyword modda üniversite başına max demo kayıt
 def _get_sickle(oai_url):
     """SSL hatalarını yoksayan Sickle istemcisi döndürür."""
     session = requests.Session()
-    session.verify = False
     session.headers.update({
         'User-Agent': 'Mozilla/5.0 (OAI-Harvest; analizus.com)',
     })

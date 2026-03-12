@@ -6,6 +6,7 @@ from django.http import JsonResponse, Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.http import require_POST, require_GET
 from django.contrib import messages
+from django_ratelimit.decorators import ratelimit
 
 from .forms import BibliometricUploadForm, BibliometricOrderForm
 from .models import BibliometricJob, BibliometricOrder
@@ -29,6 +30,7 @@ def feature_required(flag_name):
 
 @login_required
 @feature_required('bibliometrics')
+@ratelimit(key='user', rate='10/h', method='POST', block=True)
 def bibliometrics_landing(request):
     user = request.user
 

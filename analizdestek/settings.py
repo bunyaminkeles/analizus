@@ -183,11 +183,11 @@ LOCALE_PATHS = [
 
 # --- ADMIN PANELİ AYARLARI (JAZZMIN) ---
 JAZZMIN_SETTINGS = {
-    "site_title": "Analizus 2050 Core",
-    "site_header": "NEURAL LINK v1.0",
-    "site_brand": "Analizus AI",
+    "site_title": "Analizus Admin",
+    "site_header": "Analizus",
+    "site_brand": "Analizus",
     "site_logo_classes": "",
-    "welcome_sign": "Sistem Çevrimiçi. Hoş Geldiniz, Komutan.",
+    "welcome_sign": "Hoş geldiniz.",
     "copyright": "Analizus Ltd.",
     "search_model": ["auth.User", "forum.Topic"],
     "site_url": "/",

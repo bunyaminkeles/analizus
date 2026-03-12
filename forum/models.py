@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Sum
 from django.contrib.auth.models import User
 from django.urls import reverse
 from django.utils.text import slugify
@@ -270,7 +271,7 @@ class Profile(models.Model):
         """Kullanıcı istatistiklerini günceller"""
         self.total_topics = self.user.topics.count()
         self.total_posts = self.user.posts.count()
-        self.total_likes_received = sum(p.likes for p in self.user.posts.all())
+        self.total_likes_received = self.user.posts.aggregate(total=Sum('likes'))['total'] or 0
         self.best_answers_count = self.user.posts.filter(is_best_answer=True).count()
         self.save(update_fields=['total_topics', 'total_posts', 'total_likes_received', 'best_answers_count'])
 
