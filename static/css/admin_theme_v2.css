@@ -121,13 +121,22 @@ table td {
     border-right: 1px solid rgba(99, 102, 241, 0.15);
 }
 
-/* Sidebar ile içerik arası gri boşluğu kaldır */
+/* Sidebar ile içerik arası boşluğu kaldır */
 .wrapper, #wrapper {
     background-color: #0f172a !important;
 }
 .content-wrapper {
     border-left: none !important;
     box-shadow: none !important;
+}
+/* elevation-4 shadow sidebar'da gap görünümü yaratıyor — kaldır */
+.main-sidebar, .main-sidebar.elevation-4 {
+    box-shadow: none !important;
+}
+/* Sidebar section header'ları soldan kesilmesin */
+.nav-header {
+    padding-left: 0.5rem !important;
+    overflow: visible !important;
 }
 .brand-link {
     background: #0f172a !important;
