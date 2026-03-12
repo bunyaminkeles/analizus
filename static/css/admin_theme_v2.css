@@ -120,6 +120,15 @@ table td {
     background: #0f172a !important;
     border-right: 1px solid rgba(99, 102, 241, 0.15);
 }
+
+/* Sidebar ile içerik arası gri boşluğu kaldır */
+.wrapper, #wrapper {
+    background-color: #0f172a !important;
+}
+.content-wrapper {
+    border-left: none !important;
+    box-shadow: none !important;
+}
 .brand-link {
     background: #0f172a !important;
     border-bottom: 1px solid rgba(99, 102, 241, 0.3) !important;
