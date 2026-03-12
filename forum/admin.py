@@ -519,7 +519,7 @@ class SiteSettingsAdmin(admin.ModelAdmin):
         ('Otomatik Paylaşım', {
             'fields': ('auto_share_topics', 'auto_share_jobs'),
         }),
-        ('Özellik Anahtarları (Feature Flags)', {
+        ('Feature Flags', {
             'description': 'Kapalı olan özellikler kullanıcılara gösterilmez.',
             'fields': (
                 'feature_blog', 'feature_market', 'feature_ai_assistant',
@@ -528,12 +528,12 @@ class SiteSettingsAdmin(admin.ModelAdmin):
             ),
             'classes': ('collapse',),
         }),
-        ('Scraping & Analiz Limitleri', {
+        ('Limitler', {
             'description': 'Scraping: TR Dizin, OpenAlex, OAI-PMH scraperlarının çekebileceği maks. kayıt (default 5000). Analiz: Tez & Makale Analizi için işlenecek maks. kayıt (Render için 500, Hetzner için 2000–5000 önerilir).',
             'fields': ('scrap_max_records', 'analiz_max_records'),
             'classes': ('collapse',),
         }),
-        ('Bibliometrik Analiz Fiyatlandırma', {
+        ('Fiyatlandırma', {
             'description': "5000'den fazla kayıt için kullanıcılara 'admin ile iletişime geçin' mesajı gösterilir.",
             'fields': (
                 'biblio_price_500', 'biblio_price_2000', 'biblio_price_3000',
