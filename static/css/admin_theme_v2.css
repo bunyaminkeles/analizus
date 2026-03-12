@@ -135,6 +135,9 @@ table td {
 }
 .nav-sidebar .nav-link {
     color: #94a3b8 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
 }
 .nav-sidebar .nav-link:hover {
     color: #e2e8f0 !important;
