@@ -370,3 +370,10 @@ a:hover {
     color: #818cf8 !important;
 }
 
+/* SiteSettings: form tam genişlik */
+.model-sitesettings.change-form [class*="col-lg-9"],
+.model-sitesettings.change-form [class*="col-lg-3"] {
+    flex: 0 0 100% !important;
+    max-width: 100% !important;
+}
+
