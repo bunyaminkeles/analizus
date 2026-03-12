@@ -24,11 +24,9 @@ def send_email_async(subject, message, recipient_list, html_message=None):
                 html_message=html_message
             )
             for recipient in recipient_list:
-                logger.info(f"✅ E-posta başarıyla gönderildi: {recipient}")
-                print(f"✅ E-posta başarıyla gönderildi: {recipient}")
+                logger.info(f"E-posta başarıyla gönderildi: {recipient}")
         except Exception as e:
-            logger.error(f"❌ E-posta gönderim hatası: {e}")
-            print(f"❌ E-posta gönderim hatası: {e}")
+            logger.error(f"E-posta gönderim hatası: {e}")
 
     thread = threading.Thread(target=_send, daemon=True)
     thread.start()

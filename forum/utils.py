@@ -54,7 +54,7 @@ def get_altinkaynak_rates():
                 cache.set('market_rates_data', rates, 300)
                 
     except Exception as e:
-        print(f"Scraping hatası: {e}")
+        logger.error(f"Scraping hatası: {e}")
         # Hata durumunda boş liste veya cache'deki eski veriyi döndürebiliriz
     
     # Eğer veri çekilemediyse (Scraping hatası) Widget boş kalmasın diye Mock Data dön

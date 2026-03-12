@@ -55,3 +55,8 @@ beautifulsoup4
 groq
 resend
 sickle
+
+# --- TEST ---
+pytest
+pytest-django
+model-bakery

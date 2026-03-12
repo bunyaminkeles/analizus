@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse, Http404
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_GET, require_POST
+from django_ratelimit.decorators import ratelimit
 from functools import wraps
 
 from .forms import AlexSearchForm, AlexOrderForm
@@ -31,6 +32,7 @@ IBAN_INFO = {
 
 @feature_required('openalex')
 @login_required
+@ratelimit(key='user', rate='10/h', method='POST', block=True)
 def openalex_landing(request):
     """Landing page: gelişmiş arama formu + demo arama."""
     form = AlexSearchForm()

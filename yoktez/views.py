@@ -3,6 +3,7 @@ from django.http import JsonResponse, HttpResponse, StreamingHttpResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_GET, require_POST
 from django.http import Http404
+from django_ratelimit.decorators import ratelimit
 from functools import wraps
 
 from .forms import YokTezSearchForm
@@ -24,6 +25,7 @@ def feature_required(flag_name):
 
 @feature_required('yoktez')
 @login_required
+@ratelimit(key='user', rate='10/h', method='POST', block=True)
 def yoktez_landing(request):
     user = request.user
     daily_count = YokTezSearchJob.daily_count_for_user(user)

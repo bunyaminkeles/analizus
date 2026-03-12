@@ -54,6 +54,10 @@ class BibliometricJob(models.Model):
         verbose_name = 'Bibliometrik Analiz'
         verbose_name_plural = 'Bibliometrik Analizler'
         ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['status']),
+            models.Index(fields=['created_at']),
+        ]
 
     def __str__(self):
         return f'{self.user.username} - {self.original_filename} ({self.get_status_display()})'
@@ -154,6 +158,10 @@ class BibliometricOrder(models.Model):
         verbose_name = 'Bibliometrik Analiz Siparişi'
         verbose_name_plural = 'Bibliometrik Analiz Siparişleri'
         ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['status']),
+            models.Index(fields=['created_at']),
+        ]
 
     def __str__(self):
         return f'#{str(self.id)[:8]} - {self.user.username} - {self.get_status_display()}'

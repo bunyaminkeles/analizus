@@ -1,5 +1,8 @@
 import json
+import logging
 from channels.generic.websocket import AsyncWebsocketConsumer
+
+logger = logging.getLogger(__name__)
 from channels.db import database_sync_to_async
 from django.contrib.auth.models import User
 from django.utils import timezone
@@ -158,7 +161,7 @@ class NotificationConsumer(AsyncWebsocketConsumer):
             self.user_group_name,
             self.channel_name
         )
-        print(f"--- DEBUG: Kullanıcı '{self.user.username}' bağlandı ve '{self.user_group_name}' grubuna eklendi. ---") # HATA AYIKLAMA
+        logger.debug(f"Kullanıcı '{self.user.username}' bağlandı ve '{self.user_group_name}' grubuna eklendi.")
 
     async def disconnect(self, close_code):
         """
@@ -176,7 +179,7 @@ class NotificationConsumer(AsyncWebsocketConsumer):
         Gruptan bir bildirim mesajı aldığında bu metot çağrılır.
         Mesajı WebSocket üzerinden client'a (kullanıcının tarayıcısına) gönderir.
         """
-        print(f"--- DEBUG: '{self.user_group_name}' grubundaki consumer mesaj aldı. Tarayıcıya gönderiliyor... ---")
+        logger.debug(f"'{self.user_group_name}' grubundaki consumer mesaj aldı. Tarayıcıya gönderiliyor.")
         message = event['message']
         url = event.get('url', '#')
 

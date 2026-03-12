@@ -39,6 +39,10 @@ class DizinSearchJob(models.Model):
         verbose_name = "TR Dizin Arama (Demo)"
         verbose_name_plural = "TR Dizin Aramaları (Demo)"
         ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['status']),
+            models.Index(fields=['created_at']),
+        ]
 
     def __str__(self):
         query_short = self.lucene_query[:60] if self.lucene_query else str(self.query_parts)[:60]
@@ -128,6 +132,10 @@ class DizinOrder(models.Model):
         verbose_name = "TR Dizin Siparişi"
         verbose_name_plural = "TR Dizin Siparişleri"
         ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['status']),
+            models.Index(fields=['created_at']),
+        ]
 
     def __str__(self):
         return f"#{str(self.id)[:8]} - {self.user.username} - {self.abstract_count} yayın - {self.get_status_display()}"

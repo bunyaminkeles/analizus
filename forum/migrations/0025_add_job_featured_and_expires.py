@@ -4,21 +4,9 @@ from django.db import migrations, models
 
 
 def add_expires_at_if_not_exists(apps, schema_editor):
-    from django.db import connection
-    with connection.cursor() as cursor:
-        cursor.execute("""
-            DO $$
-            BEGIN
-                IF NOT EXISTS (SELECT 1 FROM information_schema.columns
-                    WHERE table_name='forum_freelancejob' AND column_name='expires_at') THEN
-                    ALTER TABLE forum_freelancejob ADD COLUMN expires_at timestamp with time zone NULL;
-                END IF;
-                IF NOT EXISTS (SELECT 1 FROM information_schema.columns
-                    WHERE table_name='forum_freelancejob' AND column_name='is_featured') THEN
-                    ALTER TABLE forum_freelancejob ADD COLUMN is_featured boolean DEFAULT false NOT NULL;
-                END IF;
-            END $$;
-        """)
+    # Bu sütunlar migration 0028'de AddField ile düzgün ekleniyor.
+    # Prod hotfix olarak yazılmış bu fonksiyon artık no-op.
+    pass
 
 
 class Migration(migrations.Migration):

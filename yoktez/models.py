@@ -40,6 +40,10 @@ class YokTezSearchJob(models.Model):
         verbose_name = 'YÖK Tez Araması'
         verbose_name_plural = 'YÖK Tez Aramaları'
         ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['status']),
+            models.Index(fields=['created_at']),
+        ]
 
     def __str__(self):
         return f"{self.user.username} - {self.tez_ad or self.yazar or 'Genel'} ({self.get_status_display()})"

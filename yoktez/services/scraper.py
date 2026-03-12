@@ -30,7 +30,6 @@ HEADERS = {
 def _make_session():
     session = requests.Session()
     session.headers.update(HEADERS)
-    session.verify = False  # YÖK SSL sertifikası sorunlu
     return session
 
 

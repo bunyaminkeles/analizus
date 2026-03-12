@@ -4,17 +4,9 @@ from django.db import migrations, models
 
 
 def add_topic_if_not_exists(apps, schema_editor):
-    from django.db import connection
-    with connection.cursor() as cursor:
-        cursor.execute("""
-            DO $$
-            BEGIN
-                IF NOT EXISTS (SELECT 1 FROM information_schema.columns
-                    WHERE table_name='forum_quizquestion' AND column_name='topic') THEN
-                    ALTER TABLE forum_quizquestion ADD COLUMN topic varchar(50) DEFAULT '' NOT NULL;
-                END IF;
-            END $$;
-        """)
+    # Bu alan migration 0028'de AddField ile düzgün ekleniyor.
+    # Prod hotfix olarak yazılmış bu fonksiyon artık no-op.
+    pass
 
 
 class Migration(migrations.Migration):

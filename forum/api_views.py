@@ -1,5 +1,8 @@
 import os
+import logging
 from django.http import JsonResponse
+
+logger = logging.getLogger(__name__)
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST, require_GET
 from django.shortcuts import get_object_or_404
@@ -100,7 +103,7 @@ def _verify_cron_secret(request):
     expected_secret = os.environ.get('CRON_SECRET_KEY', 'default-dev-secret-change-in-prod')
 
     if secret != expected_secret:
-        print(f"CRON AUTH ERROR: Gelen='{secret}', Beklenen='{expected_secret}'")
+        logger.warning(f"CRON AUTH ERROR: Gelen='{secret}', Beklenen='{expected_secret}'")
 
     return secret == expected_secret
 
@@ -268,13 +271,51 @@ def admin_queue_status(request):
 @require_GET
 def cron_health_check(request):
     """
-    Basit sağlık kontrolü endpoint'i.
-    Cron servislerinin site durumunu kontrol etmesi için.
+    Sistem sağlık kontrolü: DB, S3, Redis durumunu kontrol eder.
     """
+    checks = {}
+    overall = 'healthy'
+
+    # DB kontrolü
+    try:
+        from django.db import connection
+        with connection.cursor() as cursor:
+            cursor.execute('SELECT 1')
+        checks['db'] = 'ok'
+    except Exception as e:
+        checks['db'] = f'error: {e}'
+        overall = 'degraded'
+
+    # Redis kontrolü
+    try:
+        from django.core.cache import cache
+        cache.set('health_check', '1', timeout=5)
+        assert cache.get('health_check') == '1'
+        checks['redis'] = 'ok'
+    except Exception as e:
+        checks['redis'] = f'error: {e}'
+        overall = 'degraded'
+
+    # S3 kontrolü
+    try:
+        import boto3
+        from django.conf import settings as django_settings
+        s3 = boto3.client(
+            's3',
+            aws_access_key_id=django_settings.AWS_ACCESS_KEY_ID,
+            aws_secret_access_key=django_settings.AWS_SECRET_ACCESS_KEY,
+            region_name=django_settings.AWS_S3_REGION_NAME,
+        )
+        s3.head_bucket(Bucket=getattr(django_settings, 'AWS_STORAGE_BUCKET_NAME', 'analizus-files'))
+        checks['s3'] = 'ok'
+    except Exception as e:
+        checks['s3'] = f'error: {e}'
+        overall = 'degraded'
+
     return JsonResponse({
-        'status': 'healthy',
+        'status': overall,
         'service': 'Analizus Forum',
-        'version': '1.0'
+        'checks': checks,
     })
 
 

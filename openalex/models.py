@@ -40,6 +40,10 @@ class AlexSearchJob(models.Model):
         verbose_name = "OpenAlex Arama (Demo)"
         verbose_name_plural = "OpenAlex Aramaları (Demo)"
         ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['status']),
+            models.Index(fields=['created_at']),
+        ]
 
     def __str__(self):
         query_short = self.api_query[:60] if self.api_query else str(self.query_parts)[:60]
@@ -128,6 +132,10 @@ class AlexOrder(models.Model):
         verbose_name = "OpenAlex Siparişi"
         verbose_name_plural = "OpenAlex Siparişleri"
         ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['status']),
+            models.Index(fields=['created_at']),
+        ]
 
     def __str__(self):
         return f"#{str(self.id)[:8]} - {self.user.username} - {self.abstract_count} yayın - {self.get_status_display()}"
