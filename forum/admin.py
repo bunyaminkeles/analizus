@@ -513,7 +513,6 @@ class JobPaymentAdmin(admin.ModelAdmin):
 # --- SITE AYARLARI ---
 @admin.register(SiteSettings)
 class SiteSettingsAdmin(admin.ModelAdmin):
-    change_form_template = "admin/forum/sitesettings/change_form.html"
     list_display = ('pk', 'auto_share_topics', 'auto_share_jobs')
 
     fieldsets = (
