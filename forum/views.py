@@ -1200,12 +1200,32 @@ def how_it_works(request):
 def contact(request):
     if request.method == 'POST':
         from .models import ContactMessage
+        from .services.email_service import EmailService
+        name = request.POST.get('name', '')
+        email = request.POST.get('email', '')
+        subject = request.POST.get('subject', '')
+        message = request.POST.get('message', '')
         try:
             ContactMessage.objects.create(
-                name=request.POST.get('name', ''),
-                email=request.POST.get('email', ''),
-                subject=request.POST.get('subject', ''),
-                message=request.POST.get('message', ''),
+                name=name,
+                email=email,
+                subject=subject,
+                message=message,
+            )
+            # Admin'e bildirim emaili gönder
+            admin_email = settings.DEFAULT_FROM_EMAIL
+            html_content = (
+                f"<h3>Yeni İletişim Formu Mesajı</h3>"
+                f"<p><b>Ad:</b> {name}</p>"
+                f"<p><b>Email:</b> {email}</p>"
+                f"<p><b>Konu:</b> {subject}</p>"
+                f"<p><b>Mesaj:</b></p><p>{message}</p>"
+            )
+            EmailService._send_email(
+                to_email=admin_email,
+                subject=f"[Analizus İletişim] {subject}",
+                html_content=html_content,
+                plain_content=f"Ad: {name}\nEmail: {email}\nKonu: {subject}\n\n{message}",
             )
             messages.success(request, 'Mesajınız başarıyla gönderildi. En kısa sürede dönüş yapacağız.')
         except Exception:
