@@ -1,11 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Section, Category, Topic, Post, Profile, ContactMessage, PrivateMessage, Badge, Notification, Skill, EmailVerification, DailyTip, QuizQuestion, QuizScore, FreelanceJob, JobProposal, JobReview, UserQuizAttempt, DonationTier, Donation, JobPayment, TopicTag, SiteSettings, BlogCategory, BlogPost, SuccessStory
-
-# --- GENEL AYARLAR ---
-admin.site.site_header = "Analizus Komuta Merkezi"
-admin.site.site_title = "Vizyon 2050 Admin"
-admin.site.index_title = "Sistem Yönetim Paneli"
+from .models import Section, Category, Topic, Post, Profile, ContactMessage, PrivateMessage, Badge, Skill, DailyTip, QuizQuestion, QuizScore, FreelanceJob, JobProposal, JobReview, UserQuizAttempt, DonationTier, Donation, JobPayment, TopicTag, SiteSettings, BlogCategory, BlogPost, SuccessStory
 
 # 1. Kategori Yönetimi (Inline)
 class CategoryInline(admin.TabularInline):
@@ -131,13 +126,25 @@ class PostAdmin(admin.ModelAdmin):
         return format_html('<a href="/admin/forum/topic/{}/change/" style="color: #00d2ff;">{}</a>', obj.topic.id, obj.topic.subject[:40])
     topic_link.short_description = "Konu"
 
-# 5. Özel Mesaj (DM) Yönetimi
+# 5. Özel Mesaj (DM) Yönetimi — sadece superuser erişebilir
 @admin.register(PrivateMessage)
 class PrivateMessageAdmin(admin.ModelAdmin):
     list_display = ('sender', 'receiver', 'short_content', 'created_at', 'read_status')
     list_filter = ('is_read', 'created_at')
     search_fields = ('sender__username', 'receiver__username', 'message')
     actions = ['mark_as_read', 'mark_as_unread']
+
+    def has_module_perms(self, request, app_label=None):
+        return request.user.is_superuser
+
+    def has_view_permission(self, request, obj=None):
+        return request.user.is_superuser
+
+    def has_change_permission(self, request, obj=None):
+        return request.user.is_superuser
+
+    def has_delete_permission(self, request, obj=None):
+        return request.user.is_superuser
 
     def short_content(self, obj):
         return obj.message[:50] + "..."
@@ -290,20 +297,6 @@ class ProfileAdmin(admin.ModelAdmin):
         self.message_user(request, f'{updated} kullanıcının e-postası doğrulandı olarak işaretlendi.')
 
 
-# 8. Bildirim Yönetimi
-@admin.register(Notification)
-class NotificationAdmin(admin.ModelAdmin):
-    list_display = ('recipient', 'sender', 'verb', 'is_read', 'created_at')
-    list_filter = ('is_read', 'created_at')
-    search_fields = ('recipient__username', 'sender__username', 'verb')
-    date_hierarchy = 'created_at'
-    actions = ['mark_as_read']
-
-    @admin.action(description='✅ Okundu olarak işaretle')
-    def mark_as_read(self, request, queryset):
-        updated = queryset.update(is_read=True)
-        self.message_user(request, f'{updated} bildirim okundu olarak işaretlendi.')
-
 # 7. İletişim Mesajları
 @admin.register(ContactMessage)
 class ContactMessageAdmin(admin.ModelAdmin):
@@ -321,28 +314,6 @@ class ContactMessageAdmin(admin.ModelAdmin):
     def preview_message(self, obj):
         return obj.message[:100] + "..." if len(obj.message) > 100 else obj.message
     preview_message.short_description = "Mesaj Önizleme"
-
-
-# 9. E-posta Doğrulama Yönetimi
-@admin.register(EmailVerification)
-class EmailVerificationAdmin(admin.ModelAdmin):
-    list_display = ('user', 'token_short', 'created_at', 'expires_at', 'status')
-    list_filter = ('is_used', 'created_at')
-    search_fields = ('user__username', 'user__email')
-    readonly_fields = ('token', 'created_at')
-    date_hierarchy = 'created_at'
-
-    def token_short(self, obj):
-        return str(obj.token)[:8] + "..."
-    token_short.short_description = "Token"
-
-    def status(self, obj):
-        if obj.is_used:
-            return format_html('<span style="color: #28a745;">✅ Kullanıldı</span>')
-        if obj.is_valid():
-            return format_html('<span style="color: #ffc107;">⏳ Bekliyor</span>')
-        return format_html('<span style="color: #dc3545;">❌ Süresi Dolmuş</span>')
-    status.short_description = "Durum"
 
 
 # 10. Günlük İpucu Yönetimi
@@ -397,20 +368,6 @@ class QuizQuestionAdmin(admin.ModelAdmin):
         }),
     )
 
-
-# 12. Quiz Puanları Yönetimi
-@admin.register(QuizScore)
-class QuizScoreAdmin(admin.ModelAdmin):
-    list_display = ('user', 'total_points', 'correct_answers', 'total_answers', 'streak', 'last_played')
-    list_filter = ('last_played',)
-    search_fields = ('user__username',)
-    ordering = ('-total_points',)
-
-@admin.register(UserQuizAttempt)
-class UserQuizAttemptAdmin(admin.ModelAdmin):
-    list_display = ('user', 'question', 'is_correct', 'created_at')
-    list_filter = ('is_correct', 'created_at')
-    search_fields = ('user__username', 'question__question')
 
 @admin.register(FreelanceJob)
 class FreelanceJobAdmin(admin.ModelAdmin):
@@ -569,10 +526,12 @@ class SiteSettingsAdmin(admin.ModelAdmin):
                 'feature_trdizin', 'feature_openalex', 'feature_oaipmh', 'feature_quiz', 'feature_messaging',
                 'feature_donation', 'feature_success_stories', 'feature_bibliometrics', 'feature_yoktez',
             ),
+            'classes': ('collapse',),
         }),
         ('Scraping & Analiz Limitleri', {
             'description': 'Scraping: TR Dizin, OpenAlex, OAI-PMH scraperlarının çekebileceği maks. kayıt (default 5000). Analiz: Tez & Makale Analizi için işlenecek maks. kayıt (Render için 500, Hetzner için 2000–5000 önerilir).',
             'fields': ('scrap_max_records', 'analiz_max_records'),
+            'classes': ('collapse',),
         }),
         ('Bibliometrik Analiz Fiyatlandırma', {
             'description': "5000'den fazla kayıt için kullanıcılara 'admin ile iletişime geçin' mesajı gösterilir.",
@@ -580,6 +539,7 @@ class SiteSettingsAdmin(admin.ModelAdmin):
                 'biblio_price_500', 'biblio_price_2000', 'biblio_price_3000',
                 'biblio_price_4000', 'biblio_price_5000',
             ),
+            'classes': ('collapse',),
         }),
     )
 
