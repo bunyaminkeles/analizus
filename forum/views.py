@@ -57,6 +57,12 @@ def ratelimit_error(request, exception):
     return render(request, 'forum/ratelimit_error.html', status=429)
 
 
+# --- FORUM BÖLÜMLER ---
+def forum_index(request):
+    sections = Section.objects.prefetch_related('categories').all().order_by('order')
+    return render(request, 'forum/forum_index.html', {'sections': sections})
+
+
 # --- ANA SAYFA ---
 def home(request):
     sections = Section.objects.all().order_by('order')

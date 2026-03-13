@@ -25,6 +25,7 @@ urlpatterns = [
     path('api/inbox/poll/', views.api_inbox_poll, name='api_inbox_poll'),
 
     # Forum
+    path('forum/', views.forum_index, name='forum_index'),
     path('forum/<slug:slug>/', views.category_topics, name='category_topics'),
     path('forum/<slug:slug>/new/', views.new_topic, name='new_topic'),
     path('topic/<int:pk>/', views.topic_detail, name='topic_detail'),

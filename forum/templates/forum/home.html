@@ -337,7 +337,7 @@
                     <span class="vp-action">Hizmet Ver <i class="bi bi-arrow-right ms-1"></i></span>
                 </div>
             </a>
-            <a href="{% if user.is_authenticated %}{% url 'home' %}{% else %}{% url 'register' %}{% endif %}" class="vp-card vp-green">
+            <a href="{% url 'forum_index' %}" class="vp-card vp-green">
                 <div class="vp-icon"><i class="bi bi-mortarboard-fill"></i></div>
                 <div class="vp-body">
                     <span class="vp-question">Öğrenmek mi istiyorsun?</span>
