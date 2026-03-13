@@ -1,7 +1,54 @@
 {% extends 'base.html' %}
 {% load forum_extras %}
 
-{% block main_container %}{% endblock %}
+{% block main_container %}container-fluid px-2 px-lg-3{% endblock %}
+{% block main_content_classes %}col{% endblock %}
+{% block right_sidebar %}
+<div style="width: 340px; flex: 0 0 340px; min-width: 0;" class="d-none d-xl-block">
+    {% if user.is_authenticated %}
+    <div class="widget-card mb-3" id="donation-widget" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#donationModal">
+        <div class="widget-header" style="color: #ec4899;">
+            <i class="bi bi-heart-fill"></i>
+            <span>Bizi Destekle</span>
+        </div>
+        <div class="widget-body">
+            <p class="text-muted small mb-2">Platformumuzu destekleyerek gelişimine katkıda bulunun.</p>
+            <p class="text-muted small mb-0">Tüm destekçilerimize <span class="text-warning">Premium üyelik</span> ve <span style="color: #ec4899;">Destekçi rozeti</span> hediye edilecektir.</p>
+        </div>
+    </div>
+    {% endif %}
+    {% if recent_reviews %}
+    <div class="widget-card">
+        <div class="widget-header" style="color: #22c55e;">
+            <i class="bi bi-star-fill"></i>
+            <span>Son Değerlendirmeler</span>
+        </div>
+        <div class="widget-body p-0">
+            {% for review in recent_reviews %}
+            <div class="p-2 border-bottom border-secondary border-opacity-10">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <div class="small">
+                        <a href="{% url 'profile_detail' username=review.reviewer.username %}" class="text-decoration-none text-info fw-bold">{{ review.reviewer.username }}</a>
+                        <span class="text-muted mx-1">→</span>
+                        <a href="{% url 'profile_detail' username=review.reviewed_user.username %}" class="text-decoration-none text-light">{{ review.reviewed_user.username }}</a>
+                    </div>
+                    <div>
+                        {% for i in "12345" %}
+                        <i class="bi bi-star{% if forloop.counter <= review.rating %}-fill text-warning{% else %} text-muted{% endif %}" style="font-size: 0.6rem;"></i>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% if review.comment %}
+                <p class="text-muted small mb-0" style="font-size: 0.7rem;">{{ review.comment|truncatechars:50 }}</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+    <div class="layout-sidebar-right"></div>
+</div>
+{% endblock %}
 
 {% block content %}
 
@@ -345,54 +392,6 @@
 
 {% endblock %}
 
-{% block above_sidebar %}
-
-<!-- WIDGET: Bağış Yap -->
-{% if user.is_authenticated %}
-<div class="widget-card" id="donation-widget" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#donationModal">
-    <div class="widget-header" style="color: #ec4899;">
-        <i class="bi bi-heart-fill"></i>
-        <span>Bizi Destekle</span>
-    </div>
-    <div class="widget-body">
-        <p class="text-muted small mb-2">Platformumuzu destekleyerek gelişimine katkıda bulunun.</p>
-        <p class="text-muted small mb-0">Tüm destekçilerimize <span class="text-warning">Premium üyelik</span> ve <span style="color: #ec4899;">Destekçi rozeti</span> hediye edilecektir.</p>
-    </div>
-</div>
-{% endif %}
-
-<!-- WIDGET: Son Değerlendirmeler -->
-{% if recent_reviews %}
-<div class="widget-card full-width mt-4">
-    <div class="widget-header" style="color: #22c55e;">
-        <i class="bi bi-star-fill"></i>
-        <span>Son Değerlendirmeler</span>
-    </div>
-    <div class="widget-body p-0">
-        {% for review in recent_reviews %}
-        <div class="p-2 border-bottom border-secondary border-opacity-10">
-            <div class="d-flex justify-content-between align-items-center mb-1">
-                <div class="small">
-                    <a href="{% url 'profile_detail' username=review.reviewer.username %}" class="text-decoration-none text-info fw-bold">{{ review.reviewer.username }}</a>
-                    <span class="text-muted mx-1">→</span>
-                    <a href="{% url 'profile_detail' username=review.reviewed_user.username %}" class="text-decoration-none text-light">{{ review.reviewed_user.username }}</a>
-                </div>
-                <div>
-                    {% for i in "12345" %}
-                    <i class="bi bi-star{% if forloop.counter <= review.rating %}-fill text-warning{% else %} text-muted{% endif %}" style="font-size: 0.6rem;"></i>
-                    {% endfor %}
-                </div>
-            </div>
-            {% if review.comment %}
-            <p class="text-muted small mb-0" style="font-size: 0.7rem;">{{ review.comment|truncatechars:50 }}</p>
-            {% endif %}
-        </div>
-        {% endfor %}
-    </div>
-</div>
-{% endif %}
-
-{% endblock %}
 
 
 {% block extra_js %}
@@ -407,9 +406,9 @@
 
     display: grid;
 
-    grid-template-columns: 1fr 4fr;
+    grid-template-columns: 340px 1fr;
 
-    gap: 24px;
+    gap: 16px;
 
 }
 
@@ -461,9 +460,7 @@
 
     position: relative;
 
-    max-width: 1200px;
-
-    margin: 0 auto;
+    min-width: 0;
 
 }
 
