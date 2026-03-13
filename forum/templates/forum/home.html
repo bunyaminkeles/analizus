@@ -318,49 +318,33 @@
             <div class="hero-content">
                 <h1 class="hero-title">ANALİZUS</h1>
                 <p class="hero-subtitle">Akademik Analiz ve Veri Bilimi Topluluğu</p>
-
-                {% if not user.is_authenticated %}
-                <div class="hero-cta-buttons">
-                    <a href="{% url 'register' %}" class="cta-btn cta-primary">
-                        <i class="bi bi-rocket-takeoff-fill me-2"></i>Ücretsiz Başla
-                    </a>
-                    <a href="{% url 'how_it_works' %}" class="cta-btn cta-secondary">
-                        <i class="bi bi-question-circle me-2"></i>Nasıl Çalışır?
-                    </a>
-                </div>
-                {% endif %}
             </div>
-
         </div>
 
+        <!-- DEĞer CÜMLESİ + 3 YOL -->
         {% if not user.is_authenticated %}
-        <!-- 3 ADIMDA BAŞLA -->
-        <div class="how-it-works-strip">
-            <div class="hiw-step">
-                <div class="hiw-icon"><i class="bi bi-person-plus-fill"></i></div>
-                <div class="hiw-text">
-                    <strong>1. Kayıt Ol</strong>
-                    <span>Ücretsiz hesap aç</span>
+        <div class="value-paths">
+            <a href="{% url 'job_list' %}" class="vp-card vp-blue">
+                <div class="vp-icon"><i class="bi bi-search-heart-fill"></i></div>
+                <div class="vp-body">
+                    <span class="vp-question">Tez analizin mi var?</span>
+                    <span class="vp-action">Uzman Bul <i class="bi bi-arrow-right ms-1"></i></span>
                 </div>
-            </div>
-            <div class="hiw-arrow"><i class="bi bi-chevron-right"></i></div>
-            <div class="hiw-step">
-                <div class="hiw-icon hiw-purple"><i class="bi bi-chat-square-text-fill"></i></div>
-                <div class="hiw-text">
-                    <strong>2. Soru Sor</strong>
-                    <span>Topluluktan yanıt al</span>
+            </a>
+            <a href="{% url 'register' %}?next={% url 'post_job' %}" class="vp-card vp-purple">
+                <div class="vp-icon"><i class="bi bi-briefcase-fill"></i></div>
+                <div class="vp-body">
+                    <span class="vp-question">Uzman mısın?</span>
+                    <span class="vp-action">Hizmet Ver <i class="bi bi-arrow-right ms-1"></i></span>
                 </div>
-            </div>
-            <div class="hiw-arrow"><i class="bi bi-chevron-right"></i></div>
-            <div class="hiw-step">
-                <div class="hiw-icon hiw-green"><i class="bi bi-trophy-fill"></i></div>
-                <div class="hiw-text">
-                    <strong>3. Puan Kazan</strong>
-                    <span>Uzman yetkisi edin</span>
+            </a>
+            <a href="{% url 'register' %}" class="vp-card vp-green">
+                <div class="vp-icon"><i class="bi bi-mortarboard-fill"></i></div>
+                <div class="vp-body">
+                    <span class="vp-question">Öğrenmek mi istiyorsun?</span>
+                    <span class="vp-action">Foruma Katıl <i class="bi bi-arrow-right ms-1"></i></span>
                 </div>
-            </div>
-            <div class="hiw-arrow hiw-arrow-wide"><i class="bi bi-chevron-right"></i></div>
-            <a href="{% url 'register' %}" class="hiw-cta">Hemen Başla &rarr;</a>
+            </a>
         </div>
         {% endif %}
 
@@ -766,6 +750,57 @@
 }
 
 
+
+/* ===== VALUE PATHS ===== */
+.value-paths {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+}
+.vp-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 18px;
+    border-radius: 14px;
+    text-decoration: none;
+    border: 1px solid transparent;
+    transition: transform 0.15s, opacity 0.15s;
+}
+.vp-card:hover { transform: translateY(-2px); opacity: 0.9; }
+.vp-blue  { background: rgba(0,170,255,0.10); border-color: rgba(0,170,255,0.22); }
+.vp-purple{ background: rgba(168,85,247,0.10); border-color: rgba(168,85,247,0.22); }
+.vp-green { background: rgba(34,197,94,0.10);  border-color: rgba(34,197,94,0.22);  }
+.vp-icon {
+    font-size: 1.6rem;
+    flex-shrink: 0;
+    width: 44px;
+    text-align: center;
+}
+.vp-blue   .vp-icon { color: #38bdf8; }
+.vp-purple .vp-icon { color: #c084fc; }
+.vp-green  .vp-icon { color: #4ade80; }
+.vp-body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+.vp-question {
+    color: #cbd5e1;
+    font-size: 0.82rem;
+    line-height: 1.2;
+}
+.vp-action {
+    font-weight: 700;
+    font-size: 0.95rem;
+}
+.vp-blue   .vp-action { color: #38bdf8; }
+.vp-purple .vp-action { color: #c084fc; }
+.vp-green  .vp-action { color: #4ade80; }
+@media (max-width: 640px) {
+    .value-paths { grid-template-columns: 1fr; }
+}
 
 /* ===== HOW IT WORKS STRIP ===== */
 .how-it-works-strip {
