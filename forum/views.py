@@ -93,7 +93,26 @@ def forum_index(request):
             )
         sections_data.append({'section': section, 'categories': cats})
 
-    return render(request, 'forum/forum_index.html', {'sections_data': sections_data})
+    # Aktif çalışma odaları (en fazla 6)
+    active_rooms = (
+        StudyRoom.objects
+        .filter(status='active')
+        .select_related('category', 'creator')
+        .annotate(member_cnt=Count('memberships', distinct=True))
+        .order_by('-created_at')[:6]
+    )
+    # Süresi dolanları sessizce arşivle
+    for room in StudyRoom.objects.filter(status='active'):
+        room.auto_archive_if_expired()
+
+    from forum.models import STUDYROOM_TERMS
+    can_create_room, _ = _studyroom_eligibility(request.user)
+
+    return render(request, 'forum/forum_index.html', {
+        'sections_data': sections_data,
+        'active_rooms': active_rooms,
+        'can_create_room': can_create_room,
+    })
 
 
 # --- ANA SAYFA ---

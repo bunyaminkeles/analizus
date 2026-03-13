@@ -6,15 +6,59 @@
 {% block content %}
 <div class="container py-4">
 
-  {# ─── Başlık + Mini Arama ─── #}
+  {# ─── Başlık + Mini Arama + Oda Aç ─── #}
   <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4">
     <h2 class="text-white fw-bold mb-0">Forum</h2>
-    <div class="forum-search-wrap">
-      <i class="bi bi-search forum-search-icon"></i>
-      <input id="forumSearch" type="text" class="forum-search-input"
-             placeholder="Kategori ara... (ör: SPSS, regresyon, tez)">
+    <div class="d-flex align-items-center gap-3 flex-wrap">
+      <div class="forum-search-wrap">
+        <i class="bi bi-search forum-search-icon"></i>
+        <input id="forumSearch" type="text" class="forum-search-input"
+               placeholder="Kategori ara... (ör: SPSS, regresyon, tez)">
+      </div>
+      <a href="{% url 'studyroom_create' %}" class="btn btn-warning btn-sm fw-semibold px-3">
+        <i class="bi bi-door-open-fill me-1"></i>Oda Aç
+      </a>
     </div>
   </div>
+
+  {# ─── Aktif Çalışma Odaları ─── #}
+  {% if active_rooms %}
+  <div class="mb-5">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+      <h5 class="text-white fw-semibold mb-0" style="font-size:1rem;">
+        <i class="bi bi-door-open-fill text-warning me-2"></i>Aktif Çalışma Odaları
+      </h5>
+      <a href="{% url 'studyroom_list' %}" class="text-warning text-decoration-none" style="font-size:.8rem;">Tümünü Gör →</a>
+    </div>
+    <div class="row g-2">
+      {% for room in active_rooms %}
+      <div class="col-sm-6 col-lg-4">
+        <a href="{{ room.get_absolute_url }}" class="text-decoration-none d-block h-100">
+          <div class="p-3 rounded-3 h-100" style="background:#16213e;border:1px solid rgba(234,179,8,.2);transition:border-color .15s;"
+               onmouseenter="this.style.borderColor='rgba(234,179,8,.5)'" onmouseleave="this.style.borderColor='rgba(234,179,8,.2)'">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <span class="text-white fw-semibold" style="font-size:.85rem;line-height:1.4;">{{ room.title|truncatechars:50 }}</span>
+              {% if room.days_remaining <= 7 %}
+              <span class="badge bg-danger bg-opacity-25 text-danger ms-2 flex-shrink-0" style="font-size:.65rem;">Son {{ room.days_remaining }}g</span>
+              {% else %}
+              <span class="badge bg-success bg-opacity-15 text-success ms-2 flex-shrink-0" style="font-size:.65rem;">{{ room.days_remaining }}g</span>
+              {% endif %}
+            </div>
+            {% if room.category %}
+            <div class="mb-2"><span class="badge bg-primary bg-opacity-20 text-primary" style="font-size:.65rem;">{{ room.category.title }}</span></div>
+            {% endif %}
+            <div class="d-flex gap-3 text-white-50" style="font-size:.72rem;">
+              <span><i class="bi bi-people me-1"></i>{{ room.member_cnt }} üye</span>
+              <span><i class="bi bi-chat me-1"></i>{{ room.post_count }} gönderi</span>
+              <span class="ms-auto text-white-50">{{ room.creator.username }}</span>
+            </div>
+          </div>
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
 
   {# ─── Anchor Navigasyon ─── #}
   <div class="forum-anchors mb-4" id="forumAnchors">
