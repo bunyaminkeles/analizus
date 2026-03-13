@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Çalışma Odaları — Analizus{% endblock %}
+
+{% block content %}
+<div class="container py-4" style="max-width:1100px;">
+
+  <div class="d-flex align-items-start justify-content-between flex-wrap gap-3 mb-4">
+    <div>
+      <h1 class="fw-bold text-white mb-1" style="font-size:1.6rem;">
+        <i class="bi bi-door-open-fill text-warning me-2"></i>Çalışma Odaları
+      </h1>
+      <p class="text-white-50 small mb-0">Dönemlik, konu odaklı akademik çalışma grupları. Aktif odaya katıl veya kendin aç.</p>
+    </div>
+    <div class="d-flex gap-2 flex-wrap align-items-center">
+      {% if can_create %}
+      <a href="{% url 'studyroom_create' %}" class="btn btn-warning btn-sm fw-semibold">
+        <i class="bi bi-plus-circle me-1"></i>Oda Aç
+      </a>
+      {% else %}
+      <button class="btn btn-outline-secondary btn-sm" disabled title="{{ ineligibility_reason }}">
+        <i class="bi bi-lock me-1"></i>Oda Aç
+      </button>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Filtreler -->
+  <div class="d-flex flex-wrap gap-2 mb-4">
+    <a href="?durum=active" class="btn btn-sm {% if status_filter == 'active' %}btn-warning{% else %}btn-outline-secondary text-white-50{% endif %}">Aktif</a>
+    <a href="?durum=archived" class="btn btn-sm {% if status_filter == 'archived' %}btn-secondary{% else %}btn-outline-secondary text-white-50{% endif %}">Arşiv</a>
+    {% if request.user.is_staff %}
+    <a href="?durum=all" class="btn btn-sm {% if status_filter == 'all' %}btn-danger{% else %}btn-outline-secondary text-white-50{% endif %}">Tümü (Admin)</a>
+    {% endif %}
+    {% if categories %}
+    <div class="vr opacity-25 mx-1"></div>
+    {% for cat in categories %}
+    <a href="?durum={{ status_filter }}&kategori={{ cat.slug }}"
+       class="btn btn-sm {% if selected_category == cat.slug %}btn-outline-warning{% else %}btn-outline-secondary text-white-50{% endif %}">
+      {{ cat.title }}
+    </a>
+    {% endfor %}
+    {% if selected_category %}
+    <a href="?durum={{ status_filter }}" class="btn btn-sm btn-outline-secondary text-white-50">
+      <i class="bi bi-x"></i> Temizle
+    </a>
+    {% endif %}
+    {% endif %}
+  </div>
+
+  {% if rooms %}
+  <div class="row g-3">
+    {% for room in rooms %}
+    <div class="col-md-6 col-xl-4">
+      <div class="card border-secondary h-100" style="background:#16213e;">
+        <div class="card-body p-3">
+
+          <!-- Başlık + durum -->
+          <div class="d-flex justify-content-between align-items-start mb-2">
+            <a href="{{ room.get_absolute_url }}" class="text-white fw-semibold text-decoration-none" style="font-size:.95rem;line-height:1.4;">{{ room.title }}</a>
+            {% if room.status == 'active' %}
+              {% if room.days_remaining <= 7 %}
+              <span class="badge bg-danger bg-opacity-25 text-danger ms-2 flex-shrink-0" style="font-size:.68rem;">Son {{ room.days_remaining }}g</span>
+              {% else %}
+              <span class="badge bg-success bg-opacity-20 text-success ms-2 flex-shrink-0" style="font-size:.68rem;">{{ room.days_remaining }}g</span>
+              {% endif %}
+            {% elif room.status == 'archived' %}
+            <span class="badge bg-secondary ms-2 flex-shrink-0" style="font-size:.68rem;">Arşiv</span>
+            {% elif room.status == 'pending' %}
+            <span class="badge bg-warning bg-opacity-25 text-warning ms-2 flex-shrink-0" style="font-size:.68rem;">Onay bekliyor</span>
+            {% endif %}
+          </div>
+
+          {% if room.category %}
+          <div class="mb-2">
+            <span class="badge bg-primary bg-opacity-20 text-primary" style="font-size:.68rem;">{{ room.category.title }}</span>
+          </div>
+          {% endif %}
+
+          <p class="text-white-50 small mb-3" style="font-size:.78rem;line-height:1.5;">{{ room.description|truncatechars:100 }}</p>
+
+          <!-- Hedef -->
+          <div class="d-flex gap-2 align-items-start mb-3 p-2 rounded" style="background:rgba(255,255,255,0.04);">
+            <i class="bi bi-bullseye text-warning mt-1 flex-shrink-0" style="font-size:.75rem;"></i>
+            <span class="text-white-50" style="font-size:.72rem;">{{ room.goal|truncatechars:80 }}</span>
+          </div>
+
+          <!-- İstatistikler -->
+          <div class="d-flex gap-3 text-white-50" style="font-size:.72rem;">
+            <span><i class="bi bi-people me-1"></i>{{ room.member_cnt }} üye</span>
+            <span><i class="bi bi-chat me-1"></i>{{ room.post_count }} gönderi</span>
+            <span class="ms-auto"><i class="bi bi-person me-1"></i>{{ room.creator.username }}</span>
+          </div>
+        </div>
+        <div class="card-footer border-secondary p-2" style="background:rgba(0,0,0,.15);">
+          <a href="{{ room.get_absolute_url }}" class="btn btn-outline-warning btn-sm w-100 py-1" style="font-size:.78rem;">
+            <i class="bi bi-door-open me-1"></i>Odaya Gir
+          </a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  {% else %}
+  <div class="text-center py-5">
+    <i class="bi bi-door-closed text-white-50 mb-3 d-block" style="font-size:2.5rem;"></i>
+    {% if status_filter == 'archived' %}
+    <p class="text-white-50">Henüz arşivlenen oda yok.</p>
+    {% else %}
+    <p class="text-white-50 mb-3">Henüz aktif çalışma odası yok.</p>
+    {% if can_create %}
+    <a href="{% url 'studyroom_create' %}" class="btn btn-warning btn-sm fw-semibold">
+      <i class="bi bi-plus-circle me-1"></i>İlk Odayı Sen Aç
+    </a>
+    {% else %}
+    <p class="text-white-50 small">{{ ineligibility_reason }}</p>
+    {% endif %}
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <!-- Şartlar özeti -->
+  {% if not can_create and request.user.is_authenticated %}
+  <div class="card border-secondary mt-4 p-3" style="background:#1a1a2e;">
+    <h6 class="text-white fw-semibold mb-2"><i class="bi bi-info-circle me-2 text-info"></i>Oda Açma Koşulları</h6>
+    <ul class="text-white-50 small mb-0">
+      <li>E-posta doğrulaması yapılmış olmalı</li>
+      <li>En az <strong class="text-white">{{ STUDYROOM_MIN_POINTS }} puan</strong> gereklidir</li>
+      <li>Aynı anda yalnızca 1 aktif oda açılabilir</li>
+      <li>Oda süresi en fazla <strong class="text-white">90 gün (3 ay)</strong></li>
+    </ul>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

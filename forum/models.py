@@ -1224,3 +1224,145 @@ class BlogPost(models.Model):
     @property
     def total_likes(self):
         return self.likes.count()
+
+
+# ─── ÇALIŞMA ODALARI ─────────────────────────────────────────────────────────
+
+STUDYROOM_TERMS = """
+<h6 class="fw-semibold text-white mb-3">Çalışma Odası Kurulum Koşulları ve Sorumlulukları</h6>
+<ol class="text-white-50 small" style="line-height:2;">
+  <li><strong class="text-white">Konu Sadakati:</strong> Oluşturduğunuz oda yalnızca belirttiğiniz konu ve hedef doğrultusunda kullanılacaktır. Konu dışı içerik, reklam veya alakasız tartışmalar yasaktır.</li>
+  <li><strong class="text-white">Akademik Dürüstlük:</strong> Oda içinde paylaşılan tüm içerikler akademik etik kurallara uygun olacaktır. İntihal, sahte veri veya yanıltıcı bilgi paylaşımı yasaktır.</li>
+  <li><strong class="text-white">Süre Sınırı:</strong> Odalar en fazla <strong class="text-white">90 gün (3 ay)</strong> aktif kalabilir. Bitiş tarihinde oda otomatik arşive alınır; içerikler okunabilir ve aranabilir olmaya devam eder, yeni gönderi kabul edilmez.</li>
+  <li><strong class="text-white">Moderasyon Sorumluluğu:</strong> Oda kurucusu olarak tartışmaların platform kurallarına uygunluğunu takip etmekle yükümlüsünüz. Kural ihlali gördüğünüzde platform yönetimine bildirmeniz beklenmektedir.</li>
+  <li><strong class="text-white">Üye Limiti:</strong> Odanız belirlediğiniz maksimum üye sayısıyla sınırlıdır. Limit artışı için platform yönetimine başvurabilirsiniz.</li>
+  <li><strong class="text-white">Platform Kuralları:</strong> Analizus Topluluk Kuralları bu oda için de geçerlidir. Odanızda gerçekleşen ihlallerden kurucu sorumlu tutulabilir.</li>
+  <li><strong class="text-white">Yönetici Müdahalesi:</strong> Platform yöneticileri kural ihlali halinde odayı kapatma, içerik silme veya üye çıkarma hakkını saklı tutar.</li>
+  <li><strong class="text-white">Ticari Kullanım Yasağı:</strong> Çalışma odaları ücretli kurs, reklam veya ticari satış amacıyla kullanılamaz.</li>
+  <li><strong class="text-white">Veri Gizliliği:</strong> Oda üyelerinin kişisel bilgilerini izinsiz paylaşmak yasaktır.</li>
+  <li><strong class="text-white">Tek Aktif Oda Hakkı:</strong> Her kullanıcı aynı anda yalnızca 1 aktif çalışma odası kurabilir.</li>
+</ol>
+"""
+
+
+class StudyRoom(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'Onay Bekliyor'),
+        ('active', 'Aktif'),
+        ('archived', 'Arşiv'),
+        ('rejected', 'Reddedildi'),
+    ]
+
+    title = models.CharField(max_length=200, verbose_name="Oda Başlığı")
+    slug = models.SlugField(unique=True, max_length=220)
+    description = models.TextField(verbose_name="Açıklama")
+    goal = models.TextField(max_length=500, verbose_name="Hedef")
+    category = models.ForeignKey(
+        'Category', on_delete=models.SET_NULL, null=True, blank=True,
+        related_name='study_rooms', verbose_name="İlgili Kategori"
+    )
+    creator = models.ForeignKey(
+        User, on_delete=models.CASCADE,
+        related_name='created_rooms', verbose_name="Kurucu"
+    )
+    ends_at = models.DateTimeField(verbose_name="Bitiş Tarihi")
+    max_members = models.PositiveIntegerField(default=30, verbose_name="Maksimum Üye")
+    is_public = models.BooleanField(default=True, verbose_name="Herkese Açık")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending', verbose_name="Durum")
+
+    # Şartname onayı
+    terms_agreed = models.BooleanField(default=False, verbose_name="Şartname Onaylandı")
+    terms_agreed_at = models.DateTimeField(null=True, blank=True, verbose_name="Şartname Onay Tarihi")
+
+    # Admin inceleme
+    reviewed_by = models.ForeignKey(
+        User, null=True, blank=True, on_delete=models.SET_NULL,
+        related_name='reviewed_rooms', verbose_name="İnceleyen"
+    )
+    review_note = models.TextField(blank=True, verbose_name="İnceleme Notu")
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Çalışma Odası"
+        verbose_name_plural = "Çalışma Odaları"
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return self.title
+
+    def get_absolute_url(self):
+        from django.urls import reverse
+        return reverse('studyroom_detail', kwargs={'slug': self.slug})
+
+    @property
+    def member_count(self):
+        return self.memberships.count()
+
+    @property
+    def post_count(self):
+        return self.room_posts.count()
+
+    @property
+    def is_expired(self):
+        from django.utils import timezone
+        return timezone.now() > self.ends_at
+
+    def auto_archive_if_expired(self):
+        from django.utils import timezone
+        if self.status == 'active' and timezone.now() > self.ends_at:
+            self.status = 'archived'
+            self.save(update_fields=['status'])
+            return True
+        return False
+
+    def days_remaining(self):
+        from django.utils import timezone
+        if self.status != 'active':
+            return 0
+        delta = self.ends_at - timezone.now()
+        return max(0, delta.days)
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            from django.utils.text import slugify
+            import uuid
+            base = slugify(self.title)[:180]
+            self.slug = f"{base}-{uuid.uuid4().hex[:6]}"
+        super().save(*args, **kwargs)
+
+
+class StudyRoomMembership(models.Model):
+    ROLE_CHOICES = [
+        ('creator', 'Kurucu'),
+        ('member', 'Üye'),
+    ]
+    room = models.ForeignKey(StudyRoom, on_delete=models.CASCADE, related_name='memberships')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='room_memberships')
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='member')
+    joined_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('room', 'user')
+        verbose_name = "Oda Üyeliği"
+        verbose_name_plural = "Oda Üyelikleri"
+
+    def __str__(self):
+        return f"{self.user.username} @ {self.room.title}"
+
+
+class StudyRoomPost(models.Model):
+    room = models.ForeignKey(StudyRoom, on_delete=models.CASCADE, related_name='room_posts')
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='room_posts')
+    message = models.TextField(verbose_name="Mesaj")
+    file = models.FileField(upload_to='studyrooms/', storage=get_storage, null=True, blank=True, verbose_name="Dosya")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['created_at']
+        verbose_name = "Oda Gönderisi"
+        verbose_name_plural = "Oda Gönderileri"
+
+    def __str__(self):
+        return f"{self.author.username}: {self.message[:60]}"

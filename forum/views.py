@@ -19,7 +19,7 @@ from datetime import timedelta
 import uuid
 from django_ratelimit.decorators import ratelimit
 from django_ratelimit.exceptions import Ratelimited
-from .models import Section, Category, Topic, Post, Profile, PrivateMessage, PostLike, Notification, EmailVerification, DailyTip, QuizQuestion, QuizScore, SuccessStory, FreelanceJob, JobProposal, JobReview, Skill, Badge, UserQuizAttempt, JobPayment, SiteSettings, BlogCategory, BlogPost, DonationTier
+from .models import Section, Category, Topic, Post, Profile, PrivateMessage, PostLike, Notification, EmailVerification, DailyTip, QuizQuestion, QuizScore, SuccessStory, FreelanceJob, JobProposal, JobReview, Skill, Badge, UserQuizAttempt, JobPayment, SiteSettings, BlogCategory, BlogPost, DonationTier, StudyRoom, StudyRoomMembership, StudyRoomPost, STUDYROOM_TERMS
 from .forms import RegisterForm, NewTopicForm, PostForm, JobPostForm, ProposalForm
 from .email_utils import send_topic_reply_notification, send_private_message_notification
 from django.template.loader import render_to_string
@@ -2411,3 +2411,282 @@ def uzman_dizini(request):
         'selected_skill': skill_slug,
         'sort_by': sort_by,
     })
+
+
+# ─── ÇALIŞMA ODALARI ─────────────────────────────────────────────────────────
+
+STUDYROOM_MAX_DAYS = 90  # Her halükarda 3 ayı geçemez
+STUDYROOM_MIN_DAYS = 7
+STUDYROOM_MIN_POINTS = 200  # 200+ puan veya staff
+
+
+def _studyroom_eligibility(user):
+    """(can_create: bool, reason: str)"""
+    if not user.is_authenticated:
+        return False, 'Giriş yapmanız gerekiyor.'
+    if not hasattr(user, 'profile'):
+        return False, 'Profil bulunamadı.'
+    if not user.profile.email_verified and not user.is_staff:
+        return False, 'E-posta doğrulaması gereklidir.'
+    if not user.is_staff:
+        score = user.profile.total_score
+        if score < STUDYROOM_MIN_POINTS:
+            return False, f'Çalışma odası açmak için en az {STUDYROOM_MIN_POINTS} puan gereklidir. (Mevcut: {score})'
+        active_own = StudyRoom.objects.filter(creator=user, status__in=['pending', 'active']).exists()
+        if active_own:
+            return False, 'Zaten aktif veya onay bekleyen bir çalışma odanız var. Aynı anda yalnızca 1 oda açabilirsiniz.'
+    return True, ''
+
+
+def studyroom_list(request):
+    """Tüm aktif çalışma odaları listesi."""
+    # Süresi dolanları arşivle
+    for room in StudyRoom.objects.filter(status='active'):
+        room.auto_archive_if_expired()
+
+    category_slug = request.GET.get('kategori', '')
+    status_filter = request.GET.get('durum', 'active')
+
+    rooms = StudyRoom.objects.select_related('creator', 'category').prefetch_related('memberships')
+
+    if status_filter == 'archived':
+        rooms = rooms.filter(status='archived')
+    elif status_filter == 'all' and (request.user.is_authenticated and request.user.is_staff):
+        rooms = rooms.exclude(status='rejected')
+    else:
+        rooms = rooms.filter(status='active')
+
+    if category_slug:
+        rooms = rooms.filter(category__slug=category_slug)
+
+    rooms = rooms.annotate(member_cnt=Count('memberships', distinct=True)).order_by('-created_at')
+
+    categories = Category.objects.filter(study_rooms__status='active').distinct()
+    can_create, reason = _studyroom_eligibility(request.user)
+
+    return render(request, 'forum/studyroom_list.html', {
+        'rooms': rooms,
+        'categories': categories,
+        'selected_category': category_slug,
+        'status_filter': status_filter,
+        'can_create': can_create,
+        'ineligibility_reason': reason,
+        'STUDYROOM_MIN_POINTS': STUDYROOM_MIN_POINTS,
+    })
+
+
+@login_required
+def studyroom_create(request):
+    """Çalışma odası açma formu — şartname onayı dahil."""
+    can_create, reason = _studyroom_eligibility(request.user)
+    if not can_create:
+        messages.error(request, reason)
+        return redirect('studyroom_list')
+
+    from django.utils import timezone as tz
+
+    if request.method == 'POST':
+        title = request.POST.get('title', '').strip()
+        description = request.POST.get('description', '').strip()
+        goal = request.POST.get('goal', '').strip()
+        category_id = request.POST.get('category', '')
+        ends_at_str = request.POST.get('ends_at', '')
+        max_members = int(request.POST.get('max_members', 30))
+        is_public = request.POST.get('is_public') == '1'
+        terms_agreed = request.POST.get('terms_agreed') == '1'
+
+        errors = []
+        if len(title) < 10:
+            errors.append('Başlık en az 10 karakter olmalıdır.')
+        if len(description) < 50:
+            errors.append('Açıklama en az 50 karakter olmalıdır.')
+        if len(goal) < 20:
+            errors.append('Hedef en az 20 karakter olmalıdır.')
+        if not terms_agreed:
+            errors.append('Şartnameyi onaylamanız zorunludur.')
+
+        ends_at = None
+        if ends_at_str:
+            try:
+                from datetime import datetime
+                ends_at = tz.make_aware(datetime.strptime(ends_at_str, '%Y-%m-%d'))
+                min_date = tz.now() + timedelta(days=STUDYROOM_MIN_DAYS)
+                max_date = tz.now() + timedelta(days=STUDYROOM_MAX_DAYS)
+                if ends_at < min_date:
+                    errors.append(f'Bitiş tarihi en az {STUDYROOM_MIN_DAYS} gün sonrası olmalıdır.')
+                if ends_at > max_date:
+                    errors.append(f'Bitiş tarihi en fazla {STUDYROOM_MAX_DAYS} gün ({STUDYROOM_MAX_DAYS//30} ay) sonrası olabilir.')
+            except ValueError:
+                errors.append('Geçersiz tarih formatı.')
+        else:
+            errors.append('Bitiş tarihi zorunludur.')
+
+        category = None
+        if category_id:
+            try:
+                category = Category.objects.get(id=category_id)
+            except Category.DoesNotExist:
+                pass
+
+        if not errors:
+            # Staff ise direkt aktif, değilse onay bekliyor
+            initial_status = 'active' if request.user.is_staff else 'pending'
+
+            room = StudyRoom.objects.create(
+                title=title,
+                description=description,
+                goal=goal,
+                category=category,
+                creator=request.user,
+                ends_at=ends_at,
+                max_members=max(5, min(max_members, 200)),
+                is_public=is_public,
+                status=initial_status,
+                terms_agreed=True,
+                terms_agreed_at=tz.now(),
+            )
+            # Kurucuyu üye olarak ekle
+            StudyRoomMembership.objects.create(room=room, user=request.user, role='creator')
+
+            # Admin bildirimi (staff değilse)
+            if not request.user.is_staff:
+                try:
+                    from .email_utils import EmailService
+                    admins = User.objects.filter(is_staff=True).values_list('email', flat=True)
+                    for admin_email in admins:
+                        if admin_email:
+                            EmailService._send_email(
+                                to_email=admin_email,
+                                subject=f'[Analizus] Yeni Çalışma Odası Onay Talebi: {room.title}',
+                                html_content=f'<p><strong>{request.user.username}</strong> tarafından yeni bir çalışma odası oluşturuldu.</p>'
+                                             f'<p><strong>Başlık:</strong> {room.title}</p>'
+                                             f'<p><strong>Hedef:</strong> {room.goal}</p>'
+                                             f'<p>Admin panelinden inceleyebilirsiniz.</p>',
+                                plain_content=f'{request.user.username} tarafından "{room.title}" odası oluşturuldu. Admin panelinden inceleyin.',
+                            )
+                except Exception:
+                    pass
+
+            if initial_status == 'active':
+                messages.success(request, 'Çalışma odanız başarıyla açıldı!')
+                return redirect('studyroom_detail', slug=room.slug)
+            else:
+                messages.success(request, 'Çalışma odanız oluşturuldu. Admin onayı bekleniyor.')
+                return redirect('studyroom_list')
+
+        categories = Category.objects.all().order_by('title')
+        return render(request, 'forum/studyroom_create.html', {
+            'terms': STUDYROOM_TERMS,
+            'categories': categories,
+            'errors': errors,
+            'post': request.POST,
+            'STUDYROOM_MAX_DAYS': STUDYROOM_MAX_DAYS,
+            'STUDYROOM_MIN_DAYS': STUDYROOM_MIN_DAYS,
+        })
+
+    categories = Category.objects.all().order_by('title')
+    from django.utils import timezone as tz
+    default_end = (tz.now() + timedelta(days=30)).strftime('%Y-%m-%d')
+    max_end = (tz.now() + timedelta(days=STUDYROOM_MAX_DAYS)).strftime('%Y-%m-%d')
+    min_end = (tz.now() + timedelta(days=STUDYROOM_MIN_DAYS)).strftime('%Y-%m-%d')
+
+    return render(request, 'forum/studyroom_create.html', {
+        'terms': STUDYROOM_TERMS,
+        'categories': categories,
+        'default_end': default_end,
+        'max_end': max_end,
+        'min_end': min_end,
+        'STUDYROOM_MAX_DAYS': STUDYROOM_MAX_DAYS,
+        'STUDYROOM_MIN_DAYS': STUDYROOM_MIN_DAYS,
+    })
+
+
+def studyroom_detail(request, slug):
+    """Oda detay sayfası: gönderiler + üyeler."""
+    room = get_object_or_404(StudyRoom, slug=slug)
+    room.auto_archive_if_expired()
+
+    if room.status == 'pending' and not (request.user.is_authenticated and
+                                          (request.user.is_staff or room.creator == request.user)):
+        raise Http404
+
+    is_member = False
+    membership = None
+    if request.user.is_authenticated:
+        membership = StudyRoomMembership.objects.filter(room=room, user=request.user).first()
+        is_member = membership is not None
+
+    # POST: yeni mesaj
+    if request.method == 'POST' and request.user.is_authenticated:
+        if room.status != 'active':
+            return JsonResponse({'error': 'Oda aktif değil.'}, status=400)
+        if not is_member:
+            return JsonResponse({'error': 'Odaya katılmadan mesaj gönderemezsiniz.'}, status=403)
+
+        message = request.POST.get('message', '').strip()
+        if not message:
+            return JsonResponse({'error': 'Boş mesaj gönderilemez.'}, status=400)
+
+        post = StudyRoomPost.objects.create(room=room, author=request.user, message=message)
+        return JsonResponse({
+            'id': post.id,
+            'author': request.user.username,
+            'message': post.message,
+            'created_at': post.created_at.strftime('%d.%m.%Y %H:%M'),
+        })
+
+    posts = room.room_posts.select_related('author__profile').all()
+    members = room.memberships.select_related('user__profile').all()
+
+    return render(request, 'forum/studyroom_detail.html', {
+        'room': room,
+        'posts': posts,
+        'members': members,
+        'is_member': is_member,
+        'membership': membership,
+    })
+
+
+@login_required
+@require_POST
+def studyroom_join(request, slug):
+    """Odaya katıl / ayrıl."""
+    room = get_object_or_404(StudyRoom, slug=slug, status='active')
+
+    if room.is_expired:
+        return JsonResponse({'error': 'Odanın süresi dolmuş.'}, status=400)
+
+    membership = StudyRoomMembership.objects.filter(room=room, user=request.user).first()
+
+    if membership:
+        if membership.role == 'creator':
+            return JsonResponse({'error': 'Kurucu odadan ayrılamaz.'}, status=400)
+        membership.delete()
+        return JsonResponse({'action': 'left', 'member_count': room.member_count})
+    else:
+        if not room.is_public:
+            return JsonResponse({'error': 'Bu oda herkese açık değil.'}, status=403)
+        if room.member_count >= room.max_members:
+            return JsonResponse({'error': 'Oda kapasitesi doldu.'}, status=400)
+        StudyRoomMembership.objects.create(room=room, user=request.user, role='member')
+        return JsonResponse({'action': 'joined', 'member_count': room.member_count})
+
+
+@login_required
+@require_POST
+def studyroom_approve(request, slug):
+    """Admin: odayı onayla veya reddet."""
+    if not request.user.is_staff:
+        raise Http404
+    room = get_object_or_404(StudyRoom, slug=slug)
+    action = request.POST.get('action')
+    note = request.POST.get('note', '')
+
+    if action == 'approve':
+        room.status = 'active'
+    elif action == 'reject':
+        room.status = 'rejected'
+    room.reviewed_by = request.user
+    room.review_note = note
+    room.save(update_fields=['status', 'reviewed_by', 'review_note'])
+    return JsonResponse({'status': room.status})

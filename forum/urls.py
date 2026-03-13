@@ -28,6 +28,13 @@ urlpatterns = [
     path('hangi-test/', views.hangi_test, name='hangi_test'),
     path('uzmanlar/', views.uzman_dizini, name='uzman_dizini'),
 
+    # Çalışma Odaları
+    path('odalar/', views.studyroom_list, name='studyroom_list'),
+    path('odalar/ac/', views.studyroom_create, name='studyroom_create'),
+    path('odalar/<slug:slug>/', views.studyroom_detail, name='studyroom_detail'),
+    path('odalar/<slug:slug>/katil/', views.studyroom_join, name='studyroom_join'),
+    path('odalar/<slug:slug>/onayla/', views.studyroom_approve, name='studyroom_approve'),
+
     # Forum
     path('forum/', views.forum_index, name='forum_index'),
     path('forum/<slug:slug>/', views.category_topics, name='category_topics'),

@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.utils.html import format_html
-from .models import Section, Category, Topic, Post, Profile, ContactMessage, PrivateMessage, Badge, Skill, DailyTip, QuizQuestion, QuizScore, FreelanceJob, JobProposal, JobReview, UserQuizAttempt, DonationTier, Donation, JobPayment, TopicTag, SiteSettings, BlogCategory, BlogPost, SuccessStory
+from .models import Section, Category, Topic, Post, Profile, ContactMessage, PrivateMessage, Badge, Skill, DailyTip, QuizQuestion, QuizScore, FreelanceJob, JobProposal, JobReview, UserQuizAttempt, DonationTier, Donation, JobPayment, TopicTag, SiteSettings, BlogCategory, BlogPost, SuccessStory, StudyRoom
 
 # 1. Kategori Yönetimi (Inline)
 class CategoryInline(admin.TabularInline):
@@ -673,3 +673,25 @@ class SuccessStoryAdmin(admin.ModelAdmin):
     def reject_stories(self, request, queryset):
         updated = queryset.update(approval_status='rejected')
         self.message_user(request, f'{updated} hikaye reddedildi.')
+
+@admin.register(StudyRoom)
+class StudyRoomAdmin(admin.ModelAdmin):
+    list_display = ('title', 'creator', 'status', 'category', 'ends_at', 'member_count', 'created_at')
+    list_filter = ('status', 'category', 'is_public')
+    search_fields = ('title', 'creator__username', 'goal')
+    readonly_fields = ('created_at', 'updated_at', 'terms_agreed_at', 'slug')
+    actions = ['approve_rooms', 'reject_rooms']
+
+    def member_count(self, obj):
+        return obj.memberships.count()
+    member_count.short_description = 'Üye'
+
+    @admin.action(description='✅ Seçili odaları onayla (aktifleştir)')
+    def approve_rooms(self, request, queryset):
+        updated = queryset.filter(status='pending').update(status='active', reviewed_by=request.user)
+        self.message_user(request, f'{updated} oda aktifleştirildi.')
+
+    @admin.action(description='❌ Seçili odaları reddet')
+    def reject_rooms(self, request, queryset):
+        updated = queryset.filter(status='pending').update(status='rejected', reviewed_by=request.user)
+        self.message_user(request, f'{updated} oda reddedildi.')
