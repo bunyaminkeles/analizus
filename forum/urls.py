@@ -24,6 +24,9 @@ urlpatterns = [
     path('api/chat/<str:username>/poll/', views.api_chat_poll, name='api_chat_poll'),
     path('api/inbox/poll/', views.api_inbox_poll, name='api_inbox_poll'),
 
+    # Araçlar
+    path('hangi-test/', views.hangi_test, name='hangi_test'),
+
     # Forum
     path('forum/', views.forum_index, name='forum_index'),
     path('forum/<slug:slug>/', views.category_topics, name='category_topics'),

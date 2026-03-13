@@ -1,0 +1,721 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Hangi İstatistik Testini Kullanmalıyım? — İnteraktif Karar Ağacı{% endblock %}
+
+{% block meta_description %}Araştırmanıza uygun istatistik testini bulmak için bu interaktif karar ağacını kullanın. t-testi, ANOVA, Ki-kare, Pearson, Spearman, regresyon ve daha fazlası.{% endblock %}
+
+{% block content %}
+<div class="container py-4" style="max-width:860px;">
+
+  <!-- Başlık -->
+  <div class="text-center mb-4">
+    <span class="fs-1 text-primary"><i class="bi bi-diagram-3-fill"></i></span>
+    <h1 class="fw-bold text-white mt-2 mb-1" style="font-size:1.7rem;">Hangi İstatistik Testini Kullanmalıyım?</h1>
+    <p class="text-white-50 mb-0">Soruları yanıtlayarak araştırmanıza uygun testi saniyeler içinde bulun.</p>
+  </div>
+
+  <!-- Adım göstergesi -->
+  <div id="progress-bar-wrap" class="mb-3">
+    <div class="d-flex justify-content-between align-items-center mb-1">
+      <small class="text-white-50" id="step-label">Adım 1</small>
+      <small class="text-white-50" id="step-pct">—</small>
+    </div>
+    <div class="progress" style="height:4px;background:rgba(255,255,255,0.08);">
+      <div id="step-progress" class="progress-bar bg-primary" style="width:0%;transition:width .3s;"></div>
+    </div>
+  </div>
+
+  <!-- Karar ağacı kartı -->
+  <div id="tree-card" class="card border-secondary p-4" style="background:#16213e;min-height:280px;">
+
+    <!-- Soru ekranı -->
+    <div id="question-screen">
+      <div class="mb-1">
+        <span id="q-badge" class="badge bg-primary bg-opacity-25 text-primary fw-normal small mb-2"></span>
+      </div>
+      <h5 id="q-text" class="text-white fw-semibold mb-1" style="line-height:1.5;"></h5>
+      <p id="q-hint" class="text-white-50 small mb-4"></p>
+      <div id="options-wrap" class="d-grid gap-2"></div>
+    </div>
+
+    <!-- Sonuç ekranı -->
+    <div id="result-screen" class="d-none">
+      <div class="d-flex align-items-center gap-3 mb-3">
+        <span id="r-icon" class="fs-1"></span>
+        <div>
+          <div class="small text-white-50 mb-1">Önerilen Test</div>
+          <h4 id="r-title" class="text-white fw-bold mb-0"></h4>
+        </div>
+      </div>
+      <p id="r-desc" class="text-white-50 mb-3"></p>
+      <div id="r-conditions" class="mb-3"></div>
+      <div id="r-software" class="mb-4 small text-white-50"></div>
+
+      <!-- Aksiyon butonları -->
+      <div class="d-flex flex-wrap gap-2 mb-4">
+        <a id="r-forum-btn" href="#" class="btn btn-outline-primary btn-sm">
+          <i class="bi bi-chat-square-text me-1"></i>Forumda Tartış
+        </a>
+        <button id="r-share-btn" class="btn btn-outline-success btn-sm" onclick="openShareModal()">
+          <i class="bi bi-share me-1"></i>Analizini Paylaş
+        </button>
+        <a href="{% url 'ai_assistant' %}" class="btn btn-outline-warning btn-sm">
+          <i class="bi bi-robot me-1"></i>AI Asistan'a Sor
+        </a>
+        <button onclick="resetTree()" class="btn btn-outline-secondary btn-sm">
+          <i class="bi bi-arrow-counterclockwise me-1"></i>Baştan Başla
+        </button>
+      </div>
+
+      <!-- Benzer testler -->
+      <div id="r-related-wrap" class="border-top border-secondary pt-3">
+        <p class="text-white-50 small mb-2">İlgili konular:</p>
+        <div id="r-related" class="d-flex flex-wrap gap-2"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Geçmiş -->
+  <div id="breadcrumb-wrap" class="mt-3" style="display:none!important;">
+    <!-- gizli ama gelecekte açılabilir -->
+  </div>
+
+  <!-- Bilgi kutuları (sayfanın altında SEO için) -->
+  <div class="row g-3 mt-5">
+    <div class="col-12">
+      <h5 class="text-white fw-semibold mb-3">Popüler Testler Hakkında Kısa Bilgi</h5>
+    </div>
+    <div class="col-md-6">
+      <div class="card border-secondary p-3" style="background:#1a1a2e;">
+        <h6 class="text-primary fw-semibold mb-2"><i class="bi bi-bar-chart-steps me-2"></i>t-Testi Nedir?</h6>
+        <p class="text-white-50 small mb-0">İki grup ortalamasını karşılaştırmak için kullanılır. Bağımsız örneklem t-testi farklı grupları, bağımlı örneklem t-testi aynı grubun iki ölçümünü karşılaştırır. Normal dağılım varsayımı gerektirir.</p>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card border-secondary p-3" style="background:#1a1a2e;">
+        <h6 class="text-success fw-semibold mb-2"><i class="bi bi-bar-chart me-2"></i>ANOVA Nedir?</h6>
+        <p class="text-white-50 small mb-0">Üç veya daha fazla grubun ortalamalarını eş zamanlı karşılaştırır. Tek yönlü ANOVA bir faktörü, iki yönlü ANOVA iki faktörü inceler. Fark bulunursa post-hoc testleri gerekir.</p>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card border-secondary p-3" style="background:#1a1a2e;">
+        <h6 class="text-warning fw-semibold mb-2"><i class="bi bi-graph-up me-2"></i>Korelasyon Nedir?</h6>
+        <p class="text-white-50 small mb-0">İki değişken arasındaki ilişkinin yönünü ve gücünü ölçer. Pearson parametrik (normal dağılım), Spearman parametrik olmayan (sıralı veri) korelasyon testidir.</p>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card border-secondary p-3" style="background:#1a1a2e;">
+        <h6 class="text-info fw-semibold mb-2"><i class="bi bi-diagram-2 me-2"></i>Regresyon Nedir?</h6>
+        <p class="text-white-50 small mb-0">Bir değişkeni başka değişkenlerle tahmin etmek için kullanılır. Basit lineer regresyon tek bağımsız değişken, çoklu regresyon birden fazla bağımsız değişkenle çalışır.</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Paylaşım Modalı -->
+<div class="modal fade" id="shareModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-secondary" style="background:#16213e;">
+      <div class="modal-header border-secondary">
+        <h5 class="modal-title text-white fw-semibold">Analizini Forumda Paylaş</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p class="text-white-50 small mb-3">Aşağıdaki şablon otomatik oluşturuldu. Düzenleyip forum kategorisine gönderebilirsin.</p>
+        <textarea id="share-template" class="form-control bg-dark text-white border-secondary" rows="8" style="font-size:.85rem;resize:none;"></textarea>
+      </div>
+      <div class="modal-footer border-secondary">
+        {% if user.is_authenticated %}
+        <a id="share-forum-link" href="#" class="btn btn-primary btn-sm">
+          <i class="bi bi-send me-1"></i>Forum'a Git
+        </a>
+        {% else %}
+        <a href="{% url 'register' %}" class="btn btn-primary btn-sm">
+          <i class="bi bi-person-plus me-1"></i>Kayıt Ol &amp; Paylaş
+        </a>
+        {% endif %}
+        <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Kapat</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── AĞAÇ VERİSİ ────────────────────────────────────────────────────────────
+const TREE = {
+  start: {
+    badge: "Analiz Amacı",
+    question: "Ne yapmak istiyorsunuz?",
+    hint: "Araştırmanızın temel amacını seçin.",
+    options: [
+      { text: "🔀  Gruplar arasındaki farkı test etmek", next: "grup_kac" },
+      { text: "🔗  İki değişken arasındaki ilişkiyi incelemek", next: "iliski_tur" },
+      { text: "📈  Bir değişkeni başka değişkenlerle tahmin etmek", next: "regresyon_bagimli" },
+      { text: "📐  Ölçeğin güvenilirliği / geçerliliği", next: "olcek_tur" },
+      { text: "📊  Veri dağılımı veya tanımlayıcı istatistikler", next: "tanimsal_tur" },
+    ]
+  },
+
+  // ── Grup karşılaştırmaları ──────────────────────────────────────────────
+  grup_kac: {
+    badge: "Grup Sayısı",
+    question: "Kaç grup karşılaştırıyorsunuz?",
+    hint: "",
+    options: [
+      { text: "2 grup", next: "grup2_bagimli" },
+      { text: "3 veya daha fazla grup", next: "grup3_bagimli" },
+    ]
+  },
+  grup2_bagimli: {
+    badge: "Grup Yapısı",
+    question: "Gruplar birbirinden bağımsız mı?",
+    hint: "Bağımsız: farklı kişilerden oluşan ayrı gruplar. Bağımlı/tekrarlı: aynı kişi iki farklı koşulda (ön-test/son-test veya eşleştirilmiş çiftler).",
+    options: [
+      { text: "Evet — farklı kişilerden oluşan bağımsız gruplar", next: "grup2_bagimsiz_normal" },
+      { text: "Hayır — aynı kişiler ya da eşleştirilmiş çiftler", next: "grup2_bagimli_normal" },
+    ]
+  },
+  grup2_bagimsiz_normal: {
+    badge: "Dağılım",
+    question: "Veriler normal dağılıyor mu?",
+    hint: "Shapiro-Wilk (n<50) veya Kolmogorov-Smirnov testiyle kontrol edin. Büyük örneklemlerde (n>30) merkezi limit teoremi sayesinde normal dağılım genellikle varsayılabilir.",
+    options: [
+      { text: "Evet — normal dağılım var (ya da n > 30)", next: "r_bagimsiz_t" },
+      { text: "Hayır veya emin değilim", next: "r_mann_whitney" },
+    ]
+  },
+  grup2_bagimli_normal: {
+    badge: "Dağılım",
+    question: "Fark skorları normal dağılıyor mu?",
+    hint: "İki ölçüm arasındaki fark değerlerinin normalliğini test edin.",
+    options: [
+      { text: "Evet — normal dağılım var", next: "r_bagimli_t" },
+      { text: "Hayır veya emin değilim", next: "r_wilcoxon" },
+    ]
+  },
+  grup3_bagimli: {
+    badge: "Grup Yapısı",
+    question: "Gruplar birbirinden bağımsız mı?",
+    hint: "Bağımsız: her grupta farklı kişiler. Tekrarlı: aynı kişiler farklı koşullarda ya da zaman noktalarında.",
+    options: [
+      { text: "Evet — farklı kişilerden oluşan bağımsız gruplar", next: "grup3_bagimsiz_normal" },
+      { text: "Hayır — tekrarlı ölçüm (aynı kişiler)", next: "grup3_bagimli_normal" },
+    ]
+  },
+  grup3_bagimsiz_normal: {
+    badge: "Dağılım",
+    question: "Veriler normal dağılıyor mu?",
+    hint: "Her grubun dağılımını ayrı ayrı kontrol edin.",
+    options: [
+      { text: "Evet — normal dağılım var", next: "r_anova" },
+      { text: "Hayır veya emin değilim", next: "r_kruskal" },
+    ]
+  },
+  grup3_bagimli_normal: {
+    badge: "Dağılım",
+    question: "Veriler normal dağılıyor mu?",
+    hint: "",
+    options: [
+      { text: "Evet — normal dağılım var", next: "r_tekrarli_anova" },
+      { text: "Hayır veya emin değilim", next: "r_friedman" },
+    ]
+  },
+
+  // ── İlişki / Korelasyon ─────────────────────────────────────────────────
+  iliski_tur: {
+    badge: "Değişken Türü",
+    question: "Değişkenleriniz ne tür?",
+    hint: "",
+    options: [
+      { text: "İkisi de sürekli/sayısal (örn. yaş ve gelir)", next: "iliski_normal" },
+      { text: "İkisi de kategorik (örn. cinsiyet ve tercih)", next: "r_kicekare" },
+      { text: "Biri sıralı (Likert) veya normallik yok", next: "r_spearman" },
+    ]
+  },
+  iliski_normal: {
+    badge: "Dağılım",
+    question: "Her iki değişken de normal dağılıyor mu?",
+    hint: "",
+    options: [
+      { text: "Evet — normal dağılım var", next: "r_pearson" },
+      { text: "Hayır veya emin değilim", next: "r_spearman" },
+    ]
+  },
+
+  // ── Regresyon ──────────────────────────────────────────────────────────
+  regresyon_bagimli: {
+    badge: "Bağımlı Değişken",
+    question: "Tahmin etmek istediğiniz (bağımlı) değişken ne tür?",
+    hint: "",
+    options: [
+      { text: "Sürekli / sayısal (örn. skor, gelir, süre)", next: "regresyon_kac" },
+      { text: "İkili kategorik (evet/hayır, 0/1, başarılı/başarısız)", next: "r_lojistik" },
+      { text: "Üç veya daha fazla kategorik değer", next: "r_multinomial" },
+    ]
+  },
+  regresyon_kac: {
+    badge: "Bağımsız Değişken Sayısı",
+    question: "Kaç tane açıklayıcı (bağımsız) değişken var?",
+    hint: "",
+    options: [
+      { text: "1 bağımsız değişken", next: "r_basit_regresyon" },
+      { text: "2 veya daha fazla bağımsız değişken", next: "r_coklu_regresyon" },
+    ]
+  },
+
+  // ── Ölçek ──────────────────────────────────────────────────────────────
+  olcek_tur: {
+    badge: "Ölçek Analizi",
+    question: "Ne test etmek istiyorsunuz?",
+    hint: "",
+    options: [
+      { text: "Güvenilirlik — maddelerin iç tutarlılığı", next: "r_cronbach" },
+      { text: "Faktör yapısını keşfetmek istiyorum (EFA)", next: "r_efa" },
+      { text: "Teorik bir modeli doğrulamak istiyorum (CFA)", next: "r_cfa" },
+    ]
+  },
+
+  // ── Tanımlayıcı / Dağılım ──────────────────────────────────────────────
+  tanimsal_tur: {
+    badge: "Analiz Türü",
+    question: "Ne yapmak istiyorsunuz?",
+    hint: "",
+    options: [
+      { text: "Verinin normal dağılıp dağılmadığını test etmek", next: "r_normallik" },
+      { text: "Ortalama, SD gibi tanımlayıcı istatistikler hesaplamak", next: "r_tanimsal" },
+    ]
+  },
+
+  // ─── SONUÇLAR ─────────────────────────────────────────────────────────────
+  r_bagimsiz_t: {
+    result: true,
+    icon: "bi bi-bar-chart-steps text-primary",
+    title: "Bağımsız Örneklem t-Testi",
+    desc: "Birbirinden bağımsız iki grubun ortalamasını karşılaştırmak için kullanılan parametrik testtir.",
+    conditions: [
+      "Bağımlı değişken sürekli/sayısal",
+      "İki bağımsız grup (farklı kişiler)",
+      "Her grupta normal dağılım (veya n > 30)",
+      "Grupların varyansları homojen olmalı (Levene testi)",
+    ],
+    software: "SPSS: Analyze → Compare Means → Independent Samples T Test | R: t.test(x, y) | Python: scipy.stats.ttest_ind()",
+    forum_slug: "karsilastirma-testleri",
+    related: ["Mann-Whitney U", "ANOVA", "Bağımlı t-Testi"],
+    related_slugs: ["r_mann_whitney", "r_anova", "r_bagimli_t"],
+  },
+  r_mann_whitney: {
+    result: true,
+    icon: "bi bi-bar-chart text-info",
+    title: "Mann-Whitney U Testi",
+    desc: "Normal dağılım varsayımını karşılamayan iki bağımsız grubun medyanlarını karşılaştıran non-parametrik alternatiftir.",
+    conditions: [
+      "Bağımlı değişken sürekli veya sıralı (ordinal)",
+      "İki bağımsız grup",
+      "Normal dağılım varsayımı karşılanmıyor",
+    ],
+    software: "SPSS: Analyze → Nonparametric Tests → Legacy Dialogs → 2 Independent Samples | R: wilcox.test(x, y) | Python: scipy.stats.mannwhitneyu()",
+    forum_slug: "karsilastirma-testleri",
+    related: ["Bağımsız t-Testi", "Wilcoxon", "Kruskal-Wallis"],
+    related_slugs: ["r_bagimsiz_t", "r_wilcoxon", "r_kruskal"],
+  },
+  r_bagimli_t: {
+    result: true,
+    icon: "bi bi-arrows-collapse text-success",
+    title: "Bağımlı Örneklem t-Testi (Eşleştirilmiş)",
+    desc: "Aynı grubun iki farklı zamandaki veya iki eşleştirilmiş grubun ortalamalarını karşılaştırır.",
+    conditions: [
+      "Aynı kişilerden iki ölçüm (ön-test/son-test) veya eşleştirilmiş çiftler",
+      "Fark skorları normal dağılmalı",
+      "Sürekli bağımlı değişken",
+    ],
+    software: "SPSS: Analyze → Compare Means → Paired Samples T Test | R: t.test(x, y, paired=TRUE) | Python: scipy.stats.ttest_rel()",
+    forum_slug: "karsilastirma-testleri",
+    related: ["Wilcoxon", "Bağımsız t-Testi", "Tekrarlı ANOVA"],
+    related_slugs: ["r_wilcoxon", "r_bagimsiz_t", "r_tekrarli_anova"],
+  },
+  r_wilcoxon: {
+    result: true,
+    icon: "bi bi-arrow-left-right text-warning",
+    title: "Wilcoxon İşaretli Sıralar Testi",
+    desc: "Bağımlı t-testinin non-parametrik alternatifi; normal dağılım yoksa aynı kişinin iki ölçümünü karşılaştırır.",
+    conditions: [
+      "Aynı kişilerden iki ölçüm",
+      "Normal dağılım varsayımı karşılanmıyor",
+      "Sürekli veya ordinal bağımlı değişken",
+    ],
+    software: "SPSS: Analyze → Nonparametric Tests → Legacy Dialogs → 2 Related Samples | R: wilcox.test(x, y, paired=TRUE) | Python: scipy.stats.wilcoxon()",
+    forum_slug: "karsilastirma-testleri",
+    related: ["Bağımlı t-Testi", "Friedman", "Mann-Whitney U"],
+    related_slugs: ["r_bagimli_t", "r_friedman", "r_mann_whitney"],
+  },
+  r_anova: {
+    result: true,
+    icon: "bi bi-bar-chart-line text-primary",
+    title: "Tek Yönlü ANOVA",
+    desc: "Üç veya daha fazla bağımsız grubun ortalamasını eş zamanlı karşılaştıran parametrik testtir.",
+    conditions: [
+      "3+ bağımsız grup",
+      "Bağımlı değişken sürekli",
+      "Her grupta normal dağılım",
+      "Grupların varyansları homojen (Levene)",
+      "Fark bulunursa post-hoc test gerekir (Tukey, Bonferroni)",
+    ],
+    software: "SPSS: Analyze → Compare Means → One-Way ANOVA | R: aov() veya oneway.test() | Python: scipy.stats.f_oneway()",
+    forum_slug: "karsilastirma-testleri",
+    related: ["Kruskal-Wallis", "Bağımsız t-Testi", "MANOVA"],
+    related_slugs: ["r_kruskal", "r_bagimsiz_t", "r_anova"],
+  },
+  r_kruskal: {
+    result: true,
+    icon: "bi bi-bar-chart text-danger",
+    title: "Kruskal-Wallis Testi",
+    desc: "ANOVA'nın non-parametrik alternatifi; 3+ bağımsız grubun medyanlarını karşılaştırır.",
+    conditions: [
+      "3+ bağımsız grup",
+      "Normal dağılım varsayımı karşılanmıyor",
+      "Sürekli veya ordinal bağımlı değişken",
+    ],
+    software: "SPSS: Analyze → Nonparametric Tests → Legacy Dialogs → K Independent Samples | R: kruskal.test() | Python: scipy.stats.kruskal()",
+    forum_slug: "karsilastirma-testleri",
+    related: ["ANOVA", "Mann-Whitney U", "Friedman"],
+    related_slugs: ["r_anova", "r_mann_whitney", "r_friedman"],
+  },
+  r_tekrarli_anova: {
+    result: true,
+    icon: "bi bi-arrows-angle-contract text-success",
+    title: "Tekrarlı Ölçümler ANOVA",
+    desc: "Aynı kişilerin üç veya daha fazla farklı zaman noktasındaki/koşuldaki ortalamalarını karşılaştırır.",
+    conditions: [
+      "Aynı kişilerden 3+ tekrarlı ölçüm",
+      "Normal dağılım varsayımı",
+      "Küresellik varsayımı (Mauchly testi; ihlalde Greenhouse-Geisser düzeltmesi)",
+    ],
+    software: "SPSS: Analyze → General Linear Model → Repeated Measures | R: ezANOVA() veya aov() | Python: pingouin.rm_anova()",
+    forum_slug: "karsilastirma-testleri",
+    related: ["Friedman", "Bağımlı t-Testi", "Karma ANOVA"],
+    related_slugs: ["r_friedman", "r_bagimli_t", "r_anova"],
+  },
+  r_friedman: {
+    result: true,
+    icon: "bi bi-activity text-warning",
+    title: "Friedman Testi",
+    desc: "Tekrarlı ölçümler ANOVA'nın non-parametrik alternatifi; 3+ tekrarlı ölçümü karşılaştırır.",
+    conditions: [
+      "Aynı kişilerden 3+ tekrarlı ölçüm",
+      "Normal dağılım varsayımı karşılanmıyor",
+      "Sıralı veya sürekli bağımlı değişken",
+    ],
+    software: "SPSS: Analyze → Nonparametric Tests → Legacy Dialogs → K Related Samples | R: friedman.test() | Python: scipy.stats.friedmanchisquare()",
+    forum_slug: "karsilastirma-testleri",
+    related: ["Tekrarlı ANOVA", "Wilcoxon", "Kruskal-Wallis"],
+    related_slugs: ["r_tekrarli_anova", "r_wilcoxon", "r_kruskal"],
+  },
+  r_pearson: {
+    result: true,
+    icon: "bi bi-graph-up-arrow text-primary",
+    title: "Pearson Korelasyon Katsayısı",
+    desc: "İki sürekli değişken arasındaki doğrusal ilişkinin yönünü ve gücünü ölçen parametrik testtir.",
+    conditions: [
+      "Her iki değişken de sürekli/sayısal",
+      "Her iki değişken de normal dağılmalı",
+      "Doğrusal ilişki varsayımı (scatter plot ile kontrol edin)",
+    ],
+    software: "SPSS: Analyze → Correlate → Bivariate | R: cor.test(x, y, method='pearson') | Python: scipy.stats.pearsonr()",
+    forum_slug: "iliski-regresyon",
+    related: ["Spearman Korelasyon", "Basit Regresyon", "Ki-Kare"],
+    related_slugs: ["r_spearman", "r_basit_regresyon", "r_kicekare"],
+  },
+  r_spearman: {
+    result: true,
+    icon: "bi bi-graph-up text-info",
+    title: "Spearman Sıra Korelasyonu",
+    desc: "Normal dağılım gerektirmeyen, sıralı veya sürekli değişkenler için ilişki katsayısı.",
+    conditions: [
+      "Sürekli veya sıralı (Likert, ordinal) değişkenler",
+      "Normal dağılım varsayımı gerekmiyor",
+      "Monoton ilişki (mutlaka doğrusal olması gerekmez)",
+    ],
+    software: "SPSS: Analyze → Correlate → Bivariate → Spearman | R: cor.test(x, y, method='spearman') | Python: scipy.stats.spearmanr()",
+    forum_slug: "iliski-regresyon",
+    related: ["Pearson Korelasyon", "Ki-Kare", "Mann-Whitney U"],
+    related_slugs: ["r_pearson", "r_kicekare", "r_mann_whitney"],
+  },
+  r_kicekare: {
+    result: true,
+    icon: "bi bi-grid-3x3 text-warning",
+    title: "Ki-Kare Bağımsızlık Testi",
+    desc: "İki kategorik değişken arasında istatistiksel bir ilişki olup olmadığını test eder.",
+    conditions: [
+      "Her iki değişken de kategorik (nominal veya ordinal)",
+      "Her hücrede beklenen frekans ≥ 5 olmalı",
+      "Gözlemler birbirinden bağımsız",
+    ],
+    software: "SPSS: Analyze → Descriptive Statistics → Crosstabs → Statistics → Chi-square | R: chisq.test() | Python: scipy.stats.chi2_contingency()",
+    forum_slug: "hipotez-testleri",
+    related: ["Fisher's Exact Test", "Pearson Korelasyon", "Lojistik Regresyon"],
+    related_slugs: ["r_pearson", "r_spearman", "r_lojistik"],
+  },
+  r_basit_regresyon: {
+    result: true,
+    icon: "bi bi-diagram-2 text-success",
+    title: "Basit Doğrusal Regresyon",
+    desc: "Tek bağımsız değişkenle sürekli bir bağımlı değişkeni tahmin eden parametrik analiz.",
+    conditions: [
+      "1 bağımsız + 1 sürekli bağımlı değişken",
+      "Artıklar normal dağılmalı (normallik varsayımı)",
+      "Doğrusal ilişki",
+      "Bağımsız artıklar (Durbin-Watson)",
+    ],
+    software: "SPSS: Analyze → Regression → Linear | R: lm(y ~ x) | Python: sklearn.linear_model.LinearRegression() veya statsmodels.OLS()",
+    forum_slug: "iliski-regresyon",
+    related: ["Çoklu Regresyon", "Pearson Korelasyon", "Lojistik Regresyon"],
+    related_slugs: ["r_coklu_regresyon", "r_pearson", "r_lojistik"],
+  },
+  r_coklu_regresyon: {
+    result: true,
+    icon: "bi bi-diagram-3 text-primary",
+    title: "Çoklu Doğrusal Regresyon",
+    desc: "Birden fazla bağımsız değişkenle sürekli bir bağımlı değişkeni tahmin eden parametrik analiz.",
+    conditions: [
+      "2+ bağımsız + 1 sürekli bağımlı değişken",
+      "Artıkların normal dağılımı",
+      "Çoklu bağlantı sorunu yok (VIF < 10)",
+      "Doğrusallık ve sabit varyans (homoscedasticity)",
+    ],
+    software: "SPSS: Analyze → Regression → Linear | R: lm(y ~ x1 + x2 + ...) | Python: statsmodels.OLS() veya sklearn.LinearRegression()",
+    forum_slug: "iliski-regresyon",
+    related: ["Basit Regresyon", "Lojistik Regresyon", "Panel Veri"],
+    related_slugs: ["r_basit_regresyon", "r_lojistik", "r_coklu_regresyon"],
+  },
+  r_lojistik: {
+    result: true,
+    icon: "bi bi-toggle-on text-danger",
+    title: "Lojistik Regresyon",
+    desc: "İkili (0/1) kategorik bağımlı değişkeni tahmin etmek için kullanılır; bir olayın gerçekleşme olasılığını modeller.",
+    conditions: [
+      "Bağımlı değişken ikili (evet/hayır, 0/1)",
+      "Bağımsız değişkenler sürekli veya kategorik olabilir",
+      "Yeterli örneklem (her olay için en az 10 gözlem önerilir)",
+    ],
+    software: "SPSS: Analyze → Regression → Binary Logistic | R: glm(y ~ x, family=binomial) | Python: sklearn.linear_model.LogisticRegression()",
+    forum_slug: "iliski-regresyon",
+    related: ["Çoklu Regresyon", "Ki-Kare", "Multinomial Lojistik"],
+    related_slugs: ["r_coklu_regresyon", "r_kicekare", "r_multinomial"],
+  },
+  r_multinomial: {
+    result: true,
+    icon: "bi bi-list-task text-info",
+    title: "Multinomial Lojistik Regresyon",
+    desc: "Üç veya daha fazla kategorik değer alan bağımlı değişkeni tahmin eder.",
+    conditions: [
+      "Bağımlı değişken 3+ nominal kategorik değer alıyor",
+      "Bağımsız değişkenler sürekli veya kategorik olabilir",
+      "Kategoriler arasında sıralama yok (sıralı ise Ordinal Regresyon tercih edilir)",
+    ],
+    software: "SPSS: Analyze → Regression → Multinomial Logistic | R: nnet::multinom() | Python: sklearn.linear_model.LogisticRegression(multi_class='multinomial')",
+    forum_slug: "iliski-regresyon",
+    related: ["Lojistik Regresyon", "Ki-Kare", "Diskriminant Analizi"],
+    related_slugs: ["r_lojistik", "r_kicekare", "r_coklu_regresyon"],
+  },
+  r_cronbach: {
+    result: true,
+    icon: "bi bi-check2-square text-success",
+    title: "Cronbach's Alpha (İç Tutarlılık)",
+    desc: "Bir ölçeğin veya anketin maddelerinin birbiriyle ne kadar tutarlı olduğunu ölçen güvenilirlik katsayısı.",
+    conditions: [
+      "Aynı yapıyı ölçen birden fazla madde (soru) var",
+      "Maddeler Likert veya sürekli ölçekte",
+      "α ≥ 0.70 kabul edilebilir, ≥ 0.80 iyi sayılır",
+    ],
+    software: "SPSS: Analyze → Scale → Reliability Analysis | R: psych::alpha() | Python: pingouin.cronbach_alpha()",
+    forum_slug: "olcek-gelistirme",
+    related: ["EFA", "CFA", "Madde Analizi"],
+    related_slugs: ["r_efa", "r_cfa", "r_cronbach"],
+  },
+  r_efa: {
+    result: true,
+    icon: "bi bi-boxes text-warning",
+    title: "Açımlayıcı Faktör Analizi (EFA)",
+    desc: "Çok sayıda değişken arasındaki örüntülerden gizli faktör yapılarını keşfetmek için kullanılır.",
+    conditions: [
+      "Faktör yapısı önceden bilinmiyor veya keşfedilmek isteniyor",
+      "Yeterli örneklem (n ≥ 5 × madde sayısı önerilir; minimum 100)",
+      "KMO > 0.60, Bartlett testi anlamlı olmalı",
+    ],
+    software: "SPSS: Analyze → Dimension Reduction → Factor | R: psych::fa() | Python: factor_analyzer kütüphanesi",
+    forum_slug: "boyut-indirgeme",
+    related: ["CFA", "Cronbach's Alpha", "PCA"],
+    related_slugs: ["r_cfa", "r_cronbach", "r_efa"],
+  },
+  r_cfa: {
+    result: true,
+    icon: "bi bi-diagram-3-fill text-primary",
+    title: "Doğrulayıcı Faktör Analizi (CFA)",
+    desc: "Teorik olarak belirlenen faktör yapısının veriye ne kadar uyduğunu test eden yapısal analiz yöntemi.",
+    conditions: [
+      "Teorik bir model veya faktör yapısı önceden tanımlanmış",
+      "Yeterli örneklem (n ≥ 200 önerilir)",
+      "Uyum indeksleri: CFI > 0.90, RMSEA < 0.08, SRMR < 0.08",
+    ],
+    software: "AMOS (SPSS eklentisi) | R: lavaan::cfa() | Python: semopy kütüphanesi",
+    forum_slug: "yapisal-esitlik",
+    related: ["EFA", "SEM", "Cronbach's Alpha"],
+    related_slugs: ["r_efa", "r_cfa", "r_cronbach"],
+  },
+  r_normallik: {
+    result: true,
+    icon: "bi bi-bell-curve text-info",
+    title: "Normallik Testi (Shapiro-Wilk / K-S)",
+    desc: "Bir veri setinin normal dağılıma uyup uymadığını test eder. Diğer parametrik testler için ön koşuldur.",
+    conditions: [
+      "Shapiro-Wilk: küçük/orta örneklem (n < 50) için önerilir",
+      "Kolmogorov-Smirnov: büyük örneklem için",
+      "p > 0.05 → normal dağılım varsayımı reddedilemiyor",
+    ],
+    software: "SPSS: Analyze → Descriptive Statistics → Explore → Plots → Normality | R: shapiro.test() | Python: scipy.stats.shapiro()",
+    forum_slug: "hipotez-testleri",
+    related: ["Betimsel İstatistik", "Q-Q Plot", "Bağımsız t-Testi"],
+    related_slugs: ["r_tanimsal", "r_bagimsiz_t", "r_mann_whitney"],
+  },
+  r_tanimsal: {
+    result: true,
+    icon: "bi bi-table text-secondary",
+    title: "Betimsel / Tanımlayıcı İstatistikler",
+    desc: "Veriyi özetlemek için ortalama, medyan, standart sapma, min-max, frekans gibi istatistikler hesaplanır.",
+    conditions: [
+      "Temel veri özelliklerini anlamak için kullanılır",
+      "Diğer tüm analizlerden önce yapılması önerilir",
+      "Gruplar arası karşılaştırmalar için kesitli tablolar (crosstab) oluşturulabilir",
+    ],
+    software: "SPSS: Analyze → Descriptive Statistics → Descriptives / Frequencies | R: summary(), psych::describe() | Python: df.describe()",
+    forum_slug: "betimsel-kesifsel",
+    related: ["Normallik Testi", "Frekans Analizi", "Veri Görselleştirme"],
+    related_slugs: ["r_normallik", "r_tanimsal", "r_tanimsal"],
+  },
+};
+
+// ─── DURUM ───────────────────────────────────────────────────────────────────
+let history = [];
+let currentResult = null;
+
+// ─── RENDER ──────────────────────────────────────────────────────────────────
+function renderNode(nodeId) {
+  const node = TREE[nodeId];
+  if (!node) return;
+
+  document.getElementById('question-screen').classList.remove('d-none');
+  document.getElementById('result-screen').classList.add('d-none');
+
+  document.getElementById('q-badge').textContent = node.badge || '';
+  document.getElementById('q-text').textContent = node.question;
+  document.getElementById('q-hint').textContent = node.hint || '';
+
+  const wrap = document.getElementById('options-wrap');
+  wrap.innerHTML = '';
+  node.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'btn btn-outline-secondary text-white text-start py-2 px-3 option-btn';
+    btn.style.cssText = 'background:rgba(255,255,255,0.03);border-color:rgba(255,255,255,0.12);transition:all .15s;';
+    btn.innerHTML = `<span class="me-2 text-primary fw-bold">${String.fromCharCode(65+i)})</span>${opt.text}`;
+    btn.onclick = () => choose(nodeId, opt.next);
+    btn.onmouseenter = () => { btn.style.background = 'rgba(13,110,253,0.15)'; btn.style.borderColor = 'rgba(13,110,253,0.5)'; };
+    btn.onmouseleave = () => { btn.style.background = 'rgba(255,255,255,0.03)'; btn.style.borderColor = 'rgba(255,255,255,0.12)'; };
+    wrap.appendChild(btn);
+  });
+
+  updateProgress();
+}
+
+function choose(fromId, nextId) {
+  history.push(fromId);
+  const node = TREE[nextId];
+  if (!node) return;
+
+  if (node.result) {
+    showResult(nextId);
+  } else {
+    renderNode(nextId);
+  }
+}
+
+function showResult(nodeId) {
+  currentResult = nodeId;
+  const node = TREE[nodeId];
+
+  document.getElementById('question-screen').classList.add('d-none');
+  document.getElementById('result-screen').classList.remove('d-none');
+
+  document.getElementById('r-icon').innerHTML = `<i class="${node.icon}" style="font-size:2.5rem;"></i>`;
+  document.getElementById('r-title').textContent = node.title;
+  document.getElementById('r-desc').textContent = node.desc;
+
+  // Koşullar
+  const condWrap = document.getElementById('r-conditions');
+  condWrap.innerHTML = '<p class="text-white-50 small mb-2 fw-semibold">Kullanım koşulları:</p>' +
+    node.conditions.map(c => `<div class="d-flex gap-2 mb-1"><i class="bi bi-check2-circle text-success mt-1 flex-shrink-0"></i><span class="text-white-50 small">${c}</span></div>`).join('');
+
+  // Yazılım
+  document.getElementById('r-software').innerHTML = `<i class="bi bi-terminal me-2"></i>${node.software}`;
+
+  // Forum butonu
+  const forumBtn = document.getElementById('r-forum-btn');
+  forumBtn.href = `/forum/${node.forum_slug}/`;
+
+  // Related
+  const relWrap = document.getElementById('r-related');
+  relWrap.innerHTML = '';
+  (node.related || []).forEach((name, i) => {
+    const slug = node.related_slugs?.[i];
+    if (!slug) return;
+    const a = document.createElement('button');
+    a.className = 'btn btn-sm btn-outline-secondary text-white-50';
+    a.style.fontSize = '.78rem';
+    a.textContent = name;
+    a.onclick = () => { history = []; showResult(slug); };
+    relWrap.appendChild(a);
+  });
+
+  updateProgress(true);
+}
+
+function updateProgress(done = false) {
+  const depths = {start:1, grup_kac:2, grup2_bagimli:3, grup2_bagimsiz_normal:4, grup2_bagimli_normal:4,
+    grup3_bagimli:3, grup3_bagimsiz_normal:4, grup3_bagimli_normal:4,
+    iliski_tur:2, iliski_normal:3, regresyon_bagimli:2, regresyon_kac:3,
+    olcek_tur:2, tanimsal_tur:2};
+  const MAX = 5;
+  const step = done ? MAX : (history.length + 1);
+  document.getElementById('step-label').textContent = done ? 'Tamamlandı' : `Adım ${step}`;
+  document.getElementById('step-pct').textContent = done ? '✓' : `${Math.round(step/MAX*100)}%`;
+  document.getElementById('step-progress').style.width = (done ? 100 : Math.round(step/MAX*100)) + '%';
+  document.getElementById('step-progress').className = 'progress-bar ' + (done ? 'bg-success' : 'bg-primary');
+}
+
+function resetTree() {
+  history = [];
+  currentResult = null;
+  renderNode('start');
+}
+
+// Paylaşım modalı
+function openShareModal() {
+  if (!currentResult) return;
+  const node = TREE[currentResult];
+  const tmpl = `Merhaba,\n\n${node.title} testini kullanmayı düşünüyorum.\n\nAraştırma tasarımım:\n- [Araştırma konunuzu buraya yazın]\n- [Değişken sayınızı ve türlerini belirtin]\n- [Örneklem büyüklüğünüzü yazın]\n\nBu test için doğru bir seçim mi? Varsayımlarının kontrolünde yardımcı olabilir misiniz?`;
+  document.getElementById('share-template').value = tmpl;
+  const link = document.getElementById('share-forum-link');
+  if (link) link.href = `/forum/${node.forum_slug}/`;
+  new bootstrap.Modal(document.getElementById('shareModal')).show();
+}
+
+// Başlat
+renderNode('start');
+</script>
+
+<style>
+.option-btn:focus { outline: none; box-shadow: 0 0 0 2px rgba(13,110,253,.4); }
+</style>
+{% endblock %}

@@ -2343,3 +2343,8 @@ def send_support_email(request):
     except Exception as e:
         logger.error(f"Beklenmeyen hata: {str(e)}")
         return JsonResponse({'success': False, 'error': 'Beklenmeyen hata'}, status=500)
+
+
+def hangi_test(request):
+    """İnteraktif istatistik testi karar ağacı — SEO sayfası."""
+    return render(request, 'forum/hangi_test.html')
