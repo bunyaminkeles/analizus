@@ -322,7 +322,6 @@
         </div>
 
         <!-- DEĞer CÜMLESİ + 3 YOL -->
-        {% if not user.is_authenticated %}
         <div class="value-paths">
             <a href="{% url 'job_list' %}" class="vp-card vp-blue">
                 <div class="vp-icon"><i class="bi bi-search-heart-fill"></i></div>
@@ -331,43 +330,20 @@
                     <span class="vp-action">Uzman Bul <i class="bi bi-arrow-right ms-1"></i></span>
                 </div>
             </a>
-            <a href="{% url 'register' %}?next={% url 'post_job' %}" class="vp-card vp-purple">
+            <a href="{% if user.is_authenticated %}{% url 'post_job' %}{% else %}{% url 'register' %}?next={% url 'post_job' %}{% endif %}" class="vp-card vp-purple">
                 <div class="vp-icon"><i class="bi bi-briefcase-fill"></i></div>
                 <div class="vp-body">
                     <span class="vp-question">Uzman mısın?</span>
                     <span class="vp-action">Hizmet Ver <i class="bi bi-arrow-right ms-1"></i></span>
                 </div>
             </a>
-            <a href="{% url 'register' %}" class="vp-card vp-green">
+            <a href="{% if user.is_authenticated %}{% url 'home' %}{% else %}{% url 'register' %}{% endif %}" class="vp-card vp-green">
                 <div class="vp-icon"><i class="bi bi-mortarboard-fill"></i></div>
                 <div class="vp-body">
                     <span class="vp-question">Öğrenmek mi istiyorsun?</span>
                     <span class="vp-action">Foruma Katıl <i class="bi bi-arrow-right ms-1"></i></span>
                 </div>
             </a>
-        </div>
-        {% endif %}
-
-        <!-- CATEGORIES ROW -->
-        <div class="categories-row">
-            {% for section in sections %}
-            <a href="{% url 'section_detail' pk=section.pk %}" class="category-card">
-                <div class="category-icon">
-                    {% if "Yazılım" in section.title %}<i class="bi bi-code-slash"></i>
-                    {% elif "Yöntem" in section.title %}<i class="bi bi-diagram-3-fill"></i>
-                    {% elif "Akademi" in section.title %}<i class="bi bi-mortarboard-fill"></i>
-                    {% else %}<i class="bi bi-grid-fill"></i>{% endif %}
-                </div>
-                <div class="category-info">
-                    <h3>{{ section.title }}</h3>
-                    <p>{% if "Yazılım" in section.title %}SPSS, Python, R ve analiz araçları
-                    {% elif "Yöntem" in section.title %}İstatistik yöntemler ve teknikler
-                    {% elif "Akademi" in section.title %}Akademik kariyer ve araştırma
-                    {% else %}Tüm konular ve tartışmalar{% endif %}</p>
-                </div>
-                <div class="category-arrow"><i class="bi bi-chevron-right"></i></div>
-            </a>
-            {% endfor %}
         </div>
 
         <!-- Vitrin Yönlendirme -->
