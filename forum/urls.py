@@ -26,6 +26,7 @@ urlpatterns = [
 
     # Araçlar
     path('hangi-test/', views.hangi_test, name='hangi_test'),
+    path('uzmanlar/', views.uzman_dizini, name='uzman_dizini'),
 
     # Forum
     path('forum/', views.forum_index, name='forum_index'),

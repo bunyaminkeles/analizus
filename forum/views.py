@@ -10,7 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.db import models
 from django.contrib.contenttypes.models import ContentType
-from django.db.models import Count, Sum, Q, Avg
+from django.db.models import Count, Sum, Q, Avg, Subquery, OuterRef
 from django.contrib import messages
 from django.utils import timezone
 from django.http import JsonResponse
@@ -2348,3 +2348,66 @@ def send_support_email(request):
 def hangi_test(request):
     """İnteraktif istatistik testi karar ağacı — SEO sayfası."""
     return render(request, 'forum/hangi_test.html')
+
+
+def uzman_dizini(request):
+    """Uzman Dizini — skill/rozet/puan bazlı filtrelenebilir analist listesi."""
+    skill_slug = request.GET.get('skill', '').strip()
+    sort_by = request.GET.get('sort', 'puan')  # puan | is | aktif
+
+    # Son forum yanıtı (subquery)
+    last_post_subq = Post.objects.filter(
+        user=OuterRef('user'),
+    ).order_by('-created_at').values('topic__title')[:1]
+
+    last_post_url_subq = Post.objects.filter(
+        user=OuterRef('user'),
+    ).order_by('-created_at').values('topic__pk')[:1]
+
+    profiles = (
+        Profile.objects
+        .select_related('user')
+        .prefetch_related('skills', 'badges')
+        .filter(is_public=True)
+        .filter(
+            Q(rank__in=['contributor', 'expert', 'master', 'legend', 'admin'])
+            | Q(skills__isnull=False)
+            | Q(best_answers_count__gt=0)
+        )
+        .distinct()
+        .annotate(
+            completed_jobs=Count(
+                'user__proposals',
+                filter=Q(
+                    user__proposals__status='accepted',
+                    user__proposals__job__status='completed',
+                ),
+                distinct=True,
+            ),
+            avg_rating=Avg(
+                'user__received_reviews__rating',
+                filter=Q(user__received_reviews__is_approved=True),
+            ),
+            last_topic_title=Subquery(last_post_subq),
+            last_topic_pk=Subquery(last_post_url_subq),
+        )
+    )
+
+    if skill_slug:
+        profiles = profiles.filter(skills__slug=skill_slug)
+
+    if sort_by == 'is':
+        profiles = profiles.order_by('-completed_jobs', '-reputation')
+    elif sort_by == 'aktif':
+        profiles = profiles.order_by('-last_seen', '-reputation')
+    else:
+        profiles = profiles.order_by('-reputation', '-completed_jobs')
+
+    skills = Skill.objects.all().order_by('name')
+
+    return render(request, 'forum/uzman_dizini.html', {
+        'profiles': profiles,
+        'skills': skills,
+        'selected_skill': skill_slug,
+        'sort_by': sort_by,
+    })
