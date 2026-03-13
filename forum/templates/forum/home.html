@@ -190,6 +190,53 @@
             </div>
         </div>
 
+        {% if user.is_authenticated %}
+        <!-- PUAN PROGRESS WIDGET -->
+        {% with nb=user_profile.get_next_badge_info %}
+        <div class="widget-card points-progress-widget">
+            <div class="widget-header" style="color:#fbbf24;">
+                <i class="bi bi-trophy-fill"></i>
+                <span>İstatistik Puanın</span>
+            </div>
+            <div class="widget-body px-3 py-3">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                    <span class="text-white fw-bold" style="font-size:1.25rem;">{{ user_profile.reputation }}</span>
+                    <span class="text-white-50 small">puan</span>
+                </div>
+                {% if nb %}
+                <div class="mb-1">
+                    <div class="progress" style="height:8px;background:rgba(255,255,255,0.08);border-radius:4px;">
+                        <div class="progress-bar bg-warning" role="progressbar"
+                             style="width:{{ nb.progress }}%;border-radius:4px;"
+                             aria-valuenow="{{ nb.progress }}" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="text-white-50" style="font-size:0.72rem;">
+                        <i class="bi bi-award-fill text-warning me-1"></i>{{ nb.badge.name }} için
+                        <strong class="text-warning">{{ nb.points_needed }} puan</strong> kaldı
+                    </span>
+                    <span class="text-white-50" style="font-size:0.72rem;">%{{ nb.progress }}</span>
+                </div>
+                {% else %}
+                <p class="text-success small mb-0"><i class="bi bi-check-circle-fill me-1"></i>Tüm rozetleri kazandın!</p>
+                {% endif %}
+                <div class="d-flex gap-2 mt-2 flex-wrap">
+                    <span class="badge bg-dark border border-secondary text-white-50 px-2 py-1" style="font-size:0.7rem;">
+                        <i class="bi bi-chat-text me-1 text-info"></i>{{ user_profile.total_posts }} gönderi
+                    </span>
+                    <span class="badge bg-dark border border-secondary text-white-50 px-2 py-1" style="font-size:0.7rem;">
+                        <i class="bi bi-award me-1 text-warning"></i>{{ user_profile.badges.count }} rozet
+                    </span>
+                    <span class="badge bg-dark border border-secondary text-white-50 px-2 py-1" style="font-size:0.7rem;">
+                        <i class="bi bi-star me-1 text-purple" style="color:#a855f7;"></i>{{ user_profile.total_topics }} konu
+                    </span>
+                </div>
+            </div>
+        </div>
+        {% endwith %}
+        {% endif %}
+
         <!-- QUIZ WIDGET -->
         {% if quiz_question %}
         <div class="quiz-widget" id="quizWidget">
@@ -284,38 +331,38 @@
                 {% endif %}
             </div>
 
-            <!-- Stats Pills -->
-            <div class="stats-pills">
-                <div class="stat-pill">
-                    <div class="pill-icon cyan"><i class="bi bi-chat-square-text-fill"></i></div>
-                    <div class="pill-info">
-                        <span class="pill-label">Konu</span>
-                        <span class="pill-value">{{ total_topics }}</span>
-                    </div>
-                </div>
-                <div class="stat-pill">
-                    <div class="pill-icon purple"><i class="bi bi-file-text-fill"></i></div>
-                    <div class="pill-info">
-                        <span class="pill-label">Gönderi</span>
-                        <span class="pill-value">{{ total_posts }}</span>
-                    </div>
-                </div>
-                <div class="stat-pill">
-                    <div class="pill-icon green"><i class="bi bi-people-fill"></i></div>
-                    <div class="pill-info">
-                        <span class="pill-label">Üye</span>
-                        <span class="pill-value">{{ total_users }}</span>
-                    </div>
-                </div>
-                <div class="stat-pill">
-                    <div class="pill-icon orange"><i class="bi bi-check-circle-fill"></i></div>
-                    <div class="pill-info">
-                        <span class="pill-label">Tamamlanan İş</span>
-                        <span class="pill-value">{{ completed_jobs|default:"0" }}</span>
-                    </div>
+        </div>
+
+        {% if not user.is_authenticated %}
+        <!-- 3 ADIMDA BAŞLA -->
+        <div class="how-it-works-strip">
+            <div class="hiw-step">
+                <div class="hiw-icon"><i class="bi bi-person-plus-fill"></i></div>
+                <div class="hiw-text">
+                    <strong>1. Kayıt Ol</strong>
+                    <span>Ücretsiz hesap aç</span>
                 </div>
             </div>
+            <div class="hiw-arrow"><i class="bi bi-chevron-right"></i></div>
+            <div class="hiw-step">
+                <div class="hiw-icon hiw-purple"><i class="bi bi-chat-square-text-fill"></i></div>
+                <div class="hiw-text">
+                    <strong>2. Soru Sor</strong>
+                    <span>Topluluktan yanıt al</span>
+                </div>
+            </div>
+            <div class="hiw-arrow"><i class="bi bi-chevron-right"></i></div>
+            <div class="hiw-step">
+                <div class="hiw-icon hiw-green"><i class="bi bi-trophy-fill"></i></div>
+                <div class="hiw-text">
+                    <strong>3. Puan Kazan</strong>
+                    <span>Uzman yetkisi edin</span>
+                </div>
+            </div>
+            <div class="hiw-arrow hiw-arrow-wide"><i class="bi bi-chevron-right"></i></div>
+            <a href="{% url 'register' %}" class="hiw-cta">Hemen Başla &rarr;</a>
         </div>
+        {% endif %}
 
         <!-- CATEGORIES ROW -->
         <div class="categories-row">
@@ -719,6 +766,79 @@
 }
 
 
+
+/* ===== HOW IT WORKS STRIP ===== */
+.how-it-works-strip {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 16px 24px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+.hiw-step {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.hiw-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(0, 210, 255, 0.12);
+    border: 1px solid rgba(0, 210, 255, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #00d2ff;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+.hiw-icon.hiw-purple {
+    background: rgba(168,85,247,0.12);
+    border-color: rgba(168,85,247,0.25);
+    color: #a855f7;
+}
+.hiw-icon.hiw-green {
+    background: rgba(34,197,94,0.12);
+    border-color: rgba(34,197,94,0.25);
+    color: #22c55e;
+}
+.hiw-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+}
+.hiw-text strong {
+    color: #e2e8f0;
+    font-size: 0.88rem;
+}
+.hiw-text span {
+    color: #94a3b8;
+    font-size: 0.75rem;
+}
+.hiw-arrow {
+    color: rgba(255,255,255,0.2);
+    font-size: 0.85rem;
+}
+.hiw-arrow-wide { margin-left: 4px; }
+.hiw-cta {
+    background: linear-gradient(135deg, #00d2ff, #7c3aed);
+    color: #fff !important;
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 8px 18px;
+    border-radius: 20px;
+    text-decoration: none;
+    white-space: nowrap;
+    margin-left: 4px;
+    transition: opacity 0.2s;
+}
+.hiw-cta:hover { opacity: 0.85; }
 
 /* ===== CATEGORIES ROW ===== */
 
@@ -1162,6 +1282,12 @@
 
     .categories-row { grid-template-columns: 1fr; }
 
+}
+
+@media (max-width: 640px) {
+    .how-it-works-strip { gap: 8px; padding: 12px 16px; }
+    .hiw-arrow { display: none; }
+    .hiw-step { gap: 8px; }
 }
 
 

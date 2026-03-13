@@ -24,9 +24,26 @@ def feature_required(flag_name):
 
 
 @feature_required('yoktez')
-@login_required
 @ratelimit(key='user', rate='10/h', method='POST', block=True)
 def yoktez_landing(request):
+    if not request.user.is_authenticated:
+        return render(request, 'service_promo.html', {
+            'promo_title': 'YÖK Tez Arama',
+            'promo_icon': 'bi-mortarboard-fill',
+            'promo_color': 'success',
+            'promo_description': 'YÖK Ulusal Tez Merkezi\'nde anahtar kelime, yazar veya danışman adıyla arama yapın. Tez özetlerine, danışman bilgilerine ve konu dizinine erişin.',
+            'promo_features': [
+                {'icon': 'bi-search', 'title': 'Hızlı Arama', 'desc': 'Anahtar kelime, yazar adı veya danışman ile binlerce tez arasında anında arama yapın.'},
+                {'icon': 'bi-file-text-fill', 'title': 'Tez Özeti', 'desc': 'Türkçe ve İngilizce özetlere, konu ve dizin bilgilerine doğrudan erişin.'},
+                {'icon': 'bi-person-lines-fill', 'title': 'Danışman Bilgisi', 'desc': 'Danışman adı, üniversite ve yıl bilgisini tek sayfada görün.'},
+                {'icon': 'bi-graph-up-arrow', 'color': 'warning', 'title': 'Tez Analizi', 'desc': '10+ sonuçta Tez Analizi butonu ile grafik içeren PDF rapor alın.'},
+            ],
+            'promo_steps': [
+                'Arama kutusuna anahtar kelime, konu veya yazar adı girin.',
+                'YÖK Tez Merkezi\'nden sonuçlar saniyeler içinde listelenir.',
+                '10+ sonuçta Tez Analizi ile trend ve dağılım grafikleri alın.',
+            ],
+        })
     user = request.user
     daily_count = YokTezSearchJob.daily_count_for_user(user)
     daily_limit = YokTezSearchJob.get_daily_limit(user)
