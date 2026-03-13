@@ -58,8 +58,8 @@
               {% if cat.topic_count > 0 %}
                 <span><i class="bi bi-chat-square-text"></i> {{ cat.topic_count }} konu</span>
                 <span><i class="bi bi-reply-all"></i> {{ cat.post_count }} yanıt</span>
-                {% if cat.last_post_at %}
-                <span><i class="bi bi-clock"></i> {{ cat.last_post_at|timesince }} önce</span>
+                {% if cat.show_last_activity %}
+                <span class="fc-signal-fresh"><i class="bi bi-clock"></i> {{ cat.last_post_at|timesince }} önce</span>
                 {% endif %}
               {% else %}
                 <span class="fc-empty-signal"><i class="bi bi-stars"></i> Henüz konu yok</span>
@@ -196,11 +196,13 @@
   border-color: rgba(0,210,255,0.25);
 }
 .forum-card-popular {
-  border-color: rgba(251,191,36,0.3) !important;
-  background: rgba(30,41,59,0.85) !important;
+  border-color: rgba(251,191,36,0.4) !important;
+  background: linear-gradient(135deg, rgba(251,191,36,0.07) 0%, rgba(30,41,59,0.85) 60%) !important;
+  box-shadow: 0 0 0 1px rgba(251,191,36,0.15), inset 0 1px 0 rgba(251,191,36,0.1);
 }
 .forum-card-popular:hover {
-  border-color: rgba(251,191,36,0.5) !important;
+  border-color: rgba(251,191,36,0.6) !important;
+  box-shadow: 0 0 12px rgba(251,191,36,0.12), 0 0 0 1px rgba(251,191,36,0.25);
 }
 
 /* Popüler rozet */
@@ -268,6 +270,7 @@
 }
 .fc-signals span i { font-size: .65rem; }
 .fc-empty-signal { color: #334155 !important; }
+.fc-signal-fresh { color: #4ade80 !important; }
 
 /* Ok */
 .fc-arrow {
