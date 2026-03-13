@@ -2355,13 +2355,13 @@ def uzman_dizini(request):
     skill_slug = request.GET.get('skill', '').strip()
     sort_by = request.GET.get('sort', 'puan')  # puan | is | aktif
 
-    # Son forum yanıtı (subquery)
+    # Son forum yanıtı (subquery) — Post.created_by FK'sı, Topic.subject
     last_post_subq = Post.objects.filter(
-        user=OuterRef('user'),
-    ).order_by('-created_at').values('topic__title')[:1]
+        created_by=OuterRef('user'),
+    ).order_by('-created_at').values('topic__subject')[:1]
 
     last_post_url_subq = Post.objects.filter(
-        user=OuterRef('user'),
+        created_by=OuterRef('user'),
     ).order_by('-created_at').values('topic__pk')[:1]
 
     profiles = (
