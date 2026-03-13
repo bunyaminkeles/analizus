@@ -49,8 +49,16 @@
       <div class="mb-3">
         <label class="form-label text-white-50 small">Hedef <span class="text-danger">*</span></label>
         <textarea name="goal" class="form-control bg-dark text-white border-secondary" rows="2"
-                  placeholder="Bu odanın somut hedefi nedir? Dönem sonunda ne elde edilecek?"
+                  placeholder="Örn: Dönem sonuna kadar 3 makale inceleyip SEM modelini uygulamak"
                   minlength="20" maxlength="500" required>{{ post.goal|default:'' }}</textarea>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label text-white-50 small">Oda Kurucusu Olarak Kısa Tanıtım <span class="text-white-50">(opsiyonel)</span></label>
+        <textarea name="creator_bio" class="form-control bg-dark text-white border-secondary" rows="2"
+                  placeholder="Örn: Doktora öğrencisiyim, SEM konusunda 2 yıldır çalışıyorum. Bu odayla hem paylaşmak hem de öğrenmek istiyorum."
+                  maxlength="300">{{ post.creator_bio|default:'' }}</textarea>
+        <div class="form-text text-white-50">Odaya katılmak isteyenler sizi tanıyabilsin.</div>
       </div>
 
       <div class="row g-3">
@@ -62,6 +70,7 @@
             <option value="{{ cat.id }}" {% if post.category == cat.id|stringformat:"s" %}selected{% endif %}>{{ cat.title }}</option>
             {% endfor %}
           </select>
+          <div class="form-text text-white-50">Odayı ilgili forum kategorisiyle ilişkilendirir.</div>
         </div>
         <div class="col-sm-6">
           <label class="form-label text-white-50 small">Bitiş Tarihi <span class="text-danger">*</span></label>
@@ -73,7 +82,8 @@
         <div class="col-sm-6">
           <label class="form-label text-white-50 small">Maksimum Üye</label>
           <input type="number" name="max_members" class="form-control bg-dark text-white border-secondary"
-                 value="{{ post.max_members|default:30 }}" min="5" max="200">
+                 value="{{ post.max_members|default:20 }}" min="5" max="200">
+          <div class="form-text text-white-50">Varsayılan: 20</div>
         </div>
         <div class="col-sm-6 d-flex align-items-end pb-1">
           <div class="form-check">
@@ -91,7 +101,7 @@
         <i class="bi bi-file-earmark-text me-2"></i>Çalışma Odası Şartnamesi
       </h6>
       <div class="mb-3" style="max-height:280px;overflow-y:auto;padding-right:4px;">
-        {{ terms }}
+        {{ terms|safe }}
       </div>
       <div class="border-top border-secondary pt-3">
         <div class="form-check">

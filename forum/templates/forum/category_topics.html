@@ -29,6 +29,25 @@
     </div>
 </div>
 
+{% if active_rooms %}
+<div class="mb-3 p-3 rounded-3" style="background:rgba(234,179,8,.06);border:1px solid rgba(234,179,8,.2);">
+  <div class="d-flex align-items-center justify-content-between mb-2">
+    <span class="text-warning fw-semibold small"><i class="bi bi-door-open-fill me-2"></i>Bu konuda aktif çalışma odaları</span>
+    <a href="{% url 'studyroom_list' %}?kategori={{ category.slug }}" class="text-warning text-decoration-none" style="font-size:.72rem;">Tümünü gör →</a>
+  </div>
+  <div class="d-flex flex-wrap gap-2">
+    {% for room in active_rooms %}
+    <a href="{{ room.get_absolute_url }}" class="text-decoration-none">
+      <span class="badge fw-normal py-2 px-3" style="background:rgba(234,179,8,.12);color:#fde68a;border:1px solid rgba(234,179,8,.25);font-size:.75rem;">
+        {{ room.title|truncatechars:45 }}
+        <span class="ms-2 opacity-75">{{ room.member_cnt }} üye · {{ room.days_remaining }}g kaldı</span>
+      </span>
+    </a>
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
 <div class="card border-0 shadow-lg" style="background: var(--glass-bg); backdrop-filter: blur(10px); border-radius: 20px; overflow: hidden;">
     <div class="card-body p-0">
         <div class="table-responsive">

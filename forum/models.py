@@ -1266,9 +1266,10 @@ class StudyRoom(models.Model):
         related_name='created_rooms', verbose_name="Kurucu"
     )
     ends_at = models.DateTimeField(verbose_name="Bitiş Tarihi")
-    max_members = models.PositiveIntegerField(default=30, verbose_name="Maksimum Üye")
+    max_members = models.PositiveIntegerField(default=20, verbose_name="Maksimum Üye")
     is_public = models.BooleanField(default=True, verbose_name="Herkese Açık")
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending', verbose_name="Durum")
+    creator_bio = models.CharField(max_length=300, blank=True, verbose_name="Kurucu Tanıtımı")
 
     # Şartname onayı
     terms_agreed = models.BooleanField(default=False, verbose_name="Şartname Onaylandı")

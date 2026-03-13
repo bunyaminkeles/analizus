@@ -716,9 +716,16 @@ def section_detail(request, pk):
 # --- KATEGORİ VE KONULAR ---
 def category_topics(request, slug):
     category = get_object_or_404(Category, slug=slug)
-    # Pinned konular en üstte, sonra tarihe göre sırala
     topics = category.topics.prefetch_related('tags').annotate(replies_count=Count('posts')).order_by('-is_pinned', '-created_at')
-    return render(request, 'forum/category_topics.html', {'category': category, 'topics': topics})
+    # Bu kategoriye bağlı aktif çalışma odaları
+    active_rooms = StudyRoom.objects.filter(
+        category=category, status='active'
+    ).annotate(member_cnt=Count('memberships', distinct=True)).order_by('-created_at')[:3]
+    return render(request, 'forum/category_topics.html', {
+        'category': category,
+        'topics': topics,
+        'active_rooms': active_rooms,
+    })
 
 # --- KONU DETAY VE CEVAP YAZMA ---
 def topic_detail(request, pk):
@@ -2491,9 +2498,10 @@ def studyroom_create(request):
         goal = request.POST.get('goal', '').strip()
         category_id = request.POST.get('category', '')
         ends_at_str = request.POST.get('ends_at', '')
-        max_members = int(request.POST.get('max_members', 30))
+        max_members = int(request.POST.get('max_members', 20))
         is_public = request.POST.get('is_public') == '1'
         terms_agreed = request.POST.get('terms_agreed') == '1'
+        creator_bio = request.POST.get('creator_bio', '').strip()[:300]
 
         errors = []
         if len(title) < 10:
@@ -2536,6 +2544,7 @@ def studyroom_create(request):
                 title=title,
                 description=description,
                 goal=goal,
+                creator_bio=creator_bio,
                 category=category,
                 creator=request.user,
                 ends_at=ends_at,
