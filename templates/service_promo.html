@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ promo_title }} - Analizus{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+  {# ─── Hero ─── #}
+  <div class="row justify-content-center mb-5">
+    <div class="col-lg-8 text-center">
+      <div class="mb-3">
+        <span class="display-5 text-{{ promo_color }}"><i class="bi {{ promo_icon }}"></i></span>
+      </div>
+      <h1 class="fw-bold text-white mb-3">{{ promo_title }}</h1>
+      <p class="lead text-white-50 mb-4">{{ promo_description }}</p>
+
+      <div class="d-flex gap-3 justify-content-center flex-wrap">
+        <a href="{% url 'register' %}?next={{ request.path }}"
+           class="btn btn-{{ promo_color }} btn-lg fw-bold px-4">
+          <i class="bi bi-person-plus-fill me-2"></i>Ücretsiz Dene
+        </a>
+        <a href="{% url 'login' %}?next={{ request.path }}"
+           class="btn btn-outline-light btn-lg px-4">
+          <i class="bi bi-box-arrow-in-right me-2"></i>Giriş Yap
+        </a>
+      </div>
+    </div>
+  </div>
+
+  {# ─── Özellikler ─── #}
+  <div class="row g-3 justify-content-center mb-5">
+    {% for feat in promo_features %}
+    <div class="col-sm-6 col-lg-3">
+      <div class="card h-100 border-secondary text-center p-3" style="background-color:#1a1a2e;">
+        <div class="mb-2">
+          <span class="fs-2 text-{{ feat.color|default:promo_color }}">
+            <i class="bi {{ feat.icon }}"></i>
+          </span>
+        </div>
+        <h6 class="text-white fw-semibold mb-1">{{ feat.title }}</h6>
+        <p class="text-white-50 small mb-0">{{ feat.desc }}</p>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  {# ─── Nasıl çalışır ─── #}
+  <div class="row justify-content-center mb-5">
+    <div class="col-lg-8">
+      <div class="card border-secondary" style="background-color:#16213e;">
+        <div class="card-body p-4">
+          <h5 class="text-white fw-bold mb-4 text-center">Nasıl Çalışır?</h5>
+          <div class="row g-3">
+            {% for step in promo_steps %}
+            <div class="col-md-4 text-center">
+              <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-2"
+                   style="width:48px;height:48px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);">
+                <span class="text-{{ promo_color }} fw-bold">{{ forloop.counter }}</span>
+              </div>
+              <p class="text-white-50 small mb-0">{{ step }}</p>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {# ─── Alt CTA ─── #}
+  <div class="row justify-content-center">
+    <div class="col-lg-6 text-center">
+      <p class="text-white-50 small mb-3">Ücretsiz hesap açın, hemen kullanmaya başlayın.</p>
+      <a href="{% url 'register' %}?next={{ request.path }}"
+         class="btn btn-{{ promo_color }} fw-bold px-5">
+        <i class="bi bi-rocket-takeoff-fill me-2"></i>Başla — Ücretsiz
+      </a>
+    </div>
+  </div>
+
+</div>
+{% endblock %}

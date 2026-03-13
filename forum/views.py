@@ -57,6 +57,45 @@ def ratelimit_error(request, exception):
     return render(request, 'forum/ratelimit_error.html', status=429)
 
 
+# --- FORUM BÖLÜMLER ---
+def forum_index(request):
+    from django.db.models import Max, OuterRef, Subquery
+    from .models import Post
+
+    # Her kategori için konu sayısı, toplam gönderi sayısı, son gönderi zamanı
+    last_post_time = Post.objects.filter(
+        topic__category=OuterRef('pk')
+    ).order_by('-created_at').values('created_at')[:1]
+
+    categories_qs = Category.objects.annotate(
+        topic_count=Count('topics', distinct=True),
+        post_count=Count('topics__posts', distinct=True),
+        last_post_at=Subquery(last_post_time),
+    ).select_related('section')
+
+    # En aktif 5 kategoriyi popüler say
+    top_slugs = set(
+        categories_qs.order_by('-topic_count').values_list('slug', flat=True)[:5]
+    )
+
+    # Section'lara kategorileri bağla
+    now = timezone.now()
+    cutoff = now - timedelta(days=30)
+    sections = Section.objects.all().order_by('order')
+    sections_data = []
+    for section in sections:
+        cats = [c for c in categories_qs if c.section_id == section.pk]
+        for c in cats:
+            c.is_popular = c.slug in top_slugs
+            # Son aktivite sadece 30 gün içindeyse göster
+            c.show_last_activity = (
+                c.last_post_at is not None and c.last_post_at >= cutoff
+            )
+        sections_data.append({'section': section, 'categories': cats})
+
+    return render(request, 'forum/forum_index.html', {'sections_data': sections_data})
+
+
 # --- ANA SAYFA ---
 def home(request):
     sections = Section.objects.all().order_by('order')

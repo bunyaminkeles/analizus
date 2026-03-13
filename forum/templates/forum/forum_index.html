@@ -1,0 +1,337 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Forum - Analizus{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+  {# ─── Başlık + Mini Arama ─── #}
+  <div class="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-4">
+    <h2 class="text-white fw-bold mb-0">Forum</h2>
+    <div class="forum-search-wrap">
+      <i class="bi bi-search forum-search-icon"></i>
+      <input id="forumSearch" type="text" class="forum-search-input"
+             placeholder="Kategori ara... (ör: SPSS, regresyon, tez)">
+    </div>
+  </div>
+
+  {# ─── Anchor Navigasyon ─── #}
+  <div class="forum-anchors mb-4" id="forumAnchors">
+    {% for item in sections_data %}
+    <a href="#section-{{ item.section.pk }}" class="forum-anchor-link">
+      {{ item.section.title }}
+    </a>
+    {% endfor %}
+  </div>
+
+  {# ─── Section + Kategoriler ─── #}
+  {% for item in sections_data %}
+  <div class="mb-5 forum-section-block" id="section-{{ item.section.pk }}">
+    <h5 class="forum-section-title">{{ item.section.title }}</h5>
+    <div class="forum-grid" id="grid-{{ item.section.pk }}">
+
+      {% for cat in item.categories %}
+      <div class="forum-card-wrap" data-title="{{ cat.title|lower }} {{ cat.description|lower }}">
+        <a href="{% url 'category_topics' slug=cat.slug %}"
+           class="forum-card {% if cat.is_popular %}forum-card-popular{% endif %}">
+
+          {# Popüler rozet #}
+          {% if cat.is_popular %}
+          <span class="popular-badge"><i class="bi bi-fire me-1"></i>Popüler</span>
+          {% endif %}
+
+          {# İkon #}
+          <div class="fc-icon">
+            <i class="{{ cat.icon_class }}"></i>
+          </div>
+
+          {# İçerik #}
+          <div class="fc-body">
+            <div class="fc-title">{{ cat.title }}</div>
+            {% if cat.description %}
+            <div class="fc-desc">{{ cat.description }}</div>
+            {% endif %}
+
+            {# Canlılık sinyalleri #}
+            <div class="fc-signals">
+              {% if cat.topic_count > 0 %}
+                <span><i class="bi bi-chat-square-text"></i> {{ cat.topic_count }} konu</span>
+                <span><i class="bi bi-reply-all"></i> {{ cat.post_count }} yanıt</span>
+                {% if cat.show_last_activity %}
+                <span class="fc-signal-fresh"><i class="bi bi-clock"></i> {{ cat.last_post_at|timesince }} önce</span>
+                {% endif %}
+              {% else %}
+                <span class="fc-empty-signal"><i class="bi bi-stars"></i> Henüz konu yok</span>
+              {% endif %}
+            </div>
+          </div>
+
+          <i class="bi bi-chevron-right fc-arrow"></i>
+        </a>
+
+        {# Boş kategori CTA #}
+        {% if cat.topic_count == 0 %}
+        <a href="{% if user.is_authenticated %}{% url 'new_topic' slug=cat.slug %}{% else %}{% url 'register' %}{% endif %}"
+           class="fc-first-cta">
+          <i class="bi bi-plus-circle me-1"></i>İlk soruyu sen sor
+        </a>
+        {% else %}
+        {# + Soru Sor shortcut #}
+        <a href="{% if user.is_authenticated %}{% url 'new_topic' slug=cat.slug %}{% else %}{% url 'register' %}{% endif %}"
+           class="fc-ask-btn">
+          <i class="bi bi-plus"></i> Soru Sor
+        </a>
+        {% endif %}
+      </div>
+      {% endfor %}
+
+    </div>
+  </div>
+  {% endfor %}
+
+  {# Arama: sonuç yok mesajı #}
+  <div id="noResults" class="text-center text-white-50 py-5 d-none">
+    <i class="bi bi-search fs-2 mb-2 d-block"></i>
+    Aramanızla eşleşen kategori bulunamadı.
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<style>
+/* ─── Search ─── */
+.forum-search-wrap {
+  position: relative;
+}
+.forum-search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #64748b;
+  font-size: .85rem;
+}
+.forum-search-input {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  color: #e2e8f0;
+  padding: 8px 14px 8px 34px;
+  font-size: .85rem;
+  width: 280px;
+  outline: none;
+  transition: border-color .15s;
+}
+.forum-search-input:focus { border-color: rgba(0,210,255,0.4); }
+.forum-search-input::placeholder { color: #475569; }
+
+/* ─── Anchors ─── */
+.forum-anchors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.forum-anchor-link {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.09);
+  border-radius: 20px;
+  color: #94a3b8;
+  font-size: .78rem;
+  padding: 5px 14px;
+  text-decoration: none;
+  transition: background .15s, color .15s;
+}
+.forum-anchor-link:hover {
+  background: rgba(0,210,255,0.1);
+  border-color: rgba(0,210,255,0.25);
+  color: #38bdf8;
+}
+
+/* ─── Section title ─── */
+.forum-section-title {
+  color: #64748b;
+  font-size: .72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  margin-bottom: 12px;
+  padding-left: 2px;
+}
+
+/* ─── Grid ─── */
+.forum-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+@media (max-width: 992px) { .forum-grid { grid-template-columns: repeat(2,1fr); } }
+@media (max-width: 576px) { .forum-grid { grid-template-columns: 1fr; } }
+
+/* ─── Card wrap ─── */
+.forum-card-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ─── Card ─── */
+.forum-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 10px 10px 0 0;
+  text-decoration: none;
+  background: rgba(30,41,59,0.7);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-bottom: none;
+  position: relative;
+  flex: 1;
+  transition: border-color .15s, background .15s;
+}
+.forum-card:hover {
+  background: rgba(30,41,59,0.9);
+  border-color: rgba(0,210,255,0.25);
+}
+.forum-card-popular {
+  border-color: rgba(251,191,36,0.4) !important;
+  background: linear-gradient(135deg, rgba(251,191,36,0.07) 0%, rgba(30,41,59,0.85) 60%) !important;
+  box-shadow: 0 0 0 1px rgba(251,191,36,0.15), inset 0 1px 0 rgba(251,191,36,0.1);
+}
+.forum-card-popular:hover {
+  border-color: rgba(251,191,36,0.6) !important;
+  box-shadow: 0 0 12px rgba(251,191,36,0.12), 0 0 0 1px rgba(251,191,36,0.25);
+}
+
+/* Popüler rozet */
+.popular-badge {
+  position: absolute;
+  top: -1px;
+  right: 10px;
+  background: rgba(251,191,36,0.15);
+  border: 1px solid rgba(251,191,36,0.35);
+  border-top: none;
+  color: #fbbf24;
+  font-size: .65rem;
+  font-weight: 700;
+  padding: 2px 8px 3px;
+  border-radius: 0 0 6px 6px;
+}
+
+/* İkon */
+.fc-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: rgba(0,210,255,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 1rem;
+  color: #38bdf8;
+}
+.forum-card-popular .fc-icon {
+  background: rgba(251,191,36,0.1);
+  color: #fbbf24;
+}
+
+/* Body */
+.fc-body { flex: 1; overflow: hidden; }
+.fc-title {
+  color: #e2e8f0;
+  font-size: .88rem;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+.fc-desc {
+  color: #64748b;
+  font-size: .72rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 6px;
+}
+
+/* Canlılık sinyalleri */
+.fc-signals {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.fc-signals span {
+  color: #475569;
+  font-size: .68rem;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+.fc-signals span i { font-size: .65rem; }
+.fc-empty-signal { color: #334155 !important; }
+.fc-signal-fresh { color: #4ade80 !important; }
+
+/* Ok */
+.fc-arrow {
+  color: rgba(255,255,255,0.15);
+  font-size: .8rem;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* ─── Alt butonlar ─── */
+.fc-ask-btn, .fc-first-cta {
+  display: block;
+  text-align: center;
+  font-size: .72rem;
+  font-weight: 600;
+  padding: 5px 10px;
+  border-radius: 0 0 10px 10px;
+  text-decoration: none;
+  transition: background .15s;
+}
+.fc-ask-btn {
+  background: rgba(0,210,255,0.07);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-top: 1px solid rgba(0,210,255,0.1);
+  color: #38bdf8;
+}
+.fc-ask-btn:hover { background: rgba(0,210,255,0.14); color: #7dd3fc; }
+.fc-first-cta {
+  background: rgba(99,102,241,0.1);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-top: 1px dashed rgba(99,102,241,0.3);
+  color: #818cf8;
+}
+.fc-first-cta:hover { background: rgba(99,102,241,0.18); color: #a5b4fc; }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const input = document.getElementById('forumSearch');
+  const noResults = document.getElementById('noResults');
+
+  input.addEventListener('input', function () {
+    const q = this.value.trim().toLowerCase();
+    let visible = 0;
+
+    document.querySelectorAll('.forum-card-wrap').forEach(wrap => {
+      const text = wrap.dataset.title || '';
+      const show = !q || text.includes(q);
+      wrap.style.display = show ? '' : 'none';
+      if (show) visible++;
+    });
+
+    // Section başlıklarını ve grid'leri gizle/göster
+    document.querySelectorAll('.forum-section-block').forEach(block => {
+      const anyVisible = [...block.querySelectorAll('.forum-card-wrap')]
+        .some(w => w.style.display !== 'none');
+      block.style.display = anyVisible ? '' : 'none';
+    });
+
+    noResults.classList.toggle('d-none', visible > 0 || !q);
+  });
+});
+</script>
+{% endblock %}
