@@ -34,10 +34,28 @@ def _check_email_verified(request):
     return True
 
 
-@login_required
 @ratelimit(key='user', rate='10/h', method='POST', block=True)
 def oaipmh_landing(request):
     _feature_check()
+
+    if not request.user.is_authenticated:
+        return render(request, 'service_promo.html', {
+            'promo_title': 'Üniversite Tez Arşivi',
+            'promo_icon': 'bi-mortarboard',
+            'promo_color': 'warning',
+            'promo_description': '19 Türk üniversitesinin açık erişim arşivinde anahtar kelimeyle arama yapın veya bir üniversitenin tüm tezlerini tarayın. ODTÜ, İTÜ, Sabancı dahil 19 üniversite.',
+            'promo_features': [
+                {'icon': 'bi-building-fill', 'color': 'warning', 'title': '19 Üniversite', 'desc': 'ODTÜ, İTÜ, Sabancı, Dokuz Eylül, Akdeniz ve daha fazlası.'},
+                {'icon': 'bi-unlock-fill', 'color': 'success', 'title': 'Açık Erişim', 'desc': 'OAI-PMH protokolü ile üniversitelerin kendi açık arşivlerinden doğrudan veri.'},
+                {'icon': 'bi-search', 'title': 'İki Mod', 'desc': 'Anahtar kelime araması veya üniversite bazlı toplu tarama seçenekleri.'},
+                {'icon': 'bi-download', 'title': 'Sonuçları İndir', 'desc': 'Arama sonuçlarını TXT olarak indirin, istediğiniz araca aktarın.'},
+            ],
+            'promo_steps': [
+                'Anahtar kelime girin veya taramak istediğiniz üniversiteyi seçin.',
+                'Sistem üniversitelerin açık arşivlerinden tezleri toplar.',
+                'Sonuçları indirin veya detaylı inceleyin.',
+            ],
+        })
 
     if not _check_email_verified(request):
         return render(request, 'oaipmh/landing.html', {

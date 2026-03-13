@@ -28,10 +28,29 @@ def feature_required(flag_name):
     return decorator
 
 
-@login_required
 @feature_required('bibliometrics')
 @ratelimit(key='user', rate='10/h', method='POST', block=True)
 def bibliometrics_landing(request):
+    if not request.user.is_authenticated:
+        return render(request, 'service_promo.html', {
+            'promo_title': 'Bibliometrik Analiz',
+            'promo_icon': 'bi-bar-chart-line-fill',
+            'promo_color': 'info',
+            'promo_description': 'WoS, Scopus veya BibTeX dosyanızı yükleyin — yıllara göre yayın trendi, en çok atıf alan yazarlar, işbirliği ağı ve daha fazlası için 10 grafik içeren PDF rapor alın.',
+            'promo_features': [
+                {'icon': 'bi-graph-up-arrow', 'title': 'Yayın Trendi', 'desc': 'Yıllar içinde yayın sayısı ve büyüme oranını grafikle görün.'},
+                {'icon': 'bi-people-fill', 'title': 'Yazar Analizi', 'desc': 'En verimli yazarlar, işbirliği ağı ve Lotka kanunu dağılımı.'},
+                {'icon': 'bi-cloud-fill', 'title': 'Kelime Bulutu', 'desc': 'Alanınızdaki öne çıkan anahtar kelimeleri görselleştirin.'},
+                {'icon': 'bi-award-fill', 'title': 'Atıf & H-index', 'desc': 'En çok atıf alan yayınlar, yıllık atıf trendi ve h-index hesabı.'},
+                {'icon': 'bi-building', 'title': 'Kurum & Ülke', 'desc': 'Araştırma üretiminde öne çıkan kurumlar ve ülkeler.'},
+                {'icon': 'bi-filetype-pdf', 'title': 'PDF Rapor', 'desc': 'Tüm analizler tek bir profesyonel PDF raporunda birleştirilir.'},
+            ],
+            'promo_steps': [
+                'WoS, Scopus, BibTeX veya OpenAlex dosyanızı yükleyin.',
+                'Sistem otomatik olarak 10 farklı analizi çalıştırır.',
+                'Demo rapor (3 grafik) ücretsiz emailinize gelir.',
+            ],
+        })
     user = request.user
 
     # Email doğrulama kontrolü

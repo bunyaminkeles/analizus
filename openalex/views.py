@@ -31,10 +31,27 @@ IBAN_INFO = {
 
 
 @feature_required('openalex')
-@login_required
 @ratelimit(key='user', rate='10/h', method='POST', block=True)
 def openalex_landing(request):
     """Landing page: gelişmiş arama formu + demo arama."""
+    if not request.user.is_authenticated:
+        return render(request, 'service_promo.html', {
+            'promo_title': 'OpenAlex Gelişmiş Yayın Tarama',
+            'promo_icon': 'bi-search',
+            'promo_color': 'primary',
+            'promo_description': '240 milyondan fazla akademik yayın arasında başlık, özet, yazar, kurum gibi alanlarda gelişmiş arama yapın. Sonuçları ücretsiz indirin, 100+ sonuçta bibliometrik analize gönderin.',
+            'promo_features': [
+                {'icon': 'bi-database-fill', 'title': '240M+ Kayıt', 'desc': 'OpenAlex\'in tüm akademik veri tabanına erişin; makale, kitap, konferans bildirisi ve daha fazlası.'},
+                {'icon': 'bi-sliders', 'title': 'Gelişmiş Arama', 'desc': 'Başlık, özet, yazar, dergi, kurum, yıl ve DOI gibi 9 farklı alanda AND/OR sorguları oluşturun.'},
+                {'icon': 'bi-download', 'title': 'Ücretsiz İndirme', 'desc': 'Arama sonuçlarınızı TXT olarak ücretsiz indirin ve referans yöneticinize aktarın.'},
+                {'icon': 'bi-bar-chart-line-fill', 'title': 'Bibliometrik Analiz', 'desc': '100+ sonuçta tek tıkla bibliometrik analize gönderin, PDF rapor alın.'},
+            ],
+            'promo_steps': [
+                'Arama kriterlerinizi seçin: başlık, yazar, kurum, yıl veya DOI.',
+                'Sistem OpenAlex\'ten anında sonuçları çeker ve listeler.',
+                '100+ sonuçta bibliometrik analiz başlatın veya dosyayı indirin.',
+            ],
+        })
     form = AlexSearchForm()
     user = request.user
 
