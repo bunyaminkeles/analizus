@@ -79,11 +79,11 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
 
     styles = getSampleStyleSheet()
     title_style = ParagraphStyle('Title2', parent=styles['Heading1'], fontSize=16, spaceAfter=6,
-                                 fontName='DejaVuSans-Bold')
+                                 fontName='DejaVuSans')
     h2_style = ParagraphStyle('H2', parent=styles['Heading2'], fontSize=12, spaceAfter=4,
-                              fontName='DejaVuSans-Bold')
+                              fontName='DejaVuSans')
     h3_style = ParagraphStyle('H3', parent=styles['Heading3'], fontSize=10, spaceAfter=3,
-                              fontName='DejaVuSans-Bold')
+                              fontName='DejaVuSans')
     normal = ParagraphStyle('Normal2', parent=styles['Normal'], fontName='DejaVuSans')
 
     story = []
