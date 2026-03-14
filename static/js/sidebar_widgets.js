@@ -28,7 +28,10 @@ async function loadLatestProposals() {
             html += '</ul>';
             container.innerHTML = html;
         } else {
-            container.innerHTML = '<div class="p-3 text-muted">Henüz teklif yok.</div>';
+            // Giriş yapılmamış veya kendi ilanına teklif gelmemişse widget'ı gizle
+            const widgetCard = container.closest('.card, .widget-box, [class*="widget"]');
+            if (widgetCard) widgetCard.style.display = 'none';
+            else container.style.display = 'none';
         }
     } catch (error) {
         console.error('Proposals error:', error);
