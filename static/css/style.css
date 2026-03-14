@@ -1,3 +1,6 @@
+/* Mobil taşma önleme */
+html, body { overflow-x: hidden; max-width: 100%; }
+
 /* -----------------------------------------------------------
    PROJECT 2050: CYBER-ACADEMIC THEME (FINAL STABLE)
    ----------------------------------------------------------- */
