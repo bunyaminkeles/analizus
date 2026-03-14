@@ -213,7 +213,7 @@ JAZZMIN_SETTINGS = {
         "forum.Category": "fas fa-layer-group",
         "forum.Post": "fas fa-comment-dots",
     },
-    "show_ui_builder": False,
+    "show_ui_builder": True,
     "custom_css": "css/admin_theme_v2.css",
     "custom_js": "js/admin_custom_v2.js",
 }
