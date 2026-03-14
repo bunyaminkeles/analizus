@@ -69,6 +69,8 @@ def build_pdf(result: dict, filename: str) -> bytes:
     from reportlab.platypus import (
         SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image,
     )
+    from .pdf_fonts import register_fonts
+    register_fonts()
 
     buf = io.BytesIO()
     doc = SimpleDocTemplate(buf, pagesize=A4,
@@ -76,10 +78,13 @@ def build_pdf(result: dict, filename: str) -> bytes:
                             topMargin=2*cm, bottomMargin=2*cm)
 
     styles = getSampleStyleSheet()
-    title_style = ParagraphStyle('Title2', parent=styles['Heading1'], fontSize=16, spaceAfter=6)
-    h2_style = ParagraphStyle('H2', parent=styles['Heading2'], fontSize=12, spaceAfter=4)
-    h3_style = ParagraphStyle('H3', parent=styles['Heading3'], fontSize=10, spaceAfter=3)
-    normal = styles['Normal']
+    title_style = ParagraphStyle('Title2', parent=styles['Heading1'], fontSize=16, spaceAfter=6,
+                                 fontName='DejaVuSans-Bold')
+    h2_style = ParagraphStyle('H2', parent=styles['Heading2'], fontSize=12, spaceAfter=4,
+                              fontName='DejaVuSans-Bold')
+    h3_style = ParagraphStyle('H3', parent=styles['Heading3'], fontSize=10, spaceAfter=3,
+                              fontName='DejaVuSans-Bold')
+    normal = ParagraphStyle('Normal2', parent=styles['Normal'], fontName='DejaVuSans')
 
     story = []
     story.append(Paragraph('Betimleyici İstatistik Raporu', title_style))
@@ -148,8 +153,8 @@ def _base_table_style():
     return TableStyle([
         ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#1e3a5f')),
         ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
-        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-        ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+        ('FONTNAME', (0, 0), (-1, 0), 'DejaVuSans-Bold'),
+        ('FONTNAME', (0, 1), (-1, -1), 'DejaVuSans'),
         ('FONTSIZE', (0, 0), (-1, -1), 8),
         ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.whitesmoke, colors.white]),
         ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),

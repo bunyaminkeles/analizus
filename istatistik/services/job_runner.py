@@ -51,7 +51,7 @@ def _execute_job(job_id: str):
             return
 
         result_data = analyze(df)
-        pdf_bytes = build_pdf(result_data, job.original_filename)
+        pdf_bytes = build_pdf(result_data, job.original_filename, df)
         pdf_url = _upload_pdf(pdf_bytes, job)
         job.mark_completed(result_data=result_data, pdf_url=pdf_url)
         logger.info(f'[istatistik] Tamamlandı: {job.tool}/{job_id}')

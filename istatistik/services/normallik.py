@@ -73,7 +73,7 @@ def analyze(df) -> dict:
     return {'variables': results, 'overall_recommendation': overall}
 
 
-def build_pdf(result: dict, filename: str) -> bytes:
+def build_pdf(result: dict, filename: str, df=None) -> bytes:
     import matplotlib
     matplotlib.use('Agg')
     import matplotlib.pyplot as plt
@@ -85,6 +85,11 @@ def build_pdf(result: dict, filename: str) -> bytes:
     from reportlab.platypus import (
         SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image,
     )
+    from reportlab.pdfbase import pdfmetrics
+    from reportlab.pdfbase.ttfonts import TTFont
+
+    # Türkçe karakter desteği için DejaVu fontlarını kaydet
+    _register_fonts()
 
     buf = io.BytesIO()
     doc = SimpleDocTemplate(buf, pagesize=A4,
@@ -92,9 +97,11 @@ def build_pdf(result: dict, filename: str) -> bytes:
                             topMargin=2*cm, bottomMargin=2*cm)
 
     styles = getSampleStyleSheet()
-    title_style = ParagraphStyle('Title2', parent=styles['Heading1'], fontSize=16, spaceAfter=6)
-    h2_style = ParagraphStyle('H2', parent=styles['Heading2'], fontSize=12, spaceAfter=4)
-    normal = styles['Normal']
+    title_style = ParagraphStyle('Title2', parent=styles['Heading1'], fontSize=16, spaceAfter=6,
+                                 fontName='DejaVuSans-Bold')
+    h2_style = ParagraphStyle('H2', parent=styles['Heading2'], fontSize=12, spaceAfter=4,
+                              fontName='DejaVuSans-Bold')
+    normal = ParagraphStyle('Normal2', parent=styles['Normal'], fontName='DejaVuSans')
 
     story = []
     story.append(Paragraph('Normallik Testi Raporu', title_style))
@@ -125,8 +132,8 @@ def build_pdf(result: dict, filename: str) -> bytes:
     tbl.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#1e3a5f')),
         ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
-        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-        ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+        ('FONTNAME', (0, 0), (-1, 0), 'DejaVuSans-Bold'),
+        ('FONTNAME', (0, 1), (-1, -1), 'DejaVuSans'),
         ('FONTSIZE', (0, 0), (-1, -1), 8),
         ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.whitesmoke, colors.white]),
         ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
@@ -144,8 +151,12 @@ def build_pdf(result: dict, filename: str) -> bytes:
     if vars_for_plot:
         story.append(Spacer(1, 0.6*cm))
         story.append(Paragraph('Q-Q Grafikleri', h2_style))
+        df_num = df.select_dtypes(include=[np.number]) if df is not None else None
         for r in vars_for_plot:
-            img_buf = _qq_plot(r)
+            col_data = None
+            if df_num is not None and r['variable'] in df_num.columns:
+                col_data = df_num[r['variable']].dropna().values
+            img_buf = _qq_plot(r, col_data)
             img = Image(img_buf, width=14*cm, height=7*cm)
             story.append(img)
             story.append(Spacer(1, 0.3*cm))
@@ -154,7 +165,12 @@ def build_pdf(result: dict, filename: str) -> bytes:
     return buf.getvalue()
 
 
-def _qq_plot(r: dict) -> io.BytesIO:
+def _register_fonts():
+    from .pdf_fonts import register_fonts
+    register_fonts()
+
+
+def _qq_plot(r: dict, data=None) -> io.BytesIO:
     import matplotlib
     matplotlib.use('Agg')
     import matplotlib.pyplot as plt
@@ -168,18 +184,45 @@ def _qq_plot(r: dict) -> io.BytesIO:
     ax1.set_title('Dağılım Histogramı')
     ax1.set_xlabel('Değer')
     ax1.set_ylabel('Frekans')
+    if data is not None and len(data) > 0:
+        ax1.hist(data, bins='auto', color='steelblue', edgecolor='white', alpha=0.8)
+        # Normal eğrisi üst üste
+        import numpy as _np
+        x = _np.linspace(data.min(), data.max(), 200)
+        pdf = sp_stats.norm.pdf(x, loc=data.mean(), scale=data.std(ddof=1))
+        ax1_twin = ax1.twinx()
+        ax1_twin.plot(x, pdf, 'r-', linewidth=1.5, label='Normal')
+        ax1_twin.set_ylabel('Yoğunluk', color='red', fontsize=8)
+        ax1_twin.tick_params(axis='y', labelcolor='red', labelsize=7)
+    else:
+        ax1.text(0.5, 0.5, 'Ham veri mevcut değil', ha='center', va='center',
+                 transform=ax1.transAxes, color='grey')
 
-    # Q-Q plot — teorik değerleri yeniden hesapla
-    # Sadece özet istatistikler var, ham veri yok; placeholder çiz
+    # Q-Q plot
     ax2 = axes[1]
     ax2.set_title('Q-Q Plot (Teorik Normal)')
-    color = '#28a745' if r['is_normal'] else '#dc3545'
-    ax2.text(0.5, 0.5,
-             f"W = {r['shapiro_stat']}\np = {r['shapiro_p']}\n{r['recommendation']}",
-             ha='center', va='center', transform=ax2.transAxes,
-             fontsize=12, color=color,
-             bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5))
-    ax2.axis('off')
+    if data is not None and len(data) > 0:
+        (osm, osr), (slope, intercept, _) = sp_stats.probplot(data, dist='norm')
+        ax2.scatter(osm, osr, s=15, color='steelblue', alpha=0.7)
+        import numpy as _np
+        line_x = _np.array([osm[0], osm[-1]])
+        ax2.plot(line_x, slope * line_x + intercept, 'r-', linewidth=1.5)
+        ax2.set_xlabel('Teorik Kantiller')
+        ax2.set_ylabel('Örnek Kantiller')
+        color = '#28a745' if r['is_normal'] else '#dc3545'
+        ax2.text(0.05, 0.95,
+                 f"W={r['shapiro_stat']}, p={r['shapiro_p']}",
+                 ha='left', va='top', transform=ax2.transAxes,
+                 fontsize=9, color=color,
+                 bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.7))
+    else:
+        color = '#28a745' if r['is_normal'] else '#dc3545'
+        ax2.text(0.5, 0.5,
+                 f"W = {r['shapiro_stat']}\np = {r['shapiro_p']}\n{r['recommendation']}",
+                 ha='center', va='center', transform=ax2.transAxes,
+                 fontsize=12, color=color,
+                 bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5))
+        ax2.axis('off')
 
     plt.tight_layout()
     buf = io.BytesIO()
