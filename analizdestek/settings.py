@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     'bibliometrics',
     'tezanaliz',
     'makaleanaliz',
+    'istatistik',
     'crispy_forms',
     'crispy_bootstrap5',
     'storages',  # AWS S3 için

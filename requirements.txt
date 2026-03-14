@@ -33,6 +33,8 @@ bibtexparser
 scikit-learn
 nltk
 zeyrek
+scipy
+openpyxl
 
 # --- ARAÇLAR & GÜVENLİK ---
 python-dotenv

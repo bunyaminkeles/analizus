@@ -1,0 +1,40 @@
+{% extends "istatistik/tool_base.html" %}
+
+{% block title %}Güvenilirlik Analizi (Cronbach Alpha) - Analizus{% endblock %}
+
+{% block status_url %}{% url 'istatistik:cronbach_status' job_id='00000000-0000-0000-0000-000000000000' %}{% endblock %}
+
+{# context view'dan geliyor: tool_title, tool_icon, tool_color, tool_description, tool_hints #}
+
+{% block result_summary %}
+<div id="cronbach-summary" class="d-none">
+  <div class="row g-3 mb-2">
+    <div class="col-6">
+      <div class="rounded-3 p-3 text-center" style="background:rgba(255,255,255,0.05);">
+        <div class="fs-1 fw-bold text-primary" id="alpha-value">—</div>
+        <div class="text-white-50 small">Cronbach Alpha (α)</div>
+      </div>
+    </div>
+    <div class="col-6">
+      <div class="rounded-3 p-3 text-center" style="background:rgba(255,255,255,0.05);">
+        <div class="fs-5 fw-semibold text-white" id="alpha-interp">—</div>
+        <div class="text-white-50 small">Yorum</div>
+      </div>
+    </div>
+  </div>
+  <div class="text-white-50 small">
+    <span id="n-items">—</span> madde, <span id="n-cases">—</span> katılımcı
+  </div>
+</div>
+{% endblock %}
+
+{% block on_completed_js %}
+if (data.result_data) {
+  const r = data.result_data;
+  document.getElementById('alpha-value').textContent = r.alpha.toFixed(3);
+  document.getElementById('alpha-interp').textContent = r.interpretation;
+  document.getElementById('n-items').textContent = r.n_items + ' madde';
+  document.getElementById('n-cases').textContent = r.n_cases + ' katılımcı';
+  document.getElementById('cronbach-summary').classList.remove('d-none');
+}
+{% endblock %}

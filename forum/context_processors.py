@@ -53,5 +53,6 @@ def feature_flags(request):
             'bibliometrics': site.feature_bibliometrics,
             'yoktez': site.feature_yoktez,
             'tezanaliz': site.feature_tezanaliz,
+            'istatistik': site.feature_istatistik,
         }
     }

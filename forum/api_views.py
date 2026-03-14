@@ -74,9 +74,17 @@ def widget_market_rates(request):
     return JsonResponse({'rates': data})
 
 def widget_latest_proposals(request):
-    """Analiz pazarındaki son teklifleri JSON olarak döner"""
-    # Son 5 teklifi getir
-    proposals = JobProposal.objects.select_related('job', 'expert').order_by('-created_at')[:5]
+    """İlan sahibine ait son teklifleri döner. Sadece giriş yapmış ve kendi ilanları olan kullanıcılara."""
+    if not request.user.is_authenticated:
+        return JsonResponse({'proposals': []})
+
+    if request.user.is_staff or request.user.is_superuser:
+        proposals = JobProposal.objects.select_related('job', 'expert').order_by('-created_at')[:5]
+    else:
+        # Yalnızca bu kullanıcının ilanlarına gelen teklifler
+        proposals = JobProposal.objects.select_related('job', 'expert').filter(
+            job__owner=request.user
+        ).order_by('-created_at')[:5]
 
     data = []
     for p in proposals:

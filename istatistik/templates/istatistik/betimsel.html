@@ -1,0 +1,44 @@
+{% extends "istatistik/tool_base.html" %}
+
+{% block title %}Betimleyici İstatistik Raporu - Analizus{% endblock %}
+
+{% block status_url %}{% url 'istatistik:betimsel_status' job_id='00000000-0000-0000-0000-000000000000' %}{% endblock %}
+
+{# context view'dan geliyor #}
+
+{% block result_summary %}
+<div id="betimsel-summary" class="d-none">
+  <div class="row g-2 mb-2">
+    <div class="col-4">
+      <div class="rounded-3 p-2 text-center" style="background:rgba(255,255,255,0.05);">
+        <div class="fs-4 fw-bold text-success" id="n-rows">—</div>
+        <div class="text-white-50 small">Satır</div>
+      </div>
+    </div>
+    <div class="col-4">
+      <div class="rounded-3 p-2 text-center" style="background:rgba(255,255,255,0.05);">
+        <div class="fs-4 fw-bold text-info" id="n-cont">—</div>
+        <div class="text-white-50 small">Sürekli</div>
+      </div>
+    </div>
+    <div class="col-4">
+      <div class="rounded-3 p-2 text-center" style="background:rgba(255,255,255,0.05);">
+        <div class="fs-4 fw-bold text-warning" id="n-cat">—</div>
+        <div class="text-white-50 small">Kategorik</div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block on_completed_js %}
+if (data.result_data) {
+  const r = data.result_data;
+  document.getElementById('n-rows').textContent = r.n_rows;
+  const cont = r.variables.filter(v => v.type === 'continuous').length;
+  const cat  = r.variables.filter(v => v.type === 'categorical').length;
+  document.getElementById('n-cont').textContent = cont;
+  document.getElementById('n-cat').textContent = cat;
+  document.getElementById('betimsel-summary').classList.remove('d-none');
+}
+{% endblock %}

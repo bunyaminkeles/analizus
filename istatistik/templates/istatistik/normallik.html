@@ -1,0 +1,31 @@
+{% extends "istatistik/tool_base.html" %}
+
+{% block title %}Normallik Testi - Analizus{% endblock %}
+
+{% block status_url %}{% url 'istatistik:normallik_status' job_id='00000000-0000-0000-0000-000000000000' %}{% endblock %}
+
+{# context view'dan geliyor #}
+
+{% block result_summary %}
+<div id="normallik-summary" class="d-none">
+  <div class="rounded-3 p-3 mb-2" style="background:rgba(255,255,255,0.05);">
+    <div class="fw-semibold text-white mb-1">Genel Öneri</div>
+    <div class="text-white-50 small" id="overall-rec">—</div>
+  </div>
+  <div id="var-badges" class="d-flex flex-wrap gap-2"></div>
+</div>
+{% endblock %}
+
+{% block on_completed_js %}
+if (data.result_data) {
+  const r = data.result_data;
+  document.getElementById('overall-rec').textContent = r.overall_recommendation;
+  const badges = document.getElementById('var-badges');
+  badges.innerHTML = '';
+  r.variables.forEach(v => {
+    const cls = v.is_normal ? 'bg-success' : 'bg-danger';
+    badges.innerHTML += `<span class="badge ${cls}">${v.variable} α=${v.shapiro_p}</span>`;
+  });
+  document.getElementById('normallik-summary').classList.remove('d-none');
+}
+{% endblock %}
