@@ -23,4 +23,8 @@ def register_fonts():
         pdfmetrics.registerFontFamily('DejaVuSans',
                                       normal='DejaVuSans',
                                       bold='DejaVuSans-Bold')
+        # DejaVuSans-Bold kendi adıyla da aranabilir olsun
+        pdfmetrics.registerFontFamily('DejaVuSans-Bold',
+                                      normal='DejaVuSans-Bold',
+                                      bold='DejaVuSans-Bold')
     _registered = True
