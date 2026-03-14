@@ -12,13 +12,16 @@ def register_fonts():
     from reportlab.pdfbase.ttfonts import TTFont
     from reportlab.lib.fonts import addMapping
 
-    font_dir = '/usr/share/fonts/truetype/dejavu'
-    regular = os.path.join(font_dir, 'DejaVuSans.ttf')
-    bold = os.path.join(font_dir, 'DejaVuSans-Bold.ttf')
+    # Önce projeye dahil edilmiş font klasörüne bak (Render dahil her ortamda çalışır)
+    _here = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    bundled_dir = os.path.join(_here, 'fonts')
+    regular = os.path.join(bundled_dir, 'DejaVuSans.ttf')
+    bold = os.path.join(bundled_dir, 'DejaVuSans-Bold.ttf')
 
     if not os.path.exists(regular):
-        # Render veya farklı sistemde farklı path dene
+        # Sistem fontlarına fallback
         for candidate in [
+            '/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',
             '/usr/share/fonts/dejavu/DejaVuSans.ttf',
             '/usr/share/fonts/TTF/DejaVuSans.ttf',
         ]:
