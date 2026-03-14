@@ -3,82 +3,243 @@
 
 {% block bodyclass %}{{ block.super }} dashboard{% endblock %}
 {% block content_title %}Dashboard{% endblock %}
-
 {% block breadcrumbs %}{% endblock %}
 
 {% block content %}
 {% get_dashboard_stats as s %}
 
 <div class="admin-dashboard">
-    <!-- Ana İstatistik Kartları -->
-    <div class="row">
-        <div class="col-md-6 col-xl-3 mb-3">
-            <div class="stat-card">
-                <div class="d-flex justify-content-between align-items-start">
-                    <div>
-                        <p class="stat-label mb-1">Toplam Kullanıcı</p>
-                        <h3 class="stat-value mb-2">{{ s.total_users }}</h3>
-                        <span class="stat-change positive">+{{ s.week_users }} bu hafta</span>
-                    </div>
-                    <div class="stat-icon" style="background: rgba(99, 102, 241, 0.2);">
-                        <i class="fas fa-users" style="color: #6366f1;"></i>
-                    </div>
+
+    <!-- ═══════════════════════════════════════════════
+         PLATFORM HEALTH + ANA STAT KARTLARI
+    ═══════════════════════════════════════════════ -->
+    <div class="row align-items-stretch mb-3">
+
+        <!-- Platform Health Score -->
+        <div class="col-12 col-md-3 mb-3">
+            <div class="stat-card health-card h-100 text-center">
+                <p class="stat-label mb-2">Platform Sağlığı</p>
+                <div class="health-ring mx-auto mb-2" style="--score: {{ s.health_score }}; --color: {{ s.health_color }};">
+                    <svg viewBox="0 0 80 80" class="health-svg">
+                        <circle cx="40" cy="40" r="34" class="health-bg"/>
+                        <circle cx="40" cy="40" r="34" class="health-fill" style="stroke: {{ s.health_color }};"/>
+                    </svg>
+                    <div class="health-value" style="color: {{ s.health_color }};">{{ s.health_score }}</div>
                 </div>
+                <span class="health-label" style="color: {{ s.health_color }};">{{ s.health_label }}</span>
+                <div class="text-muted small mt-1" style="font-size: 0.7rem;">Kullanıcı büyümesi + içerik + kuyruk</div>
             </div>
         </div>
-        <div class="col-md-6 col-xl-3 mb-3">
-            <div class="stat-card">
-                <div class="d-flex justify-content-between align-items-start">
-                    <div>
-                        <p class="stat-label mb-1">Toplam Konu</p>
-                        <h3 class="stat-value mb-2">{{ s.total_topics }}</h3>
-                        <span class="stat-change positive">+{{ s.week_topics }} bu hafta</span>
-                    </div>
-                    <div class="stat-icon" style="background: rgba(16, 185, 129, 0.2);">
-                        <i class="fas fa-comments" style="color: #10b981;"></i>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6 col-xl-3 mb-3">
-            <div class="stat-card">
-                <div class="d-flex justify-content-between align-items-start">
-                    <div>
-                        <p class="stat-label mb-1">Toplam Gönderi</p>
-                        <h3 class="stat-value mb-2">{{ s.total_posts }}</h3>
-                        <span class="stat-change positive">+{{ s.week_posts }} bu hafta</span>
-                    </div>
-                    <div class="stat-icon" style="background: rgba(245, 158, 11, 0.2);">
-                        <i class="fas fa-comment-dots" style="color: #f59e0b;"></i>
+
+        <!-- 4 Ana Stat -->
+        <div class="col-12 col-md-9 mb-3">
+            <div class="row h-100">
+                <div class="col-6 col-xl-3 mb-3">
+                    <div class="stat-card neon-card h-100">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <p class="stat-label mb-1">Toplam Kullanıcı</p>
+                                <h3 class="stat-value gradient-text mb-1">{{ s.total_users }}</h3>
+                                <span class="stat-change positive">+{{ s.week_users }} bu hafta</span>
+                                {% if s.delta_users is not None %}
+                                <div class="delta-badge {% if s.delta_users >= 0 %}delta-up{% else %}delta-down{% endif %}">
+                                    {% if s.delta_users >= 0 %}▲{% else %}▼{% endif %} %{{ s.delta_users|floatformat:1 }}
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="stat-icon" style="background: rgba(99,102,241,0.2);">
+                                <i class="fas fa-users" style="color: #6366f1;"></i>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
-        <div class="col-md-6 col-xl-3 mb-3">
-            <div class="stat-card">
-                <div class="d-flex justify-content-between align-items-start">
-                    <div>
-                        <p class="stat-label mb-1">Toplam Görüntüleme</p>
-                        <h3 class="stat-value mb-2">{{ s.total_views|default:0 }}</h3>
-                        <span class="stat-change neutral">Tüm zamanlar</span>
+                <div class="col-6 col-xl-3 mb-3">
+                    <div class="stat-card neon-card h-100">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <p class="stat-label mb-1">Toplam Konu</p>
+                                <h3 class="stat-value gradient-text mb-1">{{ s.total_topics }}</h3>
+                                <span class="stat-change positive">+{{ s.week_topics }} bu hafta</span>
+                                {% if s.delta_topics is not None %}
+                                <div class="delta-badge {% if s.delta_topics >= 0 %}delta-up{% else %}delta-down{% endif %}">
+                                    {% if s.delta_topics >= 0 %}▲{% else %}▼{% endif %} %{{ s.delta_topics|floatformat:1 }}
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="stat-icon" style="background: rgba(16,185,129,0.2);">
+                                <i class="fas fa-comments" style="color: #10b981;"></i>
+                            </div>
+                        </div>
                     </div>
-                    <div class="stat-icon" style="background: rgba(236, 72, 153, 0.2);">
-                        <i class="fas fa-eye" style="color: #ec4899;"></i>
+                </div>
+                <div class="col-6 col-xl-3 mb-3">
+                    <div class="stat-card neon-card h-100">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <p class="stat-label mb-1">Toplam Gönderi</p>
+                                <h3 class="stat-value gradient-text mb-1">{{ s.total_posts }}</h3>
+                                <span class="stat-change positive">+{{ s.week_posts }} bu hafta</span>
+                                {% if s.delta_posts is not None %}
+                                <div class="delta-badge {% if s.delta_posts >= 0 %}delta-up{% else %}delta-down{% endif %}">
+                                    {% if s.delta_posts >= 0 %}▲{% else %}▼{% endif %} %{{ s.delta_posts|floatformat:1 }}
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="stat-icon" style="background: rgba(245,158,11,0.2);">
+                                <i class="fas fa-comment-dots" style="color: #f59e0b;"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-xl-3 mb-3">
+                    <div class="stat-card neon-card h-100">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <p class="stat-label mb-1">Görüntüleme</p>
+                                <h3 class="stat-value gradient-text mb-1">{{ s.total_views|default:0 }}</h3>
+                                <span class="stat-change neutral">Tüm zamanlar</span>
+                            </div>
+                            <div class="stat-icon" style="background: rgba(236,72,153,0.2);">
+                                <i class="fas fa-eye" style="color: #ec4899;"></i>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Aktivite Grafiği -->
+    <!-- ═══════════════════════════════════════════════
+         HİZMET PAZARI + GELİR ÖZETİ
+    ═══════════════════════════════════════════════ -->
+    <div class="row mb-3">
+        <!-- Hizmet Pazarı -->
+        <div class="col-12 col-md-6 mb-3">
+            <div class="dashboard-card h-100">
+                <div class="card-header">
+                    <h5><i class="fas fa-briefcase mr-2" style="color:#f59e0b;"></i>Hizmet Pazarı</h5>
+                    <a href="/admin/forum/freelancejob/" class="btn btn-xs btn-outline-warning ml-auto">Tümü</a>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-4">
+                            <div class="market-stat-val" style="color:#38bdf8;">{{ s.open_jobs }}</div>
+                            <div class="market-stat-lbl">Açık İlan</div>
+                        </div>
+                        <div class="col-4">
+                            <div class="market-stat-val" style="color:#f59e0b;">{{ s.pending_proposals }}</div>
+                            <div class="market-stat-lbl">Bekleyen Teklif</div>
+                        </div>
+                        <div class="col-4">
+                            <div class="market-stat-val" style="color:#10b981;">{{ s.month_completed }}</div>
+                            <div class="market-stat-lbl">Bu Ay Bitti</div>
+                        </div>
+                    </div>
+                    <div class="text-center mt-2">
+                        <span class="text-muted small">Toplam {{ s.total_completed }} iş tamamlandı</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Gelir Özeti -->
+        <div class="col-12 col-md-6 mb-3">
+            <div class="dashboard-card h-100">
+                <div class="card-header">
+                    <h5><i class="fas fa-coins mr-2" style="color:#10b981;"></i>Gelir Özeti</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-6">
+                            <div class="market-stat-val" style="color:#10b981; font-size:1.4rem;">
+                                {{ s.month_donation_sum|floatformat:0 }} ₺
+                            </div>
+                            <div class="market-stat-lbl">Bu Ay Bağış</div>
+                        </div>
+                        <div class="col-6">
+                            <div class="market-stat-val" style="color:#a78bfa; font-size:1.4rem;">
+                                {{ s.total_donation_sum|floatformat:0 }} ₺
+                            </div>
+                            <div class="market-stat-lbl">Toplam Bağış</div>
+                        </div>
+                    </div>
+                    <hr style="border-color: rgba(99,102,241,0.2);">
+                    <div class="row text-center">
+                        <div class="col-6">
+                            <div class="market-stat-val" style="color:#38bdf8;">{{ s.month_tezanaliz_count }}</div>
+                            <div class="market-stat-lbl">Tez Analiz (ay)</div>
+                        </div>
+                        <div class="col-6">
+                            <div class="market-stat-val" style="color:#f472b6;">{{ s.month_biblio_count }}</div>
+                            <div class="market-stat-lbl">Bibliometrik (ay)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════
+         SERVİS İSTATİSTİKLERİ
+    ═══════════════════════════════════════════════ -->
     <div class="row mb-3">
         <div class="col-12">
             <div class="dashboard-card">
                 <div class="card-header">
-                    <h5><i class="fas fa-chart-line mr-2"></i>Son 7 Günlük Aktivite</h5>
+                    <h5><i class="fas fa-rocket mr-2" style="color:#a78bfa;"></i>Akademik Servisler (Bu Ay / Toplam)</h5>
                 </div>
                 <div class="card-body">
-                    <div style="position: relative; height: 260px; width: 100%;">
+                    <div class="row text-center">
+                        <div class="col-6 col-md-3 mb-2">
+                            <div class="service-stat-box">
+                                <i class="fas fa-search" style="color:#38bdf8; font-size:1.4rem;"></i>
+                                <div class="service-stat-val">{{ s.openalex_month }} / {{ s.openalex_total }}</div>
+                                <div class="service-stat-lbl">OpenAlex</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3 mb-2">
+                            <div class="service-stat-box">
+                                <i class="fas fa-graduation-cap" style="color:#10b981; font-size:1.4rem;"></i>
+                                <div class="service-stat-val">{{ s.yoktez_month }} / {{ s.yoktez_total }}</div>
+                                <div class="service-stat-lbl">YÖK Tez</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3 mb-2">
+                            <div class="service-stat-box">
+                                <i class="fas fa-chart-bar" style="color:#f472b6; font-size:1.4rem;"></i>
+                                <div class="service-stat-val">{{ s.biblio_month }} / {{ s.biblio_total }}</div>
+                                <div class="service-stat-lbl">Bibliometrik</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3 mb-2">
+                            <div class="service-stat-box">
+                                <i class="fas fa-university" style="color:#f59e0b; font-size:1.4rem;"></i>
+                                <div class="service-stat-val">{{ s.oaipmh_month }} / {{ s.oaipmh_total }}</div>
+                                <div class="service-stat-lbl">Üniv. Tezleri</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════
+         AKTİVİTE GRAFİĞİ (7 / 30 / 90 gün toggle)
+    ═══════════════════════════════════════════════ -->
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="dashboard-card">
+                <div class="card-header d-flex align-items-center flex-wrap" style="gap:.5rem;">
+                    <h5 class="mb-0"><i class="fas fa-chart-line mr-2"></i>Aktivite Trendi</h5>
+                    <div class="ml-auto btn-group btn-group-sm chart-toggle-group" role="group">
+                        <button type="button" class="btn btn-outline-info active" data-range="7">7 Gün</button>
+                        <button type="button" class="btn btn-outline-info" data-range="30">30 Gün</button>
+                        <button type="button" class="btn btn-outline-info" data-range="90">90 Gün</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div style="position:relative; height:260px; width:100%;">
                         <canvas id="activityChart"></canvas>
                     </div>
                 </div>
@@ -86,7 +247,9 @@
         </div>
     </div>
 
-    <!-- Onay Merkezi -->
+    <!-- ═══════════════════════════════════════════════
+         ONAY MERKEZİ
+    ═══════════════════════════════════════════════ -->
     <div class="row mb-3">
         <div class="col-12">
             <div class="dashboard-card">
@@ -94,14 +257,14 @@
                     <h5><i class="fas fa-check-circle mr-2"></i>Onay Merkezi</h5>
                     <span class="text-muted small">
                         {% with total=s.pending_stories.count|add:s.pending_reviews.count|add:s.unread_contacts.count|add:s.pending_donations.count|add:s.pending_linkedin_verifications.count %}
-                        {{ total }} bekleyen işlem
+                        {% if total %}<span class="badge badge-danger">{{ total }} bekleyen</span>{% else %}<span class="text-success">Temiz ✓</span>{% endif %}
                         {% endwith %}
                     </span>
                 </div>
                 <div class="card-body">
-                    <ul class="nav nav-pills mb-3 flex-wrap" id="approvalTabs" role="tablist" style="gap: 0.5rem;">
+                    <ul class="nav nav-pills mb-3 flex-wrap" id="approvalTabs" role="tablist" style="gap:.5rem;">
                         <li class="nav-item">
-                            <a class="nav-link active position-relative" id="stories-tab" data-toggle="pill" href="#stories-panel" role="tab">
+                            <a class="nav-link active" id="stories-tab" data-toggle="pill" href="#stories-panel" role="tab">
                                 <i class="fas fa-star mr-1"></i>Hikayeler
                                 {% if s.pending_stories.count %}<span class="badge badge-danger ml-1">{{ s.pending_stories.count }}</span>{% endif %}
                             </a>
@@ -141,16 +304,16 @@
                                     <tbody>
                                         {% for story in s.pending_stories %}
                                         <tr>
-                                            <td class="text-info">{{ story.user.username }}</td>
+                                            <td><a href="/admin/auth/user/{{ story.user.id }}/change/" class="text-info">{{ story.user.username }}</a></td>
                                             <td>{{ story.quote|truncatechars:80 }}</td>
-                                            <td class="text-muted small">{{ story.created_at|timesince }} önce</td>
-                                            <td>
+                                            <td class="text-muted small text-nowrap">{{ story.created_at|timesince }} önce</td>
+                                            <td class="text-nowrap">
                                                 <form method="post" action="{% url 'dashboard_approve_story' story.pk %}" class="d-inline">{% csrf_token %}<input type="hidden" name="action" value="approve"><button class="btn btn-sm btn-success">Onayla</button></form>
                                                 <form method="post" action="{% url 'dashboard_approve_story' story.pk %}" class="d-inline ml-1">{% csrf_token %}<input type="hidden" name="action" value="reject"><button class="btn btn-sm btn-outline-danger">Reddet</button></form>
                                             </td>
                                         </tr>
                                         {% empty %}
-                                        <tr><td colspan="4" class="text-center text-muted">Bekleyen hikaye yok</td></tr>
+                                        <tr><td colspan="4" class="text-center text-muted py-3">Bekleyen hikaye yok ✓</td></tr>
                                         {% endfor %}
                                     </tbody>
                                 </table>
@@ -165,16 +328,14 @@
                                     <tbody>
                                         {% for review in s.pending_reviews %}
                                         <tr>
-                                            <td class="text-info">{{ review.reviewer.username }}</td>
-                                            <td>{{ review.reviewed_user.username }}</td>
-                                            <td>{% for i in "12345" %}<i class="fas fa-star{% if forloop.counter > review.rating %}" style="color: #475569;{% else %}" style="color: #f59e0b;{% endif %} font-size: 0.7rem;"></i>{% endfor %}</td>
+                                            <td><a href="/admin/auth/user/{{ review.reviewer.id }}/change/" class="text-info">{{ review.reviewer.username }}</a></td>
+                                            <td><a href="/admin/auth/user/{{ review.reviewed_user.id }}/change/" class="text-light">{{ review.reviewed_user.username }}</a></td>
+                                            <td>{% for i in "12345" %}<i class="fas fa-star{% if forloop.counter > review.rating %}" style="color:#475569;{% else %}" style="color:#f59e0b;{% endif %} font-size:0.7rem;"></i>{% endfor %}</td>
                                             <td class="text-muted small">{{ review.comment|truncatechars:60 }}</td>
-                                            <td>
-                                                <form method="post" action="{% url 'dashboard_approve_review' review.pk %}" class="d-inline">{% csrf_token %}<button class="btn btn-sm btn-success">Onayla</button></form>
-                                            </td>
+                                            <td><form method="post" action="{% url 'dashboard_approve_review' review.pk %}" class="d-inline">{% csrf_token %}<button class="btn btn-sm btn-success">Onayla</button></form></td>
                                         </tr>
                                         {% empty %}
-                                        <tr><td colspan="5" class="text-center text-muted">Bekleyen değerlendirme yok</td></tr>
+                                        <tr><td colspan="5" class="text-center text-muted py-3">Bekleyen değerlendirme yok ✓</td></tr>
                                         {% endfor %}
                                     </tbody>
                                 </table>
@@ -194,12 +355,10 @@
                                             <td class="text-info">{{ msg.subject }}</td>
                                             <td class="text-muted small">{{ msg.message|truncatechars:80 }}</td>
                                             <td class="text-muted small text-nowrap">{{ msg.created_at|timesince }} önce</td>
-                                            <td>
-                                                <form method="post" action="{% url 'dashboard_mark_contact_read' msg.pk %}" class="d-inline">{% csrf_token %}<button class="btn btn-sm btn-outline-info">Okundu</button></form>
-                                            </td>
+                                            <td><form method="post" action="{% url 'dashboard_mark_contact_read' msg.pk %}" class="d-inline">{% csrf_token %}<button class="btn btn-sm btn-outline-info">Okundu</button></form></td>
                                         </tr>
                                         {% empty %}
-                                        <tr><td colspan="6" class="text-center text-muted">Okunmamış mesaj yok</td></tr>
+                                        <tr><td colspan="6" class="text-center text-muted py-3">Okunmamış mesaj yok ✓</td></tr>
                                         {% endfor %}
                                     </tbody>
                                 </table>
@@ -214,22 +373,14 @@
                                     <tbody>
                                         {% for donation in s.pending_donations %}
                                         <tr>
-                                            <td>
-                                                {% if donation.user %}
-                                                <span class="text-info">{{ donation.user.username }}</span>
-                                                {% else %}
-                                                <span class="text-muted">{{ donation.name|default:"Anonim" }}</span>
-                                                {% endif %}
-                                            </td>
-                                            <td style="color: #f59e0b; font-weight: bold;">{{ donation.amount|floatformat:0 }} TL</td>
-                                            <td style="color: #10b981;">{{ donation.premium_days_granted }} gün</td>
-                                            <td class="text-muted small">{{ donation.created_at|timesince }} önce</td>
-                                            <td>
-                                                <form method="post" action="{% url 'dashboard_approve_donation' donation.pk %}" class="d-inline">{% csrf_token %}<button class="btn btn-sm btn-success">Onayla</button></form>
-                                            </td>
+                                            <td>{% if donation.user %}<a href="/admin/auth/user/{{ donation.user.id }}/change/" class="text-info">{{ donation.user.username }}</a>{% else %}<span class="text-muted">{{ donation.name|default:"Anonim" }}</span>{% endif %}</td>
+                                            <td style="color:#f59e0b; font-weight:bold;">{{ donation.amount|floatformat:0 }} ₺</td>
+                                            <td style="color:#10b981;">{{ donation.premium_days_granted }} gün</td>
+                                            <td class="text-muted small text-nowrap">{{ donation.created_at|timesince }} önce</td>
+                                            <td><form method="post" action="{% url 'dashboard_approve_donation' donation.pk %}" class="d-inline">{% csrf_token %}<button class="btn btn-sm btn-success">Onayla</button></form></td>
                                         </tr>
                                         {% empty %}
-                                        <tr><td colspan="5" class="text-center text-muted">Bekleyen bağış yok</td></tr>
+                                        <tr><td colspan="5" class="text-center text-muted py-3">Bekleyen bağış yok ✓</td></tr>
                                         {% endfor %}
                                     </tbody>
                                 </table>
@@ -244,12 +395,12 @@
                                     <tbody>
                                         {% for profile in s.pending_linkedin_verifications %}
                                         <tr>
-                                            <td class="text-info">{{ profile.user.username }}</td>
+                                            <td><a href="/admin/auth/user/{{ profile.user.id }}/change/" class="text-info">{{ profile.user.username }}</a></td>
                                             <td><a href="{{ profile.linkedin }}" target="_blank" class="text-light">{{ profile.linkedin|truncatechars:40 }}</a></td>
                                             <td><a href="{% url 'admin_verify_linkedin' profile.user.id %}" class="btn btn-sm btn-success">Onayla</a></td>
                                         </tr>
                                         {% empty %}
-                                        <tr><td colspan="3" class="text-center text-muted">Bekleyen LinkedIn onayı yok</td></tr>
+                                        <tr><td colspan="3" class="text-center text-muted py-3">Bekleyen LinkedIn onayı yok ✓</td></tr>
                                         {% endfor %}
                                     </tbody>
                                 </table>
@@ -261,32 +412,26 @@
         </div>
     </div>
 
-    <!-- Kuyruk Durumu -->
+    <!-- ═══════════════════════════════════════════════
+         KUYRUK DURUMU (auto-refresh)
+    ═══════════════════════════════════════════════ -->
     {% get_queue_status as q %}
     <div class="row mb-3" id="queue-section">
         <div class="col-12">
             <div class="dashboard-card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h5><i class="fas fa-layer-group mr-2"></i>Kuyruk Durumu</h5>
-                    <span class="text-muted small">
+                    <span id="queue-badges">
                         {% if q.running_count %}<span class="badge badge-warning mr-1">{{ q.running_count }} çalışıyor</span>{% endif %}
                         {% if q.pending_count %}<span class="badge badge-secondary">{{ q.pending_count }} bekliyor</span>{% endif %}
-                        {% if not q.total %}<span class="text-success">Kuyruk boş</span>{% endif %}
+                        {% if not q.total %}<span class="text-success">Kuyruk boş ✓</span>{% endif %}
                     </span>
                 </div>
-                <div class="card-body p-0">
+                <div class="card-body p-0" id="queue-body">
                     {% if q.rows %}
                     <div class="table-responsive">
                         <table class="table table-dashboard table-hover mb-0">
-                            <thead>
-                                <tr>
-                                    <th>Servis</th>
-                                    <th>Kullanıcı</th>
-                                    <th>Durum</th>
-                                    <th>Başlangıç</th>
-                                    <th>ID</th>
-                                </tr>
-                            </thead>
+                            <thead><tr><th>Servis</th><th>Kullanıcı</th><th>Durum</th><th>Başlangıç</th><th>ID</th></tr></thead>
                             <tbody>
                                 {% for row in q.rows %}
                                 <tr>
@@ -314,26 +459,29 @@
         </div>
     </div>
 
-    <!-- Alt Satır: Son Kayıtlar -->
+    <!-- ═══════════════════════════════════════════════
+         SON KAYITLAR
+    ═══════════════════════════════════════════════ -->
     <div class="row mb-3">
         <div class="col-12">
             <div class="dashboard-card">
-                <div class="card-header">
+                <div class="card-header d-flex justify-content-between align-items-center">
                     <h5><i class="fas fa-user-plus mr-2"></i>Son Kayıtlar</h5>
+                    <a href="/admin/auth/user/?o=-5" class="btn btn-xs btn-outline-info">Tümü</a>
                 </div>
-                <div class="card-body p-0">
-                    <div class="row no-gutters">
+                <div class="card-body">
+                    <div class="row">
                         {% for user in s.recent_users %}
-                        <div class="col-md-4 col-lg-2">
-                            <div class="activity-item px-3">
-                                <div class="d-flex align-items-center">
-                                    <div class="user-avatar-sm mr-2">{{ user.username|slice:":1"|upper }}</div>
-                                    <div>
-                                        <span class="text-info">{{ user.username }}</span>
-                                        <div class="text-muted small">{{ user.date_joined|timesince }} önce</div>
+                        <div class="col-6 col-md-4 col-lg-2 mb-2">
+                            <a href="/admin/auth/user/{{ user.id }}/change/" class="user-card-link text-decoration-none">
+                                <div class="d-flex align-items-center p-2 rounded" style="background:rgba(99,102,241,0.07); border:1px solid rgba(99,102,241,0.15); transition:border-color .2s;">
+                                    <div class="user-avatar-sm mr-2 flex-shrink-0">{{ user.username|slice:":1"|upper }}</div>
+                                    <div style="min-width:0;">
+                                        <div class="text-info text-truncate" style="font-size:0.82rem;">{{ user.username }}</div>
+                                        <div class="text-muted" style="font-size:0.68rem;">{{ user.date_joined|timesince }} önce</div>
                                     </div>
                                 </div>
-                            </div>
+                            </a>
                         </div>
                         {% empty %}
                         <div class="col p-3 text-center text-muted">Henüz kullanıcı yok</div>
@@ -343,122 +491,106 @@
             </div>
         </div>
     </div>
-</div>
 
+</div><!-- /.admin-dashboard -->
+
+<!-- ═══════════════════════════════════════════════
+     SCRIPTS
+═══════════════════════════════════════════════ -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Aktivite Grafiği
-    var activityCtx = document.getElementById('activityChart');
-    if (activityCtx) {
-        new Chart(activityCtx.getContext('2d'), {
-            type: 'line',
-            data: {
-                labels: {{ s.chart_labels_json|safe }},
-                datasets: [
-                    {
-                        label: 'Yeni Kullanıcı',
-                        data: {{ s.user_trend_json|safe }},
-                        borderColor: '#6366f1',
-                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
-                        fill: true,
-                        tension: 0.4
-                    },
-                    {
-                        label: 'Yeni Konu',
-                        data: {{ s.topic_trend_json|safe }},
-                        borderColor: '#10b981',
-                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                        fill: true,
-                        tension: 0.4
-                    },
-                    {
-                        label: 'Yeni Gönderi',
-                        data: {{ s.post_trend_json|safe }},
-                        borderColor: '#f59e0b',
-                        backgroundColor: 'rgba(245, 158, 11, 0.1)',
-                        fill: true,
-                        tension: 0.4
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { labels: { color: '#94a3b8' } }
-                },
-                scales: {
-                    x: {
-                        grid: { color: 'rgba(99, 102, 241, 0.1)' },
-                        ticks: { color: '#94a3b8' }
-                    },
-                    y: {
-                        grid: { color: 'rgba(99, 102, 241, 0.1)' },
-                        ticks: { color: '#94a3b8' },
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-    }
-
-});
-</script>
-
-<!-- Bootstrap ve bağımlılıkları (jQuery, Popper.js) -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 <script>
-// Kuyruk Durumu otomatik yenileme (10 saniyede bir)
-(function() {
+document.addEventListener('DOMContentLoaded', function() {
+
+    // ── Grafik verileri ──────────────────────────────
+    var chartData = {
+        7:  { labels: {{ s.chart_labels_json|safe }},    users: {{ s.user_trend_json|safe }},    topics: {{ s.topic_trend_json|safe }},    posts: {{ s.post_trend_json|safe }} },
+        30: { labels: {{ s.chart_labels_30_json|safe }}, users: {{ s.user_trend_30_json|safe }}, topics: {{ s.topic_trend_30_json|safe }}, posts: {{ s.post_trend_30_json|safe }} },
+        90: { labels: {{ s.chart_labels_90_json|safe }}, users: {{ s.user_trend_90_json|safe }}, topics: {{ s.topic_trend_90_json|safe }}, posts: {{ s.post_trend_90_json|safe }} }
+    };
+
+    var chartOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { labels: { color: '#94a3b8' } } },
+        scales: {
+            x: { grid: { color: 'rgba(99,102,241,0.1)' }, ticks: { color: '#94a3b8' } },
+            y: { grid: { color: 'rgba(99,102,241,0.1)' }, ticks: { color: '#94a3b8' }, beginAtZero: true }
+        }
+    };
+
+    var chart = new Chart(document.getElementById('activityChart').getContext('2d'), {
+        type: 'line',
+        data: {
+            labels: chartData[7].labels,
+            datasets: [
+                { label: 'Yeni Kullanıcı', data: chartData[7].users,  borderColor: '#6366f1', backgroundColor: 'rgba(99,102,241,0.1)',  fill: true, tension: 0.4 },
+                { label: 'Yeni Konu',      data: chartData[7].topics, borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.1)',  fill: true, tension: 0.4 },
+                { label: 'Yeni Gönderi',   data: chartData[7].posts,  borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,0.1)', fill: true, tension: 0.4 }
+            ]
+        },
+        options: chartOptions
+    });
+
+    // ── Grafik toggle ────────────────────────────────
+    document.querySelectorAll('.chart-toggle-group button').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.chart-toggle-group button').forEach(function(b) { b.classList.remove('active'); });
+            this.classList.add('active');
+            var range = parseInt(this.dataset.range);
+            var d = chartData[range];
+            chart.data.labels = d.labels;
+            chart.data.datasets[0].data = d.users;
+            chart.data.datasets[1].data = d.topics;
+            chart.data.datasets[2].data = d.posts;
+            chart.update();
+        });
+    });
+
+    // ── Kuyruk auto-refresh ──────────────────────────
     function renderQueueBadges(data) {
         var html = '';
         if (data.running_count) html += '<span class="badge badge-warning mr-1">' + data.running_count + ' çalışıyor</span>';
         if (data.pending_count) html += '<span class="badge badge-secondary">' + data.pending_count + ' bekliyor</span>';
-        if (!data.running_count && !data.pending_count) html += '<span class="text-success">Kuyruk boş</span>';
+        if (!data.running_count && !data.pending_count) html += '<span class="text-success">Kuyruk boş ✓</span>';
         return html;
     }
-
     function renderQueueRows(rows) {
-        if (!rows || rows.length === 0) {
-            return '<div class="p-3 text-center text-muted">Şu anda kuyrukta iş yok.</div>';
-        }
+        if (!rows || !rows.length) return '<div class="p-3 text-center text-muted">Şu anda kuyrukta iş yok.</div>';
         var html = '<div class="table-responsive"><table class="table table-dashboard table-hover mb-0"><thead><tr><th>Servis</th><th>Kullanıcı</th><th>Durum</th><th>Başlangıç</th><th>ID</th></tr></thead><tbody>';
-        rows.forEach(function(row) {
-            var badge = row.status === 'running'
-                ? '<span class="badge badge-warning">' + row.status_label + '</span>'
-                : '<span class="badge badge-secondary">' + row.status_label + '</span>';
-            html += '<tr><td>' + row.type + '</td><td class="text-info">' + row.user + '</td><td>' + badge + '</td><td class="text-muted small">' + row.since + ' önce</td><td class="text-muted small font-monospace">' + row.id_short + '…</td></tr>';
+        rows.forEach(function(r) {
+            var badge = r.status === 'running' ? '<span class="badge badge-warning">' + r.status_label + '</span>' : '<span class="badge badge-secondary">' + r.status_label + '</span>';
+            html += '<tr><td>' + r.type + '</td><td class="text-info">' + r.user + '</td><td>' + badge + '</td><td class="text-muted small">' + r.since + ' önce</td><td class="text-muted small font-monospace">' + r.id_short + '…</td></tr>';
         });
         html += '</tbody></table></div>';
         return html;
     }
-
-    function refreshQueue() {
+    setInterval(function() {
         fetch('/api/admin/queue-status/')
             .then(function(r) { return r.ok ? r.json() : null; })
             .then(function(data) {
                 if (!data) return;
-                var badgeEl = document.getElementById('queue-badges');
-                var bodyEl = document.getElementById('queue-body');
-                if (badgeEl) badgeEl.innerHTML = renderQueueBadges(data);
-                if (bodyEl) bodyEl.innerHTML = renderQueueRows(data.rows);
-            })
-            .catch(function() {});
+                var b = document.getElementById('queue-badges');
+                var bd = document.getElementById('queue-body');
+                if (b) b.innerHTML = renderQueueBadges(data);
+                if (bd) bd.innerHTML = renderQueueRows(data.rows);
+            }).catch(function() {});
+    }, 30000);
+
+    // ── Platform Health Score animasyonu ────────────
+    var score = {{ s.health_score }};
+    var circle = document.querySelector('.health-fill');
+    if (circle) {
+        var r = 34;
+        var circ = 2 * Math.PI * r;
+        circle.style.strokeDasharray = circ;
+        circle.style.strokeDashoffset = circ - (score / 100) * circ;
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
-        // Badge ve body elementlerine id ver (template'deki statik içeriği replace etmek için)
-        var cardHeader = document.querySelector('#queue-section .card-header span.text-muted');
-        var cardBody = document.querySelector('#queue-section .card-body');
-        if (cardHeader) cardHeader.id = 'queue-badges';
-        if (cardBody) cardBody.id = 'queue-body';
-        setInterval(refreshQueue, 30000);
-    });
-})();
+});
 </script>
 
 {% endblock %}

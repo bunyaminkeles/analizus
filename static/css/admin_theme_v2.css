@@ -247,8 +247,18 @@ input[type="checkbox"] {
     box-shadow: none !important;
 }
 .admin-dashboard .stat-card:hover {
-    border-color: rgba(99, 102, 241, 0.5) !important;
-    transform: translateY(-2px);
+    border-color: rgba(99, 102, 241, 0.6) !important;
+    transform: translateY(-3px);
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.15) !important;
+}
+/* Neon kart */
+.admin-dashboard .neon-card {
+    border-color: rgba(99, 102, 241, 0.25) !important;
+    transition: border-color 0.3s, box-shadow 0.3s, transform 0.3s;
+}
+.admin-dashboard .neon-card:hover {
+    border-color: rgba(56, 189, 248, 0.6) !important;
+    box-shadow: 0 0 24px rgba(56, 189, 248, 0.12), 0 0 8px rgba(99,102,241,0.1) !important;
 }
 .admin-dashboard .stat-icon {
     width: 50px;
@@ -258,6 +268,13 @@ input[type="checkbox"] {
     align-items: center;
     justify-content: center;
     font-size: 1.5rem;
+}
+/* Gradient rakam */
+.admin-dashboard .gradient-text {
+    background: linear-gradient(135deg, #fff 0%, #38bdf8 60%, #a78bfa 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 .admin-dashboard .stat-value {
     font-size: 2rem;
@@ -280,6 +297,119 @@ input[type="checkbox"] {
 .admin-dashboard .stat-change.neutral {
     background: rgba(148, 163, 184, 0.2);
     color: #94a3b8 !important;
+}
+/* Delta badge */
+.admin-dashboard .delta-badge {
+    display: inline-block;
+    font-size: 0.68rem;
+    padding: 1px 6px;
+    border-radius: 10px;
+    margin-top: 4px;
+    font-weight: 600;
+}
+.admin-dashboard .delta-up   { background: rgba(16,185,129,0.15); color: #10b981; }
+.admin-dashboard .delta-down { background: rgba(239,68,68,0.15);  color: #ef4444; }
+
+/* ── Platform Health Score ── */
+.admin-dashboard .health-card {
+    border-color: rgba(99,102,241,0.3) !important;
+}
+.admin-dashboard .health-ring {
+    position: relative;
+    width: 90px;
+    height: 90px;
+}
+.admin-dashboard .health-svg {
+    width: 90px;
+    height: 90px;
+    transform: rotate(-90deg);
+}
+.admin-dashboard .health-bg {
+    fill: none;
+    stroke: rgba(255,255,255,0.07);
+    stroke-width: 7;
+}
+.admin-dashboard .health-fill {
+    fill: none;
+    stroke-width: 7;
+    stroke-linecap: round;
+    stroke-dasharray: 213.6;
+    stroke-dashoffset: 213.6;
+    transition: stroke-dashoffset 1.2s ease;
+}
+.admin-dashboard .health-value {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.3rem;
+    font-weight: 800;
+}
+.admin-dashboard .health-label {
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+/* ── Hizmet Pazarı / Gelir ── */
+.admin-dashboard .market-stat-val {
+    font-size: 1.6rem;
+    font-weight: 800;
+    line-height: 1.1;
+}
+.admin-dashboard .market-stat-lbl {
+    font-size: 0.72rem;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    margin-top: 2px;
+}
+
+/* ── Servis istatistik kutuları ── */
+.admin-dashboard .service-stat-box {
+    padding: 12px 8px;
+    border-radius: 12px;
+    background: rgba(99,102,241,0.06);
+    border: 1px solid rgba(99,102,241,0.12);
+    transition: border-color .2s;
+}
+.admin-dashboard .service-stat-box:hover {
+    border-color: rgba(56,189,248,0.35);
+}
+.admin-dashboard .service-stat-val {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #e2e8f0;
+    margin-top: 6px;
+}
+.admin-dashboard .service-stat-lbl {
+    font-size: 0.72rem;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+}
+
+/* ── Grafik toggle butonları ── */
+.admin-dashboard .chart-toggle-group .btn {
+    font-size: 0.75rem;
+    padding: 2px 10px;
+    color: #94a3b8;
+    border-color: rgba(56,189,248,0.3);
+}
+.admin-dashboard .chart-toggle-group .btn.active {
+    background: rgba(56,189,248,0.15);
+    color: #38bdf8;
+    border-color: #38bdf8;
+}
+
+/* ── Son Kayıtlar kullanıcı linkleri ── */
+.admin-dashboard .user-card-link:hover .d-flex {
+    border-color: rgba(99,102,241,0.4) !important;
+}
+
+/* ── card-header buton ── */
+.admin-dashboard .btn-xs {
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 8px;
 }
 
 .admin-dashboard .dashboard-card {
