@@ -19,4 +19,8 @@ def register_fonts():
         pdfmetrics.registerFont(TTFont('DejaVuSans', regular))
     if os.path.exists(bold):
         pdfmetrics.registerFont(TTFont('DejaVuSans-Bold', bold))
+    if os.path.exists(regular) and os.path.exists(bold):
+        pdfmetrics.registerFontFamily('DejaVuSans',
+                                      normal='DejaVuSans',
+                                      bold='DejaVuSans-Bold')
     _registered = True
