@@ -58,7 +58,7 @@ def analyze(df) -> dict:
     return {'variables': results, 'n_rows': len(df)}
 
 
-def build_pdf(result: dict, filename: str) -> bytes:
+def build_pdf(result: dict, filename: str, df=None) -> bytes:
     import matplotlib
     matplotlib.use('Agg')
     import matplotlib.pyplot as plt

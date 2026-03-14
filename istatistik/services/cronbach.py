@@ -82,7 +82,7 @@ def _interpret(alpha: float) -> str:
     return 'Mükemmel (α ≥ 0.90)'
 
 
-def build_pdf(result: dict, filename: str) -> bytes:
+def build_pdf(result: dict, filename: str, df=None) -> bytes:
     from reportlab.lib.pagesizes import A4
     from reportlab.lib import colors
     from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
