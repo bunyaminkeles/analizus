@@ -30,9 +30,27 @@ IBAN_INFO = {
 
 
 @feature_required('trdizin')
-@login_required
 def trdizin_landing(request):
     """Landing page: gelişmiş arama formu + demo arama."""
+    if not request.user.is_authenticated:
+        return render(request, 'service_promo.html', {
+            'promo_title': 'TR Dizin Tarama',
+            'promo_icon': 'bi-journal-text',
+            'promo_color': 'primary',
+            'promo_description': 'Türkiye\'nin ulusal atıf dizini TR Dizin\'de makale, yazar ve dergi bazında gelişmiş arama yapın. Binlerce Türkçe akademik makaleye tek noktadan erişin.',
+            'promo_features': [
+                {'icon': 'bi-search', 'title': 'Gelişmiş Arama', 'desc': 'Başlık, yazar, dergi, anahtar kelime ve özet alanlarını birleştirerek hassas sorgular oluşturun.'},
+                {'icon': 'bi-file-earmark-text-fill', 'title': 'Makale Özetleri', 'desc': 'Türkçe akademik makalelerin tam künyesine ve özetlerine anında erişin.'},
+                {'icon': 'bi-download', 'title': 'Toplu İndirme', 'desc': 'Arama sonuçlarınızı TXT formatında bilgisayarınıza indirin veya e-posta ile alın.'},
+                {'icon': 'bi-bar-chart-fill', 'color': 'warning', 'title': 'Makale Analizi', 'desc': '10+ sonuçta Makale Analizi butonu ile yazar, dergi ve yıl dağılım grafiklerini PDF olarak alın.'},
+            ],
+            'promo_steps': [
+                'Arama alanlarına anahtar kelime, yazar adı veya dergi adını girin.',
+                'TR Dizin veritabanından eşleşen makaleler saniyeler içinde listelenir.',
+                '10+ sonuçta Makale Analizi ile bibliyometrik PDF rapor alın.',
+            ],
+        })
+
     form = DizinSearchForm()
     user = request.user
 

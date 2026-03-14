@@ -169,7 +169,7 @@
                     {% if features.market %}<li class="nav-item px-2"><a class="nav-link" href="{% url 'job_list' %}">
                         <i class="bi bi-briefcase-fill me-1 text-success"></i>Hizmetler Pazarı
                     </a></li>{% endif %}
-                    {% if features.trdizin or features.openalex or features.oaipmh or features.tezanaliz or features.bibliometrics %}
+                    {% if features.trdizin or features.openalex or features.oaipmh or features.tezanaliz or features.bibliometrics or features.yoktez %}
                     <li class="nav-item dropdown px-2">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-database-fill me-1 text-info"></i>Akademik Veri ve Analiz
@@ -182,6 +182,10 @@
                             {% if features.openalex %}
                             <li><a class="dropdown-item" href="{% url 'openalex:landing' %}">
                                 <i class="bi bi-search me-2 text-success"></i>OpenAlex Tarama
+                            </a></li>{% endif %}
+                            {% if features.yoktez %}
+                            <li><a class="dropdown-item" href="{% url 'yoktez:landing' %}">
+                                <i class="bi bi-mortarboard-fill me-2 text-success"></i>YÖK Tez Tarama
                             </a></li>{% endif %}
                             {% if features.trdizin %}
                             <li><a class="dropdown-item" href="{% url 'trdizin:landing' %}">
