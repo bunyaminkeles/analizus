@@ -84,7 +84,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-okaidia.min.css" rel="stylesheet" media="print" onload="this.media='all'">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/toolbar/prism-toolbar.min.css" rel="stylesheet" media="print" onload="this.media='all'">
 
-    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=2050">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=2052">
     <link rel="stylesheet" href="{% static 'css/sidebar_widgets.css' %}?v=2051">
 
     {% block extra_head %}{% endblock %}
@@ -102,11 +102,12 @@
         input, select, textarea, .form-control { background-color: #1e293b !important; color: #ffffff !important; border: 1px solid rgba(56, 189, 248, 0.3) !important; }
         .cyber-card, .card { background: rgba(30, 41, 59, 0.5); border: 1px solid var(--glass-border); transition: all 0.4s; }
         .cyber-card:hover { transform: translateY(-7px); border-color: var(--neon-blue) !important; }
-        .cyber-ticker-wrapper { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(15, 23, 42, 0.9); border-top: 1px solid rgba(0, 210, 255, 0.3); height: 35px; z-index: 9999; overflow: hidden; display: flex; align-items: center; }
+        .cyber-ticker-wrapper { position: fixed; bottom: 0; left: 0; width: 100%; max-width: 100vw; background: rgba(15, 23, 42, 0.9); border-top: 1px solid rgba(0, 210, 255, 0.3); height: 35px; z-index: 9999; overflow: hidden; display: flex; align-items: center; }
         .ticker-content { display: flex; white-space: nowrap; animation: ticker-animation 80s linear infinite; }
         .ticker-item { padding: 0 30px; color: var(--neon-blue); font-family: 'Courier New', monospace; font-size: 0.8rem; }
         @keyframes ticker-animation { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
         main { padding-bottom: 60px; }
+        @media (max-width: 767px) { .cyber-ticker-wrapper { display: none; } main { padding-bottom: 16px; } }
 
         /* KOD BLOKLARI İÇİN ÖZEL NEON STİL (Paket 2) */
         pre[class*="language-"] {
