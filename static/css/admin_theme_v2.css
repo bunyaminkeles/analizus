@@ -377,3 +377,27 @@ a:hover {
     max-width: 100% !important;
 }
 
+/* ===== MOBİL RESPONSIVE ===== */
+@media (max-width: 991.98px) {
+    /* AdminLTE: içerik tam genişlik (sidebar sola kayar) */
+    .content-wrapper,
+    .main-footer {
+        margin-left: 0 !important;
+    }
+
+    /* Jazzmin customizer paneli mobilde gizle */
+    #jazzmin-ui-customizer {
+        display: none !important;
+    }
+
+    /* Sidebar varsayılan gizli (AdminLTE toggle çalışsın) */
+    .main-sidebar {
+        transform: translateX(-250px);
+        transition: transform 0.3s ease;
+    }
+    body.sidebar-open .main-sidebar,
+    body.sidebar-collapse .main-sidebar {
+        transform: translateX(0);
+    }
+}
+
