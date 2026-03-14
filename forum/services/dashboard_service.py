@@ -10,7 +10,7 @@ def get_dashboard_context():
     """Admin dashboard istatistiklerini döndürür."""
     from forum.models import (
         Topic, Post, Category, Profile, SuccessStory,
-        JobReview, ContactMessage, Donation, FreelanceJob, Proposal,
+        JobReview, ContactMessage, Donation, FreelanceJob, JobProposal,
     )
 
     today = timezone.now().date()
@@ -46,7 +46,7 @@ def get_dashboard_context():
 
     # === HİZMET PAZARI ===
     open_jobs         = FreelanceJob.objects.filter(status='open').count()
-    pending_proposals = Proposal.objects.filter(status='pending').count()
+    pending_proposals = JobProposal.objects.filter(status='pending').count()
     month_completed   = FreelanceJob.objects.filter(status='completed', updated_at__date__gte=last_30_days).count()
     total_completed   = FreelanceJob.objects.filter(status='completed').count()
 
