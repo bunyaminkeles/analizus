@@ -330,7 +330,7 @@
                     <span class="vp-action">Uzman Bul <i class="bi bi-arrow-right ms-1"></i></span>
                 </div>
             </a>
-            <a href="{% if user.is_authenticated %}{% url 'post_job' %}{% else %}{% url 'register' %}?next={% url 'post_job' %}{% endif %}" class="vp-card vp-purple">
+            <a href="{% url 'job_list' %}" class="vp-card vp-purple">
                 <div class="vp-icon"><i class="bi bi-briefcase-fill"></i></div>
                 <div class="vp-body">
                     <span class="vp-question">Uzman mısın?</span>
