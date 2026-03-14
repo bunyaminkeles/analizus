@@ -1094,6 +1094,7 @@ class SiteSettings(models.Model):
     feature_bibliometrics = models.BooleanField(default=True, verbose_name="Bibliometrik Analiz")
     feature_yoktez = models.BooleanField(default=True, verbose_name="YÖK Tez Arama")
     feature_tezanaliz = models.BooleanField(default=True, verbose_name="Tez & Makale Analizi")
+    feature_istatistik = models.BooleanField(default=True, verbose_name="İstatistik Analiz Araçları")
 
     # Analiz Limitleri
     analiz_max_records = models.PositiveIntegerField(

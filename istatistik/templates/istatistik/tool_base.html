@@ -1,0 +1,237 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="container py-4">
+
+  {# ── Başlık ── #}
+  <div class="row mb-4">
+    <div class="col">
+      <h2 class="fw-bold text-white mb-1">
+        <i class="bi {{ tool_icon }} text-{{ tool_color }} me-2"></i>{{ tool_title }}
+      </h2>
+      <p class="text-white-50 mb-0">{{ tool_description }}</p>
+    </div>
+    {% if user.is_authenticated %}
+    <div class="col-auto d-flex align-items-center">
+      <span class="badge bg-secondary fs-6">Günlük: {{ daily_remaining }} analiz hakkı</span>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="row g-4">
+    {# ── Sol: Yükleme formu ── #}
+    <div class="col-lg-5">
+      <div class="card border-secondary h-100" style="background-color:#1a1a2e;">
+        <div class="card-body p-4">
+          <h5 class="text-white fw-semibold mb-3">
+            <i class="bi bi-upload me-2 text-{{ tool_color }}"></i>Dosya Yükle
+          </h5>
+          <p class="text-white-50 small mb-3">CSV veya Excel (.xlsx/.xls) dosyanızı yükleyin.</p>
+
+          {% if not user.is_authenticated %}
+          <div class="alert alert-info small mb-3">
+            <i class="bi bi-info-circle me-1"></i>
+            <a href="{% url 'login' %}?next={{ request.path }}" class="alert-link">Giriş yapın</a>
+            veya
+            <a href="{% url 'register' %}?next={{ request.path }}" class="alert-link">kayıt olun</a>
+            — geçmişiniz kaydedilsin ve daha fazla analiz yapın.
+          </div>
+          {% endif %}
+
+          <div id="upload-area"
+               class="border border-secondary rounded-3 text-center p-4 mb-3"
+               style="border-style:dashed!important;cursor:pointer;transition:border-color .2s;"
+               onclick="document.getElementById('file-input').click()">
+            <i class="bi bi-cloud-upload-fill fs-2 text-{{ tool_color }} mb-2 d-block"></i>
+            <p class="text-white-50 small mb-1">Dosyayı buraya sürükleyin veya tıklayın</p>
+            <p class="text-white-50 small mb-0" id="file-name-display">CSV, XLSX, XLS — Maks. 10 MB</p>
+          </div>
+          <input type="file" id="file-input" accept=".csv,.xlsx,.xls" class="d-none">
+
+          <button id="analyze-btn" class="btn btn-{{ tool_color }} w-100 fw-semibold" disabled>
+            <i class="bi bi-play-circle-fill me-2"></i>Analizi Başlat
+          </button>
+
+          <div id="error-msg" class="alert alert-danger mt-3 d-none small"></div>
+        </div>
+      </div>
+    </div>
+
+    {# ── Sağ: Sonuç paneli ── #}
+    <div class="col-lg-7">
+      <div class="card border-secondary h-100" style="background-color:#16213e;">
+        <div class="card-body p-4">
+
+          {# Başlangıç ekranı #}
+          <div id="panel-idle">
+            <h5 class="text-white-50 fw-semibold mb-3">Sonuçlar burada görünecek</h5>
+            <ul class="text-white-50 small ps-3">
+              {% for hint in tool_hints %}
+              <li class="mb-1">{{ hint }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+
+          {# Yükleniyor #}
+          <div id="panel-loading" class="text-center d-none py-4">
+            <div class="spinner-border text-{{ tool_color }} mb-3" style="width:3rem;height:3rem;"></div>
+            <p class="text-white-50">Analiz yapılıyor, lütfen bekleyin…</p>
+          </div>
+
+          {# Hata #}
+          <div id="panel-error" class="d-none">
+            <div class="alert alert-danger">
+              <i class="bi bi-exclamation-triangle-fill me-2"></i>
+              <span id="panel-error-msg"></span>
+            </div>
+            <button class="btn btn-outline-light btn-sm" onclick="resetUI()">
+              <i class="bi bi-arrow-counterclockwise me-1"></i>Tekrar Dene
+            </button>
+          </div>
+
+          {# Tamamlandı #}
+          <div id="panel-done" class="d-none">
+            <div class="d-flex align-items-center gap-2 mb-3">
+              <i class="bi bi-check-circle-fill text-success fs-4"></i>
+              <h5 class="text-white mb-0">Analiz Tamamlandı</h5>
+            </div>
+
+            {% block result_summary %}{# Her araç kendi özetini buraya koyar #}{% endblock %}
+
+            <div class="d-flex gap-2 mt-3 flex-wrap">
+              <a id="pdf-download-btn" href="#" class="btn btn-danger fw-semibold" target="_blank">
+                <i class="bi bi-file-earmark-pdf-fill me-2"></i>PDF İndir
+              </a>
+              <button class="btn btn-outline-light btn-sm" onclick="resetUI()">
+                <i class="bi bi-plus-circle me-1"></i>Yeni Analiz
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const STATUS_URL = "{% block status_url %}{% endblock %}";
+let pollInterval = null;
+let currentJobId = null;
+
+const uploadArea = document.getElementById('upload-area');
+const fileInput  = document.getElementById('file-input');
+const fileNameDisplay = document.getElementById('file-name-display');
+const analyzeBtn = document.getElementById('analyze-btn');
+const errorMsg   = document.getElementById('error-msg');
+
+// Drag & drop
+uploadArea.addEventListener('dragover', e => {
+  e.preventDefault();
+  uploadArea.style.borderColor = '#0d6efd';
+});
+uploadArea.addEventListener('dragleave', () => {
+  uploadArea.style.borderColor = '';
+});
+uploadArea.addEventListener('drop', e => {
+  e.preventDefault();
+  uploadArea.style.borderColor = '';
+  const f = e.dataTransfer.files[0];
+  if (f) setFile(f);
+});
+fileInput.addEventListener('change', () => {
+  if (fileInput.files[0]) setFile(fileInput.files[0]);
+});
+
+function setFile(f) {
+  fileInput._selectedFile = f;
+  fileNameDisplay.textContent = f.name;
+  analyzeBtn.disabled = false;
+  errorMsg.classList.add('d-none');
+}
+
+analyzeBtn.addEventListener('click', () => {
+  const f = fileInput._selectedFile;
+  if (!f) return;
+
+  analyzeBtn.disabled = true;
+  showPanel('loading');
+
+  const fd = new FormData();
+  fd.append('file', f);
+  fd.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+  fetch(window.location.pathname, {
+    method: 'POST',
+    headers: {'X-Requested-With': 'XMLHttpRequest'},
+    body: fd,
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.error) {
+      showError(data.error);
+      return;
+    }
+    currentJobId = data.job_id;
+    startPolling(currentJobId);
+  })
+  .catch(() => showError('Bağlantı hatası. Lütfen tekrar deneyin.'));
+});
+
+function startPolling(jobId) {
+  const url = STATUS_URL.replace('00000000-0000-0000-0000-000000000000', jobId);
+  pollInterval = setInterval(() => {
+    fetch(url, {headers: {'X-Requested-With': 'XMLHttpRequest'}})
+    .then(r => r.json())
+    .then(data => {
+      if (data.status === 'completed') {
+        clearInterval(pollInterval);
+        onCompleted(data);
+      } else if (data.status === 'failed') {
+        clearInterval(pollInterval);
+        showError(data.error || 'Analiz başarısız oldu.');
+      }
+    })
+    .catch(() => {});
+  }, 2500);
+}
+
+function onCompleted(data) {
+  document.getElementById('pdf-download-btn').href = data.pdf_url;
+  {% block on_completed_js %}{% endblock %}
+  showPanel('done');
+}
+
+function showPanel(name) {
+  ['idle','loading','error','done'].forEach(n => {
+    document.getElementById('panel-' + n).classList.toggle('d-none', n !== name);
+  });
+}
+
+function showError(msg) {
+  analyzeBtn.disabled = false;
+  document.getElementById('panel-error-msg').textContent = msg;
+  showPanel('error');
+}
+
+function resetUI() {
+  if (pollInterval) clearInterval(pollInterval);
+  currentJobId = null;
+  fileInput.value = '';
+  fileInput._selectedFile = null;
+  fileNameDisplay.textContent = 'CSV, XLSX, XLS — Maks. 10 MB';
+  analyzeBtn.disabled = true;
+  errorMsg.classList.add('d-none');
+  showPanel('idle');
+}
+
+{% if active_job_id %}
+// Devam eden iş var
+currentJobId = '{{ active_job_id }}';
+showPanel('loading');
+startPolling(currentJobId);
+{% endif %}
+</script>
+{% endblock %}

@@ -169,30 +169,38 @@
                     {% if features.market %}<li class="nav-item px-2"><a class="nav-link" href="{% url 'job_list' %}">
                         <i class="bi bi-briefcase-fill me-1 text-success"></i>Hizmetler Pazarı
                     </a></li>{% endif %}
-                    {% if features.trdizin or features.openalex or features.oaipmh or features.tezanaliz or features.bibliometrics or features.yoktez %}
+                    {% if features.oaipmh or features.openalex or features.yoktez or features.trdizin %}
                     <li class="nav-item dropdown px-2">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="bi bi-database-fill me-1 text-info"></i>Akademik Veri ve Analiz
+                            <i class="bi bi-database-fill me-1 text-info"></i>Akademik Tarama
                         </a>
                         <ul class="dropdown-menu dropdown-menu-dark">
                             {% if features.oaipmh %}
                             <li><a class="dropdown-item" href="{% url 'oaipmh:landing' %}">
                                 <i class="bi bi-mortarboard me-2 text-warning"></i>Üniversite Tezleri
                             </a></li>{% endif %}
-                            {% if features.openalex %}
-                            <li><a class="dropdown-item" href="{% url 'openalex:landing' %}">
-                                <i class="bi bi-search me-2 text-success"></i>OpenAlex Tarama
-                            </a></li>{% endif %}
                             {% if features.yoktez %}
                             <li><a class="dropdown-item" href="{% url 'yoktez:landing' %}">
                                 <i class="bi bi-mortarboard-fill me-2 text-success"></i>YÖK Tez Tarama
+                            </a></li>{% endif %}
+                            {% if features.openalex %}
+                            <li><a class="dropdown-item" href="{% url 'openalex:landing' %}">
+                                <i class="bi bi-search me-2 text-success"></i>OpenAlex Tarama
                             </a></li>{% endif %}
                             {% if features.trdizin %}
                             <li><a class="dropdown-item" href="{% url 'trdizin:landing' %}">
                                 <i class="bi bi-journal-check me-2 text-info"></i>TR Dizin Tarama
                             </a></li>{% endif %}
+                        </ul>
+                    </li>
+                    {% endif %}
+                    {% if features.bibliometrics or features.tezanaliz or features.istatistik %}
+                    <li class="nav-item dropdown px-2">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-bar-chart-line-fill me-1 text-success"></i>Analiz Araçları
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-dark">
                             {% if features.bibliometrics %}
-                            <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="{% url 'bibliometrics:landing' %}">
                                 <i class="bi bi-bar-chart-line-fill me-2 text-info"></i>Bibliometrik Analiz
                             </a></li>{% endif %}
@@ -200,6 +208,18 @@
                             <li><a class="dropdown-item" href="{% url 'tezanaliz:landing' %}">
                                 <i class="bi bi-graph-up-arrow me-2 text-success"></i>Tez Analizi (YÖK)
                             </a></li>{% endif %}
+                            {% if features.istatistik %}
+                            {% if features.bibliometrics or features.tezanaliz %}<li><hr class="dropdown-divider"></li>{% endif %}
+                            <li><a class="dropdown-item" href="{% url 'istatistik:cronbach' %}">
+                                <i class="bi bi-shield-check me-2 text-primary"></i>Güvenilirlik (Cronbach)
+                            </a></li>
+                            <li><a class="dropdown-item" href="{% url 'istatistik:normallik' %}">
+                                <i class="bi bi-activity me-2 text-warning"></i>Normallik Testi
+                            </a></li>
+                            <li><a class="dropdown-item" href="{% url 'istatistik:betimsel' %}">
+                                <i class="bi bi-clipboard2-data me-2 text-success"></i>Betimleyici İstatistik
+                            </a></li>
+                            {% endif %}
                         </ul>
                     </li>
                     {% endif %}

@@ -38,6 +38,7 @@ def _recover():
         from openalex.models import AlexSearchJob
         from trdizin.models import DizinSearchJob
         from bibliometrics.models import BibliometricJob
+        from istatistik.models import IstatistikJob
 
         from django.utils import timezone
         stuck_cutoff = timezone.now() - timedelta(minutes=STUCK_THRESHOLD_MINUTES)
@@ -65,6 +66,13 @@ def _recover():
             for job in Model.objects.filter(status='pending').order_by('created_at'):
                 _job_queue.put((job_type, str(job.id)))
                 logger.info(f'[job_queue] Recovery: {job_type}/{job.id} kuyruğa eklendi')
+
+        # İstatistik araçları — dosya içeriği bellekte tutulduğundan restart sonrası kurtarılamaz
+        for job in IstatistikJob.objects.filter(status__in=['running', 'pending']):
+            job.status = 'failed'
+            job.error_message = 'Sunucu yeniden başlatıldı, lütfen dosyayı tekrar yükleyin.'
+            job.save(update_fields=['status', 'error_message'])
+            logger.info(f'[job_queue] Recovery: istatistik/{job.id} failed (dosya yok)')
 
         # Bibliometrics upload — dosya içeriği bellekte tutulduğundan restart sonrası kurtarılamaz
         for job in BibliometricJob.objects.filter(status__in=['running', 'pending'], source='upload'):
@@ -111,6 +119,9 @@ def _run_job(job_type: str, job_id: str):
         elif job_type == 'bibliometrics_openalex':
             from bibliometrics.services.job_runner import _execute_job_openalex
             _execute_job_openalex(job_id)
+        elif job_type in ('cronbach', 'normallik', 'betimsel'):
+            from istatistik.services.job_runner import _execute_job
+            _execute_job(job_id)
         else:
             logger.warning(f'[job_queue] Bilinmeyen job_type: {job_type}')
     except Exception as e:
@@ -175,6 +186,7 @@ def get_queue_position(job_type: str, job_id: str) -> int:
         from openalex.models import AlexSearchJob
         from trdizin.models import DizinSearchJob
         from bibliometrics.models import BibliometricJob
+        from istatistik.models import IstatistikJob
 
         model_map = {
             'tezanaliz': TezAnaliz,
@@ -184,6 +196,9 @@ def get_queue_position(job_type: str, job_id: str) -> int:
             'trdizin': DizinSearchJob,
             'bibliometrics': BibliometricJob,
             'bibliometrics_openalex': BibliometricJob,
+            'cronbach': IstatistikJob,
+            'normallik': IstatistikJob,
+            'betimsel': IstatistikJob,
         }
         Model = model_map.get(job_type)
         if not Model:
@@ -201,7 +216,8 @@ def get_queue_position(job_type: str, job_id: str) -> int:
             YokTezSearchJob.objects.filter(status='pending', created_at__lt=created_at).count() +
             AlexSearchJob.objects.filter(status='pending', created_at__lt=created_at).count() +
             DizinSearchJob.objects.filter(status='pending', created_at__lt=created_at).count() +
-            BibliometricJob.objects.filter(status='pending', created_at__lt=created_at).count()
+            BibliometricJob.objects.filter(status='pending', created_at__lt=created_at).count() +
+            IstatistikJob.objects.filter(status='pending', created_at__lt=created_at).count()
         )
         running_count = (
             TezAnaliz.objects.filter(status='running').count() +
@@ -209,7 +225,8 @@ def get_queue_position(job_type: str, job_id: str) -> int:
             YokTezSearchJob.objects.filter(status='running').count() +
             AlexSearchJob.objects.filter(status='running').count() +
             DizinSearchJob.objects.filter(status='running').count() +
-            BibliometricJob.objects.filter(status='running').count()
+            BibliometricJob.objects.filter(status='running').count() +
+            IstatistikJob.objects.filter(status='running').count()
         )
 
         # Boş worker slotu var mı?
