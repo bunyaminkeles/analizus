@@ -31,7 +31,7 @@
 {% block content %}
 <div class="container-fluid py-4">
   <div class="row justify-content-center">
-    <div class="col-12 col-xl-11">
+    <div class="col-12">
 
       <!-- Başlık -->
       <div class="mb-4">
@@ -54,7 +54,7 @@
       </div>
 
       <!-- Sekmeler -->
-      <ul class="nav nav-tabs mb-0" id="tableauTabs" role="tablist">
+      <ul class="nav nav-tabs mb-0 flex-nowrap" id="tableauTabs" role="tablist" style="overflow-x:auto; overflow-y:hidden;">
         <li class="nav-item" role="presentation">
           <button class="nav-link active" id="tab-salk-btn"
                   data-bs-toggle="tab" data-bs-target="#tab-salk"
@@ -80,7 +80,7 @@
           <button class="nav-link" id="tab-kar-btn"
                   data-bs-toggle="tab" data-bs-target="#tab-kar"
                   type="button" role="tab" aria-selected="false">
-            <i class="bi bi-map me-1 text-warning"></i>İllere Göre Kar Oranı
+            <i class="bi bi-shop me-1 text-warning"></i>Satış Dashboard
           </button>
         </li>
       </ul>
@@ -97,7 +97,7 @@
                 <i class="bi bi-box-arrow-up-right me-1"></i>Tam Ekran
               </a>
             </div>
-            <div class="tableau-wrap px-3 pb-3">
+            <div class="tableau-wrap px-2 pb-2">
               <tableau-viz
                 src="https://public.tableau.com/views/TrDizinSalkAratrmalar/SalkAratrmalar"
                 width="100%" height="700"
@@ -116,7 +116,7 @@
                 <i class="bi bi-box-arrow-up-right me-1"></i>Tam Ekran
               </a>
             </div>
-            <div class="tableau-wrap px-3 pb-3">
+            <div class="tableau-wrap px-2 pb-2">
               <tableau-viz
                 src="https://public.tableau.com/views/Tuik-obezite/Dashboard2"
                 width="100%" height="700"
@@ -135,7 +135,7 @@
                 <i class="bi bi-box-arrow-up-right me-1"></i>Tam Ekran
               </a>
             </div>
-            <div class="tableau-wrap px-3 pb-3">
+            <div class="tableau-wrap px-2 pb-2">
               <tableau-viz
                 src="https://public.tableau.com/views/Binde5tenbyknfusart/Binde5denbykartlar"
                 width="100%" height="700"
@@ -145,19 +145,19 @@
           </div>
         </div>
 
-        <!-- Sekme 4: İllere Göre Kar Oranı -->
+        <!-- Sekme 4: Analizus Sales Dashboard -->
         <div class="tab-pane fade" id="tab-kar" role="tabpanel">
           <div class="card bg-dark border-secondary border-top-0 rounded-0 rounded-bottom">
             <div class="card-body p-2 d-flex justify-content-end">
-              <a href="https://public.tableau.com/views/LLEREGREKARORANI-DOLGUMAP/LLEREGREKARORANI"
+              <a href="https://public.tableau.com/views/analizus_sales/Dashboard1"
                  target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">
                 <i class="bi bi-box-arrow-up-right me-1"></i>Tam Ekran
               </a>
             </div>
-            <div class="tableau-wrap px-3 pb-3">
+            <div class="tableau-wrap px-2 pb-2">
               <tableau-viz
-                src="https://public.tableau.com/views/LLEREGREKARORANI-DOLGUMAP/LLEREGREKARORANI"
-                width="100%" height="700"
+                src="https://public.tableau.com/views/analizus_sales/Dashboard1"
+                width="100%"
                 toolbar="bottom" hide-tabs>
               </tableau-viz>
             </div>
