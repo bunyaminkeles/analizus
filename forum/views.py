@@ -1267,6 +1267,10 @@ def how_it_works(request):
     """Nasıl Çalışır? sayfası"""
     return render(request, 'forum/how_it_works.html')
 
+def tableau_dashboard(request):
+    """TR Dizin Sağlık Araştırmaları Tableau Dashboard"""
+    return render(request, 'forum/tableau_dashboard.html')
+
 def contact(request):
     if request.method == 'POST':
         from .models import ContactMessage

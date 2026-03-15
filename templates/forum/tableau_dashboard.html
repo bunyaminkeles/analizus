@@ -1,0 +1,256 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Tableau Analizleri - Analizus{% endblock %}
+{% block meta_description %}Akademik veri setlerine ait interaktif Tableau dashboard analizleri.{% endblock %}
+
+{% block extra_css %}
+<style>
+  #tableauTabs .nav-link {
+    color: rgba(255, 255, 255, 0.55);
+    background-color: #1a1f2e;
+    border-color: #495057 #495057 transparent;
+  }
+  #tableauTabs .nav-link:hover {
+    color: #fff;
+    border-color: #6c757d #6c757d transparent;
+    background-color: #242938;
+  }
+  #tableauTabs .nav-link.active {
+    color: #fff;
+    background-color: #212529;
+    border-color: #495057 #495057 #212529;
+  }
+  .tableau-wrap {
+    width: 100%;
+    overflow-x: auto;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+  <div class="row justify-content-center">
+    <div class="col-12 col-xl-11">
+
+      <!-- Başlık -->
+      <div class="mb-4">
+        <h1 class="h3 fw-bold text-white mb-1">
+          <i class="bi bi-pie-chart-fill me-2 text-warning"></i>Tableau Analizleri
+        </h1>
+        <p class="text-secondary mb-0">Akademik veri setlerine ait interaktif dashboard analizleri</p>
+      </div>
+
+      <!-- Bilgi Bandı -->
+      <div class="alert border-warning bg-dark d-flex align-items-center gap-3 mb-4" style="border-left: 3px solid; border-top: none; border-right: none; border-bottom: none;">
+        <i class="bi bi-bar-chart-steps text-warning fs-4 flex-shrink-0"></i>
+        <div class="flex-grow-1">
+          <span class="text-white">Kendi veri setiniz için Tableau analizi yaptırmak ister misiniz?</span>
+          <span class="text-secondary ms-1">Uzman analistlerimizle iletişime geçin, size özel dashboard hazırlayalım.</span>
+        </div>
+        <a href="{% url 'contact' %}" class="btn btn-warning btn-sm fw-semibold flex-shrink-0">
+          <i class="bi bi-envelope me-1"></i>İletişime Geç
+        </a>
+      </div>
+
+      <!-- Sekmeler -->
+      <ul class="nav nav-tabs mb-0" id="tableauTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+          <button class="nav-link active" id="tab-salk-btn"
+                  data-bs-toggle="tab" data-bs-target="#tab-salk"
+                  type="button" role="tab" aria-selected="true">
+            <i class="bi bi-heart-pulse me-1 text-danger"></i>TR Dizin Sağlık Araştırmaları
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="tab-obezite-btn"
+                  data-bs-toggle="tab" data-bs-target="#tab-obezite"
+                  type="button" role="tab" aria-selected="false">
+            <i class="bi bi-graph-up me-1 text-info"></i>TÜİK Verileri - Cinsiyete Göre Obezite
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="tab-nufus-btn"
+                  data-bs-toggle="tab" data-bs-target="#tab-nufus"
+                  type="button" role="tab" aria-selected="false">
+            <i class="bi bi-people me-1 text-success"></i>Türkiye %0,5'den Yüksek Nüfus Artışı
+          </button>
+        </li>
+        <li class="nav-item" role="presentation">
+          <button class="nav-link" id="tab-kar-btn"
+                  data-bs-toggle="tab" data-bs-target="#tab-kar"
+                  type="button" role="tab" aria-selected="false">
+            <i class="bi bi-map me-1 text-warning"></i>İllere Göre Kar Oranı
+          </button>
+        </li>
+      </ul>
+
+      <!-- Sekme İçerikleri -->
+      <div class="tab-content">
+
+        <!-- Sekme 1: TR Dizin Sağlık -->
+        <div class="tab-pane fade show active" id="tab-salk" role="tabpanel">
+          <div class="card bg-dark border-secondary border-top-0 rounded-0 rounded-bottom">
+            <div class="card-body p-2 d-flex justify-content-end">
+              <a href="https://public.tableau.com/views/TrDizinSalkAratrmalar/SalkAratrmalar"
+                 target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">
+                <i class="bi bi-box-arrow-up-right me-1"></i>Tam Ekran
+              </a>
+            </div>
+            <div class="tableau-wrap px-3 pb-3">
+              <div id="viz1773538587842" style="position:relative;">
+                <noscript><a href="#"><img alt="TR-Dizin Sağlık Araştırmaları Analizi"
+                  src="https://public.tableau.com/static/images/Tr/TrDizinSalkAratrmalar/SalkAratrmalar/1_rss.png"
+                  style="border:none;width:100%;"/></a></noscript>
+                <object class="tableauViz" style="display:none;">
+                  <param name="host_url" value="https%3A%2F%2Fpublic.tableau.com%2F"/>
+                  <param name="embed_code_version" value="3"/>
+                  <param name="site_root" value=""/>
+                  <param name="name" value="TrDizinSalkAratrmalar/SalkAratrmalar"/>
+                  <param name="tabs" value="no"/>
+                  <param name="toolbar" value="yes"/>
+                  <param name="animate_transition" value="yes"/>
+                  <param name="display_static_image" value="yes"/>
+                  <param name="display_spinner" value="yes"/>
+                  <param name="display_overlay" value="yes"/>
+                  <param name="display_count" value="yes"/>
+                  <param name="language" value="tr-TR"/>
+                </object>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sekme 2: TÜİK Obezite -->
+        <div class="tab-pane fade" id="tab-obezite" role="tabpanel">
+          <div class="card bg-dark border-secondary border-top-0 rounded-0 rounded-bottom">
+            <div class="card-body p-2 d-flex justify-content-end">
+              <a href="https://public.tableau.com/views/Tuik-obezite/Dashboard2"
+                 target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">
+                <i class="bi bi-box-arrow-up-right me-1"></i>Tam Ekran
+              </a>
+            </div>
+            <div class="tableau-wrap px-3 pb-3">
+              <div id="viz1773539211650" style="position:relative;">
+                <noscript><a href="#"><img alt="TÜİK Verileri - Cinsiyete Göre Obezite"
+                  src="https://public.tableau.com/static/images/Tu/Tuik-obezite/Dashboard2/1_rss.png"
+                  style="border:none;width:100%;"/></a></noscript>
+                <object class="tableauViz" style="display:none;">
+                  <param name="host_url" value="https%3A%2F%2Fpublic.tableau.com%2F"/>
+                  <param name="embed_code_version" value="3"/>
+                  <param name="site_root" value=""/>
+                  <param name="name" value="Tuik-obezite/Dashboard2"/>
+                  <param name="tabs" value="no"/>
+                  <param name="toolbar" value="yes"/>
+                  <param name="animate_transition" value="yes"/>
+                  <param name="display_static_image" value="yes"/>
+                  <param name="display_spinner" value="yes"/>
+                  <param name="display_overlay" value="yes"/>
+                  <param name="display_count" value="yes"/>
+                  <param name="language" value="tr-TR"/>
+                </object>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sekme 3: Türkiye Nüfus Artışı -->
+        <div class="tab-pane fade" id="tab-nufus" role="tabpanel">
+          <div class="card bg-dark border-secondary border-top-0 rounded-0 rounded-bottom">
+            <div class="card-body p-2 d-flex justify-content-end">
+              <a href="https://public.tableau.com/views/Binde5tenbyknfusart/Binde5denbykartlar"
+                 target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">
+                <i class="bi bi-box-arrow-up-right me-1"></i>Tam Ekran
+              </a>
+            </div>
+            <div class="tableau-wrap px-3 pb-3">
+              <div id="viz1773539352318" style="position:relative;">
+                <noscript><a href="#"><img alt="Türkiye %0,5'den Yüksek Nüfus Artışı"
+                  src="https://public.tableau.com/static/images/Bi/Binde5tenbyknfusart/Binde5denbykartlar/1_rss.png"
+                  style="border:none;width:100%;"/></a></noscript>
+                <object class="tableauViz" style="display:none;">
+                  <param name="host_url" value="https%3A%2F%2Fpublic.tableau.com%2F"/>
+                  <param name="embed_code_version" value="3"/>
+                  <param name="site_root" value=""/>
+                  <param name="name" value="Binde5tenbyknfusart/Binde5denbykartlar"/>
+                  <param name="tabs" value="no"/>
+                  <param name="toolbar" value="yes"/>
+                  <param name="animate_transition" value="yes"/>
+                  <param name="display_static_image" value="yes"/>
+                  <param name="display_spinner" value="yes"/>
+                  <param name="display_overlay" value="yes"/>
+                  <param name="display_count" value="yes"/>
+                  <param name="language" value="tr-TR"/>
+                </object>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sekme 4: İllere Göre Kar Oranı -->
+        <div class="tab-pane fade" id="tab-kar" role="tabpanel">
+          <div class="card bg-dark border-secondary border-top-0 rounded-0 rounded-bottom">
+            <div class="card-body p-2 d-flex justify-content-end">
+              <a href="https://public.tableau.com/views/LLEREGREKARORANI-DOLGUMAP/LLEREGREKARORANI"
+                 target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">
+                <i class="bi bi-box-arrow-up-right me-1"></i>Tam Ekran
+              </a>
+            </div>
+            <div class="tableau-wrap px-3 pb-3">
+              <div id="viz1773539458002" style="position:relative;">
+                <noscript><a href="#"><img alt="İllere Göre Kar Oranı"
+                  src="https://public.tableau.com/static/images/LL/LLEREGREKARORANI-DOLGUMAP/LLEREGREKARORANI/1_rss.png"
+                  style="border:none;width:100%;"/></a></noscript>
+                <object class="tableauViz" style="display:none;">
+                  <param name="host_url" value="https%3A%2F%2Fpublic.tableau.com%2F"/>
+                  <param name="embed_code_version" value="3"/>
+                  <param name="site_root" value=""/>
+                  <param name="name" value="LLEREGREKARORANI-DOLGUMAP/LLEREGREKARORANI"/>
+                  <param name="tabs" value="no"/>
+                  <param name="toolbar" value="yes"/>
+                  <param name="animate_transition" value="yes"/>
+                  <param name="display_static_image" value="yes"/>
+                  <param name="display_spinner" value="yes"/>
+                  <param name="display_overlay" value="yes"/>
+                  <param name="display_count" value="yes"/>
+                  <param name="language" value="tr-TR"/>
+                </object>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /tab-content -->
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script type="text/javascript">
+  // Container'ın gerçek genişliğini al (yatay scroll padding hariç)
+  var col = document.getElementById('tableauTabs').closest('.col-12');
+  var availableW = col ? col.offsetWidth - 32 : (window.innerWidth - 60);
+  var VIZ_WIDTH  = Math.max(availableW, 400) + 'px';
+  var VIZ_HEIGHT = Math.round(availableW * 0.75) + 'px'; // 4:3 oranı
+
+  var vizIds = [
+    'viz1773538587842',
+    'viz1773539211650',
+    'viz1773539352318',
+    'viz1773539458002'
+  ];
+  vizIds.forEach(function (id) {
+    var div = document.getElementById(id);
+    if (!div) return;
+    var obj = div.getElementsByTagName('object')[0];
+    obj.style.width  = VIZ_WIDTH;
+    obj.style.height = VIZ_HEIGHT;
+  });
+
+  // viz_v1.js tek seferinde yüklenir, tüm viz'leri bulup init eder
+  var s = document.createElement('script');
+  s.src = 'https://public.tableau.com/javascripts/api/viz_v1.js';
+  document.body.appendChild(s);
+</script>
+{% endblock %}
