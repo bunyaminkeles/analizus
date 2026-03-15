@@ -29,11 +29,16 @@
   /* Sales Dashboard açıklama kartı — tüm selectorlar .dash-info-card altında */
   .dash-info-card {
     background: #1a1f2e;
-    border-left: 1px solid #495057;
-    padding: 24px 20px;
-    height: 100%;
-    overflow-y: auto;
+    border-top: 1px solid #2d3748;
+    padding: 28px 24px;
   }
+  .dash-feat-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  @media (max-width: 576px) { .dash-feat-list { grid-template-columns: 1fr; } }
   .dash-badge {
     display: inline-flex;
     align-items: center;
@@ -268,112 +273,102 @@
         <!-- Sekme 4: Analizus Sales Dashboard -->
         <div class="tab-pane fade" id="tab-kar" role="tabpanel">
           <div class="card bg-dark border-secondary border-top-0 rounded-0 rounded-bottom">
-            <div class="card-body p-0">
-              <div class="row g-0">
-
-                <!-- Sol: Viz -->
-                <div class="col-lg-8">
-                  <div class="p-2 d-flex justify-content-end">
-                    <a href="https://public.tableau.com/views/analizus_sales/Dashboard1"
-                       target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">
-                      <i class="bi bi-box-arrow-up-right me-1"></i>Tam Ekran
-                    </a>
-                  </div>
-                  <div class="tableau-wrap px-2 pb-2">
-                    <tableau-viz
-                      src="https://public.tableau.com/views/analizus_sales/Dashboard1"
-                      width="100%" height="900"
-                      toolbar="bottom" hide-tabs>
-                    </tableau-viz>
-                  </div>
-                </div>
-
-                <!-- Sağ: Açıklama -->
-                <div class="col-lg-4">
-                  <div class="dash-info-card">
-                    <div class="dash-badge">
-                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 16l4-8 4 4 4-6"/></svg>
-                      İnteraktif Dashboard
-                    </div>
-                    <p class="dash-title">Satış Dashboard – Örnek Çalışma</p>
-                    <p class="dash-desc">
-                      2022–2025 yılları arasındaki satış verilerini interaktif olarak analiz edin. Gelir, kâr, miktar ve sipariş KPI'larını tek ekranda takip edin; bölge ve kategori bazında keşfedin.
-                    </p>
-
-                    <div class="dash-kpi-grid">
-                      <div class="dash-kpi-box">
-                        <div class="dk-label">Toplam Satış</div>
-                        <div class="dk-val dkv-blue">$2.35M</div>
-                      </div>
-                      <div class="dash-kpi-box">
-                        <div class="dk-label">Toplam Kâr</div>
-                        <div class="dk-val dkv-green">$315K</div>
-                      </div>
-                      <div class="dash-kpi-box">
-                        <div class="dk-label">Satış Adedi</div>
-                        <div class="dk-val dkv-orange">7,392</div>
-                      </div>
-                      <div class="dash-kpi-box">
-                        <div class="dk-label">Sipariş Sayısı</div>
-                        <div class="dk-val dkv-purple">3,521</div>
-                      </div>
-                    </div>
-
-                    <div class="dash-feat-list">
-                      <div class="dash-feat-item">
-                        <div class="dash-feat-icon dfi-blue">📈</div>
-                        <div>
-                          <div class="df-title">Aylık Trend Analizi</div>
-                          <p class="df-desc">Satış ve kâr trendlerini ay bazında dual-axis grafikte karşılaştırın.</p>
-                        </div>
-                      </div>
-                      <div class="dash-feat-item">
-                        <div class="dash-feat-icon dfi-green">🛍️</div>
-                        <div>
-                          <div class="df-title">Kategori Kırılımı</div>
-                          <p class="df-desc">12 alt kategorideki satış dağılımını görün, en iyi/en kötü grupları belirleyin.</p>
-                        </div>
-                      </div>
-                      <div class="dash-feat-item">
-                        <div class="dash-feat-icon dfi-orange">🗺️</div>
-                        <div>
-                          <div class="df-title">Bölgesel Performans</div>
-                          <p class="df-desc">4 bölge ve eyalet bazında satış ve kârlılık karşılaştırması.</p>
-                        </div>
-                      </div>
-                      <div class="dash-feat-item">
-                        <div class="dash-feat-icon dfi-purple">🎯</div>
-                        <div>
-                          <div class="df-title">İnteraktif Filtreleme</div>
-                          <p class="df-desc">Yıl, bölge ve kategoriye tıklayarak tüm dashboard'u anlık filtreleyin.</p>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="dash-divider"></div>
-
-                    <div class="dash-cta-box">
-                      <div class="dc-title">Kendi veriniz için dashboard oluşturalım</div>
-                      <p class="dc-desc">Akademik, satış veya operasyonel verilerinizi profesyonel Tableau dashboard'una dönüştürelim.</p>
-                      <a href="{% url 'contact' %}" class="dash-cta-btn">
-                        İletişime Geç
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                      </a>
-                    </div>
-
-                    <div class="dash-tech-tags">
-                      <span class="dash-tech-tag">Tableau Public</span>
-                      <span class="dash-tech-tag">KPI Dashboard</span>
-                      <span class="dash-tech-tag">Dual-Axis Chart</span>
-                      <span class="dash-tech-tag">Interactive Filters</span>
-                      <span class="dash-tech-tag">Dark Theme</span>
-                      <span class="dash-tech-tag">2022-2025 Data</span>
-                    </div>
-                  </div>
-                </div>
-
-              </div><!-- /row -->
+            <div class="card-body p-2 d-flex justify-content-end">
+              <a href="https://public.tableau.com/views/analizus_sales/Dashboard1"
+                 target="_blank" rel="noopener" class="btn btn-sm btn-outline-secondary">
+                <i class="bi bi-box-arrow-up-right me-1"></i>Tam Ekran
+              </a>
             </div>
+            <div class="tableau-wrap px-2 pb-2">
+              <tableau-viz
+                src="https://public.tableau.com/views/analizus_sales/Dashboard1"
+                width="100%" height="900"
+                toolbar="bottom" hide-tabs>
+              </tableau-viz>
+            </div>
+
+            <!-- Açıklama Kartı (görselin altında) -->
+            <div class="dash-info-card">
+              <div class="dash-badge">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 16l4-8 4 4 4-6"/></svg>
+                İnteraktif Dashboard
+              </div>
+              <p class="dash-title">Satış Dashboard – Örnek Çalışma</p>
+              <p class="dash-desc">
+                2022–2025 yılları arasındaki satış verilerini interaktif olarak analiz edin. Gelir, kâr, miktar ve sipariş KPI'larını tek ekranda takip edin; bölge ve kategori bazında keşfedin.
+              </p>
+
+              <div class="dash-kpi-grid">
+                <div class="dash-kpi-box">
+                  <div class="dk-label">Toplam Satış</div>
+                  <div class="dk-val dkv-blue">$2.35M</div>
+                </div>
+                <div class="dash-kpi-box">
+                  <div class="dk-label">Toplam Kâr</div>
+                  <div class="dk-val dkv-green">$315K</div>
+                </div>
+                <div class="dash-kpi-box">
+                  <div class="dk-label">Satış Adedi</div>
+                  <div class="dk-val dkv-orange">7,392</div>
+                </div>
+                <div class="dash-kpi-box">
+                  <div class="dk-label">Sipariş Sayısı</div>
+                  <div class="dk-val dkv-purple">3,521</div>
+                </div>
+              </div>
+
+              <div class="dash-feat-list">
+                <div class="dash-feat-item">
+                  <div class="dash-feat-icon dfi-blue">📈</div>
+                  <div>
+                    <div class="df-title">Aylık Trend Analizi</div>
+                    <p class="df-desc">Satış ve kâr trendlerini ay bazında dual-axis grafikte karşılaştırın.</p>
+                  </div>
+                </div>
+                <div class="dash-feat-item">
+                  <div class="dash-feat-icon dfi-green">🛍️</div>
+                  <div>
+                    <div class="df-title">Kategori Kırılımı</div>
+                    <p class="df-desc">12 alt kategorideki satış dağılımını görün, en iyi/en kötü grupları belirleyin.</p>
+                  </div>
+                </div>
+                <div class="dash-feat-item">
+                  <div class="dash-feat-icon dfi-orange">🗺️</div>
+                  <div>
+                    <div class="df-title">Bölgesel Performans</div>
+                    <p class="df-desc">4 bölge ve eyalet bazında satış ve kârlılık karşılaştırması.</p>
+                  </div>
+                </div>
+                <div class="dash-feat-item">
+                  <div class="dash-feat-icon dfi-purple">🎯</div>
+                  <div>
+                    <div class="df-title">İnteraktif Filtreleme</div>
+                    <p class="df-desc">Yıl, bölge ve kategoriye tıklayarak tüm dashboard'u anlık filtreleyin.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="dash-divider"></div>
+
+              <div class="dash-cta-box">
+                <div class="dc-title">Kendi veriniz için dashboard oluşturalım</div>
+                <p class="dc-desc">Akademik, satış veya operasyonel verilerinizi profesyonel Tableau dashboard'una dönüştürelim.</p>
+                <a href="{% url 'contact' %}" class="dash-cta-btn">
+                  İletişime Geç
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </a>
+              </div>
+
+              <div class="dash-tech-tags">
+                <span class="dash-tech-tag">Tableau Public</span>
+                <span class="dash-tech-tag">KPI Dashboard</span>
+                <span class="dash-tech-tag">Dual-Axis Chart</span>
+                <span class="dash-tech-tag">Interactive Filters</span>
+                <span class="dash-tech-tag">Dark Theme</span>
+                <span class="dash-tech-tag">2022-2025 Data</span>
+              </div>
+            </div><!-- /dash-info-card -->
+
           </div>
         </div>
 
