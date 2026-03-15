@@ -25,6 +25,148 @@
     width: 100%;
     overflow-x: auto;
   }
+
+  /* Sales Dashboard açıklama kartı */
+  .dash-info-card {
+    background: linear-gradient(135deg, #1B2838 0%, #1e3045 100%);
+    border-radius: 16px;
+    border: 1px solid rgba(79, 195, 247, 0.12);
+    padding: 36px;
+    margin: 24px 8px 8px;
+    position: relative;
+    overflow: hidden;
+  }
+  .dash-info-card::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(79,195,247,0.07) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+  .dash-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(79, 195, 247, 0.1);
+    border: 1px solid rgba(79, 195, 247, 0.2);
+    border-radius: 20px;
+    padding: 5px 13px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #4FC3F7;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .dash-info-card h3 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 10px;
+  }
+  .dash-info-card .desc {
+    font-size: 15px;
+    color: #8E9AAF;
+    line-height: 1.7;
+    margin-bottom: 28px;
+  }
+  .kpi-row {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+  }
+  .kpi-box {
+    flex: 1;
+    min-width: 120px;
+    text-align: center;
+    padding: 14px 8px;
+    background: rgba(35, 48, 67, 0.5);
+    border-radius: 10px;
+  }
+  .kpi-box .kpi-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #8E9AAF;
+    margin-bottom: 5px;
+  }
+  .kpi-box .kpi-val { font-size: 20px; font-weight: 700; }
+  .kv-blue   { color: #4FC3F7; }
+  .kv-green  { color: #81C784; }
+  .kv-orange { color: #FFB74D; }
+  .kv-purple { color: #CE93D8; }
+  .features-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+  @media (max-width: 600px) { .features-grid { grid-template-columns: 1fr; } }
+  .feat-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px;
+    background: rgba(35, 48, 67, 0.55);
+    border-radius: 10px;
+    border: 1px solid rgba(79, 195, 247, 0.06);
+  }
+  .feat-icon {
+    width: 34px; height: 34px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; font-size: 15px;
+  }
+  .fi-blue   { background: rgba(79, 195, 247, 0.15); }
+  .fi-green  { background: rgba(129, 199, 132, 0.15); }
+  .fi-orange { background: rgba(255, 183, 77, 0.15); }
+  .fi-purple { background: rgba(206, 147, 216, 0.15); }
+  .feat-item h4 { font-size: 13px; font-weight: 600; color: #e0e0e0; margin-bottom: 3px; }
+  .feat-item p  { font-size: 12px; color: #7a879a; line-height: 1.5; margin: 0; }
+  .dash-divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(79,195,247,0.15), transparent);
+    margin-bottom: 24px;
+  }
+  .dash-cta {
+    background: rgba(79, 195, 247, 0.05);
+    border: 1px solid rgba(79, 195, 247, 0.12);
+    border-radius: 12px;
+    padding: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .dash-cta h4 { font-size: 16px; font-weight: 600; color: #fff; margin-bottom: 4px; }
+  .dash-cta p  { font-size: 13px; color: #8E9AAF; line-height: 1.6; margin: 0; }
+  .dash-cta-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: #4FC3F7;
+    color: #0f1923;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 10px 22px;
+    border-radius: 8px;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background 0.2s;
+  }
+  .dash-cta-btn:hover { background: #81D4FA; color: #0f1923; }
+  .tech-tags { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 20px; }
+  .tech-tag {
+    font-size: 11px; font-weight: 500; color: #7a879a;
+    background: rgba(142, 154, 175, 0.08);
+    border: 1px solid rgba(142, 154, 175, 0.12);
+    border-radius: 5px; padding: 3px 9px;
+  }
 </style>
 {% endblock %}
 
@@ -161,6 +303,94 @@
                 toolbar="bottom" hide-tabs>
               </tableau-viz>
             </div>
+
+            <!-- Açıklama Kartı -->
+            <div class="dash-info-card">
+              <div class="dash-badge">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 16l4-8 4 4 4-6"/></svg>
+                İnteraktif Dashboard
+              </div>
+              <h3>Satış Dashboard – Örnek Çalışma</h3>
+              <p class="desc">
+                Bu dashboard, 2022–2025 yılları arasındaki satış verilerini interaktif olarak analiz etmenizi sağlar.
+                Gelir, kâr, miktar ve sipariş sayısı gibi temel performans göstergelerini (KPI) tek bir ekranda takip edebilir;
+                bölge, kategori ve zaman bazında derinlemesine inceleme yapabilirsiniz.
+                Filtrelere tıklayarak verileri dilediğiniz gibi keşfedin.
+              </p>
+
+              <div class="kpi-row">
+                <div class="kpi-box">
+                  <div class="kpi-label">Toplam Satış</div>
+                  <div class="kpi-val kv-blue">$2.35M</div>
+                </div>
+                <div class="kpi-box">
+                  <div class="kpi-label">Toplam Kâr</div>
+                  <div class="kpi-val kv-green">$315K</div>
+                </div>
+                <div class="kpi-box">
+                  <div class="kpi-label">Satış Adedi</div>
+                  <div class="kpi-val kv-orange">7,392</div>
+                </div>
+                <div class="kpi-box">
+                  <div class="kpi-label">Sipariş Sayısı</div>
+                  <div class="kpi-val kv-purple">3,521</div>
+                </div>
+              </div>
+
+              <div class="features-grid">
+                <div class="feat-item">
+                  <div class="feat-icon fi-blue">📈</div>
+                  <div>
+                    <h4>Aylık Trend Analizi</h4>
+                    <p>Satış ve kâr trendlerini ay bazında dual-axis grafikte karşılaştırın. Mevsimsel dalgalanmaları anında fark edin.</p>
+                  </div>
+                </div>
+                <div class="feat-item">
+                  <div class="feat-icon fi-green">🛍️</div>
+                  <div>
+                    <h4>Kategori Kırılımı</h4>
+                    <p>12 alt kategorideki satış dağılımını görün. En çok gelir getiren ve en düşük performanslı ürün gruplarını belirleyin.</p>
+                  </div>
+                </div>
+                <div class="feat-item">
+                  <div class="feat-icon fi-orange">🗺️</div>
+                  <div>
+                    <h4>Bölgesel Performans</h4>
+                    <p>4 bölge ve eyalet bazında satış ve kârlılık karşılaştırması. Hangi bölge öne çıkıyor, hangisi geride kalıyor?</p>
+                  </div>
+                </div>
+                <div class="feat-item">
+                  <div class="feat-icon fi-purple">🎯</div>
+                  <div>
+                    <h4>İnteraktif Filtreleme</h4>
+                    <p>Yıl, bölge ve kategoriye tıklayarak tüm dashboard'u anlık filtreleyin. Veriye istediğiniz açıdan bakın.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="dash-divider"></div>
+
+              <div class="dash-cta">
+                <div>
+                  <h4>Kendi veriniz için dashboard oluşturalım</h4>
+                  <p>Akademik araştırma, satış, pazarlama veya operasyonel verilerinizi profesyonel bir Tableau dashboard'una dönüştürelim.</p>
+                </div>
+                <a href="{% url 'contact' %}" class="dash-cta-btn">
+                  İletişime Geç
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </a>
+              </div>
+
+              <div class="tech-tags">
+                <span class="tech-tag">Tableau Public</span>
+                <span class="tech-tag">KPI Dashboard</span>
+                <span class="tech-tag">Dual-Axis Chart</span>
+                <span class="tech-tag">Interactive Filters</span>
+                <span class="tech-tag">Dark Theme</span>
+                <span class="tech-tag">2022-2025 Data</span>
+              </div>
+            </div><!-- /dash-info-card -->
+
           </div>
         </div>
 
