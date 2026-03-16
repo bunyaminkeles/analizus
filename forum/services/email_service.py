@@ -17,6 +17,10 @@ class EmailService:
     @staticmethod
     def is_configured():
         """E-posta ayarlarının yapılıp yapılmadığını kontrol eder"""
+        # Resend HTTP API kullanılıyorsa (Render ortamı)
+        if getattr(settings, 'RESEND_API_KEY', None):
+            return True
+        # SMTP kullanılıyorsa (lokal ortam)
         return all([
             settings.EMAIL_HOST,
             settings.EMAIL_PORT,

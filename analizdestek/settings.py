@@ -16,7 +16,8 @@ SITE_URL = os.getenv('SITE_URL', 'https://www.analizus.com')
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-varsayilan-anahtar')
 
 # Canlıda Debug KAPALI olmalı.
-DEBUG = 'RENDER' not in os.environ
+# .env dosyasında DEBUG=False ile kapatılır (Hetzner, Render vb.)
+DEBUG = os.getenv('DEBUG', 'True').lower() not in ('false', '0', 'no')
 
 # Sunucu adresini kabul et
 ALLOWED_HOSTS = [
@@ -124,10 +125,12 @@ STATICFILES_DIRS = [
 
 # Canlı Ortam Güvenlik Ayarları
 if not DEBUG:
+    # Nginx/Render proxy arkasında SSL header'dan anla
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
-    
+
     # Sadece ana site (analizus.com) için cookie domain ayarlarını yap
     if 'analizus.com' in SITE_URL and 'onrender.com' not in SITE_URL:
         # www ve non-www arası session paylaşımı için
@@ -236,8 +239,8 @@ JAZZMIN_UI_TWEAKS = {
 # --- E-POSTA AYARLARI ---
 RESEND_API_KEY = os.getenv('RESEND_API_KEY')
 
-if RESEND_API_KEY and not DEBUG:
-    # Render'da SMTP bloklu, Resend HTTP API kullan
+if RESEND_API_KEY:
+    # RESEND_API_KEY varsa her ortamda (Render, Hetzner) HTTP API kullan
     EMAIL_BACKEND = 'forum.backends.ResendBackend'
 else:
     # Lokal geliştirme: SMTP kullan

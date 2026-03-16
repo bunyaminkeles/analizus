@@ -11,8 +11,6 @@ RUN pip install --no-cache-dir --root-user-action=ignore -r requirements.txt
 
 COPY . .
 
-RUN python manage.py collectstatic --noinput
-
 EXPOSE 8000
 
-CMD ["sh", "-c", "bash deploy.sh && gunicorn analizdestek.wsgi:application --bind 0.0.0.0:${PORT:-8000} --access-logfile - --error-logfile -"]
+CMD ["sh", "-c", "bash deploy.sh && daphne -b 0.0.0.0 -p ${PORT:-8000} analizdestek.asgi:application"]
