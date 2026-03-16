@@ -492,6 +492,89 @@
         </div>
     </div>
 
+    <!-- ═══════════════════════════════════════════════
+         E-POSTA DOĞRULAMA
+    ═══════════════════════════════════════════════ -->
+    <div class="row mb-3">
+        <div class="col-12">
+            <div class="dashboard-card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5><i class="fas fa-envelope-open-text mr-2"></i>E-posta Doğrulama</h5>
+                    <a href="/admin/forum/emailverification/" class="btn btn-xs btn-outline-info">Tüm Tokenlar</a>
+                </div>
+                <div class="card-body">
+
+                    <!-- İstatistik kartları -->
+                    <div class="row mb-3">
+                        <div class="col-6 col-md-3 mb-2">
+                            <div class="stat-card text-center p-3 rounded" style="background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.25);">
+                                <div style="font-size:1.6rem;font-weight:700;color:#10b981;">{{ s.verified_users }}</div>
+                                <div class="text-muted" style="font-size:0.75rem;">Doğrulanmış</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3 mb-2">
+                            <div class="stat-card text-center p-3 rounded" style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);">
+                                <div style="font-size:1.6rem;font-weight:700;color:#ef4444;">{{ s.unverified_users }}</div>
+                                <div class="text-muted" style="font-size:0.75rem;">Doğrulanmamış</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3 mb-2">
+                            <div class="stat-card text-center p-3 rounded" style="background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.25);">
+                                <div style="font-size:1.6rem;font-weight:700;color:#6366f1;">%{{ s.email_verify_rate }}</div>
+                                <div class="text-muted" style="font-size:0.75rem;">Doğrulama Oranı</div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3 mb-2">
+                            <div class="stat-card text-center p-3 rounded" style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.25);">
+                                <div style="font-size:1.6rem;font-weight:700;color:#f59e0b;">{{ s.unverified_old_count }}</div>
+                                <div class="text-muted" style="font-size:0.75rem;">7+ Gün Takılı</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Son 7 günde kayıt olup doğrulamayan kullanıcılar -->
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="text-muted" style="font-size:0.82rem;"><i class="fas fa-clock mr-1"></i>Son 7 günde kayıt olup doğrulamayan kullanıcılar</span>
+                    </div>
+
+                    {% if s.unverified_recent %}
+                    <div class="table-responsive">
+                        <table class="table table-sm table-dark" style="font-size:0.82rem;">
+                            <thead>
+                                <tr>
+                                    <th>Kullanıcı</th>
+                                    <th>E-posta</th>
+                                    <th>Kayıt</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in s.unverified_recent %}
+                                <tr>
+                                    <td>
+                                        <a href="/admin/auth/user/{{ user.id }}/change/" class="text-info">{{ user.username }}</a>
+                                    </td>
+                                    <td class="text-muted">{{ user.email }}</td>
+                                    <td class="text-muted">{{ user.date_joined|timesince }} önce</td>
+                                    <td>
+                                        <a href="/admin/forum/profile/?q={{ user.username }}" class="btn btn-xs btn-outline-warning">Profil</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="p-3 text-center text-muted" style="font-size:0.85rem;">
+                        <i class="fas fa-check-circle mr-1 text-success"></i>Son 7 günde tüm kayıtlar doğrulanmış.
+                    </div>
+                    {% endif %}
+
+                </div>
+            </div>
+        </div>
+    </div>
+
 </div><!-- /.admin-dashboard -->
 
 <!-- ═══════════════════════════════════════════════

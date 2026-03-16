@@ -111,6 +111,28 @@ def get_dashboard_context():
     verified_users   = Profile.objects.filter(email_verified=True).count()
     unverified_users = Profile.objects.filter(email_verified=False).count()
 
+    # E-posta doğrulama detayları
+    from forum.models import EmailVerification
+    email_verify_rate = round(verified_users / max(1, total_users) * 100, 1)
+
+    # Son 7 günde kayıt olup henüz doğrulamayan kullanıcılar
+    unverified_recent = User.objects.filter(
+        date_joined__date__gte=last_7_days,
+        profile__email_verified=False
+    ).select_related('profile').order_by('-date_joined')[:15]
+
+    # 7 günden eski ama hâlâ doğrulanmamış (takılı kalan)
+    unverified_old_count = User.objects.filter(
+        date_joined__date__lt=last_7_days,
+        profile__email_verified=False
+    ).count()
+
+    # Bugün doğrulama yapanlar
+    verified_today = Profile.objects.filter(
+        email_verified=True,
+        user__date_joined__date=today
+    ).count()
+
     rank_distribution = Profile.objects.values('rank').annotate(
         count=Count('id')
     ).order_by('-count')
@@ -268,6 +290,10 @@ def get_dashboard_context():
         # Kullanıcı analizi
         'verified_users': verified_users,
         'unverified_users': unverified_users,
+        'email_verify_rate': email_verify_rate,
+        'unverified_recent': unverified_recent,
+        'unverified_old_count': unverified_old_count,
+        'verified_today': verified_today,
         'rank_distribution': rank_distribution,
         'category_stats': category_stats,
         'active_users': active_users,
