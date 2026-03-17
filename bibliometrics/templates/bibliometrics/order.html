@@ -1,128 +1,62 @@
-{% extends "base.html" %}
-{% load static %}
-
-{% block title %}Tam Rapor Siparişi - Analizus{% endblock %}
+{% extends 'base.html' %}
+{% block title %}Tam Rapor Siparişi — Bibliometrik Analiz{% endblock %}
 {% block main_content_classes %}col-lg-12{% endblock %}
 {% block right_sidebar %}{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-  <div class="col-lg-8">
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-7">
 
-    {# ─── Analiz Özeti ─── #}
-    <div class="card border-secondary mb-4" style="background-color: #16213e;">
-      <div class="card-header border-secondary">
-        <h6 class="text-white mb-0">
-          <i class="bi bi-file-earmark-bar-graph me-2 text-info"></i>Analiz Bilgileri
-        </h6>
+      <div class="text-center mb-4">
+        <h2 class="text-white fw-bold">
+          <i class="bi bi-bar-chart-fill me-2" style="color:#a78bfa;"></i>Tam Rapor Siparişi
+        </h2>
+        <p style="color:#94a3b8;">10 analizden oluşan tam bibliometrik raporu alın.</p>
       </div>
-      <div class="card-body">
-        <div class="row g-3">
-          <div class="col-md-4">
-            <div class="text-white-50 small">Dosya</div>
-            <div class="text-white fw-semibold">{{ job.original_filename }}</div>
-          </div>
-          <div class="col-md-4">
-            <div class="text-white-50 small">Toplam Kayıt</div>
-            <div class="text-white fw-semibold">{{ job.total_records }}</div>
-          </div>
-          <div class="col-md-4">
-            <div class="text-white-50 small">Format</div>
-            <div class="text-white fw-semibold">{{ job.get_file_format_display }}</div>
-          </div>
+
+      {# Analiz Özeti #}
+      <div class="p-4 mb-4" style="background:rgba(21,32,43,.6);border:1px solid rgba(0,210,255,.15);border-radius:15px;">
+        <h5 class="text-white mb-3"><i class="bi bi-file-earmark-bar-graph me-2" style="color:#00d2ff;"></i>Analiz Bilgileri</h5>
+        <div class="row small" style="color:#94a3b8;">
+          <div class="col-sm-4 mb-1"><strong>Dosya:</strong></div>
+          <div class="col-sm-8 mb-1 text-white">{{ job.original_filename }}</div>
+          <div class="col-sm-4 mb-1"><strong>Toplam Kayıt:</strong></div>
+          <div class="col-sm-8 mb-1"><span style="color:#00d2ff;font-weight:600;">{{ job.total_records }}</span></div>
+          <div class="col-sm-4 mb-1"><strong>Format:</strong></div>
+          <div class="col-sm-8 mb-1 text-white">{{ job.get_file_format_display }}</div>
         </div>
       </div>
-    </div>
 
-    {% if existing_order %}
-    {# ─── Mevcut Sipariş ─── #}
-    <div class="card border-warning mb-4" style="background-color: #16213e;">
-      <div class="card-header border-warning">
-        <h6 class="text-warning mb-0">
-          <i class="bi bi-receipt me-2"></i>Mevcut Siparişiniz
-        </h6>
-      </div>
-      <div class="card-body">
-        <div class="row g-3 mb-3">
-          <div class="col-md-4">
-            <div class="text-white-50 small">Sipariş No</div>
-            <div class="text-white fw-bold">#{{ existing_order.id|stringformat:"s"|slice:":8" }}</div>
-          </div>
-          <div class="col-md-4">
-            <div class="text-white-50 small">Tutar</div>
-            <div class="text-warning fw-bold fs-5">{{ existing_order.total_price }} TL</div>
-          </div>
-          <div class="col-md-4">
-            <div class="text-white-50 small">Durum</div>
-            <div>
-              {% if existing_order.status == 'completed' %}
-                <span class="badge bg-success">Tamamlandı</span>
-              {% elif existing_order.status == 'approved' %}
-                <span class="badge bg-info">Onaylandı</span>
-              {% elif existing_order.status == 'payment_review' %}
-                <span class="badge bg-warning text-dark">Ödeme İnceleniyor</span>
-              {% elif existing_order.status == 'processing' %}
-                <span class="badge bg-primary">İşleniyor</span>
-              {% else %}
-                <span class="badge bg-secondary">Ödeme Bekleniyor</span>
-              {% endif %}
-            </div>
-          </div>
+      {# Fiyatlandırma #}
+      <div class="p-4 mb-4" style="background:rgba(21,32,43,.6);border:1px solid rgba(167,139,250,.15);border-radius:15px;">
+        <h5 class="text-white mb-3"><i class="bi bi-tag me-2" style="color:#a78bfa;"></i>Fiyatlandırma</h5>
+
+        {# Fiyat özeti kutusu #}
+        <div class="text-center p-3 mb-3" style="background:linear-gradient(135deg,#0f4c75,#1a1a2e);border-radius:10px;">
+          <div style="color:#94a3b8;" class="small mb-1">Toplam Fiyat ({{ job.total_records }} kayıt)</div>
+          <div class="display-6 fw-bold" style="color:#a78bfa;">{{ price }} TL</div>
+          <div style="color:#94a3b8;" class="small">10 Analiz · PDF Rapor · Email Teslim</div>
         </div>
 
-        {% if existing_order.status == 'completed' %}
-        <div class="alert alert-success mb-0">
-          <i class="bi bi-envelope-check me-2"></i>
-          Tam rapor emailinize gönderildi. Gelen kutunuzu kontrol ediniz.
-        </div>
-        {% elif existing_order.status in 'pending_payment payment_review' %}
-        <div class="alert alert-info mb-0">
-          <i class="bi bi-info-circle me-2"></i>
-          Ödemeniz inceleniyor. Onaylandıktan sonra tam rapor emailinize gönderilecek.
-          Sorularınız için: <a href="mailto:info@analizus.com" class="text-info">info@analizus.com</a>
-        </div>
-        {% endif %}
-      </div>
-    </div>
-
-    {% else %}
-    {# ─── Yeni Sipariş Formu ─── #}
-    <div class="card border-warning mb-4" style="background-color: #16213e;">
-      <div class="card-header border-warning">
-        <h6 class="text-warning mb-0">
-          <i class="bi bi-cart-fill me-2"></i>Tam Rapor Siparişi (10 Analiz)
-        </h6>
-      </div>
-      <div class="card-body">
-
-        {# Fiyat Kutusu #}
-        <div class="card border-0 mb-3 p-3 text-center"
-             style="background: linear-gradient(135deg, #0f4c75 0%, #1a1a2e 100%);">
-          <div class="text-white-50 small mb-1">Toplam Fiyat ({{ job.total_records|default:0 }} kayıt)</div>
-          <div class="display-5 fw-bold text-warning">{{ price }} TL</div>
-          <div class="text-white-50 small">10 Analiz · PDF Rapor · Email Teslim</div>
-        </div>
-
-        {# Fiyat Kırılımı #}
+        {# Fiyat kırılımı #}
         {% if price_breakdown %}
-        <div class="card border-secondary mb-4 p-3" style="background-color: #0d1117;">
-          <div class="text-white-50 small mb-2"><i class="bi bi-calculator me-1"></i>Fiyat Kırılımı</div>
+        <div class="small">
           {% for label, amount in price_breakdown %}
-          <div class="d-flex justify-content-between small {% if forloop.last %}text-warning fw-semibold{% else %}text-white-50{% endif %}">
+          <div class="d-flex justify-content-between {% if forloop.last %}text-white fw-semibold border-top border-secondary pt-1 mt-1{% else %}text-white-50{% endif %}">
             <span>{{ label }}</span><span>{{ amount }} TL</span>
           </div>
           {% endfor %}
-          <hr class="border-secondary my-1">
-          <div class="d-flex justify-content-between text-warning fw-bold">
+          <div class="d-flex justify-content-between fw-bold mt-1 pt-1 border-top border-secondary" style="color:#a78bfa;">
             <span>Toplam</span><span>{{ price }} TL</span>
           </div>
         </div>
         {% endif %}
 
-        {# İçerik listesi #}
-        <div class="row g-2 mb-4">
+        {# 10 analiz listesi #}
+        <div class="row g-2 mt-3">
           <div class="col-md-6">
-            <ul class="list-unstyled text-white-50 small">
+            <ul class="list-unstyled text-white-50 small mb-0">
               <li><i class="bi bi-check-circle text-success me-2"></i>Yıllara Göre Yayın Trendi</li>
               <li><i class="bi bi-check-circle text-success me-2"></i>En Verimli Yazarlar (Top 15)</li>
               <li><i class="bi bi-check-circle text-success me-2"></i>Anahtar Kelime Bulutu</li>
@@ -131,7 +65,7 @@
             </ul>
           </div>
           <div class="col-md-6">
-            <ul class="list-unstyled text-white-50 small">
+            <ul class="list-unstyled text-white-50 small mb-0">
               <li><i class="bi bi-check-circle text-success me-2"></i>Kurum / Ülke Dağılımı</li>
               <li><i class="bi bi-check-circle text-success me-2"></i>Yazar İşbirliği Ağı</li>
               <li><i class="bi bi-check-circle text-success me-2"></i>Yayın Türleri Dağılımı</li>
@@ -140,52 +74,51 @@
             </ul>
           </div>
         </div>
+      </div>
 
-        {# Ödeme Detayları #}
-        <div class="card border-secondary p-3 mb-4" style="background-color: #1a1a2e;">
-          <h6 class="text-white mb-3"><i class="bi bi-bank me-2 text-info"></i>Ödeme Bilgileri (EFT / Havale)</h6>
-          <div class="row g-2 small">
-            <div class="col-5 text-white-50">Banka:</div>
-            <div class="col-7 text-white fw-semibold">Ziraat Bankası</div>
-            <div class="col-5 text-white-50">Hesap Sahibi:</div>
-            <div class="col-7 text-white fw-semibold">Analizus Akademik Hizmetler</div>
-            <div class="col-5 text-white-50">IBAN:</div>
-            <div class="col-7 text-white fw-bold font-monospace">TR00 0000 0000 0000 0000 0000 00</div>
-            <div class="col-5 text-white-50">Tutar:</div>
-            <div class="col-7 text-warning fw-bold">{{ price }} TL</div>
-            <div class="col-5 text-white-50">Açıklama:</div>
-            <div class="col-7 text-white fw-semibold">{{ request.user.username }} bibliometrik</div>
+      {% if existing_order %}
+      {# Mevcut Sipariş #}
+      <div class="p-4 mb-4" style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);border-radius:15px;">
+        <h5 class="text-white mb-3"><i class="bi bi-receipt me-2" style="color:#4ade80;"></i>Mevcut Siparişiniz</h5>
+        <div class="row g-2 mb-3" style="color:#94a3b8;">
+          <div class="col-sm-4"><div class="small">Sipariş No</div><div class="text-white fw-bold">#{{ existing_order.id|stringformat:"s"|slice:":8" }}</div></div>
+          <div class="col-sm-4"><div class="small">Tutar</div><div class="fw-bold fs-5" style="color:#4ade80;">{{ existing_order.total_price }} TL</div></div>
+          <div class="col-sm-4"><div class="small">Durum</div>
+            {% if existing_order.status == 'completed' %}<span class="badge bg-success">Tamamlandı</span>
+            {% elif existing_order.status == 'approved' %}<span class="badge bg-info">Onaylandı</span>
+            {% elif existing_order.status == 'payment_review' %}<span class="badge bg-warning text-dark">Ödeme İnceleniyor</span>
+            {% else %}<span class="badge bg-secondary">Ödeme Bekleniyor</span>{% endif %}
           </div>
         </div>
-
-        <form method="post">
-          {% csrf_token %}
-          <div class="mb-3">
-            <label class="form-label text-white fw-semibold">{{ form.payment_note.label }}</label>
-            {{ form.payment_note }}
-            <div class="form-text text-white-50">{{ form.payment_note.help_text }}</div>
-          </div>
-
-          <div class="alert alert-secondary small">
-            <i class="bi bi-info-circle me-2 text-info"></i>
-            EFT/Havale işleminden sonra bu formu doldurup gönderin. Ödeme doğrulandıktan sonra
-            tam rapor PDF'i <strong>{{ request.user.email }}</strong> adresine gönderilecektir.
-            Doğrulama süresi genellikle 1-4 saattir.
-          </div>
-
-          <button type="submit" class="btn btn-warning fw-bold w-100 py-2">
-            <i class="bi bi-send-fill me-2"></i>Ödedim, Siparişi Oluştur
-          </button>
-        </form>
-
+        {% if existing_order.status == 'completed' %}
+        <div class="alert alert-success mb-0 small"><i class="bi bi-envelope-check me-2"></i>Tam rapor emailinize gönderildi. Gelen kutunuzu kontrol ediniz.</div>
+        {% else %}
+        <div class="alert alert-info mb-0 small"><i class="bi bi-info-circle me-2"></i>Ödemeniz inceleniyor. Onaylandıktan sonra tam rapor emailinize gönderilecek.</div>
+        {% endif %}
       </div>
+
+      {% elif success %}
+      <div class="p-4 text-center mb-4" style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);border-radius:15px;">
+        <i class="bi bi-check-circle-fill fs-2" style="color:#4ade80;"></i>
+        <h5 class="text-white mt-2">Siparişiniz alındı!</h5>
+        <p style="color:#94a3b8;">Ödemeniz onaylandıktan sonra tam rapor PDF'i <strong>{{ request.user.email }}</strong> adresine gönderilecektir.</p>
+      </div>
+
+      {% else %}
+      {# Sipariş Formu #}
+      <div class="p-4 mb-4" style="background:rgba(21,32,43,.6);border:1px solid rgba(255,255,255,.1);border-radius:15px;">
+        <form method="POST" id="order-form">
+          {% csrf_token %}
+          {% include 'partials/order_payment.html' with service_code="Bibliometri" price=price %}
+        </form>
+      </div>
+      {% endif %}
+
+      <a href="{% url 'bibliometrics:landing' %}" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left me-1"></i>Bibliometrik Analize Dön
+      </a>
+
     </div>
-    {% endif %}
-
-    <a href="{% url 'bibliometrics:landing' %}" class="btn btn-outline-secondary">
-      <i class="bi bi-arrow-left me-1"></i>Geri Dön
-    </a>
-
   </div>
 </div>
 {% endblock %}

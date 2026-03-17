@@ -1,0 +1,48 @@
+{#
+  Ortak Sipariş Ödeme Bölümü — <form> dışında include edilir.
+  Her template kendi <form> tag'ini ve ek field'larını yönetir;
+  bu partial sadece IBAN + ödeme notu + info + submit içerir.
+
+  Beklenen değişkenler ({% include ... with %} ile geçilir):
+    service_code  — IBAN açıklama prefix'i ("OpenAlex", "TR Dizin", "ÜniTez", "Bibliometri")
+    price         — gösterilecek tutar (sayı veya None; None ise template JS ile günceller)
+#}
+
+{# IBAN #}
+<div class="p-3 mb-4" style="background: rgba(0,0,0,0.3); border-radius: 10px; border: 1px solid rgba(0,210,255,0.15);">
+  <small class="d-block mb-2" style="color: #00d2ff;"><i class="bi bi-bank me-1"></i>Ödeme Bilgileri (EFT / Havale)</small>
+  <div class="row g-1 small">
+    <div class="col-5 text-white-50">Banka:</div>
+    <div class="col-7 text-white fw-semibold">Ziraat Bankası</div>
+    <div class="col-5 text-white-50">Hesap Sahibi:</div>
+    <div class="col-7 text-white fw-semibold">Bünyamin Keleş</div>
+    <div class="col-5 text-white-50">IBAN:</div>
+    <div class="col-7 text-white fw-bold font-monospace">TR73 0003 2000 0000 0079 1034 65</div>
+    <div class="col-5 text-white-50">Tutar:</div>
+    <div class="col-7 fw-bold" style="color: #a78bfa;">
+      {% if price %}{{ price }} TL{% else %}<span id="display-price">—</span> TL{% endif %}
+    </div>
+    <div class="col-5 text-white-50">Açıklama:</div>
+    <div class="col-7 text-white fw-semibold">{{ service_code }} - {{ request.user.username }}</div>
+  </div>
+</div>
+
+{# Ödeme Notu #}
+<div class="mb-3">
+  <label class="form-label text-white fw-semibold">Ödeme Açıklaması</label>
+  <textarea name="payment_note" class="form-control bg-dark text-white border-secondary" rows="2"
+            placeholder="Havale/EFT yaptığınıza dair kısa açıklama..."></textarea>
+  <div class="form-text text-white-50">EFT/Havale açıklaması, tarih vb.</div>
+</div>
+
+<div class="alert alert-secondary small">
+  <i class="bi bi-info-circle me-2 text-info"></i>
+  EFT/Havale işleminden sonra bu formu doldurup gönderin. Ödeme doğrulandıktan sonra
+  tam rapor PDF'i <strong>{{ request.user.email }}</strong> adresine gönderilecektir.
+  Doğrulama süresi genellikle 1-4 saattir.
+</div>
+
+<button type="submit" class="btn btn-lg w-100"
+    style="background: linear-gradient(135deg, #a78bfa, #f472b6); color: #0f172a; font-weight: 600; border: none; border-radius: 10px;">
+  <i class="bi bi-send-fill me-2"></i>Ödedim, Siparişi Oluştur
+</button>

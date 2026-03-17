@@ -1,135 +1,123 @@
 {% extends 'base.html' %}
-
-{% block title %}Sipariş Oluştur - OpenAlex Tarama{% endblock %}
+{% block title %}Sipariş Oluştur — OpenAlex Tarama{% endblock %}
 {% block main_content_classes %}col-lg-12{% endblock %}
 {% block right_sidebar %}{% endblock %}
 
 {% block content %}
 <div class="container py-4">
-    <div class="row justify-content-center">
-        <div class="col-lg-7">
+  <div class="row justify-content-center">
+    <div class="col-lg-7">
 
-            <!-- Başlık -->
-            <div class="text-center mb-4">
-                <h2 class="text-white fw-bold">
-                    <i class="bi bi-cart-check me-2" style="color: #a78bfa;"></i>Sipariş Oluştur
-                </h2>
-                <p style="color: #94a3b8;">OpenAlex arama sonuçlarınızın tamamını alın.</p>
-            </div>
+      <div class="text-center mb-4">
+        <h2 class="text-white fw-bold">
+          <i class="bi bi-cart-check me-2" style="color:#a78bfa;"></i>Sipariş Oluştur
+        </h2>
+        <p style="color:#94a3b8;">OpenAlex arama sonuçlarınızın tamamını alın.</p>
+      </div>
 
-            <!-- Arama Özeti -->
-            <div class="p-4 mb-4" style="background: rgba(21,32,43,0.6); border: 1px solid rgba(0,210,255,0.15); border-radius: 15px;">
-                <h5 class="text-white mb-3"><i class="bi bi-info-circle me-2" style="color: #00d2ff;"></i>Arama Bilgileri</h5>
-                <div class="row" style="color: #94a3b8;">
-                    <div class="col-sm-4 mb-2"><strong>Arama Kriterleri:</strong></div>
-                    <div class="col-sm-8 mb-2 text-white">{{ job.get_query_summary }}</div>
-                    <div class="col-sm-4 mb-2"><strong>Toplam Sonuç:</strong></div>
-                    <div class="col-sm-8 mb-2"><span style="color: #00d2ff; font-weight: 600;">{{ job.total_results }}</span> yayın</div>
-                </div>
-            </div>
-
-            <!-- Fiyat Tablosu -->
-            <div class="p-4 mb-4" style="background: rgba(21,32,43,0.6); border: 1px solid rgba(167,139,250,0.15); border-radius: 15px;">
-                <h5 class="text-white mb-3"><i class="bi bi-tag me-2" style="color: #a78bfa;"></i>Fiyatlandırma</h5>
-                <table class="table table-dark table-sm mb-0" style="border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; overflow: hidden;">
-                    <tbody>
-                        <tr><td>İlk 100 yayın</td><td class="text-end" style="color: #a78bfa;">250 TL</td></tr>
-                        <tr><td>Sonraki her 100 yayın</td><td class="text-end" style="color: #a78bfa;">+100 TL</td></tr>
-                    </tbody>
-                </table>
-            </div>
-
-            {% if existing_order %}
-            <!-- Mevcut sipariş var -->
-            <div class="p-4 text-center" style="background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); border-radius: 15px;">
-                <i class="bi bi-check-circle-fill fs-2" style="color: #4ade80;"></i>
-                <h5 class="text-white mt-2">Bu arama için zaten bir siparişiniz var.</h5>
-                <p style="color: #94a3b8;">
-                    Sipariş No: #{{ existing_order.id|truncatechars:12 }}<br>
-                    Durum: <strong style="color: #00d2ff;">{{ existing_order.get_status_display }}</strong>
-                </p>
-            </div>
-
-            {% else %}
-            <!-- Sipariş Formu -->
-            <div class="p-4" style="background: rgba(21,32,43,0.6); border: 1px solid rgba(255,255,255,0.1); border-radius: 15px;">
-                <form method="POST" id="order-form">
-                    {% csrf_token %}
-
-                    <div class="mb-3">
-                        <label class="form-label text-white">İstediğiniz Yayın Sayısı</label>
-                        <input type="number" name="abstract_count" id="order-count"
-                               class="form-control bg-dark text-white border-secondary"
-                               value="{{ job.total_results }}" min="1" max="{{ job.total_results }}">
-                        <div class="d-flex justify-content-between mt-1">
-                            <small style="color: #64748b;">Maks: {{ job.total_results }}</small>
-                            <small style="color: #a78bfa; font-weight: 600;">Tutar: <span id="calc-price">0</span> TL</small>
-                        </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label text-white">Ödeme Açıklaması</label>
-                        <textarea name="payment_note" class="form-control bg-dark text-white border-secondary" rows="2"
-                                  placeholder="Havale açıklaması, tarih vb."></textarea>
-                    </div>
-
-                    <!-- IBAN -->
-                    <div class="p-3 mb-4" style="background: rgba(0,0,0,0.3); border-radius: 10px; border: 1px solid rgba(0,210,255,0.15);">
-                        <small class="d-block mb-1" style="color: #00d2ff;"><i class="bi bi-bank me-1"></i>Banka Bilgileri</small>
-                        <div style="color: #94a3b8; font-size: 0.9rem;">Hesap Sahibi:</div>
-                        <div style="color: #e2e8f0; font-family: monospace; font-size: 0.95rem;">
-                            Bünyamin Keleş
-                        </div>
-                        <div class="mt-1" style="color: #94a3b8; font-size: 0.9rem;">IBAN:</div>
-                        <div style="color: #e2e8f0; font-family: monospace; font-size: 0.95rem;">
-                            TR73 0003 2000 0000 0079 1034 65
-                        </div>
-                        <small style="color: #64748b;">Açıklama: <strong>OpenAlex - {{ user.username }}</strong></small>
-                    </div>
-
-                    <button type="submit" class="btn btn-lg w-100"
-                        style="background: linear-gradient(135deg, #a78bfa, #f472b6); color: #0f172a; font-weight: 600; border: none; border-radius: 10px;">
-                        <i class="bi bi-cart-check me-2"></i>Sipariş Oluştur
-                    </button>
-
-                    <p class="text-center mt-3 mb-0" style="color: #64748b; font-size: 0.85rem;">
-                        <i class="bi bi-clock me-1"></i>Ödemeniz onaylandıktan sonra sonuçlar <strong>24 saat içinde</strong>
-                        <strong>{{ user.email }}</strong> adresine gönderilecektir.
-                    </p>
-                </form>
-            </div>
-            {% endif %}
-
-            {% if success %}
-            <div class="mt-4 p-4 text-center" style="background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); border-radius: 15px;">
-                <i class="bi bi-check-circle-fill fs-2" style="color: #4ade80;"></i>
-                <h5 class="text-white mt-2">Siparişiniz oluşturuldu!</h5>
-                <p style="color: #94a3b8;">
-                    Ödemeniz onaylandıktan sonra sonuçlar <strong>24 saat içinde</strong>
-                    <strong>{{ user.email }}</strong> adresine gönderilecektir.
-                </p>
-                <a href="{% url 'openalex:landing' %}" class="btn btn-sm btn-outline-info mt-2">
-                    <i class="bi bi-arrow-left me-1"></i>OpenAlex Aramaya Dön
-                </a>
-            </div>
-            {% endif %}
-
+      {# Arama Özeti #}
+      <div class="p-4 mb-4" style="background:rgba(21,32,43,.6);border:1px solid rgba(0,210,255,.15);border-radius:15px;">
+        <h5 class="text-white mb-3"><i class="bi bi-info-circle me-2" style="color:#00d2ff;"></i>Arama Bilgileri</h5>
+        <div class="row small" style="color:#94a3b8;">
+          <div class="col-sm-4 mb-1"><strong>Sorgu:</strong></div>
+          <div class="col-sm-8 mb-1 text-white">{{ job.get_query_summary }}</div>
+          <div class="col-sm-4 mb-1"><strong>Toplam Sonuç:</strong></div>
+          <div class="col-sm-8 mb-1"><span style="color:#00d2ff;font-weight:600;">{{ job.total_results }}</span> yayın</div>
         </div>
+      </div>
+
+      {# Fiyatlandırma #}
+      <div class="p-4 mb-4" style="background:rgba(21,32,43,.6);border:1px solid rgba(167,139,250,.15);border-radius:15px;">
+        <h5 class="text-white mb-3"><i class="bi bi-tag me-2" style="color:#a78bfa;"></i>Fiyatlandırma</h5>
+        <div class="mb-3">
+          <label class="form-label text-white">İstediğiniz Yayın Sayısı</label>
+          <input type="number" id="order-count-preview"
+                 class="form-control bg-dark text-white border-secondary"
+                 value="{{ job.total_results }}" min="1" max="{{ job.total_results }}" disabled>
+        </div>
+        <table class="table table-dark table-sm mb-0" style="border:1px solid rgba(255,255,255,.08);border-radius:8px;overflow:hidden;">
+          <tbody>
+            <tr><td>İlk 100 yayın</td><td class="text-end" style="color:#a78bfa;">250 TL</td></tr>
+            <tr><td>Sonraki her 100 yayın</td><td class="text-end" style="color:#a78bfa;">+100 TL</td></tr>
+            <tr class="fw-bold"><td>Tahmini Tutar ({{ job.total_results }} yayın)</td>
+              <td class="text-end" style="color:#a78bfa;"><span id="calc-price">—</span> TL</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      {% if existing_order %}
+      {# Mevcut Sipariş #}
+      <div class="p-4 mb-4" style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);border-radius:15px;">
+        <h5 class="text-white mb-3"><i class="bi bi-receipt me-2" style="color:#4ade80;"></i>Mevcut Siparişiniz</h5>
+        <div class="row g-2 mb-3" style="color:#94a3b8;">
+          <div class="col-sm-4"><div class="small">Sipariş No</div><div class="text-white fw-bold">#{{ existing_order.id|stringformat:"s"|slice:":8" }}</div></div>
+          <div class="col-sm-4"><div class="small">Tutar</div><div class="fw-bold fs-5" style="color:#4ade80;">{{ existing_order.total_price }} TL</div></div>
+          <div class="col-sm-4"><div class="small">Durum</div>
+            {% if existing_order.status == 'completed' %}<span class="badge bg-success">Tamamlandı</span>
+            {% elif existing_order.status == 'approved' %}<span class="badge bg-info">Onaylandı</span>
+            {% elif existing_order.status == 'payment_review' %}<span class="badge bg-warning text-dark">Ödeme İnceleniyor</span>
+            {% else %}<span class="badge bg-secondary">Ödeme Bekleniyor</span>{% endif %}
+          </div>
+        </div>
+        {% if existing_order.status == 'completed' %}
+        <div class="alert alert-success mb-0 small"><i class="bi bi-envelope-check me-2"></i>Sonuçlar emailinize gönderildi.</div>
+        {% else %}
+        <div class="alert alert-info mb-0 small"><i class="bi bi-info-circle me-2"></i>Ödemeniz inceleniyor. Onaylandıktan sonra sonuçlar emailinize gönderilecek.</div>
+        {% endif %}
+      </div>
+
+      {% elif success %}
+      <div class="p-4 text-center mb-4" style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);border-radius:15px;">
+        <i class="bi bi-check-circle-fill fs-2" style="color:#4ade80;"></i>
+        <h5 class="text-white mt-2">Siparişiniz alındı!</h5>
+        <p style="color:#94a3b8;">Ödemeniz onaylandıktan sonra sonuçlar <strong>{{ request.user.email }}</strong> adresine gönderilecektir.</p>
+      </div>
+
+      {% else %}
+      {# Sipariş Formu #}
+      <div class="p-4 mb-4" style="background:rgba(21,32,43,.6);border:1px solid rgba(255,255,255,.1);border-radius:15px;">
+        <form method="POST" id="order-form">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label class="form-label text-white">İstediğiniz Yayın Sayısı</label>
+            <input type="number" name="abstract_count" id="order-count"
+                   class="form-control bg-dark text-white border-secondary"
+                   value="{{ job.total_results }}" min="1" max="{{ job.total_results }}">
+            <div class="d-flex justify-content-between mt-1">
+              <small style="color:#64748b;">Maks: {{ job.total_results }}</small>
+              <small style="color:#a78bfa;font-weight:600;">Tutar: <span id="form-price">—</span> TL</small>
+            </div>
+          </div>
+          {% include 'partials/order_payment.html' with service_code="OpenAlex" price=None %}
+        </form>
+      </div>
+      {% endif %}
+
+      <a href="{% url 'openalex:landing' %}" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left me-1"></i>OpenAlex Aramaya Dön
+      </a>
+
     </div>
+  </div>
 </div>
 
 <script>
-function updatePrice() {
-    const count = parseInt(document.getElementById('order-count')?.value) || 0;
-    let price = 0;
-    if (count > 0) {
-        if (count <= 100) price = 250;
-        else price = 250 + Math.ceil((count - 100) / 100) * 100;
-    }
-    const el = document.getElementById('calc-price');
-    if (el) el.textContent = price;
+function calcPrice(count) {
+  if (count <= 0) return 0;
+  if (count <= 100) return 250;
+  return 250 + Math.ceil((count - 100) / 100) * 100;
 }
-document.getElementById('order-count')?.addEventListener('input', updatePrice);
-updatePrice();
+function updatePrices() {
+  const count = parseInt(document.getElementById('order-count')?.value) || {{ job.total_results }};
+  const p = calcPrice(count);
+  const ep = document.getElementById('form-price');
+  if (ep) ep.textContent = p;
+  const dp = document.getElementById('display-price');
+  if (dp) dp.textContent = p;
+  const cp = document.getElementById('calc-price');
+  if (cp) cp.textContent = calcPrice({{ job.total_results }});
+}
+document.getElementById('order-count')?.addEventListener('input', updatePrices);
+updatePrices();
 </script>
 {% endblock %}
