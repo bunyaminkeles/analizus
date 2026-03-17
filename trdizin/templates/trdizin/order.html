@@ -82,7 +82,7 @@
               <small style="color:#a78bfa;font-weight:600;">Tutar: <span id="form-price">—</span> TL</small>
             </div>
           </div>
-          {% include 'partials/order_payment.html' with service_code="TR Dizin" price=None %}
+          {% with service_code="TR Dizin" %}{% include 'partials/order_payment.html' %}{% endwith %}
         </form>
       </div>
       {% endif %}
