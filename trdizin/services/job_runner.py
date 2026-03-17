@@ -28,6 +28,15 @@ def _generate_dizin_results_txt(publication_list, job, is_demo=True):
         lines.append(f"Dergi     : {pub.get('journal', '')}")
         lines.append(f"Yıl       : {pub.get('year', '')}")
         lines.append(f"DOI       : {pub.get('doi', '')}")
+        if pub.get('language'):
+            lines.append(f"Dil       : {pub.get('language', '')}")
+        if pub.get('publication_type'):
+            lines.append(f"Tür       : {pub.get('publication_type', '')}")
+        kw_tr = pub.get('keywords_tr') or []
+        kw_en = pub.get('keywords_en') or []
+        all_kw = kw_tr + kw_en
+        if all_kw:
+            lines.append(f"Anahtar   : {'; '.join(all_kw)}")
         abstract = pub.get('abstract_tr') or pub.get('abstract_en') or ''
         if abstract:
             lines.append(f"Özet      : {abstract}")

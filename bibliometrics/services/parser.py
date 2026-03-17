@@ -36,7 +36,11 @@ def detect_format(content: str) -> str:
     if re.search(r'@\w+\s*\{', stripped):
         return 'bibtex'
 
-    # OpenAlex TXT: "--- Yayın #" ile başlayan kayıtlar
+    # TR Dizin TXT: "Başlık    :" (4 boşluk) veya başlıkta "TR Dizin" geçiyor
+    if 'TR Dizin Yayın Arama Sonuçları' in stripped or 'Başlık    :' in stripped:
+        return 'trdizin_txt'
+
+    # OpenAlex TXT: "Başlık       :" (7 boşluk)
     if '--- Yayın #' in stripped or 'Başlık       :' in stripped:
         return 'openalex_txt'
 
@@ -72,6 +76,8 @@ def parse_file(content: str, fmt: str = None) -> tuple[list[dict], str]:
         records = _parse_wos_csv(content)
     elif fmt == 'csv_scopus':
         records = _parse_scopus_csv(content)
+    elif fmt == 'trdizin_txt':
+        records = parse_trdizin_txt(content)
     elif fmt == 'openalex_txt':
         records = parse_openalex_txt(content)
     else:
@@ -329,6 +335,82 @@ def parse_openalex_json(records: list) -> list[dict]:
         result.append(rec)
 
     return _deduplicate_and_filter(result)
+
+
+# ─────────────────────────── TR Dizin TXT ───────────────────────────
+
+def parse_trdizin_txt(content: str) -> list[dict]:
+    """
+    TR Dizin job_runner tarafından üretilen TXT formatını parse eder.
+
+    Format (12 karakter prefix):
+        --- Yayın #N ---
+        Başlık    : ...
+        Yazarlar  : ...
+        Dergi     : ...
+        Yıl       : ...
+        DOI       : ...
+        Dil       : ...
+        Tür       : ...
+        Anahtar   : ...
+        Özet      : ...
+    """
+    records = []
+    current: dict | None = None
+
+    for line in content.splitlines():
+        if line.startswith('--- Yayın #'):
+            if current is not None:
+                records.append(current)
+            current = {k: (v.copy() if isinstance(v, list) else v) for k, v in EMPTY_RECORD.items()}
+            continue
+
+        if current is None:
+            continue
+
+        def _val(prefix):
+            return line[len(prefix):].strip() if line.startswith(prefix) else None
+
+        v = _val('Başlık    :')
+        if v is not None:
+            current['title'] = _clean(v)
+            continue
+        v = _val('Yazarlar  :')
+        if v is not None:
+            current['authors'] = [a.strip() for a in v.split(',') if a.strip()]
+            continue
+        v = _val('Dergi     :')
+        if v is not None:
+            current['journal'] = _clean(v)
+            continue
+        v = _val('Yıl       :')
+        if v is not None:
+            current['year'] = _safe_int(v) or None
+            continue
+        v = _val('DOI       :')
+        if v is not None:
+            current['doi'] = _clean(v)
+            continue
+        v = _val('Tür       :')
+        if v is not None:
+            current['pub_type'] = _clean(v)
+            continue
+        v = _val('Anahtar   :')
+        if v is not None:
+            current['keywords'] = _split_keywords(v)
+            continue
+        v = _val('Özet      :')
+        if v is not None:
+            current['abstract'] = _clean(v)
+            continue
+        # Çok satırlı özet devamı
+        if current.get('abstract') and line.strip() and not line.startswith('---') and not line.startswith('==='):
+            current['abstract'] = current['abstract'] + ' ' + line.strip()
+
+    if current is not None:
+        records.append(current)
+
+    return _deduplicate_and_filter(records)
 
 
 # ─────────────────────────── OpenAlex TXT ───────────────────────────
