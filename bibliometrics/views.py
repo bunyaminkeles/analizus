@@ -148,7 +148,7 @@ def bibliometrics_job_status(request, job_id):
         data['demo_email_sent'] = job.demo_email_sent
         price = BibliometricOrder.calculate_price(job.total_records)
         data['price'] = price
-        data['contact_admin'] = price is None  # 5000+ kayıt
+        data['contact_admin'] = False
         data['has_order'] = job.orders.filter(
             status__in=['pending_payment', 'payment_review', 'approved', 'processing', 'completed']
         ).exists()

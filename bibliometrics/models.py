@@ -127,8 +127,9 @@ class BibliometricOrder(models.Model):
         2001-3000  → biblio_price_3000
         3001-4000  → biblio_price_4000
         4001-5000  → biblio_price_5000
-        5000+      → None (admin ile iletişim)
+        5000+      → biblio_price_5000 + her 500 kayıt için 400 TL
         """
+        import math
         from forum.models import SiteSettings
         s = SiteSettings.load()
         if total_records <= 500:
@@ -141,7 +142,8 @@ class BibliometricOrder(models.Model):
             return s.biblio_price_4000
         elif total_records <= 5000:
             return s.biblio_price_5000
-        return None  # 5000+ → admin ile iletişim
+        extra_blocks = math.ceil((total_records - 5000) / 500)
+        return s.biblio_price_5000 + (extra_blocks * 400)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending_payment')
 
     payment_note = models.TextField(blank=True, verbose_name='Ödeme Açıklaması')
