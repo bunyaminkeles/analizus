@@ -60,8 +60,13 @@
                     <div class="card-header">
                         <div class="d-flex justify-content-between align-items-center">
                             <span>Arama Sonuçları</span>
-                            <div id="spinner" class="spinner-border spinner-border-sm text-light" role="status">
-                                <span class="visually-hidden">Loading...</span>
+                            <div class="d-flex align-items-center gap-2">
+                                <div id="spinner" class="spinner-border spinner-border-sm text-light" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <button id="cancel-btn" class="btn btn-sm btn-outline-danger" style="display:none;" onclick="cancelJob()">
+                                    <i class="bi bi-x-circle me-1"></i>İptal Et
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -327,33 +332,57 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function pollStatus() {
         if (!currentJobId) return;
+        const cancelBtn = document.getElementById('cancel-btn');
+        if (cancelBtn) cancelBtn.style.display = 'inline-block';
 
         const interval = setInterval(() => {
             fetch(`/openalex/status/${currentJobId}/`)
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                return response.json();
+            })
             .then(data => {
                 if (data.status === 'completed') {
                     clearInterval(interval);
+                    if (cancelBtn) cancelBtn.style.display = 'none';
                     spinner.style.display = 'none';
                     submitBtn.disabled = false;
                     submitBtn.innerHTML = '<i class="fas fa-search"></i> Arama Yap';
                     displayResults(data);
                 } else if (data.status === 'failed') {
                     clearInterval(interval);
+                    if (cancelBtn) cancelBtn.style.display = 'none';
                     spinner.style.display = 'none';
                     submitBtn.disabled = false;
                     submitBtn.innerHTML = '<i class="fas fa-search"></i> Arama Yap';
-                    resultsSummary.innerHTML = `<p class="text-danger">Arama başarısız oldu: ${data.error}</p>`;
+                    resultsSummary.innerHTML = `<p class="text-danger">Arama başarısız oldu: ${data.error || 'Bilinmeyen hata'}</p>`;
                 }
             })
             .catch(err => {
-                clearInterval(interval);
-                spinner.style.display = 'none';
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = '<i class="fas fa-search"></i> Arama Yap';
-                resultsSummary.innerHTML = `<p class="text-danger">Durum kontrol edilemedi: ${err.message}</p>`;
+                // Geçici ağ hatası — polling'i durdurmadan devam et
+                console.warn('Durum kontrol hatası (tekrar denenecek):', err.message);
             });
         }, 3000);
+    }
+
+    function cancelJob() {
+        if (!currentJobId) return;
+        const cancelBtn = document.getElementById('cancel-btn');
+        cancelBtn.disabled = true;
+        cancelBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>İptal ediliyor...';
+        const csrf = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        fetch(`/openalex/cancel/${currentJobId}/`, {
+            method: 'POST',
+            headers: {'X-CSRFToken': csrf},
+        })
+        .then(r => r.json())
+        .then(() => {
+            location.reload();
+        })
+        .catch(() => {
+            cancelBtn.disabled = false;
+            cancelBtn.innerHTML = '<i class="bi bi-x-circle me-1"></i>İptal Et';
+        });
     }
 
     function displayResults(data) {

@@ -148,6 +148,18 @@ def openalex_job_status(request, job_id):
 
 @login_required
 @require_POST
+def openalex_cancel(request, job_id):
+    """Devam eden taramayı iptal eder."""
+    job = get_object_or_404(AlexSearchJob, id=job_id, user=request.user)
+    if job.status in ('pending', 'running'):
+        job.status = 'failed'
+        job.error_message = 'Kullanıcı tarafından iptal edildi.'
+        job.save(update_fields=['status', 'error_message'])
+    return JsonResponse({'success': True})
+
+
+@login_required
+@require_POST
 def openalex_send_demo_email(request, job_id):
     """Demo sonuçları kullanıcının kayıtlı emailine gönder."""
     job = get_object_or_404(AlexSearchJob, id=job_id, user=request.user)

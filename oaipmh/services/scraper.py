@@ -13,8 +13,8 @@ logger = logging.getLogger(__name__)
 
 MAX_RECORDS_PER_UNI = 2000  # keyword modda üniversite başına max kayıt
 CONNECT_TIMEOUT = 10        # TCP bağlantı kurma timeout (saniye)
-READ_TIMEOUT = 20           # Sunucudan veri okuma timeout (saniye)
-THREAD_TIMEOUT = 35         # Üniversite başına hard limit (saniye)
+READ_TIMEOUT = 30           # Sunucudan veri okuma timeout (saniye)
+THREAD_TIMEOUT = 120        # Üniversite başına hard limit (saniye)
 PER_UNI_DEMO = 2            # keyword modda üniversite başına max demo kayıt
 
 
@@ -116,8 +116,8 @@ class OAIPMHScraper:
         all_results = []
 
         def _search_one(uni):
-            found = []
             count = 0
+            matched = 0
             try:
                 sickle = _get_sickle(uni.oai_url)
                 params = {'metadataPrefix': 'oai_dc'}
@@ -138,21 +138,20 @@ class OAIPMHScraper:
                                 continue
                             if not _keyword_matches(parsed, title_query=keyword, abstract_query=abstract_query):
                                 continue
-                            found.append(parsed)
+                            with results_lock:
+                                all_results.append(parsed)
+                            matched += 1
                         except Exception:
                             continue
                 except Exception as e:
-                    # Sayfalama hatası (418, 500 vb.) — kısmi sonuçları koru
                     logger.warning(f"OAI-PMH [{uni.name}] sayfalama hatası ({count} kayıt tarandı): {e}")
 
             except NoRecordsMatch:
                 logger.info(f"OAI-PMH [{uni.name}]: Sonuç yok")
             except Exception as e:
                 logger.warning(f"OAI-PMH [{uni.name}] bağlantı hatası: {e}")
-            finally:
-                with results_lock:
-                    all_results.extend(found)
-                logger.info(f"OAI-PMH keyword [{uni.name}]: {len(found)} eşleşme / {count} kayıt tarandı")
+
+            logger.info(f"OAI-PMH keyword [{uni.name}]: {matched} eşleşme / {count} kayıt tarandı")
 
         threads = [threading.Thread(target=_search_one, args=(uni,)) for uni in universities]
         for t in threads:
