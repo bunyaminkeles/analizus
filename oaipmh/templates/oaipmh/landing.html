@@ -136,7 +136,10 @@
                 <div class="card bg-dark border-secondary text-white">
                     <div class="card-body text-center py-4">
                         <div class="spinner-border text-warning mb-3" role="status"></div>
-                        <p class="mb-0" id="status-text">Üniversite arşivleri taranıyor, lütfen bekleyin...</p>
+                        <p class="mb-2" id="status-text">Üniversite arşivleri taranıyor, lütfen bekleyin...</p>
+                        <button id="cancel-btn" class="btn btn-sm btn-outline-danger" onclick="cancelJob()">
+                            <i class="bi bi-x-circle me-1"></i>İptal Et
+                        </button>
                     </div>
                 </div>
             </div>
@@ -286,6 +289,25 @@ document.getElementById('status-text').textContent =
     {% else %}'Üniversite arşivi getiriliyor, lütfen bekleyin...'{% endif %};
 pollInterval = setInterval(pollStatus, 3000);
 {% endif %}
+
+function cancelJob() {
+    if (!currentJobId) return;
+    const btn = document.getElementById('cancel-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>İptal ediliyor...';
+    const csrf = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    fetch(`/oaipmh/cancel/${currentJobId}/`, {
+        method: 'POST',
+        headers: {'X-CSRFToken': csrf},
+    })
+    .then(r => r.json())
+    .then(() => {
+        clearInterval(pollInterval);
+        currentJobId = null;
+        document.getElementById('status-area').style.display = 'none';
+    })
+    .catch(() => { btn.disabled = false; btn.innerHTML = '<i class="bi bi-x-circle me-1"></i>İptal Et'; });
+}
 
 const _eb = document.getElementById('send-email-btn');
 if (_eb) {

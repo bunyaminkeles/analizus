@@ -162,6 +162,19 @@ def oaipmh_send_demo_email(request, job_id):
 
 
 @login_required
+@require_POST
+def oaipmh_cancel(request, job_id):
+    """Devam eden taramayı iptal eder."""
+    _feature_check()
+    job = get_object_or_404(OAIPMHSearchJob, id=job_id, user=request.user)
+    if job.status in ('pending', 'running'):
+        job.status = 'failed'
+        job.error_message = 'Kullanıcı tarafından iptal edildi.'
+        job.save(update_fields=['status', 'error_message'])
+    return JsonResponse({'success': True})
+
+
+@login_required
 def oaipmh_order_page(request, job_id):
     _feature_check()
     job = get_object_or_404(OAIPMHSearchJob, id=job_id, user=request.user)

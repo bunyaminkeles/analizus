@@ -167,7 +167,7 @@ class OAIPMHScraper:
         demo = all_results[:demo_limit]
         return total, demo, all_results
 
-    def browse_university(self, university, demo_limit=5):
+    def browse_university(self, university, demo_limit=5, max_records=5000):
         """
         Tek üniversitenin tüm tezlerini çeker.
         Returns: (total_count, demo_results, all_results)
@@ -179,6 +179,9 @@ class OAIPMHScraper:
             records = sickle.ListRecords(metadataPrefix='oai_dc')
             try:
                 for record in records:
+                    if count >= max_records:
+                        logger.info(f"OAI-PMH browse [{university.name}]: max kayıt limitine ulaşıldı ({max_records})")
+                        break
                     count += 1
                     try:
                         parsed = _parse_record(record, university.name)
