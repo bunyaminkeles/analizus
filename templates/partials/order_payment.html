@@ -1,11 +1,6 @@
 {#
-  Ortak Sipariş Ödeme Bölümü — <form> dışında include edilir.
-  Her template kendi <form> tag'ini ve ek field'larını yönetir;
-  bu partial sadece IBAN + ödeme notu + info + submit içerir.
-
-  Beklenen değişkenler ({% include ... with %} ile geçilir):
-    service_code  — IBAN açıklama prefix'i ("OpenAlex", "TR Dizin", "ÜniTez", "Bibliometri")
-    price         — gösterilecek tutar (sayı veya None; None ise template JS ile günceller)
+  Ortak Sipariş Ödeme Bölümü — form tag dışında include edilir.
+  Beklenen context: service_code, price (opsiyonel)
 #}
 
 {# IBAN #}
