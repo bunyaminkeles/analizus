@@ -32,6 +32,7 @@ def google_analytics(request):
         'GOOGLE_ANALYTICS_ID': getattr(settings, 'GOOGLE_ANALYTICS_ID', ''),
         'GOOGLE_SITE_VERIFICATION': getattr(settings, 'GOOGLE_SITE_VERIFICATION', ''),
         'BING_SITE_VERIFICATION': getattr(settings, 'BING_SITE_VERIFICATION', ''),
+        'YANDEX_SITE_VERIFICATION': getattr(settings, 'YANDEX_SITE_VERIFICATION', ''),
     }
 
 

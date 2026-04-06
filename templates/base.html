@@ -56,6 +56,9 @@
     {% if BING_SITE_VERIFICATION %}
     <meta name="msvalidate.01" content="{{ BING_SITE_VERIFICATION }}">
     {% endif %}
+    {% if YANDEX_SITE_VERIFICATION %}
+    <meta name="yandex-verification" content="{{ YANDEX_SITE_VERIFICATION }}">
+    {% endif %}
 
     {% if GOOGLE_ANALYTICS_ID %}
     <script async src="https://www.googletagmanager.com/gtag/js?id={{ GOOGLE_ANALYTICS_ID }}"></script>
