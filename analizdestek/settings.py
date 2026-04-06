@@ -237,24 +237,17 @@ JAZZMIN_UI_TWEAKS = {
 }
 
 # --- E-POSTA AYARLARI ---
-RESEND_API_KEY = os.getenv('RESEND_API_KEY')
-
-if RESEND_API_KEY and not DEBUG:
-    # Production: RESEND_API_KEY set ve DEBUG=False ise HTTP API kullan
-    EMAIL_BACKEND = 'forum.backends.ResendBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = os.getenv('SMTP_HOST')
+EMAIL_PORT = int(os.getenv('SMTP_PORT', 465))
+EMAIL_HOST_USER = os.getenv('SMTP_USER')
+EMAIL_HOST_PASSWORD = os.getenv('SMTP_PASS')
+if EMAIL_PORT == 587:
+    EMAIL_USE_TLS = True
+    EMAIL_USE_SSL = False
 else:
-    # Lokal geliştirme: SMTP kullan (DEBUG=True ise Resend key olsa bile)
-    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-    EMAIL_HOST = os.getenv('SMTP_HOST')
-    EMAIL_PORT = int(os.getenv('SMTP_PORT', 465))
-    EMAIL_HOST_USER = os.getenv('SMTP_USER')
-    EMAIL_HOST_PASSWORD = os.getenv('SMTP_PASS')
-    if EMAIL_PORT == 587:
-        EMAIL_USE_TLS = True
-        EMAIL_USE_SSL = False
-    else:
-        EMAIL_USE_TLS = False
-        EMAIL_USE_SSL = True
+    EMAIL_USE_TLS = False
+    EMAIL_USE_SSL = True
 
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'info@analizus.com')
 

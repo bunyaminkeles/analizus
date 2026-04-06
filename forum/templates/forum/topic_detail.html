@@ -17,10 +17,13 @@
 {
     "@context": "https://schema.org",
     "@type": "DiscussionForumPosting",
+    "url": "{{ request.build_absolute_uri }}",
     "headline": "{{ topic.subject|escapejs }}",
+    "text": "{{ topic.posts.first.message|striptags|escapejs|truncatechars:500 }}",
     "author": {
         "@type": "Person",
-        "name": "{{ topic.starter.username }}"
+        "name": "{{ topic.starter.username }}",
+        "url": "{{ request.scheme }}://{{ request.get_host }}{% url 'profile_detail' username=topic.starter.username %}"
     },
     "datePublished": "{{ topic.created_at|date:'c' }}",
     "interactionStatistic": {
