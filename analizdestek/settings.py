@@ -44,7 +44,8 @@ CSRF_TRUSTED_ORIGINS = [
 INSTALLED_APPS = [
     'daphne',           # Channels için ASGI sunucusu
     'channels',         # Gerçek zamanlı özellikler için
-    'jazzmin',          # Admin paneli teması
+    'unfold',                     # Django Unfold admin teması
+    'unfold.contrib.filters',     # Gelişmiş filtreler
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -185,55 +186,245 @@ LOCALE_PATHS = [
     BASE_DIR / 'locale/',
 ]
 
-# --- ADMIN PANELİ AYARLARI (JAZZMIN) ---
-JAZZMIN_SETTINGS = {
-    "site_title": "Analizus Admin",
-    "site_header": "Analizus",
-    "site_brand": "Analizus",
-    "site_logo_classes": "",
-    "welcome_sign": "Hoş geldiniz.",
-    "copyright": "Analizus Ltd.",
-    "search_model": ["auth.User", "forum.Topic"],
-    "site_url": "/",
+# --- ADMIN PANELİ AYARLARI (UNFOLD) ---
+from django.urls import reverse_lazy
 
-    "topmenu_links": [
-        {"name": "Ana Siteye Dön", "url": "home", "permissions": ["auth.view_user"]},
-        {"model": "auth.User"},
-    ],
-
-    "usermenu_links": [
-        {"name": "Profilim", "url": "home", "new_window": False}, 
-        {"model": "auth.user"}
-    ],
-
-    "show_sidebar": True,
-    "navigation_expanded": True,
-    "icons": {
-        "auth": "fas fa-users-cog",
-        "auth.user": "fas fa-user",
-        "auth.Group": "fas fa-users",
-        "forum.Topic": "fas fa-comments",
-        "forum.Category": "fas fa-layer-group",
-        "forum.Post": "fas fa-comment-dots",
+UNFOLD = {
+    "SITE_TITLE": "Analizus | Komuta Merkezi",
+    "SITE_HEADER": "Analizus Admin",
+    "SITE_URL": "/",
+    "SITE_ICON": None,
+    "SITE_SYMBOL": "analytics",
+    "SHOW_HISTORY": True,
+    "SHOW_VIEW_ON_SITE": True,
+    "SHOW_BACK_BUTTON": True,
+    "DASHBOARD_CALLBACK": "forum.dashboard.dashboard_callback",
+    "COLORS": {
+        "font": {
+            "subtle-light": "107 114 128",   # gray-500
+            "subtle-dark": "156 163 175",    # gray-400
+            "default-light": "17 24 39",     # gray-900
+            "default-dark": "243 244 246",   # gray-100
+            "important-light": "3 7 18",     # gray-950
+            "important-dark": "249 250 251", # gray-50
+        },
+        "primary": {
+            "50":  "238 242 255",
+            "100": "224 231 255",
+            "200": "199 210 254",
+            "300": "165 180 252",
+            "400": "129 140 248",
+            "500": "99 102 241",
+            "600": "79 70 229",
+            "700": "67 56 202",
+            "800": "55 48 163",
+            "900": "49 46 129",
+            "950": "30 27 75",
+        },
     },
-    "show_ui_builder": True,
-    "custom_css": "css/admin_theme_v2.css",
-    "custom_js": "js/admin_custom_v2.js",
-}
-
-JAZZMIN_UI_TWEAKS = {
-    "theme": "darkly",
-    "dark_mode_theme": "darkly",
-    "navbar": "navbar-dark",
-    "sidebar": "sidebar-dark-primary",
-    "button_classes": {
-        "primary": "btn-primary",
-        "secondary": "btn-secondary",
-        "info": "btn-info",
-        "warning": "btn-warning",
-        "danger": "btn-danger",
-        "success": "btn-success"
-    }
+    "SIDEBAR": {
+        "show_search": True,
+        "show_all_applications": False,
+        "navigation": [
+        # ─── 1. EKOSİSTEM ───────────────────────────────────────────
+        {
+            "title": "Ekosistem",
+            "separator": True,
+            "collapsible": False,
+            "items": [
+                {
+                    "title": "Kullanıcılar",
+                    "icon": "person",
+                    "link": reverse_lazy("admin:auth_user_changelist"),
+                },
+                {
+                    "title": "Profiller",
+                    "icon": "badge",
+                    "link": reverse_lazy("admin:forum_profile_changelist"),
+                },
+                {
+                    "title": "Bağışlar",
+                    "icon": "volunteer_activism",
+                    "link": reverse_lazy("admin:forum_donation_changelist"),
+                },
+                {
+                    "title": "Bağış Katmanları",
+                    "icon": "layers",
+                    "link": reverse_lazy("admin:forum_donationtier_changelist"),
+                },
+                {
+                    "title": "İş Ödemeleri",
+                    "icon": "payments",
+                    "link": reverse_lazy("admin:forum_jobpayment_changelist"),
+                },
+            ],
+        },
+        # ─── 2. FORUM & İÇERİK ──────────────────────────────────────
+        {
+            "title": "Forum & İçerik",
+            "separator": True,
+            "collapsible": True,
+            "items": [
+                {
+                    "title": "Bölümler",
+                    "icon": "grid_view",
+                    "link": reverse_lazy("admin:forum_section_changelist"),
+                },
+                {
+                    "title": "Konular",
+                    "icon": "forum",
+                    "link": reverse_lazy("admin:forum_topic_changelist"),
+                },
+                {
+                    "title": "Gönderiler",
+                    "icon": "chat_bubble",
+                    "link": reverse_lazy("admin:forum_post_changelist"),
+                },
+                {
+                    "title": "Blog Yazıları",
+                    "icon": "article",
+                    "link": reverse_lazy("admin:forum_blogpost_changelist"),
+                },
+                {
+                    "title": "Blog Kategorileri",
+                    "icon": "folder",
+                    "link": reverse_lazy("admin:forum_blogcategory_changelist"),
+                },
+                {
+                    "title": "Başarı Hikayeleri",
+                    "icon": "emoji_events",
+                    "link": reverse_lazy("admin:forum_successstory_changelist"),
+                },
+                {
+                    "title": "Çalışma Odaları",
+                    "icon": "meeting_room",
+                    "link": reverse_lazy("admin:forum_studyroom_changelist"),
+                },
+                {
+                    "title": "Freelance İşler",
+                    "icon": "work",
+                    "link": reverse_lazy("admin:forum_freelancejob_changelist"),
+                },
+                {
+                    "title": "İş Teklifleri",
+                    "icon": "handshake",
+                    "link": reverse_lazy("admin:forum_jobproposal_changelist"),
+                },
+                {
+                    "title": "İş Yorumları",
+                    "icon": "star_rate",
+                    "link": reverse_lazy("admin:forum_jobreview_changelist"),
+                },
+                {
+                    "title": "Günlük İpuçları",
+                    "icon": "lightbulb",
+                    "link": reverse_lazy("admin:forum_dailytip_changelist"),
+                },
+                {
+                    "title": "Quiz Soruları",
+                    "icon": "quiz",
+                    "link": reverse_lazy("admin:forum_quizquestion_changelist"),
+                },
+                {
+                    "title": "Rozetler",
+                    "icon": "military_tech",
+                    "link": reverse_lazy("admin:forum_badge_changelist"),
+                },
+                {
+                    "title": "Yetenekler",
+                    "icon": "psychology",
+                    "link": reverse_lazy("admin:forum_skill_changelist"),
+                },
+                {
+                    "title": "Konu Etiketleri",
+                    "icon": "label",
+                    "link": reverse_lazy("admin:forum_topictag_changelist"),
+                },
+            ],
+        },
+        # ─── 3. ARAMA & ANALİZ SERVİSLERİ ──────────────────────────
+        {
+            "title": "Arama & Analiz",
+            "separator": True,
+            "collapsible": True,
+            "items": [
+                {
+                    "title": "OpenAlex İşleri",
+                    "icon": "travel_explore",
+                    "link": reverse_lazy("admin:oaipmh_alexsearchjobproxy_changelist"),
+                },
+                {
+                    "title": "TR Dizin İşleri",
+                    "icon": "search",
+                    "link": reverse_lazy("admin:oaipmh_dizinsearchjobproxy_changelist"),
+                },
+                {
+                    "title": "YÖK Tez İşleri",
+                    "icon": "school",
+                    "link": reverse_lazy("admin:oaipmh_yoktezsearchjobproxy_changelist"),
+                },
+                {
+                    "title": "OAI-PMH İşleri",
+                    "icon": "hub",
+                    "link": reverse_lazy("admin:oaipmh_oaipmhsearchjob_changelist"),
+                },
+                {
+                    "title": "Üniversiteler",
+                    "icon": "account_balance",
+                    "link": reverse_lazy("admin:oaipmh_university_changelist"),
+                },
+                {
+                    "title": "Tez Analizleri",
+                    "icon": "biotech",
+                    "link": reverse_lazy("admin:tezanaliz_tezanaliz_changelist"),
+                },
+                {
+                    "title": "Makale Analizleri",
+                    "icon": "description",
+                    "link": reverse_lazy("admin:tezanaliz_makaleanalizproxy_changelist"),
+                },
+                {
+                    "title": "Bibliometrik İşler",
+                    "icon": "bar_chart",
+                    "link": reverse_lazy("admin:tezanaliz_bibliometricjobproxy_changelist"),
+                },
+                {
+                    "title": "Bibliometrik Siparişler",
+                    "icon": "receipt_long",
+                    "link": reverse_lazy("admin:tezanaliz_bibliometricorderproxy_changelist"),
+                },
+            ],
+        },
+        # ─── 4. SİSTEM ───────────────────────────────────────────────
+        {
+            "title": "Sistem",
+            "separator": True,
+            "collapsible": True,
+            "items": [
+                {
+                    "title": "Site Ayarları",
+                    "icon": "settings",
+                    "link": reverse_lazy("admin:forum_sitesettings_changelist"),
+                },
+                {
+                    "title": "İletişim Mesajları",
+                    "icon": "mail",
+                    "link": reverse_lazy("admin:forum_contactmessage_changelist"),
+                },
+                {
+                    "title": "Özel Mesajlar",
+                    "icon": "lock",
+                    "link": reverse_lazy("admin:forum_privatemessage_changelist"),
+                },
+                {
+                    "title": "Gruplar",
+                    "icon": "group",
+                    "link": reverse_lazy("admin:auth_group_changelist"),
+                },
+            ],
+        },
+        ],  # /navigation
+    },  # /SIDEBAR
 }
 
 # --- E-POSTA AYARLARI ---

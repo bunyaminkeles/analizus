@@ -1,679 +1,381 @@
-{% extends "admin/base_site.html" %}
-{% load i18n static jazzmin admin_dashboard_tags %}
+{% extends 'admin/base.html' %}
+{% load i18n %}
 
-{% block bodyclass %}{{ block.super }} dashboard{% endblock %}
-{% block content_title %}Dashboard{% endblock %}
-{% block breadcrumbs %}{% endblock %}
+{% block title %}Dashboard | {{ site_title|default:_('Django site admin') }}{% endblock %}
+{% block branding %}{% include "unfold/helpers/site_branding.html" %}{% endblock %}
 
 {% block content %}
-{% get_dashboard_stats as s %}
+<div style="display:flex;flex-direction:column;gap:1.5rem;">
 
-<div class="admin-dashboard">
+<!-- ══════════════════════════════════════════════════
+     ROW 1 — ANA İSTATİSTİK KARTLARI
+══════════════════════════════════════════════════ -->
+<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:1rem;">
 
-    <!-- ═══════════════════════════════════════════════
-         PLATFORM HEALTH + ANA STAT KARTLARI
-    ═══════════════════════════════════════════════ -->
-    <div class="row align-items-stretch mb-3">
-
-        <!-- Platform Health Score -->
-        <div class="col-12 col-md-3 mb-3">
-            <div class="stat-card health-card h-100 text-center">
-                <p class="stat-label mb-2">Platform Sağlığı</p>
-                <div class="health-ring mx-auto mb-2" style="--score: {{ s.health_score }}; --color: {{ s.health_color }};">
-                    <svg viewBox="0 0 80 80" class="health-svg">
-                        <circle cx="40" cy="40" r="34" class="health-bg"/>
-                        <circle cx="40" cy="40" r="34" class="health-fill" style="stroke: {{ s.health_color }};"/>
-                    </svg>
-                    <div class="health-value" style="color: {{ s.health_color }};">{{ s.health_score }}</div>
-                </div>
-                <span class="health-label" style="color: {{ s.health_color }};">{{ s.health_label }}</span>
-                <div class="text-muted small mt-1" style="font-size: 0.7rem;">Kullanıcı büyümesi + içerik + kuyruk</div>
-            </div>
-        </div>
-
-        <!-- 4 Ana Stat -->
-        <div class="col-12 col-md-9 mb-3">
-            <div class="row h-100">
-                <div class="col-6 col-xl-3 mb-3">
-                    <div class="stat-card neon-card h-100">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div>
-                                <p class="stat-label mb-1">Toplam Kullanıcı</p>
-                                <h3 class="stat-value gradient-text mb-1">{{ s.total_users }}</h3>
-                                <span class="stat-change positive">+{{ s.week_users }} bu hafta</span>
-                                {% if s.delta_users is not None %}
-                                <div class="delta-badge {% if s.delta_users >= 0 %}delta-up{% else %}delta-down{% endif %}">
-                                    {% if s.delta_users >= 0 %}▲{% else %}▼{% endif %} %{{ s.delta_users|floatformat:1 }}
-                                </div>
-                                {% endif %}
-                            </div>
-                            <div class="stat-icon" style="background: rgba(99,102,241,0.2);">
-                                <i class="fas fa-users" style="color: #6366f1;"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-6 col-xl-3 mb-3">
-                    <div class="stat-card neon-card h-100">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div>
-                                <p class="stat-label mb-1">Toplam Konu</p>
-                                <h3 class="stat-value gradient-text mb-1">{{ s.total_topics }}</h3>
-                                <span class="stat-change positive">+{{ s.week_topics }} bu hafta</span>
-                                {% if s.delta_topics is not None %}
-                                <div class="delta-badge {% if s.delta_topics >= 0 %}delta-up{% else %}delta-down{% endif %}">
-                                    {% if s.delta_topics >= 0 %}▲{% else %}▼{% endif %} %{{ s.delta_topics|floatformat:1 }}
-                                </div>
-                                {% endif %}
-                            </div>
-                            <div class="stat-icon" style="background: rgba(16,185,129,0.2);">
-                                <i class="fas fa-comments" style="color: #10b981;"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-6 col-xl-3 mb-3">
-                    <div class="stat-card neon-card h-100">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div>
-                                <p class="stat-label mb-1">Toplam Gönderi</p>
-                                <h3 class="stat-value gradient-text mb-1">{{ s.total_posts }}</h3>
-                                <span class="stat-change positive">+{{ s.week_posts }} bu hafta</span>
-                                {% if s.delta_posts is not None %}
-                                <div class="delta-badge {% if s.delta_posts >= 0 %}delta-up{% else %}delta-down{% endif %}">
-                                    {% if s.delta_posts >= 0 %}▲{% else %}▼{% endif %} %{{ s.delta_posts|floatformat:1 }}
-                                </div>
-                                {% endif %}
-                            </div>
-                            <div class="stat-icon" style="background: rgba(245,158,11,0.2);">
-                                <i class="fas fa-comment-dots" style="color: #f59e0b;"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-6 col-xl-3 mb-3">
-                    <div class="stat-card neon-card h-100">
-                        <div class="d-flex justify-content-between align-items-start">
-                            <div>
-                                <p class="stat-label mb-1">Görüntüleme</p>
-                                <h3 class="stat-value gradient-text mb-1">{{ s.total_views|default:0 }}</h3>
-                                <span class="stat-change neutral">Tüm zamanlar</span>
-                            </div>
-                            <div class="stat-icon" style="background: rgba(236,72,153,0.2);">
-                                <i class="fas fa-eye" style="color: #ec4899;"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+  <!-- Platform Sağlığı -->
+  <div style="border-radius:.75rem;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);padding:1.25rem;display:flex;flex-direction:column;align-items:center;gap:.25rem;">
+    <span style="font-size:.75rem;font-weight:600;color:#94a3b8;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem;">Platform Sağlığı</span>
+    <div style="position:relative;width:80px;height:80px;">
+      <svg viewBox="0 0 80 80" style="width:80px;height:80px;transform:rotate(-90deg);">
+        <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="8"/>
+        <circle cx="40" cy="40" r="34" fill="none" stroke="{{ health_color }}" stroke-width="8"
+          stroke-dasharray="{{ health_score|default:0 }},100" stroke-linecap="round"/>
+      </svg>
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:1.25rem;font-weight:700;color:{{ health_color }};">{{ health_score }}</div>
     </div>
+    <span style="font-size:.875rem;font-weight:600;color:{{ health_color }};">{{ health_label }}</span>
+    <span style="font-size:.7rem;color:#6b7280;text-align:center;">Büyüme + içerik + kuyruk</span>
+  </div>
 
-    <!-- ═══════════════════════════════════════════════
-         HİZMET PAZARI + GELİR ÖZETİ
-    ═══════════════════════════════════════════════ -->
-    <div class="row mb-3">
-        <!-- Hizmet Pazarı -->
-        <div class="col-12 col-md-6 mb-3">
-            <div class="dashboard-card h-100">
-                <div class="card-header">
-                    <h5><i class="fas fa-briefcase mr-2" style="color:#f59e0b;"></i>Hizmet Pazarı</h5>
-                    <a href="/admin/forum/freelancejob/" class="btn btn-xs btn-outline-warning ml-auto">Tümü</a>
-                </div>
-                <div class="card-body">
-                    <div class="row text-center">
-                        <div class="col-4">
-                            <div class="market-stat-val" style="color:#38bdf8;">{{ s.open_jobs }}</div>
-                            <div class="market-stat-lbl">Açık İlan</div>
-                        </div>
-                        <div class="col-4">
-                            <div class="market-stat-val" style="color:#f59e0b;">{{ s.pending_proposals }}</div>
-                            <div class="market-stat-lbl">Bekleyen Teklif</div>
-                        </div>
-                        <div class="col-4">
-                            <div class="market-stat-val" style="color:#10b981;">{{ s.month_completed }}</div>
-                            <div class="market-stat-lbl">Bu Ay Bitti</div>
-                        </div>
-                    </div>
-                    <div class="text-center mt-2">
-                        <span class="text-muted small">Toplam {{ s.total_completed }} iş tamamlandı</span>
-                    </div>
-                </div>
-            </div>
-        </div>
+  <!-- Toplam Kullanıcı -->
+  <a href="/admin/auth/user/" style="text-decoration:none;">
+  <div style="border-radius:.75rem;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);padding:1.25rem;display:flex;flex-direction:column;gap:.25rem;height:100%;">
+    <span class="material-symbols-outlined" style="font-size:1.5rem;color:#818cf8;">person</span>
+    <span style="font-size:2rem;font-weight:700;color:#f1f5f9;margin-top:.5rem;">{{ total_users }}</span>
+    <span style="font-size:.875rem;font-weight:500;color:#cbd5e1;">Toplam Kullanıcı</span>
+    <span style="font-size:.75rem;color:{% if week_users > 0 %}#34d399{% else %}#6b7280{% endif %};">+{{ week_users }} bu hafta</span>
+  </div></a>
 
-        <!-- Gelir Özeti -->
-        <div class="col-12 col-md-6 mb-3">
-            <div class="dashboard-card h-100">
-                <div class="card-header">
-                    <h5><i class="fas fa-coins mr-2" style="color:#10b981;"></i>Gelir Özeti</h5>
-                </div>
-                <div class="card-body">
-                    <div class="row text-center">
-                        <div class="col-6">
-                            <div class="market-stat-val" style="color:#10b981; font-size:1.4rem;">
-                                {{ s.month_donation_sum|floatformat:0 }} ₺
-                            </div>
-                            <div class="market-stat-lbl">Bu Ay Bağış</div>
-                        </div>
-                        <div class="col-6">
-                            <div class="market-stat-val" style="color:#a78bfa; font-size:1.4rem;">
-                                {{ s.total_donation_sum|floatformat:0 }} ₺
-                            </div>
-                            <div class="market-stat-lbl">Toplam Bağış</div>
-                        </div>
-                    </div>
-                    <hr style="border-color: rgba(99,102,241,0.2);">
-                    <div class="row text-center">
-                        <div class="col-6">
-                            <div class="market-stat-val" style="color:#38bdf8;">{{ s.month_tezanaliz_count }}</div>
-                            <div class="market-stat-lbl">Tez Analiz (ay)</div>
-                        </div>
-                        <div class="col-6">
-                            <div class="market-stat-val" style="color:#f472b6;">{{ s.month_biblio_count }}</div>
-                            <div class="market-stat-lbl">Bibliometrik (ay)</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+  <!-- Toplam Konu -->
+  <a href="/admin/forum/topic/" style="text-decoration:none;">
+  <div style="border-radius:.75rem;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);padding:1.25rem;display:flex;flex-direction:column;gap:.25rem;height:100%;">
+    <span class="material-symbols-outlined" style="font-size:1.5rem;color:#60a5fa;">forum</span>
+    <span style="font-size:2rem;font-weight:700;color:#f1f5f9;margin-top:.5rem;">{{ total_topics }}</span>
+    <span style="font-size:.875rem;font-weight:500;color:#cbd5e1;">Toplam Konu</span>
+    <span style="font-size:.75rem;color:{% if week_topics > 0 %}#34d399{% else %}#6b7280{% endif %};">+{{ week_topics }} bu hafta</span>
+  </div></a>
+
+  <!-- Toplam Gönderi -->
+  <a href="/admin/forum/post/" style="text-decoration:none;">
+  <div style="border-radius:.75rem;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);padding:1.25rem;display:flex;flex-direction:column;gap:.25rem;height:100%;">
+    <span class="material-symbols-outlined" style="font-size:1.5rem;color:#a78bfa;">chat_bubble</span>
+    <span style="font-size:2rem;font-weight:700;color:#f1f5f9;margin-top:.5rem;">{{ total_posts }}</span>
+    <span style="font-size:.875rem;font-weight:500;color:#cbd5e1;">Toplam Gönderi</span>
+    <span style="font-size:.75rem;color:{% if week_posts > 0 %}#34d399{% else %}#6b7280{% endif %};">+{{ week_posts }} bu hafta</span>
+  </div></a>
+
+  <!-- Toplam Görüntülenme -->
+  <div style="border-radius:.75rem;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);padding:1.25rem;display:flex;flex-direction:column;gap:.25rem;">
+    <span class="material-symbols-outlined" style="font-size:1.5rem;color:#22d3ee;">visibility</span>
+    <span style="font-size:2rem;font-weight:700;color:#f1f5f9;margin-top:.5rem;">{{ total_views }}</span>
+    <span style="font-size:.875rem;font-weight:500;color:#cbd5e1;">Toplam Görüntülenme</span>
+    <span style="font-size:.75rem;color:#6b7280;">tüm zamanlar</span>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     ROW 2 — HİZMET PAZARI + GELİR + AKADEMİK SERVİSLER
+══════════════════════════════════════════════════ -->
+<div style="display:grid;grid-template-columns:1fr 1fr 2fr;gap:1rem;">
+
+  <!-- Hizmet Pazarı -->
+  <div style="border-radius:.75rem;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);padding:1.25rem;">
+    <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:1rem;padding-bottom:.75rem;border-bottom:1px solid rgba(255,255,255,.08);">
+      <span class="material-symbols-outlined" style="font-size:1.25rem;color:#34d399;">storefront</span>
+      <span style="font-size:.875rem;font-weight:600;color:#e2e8f0;text-transform:uppercase;letter-spacing:.05em;">Hizmet Pazarı</span>
     </div>
-
-    <!-- ═══════════════════════════════════════════════
-         SERVİS İSTATİSTİKLERİ
-    ═══════════════════════════════════════════════ -->
-    <div class="row mb-3">
-        <div class="col-12">
-            <div class="dashboard-card">
-                <div class="card-header">
-                    <h5><i class="fas fa-rocket mr-2" style="color:#a78bfa;"></i>Akademik Servisler (Bu Ay / Toplam)</h5>
-                </div>
-                <div class="card-body">
-                    <div class="row text-center">
-                        <div class="col-6 col-md-3 mb-2">
-                            <div class="service-stat-box">
-                                <i class="fas fa-search" style="color:#38bdf8; font-size:1.4rem;"></i>
-                                <div class="service-stat-val">{{ s.openalex_month }} / {{ s.openalex_total }}</div>
-                                <div class="service-stat-lbl">OpenAlex</div>
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-3 mb-2">
-                            <div class="service-stat-box">
-                                <i class="fas fa-graduation-cap" style="color:#10b981; font-size:1.4rem;"></i>
-                                <div class="service-stat-val">{{ s.yoktez_month }} / {{ s.yoktez_total }}</div>
-                                <div class="service-stat-lbl">YÖK Tez</div>
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-3 mb-2">
-                            <div class="service-stat-box">
-                                <i class="fas fa-chart-bar" style="color:#f472b6; font-size:1.4rem;"></i>
-                                <div class="service-stat-val">{{ s.biblio_month }} / {{ s.biblio_total }}</div>
-                                <div class="service-stat-lbl">Bibliometrik</div>
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-3 mb-2">
-                            <div class="service-stat-box">
-                                <i class="fas fa-university" style="color:#f59e0b; font-size:1.4rem;"></i>
-                                <div class="service-stat-val">{{ s.oaipmh_month }} / {{ s.oaipmh_total }}</div>
-                                <div class="service-stat-lbl">Üniv. Tezleri</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem;text-align:center;">
+      <a href="/admin/forum/freelancejob/?status__exact=open" style="text-decoration:none;">
+      <div><div style="font-size:1.5rem;font-weight:700;color:#34d399;">{{ open_jobs }}</div><div style="font-size:.7rem;color:#6b7280;">Açık İlan</div></div></a>
+      <a href="/admin/forum/jobproposal/?status__exact=pending" style="text-decoration:none;">
+      <div><div style="font-size:1.5rem;font-weight:700;color:#fbbf24;">{{ pending_proposals }}</div><div style="font-size:.7rem;color:#6b7280;">Bekleyen Teklif</div></div></a>
+      <div><div style="font-size:1.5rem;font-weight:700;color:#818cf8;">{{ month_completed }}</div><div style="font-size:.7rem;color:#6b7280;">Bu Ay Bitti</div></div>
     </div>
+    <div style="margin-top:.75rem;font-size:.75rem;color:#6b7280;text-align:center;">Toplam {{ total_completed }} iş tamamlandı</div>
+  </div>
 
-    <!-- ═══════════════════════════════════════════════
-         AKTİVİTE GRAFİĞİ (7 / 30 / 90 gün toggle)
-    ═══════════════════════════════════════════════ -->
-    <div class="row mb-3">
-        <div class="col-12">
-            <div class="dashboard-card">
-                <div class="card-header d-flex align-items-center flex-wrap" style="gap:.5rem;">
-                    <h5 class="mb-0"><i class="fas fa-chart-line mr-2"></i>Aktivite Trendi</h5>
-                    <div class="ml-auto btn-group btn-group-sm chart-toggle-group" role="group">
-                        <button type="button" class="btn btn-outline-info active" data-range="7">7 Gün</button>
-                        <button type="button" class="btn btn-outline-info" data-range="30">30 Gün</button>
-                        <button type="button" class="btn btn-outline-info" data-range="90">90 Gün</button>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <div style="position:relative; height:260px; width:100%;">
-                        <canvas id="activityChart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
+  <!-- Gelir Özeti -->
+  <div style="border-radius:.75rem;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);padding:1.25rem;">
+    <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:1rem;padding-bottom:.75rem;border-bottom:1px solid rgba(255,255,255,.08);">
+      <span class="material-symbols-outlined" style="font-size:1.25rem;color:#f472b6;">payments</span>
+      <span style="font-size:.875rem;font-weight:600;color:#e2e8f0;text-transform:uppercase;letter-spacing:.05em;">Gelir Özeti</span>
     </div>
-
-    <!-- ═══════════════════════════════════════════════
-         ONAY MERKEZİ
-    ═══════════════════════════════════════════════ -->
-    <div class="row mb-3">
-        <div class="col-12">
-            <div class="dashboard-card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5><i class="fas fa-check-circle mr-2"></i>Onay Merkezi</h5>
-                    <span class="text-muted small">
-                        {% with total=s.pending_stories.count|add:s.pending_reviews.count|add:s.unread_contacts.count|add:s.pending_donations.count|add:s.pending_linkedin_verifications.count %}
-                        {% if total %}<span class="badge badge-danger">{{ total }} bekleyen</span>{% else %}<span class="text-success">Temiz ✓</span>{% endif %}
-                        {% endwith %}
-                    </span>
-                </div>
-                <div class="card-body">
-                    <ul class="nav nav-pills mb-3 flex-wrap" id="approvalTabs" role="tablist" style="gap:.5rem;">
-                        <li class="nav-item">
-                            <a class="nav-link active" id="stories-tab" data-toggle="pill" href="#stories-panel" role="tab">
-                                <i class="fas fa-star mr-1"></i>Hikayeler
-                                {% if s.pending_stories.count %}<span class="badge badge-danger ml-1">{{ s.pending_stories.count }}</span>{% endif %}
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" id="reviews-tab" data-toggle="pill" href="#reviews-panel" role="tab">
-                                <i class="fas fa-quote-left mr-1"></i>Değerlendirmeler
-                                {% if s.pending_reviews.count %}<span class="badge badge-danger ml-1">{{ s.pending_reviews.count }}</span>{% endif %}
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" id="contacts-tab" data-toggle="pill" href="#contacts-panel" role="tab">
-                                <i class="fas fa-envelope mr-1"></i>Mesajlar
-                                {% if s.unread_contacts.count %}<span class="badge badge-danger ml-1">{{ s.unread_contacts.count }}</span>{% endif %}
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" id="donations-tab" data-toggle="pill" href="#donations-panel" role="tab">
-                                <i class="fas fa-heart mr-1"></i>Bağışlar
-                                {% if s.pending_donations.count %}<span class="badge badge-danger ml-1">{{ s.pending_donations.count }}</span>{% endif %}
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" id="linkedin-tab" data-toggle="pill" href="#linkedin-panel" role="tab">
-                                <i class="fab fa-linkedin mr-1"></i>LinkedIn
-                                {% if s.pending_linkedin_verifications.count %}<span class="badge badge-danger ml-1">{{ s.pending_linkedin_verifications.count }}</span>{% endif %}
-                            </a>
-                        </li>
-                    </ul>
-
-                    <div class="tab-content" id="approvalTabsContent">
-                        <!-- Hikayeler -->
-                        <div class="tab-pane fade show active" id="stories-panel" role="tabpanel">
-                            <div class="table-responsive">
-                                <table class="table table-dashboard table-hover mb-0">
-                                    <thead><tr><th>Kullanıcı</th><th>Hikaye</th><th>Tarih</th><th>İşlem</th></tr></thead>
-                                    <tbody>
-                                        {% for story in s.pending_stories %}
-                                        <tr>
-                                            <td><a href="/admin/auth/user/{{ story.user.id }}/change/" class="text-info">{{ story.user.username }}</a></td>
-                                            <td>{{ story.quote|truncatechars:80 }}</td>
-                                            <td class="text-muted small text-nowrap">{{ story.created_at|timesince }} önce</td>
-                                            <td class="text-nowrap">
-                                                <form method="post" action="{% url 'dashboard_approve_story' story.pk %}" class="d-inline">{% csrf_token %}<input type="hidden" name="action" value="approve"><button class="btn btn-sm btn-success">Onayla</button></form>
-                                                <form method="post" action="{% url 'dashboard_approve_story' story.pk %}" class="d-inline ml-1">{% csrf_token %}<input type="hidden" name="action" value="reject"><button class="btn btn-sm btn-outline-danger">Reddet</button></form>
-                                            </td>
-                                        </tr>
-                                        {% empty %}
-                                        <tr><td colspan="4" class="text-center text-muted py-3">Bekleyen hikaye yok ✓</td></tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-
-                        <!-- Değerlendirmeler -->
-                        <div class="tab-pane fade" id="reviews-panel" role="tabpanel">
-                            <div class="table-responsive">
-                                <table class="table table-dashboard table-hover mb-0">
-                                    <thead><tr><th>Değerlendiren</th><th>Değerlendirilen</th><th>Puan</th><th>Yorum</th><th>İşlem</th></tr></thead>
-                                    <tbody>
-                                        {% for review in s.pending_reviews %}
-                                        <tr>
-                                            <td><a href="/admin/auth/user/{{ review.reviewer.id }}/change/" class="text-info">{{ review.reviewer.username }}</a></td>
-                                            <td><a href="/admin/auth/user/{{ review.reviewed_user.id }}/change/" class="text-light">{{ review.reviewed_user.username }}</a></td>
-                                            <td>{% for i in "12345" %}<i class="fas fa-star{% if forloop.counter > review.rating %}" style="color:#475569;{% else %}" style="color:#f59e0b;{% endif %} font-size:0.7rem;"></i>{% endfor %}</td>
-                                            <td class="text-muted small">{{ review.comment|truncatechars:60 }}</td>
-                                            <td><form method="post" action="{% url 'dashboard_approve_review' review.pk %}" class="d-inline">{% csrf_token %}<button class="btn btn-sm btn-success">Onayla</button></form></td>
-                                        </tr>
-                                        {% empty %}
-                                        <tr><td colspan="5" class="text-center text-muted py-3">Bekleyen değerlendirme yok ✓</td></tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-
-                        <!-- Mesajlar -->
-                        <div class="tab-pane fade" id="contacts-panel" role="tabpanel">
-                            <div class="table-responsive">
-                                <table class="table table-dashboard table-hover mb-0">
-                                    <thead><tr><th>Gönderen</th><th>E-posta</th><th>Konu</th><th>Mesaj</th><th>Tarih</th><th>İşlem</th></tr></thead>
-                                    <tbody>
-                                        {% for msg in s.unread_contacts %}
-                                        <tr>
-                                            <td class="fw-bold">{{ msg.name }}</td>
-                                            <td class="text-muted small">{{ msg.email }}</td>
-                                            <td class="text-info">{{ msg.subject }}</td>
-                                            <td class="text-muted small">{{ msg.message|truncatechars:80 }}</td>
-                                            <td class="text-muted small text-nowrap">{{ msg.created_at|timesince }} önce</td>
-                                            <td><form method="post" action="{% url 'dashboard_mark_contact_read' msg.pk %}" class="d-inline">{% csrf_token %}<button class="btn btn-sm btn-outline-info">Okundu</button></form></td>
-                                        </tr>
-                                        {% empty %}
-                                        <tr><td colspan="6" class="text-center text-muted py-3">Okunmamış mesaj yok ✓</td></tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-
-                        <!-- Bağışlar -->
-                        <div class="tab-pane fade" id="donations-panel" role="tabpanel">
-                            <div class="table-responsive">
-                                <table class="table table-dashboard table-hover mb-0">
-                                    <thead><tr><th>Kullanıcı</th><th>Miktar</th><th>Premium</th><th>Tarih</th><th>İşlem</th></tr></thead>
-                                    <tbody>
-                                        {% for donation in s.pending_donations %}
-                                        <tr>
-                                            <td>{% if donation.user %}<a href="/admin/auth/user/{{ donation.user.id }}/change/" class="text-info">{{ donation.user.username }}</a>{% else %}<span class="text-muted">{{ donation.name|default:"Anonim" }}</span>{% endif %}</td>
-                                            <td style="color:#f59e0b; font-weight:bold;">{{ donation.amount|floatformat:0 }} ₺</td>
-                                            <td style="color:#10b981;">{{ donation.premium_days_granted }} gün</td>
-                                            <td class="text-muted small text-nowrap">{{ donation.created_at|timesince }} önce</td>
-                                            <td><form method="post" action="{% url 'dashboard_approve_donation' donation.pk %}" class="d-inline">{% csrf_token %}<button class="btn btn-sm btn-success">Onayla</button></form></td>
-                                        </tr>
-                                        {% empty %}
-                                        <tr><td colspan="5" class="text-center text-muted py-3">Bekleyen bağış yok ✓</td></tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-
-                        <!-- LinkedIn -->
-                        <div class="tab-pane fade" id="linkedin-panel" role="tabpanel">
-                            <div class="table-responsive">
-                                <table class="table table-dashboard table-hover mb-0">
-                                    <thead><tr><th>Kullanıcı</th><th>LinkedIn Profili</th><th>İşlem</th></tr></thead>
-                                    <tbody>
-                                        {% for profile in s.pending_linkedin_verifications %}
-                                        <tr>
-                                            <td><a href="/admin/auth/user/{{ profile.user.id }}/change/" class="text-info">{{ profile.user.username }}</a></td>
-                                            <td><a href="{{ profile.linkedin }}" target="_blank" class="text-light">{{ profile.linkedin|truncatechars:40 }}</a></td>
-                                            <td><a href="{% url 'admin_verify_linkedin' profile.user.id %}" class="btn btn-sm btn-success">Onayla</a></td>
-                                        </tr>
-                                        {% empty %}
-                                        <tr><td colspan="3" class="text-center text-muted py-3">Bekleyen LinkedIn onayı yok ✓</td></tr>
-                                        {% endfor %}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div style="display:flex;flex-direction:column;gap:.5rem;">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:.8rem;color:#94a3b8;">Bu ay bağış</span>
+        <span style="font-size:.9rem;font-weight:700;color:#f472b6;">{{ month_donation_sum }} ₺</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:.8rem;color:#94a3b8;">Toplam bağış</span>
+        <span style="font-size:.9rem;font-weight:700;color:#f1f5f9;">{{ total_donation_sum }} ₺</span>
+      </div>
+      <div style="border-top:1px solid rgba(255,255,255,.06);margin:.25rem 0;"></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:.8rem;color:#94a3b8;">Tez analiz (ay)</span>
+        <span style="font-size:.9rem;font-weight:700;color:#818cf8;">{{ month_tezanaliz_count }}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:.8rem;color:#94a3b8;">Bibliometrik sipariş (ay)</span>
+        <span style="font-size:.9rem;font-weight:700;color:#818cf8;">{{ month_biblio_count }}</span>
+      </div>
     </div>
+  </div>
 
-    <!-- ═══════════════════════════════════════════════
-         KUYRUK DURUMU (auto-refresh)
-    ═══════════════════════════════════════════════ -->
-    {% get_queue_status as q %}
-    <div class="row mb-3" id="queue-section">
-        <div class="col-12">
-            <div class="dashboard-card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5><i class="fas fa-layer-group mr-2"></i>Kuyruk Durumu</h5>
-                    <span id="queue-badges">
-                        {% if q.running_count %}<span class="badge badge-warning mr-1">{{ q.running_count }} çalışıyor</span>{% endif %}
-                        {% if q.pending_count %}<span class="badge badge-secondary">{{ q.pending_count }} bekliyor</span>{% endif %}
-                        {% if not q.total %}<span class="text-success">Kuyruk boş ✓</span>{% endif %}
-                    </span>
-                </div>
-                <div class="card-body p-0" id="queue-body">
-                    {% if q.rows %}
-                    <div class="table-responsive">
-                        <table class="table table-dashboard table-hover mb-0">
-                            <thead><tr><th>Servis</th><th>Kullanıcı</th><th>Durum</th><th>Başlangıç</th><th>ID</th></tr></thead>
-                            <tbody>
-                                {% for row in q.rows %}
-                                <tr>
-                                    <td>{{ row.type }}</td>
-                                    <td class="text-info">{{ row.user }}</td>
-                                    <td>
-                                        {% if row.status == 'running' %}
-                                        <span class="badge badge-warning">{{ row.status_label }}</span>
-                                        {% else %}
-                                        <span class="badge badge-secondary">{{ row.status_label }}</span>
-                                        {% endif %}
-                                    </td>
-                                    <td class="text-muted small">{{ row.created_at|timesince }} önce</td>
-                                    <td class="text-muted small font-monospace">{{ row.id_short }}…</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                    {% else %}
-                    <div class="p-3 text-center text-muted">Şu anda kuyrukta iş yok.</div>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
+  <!-- Akademik Servisler -->
+  <div style="border-radius:.75rem;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);padding:1.25rem;">
+    <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:1rem;padding-bottom:.75rem;border-bottom:1px solid rgba(255,255,255,.08);">
+      <span class="material-symbols-outlined" style="font-size:1.25rem;color:#22d3ee;">travel_explore</span>
+      <span style="font-size:.875rem;font-weight:600;color:#e2e8f0;text-transform:uppercase;letter-spacing:.05em;">Akademik Servisler <span style="font-weight:400;color:#6b7280;">(Bu Ay / Toplam)</span></span>
     </div>
-
-    <!-- ═══════════════════════════════════════════════
-         SON KAYITLAR
-    ═══════════════════════════════════════════════ -->
-    <div class="row mb-3">
-        <div class="col-12">
-            <div class="dashboard-card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5><i class="fas fa-user-plus mr-2"></i>Son Kayıtlar</h5>
-                    <a href="/admin/auth/user/?o=-5" class="btn btn-xs btn-outline-info">Tümü</a>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        {% for user in s.recent_users %}
-                        <div class="col-6 col-md-4 col-lg-2 mb-2">
-                            <a href="/admin/auth/user/{{ user.id }}/change/" class="user-card-link text-decoration-none">
-                                <div class="d-flex align-items-center p-2 rounded" style="background:rgba(99,102,241,0.07); border:1px solid rgba(99,102,241,0.15); transition:border-color .2s;">
-                                    <div class="user-avatar-sm mr-2 flex-shrink-0">{{ user.username|slice:":1"|upper }}</div>
-                                    <div style="min-width:0;">
-                                        <div class="text-info text-truncate" style="font-size:0.82rem;">{{ user.username }}</div>
-                                        <div class="text-muted" style="font-size:0.68rem;">{{ user.date_joined|timesince }} önce</div>
-                                    </div>
-                                </div>
-                            </a>
-                        </div>
-                        {% empty %}
-                        <div class="col p-3 text-center text-muted">Henüz kullanıcı yok</div>
-                        {% endfor %}
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem;text-align:center;">
+      <a href="/admin/oaipmh/alexsearchjobproxy/" style="text-decoration:none;">
+      <div style="padding:.75rem;border-radius:.5rem;background:rgba(99,102,241,.08);">
+        <div style="font-size:1.25rem;font-weight:700;color:#818cf8;">{{ openalex_month }} / {{ openalex_total }}</div>
+        <div style="font-size:.7rem;color:#6b7280;margin-top:.25rem;">OpenAlex</div>
+      </div></a>
+      <a href="/admin/oaipmh/yoktezsearchjobproxy/" style="text-decoration:none;">
+      <div style="padding:.75rem;border-radius:.5rem;background:rgba(52,211,153,.08);">
+        <div style="font-size:1.25rem;font-weight:700;color:#34d399;">{{ yoktez_month }} / {{ yoktez_total }}</div>
+        <div style="font-size:.7rem;color:#6b7280;margin-top:.25rem;">YÖK Tez</div>
+      </div></a>
+      <a href="/admin/tezanaliz/bibliometricjobproxy/" style="text-decoration:none;">
+      <div style="padding:.75rem;border-radius:.5rem;background:rgba(251,191,36,.08);">
+        <div style="font-size:1.25rem;font-weight:700;color:#fbbf24;">{{ biblio_month }} / {{ biblio_total }}</div>
+        <div style="font-size:.7rem;color:#6b7280;margin-top:.25rem;">Bibliometrik</div>
+      </div></a>
+      <a href="/admin/oaipmh/oaipmhsearchjob/" style="text-decoration:none;">
+      <div style="padding:.75rem;border-radius:.5rem;background:rgba(34,211,238,.08);">
+        <div style="font-size:1.25rem;font-weight:700;color:#22d3ee;">{{ oaipmh_month }} / {{ oaipmh_total }}</div>
+        <div style="font-size:.7rem;color:#6b7280;margin-top:.25rem;">Dizin Tezleri</div>
+      </div></a>
     </div>
+  </div>
 
-    <!-- ═══════════════════════════════════════════════
-         E-POSTA DOĞRULAMA
-    ═══════════════════════════════════════════════ -->
-    <div class="row mb-3">
-        <div class="col-12">
-            <div class="dashboard-card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5><i class="fas fa-envelope-open-text mr-2"></i>E-posta Doğrulama</h5>
-                    <a href="/admin/forum/emailverification/" class="btn btn-xs btn-outline-info">Tüm Tokenlar</a>
-                </div>
-                <div class="card-body">
+</div>
 
-                    <!-- İstatistik kartları -->
-                    <div class="row mb-3">
-                        <div class="col-6 col-md-3 mb-2">
-                            <div class="stat-card text-center p-3 rounded" style="background:rgba(16,185,129,0.1);border:1px solid rgba(16,185,129,0.25);">
-                                <div style="font-size:1.6rem;font-weight:700;color:#10b981;">{{ s.verified_users }}</div>
-                                <div class="text-muted" style="font-size:0.75rem;">Doğrulanmış</div>
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-3 mb-2">
-                            <div class="stat-card text-center p-3 rounded" style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);">
-                                <div style="font-size:1.6rem;font-weight:700;color:#ef4444;">{{ s.unverified_users }}</div>
-                                <div class="text-muted" style="font-size:0.75rem;">Doğrulanmamış</div>
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-3 mb-2">
-                            <div class="stat-card text-center p-3 rounded" style="background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.25);">
-                                <div style="font-size:1.6rem;font-weight:700;color:#6366f1;">%{{ s.email_verify_rate }}</div>
-                                <div class="text-muted" style="font-size:0.75rem;">Doğrulama Oranı</div>
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-3 mb-2">
-                            <div class="stat-card text-center p-3 rounded" style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.25);">
-                                <div style="font-size:1.6rem;font-weight:700;color:#f59e0b;">{{ s.unverified_old_count }}</div>
-                                <div class="text-muted" style="font-size:0.75rem;">7+ Gün Takılı</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Son 7 günde kayıt olup doğrulamayan kullanıcılar -->
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <span class="text-muted" style="font-size:0.82rem;"><i class="fas fa-clock mr-1"></i>Son 7 günde kayıt olup doğrulamayan kullanıcılar</span>
-                    </div>
-
-                    {% if s.unverified_recent %}
-                    <div class="table-responsive">
-                        <table class="table table-sm table-dark" style="font-size:0.82rem;">
-                            <thead>
-                                <tr>
-                                    <th>Kullanıcı</th>
-                                    <th>E-posta</th>
-                                    <th>Kayıt</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for user in s.unverified_recent %}
-                                <tr>
-                                    <td>
-                                        <a href="/admin/auth/user/{{ user.id }}/change/" class="text-info">{{ user.username }}</a>
-                                    </td>
-                                    <td class="text-muted">{{ user.email }}</td>
-                                    <td class="text-muted">{{ user.date_joined|timesince }} önce</td>
-                                    <td>
-                                        <a href="/admin/forum/profile/?q={{ user.username }}" class="btn btn-xs btn-outline-warning">Profil</a>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                    {% else %}
-                    <div class="p-3 text-center text-muted" style="font-size:0.85rem;">
-                        <i class="fas fa-check-circle mr-1 text-success"></i>Son 7 günde tüm kayıtlar doğrulanmış.
-                    </div>
-                    {% endif %}
-
-                </div>
-            </div>
-        </div>
+<!-- ══════════════════════════════════════════════════
+     ROW 3 — AKTİVİTE TRENDİ GRAFİĞİ
+══════════════════════════════════════════════════ -->
+<div style="border-radius:.75rem;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);padding:1.25rem;">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;padding-bottom:.75rem;border-bottom:1px solid rgba(255,255,255,.08);">
+    <div style="display:flex;align-items:center;gap:.5rem;">
+      <span class="material-symbols-outlined" style="font-size:1.25rem;color:#818cf8;">show_chart</span>
+      <span style="font-size:.875rem;font-weight:600;color:#e2e8f0;text-transform:uppercase;letter-spacing:.05em;">Aktivite Trendi</span>
     </div>
+    <div class="chart-toggle-group" style="display:flex;gap:.5rem;">
+      <button data-range="7"  onclick="switchChart(7,this)"  style="padding:.3rem .75rem;border-radius:.375rem;border:1px solid #818cf8;background:#818cf8;color:#fff;font-size:.75rem;cursor:pointer;">7 Gün</button>
+      <button data-range="30" onclick="switchChart(30,this)" style="padding:.3rem .75rem;border-radius:.375rem;border:1px solid rgba(255,255,255,.15);background:transparent;color:#94a3b8;font-size:.75rem;cursor:pointer;">30 Gün</button>
+      <button data-range="90" onclick="switchChart(90,this)" style="padding:.3rem .75rem;border-radius:.375rem;border:1px solid rgba(255,255,255,.15);background:transparent;color:#94a3b8;font-size:.75rem;cursor:pointer;">90 Gün</button>
+    </div>
+  </div>
+  <div style="height:220px;"><canvas id="activityChart"></canvas></div>
+</div>
 
-</div><!-- /.admin-dashboard -->
+<!-- ══════════════════════════════════════════════════
+     ROW 4 — ONAY MERKEZİ + KUYRUK DURUMU
+══════════════════════════════════════════════════ -->
+<div style="display:grid;grid-template-columns:2fr 1fr;gap:1rem;">
 
-<!-- ═══════════════════════════════════════════════
-     SCRIPTS
-═══════════════════════════════════════════════ -->
+  <!-- Onay Merkezi -->
+  <div style="border-radius:.75rem;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);padding:1.25rem;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;padding-bottom:.75rem;border-bottom:1px solid rgba(255,255,255,.08);">
+      <div style="display:flex;align-items:center;gap:.5rem;">
+        <span class="material-symbols-outlined" style="font-size:1.25rem;color:#fbbf24;">verified</span>
+        <span style="font-size:.875rem;font-weight:600;color:#e2e8f0;text-transform:uppercase;letter-spacing:.05em;">Onay Merkezi</span>
+      </div>
+      {% with total_pending=pending_stories.count|add:pending_reviews.count|add:unread_contacts.count|add:pending_donations.count %}
+      {% if total_pending > 0 %}<span style="background:#f59e0b;color:#000;font-size:.7rem;font-weight:700;padding:.2rem .5rem;border-radius:9999px;">{{ total_pending }} bekliyor</span>{% endif %}
+      {% endwith %}
+    </div>
+    <!-- Tabs -->
+    <div style="display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap;">
+      <button onclick="showTab('tab-stories',this)" style="padding:.3rem .75rem;border-radius:.375rem;border:1px solid #818cf8;background:#818cf8;color:#fff;font-size:.75rem;cursor:pointer;">
+        Hikayeler {% if pending_stories %}<span style="background:rgba(255,255,255,.3);border-radius:9999px;padding:0 .4rem;">{{ pending_stories.count }}</span>{% endif %}
+      </button>
+      <button onclick="showTab('tab-reviews',this)" style="padding:.3rem .75rem;border-radius:.375rem;border:1px solid rgba(255,255,255,.15);background:transparent;color:#94a3b8;font-size:.75rem;cursor:pointer;">
+        Değerlendirmeler {% if pending_reviews %}<span style="background:rgba(255,255,255,.15);border-radius:9999px;padding:0 .4rem;">{{ pending_reviews.count }}</span>{% endif %}
+      </button>
+      <button onclick="showTab('tab-contacts',this)" style="padding:.3rem .75rem;border-radius:.375rem;border:1px solid rgba(255,255,255,.15);background:transparent;color:#94a3b8;font-size:.75rem;cursor:pointer;">
+        Mesajlar {% if unread_contacts %}<span style="background:rgba(255,255,255,.15);border-radius:9999px;padding:0 .4rem;">{{ unread_contacts.count }}</span>{% endif %}
+      </button>
+      <button onclick="showTab('tab-donations',this)" style="padding:.3rem .75rem;border-radius:.375rem;border:1px solid rgba(255,255,255,.15);background:transparent;color:#94a3b8;font-size:.75rem;cursor:pointer;">
+        Bağışlar {% if pending_donations %}<span style="background:rgba(255,255,255,.15);border-radius:9999px;padding:0 .4rem;">{{ pending_donations.count }}</span>{% endif %}
+      </button>
+    </div>
+    <!-- Tab içerikleri -->
+    <div id="tab-stories" style="min-height:80px;">
+      {% if pending_stories %}
+        {% for story in pending_stories %}
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:.4rem .5rem;border-radius:.375rem;margin-bottom:.25rem;background:rgba(255,255,255,.02);">
+          <span style="font-size:.8125rem;color:#cbd5e1;">{{ story.user.username }}</span>
+          <a href="/admin/forum/successstory/{{ story.pk }}/change/" style="font-size:.75rem;color:#818cf8;text-decoration:none;">İncele →</a>
+        </div>
+        {% endfor %}
+      {% else %}
+        <div style="text-align:center;color:#6b7280;font-size:.8rem;padding:1rem;">Bekleyen hikaye yok ✓</div>
+      {% endif %}
+    </div>
+    <div id="tab-reviews" style="display:none;min-height:80px;">
+      {% if pending_reviews %}
+        {% for r in pending_reviews %}
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:.4rem .5rem;border-radius:.375rem;margin-bottom:.25rem;background:rgba(255,255,255,.02);">
+          <span style="font-size:.8125rem;color:#cbd5e1;">{{ r.reviewer.username }} → {{ r.reviewed_user.username }}</span>
+          <a href="/admin/forum/jobreview/{{ r.pk }}/change/" style="font-size:.75rem;color:#818cf8;text-decoration:none;">İncele →</a>
+        </div>
+        {% endfor %}
+      {% else %}
+        <div style="text-align:center;color:#6b7280;font-size:.8rem;padding:1rem;">Bekleyen değerlendirme yok ✓</div>
+      {% endif %}
+    </div>
+    <div id="tab-contacts" style="display:none;min-height:80px;">
+      {% if unread_contacts %}
+        {% for c in unread_contacts %}
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:.4rem .5rem;border-radius:.375rem;margin-bottom:.25rem;background:rgba(255,255,255,.02);">
+          <span style="font-size:.8125rem;color:#cbd5e1;">{{ c.name }} — <span style="color:#6b7280;">{{ c.subject|truncatechars:30 }}</span></span>
+          <a href="/admin/forum/contactmessage/{{ c.pk }}/change/" style="font-size:.75rem;color:#818cf8;text-decoration:none;">İncele →</a>
+        </div>
+        {% endfor %}
+      {% else %}
+        <div style="text-align:center;color:#6b7280;font-size:.8rem;padding:1rem;">Okunmamış mesaj yok ✓</div>
+      {% endif %}
+    </div>
+    <div id="tab-donations" style="display:none;min-height:80px;">
+      {% if pending_donations %}
+        {% for d in pending_donations %}
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:.4rem .5rem;border-radius:.375rem;margin-bottom:.25rem;background:rgba(255,255,255,.02);">
+          <span style="font-size:.8125rem;color:#cbd5e1;">{% if d.user %}{{ d.user.username }}{% else %}Anonim{% endif %} — <span style="color:#34d399;">{{ d.amount }} ₺</span></span>
+          <a href="/admin/forum/donation/{{ d.pk }}/change/" style="font-size:.75rem;color:#818cf8;text-decoration:none;">İncele →</a>
+        </div>
+        {% endfor %}
+      {% else %}
+        <div style="text-align:center;color:#6b7280;font-size:.8rem;padding:1rem;">Bekleyen bağış yok ✓</div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Kuyruk Durumu -->
+  <div style="border-radius:.75rem;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);padding:1.25rem;">
+    <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:1rem;padding-bottom:.75rem;border-bottom:1px solid rgba(255,255,255,.08);">
+      <span class="material-symbols-outlined" style="font-size:1.25rem;color:#34d399;">queue</span>
+      <span style="font-size:.875rem;font-weight:600;color:#e2e8f0;text-transform:uppercase;letter-spacing:.05em;">Kuyruk Durumu</span>
+    </div>
+    <div id="queue-content" style="font-size:.8rem;color:#94a3b8;">
+      {% load admin_dashboard_tags %}
+      {% get_queue_status as qs %}
+      {% if qs.total == 0 %}
+        <div style="text-align:center;color:#34d399;padding:1rem;">Kuyruk boş ✓</div>
+      {% else %}
+        <div style="margin-bottom:.5rem;">
+          {% if qs.running_count %}<span style="background:#f59e0b;color:#000;padding:.2rem .5rem;border-radius:9999px;font-size:.7rem;font-weight:700;margin-right:.25rem;">{{ qs.running_count }} çalışıyor</span>{% endif %}
+          {% if qs.pending_count %}<span style="background:rgba(255,255,255,.1);color:#94a3b8;padding:.2rem .5rem;border-radius:9999px;font-size:.7rem;">{{ qs.pending_count }} bekliyor</span>{% endif %}
+        </div>
+        {% for row in qs.rows %}
+        <div style="display:flex;justify-content:space-between;padding:.3rem 0;border-bottom:1px solid rgba(255,255,255,.04);">
+          <span style="color:#cbd5e1;">{{ row.type }}</span>
+          <span style="color:#6b7280;">{{ row.user }}</span>
+          <span style="color:{% if row.status == 'running' %}#f59e0b{% else %}#6b7280{% endif %};">{{ row.status_label }}</span>
+        </div>
+        {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     ROW 5 — SON KAYITLAR + E-POSTA DOĞRULAMA
+══════════════════════════════════════════════════ -->
+<div style="display:grid;grid-template-columns:2fr 1fr;gap:1rem;">
+
+  <!-- Son Kayıtlar -->
+  <div style="border-radius:.75rem;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);padding:1.25rem;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;padding-bottom:.75rem;border-bottom:1px solid rgba(255,255,255,.08);">
+      <div style="display:flex;align-items:center;gap:.5rem;">
+        <span class="material-symbols-outlined" style="font-size:1.25rem;color:#818cf8;">group_add</span>
+        <span style="font-size:.875rem;font-weight:600;color:#e2e8f0;text-transform:uppercase;letter-spacing:.05em;">Son Kayıtlar</span>
+      </div>
+      <a href="/admin/auth/user/" style="font-size:.75rem;color:#818cf8;text-decoration:none;">Tümü →</a>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem;">
+      {% for u in recent_users %}
+      <a href="/admin/auth/user/{{ u.pk }}/change/" style="text-decoration:none;">
+      <div style="padding:.5rem;border-radius:.5rem;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);text-align:center;" onmouseover="this.style.borderColor='#818cf8'" onmouseout="this.style.borderColor='rgba(255,255,255,.06)'">
+        <div style="width:32px;height:32px;border-radius:50%;background:#6366f1;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.875rem;margin:0 auto .25rem;">{{ u.username|first|upper }}</div>
+        <div style="font-size:.7rem;color:#cbd5e1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ u.username }}</div>
+        <div style="font-size:.65rem;color:#6b7280;">{{ u.date_joined|timesince }} önce</div>
+      </div></a>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- E-posta Doğrulama -->
+  <div style="border-radius:.75rem;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);padding:1.25rem;">
+    <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:1rem;padding-bottom:.75rem;border-bottom:1px solid rgba(255,255,255,.08);">
+      <span class="material-symbols-outlined" style="font-size:1.25rem;color:#34d399;">mark_email_read</span>
+      <span style="font-size:.875rem;font-weight:600;color:#e2e8f0;text-transform:uppercase;letter-spacing:.05em;">E-posta Doğrulama</span>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;text-align:center;margin-bottom:1rem;">
+      <div><div style="font-size:1.5rem;font-weight:700;color:#34d399;">{{ verified_users }}</div><div style="font-size:.7rem;color:#6b7280;">Doğrulanmış</div></div>
+      <div><div style="font-size:1.5rem;font-weight:700;color:#f87171;">{{ unverified_users }}</div><div style="font-size:.7rem;color:#6b7280;">Doğrulanmamış</div></div>
+    </div>
+    <!-- Progress bar -->
+    <div style="background:rgba(255,255,255,.08);border-radius:9999px;height:8px;margin-bottom:.5rem;">
+      <div style="background:#34d399;height:8px;border-radius:9999px;width:{{ email_verify_rate }}%;"></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:.75rem;color:#6b7280;">
+      <span>Doğrulama oranı</span><span style="color:#34d399;font-weight:600;">%{{ email_verify_rate }}</span>
+    </div>
+    {% if unverified_old_count > 0 %}
+    <div style="margin-top:.75rem;font-size:.75rem;color:#f59e0b;">⚠ {{ unverified_old_count }} eski hesap hâlâ doğrulanmamış</div>
+    {% endif %}
+  </div>
+
+</div>
+
+</div><!-- /main container -->
+
+<!-- ══ SCRIPTS ══ -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
 <script>
+var chartData = {
+  7:  { labels: {{ chart_labels_json|safe }},    users: {{ user_trend_json|safe }},    topics: {{ topic_trend_json|safe }},    posts: {{ post_trend_json|safe }} },
+  30: { labels: {{ chart_labels_30_json|safe }}, users: {{ user_trend_30_json|safe }}, topics: {{ topic_trend_30_json|safe }}, posts: {{ post_trend_30_json|safe }} },
+  90: { labels: {{ chart_labels_90_json|safe }}, users: {{ user_trend_90_json|safe }}, topics: {{ topic_trend_90_json|safe }}, posts: {{ post_trend_90_json|safe }} }
+};
+var activeChart;
 document.addEventListener('DOMContentLoaded', function() {
-
-    // ── Grafik verileri ──────────────────────────────
-    var chartData = {
-        7:  { labels: {{ s.chart_labels_json|safe }},    users: {{ s.user_trend_json|safe }},    topics: {{ s.topic_trend_json|safe }},    posts: {{ s.post_trend_json|safe }} },
-        30: { labels: {{ s.chart_labels_30_json|safe }}, users: {{ s.user_trend_30_json|safe }}, topics: {{ s.topic_trend_30_json|safe }}, posts: {{ s.post_trend_30_json|safe }} },
-        90: { labels: {{ s.chart_labels_90_json|safe }}, users: {{ s.user_trend_90_json|safe }}, topics: {{ s.topic_trend_90_json|safe }}, posts: {{ s.post_trend_90_json|safe }} }
-    };
-
-    var chartOptions = {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: { legend: { labels: { color: '#94a3b8' } } },
-        scales: {
-            x: { grid: { color: 'rgba(99,102,241,0.1)' }, ticks: { color: '#94a3b8' } },
-            y: { grid: { color: 'rgba(99,102,241,0.1)' }, ticks: { color: '#94a3b8' }, beginAtZero: true }
-        }
-    };
-
-    var chart = new Chart(document.getElementById('activityChart').getContext('2d'), {
-        type: 'line',
-        data: {
-            labels: chartData[7].labels,
-            datasets: [
-                { label: 'Yeni Kullanıcı', data: chartData[7].users,  borderColor: '#6366f1', backgroundColor: 'rgba(99,102,241,0.1)',  fill: true, tension: 0.4 },
-                { label: 'Yeni Konu',      data: chartData[7].topics, borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.1)',  fill: true, tension: 0.4 },
-                { label: 'Yeni Gönderi',   data: chartData[7].posts,  borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,0.1)', fill: true, tension: 0.4 }
-            ]
-        },
-        options: chartOptions
-    });
-
-    // ── Grafik toggle ────────────────────────────────
-    document.querySelectorAll('.chart-toggle-group button').forEach(function(btn) {
-        btn.addEventListener('click', function() {
-            document.querySelectorAll('.chart-toggle-group button').forEach(function(b) { b.classList.remove('active'); });
-            this.classList.add('active');
-            var range = parseInt(this.dataset.range);
-            var d = chartData[range];
-            chart.data.labels = d.labels;
-            chart.data.datasets[0].data = d.users;
-            chart.data.datasets[1].data = d.topics;
-            chart.data.datasets[2].data = d.posts;
-            chart.update();
-        });
-    });
-
-    // ── Kuyruk auto-refresh ──────────────────────────
-    function renderQueueBadges(data) {
-        var html = '';
-        if (data.running_count) html += '<span class="badge badge-warning mr-1">' + data.running_count + ' çalışıyor</span>';
-        if (data.pending_count) html += '<span class="badge badge-secondary">' + data.pending_count + ' bekliyor</span>';
-        if (!data.running_count && !data.pending_count) html += '<span class="text-success">Kuyruk boş ✓</span>';
-        return html;
+  activeChart = new Chart(document.getElementById('activityChart').getContext('2d'), {
+    type: 'line',
+    data: {
+      labels: chartData[7].labels,
+      datasets: [
+        { label: 'Yeni Kullanıcı', data: chartData[7].users,  borderColor: '#6366f1', backgroundColor: 'rgba(99,102,241,.1)',  fill:true, tension:.4, pointRadius:3 },
+        { label: 'Yeni Konu',      data: chartData[7].topics, borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,.1)',   fill:true, tension:.4, pointRadius:3 },
+        { label: 'Yeni Gönderi',   data: chartData[7].posts,  borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,.1)',  fill:true, tension:.4, pointRadius:3 }
+      ]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{ labels:{ color:'#94a3b8', boxWidth:12 } } },
+      scales:{
+        x:{ grid:{ color:'rgba(99,102,241,.08)' }, ticks:{ color:'#94a3b8' } },
+        y:{ grid:{ color:'rgba(99,102,241,.08)' }, ticks:{ color:'#94a3b8' }, beginAtZero:true }
+      }
     }
-    function renderQueueRows(rows) {
-        if (!rows || !rows.length) return '<div class="p-3 text-center text-muted">Şu anda kuyrukta iş yok.</div>';
-        var html = '<div class="table-responsive"><table class="table table-dashboard table-hover mb-0"><thead><tr><th>Servis</th><th>Kullanıcı</th><th>Durum</th><th>Başlangıç</th><th>ID</th></tr></thead><tbody>';
-        rows.forEach(function(r) {
-            var badge = r.status === 'running' ? '<span class="badge badge-warning">' + r.status_label + '</span>' : '<span class="badge badge-secondary">' + r.status_label + '</span>';
-            html += '<tr><td>' + r.type + '</td><td class="text-info">' + r.user + '</td><td>' + badge + '</td><td class="text-muted small">' + r.since + ' önce</td><td class="text-muted small font-monospace">' + r.id_short + '…</td></tr>';
-        });
-        html += '</tbody></table></div>';
-        return html;
-    }
-    setInterval(function() {
-        fetch('/api/admin/queue-status/')
-            .then(function(r) { return r.ok ? r.json() : null; })
-            .then(function(data) {
-                if (!data) return;
-                var b = document.getElementById('queue-badges');
-                var bd = document.getElementById('queue-body');
-                if (b) b.innerHTML = renderQueueBadges(data);
-                if (bd) bd.innerHTML = renderQueueRows(data.rows);
-            }).catch(function() {});
-    }, 30000);
-
-    // ── Platform Health Score animasyonu ────────────
-    var score = {{ s.health_score }};
-    var circle = document.querySelector('.health-fill');
-    if (circle) {
-        var r = 34;
-        var circ = 2 * Math.PI * r;
-        circle.style.strokeDasharray = circ;
-        circle.style.strokeDashoffset = circ - (score / 100) * circ;
-    }
-
+  });
 });
+function switchChart(range, btn) {
+  document.querySelectorAll('.chart-toggle-group button').forEach(function(b) {
+    b.style.background='transparent'; b.style.borderColor='rgba(255,255,255,.15)'; b.style.color='#94a3b8';
+  });
+  btn.style.background='#818cf8'; btn.style.borderColor='#818cf8'; btn.style.color='#fff';
+  var d = chartData[range];
+  activeChart.data.labels = d.labels;
+  activeChart.data.datasets[0].data = d.users;
+  activeChart.data.datasets[1].data = d.topics;
+  activeChart.data.datasets[2].data = d.posts;
+  activeChart.update();
+}
+function showTab(id, btn) {
+  ['tab-stories','tab-reviews','tab-contacts','tab-donations'].forEach(function(t) {
+    document.getElementById(t).style.display = 'none';
+  });
+  document.getElementById(id).style.display = 'block';
+  btn.parentElement.querySelectorAll('button').forEach(function(b) {
+    b.style.background='transparent'; b.style.borderColor='rgba(255,255,255,.15)'; b.style.color='#94a3b8';
+  });
+  btn.style.background='#818cf8'; btn.style.borderColor='#818cf8'; btn.style.color='#fff';
+}
 </script>
-
 {% endblock %}

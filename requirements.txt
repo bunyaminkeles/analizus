@@ -8,7 +8,7 @@ whitenoise
 # --- TASARIM & ARAYÜZ ---
 django-crispy-forms
 crispy-bootstrap5
-django-jazzmin
+django-unfold
 Markdown
 
 # --- MEDYA & DOSYA ---
@@ -55,7 +55,6 @@ channels
 channels-redis
 beautifulsoup4
 groq
-resend
 sickle
 feedparser
 
