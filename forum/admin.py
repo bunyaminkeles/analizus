@@ -1,16 +1,19 @@
 from django.contrib import admin
 from django.utils.html import format_html
+from unfold.admin import ModelAdmin, TabularInline
 from .models import Section, Category, Topic, Post, Profile, ContactMessage, PrivateMessage, Badge, Skill, DailyTip, QuizQuestion, QuizScore, FreelanceJob, JobProposal, JobReview, UserQuizAttempt, DonationTier, Donation, JobPayment, TopicTag, SiteSettings, BlogCategory, BlogPost, SuccessStory, StudyRoom
 
 # 1. Kategori Yönetimi (Inline)
-class CategoryInline(admin.TabularInline):
+class CategoryInline(TabularInline):
     model = Category
     extra = 1
     prepopulated_fields = {'slug': ('title',)}
 
 # 2. Ana Bölüm (Section) Yönetimi
 @admin.register(Section)
-class SectionAdmin(admin.ModelAdmin):
+class SectionAdmin(ModelAdmin):
+    warn_unsaved_changes = True
+    compressed_fields = True
     list_display = ('title', 'order', 'order_visual', 'category_count') 
     list_editable = ('order',)
     inlines = [CategoryInline]
@@ -31,7 +34,9 @@ class SectionAdmin(admin.ModelAdmin):
 
 # 3. Konu Etiketi (TopicTag) Yönetimi
 @admin.register(TopicTag)
-class TopicTagAdmin(admin.ModelAdmin):
+class TopicTagAdmin(ModelAdmin):
+    warn_unsaved_changes = True
+    compressed_fields = True
     list_display = ('tag_preview', 'name', 'tag_type', 'order', 'topic_count', 'is_active')
     list_filter = ('tag_type', 'is_active')
     list_editable = ('order', 'is_active')
@@ -54,7 +59,9 @@ class TopicTagAdmin(admin.ModelAdmin):
 
 # 4. Konu (Topic) Yönetimi
 @admin.register(Topic)
-class TopicAdmin(admin.ModelAdmin):
+class TopicAdmin(ModelAdmin):
+    warn_unsaved_changes = True
+    compressed_fields = True
     list_display = ('subject_link', 'category_colored', 'tags_display', 'starter', 'created_at', 'views', 'status')
     list_filter = ('is_pinned', 'is_closed', 'category', 'tags', 'created_at')
     search_fields = ('subject', 'starter__username')
@@ -112,7 +119,9 @@ class TopicAdmin(admin.ModelAdmin):
 
 # 4. Mesaj (Post) Yönetimi - ✅ DÜZELTİLDİ
 @admin.register(Post)
-class PostAdmin(admin.ModelAdmin):
+class PostAdmin(ModelAdmin):
+    warn_unsaved_changes = True
+    compressed_fields = True
     list_display = ('created_by', 'topic_link', 'short_message', 'created_at')
     search_fields = ('message', 'created_by__username', 'topic__subject')
     list_filter = ('created_at', 'topic__category')
@@ -128,7 +137,9 @@ class PostAdmin(admin.ModelAdmin):
 
 # 5. Özel Mesaj (DM) Yönetimi — sadece superuser erişebilir
 @admin.register(PrivateMessage)
-class PrivateMessageAdmin(admin.ModelAdmin):
+class PrivateMessageAdmin(ModelAdmin):
+    warn_unsaved_changes = True
+    compressed_fields = True
     list_display = ('sender', 'receiver', 'short_content', 'created_at', 'read_status')
     list_filter = ('is_read', 'created_at')
     search_fields = ('sender__username', 'receiver__username', 'message')
@@ -169,7 +180,9 @@ class PrivateMessageAdmin(admin.ModelAdmin):
 
 # 6. Yetenek (Skill) Yönetimi
 @admin.register(Skill)
-class SkillAdmin(admin.ModelAdmin):
+class SkillAdmin(ModelAdmin):
+    warn_unsaved_changes = True
+    compressed_fields = True
     list_display = ('skill_preview', 'name', 'category', 'user_count')
     list_filter = ('category',)
     search_fields = ('name',)
@@ -190,7 +203,9 @@ class SkillAdmin(admin.ModelAdmin):
 
 # 7. Rozet (Badge) Yönetimi
 @admin.register(Badge)
-class BadgeAdmin(admin.ModelAdmin):
+class BadgeAdmin(ModelAdmin):
+    warn_unsaved_changes = True
+    compressed_fields = True
     list_display = ('badge_preview', 'name', 'badge_type', 'points_required', 'user_count', 'is_active')
     list_filter = ('badge_type', 'is_active')
     search_fields = ('name', 'description')
@@ -212,7 +227,9 @@ class BadgeAdmin(admin.ModelAdmin):
 
 # 8. Profil Yönetimi
 @admin.register(Profile)
-class ProfileAdmin(admin.ModelAdmin):
+class ProfileAdmin(ModelAdmin):
+    warn_unsaved_changes = True
+    compressed_fields = True
     list_display = ('user', 'avatar_preview', 'rank_display', 'reputation', 'account_type', 'email_status', 'university_info', 'stats_display')
     list_editable = ('account_type',)
     search_fields = ('user__username', 'title', 'university', 'department')
@@ -299,7 +316,9 @@ class ProfileAdmin(admin.ModelAdmin):
 
 # 7. İletişim Mesajları
 @admin.register(ContactMessage)
-class ContactMessageAdmin(admin.ModelAdmin):
+class ContactMessageAdmin(ModelAdmin):
+    warn_unsaved_changes = True
+    compressed_fields = True
     list_display = ('name', 'email', 'subject', 'created_at_formatted', 'preview_message')
     search_fields = ('name', 'email', 'subject', 'message')
     list_filter = ('created_at',)
@@ -318,7 +337,9 @@ class ContactMessageAdmin(admin.ModelAdmin):
 
 # 10. Günlük İpucu Yönetimi
 @admin.register(DailyTip)
-class DailyTipAdmin(admin.ModelAdmin):
+class DailyTipAdmin(ModelAdmin):
+    warn_unsaved_changes = True
+    compressed_fields = True
     list_display = ('title', 'category', 'publish_date', 'is_active', 'views', 'likes')
     list_filter = ('category', 'is_active', 'publish_date')
     search_fields = ('title', 'content')
@@ -342,7 +363,9 @@ class DailyTipAdmin(admin.ModelAdmin):
 
 # 11. Quiz Soruları Yönetimi
 @admin.register(QuizQuestion)
-class QuizQuestionAdmin(admin.ModelAdmin):
+class QuizQuestionAdmin(ModelAdmin):
+    warn_unsaved_changes = True
+    compressed_fields = True
     list_display = ('question_short', 'category', 'difficulty', 'correct_answer', 'is_active')
     list_filter = ('category', 'difficulty', 'is_active')
     search_fields = ('question', 'option_a', 'option_b', 'option_c', 'option_d')
@@ -370,7 +393,9 @@ class QuizQuestionAdmin(admin.ModelAdmin):
 
 
 @admin.register(FreelanceJob)
-class FreelanceJobAdmin(admin.ModelAdmin):
+class FreelanceJobAdmin(ModelAdmin):
+    warn_unsaved_changes = True
+    compressed_fields = True
     list_display = ('title', 'owner', 'category', 'status', 'is_featured', 'featured_until', 'views', 'created_at')
     list_filter = ('status', 'is_featured', 'category', 'created_at')
     search_fields = ('title', 'description', 'owner__username')
@@ -378,14 +403,18 @@ class FreelanceJobAdmin(admin.ModelAdmin):
     filter_horizontal = ('likes', 'saved_by')
 
 @admin.register(JobProposal)
-class JobProposalAdmin(admin.ModelAdmin):
+class JobProposalAdmin(ModelAdmin):
+    warn_unsaved_changes = True
+    compressed_fields = True
     list_display = ('job', 'expert', 'price', 'duration', 'status', 'created_at')
     list_filter = ('status', 'created_at')
     search_fields = ('job__title', 'expert__username', 'message')
 
 
 @admin.register(JobReview)
-class JobReviewAdmin(admin.ModelAdmin):
+class JobReviewAdmin(ModelAdmin):
+    warn_unsaved_changes = True
+    compressed_fields = True
     list_display = ('job', 'reviewer', 'reviewed_user', 'rating', 'is_approved', 'created_at')
     list_filter = ('is_approved', 'rating', 'created_at')
     list_editable = ('is_approved',)
@@ -400,7 +429,9 @@ class JobReviewAdmin(admin.ModelAdmin):
 
 # 14. Bağış Katmanları
 @admin.register(DonationTier)
-class DonationTierAdmin(admin.ModelAdmin):
+class DonationTierAdmin(ModelAdmin):
+    warn_unsaved_changes = True
+    compressed_fields = True
     list_display = ('name', 'min_amount_display', 'premium_days_display', 'is_active')
     list_editable = ('is_active',)
     ordering = ('-min_amount',)
@@ -416,7 +447,9 @@ class DonationTierAdmin(admin.ModelAdmin):
 
 # 15. Bağış Yönetimi
 @admin.register(Donation)
-class DonationAdmin(admin.ModelAdmin):
+class DonationAdmin(ModelAdmin):
+    warn_unsaved_changes = True
+    compressed_fields = True
     list_display = ('donor_display', 'amount_display', 'status_display', 'premium_days_granted', 'created_at', 'completed_at')
     list_filter = ('status', 'is_anonymous', 'created_at')
     search_fields = ('name', 'email', 'user__username', 'payment_id')
@@ -471,7 +504,9 @@ class DonationAdmin(admin.ModelAdmin):
     status_display.short_description = "Durum"
 
 @admin.register(JobPayment)
-class JobPaymentAdmin(admin.ModelAdmin):
+class JobPaymentAdmin(ModelAdmin):
+    warn_unsaved_changes = True
+    compressed_fields = True
     list_display = ('job', 'amount', 'duration_days', 'status', 'feature_status_display', 'created_at')
     list_filter = ('status', 'created_at', 'job__feature_status')
     search_fields = ('job__title', 'payment_id')
@@ -512,7 +547,9 @@ class JobPaymentAdmin(admin.ModelAdmin):
 
 # --- SITE AYARLARI ---
 @admin.register(SiteSettings)
-class SiteSettingsAdmin(admin.ModelAdmin):
+class SiteSettingsAdmin(ModelAdmin):
+    warn_unsaved_changes = True
+    compressed_fields = True
     list_display = ('pk', 'auto_share_topics', 'auto_share_jobs')
 
     fieldsets = (
@@ -560,7 +597,9 @@ class SiteSettingsAdmin(admin.ModelAdmin):
 # ═══════════════════════════════════════════════════════════════════════════════
 
 @admin.register(BlogCategory)
-class BlogCategoryAdmin(admin.ModelAdmin):
+class BlogCategoryAdmin(ModelAdmin):
+    warn_unsaved_changes = True
+    compressed_fields = True
     list_display = ('name', 'slug', 'color_preview', 'order', 'post_count')
     list_editable = ('order',)
     prepopulated_fields = {'slug': ('name',)}
@@ -579,7 +618,9 @@ class BlogCategoryAdmin(admin.ModelAdmin):
 
 
 @admin.register(BlogPost)
-class BlogPostAdmin(admin.ModelAdmin):
+class BlogPostAdmin(ModelAdmin):
+    warn_unsaved_changes = True
+    compressed_fields = True
     list_display = ('title', 'author', 'category', 'status_display', 'is_featured', 'views', 'created_at')
     list_filter = ('status', 'category', 'is_featured', 'author')
     search_fields = ('title', 'content', 'excerpt')
@@ -631,7 +672,9 @@ class BlogPostAdmin(admin.ModelAdmin):
 # ═══════════════════════════════════════════════════════════════════════════════
 
 @admin.register(SuccessStory)
-class SuccessStoryAdmin(admin.ModelAdmin):
+class SuccessStoryAdmin(ModelAdmin):
+    warn_unsaved_changes = True
+    compressed_fields = True
     list_display = ('user', 'job_link', 'quote_short', 'approval_status_display', 'is_featured', 'created_at')
     list_filter = ('approval_status', 'is_featured', 'created_at')
     list_editable = ('is_featured',)
@@ -675,7 +718,9 @@ class SuccessStoryAdmin(admin.ModelAdmin):
         self.message_user(request, f'{updated} hikaye reddedildi.')
 
 @admin.register(StudyRoom)
-class StudyRoomAdmin(admin.ModelAdmin):
+class StudyRoomAdmin(ModelAdmin):
+    warn_unsaved_changes = True
+    compressed_fields = True
     list_display = ('title', 'creator', 'status', 'category', 'ends_at', 'member_count', 'created_at')
     list_filter = ('status', 'category', 'is_public')
     search_fields = ('title', 'creator__username', 'goal')

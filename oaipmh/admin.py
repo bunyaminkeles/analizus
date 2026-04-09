@@ -1,11 +1,14 @@
 from django.contrib import admin
+from unfold.admin import ModelAdmin
 from .models import University, OAIPMHSearchJob, YokTezSearchJobProxy
 from openalex.models import AlexSearchJobProxy
 from trdizin.models import DizinSearchJobProxy
 
 
 @admin.register(University)
-class UniversityAdmin(admin.ModelAdmin):
+class UniversityAdmin(ModelAdmin):
+    warn_unsaved_changes = True
+    compressed_fields = True
     list_display = ['name', 'domain', 'oai_url', 'is_active']
     list_filter = ['is_active']
     search_fields = ['name', 'domain']
@@ -13,7 +16,9 @@ class UniversityAdmin(admin.ModelAdmin):
 
 
 @admin.register(OAIPMHSearchJob)
-class OAIPMHSearchJobAdmin(admin.ModelAdmin):
+class OAIPMHSearchJobAdmin(ModelAdmin):
+    warn_unsaved_changes = True
+    compressed_fields = True
     list_display = ['id', 'user', 'search_type', 'get_query_summary', 'status', 'total_results', 'created_at']
     list_filter = ['status', 'search_type']
     search_fields = ['user__username', 'keyword']
@@ -26,7 +31,9 @@ class OAIPMHSearchJobAdmin(admin.ModelAdmin):
 
 
 @admin.register(AlexSearchJobProxy)
-class AlexSearchJobProxyAdmin(admin.ModelAdmin):
+class AlexSearchJobProxyAdmin(ModelAdmin):
+    warn_unsaved_changes = True
+    compressed_fields = True
     list_display = ('id', 'user', 'get_query_summary', 'status', 'total_results', 'created_at')
     list_filter = ('status', 'created_at')
     search_fields = ('user__username', 'api_query')
@@ -38,7 +45,9 @@ class AlexSearchJobProxyAdmin(admin.ModelAdmin):
 
 
 @admin.register(DizinSearchJobProxy)
-class DizinSearchJobProxyAdmin(admin.ModelAdmin):
+class DizinSearchJobProxyAdmin(ModelAdmin):
+    warn_unsaved_changes = True
+    compressed_fields = True
     list_display = ('id', 'user', 'get_query_summary', 'status', 'total_results', 'created_at')
     list_filter = ('status', 'created_at')
     search_fields = ('user__username', 'lucene_query')
@@ -50,7 +59,9 @@ class DizinSearchJobProxyAdmin(admin.ModelAdmin):
 
 
 @admin.register(YokTezSearchJobProxy)
-class YokTezSearchJobProxyAdmin(admin.ModelAdmin):
+class YokTezSearchJobProxyAdmin(ModelAdmin):
+    warn_unsaved_changes = True
+    compressed_fields = True
     list_display = ('id', 'user', 'get_query_summary', 'status', 'total_results', 'created_at')
     list_filter = ('status', 'created_at')
     search_fields = ('user__username', 'tez_ad', 'yazar')
