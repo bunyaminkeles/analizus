@@ -38,3 +38,60 @@ if (data.result_data) {
   document.getElementById('cronbach-summary').classList.remove('d-none');
 }
 {% endblock %}
+
+{% block methodology %}
+<div class="mt-4 rounded-3 p-4" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07);">
+  <h5 class="text-white fw-semibold mb-3"><i class="bi bi-journal-text me-2 text-primary"></i>Metodoloji</h5>
+
+  <div class="row g-4">
+    <div class="col-md-6">
+      <h6 class="text-white-50 text-uppercase small fw-bold mb-2">Yöntem &amp; Varsayımlar</h6>
+      <p class="text-white-50 small mb-2">
+        Cronbach Alpha, bir ölçeğin iç tutarlılığını ölçen katsayıdır. Her maddenin toplam puanla korelasyonuna dayalı
+        olarak hesaplanır. Ölçek maddelerinin aynı yapıyı ölçtüğü varsayılır.
+      </p>
+      <p class="text-white-50 small mb-0">
+        <strong class="text-white-50">Formül:</strong> α = (k / k−1) × (1 − Σσ²ᵢ / σ²ₜ)<br>
+        <em>k</em> = madde sayısı, <em>σ²ᵢ</em> = madde varyansı, <em>σ²ₜ</em> = toplam puan varyansı
+      </p>
+    </div>
+    <div class="col-md-6">
+      <h6 class="text-white-50 text-uppercase small fw-bold mb-2">Yorum Eşikleri</h6>
+      <table class="table table-sm table-dark table-borderless small mb-0" style="font-size:0.8rem;">
+        <tbody>
+          <tr><td>α &lt; .50</td><td class="text-danger">Kabul edilemez</td></tr>
+          <tr><td>.50 – .70</td><td class="text-warning">Düşük güvenilirlik</td></tr>
+          <tr><td>.70 – .80</td><td class="text-info">Yeterli güvenilirlik</td></tr>
+          <tr><td>.80 – .90</td><td class="text-success">Yüksek güvenilirlik</td></tr>
+          <tr><td>&gt; .90</td><td class="text-success fw-bold">Çok yüksek güvenilirlik</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <hr style="border-color:rgba(255,255,255,0.08);">
+
+  <h6 class="text-white-50 text-uppercase small fw-bold mb-2">Tezinde Nasıl Raporlarsın?</h6>
+  <div class="rounded-3 p-3" style="background:rgba(99,102,241,0.08); border:1px solid rgba(99,102,241,0.2);">
+    <p class="text-white-50 small mb-2" style="font-style:italic;">
+      "Ölçeğin iç tutarlılık katsayısı Cronbach Alpha değeri α = .XX olarak hesaplanmıştır.
+      Bu değer, ölçeğin [yüksek / yeterli / düşük] düzeyde güvenilir olduğunu göstermektedir (Nunnally, 1978)."
+    </p>
+    <button class="btn btn-sm btn-outline-secondary" onclick="copyMethodText(this, 'cronbach-report-text')" style="font-size:0.75rem;">
+      <i class="bi bi-clipboard me-1"></i>Kopyala
+    </button>
+    <span id="cronbach-report-text" class="d-none">Ölçeğin iç tutarlılık katsayısı Cronbach Alpha değeri α = .XX olarak hesaplanmıştır. Bu değer, ölçeğin yüksek düzeyde güvenilir olduğunu göstermektedir (Nunnally, 1978).</span>
+  </div>
+
+  <hr style="border-color:rgba(255,255,255,0.08);">
+
+  <h6 class="text-white-50 text-uppercase small fw-bold mb-2">Akademik Kaynak</h6>
+  <p class="text-white-50 small mb-1">
+    Cronbach, L. J. (1951). Coefficient alpha and the internal structure of tests.
+    <em>Psychometrika, 16</em>(3), 297–334. <a href="https://doi.org/10.1007/BF02310555" target="_blank" class="text-primary">https://doi.org/10.1007/BF02310555</a>
+  </p>
+  <p class="text-white-50 small mb-0">
+    Nunnally, J. C. (1978). <em>Psychometric theory</em> (2nd ed.). McGraw-Hill.
+  </p>
+</div>
+{% endblock %}

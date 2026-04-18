@@ -42,3 +42,61 @@ if (data.result_data) {
   document.getElementById('betimsel-summary').classList.remove('d-none');
 }
 {% endblock %}
+
+{% block methodology %}
+<div class="mt-4 rounded-3 p-4" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07);">
+  <h5 class="text-white fw-semibold mb-3"><i class="bi bi-journal-text me-2 text-warning"></i>Metodoloji</h5>
+
+  <div class="row g-4">
+    <div class="col-md-6">
+      <h6 class="text-white-50 text-uppercase small fw-bold mb-2">Yöntem &amp; Hesaplanan İstatistikler</h6>
+      <p class="text-white-50 small mb-2">
+        Betimleyici istatistikler, veri setini özetleyen temel ölçüleri içerir.
+        Sürekli değişkenler için merkezi eğilim ve yayılım ölçüleri; kategorik değişkenler için
+        frekans ve yüzde dağılımları hesaplanır.
+      </p>
+      <ul class="text-white-50 small mb-0 ps-3">
+        <li>Ortalama (Mean), Ortanca (Median), Mod</li>
+        <li>Standart Sapma, Varyans, Min–Maks</li>
+        <li>Çarpıklık (Skewness), Basıklık (Kurtosis)</li>
+        <li>Frekans ve yüzde dağılımı (kategorik)</li>
+      </ul>
+    </div>
+    <div class="col-md-6">
+      <h6 class="text-white-50 text-uppercase small fw-bold mb-2">Çarpıklık ve Basıklık Yorumu</h6>
+      <table class="table table-sm table-dark table-borderless small mb-0" style="font-size:0.8rem;">
+        <tbody>
+          <tr><td>−1 ile +1 arası çarpıklık</td><td class="text-success">Normal kabul edilir</td></tr>
+          <tr><td>±1 – ±2 arası çarpıklık</td><td class="text-warning">Hafif çarpık</td></tr>
+          <tr><td>±2 üzeri çarpıklık</td><td class="text-danger">Belirgin çarpıklık</td></tr>
+          <tr><td>Basıklık −2 ile +2</td><td class="text-success">Normal kabul edilir</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <hr style="border-color:rgba(255,255,255,0.08);">
+
+  <h6 class="text-white-50 text-uppercase small fw-bold mb-2">Tezinde Nasıl Raporlarsın?</h6>
+  <div class="rounded-3 p-3" style="background:rgba(251,191,36,0.08); border:1px solid rgba(251,191,36,0.2);">
+    <p class="text-white-50 small mb-2" style="font-style:italic;">
+      "Araştırmaya katılan [N] kişinin [değişken adı] puanlarına ilişkin betimleyici istatistikler incelendiğinde
+      ortalama = XX.XX (SS = X.XX), ortanca = XX.XX, çarpıklık = X.XX ve basıklık = X.XX olarak bulunmuştur."
+    </p>
+    <button class="btn btn-sm btn-outline-secondary" onclick="copyMethodText(this, 'betimsel-report-text')" style="font-size:0.75rem;">
+      <i class="bi bi-clipboard me-1"></i>Kopyala
+    </button>
+    <span id="betimsel-report-text" class="d-none">Araştırmaya katılan N kişinin değişken puanlarına ilişkin betimleyici istatistikler incelendiğinde ortalama = XX.XX (SS = X.XX), ortanca = XX.XX, çarpıklık = X.XX ve basıklık = X.XX olarak bulunmuştur.</span>
+  </div>
+
+  <hr style="border-color:rgba(255,255,255,0.08);">
+
+  <h6 class="text-white-50 text-uppercase small fw-bold mb-2">Akademik Kaynak</h6>
+  <p class="text-white-50 small mb-1">
+    Field, A. (2018). <em>Discovering statistics using IBM SPSS statistics</em> (5th ed.). SAGE Publications.
+  </p>
+  <p class="text-white-50 small mb-0">
+    George, D., &amp; Mallery, P. (2010). <em>SPSS for Windows step by step</em> (10th ed.). Pearson.
+  </p>
+</div>
+{% endblock %}
