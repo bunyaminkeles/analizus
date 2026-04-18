@@ -1279,6 +1279,25 @@ def profile_detail(request, username):
 def about(request):
     return render(request, 'forum/about.html')
 
+def neden_biz(request):
+    from .models import SuccessStory
+    stories = SuccessStory.objects.filter(approval_status='approved').select_related('user__profile').order_by('-created_at')[:3]
+    check = '<i class="bi bi-check-circle-fill text-success"></i>'
+    partial = '<i class="bi bi-dash-circle text-warning"></i>'
+    cross = '<i class="bi bi-x-circle text-danger"></i>'
+    comparison_rows = [
+        {'feature': 'Ücret',           'analizus': f'{check} Ücretsiz',         'spss': '~$1,500/yıl',    'smartpls': '~$900/yıl',  'excel': 'Ücretli'},
+        {'feature': 'Kurulum',         'analizus': f'{check} Yok (tarayıcı)',   'spss': 'Gerekli',         'smartpls': 'Gerekli',     'excel': 'Gerekli'},
+        {'feature': 'APA Rapor',       'analizus': f'{check} Otomatik',         'spss': f'{cross} Yok',    'smartpls': f'{cross} Yok','excel': f'{cross} Yok'},
+        {'feature': 'PDF Çıktı',       'analizus': f'{check} Hazır',            'spss': f'{partial} Manuel','smartpls': f'{partial} Manuel','excel': f'{partial} Manuel'},
+        {'feature': 'Cronbach Alpha',  'analizus': f'{check} Var',              'spss': f'{check} Var',    'smartpls': f'{check} Var','excel': f'{cross} Yok'},
+        {'feature': 'Normallik Testi', 'analizus': f'{check} Var',              'spss': f'{check} Var',    'smartpls': f'{cross} Yok','excel': f'{cross} Yok'},
+        {'feature': 'Uzman Desteği',   'analizus': f'{check} Pazar yeri',       'spss': f'{cross} Yok',    'smartpls': f'{cross} Yok','excel': f'{cross} Yok'},
+        {'feature': 'Akademik Forum',  'analizus': f'{check} Var',              'spss': f'{cross} Yok',    'smartpls': f'{cross} Yok','excel': f'{cross} Yok'},
+        {'feature': 'Türkçe Arayüz',   'analizus': f'{check} Tam Türkçe',       'spss': f'{partial} Kısmi','smartpls': f'{cross} İngilizce','excel': f'{partial} Kısmi'},
+    ]
+    return render(request, 'forum/neden_biz.html', {'stories': stories, 'comparison_rows': comparison_rows})
+
 def how_it_works(request):
     """Nasıl Çalışır? sayfası"""
     return render(request, 'forum/how_it_works.html')

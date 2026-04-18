@@ -419,9 +419,17 @@
                 </div>
                 <div class="col-md-4 mb-4">
                     <p class="text-white-50 fw-bold mb-3" style="font-size:0.7rem; text-transform:uppercase; letter-spacing:1px;"><i class="bi bi-share me-1"></i>Takip Et</p>
-                    <div class="d-flex gap-3 justify-content-center justify-content-md-start">
+                    <div class="d-flex gap-3 justify-content-center justify-content-md-start mb-3">
                         <a href="https://www.linkedin.com/company/analizus" target="_blank" class="text-muted footer-link fs-5" title="LinkedIn"><i class="bi bi-linkedin"></i></a>
                         <a href="https://www.youtube.com/@analizus" target="_blank" class="text-muted footer-link fs-5" title="YouTube"><i class="bi bi-youtube"></i></a>
+                    </div>
+                    <div class="d-flex flex-column gap-2">
+                        <a href="{% url 'neden_biz' %}" class="text-muted text-decoration-none footer-link d-flex align-items-center gap-2">
+                            <i class="bi bi-patch-check" style="font-size:14px;"></i>Neden Analizus?
+                        </a>
+                        <a href="{% url 'hakkimizda' %}" class="text-muted text-decoration-none footer-link d-flex align-items-center gap-2">
+                            <i class="bi bi-info-circle" style="font-size:14px;"></i>Hakkımızda
+                        </a>
                     </div>
                 </div>
             </div>
