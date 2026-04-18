@@ -50,7 +50,10 @@
       </div>
       <p id="r-desc" class="text-white-50 mb-3"></p>
       <div id="r-conditions" class="mb-3"></div>
-      <div id="r-software" class="mb-4 small text-white-50"></div>
+      <div id="r-software" class="mb-3 small text-white-50"></div>
+
+      <!-- Analizus aracı / yakında geliyor -->
+      <div id="r-tool-action" class="mb-3"></div>
 
       <!-- Aksiyon butonları -->
       <div class="d-flex flex-wrap gap-2 mb-4">
@@ -522,6 +525,7 @@ const TREE = {
   },
   r_cronbach: {
     result: true,
+    tool_url: "/istatistik/cronbach/",
     icon: "bi bi-check2-square text-success",
     title: "Cronbach's Alpha (İç Tutarlılık)",
     desc: "Bir ölçeğin veya anketin maddelerinin birbiriyle ne kadar tutarlı olduğunu ölçen güvenilirlik katsayısı.",
@@ -567,6 +571,7 @@ const TREE = {
   },
   r_normallik: {
     result: true,
+    tool_url: "/istatistik/normallik/",
     icon: "bi bi-bell-curve text-info",
     title: "Normallik Testi (Shapiro-Wilk / K-S)",
     desc: "Bir veri setinin normal dağılıma uyup uymadığını test eder. Diğer parametrik testler için ön koşuldur.",
@@ -582,6 +587,7 @@ const TREE = {
   },
   r_tanimsal: {
     result: true,
+    tool_url: "/istatistik/betimsel/",
     icon: "bi bi-table text-secondary",
     title: "Betimsel / Tanımlayıcı İstatistikler",
     desc: "Veriyi özetlemek için ortalama, medyan, standart sapma, min-max, frekans gibi istatistikler hesaplanır.",
@@ -659,6 +665,18 @@ function showResult(nodeId) {
 
   // Yazılım
   document.getElementById('r-software').innerHTML = `<i class="bi bi-terminal me-2"></i>${node.software}`;
+
+  // Analizus buton / yakında geliyor
+  const toolBox = document.getElementById('r-tool-action');
+  if (node.tool_url) {
+    toolBox.innerHTML = `<a href="${node.tool_url}" class="btn btn-primary fw-semibold me-2">
+      <i class="bi bi-play-circle-fill me-2"></i>Analizus'ta Yap →
+    </a>`;
+  } else {
+    toolBox.innerHTML = `<span class="badge text-bg-secondary fs-6 fw-normal py-2 px-3">
+      <i class="bi bi-clock me-1"></i>Bu test yakında Analizus'ta
+    </span>`;
+  }
 
   // Forum butonu
   const forumBtn = document.getElementById('r-forum-btn');
