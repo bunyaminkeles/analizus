@@ -171,6 +171,19 @@ def home(request):
     from .news_utils import get_science_news
     science_news = get_science_news()
 
+    # Son 7 günde yeni kayıt
+    weekly_new_users = User.objects.filter(
+        date_joined__gte=timezone.now() - timedelta(days=7)
+    ).count()
+
+    # Açık iş ilanı sayısı
+    open_jobs_count = FreelanceJob.objects.filter(status='open').count()
+
+    # En az 1 tamamlanmış işi olan aktif uzman sayısı
+    active_experts_count = User.objects.filter(
+        proposals__job__status='completed'
+    ).distinct().count()
+
     context = {
         'sections': sections,
         # İstatistikler
@@ -178,6 +191,9 @@ def home(request):
         'total_posts': total_posts,
         'total_users': total_users,
         'completed_jobs': completed_jobs,
+        'weekly_new_users': weekly_new_users,
+        'open_jobs_count': open_jobs_count,
+        'active_experts_count': active_experts_count,
         # Widgetlar
         'recent_topics': recent_topics,
         'popular_topics': popular_topics,

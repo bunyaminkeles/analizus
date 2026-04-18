@@ -1,11 +1,14 @@
 from django.contrib import admin
 from django.utils.html import format_html
+from unfold.admin import ModelAdmin
 
 from .models import TezAnaliz, MakaleAnalizProxy, BibliometricJobProxy, BibliometricOrderProxy
 
 
 @admin.register(TezAnaliz)
-class TezAnalizAdmin(admin.ModelAdmin):
+class TezAnalizAdmin(ModelAdmin):
+    warn_unsaved_changes = True
+    compressed_fields = True
     list_display = ['id', 'user', 'get_query_summary', 'status', 'total_records', 'created_at']
     list_filter = ['status', 'created_at']
     search_fields = ['user__username', 'tez_ad', 'metin']
@@ -13,7 +16,9 @@ class TezAnalizAdmin(admin.ModelAdmin):
 
 
 @admin.register(MakaleAnalizProxy)
-class MakaleAnalizProxyAdmin(admin.ModelAdmin):
+class MakaleAnalizProxyAdmin(ModelAdmin):
+    warn_unsaved_changes = True
+    compressed_fields = True
     list_display = ['id', 'user', 'get_query_summary', 'status', 'total_records', 'created_at']
     list_filter = ['status', 'created_at']
     search_fields = ['user__username', 'query_summary']
@@ -21,7 +26,9 @@ class MakaleAnalizProxyAdmin(admin.ModelAdmin):
 
 
 @admin.register(BibliometricJobProxy)
-class BibliometricJobProxyAdmin(admin.ModelAdmin):
+class BibliometricJobProxyAdmin(ModelAdmin):
+    warn_unsaved_changes = True
+    compressed_fields = True
     list_display = ('id_short', 'user', 'original_filename', 'file_format',
                     'total_records', 'status', 'demo_email_sent', 'created_at')
     list_filter = ('status', 'file_format', 'demo_email_sent')
@@ -47,7 +54,9 @@ class BibliometricJobProxyAdmin(admin.ModelAdmin):
 
 
 @admin.register(BibliometricOrderProxy)
-class BibliometricOrderProxyAdmin(admin.ModelAdmin):
+class BibliometricOrderProxyAdmin(ModelAdmin):
+    warn_unsaved_changes = True
+    compressed_fields = True
     list_display = ('id_short', 'user', 'job_filename', 'total_price',
                     'status', 'results_email_sent', 'created_at')
     list_filter = ('status', 'results_email_sent')
