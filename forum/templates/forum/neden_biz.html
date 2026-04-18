@@ -9,13 +9,13 @@
 
   {# ── Hero ── #}
   <div class="text-center mb-5">
-    <span class="badge bg-primary bg-opacity-15 text-primary fw-semibold px-3 py-2 mb-3" style="font-size:.85rem;">Neden Analizus?</span>
-    <h1 class="fw-bold text-white mb-3" style="font-size:2rem;">SPSS'e Ödeme Yapmadan<br>Tez Analizini Tamamla</h1>
+    <span class="badge fw-semibold px-3 py-2 mb-3" style="font-size:.85rem;background:rgba(99,102,241,0.2);color:#818cf8;">Neden Analizus?</span>
+    <h1 class="fw-bold text-white mb-3" style="font-size:2rem;">Pahalı Yazılımlara Gerek Yok —<br>Analizini Saniyeler İçinde Yap</h1>
     <p class="text-white-50 mb-4" style="max-width:600px;margin:auto;">
       Cronbach Alpha, normallik testi, betimsel istatistik — hepsi tarayıcında, dosya yükle ve saniyeler içinde PDF rapor al.
       Lisans ücreti yok, kurulum yok, istatistik uzmanlığı şart değil.
     </p>
-    <a href="{% url 'istatistik:cronbach' %}" class="btn btn-primary fw-semibold px-4 me-2">
+    <a href="{% url 'istatistik:betimsel' %}" class="btn btn-primary fw-semibold px-4 me-2">
       <i class="bi bi-play-circle-fill me-2"></i>Hemen Dene
     </a>
     <a href="{% url 'hangi_test' %}" class="btn btn-outline-light px-4">
@@ -42,9 +42,9 @@
           <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
             <td class="py-3 px-4 text-white-50">{{ row.feature }}</td>
             <td class="py-3 px-3 text-center">{{ row.analizus|safe }}</td>
-            <td class="py-3 px-3 text-center text-white-50">{{ row.spss }}</td>
-            <td class="py-3 px-3 text-center text-white-50">{{ row.smartpls }}</td>
-            <td class="py-3 px-3 text-center text-white-50">{{ row.excel }}</td>
+            <td class="py-3 px-3 text-center text-white-50">{{ row.spss|safe }}</td>
+            <td class="py-3 px-3 text-center text-white-50">{{ row.smartpls|safe }}</td>
+            <td class="py-3 px-3 text-center text-white-50">{{ row.excel|safe }}</td>
           </tr>
           {% endfor %}
         </tbody>
@@ -130,13 +130,15 @@
 
   {# ── CTA ── #}
   <div class="text-center rounded-3 p-5" style="background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.2);">
-    <h3 class="text-white fw-bold mb-2">Tezini bekletme</h3>
+    <h3 class="text-white fw-bold mb-2">Analizini bekletme</h3>
     <p class="text-white-50 mb-4">Ücretsiz başla — kredi kartı gerekmez, kurulum yok.</p>
+    {% if not user.is_authenticated %}
     <a href="{% url 'register' %}" class="btn btn-primary fw-semibold px-5 me-2">
       <i class="bi bi-person-plus-fill me-2"></i>Ücretsiz Kayıt Ol
     </a>
-    <a href="{% url 'istatistik:cronbach' %}" class="btn btn-outline-light px-4">
-      Analiz Dene
+    {% endif %}
+    <a href="{% url 'istatistik:betimsel' %}" class="btn btn-{% if user.is_authenticated %}primary{% else %}outline-light{% endif %} fw-semibold px-5">
+      <i class="bi bi-play-circle-fill me-2"></i>Analiz Dene
     </a>
   </div>
 
