@@ -204,6 +204,10 @@ function startPolling(jobId) {
 function onCompleted(data) {
   document.getElementById('pdf-download-btn').href = data.pdf_url;
   {% block on_completed_js %}{% endblock %}
+  if (data.daily_remaining !== undefined) {
+    const badge = document.querySelector('.badge.bg-secondary');
+    if (badge) badge.textContent = 'Günlük: ' + data.daily_remaining + ' analiz hakkı';
+  }
   showPanel('done');
 }
 

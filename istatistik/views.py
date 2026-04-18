@@ -154,6 +154,8 @@ def job_status(request, job_id):
     if job.status == 'completed':
         resp['pdf_url'] = job.pdf_url
         resp['result_data'] = job.result_data
+        if request.user.is_authenticated:
+            resp['daily_remaining'] = _daily_remaining(request.user)
     elif job.status == 'failed':
         resp['error'] = job.error_message
     return JsonResponse(resp)
