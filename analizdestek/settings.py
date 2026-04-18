@@ -226,6 +226,24 @@ UNFOLD = {
         "show_search": True,
         "show_all_applications": False,
         "navigation": [
+        # ─── 0. HIZLI ERİŞİM ────────────────────────────────────────
+        {
+            "title": "Hızlı Erişim",
+            "separator": False,
+            "collapsible": False,
+            "items": [
+                {
+                    "title": "Dashboard",
+                    "icon": "dashboard",
+                    "link": reverse_lazy("admin:index"),
+                },
+                {
+                    "title": "Siteye Git",
+                    "icon": "open_in_new",
+                    "link": "/",
+                },
+            ],
+        },
         # ─── 1. EKOSİSTEM ───────────────────────────────────────────
         {
             "title": "Ekosistem",
