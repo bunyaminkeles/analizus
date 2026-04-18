@@ -351,7 +351,7 @@
         <div class="hero-section">
             <div class="hero-content">
                 <h1 class="hero-title">ANALİZUS</h1>
-                <p class="hero-subtitle">Akademik Analiz ve Veri Bilimi Topluluğu</p>
+                <p class="hero-subtitle" style="text-align:center; text-wrap:balance;">Tezin için doğru istatistik testini seç, verinle anında hesapla, gerektiğinde uzman bul.</p>
             </div>
             <div class="stats-pills">
                 {% if total_users >= 10 %}
@@ -400,6 +400,7 @@
                 <div class="vp-body">
                     <span class="vp-question">Analize mi ihtiyacın var?</span>
                     <span class="vp-action">Uzman Bul <i class="bi bi-arrow-right ms-1"></i></span>
+                    <span class="vp-desc">Alanında uzman birinden teklif al</span>
                 </div>
             </a>
             <a href="{% url 'job_list' %}" class="vp-card vp-purple">
@@ -407,6 +408,7 @@
                 <div class="vp-body">
                     <span class="vp-question">Uzman mısın?</span>
                     <span class="vp-action">Hizmet Ver <i class="bi bi-arrow-right ms-1"></i></span>
+                    <span class="vp-desc">İlanları gör, teklif ver, kazan</span>
                 </div>
             </a>
             <a href="{% url 'forum_index' %}" class="vp-card vp-green">
@@ -414,6 +416,7 @@
                 <div class="vp-body">
                     <span class="vp-question">Öğrenmek mi istiyorsun?</span>
                     <span class="vp-action">Foruma Katıl <i class="bi bi-arrow-right ms-1"></i></span>
+                    <span class="vp-desc">Sor, tartış, akademik topluluğa katıl</span>
                 </div>
             </a>
         </div>
@@ -646,13 +649,17 @@
 
 .hero-subtitle {
 
-    font-size: 0.85rem;
+    font-size: 0.82rem;
 
-    color: #64748b;
+    color: #94a3b8;
 
-    letter-spacing: 3px;
+    letter-spacing: 0;
 
     margin: 0 0 20px;
+
+    line-height: 1.7;
+
+    text-align: center;
 
 }
 
@@ -900,6 +907,11 @@
 .vp-action {
     font-weight: 700;
     font-size: 0.95rem;
+}
+.vp-desc {
+    color: #64748b;
+    font-size: 0.75rem;
+    line-height: 1.3;
 }
 .vp-blue   .vp-action { color: #38bdf8; }
 .vp-purple .vp-action { color: #c084fc; }
