@@ -813,7 +813,7 @@ class FreelanceJob(models.Model):
             current_year = timezone.now().year
 
             last_job_ref = FreelanceJob.objects.filter(
-                created_at__year=current_year, 
+                created_at__year=current_year,
                 reference_number__isnull=False
             ).order_by('-reference_number').values_list('reference_number', flat=True).first()
 
@@ -824,9 +824,17 @@ class FreelanceJob(models.Model):
                     new_seq = last_seq + 1
                 except (ValueError, IndexError):
                     pass
-            
+
             self.reference_number = f"{current_year}/{new_seq:04d}"
-        
+
+        # İlan iptal veya tamamlandıysa bekleyen teklifleri reddet
+        if self.pk and self.status in ('cancelled', 'completed'):
+            old = FreelanceJob.objects.filter(pk=self.pk).values_list('status', flat=True).first()
+            if old not in ('cancelled', 'completed'):
+                super().save(*args, **kwargs)
+                self.proposals.filter(status='pending').update(status='rejected')
+                return
+
         super().save(*args, **kwargs)
 
     @property
