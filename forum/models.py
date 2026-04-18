@@ -1091,6 +1091,11 @@ class SiteSettings(models.Model):
     # Feature Flags
     feature_blog = models.BooleanField(default=True, verbose_name="Blog")
     feature_market = models.BooleanField(default=True, verbose_name="Hizmetler Pazarı")
+    feature_proposal_price_privacy = models.BooleanField(
+        default=True,
+        verbose_name="Teklif Fiyatı Gizliliği",
+        help_text="İlan detaylarında teklif fiyatı yalnızca ilan sahibi ve teklif veren tarafından gösterilsin."
+    )
     feature_ai_assistant = models.BooleanField(default=True, verbose_name="AI Asistan")
     feature_trdizin = models.BooleanField(default=False, verbose_name="TR Dizin Tarama")
     feature_openalex = models.BooleanField(default=True, verbose_name="OpenAlex Yayın Tarama")
