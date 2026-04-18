@@ -35,11 +35,22 @@
 if (data.result_data) {
   const r = data.result_data;
   document.getElementById('n-rows').textContent = r.n_rows;
-  const cont = r.variables.filter(v => v.type === 'continuous').length;
-  const cat  = r.variables.filter(v => v.type === 'categorical').length;
-  document.getElementById('n-cont').textContent = cont;
-  document.getElementById('n-cat').textContent = cat;
+  const contVars = r.variables.filter(v => v.type === 'continuous');
+  const catVars  = r.variables.filter(v => v.type === 'categorical');
+  document.getElementById('n-cont').textContent = contVars.length;
+  document.getElementById('n-cat').textContent = catVars.length;
   document.getElementById('betimsel-summary').classList.remove('d-none');
+
+  if (contVars.length > 0) {
+    const lines = contVars.map(v =>
+      `${v.variable} değişkeni için ortalama = ${v.mean.toFixed(2)} (SS = ${v.std.toFixed(2)})`
+    );
+    const apaText = `Araştırmaya katılan ${r.n_rows} kişinin puanlarına ilişkin betimleyici istatistikler incelendiğinde ${lines.join('; ')} olarak bulunmuştur.`;
+    document.getElementById('betimsel-apa-display').textContent = apaText;
+    document.getElementById('betimsel-report-text').textContent = apaText;
+    document.getElementById('betimsel-apa-box').classList.remove('d-none');
+    document.getElementById('betimsel-apa-placeholder').classList.add('d-none');
+  }
 }
 {% endblock %}
 
@@ -78,15 +89,17 @@ if (data.result_data) {
   <hr style="border-color:rgba(255,255,255,0.08);">
 
   <h6 class="text-white-50 text-uppercase small fw-bold mb-2">Tezinde Nasıl Raporlarsın?</h6>
-  <div class="rounded-3 p-3" style="background:rgba(251,191,36,0.08); border:1px solid rgba(251,191,36,0.2);">
-    <p class="text-white-50 small mb-2" style="font-style:italic;">
-      "Araştırmaya katılan [N] kişinin [değişken adı] puanlarına ilişkin betimleyici istatistikler incelendiğinde
-      ortalama = XX.XX (SS = X.XX), ortanca = XX.XX, çarpıklık = X.XX ve basıklık = X.XX olarak bulunmuştur."
-    </p>
+  <div id="betimsel-apa-box" class="rounded-3 p-3 d-none" style="background:rgba(251,191,36,0.08); border:1px solid rgba(251,191,36,0.2);">
+    <p class="text-white small mb-2" style="font-style:italic;" id="betimsel-apa-display"></p>
     <button class="btn btn-sm btn-outline-secondary" onclick="copyMethodText(this, 'betimsel-report-text')" style="font-size:0.75rem;">
       <i class="bi bi-clipboard me-1"></i>Kopyala
     </button>
-    <span id="betimsel-report-text" class="d-none">Araştırmaya katılan N kişinin değişken puanlarına ilişkin betimleyici istatistikler incelendiğinde ortalama = XX.XX (SS = X.XX), ortanca = XX.XX, çarpıklık = X.XX ve basıklık = X.XX olarak bulunmuştur.</span>
+    <span id="betimsel-report-text" class="d-none"></span>
+  </div>
+  <div id="betimsel-apa-placeholder" class="rounded-3 p-3" style="background:rgba(251,191,36,0.04); border:1px dashed rgba(251,191,36,0.2);">
+    <p class="text-white-50 small mb-0" style="font-style:italic;">
+      <i class="bi bi-info-circle me-1"></i>Analizi tamamladıktan sonra APA formatında rapor cümlesi burada otomatik oluşacak.
+    </p>
   </div>
 
   <hr style="border-color:rgba(255,255,255,0.08);">

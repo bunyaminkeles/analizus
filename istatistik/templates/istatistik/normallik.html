@@ -24,9 +24,19 @@ if (data.result_data) {
   badges.innerHTML = '';
   r.variables.forEach(v => {
     const cls = v.is_normal ? 'bg-success' : 'bg-danger';
-    badges.innerHTML += `<span class="badge ${cls}">${v.variable} α=${v.shapiro_p}</span>`;
+    badges.innerHTML += `<span class="badge ${cls}">${v.variable} p=${v.shapiro_p}</span>`;
   });
   document.getElementById('normallik-summary').classList.remove('d-none');
+
+  const lines = r.variables.map(v => {
+    const dist = v.is_normal ? 'normal dağılım gösterdiği' : 'normal dağılım göstermediği';
+    return `${v.variable} değişkeninin ${dist} belirlenmiştir (W = ${v.shapiro_stat}, p = ${v.shapiro_p}).`;
+  });
+  const apaText = `Verilerin normal dağılım gösterip göstermediği Shapiro-Wilk testi ile incelenmiştir. ${lines.join(' ')}`;
+  document.getElementById('normallik-apa-display').textContent = apaText;
+  document.getElementById('normallik-report-text').textContent = apaText;
+  document.getElementById('normallik-apa-box').classList.remove('d-none');
+  document.getElementById('normallik-apa-placeholder').classList.add('d-none');
 }
 {% endblock %}
 
@@ -60,16 +70,17 @@ if (data.result_data) {
   <hr style="border-color:rgba(255,255,255,0.08);">
 
   <h6 class="text-white-50 text-uppercase small fw-bold mb-2">Tezinde Nasıl Raporlarsın?</h6>
-  <div class="rounded-3 p-3" style="background:rgba(34,197,94,0.08); border:1px solid rgba(34,197,94,0.2);">
-    <p class="text-white-50 small mb-2" style="font-style:italic;">
-      "Verilerin normal dağılım gösterip göstermediği Shapiro-Wilk testi ile incelenmiştir.
-      Analiz sonucunda [değişken adı] değişkeninin normal dağılım gösterdiği [göstermediği]
-      belirlenmiştir (W = .XXX, p = .XXX)."
-    </p>
+  <div id="normallik-apa-box" class="rounded-3 p-3 d-none" style="background:rgba(34,197,94,0.08); border:1px solid rgba(34,197,94,0.2);">
+    <p class="text-white small mb-2" style="font-style:italic;" id="normallik-apa-display"></p>
     <button class="btn btn-sm btn-outline-secondary" onclick="copyMethodText(this, 'normallik-report-text')" style="font-size:0.75rem;">
       <i class="bi bi-clipboard me-1"></i>Kopyala
     </button>
-    <span id="normallik-report-text" class="d-none">Verilerin normal dağılım gösterip göstermediği Shapiro-Wilk testi ile incelenmiştir. Analiz sonucunda değişkenin normal dağılım gösterdiği belirlenmiştir (W = .XXX, p = .XXX).</span>
+    <span id="normallik-report-text" class="d-none"></span>
+  </div>
+  <div id="normallik-apa-placeholder" class="rounded-3 p-3" style="background:rgba(34,197,94,0.04); border:1px dashed rgba(34,197,94,0.2);">
+    <p class="text-white-50 small mb-0" style="font-style:italic;">
+      <i class="bi bi-info-circle me-1"></i>Analizi tamamladıktan sonra APA formatında rapor cümlesi burada otomatik oluşacak.
+    </p>
   </div>
 
   <hr style="border-color:rgba(255,255,255,0.08);">
