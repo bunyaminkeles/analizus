@@ -503,6 +503,9 @@ def job_detail(request, pk):
     job.views += 1
     job.save()
 
+    site_settings = SiteSettings.load()
+    proposal_count = job.proposals.count()
+
     user_proposal = None
     proposal_form = None
 
@@ -512,11 +515,15 @@ def job_detail(request, pk):
     if request.user.is_authenticated and hasattr(request.user, 'profile'):
         _, can_propose_reason = request.user.profile.can_propose()
 
-    # 1. Teklifleri görme yetkisi (İlan sahibi veya Admin)
+    # 1. Teklifleri görme yetkisi
     if request.user == job.owner or request.user.is_superuser or request.user.is_staff:
         proposals = job.proposals.select_related('expert', 'expert__profile').all()
-    else:
+    elif site_settings.feature_proposal_price_privacy:
         proposals = None
+    else:
+        proposals = job.proposals.select_related('expert', 'expert__profile').all()
+
+    # 2. Teklif verme formu işlemleri (İlan sahibi hariç herkes için kontrol edilir)
 
     # 2. Teklif verme formu işlemleri (İlan sahibi hariç herkes için kontrol edilir)
     if request.user != job.owner:
@@ -565,6 +572,7 @@ def job_detail(request, pk):
     return render(request, 'forum/market/job_detail.html', {
         'job': job,
         'proposals': proposals,
+        'proposal_count': proposal_count,
         'user_proposal': user_proposal,
         'proposal_form': proposal_form,
         'is_liked': is_liked,
@@ -574,7 +582,8 @@ def job_detail(request, pk):
         'similar_jobs': similar_jobs,
         'reviews': reviews,
         'can_review': can_review,
-        'accepted_proposal': accepted_proposal
+        'accepted_proposal': accepted_proposal,
+        'site_settings': site_settings,
     })
 
 @login_required
