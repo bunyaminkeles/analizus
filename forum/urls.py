@@ -67,6 +67,7 @@ urlpatterns = [
     # Diğer
     path('search/', views.search_result, name='search'),
     path('hakkimizda/', views.about, name='about'),
+    path('neden-biz/', views.neden_biz, name='neden_biz'),
     path('nasil-calisir/', views.how_it_works, name='how_it_works'),
     path('tableau-analiz/', views.tableau_dashboard, name='tableau_dashboard'),
     path('iletisim/', views.contact, name='contact'),
