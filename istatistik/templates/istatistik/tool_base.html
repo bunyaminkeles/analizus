@@ -90,6 +90,26 @@
             </button>
           </div>
 
+          {# Uyarılar #}
+          <div id="panel-warning" class="d-none">
+            <div class="alert alert-warning">
+              <div class="d-flex align-items-center mb-2">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                <strong>Veri uyarıları tespit edildi</strong>
+              </div>
+              <ul id="panel-warning-list" class="mb-3 small"></ul>
+              <p class="text-muted small mb-3">Bu uyarılar veri kalitenizi etkileyebilir. Yine de devam etmek isterseniz aşağıdaki butona tıklayın.</p>
+            </div>
+            <div class="d-flex gap-2 flex-wrap">
+              <button id="confirm-warnings-btn" class="btn btn-warning btn-sm fw-semibold">
+                <i class="bi bi-arrow-right-circle me-1"></i>Yine de devam et
+              </button>
+              <button class="btn btn-outline-light btn-sm" onclick="resetUI()">
+                <i class="bi bi-x-circle me-1"></i>İptal
+              </button>
+            </div>
+          </div>
+
           {# Tamamlandı #}
           <div id="panel-done" class="d-none">
             <div class="d-flex align-items-center gap-2 mb-3">
@@ -129,6 +149,10 @@ const fileInput  = document.getElementById('file-input');
 const fileNameDisplay = document.getElementById('file-name-display');
 const analyzeBtn = document.getElementById('analyze-btn');
 const errorMsg   = document.getElementById('error-msg');
+const warningList = document.getElementById('panel-warning-list');
+const confirmWarningsBtn = document.getElementById('confirm-warnings-btn');
+let confirmWarnings = false;
+let currentFile = null;
 
 // Drag & drop
 uploadArea.addEventListener('dragover', e => {
@@ -155,16 +179,24 @@ function setFile(f) {
   errorMsg.classList.add('d-none');
 }
 
-analyzeBtn.addEventListener('click', () => {
+analyzeBtn.addEventListener('click', () => submitFile(false));
+confirmWarningsBtn.addEventListener('click', () => submitFile(true));
+
+function submitFile(confirm) {
   const f = fileInput._selectedFile;
   if (!f) return;
 
+  confirmWarnings = confirm;
   analyzeBtn.disabled = true;
+  confirmWarningsBtn.disabled = true;
   showPanel('loading');
 
   const fd = new FormData();
   fd.append('file', f);
   fd.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+  if (confirm) {
+    fd.append('confirm_warnings', 'true');
+  }
 
   fetch(window.location.pathname, {
     method: 'POST',
@@ -177,11 +209,15 @@ analyzeBtn.addEventListener('click', () => {
       showError(data.error);
       return;
     }
+    if (data.warnings) {
+      showWarning(data.warnings);
+      return;
+    }
     currentJobId = data.job_id;
     startPolling(currentJobId);
   })
   .catch(() => showError('Bağlantı hatası. Lütfen tekrar deneyin.'));
-});
+}
 
 function startPolling(jobId) {
   const url = STATUS_URL.replace('00000000-0000-0000-0000-000000000000', jobId);
@@ -212,13 +248,24 @@ function onCompleted(data) {
 }
 
 function showPanel(name) {
-  ['idle','loading','error','done'].forEach(n => {
+  ['idle','loading','warning','error','done'].forEach(n => {
     document.getElementById('panel-' + n).classList.toggle('d-none', n !== name);
   });
 }
 
+function showWarning(warnings) {
+  analyzeBtn.disabled = false;
+  confirmWarningsBtn.disabled = false;
+  warningList.innerHTML = warnings.map(w => {
+    const badge = `<span class="badge bg-${w.level === 'danger' ? 'danger' : 'warning'} me-2">${w.level === 'danger' ? 'Hata' : 'Uyarı'}</span>`;
+    return `<li class="mb-2">${badge}<strong>${w.title}:</strong> ${w.message}</li>`;
+  }).join('');
+  showPanel('warning');
+}
+
 function showError(msg) {
   analyzeBtn.disabled = false;
+  confirmWarningsBtn.disabled = false;
   document.getElementById('panel-error-msg').textContent = msg;
   showPanel('error');
 }
@@ -246,6 +293,8 @@ function resetUI() {
   fileNameDisplay.textContent = 'CSV, XLSX, XLS — Maks. 10 MB';
   analyzeBtn.disabled = true;
   errorMsg.classList.add('d-none');
+  warningList.innerHTML = '';
+  confirmWarningsBtn.disabled = false;
   showPanel('idle');
 }
 

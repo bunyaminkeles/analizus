@@ -191,6 +191,17 @@ def _handle_upload(request, tool):
 
     content = file.read()
 
+    from .services.job_runner import _parse_file
+    try:
+        df = _parse_file(content, file.name)
+    except ValueError as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+    from .services.data_validator import validate_dataframe
+    warnings = validate_dataframe(df, tool)
+    if warnings and request.POST.get('confirm_warnings', 'false').lower() != 'true':
+        return JsonResponse({'warnings': warnings, 'confirm_warnings': True})
+
     job = IstatistikJob.objects.create(
         user=request.user if request.user.is_authenticated else None,
         tool=tool,
