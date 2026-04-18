@@ -71,8 +71,8 @@ class IstatistikJob(models.Model):
         if user.is_staff or user.is_superuser:
             return 9999
         if hasattr(user, 'profile') and user.profile.is_premium:
-            return 10
-        return 3
+            return 20
+        return 5
 
     @staticmethod
     def daily_count_for_user(user):

@@ -31,11 +31,20 @@
 {% block on_completed_js %}
 if (data.result_data) {
   const r = data.result_data;
-  document.getElementById('alpha-value').textContent = r.alpha.toFixed(3);
+  const alpha = r.alpha.toFixed(3);
+  document.getElementById('alpha-value').textContent = alpha;
   document.getElementById('alpha-interp').textContent = r.interpretation;
   document.getElementById('n-items').textContent = r.n_items + ' madde';
   document.getElementById('n-cases').textContent = r.n_cases + ' katılımcı';
   document.getElementById('cronbach-summary').classList.remove('d-none');
+
+  // APA rapor cümlesini güncelle
+  const interp = r.interpretation || '';
+  const apaText = `${r.n_items} maddeden oluşan ölçeğin iç tutarlılık katsayısı Cronbach Alpha değeri α = ${alpha} olarak hesaplanmıştır (n = ${r.n_cases}). Bu değer, ölçeğin ${interp.toLowerCase()} düzeyde güvenilir olduğunu göstermektedir (Nunnally, 1978).`;
+  document.getElementById('cronbach-apa-display').textContent = apaText;
+  document.getElementById('cronbach-report-text').textContent = apaText;
+  document.getElementById('cronbach-apa-box').classList.remove('d-none');
+  document.getElementById('cronbach-apa-placeholder').classList.add('d-none');
 }
 {% endblock %}
 
@@ -72,15 +81,17 @@ if (data.result_data) {
   <hr style="border-color:rgba(255,255,255,0.08);">
 
   <h6 class="text-white-50 text-uppercase small fw-bold mb-2">Tezinde Nasıl Raporlarsın?</h6>
-  <div class="rounded-3 p-3" style="background:rgba(99,102,241,0.08); border:1px solid rgba(99,102,241,0.2);">
-    <p class="text-white-50 small mb-2" style="font-style:italic;">
-      "Ölçeğin iç tutarlılık katsayısı Cronbach Alpha değeri α = .XX olarak hesaplanmıştır.
-      Bu değer, ölçeğin [yüksek / yeterli / düşük] düzeyde güvenilir olduğunu göstermektedir (Nunnally, 1978)."
-    </p>
+  <div id="cronbach-apa-box" class="rounded-3 p-3 d-none" style="background:rgba(99,102,241,0.08); border:1px solid rgba(99,102,241,0.2);">
+    <p class="text-white small mb-2" style="font-style:italic;" id="cronbach-apa-display"></p>
     <button class="btn btn-sm btn-outline-secondary" onclick="copyMethodText(this, 'cronbach-report-text')" style="font-size:0.75rem;">
       <i class="bi bi-clipboard me-1"></i>Kopyala
     </button>
-    <span id="cronbach-report-text" class="d-none">Ölçeğin iç tutarlılık katsayısı Cronbach Alpha değeri α = .XX olarak hesaplanmıştır. Bu değer, ölçeğin yüksek düzeyde güvenilir olduğunu göstermektedir (Nunnally, 1978).</span>
+    <span id="cronbach-report-text" class="d-none"></span>
+  </div>
+  <div id="cronbach-apa-placeholder" class="rounded-3 p-3" style="background:rgba(99,102,241,0.04); border:1px dashed rgba(99,102,241,0.2);">
+    <p class="text-white-50 small mb-0" style="font-style:italic;">
+      <i class="bi bi-info-circle me-1"></i>Analizi tamamladıktan sonra APA formatında rapor cümlesi burada otomatik oluşacak.
+    </p>
   </div>
 
   <hr style="border-color:rgba(255,255,255,0.08);">
