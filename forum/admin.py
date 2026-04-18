@@ -396,19 +396,55 @@ class QuizQuestionAdmin(ModelAdmin):
 class FreelanceJobAdmin(ModelAdmin):
     warn_unsaved_changes = True
     compressed_fields = True
-    list_display = ('title', 'owner', 'category', 'status', 'is_featured', 'featured_until', 'views', 'created_at')
+    list_display = ('title', 'owner', 'category', 'status', 'teklif_sayisi', 'kabul_edilen_uzman', 'views', 'created_at', 'updated_at')
     list_filter = ('status', 'is_featured', 'category', 'created_at')
     search_fields = ('title', 'description', 'owner__username')
     date_hierarchy = 'created_at'
     filter_horizontal = ('likes', 'saved_by')
 
+    @admin.display(description='Teklif Sayısı')
+    def teklif_sayisi(self, obj):
+        total = obj.proposals.count()
+        pending = obj.proposals.filter(status='pending').count()
+        if total == 0:
+            return '—'
+        return format_html(
+            '{} <span style="color:#64748b;font-size:0.8em;">({} bekliyor)</span>',
+            total, pending
+        )
+
+    @admin.display(description='Kabul Edilen Uzman')
+    def kabul_edilen_uzman(self, obj):
+        proposal = obj.proposals.filter(status='accepted').select_related('expert').first()
+        if proposal:
+            return format_html(
+                '<span style="color:#22c55e;">✓ {}</span>',
+                proposal.expert.username
+            )
+        return '—'
+
+
 @admin.register(JobProposal)
 class JobProposalAdmin(ModelAdmin):
     warn_unsaved_changes = True
     compressed_fields = True
-    list_display = ('job', 'expert', 'price', 'duration', 'status', 'created_at')
-    list_filter = ('status', 'created_at')
+    list_display = ('job', 'ilan_durumu', 'expert', 'price', 'duration', 'status', 'created_at')
+    list_filter = ('status', 'job__status', 'created_at')
     search_fields = ('job__title', 'expert__username', 'message')
+
+    @admin.display(description='İlan Durumu')
+    def ilan_durumu(self, obj):
+        colors = {
+            'open': '#38bdf8',
+            'in_progress': '#fbbf24',
+            'completed': '#22c55e',
+            'cancelled': '#ef4444',
+        }
+        color = colors.get(obj.job.status, '#64748b')
+        return format_html(
+            '<span style="color:{};">{}</span>',
+            color, obj.job.get_status_display()
+        )
 
 
 @admin.register(JobReview)
