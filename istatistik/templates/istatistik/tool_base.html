@@ -114,6 +114,9 @@
     </div>
   </div>
 
+  {# ── Metodoloji Bölümü ── #}
+  {% block methodology %}{% endblock %}
+
 </div>
 
 <script>
@@ -214,6 +217,21 @@ function showError(msg) {
   analyzeBtn.disabled = false;
   document.getElementById('panel-error-msg').textContent = msg;
   showPanel('error');
+}
+
+function copyMethodText(btn, spanId) {
+  const text = document.getElementById(spanId).textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const orig = btn.innerHTML;
+    btn.innerHTML = '<i class="bi bi-check me-1"></i>Kopyalandı';
+    btn.classList.add('btn-success');
+    btn.classList.remove('btn-outline-secondary');
+    setTimeout(() => {
+      btn.innerHTML = orig;
+      btn.classList.remove('btn-success');
+      btn.classList.add('btn-outline-secondary');
+    }, 2000);
+  });
 }
 
 function resetUI() {
