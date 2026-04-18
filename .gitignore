@@ -40,3 +40,6 @@ aws/*
 aws/dist/libreadline.so.6
 awscliv2.zip
 .gitignore
+.~lock.analizus-hetzner-cheat-sheet.odt#
+analizus-hetzner-cheat-sheet.odt
+BingSiteAuth.xml

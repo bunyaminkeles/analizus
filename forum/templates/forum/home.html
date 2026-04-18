@@ -5,6 +5,40 @@
 {% block main_content_classes %}col{% endblock %}
 {% block right_sidebar %}
 <div style="width: 340px; flex: 0 0 340px; min-width: 0;" class="d-none d-xl-block">
+    <!-- BU HAFTA ANALİZUS'TA -->
+    <div class="widget-card mb-3">
+        <div class="widget-header" style="color: #6366f1;">
+            <i class="bi bi-bar-chart-fill"></i>
+            <span>Bu Hafta Analizus'ta</span>
+        </div>
+        <div class="widget-body" style="max-height: none;">
+            <div class="d-flex flex-column gap-2">
+                <a href="{% url 'job_list' %}" class="d-flex align-items-center justify-content-between py-1 text-decoration-none sidebar-stat-link">
+                    <span class="text-muted small"><i class="bi bi-briefcase-fill me-2" style="color:#38bdf8;"></i>Açık iş ilanı</span>
+                    <span class="fw-bold text-white small">{{ open_jobs_count }} <i class="bi bi-arrow-right" style="font-size:0.65rem; color:#38bdf8;"></i></span>
+                </a>
+                {% if weekly_new_users %}
+                <div class="d-flex align-items-center justify-content-between py-1">
+                    <span class="text-muted small"><i class="bi bi-person-plus-fill me-2" style="color:#6366f1;"></i>Bu hafta yeni üye</span>
+                    <span class="fw-bold text-white small">+{{ weekly_new_users }}</span>
+                </div>
+                {% endif %}
+                {% if completed_jobs %}
+                <div class="d-flex align-items-center justify-content-between py-1">
+                    <span class="text-muted small"><i class="bi bi-check-circle-fill me-2" style="color:#22c55e;"></i>Tamamlanan iş</span>
+                    <span class="fw-bold text-white small">{{ completed_jobs }}</span>
+                </div>
+                {% endif %}
+                {% if active_experts_count %}
+                <div class="d-flex align-items-center justify-content-between py-1">
+                    <span class="text-muted small"><i class="bi bi-star-fill me-2" style="color:#fbbf24;"></i>Aktif uzman</span>
+                    <span class="fw-bold text-white small">{{ active_experts_count }}</span>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
     {% if user.is_authenticated %}
     <div class="widget-card mb-3" id="donation-widget" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#donationModal">
         <div class="widget-header" style="color: #ec4899;">
@@ -319,6 +353,44 @@
                 <h1 class="hero-title">ANALİZUS</h1>
                 <p class="hero-subtitle">Akademik Analiz ve Veri Bilimi Topluluğu</p>
             </div>
+            <div class="stats-pills">
+                {% if total_users >= 10 %}
+                <div class="stat-pill">
+                    <div class="pill-icon cyan"><i class="bi bi-people-fill"></i></div>
+                    <div class="pill-info">
+                        <span class="pill-label">Üye</span>
+                        <span class="pill-value">{{ total_users }}</span>
+                    </div>
+                </div>
+                {% endif %}
+                {% if total_topics >= 5 %}
+                <div class="stat-pill">
+                    <div class="pill-icon purple"><i class="bi bi-chat-square-text-fill"></i></div>
+                    <div class="pill-info">
+                        <span class="pill-label">Konu</span>
+                        <span class="pill-value">{{ total_topics }}</span>
+                    </div>
+                </div>
+                {% endif %}
+                {% if completed_jobs >= 5 %}
+                <div class="stat-pill">
+                    <div class="pill-icon green"><i class="bi bi-check-circle-fill"></i></div>
+                    <div class="pill-info">
+                        <span class="pill-label">Tamamlanan İş</span>
+                        <span class="pill-value">{{ completed_jobs }}</span>
+                    </div>
+                </div>
+                {% endif %}
+                {% if total_posts >= 10 %}
+                <div class="stat-pill">
+                    <div class="pill-icon orange"><i class="bi bi-send-fill"></i></div>
+                    <div class="pill-info">
+                        <span class="pill-label">Gönderi</span>
+                        <span class="pill-value">{{ total_posts }}</span>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
         </div>
 
         <!-- DEĞer CÜMLESİ + 3 YOL -->
@@ -389,6 +461,33 @@
                         </div>
                     </div>
                     {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- BAŞARI HİKAYESİ -->
+        {% if featured_story %}
+        <div class="widget-card full-width mb-4">
+            <div class="widget-header" style="color: #a855f7;">
+                <i class="bi bi-trophy-fill"></i>
+                <span>Haftanın Başarı Hikayesi</span>
+                <a href="{% url 'success_stories' %}" class="ms-auto btn btn-sm py-0" style="font-size: 0.75rem; color: #a855f7; border: none;">Tümünü Gör <i class="bi bi-arrow-right"></i></a>
+            </div>
+            <div class="widget-body" style="max-height: none; padding: 20px;">
+                <div class="d-flex align-items-start gap-3">
+                    <div class="flex-shrink-0" style="width: 48px; height: 48px; border-radius: 12px; background: rgba(168,85,247,0.12); border: 1px solid rgba(168,85,247,0.3); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; color: #a855f7;">
+                        <i class="bi bi-mortarboard-fill"></i>
+                    </div>
+                    <div class="flex-grow-1 min-width-0">
+                        <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+                            {% if featured_story.job %}
+                            <span class="fw-bold text-white" style="font-size: 0.95rem;">{{ featured_story.job.title|truncatechars:60 }}</span>
+                            {% endif %}
+                            <span class="text-muted" style="font-size: 0.78rem;">— {{ featured_story.user.username }}</span>
+                        </div>
+                        <p class="text-muted mb-0" style="font-size: 0.82rem; line-height: 1.55;">{{ featured_story.quote|truncatechars:220 }}</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1585,6 +1684,9 @@
 .vitrin-hint-empty a:hover {
     color: #fbbf24;
 }
+
+.sidebar-stat-link:hover span { color: #38bdf8 !important; }
+.sidebar-stat-link:hover { background: rgba(56,189,248,0.05); border-radius: 8px; }
 
 .job-card-hover {
     transition: all 0.3s ease;
