@@ -1720,27 +1720,27 @@ def dashboard_mark_contact_read(request, pk):
 
 
 # --- API: QUIZ & STORIES ---
-@login_required
 def api_get_quiz_question(request):
     """
-    Kullanıcıya o gün cevaplamadığı rastgele bir quiz sorusu getirir.
-    Günlük 20 soru limiti vardır.
+    Rastgele aktif bir quiz sorusu getirir.
+    Giriş yapmış kullanıcılara bugün cevaplanmamış sorular gösterilir (günlük 20 limit).
+    Anonim kullanıcılara herhangi bir aktif soru gösterilir.
     """
     try:
-        today = timezone.now().date()
+        if request.user.is_authenticated:
+            today = timezone.now().date()
+            answered_today_ids = UserQuizAttempt.objects.filter(
+                user=request.user,
+                created_at__date=today
+            ).values_list('question_id', flat=True)
 
-        # Kullanıcının bugün cevapladığı soruların ID'lerini al
-        answered_today_ids = UserQuizAttempt.objects.filter(
-            user=request.user,
-            created_at__date=today
-        ).values_list('question_id', flat=True)
+            if answered_today_ids.count() >= 20:
+                return JsonResponse({'success': False, 'error': 'Günlük 20 soru limitinizi doldurdunuz. Yarın tekrar bekleriz!'})
 
-        # Günlük limiti kontrol et
-        if answered_today_ids.count() >= 20:
-            return JsonResponse({'success': False, 'error': 'Günlük 20 soru limitinizi doldurdunuz. Yarın tekrar bekleriz!'})
-
-        # Bugün cevaplanmamış, rastgele bir aktif soru getir
-        question = QuizQuestion.objects.filter(is_active=True).exclude(id__in=answered_today_ids).order_by('?').first()
+            question = QuizQuestion.objects.filter(is_active=True).exclude(id__in=answered_today_ids).order_by('?').first()
+        else:
+            answered_today_ids = []
+            question = QuizQuestion.objects.filter(is_active=True).order_by('?').first()
 
         if question:
             data = {
@@ -1757,12 +1757,9 @@ def api_get_quiz_question(request):
             }
             return JsonResponse({'success': True, 'question': data})
         else:
-            # Neden soru bulunamadığını kontrol et
-            if QuizQuestion.objects.filter(is_active=True).exists():
-                # Sorular var ama hepsi bugün cevaplanmış
+            if request.user.is_authenticated and QuizQuestion.objects.filter(is_active=True).exists():
                 return JsonResponse({'success': False, 'error': 'Bugünlük çözülecek soru kalmadı. Yarın tekrar bekleriz!'})
             else:
-                # Veritabanında hiç aktif soru yok
                 return JsonResponse({'success': False, 'error': 'Sistemde henüz aktif bir soru bulunmuyor.'})
 
     except Exception as e:
