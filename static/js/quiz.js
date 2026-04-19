@@ -1,16 +1,32 @@
 (function () {
     'use strict';
 
-    const app = document.getElementById('axQuizApp');
-    if (!app) return;
+    var isAuthenticated = false;
+    var loginUrl = '';
+    var body = null;
+    var categoryEl = null;
+    var diffEl = null;
+    var currentQuestion = null;
 
-    const isAuthenticated = app.dataset.authenticated === 'true';
-    const loginUrl        = app.dataset.loginUrl;
-    const body            = document.getElementById('axQuizBody');
-    const categoryEl      = document.getElementById('axQuizCategory');
-    const diffEl          = document.getElementById('axQuizDifficulty');
+    function initQuiz() {
+        var app = document.getElementById('axQuizApp');
+        if (!app) {
+            var bodyEl = document.getElementById('axQuizBody');
+            if (bodyEl) {
+                app = bodyEl.closest('#axQuizApp');
+            }
+        }
+        if (!app) return;
 
-    // Fallback sorular — API erişilemez olduğunda kullanılır
+        isAuthenticated = app.dataset.authenticated === 'true';
+        loginUrl = app.dataset.loginUrl || '/login/?next=/';
+        body = document.getElementById('axQuizBody');
+        categoryEl = document.getElementById('axQuizCategory');
+        diffEl = document.getElementById('axQuizDifficulty');
+
+        loadNext();
+    }
+
     var FALLBACK = [
         {
             id: -1,
@@ -19,7 +35,7 @@
             question: 'Cronbach Alpha katsayısı asgari olarak kaç ve üzerinde olduğunda güvenilirlik "kabul edilebilir" sayılır?',
             options: { A: '0.50', B: '0.60', C: '0.70', D: '0.90' },
             correct_answer: 'C',
-            explanation: 'Nunnally (1978)'e göre α ≥ .70 "kabul edilebilir güvenilirlik" olarak değerlendirilir.'
+            explanation: 'Nunnally (1978)\'e göre α ≥ .70 "kabul edilebilir güvenilirlik" olarak değerlendirilir.'
         },
         {
             id: -2,
@@ -61,8 +77,6 @@
         return 'ax-quiz-badge--medium';
     }
 
-    var currentQuestion = null;
-
     function renderQuestion(q) {
         currentQuestion = q;
         categoryEl.textContent = q.category;
@@ -100,7 +114,8 @@
         var skip = document.getElementById('axSkip');
         if (skip) skip.addEventListener('click', loadNext);
 
-        document.getElementById('axNext').addEventListener('click', loadNext);
+        var nextBtn = document.getElementById('axNext');
+        if (nextBtn) nextBtn.addEventListener('click', loadNext);
     }
 
     function handleAnswer(btn) {
@@ -109,7 +124,6 @@
             return;
         }
 
-        // Anında tüm şıkları kilitle
         body.querySelectorAll('.ax-quiz-opt').forEach(function (b) { b.disabled = true; });
         var skip = document.getElementById('axSkip');
         if (skip) skip.style.display = 'none';
@@ -117,7 +131,6 @@
         var qid    = currentQuestion.id;
         var answer = btn.dataset.answer;
 
-        // Fallback soru ise API çağrısı yapma, yerel olarak işle
         if (qid < 0) {
             showResult({
                 success: true,
@@ -137,7 +150,6 @@
         .then(function (r) { return r.json(); })
         .then(function (data) { showResult(data, btn); })
         .catch(function () {
-            // API hatası — yerel sonucu göster
             showResult({
                 success: true,
                 is_correct: answer === currentQuestion.correct_answer,
@@ -156,7 +168,7 @@
         });
         if (!data.is_correct) btn.classList.add('is-wrong');
 
-        var fb   = document.getElementById('axFb');
+        var fb = document.getElementById('axFb');
         var icon = document.getElementById('axFbIcon');
         var text = document.getElementById('axFbText');
         var expl = document.getElementById('axFbExpl');
@@ -179,7 +191,8 @@
         }
 
         fb.style.display = 'block';
-        document.getElementById('axNext').style.display = 'inline-flex';
+        var nextBtn = document.getElementById('axNext');
+        if (nextBtn) nextBtn.style.display = 'inline-flex';
     }
 
     function pickFallback() {
@@ -213,5 +226,9 @@
             });
     }
 
-    loadNext();
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initQuiz);
+    } else {
+        initQuiz();
+    }
 }());
