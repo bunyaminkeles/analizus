@@ -220,7 +220,7 @@
         <h2 class="ax-section-title text-center mb-5">🛠️ Araştırma Konsolu</h2>
         <div class="row g-4 justify-content-center">
             <div class="col-12 col-md-6 col-lg-3">
-                <div class="ax-tool-card">
+                <div class="ax-tool-card" role="link" tabindex="0" data-card-url="{% url 'hangi_test' %}">
                     <div class="ax-tool-icon">🧪</div>
                     <h3 class="ax-tool-title">İstatistik Rehberi</h3>
                     <p class="ax-tool-desc">Veri tipinize göre en uygun istatistiksel testi anında seçin.</p>
@@ -228,7 +228,7 @@
                 </div>
             </div>
             <div class="col-12 col-md-6 col-lg-3">
-                <div class="ax-tool-card">
+                <div class="ax-tool-card" role="link" tabindex="0" data-card-url="{% url 'ai_assistant' %}">
                     <div class="ax-tool-icon">🤖</div>
                     <h3 class="ax-tool-title">AI Asistan</h3>
                     <p class="ax-tool-desc">Literatür tarama ve tez yazımında yapay zeka destekli rehberiniz.</p>
@@ -236,7 +236,7 @@
                 </div>
             </div>
             <div class="col-12 col-md-6 col-lg-3">
-                <div class="ax-tool-card ax-tool-card--highlight">
+                <div class="ax-tool-card ax-tool-card--highlight" role="link" tabindex="0" data-card-url="/openalex/">
                     <div class="ax-tool-icon">🔍</div>
                     <h3 class="ax-tool-title">Akademik Tarama</h3>
                     <ul class="ax-tarama-list">
@@ -248,7 +248,7 @@
                 </div>
             </div>
             <div class="col-12 col-md-6 col-lg-3">
-                <div class="ax-tool-card">
+                <div class="ax-tool-card" role="link" tabindex="0" data-card-url="{% url 'studyroom_list' %}">
                     <div class="ax-tool-icon">🏠</div>
                     <h3 class="ax-tool-title">Çalışma Odaları</h3>
                     <p class="ax-tool-desc">Odaklanma süreleri ve diğer araştırmacılarla ortak çalışma imkanı.</p>
@@ -258,6 +258,25 @@
         </div>
     </div>
 </section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.ax-tool-card[data-card-url]').forEach(function (card) {
+        card.addEventListener('click', function (event) {
+            if (event.target.closest('a')) {
+                return;
+            }
+            window.location.href = card.dataset.cardUrl;
+        });
+        card.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                window.location.href = card.dataset.cardUrl;
+            }
+        });
+    });
+});
+</script>
 
 <!-- =====================================================
      FAZ 3: KENDİNİ TEST ET (Quiz)
