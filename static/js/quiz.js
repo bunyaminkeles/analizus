@@ -191,8 +191,15 @@
         var next = document.getElementById('axNext');
         if (next) { next.disabled = true; next.textContent = 'Yükleniyor...'; }
 
-        fetch('/api/quiz/random/')
-            .then(function (r) { return r.json(); })
+        var controller = new AbortController();
+        var timeout = setTimeout(function () { controller.abort(); }, 4000);
+
+        fetch('/api/quiz/random/', { signal: controller.signal })
+            .then(function (r) {
+                clearTimeout(timeout);
+                if (!r.ok) { throw new Error('non-ok'); }
+                return r.json();
+            })
             .then(function (data) {
                 if (data.success) {
                     renderQuestion(data.question);
@@ -201,6 +208,7 @@
                 }
             })
             .catch(function () {
+                clearTimeout(timeout);
                 renderQuestion(pickFallback());
             });
     }
