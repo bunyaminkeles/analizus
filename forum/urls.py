@@ -57,6 +57,9 @@ urlpatterns = [
     path('verification-pending/', views.verification_pending, name='verification_pending'),
     path('resend-verification/', views.resend_verification, name='resend_verification'),
 
+    # Onboarding
+    path('onboarding/', views.onboarding, name='onboarding'),
+
     # Admin Actions (Django admin dashboard'dan kullanılıyor)
     path('admin-actions/verify-linkedin/<int:user_id>/', views.admin_verify_linkedin, name='admin_verify_linkedin'),
     path('admin-actions/approve-story/<int:pk>/', views.dashboard_approve_story, name='dashboard_approve_story'),

@@ -1610,6 +1610,10 @@ def verify_email(request, token):
     if not request.user.is_authenticated:
         login(request, user)
 
+    # Onboarding tamamlanmamışsa yönlendir
+    if not profile.onboarding_completed:
+        return redirect('onboarding')
+
     return redirect('home')
 
 
@@ -2766,3 +2770,61 @@ def studyroom_approve(request, slug):
     room.review_note = note
     room.save(update_fields=['status', 'reviewed_by', 'review_note'])
     return JsonResponse({'status': room.status})
+
+
+@login_required
+def onboarding(request):
+    profile = request.user.profile
+
+    if profile.onboarding_completed:
+        return redirect('home')
+
+    if request.method == 'POST':
+        if 'skip' in request.POST:
+            profile.onboarding_completed = True
+            profile.save(update_fields=['onboarding_completed'])
+            return redirect('home')
+
+        segment = request.POST.get('segment', '')
+        interests = request.POST.getlist('interests')
+        tools = request.POST.getlist('tools')
+
+        if segment:
+            profile.segment = segment
+        if interests:
+            profile.onboarding_interests = interests
+        if tools:
+            profile.onboarding_tools = tools
+        profile.onboarding_completed = True
+        profile.save(update_fields=['segment', 'onboarding_interests', 'onboarding_tools', 'onboarding_completed'])
+
+        messages.success(request, 'Hoş geldiniz! Profiliniz kişiselleştirildi.')
+        return redirect('home')
+
+    segment_choices = Profile.SEGMENT_CHOICES
+    interest_choices = [
+        ('analiz', 'Analiz Yapmak'),
+        ('uzman', 'Uzman Bulmak'),
+        ('forum', 'Sorular Sormak / Cevaplamak'),
+        ('tez', 'Tez Araştırması'),
+        ('makale', 'Makale Yazımı'),
+        ('ogrenme', 'İstatistik Öğrenmek'),
+        ('bibliometri', 'Bibliometrik Analiz'),
+        ('tarama', 'Literatür Taraması'),
+    ]
+    tool_choices = [
+        ('spss', 'SPSS'),
+        ('r', 'R'),
+        ('python', 'Python'),
+        ('excel', 'Excel'),
+        ('smartpls', 'SmartPLS'),
+        ('amos', 'AMOS'),
+        ('stata', 'Stata'),
+        ('nvivo', 'NVivo'),
+        ('hicbiri', 'Henüz Hiçbirini Kullanmıyorum'),
+    ]
+    return render(request, 'forum/onboarding.html', {
+        'segment_choices': segment_choices,
+        'interest_choices': interest_choices,
+        'tool_choices': tool_choices,
+    })

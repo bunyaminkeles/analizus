@@ -220,6 +220,18 @@ class Profile(models.Model):
     edu_proposal_expires = models.DateTimeField(null=True, blank=True, verbose_name="EDU Teklif Hakkı Bitiş")
     following = models.ManyToManyField('self', related_name='followers', symmetrical=False, blank=True, verbose_name="Takip Edilenler")
 
+    # Onboarding
+    SEGMENT_CHOICES = (
+        ('student', 'Öğrenci'),
+        ('academic', 'Akademisyen'),
+        ('expert', 'Uzman'),
+        ('curious', 'Meraklı'),
+    )
+    segment = models.CharField(max_length=20, choices=SEGMENT_CHOICES, blank=True, default='', verbose_name="Segment")
+    onboarding_completed = models.BooleanField(default=False, verbose_name="Onboarding Tamamlandı")
+    onboarding_interests = models.JSONField(default=list, blank=True, verbose_name="İlgi Alanları")
+    onboarding_tools = models.JSONField(default=list, blank=True, verbose_name="Kullanılan Araçlar")
+
     def __str__(self):
         return self.user.username
 
