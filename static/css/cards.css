@@ -183,6 +183,10 @@
     box-shadow: 0 18px 40px rgba(0, 0, 0, 0.14);
 }
 
+.ax-tool-card {
+    cursor: pointer;
+}
+
 .ax-tool-card--highlight {
     border: 2px solid var(--accent-primary);
     background: rgba(99, 102, 241, 0.12);
