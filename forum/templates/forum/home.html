@@ -215,6 +215,50 @@
     </div>
 </section>
 
+<section class="ax-tools-section">
+    <div class="container">
+        <h2 class="ax-section-title text-center mb-5">🛠️ Araştırma Konsolu</h2>
+        <div class="row g-4 justify-content-center">
+            <div class="col-12 col-md-6 col-lg-3">
+                <div class="ax-tool-card">
+                    <div class="ax-tool-icon">🧪</div>
+                    <h3 class="ax-tool-title">İstatistik Rehberi</h3>
+                    <p class="ax-tool-desc">Veri tipinize göre en uygun istatistiksel testi anında seçin.</p>
+                    <a href="{% url 'hangi_test' %}" class="ax-tool-link">Kullan →</a>
+                </div>
+            </div>
+            <div class="col-12 col-md-6 col-lg-3">
+                <div class="ax-tool-card">
+                    <div class="ax-tool-icon">🤖</div>
+                    <h3 class="ax-tool-title">AI Asistan</h3>
+                    <p class="ax-tool-desc">Literatür tarama ve tez yazımında yapay zeka destekli rehberiniz.</p>
+                    <a href="{% url 'ai_assistant' %}" class="ax-tool-link">Kullan →</a>
+                </div>
+            </div>
+            <div class="col-12 col-md-6 col-lg-3">
+                <div class="ax-tool-card ax-tool-card--highlight">
+                    <div class="ax-tool-icon">🔍</div>
+                    <h3 class="ax-tool-title">Akademik Tarama</h3>
+                    <ul class="ax-tarama-list">
+                        <li><a href="/oaipmh/">Üniversite Tezleri</a></li>
+                        <li><a href="/yoktez/">YÖK Tez Tarama</a></li>
+                        <li><a href="/openalex/">OpenAlex Tarama</a></li>
+                        <li><a href="/trdizin/">TR Dizin Tarama</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-12 col-md-6 col-lg-3">
+                <div class="ax-tool-card">
+                    <div class="ax-tool-icon">🏠</div>
+                    <h3 class="ax-tool-title">Çalışma Odaları</h3>
+                    <p class="ax-tool-desc">Odaklanma süreleri ve diğer araştırmacılarla ortak çalışma imkanı.</p>
+                    <a href="{% url 'studyroom_list' %}" class="ax-tool-link">Katıl →</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
 <!-- =====================================================
      FAZ 3: KENDİNİ TEST ET (Quiz)
      ===================================================== -->
