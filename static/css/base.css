@@ -1,0 +1,385 @@
+/* =============================================================
+   ANALIZUS — MODERn KATMAN: base.css
+   Bootstrap (Legacy) ile yan yana çalışır.
+   Tüm değişkenler --ax- prefix, utility'ler .ax- prefix.
+   ============================================================= */
+
+/* -------------------------------------------------------------
+   1. DESIGN TOKENS — CSS Custom Properties
+   ------------------------------------------------------------- */
+:root {
+    /* Renkler */
+    --ax-bg-primary:        #0b0f19;
+    --ax-bg-secondary:      #111827;
+    --ax-bg-tertiary:       #1f2937;
+    --ax-bg-elevated:       #374151;
+
+    --ax-text-primary:      #f1f5f9;
+    --ax-text-secondary:    #94a3b8;
+    --ax-text-muted:        #64748b;
+
+    --ax-accent-primary:        #6366f1;
+    --ax-accent-primary-hover:  #818cf8;
+    --ax-accent-secondary:      #10b981;
+    --ax-accent-secondary-hover:#34d399;
+    --ax-accent-warning:        #f59e0b;
+    --ax-accent-danger:         #ef4444;
+
+    --ax-border-default:    #1e293b;
+    --ax-border-hover:      #334155;
+
+    /* Tipografi */
+    --ax-font-family:       'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+    --ax-text-xs:   0.75rem;
+    --ax-text-sm:   0.875rem;
+    --ax-text-base: 1rem;
+    --ax-text-lg:   1.125rem;
+    --ax-text-xl:   1.25rem;
+    --ax-text-2xl:  1.5rem;
+    --ax-text-3xl:  1.875rem;
+    --ax-text-4xl:  2.25rem;
+    --ax-text-5xl:  3rem;
+
+    --ax-font-normal:   400;
+    --ax-font-medium:   500;
+    --ax-font-semibold: 600;
+    --ax-font-bold:     700;
+
+    --ax-leading-tight:   1.25;
+    --ax-leading-normal:  1.5;
+    --ax-leading-relaxed: 1.75;
+
+    /* Spacing — 8px grid */
+    --ax-space-1:  0.25rem;  /* 4px  */
+    --ax-space-2:  0.5rem;   /* 8px  */
+    --ax-space-3:  0.75rem;  /* 12px */
+    --ax-space-4:  1rem;     /* 16px */
+    --ax-space-5:  1.25rem;  /* 20px */
+    --ax-space-6:  1.5rem;   /* 24px */
+    --ax-space-8:  2rem;     /* 32px */
+    --ax-space-10: 2.5rem;   /* 40px */
+    --ax-space-12: 3rem;     /* 48px */
+    --ax-space-16: 4rem;     /* 64px */
+    --ax-space-20: 5rem;     /* 80px */
+    --ax-space-24: 6rem;     /* 96px */
+
+    /* Border Radius */
+    --ax-radius-sm:   6px;
+    --ax-radius-md:   8px;
+    --ax-radius-lg:   12px;
+    --ax-radius-xl:   16px;
+    --ax-radius-full: 9999px;
+
+    /* Shadows — dark mode için */
+    --ax-shadow-sm:  0 1px 3px rgba(0,0,0,0.4), 0 1px 2px rgba(0,0,0,0.3);
+    --ax-shadow-md:  0 4px 6px rgba(0,0,0,0.4), 0 2px 4px rgba(0,0,0,0.3);
+    --ax-shadow-lg:  0 10px 15px rgba(0,0,0,0.5), 0 4px 6px rgba(0,0,0,0.3);
+    --ax-shadow-xl:  0 20px 25px rgba(0,0,0,0.6), 0 8px 10px rgba(0,0,0,0.4);
+
+    /* Layout */
+    --ax-container-max:     1280px;
+    --ax-container-padding: 1rem;
+
+    /* Transitions */
+    --ax-transition-fast:   150ms ease;
+    --ax-transition-normal: 300ms ease;
+    --ax-transition-slow:   500ms ease;
+
+    /* Z-index */
+    --ax-z-dropdown: 100;
+    --ax-z-sticky:   200;
+    --ax-z-modal:    300;
+    --ax-z-toast:    400;
+}
+
+/* -------------------------------------------------------------
+   2. LAYOUT UTILITIES
+   ------------------------------------------------------------- */
+
+/* Container — Bootstrap'in .container ile çakışmaz */
+.ax-container {
+    width: 100%;
+    max-width: var(--ax-container-max);
+    margin-inline: auto;
+    padding-inline: var(--ax-container-padding);
+}
+
+/* Flexbox */
+.ax-flex         { display: flex; }
+.ax-flex-col     { display: flex; flex-direction: column; }
+.ax-inline-flex  { display: inline-flex; }
+.ax-items-center { align-items: center; }
+.ax-items-start  { align-items: flex-start; }
+.ax-justify-between { justify-content: space-between; }
+.ax-justify-center  { justify-content: center; }
+.ax-justify-end     { justify-content: flex-end; }
+.ax-flex-wrap    { flex-wrap: wrap; }
+.ax-flex-1       { flex: 1; }
+.ax-shrink-0     { flex-shrink: 0; }
+
+/* Gap */
+.ax-gap-1 { gap: var(--ax-space-1); }
+.ax-gap-2 { gap: var(--ax-space-2); }
+.ax-gap-3 { gap: var(--ax-space-3); }
+.ax-gap-4 { gap: var(--ax-space-4); }
+.ax-gap-6 { gap: var(--ax-space-6); }
+.ax-gap-8 { gap: var(--ax-space-8); }
+
+/* Grid */
+.ax-grid          { display: grid; }
+.ax-grid-cols-2   { grid-template-columns: repeat(2, 1fr); }
+.ax-grid-cols-3   { grid-template-columns: repeat(3, 1fr); }
+.ax-grid-cols-4   { grid-template-columns: repeat(4, 1fr); }
+
+/* Display */
+.ax-hidden  { display: none !important; }
+.ax-block   { display: block; }
+.ax-sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Text Alignment */
+.ax-text-center { text-align: center; }
+.ax-text-left   { text-align: left; }
+.ax-text-right  { text-align: right; }
+
+/* Text Colors */
+.ax-text-primary   { color: var(--ax-text-primary); }
+.ax-text-secondary { color: var(--ax-text-secondary); }
+.ax-text-muted     { color: var(--ax-text-muted); }
+.ax-text-accent    { color: var(--ax-accent-primary); }
+.ax-text-success   { color: var(--ax-accent-secondary); }
+.ax-text-warning   { color: var(--ax-accent-warning); }
+.ax-text-danger    { color: var(--ax-accent-danger); }
+
+/* Font Sizes */
+.ax-text-xs   { font-size: var(--ax-text-xs); }
+.ax-text-sm   { font-size: var(--ax-text-sm); }
+.ax-text-base { font-size: var(--ax-text-base); }
+.ax-text-lg   { font-size: var(--ax-text-lg); }
+.ax-text-xl   { font-size: var(--ax-text-xl); }
+.ax-text-2xl  { font-size: var(--ax-text-2xl); }
+.ax-text-3xl  { font-size: var(--ax-text-3xl); }
+.ax-text-4xl  { font-size: var(--ax-text-4xl); }
+.ax-text-5xl  { font-size: var(--ax-text-5xl); }
+
+/* Font Weights */
+.ax-font-normal   { font-weight: var(--ax-font-normal); }
+.ax-font-medium   { font-weight: var(--ax-font-medium); }
+.ax-font-semibold { font-weight: var(--ax-font-semibold); }
+.ax-font-bold     { font-weight: var(--ax-font-bold); }
+
+/* Background Colors */
+.ax-bg-primary   { background-color: var(--ax-bg-primary); }
+.ax-bg-secondary { background-color: var(--ax-bg-secondary); }
+.ax-bg-tertiary  { background-color: var(--ax-bg-tertiary); }
+.ax-bg-elevated  { background-color: var(--ax-bg-elevated); }
+
+/* Border */
+.ax-border        { border: 1px solid var(--ax-border-default); }
+.ax-border-top    { border-top: 1px solid var(--ax-border-default); }
+.ax-border-bottom { border-bottom: 1px solid var(--ax-border-default); }
+.ax-rounded-sm    { border-radius: var(--ax-radius-sm); }
+.ax-rounded-md    { border-radius: var(--ax-radius-md); }
+.ax-rounded-lg    { border-radius: var(--ax-radius-lg); }
+.ax-rounded-xl    { border-radius: var(--ax-radius-xl); }
+.ax-rounded-full  { border-radius: var(--ax-radius-full); }
+
+/* Shadows */
+.ax-shadow-sm { box-shadow: var(--ax-shadow-sm); }
+.ax-shadow-md { box-shadow: var(--ax-shadow-md); }
+.ax-shadow-lg { box-shadow: var(--ax-shadow-lg); }
+
+/* Width / Height */
+.ax-w-full  { width: 100%; }
+.ax-h-full  { height: 100%; }
+.ax-min-h-screen { min-height: 100vh; }
+
+/* Position */
+.ax-relative { position: relative; }
+.ax-absolute { position: absolute; }
+.ax-fixed    { position: fixed; }
+.ax-sticky   { position: sticky; }
+.ax-inset-0  { inset: 0; }
+
+/* Overflow */
+.ax-overflow-hidden { overflow: hidden; }
+.ax-overflow-auto   { overflow: auto; }
+
+/* Opacity */
+.ax-opacity-0    { opacity: 0; }
+.ax-opacity-50   { opacity: 0.5; }
+.ax-opacity-75   { opacity: 0.75; }
+.ax-opacity-100  { opacity: 1; }
+
+/* Transition */
+.ax-transition-fast   { transition: all var(--ax-transition-fast); }
+.ax-transition-normal { transition: all var(--ax-transition-normal); }
+
+/* -------------------------------------------------------------
+   3. BUTTON COMPONENT — Bootstrap .btn ile çakışmaz
+   ------------------------------------------------------------- */
+.ax-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ax-space-2);
+    padding: var(--ax-space-2) var(--ax-space-5);
+    font-family: var(--ax-font-family);
+    font-size: var(--ax-text-sm);
+    font-weight: var(--ax-font-medium);
+    line-height: var(--ax-leading-normal);
+    border-radius: var(--ax-radius-lg);
+    border: 1px solid transparent;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color var(--ax-transition-fast),
+                border-color var(--ax-transition-fast),
+                transform var(--ax-transition-fast),
+                box-shadow var(--ax-transition-fast);
+    white-space: nowrap;
+    user-select: none;
+}
+
+.ax-btn:focus-visible {
+    outline: 2px solid var(--ax-accent-primary);
+    outline-offset: 2px;
+}
+
+.ax-btn--primary {
+    background-color: var(--ax-accent-primary);
+    color: #ffffff;
+    border-color: var(--ax-accent-primary);
+}
+.ax-btn--primary:hover {
+    background-color: var(--ax-accent-primary-hover);
+    border-color: var(--ax-accent-primary-hover);
+    transform: scale(1.02);
+    color: #ffffff;
+}
+
+.ax-btn--ghost {
+    background-color: transparent;
+    color: var(--ax-text-primary);
+    border-color: var(--ax-border-hover);
+}
+.ax-btn--ghost:hover {
+    background-color: var(--ax-bg-tertiary);
+    color: var(--ax-text-primary);
+}
+
+.ax-btn--danger {
+    background-color: var(--ax-accent-danger);
+    color: #ffffff;
+    border-color: var(--ax-accent-danger);
+}
+
+.ax-btn--sm {
+    padding: var(--ax-space-1) var(--ax-space-3);
+    font-size: var(--ax-text-xs);
+}
+
+.ax-btn--lg {
+    padding: var(--ax-space-3) var(--ax-space-8);
+    font-size: var(--ax-text-base);
+}
+
+/* -------------------------------------------------------------
+   4. CARD COMPONENT — Bootstrap .card ile çakışmaz
+   ------------------------------------------------------------- */
+.ax-card {
+    background-color: var(--ax-bg-secondary);
+    border: 1px solid var(--ax-border-default);
+    border-radius: var(--ax-radius-lg);
+    padding: var(--ax-space-6);
+    transition: border-color var(--ax-transition-fast),
+                box-shadow var(--ax-transition-fast);
+}
+.ax-card:hover {
+    border-color: var(--ax-border-hover);
+    box-shadow: var(--ax-shadow-md);
+}
+
+.ax-card--elevated {
+    background-color: var(--ax-bg-tertiary);
+}
+
+/* -------------------------------------------------------------
+   5. BADGE COMPONENT — Bootstrap .badge ile çakışmaz
+   ------------------------------------------------------------- */
+.ax-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.2em 0.65em;
+    font-size: var(--ax-text-xs);
+    font-weight: var(--ax-font-semibold);
+    border-radius: var(--ax-radius-full);
+    line-height: 1;
+}
+.ax-badge--primary { background-color: rgba(99,102,241,0.2); color: var(--ax-accent-primary); }
+.ax-badge--success { background-color: rgba(16,185,129,0.2); color: var(--ax-accent-secondary); }
+.ax-badge--warning { background-color: rgba(245,158,11,0.2); color: var(--ax-accent-warning); }
+.ax-badge--danger  { background-color: rgba(239,68,68,0.2);  color: var(--ax-accent-danger); }
+
+/* -------------------------------------------------------------
+   6. SKIP LINK — Erişilebilirlik
+   ------------------------------------------------------------- */
+.ax-skip-link {
+    position: absolute;
+    top: -100%;
+    left: var(--ax-space-4);
+    z-index: var(--ax-z-toast);
+    background-color: var(--ax-accent-primary);
+    color: #ffffff;
+    padding: var(--ax-space-2) var(--ax-space-4);
+    border-radius: var(--ax-radius-md);
+    font-weight: var(--ax-font-semibold);
+    text-decoration: none;
+    transition: top var(--ax-transition-fast);
+}
+.ax-skip-link:focus {
+    top: var(--ax-space-4);
+}
+
+/* -------------------------------------------------------------
+   7. RESPONSIVE UTILITIES
+   Breakpoints: sm 640px | md 768px | lg 1024px | xl 1280px
+   ------------------------------------------------------------- */
+@media (min-width: 640px) {
+    .ax-sm\:flex          { display: flex; }
+    .ax-sm\:hidden        { display: none !important; }
+    .ax-sm\:grid-cols-2   { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (min-width: 768px) {
+    .ax-md\:flex          { display: flex; }
+    .ax-md\:hidden        { display: none !important; }
+    .ax-md\:grid-cols-2   { grid-template-columns: repeat(2, 1fr); }
+    .ax-md\:grid-cols-3   { grid-template-columns: repeat(3, 1fr); }
+    .ax-md\:text-left     { text-align: left; }
+}
+
+@media (min-width: 1024px) {
+    .ax-lg\:flex          { display: flex; }
+    .ax-lg\:hidden        { display: none !important; }
+    .ax-lg\:grid-cols-3   { grid-template-columns: repeat(3, 1fr); }
+    .ax-lg\:grid-cols-4   { grid-template-columns: repeat(4, 1fr); }
+}
+
+@media (min-width: 1280px) {
+    .ax-xl\:grid-cols-4   { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* Body scroll kilidi (mobil menü açıkken) */
+body.ax-no-scroll {
+    overflow: hidden;
+}
