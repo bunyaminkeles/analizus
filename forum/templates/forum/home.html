@@ -352,7 +352,7 @@
 <!-- =====================================================
      FAZ 8: KULLANICI PANELİ (Giriş yapanlar)
      ===================================================== -->
-{% if user.is_authenticated and user_profile %}
+{% if user.is_authenticated %}
 <section style="padding-bottom: var(--ax-space-8, 32px);">
     <div class="container">
         <div class="row g-4">
@@ -406,7 +406,7 @@
             </div>
 
             <!-- İstatistik Puanı + Bizi Destekle -->
-            {% with nb=user_profile.get_next_badge_info %}
+            {% if user_profile %}{% with nb=user_profile.get_next_badge_info %}
             <div class="col-12 col-md-6">
                 <div class="ax-section-card">
                     <div class="ax-section-card__header" style="color: #fbbf24;">
@@ -455,7 +455,7 @@
                     </div>
                 </div>
             </div>
-            {% endwith %}
+            {% endwith %}{% endif %}
 
         </div>
     </div>
@@ -584,7 +584,7 @@ window.__testimonials = [
 {% block extra_js %}
 
 {{ block.super }}
-<script src="{% static 'js/quiz.js' %}?v=0100" defer></script>
+<script src="{% static 'js/quiz.js' %}?v=0101" defer></script>
 <script src="{% static 'js/stats-carousel.js' %}?v=0100" defer></script>
 
 <style>
