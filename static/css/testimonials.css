@@ -1,0 +1,183 @@
+/* =============================================================
+   ANALIZUS — MODERN KATMAN: testimonials.css
+   Başarı hikayeleri carousel — ax-testimonial-* prefix
+   ============================================================= */
+
+.ax-testimonials-section {
+    padding: 0 0 var(--ax-space-12);
+}
+
+/* -------------------------------------------------------------
+   BÖLÜM BAŞLIĞI
+   ------------------------------------------------------------- */
+.ax-section-title {
+    font-size: calc(var(--ax-text-2xl) * 1.1); /* +%10 ≈ 1.65rem */
+    font-weight: var(--ax-font-bold);
+    color: var(--ax-text-primary);
+    margin: 0 0 var(--ax-space-8);
+    line-height: 1.6;
+}
+
+/* -------------------------------------------------------------
+   KART
+   ------------------------------------------------------------- */
+.ax-testimonial-carousel {
+    position: relative;
+    min-height: 260px;
+}
+
+.ax-testimonial-card {
+    background: linear-gradient(145deg, var(--ax-bg-secondary) 0%, #161d2e 100%);
+    border: 1px solid var(--ax-border-hover);
+    border-radius: var(--ax-radius-xl);
+    padding: var(--ax-space-8) var(--ax-space-10);
+    text-align: center;
+    box-shadow:
+        0 1px 0 rgba(255,255,255,0.06) inset,
+        0 4px 24px rgba(0,0,0,0.35),
+        0 0 0 1px rgba(99,102,241,0.08);
+    animation: ax-fade-in 0.4s ease;
+}
+
+@keyframes ax-fade-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.ax-testimonial-card__avatar {
+    width: 72px;
+    height: 72px;
+    border-radius: var(--ax-radius-full);
+    border: 2px solid var(--ax-accent-primary);
+    object-fit: cover;
+    margin: 0 auto var(--ax-space-4);
+    background: var(--ax-bg-elevated);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--ax-text-2xl);
+}
+
+.ax-testimonial-card__quote {
+    font-size: var(--ax-text-lg);
+    font-style: italic;
+    color: var(--ax-text-primary);
+    line-height: var(--ax-leading-relaxed);
+    margin: 0 0 var(--ax-space-5);
+    position: relative;
+}
+
+.ax-testimonial-card__quote::before {
+    content: '"';
+    font-size: 3rem;
+    color: var(--ax-accent-primary);
+    opacity: 0.3;
+    position: absolute;
+    top: -16px;
+    left: -8px;
+    line-height: 1;
+    font-style: normal;
+}
+
+.ax-testimonial-card__name {
+    font-size: var(--ax-text-sm);
+    font-weight: var(--ax-font-semibold);
+    color: var(--ax-text-secondary);
+    margin: 0 0 var(--ax-space-1);
+}
+
+.ax-testimonial-card__achievements {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--ax-space-2);
+    margin-top: var(--ax-space-4);
+}
+
+.ax-testimonial-card__badge {
+    font-size: var(--ax-text-xs);
+    background: rgba(99,102,241,0.12);
+    color: var(--ax-accent-primary);
+    border: 1px solid rgba(99,102,241,0.2);
+    border-radius: var(--ax-radius-full);
+    padding: 3px 10px;
+}
+
+/* -------------------------------------------------------------
+   KONTROLLER
+   ------------------------------------------------------------- */
+.ax-carousel-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ax-space-4);
+    margin-top: var(--ax-space-6);
+}
+
+.ax-carousel-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--ax-radius-full);
+    background: var(--ax-bg-tertiary);
+    border: 1px solid var(--ax-border-hover);
+    color: var(--ax-text-secondary);
+    font-size: var(--ax-text-base);
+    cursor: pointer;
+    transition: background-color var(--ax-transition-fast),
+                border-color var(--ax-transition-fast),
+                color var(--ax-transition-fast);
+}
+
+.ax-carousel-btn:hover {
+    background: var(--ax-bg-elevated);
+    border-color: var(--ax-accent-primary);
+    color: var(--ax-text-primary);
+}
+
+.ax-dots {
+    display: flex;
+    gap: var(--ax-space-2);
+    align-items: center;
+}
+
+.ax-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: var(--ax-radius-full);
+    background: var(--ax-border-hover);
+    border: none;
+    cursor: pointer;
+    transition: background-color var(--ax-transition-fast),
+                transform var(--ax-transition-fast);
+    padding: 0;
+}
+
+.ax-dot.active {
+    background: var(--ax-accent-primary);
+    transform: scale(1.25);
+}
+
+/* -------------------------------------------------------------
+   BOŞSA
+   ------------------------------------------------------------- */
+.ax-testimonials-empty {
+    text-align: center;
+    padding: var(--ax-space-10) 0;
+    color: var(--ax-text-muted);
+    font-size: var(--ax-text-sm);
+}
+
+.ax-link-more {
+    font-size: var(--ax-text-sm);
+    font-weight: var(--ax-font-medium);
+    color: var(--ax-accent-primary);
+    text-decoration: none;
+    transition: color var(--ax-transition-fast);
+}
+
+.ax-link-more:hover {
+    color: var(--ax-accent-primary-hover);
+}

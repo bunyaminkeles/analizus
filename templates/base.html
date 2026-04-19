@@ -90,6 +90,7 @@
     <!-- Modern Katman: Analizus Design System -->
     <link rel="stylesheet" href="{% static 'css/base.css' %}?v=0100">
     <link rel="stylesheet" href="{% static 'css/navbar.css' %}?v=0100">
+    <link rel="stylesheet" href="{% static 'css/footer.css' %}?v=0100">
     <link rel="stylesheet" href="{% static 'css/style.css' %}?v=2052">
     <link rel="stylesheet" href="{% static 'css/sidebar_widgets.css' %}?v=2051">
 
@@ -137,6 +138,13 @@
             border-radius: 4px;
             font-weight: bold;
             box-shadow: 0 0 10px var(--neon-blue);
+        }
+
+        /* Erişilebilirlik: focus-visible outline */
+        :focus-visible {
+            outline: 2px solid #6366f1;
+            outline-offset: 2px;
+            border-radius: 4px;
         }
 
         /* MATEMATİK FORMÜLLERİ (MathJax) */
@@ -523,70 +531,7 @@
         </div>
     </main>
 
-    <footer class="py-5 mt-5 border-top border-secondary opacity-75">
-        <div class="container text-muted small">
-            <!-- Faydalı Linkler -->
-            <div class="row mb-4 text-center text-md-start">
-                <div class="col-md-4 mb-4">
-                    <p class="text-white-50 fw-bold mb-3" style="font-size:0.7rem; text-transform:uppercase; letter-spacing:1px;"><i class="bi bi-journal-text me-1"></i>Akademik Veritabanları</p>
-                    <div class="d-flex flex-column gap-2">
-                        <a href="https://scholar.google.com" target="_blank" rel="noopener" class="text-muted text-decoration-none footer-link d-flex align-items-center gap-2">
-                            <img src="https://www.google.com/favicon.ico" width="14" height="14" alt="">Google Scholar
-                        </a>
-                        <a href="https://dergipark.org.tr" target="_blank" rel="noopener" class="text-muted text-decoration-none footer-link d-flex align-items-center gap-2">
-                            <img src="https://dergipark.org.tr/favicon.ico" width="14" height="14" alt="">DergiPark
-                        </a>
-                        <a href="https://www.semanticscholar.org" target="_blank" rel="noopener" class="text-muted text-decoration-none footer-link d-flex align-items-center gap-2">
-                            <img src="https://www.semanticscholar.org/favicon.ico" width="14" height="14" alt="">Semantic Scholar
-                        </a>
-                        <a href="https://tez.yok.gov.tr/UlusalTezMerkezi/giris.jsp" target="_blank" rel="noopener" class="text-muted text-decoration-none footer-link d-flex align-items-center gap-2">
-                            <i class="bi bi-mortarboard" style="font-size:14px;"></i>YÖK Tez Merkezi
-                        </a>
-                    </div>
-                </div>
-                <div class="col-md-4 mb-4">
-                    <p class="text-white-50 fw-bold mb-3" style="font-size:0.7rem; text-transform:uppercase; letter-spacing:1px;"><i class="bi bi-robot me-1"></i>Yapay Zeka Araçları</p>
-                    <div class="d-flex flex-column gap-2">
-                        <a href="https://chatgpt.com" target="_blank" rel="noopener" class="text-muted text-decoration-none footer-link d-flex align-items-center gap-2">
-                            <img src="https://chatgpt.com/favicon.ico" width="14" height="14" alt="">ChatGPT
-                        </a>
-                        <a href="https://gemini.google.com" target="_blank" rel="noopener" class="text-muted text-decoration-none footer-link d-flex align-items-center gap-2">
-                            <img src="https://www.gstatic.com/lamda/images/gemini_favicon_f069958c85030456e93de685481c559f160ea06.svg" width="14" height="14" alt="">Gemini
-                        </a>
-                        <a href="https://claude.ai" target="_blank" rel="noopener" class="text-muted text-decoration-none footer-link d-flex align-items-center gap-2">
-                            <img src="https://claude.ai/favicon.ico" width="14" height="14" alt="">Claude
-                        </a>
-                        <a href="https://www.deepl.com/tr/translator" target="_blank" rel="noopener" class="text-muted text-decoration-none footer-link d-flex align-items-center gap-2">
-                            <img src="https://www.deepl.com/favicon.ico" width="14" height="14" alt="">DeepL
-                        </a>
-                    </div>
-                </div>
-                <div class="col-md-4 mb-4">
-                    <p class="text-white-50 fw-bold mb-3" style="font-size:0.7rem; text-transform:uppercase; letter-spacing:1px;"><i class="bi bi-share me-1"></i>Takip Et</p>
-                    <div class="d-flex gap-3 justify-content-center justify-content-md-start mb-3">
-                        <a href="https://www.linkedin.com/company/analizus" target="_blank" class="text-muted footer-link fs-5" title="LinkedIn"><i class="bi bi-linkedin"></i></a>
-                        <a href="https://www.youtube.com/@analizus" target="_blank" class="text-muted footer-link fs-5" title="YouTube"><i class="bi bi-youtube"></i></a>
-                    </div>
-                    <div class="d-flex flex-column gap-2">
-                        <a href="{% url 'neden_biz' %}" class="text-muted text-decoration-none footer-link d-flex align-items-center gap-2">
-                            <i class="bi bi-patch-check" style="font-size:14px;"></i>Neden Analizus?
-                        </a>
-                        <a href="{% url 'about' %}" class="text-muted text-decoration-none footer-link d-flex align-items-center gap-2">
-                            <i class="bi bi-info-circle" style="font-size:14px;"></i>Hakkımızda
-                        </a>
-                    </div>
-                </div>
-            </div>
-            <hr class="border-secondary opacity-25">
-            <p class="text-center mb-0">&copy; 2026 Analizus - Akademik Veri Üssü | Vizyon 2050</p>
-        </div>
-    </footer>
-    <style>
-    .footer-link { transition: color 0.2s; }
-    .footer-link:hover { color: #00d2ff !important; }
-    .footer-link img { opacity: 0.6; border-radius: 3px; }
-    .footer-link:hover img { opacity: 1; }
-    </style>
+    {% include 'partials/footer.html' %}
 
     <!-- Critical JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -597,16 +542,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/toolbar/prism-toolbar.min.js" defer></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/copy-to-clipboard/prism-copy-to-clipboard.min.js" defer></script>
 
-    <!-- Native lazy loading for images -->
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Add lazy loading to all images that don't have it
-        document.querySelectorAll('img:not([loading])').forEach(function(img) {
-            img.setAttribute('loading', 'lazy');
-        });
-    });
-    </script>
-    
     <!-- MathJax: Load only when needed -->
     <script>
       window.MathJax = {
@@ -683,8 +618,9 @@
         </div>
     </div>
 
-    <!-- Modern Katman: Navbar JS -->
+    <!-- Modern Katman: Navbar JS + Main -->
     <script src="{% static 'js/navbar.js' %}?v=0100" defer></script>
+    <script src="{% static 'js/main.js' %}?v=0100" defer></script>
 
     {% block extra_js %}
         {% if user.is_authenticated %}

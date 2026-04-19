@@ -1,0 +1,106 @@
+{% load static %}
+{% load i18n %}
+<footer class="ax-footer">
+    <div class="container">
+        <div class="row g-4">
+
+            <!-- Marka -->
+            <div class="col-12 col-lg-3">
+                <div class="ax-footer-brand">
+                    <span class="ax-footer-logo">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <rect x="3" y="12" width="4" height="9"/><rect x="10" y="7" width="4" height="14"/><rect x="17" y="3" width="4" height="18"/>
+                        </svg>
+                        Analizus
+                    </span>
+                    <p>Akademik araştırma ve istatistik analiz için Türkçe platform. Tezini güvenle yaz, verini doğru analiz et.</p>
+                    <div class="ax-footer-social">
+                        <a href="https://www.linkedin.com/company/analizus" target="_blank" rel="noopener" aria-label="LinkedIn">
+                            <i class="bi bi-linkedin"></i>
+                        </a>
+                        <a href="https://www.youtube.com/@analizus" target="_blank" rel="noopener" aria-label="YouTube">
+                            <i class="bi bi-youtube"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Araçlar -->
+            <div class="col-6 col-md-3 col-lg-2">
+                <p class="ax-footer-heading">Araçlar</p>
+                <ul class="ax-footer-list">
+                    <li><a href="{% url 'hangi_test' %}"><i class="bi bi-question-circle"></i>Hangi Test?</a></li>
+                    <li><a href="{% url 'istatistik:cronbach' %}"><i class="bi bi-calculator"></i>Analiz Araçları</a></li>
+                    <li><a href="{% url 'ai_assistant' %}"><i class="bi bi-robot"></i>AI Asistan</a></li>
+                    <li><a href="{% url 'uzman_dizini' %}"><i class="bi bi-people"></i>Uzman Bul</a></li>
+                </ul>
+            </div>
+
+            <!-- Topluluk -->
+            <div class="col-6 col-md-3 col-lg-2">
+                <p class="ax-footer-heading">Topluluk</p>
+                <ul class="ax-footer-list">
+                    <li><a href="{% url 'forum_index' %}"><i class="bi bi-chat-dots"></i>Forum</a></li>
+                    <li><a href="{% url 'job_list' %}"><i class="bi bi-briefcase"></i>Hizmetler Pazarı</a></li>
+                    <li><a href="{% url 'blog_list' %}"><i class="bi bi-newspaper"></i>Blog</a></li>
+                    <li><a href="{% url 'success_stories' %}"><i class="bi bi-trophy"></i>Başarı Hikayeleri</a></li>
+                </ul>
+            </div>
+
+            <!-- Akademik Kaynaklar -->
+            <div class="col-6 col-md-3 col-lg-2">
+                <p class="ax-footer-heading">Akademik Kaynaklar</p>
+                <ul class="ax-footer-list">
+                    <li>
+                        <a href="https://scholar.google.com" target="_blank" rel="noopener">
+                            <img src="https://www.google.com/favicon.ico" alt="">Google Scholar
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://dergipark.org.tr" target="_blank" rel="noopener">
+                            <img src="https://dergipark.org.tr/favicon.ico" alt="">DergiPark
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.semanticscholar.org" target="_blank" rel="noopener">
+                            <img src="https://www.semanticscholar.org/favicon.ico" alt="">Semantic Scholar
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://tez.yok.gov.tr/UlusalTezMerkezi/giris.jsp" target="_blank" rel="noopener">
+                            <i class="bi bi-mortarboard"></i>YÖK Tez Merkezi
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Kurumsal -->
+            <div class="col-6 col-md-3 col-lg-3">
+                <p class="ax-footer-heading">Kurumsal</p>
+                <ul class="ax-footer-list">
+                    <li><a href="{% url 'neden_biz' %}"><i class="bi bi-patch-check"></i>Neden Analizus?</a></li>
+                    <li><a href="{% url 'about' %}"><i class="bi bi-info-circle"></i>Hakkımızda</a></li>
+                    <li>
+                        <a href="https://chatgpt.com" target="_blank" rel="noopener">
+                            <img src="https://chatgpt.com/favicon.ico" alt="">ChatGPT
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://claude.ai" target="_blank" rel="noopener">
+                            <img src="https://claude.ai/favicon.ico" alt="">Claude
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+
+        <div class="ax-footer-bottom">
+            <p>&copy; 2026 Analizus — Akademik Araştırma Platformu</p>
+            <div class="ax-footer-bottom-links">
+                <a href="{% url 'about' %}">Hakkımızda</a>
+                <a href="{% url 'neden_biz' %}">Neden Biz?</a>
+            </div>
+        </div>
+    </div>
+</footer>

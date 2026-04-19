@@ -1,0 +1,265 @@
+/* =============================================================
+   ANALIZUS — MODERN KATMAN: quiz.css
+   Ana sayfa quiz kartı — ax-quiz-* prefix
+   ============================================================= */
+
+.ax-quiz-section {
+    padding: 0 0 48px;
+}
+
+.ax-quiz-card {
+    background: linear-gradient(135deg, var(--ax-bg-secondary) 0%, var(--ax-bg-tertiary) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: var(--ax-radius-xl);
+    padding: var(--ax-space-6);
+    max-width: 720px;
+    margin: 0 auto;
+    box-shadow:
+        0 1px 0 rgba(255,255,255,0.06) inset,
+        0 10px 15px -3px rgba(0,0,0,0.30),
+        0 4px 24px rgba(0,0,0,0.35),
+        0 0 0 1px rgba(99,102,241,0.08);
+}
+
+/* -------------------------------------------------------------
+   HEADER
+   ------------------------------------------------------------- */
+.ax-quiz-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: var(--ax-space-2);
+    margin-bottom: var(--ax-space-5);
+}
+
+.ax-quiz-title {
+    font-size: var(--ax-text-lg);
+    font-weight: var(--ax-font-semibold);
+    color: var(--ax-text-primary);
+    margin: 0;
+}
+
+.ax-quiz-meta {
+    display: flex;
+    gap: var(--ax-space-2);
+    align-items: center;
+}
+
+.ax-quiz-badge {
+    font-size: var(--ax-text-xs);
+    font-weight: var(--ax-font-medium);
+    padding: 3px 10px;
+    border-radius: var(--ax-radius-full);
+    line-height: 1.4;
+}
+
+.ax-quiz-badge--category {
+    background: rgba(99, 102, 241, 0.15);
+    color: var(--ax-accent-primary);
+}
+
+.ax-quiz-badge--easy {
+    background: rgba(16, 185, 129, 0.15);
+    color: var(--ax-accent-secondary);
+}
+
+.ax-quiz-badge--medium {
+    background: rgba(245, 158, 11, 0.15);
+    color: var(--ax-accent-warning);
+}
+
+.ax-quiz-badge--hard {
+    background: rgba(239, 68, 68, 0.15);
+    color: var(--ax-accent-danger);
+}
+
+/* -------------------------------------------------------------
+   SORU
+   ------------------------------------------------------------- */
+.ax-quiz-question {
+    font-size: var(--ax-text-base);
+    color: var(--ax-text-primary);
+    line-height: var(--ax-leading-relaxed);
+    margin-bottom: var(--ax-space-5);
+    min-height: 48px;
+}
+
+/* -------------------------------------------------------------
+   ŞIKLAR
+   ------------------------------------------------------------- */
+.ax-quiz-options {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ax-space-2);
+    margin-bottom: var(--ax-space-4);
+}
+
+.ax-quiz-opt {
+    display: flex;
+    align-items: center;
+    gap: var(--ax-space-3);
+    background: var(--ax-bg-tertiary);
+    border: 1px solid var(--ax-border-default);
+    border-radius: var(--ax-radius-md);
+    padding: 12px var(--ax-space-4);
+    color: var(--ax-text-primary);
+    font-family: var(--ax-font-family);
+    font-size: var(--ax-text-sm);
+    text-align: left;
+    cursor: pointer;
+    transition: background-color var(--ax-transition-fast),
+                border-color var(--ax-transition-fast),
+                transform var(--ax-transition-fast);
+    width: 100%;
+}
+
+.ax-quiz-opt:hover:not(:disabled) {
+    background: rgba(99, 102, 241, 0.06);
+    border-color: var(--ax-accent-primary);
+    transform: translateX(3px);
+}
+
+.ax-quiz-opt:disabled {
+    cursor: default;
+}
+
+.ax-quiz-opt__letter {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: var(--ax-radius-full);
+    background: rgba(99, 102, 241, 0.12);
+    color: var(--ax-accent-primary);
+    font-size: var(--ax-text-xs);
+    font-weight: var(--ax-font-bold);
+    flex-shrink: 0;
+    transition: background-color var(--ax-transition-fast);
+}
+
+.ax-quiz-opt.correct,
+.ax-quiz-opt.is-correct {
+    background: rgba(16, 185, 129, 0.12);
+    border-color: var(--ax-accent-secondary);
+    transform: none;
+}
+
+.ax-quiz-opt.correct .ax-quiz-opt__letter,
+.ax-quiz-opt.is-correct .ax-quiz-opt__letter {
+    background: var(--ax-accent-secondary);
+    color: #fff;
+}
+
+.ax-quiz-opt.wrong,
+.ax-quiz-opt.is-wrong {
+    background: rgba(239, 68, 68, 0.12);
+    border-color: var(--ax-accent-danger);
+    transform: none;
+}
+
+.ax-quiz-opt.wrong .ax-quiz-opt__letter,
+.ax-quiz-opt.is-wrong .ax-quiz-opt__letter {
+    background: var(--ax-accent-danger);
+    color: #fff;
+}
+
+/* -------------------------------------------------------------
+   GERİ BİLDİRİM
+   ------------------------------------------------------------- */
+.ax-quiz-feedback {
+    display: none;
+    margin-top: var(--ax-space-4);
+    padding: var(--ax-space-4);
+    border-radius: var(--ax-radius-md);
+    border-left: 3px solid var(--ax-accent-secondary);
+    background: rgba(16, 185, 129, 0.08);
+}
+
+.ax-quiz-feedback--wrong {
+    border-left-color: var(--ax-accent-danger);
+    background: rgba(239, 68, 68, 0.08);
+}
+
+.ax-quiz-feedback__icon {
+    font-size: var(--ax-text-xl);
+    line-height: 1;
+    margin-bottom: var(--ax-space-1);
+}
+
+.ax-quiz-feedback__text {
+    font-size: var(--ax-text-sm);
+    font-weight: var(--ax-font-semibold);
+    margin: 0 0 var(--ax-space-1);
+}
+
+.ax-quiz-feedback__expl {
+    font-size: var(--ax-text-xs);
+    color: var(--ax-text-secondary);
+    margin: 0;
+    line-height: var(--ax-leading-relaxed);
+}
+
+/* -------------------------------------------------------------
+   FOOTER — GEÇ / SONRAKİ
+   ------------------------------------------------------------- */
+.ax-quiz-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: var(--ax-space-4);
+    gap: var(--ax-space-3);
+}
+
+.ax-quiz-skip {
+    background: none;
+    border: none;
+    color: var(--ax-text-muted);
+    font-size: var(--ax-text-sm);
+    font-family: var(--ax-font-family);
+    cursor: pointer;
+    padding: var(--ax-space-2) 0;
+    transition: color var(--ax-transition-fast);
+}
+
+.ax-quiz-skip:hover {
+    color: var(--ax-text-secondary);
+}
+
+.ax-quiz-next {
+    display: none;
+    align-items: center;
+    gap: var(--ax-space-2);
+    background: var(--ax-accent-primary);
+    color: #fff;
+    border: none;
+    border-radius: var(--ax-radius-md);
+    padding: var(--ax-space-2) var(--ax-space-5);
+    font-size: var(--ax-text-sm);
+    font-weight: var(--ax-font-semibold);
+    font-family: var(--ax-font-family);
+    cursor: pointer;
+    transition: background-color var(--ax-transition-fast);
+    line-height: 1.5;
+}
+
+.ax-quiz-next:hover:not(:disabled) {
+    background: var(--ax-accent-primary-hover);
+}
+
+.ax-quiz-next:disabled {
+    opacity: 0.6;
+    cursor: default;
+}
+
+/* -------------------------------------------------------------
+   DURUM EKRANLARI
+   ------------------------------------------------------------- */
+.ax-quiz-loading,
+.ax-quiz-empty {
+    text-align: center;
+    padding: var(--ax-space-8) 0;
+    color: var(--ax-text-muted);
+    font-size: var(--ax-text-sm);
+}

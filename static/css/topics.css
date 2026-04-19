@@ -1,0 +1,90 @@
+/* =============================================================
+   ANALIZUS — MODERN KATMAN: topics.css
+   Sol sidebar popüler konular widget'ı — ax-topics-* prefix
+   ============================================================= */
+
+.ax-topics-widget {
+    background: var(--ax-bg-secondary);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: var(--ax-radius-xl);
+    overflow: hidden;
+    margin-bottom: var(--ax-space-6);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.30),
+                0 4px 8px rgba(0, 0, 0, 0.20);
+}
+
+.ax-topics-widget__header {
+    display: flex;
+    align-items: center;
+    gap: var(--ax-space-2);
+    padding: var(--ax-space-3) var(--ax-space-4);
+    border-bottom: 1px solid var(--ax-border-default);
+    border-left: 3px solid var(--ax-accent-warning);
+    font-size: var(--ax-text-sm);
+    font-weight: var(--ax-font-semibold);
+    color: var(--ax-accent-warning);
+    line-height: 1.6;
+}
+
+.ax-topics-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.ax-topic-item {
+    display: flex;
+    align-items: center;
+    gap: var(--ax-space-3);
+    padding: var(--ax-space-3) var(--ax-space-4);
+    text-decoration: none;
+    border-bottom: 1px solid var(--ax-border-default);
+    transition: background-color var(--ax-transition-fast);
+}
+
+.ax-topic-item:last-child {
+    border-bottom: none;
+}
+
+.ax-topic-item:hover {
+    background: var(--ax-bg-tertiary);
+}
+
+.ax-topic-item__rank {
+    font-size: var(--ax-text-xs);
+    font-weight: var(--ax-font-bold);
+    color: var(--ax-text-muted);
+    min-width: 20px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+.ax-topic-item:nth-child(1) .ax-topic-item__rank { color: #fbbf24; }
+.ax-topic-item:nth-child(2) .ax-topic-item__rank { color: #94a3b8; }
+.ax-topic-item:nth-child(3) .ax-topic-item__rank { color: #b45309; }
+
+.ax-topic-item__title {
+    font-size: 0.963rem; /* ax-text-sm × 1.1 */
+    font-weight: var(--ax-font-medium);
+    color: var(--ax-text-primary);
+    line-height: 1.6;
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.ax-topic-item__meta {
+    font-size: var(--ax-text-xs);
+    color: var(--ax-text-muted);
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+.ax-topics-empty {
+    padding: var(--ax-space-4);
+    font-size: var(--ax-text-sm);
+    color: var(--ax-text-muted);
+    text-align: center;
+}

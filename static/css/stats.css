@@ -1,0 +1,32 @@
+/* =============================================================
+   ANALIZUS — MODERN KATMAN: stats.css
+   Platform istatistikleri bandı — ax-stats-* prefix
+   ============================================================= */
+
+.ax-stats-section {
+    background: var(--ax-bg-secondary);
+    border-top: 1px solid var(--ax-border-default);
+    border-bottom: 1px solid var(--ax-border-default);
+    padding: var(--ax-space-12) 0;
+    margin-bottom: var(--ax-space-12);
+}
+
+.ax-stat-item {
+    font-size: var(--ax-text-4xl);
+    font-weight: var(--ax-font-bold);
+    color: var(--ax-accent-primary);
+    line-height: 1;
+    margin-bottom: var(--ax-space-2);
+    letter-spacing: -0.02em;
+}
+
+.ax-stat-label {
+    font-size: var(--ax-text-sm);
+    color: var(--ax-text-secondary);
+    line-height: var(--ax-leading-normal);
+}
+
+@media (max-width: 575px) {
+    .ax-stat-item { font-size: var(--ax-text-3xl); }
+    .ax-stats-section { padding: var(--ax-space-8) 0; }
+}

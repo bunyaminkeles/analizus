@@ -150,6 +150,16 @@ def home(request):
     if not featured_story:
         featured_story = SuccessStory.objects.filter(approval_status='approved').order_by('?').first()
 
+    # Ana sayfa blog kartları (son 3 yayınlanmış)
+    latest_posts = BlogPost.objects.filter(status='published').select_related('author', 'category').order_by('-published_at')[:3]
+
+    # Carousel için onaylı hikayeler (max 6)
+    success_stories = list(
+        SuccessStory.objects.filter(approval_status='approved')
+        .select_related('user', 'user__profile')
+        .order_by('-is_featured', '-created_at')[:6]
+    )
+
     # Freelance Market - Son İlanlar
     recent_jobs = FreelanceJob.objects.filter(status='open').select_related('owner', 'category').annotate(
         p_count=Count('proposals', distinct=True)
@@ -201,6 +211,8 @@ def home(request):
         'quiz_question': quiz_question,
         'donation_tiers': donation_tiers,
         'featured_story': featured_story,
+        'success_stories': success_stories,
+        'latest_posts': latest_posts,
         'recent_jobs': recent_jobs,
         'recent_reviews': recent_reviews,
         'featured_jobs': featured_jobs,

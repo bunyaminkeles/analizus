@@ -1,88 +1,20 @@
 {% extends 'base.html' %}
+{% load static %}
 {% load forum_extras %}
 
-{% block main_container %}container-fluid px-2 px-lg-3{% endblock %}
-{% block main_content_classes %}col{% endblock %}
-{% block right_sidebar %}
-<div style="width: 340px; flex: 0 0 340px; min-width: 0;" class="d-none d-xl-block">
-    <!-- BU HAFTA ANALİZUS'TA -->
-    <div class="widget-card mb-3">
-        <div class="widget-header" style="color: #6366f1;">
-            <i class="bi bi-bar-chart-fill"></i>
-            <span>Bu Hafta Analizus'ta</span>
-        </div>
-        <div class="widget-body" style="max-height: none;">
-            <div class="d-flex flex-column gap-2">
-                <a href="{% url 'job_list' %}" class="d-flex align-items-center justify-content-between py-1 text-decoration-none sidebar-stat-link">
-                    <span class="text-muted small"><i class="bi bi-briefcase-fill me-2" style="color:#38bdf8;"></i>Açık iş ilanı</span>
-                    <span class="fw-bold text-white small">{{ open_jobs_count }} <i class="bi bi-arrow-right" style="font-size:0.65rem; color:#38bdf8;"></i></span>
-                </a>
-                {% if weekly_new_users %}
-                <div class="d-flex align-items-center justify-content-between py-1">
-                    <span class="text-muted small"><i class="bi bi-person-plus-fill me-2" style="color:#6366f1;"></i>Bu hafta yeni üye</span>
-                    <span class="fw-bold text-white small">+{{ weekly_new_users }}</span>
-                </div>
-                {% endif %}
-                {% if completed_jobs %}
-                <div class="d-flex align-items-center justify-content-between py-1">
-                    <span class="text-muted small"><i class="bi bi-check-circle-fill me-2" style="color:#22c55e;"></i>Tamamlanan iş</span>
-                    <span class="fw-bold text-white small">{{ completed_jobs }}</span>
-                </div>
-                {% endif %}
-                {% if active_experts_count %}
-                <div class="d-flex align-items-center justify-content-between py-1">
-                    <span class="text-muted small"><i class="bi bi-star-fill me-2" style="color:#fbbf24;"></i>Aktif uzman</span>
-                    <span class="fw-bold text-white small">{{ active_experts_count }}</span>
-                </div>
-                {% endif %}
-            </div>
-        </div>
-    </div>
-
-    {% if user.is_authenticated %}
-    <div class="widget-card mb-3" id="donation-widget" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#donationModal">
-        <div class="widget-header" style="color: #ec4899;">
-            <i class="bi bi-heart-fill"></i>
-            <span>Bizi Destekle</span>
-        </div>
-        <div class="widget-body">
-            <p class="text-muted small mb-2">Platformumuzu destekleyerek gelişimine katkıda bulunun.</p>
-            <p class="text-muted small mb-0">Tüm destekçilerimize <span class="text-warning">Premium üyelik</span> ve <span style="color: #ec4899;">Destekçi rozeti</span> hediye edilecektir.</p>
-        </div>
-    </div>
-    {% endif %}
-    {% if recent_reviews %}
-    <div class="widget-card">
-        <div class="widget-header" style="color: #22c55e;">
-            <i class="bi bi-star-fill"></i>
-            <span>Son Değerlendirmeler</span>
-        </div>
-        <div class="widget-body p-0">
-            {% for review in recent_reviews %}
-            <div class="p-2 border-bottom border-secondary border-opacity-10">
-                <div class="d-flex justify-content-between align-items-center mb-1">
-                    <div class="small">
-                        <a href="{% url 'profile_detail' username=review.reviewer.username %}" class="text-decoration-none text-info fw-bold">{{ review.reviewer.username }}</a>
-                        <span class="text-muted mx-1">→</span>
-                        <a href="{% url 'profile_detail' username=review.reviewed_user.username %}" class="text-decoration-none text-light">{{ review.reviewed_user.username }}</a>
-                    </div>
-                    <div>
-                        {% for i in "12345" %}
-                        <i class="bi bi-star{% if forloop.counter <= review.rating %}-fill text-warning{% else %} text-muted{% endif %}" style="font-size: 0.6rem;"></i>
-                        {% endfor %}
-                    </div>
-                </div>
-                {% if review.comment %}
-                <p class="text-muted small mb-0" style="font-size: 0.7rem;">{{ review.comment|truncatechars:50 }}</p>
-                {% endif %}
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-    {% endif %}
-    <div class="layout-sidebar-right"></div>
-</div>
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/hero.css' %}?v=0100">
+<link rel="stylesheet" href="{% static 'css/cards.css' %}?v=0100">
+<link rel="stylesheet" href="{% static 'css/quiz.css' %}?v=0100">
+<link rel="stylesheet" href="{% static 'css/topics.css' %}?v=0100">
+<link rel="stylesheet" href="{% static 'css/testimonials.css' %}?v=0100">
+<link rel="stylesheet" href="{% static 'css/stats.css' %}?v=0100">
+<link rel="stylesheet" href="{% static 'css/news.css' %}?v=0100">
 {% endblock %}
+
+{% block main_container %}container-fluid px-2 px-lg-3{% endblock %}
+{% block main_content_classes %}col-12{% endblock %}
+{% block right_sidebar %}{% endblock %}
 
 {% block content %}
 
@@ -201,253 +133,131 @@
 }
 </script>
 
-<div class="container-fluid home-grid-container">
-    <aside class="home-sidebar-left">
-        <!-- Popüler Konular -->
-        <div class="widget-card">
-            <div class="widget-header orange">
-                <i class="bi bi-fire"></i>
-                <span>Popüler Konular</span>
-            </div>
-            <div class="widget-body">
-                {% for topic in popular_topics %}
-                <a href="{% url 'topic_detail' pk=topic.pk %}" class="widget-item">
-                    <div class="item-rank">#{{ forloop.counter }}</div>
-                    <div class="item-content">
-                        <span class="item-title">{{ topic.subject|truncatechars:38 }}</span>
-                        <span class="item-meta"><i class="bi bi-eye"></i> {{ topic.views }} görüntülenme</span>
-                    </div>
-                </a>
-                {% empty %}
-                <p class="empty-text">Henüz popüler konu yok</p>
-                {% endfor %}
-            </div>
-        </div>
+<!-- =====================================================
+     FAZ 2: HERO ALANI
+     ===================================================== -->
+<section class="ax-hero">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-lg-8 text-center">
 
-        {% if user.is_authenticated %}
-        <!-- PUAN PROGRESS WIDGET -->
-        {% with nb=user_profile.get_next_badge_info %}
-        <div class="widget-card points-progress-widget">
-            <div class="widget-header" style="color:#fbbf24;">
-                <i class="bi bi-trophy-fill"></i>
-                <span>İstatistik Puanın</span>
-            </div>
-            <div class="widget-body px-3 py-3">
-                <div class="d-flex justify-content-between align-items-center mb-1">
-                    <span class="text-white fw-bold" style="font-size:1.25rem;">{{ user_profile.reputation }}</span>
-                    <span class="text-white-50 small">puan</span>
-                </div>
-                {% if nb %}
-                <div class="mb-1">
-                    <div class="progress" style="height:8px;background:rgba(255,255,255,0.08);border-radius:4px;">
-                        <div class="progress-bar bg-warning" role="progressbar"
-                             style="width:{{ nb.progress }}%;border-radius:4px;"
-                             aria-valuenow="{{ nb.progress }}" aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                </div>
-                <div class="d-flex justify-content-between align-items-center">
-                    <span class="text-white-50" style="font-size:0.72rem;">
-                        <i class="bi bi-award-fill text-warning me-1"></i>{{ nb.badge.name }} için
-                        <strong class="text-warning">{{ nb.points_needed }} puan</strong> kaldı
-                    </span>
-                    <span class="text-white-50" style="font-size:0.72rem;">%{{ nb.progress }}</span>
-                </div>
-                {% else %}
-                <p class="text-success small mb-0"><i class="bi bi-check-circle-fill me-1"></i>Tüm rozetleri kazandın!</p>
-                {% endif %}
-                <div class="d-flex gap-2 mt-2 flex-wrap">
-                    <span class="badge bg-dark border border-secondary text-white-50 px-2 py-1" style="font-size:0.7rem;">
-                        <i class="bi bi-chat-text me-1 text-info"></i>{{ user_profile.total_posts }} gönderi
-                    </span>
-                    <span class="badge bg-dark border border-secondary text-white-50 px-2 py-1" style="font-size:0.7rem;">
-                        <i class="bi bi-award me-1 text-warning"></i>{{ user_profile.badges.count }} rozet
-                    </span>
-                    <span class="badge bg-dark border border-secondary text-white-50 px-2 py-1" style="font-size:0.7rem;">
-                        <i class="bi bi-star me-1 text-purple" style="color:#a855f7;"></i>{{ user_profile.total_topics }} konu
-                    </span>
-                </div>
-            </div>
-        </div>
-        {% endwith %}
-        {% endif %}
+                <h1 class="ax-hero__title">
+                    Akademik Araştırma ve<br>
+                    <mark>İstatistik Analiz</mark> İçin Türkçe Platform
+                </h1>
 
-        <!-- QUIZ WIDGET -->
-        {% if quiz_question %}
-        <div class="quiz-widget" id="quizWidget">
-            <div class="quiz-header">
-                <div class="quiz-header-left">
-                    <i class="bi bi-lightbulb-fill"></i>
-                    <span>Kendini Test Et</span>
-                </div>
-                <div class="quiz-meta">
-                    <span class="quiz-category-badge" id="quizCategory">{{ quiz_question.get_category_display }}</span>
-                    <span class="quiz-diff-badge diff-{{ quiz_question.difficulty }}" id="quizDifficulty">{{ quiz_question.get_difficulty_display }}</span>
-                </div>
-            </div>
-            <div class="quiz-body">
-                <p class="quiz-question-text" id="quizQuestionText">{{ quiz_question.question }}</p>
-                <div class="quiz-options" id="quizOptions">
-                    <button class="quiz-opt" data-answer="A" data-question-id="{{ quiz_question.id }}" onclick="submitQuizAnswer(this)">
-                        <span class="opt-letter">A</span>
-                        <span class="opt-text">{{ quiz_question.option_a }}</span>
-                    </button>
-                    <button class="quiz-opt" data-answer="B" data-question-id="{{ quiz_question.id }}" onclick="submitQuizAnswer(this)">
-                        <span class="opt-letter">B</span>
-                        <span class="opt-text">{{ quiz_question.option_b }}</span>
-                    </button>
-                    <button class="quiz-opt" data-answer="C" data-question-id="{{ quiz_question.id }}" onclick="submitQuizAnswer(this)">
-                        <span class="opt-letter">C</span>
-                        <span class="opt-text">{{ quiz_question.option_c }}</span>
-                    </button>
-                    <button class="quiz-opt" data-answer="D" data-question-id="{{ quiz_question.id }}" onclick="submitQuizAnswer(this)">
-                        <span class="opt-letter">D</span>
-                        <span class="opt-text">{{ quiz_question.option_d }}</span>
-                    </button>
-                </div>
-                {% if user.is_authenticated %}
-                <button class="quiz-skip-btn" id="quizSkipBtn" onclick="loadNextQuestion()">
-                    <i class="bi bi-skip-forward me-1"></i>Soruyu Geç
-                </button>
-                {% endif %}
-                <div class="quiz-feedback" id="quizFeedback" style="display:none;">
-                    <div class="feedback-icon" id="feedbackIcon"></div>
-                    <p class="feedback-text" id="feedbackText"></p>
-                    <p class="feedback-explanation" id="feedbackExplanation"></p>
+                <p class="ax-hero__subtitle">
+                    Doğru testi seç &middot; Verini analiz et &middot; Uzmanlarla bağlan &middot; Toplulukta tartış
+                </p>
+
+                <div class="ax-hero__actions">
                     {% if user.is_authenticated %}
-                    <button class="quiz-next-btn" id="quizNextBtn" onclick="loadNextQuestion()">
-                        <i class="bi bi-arrow-right-circle me-1"></i>Sonraki Soru
-                    </button>
+                    <a href="{% url 'istatistik:cronbach' %}" class="ax-hero__btn ax-hero__btn--primary">Analiz Yapmaya Başla</a>
+                    <a href="{% url 'hangi_test' %}" class="ax-hero__btn ax-hero__btn--secondary">Hangi Test?</a>
+                    {% else %}
+                    <a href="{% url 'register' %}" class="ax-hero__btn ax-hero__btn--primary">Hemen Başla — Ücretsiz</a>
+                    <a href="{% url 'istatistik:cronbach' %}" class="ax-hero__btn ax-hero__btn--secondary">Araçları Keşfet</a>
                     {% endif %}
                 </div>
+
+                <div class="ax-hero__metrics">
+                    <span class="ax-hero__metric">
+                        <span class="ax-hero__metric-value">{{ total_users }}+</span> Üye
+                    </span>
+                    <span class="ax-hero__metric">
+                        <span class="ax-hero__metric-value">{{ total_topics }}+</span> Konu
+                    </span>
+                    <span class="ax-hero__metric">
+                        <span class="ax-hero__metric-value">{{ total_posts }}+</span> Gönderi
+                    </span>
+                </div>
+
             </div>
         </div>
-        {% endif %}
+    </div>
+</section>
 
-        <!-- GÜNCEL BİLİM HABERLERİ (Sol Sidebar) -->
-        {% if science_news %}
-        <div class="widget-card" id="science-news-widget">
-            <div class="widget-header" style="color: #38bdf8;">
-                <i class="bi bi-newspaper"></i>
-                <span>Bilim Haberleri</span>
-            </div>
-            <div class="widget-body p-0">
-                {% for item in science_news|slice:":6" %}
-                <a href="{{ item.url }}" target="_blank" rel="noopener noreferrer" class="widget-item news-sidebar-item">
-                    <div class="item-content">
-                        <span class="item-title" style="font-size:0.78rem; -webkit-line-clamp:2;">{{ item.title }}</span>
-                        {% if item.source %}<span class="item-meta" style="color:#38bdf8;"><i class="bi bi-broadcast"></i> {{ item.source }}</span>{% endif %}
-                    </div>
+<!-- =====================================================
+     FAZ 2: YÖNLENDİRME KARTLARI
+     ===================================================== -->
+<section class="ax-cards-section">
+    <div class="container">
+        <div class="row g-4">
+
+            <div class="col-12 col-md-4">
+                <a href="{% url 'istatistik:cronbach' %}" class="ax-card ax-card--indigo">
+                    <div class="ax-card__icon">📊</div>
+                    <h3 class="ax-card__title">Analiz Yap</h3>
+                    <p class="ax-card__desc">Cronbach Alpha, Normallik Testi, Betimleyici İstatistik — doğrudan tarayıcıda, ücretsiz.</p>
+                    <span class="ax-card__link">Analiz Araçlarına Git →</span>
                 </a>
-                {% endfor %}
+            </div>
+
+            <div class="col-12 col-md-4">
+                <a href="{% url 'uzman_dizini' %}" class="ax-card ax-card--emerald">
+                    <div class="ax-card__icon">🔍</div>
+                    <h3 class="ax-card__title">Uzman Bul</h3>
+                    <p class="ax-card__desc">Alanında uzman birinden profesyonel analiz desteği al. SPSS, R, Python ve daha fazlası.</p>
+                    <span class="ax-card__link">Uzmanları Gör →</span>
+                </a>
+            </div>
+
+            <div class="col-12 col-md-4">
+                <a href="{% url 'forum_index' %}" class="ax-card ax-card--amber">
+                    <div class="ax-card__icon">💬</div>
+                    <h3 class="ax-card__title">Foruma Katıl</h3>
+                    <p class="ax-card__desc">Sorularını sor, deneyimlerini paylaş, Türkiye'nin akademik topluluğuyla bağlan.</p>
+                    <span class="ax-card__link">Tartışmalara Katıl →</span>
+                </a>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- =====================================================
+     FAZ 3: KENDİNİ TEST ET (Quiz)
+     ===================================================== -->
+<section class="ax-quiz-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-lg-8">
+                <div class="ax-quiz-card"
+                     id="axQuizApp"
+                     data-authenticated="{{ user.is_authenticated|yesno:'true,false' }}"
+                     data-login-url="{% url 'login' %}?next=/">
+                    <div class="ax-quiz-header">
+                        <h2 class="ax-quiz-title">🧠 Kendini Test Et</h2>
+                        <div class="ax-quiz-meta">
+                            <span class="ax-quiz-badge ax-quiz-badge--category" id="axQuizCategory"></span>
+                            <span class="ax-quiz-badge" id="axQuizDifficulty"></span>
+                        </div>
+                    </div>
+                    <div id="axQuizBody">
+                        <div class="ax-quiz-loading">Soru yükleniyor…</div>
+                    </div>
+                </div>
             </div>
         </div>
-        {% endif %}
+    </div>
+</section>
 
-    </aside>
-
-    <div class="analizus-home">
-
-        <!-- HERO SECTION -->
-        <div class="hero-section">
-            <div class="hero-content">
-                <h1 class="hero-title">ANALİZUS</h1>
-                <p class="hero-subtitle" style="text-align:center; text-wrap:balance;">Tezin için doğru istatistik testini seç, verinle anında hesapla, gerektiğinde uzman bul.</p>
-            </div>
-            <div class="stats-pills">
-                {% if total_users >= 10 %}
-                <div class="stat-pill">
-                    <div class="pill-icon cyan"><i class="bi bi-people-fill"></i></div>
-                    <div class="pill-info">
-                        <span class="pill-label">Üye</span>
-                        <span class="pill-value">{{ total_users }}</span>
-                    </div>
-                </div>
-                {% endif %}
-                {% if total_topics >= 5 %}
-                <div class="stat-pill">
-                    <div class="pill-icon purple"><i class="bi bi-chat-square-text-fill"></i></div>
-                    <div class="pill-info">
-                        <span class="pill-label">Konu</span>
-                        <span class="pill-value">{{ total_topics }}</span>
-                    </div>
-                </div>
-                {% endif %}
-                {% if completed_jobs >= 5 %}
-                <div class="stat-pill">
-                    <div class="pill-icon green"><i class="bi bi-check-circle-fill"></i></div>
-                    <div class="pill-info">
-                        <span class="pill-label">Tamamlanan İş</span>
-                        <span class="pill-value">{{ completed_jobs }}</span>
-                    </div>
-                </div>
-                {% endif %}
-                {% if total_posts >= 10 %}
-                <div class="stat-pill">
-                    <div class="pill-icon orange"><i class="bi bi-send-fill"></i></div>
-                    <div class="pill-info">
-                        <span class="pill-label">Gönderi</span>
-                        <span class="pill-value">{{ total_posts }}</span>
-                    </div>
-                </div>
-                {% endif %}
-            </div>
-        </div>
-
-        <!-- DEĞer CÜMLESİ + 3 YOL -->
-        <div class="value-paths">
-            <a href="{% url 'uzman_dizini' %}" class="vp-card vp-blue">
-                <div class="vp-icon"><i class="bi bi-people-fill"></i></div>
-                <div class="vp-body">
-                    <span class="vp-question">Analize mi ihtiyacın var?</span>
-                    <span class="vp-action">Uzman Bul <i class="bi bi-arrow-right ms-1"></i></span>
-                    <span class="vp-desc">Alanında uzman birinden teklif al</span>
-                </div>
-            </a>
-            <a href="{% url 'job_list' %}" class="vp-card vp-purple">
-                <div class="vp-icon"><i class="bi bi-briefcase-fill"></i></div>
-                <div class="vp-body">
-                    <span class="vp-question">Uzman mısın?</span>
-                    <span class="vp-action">Hizmet Ver <i class="bi bi-arrow-right ms-1"></i></span>
-                    <span class="vp-desc">İlanları gör, teklif ver, kazan</span>
-                </div>
-            </a>
-            <a href="{% url 'forum_index' %}" class="vp-card vp-green">
-                <div class="vp-icon"><i class="bi bi-mortarboard-fill"></i></div>
-                <div class="vp-body">
-                    <span class="vp-question">Öğrenmek mi istiyorsun?</span>
-                    <span class="vp-action">Foruma Katıl <i class="bi bi-arrow-right ms-1"></i></span>
-                    <span class="vp-desc">Sor, tartış, akademik topluluğa katıl</span>
-                </div>
-            </a>
-        </div>
-
-        <!-- Vitrin Yönlendirme -->
-        {% if featured_jobs %}
-        <div class="vitrin-hint text-center mb-3">
-            <i class="bi bi-chevron-down"></i>
-            <span>Uzman arayan projeleri inceleyin, teklif verin</span>
-            <i class="bi bi-chevron-down"></i>
-        </div>
-        {% else %}
-        <div class="vitrin-hint-empty text-center mb-3">
-            <i class="bi bi-stars"></i>
-            <span>Öne çıkarılmış hizmet talepleri burada görünür</span>
-            <a href="{% url 'job_list' %}">Hizmetler Pazarı <i class="bi bi-arrow-right"></i></a>
-        </div>
-        {% endif %}
-
-        <!-- FEATURED JOBS SECTION -->
-        {% if featured_jobs %}
-        <div class="widget-card full-width mb-4">
-            <div class="widget-header" style="color: #fbbf24;">
+<!-- =====================================================
+     FAZ 8: UZMAN ARAYAN PROJELER (Tam Genişlik)
+     ===================================================== -->
+{% if featured_jobs %}
+<section style="padding-bottom: var(--ax-space-8, 32px);">
+    <div class="container">
+        <div class="ax-section-card">
+            <div class="ax-section-card__header" style="color: #fbbf24;">
                 <i class="bi bi-stars"></i>
                 <span>Uzman Arayan Projeler</span>
-                <a href="{% url 'job_list' %}" class="ms-auto btn btn-sm btn-outline-warning py-0" style="font-size: 0.75rem; border: none;">Tümünü Gör <i class="bi bi-arrow-right"></i></a>
+                <a href="{% url 'job_list' %}" class="ms-auto ax-section-card__more">Tümünü Gör →</a>
             </div>
-            <div class="widget-body">
+            <div class="ax-section-card__body">
                 <div class="row g-3">
                     {% for job in featured_jobs %}
-                    <div class="col-md-6">
+                    <div class="col-md-6 col-lg-4">
                         <div class="p-3 border border-warning border-opacity-25 rounded-3 h-100 position-relative bg-dark bg-opacity-25 job-card-hover">
                             <div class="d-flex justify-content-between align-items-start mb-2">
                                 <h6 class="mb-0 text-white text-truncate" style="max-width: 80%;">
@@ -467,37 +277,305 @@
                 </div>
             </div>
         </div>
-        {% endif %}
+    </div>
+</section>
+{% endif %}
 
-        <!-- BAŞARI HİKAYESİ -->
-        {% if featured_story %}
-        <div class="widget-card full-width mb-4">
-            <div class="widget-header" style="color: #a855f7;">
-                <i class="bi bi-trophy-fill"></i>
-                <span>Haftanın Başarı Hikayesi</span>
-                <a href="{% url 'success_stories' %}" class="ms-auto btn btn-sm py-0" style="font-size: 0.75rem; color: #a855f7; border: none;">Tümünü Gör <i class="bi bi-arrow-right"></i></a>
-            </div>
-            <div class="widget-body" style="max-height: none; padding: 20px;">
-                <div class="d-flex align-items-start gap-3">
-                    <div class="flex-shrink-0" style="width: 48px; height: 48px; border-radius: 12px; background: rgba(168,85,247,0.12); border: 1px solid rgba(168,85,247,0.3); display: flex; align-items: center; justify-content: center; font-size: 1.4rem; color: #a855f7;">
-                        <i class="bi bi-mortarboard-fill"></i>
+<!-- =====================================================
+     FAZ 8: GÜNDEMDEKİ TARTIŞMALAR + AKADEMİK HABERLER
+     ===================================================== -->
+<section class="ax-wide-section">
+    <div class="container">
+        <div class="row g-4">
+
+            <!-- Gündemdeki Tartışmalar -->
+            <div class="col-12 col-md-6">
+                <div class="ax-section-card">
+                    <div class="ax-section-card__header" style="color: #f97316;">
+                        <i class="bi bi-fire"></i>
+                        <span>Gündemdeki Tartışmalar</span>
+                        <a href="{% url 'forum_index' %}" class="ms-auto ax-section-card__more">Tümünü Gör →</a>
                     </div>
-                    <div class="flex-grow-1 min-width-0">
-                        <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
-                            {% if featured_story.job %}
-                            <span class="fw-bold text-white" style="font-size: 0.95rem;">{{ featured_story.job.title|truncatechars:60 }}</span>
-                            {% endif %}
-                            <span class="text-muted" style="font-size: 0.78rem;">— {{ featured_story.user.username }}</span>
+                    <div class="ax-section-card__body">
+                        <div class="row g-2">
+                            {% for topic in popular_topics %}
+                            <div class="col-12 col-sm-6">
+                                <a href="{% url 'topic_detail' pk=topic.pk %}" class="ax-topic-row">
+                                    <span class="ax-topic-row__rank">#{{ forloop.counter }}</span>
+                                    <span class="ax-topic-row__title">{{ topic.subject|truncatechars:40 }}</span>
+                                    <span class="ax-topic-row__meta"><i class="bi bi-eye"></i> {{ topic.views }} görüntülenme</span>
+                                </a>
+                            </div>
+                            {% empty %}
+                            <p class="text-muted small mb-0">Henüz popüler konu yok.</p>
+                            {% endfor %}
                         </div>
-                        <p class="text-muted mb-0" style="font-size: 0.82rem; line-height: 1.55;">{{ featured_story.quote|truncatechars:220 }}</p>
                     </div>
                 </div>
             </div>
-        </div>
-        {% endif %}
 
+            <!-- Akademik Haberler -->
+            <div class="col-12 col-md-6">
+                {% if science_news %}
+                <div class="ax-section-card">
+                    <div class="ax-section-card__header" style="color: #38bdf8;">
+                        <i class="bi bi-newspaper"></i>
+                        <span>Akademik Haberler</span>
+                    </div>
+                    <div class="ax-section-card__body">
+                        <div class="row g-2">
+                            {% for item in science_news|slice:":6" %}
+                            <div class="col-12 col-sm-6">
+                                <a href="{{ item.url }}" target="_blank" rel="noopener noreferrer" class="ax-news-row">
+                                    <span class="ax-news-row__title">{{ item.title|truncatechars:55 }}</span>
+                                    {% if item.source %}<span class="ax-news-row__meta"><i class="bi bi-broadcast"></i> {{ item.source }}</span>{% endif %}
+                                </a>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="ax-section-card" style="min-height:200px;display:flex;align-items:center;justify-content:center;">
+                    <div class="text-center py-4">
+                        <i class="bi bi-newspaper" style="font-size:2rem;color:#38bdf8;opacity:0.35;"></i>
+                        <p class="text-muted small mt-2 mb-0">Akademik haberler yakında burada</p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+
+        </div>
     </div>
-</div>
+</section>
+
+<!-- =====================================================
+     FAZ 8: KULLANICI PANELİ (Giriş yapanlar)
+     ===================================================== -->
+{% if user.is_authenticated and user_profile %}
+<section style="padding-bottom: var(--ax-space-8, 32px);">
+    <div class="container">
+        <div class="row g-4">
+
+            <!-- Bu Hafta Analizus'ta -->
+            <div class="col-12 col-md-6">
+                <div class="ax-section-card">
+                    <div class="ax-section-card__header" style="color: #6366f1;">
+                        <i class="bi bi-bar-chart-fill"></i>
+                        <span>Bu Hafta Analizus'ta</span>
+                    </div>
+                    <div class="ax-section-card__body">
+                        <div class="row g-3 text-center">
+                            <div class="col-6 col-sm-3">
+                                <a href="{% url 'job_list' %}" class="ax-stat-pill">
+                                    <i class="bi bi-briefcase-fill" style="color:#38bdf8;font-size:1.4rem;"></i>
+                                    <div class="ax-stat-pill__value">{{ open_jobs_count }}</div>
+                                    <div class="ax-stat-pill__label">Açık İlan</div>
+                                </a>
+                            </div>
+                            {% if weekly_new_users %}
+                            <div class="col-6 col-sm-3">
+                                <div class="ax-stat-pill">
+                                    <i class="bi bi-person-plus-fill" style="color:#6366f1;font-size:1.4rem;"></i>
+                                    <div class="ax-stat-pill__value">+{{ weekly_new_users }}</div>
+                                    <div class="ax-stat-pill__label">Yeni Üye</div>
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% if completed_jobs %}
+                            <div class="col-6 col-sm-3">
+                                <div class="ax-stat-pill">
+                                    <i class="bi bi-check-circle-fill" style="color:#22c55e;font-size:1.4rem;"></i>
+                                    <div class="ax-stat-pill__value">{{ completed_jobs }}</div>
+                                    <div class="ax-stat-pill__label">Tamamlanan</div>
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% if active_experts_count %}
+                            <div class="col-6 col-sm-3">
+                                <div class="ax-stat-pill">
+                                    <i class="bi bi-star-fill" style="color:#fbbf24;font-size:1.4rem;"></i>
+                                    <div class="ax-stat-pill__value">{{ active_experts_count }}</div>
+                                    <div class="ax-stat-pill__label">Aktif Uzman</div>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- İstatistik Puanı + Bizi Destekle -->
+            {% with nb=user_profile.get_next_badge_info %}
+            <div class="col-12 col-md-6">
+                <div class="ax-section-card">
+                    <div class="ax-section-card__header" style="color: #fbbf24;">
+                        <i class="bi bi-trophy-fill"></i>
+                        <span>İstatistik Puanın</span>
+                        <button class="ms-auto btn btn-sm rounded-pill px-3"
+                                style="font-size:0.75rem;background:rgba(236,72,153,0.12);color:#ec4899;border:1px solid rgba(236,72,153,0.3);"
+                                data-bs-toggle="modal" data-bs-target="#donationModal">
+                            <i class="bi bi-heart-fill me-1"></i>Bizi Destekle
+                        </button>
+                    </div>
+                    <div class="ax-section-card__body">
+                        <div class="d-flex align-items-baseline gap-2 mb-3">
+                            <span class="fw-bold text-white" style="font-size:2rem;line-height:1;">{{ user_profile.reputation }}</span>
+                            <span class="text-muted small">puan</span>
+                        </div>
+                        {% if nb %}
+                        <div class="mb-2">
+                            <div class="progress" style="height:8px;background:rgba(255,255,255,0.08);border-radius:4px;">
+                                <div class="progress-bar bg-warning" role="progressbar"
+                                     style="width:{{ nb.progress }}%;border-radius:4px;"
+                                     aria-valuenow="{{ nb.progress }}" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="text-white-50" style="font-size:0.75rem;">
+                                <i class="bi bi-award-fill text-warning me-1"></i>{{ nb.badge.name }} için
+                                <strong class="text-warning">{{ nb.points_needed }} puan</strong> kaldı
+                            </span>
+                            <span class="text-white-50" style="font-size:0.72rem;">%{{ nb.progress }}</span>
+                        </div>
+                        {% else %}
+                        <p class="text-success small mb-3"><i class="bi bi-check-circle-fill me-1"></i>Tüm rozetleri kazandın!</p>
+                        {% endif %}
+                        <div class="d-flex gap-2 flex-wrap">
+                            <span class="badge bg-dark border border-secondary text-white-50 px-2 py-1" style="font-size:0.72rem;">
+                                <i class="bi bi-chat-text me-1 text-info"></i>{{ user_profile.total_posts }} gönderi
+                            </span>
+                            <span class="badge bg-dark border border-secondary text-white-50 px-2 py-1" style="font-size:0.72rem;">
+                                <i class="bi bi-award me-1 text-warning"></i>{{ user_profile.badges.count }} rozet
+                            </span>
+                            <span class="badge bg-dark border border-secondary text-white-50 px-2 py-1" style="font-size:0.72rem;">
+                                <i class="bi bi-star me-1" style="color:#a855f7;"></i>{{ user_profile.total_topics }} konu
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endwith %}
+
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- =====================================================
+     FAZ 4: BAŞARI HİKAYELERİ
+     ===================================================== -->
+{% if success_stories %}
+<section class="ax-testimonials-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-lg-10">
+                <h2 class="ax-section-title text-center">🏆 Başarı Hikayeleri</h2>
+                <div id="axTestimonialCarousel"></div>
+                <div class="ax-carousel-controls">
+                    <button class="ax-carousel-btn" id="axCarouselPrev" aria-label="Önceki">←</button>
+                    <div id="axCarouselDots" class="ax-dots"></div>
+                    <button class="ax-carousel-btn" id="axCarouselNext" aria-label="Sonraki">→</button>
+                </div>
+                <div class="text-center mt-4">
+                    <a href="{% url 'success_stories' %}" class="ax-link-more">Sen de hikayeni paylaş →</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{# Hikayeleri JS'e geç #}
+<script>
+window.__testimonials = [
+    {% for s in success_stories %}
+    {
+        "name": "{{ s.user.get_full_name|default:s.user.username|escapejs }}",
+        "quote": "{{ s.quote|escapejs }}",
+        "achievements": {{ s.achievements|default:"[]" }},
+        "avatar": "{% if s.user.profile.avatar %}{{ s.user.profile.avatar.url }}{% endif %}"
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+];
+</script>
+{% endif %}
+
+<!-- =====================================================
+     FAZ 4: PLATFORM İSTATİSTİKLERİ BANDI
+     ===================================================== -->
+<section class="ax-stats-section">
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-6 col-md-3 mb-4 mb-md-0">
+                <div class="ax-stat-item" data-target="{{ total_users }}" data-suffix="+">0+</div>
+                <div class="ax-stat-label">Aktif Üye</div>
+            </div>
+            <div class="col-6 col-md-3 mb-4 mb-md-0">
+                <div class="ax-stat-item" data-target="{{ total_topics }}" data-suffix="+">0+</div>
+                <div class="ax-stat-label">Akademik Konu</div>
+            </div>
+            <div class="col-6 col-md-3 mb-4 mb-md-0">
+                <div class="ax-stat-item" data-target="{{ total_posts }}" data-suffix="+">0+</div>
+                <div class="ax-stat-label">Forum Gönderisi</div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="ax-stat-item" data-target="{{ completed_jobs }}" data-suffix="+">0+</div>
+                <div class="ax-stat-label">Tamamlanan Analiz</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- =====================================================
+     FAZ 5: BİLİM HABERLERİ (Blog)
+     ===================================================== -->
+{% if latest_posts %}
+<section class="ax-news-section">
+    <div class="container">
+        <h2 class="ax-section-title">🔬 Güncel Akademik İçerikler</h2>
+        <div class="row g-4">
+            {% for post in latest_posts %}
+            <div class="col-12 col-md-4">
+                <a href="{{ post.get_absolute_url }}" class="ax-news-card">
+                    {% if post.cover_image %}
+                    <img src="{{ post.cover_image.url }}" alt="{{ post.title }}" class="ax-news-img" loading="lazy">
+                    {% else %}
+                    <div class="ax-news-img-placeholder">
+                        {% if post.category and "yapay" in post.category.name|lower or post.category and "ai" in post.category.name|lower %}
+                        {# Yapay Zeka / AI ikonu #}
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1H2a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h1a7 7 0 0 1 7-7h1V5.73A2 2 0 0 1 10 4a2 2 0 0 1 2-2z"/><circle cx="8.5" cy="13.5" r="1.5"/><circle cx="15.5" cy="13.5" r="1.5"/></svg>
+                        {% elif post.category and "veri" in post.category.name|lower or post.category and "python" in post.category.name|lower or post.category and "r " in post.category.name|lower %}
+                        {# Veri / Kod ikonu #}
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                        {% elif post.category and "spss" in post.category.name|lower or post.category and "istatistik" in post.category.name|lower %}
+                        {# İstatistik / Grafik ikonu #}
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg>
+                        {% elif post.category and "tez" in post.category.name|lower or post.category and "makale" in post.category.name|lower %}
+                        {# Tez / Makale ikonu #}
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                        {% else %}
+                        {# Genel makale ikonu #}
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    <div class="ax-news-content">
+                        {% if post.category %}
+                        <span class="ax-news-badge">{{ post.category.name }}</span>
+                        {% endif %}
+                        <h3 class="ax-news-title">{{ post.title|truncatechars:55 }}</h3>
+                        {% if post.excerpt %}
+                        <p style="font-size:var(--ax-text-sm);color:var(--ax-text-muted);margin:0;line-height:var(--ax-leading-relaxed);">{{ post.excerpt|truncatechars:80 }}</p>
+                        {% endif %}
+                        <span class="ax-news-link">Devamını Oku →</span>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
 
 {% endblock %}
 
@@ -506,6 +584,8 @@
 {% block extra_js %}
 
 {{ block.super }}
+<script src="{% static 'js/quiz.js' %}?v=0100" defer></script>
+<script src="{% static 'js/stats-carousel.js' %}?v=0100" defer></script>
 
 <style>
 
@@ -515,9 +595,9 @@
 
     display: grid;
 
-    grid-template-columns: 340px 1fr;
+    grid-template-columns: 280px 1fr;
 
-    gap: 16px;
+    gap: var(--ax-space-6, 24px);
 
 }
 
@@ -1145,11 +1225,16 @@
 
     background: rgba(10, 15, 30, 0.85);
 
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.05);
 
     border-radius: 14px;
 
     overflow: hidden;
+
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.30),
+                0 4px 8px rgba(0, 0, 0, 0.20);
+
+    margin-bottom: var(--ax-space-6, 24px);
 
 }
 
@@ -1240,7 +1325,11 @@
 
     font-size: 0.9rem;
 
+    line-height: 1.6;
+
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+
+    border-left: 3px solid currentColor;
 
 }
 
@@ -1366,9 +1455,11 @@
 
     color: #e2e8f0;
 
-    font-size: 0.85rem;
+    font-size: 0.935rem; /* +%10 */
 
-    font-weight: 500;
+    font-weight: 600;
+
+    line-height: 1.6;
 
     margin-bottom: 1px;
 
@@ -1392,7 +1483,9 @@
 
     color: #64748b;
 
-    font-size: 0.7rem;
+    font-size: 0.77rem; /* +%10 */
+
+    line-height: 1.6;
 
 }
 
@@ -1707,6 +1800,144 @@
     background: rgba(251, 191, 36, 0.05) !important;
     border-color: rgba(251, 191, 36, 0.5) !important;
     transform: translateY(-2px);
+}
+
+/* ===== FAZ 8: SECTION CARDS ===== */
+.ax-section-card {
+    background: linear-gradient(145deg, rgba(10,15,30,0.85) 0%, #161d2e 100%);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.30), 0 4px 8px rgba(0,0,0,0.20);
+    height: 100%;
+}
+.ax-section-card__header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 18px 24px;
+    font-weight: 600;
+    font-size: 1rem;
+    line-height: 1.6;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    border-left: 3px solid currentColor;
+}
+.ax-section-card__more {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: inherit !important;
+    text-decoration: none;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+.ax-section-card__more:hover { opacity: 1; }
+.ax-section-card__body { padding: 24px; }
+.ax-wide-section { padding-bottom: var(--ax-space-12, 48px); }
+
+/* Topic rows (2-column grid) */
+.ax-topic-row {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    text-decoration: none;
+    border: 1px solid rgba(249,115,22,0.08);
+    background: rgba(249,115,22,0.03);
+    transition: background 0.2s, border-color 0.2s, transform 0.15s;
+    height: 100%;
+}
+.ax-topic-row:hover {
+    background: rgba(249,115,22,0.08);
+    border-color: rgba(249,115,22,0.25);
+    transform: translateY(-2px);
+}
+.ax-topic-row__rank {
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: #f97316;
+    opacity: 0.8;
+}
+.ax-topic-row__title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #e2e8f0;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.ax-topic-row__meta {
+    font-size: 0.72rem;
+    color: #64748b;
+    margin-top: auto;
+}
+
+/* News rows (2-column grid) */
+.ax-news-row {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    text-decoration: none;
+    border: 1px solid rgba(56,189,248,0.08);
+    background: rgba(56,189,248,0.03);
+    transition: background 0.2s, border-color 0.2s, transform 0.15s;
+    height: 100%;
+}
+.ax-news-row:hover {
+    background: rgba(56,189,248,0.08);
+    border-color: rgba(56,189,248,0.25);
+    transform: translateY(-2px);
+}
+.ax-news-row__title {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #e2e8f0;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.ax-news-row__meta {
+    font-size: 0.72rem;
+    color: #38bdf8;
+    margin-top: auto;
+}
+
+/* Stat pills for "Bu Hafta" dashboard */
+.ax-stat-pill {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 16px 8px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    text-decoration: none;
+    transition: background 0.2s, border-color 0.2s;
+    cursor: default;
+}
+a.ax-stat-pill { cursor: pointer; }
+a.ax-stat-pill:hover {
+    background: rgba(56,189,248,0.08);
+    border-color: rgba(56,189,248,0.2);
+}
+.ax-stat-pill__value {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1;
+}
+.ax-stat-pill__label {
+    font-size: 0.68rem;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
 }
 
 </style>
