@@ -492,7 +492,7 @@ window.__testimonials = [
     {
         "name": "{{ s.user.get_full_name|default:s.user.username|escapejs }}",
         "quote": "{{ s.quote|escapejs }}",
-        "achievements": {{ s.achievements|default:"[]" }},
+        "achievements": {{ s.achievements|default:"[]"|safe }},
         "avatar": "{% if s.user.profile.avatar %}{{ s.user.profile.avatar.url }}{% endif %}"
     }{% if not forloop.last %},{% endif %}
     {% endfor %}
