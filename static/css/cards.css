@@ -1,0 +1,116 @@
+/* =============================================================
+   ANALIZUS — MODERN KATMAN: cards.css
+   Bootstrap row/col grid korunur, kart içi .ax-card prefix'li.
+   ============================================================= */
+
+/* -------------------------------------------------------------
+   CARDS SECTION
+   ------------------------------------------------------------- */
+.ax-cards-section {
+    padding: 0 0 var(--ax-space-12);
+}
+
+@media (max-width: 767px) {
+    .ax-cards-section { padding: 0 0 var(--ax-space-8); }
+}
+
+/* -------------------------------------------------------------
+   KART
+   ------------------------------------------------------------- */
+.ax-card {
+    background: linear-gradient(145deg, var(--ax-bg-secondary) 0%, #161d2e 100%);
+    border: 1px solid var(--ax-border-hover);
+    border-radius: var(--ax-radius-xl);
+    padding: var(--ax-space-6);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ax-space-3);
+    text-decoration: none;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow:
+        0 1px 0 rgba(255,255,255,0.06) inset,
+        0 10px 15px -3px rgba(0,0,0,0.30),
+        0 4px 24px rgba(0,0,0,0.35),
+        0 0 0 1px rgba(99,102,241,0.08);
+    transition: border-color var(--ax-transition-normal),
+                transform var(--ax-transition-normal),
+                box-shadow var(--ax-transition-normal);
+    cursor: pointer;
+}
+
+.ax-card:hover {
+    border-color: rgba(99,102,241,0.5);
+    transform: translateY(-5px);
+    box-shadow:
+        0 1px 0 rgba(255,255,255,0.08) inset,
+        0 8px 32px rgba(0,0,0,0.4),
+        0 0 0 1px rgba(99,102,241,0.35),
+        0 0 24px rgba(99,102,241,0.12);
+}
+
+/* -------------------------------------------------------------
+   KART İÇERİĞİ
+   ------------------------------------------------------------- */
+.ax-card__icon {
+    font-size: 32px;
+    line-height: 1;
+    flex-shrink: 0;
+}
+
+.ax-card__title {
+    font-size: var(--ax-text-xl);
+    font-weight: var(--ax-font-semibold);
+    color: var(--ax-text-primary);
+    margin: 0;
+    line-height: var(--ax-leading-tight);
+}
+
+.ax-card__desc {
+    font-size: var(--ax-text-sm);
+    color: var(--ax-text-secondary);
+    line-height: var(--ax-leading-relaxed);
+    margin: 0;
+    flex: 1;
+}
+
+.ax-card__link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ax-space-1);
+    font-size: var(--ax-text-sm);
+    font-weight: var(--ax-font-medium);
+    color: var(--ax-accent-primary);
+    text-decoration: none;
+    margin-top: auto;
+    transition: color var(--ax-transition-fast),
+                gap var(--ax-transition-fast);
+}
+
+.ax-card__link:hover {
+    color: var(--ax-accent-primary-hover);
+    gap: var(--ax-space-2);
+}
+
+/* Kart hover'da link rengini de güncelle */
+.ax-card:hover .ax-card__link {
+    color: var(--ax-accent-primary-hover);
+}
+
+/* -------------------------------------------------------------
+   KART VARYANTLARI — accent renk çizgisi
+   ------------------------------------------------------------- */
+.ax-card--indigo  { --card-accent: var(--ax-accent-primary); }
+.ax-card--emerald { --card-accent: var(--ax-accent-secondary); }
+.ax-card--amber   { --card-accent: var(--ax-accent-warning); }
+
+.ax-card--indigo:hover  { border-color: var(--ax-accent-primary); }
+.ax-card--emerald:hover { border-color: var(--ax-accent-secondary); }
+.ax-card--amber:hover   { border-color: var(--ax-accent-warning); }
+
+.ax-card--indigo .ax-card__link  { color: var(--ax-accent-primary); }
+.ax-card--emerald .ax-card__link { color: var(--ax-accent-secondary); }
+.ax-card--amber .ax-card__link   { color: var(--ax-accent-warning); }
+
+.ax-card--emerald:hover .ax-card__link { color: var(--ax-accent-secondary-hover); }
+.ax-card--amber:hover .ax-card__link   { color: #fbbf24; }

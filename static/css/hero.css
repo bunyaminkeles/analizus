@@ -1,0 +1,212 @@
+/* =============================================================
+   ANALIZUS — MODERN KATMAN: hero.css
+   Bootstrap ile uyumlu, .ax-hero prefix'li hero section.
+   ============================================================= */
+
+/* -------------------------------------------------------------
+   HERO SECTION
+   ------------------------------------------------------------- */
+.ax-hero {
+    padding: 100px 0 64px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Navbar → Hero geçiş gradienti — kopukluğu giderir */
+.ax-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 180px;
+    background: linear-gradient(
+        180deg,
+        rgba(11, 15, 25, 0.60) 0%,
+        rgba(99, 102, 241, 0.04) 60%,
+        transparent 100%
+    );
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* Dekoratif merkez ışıma */
+.ax-hero::after {
+    content: '';
+    position: absolute;
+    top: -20%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 900px;
+    height: 600px;
+    background: radial-gradient(ellipse at center,
+        rgba(99, 102, 241, 0.10) 0%,
+        transparent 65%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.ax-hero > * { position: relative; z-index: 1; }
+
+@media (max-width: 767px) {
+    .ax-hero { padding: 40px 0 32px; }
+}
+
+/* -------------------------------------------------------------
+   BAŞLIK
+   ------------------------------------------------------------- */
+.ax-hero__title {
+    font-size: var(--ax-text-4xl);
+    font-weight: var(--ax-font-bold);
+    color: var(--ax-text-primary);
+    line-height: var(--ax-leading-tight);
+    margin-bottom: var(--ax-space-6);
+    letter-spacing: -0.02em;
+}
+
+@media (max-width: 767px) {
+    .ax-hero__title { font-size: var(--ax-text-2xl); }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+    .ax-hero__title { font-size: var(--ax-text-3xl); }
+}
+
+/* Başlıktaki vurgulu kelimeler */
+.ax-hero__title mark {
+    background: none;
+    color: var(--ax-accent-primary);
+    padding: 0;
+}
+
+/* -------------------------------------------------------------
+   ALTYAZI
+   ------------------------------------------------------------- */
+.ax-hero__subtitle {
+    font-size: var(--ax-text-lg);
+    color: var(--ax-text-secondary);
+    line-height: var(--ax-leading-relaxed);
+    margin-top: var(--ax-space-2);
+    margin-bottom: var(--ax-space-8);
+    max-width: 560px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+@media (max-width: 767px) {
+    .ax-hero__subtitle {
+        font-size: var(--ax-text-base);
+        margin-bottom: var(--ax-space-6);
+    }
+}
+
+/* -------------------------------------------------------------
+   BUTONLAR
+   ------------------------------------------------------------- */
+.ax-hero__actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ax-space-3);
+    flex-wrap: wrap;
+    margin-bottom: var(--ax-space-8);
+}
+
+.ax-hero__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ax-space-2);
+    padding: 14px 32px;
+    font-size: var(--ax-text-base);
+    font-weight: var(--ax-font-semibold);
+    font-family: var(--ax-font-family);
+    border-radius: var(--ax-radius-lg);
+    text-decoration: none;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: background-color var(--ax-transition-fast),
+                border-color var(--ax-transition-fast),
+                transform var(--ax-transition-fast),
+                box-shadow var(--ax-transition-fast);
+    white-space: nowrap;
+    line-height: 1;
+}
+
+.ax-hero__btn:focus-visible {
+    outline: 2px solid var(--ax-accent-primary);
+    outline-offset: 3px;
+}
+
+/* Primary buton */
+.ax-hero__btn--primary {
+    background-color: var(--ax-accent-primary);
+    color: #ffffff;
+    border-color: var(--ax-accent-primary);
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.30),
+                0 4px 16px rgba(99, 102, 241, 0.20);
+}
+.ax-hero__btn--primary:hover {
+    background-color: var(--ax-accent-primary-hover);
+    border-color: var(--ax-accent-primary-hover);
+    transform: translateY(-3px);
+    box-shadow: 0 0 32px rgba(99, 102, 241, 0.50),
+                0 8px 24px rgba(99, 102, 241, 0.30);
+    color: #ffffff;
+}
+
+/* Secondary buton */
+.ax-hero__btn--secondary {
+    background-color: transparent;
+    color: var(--ax-text-primary);
+    border-color: var(--ax-border-hover);
+}
+.ax-hero__btn--secondary:hover {
+    background-color: var(--ax-bg-tertiary);
+    border-color: var(--ax-accent-primary);
+    color: var(--ax-text-primary);
+    transform: translateY(-2px);
+}
+
+@media (max-width: 479px) {
+    .ax-hero__btn {
+        width: 100%;
+        padding: 14px 20px;
+    }
+}
+
+/* -------------------------------------------------------------
+   METRİKLER
+   ------------------------------------------------------------- */
+.ax-hero__metrics {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ax-space-6);
+    flex-wrap: wrap;
+}
+
+.ax-hero__metric {
+    display: flex;
+    align-items: center;
+    gap: var(--ax-space-2);
+    font-size: var(--ax-text-sm);
+    color: var(--ax-text-muted);
+}
+
+.ax-hero__metric-value {
+    font-size: var(--ax-text-base);
+    font-weight: var(--ax-font-semibold);
+    color: var(--ax-text-secondary);
+}
+
+/* Metrikler arası ayraç */
+.ax-hero__metric:not(:last-child)::after {
+    content: '·';
+    margin-left: var(--ax-space-6);
+    color: var(--ax-border-hover);
+}
+
+@media (max-width: 479px) {
+    .ax-hero__metrics { gap: var(--ax-space-4); }
+    .ax-hero__metric:not(:last-child)::after { display: none; }
+}
