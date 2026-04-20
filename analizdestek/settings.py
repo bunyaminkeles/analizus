@@ -172,6 +172,7 @@ CHROME_BINARY_PATH = os.getenv('CHROME_BINARY_PATH', None)
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = 'DENY'
+SECURE_REFERRER_POLICY = 'strict-origin-when-cross-origin'
 
 # Rate Limiting
 RATELIMIT_VIEW = 'forum.views.ratelimit_error'
