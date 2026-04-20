@@ -652,82 +652,6 @@ window.__testimonials = [
 
 <style>
 
-/* ===== NEW GRID LAYOUT ===== */
-
-.home-grid-container {
-
-    display: grid;
-
-    grid-template-columns: 280px 1fr;
-
-    gap: var(--ax-space-6, 24px);
-
-}
-
-
-
-.home-sidebar-left {
-    min-width: 0;
-    overflow-x: hidden;
-}
-
-.home-grid-container {
-    overflow-x: hidden;
-    max-width: 100%;
-}
-
-.home-sidebar-left .widget-card {
-
-    margin-bottom: 24px;
-
-}
-
-.home-sidebar-left .widget-card:last-child {
-
-    margin-bottom: 0;
-
-}
-
-
-
-@media (max-width: 1200px) {
-
-    .home-grid-container {
-
-        grid-template-columns: 1fr;
-
-    }
-
-    .home-sidebar-left {
-
-        order: 2; /* Sidebar altta */
-
-    }
-
-    .analizus-home {
-
-        order: 1; /* Ana içerik üstte */
-
-    }
-
-}
-
-
-
-
-
-/* ===== MAIN CONTAINER ===== */
-
-.analizus-home {
-
-    position: relative;
-
-    min-width: 0;
-
-}
-
-
-
 /* ===== HERO SECTION ===== */
 
 .hero-section {
@@ -2255,7 +2179,7 @@ function sendSupportEmail() {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            'X-CSRFToken': getCSRFToken()
         },
         body: JSON.stringify({
             tier_id: selectedTier.value,
