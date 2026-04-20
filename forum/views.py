@@ -15,6 +15,7 @@ from django.contrib import messages
 from django.utils import timezone
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET, require_POST
+from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from datetime import timedelta
 import uuid
 from django_ratelimit.decorators import ratelimit
@@ -2223,9 +2224,6 @@ def get_client_ip(request):
     else:
         ip = request.META.get('REMOTE_ADDR')
     return ip
-
-
-from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 
 @csrf_exempt
 def donation_callback(request):
