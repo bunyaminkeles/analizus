@@ -1719,6 +1719,58 @@ def dashboard_mark_contact_read(request, pk):
     return redirect(request.META.get('HTTP_REFERER', reverse('admin:index')))
 
 
+@staff_member_required
+def dashboard_export_csv(request):
+    import csv
+    from django.http import HttpResponse
+    from django.contrib.auth.models import User
+    from django.utils import timezone
+    from datetime import timedelta
+
+    export_type = request.GET.get('type', 'users')
+    today = timezone.now().date()
+
+    if export_type == 'istatistik':
+        try:
+            from istatistik.models import IstatistikJob
+            response = HttpResponse(content_type='text/csv; charset=utf-8')
+            response['Content-Disposition'] = 'attachment; filename="analiz_kullanim.csv"'
+            response.write('\ufeff')
+            writer = csv.writer(response)
+            writer.writerow(['Tarih', 'Araç', 'Kullanıcı', 'Demo mi', 'Durum'])
+            qs = IstatistikJob.objects.select_related('user').order_by('-created_at')[:5000]
+            for job in qs:
+                writer.writerow([
+                    job.created_at.strftime('%Y-%m-%d %H:%M'),
+                    job.get_tool_display(),
+                    job.user.username if job.user else 'Anonim',
+                    'Evet' if job.is_demo else 'Hayır',
+                    job.get_status_display(),
+                ])
+            return response
+        except Exception as e:
+            from django.http import HttpResponseServerError
+            return HttpResponseServerError(f'CSV oluşturulamadı: {e}')
+    else:
+        response = HttpResponse(content_type='text/csv; charset=utf-8')
+        response['Content-Disposition'] = 'attachment; filename="kullanici_istatistikleri.csv"'
+        response.write('\ufeff')
+        writer = csv.writer(response)
+        writer.writerow(['Kullanıcı Adı', 'E-posta', 'Kayıt Tarihi', 'Son Giriş', 'E-posta Doğrulandı', 'Puan'])
+        qs = User.objects.select_related('profile').order_by('-date_joined')
+        for u in qs:
+            profile = getattr(u, 'profile', None)
+            writer.writerow([
+                u.username,
+                u.email,
+                u.date_joined.strftime('%Y-%m-%d'),
+                u.last_login.strftime('%Y-%m-%d') if u.last_login else '',
+                'Evet' if (profile and profile.email_verified) else 'Hayır',
+                profile.score if profile else 0,
+            ])
+        return response
+
+
 # --- API: QUIZ & STORIES ---
 def api_get_quiz_question(request):
     """
