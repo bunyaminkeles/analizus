@@ -24,6 +24,8 @@ services:
     env_file: .env
     expose:
       - "8000"
+    volumes:
+      - staticfiles_data:/app/staticfiles
     depends_on:
       - redis
       - db
@@ -38,9 +40,11 @@ services:
       - ./nginx/conf.d:/etc/nginx/conf.d
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
+      - staticfiles_data:/app/staticfiles:ro
     depends_on:
       - web
 
 volumes:
   app_postgres_data:
     external: true
+  staticfiles_data:
