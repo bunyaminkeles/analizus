@@ -32,6 +32,7 @@ def dashboard_callback(request, context):
         {"label": "YÖK Tez İşleri",          "icon": "school",          "url": "/admin/oaipmh/yoktezsearchjobproxy/"},
         {"label": "OAI-PMH İşleri",          "icon": "hub",             "url": "/admin/oaipmh/oaipmhsearchjob/"},
         {"label": "Üniversiteler",           "icon": "account_balance",  "url": "/admin/oaipmh/university/"},
+        {"label": "İstatistik İşleri",        "icon": "analytics",       "url": "/admin/istatistik/istatistikjob/"},
         {"label": "Tez Analizleri",          "icon": "biotech",         "url": "/admin/tezanaliz/tezanaliz/"},
         {"label": "Makale Analizleri",       "icon": "description",     "url": "/admin/tezanaliz/makaleanalizproxy/"},
         {"label": "Bibliometrik İşler",      "icon": "bar_chart",       "url": "/admin/tezanaliz/bibliometricjobproxy/"},
