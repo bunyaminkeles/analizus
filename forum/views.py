@@ -1842,10 +1842,12 @@ def api_submit_quiz_answer(request):
                     badge_awarded = 'Quiz Efsanesi'
 
 
+            correct_answer_text = getattr(question, f'option_{question.correct_answer.lower()}', '')
             return JsonResponse({
                 'success': True,
                 'is_correct': is_correct,
                 'correct_answer': question.correct_answer,
+                'correct_answer_text': correct_answer_text,
                 'explanation': question.explanation,
                 'new_score': score.total_points,
                 'total_correct': score.correct_answers,

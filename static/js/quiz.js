@@ -169,8 +169,11 @@
     function showResult(data, btn) {
         if (!data.success) return;
 
+        var correctAnswerKey = data.correct_answer || data.correct_answer_letter || '';
+        var correctAnswerText = data.correct_answer_text || correctAnswerKey || '—';
+
         body.querySelectorAll('.ax-quiz-opt').forEach(function (b) {
-            if (b.dataset.answer === data.correct_answer) b.classList.add('is-correct');
+            if (b.dataset.answer === correctAnswerKey) b.classList.add('is-correct');
         });
         if (!data.is_correct) btn.classList.add('is-wrong');
 
@@ -187,9 +190,7 @@
         } else {
             fb.classList.add('ax-quiz-feedback--wrong');
             icon.textContent = '✗';
-            text.textContent = data.correct_answer
-                ? 'Yanlış. Doğru cevap: ' + data.correct_answer
-                : 'Yanlış.';
+            text.textContent = 'Yanlış. Doğru cevap: ' + correctAnswerText;
             text.style.color = 'var(--ax-accent-danger)';
         }
 

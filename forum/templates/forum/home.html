@@ -2038,9 +2038,12 @@ function submitQuizAnswer(btn) {
     .then(r => r.json())
     .then(data => {
         if (data.success) {
+            const correctAnswerKey = data.correct_answer || data.correct_answer_letter || '';
+            const correctAnswerText = data.correct_answer_text || correctAnswerKey || '—';
+
             // Doğru/yanlış göster
             allOpts.forEach(o => {
-                if (o.dataset.answer === data.correct_answer) o.classList.add('correct');
+                if (o.dataset.answer === correctAnswerKey) o.classList.add('correct');
             });
             if (!data.is_correct) btn.classList.add('wrong');
 
@@ -2058,7 +2061,7 @@ function submitQuizAnswer(btn) {
             } else {
                 icon.innerHTML = '&#10007;';
                 icon.style.color = '#ef4444';
-                text.textContent = 'Yanlış! Doğru cevap: ' + data.correct_answer;
+                text.textContent = 'Yanlış! Doğru cevap: ' + correctAnswerText;
                 text.style.color = '#ef4444';
             }
             expl.textContent = data.explanation || '';

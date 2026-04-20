@@ -696,6 +696,7 @@
                 .then(data => {
                     const resultDiv = document.getElementById('quizResult');
                     if(data.success) {
+                        const correctAnswerText = data.correct_answer_text || data.correct_answer || '—';
                         if(data.is_correct) {
                             btnElement.classList.remove('btn-outline-light');
                             btnElement.classList.add('btn-success');
@@ -707,7 +708,7 @@
                             btnElement.classList.remove('btn-outline-light');
                             btnElement.classList.add('btn-danger');
                             resultDiv.innerHTML = `<div class="alert alert-danger py-2">
-                                <i class="bi bi-x-circle-fill me-2"></i>Yanlış. Doğru cevap: <b>${data.correct_answer}</b>
+                                <i class="bi bi-x-circle-fill me-2"></i>Yanlış. Doğru cevap: <b>${correctAnswerText}</b>
                                 <hr class="my-1 border-danger border-opacity-25">
                                 <small>${data.explanation || ''}</small>
                             </div>`;
