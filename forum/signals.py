@@ -1,5 +1,8 @@
 from django.db.models.signals import post_save, post_delete, pre_save
+from datetime import timedelta
+from django.contrib.auth.signals import user_logged_in
 from django.dispatch import receiver
+from django.utils import timezone as tz
 from django.urls import reverse
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Count
@@ -343,6 +346,7 @@ def check_post_badges(sender, instance, created, **kwargs):
         try:
             profile = instance.created_by.profile
             check_and_award_participation_badges(profile)
+            check_forum_hero_badge(profile)
         except Exception as e:
             logger.error(f"Cevap rozeti kontrolünde hata: {e}")
 
@@ -424,3 +428,95 @@ def send_success_story_invitation(sender, instance, created, **kwargs):
             logger.info(f"Başarı hikayesi daveti gönderildi: {recipient.username} (iş: {instance.pk})")
         except Exception as e:
             logger.error(f"Başarı hikayesi daveti gönderilemedi ({recipient.username}): {e}")
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# GÜNLÜK GİRİŞ STREAK
+# ═══════════════════════════════════════════════════════════════════════════
+
+@receiver(user_logged_in)
+def update_login_streak(sender, request, user, **kwargs):
+    """Her girişte streak'i güncelle"""
+    try:
+        profile = user.profile
+        today = tz.now().date()
+
+        if profile.last_login_streak_date == today:
+            return  # Bugün zaten güncellendi
+
+        if profile.last_login_streak_date == today - timedelta(days=1):
+            profile.login_streak += 1
+        else:
+            profile.login_streak = 1  # Seri kırıldı
+
+        if profile.login_streak > profile.max_login_streak:
+            profile.max_login_streak = profile.login_streak
+
+        profile.last_login_streak_date = today
+        profile.save(update_fields=['login_streak', 'max_login_streak', 'last_login_streak_date'])
+
+        # Streak rozeti: 7 gün üst üste
+        if profile.login_streak >= 7:
+            badge = Badge.objects.filter(slug='haftalik-seri').first()
+            if badge:
+                profile.badges.add(badge)
+        # Streak rozeti: 30 gün üst üste
+        if profile.login_streak >= 30:
+            badge = Badge.objects.filter(slug='aylik-seri').first()
+            if badge:
+                profile.badges.add(badge)
+    except Exception as e:
+        logger.error(f"Login streak güncellenemedi: {e}")
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# ANALİZ YAPINCA PUAN + ROZET
+# ═══════════════════════════════════════════════════════════════════════════
+
+def check_and_award_istatistik_badges(profile, total_completed):
+    """İstatistik analizine göre rozetleri kontrol et ve ver"""
+    try:
+        if total_completed >= 1:
+            badge = Badge.objects.filter(slug='ilk-analiz').first()
+            if badge:
+                profile.badges.add(badge)
+        if total_completed >= 10:
+            badge = Badge.objects.filter(slug='analiz-ustasi').first()
+            if badge:
+                profile.badges.add(badge)
+    except Exception as e:
+        logger.error(f"İstatistik rozeti kontrolünde hata: {e}")
+
+
+def on_istatistik_job_completed(job):
+    """IstatistikJob tamamlandığında çağrılır — puan ve rozet ver"""
+    try:
+        if not job.user:
+            return
+        profile, _ = Profile.objects.get_or_create(user=job.user)
+        profile.reputation += 5
+        profile.save(update_fields=['reputation'])
+        profile.update_rank()
+
+        from istatistik.models import IstatistikJob
+        total_completed = IstatistikJob.objects.filter(
+            user=job.user, status='completed'
+        ).count()
+        check_and_award_istatistik_badges(profile, total_completed)
+    except Exception as e:
+        logger.error(f"İstatistik job tamamlanma işlemi başarısız: {e}")
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# FORUM KAHRAMANI ROZETİ
+# ═══════════════════════════════════════════════════════════════════════════
+
+def check_forum_hero_badge(profile):
+    """100 gönderide Forum Kahramanı rozetini ver"""
+    try:
+        if profile.user.posts.count() >= 100:
+            badge = Badge.objects.filter(slug='forum-kahramani').first()
+            if badge:
+                profile.badges.add(badge)
+    except Exception as e:
+        logger.error(f"Forum Kahramanı rozeti kontrolünde hata: {e}")

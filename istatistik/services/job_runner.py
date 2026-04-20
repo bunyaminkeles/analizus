@@ -56,6 +56,12 @@ def _execute_job(job_id: str):
         job.mark_completed(result_data=result_data, pdf_url=pdf_url)
         logger.info(f'[istatistik] Tamamlandı: {job.tool}/{job_id}')
 
+        try:
+            from forum.signals import on_istatistik_job_completed
+            on_istatistik_job_completed(job)
+        except Exception as e:
+            logger.warning(f'[istatistik] Gamification güncellenemedi: {e}')
+
     except ValueError as e:
         job.mark_failed(str(e))
         logger.warning(f'[istatistik] Veri hatası {job.tool}/{job_id}: {e}')
