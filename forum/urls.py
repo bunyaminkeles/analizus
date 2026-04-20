@@ -66,6 +66,7 @@ urlpatterns = [
     path('admin-actions/approve-review/<int:pk>/', views.dashboard_approve_review, name='dashboard_approve_review'),
     path('admin-actions/approve-donation/<int:pk>/', views.dashboard_approve_donation, name='dashboard_approve_donation'),
     path('admin-actions/mark-contact-read/<int:pk>/', views.dashboard_mark_contact_read, name='dashboard_mark_contact_read'),
+    path('admin-actions/dashboard/export-csv/', views.dashboard_export_csv, name='dashboard_export_csv'),
 
     # Diğer
     path('search/', views.search_result, name='search'),

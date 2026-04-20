@@ -78,6 +78,28 @@ def get_dashboard_context():
     except Exception:
         month_biblio_count = total_biblio_count = 0
 
+    # === DAU / MAU ===
+    dau = User.objects.filter(last_login__date=today).count()
+    mau = User.objects.filter(last_login__date__gte=last_30_days).count()
+
+    # === İSTATİSTİK ARAÇLARI ===
+    try:
+        from istatistik.models import IstatistikJob
+        istatistik_month = IstatistikJob.objects.filter(
+            status='completed', created_at__date__gte=last_30_days
+        ).count()
+        istatistik_total = IstatistikJob.objects.filter(status='completed').count()
+        cronbach_month  = IstatistikJob.objects.filter(tool='cronbach',  status='completed', created_at__date__gte=last_30_days).count()
+        normallik_month = IstatistikJob.objects.filter(tool='normallik', status='completed', created_at__date__gte=last_30_days).count()
+        betimsel_month  = IstatistikJob.objects.filter(tool='betimsel',  status='completed', created_at__date__gte=last_30_days).count()
+        cronbach_total  = IstatistikJob.objects.filter(tool='cronbach',  status='completed').count()
+        normallik_total = IstatistikJob.objects.filter(tool='normallik', status='completed').count()
+        betimsel_total  = IstatistikJob.objects.filter(tool='betimsel',  status='completed').count()
+    except Exception:
+        istatistik_month = istatistik_total = 0
+        cronbach_month = normallik_month = betimsel_month = 0
+        cronbach_total = normallik_total = betimsel_total = 0
+
     # === SERVİS İSTATİSTİKLERİ ===
     try:
         from openalex.models import AlexSearchJob
@@ -240,6 +262,18 @@ def get_dashboard_context():
         health_label, health_color = 'Düşük', '#ef4444'
 
     return {
+        # DAU / MAU
+        'dau': dau,
+        'mau': mau,
+        # İstatistik araçları
+        'istatistik_month': istatistik_month,
+        'istatistik_total': istatistik_total,
+        'cronbach_month': cronbach_month,
+        'normallik_month': normallik_month,
+        'betimsel_month': betimsel_month,
+        'cronbach_total': cronbach_total,
+        'normallik_total': normallik_total,
+        'betimsel_total': betimsel_total,
         # Genel
         'total_users': total_users,
         'total_topics': total_topics,

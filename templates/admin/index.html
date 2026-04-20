@@ -34,6 +34,7 @@
     <span style="font-size:2rem;font-weight:700;color:#f1f5f9;margin-top:.5rem;">{{ total_users }}</span>
     <span style="font-size:.875rem;font-weight:500;color:#cbd5e1;">Toplam Kullanıcı</span>
     <span style="font-size:.75rem;color:{% if week_users > 0 %}#34d399{% else %}#6b7280{% endif %};">+{{ week_users }} bu hafta</span>
+    <span style="font-size:.7rem;color:#6b7280;margin-top:.1rem;">{{ dau }} bugün aktif · {{ mau }} bu ay</span>
   </div></a>
 
   <!-- Toplam Konu -->
@@ -139,6 +140,64 @@
         <div style="font-size:1.25rem;font-weight:700;color:#22d3ee;">{{ oaipmh_month }} / {{ oaipmh_total }}</div>
         <div style="font-size:.7rem;color:#6b7280;margin-top:.25rem;">Dizin Tezleri</div>
       </div></a>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     ROW 2.5 — İSTATİSTİK ARAÇLARI + CSV EXPORT
+══════════════════════════════════════════════════ -->
+<div style="display:grid;grid-template-columns:2fr 1fr;gap:1rem;">
+
+  <!-- İstatistik Araçları -->
+  <div style="border-radius:.75rem;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);padding:1.25rem;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;padding-bottom:.75rem;border-bottom:1px solid rgba(255,255,255,.08);">
+      <div style="display:flex;align-items:center;gap:.5rem;">
+        <span class="material-symbols-outlined" style="font-size:1.25rem;color:#f97316;">analytics</span>
+        <span style="font-size:.875rem;font-weight:600;color:#e2e8f0;text-transform:uppercase;letter-spacing:.05em;">İstatistik Araçları <span style="font-weight:400;color:#6b7280;">(Bu Ay / Toplam)</span></span>
+      </div>
+      <span style="font-size:.75rem;color:#6b7280;">Tamamlanan analizler</span>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem;text-align:center;">
+      <a href="/admin/istatistik/istatistikjob/" style="text-decoration:none;">
+      <div style="padding:.75rem;border-radius:.5rem;background:rgba(249,115,22,.08);">
+        <div style="font-size:1.25rem;font-weight:700;color:#f97316;">{{ istatistik_month }} / {{ istatistik_total }}</div>
+        <div style="font-size:.7rem;color:#6b7280;margin-top:.25rem;">Toplam</div>
+      </div></a>
+      <div style="padding:.75rem;border-radius:.5rem;background:rgba(99,102,241,.08);">
+        <div style="font-size:1.25rem;font-weight:700;color:#818cf8;">{{ cronbach_month }} / {{ cronbach_total }}</div>
+        <div style="font-size:.7rem;color:#6b7280;margin-top:.25rem;">Cronbach α</div>
+      </div>
+      <div style="padding:.75rem;border-radius:.5rem;background:rgba(16,185,129,.08);">
+        <div style="font-size:1.25rem;font-weight:700;color:#34d399;">{{ normallik_month }} / {{ normallik_total }}</div>
+        <div style="font-size:.7rem;color:#6b7280;margin-top:.25rem;">Normallik</div>
+      </div>
+      <div style="padding:.75rem;border-radius:.5rem;background:rgba(251,191,36,.08);">
+        <div style="font-size:1.25rem;font-weight:700;color:#fbbf24;">{{ betimsel_month }} / {{ betimsel_total }}</div>
+        <div style="font-size:.7rem;color:#6b7280;margin-top:.25rem;">Betimleyici</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CSV Export -->
+  <div style="border-radius:.75rem;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);padding:1.25rem;">
+    <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:1rem;padding-bottom:.75rem;border-bottom:1px solid rgba(255,255,255,.08);">
+      <span class="material-symbols-outlined" style="font-size:1.25rem;color:#22d3ee;">download</span>
+      <span style="font-size:.875rem;font-weight:600;color:#e2e8f0;text-transform:uppercase;letter-spacing:.05em;">Veri İndir</span>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:.75rem;">
+      <div style="font-size:.8rem;color:#94a3b8;">Platform metriklerini CSV olarak dışa aktar.</div>
+      <a href="/admin-actions/dashboard/export-csv/"
+         style="display:inline-flex;align-items:center;gap:.4rem;padding:.5rem 1rem;border-radius:.5rem;background:rgba(34,211,238,.12);border:1px solid rgba(34,211,238,.3);color:#22d3ee;text-decoration:none;font-size:.8rem;font-weight:600;width:fit-content;">
+        <span class="material-symbols-outlined" style="font-size:1rem;">table_view</span>
+        Kullanıcı İstatistikleri CSV
+      </a>
+      <a href="/admin-actions/dashboard/export-csv/?type=istatistik"
+         style="display:inline-flex;align-items:center;gap:.4rem;padding:.5rem 1rem;border-radius:.5rem;background:rgba(249,115,22,.12);border:1px solid rgba(249,115,22,.3);color:#f97316;text-decoration:none;font-size:.8rem;font-weight:600;width:fit-content;">
+        <span class="material-symbols-outlined" style="font-size:1rem;">bar_chart</span>
+        Analiz Kullanımı CSV
+      </a>
     </div>
   </div>
 
