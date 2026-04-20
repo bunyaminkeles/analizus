@@ -25,6 +25,7 @@ services:
     expose:
       - "8000"
     volumes:
+      - .:/app
       - staticfiles_data:/app/staticfiles
     depends_on:
       - redis
