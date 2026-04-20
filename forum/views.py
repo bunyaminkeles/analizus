@@ -1871,6 +1871,7 @@ def api_get_quiz_question(request):
     except Exception as e:
         return JsonResponse({'success': False, 'error': f'Bir hata oluştu: {str(e)}'})
 
+@csrf_exempt
 def api_submit_quiz_answer(request):
     """Quiz cevabını kontrol eder ve puan/rozet verir"""
     if not request.user.is_authenticated:
