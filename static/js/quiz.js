@@ -128,8 +128,19 @@
         var skip = document.getElementById('axSkip');
         if (skip) skip.style.display = 'none';
 
-        var qid    = currentQuestion.id;
+        var qid    = currentQuestion ? currentQuestion.id : null;
         var answer = btn.dataset.answer;
+
+        if (qid === null || qid === undefined) {
+            showResult({
+                success: true,
+                is_correct: false,
+                correct_answer: null,
+                explanation: 'Soru verisini alamadık. Lütfen sayfayı yenileyin.',
+                badge_awarded: null
+            }, btn);
+            return;
+        }
 
         if (qid < 0) {
             showResult({
@@ -144,10 +155,16 @@
 
         fetch('/api/quiz/answer/', {
             method: 'POST',
+            credentials: 'same-origin',
             headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrf() },
             body: JSON.stringify({ question_id: qid, answer: answer })
         })
-        .then(function (r) { return r.json(); })
+        .then(function (r) {
+            if (!r.ok) {
+                throw new Error('Sunucu hatası: ' + r.status);
+            }
+            return r.json();
+        })
         .then(function (data) {
             if (data.requires_login) {
                 window.location.href = loginUrl;
@@ -155,7 +172,8 @@
             }
             showResult(data, btn);
         })
-        .catch(function () {
+        .catch(function (error) {
+            console.error('Quiz submit failed:', error);
             showResult({
                 success: true,
                 is_correct: false,
@@ -169,8 +187,11 @@
     function showResult(data, btn) {
         if (!data.success) return;
 
+        var correctAnswerKey = data.correct_answer || data.correct_answer_letter || '';
+        var correctAnswerText = data.correct_answer_text || correctAnswerKey || '—';
+
         body.querySelectorAll('.ax-quiz-opt').forEach(function (b) {
-            if (b.dataset.answer === data.correct_answer) b.classList.add('is-correct');
+            if (b.dataset.answer === correctAnswerKey) b.classList.add('is-correct');
         });
         if (!data.is_correct) btn.classList.add('is-wrong');
 
@@ -187,9 +208,7 @@
         } else {
             fb.classList.add('ax-quiz-feedback--wrong');
             icon.textContent = '✗';
-            text.textContent = data.correct_answer
-                ? 'Yanlış. Doğru cevap: ' + data.correct_answer
-                : 'Yanlış.';
+            text.textContent = 'Yanlış. Doğru cevap: ' + correctAnswerText;
             text.style.color = 'var(--ax-accent-danger)';
         }
 
