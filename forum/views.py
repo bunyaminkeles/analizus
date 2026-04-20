@@ -116,6 +116,7 @@ def forum_index(request):
 
 
 # --- ANA SAYFA ---
+@ensure_csrf_cookie
 def home(request):
     sections = Section.objects.all().order_by('order')
 
@@ -2224,7 +2225,7 @@ def get_client_ip(request):
     return ip
 
 
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 
 @csrf_exempt
 def donation_callback(request):
