@@ -1327,6 +1327,58 @@ def tableau_dashboard(request):
     """TR Dizin Sağlık Araştırmaları Tableau Dashboard"""
     return render(request, 'forum/tableau_dashboard.html')
 
+
+def liderboard(request):
+    """Haftalık ve tüm zamanlı liderboard"""
+    from .models import QuizScore, UserQuizAttempt, Profile
+    from django.db.models import Count, Sum, Q
+
+    today = timezone.now().date()
+    week_start = today - timedelta(days=today.weekday())  # Pazartesi
+
+    # Haftalık quiz liderboard (bu hafta en fazla doğru cevap)
+    weekly = (
+        UserQuizAttempt.objects
+        .filter(is_correct=True, created_at__date__gte=week_start)
+        .values('user__username', 'user__profile__rank', 'user__id')
+        .annotate(weekly_correct=Count('id'))
+        .order_by('-weekly_correct')[:10]
+    )
+
+    # Tüm zamanlı reputation liderboard
+    alltime = (
+        Profile.objects
+        .select_related('user')
+        .filter(user__is_active=True)
+        .order_by('-reputation')[:10]
+    )
+
+    # Mevcut kullanıcının sıraları
+    user_weekly_rank = None
+    user_alltime_rank = None
+    if request.user.is_authenticated:
+        weekly_correct = UserQuizAttempt.objects.filter(
+            user=request.user, is_correct=True, created_at__date__gte=week_start
+        ).count()
+        user_weekly_rank = (
+            UserQuizAttempt.objects
+            .filter(is_correct=True, created_at__date__gte=week_start)
+            .values('user')
+            .annotate(cnt=Count('id'))
+            .filter(cnt__gt=weekly_correct)
+            .count() + 1
+        )
+        user_reputation = getattr(getattr(request.user, 'profile', None), 'reputation', 0)
+        user_alltime_rank = Profile.objects.filter(reputation__gt=user_reputation).count() + 1
+
+    return render(request, 'forum/liderboard.html', {
+        'weekly': weekly,
+        'alltime': alltime,
+        'week_start': week_start,
+        'user_weekly_rank': user_weekly_rank,
+        'user_alltime_rank': user_alltime_rank,
+    })
+
 def contact(request):
     if request.method == 'POST':
         from .models import ContactMessage

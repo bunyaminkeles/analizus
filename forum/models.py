@@ -220,6 +220,11 @@ class Profile(models.Model):
     edu_proposal_expires = models.DateTimeField(null=True, blank=True, verbose_name="EDU Teklif Hakkı Bitiş")
     following = models.ManyToManyField('self', related_name='followers', symmetrical=False, blank=True, verbose_name="Takip Edilenler")
 
+    # Günlük giriş streak
+    login_streak = models.PositiveIntegerField(default=0, verbose_name="Giriş Serisi")
+    max_login_streak = models.PositiveIntegerField(default=0, verbose_name="En Uzun Giriş Serisi")
+    last_login_streak_date = models.DateField(null=True, blank=True, verbose_name="Son Seri Güncellemesi")
+
     # Onboarding
     SEGMENT_CHOICES = (
         ('student', 'Öğrenci'),
