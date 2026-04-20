@@ -1,6 +1,14 @@
-version: '3.8'
-
 services:
+  db:
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-bunyamin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-analizus}
+      POSTGRES_DB: ${POSTGRES_DB:-analizus}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
   redis:
     image: redis:7-alpine
     restart: always
@@ -13,6 +21,7 @@ services:
       - "8000"
     depends_on:
       - redis
+      - db
 
   nginx:
     image: nginx:alpine
@@ -26,3 +35,6 @@ services:
       - ./certbot/www:/var/www/certbot
     depends_on:
       - web
+
+volumes:
+  db_data:

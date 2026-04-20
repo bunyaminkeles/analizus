@@ -1765,9 +1765,10 @@ def api_get_quiz_question(request):
     except Exception as e:
         return JsonResponse({'success': False, 'error': f'Bir hata oluştu: {str(e)}'})
 
-@login_required
 def api_submit_quiz_answer(request):
     """Quiz cevabını kontrol eder ve puan/rozet verir"""
+    if not request.user.is_authenticated:
+        return JsonResponse({'success': False, 'error': 'Puan kazanmak için giriş yapmalısınız.', 'requires_login': True})
     if request.method == 'POST':
         try:
             data = json.loads(request.body)

@@ -148,13 +148,19 @@
             body: JSON.stringify({ question_id: qid, answer: answer })
         })
         .then(function (r) { return r.json(); })
-        .then(function (data) { showResult(data, btn); })
+        .then(function (data) {
+            if (data.requires_login) {
+                window.location.href = loginUrl;
+                return;
+            }
+            showResult(data, btn);
+        })
         .catch(function () {
             showResult({
                 success: true,
-                is_correct: answer === currentQuestion.correct_answer,
-                correct_answer: currentQuestion.correct_answer,
-                explanation: currentQuestion.explanation,
+                is_correct: false,
+                correct_answer: null,
+                explanation: 'Cevap sunucuya gönderilemedi. Bağlantınızı kontrol edin.',
                 badge_awarded: null
             }, btn);
         });
@@ -181,7 +187,9 @@
         } else {
             fb.classList.add('ax-quiz-feedback--wrong');
             icon.textContent = '✗';
-            text.textContent = 'Yanlış. Doğru cevap: ' + data.correct_answer;
+            text.textContent = data.correct_answer
+                ? 'Yanlış. Doğru cevap: ' + data.correct_answer
+                : 'Yanlış.';
             text.style.color = 'var(--ax-accent-danger)';
         }
 

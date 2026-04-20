@@ -1,3 +1,46 @@
+# STRATEJİK MİMARİ KARAR: Bootstrap'ten Modern CSS'e Kademeli Geçiş
+
+## Sen Kimsin
+Sen projenin mimarısın. Bootstrap 5 kullanan Django projemizi, **"Kademeli Modernizasyon"** stratejisiyle özel bir Tasarım Sistemine (Design System) taşıyacaksın.
+
+## Mevcut Durum ve Problem
+- Proje Bootstrap 5 (cdn/link) üzerine kurulu.
+- Template'ler `col-lg-10`, `btn-primary`, `d-flex` gibi sınıflarla dolu.
+- Özel yazdığımız `.ax-` prefix'li CSS'ler Bootstrap ile çatışıyor, sayfa estetiği "hazır şablon" gibi duruyor.
+
+## Stratejik Karar (Kademeli Geçiş)
+Tüm Bootstrap'i bir gecede silip projeyi bozmayacağız. **"Namespace & Component Isolation"** yaklaşımını uygulayacağız.
+
+### 1. Kural: "Grid İçin Bootstrap, UI İçin Özel CSS"
+- **Grid Sistemi:** `container`, `row`, `col-*` sınıflarını Bootstrap'ten kullanmaya devam et. Bunlar temel yerleşimi (layout) bozmasın.
+- **UI Elementleri:** `btn`, `card`, `alert`, `badge` gibi Bootstrap bileşenlerini **kesinlikle kullanma**. Bunun yerine `.ax-` prefix'li kendi CSS bileşenlerimizi yaz.
+- **Conflict Yönetimi:** Eğer Bootstrap'in bir sınıfı (örn: `.btn`), senin özel stilinle çakışıyorsa, `base.css` içerisinde Bootstrap sınıflarını değil, kendi `ax-` sınıflarını önceliklendir.
+
+### 2. Modernizasyon Adımları (Senin Görevlerin)
+- **CSS Değişkenleri:** Tüm renkler, boşluklar, fontlar ve transition'lar `base.css` içindeki `:root` değişkenlerinden yönetilecek. Asla hardcoded renk/pixel değeri yazma.
+- **Bileşen İzolasyonu:** Her yeni oluşturduğun bölüme (örn: `tools.css`) kendi içinde `ax-` sınıfı ile izolasyon sağla. Bootstrap class'larını sadece layout (row/col) için kullan.
+- **İkon Stratejisi:** Font Awesome veya Bootstrap Icons yerine, her seferinde `inline SVG` kullan. Bu, harici yüklemeyi (CDN) iptal etmemizi sağlayacak.
+
+### 3. Geliştirici Talimatı
+Bundan sonraki her fazda (veya modülde) şu formatı uygula:
+1. **HTML:** Bootstrap grid'i (`row`, `col`) ile sayfayı iskeletle.
+2. **UI:** İçeriği `.ax-` (örneğin `.ax-card`, `.ax-btn-custom`) sınıflarıyla tasarla.
+3. **JS:** Bootstrap'in `data-bs-toggle` gibi script'leri yerine, kendi `.js` dosyalarımızdaki vanilla event listener'ları kullan (örneğin `navbar.js` veya `quiz.js`'deki gibi).
+4. **Temizlik:** Eğer bir modülün (örn: Araçlar vitrini) içindeki herhangi bir element Bootstrap class'ı ile stillendirilmişse, onu `.ax-` sınıfıyla override et.
+
+---
+
+## Bu Fazın Görevi
+Bu stratejiyi uygulayarak, **"Araştırma Konsolu"** bölümünü, Bootstrap grid yapısını kullanan ama görünüşü tamamen özel `.ax-` sınıflarıyla yönetilen **"Temiz ve İzole"** bir bileşen haline getir.
+
+## Beklenen
+- Bootstrap'ten miras kalan "mavi altı çizili linkler" veya "hazır butonlar" olmayacak.
+- Sayfa, Bootstrap grid'ini kullansa da görsel olarak "özel tasarlanmış bir SaaS uygulaması" gibi görünecek.
+- Her yeni eklenen modül, Bootstrap bağımlılığından bir adım daha uzaklaşacak.
+
+Hazır olduğunda, mevcut yapıyı bu "hibrit" ama modern modele göre revize et.
+
+
 # Analizus.com Geliştirme Görevi — Claude Code Prompt
 
 ## 🎯 Proje Bağlamı
