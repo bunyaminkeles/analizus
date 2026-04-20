@@ -210,3 +210,36 @@
     .ax-hero__metrics { gap: var(--ax-space-4); }
     .ax-hero__metric:not(:last-child)::after { display: none; }
 }
+
+/* Kişiselleştirilmiş segment bandı */
+.ax-hero__personal {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--ax-space-2);
+    justify-content: center;
+    padding: var(--ax-space-3) var(--ax-space-6);
+    background: rgba(99, 102, 241, 0.08);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    border-radius: var(--ax-radius-full);
+    font-size: var(--ax-text-sm);
+}
+.ax-hero__personal-badge {
+    font-weight: var(--ax-font-semibold);
+    color: var(--ax-color-primary);
+}
+.ax-hero__personal-text {
+    color: var(--ax-text-muted);
+}
+.ax-hero__personal-link {
+    color: var(--ax-text-secondary);
+    text-decoration: none;
+    font-weight: var(--ax-font-medium);
+    transition: color var(--ax-transition-fast);
+}
+.ax-hero__personal-link:hover {
+    color: var(--ax-color-primary);
+}
+.ax-hero__personal-sep {
+    color: var(--ax-border-hover);
+}

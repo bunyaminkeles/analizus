@@ -74,14 +74,14 @@ Türkiye'de akademik araştırmacılara yönelik bir platform. Şu bileşenlerde
 - **Job kuyruğu**: `analizdestek/job_queue.py` (custom ThreadPoolExecutor), `JOB_MAX_WORKERS=5`
 
 ### Veritabanı
-- **Üretim**: **Neon PostgreSQL** (serverless, havuzlu bağlantı)
-  - `conn_max_age=0` — her istek yeni bağlantı açar (serverless zorunluluğu)
-  - Env var: `DATABASE_URL=postgresql://...@...neon.tech/neondb?sslmode=require`
-- **Lokal geliştirme**: SQLite (DATABASE_URL boşsa otomatik)
+- **Üretim**: **Hetzner Docker PostgreSQL** (docker-compose `db` servisi)
+  - `conn_max_age=0` — serverless benzeri yapılandırma korunuyor
+  - Env var: `DATABASE_URL=postgresql://bunyamin:SIFRE@db:5432/analizus` (`db` = Docker servis adı)
+- **Lokal geliştirme**: SQLite (DATABASE_URL boş bırakılır, otomatik)
 
 ### Sunucu / Hosting
 - **VPS**: Hetzner (IP: 89.167.5.224)
-- **Web sunucusu**: Nginx (reverse proxy) + Gunicorn `>=22.0,<24.0`
+- **Web sunucusu**: Nginx (reverse proxy) + Daphne (ASGI)
 - **Statik dosyalar**: WhiteNoise (Django içinden serve edilir)
 
 ### Depolama
@@ -141,7 +141,7 @@ bibliometrics/services/    — parser.py, analyzer.py, pdf_builder.py, job_runne
 ### 1. Önce Anla, Sonra Kodla
 - Her yeni göreve başlamadan önce ilgili dosyaları oku ve mevcut yapıyı anla
 - **Tahmin yürütme; dosyaya bak.** "Muhtemelen şöyledir" deme, kodu oku.
-- Veritabanı değişikliklerinde Neon bağlantısını göz önünde bulundur: `conn_max_age=0`
+- Veritabanı değişikliklerinde Docker PostgreSQL bağlantısını göz önünde bulundur: `conn_max_age=0`
 
 ### 2. Küçük Adımlarla İlerle
 - Büyük değişiklikleri parçalara böl
@@ -165,7 +165,7 @@ bibliometrics/services/    — parser.py, analyzer.py, pdf_builder.py, job_runne
 
 ### 6. Veritabanı
 - Migration dosyaları üzerinden git, production DB'ye direkt dokunma
-- Neon serverless nedeniyle `conn_max_age=0` — long-running transaction'lardan kaçın
+- `conn_max_age=0` — long-running transaction'lardan kaçın
 - `select_related` / `prefetch_related` kullan, N+1 sorgu yaratma
 
 ### 7. Dokümantasyon
@@ -405,7 +405,7 @@ Görevler kolaylık derecesine göre sıralanmıştır. Fiyatlandırma/para mode
 ## 🤝 Benimle Çalışma Şeklin
 
 1. **Her görev için önce plan sun**: "Görev X'i şu dosyalarda şu değişikliklerle yapacağım. Onaylıyor musun?"
-2. **Migration gerekiyorsa mutlaka söyle**: Neon prod DB etkilenir
+2. **Migration gerekiyorsa mutlaka söyle**: Production DB etkilenir
 3. **Belirsizlik olunca sor**: Fiyat, oran, limit gibi iş kararlarını varsayma
 4. **Bozulan bir şey varsa anında söyle**: Commit'ten önce haber ver
 5. **Tamamlanan görevi özet geç**: Ne yaptın, ne test edilmeli
@@ -416,7 +416,7 @@ Görevler kolaylık derecesine göre sıralanmıştır. Fiyatlandırma/para mode
 
 - Commit mesajları Türkçe: "feat: Hero alanına değer önerisi eklendi"
 - Yeni branch için bana sor (mevcut: `dev` branch)
-- Production veritabanına (Neon) direkt dokunma, migration dosyaları üzerinden git
+- Production veritabanına direkt dokunma, migration dosyaları üzerinden git
 - `.env` değişkenlerini kod içine hardcode etme
 - Email env varları `SMTP_*` prefix ile (settings.py bunu bekliyor)
 - Büyük değişiklikler öncesi `git status` kontrol et

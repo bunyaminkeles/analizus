@@ -160,6 +160,44 @@
                     {% endif %}
                 </div>
 
+                {% if user.is_authenticated and user_profile.segment %}
+                <div class="ax-hero__personal mt-4">
+                    {% if user_profile.segment == 'student' %}
+                    <span class="ax-hero__personal-badge">🎓 Öğrenci</span>
+                    <span class="ax-hero__personal-text">Tezin için: </span>
+                    <a href="{% url 'istatistik:cronbach' %}" class="ax-hero__personal-link">Güvenilirlik Analizi</a>
+                    <span class="ax-hero__personal-sep">·</span>
+                    <a href="{% url 'istatistik:normallik' %}" class="ax-hero__personal-link">Normallik Testi</a>
+                    <span class="ax-hero__personal-sep">·</span>
+                    <a href="{% url 'hangi_test' %}" class="ax-hero__personal-link">Hangi Test?</a>
+                    {% elif user_profile.segment == 'academic' %}
+                    <span class="ax-hero__personal-badge">🏛️ Akademisyen</span>
+                    <span class="ax-hero__personal-text">Araştırmanız için: </span>
+                    <a href="{% url 'bibliometrics:landing' %}" class="ax-hero__personal-link">Bibliometrik Analiz</a>
+                    <span class="ax-hero__personal-sep">·</span>
+                    <a href="{% url 'openalex:landing' %}" class="ax-hero__personal-link">Yayın Tarama</a>
+                    <span class="ax-hero__personal-sep">·</span>
+                    <a href="{% url 'yoktez:landing' %}" class="ax-hero__personal-link">YÖK Tez</a>
+                    {% elif user_profile.segment == 'expert' %}
+                    <span class="ax-hero__personal-badge">💼 Uzman</span>
+                    <span class="ax-hero__personal-text">Fırsatlar: </span>
+                    <a href="{% url 'job_list' %}" class="ax-hero__personal-link">Açık İlanlar</a>
+                    <span class="ax-hero__personal-sep">·</span>
+                    <a href="{% url 'profile' user.username %}" class="ax-hero__personal-link">Profilim</a>
+                    <span class="ax-hero__personal-sep">·</span>
+                    <a href="{% url 'my_jobs' %}" class="ax-hero__personal-link">İşlerim</a>
+                    {% elif user_profile.segment == 'curious' %}
+                    <span class="ax-hero__personal-badge">🔍 Meraklı</span>
+                    <span class="ax-hero__personal-text">Keşfet: </span>
+                    <a href="{% url 'forum_index' %}" class="ax-hero__personal-link">Forum</a>
+                    <span class="ax-hero__personal-sep">·</span>
+                    <a href="{% url 'blog_list' %}" class="ax-hero__personal-link">Blog</a>
+                    <span class="ax-hero__personal-sep">·</span>
+                    <a href="{% url 'hangi_test' %}" class="ax-hero__personal-link">İstatistik Öğren</a>
+                    {% endif %}
+                </div>
+                {% endif %}
+
                 <div class="ax-hero__metrics">
                     <span class="ax-hero__metric">
                         <span class="ax-hero__metric-value">{{ total_users }}+</span> Üye
