@@ -1,8 +1,11 @@
 {% extends 'base.html' %}
+{% load markdown_extras %}
 
 {% block title %}{{ post.meta_title|default:post.title }} - Analizus Blog{% endblock %}
 
 {% block extra_head %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
 <meta name="description" content="{{ post.meta_description|default:post.excerpt }}">
 <meta property="og:title" content="{{ post.title }}">
 <meta property="og:description" content="{{ post.excerpt }}">
@@ -136,7 +139,7 @@
 
                     <!-- İçerik -->
                     <div class="blog-content text-light" style="line-height: 1.8; font-size: 1.05rem;">
-                        {{ post.content|safe }}
+                        {{ post.content|markdown }}
                     </div>
 
                     <!-- Beğeni & Paylaş -->
@@ -287,12 +290,43 @@
     border-radius: 8px;
     overflow-x: auto;
 }
+.blog-content pre code {
+    background: transparent;
+    color: #e2e8f0;
+    padding: 0;
+}
 .blog-content blockquote {
     border-left: 4px solid #00d2ff;
     padding-left: 1rem;
     margin-left: 0;
     color: #94a3b8;
     font-style: italic;
+}
+.blog-content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    font-size: 0.95rem;
+}
+.blog-content table th {
+    background: rgba(0, 210, 255, 0.15);
+    color: #00d2ff;
+    font-weight: 600;
+    padding: 0.6rem 1rem;
+    border: 1px solid rgba(0, 210, 255, 0.2);
+    text-align: left;
+}
+.blog-content table td {
+    padding: 0.55rem 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #cbd5e1;
+    vertical-align: top;
+}
+.blog-content table tr:nth-child(even) td {
+    background: rgba(255, 255, 255, 0.03);
+}
+.blog-content table tr:hover td {
+    background: rgba(0, 210, 255, 0.05);
 }
 .related-card {
     transition: all 0.3s ease;
@@ -345,4 +379,14 @@ function copyLink() {
     });
 }
 </script>
+
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.querySelector('.blog-content'), {
+        delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '$', right: '$', display: false}
+        ],
+        throwOnError: false
+    });"></script>
 {% endblock %}

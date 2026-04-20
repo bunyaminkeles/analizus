@@ -683,6 +683,15 @@ class BlogPostAdmin(ModelAdmin):
 
     readonly_fields = ('views', 'published_at')
 
+    class Media:
+        css = {
+            'all': ('https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.css',)
+        }
+        js = (
+            'https://cdn.jsdelivr.net/npm/easymde/dist/easymde.min.js',
+            'js/admin_blog_editor.js',
+        )
+
     def status_display(self, obj):
         colors = {'draft': '#ffc107', 'published': '#28a745'}
         icons = {'draft': '📝', 'published': '✅'}

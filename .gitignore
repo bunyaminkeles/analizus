@@ -43,3 +43,7 @@ awscliv2.zip
 .~lock.analizus-hetzner-cheat-sheet.odt#
 analizus-hetzner-cheat-sheet.odt
 BingSiteAuth.xml
+.env.example
+.gitignore
+.env.example
+templates/admin/index.html.jazzmin_backup
