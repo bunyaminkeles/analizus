@@ -15,10 +15,7 @@
       Cronbach Alpha, normallik testi, betimsel istatistik — hepsi tarayıcında, dosya yükle ve saniyeler içinde PDF rapor al.
       Lisans ücreti yok, kurulum yok, istatistik uzmanlığı şart değil.
     </p>
-    <a href="{% url 'istatistik:betimsel' %}" class="btn btn-primary fw-semibold px-4 me-2">
-      <i class="bi bi-play-circle-fill me-2"></i>Hemen Dene
-    </a>
-    <a href="{% url 'hangi_test' %}" class="btn btn-outline-light px-4">
+    <a href="{% url 'hangi_test' %}" class="btn btn-primary fw-semibold px-4">
       <i class="bi bi-diagram-3 me-2"></i>Hangi Test?
     </a>
   </div>
@@ -101,6 +98,61 @@
     </div>
   </div>
 
+  {# ── Hizmet Garantilerimiz (Gemini Görev 5) ── #}
+  <div class="mb-5">
+    <h2 class="text-white fw-bold text-center mb-4" style="font-size:1.4rem;">Danışmanlık ve Hizmet Garantilerimiz</h2>
+    <div class="row g-4">
+        <!-- Garanti 1 -->
+        <div class="col-md-6">
+            <div class="p-4 rounded-3 h-100 d-flex align-items-start gap-3" style="background:rgba(30,41,59,0.4);border:1px solid rgba(255,255,255,0.05);transition:transform 0.3s;" onmouseover="this.style.transform='translateY(-3px)';this.style.borderColor='rgba(99,102,241,0.4)';" onmouseout="this.style.transform='translateY(0)';this.style.borderColor='rgba(255,255,255,0.05)';">
+                <div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0" style="width:48px;height:48px;background:rgba(99,102,241,0.1);color:#818cf8;">
+                    <i class="bi bi-clock-history fs-4"></i>
+                </div>
+                <div>
+                    <h5 class="text-white fw-semibold mb-2" style="font-size:1.1rem;">Zamanında Teslimat Garantisi</h5>
+                    <p class="text-white-50 small mb-0" style="line-height:1.6;">Gecikmelere tahammülümüz yok. Anlaşılan teslim tarihini aşan projelerde koşulsuz destek ve ücretsiz ekstra revizyon garantisi sunuyoruz.</p>
+                </div>
+            </div>
+        </div>
+        <!-- Garanti 2 -->
+        <div class="col-md-6">
+            <div class="p-4 rounded-3 h-100 d-flex align-items-start gap-3" style="background:rgba(30,41,59,0.4);border:1px solid rgba(255,255,255,0.05);transition:transform 0.3s;" onmouseover="this.style.transform='translateY(-3px)';this.style.borderColor='rgba(99,102,241,0.4)';" onmouseout="this.style.transform='translateY(0)';this.style.borderColor='rgba(255,255,255,0.05)';">
+                <div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0" style="width:48px;height:48px;background:rgba(99,102,241,0.1);color:#818cf8;">
+                    <i class="bi bi-shield-lock fs-4"></i>
+                </div>
+                <div>
+                    <h5 class="text-white fw-semibold mb-2" style="font-size:1.1rem;">%100 Etik ve Veri Gizliliği</h5>
+                    <p class="text-white-50 small mb-0" style="line-height:1.6;">Araştırma verileriniz namusumuzdur. Analiz bitiminde tüm ham verileriniz ve sonuçlarınız şifreli sistemlerimizden kalıcı olarak silinir.</p>
+                </div>
+            </div>
+        </div>
+        <!-- Garanti 3 -->
+        <div class="col-md-6">
+            <div class="p-4 rounded-3 h-100 d-flex align-items-start gap-3" style="background:rgba(30,41,59,0.4);border:1px solid rgba(255,255,255,0.05);transition:transform 0.3s;" onmouseover="this.style.transform='translateY(-3px)';this.style.borderColor='rgba(99,102,241,0.4)';" onmouseout="this.style.transform='translateY(0)';this.style.borderColor='rgba(255,255,255,0.05)';">
+                <div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0" style="width:48px;height:48px;background:rgba(99,102,241,0.1);color:#818cf8;">
+                    <i class="bi bi-person-video3 fs-4"></i>
+                </div>
+                <div>
+                    <h5 class="text-white fw-semibold mb-2" style="font-size:1.1rem;">Ücretsiz Metodoloji Görüşmesi</h5>
+                    <p class="text-white-50 small mb-0" style="line-height:1.6;">Yanlış test seçimiyle zaman kaybetmeyin. İşe başlamadan önce verilerinizi inceliyor, doğru istatistiksel yöntemi uzmanlarımızla birlikte belirliyoruz.</p>
+                </div>
+            </div>
+        </div>
+        <!-- Garanti 4 -->
+        <div class="col-md-6">
+            <div class="p-4 rounded-3 h-100 d-flex align-items-start gap-3" style="background:rgba(30,41,59,0.4);border:1px solid rgba(255,255,255,0.05);transition:transform 0.3s;" onmouseover="this.style.transform='translateY(-3px)';this.style.borderColor='rgba(99,102,241,0.4)';" onmouseout="this.style.transform='translateY(0)';this.style.borderColor='rgba(255,255,255,0.05)';">
+                <div class="rounded-3 d-flex align-items-center justify-content-center flex-shrink-0" style="width:48px;height:48px;background:rgba(99,102,241,0.1);color:#818cf8;">
+                    <i class="bi bi-journal-check fs-4"></i>
+                </div>
+                <div>
+                    <h5 class="text-white fw-semibold mb-2" style="font-size:1.1rem;">Jüri ve Hakem Ön Onay Desteği</h5>
+                    <p class="text-white-50 small mb-0" style="line-height:1.6;">İşi teslim edip gitmiyoruz. Raporlarımızın sonuna kadar arkasındayız; olası hakem veya jüri düzeltmelerinde ücretsiz revizyon sağlıyoruz.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+
   {# ── Başarı Hikayeleri ── #}
   {% if stories %}
   <div class="mb-5">
@@ -137,8 +189,8 @@
       <i class="bi bi-person-plus-fill me-2"></i>Ücretsiz Kayıt Ol
     </a>
     {% endif %}
-    <a href="{% url 'istatistik:betimsel' %}" class="btn btn-{% if user.is_authenticated %}primary{% else %}outline-light{% endif %} fw-semibold px-5">
-      <i class="bi bi-play-circle-fill me-2"></i>Analiz Dene
+    <a href="{% url 'hangi_test' %}" class="btn btn-{% if user.is_authenticated %}primary{% else %}outline-light{% endif %} fw-semibold px-5">
+      <i class="bi bi-diagram-3 me-2"></i>Hangi Test?
     </a>
   </div>
 

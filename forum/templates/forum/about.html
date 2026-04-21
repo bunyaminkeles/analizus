@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load forum_extras %}
 
 {% block title %}Hakkımızda & İletişim - Analizus{% endblock %}
 
@@ -13,15 +14,13 @@
         <!-- SOL: Hakkımızda -->
         <div class="col-lg-6">
             <h1 class="fw-bold text-white mb-2" style="font-size: 2rem;">Biz Kimiz?</h1>
-            <p class="text-secondary mb-4">Akademik araştırma ve veri bilimi alanında bilgi paylaşımını kolaylaştıran bir topluluk platformu.</p>
+            <p class="text-secondary mb-4" style="line-height: 1.6;">Sadece istatistik değil; yapay zeka, veri bilimi, ekonometri ve metin analizi gibi verinin dokunduğu her alanda, araştırmacılarla uzmanları buluşturan Türkiye'nin en kapsamlı <strong>Analiz ve Uzmanlık Ekosistemi</strong>yiz.</p>
 
             <!-- Misyon -->
             <div class="mb-4">
                 <h5 class="text-info mb-2"><i class="bi bi-bullseye me-2"></i>Misyonumuz</h5>
                 <p class="text-light" style="line-height: 1.8;">
-                    Akademik analize ihtiyaç duyan araştırmacıları, alanında uzman kişilerle bir araya getirmek.
-                    Birden fazla veri analizi aracını kullanarak makale üreten, tez yazan ya da istatistik konusunda
-                    desteğe ihtiyaç duyan herkese erişilebilir, güvenilir ve kaliteli bir bilgi ortamı sunmak.
+                    Araştırmacılar, öğrenciler ve kurumlar ile alanında akademik yeterliliği doğrulanmış veri bilimcileri, istatistikçileri ve yapay zeka uzmanlarını güvenli bir <strong>Hizmetler Pazarında</strong> buluşturmak. Aynı zamanda ücretsiz araştırma konsolu araçlarımızla veri analizini herkes için erişilebilir kılmak.
                 </p>
             </div>
 
@@ -29,9 +28,7 @@
             <div class="mb-4">
                 <h5 class="text-warning mb-2"><i class="bi bi-eye me-2"></i>Vizyonumuz</h5>
                 <p class="text-light" style="line-height: 1.8;">
-                    Akademik bilgi üretim sürecinde herkesin eşit fırsatlara sahip olduğu, bilginin özgürce paylaşıldığı
-                    ve uzmanlığın değer gördüğü bir ekosistem oluşturmak. Yapay zekayı insanın yerine değil,
-                    insanın yanında konumlandırarak akademik gelişime katkı sunmak.
+                    Disiplinler arası sınırları kaldırarak; bir sosyoloğun yapay zeka uzmanından, bir mühendisin istatistikçiden kolayca destek alabildiği, bilginin ve emeğin adilce değere dönüştüğü <strong>Türkiye'nin en güvenilir bilimsel pazar yeri ve topluluğu</strong> olmak.
                 </p>
             </div>
 
@@ -142,6 +139,44 @@
                 </a>
             </div>
             {% endif %}
+        </div>
+
+        <!-- Ekip ve Güven (Gemini Görev 6) -->
+        <div class="col-12 mt-5 pt-5 border-top border-secondary border-opacity-25">
+            <div class="text-center mb-5">
+                <span class="badge fw-semibold px-3 py-2 mb-3" style="font-size:.85rem;background:rgba(99,102,241,0.1);color:#818cf8;border:1px solid rgba(99,102,241,0.2);">Geniş Uzman Ağı</span>
+                <h2 class="fw-bold text-white mb-2">Platformdaki Uzmanlardan Örnekler</h2>
+                <p class="text-secondary">Farklı disiplinlerden, akademik ve teknik yeterliliği doğrulanmış yüzlerce uzman Analizus'ta size destek olmak için bekliyor.</p>
+            </div>
+            
+            <div class="row g-4">
+                {% get_team_members as team_members %}
+                {% for member in team_members %}
+                <div class="col-lg-4 col-md-6">
+                    <div class="p-4 rounded-4 h-100" style="background: rgba(30, 41, 59, 0.4); border: 1px solid rgba(255, 255, 255, 0.05);">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            {% if member.image %}
+                            <img src="{{ member.image.url }}" class="rounded-circle" style="width: 60px; height: 60px; object-fit: cover;" alt="{{ member.name }}">
+                            {% else %}
+                            <img src="https://ui-avatars.com/api/?name={{ member.name|urlencode }}&background=6366f1&color=fff&size=60" class="rounded-circle" alt="{{ member.name }}">
+                            {% endif %}
+                            <div>
+                                <h5 class="text-white fw-bold mb-1">{{ member.name }}</h5>
+                                <p class="text-info small mb-0">{{ member.title }}</p>
+                            </div>
+                        </div>
+                        <p class="text-light small mb-3" style="line-height: 1.6;">"{{ member.bio }}"</p>
+                        <div class="d-flex flex-wrap gap-2">
+                            {% for skill in member.get_skills_list %}
+                            <span class="badge bg-dark border border-secondary text-secondary">{{ skill }}</span>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col-12 text-center text-muted py-4">Henüz uzman kadro eklenmedi.</div>
+                {% endfor %}
+            </div>
         </div>
 
     </div>

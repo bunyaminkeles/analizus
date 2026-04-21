@@ -3,13 +3,14 @@
 {% load forum_extras %}
 
 {% block extra_head %}
-<link rel="stylesheet" href="{% static 'css/hero.css' %}?v=0100">
+<link rel="stylesheet" href="{% static 'css/hero.css' %}?v=0101">
 <link rel="stylesheet" href="{% static 'css/cards.css' %}?v=0100">
 <link rel="stylesheet" href="{% static 'css/quiz.css' %}?v=0100">
 <link rel="stylesheet" href="{% static 'css/topics.css' %}?v=0100">
 <link rel="stylesheet" href="{% static 'css/testimonials.css' %}?v=0100">
 <link rel="stylesheet" href="{% static 'css/stats.css' %}?v=0100">
 <link rel="stylesheet" href="{% static 'css/news.css' %}?v=0100">
+<link rel="stylesheet" href="{% static 'css/home_sections.css' %}?v=0101">
 {% endblock %}
 
 {% block main_container %}container-fluid px-2 px-lg-3{% endblock %}
@@ -141,25 +142,61 @@
         <div class="row justify-content-center">
             <div class="col-12 col-lg-8 text-center">
 
-                <h1 class="ax-hero__title">
-                    Akademik Araştırma ve<br>
-                    <mark>İstatistik Analiz</mark> İçin Türkçe Platform
+                <h1 class="ax-hero__title" style="font-size: 2.75rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1.2;">
+                    İstatistikten Yapay Zekaya,<br>Türkiye'nin <mark style="background: transparent; color: #818cf8;">Analiz Ekosistemi</mark>
                 </h1>
 
-                <p class="ax-hero__subtitle">
-                    Doğru testi seç &middot; Verini analiz et &middot; Uzmanlarla bağlan &middot; Toplulukta tartış
+                <p class="ax-hero__subtitle" style="max-width: 90%; margin: 0 auto 24px; line-height: 1.6;">
+                    Akademik araştırmalar, veri bilimi, yapay zeka ve ekonometrik modelleme projeleriniz için doğru uzmanı bulun veya uzmanlığınızı kazanca dönüştürün.
                 </p>
 
                 <div class="ax-hero__actions">
                     {% if user.is_authenticated %}
-                    <a href="{% url 'istatistik:cronbach' %}" class="ax-hero__btn ax-hero__btn--primary">Analiz Yapmaya Başla</a>
+                    <a href="#arastirma-konsolu" class="ax-hero__btn ax-hero__btn--primary">Analiz Yapmaya Başla</a>
                     <a href="{% url 'hangi_test' %}" class="ax-hero__btn ax-hero__btn--secondary">Hangi Test?</a>
                     {% else %}
                     <a href="{% url 'register' %}" class="ax-hero__btn ax-hero__btn--primary">Hemen Başla — Ücretsiz</a>
-                    <a href="{% url 'istatistik:cronbach' %}" class="ax-hero__btn ax-hero__btn--secondary">Araçları Keşfet</a>
+                    <a href="#arastirma-konsolu" class="ax-hero__btn ax-hero__btn--secondary">Araçları Keşfet</a>
                     {% endif %}
                 </div>
 
+                {% if user.is_authenticated and user_profile.segment %}
+                <div class="ax-hero__personal mt-4">
+                    {% if user_profile.segment == 'student' %}
+                    <span class="ax-hero__personal-badge">🎓 Öğrenci</span>
+                    <span class="ax-hero__personal-text">Tezin için: </span>
+                    <a href="{% url 'istatistik:cronbach' %}" class="ax-hero__personal-link">Güvenilirlik Analizi</a>
+                    <span class="ax-hero__personal-sep">·</span>
+                    <a href="{% url 'istatistik:normallik' %}" class="ax-hero__personal-link">Normallik Testi</a>
+                    <span class="ax-hero__personal-sep">·</span>
+                    <a href="{% url 'hangi_test' %}" class="ax-hero__personal-link">Hangi Test?</a>
+                    {% elif user_profile.segment == 'academic' %}
+                    <span class="ax-hero__personal-badge">🏛️ Akademisyen</span>
+                    <span class="ax-hero__personal-text">Araştırmanız için: </span>
+                    <a href="{% url 'bibliometrics:landing' %}" class="ax-hero__personal-link">Bibliometrik Analiz</a>
+                    <span class="ax-hero__personal-sep">·</span>
+                    <a href="{% url 'openalex:landing' %}" class="ax-hero__personal-link">Yayın Tarama</a>
+                    <span class="ax-hero__personal-sep">·</span>
+                    <a href="{% url 'yoktez:landing' %}" class="ax-hero__personal-link">YÖK Tez</a>
+                    {% elif user_profile.segment == 'expert' %}
+                    <span class="ax-hero__personal-badge">💼 Uzman</span>
+                    <span class="ax-hero__personal-text">Fırsatlar: </span>
+                    <a href="{% url 'job_list' %}" class="ax-hero__personal-link">Açık İlanlar</a>
+                    <span class="ax-hero__personal-sep">·</span>
+                    <a href="{% url 'profile_detail' username=user.username %}" class="ax-hero__personal-link">Profilim</a>
+                    <span class="ax-hero__personal-sep">·</span>
+                    <a href="{% url 'my_jobs' %}" class="ax-hero__personal-link">İşlerim</a>
+                    {% elif user_profile.segment == 'curious' %}
+                    <span class="ax-hero__personal-badge">🔍 Meraklı</span>
+                    <span class="ax-hero__personal-text">Keşfet: </span>
+                    <a href="{% url 'forum_index' %}" class="ax-hero__personal-link">Forum</a>
+                    <span class="ax-hero__personal-sep">·</span>
+                    <a href="{% url 'blog_list' %}" class="ax-hero__personal-link">Blog</a>
+                    <span class="ax-hero__personal-sep">·</span>
+                    <a href="{% url 'hangi_test' %}" class="ax-hero__personal-link">İstatistik Öğren</a>
+                    {% endif %}
+                </div>
+                {% endif %}
                 <div class="ax-hero__metrics">
                     <span class="ax-hero__metric">
                         <span class="ax-hero__metric-value">{{ total_users }}+</span> Üye
@@ -178,44 +215,118 @@
 </section>
 
 <!-- =====================================================
-     FAZ 2: YÖNLENDİRME KARTLARI
+     GEMINI GÖREV 2: İKİ TARAFLI PAZAR YERİ YÖNLENDİRMESİ
      ===================================================== -->
-<section class="ax-cards-section">
+<section class="ax-market-routing py-3">
     <div class="container">
-        <div class="row g-4">
+        <div class="row g-4 justify-content-center">
 
-            <div class="col-12 col-md-4">
-                <a href="{% url 'istatistik:cronbach' %}" class="ax-card ax-card--indigo">
-                    <div class="ax-card__icon">📊</div>
-                    <h3 class="ax-card__title">Analiz Yap</h3>
-                    <p class="ax-card__desc">Cronbach Alpha, Normallik Testi, Betimleyici İstatistik — doğrudan tarayıcıda, ücretsiz.</p>
-                    <span class="ax-card__link">Analiz Araçlarına Git →</span>
-                </a>
-            </div>
+                <!-- Talep Tarafı (Müşteri/Araştırmacı) -->
+                <div class="col-lg-6">
+                    <div class="ax-market-card ax-market-card--demand h-100 d-flex flex-column">
+                        <div class="ax-market-header mb-3">
+                            <div class="ax-market-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                            </div>
+                            <h2 class="ax-market-title">Analiz Yaptırmak İstiyorum</h2>
+                        </div>
+                        <div class="ax-market-body flex-grow-1">
+                            <p class="ax-market-desc">Akademik araştırmalarınızdan kurumsal yapay zeka projelerinize kadar %100 gizlilik garantisiyle profesyonel analiz desteği alın. Hemen ücretsiz ilan açın.</p>
+                            <ul class="ax-market-features mt-3">
+                                <li><i class="bi bi-check2-circle" style="color: #818cf8;"></i> Alanında doğrulanmış uzmanlar</li>
+                                <li><i class="bi bi-check2-circle" style="color: #818cf8;"></i> Şeffaf ve sürprizsiz fiyatlandırma</li>
+                            </ul>
+                            <div class="ax-market-cats mt-3">
+                                <a href="{% url 'job_list' %}" class="ax-market-cat">İstatistik</a>
+                                <a href="{% url 'job_list' %}" class="ax-market-cat">Yapay Zeka & ML</a>
+                                <a href="{% url 'job_list' %}" class="ax-market-cat">Ekonometri</a>
+                                <a href="{% url 'job_list' %}" class="ax-market-cat">Veri Bilimi</a>
+                                <a href="{% url 'job_list' %}" class="ax-market-cat">Editörlük</a>
+                                <a href="{% url 'job_list' %}" class="ax-market-cat">Danışmanlık</a>
+                            </div>
+                            <div class="ax-market-diy mt-3">
+                                <span class="ax-market-diy__label">veya kendin yap →</span>
+                                <a href="{% url 'istatistik:cronbach' %}" class="ax-market-diy__link">Cronbach</a>
+                                <a href="{% url 'istatistik:normallik' %}" class="ax-market-diy__link">Normallik</a>
+                                <a href="{% url 'istatistik:betimsel' %}" class="ax-market-diy__link">Betimsel</a>
+                                <a href="{% url 'hangi_test' %}" class="ax-market-diy__link">Hangi Test?</a>
+                            </div>
+                        </div>
+                        <div class="ax-market-footer mt-4">
+                            <a href="{% url 'post_job' %}" class="ax-btn ax-btn--primary ax-btn--lg ax-block ax-w-full mb-2">İlan Açarak Uzman Bul</a>
+                            <a href="{% url 'uzman_dizini' %}" class="ax-btn ax-btn--ghost ax-block ax-w-full">Dizindeki Uzmanları İncele</a>
+                        </div>
+                    </div>
+                </div>
 
-            <div class="col-12 col-md-4">
-                <a href="{% url 'uzman_dizini' %}" class="ax-card ax-card--emerald">
-                    <div class="ax-card__icon">🔍</div>
-                    <h3 class="ax-card__title">Uzman Bul</h3>
-                    <p class="ax-card__desc">Alanında uzman birinden profesyonel analiz desteği al. SPSS, R, Python ve daha fazlası.</p>
-                    <span class="ax-card__link">Uzmanları Gör →</span>
-                </a>
-            </div>
-
-            <div class="col-12 col-md-4">
-                <a href="{% url 'forum_index' %}" class="ax-card ax-card--amber">
-                    <div class="ax-card__icon">💬</div>
-                    <h3 class="ax-card__title">Foruma Katıl</h3>
-                    <p class="ax-card__desc">Sorularını sor, deneyimlerini paylaş, Türkiye'nin akademik topluluğuyla bağlan.</p>
-                    <span class="ax-card__link">Tartışmalara Katıl →</span>
-                </a>
-            </div>
+                <!-- Arz Tarafı (Uzman/Analist) -->
+                <div class="col-lg-6">
+                    <div class="ax-market-card ax-market-card--supply h-100 d-flex flex-column">
+                        <div class="ax-market-header mb-3">
+                            <div class="ax-market-icon ax-market-icon--amber">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+                            </div>
+                            <h2 class="ax-market-title">Uzman Olarak Katılmak İstiyorum</h2>
+                        </div>
+                        <div class="ax-market-body flex-grow-1">
+                            <p class="ax-market-desc">Veri bilimi, makine öğrenmesi, ekonometri veya akademik analiz uzmanlığınızı kazanca dönüştürün. Açık projelere teklif verin ve portföyünüzü büyütün.</p>
+                            <ul class="ax-market-features mt-3">
+                                <li><i class="bi bi-check2-circle text-warning"></i> Sıfır komisyon ile hemen başla</li>
+                                <li><i class="bi bi-check2-circle text-warning"></i> Sadece alanınıza uygun projeler</li>
+                                <li><i class="bi bi-check2-circle text-warning"></i> Akademik profilini ve itibarını güçlendir</li>
+                            </ul>
+                            <a href="#istatistik-arenasi" class="ax-market-arena-link mt-3">
+                                🎯 İstatistik Arenası'nda puan kazan →
+                            </a>
+                        </div>
+                        <div class="ax-market-footer mt-4">
+                            <a href="{% url 'job_list' %}" class="ax-btn-outline-amber ax-btn-lg ax-block ax-w-full">Freelance Projelere Göz At</a>
+                        </div>
+                    </div>
+                </div>
 
         </div>
     </div>
 </section>
 
-<section class="ax-tools-section">
+
+{% if featured_jobs %}
+<section style="padding-bottom: var(--ax-space-8, 32px);">
+    <div class="container">
+        <div class="ax-section-card">
+            <div class="ax-section-card__header" style="color: #fbbf24;">
+                <i class="bi bi-stars"></i>
+                <span>Uzman Arayan Projeler</span>
+                <a href="{% url 'job_list' %}" class="ms-auto ax-section-card__more">Tümünü Gör →</a>
+            </div>
+            <div class="ax-section-card__body">
+                <div class="row g-3">
+                    {% for job in featured_jobs %}
+                    <div class="col-md-6 col-lg-4">
+                        <div class="p-3 border border-warning border-opacity-25 rounded-3 h-100 position-relative bg-dark bg-opacity-25 job-card-hover">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <h6 class="mb-0 text-white text-truncate" style="max-width: 80%;">
+                                    <a href="{% url 'job_detail' pk=job.pk %}" class="text-white text-decoration-none stretched-link">{{ job.title }}</a>
+                                </h6>
+                                <span class="badge bg-warning text-dark" style="font-size: 0.65rem;">VİTRİN</span>
+                            </div>
+                            <p class="small text-muted mb-3">{{ job.description|truncatechars:90 }}</p>
+                            <div class="d-flex justify-content-between align-items-center small">
+                                <span class="text-secondary"><i class="bi bi-clock"></i> {{ job.created_at|timesince }} önce</span>
+                                <span class="text-primary fw-bold">{{ job.budget_min|floatformat:0 }} ₺</span>
+                                <span class="text-secondary ms-3"><i class="bi bi-people"></i> {{ job.p_count }} Teklif</span>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<section class="ax-tools-section" id="arastirma-konsolu">
     <div class="container">
         <h2 class="ax-section-title text-center mb-5">🛠️ Araştırma Konsolu</h2>
         <div class="row g-4 justify-content-center">
@@ -279,9 +390,51 @@ document.addEventListener('DOMContentLoaded', function () {
 </script>
 
 <!-- =====================================================
+     NASIL ÇALIŞIYORUZ? (Kompakt Timeline)
+     ===================================================== -->
+<section class="ax-timeline-section">
+    <div class="container">
+        <h2 class="ax-timeline-heading">Nasıl Çalışıyoruz?</h2>
+        <div class="ax-timeline">
+            <div class="ax-timeline-step">
+                <div class="ax-timeline-num">1</div>
+                <div class="ax-timeline-content">
+                    <strong>İlan Aç</strong>
+                    <span>Projenizi ve ihtiyacınızı ücretsiz olarak yayınlayın.</span>
+                </div>
+            </div>
+            <div class="ax-timeline-arrow">→</div>
+            <div class="ax-timeline-step">
+                <div class="ax-timeline-num">2</div>
+                <div class="ax-timeline-content">
+                    <strong>Teklif Al</strong>
+                    <span>Alanında uzman kişiler metodoloji ve fiyat teklifleri sunar.</span>
+                </div>
+            </div>
+            <div class="ax-timeline-arrow">→</div>
+            <div class="ax-timeline-step">
+                <div class="ax-timeline-num">3</div>
+                <div class="ax-timeline-content">
+                    <strong>Analiz & Raporlama</strong>
+                    <span>Seçtiğiniz uzman analizi yapar, APA 7 formatında raporlar.</span>
+                </div>
+            </div>
+            <div class="ax-timeline-arrow">→</div>
+            <div class="ax-timeline-step">
+                <div class="ax-timeline-num">4</div>
+                <div class="ax-timeline-content">
+                    <strong>Teslim & Revizyon</strong>
+                    <span>Raporu teslim alırsınız. Danışman/hakem dönüşleri için revizyon hakkınız var.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- =====================================================
      FAZ 3: KENDİNİ TEST ET (Quiz)
      ===================================================== -->
-<section class="ax-quiz-section">
+<section class="ax-quiz-section" id="istatistik-arenasi">
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-12 col-lg-8">
@@ -306,43 +459,97 @@ document.addEventListener('DOMContentLoaded', function () {
 </section>
 
 <!-- =====================================================
-     FAZ 8: UZMAN ARAYAN PROJELER (Tam Genişlik)
+     FAZ 1 (GÖREV 4): SIKÇA SORULAN SORULAR (SSS)
      ===================================================== -->
-{% if featured_jobs %}
-<section style="padding-bottom: var(--ax-space-8, 32px);">
+<section class="ax-faq-section py-5">
     <div class="container">
-        <div class="ax-section-card">
-            <div class="ax-section-card__header" style="color: #fbbf24;">
-                <i class="bi bi-stars"></i>
-                <span>Uzman Arayan Projeler</span>
-                <a href="{% url 'job_list' %}" class="ms-auto ax-section-card__more">Tümünü Gör →</a>
+        <div class="row justify-content-center mb-5">
+            <div class="col-lg-8 text-center">
+                <span class="ax-badge-outline mb-3">Soru İşaretlerini Giderin</span>
+                <h2 class="ax-section-title mb-3">Sıkça Sorulan Sorular</h2>
+                <p class="ax-section-subtitle">Veri gizliliği, fiyatlandırma ve süreçlerimiz hakkında merak ettiğiniz her şey.</p>
             </div>
-            <div class="ax-section-card__body">
-                <div class="row g-3">
-                    {% for job in featured_jobs %}
-                    <div class="col-md-6 col-lg-4">
-                        <div class="p-3 border border-warning border-opacity-25 rounded-3 h-100 position-relative bg-dark bg-opacity-25 job-card-hover">
-                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                <h6 class="mb-0 text-white text-truncate" style="max-width: 80%;">
-                                    <a href="{% url 'job_detail' pk=job.pk %}" class="text-white text-decoration-none stretched-link">{{ job.title }}</a>
-                                </h6>
-                                <span class="badge bg-warning text-dark" style="font-size: 0.65rem;">VİTRİN</span>
-                            </div>
-                            <p class="small text-muted mb-3">{{ job.description|truncatechars:90 }}</p>
-                            <div class="d-flex justify-content-between align-items-center small">
-                                <span class="text-secondary"><i class="bi bi-clock"></i> {{ job.created_at|timesince }} önce</span>
-                                <span class="text-primary fw-bold">{{ job.budget_min|floatformat:0 }} ₺</span>
-                                <span class="text-secondary ms-3"><i class="bi bi-people"></i> {{ job.p_count }} Teklif</span>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="accordion ax-accordion" id="faqAccordion">
+                    
+                    <!-- Soru 1 -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="faqOne">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                                Analiz verilerim güvende mi? Başkalarıyla paylaşılır mı?
+                            </button>
+                        </h2>
+                        <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="faqOne" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Kesinlikle hayır. Verileriniz %100 KVKK ve akademik etik standartlarına uygun olarak şifreli sunucularda işlenir. Analiz dosyalarınız veya araştırma detaylarınız 3. şahıslarla, kurumlarla veya diğer uzmanlarla asla paylaşılmaz.
                             </div>
                         </div>
                     </div>
-                    {% endfor %}
+
+                    <!-- Soru 2 -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="faqTwo">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                Fiyatlandırma politikanız nasıl? Gizli veya ek ücret çıkar mı?
+                            </button>
+                        </h2>
+                        <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="faqTwo" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Ücretsiz ön inceleme sonrası size net bir fiyat ve metodoloji teklifi sunarız. Belirlenen analiz kapsamı dışına çıkılmadığı sürece süreç boyunca hiçbir gizli ücret, lisans bedeli veya ek maliyet yansıtılmaz.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Soru 3 -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="faqThree">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                Danışman hocam veya jüri revizyon (düzeltme) isterse ne olacak?
+                            </button>
+                        </h2>
+                        <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="faqThree" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Teslim ettiğimiz raporun sonuna kadar arkasındayız. Araştırma komitesi, danışman hoca veya dergi hakemlerinden gelen metodolojik geri bildirimler doğrultusunda, ilk anlaşılan kapsam dahilinde ücretsiz revizyon desteği sağlıyoruz.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Soru 4 -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="faqFour">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                                Analiz sonuçlarım ne kadar sürede teslim edilir?
+                            </button>
+                        </h2>
+                        <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="faqFour" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Teslimat süresi verinizin karmaşıklığına (veri temizliği gereksinimi vb.) ve istenen testlerin sayısına göre değişmekle birlikte, genellikle 3 ila 7 iş günü içerisinde APA formatında raporlanmış olarak teslim edilir. Zaman kısıtlaması olan projeler için "Acil Teslimat" seçeneğimiz bulunmaktadır.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Soru 5 -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="faqFive">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+                                Süreç bittikten sonra verilerime ve dosyalarıma ne oluyor?
+                            </button>
+                        </h2>
+                        <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="faqFive" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Proje teslim edilip tarafınızdan onay alındıktan sonra, verileriniz ve sonuç raporlarınız olası revizyon taleplerine karşın sistemlerimizde 30 gün boyunca güvenle muhafaza edilir. 30 günün sonunda tüm dosyalar sunucularımızdan kalıcı olarak ve geri döndürülemez şekilde silinir.
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
     </div>
 </section>
-{% endif %}
+
 
 <!-- =====================================================
      FAZ 8: GÜNDEMDEKİ TARTIŞMALAR + AKADEMİK HABERLER
@@ -412,178 +619,79 @@ document.addEventListener('DOMContentLoaded', function () {
     </div>
 </section>
 
-<!-- =====================================================
-     FAZ 8: KULLANICI PANELİ (Giriş yapanlar)
-     ===================================================== -->
-{% if user.is_authenticated %}
-<section style="padding-bottom: var(--ax-space-8, 32px);">
-    <div class="container">
-        <div class="row g-4">
-
-            <!-- Bu Hafta Analizus'ta -->
-            <div class="col-12 col-md-6">
-                <div class="ax-section-card">
-                    <div class="ax-section-card__header" style="color: #6366f1;">
-                        <i class="bi bi-bar-chart-fill"></i>
-                        <span>Bu Hafta Analizus'ta</span>
-                    </div>
-                    <div class="ax-section-card__body">
-                        <div class="row g-3 text-center">
-                            <div class="col-6 col-sm-3">
-                                <a href="{% url 'job_list' %}" class="ax-stat-pill">
-                                    <i class="bi bi-briefcase-fill" style="color:#38bdf8;font-size:1.4rem;"></i>
-                                    <div class="ax-stat-pill__value">{{ open_jobs_count }}</div>
-                                    <div class="ax-stat-pill__label">Açık İlan</div>
-                                </a>
-                            </div>
-                            {% if weekly_new_users %}
-                            <div class="col-6 col-sm-3">
-                                <div class="ax-stat-pill">
-                                    <i class="bi bi-person-plus-fill" style="color:#6366f1;font-size:1.4rem;"></i>
-                                    <div class="ax-stat-pill__value">+{{ weekly_new_users }}</div>
-                                    <div class="ax-stat-pill__label">Yeni Üye</div>
-                                </div>
-                            </div>
-                            {% endif %}
-                            {% if completed_jobs %}
-                            <div class="col-6 col-sm-3">
-                                <div class="ax-stat-pill">
-                                    <i class="bi bi-check-circle-fill" style="color:#22c55e;font-size:1.4rem;"></i>
-                                    <div class="ax-stat-pill__value">{{ completed_jobs }}</div>
-                                    <div class="ax-stat-pill__label">Tamamlanan</div>
-                                </div>
-                            </div>
-                            {% endif %}
-                            {% if active_experts_count %}
-                            <div class="col-6 col-sm-3">
-                                <div class="ax-stat-pill">
-                                    <i class="bi bi-star-fill" style="color:#fbbf24;font-size:1.4rem;"></i>
-                                    <div class="ax-stat-pill__value">{{ active_experts_count }}</div>
-                                    <div class="ax-stat-pill__label">Aktif Uzman</div>
-                                </div>
-                            </div>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- İstatistik Puanı + Bizi Destekle -->
-            {% if user_profile %}{% with nb=user_profile.get_next_badge_info %}
-            <div class="col-12 col-md-6">
-                <div class="ax-section-card">
-                    <div class="ax-section-card__header" style="color: #fbbf24;">
-                        <i class="bi bi-trophy-fill"></i>
-                        <span>İstatistik Puanın</span>
-                        <button class="ms-auto btn btn-sm rounded-pill px-3"
-                                style="font-size:0.75rem;background:rgba(236,72,153,0.12);color:#ec4899;border:1px solid rgba(236,72,153,0.3);"
-                                data-bs-toggle="modal" data-bs-target="#donationModal">
-                            <i class="bi bi-heart-fill me-1"></i>Bizi Destekle
-                        </button>
-                    </div>
-                    <div class="ax-section-card__body">
-                        <div class="d-flex align-items-baseline gap-2 mb-3">
-                            <span class="fw-bold text-white" style="font-size:2rem;line-height:1;">{{ user_profile.reputation }}</span>
-                            <span class="text-muted small">puan</span>
-                        </div>
-                        {% if nb %}
-                        <div class="mb-2">
-                            <div class="progress" style="height:8px;background:rgba(255,255,255,0.08);border-radius:4px;">
-                                <div class="progress-bar bg-warning" role="progressbar"
-                                     style="width:{{ nb.progress }}%;border-radius:4px;"
-                                     aria-valuenow="{{ nb.progress }}" aria-valuemin="0" aria-valuemax="100"></div>
-                            </div>
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <span class="text-white-50" style="font-size:0.75rem;">
-                                <i class="bi bi-award-fill text-warning me-1"></i>{{ nb.badge.name }} için
-                                <strong class="text-warning">{{ nb.points_needed }} puan</strong> kaldı
-                            </span>
-                            <span class="text-white-50" style="font-size:0.72rem;">%{{ nb.progress }}</span>
-                        </div>
-                        {% else %}
-                        <p class="text-success small mb-3"><i class="bi bi-check-circle-fill me-1"></i>Tüm rozetleri kazandın!</p>
-                        {% endif %}
-                        <div class="d-flex gap-2 flex-wrap">
-                            <span class="badge bg-dark border border-secondary text-white-50 px-2 py-1" style="font-size:0.72rem;">
-                                <i class="bi bi-chat-text me-1 text-info"></i>{{ user_profile.total_posts }} gönderi
-                            </span>
-                            <span class="badge bg-dark border border-secondary text-white-50 px-2 py-1" style="font-size:0.72rem;">
-                                <i class="bi bi-award me-1 text-warning"></i>{{ user_profile.badges.count }} rozet
-                            </span>
-                            <span class="badge bg-dark border border-secondary text-white-50 px-2 py-1" style="font-size:0.72rem;">
-                                <i class="bi bi-star me-1" style="color:#a855f7;"></i>{{ user_profile.total_topics }} konu
-                            </span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {% endwith %}{% endif %}
-
-        </div>
-    </div>
-</section>
-{% endif %}
 
 <!-- =====================================================
-     FAZ 4: BAŞARI HİKAYELERİ
-     ===================================================== -->
-{% if success_stories %}
-<section class="ax-testimonials-section">
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-12 col-lg-10">
-                <h2 class="ax-section-title text-center">🏆 Başarı Hikayeleri</h2>
-                <div id="axTestimonialCarousel"></div>
-                <div class="ax-carousel-controls">
-                    <button class="ax-carousel-btn" id="axCarouselPrev" aria-label="Önceki">←</button>
-                    <div id="axCarouselDots" class="ax-dots"></div>
-                    <button class="ax-carousel-btn" id="axCarouselNext" aria-label="Sonraki">→</button>
-                </div>
-                <div class="text-center mt-4">
-                    <a href="{% url 'success_stories' %}" class="ax-link-more">Sen de hikayeni paylaş →</a>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-{# Hikayeleri JS'e geç #}
-<script>
-window.__testimonials = [
-    {% for s in success_stories %}
-    {
-        "name": "{{ s.user.get_full_name|default:s.user.username|escapejs }}",
-        "quote": "{{ s.quote|escapejs }}",
-        "achievements": {{ s.achievements|default:"[]"|safe }},
-        "avatar": "{% if s.user.profile.avatar %}{{ s.user.profile.avatar.url }}{% endif %}"
-    }{% if not forloop.last %},{% endif %}
-    {% endfor %}
-];
-</script>
-{% endif %}
-
-<!-- =====================================================
-     FAZ 4: PLATFORM İSTATİSTİKLERİ BANDI
+     PLATFORM İSTATİSTİKLERİ BANDI
      ===================================================== -->
 <section class="ax-stats-section">
     <div class="container">
-        <div class="row text-center">
-            <div class="col-6 col-md-3 mb-4 mb-md-0">
+        <div class="row text-center justify-content-center">
+            <div class="col-6 col-md-2 mb-4 mb-md-0">
                 <div class="ax-stat-item" data-target="{{ total_users }}" data-suffix="+">0+</div>
                 <div class="ax-stat-label">Aktif Üye</div>
             </div>
-            <div class="col-6 col-md-3 mb-4 mb-md-0">
+            <div class="col-6 col-md-2 mb-4 mb-md-0">
                 <div class="ax-stat-item" data-target="{{ total_topics }}" data-suffix="+">0+</div>
                 <div class="ax-stat-label">Akademik Konu</div>
             </div>
-            <div class="col-6 col-md-3 mb-4 mb-md-0">
+            <div class="col-6 col-md-2 mb-4 mb-md-0">
                 <div class="ax-stat-item" data-target="{{ total_posts }}" data-suffix="+">0+</div>
                 <div class="ax-stat-label">Forum Gönderisi</div>
             </div>
-            <div class="col-6 col-md-3">
+            <div class="col-6 col-md-2 mb-4 mb-md-0">
                 <div class="ax-stat-item" data-target="{{ completed_jobs }}" data-suffix="+">0+</div>
                 <div class="ax-stat-label">Tamamlanan Analiz</div>
+            </div>
+            {% if open_jobs_count %}
+            <div class="col-6 col-md-2 mb-4 mb-md-0">
+                <a href="{% url 'job_list' %}" style="text-decoration:none;">
+                    <div class="ax-stat-item" style="color:#38bdf8;">{{ open_jobs_count }}</div>
+                    <div class="ax-stat-label">Açık İlan</div>
+                </a>
+            </div>
+            {% endif %}
+            {% if weekly_new_users %}
+            <div class="col-6 col-md-2">
+                <div class="ax-stat-item" style="color:#6366f1;">+{{ weekly_new_users }}</div>
+                <div class="ax-stat-label">Bu Hafta Yeni Üye</div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- =====================================================
+     GEMINI GÖREV 6: GÜVEN UNSURLARI (Platform Güvencesi)
+     ===================================================== -->
+<section class="ax-trust-section py-5 my-4" style="background: rgba(16, 185, 129, 0.05); border-top: 1px solid rgba(16, 185, 129, 0.1); border-bottom: 1px solid rgba(16, 185, 129, 0.1);">
+    <div class="container">
+        <div class="row text-center justify-content-center g-4">
+            <div class="col-lg-4 col-md-6">
+                <div class="d-flex align-items-center justify-content-center justify-content-md-start gap-3">
+                    <i class="bi bi-shield-check text-success" style="font-size: 2.5rem;"></i>
+                    <div class="text-start">
+                        <h5 class="text-white mb-1" style="font-size: 1.1rem; font-weight: 700;">Platform Güvencesi</h5>
+                        <span class="text-muted small">Güvenli ödeme ve KVKK uyumlu veri gizliliği. Verileriniz 3. şahıslara aktarılmaz.</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="d-flex align-items-center justify-content-center justify-content-md-start gap-3">
+                    <i class="bi bi-patch-check-fill text-info" style="font-size: 2.5rem;"></i>
+                    <div class="text-start">
+                        <h5 class="text-white mb-1" style="font-size: 1.1rem; font-weight: 700;">Uzman Doğrulama</h5>
+                        <span class="text-muted small">Platformdaki analistler akademik ve yetkinlik doğrulamasından geçer.</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="d-flex align-items-center justify-content-center justify-content-md-start gap-3">
+                    <i class="bi bi-star-fill text-warning" style="font-size: 2.5rem;"></i>
+                    <div class="text-start">
+                        <h5 class="text-white mb-1" style="font-size: 1.1rem; font-weight: 700;">Şeffaf Değerlendirme</h5>
+                        <span class="text-muted small">Sadece projeyi tamamlayanların yapabildiği 5 yıldızlı dürüst yorum sistemi.</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -650,6 +758,7 @@ window.__testimonials = [
 <script src="{% static 'js/quiz.js' %}?v=0102" defer></script>
 <script src="{% static 'js/stats-carousel.js' %}?v=0100" defer></script>
 
+<<<<<<< Updated upstream
 <style>
 
 /* ===== NEW GRID LAYOUT ===== */
@@ -2004,6 +2113,8 @@ a.ax-stat-pill:hover {
 }
 
 </style>
+=======
+>>>>>>> Stashed changes
 
 <script>
 

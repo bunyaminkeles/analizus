@@ -113,3 +113,9 @@ def reputation_display(user):
     if rep >= 1000:
         return f"{rep / 1000:.1f}K"
     return str(rep)
+
+@register.simple_tag
+def get_team_members():
+    """Aktif ekip üyelerini sıralamalarına göre getirir"""
+    from forum.models import TeamMember
+    return TeamMember.objects.filter(is_active=True).order_by('order')

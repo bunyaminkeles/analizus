@@ -6,8 +6,8 @@
 {% block content %}
 <div class="container py-4">
     <div class="text-center mb-5">
-        <h1 class="display-5 fw-bold text-white">İletişim Merkezi</h1>
-        <p class="text-muted">Akademik yolculuğunuzda size rehberlik etmek için buradayız.</p>
+        <h1 class="display-5 fw-bold text-white">Ücretsiz Fiyat ve Metodoloji Teklifi Alın</h1>
+        <p class="text-muted">Projenizin detaylarını paylaşın, uzmanlarımız size özel metodoloji ve net fiyat teklifini sunsun.</p>
     </div>
 
     <div class="row g-4">
@@ -34,9 +34,15 @@
                 </div>
 
                 <hr class="border-secondary my-4">
-                <p class="text-white-50 fst-italic">
-                    "Veriniz bizimle güvende, geleceğiniz analizle aydınlık."
-                </p>
+                
+                <!-- Güven Metni (Gemini Görev 7) -->
+                <div class="p-3 rounded mt-4" style="background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.2);">
+                    <h5 class="text-success mb-2" style="font-size: 1.05rem;"><i class="bi bi-shield-lock-fill me-2"></i>Verileriniz Bizimle Güvende</h5>
+                    <p class="text-light small mb-0" style="line-height: 1.6;">
+                        Tüm veri dosyalarınız şifreli sunucularda saklanır ve analiz tamamlandıktan sonra tamamen silinir. 
+                        %100 KVKK ve Akademik Etik Kuralları çerçevesinde hareket ediyor, hiçbir veriyi üçüncü şahıslarla paylaşmıyoruz.
+                    </p>
+                </div>
             </div>
         </div>
 
@@ -46,26 +52,32 @@
                     {% csrf_token %}
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label class="form-label text-info">Adınız Soyadınız</label>
+                            <label class="form-label text-info">Adınız Soyadınız *</label>
                             <input type="text" name="name" class="form-control bg-dark text-white border-secondary" placeholder="Örn: Dr. Ahmet Yılmaz" required>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label class="form-label text-info">E-posta Adresiniz</label>
+                            <label class="form-label text-info">E-posta Adresiniz *</label>
                             <input type="email" name="email" class="form-control bg-dark text-white border-secondary" placeholder="iletisim@akademi.edu.tr" required>
                         </div>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label text-info">Mesaj Konusu</label>
-                        <input type="text" name="subject" class="form-control bg-dark text-white border-secondary" placeholder="Örn: Analiz Desteği Talebi" required>
+                        <label class="form-label text-info">Araştırma / Veri Türü *</label>
+                        <select name="subject" class="form-select bg-dark text-white border-secondary" required>
+                            <option value="">Seçiniz...</option>
+                            <option value="Anket Verisi (SPSS/AMOS)">Anket Verisi (SPSS/AMOS)</option>
+                            <option value="Zaman Serisi / Panel Veri">Zaman Serisi / Panel Veri</option>
+                            <option value="Nitel / Mülakat Verisi (MAXQDA)">Nitel / Mülakat Verisi (MAXQDA vb.)</option>
+                            <option value="Diğer">Diğer / Karışık</option>
+                        </select>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label text-info">Mesajınız</label>
-                        <textarea name="message" rows="5" class="form-control bg-dark text-white border-secondary" placeholder="Nasıl yardımcı olabiliriz?" required></textarea>
+                        <label class="form-label text-info">Talep Edilen Analiz ve Detaylar *</label>
+                        <textarea name="message" rows="5" class="form-control bg-dark text-white border-secondary" placeholder="Örn: Hipotez testleri yapılacak, anket verisi için Cronbach Alpha ve faktör analizi istiyorum. Tahmini bütçe ve süre ne olur?" required></textarea>
                     </div>
 
-                    <button type="submit" class="btn btn-info w-100 py-2 fw-bold">Gönder 🚀</button>
+                    <button type="submit" class="btn btn-info w-100 py-2 fw-bold"><i class="bi bi-send me-2"></i>Teklif İste</button>
                 </form>
             </div>
         </div>
