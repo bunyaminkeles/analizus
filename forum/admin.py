@@ -2,6 +2,7 @@ from django.contrib import admin
 from django.utils.html import format_html
 from unfold.admin import ModelAdmin, TabularInline
 from .models import Section, Category, Topic, Post, Profile, ContactMessage, PrivateMessage, Badge, Skill, DailyTip, QuizQuestion, QuizScore, FreelanceJob, JobProposal, JobReview, UserQuizAttempt, DonationTier, Donation, JobPayment, TopicTag, SiteSettings, BlogCategory, BlogPost, SuccessStory, StudyRoom
+from .models import TeamMember
 
 # 1. Kategori Yönetimi (Inline)
 class CategoryInline(TabularInline):
@@ -785,3 +786,16 @@ class StudyRoomAdmin(ModelAdmin):
     def reject_rooms(self, request, queryset):
         updated = queryset.filter(status='pending').update(status='rejected', reviewed_by=request.user)
         self.message_user(request, f'{updated} oda reddedildi.')
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# EKİP ÜYELERİ (UZMAN KADROMUZ) YÖNETİMİ
+# ═══════════════════════════════════════════════════════════════════════════════
+
+@admin.register(TeamMember)
+class TeamMemberAdmin(ModelAdmin):
+    warn_unsaved_changes = True
+    compressed_fields = True
+    list_display = ('name', 'title', 'order', 'is_active')
+    list_editable = ('order', 'is_active')
+    search_fields = ('name', 'title', 'bio')
+    ordering = ('order',)

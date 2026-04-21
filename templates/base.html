@@ -184,8 +184,8 @@
             <!-- Desktop Menü -->
             <nav class="site-nav__menu" aria-label="Ana menü">
 
-                <a href="{% url 'home' %}"
-                   class="site-nav__link {% if request.path == '/' %}is-active{% endif %}">
+                <a href="{% url 'forum_index' %}"
+                   class="site-nav__link {% if '/forum/' in request.path %}is-active{% endif %}">
                     Forum
                 </a>
 
@@ -250,6 +250,21 @@
                 {% if features.blog %}
                 <a href="{% url 'blog_list' %}" class="site-nav__link {% if '/blog/' in request.path %}is-active{% endif %}">Blog</a>
                 {% endif %}
+
+                <!-- Kurumsal Dropdown -->
+                <div class="site-nav__dropdown-wrap">
+                    <button class="site-nav__link site-nav__dropdown-btn"
+                            aria-expanded="false" aria-haspopup="true"
+                            data-dropdown="kurumsal">
+                        Kurumsal
+                        <svg class="site-nav__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+                    </button>
+                    <div class="site-nav__dropdown" id="dropdown-kurumsal" role="menu">
+                        <a href="{% url 'neden_biz' %}" class="site-nav__dropdown-item" role="menuitem">Neden Analizus?</a>
+                        <a href="{% url 'about' %}" class="site-nav__dropdown-item" role="menuitem">Hakkımızda</a>
+                        <a href="{% url 'contact' %}" class="site-nav__dropdown-item" role="menuitem">İletişim</a>
+                    </div>
+                </div>
 
             </nav>
 

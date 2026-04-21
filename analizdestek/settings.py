@@ -359,6 +359,11 @@ UNFOLD = {
                     "icon": "label",
                     "link": reverse_lazy("admin:forum_topictag_changelist"),
                 },
+                {
+                    "title": "Ekip Üyeleri",
+                    "icon": "groups",
+                    "link": reverse_lazy("admin:forum_teammember_changelist"),
+                },
             ],
         },
         # ─── 3. ARAMA & ANALİZ SERVİSLERİ ──────────────────────────

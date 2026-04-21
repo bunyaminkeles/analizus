@@ -1,11 +1,12 @@
 {% extends 'base.html' %}
 {% load forum_extras %}
+{% load static %}
 
 {% block title %}{{ profile_user.username }} - Analizus Profil{% endblock %}
 {% block meta_description %}{{ profile_user.username }} kullanıcısının Analizus profili. {{ profile_user.profile.title|default:"Akademik Araştırmacı" }}{% endblock %}
 
 {% block extra_head %}
-<link rel="stylesheet" href="/static/css/profiles.css">
+<link rel="stylesheet" href="{% static 'css/profiles.css' %}">
 {% endblock %}
 
 {% block content %}

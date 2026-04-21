@@ -25,6 +25,7 @@ def dashboard_callback(request, context):
         {"label": "Rozetler",          "icon": "military_tech", "url": "/admin/forum/badge/"},
         {"label": "Quiz Soruları",     "icon": "quiz",          "url": "/admin/forum/quizquestion/"},
         {"label": "Konu Etiketleri",   "icon": "label",         "url": "/admin/forum/topictag/"},
+        {"label": "Ekip Üyeleri",      "icon": "groups",        "url": "/admin/forum/teammember/"},
     ]
     context["nav_analiz"] = [
         {"label": "OpenAlex İşleri",         "icon": "travel_explore",  "url": "/admin/oaipmh/alexsearchjobproxy/"},

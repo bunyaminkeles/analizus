@@ -1398,3 +1398,25 @@ class StudyRoomPost(models.Model):
 
     def __str__(self):
         return f"{self.author.username}: {self.message[:60]}"
+
+
+class TeamMember(models.Model):
+    name = models.CharField(max_length=100, verbose_name="İsim Soyisim")
+    title = models.CharField(max_length=100, verbose_name="Ünvan/Görev")
+    bio = models.TextField(verbose_name="Kısa Özgeçmiş")
+    image = models.ImageField(upload_to="team/", storage=get_storage, blank=True, null=True, verbose_name="Fotoğraf")
+    skills = models.CharField(max_length=200, blank=True, help_text="Virgülle ayırarak yazın (örn: SPSS, R Studio, Ölçek Geliştirme)", verbose_name="Yetenekler/Etiketler")
+    order = models.PositiveIntegerField(default=0, verbose_name="Sıralama")
+    is_active = models.BooleanField(default=True, verbose_name="Aktif mi?")
+
+    class Meta:
+        ordering = ['order']
+        verbose_name = "Ekip Üyesi"
+        verbose_name_plural = "Ekip Üyeleri"
+
+    def __str__(self):
+        return self.name
+
+    def get_skills_list(self):
+        """Virgülle ayrılmış yetenekleri listeye çevirir (Template'de döngü için)"""
+        return [s.strip() for s in self.skills.split(',')] if self.skills else []
