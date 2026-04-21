@@ -4,653 +4,721 @@
 {% block title %}{{ profile_user.username }} - Analizus Profil{% endblock %}
 {% block meta_description %}{{ profile_user.username }} kullanıcısının Analizus profili. {{ profile_user.profile.title|default:"Akademik Araştırmacı" }}{% endblock %}
 
+{% block extra_head %}
+<link rel="stylesheet" href="/static/css/profiles.css">
+{% endblock %}
+
 {% block content %}
 <div class="row py-5">
-    <!-- Profil Kartı (Sol) -->
+
+    <!-- ===================== SOL: PROFİL KARTI ===================== -->
     <div class="col-lg-4 mb-4">
-        <div class="card shadow-lg border-0 profile-card mb-4">
-            <div class="card-body text-center p-4">
-                
-                <div class="position-relative d-inline-block mb-4">
-                    <div class="avatar-glow">
-                        {% if profile_user.profile.avatar %}
-                            <img src="{{ profile_user.profile.avatar.url }}" class="rounded-circle shadow" style="width: 120px; height: 120px; object-fit: cover; border: 3px solid rgba(56, 189, 248, 0.5);">
-                        {% else %}
-                            <div class="rounded-circle d-flex align-items-center justify-content-center text-white shadow" style="width: 120px; height: 120px; font-size: 3rem; background: linear-gradient(135deg, rgba(56, 189, 248, 0.3), rgba(99, 102, 241, 0.3)); border: 3px solid rgba(56, 189, 248, 0.5);">
-                                {{ profile_user.username|slice:":1"|upper }}
-                            </div>
-                        {% endif %}
+        <div class="ax-profile-card">
+
+            <!-- Avatar -->
+            <div class="ax-profile-avatar-wrap">
+                {% if profile_user.profile.avatar %}
+                    <img src="{{ profile_user.profile.avatar.url }}"
+                         class="ax-profile-avatar"
+                         alt="{{ profile_user.username }} profil fotoğrafı">
+                {% else %}
+                    <div class="ax-profile-avatar-placeholder">
+                        {{ profile_user.username|slice:":1"|upper }}
                     </div>
+                {% endif %}
+            </div>
+
+            <!-- İsim & Ünvan -->
+            <h2 class="ax-profile-username">{{ profile_user.username }}</h2>
+            <p class="ax-profile-title">{{ profile_user.profile.title|default:"Akademik Araştırmacı" }}</p>
+
+            <!-- Rütbe -->
+            <div style="margin-bottom: var(--ax-space-2);">
+                {{ profile_user|get_rank_badge }}
+            </div>
+
+            <!-- Toplam Puan -->
+            <div class="ax-profile-score-main">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+                {{ profile_user.profile.total_score }} Toplam Puan
+            </div>
+
+            <div class="ax-profile-score-breakdown">
+                <span class="ax-profile-score-chip" title="Forum Aktivite Puanı">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    {{ profile_user.profile.reputation }}
+                </span>
+                <span class="ax-profile-score-chip" title="Quiz Arena Puanı">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                    {{ profile_user.profile.quiz_points }}
+                </span>
+            </div>
+
+            <!-- Takipçi -->
+            <div class="ax-profile-social-stats">
+                <div class="ax-profile-social-stat" title="Takipçi">
+                    <span class="ax-profile-social-stat__count" id="followerCountDisplay">{{ profile_user.profile.followers.count }}</span>
+                    <span class="ax-profile-social-stat__label">Takipçi</span>
                 </div>
-
-                <h2 class="fw-bold text-white mb-1">{{ profile_user.username }}</h2>
-                <p class="text-info small mb-2">{{ profile_user.profile.title|default:"Akademik Araştırmacı" }}</p>
-
-                <!-- Rütbe Badge -->
-                <div class="mb-2">
-                    {{ profile_user|get_rank_badge }}
+                <div class="ax-profile-social-stat" title="Takip Edilen">
+                    <span class="ax-profile-social-stat__count" id="followingCountDisplay">{{ profile_user.profile.following.count }}</span>
+                    <span class="ax-profile-social-stat__label">Takip</span>
                 </div>
+            </div>
 
-                <!-- Toplam Puan -->
-                <div class="mb-3">
-                    <div class="d-flex justify-content-center gap-2 flex-wrap">
-                        <span class="badge bg-gradient px-3 py-2" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                            <i class="bi bi-trophy-fill text-warning me-1"></i>
-                            {{ profile_user.profile.total_score }} Toplam Puan
-                        </span>
-                    </div>
-                    <div class="d-flex justify-content-center gap-2 mt-2">
-                        <span class="badge bg-dark px-2 py-1 small" title="Forum Aktivite Puanı">
-                            <i class="bi bi-chat-dots text-info me-1"></i>{{ profile_user.profile.reputation }}
-                        </span>
-                        <span class="badge bg-dark px-2 py-1 small" title="Quiz Arena Puanı">
-                            <i class="bi bi-lightning-charge text-warning me-1"></i>{{ profile_user.profile.quiz_points }}
-                        </span>
-                    </div>
-                </div>
-
-                <!-- Takipçi İstatistikleri -->
-                <div class="d-flex justify-content-center gap-4 mb-3 text-white">
-                    <div class="text-center cursor-pointer" title="Takipçi">
-                        <div class="h5 fw-bold mb-0" id="followerCountDisplay">{{ profile_user.profile.followers.count }}</div>
-                        <div class="small text-muted" style="font-size: 0.7rem;">Takipçi</div>
-                    </div>
-                    <div class="text-center cursor-pointer" title="Takip Edilen">
-                        <div class="h5 fw-bold mb-0" id="followingCountDisplay">{{ profile_user.profile.following.count }}</div>
-                        <div class="small text-muted" style="font-size: 0.7rem;">Takip</div>
-                    </div>
-                </div>
-
-            <!-- Doğrulama Rozetleri (Tikler) -->
-            <div class="d-flex justify-content-center gap-3 mb-3 p-2 rounded" style="background: rgba(0,0,0,0.2);">
+            <!-- Doğrulama tikler -->
+            {% if profile_user.profile.email_verified or profile_user.profile.phone_verified or profile_user.profile.linkedin_verified %}
+            <div class="ax-profile-verifications">
                 {% if profile_user.profile.email_verified %}
-                    <i class="bi bi-envelope-check-fill text-success fs-5" title="E-posta Doğrulanmış" data-bs-toggle="tooltip"></i>
+                    <span class="ax-profile-verification-icon" title="E-posta Doğrulanmış">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/><polyline points="9 14 11 16 15 12"/></svg>
+                    </span>
                 {% endif %}
                 {% if profile_user.profile.phone_verified %}
-                    <i class="bi bi-telephone-fill text-success fs-5" title="Telefon Doğrulanmış" data-bs-toggle="tooltip"></i>
+                    <span class="ax-profile-verification-icon" title="Telefon Doğrulanmış">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13 19.79 19.79 0 0 1 1.61 4.37 2 2 0 0 1 3.6 2.18h3a2 2 0 0 1 2 1.72c.13.96.34 1.9.63 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.09 6.09l1.27-1.27a2 2 0 0 1 2.11-.45c.91.29 1.85.5 2.81.63A2 2 0 0 1 22 16.92z"/></svg>
+                    </span>
                 {% endif %}
                 {% if profile_user.profile.linkedin_verified %}
-                    <i class="bi bi-linkedin text-primary fs-5" title="LinkedIn Doğrulanmış" data-bs-toggle="tooltip"></i>
+                    <span class="ax-profile-verification-icon" title="LinkedIn Doğrulanmış">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="#3b82f6"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+                    </span>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <!-- Rozet Önizleme -->
+            {% if profile_user.profile.badges.exists %}
+            <div class="ax-profile-badges-preview">
+                {% for badge in profile_user.profile.badges.all|slice:":5" %}
+                <div class="ax-profile-badge-circle"
+                     title="{{ badge.name }}: {{ badge.description }}"
+                     onclick="document.querySelector('[data-tab=badges]').click()">
+                    <i class="{{ badge.icon }}" style="color: {{ badge.color }}; font-size: 1.1rem;"></i>
+                </div>
+                {% endfor %}
+                {% if profile_user.profile.badges.count > 5 %}
+                <div class="ax-profile-badge-circle"
+                     title="Diğer rozetleri gör"
+                     onclick="document.querySelector('[data-tab=badges]').click()"
+                     style="font-size: var(--ax-text-xs); font-weight: var(--ax-font-bold); color: var(--ax-text-secondary);">
+                    +{{ profile_user.profile.badges.count|add:"-5" }}
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <!-- Sonraki rozet ilerleme (sadece profil sahibine) -->
+            {% if user == profile_user and next_badge %}
+            <div class="ax-profile-progress-wrap">
+                <div class="ax-profile-progress-header">
+                    <span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
+                        Sonraki: <strong style="color: #f59e0b;">{{ next_badge.badge.name }}</strong>
+                    </span>
+                    <span>%{{ next_badge.progress }}</span>
+                </div>
+                <div class="ax-profile-progress-bar">
+                    <div class="ax-profile-progress-fill" style="width: {{ next_badge.progress }}%;"></div>
+                </div>
+                <small style="font-size: var(--ax-text-xs); color: var(--ax-text-muted); display: block; margin-top: 4px;">
+                    {{ next_badge.points_needed }} puan daha kazan
+                </small>
+            </div>
+            {% endif %}
+
+            <!-- Üye tipi -->
+            <div class="ax-profile-member-chip">{{ profile_user.profile.account_type|upper }} ÜYE</div>
+
+            <!-- Hızlı istatistikler -->
+            <div class="ax-profile-quick-stats">
+                <div class="ax-profile-quick-stat-row">
+                    <span class="ax-profile-quick-stat-label">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                        Katılım
+                    </span>
+                    <span class="ax-profile-quick-stat-value">{{ profile_user.date_joined|date:"d M Y" }}</span>
+                </div>
+                <div class="ax-profile-quick-stat-row">
+                    <span class="ax-profile-quick-stat-label">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                        Konular
+                    </span>
+                    <span class="ax-profile-quick-stat-value">{{ profile_user.topics.count }}</span>
+                </div>
+                <div class="ax-profile-quick-stat-row">
+                    <span class="ax-profile-quick-stat-label">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 17 4 12 9 7"/><path d="M20 18v-2a4 4 0 0 0-4-4H4"/></svg>
+                        Mesajlar
+                    </span>
+                    <span class="ax-profile-quick-stat-value">{{ profile_user.posts.count }}</span>
+                </div>
+                <div class="ax-profile-quick-stat-row">
+                    <span class="ax-profile-quick-stat-label">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                        Değerlendirme
+                    </span>
+                    <span class="ax-profile-quick-stat-value">
+                        {% if rating_stats.total_reviews > 0 %}
+                            <span style="color: var(--ax-accent-warning);">{{ rating_stats.avg_rating|floatformat:1 }}</span>/5
+                            <span style="color: var(--ax-text-muted); font-size: var(--ax-text-xs);">({{ rating_stats.total_reviews }})</span>
+                        {% else %}
+                            <span style="color: var(--ax-text-muted);">—</span>
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Aksiyon Butonları -->
+            <div class="ax-profile-actions">
+                {% if user == profile_user %}
+                    <a href="{% url 'profile_edit' %}" class="ax-btn-profile-edit">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                        Profili Düzenle
+                    </a>
+                {% elif user.is_authenticated and user != profile_user %}
+                    <a href="{% url 'send_message' profile_user.username %}" class="ax-btn-profile-message">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                        Mesaj Gönder
+                    </a>
+                    <button onclick="toggleFollow('{{ profile_user.username }}', this)"
+                            class="ax-btn-profile-follow {% if profile_user in user.profile.following.all %}following{% endif %}"
+                            title="Takip Et / Bırak">
+                        {% if profile_user in user.profile.following.all %}
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><polyline points="16 11 18 13 22 9"/></svg>
+                        {% else %}
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+                        {% endif %}
+                    </button>
+                {% else %}
+                    <a href="{% url 'login' %}?next={{ request.path }}" class="ax-btn-profile-login">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+                        Mesaj İçin Giriş Yap
+                    </a>
                 {% endif %}
             </div>
 
-                <!-- Rozetler -->
-                {% if profile_user.profile.badges.exists %}
-                <div class="mb-3">
-                    <div class="d-flex flex-wrap justify-content-center gap-2">
-                        {% for badge in profile_user.profile.badges.all|slice:":5" %}
-                        <div class="badge-wrapper" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ badge.name }}: {{ badge.description }}">
-                            <div class="rounded-circle bg-dark border border-secondary d-flex align-items-center justify-content-center" style="width: 42px; height: 42px; box-shadow: 0 0 8px {{ badge.color }}33;">
-                                <i class="{{ badge.icon }}" style="color: {{ badge.color }}; font-size: 1.2rem;"></i>
+        </div><!-- /ax-profile-card -->
+    </div><!-- /col-lg-4 -->
+
+    <!-- ===================== SAĞ: SEKMELER ===================== -->
+    <div class="col-lg-8">
+
+        <!-- Sekme Başlıkları -->
+        <div class="ax-profile-tabs" id="profileTabs">
+            <button class="ax-profile-tab-btn active" data-tab="stats">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+                Arena
+            </button>
+            <button class="ax-profile-tab-btn" data-tab="portfolio">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                Portföy
+            </button>
+            <button class="ax-profile-tab-btn" data-tab="jobs">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                İlanlar
+            </button>
+            <button class="ax-profile-tab-btn" data-tab="badges">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
+                Rozetler
+            </button>
+            <button class="ax-profile-tab-btn" data-tab="skills">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                Yetenekler
+            </button>
+            <button class="ax-profile-tab-btn" data-tab="trust">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                Güven
+            </button>
+        </div>
+
+        <!-- ===== ARENA SEKMESİ ===== -->
+        <div class="ax-profile-tab-panel active" data-panel="stats">
+            <div class="ax-profile-panel">
+
+                {% if user_score %}
+                <div class="ax-profile-score-grid">
+                    <div class="ax-profile-score-metric">
+                        <div class="ax-profile-score-metric__label">Toplam Puan</div>
+                        <div class="ax-profile-score-metric__value" style="color: var(--ax-accent-warning);">{{ user_score.total_points }}</div>
+                    </div>
+                    <div class="ax-profile-score-metric">
+                        <div class="ax-profile-score-metric__label">Sıralama</div>
+                        <div class="ax-profile-score-metric__value" style="color: #38bdf8;">#{{ quiz_rank }}</div>
+                    </div>
+                    <div class="ax-profile-score-metric">
+                        <div class="ax-profile-score-metric__label">Kategori</div>
+                        <div class="ax-profile-score-metric__value" style="color: var(--ax-accent-secondary);">{{ quiz_stats|length }}</div>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% if quiz_stats %}
+                    <div style="display: flex; align-items: center; gap: var(--ax-space-2); margin-bottom: var(--ax-space-4); font-size: var(--ax-text-sm); font-weight: var(--ax-font-semibold); color: var(--ax-text-primary);">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--ax-accent-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                        Kategori Başarıları
+                    </div>
+                    <div class="ax-profile-category-list">
+                        {% for stat in quiz_stats %}
+                        <div>
+                            <div class="ax-profile-category-item__header">
+                                <span class="ax-profile-category-item__name">
+                                    {% if stat.question__category == 'spss' %}SPSS
+                                    {% elif stat.question__category == 'python' %}Python
+                                    {% elif stat.question__category == 'r' %}R Programlama
+                                    {% elif stat.question__category == 'statistics' %}İstatistik
+                                    {% elif stat.question__category == 'methodology' %}Metodoloji
+                                    {% else %}{{ stat.question__category|title }}{% endif %}
+                                </span>
+                                <span class="ax-profile-category-item__count">{{ stat.correct_count }} Doğru</span>
+                            </div>
+                            <div class="ax-profile-bar">
+                                <div class="ax-profile-bar__fill" style="width: 100%;"></div>
                             </div>
                         </div>
                         {% endfor %}
-                        {% if profile_user.profile.badges.count > 5 %}
-                        <div class="badge-wrapper" style="cursor: pointer;" onclick="document.getElementById('badges-tab').click()" title="Diğer rozetleri gör">
-                            <div class="rounded-circle bg-dark border border-secondary d-flex align-items-center justify-content-center text-white fw-bold small" style="width: 42px; height: 42px;">
-                                +{{ profile_user.profile.badges.count|add:"-5" }}
-                            </div>
-                        </div>
+                    </div>
+                {% else %}
+                    <div class="ax-profile-empty">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+                        <p class="ax-profile-empty__text">Henüz İstatistik Arena verisi yok.</p>
+                        {% if user == profile_user %}
+                        <button onclick="openQuizModal()" style="margin-top: var(--ax-space-3); background: transparent; border: 1px solid rgba(245,158,11,0.4); color: #f59e0b; padding: var(--ax-space-2) var(--ax-space-5); border-radius: var(--ax-radius-full); cursor: pointer; font-size: var(--ax-text-sm);">
+                            Hemen Çöz
+                        </button>
                         {% endif %}
                     </div>
-                </div>
                 {% endif %}
-
-                {% if user == profile_user and next_badge %}
-                <div class="mb-3 px-2">
-                    <div class="d-flex justify-content-between align-items-center mb-1">
-                        <small class="text-white-50">
-                            <i class="bi bi-award-fill text-warning me-1"></i>Sonraki Rozet: <span class="text-warning fw-semibold">{{ next_badge.badge.name }}</span>
-                        </small>
-                        <small class="text-white-50">%{{ next_badge.progress }}</small>
-                    </div>
-                    <div class="progress" style="height:6px;background:rgba(255,255,255,0.08);border-radius:3px;">
-                        <div class="progress-bar bg-warning" role="progressbar"
-                             style="width:{{ next_badge.progress }}%;border-radius:3px;"
-                             aria-valuenow="{{ next_badge.progress }}" aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                    <small class="text-white-50 d-block mt-1" style="font-size:0.7rem;">
-                        {{ next_badge.points_needed }} puan daha kazan
-                    </small>
-                </div>
-                {% endif %}
-
-                <span class="badge rounded-pill px-4 py-2 mb-4 cyber-badge">
-                    {{ profile_user.profile.account_type|upper }} ÜYE
-                </span>
-
-                <div class="stats-container p-3 rounded-3 text-start mt-3">
-                    <div class="d-flex justify-content-between mb-2 border-bottom border-secondary pb-2">
-                        <span class="text-neon"><i class="bi bi-calendar-check me-2"></i>Katılım:</span>
-                        <span class="text-white fw-bold">{{ profile_user.date_joined|date:"d M Y" }}</span>
-                    </div>
-                    <div class="d-flex justify-content-between mb-2 border-bottom border-secondary pb-2">
-                        <span class="text-neon"><i class="bi bi-chat-square-text me-2"></i>Konular:</span>
-                        <span class="text-white fw-bold">{{ profile_user.topics.count }}</span>
-                    </div>
-                    <div class="d-flex justify-content-between mb-2 border-bottom border-secondary pb-2">
-                        <span class="text-neon"><i class="bi bi-reply-all me-2"></i>Mesajlar:</span>
-                        <span class="text-white fw-bold">{{ profile_user.posts.count }}</span>
-                    </div>
-                    <div class="d-flex justify-content-between">
-                        <span class="text-neon"><i class="bi bi-star-fill me-2"></i>Değerlendirme:</span>
-                        <span class="text-white fw-bold">
-                            {% if rating_stats.total_reviews > 0 %}
-                                <span class="text-warning">{{ rating_stats.avg_rating|floatformat:1 }}</span>/5
-                                <small class="text-muted">({{ rating_stats.total_reviews }})</small>
-                            {% else %}
-                                <small class="text-muted">-</small>
-                            {% endif %}
-                        </span>
-                    </div>
-                </div>
-
-                <div class="mt-4 d-flex gap-2">
-                    {% if user == profile_user %}
-                        <a href="{% url 'profile_edit' %}" class="btn btn-outline-light w-100 rounded-pill shadow-sm py-2">
-                            <i class="bi bi-pencil-square me-2 text-info"></i>Profili Düzenle
-                        </a>
-                     {% elif user.is_authenticated and user != profile_user %}
-                        <div class="d-flex gap-2 w-100">
-                            <!-- ✅ ÖZEL MESAJ GÖNDER BUTONU -->
-                            <a href="{% url 'send_message' profile_user.username %}" class="btn btn-primary flex-grow-1 rounded-pill shadow-sm py-2" style="background: linear-gradient(45deg, #00d2ff, #3a7bd5); border: none;">
-                                <i class="bi bi-envelope-paper me-2"></i>Mesaj
-                            </a>
-                            <!-- ✅ TAKİP ET BUTONU -->
-                            <button onclick="toggleFollow('{{ profile_user.username }}', this)" class="btn {% if profile_user in user.profile.following.all %}btn-secondary{% else %}btn-outline-info{% endif %} rounded-pill shadow-sm py-2 px-3" title="Takip Et/Bırak">
-                                {% if profile_user in user.profile.following.all %}
-                                    <i class="bi bi-person-check-fill"></i>
-                                {% else %}
-                                    <i class="bi bi-person-plus-fill"></i>
-                                {% endif %}
-                            </button>
-                        </div>
-                    
-                    
-                    {% else %}
-                        <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-outline-info w-100 rounded-pill shadow-sm py-2">
-                            <i class="bi bi-box-arrow-in-right me-2"></i>Mesaj Göndermek İçin Giriş Yap
-                        </a>
-                    {% endif %}
-                </div>
-
             </div>
         </div>
-    </div>
 
-    <!-- Sekmeler (Sağ) -->
-    <div class="col-lg-8">
-        <ul class="nav nav-tabs border-secondary mb-4" id="profileTabs" role="tablist">
-            <li class="nav-item" role="presentation">
-                <button class="nav-link active" id="stats-tab" data-bs-toggle="tab" data-bs-target="#stats" type="button">
-                    <i class="bi bi-trophy-fill me-2"></i>İstatistik Arena
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="jobs-tab" data-bs-toggle="tab" data-bs-target="#jobs" type="button">
-                    <i class="bi bi-briefcase me-2"></i>İlanlar
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="badges-tab" data-bs-toggle="tab" data-bs-target="#badges" type="button">
-                    <i class="bi bi-award me-2"></i>Rozetler
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="skills-tab" data-bs-toggle="tab" data-bs-target="#skills" type="button">
-                    <i class="bi bi-lightning-charge me-2"></i>Yetenekler
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="trust-tab" data-bs-toggle="tab" data-bs-target="#trust" type="button">
-                    <i class="bi bi-shield-check me-2"></i>Güven & Onay
-                </button>
-            </li>
-        </ul>
-
-        <div class="tab-content" id="profileTabsContent">
-            <!-- Stats Tab -->
-            <div class="tab-pane fade show active" id="stats" role="tabpanel">
-                <div class="card border-0 shadow-lg" style="background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(56, 189, 248, 0.2);">
-                    <div class="card-body p-4">
-                        {% if user_score %}
-                        <div class="row text-center mb-4 pb-3 border-bottom border-secondary border-opacity-25">
-                            <div class="col-6 border-end border-secondary border-opacity-25">
-                                <div class="text-muted small text-uppercase" style="font-size: 0.75rem; letter-spacing: 1px;">Toplam Puan</div>
-                                <div class="display-6 fw-bold text-warning">{{ user_score.total_points }}</div>
-                            </div>
-                            <div class="col-6">
-                                <div class="text-muted small text-uppercase" style="font-size: 0.75rem; letter-spacing: 1px;">Sıralama</div>
-                                <div class="display-6 fw-bold text-info">#{{ quiz_rank }}</div>
-                            </div>
-                        </div>
-                        {% endif %}
-
-                        {% if quiz_stats %}
-                            <h6 class="text-white mb-3"><i class="bi bi-bar-chart-fill me-2 text-primary"></i>Kategori Başarıları</h6>
-                            <div class="d-flex flex-column gap-3">
-                                {% for stat in quiz_stats %}
-                                <div>
-                                    <div class="d-flex justify-content-between align-items-center mb-1">
-                                        <span class="text-light fw-bold">
-                                            {% if stat.question__category == 'spss' %}SPSS
-                                            {% elif stat.question__category == 'python' %}Python
-                                            {% elif stat.question__category == 'r' %}R Programlama
-                                            {% elif stat.question__category == 'statistics' %}İstatistik
-                                            {% elif stat.question__category == 'methodology' %}Metodoloji
-                                            {% else %}{{ stat.question__category|title }}{% endif %}
-                                        </span>
-                                        <span class="badge bg-warning text-dark rounded-pill">
-                                            {{ stat.correct_count }} Doğru
-                                        </span>
-                                    </div>
-                                    <div class="progress" style="height: 8px; background-color: rgba(255,255,255,0.05);">
-                                        <div class="progress-bar" role="progressbar" 
-                                             style="width: 100%; background: linear-gradient(90deg, #f59e0b, #fbbf24); box-shadow: 0 0 8px rgba(245, 158, 11, 0.4);">
-                                        </div>
-                                    </div>
-                                </div>
-                                {% endfor %}
-                            </div>
-                        {% else %}
-                            <div class="text-center py-5 text-muted">
-                                <i class="bi bi-trophy display-1 opacity-25 mb-3 d-block"></i>
-                                <p class="lead">Henüz İstatistik Arena verisi yok.</p>
-                                {% if user == profile_user %}
-                                <div class="mt-3">
-                                    <a href="#" onclick="openQuizModal()" class="btn btn-outline-warning rounded-pill px-4">Hemen Çöz</a>
-                                </div>
-                                {% endif %}
-                            </div>
-                        {% endif %}
-                    </div>
+        <!-- ===== PORTFÖY SEKMESİ ===== -->
+        <div class="ax-profile-tab-panel" data-panel="portfolio">
+            <div class="ax-profile-panel">
+                <div style="display: flex; align-items: center; gap: var(--ax-space-2); margin-bottom: var(--ax-space-2); font-size: var(--ax-text-base); font-weight: var(--ax-font-semibold); color: var(--ax-text-primary);">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ax-accent-secondary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                    Tamamlanan Projeler
                 </div>
-            </div>
+                <p style="font-size: var(--ax-text-xs); color: var(--ax-text-muted); margin-bottom: var(--ax-space-4);">
+                    Gizlilik için müşteri ve proje detayları anonim tutulmaktadır.
+                </p>
 
-            <!-- Jobs Tab -->
-            <div class="tab-pane fade" id="jobs" role="tabpanel">
-                <h6 class="text-white mb-3 ps-2 border-start border-4 border-info">Yayınlanan İlanlar</h6>
-                {% if posted_jobs %}
-                    <div class="list-group shadow-lg mb-5">
-                        {% for job in posted_jobs %}
-                        <a href="{% url 'job_detail' pk=job.pk %}" class="list-group-item list-group-item-action bg-dark text-white border-secondary d-flex justify-content-between align-items-center p-3" style="background: rgba(15, 23, 42, 0.95) !important; border-color: rgba(56, 189, 248, 0.2) !important;">
-                            <div>
-                                <h6 class="mb-1 fw-bold small">{{ job.title }}</h6>
-                                <small class="text-muted" style="font-size: 0.75rem;">{{ job.created_at|date:"d M Y" }} · <span class="badge {% if job.status == 'open' %}bg-success{% elif job.status == 'in_progress' %}bg-warning text-dark{% elif job.status == 'completed' %}bg-primary{% else %}bg-secondary{% endif %}">{{ job.get_status_display }}</span></small>
-                            </div>
-                            <div class="text-end">
-                                <span class="badge bg-info rounded-pill text-dark" style="font-size: 0.7rem;">{{ job.p_count }} Teklif</span>
-                            </div>
-                        </a>
-                        {% endfor %}
+                {% if completed_projects %}
+                <div class="ax-profile-portfolio-grid">
+                    {% for project in completed_projects %}
+                    <div class="ax-profile-portfolio-card">
+                        <span class="ax-profile-portfolio-card__label">Tamamlandı</span>
+                        <div class="ax-profile-portfolio-card__title">{{ project.job.title }}</div>
+                        <div class="ax-profile-portfolio-card__meta">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                            {{ project.created_at|date:"M Y" }}
+                            {% if project.job.budget_min and project.job.budget_max %}
+                            <span class="ax-profile-portfolio-card__budget">
+                                {{ project.job.budget_min|floatformat:0 }}–{{ project.job.budget_max|floatformat:0 }} TL
+                            </span>
+                            {% endif %}
+                        </div>
                     </div>
+                    {% endfor %}
+                </div>
                 {% else %}
-                    <div class="text-muted py-3 mb-4 ps-2">
-                        <i class="bi bi-briefcase opacity-50 me-2"></i>Bu kullanıcı henüz ilan vermemiş.
-                    </div>
+                <div class="ax-profile-empty">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                    <p class="ax-profile-empty__text">Henüz tamamlanan proje yok.</p>
+                </div>
                 {% endif %}
 
-                <h6 class="text-white mb-3 ps-2 border-start border-4 border-warning">Verilen Teklifler</h6>
-                {% if given_proposals %}
-                    <div class="list-group shadow-lg">
-                        {% for proposal in given_proposals %}
-                        <a href="{% url 'job_detail' pk=proposal.job.pk %}" class="list-group-item list-group-item-action bg-dark text-white border-secondary d-flex justify-content-between align-items-center p-3" style="background: rgba(15, 23, 42, 0.95) !important; border-color: rgba(56, 189, 248, 0.2) !important;">
-                            <div>
-                                <h6 class="mb-1 fw-bold small">{{ proposal.job.title }}</h6>
-                                <small class="text-muted" style="font-size: 0.75rem;">
-                                    {{ proposal.created_at|date:"d M Y" }} · 
-                                    <span class="badge {% if proposal.status == 'accepted' %}bg-success{% elif proposal.status == 'rejected' %}bg-danger{% else %}bg-secondary{% endif %}">
-                                        {{ proposal.get_status_display }}
-                                    </span>
-                                </small>
-                            </div>
-                            <div class="text-end">
-                                <span class="badge bg-dark border border-secondary text-light rounded-pill" style="font-size: 0.7rem;">
-                                    {{ proposal.price }} TL
-                                </span>
-                            </div>
-                        </a>
-                        {% endfor %}
-                    </div>
-                {% else %}
-                    <div class="text-muted py-3 ps-2">
-                        <i class="bi bi-send opacity-50 me-2"></i>Bu kullanıcı henüz teklif vermemiş.
-                    </div>
-                {% endif %}
-
-                <h6 class="text-white mb-3 mt-4 ps-2 border-start border-4 border-warning">Alınan Değerlendirmeler</h6>
                 {% if received_reviews %}
-                    <div class="list-group shadow-lg">
+                <div style="margin-top: var(--ax-space-8);">
+                    <p class="ax-profile-section-title ax-profile-section-title--warning" style="margin-bottom: var(--ax-space-4);">Alınan Değerlendirmeler</p>
+                    <div class="ax-profile-review-list">
                         {% for review in received_reviews %}
-                        <div class="list-group-item bg-dark text-white border-secondary p-3" style="background: rgba(15, 23, 42, 0.95) !important;">
-                            <div class="d-flex justify-content-between align-items-center mb-1">
-                                <span class="text-info small">{{ review.reviewer.username }}</span>
-                                <div>
+                        <div class="ax-profile-review-item">
+                            <div class="ax-profile-review-item__header">
+                                <span class="ax-profile-review-item__reviewer">{{ review.reviewer.username }}</span>
+                                <div class="ax-profile-review-stars">
                                     {% for i in "12345" %}
-                                    <i class="bi bi-star{% if forloop.counter <= review.rating %}-fill text-warning{% else %} text-muted{% endif %}" style="font-size: 0.7rem;"></i>
+                                    {% if forloop.counter <= review.rating %}
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="#f59e0b"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                    {% else %}
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="#374151"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                    {% endif %}
                                     {% endfor %}
                                 </div>
                             </div>
                             {% if review.comment %}
-                            <p class="text-light small mb-1">{{ review.comment }}</p>
+                            <p class="ax-profile-review-item__text">{{ review.comment }}</p>
                             {% endif %}
-                            <small class="text-muted" style="font-size: 0.7rem;">{{ review.job.title }} · {{ review.created_at|date:"d M Y" }}</small>
+                            <div class="ax-profile-review-item__meta">{{ review.job.title }} · {{ review.created_at|date:"d M Y" }}</div>
                         </div>
                         {% endfor %}
                     </div>
-                {% else %}
-                    <div class="text-muted py-3 ps-2">
-                        <i class="bi bi-star opacity-50 me-2"></i>Henüz değerlendirme almamış.
-                    </div>
+                </div>
                 {% endif %}
             </div>
+        </div>
 
-            <!-- Badges Tab -->
-            <div class="tab-pane fade" id="badges" role="tabpanel">
+        <!-- ===== İLANLAR SEKMESİ ===== -->
+        <div class="ax-profile-tab-panel" data-panel="jobs">
+            <div class="ax-profile-panel">
+
+                <p class="ax-profile-section-title" style="margin-bottom: var(--ax-space-3);">Yayınlanan İlanlar</p>
+                {% if posted_jobs %}
+                <div class="ax-profile-job-list">
+                    {% for job in posted_jobs %}
+                    <a href="{% url 'job_detail' pk=job.pk %}" class="ax-profile-job-item">
+                        <div>
+                            <div class="ax-profile-job-item__title">{{ job.title }}</div>
+                            <div class="ax-profile-job-item__meta">
+                                {{ job.created_at|date:"d M Y" }}
+                                <span class="ax-status-chip
+                                    {% if job.status == 'open' %}ax-status-chip--open
+                                    {% elif job.status == 'in_progress' %}ax-status-chip--in-progress
+                                    {% elif job.status == 'completed' %}ax-status-chip--completed
+                                    {% else %}ax-status-chip--cancelled{% endif %}">
+                                    {{ job.get_status_display }}
+                                </span>
+                            </div>
+                        </div>
+                        <span class="ax-profile-job-item__badge">{{ job.p_count }} Teklif</span>
+                    </a>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="ax-profile-empty" style="padding: var(--ax-space-6) 0;">
+                    <p class="ax-profile-empty__text">Bu kullanıcı henüz ilan vermemiş.</p>
+                </div>
+                {% endif %}
+
+                <p class="ax-profile-section-title ax-profile-section-title--warning" style="margin-bottom: var(--ax-space-3);">Verilen Teklifler</p>
+                {% if given_proposals %}
+                <div class="ax-profile-job-list">
+                    {% for proposal in given_proposals %}
+                    <a href="{% url 'job_detail' pk=proposal.job.pk %}" class="ax-profile-job-item">
+                        <div>
+                            <div class="ax-profile-job-item__title">{{ proposal.job.title }}</div>
+                            <div class="ax-profile-job-item__meta">
+                                {{ proposal.created_at|date:"d M Y" }}
+                                <span class="ax-status-chip
+                                    {% if proposal.status == 'accepted' %}ax-status-chip--accepted
+                                    {% elif proposal.status == 'rejected' %}ax-status-chip--rejected
+                                    {% else %}ax-status-chip--pending{% endif %}">
+                                    {{ proposal.get_status_display }}
+                                </span>
+                            </div>
+                        </div>
+                        <span class="ax-profile-job-item__price">{{ proposal.price }} TL</span>
+                    </a>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="ax-profile-empty" style="padding: var(--ax-space-6) 0;">
+                    <p class="ax-profile-empty__text">Bu kullanıcı henüz teklif vermemiş.</p>
+                </div>
+                {% endif %}
+
+            </div>
+        </div>
+
+        <!-- ===== ROZETLER SEKMESİ ===== -->
+        <div class="ax-profile-tab-panel" data-panel="badges">
+            <div class="ax-profile-panel">
+
                 {% if profile_user.profile.badges.exists %}
-                    <!-- Başarı Rozetleri -->
-                    {% with achievement_badges=profile_user.profile.badges.all|dictsort:"badge_type" %}
                     {% regroup profile_user.profile.badges.all by badge_type as badge_groups %}
-
                     {% for group in badge_groups %}
-                    <div class="mb-4">
-                        <h6 class="text-white mb-3 border-bottom border-secondary pb-2">
+                    <div class="ax-profile-badge-section">
+                        <div class="ax-profile-badge-section-title">
                             {% if group.grouper == 'achievement' %}
-                                <i class="bi bi-trophy-fill text-warning me-2"></i>Başarı Rozetleri
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>
+                                Başarı Rozetleri
                             {% elif group.grouper == 'specialty' %}
-                                <i class="bi bi-star-fill text-info me-2"></i>Uzmanlık Rozetleri
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                Uzmanlık Rozetleri
                             {% elif group.grouper == 'participation' %}
-                                <i class="bi bi-heart-fill text-danger me-2"></i>Katılım Rozetleri
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f43f5e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                                Katılım Rozetleri
                             {% elif group.grouper == 'special' %}
-                                <i class="bi bi-gem text-purple me-2"></i>Özel Rozetler
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12l4 6-10 13L2 9Z"/><path d="M11 3 8 9l4 13 4-13-3-6"/><path d="M2 9h20"/></svg>
+                                Özel Rozetler
                             {% endif %}
-                            <span class="badge bg-secondary ms-2">{{ group.list|length }}</span>
-                        </h6>
-                        <div class="row g-3">
+                            <span class="ax-profile-badge-count">{{ group.list|length }}</span>
+                        </div>
+                        <div class="ax-profile-badge-grid">
                             {% for badge in group.list %}
-                            <div class="col-md-6">
-                                <div class="d-flex align-items-center p-3 rounded border h-100 badge-card" style="background: rgba(15, 23, 42, 0.8); border-color: {{ badge.color }}33 !important;">
-                                    <div class="badge-icon-wrapper me-3" style="background: {{ badge.color }}22; border-radius: 12px; padding: 12px;">
-                                        <i class="{{ badge.icon }} fs-3" style="color: {{ badge.color }}"></i>
+                            <div class="ax-profile-badge-card" style="border-color: {{ badge.color }}22;">
+                                <div class="ax-profile-badge-icon" style="background: {{ badge.color }}18;">
+                                    <i class="{{ badge.icon }}" style="color: {{ badge.color }};"></i>
+                                </div>
+                                <div>
+                                    <div class="ax-profile-badge-name">{{ badge.name }}</div>
+                                    <div class="ax-profile-badge-desc">{{ badge.description }}</div>
+                                    {% if badge.points_required > 0 %}
+                                    <div class="ax-profile-badge-pts">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="#f59e0b"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                        {{ badge.points_required }} Puan
                                     </div>
-                                    <div class="flex-grow-1">
-                                        <h6 class="mb-1 text-white fw-bold">{{ badge.name }}</h6>
-                                        <small class="text-muted" style="font-size: 0.8rem;">{{ badge.description }}</small>
-                                        {% if badge.points_required > 0 %}
-                                        <div class="mt-1">
-                                            <span class="badge bg-dark text-warning" style="font-size: 0.7rem;">
-                                                <i class="bi bi-star-fill me-1"></i>{{ badge.points_required }} Puan
-                                            </span>
-                                        </div>
-                                        {% endif %}
-                                    </div>
+                                    {% endif %}
                                 </div>
                             </div>
                             {% endfor %}
                         </div>
                     </div>
                     {% endfor %}
-                    {% endwith %}
 
-                    <!-- Sonraki Rozet Bilgisi (Sadece profil sahibi için) -->
+                    <!-- Sonraki rozet hedef (sadece profil sahibine) -->
                     {% if user == profile_user and next_badge %}
-                    <div class="card border-0 mt-4" style="background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1)); border: 1px dashed rgba(139, 92, 246, 0.3) !important;">
-                        <div class="card-body p-4">
-                            <h6 class="text-white mb-3"><i class="bi bi-bullseye text-purple me-2"></i>Sonraki Hedefiniz</h6>
-                            <div class="d-flex align-items-center">
-                                <div class="me-3" style="background: {{ next_badge.badge.color }}22; border-radius: 12px; padding: 15px;">
-                                    <i class="{{ next_badge.badge.icon }} fs-2" style="color: {{ next_badge.badge.color }}"></i>
+                    <div class="ax-profile-next-badge">
+                        <div class="ax-profile-next-badge__title">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a78bfa" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                            Sonraki Hedefiniz
+                        </div>
+                        <div class="ax-profile-next-badge__body">
+                            <div class="ax-profile-next-badge__icon" style="background: {{ next_badge.badge.color }}18;">
+                                <i class="{{ next_badge.badge.icon }}" style="color: {{ next_badge.badge.color }};"></i>
+                            </div>
+                            <div class="ax-profile-next-badge__info">
+                                <div class="ax-profile-next-badge__name">{{ next_badge.badge.name }}</div>
+                                <div class="ax-profile-next-badge__desc">{{ next_badge.badge.description }}</div>
+                                <div class="ax-profile-progress-bar" style="margin-top: var(--ax-space-2);">
+                                    <div class="ax-profile-progress-fill" style="width: {{ next_badge.progress }}%; background: linear-gradient(90deg, {{ next_badge.badge.color }}, {{ next_badge.badge.color }}aa);"></div>
                                 </div>
-                                <div class="flex-grow-1">
-                                    <h5 class="text-white mb-1">{{ next_badge.badge.name }}</h5>
-                                    <small class="text-muted">{{ next_badge.badge.description }}</small>
-                                    <div class="progress mt-2" style="height: 8px; background: rgba(255,255,255,0.1);">
-                                        <div class="progress-bar" style="width: {{ next_badge.progress }}%; background: linear-gradient(90deg, {{ next_badge.badge.color }}, {{ next_badge.badge.color }}aa);"></div>
-                                    </div>
-                                    <small class="text-info mt-1 d-block">{{ next_badge.points_needed }} puan daha gerekli</small>
-                                </div>
+                                <span class="ax-profile-next-badge__remaining">{{ next_badge.points_needed }} puan daha gerekli</span>
                             </div>
                         </div>
                     </div>
                     {% endif %}
+
                 {% else %}
-                    <div class="text-center text-muted py-4 mb-4">
-                        <i class="bi bi-award display-4 opacity-25 mb-2 d-block"></i>
-                        <p class="text-muted mb-0">Henüz rozet kazanılmamış</p>
+                    <div class="ax-profile-empty">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
+                        <p class="ax-profile-empty__text">Henüz rozet kazanılmamış.</p>
                     </div>
                 {% endif %}
 
-                    <!-- Tüm Rozetler ve Kazanma Koşulları -->
-                    {% if all_badges %}
-                    <div class="mt-4 pt-4 border-top border-secondary">
-                        <h6 class="text-white mb-3">
-                            <i class="bi bi-collection-fill text-info me-2"></i>Tüm Rozetler ve Kazanma Koşulları
-                            <span class="badge bg-secondary ms-2">{{ all_badges|length }}</span>
-                        </h6>
+                <!-- Tüm rozetler ve kazanma koşulları -->
+                {% if all_badges %}
+                <div class="ax-profile-all-badges">
+                    <div style="display: flex; align-items: center; gap: var(--ax-space-2); margin-bottom: var(--ax-space-2); font-size: var(--ax-text-sm); font-weight: var(--ax-font-semibold); color: var(--ax-text-primary);">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+                        Tüm Rozetler
+                        <span class="ax-profile-badge-count">{{ all_badges|length }}</span>
+                    </div>
 
-                        {% regroup all_badges by badge_type as all_badge_groups %}
-                        {% for group in all_badge_groups %}
-                        <div class="mb-3">
-                            <small class="text-uppercase text-muted fw-bold d-block mb-2" style="font-size: 0.7rem; letter-spacing: 1px;">
-                                {% if group.grouper == 'achievement' %}Başarı Rozetleri
-                                {% elif group.grouper == 'specialty' %}Uzmanlık Rozetleri (Quiz)
-                                {% elif group.grouper == 'participation' %}Katılım Rozetleri (Forum)
-                                {% elif group.grouper == 'special' %}Özel Rozetler
-                                {% endif %}
-                            </small>
-                            {% for badge in group.list %}
-                            <div class="d-flex align-items-center p-2 rounded mb-1 {% if badge.id in user_badge_ids %}border{% endif %}" style="background: {% if badge.id in user_badge_ids %}rgba(16, 185, 129, 0.08){% else %}rgba(255,255,255,0.02){% endif %}; {% if badge.id in user_badge_ids %}border-color: {{ badge.color }}44 !important;{% endif %}">
-                                <div class="me-2" style="width: 28px; text-align: center;">
-                                    <i class="{{ badge.icon }}" style="color: {% if badge.id in user_badge_ids %}{{ badge.color }}{% else %}#4b5563{% endif %}; font-size: 1rem;"></i>
-                                </div>
-                                <div class="flex-grow-1">
-                                    <span class="{% if badge.id in user_badge_ids %}text-white{% else %}text-muted{% endif %} small fw-bold">{{ badge.name }}</span>
-                                    <span class="text-muted small ms-2" style="font-size: 0.75rem;">{{ badge.description }}</span>
-                                </div>
-                                {% if badge.id in user_badge_ids %}
-                                <span class="badge bg-success bg-opacity-25 text-success" style="font-size: 0.65rem;">Kazanıldı</span>
-                                {% else %}
-                                <span class="badge bg-dark text-muted" style="font-size: 0.65rem;">Kilitli</span>
-                                {% endif %}
-                            </div>
-                            {% endfor %}
+                    {% regroup all_badges by badge_type as all_badge_groups %}
+                    {% for group in all_badge_groups %}
+                    <span class="ax-profile-all-badges__group-label">
+                        {% if group.grouper == 'achievement' %}Başarı Rozetleri
+                        {% elif group.grouper == 'specialty' %}Uzmanlık Rozetleri
+                        {% elif group.grouper == 'participation' %}Katılım Rozetleri
+                        {% elif group.grouper == 'special' %}Özel Rozetler
+                        {% endif %}
+                    </span>
+                    {% for badge in group.list %}
+                    <div class="ax-profile-badge-row {% if badge.id in user_badge_ids %}earned{% endif %}">
+                        <div class="ax-profile-badge-row__icon">
+                            <i class="{{ badge.icon }}"
+                               style="color: {% if badge.id in user_badge_ids %}{{ badge.color }}{% else %}#4b5563{% endif %};"></i>
                         </div>
+                        <span class="ax-profile-badge-row__name"
+                              style="color: {% if badge.id in user_badge_ids %}var(--ax-text-primary){% else %}var(--ax-text-muted){% endif %};">
+                            {{ badge.name }}
+                        </span>
+                        <span class="ax-profile-badge-row__desc">{{ badge.description }}</span>
+                        {% if badge.id in user_badge_ids %}
+                            <span class="ax-badge-earned-chip">Kazanıldı</span>
+                        {% else %}
+                            <span class="ax-badge-locked-chip">Kilitli</span>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+            </div>
+        </div>
+
+        <!-- ===== YETENEKLER SEKMESİ ===== -->
+        <div class="ax-profile-tab-panel" data-panel="skills">
+            <div class="ax-profile-panel">
+                <div class="ax-profile-skills-title">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                    Uzmanlık Alanları
+                </div>
+                {% if profile_user.profile.skills.exists %}
+                    <div class="ax-profile-skill-tags">
+                        {% for skill in profile_user.profile.skills.all %}
+                        <span class="ax-profile-skill-tag">
+                            <i class="{{ skill.icon }}" style="color: {{ skill.color }};"></i>
+                            {{ skill.name }}
+                        </span>
                         {% endfor %}
                     </div>
-                    {% endif %}
+                {% else %}
+                    <div class="ax-profile-empty">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                        <p class="ax-profile-empty__text">Henüz yetenek eklenmemiş.</p>
+                    </div>
+                {% endif %}
             </div>
+        </div>
 
-            <!-- Skills Tab -->
-            <div class="tab-pane fade" id="skills" role="tabpanel">
-                <div class="card border-0 shadow-lg" style="background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(56, 189, 248, 0.2);">
-                    <div class="card-body p-4">
-                        <h5 class="text-white mb-4"><i class="bi bi-lightning-charge-fill me-2 text-warning"></i>Uzmanlık Alanları</h5>
-                        {% if profile_user.profile.skills.exists %}
-                            <div class="d-flex flex-wrap gap-2">
-                                {% for skill in profile_user.profile.skills.all %}
-                                <span class="badge bg-dark border border-secondary text-light p-2 px-3" style="font-size: 0.9rem;">
-                                    <i class="{{ skill.icon }} me-2" style="color: {{ skill.color }}"></i>{{ skill.name }}
-                                </span>
-                                {% endfor %}
-                            </div>
+        <!-- ===== GÜVEN & ONAY SEKMESİ ===== -->
+        <div class="ax-profile-tab-panel" data-panel="trust">
+
+            <!-- Yetki Kartları -->
+            <div class="ax-profile-trust-grid" style="margin-bottom: var(--ax-space-4);">
+                <div class="ax-profile-trust-card ax-profile-trust-card--granted">
+                    <div class="ax-profile-trust-card__icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="7" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                    </div>
+                    <div class="ax-profile-trust-card__title">İlan Açma Yetkisi</div>
+                    <span class="ax-profile-trust-card__status ax-profile-trust-card__status--success">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                        Aktif
+                    </span>
+                    <div class="ax-profile-trust-card__desc">Tüm üyeler ilan açabilir</div>
+                </div>
+
+                <div class="ax-profile-trust-card {% if permissions.can_propose %}ax-profile-trust-card--active{% else %}ax-profile-trust-card--locked{% endif %}">
+                    <div class="ax-profile-trust-card__icon">
+                        {% if permissions.can_propose %}
+                            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#6366f1" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
                         {% else %}
-                            <div class="text-center text-muted py-4">
-                                <i class="bi bi-lightning display-4 opacity-25 mb-2 d-block"></i>
-                                Henüz yetenek eklenmemiş.
-                            </div>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                         {% endif %}
                     </div>
+                    <div class="ax-profile-trust-card__title">Teklif Verme Yetkisi</div>
+                    {% if permissions.can_propose %}
+                        <span class="ax-profile-trust-card__status ax-profile-trust-card__status--primary">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                            Aktif
+                        </span>
+                        <div class="ax-profile-trust-card__desc">{{ permissions.propose_reason }}</div>
+                    {% else %}
+                        <span class="ax-profile-trust-card__status ax-profile-trust-card__status--locked">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                            Kilitli
+                        </span>
+                        <div class="ax-profile-trust-card__desc">1000+ puan veya özel rozet gerekli</div>
+                    {% endif %}
                 </div>
             </div>
 
-            <!-- Trust & Verification Tab -->
-            <div class="tab-pane fade" id="trust" role="tabpanel">
-                <!-- Yetki Kartları -->
-                <div class="row g-3 mb-4">
-                    <div class="col-md-6">
-                        <div class="card border-0 h-100" style="background: linear-gradient(135deg, rgba(34, 197, 94, 0.15), rgba(16, 185, 129, 0.1)); border: 1px solid rgba(34, 197, 94, 0.3) !important;">
-                            <div class="card-body p-4 text-center">
-                                <div class="mb-3">
-                                    <i class="bi bi-briefcase-fill display-4 text-success"></i>
-                                </div>
-                                <h5 class="text-white mb-2">İlan Açma Yetkisi</h5>
-                                <span class="badge bg-success rounded-pill px-3 py-2">
-                                    <i class="bi bi-check-circle me-1"></i>Aktif
-                                </span>
-                                <p class="text-muted small mt-2 mb-0">Tüm üyeler ilan açabilir</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="card border-0 h-100" style="background: {% if permissions.can_propose %}linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(99, 102, 241, 0.1)){% else %}rgba(15, 23, 42, 0.8){% endif %}; border: 1px solid {% if permissions.can_propose %}rgba(59, 130, 246, 0.3){% else %}rgba(100, 116, 139, 0.3){% endif %} !important;">
-                            <div class="card-body p-4 text-center">
-                                <div class="mb-3">
-                                    {% if permissions.can_propose %}
-                                        <i class="bi bi-send-fill display-4 text-primary"></i>
-                                    {% else %}
-                                        <i class="bi bi-send display-4 text-muted opacity-50"></i>
-                                    {% endif %}
-                                </div>
-                                <h5 class="text-white mb-2">Teklif Verme Yetkisi</h5>
-                                {% if permissions.can_propose %}
-                                    <span class="badge bg-primary rounded-pill px-3 py-2">
-                                        <i class="bi bi-check-circle me-1"></i>Aktif
-                                    </span>
-                                    <p class="text-muted small mt-2 mb-0">{{ permissions.propose_reason }}</p>
-                                {% else %}
-                                    <span class="badge bg-secondary rounded-pill px-3 py-2">
-                                        <i class="bi bi-lock me-1"></i>Kilitli
-                                    </span>
-                                    <p class="text-muted small mt-2 mb-0">1000+ puan veya özel rozet gerekli</p>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
+            <!-- Doğrulama Merkezi -->
+            <div class="ax-profile-verify-center">
+                <div class="ax-profile-verify-center__title">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+                    Hesap Doğrulama Merkezi
                 </div>
 
-                <div class="card border-0 shadow-lg" style="background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(56, 189, 248, 0.2);">
-                    <div class="card-body p-4">
-                        <h5 class="text-white mb-4"><i class="bi bi-shield-lock-fill me-2 text-info"></i>Hesap Doğrulama Merkezi</h5>
+                {% if user == profile_user %}
+                <div class="ax-profile-verify-info-box">
+                    <strong style="color: var(--ax-text-primary);">Neden Doğrulamalıyım?</strong><br>
+                    Tüm doğrulamaları tamamladığınızda "Güvenilir Üye" rozeti kazanır ve teklif verme yetkisi elde edersiniz!
+                </div>
+                {% endif %}
 
-                        {% if user == profile_user %}
-                            <div class="alert border-0 mb-4" style="background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.2) !important;">
-                                <i class="bi bi-info-circle-fill me-2 text-info"></i>
-                                <strong class="text-white">Neden Doğrulamalıyım?</strong><br>
-                                <span class="text-muted">Tüm doğrulamaları tamamladığınızda "Güvenilir Üye" rozeti kazanır ve teklif verme yetkisi elde edersiniz!</span>
-                            </div>
-                        {% endif %}
-
-                        <div class="list-group list-group-flush bg-transparent">
-                            <!-- E-posta -->
-                            <div class="list-group-item bg-transparent border-secondary d-flex justify-content-between align-items-center py-3">
-                                <div>
-                                    <h6 class="text-white mb-1"><i class="bi bi-envelope me-2"></i>E-posta Adresi</h6>
-                                    <small class="text-muted">{{ profile_user.email|default:"Belirtilmemiş" }}</small>
-                                </div>
-                                {% if profile_user.profile.email_verified %}
-                                    <span class="badge bg-success rounded-pill"><i class="bi bi-check-circle me-1"></i>Onaylı</span>
-                                {% else %}
-                                    <span class="badge bg-danger rounded-pill">Onaysız</span>
-                                {% endif %}
-                            </div>
-
-                            <!-- Telefon -->
-                            <div class="list-group-item bg-transparent border-secondary py-3">
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <div>
-                                        <h6 class="text-white mb-1"><i class="bi bi-phone me-2"></i>Telefon Numarası</h6>
-                                        <small class="text-muted">{% if profile_user.profile.phone_number %}************{% else %}Belirtilmemiş{% endif %}</small>
-                                    </div>
-                                    {% if profile_user.profile.phone_verified %}
-                                        <span class="badge bg-success rounded-pill"><i class="bi bi-check-circle me-1"></i>Onaylı</span>
-                                    {% else %}
-                                        {% if user == profile_user %}
-                                        <form method="post" class="d-flex gap-2">
-                                            {% csrf_token %}
-                                            <input type="hidden" name="action" value="verify_phone">
-                                            <input type="tel" name="phone" class="form-control form-control-sm bg-dark text-white border-secondary" placeholder="+90 5XX..." required>
-                                            <button type="submit" class="btn btn-sm btn-outline-info">Doğrula</button>
-                                        </form>
-                                        {% else %}
-                                        <span class="badge bg-secondary rounded-pill">Onaysız</span>
-                                        {% endif %}
-                                    {% endif %}
-                                </div>
-                            </div>
-
-                            <!-- LinkedIn -->
-                            <div class="list-group-item bg-transparent border-secondary py-3">
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <div>
-                                        <h6 class="text-white mb-1"><i class="bi bi-linkedin me-2"></i>LinkedIn Profili</h6>
-                                        <small class="text-muted">Profesyonel kimlik doğrulama</small>
-                                    </div>
-                                    {% if profile_user.profile.linkedin_verified %}
-                                        <span class="badge bg-primary rounded-pill"><i class="bi bi-check-circle me-1"></i>Onaylı</span>
-                                    {% else %}
-                                        {% if user == profile_user %}
-                                        <form method="post" class="d-flex gap-2">
-                                            {% csrf_token %}
-                                            <input type="hidden" name="action" value="verify_linkedin">
-                                            <input type="url" name="linkedin" class="form-control form-control-sm bg-dark text-white border-secondary" placeholder="https://linkedin.com/in/..." required>
-                                            <button type="submit" class="btn btn-sm btn-outline-primary">Bağla</button>
-                                        </form>
-                                        {% else %}
-                                        <span class="badge bg-secondary rounded-pill">Bağlanmamış</span>
-                                        {% endif %}
-                                    {% endif %}
-                                </div>
-                            </div>
+                <div class="ax-profile-verify-list">
+                    <!-- E-posta -->
+                    <div class="ax-profile-verify-row">
+                        <div class="ax-profile-verify-row__label">
+                            <h6>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                                E-posta Adresi
+                            </h6>
+                            <small>{{ profile_user.email|default:"Belirtilmemiş" }}</small>
                         </div>
+                        {% if profile_user.profile.email_verified %}
+                            <span class="ax-verify-chip ax-verify-chip--success">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                Onaylı
+                            </span>
+                        {% else %}
+                            <span class="ax-verify-chip ax-verify-chip--danger">Onaysız</span>
+                        {% endif %}
+                    </div>
+
+                    <!-- Telefon -->
+                    <div class="ax-profile-verify-row" style="flex-direction: column; align-items: flex-start;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                            <div class="ax-profile-verify-row__label">
+                                <h6>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13 19.79 19.79 0 0 1 1.61 4.37 2 2 0 0 1 3.6 2.18h3a2 2 0 0 1 2 1.72c.13.96.34 1.9.63 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.09 6.09l1.27-1.27a2 2 0 0 1 2.11-.45c.91.29 1.85.5 2.81.63A2 2 0 0 1 22 16.92z"/></svg>
+                                    Telefon Numarası
+                                </h6>
+                                <small>{% if profile_user.profile.phone_number %}************{% else %}Belirtilmemiş{% endif %}</small>
+                            </div>
+                            {% if profile_user.profile.phone_verified %}
+                                <span class="ax-verify-chip ax-verify-chip--success">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                    Onaylı
+                                </span>
+                            {% else %}
+                                <span class="ax-verify-chip ax-verify-chip--muted">Onaysız</span>
+                            {% endif %}
+                        </div>
+                        {% if not profile_user.profile.phone_verified and user == profile_user %}
+                        <form method="post" class="ax-verify-form" style="margin-top: var(--ax-space-2);">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="verify_phone">
+                            <input type="tel" name="phone" class="ax-verify-input" placeholder="+90 5XX..." required>
+                            <button type="submit" class="ax-verify-btn">Doğrula</button>
+                        </form>
+                        {% endif %}
+                    </div>
+
+                    <!-- LinkedIn -->
+                    <div class="ax-profile-verify-row" style="flex-direction: column; align-items: flex-start;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                            <div class="ax-profile-verify-row__label">
+                                <h6>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="#3b82f6"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+                                    LinkedIn Profili
+                                </h6>
+                                <small>Profesyonel kimlik doğrulama</small>
+                            </div>
+                            {% if profile_user.profile.linkedin_verified %}
+                                <span class="ax-verify-chip ax-verify-chip--primary">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                    Onaylı
+                                </span>
+                            {% else %}
+                                <span class="ax-verify-chip ax-verify-chip--muted">Bağlanmamış</span>
+                            {% endif %}
+                        </div>
+                        {% if not profile_user.profile.linkedin_verified and user == profile_user %}
+                        <form method="post" class="ax-verify-form" style="margin-top: var(--ax-space-2);">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="verify_linkedin">
+                            <input type="url" name="linkedin" class="ax-verify-input" placeholder="https://linkedin.com/in/..." required>
+                            <button type="submit" class="ax-verify-btn">Bağla</button>
+                        </form>
+                        {% endif %}
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</div>
 
-<style>
-    .profile-card {
-        background: rgba(15, 23, 42, 0.95) !important;
-        border: 1px solid rgba(56, 189, 248, 0.3) !important;
-        border-radius: 20px;
-        backdrop-filter: blur(10px);
-    }
+    </div><!-- /col-lg-8 -->
+</div><!-- /row -->
 
-    .avatar-glow {
-        filter: drop-shadow(0 0 15px rgba(56, 189, 248, 0.6));
-    }
+<script>
+(function () {
+    var tabs   = document.querySelectorAll('.ax-profile-tab-btn');
+    var panels = document.querySelectorAll('.ax-profile-tab-panel');
 
-    .cyber-badge {
-        background: linear-gradient(90deg, #38bdf8, #2563eb);
-        color: white;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        font-size: 0.8rem;
-        letter-spacing: 1px;
-    }
-
-    .stats-container {
-        background: rgba(0, 0, 0, 0.3);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .text-neon {
-        color: #38bdf8 !important;
-    }
-
-    /* Tab Styles */
-    .nav-tabs .nav-link {
-        color: #94a3b8;
-        border: 1px solid transparent;
-    }
-    .nav-tabs .nav-link:hover {
-        color: #fff;
-        border-color: rgba(255,255,255,0.1);
-    }
-    .nav-tabs .nav-link.active {
-        background-color: #1e293b !important;
-        color: #0dcaf0 !important;
-        border-color: rgba(255, 255, 255, 0.2) rgba(255, 255, 255, 0.2) transparent !important;
-    }
-</style>
+    tabs.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var target = btn.getAttribute('data-tab');
+            tabs.forEach(function (t) { t.classList.remove('active'); });
+            panels.forEach(function (p) { p.classList.remove('active'); });
+            btn.classList.add('active');
+            var panel = document.querySelector('[data-panel="' + target + '"]');
+            if (panel) panel.classList.add('active');
+        });
+    });
+})();
+</script>
 {% endblock %}

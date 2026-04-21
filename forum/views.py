@@ -1251,6 +1251,9 @@ def profile_detail(request, username):
     ).order_by('-created_at')[:20]
     given_proposals = JobProposal.objects.filter(expert=profile_user).select_related('job').order_by('-created_at')[:20]
     received_reviews = JobReview.objects.filter(reviewed_user=profile_user, is_approved=True).select_related('reviewer', 'job').order_by('-created_at')[:20]
+    completed_projects = JobProposal.objects.filter(
+        expert=profile_user, status='accepted'
+    ).select_related('job').order_by('-created_at')[:12]
 
     # Yıldız ortalaması
     rating_stats = JobReview.objects.filter(reviewed_user=profile_user, is_approved=True).aggregate(
@@ -1288,6 +1291,7 @@ def profile_detail(request, username):
         'posted_jobs': posted_jobs,
         'given_proposals': given_proposals,
         'received_reviews': received_reviews,
+        'completed_projects': completed_projects,
         'rating_stats': rating_stats,
         'quiz_stats': quiz_stats,
         'user_score': user_score,
