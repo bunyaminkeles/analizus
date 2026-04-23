@@ -553,6 +553,9 @@ def job_detail(request, pk):
                     proposal.expert = request.user
                     proposal.save()
 
+                    from .email_utils import send_proposal_notification
+                    send_proposal_notification(proposal)
+
                     messages.success(request, 'Teklifiniz başarıyla gönderildi!')
                     return redirect('job_detail', pk=pk)
             else:

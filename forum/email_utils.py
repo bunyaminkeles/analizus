@@ -33,6 +33,33 @@ def send_email_async(subject, message, recipient_list, html_message=None):
     thread.start()
 
 
+def send_proposal_notification(proposal):
+    """Yeni teklif geldiğinde ilan sahibine email gönderir"""
+    job = proposal.job
+    owner = job.owner
+    if not owner.email:
+        return
+
+    site = getattr(settings, 'SITE_URL', 'https://www.analizus.com')
+    subject = f"İlanınıza yeni bir teklif geldi: {job.title}"
+    message = f"""Merhaba {owner.username},
+
+"{job.title}" ilanınıza {proposal.expert.username} teklif verdi!
+
+Teklif: {proposal.price} TL
+Süre: {proposal.duration}
+Ön Yazı: {proposal.message[:300]}
+
+Teklifi görmek ve değerlendirmek için:
+{site}/jobs/{job.pk}/
+
+---
+Bu bir otomatik bildirimdir.
+Analizus - Akademik Veri Üssü"""
+
+    send_email_async(subject, message, [owner.email])
+
+
 def send_topic_reply_notification(post, topic):
     """Bir konuya cevap yazıldığında konu sahibine email gönderir"""
     if post.created_by == topic.starter:
