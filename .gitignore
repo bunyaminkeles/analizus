@@ -47,3 +47,4 @@ BingSiteAuth.xml
 .gitignore
 .env.example
 templates/admin/index.html.jazzmin_backup
+gemini.md
