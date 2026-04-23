@@ -414,7 +414,9 @@ def send_success_story_invitation(sender, instance, created, **kwargs):
         logger.warning("AnalizBot kullanıcısı bulunamadı, başarı hikayesi daveti gönderilemedi.")
         return
 
-    story_url = f"/success-stories/?job={instance.pk}"
+    from django.conf import settings
+    site = getattr(settings, 'SITE_URL', 'https://www.analizus.com')
+    story_url = f"{site}/success-stories/?job={instance.pk}"
     message_text = (
         f"Tebrikler! \"{instance.title}\" ilanı başarıyla tamamlandı. 🎉\n\n"
         f"Deneyiminizi toplulukla paylaşmak ister misiniz? "
