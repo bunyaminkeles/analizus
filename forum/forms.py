@@ -7,12 +7,12 @@ from django.utils.safestring import mark_safe
 # --- 1. KAYIT FORMU ---
 class RegisterForm(UserCreationForm):
     email = forms.EmailField(
-        required=True, 
+        required=True,
         label="E-Posta Adresi",
         help_text="Geçerli bir e-posta adresi giriniz."
     )
-    
-    # Checkbox (HTML'de manuel olsa da burada tanımlı olması veri doğrulaması için iyidir)
+
+    # Checkbox
     terms_confirmed = forms.BooleanField(
         required=True,
         widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}),
@@ -20,9 +20,35 @@ class RegisterForm(UserCreationForm):
         error_messages={'required': 'Kayıt olmak için şartları kabul etmelisiniz.'}
     )
 
+    # Honeypot — botlar doldurur, insanlar görmez
+    website = forms.CharField(
+        required=False,
+        widget=forms.TextInput(attrs={
+            'style': 'position:absolute;left:-9999px;top:-9999px;',
+            'tabindex': '-1',
+            'autocomplete': 'off',
+        })
+    )
+
     class Meta(UserCreationForm.Meta):
         model = User
-        fields = ("username", "email") # Şifre alanları (password1/2) otomatiktir.
+        fields = ("username", "email")
+
+    def clean_website(self):
+        # Bot honeypot'u doldurdu
+        if self.cleaned_data.get('website'):
+            raise forms.ValidationError("Geçersiz kayıt.")
+        return ''
+
+    def clean_username(self):
+        import re
+        username = self.cleaned_data.get('username', '')
+        # 5+ ardışık ünsüz = random bot kullanıcı adı imzası
+        if re.search(r'[bcdfghjklmnpqrstvwxyzBCDFGHJKLMNPQRSTVWXYZ]{5,}', username):
+            raise forms.ValidationError(
+                "Geçerli bir kullanıcı adı seçin (örn: ahmet_42, researcher1)."
+            )
+        return username
 
     def clean_email(self):
         email = self.cleaned_data.get('email')

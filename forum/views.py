@@ -848,7 +848,7 @@ def new_topic(request, slug):
     return render(request, 'forum/new_topic.html', {'category': category, 'form': form})
 
 # --- KAYIT ---
-@ratelimit(key='ip', rate='5/h', method='POST', block=True)
+@ratelimit(key='ip', rate='3/h', method='POST', block=True)
 def register(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST)
