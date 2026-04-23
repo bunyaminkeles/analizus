@@ -211,6 +211,10 @@
                         <a href="{% url 'istatistik:cronbach' %}" class="site-nav__dropdown-item" role="menuitem">Güvenilirlik (Cronbach)</a>
                         <a href="{% url 'istatistik:normallik' %}" class="site-nav__dropdown-item" role="menuitem">Normallik Testi</a>
                         <a href="{% url 'istatistik:betimsel' %}" class="site-nav__dropdown-item" role="menuitem">Betimleyici İstatistik</a>
+                        <a href="{% url 'istatistik:korelasyon' %}" class="site-nav__dropdown-item" role="menuitem">Korelasyon Matrisi</a>
+                        <a href="{% url 'istatistik:ttesti' %}" class="site-nav__dropdown-item" role="menuitem">t-Testi</a>
+                        <a href="{% url 'istatistik:anova' %}" class="site-nav__dropdown-item" role="menuitem">ANOVA</a>
+                        <a href="{% url 'istatistik:orneklem' %}" class="site-nav__dropdown-item" role="menuitem">Örneklem Hesaplayıcı</a>
                         {% endif %}
                         <div class="site-nav__dropdown-divider"></div>
                         <a href="{% url 'tableau_dashboard' %}" class="site-nav__dropdown-item" role="menuitem">Tableau Analizleri</a>
@@ -393,6 +397,10 @@
                     <a href="{% url 'istatistik:cronbach' %}" class="nav-drawer__link">Güvenilirlik (Cronbach)</a>
                     <a href="{% url 'istatistik:normallik' %}" class="nav-drawer__link">Normallik Testi</a>
                     <a href="{% url 'istatistik:betimsel' %}" class="nav-drawer__link">Betimleyici İstatistik</a>
+                    <a href="{% url 'istatistik:korelasyon' %}" class="nav-drawer__link">Korelasyon Matrisi</a>
+                    <a href="{% url 'istatistik:ttesti' %}" class="nav-drawer__link">t-Testi</a>
+                    <a href="{% url 'istatistik:anova' %}" class="nav-drawer__link">ANOVA</a>
+                    <a href="{% url 'istatistik:orneklem' %}" class="nav-drawer__link">Örneklem Hesaplayıcı</a>
                     {% endif %}
                     <a href="{% url 'tableau_dashboard' %}" class="nav-drawer__link">Tableau Analizleri</a>
                 </div>

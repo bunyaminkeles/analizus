@@ -61,12 +61,13 @@ def send_chat_message(message_instance):
         logger.error(f"Chat WebSocket mesajı gönderilemedi: {e}")
 
 from .models import Post, PrivateMessage, Notification, PostLike, Topic, Badge, FreelanceJob
-from .models import Profile  # Profile modelini import et
+from .models import Profile, JobProposal, BlogPost
+from django.contrib.auth.models import User
 
 
 @receiver(post_save, sender=Topic)
 def add_reputation_on_new_topic(sender, instance, created, **kwargs):
-    """Yeni bir konu oluşturulduğunda yazarına +5 puan ver"""
+    """Yeni bir konu oluşturulduğunda yazarına +5 puan ver ve admin'e bildir"""
     if created:
         try:
             profile, created_profile = Profile.objects.get_or_create(user=instance.starter)
@@ -74,6 +75,9 @@ def add_reputation_on_new_topic(sender, instance, created, **kwargs):
             profile.save(update_fields=['reputation'])
         except Exception as e:
             logger.error(f"Yeni konu için itibar puanı eklenemedi: {e}")
+
+        from .email_utils import notify_admin_new_topic
+        notify_admin_new_topic(instance)
 
 
 @receiver(post_save, sender=Post)
@@ -106,6 +110,10 @@ def post_save_receiver(sender, instance, created, **kwargs):
                 send_realtime_notification(recipient.id, message, url)
             except Exception as e:
                 logger.error(f"Post bildirimi oluşturulamadı: {e}")
+
+        # Admin bildirimi — yeni cevap
+        from .email_utils import notify_admin_new_post
+        notify_admin_new_post(instance)
 
         # @mention bildirimleri
         try:
@@ -489,7 +497,7 @@ def check_and_award_istatistik_badges(profile, total_completed):
 
 
 def on_istatistik_job_completed(job):
-    """IstatistikJob tamamlandığında çağrılır — puan ve rozet ver"""
+    """IstatistikJob tamamlandığında çağrılır — puan, rozet ve admin bildirimi"""
     try:
         if not job.user:
             return
@@ -503,6 +511,9 @@ def on_istatistik_job_completed(job):
             user=job.user, status='completed'
         ).count()
         check_and_award_istatistik_badges(profile, total_completed)
+
+        from .email_utils import notify_admin_analysis_completed
+        notify_admin_analysis_completed(job)
     except Exception as e:
         logger.error(f"İstatistik job tamamlanma işlemi başarısız: {e}")
 
@@ -520,3 +531,90 @@ def check_forum_hero_badge(profile):
                 profile.badges.add(badge)
     except Exception as e:
         logger.error(f"Forum Kahramanı rozeti kontrolünde hata: {e}")
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# ADMİN BİLDİRİM SİNYALLERİ
+# ═══════════════════════════════════════════════════════════════════════════
+
+@receiver(post_save, sender=User)
+def notify_admin_on_new_user(sender, instance, created, **kwargs):
+    """Yeni kullanıcı kaydında admin'e e-posta gönder"""
+    if not created:
+        return
+    # Sistem kullanıcılarını (AnalizBot vb.) atla
+    if instance.username in ('AnalizBot', 'admin'):
+        return
+    from .email_utils import notify_admin_new_user
+    notify_admin_new_user(instance)
+
+
+@receiver(post_save, sender=FreelanceJob)
+def notify_admin_on_new_job(sender, instance, created, **kwargs):
+    """Yeni iş ilanında admin'e e-posta gönder"""
+    if not created:
+        return
+    from .email_utils import notify_admin_new_job
+    notify_admin_new_job(instance)
+
+
+@receiver(post_save, sender=FreelanceJob)
+def notify_admin_on_job_completed(sender, instance, created, **kwargs):
+    """İş tamamlandığında admin'e e-posta gönder (send_success_story_invitation'dan bağımsız)"""
+    if created:
+        return
+    old_status = getattr(instance, '_old_status', None)
+    if old_status != 'completed' and instance.status == 'completed':
+        from .email_utils import notify_admin_job_completed
+        notify_admin_job_completed(instance)
+
+
+@receiver(pre_save, sender=JobProposal)
+def capture_old_proposal_status(sender, instance, **kwargs):
+    """JobProposal kaydedilmeden önceki status'u yakala"""
+    if instance.pk:
+        try:
+            old = JobProposal.objects.get(pk=instance.pk)
+            instance._old_proposal_status = old.status
+        except JobProposal.DoesNotExist:
+            instance._old_proposal_status = None
+    else:
+        instance._old_proposal_status = None
+
+
+@receiver(post_save, sender=JobProposal)
+def notify_admin_on_proposal(sender, instance, created, **kwargs):
+    """Yeni teklif veya teklif kabul edildiğinde admin'e e-posta gönder"""
+    from .email_utils import notify_admin_new_proposal, notify_admin_proposal_accepted
+    if created:
+        notify_admin_new_proposal(instance)
+    else:
+        old_status = getattr(instance, '_old_proposal_status', None)
+        if old_status != 'accepted' and instance.status == 'accepted':
+            notify_admin_proposal_accepted(instance)
+
+
+@receiver(pre_save, sender=BlogPost)
+def capture_old_blog_status(sender, instance, **kwargs):
+    """BlogPost kaydedilmeden önceki status'u yakala"""
+    if instance.pk:
+        try:
+            old = BlogPost.objects.get(pk=instance.pk)
+            instance._old_blog_status = old.status
+        except BlogPost.DoesNotExist:
+            instance._old_blog_status = None
+    else:
+        instance._old_blog_status = None
+
+
+@receiver(post_save, sender=BlogPost)
+def notify_admin_on_blog_published(sender, instance, created, **kwargs):
+    """Blog yazısı yayınlandığında admin'e e-posta gönder"""
+    if instance.status != 'published':
+        return
+    old_status = getattr(instance, '_old_blog_status', None)
+    # Sadece draft→published geçişinde bildir (her kayıtta değil)
+    if old_status == 'published':
+        return
+    from .email_utils import notify_admin_blog_published
+    notify_admin_blog_published(instance)

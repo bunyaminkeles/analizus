@@ -8,6 +8,9 @@ TOOL_CHOICES = [
     ('cronbach', 'Güvenilirlik Analizi (Cronbach Alpha)'),
     ('normallik', 'Normallik Testi'),
     ('betimsel', 'Betimleyici İstatistik'),
+    ('korelasyon', 'Korelasyon Matrisi'),
+    ('ttesti', 't-Testi'),
+    ('anova', 'Tek Yönlü ANOVA'),
 ]
 
 STATUS_CHOICES = [
@@ -33,6 +36,8 @@ class IstatistikJob(models.Model):
     result_data = models.JSONField(null=True, blank=True)
     pdf_url = models.URLField(max_length=500, blank=True)
     error_message = models.TextField(blank=True)
+
+    options = models.JSONField(default=dict, blank=True)  # araç seçenekleri, ör: {'method': 'pearson'}
 
     is_demo = models.BooleanField(default=True)  # login olmadan = True
 

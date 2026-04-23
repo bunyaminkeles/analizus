@@ -1,0 +1,232 @@
+{% extends "istatistik/tool_base.html" %}
+
+{% block title %}Korelasyon Matrisi - Analizus{% endblock %}
+
+{% block status_url %}{% url 'istatistik:korelasyon_status' job_id='00000000-0000-0000-0000-000000000000' %}{% endblock %}
+
+{% block extra_upload_fields %}
+<div class="mb-3">
+  <label class="text-white-50 small fw-semibold mb-2 d-block">Korelasyon Yöntemi</label>
+  <div class="d-flex gap-2 flex-wrap" id="method-selector">
+    <button type="button" class="btn btn-sm btn-info active" data-method="pearson">
+      Pearson
+    </button>
+    <button type="button" class="btn btn-sm btn-outline-info" data-method="spearman">
+      Spearman
+    </button>
+    <button type="button" class="btn btn-sm btn-outline-info" data-method="kendall">
+      Kendall
+    </button>
+  </div>
+  <p class="text-white-50 small mt-2 mb-0" id="method-desc">Parametrik — normal dağılımlı sürekli değişkenler için önerilir.</p>
+  <input type="hidden" id="method-input" value="pearson">
+</div>
+{% endblock %}
+
+{% block result_summary %}
+<div id="korelasyon-summary" class="d-none">
+  <div class="row g-3 mb-3">
+    <div class="col-4">
+      <div class="rounded-3 p-3 text-center" style="background:rgba(255,255,255,0.05);">
+        <div class="fs-3 fw-bold text-info" id="k-vars">—</div>
+        <div class="text-white-50 small">Değişken</div>
+      </div>
+    </div>
+    <div class="col-4">
+      <div class="rounded-3 p-3 text-center" style="background:rgba(255,255,255,0.05);">
+        <div class="fs-3 fw-bold text-info" id="k-cases">—</div>
+        <div class="text-white-50 small">Gözlem</div>
+      </div>
+    </div>
+    <div class="col-4">
+      <div class="rounded-3 p-3 text-center" style="background:rgba(255,255,255,0.05);">
+        <div class="fs-6 fw-semibold text-white" id="k-method">—</div>
+        <div class="text-white-50 small">Yöntem</div>
+      </div>
+    </div>
+  </div>
+
+  {# Heatmap önizleme #}
+  <div id="heatmap-container" class="text-center d-none mb-3">
+    <img id="heatmap-img" src="" alt="Korelasyon Isı Haritası"
+         class="img-fluid rounded-3" style="max-height:300px; border:1px solid rgba(255,255,255,0.1);">
+  </div>
+
+  {# Mini korelasyon tablosu #}
+  <div id="corr-table-container" class="d-none">
+    <p class="text-white-50 small mb-1">Korelasyon Katsayıları (r)</p>
+    <div style="overflow-x:auto; max-height:220px; overflow-y:auto;">
+      <table id="corr-table" class="table table-dark table-bordered table-sm small mb-0" style="font-size:0.75rem;"></table>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block on_completed_js %}
+if (data.result_data) {
+  const r = data.result_data;
+  document.getElementById('k-vars').textContent = r.n_vars;
+  document.getElementById('k-cases').textContent = r.n_cases;
+  document.getElementById('k-method').textContent = r.method_label;
+
+  // Heatmap
+  if (r.heatmap_b64) {
+    document.getElementById('heatmap-img').src = 'data:image/png;base64,' + r.heatmap_b64;
+    document.getElementById('heatmap-container').classList.remove('d-none');
+  }
+
+  // Mini korelasyon tablosu
+  const cols = r.columns;
+  let thead = '<thead><tr><th></th>' + cols.map(c => `<th>${c}</th>`).join('') + '</tr></thead>';
+  let tbody = '<tbody>';
+  for (let i = 0; i < cols.length; i++) {
+    tbody += `<tr><th>${cols[i]}</th>`;
+    for (let j = 0; j < cols.length; j++) {
+      const val = r.corr_matrix[i][j];
+      const p = r.pval_matrix[i][j];
+      let cls = '';
+      if (i === j) cls = 'text-white-50';
+      else if (p < 0.05 && Math.abs(val) >= 0.3) cls = 'text-success fw-bold';
+      else if (p < 0.05) cls = 'text-info';
+      tbody += `<td class="${cls}">${val.toFixed(3)}</td>`;
+    }
+    tbody += '</tr>';
+  }
+  tbody += '</tbody>';
+  document.getElementById('corr-table').innerHTML = thead + tbody;
+  document.getElementById('corr-table-container').classList.remove('d-none');
+
+  document.getElementById('korelasyon-summary').classList.remove('d-none');
+
+  // APA cümlesi güncelle
+  const apaText = `Değişkenler arasındaki ilişkiler ${r.method_label} korelasyon analizi ile incelenmiştir (n = ${r.n_cases}). Korelasyon katsayıları ve p-değerleri raporun ek tablosunda sunulmuştur (Cohen, 1988).`;
+  document.getElementById('korelasyon-apa-display').textContent = apaText;
+  document.getElementById('korelasyon-report-text').textContent = apaText;
+  document.getElementById('korelasyon-apa-box').classList.remove('d-none');
+  document.getElementById('korelasyon-apa-placeholder').classList.add('d-none');
+}
+{% endblock %}
+
+{% block methodology %}
+<div class="mt-4 rounded-3 p-4" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07);">
+  <h5 class="text-white fw-semibold mb-3"><i class="bi bi-journal-text me-2 text-info"></i>Metodoloji</h5>
+
+  <div class="row g-4">
+    <div class="col-md-6">
+      <h6 class="text-white-50 text-uppercase small fw-bold mb-2">Yöntem Seçim Rehberi</h6>
+      <table class="table table-sm table-dark table-borderless small mb-0" style="font-size:0.8rem;">
+        <thead>
+          <tr><th class="text-white-50">Yöntem</th><th class="text-white-50">Kullanım Durumu</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="text-info">Pearson</td><td class="text-white-50">Normal dağılımlı sürekli veriler</td></tr>
+          <tr><td class="text-info">Spearman</td><td class="text-white-50">Sıralı veri, normallik sağlanmıyor</td></tr>
+          <tr><td class="text-info">Kendall</td><td class="text-white-50">Küçük örneklem, çok sayıda eşik</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="col-md-6">
+      <h6 class="text-white-50 text-uppercase small fw-bold mb-2">Katsayı Yorum Eşikleri</h6>
+      <table class="table table-sm table-dark table-borderless small mb-0" style="font-size:0.8rem;">
+        <tbody>
+          <tr><td>|r| &lt; .10</td><td class="text-white-50">İhmal edilebilir ilişki</td></tr>
+          <tr><td>.10 – .30</td><td class="text-warning">Zayıf ilişki</td></tr>
+          <tr><td>.30 – .50</td><td class="text-info">Orta düzey ilişki</td></tr>
+          <tr><td>&gt; .50</td><td class="text-success fw-bold">Güçlü ilişki</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <hr style="border-color:rgba(255,255,255,0.08);">
+
+  <h6 class="text-white-50 text-uppercase small fw-bold mb-2">Tezinde Nasıl Raporlarsın?</h6>
+  <div id="korelasyon-apa-box" class="rounded-3 p-3 d-none" style="background:rgba(23,162,184,0.08); border:1px solid rgba(23,162,184,0.2);">
+    <p class="text-white small mb-2" style="font-style:italic;" id="korelasyon-apa-display"></p>
+    <button class="btn btn-sm btn-outline-secondary" onclick="copyMethodText(this, 'korelasyon-report-text')" style="font-size:0.75rem;">
+      <i class="bi bi-clipboard me-1"></i>Kopyala
+    </button>
+    <span id="korelasyon-report-text" class="d-none"></span>
+  </div>
+  <div id="korelasyon-apa-placeholder" class="rounded-3 p-3" style="background:rgba(23,162,184,0.04); border:1px dashed rgba(23,162,184,0.2);">
+    <p class="text-white-50 small mb-0" style="font-style:italic;">
+      <i class="bi bi-info-circle me-1"></i>Analizi tamamladıktan sonra APA formatında rapor cümlesi burada otomatik oluşacak.
+    </p>
+  </div>
+
+  <hr style="border-color:rgba(255,255,255,0.08);">
+
+  <h6 class="text-white-50 text-uppercase small fw-bold mb-2">Akademik Kaynak</h6>
+  <p class="text-white-50 small mb-1">
+    Cohen, J. (1988). <em>Statistical power analysis for the behavioral sciences</em> (2nd ed.). Lawrence Erlbaum.
+  </p>
+  <p class="text-white-50 small mb-1">
+    Pearson, K. (1895). Notes on regression and inheritance in the case of two parents.
+    <em>Proceedings of the Royal Society of London, 58</em>, 240–242.
+  </p>
+  <p class="text-white-50 small mb-0">
+    Spearman, C. (1904). The proof and measurement of association between two things.
+    <em>The American Journal of Psychology, 15</em>(1), 72–101.
+  </p>
+</div>
+
+<script>
+// Yöntem seçici
+const methodDescs = {
+  pearson:  'Parametrik — normal dağılımlı sürekli değişkenler için önerilir.',
+  spearman: 'Non-parametrik — sıralı veri veya normallik varsayımı sağlanmıyorsa kullanın.',
+  kendall:  'Non-parametrik — küçük örneklem veya çok sayıda bağlı sıra olduğunda tercih edilir.',
+};
+
+document.querySelectorAll('#method-selector button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#method-selector button').forEach(b => {
+      b.classList.remove('btn-info', 'active');
+      b.classList.add('btn-outline-info');
+    });
+    btn.classList.remove('btn-outline-info');
+    btn.classList.add('btn-info', 'active');
+    const m = btn.dataset.method;
+    document.getElementById('method-input').value = m;
+    document.getElementById('method-desc').textContent = methodDescs[m];
+  });
+});
+
+// submitFile override: method parametresini de ekle
+const _origSubmit = window.submitFile;
+const _origFd = FormData;
+
+// tool_base.html'deki submitFile'ı genişlet
+document.getElementById('analyze-btn').addEventListener('click', () => {}, true);
+
+// FormData'ya method eklemek için submitFile'ı yeniden tanımla
+window.submitFile = function(confirm) {
+  const f = fileInput._selectedFile;
+  if (!f) return;
+
+  analyzeBtn.disabled = true;
+  confirmWarningsBtn.disabled = true;
+  showPanel('loading');
+
+  const fd = new FormData();
+  fd.append('file', f);
+  fd.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+  fd.append('method', document.getElementById('method-input').value);
+  if (confirm) fd.append('confirm_warnings', 'true');
+
+  fetch(window.location.pathname, {
+    method: 'POST',
+    headers: {'X-Requested-With': 'XMLHttpRequest'},
+    body: fd,
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.error) { showError(data.error); return; }
+    if (data.warnings) { showWarning(data.warnings); return; }
+    currentJobId = data.job_id;
+    startPolling(currentJobId);
+  })
+  .catch(() => showError('Bağlantı hatası. Lütfen tekrar deneyin.'));
+};
+</script>
+{% endblock %}

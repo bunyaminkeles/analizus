@@ -141,6 +141,214 @@ def betimsel_landing(request):
     })
 
 
+@feature_required
+@ratelimit(key='ip', rate='10/h', method='POST', block=True)
+def korelasyon_landing(request):
+    if not request.user.is_authenticated:
+        return render(request, 'service_promo.html', {
+            **PROMO_BASE,
+            'promo_title': 'Korelasyon Matrisi',
+            'promo_icon': 'bi-grid-3x3',
+            'promo_color': 'info',
+            'promo_description': 'Değişkenleriniz arasındaki ilişkileri tek bakışta görün. Pearson, Spearman veya Kendall yöntemiyle p-değerleri ve ısı haritası içeren PDF raporu saniyeler içinde alın.',
+            'promo_features': [
+                {'icon': 'bi-table', 'title': 'Korelasyon Tablosu', 'desc': 'Tüm değişken çiftleri için r katsayısı ve p-değeri hesaplanır. p < 0.05 anlamlı ilişkiyi gösterir.'},
+                {'icon': 'bi-grid-fill', 'color': 'info', 'title': 'Isı Haritası', 'desc': 'Korelasyon katsayıları renk skalasıyla görselleştirilir. Güçlü ilişkiler anında fark edilir.'},
+                {'icon': 'bi-sliders', 'title': 'Üç Yöntem', 'desc': 'Pearson (parametrik), Spearman (non-parametrik sıralı) veya Kendall (küçük örneklem) yöntemlerinden seçin.'},
+                {'icon': 'bi-file-earmark-pdf-fill', 'color': 'danger', 'title': 'PDF Rapor', 'desc': 'Tablo ve ısı haritası düzenli formatta PDF olarak indirilir.'},
+            ],
+        })
+
+    if request.method == 'POST':
+        method = request.POST.get('method', 'pearson')
+        if method not in ('pearson', 'spearman', 'kendall'):
+            method = 'pearson'
+        return _handle_upload(request, 'korelasyon', options={'method': method})
+
+    active_job = _get_active_job(request.user, 'korelasyon')
+    return render(request, 'istatistik/korelasyon.html', {
+        'active_job_id': str(active_job.id) if active_job else None,
+        'daily_remaining': _daily_remaining(request.user),
+        'tool_title': 'Korelasyon Matrisi',
+        'tool_icon': 'bi-grid-3x3',
+        'tool_color': 'info',
+        'tool_description': 'Değişkenleriniz arasındaki ilişkileri Pearson, Spearman veya Kendall yöntemiyle hesaplayın. Her sütun bir değişken, her satır bir gözlem olmalıdır.',
+        'tool_hints': [
+            'Her sütun bir değişkeni temsil etmelidir.',
+            'Pearson: normal dağılımlı sürekli veriler için.',
+            'Spearman: sıralı veriler veya normallik varsayımı sağlanmıyorsa.',
+            'Kendall: küçük örneklem veya çok sayıda bağlı sıra olduğunda.',
+        ],
+    })
+
+
+@feature_required
+def orneklem_landing(request):
+    if request.method == 'POST':
+        return _handle_orneklem_calc(request)
+    return render(request, 'istatistik/orneklem.html', {
+        'tool_title': 'Örneklem Büyüklüğü Hesaplayıcı',
+    })
+
+
+@feature_required
+@ratelimit(key='ip', rate='10/h', method='POST', block=True)
+def ttesti_landing(request):
+    if not request.user.is_authenticated:
+        return render(request, 'service_promo.html', {
+            **PROMO_BASE,
+            'promo_title': 't-Testi',
+            'promo_icon': 'bi-distribute-horizontal',
+            'promo_color': 'purple',
+            'promo_description': 'İki grup arasındaki ortalama farkını test edin. Bağımsız veya bağımlı örneklem t-testi, Cohen\'s d etki büyüklüğü ve %95 güven aralığı ile PDF raporu alın.',
+            'promo_features': [
+                {'icon': 'bi-people-fill', 'title': 'Bağımsız Örneklem', 'desc': 'Farklı iki grubun ortalamalarını karşılaştırın. Levene testi ile varyans homojenliği otomatik kontrol edilir.'},
+                {'icon': 'bi-arrow-left-right', 'title': 'Bağımlı Örneklem', 'desc': 'Aynı gruba ait iki ölçüm arasındaki farkı test edin (öntest-sontest, eşleştirilmiş).'},
+                {'icon': 'bi-rulers', 'title': 'Etki Büyüklüğü', 'desc': 'Cohen\'s d katsayısı ve %95 güven aralığı otomatik hesaplanır.'},
+                {'icon': 'bi-file-earmark-pdf-fill', 'color': 'danger', 'title': 'PDF Rapor', 'desc': 'Grup istatistikleri ve test sonuçları düzenli tablolar halinde PDF\'e aktarılır.'},
+            ],
+        })
+    if request.method == 'POST':
+        return _handle_group_tool_post(request, 'ttesti')
+    return render(request, 'istatistik/ttesti.html', {
+        'active_job_id': str(_get_active_job(request.user, 'ttesti').id) if _get_active_job(request.user, 'ttesti') else None,
+        'daily_remaining': _daily_remaining(request.user),
+        'tool_title': 't-Testi',
+        'tool_icon': 'bi-distribute-horizontal',
+        'tool_color': 'purple',
+    })
+
+
+@feature_required
+@ratelimit(key='ip', rate='10/h', method='POST', block=True)
+def anova_landing(request):
+    if not request.user.is_authenticated:
+        return render(request, 'service_promo.html', {
+            **PROMO_BASE,
+            'promo_title': 'Tek Yönlü ANOVA',
+            'promo_icon': 'bi-bar-chart-steps',
+            'promo_color': 'danger',
+            'promo_description': 'Üç veya daha fazla grubun ortalamalarını karşılaştırın. Tukey/Bonferroni post-hoc testleri ve η² etki büyüklüğü ile tam bir ANOVA raporu alın.',
+            'promo_features': [
+                {'icon': 'bi-bar-chart-fill', 'title': 'Tek Yönlü ANOVA', 'desc': 'F istatistiği, serbestlik dereceleri ve p-değeri otomatik hesaplanır.'},
+                {'icon': 'bi-search', 'color': 'warning', 'title': 'Post-Hoc Testler', 'desc': 'Hangi gruplar arasında fark var? Tukey veya Bonferroni post-hoc testi ile belirleyin.'},
+                {'icon': 'bi-rulers', 'title': 'Etki Büyüklüğü', 'desc': 'Eta-kare (η²) ile etki büyüklüğü raporlanır.'},
+                {'icon': 'bi-file-earmark-pdf-fill', 'color': 'danger', 'title': 'PDF Rapor', 'desc': 'Grup istatistikleri, ANOVA tablosu ve post-hoc sonuçları PDF\'e aktarılır.'},
+            ],
+        })
+    if request.method == 'POST':
+        return _handle_group_tool_post(request, 'anova')
+    return render(request, 'istatistik/anova.html', {
+        'active_job_id': str(_get_active_job(request.user, 'anova').id) if _get_active_job(request.user, 'anova') else None,
+        'daily_remaining': _daily_remaining(request.user),
+        'tool_title': 'Tek Yönlü ANOVA',
+        'tool_icon': 'bi-bar-chart-steps',
+        'tool_color': 'danger',
+    })
+
+
+def _handle_group_tool_post(request, tool):
+    """t-testi ve ANOVA için iki adımlı POST yönetimi.
+    Adım 1: 'step=preview' — dosyayı parse et, sütun isimlerini döndür.
+    Adım 2: 'step=run'     — sütun seçimiyle job oluştur ve kuyruğa ekle.
+    """
+    step = request.POST.get('step', 'preview')
+    is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
+
+    if step == 'preview':
+        file = request.FILES.get('file')
+        if not file:
+            return JsonResponse({'error': 'Dosya seçilmedi.'}, status=400)
+        if not file.name.lower().endswith(('.csv', '.xlsx', '.xls')):
+            return JsonResponse({'error': 'CSV veya Excel dosyası yükleyin.'}, status=400)
+        if file.size > 10 * 1024 * 1024:
+            return JsonResponse({'error': 'Dosya 10 MB\'ı aşamaz.'}, status=400)
+
+        content = file.read()
+        from .services.job_runner import _parse_file, store_file_content
+        import uuid
+        try:
+            df = _parse_file(content, file.name)
+        except ValueError as e:
+            return JsonResponse({'error': str(e)}, status=400)
+
+        preview_id = str(uuid.uuid4())
+        store_file_content('preview_' + preview_id, content)
+
+        numeric_cols = list(df.select_dtypes(include='number').columns)
+        all_cols = list(df.columns)
+
+        return JsonResponse({
+            'success': True,
+            'preview_id': preview_id,
+            'filename': file.name,
+            'columns': all_cols,
+            'numeric_cols': numeric_cols,
+            'n_rows': len(df),
+        })
+
+    elif step == 'run':
+        if request.user.is_authenticated:
+            remaining = _daily_remaining(request.user)
+            if remaining <= 0:
+                return JsonResponse({'error': 'Günlük analiz limitiniz doldu.'}, status=429)
+            if not request.user.profile.email_verified:
+                return JsonResponse({'error': 'E-posta doğrulaması gereklidir.'}, status=403)
+
+        preview_id = request.POST.get('preview_id', '')
+        filename = request.POST.get('filename', 'dosya')
+        from .services.job_runner import _pending_file_contents, store_file_content
+
+        content = _pending_file_contents.pop('preview_' + preview_id, None)
+        if content is None:
+            return JsonResponse({'error': 'Önizleme süresi doldu. Lütfen dosyayı tekrar yükleyin.'}, status=400)
+
+        if tool == 'ttesti':
+            options = {
+                'test_type': request.POST.get('test_type', 'independent'),
+                'group_col': request.POST.get('group_col', ''),
+                'dep_col': request.POST.get('dep_col', ''),
+                'col1': request.POST.get('col1', ''),
+                'col2': request.POST.get('col2', ''),
+            }
+        else:  # anova
+            options = {
+                'group_col': request.POST.get('group_col', ''),
+                'dep_col': request.POST.get('dep_col', ''),
+                'posthoc': request.POST.get('posthoc', 'tukey'),
+            }
+
+        job = IstatistikJob.objects.create(
+            user=request.user if request.user.is_authenticated else None,
+            tool=tool,
+            original_filename=filename,
+            is_demo=not request.user.is_authenticated,
+            options=options,
+        )
+        from .services.job_runner import run_job
+        store_file_content(str(job.id), content)
+        run_job(str(job.id))
+        return JsonResponse({'success': True, 'job_id': str(job.id)})
+
+    return JsonResponse({'error': 'Geçersiz adım.'}, status=400)
+
+
+def _handle_orneklem_calc(request):
+    from .services.orneklem import calculate
+    try:
+        test_type = request.POST.get('test_type', '')
+        effect_size = float(request.POST.get('effect_size', 0))
+        alpha = float(request.POST.get('alpha', 0.05))
+        power = float(request.POST.get('power', 0.80))
+        groups = int(request.POST.get('groups', 2))
+        result = calculate(test_type, effect_size, alpha, power, groups)
+        return JsonResponse({'success': True, 'result': result})
+    except ValueError as e:
+        return JsonResponse({'error': str(e)}, status=400)
+    except Exception as e:
+        return JsonResponse({'error': f'Hesaplama hatası: {e}'}, status=500)
+
+
 @require_GET
 def job_status(request, job_id):
     """AJAX polling: job durumu + sonuç."""
@@ -163,7 +371,7 @@ def job_status(request, job_id):
 
 # ── Yardımcı fonksiyonlar ──────────────────────────────────────────────────
 
-def _handle_upload(request, tool):
+def _handle_upload(request, tool, options=None):
     """POST: dosyayı al, job oluştur, kuyruğa ekle."""
     is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
 
@@ -207,6 +415,7 @@ def _handle_upload(request, tool):
         tool=tool,
         original_filename=file.name,
         is_demo=not request.user.is_authenticated,
+        options=options or {},
     )
 
     from .services.job_runner import store_file_content, run_job
