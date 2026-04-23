@@ -429,9 +429,17 @@ class FreelanceJobAdmin(ModelAdmin):
 class JobProposalAdmin(ModelAdmin):
     warn_unsaved_changes = True
     compressed_fields = True
-    list_display = ('job', 'ilan_durumu', 'expert', 'price', 'duration', 'status', 'created_at')
+    list_display = ('job', 'ilan_sahibi', 'ilan_durumu', 'teklif_veren', 'price', 'duration', 'status', 'created_at')
     list_filter = ('status', 'job__status', 'created_at')
-    search_fields = ('job__title', 'expert__username', 'message')
+    search_fields = ('job__title', 'job__owner__username', 'expert__username', 'message')
+
+    @admin.display(description='İlan Sahibi')
+    def ilan_sahibi(self, obj):
+        return obj.job.owner.username
+
+    @admin.display(description='Teklif Veren')
+    def teklif_veren(self, obj):
+        return obj.expert.username
 
     @admin.display(description='İlan Durumu')
     def ilan_durumu(self, obj):
