@@ -49,6 +49,8 @@
           </div>
           <input type="file" id="file-input" accept=".csv,.xlsx,.xls" class="d-none">
 
+          {% block extra_upload_fields %}{% endblock %}
+
           <button id="analyze-btn" class="btn btn-{{ tool_color }} w-100 fw-semibold" disabled>
             <i class="bi bi-play-circle-fill me-2"></i>Analizi Başlat
           </button>

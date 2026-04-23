@@ -1,0 +1,329 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Örneklem Büyüklüğü Hesaplayıcı - Analizus{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+  <div class="row mb-4">
+    <div class="col">
+      <h2 class="fw-bold text-white mb-1">
+        <i class="bi bi-calculator-fill text-warning me-2"></i>Örneklem Büyüklüğü Hesaplayıcı
+      </h2>
+      <p class="text-white-50 mb-0">G*Power alternatifi — etki büyüklüğü, alfa ve güç parametrelerine göre gerekli örneklem sayısını hesaplayın.</p>
+    </div>
+  </div>
+
+  <div class="row g-4">
+
+    {# ── Sol: Parametre formu ── #}
+    <div class="col-lg-5">
+      <div class="card border-secondary h-100" style="background-color:#1a1a2e;">
+        <div class="card-body p-4">
+          <h5 class="text-white fw-semibold mb-4">
+            <i class="bi bi-sliders me-2 text-warning"></i>Parametreler
+          </h5>
+
+          {# Test tipi #}
+          <div class="mb-3">
+            <label class="text-white-50 small fw-semibold mb-2 d-block">Test Tipi</label>
+            <select id="test-type" class="form-select form-select-sm bg-dark text-white border-secondary">
+              <option value="ttest_independent">Bağımsız Örneklem t-Testi</option>
+              <option value="ttest_paired">Bağımlı Örneklem t-Testi (Eşleştirilmiş)</option>
+              <option value="anova">Tek Yönlü ANOVA</option>
+              <option value="correlation">Korelasyon Analizi</option>
+            </select>
+          </div>
+
+          {# Grup sayısı (sadece ANOVA için) #}
+          <div id="groups-row" class="mb-3 d-none">
+            <label class="text-white-50 small fw-semibold mb-1 d-block">
+              Grup Sayısı (k) <span class="text-white-50 fw-normal">— ANOVA için</span>
+            </label>
+            <input type="number" id="groups" class="form-control form-control-sm bg-dark text-white border-secondary"
+                   value="3" min="2" max="20" step="1">
+          </div>
+
+          {# Etki büyüklüğü #}
+          <div class="mb-3">
+            <label class="text-white-50 small fw-semibold mb-1 d-block">
+              Etki Büyüklüğü
+              <span id="effect-label" class="text-warning fw-normal">(Cohen's d)</span>
+            </label>
+            <div class="d-flex gap-2 mb-2">
+              <button type="button" class="btn btn-sm btn-outline-secondary effect-preset" data-val="0.2">Küçük</button>
+              <button type="button" class="btn btn-sm btn-outline-secondary effect-preset" data-val="0.5">Orta</button>
+              <button type="button" class="btn btn-sm btn-outline-secondary effect-preset" data-val="0.8">Büyük</button>
+            </div>
+            <input type="number" id="effect-size" class="form-control form-control-sm bg-dark text-white border-secondary"
+                   value="0.5" min="0.01" max="2" step="0.01">
+            <p id="effect-desc" class="text-white-50 small mt-1 mb-0">Orta düzey etki — sosyal bilimler araştırmalarında en yaygın kullanılan değer.</p>
+          </div>
+
+          {# Alfa #}
+          <div class="mb-3">
+            <label class="text-white-50 small fw-semibold mb-1 d-block">
+              Anlamlılık Düzeyi (α)
+            </label>
+            <div class="d-flex gap-2 mb-2">
+              <button type="button" class="btn btn-sm btn-outline-secondary alpha-preset active" data-val="0.05">0.05</button>
+              <button type="button" class="btn btn-sm btn-outline-secondary alpha-preset" data-val="0.01">0.01</button>
+              <button type="button" class="btn btn-sm btn-outline-secondary alpha-preset" data-val="0.10">0.10</button>
+            </div>
+            <input type="number" id="alpha" class="form-control form-control-sm bg-dark text-white border-secondary"
+                   value="0.05" min="0.001" max="0.20" step="0.001">
+          </div>
+
+          {# Güç #}
+          <div class="mb-4">
+            <label class="text-white-50 small fw-semibold mb-1 d-block">
+              İstatistiksel Güç (1−β)
+            </label>
+            <div class="d-flex gap-2 mb-2">
+              <button type="button" class="btn btn-sm btn-outline-secondary power-preset active" data-val="0.80">0.80</button>
+              <button type="button" class="btn btn-sm btn-outline-secondary power-preset" data-val="0.90">0.90</button>
+              <button type="button" class="btn btn-sm btn-outline-secondary power-preset" data-val="0.95">0.95</button>
+            </div>
+            <input type="number" id="power" class="form-control form-control-sm bg-dark text-white border-secondary"
+                   value="0.80" min="0.50" max="0.99" step="0.01">
+          </div>
+
+          <button id="calc-btn" class="btn btn-warning w-100 fw-semibold">
+            <i class="bi bi-calculator me-2"></i>Hesapla
+          </button>
+          <div id="calc-error" class="alert alert-danger mt-3 d-none small"></div>
+        </div>
+      </div>
+    </div>
+
+    {# ── Sağ: Sonuç paneli ── #}
+    <div class="col-lg-7">
+      <div class="card border-secondary h-100" style="background-color:#16213e;">
+        <div class="card-body p-4">
+
+          {# Boş durum #}
+          <div id="result-idle">
+            <h5 class="text-white-50 fw-semibold mb-3">Sonuç burada görünecek</h5>
+            <p class="text-white-50 small">Parametreleri girin ve "Hesapla" butonuna tıklayın.</p>
+            <hr style="border-color:rgba(255,255,255,0.08);">
+            <h6 class="text-white-50 small fw-bold text-uppercase mb-2">Hızlı Rehber</h6>
+            <ul class="text-white-50 small ps-3">
+              <li class="mb-1"><strong class="text-white-50">Cohen's d</strong>: 0.2 küçük, 0.5 orta, 0.8 büyük etki</li>
+              <li class="mb-1"><strong class="text-white-50">Cohen's f</strong>: 0.1 küçük, 0.25 orta, 0.4 büyük (ANOVA)</li>
+              <li class="mb-1"><strong class="text-white-50">Pearson r</strong>: 0.1 küçük, 0.3 orta, 0.5 büyük (Korelasyon)</li>
+              <li class="mb-1"><strong class="text-white-50">α = 0.05</strong>: Sosyal bilimlerde standart</li>
+              <li class="mb-1"><strong class="text-white-50">Güç = 0.80</strong>: Cohen (1988) önerisi</li>
+            </ul>
+          </div>
+
+          {# Sonuç #}
+          <div id="result-done" class="d-none">
+            <div class="d-flex align-items-center gap-2 mb-4">
+              <i class="bi bi-check-circle-fill text-success fs-4"></i>
+              <h5 class="text-white mb-0" id="res-label">—</h5>
+            </div>
+
+            {# Ana sonuç kutusu #}
+            <div class="row g-3 mb-4">
+              <div class="col-6">
+                <div class="rounded-3 p-4 text-center" style="background:rgba(255,193,7,0.1); border:1px solid rgba(255,193,7,0.3);">
+                  <div class="display-5 fw-bold text-warning" id="res-n-total">—</div>
+                  <div class="text-white-50 small mt-1">Toplam Örneklem</div>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="rounded-3 p-4 text-center" style="background:rgba(255,255,255,0.05);">
+                  <div class="fs-3 fw-bold text-info" id="res-n-group">—</div>
+                  <div class="text-white-50 small mt-1" id="res-unit">—</div>
+                </div>
+              </div>
+            </div>
+
+            {# Detaylar #}
+            <table class="table table-dark table-sm table-borderless small mb-3">
+              <tbody>
+                <tr>
+                  <td class="text-white-50">Elde Edilen Güç</td>
+                  <td class="text-white fw-semibold" id="res-power">—</td>
+                </tr>
+                <tr>
+                  <td class="text-white-50">Etki Büyüklüğü</td>
+                  <td class="text-white" id="res-effect">—</td>
+                </tr>
+              </tbody>
+            </table>
+
+            {# Yorum #}
+            <div class="rounded-3 p-3 mb-3" style="background:rgba(255,193,7,0.05); border:1px solid rgba(255,193,7,0.15);">
+              <p class="text-white-50 small mb-1 fw-semibold"><i class="bi bi-info-circle me-1 text-warning"></i>Yorum</p>
+              <p class="text-white small mb-0" id="res-recommendation">—</p>
+            </div>
+
+            {# APA cümlesi #}
+            <div class="rounded-3 p-3" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07);">
+              <p class="text-white-50 small mb-2 fw-semibold">Tezinde Nasıl Raporlarsın?</p>
+              <p class="text-white small mb-2" id="res-apa" style="font-style:italic;"></p>
+              <button class="btn btn-sm btn-outline-secondary" onclick="copyApa(this)" style="font-size:0.75rem;">
+                <i class="bi bi-clipboard me-1"></i>Kopyala
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {# Metodoloji #}
+  <div class="mt-4 rounded-3 p-4" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07);">
+    <h5 class="text-white fw-semibold mb-3"><i class="bi bi-journal-text me-2 text-warning"></i>Metodoloji</h5>
+    <div class="row g-4">
+      <div class="col-md-6">
+        <h6 class="text-white-50 text-uppercase small fw-bold mb-2">Güç Analizi Nedir?</h6>
+        <p class="text-white-50 small mb-0">
+          İstatistiksel güç (1−β), gerçekten var olan bir etkiyi tespit etme olasılığıdır.
+          Güç analizi, bu olasılığı hedeflenen düzeye (genellikle 0.80) ulaştıracak minimum örneklem büyüklüğünü hesaplar.
+          Yetersiz örneklem, gerçek etkilerin gözden kaçmasına (Tip II hata) yol açar.
+        </p>
+      </div>
+      <div class="col-md-6">
+        <h6 class="text-white-50 text-uppercase small fw-bold mb-2">Akademik Kaynak</h6>
+        <p class="text-white-50 small mb-1">
+          Cohen, J. (1988). <em>Statistical power analysis for the behavioral sciences</em> (2nd ed.). Lawrence Erlbaum.
+        </p>
+        <p class="text-white-50 small mb-0">
+          Faul, F. et al. (2007). G*Power 3: A flexible statistical power analysis program.
+          <em>Behavior Research Methods, 39</em>(2), 175–191.
+        </p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const EFFECT_LABELS = {
+  ttest_independent: "Cohen's d",
+  ttest_paired:      "Cohen's d",
+  anova:             "Cohen's f",
+  correlation:       "Pearson r",
+};
+const EFFECT_PRESETS = {
+  ttest_independent: [0.2, 0.5, 0.8],
+  ttest_paired:      [0.2, 0.5, 0.8],
+  anova:             [0.1, 0.25, 0.40],
+  correlation:       [0.1, 0.3, 0.5],
+};
+const EFFECT_DESCS = {
+  ttest_independent: ['Küçük etki (d=0.2)', 'Orta etki (d=0.5) — sosyal bilimlerde yaygın', 'Büyük etki (d=0.8)'],
+  ttest_paired:      ['Küçük etki (d=0.2)', 'Orta etki (d=0.5)', 'Büyük etki (d=0.8)'],
+  anova:             ['Küçük etki (f=0.1)', 'Orta etki (f=0.25)', 'Büyük etki (f=0.40)'],
+  correlation:       ['Küçük etki (r=0.1)', 'Orta etki (r=0.3)', 'Büyük etki (r=0.5)'],
+};
+
+document.getElementById('test-type').addEventListener('change', function() {
+  const t = this.value;
+  document.getElementById('groups-row').classList.toggle('d-none', t !== 'anova');
+  document.getElementById('effect-label').textContent = '(' + EFFECT_LABELS[t] + ')';
+  const presets = EFFECT_PRESETS[t];
+  const btns = document.querySelectorAll('.effect-preset');
+  btns.forEach((btn, i) => {
+    btn.dataset.val = presets[i];
+    btn.textContent = i === 0 ? 'Küçük' : i === 1 ? 'Orta' : 'Büyük';
+  });
+  document.getElementById('effect-size').value = presets[1];
+  document.getElementById('effect-desc').textContent = EFFECT_DESCS[t][1];
+});
+
+document.querySelectorAll('.effect-preset').forEach((btn, i) => {
+  btn.addEventListener('click', function() {
+    document.getElementById('effect-size').value = this.dataset.val;
+    const t = document.getElementById('test-type').value;
+    document.getElementById('effect-desc').textContent = EFFECT_DESCS[t][i];
+  });
+});
+
+['.alpha-preset', '.power-preset'].forEach(sel => {
+  document.querySelectorAll(sel).forEach(btn => {
+    const inputId = sel.includes('alpha') ? 'alpha' : 'power';
+    btn.addEventListener('click', function() {
+      document.querySelectorAll(sel).forEach(b => b.classList.remove('active', 'btn-secondary'));
+      this.classList.add('active');
+      document.getElementById(inputId).value = this.dataset.val;
+    });
+  });
+});
+
+document.getElementById('calc-btn').addEventListener('click', function() {
+  const errEl = document.getElementById('calc-error');
+  errEl.classList.add('d-none');
+
+  const fd = new FormData();
+  fd.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+  fd.append('test_type', document.getElementById('test-type').value);
+  fd.append('effect_size', document.getElementById('effect-size').value);
+  fd.append('alpha', document.getElementById('alpha').value);
+  fd.append('power', document.getElementById('power').value);
+  fd.append('groups', document.getElementById('groups').value);
+
+  this.disabled = true;
+  this.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Hesaplanıyor…';
+
+  fetch('{% url "istatistik:orneklem" %}', {
+    method: 'POST',
+    headers: {'X-Requested-With': 'XMLHttpRequest'},
+    body: fd,
+  })
+  .then(r => r.json())
+  .then(data => {
+    this.disabled = false;
+    this.innerHTML = '<i class="bi bi-calculator me-2"></i>Hesapla';
+    if (data.error) {
+      errEl.textContent = data.error;
+      errEl.classList.remove('d-none');
+      return;
+    }
+    showResult(data.result);
+  })
+  .catch(() => {
+    this.disabled = false;
+    this.innerHTML = '<i class="bi bi-calculator me-2"></i>Hesapla';
+    errEl.textContent = 'Bağlantı hatası. Lütfen tekrar deneyin.';
+    errEl.classList.remove('d-none');
+  });
+});
+
+function showResult(r) {
+  document.getElementById('result-idle').classList.add('d-none');
+  document.getElementById('result-done').classList.remove('d-none');
+
+  document.getElementById('res-label').textContent = r.label;
+  document.getElementById('res-n-total').textContent = r.n_total;
+  document.getElementById('res-n-group').textContent = r.n_per_group;
+  document.getElementById('res-unit').textContent = r.unit;
+  document.getElementById('res-power').textContent = (r.achieved_power * 100).toFixed(1) + '%';
+  document.getElementById('res-effect').textContent = r.effect_interpretation;
+  document.getElementById('res-recommendation').textContent = r.recommendation;
+
+  const inputs = r.inputs;
+  const apaText = `Çalışmanın örneklem büyüklüğü a priori güç analizi ile belirlenmiştir (${r.label}; Cohen, 1988). Etki büyüklüğü ${r.effect_interpretation.split(' — ')[0]}, α = ${inputs.alpha}, istatistiksel güç = ${(inputs.power * 100).toFixed(0)}% olarak alındığında gerekli örneklem büyüklüğü n = ${r.n_total} olarak hesaplanmıştır.`;
+  document.getElementById('res-apa').textContent = apaText;
+}
+
+function copyApa(btn) {
+  const text = document.getElementById('res-apa').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const orig = btn.innerHTML;
+    btn.innerHTML = '<i class="bi bi-check me-1"></i>Kopyalandı';
+    btn.classList.add('btn-success');
+    btn.classList.remove('btn-outline-secondary');
+    setTimeout(() => {
+      btn.innerHTML = orig;
+      btn.classList.remove('btn-success');
+      btn.classList.add('btn-outline-secondary');
+    }, 2000);
+  });
+}
+</script>
+{% endblock %}

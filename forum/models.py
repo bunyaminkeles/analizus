@@ -638,6 +638,13 @@ class QuizQuestion(models.Model):
         ('r', 'R'),
         ('statistics', 'İstatistik'),
         ('methodology', 'Metodoloji'),
+        ('cronbach', 'Güvenilirlik (Cronbach Alpha)'),
+        ('normallik', 'Normallik Testi'),
+        ('korelasyon', 'Korelasyon'),
+        ('ttesti', 't-Testi'),
+        ('anova', 'ANOVA'),
+        ('betimsel', 'Betimleyici İstatistik'),
+        ('output_reading', 'Çıktı Okuma'),
     ]
     DIFFICULTY_CHOICES = [
         ('easy', 'Kolay'),
@@ -656,6 +663,7 @@ class QuizQuestion(models.Model):
     topic = models.CharField(max_length=50, blank=True, verbose_name="Alt Konu")
     difficulty = models.CharField(max_length=10, choices=DIFFICULTY_CHOICES, default='medium', verbose_name="Zorluk")
     explanation = models.TextField(blank=True, verbose_name="Açıklama")
+    image = models.ImageField(upload_to='quiz/images/', blank=True, null=True, verbose_name="Görsel (opsiyonel)")
 
     is_active = models.BooleanField(default=True, verbose_name="Aktif")
     created_at = models.DateTimeField(auto_now_add=True)

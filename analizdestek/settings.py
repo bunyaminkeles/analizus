@@ -464,6 +464,8 @@ else:
     EMAIL_USE_SSL = True
 
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'info@analizus.com')
+# Admin bildirim e-postası — .env'de ADMIN_NOTIFICATION_EMAIL=bkeles74@gmail.com gibi ayarla
+ADMIN_NOTIFICATION_EMAIL = os.getenv('ADMIN_NOTIFICATION_EMAIL', DEFAULT_FROM_EMAIL)
 
 
 # --- IYZICO ÖDEME AYARLARI ---
