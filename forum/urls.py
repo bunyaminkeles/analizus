@@ -88,6 +88,7 @@ urlpatterns = [
     path('market/new/', views.post_job, name='post_job'),
     path('market/job/<int:pk>/', views.job_detail, name='job_detail'),
     path('market/job/<int:pk>/close/', views.close_job, name='close_job'),
+    path('market/job/<int:pk>/edit/', views.edit_job, name='edit_job'),
     path('market/job/<int:pk>/accept/<int:proposal_id>/', views.accept_proposal, name='accept_proposal'),
     path('market/job/<int:job_pk>/proposal/<int:proposal_id>/manage/', views.admin_manage_proposal, name='admin_manage_proposal'),
     path('market/job/<int:pk>/review/', views.add_job_review, name='add_job_review'),

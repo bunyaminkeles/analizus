@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block title %}İlanı Düzenle - {{ job.title }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm" style="background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(255, 255, 255, 0.08) !important;">
+                <div class="card-header bg-transparent border-bottom border-secondary border-opacity-25 py-3">
+                    <h4 class="text-white mb-0">
+                        <i class="bi bi-pencil-square text-warning me-2"></i>İlanı Düzenle
+                    </h4>
+                    <p class="text-warning small mb-0 mt-1">
+                        <i class="bi bi-exclamation-triangle me-1"></i>
+                        Bu hakkı yalnızca bir kez kullanabilirsiniz. Teklif alındıktan sonra düzenleme yapılamaz.
+                    </p>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+                            <label class="form-label text-white-50">{{ form.title.label }}</label>
+                            {{ form.title }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label text-white-50">{{ form.description.label }}</label>
+                            {{ form.description }}
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-white-50">{{ form.budget_min.label }}</label>
+                                {{ form.budget_min }}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-white-50">{{ form.budget_max.label }}</label>
+                                {{ form.budget_max }}
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label text-white-50">{{ form.category.label }}</label>
+                            {{ form.category }}
+                        </div>
+
+                        {% if form.errors %}
+                        <div class="alert alert-danger">
+                            {% for field in form %}{% for error in field.errors %}<div>{{ error }}</div>{% endfor %}{% endfor %}
+                        </div>
+                        {% endif %}
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-warning fw-semibold">
+                                <i class="bi bi-check-circle me-1"></i>Güncelle (Son Hakkım)
+                            </button>
+                            <a href="{% url 'job_detail' job.pk %}" class="btn btn-outline-secondary">İptal</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

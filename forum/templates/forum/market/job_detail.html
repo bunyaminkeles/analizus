@@ -139,12 +139,19 @@
                         {% endif %}
 
                         {% if user.is_authenticated and job.owner == user and job.status == 'open' %}
-                        <form method="post" action="{% url 'close_job' pk=job.pk %}" class="ms-auto" onsubmit="return confirm('İlanı kapatmak istediğinizden emin misiniz? Bu işlem geri alınamaz.');">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-sm btn-outline-danger">
-                                <i class="bi bi-power me-1"></i> İlanı Kapat
-                            </button>
-                        </form>
+                        <div class="d-flex gap-2 ms-auto">
+                            {% if not job.is_edited and not job.proposals.exists %}
+                            <a href="{% url 'edit_job' pk=job.pk %}" class="btn btn-sm btn-outline-warning">
+                                <i class="bi bi-pencil me-1"></i> Düzenle
+                            </a>
+                            {% endif %}
+                            <form method="post" action="{% url 'close_job' pk=job.pk %}" onsubmit="return confirm('İlanı kapatmak istediğinizden emin misiniz? Teklif verenlere bildirim gönderilecek.');">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm btn-outline-danger">
+                                    <i class="bi bi-power me-1"></i> Yayından Kaldır
+                                </button>
+                            </form>
+                        </div>
                         {% endif %}
 
                         {% if user.is_authenticated and job.status == 'completed' %}

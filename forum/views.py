@@ -385,15 +385,65 @@ def toggle_job_bookmark(request, pk):
 @require_POST
 def close_job(request, pk):
     job = get_object_or_404(FreelanceJob, pk=pk, owner=request.user)
-    
+
     if job.status == 'open':
+        # Bekleyen teklif sahiplerine DM gönder
+        pending_proposals = job.proposals.filter(status='pending').select_related('expert')
+        try:
+            bot_user = User.objects.get(username='AnalizBot')
+        except User.DoesNotExist:
+            bot_user = request.user
+
+        for proposal in pending_proposals:
+            PrivateMessage.objects.create(
+                sender=bot_user,
+                receiver=proposal.expert,
+                message=(
+                    f'Merhaba {proposal.expert.username},\n\n'
+                    f'Teklif verdiğiniz "{job.title}" ilanı ilan sahibi tarafından yayından kaldırıldı. '
+                    f'Teklifiniz otomatik olarak iptal edilmiştir.\n\n'
+                    f'Diğer ilanları incelemek için: https://www.analizus.com/jobs/'
+                )
+            )
+
         job.status = 'cancelled'
         job.save()
-        messages.success(request, 'İlanınız başarıyla kapatılmıştır.')
+        messages.success(request, 'İlanınız yayından kaldırıldı, teklif verenlere bildirim gönderildi.')
     else:
         messages.warning(request, 'Bu ilan zaten kapalı veya işlemde.')
 
     return redirect('job_detail', pk=pk)
+
+
+@login_required
+def edit_job(request, pk):
+    job = get_object_or_404(FreelanceJob, pk=pk, owner=request.user)
+
+    if job.status != 'open':
+        messages.error(request, 'Yalnızca açık ilanlar düzenlenebilir.')
+        return redirect('job_detail', pk=pk)
+
+    if job.is_edited:
+        messages.error(request, 'Her ilan yalnızca bir kez düzenlenebilir.')
+        return redirect('job_detail', pk=pk)
+
+    if job.proposals.exists():
+        messages.error(request, 'Teklif alınmış ilanlar düzenlenemez.')
+        return redirect('job_detail', pk=pk)
+
+    from .forms import JobPostForm
+    if request.method == 'POST':
+        form = JobPostForm(request.POST, instance=job)
+        if form.is_valid():
+            updated = form.save(commit=False)
+            updated.is_edited = True
+            updated.save()
+            messages.success(request, 'İlanınız güncellendi. (Düzenleme hakkınız kullanıldı.)')
+            return redirect('job_detail', pk=pk)
+    else:
+        form = JobPostForm(instance=job)
+
+    return render(request, 'forum/market/edit_job.html', {'form': form, 'job': job})
 
 
 @login_required

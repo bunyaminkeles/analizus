@@ -821,6 +821,7 @@ class FreelanceJob(models.Model):
     )
     feature_status = models.CharField(max_length=20, choices=FEATURE_STATUS_CHOICES, default='none', verbose_name="Vitrin Durumu")
     expires_at = models.DateTimeField(null=True, blank=True, verbose_name="Bitiş Tarihi")
+    is_edited = models.BooleanField(default=False, verbose_name="Düzenlendi")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
