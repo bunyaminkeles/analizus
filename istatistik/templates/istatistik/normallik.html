@@ -1,97 +1,333 @@
-{% extends "istatistik/tool_base.html" %}
+{% extends "base.html" %}
+{% load static %}
 
 {% block title %}Normallik Testi - Analizus{% endblock %}
 
-{% block status_url %}{% url 'istatistik:normallik_status' job_id='00000000-0000-0000-0000-000000000000' %}{% endblock %}
+{% block content %}
+<div class="container py-4">
 
-{# context view'dan geliyor #}
-
-{% block result_summary %}
-<div id="normallik-summary" class="d-none">
-  <div class="rounded-3 p-3 mb-2" style="background:rgba(255,255,255,0.05);">
-    <div class="fw-semibold text-white mb-1">Genel Öneri</div>
-    <div class="text-white-50 small" id="overall-rec">—</div>
+  <div class="row mb-4 align-items-center">
+    <div class="col">
+      <h2 class="fw-bold ax-text-primary mb-1 d-flex align-items-center">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ax-text-accent me-2"><path d="M2 20h20"/><path d="M5 20s1-8 7-8 7 8 7 8"/></svg>
+        Normallik Testi
+      </h2>
+      <p class="ax-text-muted mb-0">Shapiro-Wilk ve Kolmogorov-Smirnov testleri ile verilerinizin normal dağılıma uygunluğunu sınayın.</p>
+    </div>
+    {% if user.is_authenticated %}
+    <div class="col-auto">
+      <span class="ax-badge ax-badge-secondary">Günlük: {{ daily_remaining }} analiz hakkı</span>
+    </div>
+    {% endif %}
   </div>
-  <div id="var-badges" class="d-flex flex-wrap gap-2"></div>
-</div>
-{% endblock %}
-
-{% block on_completed_js %}
-if (data.result_data) {
-  const r = data.result_data;
-  document.getElementById('overall-rec').textContent = r.overall_recommendation;
-  const badges = document.getElementById('var-badges');
-  badges.innerHTML = '';
-  r.variables.forEach(v => {
-    const cls = v.is_normal ? 'bg-success' : 'bg-danger';
-    badges.innerHTML += `<span class="badge ${cls}">${v.variable} p=${v.shapiro_p}</span>`;
-  });
-  document.getElementById('normallik-summary').classList.remove('d-none');
-
-  const lines = r.variables.map(v => {
-    const dist = v.is_normal ? 'normal dağılım gösterdiği' : 'normal dağılım göstermediği';
-    return `${v.variable} değişkeninin ${dist} belirlenmiştir (W = ${v.shapiro_stat}, p = ${v.shapiro_p}).`;
-  });
-  const apaText = `Verilerin normal dağılım gösterip göstermediği Shapiro-Wilk testi ile incelenmiştir. ${lines.join(' ')}`;
-  document.getElementById('normallik-apa-display').textContent = apaText;
-  document.getElementById('normallik-report-text').textContent = apaText;
-  document.getElementById('normallik-apa-box').classList.remove('d-none');
-  document.getElementById('normallik-apa-placeholder').classList.add('d-none');
-}
-{% endblock %}
-
-{% block methodology %}
-<div class="mt-4 rounded-3 p-4" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07);">
-  <h5 class="text-white fw-semibold mb-3"><i class="bi bi-journal-text me-2 text-success"></i>Metodoloji</h5>
 
   <div class="row g-4">
-    <div class="col-md-6">
-      <h6 class="text-white-50 text-uppercase small fw-bold mb-2">Shapiro-Wilk Testi</h6>
-      <p class="text-white-50 small mb-2">
-        Shapiro-Wilk testi, bir veri setinin normal dağılıma uyup uymadığını sınar.
-        Küçük ve orta örneklem boyutlarında (n &lt; 2000) tercih edilir.
-        H₀: Veri normal dağılmaktadır.
-      </p>
-      <p class="text-white-50 small mb-0">
-        <strong class="text-white-50">Karar kuralı:</strong> p &gt; .05 → Normal dağılım kabul edilir.<br>
-        p ≤ .05 → Normal dağılım reddedilir; parametrik olmayan testler önerilir.
+
+    <!-- Sol: Yükleme -->
+    <div class="col-lg-5">
+      <div class="ax-card p-4">
+
+        <h5 class="ax-text-primary fw-semibold mb-3 d-flex align-items-center">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ax-text-accent me-2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Dosya Yükle
+        </h5>
+        <p class="ax-text-muted ax-text-sm mb-3">CSV veya Excel (.xlsx/.xls) dosyanızı yükleyin.</p>
+
+        {% if not user.is_authenticated %}
+        <div class="ax-alert-info mb-3 ax-text-sm">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" class="me-2 flex-shrink-0" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span><a href="{% url 'login' %}?next={{ request.path }}" class="ax-link">Giriş yapın</a> veya <a href="{% url 'register' %}?next={{ request.path }}" class="ax-link">kayıt olun</a> — geçmişiniz kaydedilsin.</span>
+        </div>
+        {% endif %}
+
+        <div id="upload-area" class="ax-upload-area mb-3" onclick="document.getElementById('file-input').click()">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ax-text-accent mb-2 mx-auto d-block"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M12 12v9"/><path d="m8 16 4-4 4 4"/></svg>
+          <p class="ax-text-muted ax-text-sm mb-1">Dosyayı buraya sürükleyin veya tıklayın</p>
+          <p class="ax-text-muted ax-text-sm mb-0" id="file-name-display">CSV, XLSX, XLS — Maks. 10 MB</p>
+        </div>
+        <input type="file" id="file-input" accept=".csv,.xlsx,.xls" class="d-none">
+
+        <button id="analyze-btn" class="ax-btn ax-btn-accent w-100 fw-semibold" disabled>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+          Analizi Başlat
+        </button>
+
+        <div id="error-msg" class="ax-alert-danger mt-3 d-none ax-text-sm"></div>
+      </div>
+    </div>
+
+    <!-- Sağ: Sonuç -->
+    <div class="col-lg-7">
+      <div class="ax-card p-4 h-100">
+
+        <div id="panel-idle">
+          <h5 class="ax-text-muted fw-semibold mb-3">Sonuçlar burada görünecek</h5>
+          <ul class="ax-text-muted ax-text-sm ps-3">
+            <li class="mb-1">Her sütun ayrı bir değişken olarak test edilir.</li>
+            <li class="mb-1">n &lt; 2000 için Shapiro-Wilk, n ≥ 2000 için Kolmogorov-Smirnov önerilir.</li>
+            <li class="mb-1">p &gt; .05 → normal dağılım kabul edilir.</li>
+            <li class="mb-1">Metin sütunları otomatik atlanır.</li>
+          </ul>
+        </div>
+
+        <div id="panel-loading" class="text-center d-none py-4">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="ax-text-accent mb-3 mx-auto d-block" style="animation: ax-spin 1s linear infinite;"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+          <p class="ax-text-muted">Analiz yapılıyor, lütfen bekleyin…</p>
+        </div>
+
+        <div id="panel-error" class="d-none">
+          <div class="ax-alert-danger mb-3">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2 flex-shrink-0"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <span id="panel-error-msg" class="ax-text-sm"></span>
+          </div>
+          <button class="ax-btn ax-btn-outline-secondary ax-btn-sm" onclick="resetUI()">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" class="me-1" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>Tekrar Dene
+          </button>
+        </div>
+
+        <div id="panel-warning" class="d-none">
+          <div class="ax-alert-warning mb-3">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2 flex-shrink-0"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <div>
+              <strong class="ax-text-warning d-block mb-2">Veri uyarıları tespit edildi</strong>
+              <ul id="panel-warning-list" class="mb-3 ax-text-sm ps-3"></ul>
+              <p class="ax-text-muted ax-text-sm mb-0">Yine de devam edebilirsiniz.</p>
+            </div>
+          </div>
+          <div class="d-flex gap-2">
+            <button id="confirm-warnings-btn" class="ax-btn ax-btn-warning ax-btn-sm fw-semibold">Yine de devam et</button>
+            <button class="ax-btn ax-btn-outline-secondary ax-btn-sm" onclick="resetUI()">İptal</button>
+          </div>
+        </div>
+
+        <div id="panel-done" class="d-none">
+          <div class="d-flex align-items-center gap-2 mb-3">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="ax-text-success"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            <h5 class="ax-text-primary mb-0">Analiz Tamamlandı</h5>
+          </div>
+
+          <!-- Genel öneri -->
+          <div class="ax-rounded-md p-3 mb-3" style="background: rgba(0,0,0,0.2); border: 1px solid var(--ax-border-default);">
+            <p class="ax-text-secondary fw-semibold ax-text-sm mb-1">Genel Öneri</p>
+            <p class="ax-text-primary ax-text-sm mb-0" id="overall-rec">—</p>
+          </div>
+
+          <!-- Değişken sonuçları -->
+          <div id="var-badges" class="d-flex flex-wrap gap-2 mb-3"></div>
+
+          <div class="d-flex gap-2 flex-wrap">
+            <a id="pdf-download-btn" href="#" target="_blank" class="ax-btn ax-btn-danger fw-semibold ax-btn-sm">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-1"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>PDF İndir
+            </a>
+            <button class="ax-btn ax-btn-outline-secondary ax-btn-sm" onclick="resetUI()">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" class="me-1" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>Yeni Analiz
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Metodoloji -->
+  <div class="ax-card mt-4 p-4">
+    <h5 class="ax-text-primary fw-semibold mb-3 d-flex align-items-center">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ax-text-accent me-2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      Metodoloji
+    </h5>
+
+    <div class="row g-4 mb-4">
+      <div class="col-md-6">
+        <h6 class="ax-text-muted text-uppercase ax-text-sm fw-bold mb-2">Shapiro-Wilk Testi</h6>
+        <p class="ax-text-muted ax-text-sm mb-2">Shapiro-Wilk testi, bir veri setinin normal dağılıma uyup uymadığını sınar. Küçük ve orta örneklem boyutlarında (n &lt; 2000) tercih edilir. H₀: Veri normal dağılmaktadır.</p>
+        <p class="ax-text-muted ax-text-sm mb-0"><strong class="ax-text-secondary">Karar:</strong> p &gt; .05 → Normal dağılım kabul edilir.<br>p ≤ .05 → Normal dağılım reddedilir; parametrik olmayan testler önerilir.</p>
+      </div>
+      <div class="col-md-6">
+        <h6 class="ax-text-muted text-uppercase ax-text-sm fw-bold mb-2">Kolmogorov-Smirnov Testi</h6>
+        <p class="ax-text-muted ax-text-sm mb-0">Büyük örneklemlerde (n ≥ 2000) Kolmogorov-Smirnov testi kullanılır. Ancak bu test büyük örneklemlerde aşırı duyarlı olabilir; histogram ve Q-Q grafiği ile birlikte değerlendirilmesi önerilir.</p>
+      </div>
+    </div>
+
+    <hr style="border-color: var(--ax-border-default); margin: 1.5rem 0;">
+
+    <h6 class="ax-text-secondary fw-semibold mb-2">Tezinde Nasıl Raporlarsın?</h6>
+    <div id="normallik-apa-box" class="d-none ax-rounded-md p-3 mb-3" style="background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.2);">
+      <p class="ax-text-primary ax-text-sm mb-2" id="normallik-apa-display" style="font-style:italic;"></p>
+      <button class="ax-btn ax-btn-outline-secondary ax-btn-sm" onclick="copyApa(this)">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" class="me-1" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Kopyala
+      </button>
+      <span id="normallik-report-text" class="d-none"></span>
+    </div>
+    <div id="normallik-apa-placeholder" class="ax-rounded-md p-3" style="background: rgba(99,102,241,0.05); border: 1px dashed rgba(99,102,241,0.2);">
+      <p class="ax-text-muted ax-text-sm mb-0">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" class="me-1" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Analizi tamamladıktan sonra APA formatında rapor cümlesi burada otomatik oluşacak.
       </p>
     </div>
-    <div class="col-md-6">
-      <h6 class="text-white-50 text-uppercase small fw-bold mb-2">Kolmogorov-Smirnov Testi</h6>
-      <p class="text-white-50 small mb-0">
-        Büyük örneklemlerde (n ≥ 2000) Kolmogorov-Smirnov testi kullanılır.
-        Ancak bu test büyük örneklemlerde aşırı duyarlı olabilir;
-        histogram ve Q-Q grafiği ile birlikte değerlendirilmesi önerilir.
-      </p>
-    </div>
+
+    <hr style="border-color: var(--ax-border-default); margin: 1.5rem 0;">
+
+    <h6 class="ax-text-secondary fw-semibold mb-2">Akademik Kaynaklar</h6>
+    <p class="ax-text-muted ax-text-sm mb-1">Shapiro, S. S., &amp; Wilk, M. B. (1965). An analysis of variance test for normality. <em>Biometrika, 52</em>(3/4), 591–611.</p>
+    <p class="ax-text-muted ax-text-sm mb-0">Field, A. (2018). <em>Discovering statistics using IBM SPSS statistics</em> (5th ed.). SAGE Publications.</p>
   </div>
 
-  <hr style="border-color:rgba(255,255,255,0.08);">
-
-  <h6 class="text-white-50 text-uppercase small fw-bold mb-2">Tezinde Nasıl Raporlarsın?</h6>
-  <div id="normallik-apa-box" class="rounded-3 p-3 d-none" style="background:rgba(34,197,94,0.08); border:1px solid rgba(34,197,94,0.2);">
-    <p class="text-white small mb-2" style="font-style:italic;" id="normallik-apa-display"></p>
-    <button class="btn btn-sm btn-outline-secondary" onclick="copyMethodText(this, 'normallik-report-text')" style="font-size:0.75rem;">
-      <i class="bi bi-clipboard me-1"></i>Kopyala
-    </button>
-    <span id="normallik-report-text" class="d-none"></span>
-  </div>
-  <div id="normallik-apa-placeholder" class="rounded-3 p-3" style="background:rgba(34,197,94,0.04); border:1px dashed rgba(34,197,94,0.2);">
-    <p class="text-white-50 small mb-0" style="font-style:italic;">
-      <i class="bi bi-info-circle me-1"></i>Analizi tamamladıktan sonra APA formatında rapor cümlesi burada otomatik oluşacak.
-    </p>
-  </div>
-
-  <hr style="border-color:rgba(255,255,255,0.08);">
-
-  <h6 class="text-white-50 text-uppercase small fw-bold mb-2">Akademik Kaynak</h6>
-  <p class="text-white-50 small mb-1">
-    Shapiro, S. S., &amp; Wilk, M. B. (1965). An analysis of variance test for normality (complete samples).
-    <em>Biometrika, 52</em>(3/4), 591–611. <a href="https://doi.org/10.2307/2333709" target="_blank" class="text-success">https://doi.org/10.2307/2333709</a>
-  </p>
-  <p class="text-white-50 small mb-0">
-    Field, A. (2018). <em>Discovering statistics using IBM SPSS statistics</em> (5th ed.). SAGE Publications.
-  </p>
 </div>
+
+<script>
+const STATUS_BASE = '{% url "istatistik:normallik_status" job_id="00000000-0000-0000-0000-000000000000" %}';
+let pollInterval = null, currentJobId = null;
+
+const uploadArea = document.getElementById('upload-area');
+const fileInput  = document.getElementById('file-input');
+const fileNameDisplay = document.getElementById('file-name-display');
+const analyzeBtn = document.getElementById('analyze-btn');
+const confirmWarningsBtn = document.getElementById('confirm-warnings-btn');
+
+uploadArea.addEventListener('dragover', e => { e.preventDefault(); uploadArea.style.borderColor = 'var(--ax-accent-primary)'; });
+uploadArea.addEventListener('dragleave', () => { uploadArea.style.borderColor = ''; });
+uploadArea.addEventListener('drop', e => { e.preventDefault(); uploadArea.style.borderColor = ''; if (e.dataTransfer.files[0]) setFile(e.dataTransfer.files[0]); });
+fileInput.addEventListener('change', () => { if (fileInput.files[0]) setFile(fileInput.files[0]); });
+
+function setFile(f) {
+  fileInput._selectedFile = f;
+  fileNameDisplay.textContent = f.name;
+  analyzeBtn.disabled = false;
+  document.getElementById('error-msg').classList.add('d-none');
+}
+
+analyzeBtn.addEventListener('click', () => submitFile(false));
+confirmWarningsBtn.addEventListener('click', () => submitFile(true));
+
+function submitFile(confirm) {
+  const f = fileInput._selectedFile; if (!f) return;
+  analyzeBtn.disabled = true; confirmWarningsBtn.disabled = true;
+  showPanel('loading');
+  const fd = new FormData();
+  fd.append('file', f);
+  fd.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+  if (confirm) fd.append('confirm_warnings', 'true');
+  fetch(window.location.pathname, { method: 'POST', headers: {'X-Requested-With': 'XMLHttpRequest'}, body: fd })
+  .then(r => r.json())
+  .then(data => {
+    if (data.error) { showError(data.error); return; }
+    if (data.warnings) { showWarning(data.warnings); return; }
+    currentJobId = data.job_id;
+    startPolling(currentJobId);
+  })
+  .catch(() => showError('Bağlantı hatası. Lütfen tekrar deneyin.'));
+}
+
+function startPolling(jobId) {
+  const url = STATUS_BASE.replace('00000000-0000-0000-0000-000000000000', jobId);
+  pollInterval = setInterval(() => {
+    fetch(url, { headers: {'X-Requested-With': 'XMLHttpRequest'} })
+    .then(r => r.json())
+    .then(data => {
+      if (data.status === 'completed') { clearInterval(pollInterval); onCompleted(data); }
+      else if (data.status === 'failed') { clearInterval(pollInterval); showError(data.error || 'Analiz başarısız oldu.'); }
+    }).catch(() => {});
+  }, 2500);
+}
+
+function onCompleted(data) {
+  document.getElementById('pdf-download-btn').href = data.pdf_url;
+  if (data.daily_remaining !== undefined) {
+    const badge = document.querySelector('.ax-badge-secondary');
+    if (badge) badge.textContent = 'Günlük: ' + data.daily_remaining + ' analiz hakkı';
+  }
+  if (data.result_data) {
+    const r = data.result_data;
+    document.getElementById('overall-rec').textContent = r.overall_recommendation;
+    const badges = document.getElementById('var-badges');
+    badges.innerHTML = '';
+    r.variables.forEach(v => {
+      const isNormal = v.is_normal;
+      badges.innerHTML += `<span class="ax-var-badge ${isNormal ? 'ax-var-badge-success' : 'ax-var-badge-danger'}">${v.variable} <span class="ax-var-p">p=${v.shapiro_p}</span></span>`;
+    });
+    const lines = r.variables.map(v => {
+      const dist = v.is_normal ? 'normal dağılım gösterdiği' : 'normal dağılım göstermediği';
+      return `${v.variable} değişkeninin ${dist} belirlenmiştir (W = ${v.shapiro_stat}, p = ${v.shapiro_p}).`;
+    });
+    const apaText = `Verilerin normal dağılım gösterip göstermediği Shapiro-Wilk testi ile incelenmiştir. ${lines.join(' ')}`;
+    document.getElementById('normallik-apa-display').textContent = apaText;
+    document.getElementById('normallik-report-text').textContent = apaText;
+    document.getElementById('normallik-apa-box').classList.remove('d-none');
+    document.getElementById('normallik-apa-placeholder').classList.add('d-none');
+  }
+  showPanel('done');
+}
+
+function showPanel(name) {
+  ['idle','loading','warning','error','done'].forEach(n => {
+    document.getElementById('panel-' + n).classList.toggle('d-none', n !== name);
+  });
+}
+function showError(msg) {
+  analyzeBtn.disabled = false; confirmWarningsBtn.disabled = false;
+  document.getElementById('panel-error-msg').textContent = msg; showPanel('error');
+}
+function showWarning(warnings) {
+  analyzeBtn.disabled = false; confirmWarningsBtn.disabled = false;
+  document.getElementById('panel-warning-list').innerHTML = warnings.map(w =>
+    `<li class="mb-1"><span class="ax-badge ax-badge-${w.level === 'danger' ? 'danger' : 'warning'} me-2">${w.level === 'danger' ? 'Hata' : 'Uyarı'}</span><strong>${w.title}:</strong> ${w.message}</li>`
+  ).join('');
+  showPanel('warning');
+}
+function resetUI() {
+  if (pollInterval) clearInterval(pollInterval);
+  currentJobId = null; fileInput.value = ''; fileInput._selectedFile = null;
+  fileNameDisplay.textContent = 'CSV, XLSX, XLS — Maks. 10 MB';
+  analyzeBtn.disabled = true;
+  document.getElementById('error-msg').classList.add('d-none');
+  document.getElementById('normallik-apa-box').classList.add('d-none');
+  document.getElementById('normallik-apa-placeholder').classList.remove('d-none');
+  showPanel('idle');
+}
+function copyApa(btn) {
+  navigator.clipboard.writeText(document.getElementById('normallik-report-text').textContent).then(() => {
+    const orig = btn.innerHTML;
+    btn.innerHTML = '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" class="me-1" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Kopyalandı';
+    setTimeout(() => { btn.innerHTML = orig; }, 2000);
+  });
+}
+
+{% if active_job_id %}
+currentJobId = '{{ active_job_id }}';
+showPanel('loading');
+startPolling(currentJobId);
+{% endif %}
+</script>
+
+<style>
+  .ax-upload-area { border: 2px dashed var(--ax-border-hover); border-radius: var(--ax-radius-md); background: rgba(0,0,0,0.1); padding: 1.5rem 1rem; text-align: center; cursor: pointer; transition: border-color 0.2s; }
+  .ax-upload-area:hover { border-color: var(--ax-accent-primary); }
+  .ax-btn-accent { background: var(--ax-accent-primary); color: #fff; border: 1px solid transparent; }
+  .ax-btn-accent:hover { background: var(--ax-accent-primary-hover); color: #fff; }
+  .ax-btn-accent:disabled { opacity: 0.45; cursor: not-allowed; }
+  .ax-btn-warning { background: var(--ax-accent-warning); color: #000; border: 1px solid transparent; }
+  .ax-btn-danger { background: var(--ax-accent-danger); color: #fff; border: 1px solid transparent; }
+  .ax-btn-danger:hover { opacity: 0.9; color: #fff; }
+  .ax-btn-outline-secondary { border: 1px solid var(--ax-border-hover); color: var(--ax-text-secondary); background: transparent; }
+  .ax-btn-outline-secondary:hover { background: rgba(255,255,255,0.05); color: var(--ax-text-primary); }
+  .ax-alert-danger, .ax-alert-warning, .ax-alert-info { display: flex; align-items: flex-start; padding: 12px 16px; border-radius: var(--ax-radius-md); }
+  .ax-alert-danger  { background: rgba(239,68,68,0.1);  border: 1px solid rgba(239,68,68,0.25);  color: var(--ax-accent-danger); }
+  .ax-alert-warning { background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.25); color: var(--ax-accent-warning); }
+  .ax-alert-info    { background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.2); color: var(--ax-text-secondary); }
+  .ax-link { color: var(--ax-accent-primary); text-decoration: none; }
+  .ax-link:hover { text-decoration: underline; }
+  .ax-badge { display: inline-flex; align-items: center; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 500; }
+  .ax-badge-secondary { background: rgba(71,85,105,0.25); color: var(--ax-text-secondary); }
+  .ax-badge-danger    { background: rgba(239,68,68,0.15); color: var(--ax-accent-danger); font-size: 0.72rem; padding: 2px 8px; }
+  .ax-badge-warning   { background: rgba(245,158,11,0.15); color: var(--ax-accent-warning); font-size: 0.72rem; padding: 2px 8px; }
+  .ax-var-badge { display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
+  .ax-var-badge-success { background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.3); color: var(--ax-accent-secondary); }
+  .ax-var-badge-danger  { background: rgba(239,68,68,0.12);  border: 1px solid rgba(239,68,68,0.3);  color: var(--ax-accent-danger); }
+  .ax-var-p { font-weight: 400; opacity: 0.8; font-size: 0.75rem; }
+  .ax-text-accent  { color: var(--ax-accent-primary) !important; }
+  .ax-text-success { color: var(--ax-accent-secondary) !important; }
+  .ax-text-warning { color: var(--ax-accent-warning) !important; }
+  .ax-text-danger  { color: var(--ax-accent-danger) !important; }
+  @keyframes ax-spin { 100% { transform: rotate(360deg); } }
+</style>
 {% endblock %}
