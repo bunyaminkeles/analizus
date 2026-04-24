@@ -43,8 +43,8 @@ class RegisterForm(UserCreationForm):
     def clean_username(self):
         import re
         username = self.cleaned_data.get('username', '')
-        # 5+ ardışık ünsüz = random bot kullanıcı adı imzası
-        if re.search(r'[bcdfghjklmnpqrstvwxyzBCDFGHJKLMNPQRSTVWXYZ]{5,}', username):
+        # 4+ ardışık ünsüz = random bot kullanıcı adı imzası (Türkçe ünsüzler dahil)
+        if re.search(r'[bcçdfgğhjklmnprsştvyzBCÇDFGĞHJKLMNPRSŞTVYZ]{4,}', username):
             raise forms.ValidationError(
                 "Geçerli bir kullanıcı adı seçin (örn: ahmet_42, researcher1)."
             )
