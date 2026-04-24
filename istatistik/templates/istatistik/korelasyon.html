@@ -1,224 +1,298 @@
-{% extends "istatistik/tool_base.html" %}
+{% extends "base.html" %}
+{% load static %}
 
 {% block title %}Korelasyon Matrisi - Analizus{% endblock %}
 
-{% block status_url %}{% url 'istatistik:korelasyon_status' job_id='00000000-0000-0000-0000-000000000000' %}{% endblock %}
+{% block content %}
+<div class="container py-4">
 
-{% block extra_upload_fields %}
-<div class="mb-3">
-  <label class="text-white-50 small fw-semibold mb-2 d-block">Korelasyon Yöntemi</label>
-  <div class="d-flex gap-2 flex-wrap" id="method-selector">
-    <button type="button" class="btn btn-sm btn-info active" data-method="pearson">
-      Pearson
-    </button>
-    <button type="button" class="btn btn-sm btn-outline-info" data-method="spearman">
-      Spearman
-    </button>
-    <button type="button" class="btn btn-sm btn-outline-info" data-method="kendall">
-      Kendall
-    </button>
-  </div>
-  <p class="text-white-50 small mt-2 mb-0" id="method-desc">Parametrik — normal dağılımlı sürekli değişkenler için önerilir.</p>
-  <input type="hidden" id="method-input" value="pearson">
-</div>
-{% endblock %}
-
-{% block result_summary %}
-<div id="korelasyon-summary" class="d-none">
-  <div class="row g-3 mb-3">
-    <div class="col-4">
-      <div class="rounded-3 p-3 text-center" style="background:rgba(255,255,255,0.05);">
-        <div class="fs-3 fw-bold text-info" id="k-vars">—</div>
-        <div class="text-white-50 small">Değişken</div>
-      </div>
+  <div class="row mb-4 align-items-center">
+    <div class="col">
+      <h2 class="fw-bold ax-text-primary mb-1 d-flex align-items-center">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ax-text-accent me-2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg>
+        Korelasyon Matrisi
+      </h2>
+      <p class="ax-text-muted mb-0">Değişkenler arasındaki ilişkileri Pearson, Spearman veya Kendall yöntemiyle analiz edin — ısı haritası ve PDF rapor ile.</p>
     </div>
-    <div class="col-4">
-      <div class="rounded-3 p-3 text-center" style="background:rgba(255,255,255,0.05);">
-        <div class="fs-3 fw-bold text-info" id="k-cases">—</div>
-        <div class="text-white-50 small">Gözlem</div>
-      </div>
+    {% if user.is_authenticated %}
+    <div class="col-auto">
+      <span class="ax-badge ax-badge-secondary">Günlük: {{ daily_remaining }} analiz hakkı</span>
     </div>
-    <div class="col-4">
-      <div class="rounded-3 p-3 text-center" style="background:rgba(255,255,255,0.05);">
-        <div class="fs-6 fw-semibold text-white" id="k-method">—</div>
-        <div class="text-white-50 small">Yöntem</div>
-      </div>
-    </div>
+    {% endif %}
   </div>
-
-  {# Heatmap önizleme #}
-  <div id="heatmap-container" class="text-center d-none mb-3">
-    <img id="heatmap-img" src="" alt="Korelasyon Isı Haritası"
-         class="img-fluid rounded-3" style="max-height:300px; border:1px solid rgba(255,255,255,0.1);">
-  </div>
-
-  {# Mini korelasyon tablosu #}
-  <div id="corr-table-container" class="d-none">
-    <p class="text-white-50 small mb-1">Korelasyon Katsayıları (r)</p>
-    <div style="overflow-x:auto; max-height:220px; overflow-y:auto;">
-      <table id="corr-table" class="table table-dark table-bordered table-sm small mb-0" style="font-size:0.75rem;"></table>
-    </div>
-  </div>
-</div>
-{% endblock %}
-
-{% block on_completed_js %}
-if (data.result_data) {
-  const r = data.result_data;
-  document.getElementById('k-vars').textContent = r.n_vars;
-  document.getElementById('k-cases').textContent = r.n_cases;
-  document.getElementById('k-method').textContent = r.method_label;
-
-  // Heatmap
-  if (r.heatmap_b64) {
-    document.getElementById('heatmap-img').src = 'data:image/png;base64,' + r.heatmap_b64;
-    document.getElementById('heatmap-container').classList.remove('d-none');
-  }
-
-  // Mini korelasyon tablosu
-  const cols = r.columns;
-  let thead = '<thead><tr><th></th>' + cols.map(c => `<th>${c}</th>`).join('') + '</tr></thead>';
-  let tbody = '<tbody>';
-  for (let i = 0; i < cols.length; i++) {
-    tbody += `<tr><th>${cols[i]}</th>`;
-    for (let j = 0; j < cols.length; j++) {
-      const val = r.corr_matrix[i][j];
-      const p = r.pval_matrix[i][j];
-      let cls = '';
-      if (i === j) cls = 'text-white-50';
-      else if (p < 0.05 && Math.abs(val) >= 0.3) cls = 'text-success fw-bold';
-      else if (p < 0.05) cls = 'text-info';
-      tbody += `<td class="${cls}">${val.toFixed(3)}</td>`;
-    }
-    tbody += '</tr>';
-  }
-  tbody += '</tbody>';
-  document.getElementById('corr-table').innerHTML = thead + tbody;
-  document.getElementById('corr-table-container').classList.remove('d-none');
-
-  document.getElementById('korelasyon-summary').classList.remove('d-none');
-
-  // APA cümlesi güncelle
-  const apaText = `Değişkenler arasındaki ilişkiler ${r.method_label} korelasyon analizi ile incelenmiştir (n = ${r.n_cases}). Korelasyon katsayıları ve p-değerleri raporun ek tablosunda sunulmuştur (Cohen, 1988).`;
-  document.getElementById('korelasyon-apa-display').textContent = apaText;
-  document.getElementById('korelasyon-report-text').textContent = apaText;
-  document.getElementById('korelasyon-apa-box').classList.remove('d-none');
-  document.getElementById('korelasyon-apa-placeholder').classList.add('d-none');
-}
-{% endblock %}
-
-{% block methodology %}
-<div class="mt-4 rounded-3 p-4" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07);">
-  <h5 class="text-white fw-semibold mb-3"><i class="bi bi-journal-text me-2 text-info"></i>Metodoloji</h5>
 
   <div class="row g-4">
-    <div class="col-md-6">
-      <h6 class="text-white-50 text-uppercase small fw-bold mb-2">Yöntem Seçim Rehberi</h6>
-      <table class="table table-sm table-dark table-borderless small mb-0" style="font-size:0.8rem;">
-        <thead>
-          <tr><th class="text-white-50">Yöntem</th><th class="text-white-50">Kullanım Durumu</th></tr>
-        </thead>
-        <tbody>
-          <tr><td class="text-info">Pearson</td><td class="text-white-50">Normal dağılımlı sürekli veriler</td></tr>
-          <tr><td class="text-info">Spearman</td><td class="text-white-50">Sıralı veri, normallik sağlanmıyor</td></tr>
-          <tr><td class="text-info">Kendall</td><td class="text-white-50">Küçük örneklem, çok sayıda eşik</td></tr>
-        </tbody>
-      </table>
+
+    <!-- Sol: Yükleme & Ayarlar -->
+    <div class="col-lg-5">
+      <div class="ax-card p-4">
+
+        <h5 class="ax-text-primary fw-semibold mb-3 d-flex align-items-center">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ax-text-accent me-2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Dosya Yükle
+        </h5>
+        <p class="ax-text-muted ax-text-sm mb-3">CSV veya Excel (.xlsx/.xls) dosyanızı yükleyin.</p>
+
+        {% if not user.is_authenticated %}
+        <div class="ax-alert-info mb-3 ax-text-sm">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" class="me-2 flex-shrink-0" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span><a href="{% url 'login' %}?next={{ request.path }}" class="ax-link">Giriş yapın</a> veya <a href="{% url 'register' %}?next={{ request.path }}" class="ax-link">kayıt olun</a> — geçmişiniz kaydedilsin.</span>
+        </div>
+        {% endif %}
+
+        <div id="upload-area"
+             class="ax-upload-area mb-3"
+             onclick="document.getElementById('file-input').click()">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ax-text-accent mb-2 mx-auto d-block"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M12 12v9"/><path d="m8 16 4-4 4 4"/></svg>
+          <p class="ax-text-muted ax-text-sm mb-1">Dosyayı buraya sürükleyin veya tıklayın</p>
+          <p class="ax-text-muted ax-text-sm mb-0" id="file-name-display">CSV, XLSX, XLS — Maks. 10 MB</p>
+        </div>
+        <input type="file" id="file-input" accept=".csv,.xlsx,.xls" class="d-none">
+
+        <!-- Yöntem Seçici -->
+        <div class="mb-4">
+          <label class="ax-text-secondary fw-semibold ax-text-sm mb-2 d-block">Korelasyon Yöntemi</label>
+          <div class="d-flex gap-2 flex-wrap" id="method-selector">
+            <button type="button" class="ax-method-btn active" data-method="pearson">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" class="me-1" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Pearson
+            </button>
+            <button type="button" class="ax-method-btn" data-method="spearman">Spearman</button>
+            <button type="button" class="ax-method-btn" data-method="kendall">Kendall</button>
+          </div>
+          <p class="ax-text-muted ax-text-sm mt-2 mb-0" id="method-desc">Parametrik — normal dağılımlı sürekli değişkenler için önerilir.</p>
+          <input type="hidden" id="method-input" value="pearson">
+        </div>
+
+        <button id="analyze-btn" class="ax-btn ax-btn-accent w-100 fw-semibold" disabled>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+          Analizi Başlat
+        </button>
+
+        <div id="error-msg" class="ax-alert-danger mt-3 d-none ax-text-sm"></div>
+      </div>
     </div>
-    <div class="col-md-6">
-      <h6 class="text-white-50 text-uppercase small fw-bold mb-2">Katsayı Yorum Eşikleri</h6>
-      <table class="table table-sm table-dark table-borderless small mb-0" style="font-size:0.8rem;">
-        <tbody>
-          <tr><td>|r| &lt; .10</td><td class="text-white-50">İhmal edilebilir ilişki</td></tr>
-          <tr><td>.10 – .30</td><td class="text-warning">Zayıf ilişki</td></tr>
-          <tr><td>.30 – .50</td><td class="text-info">Orta düzey ilişki</td></tr>
-          <tr><td>&gt; .50</td><td class="text-success fw-bold">Güçlü ilişki</td></tr>
-        </tbody>
-      </table>
+
+    <!-- Sağ: Sonuç Paneli -->
+    <div class="col-lg-7">
+      <div class="ax-card p-4 h-100">
+
+        <!-- Başlangıç -->
+        <div id="panel-idle">
+          <h5 class="ax-text-muted fw-semibold mb-3">Sonuçlar burada görünecek</h5>
+          <ul class="ax-text-muted ax-text-sm ps-3">
+            <li class="mb-1">Her sütun bir değişken, her satır bir gözlem olmalıdır.</li>
+            <li class="mb-1">Sayısal sütunlar otomatik seçilir; metin sütunları atlanır.</li>
+            <li class="mb-1">En az 2 sayısal sütun gereklidir.</li>
+            <li class="mb-1">Güçlü korelasyonlar (|r| ≥ .30, p &lt; .05) yeşil renkte gösterilir.</li>
+          </ul>
+        </div>
+
+        <!-- Yükleniyor -->
+        <div id="panel-loading" class="text-center d-none py-4">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="ax-text-accent mb-3 mx-auto d-block" style="animation: ax-spin 1s linear infinite;"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+          <p class="ax-text-muted">Analiz yapılıyor, lütfen bekleyin…</p>
+        </div>
+
+        <!-- Hata -->
+        <div id="panel-error" class="d-none">
+          <div class="ax-alert-danger mb-3">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2 flex-shrink-0"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <span id="panel-error-msg" class="ax-text-sm"></span>
+          </div>
+          <button class="ax-btn ax-btn-outline-secondary ax-btn-sm" onclick="resetUI()">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" class="me-1" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>Tekrar Dene
+          </button>
+        </div>
+
+        <!-- Uyarılar -->
+        <div id="panel-warning" class="d-none">
+          <div class="ax-alert-warning mb-3">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2 flex-shrink-0"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <div>
+              <strong class="ax-text-warning d-block mb-2">Veri uyarıları tespit edildi</strong>
+              <ul id="panel-warning-list" class="mb-3 ax-text-sm ps-3"></ul>
+              <p class="ax-text-muted ax-text-sm mb-0">Bu uyarılar veri kalitenizi etkileyebilir. Yine de devam edebilirsiniz.</p>
+            </div>
+          </div>
+          <div class="d-flex gap-2">
+            <button id="confirm-warnings-btn" class="ax-btn ax-btn-warning ax-btn-sm fw-semibold">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" class="me-1" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 16 16 12 12 8"/><line x1="8" y1="12" x2="16" y2="12"/></svg>Yine de devam et
+            </button>
+            <button class="ax-btn ax-btn-outline-secondary ax-btn-sm" onclick="resetUI()">İptal</button>
+          </div>
+        </div>
+
+        <!-- Tamamlandı -->
+        <div id="panel-done" class="d-none">
+          <div class="d-flex align-items-center gap-2 mb-3">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ax-text-success"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            <h5 class="ax-text-primary mb-0">Analiz Tamamlandı</h5>
+          </div>
+
+          <!-- Özet istatistikler -->
+          <div class="row g-3 mb-3">
+            <div class="col-4">
+              <div class="ax-stat-box text-center">
+                <div class="ax-stat-val ax-text-accent" id="k-vars">—</div>
+                <div class="ax-stat-label">Değişken</div>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="ax-stat-box text-center">
+                <div class="ax-stat-val ax-text-accent" id="k-cases">—</div>
+                <div class="ax-stat-label">Gözlem</div>
+              </div>
+            </div>
+            <div class="col-4">
+              <div class="ax-stat-box text-center">
+                <div class="ax-stat-val ax-text-primary" id="k-method">—</div>
+                <div class="ax-stat-label">Yöntem</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Heatmap -->
+          <div id="heatmap-container" class="text-center d-none mb-3">
+            <img id="heatmap-img" src="" alt="Korelasyon Isı Haritası" style="max-width:100%; max-height:300px; border-radius: var(--ax-radius-md);">
+          </div>
+
+          <!-- Korelasyon tablosu -->
+          <div id="corr-table-container" class="d-none mb-3">
+            <p class="ax-text-muted ax-text-sm mb-2 fw-semibold">Korelasyon Katsayıları (r)</p>
+            <div style="overflow-x:auto; max-height:220px; overflow-y:auto;">
+              <table id="corr-table" class="ax-table mb-0"></table>
+            </div>
+          </div>
+
+          <!-- Butonlar -->
+          <div class="d-flex gap-2 flex-wrap mt-3">
+            <a id="pdf-download-btn" href="#" target="_blank" class="ax-btn ax-btn-danger fw-semibold ax-btn-sm">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-1"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>PDF İndir
+            </a>
+            <button class="ax-btn ax-btn-outline-secondary ax-btn-sm" onclick="resetUI()">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" class="me-1" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>Yeni Analiz
+            </button>
+          </div>
+        </div>
+
+      </div>
     </div>
   </div>
 
-  <hr style="border-color:rgba(255,255,255,0.08);">
+  <!-- Metodoloji -->
+  <div class="ax-card mt-4 p-4">
+    <h5 class="ax-text-primary fw-semibold mb-3 d-flex align-items-center">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ax-text-accent me-2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="16" y2="11"/><line x1="8" y1="15" x2="12" y2="15"/></svg>
+      Metodoloji
+    </h5>
 
-  <h6 class="text-white-50 text-uppercase small fw-bold mb-2">Tezinde Nasıl Raporlarsın?</h6>
-  <div id="korelasyon-apa-box" class="rounded-3 p-3 d-none" style="background:rgba(23,162,184,0.08); border:1px solid rgba(23,162,184,0.2);">
-    <p class="text-white small mb-2" style="font-style:italic;" id="korelasyon-apa-display"></p>
-    <button class="btn btn-sm btn-outline-secondary" onclick="copyMethodText(this, 'korelasyon-report-text')" style="font-size:0.75rem;">
-      <i class="bi bi-clipboard me-1"></i>Kopyala
-    </button>
-    <span id="korelasyon-report-text" class="d-none"></span>
+    <div class="row g-4 mb-4">
+      <div class="col-md-6">
+        <h6 class="ax-text-muted text-uppercase ax-text-sm fw-bold mb-2">Yöntem Seçim Rehberi</h6>
+        <table class="ax-table mb-0">
+          <thead><tr><th>Yöntem</th><th>Kullanım Durumu</th></tr></thead>
+          <tbody>
+            <tr><td class="ax-text-accent">Pearson</td><td class="ax-text-muted">Normal dağılımlı sürekli veriler</td></tr>
+            <tr><td class="ax-text-accent">Spearman</td><td class="ax-text-muted">Sıralı veri, normallik sağlanmıyor</td></tr>
+            <tr><td class="ax-text-accent">Kendall</td><td class="ax-text-muted">Küçük örneklem, çok sayıda eşik</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="col-md-6">
+        <h6 class="ax-text-muted text-uppercase ax-text-sm fw-bold mb-2">Katsayı Yorum Eşikleri</h6>
+        <table class="ax-table mb-0">
+          <tbody>
+            <tr><td>|r| &lt; .10</td><td class="ax-text-muted">İhmal edilebilir ilişki</td></tr>
+            <tr><td>.10 – .30</td><td class="ax-text-warning">Zayıf ilişki</td></tr>
+            <tr><td>.30 – .50</td><td class="ax-text-accent">Orta düzey ilişki</td></tr>
+            <tr><td>&gt; .50</td><td class="ax-text-success fw-bold">Güçlü ilişki</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <hr style="border-color: var(--ax-border-default); margin: 1.5rem 0;">
+
+    <h6 class="ax-text-secondary fw-semibold mb-2">Tezinde Nasıl Raporlarsın?</h6>
+    <div id="korelasyon-apa-box" class="d-none ax-rounded-md p-3 mb-3" style="background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.2);">
+      <p class="ax-text-primary ax-text-sm mb-2" id="korelasyon-apa-display" style="font-style:italic;"></p>
+      <button class="ax-btn ax-btn-outline-secondary ax-btn-sm" onclick="copyApa(this)">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" class="me-1" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Kopyala
+      </button>
+      <span id="korelasyon-report-text" class="d-none"></span>
+    </div>
+    <div id="korelasyon-apa-placeholder" class="ax-rounded-md p-3" style="background: rgba(99,102,241,0.05); border: 1px dashed rgba(99,102,241,0.2);">
+      <p class="ax-text-muted ax-text-sm mb-0">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" class="me-1" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Analizi tamamladıktan sonra APA formatında rapor cümlesi burada otomatik oluşacak.
+      </p>
+    </div>
+
+    <hr style="border-color: var(--ax-border-default); margin: 1.5rem 0;">
+
+    <h6 class="ax-text-secondary fw-semibold mb-2">Akademik Kaynaklar</h6>
+    <p class="ax-text-muted ax-text-sm mb-1">Cohen, J. (1988). <em>Statistical power analysis for the behavioral sciences</em> (2nd ed.). Lawrence Erlbaum.</p>
+    <p class="ax-text-muted ax-text-sm mb-1">Pearson, K. (1895). Notes on regression and inheritance in the case of two parents. <em>Proceedings of the Royal Society of London, 58</em>, 240–242.</p>
+    <p class="ax-text-muted ax-text-sm mb-0">Spearman, C. (1904). The proof and measurement of association between two things. <em>The American Journal of Psychology, 15</em>(1), 72–101.</p>
   </div>
-  <div id="korelasyon-apa-placeholder" class="rounded-3 p-3" style="background:rgba(23,162,184,0.04); border:1px dashed rgba(23,162,184,0.2);">
-    <p class="text-white-50 small mb-0" style="font-style:italic;">
-      <i class="bi bi-info-circle me-1"></i>Analizi tamamladıktan sonra APA formatında rapor cümlesi burada otomatik oluşacak.
-    </p>
-  </div>
 
-  <hr style="border-color:rgba(255,255,255,0.08);">
-
-  <h6 class="text-white-50 text-uppercase small fw-bold mb-2">Akademik Kaynak</h6>
-  <p class="text-white-50 small mb-1">
-    Cohen, J. (1988). <em>Statistical power analysis for the behavioral sciences</em> (2nd ed.). Lawrence Erlbaum.
-  </p>
-  <p class="text-white-50 small mb-1">
-    Pearson, K. (1895). Notes on regression and inheritance in the case of two parents.
-    <em>Proceedings of the Royal Society of London, 58</em>, 240–242.
-  </p>
-  <p class="text-white-50 small mb-0">
-    Spearman, C. (1904). The proof and measurement of association between two things.
-    <em>The American Journal of Psychology, 15</em>(1), 72–101.
-  </p>
 </div>
 
 <script>
+const STATUS_BASE = '{% url "istatistik:korelasyon_status" job_id="00000000-0000-0000-0000-000000000000" %}';
+let pollInterval = null;
+let currentJobId = null;
+
+const uploadArea = document.getElementById('upload-area');
+const fileInput  = document.getElementById('file-input');
+const fileNameDisplay = document.getElementById('file-name-display');
+const analyzeBtn = document.getElementById('analyze-btn');
+const confirmWarningsBtn = document.getElementById('confirm-warnings-btn');
+
+// Drag & drop
+uploadArea.addEventListener('dragover', e => { e.preventDefault(); uploadArea.style.borderColor = 'var(--ax-accent-primary)'; });
+uploadArea.addEventListener('dragleave', () => { uploadArea.style.borderColor = ''; });
+uploadArea.addEventListener('drop', e => { e.preventDefault(); uploadArea.style.borderColor = ''; if (e.dataTransfer.files[0]) setFile(e.dataTransfer.files[0]); });
+fileInput.addEventListener('change', () => { if (fileInput.files[0]) setFile(fileInput.files[0]); });
+
+function setFile(f) {
+  fileInput._selectedFile = f;
+  fileNameDisplay.textContent = f.name;
+  analyzeBtn.disabled = false;
+  document.getElementById('error-msg').classList.add('d-none');
+}
+
 // Yöntem seçici
 const methodDescs = {
   pearson:  'Parametrik — normal dağılımlı sürekli değişkenler için önerilir.',
   spearman: 'Non-parametrik — sıralı veri veya normallik varsayımı sağlanmıyorsa kullanın.',
   kendall:  'Non-parametrik — küçük örneklem veya çok sayıda bağlı sıra olduğunda tercih edilir.',
 };
-
 document.querySelectorAll('#method-selector button').forEach(btn => {
   btn.addEventListener('click', () => {
-    document.querySelectorAll('#method-selector button').forEach(b => {
-      b.classList.remove('btn-info', 'active');
-      b.classList.add('btn-outline-info');
-    });
-    btn.classList.remove('btn-outline-info');
-    btn.classList.add('btn-info', 'active');
-    const m = btn.dataset.method;
-    document.getElementById('method-input').value = m;
-    document.getElementById('method-desc').textContent = methodDescs[m];
+    document.querySelectorAll('#method-selector button').forEach(b => { b.classList.remove('active'); b.innerHTML = b.textContent.trim(); });
+    btn.classList.add('active');
+    btn.innerHTML = `<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" class="me-1" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>${btn.textContent.trim()}`;
+    document.getElementById('method-input').value = btn.dataset.method;
+    document.getElementById('method-desc').textContent = methodDescs[btn.dataset.method];
   });
 });
 
-// submitFile override: method parametresini de ekle
-const _origSubmit = window.submitFile;
-const _origFd = FormData;
+analyzeBtn.addEventListener('click', () => submitFile(false));
+confirmWarningsBtn.addEventListener('click', () => submitFile(true));
 
-// tool_base.html'deki submitFile'ı genişlet
-document.getElementById('analyze-btn').addEventListener('click', () => {}, true);
-
-// FormData'ya method eklemek için submitFile'ı yeniden tanımla
-window.submitFile = function(confirm) {
+function submitFile(confirm) {
   const f = fileInput._selectedFile;
   if (!f) return;
-
   analyzeBtn.disabled = true;
   confirmWarningsBtn.disabled = true;
   showPanel('loading');
-
   const fd = new FormData();
   fd.append('file', f);
   fd.append('csrfmiddlewaretoken', '{{ csrf_token }}');
   fd.append('method', document.getElementById('method-input').value);
   if (confirm) fd.append('confirm_warnings', 'true');
-
-  fetch(window.location.pathname, {
-    method: 'POST',
-    headers: {'X-Requested-With': 'XMLHttpRequest'},
-    body: fd,
-  })
+  fetch(window.location.pathname, { method: 'POST', headers: {'X-Requested-With': 'XMLHttpRequest'}, body: fd })
   .then(r => r.json())
   .then(data => {
     if (data.error) { showError(data.error); return; }
@@ -227,6 +301,198 @@ window.submitFile = function(confirm) {
     startPolling(currentJobId);
   })
   .catch(() => showError('Bağlantı hatası. Lütfen tekrar deneyin.'));
-};
+}
+
+function startPolling(jobId) {
+  const url = STATUS_BASE.replace('00000000-0000-0000-0000-000000000000', jobId);
+  pollInterval = setInterval(() => {
+    fetch(url, { headers: {'X-Requested-With': 'XMLHttpRequest'} })
+    .then(r => r.json())
+    .then(data => {
+      if (data.status === 'completed') { clearInterval(pollInterval); onCompleted(data); }
+      else if (data.status === 'failed') { clearInterval(pollInterval); showError(data.error || 'Analiz başarısız oldu.'); }
+    }).catch(() => {});
+  }, 2500);
+}
+
+function onCompleted(data) {
+  document.getElementById('pdf-download-btn').href = data.pdf_url;
+  if (data.daily_remaining !== undefined) {
+    const badge = document.querySelector('.ax-badge-secondary');
+    if (badge) badge.textContent = 'Günlük: ' + data.daily_remaining + ' analiz hakkı';
+  }
+  if (data.result_data) {
+    const r = data.result_data;
+    document.getElementById('k-vars').textContent = r.n_vars;
+    document.getElementById('k-cases').textContent = r.n_cases;
+    document.getElementById('k-method').textContent = r.method_label;
+    if (r.heatmap_b64) {
+      document.getElementById('heatmap-img').src = 'data:image/png;base64,' + r.heatmap_b64;
+      document.getElementById('heatmap-container').classList.remove('d-none');
+    }
+    const cols = r.columns;
+    let thead = '<thead><tr><th></th>' + cols.map(c => `<th>${c}</th>`).join('') + '</tr></thead>';
+    let tbody = '<tbody>';
+    for (let i = 0; i < cols.length; i++) {
+      tbody += `<tr><th>${cols[i]}</th>`;
+      for (let j = 0; j < cols.length; j++) {
+        const val = r.corr_matrix[i][j];
+        const p = r.pval_matrix[i][j];
+        let cls = '';
+        if (i === j) cls = 'ax-text-muted';
+        else if (p < 0.05 && Math.abs(val) >= 0.3) cls = 'ax-text-success fw-bold';
+        else if (p < 0.05) cls = 'ax-text-accent';
+        tbody += `<td class="${cls}">${val.toFixed(3)}</td>`;
+      }
+      tbody += '</tr>';
+    }
+    tbody += '</tbody>';
+    document.getElementById('corr-table').innerHTML = thead + tbody;
+    document.getElementById('corr-table-container').classList.remove('d-none');
+
+    const apaText = `Değişkenler arasındaki ilişkiler ${r.method_label} korelasyon analizi ile incelenmiştir (n = ${r.n_cases}). Korelasyon katsayıları ve p-değerleri raporun ek tablosunda sunulmuştur (Cohen, 1988).`;
+    document.getElementById('korelasyon-apa-display').textContent = apaText;
+    document.getElementById('korelasyon-report-text').textContent = apaText;
+    document.getElementById('korelasyon-apa-box').classList.remove('d-none');
+    document.getElementById('korelasyon-apa-placeholder').classList.add('d-none');
+  }
+  showPanel('done');
+}
+
+function showPanel(name) {
+  ['idle','loading','warning','error','done'].forEach(n => {
+    document.getElementById('panel-' + n).classList.toggle('d-none', n !== name);
+  });
+}
+function showError(msg) {
+  analyzeBtn.disabled = false;
+  confirmWarningsBtn.disabled = false;
+  document.getElementById('panel-error-msg').textContent = msg;
+  showPanel('error');
+}
+function showWarning(warnings) {
+  analyzeBtn.disabled = false;
+  confirmWarningsBtn.disabled = false;
+  document.getElementById('panel-warning-list').innerHTML = warnings.map(w =>
+    `<li class="mb-1"><span class="ax-badge ax-badge-${w.level === 'danger' ? 'danger' : 'warning'} me-2">${w.level === 'danger' ? 'Hata' : 'Uyarı'}</span><strong>${w.title}:</strong> ${w.message}</li>`
+  ).join('');
+  showPanel('warning');
+}
+function resetUI() {
+  if (pollInterval) clearInterval(pollInterval);
+  currentJobId = null;
+  fileInput.value = ''; fileInput._selectedFile = null;
+  fileNameDisplay.textContent = 'CSV, XLSX, XLS — Maks. 10 MB';
+  analyzeBtn.disabled = true;
+  document.getElementById('error-msg').classList.add('d-none');
+  document.getElementById('panel-warning-list').innerHTML = '';
+  document.getElementById('heatmap-container').classList.add('d-none');
+  document.getElementById('corr-table-container').classList.add('d-none');
+  document.getElementById('korelasyon-apa-box').classList.add('d-none');
+  document.getElementById('korelasyon-apa-placeholder').classList.remove('d-none');
+  showPanel('idle');
+}
+function copyApa(btn) {
+  navigator.clipboard.writeText(document.getElementById('korelasyon-report-text').textContent).then(() => {
+    const orig = btn.innerHTML;
+    btn.innerHTML = '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" class="me-1" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Kopyalandı';
+    btn.classList.add('ax-btn-success');
+    setTimeout(() => { btn.innerHTML = orig; btn.classList.remove('ax-btn-success'); }, 2000);
+  });
+}
+
+{% if active_job_id %}
+currentJobId = '{{ active_job_id }}';
+showPanel('loading');
+startPolling(currentJobId);
+{% endif %}
 </script>
+
+<style>
+  /* Yükleme alanı */
+  .ax-upload-area {
+    border: 2px dashed var(--ax-border-hover);
+    border-radius: var(--ax-radius-md);
+    background: rgba(0,0,0,0.1);
+    padding: 1.5rem 1rem;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  .ax-upload-area:hover { border-color: var(--ax-accent-primary); }
+
+  /* Yöntem seçici butonlar */
+  .ax-method-btn {
+    display: inline-flex; align-items: center;
+    padding: 6px 14px; border-radius: var(--ax-radius-sm);
+    font-size: 0.85rem; font-weight: 500; cursor: pointer;
+    border: 1px solid var(--ax-border-hover);
+    background: transparent; color: var(--ax-text-secondary);
+    transition: all 0.2s;
+  }
+  .ax-method-btn:hover { border-color: var(--ax-accent-primary); color: var(--ax-accent-primary); }
+  .ax-method-btn.active { background: var(--ax-accent-primary); border-color: var(--ax-accent-primary); color: #fff; }
+
+  /* Accent buton */
+  .ax-btn-accent { background: var(--ax-accent-primary); color: #fff; border: 1px solid transparent; }
+  .ax-btn-accent:hover { background: var(--ax-accent-primary-hover); color: #fff; }
+  .ax-btn-accent:disabled { opacity: 0.45; cursor: not-allowed; }
+
+  /* Warning buton */
+  .ax-btn-warning { background: var(--ax-accent-warning); color: #000; border: 1px solid transparent; }
+  .ax-btn-warning:hover { opacity: 0.9; }
+
+  /* Danger buton */
+  .ax-btn-danger { background: var(--ax-accent-danger); color: #fff; border: 1px solid transparent; }
+  .ax-btn-danger:hover { opacity: 0.9; color: #fff; }
+
+  /* Outline buton */
+  .ax-btn-outline-secondary { border: 1px solid var(--ax-border-hover); color: var(--ax-text-secondary); background: transparent; }
+  .ax-btn-outline-secondary:hover { background: rgba(255,255,255,0.05); color: var(--ax-text-primary); }
+
+  /* Alert box'lar */
+  .ax-alert-danger, .ax-alert-warning, .ax-alert-info {
+    display: flex; align-items: flex-start;
+    padding: 12px 16px; border-radius: var(--ax-radius-md);
+  }
+  .ax-alert-danger  { background: rgba(239,68,68,0.1);  border: 1px solid rgba(239,68,68,0.25);  color: var(--ax-accent-danger); }
+  .ax-alert-warning { background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.25); color: var(--ax-accent-warning); }
+  .ax-alert-info    { background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.2); color: var(--ax-text-secondary); }
+
+  /* Link */
+  .ax-link { color: var(--ax-accent-primary); text-decoration: none; }
+  .ax-link:hover { text-decoration: underline; }
+
+  /* Stat box */
+  .ax-stat-box {
+    background: rgba(0,0,0,0.2);
+    border: 1px solid var(--ax-border-default);
+    border-radius: var(--ax-radius-md);
+    padding: 12px;
+  }
+  .ax-stat-val   { font-size: 1.5rem; font-weight: 700; }
+  .ax-stat-label { font-size: 0.75rem; color: var(--ax-text-muted); margin-top: 2px; }
+
+  /* Badge */
+  .ax-badge { display: inline-flex; align-items: center; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 500; }
+  .ax-badge-secondary { background: rgba(71,85,105,0.25); color: var(--ax-text-secondary); }
+  .ax-badge-danger    { background: rgba(239,68,68,0.15); color: var(--ax-accent-danger); font-size: 0.72rem; padding: 2px 8px; }
+  .ax-badge-warning   { background: rgba(245,158,11,0.15); color: var(--ax-accent-warning); font-size: 0.72rem; padding: 2px 8px; }
+
+  /* Tablo */
+  .ax-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; color: var(--ax-text-primary); }
+  .ax-table th, .ax-table td { padding: 8px 12px; border-bottom: 1px solid var(--ax-border-default); }
+  .ax-table thead th { color: var(--ax-text-secondary); font-weight: 600; background: rgba(0,0,0,0.2); font-size: 0.75rem; }
+  .ax-table tbody th { color: var(--ax-text-secondary); font-weight: 500; background: rgba(0,0,0,0.1); }
+  .ax-table tbody tr:hover { background: rgba(255,255,255,0.02); }
+
+  /* Renk yardımcıları (base.css'te tanımsız olanlar) */
+  .ax-text-accent  { color: var(--ax-accent-primary) !important; }
+  .ax-text-success { color: var(--ax-accent-secondary) !important; }
+  .ax-text-warning { color: var(--ax-accent-warning) !important; }
+  .ax-text-danger  { color: var(--ax-accent-danger) !important; }
+
+  /* Spinner */
+  @keyframes ax-spin { 100% { transform: rotate(360deg); } }
+</style>
 {% endblock %}
