@@ -237,6 +237,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let lastMessageId = 0;
     let wsConnected = false;
     const seenMessageIds = new Set();
+    let isSending = false;
 
     // Sayfadaki mevcut mesajlardan son ID'yi al
     {% if chat_messages %}
@@ -314,14 +315,16 @@ document.addEventListener('DOMContentLoaded', function() {
     // ═══════════════════════════════════════════════════════════════════
     messageForm.addEventListener('submit', function(e) {
         e.preventDefault();
+        if (isSending) return;
 
         const message = messageInput.value.trim();
         const file = fileInput.files[0];
 
-        // Dosya varsa önce yükle, sonra mesaj gönder
         if (file) {
+            isSending = true;
             uploadFileAndSend(message, file);
         } else if (message) {
+            isSending = true;
             sendMessage(message);
         }
     });
@@ -336,6 +339,7 @@ document.addEventListener('DOMContentLoaded', function() {
             messageInput.value = '';
             messageInput.style.height = 'auto';
             clearFile();
+            isSending = false;
         } else {
             // WebSocket kapalıysa AJAX ile gönder
             const formData = new FormData();
@@ -349,8 +353,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 messageInput.value = '';
                 messageInput.style.height = 'auto';
                 clearFile();
-                // Polling yeni mesajı yakalayacak
+                isSending = false;
             }).catch(() => {
+                isSending = false;
                 messageForm.submit();
             });
         }
@@ -369,12 +374,14 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .then(response => {
             if (response.ok) {
-                // Sayfa yeniden yüklenecek (dosya için)
                 window.location.reload();
+            } else {
+                isSending = false;
             }
         })
         .catch(error => {
             console.error('Dosya yükleme hatası:', error);
+            isSending = false;
             messageForm.submit();
         });
     }
