@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 from unfold.admin import ModelAdmin, TabularInline
-from .models import Section, Category, Topic, Post, Profile, ContactMessage, PrivateMessage, Badge, Skill, DailyTip, QuizQuestion, QuizScore, FreelanceJob, JobProposal, JobReview, UserQuizAttempt, DonationTier, Donation, JobPayment, TopicTag, SiteSettings, BlogCategory, BlogPost, SuccessStory, StudyRoom
+from .models import Section, Category, Topic, Post, Profile, ContactMessage, PrivateMessage, Badge, Skill, DailyTip, QuizQuestion, QuizScore, FreelanceJob, JobProposal, JobReview, UserQuizAttempt, DonationTier, Donation, JobPayment, TopicTag, SiteSettings, BlogCategory, BlogPost, BlogTag, SuccessStory, StudyRoom
 from .models import TeamMember
 
 # 1. Kategori Yönetimi (Inline)
@@ -662,12 +662,23 @@ class BlogCategoryAdmin(ModelAdmin):
     post_count.short_description = "Yazı Sayısı"
 
 
+@admin.register(BlogTag)
+class BlogTagAdmin(ModelAdmin):
+    list_display = ('name', 'slug', 'post_count')
+    prepopulated_fields = {'slug': ('name',)}
+    search_fields = ('name',)
+
+    def post_count(self, obj):
+        return obj.posts.filter(status='published').count()
+    post_count.short_description = "Yazı Sayısı"
+
+
 @admin.register(BlogPost)
 class BlogPostAdmin(ModelAdmin):
     warn_unsaved_changes = True
     compressed_fields = True
-    list_display = ('title', 'author', 'category', 'status_display', 'is_featured', 'views', 'created_at')
-    list_filter = ('status', 'category', 'is_featured', 'author')
+    list_display = ('title', 'author', 'category', 'level', 'status_display', 'is_featured', 'views', 'created_at')
+    list_filter = ('status', 'category', 'level', 'is_featured', 'author', 'tags')
     search_fields = ('title', 'content', 'excerpt')
     prepopulated_fields = {'slug': ('title',)}
     list_editable = ('is_featured',)
@@ -679,7 +690,7 @@ class BlogPostAdmin(ModelAdmin):
             'fields': ('title', 'slug', 'excerpt', 'content', 'cover_image')
         }),
         ('Kategori & Yazar', {
-            'fields': ('category', 'author')
+            'fields': ('category', 'author', 'tags', 'level')
         }),
         ('Yayın Ayarları', {
             'fields': ('status', 'is_featured')

@@ -5,35 +5,106 @@
 {% block content %}
 <div class="container py-4">
     <!-- Header -->
-    <div class="text-center mb-5">
+    <div class="text-center mb-4">
         <h1 class="fw-bold text-white mb-2">
             <i class="bi bi-journal-richtext text-info me-2"></i>Analizus Blog
         </h1>
-        <p class="text-muted">Veri analizi, istatistik ve akademik dünyadan içerikler</p>
+        <p class="text-muted">Veri analizi, istatistik, yapay zeka ve analiz araçları üzerine içerikler</p>
     </div>
 
+    <!-- Arama Çubuğu -->
+    <div class="row justify-content-center mb-5">
+        <div class="col-lg-7">
+            <form method="get" action="{% url 'blog_list' %}">
+                <div class="input-group">
+                    <input type="text" name="q" value="{{ search_query }}"
+                           class="form-control text-white border-end-0"
+                           placeholder="Konu, araç veya anahtar kelime ara... (Excel, ANOVA, Power BI...)"
+                           style="background: rgba(15,23,42,0.8); border-color: rgba(0,210,255,0.3);">
+                    <button class="btn px-4" type="submit"
+                            style="background: linear-gradient(135deg,#00d2ff,#3a7bd5); border: none; color: white;">
+                        <i class="bi bi-search"></i>
+                    </button>
+                    {% if search_query %}
+                    <a href="{% url 'blog_list' %}" class="btn btn-outline-secondary" title="Aramayı temizle">
+                        <i class="bi bi-x-lg"></i>
+                    </a>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Aktif Filtre Bildirimi -->
+    {% if search_query or current_category or current_tag or current_level %}
+    <div class="d-flex flex-wrap gap-2 align-items-center mb-4">
+        <span class="text-muted small">Filtreler:</span>
+        {% if search_query %}
+        <span class="ax-filter-badge">
+            <i class="bi bi-search me-1"></i>{{ search_query }}
+            <a href="?{% if current_category %}category={{ current_category }}&{% endif %}{% if current_tag %}tag={{ current_tag }}&{% endif %}{% if current_level %}level={{ current_level }}{% endif %}" class="ms-1 text-white opacity-75">×</a>
+        </span>
+        {% endif %}
+        {% if current_category %}
+        <span class="ax-filter-badge">
+            <i class="bi bi-folder me-1"></i>{{ posts.first.category.name }}
+            <a href="?{% if search_query %}q={{ search_query }}&{% endif %}{% if current_tag %}tag={{ current_tag }}&{% endif %}{% if current_level %}level={{ current_level }}{% endif %}" class="ms-1 text-white opacity-75">×</a>
+        </span>
+        {% endif %}
+        {% if current_tag %}
+        <span class="ax-filter-badge">
+            <i class="bi bi-tag me-1"></i>{{ current_tag }}
+            <a href="?{% if search_query %}q={{ search_query }}&{% endif %}{% if current_category %}category={{ current_category }}&{% endif %}{% if current_level %}level={{ current_level }}{% endif %}" class="ms-1 text-white opacity-75">×</a>
+        </span>
+        {% endif %}
+        {% if current_level %}
+        <span class="ax-filter-badge">
+            {% if current_level == 'beginner' %}<i class="bi bi-circle me-1"></i>Başlangıç
+            {% elif current_level == 'intermediate' %}<i class="bi bi-circle-half me-1"></i>Orta
+            {% else %}<i class="bi bi-circle-fill me-1"></i>İleri{% endif %}
+            <a href="?{% if search_query %}q={{ search_query }}&{% endif %}{% if current_category %}category={{ current_category }}&{% endif %}{% if current_tag %}tag={{ current_tag }}{% endif %}" class="ms-1 text-white opacity-75">×</a>
+        </span>
+        {% endif %}
+        <a href="{% url 'blog_list' %}" class="text-muted small ms-2">Tümünü Temizle</a>
+    </div>
+    {% endif %}
+
     <!-- Öne Çıkan Yazılar -->
-    {% if featured_posts and not current_category %}
+    {% if featured_posts %}
     <div class="mb-5">
         <h5 class="text-white mb-3"><i class="bi bi-star-fill text-warning me-2"></i>Öne Çıkan Yazılar</h5>
         <div class="row g-4">
             {% for post in featured_posts %}
             <div class="col-md-4">
                 <a href="{% url 'blog_detail' slug=post.slug %}" class="text-decoration-none">
-                    <div class="card h-100 border-0 featured-card" style="background: linear-gradient(135deg, rgba(0, 210, 255, 0.1), rgba(58, 123, 213, 0.1)); border: 1px solid rgba(0, 210, 255, 0.2) !important;">
+                    <div class="card h-100 border-0 featured-card" style="background: linear-gradient(135deg, rgba(0,210,255,0.1), rgba(58,123,213,0.1)); border: 1px solid rgba(0,210,255,0.2) !important;">
                         {% if post.cover_image %}
                         <img src="{{ post.cover_image.url }}" class="card-img-top" style="height: 160px; object-fit: cover; border-radius: 12px 12px 0 0;">
                         {% else %}
-                        <div class="card-img-top d-flex align-items-center justify-content-center" style="height: 160px; background: linear-gradient(135deg, #1e293b, #0f172a); border-radius: 12px 12px 0 0;">
+                        <div class="card-img-top d-flex align-items-center justify-content-center" style="height: 160px; background: linear-gradient(135deg,#1e293b,#0f172a); border-radius: 12px 12px 0 0;">
                             <i class="bi bi-journal-text text-info" style="font-size: 3rem; opacity: 0.3;"></i>
                         </div>
                         {% endif %}
                         <div class="card-body">
-                            <span class="badge mb-2" style="background: {{ post.category.color }}20; color: {{ post.category.color }}; border: 1px solid {{ post.category.color }}40;">
-                                <i class="bi {{ post.category.icon }} me-1"></i>{{ post.category.name }}
-                            </span>
+                            <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
+                                <span class="badge" style="background: {{ post.category.color }}20; color: {{ post.category.color }}; border: 1px solid {{ post.category.color }}40;">
+                                    <i class="bi {{ post.category.icon }} me-1"></i>{{ post.category.name }}
+                                </span>
+                                {% if post.level %}
+                                <span class="ax-level-badge ax-level-{{ post.level }}">
+                                    {% if post.level == 'beginner' %}Başlangıç{% elif post.level == 'intermediate' %}Orta{% else %}İleri{% endif %}
+                                </span>
+                                {% endif %}
+                            </div>
                             <h6 class="card-title text-white fw-bold">{{ post.title }}</h6>
                             <p class="card-text text-muted small">{{ post.excerpt|truncatechars:80 }}</p>
+                            {% if post.tags.all %}
+                            <div class="d-flex flex-wrap gap-1 mt-2">
+                                {% for tag in post.tags.all|slice:":3" %}
+                                <span class="ax-tag">{{ tag.name }}</span>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
                         </div>
                     </div>
                 </a>
@@ -58,22 +129,21 @@
                 </select>
             </div>
 
-            {% if current_category %}
-            <div class="alert alert-info bg-transparent border-info text-info mb-4">
-                <i class="bi bi-funnel me-2"></i>
-                <strong>{{ posts.first.category.name }}</strong> kategorisindeki yazılar gösteriliyor.
-                <a href="{% url 'blog_list' %}" class="text-info ms-2">Filtreyi Kaldır</a>
-            </div>
+            <!-- Sonuç bilgisi -->
+            {% if search_query or current_tag or current_level %}
+            <p class="text-muted small mb-3">
+                <strong class="text-white">{{ posts|length }}</strong> yazı bulundu
+            </p>
             {% endif %}
 
             <!-- Yazı Listesi -->
             {% for post in posts %}
-            <article class="card border-0 mb-4 blog-card" style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255, 255, 255, 0.08) !important;">
+            <article class="card border-0 mb-4 blog-card" style="background: rgba(15,23,42,0.8); border: 1px solid rgba(255,255,255,0.08) !important;">
                 <div class="row g-0">
                     {% if post.cover_image %}
                     <div class="col-md-4">
                         <a href="{% url 'blog_detail' slug=post.slug %}">
-                            <img src="{{ post.cover_image.url }}" class="img-fluid h-100" style="object-fit: cover; border-radius: 12px 0 0 12px; min-height: 200px;">
+                            <img src="{{ post.cover_image.url }}" class="img-fluid h-100" style="object-fit: cover; border-radius: 12px 0 0 12px; min-height: 180px;">
                         </a>
                     </div>
                     <div class="col-md-8">
@@ -81,10 +151,21 @@
                     <div class="col-12">
                     {% endif %}
                         <div class="card-body p-4">
-                            <div class="d-flex justify-content-between align-items-start mb-2">
-                                <span class="badge" style="background: {{ post.category.color }}20; color: {{ post.category.color }}; border: 1px solid {{ post.category.color }}40;">
-                                    <i class="bi {{ post.category.icon }} me-1"></i>{{ post.category.name }}
-                                </span>
+                            <!-- Kategori + Seviye + Tarih -->
+                            <div class="d-flex justify-content-between align-items-start mb-2 flex-wrap gap-2">
+                                <div class="d-flex align-items-center gap-2 flex-wrap">
+                                    <a href="{% url 'blog_list' %}?category={{ post.category.slug }}"
+                                       class="badge text-decoration-none"
+                                       style="background: {{ post.category.color }}20; color: {{ post.category.color }}; border: 1px solid {{ post.category.color }}40;">
+                                        <i class="bi {{ post.category.icon }} me-1"></i>{{ post.category.name }}
+                                    </a>
+                                    {% if post.level %}
+                                    <a href="{% url 'blog_list' %}?level={{ post.level }}"
+                                       class="ax-level-badge ax-level-{{ post.level }} text-decoration-none">
+                                        {% if post.level == 'beginner' %}Başlangıç{% elif post.level == 'intermediate' %}Orta{% else %}İleri{% endif %}
+                                    </a>
+                                    {% endif %}
+                                </div>
                                 <small class="text-muted">{{ post.published_at|date:"d M Y" }}</small>
                             </div>
 
@@ -96,6 +177,18 @@
 
                             <p class="card-text text-muted mb-3">{{ post.excerpt }}</p>
 
+                            <!-- Etiketler -->
+                            {% if post.tags.all %}
+                            <div class="d-flex flex-wrap gap-1 mb-3">
+                                {% for tag in post.tags.all %}
+                                <a href="{% url 'blog_list' %}?tag={{ tag.slug }}" class="ax-tag text-decoration-none">
+                                    {{ tag.name }}
+                                </a>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+
+                            <!-- Yazar + Meta -->
                             <div class="d-flex justify-content-between align-items-center">
                                 <div class="d-flex align-items-center">
                                     <div class="rounded-circle bg-info bg-opacity-10 d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px;">
@@ -116,22 +209,57 @@
             {% empty %}
             <div class="text-center py-5">
                 <i class="bi bi-journal-x text-muted" style="font-size: 4rem; opacity: 0.3;"></i>
-                <h5 class="text-white mt-3">Henüz yazı yok</h5>
-                <p class="text-muted">Bu kategoride henüz yazı bulunmuyor.</p>
+                <h5 class="text-white mt-3">
+                    {% if search_query %}
+                    "{{ search_query }}" için sonuç bulunamadı
+                    {% else %}
+                    Bu filtrede yazı yok
+                    {% endif %}
+                </h5>
+                <p class="text-muted">
+                    <a href="{% url 'blog_list' %}" class="text-info">Tüm yazılara dön</a>
+                </p>
             </div>
             {% endfor %}
         </div>
 
         <!-- Sidebar -->
         <div class="col-lg-4">
+            <!-- Seviye Filtresi -->
+            <div class="card border-0 mb-4" style="background: rgba(15,23,42,0.8); border: 1px solid rgba(255,255,255,0.08) !important;">
+                <div class="card-header bg-transparent border-bottom border-secondary border-opacity-25">
+                    <h6 class="mb-0 text-white"><i class="bi bi-bar-chart-steps text-info me-2"></i>Seviye</h6>
+                </div>
+                <div class="card-body py-2 px-3">
+                    <div class="d-flex flex-wrap gap-2 py-1">
+                        <a href="{% url 'blog_list' %}{% if current_category %}?category={{ current_category }}{% endif %}"
+                           class="ax-level-badge ax-level-all {% if not current_level %}ax-level-active{% endif %} text-decoration-none">
+                            Tümü
+                        </a>
+                        <a href="{% url 'blog_list' %}?level=beginner{% if current_category %}&category={{ current_category }}{% endif %}"
+                           class="ax-level-badge ax-level-beginner {% if current_level == 'beginner' %}ax-level-active{% endif %} text-decoration-none">
+                            Başlangıç
+                        </a>
+                        <a href="{% url 'blog_list' %}?level=intermediate{% if current_category %}&category={{ current_category }}{% endif %}"
+                           class="ax-level-badge ax-level-intermediate {% if current_level == 'intermediate' %}ax-level-active{% endif %} text-decoration-none">
+                            Orta
+                        </a>
+                        <a href="{% url 'blog_list' %}?level=advanced{% if current_category %}&category={{ current_category }}{% endif %}"
+                           class="ax-level-badge ax-level-advanced {% if current_level == 'advanced' %}ax-level-active{% endif %} text-decoration-none">
+                            İleri
+                        </a>
+                    </div>
+                </div>
+            </div>
+
             <!-- Kategoriler -->
-            <div class="card border-0 mb-4" style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255, 255, 255, 0.08) !important;">
+            <div class="card border-0 mb-4" style="background: rgba(15,23,42,0.8); border: 1px solid rgba(255,255,255,0.08) !important;">
                 <div class="card-header bg-transparent border-bottom border-secondary border-opacity-25">
                     <h6 class="mb-0 text-white"><i class="bi bi-folder text-info me-2"></i>Kategoriler</h6>
                 </div>
                 <div class="card-body p-0">
                     <div class="list-group list-group-flush">
-                        <a href="{% url 'blog_list' %}" class="list-group-item list-group-item-action bg-transparent text-white border-0 {% if not current_category %}active bg-info bg-opacity-10{% endif %}">
+                        <a href="{% url 'blog_list' %}" class="list-group-item list-group-item-action bg-transparent text-white border-0 {% if not current_category and not current_tag and not current_level and not search_query %}active bg-info bg-opacity-10{% endif %}">
                             <i class="bi bi-grid me-2 text-info"></i>Tümü
                         </a>
                         {% for cat in categories %}
@@ -144,8 +272,28 @@
                 </div>
             </div>
 
+            <!-- Araç & Konu Etiketleri -->
+            {% if tags %}
+            <div class="card border-0 mb-4" style="background: rgba(15,23,42,0.8); border: 1px solid rgba(255,255,255,0.08) !important;">
+                <div class="card-header bg-transparent border-bottom border-secondary border-opacity-25">
+                    <h6 class="mb-0 text-white"><i class="bi bi-tags text-info me-2"></i>Araç & Konular</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex flex-wrap gap-2">
+                        {% for tag in tags %}
+                        <a href="{% url 'blog_list' %}?tag={{ tag.slug }}"
+                           class="ax-tag text-decoration-none {% if current_tag == tag.slug %}ax-tag-active{% endif %}">
+                            {{ tag.name }}
+                            <span class="ms-1 opacity-60" style="font-size: 0.7rem;">{{ tag.post_count }}</span>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
             <!-- Popüler Yazılar -->
-            <div class="card border-0" style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255, 255, 255, 0.08) !important;">
+            <div class="card border-0" style="background: rgba(15,23,42,0.8); border: 1px solid rgba(255,255,255,0.08) !important;">
                 <div class="card-header bg-transparent border-bottom border-secondary border-opacity-25">
                     <h6 class="mb-0 text-white"><i class="bi bi-fire text-warning me-2"></i>Popüler Yazılar</h6>
                 </div>
@@ -176,22 +324,66 @@
 }
 .blog-card:hover {
     transform: translateY(-3px);
-    box-shadow: 0 10px 30px rgba(0, 210, 255, 0.1);
-    border-color: rgba(0, 210, 255, 0.2) !important;
+    box-shadow: 0 10px 30px rgba(0,210,255,0.1);
+    border-color: rgba(0,210,255,0.2) !important;
 }
-.hover-title:hover {
-    color: #00d2ff !important;
-}
+.hover-title:hover { color: #00d2ff !important; }
 .featured-card {
     transition: all 0.3s ease;
     border-radius: 12px;
 }
 .featured-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 15px 40px rgba(0, 210, 255, 0.15);
+    box-shadow: 0 15px 40px rgba(0,210,255,0.15);
 }
 .list-group-item.active {
     border-left: 3px solid #00d2ff !important;
+}
+
+/* Etiket */
+.ax-tag {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    background: rgba(0,210,255,0.08);
+    color: rgba(0,210,255,0.8);
+    border: 1px solid rgba(0,210,255,0.2);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.ax-tag:hover, .ax-tag-active {
+    background: rgba(0,210,255,0.2);
+    border-color: rgba(0,210,255,0.5);
+    color: #00d2ff;
+}
+
+/* Seviye badge */
+.ax-level-badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.ax-level-all { background: rgba(148,163,184,0.15); color: #94a3b8; border: 1px solid rgba(148,163,184,0.3); }
+.ax-level-beginner { background: rgba(34,197,94,0.12); color: #4ade80; border: 1px solid rgba(34,197,94,0.3); }
+.ax-level-intermediate { background: rgba(251,191,36,0.12); color: #fbbf24; border: 1px solid rgba(251,191,36,0.3); }
+.ax-level-advanced { background: rgba(239,68,68,0.12); color: #f87171; border: 1px solid rgba(239,68,68,0.3); }
+.ax-level-active, .ax-level-badge:hover { filter: brightness(1.4); }
+
+/* Aktif filtre badge */
+.ax-filter-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    background: rgba(99,102,241,0.15);
+    color: #a5b4fc;
+    border: 1px solid rgba(99,102,241,0.3);
 }
 </style>
 {% endblock %}

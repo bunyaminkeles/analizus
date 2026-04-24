@@ -20,7 +20,7 @@ from datetime import timedelta
 import uuid
 from django_ratelimit.decorators import ratelimit
 from django_ratelimit.exceptions import Ratelimited
-from .models import Section, Category, Topic, Post, Profile, PrivateMessage, PostLike, Notification, EmailVerification, DailyTip, QuizQuestion, QuizScore, SuccessStory, FreelanceJob, JobProposal, JobReview, Skill, Badge, UserQuizAttempt, JobPayment, SiteSettings, BlogCategory, BlogPost, DonationTier, StudyRoom, StudyRoomMembership, StudyRoomPost, STUDYROOM_TERMS
+from .models import Section, Category, Topic, Post, Profile, PrivateMessage, PostLike, Notification, EmailVerification, DailyTip, QuizQuestion, QuizScore, SuccessStory, FreelanceJob, JobProposal, JobReview, Skill, Badge, UserQuizAttempt, JobPayment, SiteSettings, BlogCategory, BlogPost, BlogTag, DonationTier, StudyRoom, StudyRoomMembership, StudyRoomPost, STUDYROOM_TERMS
 from .forms import RegisterForm, NewTopicForm, PostForm, JobPostForm, ProposalForm
 from .email_utils import send_topic_reply_notification, send_private_message_notification
 from django.template.loader import render_to_string
@@ -2416,30 +2416,63 @@ def job_payment_callback(request):
 @feature_required('blog')
 def blog_list(request):
     """Blog ana sayfası - yazı listesi"""
-    posts = BlogPost.objects.filter(status='published').select_related('author', 'category')
+    posts = BlogPost.objects.filter(status='published').select_related('author', 'category').prefetch_related('tags')
+
+    # Arama
+    search_query = request.GET.get('q', '').strip()
+    if search_query:
+        posts = posts.filter(
+            Q(title__icontains=search_query) |
+            Q(excerpt__icontains=search_query) |
+            Q(content__icontains=search_query) |
+            Q(tags__name__icontains=search_query)
+        ).distinct()
 
     # Kategori filtresi
-    category_slug = request.GET.get('category')
+    category_slug = request.GET.get('category', '')
     if category_slug:
         posts = posts.filter(category__slug=category_slug)
 
-    # Öne çıkan yazılar
-    featured_posts = posts.filter(is_featured=True)[:3]
+    # Etiket filtresi
+    tag_slug = request.GET.get('tag', '')
+    if tag_slug:
+        posts = posts.filter(tags__slug=tag_slug)
+
+    # Seviye filtresi
+    level_filter = request.GET.get('level', '')
+    if level_filter:
+        posts = posts.filter(level=level_filter)
+
+    # Öne çıkan yazılar (filtre yoksa göster)
+    featured_posts = []
+    if not search_query and not category_slug and not tag_slug and not level_filter:
+        featured_posts = BlogPost.objects.filter(
+            status='published', is_featured=True
+        ).select_related('author', 'category')[:3]
 
     # Kategoriler
     categories = BlogCategory.objects.annotate(
         post_count=Count('posts', filter=Q(posts__status='published'))
     ).filter(post_count__gt=0)
 
+    # Etiketler
+    tags = BlogTag.objects.annotate(
+        post_count=Count('posts', filter=Q(posts__status='published'))
+    ).filter(post_count__gt=0).order_by('name')
+
     # Popüler yazılar
-    popular_posts = posts.order_by('-views')[:5]
+    popular_posts = BlogPost.objects.filter(status='published').order_by('-views')[:5]
 
     context = {
         'posts': posts,
         'featured_posts': featured_posts,
         'categories': categories,
+        'tags': tags,
         'popular_posts': popular_posts,
         'current_category': category_slug,
+        'current_tag': tag_slug,
+        'current_level': level_filter,
+        'search_query': search_query,
     }
     return render(request, 'forum/blog/blog_list.html', context)
 

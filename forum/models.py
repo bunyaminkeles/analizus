@@ -1196,6 +1196,20 @@ class BlogCategory(models.Model):
         return self.name
 
 
+class BlogTag(models.Model):
+    """Blog etiketleri — araç ve konu bazlı filtreleme için (Excel, Power BI, Python vb.)"""
+    name = models.CharField(max_length=50, unique=True, verbose_name="Etiket Adı")
+    slug = models.SlugField(unique=True, verbose_name="Slug")
+
+    class Meta:
+        verbose_name = "Blog Etiketi"
+        verbose_name_plural = "Blog Etiketleri"
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name
+
+
 class BlogPost(models.Model):
     """Blog yazıları"""
     STATUS_CHOICES = (
@@ -1209,8 +1223,17 @@ class BlogPost(models.Model):
     content = models.TextField(verbose_name="İçerik", help_text="Maksimum 50.000 karakter (~8.000 kelime)")
     cover_image = models.ImageField(upload_to='blog/covers/', storage=get_storage, blank=True, null=True, verbose_name="Kapak Görseli")
 
+    LEVEL_CHOICES = (
+        ('beginner', 'Başlangıç'),
+        ('intermediate', 'Orta'),
+        ('advanced', 'İleri'),
+    )
+
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='blog_posts', verbose_name="Yazar")
     category = models.ForeignKey(BlogCategory, on_delete=models.SET_NULL, null=True, related_name='posts', verbose_name="Kategori")
+    tags = models.ManyToManyField('BlogTag', blank=True, related_name='posts', verbose_name="Etiketler")
+    level = models.CharField(max_length=15, choices=LEVEL_CHOICES, blank=True, verbose_name="Seviye",
+                             help_text="Hedef okuyucu kitlesi (boş bırakılabilir)")
 
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft', verbose_name="Durum")
     is_featured = models.BooleanField(default=False, verbose_name="Öne Çıkan")
