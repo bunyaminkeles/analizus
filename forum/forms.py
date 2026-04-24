@@ -43,11 +43,22 @@ class RegisterForm(UserCreationForm):
     def clean_username(self):
         import re
         username = self.cleaned_data.get('username', '')
-        # 4+ ardışık ünsüz = random bot kullanıcı adı imzası (Türkçe ünsüzler dahil)
-        if re.search(r'[bcçdfgğhjklmnprsştvyzBCÇDFGĞHJKLMNPRSŞTVYZ]{4,}', username):
+        username_lower = username.lower()
+        
+        # 1. q, w, x harflerinin çokluğu (Botların rastgele ürettiği isimler)
+        if sum(1 for c in username_lower if c in 'qwx') >= 2:
+            raise forms.ValidationError("Geçerli bir kullanıcı adı seçin. (Sistem bot şüphesi algıladı.)")
+            
+        # 2. 4+ ardışık ünsüz = random bot imzası (Türkçe ünsüzler ve q, w, x dahil)
+        if re.search(r'[bcçdfgğhjklmnpqrsştvwxyz]{4,}', username_lower):
             raise forms.ValidationError(
                 "Geçerli bir kullanıcı adı seçin (örn: ahmet_42, researcher1)."
             )
+            
+        # 3. 10 harfli anlamsız dizilimler (Örn: ooritqtiit, qesmuhoyqs)
+        if len(username_lower) == 10 and username_lower.isalpha() and ('q' in username_lower or 'x' in username_lower or 'w' in username_lower or sum(1 for c in username_lower if c in 'aeıioöuü') < 2):
+            raise forms.ValidationError("Geçerli bir kullanıcı adı seçin. (Sistem bot şüphesi algıladı.)")
+            
         return username
 
     def clean_email(self):
