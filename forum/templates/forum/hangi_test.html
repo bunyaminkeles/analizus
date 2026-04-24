@@ -10,32 +10,34 @@
 
   <!-- Başlık -->
   <div class="text-center mb-4">
-    <span class="fs-1 text-primary"><i class="bi bi-diagram-3-fill"></i></span>
-    <h1 class="fw-bold text-white mt-2 mb-1" style="font-size:1.7rem;">Hangi İstatistik Testini Kullanmalıyım?</h1>
-    <p class="text-white-50 mb-0">Soruları yanıtlayarak araştırmanıza uygun testi saniyeler içinde bulun.</p>
+    <span class="fs-1 ax-text-primary">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="2" width="8" height="6" rx="1"/><path d="M12 8v4"/><path d="M8 12H4v6h8v-6H8z"/><path d="M16 12h4v6h-8v-6h4z"/></svg>
+    </span>
+    <h1 class="fw-bold ax-text-main mt-2 mb-1" style="font-size:1.7rem;">Hangi İstatistik Testini Kullanmalıyım?</h1>
+    <p class="ax-text-muted mb-0">Soruları yanıtlayarak araştırmanıza uygun testi saniyeler içinde bulun.</p>
   </div>
 
   <!-- Adım göstergesi -->
   <div id="progress-bar-wrap" class="mb-3">
     <div class="d-flex justify-content-between align-items-center mb-1">
-      <small class="text-white-50" id="step-label">Adım 1</small>
-      <small class="text-white-50" id="step-pct">—</small>
+      <small class="ax-text-muted" id="step-label">Adım 1</small>
+      <small class="ax-text-muted" id="step-pct">—</small>
     </div>
-    <div class="progress" style="height:4px;background:rgba(255,255,255,0.08);">
-      <div id="step-progress" class="progress-bar bg-primary" style="width:0%;transition:width .3s;"></div>
+    <div class="ax-progress">
+      <div id="step-progress" class="ax-progress-bar" style="width:0%;"></div>
     </div>
   </div>
 
   <!-- Karar ağacı kartı -->
-  <div id="tree-card" class="card border-secondary p-4" style="background:#16213e;min-height:280px;">
+  <div id="tree-card" class="ax-card p-4" style="min-height:280px;">
 
     <!-- Soru ekranı -->
     <div id="question-screen">
       <div class="mb-1">
-        <span id="q-badge" class="badge bg-primary bg-opacity-25 text-primary fw-normal small mb-2"></span>
+        <span id="q-badge" class="ax-badge ax-badge-primary mb-2"></span>
       </div>
-      <h5 id="q-text" class="text-white fw-semibold mb-1" style="line-height:1.5;"></h5>
-      <p id="q-hint" class="text-white-50 small mb-4"></p>
+      <h5 id="q-text" class="ax-text-main fw-semibold mb-1" style="line-height:1.5;"></h5>
+      <p id="q-hint" class="ax-text-muted small mb-4"></p>
       <div id="options-wrap" class="d-grid gap-2"></div>
     </div>
 
@@ -44,36 +46,36 @@
       <div class="d-flex align-items-center gap-3 mb-3">
         <span id="r-icon" class="fs-1"></span>
         <div>
-          <div class="small text-white-50 mb-1">Önerilen Test</div>
-          <h4 id="r-title" class="text-white fw-bold mb-0"></h4>
+          <div class="small ax-text-muted mb-1">Önerilen Test</div>
+          <h4 id="r-title" class="ax-text-main fw-bold mb-0"></h4>
         </div>
       </div>
-      <p id="r-desc" class="text-white-50 mb-3"></p>
+      <p id="r-desc" class="ax-text-muted mb-3"></p>
       <div id="r-conditions" class="mb-3"></div>
-      <div id="r-software" class="mb-3 small text-white-50"></div>
+      <div id="r-software" class="mb-3 small ax-text-muted"></div>
 
       <!-- Analizus aracı / yakında geliyor -->
       <div id="r-tool-action" class="mb-3"></div>
 
       <!-- Aksiyon butonları -->
       <div class="d-flex flex-wrap gap-2 mb-4">
-        <a id="r-forum-btn" href="#" class="btn btn-outline-primary btn-sm">
-          <i class="bi bi-chat-square-text me-1"></i>Forumda Tartış
+        <a id="r-forum-btn" href="#" class="ax-btn ax-btn-outline-primary ax-btn-sm">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" class="me-1" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Forumda Tartış
         </a>
-        <button id="r-share-btn" class="btn btn-outline-success btn-sm" onclick="openShareModal()">
-          <i class="bi bi-share me-1"></i>Analizini Paylaş
+        <button id="r-share-btn" class="ax-btn ax-btn-outline-success ax-btn-sm" onclick="openShareModal()">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" class="me-1" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg> Analizini Paylaş
         </button>
-        <a href="{% url 'ai_assistant' %}" class="btn btn-outline-warning btn-sm">
-          <i class="bi bi-robot me-1"></i>AI Asistan'a Sor
+        <a href="{% url 'ai_assistant' %}" class="ax-btn ax-btn-outline-warning ax-btn-sm">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" class="me-1" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/><line x1="8" y1="16" x2="8" y2="16"/><line x1="16" y1="16" x2="16" y2="16"/></svg> AI Asistan'a Sor
         </a>
-        <button onclick="resetTree()" class="btn btn-outline-secondary btn-sm">
-          <i class="bi bi-arrow-counterclockwise me-1"></i>Baştan Başla
+        <button onclick="resetTree()" class="ax-btn ax-btn-outline-secondary ax-btn-sm">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" class="me-1" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg> Baştan Başla
         </button>
       </div>
 
       <!-- Benzer testler -->
       <div id="r-related-wrap" class="border-top border-secondary pt-3">
-        <p class="text-white-50 small mb-2">İlgili konular:</p>
+        <p class="ax-text-muted small mb-2">İlgili konular:</p>
         <div id="r-related" class="d-flex flex-wrap gap-2"></div>
       </div>
     </div>
@@ -88,65 +90,88 @@
   <!-- Bilgi kutuları (sayfanın altında SEO için) -->
   <div class="row g-3 mt-5">
     <div class="col-12">
-      <h5 class="text-white fw-semibold mb-3">Popüler Testler Hakkında Kısa Bilgi</h5>
+      <h5 class="ax-text-main fw-semibold mb-3">Popüler Testler Hakkında Kısa Bilgi</h5>
     </div>
     <div class="col-md-6">
-      <div class="card border-secondary p-3" style="background:#1a1a2e;">
-        <h6 class="text-primary fw-semibold mb-2"><i class="bi bi-bar-chart-steps me-2"></i>t-Testi Nedir?</h6>
-        <p class="text-white-50 small mb-0">İki grup ortalamasını karşılaştırmak için kullanılır. Bağımsız örneklem t-testi farklı grupları, bağımlı örneklem t-testi aynı grubun iki ölçümünü karşılaştırır. Normal dağılım varsayımı gerektirir.</p>
+      <div class="ax-card p-3">
+        <h6 class="ax-text-primary fw-semibold mb-2">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" class="me-2" viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></svg> t-Testi Nedir?
+        </h6>
+        <p class="ax-text-muted small mb-0">İki grup ortalamasını karşılaştırmak için kullanılır. Bağımsız örneklem t-testi farklı grupları, bağımlı örneklem t-testi aynı grubun iki ölçümünü karşılaştırır. Normal dağılım varsayımı gerektirir.</p>
       </div>
     </div>
     <div class="col-md-6">
-      <div class="card border-secondary p-3" style="background:#1a1a2e;">
-        <h6 class="text-success fw-semibold mb-2"><i class="bi bi-bar-chart me-2"></i>ANOVA Nedir?</h6>
-        <p class="text-white-50 small mb-0">Üç veya daha fazla grubun ortalamalarını eş zamanlı karşılaştırır. Tek yönlü ANOVA bir faktörü, iki yönlü ANOVA iki faktörü inceler. Fark bulunursa post-hoc testleri gerekir.</p>
+      <div class="ax-card p-3">
+        <h6 class="ax-text-success fw-semibold mb-2">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" class="me-2" viewBox="0 0 24 24"><path d="M18 20v-5M12 20v-9M6 20V4"/></svg> ANOVA Nedir?
+        </h6>
+        <p class="ax-text-muted small mb-0">Üç veya daha fazla grubun ortalamalarını eş zamanlı karşılaştırır. Tek yönlü ANOVA bir faktörü, iki yönlü ANOVA iki faktörü inceler. Fark bulunursa post-hoc testleri gerekir.</p>
       </div>
     </div>
     <div class="col-md-6">
-      <div class="card border-secondary p-3" style="background:#1a1a2e;">
-        <h6 class="text-warning fw-semibold mb-2"><i class="bi bi-graph-up me-2"></i>Korelasyon Nedir?</h6>
-        <p class="text-white-50 small mb-0">İki değişken arasındaki ilişkinin yönünü ve gücünü ölçer. Pearson parametrik (normal dağılım), Spearman parametrik olmayan (sıralı veri) korelasyon testidir.</p>
+      <div class="ax-card p-3">
+        <h6 class="ax-text-warning fw-semibold mb-2">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" class="me-2" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg> Korelasyon Nedir?
+        </h6>
+        <p class="ax-text-muted small mb-0">İki değişken arasındaki ilişkinin yönünü ve gücünü ölçer. Pearson parametrik (normal dağılım), Spearman parametrik olmayan (sıralı veri) korelasyon testidir.</p>
       </div>
     </div>
     <div class="col-md-6">
-      <div class="card border-secondary p-3" style="background:#1a1a2e;">
-        <h6 class="text-info fw-semibold mb-2"><i class="bi bi-diagram-2 me-2"></i>Regresyon Nedir?</h6>
-        <p class="text-white-50 small mb-0">Bir değişkeni başka değişkenlerle tahmin etmek için kullanılır. Basit lineer regresyon tek bağımsız değişken, çoklu regresyon birden fazla bağımsız değişkenle çalışır.</p>
+      <div class="ax-card p-3">
+        <h6 class="ax-text-info fw-semibold mb-2">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" class="me-2" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="m19 5-5 5-4-4-3 3"/></svg> Regresyon Nedir?
+        </h6>
+        <p class="ax-text-muted small mb-0">Bir değişkeni başka değişkenlerle tahmin etmek için kullanılır. Basit lineer regresyon tek bağımsız değişken, çoklu regresyon birden fazla bağımsız değişkenle çalışır.</p>
       </div>
     </div>
   </div>
 
 </div>
 
-<!-- Paylaşım Modalı -->
-<div class="modal fade" id="shareModal" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content border-secondary" style="background:#16213e;">
-      <div class="modal-header border-secondary">
-        <h5 class="modal-title text-white fw-semibold">Analizini Forumda Paylaş</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+<!-- Paylaşım Modalı (Vanilla JS) -->
+<div class="ax-modal-overlay" id="shareModal">
+  <div class="ax-modal-dialog">
+    <div class="ax-modal-content">
+      <div class="ax-modal-header">
+        <h5 class="ax-modal-title">Analizini Forumda Paylaş</h5>
+        <button type="button" class="ax-btn-close" onclick="closeShareModal()">
+          <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
       </div>
-      <div class="modal-body">
-        <p class="text-white-50 small mb-3">Aşağıdaki şablon otomatik oluşturuldu. Düzenleyip forum kategorisine gönderebilirsin.</p>
-        <textarea id="share-template" class="form-control bg-dark text-white border-secondary" rows="8" style="font-size:.85rem;resize:none;"></textarea>
+      <div class="ax-modal-body">
+        <p class="ax-text-muted small mb-3">Aşağıdaki şablon otomatik oluşturuldu. Düzenleyip forum kategorisine gönderebilirsin.</p>
+        <textarea id="share-template" class="ax-form-control" rows="8" style="resize:none;"></textarea>
       </div>
-      <div class="modal-footer border-secondary">
+      <div class="ax-modal-footer">
         {% if user.is_authenticated %}
-        <a id="share-forum-link" href="#" class="btn btn-primary btn-sm">
-          <i class="bi bi-send me-1"></i>Forum'a Git
+        <a id="share-forum-link" href="#" class="ax-btn ax-btn-primary ax-btn-sm">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" class="me-1" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg> Forum'a Git
         </a>
         {% else %}
-        <a href="{% url 'register' %}" class="btn btn-primary btn-sm">
-          <i class="bi bi-person-plus me-1"></i>Kayıt Ol &amp; Paylaş
+        <a href="{% url 'register' %}" class="ax-btn ax-btn-primary ax-btn-sm">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" class="me-1" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg> Kayıt Ol &amp; Paylaş
         </a>
         {% endif %}
-        <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-dismiss="modal">Kapat</button>
+        <button type="button" class="ax-btn ax-btn-outline-secondary ax-btn-sm" onclick="closeShareModal()">Kapat</button>
       </div>
     </div>
   </div>
 </div>
 
 <script>
+// ─── SVG IKONLAR (Inline) ───────────────────────────────────────────────────
+const SVGS = {
+  ttest: '<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="ax-text-primary"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>',
+  anova: '<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="ax-text-success"><path d="M18 20v-5M12 20v-9M6 20V4"/></svg>',
+  correlation: '<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="ax-text-info"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>',
+  regression: '<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="ax-text-success"><path d="M3 3v18h18"/><path d="m19 5-5 5-4-4-3 3"/></svg>',
+  reliability: '<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="ax-text-success"><path d="m9 11 3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>',
+  nonparametric: '<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="ax-text-warning"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>',
+  chisquare: '<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="ax-text-warning"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg>',
+  normal: '<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="ax-text-info"><path d="M2 20h20"/><path d="M5 20s1-8 7-8 7 8 7 8"/></svg>',
+  descriptive: '<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="ax-text-muted"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>'
+};
+
 // ─── AĞAÇ VERİSİ ────────────────────────────────────────────────────────────
 const TREE = {
   start: {
@@ -295,7 +320,7 @@ const TREE = {
   // ─── SONUÇLAR ─────────────────────────────────────────────────────────────
   r_bagimsiz_t: {
     result: true,
-    icon: "bi bi-bar-chart-steps text-primary",
+    icon: SVGS.ttest,
     title: "Bağımsız Örneklem t-Testi",
     tool_url: "/istatistik/ttesti/",
     desc: "Birbirinden bağımsız iki grubun ortalamasını karşılaştırmak için kullanılan parametrik testtir.",
@@ -312,7 +337,7 @@ const TREE = {
   },
   r_mann_whitney: {
     result: true,
-    icon: "bi bi-bar-chart text-info",
+    icon: SVGS.nonparametric,
     title: "Mann-Whitney U Testi",
     desc: "Normal dağılım varsayımını karşılamayan iki bağımsız grubun medyanlarını karşılaştıran non-parametrik alternatiftir.",
     conditions: [
@@ -327,7 +352,7 @@ const TREE = {
   },
   r_bagimli_t: {
     result: true,
-    icon: "bi bi-arrows-collapse text-success",
+    icon: SVGS.ttest,
     title: "Bağımlı Örneklem t-Testi (Eşleştirilmiş)",
     tool_url: "/istatistik/ttesti/",
     desc: "Aynı grubun iki farklı zamandaki veya iki eşleştirilmiş grubun ortalamalarını karşılaştırır.",
@@ -343,7 +368,7 @@ const TREE = {
   },
   r_wilcoxon: {
     result: true,
-    icon: "bi bi-arrow-left-right text-warning",
+    icon: SVGS.nonparametric,
     title: "Wilcoxon İşaretli Sıralar Testi",
     desc: "Bağımlı t-testinin non-parametrik alternatifi; normal dağılım yoksa aynı kişinin iki ölçümünü karşılaştırır.",
     conditions: [
@@ -358,7 +383,7 @@ const TREE = {
   },
   r_anova: {
     result: true,
-    icon: "bi bi-bar-chart-line text-primary",
+    icon: SVGS.anova,
     title: "Tek Yönlü ANOVA",
     tool_url: "/istatistik/anova/",
     desc: "Üç veya daha fazla bağımsız grubun ortalamasını eş zamanlı karşılaştıran parametrik testtir.",
@@ -376,7 +401,7 @@ const TREE = {
   },
   r_kruskal: {
     result: true,
-    icon: "bi bi-bar-chart text-danger",
+    icon: SVGS.nonparametric,
     title: "Kruskal-Wallis Testi",
     desc: "ANOVA'nın non-parametrik alternatifi; 3+ bağımsız grubun medyanlarını karşılaştırır.",
     conditions: [
@@ -391,7 +416,7 @@ const TREE = {
   },
   r_tekrarli_anova: {
     result: true,
-    icon: "bi bi-arrows-angle-contract text-success",
+    icon: SVGS.anova,
     title: "Tekrarlı Ölçümler ANOVA",
     desc: "Aynı kişilerin üç veya daha fazla farklı zaman noktasındaki/koşuldaki ortalamalarını karşılaştırır.",
     conditions: [
@@ -406,7 +431,7 @@ const TREE = {
   },
   r_friedman: {
     result: true,
-    icon: "bi bi-activity text-warning",
+    icon: SVGS.nonparametric,
     title: "Friedman Testi",
     desc: "Tekrarlı ölçümler ANOVA'nın non-parametrik alternatifi; 3+ tekrarlı ölçümü karşılaştırır.",
     conditions: [
@@ -421,7 +446,7 @@ const TREE = {
   },
   r_pearson: {
     result: true,
-    icon: "bi bi-graph-up-arrow text-primary",
+    icon: SVGS.correlation,
     title: "Pearson Korelasyon Katsayısı",
     tool_url: "/istatistik/korelasyon/",
     desc: "İki sürekli değişken arasındaki doğrusal ilişkinin yönünü ve gücünü ölçen parametrik testtir.",
@@ -437,7 +462,7 @@ const TREE = {
   },
   r_spearman: {
     result: true,
-    icon: "bi bi-graph-up text-info",
+    icon: SVGS.correlation,
     title: "Spearman Sıra Korelasyonu",
     tool_url: "/istatistik/korelasyon/",
     desc: "Normal dağılım gerektirmeyen, sıralı veya sürekli değişkenler için ilişki katsayısı.",
@@ -453,7 +478,7 @@ const TREE = {
   },
   r_kicekare: {
     result: true,
-    icon: "bi bi-grid-3x3 text-warning",
+    icon: SVGS.chisquare,
     title: "Ki-Kare Bağımsızlık Testi",
     desc: "İki kategorik değişken arasında istatistiksel bir ilişki olup olmadığını test eder.",
     conditions: [
@@ -468,7 +493,7 @@ const TREE = {
   },
   r_basit_regresyon: {
     result: true,
-    icon: "bi bi-diagram-2 text-success",
+    icon: SVGS.regression,
     title: "Basit Doğrusal Regresyon",
     desc: "Tek bağımsız değişkenle sürekli bir bağımlı değişkeni tahmin eden parametrik analiz.",
     conditions: [
@@ -484,7 +509,7 @@ const TREE = {
   },
   r_coklu_regresyon: {
     result: true,
-    icon: "bi bi-diagram-3 text-primary",
+    icon: SVGS.regression,
     title: "Çoklu Doğrusal Regresyon",
     desc: "Birden fazla bağımsız değişkenle sürekli bir bağımlı değişkeni tahmin eden parametrik analiz.",
     conditions: [
@@ -500,7 +525,7 @@ const TREE = {
   },
   r_lojistik: {
     result: true,
-    icon: "bi bi-toggle-on text-danger",
+    icon: SVGS.regression,
     title: "Lojistik Regresyon",
     desc: "İkili (0/1) kategorik bağımlı değişkeni tahmin etmek için kullanılır; bir olayın gerçekleşme olasılığını modeller.",
     conditions: [
@@ -515,7 +540,7 @@ const TREE = {
   },
   r_multinomial: {
     result: true,
-    icon: "bi bi-list-task text-info",
+    icon: SVGS.regression,
     title: "Multinomial Lojistik Regresyon",
     desc: "Üç veya daha fazla kategorik değer alan bağımlı değişkeni tahmin eder.",
     conditions: [
@@ -531,7 +556,7 @@ const TREE = {
   r_cronbach: {
     result: true,
     tool_url: "/istatistik/cronbach/",
-    icon: "bi bi-check2-square text-success",
+    icon: SVGS.reliability,
     title: "Cronbach's Alpha (İç Tutarlılık)",
     desc: "Bir ölçeğin veya anketin maddelerinin birbiriyle ne kadar tutarlı olduğunu ölçen güvenilirlik katsayısı.",
     conditions: [
@@ -546,7 +571,7 @@ const TREE = {
   },
   r_efa: {
     result: true,
-    icon: "bi bi-boxes text-warning",
+    icon: SVGS.reliability,
     title: "Açımlayıcı Faktör Analizi (EFA)",
     desc: "Çok sayıda değişken arasındaki örüntülerden gizli faktör yapılarını keşfetmek için kullanılır.",
     conditions: [
@@ -561,7 +586,7 @@ const TREE = {
   },
   r_cfa: {
     result: true,
-    icon: "bi bi-diagram-3-fill text-primary",
+    icon: SVGS.reliability,
     title: "Doğrulayıcı Faktör Analizi (CFA)",
     desc: "Teorik olarak belirlenen faktör yapısının veriye ne kadar uyduğunu test eden yapısal analiz yöntemi.",
     conditions: [
@@ -577,7 +602,7 @@ const TREE = {
   r_normallik: {
     result: true,
     tool_url: "/istatistik/normallik/",
-    icon: "bi bi-bell-curve text-info",
+    icon: SVGS.normal,
     title: "Normallik Testi (Shapiro-Wilk / K-S)",
     desc: "Bir veri setinin normal dağılıma uyup uymadığını test eder. Diğer parametrik testler için ön koşuldur.",
     conditions: [
@@ -593,7 +618,7 @@ const TREE = {
   r_tanimsal: {
     result: true,
     tool_url: "/istatistik/betimsel/",
-    icon: "bi bi-table text-secondary",
+    icon: SVGS.descriptive,
     title: "Betimsel / Tanımlayıcı İstatistikler",
     desc: "Veriyi özetlemek için ortalama, medyan, standart sapma, min-max, frekans gibi istatistikler hesaplanır.",
     conditions: [
@@ -628,12 +653,9 @@ function renderNode(nodeId) {
   wrap.innerHTML = '';
   node.options.forEach((opt, i) => {
     const btn = document.createElement('button');
-    btn.className = 'btn btn-outline-secondary text-white text-start py-2 px-3 option-btn';
-    btn.style.cssText = 'background:rgba(255,255,255,0.03);border-color:rgba(255,255,255,0.12);transition:all .15s;';
-    btn.innerHTML = `<span class="me-2 text-primary fw-bold">${String.fromCharCode(65+i)})</span>${opt.text}`;
+    btn.className = 'ax-btn ax-btn-ghost ax-quiz-option';
+    btn.innerHTML = `<span class="me-2 ax-text-primary fw-bold">${String.fromCharCode(65+i)})</span>${opt.text}`;
     btn.onclick = () => choose(nodeId, opt.next);
-    btn.onmouseenter = () => { btn.style.background = 'rgba(13,110,253,0.15)'; btn.style.borderColor = 'rgba(13,110,253,0.5)'; };
-    btn.onmouseleave = () => { btn.style.background = 'rgba(255,255,255,0.03)'; btn.style.borderColor = 'rgba(255,255,255,0.12)'; };
     wrap.appendChild(btn);
   });
 
@@ -659,37 +681,37 @@ function showResult(nodeId) {
   document.getElementById('question-screen').classList.add('d-none');
   document.getElementById('result-screen').classList.remove('d-none');
 
-  document.getElementById('r-icon').innerHTML = `<i class="${node.icon}" style="font-size:2.5rem;"></i>`;
+  document.getElementById('r-icon').innerHTML = node.icon;
   document.getElementById('r-title').textContent = node.title;
   document.getElementById('r-desc').textContent = node.desc;
 
   // Koşullar
   const condWrap = document.getElementById('r-conditions');
-  condWrap.innerHTML = '<p class="text-white-50 small mb-2 fw-semibold">Kullanım koşulları:</p>' +
-    node.conditions.map(c => `<div class="d-flex gap-2 mb-1"><i class="bi bi-check2-circle text-success mt-1 flex-shrink-0"></i><span class="text-white-50 small">${c}</span></div>`).join('');
+  condWrap.innerHTML = '<p class="ax-text-muted small mb-2 fw-semibold">Kullanım koşulları:</p>' +
+    node.conditions.map(c => `<div class="d-flex gap-2 mb-1"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" class="ax-text-success mt-1 flex-shrink-0" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg><span class="ax-text-muted small">${c}</span></div>`).join('');
 
   // Yazılım
-  document.getElementById('r-software').innerHTML = `<i class="bi bi-terminal me-2"></i>${node.software}`;
+  document.getElementById('r-software').innerHTML = `<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" class="me-2" viewBox="0 0 24 24"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>${node.software}`;
 
   // Analizus buton / yakında geliyor
   const toolBox = document.getElementById('r-tool-action');
   let toolHtml = '';
   if (node.tool_url) {
-    toolHtml += `<a href="${node.tool_url}" class="btn btn-primary fw-semibold me-2 mb-3">
-      <i class="bi bi-play-circle-fill me-2"></i>Analizus'ta Yap →
+    toolHtml += `<a href="${node.tool_url}" class="ax-btn ax-btn-primary fw-semibold me-2 mb-3">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" class="me-2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg> Analizus'ta Yap →
     </a>`;
   } else {
-    toolHtml += `<span class="badge text-bg-secondary fs-6 fw-normal py-2 px-3 mb-3 d-inline-block">
-      <i class="bi bi-clock me-1"></i>Bu test yakında Analizus'ta
+    toolHtml += `<span class="ax-badge ax-badge-secondary py-2 px-3 mb-3">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" class="me-1" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Bu test yakında Analizus'ta
     </span>`;
   }
   
   // Görev 9: Pazaryeri / Uzman Yönlendirme Funnel'ı
   toolHtml += `
   <div class="p-3 rounded-3" style="background: rgba(99, 102, 241, 0.08); border: 1px dashed rgba(99, 102, 241, 0.4);">
-      <div class="text-white fw-bold mb-1" style="font-size: 0.95rem;"><i class="bi bi-lightning-charge-fill text-warning me-1"></i>Zamanınız Yok Mu?</div>
-      <p class="text-white-50 small mb-3"><strong>${node.title}</strong> analizini akademik standartlarda ve hatasız bir şekilde platformumuzdaki uzmanlara yaptırabilirsiniz.</p>
-      <a href="{% url 'post_job' %}" class="btn btn-sm w-100 fw-bold" style="background: #6366f1; color: #fff;"><i class="bi bi-briefcase-fill me-1"></i> Bu Analiz İçin Uzman Bul</a>
+      <div class="ax-text-main fw-bold mb-1" style="font-size: 0.95rem;"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" class="ax-text-warning me-1" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Zamanınız Yok Mu?</div>
+      <p class="ax-text-muted small mb-3"><strong>${node.title}</strong> analizini akademik standartlarda ve hatasız bir şekilde platformumuzdaki uzmanlara yaptırabilirsiniz.</p>
+      <a href="{% url 'post_job' %}" class="ax-btn ax-btn-primary ax-btn-sm w-100 fw-bold"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" class="me-1" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg> Bu Analiz İçin Uzman Bul</a>
   </div>`;
   toolBox.innerHTML = toolHtml;
 
@@ -704,7 +726,7 @@ function showResult(nodeId) {
     const slug = node.related_slugs?.[i];
     if (!slug) return;
     const a = document.createElement('button');
-    a.className = 'btn btn-sm btn-outline-secondary text-white-50';
+    a.className = 'ax-btn ax-btn-outline-secondary ax-btn-sm';
     a.style.fontSize = '.78rem';
     a.textContent = name;
     a.onclick = () => { history = []; showResult(slug); };
@@ -724,7 +746,7 @@ function updateProgress(done = false) {
   document.getElementById('step-label').textContent = done ? 'Tamamlandı' : `Adım ${step}`;
   document.getElementById('step-pct').textContent = done ? '✓' : `${Math.round(step/MAX*100)}%`;
   document.getElementById('step-progress').style.width = (done ? 100 : Math.round(step/MAX*100)) + '%';
-  document.getElementById('step-progress').className = 'progress-bar ' + (done ? 'bg-success' : 'bg-primary');
+  document.getElementById('step-progress').className = 'ax-progress-bar ' + (done ? 'ax-progress-bar-success' : '');
 }
 
 function resetTree() {
@@ -733,7 +755,7 @@ function resetTree() {
   renderNode('start');
 }
 
-// Paylaşım modalı
+// Vanilla JS Paylaşım Modalı Logic
 function openShareModal() {
   if (!currentResult) return;
   const node = TREE[currentResult];
@@ -741,14 +763,136 @@ function openShareModal() {
   document.getElementById('share-template').value = tmpl;
   const link = document.getElementById('share-forum-link');
   if (link) link.href = `/forum/${node.forum_slug}/`;
-  new bootstrap.Modal(document.getElementById('shareModal')).show();
+  
+  document.getElementById('shareModal').classList.add('ax-modal-show');
+  document.body.style.overflow = 'hidden';
 }
+
+function closeShareModal() {
+  document.getElementById('shareModal').classList.remove('ax-modal-show');
+  document.body.style.overflow = '';
+}
+
+// Click outside modal to close
+window.addEventListener('click', (e) => {
+  const modal = document.getElementById('shareModal');
+  if (e.target === modal) {
+    closeShareModal();
+  }
+});
 
 // Başlat
 renderNode('start');
 </script>
 
+<!-- Bu CSS kodları ileride global bir tasarım sistemine (base.css) taşınacaktır -->
 <style>
-.option-btn:focus { outline: none; box-shadow: 0 0 0 2px rgba(13,110,253,.4); }
+  :root {
+    --ax-color-primary: #6366f1;
+    --ax-color-primary-hover: #4f46e5;
+    --ax-color-success: #10b981;
+    --ax-color-warning: #f59e0b;
+    --ax-color-info: #0ea5e9;
+    --ax-color-danger: #ef4444;
+    --ax-color-secondary: #475569;
+
+    --ax-bg-card: #1e293b;
+    --ax-border-color: #334155;
+    
+    --ax-text-main: #f8fafc;
+    --ax-text-muted: #94a3b8;
+
+    --ax-radius-md: 12px;
+    --ax-radius-sm: 8px;
+  }
+
+  /* Text Utilities */
+  .ax-text-primary { color: var(--ax-color-primary) !important; }
+  .ax-text-success { color: var(--ax-color-success) !important; }
+  .ax-text-warning { color: var(--ax-color-warning) !important; }
+  .ax-text-info { color: var(--ax-color-info) !important; }
+  .ax-text-danger { color: var(--ax-color-danger) !important; }
+  .ax-text-muted { color: var(--ax-text-muted) !important; }
+  .ax-text-main { color: var(--ax-text-main) !important; }
+
+  /* Components */
+  .ax-card {
+    background: var(--ax-bg-card);
+    border: 1px solid var(--ax-border-color);
+    border-radius: var(--ax-radius-md);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+  }
+
+  .ax-progress { height: 4px; background: rgba(255,255,255,0.08); border-radius: 2px; overflow: hidden; }
+  .ax-progress-bar { height: 100%; background: var(--ax-color-primary); transition: width 0.3s ease; }
+  .ax-progress-bar-success { background: var(--ax-color-success); }
+
+  .ax-badge { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+  .ax-badge-primary { background: rgba(99, 102, 241, 0.15); color: var(--ax-color-primary); }
+  .ax-badge-secondary { background: rgba(71, 85, 105, 0.2); color: var(--ax-text-muted); }
+
+  /* Buttons */
+  .ax-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    padding: 8px 16px; border-radius: var(--ax-radius-sm); font-weight: 500;
+    cursor: pointer; transition: all 0.2s; border: 1px solid transparent;
+    text-decoration: none; font-size: 0.875rem;
+  }
+  .ax-btn-sm { padding: 6px 12px; font-size: 0.8rem; }
+  .ax-btn-primary { background: var(--ax-color-primary); color: #fff; }
+  .ax-btn-primary:hover { background: var(--ax-color-primary-hover); color: #fff; }
+  
+  .ax-btn-outline-primary { border-color: var(--ax-color-primary); color: var(--ax-color-primary); background: transparent; }
+  .ax-btn-outline-primary:hover { background: rgba(99, 102, 241, 0.1); color: var(--ax-color-primary); }
+  
+  .ax-btn-outline-success { border-color: var(--ax-color-success); color: var(--ax-color-success); background: transparent; }
+  .ax-btn-outline-success:hover { background: rgba(16, 185, 129, 0.1); color: var(--ax-color-success); }
+  
+  .ax-btn-outline-warning { border-color: var(--ax-color-warning); color: var(--ax-color-warning); background: transparent; }
+  .ax-btn-outline-warning:hover { background: rgba(245, 158, 11, 0.1); color: var(--ax-color-warning); }
+  
+  .ax-btn-outline-secondary { border-color: var(--ax-border-color); color: var(--ax-text-muted); background: transparent; }
+  .ax-btn-outline-secondary:hover { background: rgba(255, 255, 255, 0.05); color: var(--ax-text-main); }
+
+  .ax-btn-ghost { background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.12); color: var(--ax-text-main); }
+  .ax-btn-ghost:hover { background: rgba(99, 102, 241, 0.15); border-color: rgba(99, 102, 241, 0.5); color: var(--ax-color-primary); }
+  .ax-btn-ghost:focus { outline: none; box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.4); }
+  
+  .ax-form-control {
+    display: block; width: 100%; padding: 10px;
+    background: rgba(0,0,0,0.2); border: 1px solid var(--ax-border-color);
+    border-radius: var(--ax-radius-sm); color: var(--ax-text-main);
+    font-family: inherit; font-size: 0.85rem;
+  }
+  .ax-form-control:focus { outline: none; border-color: var(--ax-color-primary); }
+
+  /* Modal */
+  .ax-modal-overlay {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center;
+    opacity: 0; visibility: hidden; transition: all 0.3s; z-index: 9999; backdrop-filter: blur(4px);
+  }
+  .ax-modal-overlay.ax-modal-show { opacity: 1; visibility: visible; }
+  .ax-modal-dialog {
+    background: var(--ax-bg-card); border: 1px solid var(--ax-border-color);
+    border-radius: var(--ax-radius-md); width: 100%; max-width: 500px; margin: 0 15px;
+    transform: translateY(-20px); transition: transform 0.3s;
+  }
+  .ax-modal-show .ax-modal-dialog { transform: translateY(0); }
+  .ax-modal-header { padding: 16px 20px; border-bottom: 1px solid var(--ax-border-color); display: flex; justify-content: space-between; align-items: center; }
+  .ax-modal-title { margin: 0; font-size: 1.1rem; font-weight: 600; color: var(--ax-text-main); }
+  .ax-modal-body { padding: 20px; }
+  .ax-modal-footer { padding: 16px 20px; border-top: 1px solid var(--ax-border-color); display: flex; gap: 10px; justify-content: flex-end; }
+  .ax-btn-close { background: transparent; border: none; color: var(--ax-text-muted); cursor: pointer; padding: 4px; display: flex; align-items: center; justify-content: center; }
+  .ax-btn-close:hover { color: var(--ax-text-main); }
+
+  /* Quiz Option Button Özel Stili (Bootstrap'ten bağımsız) */
+  .ax-quiz-option {
+    width: 100%;
+    justify-content: flex-start;
+    text-align: left;
+    padding: 12px 16px;
+    margin-bottom: 8px;
+  }
 </style>
 {% endblock %}
