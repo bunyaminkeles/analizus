@@ -928,8 +928,8 @@ def register(request):
 
 
 # --- GİRİŞ (Rate Limited) ---
-@ratelimit(key='ip', rate='10/m', method='POST', block=True)
-@ratelimit(key='post:username', rate='5/m', method='POST', block=True)
+@ratelimit(key='ip', rate='5/m', method='POST', block=True)
+@ratelimit(key='post:username', rate='3/m', method='POST', block=True)
 def custom_login(request):
     """Rate limited login view"""
     from django.contrib.auth import authenticate, login as auth_login

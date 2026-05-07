@@ -44,21 +44,45 @@ class RegisterForm(UserCreationForm):
         import re
         username = self.cleaned_data.get('username', '')
         username_lower = username.lower()
-        
-        # 1. q, w, x harflerinin çokluğu (Botların rastgele ürettiği isimler)
+
+        # Kural 1: 2+ adet q/w/x → kesinlikle bot
         if sum(1 for c in username_lower if c in 'qwx') >= 2:
-            raise forms.ValidationError("Geçerli bir kullanıcı adı seçin. (Sistem bot şüphesi algıladı.)")
-            
-        # 2. 4+ ardışık ünsüz = random bot imzası (Türkçe ünsüzler ve q, w, x dahil)
+            raise forms.ValidationError("Geçerli bir kullanıcı adı seçin.")
+
+        # Kural 2: 4+ ardışık ünsüz → bot imzası
         if re.search(r'[bcçdfgğhjklmnpqrsştvwxyz]{4,}', username_lower):
-            raise forms.ValidationError(
-                "Geçerli bir kullanıcı adı seçin (örn: ahmet_42, researcher1)."
-            )
-            
-        # 3. 10 harfli anlamsız dizilimler (Örn: ooritqtiit, qesmuhoyqs)
-        if len(username_lower) == 10 and username_lower.isalpha() and ('q' in username_lower or 'x' in username_lower or 'w' in username_lower or sum(1 for c in username_lower if c in 'aeıioöuü') < 2):
-            raise forms.ValidationError("Geçerli bir kullanıcı adı seçin. (Sistem bot şüphesi algıladı.)")
-            
+            raise forms.ValidationError("Geçerli bir kullanıcı adı seçin (örn: ahmet42, bilge_ar).")
+
+        # Kural 3: Aynı karakter 3+ kez art arda (yikeeofuuu → uuu)
+        if re.search(r'(.)\1\1', username_lower):
+            raise forms.ValidationError("Geçerli bir kullanıcı adı seçin.")
+
+        # Kural 4: Skor tabanlı rastgele isim tespiti
+        # Yalnızca 8–12 karakter, tamamı küçük harf ve sadece harf olan kullanıcı adlarına uygulanır
+        if re.match(r'^[a-z]{8,12}$', username_lower):
+            vowels = set('aeıioöuü')  # y dahil değil → daha sıkı
+            vowel_count = sum(1 for c in username_lower if c in vowels)
+            vowel_ratio = vowel_count / len(username_lower)
+
+            # Max ardışık ünsüz (y ünsüz sayılır burada)
+            consonant_groups = re.findall(r'[bcçdfgğhjklmnpqrsştvwxyz]+', username_lower)
+            max_cons = max((len(g) for g in consonant_groups), default=0)
+
+            score = 0
+            if max_cons >= 3:       score += 2
+            if vowel_ratio < 0.30:  score += 2
+            if vowel_ratio < 0.25:  score += 1   # ekstra ceza
+            if len(username_lower) in (9, 10, 11): score += 1  # bot uzunluk kalıbı
+
+            # Yüksek ünlü oranı gerçek isim işareti → puanı düşür
+            if vowel_ratio >= 0.40:
+                score = max(0, score - 2)
+
+            if score >= 3:
+                raise forms.ValidationError(
+                    "Geçerli bir kullanıcı adı seçin (örn: ahmet42, bilge_ar)."
+                )
+
         return username
 
     def clean_email(self):

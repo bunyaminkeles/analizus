@@ -78,6 +78,7 @@ MIDDLEWARE = [
     'django.middleware.locale.LocaleMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'forum.middleware.HoneypotMiddleware',            # Bot honeypot kontrolü
     'forum.middleware.EmailVerificationMiddleware',  # E-posta doğrulama kontrolü
 ]
 
@@ -514,8 +515,25 @@ GOOGLE_SITE_VERIFICATION = os.getenv('GOOGLE_SITE_VERIFICATION', '')
 BING_SITE_VERIFICATION = os.getenv('BING_SITE_VERIFICATION', '')
 YANDEX_SITE_VERIFICATION = os.getenv('YANDEX_SITE_VERIFICATION', '')
 
-# --- CHANNEL (GERÇEK-ZAMANLI) AYARLARI ---
+# --- CACHE (django-ratelimit için worker'lar arası paylaşımlı) ---
 REDIS_URL = os.environ.get('REDIS_URL')
+
+if REDIS_URL:
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.redis.RedisCache",
+            "LOCATION": REDIS_URL,
+        }
+    }
+else:
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.db.DatabaseCache",
+            "LOCATION": "django_cache_table",
+        }
+    }
+
+# --- CHANNEL (GERÇEK-ZAMANLI) AYARLARI ---
 
 if DEBUG or not REDIS_URL:
     # Geliştirme ortamında veya Redis URL yoksa InMemory kullan

@@ -270,6 +270,9 @@
 
                     <form method="post" novalidate id="loginForm">
                         {% csrf_token %}
+                        <div style="position:absolute;left:-9999px;top:-9999px;" aria-hidden="true">
+                            <input type="text" name="website" id="id_website" tabindex="-1" autocomplete="off">
+                        </div>
 
                         <div class="field">
                             <label class="label">Kullanıcı Adı</label>
