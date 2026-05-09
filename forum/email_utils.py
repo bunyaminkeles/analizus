@@ -289,7 +289,7 @@ def notify_admin_new_job(job):
         rows = [
             ('İlan başlığı', job.title),
             ('İlan sahibi', job.owner.username),
-            ('Bütçe', f"{job.budget_min} – {job.budget_max} TL"),
+            ('Bütçe', f"Maks. {job.budget_max} TL"),
             ('Kategori', str(job.category) if job.category else '—'),
             ('Referans', job.reference_number or '—'),
             ('Tarih', job.created_at.strftime('%d.%m.%Y %H:%M')),
@@ -301,7 +301,7 @@ def notify_admin_new_job(job):
             f"{site}/jobs/{job.pk}/",
             'İlana Git'
         )
-        plain = f"Yeni ilan: '{job.title}' — {job.owner.username} ({job.budget_min}–{job.budget_max} TL)"
+        plain = f"Yeni ilan: '{job.title}' — {job.owner.username} (Maks. {job.budget_max} TL)"
         _send_admin(f"[Analizus] Yeni İlan: {job.title[:60]}", html, plain)
     except Exception as e:
         logger.error(f"Admin yeni ilan bildirimi gönderilemedi: {e}")

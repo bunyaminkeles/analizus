@@ -33,7 +33,6 @@
     "currency": "TRY",
     "value": {
       "@type": "QuantitativeValue",
-      "minValue": {{ job.budget_min }},
       "maxValue": {{ job.budget_max }},
       "unitText": "FIXED"
     }
@@ -119,8 +118,8 @@
 
                     <div class="bg-dark bg-opacity-50 p-3 rounded border border-secondary border-opacity-25">
                         <div class="d-flex justify-content-between align-items-center">
-                            <span class="text-muted">Bütçe Aralığı:</span>
-                            <span class="text-success fw-bold fs-5">₺{{ job.budget_min|floatformat:0 }} - ₺{{ job.budget_max|floatformat:0 }}</span>
+                            <span class="text-muted">Bütçe:</span>
+                            <span class="text-success fw-bold fs-5">₺{{ job.budget_max|floatformat:0 }}'ye kadar</span>
                         </div>
                     </div>
 
@@ -348,7 +347,7 @@
                             <small class="text-muted" style="font-size: 0.75rem;">{{ sjob.created_at|timesince }} önce · {{ sjob.owner.username }}</small>
                         </div>
                         <div class="text-end">
-                            <span class="text-success fw-bold small">₺{{ sjob.budget_min|floatformat:0 }}</span>
+                            <span class="text-success fw-bold small">₺{{ sjob.budget_max|floatformat:0 }}'ye kadar</span>
                         </div>
                     </a>
                     {% endfor %}
