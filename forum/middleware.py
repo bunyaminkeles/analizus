@@ -1,9 +1,29 @@
 """
-E-posta doğrulama middleware'i
+Güvenlik middleware'leri: Honeypot + E-posta doğrulama
 """
+from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.contrib import messages
+
+_HONEYPOT_FIELD = 'website'
+_GUARDED_PATHS = {'/login/', '/register/'}
+
+
+class HoneypotMiddleware:
+    """POST'ta gizli 'website' alanı dolu gelirse botu sessizce reddeder."""
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        if (
+            request.method == 'POST'
+            and request.path in _GUARDED_PATHS
+            and request.POST.get(_HONEYPOT_FIELD)
+        ):
+            return HttpResponseRedirect(request.path)
+        return self.get_response(request)
 
 
 class EmailVerificationMiddleware:

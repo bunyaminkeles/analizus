@@ -78,6 +78,7 @@ MIDDLEWARE = [
     'django.middleware.locale.LocaleMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'forum.middleware.HoneypotMiddleware',            # Bot honeypot kontrolü
     'forum.middleware.EmailVerificationMiddleware',  # E-posta doğrulama kontrolü
 ]
 
@@ -513,6 +514,15 @@ GOOGLE_ANALYTICS_ID = os.getenv('GOOGLE_ANALYTICS_ID', '')
 GOOGLE_SITE_VERIFICATION = os.getenv('GOOGLE_SITE_VERIFICATION', '')
 BING_SITE_VERIFICATION = os.getenv('BING_SITE_VERIFICATION', '')
 YANDEX_SITE_VERIFICATION = os.getenv('YANDEX_SITE_VERIFICATION', '')
+
+# --- CACHE (django-ratelimit için worker'lar arası paylaşımlı) ---
+# Redis yalnızca Channels için — cache her zaman DB (REDIS_URL yoksa çöker)
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.db.DatabaseCache",
+        "LOCATION": "django_cache_table",
+    }
+}
 
 # --- CHANNEL (GERÇEK-ZAMANLI) AYARLARI ---
 REDIS_URL = os.environ.get('REDIS_URL')

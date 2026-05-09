@@ -61,7 +61,7 @@ class FreelanceJobSerializer(serializers.ModelSerializer):
     proposal_count = serializers.SerializerMethodField()
     class Meta:
         model = FreelanceJob
-        fields = ['id', 'title', 'budget_min', 'budget_max', 'owner', 'category', 'created_at', 'is_featured', 'proposal_count']
+        fields = ['id', 'title', 'budget_max', 'owner', 'category', 'created_at', 'is_featured', 'proposal_count']
 
     def get_proposal_count(self, obj):
         return obj.proposals.count()

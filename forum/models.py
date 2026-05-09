@@ -802,7 +802,7 @@ class FreelanceJob(models.Model):
     title = models.CharField(max_length=200, verbose_name="İlan Başlığı")
     reference_number = models.CharField(max_length=20, unique=True, blank=True, null=True, verbose_name="Referans Numarası")
     description = models.TextField(verbose_name="İş Tanımı")
-    budget_min = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Min Bütçe (TL)")
+    budget_min = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Min Bütçe (TL)")
     budget_max = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Max Bütçe (TL)")
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, related_name='jobs', verbose_name="Kategori")
     
