@@ -130,17 +130,19 @@ class PostForm(forms.ModelForm):
 class JobPostForm(forms.ModelForm):
     class Meta:
         model = FreelanceJob
-        fields = ['title', 'description', 'budget_max', 'category']
+        fields = ['title', 'description', 'budget_max', 'expected_duration', 'category']
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control bg-dark text-light border-secondary', 'placeholder': 'Örn: SPSS Veri Analizi'}),
             'description': forms.Textarea(attrs={'class': 'form-control bg-dark text-light border-secondary', 'rows': 5, 'placeholder': 'İşin detaylarını açıklayın...'}),
             'budget_max': forms.NumberInput(attrs={'class': 'form-control bg-dark text-light border-secondary', 'placeholder': 'Örn: 500'}),
+            'expected_duration': forms.TextInput(attrs={'class': 'form-control bg-dark text-light border-secondary', 'placeholder': 'Örn: 3 gün'}),
             'category': forms.Select(attrs={'class': 'form-select bg-dark text-light border-secondary'}),
         }
         labels = {
             'title': 'İlan Başlığı',
             'description': 'İş Tanımı',
             'budget_max': 'Bütçe (TL)',
+            'expected_duration': 'Tahmini Süre',
             'category': 'Kategori',
         }
 
