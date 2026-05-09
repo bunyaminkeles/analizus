@@ -804,6 +804,7 @@ class FreelanceJob(models.Model):
     description = models.TextField(verbose_name="İş Tanımı")
     budget_min = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Min Bütçe (TL)")
     budget_max = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Max Bütçe (TL)")
+    expected_duration = models.CharField(max_length=100, blank=True, verbose_name="Beklenen Teslim Süresi")
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, related_name='jobs', verbose_name="Kategori")
     
     likes = models.ManyToManyField(User, related_name='liked_jobs', blank=True, verbose_name="Beğenenler")
