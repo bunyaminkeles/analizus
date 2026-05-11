@@ -147,6 +147,26 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
             story.append(img)
             story.append(Spacer(1, 0.4*cm))
 
+    story.append(Spacer(1, 0.5*cm))
+    story.append(Paragraph('Tezinde Nasıl Raporlarsın?', h2_style))
+    cont_vars_for_apa = [v for v in result['variables'] if v['type'] == 'continuous']
+    if cont_vars_for_apa:
+        lines = [f"{v['variable']} değişkeni için ortalama = {v['mean']:.2f} (SS = {v['std']:.2f})"
+                 for v in cont_vars_for_apa]
+        apa_text = (f"Araştırmaya katılan {result['n_rows']} kişinin puanlarına ilişkin betimleyici "
+                    f"istatistikler incelendiğinde {'; '.join(lines)} olarak bulunmuştur.")
+    else:
+        apa_text = (f"Araştırmaya katılan {result['n_rows']} kişiye ait "
+                    f"{len(result['variables'])} değişkene ilişkin betimleyici istatistikler "
+                    f"yukarıda sunulmuştur.")
+    apa_tbl = Table([[Paragraph(apa_text, normal)]], colWidths=[16*cm])
+    apa_tbl.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#f0f4ff')),
+        ('BOX', (0, 0), (-1, -1), 1, colors.HexColor('#1e3a5f')),
+        ('PADDING', (0, 0), (-1, -1), 8),
+    ]))
+    story.append(apa_tbl)
+
     doc.build(story)
     return buf.getvalue()
 

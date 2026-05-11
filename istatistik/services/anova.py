@@ -221,5 +221,21 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
     story.append(Paragraph('Yorum', h2_s))
     story.append(Paragraph(result['conclusion'], norm_s))
 
+    story.append(Spacer(1, 0.5*cm))
+    story.append(Paragraph('Tezinde Nasıl Raporlarsın?', h2_s))
+    p_str = '< .001' if result['p_value'] < 0.001 else f"{result['p_value']:.3f}"
+    sig_txt = 'anlamlı' if result['significant'] else 'anlamlı olmayan'
+    apa_text = (f"Tek yönlü ANOVA sonucunda {result['group_col']} grupları arasında "
+                f"{result['dep_col']} açısından {sig_txt} bir fark bulunmuştur, "
+                f"F({result['df_between']}, {result['df_within']}) = {result['f_stat']:.3f}, "
+                f"p = {p_str}, η² = {result['eta_sq']:.3f} ({result['effect_interpretation']}).")
+    apa_tbl = Table([[Paragraph(apa_text, norm_s)]], colWidths=[16*cm])
+    apa_tbl.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#f0f4ff')),
+        ('BOX', (0, 0), (-1, -1), 1, colors.HexColor('#1e3a5f')),
+        ('PADDING', (0, 0), (-1, -1), 8),
+    ]))
+    story.append(apa_tbl)
+
     doc.build(story)
     return buf.getvalue()

@@ -167,6 +167,24 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
             story.append(img)
             story.append(Spacer(1, 0.3*cm))
 
+    story.append(Spacer(1, 0.5*cm))
+    story.append(Paragraph('Tezinde Nasıl Raporlarsın?', h2_style))
+    apa_lines = []
+    for r in result['variables']:
+        dist = 'normal dağılım gösterdiği' if r['is_normal'] else 'normal dağılım göstermediği'
+        p_s = '< .001' if r['shapiro_p'] < 0.001 else str(r['shapiro_p'])
+        apa_lines.append(f"{r['variable']} değişkeninin {dist} belirlenmiştir "
+                         f"(W = {r['shapiro_stat']}, p = {p_s}).")
+    apa_text = ('Verilerin normal dağılım gösterip göstermediği Shapiro-Wilk testi ile '
+                'incelenmiştir. ' + ' '.join(apa_lines))
+    apa_tbl = Table([[Paragraph(apa_text, normal)]], colWidths=[16*cm])
+    apa_tbl.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#f0f4ff')),
+        ('BOX', (0, 0), (-1, -1), 1, colors.HexColor('#1e3a5f')),
+        ('PADDING', (0, 0), (-1, -1), 8),
+    ]))
+    story.append(apa_tbl)
+
     doc.build(story)
     return buf.getvalue()
 

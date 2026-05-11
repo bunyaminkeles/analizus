@@ -167,6 +167,21 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
     ]))
     story.append(tbl)
 
+    story.append(Spacer(1, 0.5*cm))
+    story.append(Paragraph('Tezinde Nasıl Raporlarsın?', h2_style))
+    apa_text = (f"{result['n_items']} maddeden oluşan ölçeğin iç tutarlılık katsayısı "
+                f"Cronbach Alpha değeri α = {result['alpha']:.3f} olarak hesaplanmıştır "
+                f"(n = {result['n_cases']}). Bu değer, ölçeğin "
+                f"{result['interpretation'].lower()} düzeyde güvenilir olduğunu göstermektedir "
+                f"(Nunnally, 1978).")
+    apa_tbl = Table([[Paragraph(apa_text, normal)]], colWidths=[16*cm])
+    apa_tbl.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#f0f4ff')),
+        ('BOX', (0, 0), (-1, -1), 1, colors.HexColor('#1e3a5f')),
+        ('PADDING', (0, 0), (-1, -1), 8),
+    ]))
+    story.append(apa_tbl)
+
     doc.build(story)
     return buf.getvalue()
 

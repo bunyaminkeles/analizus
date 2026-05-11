@@ -242,5 +242,18 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
         ParagraphStyle('note', parent=styles['Normal'], fontName='DejaVuSans', fontSize=8)
     ))
 
+    story.append(Spacer(1, 0.5*cm))
+    story.append(Paragraph('Tezinde Nasıl Raporlarsın?', h2_style))
+    apa_text = (f"Değişkenler arasındaki ilişkiler {result['method_label']} korelasyon analizi ile "
+                f"incelenmiştir (n = {result['n_cases']}). Korelasyon katsayıları ve p-değerleri "
+                f"raporun ek tablosunda sunulmuştur (Cohen, 1988).")
+    apa_tbl = Table([[Paragraph(apa_text, normal)]], colWidths=[16*cm])
+    apa_tbl.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#f0f4ff')),
+        ('BOX', (0, 0), (-1, -1), 1, colors.HexColor('#1e3a5f')),
+        ('PADDING', (0, 0), (-1, -1), 8),
+    ]))
+    story.append(apa_tbl)
+
     doc.build(story)
     return buf.getvalue()

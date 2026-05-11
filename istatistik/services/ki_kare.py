@@ -233,5 +233,22 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
     ]))
     story.append(tbl2)
 
+    story.append(Spacer(1, 0.5*cm))
+    story.append(Paragraph('Tezinde Nasıl Raporlarsın?', h2))
+    p_str = '< .001' if result['p_value'] < 0.001 else f"{result['p_value']:.3f}"
+    sig_txt = ('istatistiksel olarak anlamlı bir ilişki bulunmuştur'
+               if result['is_significant'] else 'anlamlı bir ilişki bulunmamıştır')
+    apa_text = (f"Ki-kare bağımsızlık testi sonucunda {result['col1']} ile {result['col2']} "
+                f"arasında {sig_txt}, "
+                f"χ²({result['dof']}, N = {result['n']}) = {result['chi2']:.3f}, "
+                f"p = {p_str}, V = {result['cramers_v']:.3f} ({result['effect_label'].lower()}).")
+    apa_tbl = Table([[Paragraph(apa_text, normal)]], colWidths=[16*cm])
+    apa_tbl.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#f5f0ff')),
+        ('BOX', (0, 0), (-1, -1), 1, PURPLE),
+        ('PADDING', (0, 0), (-1, -1), 8),
+    ]))
+    story.append(apa_tbl)
+
     doc.build(story)
     return buf.getvalue()

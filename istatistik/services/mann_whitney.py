@@ -169,5 +169,23 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
     story.append(Paragraph('Yorum', h2_s))
     story.append(Paragraph(result['conclusion'], norm_s))
 
+    story.append(Spacer(1, 0.5*cm))
+    story.append(Paragraph('Tezinde Nasıl Raporlarsın?', h2_s))
+    p_str = '< .001' if result['p_value'] < 0.001 else f"{result['p_value']:.3f}"
+    sig_txt = ('istatistiksel olarak anlamlı bir fark bulunmuştur'
+               if result['significant'] else 'anlamlı bir fark bulunmamıştır')
+    apa_text = (f"Mann-Whitney U testi sonucunda {result['group_col']} grupları "
+                f"({result['g1_label']} ve {result['g2_label']}) arasında "
+                f"{result['dep_col']} açısından {sig_txt}, "
+                f"U = {result['u_stat']:.3f}, p = {p_str}, "
+                f"r = {abs(result['r_rb']):.3f} ({result['effect_interpretation']}).")
+    apa_tbl = Table([[Paragraph(apa_text, norm_s)]], colWidths=[16*cm])
+    apa_tbl.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#fff8f0')),
+        ('BOX', (0, 0), (-1, -1), 1, HEADER_COLOR),
+        ('PADDING', (0, 0), (-1, -1), 8),
+    ]))
+    story.append(apa_tbl)
+
     doc.build(story)
     return buf.getvalue()
