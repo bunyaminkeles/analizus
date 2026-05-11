@@ -42,10 +42,12 @@ def _execute_job(job_id: str):
         df = _parse_file(content, job.original_filename)
         if job.tool == 'cronbach':
             from .cronbach import analyze, build_pdf
-            result_data = analyze(df)
+            columns = (job.options or {}).get('columns') or None
+            result_data = analyze(df, columns=columns)
         elif job.tool == 'normallik':
             from .normallik import analyze, build_pdf
-            result_data = analyze(df)
+            columns = (job.options or {}).get('columns') or None
+            result_data = analyze(df, columns=columns)
         elif job.tool == 'betimsel':
             from .betimsel import analyze, build_pdf
             result_data = analyze(df)

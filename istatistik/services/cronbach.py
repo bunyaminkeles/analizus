@@ -6,9 +6,14 @@ import io
 import numpy as np
 
 
-def analyze(df) -> dict:
-    # Sayısal sütunları al
-    df_num = df.select_dtypes(include=[np.number]).dropna()
+def analyze(df, columns=None) -> dict:
+    df_num = df.select_dtypes(include=[np.number])
+    if columns:
+        valid = [c for c in columns if c in df_num.columns]
+        if not valid:
+            raise ValueError('Seçilen sütunlar sayısal değil veya bulunamadı.')
+        df_num = df_num[valid]
+    df_num = df_num.dropna()
     k = len(df_num.columns)
     n = len(df_num)
 

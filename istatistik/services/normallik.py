@@ -6,10 +6,16 @@ import io
 import numpy as np
 
 
-def analyze(df) -> dict:
+def analyze(df, columns=None) -> dict:
     from scipy import stats as sp_stats
 
-    df_num = df.select_dtypes(include=[np.number]).dropna()
+    df_num = df.select_dtypes(include=[np.number])
+    if columns:
+        valid = [c for c in columns if c in df_num.columns]
+        if not valid:
+            raise ValueError('Seçilen sütunlar sayısal değil veya bulunamadı.')
+        df_num = df_num[valid]
+    df_num = df_num.dropna()
     if df_num.empty:
         raise ValueError('Hiç sayısal sütun bulunamadı.')
 

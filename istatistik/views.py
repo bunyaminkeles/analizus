@@ -46,7 +46,7 @@ def cronbach_landing(request):
         })
 
     if request.method == 'POST':
-        return _handle_upload(request, 'cronbach')
+        return _handle_group_tool_post(request, 'cronbach')
 
     active_job = _get_active_job(request.user, 'cronbach')
     return render(request, 'istatistik/cronbach.html', {
@@ -84,7 +84,7 @@ def normallik_landing(request):
         })
 
     if request.method == 'POST':
-        return _handle_upload(request, 'normallik')
+        return _handle_group_tool_post(request, 'normallik')
 
     active_job = _get_active_job(request.user, 'normallik')
     return render(request, 'istatistik/normallik.html', {
@@ -317,6 +317,9 @@ def _handle_group_tool_post(request, tool):
                 'dep_col': request.POST.get('dep_col', ''),
                 'posthoc': request.POST.get('posthoc', 'tukey'),
             }
+        elif tool in ('cronbach', 'normallik'):
+            cols = request.POST.getlist('columns')
+            options = {'columns': cols} if cols else {}
         else:  # mann_whitney, kruskal_wallis
             options = {
                 'group_col': request.POST.get('group_col', ''),
