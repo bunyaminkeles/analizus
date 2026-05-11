@@ -46,9 +46,6 @@ asgiref
 typing_extensions
 packaging
 
-# --- ÖDEME SİSTEMLERİ ---
-iyzipay  # iyzico ödeme entegrasyonu
-
 # --- GERÇEK ZAMANLI (REAL-TIME) ---
 daphne
 channels

@@ -73,6 +73,22 @@ def _execute_job(job_id: str):
                 dep_col=opts.get('dep_col'),
                 posthoc=opts.get('posthoc', 'tukey'),
             )
+        elif job.tool == 'mann_whitney':
+            from .mann_whitney import analyze, build_pdf
+            opts = job.options or {}
+            result_data = analyze(
+                df,
+                group_col=opts.get('group_col'),
+                dep_col=opts.get('dep_col'),
+            )
+        elif job.tool == 'kruskal_wallis':
+            from .kruskal_wallis import analyze, build_pdf
+            opts = job.options or {}
+            result_data = analyze(
+                df,
+                group_col=opts.get('group_col'),
+                dep_col=opts.get('dep_col'),
+            )
         else:
             job.mark_failed(f'Bilinmeyen araç: {job.tool}')
             return

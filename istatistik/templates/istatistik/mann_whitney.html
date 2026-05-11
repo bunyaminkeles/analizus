@@ -1,0 +1,324 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Mann-Whitney U Testi - Analizus{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+  <div class="row mb-4 align-items-center">
+    <div class="col">
+      <h2 class="fw-bold text-white mb-1">
+        <i class="bi bi-distribute-horizontal text-warning me-2"></i>Mann-Whitney U Testi
+      </h2>
+      <p class="text-white-50 mb-0">İki bağımsız grubun dağılımını non-parametrik olarak karşılaştırın — normallik varsayımı gerekmez.</p>
+    </div>
+    {% if user.is_authenticated %}
+    <div class="col-auto">
+      <span class="badge bg-secondary fs-6">Günlük: {{ daily_remaining }} analiz hakkı</span>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="row g-4">
+
+    <div class="col-lg-5">
+      <div class="card border-secondary" style="background-color:#1a1a2e;">
+        <div class="card-body p-4">
+
+          <div id="step-upload">
+            <h5 class="text-white fw-semibold mb-3">
+              <i class="bi bi-upload me-2 text-warning"></i>Dosya Yükle
+            </h5>
+            <div id="upload-area"
+                 class="border border-secondary rounded-3 text-center p-4 mb-3"
+                 style="border-style:dashed!important;cursor:pointer;"
+                 onclick="document.getElementById('file-input').click()">
+              <i class="bi bi-cloud-upload-fill fs-2 text-warning mb-2 d-block"></i>
+              <p class="text-white-50 small mb-0" id="file-name">CSV, XLSX, XLS — Maks. 10 MB</p>
+            </div>
+            <input type="file" id="file-input" accept=".csv,.xlsx,.xls" class="d-none">
+            <button id="preview-btn" class="btn btn-warning w-100 fw-semibold disabled" disabled>
+              <i class="bi bi-arrow-right-circle me-2"></i>Sütunları Getir
+            </button>
+            <div id="upload-error" class="alert alert-danger mt-3 d-none small"></div>
+          </div>
+
+          <div id="step-config" class="d-none">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <h5 class="text-white fw-semibold mb-0">
+                <i class="bi bi-list-check me-2 text-warning"></i>Sütun Seçimi
+              </h5>
+              <button class="btn btn-sm btn-outline-secondary" onclick="resetToUpload()">
+                <i class="bi bi-arrow-left me-1"></i>Geri
+              </button>
+            </div>
+            <p class="text-white-50 small mb-3" id="config-file-info">—</p>
+
+            <div class="mb-2">
+              <label class="text-white-50 small mb-1 d-block">Grup Sütunu (2 grup, kategorik)</label>
+              <select id="group-col" class="form-select form-select-sm bg-dark text-white border-secondary"></select>
+              <p class="text-white-50 small mt-1 mb-0">Bu sütun tam olarak 2 farklı değer içermelidir (ör. Cinsiyet: 1/2).</p>
+            </div>
+            <div class="mb-3">
+              <label class="text-white-50 small mb-1 d-block">Bağımlı Değişken (sayısal)</label>
+              <select id="dep-col" class="form-select form-select-sm bg-dark text-white border-secondary"></select>
+            </div>
+
+            <button id="run-btn" class="btn btn-warning w-100 fw-semibold text-dark">
+              <i class="bi bi-play-circle-fill me-2"></i>Analizi Başlat
+            </button>
+            <div id="run-error" class="alert alert-danger mt-3 d-none small"></div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-7">
+      <div class="card border-secondary h-100" style="background-color:#16213e;">
+        <div class="card-body p-4">
+
+          <div id="panel-idle">
+            <h5 class="text-white-50 fw-semibold mb-3">Sonuçlar burada görünecek</h5>
+            <ul class="text-white-50 small ps-3">
+              <li class="mb-1">Her satır bir gözlem (kişi/ölçüm) olmalıdır.</li>
+              <li class="mb-1">Grup sütunu tam olarak 2 farklı değer içermelidir.</li>
+              <li class="mb-1">Normallik varsayımı sağlanmıyorsa t-testine göre daha güvenilirdir.</li>
+              <li class="mb-1">Ordinal (sıralı) ve sürekli veriler için uygundur.</li>
+            </ul>
+          </div>
+
+          <div id="panel-loading" class="text-center d-none py-4">
+            <div class="spinner-border text-warning mb-3" style="width:3rem;height:3rem;"></div>
+            <p class="text-white-50">Analiz yapılıyor…</p>
+          </div>
+
+          <div id="panel-error" class="d-none">
+            <div class="alert alert-danger">
+              <i class="bi bi-exclamation-triangle-fill me-2"></i>
+              <span id="panel-error-msg"></span>
+            </div>
+            <button class="btn btn-outline-light btn-sm" onclick="resetToUpload()">Tekrar Dene</button>
+          </div>
+
+          <div id="panel-done" class="d-none">
+            <div class="d-flex align-items-center gap-2 mb-3">
+              <i class="bi bi-check-circle-fill text-success fs-4"></i>
+              <h5 class="text-white mb-0">Mann-Whitney U Testi</h5>
+            </div>
+
+            <div class="row g-3 mb-3">
+              <div class="col-4">
+                <div class="rounded-3 p-3 text-center" style="background:rgba(255,255,255,0.05);">
+                  <div class="fs-3 fw-bold text-warning" id="res-u">—</div>
+                  <div class="text-white-50 small">U istatistiği</div>
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="rounded-3 p-3 text-center" style="background:rgba(255,255,255,0.05);">
+                  <div class="fs-3 fw-bold" id="res-p" style="color:#f59e0b;">—</div>
+                  <div class="text-white-50 small">p-değeri</div>
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="rounded-3 p-3 text-center" style="background:rgba(255,255,255,0.05);">
+                  <div class="fs-3 fw-bold text-info" id="res-r">—</div>
+                  <div class="text-white-50 small">r (etki)</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="rounded-3 p-3 mb-3" id="res-sig-box">
+              <p class="small mb-0 fw-semibold text-white" id="res-sig-text">—</p>
+            </div>
+
+            <div class="mb-3">
+              <p class="text-white-50 small mb-1 fw-semibold">Grup İstatistikleri</p>
+              <div style="overflow-x:auto;">
+                <table id="group-table" class="table table-dark table-bordered table-sm small mb-0" style="font-size:0.75rem;"></table>
+              </div>
+            </div>
+
+            <div class="rounded-3 p-3 mb-3" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07);">
+              <p class="text-white-50 small fw-semibold mb-1">Sonuç</p>
+              <p class="text-white small mb-0" id="res-conclusion">—</p>
+            </div>
+
+            <div class="rounded-3 p-3" style="background:rgba(245,158,11,0.06); border:1px solid rgba(245,158,11,0.2);">
+              <p class="text-white-50 small fw-semibold mb-2">Tezinde Nasıl Raporlarsın?</p>
+              <p class="text-white small mb-2" id="res-apa" style="font-style:italic;"></p>
+              <div class="d-flex gap-2">
+                <a id="pdf-btn" href="#" target="_blank" class="btn btn-sm btn-warning fw-semibold text-dark">
+                  <i class="bi bi-file-earmark-pdf-fill me-1"></i>PDF İndir
+                </a>
+                <button class="btn btn-sm btn-outline-secondary" onclick="copyApa(this)">
+                  <i class="bi bi-clipboard me-1"></i>Kopyala
+                </button>
+                <button class="btn btn-sm btn-outline-light" onclick="resetToUpload()">
+                  <i class="bi bi-plus-circle me-1"></i>Yeni
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-4 rounded-3 p-4" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07);">
+    <h5 class="text-white fw-semibold mb-3"><i class="bi bi-journal-text me-2 text-warning"></i>Metodoloji</h5>
+    <div class="row g-4">
+      <div class="col-md-6">
+        <h6 class="text-white-50 text-uppercase small fw-bold mb-2">Ne Zaman Kullanılır?</h6>
+        <ul class="text-white-50 small ps-3 mb-0">
+          <li>Veriler normal dağılım göstermiyorsa</li>
+          <li>Ordinal (sıralı) ölçek verilerinde</li>
+          <li>Küçük örneklem boyutlarında</li>
+          <li>Aykırı değerlerin etkisini azaltmak için</li>
+        </ul>
+      </div>
+      <div class="col-md-6">
+        <h6 class="text-white-50 text-uppercase small fw-bold mb-2">Etki Büyüklüğü (r)</h6>
+        <table class="table table-sm table-dark table-borderless small mb-0" style="font-size:0.8rem;">
+          <tbody>
+            <tr><td>r &lt; .10</td><td class="text-white-50">İhmal edilebilir</td></tr>
+            <tr><td>.10 – .30</td><td class="text-warning">Küçük</td></tr>
+            <tr><td>.30 – .50</td><td class="text-info">Orta</td></tr>
+            <tr><td>&gt; .50</td><td class="text-success fw-bold">Büyük</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const TOOL_URL   = '{% url "istatistik:mann_whitney" %}';
+const STATUS_BASE = '{% url "istatistik:mann_whitney_status" job_id="00000000-0000-0000-0000-000000000000" %}';
+let previewId = null, previewFilename = null, pollInterval = null;
+
+const uploadArea = document.getElementById('upload-area');
+const fileInput  = document.getElementById('file-input');
+uploadArea.addEventListener('dragover', e => { e.preventDefault(); uploadArea.style.borderColor = '#f59e0b'; });
+uploadArea.addEventListener('dragleave', () => { uploadArea.style.borderColor = ''; });
+uploadArea.addEventListener('drop', e => { e.preventDefault(); uploadArea.style.borderColor = ''; if (e.dataTransfer.files[0]) setFile(e.dataTransfer.files[0]); });
+fileInput.addEventListener('change', () => { if (fileInput.files[0]) setFile(fileInput.files[0]); });
+
+function setFile(f) {
+  fileInput._file = f;
+  document.getElementById('file-name').textContent = f.name;
+  const btn = document.getElementById('preview-btn');
+  btn.disabled = false; btn.classList.remove('disabled');
+  document.getElementById('upload-error').classList.add('d-none');
+}
+
+document.getElementById('preview-btn').addEventListener('click', function() {
+  const f = fileInput._file; if (!f) return;
+  this.disabled = true; this.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Yükleniyor…';
+  const fd = new FormData();
+  fd.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+  fd.append('step', 'preview'); fd.append('file', f);
+  fetch(TOOL_URL, { method: 'POST', headers: {'X-Requested-With': 'XMLHttpRequest'}, body: fd })
+  .then(r => r.json()).then(data => {
+    this.disabled = false; this.innerHTML = '<i class="bi bi-arrow-right-circle me-2"></i>Sütunları Getir';
+    if (data.error) { document.getElementById('upload-error').textContent = data.error; document.getElementById('upload-error').classList.remove('d-none'); return; }
+    previewId = data.preview_id; previewFilename = data.filename;
+    showConfigStep(data.columns, data.numeric_cols, data.n_rows, data.filename);
+  }).catch(() => { this.disabled = false; this.innerHTML = '<i class="bi bi-arrow-right-circle me-2"></i>Sütunları Getir'; });
+});
+
+function showConfigStep(cols, numCols, nRows, fname) {
+  document.getElementById('step-upload').classList.add('d-none');
+  document.getElementById('step-config').classList.remove('d-none');
+  document.getElementById('config-file-info').textContent = `${fname} — ${nRows} satır, ${cols.length} sütun`;
+  const groupSel = document.getElementById('group-col');
+  groupSel.innerHTML = '';
+  cols.forEach(c => { const o = document.createElement('option'); o.value = c; o.textContent = c; groupSel.appendChild(o); });
+  const depSel = document.getElementById('dep-col');
+  depSel.innerHTML = '';
+  numCols.forEach(c => { const o = document.createElement('option'); o.value = c; o.textContent = c; depSel.appendChild(o); });
+  if (numCols.length > 1) depSel.selectedIndex = 1;
+}
+
+document.getElementById('run-btn').addEventListener('click', function() {
+  const errEl = document.getElementById('run-error'); errEl.classList.add('d-none');
+  this.disabled = true; this.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Başlatılıyor…';
+  showPanel('loading');
+  const fd = new FormData();
+  fd.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+  fd.append('step', 'run'); fd.append('preview_id', previewId); fd.append('filename', previewFilename);
+  fd.append('group_col', document.getElementById('group-col').value);
+  fd.append('dep_col', document.getElementById('dep-col').value);
+  fetch(TOOL_URL, { method: 'POST', headers: {'X-Requested-With': 'XMLHttpRequest'}, body: fd })
+  .then(r => r.json()).then(data => {
+    this.disabled = false; this.innerHTML = '<i class="bi bi-play-circle-fill me-2"></i>Analizi Başlat';
+    if (data.error) { errEl.textContent = data.error; errEl.classList.remove('d-none'); showPanel('idle'); return; }
+    startPolling(data.job_id);
+  }).catch(() => { this.disabled = false; this.innerHTML = '<i class="bi bi-play-circle-fill me-2"></i>Analizi Başlat'; showPanel('idle'); });
+});
+
+function startPolling(jobId) {
+  const url = STATUS_BASE.replace('00000000-0000-0000-0000-000000000000', jobId);
+  pollInterval = setInterval(() => {
+    fetch(url).then(r => r.json()).then(data => {
+      if (data.status === 'completed') { clearInterval(pollInterval); onCompleted(data); }
+      else if (data.status === 'failed') { clearInterval(pollInterval); showPanelError(data.error || 'Analiz başarısız.'); }
+    }).catch(() => {});
+  }, 2500);
+}
+
+function onCompleted(data) {
+  const r = data.result_data;
+  document.getElementById('res-u').textContent = r.u_stat.toFixed(3);
+  const pEl = document.getElementById('res-p');
+  pEl.textContent = r.p_value < 0.001 ? '< .001' : r.p_value.toFixed(4);
+  pEl.style.color = r.significant ? '#4ade80' : '#f87171';
+  document.getElementById('res-r').textContent = Math.abs(r.r_rb).toFixed(3);
+
+  const sigBox = document.getElementById('res-sig-box');
+  if (r.significant) {
+    sigBox.style.background = 'rgba(74,222,128,0.08)'; sigBox.style.border = '1px solid rgba(74,222,128,0.2)';
+    document.getElementById('res-sig-text').textContent = '✓ Gruplar arasında anlamlı fark var (p < .05)';
+  } else {
+    sigBox.style.background = 'rgba(248,113,113,0.08)'; sigBox.style.border = '1px solid rgba(248,113,113,0.2)';
+    document.getElementById('res-sig-text').textContent = '✗ Gruplar arasında anlamlı fark yok (p ≥ .05)';
+  }
+
+  let gtHead = '<thead><tr><th>Grup</th><th>n</th><th>Medyan</th><th>Ort.</th><th>SS</th><th>Ort. Sıra</th></tr></thead>';
+  let gtBody = '<tbody>' + r.group_stats.map(s =>
+    `<tr><td>${s.label}</td><td>${s.n}</td><td>${s.median.toFixed(3)}</td><td>${s.mean.toFixed(3)}</td><td>${s.std.toFixed(3)}</td><td>${s.mean_rank.toFixed(3)}</td></tr>`
+  ).join('') + '</tbody>';
+  document.getElementById('group-table').innerHTML = gtHead + gtBody;
+
+  document.getElementById('res-conclusion').textContent = r.conclusion;
+  const apa = `Mann-Whitney U testi sonucunda ${r.g1_label} ve ${r.g2_label} grupları arasında ${r.dep_col} açısından ${r.significant ? 'istatistiksel olarak anlamlı bir fark bulunmuştur' : 'anlamlı bir fark bulunmamıştır'}, U = ${r.u_stat.toFixed(3)}, p = ${r.p_value < 0.001 ? '< .001' : r.p_value.toFixed(3)}, r = ${Math.abs(r.r_rb).toFixed(3)} (${r.effect_interpretation}).`;
+  document.getElementById('res-apa').textContent = apa;
+  document.getElementById('pdf-btn').href = data.pdf_url;
+  showPanel('done');
+}
+
+function showPanel(name) {
+  ['idle','loading','error','done'].forEach(n => { document.getElementById('panel-' + n).classList.toggle('d-none', n !== name); });
+}
+function showPanelError(msg) { document.getElementById('panel-error-msg').textContent = msg; showPanel('error'); }
+function resetToUpload() {
+  if (pollInterval) clearInterval(pollInterval);
+  previewId = null; previewFilename = null;
+  fileInput.value = ''; fileInput._file = null;
+  document.getElementById('file-name').textContent = 'CSV, XLSX, XLS — Maks. 10 MB';
+  document.getElementById('preview-btn').disabled = true; document.getElementById('preview-btn').classList.add('disabled');
+  document.getElementById('step-upload').classList.remove('d-none');
+  document.getElementById('step-config').classList.add('d-none');
+  showPanel('idle');
+}
+function copyApa(btn) {
+  navigator.clipboard.writeText(document.getElementById('res-apa').textContent).then(() => {
+    const orig = btn.innerHTML; btn.innerHTML = '<i class="bi bi-check me-1"></i>Kopyalandı'; btn.classList.add('btn-success');
+    setTimeout(() => { btn.innerHTML = orig; btn.classList.remove('btn-success'); }, 2000);
+  });
+}
+</script>
+{% endblock %}
