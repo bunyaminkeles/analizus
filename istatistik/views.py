@@ -122,7 +122,7 @@ def betimsel_landing(request):
         })
 
     if request.method == 'POST':
-        return _handle_upload(request, 'betimsel')
+        return _handle_group_tool_post(request, 'betimsel')
 
     active_job = _get_active_job(request.user, 'betimsel')
     return render(request, 'istatistik/betimsel.html', {
@@ -317,7 +317,7 @@ def _handle_group_tool_post(request, tool):
                 'dep_col': request.POST.get('dep_col', ''),
                 'posthoc': request.POST.get('posthoc', 'tukey'),
             }
-        elif tool in ('cronbach', 'normallik'):
+        elif tool in ('cronbach', 'normallik', 'betimsel'):
             cols = request.POST.getlist('columns')
             options = {'columns': cols} if cols else {}
         else:  # mann_whitney, kruskal_wallis
@@ -396,6 +396,35 @@ def kruskal_wallis_landing(request):
         'tool_title': 'Kruskal-Wallis H Testi',
         'tool_icon': 'bi-bar-chart-steps',
         'tool_color': 'teal',
+    })
+
+
+@feature_required
+@ratelimit(key='ip', rate='10/h', method='POST', block=True)
+def ki_kare_landing(request):
+    if not request.user.is_authenticated:
+        return render(request, 'service_promo.html', {
+            **PROMO_BASE,
+            'promo_title': 'Ki-Kare Testi',
+            'promo_icon': 'bi-grid-3x3',
+            'promo_color': 'purple',
+            'promo_description': 'İki kategorik değişken arasındaki ilişkiyi test edin. Çapraz tablo ve Cramér\'s V etki büyüklüğü ile PDF raporu alın.',
+            'promo_features': [
+                {'icon': 'bi-grid-3x3', 'title': 'Bağımsızlık Testi', 'desc': 'Pearson\'s Ki-Kare testi ile iki kategorik değişken arasındaki ilişki sınanır.'},
+                {'icon': 'bi-table', 'color': 'info', 'title': 'Çapraz Tablo', 'desc': 'Gözlenen frekanslar ve satır/sütun toplamları ile tam çapraz tablo.'},
+                {'icon': 'bi-rulers', 'title': 'Cramér\'s V', 'desc': 'Etki büyüklüğü V katsayısı ile ilişkinin gücü raporlanır.'},
+                {'icon': 'bi-file-earmark-pdf-fill', 'color': 'danger', 'title': 'PDF Rapor', 'desc': 'APA formatında raporlanabilir sonuçlar PDF olarak indirilir.'},
+            ],
+        })
+    if request.method == 'POST':
+        return _handle_group_tool_post(request, 'ki_kare')
+    active_job = _get_active_job(request.user, 'ki_kare')
+    return render(request, 'istatistik/ki_kare.html', {
+        'active_job_id': str(active_job.id) if active_job else None,
+        'daily_remaining': _daily_remaining(request.user),
+        'tool_title': 'Ki-Kare Testi',
+        'tool_icon': 'bi-grid-3x3',
+        'tool_color': 'purple',
     })
 
 

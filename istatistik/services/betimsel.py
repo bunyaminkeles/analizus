@@ -6,7 +6,11 @@ import io
 import numpy as np
 
 
-def analyze(df) -> dict:
+def analyze(df, columns=None) -> dict:
+    if columns:
+        valid = [c for c in columns if c in df.columns]
+        if valid:
+            df = df[valid]
     results = []
     for col in df.columns:
         series = df[col].dropna()

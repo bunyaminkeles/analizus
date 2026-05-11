@@ -13,6 +13,7 @@ TOOL_CHOICES = [
     ('anova', 'Tek Yönlü ANOVA'),
     ('mann_whitney', 'Mann-Whitney U Testi'),
     ('kruskal_wallis', 'Kruskal-Wallis H Testi'),
+    ('ki_kare', 'Ki-Kare Testi'),
 ]
 
 STATUS_CHOICES = [
