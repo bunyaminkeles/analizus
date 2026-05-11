@@ -42,13 +42,16 @@ def _execute_job(job_id: str):
         df = _parse_file(content, job.original_filename)
         if job.tool == 'cronbach':
             from .cronbach import analyze, build_pdf
-            result_data = analyze(df)
+            columns = (job.options or {}).get('columns') or None
+            result_data = analyze(df, columns=columns)
         elif job.tool == 'normallik':
             from .normallik import analyze, build_pdf
-            result_data = analyze(df)
+            columns = (job.options or {}).get('columns') or None
+            result_data = analyze(df, columns=columns)
         elif job.tool == 'betimsel':
             from .betimsel import analyze, build_pdf
-            result_data = analyze(df)
+            columns = (job.options or {}).get('columns') or None
+            result_data = analyze(df, columns=columns)
         elif job.tool == 'korelasyon':
             from .korelasyon import analyze, build_pdf
             method = (job.options or {}).get('method', 'pearson')
@@ -72,6 +75,30 @@ def _execute_job(job_id: str):
                 group_col=opts.get('group_col'),
                 dep_col=opts.get('dep_col'),
                 posthoc=opts.get('posthoc', 'tukey'),
+            )
+        elif job.tool == 'mann_whitney':
+            from .mann_whitney import analyze, build_pdf
+            opts = job.options or {}
+            result_data = analyze(
+                df,
+                group_col=opts.get('group_col'),
+                dep_col=opts.get('dep_col'),
+            )
+        elif job.tool == 'kruskal_wallis':
+            from .kruskal_wallis import analyze, build_pdf
+            opts = job.options or {}
+            result_data = analyze(
+                df,
+                group_col=opts.get('group_col'),
+                dep_col=opts.get('dep_col'),
+            )
+        elif job.tool == 'ki_kare':
+            from .ki_kare import analyze, build_pdf
+            opts = job.options or {}
+            result_data = analyze(
+                df,
+                col1=opts.get('group_col'),
+                col2=opts.get('dep_col'),
             )
         else:
             job.mark_failed(f'Bilinmeyen araç: {job.tool}')

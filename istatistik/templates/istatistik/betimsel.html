@@ -48,8 +48,8 @@
         <input type="file" id="file-input" accept=".csv,.xlsx,.xls" class="d-none">
 
         <button id="analyze-btn" class="ax-btn ax-btn-accent w-100 fw-semibold" disabled>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
-          Analizi Başlat
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2"><path d="M4 6h16"/><path d="M8 12h8"/><path d="M11 18h2"/></svg>
+          Sütunları Getir
         </button>
 
         <div id="error-msg" class="ax-alert-danger mt-3 d-none ax-text-sm"></div>
@@ -68,6 +68,26 @@
             <li class="mb-1">Metin/kategorik sütunlar için frekans tablosu oluşturulur.</li>
             <li class="mb-1">Tüm sonuçlar PDF rapor olarak indirilebilir.</li>
           </ul>
+        </div>
+
+        <div id="panel-config" class="d-none">
+          <h5 class="ax-text-primary fw-semibold mb-1 d-flex align-items-center">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ax-text-accent me-2"><path d="M4 6h16"/><path d="M8 12h8"/><path d="M11 18h2"/></svg>
+            Değişken Seçimi
+          </h5>
+          <p class="ax-text-muted ax-text-sm mb-3">Raporlanacak sütunları seçin (sayısal ve kategorik).</p>
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="ax-text-muted ax-text-sm" id="col-count-label">0 değişken seçili</span>
+            <button class="ax-btn ax-btn-outline-secondary ax-btn-sm" id="toggle-all-btn">Tümünü Seç</button>
+          </div>
+          <div id="col-checkbox-list" class="mb-3 ax-rounded-md" style="max-height: 260px; overflow-y: auto; border: 1px solid var(--ax-border-default); background: rgba(0,0,0,0.12);"></div>
+          <div class="d-flex gap-2">
+            <button id="run-analysis-btn" class="ax-btn ax-btn-accent fw-semibold flex-grow-1" disabled>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+              Analizi Başlat
+            </button>
+            <button class="ax-btn ax-btn-outline-secondary" onclick="resetUI()">İptal</button>
+          </div>
         </div>
 
         <div id="panel-loading" class="text-center d-none py-4">
@@ -202,13 +222,14 @@
 
 <script>
 const STATUS_BASE = '{% url "istatistik:betimsel_status" job_id="00000000-0000-0000-0000-000000000000" %}';
-let pollInterval = null, currentJobId = null;
+let pollInterval = null, currentJobId = null, previewData = null;
 
 const uploadArea = document.getElementById('upload-area');
 const fileInput  = document.getElementById('file-input');
 const fileNameDisplay = document.getElementById('file-name-display');
 const analyzeBtn = document.getElementById('analyze-btn');
-const confirmWarningsBtn = document.getElementById('confirm-warnings-btn');
+const runAnalysisBtn = document.getElementById('run-analysis-btn');
+const toggleAllBtn = document.getElementById('toggle-all-btn');
 
 uploadArea.addEventListener('dragover', e => { e.preventDefault(); uploadArea.style.borderColor = 'var(--ax-accent-primary)'; });
 uploadArea.addEventListener('dragleave', () => { uploadArea.style.borderColor = ''; });
@@ -222,26 +243,70 @@ function setFile(f) {
   document.getElementById('error-msg').classList.add('d-none');
 }
 
-analyzeBtn.addEventListener('click', () => submitFile(false));
-confirmWarningsBtn.addEventListener('click', () => submitFile(true));
+analyzeBtn.addEventListener('click', previewFile);
+runAnalysisBtn.addEventListener('click', runAnalysis);
+toggleAllBtn.addEventListener('click', toggleAllColumns);
 
-function submitFile(confirm) {
+function previewFile() {
   const f = fileInput._selectedFile; if (!f) return;
-  analyzeBtn.disabled = true; confirmWarningsBtn.disabled = true;
+  analyzeBtn.disabled = true;
   showPanel('loading');
   const fd = new FormData();
-  fd.append('file', f);
+  fd.append('file', f); fd.append('step', 'preview');
   fd.append('csrfmiddlewaretoken', '{{ csrf_token }}');
-  if (confirm) fd.append('confirm_warnings', 'true');
   fetch(window.location.pathname, { method: 'POST', headers: {'X-Requested-With': 'XMLHttpRequest'}, body: fd })
-  .then(r => r.json())
-  .then(data => {
+  .then(r => r.json()).then(data => {
     if (data.error) { showError(data.error); return; }
-    if (data.warnings) { showWarning(data.warnings); return; }
+    previewData = { preview_id: data.preview_id, filename: data.filename };
+    buildColumnCheckboxes(data.columns);  // tüm sütunlar (kategorik dahil)
+    showPanel('config');
+  }).catch(() => showError('Bağlantı hatası. Lütfen tekrar deneyin.'));
+}
+
+function buildColumnCheckboxes(cols) {
+  const list = document.getElementById('col-checkbox-list');
+  list.innerHTML = cols.map(c => `
+    <div class="d-flex align-items-center gap-2 py-1 px-3" style="border-bottom:1px solid var(--ax-border-default);">
+      <input type="checkbox" class="col-cb" id="col_${CSS.escape(c)}" value="${c}" checked style="cursor:pointer;width:15px;height:15px;flex-shrink:0;">
+      <label for="col_${CSS.escape(c)}" class="ax-text-secondary ax-text-sm mb-0 w-100" style="cursor:pointer;">${c}</label>
+    </div>
+  `).join('');
+  document.querySelectorAll('.col-cb').forEach(cb => cb.addEventListener('change', updateColCount));
+  updateColCount();
+}
+
+function updateColCount() {
+  const cbs = document.querySelectorAll('.col-cb');
+  const selected = [...cbs].filter(cb => cb.checked).length;
+  document.getElementById('col-count-label').textContent = selected + ' değişken seçili';
+  runAnalysisBtn.disabled = selected === 0;
+  toggleAllBtn.textContent = selected === cbs.length ? 'Tümünü Kaldır' : 'Tümünü Seç';
+}
+
+function toggleAllColumns() {
+  const cbs = document.querySelectorAll('.col-cb');
+  const allChecked = [...cbs].every(cb => cb.checked);
+  cbs.forEach(cb => { cb.checked = !allChecked; });
+  updateColCount();
+}
+
+function runAnalysis() {
+  if (!previewData) return;
+  const selectedCols = [...document.querySelectorAll('.col-cb:checked')].map(cb => cb.value);
+  if (selectedCols.length === 0) return;
+  runAnalysisBtn.disabled = true;
+  showPanel('loading');
+  const fd = new FormData();
+  fd.append('step', 'run'); fd.append('preview_id', previewData.preview_id);
+  fd.append('filename', previewData.filename);
+  fd.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+  selectedCols.forEach(c => fd.append('columns', c));
+  fetch(window.location.pathname, { method: 'POST', headers: {'X-Requested-With': 'XMLHttpRequest'}, body: fd })
+  .then(r => r.json()).then(data => {
+    if (data.error) { showError(data.error); return; }
     currentJobId = data.job_id;
     startPolling(currentJobId);
-  })
-  .catch(() => showError('Bağlantı hatası. Lütfen tekrar deneyin.'));
+  }).catch(() => showError('Bağlantı hatası. Lütfen tekrar deneyin.'));
 }
 
 function startPolling(jobId) {
@@ -282,24 +347,18 @@ function onCompleted(data) {
 }
 
 function showPanel(name) {
-  ['idle','loading','warning','error','done'].forEach(n => {
+  ['idle','config','loading','warning','error','done'].forEach(n => {
     document.getElementById('panel-' + n).classList.toggle('d-none', n !== name);
   });
 }
 function showError(msg) {
-  analyzeBtn.disabled = false; confirmWarningsBtn.disabled = false;
+  analyzeBtn.disabled = false;
   document.getElementById('panel-error-msg').textContent = msg; showPanel('error');
-}
-function showWarning(warnings) {
-  analyzeBtn.disabled = false; confirmWarningsBtn.disabled = false;
-  document.getElementById('panel-warning-list').innerHTML = warnings.map(w =>
-    `<li class="mb-1"><span class="ax-badge ax-badge-${w.level === 'danger' ? 'danger' : 'warning'} me-2">${w.level === 'danger' ? 'Hata' : 'Uyarı'}</span><strong>${w.title}:</strong> ${w.message}</li>`
-  ).join('');
-  showPanel('warning');
 }
 function resetUI() {
   if (pollInterval) clearInterval(pollInterval);
-  currentJobId = null; fileInput.value = ''; fileInput._selectedFile = null;
+  currentJobId = null; previewData = null;
+  fileInput.value = ''; fileInput._selectedFile = null;
   fileNameDisplay.textContent = 'CSV, XLSX, XLS — Maks. 10 MB';
   analyzeBtn.disabled = true;
   document.getElementById('error-msg').classList.add('d-none');

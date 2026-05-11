@@ -550,7 +550,7 @@ function onCompleted(data) {
 
   let apa;
   if (r.test_type === 'independent') {
-    apa = `${r.g1_label} (n = ${r.g1_n}, M = ${r.g1_mean.toFixed(3)}, SS = ${r.g1_std.toFixed(3)}) ile ${r.g2_label} (n = ${r.g2_n}, M = ${r.g2_mean.toFixed(3)}, SS = ${r.g2_std.toFixed(3)}) arasındaki fark ${r.test_label} ile test edilmiştir: t(${r.df}) = ${r.t_stat.toFixed(3)}, p = ${r.p_value < 0.001 ? '< .001' : r.p_value.toFixed(3)}, d = ${r.cohens_d.toFixed(3)}.`;
+    apa = `${r.group_col} grupları (${r.g1_label} ve ${r.g2_label}) arasındaki ${r.dep_col} farkı ${r.test_label} ile test edilmiştir: t(${r.df}) = ${r.t_stat.toFixed(3)}, p = ${r.p_value < 0.001 ? '< .001' : r.p_value.toFixed(3)}, d = ${r.cohens_d.toFixed(3)} (${r.g1_label}: M = ${r.g1_mean.toFixed(3)}, SS = ${r.g1_std.toFixed(3)}; ${r.g2_label}: M = ${r.g2_mean.toFixed(3)}, SS = ${r.g2_std.toFixed(3)}).`;
   } else {
     apa = `${r.col1} ve ${r.col2} arasındaki fark ${r.test_label} ile test edilmiştir: t(${r.df}) = ${r.t_stat.toFixed(3)}, p = ${r.p_value < 0.001 ? '< .001' : r.p_value.toFixed(3)}, d = ${r.cohens_d.toFixed(3)}.`;
   }

@@ -257,5 +257,27 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
     story.append(Paragraph('Yorum', h2_s))
     story.append(Paragraph(result['conclusion'], norm_s))
 
+    story.append(Spacer(1, 0.5*cm))
+    story.append(Paragraph('Tezinde Nasıl Raporlarsın?', h2_s))
+    p_str = '< .001' if result['p_value'] < 0.001 else f"{result['p_value']:.3f}"
+    if result['test_type'] == 'independent':
+        apa_text = (f"{result['group_col']} grupları ({result['g1_label']} ve {result['g2_label']}) "
+                    f"arasındaki {result['dep_col']} farkı {result['test_label']} ile test edilmiştir: "
+                    f"t({result['df']}) = {result['t_stat']:.3f}, p = {p_str}, "
+                    f"d = {result['cohens_d']:.3f} "
+                    f"({result['g1_label']}: M = {result['g1_mean']:.3f}, SS = {result['g1_std']:.3f}; "
+                    f"{result['g2_label']}: M = {result['g2_mean']:.3f}, SS = {result['g2_std']:.3f}).")
+    else:
+        apa_text = (f"{result['col1']} ve {result['col2']} arasındaki fark {result['test_label']} "
+                    f"ile test edilmiştir: t({result['df']}) = {result['t_stat']:.3f}, "
+                    f"p = {p_str}, d = {result['cohens_d']:.3f}.")
+    apa_tbl = Table([[Paragraph(apa_text, norm_s)]], colWidths=[16*cm])
+    apa_tbl.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#f0f4ff')),
+        ('BOX', (0, 0), (-1, -1), 1, colors.HexColor('#1e3a5f')),
+        ('PADDING', (0, 0), (-1, -1), 8),
+    ]))
+    story.append(apa_tbl)
+
     doc.build(story)
     return buf.getvalue()

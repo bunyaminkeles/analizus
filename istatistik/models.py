@@ -11,6 +11,9 @@ TOOL_CHOICES = [
     ('korelasyon', 'Korelasyon Matrisi'),
     ('ttesti', 't-Testi'),
     ('anova', 'Tek Yönlü ANOVA'),
+    ('mann_whitney', 'Mann-Whitney U Testi'),
+    ('kruskal_wallis', 'Kruskal-Wallis H Testi'),
+    ('ki_kare', 'Ki-Kare Testi'),
 ]
 
 STATUS_CHOICES = [

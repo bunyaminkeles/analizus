@@ -1,5 +1,8 @@
 """
-Tek Yönlü ANOVA + Tukey / Bonferroni post-hoc testleri.
+Kruskal-Wallis H Testi.
+3 veya daha fazla bağımsız grubun dağılımını karşılaştıran non-parametrik test.
+Tek yönlü ANOVA'nın parametrik olmayan alternatifi.
+Post-hoc: çiftli Mann-Whitney U + Bonferroni düzeltmesi.
 """
 import io
 import numpy as np
@@ -7,7 +10,7 @@ from scipy import stats
 from itertools import combinations
 
 
-def analyze(df, group_col: str, dep_col: str, posthoc: str = 'tukey') -> dict:
+def analyze(df, group_col: str, dep_col: str) -> dict:
     if group_col not in df.columns:
         raise ValueError(f'"{group_col}" sütunu bulunamadı.')
     if dep_col not in df.columns:
@@ -27,69 +30,65 @@ def analyze(df, group_col: str, dep_col: str, posthoc: str = 'tukey') -> dict:
         if len(g) < 3:
             raise ValueError(f'"{lbl}" grubunda en az 3 gözlem olmalıdır.')
 
-    f_stat, p_val = stats.f_oneway(*groups)
+    h_stat, p_val = stats.kruskal(*groups)
 
-    # Eta-kare (η²) etki büyüklüğü
-    grand_mean = np.concatenate(groups).mean()
-    ss_between = sum(len(g) * (g.mean() - grand_mean) ** 2 for g in groups)
-    ss_total = sum(((v - grand_mean) ** 2) for g in groups for v in g)
-    eta_sq = ss_between / ss_total if ss_total > 0 else 0.0
+    # Eta-kare (η²_H) etki büyüklüğü
+    n_total = sum(len(g) for g in groups)
+    k = len(group_labels)
+    eta_sq = (h_stat - k + 1) / (n_total - k) if (n_total - k) > 0 else 0.0
+    eta_sq = max(0.0, float(eta_sq))
 
-    # Levene varyans homojenliği
-    levene_stat, levene_p = stats.levene(*groups)
-
-    # Grup istatistikleri
+    # Ortalama sıralar
+    all_vals = np.concatenate(groups)
+    all_ranks = stats.rankdata(all_vals)
+    idx = 0
     group_stats = []
     for g, lbl in zip(groups, group_labels):
+        n = len(g)
+        g_ranks = all_ranks[idx:idx + n]
+        idx += n
         group_stats.append({
             'label': str(lbl),
-            'n': len(g),
+            'n': n,
+            'median': round(float(np.median(g)), 3),
             'mean': round(float(g.mean()), 3),
             'std': round(float(g.std(ddof=1)), 3),
-            'min': round(float(g.min()), 3),
-            'max': round(float(g.max()), 3),
+            'mean_rank': round(float(g_ranks.mean()), 3),
         })
 
-    # Post-hoc testler
+    # Post-hoc: çiftli Mann-Whitney U + Bonferroni
     posthoc_results = []
     if float(p_val) < 0.05:
-        pairs = list(combinations(range(len(group_labels)), 2))
+        pairs = list(combinations(range(k), 2))
         n_comparisons = len(pairs)
         for i, j in pairs:
-            t_s, p_pair = stats.ttest_ind(groups[i], groups[j])
-            if posthoc == 'bonferroni':
-                p_adj = min(p_pair * n_comparisons, 1.0)
-                method = 'Bonferroni'
-            else:
-                # Tukey HSD yaklaşımı: Bonferroni ile karşılaştırılabilir ve scipy ile uygulanabilir
-                # Tam Tukey için statsmodels gerekir; burada Bonferroni fallback kullanıyoruz
-                p_adj = min(p_pair * n_comparisons, 1.0)
-                method = 'Tukey (Bonferroni yaklaşımı)'
+            u_s, p_pair = stats.mannwhitneyu(groups[i], groups[j], alternative='two-sided')
+            p_adj = min(float(p_pair) * n_comparisons, 1.0)
             posthoc_results.append({
                 'g1': str(group_labels[i]),
                 'g2': str(group_labels[j]),
-                'mean_diff': round(float(groups[i].mean() - groups[j].mean()), 3),
+                'median_diff': round(float(np.median(groups[i]) - np.median(groups[j])), 3),
+                'u_stat': round(float(u_s), 3),
                 'p_value': round(float(p_pair), 4),
                 'p_adj': round(float(p_adj), 4),
                 'significant': float(p_adj) < 0.05,
             })
 
     return {
-        'test_label': 'Tek Yönlü ANOVA',
+        'test_label': 'Kruskal-Wallis H Testi',
         'group_col': group_col,
         'dep_col': dep_col,
-        'k_groups': len(group_labels),
-        'f_stat': round(float(f_stat), 3),
+        'k_groups': k,
+        'n_total': n_total,
+        'h_stat': round(float(h_stat), 3),
+        'df': k - 1,
         'p_value': round(float(p_val), 4),
-        'df_between': len(group_labels) - 1,
-        'df_within': len(sub) - len(group_labels),
         'eta_sq': round(float(eta_sq), 3),
         'effect_interpretation': _interpret_eta(eta_sq),
-        'levene_p': round(float(levene_p), 4),
         'significant': float(p_val) < 0.05,
         'group_stats': group_stats,
         'posthoc': posthoc_results,
-        'posthoc_method': method if float(p_val) < 0.05 else '—',
+        'posthoc_method': 'Mann-Whitney U + Bonferroni' if float(p_val) < 0.05 else '—',
         'conclusion': _conclusion(p_val, group_col, dep_col, posthoc_results),
     }
 
@@ -105,9 +104,9 @@ def _interpret_eta(eta: float) -> str:
 
 
 def _conclusion(p, group_col, dep_col, posthoc) -> str:
-    if p >= 0.05:
+    if float(p) >= 0.05:
         return (f'Gruplar arasında {dep_col} açısından istatistiksel olarak '
-                f'anlamlı bir fark bulunmamaktadır [F = —, p = {p:.4f}].')
+                f'anlamlı bir fark bulunmamaktadır (p = {p:.4f}).')
     sig_pairs = [f'{r["g1"]} – {r["g2"]}' for r in posthoc if r['significant']]
     base = (f'Gruplar arasında {dep_col} açısından istatistiksel olarak '
             f'anlamlı bir fark bulunmaktadır (p = {p:.4f}).')
@@ -130,26 +129,27 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
                             leftMargin=2*cm, rightMargin=2*cm,
                             topMargin=2*cm, bottomMargin=2*cm)
     styles = getSampleStyleSheet()
+    HEADER_COLOR = colors.HexColor('#065f46')
     title_s = ParagraphStyle('T', parent=styles['Heading1'], fontSize=16, spaceAfter=6, fontName='DejaVuSans')
-    h2_s = ParagraphStyle('H2', parent=styles['Heading2'], fontSize=12, spaceAfter=4, fontName='DejaVuSans')
-    norm_s = ParagraphStyle('N', parent=styles['Normal'], fontName='DejaVuSans', fontSize=9)
+    h2_s    = ParagraphStyle('H2', parent=styles['Heading2'], fontSize=12, spaceAfter=4, fontName='DejaVuSans')
+    norm_s  = ParagraphStyle('N', parent=styles['Normal'], fontName='DejaVuSans', fontSize=9)
 
     story = []
-    story.append(Paragraph('Tek Yönlü ANOVA Raporu', title_s))
+    story.append(Paragraph('Kruskal-Wallis H Testi Raporu', title_s))
     story.append(Paragraph(f'Dosya: {filename}', norm_s))
     story.append(Spacer(1, 0.4*cm))
 
     # Grup istatistikleri
     story.append(Paragraph('Grup İstatistikleri', h2_s))
-    gs_header = ['Grup', 'n', 'Ort.', 'SS', 'Min', 'Maks']
+    gs_header = ['Grup', 'n', 'Medyan', 'Ort.', 'SS', 'Ort. Sıra']
     gs_rows = [gs_header] + [
-        [s['label'], str(s['n']), f"{s['mean']:.3f}", f"{s['std']:.3f}",
-         f"{s['min']:.3f}", f"{s['max']:.3f}"]
+        [s['label'], str(s['n']), f"{s['median']:.3f}", f"{s['mean']:.3f}",
+         f"{s['std']:.3f}", f"{s['mean_rank']:.3f}"]
         for s in result['group_stats']
     ]
-    gs_tbl = Table(gs_rows, colWidths=[4*cm, 2*cm, 2.5*cm, 2.5*cm, 2.5*cm, 2.5*cm])
+    gs_tbl = Table(gs_rows, colWidths=[3.5*cm, 2*cm, 2.5*cm, 2.5*cm, 2.5*cm, 3*cm])
     gs_tbl.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#1e3a5f')),
+        ('BACKGROUND', (0, 0), (-1, 0), HEADER_COLOR),
         ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
         ('FONTNAME', (0, 0), (-1, 0), 'DejaVuSans-Bold'),
         ('FONTNAME', (0, 1), (-1, -1), 'DejaVuSans'),
@@ -162,22 +162,20 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
     story.append(gs_tbl)
     story.append(Spacer(1, 0.5*cm))
 
-    # ANOVA tablosu
-    story.append(Paragraph('ANOVA Tablosu', h2_s))
+    # Test sonuçları
+    story.append(Paragraph('Test Sonuçları', h2_s))
     sig = result['significant']
-    anova_rows = [
-        ['F istatistiği', f"{result['f_stat']:.3f}"],
-        ['df (gruplar arası)', str(result['df_between'])],
-        ['df (gruplar içi)', str(result['df_within'])],
+    res_rows = [
+        ['H istatistiği', f"{result['h_stat']:.3f}"],
+        ['Serbestlik Derecesi (df)', str(result['df'])],
         ['p-değeri', f"{result['p_value']:.4f}"],
         ['Eta-kare (η²)', f"{result['eta_sq']:.3f}"],
-        ['Etki Büyüklüğü', result['effect_interpretation']],
-        ['Levene p', f"{result['levene_p']:.4f}"],
+        ['Etki Yorumu', result['effect_interpretation']],
         ['Sonuç', 'Anlamlı (p < .05)' if sig else 'Anlamlı değil (p ≥ .05)'],
     ]
-    a_tbl = Table(anova_rows, colWidths=[7*cm, 9*cm])
-    a_tbl.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (0, -1), colors.HexColor('#1e3a5f')),
+    res_tbl = Table(res_rows, colWidths=[7*cm, 9*cm])
+    res_tbl.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (0, -1), HEADER_COLOR),
         ('TEXTCOLOR', (0, 0), (0, -1), colors.white),
         ('BACKGROUND', (1, -1), (1, -1),
          colors.HexColor('#d4edda') if sig else colors.HexColor('#f8d7da')),
@@ -187,21 +185,21 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
         ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
         ('PADDING', (0, 0), (-1, -1), 6),
     ]))
-    story.append(a_tbl)
+    story.append(res_tbl)
 
     # Post-hoc
     if result['posthoc']:
         story.append(Spacer(1, 0.5*cm))
         story.append(Paragraph(f'Post-Hoc Testler ({result["posthoc_method"]})', h2_s))
-        ph_header = ['Grup 1', 'Grup 2', 'Ort. Fark', 'p', 'p (düzeltilmiş)', 'Anlamlı']
+        ph_header = ['Grup 1', 'Grup 2', 'Med. Fark', 'U', 'p', 'p (Bonf.)', 'Anlamlı']
         ph_rows = [ph_header] + [
-            [r['g1'], r['g2'], f"{r['mean_diff']:.3f}", f"{r['p_value']:.4f}",
-             f"{r['p_adj']:.4f}", 'Evet' if r['significant'] else 'Hayır']
+            [r['g1'], r['g2'], f"{r['median_diff']:.3f}", f"{r['u_stat']:.1f}",
+             f"{r['p_value']:.4f}", f"{r['p_adj']:.4f}", 'Evet' if r['significant'] else 'Hayır']
             for r in result['posthoc']
         ]
-        ph_tbl = Table(ph_rows, colWidths=[3*cm, 3*cm, 3*cm, 2.5*cm, 3.5*cm, 2*cm])
+        ph_tbl = Table(ph_rows, colWidths=[2.5*cm, 2.5*cm, 2.5*cm, 2*cm, 2.5*cm, 2.5*cm, 1.5*cm])
         ph_style = [
-            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#1e3a5f')),
+            ('BACKGROUND', (0, 0), (-1, 0), HEADER_COLOR),
             ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
             ('FONTNAME', (0, 0), (-1, 0), 'DejaVuSans-Bold'),
             ('FONTNAME', (0, 1), (-1, -1), 'DejaVuSans'),
@@ -213,7 +211,7 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
         ]
         for idx, r in enumerate(result['posthoc'], start=1):
             if r['significant']:
-                ph_style.append(('BACKGROUND', (5, idx), (5, idx), colors.HexColor('#d4edda')))
+                ph_style.append(('BACKGROUND', (6, idx), (6, idx), colors.HexColor('#d4edda')))
         ph_tbl.setStyle(TableStyle(ph_style))
         story.append(ph_tbl)
 
@@ -224,15 +222,16 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
     story.append(Spacer(1, 0.5*cm))
     story.append(Paragraph('Tezinde Nasıl Raporlarsın?', h2_s))
     p_str = '< .001' if result['p_value'] < 0.001 else f"{result['p_value']:.3f}"
-    sig_txt = 'anlamlı' if result['significant'] else 'anlamlı olmayan'
-    apa_text = (f"Tek yönlü ANOVA sonucunda {result['group_col']} grupları arasında "
-                f"{result['dep_col']} açısından {sig_txt} bir fark bulunmuştur, "
-                f"F({result['df_between']}, {result['df_within']}) = {result['f_stat']:.3f}, "
-                f"p = {p_str}, η² = {result['eta_sq']:.3f} ({result['effect_interpretation']}).")
+    sig_txt = ('istatistiksel olarak anlamlı bir fark bulunmuştur'
+               if result['significant'] else 'anlamlı bir fark bulunmamıştır')
+    apa_text = (f"Kruskal-Wallis H testi sonucunda {result['group_col']} grupları arasında "
+                f"{result['dep_col']} açısından {sig_txt}, "
+                f"H({result['df']}) = {result['h_stat']:.3f}, p = {p_str}, "
+                f"η² = {result['eta_sq']:.3f} ({result['effect_interpretation']}).")
     apa_tbl = Table([[Paragraph(apa_text, norm_s)]], colWidths=[16*cm])
     apa_tbl.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#f0f4ff')),
-        ('BOX', (0, 0), (-1, -1), 1, colors.HexColor('#1e3a5f')),
+        ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#f0f7ff')),
+        ('BOX', (0, 0), (-1, -1), 1, HEADER_COLOR),
         ('PADDING', (0, 0), (-1, -1), 8),
     ]))
     story.append(apa_tbl)

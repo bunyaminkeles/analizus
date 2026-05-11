@@ -214,6 +214,9 @@
                         <a href="{% url 'istatistik:korelasyon' %}" class="site-nav__dropdown-item" role="menuitem">Korelasyon Matrisi</a>
                         <a href="{% url 'istatistik:ttesti' %}" class="site-nav__dropdown-item" role="menuitem">t-Testi</a>
                         <a href="{% url 'istatistik:anova' %}" class="site-nav__dropdown-item" role="menuitem">ANOVA</a>
+                        <a href="{% url 'istatistik:mann_whitney' %}" class="site-nav__dropdown-item" role="menuitem">Mann-Whitney U</a>
+                        <a href="{% url 'istatistik:kruskal_wallis' %}" class="site-nav__dropdown-item" role="menuitem">Kruskal-Wallis H</a>
+                        <a href="{% url 'istatistik:ki_kare' %}" class="site-nav__dropdown-item" role="menuitem">Ki-Kare Testi</a>
                         <a href="{% url 'istatistik:orneklem' %}" class="site-nav__dropdown-item" role="menuitem">Örneklem Hesaplayıcı</a>
                         {% endif %}
                         <div class="site-nav__dropdown-divider"></div>
@@ -400,6 +403,9 @@
                     <a href="{% url 'istatistik:korelasyon' %}" class="nav-drawer__link">Korelasyon Matrisi</a>
                     <a href="{% url 'istatistik:ttesti' %}" class="nav-drawer__link">t-Testi</a>
                     <a href="{% url 'istatistik:anova' %}" class="nav-drawer__link">ANOVA</a>
+                    <a href="{% url 'istatistik:mann_whitney' %}" class="nav-drawer__link">Mann-Whitney U</a>
+                    <a href="{% url 'istatistik:kruskal_wallis' %}" class="nav-drawer__link">Kruskal-Wallis H</a>
+                    <a href="{% url 'istatistik:ki_kare' %}" class="nav-drawer__link">Ki-Kare Testi</a>
                     <a href="{% url 'istatistik:orneklem' %}" class="nav-drawer__link">Örneklem Hesaplayıcı</a>
                     {% endif %}
                     <a href="{% url 'tableau_dashboard' %}" class="nav-drawer__link">Tableau Analizleri</a>

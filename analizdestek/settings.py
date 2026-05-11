@@ -470,11 +470,6 @@ DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'info@analizus.com')
 ADMIN_NOTIFICATION_EMAIL = os.getenv('ADMIN_NOTIFICATION_EMAIL', DEFAULT_FROM_EMAIL)
 
 
-# --- IYZICO ÖDEME AYARLARI ---
-IYZICO_API_KEY = os.getenv('IYZICO_API_KEY', '').strip()
-IYZICO_SECRET_KEY = os.getenv('IYZICO_SECRET_KEY', '').strip()
-IYZICO_BASE_URL = os.getenv('IYZICO_BASE_URL', 'sandbox-api.iyzipay.com').strip()  # Production: api.iyzipay.com
-
 # --- İŞ KUYRUĞU AYARLARI ---
 # Paralel iş kuyruğu — Hetzner kapasitesine göre ayarla (default: 5)
 JOB_MAX_WORKERS = int(os.environ.get('JOB_MAX_WORKERS', 5))

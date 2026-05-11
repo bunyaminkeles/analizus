@@ -46,7 +46,7 @@ def cronbach_landing(request):
         })
 
     if request.method == 'POST':
-        return _handle_upload(request, 'cronbach')
+        return _handle_group_tool_post(request, 'cronbach')
 
     active_job = _get_active_job(request.user, 'cronbach')
     return render(request, 'istatistik/cronbach.html', {
@@ -84,7 +84,7 @@ def normallik_landing(request):
         })
 
     if request.method == 'POST':
-        return _handle_upload(request, 'normallik')
+        return _handle_group_tool_post(request, 'normallik')
 
     active_job = _get_active_job(request.user, 'normallik')
     return render(request, 'istatistik/normallik.html', {
@@ -122,7 +122,7 @@ def betimsel_landing(request):
         })
 
     if request.method == 'POST':
-        return _handle_upload(request, 'betimsel')
+        return _handle_group_tool_post(request, 'betimsel')
 
     active_job = _get_active_job(request.user, 'betimsel')
     return render(request, 'istatistik/betimsel.html', {
@@ -311,11 +311,19 @@ def _handle_group_tool_post(request, tool):
                 'col1': request.POST.get('col1', ''),
                 'col2': request.POST.get('col2', ''),
             }
-        else:  # anova
+        elif tool == 'anova':
             options = {
                 'group_col': request.POST.get('group_col', ''),
                 'dep_col': request.POST.get('dep_col', ''),
                 'posthoc': request.POST.get('posthoc', 'tukey'),
+            }
+        elif tool in ('cronbach', 'normallik', 'betimsel'):
+            cols = request.POST.getlist('columns')
+            options = {'columns': cols} if cols else {}
+        else:  # mann_whitney, kruskal_wallis
+            options = {
+                'group_col': request.POST.get('group_col', ''),
+                'dep_col': request.POST.get('dep_col', ''),
             }
 
         job = IstatistikJob.objects.create(
@@ -331,6 +339,93 @@ def _handle_group_tool_post(request, tool):
         return JsonResponse({'success': True, 'job_id': str(job.id)})
 
     return JsonResponse({'error': 'Geçersiz adım.'}, status=400)
+
+
+@feature_required
+@ratelimit(key='ip', rate='10/h', method='POST', block=True)
+def mann_whitney_landing(request):
+    if not request.user.is_authenticated:
+        return render(request, 'service_promo.html', {
+            **PROMO_BASE,
+            'promo_title': 'Mann-Whitney U Testi',
+            'promo_icon': 'bi-distribute-horizontal',
+            'promo_color': 'warning',
+            'promo_description': 'İki bağımsız grubun dağılımını karşılaştırın. Normallik varsayımı gerekmez. Medyan farkı, sıra ortalamaları ve rank-biserial etki büyüklüğü ile PDF raporu alın.',
+            'promo_features': [
+                {'icon': 'bi-people-fill', 'title': 'Non-Parametrik', 'desc': 'Normallik varsayımı sağlanmadığında t-testine güçlü bir alternatif.'},
+                {'icon': 'bi-bar-chart-line', 'title': 'Sıra Analizi', 'desc': 'Medyanlar ve ortalama sıralar raporlanır.'},
+                {'icon': 'bi-rulers', 'title': 'Etki Büyüklüğü', 'desc': 'Rank-biserial korelasyon (r) ile etki büyüklüğü hesaplanır.'},
+                {'icon': 'bi-file-earmark-pdf-fill', 'color': 'danger', 'title': 'PDF Rapor', 'desc': 'Sonuçlar düzenli tablolar halinde PDF olarak indirilir.'},
+            ],
+        })
+    if request.method == 'POST':
+        return _handle_group_tool_post(request, 'mann_whitney')
+    active_job = _get_active_job(request.user, 'mann_whitney')
+    return render(request, 'istatistik/mann_whitney.html', {
+        'active_job_id': str(active_job.id) if active_job else None,
+        'daily_remaining': _daily_remaining(request.user),
+        'tool_title': 'Mann-Whitney U Testi',
+        'tool_icon': 'bi-distribute-horizontal',
+        'tool_color': 'warning',
+    })
+
+
+@feature_required
+@ratelimit(key='ip', rate='10/h', method='POST', block=True)
+def kruskal_wallis_landing(request):
+    if not request.user.is_authenticated:
+        return render(request, 'service_promo.html', {
+            **PROMO_BASE,
+            'promo_title': 'Kruskal-Wallis H Testi',
+            'promo_icon': 'bi-bar-chart-steps',
+            'promo_color': 'teal',
+            'promo_description': 'Üç veya daha fazla bağımsız grubun dağılımını non-parametrik olarak karşılaştırın. Bonferroni düzeltmeli post-hoc testleri ve η² etki büyüklüğü ile PDF raporu alın.',
+            'promo_features': [
+                {'icon': 'bi-bar-chart-fill', 'title': '3+ Grup', 'desc': 'ANOVA\'nın parametrik olmayan alternatifi. Normallik gerekmez.'},
+                {'icon': 'bi-search', 'color': 'warning', 'title': 'Post-Hoc', 'desc': 'Anlamlı fark bulunursa çiftli Mann-Whitney U + Bonferroni düzeltmesi uygulanır.'},
+                {'icon': 'bi-rulers', 'title': 'Etki Büyüklüğü', 'desc': 'Eta-kare (η²) ile etki büyüklüğü raporlanır.'},
+                {'icon': 'bi-file-earmark-pdf-fill', 'color': 'danger', 'title': 'PDF Rapor', 'desc': 'Grup istatistikleri ve post-hoc sonuçları PDF\'e aktarılır.'},
+            ],
+        })
+    if request.method == 'POST':
+        return _handle_group_tool_post(request, 'kruskal_wallis')
+    active_job = _get_active_job(request.user, 'kruskal_wallis')
+    return render(request, 'istatistik/kruskal_wallis.html', {
+        'active_job_id': str(active_job.id) if active_job else None,
+        'daily_remaining': _daily_remaining(request.user),
+        'tool_title': 'Kruskal-Wallis H Testi',
+        'tool_icon': 'bi-bar-chart-steps',
+        'tool_color': 'teal',
+    })
+
+
+@feature_required
+@ratelimit(key='ip', rate='10/h', method='POST', block=True)
+def ki_kare_landing(request):
+    if not request.user.is_authenticated:
+        return render(request, 'service_promo.html', {
+            **PROMO_BASE,
+            'promo_title': 'Ki-Kare Testi',
+            'promo_icon': 'bi-grid-3x3',
+            'promo_color': 'purple',
+            'promo_description': 'İki kategorik değişken arasındaki ilişkiyi test edin. Çapraz tablo ve Cramér\'s V etki büyüklüğü ile PDF raporu alın.',
+            'promo_features': [
+                {'icon': 'bi-grid-3x3', 'title': 'Bağımsızlık Testi', 'desc': 'Pearson\'s Ki-Kare testi ile iki kategorik değişken arasındaki ilişki sınanır.'},
+                {'icon': 'bi-table', 'color': 'info', 'title': 'Çapraz Tablo', 'desc': 'Gözlenen frekanslar ve satır/sütun toplamları ile tam çapraz tablo.'},
+                {'icon': 'bi-rulers', 'title': 'Cramér\'s V', 'desc': 'Etki büyüklüğü V katsayısı ile ilişkinin gücü raporlanır.'},
+                {'icon': 'bi-file-earmark-pdf-fill', 'color': 'danger', 'title': 'PDF Rapor', 'desc': 'APA formatında raporlanabilir sonuçlar PDF olarak indirilir.'},
+            ],
+        })
+    if request.method == 'POST':
+        return _handle_group_tool_post(request, 'ki_kare')
+    active_job = _get_active_job(request.user, 'ki_kare')
+    return render(request, 'istatistik/ki_kare.html', {
+        'active_job_id': str(active_job.id) if active_job else None,
+        'daily_remaining': _daily_remaining(request.user),
+        'tool_title': 'Ki-Kare Testi',
+        'tool_icon': 'bi-grid-3x3',
+        'tool_color': 'purple',
+    })
 
 
 def _handle_orneklem_calc(request):
