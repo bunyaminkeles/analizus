@@ -138,8 +138,18 @@
               <span id="res-low-exp-text"></span>
             </div>
 
+            <div id="fisher-box" class="rounded-3 p-3 mb-3 d-none" style="background:rgba(167,139,250,0.07); border:1px solid rgba(167,139,250,0.25);">
+              <p class="text-white-50 small fw-semibold mb-2">Fisher's Exact Test (2×2)</p>
+              <div class="d-flex gap-3 flex-wrap">
+                <div><span class="text-white-50 small">Odds Ratio: </span><span class="text-white fw-bold" id="res-or">—</span></div>
+                <div><span class="text-white-50 small">p (Fisher): </span><span class="fw-bold" id="res-fp">—</span></div>
+                <div><span class="text-white-50 small">Anlamlı: </span><span class="fw-bold" id="res-fsig">—</span></div>
+              </div>
+            </div>
+
             <div class="mb-3">
               <p class="text-white-50 small mb-1 fw-semibold">Çapraz Tablo (Gözlenen Frekanslar)</p>
+              <p class="text-white-50 small mb-1" id="ct-col-label"></p>
               <div style="overflow-x:auto;">
                 <table id="ct-table" class="table table-dark table-bordered table-sm small mb-0" style="font-size:0.75rem;"></table>
               </div>
@@ -292,9 +302,22 @@ function onCompleted(data) {
     document.getElementById('res-low-exp-warning').classList.remove('d-none');
   }
 
+  // Fisher (2x2)
+  if (r.fisher) {
+    const f = r.fisher;
+    document.getElementById('res-or').textContent = f.odds_ratio.toFixed(4);
+    const fpEl = document.getElementById('res-fp');
+    fpEl.textContent = f.p_value < 0.001 ? '< .001' : f.p_value.toFixed(4);
+    fpEl.style.color = f.is_significant ? '#4ade80' : '#f87171';
+    document.getElementById('res-fsig').textContent = f.is_significant ? 'Evet' : 'Hayır';
+    document.getElementById('res-fsig').style.color = f.is_significant ? '#4ade80' : '#f87171';
+    document.getElementById('fisher-box').classList.remove('d-none');
+  }
+
   // Çapraz tablo
   const ct = r.contingency_table;
-  let head = `<thead><tr><th>${r.col1} \\ ${r.col2}</th>` + ct.columns.map(c => `<th>${c}</th>`).join('') + '<th>Toplam</th></tr></thead>';
+  document.getElementById('ct-col-label').textContent = `Sütunlar: ${r.col2}`;
+  let head = `<thead><tr><th>${r.col1}</th>` + ct.columns.map(c => `<th>${c}</th>`).join('') + '<th>Toplam</th></tr></thead>';
   let body = '<tbody>';
   ct.index.forEach((idx, i) => {
     body += `<tr><td><strong>${idx}</strong></td>` + ct.values[i].map(v => `<td>${v}</td>`).join('') + `<td><strong>${ct.row_totals[i]}</strong></td></tr>`;
@@ -323,6 +346,7 @@ function resetToUpload() {
   document.getElementById('step-upload').classList.remove('d-none');
   document.getElementById('step-config').classList.add('d-none');
   document.getElementById('res-low-exp-warning').classList.add('d-none');
+  document.getElementById('fisher-box').classList.add('d-none');
   showPanel('idle');
 }
 function copyApa(btn) {

@@ -34,6 +34,17 @@ def analyze(df, col1: str, col2: str) -> dict:
     low_expected = int((expected < 5).sum())
     total_cells = int(expected.size)
 
+    # Fisher's Exact Test — yalnızca 2×2 tablolar için geçerlidir
+    if r == 2 and c == 2:
+        odds_ratio, fisher_p = stats.fisher_exact(ct.values)
+        fisher_result = {
+            'odds_ratio': round(float(odds_ratio), 4),
+            'p_value': round(float(fisher_p), 4),
+            'is_significant': bool(fisher_p < 0.05),
+        }
+    else:
+        fisher_result = None
+
     if v < 0.10:
         effect_label = 'Çok küçük etki'
         effect_color = 'secondary'
@@ -88,6 +99,7 @@ def analyze(df, col1: str, col2: str) -> dict:
         'low_expected_count': low_expected,
         'total_cells': total_cells,
         'low_expected_warning': low_expected > 0,
+        'fisher': fisher_result,
     }
 
 
@@ -165,10 +177,37 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
         ))
         story.append(Spacer(1, 0.3*cm))
 
+    # Fisher sonucu (2x2 ise)
+    if result.get('fisher'):
+        f = result['fisher']
+        f_sig = 'anlamlı' if f['is_significant'] else 'anlamlı değil'
+        story.append(Paragraph('Fisher\'s Exact Test (2×2 tablo)', h2))
+        fisher_data = [
+            ['Odds Ratio', 'p (Fisher)', 'Anlamlı?'],
+            [f"{f['odds_ratio']:.4f}", f"{f['p_value']:.4f}", 'Evet' if f['is_significant'] else 'Hayır'],
+        ]
+        f_tbl = Table(fisher_data, colWidths=[4*cm, 4*cm, 4*cm])
+        f_tbl.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), PURPLE),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+            ('FONTNAME', (0, 0), (-1, 0), 'DejaVuSans-Bold'),
+            ('FONTNAME', (0, 1), (-1, -1), 'DejaVuSans'),
+            ('FONTSIZE', (0, 0), (-1, -1), 9),
+            ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
+            ('PADDING', (0, 0), (-1, -1), 5),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('BACKGROUND', (0, 1), (-1, 1),
+             colors.HexColor('#d4edda') if f['is_significant'] else colors.HexColor('#f8d7da')),
+        ]))
+        story.append(f_tbl)
+        story.append(Spacer(1, 0.4*cm))
+
     # Çapraz tablo
     story.append(Paragraph('Çapraz Tablo (Gözlenen Frekanslar)', h2))
+    story.append(Paragraph(f'Sütunlar: {result["col2"]}', small))
+    story.append(Spacer(1, 0.15*cm))
     ct = result['contingency_table']
-    header = [result['col1'] + ' \\ ' + result['col2']] + ct['columns'] + ['Toplam']
+    header = [result['col1']] + ct['columns'] + ['Toplam']
     rows = [header]
     for i, idx in enumerate(ct['index']):
         row = [idx] + [str(v) for v in ct['values'][i]] + [str(ct['row_totals'][i])]
