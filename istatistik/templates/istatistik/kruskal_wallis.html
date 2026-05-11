@@ -310,7 +310,7 @@ function onCompleted(data) {
   }
 
   document.getElementById('res-conclusion').textContent = r.conclusion;
-  const apa = `Kruskal-Wallis H testi sonucunda gruplar arasında ${r.dep_col} açısından ${r.significant ? 'istatistiksel olarak anlamlı bir fark bulunmuştur' : 'anlamlı bir fark bulunmamıştır'}, H(${r.df}) = ${r.h_stat.toFixed(3)}, p = ${r.p_value < 0.001 ? '< .001' : r.p_value.toFixed(3)}, η² = ${r.eta_sq.toFixed(3)} (${r.effect_interpretation}).`;
+  const apa = `Kruskal-Wallis H testi sonucunda ${r.group_col} grupları arasında ${r.dep_col} açısından ${r.significant ? 'istatistiksel olarak anlamlı bir fark bulunmuştur' : 'anlamlı bir fark bulunmamıştır'}, H(${r.df}) = ${r.h_stat.toFixed(3)}, p = ${r.p_value < 0.001 ? '< .001' : r.p_value.toFixed(3)}, η² = ${r.eta_sq.toFixed(3)} (${r.effect_interpretation}).`;
   document.getElementById('res-apa').textContent = apa;
   document.getElementById('pdf-btn').href = data.pdf_url;
   showPanel('done');
