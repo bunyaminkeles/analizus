@@ -219,13 +219,26 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
     # APA
     story.append(Spacer(1, 0.5*cm))
     story.append(Paragraph('Tezinde Nasıl Raporlarsın?', h2_s))
-    apa_text = (f"Çoklu doğrusal regresyon analizi sonucunda kurulan model istatistiksel açıdan "
-                f"{'anlamlı bulunmuştur' if sig else 'anlamlı bulunmamıştır'}, "
-                f"F({result['df_model']}, {result['df_resid']}) = {result['f_stat']:.3f}, "
-                f"p = {p_str}, R² = {result['r_squared']:.4f}, "
-                f"düzeltilmiş R² = {result['adj_r_squared']:.4f}.")
+    apa_text = (
+        f"Çoklu doğrusal regresyon analizi sonucunda, {result['dep_col']} değişkenini "
+        f"yordamak amacıyla kurulan model istatistiksel açıdan "
+        f"{'anlamlı bulunmuştur' if sig else 'anlamlı bulunmamıştır'}, "
+        f"F({result['df_model']}, {result['df_resid']}) = {result['f_stat']:.3f}, "
+        f"p = {p_str}. Model, bağımlı değişkendeki varyansın "
+        f"%{result['r_squared']*100:.1f}'ini açıklamaktadır "
+        f"(R² = {result['r_squared']:.4f}, düzeltilmiş R² = {result['adj_r_squared']:.4f})."
+    )
     if result['sig_predictors']:
-        apa_text += f" Anlamlı yordayıcılar: {', '.join(result['sig_predictors'])}."
+        sig_details = []
+        for c in result['coefficients'][1:]:
+            if c['significant']:
+                p_c = '< .001' if c['p'] < 0.001 else f"{c['p']:.3f}"
+                sig_details.append(
+                    f"{c['name']} (B = {c['B']:.3f}, β = {c['beta']:.3f}, p = {p_c})"
+                )
+        apa_text += f" Bağımsız değişkenler arasında istatistiksel açıdan anlamlı yordayıcılar şunlardır: {'; '.join(sig_details)}."
+    else:
+        apa_text += " Hiçbir bağımsız değişken bağımlı değişkeni anlamlı düzeyde yordamamıştır."
     apa_tbl = Table([[Paragraph(apa_text, norm_s)]], colWidths=[16*cm])
     apa_tbl.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#f0f4ff')),
