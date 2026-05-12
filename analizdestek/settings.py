@@ -485,6 +485,8 @@ ALLOWED_ATTACHMENT_TYPES = [
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     'application/vnd.ms-powerpoint',
     'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    'text/csv',
+    'text/plain',
 ]
 
 # --- SESSION AYARLARI ---

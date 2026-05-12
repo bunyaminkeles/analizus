@@ -1225,7 +1225,7 @@ def send_message(request, username):
                 messages.error(request, 'Dosya boyutu 5 MB\'ı geçemez.')
                 return redirect('send_message', username=username)
             if attachment.content_type not in settings.ALLOWED_ATTACHMENT_TYPES:
-                messages.error(request, 'Bu dosya türü desteklenmiyor. (Resim, PDF, Word, Excel, PowerPoint)')
+                messages.error(request, 'Bu dosya türü desteklenmiyor. (Resim, PDF, Word, Excel, PowerPoint, CSV)')
                 return redirect('send_message', username=username)
 
         # Mesaj oluştur
