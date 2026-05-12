@@ -14,13 +14,15 @@ METHOD_LABELS = {
 }
 
 
-def analyze(df, method: str = 'pearson') -> dict:
+def analyze(df, method: str = 'pearson', columns=None) -> dict:
     import pandas as pd
     from scipy import stats
 
     if method not in ('pearson', 'spearman', 'kendall'):
         method = 'pearson'
 
+    if columns:
+        df = df[[c for c in columns if c in df.columns]]
     df_num = df.select_dtypes(include=[np.number]).dropna()
     cols = list(df_num.columns)
     k = len(cols)

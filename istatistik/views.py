@@ -160,10 +160,7 @@ def korelasyon_landing(request):
         })
 
     if request.method == 'POST':
-        method = request.POST.get('method', 'pearson')
-        if method not in ('pearson', 'spearman', 'kendall'):
-            method = 'pearson'
-        return _handle_upload(request, 'korelasyon', options={'method': method})
+        return _handle_group_tool_post(request, 'korelasyon')
 
     active_job = _get_active_job(request.user, 'korelasyon')
     return render(request, 'istatistik/korelasyon.html', {
@@ -320,6 +317,14 @@ def _handle_group_tool_post(request, tool):
         elif tool in ('cronbach', 'normallik', 'betimsel'):
             cols = request.POST.getlist('columns')
             options = {'columns': cols} if cols else {}
+        elif tool == 'korelasyon':
+            method = request.POST.get('method', 'pearson')
+            if method not in ('pearson', 'spearman', 'kendall'):
+                method = 'pearson'
+            cols = request.POST.getlist('columns')
+            options = {'method': method}
+            if cols:
+                options['columns'] = cols
         elif tool in ('lineer_regresyon', 'lojistik_regresyon'):
             options = {
                 'dep_col': request.POST.get('dep_col', ''),
