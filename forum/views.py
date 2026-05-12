@@ -2687,6 +2687,26 @@ def studyroom_join(request, slug):
 
 
 @login_required
+@require_GET
+def studyroom_poll(request, slug):
+    """Oda mesaj polling: son ID'den sonraki yeni gönderileri döndür."""
+    room = get_object_or_404(StudyRoom, slug=slug)
+    after_id = int(request.GET.get('after', 0))
+    new_posts = room.room_posts.filter(id__gt=after_id).select_related('author__profile').order_by('id')
+    data = []
+    for post in new_posts:
+        data.append({
+            'id': post.id,
+            'author': post.author.username,
+            'message': post.message,
+            'created_at': post.created_at.strftime('%d.%m.%Y %H:%M'),
+            'is_own': post.author == request.user,
+            'avatar_url': post.author.profile.avatar.url if post.author.profile.avatar else '',
+        })
+    return JsonResponse({'posts': data})
+
+
+@login_required
 @require_POST
 def studyroom_invite(request, slug):
     """Kurucu: odaya kullanıcı adıyla üye davet et."""

@@ -228,6 +228,66 @@
 <script>
 const csrfToken = '{{ csrf_token }}';
 const memberUsernames = [{% for m in members %}"{{ m.user.username }}"{% if not forloop.last %},{% endif %}{% endfor %}];
+const currentUsername = '{{ request.user.username }}';
+
+// ── Yeni mesaj DOM'a ekle ──────────────────────────────────────────────────
+function appendRoomPost(post) {
+  const container = document.getElementById('posts-container');
+  if (!container) return;
+  const empty = container.querySelector('.text-center');
+  if (empty) empty.remove();
+
+  const avatar = post.avatar_url
+    ? `<img src="${post.avatar_url}" class="rounded-circle" width="36" height="36" style="object-fit:cover;">`
+    : `<div class="rounded-circle d-flex align-items-center justify-content-center"
+           style="width:36px;height:36px;background:#1e3a5f;border:1px solid rgba(255,255,255,0.1);">
+         <span class="text-primary fw-bold small">${post.author[0].toUpperCase()}</span>
+       </div>`;
+
+  const div = document.createElement('div');
+  div.className = 'd-flex gap-3 mb-3';
+  div.innerHTML = `
+    <div class="flex-shrink-0">${avatar}</div>
+    <div class="flex-grow-1">
+      <div class="card border-secondary p-3" style="background:#1a1a2e;">
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <a href="/profile/${post.author}/" class="text-white fw-semibold text-decoration-none small">${post.author}</a>
+          <span class="text-white-50" style="font-size:.7rem;">${post.created_at}</span>
+        </div>
+        <p class="text-white-50 small mb-0" style="white-space:pre-wrap;">${renderMentions(escapeHtml(post.message))}</p>
+      </div>
+    </div>`;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+function escapeHtml(s) {
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+// ── Oda mesaj polling (3 sn) ──────────────────────────────────────────────
+{% if is_member and room.status == 'active' %}
+let lastRoomPostId = {% if posts %}{{ posts.last.id }}{% else %}0{% endif %};
+const seenRoomPostIds = new Set([{% for p in posts %}{{ p.id }}{% if not forloop.last %},{% endif %}{% endfor %}]);
+
+setInterval(() => {
+  if (document.hidden) return;
+  fetch(`/odalar/{{ room.slug }}/poll/?after=${lastRoomPostId}`)
+    .then(r => r.json())
+    .then(data => {
+      (data.posts || []).forEach(post => {
+        if (!seenRoomPostIds.has(post.id)) {
+          seenRoomPostIds.add(post.id);
+          lastRoomPostId = Math.max(lastRoomPostId, post.id);
+          appendRoomPost(post);
+        }
+      });
+    })
+    .catch(() => {});
+}, 3000);
+{% endif %}
 
 // @mention'ları tıklanabilir profile linki olarak render et
 function renderMentions(text) {
@@ -345,8 +405,10 @@ function toggleJoin(slug) {
 }
 
 function sendPost(slug) {
-  const msg = document.getElementById('msg-input').value.trim();
+  const input = document.getElementById('msg-input');
+  const msg = input.value.trim();
   if (!msg) return;
+  input.disabled = true;
   fetch(`/odalar/${slug}/`, {
     method: 'POST',
     headers: { 'X-CSRFToken': csrfToken, 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -354,29 +416,23 @@ function sendPost(slug) {
   })
   .then(r => r.json())
   .then(data => {
+    input.disabled = false;
     if (data.error) { alert(data.error); return; }
-    document.getElementById('msg-input').value = '';
-    const container = document.getElementById('posts-container');
-    container.insertAdjacentHTML('beforeend', `
-      <div class="d-flex gap-3 mb-3">
-        <div class="flex-shrink-0">
-          <div class="rounded-circle d-flex align-items-center justify-content-center"
-               style="width:36px;height:36px;background:#1e3a5f;border:1px solid rgba(255,255,255,0.1);">
-            <span class="text-primary fw-bold small">${data.author[0].toUpperCase()}</span>
-          </div>
-        </div>
-        <div class="flex-grow-1">
-          <div class="card border-secondary p-3" style="background:#1a1a2e;">
-            <div class="d-flex align-items-center gap-2 mb-2">
-              <span class="text-white fw-semibold small">${data.author}</span>
-              <span class="text-white-50" style="font-size:.7rem;">${data.created_at}</span>
-            </div>
-            <p class="text-white-50 small mb-0">${renderMentions(data.message)}</p>
-          </div>
-        </div>
-      </div>`);
-    container.scrollTop = container.scrollHeight;
-  });
+    input.value = '';
+    // polling'in tekrar göstermemesi için ID'yi hemen kaydet
+    if (typeof seenRoomPostIds !== 'undefined') {
+      seenRoomPostIds.add(data.id);
+      lastRoomPostId = Math.max(lastRoomPostId, data.id);
+    }
+    appendRoomPost({
+      id: data.id,
+      author: data.author,
+      message: data.message,
+      created_at: data.created_at,
+      avatar_url: '',
+    });
+  })
+  .catch(() => { input.disabled = false; });
 }
 
 function inviteMember(slug) {
