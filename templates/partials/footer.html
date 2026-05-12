@@ -75,7 +75,7 @@
             </div>
 
             <!-- Kurumsal -->
-            <div class="col-6 col-md-3 col-lg-3">
+            <div class="col-6 col-md-3 col-lg-2">
                 <p class="ax-footer-heading">Kurumsal</p>
                 <ul class="ax-footer-list">
                     <li><a href="{% url 'neden_biz' %}"><i class="bi bi-patch-check"></i>Neden Analizus?</a></li>
@@ -85,17 +85,27 @@
                 </ul>
             </div>
 
-        </div>
-
-        <!-- Destek CTA -->
-        <div class="ax-footer-support">
-            <div class="ax-footer-support-text">
-                <i class="bi bi-heart-fill" style="color:#ec4899;"></i>
-                <span>Analizus'u seviyorsan destekle — platformun büyümesine katkıda bulun.</span>
+            <!-- Bize Destek Ol -->
+            <div class="col-12 col-md-6 col-lg-3">
+                <p class="ax-footer-heading" style="color:#ec4899;">Bize Destek Ol</p>
+                <p style="font-size:.8rem;color:#64748b;margin-bottom:12px;line-height:1.5;">
+                    Analizus'u seviyorsan destekle — Destekçi rozeti, premium üyelik ve daha fazlası seni bekliyor.
+                </p>
+                <ul class="ax-footer-list mb-3" style="margin-bottom:10px;">
+                    <li style="color:#94a3b8;font-size:.78rem;"><i class="bi bi-heart-fill" style="color:#ec4899;"></i>Destekçi Rozeti</li>
+                    <li style="color:#94a3b8;font-size:.78rem;"><i class="bi bi-gem" style="color:#a855f7;"></i>Premium Üyelik</li>
+                    <li style="color:#94a3b8;font-size:.78rem;"><i class="bi bi-people-fill" style="color:#f59e0b;"></i>Destekçiler Listesi</li>
+                </ul>
+                <button data-bs-toggle="modal" data-bs-target="#donationModal"
+                        style="padding:8px 20px;border-radius:20px;border:none;font-size:.82rem;
+                               font-weight:600;cursor:pointer;width:100%;
+                               background:linear-gradient(135deg,#ec4899,#a855f7);color:#fff;
+                               transition:opacity .15s;"
+                        onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
+                    <i class="bi bi-heart-fill me-1" style="font-size:.75rem;"></i>Destekçi Ol
+                </button>
             </div>
-            <button class="ax-footer-support-btn" data-bs-toggle="modal" data-bs-target="#donationModal">
-                Bize Destek Ol
-            </button>
+
         </div>
 
         <div class="ax-footer-bottom">
