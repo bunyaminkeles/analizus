@@ -13,6 +13,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db.models import Count, Sum, Q, Avg, Subquery, OuterRef
 from django.contrib import messages
 from django.utils import timezone
+from django.utils.html import strip_tags
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET, require_POST
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
