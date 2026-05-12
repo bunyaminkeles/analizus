@@ -14,6 +14,8 @@ TOOL_CHOICES = [
     ('mann_whitney', 'Mann-Whitney U Testi'),
     ('kruskal_wallis', 'Kruskal-Wallis H Testi'),
     ('ki_kare', 'Ki-Kare Testi'),
+    ('lineer_regresyon', 'Çoklu Doğrusal Regresyon'),
+    ('lojistik_regresyon', 'Lojistik Regresyon'),
 ]
 
 STATUS_CHOICES = [

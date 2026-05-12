@@ -1,0 +1,403 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Çoklu Doğrusal Regresyon - Analizus{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+  <div class="row mb-4 align-items-center">
+    <div class="col">
+      <h2 class="fw-bold text-white mb-1">
+        <i class="bi bi-graph-up-arrow text-primary me-2"></i>Çoklu Doğrusal Regresyon
+      </h2>
+      <p class="text-white-50 mb-0">Bağımsız değişkenlerin sürekli bir bağımlı değişkeni ne kadar açıkladığını test edin — R², F testi, β ve VIF dahil.</p>
+    </div>
+    {% if user.is_authenticated %}
+    <div class="col-auto">
+      <span class="badge bg-secondary fs-6">Günlük: {{ daily_remaining }} analiz hakkı</span>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="row g-4">
+
+    <!-- Sol panel: yükleme + config -->
+    <div class="col-lg-5">
+      <div class="card border-secondary" style="background-color:#1a1a2e;">
+        <div class="card-body p-4">
+
+          <!-- Adım 1: Yükleme -->
+          <div id="step-upload">
+            <h5 class="text-white fw-semibold mb-3">
+              <i class="bi bi-upload me-2 text-primary"></i>Dosya Yükle
+            </h5>
+            <div id="upload-area"
+                 class="border border-secondary rounded-3 text-center p-4 mb-3"
+                 style="border-style:dashed!important;cursor:pointer;"
+                 onclick="document.getElementById('file-input').click()">
+              <i class="bi bi-cloud-upload-fill fs-2 text-primary mb-2 d-block"></i>
+              <p class="text-white-50 small mb-0" id="file-name">CSV, XLSX, XLS — Maks. 10 MB</p>
+            </div>
+            <input type="file" id="file-input" accept=".csv,.xlsx,.xls" class="d-none">
+            <button id="preview-btn" class="btn btn-primary w-100 fw-semibold disabled" disabled>
+              <i class="bi bi-arrow-right-circle me-2"></i>Sütunları Getir
+            </button>
+            <div id="upload-error" class="alert alert-danger mt-3 d-none small"></div>
+          </div>
+
+          <!-- Adım 2: Sütun seçimi -->
+          <div id="step-config" class="d-none">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <h5 class="text-white fw-semibold mb-0">
+                <i class="bi bi-list-check me-2 text-primary"></i>Değişken Seçimi
+              </h5>
+              <button class="btn btn-sm btn-outline-secondary" onclick="resetToUpload()">
+                <i class="bi bi-arrow-left me-1"></i>Geri
+              </button>
+            </div>
+            <p class="text-white-50 small mb-3" id="config-file-info">—</p>
+
+            <div class="mb-3">
+              <label class="text-white-50 small mb-1 d-block">Bağımlı Değişken (Y — sayısal)</label>
+              <select id="dep-col" class="form-select form-select-sm bg-dark text-white border-secondary" onchange="updateIndepList()">
+                <option value="">— Seçiniz —</option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <label class="text-white-50 small mb-0">Bağımsız Değişkenler (X — en az 1)</label>
+                <button type="button" class="btn btn-link btn-sm text-primary p-0" onclick="toggleAllIndep()">Tümünü Seç/Kaldır</button>
+              </div>
+              <div id="indep-list" class="border border-secondary rounded p-2" style="max-height:200px;overflow-y:auto;background:#12122a;">
+                <p class="text-white-50 small mb-0">Önce bağımlı değişkeni seçin.</p>
+              </div>
+              <p class="text-white-50 small mt-1 mb-0">Seçilen: <span id="indep-count">0</span></p>
+            </div>
+
+            <button id="run-btn" class="btn btn-primary w-100 fw-semibold" disabled>
+              <i class="bi bi-play-circle-fill me-2"></i>Analizi Başlat
+            </button>
+            <div id="run-error" class="alert alert-danger mt-3 d-none small"></div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Sağ panel: sonuçlar -->
+    <div class="col-lg-7">
+      <div class="card border-secondary h-100" style="background-color:#16213e;">
+        <div class="card-body p-4">
+
+          <div id="panel-idle">
+            <h5 class="text-white-50 fw-semibold mb-3">Sonuçlar burada görünecek</h5>
+            <ul class="text-white-50 small ps-3">
+              <li class="mb-1">Her satır bir gözlem olmalıdır.</li>
+              <li class="mb-1">Bağımlı değişken sayısal (sürekli) olmalıdır.</li>
+              <li class="mb-1">Kategorik bağımsız değişkenler otomatik dummy'e dönüştürülür.</li>
+              <li class="mb-1">VIF &gt; 10 çoklu bağlantı sorununa işaret edebilir.</li>
+              <li class="mb-1">β katsayıları yordayıcılar arası etki büyüklüğü karşılaştırması sağlar.</li>
+            </ul>
+          </div>
+
+          <div id="panel-loading" class="text-center d-none py-4">
+            <div class="spinner-border text-primary mb-3" style="width:3rem;height:3rem;"></div>
+            <p class="text-white-50">Regresyon analizi yapılıyor…</p>
+          </div>
+
+          <div id="panel-error" class="d-none">
+            <div class="alert alert-danger">
+              <i class="bi bi-exclamation-triangle-fill me-2"></i>
+              <span id="panel-error-msg"></span>
+            </div>
+            <button class="btn btn-outline-secondary btn-sm" onclick="resetToUpload()">Yeniden Dene</button>
+          </div>
+
+          <div id="panel-done" class="d-none">
+
+            <!-- Model özeti -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="text-white fw-semibold mb-0">Model Özeti</h5>
+              <a id="pdf-btn" href="#" class="btn btn-sm btn-outline-danger" target="_blank">
+                <i class="bi bi-file-earmark-pdf-fill me-1"></i>PDF İndir
+              </a>
+            </div>
+
+            <div id="sig-box" class="rounded-3 p-3 mb-3">
+              <div class="fs-6 fw-semibold" id="sig-text"></div>
+            </div>
+
+            <div class="row g-2 mb-3">
+              <div class="col-6 col-md-3">
+                <div class="rounded-3 p-3 text-center" style="background:rgba(255,255,255,0.05);">
+                  <div class="fs-4 fw-bold text-primary" id="res-r2">—</div>
+                  <div class="text-white-50 small">R²</div>
+                </div>
+              </div>
+              <div class="col-6 col-md-3">
+                <div class="rounded-3 p-3 text-center" style="background:rgba(255,255,255,0.05);">
+                  <div class="fs-4 fw-bold text-info" id="res-adj-r2">—</div>
+                  <div class="text-white-50 small">Düz. R²</div>
+                </div>
+              </div>
+              <div class="col-6 col-md-3">
+                <div class="rounded-3 p-3 text-center" style="background:rgba(255,255,255,0.05);">
+                  <div class="fs-4 fw-bold text-warning" id="res-f">—</div>
+                  <div class="text-white-50 small">F</div>
+                </div>
+              </div>
+              <div class="col-6 col-md-3">
+                <div class="rounded-3 p-3 text-center" style="background:rgba(255,255,255,0.05);">
+                  <div class="fs-4 fw-bold" id="res-p" style="color:#a78bfa;">—</div>
+                  <div class="text-white-50 small">p-değeri</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Katsayılar -->
+            <h6 class="text-white fw-semibold mb-2">Katsayılar</h6>
+            <div class="table-responsive mb-3" style="max-height:280px;overflow-y:auto;">
+              <table class="table table-dark table-sm table-hover mb-0" style="font-size:0.78rem;">
+                <thead id="coef-head"></thead>
+                <tbody id="coef-body"></tbody>
+              </table>
+            </div>
+            <p class="text-white-50 small mb-3">* Yeşil hücre p &lt; .05 | β = standardize edilmiş katsayı | VIF &gt; 10 çoklu bağlantı riski</p>
+
+            <!-- APA -->
+            <div class="rounded-3 p-3 mb-2" style="background:rgba(59,130,246,0.08);border:1px solid rgba(59,130,246,0.2);">
+              <p class="text-white-50 small fw-semibold mb-2">Tezinde Nasıl Raporlarsın?</p>
+              <p class="text-white small mb-2" id="res-apa" style="font-style:italic;"></p>
+              <button class="btn btn-sm btn-outline-primary" onclick="copyApa()">
+                <i class="bi bi-clipboard me-1"></i>Kopyala
+              </button>
+            </div>
+
+          </div><!-- panel-done -->
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const TOOL_URL = '{% url "istatistik:lineer_regresyon" %}';
+const STATUS_BASE = '{% url "istatistik:lineer_regresyon_status" "00000000-0000-0000-0000-000000000000" %}'.replace('00000000-0000-0000-0000-000000000000', '');
+
+let previewId = null, previewFilename = null, allNumericCols = [], pollInterval = null;
+
+const fileInput = document.getElementById('file-input');
+const previewBtn = document.getElementById('preview-btn');
+
+fileInput.addEventListener('change', () => {
+  const f = fileInput.files[0];
+  if (!f) return;
+  document.getElementById('file-name').textContent = f.name + ' (' + (f.size / 1024).toFixed(0) + ' KB)';
+  previewBtn.disabled = false; previewBtn.classList.remove('disabled');
+  document.getElementById('upload-error').classList.add('d-none');
+});
+
+previewBtn.addEventListener('click', previewFile);
+
+function previewFile() {
+  const f = fileInput.files[0];
+  if (!f) return;
+  previewBtn.disabled = true;
+  const fd = new FormData();
+  fd.append('file', f); fd.append('step', 'preview');
+  fd.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+  fetch(TOOL_URL, {method:'POST', body:fd, headers:{'X-Requested-With':'XMLHttpRequest'}})
+    .then(r => r.json())
+    .then(data => {
+      previewBtn.disabled = false;
+      if (!data.success) { showUploadError(data.error || 'Hata'); return; }
+      previewId = data.preview_id; previewFilename = data.filename;
+      allNumericCols = data.numeric_cols || [];
+      document.getElementById('config-file-info').textContent = data.filename + ' — ' + data.n_rows + ' satır, ' + data.columns.length + ' sütun';
+      buildDepSelect(allNumericCols);
+      updateIndepList();
+      document.getElementById('step-upload').classList.add('d-none');
+      document.getElementById('step-config').classList.remove('d-none');
+    })
+    .catch(() => { previewBtn.disabled = false; showUploadError('Sunucu hatası.'); });
+}
+
+function buildDepSelect(cols) {
+  const sel = document.getElementById('dep-col');
+  sel.innerHTML = '<option value="">— Seçiniz —</option>';
+  cols.forEach(c => { sel.innerHTML += `<option value="${c}">${c}</option>`; });
+}
+
+function updateIndepList() {
+  const depVal = document.getElementById('dep-col').value;
+  const container = document.getElementById('indep-list');
+  const available = allNumericCols.filter(c => c !== depVal);
+  if (!depVal) {
+    container.innerHTML = '<p class="text-white-50 small mb-0">Önce bağımlı değişkeni seçin.</p>';
+    document.getElementById('indep-count').textContent = '0';
+    document.getElementById('run-btn').disabled = true;
+    return;
+  }
+  if (available.length === 0) {
+    container.innerHTML = '<p class="text-white-50 small mb-0">Başka sayısal sütun yok.</p>';
+    document.getElementById('run-btn').disabled = true;
+    return;
+  }
+  container.innerHTML = available.map(c =>
+    `<div class="form-check mb-1">
+      <input class="form-check-input indep-cb" type="checkbox" value="${c}" id="cb_${c}" onchange="countIndep()">
+      <label class="form-check-label text-white-50 small" for="cb_${c}">${c}</label>
+    </div>`
+  ).join('');
+  countIndep();
+}
+
+function countIndep() {
+  const n = document.querySelectorAll('.indep-cb:checked').length;
+  document.getElementById('indep-count').textContent = n;
+  document.getElementById('run-btn').disabled = n < 1;
+}
+
+function toggleAllIndep() {
+  const cbs = document.querySelectorAll('.indep-cb');
+  const allChecked = Array.from(cbs).every(cb => cb.checked);
+  cbs.forEach(cb => cb.checked = !allChecked);
+  countIndep();
+}
+
+document.getElementById('run-btn').addEventListener('click', runAnalysis);
+
+function runAnalysis() {
+  const depVal = document.getElementById('dep-col').value;
+  const indepVals = Array.from(document.querySelectorAll('.indep-cb:checked')).map(cb => cb.value);
+  if (!depVal) { showRunError('Bağımlı değişken seçilmedi.'); return; }
+  if (indepVals.length === 0) { showRunError('En az 1 bağımsız değişken seçin.'); return; }
+
+  document.getElementById('run-error').classList.add('d-none');
+  showPanel('loading');
+
+  const fd = new FormData();
+  fd.append('step', 'run');
+  fd.append('preview_id', previewId);
+  fd.append('filename', previewFilename);
+  fd.append('dep_col', depVal);
+  indepVals.forEach(v => fd.append('indep_cols', v));
+  fd.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+  fetch(TOOL_URL, {method:'POST', body:fd, headers:{'X-Requested-With':'XMLHttpRequest'}})
+    .then(r => r.json())
+    .then(data => {
+      if (!data.success) { showPanel('idle'); showRunError(data.error || 'Hata'); return; }
+      startPolling(data.job_id);
+    })
+    .catch(() => { showPanel('idle'); showRunError('Sunucu hatası.'); });
+}
+
+function startPolling(jobId) {
+  if (pollInterval) clearInterval(pollInterval);
+  pollInterval = setInterval(() => {
+    fetch(STATUS_BASE + jobId + '/', {headers:{'X-Requested-With':'XMLHttpRequest'}})
+      .then(r => r.json())
+      .then(data => {
+        if (data.status === 'completed') {
+          clearInterval(pollInterval);
+          showResults(data);
+        } else if (data.status === 'failed') {
+          clearInterval(pollInterval);
+          showPanel('error');
+          document.getElementById('panel-error-msg').textContent = data.error || 'Analiz başarısız.';
+        }
+      });
+  }, 2000);
+}
+
+function showResults(data) {
+  const r = data.result_data;
+  const sig = r.significant;
+  const sigBox = document.getElementById('sig-box');
+  if (sig) {
+    sigBox.style.background = 'rgba(74,222,128,0.08)'; sigBox.style.border = '1px solid rgba(74,222,128,0.2)';
+    document.getElementById('sig-text').innerHTML = `<span style="color:#4ade80;">✓ Model istatistiksel olarak anlamlı (p &lt; .05)</span>`;
+  } else {
+    sigBox.style.background = 'rgba(248,113,113,0.08)'; sigBox.style.border = '1px solid rgba(248,113,113,0.2)';
+    document.getElementById('sig-text').innerHTML = `<span style="color:#f87171;">✗ Model istatistiksel olarak anlamlı değil (p ≥ .05)</span>`;
+  }
+
+  document.getElementById('res-r2').textContent = r.r_squared.toFixed(4);
+  document.getElementById('res-adj-r2').textContent = r.adj_r_squared.toFixed(4);
+  document.getElementById('res-f').textContent = `F(${r.df_model},${r.df_resid})=${r.f_stat.toFixed(3)}`;
+  const pDisp = r.f_p < 0.001 ? '< .001' : r.f_p.toFixed(3);
+  document.getElementById('res-p').textContent = pDisp;
+
+  // Katsayılar tablosu
+  document.getElementById('coef-head').innerHTML = '<tr>' +
+    ['Değişken','B','β','SE','t','p','%95 GA Alt','%95 GA Üst','VIF'].map(h => `<th>${h}</th>`).join('') + '</tr>';
+  document.getElementById('coef-body').innerHTML = r.coefficients.map(c => {
+    const pStr = c.p < 0.001 ? '&lt; .001' : c.p.toFixed(4);
+    const pCell = c.significant && c.name !== 'Sabit'
+      ? `<td style="color:#4ade80;font-weight:bold;">${pStr}</td>`
+      : `<td>${pStr}</td>`;
+    const betaStr = c.beta === '—' ? '—' : c.beta.toFixed(4);
+    const vifStr = c.vif === '—' ? '—' : (typeof c.vif === 'number' ? c.vif.toFixed(3) : c.vif);
+    const vifCell = (c.vif !== '—' && c.vif > 10)
+      ? `<td style="color:#fb923c;">${vifStr}</td>` : `<td>${vifStr}</td>`;
+    return `<tr>
+      <td class="fw-semibold">${c.name}</td>
+      <td>${c.B.toFixed(4)}</td>
+      <td>${betaStr}</td>
+      <td>${c.se.toFixed(4)}</td>
+      <td>${c.t.toFixed(3)}</td>
+      ${pCell}
+      <td>${c.ci_low.toFixed(4)}</td>
+      <td>${c.ci_high.toFixed(4)}</td>
+      ${vifCell}
+    </tr>`;
+  }).join('');
+
+  // APA
+  const sigTxt = sig ? 'anlamlı bulunmuştur' : 'anlamlı bulunmamıştır';
+  let apa = `Çoklu doğrusal regresyon analizi sonucunda kurulan model istatistiksel açıdan ${sigTxt}, F(${r.df_model}, ${r.df_resid}) = ${r.f_stat.toFixed(3)}, p = ${pDisp}, R² = ${r.r_squared.toFixed(4)}, düzeltilmiş R² = ${r.adj_r_squared.toFixed(4)}.`;
+  if (r.sig_predictors && r.sig_predictors.length > 0) {
+    apa += ` Anlamlı yordayıcılar: ${r.sig_predictors.join(', ')}.`;
+  }
+  document.getElementById('res-apa').textContent = apa;
+  document.getElementById('pdf-btn').href = data.pdf_url;
+  showPanel('done');
+}
+
+function copyApa() {
+  navigator.clipboard.writeText(document.getElementById('res-apa').textContent).then(() => {
+    const btn = event.target.closest('button');
+    btn.innerHTML = '<i class="bi bi-check-lg me-1"></i>Kopyalandı';
+    setTimeout(() => { btn.innerHTML = '<i class="bi bi-clipboard me-1"></i>Kopyala'; }, 2000);
+  });
+}
+
+function showPanel(name) {
+  ['idle','loading','error','done'].forEach(n => {
+    document.getElementById('panel-' + n).classList.toggle('d-none', n !== name);
+  });
+}
+function showUploadError(msg) { const el = document.getElementById('upload-error'); el.textContent = msg; el.classList.remove('d-none'); }
+function showRunError(msg) { const el = document.getElementById('run-error'); el.textContent = msg; el.classList.remove('d-none'); }
+function resetToUpload() {
+  if (pollInterval) clearInterval(pollInterval);
+  previewId = null; previewFilename = null;
+  fileInput.value = ''; previewBtn.disabled = true; previewBtn.classList.add('disabled');
+  document.getElementById('file-name').textContent = 'CSV, XLSX, XLS — Maks. 10 MB';
+  document.getElementById('step-config').classList.add('d-none');
+  document.getElementById('step-upload').classList.remove('d-none');
+  document.getElementById('upload-error').classList.add('d-none');
+  document.getElementById('run-error').classList.add('d-none');
+  showPanel('idle');
+}
+
+{% if active_job_id %}
+showPanel('loading');
+startPolling('{{ active_job_id }}');
+{% endif %}
+</script>
+{% endblock %}
