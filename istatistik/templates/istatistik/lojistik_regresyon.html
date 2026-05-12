@@ -194,7 +194,7 @@
 
 <script>
 const TOOL_URL = '{% url "istatistik:lojistik_regresyon" %}';
-const STATUS_BASE = '{% url "istatistik:lojistik_regresyon_status" "00000000-0000-0000-0000-000000000000" %}'.replace('00000000-0000-0000-0000-000000000000', '');
+const STATUS_TEMPLATE = '{% url "istatistik:lojistik_regresyon_status" "00000000-0000-0000-0000-000000000000" %}';
 
 let previewId = null, previewFilename = null, allCols = [], allNumCols = [], pollInterval = null;
 
@@ -309,7 +309,7 @@ function runAnalysis() {
 function startPolling(jobId) {
   if (pollInterval) clearInterval(pollInterval);
   pollInterval = setInterval(() => {
-    fetch(STATUS_BASE + jobId + '/', {headers:{'X-Requested-With':'XMLHttpRequest'}})
+    fetch(STATUS_TEMPLATE.replace('00000000-0000-0000-0000-000000000000', jobId), {headers:{'X-Requested-With':'XMLHttpRequest'}})
       .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
       .then(data => {
         if (data.status === 'completed') {
