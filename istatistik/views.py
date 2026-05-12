@@ -28,7 +28,7 @@ PROMO_BASE = {
 
 
 @feature_required
-@ratelimit(key='ip', rate='10/h', method='POST', block=True)
+@ratelimit(key='ip', rate='30/h', method='POST', block=True)
 def cronbach_landing(request):
     if not request.user.is_authenticated:
         return render(request, 'service_promo.html', {
@@ -66,7 +66,7 @@ def cronbach_landing(request):
 
 
 @feature_required
-@ratelimit(key='ip', rate='10/h', method='POST', block=True)
+@ratelimit(key='ip', rate='30/h', method='POST', block=True)
 def normallik_landing(request):
     if not request.user.is_authenticated:
         return render(request, 'service_promo.html', {
@@ -104,7 +104,7 @@ def normallik_landing(request):
 
 
 @feature_required
-@ratelimit(key='ip', rate='10/h', method='POST', block=True)
+@ratelimit(key='ip', rate='30/h', method='POST', block=True)
 def betimsel_landing(request):
     if not request.user.is_authenticated:
         return render(request, 'service_promo.html', {
@@ -142,7 +142,7 @@ def betimsel_landing(request):
 
 
 @feature_required
-@ratelimit(key='ip', rate='10/h', method='POST', block=True)
+@ratelimit(key='ip', rate='30/h', method='POST', block=True)
 def korelasyon_landing(request):
     if not request.user.is_authenticated:
         return render(request, 'service_promo.html', {
@@ -192,7 +192,7 @@ def orneklem_landing(request):
 
 
 @feature_required
-@ratelimit(key='ip', rate='10/h', method='POST', block=True)
+@ratelimit(key='ip', rate='30/h', method='POST', block=True)
 def ttesti_landing(request):
     if not request.user.is_authenticated:
         return render(request, 'service_promo.html', {
@@ -220,7 +220,7 @@ def ttesti_landing(request):
 
 
 @feature_required
-@ratelimit(key='ip', rate='10/h', method='POST', block=True)
+@ratelimit(key='ip', rate='30/h', method='POST', block=True)
 def anova_landing(request):
     if not request.user.is_authenticated:
         return render(request, 'service_promo.html', {
@@ -347,7 +347,7 @@ def _handle_group_tool_post(request, tool):
 
 
 @feature_required
-@ratelimit(key='ip', rate='10/h', method='POST', block=True)
+@ratelimit(key='ip', rate='30/h', method='POST', block=True)
 def mann_whitney_landing(request):
     if not request.user.is_authenticated:
         return render(request, 'service_promo.html', {
@@ -376,7 +376,7 @@ def mann_whitney_landing(request):
 
 
 @feature_required
-@ratelimit(key='ip', rate='10/h', method='POST', block=True)
+@ratelimit(key='ip', rate='30/h', method='POST', block=True)
 def kruskal_wallis_landing(request):
     if not request.user.is_authenticated:
         return render(request, 'service_promo.html', {
@@ -405,7 +405,7 @@ def kruskal_wallis_landing(request):
 
 
 @feature_required
-@ratelimit(key='ip', rate='10/h', method='POST', block=True)
+@ratelimit(key='ip', rate='30/h', method='POST', block=True)
 def ki_kare_landing(request):
     if not request.user.is_authenticated:
         return render(request, 'service_promo.html', {
@@ -434,7 +434,7 @@ def ki_kare_landing(request):
 
 
 @feature_required
-@ratelimit(key='ip', rate='10/h', method='POST', block=True)
+@ratelimit(key='ip', rate='30/h', method='POST', block=True)
 def lineer_regresyon_landing(request):
     if not request.user.is_authenticated:
         return render(request, 'service_promo.html', {
@@ -463,7 +463,7 @@ def lineer_regresyon_landing(request):
 
 
 @feature_required
-@ratelimit(key='ip', rate='10/h', method='POST', block=True)
+@ratelimit(key='ip', rate='30/h', method='POST', block=True)
 def lojistik_regresyon_landing(request):
     if not request.user.is_authenticated:
         return render(request, 'service_promo.html', {
