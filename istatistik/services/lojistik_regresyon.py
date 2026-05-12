@@ -74,7 +74,7 @@ def analyze(df, dep_col: str, indep_cols: list) -> dict:
     nagelkerke = float(cox_snell / max_cox_snell) if max_cox_snell > 0 else 0.0
 
     # Katsayılar
-    ci = model.conf_int()
+    ci = np.array(model.conf_int())
     coefficients = [{
         'name': 'Sabit',
         'B': round(float(model.params[0]), 4),
@@ -82,8 +82,8 @@ def analyze(df, dep_col: str, indep_cols: list) -> dict:
         'wald': round(float(model.tvalues[0] ** 2), 3),
         'p': round(float(model.pvalues[0]), 4),
         'exp_b': round(float(np.exp(model.params[0])), 4),
-        'ci_low_or': round(float(np.exp(ci.iloc[0, 0])), 4),
-        'ci_high_or': round(float(np.exp(ci.iloc[0, 1])), 4),
+        'ci_low_or': round(float(np.exp(ci[0, 0])), 4),
+        'ci_high_or': round(float(np.exp(ci[0, 1])), 4),
         'significant': bool(model.pvalues[0] < 0.05),
     }]
     for i, name in enumerate(predictor_names):
@@ -94,8 +94,8 @@ def analyze(df, dep_col: str, indep_cols: list) -> dict:
             'wald': round(float(model.tvalues[i + 1] ** 2), 3),
             'p': round(float(model.pvalues[i + 1]), 4),
             'exp_b': round(float(np.exp(model.params[i + 1])), 4),
-            'ci_low_or': round(float(np.exp(ci.iloc[i + 1, 0])), 4),
-            'ci_high_or': round(float(np.exp(ci.iloc[i + 1, 1])), 4),
+            'ci_low_or': round(float(np.exp(ci[i + 1, 0])), 4),
+            'ci_high_or': round(float(np.exp(ci[i + 1, 1])), 4),
             'significant': bool(model.pvalues[i + 1] < 0.05),
         })
 
