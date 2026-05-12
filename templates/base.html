@@ -207,17 +207,27 @@
                         {% endif %}
                         {% if features.istatistik %}
                         {% if features.bibliometrics or features.tezanaliz %}<div class="site-nav__dropdown-divider"></div>{% endif %}
-                        <span class="site-nav__dropdown-label">İstatistik Araçları</span>
-                        <a href="{% url 'istatistik:cronbach' %}" class="site-nav__dropdown-item" role="menuitem">Güvenilirlik (Cronbach)</a>
-                        <a href="{% url 'istatistik:normallik' %}" class="site-nav__dropdown-item" role="menuitem">Normallik Testi</a>
+                        <span class="site-nav__dropdown-label">Ön Analizler</span>
                         <a href="{% url 'istatistik:betimsel' %}" class="site-nav__dropdown-item" role="menuitem">Betimleyici İstatistik</a>
+                        <a href="{% url 'istatistik:normallik' %}" class="site-nav__dropdown-item" role="menuitem">Normallik Testi</a>
+                        <a href="{% url 'istatistik:orneklem' %}" class="site-nav__dropdown-item" role="menuitem">Örneklem Hesaplayıcı</a>
+                        <div class="site-nav__dropdown-divider"></div>
+                        <span class="site-nav__dropdown-label">Geçerlik &amp; Güvenirlik</span>
+                        <a href="{% url 'istatistik:cronbach' %}" class="site-nav__dropdown-item" role="menuitem">Cronbach Alpha</a>
+                        <div class="site-nav__dropdown-divider"></div>
+                        <span class="site-nav__dropdown-label">İlişki Analizleri</span>
                         <a href="{% url 'istatistik:korelasyon' %}" class="site-nav__dropdown-item" role="menuitem">Korelasyon Matrisi</a>
+                        <a href="{% url 'istatistik:ki_kare' %}" class="site-nav__dropdown-item" role="menuitem">Ki-Kare Testi</a>
+                        <div class="site-nav__dropdown-divider"></div>
+                        <span class="site-nav__dropdown-label">Fark Analizleri</span>
                         <a href="{% url 'istatistik:ttesti' %}" class="site-nav__dropdown-item" role="menuitem">t-Testi</a>
                         <a href="{% url 'istatistik:anova' %}" class="site-nav__dropdown-item" role="menuitem">ANOVA</a>
                         <a href="{% url 'istatistik:mann_whitney' %}" class="site-nav__dropdown-item" role="menuitem">Mann-Whitney U</a>
                         <a href="{% url 'istatistik:kruskal_wallis' %}" class="site-nav__dropdown-item" role="menuitem">Kruskal-Wallis H</a>
-                        <a href="{% url 'istatistik:ki_kare' %}" class="site-nav__dropdown-item" role="menuitem">Ki-Kare Testi</a>
-                        <a href="{% url 'istatistik:orneklem' %}" class="site-nav__dropdown-item" role="menuitem">Örneklem Hesaplayıcı</a>
+                        <div class="site-nav__dropdown-divider"></div>
+                        <span class="site-nav__dropdown-label">Regresyon Analizleri</span>
+                        <a href="{% url 'istatistik:lineer_regresyon' %}" class="site-nav__dropdown-item" role="menuitem">Çoklu Doğrusal Regresyon</a>
+                        <a href="{% url 'istatistik:lojistik_regresyon' %}" class="site-nav__dropdown-item" role="menuitem">Lojistik Regresyon</a>
                         {% endif %}
                         <div class="site-nav__dropdown-divider"></div>
                         <a href="{% url 'tableau_dashboard' %}" class="site-nav__dropdown-item" role="menuitem">Tableau Analizleri</a>
@@ -396,17 +406,23 @@
                     {% if features.bibliometrics %}<a href="{% url 'bibliometrics:landing' %}" class="nav-drawer__link">Bibliometrik Analiz</a>{% endif %}
                     {% if features.tezanaliz %}<a href="{% url 'tezanaliz:landing' %}" class="nav-drawer__link">Tez Analizi (YÖK)</a>{% endif %}
                     {% if features.istatistik %}
-                    <span class="nav-drawer__sub-label">İstatistik Araçları</span>
-                    <a href="{% url 'istatistik:cronbach' %}" class="nav-drawer__link">Güvenilirlik (Cronbach)</a>
-                    <a href="{% url 'istatistik:normallik' %}" class="nav-drawer__link">Normallik Testi</a>
+                    <span class="nav-drawer__sub-label">Ön Analizler</span>
                     <a href="{% url 'istatistik:betimsel' %}" class="nav-drawer__link">Betimleyici İstatistik</a>
+                    <a href="{% url 'istatistik:normallik' %}" class="nav-drawer__link">Normallik Testi</a>
+                    <a href="{% url 'istatistik:orneklem' %}" class="nav-drawer__link">Örneklem Hesaplayıcı</a>
+                    <span class="nav-drawer__sub-label">Geçerlik &amp; Güvenirlik</span>
+                    <a href="{% url 'istatistik:cronbach' %}" class="nav-drawer__link">Cronbach Alpha</a>
+                    <span class="nav-drawer__sub-label">İlişki Analizleri</span>
                     <a href="{% url 'istatistik:korelasyon' %}" class="nav-drawer__link">Korelasyon Matrisi</a>
+                    <a href="{% url 'istatistik:ki_kare' %}" class="nav-drawer__link">Ki-Kare Testi</a>
+                    <span class="nav-drawer__sub-label">Fark Analizleri</span>
                     <a href="{% url 'istatistik:ttesti' %}" class="nav-drawer__link">t-Testi</a>
                     <a href="{% url 'istatistik:anova' %}" class="nav-drawer__link">ANOVA</a>
                     <a href="{% url 'istatistik:mann_whitney' %}" class="nav-drawer__link">Mann-Whitney U</a>
                     <a href="{% url 'istatistik:kruskal_wallis' %}" class="nav-drawer__link">Kruskal-Wallis H</a>
-                    <a href="{% url 'istatistik:ki_kare' %}" class="nav-drawer__link">Ki-Kare Testi</a>
-                    <a href="{% url 'istatistik:orneklem' %}" class="nav-drawer__link">Örneklem Hesaplayıcı</a>
+                    <span class="nav-drawer__sub-label">Regresyon Analizleri</span>
+                    <a href="{% url 'istatistik:lineer_regresyon' %}" class="nav-drawer__link">Çoklu Doğrusal Regresyon</a>
+                    <a href="{% url 'istatistik:lojistik_regresyon' %}" class="nav-drawer__link">Lojistik Regresyon</a>
                     {% endif %}
                     <a href="{% url 'tableau_dashboard' %}" class="nav-drawer__link">Tableau Analizleri</a>
                 </div>

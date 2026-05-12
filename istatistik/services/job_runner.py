@@ -100,6 +100,22 @@ def _execute_job(job_id: str):
                 col1=opts.get('group_col'),
                 col2=opts.get('dep_col'),
             )
+        elif job.tool == 'lineer_regresyon':
+            from .lineer_regresyon import analyze, build_pdf
+            opts = job.options or {}
+            result_data = analyze(
+                df,
+                dep_col=opts.get('dep_col', ''),
+                indep_cols=opts.get('indep_cols', []),
+            )
+        elif job.tool == 'lojistik_regresyon':
+            from .lojistik_regresyon import analyze, build_pdf
+            opts = job.options or {}
+            result_data = analyze(
+                df,
+                dep_col=opts.get('dep_col', ''),
+                indep_cols=opts.get('indep_cols', []),
+            )
         else:
             job.mark_failed(f'Bilinmeyen araç: {job.tool}')
             return

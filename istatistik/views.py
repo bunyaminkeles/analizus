@@ -320,6 +320,11 @@ def _handle_group_tool_post(request, tool):
         elif tool in ('cronbach', 'normallik', 'betimsel'):
             cols = request.POST.getlist('columns')
             options = {'columns': cols} if cols else {}
+        elif tool in ('lineer_regresyon', 'lojistik_regresyon'):
+            options = {
+                'dep_col': request.POST.get('dep_col', ''),
+                'indep_cols': request.POST.getlist('indep_cols'),
+            }
         else:  # mann_whitney, kruskal_wallis
             options = {
                 'group_col': request.POST.get('group_col', ''),
@@ -425,6 +430,64 @@ def ki_kare_landing(request):
         'tool_title': 'Ki-Kare Testi',
         'tool_icon': 'bi-grid-3x3',
         'tool_color': 'purple',
+    })
+
+
+@feature_required
+@ratelimit(key='ip', rate='10/h', method='POST', block=True)
+def lineer_regresyon_landing(request):
+    if not request.user.is_authenticated:
+        return render(request, 'service_promo.html', {
+            **PROMO_BASE,
+            'promo_title': 'Çoklu Doğrusal Regresyon',
+            'promo_icon': 'bi-graph-up-arrow',
+            'promo_color': 'primary',
+            'promo_description': 'Bir veya birden fazla bağımsız değişkenin sürekli bir bağımlı değişkeni ne kadar açıkladığını analiz edin. R², F testi, standardize beta ve VIF dahil tam OLS regresyon raporu.',
+            'promo_features': [
+                {'icon': 'bi-graph-up-arrow', 'title': 'OLS Regresyon', 'desc': 'R², düzeltilmiş R², F istatistiği ve model anlamlılığı otomatik hesaplanır.'},
+                {'icon': 'bi-table', 'color': 'info', 'title': 'Katsayı Tablosu', 'desc': 'Her yordayıcı için B, β (standardize), SE, t, p ve %95 güven aralığı raporlanır.'},
+                {'icon': 'bi-exclamation-triangle', 'color': 'warning', 'title': 'VIF (Çoklu Bağlantı)', 'desc': 'Variance Inflation Factor ile çoklu bağlantı sorunu kontrol edilir.'},
+                {'icon': 'bi-file-earmark-pdf-fill', 'color': 'danger', 'title': 'PDF Rapor', 'desc': 'APA formatında raporlanabilir sonuçlar PDF olarak indirilir.'},
+            ],
+        })
+    if request.method == 'POST':
+        return _handle_group_tool_post(request, 'lineer_regresyon')
+    active_job = _get_active_job(request.user, 'lineer_regresyon')
+    return render(request, 'istatistik/lineer_regresyon.html', {
+        'active_job_id': str(active_job.id) if active_job else None,
+        'daily_remaining': _daily_remaining(request.user),
+        'tool_title': 'Çoklu Doğrusal Regresyon',
+        'tool_icon': 'bi-graph-up-arrow',
+        'tool_color': 'primary',
+    })
+
+
+@feature_required
+@ratelimit(key='ip', rate='10/h', method='POST', block=True)
+def lojistik_regresyon_landing(request):
+    if not request.user.is_authenticated:
+        return render(request, 'service_promo.html', {
+            **PROMO_BASE,
+            'promo_title': 'Lojistik Regresyon',
+            'promo_icon': 'bi-diagram-3',
+            'promo_color': 'success',
+            'promo_description': 'İkili (binary) bir sonuç değişkenini yordayın. Odds Ratio, Nagelkerke R² ve sınıflandırma tablosu ile tam lojistik regresyon raporu.',
+            'promo_features': [
+                {'icon': 'bi-toggles', 'title': 'Binary Sonuç', 'desc': '0/1 veya iki kategorili bağımlı değişken ile çalışır. Kategorik yordayıcılar otomatik dummy\'e dönüştürülür.'},
+                {'icon': 'bi-table', 'color': 'info', 'title': 'Odds Ratio', 'desc': 'Her yordayıcı için B, SE, Wald, p ve Exp(B) = Odds Ratio %95 GA ile raporlanır.'},
+                {'icon': 'bi-check2-square', 'color': 'warning', 'title': 'Sınıflandırma', 'desc': 'Model doğruluğu ve sınıflandırma tablosu (TP, TN, FP, FN) gösterilir.'},
+                {'icon': 'bi-file-earmark-pdf-fill', 'color': 'danger', 'title': 'PDF Rapor', 'desc': 'Nagelkerke R², model χ² ve APA formatında raporlanabilir sonuçlar PDF olarak indirilir.'},
+            ],
+        })
+    if request.method == 'POST':
+        return _handle_group_tool_post(request, 'lojistik_regresyon')
+    active_job = _get_active_job(request.user, 'lojistik_regresyon')
+    return render(request, 'istatistik/lojistik_regresyon.html', {
+        'active_job_id': str(active_job.id) if active_job else None,
+        'daily_remaining': _daily_remaining(request.user),
+        'tool_title': 'Lojistik Regresyon',
+        'tool_icon': 'bi-diagram-3',
+        'tool_color': 'success',
     })
 
 

@@ -23,4 +23,8 @@ urlpatterns = [
     path('kruskal-wallis/status/<uuid:job_id>/', views.job_status, name='kruskal_wallis_status'),
     path('ki-kare/', views.ki_kare_landing, name='ki_kare'),
     path('ki-kare/status/<uuid:job_id>/', views.job_status, name='ki_kare_status'),
+    path('lineer-regresyon/', views.lineer_regresyon_landing, name='lineer_regresyon'),
+    path('lineer-regresyon/status/<uuid:job_id>/', views.job_status, name='lineer_regresyon_status'),
+    path('lojistik-regresyon/', views.lojistik_regresyon_landing, name='lojistik_regresyon'),
+    path('lojistik-regresyon/status/<uuid:job_id>/', views.job_status, name='lojistik_regresyon_status'),
 ]
