@@ -197,8 +197,8 @@
                                     <span class="text-muted small">{{ post.author.username }}</span>
                                 </div>
                                 <div class="text-muted small">
-                                    <span class="me-3"><i class="bi bi-eye me-1"></i>{{ post.views }}</span>
-                                    <span class="me-3"><i class="bi bi-heart me-1"></i>{{ post.total_likes }}</span>
+                                    {% if post.views %}<span class="me-3"><i class="bi bi-eye me-1"></i>{{ post.views }}</span>{% endif %}
+                                    {% if post.total_likes %}<span class="me-3"><i class="bi bi-heart me-1"></i>{{ post.total_likes }}</span>{% endif %}
                                     <span><i class="bi bi-clock me-1"></i>{{ post.reading_time }} dk</span>
                                 </div>
                             </div>
