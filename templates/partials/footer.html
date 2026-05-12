@@ -87,6 +87,17 @@
 
         </div>
 
+        <!-- Destek CTA -->
+        <div class="ax-footer-support">
+            <div class="ax-footer-support-text">
+                <i class="bi bi-heart-fill" style="color:#ec4899;"></i>
+                <span>Analizus'u seviyorsan destekle — platformun büyümesine katkıda bulun.</span>
+            </div>
+            <button class="ax-footer-support-btn" data-bs-toggle="modal" data-bs-target="#donationModal">
+                Bize Destek Ol
+            </button>
+        </div>
+
         <div class="ax-footer-bottom">
             <p>&copy; 2026 Analizus — Akademik Araştırma Platformu</p>
             <div class="ax-footer-bottom-links">
@@ -96,3 +107,118 @@
         </div>
     </div>
 </footer>
+
+<!-- Bağış Modal (her sayfada erişilebilir) -->
+<div class="modal fade" id="donationModal" tabindex="-1" aria-labelledby="donationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark border border-secondary" style="border-radius:20px;">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title text-white" id="donationModalLabel">
+                    <i class="bi bi-heart-fill me-2" style="color:#ec4899;"></i>Bizi Destekle
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Kapat"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-muted mb-4">Platformumuzu destekleyerek gelişimine katkıda bulunabilirsiniz.</p>
+
+                {% if donation_tiers %}
+                <h6 class="text-white mb-3"><i class="bi bi-gem me-2" style="color:#ec4899;"></i>Destek Paketini Seçiniz</h6>
+                <div class="d-flex flex-column gap-2 mb-4" id="tierSelectionContainer">
+                    {% for tier in donation_tiers %}
+                    <div class="tier-option p-3 rounded"
+                         style="background:rgba(255,255,255,0.05);border:2px solid rgba(255,255,255,0.1);cursor:pointer;transition:all .2s;"
+                         data-tier-id="{{ tier.id }}" data-tier-name="{{ tier.name }}" data-tier-amount="{{ tier.min_amount }}"
+                         onclick="selectTier(this)">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center gap-2">
+                                <input class="form-check-input tier-radio" type="radio" name="selectedTier"
+                                       id="ftier_{{ tier.id }}" value="{{ tier.id }}" style="cursor:pointer;">
+                                <label for="ftier_{{ tier.id }}" style="cursor:pointer;margin-bottom:0;">
+                                    <i class="bi bi-star-fill me-1"
+                                       style="color:{% if tier.min_amount >= 500 %}#a855f7{% elif tier.min_amount >= 250 %}#f59e0b{% elif tier.min_amount >= 100 %}#94a3b8{% else %}#cd7f32{% endif %};"></i>
+                                    <span class="text-white fw-bold">{{ tier.name }}</span>
+                                </label>
+                            </div>
+                            <div>
+                                <span class="text-warning fw-bold">{{ tier.min_amount|floatformat:0 }} TL</span>
+                                <span class="text-muted mx-1">&rarr;</span>
+                                <span class="text-success small">{{ tier.premium_days }} gün</span>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <div class="alert alert-info bg-transparent border-info text-info small mb-4">
+                    <i class="bi bi-info-circle me-2"></i>
+                    Destek paketinizi seçin ve <strong>"Sizi Destekliyorum"</strong> butonuna basın. Size e-posta yoluyla IBAN bilgileri gönderilecektir. Havale kontrol edildikten sonra talebiniz işleme konulacaktır.
+                </div>
+
+                <h6 class="text-white mb-3"><i class="bi bi-unlock-fill me-2 text-success"></i>Ne Kazanırsınız?</h6>
+                <div class="d-flex flex-column gap-2">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-send-fill" style="color:#10b981;"></i>
+                        <span class="text-white small">Süresi içinde ilanlara teklif verebilme</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-briefcase-fill" style="color:#3b82f6;"></i>
+                        <span class="text-white small">Haftada <strong>3 ilan</strong> yayınlama hakkı <span class="text-muted">(Normal: 1)</span></span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-heart-fill" style="color:#ec4899;"></i>
+                        <span class="text-white small">Profil üzerinde özel <strong>Destekçi Rozeti</strong></span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-people-fill" style="color:#f59e0b;"></i>
+                        <span class="text-white small"><strong>Destekçiler listesinde</strong> yer alma</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-secondary d-flex gap-2">
+                <button type="button" class="btn btn-outline-secondary rounded-pill" data-bs-dismiss="modal">Kapat</button>
+                <button type="button" class="btn btn-primary rounded-pill" id="footerSupportBtn" onclick="footerSendSupportEmail()">
+                    <i class="bi bi-heart-fill me-2"></i>Sizi Destekliyorum
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function selectTier(el) {
+    document.querySelectorAll('#donationModal .tier-option').forEach(o => {
+        o.style.borderColor = 'rgba(255,255,255,0.1)';
+        o.style.backgroundColor = 'rgba(255,255,255,0.05)';
+    });
+    el.style.borderColor = '#ec4899';
+    el.style.backgroundColor = 'rgba(236,72,153,0.15)';
+    el.querySelector('input[type=radio]').checked = true;
+}
+
+function footerSendSupportEmail() {
+    const selected = document.querySelector('#donationModal input[name="selectedTier"]:checked');
+    if (!selected) { alert('Lütfen bir destek paketini seçiniz.'); return; }
+    const tier = selected.closest('.tier-option');
+    const btn = document.getElementById('footerSupportBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="bi bi-hourglass-split me-2"></i>Gönderiliyor...';
+    fetch('/api/send-support-email/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': document.cookie.match(/csrftoken=([^;]+)/)?.[1] || '' },
+        body: JSON.stringify({ tier_id: selected.value, tier_name: tier.dataset.tierName, tier_amount: tier.dataset.tierAmount })
+    })
+    .then(r => r.json())
+    .then(data => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-heart-fill me-2"></i>Sizi Destekliyorum';
+        if (data.success) {
+            alert('✅ E-postanız gönderildi! Lütfen e-posta kutunuzu kontrol ediniz.');
+            bootstrap.Modal.getInstance(document.getElementById('donationModal')).hide();
+        } else {
+            alert('❌ Hata: ' + (data.error || 'E-posta gönderilemedi.'));
+        }
+    })
+    .catch(() => { btn.disabled = false; btn.innerHTML = '<i class="bi bi-heart-fill me-2"></i>Sizi Destekliyorum'; });
+}
+</script>

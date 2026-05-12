@@ -150,3 +150,42 @@
     .ax-footer { padding: var(--ax-space-10) 0 var(--ax-space-6); }
     .ax-footer-bottom { justify-content: center; text-align: center; }
 }
+
+/* ── Destek CTA strip ── */
+.ax-footer-support {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 14px 20px;
+    margin-bottom: 20px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(236,72,153,0.1) 0%, rgba(168,85,247,0.08) 100%);
+    border: 1px solid rgba(236,72,153,0.25);
+}
+
+.ax-footer-support-text {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: .85rem;
+    color: var(--ax-text-secondary);
+}
+
+.ax-footer-support-btn {
+    flex-shrink: 0;
+    padding: 7px 20px;
+    border-radius: 20px;
+    border: none;
+    font-size: .82rem;
+    font-weight: 600;
+    cursor: pointer;
+    background: linear-gradient(135deg, #ec4899, #a855f7);
+    color: #fff;
+    transition: opacity .15s;
+}
+.ax-footer-support-btn:hover { opacity: .88; }
+
+@media (max-width: 575px) {
+    .ax-footer-support { flex-direction: column; text-align: center; }
+}
