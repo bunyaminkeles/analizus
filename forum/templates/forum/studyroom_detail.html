@@ -53,6 +53,10 @@
       <div class="text-end flex-shrink-0">
         <div class="text-white fw-bold" style="font-size:1.3rem;">{{ room.member_count }}</div>
         <div class="text-white-50 small mb-2">üye / {{ room.max_members }}</div>
+        <button class="btn btn-outline-secondary btn-sm mb-2 w-100" style="font-size:.72rem;"
+                onclick="copyRoomLink()" id="copy-link-btn">
+          <i class="bi bi-link-45deg me-1"></i>Linki Kopyala
+        </button>
         {% if room.status == 'active' %}
           {% if user.is_authenticated %}
             {% if is_member %}
@@ -398,6 +402,20 @@ function inviteMember(slug) {
       memberUsernames.push(data.username);
       setTimeout(() => location.reload(), 800);
     }
+  });
+}
+
+function copyRoomLink() {
+  const url = window.location.origin + '{{ room.get_absolute_url }}';
+  navigator.clipboard.writeText(url).then(() => {
+    const btn = document.getElementById('copy-link-btn');
+    const orig = btn.innerHTML;
+    btn.innerHTML = '<i class="bi bi-check2 me-1"></i>Kopyalandı!';
+    btn.classList.replace('btn-outline-secondary', 'btn-outline-success');
+    setTimeout(() => {
+      btn.innerHTML = orig;
+      btn.classList.replace('btn-outline-success', 'btn-outline-secondary');
+    }, 2000);
   });
 }
 
