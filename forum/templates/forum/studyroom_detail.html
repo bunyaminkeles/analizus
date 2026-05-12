@@ -239,7 +239,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-// @mention autocomplete
+// @mention autocomplete — normal mesajlaşmayla aynı /api/users/search/ endpoint'i kullanır
 (function() {
   const textarea = document.getElementById('msg-input');
   const dropdown = document.getElementById('room-mention-dropdown');
@@ -247,37 +247,50 @@ document.addEventListener('DOMContentLoaded', () => {
 
   let mentionStart = -1;
   let activeIdx = -1;
+  let debounceTimer = null;
 
   function getItems() { return dropdown.querySelectorAll('.rm-item'); }
 
-  function showDropdown(filtered) {
-    dropdown.innerHTML = filtered.map((u, i) =>
-      `<div class="rm-item d-flex align-items-center gap-2 px-3 py-2"
-            style="cursor:pointer;font-size:.82rem;color:rgba(255,255,255,0.75);"
-            onmousedown="roomInsertMention('${u}')"
-            onmouseover="this.style.background='rgba(99,102,241,0.18)'"
-            onmouseout="this.style.background=''">
-        <div style="width:26px;height:26px;border-radius:50%;background:#1e3a5f;border:1px solid rgba(255,255,255,0.1);
-                    display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;color:#818cf8;flex-shrink:0;">
-          ${u[0].toUpperCase()}
-        </div>
-        <span>@${u}</span>
-      </div>`
-    ).join('');
+  function showDropdown(users) {
+    if (!users.length) { dropdown.style.display = 'none'; return; }
+    dropdown.innerHTML = users.map(u => {
+      const avatar = u.avatar_url
+        ? `<img src="${u.avatar_url}" style="width:26px;height:26px;border-radius:50%;object-fit:cover;flex-shrink:0;">`
+        : `<div style="width:26px;height:26px;border-radius:50%;background:#1e3a5f;border:1px solid rgba(255,255,255,0.1);
+                       display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;
+                       color:#818cf8;flex-shrink:0;">${u.username[0].toUpperCase()}</div>`;
+      return `<div class="rm-item d-flex align-items-center gap-2 px-3 py-2"
+                   data-username="${u.username}"
+                   style="cursor:pointer;font-size:.82rem;color:rgba(255,255,255,0.8);"
+                   onmousedown="roomInsertMention('${u.username}')"
+                   onmouseover="this.style.background='rgba(99,102,241,0.18)'"
+                   onmouseout="this.style.background=''">
+               ${avatar}
+               <div>
+                 <div style="font-weight:600;">@${u.username}</div>
+                 ${u.rank ? `<div style="font-size:.68rem;color:rgba(255,255,255,0.4);">${u.rank}</div>` : ''}
+               </div>
+             </div>`;
+    }).join('');
     dropdown.style.display = 'block';
     activeIdx = -1;
   }
 
+  function fetchUsers(query) {
+    fetch(`/api/users/search/?q=${encodeURIComponent(query)}`)
+      .then(r => r.json())
+      .then(data => showDropdown(data.users || []))
+      .catch(() => { dropdown.style.display = 'none'; });
+  }
+
   textarea.addEventListener('input', () => {
     const before = textarea.value.slice(0, textarea.selectionStart);
-    const match = before.match(/@(\w*)$/);
+    const match = before.match(/@(\w+)$/);          // en az 1 harf şart
     if (!match) { dropdown.style.display = 'none'; mentionStart = -1; return; }
     mentionStart = before.lastIndexOf('@');
-    const query = match[1].toLowerCase();
-    const filtered = memberUsernames.filter(u =>
-      u.toLowerCase().startsWith(query) && u !== '{{ request.user.username }}'
-    );
-    filtered.length ? showDropdown(filtered) : (dropdown.style.display = 'none');
+    const query = match[1];
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => fetchUsers(query), 250);
   });
 
   textarea.addEventListener('keydown', e => {
@@ -293,7 +306,7 @@ document.addEventListener('DOMContentLoaded', () => {
       items.forEach((el, i) => el.style.background = i === activeIdx ? 'rgba(99,102,241,0.18)' : '');
     } else if ((e.key === 'Enter' || e.key === 'Tab') && activeIdx >= 0) {
       e.preventDefault();
-      roomInsertMention(items[activeIdx].textContent.trim().replace('@', ''));
+      roomInsertMention(items[activeIdx].dataset.username);
     } else if (e.key === 'Escape') {
       dropdown.style.display = 'none';
     }
