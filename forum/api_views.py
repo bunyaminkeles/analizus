@@ -223,6 +223,54 @@ def cron_cleanup_s3_files(request):
 
 
 @require_GET
+def cron_cleanup_attachments(request):
+    """
+    90 günden eski DM ve oda mesajı dosyalarını siler.
+
+    Kullanım:
+    - GET /api/cron/cleanup-attachments/?secret=YOUR_SECRET
+    - Haftalık cron job olarak çalıştırılmalıdır.
+    """
+    if not _verify_cron_secret(request):
+        return JsonResponse({'success': False, 'error': 'Unauthorized'}, status=403)
+
+    from django.utils import timezone
+    from datetime import timedelta
+    from forum.models import PrivateMessage, StudyRoomPost
+
+    cutoff = timezone.now() - timedelta(days=90)
+    dm_deleted = 0
+    room_deleted = 0
+
+    for msg in PrivateMessage.objects.filter(created_at__lt=cutoff).exclude(attachment=''):
+        try:
+            msg.attachment.storage.delete(msg.attachment.name)
+            msg.attachment = ''
+            msg.save(update_fields=['attachment'])
+            dm_deleted += 1
+        except Exception:
+            pass
+
+    for post in StudyRoomPost.objects.filter(created_at__lt=cutoff).exclude(file=''):
+        try:
+            post.file.storage.delete(post.file.name)
+            post.file = ''
+            post.save(update_fields=['file'])
+            room_deleted += 1
+        except Exception:
+            pass
+
+    return JsonResponse({
+        'success': True,
+        'deleted_files': {
+            'dm_attachments': dm_deleted,
+            'room_post_files': room_deleted,
+        },
+        'cutoff_days': 90,
+    })
+
+
+@require_GET
 def admin_queue_status(request):
     """Admin dashboard için kuyruk durumu JSON endpoint'i (sadece staff)."""
     if not request.user.is_authenticated or not request.user.is_staff:
