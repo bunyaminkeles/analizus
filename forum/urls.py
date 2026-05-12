@@ -33,6 +33,9 @@ urlpatterns = [
     path('odalar/ac/', views.studyroom_create, name='studyroom_create'),
     path('odalar/<slug:slug>/', views.studyroom_detail, name='studyroom_detail'),
     path('odalar/<slug:slug>/katil/', views.studyroom_join, name='studyroom_join'),
+    path('odalar/<slug:slug>/davet/', views.studyroom_invite, name='studyroom_invite'),
+    path('odalar/<slug:slug>/duzenle/', views.studyroom_edit, name='studyroom_edit'),
+    path('odalar/<slug:slug>/sil/', views.studyroom_delete, name='studyroom_delete'),
     path('odalar/<slug:slug>/onayla/', views.studyroom_approve, name='studyroom_approve'),
 
     # Forum

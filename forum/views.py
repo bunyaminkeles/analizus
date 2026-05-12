@@ -2625,6 +2625,23 @@ def studyroom_detail(request, slug):
             return JsonResponse({'error': 'Boş mesaj gönderilemez.'}, status=400)
 
         post = StudyRoomPost.objects.create(room=room, author=request.user, message=message)
+
+        # @mention bildirimleri
+        import re as _re
+        mentions = set(_re.findall(r'@(\w+)', message))
+        if mentions:
+            room_member_ids = set(room.memberships.values_list('user_id', flat=True))
+            ct = ContentType.objects.get_for_model(StudyRoomPost)
+            for mentioned_user in User.objects.filter(username__in=mentions).exclude(pk=request.user.pk):
+                if mentioned_user.pk in room_member_ids:
+                    Notification.objects.create(
+                        recipient=mentioned_user,
+                        sender=request.user,
+                        verb=f"sizi '{room.title}' odasında etiketledi",
+                        content_type=ct,
+                        object_id=post.id,
+                    )
+
         return JsonResponse({
             'id': post.id,
             'author': request.user.username,
@@ -2667,6 +2684,87 @@ def studyroom_join(request, slug):
             return JsonResponse({'error': 'Oda kapasitesi doldu.'}, status=400)
         StudyRoomMembership.objects.create(room=room, user=request.user, role='member')
         return JsonResponse({'action': 'joined', 'member_count': room.member_count})
+
+
+@login_required
+@require_POST
+def studyroom_invite(request, slug):
+    """Kurucu: odaya kullanıcı adıyla üye davet et."""
+    room = get_object_or_404(StudyRoom, slug=slug)
+    if room.status not in ('active', 'pending'):
+        return JsonResponse({'error': 'Oda bu durumda davet kabul etmiyor.'}, status=400)
+    if not StudyRoomMembership.objects.filter(room=room, user=request.user, role='creator').exists():
+        return JsonResponse({'error': 'Yalnızca kurucu üye davet edebilir.'}, status=403)
+
+    username = request.POST.get('username', '').strip()
+    try:
+        invited_user = User.objects.get(username=username)
+    except User.DoesNotExist:
+        return JsonResponse({'error': f'"{username}" kullanıcısı bulunamadı.'}, status=404)
+
+    if StudyRoomMembership.objects.filter(room=room, user=invited_user).exists():
+        return JsonResponse({'error': 'Bu kullanıcı zaten odada.'}, status=400)
+
+    if room.member_count >= room.max_members:
+        return JsonResponse({'error': 'Oda kapasitesi doldu.'}, status=400)
+
+    StudyRoomMembership.objects.create(room=room, user=invited_user, role='member')
+
+    ct = ContentType.objects.get_for_model(StudyRoom)
+    Notification.objects.create(
+        recipient=invited_user,
+        sender=request.user,
+        verb=f"sizi '{room.title}' çalışma odasına davet etti",
+        content_type=ct,
+        object_id=room.id,
+    )
+
+    return JsonResponse({
+        'success': True,
+        'username': invited_user.username,
+        'member_count': room.member_count,
+    })
+
+
+@login_required
+def studyroom_edit(request, slug):
+    """Kurucu: oda ayarlarını düzenle."""
+    room = get_object_or_404(StudyRoom, slug=slug)
+    if room.creator != request.user:
+        raise Http404
+    if room.status == 'archived':
+        return redirect('studyroom_detail', slug=slug)
+
+    if request.method == 'POST':
+        title = request.POST.get('title', '').strip()
+        description = request.POST.get('description', '').strip()
+        goal = request.POST.get('goal', '').strip()
+        is_public = request.POST.get('is_public') == 'on'
+
+        if title:
+            room.title = title
+        if description:
+            room.description = description
+        if goal:
+            room.goal = goal
+        room.is_public = is_public
+        room.save(update_fields=['title', 'description', 'goal', 'is_public'])
+        return redirect('studyroom_detail', slug=room.slug)
+
+    return render(request, 'forum/studyroom_edit.html', {'room': room})
+
+
+@login_required
+@require_POST
+def studyroom_delete(request, slug):
+    """Kurucu: odayı sil (yalnızca pending/rejected durumlarda)."""
+    room = get_object_or_404(StudyRoom, slug=slug)
+    if room.creator != request.user:
+        return JsonResponse({'error': 'Yetki yok.'}, status=403)
+    if room.status == 'active':
+        return JsonResponse({'error': 'Aktif oda silinemez. Önce admin ile iletişime geçin.'}, status=400)
+    room.delete()
+    return JsonResponse({'success': True, 'redirect': '/odalar/'})
 
 
 @login_required

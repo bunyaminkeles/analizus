@@ -349,12 +349,29 @@ document.addEventListener('DOMContentLoaded', function() {
                 method: 'POST',
                 body: formData,
                 headers: {'X-Requested-With': 'XMLHttpRequest'},
-            }).then(() => {
+            })
+            .then(r => r.json())
+            .then(data => {
+                // message_id'yi hemen seenMessageIds'e ekle:
+                // WS echo veya polling aynı mesajı tekrar göstermesin
+                if (data.id && !seenMessageIds.has(data.id)) {
+                    seenMessageIds.add(data.id);
+                    lastMessageId = Math.max(lastMessageId, data.id);
+                    appendMessage({
+                        message: message,
+                        sender_id: currentUserId,
+                        timestamp: new Date().toLocaleTimeString('tr-TR', {hour: '2-digit', minute: '2-digit'}),
+                        attachment_url: attachmentUrl,
+                        attachment_name: attachmentName,
+                        attachment_type: '',
+                    });
+                }
                 messageInput.value = '';
                 messageInput.style.height = 'auto';
                 clearFile();
                 isSending = false;
-            }).catch(() => {
+            })
+            .catch(() => {
                 isSending = false;
                 messageForm.submit();
             });

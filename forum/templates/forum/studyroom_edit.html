@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Odayı Düzenle — {{ room.title }}{% endblock %}
+
+{% block content %}
+<div class="container py-4" style="max-width:640px;">
+
+  <div class="mb-3">
+    <a href="{{ room.get_absolute_url }}" class="text-white-50 text-decoration-none small">
+      <i class="bi bi-arrow-left me-1"></i>Odaya Dön
+    </a>
+  </div>
+
+  <div class="card border-secondary p-4" style="background:#16213e;">
+    <h5 class="text-white fw-bold mb-4">
+      <i class="bi bi-pencil-square me-2 text-warning"></i>Odayı Düzenle
+    </h5>
+
+    <form method="post">
+      {% csrf_token %}
+
+      <div class="mb-3">
+        <label class="form-label text-white-50 small">Başlık</label>
+        <input type="text" name="title" class="form-control bg-dark text-white border-secondary"
+               value="{{ room.title }}" maxlength="200" required>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label text-white-50 small">Açıklama</label>
+        <textarea name="description" class="form-control bg-dark text-white border-secondary" rows="3"
+                  required>{{ room.description }}</textarea>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label text-white-50 small">Hedef</label>
+        <textarea name="goal" class="form-control bg-dark text-white border-secondary" rows="2"
+                  maxlength="500" required>{{ room.goal }}</textarea>
+      </div>
+
+      <div class="mb-4">
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" name="is_public" id="is_public"
+                 {% if room.is_public %}checked{% endif %}>
+          <label class="form-check-label text-white-50 small" for="is_public">
+            Herkese Açık
+            <span class="text-white-50 ms-1" style="font-size:.72rem;">
+              (kapalıysa yalnızca davet ettiğiniz kişiler katılabilir)
+            </span>
+          </label>
+        </div>
+      </div>
+
+      <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-warning btn-sm fw-semibold">
+          <i class="bi bi-check-circle me-1"></i>Kaydet
+        </button>
+        <a href="{{ room.get_absolute_url }}" class="btn btn-outline-secondary btn-sm">İptal</a>
+
+        {% if room.status != 'active' %}
+        <button type="button" class="btn btn-outline-danger btn-sm ms-auto"
+                onclick="deleteRoom('{{ room.slug }}')">
+          <i class="bi bi-trash me-1"></i>Odayı Sil
+        </button>
+        {% endif %}
+      </div>
+    </form>
+  </div>
+
+</div>
+
+<script>
+const csrfToken = '{{ csrf_token }}';
+
+function deleteRoom(slug) {
+  if (!confirm('Bu odayı silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.')) return;
+  fetch(`/odalar/${slug}/sil/`, {
+    method: 'POST',
+    headers: { 'X-CSRFToken': csrfToken },
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.error) { alert(data.error); return; }
+    window.location.href = data.redirect;
+  });
+}
+</script>
+{% endblock %}

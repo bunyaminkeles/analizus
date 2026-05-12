@@ -25,7 +25,7 @@
           <span class="badge bg-secondary">Arşivlendi</span>
           {% endif %}
           {% if room.category %}
-          <span class="badge bg-primary bg-opacity-20 text-primary">{{ room.category.title }}</span>
+          <span class="badge bg-white bg-opacity-10 text-white-50">{{ room.category.title }}</span>
           {% endif %}
           {% if room.status == 'active' %}
           <span class="text-white-50 small">
@@ -58,6 +58,17 @@
             {% if is_member %}
               {% if membership.role == 'creator' %}
               <span class="badge bg-warning text-dark">Kurucu</span>
+              <div class="d-flex gap-1 mt-2 justify-content-end">
+                <a href="{% url 'studyroom_edit' room.slug %}" class="btn btn-outline-secondary btn-sm py-0 px-2" style="font-size:.72rem;">
+                  <i class="bi bi-pencil me-1"></i>Düzenle
+                </a>
+                {% if room.status != 'active' %}
+                <button class="btn btn-outline-danger btn-sm py-0 px-2" style="font-size:.72rem;"
+                        onclick="deleteRoom('{{ room.slug }}')">
+                  <i class="bi bi-trash me-1"></i>Sil
+                </button>
+                {% endif %}
+              </div>
               {% else %}
               <button class="btn btn-outline-secondary btn-sm" id="join-btn" data-action="leave"
                       onclick="toggleJoin('{{ room.slug }}')">
@@ -125,7 +136,7 @@
                 <a href="{% url 'profile_detail' post.author.username %}" class="text-white fw-semibold text-decoration-none small">{{ post.author.username }}</a>
                 <span class="text-white-50" style="font-size:.7rem;">{{ post.created_at|date:"d M Y H:i" }}</span>
               </div>
-              <p class="text-white-50 small mb-0" style="white-space:pre-wrap;">{{ post.message }}</p>
+              <p class="text-white-50 small mb-0 mention-text" style="white-space:pre-wrap;">{{ post.message }}</p>
             </div>
           </div>
         </div>
@@ -165,7 +176,21 @@
         <i class="bi bi-people me-2 text-success"></i>Üyeler
         <span class="text-white-50 fw-normal">({{ room.member_count }}/{{ room.max_members }})</span>
       </h6>
-      <div class="card border-secondary p-2" style="background:#16213e;">
+
+      {% if membership.role == 'creator' and room.status != 'archived' and room.status != 'rejected' %}
+      <div class="mb-2">
+        <div class="input-group input-group-sm">
+          <input type="text" id="invite-input" class="form-control bg-dark text-white border-secondary"
+                 placeholder="Kullanıcı adı..." style="font-size:.8rem;">
+          <button class="btn btn-outline-warning btn-sm" onclick="inviteMember('{{ room.slug }}')">
+            <i class="bi bi-person-plus"></i>
+          </button>
+        </div>
+        <div id="invite-msg" class="small mt-1" style="display:none;font-size:.75rem;"></div>
+      </div>
+      {% endif %}
+
+      <div class="card border-secondary p-2" style="background:#16213e;" id="members-list">
         {% for m in members %}
         <div class="d-flex align-items-center gap-2 p-2 rounded {% if not forloop.last %}border-bottom border-secondary{% endif %}">
           {% if m.user.profile.avatar %}
@@ -190,6 +215,64 @@
 
 <script>
 const csrfToken = '{{ csrf_token }}';
+const memberUsernames = [{% for m in members %}"{{ m.user.username }}"{% if not forloop.last %},{% endif %}{% endfor %}];
+
+// @mention'ları tıklanabilir profile linki olarak render et
+function renderMentions(text) {
+  return text.replace(/@(\w+)/g, (match, username) => {
+    return `<a href="/profile/${username}/" class="text-warning text-decoration-none fw-semibold">${match}</a>`;
+  });
+}
+
+// Sayfa yüklenince mevcut mesajlardaki @mention'ları linkle
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('#posts-container .mention-text').forEach(el => {
+    el.innerHTML = renderMentions(el.textContent);
+  });
+});
+
+// @mention autocomplete
+(function() {
+  const textarea = document.getElementById('msg-input');
+  if (!textarea) return;
+
+  const dropdown = document.createElement('div');
+  dropdown.id = 'mention-dropdown';
+  dropdown.style.cssText = 'position:absolute;background:#1e3a5f;border:1px solid rgba(255,255,255,0.15);border-radius:6px;z-index:1000;display:none;min-width:150px;max-height:160px;overflow-y:auto;';
+  textarea.parentElement.style.position = 'relative';
+  textarea.parentElement.appendChild(dropdown);
+
+  let mentionStart = -1;
+
+  textarea.addEventListener('input', () => {
+    const val = textarea.value;
+    const pos = textarea.selectionStart;
+    const before = val.slice(0, pos);
+    const match = before.match(/@(\w*)$/);
+    if (!match) { dropdown.style.display = 'none'; mentionStart = -1; return; }
+    mentionStart = before.lastIndexOf('@');
+    const query = match[1].toLowerCase();
+    const filtered = memberUsernames.filter(u => u.toLowerCase().startsWith(query) && u !== '{{ request.user.username }}');
+    if (!filtered.length) { dropdown.style.display = 'none'; return; }
+    dropdown.innerHTML = filtered.map(u =>
+      `<div class="px-3 py-1 text-white-50 small" style="cursor:pointer;font-size:.82rem;" onmousedown="insertMention('${u}')" onmouseover="this.style.background='rgba(255,255,255,0.08)'" onmouseout="this.style.background=''">${u}</div>`
+    ).join('');
+    dropdown.style.display = 'block';
+  });
+
+  textarea.addEventListener('blur', () => setTimeout(() => { dropdown.style.display = 'none'; }, 150));
+
+  window.insertMention = function(username) {
+    const val = textarea.value;
+    const pos = textarea.selectionStart;
+    const before = val.slice(0, mentionStart);
+    const after = val.slice(pos);
+    textarea.value = before + '@' + username + ' ' + after;
+    textarea.focus();
+    dropdown.style.display = 'none';
+    mentionStart = -1;
+  };
+})();
 
 function toggleJoin(slug) {
   fetch(`/odalar/${slug}/katil/`, {
@@ -230,11 +313,50 @@ function sendPost(slug) {
               <span class="text-white fw-semibold small">${data.author}</span>
               <span class="text-white-50" style="font-size:.7rem;">${data.created_at}</span>
             </div>
-            <p class="text-white-50 small mb-0">${data.message}</p>
+            <p class="text-white-50 small mb-0">${renderMentions(data.message)}</p>
           </div>
         </div>
       </div>`);
     container.scrollTop = container.scrollHeight;
+  });
+}
+
+function inviteMember(slug) {
+  const input = document.getElementById('invite-input');
+  const username = input.value.trim();
+  const msgEl = document.getElementById('invite-msg');
+  if (!username) return;
+  fetch(`/odalar/${slug}/davet/`, {
+    method: 'POST',
+    headers: { 'X-CSRFToken': csrfToken, 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: `username=${encodeURIComponent(username)}`,
+  })
+  .then(r => r.json())
+  .then(data => {
+    msgEl.style.display = 'block';
+    if (data.error) {
+      msgEl.className = 'small mt-1 text-danger';
+      msgEl.textContent = data.error;
+    } else {
+      msgEl.className = 'small mt-1 text-success';
+      msgEl.textContent = `${data.username} odaya eklendi.`;
+      input.value = '';
+      memberUsernames.push(data.username);
+      setTimeout(() => location.reload(), 800);
+    }
+  });
+}
+
+function deleteRoom(slug) {
+  if (!confirm('Bu odayı silmek istediğinizden emin misiniz?')) return;
+  fetch(`/odalar/${slug}/sil/`, {
+    method: 'POST',
+    headers: { 'X-CSRFToken': csrfToken },
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.error) { alert(data.error); return; }
+    window.location.href = data.redirect;
   });
 }
 

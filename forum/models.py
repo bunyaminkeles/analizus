@@ -1429,6 +1429,10 @@ class StudyRoomPost(models.Model):
         verbose_name = "Oda Gönderisi"
         verbose_name_plural = "Oda Gönderileri"
 
+    def get_absolute_url(self):
+        from django.urls import reverse
+        return reverse('studyroom_detail', kwargs={'slug': self.room.slug})
+
     def __str__(self):
         return f"{self.author.username}: {self.message[:60]}"
 
