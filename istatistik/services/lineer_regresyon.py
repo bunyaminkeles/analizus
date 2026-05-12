@@ -71,7 +71,7 @@ def analyze(df, dep_col: str, indep_cols: list) -> dict:
     try:
         vifs = [variance_inflation_factor(X_sm.astype(float), i + 1) for i in range(p)]
     except Exception:
-        vifs = [float('nan')] * p
+        vifs = [None] * p
 
     # Katsayılar
     ci = np.array(model.conf_int())
@@ -98,7 +98,7 @@ def analyze(df, dep_col: str, indep_cols: list) -> dict:
             'p': round(float(model.pvalues[i + 1]), 4),
             'ci_low': round(float(ci[i + 1, 0]), 4),
             'ci_high': round(float(ci[i + 1, 1]), 4),
-            'vif': round(float(vif_val), 3) if not np.isnan(vif_val) else '—',
+            'vif': (round(float(vif_val), 3) if (vif_val is not None and not np.isnan(vif_val) and not np.isinf(vif_val)) else '—'),
             'significant': bool(model.pvalues[i + 1] < 0.05),
         })
 
