@@ -2621,10 +2621,21 @@ def studyroom_detail(request, slug):
             return JsonResponse({'error': 'Odaya katılmadan mesaj gönderemezsiniz.'}, status=403)
 
         message = request.POST.get('message', '').strip()
-        if not message:
+        file = request.FILES.get('file')
+
+        if not message and not file:
             return JsonResponse({'error': 'Boş mesaj gönderilemez.'}, status=400)
 
-        post = StudyRoomPost.objects.create(room=room, author=request.user, message=message)
+        if file:
+            if file.size > settings.MAX_UPLOAD_SIZE:
+                return JsonResponse({'error': 'Dosya boyutu 5 MB\'ı geçemez.'}, status=400)
+            if file.content_type not in settings.ALLOWED_ATTACHMENT_TYPES:
+                return JsonResponse({'error': 'Bu dosya türü desteklenmiyor.'}, status=400)
+
+        post = StudyRoomPost(room=room, author=request.user, message=message)
+        if file:
+            post.file = file
+        post.save()
 
         # @mention bildirimleri
         import re as _re
@@ -2642,11 +2653,20 @@ def studyroom_detail(request, slug):
                         object_id=post.id,
                     )
 
+        file_url = post.file.url if post.file else ''
+        file_name = post.file.name.split('/')[-1] if post.file else ''
+        file_type = 'image' if file and file.content_type.startswith('image/') else (
+                    'pdf' if file and file.content_type == 'application/pdf' else
+                    ('doc' if file else ''))
+
         return JsonResponse({
             'id': post.id,
             'author': request.user.username,
             'message': post.message,
             'created_at': post.created_at.strftime('%d.%m.%Y %H:%M'),
+            'file_url': file_url,
+            'file_name': file_name,
+            'file_type': file_type,
         })
 
     posts = room.room_posts.select_related('author__profile').all()
@@ -2695,6 +2715,11 @@ def studyroom_poll(request, slug):
     new_posts = room.room_posts.filter(id__gt=after_id).select_related('author__profile').order_by('id')
     data = []
     for post in new_posts:
+        file_url = post.file.url if post.file else ''
+        file_name = post.file.name.split('/')[-1] if post.file else ''
+        ct = post.file.name.rsplit('.', 1)[-1].lower() if post.file else ''
+        file_type = 'image' if ct in ('jpg', 'jpeg', 'png', 'gif', 'webp') else (
+                    'pdf' if ct == 'pdf' else ('doc' if file_url else ''))
         data.append({
             'id': post.id,
             'author': post.author.username,
@@ -2702,6 +2727,9 @@ def studyroom_poll(request, slug):
             'created_at': post.created_at.strftime('%d.%m.%Y %H:%M'),
             'is_own': post.author == request.user,
             'avatar_url': post.author.profile.avatar.url if post.author.profile.avatar else '',
+            'file_url': file_url,
+            'file_name': file_name,
+            'file_type': file_type,
         })
     return JsonResponse({'posts': data})
 

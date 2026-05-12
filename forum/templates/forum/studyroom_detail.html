@@ -140,7 +140,28 @@
                 <a href="{% url 'profile_detail' post.author.username %}" class="text-white fw-semibold text-decoration-none small">{{ post.author.username }}</a>
                 <span class="text-white-50" style="font-size:.7rem;">{{ post.created_at|date:"d M Y H:i" }}</span>
               </div>
-              <p class="text-white-50 small mb-0 mention-text" style="white-space:pre-wrap;">{{ post.message }}</p>
+              {% if post.message %}<p class="text-white-50 small mb-0 mention-text" style="white-space:pre-wrap;">{{ post.message }}</p>{% endif %}
+              {% if post.file %}
+              <div class="mt-2">
+                {% with ext=post.file.name|lower %}
+                {% if ".jpg" in ext or ".jpeg" in ext or ".png" in ext or ".gif" in ext or ".webp" in ext %}
+                <a href="{{ post.file.url }}" target="_blank">
+                  <img src="{{ post.file.url }}" alt="Resim" class="img-fluid rounded" style="max-height:150px;">
+                </a>
+                {% elif ".pdf" in ext %}
+                <a href="{{ post.file.url }}" target="_blank" class="btn btn-sm"
+                   style="background:rgba(220,53,69,0.15);color:#dc3545;border:1px solid rgba(220,53,69,0.3);">
+                  <i class="bi bi-file-pdf me-1"></i>{{ post.file.name|slice:"11:"|truncatechars:30 }}
+                </a>
+                {% else %}
+                <a href="{{ post.file.url }}" target="_blank" class="btn btn-sm"
+                   style="background:rgba(0,210,255,0.15);color:#00d2ff;border:1px solid rgba(0,210,255,0.3);">
+                  <i class="bi bi-file-earmark me-1"></i>{{ post.file.name|slice:"11:"|truncatechars:30 }}
+                </a>
+                {% endif %}
+                {% endwith %}
+              </div>
+              {% endif %}
             </div>
           </div>
         </div>
@@ -165,7 +186,24 @@
                       box-shadow:0 -4px 16px rgba(0,0,0,0.5);">
           </div>
         </div>
-        <div class="text-end">
+        <div id="room-file-preview" class="d-none mb-2 d-flex align-items-center gap-2 px-2 py-1 rounded"
+             style="background:rgba(0,210,255,0.07);border:1px solid rgba(0,210,255,0.2);font-size:.8rem;color:#7dd3fc;">
+          <i class="bi bi-file-earmark" style="font-size:1rem;"></i>
+          <span id="room-file-name" class="flex-grow-1 text-truncate"></span>
+          <button type="button" class="btn btn-sm p-0 text-danger" onclick="clearRoomFile()" style="line-height:1;">
+            <i class="bi bi-x-circle"></i>
+          </button>
+        </div>
+        <div class="d-flex align-items-center justify-content-between">
+          <div class="d-flex align-items-center gap-2">
+            <label class="btn btn-sm" for="room-file-input" title="Dosya Ekle"
+                   style="background:rgba(0,210,255,0.08);color:#38bdf8;border:1px solid rgba(0,210,255,0.2);padding:4px 10px;">
+              <i class="bi bi-paperclip"></i>
+            </label>
+            <input type="file" id="room-file-input" class="d-none"
+                   accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png,.gif,.webp">
+            <span class="text-white-50" style="font-size:.68rem;">PDF, Word, Excel, PPT, Resim (Max 5 MB)</span>
+          </div>
           <button onclick="sendPost('{{ room.slug }}')" class="btn btn-primary btn-sm fw-semibold">
             <i class="bi bi-send me-1"></i>Gönder
           </button>
@@ -231,6 +269,17 @@ const memberUsernames = [{% for m in members %}"{{ m.user.username }}"{% if not 
 const currentUsername = '{{ request.user.username }}';
 
 // ── Yeni mesaj DOM'a ekle ──────────────────────────────────────────────────
+function getFileHtml(post) {
+  if (!post.file_url) return '';
+  if (post.file_type === 'image') {
+    return `<div class="mt-2"><a href="${post.file_url}" target="_blank"><img src="${post.file_url}" alt="Resim" class="img-fluid rounded" style="max-height:150px;"></a></div>`;
+  } else if (post.file_type === 'pdf') {
+    return `<div class="mt-2"><a href="${post.file_url}" target="_blank" class="btn btn-sm" style="background:rgba(220,53,69,0.15);color:#dc3545;border:1px solid rgba(220,53,69,0.3);"><i class="bi bi-file-pdf me-1"></i>${escapeHtml(post.file_name)}</a></div>`;
+  } else {
+    return `<div class="mt-2"><a href="${post.file_url}" target="_blank" class="btn btn-sm" style="background:rgba(0,210,255,0.15);color:#00d2ff;border:1px solid rgba(0,210,255,0.3);"><i class="bi bi-file-earmark me-1"></i>${escapeHtml(post.file_name)}</a></div>`;
+  }
+}
+
 function appendRoomPost(post) {
   const container = document.getElementById('posts-container');
   if (!container) return;
@@ -244,6 +293,8 @@ function appendRoomPost(post) {
          <span class="text-primary fw-bold small">${post.author[0].toUpperCase()}</span>
        </div>`;
 
+  const msgHtml = post.message ? `<p class="text-white-50 small mb-0" style="white-space:pre-wrap;">${renderMentions(escapeHtml(post.message))}</p>` : '';
+
   const div = document.createElement('div');
   div.className = 'd-flex gap-3 mb-3';
   div.innerHTML = `
@@ -254,7 +305,7 @@ function appendRoomPost(post) {
           <a href="/profile/${post.author}/" class="text-white fw-semibold text-decoration-none small">${post.author}</a>
           <span class="text-white-50" style="font-size:.7rem;">${post.created_at}</span>
         </div>
-        <p class="text-white-50 small mb-0" style="white-space:pre-wrap;">${renderMentions(escapeHtml(post.message))}</p>
+        ${msgHtml}${getFileHtml(post)}
       </div>
     </div>`;
   container.appendChild(div);
@@ -404,22 +455,31 @@ function toggleJoin(slug) {
   });
 }
 
+function clearRoomFile() {
+  const fi = document.getElementById('room-file-input');
+  const preview = document.getElementById('room-file-preview');
+  if (fi) fi.value = '';
+  if (preview) preview.classList.add('d-none');
+}
+
 function sendPost(slug) {
   const input = document.getElementById('msg-input');
+  const fileInput = document.getElementById('room-file-input');
   const msg = input.value.trim();
-  if (!msg) return;
+  const file = fileInput && fileInput.files[0];
+  if (!msg && !file) return;
   input.disabled = true;
-  fetch(`/odalar/${slug}/`, {
-    method: 'POST',
-    headers: { 'X-CSRFToken': csrfToken, 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: `message=${encodeURIComponent(msg)}`,
-  })
+  const formData = new FormData();
+  formData.append('message', msg);
+  formData.append('csrfmiddlewaretoken', csrfToken);
+  if (file) formData.append('file', file);
+  fetch(`/odalar/${slug}/`, { method: 'POST', body: formData })
   .then(r => r.json())
   .then(data => {
     input.disabled = false;
     if (data.error) { alert(data.error); return; }
     input.value = '';
-    // polling'in tekrar göstermemesi için ID'yi hemen kaydet
+    clearRoomFile();
     if (typeof seenRoomPostIds !== 'undefined') {
       seenRoomPostIds.add(data.id);
       lastRoomPostId = Math.max(lastRoomPostId, data.id);
@@ -430,6 +490,9 @@ function sendPost(slug) {
       message: data.message,
       created_at: data.created_at,
       avatar_url: '',
+      file_url: data.file_url || '',
+      file_name: data.file_name || '',
+      file_type: data.file_type || '',
     });
   })
   .catch(() => { input.disabled = false; });
@@ -487,6 +550,22 @@ function deleteRoom(slug) {
     window.location.href = data.redirect;
   });
 }
+
+// File input listener
+(function() {
+  const fi = document.getElementById('room-file-input');
+  if (!fi) return;
+  fi.addEventListener('change', function() {
+    const preview = document.getElementById('room-file-preview');
+    const nameEl = document.getElementById('room-file-name');
+    if (this.files[0]) {
+      nameEl.textContent = this.files[0].name;
+      preview.classList.remove('d-none');
+    } else {
+      preview.classList.add('d-none');
+    }
+  });
+})();
 
 function approveRoom(slug, action) {
   const note = action === 'reject' ? (prompt('Red sebebi (opsiyonel):') || '') : '';
