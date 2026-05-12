@@ -370,9 +370,16 @@ function _showResults(data) {
 
   // APA
   const sigTxt = sig ? 'anlamlı bulunmuştur' : 'anlamlı bulunmamıştır';
-  let apa = `Çoklu doğrusal regresyon analizi sonucunda kurulan model istatistiksel açıdan ${sigTxt}, F(${r.df_model}, ${r.df_resid}) = ${r.f_stat.toFixed(3)}, p = ${pDisp}, R² = ${r.r_squared.toFixed(4)}, düzeltilmiş R² = ${r.adj_r_squared.toFixed(4)}.`;
-  if (r.sig_predictors && r.sig_predictors.length > 0) {
-    apa += ` Anlamlı yordayıcılar: ${r.sig_predictors.join(', ')}.`;
+  let apa = `Çoklu doğrusal regresyon analizi sonucunda, ${r.dep_col} değişkenini yordamak amacıyla kurulan model istatistiksel açıdan ${sigTxt}, F(${r.df_model}, ${r.df_resid}) = ${r.f_stat.toFixed(3)}, p = ${pDisp}. Model, bağımlı değişkendeki varyansın %${(r.r_squared * 100).toFixed(1)}'ini açıklamaktadır (R² = ${r.r_squared.toFixed(4)}, düzeltilmiş R² = ${r.adj_r_squared.toFixed(4)}).`;
+  const sigCoefs = r.coefficients.slice(1).filter(c => c.significant);
+  if (sigCoefs.length > 0) {
+    const details = sigCoefs.map(c => {
+      const cp = c.p < 0.001 ? '< .001' : c.p.toFixed(3);
+      return `${c.name} (B = ${c.B.toFixed(3)}, β = ${typeof c.beta === 'number' ? c.beta.toFixed(3) : c.beta}, p = ${cp})`;
+    });
+    apa += ` Bağımsız değişkenler arasında istatistiksel açıdan anlamlı yordayıcılar şunlardır: ${details.join('; ')}.`;
+  } else {
+    apa += ' Hiçbir bağımsız değişken bağımlı değişkeni anlamlı düzeyde yordamamıştır.';
   }
   document.getElementById('res-apa').textContent = apa;
   document.getElementById('pdf-btn').href = data.pdf_url;

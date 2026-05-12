@@ -421,8 +421,20 @@ def notify_admin_analysis_completed(job):
             'cronbach': 'Cronbach Alpha', 'normallik': 'Normallik Testi',
             'betimsel': 'Betimsel İstatistik', 'korelasyon': 'Korelasyon Matrisi',
             'ttesti': 't-Testi', 'anova': 'ANOVA',
+            'mann_whitney': 'Mann-Whitney U', 'kruskal_wallis': 'Kruskal-Wallis',
+            'ki_kare': 'Ki-Kare', 'lineer_regresyon': 'Çoklu Doğrusal Regresyon',
+            'lojistik_regresyon': 'Lojistik Regresyon',
+        }
+        tool_urls = {
+            'cronbach': 'cronbach/', 'normallik': 'normallik/',
+            'betimsel': 'betimsel/', 'korelasyon': 'korelasyon/',
+            'ttesti': 'ttesti/', 'anova': 'anova/',
+            'mann_whitney': 'mann-whitney/', 'kruskal_wallis': 'kruskal-wallis/',
+            'ki_kare': 'ki-kare/', 'lineer_regresyon': 'lineer-regresyon/',
+            'lojistik_regresyon': 'lojistik-regresyon/',
         }
         tool_label = tool_names.get(job.tool, job.tool)
+        tool_path = tool_urls.get(job.tool, '')
         rows = [
             ('Araç', tool_label),
             ('Kullanıcı', job.user.username),
@@ -433,8 +445,8 @@ def notify_admin_analysis_completed(job):
             '📊 Analiz Tamamlandı', color,
             f"{job.user.username} — {tool_label}",
             rows,
-            f"{site}/admin/istatistik/istatistikjob/{job.pk}/change/",
-            'Analiz Detayına Git'
+            f"{site}/istatistik/{tool_path}",
+            'Analiz Sayfasına Git'
         )
         plain = f"Analiz tamamlandı: {tool_label} — kullanıcı: {job.user.username}"
         _send_admin(f"[Analizus] 📊 Analiz: {tool_label} ({job.user.username})", html, plain)
