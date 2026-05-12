@@ -300,7 +300,7 @@ function startPolling(jobId) {
   if (pollInterval) clearInterval(pollInterval);
   pollInterval = setInterval(() => {
     fetch(STATUS_BASE + jobId + '/', {headers:{'X-Requested-With':'XMLHttpRequest'}})
-      .then(r => r.json())
+      .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
       .then(data => {
         if (data.status === 'completed') {
           clearInterval(pollInterval);
@@ -310,11 +310,22 @@ function startPolling(jobId) {
           showPanel('error');
           document.getElementById('panel-error-msg').textContent = data.error || 'Analiz başarısız.';
         }
+      })
+      .catch(err => {
+        clearInterval(pollInterval);
+        showPanel('error');
+        document.getElementById('panel-error-msg').textContent = 'Durum sorgulanamadı: ' + err.message;
       });
   }, 2000);
 }
 
 function showResults(data) {
+  try { _showResults(data); } catch(e) {
+    showPanel('error');
+    document.getElementById('panel-error-msg').textContent = 'Sonuç gösterilirken hata: ' + e.message;
+  }
+}
+function _showResults(data) {
   const r = data.result_data;
   const sig = r.significant;
   const sigBox = document.getElementById('sig-box');
