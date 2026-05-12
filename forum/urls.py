@@ -33,6 +33,10 @@ urlpatterns = [
     path('odalar/ac/', views.studyroom_create, name='studyroom_create'),
     path('odalar/<slug:slug>/', views.studyroom_detail, name='studyroom_detail'),
     path('odalar/<slug:slug>/katil/', views.studyroom_join, name='studyroom_join'),
+    path('odalar/<slug:slug>/poll/', views.studyroom_poll, name='studyroom_poll'),
+    path('odalar/<slug:slug>/davet/', views.studyroom_invite, name='studyroom_invite'),
+    path('odalar/<slug:slug>/duzenle/', views.studyroom_edit, name='studyroom_edit'),
+    path('odalar/<slug:slug>/sil/', views.studyroom_delete, name='studyroom_delete'),
     path('odalar/<slug:slug>/onayla/', views.studyroom_approve, name='studyroom_approve'),
 
     # Forum
@@ -118,6 +122,7 @@ urlpatterns = [
     path('api/cron/daily-quiz/', api_views.cron_generate_daily_quiz, name='cron_daily_quiz'),
     path('api/cron/update-badges/', api_views.cron_update_badges_ranks, name='cron_update_badges'),
     path('api/cron/cleanup-s3/', api_views.cron_cleanup_s3_files, name='cron_cleanup_s3'),
+    path('api/cron/cleanup-attachments/', api_views.cron_cleanup_attachments, name='cron_cleanup_attachments'),
     path('api/cron/health/', api_views.cron_health_check, name='cron_health'),
     path('api/admin/queue-status/', api_views.admin_queue_status, name='admin_queue_status'),
 

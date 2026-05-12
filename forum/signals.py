@@ -61,7 +61,7 @@ def send_chat_message(message_instance):
         logger.error(f"Chat WebSocket mesajı gönderilemedi: {e}")
 
 from .models import Post, PrivateMessage, Notification, PostLike, Topic, Badge, FreelanceJob
-from .models import Profile, JobProposal, BlogPost
+from .models import Profile, JobProposal, BlogPost, StudyRoom, StudyRoomPost
 from django.contrib.auth.models import User
 
 
@@ -620,3 +620,32 @@ def notify_admin_on_blog_published(sender, instance, created, **kwargs):
         return
     from .email_utils import notify_admin_blog_published
     notify_admin_blog_published(instance)
+
+
+# ── Dosya Temizleme Sinyalleri ────────────────────────────────────────────────
+
+def _delete_storage_file(field):
+    """FileField içindeki dosyayı storage'dan sil (S3 veya yerel)."""
+    if not field:
+        return
+    try:
+        field.storage.delete(field.name)
+    except Exception:
+        pass
+
+
+@receiver(post_delete, sender=PrivateMessage)
+def delete_private_message_attachment(sender, instance, **kwargs):
+    _delete_storage_file(instance.attachment)
+
+
+@receiver(post_delete, sender=StudyRoomPost)
+def delete_studyroom_post_file(sender, instance, **kwargs):
+    _delete_storage_file(instance.file)
+
+
+@receiver(post_delete, sender=StudyRoom)
+def delete_studyroom_files_on_room_delete(sender, instance, **kwargs):
+    """Oda silinince tüm oda gönderilerindeki dosyaları temizle."""
+    for post in instance.room_posts.exclude(file=''):
+        _delete_storage_file(post.file)

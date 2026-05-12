@@ -99,6 +99,7 @@ TEMPLATES = [
                 'forum.context_processors.profile_context',  # Profil, bildirimler vb. için
                 'forum.context_processors.google_analytics',  # Google Analytics
                 'forum.context_processors.feature_flags',  # Feature Flags
+                'forum.context_processors.donation_context',  # Bağış paketleri (footer modal)
             ],
         },
     },
@@ -485,6 +486,8 @@ ALLOWED_ATTACHMENT_TYPES = [
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     'application/vnd.ms-powerpoint',
     'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    'text/csv',
+    'text/plain',
 ]
 
 # --- SESSION AYARLARI ---

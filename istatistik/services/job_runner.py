@@ -55,7 +55,8 @@ def _execute_job(job_id: str):
         elif job.tool == 'korelasyon':
             from .korelasyon import analyze, build_pdf
             method = (job.options or {}).get('method', 'pearson')
-            result_data = analyze(df, method=method)
+            columns = (job.options or {}).get('columns') or None
+            result_data = analyze(df, method=method, columns=columns)
         elif job.tool == 'ttesti':
             from .ttesti import analyze, build_pdf
             opts = job.options or {}

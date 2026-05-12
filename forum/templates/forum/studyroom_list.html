@@ -61,20 +61,20 @@
             <a href="{{ room.get_absolute_url }}" class="text-white fw-semibold text-decoration-none" style="font-size:.95rem;line-height:1.4;">{{ room.title }}</a>
             {% if room.status == 'active' %}
               {% if room.days_remaining <= 7 %}
-              <span class="badge bg-danger bg-opacity-25 text-danger ms-2 flex-shrink-0" style="font-size:.68rem;">Son {{ room.days_remaining }}g</span>
+              <span class="badge ms-2 flex-shrink-0" style="font-size:.68rem;background:rgba(239,68,68,0.18);color:#fca5a5;">Son {{ room.days_remaining }}g</span>
               {% else %}
-              <span class="badge bg-success bg-opacity-20 text-success ms-2 flex-shrink-0" style="font-size:.68rem;">{{ room.days_remaining }}g</span>
+              <span class="badge ms-2 flex-shrink-0" style="font-size:.68rem;background:rgba(16,185,129,0.18);color:#86efac;">{{ room.days_remaining }}g</span>
               {% endif %}
             {% elif room.status == 'archived' %}
             <span class="badge bg-secondary ms-2 flex-shrink-0" style="font-size:.68rem;">Arşiv</span>
             {% elif room.status == 'pending' %}
-            <span class="badge bg-warning bg-opacity-25 text-warning ms-2 flex-shrink-0" style="font-size:.68rem;">Onay bekliyor</span>
+            <span class="badge ms-2 flex-shrink-0" style="font-size:.68rem;background:rgba(234,179,8,0.18);color:#fde68a;">Onay bekliyor</span>
             {% endif %}
           </div>
 
           {% if room.category %}
           <div class="mb-2">
-            <span class="badge bg-primary bg-opacity-20 text-primary" style="font-size:.68rem;">{{ room.category.title }}</span>
+            <span class="badge bg-white bg-opacity-10 text-white-50" style="font-size:.68rem;">{{ room.category.title }}</span>
           </div>
           {% endif %}
 

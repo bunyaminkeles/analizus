@@ -122,7 +122,7 @@
                                         <i class="bi bi-paperclip"></i>
                                     </label>
                                     <input type="file" name="attachment" id="file-input" class="d-none"
-                                           accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png,.gif,.webp">
+                                           accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.csv,.txt,.jpg,.jpeg,.png,.gif,.webp">
 
                                     <!-- Mesaj Input -->
                                     <div class="flex-grow-1 position-relative">
@@ -149,7 +149,7 @@
                                 </div>
 
                                 <small class="text-muted d-block mt-2">
-                                    <i class="bi bi-paperclip me-1"></i>PDF, Word, Excel, PowerPoint, Resim (Max 5 MB)
+                                    <i class="bi bi-paperclip me-1"></i>PDF, Word, Excel, PowerPoint, CSV, Resim (Max 5 MB)
                                 </small>
                             </form>
                         </div>
@@ -293,6 +293,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // AJAX POLLING (WebSocket yedek mekanizması)
     // ═══════════════════════════════════════════════════════════════════
     setInterval(function() {
+        if (document.hidden) return;
         fetch(`/api/chat/${receiverUsername}/poll/?after=${lastMessageId}`)
             .then(r => r.json())
             .then(data => {
@@ -301,14 +302,13 @@ document.addEventListener('DOMContentLoaded', function() {
                         if (!seenMessageIds.has(msg.id)) {
                             seenMessageIds.add(msg.id);
                             lastMessageId = Math.max(lastMessageId, msg.id);
-                            msg.sender_id = msg.sender_id;
                             appendMessage(msg);
                         }
                     });
                 }
             })
             .catch(() => {});
-    }, 3000);
+    }, 2000);
 
     // ═══════════════════════════════════════════════════════════════════
     // MESAJ GÖNDERME (Form submit yerine WebSocket)
@@ -330,35 +330,40 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     function sendMessage(message, attachmentUrl = '', attachmentName = '') {
-        if (chatSocket && chatSocket.readyState === WebSocket.OPEN) {
-            chatSocket.send(JSON.stringify({
-                'message': message,
-                'attachment_url': attachmentUrl,
-                'attachment_name': attachmentName,
-            }));
+        // Her zaman AJAX ile kaydet — WS teslim için kullanılır, kayıt için değil.
+        // Bu şekilde WS'nin çalışıp çalışmadığından bağımsız olarak mesaj DB'ye girer.
+        const formData = new FormData();
+        formData.append('message', message);
+        formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+        fetch(window.location.href, {
+            method: 'POST',
+            body: formData,
+            headers: {'X-Requested-With': 'XMLHttpRequest'},
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (!data.id) { isSending = false; return; }
+            // Gönderenin mesajını hemen ekle, polling tekrar eklemesin
+            if (!seenMessageIds.has(data.id)) {
+                seenMessageIds.add(data.id);
+                lastMessageId = Math.max(lastMessageId, data.id);
+                appendMessage({
+                    message: message,
+                    sender_id: currentUserId,
+                    timestamp: new Date().toLocaleTimeString('tr-TR', {hour: '2-digit', minute: '2-digit'}),
+                    attachment_url: attachmentUrl,
+                    attachment_name: attachmentName,
+                    attachment_type: '',
+                });
+            }
             messageInput.value = '';
             messageInput.style.height = 'auto';
             clearFile();
             isSending = false;
-        } else {
-            // WebSocket kapalıysa AJAX ile gönder
-            const formData = new FormData();
-            formData.append('message', message);
-            formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
-            fetch(window.location.href, {
-                method: 'POST',
-                body: formData,
-                headers: {'X-Requested-With': 'XMLHttpRequest'},
-            }).then(() => {
-                messageInput.value = '';
-                messageInput.style.height = 'auto';
-                clearFile();
-                isSending = false;
-            }).catch(() => {
-                isSending = false;
-                messageForm.submit();
-            });
-        }
+        })
+        .catch(() => {
+            isSending = false;
+        });
     }
 
     function uploadFileAndSend(message, file) {

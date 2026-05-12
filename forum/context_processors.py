@@ -1,5 +1,5 @@
 from django.conf import settings
-from forum.models import Profile, Notification, PrivateMessage, SiteSettings
+from forum.models import Profile, Notification, PrivateMessage, SiteSettings, DonationTier
 
 
 def profile_context(request):
@@ -24,6 +24,15 @@ def profile_context(request):
         except Profile.DoesNotExist:
             pass
     return context
+
+
+def donation_context(request):
+    """Aktif bağış paketlerini tüm sayfalara geçirir (footer modal için)."""
+    try:
+        tiers = list(DonationTier.objects.filter(is_active=True).order_by('min_amount'))
+    except Exception:
+        tiers = []
+    return {'donation_tiers': tiers}
 
 
 def google_analytics(request):

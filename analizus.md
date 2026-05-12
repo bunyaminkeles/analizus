@@ -34,7 +34,7 @@
 | E-posta | SMTP (`mail.analizus.com`, 587 TLS / 465 SSL) |
 | Statik Dosyalar | WhiteNoise (CompressedStaticFilesStorage) — S3'e upload yok |
 | Dosya Yükleme | AWS S3 `eu-north-1`, bucket: `analizus-files` |
-| Hosting | Hetzner VPS (`204.168.195.246`) — Nginx + Gunicorn (systemctl) |
+| Hosting | Hetzner VPS (`89.167.5.224`) — Docker Compose (web, db, redis) + Nginx |
 | SSL | Let's Encrypt (certbot) |
 | AI/LLM | Groq (aktif), OpenAI, Gemini (env var ile) |
 | Ödeme | iyzico altyapısı mevcut ama **pasif** — sonraya bırakıldı |
@@ -61,34 +61,38 @@ pytest, pytest-django, model-bakery
 
 ---
 
-## 3. SUNUCU MİMARİSİ (HETZNER — BARE METAL)
+## 3. SUNUCU MİMARİSİ (HETZNER — DOCKER)
 
 ```
 İnternet
     ↓
 Nginx (80/443) — SSL termination, reverse proxy
     ↓
-Gunicorn (Unix socket) — Django uygulaması
+Docker Container — Django / Gunicorn (/app)
     ↓
-PostgreSQL (local) + Redis (local)
+PostgreSQL (host) + Redis (host)
 ```
 
-**VPS IP:** `204.168.195.246`
-**Uygulama dizini:** `/var/www/rlprehber`
-**Servis yönetimi:** `systemctl` (gunicorn, nginx)
+**VPS IP:** `89.167.5.224`
+**Uygulama dizini (container içi):** `/app`
+**Servis yönetimi:** `docker compose`
+**Container adları:** `app-web-1`, `app-db-1`, `app-redis-1`
+**Compose servis adları:** `web`, `db`, `redis`
+
+> Not: `DATABASE_URL` içinde servis adı kullanılır (`db`) — `localhost` container içinden host'a ulaşamaz.
 
 ### Bağlantı
 ```bash
-ssh root@204.168.195.246
+ssh root@89.167.5.224
 ```
 
 ### Uygulama Yönetimi
 ```bash
-# Uygulama durumu
-systemctl status gunicorn
+# Container durumu
+docker compose ps
 
 # Logları izle
-journalctl -u gunicorn -f
+docker compose logs -f web
 
 # Site yanıt veriyor mu?
 curl -o /dev/null -w '%{http_code}' http://localhost/
@@ -96,42 +100,37 @@ curl -o /dev/null -w '%{http_code}' http://localhost/
 
 ### Manuel Deploy (Kod Değişikliği Sonrası)
 ```bash
-cd /var/www/rlprehber
 git pull origin main
-systemctl restart gunicorn
+docker compose up -d --build web
 ```
 
 ### Migration Varsa
 ```bash
-cd /var/www/rlprehber
 git pull origin main
-source venv/bin/activate
-python manage.py migrate
-systemctl restart gunicorn
+docker compose up -d --build web
+docker compose exec web python manage.py migrate
 ```
 
 ### requirements.txt Değişince (Yeni Paket)
+Image'i yeniden build etmek yeterlidir — `--build` bayrağı her zaman requirements'ı günceller:
 ```bash
-cd /var/www/rlprehber
 git pull origin main
-source venv/bin/activate
-pip install -r requirements.txt
-systemctl restart gunicorn
+docker compose up -d --build web
 ```
 
 ### Servis Yönetimi
 ```bash
-systemctl restart gunicorn
-systemctl restart nginx
+docker compose restart web
 
-# Gunicorn durumu ve socket
-systemctl status gunicorn
+# Tüm servisler
+docker compose ps
+docker compose down && docker compose up -d
 ```
 
 ### .env Güncelleme
 ```bash
-nano /var/www/rlprehber/.env
-systemctl restart gunicorn
+nano /app/.env          # veya compose dosyasının bulunduğu dizindeki .env
+docker compose up -d web
 ```
 
 ---
@@ -142,7 +141,7 @@ systemctl restart gunicorn
 
 ```bash
 # Veritabanı
-DATABASE_URL=postgresql://bunyamin:SIFRE@localhost:5432/analizus
+DATABASE_URL=postgresql://bunyamin:SIFRE@db:5432/analizus
 
 # Redis (Channels)
 REDIS_URL=redis://localhost:6379/0
@@ -204,8 +203,8 @@ git push origin dev
 git checkout main
 
 # 3. Hetzner'de uygula
-ssh root@204.168.195.246
-cd /var/www/rlprehber && git pull origin main && systemctl restart gunicorn
+ssh root@89.167.5.224
+git pull origin main && docker compose up -d --build web
 ```
 
 ---
@@ -858,8 +857,8 @@ with connection.cursor() as c:
 | Hata | Çözüm |
 |---|---|
 | E-posta gönderilmiyor | `SMTP_HOST` kullan, `EMAIL_HOST` değil |
-| DB bağlantı hatası (prod) | `DATABASE_URL` içindeki host `localhost` (bare metal) |
-| Migration production'da çalışmadı | `source venv/bin/activate && python manage.py migrate` |
+| DB bağlantı hatası (prod) | `DATABASE_URL` içindeki host Docker servis adı olmalı (`db`) — `localhost` container içinden çalışmaz; önce `docker compose up -d db` ile DB servisini başlat |
+| Migration production'da çalışmadı | `docker compose exec web python manage.py migrate` |
 | Statik dosyalar eksik | `python manage.py collectstatic` çalıştır |
 | `budget_min` form validation hatası | `budget_min` formdan kaldırıldı (nullable) — form sadece `budget_max` bekler |
 | Feature görünmüyor | `SiteSettings` admin'den ilgili flag'i `True` yap |
@@ -903,4 +902,4 @@ with connection.cursor() as c:
 
 ---
 
-*Son güncelleme: Mayıs 2026 — §3 Hetzner Docker → bare metal gunicorn (204.168.195.246, /var/www/rlprehber); §12 regresyon araçları (lineer + lojistik), menü kategorileri, JS polling kuralı, APA raporlama; §2 statsmodels eklendi; §25 yeni hata satırları; §26 görev listesi güncellendi*
+*Son güncelleme: Mayıs 2026 — §3 Hetzner Docker Compose (web/db/redis, /app, 89.167.5.224); §4 DATABASE_URL host=db; §12 regresyon araçları (lineer + lojistik), menü kategorileri, JS polling kuralı, APA raporlama; §2 statsmodels eklendi; §25 hata satırları güncellendi; §26 görev listesi güncellendi*
