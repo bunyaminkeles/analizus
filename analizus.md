@@ -409,12 +409,15 @@ class IstatistikJob:
 ### Diğer Önemli Modeller
 ```python
 class SiteSettings:      # Singleton (tek kayıt) — feature flag'ler admin'den yönetilir
-class PrivateMessage:    # Kullanıcılar arası DM
+class PrivateMessage:    # Kullanıcılar arası DM (attachment: FileField → S3)
 class BlogPost / BlogCategory
 class StudyRoom:         # Çalışma odaları
+class StudyRoomPost:     # Oda mesajları (file: FileField → S3)
 class QuizQuestion / QuizScore:  # İstatistik Arena
 class Badge:             # Rozetler
 class SuccessStory:      # Başarı hikayeleri
+class DonationTier:      # Destek paketi (name, min_amount, premium_days, is_active)
+class Donation:          # Bağış kaydı
 ```
 
 ---
@@ -640,6 +643,13 @@ Her önemli event'te `bkeles74@gmail.com` adresine bildirim:
 - Yeni ilan, yeni teklif, teklif kabul, iş tamamlandı
 - Blog yayınlandı, analiz tamamlandı
 
+### Destekçi E-postası (`support_payment_details.html`)
+- Endpoint: `POST /api/send-support-email/` → `forum/views.py:send_support_email`
+- Kullanıcı footer modalından tier seçer → buton e-posta gönderir
+- Şablon: `forum/templates/forum/emails/support_payment_details.html` (HTML, koyu tema)
+- İçerik: IBAN (TR73 0003 2000 0000 0079 1034 65), seçilen paket, premium gün, adımlar
+- `donation_context` context processor → `DonationTier.objects.filter(is_active=True)` → her sayfada `donation_tiers` değişkeni
+
 ### `notify_admin_analysis_completed` Detayı
 - Tüm istatistik araç kodları Türkçe isme çevrilir (`tool_names` dict)
 - E-postadaki "Analiz Sayfasına Git" linki admin paneline değil **public araç sayfasına** gider: `{SITE_URL}/istatistik/{tool_path}/`
@@ -780,6 +790,7 @@ SESSION_COOKIE_DOMAIN = '.analizus.com'  # Prod'da
 - Doğrulama: `X-Cron-Secret` header veya `?secret=` query param
 - Env: `CRON_SECRET_KEY`
 - **Aktif:** `/api/cron/cleanup-s3/` — trdizin + openalex S3 temizliği
+- **Aktif:** `/api/cron/cleanup-attachments/` — 90 günden eski DM + oda mesajı dosyaları S3'ten silinir, mesaj/post kaydı korunur (haftalık çalıştırılması önerilir)
 - **Kaldırılacak** (artık gereksiz): `/api/cron/daily-quiz/`, `/api/cron/update-badges/`
 
 ---
@@ -884,6 +895,7 @@ with connection.cursor() as c:
 - **Lojistik Regresyon (Binary)** — Nagelkerke R², OR, sınıflandırma tablosu, APA raporu
 - Tüm analiz PDF'lerine "Tezinde Nasıl Raporlarsın?" APA bölümü eklendi
 - Analizler menüsü kategorilere ayrıldı (5 kategori)
+- **Korelasyon sütun seçimi** — Cronbach ile aynı iki adımlı akış (preview → sütun seç → run)
 - Admin e-posta bildirim sistemi (tüm event'ler + araç Türkçe isimleri)
 - Bot koruması (honeypot + username regex + rate limit)
 - İlan düzenleme hakkı (1 kez, teklif yokken)
@@ -891,6 +903,8 @@ with connection.cursor() as c:
 - Yeni teklif → ilan sahibine e-posta
 - İş ilanı formunda minimum bütçe alanı kaldırıldı (yalnızca maksimum bütçe giriliyor)
 - Başarı hikayeleri, rozet, quiz sistemi
+- **Dosya paylaşımı (DM + Çalışma Odaları)** — PDF, Word, Excel, PPT, CSV, TXT, resim; max 5 MB; S3'e yüklenir; mesaj/oda silinince dosya da silinir (post_delete signal)
+- **Destekçi / Bağış sistemi** — Footer widget, modal (DonationTier seçimi), IBAN e-postası; `donation_context` processor ile her sayfada tier listesi mevcut; migration `0076_seed_donation_tiers` (4 tier)
 
 ### Sıradaki Görevler
 - Yeni kullanıcı onboarding akışı (Profile.segment alanı)
@@ -902,4 +916,4 @@ with connection.cursor() as c:
 
 ---
 
-*Son güncelleme: Mayıs 2026 — §3 Hetzner Docker Compose (web/db/redis, /app, 89.167.5.224); §4 DATABASE_URL host=db; §12 regresyon araçları (lineer + lojistik), menü kategorileri, JS polling kuralı, APA raporlama; §2 statsmodels eklendi; §25 hata satırları güncellendi; §26 görev listesi güncellendi*
+*Son güncelleme: Mayıs 2026 — §3 Hetzner Docker Compose (web/db/redis, /app, 89.167.5.224); §4 DATABASE_URL host=db; §8 DonationTier/Donation/StudyRoomPost modelleri; §12 regresyon + korelasyon sütun seçimi; §15 destekçi e-postası; §22 cleanup-attachments cron; §26 dosya paylaşımı + destekçi sistemi + korelasyon sütun seçimi tamamlandı*
