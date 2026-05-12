@@ -74,7 +74,7 @@ def analyze(df, dep_col: str, indep_cols: list) -> dict:
         vifs = [float('nan')] * p
 
     # Katsayılar
-    ci = model.conf_int()
+    ci = np.array(model.conf_int())
     coefficients = [{
         'name': 'Sabit',
         'B': round(float(model.params[0]), 4),
@@ -82,8 +82,8 @@ def analyze(df, dep_col: str, indep_cols: list) -> dict:
         'se': round(float(model.bse[0]), 4),
         't': round(float(model.tvalues[0]), 3),
         'p': round(float(model.pvalues[0]), 4),
-        'ci_low': round(float(ci.iloc[0, 0]), 4),
-        'ci_high': round(float(ci.iloc[0, 1]), 4),
+        'ci_low': round(float(ci[0, 0]), 4),
+        'ci_high': round(float(ci[0, 1]), 4),
         'vif': '—',
         'significant': bool(model.pvalues[0] < 0.05),
     }]
@@ -96,8 +96,8 @@ def analyze(df, dep_col: str, indep_cols: list) -> dict:
             'se': round(float(model.bse[i + 1]), 4),
             't': round(float(model.tvalues[i + 1]), 3),
             'p': round(float(model.pvalues[i + 1]), 4),
-            'ci_low': round(float(ci.iloc[i + 1, 0]), 4),
-            'ci_high': round(float(ci.iloc[i + 1, 1]), 4),
+            'ci_low': round(float(ci[i + 1, 0]), 4),
+            'ci_high': round(float(ci[i + 1, 1]), 4),
             'vif': round(float(vif_val), 3) if not np.isnan(vif_val) else '—',
             'significant': bool(model.pvalues[i + 1] < 0.05),
         })
