@@ -2677,7 +2677,7 @@ def studyroom_detail(request, slug):
             'file_type': file_type,
         })
 
-    posts = room.room_posts.select_related('author__profile').all()
+    posts = room.room_posts.select_related('author__profile').all() if is_member else []
     members = room.memberships.select_related('user__profile').all()
 
     return render(request, 'forum/studyroom_detail.html', {
