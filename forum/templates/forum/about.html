@@ -18,7 +18,7 @@
 
             <!-- Misyon -->
             <div class="mb-4">
-                <h5 class="text-info mb-2"><i class="bi bi-bullseye me-2"></i>Misyonumuz</h5>
+                <h5 class="mb-2" style="color:#818cf8;"><i class="bi bi-bullseye me-2"></i>Misyonumuz</h5>
                 <p class="text-light" style="line-height: 1.8;">
                     Araştırmacılar, öğrenciler ve kurumlar ile alanında akademik yeterliliği doğrulanmış veri bilimcileri, istatistikçileri ve yapay zeka uzmanlarını güvenli bir <strong>Hizmetler Pazarında</strong> buluşturmak. Aynı zamanda ücretsiz araştırma konsolu araçlarımızla veri analizini herkes için erişilebilir kılmak.
                 </p>
@@ -26,7 +26,7 @@
 
             <!-- Vizyon -->
             <div class="mb-4">
-                <h5 class="text-warning mb-2"><i class="bi bi-eye me-2"></i>Vizyonumuz</h5>
+                <h5 class="mb-2" style="color:#a78bfa;"><i class="bi bi-eye me-2"></i>Vizyonumuz</h5>
                 <p class="text-light" style="line-height: 1.8;">
                     Disiplinler arası sınırları kaldırarak; bir sosyoloğun yapay zeka uzmanından, bir mühendisin istatistikçiden kolayca destek alabildiği, bilginin ve emeğin adilce değere dönüştüğü <strong>Türkiye'nin en güvenilir bilimsel pazar yeri ve topluluğu</strong> olmak.
                 </p>
@@ -34,31 +34,31 @@
 
             <!-- Ne Yapıyoruz -->
             <div class="mb-4">
-                <h5 class="text-success mb-2"><i class="bi bi-gear me-2"></i>Ne Yapıyoruz?</h5>
+                <h5 class="mb-2" style="color:#818cf8;"><i class="bi bi-gear me-2"></i>Ne Yapıyoruz?</h5>
                 <div class="d-flex flex-column gap-3">
                     <div class="d-flex gap-3">
-                        <i class="bi bi-chat-dots text-info mt-1"></i>
+                        <i class="bi bi-chat-dots mt-1" style="color:#818cf8;"></i>
                         <div>
                             <span class="text-white fw-bold">Forum</span>
                             <span class="text-secondary"> - İstatistik, analiz yöntemleri ve akademik konularda soru-cevap</span>
                         </div>
                     </div>
                     <div class="d-flex gap-3">
-                        <i class="bi bi-briefcase text-success mt-1"></i>
+                        <i class="bi bi-briefcase mt-1" style="color:#a78bfa;"></i>
                         <div>
                             <span class="text-white fw-bold">Hizmetler Pazarı</span>
                             <span class="text-secondary"> - Uzmanlarla proje bazlı eşleşme ve analiz hizmeti</span>
                         </div>
                     </div>
                     <div class="d-flex gap-3">
-                        <i class="bi bi-robot text-warning mt-1"></i>
+                        <i class="bi bi-robot mt-1" style="color:#818cf8;"></i>
                         <div>
                             <span class="text-white fw-bold">AI Asistan</span>
                             <span class="text-secondary"> - Yapay zeka destekli istatistik danışmanlığı</span>
                         </div>
                     </div>
                     <div class="d-flex gap-3">
-                        <i class="bi bi-journal-richtext text-info mt-1"></i>
+                        <i class="bi bi-journal-richtext mt-1" style="color:#a78bfa;"></i>
                         <div>
                             <span class="text-white fw-bold">Blog</span>
                             <span class="text-secondary"> - Adım adım analiz rehberleri ve akademik yazılar</span>
@@ -72,15 +72,15 @@
                 <h5 class="text-white mb-2"><i class="bi bi-heart me-2" style="color: #ec4899;"></i>Değerlerimiz</h5>
                 <div class="d-flex flex-column gap-2">
                     <div class="d-flex align-items-start gap-2">
-                        <i class="bi bi-check-circle-fill text-success mt-1 small"></i>
+                        <i class="bi bi-check-circle-fill mt-1 small" style="color:#818cf8;"></i>
                         <span class="text-light"><strong>Akademik Dürüstlük</strong> - Bilimsel etik ve doğruluk her şeyin önünde</span>
                     </div>
                     <div class="d-flex align-items-start gap-2">
-                        <i class="bi bi-check-circle-fill text-success mt-1 small"></i>
+                        <i class="bi bi-check-circle-fill mt-1 small" style="color:#818cf8;"></i>
                         <span class="text-light"><strong>Erişilebilirlik</strong> - Bilgi herkese açık, destek herkese eşit</span>
                     </div>
                     <div class="d-flex align-items-start gap-2">
-                        <i class="bi bi-check-circle-fill text-success mt-1 small"></i>
+                        <i class="bi bi-check-circle-fill mt-1 small" style="color:#818cf8;"></i>
                         <span class="text-light"><strong>Topluluk Gücü</strong> - Uzmanların birbirine destek olduğu bir ekosistem</span>
                     </div>
                 </div>
@@ -95,37 +95,37 @@
             <!-- İletişim Bilgileri -->
             <div class="d-flex gap-4 mb-4">
                 <div class="d-flex align-items-center gap-2">
-                    <i class="bi bi-envelope-at text-info"></i>
+                    <i class="bi bi-envelope-at" style="color:#818cf8;"></i>
                     <span class="text-light small">info@analizus.com</span>
                 </div>
             </div>
 
             <!-- İletişim Formu -->
-            <div class="p-4" style="background: rgba(21, 32, 43, 0.6); border: 1px solid rgba(255,255,255,0.1); border-radius: 15px;">
+            <div class="p-4" style="background: rgba(21, 32, 43, 0.6); border: 1px solid rgba(99,102,241,0.2); border-radius: 15px;">
                 <form method="POST" action="{% url 'contact' %}">
                     {% csrf_token %}
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label class="form-label text-info small">Adınız Soyadınız</label>
+                            <label class="form-label small" style="color:#818cf8;">Adınız Soyadınız</label>
                             <input type="text" name="name" class="form-control bg-dark text-white border-secondary" required>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label class="form-label text-info small">E-posta</label>
+                            <label class="form-label small" style="color:#818cf8;">E-posta</label>
                             <input type="email" name="email" class="form-control bg-dark text-white border-secondary" required>
                         </div>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label text-info small">Konu</label>
+                        <label class="form-label small" style="color:#818cf8;">Konu</label>
                         <input type="text" name="subject" class="form-control bg-dark text-white border-secondary" required>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label text-info small">Mesajınız</label>
+                        <label class="form-label small" style="color:#818cf8;">Mesajınız</label>
                         <textarea name="message" rows="5" class="form-control bg-dark text-white border-secondary" required></textarea>
                     </div>
 
-                    <button type="submit" class="btn btn-info w-100 py-2 fw-bold">
+                    <button type="submit" class="btn w-100 py-2 fw-bold" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border:none;">
                         <i class="bi bi-send me-2"></i>Gönder
                     </button>
                 </form>
