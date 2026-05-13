@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.core.paginator import Paginator
 from django.urls import reverse
 from django import forms
 from django.conf import settings
@@ -2175,8 +2176,14 @@ def blog_list(request):
     # Popüler yazılar
     popular_posts = BlogPost.objects.filter(status='published').order_by('-views')[:5]
 
+    # Sayfalama
+    posts = posts.order_by('-published_at')
+    paginator = Paginator(posts, 12)
+    page_obj = paginator.get_page(request.GET.get('page'))
+
     context = {
-        'posts': posts,
+        'posts': page_obj,
+        'page_obj': page_obj,
         'featured_posts': featured_posts,
         'categories': categories,
         'tags': tags,
