@@ -1456,7 +1456,7 @@ class TeamMember(models.Model):
         return self.name
 
     def get_profile_url(self):
-        return f"/profil/{self.username}/" if self.username else None
+        return f"/profile/{self.username}/" if self.username else None
 
     def get_skills_list(self):
         return [s.strip() for s in self.skills.split(',')] if self.skills else []
