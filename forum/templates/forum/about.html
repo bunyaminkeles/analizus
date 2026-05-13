@@ -153,6 +153,7 @@
                 {% get_team_members as team_members %}
                 {% for member in team_members %}
                 <div class="col-lg-4 col-md-6">
+                    {% if member.get_profile_url %}<a href="{{ member.get_profile_url }}" class="text-decoration-none d-block h-100">{% endif %}
                     <div class="ax-expert-card h-100">
                         <div class="ax-expert-card__top"></div>
                         <div class="ax-expert-card__body">
@@ -182,6 +183,7 @@
                             {% endif %}
                         </div>
                     </div>
+                    {% if member.get_profile_url %}</a>{% endif %}
                 </div>
                 {% empty %}
                 <div class="col-12 text-center text-muted py-4">Henüz uzman kadro eklenmedi.</div>
@@ -240,6 +242,10 @@
                 -webkit-line-clamp: 5;
                 -webkit-box-orient: vertical;
                 overflow: hidden;
+            }
+            a:has(.ax-expert-card) .ax-expert-card,
+            a.d-block:has(.ax-expert-card):hover .ax-expert-card {
+                cursor: pointer;
             }
             .ax-expert-skill {
                 font-size: 0.7rem;
