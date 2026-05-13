@@ -123,48 +123,53 @@
 
       <div id="posts-container">
         {% for post in posts %}
-        <div class="d-flex gap-3 mb-3">
-          <div class="flex-shrink-0">
-            {% if post.author.profile.avatar %}
-            <img src="{{ post.author.profile.avatar.url }}" class="rounded-circle" width="36" height="36" style="object-fit:cover;">
-            {% else %}
-            <div class="rounded-circle d-flex align-items-center justify-content-center"
-                 style="width:36px;height:36px;background:#1e3a5f;border:1px solid rgba(255,255,255,0.1);">
-              <span class="text-primary fw-bold small">{{ post.author.username|first|upper }}</span>
+        {% if post.author == request.user %}
+        <div class="rm-wrap rm-benim">
+          <div class="rm-meta rm-meta--sag">
+            <a href="{% url 'profile_detail' post.author.username %}" class="rm-yazar">{{ post.author.username }}</a>
+          </div>
+          <div class="rm-balon rm-balon--benim">
+            {% if post.message %}<p class="mb-0 mention-text" style="white-space:pre-wrap;">{{ post.message }}</p>{% endif %}
+            {% if post.file %}
+            <div class="{% if post.message %}mt-2{% endif %}">
+              {% with ext=post.file.name|lower %}
+              {% if ".jpg" in ext or ".jpeg" in ext or ".png" in ext or ".gif" in ext or ".webp" in ext %}
+              <a href="{{ post.file.url }}" target="_blank"><img src="{{ post.file.url }}" alt="Resim" class="img-fluid rounded" style="max-height:150px;"></a>
+              {% elif ".pdf" in ext %}
+              <a href="{{ post.file.url }}" target="_blank" class="rm-dosya rm-dosya--pdf"><i class="bi bi-file-pdf me-1"></i>{{ post.file.name|slice:"11:"|truncatechars:30 }}</a>
+              {% else %}
+              <a href="{{ post.file.url }}" target="_blank" class="rm-dosya"><i class="bi bi-file-earmark me-1"></i>{{ post.file.name|slice:"11:"|truncatechars:30 }}</a>
+              {% endif %}
+              {% endwith %}
             </div>
             {% endif %}
           </div>
-          <div class="flex-grow-1">
-            <div class="card border-secondary p-3" style="background:#1a1a2e;">
-              <div class="d-flex align-items-center gap-2 mb-2">
-                <a href="{% url 'profile_detail' post.author.username %}" class="text-white fw-semibold text-decoration-none small">{{ post.author.username }}</a>
-                <span class="text-white-50" style="font-size:.7rem;">{{ post.created_at|date:"d M Y H:i" }}</span>
-              </div>
-              {% if post.message %}<p class="text-white-50 small mb-0 mention-text" style="white-space:pre-wrap;">{{ post.message }}</p>{% endif %}
-              {% if post.file %}
-              <div class="mt-2">
-                {% with ext=post.file.name|lower %}
-                {% if ".jpg" in ext or ".jpeg" in ext or ".png" in ext or ".gif" in ext or ".webp" in ext %}
-                <a href="{{ post.file.url }}" target="_blank">
-                  <img src="{{ post.file.url }}" alt="Resim" class="img-fluid rounded" style="max-height:150px;">
-                </a>
-                {% elif ".pdf" in ext %}
-                <a href="{{ post.file.url }}" target="_blank" class="btn btn-sm"
-                   style="background:rgba(220,53,69,0.15);color:#dc3545;border:1px solid rgba(220,53,69,0.3);">
-                  <i class="bi bi-file-pdf me-1"></i>{{ post.file.name|slice:"11:"|truncatechars:30 }}
-                </a>
-                {% else %}
-                <a href="{{ post.file.url }}" target="_blank" class="btn btn-sm"
-                   style="background:rgba(0,210,255,0.15);color:#00d2ff;border:1px solid rgba(0,210,255,0.3);">
-                  <i class="bi bi-file-earmark me-1"></i>{{ post.file.name|slice:"11:"|truncatechars:30 }}
-                </a>
-                {% endif %}
-                {% endwith %}
-              </div>
-              {% endif %}
-            </div>
-          </div>
+          <div class="rm-zaman rm-zaman--sag">{{ post.created_at|date:"d.m.Y H:i" }}</div>
         </div>
+        {% else %}
+        <div class="rm-wrap rm-karsi">
+          <div class="rm-meta">
+            <a href="{% url 'profile_detail' post.author.username %}" class="rm-yazar">{{ post.author.username }}</a>
+          </div>
+          <div class="rm-balon rm-balon--karsi">
+            {% if post.message %}<p class="mb-0 mention-text" style="white-space:pre-wrap;">{{ post.message }}</p>{% endif %}
+            {% if post.file %}
+            <div class="{% if post.message %}mt-2{% endif %}">
+              {% with ext=post.file.name|lower %}
+              {% if ".jpg" in ext or ".jpeg" in ext or ".png" in ext or ".gif" in ext or ".webp" in ext %}
+              <a href="{{ post.file.url }}" target="_blank"><img src="{{ post.file.url }}" alt="Resim" class="img-fluid rounded" style="max-height:150px;"></a>
+              {% elif ".pdf" in ext %}
+              <a href="{{ post.file.url }}" target="_blank" class="rm-dosya rm-dosya--pdf"><i class="bi bi-file-pdf me-1"></i>{{ post.file.name|slice:"11:"|truncatechars:30 }}</a>
+              {% else %}
+              <a href="{{ post.file.url }}" target="_blank" class="rm-dosya"><i class="bi bi-file-earmark me-1"></i>{{ post.file.name|slice:"11:"|truncatechars:30 }}</a>
+              {% endif %}
+              {% endwith %}
+            </div>
+            {% endif %}
+          </div>
+          <div class="rm-zaman">{{ post.created_at|date:"d.m.Y H:i" }}</div>
+        </div>
+        {% endif %}
         {% empty %}
         <div class="text-center py-4 text-white-50 small">
           <i class="bi bi-chat d-block mb-2" style="font-size:1.8rem;"></i>
@@ -263,6 +268,46 @@
 
 </div>
 
+<style>
+#posts-container {
+  height: calc(100vh - 420px);
+  min-height: 280px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+  padding: .75rem;
+  background: rgba(15,23,42,0.4);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 10px;
+}
+.rm-wrap { display: flex; flex-direction: column; max-width: 78%; }
+.rm-benim { align-self: flex-end; align-items: flex-end; }
+.rm-karsi { align-self: flex-start; align-items: flex-start; }
+.rm-balon {
+  padding: .5rem .85rem;
+  border-radius: 1rem;
+  font-size: .875rem;
+  line-height: 1.5;
+  word-break: break-word;
+  color: #f1f5f9;
+}
+.rm-balon--benim { background: #6366f1; border-bottom-right-radius: .25rem; }
+.rm-balon--karsi { background: #1f2937; border-bottom-left-radius: .25rem; }
+.rm-meta { display: flex; align-items: center; gap: .3rem; margin-bottom: 3px; font-size: .72rem; }
+.rm-meta--sag { justify-content: flex-end; }
+.rm-yazar { color: #818cf8; font-weight: 600; text-decoration: none; }
+.rm-yazar:hover { text-decoration: underline; }
+.rm-zaman { font-size: .68rem; color: #64748b; margin-top: 3px; }
+.rm-zaman--sag { text-align: right; }
+.rm-dosya {
+  display: inline-flex; align-items: center; gap: .3rem;
+  padding: 3px 10px; border-radius: 6px; font-size: .78rem; text-decoration: none;
+  background: rgba(0,210,255,0.15); color: #00d2ff; border: 1px solid rgba(0,210,255,0.3);
+}
+.rm-dosya--pdf { background: rgba(220,53,69,0.15); color: #dc3545; border-color: rgba(220,53,69,0.3); }
+</style>
+
 <script>
 const csrfToken = '{{ csrf_token }}';
 const memberUsernames = [{% for m in members %}"{{ m.user.username }}"{% if not forloop.last %},{% endif %}{% endfor %}];
@@ -286,28 +331,19 @@ function appendRoomPost(post) {
   const empty = container.querySelector('.text-center');
   if (empty) empty.remove();
 
-  const avatar = post.avatar_url
-    ? `<img src="${post.avatar_url}" class="rounded-circle" width="36" height="36" style="object-fit:cover;">`
-    : `<div class="rounded-circle d-flex align-items-center justify-content-center"
-           style="width:36px;height:36px;background:#1e3a5f;border:1px solid rgba(255,255,255,0.1);">
-         <span class="text-primary fw-bold small">${post.author[0].toUpperCase()}</span>
-       </div>`;
-
-  const msgHtml = post.message ? `<p class="text-white-50 small mb-0" style="white-space:pre-wrap;">${renderMentions(escapeHtml(post.message))}</p>` : '';
+  const benim = post.author === currentUsername;
+  const msgHtml = post.message ? `<p class="mb-0" style="white-space:pre-wrap;">${renderMentions(escapeHtml(post.message))}</p>` : '';
 
   const div = document.createElement('div');
-  div.className = 'd-flex gap-3 mb-3';
+  div.className = `rm-wrap ${benim ? 'rm-benim' : 'rm-karsi'}`;
   div.innerHTML = `
-    <div class="flex-shrink-0">${avatar}</div>
-    <div class="flex-grow-1">
-      <div class="card border-secondary p-3" style="background:#1a1a2e;">
-        <div class="d-flex align-items-center gap-2 mb-2">
-          <a href="/profile/${post.author}/" class="text-white fw-semibold text-decoration-none small">${post.author}</a>
-          <span class="text-white-50" style="font-size:.7rem;">${post.created_at}</span>
-        </div>
-        ${msgHtml}${getFileHtml(post)}
-      </div>
-    </div>`;
+    <div class="rm-meta ${benim ? 'rm-meta--sag' : ''}">
+      <a href="/profile/${post.author}/" class="rm-yazar">${escapeHtml(post.author)}</a>
+    </div>
+    <div class="rm-balon ${benim ? 'rm-balon--benim' : 'rm-balon--karsi'}">
+      ${msgHtml}${getFileHtml(post)}
+    </div>
+    <div class="rm-zaman ${benim ? 'rm-zaman--sag' : ''}">${post.created_at}</div>`;
   container.appendChild(div);
   container.scrollTop = container.scrollHeight;
 }
@@ -347,11 +383,14 @@ function renderMentions(text) {
   });
 }
 
-// Sayfa yüklenince mevcut mesajlardaki @mention'ları linkle
 document.addEventListener('DOMContentLoaded', () => {
+  // @mention'ları linkle
   document.querySelectorAll('#posts-container .mention-text').forEach(el => {
     el.innerHTML = renderMentions(el.textContent);
   });
+  // En alta kaydır
+  const c = document.getElementById('posts-container');
+  if (c) c.scrollTop = c.scrollHeight;
 });
 
 // @mention autocomplete — normal mesajlaşmayla aynı /api/users/search/ endpoint'i kullanır
