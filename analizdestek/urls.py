@@ -3,9 +3,10 @@ from django.urls import path, include
 from django.contrib.auth import views as auth_views
 from django.contrib.sitemaps.views import sitemap
 from django.views.generic import TemplateView
+from django.http import HttpResponse
 from django.conf import settings
 from django.conf.urls.static import static
-from forum.sitemaps import StaticViewSitemap, TopicSitemap, CategorySitemap, JobSitemap
+from forum.sitemaps import StaticViewSitemap, TopicSitemap, CategorySitemap, JobSitemap, BlogPostSitemap, IstatistikSitemap, ToolsSitemap
 from forum.views import custom_login
 
 sitemaps = {
@@ -13,6 +14,9 @@ sitemaps = {
     'topics': TopicSitemap,
     'categories': CategorySitemap,
     'jobs': JobSitemap,
+    'blog': BlogPostSitemap,
+    'istatistik': IstatistikSitemap,
+    'tools': ToolsSitemap,
 }
 
 urlpatterns = [
@@ -69,6 +73,7 @@ urlpatterns = [
     # 4. SEO - Sitemap & Robots
     path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
     path('robots.txt', TemplateView.as_view(template_name='robots.txt', content_type='text/plain')),
+    path('534e22a9f9e4d375119c5bc6d006aad0.txt', lambda r: HttpResponse('534e22a9f9e4d375119c5bc6d006aad0', content_type='text/plain')),
 ]
 
 # Lokal geliştirmede media dosyalarını servis et

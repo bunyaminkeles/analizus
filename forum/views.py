@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.core.paginator import Paginator
 from django.urls import reverse
 from django import forms
 from django.conf import settings
@@ -1096,7 +1097,14 @@ def profile_edit(request):
                     # Varsa getir (case-insensitive), yoksa oluştur
                     skill = Skill.objects.filter(name__iexact=skill_name).first()
                     if not skill:
-                        skill = Skill.objects.create(name=skill_name)
+                        from django.utils.text import slugify as _slugify
+                        base_slug = _slugify(skill_name) or f"skill-{skill_name[:20]}"
+                        slug = base_slug
+                        counter = 1
+                        while Skill.objects.filter(slug=slug).exists():
+                            slug = f"{base_slug}-{counter}"
+                            counter += 1
+                        skill = Skill.objects.create(name=skill_name, slug=slug)
                     selected_skills.append(str(skill.id))
 
         profile.skills.set(selected_skills)
@@ -1473,7 +1481,7 @@ def contact(request):
         except Exception:
             messages.error(request, 'Mesaj gönderilirken bir hata oluştu. Lütfen tekrar deneyin.')
         return redirect('about')
-    return redirect('about')
+    return redirect('/hakkimizda/#iletisim')
 
 def search_result(request):
     """Arama sonuçları"""
@@ -2175,8 +2183,14 @@ def blog_list(request):
     # Popüler yazılar
     popular_posts = BlogPost.objects.filter(status='published').order_by('-views')[:5]
 
+    # Sayfalama
+    posts = posts.order_by('-published_at')
+    paginator = Paginator(posts, 12)
+    page_obj = paginator.get_page(request.GET.get('page'))
+
     context = {
-        'posts': posts,
+        'posts': page_obj,
+        'page_obj': page_obj,
         'featured_posts': featured_posts,
         'categories': categories,
         'tags': tags,
@@ -2670,7 +2684,7 @@ def studyroom_detail(request, slug):
             'file_type': file_type,
         })
 
-    posts = room.room_posts.select_related('author__profile').all()
+    posts = room.room_posts.select_related('author__profile').all() if is_member else []
     members = room.memberships.select_related('user__profile').all()
 
     return render(request, 'forum/studyroom_detail.html', {

@@ -155,9 +155,10 @@
     <div class="col-12">
       <h6 class="text-white fw-semibold mb-3">
         <i class="bi bi-chat-square-text me-2 text-primary"></i>Tartışma
-        <span class="text-white-50 fw-normal">({{ room.room_posts.count }})</span>
+        {% if is_member %}<span class="text-white-50 fw-normal">({{ room.room_posts.count }})</span>{% endif %}
       </h6>
 
+      {% if is_member %}
       <div id="posts-container">
         {% for post in posts %}
         {% if post.author == request.user %}
@@ -216,7 +217,7 @@
       </div>
 
       <!-- Mesaj formu -->
-      {% if room.status == 'active' and is_member %}
+      {% if room.status == 'active' %}
       <div class="card border-secondary mt-3 p-3" style="background:#16213e;">
         <div class="position-relative mb-2">
           <textarea id="msg-input" class="form-control bg-dark text-white border-secondary"
@@ -251,15 +252,35 @@
           </button>
         </div>
       </div>
-      {% elif room.status == 'active' and not is_member %}
-      <div class="text-center py-3 text-white-50 small border border-secondary rounded mt-3 p-3" style="background:rgba(255,255,255,.02);">
-        Mesaj göndermek için odaya katılın.
-      </div>
       {% elif room.status == 'archived' %}
       <div class="text-center py-3 text-white-50 small border border-secondary rounded mt-3 p-3" style="background:rgba(255,255,255,.02);">
         <i class="bi bi-archive me-1"></i>Bu oda arşivlenmiştir. Yeni gönderi kabul edilmez.
       </div>
       {% endif %}
+
+      {% else %}
+      <!-- Üye olmayan kullanıcılar için kilitli alan -->
+      <div class="text-center py-5 rounded" style="background:rgba(15,23,42,0.4);border:1px solid rgba(255,255,255,0.07);">
+        <div class="mb-3" style="font-size:2.5rem;opacity:.4;">
+          <i class="bi bi-lock-fill"></i>
+        </div>
+        <p class="text-white-50 mb-1 fw-semibold">Bu odanın yazışmaları üyelere özeldir.</p>
+        <p class="text-white-50 small mb-4">Tartışmalara katılmak ve mesajları görmek için odaya katılın.</p>
+        {% if room.status == 'active' %}
+          {% if user.is_authenticated %}
+          <button class="btn btn-warning fw-bold rounded-pill px-4" id="join-btn" data-action="join"
+                  onclick="toggleJoin('{{ room.slug }}')">
+            <i class="bi bi-door-open me-2"></i>Odaya Katıl
+          </button>
+          {% else %}
+          <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-warning fw-bold rounded-pill px-4">
+            <i class="bi bi-door-open me-2"></i>Giriş Yap & Katıl
+          </a>
+          {% endif %}
+        {% endif %}
+      </div>
+      {% endif %}
+
     </div>
 
   </div>

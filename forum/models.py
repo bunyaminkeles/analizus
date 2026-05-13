@@ -1443,6 +1443,7 @@ class TeamMember(models.Model):
     bio = models.TextField(verbose_name="Kısa Özgeçmiş")
     image = models.ImageField(upload_to="team/", storage=get_storage, blank=True, null=True, verbose_name="Fotoğraf")
     skills = models.CharField(max_length=200, blank=True, help_text="Virgülle ayırarak yazın (örn: SPSS, R Studio, Ölçek Geliştirme)", verbose_name="Yetenekler/Etiketler")
+    username = models.CharField(max_length=150, blank=True, help_text="Analizus kullanıcı adı (profil linki için)", verbose_name="Kullanıcı Adı")
     order = models.PositiveIntegerField(default=0, verbose_name="Sıralama")
     is_active = models.BooleanField(default=True, verbose_name="Aktif mi?")
 
@@ -1454,6 +1455,8 @@ class TeamMember(models.Model):
     def __str__(self):
         return self.name
 
+    def get_profile_url(self):
+        return f"/profile/{self.username}/" if self.username else None
+
     def get_skills_list(self):
-        """Virgülle ayrılmış yetenekleri listeye çevirir (Template'de döngü için)"""
         return [s.strip() for s in self.skills.split(',')] if self.skills else []

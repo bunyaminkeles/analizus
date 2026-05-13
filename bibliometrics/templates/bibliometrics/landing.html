@@ -1,7 +1,8 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Bibliometrik Analiz - Analizus{% endblock %}
+{% block title %}Bibliometrik Analiz — WoS, Scopus, BibTeX ile Atıf ve Yayın Analizi | Analizus{% endblock %}
+{% block meta_description %}WoS, Scopus, BibTeX veya OpenAlex verilerinizle bibliometrik analiz yapın. Yayın trendi, atıf analizi, H-index, işbirliği ağı, kelime bulutu — PDF rapor ile. Ücretsiz dene.{% endblock %}
 
 {% block content %}
 <div class="row g-4">
@@ -443,4 +444,42 @@
   }
 })();
 </script>
+
+<!-- SEO: Bilgi metni -->
+<div class="container mb-5 mt-4" style="max-width:900px;">
+    <div class="row g-4">
+        <div class="col-12">
+            <h2 class="text-white fw-semibold mb-3" style="font-size:1.1rem;">
+                <i class="bi bi-info-circle me-2" style="color:#818cf8;"></i>Bibliometrik Analiz Nedir?
+            </h2>
+            <p class="text-secondary" style="line-height:1.8;font-size:.92rem;">
+                Bibliometrik analiz; bilimsel yayınların atıf sayısı, yazar işbirliği ağı, yayın trendi ve anahtar kelime dağılımı gibi nicel göstergelerini inceleyen bir araştırma yöntemidir. Tez literatür taraması, sistematik derleme ve araştırma haritalaması için vazgeçilmez bir araçtır. Analizus Bibliometrik Analiz aracı; Web of Science (WoS), Scopus, BibTeX ve OpenAlex formatlarını destekler — tek dosya yükleyerek 10 farklı analizi saniyeler içinde gerçekleştirebilirsiniz.
+            </p>
+        </div>
+        <div class="col-md-3">
+            <div class="p-3 rounded h-100" style="background:rgba(99,102,241,0.07);border:1px solid rgba(99,102,241,0.15);">
+                <h3 class="text-white fw-semibold mb-2" style="font-size:.9rem;"><i class="bi bi-graph-up me-2" style="color:#818cf8;"></i>Yayın Trendi</h3>
+                <p class="text-secondary mb-0" style="font-size:.8rem;line-height:1.6;">Yıllara göre yayın sayısı değişimini görselleştirin.</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="p-3 rounded h-100" style="background:rgba(99,102,241,0.07);border:1px solid rgba(99,102,241,0.15);">
+                <h3 class="text-white fw-semibold mb-2" style="font-size:.9rem;"><i class="bi bi-award me-2" style="color:#818cf8;"></i>Atıf & H-index</h3>
+                <p class="text-secondary mb-0" style="font-size:.8rem;line-height:1.6;">En çok atıf alan makaleleri ve yazar H-index değerlerini hesaplayın.</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="p-3 rounded h-100" style="background:rgba(99,102,241,0.07);border:1px solid rgba(99,102,241,0.15);">
+                <h3 class="text-white fw-semibold mb-2" style="font-size:.9rem;"><i class="bi bi-diagram-3 me-2" style="color:#818cf8;"></i>İşbirliği Ağı</h3>
+                <p class="text-secondary mb-0" style="font-size:.8rem;line-height:1.6;">Yazar ve kurum ortak çalışma ağlarını görsel harita ile inceleyin.</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="p-3 rounded h-100" style="background:rgba(99,102,241,0.07);border:1px solid rgba(99,102,241,0.15);">
+                <h3 class="text-white fw-semibold mb-2" style="font-size:.9rem;"><i class="bi bi-cloud me-2" style="color:#818cf8;"></i>Kelime Bulutu</h3>
+                <p class="text-secondary mb-0" style="font-size:.8rem;line-height:1.6;">Başlık ve özet metinlerinden anahtar kavram frekanslarını çıkarın.</p>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

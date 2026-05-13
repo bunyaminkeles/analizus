@@ -1,6 +1,6 @@
 from django.contrib.sitemaps import Sitemap
 from django.urls import reverse
-from .models import Topic, Category, FreelanceJob
+from .models import Topic, Category, FreelanceJob, BlogPost
 
 
 class StaticViewSitemap(Sitemap):
@@ -58,3 +58,62 @@ class JobSitemap(Sitemap):
 
     def location(self, obj):
         return reverse('job_detail', args=[obj.pk])
+
+
+class BlogPostSitemap(Sitemap):
+    """Yayınlanmış blog yazıları için sitemap"""
+    changefreq = 'monthly'
+    priority = 0.9
+
+    def items(self):
+        return BlogPost.objects.filter(status='published').order_by('-published_at')
+
+    def lastmod(self, obj):
+        return obj.updated_at
+
+    def location(self, obj):
+        return reverse('blog_detail', kwargs={'slug': obj.slug})
+
+
+class IstatistikSitemap(Sitemap):
+    """İstatistik araç landing sayfaları için sitemap"""
+    changefreq = 'monthly'
+    priority = 0.9
+
+    def items(self):
+        return [
+            'istatistik:cronbach',
+            'istatistik:normallik',
+            'istatistik:betimsel',
+            'istatistik:korelasyon',
+            'istatistik:orneklem',
+            'istatistik:ttesti',
+            'istatistik:anova',
+            'istatistik:mann_whitney',
+            'istatistik:kruskal_wallis',
+            'istatistik:ki_kare',
+            'istatistik:lineer_regresyon',
+            'istatistik:lojistik_regresyon',
+        ]
+
+    def location(self, item):
+        return reverse(item)
+
+
+class ToolsSitemap(Sitemap):
+    """Diğer araç landing sayfaları için sitemap"""
+    changefreq = 'monthly'
+    priority = 0.8
+
+    def items(self):
+        return [
+            ('openalex', 'landing'),
+            ('yoktez', 'landing'),
+            ('bibliometrics', 'landing'),
+            ('tezanaliz', 'landing'),
+            ('oaipmh', 'landing'),
+        ]
+
+    def location(self, item):
+        namespace, name = item
+        return reverse(f'{namespace}:{name}')
