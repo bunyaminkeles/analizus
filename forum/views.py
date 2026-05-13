@@ -1306,7 +1306,7 @@ def profile_detail(request, username):
     given_proposals = JobProposal.objects.filter(expert=profile_user).select_related('job').order_by('-created_at')[:20]
     received_reviews = JobReview.objects.filter(reviewed_user=profile_user, is_approved=True).select_related('reviewer', 'job').order_by('-created_at')[:20]
     completed_projects = JobProposal.objects.filter(
-        expert=profile_user, status='accepted'
+        expert=profile_user, status='accepted', job__status='completed'
     ).select_related('job').order_by('-created_at')[:12]
 
     # Yıldız ortalaması
