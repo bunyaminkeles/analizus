@@ -13,9 +13,11 @@
   </div>
 
   <!-- Oda başlığı + durum -->
-  <div class="card border-secondary mb-4 p-4" style="background:#16213e;">
-    <div class="d-flex align-items-start justify-content-between flex-wrap gap-3">
-      <div>
+  <div class="card border-secondary mb-4" style="background:#16213e;">
+    <div class="row g-0">
+
+      <!-- Sol: başlık, açıklama, hedef -->
+      <div class="col-md-8 p-4" style="border-right:1px solid rgba(255,255,255,0.07);">
         <div class="d-flex align-items-center gap-2 flex-wrap mb-2">
           {% if room.status == 'active' %}
           <span class="badge" style="background:rgba(16,185,129,0.18);color:#86efac;">Aktif</span>
@@ -38,60 +40,57 @@
           </span>
           {% endif %}
         </div>
-        <h2 class="text-white fw-bold mb-2" style="font-size:1.4rem;">{{ room.title }}</h2>
-        <p class="text-white-50 small mb-3">{{ room.description }}</p>
-        <div class="d-flex gap-2 align-items-start p-2 rounded" style="background:rgba(255,255,255,0.04);display:inline-flex!important;">
+        <h2 class="text-white fw-bold mb-2" style="font-size:1.3rem;">{{ room.title }}</h2>
+        <p class="text-white-50 small mb-3" style="line-height:1.6;">{{ room.description }}</p>
+        <div class="d-inline-flex gap-2 align-items-start p-2 rounded" style="background:rgba(255,255,255,0.04);">
           <i class="bi bi-bullseye text-warning mt-1 flex-shrink-0"></i>
           <div>
-            <span class="text-white-50" style="font-size:.75rem;">Hedef:</span>
+            <span class="text-white-50" style="font-size:.72rem;">Hedef:</span>
             <p class="text-white small mb-0">{{ room.goal }}</p>
           </div>
         </div>
       </div>
 
-      <!-- Üye sayısı + katıl butonu -->
-      <div class="text-end flex-shrink-0">
-        <div class="text-white fw-bold" style="font-size:1.3rem;">{{ room.member_count }}</div>
-        <div class="text-white-50 small mb-2">üye / {{ room.max_members }}</div>
-        <button class="btn btn-outline-secondary btn-sm mb-2 w-100" style="font-size:.72rem;"
+      <!-- Sağ: üye sayısı + butonlar -->
+      <div class="col-md-4 p-4 d-flex flex-column align-items-center justify-content-center text-center gap-2">
+        <div>
+          <div class="text-white fw-bold" style="font-size:1.6rem; line-height:1;">{{ room.member_count }}</div>
+          <div class="text-white-50 small">üye / {{ room.max_members }}</div>
+        </div>
+
+        <button class="btn btn-outline-secondary btn-sm w-100" style="font-size:.72rem;"
                 onclick="copyRoomLink()" id="copy-link-btn">
           <i class="bi bi-link-45deg me-1"></i>Linki Kopyala
         </button>
+
         {% if room.status == 'active' %}
           {% if user.is_authenticated %}
             {% if is_member %}
               {% if membership.role == 'creator' %}
               <span class="badge bg-warning text-dark">Kurucu</span>
-              <div class="d-flex gap-1 mt-2 justify-content-end">
-                <a href="{% url 'studyroom_edit' room.slug %}" class="btn btn-outline-secondary btn-sm py-0 px-2" style="font-size:.72rem;">
-                  <i class="bi bi-pencil me-1"></i>Düzenle
-                </a>
-                {% if room.status != 'active' %}
-                <button class="btn btn-outline-danger btn-sm py-0 px-2" style="font-size:.72rem;"
-                        onclick="deleteRoom('{{ room.slug }}')">
-                  <i class="bi bi-trash me-1"></i>Sil
-                </button>
-                {% endif %}
-              </div>
+              <a href="{% url 'studyroom_edit' room.slug %}" class="btn btn-outline-secondary btn-sm w-100" style="font-size:.72rem;">
+                <i class="bi bi-pencil me-1"></i>Düzenle
+              </a>
               {% else %}
-              <button class="btn btn-outline-secondary btn-sm" id="join-btn" data-action="leave"
+              <button class="btn btn-outline-secondary btn-sm w-100" id="join-btn" data-action="leave"
                       onclick="toggleJoin('{{ room.slug }}')">
                 <i class="bi bi-box-arrow-left me-1"></i>Ayrıl
               </button>
               {% endif %}
             {% else %}
-            <button class="btn btn-warning btn-sm fw-semibold" id="join-btn" data-action="join"
+            <button class="btn btn-warning btn-sm fw-semibold w-100" id="join-btn" data-action="join"
                     onclick="toggleJoin('{{ room.slug }}')">
               <i class="bi bi-door-open me-1"></i>Katıl
             </button>
             {% endif %}
           {% else %}
-          <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-warning btn-sm fw-semibold">
+          <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-warning btn-sm fw-semibold w-100">
             <i class="bi bi-door-open me-1"></i>Giriş Yap & Katıl
           </a>
           {% endif %}
         {% endif %}
-        <div class="text-white-50 mt-2" style="font-size:.72rem;">
+
+        <div class="text-white-50" style="font-size:.7rem;">
           Kurucu: <a href="{% url 'profile_detail' room.creator.username %}" class="text-white-50">{{ room.creator.username }}</a>
         </div>
       </div>
@@ -99,7 +98,7 @@
 
     <!-- Admin kontrolleri -->
     {% if request.user.is_staff and room.status == 'pending' %}
-    <div class="border-top border-secondary mt-3 pt-3">
+    <div class="border-top border-secondary mx-4 mb-3 pt-3">
       <p class="text-warning small mb-2"><i class="bi bi-shield-check me-1"></i>Admin: Bu oda onay bekliyor.</p>
       <div class="d-flex gap-2">
         <button onclick="approveRoom('{{ room.slug }}', 'approve')" class="btn btn-success btn-sm">
