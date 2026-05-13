@@ -153,23 +153,33 @@
                 {% get_team_members as team_members %}
                 {% for member in team_members %}
                 <div class="col-lg-4 col-md-6">
-                    <div class="p-4 rounded-4 h-100" style="background: rgba(30, 41, 59, 0.4); border: 1px solid rgba(255, 255, 255, 0.05);">
-                        <div class="d-flex align-items-center gap-3 mb-3">
-                            {% if member.image %}
-                            <img src="{{ member.image.url }}" class="rounded-circle" style="width: 60px; height: 60px; object-fit: cover;" alt="{{ member.name }}">
-                            {% else %}
-                            <img src="https://ui-avatars.com/api/?name={{ member.name|urlencode }}&background=6366f1&color=fff&size=60" class="rounded-circle" alt="{{ member.name }}">
-                            {% endif %}
-                            <div>
-                                <h5 class="text-white fw-bold mb-1">{{ member.name }}</h5>
-                                <p class="text-info small mb-0">{{ member.title }}</p>
+                    <div class="ax-expert-card h-100">
+                        <div class="ax-expert-card__top"></div>
+                        <div class="ax-expert-card__body">
+                            <!-- Avatar + İsim -->
+                            <div class="d-flex align-items-center gap-3 mb-3">
+                                <div class="ax-expert-avatar">
+                                    {% if member.image %}
+                                    <img src="{{ member.image.url }}" class="rounded-circle" style="width:56px;height:56px;object-fit:cover;" alt="{{ member.name }}">
+                                    {% else %}
+                                    <img src="https://ui-avatars.com/api/?name={{ member.name|urlencode }}&background=6366f1&color=fff&size=56&bold=true" class="rounded-circle" style="width:56px;height:56px;" alt="{{ member.name }}">
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <h5 class="text-white fw-bold mb-0" style="font-size:1rem;">{{ member.name }}</h5>
+                                    <span class="ax-expert-role">{{ member.title }}</span>
+                                </div>
                             </div>
-                        </div>
-                        <p class="text-light small mb-3" style="line-height: 1.6;">"{{ member.bio }}"</p>
-                        <div class="d-flex flex-wrap gap-2">
-                            {% for skill in member.get_skills_list %}
-                            <span class="badge bg-dark border border-secondary text-secondary">{{ skill }}</span>
-                            {% endfor %}
+                            <!-- Bio -->
+                            <p class="ax-expert-bio">"{{ member.bio }}"</p>
+                            <!-- Yetenekler -->
+                            {% if member.get_skills_list %}
+                            <div class="d-flex flex-wrap gap-2 mt-auto pt-2 border-top" style="border-color: rgba(255,255,255,0.06) !important;">
+                                {% for skill in member.get_skills_list %}
+                                <span class="ax-expert-skill">{{ skill }}</span>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -177,6 +187,70 @@
                 <div class="col-12 text-center text-muted py-4">Henüz uzman kadro eklenmedi.</div>
                 {% endfor %}
             </div>
+
+            <style>
+            .ax-expert-card {
+                background: rgba(15,23,42,0.7);
+                border: 1px solid rgba(99,102,241,0.12);
+                border-radius: 16px;
+                overflow: hidden;
+                display: flex;
+                flex-direction: column;
+                transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+            }
+            .ax-expert-card:hover {
+                transform: translateY(-4px);
+                border-color: rgba(99,102,241,0.35);
+                box-shadow: 0 12px 32px rgba(99,102,241,0.1);
+            }
+            .ax-expert-card__top {
+                height: 4px;
+                background: linear-gradient(90deg, #6366f1, #8b5cf6);
+            }
+            .ax-expert-card__body {
+                padding: 1.25rem;
+                display: flex;
+                flex-direction: column;
+                flex: 1;
+            }
+            .ax-expert-avatar {
+                padding: 2px;
+                border-radius: 50%;
+                background: linear-gradient(135deg, #6366f1, #8b5cf6);
+                flex-shrink: 0;
+            }
+            .ax-expert-role {
+                font-size: 0.78rem;
+                font-weight: 600;
+                color: #818cf8;
+                background: rgba(99,102,241,0.1);
+                border: 1px solid rgba(99,102,241,0.2);
+                padding: 1px 8px;
+                border-radius: 20px;
+                display: inline-block;
+                margin-top: 3px;
+            }
+            .ax-expert-bio {
+                color: #cbd5e1;
+                font-size: 0.82rem;
+                line-height: 1.65;
+                margin-bottom: 1rem;
+                flex-grow: 1;
+                display: -webkit-box;
+                -webkit-line-clamp: 5;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+            }
+            .ax-expert-skill {
+                font-size: 0.7rem;
+                font-weight: 600;
+                padding: 2px 9px;
+                border-radius: 20px;
+                background: rgba(99,102,241,0.08);
+                color: #a5b4fc;
+                border: 1px solid rgba(99,102,241,0.18);
+            }
+            </style>
         </div>
 
     </div>
