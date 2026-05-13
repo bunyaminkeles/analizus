@@ -222,8 +222,9 @@ forum/                      # Ana app — Forum, Market, Blog, Quiz, DM, AI...
 ├── models.py               # Büyük model dosyası (Profile, Topic, Post, FreelanceJob...)
 ├── views.py
 ├── admin.py
-├── signals.py              # Bildirim sinyalleri
+├── signals.py              # Bildirim sinyalleri (yeni topic/blog → IndexNow ping dahil)
 ├── email_utils.py          # Async admin+kullanıcı e-posta bildirimleri
+├── indexnow.py             # Bing IndexNow ping (arka plan thread, key: 534e22a9f9e4d375119c5bc6d006aad0)
 ├── context_processors.py   # Profil, feature flags, GA
 ├── s3_utils.py             # S3 upload/delete yardımcıları
 ├── middleware.py           # EmailVerificationMiddleware
@@ -275,6 +276,7 @@ static/
 ├── css/
 │   ├── base.css            # :root değişkenleri + ax- component'ler
 │   └── ...                 # Modül bazlı CSS dosyaları
+├── 534e22a9f9e4d375119c5bc6d006aad0.txt  # IndexNow key dosyası (Bing)
 staticfiles/                # collectstatic çıktısı
 media/                      # Yerel geliştirme dosya yükleme alanı
 nginx/                      # Nginx konfigürasyonu
@@ -303,8 +305,9 @@ CLAUDE.md                   # AI geliştirme kuralları ve görev listesi
 /tezanaliz/         → tezanaliz.urls  (namespace='tezanaliz')
 /makaleanaliz/      → makaleanaliz.urls  (namespace='makaleanaliz')
 /istatistik/        → istatistik.urls  (namespace='istatistik')
-/sitemap.xml        → Django sitemaps
+/sitemap.xml        → Django sitemaps (StaticView, Topic, Category, Job, BlogPost, Istatistik, Tools)
 /robots.txt         → TemplateView
+/534e22a9f9e4d375119c5bc6d006aad0.txt → IndexNow key (Bing doğrulama)
 /                   → forum.urls  (en sona — çakışma önlemi)
 
 # istatistik.urls içindeki URL'ler:
@@ -905,6 +908,7 @@ with connection.cursor() as c:
 - Başarı hikayeleri, rozet, quiz sistemi
 - **Dosya paylaşımı (DM + Çalışma Odaları)** — PDF, Word, Excel, PPT, CSV, TXT, resim; max 5 MB; S3'e yüklenir; mesaj/oda silinince dosya da silinir (post_delete signal)
 - **Destekçi / Bağış sistemi** — Footer widget, modal (DonationTier seçimi), IBAN e-postası; `donation_context` processor ile her sayfada tier listesi mevcut; migration `0076_seed_donation_tiers` (4 tier)
+- **SEO iyileştirmeleri** — Nginx non-www→www 301 yönlendirmesi; sitemap genişletmesi (blog, 12 istatistik aracı, 5 landing page); 18 sayfaya benzersiz meta description; 6 title güncellendi; IndexNow entegrasyonu (Bing); Google Search Console `https://www.analizus.com/` property eklendi + sitemap submit edildi
 
 ### Sıradaki Görevler
 - Yeni kullanıcı onboarding akışı (Profile.segment alanı)
@@ -916,4 +920,4 @@ with connection.cursor() as c:
 
 ---
 
-*Son güncelleme: Mayıs 2026 — §3 Hetzner Docker Compose (web/db/redis, /app, 89.167.5.224); §4 DATABASE_URL host=db; §8 DonationTier/Donation/StudyRoomPost modelleri; §12 regresyon + korelasyon sütun seçimi; §15 destekçi e-postası; §22 cleanup-attachments cron; §26 dosya paylaşımı + destekçi sistemi + korelasyon sütun seçimi tamamlandı*
+*Son güncelleme: Mayıs 2026 — §3 Hetzner Docker Compose (web/db/redis, /app, 89.167.5.224); §4 DATABASE_URL host=db; §8 DonationTier/Donation/StudyRoomPost modelleri; §12 regresyon + korelasyon sütun seçimi; §15 destekçi e-postası; §22 cleanup-attachments cron; §26 dosya paylaşımı + destekçi sistemi + korelasyon sütun seçimi + SEO iyileştirmeleri (IndexNow, sitemap, meta description, www redirect) tamamlandı*
