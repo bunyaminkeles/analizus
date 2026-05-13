@@ -1,7 +1,8 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}TR Dizin Gelişmiş Yayın Tarama{% endblock %}
+{% block title %}TR Dizin Tarama — Türkiye Ulusal Akademik Atıf Veritabanı | Analizus{% endblock %}
+{% block meta_description %}TR Dizin'de Boolean operatörlerle gelişmiş yayın araması yapın. TÜBİTAK ULAKBİM hakemli Türk dergilerinde konu, yazar ve dergi filtreleriyle akademik makale bulun.{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
@@ -442,4 +443,35 @@ createRule(true);
 .query-preview-text .qp-value { color: #e2e8f0; }
 </style>
 
+<!-- SEO: Bilgi metni -->
+<div class="container mb-5 mt-5" style="max-width:860px;">
+    <div class="row g-4">
+        <div class="col-12">
+            <h2 class="text-white fw-semibold mb-3" style="font-size:1.1rem;">
+                <i class="bi bi-info-circle me-2" style="color:#818cf8;"></i>TR Dizin Nedir?
+            </h2>
+            <p class="text-secondary" style="line-height:1.8;font-size:.92rem;">
+                TR Dizin, TÜBİTAK ULAKBİM tarafından yönetilen Türkiye'nin ulusal akademik atıf ve dizin veritabanıdır. Hakemli Türk dergileri ve bu dergilerde yayımlanan makaleleri kapsar; YÖK, üniversiteler ve araştırmacılar tarafından akademik performans değerlendirmesinde başvuru kaynağı olarak kullanılır. Analizus TR Dizin Tarama aracı, bu veritabanında gelişmiş Boolean operatörleriyle hedefli yayın araması yapmanıza olanak tanır.
+            </p>
+        </div>
+        <div class="col-md-4">
+            <div class="p-3 rounded h-100" style="background:rgba(99,102,241,0.07);border:1px solid rgba(99,102,241,0.15);">
+                <h3 class="text-white fw-semibold mb-2" style="font-size:.9rem;"><i class="bi bi-code-square me-2" style="color:#818cf8;"></i>Boolean Arama</h3>
+                <p class="text-secondary mb-0" style="font-size:.8rem;line-height:1.6;">AND, OR, NOT operatörleriyle karmaşık sorgular oluşturun; tam ifade ve joker karakter desteği.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-3 rounded h-100" style="background:rgba(99,102,241,0.07);border:1px solid rgba(99,102,241,0.15);">
+                <h3 class="text-white fw-semibold mb-2" style="font-size:.9rem;"><i class="bi bi-journal-richtext me-2" style="color:#818cf8;"></i>Hakemli Türk Dergiler</h3>
+                <p class="text-secondary mb-0" style="font-size:.8rem;line-height:1.6;">TR Dizin kapsamındaki tüm Türkçe ve İngilizce hakemli dergiler arasında tarama yapın.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="p-3 rounded h-100" style="background:rgba(99,102,241,0.07);border:1px solid rgba(99,102,241,0.15);">
+                <h3 class="text-white fw-semibold mb-2" style="font-size:.9rem;"><i class="bi bi-bar-chart-line me-2" style="color:#818cf8;"></i>Bibliometrik Analiz</h3>
+                <p class="text-secondary mb-0" style="font-size:.8rem;line-height:1.6;">Sonuçları <a href="/bibliometrics/" class="text-decoration-none" style="color:#a5b4fc;">Bibliometrik Analiz</a> aracına aktararak yayın trendi ve atıf haritası oluşturun.</p>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
