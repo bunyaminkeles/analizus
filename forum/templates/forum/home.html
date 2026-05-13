@@ -711,33 +711,18 @@ document.addEventListener('DOMContentLoaded', function () {
                 <a href="{{ post.get_absolute_url }}" class="ax-news-card">
                     {% if post.cover_image %}
                     <img src="{{ post.cover_image.url }}" alt="{{ post.title }}" class="ax-news-img" loading="lazy">
-                    {% else %}
-                    <div class="ax-news-img-placeholder">
-                        {% if post.category and "yapay" in post.category.name|lower or post.category and "ai" in post.category.name|lower %}
-                        {# Yapay Zeka / AI ikonu #}
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1v1a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-1H2a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h1a7 7 0 0 1 7-7h1V5.73A2 2 0 0 1 10 4a2 2 0 0 1 2-2z"/><circle cx="8.5" cy="13.5" r="1.5"/><circle cx="15.5" cy="13.5" r="1.5"/></svg>
-                        {% elif post.category and "veri" in post.category.name|lower or post.category and "python" in post.category.name|lower or post.category and "r " in post.category.name|lower %}
-                        {# Veri / Kod ikonu #}
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-                        {% elif post.category and "spss" in post.category.name|lower or post.category and "istatistik" in post.category.name|lower %}
-                        {# İstatistik / Grafik ikonu #}
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg>
-                        {% elif post.category and "tez" in post.category.name|lower or post.category and "makale" in post.category.name|lower %}
-                        {# Tez / Makale ikonu #}
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-                        {% else %}
-                        {# Genel makale ikonu #}
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-                        {% endif %}
-                    </div>
+                    {% elif post.category %}
+                    <div class="ax-news-accent" style="background: {{ post.category.color }};"></div>
                     {% endif %}
                     <div class="ax-news-content">
                         {% if post.category %}
-                        <span class="ax-news-badge">{{ post.category.name }}</span>
+                        <span class="ax-news-badge" style="background: {{ post.category.color }}20; color: {{ post.category.color }}; border-color: {{ post.category.color }}40;">
+                            <i class="bi {{ post.category.icon }} me-1"></i>{{ post.category.name }}
+                        </span>
                         {% endif %}
-                        <h3 class="ax-news-title">{{ post.title|truncatechars:55 }}</h3>
+                        <h3 class="ax-news-title">{{ post.title|truncatechars:70 }}</h3>
                         {% if post.excerpt %}
-                        <p style="font-size:var(--ax-text-sm);color:var(--ax-text-muted);margin:0;line-height:var(--ax-leading-relaxed);">{{ post.excerpt|truncatechars:80 }}</p>
+                        <p style="font-size:var(--ax-text-sm);color:var(--ax-text-muted);margin:0;line-height:var(--ax-leading-relaxed);">{{ post.excerpt|truncatechars:100 }}</p>
                         {% endif %}
                         <span class="ax-news-link">Devamını Oku →</span>
                     </div>
