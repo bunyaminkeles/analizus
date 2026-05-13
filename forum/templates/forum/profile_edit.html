@@ -124,19 +124,44 @@
 
                             <!-- 3. YETENEKLER (SKILLS) -->
                             <div class="tab-pane fade" id="skills" role="tabpanel">
-                                <p class="text-muted mb-4">Uzmanlık alanlarınızı seçin. Bu bilgiler profilinizde görüntülenecektir.</p>
-                                <div class="row g-3">
+                                <p class="text-muted mb-3">Uzmanlık alanlarınızı seçin veya kendinizinkini ekleyin.</p>
+
+                                <!-- Seçili yetenekler (tag görünümü) -->
+                                <div id="selected-tags" class="d-flex flex-wrap gap-2 mb-3 p-3 rounded" style="min-height:44px;background:rgba(99,102,241,0.06);border:1px solid rgba(99,102,241,0.18);">
+                                    <span class="text-white-50 small align-self-center" id="no-selection-hint">Henüz seçilmedi</span>
+                                </div>
+
+                                <!-- Arama -->
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text bg-dark border-secondary text-white-50"><i class="bi bi-search"></i></span>
+                                    <input type="text" id="skill-search" class="form-control bg-dark text-white border-secondary"
+                                           placeholder="Yetenek ara...">
+                                </div>
+
+                                <!-- Chip listesi -->
+                                <div id="skill-chips" class="d-flex flex-wrap gap-2 mb-4">
                                     {% for skill in all_skills %}
-                                    <div class="col-md-4 col-sm-6">
-                                        <div class="form-check custom-checkbox">
-                                            <input class="form-check-input" type="checkbox" name="skills" value="{{ skill.id }}" id="skill_{{ skill.id }}" 
-                                                {% if skill in profile.skills.all %}checked{% endif %}>
-                                            <label class="form-check-label text-white" for="skill_{{ skill.id }}">
-                                                <i class="{{ skill.icon }} me-2" style="color: {{ skill.color }}"></i>{{ skill.name }}
-                                            </label>
-                                        </div>
-                                    </div>
+                                    <label class="skill-chip {% if skill in profile.skills.all %}selected{% endif %}"
+                                           data-name="{{ skill.name|lower }}">
+                                        <input type="checkbox" name="skills" value="{{ skill.id }}"
+                                               {% if skill in profile.skills.all %}checked{% endif %}
+                                               style="display:none;">
+                                        <i class="{{ skill.icon }} me-1"></i>{{ skill.name }}
+                                    </label>
                                     {% endfor %}
+                                </div>
+
+                                <!-- Manuel yetenek ekleme -->
+                                <div class="border-top border-secondary border-opacity-25 pt-3">
+                                    <label class="text-white-50 small mb-2 d-block"><i class="bi bi-plus-circle me-1"></i>Listede olmayan bir yetenek ekle (virgülle ayır)</label>
+                                    <div class="input-group">
+                                        <input type="text" id="custom-skill-input" name="custom_skills"
+                                               class="form-control bg-dark text-white border-secondary"
+                                               placeholder="Örn: SmartPLS, Qualtrics, Gephi"
+                                               value="{{ profile.custom_skills_text|default:'' }}">
+                                        <span class="input-group-text bg-dark border-secondary text-white-50" style="font-size:.75rem;">Enter ile ekle</span>
+                                    </div>
+                                    <div id="custom-tags" class="d-flex flex-wrap gap-2 mt-2"></div>
                                 </div>
                             </div>
 
@@ -193,5 +218,141 @@
         background-color: #0dcaf0;
         border-color: #0dcaf0;
     }
+    .skill-chip {
+        display: inline-flex;
+        align-items: center;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: .8rem;
+        font-weight: 500;
+        cursor: pointer;
+        user-select: none;
+        background: rgba(30,41,59,0.8);
+        border: 1px solid rgba(255,255,255,0.1);
+        color: #94a3b8;
+        transition: all .15s;
+    }
+    .skill-chip:hover {
+        border-color: rgba(99,102,241,0.4);
+        color: #c7d2fe;
+    }
+    .skill-chip.selected {
+        background: rgba(99,102,241,0.2);
+        border-color: rgba(99,102,241,0.5);
+        color: #a5b4fc;
+    }
+    .skill-chip.hidden { display: none; }
+    .selected-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: .78rem;
+        font-weight: 600;
+        background: rgba(99,102,241,0.2);
+        border: 1px solid rgba(99,102,241,0.4);
+        color: #a5b4fc;
+    }
+    .selected-tag .rm { cursor: pointer; opacity: .6; font-size: .7rem; }
+    .selected-tag .rm:hover { opacity: 1; }
+    .custom-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: .78rem;
+        font-weight: 600;
+        background: rgba(16,185,129,0.15);
+        border: 1px solid rgba(16,185,129,0.35);
+        color: #6ee7b7;
+    }
+    .custom-tag .rm { cursor: pointer; opacity: .6; font-size: .7rem; }
+    .custom-tag .rm:hover { opacity: 1; }
 </style>
+
+<script>
+(function() {
+    // ── Chip seçim mantığı ──────────────────────────────────────────────────
+    const chips = document.querySelectorAll('.skill-chip');
+    const tagsBox = document.getElementById('selected-tags');
+    const hint = document.getElementById('no-selection-hint');
+
+    function syncTags() {
+        tagsBox.querySelectorAll('.selected-tag').forEach(t => t.remove());
+        const selected = [...chips].filter(c => c.classList.contains('selected'));
+        if (selected.length) {
+            hint.style.display = 'none';
+            selected.forEach(chip => {
+                const tag = document.createElement('span');
+                tag.className = 'selected-tag';
+                tag.innerHTML = chip.textContent.trim() + ' <span class="rm bi bi-x"></span>';
+                tag.querySelector('.rm').onclick = () => {
+                    chip.classList.remove('selected');
+                    chip.querySelector('input').checked = false;
+                    syncTags();
+                };
+                tagsBox.appendChild(tag);
+            });
+        } else {
+            hint.style.display = '';
+        }
+    }
+
+    chips.forEach(chip => {
+        chip.addEventListener('click', () => {
+            chip.classList.toggle('selected');
+            chip.querySelector('input').checked = chip.classList.contains('selected');
+            syncTags();
+        });
+    });
+
+    syncTags(); // Sayfa yüklenince mevcut seçimleri göster
+
+    // ── Arama ──────────────────────────────────────────────────────────────
+    document.getElementById('skill-search').addEventListener('input', function() {
+        const q = this.value.toLowerCase().trim();
+        chips.forEach(chip => {
+            chip.classList.toggle('hidden', q && !chip.dataset.name.includes(q));
+        });
+    });
+
+    // ── Manuel yetenek ekleme ───────────────────────────────────────────────
+    const customInput = document.getElementById('custom-skill-input');
+    const customTagsBox = document.getElementById('custom-tags');
+
+    function buildCustomTags() {
+        customTagsBox.innerHTML = '';
+        const vals = customInput.value.split(',').map(v => v.trim()).filter(Boolean);
+        vals.forEach(val => {
+            const tag = document.createElement('span');
+            tag.className = 'custom-tag';
+            tag.innerHTML = val + ' <span class="rm bi bi-x"></span>';
+            tag.querySelector('.rm').onclick = () => {
+                const updated = customInput.value.split(',').map(v => v.trim()).filter(v => v && v !== val);
+                customInput.value = updated.join(', ');
+                buildCustomTags();
+            };
+            customTagsBox.appendChild(tag);
+        });
+    }
+
+    customInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            // Virgül yoksa sona ekle
+            const cur = this.value.trim();
+            if (cur && !cur.endsWith(',')) {
+                // Zaten virgülle ayırıyorsak sadece trim
+            }
+            buildCustomTags();
+        }
+    });
+
+    customInput.addEventListener('input', buildCustomTags);
+
+    buildCustomTags(); // Sayfa yüklenince varsa göster
+})();
+</script>
 {% endblock %}
