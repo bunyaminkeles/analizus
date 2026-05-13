@@ -78,6 +78,8 @@ def add_reputation_on_new_topic(sender, instance, created, **kwargs):
 
         from .email_utils import notify_admin_new_topic
         notify_admin_new_topic(instance)
+        from .indexnow import ping_url
+        ping_url(f'https://www.analizus.com{reverse("topic_detail", args=[instance.pk])}')
 
 
 @receiver(post_save, sender=Post)
@@ -611,7 +613,7 @@ def capture_old_blog_status(sender, instance, **kwargs):
 
 @receiver(post_save, sender=BlogPost)
 def notify_admin_on_blog_published(sender, instance, created, **kwargs):
-    """Blog yazısı yayınlandığında admin'e e-posta gönder"""
+    """Blog yazısı yayınlandığında admin'e e-posta gönder ve IndexNow'a bildir"""
     if instance.status != 'published':
         return
     old_status = getattr(instance, '_old_blog_status', None)
@@ -620,6 +622,8 @@ def notify_admin_on_blog_published(sender, instance, created, **kwargs):
         return
     from .email_utils import notify_admin_blog_published
     notify_admin_blog_published(instance)
+    from .indexnow import ping_url
+    ping_url(f'https://www.analizus.com{instance.get_absolute_url()}')
 
 
 # ── Dosya Temizleme Sinyalleri ────────────────────────────────────────────────
