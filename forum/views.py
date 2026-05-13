@@ -1097,7 +1097,14 @@ def profile_edit(request):
                     # Varsa getir (case-insensitive), yoksa oluştur
                     skill = Skill.objects.filter(name__iexact=skill_name).first()
                     if not skill:
-                        skill = Skill.objects.create(name=skill_name)
+                        from django.utils.text import slugify as _slugify
+                        base_slug = _slugify(skill_name) or f"skill-{skill_name[:20]}"
+                        slug = base_slug
+                        counter = 1
+                        while Skill.objects.filter(slug=slug).exists():
+                            slug = f"{base_slug}-{counter}"
+                            counter += 1
+                        skill = Skill.objects.create(name=skill_name, slug=slug)
                     selected_skills.append(str(skill.id))
 
         profile.skills.set(selected_skills)
