@@ -1474,7 +1474,7 @@ def contact(request):
         except Exception:
             messages.error(request, 'Mesaj gönderilirken bir hata oluştu. Lütfen tekrar deneyin.')
         return redirect('about')
-    return redirect('about')
+    return redirect('/hakkimizda/#iletisim')
 
 def search_result(request):
     """Arama sonuçları"""
