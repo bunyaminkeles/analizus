@@ -1290,6 +1290,13 @@ def send_message(request, username):
 
     receiver = get_object_or_404(User, username=username)
 
+    # Bot kullanıcılarına mesaj gönderilemez
+    if receiver.username == 'AnalizBot':
+        if request.method == 'POST':
+            if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({'status': 'error', 'message': 'Bot kullanıcıya mesaj gönderilemez.'}, status=403)
+            return redirect('send_message', username=username)
+
     # Sohbet geçmişini getir
     chat_messages = PrivateMessage.objects.filter(
         Q(sender=request.user, receiver=receiver) |
@@ -1332,7 +1339,11 @@ def send_message(request, username):
         messages.success(request, f"{receiver.username} kullanıcısına mesajınız gönderildi!")
         return redirect('send_message', username=username)
 
-    return render(request, 'forum/send_message.html', {'receiver': receiver, 'chat_messages': chat_messages})
+    return render(request, 'forum/send_message.html', {
+        'receiver': receiver,
+        'chat_messages': chat_messages,
+        'is_bot': receiver.username == 'AnalizBot',
+    })
 
 def _check_and_award_trust_badge(request, user):
     """Tüm doğrulamalar tamamsa Güvenilir Üye rozeti verir"""
