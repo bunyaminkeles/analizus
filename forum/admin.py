@@ -1,8 +1,31 @@
 from django.contrib import admin
+from django.contrib.auth.models import User
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.utils.html import format_html
-from unfold.admin import ModelAdmin, TabularInline
+from unfold.admin import ModelAdmin, TabularInline, StackedInline
 from .models import Section, Category, Topic, Post, Profile, ContactMessage, PrivateMessage, Badge, Skill, DailyTip, QuizQuestion, QuizScore, FreelanceJob, JobProposal, JobReview, UserQuizAttempt, DonationTier, Donation, JobPayment, TopicTag, SiteSettings, BlogCategory, BlogPost, BlogTag, SuccessStory, StudyRoom
 from .models import TeamMember
+
+
+class ProfileInline(StackedInline):
+    model = Profile
+    can_delete = False
+    verbose_name = "Profil"
+    verbose_name_plural = "Profil"
+    fields = (
+        'account_type', 'rank', 'reputation',
+        'title', 'university', 'department',
+        'email_verified', 'is_public',
+    )
+    extra = 0
+
+
+admin.site.unregister(User)
+
+
+@admin.register(User)
+class UserAdmin(BaseUserAdmin, ModelAdmin):
+    inlines = (ProfileInline,)
 
 # 1. Kategori Yönetimi (Inline)
 class CategoryInline(TabularInline):
