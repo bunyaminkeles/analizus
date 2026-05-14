@@ -1,4 +1,5 @@
 from django.urls import path
+from django.views.generic import RedirectView
 from . import views
 from . import api_views
 
@@ -86,6 +87,10 @@ urlpatterns = [
 
     # Başarı Hikayeleri
     path('success-stories/', views.success_stories, name='success_stories'),
+
+    # Eski /jobs/ URL'lerini /market/ 'e yönlendir (geriye dönük uyumluluk)
+    path('jobs/', RedirectView.as_view(url='/market/', permanent=True)),
+    path('jobs/<int:pk>/', RedirectView.as_view(pattern_name='job_detail', permanent=True)),
 
     # Freelance Market
     path('market/', views.job_list, name='job_list'),
