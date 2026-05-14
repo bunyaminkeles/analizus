@@ -307,7 +307,11 @@
                 {% if completed_projects %}
                 <div class="ax-profile-portfolio-grid">
                     {% for project in completed_projects %}
+                    {% if project.job.status == 'in_progress' %}
+                    <a href="{% url 'job_detail' pk=project.job.pk %}" class="ax-profile-portfolio-card ax-profile-portfolio-card--link">
+                    {% else %}
                     <div class="ax-profile-portfolio-card">
+                    {% endif %}
                         <span class="ax-profile-portfolio-card__label">{% if project.job.status == 'completed' %}Tamamlandı{% else %}Devam Ediyor{% endif %}</span>
                         <div class="ax-profile-portfolio-card__title">{{ project.job.title }}</div>
                         <div class="ax-profile-portfolio-card__meta">
@@ -319,7 +323,11 @@
                             </span>
                             {% endif %}
                         </div>
+                    {% if project.job.status == 'in_progress' %}
+                    </a>
+                    {% else %}
                     </div>
+                    {% endif %}
                     {% endfor %}
                 </div>
                 {% else %}
