@@ -514,3 +514,73 @@ body {
     box-shadow: 0 4px 24px rgba(0, 0, 0, 0.45);
     border-bottom-color: rgba(255, 255, 255, 0.12);
 }
+
+/* -------------------------------------------------------------
+   FLYOUT SUBMENU — Dropdown içinde yana açılan alt menü
+   ------------------------------------------------------------- */
+.site-nav__flyout-wrap {
+    position: relative;
+}
+
+.site-nav__flyout-btn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: var(--ax-space-2) var(--ax-space-3);
+    font-size: var(--ax-text-sm);
+    font-weight: var(--ax-font-medium);
+    font-family: var(--ax-font-family);
+    color: var(--ax-text-secondary);
+    background: none;
+    border: none;
+    border-radius: var(--ax-radius-md);
+    cursor: pointer;
+    text-align: left;
+    white-space: nowrap;
+    transition: color var(--ax-transition-fast),
+                background-color var(--ax-transition-fast);
+}
+.site-nav__flyout-btn:hover,
+.site-nav__flyout-wrap:hover .site-nav__flyout-btn {
+    color: var(--ax-text-primary);
+    background-color: var(--ax-bg-tertiary);
+}
+
+.site-nav__flyout-arrow {
+    width: 12px;
+    height: 12px;
+    flex-shrink: 0;
+    margin-left: var(--ax-space-2);
+    color: var(--ax-text-muted);
+    transition: color var(--ax-transition-fast);
+}
+.site-nav__flyout-wrap:hover .site-nav__flyout-arrow {
+    color: var(--ax-accent-primary);
+}
+
+.site-nav__flyout {
+    position: absolute;
+    left: calc(100% + 4px);
+    top: 0;
+    min-width: 210px;
+    background-color: var(--ax-bg-secondary);
+    border: 1px solid var(--ax-border-default);
+    border-radius: var(--ax-radius-lg);
+    box-shadow: var(--ax-shadow-lg);
+    padding: var(--ax-space-2);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(-6px);
+    transition: opacity var(--ax-transition-fast),
+                visibility var(--ax-transition-fast),
+                transform var(--ax-transition-fast);
+    z-index: calc(var(--ax-z-dropdown) + 1);
+    pointer-events: none;
+}
+.site-nav__flyout-wrap:hover .site-nav__flyout {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0);
+    pointer-events: auto;
+}

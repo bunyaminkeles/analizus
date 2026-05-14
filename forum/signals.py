@@ -166,9 +166,10 @@ def private_message_post_save(sender, instance, created, **kwargs):
             # Gerçek zamanlı bildirim
             send_realtime_notification(recipient.id, message, url)
 
-            # E-posta bildirimi gönder
-            from .email_utils import send_private_message_notification
-            send_private_message_notification(instance.sender, recipient, instance.message)
+            # E-posta bildirimi gönder (_skip_email=True ise harici email zaten gönderilmiştir)
+            if not getattr(instance, '_skip_email', False):
+                from .email_utils import send_private_message_notification
+                send_private_message_notification(instance.sender, recipient, instance.message)
 
             # Anlık mesajlaşma - chat kutusuna düşür
             # WebSocket consumer'dan gelen mesajlar zaten doğrudan broadcast edilir

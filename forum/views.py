@@ -459,6 +459,11 @@ def accept_proposal(request, pk, proposal_id):
         messages.warning(request, 'Bu ilan artık aktif değil.')
         return redirect('job_detail', pk=pk)
 
+    # Reddedilecek teklifçileri update öncesi al
+    rejected_proposals = list(
+        job.proposals.exclude(pk=proposal_id).filter(status='pending').select_related('expert')
+    )
+
     # Teklifi kabul et
     proposal.status = 'accepted'
     proposal.save()
@@ -469,6 +474,40 @@ def accept_proposal(request, pk, proposal_id):
     # İlanı askıya al
     job.status = 'in_progress'
     job.save()
+
+    # AnalizBot'tan inbox bildirimleri gönder
+    try:
+        bot_user = User.objects.get(username='AnalizBot')
+    except User.DoesNotExist:
+        bot_user = request.user
+
+    site = getattr(settings, 'SITE_URL', 'https://www.analizus.com')
+
+    # Kabul edilen teklifçiye bildirim
+    PrivateMessage.objects.create(
+        sender=bot_user,
+        receiver=proposal.expert,
+        message=(
+            f'Tebrikler {proposal.expert.username}!\n\n'
+            f'"{job.title}" ilanına verdiğiniz teklif kabul edildi.\n\n'
+            f'Teklif Tutarı: {proposal.price} TL\n'
+            f'Süre: {proposal.duration}\n\n'
+            f'İlanı görüntülemek için: {site}/jobs/{job.pk}/'
+        )
+    )
+
+    # Reddedilen teklifçilere bildirim
+    for rp in rejected_proposals:
+        PrivateMessage.objects.create(
+            sender=bot_user,
+            receiver=rp.expert,
+            message=(
+                f'Merhaba {rp.expert.username},\n\n'
+                f'"{job.title}" ilanına verdiğiniz teklif değerlendirildi, '
+                f'ancak bu sefer başka bir uzman tercih edildi.\n\n'
+                f'Diğer açık ilanlar için: {site}/jobs/'
+            )
+        )
 
     messages.success(request, f'{proposal.expert.username} kullanıcısının teklifi kabul edildi. İlan askıya alındı.')
     return redirect('job_detail', pk=pk)
@@ -608,6 +647,24 @@ def job_detail(request, pk):
                     from .email_utils import send_proposal_notification
                     send_proposal_notification(proposal)
 
+                    # İlan sahibinin inbox'ına teklif bildirimi düşür
+                    # (email send_proposal_notification tarafından zaten gönderildi, _skip_email=True)
+                    site = getattr(settings, 'SITE_URL', 'https://www.analizus.com')
+                    _pm = PrivateMessage(
+                        sender=request.user,
+                        receiver=job.owner,
+                        message=(
+                            f'"{job.title}" ilanınıza yeni bir teklif geldi!\n\n'
+                            f'Teklif Veren: {request.user.username}\n'
+                            f'Teklif Tutarı: {proposal.price} TL\n'
+                            f'Süre: {proposal.duration}\n\n'
+                            f'Ön Yazı:\n{proposal.message[:500]}\n\n'
+                            f'Teklifi değerlendirmek için: {site}/jobs/{job.pk}/'
+                        )
+                    )
+                    _pm._skip_email = True
+                    _pm.save()
+
                     messages.success(request, 'Teklifiniz başarıyla gönderildi!')
                     return redirect('job_detail', pk=pk)
             else:
@@ -694,6 +751,26 @@ def add_job_review(request, pk):
         rating=int(rating),
         comment=comment
     )
+
+    # Karşı taraf henüz değerlendirme yapmadıysa inbox'ına bildirim düşür
+    other_party = accepted_proposal.expert if is_owner else job.owner
+    other_has_reviewed = job.reviews.filter(reviewer=other_party).exists()
+    if not other_has_reviewed:
+        try:
+            bot_user = User.objects.get(username='AnalizBot')
+        except User.DoesNotExist:
+            bot_user = request.user
+        site = getattr(settings, 'SITE_URL', 'https://www.analizus.com')
+        PrivateMessage.objects.create(
+            sender=bot_user,
+            receiver=other_party,
+            message=(
+                f'Merhaba {other_party.username},\n\n'
+                f'"{job.title}" projesi için {request.user.username} değerlendirmesini tamamladı.\n\n'
+                f'Projenin kapatılabilmesi için sizin de değerlendirme yapmanız gerekmektedir.\n\n'
+                f'Değerlendirme yapmak için: {site}/jobs/{job.pk}/'
+            )
+        )
 
     messages.success(request, 'Değerlendirmeniz gönderildi. Admin onayından sonra yayınlanacak.')
     return redirect('job_detail', pk=pk)
