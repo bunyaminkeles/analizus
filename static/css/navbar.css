@@ -532,11 +532,8 @@ body {
     font-weight: var(--ax-font-medium);
     font-family: var(--ax-font-family);
     color: var(--ax-text-secondary);
-    background: none;
-    border: none;
     border-radius: var(--ax-radius-md);
     cursor: pointer;
-    text-align: left;
     white-space: nowrap;
     transition: color var(--ax-transition-fast),
                 background-color var(--ax-transition-fast);
