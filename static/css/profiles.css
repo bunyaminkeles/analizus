@@ -583,6 +583,17 @@
     box-shadow: 0 4px 16px rgba(16, 185, 129, 0.08);
 }
 
+a.ax-profile-portfolio-card--link {
+    text-decoration: none;
+    cursor: pointer;
+}
+
+a.ax-profile-portfolio-card--link:hover {
+    border-color: var(--ax-primary);
+    box-shadow: 0 4px 16px rgba(99, 102, 241, 0.15);
+    transform: translateY(-2px);
+}
+
 .ax-profile-portfolio-card__label {
     font-size: 0.65rem;
     text-transform: uppercase;
