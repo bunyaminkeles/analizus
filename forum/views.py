@@ -752,15 +752,29 @@ def add_job_review(request, pk):
         comment=comment
     )
 
-    # Karşı taraf henüz değerlendirme yapmadıysa inbox'ına bildirim düşür
+    try:
+        bot_user = User.objects.get(username='AnalizBot')
+    except User.DoesNotExist:
+        bot_user = request.user
+    site = getattr(settings, 'SITE_URL', 'https://www.analizus.com')
+
+    # Değerlendirilen kişiye bildirim: "X seni değerlendirdi"
+    stars = '⭐' * int(rating)
+    PrivateMessage.objects.create(
+        sender=bot_user,
+        receiver=reviewed_user,
+        message=(
+            f'Merhaba {reviewed_user.username},\n\n'
+            f'"{job.title}" projesi için {request.user.username} sizi değerlendirdi.\n\n'
+            f'Puan: {stars} ({rating}/5)'
+            + (f'\nYorum: {comment}' if comment else '')
+        )
+    )
+
+    # Karşı taraf henüz değerlendirme yapmadıysa "sen de yap" bildirimi
     other_party = accepted_proposal.expert if is_owner else job.owner
     other_has_reviewed = job.reviews.filter(reviewer=other_party).exists()
     if not other_has_reviewed:
-        try:
-            bot_user = User.objects.get(username='AnalizBot')
-        except User.DoesNotExist:
-            bot_user = request.user
-        site = getattr(settings, 'SITE_URL', 'https://www.analizus.com')
         PrivateMessage.objects.create(
             sender=bot_user,
             receiver=other_party,
