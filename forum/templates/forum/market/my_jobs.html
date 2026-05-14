@@ -53,12 +53,14 @@
                 <a href="{% url 'job_detail' pk=proposal.job.pk %}" class="list-group-item list-group-item-action bg-dark text-white border-secondary p-3">
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <h6 class="mb-0 fw-bold">{{ proposal.job.title }} <small class="text-muted fw-normal"><i class="bi bi-hash"></i>{{ proposal.job.reference_number }}</small></h6>
-                        <span class="badge 
+                        <span class="badge
                             {% if proposal.status == 'pending' %}bg-warning text-dark
-                            {% elif proposal.status == 'accepted' %}bg-success
                             {% elif proposal.status == 'rejected' %}bg-danger
+                            {% elif proposal.job.status == 'completed' %}bg-secondary
+                            {% elif proposal.job.status == 'in_progress' %}bg-info text-dark
+                            {% else %}bg-success
                             {% endif %}
-                        ">{{ proposal.get_status_display }}</span>
+                        ">{% if proposal.status == 'accepted' %}{% if proposal.job.status == 'completed' %}Tamamlandı{% else %}Devam Ediyor{% endif %}{% else %}{{ proposal.get_status_display }}{% endif %}</span>
                     </div>
                     <div class="d-flex justify-content-between small">
                         <span class="text-muted">Teklifim: <span class="text-success">₺{{ proposal.price }}</span></span>
