@@ -405,7 +405,7 @@ document.addEventListener('DOMContentLoaded', function() {
                      style="max-width: 75%; ${isOwn
                         ? 'background: linear-gradient(135deg, rgba(0, 210, 255, 0.35), rgba(58, 123, 213, 0.35)); border: 1px solid rgba(0, 210, 255, 0.4); box-shadow: 0 2px 8px rgba(0, 210, 255, 0.15);'
                         : 'background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(255, 255, 255, 0.15);'}">
-                    ${data.message ? `<p class="mb-1 small">${renderMentions(escapeHtml(data.message))}</p>` : ''}
+                    ${data.message ? `<p class="mb-1 small">${linkifyUrls(renderMentions(escapeHtml(data.message)))}</p>` : ''}
                     ${data.attachment_url ? getAttachmentHtml(data) : ''}
                     <small class="text-muted d-block mt-1" style="font-size: 0.65rem;">${data.timestamp}</small>
                 </div>
@@ -435,6 +435,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function renderMentions(text) {
         return text.replace(/@(\w+)/g, '<a href="/profile/$1/" class="mention-link" title="@$1">@$1</a>');
+    }
+
+    function linkifyUrls(text) {
+        return text
+            .replace(/(https?:\/\/[^\s<>"]+)/g, '<a href="$1" target="_blank" rel="noopener noreferrer" class="text-info">$1</a>')
+            .replace(/\n/g, '<br>');
     }
 
     // ═══════════════════════════════════════════════════════════════════

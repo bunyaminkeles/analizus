@@ -76,11 +76,13 @@
       <span class="material-symbols-outlined" style="font-size:1.25rem;color:#34d399;">storefront</span>
       <span style="font-size:.875rem;font-weight:600;color:#e2e8f0;text-transform:uppercase;letter-spacing:.05em;">Hizmet Pazarı</span>
     </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem;text-align:center;">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:.75rem;text-align:center;">
       <a href="/admin/forum/freelancejob/?status__exact=open" style="text-decoration:none;">
       <div><div style="font-size:1.5rem;font-weight:700;color:#34d399;">{{ open_jobs }}</div><div style="font-size:.7rem;color:#6b7280;">Açık İlan</div></div></a>
       <a href="/admin/forum/jobproposal/?status__exact=pending" style="text-decoration:none;">
       <div><div style="font-size:1.5rem;font-weight:700;color:#fbbf24;">{{ pending_proposals }}</div><div style="font-size:.7rem;color:#6b7280;">Bekleyen Teklif</div></div></a>
+      <a href="/admin/forum/freelancejob/?status__exact=in_progress" style="text-decoration:none;">
+      <div><div style="font-size:1.5rem;font-weight:700;color:#38bdf8;">{{ in_progress_jobs }}</div><div style="font-size:.7rem;color:#6b7280;">Devam Eden</div></div></a>
       <div><div style="font-size:1.5rem;font-weight:700;color:#818cf8;">{{ month_completed }}</div><div style="font-size:.7rem;color:#6b7280;">Bu Ay Bitti</div></div>
     </div>
     <div style="margin-top:.75rem;font-size:.75rem;color:#6b7280;text-align:center;">Toplam {{ total_completed }} iş tamamlandı</div>

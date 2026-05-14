@@ -47,6 +47,7 @@ def get_dashboard_context():
     # === HİZMET PAZARI ===
     open_jobs         = FreelanceJob.objects.filter(status='open').count()
     pending_proposals = JobProposal.objects.filter(status='pending').count()
+    in_progress_jobs  = FreelanceJob.objects.filter(status='in_progress').count()
     month_completed   = FreelanceJob.objects.filter(status='completed', updated_at__date__gte=last_30_days).count()
     total_completed   = FreelanceJob.objects.filter(status='completed').count()
 
@@ -290,6 +291,7 @@ def get_dashboard_context():
         # Hizmet Pazarı
         'open_jobs': open_jobs,
         'pending_proposals': pending_proposals,
+        'in_progress_jobs': in_progress_jobs,
         'month_completed': month_completed,
         'total_completed': total_completed,
         # Gelir

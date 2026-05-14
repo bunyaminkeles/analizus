@@ -43,7 +43,7 @@
                     {% endif %}
                 </div>
                 
-                <p class="mb-2 text-light ps-5">{{ msg.message|truncatewords:30 }}</p>
+                <p class="mb-2 text-light ps-5">{{ msg.message|urlize|linebreaksbr }}</p>
                 
                 <div class="ps-5">
                     <a href="{% url 'send_message' msg.sender.username %}" class="btn btn-sm btn-outline-info rounded-pill px-3">
@@ -94,6 +94,13 @@
 </style>
 
 <script>
+function linkify(text) {
+    const escaped = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    return escaped
+        .replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" class="text-info">$1</a>')
+        .replace(/\n/g, '<br>');
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     // Mesaj ikonunun yanındaki kırmızı badge'i bul ve kaldır
     const inboxBadge = document.querySelector('a[href$="/inbox/"] .bg-danger.rounded-circle');
@@ -152,7 +159,7 @@ document.addEventListener('DOMContentLoaded', function() {
                                 </div>
                                 <span class="badge bg-danger rounded-pill">Yeni</span>
                             </div>
-                            <p class="mb-2 text-light ps-5">${msg.message.length > 100 ? msg.message.substring(0, 100) + '...' : msg.message}</p>
+                            <p class="mb-2 text-light ps-5">${linkify(msg.message.length > 100 ? msg.message.substring(0, 100) + '...' : msg.message)}</p>
                             <div class="ps-5">
                                 <a href="${msg.reply_url}" class="btn btn-sm btn-outline-info rounded-pill px-3">
                                     <i class="bi bi-reply-fill me-1"></i>Cevapla
