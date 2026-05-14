@@ -51,7 +51,7 @@ Süre: {proposal.duration}
 Ön Yazı: {proposal.message[:300]}
 
 Teklifi görmek ve değerlendirmek için:
-{site}/jobs/{job.pk}/
+{site}/market/job/{job.pk}/
 
 ---
 Bu bir otomatik bildirimdir.
@@ -298,7 +298,7 @@ def notify_admin_new_job(job):
             '🟠 Yeni İş İlanı', color,
             job.title,
             rows,
-            f"{site}/jobs/{job.pk}/",
+            f"{site}/market/job/{job.pk}/",
             'İlana Git'
         )
         plain = f"Yeni ilan: '{job.title}' — {job.owner.username} (Maks. {job.budget_max} TL)"
@@ -351,7 +351,7 @@ def notify_admin_proposal_accepted(proposal):
             '✅ Teklif Kabul Edildi', color,
             f'"{proposal.job.title}" ilanında anlaşma sağlandı',
             rows,
-            f"{site}/jobs/{proposal.job.pk}/",
+            f"{site}/market/job/{proposal.job.pk}/",
             'İlana Git'
         )
         plain = f"Teklif kabul: '{proposal.job.title}' — uzman: {proposal.expert.username} ({proposal.price} TL)"
