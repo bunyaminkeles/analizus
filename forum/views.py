@@ -492,7 +492,7 @@ def accept_proposal(request, pk, proposal_id):
             f'"{job.title}" ilanına verdiğiniz teklif kabul edildi.\n\n'
             f'Teklif Tutarı: {proposal.price} TL\n'
             f'Süre: {proposal.duration}\n\n'
-            f'İlanı görüntülemek için: {site}/jobs/{job.pk}/'
+            f'İlanı görüntülemek için: {site}/market/job/{job.pk}/'
         )
     )
 
@@ -505,7 +505,7 @@ def accept_proposal(request, pk, proposal_id):
                 f'Merhaba {rp.expert.username},\n\n'
                 f'"{job.title}" ilanına verdiğiniz teklif değerlendirildi, '
                 f'ancak bu sefer başka bir uzman tercih edildi.\n\n'
-                f'Diğer açık ilanlar için: {site}/jobs/'
+                f'Diğer açık ilanlar için: {site}/market/'
             )
         )
 
@@ -659,7 +659,7 @@ def job_detail(request, pk):
                             f'Teklif Tutarı: {proposal.price} TL\n'
                             f'Süre: {proposal.duration}\n\n'
                             f'Ön Yazı:\n{proposal.message[:500]}\n\n'
-                            f'Teklifi değerlendirmek için: {site}/jobs/{job.pk}/'
+                            f'Teklifi değerlendirmek için: {site}/market/job/{job.pk}/'
                         )
                     )
                     _pm._skip_email = True
@@ -768,7 +768,7 @@ def add_job_review(request, pk):
                 f'Merhaba {other_party.username},\n\n'
                 f'"{job.title}" projesi için {request.user.username} değerlendirmesini tamamladı.\n\n'
                 f'Projenin kapatılabilmesi için sizin de değerlendirme yapmanız gerekmektedir.\n\n'
-                f'Değerlendirme yapmak için: {site}/jobs/{job.pk}/'
+                f'Değerlendirme yapmak için: {site}/market/job/{job.pk}/'
             )
         )
 
