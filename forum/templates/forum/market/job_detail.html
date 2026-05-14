@@ -274,8 +274,34 @@
             <div class="mt-4">
                 <h5 class="text-white mb-3"><i class="bi bi-star text-warning me-2"></i>Değerlendirmeler</h5>
 
+                {% for review in reviews %}
+                <div class="card border-0 shadow-sm mb-2" style="background: rgba(30, 41, 59, 0.4);">
+                    <div class="card-body py-2 px-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="text-info small fw-bold">{{ review.reviewer.username }}</span>
+                                <i class="bi bi-arrow-right text-muted mx-1"></i>
+                                <span class="text-white-50 small">{{ review.reviewed_user.username }}</span>
+                            </div>
+                            <div>
+                                {% for i in "12345" %}
+                                <i class="bi bi-star{% if forloop.counter <= review.rating %}-fill text-warning{% else %} text-muted{% endif %}" style="font-size: 0.8rem;"></i>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% if review.comment %}
+                        <p class="text-light small mb-0 mt-1">{{ review.comment }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                {% empty %}
+                {% if not can_review %}
+                <p class="text-muted small">Henüz değerlendirme yapılmamış.</p>
+                {% endif %}
+                {% endfor %}
+
                 {% if can_review %}
-                <div class="card border-0 shadow-sm mb-3" style="background: rgba(30, 41, 59, 0.6);">
+                <div class="card border-0 shadow-sm mt-3" style="background: rgba(30, 41, 59, 0.6);">
                     <div class="card-body">
                         <form method="post" action="{% url 'add_job_review' pk=job.pk %}">
                             {% csrf_token %}
@@ -312,32 +338,6 @@
                     </div>
                 </div>
                 {% endif %}
-
-                {% for review in reviews %}
-                <div class="card border-0 shadow-sm mb-2" style="background: rgba(30, 41, 59, 0.4);">
-                    <div class="card-body py-2 px-3">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div>
-                                <span class="text-info small fw-bold">{{ review.reviewer.username }}</span>
-                                <i class="bi bi-arrow-right text-muted mx-1"></i>
-                                <span class="text-white-50 small">{{ review.reviewed_user.username }}</span>
-                            </div>
-                            <div>
-                                {% for i in "12345" %}
-                                <i class="bi bi-star{% if forloop.counter <= review.rating %}-fill text-warning{% else %} text-muted{% endif %}" style="font-size: 0.8rem;"></i>
-                                {% endfor %}
-                            </div>
-                        </div>
-                        {% if review.comment %}
-                        <p class="text-light small mb-0 mt-1">{{ review.comment }}</p>
-                        {% endif %}
-                    </div>
-                </div>
-                {% empty %}
-                {% if not can_review %}
-                <p class="text-muted small">Henüz değerlendirme yapılmamış.</p>
-                {% endif %}
-                {% endfor %}
             </div>
             {% endif %}
 
