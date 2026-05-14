@@ -212,9 +212,9 @@
                         <div class="site-nav__flyout-wrap">
                             <button class="site-nav__flyout-btn" type="button" onmousedown="this.blur()">
                                 Ön Analizler
-                                <svg class="site-nav__flyout-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+                                <svg class="site-nav__flyout-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
                             </button>
-                            <div class="site-nav__flyout" role="menu">
+                            <div class="site-nav__flyout" role="menu" style="display:none">
                                 <a href="{% url 'istatistik:betimsel' %}" class="site-nav__dropdown-item" role="menuitem">Betimleyici İstatistik</a>
                                 <a href="{% url 'istatistik:normallik' %}" class="site-nav__dropdown-item" role="menuitem">Normallik Testi</a>
                                 <a href="{% url 'istatistik:orneklem' %}" class="site-nav__dropdown-item" role="menuitem">Örneklem Hesaplayıcı</a>
@@ -225,9 +225,9 @@
                         <div class="site-nav__flyout-wrap">
                             <button class="site-nav__flyout-btn" type="button" onmousedown="this.blur()">
                                 Geçerlik &amp; Güvenirlik
-                                <svg class="site-nav__flyout-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+                                <svg class="site-nav__flyout-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
                             </button>
-                            <div class="site-nav__flyout" role="menu">
+                            <div class="site-nav__flyout" role="menu" style="display:none">
                                 <a href="{% url 'istatistik:cronbach' %}" class="site-nav__dropdown-item" role="menuitem">Cronbach Alpha</a>
                             </div>
                         </div>
@@ -236,9 +236,9 @@
                         <div class="site-nav__flyout-wrap">
                             <button class="site-nav__flyout-btn" type="button" onmousedown="this.blur()">
                                 İlişki Analizleri
-                                <svg class="site-nav__flyout-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+                                <svg class="site-nav__flyout-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
                             </button>
-                            <div class="site-nav__flyout" role="menu">
+                            <div class="site-nav__flyout" role="menu" style="display:none">
                                 <a href="{% url 'istatistik:korelasyon' %}" class="site-nav__dropdown-item" role="menuitem">Korelasyon Matrisi</a>
                                 <a href="{% url 'istatistik:ki_kare' %}" class="site-nav__dropdown-item" role="menuitem">Ki-Kare Testi</a>
                             </div>
@@ -248,9 +248,9 @@
                         <div class="site-nav__flyout-wrap">
                             <button class="site-nav__flyout-btn" type="button" onmousedown="this.blur()">
                                 Fark Analizleri
-                                <svg class="site-nav__flyout-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+                                <svg class="site-nav__flyout-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
                             </button>
-                            <div class="site-nav__flyout" role="menu">
+                            <div class="site-nav__flyout" role="menu" style="display:none">
                                 <a href="{% url 'istatistik:ttesti' %}" class="site-nav__dropdown-item" role="menuitem">t-Testi</a>
                                 <a href="{% url 'istatistik:anova' %}" class="site-nav__dropdown-item" role="menuitem">ANOVA</a>
                                 <a href="{% url 'istatistik:mann_whitney' %}" class="site-nav__dropdown-item" role="menuitem">Mann-Whitney U</a>
@@ -262,9 +262,9 @@
                         <div class="site-nav__flyout-wrap">
                             <button class="site-nav__flyout-btn" type="button" onmousedown="this.blur()">
                                 Regresyon Analizleri
-                                <svg class="site-nav__flyout-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
+                                <svg class="site-nav__flyout-arrow" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>
                             </button>
-                            <div class="site-nav__flyout" role="menu">
+                            <div class="site-nav__flyout" role="menu" style="display:none">
                                 <a href="{% url 'istatistik:lineer_regresyon' %}" class="site-nav__dropdown-item" role="menuitem">Çoklu Doğrusal Regresyon</a>
                                 <a href="{% url 'istatistik:lojistik_regresyon' %}" class="site-nav__dropdown-item" role="menuitem">Lojistik Regresyon</a>
                             </div>
