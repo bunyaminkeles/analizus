@@ -330,6 +330,22 @@ def _handle_group_tool_post(request, tool):
                 'dep_col': request.POST.get('dep_col', ''),
                 'indep_cols': request.POST.getlist('indep_cols'),
             }
+        elif tool == 'afa':
+            cols = request.POST.getlist('columns')
+            n_factors_raw = request.POST.get('n_factors', '').strip()
+            rotation = request.POST.get('rotation', 'varimax')
+            if rotation not in ('varimax', 'promax', 'oblimin'):
+                rotation = 'varimax'
+            options = {'rotation': rotation}
+            if cols:
+                options['columns'] = cols
+            if n_factors_raw.isdigit() and int(n_factors_raw) > 0:
+                options['n_factors'] = int(n_factors_raw)
+        elif tool == 'wilcoxon':
+            options = {
+                'col1': request.POST.get('col1', ''),
+                'col2': request.POST.get('col2', ''),
+            }
         else:  # mann_whitney, kruskal_wallis
             options = {
                 'group_col': request.POST.get('group_col', ''),
@@ -493,6 +509,68 @@ def lojistik_regresyon_landing(request):
         'tool_title': 'Lojistik Regresyon',
         'tool_icon': 'bi-diagram-3',
         'tool_color': 'success',
+    })
+
+
+@feature_required
+@ratelimit(key='ip', rate='30/h', method='POST', block=True)
+def afa_landing(request):
+    if not request.user.is_authenticated:
+        return render(request, 'service_promo.html', {
+            **PROMO_BASE,
+            'promo_title': 'Açıklayıcı Faktör Analizi (AFA)',
+            'promo_icon': 'bi-diagram-2',
+            'promo_color': 'info',
+            'promo_description': 'Ölçek geçerliğini kanıtlayın. KMO, Bartlett testi, faktör yük matrisi ve açıklanan varyans tablosu ile tam AFA raporu.',
+            'promo_features': [
+                {'icon': 'bi-grid-3x3', 'title': 'Faktör Yapısı', 'desc': 'Varimax rotasyonlu faktör yük matrisi ile her maddenin hangi faktöre yüklendiğini görün.'},
+                {'icon': 'bi-bar-chart-steps', 'color': 'warning', 'title': 'KMO & Bartlett', 'desc': 'Örneklem yeterliliği (KMO) ve Bartlett küresellik testi ile faktör analizine uygunluğu sınayın.'},
+                {'icon': 'bi-percent', 'color': 'success', 'title': 'Açıklanan Varyans', 'desc': 'Her faktörün açıkladığı varyans yüzdesi ve kümülatif varyans tablosu.'},
+                {'icon': 'bi-file-earmark-pdf-fill', 'color': 'danger', 'title': 'PDF Rapor', 'desc': 'APA formatında raporlanabilir tablo ve yorum içeren PDF indirilir.'},
+            ],
+        })
+    if request.method == 'POST':
+        return _handle_group_tool_post(request, 'afa')
+    active_job = _get_active_job(request.user, 'afa')
+    return render(request, 'istatistik/afa.html', {
+        'active_job_id': str(active_job.id) if active_job else None,
+        'daily_remaining': _daily_remaining(request.user),
+        'tool_title': 'Açıklayıcı Faktör Analizi (AFA)',
+        'tool_icon': 'bi-diagram-2',
+        'tool_color': 'info',
+        'tool_description': 'Ölçek geçerliğini sınayın. Her sütun bir madde, her satır bir katılımcı olmalıdır.',
+        'tool_hints': [
+            'Her sütun bir ölçek maddesi olmalıdır (örn. M1, M2…).',
+            'Tüm sütunlar sayısal olmalıdır (Likert vb.).',
+            'Faktör sayısı otomatik belirlenir (özdeğer > 1 kuralı).',
+            'En az 3 madde ve 10 katılımcı gereklidir.',
+        ],
+    })
+
+
+@feature_required
+@ratelimit(key='ip', rate='30/h', method='POST', block=True)
+def wilcoxon_landing(request):
+    if not request.user.is_authenticated:
+        return render(request, 'service_promo.html', {
+            **PROMO_BASE,
+            'promo_title': 'Wilcoxon İşaret Testi',
+            'promo_icon': 'bi-arrow-left-right',
+            'promo_color': 'warning',
+            'promo_description': 'İki bağımlı (eşleştirilmiş) ölçümü karşılaştırın. Bağımlı t-testinin parametrik olmayan alternatifi.',
+            'promo_features': [
+                {'icon': 'bi-bar-chart-steps', 'title': 'W İstatistiği', 'desc': 'Wilcoxon W istatistiği ve p değeri ile iki ölçüm arasındaki farkı sınayın.'},
+                {'icon': 'bi-arrows-collapse', 'color': 'warning', 'title': 'Etki Büyüklüğü', 'desc': 'Rank-biserial korelasyon (r) ile etki büyüklüğünü hesaplayın.'},
+                {'icon': 'bi-table', 'color': 'success', 'title': 'Betimsel Tablo', 'desc': 'Her ölçüm için medyan, ortalama ve fark istatistikleri.'},
+                {'icon': 'bi-file-earmark-pdf-fill', 'color': 'danger', 'title': 'PDF Rapor', 'desc': 'APA formatında otomatik rapor cümlesi ve PDF indirme.'},
+            ],
+        })
+    if request.method == 'POST':
+        return _handle_group_tool_post(request, 'wilcoxon')
+    active_job = _get_active_job(request.user, 'wilcoxon')
+    return render(request, 'istatistik/wilcoxon.html', {
+        'active_job_id': str(active_job.id) if active_job else None,
+        'daily_remaining': _daily_remaining(request.user),
     })
 
 

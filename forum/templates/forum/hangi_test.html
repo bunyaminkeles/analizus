@@ -124,6 +124,22 @@
         <p class="ax-text-muted small mb-0">Bir değişkeni başka değişkenlerle tahmin etmek için kullanılır. Basit lineer regresyon tek bağımsız değişken, çoklu regresyon birden fazla bağımsız değişkenle çalışır.</p>
       </div>
     </div>
+    <div class="col-md-6">
+      <div class="ax-card p-3">
+        <h6 class="ax-text-primary fw-semibold mb-2">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" class="me-2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Faktör Analizi (AFA) Nedir?
+        </h6>
+        <p class="ax-text-muted small mb-0">Çok sayıda değişkenin ardında yatan gizli faktörleri ortaya koyar. Ölçek geçerliği için KMO testi (≥ .60), Bartlett küresellik testi (p &lt; .05) ve faktör yük matrisi incelenir.</p>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="ax-card p-3">
+        <h6 class="ax-text-warning fw-semibold mb-2">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" class="me-2" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg> Wilcoxon Testi Nedir?
+        </h6>
+        <p class="ax-text-muted small mb-0">İki bağımlı (eşleştirilmiş) ölçümü karşılaştıran non-parametrik testtir. Bağımlı t-testinin normallik varsayımını karşılayamadığında tercih edilir. Ön test–son test karşılaştırmaları için idealdir.</p>
+      </div>
+    </div>
   </div>
 
 </div>
@@ -370,7 +386,8 @@ const TREE = {
   r_wilcoxon: {
     result: true,
     icon: SVGS.nonparametric,
-    title: "Wilcoxon İşaretli Sıralar Testi",
+    title: "Wilcoxon İşaret Testi",
+    tool_url: "/istatistik/wilcoxon/",
     desc: "Bağımlı t-testinin non-parametrik alternatifi; normal dağılım yoksa aynı kişinin iki ölçümünü karşılaştırır.",
     conditions: [
       "Aynı kişilerden iki ölçüm",
@@ -578,7 +595,8 @@ const TREE = {
   r_efa: {
     result: true,
     icon: SVGS.reliability,
-    title: "Açımlayıcı Faktör Analizi (EFA)",
+    title: "Açıklayıcı Faktör Analizi (AFA)",
+    tool_url: "/istatistik/afa/",
     desc: "Çok sayıda değişken arasındaki örüntülerden gizli faktör yapılarını keşfetmek için kullanılır.",
     conditions: [
       "Faktör yapısı önceden bilinmiyor veya keşfedilmek isteniyor",

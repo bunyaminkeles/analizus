@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Betimsel İstatistik Analizi (Ortalama, SS, Çeyrekler) - Analizus{% endblock %}
-{% block meta_description %}Minimum, maksimum, ortalama, standart sapma ve çeyreklik değerleri hesaplayın. Excel veya CSV yükleyin, betimsel istatistik PDF raporu alın.{% endblock %}
+{% block title %}Wilcoxon İşaret Testi - Analizus{% endblock %}
+{% block meta_description %}İki eşleştirilmiş ölçümü Wilcoxon İşaret Testi ile ücretsiz karşılaştırın. W istatistiği, etki büyüklüğü ve APA formatında PDF rapor alın.{% endblock %}
 
 {% block content %}
 <div class="container py-4">
@@ -10,10 +10,10 @@
   <div class="row mb-4 align-items-center">
     <div class="col">
       <h2 class="fw-bold ax-text-primary mb-1 d-flex align-items-center">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ax-text-accent me-2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
-        Betimleyici İstatistik Raporu
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ax-text-accent me-2"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
+        Wilcoxon İşaret Testi
       </h2>
-      <p class="ax-text-muted mb-0">Veri setinizin ortalama, medyan, standart sapma, çarpıklık ve frekans tablolarını otomatik hesaplayın.</p>
+      <p class="ax-text-muted mb-0">İki bağımlı (eşleştirilmiş) ölçümü karşılaştırın — bağımlı t-testinin parametrik olmayan alternatifi.</p>
     </div>
     {% if user.is_authenticated %}
     <div class="col-auto">
@@ -64,26 +64,31 @@
         <div id="panel-idle">
           <h5 class="ax-text-muted fw-semibold mb-3">Sonuçlar burada görünecek</h5>
           <ul class="ax-text-muted ax-text-sm ps-3">
-            <li class="mb-1">Her sütun bir değişken, her satır bir gözlem olmalıdır.</li>
-            <li class="mb-1">Sayısal sütunlar için merkezi eğilim ve yayılım ölçüleri hesaplanır.</li>
-            <li class="mb-1">Metin/kategorik sütunlar için frekans tablosu oluşturulur.</li>
-            <li class="mb-1">Tüm sonuçlar PDF rapor olarak indirilebilir.</li>
+            <li class="mb-1">İki sütun seçin: ön test ve son test (ya da iki ilgili ölçüm).</li>
+            <li class="mb-1">Her satır bir katılımcıyı temsil etmelidir.</li>
+            <li class="mb-1">Her iki sütun da sayısal olmalıdır.</li>
+            <li class="mb-1">En az 5 eşleştirilmiş gözlem gereklidir.</li>
           </ul>
         </div>
 
         <div id="panel-config" class="d-none">
           <h5 class="ax-text-primary fw-semibold mb-1 d-flex align-items-center">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ax-text-accent me-2"><path d="M4 6h16"/><path d="M8 12h8"/><path d="M11 18h2"/></svg>
-            Değişken Seçimi
+            Sütun Seçimi
           </h5>
-          <p class="ax-text-muted ax-text-sm mb-3">Raporlanacak sütunları seçin (sayısal ve kategorik).</p>
-          <div class="d-flex justify-content-between align-items-center mb-2">
-            <span class="ax-text-muted ax-text-sm" id="col-count-label">0 değişken seçili</span>
-            <button class="ax-btn ax-btn-outline-secondary ax-btn-sm" id="toggle-all-btn">Tümünü Seç</button>
+          <p class="ax-text-muted ax-text-sm mb-3">Karşılaştırılacak iki sayısal sütunu seçin (örn. ön test – son test).</p>
+
+          <div class="mb-3">
+            <label class="ax-text-muted ax-text-sm mb-1 d-block">1. Ölçüm (ön test / grup 1)</label>
+            <select id="col1-select" class="ax-select w-100"></select>
           </div>
-          <div id="col-checkbox-list" class="mb-3 ax-rounded-md" style="max-height: 260px; overflow-y: auto; border: 1px solid var(--ax-border-default); background: rgba(0,0,0,0.12);"></div>
+          <div class="mb-3">
+            <label class="ax-text-muted ax-text-sm mb-1 d-block">2. Ölçüm (son test / grup 2)</label>
+            <select id="col2-select" class="ax-select w-100"></select>
+          </div>
+
           <div class="d-flex gap-2">
-            <button id="run-analysis-btn" class="ax-btn ax-btn-accent fw-semibold flex-grow-1" disabled>
+            <button id="run-analysis-btn" class="ax-btn ax-btn-accent fw-semibold flex-grow-1">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
               Analizi Başlat
             </button>
@@ -106,49 +111,48 @@
           </button>
         </div>
 
-        <div id="panel-warning" class="d-none">
-          <div class="ax-alert-warning mb-3">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2 flex-shrink-0"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-            <div>
-              <strong class="ax-text-warning d-block mb-2">Veri uyarıları tespit edildi</strong>
-              <ul id="panel-warning-list" class="mb-3 ax-text-sm ps-3"></ul>
-              <p class="ax-text-muted ax-text-sm mb-0">Bu uyarılar veri kalitenizi etkileyebilir. Yine de devam edebilirsiniz.</p>
-            </div>
-          </div>
-          <div class="d-flex gap-2">
-            <button id="confirm-warnings-btn" class="ax-btn ax-btn-warning ax-btn-sm fw-semibold">
-              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" class="me-1" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 16 16 12 12 8"/><line x1="8" y1="12" x2="16" y2="12"/></svg>Yine de devam et
-            </button>
-            <button class="ax-btn ax-btn-outline-secondary ax-btn-sm" onclick="resetUI()">İptal</button>
-          </div>
-        </div>
-
         <div id="panel-done" class="d-none">
           <div class="d-flex align-items-center gap-2 mb-3">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ax-text-success"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
             <h5 class="ax-text-primary mb-0">Analiz Tamamlandı</h5>
           </div>
 
-          <div class="row g-3 mb-3">
+          <div class="row g-2 mb-2">
             <div class="col-4">
               <div class="ax-stat-box text-center">
-                <div class="ax-stat-val ax-text-success" id="n-rows">—</div>
-                <div class="ax-stat-label">Satır</div>
+                <div class="ax-stat-val ax-text-accent" id="w-value">—</div>
+                <div class="ax-stat-label">W İstatistiği</div>
               </div>
             </div>
             <div class="col-4">
               <div class="ax-stat-box text-center">
-                <div class="ax-stat-val ax-text-accent" id="n-cont">—</div>
-                <div class="ax-stat-label">Sürekli</div>
+                <div class="ax-stat-val ax-text-primary" id="p-value">—</div>
+                <div class="ax-stat-label">p-değeri</div>
               </div>
             </div>
             <div class="col-4">
               <div class="ax-stat-box text-center">
-                <div class="ax-stat-val ax-text-warning" id="n-cat">—</div>
-                <div class="ax-stat-label">Kategorik</div>
+                <div class="ax-stat-val ax-text-success" id="r-value">—</div>
+                <div class="ax-stat-label">Etki (r)</div>
               </div>
             </div>
           </div>
+          <div class="row g-2 mb-3">
+            <div class="col-6">
+              <div class="ax-stat-box text-center">
+                <div class="ax-stat-val ax-text-primary" id="median1-val">—</div>
+                <div class="ax-stat-label" id="col1-label">1. Ölçüm Medyan</div>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="ax-stat-box text-center">
+                <div class="ax-stat-val ax-text-primary" id="median2-val">—</div>
+                <div class="ax-stat-label" id="col2-label">2. Ölçüm Medyan</div>
+              </div>
+            </div>
+          </div>
+          <p class="ax-text-muted ax-text-sm text-center mb-3" id="sign-stats"></p>
+          <p class="ax-text-muted ax-text-sm text-center mb-3" id="significance-badge"></p>
 
           <div class="d-flex gap-2 flex-wrap">
             <a id="pdf-download-btn" href="#" target="_blank" class="ax-btn ax-btn-danger fw-semibold ax-btn-sm">
@@ -173,23 +177,18 @@
 
     <div class="row g-4 mb-4">
       <div class="col-md-6">
-        <h6 class="ax-text-muted text-uppercase ax-text-sm fw-bold mb-2">Hesaplanan İstatistikler</h6>
-        <p class="ax-text-muted ax-text-sm mb-2">Betimleyici istatistikler veri setini özetleyen temel ölçüleri içerir. Sürekli değişkenler için merkezi eğilim ve yayılım; kategorik değişkenler için frekans ve yüzde dağılımları hesaplanır.</p>
-        <ul class="ax-text-muted ax-text-sm ps-3 mb-0">
-          <li>Ortalama, Ortanca, Mod</li>
-          <li>Standart Sapma, Varyans, Min–Maks</li>
-          <li>Çarpıklık (Skewness), Basıklık (Kurtosis)</li>
-          <li>Frekans ve yüzde dağılımı (kategorik)</li>
-        </ul>
+        <h6 class="ax-text-muted text-uppercase ax-text-sm fw-bold mb-2">Yöntem &amp; Varsayımlar</h6>
+        <p class="ax-text-muted ax-text-sm mb-2">Wilcoxon işaret testi, eşleştirilmiş iki ölçüm arasındaki farkın sıfırdan anlamlı biçimde farklı olup olmadığını sınar. Verilerin normal dağılım göstermediği durumlarda bağımlı t-testinin yerine kullanılır.</p>
+        <p class="ax-text-muted ax-text-sm mb-0"><strong class="ax-text-secondary">Ne zaman kullanılır?</strong> Ön test–son test karşılaştırması, eşleştirilmiş grup fark analizi ve tekrarlı ölçüm tasarımlarında tercih edilir.</p>
       </div>
       <div class="col-md-6">
-        <h6 class="ax-text-muted text-uppercase ax-text-sm fw-bold mb-2">Çarpıklık &amp; Basıklık Yorumu</h6>
+        <h6 class="ax-text-muted text-uppercase ax-text-sm fw-bold mb-2">Etki Büyüklüğü (r)</h6>
         <table class="ax-table mb-0">
           <tbody>
-            <tr><td>−1 ile +1 arası çarpıklık</td><td class="ax-text-success">Normal kabul edilir</td></tr>
-            <tr><td>±1 – ±2 arası çarpıklık</td><td class="ax-text-warning">Hafif çarpık</td></tr>
-            <tr><td>±2 üzeri çarpıklık</td><td class="ax-text-danger">Belirgin çarpıklık</td></tr>
-            <tr><td>Basıklık −2 ile +2</td><td class="ax-text-success">Normal kabul edilir</td></tr>
+            <tr><td>r &lt; .10</td><td class="ax-text-muted">İhmal edilebilir</td></tr>
+            <tr><td>.10 – .29</td><td class="ax-text-warning">Küçük etki</td></tr>
+            <tr><td>.30 – .49</td><td class="ax-text-accent">Orta düzey etki</td></tr>
+            <tr><td>≥ .50</td><td class="ax-text-success fw-bold">Büyük etki</td></tr>
           </tbody>
         </table>
       </div>
@@ -198,14 +197,14 @@
     <hr style="border-color: var(--ax-border-default); margin: 1.5rem 0;">
 
     <h6 class="ax-text-secondary fw-semibold mb-2">Tezinde Nasıl Raporlarsın?</h6>
-    <div id="betimsel-apa-box" class="d-none ax-rounded-md p-3 mb-3" style="background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.2);">
-      <p class="ax-text-primary ax-text-sm mb-2" id="betimsel-apa-display" style="font-style:italic;"></p>
-      <button class="ax-btn ax-btn-outline-secondary ax-btn-sm" onclick="copyApa(this, 'betimsel-report-text')">
+    <div id="wilcoxon-apa-box" class="d-none ax-rounded-md p-3 mb-3" style="background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.2);">
+      <p class="ax-text-primary ax-text-sm mb-2" id="wilcoxon-apa-display" style="font-style:italic;"></p>
+      <button class="ax-btn ax-btn-outline-secondary ax-btn-sm" onclick="copyApa(this, 'wilcoxon-report-text')">
         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" class="me-1" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Kopyala
       </button>
-      <span id="betimsel-report-text" class="d-none"></span>
+      <span id="wilcoxon-report-text" class="d-none"></span>
     </div>
-    <div id="betimsel-apa-placeholder" class="ax-rounded-md p-3" style="background: rgba(99,102,241,0.05); border: 1px dashed rgba(99,102,241,0.2);">
+    <div id="wilcoxon-apa-placeholder" class="ax-rounded-md p-3" style="background: rgba(99,102,241,0.05); border: 1px dashed rgba(99,102,241,0.2);">
       <p class="ax-text-muted ax-text-sm mb-0">
         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" class="me-1" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
         Analizi tamamladıktan sonra APA formatında rapor cümlesi burada otomatik oluşacak.
@@ -215,22 +214,22 @@
     <hr style="border-color: var(--ax-border-default); margin: 1.5rem 0;">
 
     <h6 class="ax-text-secondary fw-semibold mb-2">Akademik Kaynaklar</h6>
-    <p class="ax-text-muted ax-text-sm mb-1">Field, A. (2018). <em>Discovering statistics using IBM SPSS statistics</em> (5th ed.). SAGE Publications.</p>
-    <p class="ax-text-muted ax-text-sm mb-0">George, D., &amp; Mallery, P. (2010). <em>SPSS for Windows step by step</em> (10th ed.). Pearson.</p>
+    <p class="ax-text-muted ax-text-sm mb-1">Wilcoxon, F. (1945). Individual comparisons by ranking methods. <em>Biometrics Bulletin, 1</em>(6), 80–83.</p>
+    <p class="ax-text-muted ax-text-sm mb-0">Field, A. (2018). <em>Discovering statistics using IBM SPSS statistics</em> (5th ed.). SAGE Publications.</p>
   </div>
 
   <!-- SEO: Bu Test Nedir? -->
   <div class="ax-card mt-4 p-4">
-    <h5 class="ax-text-primary fw-semibold mb-3">Betimleyici İstatistik Nedir?</h5>
-    <p class="ax-text-muted ax-text-sm mb-3">Betimleyici (tanımlayıcı) istatistik, bir veri setinin temel özelliklerini özetlemek için kullanılan yöntemlerin bütünüdür. Ortalama, medyan, standart sapma, minimum, maksimum ve çarpıklık gibi ölçüler verinin genel yapısını anlamayı sağlar.</p>
-    <p class="ax-text-muted ax-text-sm mb-3">Herhangi bir istatistiksel analizden önce betimleyici istatistik yapılması önerilir. Verinin dağılımını, aykırı değerleri ve eksik gözlemleri anlamak, sonraki analizlerin doğruluğunu artırır. Tezlerde ve araştırma raporlarında katılımcı profilinin tanımlanmasında da kullanılır.</p>
-    <p class="ax-text-muted ax-text-sm mb-0">Her sütun bir değişkeni, her satır ise bir gözlem birimini (katılımcı, ürün, gün vb.) temsil etmelidir. CSV veya Excel formatındaki verilerinizi yükleyerek tüm sayısal sütunlar için anında özet istatistikler alabilirsiniz.</p>
+    <h5 class="ax-text-primary fw-semibold mb-3">Wilcoxon İşaret Testi Nedir?</h5>
+    <p class="ax-text-muted ax-text-sm mb-3">Wilcoxon işaret testi, iki bağımlı (eşleştirilmiş) ölçüm arasındaki farkın istatistiksel olarak anlamlı olup olmadığını sınamak için kullanılan non-parametrik bir testtir. Bağımlı örneklem t-testinin varsayımlarının (normallik gibi) karşılanamadığı durumlarda güçlü bir alternatif sağlar.</p>
+    <p class="ax-text-muted ax-text-sm mb-3">Tipik kullanım senaryoları arasında ön test – son test karşılaştırması (örneğin bir eğitimin etkisini değerlendirmek), iki yöntemin aynı katılımcılar üzerindeki etkisinin karşılaştırılması ve tekrarlı ölçüm çalışmaları yer alır. Test, sadece farkların işaretini ve büyüklük sıralamasını kullanarak çalışır; bu da aykırı değerlere karşı daha dayanıklı olmasını sağlar.</p>
+    <p class="ax-text-muted ax-text-sm mb-0">Sonuçlar W istatistiği ve p-değeri ile raporlanır. Etki büyüklüğü için rank-biserial korelasyon (r) hesaplanır. p &lt; .05 olduğunda iki ölçüm arasında anlamlı bir fark olduğu kabul edilir.</p>
   </div>
 
 </div>
 
 <script>
-const STATUS_BASE = '{% url "istatistik:betimsel_status" job_id="00000000-0000-0000-0000-000000000000" %}';
+const STATUS_BASE = '{% url "istatistik:wilcoxon_status" job_id="00000000-0000-0000-0000-000000000000" %}';
 let pollInterval = null, currentJobId = null, previewData = null;
 
 const uploadArea = document.getElementById('upload-area');
@@ -238,7 +237,6 @@ const fileInput  = document.getElementById('file-input');
 const fileNameDisplay = document.getElementById('file-name-display');
 const analyzeBtn = document.getElementById('analyze-btn');
 const runAnalysisBtn = document.getElementById('run-analysis-btn');
-const toggleAllBtn = document.getElementById('toggle-all-btn');
 
 uploadArea.addEventListener('dragover', e => { e.preventDefault(); uploadArea.style.borderColor = 'var(--ax-accent-primary)'; });
 uploadArea.addEventListener('dragleave', () => { uploadArea.style.borderColor = ''; });
@@ -254,68 +252,58 @@ function setFile(f) {
 
 analyzeBtn.addEventListener('click', previewFile);
 runAnalysisBtn.addEventListener('click', runAnalysis);
-toggleAllBtn.addEventListener('click', toggleAllColumns);
 
 function previewFile() {
-  const f = fileInput._selectedFile; if (!f) return;
+  const f = fileInput._selectedFile;
+  if (!f) return;
   analyzeBtn.disabled = true;
   showPanel('loading');
   const fd = new FormData();
-  fd.append('file', f); fd.append('step', 'preview');
+  fd.append('file', f);
+  fd.append('step', 'preview');
   fd.append('csrfmiddlewaretoken', '{{ csrf_token }}');
   fetch(window.location.pathname, { method: 'POST', headers: {'X-Requested-With': 'XMLHttpRequest'}, body: fd })
-  .then(r => r.json()).then(data => {
+  .then(r => r.json())
+  .then(data => {
     if (data.error) { showError(data.error); return; }
     previewData = { preview_id: data.preview_id, filename: data.filename };
-    buildColumnCheckboxes(data.columns);  // tüm sütunlar (kategorik dahil)
+    buildColumnSelects(data.numeric_cols);
     showPanel('config');
-  }).catch(() => showError('Bağlantı hatası. Lütfen tekrar deneyin.'));
+  })
+  .catch(() => showError('Bağlantı hatası. Lütfen tekrar deneyin.'));
 }
 
-function buildColumnCheckboxes(cols) {
-  const list = document.getElementById('col-checkbox-list');
-  list.innerHTML = cols.map(c => `
-    <div class="d-flex align-items-center gap-2 py-1 px-3" style="border-bottom:1px solid var(--ax-border-default);">
-      <input type="checkbox" class="col-cb" id="col_${CSS.escape(c)}" value="${c}" checked style="cursor:pointer;width:15px;height:15px;flex-shrink:0;">
-      <label for="col_${CSS.escape(c)}" class="ax-text-secondary ax-text-sm mb-0 w-100" style="cursor:pointer;">${c}</label>
-    </div>
-  `).join('');
-  document.querySelectorAll('.col-cb').forEach(cb => cb.addEventListener('change', updateColCount));
-  updateColCount();
-}
-
-function updateColCount() {
-  const cbs = document.querySelectorAll('.col-cb');
-  const selected = [...cbs].filter(cb => cb.checked).length;
-  document.getElementById('col-count-label').textContent = selected + ' değişken seçili';
-  runAnalysisBtn.disabled = selected === 0;
-  toggleAllBtn.textContent = selected === cbs.length ? 'Tümünü Kaldır' : 'Tümünü Seç';
-}
-
-function toggleAllColumns() {
-  const cbs = document.querySelectorAll('.col-cb');
-  const allChecked = [...cbs].every(cb => cb.checked);
-  cbs.forEach(cb => { cb.checked = !allChecked; });
-  updateColCount();
+function buildColumnSelects(cols) {
+  const sel1 = document.getElementById('col1-select');
+  const sel2 = document.getElementById('col2-select');
+  const opts = cols.map(c => `<option value="${c}">${c}</option>`).join('');
+  sel1.innerHTML = opts;
+  sel2.innerHTML = opts;
+  if (cols.length > 1) sel2.selectedIndex = 1;
 }
 
 function runAnalysis() {
   if (!previewData) return;
-  const selectedCols = [...document.querySelectorAll('.col-cb:checked')].map(cb => cb.value);
-  if (selectedCols.length === 0) return;
+  const col1 = document.getElementById('col1-select').value;
+  const col2 = document.getElementById('col2-select').value;
+  if (col1 === col2) { showError('İki farklı sütun seçmelisiniz.'); return; }
   runAnalysisBtn.disabled = true;
   showPanel('loading');
   const fd = new FormData();
-  fd.append('step', 'run'); fd.append('preview_id', previewData.preview_id);
+  fd.append('step', 'run');
+  fd.append('preview_id', previewData.preview_id);
   fd.append('filename', previewData.filename);
   fd.append('csrfmiddlewaretoken', '{{ csrf_token }}');
-  selectedCols.forEach(c => fd.append('columns', c));
+  fd.append('col1', col1);
+  fd.append('col2', col2);
   fetch(window.location.pathname, { method: 'POST', headers: {'X-Requested-With': 'XMLHttpRequest'}, body: fd })
-  .then(r => r.json()).then(data => {
+  .then(r => r.json())
+  .then(data => {
     if (data.error) { showError(data.error); return; }
     currentJobId = data.job_id;
     startPolling(currentJobId);
-  }).catch(() => showError('Bağlantı hatası. Lütfen tekrar deneyin.'));
+  })
+  .catch(() => showError('Bağlantı hatası. Lütfen tekrar deneyin.'));
 }
 
 function startPolling(jobId) {
@@ -338,30 +326,38 @@ function onCompleted(data) {
   }
   if (data.result_data) {
     const r = data.result_data;
-    document.getElementById('n-rows').textContent = r.n_rows;
-    const contVars = r.variables.filter(v => v.type === 'continuous');
-    const catVars  = r.variables.filter(v => v.type === 'categorical');
-    document.getElementById('n-cont').textContent = contVars.length;
-    document.getElementById('n-cat').textContent = catVars.length;
-    if (contVars.length > 0) {
-      const lines = contVars.map(v => `${v.variable} değişkeni için ortalama = ${v.mean.toFixed(2)} (SS = ${v.std.toFixed(2)})`);
-      const apaText = `Araştırmaya katılan ${r.n_rows} kişinin puanlarına ilişkin betimleyici istatistikler incelendiğinde ${lines.join('; ')} olarak bulunmuştur.`;
-      document.getElementById('betimsel-apa-display').textContent = apaText;
-      document.getElementById('betimsel-report-text').textContent = apaText;
-      document.getElementById('betimsel-apa-box').classList.remove('d-none');
-      document.getElementById('betimsel-apa-placeholder').classList.add('d-none');
-    }
+    document.getElementById('w-value').textContent = r.w_stat !== undefined ? r.w_stat.toFixed(3) : '—';
+    const pStr = r.p_value < 0.001 ? '< .001' : r.p_value.toFixed(3);
+    document.getElementById('p-value').textContent = r.p_value < 0.001 ? '< .001' : r.p_value.toFixed(4);
+    document.getElementById('r-value').textContent = r.r_rb !== undefined ? r.r_rb.toFixed(3) : '—';
+    document.getElementById('median1-val').textContent = r.median1 !== undefined ? r.median1.toFixed(3) : '—';
+    document.getElementById('median2-val').textContent = r.median2 !== undefined ? r.median2.toFixed(3) : '—';
+    document.getElementById('col1-label').textContent = r.col1 + ' (Medyan)';
+    document.getElementById('col2-label').textContent = r.col2 + ' (Medyan)';
+    document.getElementById('sign-stats').textContent =
+      `n = ${r.n} · Pozitif fark: ${r.n_positive} · Negatif fark: ${r.n_negative} · Eşit: ${r.n_ties}`;
+    const sigText = r.significant ? 'Anlamlı fark bulundu (p < .05)' : 'Anlamlı fark yok (p ≥ .05)';
+    const sigColor = r.significant ? 'ax-text-success' : 'ax-text-muted';
+    document.getElementById('significance-badge').innerHTML =
+      `<span class="${sigColor} fw-semibold">${sigText}</span> · ${r.effect_interpretation}`;
+
+    const apaText = `Wilcoxon işaret testi sonucunda ${r.col1} ve ${r.col2} ölçümleri arasındaki fark ${r.significant ? 'istatistiksel olarak anlamlı bulunmuştur' : 'istatistiksel olarak anlamlı bulunmamıştır'}, W = ${r.w_stat.toFixed(3)}, p ${pStr}, r = ${Math.abs(r.r_rb).toFixed(3)} (${r.effect_interpretation}) (N = ${r.n}).`;
+    document.getElementById('wilcoxon-apa-display').textContent = apaText;
+    document.getElementById('wilcoxon-report-text').textContent = apaText;
+    document.getElementById('wilcoxon-apa-box').classList.remove('d-none');
+    document.getElementById('wilcoxon-apa-placeholder').classList.add('d-none');
   }
   showPanel('done');
 }
 
 function showPanel(name) {
-  ['idle','config','loading','warning','error','done'].forEach(n => {
+  ['idle','config','loading','error','done'].forEach(n => {
     document.getElementById('panel-' + n).classList.toggle('d-none', n !== name);
   });
 }
 function showError(msg) {
   analyzeBtn.disabled = false;
+  runAnalysisBtn.disabled = false;
   document.getElementById('panel-error-msg').textContent = msg; showPanel('error');
 }
 function resetUI() {
@@ -371,8 +367,8 @@ function resetUI() {
   fileNameDisplay.textContent = 'CSV, XLSX, XLS — Maks. 10 MB';
   analyzeBtn.disabled = true;
   document.getElementById('error-msg').classList.add('d-none');
-  document.getElementById('betimsel-apa-box').classList.add('d-none');
-  document.getElementById('betimsel-apa-placeholder').classList.remove('d-none');
+  document.getElementById('wilcoxon-apa-box').classList.add('d-none');
+  document.getElementById('wilcoxon-apa-placeholder').classList.remove('d-none');
   showPanel('idle');
 }
 function copyApa(btn, spanId) {
@@ -396,15 +392,12 @@ startPolling(currentJobId);
   .ax-btn-accent { background: var(--ax-accent-primary); color: #fff; border: 1px solid transparent; }
   .ax-btn-accent:hover { background: var(--ax-accent-primary-hover); color: #fff; }
   .ax-btn-accent:disabled { opacity: 0.45; cursor: not-allowed; }
-  .ax-btn-warning { background: var(--ax-accent-warning); color: #000; border: 1px solid transparent; }
   .ax-btn-danger { background: var(--ax-accent-danger); color: #fff; border: 1px solid transparent; }
   .ax-btn-danger:hover { opacity: 0.9; color: #fff; }
   .ax-btn-outline-secondary { border: 1px solid var(--ax-border-hover); color: var(--ax-text-secondary); background: transparent; }
   .ax-btn-outline-secondary:hover { background: rgba(255,255,255,0.05); color: var(--ax-text-primary); }
-  .ax-alert-danger, .ax-alert-warning, .ax-alert-info { display: flex; align-items: flex-start; padding: 12px 16px; border-radius: var(--ax-radius-md); }
-  .ax-alert-danger  { background: rgba(239,68,68,0.1);  border: 1px solid rgba(239,68,68,0.25);  color: var(--ax-accent-danger); }
-  .ax-alert-warning { background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.25); color: var(--ax-accent-warning); }
-  .ax-alert-info    { background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.2); color: var(--ax-text-secondary); }
+  .ax-alert-danger { display: flex; align-items: flex-start; padding: 12px 16px; border-radius: var(--ax-radius-md); background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.25); color: var(--ax-accent-danger); }
+  .ax-alert-info { display: flex; align-items: flex-start; padding: 12px 16px; border-radius: var(--ax-radius-md); background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.2); color: var(--ax-text-secondary); }
   .ax-link { color: var(--ax-accent-primary); text-decoration: none; }
   .ax-link:hover { text-decoration: underline; }
   .ax-stat-box { background: rgba(0,0,0,0.2); border: 1px solid var(--ax-border-default); border-radius: var(--ax-radius-md); padding: 12px; }
@@ -412,8 +405,6 @@ startPolling(currentJobId);
   .ax-stat-label { font-size: 0.75rem; color: var(--ax-text-muted); margin-top: 2px; }
   .ax-badge { display: inline-flex; align-items: center; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 500; }
   .ax-badge-secondary { background: rgba(71,85,105,0.25); color: var(--ax-text-secondary); }
-  .ax-badge-danger    { background: rgba(239,68,68,0.15); color: var(--ax-accent-danger); font-size: 0.72rem; padding: 2px 8px; }
-  .ax-badge-warning   { background: rgba(245,158,11,0.15); color: var(--ax-accent-warning); font-size: 0.72rem; padding: 2px 8px; }
   .ax-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; color: var(--ax-text-primary); }
   .ax-table th, .ax-table td { padding: 8px 12px; border-bottom: 1px solid var(--ax-border-default); }
   .ax-table thead th { color: var(--ax-text-secondary); font-weight: 600; background: rgba(0,0,0,0.2); }
@@ -422,6 +413,8 @@ startPolling(currentJobId);
   .ax-text-success { color: var(--ax-accent-secondary) !important; }
   .ax-text-warning { color: var(--ax-accent-warning) !important; }
   .ax-text-danger  { color: var(--ax-accent-danger) !important; }
+  .ax-select { background: rgba(0,0,0,0.2); border: 1px solid var(--ax-border-default); border-radius: var(--ax-radius-sm); color: var(--ax-text-primary); padding: 8px 12px; font-size: 0.85rem; }
+  .ax-select:focus { outline: none; border-color: var(--ax-accent-primary); }
   @keyframes ax-spin { 100% { transform: rotate(360deg); } }
 </style>
 {% endblock %}

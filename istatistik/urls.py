@@ -27,4 +27,8 @@ urlpatterns = [
     path('lineer-regresyon/status/<uuid:job_id>/', views.job_status, name='lineer_regresyon_status'),
     path('lojistik-regresyon/', views.lojistik_regresyon_landing, name='lojistik_regresyon'),
     path('lojistik-regresyon/status/<uuid:job_id>/', views.job_status, name='lojistik_regresyon_status'),
+    path('afa/', views.afa_landing, name='afa'),
+    path('afa/status/<uuid:job_id>/', views.job_status, name='afa_status'),
+    path('wilcoxon/', views.wilcoxon_landing, name='wilcoxon'),
+    path('wilcoxon/status/<uuid:job_id>/', views.job_status, name='wilcoxon_status'),
 ]
