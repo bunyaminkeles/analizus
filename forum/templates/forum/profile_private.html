@@ -16,7 +16,7 @@
                     <i class="bi bi-lock-fill"></i>
                     <span>Profil gizli</span>
                 </div>
-                <a href="{% url 'forum_index' %}" class="ax-btn ax-btn--primary">Foruma Dön</a>
+                <button onclick="if(history.length>1){history.back()}else{location.href='/'}" class="ax-btn ax-btn--primary">Geri Dön</button>
             </div>
         </div>
     </div>
