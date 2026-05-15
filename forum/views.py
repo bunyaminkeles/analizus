@@ -404,7 +404,7 @@ def close_job(request, pk):
                     f'Merhaba {proposal.expert.username},\n\n'
                     f'Teklif verdiğiniz "{job.title}" ilanı ilan sahibi tarafından yayından kaldırıldı. '
                     f'Teklifiniz otomatik olarak iptal edilmiştir.\n\n'
-                    f'Diğer ilanları incelemek için: https://www.analizus.com/jobs/'
+                    f'Diğer ilanları incelemek için: {getattr(settings, "SITE_URL", "https://www.analizus.com")}/market/'
                 )
             )
 
