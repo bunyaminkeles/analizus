@@ -153,14 +153,15 @@
 
                                 <!-- Manuel yetenek ekleme -->
                                 <div class="border-top border-secondary border-opacity-25 pt-3">
-                                    <label class="text-white-50 small mb-2 d-block"><i class="bi bi-plus-circle me-1"></i>Listede olmayan bir yetenek ekle (virgülle ayır)</label>
+                                    <label class="text-white-50 small mb-2 d-block"><i class="bi bi-plus-circle me-1"></i>Listede olmayan bir yetenek ekle</label>
                                     <div class="input-group">
-                                        <input type="text" id="custom-skill-input" name="custom_skills"
+                                        <input type="text" id="custom-skill-input"
                                                class="form-control bg-dark text-white border-secondary"
-                                               placeholder="Örn: SmartPLS, Qualtrics, Gephi"
-                                               value="{{ profile.custom_skills_text|default:'' }}">
+                                               placeholder="Örn: SmartPLS, Qualtrics, Gephi">
                                         <span class="input-group-text bg-dark border-secondary text-white-50" style="font-size:.75rem;">Enter ile ekle</span>
                                     </div>
+                                    <input type="hidden" id="custom-skills-hidden" name="custom_skills"
+                                           value="{{ profile.custom_skills_text|default:'' }}">
                                     <div id="custom-tags" class="d-flex flex-wrap gap-2 mt-2"></div>
                                 </div>
                             </div>
@@ -301,7 +302,8 @@
     }
 
     chips.forEach(chip => {
-        chip.addEventListener('click', () => {
+        chip.addEventListener('click', (e) => {
+            e.preventDefault();
             chip.classList.toggle('selected');
             chip.querySelector('input').checked = chip.classList.contains('selected');
             syncTags();
@@ -320,19 +322,21 @@
 
     // ── Manuel yetenek ekleme ───────────────────────────────────────────────
     const customInput = document.getElementById('custom-skill-input');
+    const customHidden = document.getElementById('custom-skills-hidden');
     const customTagsBox = document.getElementById('custom-tags');
 
-    function buildCustomTags() {
+    let customSkills = customHidden.value.split(',').map(v => v.trim()).filter(Boolean);
+
+    function renderCustomTags() {
         customTagsBox.innerHTML = '';
-        const vals = customInput.value.split(',').map(v => v.trim()).filter(Boolean);
-        vals.forEach(val => {
+        customSkills.forEach(val => {
             const tag = document.createElement('span');
             tag.className = 'custom-tag';
             tag.innerHTML = val + ' <span class="rm bi bi-x"></span>';
             tag.querySelector('.rm').onclick = () => {
-                const updated = customInput.value.split(',').map(v => v.trim()).filter(v => v && v !== val);
-                customInput.value = updated.join(', ');
-                buildCustomTags();
+                customSkills = customSkills.filter(v => v !== val);
+                customHidden.value = customSkills.join(', ');
+                renderCustomTags();
             };
             customTagsBox.appendChild(tag);
         });
@@ -341,18 +345,15 @@
     customInput.addEventListener('keydown', function(e) {
         if (e.key === 'Enter') {
             e.preventDefault();
-            // Virgül yoksa sona ekle
-            const cur = this.value.trim();
-            if (cur && !cur.endsWith(',')) {
-                // Zaten virgülle ayırıyorsak sadece trim
-            }
-            buildCustomTags();
+            const vals = this.value.split(',').map(v => v.trim()).filter(Boolean);
+            vals.forEach(v => { if (v && !customSkills.includes(v)) customSkills.push(v); });
+            customHidden.value = customSkills.join(', ');
+            this.value = '';
+            renderCustomTags();
         }
     });
 
-    customInput.addEventListener('input', buildCustomTags);
-
-    buildCustomTags(); // Sayfa yüklenince varsa göster
+    renderCustomTags(); // Sayfa yüklenince varsa göster
 })();
 </script>
 {% endblock %}
