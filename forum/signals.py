@@ -542,6 +542,39 @@ def check_forum_hero_badge(profile):
 # ADMİN BİLDİRİM SİNYALLERİ
 # ═══════════════════════════════════════════════════════════════════════════
 
+@receiver(pre_save, sender=User)
+def capture_old_staff_status(sender, instance, **kwargs):
+    """User kaydedilmeden önceki is_staff/is_superuser değerlerini yakala"""
+    if instance.pk:
+        try:
+            old = User.objects.get(pk=instance.pk)
+            instance._old_is_staff = old.is_staff
+            instance._old_is_superuser = old.is_superuser
+        except User.DoesNotExist:
+            instance._old_is_staff = False
+            instance._old_is_superuser = False
+    else:
+        instance._old_is_staff = False
+        instance._old_is_superuser = False
+
+
+@receiver(post_save, sender=User)
+def sync_rank_on_staff_change(sender, instance, created, **kwargs):
+    """is_staff veya is_superuser değiştiğinde profile rank'ını senkronize et"""
+    if created:
+        return
+    old_is_staff = getattr(instance, '_old_is_staff', None)
+    old_is_superuser = getattr(instance, '_old_is_superuser', None)
+    if old_is_staff is None:
+        return
+    if instance.is_staff != old_is_staff or instance.is_superuser != old_is_superuser:
+        try:
+            profile = instance.profile
+            profile.update_rank()
+        except Exception as e:
+            logger.error(f"Staff değişiminde rank güncellenemedi ({instance.username}): {e}")
+
+
 @receiver(post_save, sender=User)
 def notify_admin_on_new_user(sender, instance, created, **kwargs):
     """Yeni kullanıcı kaydında admin'e e-posta gönder"""
