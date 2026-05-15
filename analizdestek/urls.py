@@ -74,6 +74,7 @@ urlpatterns = [
     path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
     path('robots.txt', TemplateView.as_view(template_name='robots.txt', content_type='text/plain')),
     path('534e22a9f9e4d375119c5bc6d006aad0.txt', lambda r: HttpResponse('534e22a9f9e4d375119c5bc6d006aad0', content_type='text/plain')),
+    path('46d2a083d40a42108f68727e20395ab8.txt', lambda r: HttpResponse('46d2a083d40a42108f68727e20395ab8', content_type='text/plain')),
 ]
 
 # Lokal geliştirmede media dosyalarını servis et
