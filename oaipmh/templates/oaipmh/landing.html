@@ -1,8 +1,12 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Üniversite Tez Arşivi — 19 Türk Üniversitesinde Tez Ara | Analizus{% endblock %}
-{% block meta_description %}19 Türk üniversitesinin açık erişim tez arşivinde anahtar kelime ve özet ile arama yapın. OAI-PMH protokolü ile doğrudan üniversite sunucularından akademik tez verisi. Ücretsiz tez tarama.{% endblock %}
+{% block title %}Üniversite Tez Veri Kazıma Botu — 19 Üniversite, Kodsuz İndirme | Analizus{% endblock %}
+{% block meta_description %}19 Türk üniversitesinin tez arşivinden kodsuz veri kazıma botu. Anahtar kelimeyle arama yapın veya bir üniversitenin tüm tezlerini çekin; TXT olarak indirin. Python veya Selenium bilgisi gerekmez.{% endblock %}
+{% block meta_keywords %}üniversite tez kazıma, tez arşivi veri çekme, kodsuz tez scraper, akademik tez bot, üniversite tez indirme, tez verisi kazıma{% endblock %}
+{% block canonical %}/oaipmh/{% endblock %}
+{% block og_title %}Üniversite Tez Veri Kazıma Botu — 19 Üniversite | Analizus{% endblock %}
+{% block og_description %}19 Türk üniversitesinin tez arşivinden kodsuz veri kazıma botu. Toplu tez verisi çekin ve indirin.{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
@@ -12,11 +16,10 @@
             <div class="card bg-dark border-secondary text-white mb-4">
                 <div class="card-body">
                     <h1 class="card-title h3 mb-2">
-                        <i class="bi bi-mortarboard me-2 text-warning"></i>Üniversite Tez Arşivi
+                        <i class="bi bi-mortarboard me-2 text-warning"></i>Üniversite Tez Veri Kazıma Botu
                     </h1>
                     <p class="card-text text-muted mb-1">
-                        19 Türk üniversitesinin açık erişim arşivinde arama yapın veya bir üniversitenin tüm tezlerini tarayın.
-                        OAI-PMH protokolü ile doğrudan üniversite sunucularından veri çekilir.
+                        19 Türk üniversitesinin tez arşivinden kodsuz veri çekin. Anahtar kelimeyle arama yapın veya bir üniversitenin tüm tezlerini toplu olarak kazıyın. Python ya da Selenium bilgisi gerekmez.
                     </p>
                     {% if remaining is not None %}
                     <p class="text-muted small mb-0">

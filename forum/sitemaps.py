@@ -102,16 +102,17 @@ class IstatistikSitemap(Sitemap):
 
 class ToolsSitemap(Sitemap):
     """Diğer araç landing sayfaları için sitemap"""
-    changefreq = 'monthly'
-    priority = 0.8
+    changefreq = 'weekly'
+    priority = 0.9
 
     def items(self):
         return [
-            ('openalex', 'landing'),
             ('yoktez', 'landing'),
+            ('trdizin', 'landing'),
+            ('openalex', 'landing'),
+            ('oaipmh', 'landing'),
             ('bibliometrics', 'landing'),
             ('tezanaliz', 'landing'),
-            ('oaipmh', 'landing'),
         ]
 
     def location(self, item):

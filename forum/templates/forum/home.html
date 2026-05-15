@@ -129,7 +129,55 @@
             "position": 3,
             "name": "Veri Bilimi Eğitimi",
             "description": "İstatistik Arena ile interaktif öğrenme"
+        },
+        {
+            "@type": "ListItem",
+            "position": 4,
+            "name": "YÖK Tez Veri Kazıma",
+            "description": "YÖK Tez Merkezi'nden kodsuz veri kazıma ve Excel indirme aracı. Python bilgisi gerekmez.",
+            "url": "https://www.analizus.com/yoktez/"
+        },
+        {
+            "@type": "ListItem",
+            "position": 5,
+            "name": "TR Dizin Makale Kazıma",
+            "description": "TR Dizin'den kodsuz akademik makale veri kazıma ve Excel indirme aracı.",
+            "url": "https://www.analizus.com/trdizin/"
+        },
+        {
+            "@type": "ListItem",
+            "position": 6,
+            "name": "OpenAlex Yayın Kazıma",
+            "description": "240 milyondan fazla akademik yayından kodsuz veri kazıma ve Excel indirme.",
+            "url": "https://www.analizus.com/openalex/"
+        },
+        {
+            "@type": "ListItem",
+            "position": 7,
+            "name": "Üniversite Tez Veri Kazıma Botu",
+            "description": "19 Türk üniversitesinin tez arşivinden kodsuz toplu veri kazıma botu.",
+            "url": "https://www.analizus.com/oaipmh/"
         }
+    ]
+}
+</script>
+
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Analizus Akademik Veri Kazıma Aracı",
+    "applicationCategory": "EducationalApplication",
+    "operatingSystem": "Web",
+    "offers": {"@type": "Offer", "price": "0", "priceCurrency": "TRY"},
+    "description": "YÖK Tez, TR Dizin ve OpenAlex'ten kodsuz akademik veri kazıma ve Excel indirme platformu. Python veya Selenium bilgisi gerekmez.",
+    "url": "https://www.analizus.com",
+    "featureList": [
+        "YÖK Tez Merkezi veri kazıma",
+        "TR Dizin makale kazıma",
+        "OpenAlex yayın kazıma",
+        "Excel ve TXT formatında indirme",
+        "Bibliometrik analiz"
     ]
 }
 </script>
@@ -147,7 +195,7 @@
                 </h1>
 
                 <p class="ax-hero__subtitle" style="max-width: 90%; margin: 0 auto 24px; line-height: 1.6;">
-                    Akademik araştırmalar, veri bilimi, yapay zeka ve ekonometrik modelleme projeleriniz için doğru uzmanı bulun veya uzmanlığınızı kazanca dönüştürün.
+                    YÖK Tez, TR Dizin ve OpenAlex'ten kodsuz veri kazıyın; istatistik analizi yapın, uzman bulun veya uzmanlığınızı kazanca dönüştürün.
                 </p>
 
                 <div class="ax-hero__actions">
@@ -158,6 +206,22 @@
                     <a href="{% url 'register' %}" class="ax-hero__btn ax-hero__btn--primary">Hemen Başla — Ücretsiz</a>
                     <a href="#arastirma-konsolu" class="ax-hero__btn ax-hero__btn--secondary">Araçları Keşfet</a>
                     {% endif %}
+                </div>
+
+                <!-- Veri Kazıma Araçları Chip'leri -->
+                <div class="d-flex flex-wrap justify-content-center gap-2 mt-3 mb-1">
+                    <a href="{% url 'yoktez:landing' %}" class="badge rounded-pill text-decoration-none px-3 py-2" style="background:rgba(129,140,248,.15);color:#818cf8;border:1px solid rgba(129,140,248,.3);font-size:.8rem;font-weight:500;">
+                        <i class="bi bi-mortarboard-fill me-1"></i>YÖK Tez Kazıma
+                    </a>
+                    <a href="{% url 'trdizin:landing' %}" class="badge rounded-pill text-decoration-none px-3 py-2" style="background:rgba(129,140,248,.15);color:#818cf8;border:1px solid rgba(129,140,248,.3);font-size:.8rem;font-weight:500;">
+                        <i class="bi bi-journal-text me-1"></i>TR Dizin Tarama
+                    </a>
+                    <a href="{% url 'openalex:landing' %}" class="badge rounded-pill text-decoration-none px-3 py-2" style="background:rgba(129,140,248,.15);color:#818cf8;border:1px solid rgba(129,140,248,.3);font-size:.8rem;font-weight:500;">
+                        <i class="bi bi-globe me-1"></i>OpenAlex
+                    </a>
+                    <a href="{% url 'oaipmh:landing' %}" class="badge rounded-pill text-decoration-none px-3 py-2" style="background:rgba(129,140,248,.15);color:#818cf8;border:1px solid rgba(129,140,248,.3);font-size:.8rem;font-weight:500;">
+                        <i class="bi bi-archive-fill me-1"></i>Üniversite Arşivi
+                    </a>
                 </div>
 
                 {% if user.is_authenticated and user_profile.segment %}
@@ -172,12 +236,12 @@
                     <a href="{% url 'hangi_test' %}" class="ax-hero__personal-link">Hangi Test?</a>
                     {% elif user_profile.segment == 'academic' %}
                     <span class="ax-hero__personal-badge">🏛️ Akademisyen</span>
-                    <span class="ax-hero__personal-text">Araştırmanız için: </span>
+                    <span class="ax-hero__personal-text">Kazıma araçları: </span>
+                    <a href="{% url 'yoktez:landing' %}" class="ax-hero__personal-link">YÖK Tez Kazıma</a>
+                    <span class="ax-hero__personal-sep">·</span>
+                    <a href="{% url 'trdizin:landing' %}" class="ax-hero__personal-link">TR Dizin</a>
+                    <span class="ax-hero__personal-sep">·</span>
                     <a href="{% url 'bibliometrics:landing' %}" class="ax-hero__personal-link">Bibliometrik Analiz</a>
-                    <span class="ax-hero__personal-sep">·</span>
-                    <a href="{% url 'openalex:landing' %}" class="ax-hero__personal-link">Yayın Tarama</a>
-                    <span class="ax-hero__personal-sep">·</span>
-                    <a href="{% url 'yoktez:landing' %}" class="ax-hero__personal-link">YÖK Tez</a>
                     {% elif user_profile.segment == 'expert' %}
                     <span class="ax-hero__personal-badge">💼 Uzman</span>
                     <span class="ax-hero__personal-text">Fırsatlar: </span>

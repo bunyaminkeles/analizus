@@ -34,20 +34,20 @@ def trdizin_landing(request):
     """Landing page: gelişmiş arama formu + demo arama."""
     if not request.user.is_authenticated:
         return render(request, 'service_promo.html', {
-            'promo_title': 'TR Dizin Tarama',
+            'promo_title': 'TR Dizin Makale Kazıma ve İndirme Aracı',
             'promo_icon': 'bi-journal-text',
             'promo_color': 'primary',
-            'promo_description': 'Türkiye\'nin ulusal atıf dizini TR Dizin\'de makale, yazar ve dergi bazında gelişmiş arama yapın. Binlerce Türkçe akademik makaleye tek noktadan erişin.',
+            'promo_description': 'TR Dizin\'den kodsuz makale veri kazıma aracı. Anahtar kelime, yazar ve dergi bazında gelişmiş arama yapın; sonuçları Excel veya TXT olarak indirin. Python bilgisi gerekmez.',
             'promo_features': [
-                {'icon': 'bi-search', 'title': 'Gelişmiş Arama', 'desc': 'Başlık, yazar, dergi, anahtar kelime ve özet alanlarını birleştirerek hassas sorgular oluşturun.'},
-                {'icon': 'bi-file-earmark-text-fill', 'title': 'Makale Özetleri', 'desc': 'Türkçe akademik makalelerin tam künyesine ve özetlerine anında erişin.'},
-                {'icon': 'bi-download', 'title': 'Toplu İndirme', 'desc': 'Arama sonuçlarınızı TXT formatında bilgisayarınıza indirin veya e-posta ile alın.'},
-                {'icon': 'bi-bar-chart-fill', 'color': 'warning', 'title': 'Makale Analizi', 'desc': '10+ sonuçta Makale Analizi butonu ile yazar, dergi ve yıl dağılım grafiklerini PDF olarak alın.'},
+                {'icon': 'bi-download', 'title': 'Excel & TXT İndirme', 'desc': 'Makale başlığı, yazar, dergi, yıl ve özet verilerini tek tıkla Excel veya TXT olarak indirin.'},
+                {'icon': 'bi-search', 'title': 'Kodsuz Veri Kazıma', 'desc': 'Başlık, yazar, dergi, anahtar kelime ve özet alanlarını birleştirerek binlerce makaleden veri çekin.'},
+                {'icon': 'bi-file-earmark-text-fill', 'title': 'Tam Künyeye Erişim', 'desc': 'TÜBİTAK ULAKBİM hakemli dergilerindeki makalelerin DOI, özet ve atıf bilgilerine erişin.'},
+                {'icon': 'bi-bar-chart-fill', 'color': 'warning', 'title': 'Tek Tıkla Analiz', 'desc': '10+ sonuçta Analiz Yap butonu ile yazar, dergi ve yıl dağılım grafiklerini PDF olarak alın.'},
             ],
             'promo_steps': [
                 'Arama alanlarına anahtar kelime, yazar adı veya dergi adını girin.',
-                'TR Dizin veritabanından eşleşen makaleler saniyeler içinde listelenir.',
-                '10+ sonuçta Makale Analizi ile bibliyometrik PDF rapor alın.',
+                'TR Dizin\'den makaleler saniyeler içinde kazınır ve listelenir.',
+                'Excel veya TXT olarak indirin ya da Analiz Yap ile bibliometrik rapor alın.',
             ],
         })
 
@@ -206,6 +206,58 @@ def trdizin_order_page(request, job_id):
     return render(request, 'trdizin/order.html', {
         'job': job,
     })
+
+
+@login_required
+@require_GET
+def trdizin_download_excel(request, job_id):
+    """demo_results JSON'ından Excel (.xlsx) üretir."""
+    import openpyxl
+    from openpyxl.styles import Font, PatternFill, Alignment
+    job = get_object_or_404(DizinSearchJob, id=job_id, user=request.user)
+    records = job.demo_results or []
+    if not records:
+        raise Http404
+
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = 'TR Dizin Sonuçları'
+
+    headers = ['No', 'Başlık', 'Yazarlar', 'Dergi', 'Yıl', 'DOI', 'Yayın Türü', 'Erişim', 'Dil', 'Anahtar Kelimeler (TR)', 'Özet (TR)', 'Özet (EN)']
+    ws.append(headers)
+    header_fill = PatternFill(start_color='2D3748', end_color='2D3748', fill_type='solid')
+    header_font = Font(color='FFFFFF', bold=True)
+    for col_num, _ in enumerate(headers, 1):
+        cell = ws.cell(row=1, column=col_num)
+        cell.fill = header_fill
+        cell.font = header_font
+        cell.alignment = Alignment(wrap_text=True)
+
+    for i, r in enumerate(records, 1):
+        kw_tr = r.get('keywords_tr', [])
+        ws.append([
+            i,
+            r.get('title', ''),
+            r.get('authors', ''),
+            r.get('journal', ''),
+            r.get('year', ''),
+            r.get('doi', ''),
+            r.get('publication_type', ''),
+            r.get('access_type', ''),
+            r.get('language', ''),
+            ', '.join(kw_tr) if isinstance(kw_tr, list) else str(kw_tr),
+            r.get('abstract_tr', ''),
+            r.get('abstract_en', ''),
+        ])
+
+    for col in ws.columns:
+        max_len = max((len(str(c.value or '')) for c in col), default=10)
+        ws.column_dimensions[col[0].column_letter].width = min(max_len + 2, 60)
+
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = f'attachment; filename="trdizin_{job.id}.xlsx"'
+    wb.save(response)
+    return response
 
 
 @login_required

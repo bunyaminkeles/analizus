@@ -1,8 +1,12 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}YÖK Tez Arama - Ulusal Tez Merkezi - Analizus{% endblock %}
-{% block meta_description %}YÖK Ulusal Tez Merkezi'nde tez arayın, özet ve detayları görüntüleyin. Türkiye'deki yüz binlerce akademik teze hızlı ve kolay erişim.{% endblock %}
+{% block title %}YÖK Tez Kazıma ve İndirme Aracı — Kodsuz Veri Çekme | Analizus{% endblock %}
+{% block meta_description %}YÖK Ulusal Tez Merkezi'nden kodsuz veri kazıma aracı. Anahtar kelime, yazar veya danışmanla arama yapın; tez verilerini Excel veya TXT olarak indirin. Python bilgisi gerekmez.{% endblock %}
+{% block meta_keywords %}YÖK tez kazıma, tez verisi indirme, YÖK tez excel, akademik web scraper, kodsuz veri çekme, tez scraper, üniversite tez verisi, YÖK tez veri kazıma{% endblock %}
+{% block canonical %}/yoktez/{% endblock %}
+{% block og_title %}YÖK Tez Kazıma ve İndirme Aracı — Kodsuz | Analizus{% endblock %}
+{% block og_description %}YÖK Ulusal Tez Merkezi'nden kodsuz veri kazıma. Tez verilerini Excel veya TXT olarak indirin. Python bilgisi gerekmez.{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
@@ -13,10 +17,10 @@
                 <div class="card-body d-flex justify-content-between align-items-start">
                     <div>
                         <h1 class="card-title h3 mb-2">
-                            <i class="bi bi-graph-up-arrow me-2 text-success"></i>Tez Analizi
+                            <i class="bi bi-graph-up-arrow me-2 text-success"></i>YÖK Tez Veri Kazıma
                         </h1>
                         <p class="card-text text-muted mb-1">
-                            YÖK Ulusal Tez Merkezi'nde arama yapın, 10+ sonuçta <strong class="text-success">Analiz Yap</strong> butonuyla 7 grafik içeren PDF rapor alın.
+                            YÖK Ulusal Tez Merkezi'nden saniyeler içinde veri çekin. 10+ sonuçta <strong class="text-success">Analiz Yap</strong> ile 7 grafik içeren PDF rapor veya <strong class="text-success">Excel/TXT</strong> olarak indirin.
                         </p>
                         <p class="text-muted small mb-0">
                             Günlük <strong>{{ daily_limit }}</strong> arama hakkı — Kalan: <strong>{{ remaining }}</strong>
@@ -124,8 +128,11 @@
                             <button id="send-email-btn" class="btn btn-sm btn-outline-warning" style="display:none;">
                                 <i class="bi bi-envelope me-1"></i>E-posta Gönder
                             </button>
-                            <a id="download-btn" href="#" class="btn btn-sm btn-primary" style="display:none;">
-                                <i class="bi bi-download me-1"></i>İndir
+                            <a id="download-btn" href="#" class="btn btn-sm btn-outline-primary" style="display:none;">
+                                <i class="bi bi-filetype-txt me-1"></i>TXT İndir
+                            </a>
+                            <a id="download-excel-btn" href="#" class="btn btn-sm btn-success" style="display:none;">
+                                <i class="bi bi-file-earmark-excel me-1"></i>Excel İndir
                             </a>
                             <button id="analiz-btn" class="btn btn-sm btn-success" style="display:none;" onclick="startAnaliz(event)">
                                 <i class="bi bi-bar-chart-line me-1"></i>Analiz Yap
@@ -299,6 +306,11 @@ function showResults(data) {
         dlBtn.href = `/yoktez/download/${currentJobId}/`;
         dlBtn.removeAttribute('target');
         dlBtn.style.display = 'inline-block';
+    }
+    if (data.demo_results && data.demo_results.length > 0) {
+        const xlBtn = document.getElementById('download-excel-btn');
+        xlBtn.href = `/yoktez/download-excel/${currentJobId}/`;
+        xlBtn.style.display = 'inline-block';
     }
     if (data.total_results >= 10) {
         const analizBtn = document.getElementById('analiz-btn');
