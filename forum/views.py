@@ -1216,8 +1216,7 @@ def profile_edit(request):
             logger.error(f"Profile save error: {type(e).__name__}: {e}", exc_info=True)
 
         messages.success(request, "Profiliniz başarıyla güncellendi.")
-        messages.info(request, "Bilgileriniz KVKK kapsamında 3. kişilerle paylaşılmamaktadır.")
-        return redirect('profile_edit')
+        return redirect('profile_detail', username=user.username)
     
     return render(request, 'forum/profile_edit.html', {'user': user, 'profile': profile, 'all_skills': all_skills})
 
