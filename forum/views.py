@@ -1375,11 +1375,20 @@ def _check_and_award_trust_badge(request, user):
 @login_required
 def profile_detail(request, username):
     profile_user = get_object_or_404(User, username=username)
+    is_owner = request.user == profile_user
+    is_staff = request.user.is_authenticated and (request.user.is_staff or request.user.is_superuser)
+
+    # GİZLİLİK KONTROLÜ: Profil herkese kapalıysa sadece sahip ve adminler tam görür
+    if not is_owner and not is_staff:
+        profile = getattr(profile_user, 'profile', None)
+        if profile and not profile.is_public:
+            return render(request, 'forum/profile_private.html', {
+                'profile_user': profile_user,
+            })
 
     # GİZLİLİK KONTROLÜ: E-posta gösterimi
-    # Eğer görüntüleyen kişi profil sahibi değilse ve kullanıcı e-postasını gizlemişse
-    if request.user != profile_user and hasattr(profile_user, 'profile') and not profile_user.profile.show_email:
-        profile_user.email = ""  # E-postayı gizle
+    if not is_owner and hasattr(profile_user, 'profile') and not profile_user.profile.show_email:
+        profile_user.email = ""
 
     # Doğrulama İşlemleri (POST)
     if request.method == 'POST' and request.user == profile_user:
