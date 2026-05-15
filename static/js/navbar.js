@@ -53,6 +53,21 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // -------------------------------------------------------
+    // 1b. Flyout submenu (mouseenter/mouseleave — JS class toggle)
+    // -------------------------------------------------------
+    document.querySelectorAll('.site-nav__flyout-wrap').forEach(function (wrap) {
+        wrap.addEventListener('mouseenter', function () {
+            document.querySelectorAll('.site-nav__flyout-wrap.is-open').forEach(function (w) {
+                if (w !== wrap) w.classList.remove('is-open');
+            });
+            wrap.classList.add('is-open');
+        });
+        wrap.addEventListener('mouseleave', function () {
+            wrap.classList.remove('is-open');
+        });
+    });
+
+    // -------------------------------------------------------
     // 2. Mobile Drawer Aç / Kapat
     // -------------------------------------------------------
     function openDrawer() {
