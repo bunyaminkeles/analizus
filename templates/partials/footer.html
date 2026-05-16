@@ -105,7 +105,7 @@
                                background:linear-gradient(135deg,#ec4899,#a855f7);color:#fff;
                                transition:opacity .15s;"
                         onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
-                    <i class="bi bi-heart-fill me-1" style="font-size:.75rem;"></i>Destekçi Ol
+                    <i class="bi bi-gem me-1" style="font-size:.75rem;"></i>Premium Üye Ol
                 </button>
             </div>
 
@@ -127,12 +127,13 @@
         <div class="modal-content bg-dark border border-secondary" style="border-radius:20px;">
             <div class="modal-header border-secondary">
                 <h5 class="modal-title text-white" id="donationModalLabel">
-                    <i class="bi bi-heart-fill me-2" style="color:#ec4899;"></i>Bizi Destekle
+                    <i class="bi bi-gem me-2" style="color:#a855f7;"></i>Premium Üye Ol
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Kapat"></button>
             </div>
             <div class="modal-body">
-                <p class="text-muted mb-4">Platformumuzu destekleyerek gelişimine katkıda bulunabilirsiniz.</p>
+                <p class="text-muted mb-1">Premium üyelik ile tüm avantajlardan yararlan.</p>
+                <p style="font-size:.75rem;color:#475569;margin-bottom:1rem;">Aynı zamanda platformumuzun gelişimine de katkıda bulunmuş olursunuz.</p>
 
                 {% if donation_tiers %}
                 <h6 class="text-white mb-3"><i class="bi bi-gem me-2" style="color:#ec4899;"></i>Destek Paketini Seçiniz</h6>
@@ -164,8 +165,11 @@
                 {% endif %}
 
                 <div class="alert alert-info bg-transparent border-info text-info small mb-4">
-                    <i class="bi bi-info-circle me-2"></i>
-                    Destek paketinizi seçin ve <strong>"Sizi Destekliyorum"</strong> butonuna basın. Size e-posta yoluyla IBAN bilgileri gönderilecektir. Havale kontrol edildikten sonra talebiniz işleme konulacaktır.
+                    <div class="d-flex flex-column gap-1">
+                        <div><span class="fw-bold me-1">1.</span> Paketini seç</div>
+                        <div><span class="fw-bold me-1">2.</span> "Ödeme Talimatlarını Al" butonuna bas — IBAN bilgileri e-postana gelir</div>
+                        <div><span class="fw-bold me-1">3.</span> Havaleyi yap → Premium genellikle <strong>24 saat içinde</strong> aktif edilir</div>
+                    </div>
                 </div>
 
                 <h6 class="text-white mb-3"><i class="bi bi-unlock-fill me-2 text-success"></i>Ne Kazanırsınız?</h6>
@@ -191,7 +195,7 @@
             <div class="modal-footer border-secondary d-flex gap-2">
                 <button type="button" class="btn btn-outline-secondary rounded-pill" data-bs-dismiss="modal">Kapat</button>
                 <button type="button" class="btn btn-primary rounded-pill" id="footerSupportBtn" onclick="footerSendSupportEmail()">
-                    <i class="bi bi-heart-fill me-2"></i>Sizi Destekliyorum
+                    <i class="bi bi-envelope-fill me-2"></i>Ödeme Talimatlarını Al
                 </button>
             </div>
         </div>
@@ -224,14 +228,14 @@ function footerSendSupportEmail() {
     .then(r => r.json())
     .then(data => {
         btn.disabled = false;
-        btn.innerHTML = '<i class="bi bi-heart-fill me-2"></i>Sizi Destekliyorum';
+        btn.innerHTML = '<i class="bi bi-envelope-fill me-2"></i>Ödeme Talimatlarını Al';
         if (data.success) {
-            alert('✅ E-postanız gönderildi! Lütfen e-posta kutunuzu kontrol ediniz.');
+            alert('✅ IBAN bilgileri e-postanıza gönderildi! Havale sonrası Premium üyeliğiniz 24 saat içinde aktif edilecektir.');
             bootstrap.Modal.getInstance(document.getElementById('donationModal')).hide();
         } else {
             alert('❌ Hata: ' + (data.error || 'E-posta gönderilemedi.'));
         }
     })
-    .catch(() => { btn.disabled = false; btn.innerHTML = '<i class="bi bi-heart-fill me-2"></i>Sizi Destekliyorum'; });
+    .catch(() => { btn.disabled = false; btn.innerHTML = '<i class="bi bi-envelope-fill me-2"></i>Ödeme Talimatlarını Al'; });
 }
 </script>
