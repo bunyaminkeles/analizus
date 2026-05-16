@@ -284,8 +284,8 @@ function showResults(data) {
     (data.demo_results || []).forEach((r, i) => {
         list.innerHTML += `
         <div class="border-bottom border-secondary pb-3 mb-3">
-            <h6 class="mb-1">${i+1}. ${r.title || '(Başlık yok)'}</h6>
-            ${r.title_tr ? `<div class="text-muted small fst-italic mb-1">${r.title_tr}</div>` : ''}
+            <h6 class="mb-1">${i+1}. ${r.title_tr || r.title || '(Başlık yok)'}</h6>
+            ${r.title && r.title_tr ? `<div class="text-muted small fst-italic mb-1">${r.title}</div>` : ''}
             <small class="text-muted d-block">
                 ${r.author || ''} ${r.year ? '· ' + r.year : ''} · ${r.university || ''}
                 ${r.thesis_type ? ' · ' + r.thesis_type : ''}
@@ -301,13 +301,11 @@ function showResults(data) {
     if (data.total_results > 0 && !data.demo_email_sent) {
         document.getElementById('send-email-btn').style.display = 'inline-block';
     }
-    if (data.all_results_file_url) {
+    if (data.demo_results && data.demo_results.length > 0) {
         const dlBtn = document.getElementById('download-btn');
         dlBtn.href = `/yoktez/download/${currentJobId}/`;
-        dlBtn.removeAttribute('target');
         dlBtn.style.display = 'inline-block';
-    }
-    if (data.demo_results && data.demo_results.length > 0) {
+
         const xlBtn = document.getElementById('download-excel-btn');
         xlBtn.href = `/yoktez/download-excel/${currentJobId}/`;
         xlBtn.style.display = 'inline-block';

@@ -3,7 +3,7 @@ import logging
 from datetime import timedelta
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse, Http404
+from django.http import JsonResponse, Http404, HttpResponse
 from django.views.decorators.http import require_POST, require_GET
 from django.utils import timezone
 from django_ratelimit.decorators import ratelimit
@@ -172,6 +172,82 @@ def oaipmh_cancel(request, job_id):
         job.error_message = 'Kullanıcı tarafından iptal edildi.'
         job.save(update_fields=['status', 'error_message'])
     return JsonResponse({'success': True})
+
+
+@login_required
+@require_GET
+def oaipmh_download(request, job_id):
+    """S3'teki TXT dosyasını proxy ile indirtir (tarayıcıda açmaz)."""
+    import requests as req_lib
+    _feature_check()
+    job = get_object_or_404(OAIPMHSearchJob, id=job_id, user=request.user)
+
+    if not job.all_results_file_url:
+        raise Http404
+
+    try:
+        s3_resp = req_lib.get(job.all_results_file_url, timeout=30, stream=True)
+        s3_resp.raise_for_status()
+    except Exception:
+        raise Http404
+
+    response = HttpResponse(
+        s3_resp.content,
+        content_type='text/plain; charset=utf-8',
+    )
+    response['Content-Disposition'] = f'attachment; filename="unitez_{job.id}.txt"'
+    return response
+
+
+@login_required
+@require_GET
+def oaipmh_download_excel(request, job_id):
+    """demo_results JSON'ından Excel (.xlsx) üretir."""
+    import openpyxl
+    from openpyxl.styles import Font, PatternFill, Alignment
+    _feature_check()
+    job = get_object_or_404(OAIPMHSearchJob, id=job_id, user=request.user)
+    records = job.demo_results or []
+    if not records:
+        raise Http404
+
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = 'Üniversite Tez Sonuçları'
+
+    headers = ['No', 'Başlık', 'Yazarlar', 'Yıl', 'Üniversite', 'Tür', 'Konu', 'Özet', 'Link']
+    ws.append(headers)
+    header_fill = PatternFill(start_color='2D3748', end_color='2D3748', fill_type='solid')
+    header_font = Font(color='FFFFFF', bold=True)
+    for col_num, _ in enumerate(headers, 1):
+        cell = ws.cell(row=1, column=col_num)
+        cell.fill = header_fill
+        cell.font = header_font
+        cell.alignment = Alignment(wrap_text=True)
+
+    for i, r in enumerate(records, 1):
+        ws.append([
+            i,
+            r.get('title', ''),
+            r.get('authors', ''),
+            r.get('year', ''),
+            r.get('university', ''),
+            r.get('type', ''),
+            r.get('subject', ''),
+            r.get('abstract', ''),
+            r.get('link', ''),
+        ])
+
+    for col in ws.columns:
+        max_len = max((len(str(c.value or '')) for c in col), default=10)
+        ws.column_dimensions[col[0].column_letter].width = min(max_len + 2, 60)
+
+    response = HttpResponse(
+        content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    )
+    response['Content-Disposition'] = f'attachment; filename="unitez_{job.id}.xlsx"'
+    wb.save(response)
+    return response
 
 
 @login_required

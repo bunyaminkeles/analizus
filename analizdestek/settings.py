@@ -585,6 +585,11 @@ LOGGING = {
             'level': 'INFO',
             'propagate': False,
         },
+        'oaipmh': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
     },
     'root': {
         'handlers': ['console'],

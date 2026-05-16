@@ -155,10 +155,13 @@
                         <span id="results-summary">Sonuçlar</span>
                         <div class="d-flex gap-2">
                             <button id="send-email-btn" class="btn btn-sm btn-outline-warning" style="display:none;">
-                                <i class="bi bi-envelope me-1"></i>Sonuçları E-posta Gönder
+                                <i class="bi bi-envelope me-1"></i>E-posta Gönder
                             </button>
-                            <a id="download-btn" href="#" class="btn btn-sm btn-primary" style="display:none;" target="_blank">
-                                <i class="bi bi-download me-1"></i>Tüm Sonuçları İndir
+                            <a id="download-btn" href="#" class="btn btn-sm btn-outline-primary" style="display:none;">
+                                <i class="bi bi-filetype-txt me-1"></i>TXT İndir
+                            </a>
+                            <a id="download-excel-btn" href="#" class="btn btn-sm btn-success" style="display:none;">
+                                <i class="bi bi-file-earmark-excel me-1"></i>Excel İndir
                             </a>
                         </div>
                     </div>
@@ -264,8 +267,13 @@ function showResults(data) {
     }
     if (data.all_results_file_url) {
         const dlBtn = document.getElementById('download-btn');
-        dlBtn.href = data.all_results_file_url;
+        dlBtn.href = `/oaipmh/download/${currentJobId}/`;
         dlBtn.style.display = 'inline-block';
+    }
+    if (data.demo_results && data.demo_results.length > 0) {
+        const xlBtn = document.getElementById('download-excel-btn');
+        xlBtn.href = `/oaipmh/download-excel/${currentJobId}/`;
+        xlBtn.style.display = 'inline-block';
     }
 }
 

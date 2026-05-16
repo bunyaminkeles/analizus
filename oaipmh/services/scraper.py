@@ -120,13 +120,10 @@ class OAIPMHScraper:
             matched = 0
             try:
                 sickle = _get_sickle(uni.oai_url)
-                params = {'metadataPrefix': 'oai_dc'}
-                if year_from:
-                    params['from'] = f"{year_from}-01-01"
-                if year_to:
-                    params['until'] = f"{year_to}-12-31"
-
-                records = sickle.ListRecords(**params)
+                # Tarih parametrelerini sunucuya gönderme — çoğu üniversite OAI-PMH sunucusu
+                # from/until'i desteklemez ve NoRecordsMatch döndürür.
+                # Yıl filtresi _year_in_range ile lokal yapılır.
+                records = sickle.ListRecords(metadataPrefix='oai_dc')
                 try:
                     for record in records:
                         if count >= MAX_RECORDS_PER_UNI:

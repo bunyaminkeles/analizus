@@ -181,27 +181,34 @@ def yoktez_download_excel(request, job_id):
     return response
 
 
+@login_required
 @require_GET
 def yoktez_download(request, job_id):
-    """S3'teki TXT dosyasını proxy ile indirtir (tarayıcıda açmaz)."""
+    """S3'teki TXT dosyasını proxy ile indirtir; S3 yoksa demo_results'tan üretir."""
     import requests as req_lib
     job = get_object_or_404(YokTezSearchJob, id=job_id, user=request.user)
 
-    if not job.all_results_file_url:
+    if job.all_results_file_url:
+        try:
+            s3_resp = req_lib.get(job.all_results_file_url, timeout=30, stream=True)
+            s3_resp.raise_for_status()
+            response = HttpResponse(
+                s3_resp.content,
+                content_type='text/plain; charset=utf-8',
+            )
+            response['Content-Disposition'] = f'attachment; filename="yoktez_{job.id}.txt"'
+            return response
+        except Exception:
+            pass
+
+    # Fallback: demo_results'tan on-the-fly üret
+    if not job.demo_results:
         raise Http404
 
-    try:
-        s3_resp = req_lib.get(job.all_results_file_url, timeout=30, stream=True)
-        s3_resp.raise_for_status()
-    except Exception:
-        raise Http404
-
-    filename = f'yoktez_{job.id}.txt'
-    response = HttpResponse(
-        s3_resp.content,
-        content_type='text/plain; charset=utf-8',
-    )
-    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+    from .services.scraper import generate_results_txt
+    txt = generate_results_txt(job.demo_results, job)
+    response = HttpResponse(txt, content_type='text/plain; charset=utf-8')
+    response['Content-Disposition'] = f'attachment; filename="yoktez_{job.id}.txt"'
     return response
 
 
