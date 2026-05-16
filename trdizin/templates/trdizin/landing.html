@@ -1,8 +1,12 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}TR Dizin Tarama — Türkiye Ulusal Akademik Atıf Veritabanı | Analizus{% endblock %}
-{% block meta_description %}TR Dizin'de Boolean operatörlerle gelişmiş yayın araması yapın. TÜBİTAK ULAKBİM hakemli Türk dergilerinde konu, yazar ve dergi filtreleriyle akademik makale bulun.{% endblock %}
+{% block title %}TR Dizin Makale Kazıma ve İndirme Aracı — Kodsuz Veri Çekme | Analizus{% endblock %}
+{% block meta_description %}TR Dizin'den kodsuz makale veri kazıma aracı. Boolean operatörlerle gelişmiş arama yapın, sonuçları Excel veya TXT olarak indirin. TÜBİTAK ULAKBİM hakemli Türk dergilerinden toplu veri çekme.{% endblock %}
+{% block meta_keywords %}TR Dizin kazıma, makale verisi indirme, TR Dizin excel, akademik makale scraper, kodsuz veri çekme, TÜBİTAK ULAKBİM veri, TR Dizin scraper{% endblock %}
+{% block canonical %}/trdizin/{% endblock %}
+{% block og_title %}TR Dizin Makale Kazıma ve İndirme Aracı — Kodsuz | Analizus{% endblock %}
+{% block og_description %}TR Dizin'den kodsuz makale veri kazıma. Sonuçları Excel veya TXT olarak indirin. TÜBİTAK ULAKBİM verisi.{% endblock %}
 
 {% block content %}
 <div class="container mt-4">
@@ -12,11 +16,11 @@
             <div class="card bg-dark border-secondary text-white mb-4">
                 <div class="card-body">
                     <h1 class="card-title h3 mb-2">
-                        <i class="bi bi-journal-text me-2 text-info"></i>TR Dizin Yayın Tarama
+                        <i class="bi bi-journal-text me-2 text-info"></i>TR Dizin Makale Kazıma ve İndirme
                     </h1>
                     <p class="card-text text-muted mb-1">
-                        TR Dizin'de başlık, özet, yazar, anahtar kelime gibi alanlarda gelişmiş arama yapın.
-                        10+ sonuçta <strong class="text-info">Analiz Yap</strong> butonuyla grafik içeren PDF rapor alın.
+                        TR Dizin'den kodsuz veri çekin. Başlık, özet, yazar ve anahtar kelime alanlarında gelişmiş arama yapın; sonuçları <strong class="text-info">Excel veya TXT</strong> olarak indirin.
+                        10+ sonuçta <strong class="text-info">Analiz Yap</strong> ile grafik içeren PDF rapor alın.
                     </p>
                     <p class="text-muted small mb-0">
                         Günlük <strong>{{ daily_limit }}</strong> arama hakkı — Kalan: <strong>{{ remaining }}</strong>
@@ -90,8 +94,11 @@
                             <button id="send-email-btn" class="btn btn-sm btn-outline-warning" style="display:none;">
                                 <i class="bi bi-envelope me-1"></i>E-posta Gönder
                             </button>
-                            <a id="download-btn" href="#" class="btn btn-sm btn-primary" style="display:none;">
-                                <i class="bi bi-download me-1"></i>İndir
+                            <a id="download-btn" href="#" class="btn btn-sm btn-outline-primary" style="display:none;">
+                                <i class="bi bi-filetype-txt me-1"></i>TXT İndir
+                            </a>
+                            <a id="download-excel-btn" href="#" class="btn btn-sm btn-success" style="display:none;">
+                                <i class="bi bi-file-earmark-excel me-1"></i>Excel İndir
                             </a>
                             <button id="analiz-btn" class="btn btn-sm btn-info" style="display:none;" onclick="startAnaliz(event)">
                                 <i class="bi bi-bar-chart-line me-1"></i>Analiz Yap
@@ -263,6 +270,11 @@ function showResults(data) {
         const dlBtn = document.getElementById('download-btn');
         dlBtn.href = `/trdizin/download/${currentJobId}/`;
         dlBtn.style.display = 'inline-block';
+    }
+    if (data.demo_results && data.demo_results.length > 0) {
+        const xlBtn = document.getElementById('download-excel-btn');
+        xlBtn.href = `/trdizin/download-excel/${currentJobId}/`;
+        xlBtn.style.display = 'inline-block';
     }
     if (data.total_results >= 10) {
         const analizBtn = document.getElementById('analiz-btn');

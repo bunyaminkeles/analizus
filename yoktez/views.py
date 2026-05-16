@@ -28,20 +28,20 @@ def feature_required(flag_name):
 def yoktez_landing(request):
     if not request.user.is_authenticated:
         return render(request, 'service_promo.html', {
-            'promo_title': 'YÖK Tez Arama',
+            'promo_title': 'YÖK Tez Kazıma ve İndirme Aracı',
             'promo_icon': 'bi-mortarboard-fill',
             'promo_color': 'success',
-            'promo_description': 'YÖK Ulusal Tez Merkezi\'nde anahtar kelime, yazar veya danışman adıyla arama yapın. Tez özetlerine, danışman bilgilerine ve konu dizinine erişin.',
+            'promo_description': 'YÖK Ulusal Tez Merkezi\'nden kodsuz veri kazıma aracı. Anahtar kelime, yazar veya danışmanla arama yapın; tez verilerini Excel veya TXT olarak indirin. Python bilgisi gerekmez.',
             'promo_features': [
-                {'icon': 'bi-search', 'title': 'Hızlı Arama', 'desc': 'Anahtar kelime, yazar adı veya danışman ile binlerce tez arasında anında arama yapın.'},
-                {'icon': 'bi-file-text-fill', 'title': 'Tez Özeti', 'desc': 'Türkçe ve İngilizce özetlere, konu ve dizin bilgilerine doğrudan erişin.'},
-                {'icon': 'bi-person-lines-fill', 'title': 'Danışman Bilgisi', 'desc': 'Danışman adı, üniversite ve yıl bilgisini tek sayfada görün.'},
-                {'icon': 'bi-graph-up-arrow', 'color': 'warning', 'title': 'Tez Analizi', 'desc': '10+ sonuçta Tez Analizi butonu ile grafik içeren PDF rapor alın.'},
+                {'icon': 'bi-download', 'title': 'Excel & TXT İndirme', 'desc': 'Tez No, Başlık, Yazar, Danışman, Üniversite, Yıl ve Özet verilerini tek tıkla Excel veya TXT olarak indirin.'},
+                {'icon': 'bi-search', 'title': 'Kodsuz Veri Kazıma', 'desc': 'Python veya Selenium bilgisi gerekmeden, anahtar kelime ile binlerce tez verisini saniyeler içinde çekin.'},
+                {'icon': 'bi-person-lines-fill', 'title': 'Danışman & Kurum Verisi', 'desc': 'Danışman adı, üniversite ve yıl bilgisini yapılandırılmış biçimde edinin.'},
+                {'icon': 'bi-graph-up-arrow', 'color': 'warning', 'title': 'Tek Tıkla Bibliometrik Analiz', 'desc': '10+ sonuçta Analiz Yap butonu ile trend ve dağılım grafiklerini PDF olarak alın.'},
             ],
             'promo_steps': [
                 'Arama kutusuna anahtar kelime, konu veya yazar adı girin.',
-                'YÖK Tez Merkezi\'nden sonuçlar saniyeler içinde listelenir.',
-                '10+ sonuçta Tez Analizi ile trend ve dağılım grafikleri alın.',
+                'YÖK Tez Merkezi\'nden veriler saniyeler içinde kazınır ve listelenir.',
+                'Excel veya TXT olarak indirin ya da Analiz Yap ile bibliometrik rapor alın.',
             ],
         })
     user = request.user
@@ -130,27 +130,85 @@ def yoktez_job_status(request, job_id):
 
 
 @login_required
+@login_required
+@require_GET
+def yoktez_download_excel(request, job_id):
+    """demo_results JSON'ından Excel (.xlsx) üretir."""
+    import openpyxl
+    from openpyxl.styles import Font, PatternFill, Alignment
+    job = get_object_or_404(YokTezSearchJob, id=job_id, user=request.user)
+    records = job.demo_results or []
+    if not records:
+        raise Http404
+
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = 'YÖK Tez Sonuçları'
+
+    headers = ['No', 'Tez No', 'Başlık (EN)', 'Başlık (TR)', 'Yazar', 'Danışman', 'Üniversite', 'Yıl', 'Tür', 'Dil', 'Özet (TR)', 'Özet (EN)']
+    ws.append(headers)
+    header_fill = PatternFill(start_color='2D3748', end_color='2D3748', fill_type='solid')
+    header_font = Font(color='FFFFFF', bold=True)
+    for col_num, _ in enumerate(headers, 1):
+        cell = ws.cell(row=1, column=col_num)
+        cell.fill = header_fill
+        cell.font = header_font
+        cell.alignment = Alignment(wrap_text=True)
+
+    for i, r in enumerate(records, 1):
+        ws.append([
+            i,
+            r.get('tez_no', ''),
+            r.get('title', ''),
+            r.get('title_tr', ''),
+            r.get('author', ''),
+            r.get('danisman', ''),
+            r.get('university', ''),
+            r.get('year', ''),
+            r.get('thesis_type', ''),
+            r.get('language', ''),
+            r.get('abstract_tr', ''),
+            r.get('abstract_en', ''),
+        ])
+
+    for col in ws.columns:
+        max_len = max((len(str(c.value or '')) for c in col), default=10)
+        ws.column_dimensions[col[0].column_letter].width = min(max_len + 2, 60)
+
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = f'attachment; filename="yoktez_{job.id}.xlsx"'
+    wb.save(response)
+    return response
+
+
+@login_required
 @require_GET
 def yoktez_download(request, job_id):
-    """S3'teki TXT dosyasını proxy ile indirtir (tarayıcıda açmaz)."""
+    """S3'teki TXT dosyasını proxy ile indirtir; S3 yoksa demo_results'tan üretir."""
     import requests as req_lib
     job = get_object_or_404(YokTezSearchJob, id=job_id, user=request.user)
 
-    if not job.all_results_file_url:
+    if job.all_results_file_url:
+        try:
+            s3_resp = req_lib.get(job.all_results_file_url, timeout=30, stream=True)
+            s3_resp.raise_for_status()
+            response = HttpResponse(
+                s3_resp.content,
+                content_type='text/plain; charset=utf-8',
+            )
+            response['Content-Disposition'] = f'attachment; filename="yoktez_{job.id}.txt"'
+            return response
+        except Exception:
+            pass
+
+    # Fallback: demo_results'tan on-the-fly üret
+    if not job.demo_results:
         raise Http404
 
-    try:
-        s3_resp = req_lib.get(job.all_results_file_url, timeout=30, stream=True)
-        s3_resp.raise_for_status()
-    except Exception:
-        raise Http404
-
-    filename = f'yoktez_{job.id}.txt'
-    response = HttpResponse(
-        s3_resp.content,
-        content_type='text/plain; charset=utf-8',
-    )
-    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+    from .services.scraper import generate_results_txt
+    txt = generate_results_txt(job.demo_results, job)
+    response = HttpResponse(txt, content_type='text/plain; charset=utf-8')
+    response['Content-Disposition'] = f'attachment; filename="yoktez_{job.id}.txt"'
     return response
 
 

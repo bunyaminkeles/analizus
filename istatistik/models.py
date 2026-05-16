@@ -16,6 +16,8 @@ TOOL_CHOICES = [
     ('ki_kare', 'Ki-Kare Testi'),
     ('lineer_regresyon', 'Çoklu Doğrusal Regresyon'),
     ('lojistik_regresyon', 'Lojistik Regresyon'),
+    ('afa', 'Açıklayıcı Faktör Analizi (AFA)'),
+    ('wilcoxon', 'Wilcoxon İşaret Testi'),
 ]
 
 STATUS_CHOICES = [

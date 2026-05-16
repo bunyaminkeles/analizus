@@ -26,7 +26,7 @@
 
     <title>{% block title %}Analizus - Akademik Analiz ve Veri Bilimi Topluluğu{% endblock %}</title>
     <meta name="description" content="{% block meta_description %}SPSS, Python, R Studio, Nitel analizler ve AI ile istatistik analizi, tez yazımı ve akademik araştırma desteği. Türkiye'nin en büyük veri bilimi topluluğu.{% endblock %}">
-    <meta name="keywords" content="SPSS, Python, R Studio, istatistik analizi, tez yazımı, akademik araştırma, veri bilimi, regresyon, ANOVA, t-test, akademik danışmanlık, tez istatistik">
+    <meta name="keywords" content="{% block meta_keywords %}SPSS, Python, R Studio, istatistik analizi, tez yazımı, akademik araştırma, veri bilimi, regresyon, ANOVA, t-test, akademik danışmanlık, tez istatistik{% endblock %}">
     <meta name="author" content="Analizus">
     <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
     <meta name="googlebot" content="index, follow">
@@ -227,6 +227,7 @@
                             </div>
                             <div class="site-nav__flyout" role="menu">
                                 <a href="{% url 'istatistik:cronbach' %}" class="site-nav__dropdown-item" role="menuitem">Cronbach Alpha</a>
+                                <a href="{% url 'istatistik:afa' %}" class="site-nav__dropdown-item" role="menuitem">Açıklayıcı Faktör Analizi</a>
                             </div>
                         </div>
                         <!-- İlişki Analizleri flyout -->
@@ -251,6 +252,7 @@
                                 <a href="{% url 'istatistik:anova' %}" class="site-nav__dropdown-item" role="menuitem">ANOVA</a>
                                 <a href="{% url 'istatistik:mann_whitney' %}" class="site-nav__dropdown-item" role="menuitem">Mann-Whitney U</a>
                                 <a href="{% url 'istatistik:kruskal_wallis' %}" class="site-nav__dropdown-item" role="menuitem">Kruskal-Wallis H</a>
+                                <a href="{% url 'istatistik:wilcoxon' %}" class="site-nav__dropdown-item" role="menuitem">Wilcoxon İşaret Testi</a>
                             </div>
                         </div>
                         <!-- Regresyon Analizleri flyout -->
@@ -456,6 +458,7 @@
                     <a href="{% url 'istatistik:anova' %}" class="nav-drawer__link">ANOVA</a>
                     <a href="{% url 'istatistik:mann_whitney' %}" class="nav-drawer__link">Mann-Whitney U</a>
                     <a href="{% url 'istatistik:kruskal_wallis' %}" class="nav-drawer__link">Kruskal-Wallis H</a>
+                    <a href="{% url 'istatistik:wilcoxon' %}" class="nav-drawer__link">Wilcoxon İşaret Testi</a>
                     <span class="nav-drawer__sub-label">Regresyon Analizleri</span>
                     <a href="{% url 'istatistik:lineer_regresyon' %}" class="nav-drawer__link">Çoklu Doğrusal Regresyon</a>
                     <a href="{% url 'istatistik:lojistik_regresyon' %}" class="nav-drawer__link">Lojistik Regresyon</a>

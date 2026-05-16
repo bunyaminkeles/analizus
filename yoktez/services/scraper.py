@@ -1,8 +1,9 @@
 """
-YÖK Ulusal Tez Merkezi HTTP scraper.
-Selenium kullanmaz — requests + BeautifulSoup ile doğrudan form POST.
+YÖK Ulusal Tez Merkezi HTTP scraper — YENİ ARAYÜZ (2025+).
+Selenium kullanmaz — requests + BeautifulSoup ile GForm2 (islem=4).
 
-Referans: saidsurucu/yoktez-mcp
+Sonuç sayfası: tezSorguSonucYeni.jsp  (div.result-card elementleri)
+Detay endpoint: tezBilgiDetay.jsp?kayitNo=...&tezNo=...  (JSON yanıt)
 """
 import re
 import logging
@@ -13,8 +14,8 @@ logger = logging.getLogger(__name__)
 
 BASE_URL = 'https://tez.yok.gov.tr/UlusalTezMerkezi'
 SEARCH_URL = f'{BASE_URL}/SearchTez'
-INIT_URL = f'{BASE_URL}/tarama.jsp'
-DETAIL_URL = f'{BASE_URL}/tezDetay.jsp'
+INIT_URL   = f'{BASE_URL}/tarama.jsp'
+DETAIL_URL = f'{BASE_URL}/tezBilgiDetay.jsp'
 
 HEADERS = {
     'User-Agent': (
@@ -26,6 +27,21 @@ HEADERS = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
 }
 
+# nevi değerleri: arama alanı seçimi
+NEVI_TEZ_ADI  = '1'
+NEVI_YAZAR    = '2'   # YÖK tarafında kararsız, çalışmayabilir
+NEVI_DANISMAN = '3'
+NEVI_OZET     = '6'
+NEVI_TUMU     = '7'
+
+# tur kodu → thesis_type metni (lokal filtreleme için)
+TUR_MAP = {
+    '1': 'yüksek lisans',
+    '2': 'doktora',
+    '3': 'tıpta uzmanlık',
+    '4': 'sanatta yeterlik',
+}
+
 
 def _make_session():
     session = requests.Session()
@@ -33,107 +49,104 @@ def _make_session():
     return session
 
 
-def _build_form(tez_ad='', yazar='', danisman='', universite='',
-                tur='0', yil1='0', yil2='0', metin=''):
+def _determine_query(tez_ad='', yazar='', danisman='', metin=''):
+    """
+    Dolu alan sayısına göre keyword ve nevi belirler.
+    Birden fazla alan doluysa tez_ad önceliklidir.
+    Returns: (keyword, nevi)
+    """
+    if tez_ad:
+        return tez_ad, NEVI_TEZ_ADI
+    if danisman:
+        return danisman, NEVI_DANISMAN
+    if metin:
+        return metin, NEVI_OZET
+    if yazar:
+        return yazar, NEVI_YAZAR
+    return '', NEVI_TUMU
+
+
+def _build_form(keyword='', nevi=NEVI_TUMU, tip='2'):
+    """GForm2 (islem=4) POST verisi."""
     return {
-        'TezNo': '',
-        'TezAd': tez_ad,
-        'AdSoyad': yazar.upper() if yazar else '',
-        'DanismanAdSoyad': danisman.upper() if danisman else '',
-        'Universite': '0',
-        'Enstitu': '0',
-        'ABD': '0',
-        'BilimDali': '0',
-        'uniad': universite.upper() if universite else '',
-        'ensad': '',
-        'abdad': '',
-        'bilim': '',
-        'Tur': tur or '0',
-        'Dil': '0',
-        'izin': '0',
-        'Durum': '3',
-        'EnstituGrubu': '',
-        'yil1': str(yil1) if yil1 else '0',
-        'yil2': str(yil2) if yil2 else '0',
-        'Dizin': '',
-        'Metin': metin,
-        'Konu': '',
-        'islem': '2',
-        'Bolum': '0',
+        'keyword':    keyword,
+        'keyword1':   '',
+        'keyword2':   '',
+        'ops_field':  'and',
+        'ops_field1': 'and',
+        'nevi':       nevi,
+        'tip':        tip,
+        'islem':      '4',
     }
 
 
-def _extract_field(block: str, key: str) -> str:
-    """JS doc objesinden bir alanı çıkar: key: "value" """
-    m = re.search(key + r'\s*:\s*"((?:[^"\\]|\\.)*)"', block)
-    return m.group(1) if m else ''
-
-
 def _strip_html(text: str) -> str:
-    """HTML tag'lerini temizle."""
-    return re.sub(r'<[^>]+>', '', text).replace('\\"', '"').replace("\\'", "'").strip()
+    return re.sub(r'<[^>]+>', '', text or '').strip()
 
 
 def _parse_results(html: str) -> tuple[int, list[dict]]:
-    """HTML'den tez kayıtlarını parse et. (total_count, records) döner."""
+    """
+    tezSorguSonucYeni.jsp HTML'inden kayıtları parse et.
+    Returns: (total_count, records)
+    """
     soup = BeautifulSoup(html, 'html.parser')
 
-    # Toplam kayıt sayısını bul
+    # Toplam kayıt sayısı — "X kayıt bulundu" veya "Toplam: X" gibi metinler
     total = 0
-    uyari = soup.find(id='divuyari')
-    if uyari:
-        m = re.search(r'(\d+)\s*kayıt', uyari.get_text())
-        if m:
-            total = int(m.group(1))
+    for text_node in soup.find_all(string=re.compile(r'\d[\d\.\s]*kayıt', re.I)):
+        nums = re.findall(r'[\d\.]+', str(text_node))
+        for n in nums:
+            n_clean = n.replace('.', '')
+            if n_clean.isdigit() and int(n_clean) > total:
+                total = int(n_clean)
+
+    # Yedek: sayfada "15.377" gibi büyük sayıyı içeren span/div bul
+    if not total:
+        for tag in soup.find_all(['span', 'div', 'p', 'strong'], string=re.compile(r'^\s*[\d\.]+\s*$')):
+            n_clean = tag.get_text(strip=True).replace('.', '')
+            if n_clean.isdigit() and int(n_clean) > 100:
+                total = int(n_clean)
+                break
+
+    cards = soup.find_all('div', class_='result-card')
+    logger.info(f'YÖK Tez: {len(cards)} kart bulundu, bildirilen toplam={total}')
 
     records = []
+    for card in cards:
+        kayit_no = card.get('data-kayitno', '')
+        tez_no   = card.get('data-tezno', '')
 
-    # YÖK Tez formatı: var rows = []; ... var doc = { userId:..., name:..., ... }; rows.push(doc);
-    # Her kayıt ayrı bir `var doc = {...};` bloğu olarak gelir.
-    doc_blocks = re.findall(r'var\s+doc\s*=\s*\{(.*?)\};', html, re.DOTALL)
+        # TR Başlık — div.card-title
+        title_tag = card.find(class_='card-title')
+        title_tr = title_tag.get_text(strip=True) if title_tag else ''
 
-    for block in doc_blocks:
-        user_id_html = _extract_field(block, 'userId')
-        tez_no_m = re.search(r'>(\d+)<', user_id_html)
-        tez_no = tez_no_m.group(1) if tez_no_m else ''
+        # EN Başlık — div.card-info style="font-style: italic" (inline stil, <i> tag değil)
+        title_en = ''
+        info_divs = card.find_all(class_='card-info')
+        for info in info_divs:
+            style = info.get('style', '')
+            if 'italic' in style:
+                title_en = info.get_text(strip=True)
+                break
 
-        # Yöntem 1: JS doc bloğunda doğrudan 'id' ve 'no' alanları
-        id_m = re.search(r'(?<![a-zA-Z])id\s*:\s*"((?:[^"\\]|\\.)*)"', block)
-        no_m = re.search(r'(?<![a-zA-Z])no\s*:\s*"((?:[^"\\]|\\.)*)"', block)
-        detail_id = id_m.group(1) if id_m else ''
-        detail_no = no_m.group(1) if no_m else ''
-
-        # Yöntem 2: userId HTML'indeki onclick=tezDetay('id','no')
-        if not detail_id:
-            user_id_unescaped = user_id_html.replace("\\'", "'").replace('\\"', '"')
-            detail_m = re.search(r"""tezDetay\(['"]([\w\-+/=]+)['"]\s*,\s*['"]([\w\-+/=]+)['"]\)""", user_id_unescaped)
-            detail_id = detail_m.group(1) if detail_m else ''
-            detail_no = detail_m.group(2) if detail_m else ''
-
-        if detail_id:
-            logger.info(f'tezDetay bulundu: id={detail_id[:12]}… tez_no={tez_no}')
-        else:
-            # Hangi alanlar var? Tanımlama için ilk blok içeriğini logla
-            field_names = re.findall(r'(\w+)\s*:', block[:500])
-            logger.warning(f'tezDetay parametreler YOK, tez_no={tez_no}, alanlar={field_names}, userId={user_id_html[:120]}')
-
-        title_html = _extract_field(block, 'weight')
-        # İlk <br> öncesi kısım başlık (İngilizce), sonrası Türkçe
-        title_parts = re.split(r'<br\s*/?>', title_html, maxsplit=1)
-        title = _strip_html(title_parts[0])
-        title_tr = _strip_html(title_parts[1]) if len(title_parts) > 1 else ''
+        # Tez No — "Tez No:" içeren card-info (yoksa data-tezno tokenı kullanılır)
+        # Not: Kart yapısında yazar/yıl/üniversite/tür bilgisi YOK — detail endpoint'ten çekilir.
+        for info in info_divs:
+            raw = info.get_text(strip=True)
+            m = re.search(r'Tez No\s*:?\s*(\d+)', raw, re.I)
+            if m and not tez_no:
+                tez_no = m.group(1)
 
         records.append({
-            'tez_no': tez_no,
-            'detail_id': detail_id,
-            'detail_no': detail_no,
-            'author': _extract_field(block, 'name').strip(),
-            'title': title,
-            'title_tr': title_tr,
-            'year': _extract_field(block, 'age').strip(),
-            'university': _extract_field(block, 'uni').strip(),
-            'thesis_type': _extract_field(block, 'important').strip(),
-            'language': _extract_field(block, 'height').strip(),
+            'tez_no':      tez_no,
+            'kayit_no':    kayit_no,
+            'title_tr':    title_tr,
+            'title':       title_en,   # EN başlık (eski 'title' alanıyla uyumlu)
+            'author':      '',         # detail'den gelecek
+            'year':        '',         # detail'den gelecek
+            'university':  '',         # detail'den gelecek
+            'thesis_type': '',         # detail'den gelecek
+            'language':    '',         # detail'den gelecek
         })
 
     if not total and records:
@@ -142,96 +155,331 @@ def _parse_results(html: str) -> tuple[int, list[dict]]:
     return total, records
 
 
-def _fetch_detail(session, detail_id: str, detail_no: str) -> dict:
-    """Tek bir tezin detay sayfasından özet ve ek bilgileri çek."""
-    if not detail_id or not detail_no:
+def _fetch_detail(session, kayit_no: str, tez_no: str) -> dict:
+    """tezBilgiDetay.jsp'den JSON olarak detay çeker."""
+    if not kayit_no and not tez_no:
         return {}
     try:
-        url = f'{DETAIL_URL}?id={detail_id}&no={detail_no}'
-        resp = session.get(url, timeout=15, headers={'Referer': SEARCH_URL})
+        resp = session.get(
+            DETAIL_URL,
+            params={'kayitNo': kayit_no, 'tezNo': tez_no},
+            timeout=15,
+            headers={'Referer': SEARCH_URL, 'X-Requested-With': 'XMLHttpRequest'},
+        )
         resp.encoding = 'utf-8'
-        soup = BeautifulSoup(resp.text, 'html.parser')
-        tds = soup.find_all('td')
-        logger.info(f'tezDetay id={detail_id[:8]}… status={resp.status_code} tds={len(tds)}')
+        logger.info(f'tezBilgiDetay kayitNo={kayit_no} tezNo={tez_no} status={resp.status_code}')
+
+        try:
+            data = resp.json()
+        except Exception:
+            # JSON değilse HTML'den parse et (eski format fallback)
+            return _parse_detail_html(resp.text)
 
         result = {}
 
-        # td[6]: başlık + Yazar, Danışman, Yer Bilgisi, Konu, Dizin
-        if len(tds) > 6:
-            lines = tds[6].get_text(separator='\n').split('\n')
-            for line in lines:
-                line = line.strip()
-                if line.startswith('Danışman:'):
-                    result['danisman'] = line[len('Danışman:'):].strip()
-                elif line.startswith('Konu:'):
-                    result['konu'] = line[len('Konu:'):].strip()
-                elif line.startswith('Dizin:'):
-                    result['dizin'] = line[len('Dizin:'):].strip()
+        # Danışman — "<strong>Danışman: </strong>DOÇ. DR. X" formatı
+        danisman_raw = data.get('danisman', '')
+        if danisman_raw:
+            cleaned = _strip_html(danisman_raw)
+            # "Danışman: " prefixini kaldır
+            cleaned = re.sub(r'^Danışman\s*:\s*', '', cleaned, flags=re.I).strip()
+            if cleaned:
+                result['danisman'] = cleaned
 
-        # td[9]: Türkçe özet
-        if len(tds) > 9:
-            ozet_tr = tds[9].get_text(separator=' ').strip()
-            if ozet_tr:
-                result['abstract_tr'] = ozet_tr
+        # Üniversite — "yer": "Akdeniz Üniversitesi / Sağlık Bilimleri / Beslenme"
+        yer = data.get('yer', '')
+        if yer:
+            result['university'] = yer.split('/')[0].strip()
 
-        # td[11]: İngilizce özet
-        if len(tds) > 11:
-            ozet_en = tds[11].get_text(separator=' ').strip()
-            if ozet_en:
-                result['abstract_en'] = ozet_en
+        # Türkçe özet
+        tr_ozet = _strip_html(data.get('trOzet', ''))
+        if tr_ozet:
+            result['abstract_tr'] = tr_ozet
+
+        # İngilizce özet
+        en_ozet = _strip_html(data.get('enOzet', ''))
+        if en_ozet:
+            result['abstract_en'] = en_ozet
+
+        # Anahtar kelimeler (HTML içerebilir)
+        kw_tr = _strip_html(data.get('anahtarKelimeTr', ''))
+        if kw_tr:
+            result['keywords_tr'] = kw_tr
+        kw_en = _strip_html(data.get('anahtarKelimeEn', ''))
+        if kw_en:
+            result['keywords_en'] = kw_en
+
+        # Dil
+        dil = data.get('dil', '')
+        if dil:
+            result['language'] = dil
+
+        # APA referansından yazar, yıl, tez türü, üniversite çıkar
+        # Ham: "AKTAR, M. (2026). <i>Başlık.</i> [Doktora tezi, Üniversite Adı]."
+        apa_raw = data.get('apa_ref', '') or data.get('apaRef', '')
+        apa = _strip_html(apa_raw)   # <i> gibi HTML taglerini temizle
+        if apa:
+            result['apa_ref'] = apa
+
+            year_m = re.search(r'\((\d{4})\)', apa)
+            if year_m:
+                result['year'] = year_m.group(1)
+
+            author_m = re.match(r'^([^(]+)\(', apa)
+            if author_m:
+                result['author'] = author_m.group(1).strip().rstrip(',').strip()
+
+            # "[Doktora tezi, Üniversite Adı]"
+            bracket_m = re.search(r'\[([^\]]+)\]', apa)
+            if bracket_m:
+                bracket_content = bracket_m.group(1)
+                parts = [p.strip() for p in bracket_content.split(',')]
+                if parts:
+                    result.setdefault('thesis_type', parts[0])
+                if len(parts) > 1:
+                    result.setdefault('university', parts[1])
+
+        # MLA'dan tez türü fallback
+        mla = data.get('mla_ref', '') or data.get('mlaRef', '')
+        if mla and 'thesis_type' not in result:
+            type_m = re.search(r'(Yüksek Lisans Tezi|Doktora Tezi|Tıpta Uzmanlık|Sanatta Yeterlik)', mla, re.I)
+            if type_m:
+                result['thesis_type'] = type_m.group(1)
 
         return result
+
     except Exception as e:
-        logger.warning(f'tezDetay fetch hatası ({detail_id}): {e}')
+        logger.warning(f'tezBilgiDetay fetch hatası (kayitNo={kayit_no}): {e}')
         return {}
+
+
+def _parse_detail_html(html: str) -> dict:
+    """Detay sayfası JSON değil HTML dönerse eski td tabanlı parse ile bilgi çıkar."""
+    soup = BeautifulSoup(html, 'html.parser')
+    tds = soup.find_all('td')
+    result = {}
+    if len(tds) > 6:
+        lines = tds[6].get_text(separator='\n').split('\n')
+        for line in lines:
+            line = line.strip()
+            if line.startswith('Danışman:'):
+                result['danisman'] = line[len('Danışman:'):].strip()
+    if len(tds) > 9:
+        ozet_tr = tds[9].get_text(separator=' ').strip()
+        if ozet_tr:
+            result['abstract_tr'] = ozet_tr
+    if len(tds) > 11:
+        ozet_en = tds[11].get_text(separator=' ').strip()
+        if ozet_en:
+            result['abstract_en'] = ozet_en
+    return result
+
+
+def _year_ok(record: dict, year_from, year_to) -> bool:
+    year_str = record.get('year', '')
+    if not year_str or not year_str.isdigit():
+        return True   # bilinmiyorsa dahil et
+    y = int(year_str)
+    if year_from and y < year_from:
+        return False
+    if year_to and y > year_to:
+        return False
+    return True
+
+
+def _type_ok(record: dict, tur: str) -> bool:
+    if not tur or tur == '0':
+        return True
+    expected = TUR_MAP.get(tur, '')
+    rec_type = record.get('thesis_type', '').lower()
+    return expected in rec_type
+
+
+def _uni_ok(record: dict, universite: str) -> bool:
+    if not universite:
+        return True
+    return universite.lower() in record.get('university', '').lower()
 
 
 def search(tez_ad='', yazar='', danisman='', universite='',
            tur='0', yil_baslangic=None, yil_bitis=None, metin='',
            demo_limit=5) -> tuple[int, list[dict]]:
     """
-    YÖK Tez araması yapar.
+    YÖK Tez araması yapar (yeni arayüz: islem=4).
     Returns: (total_count, demo_records)
     """
     session = _make_session()
 
-    # 1. Session aç
+    # Session çerezi al
     try:
         session.get(INIT_URL, timeout=15)
     except Exception as e:
         logger.warning(f'YÖK Tez session init hatası (devam ediliyor): {e}')
 
-    # 2. Arama yap
-    form_data = _build_form(
-        tez_ad=tez_ad,
-        yazar=yazar,
-        danisman=danisman,
-        universite=universite,
-        tur=tur,
-        yil1=yil_baslangic,
-        yil2=yil_bitis,
-        metin=metin,
-    )
+    keyword, nevi = _determine_query(tez_ad=tez_ad, yazar=yazar,
+                                     danisman=danisman, metin=metin)
+    if not keyword and universite:
+        keyword = universite
+        nevi = NEVI_TUMU
 
-    response = session.post(SEARCH_URL, data=form_data, timeout=30, allow_redirects=False)
+    logger.info(f'YÖK Tez arama: keyword="{keyword}" nevi={nevi}')
 
-    # HTTP → HTTPS redirect
-    if response.status_code in (301, 302, 303, 307, 308):
-        redirect_url = response.headers.get('location', '')
-        if redirect_url.startswith('http://'):
-            redirect_url = redirect_url.replace('http://', 'https://', 1)
-        if redirect_url:
-            response = session.get(redirect_url, timeout=30)
+    form_data = _build_form(keyword=keyword, nevi=nevi)
 
-    response.encoding = 'utf-8'
+    try:
+        response = session.post(SEARCH_URL, data=form_data, timeout=45, allow_redirects=True)
+        response.encoding = 'utf-8'
+    except Exception as e:
+        logger.error(f'YÖK Tez POST hatası: {e}')
+        raise
+
+    logger.info(f'YÖK Tez yanıt URL={response.url} status={response.status_code} boyut={len(response.text)}')
+
+    # Hata sayfası kontrolü
+    if 'tezSorguSonucHata' in response.url or 'hata' in response.url.lower():
+        logger.warning(f'YÖK Tez hata sayfasına yönlendirildi: {response.url}')
+        # Eski form formatını dene (fallback)
+        return _search_legacy(session, tez_ad=tez_ad, yazar=yazar, danisman=danisman,
+                               universite=universite, tur=tur,
+                               yil_baslangic=yil_baslangic, yil_bitis=yil_bitis,
+                               metin=metin, demo_limit=demo_limit)
+
     total, records = _parse_results(response.text)
+    if total == 0:
+        total = len(records)
 
+    # Kart yapısında yıl/üniversite/tür YOK — detail'den sonra filtrele.
+    has_extra_filters = bool(
+        (yil_baslangic or yil_bitis) or
+        (universite) or
+        (tur and tur != '0')
+    )
+    # Filtre varsa daha fazla aday çek; ilk page yeni kayıtlarla dolu olabilir
+    candidate_count = demo_limit * 4 if has_extra_filters else demo_limit
+    candidates = records[:candidate_count]
+
+    enriched = []   # detail çekilmiş tüm adaylar
+    demo = []       # filtreden geçenler
+
+    for rec in candidates:
+        detail = _fetch_detail(session, rec.get('kayit_no', ''), rec.get('tez_no', ''))
+        if detail:
+            for field in ('year', 'author', 'university', 'thesis_type', 'language',
+                          'danisman', 'abstract_tr', 'abstract_en', 'keywords_tr',
+                          'keywords_en', 'apa_ref'):
+                if detail.get(field):
+                    rec[field] = detail[field]
+        enriched.append(rec)
+
+        if (len(demo) < demo_limit
+                and _year_ok(rec, yil_baslangic, yil_bitis)
+                and _uni_ok(rec, universite)
+                and _type_ok(rec, tur)):
+            demo.append(rec)
+
+    # Filtre sonucu boşsa: tüm adaylardan en iyi demo_limit kaydı sun
+    if not demo and has_extra_filters:
+        logger.info('YÖK Tez: filtreli demo bulunamadı, filtresiz fallback')
+        demo = enriched[:demo_limit]
+
+    logger.info(f'YÖK Tez tamamlandı: sunucu_toplam={total} demo={len(demo)}')
+    return total, demo
+
+
+def _search_legacy(session, tez_ad='', yazar='', danisman='', universite='',
+                   tur='0', yil_baslangic=None, yil_bitis=None, metin='',
+                   demo_limit=5) -> tuple[int, list[dict]]:
+    """
+    Eski YÖK Tez formu (islem=2) ile fallback arama.
+    Yeni site bunu artık desteklemiyor olabilir.
+    """
+    logger.info('YÖK Tez: eski form (islem=2) deneniyor')
+    form_data = {
+        'TezNo': '', 'TezAd': tez_ad,
+        'AdSoyad': yazar.upper() if yazar else '',
+        'DanismanAdSoyad': danisman.upper() if danisman else '',
+        'Universite': '0', 'Enstitu': '0', 'ABD': '0', 'BilimDali': '0',
+        'uniad': universite.upper() if universite else '',
+        'ensad': '', 'abdad': '', 'bilim': '',
+        'Tur': tur or '0', 'Dil': '0', 'izin': '0', 'Durum': '3',
+        'EnstituGrubu': '',
+        'yil1': str(yil_baslangic) if yil_baslangic else '0',
+        'yil2': str(yil_bitis) if yil_bitis else '0',
+        'Dizin': '', 'Metin': metin, 'Konu': '', 'islem': '2', 'Bolum': '0',
+    }
+    try:
+        resp = session.post(SEARCH_URL, data=form_data, timeout=30, allow_redirects=True)
+        resp.encoding = 'utf-8'
+    except Exception as e:
+        logger.error(f'YÖK Tez legacy POST hatası: {e}')
+        return 0, []
+
+    if 'tezSorguSonucHata' in resp.url or len(resp.text) < 500:
+        logger.warning('YÖK Tez: eski form da çalışmıyor')
+        return 0, []
+
+    # Eski format: var doc = {...} bloklarını parse et
+    doc_blocks = re.findall(r'var\s+doc\s*=\s*\{(.*?)\};', resp.text, re.DOTALL)
+    if not doc_blocks:
+        logger.warning('YÖK Tez legacy: var doc bloğu bulunamadı')
+        return 0, []
+
+    def exf(block, key):
+        m = re.search(key + r'\s*:\s*"((?:[^"\\]|\\.)*)"', block)
+        return m.group(1) if m else ''
+
+    records = []
+    for block in doc_blocks:
+        title_html = exf(block, 'weight')
+        parts = re.split(r'<br\s*/?>', title_html, maxsplit=1)
+        title_en = re.sub(r'<[^>]+>', '', parts[0]).strip()
+        title_tr = re.sub(r'<[^>]+>', '', parts[1]).strip() if len(parts) > 1 else ''
+
+        user_id_html = exf(block, 'userId')
+        tez_no_m = re.search(r'>(\d+)<', user_id_html)
+        tez_no = tez_no_m.group(1) if tez_no_m else ''
+
+        id_m = re.search(r'(?<![a-zA-Z])id\s*:\s*"((?:[^"\\]|\\.)*)"', block)
+        no_m = re.search(r'(?<![a-zA-Z])no\s*:\s*"((?:[^"\\]|\\.)*)"', block)
+        detail_id = id_m.group(1) if id_m else ''
+        detail_no = no_m.group(1) if no_m else ''
+
+        if not detail_id:
+            unesc = user_id_html.replace("\\'", "'").replace('\\"', '"')
+            dm = re.search(r"""tezDetay\(['"]([\w\-+/=]+)['"]\s*,\s*['"]([\w\-+/=]+)['"]\)""", unesc)
+            detail_id = dm.group(1) if dm else ''
+            detail_no = dm.group(2) if dm else ''
+
+        records.append({
+            'tez_no': tez_no,
+            'kayit_no': detail_id,   # legacy uyumluluk
+            'title': title_en,
+            'title_tr': title_tr,
+            'author': exf(block, 'name').strip(),
+            'year': exf(block, 'age').strip(),
+            'university': exf(block, 'uni').strip(),
+            'thesis_type': exf(block, 'important').strip(),
+            'language': exf(block, 'height').strip(),
+        })
+
+    total = len(records)
     demo = records[:demo_limit]
 
-    # Demo kayıtları için detay (özet) çek
+    # Legacy detay (tezDetay.jsp HTML)
+    legacy_detail_url = f'{BASE_URL}/tezDetay.jsp'
     for rec in demo:
-        detail = _fetch_detail(session, rec.get('detail_id', ''), rec.get('detail_no', ''))
-        rec.update(detail)
+        if rec.get('kayit_no') and rec.get('tez_no'):
+            try:
+                dr = session.get(
+                    legacy_detail_url,
+                    params={'id': rec['kayit_no'], 'no': rec['tez_no']},
+                    timeout=15,
+                )
+                dr.encoding = 'utf-8'
+                detail = _parse_detail_html(dr.text)
+                rec.update(detail)
+            except Exception as e:
+                logger.warning(f'YÖK Tez legacy detay hatası: {e}')
 
     return total, demo
 
@@ -246,9 +494,9 @@ def generate_results_txt(records: list[dict], job) -> str:
         '',
     ]
     for i, r in enumerate(records, 1):
-        lines.append(f'{i}. {r.get("title", "(Başlık yok)")}')
-        if r.get('title_tr'):
-            lines.append(f'   TR: {r["title_tr"]}')
+        lines.append(f'{i}. {r.get("title_tr") or r.get("title") or "(Başlık yok)"}')
+        if r.get('title') and r.get('title_tr'):
+            lines.append(f'   EN: {r["title"]}')
         lines.append(f'   Yazar: {r.get("author", "-")}')
         lines.append(f'   Yıl: {r.get("year", "-")} | Tür: {r.get("thesis_type", "-")} | Dil: {r.get("language", "-")}')
         lines.append(f'   Üniversite: {r.get("university", "-")}')
@@ -256,8 +504,8 @@ def generate_results_txt(records: list[dict], job) -> str:
         if r.get('danisman'):
             lines.append(f'   Danışman: {r["danisman"]}')
         if r.get('abstract_tr'):
-            lines.append(f'   Özet: {r["abstract_tr"]}')
+            lines.append(f'   Özet: {r["abstract_tr"][:500]}')
         if r.get('abstract_en'):
-            lines.append(f'   Abstract: {r["abstract_en"]}')
+            lines.append(f'   Abstract: {r["abstract_en"][:500]}')
         lines.append('')
     return '\n'.join(lines)

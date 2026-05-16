@@ -117,6 +117,23 @@ def _execute_job(job_id: str):
                 dep_col=opts.get('dep_col', ''),
                 indep_cols=opts.get('indep_cols', []),
             )
+        elif job.tool == 'afa':
+            from .afa import analyze, build_pdf
+            opts = job.options or {}
+            result_data = analyze(
+                df,
+                columns=opts.get('columns') or None,
+                n_factors=opts.get('n_factors') or None,
+                rotation=opts.get('rotation', 'varimax'),
+            )
+        elif job.tool == 'wilcoxon':
+            from .wilcoxon import analyze, build_pdf
+            opts = job.options or {}
+            result_data = analyze(
+                df,
+                col1=opts.get('col1'),
+                col2=opts.get('col2'),
+            )
         else:
             job.mark_failed(f'Bilinmeyen araç: {job.tool}')
             return

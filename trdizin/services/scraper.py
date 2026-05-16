@@ -20,9 +20,33 @@ class TRDizinScraper:
             'Accept': 'application/json',
         })
 
+    @staticmethod
+    def parse_year_filter(query_parts):
+        """
+        query_parts içinden yıl filtresini ayıklar.
+        Returns: (year_from, year_to) veya (None, None)
+
+        TR Dizin API'sinin Lucene `year` ve `publicationYear` alanları
+        sunucu tarafında güvenilir çalışmıyor; yıl filtrelemesi lokal yapılır.
+        """
+        for part in query_parts:
+            if part.get('field') == 'year':
+                val = part.get('value', '').strip()
+                parts = val.split('-')
+                if len(parts) == 2:
+                    try:
+                        return int(parts[0].strip()), int(parts[1].strip())
+                    except ValueError:
+                        pass
+                elif val.isdigit():
+                    y = int(val)
+                    return y, y
+        return None, None
+
     def build_lucene_query(self, query_parts):
         """
         Yapısal sorgu parçalarını Lucene query string'e çevirir.
+        NOT: year alanı lokal filtreleme için ayrıştırılır, Lucene sorgusuna dahil edilmez.
 
         query_parts: [
             {"field": "title", "value": "ankara", "operator": "AND"},
@@ -41,12 +65,8 @@ class TRDizinScraper:
                 continue
 
             if field == 'year':
-                # Yıl aralığı: "2020-2022" → year : ([2020 TO 2022])
-                years = value.split('-')
-                if len(years) == 2:
-                    clause = f'year : ([{years[0].strip()} TO {years[1].strip()}])'
-                else:
-                    clause = f'year : ([{value} TO {value}])'
+                # TR Dizin API'si Lucene yıl aralığını desteklemiyor — lokal filtre
+                continue
             elif field == 'language':
                 # Dil: "TUR,ENG" → language : ( "TUR" OR "ENG" )
                 langs = [v.strip() for v in value.split(',') if v.strip()]
@@ -71,23 +91,17 @@ class TRDizinScraper:
                     else:
                         clause = f'{field} : ( "{value}" )'
 
-            clauses.append(clause)
+            clauses.append((clause, part.get('operator', 'AND')))
 
         if not clauses:
             return '*'
 
         # Parçaları operatörlerle birleştir
         result_parts = []
-        for i, part in enumerate(query_parts):
-            if not part.get('value', '').strip():
-                continue
-            if i > 0 and result_parts:
-                operator = part.get('operator', 'AND')
+        for i, (clause, operator) in enumerate(clauses):
+            if i > 0:
                 result_parts.append(f' {operator} ')
-            # İlgili clause'u bul
-            clause_idx = len([p for p in query_parts[:i+1] if p.get('value', '').strip()]) - 1
-            if clause_idx < len(clauses):
-                result_parts.append(clauses[clause_idx])
+            result_parts.append(clause)
 
         query = ''.join(result_parts)
         return f'({query})'
@@ -182,11 +196,12 @@ class TRDizinScraper:
 
         Returns: (total_count, demo_results, all_results, lucene_query)
         - demo_results: İlk demo_limit sonuç (özetlerle birlikte)
-        - all_results: Tüm sonuçlar
+        - all_results: Tüm sonuçlar (yıl filtresi uygulanmış)
         - lucene_query: Oluşturulan Lucene sorgusu
         """
         lucene_query = self.build_lucene_query(query_parts)
-        logger.info(f"TR Dizin arama: {lucene_query}")
+        year_from, year_to = self.parse_year_filter(query_parts)
+        logger.info(f"TR Dizin arama: {lucene_query}  yıl_filtresi={year_from}-{year_to}")
 
         # İlk sayfa: toplam sonuç sayısı + demo sonuçlar
         data = self._fetch_page(lucene_query, page=1, limit=MAX_PAGE_SIZE)
@@ -224,5 +239,32 @@ class TRDizinScraper:
                 logger.info(f"Maksimum sonuç limitine ulaşıldı: {len(all_results)}")
                 break
 
+        # Lokal yıl filtresi — TR Dizin API Lucene yıl alanı güvenilir çalışmıyor
+        if year_from or year_to:
+            before = len(all_results)
+            all_results = [
+                r for r in all_results
+                if self._year_in_range(r.get('year'), year_from, year_to)
+            ]
+            total_count = len(all_results)
+            # Demo sonuçları da yeniden hesapla (ilk sayfa yıl filtresiz çekilmişti)
+            demo_results = all_results[:demo_limit]
+            logger.info(f"TR Dizin yıl filtresi ({year_from}-{year_to}): {before} → {total_count} kayıt")
+
         logger.info(f"TR Dizin arama tamamlandı: {total_count} toplam, {len(all_results)} çekildi")
         return total_count, demo_results, all_results, lucene_query
+
+    @staticmethod
+    def _year_in_range(year, year_from, year_to):
+        """Yıl değeri verilen aralıkta mı?"""
+        if year is None:
+            return True
+        try:
+            y = int(year)
+        except (TypeError, ValueError):
+            return True
+        if year_from and y < year_from:
+            return False
+        if year_to and y > year_to:
+            return False
+        return True

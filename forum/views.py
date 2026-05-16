@@ -299,10 +299,12 @@ def success_stories(request):
 # --- FREELANCE MARKET ---
 @feature_required('market')
 def job_list(request):
-    # Süresi dolan açık ilanları otomatik kapat
     from django.utils import timezone as tz
     from datetime import timedelta
     now = tz.now()
+    three_months_ago = now - timedelta(days=90)
+
+    # Süresi dolan açık ilanları otomatik kapat
     FreelanceJob.objects.filter(status='open', expires_at__lt=now).update(status='cancelled')
     FreelanceJob.objects.filter(status='open', expires_at__isnull=True, created_at__lt=now - timedelta(days=30)).update(status='cancelled')
 
@@ -318,6 +320,28 @@ def job_list(request):
     else:
         jobs = jobs.order_by('-created_at')
 
+    # İstatistikler
+    completed_qs = FreelanceJob.objects.filter(status='completed')
+    recent_completed_qs = completed_qs.filter(updated_at__gte=three_months_ago)
+    avg_budget = completed_qs.aggregate(avg=Avg('budget_max'))['avg'] or 0
+    total_experts = JobProposal.objects.filter(status='accepted').values('expert').distinct().count()
+
+    market_stats = {
+        'total_completed': completed_qs.count(),
+        'recent_completed': recent_completed_qs.count(),
+        'avg_budget': int(avg_budget),
+        'total_experts': total_experts,
+        'open_count': jobs.count(),
+    }
+
+    # Son 3 ayda tamamlanan ilanlar (max 6, en yeni önce)
+    completed_jobs = (
+        recent_completed_qs
+        .select_related('category')
+        .annotate(p_count=Count('proposals', distinct=True))
+        .order_by('-updated_at')[:6]
+    )
+
     # Yetki bilgileri
     can_post = FreelanceJob.can_post(request.user)
     can_post_reason = ""
@@ -329,6 +353,8 @@ def job_list(request):
         'current_sort': sort,
         'can_post': can_post,
         'can_post_reason': can_post_reason,
+        'market_stats': market_stats,
+        'completed_jobs': completed_jobs,
     })
 
 @feature_required('market')

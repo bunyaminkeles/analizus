@@ -36,20 +36,20 @@ def openalex_landing(request):
     """Landing page: gelişmiş arama formu + demo arama."""
     if not request.user.is_authenticated:
         return render(request, 'service_promo.html', {
-            'promo_title': 'OpenAlex Gelişmiş Yayın Tarama',
+            'promo_title': 'OpenAlex Yayın Kazıma ve Veri İndirme Aracı',
             'promo_icon': 'bi-search',
             'promo_color': 'primary',
-            'promo_description': '240 milyondan fazla akademik yayın arasında başlık, özet, yazar, kurum gibi alanlarda gelişmiş arama yapın. Sonuçları ücretsiz indirin, 100+ sonuçta bibliometrik analize gönderin.',
+            'promo_description': '240 milyondan fazla akademik yayından kodsuz veri kazıma aracı. Başlık, yazar, kurum gibi alanlarda arama yapın; sonuçları Excel veya TXT olarak tek tıkla indirin.',
             'promo_features': [
-                {'icon': 'bi-database-fill', 'title': '240M+ Kayıt', 'desc': 'OpenAlex\'in tüm akademik veri tabanına erişin; makale, kitap, konferans bildirisi ve daha fazlası.'},
-                {'icon': 'bi-sliders', 'title': 'Gelişmiş Arama', 'desc': 'Başlık, özet, yazar, dergi, kurum, yıl ve DOI gibi 9 farklı alanda AND/OR sorguları oluşturun.'},
-                {'icon': 'bi-download', 'title': 'Ücretsiz İndirme', 'desc': 'Arama sonuçlarınızı TXT olarak ücretsiz indirin ve referans yöneticinize aktarın.'},
-                {'icon': 'bi-bar-chart-line-fill', 'title': 'Bibliometrik Analiz', 'desc': '100+ sonuçta tek tıkla bibliometrik analize gönderin, PDF rapor alın.'},
+                {'icon': 'bi-download', 'title': 'Excel & TXT İndirme', 'desc': 'Yayın başlığı, yazar, dergi, yıl, DOI ve özet verilerini tek tıkla Excel veya TXT olarak indirin.'},
+                {'icon': 'bi-database-fill', 'title': '240M+ Kaynaktan Veri Çekme', 'desc': 'OpenAlex\'in tüm akademik veri tabanından makale, kitap ve konferans bildirisini kodsuz kazıyın.'},
+                {'icon': 'bi-sliders', 'title': 'Kodsuz Gelişmiş Sorgulama', 'desc': 'Başlık, özet, yazar, dergi, kurum, yıl ve DOI gibi 9 farklı alanda AND/OR sorguları oluşturun.'},
+                {'icon': 'bi-bar-chart-line-fill', 'title': 'Tek Tıkla Bibliometrik Analiz', 'desc': '100+ sonuçta tek tıkla bibliometrik analize gönderin, PDF rapor alın.'},
             ],
             'promo_steps': [
                 'Arama kriterlerinizi seçin: başlık, yazar, kurum, yıl veya DOI.',
-                'Sistem OpenAlex\'ten anında sonuçları çeker ve listeler.',
-                '100+ sonuçta bibliometrik analiz başlatın veya dosyayı indirin.',
+                'Sistem OpenAlex\'ten verileri kazıyarak saniyeler içinde listeler.',
+                'Excel veya TXT olarak indirin ya da bibliometrik analiz başlatın.',
             ],
         })
     form = AlexSearchForm()
@@ -144,6 +144,58 @@ def openalex_job_status(request, job_id):
         response['error'] = job.error_message
 
     return JsonResponse(response)
+
+
+@login_required
+@require_GET
+def openalex_download_excel(request, job_id):
+    """demo_results JSON'ından Excel (.xlsx) üretir."""
+    import openpyxl
+    from openpyxl.styles import Font, PatternFill, Alignment
+    job = get_object_or_404(AlexSearchJob, id=job_id, user=request.user)
+    records = job.demo_results or []
+    if not records:
+        raise Http404
+
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = 'OpenAlex Sonuçları'
+
+    headers = ['No', 'Başlık', 'Yazarlar', 'Dergi', 'Yıl', 'DOI', 'Tür', 'Atıf Sayısı', 'Kurumlar', 'Anahtar Kelimeler', 'Açık Erişim', 'Özet']
+    ws.append(headers)
+    header_fill = PatternFill(start_color='2D3748', end_color='2D3748', fill_type='solid')
+    header_font = Font(color='FFFFFF', bold=True)
+    for col_num, _ in enumerate(headers, 1):
+        cell = ws.cell(row=1, column=col_num)
+        cell.fill = header_fill
+        cell.font = header_font
+        cell.alignment = Alignment(wrap_text=True)
+
+    for i, r in enumerate(records, 1):
+        kw = r.get('keywords', [])
+        ws.append([
+            i,
+            r.get('title', ''),
+            r.get('authors', ''),
+            r.get('journal', ''),
+            r.get('year', ''),
+            r.get('doi', ''),
+            r.get('type', ''),
+            r.get('cited_by_count', 0),
+            r.get('institutions', ''),
+            ', '.join(kw) if isinstance(kw, list) else str(kw),
+            'Evet' if r.get('open_access') else 'Hayır',
+            r.get('abstract', ''),
+        ])
+
+    for col in ws.columns:
+        max_len = max((len(str(c.value or '')) for c in col), default=10)
+        ws.column_dimensions[col[0].column_letter].width = min(max_len + 2, 60)
+
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = f'attachment; filename="openalex_{job.id}.xlsx"'
+    wb.save(response)
+    return response
 
 
 @login_required
