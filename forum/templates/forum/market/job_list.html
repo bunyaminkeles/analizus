@@ -47,15 +47,7 @@
                 <div class="text-muted" style="font-size:0.75rem;">Aktif Uzman</div>
             </div>
         </div>
-        <div class="col-6 col-md-3">
-            <div class="rounded-3 text-center py-3 px-2" style="background:rgba(245,158,11,0.07);border:1px solid rgba(245,158,11,0.15);">
-                <div class="fw-bold text-warning mb-1" style="font-size:1.6rem;line-height:1;">
-                    {% if market_stats.avg_budget %}₺{{ market_stats.avg_budget }}{% else %}—{% endif %}
-                </div>
-                <div class="text-muted" style="font-size:0.75rem;">Ort. Bütçe</div>
-            </div>
-        </div>
-        <div class="col-6 col-md-3">
+        <div class="col-6 col-md-4">
             <div class="rounded-3 text-center py-3 px-2" style="background:rgba(139,92,246,0.07);border:1px solid rgba(139,92,246,0.15);">
                 <div class="fw-bold mb-1" style="font-size:1.6rem;line-height:1;color:#a78bfa;">
                     {{ market_stats.recent_completed }}
