@@ -69,6 +69,4 @@ class YokTezSearchJob(models.Model):
     def get_daily_limit(user):
         if user.is_staff or user.is_superuser:
             return 9999
-        if hasattr(user, 'profile') and user.profile.is_premium:
-            return 7
-        return 1
+        return 3

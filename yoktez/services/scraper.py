@@ -447,9 +447,10 @@ def _search_impl(tez_ad='', yazar='', danisman='', universite='',
                 and _type_ok(rec, tur)):
             demo.append(rec)
 
-    # Filtre sonucu boşsa: tüm adaylardan en iyi demo_limit kaydı sun
-    if not demo and has_extra_filters:
-        logger.info('YÖK Tez: filtreli demo bulunamadı, filtresiz fallback')
+    # Üniversite filtresi boşsa ve sadece yıl/tür kaldıysa fallback yap;
+    # üniversite filtresi varsa sıfır sonuç doğru davranıştır — fallback etme
+    if not demo and has_extra_filters and not universite:
+        logger.info('YÖK Tez: filtreli demo bulunamadı, filtresiz fallback (üniversite filtresi yok)')
         demo = enriched[:demo_limit]
 
     logger.info(f'YÖK Tez tamamlandı: sunucu_toplam={total} demo={len(demo)}')
