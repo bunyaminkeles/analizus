@@ -1,12 +1,17 @@
 import requests
 import logging
 import time
+import random
+import threading
 import os
 
 logger = logging.getLogger(__name__)
 
 API_BASE = "https://api.openalex.org/works"
 MAX_PER_PAGE = 200
+
+# Polite pool limiti: 10 req/s. Eş zamanlı 4 job ile güvende kalırız.
+_openalex_semaphore = threading.Semaphore(4)
 
 
 class OpenAlexScraper:
@@ -102,24 +107,27 @@ class OpenAlexScraper:
         return ' & '.join(parts) if parts else '*'
 
     def _fetch_page(self, params, cursor=None):
-        """OpenAlex API'den tek sayfa sonuç çeker."""
+        """OpenAlex API'den tek sayfa sonuç çeker. 429'da Retry-After başlığına uyar."""
         req_params = dict(params)
-        if cursor:
-            req_params['cursor'] = cursor
-        else:
-            req_params['cursor'] = '*'
+        req_params['cursor'] = cursor if cursor else '*'
 
         for attempt in range(self.max_retries):
             try:
                 response = self.session.get(
                     API_BASE, params=req_params, timeout=self.timeout
                 )
+                if response.status_code == 429 and attempt < self.max_retries - 1:
+                    retry_after = int(response.headers.get('Retry-After', 0))
+                    wait = max(retry_after, random.uniform(10.0, 20.0))
+                    logger.warning(f"OpenAlex rate limit 429, {wait:.1f}s bekleniyor...")
+                    time.sleep(wait)
+                    continue
                 response.raise_for_status()
                 return response.json()
             except requests.RequestException as e:
                 logger.warning(f"OpenAlex API attempt {attempt+1} failed: {e}")
                 if attempt < self.max_retries - 1:
-                    time.sleep(2 ** attempt)
+                    time.sleep(2 ** attempt + random.uniform(0.5, 1.5))
                 else:
                     raise
 
@@ -201,6 +209,10 @@ class OpenAlexScraper:
 
         Returns: (total_count, demo_results, all_results, api_query_desc)
         """
+        with _openalex_semaphore:
+            return self._search_impl(query_parts, demo_limit)
+
+    def _search_impl(self, query_parts, demo_limit=5):
         params = self.build_api_params(query_parts)
         api_query_desc = self._build_query_description(params)
         logger.info(f"OpenAlex arama: {api_query_desc}")
@@ -229,7 +241,7 @@ class OpenAlexScraper:
                     break
                 all_results.extend([self._parse_work(w) for w in page_results])
                 next_cursor = data.get('meta', {}).get('next_cursor')
-                time.sleep(0.1)  # API'ye saygılı ol (polite pool)
+                time.sleep(random.uniform(0.3, 0.6))  # polite pool — saygılı hız
             except Exception as e:
                 logger.error(f"OpenAlex pagination hatası: {e}")
                 break

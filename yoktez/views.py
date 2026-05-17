@@ -133,7 +133,10 @@ def yoktez_job_status(request, job_id):
     job = get_object_or_404(YokTezSearchJob, id=job_id, user=request.user)
 
     resp = {'status': job.status, 'total_results': job.total_results}
-    if job.status == 'completed':
+    if job.status == 'pending':
+        from analizdestek.job_queue import get_queue_position
+        resp['queue_position'] = get_queue_position('yoktez', str(job.id))
+    elif job.status == 'completed':
         resp['demo_results'] = job.demo_results[:5]
         resp['all_results_file_url'] = job.all_results_file_url
     elif job.status == 'failed':

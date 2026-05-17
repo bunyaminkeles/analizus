@@ -1,11 +1,23 @@
 import requests
 import logging
 import time
+import random
+import threading
 
 logger = logging.getLogger(__name__)
 
 API_BASE = "https://search.trdizin.gov.tr/api/defaultSearch/publication/"
 MAX_PAGE_SIZE = 100
+
+# Aynı anda en fazla 3 job TR Dizin API'sine istek atabilir.
+_trdizin_semaphore = threading.Semaphore(3)
+
+_USER_AGENTS = [
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 Edg/120.0.0.0',
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36',
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:125.0) Gecko/20100101 Firefox/125.0',
+]
 
 
 class TRDizinScraper:
@@ -16,8 +28,10 @@ class TRDizinScraper:
         self.max_retries = max_retries
         self.session = requests.Session()
         self.session.headers.update({
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+            'User-Agent': random.choice(_USER_AGENTS),
             'Accept': 'application/json',
+            'Accept-Language': 'tr-TR,tr;q=0.9,en-US;q=0.8',
+            'DNT': '1',
         })
 
     @staticmethod
@@ -107,7 +121,7 @@ class TRDizinScraper:
         return f'({query})'
 
     def _fetch_page(self, lucene_query, page=1, limit=20, order='publicationYear-DESC'):
-        """TR Dizin API'den tek sayfa sonuç çeker."""
+        """TR Dizin API'den tek sayfa sonuç çeker. 429/503'te backoff ile yeniden dener."""
         params = {
             'q': lucene_query,
             'order': order,
@@ -120,12 +134,17 @@ class TRDizinScraper:
                 response = self.session.get(
                     API_BASE, params=params, timeout=self.timeout
                 )
+                if response.status_code in (429, 503) and attempt < self.max_retries - 1:
+                    wait = random.uniform(5.0, 10.0) * (attempt + 1)
+                    logger.warning(f"TR Dizin rate limit ({response.status_code}), {wait:.1f}s bekleniyor...")
+                    time.sleep(wait)
+                    continue
                 response.raise_for_status()
                 return response.json()
             except requests.RequestException as e:
                 logger.warning(f"TR Dizin API attempt {attempt+1} failed: {e}")
                 if attempt < self.max_retries - 1:
-                    time.sleep(2 ** attempt)
+                    time.sleep(2 ** attempt + random.uniform(0.5, 1.5))
                 else:
                     raise
 
@@ -199,6 +218,10 @@ class TRDizinScraper:
         - all_results: Tüm sonuçlar (yıl filtresi uygulanmış)
         - lucene_query: Oluşturulan Lucene sorgusu
         """
+        with _trdizin_semaphore:
+            return self._search_impl(query_parts, demo_limit)
+
+    def _search_impl(self, query_parts, demo_limit=3):
         lucene_query = self.build_lucene_query(query_parts)
         year_from, year_to = self.parse_year_filter(query_parts)
         logger.info(f"TR Dizin arama: {lucene_query}  yıl_filtresi={year_from}-{year_to}")
@@ -227,7 +250,7 @@ class TRDizinScraper:
                     break
                 all_results.extend([self._parse_hit(h) for h in page_hits])
                 page += 1
-                time.sleep(0.5)  # API'ye saygılı ol
+                time.sleep(random.uniform(0.5, 1.5))  # API'ye saygılı ol
             except Exception as e:
                 logger.error(f"TR Dizin pagination hatası (sayfa {page}): {e}")
                 break

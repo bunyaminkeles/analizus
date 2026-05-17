@@ -10,6 +10,24 @@ from .models import AlexSearchJob, AlexOrder
 from .services.job_runner import run_scraping_job
 
 
+def _safe_filename(job, ext: str) -> str:
+    """openalex_<arama_kelimesi>_<YYYYMMDD>.<ext> formatında güvenli dosya adı."""
+    import re
+    from django.utils import timezone
+    keyword = ''
+    if job.query_parts:
+        for part in job.query_parts:
+            val = part.get('value', '').strip()
+            if val:
+                keyword = val
+                break
+    keyword = (keyword or 'sonuclar')[:40]
+    keyword = re.sub(r'[^\w\s-]', '', keyword, flags=re.UNICODE)
+    keyword = re.sub(r'[\s]+', '_', keyword).strip('_')
+    date_str = timezone.now().strftime('%Y%m%d')
+    return f'openalex_{keyword}_{date_str}.{ext}'
+
+
 def feature_required(flag_name):
     """Decorator: SiteSettings'deki feature flag kapalıysa 404 döner."""
     def decorator(view_func):
@@ -137,7 +155,10 @@ def openalex_job_status(request, job_id):
         'status': job.status,
         'total_results': job.total_results,
     }
-    if job.status == 'completed':
+    if job.status == 'pending':
+        from analizdestek.job_queue import get_queue_position
+        response['queue_position'] = get_queue_position('openalex', str(job.id))
+    elif job.status == 'completed':
         response['demo_results'] = job.demo_results[:3]
         response['all_results_file_url'] = job.all_results_file_url
     elif job.status == 'failed':
@@ -193,7 +214,7 @@ def openalex_download_excel(request, job_id):
         ws.column_dimensions[col[0].column_letter].width = min(max_len + 2, 60)
 
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-    response['Content-Disposition'] = f'attachment; filename="openalex_{job.id}.xlsx"'
+    response['Content-Disposition'] = f'attachment; filename="{_safe_filename(job, "xlsx")}"'
     wb.save(response)
     return response
 
