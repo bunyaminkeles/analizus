@@ -135,6 +135,8 @@ def fetch_all(
     import time as _time
     deadline = _time.monotonic() + job_timeout
 
+    uni_filter = universite.strip().lower() if universite else ''
+
     results = []
     for i, rec in enumerate(all_basic):
         if _time.monotonic() > deadline:
@@ -149,13 +151,18 @@ def fetch_all(
             logger.warning(f'[tezanaliz fetcher] Detay hatası kayıt {i}: {e}')
             detail = {}
         rec.update(detail)
+
+        # Üniversite filtresi — detay çekildikten sonra uygulanır
+        if uni_filter and uni_filter not in rec.get('university', '').lower():
+            continue
+
         results.append(rec)
         if i < len(all_basic) - 1:
             time.sleep(detail_delay)
         if (i + 1) % 20 == 0:
             logger.info(f'[tezanaliz fetcher] Detay: {i+1}/{len(all_basic)} tamamlandı')
 
-    logger.info(f'[tezanaliz fetcher] Toplam {len(results)} kayıt hazır.')
+    logger.info(f'[tezanaliz fetcher] Toplam {len(results)} kayıt hazır (üniversite filtresi: {uni_filter or "yok"}).')
     return results
 
 
