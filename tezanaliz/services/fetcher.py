@@ -31,7 +31,7 @@ def fetch_all(
     Returns: List[dict] — tam doldurulmuş kayıtlar
     """
     from yoktez.services.scraper import (
-        _make_session, _build_form, _parse_results, _fetch_detail,
+        _make_session, _build_form, _determine_query, _parse_results, _fetch_detail,
         SEARCH_URL, INIT_URL,
     )
 
@@ -43,15 +43,13 @@ def fetch_all(
     except Exception as e:
         logger.warning(f'[tezanaliz fetcher] Session init hatası (devam): {e}')
 
-    form_data = _build_form(
+    keyword, nevi = _determine_query(
         tez_ad=tez_ad,
         yazar=yazar,
-        universite=universite,
-        tur=tur or '0',
-        yil1=yil_baslangic,
-        yil2=yil_bitis,
+        danisman='',
         metin=metin,
     )
+    form_data = _build_form(keyword=keyword, nevi=nevi)
 
     # --- Sayfa 1 ---
     all_basic = []
