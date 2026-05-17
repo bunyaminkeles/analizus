@@ -31,4 +31,8 @@ urlpatterns = [
     path('afa/status/<uuid:job_id>/', views.job_status, name='afa_status'),
     path('wilcoxon/', views.wilcoxon_landing, name='wilcoxon'),
     path('wilcoxon/status/<uuid:job_id>/', views.job_status, name='wilcoxon_status'),
+    path('friedman/', views.friedman_landing, name='friedman'),
+    path('friedman/status/<uuid:job_id>/', views.job_status, name='friedman_status'),
+    path('tekrarli-anova/', views.tekrarli_anova_landing, name='tekrarli_anova'),
+    path('tekrarli-anova/status/<uuid:job_id>/', views.job_status, name='tekrarli_anova_status'),
 ]

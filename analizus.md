@@ -188,8 +188,8 @@ OPENALEX_EMAIL=info@analizus.com
 
 ### Branch Stratejisi
 - `main` → production (Hetzner buradan deploy eder)
-- `dev` → geliştirme (main → dev merge yapılır)
-- Geliştirme `main`'de yapılır; `dev` ikincil
+- `dev` → geliştirme — tüm geliştirmeler burada yapılır
+- Onay sonrası `dev → main` merge ve deploy
 
 ### Standart Deploy Akışı
 ```bash

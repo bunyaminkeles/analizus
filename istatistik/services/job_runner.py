@@ -134,6 +134,20 @@ def _execute_job(job_id: str):
                 col1=opts.get('col1'),
                 col2=opts.get('col2'),
             )
+        elif job.tool == 'friedman':
+            from .friedman import analyze, build_pdf
+            opts = job.options or {}
+            result_data = analyze(
+                df,
+                columns=opts.get('columns') or [],
+            )
+        elif job.tool == 'tekrarli_anova':
+            from .tekrarli_anova import analyze, build_pdf
+            opts = job.options or {}
+            result_data = analyze(
+                df,
+                columns=opts.get('columns') or [],
+            )
         else:
             job.mark_failed(f'Bilinmeyen araç: {job.tool}')
             return

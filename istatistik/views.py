@@ -346,6 +346,9 @@ def _handle_group_tool_post(request, tool):
                 'col1': request.POST.get('col1', ''),
                 'col2': request.POST.get('col2', ''),
             }
+        elif tool in ('friedman', 'tekrarli_anova'):
+            cols = request.POST.getlist('columns')
+            options = {'columns': cols} if cols else {}
         else:  # mann_whitney, kruskal_wallis
             options = {
                 'group_col': request.POST.get('group_col', ''),
@@ -569,6 +572,58 @@ def wilcoxon_landing(request):
         return _handle_group_tool_post(request, 'wilcoxon')
     active_job = _get_active_job(request.user, 'wilcoxon')
     return render(request, 'istatistik/wilcoxon.html', {
+        'active_job_id': str(active_job.id) if active_job else None,
+        'daily_remaining': _daily_remaining(request.user),
+    })
+
+
+@feature_required
+@ratelimit(key='ip', rate='30/h', method='POST', block=True)
+def friedman_landing(request):
+    if not request.user.is_authenticated:
+        return render(request, 'service_promo.html', {
+            **PROMO_BASE,
+            'promo_title': 'Friedman Testi',
+            'promo_icon': 'bi-bar-chart-steps',
+            'promo_color': 'success',
+            'promo_description': '3 veya daha fazla bağımlı (eşleştirilmiş) ölçümü karşılaştırın. Tekrarlayan ölçümler ANOVA\'nın parametrik olmayan alternatifi.',
+            'promo_features': [
+                {'icon': 'bi-bar-chart-steps', 'title': 'χ² İstatistiği', 'desc': 'Friedman χ² istatistiği, serbestlik derecesi ve p değeri ile ölçümler arası farkı sınayın.'},
+                {'icon': 'bi-rulers', 'color': 'success', 'title': "Kendall's W", 'desc': "Etki büyüklüğü Kendall's W katsayısı ile raporlanır."},
+                {'icon': 'bi-diagram-3', 'color': 'warning', 'title': 'Post-Hoc', 'desc': 'Anlamlı bulunursa Bonferroni düzeltmeli pairwise Wilcoxon karşılaştırmaları.'},
+                {'icon': 'bi-file-earmark-pdf-fill', 'color': 'danger', 'title': 'PDF Rapor', 'desc': 'APA formatında hazır raporlama cümlesi ve PDF indirme.'},
+            ],
+        })
+    if request.method == 'POST':
+        return _handle_group_tool_post(request, 'friedman')
+    active_job = _get_active_job(request.user, 'friedman')
+    return render(request, 'istatistik/friedman.html', {
+        'active_job_id': str(active_job.id) if active_job else None,
+        'daily_remaining': _daily_remaining(request.user),
+    })
+
+
+@feature_required
+@ratelimit(key='ip', rate='30/h', method='POST', block=True)
+def tekrarli_anova_landing(request):
+    if not request.user.is_authenticated:
+        return render(request, 'service_promo.html', {
+            **PROMO_BASE,
+            'promo_title': 'Tekrarlayan Ölçümler ANOVA',
+            'promo_icon': 'bi-graph-up-arrow',
+            'promo_color': 'primary',
+            'promo_description': 'Aynı katılımcıların 3+ farklı koşulda/zamanda ölçüldüğü verileri analiz edin. F istatistiği, η² etki büyüklüğü ve Bonferroni post-hoc ile PDF raporu alın.',
+            'promo_features': [
+                {'icon': 'bi-graph-up-arrow', 'title': 'F İstatistiği', 'desc': 'Tekrarlayan ölçümler ANOVA ile F istatistiği, serbestlik derecesi ve p değeri hesaplanır.'},
+                {'icon': 'bi-rulers', 'color': 'primary', 'title': 'Etki Büyüklüğü (η²)', 'desc': 'Partial eta-squared (η²) ile etki büyüklüğü raporlanır.'},
+                {'icon': 'bi-diagram-3', 'color': 'warning', 'title': 'Post-Hoc', 'desc': 'Bonferroni düzeltmeli bağımlı t-testi ile hangi ölçüm çiftlerinin farklılaştığı belirlenir.'},
+                {'icon': 'bi-file-earmark-pdf-fill', 'color': 'danger', 'title': 'PDF Rapor', 'desc': 'ANOVA tablosu, post-hoc ve APA formatında otomatik raporlama cümlesi.'},
+            ],
+        })
+    if request.method == 'POST':
+        return _handle_group_tool_post(request, 'tekrarli_anova')
+    active_job = _get_active_job(request.user, 'tekrarli_anova')
+    return render(request, 'istatistik/tekrarli_anova.html', {
         'active_job_id': str(active_job.id) if active_job else None,
         'daily_remaining': _daily_remaining(request.user),
     })

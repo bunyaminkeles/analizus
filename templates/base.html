@@ -35,7 +35,7 @@
     <!-- Open Graph -->
     <meta property="og:type" content="{% block og_type %}website{% endblock %}">
     <meta property="og:url" content="https://www.analizus.com{{ request.path }}">
-    <meta property="og:title" content="{% block og_title %}Analizus - Akademik Analiz Topluluğu{% endblock %}">
+    <meta property="og:title" content="{% block og_title %}Analizus - Analiz Ekosistemi{% endblock %}">
     <meta property="og:description" content="{% block og_description %}SPSS, Python, Yapay Zeka ve Nitel analizler ile akademik analiz desteği ve veri bilimi topluluğu.{% endblock %}">
     <meta property="og:image" content="{% block og_image %}https://www.analizus.com{% static 'images/og-image.png' %}{% endblock %}">
     <meta property="og:image:width" content="1200">
@@ -46,7 +46,7 @@
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:site" content="@analizus">
-    <meta name="twitter:title" content="{% block twitter_title %}Analizus - Akademik Analiz Topluluğu{% endblock %}">
+    <meta name="twitter:title" content="{% block twitter_title %}Analizus - Analiz Ekosistemi{% endblock %}">
     <meta name="twitter:description" content="{% block twitter_description %}SPSS, Python, R ile akademik analiz desteği.{% endblock %}">
     <meta name="twitter:image" content="{% block twitter_image %}https://www.analizus.com{% static 'images/og-image.png' %}{% endblock %}">
 
@@ -253,6 +253,8 @@
                                 <a href="{% url 'istatistik:mann_whitney' %}" class="site-nav__dropdown-item" role="menuitem">Mann-Whitney U</a>
                                 <a href="{% url 'istatistik:kruskal_wallis' %}" class="site-nav__dropdown-item" role="menuitem">Kruskal-Wallis H</a>
                                 <a href="{% url 'istatistik:wilcoxon' %}" class="site-nav__dropdown-item" role="menuitem">Wilcoxon İşaret Testi</a>
+                                <a href="{% url 'istatistik:friedman' %}" class="site-nav__dropdown-item" role="menuitem">Friedman Testi</a>
+                                <a href="{% url 'istatistik:tekrarli_anova' %}" class="site-nav__dropdown-item" role="menuitem">Tekrarlayan Ölçümler ANOVA</a>
                             </div>
                         </div>
                         <!-- Regresyon Analizleri flyout -->
@@ -459,6 +461,8 @@
                     <a href="{% url 'istatistik:mann_whitney' %}" class="nav-drawer__link">Mann-Whitney U</a>
                     <a href="{% url 'istatistik:kruskal_wallis' %}" class="nav-drawer__link">Kruskal-Wallis H</a>
                     <a href="{% url 'istatistik:wilcoxon' %}" class="nav-drawer__link">Wilcoxon İşaret Testi</a>
+                    <a href="{% url 'istatistik:friedman' %}" class="nav-drawer__link">Friedman Testi</a>
+                    <a href="{% url 'istatistik:tekrarli_anova' %}" class="nav-drawer__link">Tekrarlayan Ölçümler ANOVA</a>
                     <span class="nav-drawer__sub-label">Regresyon Analizleri</span>
                     <a href="{% url 'istatistik:lineer_regresyon' %}" class="nav-drawer__link">Çoklu Doğrusal Regresyon</a>
                     <a href="{% url 'istatistik:lojistik_regresyon' %}" class="nav-drawer__link">Lojistik Regresyon</a>

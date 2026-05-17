@@ -399,6 +399,18 @@ document.getElementById('send-email-btn').addEventListener('click', function() {
                 <p class="text-secondary mb-0" style="font-size:.8rem;line-height:1.6;">Bulduğunuz tezin metodolojisini <a href="/tez-analiz/" class="text-decoration-none" style="color:#a5b4fc;">Tez Analizi</a> aracımızla yapay zeka destekli inceleyin.</p>
             </div>
         </div>
+
+        <!-- Güvenli Kazıma Notu -->
+        <div class="col-12 mt-2">
+            <div class="p-3 rounded" style="background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.18);">
+                <h3 class="fw-semibold mb-2" style="font-size:.9rem;color:#fbbf24;">
+                    <i class="bi bi-shield-check me-2"></i>Güvenli &amp; Sorumlu Kazıma
+                </h3>
+                <p class="mb-0" style="font-size:.8rem;line-height:1.7;color:#94a3b8;">
+                    Analizus'un altyapısında bekleme süreleri (rate-limiting) YÖK'ün güvenlik duvarını tetiklemeyecek biçimde, insan davranışına benzer hızlarda ayarlanmıştır. Kendi yazdığınız acemi bir bot anında ban yiyebilirken, Analizus bu riski önemli ölçüde düşürür. Bununla birlikte risk sıfır değildir; aracı günlerce hiç durmadan çalıştırırsanız ağınız kısıtlamaya takılabilir.
+                </p>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}

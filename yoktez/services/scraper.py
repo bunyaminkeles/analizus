@@ -6,25 +6,47 @@ Sonuç sayfası: tezSorguSonucYeni.jsp  (div.result-card elementleri)
 Detay endpoint: tezBilgiDetay.jsp?kayitNo=...&tezNo=...  (JSON yanıt)
 """
 import re
+import time
+import random
 import logging
 import requests
 from bs4 import BeautifulSoup
 
 logger = logging.getLogger(__name__)
 
+# İstekler arası bekleme aralıkları (saniye) — YÖK firewall'ını tetiklemez
+_DELAY_INIT_TO_SEARCH  = (1.5, 3.0)   # session init → POST arama
+_DELAY_BETWEEN_DETAILS = (2.0, 4.5)   # her detail isteği arası
+_DELAY_DETAIL_RETRY    = (5.0, 9.0)   # 429/503 sonrası retry bekle
+_MAX_DETAIL_RETRIES    = 2            # detail endpoint için maksimum yeniden deneme
+
 BASE_URL = 'https://tez.yok.gov.tr/UlusalTezMerkezi'
 SEARCH_URL = f'{BASE_URL}/SearchTez'
 INIT_URL   = f'{BASE_URL}/tarama.jsp'
 DETAIL_URL = f'{BASE_URL}/tezBilgiDetay.jsp'
 
+# Birden fazla gerçekçi User-Agent — her session rastgele birini seçer
+_USER_AGENTS = [
+    ('Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
+     'AppleWebKit/537.36 (KHTML, like Gecko) '
+     'Chrome/124.0.0.0 Safari/537.36'),
+    ('Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
+     'AppleWebKit/537.36 (KHTML, like Gecko) '
+     'Chrome/120.0.0.0 Safari/537.36 Edg/120.0.0.0'),
+    ('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) '
+     'AppleWebKit/537.36 (KHTML, like Gecko) '
+     'Chrome/123.0.0.0 Safari/537.36'),
+    ('Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:125.0) '
+     'Gecko/20100101 Firefox/125.0'),
+]
+
 HEADERS = {
-    'User-Agent': (
-        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
-        'AppleWebKit/537.36 (KHTML, like Gecko) '
-        'Chrome/120.0.0.0 Safari/537.36'
-    ),
-    'Accept-Language': 'tr-TR,tr;q=0.9,en-US;q=0.8',
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+    'Accept-Language': 'tr-TR,tr;q=0.9,en-US;q=0.8,en;q=0.7',
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+    'Accept-Encoding': 'gzip, deflate, br',
+    'Connection': 'keep-alive',
+    'Upgrade-Insecure-Requests': '1',
+    'DNT': '1',
 }
 
 # nevi değerleri: arama alanı seçimi
@@ -46,7 +68,14 @@ TUR_MAP = {
 def _make_session():
     session = requests.Session()
     session.headers.update(HEADERS)
+    # Her session'da rastgele User-Agent — farklı tarayıcı izlenimi
+    session.headers['User-Agent'] = random.choice(_USER_AGENTS)
     return session
+
+
+def _human_delay(lo: float, hi: float):
+    """Verilen aralıkta insan davranışını taklit eden rastgele bekleme."""
+    time.sleep(random.uniform(lo, hi))
 
 
 def _determine_query(tez_ad='', yazar='', danisman='', metin=''):
@@ -156,24 +185,44 @@ def _parse_results(html: str) -> tuple[int, list[dict]]:
 
 
 def _fetch_detail(session, kayit_no: str, tez_no: str) -> dict:
-    """tezBilgiDetay.jsp'den JSON olarak detay çeker."""
+    """tezBilgiDetay.jsp'den JSON olarak detay çeker. 429/503 durumunda yeniden dener."""
     if not kayit_no and not tez_no:
         return {}
-    try:
-        resp = session.get(
-            DETAIL_URL,
-            params={'kayitNo': kayit_no, 'tezNo': tez_no},
-            timeout=15,
-            headers={'Referer': SEARCH_URL, 'X-Requested-With': 'XMLHttpRequest'},
-        )
-        resp.encoding = 'utf-8'
-        logger.info(f'tezBilgiDetay kayitNo={kayit_no} tezNo={tez_no} status={resp.status_code}')
 
+    for attempt in range(_MAX_DETAIL_RETRIES + 1):
         try:
-            data = resp.json()
-        except Exception:
-            # JSON değilse HTML'den parse et (eski format fallback)
-            return _parse_detail_html(resp.text)
+            resp = session.get(
+                DETAIL_URL,
+                params={'kayitNo': kayit_no, 'tezNo': tez_no},
+                timeout=15,
+                headers={'Referer': SEARCH_URL, 'X-Requested-With': 'XMLHttpRequest'},
+            )
+            resp.encoding = 'utf-8'
+            logger.info(f'tezBilgiDetay kayitNo={kayit_no} tezNo={tez_no} '
+                        f'status={resp.status_code} deneme={attempt + 1}')
+
+            # Rate limit veya geçici hata — bekle ve yeniden dene
+            if resp.status_code in (429, 503) and attempt < _MAX_DETAIL_RETRIES:
+                wait = random.uniform(*_DELAY_DETAIL_RETRY) * (attempt + 1)
+                logger.warning(f'YÖK Tez rate limit ({resp.status_code}), {wait:.1f}s beklenyor...')
+                time.sleep(wait)
+                continue
+
+            break  # Başarılı ya da son deneme
+        except Exception as e:
+            if attempt < _MAX_DETAIL_RETRIES:
+                time.sleep(random.uniform(*_DELAY_DETAIL_RETRY))
+                continue
+            logger.warning(f'tezBilgiDetay fetch hatası (kayitNo={kayit_no}): {e}')
+            return {}
+
+    try:
+        data = resp.json()
+    except Exception:
+        # JSON değilse HTML'den parse et (eski format fallback)
+        return _parse_detail_html(resp.text)
+
+    try:
 
         result = {}
 
@@ -316,6 +365,9 @@ def search(tez_ad='', yazar='', danisman='', universite='',
     except Exception as e:
         logger.warning(f'YÖK Tez session init hatası (devam ediliyor): {e}')
 
+    # İnsan davranışını taklit: sayfa yüklendikten sonra biraz bekle
+    _human_delay(*_DELAY_INIT_TO_SEARCH)
+
     keyword, nevi = _determine_query(tez_ad=tez_ad, yazar=yazar,
                                      danisman=danisman, metin=metin)
     if not keyword and universite:
@@ -361,7 +413,11 @@ def search(tez_ad='', yazar='', danisman='', universite='',
     enriched = []   # detail çekilmiş tüm adaylar
     demo = []       # filtreden geçenler
 
-    for rec in candidates:
+    for idx, rec in enumerate(candidates):
+        # Her detail isteğinden önce insan benzeri bekleme (ilk kayıt hariç küçük ek gecikme)
+        if idx > 0:
+            _human_delay(*_DELAY_BETWEEN_DETAILS)
+
         detail = _fetch_detail(session, rec.get('kayit_no', ''), rec.get('tez_no', ''))
         if detail:
             for field in ('year', 'author', 'university', 'thesis_type', 'language',
@@ -467,8 +523,10 @@ def _search_legacy(session, tez_ad='', yazar='', danisman='', universite='',
 
     # Legacy detay (tezDetay.jsp HTML)
     legacy_detail_url = f'{BASE_URL}/tezDetay.jsp'
-    for rec in demo:
+    for idx, rec in enumerate(demo):
         if rec.get('kayit_no') and rec.get('tez_no'):
+            if idx > 0:
+                _human_delay(*_DELAY_BETWEEN_DETAILS)
             try:
                 dr = session.get(
                     legacy_detail_url,

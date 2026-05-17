@@ -18,6 +18,8 @@ TOOL_CHOICES = [
     ('lojistik_regresyon', 'Lojistik Regresyon'),
     ('afa', 'Açıklayıcı Faktör Analizi (AFA)'),
     ('wilcoxon', 'Wilcoxon İşaret Testi'),
+    ('friedman', 'Friedman Testi'),
+    ('tekrarli_anova', 'Tekrarlayan Ölçümler ANOVA'),
 ]
 
 STATUS_CHOICES = [
