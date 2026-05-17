@@ -76,6 +76,7 @@
                         </div>
                     </div>
                     <div class="card-body">
+                        <p id="status-msg" class="text-center text-secondary mb-2" style="display:none;"></p>
                         <div id="results-summary" class="mb-3"></div>
                         <div id="results-list"></div>
                         <div id="results-actions" class="mt-3" style="display: none;">
@@ -380,12 +381,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 return response.json();
             })
             .then(data => {
+                const statusMsg = document.getElementById('status-msg');
                 if (data.status === 'completed') {
                     clearInterval(interval);
                     if (cancelBtn) cancelBtn.style.display = 'none';
                     spinner.style.display = 'none';
                     submitBtn.disabled = false;
                     submitBtn.innerHTML = '<i class="fas fa-search"></i> Arama Yap';
+                    if (statusMsg) statusMsg.style.display = 'none';
                     displayResults(data);
                 } else if (data.status === 'failed') {
                     clearInterval(interval);
@@ -393,7 +396,20 @@ document.addEventListener('DOMContentLoaded', function() {
                     spinner.style.display = 'none';
                     submitBtn.disabled = false;
                     submitBtn.innerHTML = '<i class="fas fa-search"></i> Arama Yap';
+                    if (statusMsg) statusMsg.style.display = 'none';
                     resultsSummary.innerHTML = `<p class="text-danger">Arama başarısız oldu: ${data.error || 'Bilinmeyen hata'}</p>`;
+                } else if (data.status === 'pending') {
+                    if (statusMsg) {
+                        statusMsg.style.display = 'block';
+                        const pos = data.queue_position;
+                        if (pos > 1) statusMsg.textContent = `Sırada bekliyorsunuz — tahmini sıra: ${pos}. Lütfen bekleyin...`;
+                        else statusMsg.textContent = 'Sıradaki tarama başlıyor...';
+                    }
+                } else if (data.status === 'running') {
+                    if (statusMsg) {
+                        statusMsg.style.display = 'block';
+                        statusMsg.textContent = 'OpenAlex\'ten veriler çekiliyor, lütfen bekleyin...';
+                    }
                 }
             })
             .catch(err => {

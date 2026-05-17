@@ -111,7 +111,7 @@
                 <div class="card bg-dark border-secondary text-white">
                     <div class="card-body text-center py-4">
                         <div class="spinner-border text-warning mb-3" role="status"></div>
-                        <p class="mb-2">YÖK Tez sunucusundan veri çekiliyor, lütfen bekleyin...</p>
+                        <p id="status-msg" class="mb-2">YÖK Tez sunucusundan veri çekiliyor, lütfen bekleyin...</p>
                         <button id="cancel-btn" class="btn btn-sm btn-outline-danger" onclick="cancelJob()">
                             <i class="bi bi-x-circle me-1"></i>İptal
                         </button>
@@ -244,6 +244,16 @@ function pollStatus() {
                 document.getElementById('search-btn').disabled = false;
                 document.getElementById('search-btn').innerHTML = '<i class="bi bi-search me-1"></i>Ara';
                 alert('Arama başarısız: ' + (data.error || 'Bilinmeyen hata'));
+            } else if (data.status === 'pending') {
+                const pos = data.queue_position;
+                const msg = document.getElementById('status-msg');
+                if (msg) {
+                    if (pos > 1) msg.textContent = `Sırada bekliyorsunuz — tahmini sıra: ${pos}. Lütfen bekleyin...`;
+                    else msg.textContent = 'Sıradaki tarama başlıyor...';
+                }
+            } else if (data.status === 'running') {
+                const msg = document.getElementById('status-msg');
+                if (msg) msg.textContent = 'YÖK Tez sunucusundan veri çekiliyor, lütfen bekleyin...';
             }
         });
 }
