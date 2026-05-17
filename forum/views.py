@@ -1250,11 +1250,35 @@ def profile_edit(request):
 @feature_required('messaging')
 @login_required
 def inbox(request):
-    # Sayfa görüntülendiğinde tüm okunmamış mesajları okundu yap
+    # Okunmamış sayısını kaydet, sonra okundu yap
+    unread_by_sender = {}
+    for row in (PrivateMessage.objects
+                .filter(receiver=request.user, is_read=False)
+                .values('sender')
+                .annotate(cnt=models.Count('id'))):
+        unread_by_sender[row['sender']] = row['cnt']
+
     PrivateMessage.objects.filter(receiver=request.user, is_read=False).update(is_read=True)
 
-    received_messages = PrivateMessage.objects.filter(receiver=request.user).order_by('-created_at')
-    return render(request, 'forum/inbox.html', {'received_messages': received_messages})
+    # Gönderici başına en son mesajı bul → konuşma listesi
+    seen = set()
+    conversations = []
+    qs = (PrivateMessage.objects
+          .filter(receiver=request.user)
+          .select_related('sender', 'sender__profile')
+          .order_by('-created_at'))
+    for msg in qs:
+        sid = msg.sender_id
+        if sid in seen:
+            continue
+        seen.add(sid)
+        conversations.append({
+            'sender': msg.sender,
+            'last_message': msg,
+            'unread_count': unread_by_sender.get(sid, 0),
+        })
+
+    return render(request, 'forum/inbox.html', {'conversations': conversations})
 
 
 # --- MESAJ POLLING API ---
