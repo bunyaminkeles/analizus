@@ -119,7 +119,7 @@ def _run_job(job_type: str, job_id: str):
         elif job_type == 'bibliometrics_openalex':
             from bibliometrics.services.job_runner import _execute_job_openalex
             _execute_job_openalex(job_id)
-        elif job_type in ('cronbach', 'normallik', 'betimsel', 'korelasyon', 'ttesti', 'anova', 'mann_whitney', 'kruskal_wallis', 'ki_kare', 'lineer_regresyon', 'lojistik_regresyon', 'afa', 'wilcoxon'):
+        elif job_type in ('cronbach', 'normallik', 'betimsel', 'korelasyon', 'ttesti', 'anova', 'mann_whitney', 'kruskal_wallis', 'ki_kare', 'lineer_regresyon', 'lojistik_regresyon', 'afa', 'wilcoxon', 'friedman', 'tekrarli_anova'):
             from istatistik.services.job_runner import _execute_job
             _execute_job(job_id)
         else:
@@ -209,6 +209,8 @@ def get_queue_position(job_type: str, job_id: str) -> int:
             'lojistik_regresyon': IstatistikJob,
             'afa': IstatistikJob,
             'wilcoxon': IstatistikJob,
+            'friedman': IstatistikJob,
+            'tekrarli_anova': IstatistikJob,
         }
         Model = model_map.get(job_type)
         if not Model:

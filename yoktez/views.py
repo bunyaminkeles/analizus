@@ -10,6 +10,18 @@ from .forms import YokTezSearchForm
 from .models import YokTezSearchJob
 
 
+def _safe_filename(job, ext: str) -> str:
+    """yoktez_<arama_kelimesi>_<YYYYMMDD>.<ext> formatında güvenli dosya adı üretir."""
+    import re
+    from django.utils import timezone
+    keyword = job.tez_ad or job.yazar or job.metin or job.danisman or job.universite or 'sonuclar'
+    keyword = keyword[:40].strip()
+    keyword = re.sub(r'[^\w\s-]', '', keyword, flags=re.UNICODE)
+    keyword = re.sub(r'[\s]+', '_', keyword).strip('_')
+    date_str = timezone.now().strftime('%Y%m%d')
+    return f'yoktez_{keyword}_{date_str}.{ext}'
+
+
 def feature_required(flag_name):
     def decorator(view_func):
         @wraps(view_func)
@@ -176,7 +188,7 @@ def yoktez_download_excel(request, job_id):
         ws.column_dimensions[col[0].column_letter].width = min(max_len + 2, 60)
 
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
-    response['Content-Disposition'] = f'attachment; filename="yoktez_{job.id}.xlsx"'
+    response['Content-Disposition'] = f'attachment; filename="{_safe_filename(job, "xlsx")}"'
     wb.save(response)
     return response
 
@@ -196,7 +208,7 @@ def yoktez_download(request, job_id):
                 s3_resp.content,
                 content_type='text/plain; charset=utf-8',
             )
-            response['Content-Disposition'] = f'attachment; filename="yoktez_{job.id}.txt"'
+            response['Content-Disposition'] = f'attachment; filename="{_safe_filename(job, "txt")}"'
             return response
         except Exception:
             pass
@@ -208,7 +220,7 @@ def yoktez_download(request, job_id):
     from .services.scraper import generate_results_txt
     txt = generate_results_txt(job.demo_results, job)
     response = HttpResponse(txt, content_type='text/plain; charset=utf-8')
-    response['Content-Disposition'] = f'attachment; filename="yoktez_{job.id}.txt"'
+    response['Content-Disposition'] = f'attachment; filename="{_safe_filename(job, "txt")}"'
     return response
 
 

@@ -9,10 +9,15 @@ import re
 import time
 import random
 import logging
+import threading
 import requests
 from bs4 import BeautifulSoup
 
 logger = logging.getLogger(__name__)
+
+# Aynı anda en fazla 2 job YÖK'e aktif istek atabilir.
+# Kalan job'lar thread'de bekler — sunucu IP'mizden eş zamanlı yük sınırlanır.
+_yoktez_semaphore = threading.Semaphore(2)
 
 # İstekler arası bekleme aralıkları (saniye) — YÖK firewall'ını tetiklemez
 _DELAY_INIT_TO_SEARCH  = (1.5, 3.0)   # session init → POST arama
@@ -357,6 +362,16 @@ def search(tez_ad='', yazar='', danisman='', universite='',
     YÖK Tez araması yapar (yeni arayüz: islem=4).
     Returns: (total_count, demo_records)
     """
+    with _yoktez_semaphore:
+        return _search_impl(tez_ad=tez_ad, yazar=yazar, danisman=danisman,
+                            universite=universite, tur=tur,
+                            yil_baslangic=yil_baslangic, yil_bitis=yil_bitis,
+                            metin=metin, demo_limit=demo_limit)
+
+
+def _search_impl(tez_ad='', yazar='', danisman='', universite='',
+                 tur='0', yil_baslangic=None, yil_bitis=None, metin='',
+                 demo_limit=5) -> tuple[int, list[dict]]:
     session = _make_session()
 
     # Session çerezi al
@@ -390,11 +405,10 @@ def search(tez_ad='', yazar='', danisman='', universite='',
     # Hata sayfası kontrolü
     if 'tezSorguSonucHata' in response.url or 'hata' in response.url.lower():
         logger.warning(f'YÖK Tez hata sayfasına yönlendirildi: {response.url}')
-        # Eski form formatını dene (fallback)
         return _search_legacy(session, tez_ad=tez_ad, yazar=yazar, danisman=danisman,
-                               universite=universite, tur=tur,
-                               yil_baslangic=yil_baslangic, yil_bitis=yil_bitis,
-                               metin=metin, demo_limit=demo_limit)
+                              universite=universite, tur=tur,
+                              yil_baslangic=yil_baslangic, yil_bitis=yil_bitis,
+                              metin=metin, demo_limit=demo_limit)
 
     total, records = _parse_results(response.text)
     if total == 0:
