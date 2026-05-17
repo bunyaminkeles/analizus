@@ -387,6 +387,11 @@ class JobProposal:
     # Kabul edilince: job.status → 'in_progress'
 ```
 
+### Quiz Puan Sistemi
+- Her doğru cevap: **10 puan** (`QuizScore.total_points += 10`)
+- Teklif verme eşiği: 1000+ toplam puan (forum `reputation` + quiz `total_points`)
+- `quiz-efsanesi` rozeti: 1000 doğru cevap → teklif hakkı (alternatif yol)
+
 ### İlan Kuralları (Hizmetler Pazarı)
 - **Düzenleme:** `status=open` AND `proposals.exists()=False` AND `is_edited=False` → 1 kez düzenlenebilir
 - **İptal:** `close_job` view → `status=cancelled` → bekleyen teklif verenlere AnalizBot DM
@@ -416,7 +421,7 @@ class PrivateMessage:    # Kullanıcılar arası DM (attachment: FileField → S
 class BlogPost / BlogCategory
 class StudyRoom:         # Çalışma odaları
 class StudyRoomPost:     # Oda mesajları (file: FileField → S3)
-class QuizQuestion / QuizScore:  # İstatistik Arena
+class QuizQuestion / QuizScore:  # İstatistik Arena — 432 soru (hedef: 1000)
 class Badge:             # Rozetler
 class SuccessStory:      # Başarı hikayeleri
 class DonationTier:      # Destek paketi (name, min_amount, premium_days, is_active)
@@ -547,6 +552,8 @@ Kullanıcı dosya yükler (CSV/Excel, max 10MB)
 | `ki-kare/` | `ki_kare` | ki_kare.py | Ki-Kare + Fisher's Exact Test |
 | `lineer-regresyon/` | `lineer_regresyon` | lineer_regresyon.py | Çoklu Doğrusal Regresyon (OLS) |
 | `lojistik-regresyon/` | `lojistik_regresyon` | lojistik_regresyon.py | Lojistik Regresyon (Binary) |
+| `friedman/` | `friedman` | friedman.py | Friedman Testi (tekrarlayan ölçüm, parametrik olmayan) |
+| `tekrarli-anova/` | `tekrarli_anova` | tekrarli_anova.py | Tekrarlayan Ölçümler ANOVA + Cohen's d post-hoc |
 
 ### Regresyon Araçları (Detay)
 
@@ -595,9 +602,15 @@ Analizler →
   Ön Analizler:         Normallik, Betimsel İstatistik, Örneklem
   Geçerlik & Güvenirlik: Cronbach Alpha
   İlişki Analizleri:    Korelasyon
-  Fark Analizleri:      t-Testi, ANOVA, Mann-Whitney U, Kruskal-Wallis, Ki-Kare
+  Fark Analizleri:      t-Testi, ANOVA, Mann-Whitney U, Kruskal-Wallis, Ki-Kare,
+                        Wilcoxon, Friedman, Tekrarlayan Ölçümler ANOVA
   Regresyon Analizleri: Çoklu Doğrusal Regresyon, Lojistik Regresyon
 ```
+
+### Unified Analiz Arayüzü (PLANLANDI — mayıs 2026)
+- Hedef: Ön Analizler → Regresyon'a kadar tüm araçları tek "Analiz Akışı" wizard'ında birleştir
+- Veri bir kez yüklenir, kategoriler arası geçiş yapılır
+- Karar bekleniyor: UX tasarımı, URL prefix (`/analiz/`), tek sayfa vs çok adım
 
 ---
 
@@ -613,20 +626,34 @@ Analizler →
 
 ## 14. AKADEMİK TARAMA ARAÇLARI
 
+### Scraping Ban Koruması (3 Servis)
+
+| Koruma | YÖK Tez | TR Dizin | OpenAlex |
+|---|---|---|---|
+| Semaphore | `Semaphore(2)` | `Semaphore(3)` | `Semaphore(4)` |
+| 429/503 backoff | 5-9s × deneme | 5-10s × deneme | Retry-After header |
+| UA rotasyonu | 4 farklı UA | 4 farklı UA | — (API, UA sabit) |
+| Sayfa gecikmesi | 2-4.5s | 0.5-1.5s | 0.3-0.6s |
+| Queue pozisyonu | status endpoint'te `queue_position` alanı |
+
+- Status `pending` iken frontend "Sırada N. sıradasınız" gösterir
+- İndirilen dosya adları: `yoktez_<kelime>_<tarih>.xlsx`, `trdizin_<kelime>_<tarih>.xlsx` vb.
+
 ### OpenAlex (`openalex/`)
 - 240M+ akademik kayıt, ücretsiz API
 - Cursor-based pagination, max 5000 sonuç
-- `OPENALEX_EMAIL` env var (polite pool)
+- `OPENALEX_EMAIL` env var (polite pool, 10 req/s)
 - S3 paths: `openalex/demo/`, `openalex/full/`, `openalex/orders/`
 
-### YÖK Tez (`yoktez/`)
+### YÖK Tez (`yoktez/` vs `tezanaliz/` — KARIŞTIRILMAMALI)
+- `/yoktez/` = **Tarama**: arama formu → TXT/Excel indir (ham veri)
+- `/tezanaliz/` = **Analiz**: aynı arama + 7 grafiksel analiz (LDA, TF-IDF, trend, wordcloud) + PDF
+- `tezanaliz` scraper için `yoktez.services.scraper`'ı import eder — rate limiting her ikisine de uygulanır
 - HTTP tabanlı (requests + BeautifulSoup) — Selenium yok
-- YÖK form POST → JS block parse → tezDetay.jsp ile abstract
-- Sonuç formatı: TXT
 
 ### TR Dizin (`trdizin/`)
-- `feature_trdizin = False` — varsayılan gizli
-- HTTP API tabanlı
+- `feature_trdizin = False` — varsayılan gizli, admin'den açılabilir
+- REST JSON API tabanlı (`search.trdizin.gov.tr/api/`)
 
 ### OAI-PMH (`oaipmh/`)
 - 19 üniversite arşivi aktif endpoint (ODTÜ, İTÜ, Dokuz Eylül, Akdeniz vb.)
