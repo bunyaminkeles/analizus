@@ -70,12 +70,22 @@ def _parse_record(record, university_name=""):
 
 
 def _is_thesis(record):
-    """Kaydın tez olup olmadığını dc.type üzerinden kontrol eder."""
+    """
+    Kaydın tez olup olmadığını dc.type üzerinden kontrol eder.
+    dc:type boşsa dahil et — çoğu Türk üniversitesi bu alanı doldurmaz.
+    Sadece açıkça makale/kitap olduğu belli olanları çıkar.
+    """
     meta = record.metadata
     types = [t.lower() for t in meta.get('type', [])]
-    thesis_keywords = ['thesis', 'tez', 'masterthesis', 'doctoralthesis',
-                       'master', 'doctoral', 'dissertation', 'yüksek lisans', 'doktora']
-    return any(kw in ' '.join(types) for kw in thesis_keywords)
+    if not types:
+        return True  # dc:type yoksa varsayılan olarak dahil et
+    joined = ' '.join(types)
+    non_thesis = ['article', 'journalarticle', 'journal article', 'book',
+                  'bookchapter', 'book chapter', 'conference', 'preprint',
+                  'report', 'makale', 'bildiri', 'dataset']
+    if any(kw in joined for kw in non_thesis):
+        return False
+    return True
 
 
 def _keyword_matches(record_dict, title_query=None, abstract_query=None):
