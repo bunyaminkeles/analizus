@@ -190,7 +190,7 @@
                 </a>
 
                 <!-- Analizler Dropdown -->
-                {% if features.bibliometrics or features.tezanaliz or features.istatistik %}
+                {% if features.bibliometrics or features.istatistik %}
                 <div class="site-nav__dropdown-wrap">
                     <button class="site-nav__link site-nav__dropdown-btn"
                             aria-expanded="false" aria-haspopup="true"
@@ -202,11 +202,8 @@
                         {% if features.bibliometrics %}
                         <a href="{% url 'bibliometrics:landing' %}" class="site-nav__dropdown-item" role="menuitem">Bibliometrik Analiz</a>
                         {% endif %}
-                        {% if features.tezanaliz %}
-                        <a href="{% url 'tezanaliz:landing' %}" class="site-nav__dropdown-item" role="menuitem">Tez Analizi (YÖK)</a>
-                        {% endif %}
                         {% if features.istatistik %}
-                        {% if features.bibliometrics or features.tezanaliz %}<div class="site-nav__dropdown-divider"></div>{% endif %}
+                        {% if features.bibliometrics %}<div class="site-nav__dropdown-divider"></div>{% endif %}
                         <!-- Ön Analizler flyout -->
                         <div class="site-nav__flyout-wrap">
                             <div class="site-nav__flyout-btn">
@@ -291,7 +288,7 @@
                         <div class="site-nav__dropdown-divider"></div>
                         <span class="site-nav__dropdown-label">Akademik Tarama</span>
                         {% if features.oaipmh %}<a href="{% url 'oaipmh:landing' %}" class="site-nav__dropdown-item" role="menuitem">Üniversite Tezleri</a>{% endif %}
-                        {% if features.yoktez %}<a href="{% url 'yoktez:landing' %}" class="site-nav__dropdown-item" role="menuitem">YÖK Tez Tarama</a>{% endif %}
+                        {% if features.yoktez %}<a href="{% url 'yoktez:landing' %}" class="site-nav__dropdown-item" role="menuitem">YÖK Tez</a>{% endif %}
                         {% if features.openalex %}<a href="{% url 'openalex:landing' %}" class="site-nav__dropdown-item" role="menuitem">OpenAlex Tarama</a>{% endif %}
                         {% if features.trdizin %}<a href="{% url 'trdizin:landing' %}" class="site-nav__dropdown-item" role="menuitem">TR Dizin Tarama</a>{% endif %}
                         {% endif %}
@@ -434,7 +431,7 @@
 
             <a href="{% url 'home' %}" class="nav-drawer__link {% if request.path == '/' %}is-active{% endif %}">Forum</a>
 
-            {% if features.bibliometrics or features.tezanaliz or features.istatistik %}
+            {% if features.bibliometrics or features.istatistik %}
             <div>
                 <button class="nav-drawer__accordion-btn" aria-expanded="false" data-accordion="mob-analizler">
                     Analizler
@@ -442,7 +439,6 @@
                 </button>
                 <div class="nav-drawer__accordion-body" id="mob-analizler">
                     {% if features.bibliometrics %}<a href="{% url 'bibliometrics:landing' %}" class="nav-drawer__link">Bibliometrik Analiz</a>{% endif %}
-                    {% if features.tezanaliz %}<a href="{% url 'tezanaliz:landing' %}" class="nav-drawer__link">Tez Analizi (YÖK)</a>{% endif %}
                     {% if features.istatistik %}
                     <span class="nav-drawer__sub-label">Ön Analizler</span>
                     <a href="{% url 'istatistik:betimsel' %}" class="nav-drawer__link">Betimleyici İstatistik</a>
@@ -480,7 +476,7 @@
                     {% if features.oaipmh or features.yoktez or features.openalex or features.trdizin %}
                     <span class="nav-drawer__sub-label">Akademik Tarama</span>
                     {% if features.oaipmh %}<a href="{% url 'oaipmh:landing' %}" class="nav-drawer__link">Üniversite Tezleri</a>{% endif %}
-                    {% if features.yoktez %}<a href="{% url 'yoktez:landing' %}" class="nav-drawer__link">YÖK Tez Tarama</a>{% endif %}
+                    {% if features.yoktez %}<a href="{% url 'yoktez:landing' %}" class="nav-drawer__link">YÖK Tez</a>{% endif %}
                     {% if features.openalex %}<a href="{% url 'openalex:landing' %}" class="nav-drawer__link">OpenAlex Tarama</a>{% endif %}
                     {% if features.trdizin %}<a href="{% url 'trdizin:landing' %}" class="nav-drawer__link">TR Dizin Tarama</a>{% endif %}
                     {% endif %}

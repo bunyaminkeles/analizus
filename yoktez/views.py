@@ -1,5 +1,6 @@
+import logging
 from django.shortcuts import render, get_object_or_404
-from django.http import JsonResponse, HttpResponse, StreamingHttpResponse
+from django.http import JsonResponse, HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_GET, require_POST
 from django.http import Http404
@@ -8,6 +9,8 @@ from functools import wraps
 
 from .forms import YokTezSearchForm
 from .models import YokTezSearchJob
+
+logger = logging.getLogger(__name__)
 
 
 def feature_required(flag_name):
@@ -106,11 +109,15 @@ def yoktez_landing(request):
         status__in=['pending', 'running'],
     ).order_by('-created_at').first()
 
+    from tezanaliz.models import TezAnaliz
+    past_analiz_jobs = TezAnaliz.objects.filter(user=user).select_related('yok_job').order_by('-created_at')[:8]
+
     return render(request, 'yoktez/landing.html', {
         'form': form,
         'remaining': remaining,
         'daily_limit': daily_limit,
         'active_job_id': str(active_job.id) if active_job else None,
+        'past_analiz_jobs': past_analiz_jobs,
     })
 
 
@@ -240,3 +247,110 @@ def yoktez_cancel(request, job_id):
         job.error_message = 'Kullanıcı tarafından iptal edildi.'
         job.save(update_fields=['status', 'error_message'])
     return JsonResponse({'success': True})
+
+
+# ---------------------------------------------------------------------------
+# Tez Analizi view'ları (tezanaliz app'ten taşındı — /yoktez/analiz/... URL'leri)
+# ---------------------------------------------------------------------------
+
+@login_required
+@require_POST
+def create_analiz(request, yok_job_id):
+    """YÖK Tez aramasından tez analizi başlat."""
+    from tezanaliz.models import TezAnaliz
+
+    try:
+        yok_job = YokTezSearchJob.objects.get(id=yok_job_id, user=request.user)
+    except YokTezSearchJob.DoesNotExist:
+        return JsonResponse({'error': 'YÖK Tez araması bulunamadı.'}, status=404)
+
+    if yok_job.total_results < 10:
+        return JsonResponse(
+            {'error': f'Analiz için en az 10 sonuç gereklidir (bulunan: {yok_job.total_results}).'},
+            status=400,
+        )
+
+    limit = TezAnaliz.get_daily_limit(request.user)
+    used = TezAnaliz.daily_count_for_user(request.user)
+    if used >= limit:
+        return JsonResponse({'error': f'Günlük analiz limitinize ({limit}) ulaştınız.'}, status=429)
+
+    existing = TezAnaliz.objects.filter(yok_job=yok_job, user=request.user).first()
+    if existing and existing.status in ('pending', 'running'):
+        return JsonResponse({'job_id': str(existing.id), 'already_running': True})
+    if existing and existing.status == 'completed':
+        return JsonResponse({'job_id': str(existing.id), 'already_completed': True})
+
+    job = TezAnaliz.objects.create(
+        user=request.user,
+        yok_job=yok_job,
+        tez_ad=yok_job.tez_ad,
+        yazar=yok_job.yazar,
+        universite=yok_job.universite,
+        tur=yok_job.tur,
+        yil_baslangic=yok_job.yil_baslangic,
+        yil_bitis=yok_job.yil_bitis,
+        metin=yok_job.metin,
+    )
+
+    from tezanaliz.services.job_runner import run_tezanaliz_job
+    run_tezanaliz_job(str(job.id))
+
+    return JsonResponse({'job_id': str(job.id)})
+
+
+STALE_TIMEOUT_MINUTES = 15
+
+
+@login_required
+def analiz_status(request, job_id):
+    """Analiz iş durumunu döndür."""
+    from django.utils import timezone
+    from tezanaliz.models import TezAnaliz
+
+    job = get_object_or_404(TezAnaliz, id=job_id, user=request.user)
+
+    if job.status in ('pending', 'running'):
+        elapsed = (timezone.now() - job.created_at).total_seconds()
+        if elapsed > STALE_TIMEOUT_MINUTES * 60:
+            job.mark_failed(
+                f'İşlem {STALE_TIMEOUT_MINUTES} dakika içinde tamamlanamadı. '
+                'YÖK Tez sunucusu yavaş yanıt veriyor olabilir. Lütfen tekrar deneyin.'
+            )
+
+    queue_position = 0
+    if job.status == 'pending':
+        from analizdestek.job_queue import get_queue_position
+        queue_position = get_queue_position('tezanaliz', str(job.id))
+
+    return JsonResponse({
+        'status': job.status,
+        'total_records': job.total_records,
+        'pdf_url': job.pdf_url,
+        'error': job.error_message,
+        'queue_position': queue_position,
+    })
+
+
+@login_required
+def analiz_results(request, job_id):
+    """Analiz sonuç sayfası."""
+    from tezanaliz.models import TezAnaliz
+
+    job = get_object_or_404(TezAnaliz, id=job_id, user=request.user)
+    similar = (job.analysis_data or {}).get('similar', [])
+
+    analyses_list = [
+        'Tez Türlerine Göre Dağılım (Pasta Grafik)',
+        'Yıllara Göre Tez Türü Trendi (Stacked Bar)',
+        'Üniversite Bazında Üretkenlik (Top 15)',
+        'TF-IDF Anahtar Kelimeler (Başlık + Özet)',
+        'Son 5 Yıl Tez Trendi + Büyüme Oranı',
+        'LDA Konu Modelleme (Gizli Konular)',
+        'Konu & Dizin Terimleri Kelime Bulutu',
+    ]
+    return render(request, 'yoktez/results.html', {
+        'job': job,
+        'similar': similar,
+        'analyses_list': analyses_list,
+    })

@@ -26,11 +26,6 @@
                             Günlük <strong>{{ daily_limit }}</strong> arama hakkı — Kalan: <strong>{{ remaining }}</strong>
                         </p>
                     </div>
-                    {% if features.tezanaliz %}
-                    <a href="{% url 'tezanaliz:landing' %}" class="btn btn-sm btn-outline-success ms-3 text-nowrap">
-                        <i class="bi bi-clock-history me-1"></i>Analizlerim
-                    </a>
-                    {% endif %}
                 </div>
             </div>
 
@@ -326,14 +321,14 @@ function startAnaliz(e) {
     btn.disabled = true;
     btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Başlatılıyor...';
     const csrf = document.querySelector('[name=csrfmiddlewaretoken]').value;
-    fetch(`/tezanaliz/yok/${jobId}/`, {
+    fetch(`/yoktez/analiz/${jobId}/`, {
         method: 'POST',
         headers: {'X-CSRFToken': csrf, 'X-Requested-With': 'XMLHttpRequest'},
     })
     .then(r => r.json())
     .then(data => {
         if (data.job_id) {
-            window.location.href = `/tezanaliz/sonuc/${data.job_id}/`;
+            window.location.href = `/yoktez/sonuc/${data.job_id}/`;
         } else {
             btn.disabled = false;
             btn.innerHTML = '<i class="bi bi-bar-chart-line me-1"></i>Analiz Yap';
@@ -370,6 +365,45 @@ document.getElementById('send-email-btn').addEventListener('click', function() {
 });
 </script>
 
+<!-- Geçmiş Analizler -->
+{% if past_analiz_jobs %}
+<div class="container mb-2" style="max-width:860px;">
+    <div class="card bg-dark border-secondary text-white">
+        <div class="card-header">
+            <i class="bi bi-clock-history me-2"></i>Geçmiş Analizlerim
+        </div>
+        <div class="list-group list-group-flush">
+            {% for job in past_analiz_jobs %}
+            <div class="list-group-item bg-dark border-secondary text-white d-flex justify-content-between align-items-center py-2">
+                <div>
+                    <div class="small fw-semibold">{{ job.get_query_summary|truncatechars:60 }}</div>
+                    <div class="text-muted" style="font-size:0.75rem;">
+                        {{ job.created_at|date:"d.m.Y H:i" }}
+                        {% if job.status == 'completed' %}· {{ job.total_records }} tez{% endif %}
+                    </div>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    {% if job.status == 'completed' %}
+                        <span class="badge bg-success">Tamamlandı</span>
+                        <a href="{% url 'yoktez:analiz_results' job.id %}" class="btn btn-sm btn-outline-success">
+                            <i class="bi bi-eye me-1"></i>Görüntüle
+                        </a>
+                    {% elif job.status == 'running' or job.status == 'pending' %}
+                        <span class="badge bg-warning text-dark">Devam ediyor</span>
+                        <a href="{% url 'yoktez:analiz_results' job.id %}" class="btn btn-sm btn-outline-warning">
+                            <i class="bi bi-hourglass-split me-1"></i>Takip Et
+                        </a>
+                    {% else %}
+                        <span class="badge bg-danger">Başarısız</span>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
 <!-- SEO: Bilgi metni -->
 <div class="container mb-5 mt-5" style="max-width:860px;">
     <div class="row g-4">
@@ -396,7 +430,7 @@ document.getElementById('send-email-btn').addEventListener('click', function() {
         <div class="col-md-4">
             <div class="p-3 rounded h-100" style="background:rgba(99,102,241,0.07);border:1px solid rgba(99,102,241,0.15);">
                 <h3 class="text-white fw-semibold mb-2" style="font-size:.9rem;"><i class="bi bi-robot me-2" style="color:#818cf8;"></i>AI ile Analiz Et</h3>
-                <p class="text-secondary mb-0" style="font-size:.8rem;line-height:1.6;">Bulduğunuz tezin metodolojisini <a href="/tezanaliz/" class="text-decoration-none" style="color:#a5b4fc;">Tez Analizi</a> aracımızla yapay zeka destekli inceleyin.</p>
+                <p class="text-secondary mb-0" style="font-size:.8rem;line-height:1.6;">10+ sonuçta <strong class="text-decoration-none" style="color:#a5b4fc;">Analiz Yap</strong> butonu ile 7 grafik içeren PDF rapor alın.</p>
             </div>
         </div>
     </div>
