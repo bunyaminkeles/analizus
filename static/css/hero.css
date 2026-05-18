@@ -246,13 +246,12 @@
     font-size: var(--ax-text-xs);
 }
 .ax-hero__kazima-bar a {
-    color: var(--ax-text-secondary);
+    color: var(--ax-text-muted);
     text-decoration: none;
-    font-weight: var(--ax-font-medium);
     transition: color var(--ax-transition-fast);
 }
 .ax-hero__kazima-bar a:hover {
-    color: var(--ax-accent-primary);
+    color: var(--ax-text-secondary);
 }
 .ax-hero__kazima-sep { display: none; }
 
