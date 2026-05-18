@@ -25,6 +25,13 @@ class MakaleAnaliz(models.Model):
         blank=True,
         related_name='analizler',
     )
+    oai_job = models.ForeignKey(
+        'oaipmh.OAIPMHSearchJob',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='analizler',
+    )
 
     # Sorgu özeti (dizin_job silinse bile kalsın)
     query_summary = models.CharField(max_length=500, blank=True)

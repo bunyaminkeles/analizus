@@ -7,6 +7,8 @@
 
 ## 1. PROJE AMAÇ VE VİZYON
 
+**Platform tanımı:** Analizus; bütün veri analizi, istatistiki analizler ve yapay zeka modellemeleri için uzmanların ve talep sahiplerinin buluştuğu, akademik desteklerin sıfırdan uzmanlık düzeyine kadar verildiği, kabiliyetlerin hizmete dönüştürüldüğü, kodsuz veri kazıma ile veri erişiminin sağlanabildiği bir forum ve analiz platformudur.
+
 **Alan adı:** `analizus.com`
 **Hedef kitle:** Tez yazan öğrenciler, makale hazırlayan akademisyenler, istatistik analizine ihtiyaç duyan araştırmacılar ve bu alanda hizmet veren uzmanlar.
 **Temel değer önerisi:** Tezin için doğru istatistik testini seç, verinle anında hesapla, gerektiğinde uzman bul — Türkçe, güvenilir, akademik düzeyde.
@@ -909,9 +911,12 @@ with connection.cursor() as c:
 - **Dosya paylaşımı (DM + Çalışma Odaları)** — PDF, Word, Excel, PPT, CSV, TXT, resim; max 5 MB; S3'e yüklenir; mesaj/oda silinince dosya da silinir (post_delete signal)
 - **Destekçi / Bağış sistemi** — Footer widget, modal (DonationTier seçimi), IBAN e-postası; `donation_context` processor ile her sayfada tier listesi mevcut; migration `0076_seed_donation_tiers` (4 tier)
 - **SEO iyileştirmeleri** — Nginx non-www→www 301 yönlendirmesi; sitemap genişletmesi (blog, 12 istatistik aracı, 5 landing page); 18 sayfaya benzersiz meta description; 6 title güncellendi; IndexNow entegrasyonu (Bing); Google Search Console `https://www.analizus.com/` property eklendi + sitemap submit edildi
+- **YÖK Tez birleştirme** — `/tezanaliz/` + `/yoktez/` tek çatıda birleştirildi; tüm işlevler `/yoktez/` altında; `/tezanaliz/*` 301 redirect; navbar'da tek "YÖK Tez" girişi
 
 ### Sıradaki Görevler
-- Yeni kullanıcı onboarding akışı (Profile.segment alanı)
+- Sosyal kanıt iyileştirmeleri (ana sayfa — çok kolay)
+- Hero net değer önerisi (ana sayfa — kolay)
+- Yeni kullanıcı onboarding akışı (Profile.segment alanı — migration gerekli)
 - Analiz araçlarında akıllı hata yönetimi
 - Blog içerik altyapısı iyileştirmeleri
 - Admin analytics dashboard
@@ -920,4 +925,4 @@ with connection.cursor() as c:
 
 ---
 
-*Son güncelleme: Mayıs 2026 — §3 Hetzner Docker Compose (web/db/redis, /app, 89.167.5.224); §4 DATABASE_URL host=db; §8 DonationTier/Donation/StudyRoomPost modelleri; §12 regresyon + korelasyon sütun seçimi; §15 destekçi e-postası; §22 cleanup-attachments cron; §26 dosya paylaşımı + destekçi sistemi + korelasyon sütun seçimi + SEO iyileştirmeleri (IndexNow, sitemap, meta description, www redirect) tamamlandı*
+*Son güncelleme: Mayıs 2026 — §26 YÖK Tez birleştirme (/tezanaliz/+/yoktez/ → /yoktez/); sıradaki görevler güncellendi*

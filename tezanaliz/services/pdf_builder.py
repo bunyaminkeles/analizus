@@ -134,9 +134,20 @@ def _draw_cover(c, width, height, total_records: int, query_summary: str):
     c.setFont(_FONT_NORMAL, 11)
     c.drawCentredString(width / 2, height - 150, 'YÖK Ulusal Tez Merkezi Verisi')
 
-    # Bilgi kartı
-    card_w = 350
-    card_h = 110
+    # Bilgi kartı — sorgu uzunsa iki satıra bölünür
+    query_text = query_summary or 'Genel Tarama'
+    max_chars = 38
+    if len(query_text) > max_chars:
+        query_line1 = query_text[:max_chars]
+        query_line2 = query_text[max_chars:max_chars * 2]
+        query_extra_h = 18
+    else:
+        query_line1 = query_text
+        query_line2 = ''
+        query_extra_h = 0
+
+    card_w = 380
+    card_h = 130 + query_extra_h
     card_x = width / 2 - card_w / 2
     card_y = height / 2 - card_h / 2
 
@@ -152,18 +163,21 @@ def _draw_cover(c, width, height, total_records: int, query_summary: str):
 
     row_y = card_y + card_h - 26
 
-    def _kv(key, val):
+    def _kv(key, val, val2=''):
         nonlocal row_y
         c.setFillColorRGB(*C_MUTED)
         c.setFont(_FONT_NORMAL, 9)
         c.drawString(card_x + 22, row_y, key)
         c.setFillColorRGB(*C_NAVY)
         c.setFont(_FONT_BOLD, 10)
-        c.drawString(card_x + 150, row_y, str(val)[:48])
+        c.drawString(card_x + 150, row_y, str(val))
+        if val2:
+            row_y -= 16
+            c.drawString(card_x + 150, row_y, str(val2))
         row_y -= 26
 
     _kv('Toplam Tez:', f'{total_records:,}')
-    _kv('Sorgu:', (query_summary or 'Genel Tarama')[:48])
+    _kv('Sorgu:', query_line1, query_line2)
     _kv('Rapor Tarihi:', date.today().strftime('%d.%m.%Y'))
     _kv('Hazırlayan:', 'Analizus Otomatik Analiz')
 

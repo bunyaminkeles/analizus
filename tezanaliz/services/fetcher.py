@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 
 MAX_RECORDS = 300
 PAGE_DELAY = 2.0    # saniye — sayfa istekleri arası
-DETAIL_DELAY = 0.5  # saniye — detay istekleri arası
+DETAIL_DELAY = 1.0  # saniye — detay istekleri arası
 JOB_TIMEOUT = 12 * 60  # saniye — toplam iş zaman aşımı (12 dk)
 
 
@@ -49,7 +49,9 @@ def fetch_all(
         danisman='',
         metin=metin,
     )
-    form_data = _build_form(keyword=keyword, nevi=nevi)
+    form_data = _build_form(keyword=keyword, nevi=nevi,
+                            universite=universite, yil_baslangic=yil_baslangic,
+                            yil_bitis=yil_bitis, tur=tur)
 
     # --- Sayfa 1 ---
     all_basic = []
@@ -62,6 +64,9 @@ def fetch_all(
             redirect_url = response.headers.get('location', '')
             if redirect_url.startswith('http://'):
                 redirect_url = redirect_url.replace('http://', 'https://', 1)
+            if redirect_url and not redirect_url.startswith('http'):
+                from urllib.parse import urljoin
+                redirect_url = urljoin('https://tez.yok.gov.tr', redirect_url)
             if redirect_url:
                 response = session.get(redirect_url, timeout=30)
                 search_result_url = response.url  # final URL — ek sayfalar için kullanılacak
@@ -146,7 +151,7 @@ def fetch_all(
             )
             break
         try:
-            detail = _fetch_detail(session, rec.get('detail_id', ''), rec.get('detail_no', ''))
+            detail = _fetch_detail(session, rec.get('kayit_no', '') or rec.get('detail_id', ''), rec.get('tez_no', '') or rec.get('detail_no', ''))
         except Exception as e:
             logger.warning(f'[tezanaliz fetcher] Detay hatası kayıt {i}: {e}')
             detail = {}

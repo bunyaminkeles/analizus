@@ -66,7 +66,8 @@ def _determine_query(tez_ad='', yazar='', danisman='', metin=''):
     return '', NEVI_TUMU
 
 
-def _build_form(keyword='', nevi=NEVI_TUMU, tip='2'):
+def _build_form(keyword='', nevi=NEVI_TUMU, tip='2',
+                universite='', yil_baslangic=None, yil_bitis=None, tur='0'):
     """GForm2 (islem=4) POST verisi."""
     return {
         'keyword':    keyword,
@@ -77,6 +78,10 @@ def _build_form(keyword='', nevi=NEVI_TUMU, tip='2'):
         'nevi':       nevi,
         'tip':        tip,
         'islem':      '4',
+        'uniad':      universite.upper() if universite else '',
+        'yil1':       str(yil_baslangic) if yil_baslangic else '0',
+        'yil2':       str(yil_bitis) if yil_bitis else '0',
+        'Tur':        tur if tur and tur != '0' else '0',
     }
 
 
@@ -214,6 +219,13 @@ def _fetch_detail(session, kayit_no: str, tez_no: str) -> dict:
         if dil:
             result['language'] = dil
 
+        # Gerçek sayısal tez no — yeni API'de 'tezNo' veya 'tez_no' alanı
+        for key in ('tezNo', 'tez_no', 'TezNo', 'no'):
+            val = str(data.get(key, '')).strip()
+            if val and val.isdigit():
+                result['tez_no'] = val
+                break
+
         # APA referansından yazar, yıl, tez türü, üniversite çıkar
         # Ham: "AKTAR, M. (2026). <i>Başlık.</i> [Doktora tezi, Üniversite Adı]."
         apa_raw = data.get('apa_ref', '') or data.get('apaRef', '')
@@ -324,7 +336,9 @@ def search(tez_ad='', yazar='', danisman='', universite='',
 
     logger.info(f'YÖK Tez arama: keyword="{keyword}" nevi={nevi}')
 
-    form_data = _build_form(keyword=keyword, nevi=nevi)
+    form_data = _build_form(keyword=keyword, nevi=nevi,
+                            universite=universite, yil_baslangic=yil_baslangic,
+                            yil_bitis=yil_bitis, tur=tur)
 
     try:
         response = session.post(SEARCH_URL, data=form_data, timeout=45, allow_redirects=True)
@@ -354,8 +368,13 @@ def search(tez_ad='', yazar='', danisman='', universite='',
         (universite) or
         (tur and tur != '0')
     )
-    # Filtre varsa daha fazla aday çek; ilk page yeni kayıtlarla dolu olabilir
-    candidate_count = demo_limit * 4 if has_extra_filters else demo_limit
+    # Filtre varsa daha fazla aday çek; uniad server-side çalışırsa az yeterli, çalışmazsa 50'ye kadar tara
+    if universite:
+        candidate_count = min(len(records), 50)
+    elif has_extra_filters:
+        candidate_count = min(len(records), demo_limit * 10)
+    else:
+        candidate_count = demo_limit
     candidates = records[:candidate_count]
 
     enriched = []   # detail çekilmiş tüm adaylar
