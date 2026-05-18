@@ -21,7 +21,7 @@ _yoktez_semaphore = threading.Semaphore(2)
 
 # İstekler arası bekleme aralıkları (saniye) — YÖK firewall'ını tetiklemez
 _DELAY_INIT_TO_SEARCH  = (1.5, 3.0)   # session init → POST arama
-_DELAY_BETWEEN_DETAILS = (2.0, 4.5)   # her detail isteği arası
+_DELAY_BETWEEN_DETAILS = (0.8, 2.0)   # her detail isteği arası
 _DELAY_DETAIL_RETRY    = (5.0, 9.0)   # 429/503 sonrası retry bekle
 _MAX_DETAIL_RETRIES    = 2            # detail endpoint için maksimum yeniden deneme
 
@@ -438,7 +438,7 @@ def _search_impl(tez_ad='', yazar='', danisman='', universite='',
     if universite:
         candidate_count = min(len(records), 50)
     elif has_extra_filters:
-        candidate_count = min(len(records), demo_limit * 10)
+        candidate_count = min(len(records), demo_limit * 5)
     else:
         candidate_count = demo_limit
     candidates = records[:candidate_count]
@@ -465,6 +465,8 @@ def _search_impl(tez_ad='', yazar='', danisman='', universite='',
                 and _uni_ok(rec, universite)
                 and _type_ok(rec, tur)):
             demo.append(rec)
+            if len(demo) >= demo_limit:
+                break
 
     # Üniversite filtresi boşsa ve sadece yıl/tür kaldıysa fallback yap;
     # üniversite filtresi varsa sıfır sonuç doğru davranıştır — fallback etme

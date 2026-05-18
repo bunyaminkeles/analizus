@@ -121,6 +121,18 @@ def yoktez_landing(request):
         status__in=['pending', 'running'],
     ).order_by('-created_at').first()
 
+    if active_job and request.method == 'GET':
+        form = YokTezSearchForm(initial={
+            'tez_ad': active_job.tez_ad,
+            'yazar': getattr(active_job, 'yazar', ''),
+            'danisman': getattr(active_job, 'danisman', ''),
+            'universite': getattr(active_job, 'universite', ''),
+            'tur': active_job.tur,
+            'yil_baslangic': active_job.yil_baslangic,
+            'yil_bitis': active_job.yil_bitis,
+            'metin': active_job.metin,
+        })
+
     from tezanaliz.models import TezAnaliz
     past_analiz_jobs = TezAnaliz.objects.filter(user=user).select_related('yok_job').order_by('-created_at')[:8]
 
