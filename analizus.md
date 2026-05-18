@@ -88,6 +88,10 @@ PostgreSQL (host) + Redis (host)
 ssh root@89.167.5.224
 ```
 
+> ⚠️ **KRİTİK:** Hetzner'de `docker-compose` komutu **YOKTUR**. Her zaman `docker compose` (boşluklu, plugin) kullan.
+> Migration'ları **asla** host'ta çalıştırma — `db` hostname container dışında çözümlenmez.
+> Doğru: `docker compose exec web python manage.py migrate`
+
 ### Uygulama Yönetimi
 ```bash
 # Container durumu
