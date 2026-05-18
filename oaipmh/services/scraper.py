@@ -130,6 +130,8 @@ class OAIPMHScraper:
                             break
                         count += 1
                         try:
+                            if not _is_thesis(record):
+                                continue
                             parsed = _parse_record(record, uni.name)
                             if not _year_in_range(parsed, year_from, year_to):
                                 continue

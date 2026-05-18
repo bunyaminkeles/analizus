@@ -191,17 +191,6 @@ Görevler kolaylık derecesine göre sıralanmıştır. Fiyatlandırma/para mode
 
 ---
 
-#### Görev 2: Hero Alanında Net Değer Önerisi
-**Zorluk**: Kolay — template + CSS
-- Ana sayfa hero bölümünde tek cümlelik güçlü değer önerisi
-- Örnek: *"Tezin için doğru istatistik testini seç, verinle anında hesapla, gerektiğinde uzman bul."*
-- Hero altına 3 hızlı eylem butonu + 1 satır açıklama (Analiz Yap / Uzman Bul / Foruma Katıl)
-- Mobil responsive kontrolü
-
-**Başarı kriteri**: İlk giren biri 5 saniyede "burada analiz yapabilirim, uzman bulabilirim" anlıyor.
-
----
-
 #### Görev 3: Analiz Araçlarına Akademik Referans
 **Zorluk**: Kolay — template eklentisi, statik içerik
 - `istatistik/templates/` altındaki analiz sonuç şablonlarına "Metodoloji" bölümü ekle

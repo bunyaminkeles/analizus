@@ -553,7 +553,11 @@ def _search_legacy(session, tez_ad='', yazar='', danisman='', universite='',
         })
 
     total = len(records)
-    demo = records[:demo_limit]
+    filtered = [r for r in records
+                if _year_ok(r, yil_baslangic, yil_bitis)
+                and _uni_ok(r, universite)
+                and _type_ok(r, tur)]
+    demo = (filtered or records)[:demo_limit]
 
     # Legacy detay (tezDetay.jsp HTML)
     legacy_detail_url = f'{BASE_URL}/tezDetay.jsp'
