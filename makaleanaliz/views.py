@@ -65,6 +65,54 @@ def create_from_dizin(request, dizin_job_id):
     return JsonResponse({'job_id': str(job.id)})
 
 
+@login_required
+@require_POST
+def create_from_oaipmh(request, oai_job_id):
+    """
+    OAI-PMH aramasından makale analizi başlat.
+    POST /makaleanaliz/oaipmh/<oai_job_id>/
+    """
+    from oaipmh.models import OAIPMHSearchJob
+
+    try:
+        oai_job = OAIPMHSearchJob.objects.get(id=oai_job_id, user=request.user)
+    except OAIPMHSearchJob.DoesNotExist:
+        return JsonResponse({'error': 'Üniversite tez araması bulunamadı.'}, status=404)
+
+    if oai_job.status != 'completed':
+        return JsonResponse({'error': 'Analiz için tamamlanmış bir arama gereklidir.'}, status=400)
+
+    record_count = len(oai_job.all_results) if oai_job.all_results else oai_job.total_results
+    if record_count < 5:
+        return JsonResponse(
+            {'error': f'Analiz için en az 5 sonuç gereklidir (bulunan: {record_count}).'},
+            status=400,
+        )
+
+    limit = MakaleAnaliz.get_daily_limit(request.user)
+    used = MakaleAnaliz.daily_count_for_user(request.user)
+    if used >= limit:
+        return JsonResponse({'error': f'Günlük analiz limitinize ({limit}) ulaştınız.'}, status=429)
+
+    existing = MakaleAnaliz.objects.filter(oai_job=oai_job, user=request.user).first()
+    if existing and existing.status in ('pending', 'running'):
+        return JsonResponse({'job_id': str(existing.id), 'already_running': True})
+    if existing and existing.status == 'completed':
+        return JsonResponse({'job_id': str(existing.id), 'already_completed': True})
+
+    keyword = oai_job.keyword or ''
+    job = MakaleAnaliz.objects.create(
+        user=request.user,
+        oai_job=oai_job,
+        query_summary=f'Üniversite Arşivi: {keyword}' if keyword else 'Üniversite Tez Taraması',
+    )
+
+    from makaleanaliz.services.job_runner import run_makaleanaliz_job
+    run_makaleanaliz_job(str(job.id))
+
+    return JsonResponse({'job_id': str(job.id)})
+
+
 STALE_TIMEOUT_MINUTES = 10
 
 

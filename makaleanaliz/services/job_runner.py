@@ -39,18 +39,23 @@ def _execute_job(job_id: str) -> None:
     try:
         job.mark_running()
 
-        # 1. Veriyi DizinSearchJob'dan al
-        if not job.dizin_job:
-            job.mark_failed('TR Dizin araması bulunamadı.')
-            return
-
+        # 1. Veriyi kaynak job'dan al
         from forum.models import SiteSettings
         max_records = SiteSettings.load().analiz_max_records or 500
 
-        records = list(job.dizin_job.all_results or [])
+        if job.dizin_job:
+            records = list(job.dizin_job.all_results or [])
+            source_label = 'TR Dizin'
+        elif job.oai_job:
+            records = list(job.oai_job.all_results or [])
+            source_label = 'Üniversite Tez Arşivi'
+        else:
+            job.mark_failed('Analiz kaynağı bulunamadı.')
+            return
+
         if not records:
             job.mark_failed(
-                'TR Dizin verisi bulunamadı. '
+                f'{source_label} verisi bulunamadı. '
                 'Yeni bir arama yaparak tekrar deneyin.'
             )
             return

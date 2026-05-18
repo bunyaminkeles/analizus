@@ -163,11 +163,18 @@
                             <a id="download-excel-btn" href="#" class="btn btn-sm btn-success" style="display:none;">
                                 <i class="bi bi-file-earmark-excel me-1"></i>Excel İndir
                             </a>
+                            <button id="analiz-btn" class="btn btn-sm btn-info" style="display:none;" onclick="startAnaliz(event)">
+                                <i class="bi bi-bar-chart-line me-1"></i>Analiz Yap
+                            </button>
                         </div>
                     </div>
                     <div class="card-body">
                         <div id="email-sent-alert" class="alert alert-success" style="display:none;">
                             <i class="bi bi-check-circle me-2"></i>Sonuçlar e-posta adresinize gönderildi.
+                        </div>
+                        <div id="analiz-info" class="alert alert-info" style="display:none;">
+                            <i class="bi bi-bar-chart-line me-2"></i>
+                            Analiz başlatıldı! <a id="analiz-link" href="#" class="alert-link">Sonuçları buradan takip edin →</a>
                         </div>
                         <div id="results-list"></div>
                     </div>
@@ -265,7 +272,7 @@ function showResults(data) {
     if (!data.demo_email_sent && data.total_results > 0) {
         document.getElementById('send-email-btn').style.display = 'inline-block';
     }
-    if (data.all_results_file_url) {
+    if (data.total_results > 0) {
         const dlBtn = document.getElementById('download-btn');
         dlBtn.href = `/oaipmh/download/${currentJobId}/`;
         dlBtn.style.display = 'inline-block';
@@ -275,6 +282,42 @@ function showResults(data) {
         xlBtn.href = `/oaipmh/download-excel/${currentJobId}/`;
         xlBtn.style.display = 'inline-block';
     }
+    if (data.total_results >= 5) {
+        const analizBtn = document.getElementById('analiz-btn');
+        analizBtn.dataset.jobId = currentJobId;
+        analizBtn.style.display = 'inline-block';
+    }
+}
+
+function startAnaliz(e) {
+    e.preventDefault();
+    const btn = document.getElementById('analiz-btn');
+    const jobId = btn.dataset.jobId || currentJobId;
+    if (!jobId) { alert('Oturum bilgisi kayboldu, lütfen sayfayı yenileyin.'); return; }
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Başlatılıyor...';
+    const csrf = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    fetch(`/makaleanaliz/oaipmh/${jobId}/`, {
+        method: 'POST',
+        headers: {'X-CSRFToken': csrf, 'X-Requested-With': 'XMLHttpRequest'},
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.job_id) {
+            btn.style.display = 'none';
+            document.getElementById('analiz-link').href = `/makaleanaliz/sonuc/${data.job_id}/`;
+            document.getElementById('analiz-info').style.display = 'block';
+        } else {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="bi bi-bar-chart-line me-1"></i>Analiz Yap';
+            alert(data.error || 'Analiz başlatılamadı.');
+        }
+    })
+    .catch(err => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-bar-chart-line me-1"></i>Analiz Yap';
+        alert('Bağlantı hatası: ' + err);
+    });
 }
 
 const _kf = document.getElementById('keyword-form');
