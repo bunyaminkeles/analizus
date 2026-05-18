@@ -135,7 +135,7 @@ docker compose down && docker compose up -d
 
 ### .env Güncelleme
 ```bash
-nano /app/.env          # veya compose dosyasının bulunduğu dizindeki .env
+nano /app/.env
 docker compose up -d web
 ```
 
@@ -149,8 +149,8 @@ docker compose up -d web
 # Veritabanı
 DATABASE_URL=postgresql://bunyamin:SIFRE@db:5432/analizus
 
-# Redis (Channels)
-REDIS_URL=redis://localhost:6379/0
+# Redis (Channels) — Docker servis adı kullanılmalı, localhost değil
+REDIS_URL=redis://redis:6379
 
 # Site
 SITE_URL=https://www.analizus.com
@@ -737,7 +737,9 @@ analizus-files/
 │   ├── kruskal_wallis/
 │   ├── ki_kare/
 │   ├── lineer_regresyon/
-│   └── lojistik_regresyon/
+│   ├── lojistik_regresyon/
+│   ├── friedman/
+│   └── tekrarli_anova/
 ├── bibliometrics/
 │   ├── demo/
 │   └── full/
@@ -912,6 +914,7 @@ with connection.cursor() as c:
 | AnalizBot bulunamadı | `User.objects.get(username='AnalizBot')` — sisteme bu kullanıcı eklenmeli |
 | S3 yükleme başarısız | `AWS_S3_REGION_NAME=eu-north-1` (eu-central değil) |
 | WebSocket bağlanmıyor | Nginx `/ws/` bloğunda `proxy_http_version 1.1` ve `Upgrade` header'ı kontrol et |
+| Redis bağlantı hatası (`Connect call failed 127.0.0.1:6379`) | `.env`'de `REDIS_URL=redis://redis:6379` kullan — Docker'da `localhost`/`127.0.0.1` container dışına ulaşamaz; Render'dan kalan eski şifreli URL'i temizle |
 | Ödeme işlemi | iyzico altyapısı kodda var ama pasif — ödeme sistemi henüz aktif değil |
 | `No module named 'statsmodels'` | `pip install statsmodels` (regresyon analizleri için zorunlu) |
 | İstatistik polling 404 dönüyor | `STATUS_TEMPLATE.replace()` pattern'i kullan, `STATUS_BASE + jobId + '/'` değil (double slash üretir) |
@@ -943,10 +946,10 @@ with connection.cursor() as c:
 - **Destekçi / Bağış sistemi** — Footer widget, modal (DonationTier seçimi), IBAN e-postası; `donation_context` processor ile her sayfada tier listesi mevcut; migration `0076_seed_donation_tiers` (4 tier)
 - **SEO iyileştirmeleri** — Nginx non-www→www 301 yönlendirmesi; sitemap genişletmesi (blog, 12 istatistik aracı, 5 landing page); 18 sayfaya benzersiz meta description; 6 title güncellendi; IndexNow entegrasyonu (Bing); Google Search Console `https://www.analizus.com/` property eklendi + sitemap submit edildi
 - **YÖK Tez birleştirme** — `/tezanaliz/` + `/yoktez/` tek çatıda birleştirildi; tüm işlevler `/yoktez/` altında; `/tezanaliz/*` 301 redirect; navbar'da tek "YÖK Tez" girişi
+- **Veri kazıma filter audit** — OAI-PMH `search_keyword` tez filtresi (`_is_thesis`, dc:type boş=dahil et); YÖK Tez `_search_legacy` yıl/üniversite/tür lokal filtreleri; TR Dizin ve OpenAlex temiz bulundu
 
 ### Sıradaki Görevler
 - Sosyal kanıt iyileştirmeleri (ana sayfa — çok kolay)
-- Hero net değer önerisi (ana sayfa — kolay)
 - Yeni kullanıcı onboarding akışı (Profile.segment alanı — migration gerekli)
 - Analiz araçlarında akıllı hata yönetimi
 - Blog içerik altyapısı iyileştirmeleri
