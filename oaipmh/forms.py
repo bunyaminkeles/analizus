@@ -35,15 +35,6 @@ class OAIPMHKeywordForm(forms.Form):
             'placeholder': 'Başlıkta aranacak kelime...',
         })
     )
-    abstract_query = forms.CharField(
-        required=False,
-        max_length=300,
-        label="Özet",
-        widget=forms.TextInput(attrs={
-            'class': 'form-control',
-            'placeholder': 'Özette aranacak kelime...',
-        })
-    )
     year_from = forms.IntegerField(
         required=False,
         label="Başlangıç Yılı",
@@ -73,8 +64,8 @@ class OAIPMHKeywordForm(forms.Form):
 
     def clean(self):
         cleaned = super().clean()
-        if not cleaned.get('keyword') and not cleaned.get('abstract_query'):
-            raise forms.ValidationError("En az bir arama terimi girilmeli (başlık veya özet).")
+        if not cleaned.get('keyword'):
+            raise forms.ValidationError("Başlık alanı zorunludur.")
         yf = cleaned.get('year_from')
         yt = cleaned.get('year_to')
         if yf and yt and yf > yt:
