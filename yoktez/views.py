@@ -121,16 +121,28 @@ def yoktez_landing(request):
         status__in=['pending', 'running'],
     ).order_by('-created_at').first()
 
-    if active_job and request.method == 'GET':
+    # Tamamlanmış son job — kullanıcı sayfadan ayrılıp dönünce sonuçları göster
+    completed_job = None
+    if not active_job and request.method == 'GET':
+        from django.utils import timezone
+        cutoff = timezone.now() - timezone.timedelta(hours=24)
+        completed_job = YokTezSearchJob.objects.filter(
+            user=user,
+            status='completed',
+            completed_at__gte=cutoff,
+        ).order_by('-completed_at').first()
+
+    restore_job = active_job or completed_job
+    if restore_job and request.method == 'GET':
         form = YokTezSearchForm(initial={
-            'tez_ad': active_job.tez_ad,
-            'yazar': getattr(active_job, 'yazar', ''),
-            'danisman': getattr(active_job, 'danisman', ''),
-            'universite': getattr(active_job, 'universite', ''),
-            'tur': active_job.tur,
-            'yil_baslangic': active_job.yil_baslangic,
-            'yil_bitis': active_job.yil_bitis,
-            'metin': active_job.metin,
+            'tez_ad': restore_job.tez_ad,
+            'yazar': restore_job.yazar,
+            'danisman': restore_job.danisman,
+            'universite': restore_job.universite,
+            'tur': restore_job.tur,
+            'yil_baslangic': restore_job.yil_baslangic,
+            'yil_bitis': restore_job.yil_bitis,
+            'metin': restore_job.metin,
         })
 
     from tezanaliz.models import TezAnaliz
@@ -141,6 +153,7 @@ def yoktez_landing(request):
         'remaining': remaining,
         'daily_limit': daily_limit,
         'active_job_id': str(active_job.id) if active_job else None,
+        'completed_job_id': str(completed_job.id) if completed_job else None,
         'past_analiz_jobs': past_analiz_jobs,
     })
 

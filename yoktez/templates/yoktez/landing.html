@@ -186,6 +186,21 @@ pollInterval = setInterval(pollStatus, 3000);
 })();
 {% endif %}
 
+{% if completed_job_id %}
+// Tamamlanmış job — sayfaya dönünce sonuçları otomatik göster
+(function() {
+    currentJobId = '{{ completed_job_id }}';
+    fetch(`/yoktez/status/${currentJobId}/`)
+        .then(r => r.ok ? r.json() : null)
+        .then(data => {
+            if (data && data.status === 'completed') {
+                showResults(data);
+            }
+        })
+        .catch(() => {});
+})();
+{% endif %}
+
 document.getElementById('yoktez-form').addEventListener('submit', function(e) {
     e.preventDefault();
     const form = this;
