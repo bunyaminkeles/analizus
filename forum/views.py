@@ -2377,16 +2377,35 @@ def blog_detail(request, slug):
     if request.user.is_authenticated:
         is_liked = post.likes.filter(pk=request.user.pk).exists()
 
-    # İlgili yazılar (aynı kategoriden)
+    # İlgili yazılar (aynı kategoriden, en yeni 3)
     related_posts = BlogPost.objects.filter(
         status='published',
         category=post.category
-    ).exclude(pk=post.pk)[:3]
+    ).exclude(pk=post.pk).select_related('category').order_by('-published_at')[:3]
+
+    # Sidebar: aynı kategoriden son 5 yazı
+    category_posts = BlogPost.objects.filter(
+        status='published',
+        category=post.category
+    ).exclude(pk=post.pk).order_by('-published_at')[:5]
+
+    # Sidebar: en çok okunan 5 yazı
+    popular_posts = BlogPost.objects.filter(
+        status='published'
+    ).exclude(pk=post.pk).order_by('-views')[:5]
+
+    # Sidebar: kategoriler
+    categories = BlogCategory.objects.annotate(
+        post_count=Count('posts', filter=Q(posts__status='published'))
+    ).filter(post_count__gt=0)
 
     context = {
         'post': post,
         'is_liked': is_liked,
         'related_posts': related_posts,
+        'category_posts': category_posts,
+        'popular_posts': popular_posts,
+        'categories': categories,
     }
     return render(request, 'forum/blog/blog_detail.html', context)
 
