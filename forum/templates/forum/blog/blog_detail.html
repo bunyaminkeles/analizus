@@ -7,7 +7,6 @@
 {% block extra_head %}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
-<meta name="description" content="{{ post.meta_description|default:post.excerpt }}">
 <meta property="og:title" content="{{ post.title }}">
 <meta property="og:description" content="{{ post.excerpt }}">
 <meta property="og:type" content="article">
@@ -192,34 +191,90 @@
 
         <!-- Sidebar -->
         <div class="col-lg-4">
-            <!-- Yazar Kartı -->
-            <div class="card border-0 mb-4 sticky-top" style="top: 90px; background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255, 255, 255, 0.08) !important;">
-                <div class="card-body text-center p-4">
-                    {% if post.author.profile.avatar %}
-                    <img src="{{ post.author.profile.avatar.url }}" class="rounded-circle mb-3" style="width: 80px; height: 80px; object-fit: cover; border: 3px solid rgba(0, 210, 255, 0.3);">
-                    {% else %}
-                    <div class="rounded-circle bg-info bg-opacity-10 d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 80px; height: 80px;">
-                        <span class="text-info fw-bold fs-3">{{ post.author.username|slice:":1"|upper }}</span>
+            <div class="ax-detail-sidebar">
+
+                <!-- Yazar Kartı -->
+                <div class="ax-sidebar-widget mb-3">
+                    <div class="ax-sidebar-widget__body text-center p-4">
+                        {% if post.author.profile.avatar %}
+                        <img src="{{ post.author.profile.avatar.url }}" class="rounded-circle mb-3" style="width: 72px; height: 72px; object-fit: cover; border: 3px solid rgba(99,102,241,0.35);">
+                        {% else %}
+                        <div class="rounded-circle bg-info bg-opacity-10 d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 72px; height: 72px;">
+                            <span class="text-info fw-bold fs-3">{{ post.author.username|slice:":1"|upper }}</span>
+                        </div>
+                        {% endif %}
+                        <h6 class="text-white fw-bold mb-1">{{ post.author.username }}</h6>
+                        <p class="text-muted small mb-3">{{ post.author.profile.title|default:"Yazar" }}</p>
+                        <a href="{% url 'profile_detail' post.author.username %}" class="btn btn-outline-secondary btn-sm rounded-pill w-100">
+                            <i class="bi bi-person me-1"></i>Profili Gör
+                        </a>
                     </div>
-                    {% endif %}
-
-                    <h5 class="text-white fw-bold mb-1">{{ post.author.username }}</h5>
-                    <p class="text-info small mb-3">{{ post.author.profile.title|default:"Yazar" }}</p>
-
-                    {% if post.author.profile.bio %}
-                    <p class="text-muted small mb-3">{{ post.author.profile.bio|truncatechars:100 }}</p>
-                    {% endif %}
-
-                    <a href="{% url 'profile_detail' post.author.username %}" class="btn btn-outline-info btn-sm rounded-pill w-100">
-                        <i class="bi bi-person me-1"></i>Profili Gör
-                    </a>
                 </div>
-            </div>
 
-            <!-- Blog'a Dön -->
-            <a href="{% url 'blog_list' %}" class="btn btn-outline-secondary w-100 rounded-pill">
-                <i class="bi bi-arrow-left me-2"></i>Tüm Yazılar
-            </a>
+                <!-- Bu Kategorideki Yazılar -->
+                {% if category_posts %}
+                <div class="ax-sidebar-widget mb-3">
+                    <div class="ax-sidebar-widget__header">
+                        <i class="bi bi-folder-open me-2" style="color: {{ post.category.color }};"></i>{{ post.category.name }}
+                    </div>
+                    <div class="ax-sidebar-widget__body p-0">
+                        {% for cp in category_posts %}
+                        <a href="{% url 'blog_detail' slug=cp.slug %}" class="ax-sidebar-post">
+                            <span class="ax-sidebar-post__title">{{ cp.title|truncatechars:60 }}</span>
+                            <small class="ax-sidebar-post__date">{{ cp.published_at|date:"d M Y" }}</small>
+                        </a>
+                        {% endfor %}
+                        <a href="{% url 'blog_list' %}?category={{ post.category.slug }}" class="ax-sidebar-more">
+                            {{ post.category.name }} yazılarının tümü <i class="bi bi-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Popüler Yazılar -->
+                {% if popular_posts %}
+                <div class="ax-sidebar-widget mb-3">
+                    <div class="ax-sidebar-widget__header">
+                        <i class="bi bi-fire text-warning me-2"></i>Popüler Yazılar
+                    </div>
+                    <div class="ax-sidebar-widget__body p-0">
+                        {% for pp in popular_posts %}
+                        <a href="{% url 'blog_detail' slug=pp.slug %}" class="ax-popular-item text-decoration-none">
+                            <span class="ax-popular-num">{{ forloop.counter }}</span>
+                            <div>
+                                <div class="ax-popular-title">{{ pp.title|truncatechars:55 }}</div>
+                                <small class="text-muted"><i class="bi bi-eye me-1"></i>{{ pp.views }}</small>
+                            </div>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Kategoriler -->
+                {% if categories %}
+                <div class="ax-sidebar-widget mb-3">
+                    <div class="ax-sidebar-widget__header">
+                        <i class="bi bi-grid text-info me-2"></i>Kategoriler
+                    </div>
+                    <div class="ax-sidebar-widget__body p-0">
+                        {% for cat in categories %}
+                        <a href="{% url 'blog_list' %}?category={{ cat.slug }}"
+                           class="ax-cat-item {% if cat.slug == post.category.slug %}ax-cat-item--active{% endif %}">
+                            <span><i class="bi {{ cat.icon }} me-2" style="color: {{ cat.color }};"></i>{{ cat.name }}</span>
+                            <span class="ax-cat-count">{{ cat.post_count }}</span>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Blog'a Dön -->
+                <a href="{% url 'blog_list' %}" class="btn btn-outline-secondary w-100 rounded-pill">
+                    <i class="bi bi-arrow-left me-2"></i>Tüm Yazılar
+                </a>
+
+            </div>
         </div>
     </div>
 </article>
@@ -328,6 +383,91 @@
 }
 .blog-content table tr:hover td {
     background: rgba(0, 210, 255, 0.05);
+}
+/* Sidebar */
+.ax-detail-sidebar { position: sticky; top: 80px; }
+.ax-sidebar-widget {
+    background: var(--ax-surface, rgba(15,23,42,0.8));
+    border: 1px solid var(--ax-border, rgba(255,255,255,0.08));
+    border-radius: 12px;
+    overflow: hidden;
+}
+.ax-sidebar-widget__header {
+    padding: 0.6rem 1rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--ax-text, #e2e8f0);
+    border-bottom: 1px solid var(--ax-border, rgba(255,255,255,0.08));
+}
+.ax-sidebar-widget__body { padding: 0.75rem 1rem; }
+.ax-sidebar-post {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 0.55rem 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    text-decoration: none;
+    transition: background 0.15s;
+}
+.ax-sidebar-post:last-of-type { border-bottom: none; }
+.ax-sidebar-post:hover { background: rgba(99,102,241,0.07); }
+.ax-sidebar-post__title {
+    color: #cbd5e1;
+    font-size: 0.8rem;
+    line-height: 1.4;
+    transition: color 0.15s;
+}
+.ax-sidebar-post:hover .ax-sidebar-post__title { color: #a5b4fc; }
+.ax-sidebar-post__date { color: #64748b; font-size: 0.72rem; }
+.ax-sidebar-more {
+    display: block;
+    padding: 0.5rem 1rem;
+    font-size: 0.78rem;
+    color: #818cf8;
+    text-decoration: none;
+    border-top: 1px solid rgba(99,102,241,0.15);
+    transition: color 0.15s;
+}
+.ax-sidebar-more:hover { color: #a5b4fc; }
+.ax-popular-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 0.6rem 1rem;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    transition: background 0.15s;
+    text-decoration: none;
+}
+.ax-popular-item:last-child { border-bottom: none; }
+.ax-popular-item:hover { background: rgba(99,102,241,0.06); }
+.ax-popular-num {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #6366f1;
+    min-width: 18px;
+    padding-top: 2px;
+}
+.ax-popular-title { color: #cbd5e1; font-size: 0.8rem; line-height: 1.4; margin-bottom: 2px; }
+.ax-cat-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    color: #cbd5e1;
+    text-decoration: none;
+    font-size: 0.83rem;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    transition: background 0.15s;
+}
+.ax-cat-item:last-child { border-bottom: none; }
+.ax-cat-item:hover { background: rgba(99,102,241,0.08); color: #e2e8f0; }
+.ax-cat-item--active { border-left: 3px solid #6366f1; background: rgba(99,102,241,0.07); }
+.ax-cat-count {
+    background: rgba(148,163,184,0.15);
+    color: #64748b;
+    font-size: 0.7rem;
+    padding: 1px 7px;
+    border-radius: 10px;
 }
 .related-card {
     transition: all 0.3s ease;

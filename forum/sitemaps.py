@@ -16,12 +16,12 @@ class StaticViewSitemap(Sitemap):
 
 
 class TopicSitemap(Sitemap):
-    """Forum konuları için sitemap"""
+    """Forum konuları için sitemap — sadece 1000+ görüntüleme alanlar"""
     changefreq = 'weekly'
-    priority = 0.8
+    priority = 0.6
 
     def items(self):
-        return Topic.objects.all().order_by('-created_at')
+        return Topic.objects.filter(views__gte=1000).order_by('-views')
 
     def lastmod(self, obj):
         return obj.created_at
@@ -112,7 +112,6 @@ class ToolsSitemap(Sitemap):
             ('openalex', 'landing'),
             ('oaipmh', 'landing'),
             ('bibliometrics', 'landing'),
-            ('tezanaliz', 'landing'),
         ]
 
     def location(self, item):

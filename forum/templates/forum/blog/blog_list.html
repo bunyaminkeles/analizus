@@ -1,7 +1,16 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
-{% block title %}İstatistik ve Akademik Araştırma Blog - Analizus{% endblock %}
+{% block title %}{% if current_category %}{{ current_category }} - {% endif %}İstatistik ve Akademik Araştırma Blog - Analizus{% endblock %}
 {% block meta_description %}İstatistik, veri analizi ve akademik araştırma hakkında Türkçe blog yazıları. SPSS, R, Python, tez yazımı rehberleri ve analiz ipuçları.{% endblock %}
+
+{% block canonical %}{% url 'blog_list' %}{% if current_category %}?category={{ current_category }}{% endif %}{% endblock %}
+
+{% block extra_head %}
+{% if page_obj.number > 1 %}
+<meta name="robots" content="noindex, follow">
+{% endif %}
+{% endblock %}
 
 {% block content %}
 <div class="container py-4">
