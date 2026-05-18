@@ -246,21 +246,12 @@
     font-size: var(--ax-text-xs);
 }
 .ax-hero__kazima-bar a {
-    display: inline-flex;
-    align-items: center;
-    padding: 3px 10px;
-    border-radius: var(--ax-radius-full);
-    background: rgba(99, 102, 241, 0.08);
-    border: 1px solid rgba(99, 102, 241, 0.20);
-    color: var(--ax-accent-primary);
+    color: var(--ax-text-secondary);
     text-decoration: none;
-    font-size: var(--ax-text-xs);
     font-weight: var(--ax-font-medium);
-    transition: background var(--ax-transition-fast), border-color var(--ax-transition-fast);
+    transition: color var(--ax-transition-fast);
 }
 .ax-hero__kazima-bar a:hover {
-    background: rgba(99, 102, 241, 0.16);
-    border-color: rgba(99, 102, 241, 0.40);
     color: var(--ax-accent-primary);
 }
 .ax-hero__kazima-sep { display: none; }
