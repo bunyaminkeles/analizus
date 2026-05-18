@@ -199,19 +199,18 @@ OPENALEX_EMAIL=info@analizus.com
 
 ### Standart Deploy Akışı
 ```bash
-# 1. Lokalde geliştir + commit + push
-git push origin main
-
-# 2. main → dev merge
-git checkout dev
-git merge main -m "Merge main → dev: açıklama"
-git push origin dev
-git checkout main
+# 1. Lokalde geliştir + commit (dev branch)
+# 2. dev → main merge + push
+git checkout main && git merge dev && git push origin main && git checkout dev
 
 # 3. Hetzner'de uygula
 ssh root@89.167.5.224
-git pull origin main && docker compose up -d --build web
+git pull && docker compose restart web && docker compose restart nginx
 ```
+
+> ⚠️ **KRİTİK:** `docker compose restart web` sonrası **mutlaka** `docker compose restart nginx` da çalıştır.
+> Nginx, web container'ın IP'sini başlangıçta çözümler. Container restart'ta yeni IP'yi almak için nginx de yeniden başlatılmalıdır.
+> Aktif scraping/analiz job'u varken restart yapma — önce `docker compose exec web python manage.py shell -c "from yoktez.models import YokTezSearchJob; print(YokTezSearchJob.objects.filter(status='running').count())"` ile kontrol et.
 
 ---
 
@@ -639,7 +638,7 @@ Analizler →
 | Semaphore | `Semaphore(2)` | `Semaphore(3)` | `Semaphore(4)` |
 | 429/503 backoff | 5-9s × deneme | 5-10s × deneme | Retry-After header |
 | UA rotasyonu | 4 farklı UA | 4 farklı UA | — (API, UA sabit) |
-| Sayfa gecikmesi | 2-4.5s | 0.5-1.5s | 0.3-0.6s |
+| Sayfa gecikmesi | 0.8-2.0s | 0.5-1.5s | 0.3-0.6s |
 | Queue pozisyonu | status endpoint'te `queue_position` alanı |
 
 - Status `pending` iken frontend "Sırada N. sıradasınız" gösterir
@@ -915,6 +914,7 @@ with connection.cursor() as c:
 | S3 yükleme başarısız | `AWS_S3_REGION_NAME=eu-north-1` (eu-central değil) |
 | WebSocket bağlanmıyor | Nginx `/ws/` bloğunda `proxy_http_version 1.1` ve `Upgrade` header'ı kontrol et |
 | Redis bağlantı hatası (`Connect call failed 127.0.0.1:6379`) | `.env`'de `REDIS_URL=redis://redis:6379` kullan — Docker'da `localhost`/`127.0.0.1` container dışına ulaşamaz; Render'dan kalan eski şifreli URL'i temizle |
+| 502 Bad Gateway (web restart sonrası) | `docker compose restart web` sonrası **nginx da restart edilmeli**: `docker compose restart nginx`. Nginx, web container IP'sini başlangıçta cache'ler. Nginx conf'unda `resolver 127.0.0.11 valid=10s;` ve `set $backend http://web:8000;` bu sorunu kalıcı çözer. |
 | Ödeme işlemi | iyzico altyapısı kodda var ama pasif — ödeme sistemi henüz aktif değil |
 | `No module named 'statsmodels'` | `pip install statsmodels` (regresyon analizleri için zorunlu) |
 | İstatistik polling 404 dönüyor | `STATUS_TEMPLATE.replace()` pattern'i kullan, `STATUS_BASE + jobId + '/'` değil (double slash üretir) |
@@ -947,6 +947,9 @@ with connection.cursor() as c:
 - **SEO iyileştirmeleri** — Nginx non-www→www 301 yönlendirmesi; sitemap genişletmesi (blog, 12 istatistik aracı, 5 landing page); 18 sayfaya benzersiz meta description; 6 title güncellendi; IndexNow entegrasyonu (Bing); Google Search Console `https://www.analizus.com/` property eklendi + sitemap submit edildi
 - **YÖK Tez birleştirme** — `/tezanaliz/` + `/yoktez/` tek çatıda birleştirildi; tüm işlevler `/yoktez/` altında; `/tezanaliz/*` 301 redirect; navbar'da tek "YÖK Tez" girişi
 - **Veri kazıma filter audit** — OAI-PMH `search_keyword` tez filtresi (`_is_thesis`, dc:type boş=dahil et); YÖK Tez `_search_legacy` yıl/üniversite/tür lokal filtreleri; TR Dizin ve OpenAlex temiz bulundu
+- **OAI-PMH iyileştirmeleri** — özet (dc:description) arama alanı kaldırıldı (OAI-PMH'de boş geliyor, 0 sonuç üretiyordu); "Analiz Yap" butonu kaldırıldı (makaleanaliz'e yanlış yönlendiriyordu)
+- **YÖK Tez UX** — job state kalıcılığı: arama başlayınca sayfadan ayrılıp dönünce form dolu gelir, tamamlanan job 24 saat boyunca otomatik gösterilir; scraper hız iyileştirmesi (detay gecikmesi 2-4.5s→0.8-2.0s, erken çıkış: 5 demo dolunca durur, kandidat limiti 10x→5x)
+- **Nginx Docker DNS resolver** — `resolver 127.0.0.11 valid=10s;` + `set $backend http://web:8000;` eklendi; web restart sonrası 502 sorunu giderildi
 
 ### Sıradaki Görevler
 - Sosyal kanıt iyileştirmeleri (ana sayfa — çok kolay)
@@ -959,4 +962,4 @@ with connection.cursor() as c:
 
 ---
 
-*Son güncelleme: Mayıs 2026 — §26 YÖK Tez birleştirme (/tezanaliz/+/yoktez/ → /yoktez/); sıradaki görevler güncellendi*
+*Son güncelleme: Mayıs 2026 — OAI-PMH özet arama + Analiz Yap butonu kaldırıldı; YÖK Tez job state kalıcılığı + scraper hız iyileştirmesi; Nginx DNS resolver fix; deploy akışı güncellendi*
