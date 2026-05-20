@@ -6,14 +6,12 @@ FIELD_CHOICES = [
     ('abstract', 'Özet'),
     ('author', 'Yazar'),
     ('keyword', 'Anahtar Kelime'),
-    ('journal', 'Dergi / Kaynak'),
-    ('institution', 'Kurum'),
-    ('doi', 'DOI'),
     ('year', 'Yıl Aralığı'),
-    ('type', 'Yayın Türü'),
 ]
 
-VALID_FIELDS = [c[0] for c in FIELD_CHOICES]
+# Kazımada hâlâ kullanılabilen ama form UI'ında gösterilmeyen alanlar
+_SCRAPER_ONLY_FIELDS = ['journal', 'institution', 'doi', 'type']
+VALID_FIELDS = [c[0] for c in FIELD_CHOICES] + _SCRAPER_ONLY_FIELDS
 
 INPUT_CSS = 'form-control bg-dark text-white border-secondary'
 

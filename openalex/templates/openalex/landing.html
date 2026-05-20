@@ -215,11 +215,7 @@ document.addEventListener('DOMContentLoaded', function() {
         { value: 'abstract', text: 'Özet' },
         { value: 'author', text: 'Yazar' },
         { value: 'keyword', text: 'Anahtar Kelime' },
-        { value: 'journal', text: 'Dergi / Kaynak' },
-        { value: 'institution', text: 'Kurum' },
         { value: 'year', text: 'Yıl Aralığı (örn: 2020-2023)' },
-        { value: 'doi', text: 'DOI' },
-        { value: 'type', text: 'Yayın Türü (örn: journal-article)' },
     ];
 
     const queryPreview = document.getElementById('query-preview');
@@ -465,13 +461,12 @@ document.addEventListener('DOMContentLoaded', function() {
             resultsList.innerHTML = html;
         }
 
-        // İndirme butonu
-        if (downloadBtn && data.all_results_file_url) {
-            downloadBtn.href = data.all_results_file_url;
-            downloadBtn.classList.remove('d-none');
-        }
-        // Excel indirme butonu
+        // TXT ve Excel indirme butonları — demo_results varsa göster
         if (data.demo_results && data.demo_results.length > 0) {
+            if (downloadBtn) {
+                downloadBtn.href = `/openalex/download-txt/${currentJobId}/`;
+                downloadBtn.classList.remove('d-none');
+            }
             const xlBtn = document.getElementById('download-excel-btn');
             if (xlBtn) {
                 xlBtn.href = `/openalex/download-excel/${currentJobId}/`;
@@ -486,6 +481,15 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         resultsActions.style.display = 'block';
+
+        // Sayfa yenilenmesine karşı sonuçları sakla
+        try {
+            localStorage.setItem('openalex_last_job', JSON.stringify({
+                job_id: currentJobId,
+                results: data,
+                ts: Date.now(),
+            }));
+        } catch(e) {}
     }
 
     sendEmailBtn.addEventListener('click', function() {
@@ -561,13 +565,27 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Sayfa yüklenince aktif job varsa polling'i devam ettir
+    // Aktif iş varsa polling'i devam ettir; yoksa son tamamlanan aramayı göster
     {% if active_job_id %}
     currentJobId = '{{ active_job_id }}';
     spinner.style.display = 'block';
+    resultsContainer.style.display = 'block';
     resultsSummary.innerHTML = '<p class="text-info">Aramanız arka planda devam ediyor, lütfen bekleyin...</p>';
-    resultsArea.style.display = 'block';
     pollStatus();
+    {% else %}
+    // localStorage'dan son tamamlanan arama sonuçlarını geri yükle (24 saat geçerli)
+    try {
+        const saved = localStorage.getItem('openalex_last_job');
+        if (saved) {
+            const {job_id, results, ts} = JSON.parse(saved);
+            if (job_id && results && (Date.now() - ts) < 24 * 60 * 60 * 1000) {
+                currentJobId = job_id;
+                resultsContainer.style.display = 'block';
+                displayResults(results);
+                resultsSummary.innerHTML = '<span class="text-muted small me-2"><i class="bi bi-clock-history"></i> Önceki arama sonuçları</span>' + resultsSummary.innerHTML;
+            }
+        }
+    } catch(e) {}
     {% endif %}
 
     createRule(true); // Initial rule
