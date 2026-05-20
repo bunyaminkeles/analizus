@@ -14,13 +14,15 @@ logger = logging.getLogger(__name__)
 
 
 def _safe_filename(job, ext: str) -> str:
-    """yoktez_<arama_kelimesi>_<YYYYMMDD>.<ext> formatında güvenli dosya adı üretir."""
+    """yoktez_<arama_kelimesi>_<YYYYMMDD>.<ext> — ASCII güvenli dosya adı."""
     import re
     from django.utils import timezone
-    keyword = job.tez_ad or job.yazar or job.metin or job.danisman or job.universite or 'sonuclar'
-    keyword = keyword[:40].strip()
-    keyword = re.sub(r'[^\w\s-]', '', keyword, flags=re.UNICODE)
-    keyword = re.sub(r'[\s]+', '_', keyword).strip('_')
+    # Türkçe → ASCII dönüşümü (header encoding uyumluluğu için)
+    _tr = str.maketrans('ğĞışİöÖüÜçÇ', 'gGisiIoOuUcC')
+    keyword = (job.tez_ad or job.universite or job.metin or 'sonuclar') or 'sonuclar'
+    keyword = keyword.translate(_tr)[:40].strip()
+    keyword = re.sub(r'[^\w\s-]', '', keyword)
+    keyword = re.sub(r'\s+', '_', keyword).strip('_') or 'sonuclar'
     date_str = timezone.now().strftime('%Y%m%d')
     return f'yoktez_{keyword}_{date_str}.{ext}'
 

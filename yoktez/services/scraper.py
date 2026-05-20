@@ -168,8 +168,10 @@ def _parse_results(html: str) -> tuple[int, list[dict]]:
                 title_en = info.get_text(strip=True)
                 break
 
-        # Tez No — kart metninde "Tez No: 962854" yazıyor, bunu önce oku
-        # data-tezno hash olabildiğinden regex eşleşmesi varsa daima onu kullan
+        # data-tezno API çağrısı için sakla (hash olabilir)
+        api_tez_no = tez_no
+
+        # Gösterim için numeric tez no: kart metninden "Tez No: 962854" oku
         for info in info_divs:
             raw = info.get_text(strip=True)
             m = re.search(r'Tez No\s*:?\s*(\d+)', raw, re.I)
@@ -181,7 +183,8 @@ def _parse_results(html: str) -> tuple[int, list[dict]]:
             tez_no = kayit_no
 
         records.append({
-            'tez_no':      tez_no,
+            'tez_no':      tez_no,      # numeric — gösterim ve Excel için
+            '_api_tez_no': api_tez_no,  # orijinal hash — tezBilgiDetay.jsp için
             'kayit_no':    kayit_no,
             'title_tr':    title_tr,
             'title':       title_en,   # EN başlık (eski 'title' alanıyla uyumlu)
@@ -455,7 +458,7 @@ def _search_impl(tez_ad='', yazar='', danisman='', universite='',
         if idx > 0:
             _human_delay(*_DELAY_BETWEEN_DETAILS)
 
-        detail = _fetch_detail(session, rec.get('kayit_no', ''), rec.get('tez_no', ''))
+        detail = _fetch_detail(session, rec.get('kayit_no', ''), rec.get('_api_tez_no') or rec.get('tez_no', ''))
         if detail:
             for field in ('year', 'author', 'university', 'thesis_type', 'language',
                           'danisman', 'abstract_tr', 'abstract_en', 'keywords_tr',
