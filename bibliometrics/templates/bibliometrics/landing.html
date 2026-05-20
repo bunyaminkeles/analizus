@@ -105,6 +105,10 @@
             <div class="progress-bar progress-bar-striped progress-bar-animated bg-info"
                  id="progressBar" style="width: 30%;"></div>
           </div>
+          <p class="text-muted small mt-2 mb-0">
+            <i class="bi bi-shield-check me-1 text-success"></i>
+            Analiz sunucuda arka planda çalışıyor — sayfayı kapatsanız veya başka sekmeye geçseniz de durmaz. Tamamlandığında e-posta ile bildirilirsiniz.
+          </p>
         </div>
 
         {# Hata #}
@@ -327,14 +331,6 @@
   progBar.style.width = '50%';
   progText.textContent = 'Analiz arka planda devam ediyor, lütfen bekleyin...';
   {% endif %}
-
-  // Sayfa terk edilirken uyar
-  window.addEventListener('beforeunload', function(e) {
-    if (currentJobId && pollTimer) {
-      e.preventDefault();
-      e.returnValue = '';
-    }
-  });
 
   function showError(msg) {
     errorArea.classList.remove('d-none');
