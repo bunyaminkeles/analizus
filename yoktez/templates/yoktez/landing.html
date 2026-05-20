@@ -290,20 +290,19 @@ function showResults(data) {
 
     const list = document.getElementById('results-list');
     list.innerHTML = '';
-    (data.demo_results || []).forEach((r, i) => {
+    const preview = (data.demo_results || []).slice(0, 1);
+    preview.forEach((r, i) => {
         list.innerHTML += `
-        <div class="border-bottom border-secondary pb-3 mb-3">
-            <h6 class="mb-1">${i+1}. ${r.title_tr || r.title || '(Başlık yok)'}</h6>
+        <div class="pb-2">
+            <h6 class="mb-1">1. ${r.title_tr || r.title || '(Başlık yok)'}</h6>
             ${r.title && r.title_tr ? `<div class="text-muted small fst-italic mb-1">${r.title}</div>` : ''}
             <small class="text-muted d-block">
                 ${r.author || ''} ${r.year ? '· ' + r.year : ''} · ${r.university || ''}
                 ${r.thesis_type ? ' · ' + r.thesis_type : ''}
-                ${r.language ? ' · ' + r.language : ''}
             </small>
             <small class="text-muted">Tez No: ${r.tez_no || '-'}</small>
             ${r.danisman ? `<div class="text-muted small mt-1"><strong>Danışman:</strong> ${r.danisman}</div>` : ''}
-            ${r.abstract_tr ? `<div class="text-light small mt-2" style="line-height:1.5;">${r.abstract_tr}</div>` : ''}
-            ${r.abstract_en ? `<div class="text-muted small mt-1 fst-italic">${r.abstract_en}</div>` : ''}
+            ${r.abstract_tr ? `<div class="text-light small mt-2" style="line-height:1.5;max-height:80px;overflow:hidden;">${r.abstract_tr}</div>` : ''}
         </div>`;
     });
 

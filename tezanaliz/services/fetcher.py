@@ -151,7 +151,7 @@ def fetch_all(
             )
             break
         try:
-            detail = _fetch_detail(session, rec.get('kayit_no', '') or rec.get('detail_id', ''), rec.get('tez_no', '') or rec.get('detail_no', ''))
+            detail = _fetch_detail(session, rec.get('kayit_no', '') or rec.get('detail_id', ''), rec.get('_api_tez_no') or rec.get('tez_no', '') or rec.get('detail_no', ''))
         except Exception as e:
             logger.warning(f'[tezanaliz fetcher] Detay hatası kayıt {i}: {e}')
             detail = {}
