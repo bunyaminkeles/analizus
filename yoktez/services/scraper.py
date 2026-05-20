@@ -466,16 +466,18 @@ def _search_impl(tez_ad='', yazar='', danisman='', universite='',
 
         if (len(demo) < demo_limit
                 and _year_ok(rec, yil_baslangic, yil_bitis)
-                and _uni_ok(rec, universite)
                 and _type_ok(rec, tur)):
+            # _uni_ok yerel kontrolü kaldırıldı: YÖK uniad parametresiyle sunucu
+            # tarafında filtreler; detail başarısız olunca university='' kalır ve
+            # lokal filtre tüm kayıtları silerdi.
             demo.append(rec)
             if len(demo) >= demo_limit:
                 break
 
-    # Üniversite filtresi boşsa ve sadece yıl/tür kaldıysa fallback yap;
-    # üniversite filtresi varsa sıfır sonuç doğru davranıştır — fallback etme
-    if not demo and has_extra_filters and not universite:
-        logger.info('YÖK Tez: filtreli demo bulunamadı, filtresiz fallback (üniversite filtresi yok)')
+    # Demo hâlâ boşsa (örn. detail'ler başarısız, yıl/tür filtresi de eşleşmedi)
+    # en azından enriched kayıtların ilklerini göster
+    if not demo and enriched:
+        logger.info('YÖK Tez: filtreli demo bulunamadı, filtresiz fallback')
         demo = enriched[:demo_limit]
 
     logger.info(f'YÖK Tez tamamlandı: sunucu_toplam={total} demo={len(demo)}')
