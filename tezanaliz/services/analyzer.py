@@ -231,10 +231,11 @@ def keyword_tfidf_chart(records: list[dict]) -> tuple[str, plt.Figure] | None:
 
     try:
         from sklearn.feature_extraction.text import TfidfVectorizer
+        min_df_val = 1 if len(texts) < 10 else 2
         vec = TfidfVectorizer(
             max_features=500,
             stop_words=list(EN_STOPWORDS),
-            min_df=2,
+            min_df=min_df_val,
             ngram_range=(1, 2),
             token_pattern=r'\b[a-zA-Z]{3,}\b',
         )
@@ -316,7 +317,7 @@ def lda_topics_chart(records: list[dict]) -> tuple[str, plt.Figure] | None:
         if len(t) > 50:
             texts.append(t)
 
-    if len(texts) < 10:
+    if len(texts) < 5:
         logger.info('[tezanaliz] LDA için yeterli metin yok, atlanıyor.')
         return None
 
@@ -324,12 +325,13 @@ def lda_topics_chart(records: list[dict]) -> tuple[str, plt.Figure] | None:
         from sklearn.feature_extraction.text import CountVectorizer
         from sklearn.decomposition import LatentDirichletAllocation
 
-        n_topics = min(5, max(2, len(texts) // 10))
+        n_topics = min(5, max(2, len(texts) // 5))
+        min_df_val = 1 if len(texts) < 10 else 2
 
         vec = CountVectorizer(
             max_features=300,
             stop_words=list(EN_STOPWORDS),
-            min_df=2,
+            min_df=min_df_val,
             token_pattern=r'\b[a-zA-Z]{4,}\b',
         )
         dtm = vec.fit_transform(texts)
@@ -395,7 +397,7 @@ def subject_wordcloud(records: list[dict]) -> tuple[str, plt.Figure] | None:
             if w not in EN_STOPWORDS:
                 word_freq[w] += 1
 
-    if len(word_freq) < 10:
+    if len(word_freq) < 5:
         logger.info('[tezanaliz] Yeterli İngilizce kelime yok, wordcloud atlanıyor.')
         return None
 

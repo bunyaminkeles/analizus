@@ -18,7 +18,7 @@ def _safe_filename(job, ext: str) -> str:
     import re
     from django.utils import timezone
     # Türkçe → ASCII dönüşümü (header encoding uyumluluğu için)
-    _tr = str.maketrans('ğĞışİöÖüÜçÇ', 'gGisiIoOuUcC')
+    _tr = str.maketrans('ğĞışİöÖüÜçÇ', 'gGisIoOuUcC')
     keyword = (job.tez_ad or job.universite or job.metin or 'sonuclar') or 'sonuclar'
     keyword = keyword.translate(_tr)[:40].strip()
     keyword = re.sub(r'[^\w\s-]', '', keyword)
