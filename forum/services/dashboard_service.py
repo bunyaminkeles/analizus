@@ -241,6 +241,29 @@ def get_dashboard_context():
     unread_contacts  = ContactMessage.objects.filter(is_read=False).order_by('-created_at')[:20]
     pending_donations = Donation.objects.filter(status='pending').select_related('user').order_by('-created_at')
 
+    # === BEKLEYEN ÖDEME SİPARİŞLERİ ===
+    try:
+        from bibliometrics.models import BibliometricOrder
+        pending_biblio_orders = list(BibliometricOrder.objects.filter(
+            status='pending_payment'
+        ).select_related('user', 'job').order_by('-created_at'))
+    except Exception:
+        pending_biblio_orders = []
+
+    try:
+        from openalex.models import AlexOrder
+        pending_openalex_orders = list(AlexOrder.objects.filter(
+            status='pending_payment'
+        ).select_related('user', 'search_job').order_by('-created_at'))
+    except Exception:
+        pending_openalex_orders = []
+
+    # İş vitrin ödemeleri — kullanıcı ödedi, admin onayı bekliyor
+    from forum.models import JobPayment
+    pending_job_payments = list(JobPayment.objects.filter(
+        status='pending_confirmation'
+    ).select_related('job', 'job__owner').order_by('-created_at'))
+
     # === SON KAYITLAR ===
     recent_users = User.objects.order_by('-date_joined')[:12]
     recent_topics_list = Topic.objects.select_related('starter', 'category').order_by('-created_at')[:5]
@@ -249,7 +272,9 @@ def get_dashboard_context():
     user_growth_score    = min(40, int(week_users / max(1, total_users) * 4000))
     content_growth_score = min(40, int((week_topics + week_posts) / max(1, total_topics + total_posts) * 4000))
     pending_total        = (pending_stories.count() + pending_reviews.count() +
-                            unread_contacts.count() + pending_donations.count())
+                            unread_contacts.count() + pending_donations.count() +
+                            len(pending_biblio_orders) + len(pending_openalex_orders) +
+                            len(pending_job_payments))
     queue_health_score   = max(0, 20 - pending_total)
     health_score         = user_growth_score + content_growth_score + queue_health_score
 
@@ -333,12 +358,15 @@ def get_dashboard_context():
         'rank_distribution': rank_distribution,
         'category_stats': category_stats,
         'active_users': active_users,
-        # Onay merkezi
+        # Bildirimler (onay/ödeme merkezi)
         'pending_linkedin_verifications': pending_linkedin_verifications,
         'pending_stories': pending_stories,
         'pending_reviews': pending_reviews,
         'unread_contacts': unread_contacts,
         'pending_donations': pending_donations,
+        'pending_biblio_orders': pending_biblio_orders,
+        'pending_openalex_orders': pending_openalex_orders,
+        'pending_job_payments': pending_job_payments,
         # Son aktiviteler
         'recent_users': recent_users,
         'recent_topics_list': recent_topics_list,
