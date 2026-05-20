@@ -168,13 +168,17 @@ def _parse_results(html: str) -> tuple[int, list[dict]]:
                 title_en = info.get_text(strip=True)
                 break
 
-        # Tez No — "Tez No:" içeren card-info (yoksa data-tezno tokenı kullanılır)
-        # Not: Kart yapısında yazar/yıl/üniversite/tür bilgisi YOK — detail endpoint'ten çekilir.
+        # Tez No — kart metninde "Tez No: 962854" yazıyor, bunu önce oku
+        # data-tezno hash olabildiğinden regex eşleşmesi varsa daima onu kullan
         for info in info_divs:
             raw = info.get_text(strip=True)
             m = re.search(r'Tez No\s*:?\s*(\d+)', raw, re.I)
-            if m and not tez_no:
+            if m:
                 tez_no = m.group(1)
+                break
+        # Hâlâ numeric değilse data-kayitno'yu dene
+        if not tez_no.isdigit() and kayit_no.isdigit():
+            tez_no = kayit_no
 
         records.append({
             'tez_no':      tez_no,
@@ -273,8 +277,8 @@ def _fetch_detail(session, kayit_no: str, tez_no: str) -> dict:
         if dil:
             result['language'] = dil
 
-        # Gerçek sayısal tez no — yeni API'de 'tezNo' veya 'tez_no' alanı
-        for key in ('tezNo', 'tez_no', 'TezNo', 'no'):
+        # Gerçek sayısal tez no — yeni API'de farklı key adları dene
+        for key in ('tezNo', 'tez_no', 'TezNo', 'no', 'kayitNo', 'kayit_no', 'KayitNo', 'id'):
             val = str(data.get(key, '')).strip()
             if val and val.isdigit():
                 result['tez_no'] = val

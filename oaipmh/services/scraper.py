@@ -7,26 +7,36 @@ Browse modu: Tek üniversitenin tüm tez kayıtları
 import logging
 import threading
 import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 from sickle import Sickle
 from sickle.oaiexceptions import NoRecordsMatch, OAIError
 logger = logging.getLogger(__name__)
 
 MAX_RECORDS_PER_UNI = 2000  # keyword modda üniversite başına max kayıt
-CONNECT_TIMEOUT = 10        # TCP bağlantı kurma timeout (saniye)
-READ_TIMEOUT = 30           # Sunucudan veri okuma timeout (saniye)
-THREAD_TIMEOUT = 120        # Üniversite başına hard limit (saniye)
+CONNECT_TIMEOUT = 15        # TCP bağlantı kurma timeout (saniye)
+READ_TIMEOUT = 60           # Sunucudan veri okuma timeout (saniye) — DSpace sayfalama için uzun tutuldu
+THREAD_TIMEOUT = 180        # Üniversite başına hard limit (saniye)
 PER_UNI_DEMO = 2            # keyword modda üniversite başına max demo kayıt
 
 
 def _get_sickle(oai_url):
-    """SSL hatalarını yoksayan Sickle istemcisi döndürür."""
+    """Retry adapter + uzun timeout ile Sickle istemcisi döndürür."""
     session = requests.Session()
-    session.headers.update({
-        'User-Agent': 'Mozilla/5.0 (OAI-Harvest; analizus.com)',
-    })
-    # Sickle 0.7.0'da session parametresi yok; sickle.session'ı doğrudan atıyoruz.
-    # timeout, request_args'a gidiyor ve session.request(timeout=...) olarak iletiliyor.
-    sickle = Sickle(oai_url, timeout=(CONNECT_TIMEOUT, READ_TIMEOUT), max_retries=1, verify=False)
+    # urllib3 düzeyinde retry: ConnectionReset, read timeout, 5xx yanıtlar için
+    retry = Retry(
+        total=3,
+        connect=3,       # bağlantı hatalarında yeniden dene (ConnectionResetError dahil)
+        read=2,          # okuma timeout'larında yeniden dene
+        backoff_factor=1,  # 0s, 1s, 2s arasında bekle
+        status_forcelist=[429, 500, 502, 503, 504],
+    )
+    adapter = HTTPAdapter(max_retries=retry)
+    session.mount('http://', adapter)
+    session.mount('https://', adapter)
+    session.headers.update({'User-Agent': 'Mozilla/5.0 (OAI-Harvest; analizus.com)'})
+    # Sickle'ın kendi max_retries'ını 0 bırakıyoruz — retry'ı urllib3 katmanı yapıyor
+    sickle = Sickle(oai_url, timeout=(CONNECT_TIMEOUT, READ_TIMEOUT), max_retries=0, verify=False)
     sickle.session = session
     return sickle
 

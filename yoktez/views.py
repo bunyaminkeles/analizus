@@ -136,8 +136,6 @@ def yoktez_landing(request):
     if restore_job and request.method == 'GET':
         form = YokTezSearchForm(initial={
             'tez_ad': restore_job.tez_ad,
-            'yazar': restore_job.yazar,
-            'danisman': restore_job.danisman,
             'universite': restore_job.universite,
             'tur': restore_job.tur,
             'yil_baslangic': restore_job.yil_baslangic,

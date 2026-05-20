@@ -36,96 +36,23 @@
             </div>
             {% else %}
 
-            <!-- Sekmeler -->
-            <ul class="nav nav-tabs mb-3" id="searchTabs">
-                <li class="nav-item">
-                    <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#keyword-tab">
-                        <i class="bi bi-search me-1"></i>Anahtar Kelime Araması
-                    </button>
-                </li>
-                <li class="nav-item">
-                    <button class="nav-link" data-bs-toggle="tab" data-bs-target="#browse-tab">
-                        <i class="bi bi-building me-1"></i>Üniversite Tezleri
-                    </button>
-                </li>
-            </ul>
-
-            <div class="tab-content">
-                <!-- Keyword Modu -->
-                <div class="tab-pane fade show active" id="keyword-tab">
-                    <div class="card bg-dark border-secondary text-white mb-3">
-                        <div class="card-header">Filtreli Arama</div>
-                        <div class="card-body">
-                            <p class="text-muted small mb-3">
-                                Başlık ve/veya özet filtresi girilmeli. Yıl aralığı ve üniversite seçimi isteğe bağlıdır.
-                                Birden fazla filtre girilirse <strong>tümü</strong> eşleşen kayıtlar getirilir.
-                            </p>
-                            <form id="keyword-form" method="post" onsubmit="submitSearch('keyword-form','keyword'); return false;">
-                                {% csrf_token %}
-                                <input type="hidden" name="search_type" value="keyword">
-
-                                <div class="mb-3">
-                                    <label class="form-label">{{ keyword_form.keyword.label }}</label>
-                                    {{ keyword_form.keyword }}
-                                </div>
-
-                                <div class="row g-2 mb-3">
-                                    <div class="col-6">
-                                        <label class="form-label">{{ keyword_form.year_from.label }}</label>
-                                        {{ keyword_form.year_from }}
-                                    </div>
-                                    <div class="col-6">
-                                        <label class="form-label">{{ keyword_form.year_to.label }}</label>
-                                        {{ keyword_form.year_to }}
-                                    </div>
-                                </div>
-
-                                <div class="mb-3">
-                                    <label class="form-label d-flex justify-content-between align-items-center">
-                                        <span>{{ keyword_form.universities.label }}</span>
-                                        <span class="text-muted small fw-normal">Seçim yapılmazsa tümünde aranır</span>
-                                    </label>
-                                    <div class="border border-secondary rounded p-2" style="max-height:200px; overflow-y:auto; background:#1a1a2e;">
-                                        {% for checkbox in keyword_form.universities %}
-                                        <div class="form-check">
-                                            {{ checkbox.tag }}
-                                            <label class="form-check-label small" for="{{ checkbox.id_for_label }}">
-                                                {{ checkbox.choice_label }}
-                                            </label>
-                                        </div>
-                                        {% endfor %}
-                                    </div>
-                                </div>
-
-                                <button type="button" class="btn btn-warning" id="keyword-btn"
-                                        onclick="submitSearch('keyword-form','keyword')">
-                                    <i class="bi bi-search me-1"></i>Ara
-                                </button>
-                            </form>
+            <!-- Browse Modu -->
+            <div class="card bg-dark border-secondary text-white mb-3">
+                <div class="card-header">Üniversitenin Tüm Tezleri</div>
+                <div class="card-body">
+                    <p class="text-muted small">Seçtiğiniz üniversitenin tüm tez kayıtlarını getirir. Büyük arşivlerde birkaç dakika sürebilir.</p>
+                    <form id="browse-form" method="post" onsubmit="submitSearch('browse-form','browse'); return false;">
+                        {% csrf_token %}
+                        <input type="hidden" name="search_type" value="browse">
+                        <div class="mb-3">
+                            <label class="form-label">{{ browse_form.university.label }}</label>
+                            {{ browse_form.university }}
                         </div>
-                    </div>
-                </div>
-
-                <!-- Browse Modu -->
-                <div class="tab-pane fade" id="browse-tab">
-                    <div class="card bg-dark border-secondary text-white mb-3">
-                        <div class="card-header">Üniversitenin Tüm Tezleri</div>
-                        <div class="card-body">
-                            <p class="text-muted small">Seçtiğiniz üniversitenin tüm tez kayıtlarını getirir. Büyük arşivlerde birkaç dakika sürebilir.</p>
-                            <form id="browse-form" method="post" onsubmit="submitSearch('browse-form','browse'); return false;">
-                                {% csrf_token %}
-                                <input type="hidden" name="search_type" value="browse">
-                                <div class="mb-3">
-                                    <label class="form-label">{{ browse_form.university.label }}</label>
-                                    {{ browse_form.university }}
-                                </div>
-                                <button type="button" class="btn btn-warning" id="browse-btn"
-                                        onclick="submitSearch('browse-form','browse')">
-                                    <i class="bi bi-building me-1"></i>Tezleri Getir
-                                </button>
-                            </form>
-                        </div>
-                    </div>
+                        <button type="button" class="btn btn-warning" id="browse-btn"
+                                onclick="submitSearch('browse-form','browse')">
+                            <i class="bi bi-building me-1"></i>Tezleri Getir
+                        </button>
+                    </form>
                 </div>
             </div>
 
@@ -187,17 +114,7 @@ function submitSearch(formId, searchType) {
 
     document.getElementById('status-area').style.display = 'block';
     document.getElementById('results-area').style.display = 'none';
-
-    let statusMsg;
-    if (searchType === 'keyword') {
-        const checked = form.querySelectorAll('input[name="universities"]:checked').length;
-        const allUnis = form.querySelectorAll('input[name="universities"]').length || 19;
-        const uniCount = checked > 0 ? checked : allUnis;
-        statusMsg = `${uniCount} üniversite arşivi taranıyor, lütfen bekleyin...`;
-    } else {
-        statusMsg = 'Üniversite arşivi getiriliyor, lütfen bekleyin...';
-    }
-    document.getElementById('status-text').textContent = statusMsg;
+    document.getElementById('status-text').textContent = 'Üniversite arşivi getiriliyor, lütfen bekleyin...';
 
     fetch("{% url 'oaipmh:landing' %}", {
         method: 'POST',
@@ -271,13 +188,6 @@ function showResults(data) {
     }
 }
 
-const _kf = document.getElementById('keyword-form');
-if (_kf) {
-    _kf.addEventListener('submit', function(e) {
-        e.preventDefault();
-        submitSearch('keyword-form', 'keyword');
-    });
-}
 const _bf = document.getElementById('browse-form');
 if (_bf) {
     _bf.addEventListener('submit', function(e) {
@@ -290,9 +200,7 @@ if (_bf) {
 {% if active_job_id %}
 currentJobId = '{{ active_job_id }}';
 document.getElementById('status-area').style.display = 'block';
-document.getElementById('status-text').textContent =
-    {% if active_job_type == 'keyword' %}'Üniversite arşivleri taranıyor, lütfen bekleyin...'
-    {% else %}'Üniversite arşivi getiriliyor, lütfen bekleyin...'{% endif %};
+document.getElementById('status-text').textContent = 'Üniversite arşivi getiriliyor, lütfen bekleyin...';
 pollInterval = setInterval(pollStatus, 3000);
 {% endif %}
 

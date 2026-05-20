@@ -52,17 +52,6 @@
                                 {{ form.tez_ad }}
                             </div>
                             <div class="col-md-6">
-                                <label class="form-label">{{ form.yazar.label }}</label>
-                                {{ form.yazar }}
-                            </div>
-                        </div>
-
-                        <div class="row g-3 mb-3">
-                            <div class="col-md-6">
-                                <label class="form-label">{{ form.danisman.label }}</label>
-                                {{ form.danisman }}
-                            </div>
-                            <div class="col-md-6">
                                 <label class="form-label">{{ form.universite.label }}</label>
                                 {{ form.universite }}
                             </div>
@@ -321,7 +310,7 @@ function showResults(data) {
     if (data.total_results > 0 && !data.demo_email_sent) {
         document.getElementById('send-email-btn').style.display = 'inline-block';
     }
-    if (data.demo_results && data.demo_results.length > 0) {
+    if (data.total_results > 0) {
         const dlBtn = document.getElementById('download-btn');
         dlBtn.href = `/yoktez/download/${currentJobId}/`;
         dlBtn.style.display = 'inline-block';
