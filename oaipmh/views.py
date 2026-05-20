@@ -174,6 +174,19 @@ def oaipmh_cancel(request, job_id):
     return JsonResponse({'success': True})
 
 
+def _download_filename(job, ext):
+    """İndirme dosyası adı: üniversite_adı + zaman_damgası."""
+    import re
+    ts = (job.completed_at or job.created_at).strftime('%Y%m%d_%H%M%S')
+    if job.search_type == 'browse' and job.university:
+        uni = re.sub(r'[^\w\s-]', '', job.university.name).strip().replace(' ', '_')
+    elif job.keyword:
+        uni = re.sub(r'[^\w\s-]', '', job.keyword).strip().replace(' ', '_')[:30]
+    else:
+        uni = 'tez'
+    return f"{uni}_{ts}.{ext}"
+
+
 @login_required
 @require_GET
 def oaipmh_download(request, job_id):
@@ -195,7 +208,8 @@ def oaipmh_download(request, job_id):
         s3_resp.content,
         content_type='text/plain; charset=utf-8',
     )
-    response['Content-Disposition'] = f'attachment; filename="unitez_{job.id}.txt"'
+    fname = _download_filename(job, 'txt')
+    response['Content-Disposition'] = f'attachment; filename="{fname}"'
     return response
 
 
@@ -245,7 +259,8 @@ def oaipmh_download_excel(request, job_id):
     response = HttpResponse(
         content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     )
-    response['Content-Disposition'] = f'attachment; filename="unitez_{job.id}.xlsx"'
+    fname = _download_filename(job, 'xlsx')
+    response['Content-Disposition'] = f'attachment; filename="{fname}"'
     wb.save(response)
     return response
 
