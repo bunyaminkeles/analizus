@@ -147,6 +147,21 @@ def _draw_footer(c, width):
     c.drawRightString(width - 18, 14, 'Bu rapor otomatik olarak oluşturulmuştur.')
 
 
+def _fit_text(text: str, font_name: str, font_size: float, max_width: float) -> str:
+    """Metni max_width point'e sığacak şekilde kırp, '…' ekle."""
+    try:
+        from reportlab.pdfbase.pdfmetrics import stringWidth as _sw
+        if _sw(text, font_name, font_size) <= max_width:
+            return text
+        while text and _sw(text + '…', font_name, font_size) > max_width:
+            text = text[:-1]
+        return text + '…'
+    except Exception:
+        # stringWidth yoksa karaktere göre kaba kırp
+        limit = max(1, int(max_width / (font_size * 0.58)))
+        return text[:limit] + ('…' if len(text) > limit else '')
+
+
 def _draw_cover(c, width, height, is_demo: bool, total_records: int, filename: str):
     _draw_page_background(c, width, height)
 
@@ -181,10 +196,14 @@ def _draw_cover(c, width, height, is_demo: bool, total_records: int, filename: s
     c.drawCentredString(width / 2, height - 160, label)
 
     # ── Bilgi kartı ──
-    card_w = 330
+    card_w = 440                          # genişletildi: değer kolonu için yeterli alan
     card_h = 128
     card_x = width / 2 - card_w / 2
     card_y = height / 2 - card_h / 2 - 20
+
+    KEY_W   = 120                         # anahtar sütun genişliği
+    VAL_X   = card_x + KEY_W + 22        # değer başlangıç X
+    VAL_MAX = card_w - KEY_W - 22 - 12   # değere ayrılan maksimum genişlik (12pt sağ pay)
 
     # Gölge
     c.setFillColorRGB(0.86, 0.89, 0.94)
@@ -213,11 +232,12 @@ def _draw_cover(c, width, height, is_demo: bool, total_records: int, filename: s
         c.drawString(card_x + 22, row_y, key)
         c.setFillColorRGB(*C_NAVY)
         c.setFont(_FONT_BOLD, 10)
-        c.drawString(card_x + 140, row_y, str(val)[:44])
+        val_str = _fit_text(str(val), _FONT_BOLD, 10, VAL_MAX)
+        c.drawString(VAL_X, row_y, val_str)
         row_y -= 24
 
     _kv('Toplam Kayıt:',  f'{total_records:,}')
-    _kv('Dosya:',          filename[:42])
+    _kv('Dosya:',          filename)
     _kv('Rapor Tarihi:',   date.today().strftime('%d.%m.%Y'))
     _kv('Hazırlayan:',     'Analizus Otomatik Analiz')
 
