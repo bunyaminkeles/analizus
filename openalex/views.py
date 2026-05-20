@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404
-from django.http import JsonResponse, Http404
+from django.http import JsonResponse, Http404, HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_GET, require_POST
 from django_ratelimit.decorators import ratelimit
@@ -216,6 +216,21 @@ def openalex_download_excel(request, job_id):
     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     response['Content-Disposition'] = f'attachment; filename="{_safe_filename(job, "xlsx")}"'
     wb.save(response)
+    return response
+
+
+@login_required
+@require_GET
+def openalex_download_txt(request, job_id):
+    """demo_results'dan TXT dosyası üretir."""
+    from .services.job_runner import _generate_alex_results_txt
+    job = get_object_or_404(AlexSearchJob, id=job_id, user=request.user)
+    records = job.demo_results or []
+    if not records:
+        raise Http404
+    content = _generate_alex_results_txt(records, job, is_demo=True)
+    response = HttpResponse(content, content_type='text/plain; charset=utf-8')
+    response['Content-Disposition'] = f'attachment; filename="{_safe_filename(job, "txt")}"'
     return response
 
 
