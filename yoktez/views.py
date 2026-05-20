@@ -135,12 +135,12 @@ def yoktez_landing(request):
     restore_job = active_job or completed_job
     if restore_job and request.method == 'GET':
         form = YokTezSearchForm(initial={
-            'tez_ad': restore_job.tez_ad,
-            'universite': restore_job.universite,
-            'tur': restore_job.tur,
+            'tez_ad': restore_job.tez_ad or '',
+            'universite': restore_job.universite or '',
+            'tur': restore_job.tur or '0',
             'yil_baslangic': restore_job.yil_baslangic,
             'yil_bitis': restore_job.yil_bitis,
-            'metin': restore_job.metin,
+            'metin': restore_job.metin or '',
         })
 
     from tezanaliz.models import TezAnaliz
