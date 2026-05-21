@@ -4,7 +4,6 @@ from django import forms
 FIELD_CHOICES = [
     ('title', 'Başlık'),
     ('abstract', 'Özet'),
-    ('author', 'Yazar'),
     ('keyword', 'Anahtar Kelime'),
     ('doi', 'DOI'),
     ('year', 'Yıl Aralığı'),
