@@ -53,7 +53,6 @@ def _execute_job(job_id: str) -> None:
             records = fetch_all(
                 tez_ad=job.tez_ad,
                 yazar=job.yazar,
-                universite=job.universite,
                 tur=job.tur or '0',
                 yil_baslangic=job.yil_baslangic,
                 yil_bitis=job.yil_bitis,

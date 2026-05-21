@@ -19,14 +19,6 @@ class YokTezSearchForm(forms.Form):
             'placeholder': 'Tez başlığında ara...',
         }),
     )
-    universite = forms.CharField(
-        required=False,
-        label='Üniversite',
-        widget=forms.TextInput(attrs={
-            'class': 'form-control bg-dark text-white border-secondary',
-            'placeholder': 'Üniversite adı...',
-        }),
-    )
     metin = forms.CharField(
         required=False,
         label='Özet / Metin',
@@ -65,7 +57,7 @@ class YokTezSearchForm(forms.Form):
     def clean(self):
         cleaned = super().clean()
         # En az bir alan dolu olmalı
-        fields = ['tez_ad', 'universite', 'metin']
+        fields = ['tez_ad', 'metin']
         if not any(cleaned.get(f) for f in fields):
             raise forms.ValidationError('En az bir arama kriteri girmelisiniz.')
         return cleaned

@@ -94,7 +94,6 @@ def yoktez_landing(request):
                 tez_ad=cd.get('tez_ad', ''),
                 yazar=cd.get('yazar', ''),
                 danisman=cd.get('danisman', ''),
-                universite=cd.get('universite', ''),
                 tur=cd.get('tur', '0'),
                 yil_baslangic=cd.get('yil_baslangic'),
                 yil_bitis=cd.get('yil_bitis'),
@@ -138,7 +137,6 @@ def yoktez_landing(request):
     if restore_job and request.method == 'GET':
         form = YokTezSearchForm(initial={
             'tez_ad': restore_job.tez_ad or '',
-            'universite': restore_job.universite or '',
             'tur': restore_job.tur or '0',
             'yil_baslangic': restore_job.yil_baslangic,
             'yil_bitis': restore_job.yil_bitis,
