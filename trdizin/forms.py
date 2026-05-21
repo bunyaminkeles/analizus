@@ -6,11 +6,8 @@ FIELD_CHOICES = [
     ('abstract', 'Özet'),
     ('author', 'Yazar'),
     ('keyword', 'Anahtar Kelime'),
-    ('journal', 'Dergi Adı'),
-    ('institution', 'Kurum'),
     ('doi', 'DOI'),
     ('year', 'Yıl Aralığı'),
-    ('language', 'Yayın Dili'),
 ]
 
 VALID_FIELDS = [c[0] for c in FIELD_CHOICES]
