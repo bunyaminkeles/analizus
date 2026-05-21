@@ -35,6 +35,19 @@ class TRDizinScraper:
         })
 
     @staticmethod
+    def parse_abstract_filter(query_parts):
+        """
+        query_parts içinden özet filtresini ayıklar.
+        TR Dizin API'sinde 'abstract' alan adı Lucene sorgusunda çalışmıyor
+        (API'deki gerçek alan adı 'abstracts'); lokal filtreleme yapılır.
+        Returns: str veya ''
+        """
+        for part in query_parts:
+            if part.get('field') == 'abstract':
+                return part.get('value', '').strip()
+        return ''
+
+    @staticmethod
     def parse_year_filter(query_parts):
         """
         query_parts içinden yıl filtresini ayıklar.
@@ -66,8 +79,6 @@ class TRDizinScraper:
             {"field": "title", "value": "ankara", "operator": "AND"},
             {"field": "abstract", "value": "sağlık AND yönetimi", "operator": "AND"},
             {"field": "year", "value": "2020-2022", "operator": "AND"},
-            {"field": "language", "value": "TUR,ENG", "operator": "AND"},
-            {"field": "institution", "value": "Hacettepe", "operator": "AND"},
         ]
         """
         clauses = []
@@ -78,8 +89,8 @@ class TRDizinScraper:
             if not value:
                 continue
 
-            if field == 'year':
-                # TR Dizin API'si Lucene yıl aralığını desteklemiyor — lokal filtre
+            if field in ('year', 'abstract'):
+                # Lokal filtreleme — API'de güvenilir çalışmıyor
                 continue
             else:
                 # Alanlar: title, abstract, author, keyword, doi
@@ -216,7 +227,8 @@ class TRDizinScraper:
     def _search_impl(self, query_parts, demo_limit=3):
         lucene_query = self.build_lucene_query(query_parts)
         year_from, year_to = self.parse_year_filter(query_parts)
-        logger.info(f"TR Dizin arama: {lucene_query}  yıl_filtresi={year_from}-{year_to}")
+        abstract_filter = self.parse_abstract_filter(query_parts)
+        logger.info(f"TR Dizin arama: {lucene_query}  yıl_filtresi={year_from}-{year_to}  özet_filtresi={abstract_filter!r}")
 
         # İlk sayfa: toplam sonuç sayısı + demo sonuçlar
         data = self._fetch_page(lucene_query, page=1, limit=MAX_PAGE_SIZE)
@@ -262,12 +274,44 @@ class TRDizinScraper:
                 if self._year_in_range(r.get('year'), year_from, year_to)
             ]
             total_count = len(all_results)
-            # Demo sonuçları da yeniden hesapla (ilk sayfa yıl filtresiz çekilmişti)
             demo_results = all_results[:demo_limit]
             logger.info(f"TR Dizin yıl filtresi ({year_from}-{year_to}): {before} → {total_count} kayıt")
 
+        # Lokal özet filtresi — API'de 'abstract' alan adı tanınmıyor
+        if abstract_filter:
+            before = len(all_results)
+            all_results = [
+                r for r in all_results
+                if self._abstract_matches(r, abstract_filter)
+            ]
+            total_count = len(all_results)
+            demo_results = all_results[:demo_limit]
+            logger.info(f"TR Dizin özet filtresi ({abstract_filter!r}): {before} → {total_count} kayıt")
+
         logger.info(f"TR Dizin arama tamamlandı: {total_count} toplam, {len(all_results)} çekildi")
         return total_count, demo_results, all_results, lucene_query
+
+    @staticmethod
+    def _abstract_matches(record: dict, filter_value: str) -> bool:
+        """
+        Kayıt özetinin filtre değerini içerip içermediğini kontrol eder.
+        Çok kelimeli değerler AND mantığıyla, 'OR' içerenler OR mantığıyla değerlendirilir.
+        """
+        combined = (
+            (record.get('abstract_tr') or '') + ' ' +
+            (record.get('abstract_en') or '')
+        ).lower()
+
+        if ' OR ' in filter_value.upper():
+            terms = [t.strip().lower() for t in filter_value.upper().split(' OR ')]
+            return any(t in combined for t in terms)
+        elif ' AND ' in filter_value.upper():
+            terms = [t.strip().lower() for t in filter_value.upper().split(' AND ')]
+            return all(t in combined for t in terms)
+        else:
+            # Tek veya çok kelime — tümü bulunmalı (AND)
+            terms = [t.lower() for t in filter_value.split()]
+            return all(t in combined for t in terms)
 
     @staticmethod
     def _year_in_range(year, year_from, year_to):
