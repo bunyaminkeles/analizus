@@ -101,7 +101,7 @@ def _determine_query(tez_ad='', yazar='', danisman='', metin=''):
 
 
 def _build_form(keyword='', nevi=NEVI_TUMU, tip='2',
-                universite='', yil_baslangic=None, yil_bitis=None, tur='0'):
+                yil_baslangic=None, yil_bitis=None, tur='0'):
     """GForm2 (islem=4) POST verisi."""
     return {
         'keyword':    keyword,
@@ -112,7 +112,6 @@ def _build_form(keyword='', nevi=NEVI_TUMU, tip='2',
         'nevi':       nevi,
         'tip':        tip,
         'islem':      '4',
-        'uniad':      universite.upper() if universite else '',
         'yil1':       str(yil_baslangic) if yil_baslangic else '0',
         'yil2':       str(yil_bitis) if yil_bitis else '0',
         'Tur':        tur if tur and tur != '0' else '0',
@@ -368,13 +367,7 @@ def _type_ok(record: dict, tur: str) -> bool:
     return expected in rec_type
 
 
-def _uni_ok(record: dict, universite: str) -> bool:
-    if not universite:
-        return True
-    return universite.lower() in record.get('university', '').lower()
-
-
-def search(tez_ad='', yazar='', danisman='', universite='',
+def search(tez_ad='', yazar='', danisman='',
            tur='0', yil_baslangic=None, yil_bitis=None, metin='',
            demo_limit=5) -> tuple[int, list[dict]]:
     """
@@ -383,12 +376,11 @@ def search(tez_ad='', yazar='', danisman='', universite='',
     """
     with _yoktez_semaphore:
         return _search_impl(tez_ad=tez_ad, yazar=yazar, danisman=danisman,
-                            universite=universite, tur=tur,
-                            yil_baslangic=yil_baslangic, yil_bitis=yil_bitis,
+                            tur=tur, yil_baslangic=yil_baslangic, yil_bitis=yil_bitis,
                             metin=metin, demo_limit=demo_limit)
 
 
-def _search_impl(tez_ad='', yazar='', danisman='', universite='',
+def _search_impl(tez_ad='', yazar='', danisman='',
                  tur='0', yil_baslangic=None, yil_bitis=None, metin='',
                  demo_limit=5) -> tuple[int, list[dict]]:
     session = _make_session()
@@ -404,15 +396,11 @@ def _search_impl(tez_ad='', yazar='', danisman='', universite='',
 
     keyword, nevi = _determine_query(tez_ad=tez_ad, yazar=yazar,
                                      danisman=danisman, metin=metin)
-    if not keyword and universite:
-        keyword = universite
-        nevi = NEVI_TUMU
 
     logger.info(f'YÖK Tez arama: keyword="{keyword}" nevi={nevi}')
 
     form_data = _build_form(keyword=keyword, nevi=nevi,
-                            universite=universite, yil_baslangic=yil_baslangic,
-                            yil_bitis=yil_bitis, tur=tur)
+                            yil_baslangic=yil_baslangic, yil_bitis=yil_bitis, tur=tur)
 
     try:
         response = session.post(SEARCH_URL, data=form_data, timeout=45, allow_redirects=True)
@@ -427,24 +415,16 @@ def _search_impl(tez_ad='', yazar='', danisman='', universite='',
     if 'tezSorguSonucHata' in response.url or 'hata' in response.url.lower():
         logger.warning(f'YÖK Tez hata sayfasına yönlendirildi: {response.url}')
         return _search_legacy(session, tez_ad=tez_ad, yazar=yazar, danisman=danisman,
-                              universite=universite, tur=tur,
-                              yil_baslangic=yil_baslangic, yil_bitis=yil_bitis,
+                              tur=tur, yil_baslangic=yil_baslangic, yil_bitis=yil_bitis,
                               metin=metin, demo_limit=demo_limit)
 
     total, records = _parse_results(response.text)
     if total == 0:
         total = len(records)
 
-    # Kart yapısında yıl/üniversite/tür YOK — detail'den sonra filtrele.
-    has_extra_filters = bool(
-        (yil_baslangic or yil_bitis) or
-        (universite) or
-        (tur and tur != '0')
-    )
-    # Filtre varsa daha fazla aday çek; uniad server-side çalışırsa az yeterli, çalışmazsa 50'ye kadar tara
-    if universite:
-        candidate_count = min(len(records), 50)
-    elif has_extra_filters:
+    # Kart yapısında yıl/tür YOK — detail'den sonra filtrele.
+    has_extra_filters = bool((yil_baslangic or yil_bitis) or (tur and tur != '0'))
+    if has_extra_filters:
         candidate_count = min(len(records), demo_limit * 5)
     else:
         candidate_count = demo_limit
@@ -487,7 +467,7 @@ def _search_impl(tez_ad='', yazar='', danisman='', universite='',
     return total, demo
 
 
-def _search_legacy(session, tez_ad='', yazar='', danisman='', universite='',
+def _search_legacy(session, tez_ad='', yazar='', danisman='',
                    tur='0', yil_baslangic=None, yil_bitis=None, metin='',
                    demo_limit=5) -> tuple[int, list[dict]]:
     """
@@ -500,7 +480,6 @@ def _search_legacy(session, tez_ad='', yazar='', danisman='', universite='',
         'AdSoyad': yazar.upper() if yazar else '',
         'DanismanAdSoyad': danisman.upper() if danisman else '',
         'Universite': '0', 'Enstitu': '0', 'ABD': '0', 'BilimDali': '0',
-        'uniad': universite.upper() if universite else '',
         'ensad': '', 'abdad': '', 'bilim': '',
         'Tur': tur or '0', 'Dil': '0', 'izin': '0', 'Durum': '3',
         'EnstituGrubu': '',
@@ -566,7 +545,6 @@ def _search_legacy(session, tez_ad='', yazar='', danisman='', universite='',
     total = len(records)
     filtered = [r for r in records
                 if _year_ok(r, yil_baslangic, yil_bitis)
-                and _uni_ok(r, universite)
                 and _type_ok(r, tur)]
     demo = (filtered or records)[:demo_limit]
 
