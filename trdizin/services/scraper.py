@@ -81,16 +81,8 @@ class TRDizinScraper:
             if field == 'year':
                 # TR Dizin API'si Lucene yıl aralığını desteklemiyor — lokal filtre
                 continue
-            elif field == 'language':
-                # Dil: "TUR,ENG" → language : ( "TUR" OR "ENG" )
-                langs = [v.strip() for v in value.split(',') if v.strip()]
-                if len(langs) == 1:
-                    clause = f'language : ( "{langs[0]}" )'
-                else:
-                    lang_str = ' OR '.join(f'"{l}"' for l in langs)
-                    clause = f'language : ( {lang_str} )'
             else:
-                # Diğer alanlar: title, abstract, author, keyword, journal, institution, doi
+                # Alanlar: title, abstract, author, keyword, doi
                 # Değer zaten AND/OR içerebilir (kullanıcı girişi)
                 if ' AND ' in value or ' OR ' in value:
                     # Kullanıcı kendi operatörlerini girmiş

@@ -352,10 +352,7 @@ const fieldOptions = [
     { value: 'abstract', text: 'Özet' },
     { value: 'author', text: 'Yazar' },
     { value: 'keyword', text: 'Anahtar Kelime' },
-    { value: 'journal', text: 'Dergi Adı' },
-    { value: 'institution', text: 'Kurum' },
     { value: 'year', text: 'Yıl Aralığı (örn: 2020-2022)' },
-    { value: 'language', text: 'Yayın Dili (örn: TUR,ENG)' },
     { value: 'doi', text: 'DOI' },
 ];
 const fieldLabels = {};
@@ -376,8 +373,6 @@ function updateQueryPreview() {
         if (part.field === 'year') {
             const y = val.split('-');
             if (y.length === 2) val = `[${y[0].trim()} TO ${y[1].trim()}]`;
-        } else if (part.field === 'language') {
-            val = val.split(',').map(l => `"${l.trim()}"`).join(' OR ');
         } else {
             const words = val.trim().split(/\s+/);
             val = words.length > 1 ? words.map(w => `"${w}"`).join(' AND ') : `"${val}"`;
