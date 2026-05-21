@@ -5,7 +5,6 @@ FIELD_CHOICES = [
     ('title', 'Başlık'),
     ('abstract', 'Özet'),
     ('keyword', 'Anahtar Kelime'),
-    ('doi', 'DOI'),
     ('year', 'Yıl Aralığı'),
 ]
 
