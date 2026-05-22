@@ -36,7 +36,7 @@ nltk
 zeyrek
 scipy
 openpyxl
-factor-analyzer
+factor-analyzer==0.5.1
 
 # --- ARAÇLAR & GÜVENLİK ---
 python-dotenv
