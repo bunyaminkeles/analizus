@@ -4,6 +4,7 @@ from django.contrib.auth import views as auth_views
 from django.contrib.sitemaps.views import sitemap
 from django.views.generic import TemplateView
 from django.http import HttpResponse
+from django.views.generic import RedirectView
 from django.conf import settings
 from django.conf.urls.static import static
 from forum.sitemaps import StaticViewSitemap, TopicSitemap, CategorySitemap, JobSitemap, BlogPostSitemap, IstatistikSitemap, ToolsSitemap
@@ -68,6 +69,9 @@ urlpatterns = [
 
     # Unified Analiz Konsolu (/analiz/ prefix)
     path('analiz/', include('istatistik.urls_analiz')),
+
+    # Akademik Tarama Unified Console — ilk aktif araca yönlendir
+    path('tarama/', RedirectView.as_view(url='/yoktez/', permanent=False)),
 
     # 4. Forum Uygulaması (En sona koymak çakışmaları önler)
     path('', include('forum.urls')),

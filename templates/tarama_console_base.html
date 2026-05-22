@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/analiz_console.css' %}">
+{% endblock %}
+
+{% block content %}
+
+{# ── Mobile: sidebar açma butonu ── #}
+<div class="ax-console-mobile-bar d-lg-none">
+  <button class="ax-console-mobile-btn" onclick="axTaramaSidebarToggle()" type="button" aria-expanded="false" aria-controls="ax-tarama-sidebar">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    Araç Seç
+    <svg id="ax-tarama-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="margin-left:auto;transition:transform .2s;"><polyline points="6 9 12 15 18 9"/></svg>
+  </button>
+</div>
+
+{# ── İki sütun: sidebar + içerik ── #}
+<div class="ax-console-layout">
+
+  {# ── Sidebar ── #}
+  <aside class="ax-console-sidebar" id="ax-tarama-sidebar" aria-label="Akademik tarama araçları menüsü">
+
+    <div class="ax-console-cat">
+      <div class="ax-console-cat-title">Akademik Tarama</div>
+      <ul>
+        {% if features.oaipmh %}
+        <li>
+          <a href="{% url 'oaipmh:landing' %}"
+             class="ax-console-tool{% if '/oaipmh/' in request.path %} is-active{% endif %}"
+             {% if '/oaipmh/' in request.path %}aria-current="page"{% endif %}>
+            <i class="bi bi-building" aria-hidden="true"></i>
+            Üniversite Tez Arşivi
+          </a>
+        </li>
+        {% endif %}
+        {% if features.yoktez %}
+        <li>
+          <a href="{% url 'yoktez:landing' %}"
+             class="ax-console-tool{% if '/yoktez/' in request.path %} is-active{% endif %}"
+             {% if '/yoktez/' in request.path %}aria-current="page"{% endif %}>
+            <i class="bi bi-mortarboard-fill" aria-hidden="true"></i>
+            YÖK Tez
+          </a>
+        </li>
+        {% endif %}
+        {% if features.openalex %}
+        <li>
+          <a href="{% url 'openalex:landing' %}"
+             class="ax-console-tool{% if '/openalex/' in request.path %} is-active{% endif %}"
+             {% if '/openalex/' in request.path %}aria-current="page"{% endif %}>
+            <i class="bi bi-search" aria-hidden="true"></i>
+            OpenAlex
+          </a>
+        </li>
+        {% endif %}
+        {% if features.trdizin %}
+        <li>
+          <a href="{% url 'trdizin:landing' %}"
+             class="ax-console-tool{% if '/trdizin/' in request.path %} is-active{% endif %}"
+             {% if '/trdizin/' in request.path %}aria-current="page"{% endif %}>
+            <i class="bi bi-journal-text" aria-hidden="true"></i>
+            TR Dizin
+          </a>
+        </li>
+        {% endif %}
+      </ul>
+    </div>
+
+  </aside>
+
+  {# ── Araç alanı: her araç kendi içeriğini buraya yazar ── #}
+  <div class="ax-console-content">
+    {% block tool_area %}{% endblock %}
+  </div>
+
+</div>
+
+<script>
+function axTaramaSidebarToggle() {
+  const sidebar = document.getElementById('ax-tarama-sidebar');
+  const chevron = document.getElementById('ax-tarama-chevron');
+  const btn = document.querySelector('.ax-console-mobile-btn');
+  const isOpen = sidebar.classList.toggle('is-open');
+  if (chevron) chevron.style.transform = isOpen ? 'rotate(180deg)' : '';
+  if (btn) btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+}
+</script>
+
+{% endblock %}
