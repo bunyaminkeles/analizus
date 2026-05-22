@@ -229,11 +229,7 @@
                         <a href="{% url 'studyroom_list' %}" class="site-nav__dropdown-item" role="menuitem">Çalışma Odaları</a>
                         {% if features.oaipmh or features.yoktez or features.openalex or features.trdizin %}
                         <div class="site-nav__dropdown-divider"></div>
-                        <span class="site-nav__dropdown-label">Akademik Tarama</span>
-                        {% if features.oaipmh %}<a href="{% url 'oaipmh:landing' %}" class="site-nav__dropdown-item" role="menuitem">Üniversite Tezleri</a>{% endif %}
-                        {% if features.yoktez %}<a href="{% url 'yoktez:landing' %}" class="site-nav__dropdown-item" role="menuitem">YÖK Tez</a>{% endif %}
-                        {% if features.openalex %}<a href="{% url 'openalex:landing' %}" class="site-nav__dropdown-item" role="menuitem">OpenAlex Tarama</a>{% endif %}
-                        {% if features.trdizin %}<a href="{% url 'trdizin:landing' %}" class="site-nav__dropdown-item" role="menuitem">TR Dizin Tarama</a>{% endif %}
+                        <a href="/tarama/" class="site-nav__dropdown-item" role="menuitem">Akademik Tarama</a>
                         {% endif %}
                     </div>
                 </div>
@@ -419,11 +415,7 @@
                     {% if features.ai_assistant %}<a href="{% url 'ai_assistant' %}" class="nav-drawer__link">AI Asistan</a>{% endif %}
                     <a href="{% url 'studyroom_list' %}" class="nav-drawer__link">Çalışma Odaları</a>
                     {% if features.oaipmh or features.yoktez or features.openalex or features.trdizin %}
-                    <span class="nav-drawer__sub-label">Akademik Tarama</span>
-                    {% if features.oaipmh %}<a href="{% url 'oaipmh:landing' %}" class="nav-drawer__link">Üniversite Tezleri</a>{% endif %}
-                    {% if features.yoktez %}<a href="{% url 'yoktez:landing' %}" class="nav-drawer__link">YÖK Tez</a>{% endif %}
-                    {% if features.openalex %}<a href="{% url 'openalex:landing' %}" class="nav-drawer__link">OpenAlex Tarama</a>{% endif %}
-                    {% if features.trdizin %}<a href="{% url 'trdizin:landing' %}" class="nav-drawer__link">TR Dizin Tarama</a>{% endif %}
+                    <a href="/tarama/" class="nav-drawer__link">Akademik Tarama</a>
                     {% endif %}
                 </div>
             </div>
