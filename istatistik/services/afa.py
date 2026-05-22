@@ -6,7 +6,28 @@ import io
 import numpy as np
 
 
+def _patch_sklearn_compat():
+    """scikit-learn 1.6+ factor_analyzer uyumluluk yaması (force_all_finite kaldırıldı)."""
+    try:
+        import sklearn.utils.validation as _val
+        _orig = _val.check_array
+        import functools
+        @functools.wraps(_orig)
+        def _compat(*args, **kw):
+            kw.pop('force_all_finite', None)
+            return _orig(*args, **kw)
+        _val.check_array = _compat
+        try:
+            import factor_analyzer.factor_analyzer as _fa
+            _fa.check_array = _compat
+        except Exception:
+            pass
+    except Exception:
+        pass
+
+
 def analyze(df, columns=None, n_factors=None, rotation='varimax', method='minres') -> dict:
+    _patch_sklearn_compat()
     from factor_analyzer import FactorAnalyzer
     from factor_analyzer.factor_analyzer import calculate_kmo, calculate_bartlett_sphericity
 
