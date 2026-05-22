@@ -113,6 +113,9 @@ def _run_job(job_type: str, job_id: str):
         elif job_type == 'trdizin':
             from trdizin.services.job_runner import _execute_job
             _execute_job(job_id)
+        elif job_type == 'oaipmh':
+            from oaipmh.services.job_runner import _execute_job
+            _execute_job(job_id)
         elif job_type == 'bibliometrics':
             from bibliometrics.services.job_runner import _execute_job
             _execute_job(job_id)

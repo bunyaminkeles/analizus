@@ -103,7 +103,7 @@ def oaipmh_landing(request):
         return JsonResponse({'success': True, 'job_id': str(job.id)})
 
     # 5 dakikadan uzun süre running/pending kalan job'ları stale say → failed yap
-    stale_cutoff = timezone.now() - timedelta(minutes=5)
+    stale_cutoff = timezone.now() - timedelta(minutes=60)
     OAIPMHSearchJob.objects.filter(
         user=request.user,
         status__in=['pending', 'running'],

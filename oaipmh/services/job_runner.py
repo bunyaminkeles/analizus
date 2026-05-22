@@ -48,80 +48,78 @@ def _generate_results_txt(record_list, job, is_demo=True):
 
 
 def run_scraping_job(job_id):
-    """Background thread'de OAI-PMH scraping job çalıştır."""
-    def _run():
-        from oaipmh.models import OAIPMHSearchJob, University
-        from oaipmh.services.scraper import OAIPMHScraper
+    """OAI-PMH scraping job'ını merkezi job_queue üzerinden çalıştır."""
+    from analizdestek.job_queue import enqueue
+    enqueue('oaipmh', job_id)
 
-        try:
-            job = OAIPMHSearchJob.objects.get(id=job_id)
-            job.mark_running()
 
-            scraper = OAIPMHScraper()
+def _execute_job(job_id):
+    """job_queue worker thread'inde çağrılır."""
+    from oaipmh.models import OAIPMHSearchJob, University
+    from oaipmh.services.scraper import OAIPMHScraper
 
-            if job.search_type == 'keyword':
-                if job.university_ids:
-                    universities = University.objects.filter(id__in=job.university_ids, is_active=True)
-                else:
-                    universities = University.objects.filter(is_active=True)
-                total_count, demo_results, all_results = scraper.search_keyword(
-                    universities=universities,
-                    keyword=job.keyword,
-                    abstract_query=job.abstract_query,
-                    year_from=job.year_from,
-                    year_to=job.year_to,
-                    demo_limit=5,
-                )
-            else:  # browse
-                total_count, demo_results, all_results = scraper.browse_university(
-                    university=job.university,
-                    demo_limit=5,
-                )
+    try:
+        job = OAIPMHSearchJob.objects.get(id=job_id)
+        job.mark_running()
 
-            job.mark_completed(
-                demo_results=demo_results,
-                all_results=all_results,
-                total_count=total_count,
+        scraper = OAIPMHScraper()
+
+        if job.search_type == 'keyword':
+            if job.university_ids:
+                universities = University.objects.filter(id__in=job.university_ids, is_active=True)
+            else:
+                universities = University.objects.filter(is_active=True)
+            total_count, demo_results, all_results = scraper.search_keyword(
+                universities=universities,
+                keyword=job.keyword,
+                abstract_query=job.abstract_query,
+                year_from=job.year_from,
+                year_to=job.year_to,
+                demo_limit=5,
+            )
+        else:  # browse
+            total_count, demo_results, all_results = scraper.browse_university(
+                university=job.university,
+                demo_limit=5,
             )
 
-            # S3'e yükle
-            try:
-                demo_txt = _generate_results_txt(demo_results, job, is_demo=True)
-                demo_url = upload_to_s3(demo_txt, f"oaipmh/demo/{job.id}.txt")
+        job.mark_completed(
+            demo_results=demo_results,
+            all_results=all_results,
+            total_count=total_count,
+        )
 
-                all_txt = _generate_results_txt(all_results, job, is_demo=False)
-                all_url = upload_to_s3(all_txt, f"oaipmh/full/{job.id}.txt")
+        try:
+            demo_txt = _generate_results_txt(demo_results, job, is_demo=True)
+            demo_url = upload_to_s3(demo_txt, f"oaipmh/demo/{job.id}.txt")
 
-                update_fields = []
-                if demo_url:
-                    job.demo_file_url = demo_url
-                    update_fields.append('demo_file_url')
-                if all_url:
-                    job.all_results_file_url = all_url
-                    update_fields.append('all_results_file_url')
-                if update_fields:
-                    job.save(update_fields=update_fields)
-                # S3'e yüklendi, DB'deki büyük JSON alanını temizle (Neon tasarrufu)
-                if all_url:
-                    job.all_results = []
-                    job.save(update_fields=['all_results'])
-            except Exception as e:
-                logger.error(f"OAI-PMH S3 yükleme hatası: {e}")
+            all_txt = _generate_results_txt(all_results, job, is_demo=False)
+            all_url = upload_to_s3(all_txt, f"oaipmh/full/{job.id}.txt")
 
-            logger.info(f"OAI-PMH job {job_id} tamamlandı: {total_count} sonuç")
-
+            update_fields = []
+            if demo_url:
+                job.demo_file_url = demo_url
+                update_fields.append('demo_file_url')
+            if all_url:
+                job.all_results_file_url = all_url
+                update_fields.append('all_results_file_url')
+            if update_fields:
+                job.save(update_fields=update_fields)
+            if all_url:
+                job.all_results = []
+                job.save(update_fields=['all_results'])
         except Exception as e:
-            logger.error(f"OAI-PMH job {job_id} başarısız: {e}")
-            try:
-                from oaipmh.models import OAIPMHSearchJob
-                job = OAIPMHSearchJob.objects.get(id=job_id)
-                job.mark_failed(str(e))
-            except Exception:
-                pass
+            logger.error(f"OAI-PMH S3 yükleme hatası: {e}")
 
-    thread = threading.Thread(target=_run)
-    thread.daemon = True
-    thread.start()
+        logger.info(f"OAI-PMH job {job_id} tamamlandı: {total_count} sonuç")
+
+    except Exception as e:
+        logger.error(f"OAI-PMH job {job_id} başarısız: {e}")
+        try:
+            job = OAIPMHSearchJob.objects.get(id=job_id)
+            job.mark_failed(str(e))
+        except Exception:
+            pass
 
 
 def send_demo_email_async(job_id):
