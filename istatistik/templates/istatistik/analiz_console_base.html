@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/analiz_console.css' %}">
+{% endblock %}
+
+{% block content %}
+
+{# ── Mobile: sidebar açma butonu ── #}
+<div class="ax-console-mobile-bar d-lg-none">
+  <button class="ax-console-mobile-btn" onclick="axSidebarToggle()" type="button" aria-expanded="false" aria-controls="ax-console-sidebar">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    Araç Seç
+    <svg id="ax-sidebar-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="margin-left:auto;transition:transform .2s;"><polyline points="6 9 12 15 18 9"/></svg>
+  </button>
+</div>
+
+{# ── İki sütun: sidebar + içerik ── #}
+<div class="ax-console-layout">
+
+  {# ── Sidebar ── #}
+  <aside class="ax-console-sidebar" id="ax-console-sidebar" aria-label="Analiz araçları menüsü">
+
+    {# Aktif veri seti göstergesi #}
+    {% if session_dataset_name %}
+    <div class="ax-console-dataset">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+      <span class="ax-console-dataset-name" title="{{ session_dataset_name }}">{{ session_dataset_name }}</span>
+      <button class="ax-console-dataset-clear" onclick="axClearSession()" title="Veri setini temizle" type="button">×</button>
+    </div>
+    {% endif %}
+
+    {% if tool_categories %}
+      {% for cat_name, tools in tool_categories %}
+      <div class="ax-console-cat">
+        <div class="ax-console-cat-title">{{ cat_name }}</div>
+        <ul>
+          {% for slug, name, icon, color, url_name in tools %}
+          <li>
+            <a href="{% url url_name %}"
+               class="ax-console-tool{% if active_tool == slug %} is-active{% endif %}"
+               {% if active_tool == slug %}aria-current="page"{% endif %}>
+              <i class="bi {{ icon }}" aria-hidden="true"></i>
+              {{ name }}
+            </a>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endfor %}
+    {% endif %}
+  </aside>
+
+  {# ── Araç alanı: her araç kendi içeriğini buraya yazar ── #}
+  <div class="ax-console-content">
+    {% block tool_area %}{% endblock %}
+  </div>
+
+</div>
+
+<script>
+function axSidebarToggle() {
+  const sidebar = document.getElementById('ax-console-sidebar');
+  const chevron = document.getElementById('ax-sidebar-chevron');
+  const btn = document.querySelector('.ax-console-mobile-btn');
+  const isOpen = sidebar.classList.toggle('is-open');
+  if (chevron) chevron.style.transform = isOpen ? 'rotate(180deg)' : '';
+  if (btn) btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+}
+
+// ── Session dataset desteği ──────────────────────────────────────────────────
+(function() {
+  const SESSION_FILE = '{{ session_dataset_name|default:""|escapejs }}';
+  if (!SESSION_FILE) return;
+
+  // Sentinel: gerçek bir File nesnesi — previewFile()'ın if(!f)return guard'ını geçer
+  const SENTINEL = new File([], '\x00ax_session\x00', { type: 'application/octet-stream' });
+
+  document.addEventListener('DOMContentLoaded', function() {
+    // Araçlar farklı display ID kullanıyor: file-name-display veya file-name
+    const fileNameDisplay = document.getElementById('file-name-display') || document.getElementById('file-name');
+    const fileInput       = document.getElementById('file-input');
+    // Araçlar farklı buton ID'si kullanıyor: analyze-btn veya preview-btn
+    const btn = document.getElementById('analyze-btn') || document.getElementById('preview-btn');
+    if (!btn) return;
+
+    // Upload alanını "mevcut veri" moduna al
+    if (fileNameDisplay) fileNameDisplay.textContent = SESSION_FILE;
+    if (fileInput) {
+      // Property convention 1 & 2: _selectedFile / _file
+      fileInput._selectedFile = SENTINEL;
+      fileInput._file = SENTINEL;
+      // Convention 3: fileInput.files[0] (read-only) — DataTransfer ile inject et
+      try {
+        const dt = new DataTransfer();
+        dt.items.add(SENTINEL);
+        fileInput.files = dt.files;
+      } catch(e) {}
+    }
+    // HTML disabled attribute ve Bootstrap disabled class ikisini de kaldır
+    btn.disabled = false;
+    btn.classList.remove('disabled');
+  });
+
+  // fetch interceptor: sentinel dosyayı yakala → use_session=true ile değiştir
+  const _origFetch = window.fetch;
+  window.fetch = function(url, options) {
+    if (options && options.method === 'POST' && options.body instanceof FormData) {
+      const fd   = options.body;
+      const step = fd.get('step');
+      const file = fd.get('file');
+      if (step === 'preview' && file instanceof File && file.name === '\x00ax_session\x00') {
+        fd.delete('file');
+        fd.append('use_session', 'true');
+      }
+    }
+    return _origFetch.call(window, url, options);
+  };
+})();
+
+function axClearSession() {
+  fetch('/analiz/clear-session/', {
+    method: 'POST',
+    headers: {'X-CSRFToken': '{{ csrf_token }}', 'X-Requested-With': 'XMLHttpRequest'},
+  }).then(() => window.location.reload());
+}
+</script>
+
+{% endblock %}

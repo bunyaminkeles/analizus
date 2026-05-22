@@ -9,10 +9,19 @@ import logging
 logger = logging.getLogger(__name__)
 
 _pending_file_contents: dict[str, bytes] = {}
+_session_datasets: dict[str, tuple[bytes, str]] = {}  # session_key → (content, filename)
 
 
 def store_file_content(job_id: str, content: bytes):
     _pending_file_contents[job_id] = content
+
+
+def save_session_dataset(session_key: str, content: bytes, filename: str):
+    _session_datasets[session_key] = (content, filename)
+
+
+def get_session_dataset(session_key: str) -> tuple[bytes, str] | None:
+    return _session_datasets.get(session_key)
 
 
 def run_job(job_id: str):

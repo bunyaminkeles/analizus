@@ -18,6 +18,43 @@ def feature_required(view_func):
     return wrapper
 
 
+TOOL_CATEGORIES = [
+    ('Ön Analizler', [
+        ('betimsel',  'Betimleyici İstatistik',       'bi-clipboard2-data',    'success',  'istatistik:betimsel'),
+        ('normallik', 'Normallik Testi',               'bi-activity',           'warning',  'istatistik:normallik'),
+        ('orneklem',  'Örneklem Hesaplayıcı',          'bi-calculator-fill',    'info',     'istatistik:orneklem'),
+    ]),
+    ('Geçerlik & Güvenirlik', [
+        ('cronbach',  'Cronbach Alpha',                'bi-shield-check',       'primary',  'istatistik:cronbach'),
+        ('afa',       'Açıklayıcı Faktör Analizi',     'bi-diagram-3',          'info',     'istatistik:afa'),
+    ]),
+    ('İlişki Analizleri', [
+        ('korelasyon', 'Korelasyon Matrisi',           'bi-grid-3x3',           'info',     'istatistik:korelasyon'),
+        ('ki_kare',   'Ki-Kare Testi',                 'bi-table',              'warning',  'istatistik:ki_kare'),
+    ]),
+    ('Fark Analizleri', [
+        ('ttesti',         't-Testi',                  'bi-distribute-horizontal', 'primary', 'istatistik:ttesti'),
+        ('anova',          'Tek Yönlü ANOVA',           'bi-bar-chart-steps',   'danger',   'istatistik:anova'),
+        ('mann_whitney',   'Mann-Whitney U',            'bi-arrow-left-right',  'warning',  'istatistik:mann_whitney'),
+        ('kruskal_wallis', 'Kruskal-Wallis H',          'bi-funnel',            'teal',     'istatistik:kruskal_wallis'),
+        ('wilcoxon',       'Wilcoxon İşaret Testi',     'bi-arrows-collapse',   'info',     'istatistik:wilcoxon'),
+        ('friedman',       'Friedman Testi',            'bi-bar-chart-steps',   'success',  'istatistik:friedman'),
+        ('tekrarli_anova', 'Tekrarlayan Ölçümler ANOVA','bi-arrow-repeat',      'primary',  'istatistik:tekrarli_anova'),
+    ]),
+    ('Regresyon Analizleri', [
+        ('lineer_regresyon',  'Çoklu Doğrusal Regresyon', 'bi-graph-up-arrow',  'primary',  'istatistik:lineer_regresyon'),
+        ('lojistik_regresyon','Lojistik Regresyon',        'bi-bezier2',         'success',  'istatistik:lojistik_regresyon'),
+    ]),
+]
+
+
+def _console_ctx(active_tool, request=None):
+    ctx = {'active_tool': active_tool, 'tool_categories': TOOL_CATEGORIES}
+    if request:
+        ctx['session_dataset_name'] = request.session.get('_ax_dataset_name', '')
+    return ctx
+
+
 PROMO_BASE = {
     'promo_steps': [
         'CSV veya Excel dosyanızı yükleyin.',
@@ -62,6 +99,7 @@ def cronbach_landing(request):
             'Başlık satırı otomatik algılanır.',
             'Boş hücreler (NA) satırdan çıkarılır.',
         ],
+        **_console_ctx('cronbach', request),
     })
 
 
@@ -100,6 +138,7 @@ def normallik_landing(request):
             'p ≥ 0.05 → normal dağılım varsayımı reddedilemez.',
             'Hem istatistiksel hem görsel (Q-Q plot) sonuçlar PDF\'e eklenir.',
         ],
+        **_console_ctx('normallik', request),
     })
 
 
@@ -138,6 +177,7 @@ def betimsel_landing(request):
             'Başlık satırı otomatik algılanır.',
             'Boş hücreler (NA) değişken bazında çıkarılır.',
         ],
+        **_console_ctx('betimsel', request),
     })
 
 
@@ -176,6 +216,7 @@ def korelasyon_landing(request):
             'Spearman: sıralı veriler veya normallik varsayımı sağlanmıyorsa.',
             'Kendall: küçük örneklem veya çok sayıda bağlı sıra olduğunda.',
         ],
+        **_console_ctx('korelasyon', request),
     })
 
 
@@ -185,6 +226,7 @@ def orneklem_landing(request):
         return _handle_orneklem_calc(request)
     return render(request, 'istatistik/orneklem.html', {
         'tool_title': 'Örneklem Büyüklüğü Hesaplayıcı',
+        **_console_ctx('orneklem', request),
     })
 
 
@@ -213,6 +255,7 @@ def ttesti_landing(request):
         'tool_title': 't-Testi',
         'tool_icon': 'bi-distribute-horizontal',
         'tool_color': 'purple',
+        **_console_ctx('ttesti', request),
     })
 
 
@@ -241,6 +284,7 @@ def anova_landing(request):
         'tool_title': 'Tek Yönlü ANOVA',
         'tool_icon': 'bi-bar-chart-steps',
         'tool_color': 'danger',
+        **_console_ctx('anova', request),
     })
 
 
@@ -253,21 +297,40 @@ def _handle_group_tool_post(request, tool):
     is_ajax = request.headers.get('X-Requested-With') == 'XMLHttpRequest'
 
     if step == 'preview':
-        file = request.FILES.get('file')
-        if not file:
-            return JsonResponse({'error': 'Dosya seçilmedi.'}, status=400)
-        if not file.name.lower().endswith(('.csv', '.xlsx', '.xls')):
-            return JsonResponse({'error': 'CSV veya Excel dosyası yükleyin.'}, status=400)
-        if file.size > 10 * 1024 * 1024:
-            return JsonResponse({'error': 'Dosya 10 MB\'ı aşamaz.'}, status=400)
-
-        content = file.read()
-        from .services.job_runner import _parse_file, store_file_content
+        from .services.job_runner import _parse_file, store_file_content, save_session_dataset, get_session_dataset
         import uuid
+
+        use_session = request.POST.get('use_session') == 'true'
+        file = request.FILES.get('file')
+
+        if use_session:
+            session_key = request.session.session_key
+            stored = get_session_dataset(session_key) if session_key else None
+            if not stored:
+                return JsonResponse({'error': 'Oturum verisi bulunamadı. Lütfen dosyayı tekrar yükleyin.'}, status=400)
+            content, original_filename = stored
+        elif file:
+            if not file.name.lower().endswith(('.csv', '.xlsx', '.xls')):
+                return JsonResponse({'error': 'CSV veya Excel dosyası yükleyin.'}, status=400)
+            if file.size > 10 * 1024 * 1024:
+                return JsonResponse({'error': 'Dosya 10 MB\'ı aşamaz.'}, status=400)
+            content = file.read()
+            original_filename = file.name
+        else:
+            return JsonResponse({'error': 'Dosya seçilmedi.'}, status=400)
+
         try:
-            df = _parse_file(content, file.name)
+            df = _parse_file(content, original_filename)
         except ValueError as e:
             return JsonResponse({'error': str(e)}, status=400)
+
+        # Dosyayı session'a kaydet (her yüklemede güncelle)
+        if file and not use_session:
+            if not request.session.session_key:
+                request.session.create()
+            save_session_dataset(request.session.session_key, content, original_filename)
+            request.session['_ax_dataset_name'] = original_filename
+            request.session.modified = True
 
         preview_id = str(uuid.uuid4())
         store_file_content('preview_' + preview_id, content)
@@ -278,7 +341,7 @@ def _handle_group_tool_post(request, tool):
         return JsonResponse({
             'success': True,
             'preview_id': preview_id,
-            'filename': file.name,
+            'filename': original_filename,
             'columns': all_cols,
             'numeric_cols': numeric_cols,
             'n_rows': len(df),
@@ -396,6 +459,7 @@ def mann_whitney_landing(request):
         'tool_title': 'Mann-Whitney U Testi',
         'tool_icon': 'bi-distribute-horizontal',
         'tool_color': 'warning',
+        **_console_ctx('mann_whitney', request),
     })
 
 
@@ -425,6 +489,7 @@ def kruskal_wallis_landing(request):
         'tool_title': 'Kruskal-Wallis H Testi',
         'tool_icon': 'bi-bar-chart-steps',
         'tool_color': 'teal',
+        **_console_ctx('kruskal_wallis', request),
     })
 
 
@@ -454,6 +519,7 @@ def ki_kare_landing(request):
         'tool_title': 'Ki-Kare Testi',
         'tool_icon': 'bi-grid-3x3',
         'tool_color': 'purple',
+        **_console_ctx('ki_kare', request),
     })
 
 
@@ -483,6 +549,7 @@ def lineer_regresyon_landing(request):
         'tool_title': 'Çoklu Doğrusal Regresyon',
         'tool_icon': 'bi-graph-up-arrow',
         'tool_color': 'primary',
+        **_console_ctx('lineer_regresyon', request),
     })
 
 
@@ -512,6 +579,7 @@ def lojistik_regresyon_landing(request):
         'tool_title': 'Lojistik Regresyon',
         'tool_icon': 'bi-diagram-3',
         'tool_color': 'success',
+        **_console_ctx('lojistik_regresyon', request),
     })
 
 
@@ -548,6 +616,7 @@ def afa_landing(request):
             'Faktör sayısı otomatik belirlenir (özdeğer > 1 kuralı).',
             'En az 3 madde ve 10 katılımcı gereklidir.',
         ],
+        **_console_ctx('afa', request),
     })
 
 
@@ -574,6 +643,7 @@ def wilcoxon_landing(request):
     return render(request, 'istatistik/wilcoxon.html', {
         'active_job_id': str(active_job.id) if active_job else None,
         'daily_remaining': _daily_remaining(request.user),
+        **_console_ctx('wilcoxon', request),
     })
 
 
@@ -600,6 +670,7 @@ def friedman_landing(request):
     return render(request, 'istatistik/friedman.html', {
         'active_job_id': str(active_job.id) if active_job else None,
         'daily_remaining': _daily_remaining(request.user),
+        **_console_ctx('friedman', request),
     })
 
 
@@ -626,7 +697,55 @@ def tekrarli_anova_landing(request):
     return render(request, 'istatistik/tekrarli_anova.html', {
         'active_job_id': str(active_job.id) if active_job else None,
         'daily_remaining': _daily_remaining(request.user),
+        **_console_ctx('tekrarli_anova', request),
     })
+
+
+def clear_session_dataset(request):
+    """Session'daki veri setini temizle."""
+    from django.views.decorators.http import require_POST
+    if request.method != 'POST':
+        from django.http import HttpResponseNotAllowed
+        return HttpResponseNotAllowed(['POST'])
+    from .services.job_runner import _session_datasets
+    session_key = request.session.session_key
+    if session_key:
+        _session_datasets.pop(session_key, None)
+    request.session.pop('_ax_dataset_name', None)
+    request.session.modified = True
+    return JsonResponse({'ok': True})
+
+
+def analiz_redirect(request):
+    from django.shortcuts import redirect
+    return redirect('istatistik:betimsel', permanent=False)
+
+
+@feature_required
+def analiz_console(request, tool_slug):
+    """Unified /analiz/<slug>/ entry point — delegates to the matching landing view."""
+    _SLUG_MAP = {
+        'betimsel': betimsel_landing,
+        'normallik': normallik_landing,
+        'orneklem': orneklem_landing,
+        'cronbach': cronbach_landing,
+        'afa': afa_landing,
+        'korelasyon': korelasyon_landing,
+        'ki-kare': ki_kare_landing,
+        'ttesti': ttesti_landing,
+        'anova': anova_landing,
+        'mann-whitney': mann_whitney_landing,
+        'kruskal-wallis': kruskal_wallis_landing,
+        'wilcoxon': wilcoxon_landing,
+        'friedman': friedman_landing,
+        'tekrarli-anova': tekrarli_anova_landing,
+        'lineer-regresyon': lineer_regresyon_landing,
+        'lojistik-regresyon': lojistik_regresyon_landing,
+    }
+    view_fn = _SLUG_MAP.get(tool_slug)
+    if not view_fn:
+        raise Http404
+    return view_fn(request)
 
 
 def _handle_orneklem_calc(request):

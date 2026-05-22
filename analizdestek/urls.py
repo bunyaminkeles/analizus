@@ -66,6 +66,9 @@ urlpatterns = [
     # İstatistik Analiz Araçları
     path('istatistik/', include('istatistik.urls', namespace='istatistik')),
 
+    # Unified Analiz Konsolu (/analiz/ prefix)
+    path('analiz/', include('istatistik.urls_analiz')),
+
     # 4. Forum Uygulaması (En sona koymak çakışmaları önler)
     path('', include('forum.urls')),
     path('i18n/', include('django.conf.urls.i18n')), # DİL MOTORU BURADA
