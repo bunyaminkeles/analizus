@@ -144,7 +144,7 @@ def yoktez_landing(request):
         })
 
     from tezanaliz.models import TezAnaliz
-    past_analiz_jobs = TezAnaliz.objects.filter(user=user).select_related('yok_job').order_by('-created_at')[:8]
+    past_analiz_jobs = TezAnaliz.objects.filter(user=user).select_related('yok_job').order_by('-created_at')[:5]
 
     return render(request, 'yoktez/landing.html', {
         'form': form,
