@@ -379,7 +379,7 @@ document.getElementById('send-email-btn').addEventListener('click', function() {
         <div class="card-header">
             <i class="bi bi-clock-history me-2"></i>Geçmiş Analizlerim
         </div>
-        <div class="list-group list-group-flush">
+        <div class="list-group list-group-flush" style="max-height:260px;overflow-y:auto;">
             {% for job in past_analiz_jobs %}
             <div class="list-group-item bg-dark border-secondary text-white d-flex justify-content-between align-items-center py-2">
                 <div>
