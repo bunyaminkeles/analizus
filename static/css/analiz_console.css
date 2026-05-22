@@ -1,0 +1,192 @@
+/* Analiz Konsolu — Sidebar + Layout */
+
+/* ── Layout wrapper ── */
+.ax-console-layout {
+  display: flex;
+  gap: 0;
+  min-height: calc(100vh - 64px);
+}
+
+/* ── Mobile toolbar ── */
+.ax-console-mobile-bar {
+  padding: 0.75rem 1rem 0;
+  background: var(--ax-bg-primary);
+}
+
+.ax-console-mobile-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.875rem;
+  background: var(--ax-bg-secondary);
+  border: 1px solid var(--ax-border-default);
+  border-radius: 0.5rem;
+  color: var(--ax-text-secondary);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  width: 100%;
+}
+
+.ax-console-mobile-btn:hover {
+  background: var(--ax-bg-tertiary);
+  color: var(--ax-text-primary);
+}
+
+.ax-console-mobile-btn svg {
+  flex-shrink: 0;
+}
+
+/* ── Sidebar ── */
+.ax-console-sidebar {
+  width: 228px;
+  flex-shrink: 0;
+  padding: 1.25rem 0.5rem;
+  border-right: 1px solid var(--ax-border-default);
+  background: var(--ax-bg-primary);
+  overflow-y: auto;
+}
+
+.ax-console-sidebar::-webkit-scrollbar { width: 3px; }
+.ax-console-sidebar::-webkit-scrollbar-track { background: transparent; }
+.ax-console-sidebar::-webkit-scrollbar-thumb {
+  background: var(--ax-border-default);
+  border-radius: 2px;
+}
+
+/* ── Content area ── */
+.ax-console-content {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ── Session dataset indicator ── */
+.ax-console-dataset {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.4375rem 0.625rem;
+  margin-bottom: 0.5rem;
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+}
+
+.ax-console-dataset svg {
+  color: var(--ax-accent-secondary);
+  flex-shrink: 0;
+}
+
+.ax-console-dataset-name {
+  flex: 1;
+  min-width: 0;
+  color: var(--ax-accent-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ax-console-dataset-clear {
+  background: none;
+  border: none;
+  color: var(--ax-text-muted);
+  cursor: pointer;
+  padding: 0;
+  font-size: 0.875rem;
+  line-height: 1;
+  flex-shrink: 0;
+  transition: color 0.12s;
+}
+.ax-console-dataset-clear:hover { color: var(--ax-accent-danger); }
+
+/* ── Category headings ── */
+.ax-console-cat { margin-bottom: 0.25rem; }
+
+.ax-console-cat-title {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--ax-text-muted);
+  padding: 0.625rem 0.625rem 0.25rem;
+}
+
+/* ── Tool links ── */
+.ax-console-cat ul {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 0.5rem;
+}
+
+.ax-console-tool {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4375rem 0.625rem;
+  font-size: 0.8125rem;
+  color: var(--ax-text-secondary);
+  text-decoration: none;
+  border-radius: 0.375rem;
+  border-left: 2px solid transparent;
+  transition: background 0.12s, color 0.12s;
+  line-height: 1.35;
+}
+
+.ax-console-tool:hover {
+  background: var(--ax-bg-tertiary);
+  color: var(--ax-text-primary);
+  text-decoration: none;
+}
+
+.ax-console-tool.is-active {
+  background: rgba(99, 102, 241, 0.1);
+  color: var(--ax-accent-primary-hover);
+  border-left-color: var(--ax-accent-primary);
+  font-weight: 500;
+}
+
+.ax-console-tool i {
+  font-size: 0.875rem;
+  width: 1rem;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+/* ── Responsive ── */
+@media (max-width: 991.98px) {
+  .ax-console-layout {
+    flex-direction: column;
+  }
+
+  .ax-console-sidebar {
+    display: none;
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid var(--ax-border-default);
+    padding: 0.75rem 1rem;
+    background: var(--ax-bg-secondary);
+  }
+
+  .ax-console-sidebar.is-open {
+    display: block;
+  }
+
+  .ax-console-content {
+    width: 100%;
+  }
+}
+
+@media (min-width: 992px) {
+  .ax-console-mobile-bar {
+    display: none;
+  }
+
+  .ax-console-sidebar {
+    position: sticky;
+    top: 64px;
+    max-height: calc(100vh - 64px);
+    display: block;
+  }
+}
