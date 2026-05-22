@@ -185,13 +185,7 @@
             <!-- Desktop Menü -->
             <nav class="site-nav__menu" aria-label="Ana menü">
 
-                <a href="{% url 'forum_index' %}"
-                   class="site-nav__link {% if '/forum/' in request.path %}is-active{% endif %}">
-                    Forum
-                </a>
-
                 <!-- Analizler Dropdown -->
-                {% if features.bibliometrics or features.istatistik %}
                 <div class="site-nav__dropdown-wrap">
                     <button class="site-nav__link site-nav__dropdown-btn"
                             aria-expanded="false" aria-haspopup="true"
@@ -200,46 +194,31 @@
                         <svg class="site-nav__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
                     </button>
                     <div class="site-nav__dropdown" id="dropdown-analizler" role="menu">
+                        {% if features.istatistik %}
+                        <a href="/analiz/" class="site-nav__dropdown-item" role="menuitem">İstatistik Analiz Araçları</a>
+                        {% endif %}
                         {% if features.bibliometrics %}
                         <a href="{% url 'bibliometrics:landing' %}" class="site-nav__dropdown-item" role="menuitem">Bibliometrik Analiz</a>
                         {% endif %}
-                        {% if features.istatistik %}
-                        {% if features.bibliometrics %}<div class="site-nav__dropdown-divider"></div>{% endif %}
-                        <a href="/analiz/" class="site-nav__dropdown-item" role="menuitem">İstatistik Analiz Araçları</a>
-                        {% endif %}
-                        <div class="site-nav__dropdown-divider"></div>
                         <a href="{% url 'tableau_dashboard' %}" class="site-nav__dropdown-item" role="menuitem">Tableau Analizleri</a>
-                    </div>
-                </div>
-                {% endif %}
-
-                <!-- Araçlar Dropdown -->
-                <div class="site-nav__dropdown-wrap">
-                    <button class="site-nav__link site-nav__dropdown-btn"
-                            aria-expanded="false" aria-haspopup="true"
-                            data-dropdown="araclar">
-                        Araçlar
-                        <svg class="site-nav__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
-                    </button>
-                    <div class="site-nav__dropdown" id="dropdown-araclar" role="menu">
+                        <div class="site-nav__dropdown-divider"></div>
                         <a href="{% url 'hangi_test' %}" class="site-nav__dropdown-item" role="menuitem">Hangi Test?</a>
                         {% if features.ai_assistant %}
                         <a href="{% url 'ai_assistant' %}" class="site-nav__dropdown-item" role="menuitem">AI Asistan</a>
                         {% endif %}
                         <a href="{% url 'studyroom_list' %}" class="site-nav__dropdown-item" role="menuitem">Çalışma Odaları</a>
-                        {% if features.oaipmh or features.yoktez or features.openalex or features.trdizin %}
-                        <div class="site-nav__dropdown-divider"></div>
-                        <a href="/tarama/" class="site-nav__dropdown-item" role="menuitem">Akademik Tarama</a>
-                        {% endif %}
                     </div>
                 </div>
 
-                {% if features.market %}
-                <a href="{% url 'job_list' %}" class="site-nav__link">Hizmetler</a>
+                <!-- Akademik Tarama -->
+                {% if features.oaipmh or features.yoktez or features.openalex or features.trdizin %}
+                <a href="/tarama/" class="site-nav__link {% if '/tarama/' in request.path or '/yoktez/' in request.path or '/openalex/' in request.path or '/trdizin/' in request.path or '/oaipmh/' in request.path %}is-active{% endif %}">
+                    Akademik Tarama
+                </a>
                 {% endif %}
 
-                {% if features.blog %}
-                <a href="{% url 'blog_list' %}" class="site-nav__link {% if '/blog/' in request.path %}is-active{% endif %}">Blog</a>
+                {% if features.market %}
+                <a href="{% url 'job_list' %}" class="site-nav__link">Pazaryeri</a>
                 {% endif %}
 
                 <!-- Kurumsal Dropdown -->
@@ -252,6 +231,9 @@
                     </button>
                     <div class="site-nav__dropdown" id="dropdown-kurumsal" role="menu">
                         <a href="{% url 'neden_biz' %}" class="site-nav__dropdown-item" role="menuitem">Neden Analizus?</a>
+                        {% if features.blog %}
+                        <a href="{% url 'blog_list' %}" class="site-nav__dropdown-item" role="menuitem">Blog</a>
+                        {% endif %}
                         <a href="{% url 'about' %}" class="site-nav__dropdown-item" role="menuitem">Hakkımızda</a>
                         <a href="{% url 'about' %}#iletisim" class="site-nav__dropdown-item" role="menuitem">İletişim</a>
                     </div>
@@ -368,41 +350,39 @@
         </div>
         <nav class="nav-drawer__nav">
 
-            <a href="{% url 'home' %}" class="nav-drawer__link {% if request.path == '/' %}is-active{% endif %}">Forum</a>
-
-            {% if features.bibliometrics or features.istatistik %}
             <div>
                 <button class="nav-drawer__accordion-btn" aria-expanded="false" data-accordion="mob-analizler">
                     Analizler
                     <svg class="nav-drawer__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
                 </button>
                 <div class="nav-drawer__accordion-body" id="mob-analizler">
-                    {% if features.bibliometrics %}<a href="{% url 'bibliometrics:landing' %}" class="nav-drawer__link">Bibliometrik Analiz</a>{% endif %}
                     {% if features.istatistik %}<a href="/analiz/" class="nav-drawer__link">İstatistik Analiz Araçları</a>{% endif %}
+                    {% if features.bibliometrics %}<a href="{% url 'bibliometrics:landing' %}" class="nav-drawer__link">Bibliometrik Analiz</a>{% endif %}
                     <a href="{% url 'tableau_dashboard' %}" class="nav-drawer__link">Tableau Analizleri</a>
-                </div>
-            </div>
-            {% endif %}
-
-            <div>
-                <button class="nav-drawer__accordion-btn" aria-expanded="false" data-accordion="mob-araclar">
-                    Araçlar
-                    <svg class="nav-drawer__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
-                </button>
-                <div class="nav-drawer__accordion-body" id="mob-araclar">
                     <a href="{% url 'hangi_test' %}" class="nav-drawer__link">Hangi Test?</a>
                     {% if features.ai_assistant %}<a href="{% url 'ai_assistant' %}" class="nav-drawer__link">AI Asistan</a>{% endif %}
                     <a href="{% url 'studyroom_list' %}" class="nav-drawer__link">Çalışma Odaları</a>
-                    {% if features.oaipmh or features.yoktez or features.openalex or features.trdizin %}
-                    <a href="/tarama/" class="nav-drawer__link">Akademik Tarama</a>
-                    {% endif %}
                 </div>
             </div>
 
-            {% if features.market %}<a href="{% url 'job_list' %}" class="nav-drawer__link">Hizmetler</a>{% endif %}
-            {% if features.blog %}<a href="{% url 'blog_list' %}" class="nav-drawer__link">Blog</a>{% endif %}
-            <a href="{% url 'neden_biz' %}" class="nav-drawer__link">Neden Biz?</a>
-            <a href="{% url 'about' %}" class="nav-drawer__link">Hakkımızda</a>
+            {% if features.oaipmh or features.yoktez or features.openalex or features.trdizin %}
+            <a href="/tarama/" class="nav-drawer__link">Akademik Tarama</a>
+            {% endif %}
+
+            {% if features.market %}<a href="{% url 'job_list' %}" class="nav-drawer__link">Pazaryeri</a>{% endif %}
+
+            <div>
+                <button class="nav-drawer__accordion-btn" aria-expanded="false" data-accordion="mob-kurumsal">
+                    Kurumsal
+                    <svg class="nav-drawer__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div class="nav-drawer__accordion-body" id="mob-kurumsal">
+                    <a href="{% url 'neden_biz' %}" class="nav-drawer__link">Neden Analizus?</a>
+                    {% if features.blog %}<a href="{% url 'blog_list' %}" class="nav-drawer__link">Blog</a>{% endif %}
+                    <a href="{% url 'about' %}" class="nav-drawer__link">Hakkımızda</a>
+                    <a href="{% url 'about' %}#iletisim" class="nav-drawer__link">İletişim</a>
+                </div>
+            </div>
 
             <div class="nav-drawer__divider"></div>
 
