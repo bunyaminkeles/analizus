@@ -53,7 +53,11 @@ TOOL_CATEGORIES = [
 
 
 def _console_ctx(active_tool, request=None):
-    ctx = {'active_tool': active_tool, 'tool_categories': TOOL_CATEGORIES}
+    ctx = {
+        'active_tool': active_tool,
+        'tool_categories': TOOL_CATEGORIES,
+        'max_upload_mb': django_settings.MAX_UPLOAD_SIZE // (1024 * 1024),
+    }
     if request:
         ctx['session_dataset_name'] = request.session.get('_ax_dataset_name', '')
     return ctx

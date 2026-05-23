@@ -44,7 +44,7 @@
         <div id="upload-area" class="ax-upload-area mb-3" onclick="document.getElementById('file-input').click()">
           <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ax-text-accent mb-2 mx-auto d-block"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M12 12v9"/><path d="m8 16 4-4 4 4"/></svg>
           <p class="ax-text-muted ax-text-sm mb-1">Dosyayı buraya sürükleyin veya tıklayın</p>
-          <p class="ax-text-muted ax-text-sm mb-0" id="file-name-display">CSV, XLSX, XLS — Maks. 5 MB</p>
+          <p class="ax-text-muted ax-text-sm mb-0" id="file-name-display">CSV, XLSX, XLS — Maks. {{ max_upload_mb }} MB</p>
         </div>
         <input type="file" id="file-input" accept=".csv,.xlsx,.xls" class="d-none">
 
@@ -369,7 +369,7 @@ function resetUI() {
   if (pollInterval) clearInterval(pollInterval);
   currentJobId = null; previewData = null;
   fileInput.value = ''; fileInput._selectedFile = null;
-  fileNameDisplay.textContent = 'CSV, XLSX, XLS — Maks. 5 MB';
+  fileNameDisplay.textContent = 'CSV, XLSX, XLS — Maks. {{ max_upload_mb }} MB';
   analyzeBtn.disabled = true;
   document.getElementById('error-msg').classList.add('d-none');
   document.getElementById('cronbach-apa-box').classList.add('d-none');
