@@ -36,7 +36,7 @@
                  style="border-style:dashed!important;cursor:pointer;"
                  onclick="document.getElementById('file-input').click()">
               <i class="bi bi-cloud-upload-fill fs-2 mb-2 d-block" style="color:#a78bfa;"></i>
-              <p class="text-white-50 small mb-0" id="file-name">CSV, XLSX, XLS — Maks. 10 MB</p>
+              <p class="text-white-50 small mb-0" id="file-name">CSV, XLSX, XLS — Maks. 5 MB</p>
             </div>
             <input type="file" id="file-input" accept=".csv,.xlsx,.xls" class="d-none">
             <button id="preview-btn" class="btn w-100 fw-semibold disabled" disabled
@@ -350,7 +350,7 @@ function resetToUpload() {
   if (pollInterval) clearInterval(pollInterval);
   previewId = null; previewFilename = null;
   fileInput.value = ''; fileInput._file = null;
-  document.getElementById('file-name').textContent = 'CSV, XLSX, XLS — Maks. 10 MB';
+  document.getElementById('file-name').textContent = 'CSV, XLSX, XLS — Maks. 5 MB';
   const pb = document.getElementById('preview-btn'); pb.disabled = true; pb.classList.add('disabled');
   document.getElementById('step-upload').classList.remove('d-none');
   document.getElementById('step-config').classList.add('d-none');

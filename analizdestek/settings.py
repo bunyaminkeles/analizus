@@ -477,6 +477,8 @@ JOB_MAX_WORKERS = int(os.environ.get('JOB_MAX_WORKERS', 5))
 
 # --- DOSYA YÜKLEME AYARLARI ---
 MAX_UPLOAD_SIZE = 5 * 1024 * 1024  # 5 MB
+DATA_UPLOAD_MAX_MEMORY_SIZE = MAX_UPLOAD_SIZE
+FILE_UPLOAD_MAX_MEMORY_SIZE = MAX_UPLOAD_SIZE
 ALLOWED_ATTACHMENT_TYPES = [
     'image/jpeg', 'image/png', 'image/gif', 'image/webp',
     'application/pdf',

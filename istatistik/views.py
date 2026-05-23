@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse, Http404
 from django.views.decorators.http import require_GET
 from django_ratelimit.decorators import ratelimit
+from django.conf import settings as django_settings
 from functools import wraps
 
 from .models import IstatistikJob
@@ -315,8 +316,8 @@ def _handle_group_tool_post(request, tool):
         elif file:
             if not file.name.lower().endswith(('.csv', '.xlsx', '.xls')):
                 return JsonResponse({'error': 'CSV veya Excel dosyası yükleyin.'}, status=400)
-            if file.size > 10 * 1024 * 1024:
-                return JsonResponse({'error': 'Dosya 10 MB\'ı aşamaz.'}, status=400)
+            if file.size > django_settings.MAX_UPLOAD_SIZE:
+                return JsonResponse({'error': 'Dosya boyutu 5 MB sınırını aşıyor.'}, status=400)
             content = file.read()
             original_filename = file.name
         else:
@@ -856,8 +857,8 @@ def _handle_upload(request, tool, options=None):
     if not file.name.lower().endswith(allowed_ext):
         return JsonResponse({'error': 'Yalnızca CSV veya Excel (.xlsx/.xls) dosyası yükleyebilirsiniz.'}, status=400)
 
-    if file.size > 10 * 1024 * 1024:  # 10 MB
-        return JsonResponse({'error': 'Dosya boyutu 10 MB\'ı aşamaz.'}, status=400)
+    if file.size > django_settings.MAX_UPLOAD_SIZE:  # 10 MB
+        return JsonResponse({'error': 'Dosya boyutu 5 MB sınırını aşıyor.'}, status=400)
 
     content = file.read()
 

@@ -38,7 +38,7 @@
                  style="border-style:dashed!important;cursor:pointer;"
                  onclick="document.getElementById('file-input').click()">
               <i class="bi bi-cloud-upload-fill fs-2 mb-2 d-block" style="color:#a78bfa;"></i>
-              <p class="text-white-50 small mb-0" id="file-name">CSV, XLSX, XLS — Maks. 10 MB</p>
+              <p class="text-white-50 small mb-0" id="file-name">CSV, XLSX, XLS — Maks. 5 MB</p>
             </div>
             <input type="file" id="file-input" accept=".csv,.xlsx,.xls" class="d-none">
             <button id="preview-btn" class="btn w-100 fw-semibold disabled" style="background:#4c1d95;color:#fff;" disabled>
@@ -243,6 +243,12 @@ const previewBtn = document.getElementById('preview-btn');
 fileInput.addEventListener('change', () => {
   const f = fileInput.files[0];
   if (!f) return;
+  if (f.size > 5 * 1024 * 1024) {
+    document.getElementById('upload-error').textContent = 'Dosya boyutu 5 MB sınırını aşıyor.';
+    document.getElementById('upload-error').classList.remove('d-none');
+    fileInput.value = '';
+    return;
+  }
   document.getElementById('file-name').textContent = f.name + ' (' + (f.size / 1024).toFixed(0) + ' KB)';
   previewBtn.disabled = false; previewBtn.classList.remove('disabled');
   document.getElementById('upload-error').classList.add('d-none');
@@ -435,7 +441,7 @@ function resetToUpload() {
   if (pollInterval) clearInterval(pollInterval);
   previewId = null; previewFilename = null;
   fileInput.value = ''; previewBtn.disabled = true; previewBtn.classList.add('disabled');
-  document.getElementById('file-name').textContent = 'CSV, XLSX, XLS — Maks. 10 MB';
+  document.getElementById('file-name').textContent = 'CSV, XLSX, XLS — Maks. 5 MB';
   document.getElementById('step-config').classList.add('d-none');
   document.getElementById('step-upload').classList.remove('d-none');
   document.getElementById('upload-error').classList.add('d-none');
