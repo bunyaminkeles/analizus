@@ -45,7 +45,7 @@
                onclick="document.getElementById('file-input').click()">
             <i class="bi bi-cloud-upload-fill fs-2 text-{{ tool_color }} mb-2 d-block"></i>
             <p class="text-white-50 small mb-1">Dosyayı buraya sürükleyin veya tıklayın</p>
-            <p class="text-white-50 small mb-0" id="file-name-display">CSV, XLSX, XLS — Maks. 5 MB</p>
+            <p class="text-white-50 small mb-0" id="file-name-display">CSV, XLSX, XLS — Maks. {{ max_upload_mb }} MB</p>
           </div>
           <input type="file" id="file-input" accept=".csv,.xlsx,.xls" class="d-none">
 
@@ -174,9 +174,10 @@ fileInput.addEventListener('change', () => {
   if (fileInput.files[0]) setFile(fileInput.files[0]);
 });
 
+const MAX_UPLOAD_BYTES = {{ max_upload_mb }} * 1024 * 1024;
 function setFile(f) {
-  if (f.size > 5 * 1024 * 1024) {
-    errorMsg.textContent = 'Dosya boyutu 5 MB sınırını aşıyor. Lütfen daha küçük bir dosya seçin.';
+  if (f.size > MAX_UPLOAD_BYTES) {
+    errorMsg.textContent = 'Dosya boyutu {{ max_upload_mb }} MB sınırını aşıyor. Lütfen daha küçük bir dosya seçin.';
     errorMsg.classList.remove('d-none');
     fileInput.value = '';
     fileInput._selectedFile = null;
@@ -300,7 +301,7 @@ function resetUI() {
   currentJobId = null;
   fileInput.value = '';
   fileInput._selectedFile = null;
-  fileNameDisplay.textContent = 'CSV, XLSX, XLS — Maks. 5 MB';
+  fileNameDisplay.textContent = 'CSV, XLSX, XLS — Maks. {{ max_upload_mb }} MB';
   analyzeBtn.disabled = true;
   errorMsg.classList.add('d-none');
   warningList.innerHTML = '';
