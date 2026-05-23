@@ -159,7 +159,7 @@ def trdizin_job_status(request, job_id):
         from analizdestek.job_queue import get_queue_position
         response['queue_position'] = get_queue_position('trdizin', str(job.id))
     elif job.status == 'completed':
-        response['demo_results'] = job.demo_results[:3]
+        response['demo_results'] = job.demo_results[:5]
         response['all_results_file_url'] = job.all_results_file_url
     elif job.status == 'failed':
         response['error'] = job.error_message
