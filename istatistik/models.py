@@ -20,6 +20,7 @@ TOOL_CHOICES = [
     ('wilcoxon', 'Wilcoxon İşaret Testi'),
     ('friedman', 'Friedman Testi'),
     ('tekrarli_anova', 'Tekrarlayan Ölçümler ANOVA'),
+    ('karar_agaci', 'Karar Ağacı Sınıflandırması'),
 ]
 
 STATUS_CHOICES = [

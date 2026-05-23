@@ -45,6 +45,9 @@ TOOL_CATEGORIES = [
         ('lineer_regresyon',  'Çoklu Doğrusal Regresyon', 'bi-graph-up-arrow',  'primary',  'istatistik:lineer_regresyon'),
         ('lojistik_regresyon','Lojistik Regresyon',        'bi-bezier2',         'success',  'istatistik:lojistik_regresyon'),
     ]),
+    ('Makine Öğrenmesi', [
+        ('karar_agaci', 'Karar Ağacı', 'bi-diagram-2', 'purple', 'istatistik:karar_agaci'),
+    ]),
 ]
 
 
@@ -388,6 +391,19 @@ def _handle_group_tool_post(request, tool):
             options = {'method': method}
             if cols:
                 options['columns'] = cols
+        elif tool == 'karar_agaci':
+            max_d = request.POST.get('max_depth', '5').strip()
+            t_size = request.POST.get('test_size', '0.2').strip()
+            criterion = request.POST.get('criterion', 'gini')
+            if criterion not in ('gini', 'entropy'):
+                criterion = 'gini'
+            options = {
+                'target_col': request.POST.get('target_col', ''),
+                'feature_cols': request.POST.getlist('feature_cols'),
+                'max_depth': int(max_d) if max_d.isdigit() else 5,
+                'test_size': float(t_size) if t_size else 0.2,
+                'criterion': criterion,
+            }
         elif tool in ('lineer_regresyon', 'lojistik_regresyon'):
             options = {
                 'dep_col': request.POST.get('dep_col', ''),
@@ -585,6 +601,36 @@ def lojistik_regresyon_landing(request):
 
 @feature_required
 @ratelimit(key='ip', rate='30/h', method='POST', block=True)
+def karar_agaci_landing(request):
+    if not request.user.is_authenticated:
+        return render(request, 'service_promo.html', {
+            **PROMO_BASE,
+            'promo_title': 'Karar Ağacı Sınıflandırması',
+            'promo_icon': 'bi-diagram-2',
+            'promo_color': 'purple',
+            'promo_description': 'Veri setinizdeki kategorik hedef değişkeni sınıflandırın. Özellik önemi, confusion matrix ve ağaç yapısı görselleştirmesiyle tam ML raporu.',
+            'promo_features': [
+                {'icon': 'bi-diagram-2', 'title': 'Ağaç Modeli', 'desc': 'Gini veya Entropy kriteri ile karar ağacı eğitilir. Maksimum derinliği kendiniz belirleyebilirsiniz.'},
+                {'icon': 'bi-bar-chart-steps', 'color': 'warning', 'title': 'Özellik Önemi', 'desc': 'Hangi değişkenin sınıflandırmaya en çok katkı yaptığı sıralı tablo ile gösterilir.'},
+                {'icon': 'bi-grid-3x3', 'color': 'info', 'title': 'Confusion Matrix', 'desc': 'Test seti üzerindeki doğruluk, kesinlik, duyarlılık ve F1 skoru raporlanır.'},
+                {'icon': 'bi-file-earmark-pdf-fill', 'color': 'danger', 'title': 'PDF Rapor', 'desc': 'Ağaç yapısı, metrikler ve APA formatında raporlama cümlesi PDF olarak indirilir.'},
+            ],
+        })
+    if request.method == 'POST':
+        return _handle_group_tool_post(request, 'karar_agaci')
+    active_job = _get_active_job(request.user, 'karar_agaci')
+    return render(request, 'istatistik/karar_agaci.html', {
+        'active_job_id': str(active_job.id) if active_job else None,
+        'daily_remaining': _daily_remaining(request.user),
+        'tool_title': 'Karar Ağacı Sınıflandırması',
+        'tool_icon': 'bi-diagram-2',
+        'tool_color': 'purple',
+        **_console_ctx('karar_agaci', request),
+    })
+
+
+@feature_required
+@ratelimit(key='ip', rate='30/h', method='POST', block=True)
 def afa_landing(request):
     if not request.user.is_authenticated:
         return render(request, 'service_promo.html', {
@@ -741,6 +787,7 @@ def analiz_console(request, tool_slug):
         'tekrarli-anova': tekrarli_anova_landing,
         'lineer-regresyon': lineer_regresyon_landing,
         'lojistik-regresyon': lojistik_regresyon_landing,
+        'karar-agaci': karar_agaci_landing,
     }
     view_fn = _SLUG_MAP.get(tool_slug)
     if not view_fn:
