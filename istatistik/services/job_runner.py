@@ -157,6 +157,19 @@ def _execute_job(job_id: str):
                 df,
                 columns=opts.get('columns') or [],
             )
+        elif job.tool == 'karar_agaci':
+            from .karar_agaci import analyze, build_pdf
+            opts = job.options or {}
+            max_d = opts.get('max_depth', 5)
+            t_size = opts.get('test_size', 0.2)
+            result_data = analyze(
+                df,
+                target_col=opts.get('target_col', ''),
+                feature_cols=opts.get('feature_cols', []),
+                max_depth=int(max_d) if str(max_d).isdigit() else 5,
+                test_size=float(t_size) if t_size else 0.2,
+                criterion=opts.get('criterion', 'gini'),
+            )
         else:
             job.mark_failed(f'Bilinmeyen araç: {job.tool}')
             return
