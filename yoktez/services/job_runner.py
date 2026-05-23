@@ -102,6 +102,12 @@ def send_demo_email_async(job_id: str) -> None:
                 body_lines.append(f'{i}. {r.get("title", "(Başlık yok)")}')
                 body_lines.append(f'   Yazar: {r.get("author", "-")} | Yıl: {r.get("year", "-")}')
                 body_lines.append(f'   Üniversite: {r.get("university", "-")}')
+                abstract = r.get('abstract_tr') or r.get('abstract_en', '')
+                if abstract:
+                    trimmed = abstract[:500].rstrip()
+                    if len(abstract) > 500:
+                        trimmed += '…'
+                    body_lines.append(f'   Özet: {trimmed}')
                 body_lines.append('')
 
             body_lines.append('─' * 40)

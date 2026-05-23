@@ -35,7 +35,7 @@
                  style="border: 2px dashed var(--ax-border-default); background: rgba(0,0,0,0.1); cursor:pointer; transition: border-color 0.2s;"
                  onclick="document.getElementById('file-input').click()">
               <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ax-text-danger mb-2 mx-auto d-block"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M12 12v9"/><path d="m8 16 4-4 4 4"/></svg>
-              <p class="ax-text-muted ax-text-sm mb-0" id="file-name">CSV, XLSX, XLS — Maks. 10 MB</p>
+              <p class="ax-text-muted ax-text-sm mb-0" id="file-name">CSV, XLSX, XLS — Maks. 5 MB</p>
             </div>
             <input type="file" id="file-input" accept=".csv,.xlsx,.xls" class="d-none">
             <button id="preview-btn" class="ax-btn ax-btn--danger ax-w-full fw-semibold" disabled>
@@ -339,7 +339,7 @@ function resetToUpload() {
   if (pollInterval) clearInterval(pollInterval);
   previewId = null; previewFilename = null;
   fileInput.value = ''; fileInput._file = null;
-  document.getElementById('file-name').textContent = 'CSV, XLSX, XLS — Maks. 10 MB';
+  document.getElementById('file-name').textContent = 'CSV, XLSX, XLS — Maks. 5 MB';
   document.getElementById('preview-btn').disabled = true;
   document.getElementById('step-upload').classList.remove('d-none');
   document.getElementById('step-config').classList.add('d-none');
