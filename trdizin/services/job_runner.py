@@ -144,16 +144,15 @@ def send_demo_email(job):
 
     body_lines = [
         f"Merhaba {user.first_name or user.username},\n",
-        f"TR Dizin arama sonuçlarınız hazırlanmıştır.\n",
+        f"TR Dizin aramanızın örnek sonuçları hazırlanmıştır.\n",
         f"Sorgu: {job.get_query_summary()}",
-        f"Toplam Sonuç: {job.total_results}\n",
+        f"Toplam Bulunan: {job.total_results} yayın",
+        f"Ekteki dosyada en yeni {len(job.demo_results)} makale yer almaktadır.\n",
+        f"{'─'*40}",
+        f"Tüm veri talebi için:",
+        f"  info@analizus.com adresine yazabilirsiniz.",
+        f"\n---\nAnalizus - {site_url}",
     ]
-
-    if job.all_results_file_url:
-        body_lines.append(f"Tüm sonuçlarınızı aşağıdaki linkten indirebilirsiniz (geçici link):")
-        body_lines.append(f"  {job.all_results_file_url}\n")
-
-    body_lines.append(f"\n---\nAnalizus - {site_url}")
 
     try:
         email = EmailMessage(
@@ -162,13 +161,12 @@ def send_demo_email(job):
             from_email=settings.DEFAULT_FROM_EMAIL,
             to=[to_email],
         )
-        if not job.all_results_file_url:
-            demo_txt = _generate_dizin_results_txt(job.demo_results, job, is_demo=False)
-            email.attach(
-                f"trdizin_{len(job.demo_results)}_sonuc.txt",
-                demo_txt,
-                'text/plain',
-            )
+        demo_txt = _generate_dizin_results_txt(job.demo_results, job, is_demo=True)
+        email.attach(
+            f"trdizin_{len(job.demo_results)}_sonuc.txt",
+            demo_txt,
+            'text/plain',
+        )
         email.send()
 
         job.demo_email_sent = True

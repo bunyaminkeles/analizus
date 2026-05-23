@@ -2,11 +2,11 @@
 {% load static %}
 
 {% block title %}TR Dizin Makale Kazıma ve İndirme Aracı — Kodsuz Veri Çekme | Analizus{% endblock %}
-{% block meta_description %}TR Dizin'den kodsuz makale veri kazıma aracı. Boolean operatörlerle gelişmiş arama yapın, sonuçları Excel veya TXT olarak indirin. TÜBİTAK ULAKBİM hakemli Türk dergilerinden toplu veri çekme.{% endblock %}
+{% block meta_description %}TR Dizin'den kodsuz makale veri kazıma aracı. Boolean operatörlerle gelişmiş arama yapın, en yeni 5 makalenin verilerini Excel veya TXT olarak indirin.{% endblock %}
 {% block meta_keywords %}TR Dizin kazıma, makale verisi indirme, TR Dizin excel, akademik makale scraper, kodsuz veri çekme, TÜBİTAK ULAKBİM veri, TR Dizin scraper{% endblock %}
 {% block canonical %}/trdizin/{% endblock %}
 {% block og_title %}TR Dizin Makale Kazıma ve İndirme Aracı — Kodsuz | Analizus{% endblock %}
-{% block og_description %}TR Dizin'den kodsuz makale veri kazıma. Sonuçları Excel veya TXT olarak indirin. TÜBİTAK ULAKBİM verisi.{% endblock %}
+{% block og_description %}TR Dizin'den kodsuz makale veri kazıma. En yeni 5 makalenin verilerini Excel veya TXT olarak indirin.{% endblock %}
 
 {% block tool_area %}
 <div class="container mt-4">
@@ -19,8 +19,7 @@
                         <i class="bi bi-journal-text me-2 text-info"></i>TR Dizin Makale Kazıma ve İndirme
                     </h1>
                     <p class="card-text text-muted mb-1">
-                        TR Dizin'den kodsuz veri çekin. Başlık, özet, yazar ve anahtar kelime alanlarında gelişmiş arama yapın; sonuçları <strong class="text-info">Excel veya TXT</strong> olarak indirin.
-                        10+ sonuçta <strong class="text-info">Analiz Yap</strong> ile grafik içeren PDF rapor alın.
+                        TR Dizin'den kodsuz veri çekin. Başlık, özet, yazar ve anahtar kelime alanlarında gelişmiş arama yapın; toplam sonuç sayısını görün. En yeni <strong class="text-info">5 makalenin</strong> verilerini <strong class="text-info">Excel veya TXT</strong> olarak indirin ya da e-posta ile alın.
                     </p>
                     <p class="text-muted small mb-0">
                         Günlük <strong>{{ daily_limit }}</strong> arama hakkı — Kalan: <strong>{{ remaining }}</strong>
@@ -90,30 +89,31 @@
                 <div class="card bg-dark border-secondary text-white mb-3">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <span id="results-summary">Sonuçlar</span>
-                        <div class="d-flex gap-2">
+                        <div class="d-flex gap-2 flex-wrap">
                             <button id="send-email-btn" class="btn btn-sm btn-outline-warning" style="display:none;">
                                 <i class="bi bi-envelope me-1"></i>E-posta Gönder
                             </button>
-                            <a id="download-btn" href="#" class="btn btn-sm btn-outline-primary" style="display:none;">
-                                <i class="bi bi-filetype-txt me-1"></i>TXT İndir
-                            </a>
                             <a id="download-excel-btn" href="#" class="btn btn-sm btn-success" style="display:none;">
                                 <i class="bi bi-file-earmark-excel me-1"></i>Excel İndir
                             </a>
-                            <button id="analiz-btn" class="btn btn-sm btn-info" style="display:none;" onclick="startAnaliz(event)">
-                                <i class="bi bi-bar-chart-line me-1"></i>Analiz Yap
-                            </button>
                         </div>
                     </div>
                     <div class="card-body">
                         <div id="email-sent-alert" class="alert alert-success" style="display:none;">
-                            <i class="bi bi-check-circle me-2"></i>Sonuçlar e-posta adresinize gönderildi.
-                        </div>
-                        <div id="analiz-info" class="alert alert-info" style="display:none;">
-                            <i class="bi bi-bar-chart-line me-2"></i>
-                            Analiz başlatıldı! <a id="analiz-link" href="#" class="alert-link">Sonuçları buradan takip edin →</a>
+                            <i class="bi bi-check-circle me-2"></i>Sonuçlar e-posta adresinize ek dosya olarak gönderildi.
                         </div>
                         <div id="results-list"></div>
+
+                        <!-- Tüm veri talep kutusu -->
+                        <div id="full-data-box" style="display:none;" class="mt-3 p-3 rounded">
+                            <div class="d-flex align-items-start gap-2">
+                                <i class="bi bi-database-fill-lock text-warning mt-1"></i>
+                                <div>
+                                    <div class="text-white fw-semibold small mb-1">Tüm Veri Talebi</div>
+                                    <div class="text-muted small">Yukarıdaki örnek, en yeni 5 makaleyi içermektedir. Tüm sonuçlara erişmek için <a href="mailto:info@analizus.com" class="text-warning text-decoration-none fw-semibold">info@analizus.com</a> adresine aramanızı belirterek yazabilirsiniz.</div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -255,19 +255,24 @@ function showResults(data) {
     document.getElementById('resume-banner').style.display = 'none';
     document.getElementById('status-area').style.display = 'none';
     document.getElementById('results-area').style.display = 'block';
+
+    const demo = data.demo_results || [];
     document.getElementById('results-summary').textContent =
-        `${data.total_results} yayın bulundu — İlk ${(data.demo_results || []).length} kayıt`;
+        `${data.total_results} yayın bulundu — En yeni ${demo.length} örnek aşağıda`;
 
     const list = document.getElementById('results-list');
     list.innerHTML = '';
-    (data.demo_results || []).forEach((r, i) => {
+    demo.forEach((r, i) => {
+        const kw = (r.keywords_tr || []).slice(0, 5).join(', ');
         list.innerHTML += `
         <div class="border-bottom border-secondary pb-3 mb-3">
             <h6 class="mb-1">${i+1}. ${r.title || '(Başlık yok)'}</h6>
             <small class="text-muted d-block">
                 ${r.authors || ''} ${r.year ? '· ' + r.year : ''} ${r.journal ? '· <em>' + r.journal + '</em>' : ''}
+                ${r.doi ? '· <a href="https://doi.org/' + r.doi + '" target="_blank" class="text-info text-decoration-none">DOI</a>' : ''}
             </small>
-            ${r.abstract_tr ? `<div class="text-light small mt-2" style="line-height:1.5;">${r.abstract_tr.substring(0,300)}...</div>` : ''}
+            ${kw ? `<small class="text-muted d-block mt-1"><i class="bi bi-tag me-1"></i>${kw}</small>` : ''}
+            ${r.abstract_tr ? `<div class="text-secondary small mt-2" style="line-height:1.5;max-height:80px;overflow:hidden;">${r.abstract_tr.substring(0,300)}...</div>` : ''}
         </div>`;
     });
 
@@ -275,53 +280,13 @@ function showResults(data) {
         const emailBtn = document.getElementById('send-email-btn');
         emailBtn.style.display = 'inline-block';
         emailBtn.dataset.jobId = currentJobId;
-    }
-    if (data.all_results_file_url) {
-        const dlBtn = document.getElementById('download-btn');
-        dlBtn.href = `/trdizin/download/${currentJobId}/`;
-        dlBtn.style.display = 'inline-block';
-    }
-    if (data.demo_results && data.demo_results.length > 0) {
+
         const xlBtn = document.getElementById('download-excel-btn');
         xlBtn.href = `/trdizin/download-excel/${currentJobId}/`;
         xlBtn.style.display = 'inline-block';
-    }
-    if (data.total_results >= 10) {
-        const analizBtn = document.getElementById('analiz-btn');
-        analizBtn.dataset.jobId = currentJobId;
-        analizBtn.style.display = 'inline-block';
-    }
-}
 
-function startAnaliz(e) {
-    e.preventDefault();
-    const btn = document.getElementById('analiz-btn');
-    const jobId = btn.dataset.jobId || currentJobId;
-    if (!jobId) { alert('Oturum bilgisi kayboldu, lütfen sayfayı yenileyin.'); return; }
-    btn.disabled = true;
-    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Başlatılıyor...';
-    const csrf = document.querySelector('[name=csrfmiddlewaretoken]').value;
-    fetch(`/makaleanaliz/dizin/${jobId}/`, {
-        method: 'POST',
-        headers: {'X-CSRFToken': csrf, 'X-Requested-With': 'XMLHttpRequest'},
-    })
-    .then(r => r.json())
-    .then(data => {
-        if (data.job_id) {
-            btn.style.display = 'none';
-            document.getElementById('analiz-link').href = `/makaleanaliz/sonuc/${data.job_id}/`;
-            document.getElementById('analiz-info').style.display = 'block';
-        } else {
-            btn.disabled = false;
-            btn.innerHTML = '<i class="bi bi-bar-chart-line me-1"></i>Analiz Yap';
-            alert(data.error || 'Analiz başlatılamadı.');
-        }
-    })
-    .catch(err => {
-        btn.disabled = false;
-        btn.innerHTML = '<i class="bi bi-bar-chart-line me-1"></i>Analiz Yap';
-        alert('Bağlantı hatası: ' + err);
-    });
+        document.getElementById('full-data-box').style.display = 'block';
+    }
 }
 
 document.getElementById('send-email-btn').addEventListener('click', function() {
@@ -456,6 +421,7 @@ createRule(true);
 .query-preview-text .qp-field { color: #22d3ee; }
 .query-preview-text .qp-op { color: #fbbf24; font-weight: 700; }
 .query-preview-text .qp-value { color: #e2e8f0; }
+#full-data-box { background: rgba(251,191,36,0.06); border: 1px solid rgba(251,191,36,0.2); }
 </style>
 
 <!-- SEO: Bilgi metni -->
@@ -466,13 +432,13 @@ createRule(true);
                 <i class="bi bi-info-circle me-2" style="color:#818cf8;"></i>TR Dizin Nedir?
             </h2>
             <p class="text-secondary" style="line-height:1.8;font-size:.92rem;">
-                TR Dizin, TÜBİTAK ULAKBİM tarafından yönetilen Türkiye'nin ulusal akademik atıf ve dizin veritabanıdır. Hakemli Türk dergileri ve bu dergilerde yayımlanan makaleleri kapsar; YÖK, üniversiteler ve araştırmacılar tarafından akademik performans değerlendirmesinde başvuru kaynağı olarak kullanılır. Analizus TR Dizin Tarama aracı, bu veritabanında gelişmiş Boolean operatörleriyle hedefli yayın araması yapmanıza olanak tanır.
+                TR Dizin, TÜBİTAK ULAKBİM tarafından yönetilen Türkiye'nin ulusal akademik atıf ve dizin veritabanıdır. Hakemli Türk dergileri ve bu dergilerde yayımlanan makaleleri kapsar. Analizus TR Dizin Tarama aracı, bu veritabanında gelişmiş Boolean operatörleriyle hedefli yayın araması yapmanıza olanak tanır. Sonuçlar bilgi amaçlıdır; örnek olarak en yeni 5 makale indirilebilir, tam veri talebi için yönetici ile iletişime geçilir.
             </p>
         </div>
         <div class="col-md-4">
             <div class="p-3 rounded h-100" style="background:rgba(99,102,241,0.07);border:1px solid rgba(99,102,241,0.15);">
                 <h3 class="text-white fw-semibold mb-2" style="font-size:.9rem;"><i class="bi bi-code-square me-2" style="color:#818cf8;"></i>Boolean Arama</h3>
-                <p class="text-secondary mb-0" style="font-size:.8rem;line-height:1.6;">AND, OR, NOT operatörleriyle karmaşık sorgular oluşturun; tam ifade ve joker karakter desteği.</p>
+                <p class="text-secondary mb-0" style="font-size:.8rem;line-height:1.6;">AND, OR operatörleriyle karmaşık sorgular oluşturun; başlık, özet ve anahtar kelime alanlarında tarama yapın.</p>
             </div>
         </div>
         <div class="col-md-4">
@@ -483,8 +449,8 @@ createRule(true);
         </div>
         <div class="col-md-4">
             <div class="p-3 rounded h-100" style="background:rgba(99,102,241,0.07);border:1px solid rgba(99,102,241,0.15);">
-                <h3 class="text-white fw-semibold mb-2" style="font-size:.9rem;"><i class="bi bi-bar-chart-line me-2" style="color:#818cf8;"></i>Bibliometrik Analiz</h3>
-                <p class="text-secondary mb-0" style="font-size:.8rem;line-height:1.6;">Sonuçları <a href="/bibliometrics/" class="text-decoration-none" style="color:#a5b4fc;">Bibliometrik Analiz</a> aracına aktararak yayın trendi ve atıf haritası oluşturun.</p>
+                <h3 class="text-white fw-semibold mb-2" style="font-size:.9rem;"><i class="bi bi-envelope-at me-2" style="color:#818cf8;"></i>Tam Veri Talebi</h3>
+                <p class="text-secondary mb-0" style="font-size:.8rem;line-height:1.6;">Tüm sonuç setine ihtiyaç duyuyorsanız <a href="mailto:info@analizus.com" class="text-decoration-none" style="color:#a5b4fc;">info@analizus.com</a> adresinden yönetici ile iletişime geçin.</p>
             </div>
         </div>
     </div>

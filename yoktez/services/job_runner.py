@@ -91,10 +91,11 @@ def send_demo_email_async(job_id: str) -> None:
             job = YokTezSearchJob.objects.get(id=job_id)
 
             body_lines = [
-                f'YÖK Tez aramanızın sonuçları hazır.',
+                f'YÖK Tez aramanızın örnek sonuçları hazır.',
                 f'',
                 f'Sorgu: {job.get_query_summary()}',
                 f'Toplam bulunan: {job.total_results} tez',
+                f'Aşağıda en yeni 5 tezin bilgileri yer almaktadır.',
                 f'',
             ]
             for i, r in enumerate(job.demo_results, 1):
@@ -103,9 +104,9 @@ def send_demo_email_async(job_id: str) -> None:
                 body_lines.append(f'   Üniversite: {r.get("university", "-")}')
                 body_lines.append('')
 
-            if job.all_results_file_url:
-                body_lines.append(f'Sonuç dosyasını indirmek için:')
-                body_lines.append(f'  {job.all_results_file_url}')
+            body_lines.append('─' * 40)
+            body_lines.append('Tüm veri talebi için:')
+            body_lines.append('  info@analizus.com adresine yazabilirsiniz.')
 
             email = EmailMessage(
                 subject=f'YÖK Tez Arama Sonuçları — {job.get_query_summary()[:50]}',

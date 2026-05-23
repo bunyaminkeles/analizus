@@ -2,11 +2,11 @@
 {% load static %}
 
 {% block title %}YÖK Tez Kazıma ve İndirme Aracı — Kodsuz Veri Çekme | Analizus{% endblock %}
-{% block meta_description %}YÖK Ulusal Tez Merkezi'nden kodsuz veri kazıma aracı. Anahtar kelime, yazar veya danışmanla arama yapın; tez verilerini Excel veya TXT olarak indirin. Python bilgisi gerekmez.{% endblock %}
+{% block meta_description %}YÖK Ulusal Tez Merkezi'nden kodsuz veri kazıma aracı. Anahtar kelime, yazar veya danışmanla arama yapın; en yeni 5 tezin verilerini Excel veya TXT olarak indirin.{% endblock %}
 {% block meta_keywords %}YÖK tez kazıma, tez verisi indirme, YÖK tez excel, akademik web scraper, kodsuz veri çekme, tez scraper, üniversite tez verisi, YÖK tez veri kazıma{% endblock %}
 {% block canonical %}/yoktez/{% endblock %}
 {% block og_title %}YÖK Tez Kazıma ve İndirme Aracı — Kodsuz | Analizus{% endblock %}
-{% block og_description %}YÖK Ulusal Tez Merkezi'nden kodsuz veri kazıma. Tez verilerini Excel veya TXT olarak indirin. Python bilgisi gerekmez.{% endblock %}
+{% block og_description %}YÖK Ulusal Tez Merkezi'nden kodsuz veri kazıma. En yeni 5 tezin verilerini Excel veya TXT olarak indirin.{% endblock %}
 
 {% block tool_area %}
 <div class="container mt-4">
@@ -17,10 +17,10 @@
                 <div class="card-body d-flex justify-content-between align-items-start">
                     <div>
                         <h1 class="card-title h3 mb-2">
-                            <i class="bi bi-graph-up-arrow me-2 text-success"></i>YÖK Tez Veri Kazıma
+                            <i class="bi bi-mortarboard-fill me-2 text-success"></i>YÖK Tez Veri Kazıma
                         </h1>
                         <p class="card-text text-muted mb-1">
-                            YÖK Ulusal Tez Merkezi'nden saniyeler içinde veri çekin. 10+ sonuçta <strong class="text-success">Analiz Yap</strong> ile 7 grafik içeren PDF rapor veya <strong class="text-success">Excel/TXT</strong> olarak indirin.
+                            YÖK Ulusal Tez Merkezi'nden saniyeler içinde veri çekin. Toplam sonuç sayısını görün; en yeni <strong class="text-success">5 tezin</strong> bilgisini <strong class="text-success">Excel veya TXT</strong> olarak indirin ya da e-posta ile alın.
                         </p>
                         <p class="text-muted small mb-0">
                             Günlük <strong>{{ daily_limit }}</strong> arama hakkı — Kalan: <strong>{{ remaining }}</strong>
@@ -102,7 +102,7 @@
                 <div class="card bg-dark border-secondary text-white mb-3">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <span id="results-summary">Sonuçlar</span>
-                        <div class="d-flex gap-2">
+                        <div class="d-flex gap-2 flex-wrap">
                             <button id="send-email-btn" class="btn btn-sm btn-outline-warning" style="display:none;">
                                 <i class="bi bi-envelope me-1"></i>E-posta Gönder
                             </button>
@@ -112,9 +112,6 @@
                             <a id="download-excel-btn" href="#" class="btn btn-sm btn-success" style="display:none;">
                                 <i class="bi bi-file-earmark-excel me-1"></i>Excel İndir
                             </a>
-                            <button id="analiz-btn" class="btn btn-sm btn-success" style="display:none;" onclick="startAnaliz(event)">
-                                <i class="bi bi-bar-chart-line me-1"></i>Analiz Yap
-                            </button>
                         </div>
                     </div>
                     <div class="card-body">
@@ -122,6 +119,17 @@
                             <i class="bi bi-check-circle me-2"></i>Sonuçlar e-posta adresinize gönderildi.
                         </div>
                         <div id="results-list"></div>
+
+                        <!-- Tüm veri talep kutusu -->
+                        <div id="full-data-box" style="display:none;" class="mt-3 p-3 rounded" style="background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.2);">
+                            <div class="d-flex align-items-start gap-2">
+                                <i class="bi bi-database-fill-lock text-warning mt-1"></i>
+                                <div>
+                                    <div class="text-white fw-semibold small mb-1">Tüm Veri Talebi</div>
+                                    <div class="text-muted small">Yukarıdaki örnek, en yeni 5 tezi içermektedir. Tüm sonuçlara erişmek için <a href="mailto:info@analizus.com" class="text-warning text-decoration-none fw-semibold">info@analizus.com</a> adresine aramanızı belirterek yazabilirsiniz.</div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -135,7 +143,6 @@
 let currentJobId = null;
 let pollInterval = null;
 
-// Sayfa yüklenince devam eden job var mı kontrol et (server-side)
 {% if active_job_id %}
 currentJobId = '{{ active_job_id }}';
 sessionStorage.setItem('yoktez_job_id', currentJobId);
@@ -144,7 +151,6 @@ document.getElementById('search-btn').disabled = true;
 document.getElementById('search-btn').innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Aranıyor...';
 pollInterval = setInterval(pollStatus, 3000);
 {% else %}
-// sessionStorage'dan önceki job'ı geri yükle
 (function() {
     const savedId = sessionStorage.getItem('yoktez_job_id');
     if (!savedId) return;
@@ -156,7 +162,6 @@ pollInterval = setInterval(pollStatus, 3000);
             if (data.status === 'completed') {
                 showResults(data);
             } else if (data.status === 'pending' || data.status === 'running') {
-                // Devam eden tarama — banner göster ve polling başlat
                 showResumeBanner(savedId);
                 document.getElementById('search-btn').disabled = true;
                 document.getElementById('search-btn').innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Aranıyor...';
@@ -170,15 +175,12 @@ pollInterval = setInterval(pollStatus, 3000);
 {% endif %}
 
 {% if completed_job_id %}
-// Tamamlanmış job — sayfaya dönünce sonuçları otomatik göster
 (function() {
     currentJobId = '{{ completed_job_id }}';
     fetch(`/yoktez/status/${currentJobId}/`)
         .then(r => r.ok ? r.json() : null)
         .then(data => {
-            if (data && data.status === 'completed') {
-                showResults(data);
-            }
+            if (data && data.status === 'completed') showResults(data);
         })
         .catch(() => {});
 })();
@@ -279,31 +281,31 @@ function showResults(data) {
     document.getElementById('resume-banner').style.display = 'none';
     document.getElementById('status-area').style.display = 'none';
     document.getElementById('results-area').style.display = 'block';
+
+    const demo = data.demo_results || [];
     document.getElementById('results-summary').textContent =
-        `${data.total_results} tez bulundu — İlk ${(data.demo_results || []).length} kayıt`;
+        `${data.total_results} tez bulundu — En yeni ${demo.length} örnek aşağıda`;
 
     const list = document.getElementById('results-list');
     list.innerHTML = '';
-    const preview = (data.demo_results || []).slice(0, 1);
-    preview.forEach((r, i) => {
+    demo.forEach((r, i) => {
         list.innerHTML += `
-        <div class="pb-2">
-            <h6 class="mb-1">1. ${r.title_tr || r.title || '(Başlık yok)'}</h6>
+        <div class="border-bottom border-secondary pb-3 mb-3">
+            <h6 class="mb-1">${i+1}. ${r.title_tr || r.title || '(Başlık yok)'}</h6>
             ${r.title && r.title_tr ? `<div class="text-muted small fst-italic mb-1">${r.title}</div>` : ''}
             <small class="text-muted d-block">
                 ${r.author || ''} ${r.year ? '· ' + r.year : ''} · ${r.university || ''}
                 ${r.thesis_type ? ' · ' + r.thesis_type : ''}
             </small>
-            <small class="text-muted">Tez No: ${r.tez_no || '-'}</small>
-            ${r.danisman ? `<div class="text-muted small mt-1"><strong>Danışman:</strong> ${r.danisman}</div>` : ''}
-            ${r.abstract_tr ? `<div class="text-light small mt-2" style="line-height:1.5;max-height:80px;overflow:hidden;">${r.abstract_tr}</div>` : ''}
+            ${r.danisman ? `<small class="text-muted"><strong>Danışman:</strong> ${r.danisman}</small>` : ''}
+            ${r.abstract_tr ? `<div class="text-secondary small mt-2" style="line-height:1.5;max-height:80px;overflow:hidden;">${r.abstract_tr}</div>` : ''}
         </div>`;
     });
 
-    if (data.total_results > 0 && !data.demo_email_sent) {
-        document.getElementById('send-email-btn').style.display = 'inline-block';
-    }
     if (data.total_results > 0) {
+        if (!data.demo_email_sent) {
+            document.getElementById('send-email-btn').style.display = 'inline-block';
+        }
         const dlBtn = document.getElementById('download-btn');
         dlBtn.href = `/yoktez/download/${currentJobId}/`;
         dlBtn.style.display = 'inline-block';
@@ -311,42 +313,11 @@ function showResults(data) {
         const xlBtn = document.getElementById('download-excel-btn');
         xlBtn.href = `/yoktez/download-excel/${currentJobId}/`;
         xlBtn.style.display = 'inline-block';
-    }
-    if (data.total_results >= 10) {
-        const analizBtn = document.getElementById('analiz-btn');
-        analizBtn.dataset.jobId = currentJobId;
-        analizBtn.style.display = 'inline-block';
-    }
-    document.getElementById('send-email-btn').dataset.jobId = currentJobId;
-}
 
-function startAnaliz(e) {
-    e.preventDefault();
-    const btn = document.getElementById('analiz-btn');
-    const jobId = btn.dataset.jobId || currentJobId;
-    if (!jobId) { alert('Oturum bilgisi kayboldu, lütfen sayfayı yenileyin.'); return; }
-    btn.disabled = true;
-    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Başlatılıyor...';
-    const csrf = document.querySelector('[name=csrfmiddlewaretoken]').value;
-    fetch(`/yoktez/analiz/${jobId}/`, {
-        method: 'POST',
-        headers: {'X-CSRFToken': csrf, 'X-Requested-With': 'XMLHttpRequest'},
-    })
-    .then(r => r.json())
-    .then(data => {
-        if (data.job_id) {
-            window.location.href = `/yoktez/sonuc/${data.job_id}/`;
-        } else {
-            btn.disabled = false;
-            btn.innerHTML = '<i class="bi bi-bar-chart-line me-1"></i>Analiz Yap';
-            alert(data.error || 'Analiz başlatılamadı.');
-        }
-    })
-    .catch(err => {
-        btn.disabled = false;
-        btn.innerHTML = '<i class="bi bi-bar-chart-line me-1"></i>Analiz Yap';
-        alert('Bağlantı hatası: ' + err);
-    });
+        document.getElementById('full-data-box').style.display = 'block';
+    }
+
+    document.getElementById('send-email-btn').dataset.jobId = currentJobId;
 }
 
 document.getElementById('send-email-btn').addEventListener('click', function() {
@@ -372,45 +343,6 @@ document.getElementById('send-email-btn').addEventListener('click', function() {
 });
 </script>
 
-<!-- Geçmiş Analizler -->
-{% if past_analiz_jobs %}
-<div class="container mb-2" style="max-width:860px;">
-    <div class="card bg-dark border-secondary text-white">
-        <div class="card-header">
-            <i class="bi bi-clock-history me-2"></i>Geçmiş Analizlerim
-        </div>
-        <div class="list-group list-group-flush" style="max-height:260px;overflow-y:auto;">
-            {% for job in past_analiz_jobs %}
-            <div class="list-group-item bg-dark border-secondary text-white d-flex justify-content-between align-items-center py-2">
-                <div>
-                    <div class="small fw-semibold">{{ job.get_query_summary|truncatechars:60 }}</div>
-                    <div class="text-muted" style="font-size:0.75rem;">
-                        {{ job.created_at|date:"d.m.Y H:i" }}
-                        {% if job.status == 'completed' %}· {{ job.total_records }} tez{% endif %}
-                    </div>
-                </div>
-                <div class="d-flex align-items-center gap-2">
-                    {% if job.status == 'completed' %}
-                        <span class="badge bg-success">Tamamlandı</span>
-                        <a href="{% url 'yoktez:analiz_results' job.id %}" class="btn btn-sm btn-outline-success">
-                            <i class="bi bi-eye me-1"></i>Görüntüle
-                        </a>
-                    {% elif job.status == 'running' or job.status == 'pending' %}
-                        <span class="badge bg-warning text-dark">Devam ediyor</span>
-                        <a href="{% url 'yoktez:analiz_results' job.id %}" class="btn btn-sm btn-outline-warning">
-                            <i class="bi bi-hourglass-split me-1"></i>Takip Et
-                        </a>
-                    {% else %}
-                        <span class="badge bg-danger">Başarısız</span>
-                    {% endif %}
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-    </div>
-</div>
-{% endif %}
-
 <!-- SEO: Bilgi metni -->
 <div class="container mb-5 mt-5" style="max-width:860px;">
     <div class="row g-4">
@@ -419,7 +351,7 @@ document.getElementById('send-email-btn').addEventListener('click', function() {
                 <i class="bi bi-info-circle me-2" style="color:#818cf8;"></i>YÖK Tez Merkezi Arama Nedir?
             </h2>
             <p class="text-secondary" style="line-height:1.8;font-size:.92rem;">
-                YÖK Ulusal Tez Merkezi, Türkiye'deki üniversitelerde tamamlanmış yüz binlerce lisans üstü tezi barındıran resmi akademik veritabanıdır. Analizus YÖK Tez Tarama aracı, bu veritabanına hızlı ve filtrelenmiş erişim sağlar; konu, yazar, üniversite ve yıl bilgilerine göre tez araması yapmanıza olanak tanır. Tez izni olmayan çalışmalar için özet ve künyeye ulaşabilir, izinli olanlar için tam metne yönlendirilirsiniz.
+                YÖK Ulusal Tez Merkezi, Türkiye'deki üniversitelerde tamamlanmış yüz binlerce lisansüstü tezi barındıran resmi akademik veritabanıdır. Analizus YÖK Tez Tarama aracı, bu veritabanına hızlı ve filtrelenmiş erişim sağlar; konu, üniversite ve yıl bilgilerine göre tez araması yapmanıza olanak tanır. Sonuçlar bilgi amaçlıdır; örnek olarak en yeni 5 tez indirilebilir, tam veri talebi için yönetici ile iletişime geçilir.
             </p>
         </div>
         <div class="col-md-4">
@@ -436,19 +368,18 @@ document.getElementById('send-email-btn').addEventListener('click', function() {
         </div>
         <div class="col-md-4">
             <div class="p-3 rounded h-100" style="background:rgba(99,102,241,0.07);border:1px solid rgba(99,102,241,0.15);">
-                <h3 class="text-white fw-semibold mb-2" style="font-size:.9rem;"><i class="bi bi-robot me-2" style="color:#818cf8;"></i>AI ile Analiz Et</h3>
-                <p class="text-secondary mb-0" style="font-size:.8rem;line-height:1.6;">10+ sonuçta <strong class="text-decoration-none" style="color:#a5b4fc;">Analiz Yap</strong> butonu ile 7 grafik içeren PDF rapor alın.</p>
+                <h3 class="text-white fw-semibold mb-2" style="font-size:.9rem;"><i class="bi bi-envelope-at me-2" style="color:#818cf8;"></i>Tam Veri Talebi</h3>
+                <p class="text-secondary mb-0" style="font-size:.8rem;line-height:1.6;">Tüm sonuç setine ihtiyaç duyuyorsanız <a href="mailto:info@analizus.com" class="text-decoration-none" style="color:#a5b4fc;">info@analizus.com</a> adresinden yönetici ile iletişime geçin.</p>
             </div>
         </div>
 
-        <!-- Güvenli Kazıma Notu -->
         <div class="col-12 mt-2">
             <div class="p-3 rounded" style="background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.18);">
                 <h3 class="fw-semibold mb-2" style="font-size:.9rem;color:#fbbf24;">
                     <i class="bi bi-shield-check me-2"></i>Güvenli &amp; Sorumlu Kazıma
                 </h3>
                 <p class="mb-0" style="font-size:.8rem;line-height:1.7;color:#94a3b8;">
-                    Analizus'un altyapısında bekleme süreleri (rate-limiting) YÖK'ün güvenlik duvarını tetiklemeyecek biçimde, insan davranışına benzer hızlarda ayarlanmıştır. Kendi yazdığınız acemi bir bot anında ban yiyebilirken, Analizus bu riski önemli ölçüde düşürür. Bununla birlikte risk sıfır değildir; aracı günlerce hiç durmadan çalıştırırsanız ağınız kısıtlamaya takılabilir.
+                    Analizus'un altyapısında bekleme süreleri (rate-limiting) YÖK'ün güvenlik duvarını tetiklemeyecek biçimde, insan davranışına benzer hızlarda ayarlanmıştır. Kendi yazdığınız acemi bir bot anında ban yiyebilirken, Analizus bu riski önemli ölçüde düşürür.
                 </p>
             </div>
         </div>
