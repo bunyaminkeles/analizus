@@ -310,6 +310,8 @@ CLAUDE.md                   # AI geliştirme kuralları ve görev listesi
 /tezanaliz/         → tezanaliz.urls  (namespace='tezanaliz')
 /makaleanaliz/      → makaleanaliz.urls  (namespace='makaleanaliz')
 /istatistik/        → istatistik.urls  (namespace='istatistik')
+/analiz/            → istatistik.urls_analiz (unified konsol — /analiz/<slug>/)
+/tarama/            → RedirectView → /yoktez/  (akademik tarama konsolu giriş noktası)
 /sitemap.xml        → Django sitemaps (StaticView, Topic, Category, Job, BlogPost, Istatistik, Tools)
 /robots.txt         → TemplateView
 /534e22a9f9e4d375119c5bc6d006aad0.txt → IndexNow key (Bing doğrulama)
@@ -601,21 +603,33 @@ const STATUS_TEMPLATE = '{% url "istatistik:cronbach_status" "00000000-0000-0000
 fetch(STATUS_TEMPLATE.replace('00000000-0000-0000-0000-000000000000', jobId))
 ```
 
-### Navigasyon Menüsü Kategorileri (`base.html`)
+### Navigasyon Menüsü (`base.html` — Mayıs 2026)
 ```
-Analizler →
-  Ön Analizler:         Normallik, Betimsel İstatistik, Örneklem
-  Geçerlik & Güvenirlik: Cronbach Alpha
-  İlişki Analizleri:    Korelasyon
-  Fark Analizleri:      t-Testi, ANOVA, Mann-Whitney U, Kruskal-Wallis, Ki-Kare,
-                        Wilcoxon, Friedman, Tekrarlayan Ölçümler ANOVA
-  Regresyon Analizleri: Çoklu Doğrusal Regresyon, Lojistik Regresyon
-```
+Analizler ▾          → İstatistik Analiz Araçları (/analiz/)
+                       Bibliometrik Analiz (/bibliometrics/)
+                       Tableau Analizleri
+                       ──────────────────────────
+                       Hangi Test? (/hangi-test/)
+                       AI Asistan (/ai-asistan/)
+                       Çalışma Odaları (/odalar/)
 
-### Unified Analiz Arayüzü (PLANLANDI — mayıs 2026)
-- Hedef: Ön Analizler → Regresyon'a kadar tüm araçları tek "Analiz Akışı" wizard'ında birleştir
-- Veri bir kez yüklenir, kategoriler arası geçiş yapılır
-- Karar bekleniyor: UX tasarımı, URL prefix (`/analiz/`), tek sayfa vs çok adım
+Akademik Tarama      → /tarama/ (direkt link; aktif path ile is-active vurgusu)
+
+Pazaryeri            → /hizmetler/ (eski adı: Hizmetler)
+
+Kurumsal ▾           → Neden Analizus? (/neden-biz/)
+                       Blog (/blog/)
+                       Hakkımızda + İletişim
+```
+Mobil drawer: Her üst gruba accordion. Analizler altında `/analiz/` tek link (eski 16 ayrı link kaldırıldı).
+
+### Unified Analiz Arayüzü (TAMAMLANDI — mayıs 2026)
+- 16 istatistik aracı tek sidebar'lı konsol: `/analiz/<slug>/`
+- `analiz_console_base.html` + `analiz_console.css` — sidebar kategorilere göre accordion, aktif araç vurgulu
+- Eski `/istatistik/<slug>/` URL'leri çalışmaya devam eder (redirect yok, template değişti)
+- Context: `TOOL_CATEGORIES` sabiti + `_console_ctx()` helper (`istatistik/views.py`)
+- `/analiz/` URL'i `istatistik/urls_analiz.py` üzerinden dahil edildi
+- Mobilde sidebar gizli, "Araç Seç" toggle butonu ile açılır
 
 ---
 
@@ -663,6 +677,15 @@ Analizler →
 ### OAI-PMH (`oaipmh/`)
 - 19 üniversite arşivi aktif endpoint (ODTÜ, İTÜ, Dokuz Eylül, Akdeniz vb.)
 - `sickle` kütüphanesi (OAI-PMH client)
+- **Job kuyruğu:** `job_queue.enqueue('oaipmh', job_id)` kullanır — eski raw `threading.Thread` kaldırıldı
+- Stale job cutoff: 60 dakika (scraping 19 üniversiteyi tarayabilir, kısa timeout uygun değil)
+
+### Akademik Tarama Unified Console
+- 4 tarama aracı tek sidebar'lı konsolda: `/tarama/` → `/yoktez/` redirect, her araç kendi URL'inde çalışır
+- `templates/tarama_console_base.html` — `analiz_console.css`'i yeniden kullanır (`.ax-console-*` sınıfları)
+- Sidebar aktif araç tespiti: `request.path` ile (context processor gerekmez)
+- Feature flag kontrollü: `features.oaipmh`, `features.yoktez`, `features.openalex`, `features.trdizin`
+- Landing template'leri `base.html` yerine `tarama_console_base.html`'i extend eder; `{% block content %}` → `{% block tool_area %}`
 
 ---
 
@@ -921,6 +944,9 @@ with connection.cursor() as c:
 | İstatistik "Sunucu hatası." (preview) | Ratelimit dolmuş (30/h) — cache temizle: `DELETE FROM django_cache_table WHERE cache_key LIKE '%rl:%'` |
 | `conf_int().iloc` AttributeError | statsmodels `conf_int()` bazen ndarray döner — `np.array(model.conf_int())` kullan |
 | Job spinner'da takılı, hata yok | `result_data` içinde `inf`/`nan` var, JSON save patlıyor — serviste `np.isinf()` kontrolü ekle |
+| `check_array() got an unexpected keyword argument 'force_all_finite'` (AFA) | scikit-learn 1.6+ `force_all_finite` parametresini kaldırdı. **Çözüm:** `factor-analyzer==0.5.1` pin'le (`requirements.txt`); `istatistik/services/afa.py`'de `_patch_sklearn_compat()` monkey-patch shim çağrısı var — `analyze()` fonksiyonu başında çalışır. `docker compose up -d --build web` ile image yeniden build edilmeli (sadece restart yetmez). |
+| OAI-PMH job sayfadan çıkınca duruyor | Eski tasarım raw `daemon=True` thread kullanıyordu — process exit/nav baskısına karşı korumasız. **Düzeltme:** `job_queue.enqueue('oaipmh', job_id)` ile merkezi ThreadPoolExecutor'a taşındı. Ek olarak stale cutoff 5 dk → 60 dk'ya çıkarıldı (19 üniversite taraması uzun sürebilir). |
+| Session veri seti (lineer/lojistik regresyon) form gönderince kaybolıyor | DataTransfer API ile sentinel File inject edilir; fetch interceptor sentinel'i algılayıp `use_session=true`'ya çevirir. `analiz_console_base.html`'deki `DOMContentLoaded` handler üç JS konvansiyonunu da karşılar (`files[0]`, `._selectedFile`, `._file`). |
 
 ---
 
@@ -950,8 +976,18 @@ with connection.cursor() as c:
 - **OAI-PMH iyileştirmeleri** — özet (dc:description) arama alanı kaldırıldı (OAI-PMH'de boş geliyor, 0 sonuç üretiyordu); "Analiz Yap" butonu kaldırıldı (makaleanaliz'e yanlış yönlendiriyordu)
 - **YÖK Tez UX** — job state kalıcılığı: arama başlayınca sayfadan ayrılıp dönünce form dolu gelir, tamamlanan job 24 saat boyunca otomatik gösterilir; scraper hız iyileştirmesi (detay gecikmesi 2-4.5s→0.8-2.0s, erken çıkış: 5 demo dolunca durur, kandidat limiti 10x→5x)
 - **Nginx Docker DNS resolver** — `resolver 127.0.0.11 valid=10s;` + `set $backend http://web:8000;` eklendi; web restart sonrası 502 sorunu giderildi
+- **Unified Analiz Konsolu** (mayıs 2026) — 16 istatistik aracı tek sidebar'lı konsolda; `/analiz/<slug>/`; `analiz_console_base.html` + `analiz_console.css`; navbar'da flyout menüler kaldırıldı, tek "İstatistik Analiz Araçları" linki
+- **Akademik Tarama Unified Console** (mayıs 2026) — 4 tarama aracı `tarama_console_base.html` altında; `/tarama/` giriş noktası (→ `/yoktez/` redirect); sidebar feature flag koşullu
+- **Navbar sadeleştirme** (mayıs 2026) — Forum linki kaldırıldı; Blog → Kurumsal dropdown'a taşındı; Hizmetler → Pazaryeri olarak yeniden adlandırıldı; Araçlar flyout menüsü → Analizler dropdown (tek `/analiz/` linki); Akademik Tarama direkt link oldu
+- **OAI-PMH job_queue entegrasyonu** (mayıs 2026) — Raw `threading.Thread` → `job_queue.enqueue('oaipmh')`; stale cutoff 5 dk → 60 dk; `job_queue.py`'de `oaipmh` case eklendi
+- **AFA sklearn 1.6+ uyumluluğu** (mayıs 2026) — `factor-analyzer==0.5.1` pin'lendi; `afa.py`'de `_patch_sklearn_compat()` monkey-patch shim eklendi
+- **Session veri seti kalıcılığı** (mayıs 2026) — Çoklu Doğrusal Regresyon + Lojistik Regresyon: DataTransfer API + sentinel file + fetch interceptor; `analiz_console_base.html`'de tüm üç JS konvansiyonu destekleniyor
+- **İstatistik Rehberi eksik linkler** — `hangi_test.html`'de `r_tekrarli_anova` ve `r_friedman` düğümlerine `tool_url` eklendi
+- **YÖK Tez geçmiş analizler** — Scrollable container (`max-height:260px`) + queryset `[:8]→[:5]`; liste aşağı uzayıp gitmiyor
+- **Mobil navbar** — Drawer'da eski 16 ayrı analiz linki → tek `/analiz/` linki
 
 ### Sıradaki Görevler
+- **ML Araçları** — Unified konsolda yeni "Makine Öğrenmesi" kategorisi: Karar Ağacı, Rastgele Orman, KNN
 - Sosyal kanıt iyileştirmeleri (ana sayfa — çok kolay)
 - Yeni kullanıcı onboarding akışı (Profile.segment alanı — migration gerekli)
 - Analiz araçlarında akıllı hata yönetimi
@@ -962,4 +998,4 @@ with connection.cursor() as c:
 
 ---
 
-*Son güncelleme: Mayıs 2026 — OAI-PMH özet arama + Analiz Yap butonu kaldırıldı; YÖK Tez job state kalıcılığı + scraper hız iyileştirmesi; Nginx DNS resolver fix; deploy akışı güncellendi*
+*Son güncelleme: Mayıs 2026 — Unified Analiz Konsolu (/analiz/) + Akademik Tarama Konsolu (/tarama/) tamamlandı; navbar sadeleştirme (Pazaryeri, Kurumsal, Analizler, Akademik Tarama); OAI-PMH job_queue entegrasyonu + stale timeout düzeltmesi; AFA sklearn 1.6+ uyumluluğu (factor-analyzer==0.5.1 + monkey-patch); session veri seti kalıcılığı (Regresyon araçları); İstatistik Rehberi eksik tool_url'ler eklendi; YÖK Tez geçmiş analizler scrollable sınırlandırıldı*
