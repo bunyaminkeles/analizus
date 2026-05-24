@@ -1260,22 +1260,22 @@ def inbox(request):
 
     PrivateMessage.objects.filter(receiver=request.user, is_read=False).update(is_read=True)
 
-    # Gönderici başına en son mesajı bul → konuşma listesi
+    # Gönderilen + alınan tüm konuşmalar — her konuşma ortağı için en son mesaj
     seen = set()
     conversations = []
     qs = (PrivateMessage.objects
-          .filter(receiver=request.user)
-          .select_related('sender', 'sender__profile')
+          .filter(Q(sender=request.user) | Q(receiver=request.user))
+          .select_related('sender', 'sender__profile', 'receiver', 'receiver__profile')
           .order_by('-created_at'))
     for msg in qs:
-        sid = msg.sender_id
-        if sid in seen:
+        partner = msg.receiver if msg.sender == request.user else msg.sender
+        if partner.id in seen:
             continue
-        seen.add(sid)
+        seen.add(partner.id)
         conversations.append({
-            'sender': msg.sender,
+            'sender': partner,
             'last_message': msg,
-            'unread_count': unread_by_sender.get(sid, 0),
+            'unread_count': unread_by_sender.get(partner.id, 0),
         })
 
     return render(request, 'forum/inbox.html', {'conversations': conversations})
