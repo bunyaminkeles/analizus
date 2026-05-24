@@ -18,7 +18,7 @@
         {% for conv in conversations %}
         {% with msg=conv.last_message sender=conv.sender %}
         <a href="{% url 'send_message' sender.username %}"
-           class="ax-inbox-row {% if conv.unread_count %}ax-inbox-row--unread{% endif %}">
+           class="ax-inbox-row {% if conv.unread_count %}ax-inbox-row--unread{% endif %}{% if forloop.counter > 5 %} ax-inbox-extra d-none{% endif %}">
 
             <div class="ax-inbox-avatar">
                 {% if sender.profile.avatar %}
@@ -50,6 +50,11 @@
         {% endwith %}
         {% endfor %}
     </div>
+    {% if conversations|length > 5 %}
+    <button id="inbox-show-more" class="ax-inbox-more-btn" onclick="inboxShowMore()">
+        <i class="bi bi-chevron-down me-1"></i>Diğer {{ conversations|length|add:"-5" }} konuşmayı göster
+    </button>
+    {% endif %}
     {% else %}
     <div class="text-center py-5" style="color:var(--ax-muted);">
         <i class="bi bi-inbox" style="font-size:3rem;opacity:.3;"></i>
@@ -147,5 +152,30 @@
     flex-shrink: 0;
     margin-left: auto;
 }
+
+.ax-inbox-more-btn {
+    display: block;
+    width: 100%;
+    margin-top: 8px;
+    padding: 10px;
+    background: none;
+    border: 1px solid var(--ax-border);
+    border-radius: 8px;
+    color: var(--ax-muted);
+    font-size: .82rem;
+    cursor: pointer;
+    transition: background .15s, color .15s;
+}
+.ax-inbox-more-btn:hover {
+    background: rgba(99,102,241,.08);
+    color: #a5b4fc;
+}
 </style>
+
+<script>
+function inboxShowMore() {
+    document.querySelectorAll('.ax-inbox-extra').forEach(el => el.classList.remove('d-none'));
+    document.getElementById('inbox-show-more').remove();
+}
+</script>
 {% endblock %}
