@@ -8,8 +8,9 @@
                 {{ profile_user.username|slice:":1"|upper }}
             </div>
         {% endif %}
-        <!-- Çevrimiçi durumu simülasyonu -->
-        <span class="position-absolute bottom-0 end-0 p-2 bg-success border border-dark rounded-circle"></span>
+        {% if profile_user.profile.is_online %}
+        <span class="position-absolute bottom-0 end-0 p-2 bg-success border border-dark rounded-circle" title="Çevrimiçi"></span>
+        {% endif %}
     </div>
 
     <h4 class="text-white fw-bold mb-1">{{ profile_user.username }}</h4>
