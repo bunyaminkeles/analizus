@@ -1409,6 +1409,21 @@ def send_message(request, username):
         'is_bot': receiver.username == 'AnalizBot',
     })
 
+def _chat_room_name(uid1, uid2):
+    ids = sorted([uid1, uid2])
+    return f'chat_{ids[0]}_{ids[1]}'
+
+
+def _broadcast_chat(uid1, uid2, event):
+    try:
+        from channels.layers import get_channel_layer
+        from asgiref.sync import async_to_sync
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(_chat_room_name(uid1, uid2), event)
+    except Exception:
+        pass
+
+
 @login_required
 @require_POST
 def api_edit_message(request, message_id):
@@ -1422,6 +1437,12 @@ def api_edit_message(request, message_id):
     msg.message = new_text
     msg.edited_at = timezone.now()
     msg.save(update_fields=['message', 'edited_at'])
+    _broadcast_chat(request.user.id, msg.receiver_id, {
+        'type': 'message_edit',
+        'message_id': msg.id,
+        'message': new_text,
+        'edited_at': msg.edited_at.strftime('%H:%M'),
+    })
     return JsonResponse({'ok': True, 'message': new_text, 'edited_at': msg.edited_at.strftime('%H:%M')})
 
 
@@ -1432,6 +1453,10 @@ def api_delete_message(request, message_id):
     msg.is_deleted = True
     msg.message = ''
     msg.save(update_fields=['is_deleted', 'message'])
+    _broadcast_chat(request.user.id, msg.receiver_id, {
+        'type': 'message_delete',
+        'message_id': msg.id,
+    })
     return JsonResponse({'ok': True})
 
 
@@ -1439,6 +1464,7 @@ def api_delete_message(request, message_id):
 @require_POST
 def api_delete_conversation(request, username):
     other = get_object_or_404(User, username=username)
+    _broadcast_chat(request.user.id, other.id, {'type': 'conversation_delete'})
     PrivateMessage.objects.filter(
         Q(sender=request.user, receiver=other) | Q(sender=other, receiver=request.user)
     ).delete()
