@@ -758,19 +758,22 @@ document.addEventListener('DOMContentLoaded', function() {
     // ═══════════════════════════════════════════════════════════════════
     function deleteMessage(msgId) {
         if (!confirm('Bu mesajı silmek istiyor musunuz?')) return;
+        // Butonu direkt ID ile bul (querySelector bağımlılığını kaldır)
+        const textEl = document.getElementById('msg-text-' + msgId);
+        const msgBubble = textEl ? textEl.closest('.p-2.px-3.rounded-3') : null;
         const fd = new FormData();
         fd.append('csrfmiddlewaretoken', '{{ csrf_token }}');
         fetch(`/api/message/${msgId}/delete/`, { method: 'POST', body: fd })
-            .then(r => r.json())
+            .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
             .then(data => {
                 if (!data.ok) return;
-                const row = chatHistory.querySelector(`.msg-row[data-msg-id="${msgId}"]`);
-                if (!row) return;
-                const isOwn = row.dataset.own === '1';
-                row.innerHTML = `<div class="d-flex ${isOwn ? 'justify-content-end' : 'justify-content-start'} w-100">
-                    <div class="p-2 px-3 rounded-3 text-muted fst-italic" style="font-size:0.82rem;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);">
-                        <i class="bi bi-slash-circle me-1"></i>Bu mesaj silindi.
-                    </div></div>`;
+                if (msgBubble) {
+                    msgBubble.innerHTML = '<i class="bi bi-slash-circle me-1"></i>Bu mesaj silindi.';
+                    msgBubble.className = 'p-2 px-3 rounded-3 text-muted fst-italic';
+                    msgBubble.style.cssText = 'font-size:0.82rem;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);';
+                    const wrap = msgBubble.closest('.msg-wrap');
+                    if (wrap) { const actions = wrap.querySelector('.msg-actions'); if (actions) actions.remove(); }
+                }
             })
             .catch(() => alert('Sunucu hatası.'));
     }
@@ -785,14 +788,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const fd = new FormData();
             fd.append('csrfmiddlewaretoken', '{{ csrf_token }}');
             fetch(`/api/chat/{{ receiver.username }}/delete-conversation/`, { method: 'POST', body: fd })
-                .then(r => r.json())
+                .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
                 .then(data => {
                     if (!data.ok) return;
-                    chatHistory.innerHTML = `<div class="text-center py-5">
-                        <i class="bi bi-chat-dots text-muted" style="font-size: 3rem; opacity: 0.3;"></i>
-                        <p class="text-muted mt-2 mb-0">Henüz mesaj yok</p>
-                        <small class="text-muted">İlk mesajı siz gönderin!</small>
-                    </div>`;
+                    window.location.href = '/inbox/';
                 })
                 .catch(() => alert('Sunucu hatası.'));
         });
