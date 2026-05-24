@@ -102,7 +102,7 @@
                                         </div>
                                         {% endif %}
                                         <div class="p-2 px-3 rounded-3 {% if msg.sender == request.user %}text-white{% else %}text-light{% endif %}"
-                                             style="max-width: 75%; {% if msg.sender == request.user %}background: linear-gradient(135deg, rgba(0, 210, 255, 0.35), rgba(58, 123, 213, 0.35)); border: 1px solid rgba(0, 210, 255, 0.4); box-shadow: 0 2px 8px rgba(0, 210, 255, 0.15);{% else %}background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(255, 255, 255, 0.15);{% endif %}">
+                                             style="{% if msg.sender == request.user %}background: linear-gradient(135deg, rgba(0, 210, 255, 0.35), rgba(58, 123, 213, 0.35)); border: 1px solid rgba(0, 210, 255, 0.4); box-shadow: 0 2px 8px rgba(0, 210, 255, 0.15);{% else %}background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(255, 255, 255, 0.15);{% endif %}">
                                             {% if msg.message %}
                                             <p class="mb-1 small msg-text" id="msg-text-{{ msg.id }}">{{ msg.message|render_mentions }}</p>
                                             {% endif %}
@@ -200,7 +200,7 @@
 
 <style>
     /* Mesaj aksiyonları */
-    .msg-wrap { position: relative; }
+    .msg-wrap { position: relative; max-width: 75%; }
     .msg-actions {
         position: absolute;
         top: 50%;
@@ -337,13 +337,27 @@ document.addEventListener('DOMContentLoaded', function() {
         chatSocket.onmessage = function(e) {
             const data = JSON.parse(e.data);
             if (data.type === 'chat_message') {
-                // Çift mesajı önle
                 if (data.message_id && seenMessageIds.has(data.message_id)) return;
                 if (data.message_id) {
                     seenMessageIds.add(data.message_id);
                     lastMessageId = Math.max(lastMessageId, data.message_id);
                 }
                 appendMessage(data);
+            } else if (data.type === 'message_edit') {
+                const textEl = document.getElementById('msg-text-' + data.message_id);
+                if (textEl) textEl.textContent = data.message;
+            } else if (data.type === 'message_delete') {
+                const textEl = document.getElementById('msg-text-' + data.message_id);
+                const msgBubble = textEl ? textEl.closest('.p-2.px-3.rounded-3') : null;
+                if (msgBubble) {
+                    msgBubble.innerHTML = '<i class="bi bi-slash-circle me-1"></i>Bu mesaj silindi.';
+                    msgBubble.className = 'p-2 px-3 rounded-3 text-muted fst-italic';
+                    msgBubble.style.cssText = 'font-size:0.82rem;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);';
+                    const wrap = msgBubble.closest('.msg-wrap');
+                    if (wrap) { const actions = wrap.querySelector('.msg-actions'); if (actions) actions.remove(); }
+                }
+            } else if (data.type === 'conversation_delete') {
+                window.location.href = '/inbox/';
             }
         };
 
@@ -487,7 +501,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <div class="position-relative msg-wrap ${isOwn ? 'own-msg' : ''}">
                     ${actionsHtml}
                     <div class="p-2 px-3 rounded-3 ${isOwn ? 'text-white' : 'text-light'}"
-                         style="max-width: 75%; ${isOwn
+                         style="${isOwn
                             ? 'background: linear-gradient(135deg, rgba(0, 210, 255, 0.35), rgba(58, 123, 213, 0.35)); border: 1px solid rgba(0, 210, 255, 0.4); box-shadow: 0 2px 8px rgba(0, 210, 255, 0.15);'
                             : 'background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(255, 255, 255, 0.15);'}">
                         ${data.message ? `<p class="mb-1 small" ${msgId ? `id="msg-text-${msgId}"` : ''}>${linkifyUrls(renderMentions(escapeHtml(data.message)))}</p>` : ''}

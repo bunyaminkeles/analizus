@@ -85,6 +85,25 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'is_own': event['sender_id'] == self.user.id,
         }))
 
+    async def message_edit(self, event):
+        await self.send(text_data=json.dumps({
+            'type': 'message_edit',
+            'message_id': event['message_id'],
+            'message': event['message'],
+            'edited_at': event['edited_at'],
+        }))
+
+    async def message_delete(self, event):
+        await self.send(text_data=json.dumps({
+            'type': 'message_delete',
+            'message_id': event['message_id'],
+        }))
+
+    async def conversation_delete(self, event):
+        await self.send(text_data=json.dumps({
+            'type': 'conversation_delete',
+        }))
+
     @database_sync_to_async
     def get_user(self, username):
         try:
