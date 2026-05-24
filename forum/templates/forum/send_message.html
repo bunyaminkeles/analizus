@@ -138,7 +138,7 @@
                                     </div>
 
                                     <!-- Gönder Butonu -->
-                                    <button type="submit" class="btn px-4" style="background: linear-gradient(135deg, #00d2ff, #3a7bd5); border: none; color: white;">
+                                    <button type="button" id="send-btn" class="btn px-4" style="background: linear-gradient(135deg, #00d2ff, #3a7bd5); border: none; color: white;">
                                         <i class="bi bi-send-fill"></i>
                                     </button>
                                 </div>
@@ -319,15 +319,12 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 2000);
 
     // ═══════════════════════════════════════════════════════════════════
-    // MESAJ GÖNDERME (Form submit yerine WebSocket)
+    // MESAJ GÖNDERME
     // ═══════════════════════════════════════════════════════════════════
-    messageForm.addEventListener('submit', function(e) {
-        e.preventDefault();
+    function trySend() {
         if (isSending) return;
-
         const message = messageInput.value.trim();
         const file = fileInput.files[0];
-
         if (file) {
             isSending = true;
             uploadFileAndSend(message, file);
@@ -335,7 +332,9 @@ document.addEventListener('DOMContentLoaded', function() {
             isSending = true;
             sendMessage(message);
         }
-    });
+    }
+
+    document.getElementById('send-btn').addEventListener('click', trySend);
 
     function sendMessage(message, attachmentUrl = '', attachmentName = '') {
         // Her zaman AJAX ile kaydet — WS teslim için kullanılır, kayıt için değil.
@@ -395,7 +394,6 @@ document.addEventListener('DOMContentLoaded', function() {
         .catch(error => {
             console.error('Dosya yükleme hatası:', error);
             isSending = false;
-            messageForm.submit();
         });
     }
 
@@ -521,7 +519,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
-            messageForm.dispatchEvent(new Event('submit'));
+            trySend();
         }
     });
 
