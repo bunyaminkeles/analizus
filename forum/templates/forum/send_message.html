@@ -69,38 +69,69 @@
                             <i class="bi bi-chat-dots-fill me-2" style="color: #00d2ff;"></i>
                             <span class="text-white fw-medium">Sohbet</span>
                             {% if chat_messages %}
-                            <span class="badge ms-auto" style="background: rgba(0, 210, 255, 0.15); color: #00d2ff;">{{ chat_messages|length }} mesaj</span>
+                            <span class="badge ms-2" style="background: rgba(0, 210, 255, 0.15); color: #00d2ff;">{{ chat_messages|length }} mesaj</span>
+                            {% endif %}
+                            {% if not is_bot %}
+                            <button class="btn btn-sm ms-auto" id="delete-conv-btn"
+                                    style="background: rgba(220,53,69,0.1); color: #dc3545; border: 1px solid rgba(220,53,69,0.2);"
+                                    title="Sohbeti tamamen sil">
+                                <i class="bi bi-trash3 me-1"></i>Sohbeti Sil
+                            </button>
                             {% endif %}
                         </div>
                         <div class="card-body p-3" style="min-height: 300px; max-height: 450px; overflow-y: auto;" id="chat-history">
                             {% if chat_messages %}
                                 {% for msg in chat_messages %}
-                                <div class="d-flex mb-3 {% if msg.sender == request.user %}justify-content-end{% else %}justify-content-start{% endif %}">
-                                    <div class="p-2 px-3 rounded-3 {% if msg.sender == request.user %}text-white{% else %}text-light{% endif %}" style="max-width: 75%; {% if msg.sender == request.user %}background: linear-gradient(135deg, rgba(0, 210, 255, 0.35), rgba(58, 123, 213, 0.35)); border: 1px solid rgba(0, 210, 255, 0.4); box-shadow: 0 2px 8px rgba(0, 210, 255, 0.15);{% else %}background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(255, 255, 255, 0.15);{% endif %}">
-                                        {% if msg.message %}
-                                        <p class="mb-1 small">{{ msg.message|render_mentions }}</p>
-                                        {% endif %}
+                                <div class="d-flex mb-3 {% if msg.sender == request.user %}justify-content-end{% else %}justify-content-start{% endif %} msg-row"
+                                     data-msg-id="{{ msg.id }}" data-own="{% if msg.sender == request.user %}1{% else %}0{% endif %}">
 
-                                        {% if msg.attachment %}
-                                        <div class="mt-2">
-                                            {% if msg.get_attachment_type == 'image' %}
-                                            <a href="{{ msg.attachment.url }}" target="_blank">
-                                                <img src="{{ msg.attachment.url }}" alt="Resim" class="img-fluid rounded" style="max-height: 150px;">
-                                            </a>
-                                            {% elif msg.get_attachment_type == 'pdf' %}
-                                            <a href="{{ msg.attachment.url }}" target="_blank" class="btn btn-sm" style="background: rgba(220, 53, 69, 0.15); color: #dc3545; border: 1px solid rgba(220, 53, 69, 0.3);">
-                                                <i class="bi bi-file-pdf me-1"></i>{{ msg.attachment_name|truncatechars:20 }}
-                                            </a>
-                                            {% else %}
-                                            <a href="{{ msg.attachment.url }}" target="_blank" class="btn btn-sm" style="background: rgba(0, 210, 255, 0.15); color: #00d2ff; border: 1px solid rgba(0, 210, 255, 0.3);">
-                                                <i class="bi bi-file-earmark me-1"></i>{{ msg.attachment_name|truncatechars:20 }}
-                                            </a>
-                                            {% endif %}
+                                    {% if msg.is_deleted %}
+                                    <div class="p-2 px-3 rounded-3 text-muted fst-italic" style="max-width:75%;font-size:0.82rem;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);">
+                                        <i class="bi bi-slash-circle me-1"></i>Bu mesaj silindi.
+                                    </div>
+                                    {% else %}
+                                    <div class="position-relative msg-wrap {% if msg.sender == request.user %}own-msg{% endif %}">
+                                        {% if msg.sender == request.user %}
+                                        <div class="msg-actions">
+                                            <button class="btn btn-sm p-0 px-1 edit-btn" data-msg-id="{{ msg.id }}" title="Düzenle" style="color:#00d2ff;">
+                                                <i class="bi bi-pencil" style="font-size:0.75rem;"></i>
+                                            </button>
+                                            <button class="btn btn-sm p-0 px-1 del-btn" data-msg-id="{{ msg.id }}" title="Sil" style="color:#dc3545;">
+                                                <i class="bi bi-trash" style="font-size:0.75rem;"></i>
+                                            </button>
                                         </div>
                                         {% endif %}
+                                        <div class="p-2 px-3 rounded-3 {% if msg.sender == request.user %}text-white{% else %}text-light{% endif %}"
+                                             style="max-width: 75%; {% if msg.sender == request.user %}background: linear-gradient(135deg, rgba(0, 210, 255, 0.35), rgba(58, 123, 213, 0.35)); border: 1px solid rgba(0, 210, 255, 0.4); box-shadow: 0 2px 8px rgba(0, 210, 255, 0.15);{% else %}background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(255, 255, 255, 0.15);{% endif %}">
+                                            {% if msg.message %}
+                                            <p class="mb-1 small msg-text" id="msg-text-{{ msg.id }}">{{ msg.message|render_mentions }}</p>
+                                            {% endif %}
 
-                                        <small class="text-muted d-block mt-1" style="font-size: 0.65rem;">{{ msg.created_at|timesince }} önce</small>
+                                            {% if msg.attachment %}
+                                            <div class="mt-2">
+                                                {% if msg.get_attachment_type == 'image' %}
+                                                <a href="{{ msg.attachment.url }}" target="_blank">
+                                                    <img src="{{ msg.attachment.url }}" alt="Resim" class="img-fluid rounded" style="max-height: 150px;">
+                                                </a>
+                                                {% elif msg.get_attachment_type == 'pdf' %}
+                                                <a href="{{ msg.attachment.url }}" target="_blank" class="btn btn-sm" style="background: rgba(220, 53, 69, 0.15); color: #dc3545; border: 1px solid rgba(220, 53, 69, 0.3);">
+                                                    <i class="bi bi-file-pdf me-1"></i>{{ msg.attachment_name|truncatechars:20 }}
+                                                </a>
+                                                {% else %}
+                                                <a href="{{ msg.attachment.url }}" target="_blank" class="btn btn-sm" style="background: rgba(0, 210, 255, 0.15); color: #00d2ff; border: 1px solid rgba(0, 210, 255, 0.3);">
+                                                    <i class="bi bi-file-earmark me-1"></i>{{ msg.attachment_name|truncatechars:20 }}
+                                                </a>
+                                                {% endif %}
+                                            </div>
+                                            {% endif %}
+
+                                            <small class="text-muted d-block mt-1" style="font-size: 0.65rem;">
+                                                {{ msg.created_at|timesince }} önce
+                                                {% if msg.edited_at %}<span class="ms-1" title="{{ msg.edited_at }}">(düzenlendi)</span>{% endif %}
+                                            </small>
+                                        </div>
                                     </div>
+                                    {% endif %}
                                 </div>
                                 {% endfor %}
                             {% else %}
@@ -168,6 +199,40 @@
 </div>
 
 <style>
+    /* Mesaj aksiyonları */
+    .msg-wrap { position: relative; }
+    .msg-actions {
+        position: absolute;
+        top: 50%;
+        left: -56px;
+        transform: translateY(-50%);
+        display: none;
+        gap: 2px;
+        background: rgba(15,23,42,0.9);
+        border: 1px solid rgba(0,210,255,0.2);
+        border-radius: 6px;
+        padding: 2px 4px;
+        white-space: nowrap;
+        z-index: 10;
+    }
+    .msg-wrap:hover .msg-actions { display: flex; }
+    .msg-actions .btn { line-height: 1; }
+
+    /* Inline edit alanı */
+    .msg-edit-area {
+        display: none;
+        margin-top: 4px;
+    }
+    .msg-edit-area textarea {
+        width: 100%;
+        background: rgba(0,0,0,0.3);
+        border: 1px solid rgba(0,210,255,0.4);
+        color: #fff;
+        border-radius: 6px;
+        padding: 4px 8px;
+        font-size: 0.85rem;
+        resize: none;
+    }
     .mention-link {
         color: #00d2ff;
         font-weight: 600;
@@ -405,15 +470,30 @@ document.addEventListener('DOMContentLoaded', function() {
         const emptyMessage = chatHistory.querySelector('.text-center.py-5');
         if (emptyMessage) emptyMessage.remove();
 
+        const msgId = data.id || data.message_id || '';
+        const actionsHtml = isOwn && msgId ? `
+            <div class="msg-actions">
+                <button class="btn btn-sm p-0 px-1 edit-btn" data-msg-id="${msgId}" title="Düzenle" style="color:#00d2ff;">
+                    <i class="bi bi-pencil" style="font-size:0.75rem;"></i>
+                </button>
+                <button class="btn btn-sm p-0 px-1 del-btn" data-msg-id="${msgId}" title="Sil" style="color:#dc3545;">
+                    <i class="bi bi-trash" style="font-size:0.75rem;"></i>
+                </button>
+            </div>` : '';
+
         const messageHtml = `
-            <div class="d-flex mb-3 ${isOwn ? 'justify-content-end' : 'justify-content-start'}">
-                <div class="p-2 px-3 rounded-3 ${isOwn ? 'text-white' : 'text-light'}"
-                     style="max-width: 75%; ${isOwn
-                        ? 'background: linear-gradient(135deg, rgba(0, 210, 255, 0.35), rgba(58, 123, 213, 0.35)); border: 1px solid rgba(0, 210, 255, 0.4); box-shadow: 0 2px 8px rgba(0, 210, 255, 0.15);'
-                        : 'background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(255, 255, 255, 0.15);'}">
-                    ${data.message ? `<p class="mb-1 small">${linkifyUrls(renderMentions(escapeHtml(data.message)))}</p>` : ''}
-                    ${data.attachment_url ? getAttachmentHtml(data) : ''}
-                    <small class="text-muted d-block mt-1" style="font-size: 0.65rem;">${data.timestamp}</small>
+            <div class="d-flex mb-3 ${isOwn ? 'justify-content-end' : 'justify-content-start'} msg-row"
+                 data-msg-id="${msgId}" data-own="${isOwn ? '1' : '0'}">
+                <div class="position-relative msg-wrap ${isOwn ? 'own-msg' : ''}">
+                    ${actionsHtml}
+                    <div class="p-2 px-3 rounded-3 ${isOwn ? 'text-white' : 'text-light'}"
+                         style="max-width: 75%; ${isOwn
+                            ? 'background: linear-gradient(135deg, rgba(0, 210, 255, 0.35), rgba(58, 123, 213, 0.35)); border: 1px solid rgba(0, 210, 255, 0.4); box-shadow: 0 2px 8px rgba(0, 210, 255, 0.15);'
+                            : 'background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(255, 255, 255, 0.15);'}">
+                        ${data.message ? `<p class="mb-1 small" ${msgId ? `id="msg-text-${msgId}"` : ''}>${linkifyUrls(renderMentions(escapeHtml(data.message)))}</p>` : ''}
+                        ${data.attachment_url ? getAttachmentHtml(data) : ''}
+                        <small class="text-muted d-block mt-1" style="font-size: 0.65rem;">${data.timestamp}</small>
+                    </div>
                 </div>
             </div>
         `;
@@ -613,6 +693,110 @@ document.addEventListener('DOMContentLoaded', function() {
         fileInput.value = '';
         filePreview.classList.add('d-none');
     };
+
+    // ═══════════════════════════════════════════════════════════════════
+    // MESAJ DÜZENLE
+    // ═══════════════════════════════════════════════════════════════════
+    chatHistory.addEventListener('click', function(e) {
+        const editBtn = e.target.closest('.edit-btn');
+        const delBtn = e.target.closest('.del-btn');
+        if (editBtn) openEditArea(editBtn.dataset.msgId);
+        if (delBtn) deleteMessage(delBtn.dataset.msgId);
+    });
+
+    function openEditArea(msgId) {
+        const textEl = document.getElementById('msg-text-' + msgId);
+        if (!textEl) return;
+        // Mevcut edit alanı varsa kapat
+        document.querySelectorAll('.msg-edit-area').forEach(el => closeEditArea(el));
+
+        const currentText = textEl.textContent.trim();
+        const editArea = document.createElement('div');
+        editArea.className = 'msg-edit-area';
+        editArea.dataset.msgId = msgId;
+        editArea.innerHTML = `
+            <textarea rows="2">${escapeHtml(currentText)}</textarea>
+            <div class="d-flex gap-1 mt-1">
+                <button class="btn btn-sm save-edit-btn" style="background:rgba(0,210,255,0.2);color:#00d2ff;border:1px solid rgba(0,210,255,0.3);font-size:0.75rem;">Kaydet</button>
+                <button class="btn btn-sm cancel-edit-btn" style="background:rgba(255,255,255,0.05);color:#94a3b8;border:1px solid rgba(255,255,255,0.1);font-size:0.75rem;">İptal</button>
+            </div>`;
+        editArea.style.display = 'block';
+        textEl.after(editArea);
+        editArea.querySelector('textarea').focus();
+
+        editArea.querySelector('.cancel-edit-btn').addEventListener('click', () => closeEditArea(editArea));
+        editArea.querySelector('.save-edit-btn').addEventListener('click', () => saveEdit(msgId, editArea));
+        editArea.querySelector('textarea').addEventListener('keydown', e => {
+            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); saveEdit(msgId, editArea); }
+            if (e.key === 'Escape') closeEditArea(editArea);
+        });
+    }
+
+    function closeEditArea(el) {
+        if (el && el.parentNode) el.remove();
+    }
+
+    function saveEdit(msgId, editArea) {
+        const newText = editArea.querySelector('textarea').value.trim();
+        if (!newText) return;
+        const fd = new FormData();
+        fd.append('message', newText);
+        fd.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+        fetch(`/api/message/${msgId}/edit/`, { method: 'POST', body: fd })
+            .then(r => r.json())
+            .then(data => {
+                if (!data.ok) { alert(data.error || 'Düzenlenemedi.'); return; }
+                const textEl = document.getElementById('msg-text-' + msgId);
+                if (textEl) textEl.textContent = data.message;
+                closeEditArea(editArea);
+            })
+            .catch(() => alert('Sunucu hatası.'));
+    }
+
+    // ═══════════════════════════════════════════════════════════════════
+    // MESAJ SİL
+    // ═══════════════════════════════════════════════════════════════════
+    function deleteMessage(msgId) {
+        if (!confirm('Bu mesajı silmek istiyor musunuz?')) return;
+        const fd = new FormData();
+        fd.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+        fetch(`/api/message/${msgId}/delete/`, { method: 'POST', body: fd })
+            .then(r => r.json())
+            .then(data => {
+                if (!data.ok) return;
+                const row = chatHistory.querySelector(`.msg-row[data-msg-id="${msgId}"]`);
+                if (!row) return;
+                const isOwn = row.dataset.own === '1';
+                row.innerHTML = `<div class="d-flex ${isOwn ? 'justify-content-end' : 'justify-content-start'} w-100">
+                    <div class="p-2 px-3 rounded-3 text-muted fst-italic" style="font-size:0.82rem;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.1);">
+                        <i class="bi bi-slash-circle me-1"></i>Bu mesaj silindi.
+                    </div></div>`;
+            })
+            .catch(() => alert('Sunucu hatası.'));
+    }
+
+    // ═══════════════════════════════════════════════════════════════════
+    // SOHBETİ SİL
+    // ═══════════════════════════════════════════════════════════════════
+    const deleteConvBtn = document.getElementById('delete-conv-btn');
+    if (deleteConvBtn) {
+        deleteConvBtn.addEventListener('click', function() {
+            if (!confirm('Tüm sohbet geçmişi her iki taraf için de silinecek. Devam etmek istiyor musunuz?')) return;
+            const fd = new FormData();
+            fd.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+            fetch(`/api/chat/{{ receiver.username }}/delete-conversation/`, { method: 'POST', body: fd })
+                .then(r => r.json())
+                .then(data => {
+                    if (!data.ok) return;
+                    chatHistory.innerHTML = `<div class="text-center py-5">
+                        <i class="bi bi-chat-dots text-muted" style="font-size: 3rem; opacity: 0.3;"></i>
+                        <p class="text-muted mt-2 mb-0">Henüz mesaj yok</p>
+                        <small class="text-muted">İlk mesajı siz gönderin!</small>
+                    </div>`;
+                })
+                .catch(() => alert('Sunucu hatası.'));
+        });
+    }
 });
 </script>
 {% endblock %}

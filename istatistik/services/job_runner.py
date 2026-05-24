@@ -170,6 +170,19 @@ def _execute_job(job_id: str):
                 test_size=float(t_size) if t_size else 0.2,
                 criterion=opts.get('criterion', 'gini'),
             )
+        elif job.tool == 'svm':
+            from .svm import analyze, build_pdf
+            opts = job.options or {}
+            t_size = opts.get('test_size', 0.2)
+            c_val = opts.get('C', 1.0)
+            result_data = analyze(
+                df,
+                target_col=opts.get('target_col', ''),
+                feature_cols=opts.get('feature_cols', []),
+                kernel=opts.get('kernel', 'rbf'),
+                C=float(c_val) if c_val else 1.0,
+                test_size=float(t_size) if t_size else 0.2,
+            )
         else:
             job.mark_failed(f'Bilinmeyen araç: {job.tool}')
             return

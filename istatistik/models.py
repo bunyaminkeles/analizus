@@ -21,6 +21,7 @@ TOOL_CHOICES = [
     ('friedman', 'Friedman Testi'),
     ('tekrarli_anova', 'Tekrarlayan Ölçümler ANOVA'),
     ('karar_agaci', 'Karar Ağacı Sınıflandırması'),
+    ('svm', 'Destek Vektör Makinesi (SVM)'),
 ]
 
 STATUS_CHOICES = [

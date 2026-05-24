@@ -24,6 +24,9 @@ urlpatterns = [
     path('send-message/<str:username>/', views.send_message, name='send_message'),
     path('api/chat/<str:username>/poll/', views.api_chat_poll, name='api_chat_poll'),
     path('api/inbox/poll/', views.api_inbox_poll, name='api_inbox_poll'),
+    path('api/message/<int:message_id>/edit/', views.api_edit_message, name='api_edit_message'),
+    path('api/message/<int:message_id>/delete/', views.api_delete_message, name='api_delete_message'),
+    path('api/chat/<str:username>/delete-conversation/', views.api_delete_conversation, name='api_delete_conversation'),
 
     # Araçlar
     path('hangi-test/', views.hangi_test, name='hangi_test'),
