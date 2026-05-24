@@ -232,7 +232,7 @@ forum/                      # Ana app — Forum, Market, Blog, Quiz, DM, AI...
 ├── indexnow.py             # Bing IndexNow ping (arka plan thread, key: 534e22a9f9e4d375119c5bc6d006aad0)
 ├── context_processors.py   # Profil, feature flags, GA
 ├── s3_utils.py             # S3 upload/delete yardımcıları
-├── middleware.py           # EmailVerificationMiddleware
+├── middleware.py           # HoneypotMiddleware, LastSeenMiddleware, EmailVerificationMiddleware
 ├── dashboard.py            # Unfold admin dashboard callback
 ├── forms.py                # Kayıt formu (honeypot + bot koruması)
 ├── consumers.py            # WebSocket consumer (Channels)
@@ -791,6 +791,8 @@ analizus-files/
 3. **Rate limit:** Kayıt `3/saat`, Login `10/5dk`, İstatistik POST `30/saat` (IP bazlı, `django-ratelimit`)
 
 ### Middleware
+- `forum.middleware.HoneypotMiddleware` — POST'ta gizli `website` alanı dolu gelirse botu reddeder
+- `forum.middleware.LastSeenMiddleware` — giriş yapmış kullanıcının `Profile.last_seen` alanını 60 saniyelik throttle ile günceller; static/media isteklerini atlar
 - `forum.middleware.EmailVerificationMiddleware` — email doğrulanmamışsa bazı işlemler engellenir
 - CSRF: Tüm formlarda zorunlu
 - `XFrameOptionsMiddleware` — clickjacking önleme
@@ -985,6 +987,11 @@ with connection.cursor() as c:
 - **İstatistik Rehberi eksik linkler** — `hangi_test.html`'de `r_tekrarli_anova` ve `r_friedman` düğümlerine `tool_url` eklendi
 - **YÖK Tez geçmiş analizler** — Scrollable container (`max-height:260px`) + queryset `[:8]→[:5]`; liste aşağı uzayıp gitmiyor
 - **Mobil navbar** — Drawer'da eski 16 ayrı analiz linki → tek `/analiz/` linki
+- **Çevrimiçi göstergesi** (mayıs 2026) — `Profile.is_online` property (son 5 dk kontrolü); `LastSeenMiddleware` her istekte `last_seen` günceller (60s throttle); profil sayfası + tüm profil kartları + sohbet + hikaye modallarında koşullu yeşil nokta; hover tooltip "Çevrimiçi"
+- **Kayıt formu autocomplete** (mayıs 2026) — `autocomplete="new-password"` (parola alanları) + `username`/`email` attribute'ları eklendi; tarayıcı otomatik doldurma engellendi
+- **Çift mesaj düzeltmesi** (mayıs 2026) — Gönder butonu `type=submit` → `type=button`; `trySend()` tek giriş noktası (buton click + Enter); `messageForm.submit()` fallback (upload hata → ikinci kayıt) kaldırıldı
+- **Gelen Kutusu konuşma listesi** (mayıs 2026) — Sadece alınan değil, gönderilen + alınan tüm konuşmalar listeleniyor (`Q(sender=user) | Q(receiver=user)`); konuşma ortağı dinamik tespit edilir
+- **Inbox "diğerlerini göster"** (mayıs 2026) — İlk 5 konuşma görünür, fazlası `d-none`; "Diğer N konuşmayı göster" butonu tıklanınca sayfa yenilemesiz açılır
 
 ### Sıradaki Görevler
 - **ML Araçları** — Unified konsolda yeni "Makine Öğrenmesi" kategorisi: Karar Ağacı, Rastgele Orman, KNN
@@ -998,4 +1005,4 @@ with connection.cursor() as c:
 
 ---
 
-*Son güncelleme: Mayıs 2026 — Unified Analiz Konsolu (/analiz/) + Akademik Tarama Konsolu (/tarama/) tamamlandı; navbar sadeleştirme (Pazaryeri, Kurumsal, Analizler, Akademik Tarama); OAI-PMH job_queue entegrasyonu + stale timeout düzeltmesi; AFA sklearn 1.6+ uyumluluğu (factor-analyzer==0.5.1 + monkey-patch); session veri seti kalıcılığı (Regresyon araçları); İstatistik Rehberi eksik tool_url'ler eklendi; YÖK Tez geçmiş analizler scrollable sınırlandırıldı*
+*Son güncelleme: Mayıs 2026 — Çevrimiçi göstergesi (LastSeenMiddleware + Profile.is_online); çift mesaj düzeltmesi (trySend tek giriş noktası); Gelen Kutusu gönderilen konuşmalar + ilk-5-tıkla-aç; kayıt formu autocomplete. Önceki: Unified Analiz Konsolu (/analiz/) + Akademik Tarama Konsolu (/tarama/); navbar sadeleştirme; OAI-PMH job_queue; AFA sklearn 1.6+ uyumluluğu; session veri seti kalıcılığı (Regresyon araçları)*
