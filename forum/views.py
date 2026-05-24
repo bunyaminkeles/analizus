@@ -1291,7 +1291,8 @@ def api_chat_poll(request, username):
 
     new_messages = PrivateMessage.objects.filter(
         Q(sender=request.user, receiver=receiver) | Q(sender=receiver, receiver=request.user),
-        id__gt=after_id
+        id__gt=after_id,
+        is_deleted=False,
     ).order_by('created_at')[:50]
 
     data = []
