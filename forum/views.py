@@ -1408,6 +1408,42 @@ def send_message(request, username):
         'is_bot': receiver.username == 'AnalizBot',
     })
 
+@login_required
+@require_POST
+def api_edit_message(request, message_id):
+    msg = get_object_or_404(PrivateMessage, id=message_id, sender=request.user, is_deleted=False)
+    new_text = request.POST.get('message', '').strip()
+    if not new_text:
+        return JsonResponse({'ok': False, 'error': 'Mesaj boş olamaz.'}, status=400)
+    if len(new_text) > 5000:
+        return JsonResponse({'ok': False, 'error': 'Mesaj çok uzun.'}, status=400)
+    from django.utils import timezone
+    msg.message = new_text
+    msg.edited_at = timezone.now()
+    msg.save(update_fields=['message', 'edited_at'])
+    return JsonResponse({'ok': True, 'message': new_text, 'edited_at': msg.edited_at.strftime('%H:%M')})
+
+
+@login_required
+@require_POST
+def api_delete_message(request, message_id):
+    msg = get_object_or_404(PrivateMessage, id=message_id, sender=request.user)
+    msg.is_deleted = True
+    msg.message = ''
+    msg.save(update_fields=['is_deleted', 'message'])
+    return JsonResponse({'ok': True})
+
+
+@login_required
+@require_POST
+def api_delete_conversation(request, username):
+    other = get_object_or_404(User, username=username)
+    PrivateMessage.objects.filter(
+        Q(sender=request.user, receiver=other) | Q(sender=other, receiver=request.user)
+    ).delete()
+    return JsonResponse({'ok': True})
+
+
 def _check_and_award_trust_badge(request, user):
     """Tüm doğrulamalar tamamsa Güvenilir Üye rozeti verir"""
     from .signals import check_and_award_trust_badge

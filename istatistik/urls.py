@@ -37,4 +37,6 @@ urlpatterns = [
     path('tekrarli-anova/status/<uuid:job_id>/', views.job_status, name='tekrarli_anova_status'),
     path('karar-agaci/', views.karar_agaci_landing, name='karar_agaci'),
     path('karar-agaci/status/<uuid:job_id>/', views.job_status, name='karar_agaci_status'),
+    path('svm/', views.svm_landing, name='svm'),
+    path('svm/status/<uuid:job_id>/', views.job_status, name='svm_status'),
 ]

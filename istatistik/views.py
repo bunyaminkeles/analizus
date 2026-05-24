@@ -48,6 +48,7 @@ TOOL_CATEGORIES = [
     ]),
     ('Makine Öğrenmesi', [
         ('karar_agaci', 'Karar Ağacı', 'bi-diagram-2', 'purple', 'istatistik:karar_agaci'),
+        ('svm', 'Destek Vektör Makinesi', 'bi-cpu', 'teal', 'istatistik:svm'),
     ]),
 ]
 
@@ -631,6 +632,36 @@ def karar_agaci_landing(request):
         'tool_icon': 'bi-diagram-2',
         'tool_color': 'purple',
         **_console_ctx('karar_agaci', request),
+    })
+
+
+@feature_required
+@ratelimit(key='ip', rate='30/h', method='POST', block=True)
+def svm_landing(request):
+    if not request.user.is_authenticated:
+        return render(request, 'service_promo.html', {
+            **PROMO_BASE,
+            'promo_title': 'Destek Vektör Makinesi (SVM)',
+            'promo_icon': 'bi-cpu',
+            'promo_color': 'teal',
+            'promo_description': 'Veri setinizdeki kategorik hedef değişkeni yüksek doğrulukla sınıflandırın. RBF, Doğrusal ve Polinom kernel seçenekleriyle confusion matrix ve permutation importance dahil tam ML raporu.',
+            'promo_features': [
+                {'icon': 'bi-cpu', 'title': 'SVM Modeli', 'desc': 'RBF, Doğrusal veya Polinom kernel ve C düzenleme parametresiyle Destek Vektör Makinesi eğitilir.'},
+                {'icon': 'bi-bar-chart-steps', 'color': 'warning', 'title': 'Permutation Importance', 'desc': 'Her değişkenin sınıflandırmaya gerçek katkısı permütasyon yöntemiyle hesaplanır ve sıralanır.'},
+                {'icon': 'bi-grid-3x3', 'color': 'info', 'title': 'Confusion Matrix', 'desc': 'Test seti üzerindeki doğruluk, kesinlik, duyarlılık ve F1 skoru raporlanır.'},
+                {'icon': 'bi-file-earmark-pdf-fill', 'color': 'danger', 'title': 'PDF Rapor', 'desc': 'Metrikler, confusion matrix ve APA formatında raporlama cümlesi PDF olarak indirilir.'},
+            ],
+        })
+    if request.method == 'POST':
+        return _handle_group_tool_post(request, 'svm')
+    active_job = _get_active_job(request.user, 'svm')
+    return render(request, 'istatistik/svm.html', {
+        'active_job_id': str(active_job.id) if active_job else None,
+        'daily_remaining': _daily_remaining(request.user),
+        'tool_title': 'Destek Vektör Makinesi (SVM)',
+        'tool_icon': 'bi-cpu',
+        'tool_color': 'teal',
+        **_console_ctx('svm', request),
     })
 
 

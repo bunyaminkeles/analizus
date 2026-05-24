@@ -1,0 +1,472 @@
+{% extends "istatistik/analiz_console_base.html" %}
+{% load static %}
+
+{% block title %}Destek Vektör Makinesi (SVM) - Analizus{% endblock %}
+{% block meta_description %}SVM sınıflandırma analizi: RBF, doğrusal ve polinom kernel, confusion matrix, permutation importance ve APA formatında rapor. Tez için hazır ML çıktısı, ücretsiz online analiz.{% endblock %}
+
+{% block tool_area %}
+<div class="container py-4">
+
+  <div class="row mb-4 align-items-center">
+    <div class="col">
+      <h2 class="fw-bold text-white mb-1">
+        <i class="bi bi-cpu me-2" style="color:#2dd4bf;"></i>Destek Vektör Makinesi (SVM)
+      </h2>
+      <p class="text-white-50 mb-0">Kategorik bir hedef değişkeni yüksek doğrulukla sınıflandırın — confusion matrix ve permutation importance dahil.</p>
+    </div>
+    {% if user.is_authenticated %}
+    <div class="col-auto">
+      <span class="badge bg-secondary fs-6">Günlük: {{ daily_remaining }} analiz hakkı</span>
+    </div>
+    {% endif %}
+  </div>
+
+  <div class="row g-4">
+
+    <!-- Sol panel -->
+    <div class="col-lg-5">
+      <div class="card border-secondary" style="background-color:#1a1a2e;">
+        <div class="card-body p-4">
+
+          <!-- Adım 1: Yükleme -->
+          <div id="step-upload">
+            <h5 class="text-white fw-semibold mb-3">
+              <i class="bi bi-upload me-2" style="color:#2dd4bf;"></i>Dosya Yükle
+            </h5>
+            <div id="upload-area"
+                 class="border border-secondary rounded-3 text-center p-4 mb-3"
+                 style="border-style:dashed!important;cursor:pointer;"
+                 onclick="document.getElementById('file-input').click()">
+              <i class="bi bi-cloud-upload-fill fs-2 mb-2 d-block" style="color:#2dd4bf;"></i>
+              <p class="text-white-50 small mb-0" id="file-name">CSV, XLSX, XLS — Maks. {{ max_upload_mb }} MB</p>
+            </div>
+            <input type="file" id="file-input" accept=".csv,.xlsx,.xls" class="d-none">
+            <button id="preview-btn" class="btn w-100 fw-semibold disabled" style="background:#134e4a;color:#fff;" disabled>
+              <i class="bi bi-arrow-right-circle me-2"></i>Sütunları Getir
+            </button>
+            <div id="upload-error" class="alert alert-danger mt-3 d-none small"></div>
+          </div>
+
+          <!-- Adım 2: Sütun seçimi -->
+          <div id="step-config" class="d-none">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+              <h5 class="text-white fw-semibold mb-0">
+                <i class="bi bi-list-check me-2" style="color:#2dd4bf;"></i>Değişken Seçimi
+              </h5>
+              <button class="btn btn-sm btn-outline-secondary" onclick="resetToUpload()">
+                <i class="bi bi-arrow-left me-1"></i>Geri
+              </button>
+            </div>
+            <p class="text-white-50 small mb-3" id="config-file-info">—</p>
+
+            <div class="mb-3">
+              <label class="text-white-50 small mb-1 d-block">Hedef Değişken (Y — kategori sütunu)</label>
+              <select id="target-col" class="form-select form-select-sm bg-dark text-white border-secondary" onchange="updateFeatureList()">
+                <option value="">— Seçiniz —</option>
+              </select>
+              <p class="text-white-50 small mt-1 mb-0">En az 2, en fazla 20 farklı değer içermelidir.</p>
+            </div>
+
+            <div class="mb-3">
+              <div class="d-flex justify-content-between align-items-center mb-1">
+                <label class="text-white-50 small mb-0">Özellik Değişkenleri (X — en az 1)</label>
+                <button type="button" class="btn btn-link btn-sm p-0" style="color:#2dd4bf;" onclick="toggleAllFeatures()">Tümünü Seç/Kaldır</button>
+              </div>
+              <div id="feature-list" class="border border-secondary rounded p-2" style="max-height:200px;overflow-y:auto;background:#12122a;">
+                <p class="text-white-50 small mb-0">Önce hedef değişkeni seçin.</p>
+              </div>
+              <p class="text-white-50 small mt-1 mb-0">Seçilen: <span id="feature-count">0</span></p>
+            </div>
+
+            <!-- Model parametreleri -->
+            <div class="mb-3">
+              <label class="text-white-50 small mb-1 d-block">Kernel Fonksiyonu</label>
+              <select id="kernel" class="form-select form-select-sm bg-dark text-white border-secondary">
+                <option value="rbf" selected>RBF (Radyal Tabanlı) — Önerilen</option>
+                <option value="linear">Doğrusal (Linear)</option>
+                <option value="poly">Polinom</option>
+              </select>
+            </div>
+
+            <div class="row g-2 mb-3">
+              <div class="col-6">
+                <label class="text-white-50 small mb-1 d-block">
+                  C (Düzenleme): <span id="c-label">1.0</span>
+                </label>
+                <input type="range" id="c-param" min="0" max="20" value="4" step="1" class="form-range"
+                       oninput="updateCLabel(this.value)">
+                <div class="d-flex justify-content-between text-white-50" style="font-size:0.7rem;">
+                  <span>0.1 (güçlü)</span><span>10 (zayıf)</span>
+                </div>
+              </div>
+              <div class="col-6">
+                <label class="text-white-50 small mb-1 d-block">Test Oranı</label>
+                <select id="test-size" class="form-select form-select-sm bg-dark text-white border-secondary">
+                  <option value="0.1">%10</option>
+                  <option value="0.2" selected>%20</option>
+                  <option value="0.3">%30</option>
+                  <option value="0.4">%40</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="alert alert-secondary small py-2 mb-3" style="background:rgba(255,255,255,0.04);border-color:#2dd4bf33;">
+              <i class="bi bi-info-circle me-1" style="color:#2dd4bf;"></i>
+              5.000'den fazla satır otomatik örneklenir. SVM büyük veri setlerinde yavaş çalışabilir.
+            </div>
+
+            <button id="run-btn" class="btn w-100 fw-semibold" style="background:#134e4a;color:#fff;" disabled>
+              <i class="bi bi-play-circle-fill me-2"></i>Analizi Başlat
+            </button>
+            <div id="run-error" class="alert alert-danger mt-3 d-none small"></div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Sağ panel: sonuçlar -->
+    <div class="col-lg-7">
+      <div class="card border-secondary h-100" style="background-color:#16213e;">
+        <div class="card-body p-4">
+
+          <div id="panel-idle">
+            <h5 class="text-white-50 fw-semibold mb-3">Sonuçlar burada görünecek</h5>
+            <ul class="text-white-50 small ps-3">
+              <li class="mb-1">Hedef değişken 2–20 farklı kategori içermelidir.</li>
+              <li class="mb-1">Özellikler otomatik olarak standardize edilir (SVM için zorunlu).</li>
+              <li class="mb-1">Kategorik özellikler dummy değişkene dönüştürülür.</li>
+              <li class="mb-1">Düşük C değerleri geniş marjine, yüksek C değerleri daha dar marjine izin verir.</li>
+              <li class="mb-1">Permutation importance, her değişkenin sınıflandırmaya gerçek katkısını ölçer.</li>
+            </ul>
+          </div>
+
+          <div id="panel-loading" class="text-center d-none py-4">
+            <div class="spinner-border mb-3" style="width:3rem;height:3rem;color:#2dd4bf;"></div>
+            <p class="text-white-50">SVM modeli eğitiliyor…</p>
+          </div>
+
+          <div id="panel-error" class="d-none">
+            <div class="alert alert-danger">
+              <i class="bi bi-exclamation-triangle-fill me-2"></i>
+              <span id="panel-error-msg"></span>
+            </div>
+            <button class="btn btn-outline-secondary btn-sm" onclick="resetToUpload()">Yeniden Dene</button>
+          </div>
+
+          <div id="panel-done" class="d-none">
+
+            <!-- Başlık + PDF -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <h5 class="text-white fw-semibold mb-0">Model Sonuçları</h5>
+              <a id="pdf-btn" href="#" class="btn btn-sm btn-outline-danger" target="_blank">
+                <i class="bi bi-file-earmark-pdf-fill me-1"></i>PDF İndir
+              </a>
+            </div>
+
+            <!-- 4 metrik kartı -->
+            <div class="row g-2 mb-3">
+              <div class="col-6 col-md-3">
+                <div class="rounded-3 p-3 text-center" style="background:rgba(45,212,191,0.12);border:1px solid rgba(45,212,191,0.25);">
+                  <div class="fs-5 fw-bold" id="res-accuracy" style="color:#2dd4bf;">—</div>
+                  <div class="text-white-50 small">Doğruluk</div>
+                </div>
+              </div>
+              <div class="col-6 col-md-3">
+                <div class="rounded-3 p-3 text-center" style="background:rgba(255,255,255,0.05);">
+                  <div class="fs-5 fw-bold text-info" id="res-precision">—</div>
+                  <div class="text-white-50 small">Kesinlik</div>
+                </div>
+              </div>
+              <div class="col-6 col-md-3">
+                <div class="rounded-3 p-3 text-center" style="background:rgba(255,255,255,0.05);">
+                  <div class="fs-5 fw-bold text-warning" id="res-recall">—</div>
+                  <div class="text-white-50 small">Duyarlılık</div>
+                </div>
+              </div>
+              <div class="col-6 col-md-3">
+                <div class="rounded-3 p-3 text-center" style="background:rgba(255,255,255,0.05);">
+                  <div class="fs-5 fw-bold text-success" id="res-f1">—</div>
+                  <div class="text-white-50 small">F1 Skoru</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Model özet bilgisi -->
+            <div id="model-info" class="rounded-3 p-3 mb-3 text-white-50 small" style="background:rgba(255,255,255,0.04);"></div>
+
+            <!-- Özellik önemi tablosu -->
+            <h6 class="text-white fw-semibold mb-2">Değişken Önem Sıralaması (Permutation)</h6>
+            <div class="table-responsive mb-3" style="max-height:240px;overflow-y:auto;">
+              <table class="table table-dark table-sm table-hover mb-0" style="font-size:0.78rem;">
+                <thead>
+                  <tr>
+                    <th>Sıra</th>
+                    <th>Özellik</th>
+                    <th>Önem Skoru</th>
+                    <th>Göreli Ağırlık</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="fi-body"></tbody>
+              </table>
+            </div>
+
+            <!-- APA -->
+            <div class="rounded-3 p-3 mb-2" style="background:rgba(45,212,191,0.08);border:1px solid rgba(45,212,191,0.2);">
+              <p class="text-white-50 small fw-semibold mb-2">Tezinde Nasıl Raporlarsın?</p>
+              <p class="text-white small mb-2" id="res-apa" style="font-style:italic;"></p>
+              <button class="btn btn-sm btn-outline-secondary" onclick="copyApa()">
+                <i class="bi bi-clipboard me-1"></i>Kopyala
+              </button>
+            </div>
+
+          </div><!-- panel-done -->
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- SEO: Bu Test Nedir? -->
+  <div class="ax-card mt-4 p-4">
+    <h5 class="ax-text-primary fw-semibold mb-3">Destek Vektör Makinesi (SVM) Nedir?</h5>
+    <p class="ax-text-muted ax-text-sm mb-3">Destek Vektör Makinesi (Support Vector Machine — SVM), sınıflar arasındaki marjini en büyüklemeye çalışarak optimum bir karar sınırı (hiperplan) bulan güçlü bir makine öğrenmesi algoritmasıdır. İki sınıf arasındaki sınıra en yakın olan eğitim örneklerine "destek vektörleri" adı verilir.</p>
+    <p class="ax-text-muted ax-text-sm mb-3">Kernel fonksiyonu, veriyi daha yüksek boyutlu bir uzaya taşıyarak doğrusal olmayan sınıflandırma problemlerini çözmeye olanak tanır. RBF (Radyal Tabanlı Fonksiyon) kernel en yaygın kullanılan seçenektir. C parametresi, hatalı sınıflandırmalara verilen cezayı ve dolayısıyla model karmaşıklığını düzenler.</p>
+    <p class="ax-text-muted ax-text-sm mb-0">SVM, küçük ve orta büyüklükteki veri setlerinde, özellikle yüksek boyutlu verilerde çok etkilidir. Permutation importance yöntemi, her değişkenin modele katkısını rassal permütasyon denemesiyle ölçer ve yorumlamayı kolaylaştırır.</p>
+  </div>
+</div>
+
+<script>
+const TOOL_URL = '{% url "istatistik:svm" %}';
+const STATUS_TEMPLATE = '{% url "istatistik:svm_status" "00000000-0000-0000-0000-000000000000" %}';
+
+const C_VALUES = [0.1, 0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 12.0, 15.0, 18.0, 20.0, 25.0, 30.0];
+
+let previewId = null, previewFilename = null, allCols = [], pollInterval = null;
+
+const fileInput = document.getElementById('file-input');
+const previewBtn = document.getElementById('preview-btn');
+
+function updateCLabel(idx) {
+  const val = C_VALUES[parseInt(idx)] || 1.0;
+  document.getElementById('c-label').textContent = val;
+}
+updateCLabel(document.getElementById('c-param').value);
+
+fileInput.addEventListener('change', () => {
+  const f = fileInput.files[0];
+  if (!f) return;
+  if (f.size > {{ max_upload_mb }} * 1024 * 1024) {
+    document.getElementById('upload-error').textContent = 'Dosya boyutu {{ max_upload_mb }} MB sınırını aşıyor.';
+    document.getElementById('upload-error').classList.remove('d-none');
+    fileInput.value = '';
+    return;
+  }
+  document.getElementById('file-name').textContent = f.name + ' (' + (f.size / 1024).toFixed(0) + ' KB)';
+  previewBtn.disabled = false; previewBtn.classList.remove('disabled');
+  document.getElementById('upload-error').classList.add('d-none');
+});
+
+previewBtn.addEventListener('click', previewFile);
+
+function previewFile() {
+  const f = fileInput.files[0];
+  if (!f) return;
+  previewBtn.disabled = true;
+  const fd = new FormData();
+  fd.append('file', f); fd.append('step', 'preview');
+  fd.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+  fetch(TOOL_URL, {method:'POST', body:fd, headers:{'X-Requested-With':'XMLHttpRequest'}})
+    .then(r => r.json())
+    .then(data => {
+      previewBtn.disabled = false;
+      if (!data.success) { showUploadError(data.error || 'Hata'); return; }
+      previewId = data.preview_id; previewFilename = data.filename;
+      allCols = data.columns || [];
+      document.getElementById('config-file-info').textContent = data.filename + ' — ' + data.n_rows + ' satır, ' + data.columns.length + ' sütun';
+      buildTargetSelect(allCols);
+      updateFeatureList();
+      document.getElementById('step-upload').classList.add('d-none');
+      document.getElementById('step-config').classList.remove('d-none');
+    })
+    .catch(() => { previewBtn.disabled = false; showUploadError('Sunucu hatası.'); });
+}
+
+function buildTargetSelect(cols) {
+  const sel = document.getElementById('target-col');
+  sel.innerHTML = '<option value="">— Seçiniz —</option>';
+  cols.forEach(c => { sel.innerHTML += `<option value="${c}">${c}</option>`; });
+}
+
+function updateFeatureList() {
+  const targetVal = document.getElementById('target-col').value;
+  const container = document.getElementById('feature-list');
+  const available = allCols.filter(c => c !== targetVal);
+  if (!targetVal) {
+    container.innerHTML = '<p class="text-white-50 small mb-0">Önce hedef değişkeni seçin.</p>';
+    document.getElementById('feature-count').textContent = '0';
+    document.getElementById('run-btn').disabled = true;
+    return;
+  }
+  if (available.length === 0) {
+    container.innerHTML = '<p class="text-white-50 small mb-0">Başka sütun yok.</p>';
+    document.getElementById('run-btn').disabled = true;
+    return;
+  }
+  container.innerHTML = available.map(c =>
+    `<div class="form-check mb-1">
+      <input class="form-check-input feature-cb" type="checkbox" value="${c}" id="cb_${c}" onchange="countFeatures()">
+      <label class="form-check-label text-white-50 small" for="cb_${c}">${c}</label>
+    </div>`
+  ).join('');
+  countFeatures();
+}
+
+function countFeatures() {
+  const n = document.querySelectorAll('.feature-cb:checked').length;
+  document.getElementById('feature-count').textContent = n;
+  document.getElementById('run-btn').disabled = n < 1;
+}
+
+function toggleAllFeatures() {
+  const cbs = document.querySelectorAll('.feature-cb');
+  const allChecked = Array.from(cbs).every(cb => cb.checked);
+  cbs.forEach(cb => cb.checked = !allChecked);
+  countFeatures();
+}
+
+document.getElementById('run-btn').addEventListener('click', runAnalysis);
+
+function runAnalysis() {
+  const targetVal = document.getElementById('target-col').value;
+  const featureVals = Array.from(document.querySelectorAll('.feature-cb:checked')).map(cb => cb.value);
+  if (!targetVal) { showRunError('Hedef değişken seçilmedi.'); return; }
+  if (featureVals.length === 0) { showRunError('En az 1 özellik değişkeni seçin.'); return; }
+
+  document.getElementById('run-error').classList.add('d-none');
+  showPanel('loading');
+
+  const cIdx = parseInt(document.getElementById('c-param').value);
+  const cVal = C_VALUES[cIdx] || 1.0;
+
+  const fd = new FormData();
+  fd.append('step', 'run');
+  fd.append('preview_id', previewId);
+  fd.append('filename', previewFilename);
+  fd.append('target_col', targetVal);
+  featureVals.forEach(v => fd.append('feature_cols', v));
+  fd.append('kernel', document.getElementById('kernel').value);
+  fd.append('C', cVal);
+  fd.append('test_size', document.getElementById('test-size').value);
+  fd.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+  fetch(TOOL_URL, {method:'POST', body:fd, headers:{'X-Requested-With':'XMLHttpRequest'}})
+    .then(r => r.json())
+    .then(data => {
+      if (!data.success) { showPanel('idle'); showRunError(data.error || 'Hata'); return; }
+      startPolling(data.job_id);
+    })
+    .catch(() => { showPanel('idle'); showRunError('Sunucu hatası.'); });
+}
+
+function startPolling(jobId) {
+  if (pollInterval) clearInterval(pollInterval);
+  pollInterval = setInterval(() => {
+    fetch(STATUS_TEMPLATE.replace('00000000-0000-0000-0000-000000000000', jobId), {headers:{'X-Requested-With':'XMLHttpRequest'}})
+      .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(data => {
+        if (data.status === 'completed') {
+          clearInterval(pollInterval);
+          showResults(data);
+        } else if (data.status === 'failed') {
+          clearInterval(pollInterval);
+          showPanel('error');
+          document.getElementById('panel-error-msg').textContent = data.error || 'Analiz başarısız.';
+        }
+      })
+      .catch(err => {
+        clearInterval(pollInterval);
+        showPanel('error');
+        document.getElementById('panel-error-msg').textContent = 'Durum sorgulanamadı: ' + err.message;
+      });
+  }, 2000);
+}
+
+function showResults(data) {
+  const r = data.result_data;
+
+  document.getElementById('res-accuracy').textContent = (r.accuracy * 100).toFixed(1) + '%';
+  document.getElementById('res-precision').textContent = (r.precision * 100).toFixed(1) + '%';
+  document.getElementById('res-recall').textContent = (r.recall * 100).toFixed(1) + '%';
+  document.getElementById('res-f1').textContent = (r.f1 * 100).toFixed(1) + '%';
+
+  const kernelMap = {linear: 'Doğrusal', rbf: 'RBF', poly: 'Polinom'};
+  document.getElementById('model-info').innerHTML =
+    `Kernel: <strong>${kernelMap[r.kernel] || r.kernel}</strong> &nbsp;|&nbsp; ` +
+    `C: <strong>${r.C}</strong> &nbsp;|&nbsp; ` +
+    `Destek Vektörü: <strong>${r.n_support_vectors}</strong> &nbsp;|&nbsp; ` +
+    `Sınıflar: <strong>${r.classes.join(', ')}</strong> &nbsp;|&nbsp; ` +
+    `Eğitim: ${r.n_train} &nbsp;|&nbsp; Test: ${r.n_test}`;
+
+  const total = r.feature_importances.reduce((s, f) => s + f.importance, 0);
+  document.getElementById('fi-body').innerHTML = r.feature_importances.map(f => {
+    const pct = total > 0 ? (f.importance / total * 100).toFixed(1) : '0.0';
+    const barWidth = total > 0 ? Math.round(f.importance / total * 100) : 0;
+    return `<tr>
+      <td class="text-white-50">${f.rank}</td>
+      <td class="fw-semibold">${f.name}</td>
+      <td>${f.importance.toFixed(4)}</td>
+      <td>${pct}%</td>
+      <td style="min-width:80px;">
+        <div style="height:6px;border-radius:3px;background:rgba(45,212,191,0.2);">
+          <div style="height:6px;border-radius:3px;background:#2dd4bf;width:${barWidth}%;"></div>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+
+  const kernelLong = {linear: 'Doğrusal (Linear)', rbf: 'RBF (Radyal Tabanlı)', poly: 'Polinom'}[r.kernel] || r.kernel;
+  let apa = `Destek vektör makinesi (SVM) sınıflandırma analizi (${kernelLong} kernel, C = ${r.C}) uygulanmıştır. Model, test seti üzerinde %${(r.accuracy*100).toFixed(1)} doğruluk oranı elde etmiştir (n_eğitim = ${r.n_train}, n_test = ${r.n_test}). Kesinlik = %${(r.precision*100).toFixed(1)}, Duyarlılık = %${(r.recall*100).toFixed(1)}, F1 = %${(r.f1*100).toFixed(1)} olarak bulunmuştur. Model toplam ${r.n_support_vectors} destek vektörü kullanmıştır.`;
+  if (r.feature_importances && r.feature_importances.length > 0 && r.feature_importances[0].importance > 0) {
+    const top = r.feature_importances[0];
+    apa += ` Permütasyon önem analizi sonucunda en etkili değişken '${top.name}' (önem skoru = ${top.importance.toFixed(4)}) olarak belirlenmiştir.`;
+  }
+  document.getElementById('res-apa').textContent = apa;
+  document.getElementById('pdf-btn').href = data.pdf_url;
+  showPanel('done');
+}
+
+function copyApa() {
+  navigator.clipboard.writeText(document.getElementById('res-apa').textContent).then(() => {
+    const btn = event.target.closest('button');
+    btn.innerHTML = '<i class="bi bi-check-lg me-1"></i>Kopyalandı';
+    setTimeout(() => { btn.innerHTML = '<i class="bi bi-clipboard me-1"></i>Kopyala'; }, 2000);
+  });
+}
+
+function showPanel(name) {
+  ['idle','loading','error','done'].forEach(n => {
+    document.getElementById('panel-' + n).classList.toggle('d-none', n !== name);
+  });
+}
+function showUploadError(msg) { const el = document.getElementById('upload-error'); el.textContent = msg; el.classList.remove('d-none'); }
+function showRunError(msg) { const el = document.getElementById('run-error'); el.textContent = msg; el.classList.remove('d-none'); }
+function resetToUpload() {
+  if (pollInterval) clearInterval(pollInterval);
+  previewId = null; previewFilename = null;
+  fileInput.value = ''; previewBtn.disabled = true; previewBtn.classList.add('disabled');
+  document.getElementById('file-name').textContent = 'CSV, XLSX, XLS — Maks. {{ max_upload_mb }} MB';
+  document.getElementById('step-config').classList.add('d-none');
+  document.getElementById('step-upload').classList.remove('d-none');
+  document.getElementById('upload-error').classList.add('d-none');
+  document.getElementById('run-error').classList.add('d-none');
+  showPanel('idle');
+}
+
+{% if active_job_id %}
+showPanel('loading');
+startPolling('{{ active_job_id }}');
+{% endif %}
+</script>
+{% endblock %}

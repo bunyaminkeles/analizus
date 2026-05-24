@@ -481,6 +481,8 @@ class PrivateMessage(models.Model):
     attachment_name = models.CharField(max_length=255, blank=True, verbose_name="Dosya Adı")
     created_at = models.DateTimeField(auto_now_add=True)
     is_read = models.BooleanField(default=False)
+    edited_at = models.DateTimeField(null=True, blank=True)
+    is_deleted = models.BooleanField(default=False)
 
     def get_attachment_type(self):
         """Dosya tipini döndür (image, pdf, document, other)"""
