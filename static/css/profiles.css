@@ -17,8 +17,43 @@
 
 .ax-profile-avatar-wrap {
     display: inline-block;
+    position: relative;
     margin-bottom: var(--ax-space-4);
     filter: drop-shadow(0 0 16px rgba(99, 102, 241, 0.4));
+}
+
+.ax-online-dot {
+    position: absolute;
+    bottom: 6px;
+    right: 6px;
+    width: 16px;
+    height: 16px;
+    background: #22c55e;
+    border: 2px solid #0f172a;
+    border-radius: 50%;
+    cursor: default;
+}
+
+.ax-online-dot::after {
+    content: "Çevrimiçi";
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #22c55e;
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 600;
+    white-space: nowrap;
+    padding: 3px 8px;
+    border-radius: 4px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s;
+}
+
+.ax-online-dot:hover::after {
+    opacity: 1;
 }
 
 .ax-profile-avatar {

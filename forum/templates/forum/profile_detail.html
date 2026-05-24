@@ -27,6 +27,9 @@
                         {{ profile_user.username|slice:":1"|upper }}
                     </div>
                 {% endif %}
+                {% if profile_user.profile.is_online %}
+                <span class="ax-online-dot" title="Çevrimiçi"></span>
+                {% endif %}
             </div>
 
             <!-- İsim & Ünvan -->
