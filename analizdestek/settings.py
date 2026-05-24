@@ -79,6 +79,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'forum.middleware.HoneypotMiddleware',            # Bot honeypot kontrolü
+    'forum.middleware.LastSeenMiddleware',            # Son görülme güncelleme
     'forum.middleware.EmailVerificationMiddleware',  # E-posta doğrulama kontrolü
 ]
 

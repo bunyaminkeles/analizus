@@ -1,13 +1,41 @@
 """
-Güvenlik middleware'leri: Honeypot + E-posta doğrulama
+Güvenlik middleware'leri: Honeypot + E-posta doğrulama + Son görülme
 """
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.contrib import messages
+from django.utils import timezone
 
 _HONEYPOT_FIELD = 'website'
 _GUARDED_PATHS = {'/login/', '/register/'}
+
+# last_seen en fazla bu sıklıkta yazılır (saniye) — gereksiz DB yazımını önler
+_LAST_SEEN_INTERVAL = 60
+
+
+class LastSeenMiddleware:
+    """Giriş yapmış kullanıcının last_seen alanını dakikada bir günceller."""
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        if (
+            request.user.is_authenticated
+            and hasattr(request.user, 'profile')
+            and not request.path.startswith('/static/')
+            and not request.path.startswith('/media/')
+        ):
+            profile = request.user.profile
+            now = timezone.now()
+            if (
+                profile.last_seen is None
+                or (now - profile.last_seen).total_seconds() > _LAST_SEEN_INTERVAL
+            ):
+                profile.last_seen = now
+                profile.save(update_fields=['last_seen'])
+        return self.get_response(request)
 
 
 class HoneypotMiddleware:

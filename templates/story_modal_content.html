@@ -9,7 +9,9 @@
                     <span class="text-white fw-bold fs-4">{{ story.user.username|slice:":1" }}</span>
                 </div>
             {% endif %}
-            <span class="position-absolute bottom-0 end-0 bg-success border border-dark rounded-circle p-1"></span>
+            {% if story.user.profile.is_online %}
+            <span class="position-absolute bottom-0 end-0 bg-success border border-dark rounded-circle p-1" title="Çevrimiçi"></span>
+            {% endif %}
         </div>
         <div class="ms-3">
             <h5 class="text-white mb-0 fw-bold">{{ story.user.get_full_name|default:story.user.username }}</h5>

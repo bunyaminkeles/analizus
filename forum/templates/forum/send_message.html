@@ -18,7 +18,9 @@
                                         {{ receiver.username|slice:":1"|upper }}
                                     </div>
                                 {% endif %}
-                                <span class="position-absolute bottom-0 end-0 p-1 bg-success border border-dark rounded-circle" style="width: 14px; height: 14px;"></span>
+                                {% if receiver.profile.is_online %}
+                                <span class="position-absolute bottom-0 end-0 p-1 bg-success border border-dark rounded-circle" style="width: 14px; height: 14px;" title="Çevrimiçi"></span>
+                                {% endif %}
                             </div>
 
                             <h5 class="text-white fw-bold mb-1">{{ receiver.username }}</h5>

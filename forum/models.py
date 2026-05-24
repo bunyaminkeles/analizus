@@ -327,6 +327,12 @@ class Profile(models.Model):
         quiz_score = self.user.quiz_scores.first()
         return quiz_score.total_points if quiz_score else 0
 
+    @property
+    def is_online(self):
+        if not self.last_seen:
+            return False
+        return (timezone.now() - self.last_seen).total_seconds() < 300
+
     def get_full_name(self):
         """Tam adı veya kullanıcı adını döndürür"""
         if self.user.first_name and self.user.last_name:
