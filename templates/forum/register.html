@@ -279,7 +279,7 @@
                         <label>Kullanıcı adı*</label>
                         <div class="input-box">
                             <i class="bi bi-person"></i>
-                            <input type="text" name="username" value="{{ form.username.value|default:'' }}" required>
+                            <input type="text" name="username" value="{{ form.username.value|default:'' }}" required autocomplete="username">
                         </div>
                         <p class="hint">Zorunlu. 150 karakter ya da daha az.</p>
                         {% if form.username.errors %}<ul class="err">{% for e in form.username.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
@@ -289,7 +289,7 @@
                         <label>E-Posta Adresi*</label>
                         <div class="input-box">
                             <i class="bi bi-envelope"></i>
-                            <input type="email" name="email" value="{{ form.email.value|default:'' }}" required>
+                            <input type="email" name="email" value="{{ form.email.value|default:'' }}" required autocomplete="email">
                         </div>
                         <p class="hint">Geçerli bir e-posta adresi giriniz.</p>
                         {% if form.email.errors %}<ul class="err">{% for e in form.email.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
@@ -299,7 +299,7 @@
                         <label>Parola*</label>
                         <div class="input-box">
                             <i class="bi bi-lock"></i>
-                            <input type="password" name="password1" required>
+                            <input type="password" name="password1" required autocomplete="new-password">
                         </div>
                         {% if form.password1.errors %}<ul class="err">{% for e in form.password1.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
                     </div>
@@ -308,7 +308,7 @@
                         <label>Parola onayı*</label>
                         <div class="input-box">
                             <i class="bi bi-lock-fill"></i>
-                            <input type="password" name="password2" required>
+                            <input type="password" name="password2" required autocomplete="new-password">
                         </div>
                         <p class="hint">Doğrulama için aynı parolayı girin.</p>
                         {% if form.password2.errors %}<ul class="err">{% for e in form.password2.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
