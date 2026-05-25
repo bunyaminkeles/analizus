@@ -147,15 +147,16 @@
 }
 
 .ax-footer-visitor-counter {
-    font-size: var(--ax-text-xs);
+    font-size: .82rem;
     color: var(--ax-text-muted);
     display: flex;
     align-items: center;
     gap: 4px;
+    margin: 0 var(--ax-space-3);
 }
 
 .ax-footer-visitor-counter i {
-    font-size: .75rem;
+    font-size: .8rem;
     opacity: .6;
 }
 
