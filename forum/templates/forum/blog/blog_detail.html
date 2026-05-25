@@ -2,7 +2,7 @@
 {% load markdown_extras %}
 
 {% block title %}{{ post.meta_title|default:post.title }} - Analizus Blog{% endblock %}
-{% block meta_description %}{{ post.meta_description|default:post.excerpt }}{% endblock %}
+{% block meta_description %}{{ post.meta_description|default:post.excerpt|default:post.content|striptags|truncatechars:155 }}{% endblock %}
 
 {% block extra_head %}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">

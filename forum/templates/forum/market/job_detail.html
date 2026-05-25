@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 
 {% block title %}{{ job.title }} - Analizus Market{% endblock %}
+{% block meta_description %}{{ job.description|striptags|truncatechars:155 }}{% endblock %}
 
 {% block extra_head %}
-<meta name="description" content="{{ job.description|striptags|truncatechars:160 }}">
 <meta property="og:title" content="{{ job.title }} - Analizus Market">
-<meta property="og:description" content="{{ job.description|striptags|truncatechars:160 }}">
+<meta property="og:description" content="{{ job.description|striptags|truncatechars:155 }}">
 <meta property="og:type" content="website">
 
 <script type="application/ld+json">
