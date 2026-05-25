@@ -12,6 +12,7 @@ from forum.models import SiteSettings
 from .models import University, OAIPMHSearchJob, OAIPMHOrder
 from .forms import OAIPMHKeywordForm, OAIPMHBrowseForm, OAIPMHOrderForm
 from .services.job_runner import run_scraping_job, send_demo_email_async
+from tarama_seo_content import TARAMA_SEO_CONTENT
 
 logger = logging.getLogger(__name__)
 
@@ -122,6 +123,7 @@ def oaipmh_landing(request):
         'remaining': remaining,
         'active_job_id': str(active_job.id) if active_job else None,
         'active_job_type': active_job.search_type if active_job else None,
+        'seo_guide': TARAMA_SEO_CONTENT.get('oaipmh'),
     })
 
 

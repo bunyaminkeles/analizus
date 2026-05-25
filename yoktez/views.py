@@ -9,6 +9,7 @@ from functools import wraps
 
 from .forms import YokTezSearchForm
 from .models import YokTezSearchJob
+from tarama_seo_content import TARAMA_SEO_CONTENT
 
 logger = logging.getLogger(__name__)
 
@@ -153,6 +154,7 @@ def yoktez_landing(request):
         'active_job_id': str(active_job.id) if active_job else None,
         'completed_job_id': str(completed_job.id) if completed_job else None,
         'past_analiz_jobs': past_analiz_jobs,
+        'seo_guide': TARAMA_SEO_CONTENT.get('yoktez'),
     })
 
 
