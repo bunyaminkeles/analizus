@@ -6,11 +6,7 @@
 
 {% block canonical %}{% url 'blog_list' %}{% if current_category %}?category={{ current_category }}{% endif %}{% endblock %}
 
-{% block extra_head %}
-{% if page_obj.number > 1 %}
-<meta name="robots" content="noindex, follow">
-{% endif %}
-{% endblock %}
+{% block extra_head %}{% endblock %}
 
 {% block content %}
 <div class="container py-4">

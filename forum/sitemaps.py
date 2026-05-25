@@ -82,22 +82,28 @@ class IstatistikSitemap(Sitemap):
 
     def items(self):
         return [
-            'istatistik:cronbach',
-            'istatistik:normallik',
-            'istatistik:betimsel',
-            'istatistik:korelasyon',
-            'istatistik:orneklem',
-            'istatistik:ttesti',
-            'istatistik:anova',
-            'istatistik:mann_whitney',
-            'istatistik:kruskal_wallis',
-            'istatistik:ki_kare',
-            'istatistik:lineer_regresyon',
-            'istatistik:lojistik_regresyon',
+            'cronbach',
+            'normallik',
+            'betimsel',
+            'korelasyon',
+            'orneklem',
+            'ttesti',
+            'anova',
+            'mann-whitney',
+            'kruskal-wallis',
+            'ki-kare',
+            'lineer-regresyon',
+            'lojistik-regresyon',
+            'friedman',
+            'tekrarli-anova',
+            'karar-agaci',
+            'svm',
+            'afa',
+            'wilcoxon',
         ]
 
     def location(self, item):
-        return reverse(item)
+        return f'/analiz/{item}/'
 
 
 class ToolsSitemap(Sitemap):
