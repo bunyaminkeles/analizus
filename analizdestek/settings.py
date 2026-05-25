@@ -81,6 +81,7 @@ MIDDLEWARE = [
     'forum.middleware.HoneypotMiddleware',            # Bot honeypot kontrolü
     'forum.middleware.LastSeenMiddleware',            # Son görülme güncelleme
     'forum.middleware.EmailVerificationMiddleware',  # E-posta doğrulama kontrolü
+    'forum.middleware.VisitorCounterMiddleware',     # Ziyaretçi sayacı
 ]
 
 ROOT_URLCONF = 'analizdestek.urls'
@@ -101,6 +102,7 @@ TEMPLATES = [
                 'forum.context_processors.google_analytics',  # Google Analytics
                 'forum.context_processors.feature_flags',  # Feature Flags
                 'forum.context_processors.donation_context',  # Bağış paketleri (footer modal)
+                'forum.context_processors.visitor_counter',  # Ziyaretçi sayacı
             ],
         },
     },

@@ -1468,3 +1468,24 @@ class TeamMember(models.Model):
 
     def get_skills_list(self):
         return [s.strip() for s in self.skills.split(',')] if self.skills else []
+
+
+class SiteVisit(models.Model):
+    """Toplam site ziyaretçi sayacı — tek satır, atomik artırım."""
+    total_visits = models.PositiveBigIntegerField(default=0)
+
+    class Meta:
+        verbose_name = "Site Ziyaret Sayacı"
+
+    @classmethod
+    def increment(cls):
+        obj, created = cls.objects.get_or_create(pk=1)
+        if not created:
+            cls.objects.filter(pk=1).update(total_visits=models.F('total_visits') + 1)
+
+    @classmethod
+    def get_count(cls):
+        try:
+            return cls.objects.get(pk=1).total_visits
+        except cls.DoesNotExist:
+            return 0
