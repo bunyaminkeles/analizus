@@ -29,7 +29,7 @@
     <meta name="description" content="{% block meta_description %}SPSS, Python, R Studio, Nitel analizler ve AI ile istatistik analizi, tez yazımı ve akademik araştırma desteği. Türkiye'nin en büyük veri bilimi topluluğu.{% endblock %}">
     <meta name="keywords" content="{% block meta_keywords %}SPSS, Python, R Studio, istatistik analizi, tez yazımı, akademik araştırma, veri bilimi, regresyon, ANOVA, t-test, akademik danışmanlık, tez istatistik{% endblock %}">
     <meta name="author" content="Analizus">
-    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <meta name="robots" content="{% block robots_content %}index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1{% endblock %}">
     <meta name="googlebot" content="index, follow">
     <link rel="canonical" href="https://www.analizus.com{% block canonical %}{{ request.path }}{% endblock %}">
 
