@@ -190,3 +190,110 @@
     display: block;
   }
 }
+
+/* ── Araç Rehberi (SEO) ── */
+.ax-tool-guide {
+  max-width: 860px;
+  margin: 3rem auto 2rem;
+  padding: 0 1rem;
+  color: var(--ax-text-secondary);
+  font-size: 0.93rem;
+  line-height: 1.7;
+}
+
+.ax-tool-guide-intro {
+  margin-bottom: 1.25rem;
+  color: var(--ax-text-primary);
+}
+
+.ax-tool-guide-sections {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.ax-tool-guide-detail {
+  border: 1px solid var(--ax-border-default);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.ax-tool-guide-detail summary {
+  padding: 0.65rem 1rem;
+  cursor: pointer;
+  font-weight: 500;
+  color: var(--ax-text-primary);
+  background: var(--ax-bg-secondary);
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ax-tool-guide-detail summary::before {
+  content: '+';
+  font-size: 1.1rem;
+  color: var(--ax-primary);
+  width: 1rem;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.ax-tool-guide-detail[open] summary::before {
+  content: '−';
+}
+
+.ax-tool-guide-detail p,
+.ax-tool-guide-detail blockquote {
+  margin: 0;
+  padding: 0.75rem 1rem;
+  border-top: 1px solid var(--ax-border-default);
+}
+
+.ax-tool-guide-apa {
+  font-style: italic;
+  border-left: 3px solid var(--ax-primary) !important;
+  background: var(--ax-bg-secondary);
+}
+
+.ax-tool-guide-faq {
+  margin-bottom: 1.5rem;
+}
+
+.ax-tool-guide-faq-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--ax-text-primary);
+  margin-bottom: 0.75rem;
+}
+
+.ax-tool-guide-related {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--ax-border-default);
+}
+
+.ax-tool-guide-related-label {
+  font-weight: 500;
+  color: var(--ax-text-primary);
+  font-size: 0.88rem;
+}
+
+.ax-tool-guide-related-link {
+  padding: 0.2rem 0.65rem;
+  border: 1px solid var(--ax-border-default);
+  border-radius: 20px;
+  font-size: 0.82rem;
+  color: var(--ax-primary);
+  text-decoration: none;
+  transition: background 0.15s;
+}
+
+.ax-tool-guide-related-link:hover {
+  background: var(--ax-bg-secondary);
+  text-decoration: none;
+}
