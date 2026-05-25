@@ -1,5 +1,5 @@
 from django.conf import settings
-from forum.models import Profile, Notification, PrivateMessage, SiteSettings, DonationTier
+from forum.models import Profile, Notification, PrivateMessage, SiteSettings, DonationTier, SiteVisit
 
 
 def profile_context(request):
@@ -43,6 +43,11 @@ def google_analytics(request):
         'BING_SITE_VERIFICATION': getattr(settings, 'BING_SITE_VERIFICATION', ''),
         'YANDEX_SITE_VERIFICATION': getattr(settings, 'YANDEX_SITE_VERIFICATION', ''),
     }
+
+
+def visitor_counter(request):
+    """Toplam ziyaretçi sayısını tüm template'lere geçirir."""
+    return {'total_visitors': SiteVisit.get_count()}
 
 
 def feature_flags(request):

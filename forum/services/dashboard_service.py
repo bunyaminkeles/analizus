@@ -269,8 +269,12 @@ def get_dashboard_context():
     recent_topics_list = Topic.objects.select_related('starter', 'category').order_by('-created_at')[:5]
 
     # === PLATFORM HEALTH SCORE ===
-    user_growth_score    = min(40, int(week_users / max(1, total_users) * 4000))
-    content_growth_score = min(40, int((week_topics + week_posts) / max(1, total_topics + total_posts) * 4000))
+    month_topics_count = Topic.objects.filter(created_at__date__gte=last_30_days).count()
+    month_posts_count  = Post.objects.filter(created_at__date__gte=last_30_days).count()
+    month_users_count  = User.objects.filter(date_joined__date__gte=last_30_days).count()
+
+    user_growth_score    = min(40, int(month_users_count  / max(1, total_users) * 400))
+    content_growth_score = min(40, int((month_topics_count + month_posts_count) / max(1, total_topics + total_posts) * 400))
     pending_total        = (pending_stories.count() + pending_reviews.count() +
                             unread_contacts.count() + pending_donations.count() +
                             len(pending_biblio_orders) + len(pending_openalex_orders) +

@@ -146,6 +146,24 @@
     color: var(--ax-accent-primary);
 }
 
+.ax-footer-visitor-counter {
+    font-size: var(--ax-text-xs);
+    color: var(--ax-text-muted);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.ax-footer-visitor-counter i {
+    font-size: .75rem;
+    opacity: .6;
+}
+
+.ax-footer-visitor-counter span {
+    font-weight: 600;
+    color: var(--ax-text-secondary);
+}
+
 @media (max-width: 767px) {
     .ax-footer { padding: var(--ax-space-10) 0 var(--ax-space-6); }
     .ax-footer-bottom { justify-content: center; text-align: center; }

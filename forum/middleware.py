@@ -14,6 +14,27 @@ _GUARDED_PATHS = {'/login/', '/register/'}
 _LAST_SEEN_INTERVAL = 60
 
 
+class VisitorCounterMiddleware:
+    """Her yeni session'da ziyaretçi sayacını bir artırır."""
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        if (
+            not request.path.startswith(('/static/', '/media/', '/admin/', '/api/'))
+            and request.method == 'GET'
+            and not request.session.get('_counted')
+        ):
+            try:
+                from forum.models import SiteVisit
+                SiteVisit.increment()
+                request.session['_counted'] = True
+            except Exception:
+                pass
+        return self.get_response(request)
+
+
 class LastSeenMiddleware:
     """Giriş yapmış kullanıcının last_seen alanını dakikada bir günceller."""
 
