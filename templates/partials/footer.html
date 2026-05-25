@@ -112,11 +112,7 @@
         </div>
 
         <div class="ax-footer-bottom">
-            <p>&copy; 2026 Analizus — Akademik Araştırma Platformu</p>
-            <div class="ax-footer-visitor-counter">
-                <i class="bi bi-eye"></i>
-                <span>{{ total_visitors|default:0 }}</span> ziyaretçi
-            </div>
+            <p>&copy; 2026 Analizus — Akademik Araştırma Platformu <span class="ax-footer-visitor-counter"><i class="bi bi-eye"></i>{{ total_visitors|default:0 }} ziyaretçi</span></p>
             <div class="ax-footer-bottom-links">
                 <a href="{% url 'about' %}">Hakkımızda</a>
                 <a href="{% url 'neden_biz' %}">Neden Biz?</a>

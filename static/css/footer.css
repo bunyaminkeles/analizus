@@ -147,22 +147,16 @@
 }
 
 .ax-footer-visitor-counter {
-    font-size: .82rem;
-    color: var(--ax-text-muted);
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    margin: 0 var(--ax-space-3);
+    margin-left: var(--ax-space-3);
+    padding-left: var(--ax-space-3);
+    border-left: 1px solid var(--ax-border-default);
+    font-size: inherit;
+    color: inherit;
 }
 
 .ax-footer-visitor-counter i {
-    font-size: .8rem;
+    margin-right: 4px;
     opacity: .6;
-}
-
-.ax-footer-visitor-counter span {
-    font-weight: 600;
-    color: var(--ax-text-secondary);
 }
 
 @media (max-width: 767px) {
