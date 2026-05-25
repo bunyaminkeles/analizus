@@ -1,6 +1,21 @@
 {% extends "base.html" %}
 {% load static %}
 
+{% block structured_data %}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "{{ tool_title }} — Analizus",
+    "description": "{{ tool_description }}",
+    "applicationCategory": "EducationalApplication",
+    "operatingSystem": "Web",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "TRY" },
+    "url": "https://www.analizus.com/analiz/{{ active_tool }}/"
+}
+</script>
+{% endblock %}
+
 {% block extra_head %}
 <link rel="stylesheet" href="{% static 'css/analiz_console.css' %}">
 {% endblock %}
