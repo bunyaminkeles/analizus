@@ -7,6 +7,7 @@ from functools import wraps
 from .forms import DizinSearchForm, DizinOrderForm
 from .models import DizinSearchJob, DizinOrder
 from .services.job_runner import run_scraping_job
+from tarama_seo_content import TARAMA_SEO_CONTENT
 
 
 def _safe_filename(job, ext: str) -> str:
@@ -142,6 +143,7 @@ def trdizin_landing(request):
         'remaining': remaining,
         'daily_limit': daily_limit,
         'active_job_id': str(active_job.id) if active_job else None,
+        'seo_guide': TARAMA_SEO_CONTENT.get('trdizin'),
     })
 
 
