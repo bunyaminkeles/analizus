@@ -144,4 +144,52 @@ function axClearSession() {
 }
 </script>
 
+{% if seo_guide %}
+<div class="ax-tool-guide">
+  <div class="ax-tool-guide-intro">
+    <p>{{ seo_guide.intro }}</p>
+  </div>
+
+  <div class="ax-tool-guide-sections">
+    <details class="ax-tool-guide-detail">
+      <summary>Ne Zaman Kullanılır?</summary>
+      <p>{{ seo_guide.when_to_use }}</p>
+    </details>
+    <details class="ax-tool-guide-detail">
+      <summary>Varsayımlar</summary>
+      <p>{{ seo_guide.assumptions }}</p>
+    </details>
+    <details class="ax-tool-guide-detail">
+      <summary>Sonuçlar Nasıl Yorumlanır?</summary>
+      <p>{{ seo_guide.how_to_interpret }}</p>
+    </details>
+    <details class="ax-tool-guide-detail">
+      <summary>APA Formatı Örneği</summary>
+      <blockquote class="ax-tool-guide-apa">{{ seo_guide.apa_example }}</blockquote>
+    </details>
+  </div>
+
+  {% if seo_guide.faq %}
+  <div class="ax-tool-guide-faq">
+    <h2 class="ax-tool-guide-faq-title">Sık Sorulan Sorular</h2>
+    {% for item in seo_guide.faq %}
+    <details class="ax-tool-guide-detail">
+      <summary>{{ item.q }}</summary>
+      <p>{{ item.a }}</p>
+    </details>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if seo_guide.related_tools %}
+  <div class="ax-tool-guide-related">
+    <span class="ax-tool-guide-related-label">İlgili Araçlar:</span>
+    {% for slug, name in seo_guide.related_tools %}
+    <a href="/analiz/{{ slug }}/" class="ax-tool-guide-related-link">{{ name }}</a>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+{% endif %}
+
 {% endblock %}

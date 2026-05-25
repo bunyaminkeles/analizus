@@ -6,6 +6,7 @@ from django.conf import settings as django_settings
 from functools import wraps
 
 from .models import IstatistikJob
+from .seo_content import SEO_CONTENT
 
 
 def feature_required(view_func):
@@ -58,6 +59,7 @@ def _console_ctx(active_tool, request=None):
         'active_tool': active_tool,
         'tool_categories': TOOL_CATEGORIES,
         'max_upload_mb': django_settings.MAX_UPLOAD_SIZE // (1024 * 1024),
+        'seo_guide': SEO_CONTENT.get(active_tool),
     }
     if request:
         ctx['session_dataset_name'] = request.session.get('_ax_dataset_name', '')
