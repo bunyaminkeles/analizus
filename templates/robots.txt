@@ -4,6 +4,7 @@
 User-agent: *
 Allow: /
 Disallow: /admin/
+Disallow: /api/
 Disallow: /inbox/
 Disallow: /profile/edit/
 Disallow: /send-message/
