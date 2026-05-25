@@ -105,23 +105,25 @@ curl -o /dev/null -w '%{http_code}' http://localhost/
 ```
 
 ### Manuel Deploy (Kod Değişikliği Sonrası)
+> Kod volume-mount ile container'a bağlı — `--build` GEREKMEZ, sadece restart yeterli.
 ```bash
 git pull origin main
-docker compose up -d --build web
+docker compose restart web && docker compose restart nginx
 ```
 
-### Migration Varsa
+### Migration + Statik Dosya Varsa
 ```bash
 git pull origin main
-docker compose up -d --build web
+docker compose restart web && docker compose restart nginx
 docker compose exec web python manage.py migrate
+docker compose exec web python manage.py collectstatic --noinput
 ```
 
 ### requirements.txt Değişince (Yeni Paket)
-Image'i yeniden build etmek yeterlidir — `--build` bayrağı her zaman requirements'ı günceller:
+> Tek `--build` gereken durum budur — yeni paket image'e eklenmeli.
 ```bash
 git pull origin main
-docker compose up -d --build web
+docker compose up -d --build web && docker compose restart nginx
 ```
 
 ### Servis Yönetimi
@@ -262,6 +264,8 @@ istatistik/                 # İstatistik analiz araçları
 │   ├── lojistik_regresyon.py # Lojistik Regresyon (Logit, statsmodels)
 │   ├── orneklem.py         # Örneklem büyüklüğü hesaplama
 │   ├── data_validator.py   # Veri doğrulama
+│   ├── karar_agaci.py      # Karar Ağacı (sklearn DecisionTreeClassifier, feature_importances_)
+│   ├── svm.py              # Destek Vektör Makinesi (SVC + StandardScaler, permutation_importance)
 │   ├── job_runner.py       # _execute_job, _parse_file, _upload_pdf
 │   └── pdf_fonts.py        # DejaVuSans Türkçe font kaydı (reportlab)
 ├── templates/istatistik/   # Her araç için ayrı HTML şablonu
@@ -330,7 +334,14 @@ CLAUDE.md                   # AI geliştirme kuralları ve görev listesi
 /istatistik/ki-kare/
 /istatistik/lineer-regresyon/
 /istatistik/lojistik-regresyon/
+/istatistik/karar-agaci/
+/istatistik/svm/
 # Her araç için: /istatistik/<araç>/status/<uuid:job_id>/
+
+# forum.urls içindeki mesajlaşma API'leri:
+/api/message/<int:message_id>/edit/              → api_edit_message (POST)
+/api/message/<int:message_id>/delete/            → api_delete_message (POST, soft delete)
+/api/chat/<str:username>/delete-conversation/    → api_delete_conversation (POST, hard delete)
 ```
 
 ---
@@ -425,6 +436,8 @@ class IstatistikJob:
 ```python
 class SiteSettings:      # Singleton (tek kayıt) — feature flag'ler admin'den yönetilir
 class PrivateMessage:    # Kullanıcılar arası DM (attachment: FileField → S3)
+    # edited_at: DateTimeField (null=True) — düzenleme zamanı
+    # is_deleted: BooleanField (default=False) — yumuşak silme; mesaj='' olur, kayıt kalır
 class BlogPost / BlogCategory
 class StudyRoom:         # Çalışma odaları
 class StudyRoomPost:     # Oda mesajları (file: FileField → S3)
@@ -561,6 +574,32 @@ Kullanıcı dosya yükler (CSV/Excel, max 10MB)
 | `lojistik-regresyon/` | `lojistik_regresyon` | lojistik_regresyon.py | Lojistik Regresyon (Binary) |
 | `friedman/` | `friedman` | friedman.py | Friedman Testi (tekrarlayan ölçüm, parametrik olmayan) |
 | `tekrarli-anova/` | `tekrarli_anova` | tekrarli_anova.py | Tekrarlayan Ölçümler ANOVA + Cohen's d post-hoc |
+| `karar-agaci/` | `karar_agaci` | karar_agaci.py | Karar Ağacı Sınıflandırması (DecisionTreeClassifier, feature_importances_) |
+| `svm/` | `svm` | svm.py | Destek Vektör Makinesi (SVC, RBF/Linear/Poly, StandardScaler, permutation importance) |
+
+### Araç Kategorileri (`TOOL_CATEGORIES` — `istatistik/views.py`)
+```python
+('Güvenirlik', ['cronbach'])
+('Tanımlayıcı', ['normallik', 'betimsel', 'korelasyon', 'orneklem'])
+('Karşılaştırma', ['ttesti', 'anova', 'mann_whitney', 'kruskal_wallis', 'ki_kare', 'friedman', 'tekrarli_anova'])
+('Regresyon', ['lineer_regresyon', 'lojistik_regresyon'])
+('Makine Öğrenmesi', ['karar_agaci', 'svm'])
+```
+Her kategori `analiz_console_base.html` sidebar'ında accordion olarak gösterilir.
+
+### Makine Öğrenmesi Araçları (Detay)
+
+**Karar Ağacı (`karar_agaci.py`)**
+- `sklearn.tree.DecisionTreeClassifier`; bağımlı değişken kategorik
+- `clf.feature_importances_` ile doğrudan feature önem sıralaması
+- Çıktı: accuracy, precision, recall, f1, confusion_matrix, feature_importances list, max_depth, n_leaves
+
+**Destek Vektör Makinesi (`svm.py`)**
+- `sklearn.svm.SVC` + `StandardScaler` (ölçekleme zorunlu — karar ağacından farkı)
+- Kernel seçeneği: RBF (varsayılan), Linear, Poly; C parametresi: 0.1–10
+- Feature önemi: `sklearn.inspection.permutation_importance` (model-agnostik; `np.clip(importances, 0, None)` — negatif değer kesilir)
+- Büyük dataset (>5000 satır): 5000 satıra otomatik örnekleme (stratified)
+- Çıktı: accuracy, precision, recall, f1, confusion_matrix, n_support_vectors, feature_importances list, kernel, C
 
 ### Regresyon Araçları (Detay)
 
@@ -633,7 +672,42 @@ Mobil drawer: Her üst gruba accordion. Analizler altında `/analiz/` tek link (
 
 ---
 
-## 13. BİBLİOMETRİK ANALİZ
+## 13. ÖZEL MESAJLAŞMA (DM) — DÜZENLEME / SİLME / SOHBET SİLME
+
+### Model Alanları (PrivateMessage)
+- `edited_at: DateTimeField(null=True, blank=True)` — mesaj düzenlenince doldurulur
+- `is_deleted: BooleanField(default=False)` — yumuşak silme; silinince `message=''` olur, kayıt DB'de kalır
+
+### API Endpoint'leri (`forum/views.py`)
+| Endpoint | İzin | Açıklama |
+|---|---|---|
+| `POST /api/message/<id>/edit/` | Sadece gönderen | `message`, `edited_at` günceller; WS broadcast |
+| `POST /api/message/<id>/delete/` | Sadece gönderen | `is_deleted=True`, `message=''`; WS broadcast |
+| `POST /api/chat/<username>/delete-conversation/` | Giriş yapmış | Broadcast ÖNCE gönderilir, sonra hard delete |
+
+### WebSocket Broadcast Yardımcıları (`forum/views.py`)
+```python
+def _chat_room_name(uid1, uid2):
+    ids = sorted([uid1, uid2])
+    return f'chat_{ids[0]}_{ids[1]}'   # ChatConsumer ile aynı format — önemli
+
+def _broadcast_chat(uid1, uid2, event):
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(_chat_room_name(uid1, uid2), event)
+```
+
+### ChatConsumer Handlers (`forum/consumers.py`)
+Üç yeni handler eklendi — WS event type → handler eşleşmesi:
+- `message_edit` → `message_id`, `message`, `edited_at` gönderir
+- `message_delete` → `message_id` gönderir
+- `conversation_delete` → payload boş; client `/inbox/` adresine yönlendirilir
+
+### Poll API Notu
+`api_chat_poll` endpoint'i `is_deleted=False` filtresi eklenmiştir — silinmiş mesajlar polling ile geri gelmez.
+
+---
+
+## 14. BİBLİOMETRİK ANALİZ
 
 - Desteklenen formatlar: BibTeX (.bib), WoS TSV, Scopus CSV, OpenAlex TXT (otomatik algılama)
 - Çoklu dosya birleştirme
@@ -643,7 +717,7 @@ Mobil drawer: Her üst gruba accordion. Analizler altında `/analiz/` tek link (
 
 ---
 
-## 14. AKADEMİK TARAMA ARAÇLARI
+## 15. AKADEMİK TARAMA ARAÇLARI
 
 ### Scraping Ban Koruması (3 Servis)
 
@@ -689,7 +763,7 @@ Mobil drawer: Her üst gruba accordion. Analizler altında `/analiz/` tek link (
 
 ---
 
-## 15. E-POSTA SİSTEMİ
+## 16. E-POSTA SİSTEMİ
 
 **SMTP:** `mail.analizus.com` (587 TLS veya 465 SSL — settings.py otomatik algılar)
 **Gönderici:** `Analizus <info@analizus.com>`
@@ -718,7 +792,7 @@ Her önemli event'te `bkeles74@gmail.com` adresine bildirim:
 
 ---
 
-## 16. ANALİZBOT VE BİLDİRİM SİSTEMİ
+## 17. ANALİZBOT VE BİLDİRİM SİSTEMİ
 
 **AnalizBot:** Sistem kullanıcısı (`username: AnalizBot`) — otomatik DM göndermek için kullanılır.
 
@@ -742,7 +816,7 @@ Her önemli event'te `bkeles74@gmail.com` adresine bildirim:
 
 ---
 
-## 17. S3 DEPOLAMA YAPISI
+## 18. S3 DEPOLAMA YAPISI
 
 ```
 analizus-files/
@@ -761,7 +835,9 @@ analizus-files/
 │   ├── lineer_regresyon/
 │   ├── lojistik_regresyon/
 │   ├── friedman/
-│   └── tekrarli_anova/
+│   ├── tekrarli_anova/
+│   ├── karar_agaci/
+│   └── svm/
 ├── bibliometrics/
 │   ├── demo/
 │   └── full/
@@ -782,7 +858,7 @@ analizus-files/
 
 ---
 
-## 18. GÜVENLİK VE BOT KORUMASI
+## 19. GÜVENLİK VE BOT KORUMASI
 
 ### Kayıt Formu (`forum/forms.py`)
 1. **Honeypot:** `website` alanı CSS ile gizlenir (`position:absolute; left:-9999px`). Bot doldurursa reddedilir.
@@ -799,7 +875,7 @@ analizus-files/
 
 ---
 
-## 19. ADMIN PANELİ
+## 20. ADMIN PANELİ
 
 - **Tema:** Django Unfold (indigo/koyu tema)
 - **URL:** `/admin/`
@@ -813,7 +889,7 @@ analizus-files/
 
 ---
 
-## 20. HIZMETLER PAZARI İŞ AKIŞLARI
+## 21. HIZMETLER PAZARI İŞ AKIŞLARI
 
 ```
 İlan Aç (status=open)
@@ -834,7 +910,7 @@ Uzman Teklif Verir (proposal status=pending)
 
 ---
 
-## 21. OTURUM YÖNETİMİ
+## 22. OTURUM YÖNETİMİ
 
 ```python
 SESSION_ENGINE = 'django.contrib.sessions.backends.db'
@@ -847,7 +923,7 @@ SESSION_COOKIE_DOMAIN = '.analizus.com'  # Prod'da
 
 ---
 
-## 22. CRON SİSTEMİ
+## 23. CRON SİSTEMİ
 
 - Doğrulama: `X-Cron-Secret` header veya `?secret=` query param
 - Env: `CRON_SECRET_KEY`
@@ -857,7 +933,7 @@ SESSION_COOKIE_DOMAIN = '.analizus.com'  # Prod'da
 
 ---
 
-## 23. GELİŞTİRME ORTAMI
+## 24. GELİŞTİRME ORTAMI
 
 ### Local Kurulum
 ```bash
@@ -889,7 +965,7 @@ with connection.cursor() as c:
 
 ---
 
-## 24. DEĞİŞMEZ KURALLAR (NON-NEGOTIABLES)
+## 25. DEĞİŞMEZ KURALLAR (NON-NEGOTIABLES)
 
 ### Backend
 1. ORM sorgularında `select_related()` / `prefetch_related()` kullan. N+1 sorgu yasaktır.
@@ -925,7 +1001,7 @@ with connection.cursor() as c:
 
 ---
 
-## 25. SIKÇA YAPILAN HATALAR VE ÇÖZÜMLERİ
+## 26. SIKÇA YAPILAN HATALAR VE ÇÖZÜMLERİ
 
 | Hata | Çözüm |
 |---|---|
@@ -952,7 +1028,7 @@ with connection.cursor() as c:
 
 ---
 
-## 26. GÖREV LİSTESİ (Mevcut Durum)
+## 27. GÖREV LİSTESİ (Mevcut Durum)
 
 ### Tamamlananlar
 - Tüm istatistik araçları: Cronbach Alpha, Normallik, Betimsel, Korelasyon, t-Testi, ANOVA, Örneklem
@@ -992,9 +1068,12 @@ with connection.cursor() as c:
 - **Çift mesaj düzeltmesi** (mayıs 2026) — Gönder butonu `type=submit` → `type=button`; `trySend()` tek giriş noktası (buton click + Enter); `messageForm.submit()` fallback (upload hata → ikinci kayıt) kaldırıldı
 - **Gelen Kutusu konuşma listesi** (mayıs 2026) — Sadece alınan değil, gönderilen + alınan tüm konuşmalar listeleniyor (`Q(sender=user) | Q(receiver=user)`); konuşma ortağı dinamik tespit edilir
 - **Inbox "diğerlerini göster"** (mayıs 2026) — İlk 5 konuşma görünür, fazlası `d-none`; "Diğer N konuşmayı göster" butonu tıklanınca sayfa yenilemesiz açılır
+- **Karar Ağacı (ML)** (mayıs 2026) — Unified konsolda "Makine Öğrenmesi" kategorisi altında; `karar_agaci.py`; sklearn DecisionTreeClassifier; feature_importances_ ile önem sıralaması; PDF çıktısı
+- **Destek Vektör Makinesi (SVM)** (mayıs 2026) — `svm.py`; SVC + StandardScaler; RBF/Linear/Poly kernel; C parametresi 0.1–10; permutation_importance (model-agnostik); büyük dataset otomatik örnekleme (5000 satır); PDF çıktısı
+- **Mesaj düzenleme / silme / sohbet silme** (mayıs 2026) — Inline edit (textarea), soft delete (`is_deleted=True, message=''`), conversation hard delete; `_broadcast_chat` + `_chat_room_name` view helper'ları; ChatConsumer'a `message_edit`, `message_delete`, `conversation_delete` handler'ları eklendi; WS broadcast ile karşı taraf anlık güncellenir; poll API `is_deleted=False` filtresi eklendi
 
 ### Sıradaki Görevler
-- **ML Araçları** — Unified konsolda yeni "Makine Öğrenmesi" kategorisi: Karar Ağacı, Rastgele Orman, KNN
+- **ML Araçları** — Rastgele Orman, KNN (Karar Ağacı + SVM tamamlandı)
 - Sosyal kanıt iyileştirmeleri (ana sayfa — çok kolay)
 - Yeni kullanıcı onboarding akışı (Profile.segment alanı — migration gerekli)
 - Analiz araçlarında akıllı hata yönetimi
@@ -1005,4 +1084,4 @@ with connection.cursor() as c:
 
 ---
 
-*Son güncelleme: Mayıs 2026 — Çevrimiçi göstergesi (LastSeenMiddleware + Profile.is_online); çift mesaj düzeltmesi (trySend tek giriş noktası); Gelen Kutusu gönderilen konuşmalar + ilk-5-tıkla-aç; kayıt formu autocomplete. Önceki: Unified Analiz Konsolu (/analiz/) + Akademik Tarama Konsolu (/tarama/); navbar sadeleştirme; OAI-PMH job_queue; AFA sklearn 1.6+ uyumluluğu; session veri seti kalıcılığı (Regresyon araçları)*
+*Son güncelleme: Mayıs 2026 — Karar Ağacı + Destek Vektör Makinesi (SVM) ML araçları eklendi (§12 + §18 S3); mesaj düzenleme/silme/sohbet-silme + anlık WS broadcast (§13 + §8 model alanları). Önceki: Çevrimiçi göstergesi; çift mesaj düzeltmesi; Gelen Kutusu; kayıt formu autocomplete; Unified Analiz Konsolu (/analiz/) + Akademik Tarama Konsolu (/tarama/); navbar sadeleştirme; OAI-PMH job_queue; AFA sklearn 1.6+ uyumluluğu; session veri seti kalıcılığı.*
