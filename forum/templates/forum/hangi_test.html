@@ -3,7 +3,74 @@
 
 {% block title %}Hangi İstatistik Testini Kullanmalıyım? — İnteraktif Karar Ağacı{% endblock %}
 
-{% block meta_description %}Araştırmanıza uygun istatistik testini bulmak için bu interaktif karar ağacını kullanın. t-testi, ANOVA, Ki-kare, Pearson, Spearman, regresyon ve daha fazlası.{% endblock %}
+{% block meta_description %}Tezin için hangi istatistik testini kullanmalısın? Adım adım karar rehberi — t-testi, ANOVA, Ki-Kare, korelasyon, regresyon ve daha fazlası. Ücretsiz online analiz araçlarıyla hemen hesapla.{% endblock %}
+
+{% block structured_data %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "T-testi mi ANOVA mı kullanmalıyım?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "İki grubu karşılaştırıyorsanız t-testi kullanın. Üç veya daha fazla grup söz konusuysa tek yönlü ANOVA tercih edilmelidir. Her iki test de normallik varsayımı gerektirir."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Parametrik mi, parametrik olmayan mı test seçmeliyim?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Verileriniz normal dağılım gösteriyorsa ve örneklem yeterliyse (n ≥ 30) parametrik testler (t-testi, ANOVA) tercih edin. Normallik varsayımı karşılanmıyorsa veya örneklem küçükse parametrik olmayan alternatifler (Mann-Whitney U, Kruskal-Wallis, Wilcoxon) daha güvenilir sonuç verir."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Hangi korelasyon testini kullanmalıyım?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Veriler normal dağılımlıysa Pearson korelasyon katsayısı; ordinal veriler veya normallik ihlali varsa Spearman sıra korelasyonu tercih edilmelidir. Küçük örneklem veya çok sayıda bağ (tied rank) durumunda Kendall tau uygundur."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Kategorik veriler için hangi test kullanılır?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "İki kategorik değişken arasındaki ilişkiyi test etmek için Ki-Kare Bağımsızlık Testi kullanılır. Hücre frekansları küçükse (beklenen < 5) Fisher's Exact Test tercih edilmelidir."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Öntest-sontest tasarımında hangi test uygulanır?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Aynı gruba iki ölçüm yapıldıysa bağımlı örneklem t-testi (eşleştirilmiş t-testi) kullanın. Normallik varsayımı karşılanmıyorsa Wilcoxon İşaret Testi tercih edin. Üç veya daha fazla ölçüm noktası varsa Tekrarlı Ölçümler ANOVA veya Friedman Testi uygulanmalıdır."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Ölçek güvenilirliği için hangi analiz yapılır?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Anket veya ölçeğin iç tutarlılığını ölçmek için Cronbach Alfa katsayısı hesaplanır. α ≥ 0.70 kabul edilebilir, α ≥ 0.80 iyi, α ≥ 0.90 mükemmel güvenilirlik göstergesidir."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Sürekli bir bağımlı değişkeni tahmin etmek için hangi analiz kullanılır?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Tek bağımsız değişkenle basit doğrusal regresyon, birden fazla bağımsız değişkenle çoklu doğrusal regresyon kullanın. Bağımlı değişken ikili kategorikse (0/1) lojistik regresyon tercih edilmelidir."
+      }
+    }
+  ]
+}
+</script>
+{% endblock %}
 
 {% block content %}
 <div class="container py-4" style="max-width:860px;">
@@ -90,54 +157,79 @@
   <!-- Bilgi kutuları (sayfanın altında SEO için) -->
   <div class="row g-3 mt-5">
     <div class="col-12">
-      <h5 class="ax-text-main fw-semibold mb-3">Popüler Testler Hakkında Kısa Bilgi</h5>
+      <h2 class="ax-text-main fw-semibold mb-1" style="font-size:1.1rem;">Testler Hakkında Kısa Bilgi</h2>
+      <p class="ax-text-muted small mb-3">Karar ağacının önerdiği testi Analizus'ta ücretsiz olarak çalıştırabilirsiniz.</p>
     </div>
     <div class="col-md-6">
-      <div class="ax-card p-3">
-        <h6 class="ax-text-primary fw-semibold mb-2">
-          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" class="me-2" viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></svg> t-Testi Nedir?
-        </h6>
-        <p class="ax-text-muted small mb-0">İki grup ortalamasını karşılaştırmak için kullanılır. Bağımsız örneklem t-testi farklı grupları, bağımlı örneklem t-testi aynı grubun iki ölçümünü karşılaştırır. Normal dağılım varsayımı gerektirir.</p>
+      <div class="ax-card p-3 h-100 d-flex flex-column">
+        <h3 class="ax-text-primary fw-semibold mb-2" style="font-size:.95rem;">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" class="me-2" viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>T-Testi
+        </h3>
+        <p class="ax-text-muted small mb-2 flex-grow-1">İki grup ortalamasını karşılaştırmak için kullanılır. Bağımsız örneklem t-testi farklı grupları, bağımlı örneklem t-testi aynı grubun iki ölçümünü karşılaştırır. Normallik varsayımı gerektirir.</p>
+        <a href="/analiz/ttesti/" class="ax-btn ax-btn-outline-primary ax-btn-sm mt-auto" style="font-size:.78rem;">Analizus'ta Hesapla →</a>
       </div>
     </div>
     <div class="col-md-6">
-      <div class="ax-card p-3">
-        <h6 class="ax-text-success fw-semibold mb-2">
-          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" class="me-2" viewBox="0 0 24 24"><path d="M18 20v-5M12 20v-9M6 20V4"/></svg> ANOVA Nedir?
-        </h6>
-        <p class="ax-text-muted small mb-0">Üç veya daha fazla grubun ortalamalarını eş zamanlı karşılaştırır. Tek yönlü ANOVA bir faktörü, iki yönlü ANOVA iki faktörü inceler. Fark bulunursa post-hoc testleri gerekir.</p>
+      <div class="ax-card p-3 h-100 d-flex flex-column">
+        <h3 class="ax-text-success fw-semibold mb-2" style="font-size:.95rem;">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" class="me-2" viewBox="0 0 24 24"><path d="M18 20v-5M12 20v-9M6 20V4"/></svg>Tek Yönlü ANOVA
+        </h3>
+        <p class="ax-text-muted small mb-2 flex-grow-1">Üç veya daha fazla bağımsız grubun ortalamalarını karşılaştırır. Anlamlı F sonrasında Tukey veya Bonferroni post-hoc testleri hangi grupların farklılaştığını belirler.</p>
+        <a href="/analiz/anova/" class="ax-btn ax-btn-outline-primary ax-btn-sm mt-auto" style="font-size:.78rem;">Analizus'ta Hesapla →</a>
       </div>
     </div>
     <div class="col-md-6">
-      <div class="ax-card p-3">
-        <h6 class="ax-text-warning fw-semibold mb-2">
-          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" class="me-2" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg> Korelasyon Nedir?
-        </h6>
-        <p class="ax-text-muted small mb-0">İki değişken arasındaki ilişkinin yönünü ve gücünü ölçer. Pearson parametrik (normal dağılım), Spearman parametrik olmayan (sıralı veri) korelasyon testidir.</p>
+      <div class="ax-card p-3 h-100 d-flex flex-column">
+        <h3 class="ax-text-warning fw-semibold mb-2" style="font-size:.95rem;">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" class="me-2" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>Korelasyon Analizi
+        </h3>
+        <p class="ax-text-muted small mb-2 flex-grow-1">İki değişken arasındaki ilişkinin yönünü ve gücünü ölçer. Pearson parametrik (normal dağılım); Spearman, Kendall parametrik olmayan (sıralı veri) korelasyon testleridir.</p>
+        <a href="/analiz/korelasyon/" class="ax-btn ax-btn-outline-primary ax-btn-sm mt-auto" style="font-size:.78rem;">Analizus'ta Hesapla →</a>
       </div>
     </div>
     <div class="col-md-6">
-      <div class="ax-card p-3">
-        <h6 class="ax-text-info fw-semibold mb-2">
-          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" class="me-2" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="m19 5-5 5-4-4-3 3"/></svg> Regresyon Nedir?
-        </h6>
-        <p class="ax-text-muted small mb-0">Bir değişkeni başka değişkenlerle tahmin etmek için kullanılır. Basit lineer regresyon tek bağımsız değişken, çoklu regresyon birden fazla bağımsız değişkenle çalışır.</p>
+      <div class="ax-card p-3 h-100 d-flex flex-column">
+        <h3 class="ax-text-info fw-semibold mb-2" style="font-size:.95rem;">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" class="me-2" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="m19 5-5 5-4-4-3 3"/></svg>Doğrusal Regresyon
+        </h3>
+        <p class="ax-text-muted small mb-2 flex-grow-1">Sürekli bir bağımlı değişkeni bir veya daha fazla bağımsız değişkenle tahmin eder. R², β katsayıları ve VIF ile çoklu doğrusallık kontrolü raporlanır.</p>
+        <a href="/analiz/lineer-regresyon/" class="ax-btn ax-btn-outline-primary ax-btn-sm mt-auto" style="font-size:.78rem;">Analizus'ta Hesapla →</a>
       </div>
     </div>
     <div class="col-md-6">
-      <div class="ax-card p-3">
-        <h6 class="ax-text-primary fw-semibold mb-2">
-          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" class="me-2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> Faktör Analizi (AFA) Nedir?
-        </h6>
-        <p class="ax-text-muted small mb-0">Çok sayıda değişkenin ardında yatan gizli faktörleri ortaya koyar. Ölçek geçerliği için KMO testi (≥ .60), Bartlett küresellik testi (p &lt; .05) ve faktör yük matrisi incelenir.</p>
+      <div class="ax-card p-3 h-100 d-flex flex-column">
+        <h3 class="ax-text-warning fw-semibold mb-2" style="font-size:.95rem;">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" class="me-2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg>Ki-Kare Testi
+        </h3>
+        <p class="ax-text-muted small mb-2 flex-grow-1">İki kategorik değişken arasındaki ilişkiyi test eder. Beklenen hücre frekansı 5'in altında olduğunda Fisher's Exact Test otomatik devreye girer.</p>
+        <a href="/analiz/ki-kare/" class="ax-btn ax-btn-outline-primary ax-btn-sm mt-auto" style="font-size:.78rem;">Analizus'ta Hesapla →</a>
       </div>
     </div>
     <div class="col-md-6">
-      <div class="ax-card p-3">
-        <h6 class="ax-text-warning fw-semibold mb-2">
-          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" class="me-2" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg> Wilcoxon Testi Nedir?
-        </h6>
-        <p class="ax-text-muted small mb-0">İki bağımlı (eşleştirilmiş) ölçümü karşılaştıran non-parametrik testtir. Bağımlı t-testinin normallik varsayımını karşılayamadığında tercih edilir. Ön test–son test karşılaştırmaları için idealdir.</p>
+      <div class="ax-card p-3 h-100 d-flex flex-column">
+        <h3 class="ax-text-primary fw-semibold mb-2" style="font-size:.95rem;">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" class="me-2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>Açıklayıcı Faktör Analizi
+        </h3>
+        <p class="ax-text-muted small mb-2 flex-grow-1">Çok sayıda değişkenin ardında yatan gizli faktörleri ortaya koyar. Ölçek geçerliği için KMO (≥ .60), Bartlett testi (p &lt; .05) ve faktör yük matrisi incelenir.</p>
+        <a href="/analiz/afa/" class="ax-btn ax-btn-outline-primary ax-btn-sm mt-auto" style="font-size:.78rem;">Analizus'ta Hesapla →</a>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="ax-card p-3 h-100 d-flex flex-column">
+        <h3 class="ax-text-warning fw-semibold mb-2" style="font-size:.95rem;">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" class="me-2" viewBox="0 0 24 24"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg>Wilcoxon Testi
+        </h3>
+        <p class="ax-text-muted small mb-2 flex-grow-1">İki bağımlı ölçümü karşılaştıran parametrik olmayan testtir. Bağımlı t-testinin normallik varsayımı karşılanamadığında tercih edilir. Öntest-sontest tasarımları için idealdir.</p>
+        <a href="/analiz/wilcoxon/" class="ax-btn ax-btn-outline-primary ax-btn-sm mt-auto" style="font-size:.78rem;">Analizus'ta Hesapla →</a>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="ax-card p-3 h-100 d-flex flex-column">
+        <h3 class="ax-text-success fw-semibold mb-2" style="font-size:.95rem;">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" class="me-2" viewBox="0 0 24 24"><path d="m9 11 3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>Cronbach Alfa
+        </h3>
+        <p class="ax-text-muted small mb-2 flex-grow-1">Anket veya ölçeğin iç tutarlılığını ölçer. α ≥ 0.70 kabul edilebilir, α ≥ 0.80 iyi düzey. Tez ve makale çalışmalarında ölçek güvenilirlik kanıtı olarak raporlanır.</p>
+        <a href="/analiz/cronbach/" class="ax-btn ax-btn-outline-primary ax-btn-sm mt-auto" style="font-size:.78rem;">Analizus'ta Hesapla →</a>
       </div>
     </div>
   </div>
@@ -338,7 +430,7 @@ const TREE = {
     result: true,
     icon: SVGS.ttest,
     title: "Bağımsız Örneklem t-Testi",
-    tool_url: "/istatistik/ttesti/",
+    tool_url: "/analiz/ttesti/",
     desc: "Birbirinden bağımsız iki grubun ortalamasını karşılaştırmak için kullanılan parametrik testtir.",
     conditions: [
       "Bağımlı değişken sürekli/sayısal",
@@ -355,7 +447,7 @@ const TREE = {
     result: true,
     icon: SVGS.nonparametric,
     title: "Mann-Whitney U Testi",
-    tool_url: "/istatistik/mann-whitney/",
+    tool_url: "/analiz/mann-whitney/",
     desc: "Normal dağılım varsayımını karşılamayan iki bağımsız grubun medyanlarını karşılaştıran non-parametrik alternatiftir.",
     conditions: [
       "Bağımlı değişken sürekli veya sıralı (ordinal)",
@@ -371,7 +463,7 @@ const TREE = {
     result: true,
     icon: SVGS.ttest,
     title: "Bağımlı Örneklem t-Testi (Eşleştirilmiş)",
-    tool_url: "/istatistik/ttesti/",
+    tool_url: "/analiz/ttesti/",
     desc: "Aynı grubun iki farklı zamandaki veya iki eşleştirilmiş grubun ortalamalarını karşılaştırır.",
     conditions: [
       "Aynı kişilerden iki ölçüm (ön-test/son-test) veya eşleştirilmiş çiftler",
@@ -387,7 +479,7 @@ const TREE = {
     result: true,
     icon: SVGS.nonparametric,
     title: "Wilcoxon İşaret Testi",
-    tool_url: "/istatistik/wilcoxon/",
+    tool_url: "/analiz/wilcoxon/",
     desc: "Bağımlı t-testinin non-parametrik alternatifi; normal dağılım yoksa aynı kişinin iki ölçümünü karşılaştırır.",
     conditions: [
       "Aynı kişilerden iki ölçüm",
@@ -403,7 +495,7 @@ const TREE = {
     result: true,
     icon: SVGS.anova,
     title: "Tek Yönlü ANOVA",
-    tool_url: "/istatistik/anova/",
+    tool_url: "/analiz/anova/",
     desc: "Üç veya daha fazla bağımsız grubun ortalamasını eş zamanlı karşılaştıran parametrik testtir.",
     conditions: [
       "3+ bağımsız grup",
@@ -421,7 +513,7 @@ const TREE = {
     result: true,
     icon: SVGS.nonparametric,
     title: "Kruskal-Wallis Testi",
-    tool_url: "/istatistik/kruskal-wallis/",
+    tool_url: "/analiz/kruskal-wallis/",
     desc: "ANOVA'nın non-parametrik alternatifi; 3+ bağımsız grubun medyanlarını karşılaştırır.",
     conditions: [
       "3+ bağımsız grup",
@@ -437,7 +529,7 @@ const TREE = {
     result: true,
     icon: SVGS.anova,
     title: "Tekrarlı Ölçümler ANOVA",
-    tool_url: "/istatistik/tekrarli-anova/",
+    tool_url: "/analiz/tekrarli-anova/",
     desc: "Aynı kişilerin üç veya daha fazla farklı zaman noktasındaki/koşuldaki ortalamalarını karşılaştırır.",
     conditions: [
       "Aynı kişilerden 3+ tekrarlı ölçüm",
@@ -453,7 +545,7 @@ const TREE = {
     result: true,
     icon: SVGS.nonparametric,
     title: "Friedman Testi",
-    tool_url: "/istatistik/friedman/",
+    tool_url: "/analiz/friedman/",
     desc: "Tekrarlı ölçümler ANOVA'nın non-parametrik alternatifi; 3+ tekrarlı ölçümü karşılaştırır.",
     conditions: [
       "Aynı kişilerden 3+ tekrarlı ölçüm",
@@ -469,7 +561,7 @@ const TREE = {
     result: true,
     icon: SVGS.correlation,
     title: "Pearson Korelasyon Katsayısı",
-    tool_url: "/istatistik/korelasyon/",
+    tool_url: "/analiz/korelasyon/",
     desc: "İki sürekli değişken arasındaki doğrusal ilişkinin yönünü ve gücünü ölçen parametrik testtir.",
     conditions: [
       "Her iki değişken de sürekli/sayısal",
@@ -485,7 +577,7 @@ const TREE = {
     result: true,
     icon: SVGS.correlation,
     title: "Spearman Sıra Korelasyonu",
-    tool_url: "/istatistik/korelasyon/",
+    tool_url: "/analiz/korelasyon/",
     desc: "Normal dağılım gerektirmeyen, sıralı veya sürekli değişkenler için ilişki katsayısı.",
     conditions: [
       "Sürekli veya sıralı (Likert, ordinal) değişkenler",
@@ -501,7 +593,7 @@ const TREE = {
     result: true,
     icon: SVGS.chisquare,
     title: "Ki-Kare Bağımsızlık Testi",
-    tool_url: "/istatistik/ki-kare/",
+    tool_url: "/analiz/ki-kare/",
     desc: "İki kategorik değişken arasında istatistiksel bir ilişki olup olmadığını test eder.",
     conditions: [
       "Her iki değişken de kategorik (nominal veya ordinal)",
@@ -517,7 +609,7 @@ const TREE = {
     result: true,
     icon: SVGS.regression,
     title: "Basit Doğrusal Regresyon",
-    tool_url: "/istatistik/lineer-regresyon/",
+    tool_url: "/analiz/lineer-regresyon/",
     desc: "Tek bağımsız değişkenle sürekli bir bağımlı değişkeni tahmin eden parametrik analiz.",
     conditions: [
       "1 bağımsız + 1 sürekli bağımlı değişken",
@@ -534,7 +626,7 @@ const TREE = {
     result: true,
     icon: SVGS.regression,
     title: "Çoklu Doğrusal Regresyon",
-    tool_url: "/istatistik/lineer-regresyon/",
+    tool_url: "/analiz/lineer-regresyon/",
     desc: "Birden fazla bağımsız değişkenle sürekli bir bağımlı değişkeni tahmin eden parametrik analiz.",
     conditions: [
       "2+ bağımsız + 1 sürekli bağımlı değişken",
@@ -551,7 +643,7 @@ const TREE = {
     result: true,
     icon: SVGS.regression,
     title: "Lojistik Regresyon",
-    tool_url: "/istatistik/lojistik-regresyon/",
+    tool_url: "/analiz/lojistik-regresyon/",
     desc: "İkili (0/1) kategorik bağımlı değişkeni tahmin etmek için kullanılır; bir olayın gerçekleşme olasılığını modeller.",
     conditions: [
       "Bağımlı değişken ikili (evet/hayır, 0/1)",
@@ -580,7 +672,7 @@ const TREE = {
   },
   r_cronbach: {
     result: true,
-    tool_url: "/istatistik/cronbach/",
+    tool_url: "/analiz/cronbach/",
     icon: SVGS.reliability,
     title: "Cronbach's Alpha (İç Tutarlılık)",
     desc: "Bir ölçeğin veya anketin maddelerinin birbiriyle ne kadar tutarlı olduğunu ölçen güvenilirlik katsayısı.",
@@ -598,7 +690,7 @@ const TREE = {
     result: true,
     icon: SVGS.reliability,
     title: "Açıklayıcı Faktör Analizi (AFA)",
-    tool_url: "/istatistik/afa/",
+    tool_url: "/analiz/afa/",
     desc: "Çok sayıda değişken arasındaki örüntülerden gizli faktör yapılarını keşfetmek için kullanılır.",
     conditions: [
       "Faktör yapısı önceden bilinmiyor veya keşfedilmek isteniyor",
@@ -627,7 +719,7 @@ const TREE = {
   },
   r_normallik: {
     result: true,
-    tool_url: "/istatistik/normallik/",
+    tool_url: "/analiz/normallik/",
     icon: SVGS.normal,
     title: "Normallik Testi (Shapiro-Wilk / K-S)",
     desc: "Bir veri setinin normal dağılıma uyup uymadığını test eder. Diğer parametrik testler için ön koşuldur.",
@@ -643,7 +735,7 @@ const TREE = {
   },
   r_tanimsal: {
     result: true,
-    tool_url: "/istatistik/betimsel/",
+    tool_url: "/analiz/betimsel/",
     icon: SVGS.descriptive,
     title: "Betimsel / Tanımlayıcı İstatistikler",
     desc: "Veriyi özetlemek için ortalama, medyan, standart sapma, min-max, frekans gibi istatistikler hesaplanır.",
