@@ -41,7 +41,7 @@
           {% endif %}
         </div>
         <h2 class="text-white fw-bold mb-2" style="font-size:1.3rem;">{{ room.title }}</h2>
-        <p class="text-white-50 small mb-3" style="line-height:1.6;">{{ room.description }}</p>
+        <p class="text-white-50 small mb-3" style="line-height:1.6;white-space:pre-wrap;">{{ room.description }}</p>
         <div class="d-inline-flex gap-2 align-items-start p-2 rounded mb-3" style="background:rgba(255,255,255,0.04);">
           <i class="bi bi-bullseye text-warning mt-1 flex-shrink-0"></i>
           <div>
@@ -116,12 +116,20 @@
 
         {% if membership.role == 'creator' and room.status != 'archived' and room.status != 'rejected' %}
         <div class="mb-2">
-          <div class="input-group input-group-sm">
-            <input type="text" id="invite-input" class="form-control bg-dark text-white border-secondary"
-                   placeholder="Kullanıcı adı..." style="font-size:.8rem;">
-            <button class="btn btn-outline-warning btn-sm" onclick="inviteMember('{{ room.slug }}')">
-              <i class="bi bi-person-plus"></i>
-            </button>
+          <div class="position-relative">
+            <div class="input-group input-group-sm">
+              <input type="text" id="invite-input" class="form-control bg-dark text-white border-secondary"
+                     placeholder="@kullanıcı adı..." style="font-size:.8rem;" autocomplete="off">
+              <button class="btn btn-outline-warning btn-sm" onclick="inviteMember('{{ room.slug }}')">
+                <i class="bi bi-person-plus"></i>
+              </button>
+            </div>
+            <div id="invite-mention-dropdown"
+                 style="display:none;position:absolute;top:calc(100% + 2px);left:0;right:0;
+                        background:#0f172a;border:1px solid rgba(99,102,241,0.4);border-radius:8px;
+                        max-height:160px;overflow-y:auto;z-index:1060;
+                        box-shadow:0 4px 16px rgba(0,0,0,0.5);">
+            </div>
           </div>
           <div id="invite-msg" class="small mt-1" style="display:none;font-size:.75rem;"></div>
         </div>
@@ -558,7 +566,8 @@ function sendPost(slug) {
 
 function inviteMember(slug) {
   const input = document.getElementById('invite-input');
-  const username = input.value.trim();
+  const raw = input.value.trim();
+  const username = raw.startsWith('@') ? raw.slice(1) : raw;
   const msgEl = document.getElementById('invite-msg');
   if (!username) return;
   fetch(`/odalar/${slug}/davet/`, {
@@ -581,6 +590,85 @@ function inviteMember(slug) {
     }
   });
 }
+
+// @mention autocomplete — invite-input için
+(function() {
+  const input = document.getElementById('invite-input');
+  const dropdown = document.getElementById('invite-mention-dropdown');
+  if (!input || !dropdown) return;
+
+  let activeIdx = -1;
+  let debounceTimer = null;
+
+  function getItems() { return dropdown.querySelectorAll('.inv-item'); }
+
+  function showDropdown(users) {
+    if (!users.length) { dropdown.style.display = 'none'; return; }
+    dropdown.innerHTML = users.map(u => {
+      const avatar = u.avatar_url
+        ? `<img src="${u.avatar_url}" style="width:24px;height:24px;border-radius:50%;object-fit:cover;flex-shrink:0;">`
+        : `<div style="width:24px;height:24px;border-radius:50%;background:#1e3a5f;border:1px solid rgba(255,255,255,0.1);
+                       display:flex;align-items:center;justify-content:center;font-size:.6rem;font-weight:700;
+                       color:#818cf8;flex-shrink:0;">${u.username[0].toUpperCase()}</div>`;
+      return `<div class="inv-item d-flex align-items-center gap-2 px-3 py-2"
+                   data-username="${u.username}"
+                   style="cursor:pointer;font-size:.8rem;color:rgba(255,255,255,0.85);"
+                   onmousedown="inviteSelectUser('${u.username}')"
+                   onmouseover="this.style.background='rgba(99,102,241,0.18)'"
+                   onmouseout="this.style.background=''">
+               ${avatar}
+               <div>
+                 <div style="font-weight:600;">@${u.username}</div>
+                 ${u.rank ? `<div style="font-size:.66rem;color:rgba(255,255,255,0.4);">${u.rank}</div>` : ''}
+               </div>
+             </div>`;
+    }).join('');
+    dropdown.style.display = 'block';
+    activeIdx = -1;
+  }
+
+  function fetchInviteUsers(query) {
+    fetch(`/api/users/search/?q=${encodeURIComponent(query)}`)
+      .then(r => r.json())
+      .then(data => showDropdown(data.users || []))
+      .catch(() => { dropdown.style.display = 'none'; });
+  }
+
+  input.addEventListener('input', () => {
+    const raw = input.value.trim();
+    const query = raw.startsWith('@') ? raw.slice(1) : raw;
+    if (query.length < 1) { dropdown.style.display = 'none'; return; }
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => fetchInviteUsers(query), 250);
+  });
+
+  input.addEventListener('keydown', e => {
+    if (dropdown.style.display === 'none') return;
+    const items = getItems();
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      activeIdx = Math.min(activeIdx + 1, items.length - 1);
+      items.forEach((el, i) => el.style.background = i === activeIdx ? 'rgba(99,102,241,0.18)' : '');
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      activeIdx = Math.max(activeIdx - 1, 0);
+      items.forEach((el, i) => el.style.background = i === activeIdx ? 'rgba(99,102,241,0.18)' : '');
+    } else if ((e.key === 'Enter' || e.key === 'Tab') && activeIdx >= 0) {
+      e.preventDefault();
+      inviteSelectUser(items[activeIdx].dataset.username);
+    } else if (e.key === 'Escape') {
+      dropdown.style.display = 'none';
+    }
+  });
+
+  input.addEventListener('blur', () => setTimeout(() => { dropdown.style.display = 'none'; }, 200));
+
+  window.inviteSelectUser = function(username) {
+    input.value = '@' + username;
+    dropdown.style.display = 'none';
+    input.focus();
+  };
+})();
 
 function copyRoomLink() {
   const url = window.location.origin + '{{ room.get_absolute_url }}';
