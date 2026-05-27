@@ -128,6 +128,9 @@
                                             <small class="text-muted d-block mt-1" style="font-size: 0.65rem;">
                                                 {{ msg.created_at|timesince }} önce
                                                 {% if msg.edited_at %}<span class="ms-1" title="{{ msg.edited_at }}">(düzenlendi)</span>{% endif %}
+                                                {% if msg.sender == request.user %}
+                                                <span id="read-{{ msg.id }}" class="read-receipt {% if msg.is_read %}read-receipt-seen{% else %}read-receipt-sent{% endif %}">{% if msg.is_read %}✓✓{% else %}✓{% endif %}</span>
+                                                {% endif %}
                                             </small>
                                         </div>
                                     </div>
@@ -217,6 +220,11 @@
     }
     .msg-wrap:hover .msg-actions { display: flex; }
     .msg-actions .btn { line-height: 1; }
+
+    /* Okundu göstergesi */
+    .read-receipt { font-size: 0.6rem; margin-left: 4px; }
+    .read-receipt-sent { color: rgba(255,255,255,0.35); }
+    .read-receipt-seen { color: #00d2ff; }
 
     /* Inline edit alanı */
     .msg-edit-area {
@@ -358,6 +366,19 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             } else if (data.type === 'conversation_delete') {
                 window.location.href = '/inbox/';
+            } else if (data.type === 'messages_read') {
+                if (data.reader_id !== currentUserId) {
+                    document.querySelectorAll('.msg-row[data-own="1"]').forEach(row => {
+                        const id = parseInt(row.dataset.msgId);
+                        if (id && id <= data.up_to_id) {
+                            const el = document.getElementById('read-' + id);
+                            if (el && !el.classList.contains('read-receipt-seen')) {
+                                el.className = 'read-receipt read-receipt-seen';
+                                el.textContent = '✓✓';
+                            }
+                        }
+                    });
+                }
             }
         };
 
@@ -506,7 +527,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             : 'background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(255, 255, 255, 0.15);'}">
                         ${data.message ? `<p class="mb-1 small" ${msgId ? `id="msg-text-${msgId}"` : ''}>${linkifyUrls(renderMentions(escapeHtml(data.message)))}</p>` : ''}
                         ${data.attachment_url ? getAttachmentHtml(data) : ''}
-                        <small class="text-muted d-block mt-1" style="font-size: 0.65rem;">${data.timestamp}</small>
+                        <small class="text-muted d-block mt-1" style="font-size: 0.65rem;">${data.timestamp}${isOwn && msgId ? `<span id="read-${msgId}" class="read-receipt read-receipt-sent">✓</span>` : ''}</small>
                     </div>
                 </div>
             </div>

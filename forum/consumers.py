@@ -37,6 +37,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_add(self.room_name, self.channel_name)
         await self.accept()
 
+        # Karşı tarafın gönderdiği okunmamış mesajları okundu yap ve bildirimi gönder
+        read_up_to = await self.mark_messages_read()
+        if read_up_to:
+            await self.channel_layer.group_send(self.room_name, {
+                'type': 'messages_read',
+                'reader_id': self.user.id,
+                'up_to_id': read_up_to,
+            })
+
     async def disconnect(self, close_code):
         if hasattr(self, 'room_name'):
             await self.channel_layer.group_discard(self.room_name, self.channel_name)
@@ -85,6 +94,15 @@ class ChatConsumer(AsyncWebsocketConsumer):
             'is_own': event['sender_id'] == self.user.id,
         }))
 
+        # Alıcı sohbetteyse mesajı hemen okundu say
+        if event['sender_id'] != self.user.id:
+            await self.mark_single_message_read(event['message_id'])
+            await self.channel_layer.group_send(self.room_name, {
+                'type': 'messages_read',
+                'reader_id': self.user.id,
+                'up_to_id': event['message_id'],
+            })
+
     async def message_edit(self, event):
         await self.send(text_data=json.dumps({
             'type': 'message_edit',
@@ -103,6 +121,35 @@ class ChatConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({
             'type': 'conversation_delete',
         }))
+
+    async def messages_read(self, event):
+        await self.send(text_data=json.dumps({
+            'type': 'messages_read',
+            'reader_id': event['reader_id'],
+            'up_to_id': event['up_to_id'],
+        }))
+
+    @database_sync_to_async
+    def mark_messages_read(self):
+        from .models import PrivateMessage
+        qs = PrivateMessage.objects.filter(
+            sender=self.other_user,
+            receiver=self.user,
+            is_read=False,
+        )
+        last_id = qs.order_by('-id').values_list('id', flat=True).first()
+        if last_id:
+            qs.update(is_read=True)
+        return last_id
+
+    @database_sync_to_async
+    def mark_single_message_read(self, message_id):
+        from .models import PrivateMessage
+        PrivateMessage.objects.filter(
+            id=message_id,
+            receiver=self.user,
+            is_read=False,
+        ).update(is_read=True)
 
     @database_sync_to_async
     def get_user(self, username):
