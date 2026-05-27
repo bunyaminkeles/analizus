@@ -455,6 +455,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 seenMessageIds.add(data.id);
                 lastMessageId = Math.max(lastMessageId, data.id);
                 appendMessage({
+                    id: data.id,
                     message: message,
                     sender_id: currentUserId,
                     timestamp: new Date().toLocaleTimeString('tr-TR', {hour: '2-digit', minute: '2-digit'}),
