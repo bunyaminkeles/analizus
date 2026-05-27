@@ -954,6 +954,10 @@ python manage.py collectstatic     # Statik dosyaları topla
 python manage.py shell             # Django shell
 python manage.py test              # Test suite (pytest-django)
 
+# Test kullanıcıları (lokal SQLite'ta mevcut — prod'a gönderilmedi)
+# testuser_a / testuser_b  →  şifre: testpass123  →  DM okundu göstergesi testi için oluşturuldu
+# Kullanım: python manage.py shell → User.objects.get(username='testuser_a')
+
 # Ratelimit cache'ini temizle (geliştirme sırasında limit dolunca)
 python manage.py shell -c "
 from django.db import connection
@@ -1071,12 +1075,13 @@ with connection.cursor() as c:
 - **Karar Ağacı (ML)** (mayıs 2026) — Unified konsolda "Makine Öğrenmesi" kategorisi altında; `karar_agaci.py`; sklearn DecisionTreeClassifier; feature_importances_ ile önem sıralaması; PDF çıktısı
 - **Destek Vektör Makinesi (SVM)** (mayıs 2026) — `svm.py`; SVC + StandardScaler; RBF/Linear/Poly kernel; C parametresi 0.1–10; permutation_importance (model-agnostik); büyük dataset otomatik örnekleme (5000 satır); PDF çıktısı
 - **Mesaj düzenleme / silme / sohbet silme** (mayıs 2026) — Inline edit (textarea), soft delete (`is_deleted=True, message=''`), conversation hard delete; `_broadcast_chat` + `_chat_room_name` view helper'ları; ChatConsumer'a `message_edit`, `message_delete`, `conversation_delete` handler'ları eklendi; WS broadcast ile karşı taraf anlık güncellenir; poll API `is_deleted=False` filtresi eklendi
+- **DM okundu göstergesi** (mayıs 2026) — Gönderen kendi mesajı altında `✓` (gri, iletildi) veya `✓✓` (cyan, okundu) görür; `consumers.py`'de `connect` + `chat_message` handler'ında `mark_messages_read` / `mark_single_message_read` DB çağrısı + `messages_read` WS event broadcast; `send_message.html`'de template (mevcut mesajlar) ve `appendMessage` JS (yeni mesajlar) güncellendi; JS `messages_read` event handler `data-own="1"` mesajlarını anlık günceller
 
 ### Sıradaki Görevler
 - **ML Araçları** — Rastgele Orman, KNN (Karar Ağacı + SVM tamamlandı)
 - Sosyal kanıt iyileştirmeleri (ana sayfa — çok kolay)
-- Yeni kullanıcı onboarding akışı (Profile.segment alanı — migration gerekli)
-- Analiz araçlarında akıllı hata yönetimi
+- Yeni kullanıcı onboarding akışı — altyapı hazır (migration `0067_profile_onboarding`; `segment`, `onboarding_completed`, `onboarding_interests`, `onboarding_tools` alanları + `/onboarding/` view mevcut); toplanan veri henüz kullanıcı deneyimine yansıtılmıyor; **pasif bekliyor**
+- Analiz araçlarında akıllı hata yönetimi — `data_validator.py` mevcut ama yalnızca Cronbach'ta aktif; araç bazlı ön kontrol + Türkçe hata mesajları eksik; **pasif bekliyor**
 - Blog içerik altyapısı iyileştirmeleri
 - Admin analytics dashboard
 - Gamification genişletmesi
@@ -1084,4 +1089,4 @@ with connection.cursor() as c:
 
 ---
 
-*Son güncelleme: Mayıs 2026 — Karar Ağacı + Destek Vektör Makinesi (SVM) ML araçları eklendi (§12 + §18 S3); mesaj düzenleme/silme/sohbet-silme + anlık WS broadcast (§13 + §8 model alanları). Önceki: Çevrimiçi göstergesi; çift mesaj düzeltmesi; Gelen Kutusu; kayıt formu autocomplete; Unified Analiz Konsolu (/analiz/) + Akademik Tarama Konsolu (/tarama/); navbar sadeleştirme; OAI-PMH job_queue; AFA sklearn 1.6+ uyumluluğu; session veri seti kalıcılığı.*
+*Son güncelleme: Mayıs 2026 — DM okundu göstergesi (✓/✓✓, WS gerçek zamanlı); onboarding + akıllı hata yönetimi pasif bırakıldı (altyapı hazır, veri kullanılmıyor). Önceki: Karar Ağacı + SVM ML araçları; mesaj düzenleme/silme/sohbet-silme; çevrimiçi göstergesi; Gelen Kutusu; Unified Analiz Konsolu; navbar sadeleştirme; OAI-PMH job_queue; AFA sklearn 1.6+ uyumluluğu; session veri seti kalıcılığı.*
