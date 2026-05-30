@@ -90,7 +90,12 @@ def bibliometrics_landing(request):
         for uf in uploaded_files:
             try:
                 _validate_file(uf)
-                content = uf.read().decode('utf-8', errors='replace')
+                raw = uf.read()
+                if uf.name.lower().endswith('.xlsx'):
+                    from .services.parser import xlsx_bytes_to_csv_text
+                    content = xlsx_bytes_to_csv_text(raw)
+                else:
+                    content = raw.decode('utf-8', errors='replace')
                 file_contents.append(content)
                 filenames.append(uf.name)
             except Exception as e:

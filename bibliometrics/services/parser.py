@@ -630,6 +630,28 @@ def parse_openalex_txt(content: str) -> list[dict]:
     return _deduplicate_and_filter(records)
 
 
+# ─────────────────────────── Excel (XLSX) ───────────────────────────
+
+def xlsx_bytes_to_csv_text(file_bytes: bytes) -> str:
+    """
+    XLSX dosyasını (bytes) CSV metnine dönüştürür.
+    İlk sayfa kullanılır. Scopus/WoS/genel sütunları olduğu gibi aktarılır.
+    """
+    import io
+    import csv
+    import openpyxl
+
+    wb = openpyxl.load_workbook(io.BytesIO(file_bytes), read_only=True, data_only=True)
+    ws = wb.active
+
+    output = io.StringIO()
+    writer = csv.writer(output)
+    for row in ws.iter_rows(values_only=True):
+        writer.writerow(['' if v is None else str(v) for v in row])
+    wb.close()
+    return output.getvalue()
+
+
 # ─────────────────────────── Yardımcılar ───────────────────────────
 
 def _clean(val) -> str:
