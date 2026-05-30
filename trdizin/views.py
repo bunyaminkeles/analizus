@@ -68,6 +68,7 @@ def trdizin_landing(request):
                 'TR Dizin\'den makaleler saniyeler içinde kazınır ve listelenir.',
                 'Excel veya TXT olarak indirin ya da Analiz Yap ile bibliometrik rapor alın.',
             ],
+            'seo_guide': TARAMA_SEO_CONTENT.get('trdizin'),
         })
 
     form = DizinSearchForm()

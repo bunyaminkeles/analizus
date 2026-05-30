@@ -61,6 +61,7 @@ def yoktez_landing(request):
                 'YÖK Tez Merkezi\'nden veriler saniyeler içinde kazınır ve listelenir.',
                 'Excel veya TXT olarak indirin ya da Analiz Yap ile bibliometrik rapor alın.',
             ],
+            'seo_guide': TARAMA_SEO_CONTENT.get('yoktez'),
         })
     user = request.user
     daily_count = YokTezSearchJob.daily_count_for_user(user)

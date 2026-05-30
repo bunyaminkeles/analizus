@@ -81,6 +81,7 @@ def cronbach_landing(request):
     if not request.user.is_authenticated:
         return render(request, 'service_promo.html', {
             **PROMO_BASE,
+            'seo_guide': SEO_CONTENT.get('cronbach'),
             'promo_title': 'Güvenilirlik Analizi — Cronbach Alpha',
             'promo_icon': 'bi-shield-check',
             'promo_color': 'primary',
@@ -120,6 +121,7 @@ def normallik_landing(request):
     if not request.user.is_authenticated:
         return render(request, 'service_promo.html', {
             **PROMO_BASE,
+            'seo_guide': SEO_CONTENT.get('normallik'),
             'promo_title': 'Normallik Testi',
             'promo_icon': 'bi-bell-curve',
             'promo_color': 'warning',
@@ -159,6 +161,7 @@ def betimsel_landing(request):
     if not request.user.is_authenticated:
         return render(request, 'service_promo.html', {
             **PROMO_BASE,
+            'seo_guide': SEO_CONTENT.get('betimsel'),
             'promo_title': 'Betimleyici İstatistik Raporu',
             'promo_icon': 'bi-clipboard2-data',
             'promo_color': 'success',
@@ -198,6 +201,7 @@ def korelasyon_landing(request):
     if not request.user.is_authenticated:
         return render(request, 'service_promo.html', {
             **PROMO_BASE,
+            'seo_guide': SEO_CONTENT.get('korelasyon'),
             'promo_title': 'Korelasyon Matrisi',
             'promo_icon': 'bi-grid-3x3',
             'promo_color': 'info',
@@ -247,6 +251,7 @@ def ttesti_landing(request):
     if not request.user.is_authenticated:
         return render(request, 'service_promo.html', {
             **PROMO_BASE,
+            'seo_guide': SEO_CONTENT.get('ttesti'),
             'promo_title': 't-Testi',
             'promo_icon': 'bi-distribute-horizontal',
             'promo_color': 'purple',
@@ -276,6 +281,7 @@ def anova_landing(request):
     if not request.user.is_authenticated:
         return render(request, 'service_promo.html', {
             **PROMO_BASE,
+            'seo_guide': SEO_CONTENT.get('anova'),
             'promo_title': 'Tek Yönlü ANOVA',
             'promo_icon': 'bi-bar-chart-steps',
             'promo_color': 'danger',
@@ -463,6 +469,7 @@ def mann_whitney_landing(request):
     if not request.user.is_authenticated:
         return render(request, 'service_promo.html', {
             **PROMO_BASE,
+            'seo_guide': SEO_CONTENT.get('mann_whitney'),
             'promo_title': 'Mann-Whitney U Testi',
             'promo_icon': 'bi-distribute-horizontal',
             'promo_color': 'warning',
@@ -493,6 +500,7 @@ def kruskal_wallis_landing(request):
     if not request.user.is_authenticated:
         return render(request, 'service_promo.html', {
             **PROMO_BASE,
+            'seo_guide': SEO_CONTENT.get('kruskal_wallis'),
             'promo_title': 'Kruskal-Wallis H Testi',
             'promo_icon': 'bi-bar-chart-steps',
             'promo_color': 'teal',
@@ -523,6 +531,7 @@ def ki_kare_landing(request):
     if not request.user.is_authenticated:
         return render(request, 'service_promo.html', {
             **PROMO_BASE,
+            'seo_guide': SEO_CONTENT.get('ki_kare'),
             'promo_title': 'Ki-Kare Testi',
             'promo_icon': 'bi-grid-3x3',
             'promo_color': 'purple',
@@ -553,6 +562,7 @@ def lineer_regresyon_landing(request):
     if not request.user.is_authenticated:
         return render(request, 'service_promo.html', {
             **PROMO_BASE,
+            'seo_guide': SEO_CONTENT.get('lineer_regresyon'),
             'promo_title': 'Çoklu Doğrusal Regresyon',
             'promo_icon': 'bi-graph-up-arrow',
             'promo_color': 'primary',
@@ -583,6 +593,7 @@ def lojistik_regresyon_landing(request):
     if not request.user.is_authenticated:
         return render(request, 'service_promo.html', {
             **PROMO_BASE,
+            'seo_guide': SEO_CONTENT.get('lojistik_regresyon'),
             'promo_title': 'Lojistik Regresyon',
             'promo_icon': 'bi-diagram-3',
             'promo_color': 'success',
@@ -613,6 +624,7 @@ def karar_agaci_landing(request):
     if not request.user.is_authenticated:
         return render(request, 'service_promo.html', {
             **PROMO_BASE,
+            'seo_guide': SEO_CONTENT.get('karar_agaci'),
             'promo_title': 'Karar Ağacı Sınıflandırması',
             'promo_icon': 'bi-diagram-2',
             'promo_color': 'purple',
@@ -643,6 +655,7 @@ def svm_landing(request):
     if not request.user.is_authenticated:
         return render(request, 'service_promo.html', {
             **PROMO_BASE,
+            'seo_guide': SEO_CONTENT.get('svm'),
             'promo_title': 'Destek Vektör Makinesi (SVM)',
             'promo_icon': 'bi-cpu',
             'promo_color': 'teal',
@@ -673,6 +686,7 @@ def afa_landing(request):
     if not request.user.is_authenticated:
         return render(request, 'service_promo.html', {
             **PROMO_BASE,
+            'seo_guide': SEO_CONTENT.get('afa'),
             'promo_title': 'Açıklayıcı Faktör Analizi (AFA)',
             'promo_icon': 'bi-diagram-2',
             'promo_color': 'info',
@@ -710,6 +724,7 @@ def wilcoxon_landing(request):
     if not request.user.is_authenticated:
         return render(request, 'service_promo.html', {
             **PROMO_BASE,
+            'seo_guide': SEO_CONTENT.get('wilcoxon'),
             'promo_title': 'Wilcoxon İşaret Testi',
             'promo_icon': 'bi-arrow-left-right',
             'promo_color': 'warning',
@@ -737,6 +752,7 @@ def friedman_landing(request):
     if not request.user.is_authenticated:
         return render(request, 'service_promo.html', {
             **PROMO_BASE,
+            'seo_guide': SEO_CONTENT.get('friedman'),
             'promo_title': 'Friedman Testi',
             'promo_icon': 'bi-bar-chart-steps',
             'promo_color': 'success',
@@ -764,6 +780,7 @@ def tekrarli_anova_landing(request):
     if not request.user.is_authenticated:
         return render(request, 'service_promo.html', {
             **PROMO_BASE,
+            'seo_guide': SEO_CONTENT.get('tekrarli_anova'),
             'promo_title': 'Tekrarlayan Ölçümler ANOVA',
             'promo_icon': 'bi-graph-up-arrow',
             'promo_color': 'primary',
