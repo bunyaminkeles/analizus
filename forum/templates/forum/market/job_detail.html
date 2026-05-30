@@ -3,6 +3,8 @@
 {% block title %}{{ job.title }} - Analizus Market{% endblock %}
 {% block meta_description %}{{ job.description|striptags|truncatechars:155 }}{% endblock %}
 
+{% block robots_content %}{% if job.status != 'open' %}noindex, follow{% else %}index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1{% endif %}{% endblock %}
+
 {% block extra_head %}
 <meta property="og:title" content="{{ job.title }} - Analizus Market">
 <meta property="og:description" content="{{ job.description|striptags|truncatechars:155 }}">
