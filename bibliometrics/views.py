@@ -10,6 +10,7 @@ from django_ratelimit.decorators import ratelimit
 
 from .forms import BibliometricUploadForm, BibliometricOrderForm
 from .models import BibliometricJob, BibliometricOrder
+from tarama_seo_content import TARAMA_SEO_CONTENT
 
 logger = logging.getLogger(__name__)
 
@@ -50,6 +51,7 @@ def bibliometrics_landing(request):
                 'Sistem otomatik olarak 10 farklı analizi çalıştırır.',
                 'Demo rapor (3 grafik) ücretsiz emailinize gelir.',
             ],
+            'seo_guide': TARAMA_SEO_CONTENT.get('bibliometrics'),
         })
     user = request.user
 

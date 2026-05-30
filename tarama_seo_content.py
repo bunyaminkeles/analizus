@@ -311,4 +311,91 @@ TARAMA_SEO_CONTENT = {
             ('/trdizin/', 'TR Dizin Tarama'),
         ],
     },
+
+    'bibliometrics': {
+        'intro': (
+            'Bibliometrik analiz, akademik yayınları istatistiksel yöntemlerle inceleyen ve bir '
+            'araştırma alanının yapısını, eğilimlerini ve etkisini sayısal olarak ortaya koyan '
+            'bir yöntemdir. Yayın sayısı, atıf örüntüleri, yazar üretkenliği, dergi dağılımı ve '
+            'kurumsal işbirliği gibi göstergeler aracılığıyla alana ilişkin bütünsel bir tablo '
+            'çizilir. Analizus Bibliometrik Analiz aracı, Web of Science, Scopus veya BibTeX '
+            'formatında dışa aktarılan veri dosyalarından otomatik olarak 10 farklı analiz üretir '
+            've sonuçları tek bir PDF raporda sunar.'
+        ),
+        'when_to_use': (
+            'Sistematik derleme veya meta-analiz çalışmalarında araştırma alanını haritalandırmak '
+            'için kullanın. Tez veya makale literatür bölümünde alandaki yayın trendlerini, '
+            'öncü araştırmacıları ve kilit dergileri sayısal olarak göstermek istediğinizde '
+            'idealdir. Proje önerisinde araştırma boşluğunu kanıtlamak, belirli bir zaman '
+            'aralığındaki entelektüel birikimi görselleştirmek ve işbirliği ağlarını analiz '
+            'etmek için de tercih edilir. Ham veri kaynağı olarak WoS veya Scopus\'tan '
+            'dışa aktarılmış bir CSV/BibTeX dosyası gerekir.'
+        ),
+        'assumptions': (
+            'Analiz sonuçlarının kalitesi doğrudan girdi dosyasının kalitesine bağlıdır. '
+            'Eksik veya tutarsız yazar adları, dergi kısaltmaları veya kayıp atıf bilgileri '
+            'sonuçları etkileyebilir. WoS ve Scopus kayıtları farklı alan adları kullandığından '
+            'platform uyumluluğunu kontrol edin. Lotka kanunu analizi en az 30 farklı yazar '
+            'gerektirir; daha küçük veri setlerinde yorum yaparken dikkatli olunmalıdır. '
+            'Kelime bulutu ve anahtar kelime analizi; başlık, anahtar kelime ve özet '
+            'alanlarının dolu olduğu kayıtlar için daha doğru sonuç verir.'
+        ),
+        'how_to_interpret': (
+            'Yayın trendi grafiği alanın büyüme hızını gösterir; ani artışlar yeni araştırma '
+            'ilgi odaklarına işaret edebilir. H-index, en az h atıf almış h yayına sahip olmayı '
+            'ifade eder; bireysel yazarlar için etkiyi ölçer. Bradford kanunu dağılımında çekirdek '
+            'dergilere odaklanmak literatür takibini kolaylaştırır. Ortak yazarlık ağında merkezi '
+            'konumdaki yazarlar alandaki köprü araştırmacıları temsil eder. Ülke/kurum '
+            'dağılımı araştırmanın coğrafi yoğunlaşmasını gösterir.'
+        ),
+        'apa_example': (
+            'Araştırmacı, A. A., & Ortak, B. B. (2023). Eğitim bilimleri alanında '
+            'bibliometrik analiz: 2010–2023 dönemine ilişkin bir değerlendirme. '
+            'Eğitim ve Bilim, 48(215), 1–25. https://doi.org/10.15390/EB.2023.XXXXX'
+        ),
+        'faq': [
+            {
+                'q': 'Hangi dosya formatları destekleniyor?',
+                'a': (
+                    'Web of Science\'dan "Tab-delimited (Win, UTF-8)" formatında; '
+                    'Scopus\'tan CSV formatında dışa aktarılan dosyalar ve BibTeX (.bib) '
+                    'dosyaları desteklenmektedir. OpenAlex tarama aracından indirilen '
+                    'Excel dosyaları da doğrudan yüklenebilir.'
+                ),
+            },
+            {
+                'q': 'Kaç kayıtla analiz yapabilirim?',
+                'a': (
+                    'Demo modda ilk 3 grafiği ücretsiz alırsınız; tam rapor (10 grafik) '
+                    'için sipariş oluşturabilirsiniz. Veri seti büyüklüğü konusunda bir '
+                    'üst sınır yoktur; ancak çok büyük dosyalar (10.000+ kayıt) işlem '
+                    'süresini uzatabilir.'
+                ),
+            },
+            {
+                'q': 'Sistematik derleme için yeterli mi?',
+                'a': (
+                    'Bibliometrik analiz sistematik derlemenin nicel bölümünü destekler; '
+                    'araştırma alanını haritalandırmak ve anahtar kaynakları belirlemek '
+                    'için güçlü bir araçtır. Ancak tam sistematik derleme; PRISMA akış '
+                    'şeması, dahil etme/dışlama kriterleri ve kalite değerlendirmesi gibi '
+                    'ek adımlar gerektirir.'
+                ),
+            },
+            {
+                'q': 'Hangi analizler raporlara dahil?',
+                'a': (
+                    'Yayın trendi, en üretken yazarlar, en çok yayın yapan dergiler, '
+                    'ülke/kurum dağılımı, anahtar kelime bulutu, ortak yazarlık ağı, '
+                    'Lotka kanunu, Bradford kanunu, h-index dağılımı ve yıllık atıf '
+                    'trendi olmak üzere 10 farklı analiz tek PDF\'de sunulur.'
+                ),
+            },
+        ],
+        'related_tools': [
+            ('/openalex/', 'OpenAlex Yayın Tarama'),
+            ('/trdizin/', 'TR Dizin Tarama'),
+            ('/yoktez/', 'YÖK Tez Tarama'),
+        ],
+    },
 }
