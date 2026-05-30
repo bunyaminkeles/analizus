@@ -623,7 +623,6 @@ def admin_manage_proposal(request, job_pk, proposal_id):
 
 
 @feature_required('market')
-@login_required
 def job_detail(request, pk):
     job = get_object_or_404(FreelanceJob, pk=pk)
 
