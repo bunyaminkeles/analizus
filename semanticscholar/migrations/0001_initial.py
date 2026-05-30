@@ -1,0 +1,79 @@
+from django.db import migrations, models
+import django.db.models.deletion
+import uuid
+from django.conf import settings
+
+
+class Migration(migrations.Migration):
+
+    initial = True
+
+    dependencies = [
+        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+    ]
+
+    operations = [
+        migrations.CreateModel(
+            name='SemanticSearchJob',
+            fields=[
+                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
+                ('query_parts', models.JSONField(default=list, verbose_name='Sorgu Parçaları')),
+                ('api_query', models.TextField(blank=True, verbose_name='Oluşturulan API Sorgusu')),
+                ('status', models.CharField(choices=[('pending', 'Bekliyor'), ('running', 'Çalışıyor'), ('completed', 'Tamamlandı'), ('failed', 'Başarısız')], default='pending', max_length=20)),
+                ('total_results', models.PositiveIntegerField(default=0)),
+                ('error_message', models.TextField(blank=True)),
+                ('demo_results', models.JSONField(blank=True, default=list)),
+                ('all_results', models.JSONField(blank=True, default=list)),
+                ('demo_file_url', models.URLField(blank=True, default='', max_length=500, verbose_name='Demo Dosya URL (S3)')),
+                ('all_results_file_url', models.URLField(blank=True, default='', max_length=500, verbose_name='Tüm Sonuçlar Dosya URL (S3)')),
+                ('created_at', models.DateTimeField(auto_now_add=True)),
+                ('completed_at', models.DateTimeField(blank=True, null=True)),
+                ('demo_email_sent', models.BooleanField(default=False)),
+                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='semantic_searches', to=settings.AUTH_USER_MODEL)),
+            ],
+            options={
+                'verbose_name': 'Semantic Scholar Arama',
+                'verbose_name_plural': 'Semantic Scholar Aramaları',
+                'ordering': ['-created_at'],
+            },
+        ),
+        migrations.CreateModel(
+            name='SemanticOrder',
+            fields=[
+                ('id', models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False)),
+                ('abstract_count', models.PositiveIntegerField(verbose_name='İstenen Yayın Sayısı')),
+                ('total_price', models.DecimalField(decimal_places=2, max_digits=10, verbose_name='Toplam Tutar (TL)')),
+                ('status', models.CharField(choices=[('pending_payment', 'Ödeme Bekleniyor'), ('payment_review', 'Ödeme İnceleniyor'), ('approved', 'Onaylandı'), ('processing', 'İşleniyor'), ('completed', 'Tamamlandı - Gönderildi'), ('cancelled', 'İptal')], default='pending_payment', max_length=20)),
+                ('payment_note', models.TextField(blank=True, verbose_name='Ödeme Açıklaması')),
+                ('admin_note', models.TextField(blank=True, verbose_name='Admin Notu')),
+                ('results_email_sent', models.BooleanField(default=False)),
+                ('results_email_sent_at', models.DateTimeField(blank=True, null=True)),
+                ('created_at', models.DateTimeField(auto_now_add=True)),
+                ('updated_at', models.DateTimeField(auto_now=True)),
+                ('approved_at', models.DateTimeField(blank=True, null=True)),
+                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='semantic_orders', to=settings.AUTH_USER_MODEL)),
+                ('search_job', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='orders', to='semanticscholar.semanticsearchjob')),
+            ],
+            options={
+                'verbose_name': 'Semantic Scholar Siparişi',
+                'verbose_name_plural': 'Semantic Scholar Siparişleri',
+                'ordering': ['-created_at'],
+            },
+        ),
+        migrations.AddIndex(
+            model_name='semanticsearchjob',
+            index=models.Index(fields=['status'], name='semanticsch_status_idx'),
+        ),
+        migrations.AddIndex(
+            model_name='semanticsearchjob',
+            index=models.Index(fields=['created_at'], name='semanticsch_created_idx'),
+        ),
+        migrations.AddIndex(
+            model_name='semanticorder',
+            index=models.Index(fields=['status'], name='semanticord_status_idx'),
+        ),
+        migrations.AddIndex(
+            model_name='semanticorder',
+            index=models.Index(fields=['created_at'], name='semanticord_created_idx'),
+        ),
+    ]

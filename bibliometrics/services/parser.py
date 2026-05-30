@@ -28,13 +28,20 @@ EMPTY_RECORD = {
 def detect_format(content: str) -> str:
     """
     Dosya içeriğine göre formatı tahmin eder.
-    Returns: 'bibtex' | 'csv_wos' | 'csv_scopus' | 'openalex_txt' | 'csv_auto'
+    Returns: 'bibtex' | 'wos_txt' | 'csv_wos' | 'csv_scopus' | 'openalex_txt' | 'csv_auto'
     """
     stripped = content.strip()
 
     # BibTeX: @ ile başlayan kayıtlar
     if re.search(r'@\w+\s*\{', stripped):
         return 'bibtex'
+
+    # WoS plain text (ISI format): FN/VR başlığı veya PT ile başlayan + ER satırı
+    first_lines = stripped[:200]
+    if ('FN ' in first_lines or 'FN\t' in first_lines) and '\nER' in stripped:
+        return 'wos_txt'
+    if re.match(r'^PT [A-Z]', stripped) and '\nER' in stripped:
+        return 'wos_txt'
 
     # TR Dizin TXT: "Başlık    :" (4 boşluk) veya başlıkta "TR Dizin" geçiyor
     if 'TR Dizin Yayın Arama Sonuçları' in stripped or 'Başlık    :' in stripped:
@@ -72,6 +79,8 @@ def parse_file(content: str, fmt: str = None) -> tuple[list[dict], str]:
 
     if fmt == 'bibtex':
         records = _parse_bibtex(content)
+    elif fmt == 'wos_txt':
+        records = _parse_wos_txt(content)
     elif fmt == 'csv_wos':
         records = _parse_wos_csv(content)
     elif fmt == 'csv_scopus':
@@ -182,6 +191,131 @@ def _split_bibtex_authors(raw: str) -> list[str]:
         elif p:
             result.append(p)
     return result
+
+
+# ─────────────────────────── Web of Science Plain Text (ISI) ───────────────────────────
+
+def _parse_wos_txt(content: str) -> list[dict]:
+    """
+    WoS 'Plain Text' / ISI formatını parse eder.
+    Her kayıt 'ER' satırıyla biter; alanlar 2 harfli tag ile başlar.
+    Örnek: AU, TI, SO, DE, ID, AB, PY, TC, DI, C1, UT
+    """
+    records = []
+    current: dict | None = None
+    current_tag: str = ''
+
+    for raw_line in content.splitlines():
+        # Continuation satırları: 3 boşluk ya da tam boş
+        if raw_line.startswith('   ') or (current_tag and raw_line == ''):
+            if current is not None and current_tag:
+                _wos_append(current, current_tag, raw_line.strip())
+            continue
+
+        tag = raw_line[:2].strip()
+        value = raw_line[3:].strip() if len(raw_line) > 3 else ''
+
+        if tag == 'ER':
+            if current is not None:
+                records.append(current)
+            current = None
+            current_tag = ''
+            continue
+
+        if tag in ('FN', 'VR', 'EF', ''):
+            continue
+
+        if tag == 'PT':
+            # Yeni kayıt başlıyor
+            current = {k: (v.copy() if isinstance(v, list) else v) for k, v in EMPTY_RECORD.items()}
+            current['pub_type'] = _wos_pt_label(value)
+            current_tag = ''
+            continue
+
+        if current is None:
+            continue
+
+        current_tag = tag
+        _wos_set(current, tag, value)
+
+    # Son kayıt ER olmadan bitmişse
+    if current is not None and current.get('title'):
+        records.append(current)
+
+    return records
+
+
+def _wos_set(rec: dict, tag: str, value: str):
+    """İlk satır değerini kayıt alanına yazar."""
+    if tag == 'TI':
+        rec['title'] = _clean(value)
+    elif tag == 'AU':
+        rec['authors'] = [_wos_fmt_author(value)]
+    elif tag == 'AF':
+        if not rec['authors']:
+            rec['authors'] = [_clean(value)]
+    elif tag == 'SO':
+        rec['journal'] = _clean(value)
+    elif tag == 'AB':
+        rec['abstract'] = _clean(value)
+    elif tag == 'DE':
+        rec['keywords'] = _split_keywords(value)
+    elif tag == 'ID':
+        extras = _split_keywords(value)
+        for kw in extras:
+            if kw not in rec['keywords']:
+                rec['keywords'].append(kw)
+    elif tag == 'PY':
+        rec['year'] = _safe_int(value) or None
+    elif tag == 'TC':
+        rec['cited_by'] = _safe_int(value)
+    elif tag == 'DI':
+        rec['doi'] = _clean(value)
+    elif tag == 'C1':
+        rec['institution'] = _clean(value)
+    elif tag == 'CU':
+        rec['country'] = _clean(value)
+
+
+def _wos_append(rec: dict, tag: str, value: str):
+    """Çok satırlı alanlara devam satırı ekler."""
+    if not value:
+        return
+    if tag == 'AU':
+        rec['authors'].append(_wos_fmt_author(value))
+    elif tag == 'AF':
+        if not rec['authors']:
+            rec['authors'].append(_clean(value))
+    elif tag == 'TI':
+        rec['title'] = (rec['title'] + ' ' + _clean(value)).strip()
+    elif tag == 'AB':
+        rec['abstract'] = (rec['abstract'] + ' ' + _clean(value)).strip()
+    elif tag == 'DE':
+        rec['keywords'].extend(kw for kw in _split_keywords(value) if kw not in rec['keywords'])
+    elif tag == 'ID':
+        rec['keywords'].extend(kw for kw in _split_keywords(value) if kw not in rec['keywords'])
+    elif tag == 'C1':
+        if rec['institution']:
+            rec['institution'] += '; ' + _clean(value)
+        else:
+            rec['institution'] = _clean(value)
+
+
+def _wos_fmt_author(raw: str) -> str:
+    """'Smith, John' → 'John Smith'; zaten düzgünse olduğu gibi bırak."""
+    raw = _clean(raw)
+    if ',' in raw:
+        parts = raw.split(',', 1)
+        return f'{parts[1].strip()} {parts[0].strip()}'
+    return raw
+
+
+def _wos_pt_label(code: str) -> str:
+    labels = {
+        'J': 'journal-article', 'B': 'book', 'S': 'book-chapter',
+        'C': 'conference-paper', 'P': 'patent', 'R': 'review',
+    }
+    return labels.get(code.upper(), code.lower())
 
 
 # ─────────────────────────── Web of Science TSV ───────────────────────────

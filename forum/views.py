@@ -3179,6 +3179,14 @@ def tarama_hub(request):
             'feature_key': 'trdizin',
         },
         {
+            'title': 'Semantic Scholar Yayın Kazıma',
+            'desc': '200 milyondan fazla akademik yayın arasında kodsuz arama yapın. WoS, Scopus ve arXiv dahil tüm büyük veri tabanlarını kapsar.',
+            'icon': 'bi-diagram-3-fill',
+            'color': 'info',
+            'url_name': 'semanticscholar:landing',
+            'feature_key': 'semanticscholar',
+        },
+        {
             'title': 'Üniversite Tez Arşivi',
             'desc': '19 Türk üniversitesinin açık erişim arşivinde anahtar kelime ile tez ve makale arayın.',
             'icon': 'bi-mortarboard',

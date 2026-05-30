@@ -65,6 +65,16 @@
           </a>
         </li>
         {% endif %}
+        {% if features.semanticscholar %}
+        <li>
+          <a href="{% url 'semanticscholar:landing' %}"
+             class="ax-console-tool{% if '/semantic-scholar/' in request.path %} is-active{% endif %}"
+             {% if '/semantic-scholar/' in request.path %}aria-current="page"{% endif %}>
+            <i class="bi bi-diagram-3-fill" aria-hidden="true"></i>
+            Semantic Scholar
+          </a>
+        </li>
+        {% endif %}
       </ul>
     </div>
 

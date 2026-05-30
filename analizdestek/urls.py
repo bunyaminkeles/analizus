@@ -49,6 +49,9 @@ urlpatterns = [
     # OpenAlex Yayın Tarama
     path('openalex/', include('openalex.urls')),
 
+    # Semantic Scholar Yayın Kazıma
+    path('semantic-scholar/', include('semanticscholar.urls')),
+
     # Üniversite Tez Arşivi (OAI-PMH)
     path('oaipmh/', include('oaipmh.urls')),
 

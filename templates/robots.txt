@@ -37,6 +37,14 @@ Disallow: /studyroom/*/katil/
 Disallow: /blog/create/
 Disallow: /blog/*/edit/
 
+# Semantic Scholar — aksiyon endpointleri
+Disallow: /semantic-scholar/status/
+Disallow: /semantic-scholar/send-demo/
+Disallow: /semantic-scholar/download/
+Disallow: /semantic-scholar/download-excel/
+Disallow: /semantic-scholar/cancel/
+Disallow: /semantic-scholar/siparis/
+
 # API endpointleri
 Disallow: /api/
 Disallow: /analiz/clear-session/

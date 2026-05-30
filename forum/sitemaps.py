@@ -118,6 +118,7 @@ class ToolsSitemap(Sitemap):
             ('openalex', 'landing'),
             ('oaipmh', 'landing'),
             ('bibliometrics', 'landing'),
+            ('semanticscholar', 'landing'),
         ]
 
     def location(self, item):
