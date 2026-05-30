@@ -398,4 +398,91 @@ TARAMA_SEO_CONTENT = {
             ('/yoktez/', 'YÖK Tez Tarama'),
         ],
     },
+
+    'tableau': {
+        'intro': (
+            'Tableau, akademik araştırmalarda veri görselleştirme, tez bulgularını sunma ve '
+            'interaktif rapor hazırlama amacıyla kullanılan profesyonel bir iş zekâsı (BI) '
+            'aracıdır. Sürükle-bırak arayüzüyle karmaşık veri setlerinden grafik, harita ve '
+            'dashboard oluşturmak mümkündür; programlama bilgisi gerekmez. Bu sayfadaki '
+            'dashboard\'lar TR Dizin, TÜİK ve örnek satış verisi üzerinde hazırlanmış '
+            'interaktif çalışmalardır; filtreleyebilir, yakınlaştırabilir ve tam ekranda '
+            'inceleyebilirsiniz.'
+        ),
+        'when_to_use': (
+            'Tez bulgularınızı görsel olarak sunmak, büyük veri setlerindeki örüntüleri '
+            'keşfetmek ya da akademik bir raporu etkileşimli hâle getirmek istediğinizde '
+            'Tableau\'dan yararlanabilirsiniz. Bibliyometrik analizlerde yayın trendleri, '
+            'ülke ve kurum dağılımları; sağlık araştırmalarında hasta veya vaka dağılımları; '
+            'sosyal bilimlerde demografik karşılaştırmalar için özellikle güçlüdür. '
+            'Kendi veri setiniz için özel bir dashboard hazırlatmak isterseniz '
+            'uzman analistlerimizle iletişime geçebilirsiniz.'
+        ),
+        'assumptions': (
+            'Bu sayfadaki dashboard\'lar Tableau Public üzerinde barındırılmakta olup '
+            'yüklenmeleri internet bağlantısına bağlıdır. Görselleştirmeler anlık veri '
+            'çekmez; derleme tarihindeki veri kesitini yansıtır. Bazı tarayıcılarda '
+            'JavaScript desteği gereklidir; engelleme durumunda "Tam Ekran" bağlantısı '
+            'üzerinden Tableau Public\'e doğrudan ulaşılabilir. Dashboard\'lardaki '
+            'veriler yalnızca gösterim amaçlıdır; akademik atıf için orijinal veri '
+            'kaynağına (TÜİK, TR Dizin) başvurunuz.'
+        ),
+        'how_to_interpret': (
+            'Filtreleri kullanarak belirli yıl, kategori veya bölgeye odaklanın; tüm grafikler '
+            'anlık olarak güncellenir. Çubuk veya pasta grafikte bir dilime tıklayarak '
+            'diğer panelleri çapraz filtreleyin. Harita dashboard\'larında ilgisini çeken '
+            'bölgenin üzerine gelerek detay kartını görüntüleyin. Renk skalasında koyu '
+            'tonlar yüksek değerleri, açık tonlar düşük değerleri temsil eder. '
+            'Akademik raporlamada dashboard\'dan bir görsel kullanıyorsanız veri kaynağını '
+            'dipnotta belirtmeyi unutmayın.'
+        ),
+        'apa_example': (
+            'Analizus. (2024). TR Dizin Sağlık Araştırmaları İnteraktif Dashboard [Tableau '
+            'görselleştirmesi]. https://www.analizus.com/tableau-analiz/'
+        ),
+        'faq': [
+            {
+                'q': 'Tableau öğrenmek ne kadar sürer?',
+                'a': (
+                    'Temel sürükle-bırak işlemleri ve basit grafik oluşturmayı birkaç saatte '
+                    'öğrenebilirsiniz. Hesaplanan alanlar, LOD ifadeleri ve ileri düzey '
+                    'dashboard tasarımı birkaç haftalık pratik gerektirir. Akademik '
+                    'araştırmanız için özelleştirilmiş bir dashboard\'u kendiniz '
+                    'oluşturmak yerine hazırlattırmak zaman açısından daha verimli olabilir.'
+                ),
+            },
+            {
+                'q': 'Tableau ücretsiz mi?',
+                'a': (
+                    'Tableau Public tamamen ücretsizdir; hazırladığınız görselleştirmeleri '
+                    'herkese açık biçimde yayımlamanıza olanak tanır. Tableau Desktop '
+                    '(ücretli) ise veriyi gizli tutarak çalışmanızı sağlar. Öğrenciler '
+                    'edu e-posta adresiyle Tableau for Students lisansına başvurabilir.'
+                ),
+            },
+            {
+                'q': 'Kendi veri setimle dashboard yaptırabilir miyim?',
+                'a': (
+                    'Evet. Excel, CSV, Scopus, WoS veya TÜİK formatındaki veri dosyanızı '
+                    'paylaşmanız yeterlidir. Uzman analistlerimiz araştırmanızın odağına '
+                    'uygun interaktif dashboard tasarlar ve Tableau Public veya '
+                    'Desktop çıktısı olarak teslim eder. İletişim formundan talebinizi iletebilirsiniz.'
+                ),
+            },
+            {
+                'q': 'Dashboard\'lar yüklenmiyorsa ne yapmalıyım?',
+                'a': (
+                    'Tableau Public\'in sunucularına bağlantı kesildiğinde embed yüklenmeyebilir. '
+                    'Sayfayı yenileyin veya her dashboard\'un yanındaki "Tam Ekran" bağlantısına '
+                    'tıklayarak Tableau Public\'e doğrudan gidin. Sorun devam ederse '
+                    'tarayıcınızın reklam engelleyicisini geçici olarak devre dışı bırakmayı deneyin.'
+                ),
+            },
+        ],
+        'related_tools': [
+            ('/bibliometrics/', 'Bibliometrik Analiz'),
+            ('/trdizin/', 'TR Dizin Tarama'),
+            ('/openalex/', 'OpenAlex Tarama'),
+        ],
+    },
 }

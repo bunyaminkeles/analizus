@@ -1615,7 +1615,10 @@ def how_it_works(request):
 
 def tableau_dashboard(request):
     """TR Dizin Sağlık Araştırmaları Tableau Dashboard"""
-    return render(request, 'forum/tableau_dashboard.html')
+    from tarama_seo_content import TARAMA_SEO_CONTENT
+    return render(request, 'forum/tableau_dashboard.html', {
+        'seo_guide': TARAMA_SEO_CONTENT.get('tableau'),
+    })
 
 
 def liderboard(request):
