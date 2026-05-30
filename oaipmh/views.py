@@ -56,6 +56,7 @@ def oaipmh_landing(request):
                 'Sistem üniversitelerin açık arşivlerinden tezleri toplar.',
                 'Sonuçları indirin veya detaylı inceleyin.',
             ],
+            'seo_guide': TARAMA_SEO_CONTENT.get('oaipmh'),
         })
 
     if not _check_email_verified(request):

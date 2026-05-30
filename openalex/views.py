@@ -70,6 +70,7 @@ def openalex_landing(request):
                 'Sistem OpenAlex\'ten verileri kazıyarak saniyeler içinde listeler.',
                 'Excel veya TXT olarak indirin ya da bibliometrik analiz başlatın.',
             ],
+            'seo_guide': TARAMA_SEO_CONTENT.get('openalex'),
         })
     form = AlexSearchForm()
     user = request.user
