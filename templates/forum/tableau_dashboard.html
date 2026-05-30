@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Tableau Analizleri - Analizus{% endblock %}
-{% block meta_description %}Akademik veri setlerine ait interaktif Tableau dashboard analizleri.{% endblock %}
+{% block title %}Tableau Analizleri — TR Dizin, TÜİK ve Akademik Veri Görselleştirme | Analizus{% endblock %}
+{% block meta_description %}TR Dizin sağlık araştırmaları, TÜİK obezite ve nüfus verileri ile satış analizine ait interaktif Tableau dashboard'ları. Kendi verileriniz için özel dashboard hizmeti.{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -41,6 +41,21 @@
           <i class="bi bi-pie-chart-fill me-2 text-warning"></i>Tableau Analizleri
         </h1>
         <p class="text-secondary mb-0">Akademik veri setlerine ait interaktif dashboard analizleri</p>
+      </div>
+
+      <!-- SEO Intro -->
+      <div class="mb-4 p-3 rounded" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07);">
+        <p class="text-white-50 mb-2" style="font-size:0.9rem; line-height:1.8">
+          Bu sayfada TR Dizin sağlık araştırmaları, TÜİK obezite ve nüfus istatistikleri ile satış verisi
+          örneğine ait interaktif Tableau dashboard'ları bulunmaktadır. Her dashboard filtrelenebilir,
+          yakınlaştırılabilir ve tam ekranda incelenebilir. Tableau, akademik araştırmalarda veri
+          görselleştirme, tez bulgularını sunma ve rapor hazırlama amacıyla yaygın olarak kullanılan
+          profesyonel bir BI (Business Intelligence) aracıdır.
+        </p>
+        <p class="text-white-50 mb-0" style="font-size:0.9rem; line-height:1.8">
+          Kendi araştırma veya tez veriniz için özel Tableau dashboard hazırlatmak istiyorsanız
+          uzman analistlerimizle iletişime geçebilirsiniz.
+        </p>
       </div>
 
       <!-- Bilgi Bandı -->
@@ -106,6 +121,17 @@
                 toolbar="bottom" hide-tabs>
               </tableau-viz>
             </div>
+            <div class="px-3 pb-3 pt-3" style="border-top:1px solid #2d3748; background-color:#1a1f2e;">
+              <h2 class="h6 fw-bold text-white mb-2">TR Dizin Sağlık Araştırmaları Dashboard</h2>
+              <p class="text-secondary mb-0" style="font-size:13px; line-height:1.7;">
+                TR Dizin'de yayımlanmış sağlık bilimleri araştırmalarının yıllara, dergilere ve
+                anahtar kelimelere göre dağılımını görselleştiren interaktif bir bibliometrik
+                dashboard'dur. Tıp, hemşirelik, halk sağlığı ve eczacılık gibi alanlardaki
+                yayın trendlerini analiz etmek, alandaki öncü dergileri belirlemek ve
+                araştırma yoğunluğunu haritalandırmak için kullanılabilir.
+                Veri kaynağı: TÜBİTAK ULAKBİM TR Dizin veritabanı.
+              </p>
+            </div>
           </div>
         </div>
 
@@ -125,6 +151,16 @@
                 toolbar="bottom" hide-tabs>
               </tableau-viz>
             </div>
+            <div class="px-3 pb-3 pt-3" style="border-top:1px solid #2d3748; background-color:#1a1f2e;">
+              <h2 class="h6 fw-bold text-white mb-2">TÜİK — Cinsiyete Göre Obezite Oranları</h2>
+              <p class="text-secondary mb-0" style="font-size:13px; line-height:1.7;">
+                Türkiye İstatistik Kurumu'nun (TÜİK) sağlık istatistiklerinden derlenen obezite
+                verilerini cinsiyete ve yıllara göre karşılaştıran dashboard. Kadın ve erkek
+                nüfusundaki obezite prevalansı, zaman içindeki değişim eğrisi ve cinsiyet
+                farklılıkları interaktif grafiklerle görselleştirilmiştir.
+                Halk sağlığı, beslenme ve tıp araştırmalarında referans veri kaynağı olarak kullanılabilir.
+              </p>
+            </div>
           </div>
         </div>
 
@@ -143,6 +179,16 @@
                 width="100%" height="700"
                 toolbar="bottom" hide-tabs>
               </tableau-viz>
+            </div>
+            <div class="px-3 pb-3 pt-3" style="border-top:1px solid #2d3748; background-color:#1a1f2e;">
+              <h2 class="h6 fw-bold text-white mb-2">Türkiye — %0,5'den Yüksek Nüfus Artışı Gösteren İller</h2>
+              <p class="text-secondary mb-0" style="font-size:13px; line-height:1.7;">
+                TÜİK adrese dayalı nüfus kayıt sistemi verilerine göre binde beşin üzerinde
+                nüfus artışı kaydeden Türkiye illerini harita ve grafik üzerinde görselleştiren
+                dashboard. İç göç örüntüleri, kentleşme dinamikleri ve bölgesel büyüme
+                farklılıklarını analiz etmek isteyen demografi, şehir planlama ve sosyal
+                bilimler araştırmacıları için referans görselleştirmedir.
+              </p>
             </div>
           </div>
         </div>
