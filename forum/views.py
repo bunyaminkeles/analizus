@@ -324,7 +324,7 @@ def job_list(request):
     completed_qs = FreelanceJob.objects.filter(status='completed')
     recent_completed_qs = completed_qs.filter(updated_at__gte=three_months_ago)
     avg_budget = completed_qs.aggregate(avg=Avg('budget_max'))['avg'] or 0
-    total_experts = JobProposal.objects.filter(status='accepted').values('expert').distinct().count()
+    total_experts = JobProposal.objects.values('expert').distinct().count()
 
     market_stats = {
         'total_completed': completed_qs.count(),
