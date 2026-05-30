@@ -315,7 +315,8 @@ CLAUDE.md                   # AI geliştirme kuralları ve görev listesi
 /makaleanaliz/      → makaleanaliz.urls  (namespace='makaleanaliz')
 /istatistik/        → istatistik.urls  (namespace='istatistik')
 /analiz/            → istatistik.urls_analiz (unified konsol — /analiz/<slug>/)
-/tarama/            → RedirectView → /yoktez/  (akademik tarama konsolu giriş noktası)
+                      /analiz/ → analiz_hub view (tüm araçları kategorili listeler; guest + login)
+/tarama/            → tarama_hub view (yoktez, openalex, trdizin, oaipmh kartları; guest + login)
 /sitemap.xml        → Django sitemaps (StaticView, Topic, Category, Job, BlogPost, Istatistik, Tools)
 /robots.txt         → TemplateView
 /534e22a9f9e4d375119c5bc6d006aad0.txt → IndexNow key (Bing doğrulama)
@@ -494,6 +495,17 @@ Kaynak: `forum/context_processors.py` → `feature_flags()`
 }
 ```
 
+### Bootstrap'te Eksik Renk Utility Class'ları (`style.css`)
+Bootstrap `text-teal` / `text-purple` / `btn-teal` / `btn-purple` sınıflarını tanımlamaz.
+`istatistik/views.py`'de bazı araçlar `promo_color='teal'` veya `promo_color='purple'` kullanır;
+bu sınıflar `static/css/style.css` sonunda tanımlıdır:
+```css
+.text-teal   { color: #20c997 }   /* Kruskal-Wallis, SVM */
+.text-purple { color: #c084fc }   /* t-Testi, Ki-Kare, Karar Ağacı */
+.btn-teal / .btn-purple / .btn-outline-teal / .btn-outline-purple
+```
+Yeni araç eklerken `teal` / `purple` dışında bir renk kullanılıyorsa önce Bootstrap class'ının var olup olmadığını kontrol et.
+
 ### `ax-` Prefix CSS Sınıfları (Örnekler)
 ```
 .ax-card                → Temel kart (surface arka plan, ax-border)
@@ -663,11 +675,12 @@ Kurumsal ▾           → Neden Analizus? (/neden-biz/)
 Mobil drawer: Her üst gruba accordion. Analizler altında `/analiz/` tek link (eski 16 ayrı link kaldırıldı).
 
 ### Unified Analiz Arayüzü (TAMAMLANDI — mayıs 2026)
-- 16 istatistik aracı tek sidebar'lı konsol: `/analiz/<slug>/`
+- 18 istatistik aracı tek sidebar'lı konsol: `/analiz/<slug>/`
 - `analiz_console_base.html` + `analiz_console.css` — sidebar kategorilere göre accordion, aktif araç vurgulu
 - Eski `/istatistik/<slug>/` URL'leri çalışmaya devam eder (redirect yok, template değişti)
 - Context: `TOOL_CATEGORIES` sabiti + `_console_ctx()` helper (`istatistik/views.py`)
-- `/analiz/` URL'i `istatistik/urls_analiz.py` üzerinden dahil edildi
+- `/analiz/` URL'i `istatistik/urls_analiz.py` üzerinden dahil edildi; `analiz_hub` view tüm araçları listeler
+- `analiz_console` view içindeki `_SLUG_MAP` tüm 18 aracı içerir (svm dahil — eksikti, 404 üretiyordu)
 - Mobilde sidebar gizli, "Araç Seç" toggle butonu ile açılır
 
 ---
@@ -755,7 +768,7 @@ def _broadcast_chat(uid1, uid2, event):
 - Stale job cutoff: 60 dakika (scraping 19 üniversiteyi tarayabilir, kısa timeout uygun değil)
 
 ### Akademik Tarama Unified Console
-- 4 tarama aracı tek sidebar'lı konsolda: `/tarama/` → `/yoktez/` redirect, her araç kendi URL'inde çalışır
+- 4 tarama aracı tek sidebar'lı konsolda: `/tarama/` → `tarama_hub` view (hub sayfası; eski redirect kaldırıldı), her araç kendi URL'inde çalışır
 - `templates/tarama_console_base.html` — `analiz_console.css`'i yeniden kullanır (`.ax-console-*` sınıfları)
 - Sidebar aktif araç tespiti: `request.path` ile (context processor gerekmez)
 - Feature flag kontrollü: `features.oaipmh`, `features.yoktez`, `features.openalex`, `features.trdizin`
@@ -1077,6 +1090,16 @@ with connection.cursor() as c:
 - **Mesaj düzenleme / silme / sohbet silme** (mayıs 2026) — Inline edit (textarea), soft delete (`is_deleted=True, message=''`), conversation hard delete; `_broadcast_chat` + `_chat_room_name` view helper'ları; ChatConsumer'a `message_edit`, `message_delete`, `conversation_delete` handler'ları eklendi; WS broadcast ile karşı taraf anlık güncellenir; poll API `is_deleted=False` filtresi eklendi
 - **DM okundu göstergesi** (mayıs 2026) — Gönderen kendi mesajı altında `✓` (gri, iletildi) veya `✓✓` (cyan, okundu) görür; `consumers.py`'de `connect` + `chat_message` handler'ında `mark_messages_read` / `mark_single_message_read` DB çağrısı + `messages_read` WS event broadcast; `send_message.html`'de template (mevcut mesajlar) ve `appendMessage` JS (yeni mesajlar) güncellendi; JS `messages_read` event handler `data-own="1"` mesajlarını anlık günceller. **Düzeltme:** `sendMessage` AJAX callback'inde `appendMessage` çağrısına `id: data.id` eklenmedi — balonun `data-msg-id` boş kalıyordu, `messages_read` eventi mesajı bulamıyordu; sayfa yenilemeden `✓✓` gösterilmiyordu.
 
+- **SEO — Hub sayfaları + promo içerik** (mayıs 2026)
+  - `/analiz/` → `analiz_hub`: 18 aracı kategorili listeler (guest görebilir, Google index'ler)
+  - `/tarama/` → `tarama_hub`: 4 akademik tarama aracını listeler
+  - `service_promo.html`: `seo_guide` varsa intro + accordion + SSS bloğu render eder
+  - 17 istatistik aracı + yoktez/oaipmh/openalex/trdizin/bibliometrics promo context'lerine `seo_guide` eklendi
+  - `tarama_seo_content.py`'ye `bibliometrics` ve `tableau` girişleri eklendi
+  - Tableau sayfası: meta description, intro paragraf, tab açıklamaları, accordion + SSS SEO bloğu
+  - `robots.txt` genişletildi: `/login/`, `/logout/`, `/accounts/`, `/register/`, `/forum/*/new|edit|delete`, `/market/new|*/edit`, `/blog/create|*/edit`, `/odalar/ac/`, `/studyroom/*/katil/`, `/analiz/clear-session/` engellendi
+  - `istatistik/views.py` `_SLUG_MAP` eksik `svm` eklendi (404 düzeltmesi)
+
 ### Sıradaki Görevler
 - **ML Araçları** — Rastgele Orman, KNN (Karar Ağacı + SVM tamamlandı)
 - Sosyal kanıt iyileştirmeleri (ana sayfa — çok kolay)
@@ -1089,4 +1112,4 @@ with connection.cursor() as c:
 
 ---
 
-*Son güncelleme: Mayıs 2026 — DM okundu göstergesi (✓/✓✓, WS gerçek zamanlı) + AJAX id eksikliği düzeltmesi; onboarding + akıllı hata yönetimi pasif bırakıldı. Önceki: Karar Ağacı + SVM ML araçları; mesaj düzenleme/silme/sohbet-silme; çevrimiçi göstergesi; Gelen Kutusu; Unified Analiz Konsolu; navbar sadeleştirme; OAI-PMH job_queue; AFA sklearn 1.6+ uyumluluğu; session veri seti kalıcılığı.*
+*Son güncelleme: Mayıs 2026 — SEO: analiz+tarama hub sayfaları, tüm promo sayfalara seo_guide içerik, robots.txt genişletme, /analiz/svm/ 404 düzeltmesi, text-teal/purple CSS, tableau SEO. Önceki: DM okundu göstergesi; Karar Ağacı + SVM ML araçları; mesaj düzenleme/silme/sohbet-silme; çevrimiçi göstergesi; Gelen Kutusu; Unified Analiz Konsolu; navbar sadeleştirme.*
