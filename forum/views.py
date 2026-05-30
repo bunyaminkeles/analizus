@@ -3147,3 +3147,41 @@ def onboarding(request):
         'interest_choices': interest_choices,
         'tool_choices': tool_choices,
     })
+
+
+def tarama_hub(request):
+    tools = [
+        {
+            'title': 'YÖK Tez Kazıma ve İndirme Aracı',
+            'desc': 'Anahtar kelime, yazar veya danışmanla arama yapın; tez verilerini Excel veya TXT olarak indirin.',
+            'icon': 'bi-mortarboard-fill',
+            'color': 'success',
+            'url_name': 'yoktez:landing',
+            'feature_key': 'yoktez',
+        },
+        {
+            'title': 'OpenAlex Yayın Kazıma',
+            'desc': '240 milyondan fazla akademik yayından kodsuz veri kazıma. Başlık, yazar, kurum ve atıf bilgileri.',
+            'icon': 'bi-search',
+            'color': 'primary',
+            'url_name': 'openalex:landing',
+            'feature_key': 'openalex',
+        },
+        {
+            'title': 'TR Dizin Makale Kazıma',
+            'desc': 'TR Dizin\'den anahtar kelime ile makale arayın; yazarları, dergileri ve atıf bilgilerini indirin.',
+            'icon': 'bi-journal-text',
+            'color': 'primary',
+            'url_name': 'trdizin:landing',
+            'feature_key': 'trdizin',
+        },
+        {
+            'title': 'Üniversite Tez Arşivi',
+            'desc': '19 Türk üniversitesinin açık erişim arşivinde anahtar kelime ile tez ve makale arayın.',
+            'icon': 'bi-mortarboard',
+            'color': 'warning',
+            'url_name': 'oaipmh:landing',
+            'feature_key': 'oaipmh',
+        },
+    ]
+    return render(request, 'tarama_hub.html', {'tools': tools})

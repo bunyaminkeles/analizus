@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}İstatistik Analiz Araçları — Analizus{% endblock %}
+{% block meta_description %}Betimsel istatistik, t-testi, ANOVA, regresyon, faktör analizi ve daha fazlası. Veri dosyanızı yükleyin, APA formatında PDF rapor saniyeler içinde hazır.{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+
+  <div class="text-center mb-5">
+    <span class="fs-1 text-success"><i class="bi bi-bar-chart-fill"></i></span>
+    <h1 class="fw-bold text-white mt-2 mb-2">İstatistik Analiz Araçları</h1>
+    <p class="text-white-50 lead mx-auto" style="max-width:580px">
+      Veri dosyanızı yükleyin; analiz otomatik tamamlanır, APA formatında PDF rapor hazır. Python veya SPSS bilgisi gerekmez.
+    </p>
+    {% if not request.user.is_authenticated %}
+    <div class="d-flex gap-3 justify-content-center flex-wrap mt-4">
+      <a href="{% url 'register' %}?next=/analiz/" class="btn btn-success btn-lg fw-bold px-5">
+        <i class="bi bi-person-plus-fill me-2"></i>Ücretsiz Dene
+      </a>
+      <a href="{% url 'login' %}?next=/analiz/" class="btn btn-outline-light btn-lg px-4">
+        <i class="bi bi-box-arrow-in-right me-2"></i>Giriş Yap
+      </a>
+    </div>
+    {% endif %}
+  </div>
+
+  {% for cat_name, tools in tool_categories %}
+  <h6 class="text-uppercase fw-semibold mb-3 mt-4 pb-2"
+      style="color:rgba(255,255,255,.45); border-bottom:1px solid rgba(255,255,255,.08); letter-spacing:.06em">
+    {{ cat_name }}
+  </h6>
+  <div class="row g-2 mb-1">
+    {% for slug, name, icon, color, url_name in tools %}
+    <div class="col-sm-6 col-lg-4">
+      <a href="{% url url_name %}" class="text-decoration-none d-flex align-items-center gap-3 p-3 rounded h-100"
+         style="background:#1a1a2e; border:1px solid rgba(255,255,255,.07)">
+        <span class="fs-4 text-{{ color }} flex-shrink-0"><i class="bi {{ icon }}"></i></span>
+        <span class="text-white fw-medium" style="font-size:.9rem">{{ name }}</span>
+        <i class="bi bi-arrow-right ms-auto text-white-50" style="font-size:.8rem"></i>
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+  {% endfor %}
+
+  {% if not request.user.is_authenticated %}
+  <div class="text-center mt-5 pt-3">
+    <p class="text-white-50 small mb-3">Ücretsiz hesap açın, tüm araçlara hemen erişin.</p>
+    <a href="{% url 'register' %}?next=/analiz/" class="btn btn-success fw-bold px-5">
+      <i class="bi bi-rocket-takeoff-fill me-2"></i>Başla — Ücretsiz
+    </a>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

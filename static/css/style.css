@@ -449,3 +449,45 @@ label, .form-label {
     opacity: 0.8;
     text-align: right;
 }
+
+/* Bootstrap'te tanımlı olmayan renk utility class'ları */
+.text-teal   { color: #20c997 !important; }
+.text-purple { color: #c084fc !important; }
+
+.btn-teal {
+    background-color: #20c997;
+    border-color: #20c997;
+    color: #fff;
+}
+.btn-teal:hover, .btn-teal:focus {
+    background-color: #1aab81;
+    border-color: #1aab81;
+    color: #fff;
+}
+.btn-outline-teal {
+    border-color: #20c997;
+    color: #20c997;
+}
+.btn-outline-teal:hover {
+    background-color: #20c997;
+    color: #fff;
+}
+
+.btn-purple {
+    background-color: #c084fc;
+    border-color: #c084fc;
+    color: #fff;
+}
+.btn-purple:hover, .btn-purple:focus {
+    background-color: #a855f7;
+    border-color: #a855f7;
+    color: #fff;
+}
+.btn-outline-purple {
+    border-color: #c084fc;
+    color: #c084fc;
+}
+.btn-outline-purple:hover {
+    background-color: #c084fc;
+    color: #fff;
+}
