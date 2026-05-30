@@ -8,7 +8,7 @@ from django.views.generic import RedirectView
 from django.conf import settings
 from django.conf.urls.static import static
 from forum.sitemaps import StaticViewSitemap, TopicSitemap, CategorySitemap, JobSitemap, BlogPostSitemap, IstatistikSitemap, ToolsSitemap
-from forum.views import custom_login
+from forum.views import custom_login, tarama_hub
 
 sitemaps = {
     'static': StaticViewSitemap,
@@ -71,7 +71,7 @@ urlpatterns = [
     path('analiz/', include('istatistik.urls_analiz')),
 
     # Akademik Tarama Unified Console — ilk aktif araca yönlendir
-    path('tarama/', RedirectView.as_view(url='/yoktez/', permanent=False)),
+    path('tarama/', tarama_hub, name='tarama_hub'),
 
     # 4. Forum Uygulaması (En sona koymak çakışmaları önler)
     path('', include('forum.urls')),

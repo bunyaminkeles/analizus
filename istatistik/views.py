@@ -800,6 +800,12 @@ def clear_session_dataset(request):
     return JsonResponse({'ok': True})
 
 
+def analiz_hub(request):
+    return render(request, 'istatistik/analiz_hub.html', {
+        'tool_categories': TOOL_CATEGORIES,
+    })
+
+
 def analiz_redirect(request):
     from django.shortcuts import redirect
     return redirect('istatistik:betimsel', permanent=False)
@@ -826,6 +832,7 @@ def analiz_console(request, tool_slug):
         'lineer-regresyon': lineer_regresyon_landing,
         'lojistik-regresyon': lojistik_regresyon_landing,
         'karar-agaci': karar_agaci_landing,
+        'svm': svm_landing,
     }
     view_fn = _SLUG_MAP.get(tool_slug)
     if not view_fn:
