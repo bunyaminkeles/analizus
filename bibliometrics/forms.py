@@ -3,7 +3,7 @@ from django import forms
 INPUT_CSS = 'form-control bg-dark text-white border-secondary'
 LABEL_CSS = 'form-label text-light fw-semibold'
 
-ALLOWED_EXTENSIONS = {'.bib', '.txt', '.csv', '.tsv'}
+ALLOWED_EXTENSIONS = {'.bib', '.txt', '.csv', '.tsv', '.xlsx'}
 MAX_FILE_SIZE_MB = 10
 
 
@@ -11,12 +11,12 @@ class BibliometricUploadForm(forms.Form):
     file = forms.FileField(
         label='Veri Dosyası / Dosyaları',
         help_text=(
-            'BibTeX (.bib), WoS TSV, Scopus CSV veya OpenAlex TXT formatları desteklenir. '
+            'BibTeX (.bib), WoS TSV, Scopus CSV, OpenAlex TXT veya Excel (.xlsx) formatları desteklenir. '
             'Birden fazla dosya seçebilirsiniz — kayıtlar birleştirilir. Maks 10 MB/dosya.'
         ),
         widget=forms.FileInput(attrs={
             'class': INPUT_CSS,
-            'accept': '.bib,.csv,.tsv,.txt',
+            'accept': '.bib,.csv,.tsv,.txt,.xlsx',
             # 'multiple' burada değil — template'de data-multiple ile ekleniyor
             # Django FileInput multiple'ı desteklemiyor; view request.FILES.getlist ile alıyor
         }),
@@ -39,7 +39,7 @@ def _validate_file(f):
     if ext not in ALLOWED_EXTENSIONS:
         raise forms.ValidationError(
             f'Desteklenmeyen dosya formatı: {ext}. '
-            f'Lütfen .bib, .csv, .tsv veya .txt yükleyin.'
+            f'Lütfen .bib, .csv, .tsv, .txt veya .xlsx yükleyin.'
         )
     size_mb = f.size / (1024 * 1024)
     if size_mb > MAX_FILE_SIZE_MB:
