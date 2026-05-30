@@ -3,11 +3,43 @@
 
 User-agent: *
 Allow: /
-Disallow: /admin/
-Disallow: /api/
-Disallow: /inbox/
+
+# Auth sayfaları
+Disallow: /login/
+Disallow: /logout/
+Disallow: /accounts/
+Disallow: /register/
+
+# Kullanıcı aksiyonları (login gerektiren)
 Disallow: /profile/edit/
+Disallow: /onboarding/
+Disallow: /inbox/
 Disallow: /send-message/
+
+# Forum — içerik oluşturma/düzenleme
+Disallow: /forum/*/new/
+Disallow: /forum/*/edit/
+Disallow: /forum/*/delete/
+Disallow: /forum/*/reply/
+Disallow: /forum/*/vote/
+Disallow: /forum/*/bookmark/
+
+# Pazaryeri — aksiyon sayfaları
+Disallow: /market/new/
+Disallow: /market/job/*/edit/
+Disallow: /market/job/*/delete/
+
+# Çalışma odaları — aksiyon
+Disallow: /odalar/ac/
+Disallow: /studyroom/*/katil/
+
+# Blog — oluşturma
+Disallow: /blog/create/
+Disallow: /blog/*/edit/
+
+# API endpointleri
+Disallow: /api/
+Disallow: /analiz/clear-session/
 
 # Sitemap
 Sitemap: https://www.analizus.com/sitemap.xml
