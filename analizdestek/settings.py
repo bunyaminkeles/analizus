@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'forum',
     'trdizin',
     'openalex',
+    'semanticscholar',
     'oaipmh',
     'yoktez',
     'bibliometrics',

@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% block title %}Sipariş Oluştur — Semantic Scholar Tarama{% endblock %}
+{% block main_content_classes %}col-lg-12{% endblock %}
+{% block right_sidebar %}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-7">
+
+      <div class="text-center mb-4">
+        <h2 class="text-white fw-bold">
+          <i class="bi bi-cart-check me-2" style="color:#22d3ee;"></i>Sipariş Oluştur
+        </h2>
+        <p style="color:#94a3b8;">Semantic Scholar arama sonuçlarınızın tamamını alın.</p>
+      </div>
+
+      <div class="p-4 mb-4" style="background:rgba(21,32,43,.6);border:1px solid rgba(34,211,238,.15);border-radius:15px;">
+        <h5 class="text-white mb-3"><i class="bi bi-info-circle me-2" style="color:#22d3ee;"></i>Arama Bilgileri</h5>
+        <div class="row small" style="color:#94a3b8;">
+          <div class="col-sm-4 mb-1"><strong>Sorgu:</strong></div>
+          <div class="col-sm-8 mb-1 text-white">{{ job.get_query_summary }}</div>
+          <div class="col-sm-4 mb-1"><strong>Toplam Sonuç:</strong></div>
+          <div class="col-sm-8 mb-1"><span style="color:#22d3ee;font-weight:600;">{{ job.total_results }}</span> yayın</div>
+        </div>
+      </div>
+
+      <div class="p-4 mb-4" style="background:rgba(21,32,43,.6);border:1px solid rgba(167,139,250,.15);border-radius:15px;">
+        <h5 class="text-white mb-3"><i class="bi bi-tag me-2" style="color:#a78bfa;"></i>Fiyatlandırma</h5>
+        <table class="table table-dark table-sm mb-0" style="border:1px solid rgba(255,255,255,.08);border-radius:8px;overflow:hidden;">
+          <tbody>
+            <tr><td>İlk 100 yayın</td><td class="text-end" style="color:#a78bfa;">250 TL</td></tr>
+            <tr><td>Sonraki her 100 yayın</td><td class="text-end" style="color:#a78bfa;">+100 TL</td></tr>
+            <tr class="fw-bold"><td>Tahmini Tutar ({{ job.total_results }} yayın)</td>
+              <td class="text-end" style="color:#a78bfa;"><span id="calc-price">—</span> TL</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      {% if existing_order %}
+      <div class="p-4 mb-4" style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);border-radius:15px;">
+        <h5 class="text-white mb-3"><i class="bi bi-receipt me-2" style="color:#4ade80;"></i>Mevcut Siparişiniz</h5>
+        <div class="row g-2 mb-3" style="color:#94a3b8;">
+          <div class="col-sm-4"><div class="small">Sipariş No</div><div class="text-white fw-bold">#{{ existing_order.id|stringformat:"s"|slice:":8" }}</div></div>
+          <div class="col-sm-4"><div class="small">Tutar</div><div class="fw-bold fs-5" style="color:#4ade80;">{{ existing_order.total_price }} TL</div></div>
+          <div class="col-sm-4"><div class="small">Durum</div>
+            {% if existing_order.status == 'completed' %}<span class="badge bg-success">Tamamlandı</span>
+            {% elif existing_order.status == 'approved' %}<span class="badge bg-info">Onaylandı</span>
+            {% elif existing_order.status == 'payment_review' %}<span class="badge bg-warning text-dark">Ödeme İnceleniyor</span>
+            {% else %}<span class="badge bg-secondary">Ödeme Bekleniyor</span>{% endif %}
+          </div>
+        </div>
+        {% if existing_order.status == 'completed' %}
+        <div class="alert alert-success mb-0 small"><i class="bi bi-envelope-check me-2"></i>Sonuçlar emailinize gönderildi.</div>
+        {% else %}
+        <div class="alert alert-info mb-0 small"><i class="bi bi-info-circle me-2"></i>Ödemeniz inceleniyor. Onaylandıktan sonra sonuçlar emailinize gönderilecek.</div>
+        {% endif %}
+      </div>
+
+      {% elif success %}
+      <div class="p-4 text-center mb-4" style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);border-radius:15px;">
+        <i class="bi bi-check-circle-fill fs-2" style="color:#4ade80;"></i>
+        <h5 class="text-white mt-2">Siparişiniz alındı!</h5>
+        <p style="color:#94a3b8;">Ödemeniz onaylandıktan sonra sonuçlar <strong>{{ request.user.email }}</strong> adresine gönderilecektir.</p>
+      </div>
+
+      {% else %}
+      <div class="p-4 mb-4" style="background:rgba(21,32,43,.6);border:1px solid rgba(255,255,255,.1);border-radius:15px;">
+        <form method="POST" id="order-form">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label class="form-label text-white">İstediğiniz Yayın Sayısı</label>
+            <input type="number" name="abstract_count" id="order-count"
+                   class="form-control bg-dark text-white border-secondary"
+                   value="{{ job.total_results }}" min="1" max="{{ job.total_results }}">
+            <div class="d-flex justify-content-between mt-1">
+              <small style="color:#64748b;">Maks: {{ job.total_results }}</small>
+              <small style="color:#a78bfa;font-weight:600;">Tutar: <span id="form-price">—</span> TL</small>
+            </div>
+          </div>
+          {% with service_code="Semantic Scholar" %}{% include 'partials/order_payment.html' %}{% endwith %}
+        </form>
+      </div>
+      {% endif %}
+
+      <a href="{% url 'semanticscholar:landing' %}" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left me-1"></i>Semantic Scholar Aramaya Dön
+      </a>
+
+    </div>
+  </div>
+</div>
+
+<script>
+function calcPrice(count) {
+  if (count <= 0) return 0;
+  if (count <= 100) return 250;
+  return 250 + Math.ceil((count - 100) / 100) * 100;
+}
+function updatePrices() {
+  const count = parseInt(document.getElementById('order-count')?.value) || {{ job.total_results }};
+  const p = calcPrice(count);
+  const fp = document.getElementById('form-price');
+  if (fp) fp.textContent = p;
+  const cp = document.getElementById('calc-price');
+  if (cp) cp.textContent = calcPrice({{ job.total_results }});
+}
+document.getElementById('order-count')?.addEventListener('input', updatePrices);
+updatePrices();
+</script>
+{% endblock %}

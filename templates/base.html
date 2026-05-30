@@ -236,8 +236,8 @@
                 </div>
 
                 <!-- Akademik Tarama -->
-                {% if features.oaipmh or features.yoktez or features.openalex or features.trdizin %}
-                <a href="/tarama/" class="site-nav__link {% if '/tarama/' in request.path or '/yoktez/' in request.path or '/openalex/' in request.path or '/trdizin/' in request.path or '/oaipmh/' in request.path %}is-active{% endif %}">
+                {% if features.oaipmh or features.yoktez or features.openalex or features.trdizin or features.semanticscholar %}
+                <a href="/tarama/" class="site-nav__link {% if '/tarama/' in request.path or '/yoktez/' in request.path or '/openalex/' in request.path or '/trdizin/' in request.path or '/oaipmh/' in request.path or '/semantic-scholar/' in request.path %}is-active{% endif %}">
                     Akademik Tarama
                 </a>
                 {% endif %}
@@ -390,7 +390,7 @@
                 </div>
             </div>
 
-            {% if features.oaipmh or features.yoktez or features.openalex or features.trdizin %}
+            {% if features.oaipmh or features.yoktez or features.openalex or features.trdizin or features.semanticscholar %}
             <a href="/tarama/" class="nav-drawer__link">Akademik Tarama</a>
             {% endif %}
 

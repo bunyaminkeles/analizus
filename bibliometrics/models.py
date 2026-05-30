@@ -15,7 +15,8 @@ class BibliometricJob(models.Model):
 
     FORMAT_CHOICES = (
         ('bibtex', 'BibTeX (.bib)'),
-        ('csv_wos', 'Web of Science CSV'),
+        ('wos_txt', 'Web of Science Plain Text (ISI)'),
+        ('csv_wos', 'Web of Science Tab-Delimited'),
         ('csv_scopus', 'Scopus CSV'),
         ('csv_auto', 'CSV (Otomatik)'),
         ('openalex_json', 'OpenAlex (Otomatik)'),

@@ -399,6 +399,88 @@ TARAMA_SEO_CONTENT = {
         ],
     },
 
+    'semanticscholar': {
+        'intro': (
+            'Semantic Scholar, Allen Institute for AI tarafından geliştirilen ücretsiz ve açık '
+            'akademik arama motorudur. 200 milyondan fazla yayını kapsayan veritabanı; Web of '
+            'Science, Scopus, PubMed, arXiv ve IEEE Xplore dahil tüm büyük akademik '
+            'platformlardaki çalışmalara erişim sağlar. Analizus Semantic Scholar Kazıma aracı, '
+            'kurumsal abonelik gerektirmeksizin anahtar kelime, yazar adı, araştırma alanı ve '
+            'yıl aralığı ile gelişmiş arama yapmanızı; sonuçları Excel veya TXT olarak '
+            'indirmenizi sağlar. DOI\'si olan kayıtlar CrossRef ile otomatik zenginleştirilir.'
+        ),
+        'when_to_use': (
+            'Web of Science veya Scopus kurumsal aboneliğiniz olmadığında kapsamlı literatür '
+            'taraması yapmak için idealdir. Tez veya makale literatür bölümünde uluslararası '
+            'yayınları sistematik olarak derlemek, belirli bir araştırma alanındaki güncel '
+            'çalışmaları atıf sayısına göre sıralamak ve bibliometrik analiz için ham veri '
+            'toplamak amacıyla kullanabilirsiniz. Açık erişimli yayınlar için PDF bağlantısı '
+            'da sunulduğundan tam metne ücretsiz ulaşmak mümkündür.'
+        ),
+        'assumptions': (
+            'Semantic Scholar veritabanı her yayını kapsamamaktadır; özellikle yerel dergiler '
+            've Türkçe yayınlar sınırlı olabilir. Bunun için TR Dizin veya OAI-PMH araçlarını '
+            'tercih edin. Arama sonuçları alaka düzeyine göre sıralanır; yıl filtresi lokal '
+            'olarak uygulandığından toplam sonuç sayısı daha az görünebilir. Tek sorguda en '
+            'fazla 1.000 kayıt alınabilir (API sınırı); daha fazlası için birden fazla '
+            'sorgu kullanın.'
+        ),
+        'how_to_interpret': (
+            'Atıf sayısı (cited by) yayının alanda ne kadar yankı uyandırdığını gösterir; '
+            'ancak yeni yayınların atıf sayısı düşük olabilir. Araştırma alanı (fields of '
+            'study) Semantic Scholar\'ın yapay zeka tabanlı sınıflandırmasıdır, yazar '
+            'tarafından girilmez. OA PDF bağlantısı varsa yayın açık erişimlidir ve '
+            'ücretsiz tam metne ulaşılabilir. CrossRef ile zenginleştirilmiş kayıtlarda '
+            'kurum ve yayıncı bilgisi de yer alır.'
+        ),
+        'apa_example': (
+            'Smith, J. A., & Johnson, B. (2023). Machine learning applications in '
+            'bibliometric analysis: A systematic review. Scientometrics, 128(5), '
+            '2891–2915. https://doi.org/10.1007/s11192-023-04567-8'
+        ),
+        'faq': [
+            {
+                'q': 'Web of Science\'a alternatif mi?',
+                'a': (
+                    'Semantic Scholar 200M+ yayınla WoS\'un kapsadığı yayınların büyük bölümünü '
+                    'içerir ve ücretsizdir. Ancak WoS\'un atıf analizi, dergi etki faktörü ve '
+                    'belirli alan indekslerine göre filtreleme gibi özelleşmiş araçlarına sahip '
+                    'değildir. Genel literatür taraması ve veri toplama için güçlü bir alternatiftir.'
+                ),
+            },
+            {
+                'q': 'Türkçe yayınları buluyor mu?',
+                'a': (
+                    'Uluslararası indeksli Türkçe dergiler (SCI, SSCI, ESCI kapsamındakiler) '
+                    'Semantic Scholar\'da yer alır. Yalnızca TR Dizin kapsamındaki yerel hakemli '
+                    'dergiler için TR Dizin Kazıma aracını kullanmanız önerilir.'
+                ),
+            },
+            {
+                'q': 'CrossRef zenginleştirme ne demek?',
+                'a': (
+                    'DOI\'si olan her kayıt için CrossRef API\'ye sorgu atılır ve kurum, '
+                    'yayıncı, konu sınıflandırması gibi ek bilgiler otomatik olarak eklenir. '
+                    'Bu işlem demo sonuçlarında (ilk 5 kayıt) uygulanır.'
+                ),
+            },
+            {
+                'q': 'Neden bazı sorgularda az sonuç geliyor?',
+                'a': (
+                    'Yıl filtresi API düzeyinde değil, indirilen veriye lokal olarak uygulanır. '
+                    'API en fazla 1.000 kayıt döndürdüğünden geniş bir tarih aralığında çok '
+                    'sayıda yayın varsa filtre sonrası kayıt azalabilir. Aramayı daha spesifik '
+                    'anahtar kelimelerle daraltmayı deneyin.'
+                ),
+            },
+        ],
+        'related_tools': [
+            ('/openalex/', 'OpenAlex Yayın Tarama'),
+            ('/trdizin/', 'TR Dizin Tarama'),
+            ('/bibliometrics/', 'Bibliometrik Analiz'),
+        ],
+    },
+
     'tableau': {
         'intro': (
             'Tableau, akademik araştırmalarda veri görselleştirme, tez bulgularını sunma ve '

@@ -39,6 +39,7 @@ def _recover():
         from trdizin.models import DizinSearchJob
         from bibliometrics.models import BibliometricJob
         from istatistik.models import IstatistikJob
+        from semanticscholar.models import SemanticSearchJob
 
         from django.utils import timezone
         stuck_cutoff = timezone.now() - timedelta(minutes=STUCK_THRESHOLD_MINUTES)
@@ -48,6 +49,7 @@ def _recover():
             (MakaleAnaliz, 'makaleanaliz'),
             (YokTezSearchJob, 'yoktez'),
             (AlexSearchJob, 'openalex'),
+            (SemanticSearchJob, 'semanticscholar'),
             (DizinSearchJob, 'trdizin'),
         ]
 
@@ -112,6 +114,9 @@ def _run_job(job_type: str, job_id: str):
             _execute_job(job_id)
         elif job_type == 'trdizin':
             from trdizin.services.job_runner import _execute_job
+            _execute_job(job_id)
+        elif job_type == 'semanticscholar':
+            from semanticscholar.services.job_runner import _execute_job
             _execute_job(job_id)
         elif job_type == 'oaipmh':
             from oaipmh.services.job_runner import _execute_job
@@ -190,6 +195,7 @@ def get_queue_position(job_type: str, job_id: str) -> int:
         from trdizin.models import DizinSearchJob
         from bibliometrics.models import BibliometricJob
         from istatistik.models import IstatistikJob
+        from semanticscholar.models import SemanticSearchJob
 
         model_map = {
             'tezanaliz': TezAnaliz,
@@ -197,6 +203,7 @@ def get_queue_position(job_type: str, job_id: str) -> int:
             'yoktez': YokTezSearchJob,
             'openalex': AlexSearchJob,
             'trdizin': DizinSearchJob,
+            'semanticscholar': SemanticSearchJob,
             'bibliometrics': BibliometricJob,
             'bibliometrics_openalex': BibliometricJob,
             'cronbach': IstatistikJob,
@@ -232,6 +239,7 @@ def get_queue_position(job_type: str, job_id: str) -> int:
             YokTezSearchJob.objects.filter(status='pending', created_at__lt=created_at).count() +
             AlexSearchJob.objects.filter(status='pending', created_at__lt=created_at).count() +
             DizinSearchJob.objects.filter(status='pending', created_at__lt=created_at).count() +
+            SemanticSearchJob.objects.filter(status='pending', created_at__lt=created_at).count() +
             BibliometricJob.objects.filter(status='pending', created_at__lt=created_at).count() +
             IstatistikJob.objects.filter(status='pending', created_at__lt=created_at).count()
         )
@@ -241,6 +249,7 @@ def get_queue_position(job_type: str, job_id: str) -> int:
             YokTezSearchJob.objects.filter(status='running').count() +
             AlexSearchJob.objects.filter(status='running').count() +
             DizinSearchJob.objects.filter(status='running').count() +
+            SemanticSearchJob.objects.filter(status='running').count() +
             BibliometricJob.objects.filter(status='running').count() +
             IstatistikJob.objects.filter(status='running').count()
         )
