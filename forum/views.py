@@ -3195,4 +3195,6 @@ def tarama_hub(request):
             'feature_key': 'oaipmh',
         },
     ]
+    settings = SiteSettings.load()
+    tools = [t for t in tools if getattr(settings, f'feature_{t["feature_key"]}', True)]
     return render(request, 'tarama_hub.html', {'tools': tools})
