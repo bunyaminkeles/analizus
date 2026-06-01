@@ -1470,6 +1470,30 @@ def api_delete_conversation(request, username):
     return JsonResponse({'ok': True})
 
 
+@login_required
+@require_POST
+def api_edit_room_post(request, post_id):
+    post = get_object_or_404(StudyRoomPost, id=post_id, author=request.user)
+    new_text = request.POST.get('message', '').strip()
+    if not new_text:
+        return JsonResponse({'ok': False, 'error': 'Mesaj boş olamaz.'}, status=400)
+    if len(new_text) > 5000:
+        return JsonResponse({'ok': False, 'error': 'Mesaj çok uzun.'}, status=400)
+    from django.utils import timezone
+    post.message = new_text
+    post.edited_at = timezone.now()
+    post.save(update_fields=['message', 'edited_at'])
+    return JsonResponse({'ok': True, 'message': new_text, 'edited_at': post.edited_at.strftime('%H:%M')})
+
+
+@login_required
+@require_POST
+def api_delete_room_post(request, post_id):
+    post = get_object_or_404(StudyRoomPost, id=post_id, author=request.user)
+    post.delete()  # post_delete signal S3 dosyasını temizler
+    return JsonResponse({'ok': True})
+
+
 def _check_and_award_trust_badge(request, user):
     """Tüm doğrulamalar tamamsa Güvenilir Üye rozeti verir"""
     from .signals import check_and_award_trust_badge
@@ -2900,6 +2924,7 @@ def studyroom_detail(request, slug):
         import re as _re
         mentions = set(_re.findall(r'@(\w+)', message))
         if mentions:
+            from .email_utils import notify_room_mention
             room_member_ids = set(room.memberships.values_list('user_id', flat=True))
             ct = ContentType.objects.get_for_model(StudyRoomPost)
             for mentioned_user in User.objects.filter(username__in=mentions).exclude(pk=request.user.pk):
@@ -2911,6 +2936,7 @@ def studyroom_detail(request, slug):
                         content_type=ct,
                         object_id=post.id,
                     )
+                    notify_room_mention(request.user, mentioned_user, room, message)
 
         file_url = post.file.url if post.file else ''
         file_name = post.file.name.split('/')[-1] if post.file else ''
