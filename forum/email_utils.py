@@ -452,3 +452,27 @@ def notify_admin_analysis_completed(job):
         _send_admin(f"[Analizus] 📊 Analiz: {tool_label} ({job.user.username})", html, plain)
     except Exception as e:
         logger.error(f"Admin analiz bildirimi gönderilemedi: {e}")
+
+
+def notify_room_mention(sender, recipient, room, message_content):
+    """Çalışma odası gönderisinde @mention olunca ilgili üyeye e-posta gönderir."""
+    if not recipient.email:
+        return
+    site = getattr(settings, 'SITE_URL', 'https://www.analizus.com')
+    room_url = f"{site}/odalar/{room.slug}/"
+    subject = f"@{sender.username} sizi '{room.title}' odasında etiketledi"
+    plain = f"""Merhaba {recipient.username},
+
+@{sender.username}, "{room.title}" çalışma odasında sizi etiketledi.
+
+Mesaj:
+{message_content[:500]}
+
+Odaya gitmek için:
+{room_url}
+
+---
+Bu bir otomatik bildirimdir.
+Analizus - Akademik Veri Üssü"""
+
+    send_email_async(subject, plain, [recipient.email])

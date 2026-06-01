@@ -1432,6 +1432,7 @@ class StudyRoomPost(models.Model):
     message = models.TextField(verbose_name="Mesaj")
     file = models.FileField(upload_to='studyrooms/', storage=get_storage, null=True, blank=True, verbose_name="Dosya")
     created_at = models.DateTimeField(auto_now_add=True)
+    edited_at = models.DateTimeField(null=True, blank=True, verbose_name="Düzenleme Zamanı")
 
     class Meta:
         ordering = ['created_at']

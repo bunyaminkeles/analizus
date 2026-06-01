@@ -188,6 +188,9 @@ IYZICO_SECRET_KEY=...
 
 # OpenAlex polite pool
 OPENALEX_EMAIL=info@analizus.com
+
+# Semantic Scholar API (saniyede 1 istek; key'siz çalışır ama rate limit yüksek)
+SEMANTIC_SCHOLAR_API_KEY=...
 ```
 
 ---
@@ -279,6 +282,7 @@ tezanaliz/, makaleanaliz/   # AI destekli tez/makale analizi
 openalex/                   # OpenAlex akademik yayın tarama
 yoktez/                     # YÖK tez arama (HTTP tabanlı)
 trdizin/                    # TR Dizin (feature flag ile gizli)
+semanticscholar/            # Semantic Scholar + CrossRef yayın kazıma
 oaipmh/                     # 19 üniversite arşivi OAI-PMH
 templates/                  # Genel şablonlar (base.html, auth...)
 static/
@@ -307,6 +311,7 @@ CLAUDE.md                   # AI geliştirme kuralları ve görev listesi
 /login/             → Özel login view (rate limited)
 /logout/            → Django logout
 /trdizin/           → trdizin.urls  (feature flag: feature_trdizin)
+/semantic-scholar/  → semanticscholar.urls  (feature flag: feature_semanticscholar)
 /openalex/          → openalex.urls
 /oaipmh/            → oaipmh.urls
 /yoktez/            → yoktez.urls
@@ -462,6 +467,7 @@ class Donation:          # Bağış kaydı
 | `feature_proposal_price_privacy` | True | Teklif fiyat gizliliği |
 | `feature_ai_assistant` | True | AI Asistan |
 | `feature_trdizin` | **False** | TR Dizin (gizli, özel kullanıcılara açılabilir) |
+| `feature_semanticscholar` | True | Semantic Scholar Yayın Kazıma |
 | `feature_openalex` | True | OpenAlex |
 | `feature_oaipmh` | True | OAI-PMH Üniversite Arşivi |
 | `feature_quiz` | True | İstatistik Arena |
@@ -757,6 +763,17 @@ def _broadcast_chat(uid1, uid2, event):
 - `tezanaliz` scraper için `yoktez.services.scraper`'ı import eder — rate limiting her ikisine de uygulanır
 - HTTP tabanlı (requests + BeautifulSoup) — Selenium yok
 
+### Semantic Scholar (`semanticscholar/`)
+- `feature_semanticscholar = True`
+- Semantic Scholar Graph API (`api.semanticscholar.org/graph/v1/paper/search`)
+- 200M+ yayın; WoS, Scopus, PubMed, arXiv dahil
+- DOI'si olan kayıtlar CrossRef API ile kurum/yayıncı/konu bilgisiyle zenginleştirilir
+- Arama alanları: keyword, title, author, year, field_of_study, doi
+- Max 1.000 kayıt (API hard limit — offset sınırı)
+- `SEMANTIC_SCHOLAR_API_KEY` env var (saniyede 1 istek; key'siz paylaşımlı limit)
+- Key yeni oluşturulunca aktivasyon birkaç saat sürebilir; bu sürede key'siz çalışır (429)
+- S3 paths: `semanticscholar/demo/`, `semanticscholar/full/`
+
 ### TR Dizin (`trdizin/`)
 - `feature_trdizin = False` — varsayılan gizli, admin'den açılabilir
 - REST JSON API tabanlı (`search.trdizin.gov.tr/api/`)
@@ -862,6 +879,9 @@ analizus-files/
 │   ├── demo/
 │   ├── full/
 │   └── orders/
+├── semanticscholar/
+│   ├── demo/
+│   └── full/
 ```
 
 **Utils (`forum/s3_utils.py`):**
@@ -1100,6 +1120,9 @@ with connection.cursor() as c:
   - `robots.txt` genişletildi: `/login/`, `/logout/`, `/accounts/`, `/register/`, `/forum/*/new|edit|delete`, `/market/new|*/edit`, `/blog/create|*/edit`, `/odalar/ac/`, `/studyroom/*/katil/`, `/analiz/clear-session/` engellendi
   - `istatistik/views.py` `_SLUG_MAP` eksik `svm` eklendi (404 düzeltmesi)
 
+- **Semantic Scholar yayın kazıma modülü** (mayıs 2026) — `semanticscholar/` Django uygulaması; Semantic Scholar Graph API + CrossRef zenginleştirme; arama formu, job kuyruğu, Excel/TXT indirme, e-posta, sipariş akışı; feature flag, navbar, sitemap, robots.txt, tarama_hub entegrasyonu; SEO içerikleri
+- **WoS Plain Text (ISI) parser** (mayıs 2026) — `bibliometrics/services/parser.py`'e `_parse_wos_txt()` eklendi; `FN/VR` başlıklı ve başlıksız format, çok satırlı alan desteği
+
 ### Sıradaki Görevler
 - **ML Araçları** — Rastgele Orman, KNN (Karar Ağacı + SVM tamamlandı)
 - Sosyal kanıt iyileştirmeleri (ana sayfa — çok kolay)
@@ -1112,4 +1135,4 @@ with connection.cursor() as c:
 
 ---
 
-*Son güncelleme: Mayıs 2026 — SEO: analiz+tarama hub sayfaları, tüm promo sayfalara seo_guide içerik, robots.txt genişletme, /analiz/svm/ 404 düzeltmesi, text-teal/purple CSS, tableau SEO. Önceki: DM okundu göstergesi; Karar Ağacı + SVM ML araçları; mesaj düzenleme/silme/sohbet-silme; çevrimiçi göstergesi; Gelen Kutusu; Unified Analiz Konsolu; navbar sadeleştirme.*
+*Son güncelleme: Mayıs 2026 — Semantic Scholar yayın kazıma modülü (CrossRef zenginleştirme, API key: SEMANTIC_SCHOLAR_API_KEY); WoS plain text (ISI) parser; context_processors'a feature_semanticscholar eklendi. Önceki: SEO hub sayfaları, robots.txt, tableau SEO; DM okundu göstergesi; Karar Ağacı + SVM; Unified Analiz Konsolu; navbar sadeleştirme.*
