@@ -396,7 +396,9 @@ function getFileHtml(post) {
 }
 
 function formatChatTime(input) {
-  const dt = input instanceof Date ? input : new Date(input);
+  const cleaned = typeof input === 'string' ? input.replace(/\.(\d{3})\d+/, '.$1') : input;
+  const dt = cleaned instanceof Date ? cleaned : new Date(cleaned);
+  if (isNaN(dt.getTime())) return '';
   const now = new Date();
   const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const msgStart = new Date(dt.getFullYear(), dt.getMonth(), dt.getDate());

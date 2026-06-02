@@ -1032,6 +1032,13 @@ with connection.cursor() as c:
 
 ## 25. DEĞİŞMEZ KURALLAR (NON-NEGOTIABLES)
 
+### KIRMIZI ÇİZGİ — Değişiklik Kısıtları (Claude için zorunlu)
+1. **Kapsam dışına çıkma.** İstenen dosya/satır dışında hiçbir şeye dokunma. "İyileştirme" fırsatı görsen bile yapma — ayrı görev olarak sor.
+2. **Birden fazla dosya değişecekse önce listele, onay al, sonra uygula.**
+3. **Değişiklik yapmadan önce ilgili dosyayı oku.** Tahmin yürütme.
+4. **Bir şeyi düzeltirken başka şeyi bozma.** Şüpheliysen sor.
+5. **Her değişiklik sonrası dur ve onay bekle.** Tek seferde tek görev.
+
 ### Backend
 1. ORM sorgularında `select_related()` / `prefetch_related()` kullan. N+1 sorgu yasaktır.
 2. `conn_max_age=0` — long-running transaction'lardan kaçın.
@@ -1154,6 +1161,7 @@ with connection.cursor() as c:
 - **Çalışma Odası mesaj düzenleme / silme** (haziran 2026) — `StudyRoomPost`'a `edited_at` alanı (migration 0120); `/api/room-post/<id>/edit|delete/`; hover ile ✏️/🗑️ ikonları, inline textarea; hard delete (S3 signal); `(düzenlendi)` etiketi
 - **Çalışma Odası @mention e-postası** (haziran 2026) — `email_utils.notify_room_mention()`; etiketlenen oda üyesine async e-posta; tüm üyelere değil
 - **Migration çakışması düzeltmesi** (haziran 2026) — sunucuda lokal kalan `0119_alter_sitevisit_id`, `0120_merge_20260530_2123`, `0121_merge_20260601_1555` dosyaları git'e eklendi
+- **SEO — GSC index hataları düzeltmesi** (haziran 2026) — `robots.txt`'e `Disallow: /istatistik/` ve `Disallow: /jobs/` eklendi; `/istatistik/<araç>/` URL'leri canonical olarak `/analiz/<araç>/`'a işaret ediyor ama Google her iki prefix'i de tarıyordu (33 "Alternative page with canonical" hatası); `blog_list.html` canonical'den `?category=` parametresi kaldırıldı — filtreli blog sayfaları artık `/blog/`'a canonical işaret ediyor
 
 ### Sıradaki Görevler
 - **ML Araçları** — Rastgele Orman, KNN (Karar Ağacı + SVM tamamlandı)
@@ -1167,4 +1175,4 @@ with connection.cursor() as c:
 
 ---
 
-*Son güncelleme: Haziran 2026 — Çalışma odası mesaj düzenleme/silme + @mention e-posta (§13b); migration çakışması düzeltmesi (0119_alter_sitevisit_id, 0120_merge, 0121_merge git'e eklendi). Önceki: Semantic Scholar yayın kazıma; WoS parser; SEO hub sayfaları; DM okundu göstergesi; Karar Ağacı + SVM.*
+*Son güncelleme: Haziran 2026 — SEO GSC hataları: robots.txt `/istatistik/` + `/jobs/` disallow, blog_list canonical `?category=` kaldırıldı. Önceki: Çalışma odası mesaj düzenleme/silme + @mention e-posta (§13b); migration çakışması düzeltmesi; Semantic Scholar yayın kazıma; WoS parser; SEO hub sayfaları; DM okundu göstergesi; Karar Ağacı + SVM.*
