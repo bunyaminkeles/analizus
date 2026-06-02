@@ -2,6 +2,20 @@
 
 Tam sistem dokümantasyonu: `analizus.md` (proje kökünde) — stack, URL'ler, modeller, deploy, sık yapılan hatalar, görev listesi hepsi orada.
 
+---
+
+## KIRMIZI ÇİZGİ — DEĞİŞİKLİK KISITLARI
+
+1. **Kapsam dışına çıkma.** İstenen dosya/satır dışında hiçbir şeye dokunma. "İyileştirme" fırsatı görsen bile yapma — ayrı görev olarak sor.
+2. **Birden fazla dosya değişecekse önce listele, onay al, sonra uygula.**
+3. **Değişiklik yapmadan önce ilgili dosyayı oku.** Tahmin yürütme.
+4. **Bir şeyi düzeltirken başka şeyi bozma.** Şüpheliysen sor.
+5. **Her değişiklik sonrası dur ve onay bekle.** Tek seferde tek görev.
+
+> Bu kuralları ihlal etmek, doğru çözümden daha büyük zarar verir.
+
+---
+
 ## CSS / Tasarım (ax- sistemi)
 - Bootstrap yalnızca grid: `container`, `row`, `col-*`
 - UI elementleri (`btn`, `card`, `badge`, `alert`) → `ax-` prefix'li özel sınıflar, Bootstrap bileşenleri kullanma

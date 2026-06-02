@@ -186,7 +186,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
         return {
             'id': msg.id,
-            'timestamp': msg.created_at.strftime('%H:%M'),
+            'timestamp': timezone.localtime(msg.created_at).isoformat(),
             'attachment_type': attachment_type,
         }
 
