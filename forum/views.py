@@ -1310,7 +1310,7 @@ def api_chat_poll(request, username):
             'attachment_url': attachment_url,
             'attachment_name': msg.attachment_name or '',
             'attachment_type': attachment_type,
-            'timestamp': msg.created_at.strftime('%H:%M'),
+            'timestamp': timezone.localtime(msg.created_at).strftime('%H:%M'),
         })
 
     return JsonResponse({'messages': data})
@@ -1335,7 +1335,7 @@ def api_inbox_poll(request):
             'sender_username': msg.sender.username,
             'sender_profile_url': reverse('profile_detail', args=[msg.sender.username]),
             'reply_url': reverse('send_message', args=[msg.sender.username]),
-            'created_at': msg.created_at.strftime('%d %b %Y - %H:%M'),
+            'created_at': timezone.localtime(msg.created_at).strftime('%d %b %Y - %H:%M'),
             'is_read': msg.is_read,
         })
 
@@ -1440,9 +1440,9 @@ def api_edit_message(request, message_id):
         'type': 'message_edit',
         'message_id': msg.id,
         'message': new_text,
-        'edited_at': msg.edited_at.strftime('%H:%M'),
+        'edited_at': timezone.localtime(msg.edited_at).strftime('%H:%M'),
     })
-    return JsonResponse({'ok': True, 'message': new_text, 'edited_at': msg.edited_at.strftime('%H:%M')})
+    return JsonResponse({'ok': True, 'message': new_text, 'edited_at': timezone.localtime(msg.edited_at).strftime('%H:%M')})
 
 
 @login_required
@@ -1483,7 +1483,7 @@ def api_edit_room_post(request, post_id):
     post.message = new_text
     post.edited_at = timezone.now()
     post.save(update_fields=['message', 'edited_at'])
-    return JsonResponse({'ok': True, 'message': new_text, 'edited_at': post.edited_at.strftime('%H:%M')})
+    return JsonResponse({'ok': True, 'message': new_text, 'edited_at': timezone.localtime(post.edited_at).strftime('%H:%M')})
 
 
 @login_required
@@ -1804,7 +1804,7 @@ def get_notifications(request):
             'id': notif.id,
             'message': notif.verb,
             'url': notif.get_url(),
-            'created_at': notif.created_at.strftime('%d.%m.%Y %H:%M'),
+            'created_at': timezone.localtime(notif.created_at).strftime('%d.%m.%Y %H:%M'),
             'sender': notif.sender.username if notif.sender else None,
         })
 
@@ -2110,7 +2110,7 @@ def dashboard_export_csv(request):
             qs = IstatistikJob.objects.select_related('user').order_by('-created_at')[:5000]
             for job in qs:
                 writer.writerow([
-                    job.created_at.strftime('%Y-%m-%d %H:%M'),
+                    timezone.localtime(job.created_at).strftime('%Y-%m-%d %H:%M'),
                     job.get_tool_display(),
                     job.user.username if job.user else 'Anonim',
                     'Evet' if job.is_demo else 'Hayır',
@@ -2347,7 +2347,7 @@ def donation_widget_data(request):
         donors_data.append({
             'name': d.name or (d.user.username if d.user else 'Anonim'),
             'amount': float(d.amount),
-            'date': d.completed_at.strftime('%d.%m.%Y') if d.completed_at else '',
+            'date': timezone.localtime(d.completed_at).strftime('%d.%m.%Y') if d.completed_at else '',
         })
 
     return JsonResponse({
@@ -2948,7 +2948,7 @@ def studyroom_detail(request, slug):
             'id': post.id,
             'author': request.user.username,
             'message': post.message,
-            'created_at': post.created_at.strftime('%d.%m.%Y %H:%M'),
+            'created_at': timezone.localtime(post.created_at).strftime('%d.%m.%Y %H:%M'),
             'file_url': file_url,
             'file_name': file_name,
             'file_type': file_type,
@@ -3009,7 +3009,7 @@ def studyroom_poll(request, slug):
             'id': post.id,
             'author': post.author.username,
             'message': post.message,
-            'created_at': post.created_at.strftime('%d.%m.%Y %H:%M'),
+            'created_at': timezone.localtime(post.created_at).strftime('%d.%m.%Y %H:%M'),
             'is_own': post.author == request.user,
             'avatar_url': post.author.profile.avatar.url if post.author.profile.avatar else '',
             'file_url': file_url,
