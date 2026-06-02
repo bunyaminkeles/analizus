@@ -4,7 +4,7 @@
 {% block title %}{% if current_category %}{{ current_category }} - {% endif %}İstatistik ve Akademik Araştırma Blog - Analizus{% endblock %}
 {% block meta_description %}İstatistik, veri analizi ve akademik araştırma hakkında Türkçe blog yazıları. SPSS, R, Python, tez yazımı rehberleri ve analiz ipuçları.{% endblock %}
 
-{% block canonical %}{% url 'blog_list' %}{% if current_category %}?category={{ current_category }}{% endif %}{% endblock %}
+{% block canonical %}{% url 'blog_list' %}{% endblock %}
 
 {% block extra_head %}{% endblock %}
 
