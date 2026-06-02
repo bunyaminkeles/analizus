@@ -348,6 +348,8 @@ CLAUDE.md                   # AI geliştirme kuralları ve görev listesi
 /api/message/<int:message_id>/edit/              → api_edit_message (POST)
 /api/message/<int:message_id>/delete/            → api_delete_message (POST, soft delete)
 /api/chat/<str:username>/delete-conversation/    → api_delete_conversation (POST, hard delete)
+/api/room-post/<int:post_id>/edit/               → api_edit_room_post (POST)
+/api/room-post/<int:post_id>/delete/             → api_delete_room_post (POST, hard delete — S3 signal)
 ```
 
 ---
@@ -447,6 +449,7 @@ class PrivateMessage:    # Kullanıcılar arası DM (attachment: FileField → S
 class BlogPost / BlogCategory
 class StudyRoom:         # Çalışma odaları
 class StudyRoomPost:     # Oda mesajları (file: FileField → S3)
+    # edited_at: DateTimeField(null=True) — düzenleme zamanı (migration 0120)
 class QuizQuestion / QuizScore:  # İstatistik Arena — 432 soru (hedef: 1000)
 class Badge:             # Rozetler
 class SuccessStory:      # Başarı hikayeleri
@@ -726,6 +729,30 @@ def _broadcast_chat(uid1, uid2, event):
 
 ---
 
+## 13b. ÇALIŞMA ODASI MESAJLARI — DÜZENLEME / SİLME
+
+### Model Alanı (StudyRoomPost)
+- `edited_at: DateTimeField(null=True, blank=True)` — mesaj düzenlenince doldurulur (migration 0120)
+
+### API Endpoint'leri (`forum/views.py`)
+| Endpoint | İzin | Açıklama |
+|---|---|---|
+| `POST /api/room-post/<id>/edit/` | Sadece yazar | `message`, `edited_at` günceller |
+| `POST /api/room-post/<id>/delete/` | Sadece yazar | Hard delete — `post_delete` signal S3 dosyasını temizler |
+
+### Davranış Farkı (DM'den)
+- DM siler: **soft delete** (`is_deleted=True, message=''`) — kayıt DB'de kalır, WS broadcast var
+- Oda siler: **hard delete** — kayıt DB'den silinir, DOM'dan kaldırılır; WS yok (polling mimarisi)
+- Düzenleme yalnızca metin içindir; dosya eki düzenlenemez
+
+### @mention E-posta Bildirimi
+- Gönderilen mesajda `@username` varsa ve o kullanıcı oda üyesiyse:
+  1. `Notification` kaydı oluşturulur (mevcut sistem)
+  2. `email_utils.notify_room_mention()` ile async e-posta gönderilir
+- Tüm üyelere değil — **yalnızca etiketlenen kişiye** gider
+
+---
+
 ## 14. BİBLİOMETRİK ANALİZ
 
 - Desteklenen formatlar: BibTeX (.bib), WoS TSV, Scopus CSV, OpenAlex TXT (otomatik algılama)
@@ -819,6 +846,7 @@ Her önemli event'te `bkeles74@gmail.com` adresine bildirim:
 ### Kullanıcı Bildirimleri
 - Yeni teklif gelince → ilan sahibine e-posta
 - Analiz tamamlanınca → kullanıcıya S3 linki ile e-posta
+- Çalışma odası @mention → `notify_room_mention(sender, recipient, room, message)` — sadece etiketlenen oda üyesine
 
 ---
 
@@ -1058,6 +1086,7 @@ with connection.cursor() as c:
 | İstatistik polling 404 dönüyor | `STATUS_TEMPLATE.replace()` pattern'i kullan, `STATUS_BASE + jobId + '/'` değil (double slash üretir) |
 | İstatistik "Sunucu hatası." (preview) | Ratelimit dolmuş (30/h) — cache temizle: `DELETE FROM django_cache_table WHERE cache_key LIKE '%rl:%'` |
 | `conf_int().iloc` AttributeError | statsmodels `conf_int()` bazen ndarray döner — `np.array(model.conf_int())` kullan |
+| Migration çakışması (`multiple leaf nodes`) | Sunucuda lokal `makemigrations --merge` ile oluşturulan dosya git'e eklenmemişse çıkar. Çözüm: sunucuda `python manage.py makemigrations --merge --no-input` → `migrate` → oluşan dosyayı lokale ekle, commit, push |
 | Job spinner'da takılı, hata yok | `result_data` içinde `inf`/`nan` var, JSON save patlıyor — serviste `np.isinf()` kontrolü ekle |
 | `check_array() got an unexpected keyword argument 'force_all_finite'` (AFA) | scikit-learn 1.6+ `force_all_finite` parametresini kaldırdı. **Çözüm:** `factor-analyzer==0.5.1` pin'le (`requirements.txt`); `istatistik/services/afa.py`'de `_patch_sklearn_compat()` monkey-patch shim çağrısı var — `analyze()` fonksiyonu başında çalışır. `docker compose up -d --build web` ile image yeniden build edilmeli (sadece restart yetmez). |
 | OAI-PMH job sayfadan çıkınca duruyor | Eski tasarım raw `daemon=True` thread kullanıyordu — process exit/nav baskısına karşı korumasız. **Düzeltme:** `job_queue.enqueue('oaipmh', job_id)` ile merkezi ThreadPoolExecutor'a taşındı. Ek olarak stale cutoff 5 dk → 60 dk'ya çıkarıldı (19 üniversite taraması uzun sürebilir). |
@@ -1122,6 +1151,9 @@ with connection.cursor() as c:
 
 - **Semantic Scholar yayın kazıma modülü** (mayıs 2026) — `semanticscholar/` Django uygulaması; Semantic Scholar Graph API + CrossRef zenginleştirme; arama formu, job kuyruğu, Excel/TXT indirme, e-posta, sipariş akışı; feature flag, navbar, sitemap, robots.txt, tarama_hub entegrasyonu; SEO içerikleri
 - **WoS Plain Text (ISI) parser** (mayıs 2026) — `bibliometrics/services/parser.py`'e `_parse_wos_txt()` eklendi; `FN/VR` başlıklı ve başlıksız format, çok satırlı alan desteği
+- **Çalışma Odası mesaj düzenleme / silme** (haziran 2026) — `StudyRoomPost`'a `edited_at` alanı (migration 0120); `/api/room-post/<id>/edit|delete/`; hover ile ✏️/🗑️ ikonları, inline textarea; hard delete (S3 signal); `(düzenlendi)` etiketi
+- **Çalışma Odası @mention e-postası** (haziran 2026) — `email_utils.notify_room_mention()`; etiketlenen oda üyesine async e-posta; tüm üyelere değil
+- **Migration çakışması düzeltmesi** (haziran 2026) — sunucuda lokal kalan `0119_alter_sitevisit_id`, `0120_merge_20260530_2123`, `0121_merge_20260601_1555` dosyaları git'e eklendi
 
 ### Sıradaki Görevler
 - **ML Araçları** — Rastgele Orman, KNN (Karar Ağacı + SVM tamamlandı)
@@ -1135,4 +1167,4 @@ with connection.cursor() as c:
 
 ---
 
-*Son güncelleme: Mayıs 2026 — Semantic Scholar yayın kazıma modülü (CrossRef zenginleştirme, API key: SEMANTIC_SCHOLAR_API_KEY); WoS plain text (ISI) parser; context_processors'a feature_semanticscholar eklendi. Önceki: SEO hub sayfaları, robots.txt, tableau SEO; DM okundu göstergesi; Karar Ağacı + SVM; Unified Analiz Konsolu; navbar sadeleştirme.*
+*Son güncelleme: Haziran 2026 — Çalışma odası mesaj düzenleme/silme + @mention e-posta (§13b); migration çakışması düzeltmesi (0119_alter_sitevisit_id, 0120_merge, 0121_merge git'e eklendi). Önceki: Semantic Scholar yayın kazıma; WoS parser; SEO hub sayfaları; DM okundu göstergesi; Karar Ağacı + SVM.*
