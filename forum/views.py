@@ -1310,7 +1310,7 @@ def api_chat_poll(request, username):
             'attachment_url': attachment_url,
             'attachment_name': msg.attachment_name or '',
             'attachment_type': attachment_type,
-            'timestamp': timezone.localtime(msg.created_at).strftime('%H:%M'),
+            'timestamp': timezone.localtime(msg.created_at).isoformat(),
         })
 
     return JsonResponse({'messages': data})
@@ -1335,7 +1335,7 @@ def api_inbox_poll(request):
             'sender_username': msg.sender.username,
             'sender_profile_url': reverse('profile_detail', args=[msg.sender.username]),
             'reply_url': reverse('send_message', args=[msg.sender.username]),
-            'created_at': timezone.localtime(msg.created_at).strftime('%d %b %Y - %H:%M'),
+            'created_at': timezone.localtime(msg.created_at).isoformat(),
             'is_read': msg.is_read,
         })
 
@@ -1440,9 +1440,9 @@ def api_edit_message(request, message_id):
         'type': 'message_edit',
         'message_id': msg.id,
         'message': new_text,
-        'edited_at': timezone.localtime(msg.edited_at).strftime('%H:%M'),
+        'edited_at': timezone.localtime(msg.edited_at).isoformat(),
     })
-    return JsonResponse({'ok': True, 'message': new_text, 'edited_at': timezone.localtime(msg.edited_at).strftime('%H:%M')})
+    return JsonResponse({'ok': True, 'message': new_text, 'edited_at': timezone.localtime(msg.edited_at).isoformat()})
 
 
 @login_required
@@ -1483,7 +1483,7 @@ def api_edit_room_post(request, post_id):
     post.message = new_text
     post.edited_at = timezone.now()
     post.save(update_fields=['message', 'edited_at'])
-    return JsonResponse({'ok': True, 'message': new_text, 'edited_at': timezone.localtime(post.edited_at).strftime('%H:%M')})
+    return JsonResponse({'ok': True, 'message': new_text, 'edited_at': timezone.localtime(post.edited_at).isoformat()})
 
 
 @login_required
@@ -2948,7 +2948,7 @@ def studyroom_detail(request, slug):
             'id': post.id,
             'author': request.user.username,
             'message': post.message,
-            'created_at': timezone.localtime(post.created_at).strftime('%d.%m.%Y %H:%M'),
+            'created_at': timezone.localtime(post.created_at).isoformat(),
             'file_url': file_url,
             'file_name': file_name,
             'file_type': file_type,
@@ -3009,7 +3009,7 @@ def studyroom_poll(request, slug):
             'id': post.id,
             'author': post.author.username,
             'message': post.message,
-            'created_at': timezone.localtime(post.created_at).strftime('%d.%m.%Y %H:%M'),
+            'created_at': timezone.localtime(post.created_at).isoformat(),
             'is_own': post.author == request.user,
             'avatar_url': post.author.profile.avatar.url if post.author.profile.avatar else '',
             'file_url': file_url,

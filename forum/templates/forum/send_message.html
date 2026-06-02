@@ -126,8 +126,8 @@
                                             {% endif %}
 
                                             <small class="text-muted d-block mt-1" style="font-size: 0.65rem;">
-                                                {{ msg.created_at|timesince }} önce
-                                                {% if msg.edited_at %}<span class="ms-1" title="{{ msg.edited_at }}">(düzenlendi)</span>{% endif %}
+                                                <span class="msg-ts" data-ts="{{ msg.created_at|date:'c' }}"></span>
+                                                {% if msg.edited_at %}<span class="ms-1">(düzenlendi)</span>{% endif %}
                                                 {% if msg.sender == request.user %}
                                                 <span id="read-{{ msg.id }}" class="read-receipt {% if msg.is_read %}read-receipt-seen{% else %}read-receipt-sent{% endif %}">{% if msg.is_read %}✓✓{% else %}✓{% endif %}</span>
                                                 {% endif %}
@@ -300,7 +300,23 @@
 </style>
 
 <script>
+function formatChatTime(input) {
+    const dt = input instanceof Date ? input : new Date(input);
+    const now = new Date();
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const msgStart = new Date(dt.getFullYear(), dt.getMonth(), dt.getDate());
+    const diffDays = Math.round((todayStart - msgStart) / 86400000);
+    const timeStr = dt.toLocaleTimeString('tr-TR', {hour: '2-digit', minute: '2-digit'});
+    if (diffDays === 0) return timeStr;
+    if (diffDays < 7) return dt.toLocaleDateString('tr-TR', {weekday: 'long'}) + ' ' + timeStr;
+    return dt.toLocaleDateString('tr-TR');
+}
+
 document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.msg-ts[data-ts]').forEach(el => {
+        el.textContent = formatChatTime(el.dataset.ts);
+    });
+
     const fileInput = document.getElementById('file-input');
     const filePreview = document.getElementById('file-preview');
     const previewIcon = document.getElementById('preview-icon');
@@ -458,7 +474,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     id: data.id,
                     message: message,
                     sender_id: currentUserId,
-                    timestamp: new Date().toLocaleTimeString('tr-TR', {hour: '2-digit', minute: '2-digit'}),
+                    timestamp: new Date().toISOString(),
                     attachment_url: attachmentUrl,
                     attachment_name: attachmentName,
                     attachment_type: '',
@@ -528,7 +544,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             : 'background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(255, 255, 255, 0.15);'}">
                         ${data.message ? `<p class="mb-1 small" ${msgId ? `id="msg-text-${msgId}"` : ''}>${linkifyUrls(renderMentions(escapeHtml(data.message)))}</p>` : ''}
                         ${data.attachment_url ? getAttachmentHtml(data) : ''}
-                        <small class="text-muted d-block mt-1" style="font-size: 0.65rem;">${data.timestamp}${isOwn && msgId ? `<span id="read-${msgId}" class="read-receipt read-receipt-sent">✓</span>` : ''}</small>
+                        <small class="text-muted d-block mt-1" style="font-size: 0.65rem;">${formatChatTime(data.timestamp)}${isOwn && msgId ? `<span id="read-${msgId}" class="read-receipt read-receipt-sent">✓</span>` : ''}</small>
                     </div>
                 </div>
             </div>

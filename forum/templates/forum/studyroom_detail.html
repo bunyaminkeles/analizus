@@ -198,7 +198,7 @@
             </div>
             {% endif %}
           </div>
-          <div class="rm-zaman rm-zaman--sag">{{ post.created_at|date:"d.m.Y H:i" }}{% if post.edited_at %} <span class="rm-edited">(düzenlendi)</span>{% endif %}</div>
+          <div class="rm-zaman rm-zaman--sag"><span class="msg-ts" data-ts="{{ post.created_at|date:'c' }}"></span>{% if post.edited_at %} <span class="rm-edited">(düzenlendi)</span>{% endif %}</div>
         </div>
         {% else %}
         <div class="rm-wrap rm-karsi">
@@ -221,7 +221,7 @@
             </div>
             {% endif %}
           </div>
-          <div class="rm-zaman">{{ post.created_at|date:"d.m.Y H:i" }}</div>
+          <div class="rm-zaman"><span class="msg-ts" data-ts="{{ post.created_at|date:'c' }}"></span></div>
         </div>
         {% endif %}
         {% empty %}
@@ -395,6 +395,18 @@ function getFileHtml(post) {
   }
 }
 
+function formatChatTime(input) {
+  const dt = input instanceof Date ? input : new Date(input);
+  const now = new Date();
+  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const msgStart = new Date(dt.getFullYear(), dt.getMonth(), dt.getDate());
+  const diffDays = Math.round((todayStart - msgStart) / 86400000);
+  const timeStr = dt.toLocaleTimeString('tr-TR', {hour: '2-digit', minute: '2-digit'});
+  if (diffDays === 0) return timeStr;
+  if (diffDays < 7) return dt.toLocaleDateString('tr-TR', {weekday: 'long'}) + ' ' + timeStr;
+  return dt.toLocaleDateString('tr-TR');
+}
+
 function appendRoomPost(post) {
   const container = document.getElementById('posts-container');
   if (!container) return;
@@ -424,7 +436,7 @@ function appendRoomPost(post) {
     <div class="rm-balon ${benim ? 'rm-balon--benim' : 'rm-balon--karsi'}">
       ${msgHtml}${getFileHtml(post)}
     </div>
-    <div class="rm-zaman ${benim ? 'rm-zaman--sag' : ''}">${post.created_at}</div>`;
+    <div class="rm-zaman ${benim ? 'rm-zaman--sag' : ''}">${formatChatTime(post.created_at)}</div>`;
   container.appendChild(div);
   container.scrollTop = container.scrollHeight;
 }
@@ -465,6 +477,10 @@ function renderMentions(text) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  // Zaman damgalarını formatla
+  document.querySelectorAll('.msg-ts[data-ts]').forEach(el => {
+    el.textContent = formatChatTime(el.dataset.ts);
+  });
   // @mention'ları linkle
   document.querySelectorAll('#posts-container .mention-text').forEach(el => {
     el.innerHTML = renderMentions(el.textContent);
