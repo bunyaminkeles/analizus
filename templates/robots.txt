@@ -45,6 +45,12 @@ Disallow: /semantic-scholar/download-excel/
 Disallow: /semantic-scholar/cancel/
 Disallow: /semantic-scholar/siparis/
 
+# Eski /istatistik/ prefix — canonical /analiz/ altında
+Disallow: /istatistik/
+
+# Eski /jobs/ prefix — kalıcı olarak /market/'e yönlendirildi
+Disallow: /jobs/
+
 # API endpointleri
 Disallow: /api/
 Disallow: /analiz/clear-session/
