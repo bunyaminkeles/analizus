@@ -589,7 +589,11 @@ class JobPaymentAdmin(ModelAdmin):
     def approve_feature(self, request, queryset):
         from django.utils import timezone
         from datetime import timedelta
-        for payment in queryset.filter(status='pending_confirmation'):
+        count = 0
+        for payment in queryset.filter(
+            status__in=['pending_confirmation', 'success'],
+            job__feature_status='pending'
+        ):
             job = payment.job
             payment.status = 'success'
             payment.save()
@@ -599,7 +603,8 @@ class JobPaymentAdmin(ModelAdmin):
             start_time = job.featured_until if job.featured_until and job.featured_until > now else now
             job.featured_until = start_time + timedelta(days=payment.duration_days)
             job.save()
-        self.message_user(request, f'{queryset.count()} ilan vitrine eklendi.')
+            count += 1
+        self.message_user(request, f'{count} ilan vitrine eklendi.')
     approve_feature.short_description = "Seçili ilanları vitrine ekle (onayla)"
 
     def reject_feature(self, request, queryset):
