@@ -304,9 +304,14 @@ def job_list(request):
     now = tz.now()
     three_months_ago = now - timedelta(days=90)
 
-    # Süresi dolan açık ilanları otomatik kapat
-    FreelanceJob.objects.filter(status='open', expires_at__lt=now).update(status='cancelled')
-    FreelanceJob.objects.filter(status='open', expires_at__isnull=True, created_at__lt=now - timedelta(days=30)).update(status='cancelled')
+    # Süresi dolan açık ilanları otomatik kapat; bekleyen teklifleri de reddet
+    expired_qs = FreelanceJob.objects.filter(status='open', expires_at__lt=now)
+    JobProposal.objects.filter(job__in=expired_qs, status='pending').update(status='rejected')
+    expired_qs.update(status='cancelled')
+
+    old_qs = FreelanceJob.objects.filter(status='open', expires_at__isnull=True, created_at__lt=now - timedelta(days=30))
+    JobProposal.objects.filter(job__in=old_qs, status='pending').update(status='rejected')
+    old_qs.update(status='cancelled')
 
     sort = request.GET.get('sort', 'newest')
     jobs = FreelanceJob.objects.filter(status='open').select_related('owner', 'category').annotate(
