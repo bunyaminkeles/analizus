@@ -455,6 +455,13 @@ class Badge:             # Rozetler
 class SuccessStory:      # Başarı hikayeleri
 class DonationTier:      # Destek paketi (name, min_amount, premium_days, is_active)
 class Donation:          # Bağış kaydı
+    # STATUS: pending → pending_confirmation → completed | failed
+    # pending_confirmation: kullanıcı "Havaleyi Yaptım" butonuna bastı, admin onayı bekliyor
+    # grant_premium() / grant_supporter_badge() — completed olunca çağrılır
+class JobPayment:        # İlan vitrin ödemeleri
+    # STATUS: pending → pending_confirmation → success | failed
+    # ⚠️ status alanı admin'de readonly — değişiklik yalnızca list action ile yapılır
+    # approve_feature action: status='success' VE job.feature_status='pending' olanları da işler
 ```
 
 ---
@@ -947,6 +954,28 @@ analizus-files/
 - `JobProposalAdmin` — teklif (İlan Sahibi + Teklif Veren kolonları)
 - `ProfileAdmin` — kullanıcı profil
 - `SiteSettingsAdmin` — feature flag yönetimi
+- `JobPaymentAdmin` — vitrin ödemeleri; `status` readonly; **"Seçili ilanları vitrine ekle"** action ile onaylanır
+- `BibliometricOrderProxyAdmin` (`tezanaliz/admin.py`) — `status` readonly; **"Onayla ve Tam Rapor Emailini Gönder"** action ile onaylanır; e-posta + `status=completed` otomatik set edilir
+- `AlexOrderAdmin` (`openalex/admin.py`) — OpenAlex siparişleri; `status` readonly; aynı action akışı
+
+### Gelir Kaynakları ve Ödeme Akışları
+| Gelir | Model | Admin Onay Yolu |
+|---|---|---|
+| Bağış (Premium) | `Donation` | Dashboard "BAĞIŞ" → detail → action yok, `dashboard_approve_donation` view |
+| İlan Vitrini | `JobPayment` | Job Payments list → "Seçili ilanları vitrine ekle" action |
+| Bibliometrik Analiz | `BibliometricOrder` | Bibliometrik Siparişler list → "Onayla ve Tam Rapor Emailini Gönder" action |
+| OpenAlex Sipariş | `AlexOrder` | OpenAlex Siparişleri list → "Onayla ve Tam Rapor Emailini Gönder" action |
+
+> ⚠️ **KRİTİK:** Ödeme/sipariş `status` alanlarını admin detail sayfasından **elle değiştirme** — e-posta gönderilmez, job alanları güncellenmez. Her zaman **list view → action** kullan.
+
+### Bağış Akışı (Kullanıcı tarafı)
+```
+Kullanıcı paket seçer → send_support_email → Donation(status=pending) oluşur + IBAN e-postası gönderilir
+    ↓ E-postadaki "Havaleyi Yaptım" butonu
+mark_donation_transferred view → status=pending_confirmation + admin bildirimi
+    ↓ Admin dashboard "BAĞIŞ" satırı → dashboard_approve_donation
+Donation.grant_premium() + grant_supporter_badge()
+```
 
 ---
 
@@ -1089,6 +1118,9 @@ with connection.cursor() as c:
 | Redis bağlantı hatası (`Connect call failed 127.0.0.1:6379`) | `.env`'de `REDIS_URL=redis://redis:6379` kullan — Docker'da `localhost`/`127.0.0.1` container dışına ulaşamaz; Render'dan kalan eski şifreli URL'i temizle |
 | 502 Bad Gateway (web restart sonrası) | `docker compose restart web` sonrası **nginx da restart edilmeli**: `docker compose restart nginx`. Nginx, web container IP'sini başlangıçta cache'ler. Nginx conf'unda `resolver 127.0.0.11 valid=10s;` ve `set $backend http://web:8000;` bu sorunu kalıcı çözer. |
 | Ödeme işlemi | iyzico altyapısı kodda var ama pasif — ödeme sistemi henüz aktif değil |
+| Admin'de status elle değiştirildi, e-posta gitmedi / vitrin açılmadı | `status` alanları readonly — **list view → action** kullanılmalı. JobPayment: "Seçili ilanları vitrine ekle"; BibliometricOrder/AlexOrder: "Onayla ve Tam Rapor Emailini Gönder" |
+| Donation geliri admin'de 0₺ gösteriyor | `status='completed'` filtresi — eski kod `'approved'` kullanıyordu (haziran 2026'da düzeltildi) |
+| Vitrine Taşı butonu zaten vitrindekilerde görünüyor | `job.is_featured=True` veya `feature_status='pending'/'approved'` ise buton gizleniyor (haziran 2026'da düzeltildi) |
 | `No module named 'statsmodels'` | `pip install statsmodels` (regresyon analizleri için zorunlu) |
 | İstatistik polling 404 dönüyor | `STATUS_TEMPLATE.replace()` pattern'i kullan, `STATUS_BASE + jobId + '/'` değil (double slash üretir) |
 | İstatistik "Sunucu hatası." (preview) | Ratelimit dolmuş (30/h) — cache temizle: `DELETE FROM django_cache_table WHERE cache_key LIKE '%rl:%'` |
@@ -1162,6 +1194,7 @@ with connection.cursor() as c:
 - **Çalışma Odası @mention e-postası** (haziran 2026) — `email_utils.notify_room_mention()`; etiketlenen oda üyesine async e-posta; tüm üyelere değil
 - **Migration çakışması düzeltmesi** (haziran 2026) — sunucuda lokal kalan `0119_alter_sitevisit_id`, `0120_merge_20260530_2123`, `0121_merge_20260601_1555` dosyaları git'e eklendi
 - **SEO — GSC index hataları düzeltmesi** (haziran 2026) — `robots.txt`'e `Disallow: /istatistik/` ve `Disallow: /jobs/` eklendi; `/istatistik/<araç>/` URL'leri canonical olarak `/analiz/<araç>/`'a işaret ediyor ama Google her iki prefix'i de tarıyordu (33 "Alternative page with canonical" hatası); `blog_list.html` canonical'den `?category=` parametresi kaldırıldı — filtreli blog sayfaları artık `/blog/`'a canonical işaret ediyor
+- **Ödeme/sipariş admin düzeltmeleri** (haziran 2026) — `JobPayment.status` readonly yapıldı; `approve_feature` action `status='success'` ama `feature_status='pending'` olan kayıtları da işler; gerçek işlenen sayı mesajı düzeltildi; `Donation` modeline `pending_confirmation` status eklendi (migration 0122); `send_support_email` artık DB kaydı oluşturuyor; `mark_donation_transferred` view + URL eklendi; e-posta şablonuna "Havaleyi Yaptım" butonu eklendi; `AlexOrderProxy` + `AlexOrderAdmin` eklendi (`openalex/admin.py`) — dashboard linki düzeltildi (404 veriyordu); `BibliometricOrder.status` readonly yapıldı; Gelir Özeti'ne vitrin + biblio + openalex aylık/toplam gelir eklendi; bağış filtresi `'approved'`→`'completed'` düzeltildi; Vitrine Taşı butonu zaten vitrindekilerde gizleniyor
 
 ### Sıradaki Görevler
 - **ML Araçları** — Rastgele Orman, KNN (Karar Ağacı + SVM tamamlandı)
@@ -1175,4 +1208,4 @@ with connection.cursor() as c:
 
 ---
 
-*Son güncelleme: Haziran 2026 — SEO GSC hataları: robots.txt `/istatistik/` + `/jobs/` disallow, blog_list canonical `?category=` kaldırıldı. Önceki: Çalışma odası mesaj düzenleme/silme + @mention e-posta (§13b); migration çakışması düzeltmesi; Semantic Scholar yayın kazıma; WoS parser; SEO hub sayfaları; DM okundu göstergesi; Karar Ağacı + SVM.*
+*Son güncelleme: Haziran 2026 — Ödeme/sipariş admin düzeltmeleri: status readonly, bağış akışı DB kaydı + havale bildirimi, AlexOrder admin, Gelir Özeti 4 kanal. Önceki: SEO GSC hataları; Çalışma odası mesaj düzenleme/silme + @mention e-posta; migration çakışması düzeltmesi; Semantic Scholar; WoS parser; DM okundu göstergesi; Karar Ağacı + SVM.*
