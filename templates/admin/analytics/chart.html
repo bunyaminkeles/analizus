@@ -54,6 +54,8 @@
       En Aktif Kullanıcılar (Son 7 Gün)
     </h2>
     <canvas id="topUsersChart"></canvas>
+
+    <div id="user-links" class="mt-4 flex flex-wrap gap-2"></div>
   </div>
   {% endif %}
 
@@ -142,6 +144,16 @@
         plugins: { legend: { display: false } },
         scales: { x: scaleOpts, y: { ...scaleOpts, beginAtZero: true } },
       },
+    });
+
+    // Kullanıcı bazlı grafik linkleri
+    const linksDiv = document.getElementById('user-links');
+    topUsersRaw.forEach(d => {
+      const a = document.createElement('a');
+      a.href = `?user=${encodeURIComponent(d.user__username)}`;
+      a.textContent = `${d.user__username} (${d.total})`;
+      a.className = 'inline-block px-3 py-1 rounded-full text-xs font-medium bg-emerald-100 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300 hover:bg-emerald-200 dark:hover:bg-emerald-800 transition-colors';
+      linksDiv.appendChild(a);
     });
   }
 
