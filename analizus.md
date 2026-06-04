@@ -1202,7 +1202,8 @@ with connection.cursor() as c:
 - Yeni kullanıcı onboarding akışı — altyapı hazır (migration `0067_profile_onboarding`; `segment`, `onboarding_completed`, `onboarding_interests`, `onboarding_tools` alanları + `/onboarding/` view mevcut); toplanan veri henüz kullanıcı deneyimine yansıtılmıyor; **pasif bekliyor**
 - Analiz araçlarında akıllı hata yönetimi — `data_validator.py` mevcut ama yalnızca Cronbach'ta aktif; araç bazlı ön kontrol + Türkçe hata mesajları eksik; **pasif bekliyor**
 - Blog içerik altyapısı iyileştirmeleri
-- Admin analytics dashboard
+- Admin analytics dashboard (kullanıcı navigasyon takibi tamamlandı — haziran 2026)
+- **Semantic Scholar → Bibliometrik Analiz entegrasyonu** — Semantic Scholar'dan BibTeX export ekle; sonuçları doğrudan `/bibliometrics/` aracına aktar; iki taraf değişiklik gerektirir (`semanticscholar/` export + `bibliometrics/` parser)
 - Gamification genişletmesi
 - Fiyatlandırma sayfası (iş kararı — en son)
 

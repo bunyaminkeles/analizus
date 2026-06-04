@@ -133,15 +133,19 @@ def send_demo_email(job):
 
     body_lines = [
         f"Merhaba {user.first_name or user.username},\n",
-        "Semantic Scholar aramanızın örnek sonuçları hazırlanmıştır.\n",
+        "Semantic Scholar arama sonuçlarınız hazırlanmıştır.\n",
         f"Sorgu: {job.get_query_summary()}",
-        f"Toplam Bulunan: {job.total_results} yayın",
-        f"Ekteki dosyada en yeni {len(job.demo_results)} yayın yer almaktadır.\n",
-        "─" * 40,
-        "Tüm veri talebi için:",
-        "  info@analizus.com adresine yazabilirsiniz.",
-        f"\n---\nAnalizus - {site_url}",
+        f"Toplam Sonuç: {job.total_results}\n",
     ]
+
+    if job.all_results_file_url:
+        body_lines.append("Tüm sonuçlarınızı aşağıdaki linkten indirebilirsiniz (geçici link):")
+        body_lines.append(f"  {job.all_results_file_url}\n")
+    else:
+        body_lines.append("Tüm sonuçlara erişmek için sipariş sayfasını ziyaret edebilirsiniz:")
+        body_lines.append(f"  {site_url}/semantic-scholar/siparis/{job.id}/\n")
+
+    body_lines.append(f"---\nAnalizus - {site_url}")
 
     try:
         email = EmailMessage(
@@ -150,12 +154,13 @@ def send_demo_email(job):
             from_email=settings.DEFAULT_FROM_EMAIL,
             to=[to_email],
         )
-        demo_txt = _generate_results_txt(job.demo_results, job, is_demo=True)
-        email.attach(
-            f"semantic_scholar_{len(job.demo_results)}_sonuc.txt",
-            demo_txt,
-            'text/plain',
-        )
+        if not job.all_results_file_url:
+            demo_txt = _generate_results_txt(job.demo_results, job, is_demo=True)
+            email.attach(
+                f"semantic_scholar_{len(job.demo_results)}_sonuc.txt",
+                demo_txt,
+                'text/plain',
+            )
         email.send()
         job.demo_email_sent = True
         job.save(update_fields=['demo_email_sent'])
