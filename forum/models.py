@@ -994,6 +994,7 @@ class Donation(models.Model):
     """Bağış sistemi için model"""
     STATUS_CHOICES = (
         ('pending', 'Bekliyor'),
+        ('pending_confirmation', 'Onay Bekliyor'),
         ('completed', 'Tamamlandı'),
         ('failed', 'Başarısız'),
     )

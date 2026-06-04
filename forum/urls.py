@@ -127,6 +127,7 @@ urlpatterns = [
     # Bağış Sistemi
     path('api/send-support-email/', views.send_support_email, name='send_support_email'),
     path('donation/success/', views.donation_success, name='donation_success'),
+    path('donation/<int:pk>/transferred/', views.mark_donation_transferred, name='mark_donation_transferred'),
 
     # Cron Job Endpoints (External cron services için)
     path('api/cron/cleanup-s3/', api_views.cron_cleanup_s3_files, name='cron_cleanup_s3'),

@@ -2572,52 +2572,71 @@ def blog_create(request):
 @login_required
 @require_POST
 def send_support_email(request):
-    """Kullanıcının seçtiği destek paketine göre e-posta gönder"""
+    """Kullanıcının seçtiği destek paketine göre e-posta gönder ve DB kaydı oluştur"""
     from .services.email_service import EmailService
+    from .models import Donation
 
     try:
-        # Request'ten veri al
         data = json.loads(request.body)
         tier_id = data.get('tier_id')
         tier_name = data.get('tier_name')
         tier_amount = data.get('tier_amount')
 
-        # Validation
         if not all([tier_id, tier_name, tier_amount]):
             return JsonResponse({'success': False, 'error': 'Geçersiz veri'}, status=400)
 
-        # Tier'ı veritabanından kontrol et
         tier = DonationTier.objects.filter(id=tier_id, is_active=True).first()
         if not tier:
             return JsonResponse({'success': False, 'error': 'Paket bulunamadı'}, status=404)
 
         user = request.user
-        user_email = user.email
-        username = user.username
 
-        # E-posta metni
-        email_subject = "Analizus Bağış İşlemi"
-        
+        # Daha önce pending/pending_confirmation kaydı varsa yeniden kullan
+        donation = Donation.objects.filter(
+            user=user,
+            status__in=['pending', 'pending_confirmation'],
+        ).order_by('-created_at').first()
+
+        if not donation:
+            donation = Donation.objects.create(
+                user=user,
+                email=user.email,
+                name=user.get_full_name() or user.username,
+                amount=tier.min_amount,
+                payment_id=f"IBAN-{uuid.uuid4().hex[:12].upper()}",
+                conversation_id=f"TIER-{tier.pk}",
+                status='pending',
+            )
+
+        confirm_url = request.build_absolute_uri(
+            reverse('mark_donation_transferred', args=[donation.pk])
+        )
+
         context = {
-            'username': username,
+            'username': user.username,
             'tier_amount': tier_amount,
             'tier_name': tier_name,
             'premium_days': tier.premium_days,
+            'confirm_url': confirm_url,
         }
-        
+
         html_message = render_to_string('forum/emails/support_payment_details.html', context)
         plain_message = strip_tags(html_message)
-        
-        # Django Mail ile gönder
+
         email_sent = EmailService._send_email(
-            to_email=user_email,
-            subject=email_subject,
+            to_email=user.email,
+            subject="Analizus Bağış İşlemi",
             html_content=html_message,
             plain_content=plain_message
         )
 
         if email_sent:
-            return JsonResponse({'success': True, 'message': 'E-posta gönderildi'})
+            return JsonResponse({
+                'success': True,
+                'message': 'E-posta gönderildi',
+                'donation_id': donation.pk,
+                'confirm_url': confirm_url,
+            })
         else:
             return JsonResponse({'success': False, 'error': 'E-posta gönderilemedi'}, status=500)
 
@@ -2626,6 +2645,36 @@ def send_support_email(request):
     except Exception as e:
         logger.error(f"Beklenmeyen hata: {str(e)}")
         return JsonResponse({'success': False, 'error': 'Beklenmeyen hata'}, status=500)
+
+
+@login_required
+def mark_donation_transferred(request, pk):
+    """Kullanıcının havaleyi yaptığını bildirmesi."""
+    from .models import Donation
+    donation = get_object_or_404(Donation, pk=pk, user=request.user)
+
+    if donation.status == 'completed':
+        messages.info(request, "Bu bağışınız zaten onaylanmış.")
+        return redirect('profile_detail', username=request.user.username)
+
+    if donation.status == 'pending_confirmation':
+        messages.info(request, "Bildiriminiz daha önce alındı. Onay bekleniyor.")
+        return redirect('profile_detail', username=request.user.username)
+
+    donation.status = 'pending_confirmation'
+    donation.save(update_fields=['status'])
+
+    admins = User.objects.filter(is_staff=True)
+    for admin in admins:
+        Notification.objects.create(
+            recipient=admin,
+            sender=request.user,
+            verb=f"'{donation.name or request.user.username}' kullanıcısı {donation.amount}₺ bağış havalesini yaptığını bildirdi.",
+            target=None,
+        )
+
+    messages.success(request, "Bildiriminiz alındı. Havale kontrol edildikten sonra Premium üyeliğiniz aktifleştirilecektir.")
+    return redirect('profile_detail', username=request.user.username)
 
 
 def hangi_test(request):

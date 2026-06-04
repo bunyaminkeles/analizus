@@ -264,7 +264,7 @@
     <!-- Tab içerikleri -->
     <!-- ÖDEMELER -->
     <div id="tab-payments" style="min-height:80px;">
-      {% if pending_biblio_orders or pending_openalex_orders or pending_job_payments %}
+      {% if pending_biblio_orders or pending_openalex_orders or pending_job_payments or pending_donations %}
         {% for o in pending_biblio_orders %}
         <div style="display:flex;justify-content:space-between;align-items:center;padding:.4rem .5rem;border-radius:.375rem;margin-bottom:.25rem;background:rgba(239,68,68,.06);border-left:3px solid #ef4444;">
           <span style="font-size:.8125rem;color:#cbd5e1;">
@@ -290,6 +290,15 @@
             {{ p.job.owner.username }} — <em style="color:#94a3b8;">{{ p.job.title|truncatechars:25 }}</em> — <span style="color:#34d399;">{{ p.amount }} ₺</span>
           </span>
           <a href="/admin/forum/jobpayment/{{ p.pk }}/change/" style="font-size:.75rem;color:#818cf8;text-decoration:none;">Onayla →</a>
+        </div>
+        {% endfor %}
+        {% for d in pending_donations %}
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:.4rem .5rem;border-radius:.375rem;margin-bottom:.25rem;background:rgba(239,68,68,.06);border-left:3px solid #ec4899;">
+          <span style="font-size:.8125rem;color:#cbd5e1;">
+            <span style="color:#f472b6;font-size:.7rem;font-weight:600;">BAĞIŞ</span>
+            {{ d.user.username }} — <span style="color:#34d399;">{{ d.amount }} ₺</span>
+          </span>
+          <a href="/admin/forum/donation/{{ d.pk }}/change/" style="font-size:.75rem;color:#818cf8;text-decoration:none;">Onayla →</a>
         </div>
         {% endfor %}
       {% else %}
