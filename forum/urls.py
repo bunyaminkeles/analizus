@@ -132,6 +132,7 @@ urlpatterns = [
     # Cron Job Endpoints (External cron services için)
     path('api/cron/cleanup-s3/', api_views.cron_cleanup_s3_files, name='cron_cleanup_s3'),
     path('api/cron/cleanup-attachments/', api_views.cron_cleanup_attachments, name='cron_cleanup_attachments'),
+    path('api/cron/cleanup-pageviews/', api_views.cron_cleanup_pageviews, name='cron_cleanup_pageviews'),
     path('api/cron/health/', api_views.cron_health_check, name='cron_health'),
     path('api/admin/queue-status/', api_views.admin_queue_status, name='admin_queue_status'),
 

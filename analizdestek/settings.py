@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     'tezanaliz',
     'makaleanaliz',
     'istatistik',
+    'analytics',
     'crispy_forms',
     'crispy_bootstrap5',
     'storages',  # AWS S3 için
@@ -83,6 +84,7 @@ MIDDLEWARE = [
     'forum.middleware.LastSeenMiddleware',            # Son görülme güncelleme
     'forum.middleware.EmailVerificationMiddleware',  # E-posta doğrulama kontrolü
     'forum.middleware.VisitorCounterMiddleware',     # Ziyaretçi sayacı
+    'analytics.middleware.PageViewMiddleware',       # Kullanıcı navigasyon takibi
 ]
 
 ROOT_URLCONF = 'analizdestek.urls'
@@ -425,7 +427,30 @@ UNFOLD = {
                 },
             ],
         },
-        # ─── 4. SİSTEM ───────────────────────────────────────────────
+        # ─── 4. DAVRANIŞ ANALİZİ ────────────────────────────────────
+        {
+            "title": "Davranış Analizi",
+            "separator": True,
+            "collapsible": False,
+            "items": [
+                {
+                    "title": "Sayfa Ziyaretleri",
+                    "icon": "visibility",
+                    "link": reverse_lazy("admin:analytics_pageview_changelist"),
+                },
+                {
+                    "title": "Navigasyon Grafiği",
+                    "icon": "bar_chart",
+                    "link": "/admin/analytics/pageview/grafik/",
+                },
+                {
+                    "title": "Ziyaret Özetleri",
+                    "icon": "summarize",
+                    "link": reverse_lazy("admin:analytics_pageviewsummary_changelist"),
+                },
+            ],
+        },
+        # ─── 5. SİSTEM ───────────────────────────────────────────────
         {
             "title": "Sistem",
             "separator": True,

@@ -201,6 +201,67 @@ def cron_cleanup_attachments(request):
 
 
 @require_GET
+def cron_cleanup_pageviews(request):
+    """
+    5 günden eski sayfa ziyaret loglarını özetleyip siler.
+
+    Kullanım:
+    - GET /api/cron/cleanup-pageviews/?secret=YOUR_SECRET
+    - Günlük cron job olarak çalıştırılmalıdır.
+    """
+    if not _verify_cron_secret(request):
+        return JsonResponse({'success': False, 'error': 'Unauthorized'}, status=403)
+
+    try:
+        from datetime import date, timedelta
+        from django.db import transaction
+        from django.db.models import Count
+        from analytics.models import PageView, PageViewSummary
+
+        retention_days = int(request.GET.get('days', 5))
+        cutoff = date.today() - timedelta(days=retention_days)
+        old_qs = PageView.objects.filter(timestamp__date__lt=cutoff)
+        total_old = old_qs.count()
+
+        if total_old == 0:
+            return JsonResponse({'success': True, 'deleted': 0, 'summaries_updated': 0})
+
+        aggregates = list(
+            old_qs
+            .values('timestamp__date', 'path', 'tab_name')
+            .annotate(visit_count=Count('id'), unique_users=Count('user_id', distinct=True))
+        )
+
+        upserted = 0
+        with transaction.atomic():
+            for row in aggregates:
+                obj, created = PageViewSummary.objects.get_or_create(
+                    date=row['timestamp__date'],
+                    path=row['path'],
+                    defaults={
+                        'tab_name': row['tab_name'],
+                        'visit_count': row['visit_count'],
+                        'unique_users': row['unique_users'],
+                    },
+                )
+                if not created:
+                    obj.visit_count += row['visit_count']
+                    obj.unique_users = max(obj.unique_users, row['unique_users'])
+                    obj.save(update_fields=['visit_count', 'unique_users'])
+                upserted += 1
+            deleted_count, _ = old_qs.delete()
+
+        return JsonResponse({
+            'success': True,
+            'deleted': deleted_count,
+            'summaries_updated': upserted,
+            'retention_days': retention_days,
+        })
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
+
+
+@require_GET
 def admin_queue_status(request):
     """Admin dashboard için kuyruk durumu JSON endpoint'i (sadece staff)."""
     if not request.user.is_authenticated or not request.user.is_staff:
