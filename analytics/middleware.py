@@ -1,8 +1,13 @@
+import re
+
 _SKIP_PREFIXES = (
     '/static/', '/media/', '/admin/', '/api/', '/ws/',
     '/favicon', '/accounts/', '/login/', '/logout/',
     '/sitemap', '/robots', '/.well-known/', '/534e',
 )
+
+# /analiz/cronbach/status/uuid/ veya /semantic-scholar/status/uuid/ gibi polling URL'leri atla
+_STATUS_RE = re.compile(r'/status/[0-9a-f\-]{36}/')
 
 
 class PageViewMiddleware:
@@ -17,6 +22,7 @@ class PageViewMiddleware:
             and request.user.is_authenticated
             and response.status_code == 200
             and not any(request.path.startswith(p) for p in _SKIP_PREFIXES)
+            and not _STATUS_RE.search(request.path)
         ):
             try:
                 from analytics.models import PageView
