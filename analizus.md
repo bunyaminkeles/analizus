@@ -42,7 +42,7 @@
 | Ödeme | iyzico altyapısı mevcut ama **pasif** — sonraya bırakıldı |
 | i18n | Türkçe (`tr`), `locale/` klasöründe çeviri dosyaları |
 | Rate Limit | `django-ratelimit` — kayıt: 3/saat, login: 10/5dk, istatistik POST: 30/saat |
-| Analytics | Veri toplama yok (henüz) |
+| Analytics | `analytics/` Django app — login'li kullanıcı sayfa ziyaretleri (PageView + PageViewSummary), admin grafik, 5 günlük otomatik temizlik |
 
 ### Temel Paketler (requirements.txt)
 ```
@@ -1019,6 +1019,7 @@ SESSION_COOKIE_DOMAIN = '.analizus.com'  # Prod'da
 - Env: `CRON_SECRET_KEY`
 - **Aktif:** `/api/cron/cleanup-s3/` — trdizin + openalex S3 temizliği
 - **Aktif:** `/api/cron/cleanup-attachments/` — 90 günden eski DM + oda mesajı dosyaları S3'ten silinir, mesaj/post kaydı korunur (haftalık çalıştırılması önerilir)
+- **Aktif:** `/api/cron/cleanup-pageviews/` — 5 günden eski sayfa ziyaret loglarını PageViewSummary'e toplar ve siler; Hetzner crontab'ında `0 4 * * *` ile çalışır
 - **Kaldırılacak** (artık gereksiz): `/api/cron/daily-quiz/`, `/api/cron/update-badges/`
 
 ---
@@ -1195,6 +1196,8 @@ with connection.cursor() as c:
 - **Migration çakışması düzeltmesi** (haziran 2026) — sunucuda lokal kalan `0119_alter_sitevisit_id`, `0120_merge_20260530_2123`, `0121_merge_20260601_1555` dosyaları git'e eklendi
 - **SEO — GSC index hataları düzeltmesi** (haziran 2026) — `robots.txt`'e `Disallow: /istatistik/` ve `Disallow: /jobs/` eklendi; `/istatistik/<araç>/` URL'leri canonical olarak `/analiz/<araç>/`'a işaret ediyor ama Google her iki prefix'i de tarıyordu (33 "Alternative page with canonical" hatası); `blog_list.html` canonical'den `?category=` parametresi kaldırıldı — filtreli blog sayfaları artık `/blog/`'a canonical işaret ediyor
 - **Ödeme/sipariş admin düzeltmeleri** (haziran 2026) — `JobPayment.status` readonly yapıldı; `approve_feature` action `status='success'` ama `feature_status='pending'` olan kayıtları da işler; gerçek işlenen sayı mesajı düzeltildi; `Donation` modeline `pending_confirmation` status eklendi (migration 0122); `send_support_email` artık DB kaydı oluşturuyor; `mark_donation_transferred` view + URL eklendi; e-posta şablonuna "Havaleyi Yaptım" butonu eklendi; `AlexOrderProxy` + `AlexOrderAdmin` eklendi (`openalex/admin.py`) — dashboard linki düzeltildi (404 veriyordu); `BibliometricOrder.status` readonly yapıldı; Gelir Özeti'ne vitrin + biblio + openalex aylık/toplam gelir eklendi; bağış filtresi `'approved'`→`'completed'` düzeltildi; Vitrine Taşı butonu zaten vitrindekilerde gizleniyor
+- **Kullanıcı navigasyon analizi** (haziran 2026) — `analytics/` Django uygulaması; `PageView` (ham log, 5 gün TTL) + `PageViewSummary` (kalıcı özet); `PageViewMiddleware` login'li kullanıcıların GET 200 isteklerini loglar (`/static/`, `/admin/`, `/api/` vb. atlanır); URL → Türkçe sekme adı eşleştirmesi (`analytics/utils.py`); admin'de kullanıcı bazlı liste + `/admin/analytics/pageview/grafik/` Chart.js sayfası (kullanıcı adına tıkla → o kullanıcının pasta/çizgi/bar grafiği); `cleanup_pageviews` management command + `/api/cron/cleanup-pageviews/` endpoint; Hetzner crontab'ında `0 4 * * *`
+- **Semantic Scholar e-posta revizyonu** (haziran 2026) — demo email OpenAlex ile hizalandı; "info@analizus.com'a yaz" kaldırıldı, sipariş sayfası linki eklendi; S3 linki varsa ek gönderilmez (OpenAlex pattern)
 
 ### Sıradaki Görevler
 - **ML Araçları** — Rastgele Orman, KNN (Karar Ağacı + SVM tamamlandı)
@@ -1202,11 +1205,11 @@ with connection.cursor() as c:
 - Yeni kullanıcı onboarding akışı — altyapı hazır (migration `0067_profile_onboarding`; `segment`, `onboarding_completed`, `onboarding_interests`, `onboarding_tools` alanları + `/onboarding/` view mevcut); toplanan veri henüz kullanıcı deneyimine yansıtılmıyor; **pasif bekliyor**
 - Analiz araçlarında akıllı hata yönetimi — `data_validator.py` mevcut ama yalnızca Cronbach'ta aktif; araç bazlı ön kontrol + Türkçe hata mesajları eksik; **pasif bekliyor**
 - Blog içerik altyapısı iyileştirmeleri
-- Admin analytics dashboard (kullanıcı navigasyon takibi tamamlandı — haziran 2026)
+- Admin analytics dashboard — navigasyon takibi tamamlandı; gelişmiş kullanıcı segmentasyonu/funnel analizi eklenebilir
 - **Semantic Scholar → Bibliometrik Analiz entegrasyonu** — Semantic Scholar'dan BibTeX export ekle; sonuçları doğrudan `/bibliometrics/` aracına aktar; iki taraf değişiklik gerektirir (`semanticscholar/` export + `bibliometrics/` parser)
 - Gamification genişletmesi
 - Fiyatlandırma sayfası (iş kararı — en son)
 
 ---
 
-*Son güncelleme: Haziran 2026 — Ödeme/sipariş admin düzeltmeleri: status readonly, bağış akışı DB kaydı + havale bildirimi, AlexOrder admin, Gelir Özeti 4 kanal. Önceki: SEO GSC hataları; Çalışma odası mesaj düzenleme/silme + @mention e-posta; migration çakışması düzeltmesi; Semantic Scholar; WoS parser; DM okundu göstergesi; Karar Ağacı + SVM.*
+*Son güncelleme: Haziran 2026 — Kullanıcı navigasyon analizi (analytics app, Chart.js admin grafik, cron cleanup); Semantic Scholar API key + demo email revizyonu. Önceki: Ödeme/sipariş admin düzeltmeleri; SEO GSC hataları; Çalışma odası mesaj düzenleme/silme + @mention e-posta; Semantic Scholar modülü; WoS parser; DM okundu göstergesi; Karar Ağacı + SVM.*
