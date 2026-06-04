@@ -239,7 +239,7 @@ def get_dashboard_context():
     pending_stories  = SuccessStory.objects.filter(approval_status='pending').select_related('user')
     pending_reviews  = JobReview.objects.filter(is_approved=False).select_related('reviewer', 'reviewed_user', 'job')
     unread_contacts  = ContactMessage.objects.filter(is_read=False).order_by('-created_at')[:20]
-    pending_donations = Donation.objects.filter(status='pending').select_related('user').order_by('-created_at')
+    pending_donations = Donation.objects.filter(status='pending_confirmation').select_related('user').order_by('-created_at')
 
     # === BEKLEYEN ÖDEME SİPARİŞLERİ ===
     try:

@@ -71,9 +71,22 @@
           <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
             <tr><td style="padding:6px 0;font-size:13px;color:#cbd5e1;"><span style="color:#a855f7;font-weight:700;">1.</span> Yukarıdaki IBAN'a <strong>{{ tier_amount }} TL</strong> havale yapınız.</td></tr>
             <tr><td style="padding:6px 0;font-size:13px;color:#cbd5e1;"><span style="color:#a855f7;font-weight:700;">2.</span> Açıklama alanına <strong>{{ username }} — Destek</strong> yazınız.</td></tr>
-            <tr><td style="padding:6px 0;font-size:13px;color:#cbd5e1;"><span style="color:#a855f7;font-weight:700;">3.</span> Havale sonrası admin tarafından kontrol edilir.</td></tr>
+            <tr><td style="padding:6px 0;font-size:13px;color:#cbd5e1;"><span style="color:#a855f7;font-weight:700;">3.</span> Havaleyi yaptıktan sonra aşağıdaki butona tıklayarak bize bildirin.</td></tr>
             <tr><td style="padding:6px 0;font-size:13px;color:#cbd5e1;"><span style="color:#a855f7;font-weight:700;">4.</span> Onaylandıktan sonra Premium ve Destekçi Rozeti <strong>24 saat içinde</strong> aktifleştirilir.</td></tr>
           </table>
+
+          <!-- Bildir Butonu -->
+          {% if confirm_url %}
+          <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
+            <tr>
+              <td align="center">
+                <a href="{{ confirm_url }}" style="display:inline-block;padding:12px 32px;background:linear-gradient(135deg,#ec4899,#a855f7);color:#fff;font-size:14px;font-weight:700;border-radius:8px;text-decoration:none;">
+                  ✅ Havaleyi Yaptım — Bildir
+                </a>
+              </td>
+            </tr>
+          </table>
+          {% endif %}
 
           <!-- Ayrıcalıklar -->
           <p style="margin:0 0 12px;font-size:12px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.08em;">🎁 Kazanacağınız Ayrıcalıklar</p>
