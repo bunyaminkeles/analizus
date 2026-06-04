@@ -53,14 +53,47 @@ def get_dashboard_context():
 
     # === GELİR ÖZETİ ===
     month_donation_sum = Donation.objects.filter(
-        status='approved', created_at__date__gte=last_30_days
+        status='completed', created_at__date__gte=last_30_days
     ).aggregate(s=Sum('amount'))['s'] or 0
 
     total_donation_sum = Donation.objects.filter(
-        status='approved'
+        status='completed'
     ).aggregate(s=Sum('amount'))['s'] or 0
 
-    # Analiz servisleri geliri
+    # Vitrin geliri
+    from forum.models import JobPayment
+    month_vitrin_sum = JobPayment.objects.filter(
+        status='success', created_at__date__gte=last_30_days
+    ).aggregate(s=Sum('amount'))['s'] or 0
+    total_vitrin_sum = JobPayment.objects.filter(
+        status='success'
+    ).aggregate(s=Sum('amount'))['s'] or 0
+
+    # OpenAlex sipariş geliri
+    try:
+        from openalex.models import AlexOrder
+        month_openalex_sum = AlexOrder.objects.filter(
+            status='completed', created_at__date__gte=last_30_days
+        ).aggregate(s=Sum('total_price'))['s'] or 0
+        total_openalex_sum = AlexOrder.objects.filter(
+            status='completed'
+        ).aggregate(s=Sum('total_price'))['s'] or 0
+    except Exception:
+        month_openalex_sum = total_openalex_sum = 0
+
+    # Bibliometrik sipariş geliri
+    try:
+        from bibliometrics.models import BibliometricOrder
+        month_biblio_sum = BibliometricOrder.objects.filter(
+            status='completed', created_at__date__gte=last_30_days
+        ).aggregate(s=Sum('total_price'))['s'] or 0
+        total_biblio_sum = BibliometricOrder.objects.filter(
+            status='completed'
+        ).aggregate(s=Sum('total_price'))['s'] or 0
+    except Exception:
+        month_biblio_sum = total_biblio_sum = 0
+
+    # Analiz servisleri sayım
     try:
         from tezanaliz.models import TezAnaliz
         month_tezanaliz_count = TezAnaliz.objects.filter(
@@ -326,6 +359,12 @@ def get_dashboard_context():
         # Gelir
         'month_donation_sum': month_donation_sum,
         'total_donation_sum': total_donation_sum,
+        'month_vitrin_sum': month_vitrin_sum,
+        'total_vitrin_sum': total_vitrin_sum,
+        'month_openalex_sum': month_openalex_sum,
+        'total_openalex_sum': total_openalex_sum,
+        'month_biblio_sum': month_biblio_sum,
+        'total_biblio_sum': total_biblio_sum,
         'month_tezanaliz_count': month_tezanaliz_count,
         'total_tezanaliz_count': total_tezanaliz_count,
         'month_biblio_count': month_biblio_count,

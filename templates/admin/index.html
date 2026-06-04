@@ -96,12 +96,20 @@
     </div>
     <div style="display:flex;flex-direction:column;gap:.5rem;">
       <div style="display:flex;justify-content:space-between;align-items:center;">
-        <span style="font-size:.8rem;color:#94a3b8;">Bu ay bağış</span>
-        <span style="font-size:.9rem;font-weight:700;color:#f472b6;">{{ month_donation_sum }} ₺</span>
+        <span style="font-size:.8rem;color:#94a3b8;">Bağış (ay / toplam)</span>
+        <span style="font-size:.9rem;font-weight:700;color:#f472b6;">{{ month_donation_sum }} ₺ / {{ total_donation_sum }} ₺</span>
       </div>
       <div style="display:flex;justify-content:space-between;align-items:center;">
-        <span style="font-size:.8rem;color:#94a3b8;">Toplam bağış</span>
-        <span style="font-size:.9rem;font-weight:700;color:#f1f5f9;">{{ total_donation_sum }} ₺</span>
+        <span style="font-size:.8rem;color:#94a3b8;">Vitrin (ay / toplam)</span>
+        <span style="font-size:.9rem;font-weight:700;color:#fbbf24;">{{ month_vitrin_sum }} ₺ / {{ total_vitrin_sum }} ₺</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:.8rem;color:#94a3b8;">Bibliometrik (ay / toplam)</span>
+        <span style="font-size:.9rem;font-weight:700;color:#818cf8;">{{ month_biblio_sum }} ₺ / {{ total_biblio_sum }} ₺</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:.8rem;color:#94a3b8;">OpenAlex (ay / toplam)</span>
+        <span style="font-size:.9rem;font-weight:700;color:#34d399;">{{ month_openalex_sum }} ₺ / {{ total_openalex_sum }} ₺</span>
       </div>
       <div style="border-top:1px solid rgba(255,255,255,.06);margin:.25rem 0;"></div>
       <div style="display:flex;justify-content:space-between;align-items:center;">
