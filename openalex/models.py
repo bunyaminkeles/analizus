@@ -162,3 +162,11 @@ class AlexSearchJobProxy(AlexSearchJob):
         app_label = 'oaipmh'
         verbose_name = 'OpenAlex Arama İşi'
         verbose_name_plural = 'OpenAlex Arama İşleri'
+
+
+class AlexOrderProxy(AlexOrder):
+    class Meta:
+        proxy = True
+        app_label = 'openalex'
+        verbose_name = 'OpenAlex Siparişi'
+        verbose_name_plural = 'OpenAlex Siparişleri'
