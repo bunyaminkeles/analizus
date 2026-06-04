@@ -138,13 +138,8 @@ def send_demo_email(job):
         f"Toplam Sonuç: {job.total_results}\n",
     ]
 
-    if job.all_results_file_url:
-        body_lines.append("Tüm sonuçlarınızı aşağıdaki linkten indirebilirsiniz (geçici link):")
-        body_lines.append(f"  {job.all_results_file_url}\n")
-    else:
-        body_lines.append("Tüm sonuçlara erişmek için sipariş sayfasını ziyaret edebilirsiniz:")
-        body_lines.append(f"  {site_url}/semantic-scholar/siparis/{job.id}/\n")
-
+    body_lines.append("Tüm sonuçlara erişmek için sipariş sayfasını ziyaret edebilirsiniz:")
+    body_lines.append(f"  {site_url}/semantic-scholar/siparis/{job.id}/\n")
     body_lines.append(f"---\nAnalizus - {site_url}")
 
     try:
@@ -154,13 +149,12 @@ def send_demo_email(job):
             from_email=settings.DEFAULT_FROM_EMAIL,
             to=[to_email],
         )
-        if not job.all_results_file_url:
-            demo_txt = _generate_results_txt(job.demo_results, job, is_demo=True)
-            email.attach(
-                f"semantic_scholar_{len(job.demo_results)}_sonuc.txt",
-                demo_txt,
-                'text/plain',
-            )
+        demo_txt = _generate_results_txt(job.demo_results, job, is_demo=True)
+        email.attach(
+            f"semantic_scholar_{len(job.demo_results)}_sonuc.txt",
+            demo_txt,
+            'text/plain',
+        )
         email.send()
         job.demo_email_sent = True
         job.save(update_fields=['demo_email_sent'])

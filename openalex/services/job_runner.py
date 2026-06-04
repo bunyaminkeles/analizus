@@ -128,7 +128,7 @@ def send_demo_email_async(job_id):
 
 
 def send_demo_email(job):
-    """Arama sonuçlarını (tüm sonuçlar S3 linki ile) kullanıcının emailine gönder."""
+    """Demo arama sonuçlarını (5 kayıt ek dosya + sipariş linki) kullanıcıya gönder."""
     user = job.user
     to_email = user.email
 
@@ -144,15 +144,10 @@ def send_demo_email(job):
         f"OpenAlex arama sonuçlarınız hazırlanmıştır.\n",
         f"Sorgu: {job.get_query_summary()}",
         f"Toplam Sonuç: {job.total_results}\n",
+        "Tüm sonuçlara erişmek için sipariş sayfasını ziyaret edebilirsiniz:",
+        f"  {site_url}/openalex/siparis/{job.id}/\n",
+        f"---\nAnalizus - {site_url}",
     ]
-
-    if job.all_results_file_url:
-        body_lines.append(f"Tüm sonuçlarınızı aşağıdaki linkten indirebilirsiniz (geçici link):")
-        body_lines.append(f"  {job.all_results_file_url}\n")
-    else:
-        demo_txt = _generate_alex_results_txt(job.demo_results, job, is_demo=False)
-
-    body_lines.append(f"\n---\nAnalizus - {site_url}")
 
     try:
         email = EmailMessage(
@@ -161,13 +156,12 @@ def send_demo_email(job):
             from_email=settings.DEFAULT_FROM_EMAIL,
             to=[to_email],
         )
-        if not job.all_results_file_url:
-            demo_txt = _generate_alex_results_txt(job.demo_results, job, is_demo=False)
-            email.attach(
-                f"openalex_{len(job.demo_results)}_sonuc.txt",
-                demo_txt,
-                'text/plain',
-            )
+        demo_txt = _generate_alex_results_txt(job.demo_results, job, is_demo=True)
+        email.attach(
+            f"openalex_{len(job.demo_results)}_sonuc.txt",
+            demo_txt,
+            'text/plain',
+        )
         email.send()
 
         job.demo_email_sent = True
