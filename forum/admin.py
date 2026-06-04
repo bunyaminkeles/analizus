@@ -578,7 +578,7 @@ class JobPaymentAdmin(ModelAdmin):
     list_display = ('job', 'amount', 'duration_days', 'status', 'feature_status_display', 'created_at')
     list_filter = ('status', 'created_at', 'job__feature_status')
     search_fields = ('job__title', 'payment_id')
-    readonly_fields = ('payment_id', 'conversation_id', 'created_at')
+    readonly_fields = ('payment_id', 'conversation_id', 'created_at', 'status')
     ordering = ('-created_at',)
     actions = ['approve_feature', 'reject_feature']
 
