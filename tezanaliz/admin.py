@@ -61,7 +61,7 @@ class BibliometricOrderProxyAdmin(ModelAdmin):
                     'status', 'results_email_sent', 'created_at')
     list_filter = ('status', 'results_email_sent')
     search_fields = ('user__username', 'job__original_filename')
-    readonly_fields = ('id', 'created_at', 'updated_at', 'approved_at',
+    readonly_fields = ('id', 'status', 'created_at', 'updated_at', 'approved_at',
                        'results_email_sent_at')
     ordering = ('-created_at',)
     actions = ['approve_and_send_email']
