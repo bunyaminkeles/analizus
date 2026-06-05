@@ -62,23 +62,20 @@ class PageViewAdmin(ModelAdmin):
         for row in daily:
             row['timestamp__date'] = str(row['timestamp__date'])
 
-        top_users = []
+        top_users = list(
+            qs.values('user__username')
+            .annotate(total=Count('id'))
+            .order_by('-total')[:10]
+        )
         per_user_data = {}
-        if not username:
-            base_qs = PageView.objects.filter(timestamp__date__gte=cutoff)
-            top_users = list(
-                base_qs.values('user__username')
-                .annotate(total=Count('id'))
-                .order_by('-total')[:10]
-            )
-            for u in top_users:
-                uname = u['user__username']
-                u_qs = base_qs.filter(user__username=uname)
-                u_pages = list(u_qs.values('tab_name').annotate(total=Count('id')).order_by('-total')[:10])
-                u_daily = list(u_qs.values('timestamp__date').annotate(total=Count('id')).order_by('timestamp__date'))
-                for r in u_daily:
-                    r['timestamp__date'] = str(r['timestamp__date'])
-                per_user_data[uname] = {'pages': u_pages, 'daily': u_daily}
+        for u in top_users:
+            uname = u['user__username']
+            u_qs = qs.filter(user__username=uname)
+            u_pages = list(u_qs.values('tab_name').annotate(total=Count('id')).order_by('-total')[:10])
+            u_daily = list(u_qs.values('timestamp__date').annotate(total=Count('id')).order_by('timestamp__date'))
+            for r in u_daily:
+                r['timestamp__date'] = str(r['timestamp__date'])
+            per_user_data[uname] = {'pages': u_pages, 'daily': u_daily}
 
         context = {
             **self.admin_site.each_context(request),
