@@ -29,11 +29,8 @@ class Command(BaseCommand):
 
         aggregates = list(
             old_qs
-            .values('timestamp__date', 'path', 'tab_name')
-            .annotate(
-                visit_count=Count('id'),
-                unique_users=Count('user_id', distinct=True),
-            )
+            .values('timestamp__date', 'user_id', 'path', 'tab_name')
+            .annotate(visit_count=Count('id'))
         )
 
         if options['dry_run']:
@@ -48,17 +45,16 @@ class Command(BaseCommand):
             for row in aggregates:
                 obj, created = PageViewSummary.objects.get_or_create(
                     date=row['timestamp__date'],
+                    user_id=row['user_id'],
                     path=row['path'],
                     defaults={
                         'tab_name': row['tab_name'],
                         'visit_count': row['visit_count'],
-                        'unique_users': row['unique_users'],
                     },
                 )
                 if not created:
                     obj.visit_count += row['visit_count']
-                    obj.unique_users = max(obj.unique_users, row['unique_users'])
-                    obj.save(update_fields=['visit_count', 'unique_users'])
+                    obj.save(update_fields=['visit_count'])
                 upserted += 1
 
             deleted_count, _ = old_qs.delete()

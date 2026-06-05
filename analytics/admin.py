@@ -97,12 +97,21 @@ class PageViewAdmin(ModelAdmin):
 
 @admin.register(PageViewSummary)
 class PageViewSummaryAdmin(ModelAdmin):
-    list_display = ['date', 'tab_name', 'visit_count', 'unique_users', 'path']
+    list_display = ['date', 'get_username', 'tab_name', 'visit_count', 'path']
     list_filter = ['tab_name']
     date_hierarchy = 'date'
     ordering = ['-date', '-visit_count']
     list_per_page = 50
-    search_fields = ['tab_name', 'path']
+    search_fields = ['user__username', 'tab_name', 'path']
+    list_select_related = True
+
+    def get_username(self, obj):
+        if obj.user:
+            chart_url = reverse('admin:analytics_grafik') + f'?user={obj.user.username}'
+            return format_html('<a href="{}" title="Grafiği Gör">{}</a>', chart_url, obj.user.username)
+        return '—'
+    get_username.short_description = 'Kullanıcı'
+    get_username.admin_order_field = 'user__username'
 
     def has_add_permission(self, request):
         return False
