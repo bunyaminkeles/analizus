@@ -21,6 +21,12 @@
     </div>
   </div>
 
+  <!-- Aktif kullanıcı başlığı -->
+  <div id="user-section-header" class="hidden mb-3 flex items-center gap-2">
+    <span class="text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500">Gösterilen kullanıcı</span>
+    <span id="user-section-name" class="text-base font-bold text-indigo-600 dark:text-indigo-400"></span>
+  </div>
+
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
 
     <!-- En Çok Ziyaret Edilen Sayfalar -->
@@ -127,13 +133,20 @@
 
   function setActiveBadge(username) {
     const badge = document.getElementById('active-user-badge');
+    const header = document.getElementById('user-section-header');
+    const headerName = document.getElementById('user-section-name');
     if (username) {
       document.getElementById('active-user-name').textContent = username;
       badge.classList.remove('hidden');
       badge.classList.add('flex');
+      headerName.textContent = username;
+      header.classList.remove('hidden');
+      header.classList.add('flex');
     } else {
       badge.classList.add('hidden');
       badge.classList.remove('flex');
+      header.classList.add('hidden');
+      header.classList.remove('flex');
     }
   }
 
