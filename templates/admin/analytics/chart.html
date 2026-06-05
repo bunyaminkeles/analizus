@@ -9,23 +9,23 @@
       <h1 class="text-2xl font-semibold text-gray-900 dark:text-gray-100">{{ title }}</h1>
       <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">{{ date_range }}</p>
     </div>
-    <a href="{% url 'admin:analytics_pageview_changelist' %}"
-       class="text-sm text-indigo-600 dark:text-indigo-400 hover:underline">
-      ← Ziyaret Listesi
-    </a>
+    <div class="flex items-center gap-3">
+      <span id="active-user-badge" class="hidden items-center gap-2 px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 dark:bg-indigo-900/40 text-indigo-800 dark:text-indigo-200">
+        <span id="active-user-name"></span>
+        <button id="reset-filter" title="Filtreyi Kaldır" class="text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-100 font-bold leading-none">×</button>
+      </span>
+      <a href="{% url 'admin:analytics_pageview_changelist' %}"
+         class="text-sm text-indigo-600 dark:text-indigo-400 hover:underline">
+        ← Ziyaret Listesi
+      </a>
+    </div>
   </div>
-
-  {% if username %}
-  <div class="bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-700 rounded-lg p-4 mb-6 text-sm text-indigo-800 dark:text-indigo-200">
-    <strong>{{ username }}</strong> kullanıcısının son 7 günlük navigasyon geçmişi
-  </div>
-  {% endif %}
 
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
 
     <!-- En Çok Ziyaret Edilen Sayfalar -->
     <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 shadow-sm">
-      <h2 class="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide mb-4">
+      <h2 id="top-pages-title" class="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide mb-4">
         En Çok Ziyaret Edilen Sayfalar
       </h2>
       <canvas id="topPagesChart"></canvas>
@@ -33,7 +33,7 @@
 
     <!-- Günlük Trend -->
     <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 shadow-sm">
-      <h2 class="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide mb-4">
+      <h2 id="daily-title" class="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide mb-4">
         Günlük Ziyaret Trendi
       </h2>
       <canvas id="dailyChart"></canvas>
@@ -41,27 +41,14 @@
 
   </div>
 
-  {% if not username %}
   <!-- En Aktif Kullanıcılar -->
   <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 shadow-sm mb-6">
-    <h2 class="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide mb-4">
+    <h2 class="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide mb-1">
       En Aktif Kullanıcılar (Son 7 Gün)
     </h2>
+    <p class="text-xs text-gray-400 dark:text-gray-500 mb-4">Bir kullanıcıya tıklayarak üstteki grafikleri filtreleyin</p>
     <canvas id="topUsersChart"></canvas>
-
-    <div id="user-links" class="mt-4 flex flex-wrap gap-2"></div>
   </div>
-  {% endif %}
-
-  {% if username and user_pages_json != '[]' %}
-  <!-- Kullanıcının Sayfa Dağılımı -->
-  <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 shadow-sm mb-6">
-    <h2 class="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide mb-4">
-      {{ username }} — Hangi Sayfalara Baktı?
-    </h2>
-    <canvas id="userPagesChart"></canvas>
-  </div>
-  {% endif %}
 
 </div>
 
@@ -71,17 +58,17 @@
   const topPagesRaw  = JSON.parse('{{ top_pages_json|escapejs }}');
   const dailyRaw     = JSON.parse('{{ daily_json|escapejs }}');
   const topUsersRaw  = JSON.parse('{{ top_users_json|escapejs }}');
-  const userPagesRaw = JSON.parse('{{ user_pages_json|escapejs }}');
+  const perUserData  = JSON.parse('{{ per_user_data_json|escapejs }}');
 
-  // Renk paletleri — indigo / violet / emerald (projeyle uyumlu)
-  const indigo = 'rgba(99,102,241,0.75)';
+  const indigo       = 'rgba(99,102,241,0.75)';
   const indigoBorder = 'rgb(99,102,241)';
-  const violet = 'rgba(139,92,246,0.75)';
+  const violet       = 'rgba(139,92,246,0.75)';
   const violetBorder = 'rgb(139,92,246)';
-  const emerald = 'rgba(16,185,129,0.75)';
-  const emeraldBorder = 'rgb(16,185,129)';
+  const emerald      = 'rgba(16,185,129,0.75)';
+  const emeraldBorder= 'rgb(16,185,129)';
+  const emeraldSel   = 'rgba(16,185,129,1)';
 
-  const isDark = document.documentElement.classList.contains('dark');
+  const isDark    = document.documentElement.classList.contains('dark');
   const textColor = isDark ? '#d1d5db' : '#374151';
   const gridColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)';
 
@@ -91,57 +78,99 @@
   };
 
   // --- Top Sayfalar (yatay bar) ---
-  if (topPagesRaw.length) {
-    new Chart(document.getElementById('topPagesChart'), {
-      type: 'bar',
-      data: {
-        labels: topPagesRaw.map(d => d.tab_name),
-        datasets: [{ label: 'Ziyaret', data: topPagesRaw.map(d => d.total),
-          backgroundColor: indigo, borderColor: indigoBorder, borderWidth: 1 }],
-      },
-      options: {
-        indexAxis: 'y',
-        plugins: { legend: { display: false } },
-        scales: { x: scaleOpts, y: { ...scaleOpts, ticks: { ...scaleOpts.ticks, font: { size: 11 } } } },
-      },
-    });
-  }
+  const topPagesChart = topPagesRaw.length ? new Chart(document.getElementById('topPagesChart'), {
+    type: 'bar',
+    data: {
+      labels: topPagesRaw.map(d => d.tab_name),
+      datasets: [{ label: 'Ziyaret', data: topPagesRaw.map(d => d.total),
+        backgroundColor: indigo, borderColor: indigoBorder, borderWidth: 1 }],
+    },
+    options: {
+      indexAxis: 'y',
+      plugins: { legend: { display: false } },
+      scales: { x: scaleOpts, y: { ...scaleOpts, ticks: { ...scaleOpts.ticks, font: { size: 11 } } } },
+    },
+  }) : null;
 
   // --- Günlük Trend (çizgi) ---
-  if (dailyRaw.length) {
-    new Chart(document.getElementById('dailyChart'), {
-      type: 'line',
-      data: {
-        labels: dailyRaw.map(d => d.timestamp__date),
-        datasets: [{ label: 'Ziyaret', data: dailyRaw.map(d => d.total),
-          borderColor: violetBorder, backgroundColor: 'rgba(139,92,246,0.12)',
-          tension: 0.4, fill: true, pointRadius: 4 }],
-      },
-      options: {
-        plugins: { legend: { display: false } },
-        scales: { x: scaleOpts, y: { ...scaleOpts, beginAtZero: true } },
-      },
-    });
+  const dailyChart = dailyRaw.length ? new Chart(document.getElementById('dailyChart'), {
+    type: 'line',
+    data: {
+      labels: dailyRaw.map(d => d.timestamp__date),
+      datasets: [{ label: 'Ziyaret', data: dailyRaw.map(d => d.total),
+        borderColor: violetBorder, backgroundColor: 'rgba(139,92,246,0.12)',
+        tension: 0.4, fill: true, pointRadius: 4 }],
+    },
+    options: {
+      plugins: { legend: { display: false } },
+      scales: { x: scaleOpts, y: { ...scaleOpts, beginAtZero: true } },
+    },
+  }) : null;
+
+  // --- Grafikleri güncelle ---
+  function updateTopCharts(pages, daily, label) {
+    if (topPagesChart) {
+      topPagesChart.data.labels   = pages.map(d => d.tab_name);
+      topPagesChart.data.datasets[0].data = pages.map(d => d.total);
+      topPagesChart.update();
+    }
+    if (dailyChart) {
+      dailyChart.data.labels   = daily.map(d => d.timestamp__date);
+      dailyChart.data.datasets[0].data = daily.map(d => d.total);
+      dailyChart.update();
+    }
+    document.getElementById('top-pages-title').textContent =
+      label ? `En Çok Ziyaret — ${label}` : 'En Çok Ziyaret Edilen Sayfalar';
+    document.getElementById('daily-title').textContent =
+      label ? `Günlük Trend — ${label}` : 'Günlük Ziyaret Trendi';
+  }
+
+  function setActiveBadge(username) {
+    const badge = document.getElementById('active-user-badge');
+    if (username) {
+      document.getElementById('active-user-name').textContent = username;
+      badge.classList.remove('hidden');
+      badge.classList.add('flex');
+    } else {
+      badge.classList.add('hidden');
+      badge.classList.remove('flex');
+    }
   }
 
   // --- En Aktif Kullanıcılar ---
+  let selectedUser = null;
   const topUsersCanvas = document.getElementById('topUsersChart');
   if (topUsersCanvas && topUsersRaw.length) {
-    new Chart(topUsersCanvas, {
+    const bgColors = () => topUsersRaw.map((_, i) =>
+      selectedUser === topUsersRaw[i].user__username ? emeraldSel : emerald
+    );
+
+    const topUsersChart = new Chart(topUsersCanvas, {
       type: 'bar',
       data: {
         labels: topUsersRaw.map(d => d.user__username),
         datasets: [{ label: 'Sayfa Ziyareti', data: topUsersRaw.map(d => d.total),
-          backgroundColor: emerald, borderColor: emeraldBorder, borderWidth: 1 }],
+          backgroundColor: bgColors(), borderColor: emeraldBorder, borderWidth: 1 }],
       },
       options: {
         plugins: { legend: { display: false } },
         scales: { x: scaleOpts, y: { ...scaleOpts, beginAtZero: true } },
         onClick: (evt, elements) => {
-          if (elements.length) {
-            const username = topUsersRaw[elements[0].index].user__username;
-            window.location.href = `?user=${encodeURIComponent(username)}`;
+          if (!elements.length) return;
+          const uname = topUsersRaw[elements[0].index].user__username;
+          if (selectedUser === uname) {
+            // ikinci tıklama → filtreyi kaldır
+            selectedUser = null;
+            updateTopCharts(topPagesRaw, dailyRaw, null);
+            setActiveBadge(null);
+          } else {
+            selectedUser = uname;
+            const ud = perUserData[uname];
+            if (ud) updateTopCharts(ud.pages, ud.daily, uname);
+            setActiveBadge(uname);
           }
+          topUsersChart.data.datasets[0].backgroundColor = bgColors();
+          topUsersChart.update();
         },
         onHover: (evt, elements) => {
           evt.native.target.style.cursor = elements.length ? 'pointer' : 'default';
@@ -149,36 +178,12 @@
       },
     });
 
-    // Kullanıcı bazlı grafik linkleri
-    const linksDiv = document.getElementById('user-links');
-    topUsersRaw.forEach(d => {
-      const a = document.createElement('a');
-      a.href = `?user=${encodeURIComponent(d.user__username)}`;
-      a.textContent = `${d.user__username} (${d.total})`;
-      a.className = 'inline-block px-3 py-1 rounded-full text-xs font-medium bg-emerald-100 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300 hover:bg-emerald-200 dark:hover:bg-emerald-800 transition-colors';
-      linksDiv.appendChild(a);
-    });
-  }
-
-  // --- Kullanıcı Sayfa Dağılımı (pasta) ---
-  const userPagesCanvas = document.getElementById('userPagesChart');
-  if (userPagesCanvas && userPagesRaw.length) {
-    const palette = [
-      '#6366f1','#8b5cf6','#10b981','#f59e0b','#ef4444',
-      '#3b82f6','#ec4899','#14b8a6','#f97316','#a855f7',
-    ];
-    new Chart(userPagesCanvas, {
-      type: 'doughnut',
-      data: {
-        labels: userPagesRaw.map(d => d.tab_name),
-        datasets: [{ data: userPagesRaw.map(d => d.total),
-          backgroundColor: palette.slice(0, userPagesRaw.length), borderWidth: 2 }],
-      },
-      options: {
-        plugins: {
-          legend: { position: 'right', labels: { color: textColor, font: { size: 12 }, padding: 12 } },
-        },
-      },
+    document.getElementById('reset-filter').addEventListener('click', () => {
+      selectedUser = null;
+      updateTopCharts(topPagesRaw, dailyRaw, null);
+      setActiveBadge(null);
+      topUsersChart.data.datasets[0].backgroundColor = bgColors();
+      topUsersChart.update();
     });
   }
 })();
