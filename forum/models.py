@@ -797,6 +797,20 @@ class SuccessStory(models.Model):
     def __str__(self):
         return f"{self.user.username} - Başarı Hikayesi"
 
+class JobCategory(models.Model):
+    title = models.CharField(max_length=100, verbose_name="Kategori Adı")
+    order = models.IntegerField(default=0, verbose_name="Sıralama")
+    is_active = models.BooleanField(default=True, verbose_name="Aktif")
+
+    class Meta:
+        verbose_name = "İş Kategorisi"
+        verbose_name_plural = "İş Kategorileri"
+        ordering = ['order', 'title']
+
+    def __str__(self):
+        return self.title
+
+
 class FreelanceJob(models.Model):
     """Kullanıcıların verdiği iş ilanları (Freelance Market)"""
     STATUS_CHOICES = (
@@ -813,7 +827,7 @@ class FreelanceJob(models.Model):
     budget_min = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name="Min Bütçe (TL)")
     budget_max = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Max Bütçe (TL)")
     expected_duration = models.CharField(max_length=100, blank=True, verbose_name="Beklenen Teslim Süresi")
-    category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, related_name='jobs', verbose_name="Kategori")
+    category = models.ForeignKey(JobCategory, on_delete=models.SET_NULL, null=True, blank=True, related_name='jobs', verbose_name="Kategori")
     
     likes = models.ManyToManyField(User, related_name='liked_jobs', blank=True, verbose_name="Beğenenler")
     saved_by = models.ManyToManyField(User, related_name='saved_jobs', blank=True, verbose_name="Kaydedenler")

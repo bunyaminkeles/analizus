@@ -7,11 +7,13 @@
 
 ## 1. PROJE AMAÇ VE VİZYON
 
-**Platform tanımı:** Analizus; bütün veri analizi, istatistiki analizler ve yapay zeka modellemeleri için uzmanların ve talep sahiplerinin buluştuğu, akademik desteklerin sıfırdan uzmanlık düzeyine kadar verildiği, kabiliyetlerin hizmete dönüştürüldüğü, kodsuz veri kazıma ile veri erişiminin sağlanabildiği bir forum ve analiz platformudur.
+**Platform tanımı:** Analizus; veri analizi, istatistiksel analizler ve yapay zeka modellemeleri için uzmanların ve talep sahiplerinin buluştuğu bir analiz platformudur. Hem akademik çevreye (tez/makale desteği) hem de kurumsal müşterilere (şirket verisi → insight, görselleştirme, ML) hizmet verir.
 
 **Alan adı:** `analizus.com`
-**Hedef kitle:** Tez yazan öğrenciler, makale hazırlayan akademisyenler, istatistik analizine ihtiyaç duyan araştırmacılar ve bu alanda hizmet veren uzmanlar.
-**Temel değer önerisi:** Tezin için doğru istatistik testini seç, verinle anında hesapla, gerektiğinde uzman bul — Türkçe, güvenilir, akademik düzeyde.
+**Hedef kitle (iki segment):**
+- **Akademik:** Tez yazan öğrenciler, makale hazırlayan akademisyenler, istatistik analizine ihtiyaç duyan araştırmacılar
+- **Kurumsal:** Verilerinden insight elde etmek, görselleştirme/ML yaptırmak isteyen şirketler ve kurumlar
+**Temel değer önerisi:** Doğru istatistik testini seç, verinle anında hesapla, gerektiğinde uzman bul — Türkçe, güvenilir, akademik ve kurumsal düzeyde.
 **Tasarım felsefesi:** `ax-` prefix'li özel CSS sınıfları; Bootstrap sadece grid (`container`, `row`, `col-*`) için kullanılır. UI elementleri (`btn`, `card`, `badge`) tamamen özel CSS'ten gelir.
 **Güven prensibi:** Kullanıcılar analiz sonuçlarına güvenmek zorunda — hızlı değil, doğru.
 
@@ -182,9 +184,8 @@ GEMINI_API_KEY=...
 # Cron güvenlik
 CRON_SECRET_KEY=...
 
-# Ödeme (henüz pasif)
-IYZICO_API_KEY=...
-IYZICO_SECRET_KEY=...
+# WhatsApp float butonu (boşsa buton çıkmaz)
+WHATSAPP_NUMBER=905XXXXXXXXX    # Uluslararası format, başında + yok
 
 # OpenAlex polite pool
 OPENALEX_EMAIL=info@analizus.com
@@ -322,6 +323,7 @@ CLAUDE.md                   # AI geliştirme kuralları ve görev listesi
 /analiz/            → istatistik.urls_analiz (unified konsol — /analiz/<slug>/)
                       /analiz/ → analiz_hub view (tüm araçları kategorili listeler; guest + login)
 /tarama/            → tarama_hub view (yoktez, openalex, trdizin, oaipmh kartları; guest + login)
+/proje-talebi/      → proje_talebi view (kurumsal talep formu — ProjectRequest modeli, FAQPage schema)
 /sitemap.xml        → Django sitemaps (StaticView, Topic, Category, Job, BlogPost, Istatistik, Tools)
 /robots.txt         → TemplateView
 /534e22a9f9e4d375119c5bc6d006aad0.txt → IndexNow key (Bing doğrulama)
@@ -438,6 +440,22 @@ class IstatistikJob:
     created_at, completed_at
     # Dosya içeriği in-memory dict'te tutulur (_pending_file_contents)
     # — DB'ye yazılmaz, worker thread'e aktarılır
+```
+
+### Kurumsal Talep (ProjectRequest)
+```python
+class ProjectRequest:
+    name: str                  # Ad Soyad
+    email: EmailField
+    company: str (blank)       # Şirket / Kurum
+    analysis_type: choice      # visualization | ml | statistics | cleaning | timeseries | nlp | other
+    description: TextField
+    data_size: choice          # small | medium | large | unknown
+    timeline: choice           # urgent | short | flexible
+    status: choice             # new | in_review | contacted | closed  (admin'den yönetilir)
+    admin_notes: TextField
+    # Gönderimde: admine ADMIN_NOTIFICATION_EMAIL'e + kullanıcıya onay e-postası gider
+    # Admin paneli: renk kodlu durum, list_editable status, fieldset
 ```
 
 ### Diğer Önemli Modeller
@@ -1201,6 +1219,7 @@ with connection.cursor() as c:
 - **Ödeme/sipariş admin düzeltmeleri** (haziran 2026) — `JobPayment.status` readonly yapıldı; `approve_feature` action `status='success'` ama `feature_status='pending'` olan kayıtları da işler; gerçek işlenen sayı mesajı düzeltildi; `Donation` modeline `pending_confirmation` status eklendi (migration 0122); `send_support_email` artık DB kaydı oluşturuyor; `mark_donation_transferred` view + URL eklendi; e-posta şablonuna "Havaleyi Yaptım" butonu eklendi; `AlexOrderProxy` + `AlexOrderAdmin` eklendi (`openalex/admin.py`) — dashboard linki düzeltildi (404 veriyordu); `BibliometricOrder.status` readonly yapıldı; Gelir Özeti'ne vitrin + biblio + openalex aylık/toplam gelir eklendi; bağış filtresi `'approved'`→`'completed'` düzeltildi; Vitrine Taşı butonu zaten vitrindekilerde gizleniyor
 - **Kullanıcı navigasyon analizi** (haziran 2026) — `analytics/` Django uygulaması; `PageView` (ham log, 5 gün TTL) + `PageViewSummary` (kalıcı özet, user FK ile); `PageViewMiddleware` login'li kullanıcıların GET 200 isteklerini loglar (`/static/`, `/admin/`, `/api/` vb. atlanır); URL → Türkçe sekme adı eşleştirmesi (`analytics/utils.py`); admin'de kullanıcı bazlı liste + `/admin/analytics/pageview/grafik/` Chart.js sayfası — "En Aktif Kullanıcılar" bar'ına tıklanınca üstteki "En Çok Ziyaret" + "Günlük Trend" grafikleri sayfa yenilemesiz in-place güncellenir, seçili kullanıcı badge ile gösterilir, tekrar tıklanınca filtre sıfırlanır; `PageViewSummary` user FK'lı (migration 0002), user bazlı arama admin'de çalışır; `cleanup_pageviews` management command + `/api/cron/cleanup-pageviews/` endpoint (her ikisi de user_id bazlı aggregate); Hetzner crontab'ında `0 4 * * *`
 - **Semantic Scholar e-posta revizyonu** (haziran 2026) — demo email OpenAlex ile hizalandı; "info@analizus.com'a yaz" kaldırıldı, sipariş sayfası linki eklendi; S3 linki varsa ek gönderilmez (OpenAlex pattern)
+- **SEO — GSC "Alternative page with canonical tag" 30 sayfa düzeltmesi** (haziran 2026) — `blog_list.html`: kategori-only sayfalar (`/blog/?category=xyz`) self-referencing canonical → Google index'ler; sayfalama + level filtresi + arama sayfaları → `noindex, follow`; `uzman_dizini.html`: skill sayfaları (`/uzmanlar/?skill=nvivo`) self-referencing canonical; boş skill param (`/uzmanlar/?skill=`) → view'da 301 redirect `/uzmanlar/`'e; trailing `&` URL'leri (`/blog/?category=xyz&`) → `blog_list` view'da 301 redirect ile temizleniyor.
 
 ### Sıradaki Görevler
 - **ML Araçları** — Rastgele Orman, KNN (Karar Ağacı + SVM tamamlandı)
@@ -1215,4 +1234,4 @@ with connection.cursor() as c:
 
 ---
 
-*Son güncelleme: Haziran 2026 — Analytics grafik in-place user filtresi (bar tıklama → chart güncelleme, sayfa yenilemesiz); PageViewSummary user FK migrasyonu (0002); cleanup_pageviews + cron endpoint user bazlı aggregate; Semantic Scholar API key + demo email revizyonu. Önceki: Kullanıcı navigasyon analizi (analytics app, Chart.js); Ödeme/sipariş admin düzeltmeleri; SEO GSC hataları; Çalışma odası mesaj düzenleme/silme + @mention e-posta; Semantic Scholar modülü; WoS parser; DM okundu göstergesi; Karar Ağacı + SVM.*
+*Son güncelleme: Haziran 2026 — SEO GSC "Alternative page with canonical tag" 30 sayfa düzeltmesi: kategori sayfaları self-referencing canonical, pagination/level/arama noindex, skill sayfaları self-referencing canonical, boş skill redirect, trailing & redirect. Önceki: Analytics grafik in-place user filtresi; Semantic Scholar e-posta revizyonu; Kullanıcı navigasyon analizi; Ödeme/sipariş admin düzeltmeleri; Çalışma odası mesaj düzenleme/silme + @mention; Semantic Scholar modülü; WoS parser; DM okundu göstergesi; Karar Ağacı + SVM.*

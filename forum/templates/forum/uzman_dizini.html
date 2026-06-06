@@ -3,6 +3,7 @@
 
 {% block title %}Uzman Bul — Analizus Uzman Dizini{% endblock %}
 {% block meta_description %}SPSS, R ve Python uzmanları ile analistleri keşfedin. Teziniz için akademik destek veren uzmanın profilini inceleyin, uzmanlık alanlarını karşılaştırın, doğrudan iletişime geçin.{% endblock %}
+{% block canonical %}{% if selected_skill %}{% url 'uzman_dizini' %}?skill={{ selected_skill }}{% else %}{% url 'uzman_dizini' %}{% endif %}{% endblock %}
 
 {% block content %}
 <div class="container py-4">
