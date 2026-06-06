@@ -7,11 +7,13 @@
 
 ## 1. PROJE AMAÇ VE VİZYON
 
-**Platform tanımı:** Analizus; bütün veri analizi, istatistiki analizler ve yapay zeka modellemeleri için uzmanların ve talep sahiplerinin buluştuğu, akademik desteklerin sıfırdan uzmanlık düzeyine kadar verildiği, kabiliyetlerin hizmete dönüştürüldüğü, kodsuz veri kazıma ile veri erişiminin sağlanabildiği bir forum ve analiz platformudur.
+**Platform tanımı:** Analizus; veri analizi, istatistiksel analizler ve yapay zeka modellemeleri için uzmanların ve talep sahiplerinin buluştuğu bir analiz platformudur. Hem akademik çevreye (tez/makale desteği) hem de kurumsal müşterilere (şirket verisi → insight, görselleştirme, ML) hizmet verir.
 
 **Alan adı:** `analizus.com`
-**Hedef kitle:** Tez yazan öğrenciler, makale hazırlayan akademisyenler, istatistik analizine ihtiyaç duyan araştırmacılar ve bu alanda hizmet veren uzmanlar.
-**Temel değer önerisi:** Tezin için doğru istatistik testini seç, verinle anında hesapla, gerektiğinde uzman bul — Türkçe, güvenilir, akademik düzeyde.
+**Hedef kitle (iki segment):**
+- **Akademik:** Tez yazan öğrenciler, makale hazırlayan akademisyenler, istatistik analizine ihtiyaç duyan araştırmacılar
+- **Kurumsal:** Verilerinden insight elde etmek, görselleştirme/ML yaptırmak isteyen şirketler ve kurumlar
+**Temel değer önerisi:** Doğru istatistik testini seç, verinle anında hesapla, gerektiğinde uzman bul — Türkçe, güvenilir, akademik ve kurumsal düzeyde.
 **Tasarım felsefesi:** `ax-` prefix'li özel CSS sınıfları; Bootstrap sadece grid (`container`, `row`, `col-*`) için kullanılır. UI elementleri (`btn`, `card`, `badge`) tamamen özel CSS'ten gelir.
 **Güven prensibi:** Kullanıcılar analiz sonuçlarına güvenmek zorunda — hızlı değil, doğru.
 
@@ -182,9 +184,8 @@ GEMINI_API_KEY=...
 # Cron güvenlik
 CRON_SECRET_KEY=...
 
-# Ödeme (henüz pasif)
-IYZICO_API_KEY=...
-IYZICO_SECRET_KEY=...
+# WhatsApp float butonu (boşsa buton çıkmaz)
+WHATSAPP_NUMBER=905XXXXXXXXX    # Uluslararası format, başında + yok
 
 # OpenAlex polite pool
 OPENALEX_EMAIL=info@analizus.com
@@ -322,6 +323,7 @@ CLAUDE.md                   # AI geliştirme kuralları ve görev listesi
 /analiz/            → istatistik.urls_analiz (unified konsol — /analiz/<slug>/)
                       /analiz/ → analiz_hub view (tüm araçları kategorili listeler; guest + login)
 /tarama/            → tarama_hub view (yoktez, openalex, trdizin, oaipmh kartları; guest + login)
+/proje-talebi/      → proje_talebi view (kurumsal talep formu — ProjectRequest modeli, FAQPage schema)
 /sitemap.xml        → Django sitemaps (StaticView, Topic, Category, Job, BlogPost, Istatistik, Tools)
 /robots.txt         → TemplateView
 /534e22a9f9e4d375119c5bc6d006aad0.txt → IndexNow key (Bing doğrulama)
@@ -438,6 +440,22 @@ class IstatistikJob:
     created_at, completed_at
     # Dosya içeriği in-memory dict'te tutulur (_pending_file_contents)
     # — DB'ye yazılmaz, worker thread'e aktarılır
+```
+
+### Kurumsal Talep (ProjectRequest)
+```python
+class ProjectRequest:
+    name: str                  # Ad Soyad
+    email: EmailField
+    company: str (blank)       # Şirket / Kurum
+    analysis_type: choice      # visualization | ml | statistics | cleaning | timeseries | nlp | other
+    description: TextField
+    data_size: choice          # small | medium | large | unknown
+    timeline: choice           # urgent | short | flexible
+    status: choice             # new | in_review | contacted | closed  (admin'den yönetilir)
+    admin_notes: TextField
+    # Gönderimde: admine ADMIN_NOTIFICATION_EMAIL'e + kullanıcıya onay e-postası gider
+    # Admin paneli: renk kodlu durum, list_editable status, fieldset
 ```
 
 ### Diğer Önemli Modeller
