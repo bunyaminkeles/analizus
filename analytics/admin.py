@@ -24,7 +24,7 @@ class PageViewAdmin(ModelAdmin):
     list_select_related = True
 
     def get_username(self, obj):
-        chart_url = reverse('admin:analytics_grafik') + f'?user={obj.user.username}'
+        chart_url = reverse('admin:analytics_grafik')
         return format_html('<a href="{}" title="Grafiği Gör">{}</a>', chart_url, obj.user.username)
     get_username.short_description = 'Kullanıcı'
     get_username.admin_order_field = 'user__username'
@@ -46,10 +46,7 @@ class PageViewAdmin(ModelAdmin):
         today = date.today()
         cutoff = today - timedelta(days=6)
 
-        username = request.GET.get('user', '').strip()
         qs = PageView.objects.filter(timestamp__date__gte=cutoff)
-        if username:
-            qs = qs.filter(user__username=username)
 
         top_pages = list(
             qs.values('tab_name')
@@ -65,31 +62,28 @@ class PageViewAdmin(ModelAdmin):
         for row in daily:
             row['timestamp__date'] = str(row['timestamp__date'])
 
-        top_users = []
-        if not username:
-            top_users = list(
-                qs.values('user__username')
-                .annotate(total=Count('id'))
-                .order_by('-total')[:10]
-            )
-
-        # Kullanıcı bazlı sayfa dağılımı (kullanıcı filtrelendiğinde göster)
-        user_pages = []
-        if username:
-            user_pages = list(
-                qs.values('tab_name')
-                .annotate(total=Count('id'))
-                .order_by('-total')
-            )
+        top_users = list(
+            qs.values('user__username')
+            .annotate(total=Count('id'))
+            .order_by('-total')[:10]
+        )
+        per_user_data = {}
+        for u in top_users:
+            uname = u['user__username']
+            u_qs = qs.filter(user__username=uname)
+            u_pages = list(u_qs.values('tab_name').annotate(total=Count('id')).order_by('-total')[:10])
+            u_daily = list(u_qs.values('timestamp__date').annotate(total=Count('id')).order_by('timestamp__date'))
+            for r in u_daily:
+                r['timestamp__date'] = str(r['timestamp__date'])
+            per_user_data[uname] = {'pages': u_pages, 'daily': u_daily}
 
         context = {
             **self.admin_site.each_context(request),
-            'title': f'Navigasyon Grafiği — {username}' if username else 'Kullanıcı Navigasyon Analizi',
+            'title': 'Kullanıcı Navigasyon Analizi',
             'top_pages_json': json.dumps(top_pages, cls=DjangoJSONEncoder),
             'daily_json': json.dumps(daily, cls=DjangoJSONEncoder),
             'top_users_json': json.dumps(top_users, cls=DjangoJSONEncoder),
-            'user_pages_json': json.dumps(user_pages, cls=DjangoJSONEncoder),
-            'username': username,
+            'per_user_data_json': json.dumps(per_user_data, cls=DjangoJSONEncoder),
             'date_range': f'{cutoff} — {today}',
         }
         return render(request, 'admin/analytics/chart.html', context)
@@ -97,12 +91,21 @@ class PageViewAdmin(ModelAdmin):
 
 @admin.register(PageViewSummary)
 class PageViewSummaryAdmin(ModelAdmin):
-    list_display = ['date', 'tab_name', 'visit_count', 'unique_users', 'path']
+    list_display = ['date', 'get_username', 'tab_name', 'visit_count', 'path']
     list_filter = ['tab_name']
     date_hierarchy = 'date'
     ordering = ['-date', '-visit_count']
     list_per_page = 50
-    search_fields = ['tab_name', 'path']
+    search_fields = ['user__username', 'tab_name', 'path']
+    list_select_related = True
+
+    def get_username(self, obj):
+        if obj.user:
+            chart_url = reverse('admin:analytics_grafik') + f'?user={obj.user.username}'
+            return format_html('<a href="{}" title="Grafiği Gör">{}</a>', chart_url, obj.user.username)
+        return '—'
+    get_username.short_description = 'Kullanıcı'
+    get_username.admin_order_field = 'user__username'
 
     def has_add_permission(self, request):
         return False

@@ -20,16 +20,17 @@ class PageView(models.Model):
 class PageViewSummary(models.Model):
     """Ham loglar silinince burada kalıcı özet tutulur."""
     date = models.DateField(db_index=True)
+    user = models.ForeignKey(User, null=True, blank=True, on_delete=models.SET_NULL, related_name='page_view_summaries')
     path = models.CharField(max_length=200)
     tab_name = models.CharField(max_length=100)
     visit_count = models.PositiveIntegerField(default=0)
-    unique_users = models.PositiveIntegerField(default=0)
 
     class Meta:
-        unique_together = ['date', 'path']
+        unique_together = ['date', 'path', 'user']
         ordering = ['-date', '-visit_count']
         verbose_name = 'Ziyaret Özeti'
         verbose_name_plural = 'Ziyaret Özetleri'
 
     def __str__(self):
-        return f'{self.date} | {self.tab_name} | {self.visit_count} ziyaret'
+        username = self.user.username if self.user else '—'
+        return f'{self.date} | {username} | {self.tab_name} | {self.visit_count} ziyaret'
