@@ -22,6 +22,7 @@ def dashboard_callback(request, context):
         {"label": "Başarı Hikayeleri", "icon": "emoji_events",  "url": "/admin/forum/successstory/"},
         {"label": "Çalışma Odaları",   "icon": "meeting_room",  "url": "/admin/forum/studyroom/"},
         {"label": "Freelance İşler",   "icon": "work",          "url": "/admin/forum/freelancejob/"},
+        {"label": "İş Kategorileri",   "icon": "category",      "url": "/admin/forum/jobcategory/"},
         {"label": "Rozetler",          "icon": "military_tech", "url": "/admin/forum/badge/"},
         {"label": "Quiz Soruları",     "icon": "quiz",          "url": "/admin/forum/quizquestion/"},
         {"label": "Konu Etiketleri",   "icon": "label",         "url": "/admin/forum/topictag/"},
