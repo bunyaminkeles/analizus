@@ -1737,6 +1737,78 @@ def contact(request):
         return redirect('about')
     return redirect('/hakkimizda/#iletisim')
 
+
+def proje_talebi(request):
+    from .models import ProjectRequest
+    from .services.email_service import EmailService
+
+    if request.method == 'POST':
+        name = request.POST.get('name', '').strip()
+        email = request.POST.get('email', '').strip()
+        company = request.POST.get('company', '').strip()
+        analysis_type = request.POST.get('analysis_type', '')
+        description = request.POST.get('description', '').strip()
+        data_size = request.POST.get('data_size', '')
+        timeline = request.POST.get('timeline', '')
+
+        if not all([name, email, analysis_type, description, data_size, timeline]):
+            messages.error(request, 'Lütfen zorunlu alanları doldurunuz.')
+            return redirect('proje_talebi')
+
+        try:
+            req = ProjectRequest.objects.create(
+                name=name, email=email, company=company,
+                analysis_type=analysis_type, description=description,
+                data_size=data_size, timeline=timeline,
+            )
+
+            # Admine bildirim
+            admin_email = settings.ADMIN_NOTIFICATION_EMAIL
+            analysis_label = dict(ProjectRequest.ANALYSIS_CHOICES).get(analysis_type, analysis_type)
+            size_label = dict(ProjectRequest.DATA_SIZE_CHOICES).get(data_size, data_size)
+            timeline_label = dict(ProjectRequest.TIMELINE_CHOICES).get(timeline, timeline)
+            admin_html = (
+                f"<h3>Yeni Proje Talebi #{req.pk}</h3>"
+                f"<p><b>Ad:</b> {name}</p>"
+                f"<p><b>E-posta:</b> {email}</p>"
+                f"<p><b>Şirket/Kurum:</b> {company or '—'}</p>"
+                f"<p><b>Analiz Türü:</b> {analysis_label}</p>"
+                f"<p><b>Veri Boyutu:</b> {size_label}</p>"
+                f"<p><b>Süre Beklentisi:</b> {timeline_label}</p>"
+                f"<p><b>Açıklama:</b></p><p>{description}</p>"
+            )
+            EmailService._send_email(
+                to_email=admin_email,
+                subject=f"[Analizus] Yeni Proje Talebi: {name} ({analysis_label})",
+                html_content=admin_html,
+                plain_content=f"Yeni talep #{req.pk}\nAd: {name}\nEmail: {email}\nŞirket: {company}\nTür: {analysis_label}\n\n{description}",
+            )
+
+            # Kullanıcıya onay
+            user_html = (
+                f"<p>Sayın {name},</p>"
+                f"<p>Proje talebiniz başarıyla alındı. En kısa sürede sizinle iletişime geçeceğiz.</p>"
+                f"<p><b>Talep Özeti:</b><br>"
+                f"Analiz Türü: {analysis_label}<br>"
+                f"Veri Boyutu: {size_label}<br>"
+                f"Süre Beklentisi: {timeline_label}</p>"
+                f"<p>— Analizus Ekibi</p>"
+            )
+            EmailService._send_email(
+                to_email=email,
+                subject="Proje talebiniz alındı — Analizus",
+                html_content=user_html,
+                plain_content=f"Sayın {name},\n\nProje talebiniz alındı. En kısa sürede sizinle iletişime geçeceğiz.\n\n— Analizus Ekibi",
+            )
+
+            messages.success(request, 'Talebiniz alındı! En kısa sürede size dönüş yapacağız.')
+        except Exception:
+            messages.error(request, 'Bir hata oluştu, lütfen tekrar deneyin.')
+        return redirect('proje_talebi')
+
+    return render(request, 'forum/proje_talebi.html')
+
+
 def search_result(request):
     """Arama sonuçları"""
     query = request.GET.get('q', '').strip()

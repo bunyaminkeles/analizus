@@ -539,6 +539,9 @@ CSRF_USE_SESSIONS = False  # Cookie-based CSRF (mobile uyumlu)
 # GA4 Measurement ID (örn: G-XXXXXXXXXX)
 GOOGLE_ANALYTICS_ID = os.getenv('GOOGLE_ANALYTICS_ID', '')
 
+# --- WHATSAPP ---
+WHATSAPP_NUMBER = os.getenv('WHATSAPP_NUMBER', '')  # Format: 905XXXXXXXXX (başında + yok)
+
 # --- SEO / SITE VERIFICATION ---
 GOOGLE_SITE_VERIFICATION = os.getenv('GOOGLE_SITE_VERIFICATION', '')
 BING_SITE_VERIFICATION = os.getenv('BING_SITE_VERIFICATION', '')

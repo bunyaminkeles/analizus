@@ -86,6 +86,7 @@ urlpatterns = [
     path('nasil-calisir/', views.how_it_works, name='how_it_works'),
     path('tableau-analiz/', views.tableau_dashboard, name='tableau_dashboard'),
     path('iletisim/', views.contact, name='contact'),
+    path('proje-talebi/', views.proje_talebi, name='proje_talebi'),
     
     # Section Detail
     path('section/<int:pk>/', views.section_detail, name='section_detail'),

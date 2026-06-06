@@ -39,10 +39,10 @@
 | Hosting | Hetzner VPS (`89.167.5.224`) — Docker Compose (web, db, redis) + Nginx |
 | SSL | Let's Encrypt (certbot) |
 | AI/LLM | Groq (aktif), OpenAI, Gemini (env var ile) |
-| Ödeme | iyzico altyapısı mevcut ama **pasif** — sonraya bırakıldı |
+| Ödeme | iyzico **kullanım izni yok** — entegrasyon yapılmayacak; ödeme sistemi belirsiz |
 | i18n | Türkçe (`tr`), `locale/` klasöründe çeviri dosyaları |
 | Rate Limit | `django-ratelimit` — kayıt: 3/saat, login: 10/5dk, istatistik POST: 30/saat |
-| Analytics | `analytics/` Django app — login'li kullanıcı sayfa ziyaretleri (PageView + PageViewSummary), admin grafik, 5 günlük otomatik temizlik |
+| Analytics | `analytics/` Django app — login'li kullanıcı sayfa ziyaretleri (PageView + PageViewSummary), admin grafik (Chart.js, in-place user filtresi), 5 günlük otomatik temizlik |
 
 ### Temel Paketler (requirements.txt)
 ```
@@ -1118,7 +1118,7 @@ with connection.cursor() as c:
 | WebSocket bağlanmıyor | Nginx `/ws/` bloğunda `proxy_http_version 1.1` ve `Upgrade` header'ı kontrol et |
 | Redis bağlantı hatası (`Connect call failed 127.0.0.1:6379`) | `.env`'de `REDIS_URL=redis://redis:6379` kullan — Docker'da `localhost`/`127.0.0.1` container dışına ulaşamaz; Render'dan kalan eski şifreli URL'i temizle |
 | 502 Bad Gateway (web restart sonrası) | `docker compose restart web` sonrası **nginx da restart edilmeli**: `docker compose restart nginx`. Nginx, web container IP'sini başlangıçta cache'ler. Nginx conf'unda `resolver 127.0.0.11 valid=10s;` ve `set $backend http://web:8000;` bu sorunu kalıcı çözer. |
-| Ödeme işlemi | iyzico altyapısı kodda var ama pasif — ödeme sistemi henüz aktif değil |
+| Ödeme işlemi | iyzico **kullanım izni yok** — entegrasyon yapılmayacak; ödeme sistemi henüz belirsiz |
 | Admin'de status elle değiştirildi, e-posta gitmedi / vitrin açılmadı | `status` alanları readonly — **list view → action** kullanılmalı. JobPayment: "Seçili ilanları vitrine ekle"; BibliometricOrder/AlexOrder: "Onayla ve Tam Rapor Emailini Gönder" |
 | Donation geliri admin'de 0₺ gösteriyor | `status='completed'` filtresi — eski kod `'approved'` kullanıyordu (haziran 2026'da düzeltildi) |
 | Vitrine Taşı butonu zaten vitrindekilerde görünüyor | `job.is_featured=True` veya `feature_status='pending'/'approved'` ise buton gizleniyor (haziran 2026'da düzeltildi) |
@@ -1131,6 +1131,9 @@ with connection.cursor() as c:
 | `check_array() got an unexpected keyword argument 'force_all_finite'` (AFA) | scikit-learn 1.6+ `force_all_finite` parametresini kaldırdı. **Çözüm:** `factor-analyzer==0.5.1` pin'le (`requirements.txt`); `istatistik/services/afa.py`'de `_patch_sklearn_compat()` monkey-patch shim çağrısı var — `analyze()` fonksiyonu başında çalışır. `docker compose up -d --build web` ile image yeniden build edilmeli (sadece restart yetmez). |
 | OAI-PMH job sayfadan çıkınca duruyor | Eski tasarım raw `daemon=True` thread kullanıyordu — process exit/nav baskısına karşı korumasız. **Düzeltme:** `job_queue.enqueue('oaipmh', job_id)` ile merkezi ThreadPoolExecutor'a taşındı. Ek olarak stale cutoff 5 dk → 60 dk'ya çıkarıldı (19 üniversite taraması uzun sürebilir). |
 | Session veri seti (lineer/lojistik regresyon) form gönderince kaybolıyor | DataTransfer API ile sentinel File inject edilir; fetch interceptor sentinel'i algılayıp `use_session=true`'ya çevirir. `analiz_console_base.html`'deki `DOMContentLoaded` handler üç JS konvansiyonunu da karşılar (`files[0]`, `._selectedFile`, `._file`). |
+| `analytics/admin.py` 500 — `NameError: name 'username' is not defined` | `chart_view`'dan `?user=` filtresi kaldırılınca `if not username:` satırı düzenlenmemişti. Grafik sayfası artık tek modda çalışır (filtre yok), `top_users` + `per_user_data` her zaman hesaplanır. |
+| `cleanup-pageviews` cron endpoint model uyumsuzluğu | `forum/api_views.py`'deki `cron_cleanup_pageviews` eski modele göre `unique_users` yazıyordu. `PageViewSummary`'ye `user` FK eklendikten sonra endpoint de `user_id` bazlı aggregate'e güncellendi. Her iki yer birlikte değiştirilmeli: `analytics/models.py` + `analytics/management/commands/cleanup_pageviews.py` + `forum/api_views.py`. |
+| `PageViewSummary` admin'de user araması çalışmıyor | Model `user` FK içermiyordu, `search_fields = ['tab_name', 'path']` kullanıcı adını aramıyordu. Migration 0002 ile `user` FK eklendi, `search_fields`'e `user__username` eklendi. |
 
 ---
 
@@ -1196,7 +1199,7 @@ with connection.cursor() as c:
 - **Migration çakışması düzeltmesi** (haziran 2026) — sunucuda lokal kalan `0119_alter_sitevisit_id`, `0120_merge_20260530_2123`, `0121_merge_20260601_1555` dosyaları git'e eklendi
 - **SEO — GSC index hataları düzeltmesi** (haziran 2026) — `robots.txt`'e `Disallow: /istatistik/` ve `Disallow: /jobs/` eklendi; `/istatistik/<araç>/` URL'leri canonical olarak `/analiz/<araç>/`'a işaret ediyor ama Google her iki prefix'i de tarıyordu (33 "Alternative page with canonical" hatası); `blog_list.html` canonical'den `?category=` parametresi kaldırıldı — filtreli blog sayfaları artık `/blog/`'a canonical işaret ediyor
 - **Ödeme/sipariş admin düzeltmeleri** (haziran 2026) — `JobPayment.status` readonly yapıldı; `approve_feature` action `status='success'` ama `feature_status='pending'` olan kayıtları da işler; gerçek işlenen sayı mesajı düzeltildi; `Donation` modeline `pending_confirmation` status eklendi (migration 0122); `send_support_email` artık DB kaydı oluşturuyor; `mark_donation_transferred` view + URL eklendi; e-posta şablonuna "Havaleyi Yaptım" butonu eklendi; `AlexOrderProxy` + `AlexOrderAdmin` eklendi (`openalex/admin.py`) — dashboard linki düzeltildi (404 veriyordu); `BibliometricOrder.status` readonly yapıldı; Gelir Özeti'ne vitrin + biblio + openalex aylık/toplam gelir eklendi; bağış filtresi `'approved'`→`'completed'` düzeltildi; Vitrine Taşı butonu zaten vitrindekilerde gizleniyor
-- **Kullanıcı navigasyon analizi** (haziran 2026) — `analytics/` Django uygulaması; `PageView` (ham log, 5 gün TTL) + `PageViewSummary` (kalıcı özet); `PageViewMiddleware` login'li kullanıcıların GET 200 isteklerini loglar (`/static/`, `/admin/`, `/api/` vb. atlanır); URL → Türkçe sekme adı eşleştirmesi (`analytics/utils.py`); admin'de kullanıcı bazlı liste + `/admin/analytics/pageview/grafik/` Chart.js sayfası (kullanıcı adına tıkla → o kullanıcının pasta/çizgi/bar grafiği); `cleanup_pageviews` management command + `/api/cron/cleanup-pageviews/` endpoint; Hetzner crontab'ında `0 4 * * *`
+- **Kullanıcı navigasyon analizi** (haziran 2026) — `analytics/` Django uygulaması; `PageView` (ham log, 5 gün TTL) + `PageViewSummary` (kalıcı özet, user FK ile); `PageViewMiddleware` login'li kullanıcıların GET 200 isteklerini loglar (`/static/`, `/admin/`, `/api/` vb. atlanır); URL → Türkçe sekme adı eşleştirmesi (`analytics/utils.py`); admin'de kullanıcı bazlı liste + `/admin/analytics/pageview/grafik/` Chart.js sayfası — "En Aktif Kullanıcılar" bar'ına tıklanınca üstteki "En Çok Ziyaret" + "Günlük Trend" grafikleri sayfa yenilemesiz in-place güncellenir, seçili kullanıcı badge ile gösterilir, tekrar tıklanınca filtre sıfırlanır; `PageViewSummary` user FK'lı (migration 0002), user bazlı arama admin'de çalışır; `cleanup_pageviews` management command + `/api/cron/cleanup-pageviews/` endpoint (her ikisi de user_id bazlı aggregate); Hetzner crontab'ında `0 4 * * *`
 - **Semantic Scholar e-posta revizyonu** (haziran 2026) — demo email OpenAlex ile hizalandı; "info@analizus.com'a yaz" kaldırıldı, sipariş sayfası linki eklendi; S3 linki varsa ek gönderilmez (OpenAlex pattern)
 
 ### Sıradaki Görevler
@@ -1212,4 +1215,4 @@ with connection.cursor() as c:
 
 ---
 
-*Son güncelleme: Haziran 2026 — Kullanıcı navigasyon analizi (analytics app, Chart.js admin grafik, cron cleanup); Semantic Scholar API key + demo email revizyonu. Önceki: Ödeme/sipariş admin düzeltmeleri; SEO GSC hataları; Çalışma odası mesaj düzenleme/silme + @mention e-posta; Semantic Scholar modülü; WoS parser; DM okundu göstergesi; Karar Ağacı + SVM.*
+*Son güncelleme: Haziran 2026 — Analytics grafik in-place user filtresi (bar tıklama → chart güncelleme, sayfa yenilemesiz); PageViewSummary user FK migrasyonu (0002); cleanup_pageviews + cron endpoint user bazlı aggregate; Semantic Scholar API key + demo email revizyonu. Önceki: Kullanıcı navigasyon analizi (analytics app, Chart.js); Ödeme/sipariş admin düzeltmeleri; SEO GSC hataları; Çalışma odası mesaj düzenleme/silme + @mention e-posta; Semantic Scholar modülü; WoS parser; DM okundu göstergesi; Karar Ağacı + SVM.*

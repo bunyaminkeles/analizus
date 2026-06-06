@@ -1,0 +1,319 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Proje Talebi — Veri Analizi ve Danışmanlık | Analizus{% endblock %}
+{% block meta_description %}Şirketinizin veri analizi, görselleştirme veya makine öğrenmesi ihtiyacınızı bizimle paylaşın. Uzman analistlerle eşleştirilip projenize özel teklif alın.{% endblock %}
+{% block meta_keywords %}veri analizi danışmanlık, kurumsal veri analizi, makine öğrenmesi hizmet, Python R veri bilimi, şirket için analiz{% endblock %}
+
+{% block structured_data %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Hangi sektörlerden şirketlerle çalışıyorsunuz?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Finans, perakende, sağlık, üretim, e-ticaret ve kamu sektörü başta olmak üzere veri üreten her sektörden şirketle çalışıyoruz. Sektörünüz ne olursa olsun, verinizden anlamlı içgörüler elde edebiliriz."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Veri gizliliğim nasıl korunuyor?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Tüm veriler şifreli aktarım kanallarıyla iletilir, yalnızca proje kapsamında kullanılır ve analiz tamamlandıktan sonra imha edilir. KVKK uyumluluğu temel ilkemizdir."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Proje tamamlanma süresi ne kadar?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Projenin kapsamına göre değişmekle birlikte, basit görselleştirme ve betimsel analiz çalışmaları genellikle 1–3 iş günü; makine öğrenmesi modelleme projeleri ise 2–6 hafta arasında tamamlanmaktadır."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Hangi araç ve teknolojileri kullanıyorsunuz?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Python (pandas, scikit-learn, TensorFlow), R, SQL, Tableau, Power BI, Excel ve SPSS dahil geniş bir araç setiyle çalışıyoruz. Müşterinin tercihine ve projenin niteliğine göre en uygun araç seçilir."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Ücretlendirme nasıl yapılıyor?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Fiyatlandırma proje kapsamına, veri boyutuna ve süresine göre belirlenir. Talebi aldıktan sonra ücretsiz bir ön değerlendirme yapılır ve size net fiyat teklifi sunulur."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Projeye başlamak için ne sağlamam gerekiyor?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Proje hedeflerinizi ve mevcut verinizi (CSV, Excel, veri tabanı erişimi vb.) paylaşmanız yeterlidir. İhtiyaç duyulursa uzmanımız sizi yönlendirir ve gerekli veriyi birlikte tanımlarız."
+      }
+    }
+  ]
+}
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4 py-lg-5">
+
+  <!-- Başlık -->
+  <div class="text-center mb-5">
+    <span class="badge mb-3 px-3 py-2" style="background:rgba(99,102,241,.15);color:#818cf8;border:1px solid rgba(99,102,241,.3);font-size:.78rem;letter-spacing:.04em;">KURUMSAL ANALİZ HİZMETİ</span>
+    <h1 class="fw-bold text-white mb-3" style="font-size:clamp(1.6rem,4vw,2.4rem);">Projenizi Anlatın, Size Uygun Uzmanı Bulalım</h1>
+    <p class="text-white-50 mx-auto" style="max-width:560px;font-size:1rem;line-height:1.7;">
+      Şirketinizin verisinden stratejik içgörüler elde edin. Talebinizi iletmeniz yeterli — uzman analistlerle eşleştirip ücretsiz ön değerlendirme sunuyoruz.
+    </p>
+  </div>
+
+  {% if messages %}
+  {% for msg in messages %}
+  <div class="alert {% if msg.tags == 'success' %}alert-success{% else %}alert-danger{% endif %} mb-4" role="alert">
+    {{ msg }}
+  </div>
+  {% endfor %}
+  {% endif %}
+
+  <div class="row g-4 g-lg-5 align-items-start">
+
+    <!-- SOL: Form -->
+    <div class="col-lg-7">
+      <div class="p-4 p-lg-5 rounded-3" style="background:rgba(30,41,59,.6);border:1px solid rgba(255,255,255,.08);">
+        <h2 class="text-white fw-semibold mb-4" style="font-size:1.15rem;">
+          <i class="bi bi-send-fill text-primary me-2"></i>Talep Formu
+        </h2>
+
+        <form method="POST" novalidate>
+          {% csrf_token %}
+
+          <div class="row g-3 mb-3">
+            <div class="col-sm-6">
+              <label class="form-label text-white-50 small">Ad Soyad <span class="text-danger">*</span></label>
+              <input type="text" name="name" class="form-control" placeholder="Örn: Ayşe Kaya" required>
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label text-white-50 small">E-posta <span class="text-danger">*</span></label>
+              <input type="email" name="email" class="form-control" placeholder="ayse@sirket.com" required>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label text-white-50 small">Şirket / Kurum</label>
+            <input type="text" name="company" class="form-control" placeholder="Şirket adı (isteğe bağlı)">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label text-white-50 small">Analiz Türü <span class="text-danger">*</span></label>
+            <select name="analysis_type" class="form-select" required>
+              <option value="">Seçiniz…</option>
+              <option value="visualization">Veri Görselleştirme</option>
+              <option value="ml">Makine Öğrenmesi / Yapay Zeka</option>
+              <option value="statistics">İstatistiksel Analiz</option>
+              <option value="cleaning">Veri Temizleme / Hazırlama</option>
+              <option value="timeseries">Zaman Serisi Analizi</option>
+              <option value="nlp">Metin / NLP Analizi</option>
+              <option value="other">Diğer</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label text-white-50 small">Proje Açıklaması <span class="text-danger">*</span></label>
+            <textarea name="description" rows="5" class="form-control"
+              placeholder="Hedeflerinizi, elinizde bulunan veriyi ve beklentilerinizi kısaca anlatın." required></textarea>
+          </div>
+
+          <div class="row g-3 mb-4">
+            <div class="col-sm-6">
+              <label class="form-label text-white-50 small">Veri Boyutu <span class="text-danger">*</span></label>
+              <select name="data_size" class="form-select" required>
+                <option value="">Seçiniz…</option>
+                <option value="small">1.000 satırdan az</option>
+                <option value="medium">1.000 – 100.000 satır</option>
+                <option value="large">100.000 satır ve üzeri</option>
+                <option value="unknown">Bilmiyorum</option>
+              </select>
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label text-white-50 small">Süre Beklentisi <span class="text-danger">*</span></label>
+              <select name="timeline" class="form-select" required>
+                <option value="">Seçiniz…</option>
+                <option value="urgent">1 hafta içinde</option>
+                <option value="short">1 ay içinde</option>
+                <option value="flexible">Esnek</option>
+              </select>
+            </div>
+          </div>
+
+          <button type="submit" class="ax-btn ax-btn--primary w-100 py-3 fw-semibold" style="font-size:1rem;">
+            <i class="bi bi-send me-2"></i>Talebi Gönder
+          </button>
+          <p class="text-white-50 text-center mt-3" style="font-size:.78rem;">
+            <i class="bi bi-shield-check me-1 text-success"></i>
+            Bilgileriniz gizli tutulur. Talep sonrası ücretsiz ön değerlendirme yapılır.
+          </p>
+        </form>
+      </div>
+    </div>
+
+    <!-- SAĞ: Neden + Güven -->
+    <div class="col-lg-5">
+
+      <!-- Neden Analizus? -->
+      <div class="mb-4 p-4 rounded-3" style="background:rgba(30,41,59,.4);border:1px solid rgba(255,255,255,.06);">
+        <h3 class="text-white fw-semibold mb-3" style="font-size:1rem;">Neden Analizus?</h3>
+        <ul class="list-unstyled mb-0" style="display:flex;flex-direction:column;gap:12px;">
+          <li class="d-flex gap-3 align-items-start">
+            <span style="color:#22c55e;font-size:1.1rem;margin-top:2px;">✓</span>
+            <span class="text-white-50 small">Python, R, SQL, Tableau uzmanlarından oluşan doğrulanmış analist ağı</span>
+          </li>
+          <li class="d-flex gap-3 align-items-start">
+            <span style="color:#22c55e;font-size:1.1rem;margin-top:2px;">✓</span>
+            <span class="text-white-50 small">Ücretsiz ön değerlendirme — taahhüt olmadan net fiyat teklifi</span>
+          </li>
+          <li class="d-flex gap-3 align-items-start">
+            <span style="color:#22c55e;font-size:1.1rem;margin-top:2px;">✓</span>
+            <span class="text-white-50 small">KVKK uyumlu veri işleme, analiz sonrası imha</span>
+          </li>
+          <li class="d-flex gap-3 align-items-start">
+            <span style="color:#22c55e;font-size:1.1rem;margin-top:2px;">✓</span>
+            <span class="text-white-50 small">Finans, perakende, sağlık ve üretim sektörlerinde kanıtlanmış proje deneyimi</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- İletişim alternatif -->
+      <div class="p-4 rounded-3" style="background:rgba(37,211,102,.07);border:1px solid rgba(37,211,102,.2);">
+        <h3 class="fw-semibold mb-2" style="font-size:.95rem;color:#4ade80;">
+          <i class="bi bi-whatsapp me-2"></i>Hızlı Görüşme
+        </h3>
+        <p class="text-white-50 small mb-3">Form doldurmak yerine doğrudan konuşmayı tercih ediyorsanız:</p>
+        {% if WHATSAPP_NUMBER %}
+        <a href="https://wa.me/{{ WHATSAPP_NUMBER }}?text=Merhaba%2C%20proje%20talebi%20hakk%C4%B1nda%20bilgi%20almak%20istiyorum."
+           target="_blank" rel="noopener noreferrer"
+           class="ax-btn ax-btn--sm fw-semibold"
+           style="background:#25d366;color:#fff;border:none;display:inline-flex;align-items:center;gap:8px;padding:8px 18px;border-radius:8px;">
+          <i class="bi bi-whatsapp"></i> WhatsApp ile Yaz
+        </a>
+        {% else %}
+        <a href="mailto:info@analizus.com" class="ax-btn ax-btn--sm" style="display:inline-flex;align-items:center;gap:8px;">
+          <i class="bi bi-envelope"></i> info@analizus.com
+        </a>
+        {% endif %}
+      </div>
+    </div>
+
+  </div>
+
+  <!-- SSS -->
+  <div class="mt-6 pt-5" style="margin-top:4rem;">
+    <h2 class="text-white fw-bold text-center mb-4" style="font-size:1.4rem;">Sık Sorulan Sorular</h2>
+
+    <div class="row g-3" style="max-width:860px;margin:0 auto;">
+
+      {% with faqs=faq_list %}
+      <div class="col-12">
+        <div class="accordion" id="faqAccordion">
+
+          <div class="accordion-item border-0 mb-2 rounded-2 overflow-hidden" style="background:rgba(30,41,59,.6);">
+            <h3 class="accordion-header">
+              <button class="accordion-button collapsed text-white fw-semibold" type="button"
+                data-bs-toggle="collapse" data-bs-target="#faq1" style="background:transparent;box-shadow:none;font-size:.95rem;">
+                Hangi sektörlerden şirketlerle çalışıyorsunuz?
+              </button>
+            </h3>
+            <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+              <div class="accordion-body text-white-50 small pt-0">
+                Finans, perakende, sağlık, üretim, e-ticaret ve kamu sektörü başta olmak üzere veri üreten her sektörden şirketle çalışıyoruz. Sektörünüz ne olursa olsun, verinizden anlamlı içgörüler elde edebiliriz.
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item border-0 mb-2 rounded-2 overflow-hidden" style="background:rgba(30,41,59,.6);">
+            <h3 class="accordion-header">
+              <button class="accordion-button collapsed text-white fw-semibold" type="button"
+                data-bs-toggle="collapse" data-bs-target="#faq2" style="background:transparent;box-shadow:none;font-size:.95rem;">
+                Veri gizliliğim nasıl korunuyor?
+              </button>
+            </h3>
+            <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+              <div class="accordion-body text-white-50 small pt-0">
+                Tüm veriler şifreli aktarım kanallarıyla iletilir, yalnızca proje kapsamında kullanılır ve analiz tamamlandıktan sonra imha edilir. KVKK uyumluluğu temel ilkemizdir.
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item border-0 mb-2 rounded-2 overflow-hidden" style="background:rgba(30,41,59,.6);">
+            <h3 class="accordion-header">
+              <button class="accordion-button collapsed text-white fw-semibold" type="button"
+                data-bs-toggle="collapse" data-bs-target="#faq3" style="background:transparent;box-shadow:none;font-size:.95rem;">
+                Proje tamamlanma süresi ne kadar?
+              </button>
+            </h3>
+            <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+              <div class="accordion-body text-white-50 small pt-0">
+                Basit görselleştirme ve betimsel analiz çalışmaları genellikle 1–3 iş günü; makine öğrenmesi modelleme projeleri ise 2–6 hafta arasında tamamlanmaktadır.
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item border-0 mb-2 rounded-2 overflow-hidden" style="background:rgba(30,41,59,.6);">
+            <h3 class="accordion-header">
+              <button class="accordion-button collapsed text-white fw-semibold" type="button"
+                data-bs-toggle="collapse" data-bs-target="#faq4" style="background:transparent;box-shadow:none;font-size:.95rem;">
+                Hangi araç ve teknolojileri kullanıyorsunuz?
+              </button>
+            </h3>
+            <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+              <div class="accordion-body text-white-50 small pt-0">
+                Python (pandas, scikit-learn, TensorFlow), R, SQL, Tableau, Power BI, Excel ve SPSS dahil geniş bir araç setiyle çalışıyoruz. Projenin niteliğine göre en uygun araç seçilir.
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item border-0 mb-2 rounded-2 overflow-hidden" style="background:rgba(30,41,59,.6);">
+            <h3 class="accordion-header">
+              <button class="accordion-button collapsed text-white fw-semibold" type="button"
+                data-bs-toggle="collapse" data-bs-target="#faq5" style="background:transparent;box-shadow:none;font-size:.95rem;">
+                Ücretlendirme nasıl yapılıyor?
+              </button>
+            </h3>
+            <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+              <div class="accordion-body text-white-50 small pt-0">
+                Fiyatlandırma proje kapsamına, veri boyutuna ve süresine göre belirlenir. Talebi aldıktan sonra ücretsiz bir ön değerlendirme yapılır ve size net fiyat teklifi sunulur.
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item border-0 rounded-2 overflow-hidden" style="background:rgba(30,41,59,.6);">
+            <h3 class="accordion-header">
+              <button class="accordion-button collapsed text-white fw-semibold" type="button"
+                data-bs-toggle="collapse" data-bs-target="#faq6" style="background:transparent;box-shadow:none;font-size:.95rem;">
+                Projeye başlamak için ne sağlamam gerekiyor?
+              </button>
+            </h3>
+            <div id="faq6" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+              <div class="accordion-body text-white-50 small pt-0">
+                Proje hedeflerinizi ve mevcut verinizi (CSV, Excel, veri tabanı erişimi vb.) paylaşmanız yeterlidir. İhtiyaç duyulursa uzmanımız sizi yönlendirir ve gerekli veriyi birlikte tanımlarız.
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      {% endwith %}
+
+    </div>
+  </div>
+
+</div>
+{% endblock %}

@@ -1473,6 +1473,54 @@ class TeamMember(models.Model):
         return [s.strip() for s in self.skills.split(',')] if self.skills else []
 
 
+class ProjectRequest(models.Model):
+    ANALYSIS_CHOICES = [
+        ('visualization', 'Veri Görselleştirme'),
+        ('ml', 'Makine Öğrenmesi / Yapay Zeka'),
+        ('statistics', 'İstatistiksel Analiz'),
+        ('cleaning', 'Veri Temizleme / Hazırlama'),
+        ('timeseries', 'Zaman Serisi Analizi'),
+        ('nlp', 'Metin / NLP Analizi'),
+        ('other', 'Diğer'),
+    ]
+    DATA_SIZE_CHOICES = [
+        ('small', '1.000 satırdan az'),
+        ('medium', '1.000 – 100.000 satır'),
+        ('large', '100.000 satır ve üzeri'),
+        ('unknown', 'Bilmiyorum'),
+    ]
+    TIMELINE_CHOICES = [
+        ('urgent', '1 hafta içinde'),
+        ('short', '1 ay içinde'),
+        ('flexible', 'Esnek'),
+    ]
+    STATUS_CHOICES = [
+        ('new', 'Yeni'),
+        ('in_review', 'İnceleniyor'),
+        ('contacted', 'İletişime Geçildi'),
+        ('closed', 'Kapatıldı'),
+    ]
+
+    name = models.CharField(max_length=150, verbose_name="Ad Soyad")
+    email = models.EmailField(verbose_name="E-posta")
+    company = models.CharField(max_length=200, blank=True, verbose_name="Şirket / Kurum")
+    analysis_type = models.CharField(max_length=30, choices=ANALYSIS_CHOICES, verbose_name="Analiz Türü")
+    description = models.TextField(verbose_name="Proje Açıklaması")
+    data_size = models.CharField(max_length=20, choices=DATA_SIZE_CHOICES, verbose_name="Veri Boyutu")
+    timeline = models.CharField(max_length=20, choices=TIMELINE_CHOICES, verbose_name="Süre Beklentisi")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='new', verbose_name="Durum")
+    admin_notes = models.TextField(blank=True, verbose_name="Admin Notları")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Proje Talebi"
+        verbose_name_plural = "Proje Talepleri"
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.name} — {self.get_analysis_type_display()} ({self.created_at.strftime('%d.%m.%Y')})"
+
+
 class SiteVisit(models.Model):
     """Toplam site ziyaretçi sayacı — tek satır, atomik artırım."""
     total_visits = models.PositiveBigIntegerField(default=0)

@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.utils.html import format_html
 from unfold.admin import ModelAdmin, TabularInline, StackedInline
-from .models import Section, Category, Topic, Post, Profile, ContactMessage, PrivateMessage, Badge, Skill, DailyTip, QuizQuestion, QuizScore, FreelanceJob, JobProposal, JobReview, UserQuizAttempt, DonationTier, Donation, JobPayment, TopicTag, SiteSettings, BlogCategory, BlogPost, BlogTag, SuccessStory, StudyRoom
+from .models import Section, Category, Topic, Post, Profile, ContactMessage, PrivateMessage, Badge, Skill, DailyTip, QuizQuestion, QuizScore, FreelanceJob, JobProposal, JobReview, UserQuizAttempt, DonationTier, Donation, JobPayment, TopicTag, SiteSettings, BlogCategory, BlogPost, BlogTag, SuccessStory, StudyRoom, ProjectRequest
 from .models import TeamMember
 
 
@@ -357,6 +357,37 @@ class ContactMessageAdmin(ModelAdmin):
     def preview_message(self, obj):
         return obj.message[:100] + "..." if len(obj.message) > 100 else obj.message
     preview_message.short_description = "Mesaj Önizleme"
+
+
+@admin.register(ProjectRequest)
+class ProjectRequestAdmin(ModelAdmin):
+    warn_unsaved_changes = True
+    compressed_fields = True
+    list_display = ('name', 'company', 'email', 'analysis_type_display', 'data_size', 'timeline', 'status', 'status_badge', 'created_at_formatted')
+    list_filter = ('status', 'analysis_type', 'timeline', 'data_size', 'created_at')
+    search_fields = ('name', 'email', 'company', 'description')
+    list_editable = ('status',)
+    readonly_fields = ('created_at',)
+    ordering = ('-created_at',)
+    fieldsets = (
+        ('Talep Eden', {'fields': ('name', 'email', 'company')}),
+        ('Proje Detayları', {'fields': ('analysis_type', 'description', 'data_size', 'timeline')}),
+        ('Yönetim', {'fields': ('status', 'admin_notes', 'created_at')}),
+    )
+
+    def analysis_type_display(self, obj):
+        return obj.get_analysis_type_display()
+    analysis_type_display.short_description = "Analiz Türü"
+
+    def status_badge(self, obj):
+        colors = {'new': '#ef4444', 'in_review': '#f59e0b', 'contacted': '#3b82f6', 'closed': '#6b7280'}
+        color = colors.get(obj.status, '#6b7280')
+        return format_html('<span style="background:{};color:#fff;padding:2px 8px;border-radius:10px;font-size:.75rem;">{}</span>', color, obj.get_status_display())
+    status_badge.short_description = "Durum"
+
+    def created_at_formatted(self, obj):
+        return format_html('<span style="color:#00d2ff;">{}</span>', obj.created_at.strftime('%d %b %Y, %H:%M'))
+    created_at_formatted.short_description = "Tarih"
 
 
 # 10. Günlük İpucu Yönetimi
