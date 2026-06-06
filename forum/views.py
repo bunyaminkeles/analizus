@@ -2462,6 +2462,10 @@ def donation_success(request):
 @feature_required('blog')
 def blog_list(request):
     """Blog ana sayfası - yazı listesi"""
+    qs = request.META.get('QUERY_STRING', '')
+    if qs.endswith('&'):
+        return redirect(request.path + '?' + qs.rstrip('&'), permanent=True)
+
     posts = BlogPost.objects.filter(status='published').select_related('author', 'category').prefetch_related('tags')
 
     # Arama
@@ -2757,6 +2761,9 @@ def hangi_test(request):
 def uzman_dizini(request):
     """Uzman Dizini — skill/rozet/puan bazlı filtrelenebilir analist listesi."""
     skill_slug = request.GET.get('skill', '').strip()
+    if 'skill' in request.GET and not skill_slug:
+        return redirect('uzman_dizini', permanent=True)
+
     sort_by = request.GET.get('sort', 'puan')  # puan | is | aktif
 
     # Son forum yanıtı (subquery) — Post.created_by FK'sı, Topic.subject
