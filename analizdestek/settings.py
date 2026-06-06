@@ -333,6 +333,11 @@ UNFOLD = {
                     "link": reverse_lazy("admin:forum_freelancejob_changelist"),
                 },
                 {
+                    "title": "İş Kategorileri",
+                    "icon": "category",
+                    "link": reverse_lazy("admin:forum_jobcategory_changelist"),
+                },
+                {
                     "title": "İş Teklifleri",
                     "icon": "handshake",
                     "link": reverse_lazy("admin:forum_jobproposal_changelist"),
