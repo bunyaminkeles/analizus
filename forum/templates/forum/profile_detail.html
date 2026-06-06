@@ -173,6 +173,29 @@
                 </div>
             </div>
 
+            <!-- Uzmanlık Araçları -->
+            {% if profile_user.profile.skills.exists %}
+            <div style="margin-bottom:var(--ax-space-4);">
+                <div style="font-size:var(--ax-text-xs);color:var(--ax-text-muted);margin-bottom:var(--ax-space-2);display:flex;align-items:center;gap:6px;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                    Uzmanlık Araçları
+                </div>
+                <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                    {% for skill in profile_user.profile.skills.all|slice:":6" %}
+                    <span style="background:{{ skill.color }}18;color:{{ skill.color }};border:1px solid {{ skill.color }}33;font-size:.68rem;font-weight:500;padding:2px 8px;border-radius:20px;display:inline-flex;align-items:center;gap:4px;">
+                        {% if skill.icon %}<i class="{{ skill.icon }}" style="font-size:.65rem;"></i>{% endif %}
+                        {{ skill.name }}
+                    </span>
+                    {% endfor %}
+                    {% if profile_user.profile.skills.count > 6 %}
+                    <span style="background:rgba(255,255,255,.05);color:var(--ax-text-muted);font-size:.68rem;padding:2px 8px;border-radius:20px;border:1px solid rgba(255,255,255,.08);">
+                        +{{ profile_user.profile.skills.count|add:"-6" }}
+                    </span>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
             <!-- Aksiyon Butonları -->
             <div class="ax-profile-actions">
                 {% if user == profile_user %}
