@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-from .models import Topic, Post, FreelanceJob, JobProposal, TopicTag
+from .models import Topic, Post, FreelanceJob, JobCategory, JobProposal, TopicTag
 from django.utils.safestring import mark_safe
 
 # --- 1. KAYIT FORMU ---
@@ -128,23 +128,49 @@ class PostForm(forms.ModelForm):
 
 # --- 4. İŞ İLANI FORMU ---
 class JobPostForm(forms.ModelForm):
+    category_input = forms.CharField(
+        required=False,
+        label='Kategori',
+        widget=forms.TextInput(attrs={
+            'class': 'form-control bg-dark text-light border-secondary',
+            'placeholder': 'Örn: SPSS, Veri Analizi, Makine Öğrenmesi...',
+            'list': 'job-category-list',
+            'autocomplete': 'off',
+        })
+    )
+
     class Meta:
         model = FreelanceJob
-        fields = ['title', 'description', 'budget_max', 'expected_duration', 'category']
+        fields = ['title', 'description', 'budget_max', 'expected_duration']
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control bg-dark text-light border-secondary', 'placeholder': 'Örn: SPSS Veri Analizi'}),
             'description': forms.Textarea(attrs={'class': 'form-control bg-dark text-light border-secondary', 'rows': 5, 'placeholder': 'İşin detaylarını açıklayın...'}),
             'budget_max': forms.NumberInput(attrs={'class': 'form-control bg-dark text-light border-secondary', 'placeholder': 'Örn: 500'}),
             'expected_duration': forms.TextInput(attrs={'class': 'form-control bg-dark text-light border-secondary', 'placeholder': 'Örn: 3 gün'}),
-            'category': forms.Select(attrs={'class': 'form-select bg-dark text-light border-secondary'}),
         }
         labels = {
             'title': 'İlan Başlığı',
             'description': 'İş Tanımı',
             'budget_max': 'Bütçe (TL)',
             'expected_duration': 'Tahmini Süre',
-            'category': 'Kategori',
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.pk and self.instance.category:
+            self.fields['category_input'].initial = self.instance.category.title
+
+    def save(self, commit=True):
+        job = super().save(commit=False)
+        cat_name = self.cleaned_data.get('category_input', '').strip()
+        if cat_name:
+            cat, _ = JobCategory.objects.get_or_create(title=cat_name)
+            job.category = cat
+        else:
+            job.category = None
+        if commit:
+            job.save()
+        return job
 
 class ProposalForm(forms.ModelForm):
     class Meta:

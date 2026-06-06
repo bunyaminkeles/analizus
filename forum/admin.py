@@ -450,7 +450,8 @@ class QuizQuestionAdmin(ModelAdmin):
 @admin.register(JobCategory)
 class JobCategoryAdmin(ModelAdmin):
     list_display = ('title', 'order', 'is_active')
-    list_editable = ('order', 'is_active')
+    list_display_links = None
+    list_editable = ('title', 'order', 'is_active')
     search_fields = ('title',)
 
 
