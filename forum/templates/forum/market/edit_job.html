@@ -42,8 +42,11 @@
                         </div>
 
                         <div class="mb-4">
-                            <label class="form-label text-white-50">{{ form.category.label }}</label>
-                            {{ form.category }}
+                            <label class="form-label text-white-50">{{ form.category_input.label }}</label>
+                            {{ form.category_input }}
+                            <datalist id="job-category-list">
+                                {% for cat in job_categories %}<option value="{{ cat }}">{% endfor %}
+                            </datalist>
                         </div>
 
                         {% if form.errors %}

@@ -390,7 +390,9 @@ def post_job(request):
             return redirect('job_detail', pk=job.pk)
     else:
         form = JobPostForm()
-    return render(request, 'forum/market/post_job.html', {'form': form})
+    from .models import JobCategory
+    job_categories = JobCategory.objects.filter(is_active=True).values_list('title', flat=True)
+    return render(request, 'forum/market/post_job.html', {'form': form, 'job_categories': job_categories})
 
 @login_required
 def toggle_job_like(request, pk):
@@ -476,7 +478,9 @@ def edit_job(request, pk):
     else:
         form = JobPostForm(instance=job)
 
-    return render(request, 'forum/market/edit_job.html', {'form': form, 'job': job})
+    from .models import JobCategory
+    job_categories = JobCategory.objects.filter(is_active=True).values_list('title', flat=True)
+    return render(request, 'forum/market/edit_job.html', {'form': form, 'job': job, 'job_categories': job_categories})
 
 
 @login_required
