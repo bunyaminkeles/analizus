@@ -1963,9 +1963,9 @@ def ai_assistant(request):
         cache_key = f"ai_usage_{request.user.id}_{timezone.now().date()}"
         daily_limit = 30
     else:
-        ip = request.META.get('HTTP_X_FORWARDED_FOR', request.META.get('REMOTE_ADDR', 'unknown'))
-        ip = ip.split(',')[0].strip()
-        cache_key = f"ai_usage_anon_{ip}_{timezone.now().date()}"
+        if not request.session.session_key:
+            request.session.create()
+        cache_key = f"ai_usage_anon_{request.session.session_key}_{timezone.now().date()}"
         daily_limit = 3
 
     usage_count = cache.get(cache_key, 0)
@@ -2035,9 +2035,9 @@ def api_ai_chat(request):
         cache_key = f"ai_usage_{request.user.id}_{timezone.now().date()}"
         daily_limit = 30
     else:
-        ip = request.META.get('HTTP_X_FORWARDED_FOR', request.META.get('REMOTE_ADDR', 'unknown'))
-        ip = ip.split(',')[0].strip()
-        cache_key = f"ai_usage_anon_{ip}_{timezone.now().date()}"
+        if not request.session.session_key:
+            request.session.create()
+        cache_key = f"ai_usage_anon_{request.session.session_key}_{timezone.now().date()}"
         daily_limit = 3
 
     usage_count = cache.get(cache_key, 0)
