@@ -3,7 +3,7 @@
 
 {% block title %}Uzman Bul — Analizus Uzman Dizini{% endblock %}
 {% block meta_description %}SPSS, R ve Python uzmanları ile analistleri keşfedin. Teziniz için akademik destek veren uzmanın profilini inceleyin, uzmanlık alanlarını karşılaştırın, doğrudan iletişime geçin.{% endblock %}
-{% block canonical %}{% if selected_skill %}{% url 'uzman_dizini' %}?skill={{ selected_skill }}{% else %}{% url 'uzman_dizini' %}{% endif %}{% endblock %}
+{% block canonical %}{% if selected_cat %}{% url 'uzman_dizini' %}?cat={{ selected_cat }}{% else %}{% url 'uzman_dizini' %}{% endif %}{% endblock %}
 
 {% block content %}
 <div class="container py-4">
@@ -28,11 +28,11 @@
     <form method="get" class="row g-2 align-items-end">
       <!-- Uzmanlık alanı -->
       <div class="col-sm-6 col-md-5">
-        <label class="form-label text-white-50 small mb-1">Yönteme göre filtrele</label>
-        <select name="skill" class="form-select form-select-sm bg-dark text-white border-secondary" onchange="this.form.submit()">
+        <label class="form-label text-white-50 small mb-1">Uzmanlık alanına göre filtrele</label>
+        <select name="cat" class="form-select form-select-sm bg-dark text-white border-secondary" onchange="this.form.submit()">
           <option value="">— Tüm uzmanlık alanları —</option>
-          {% for skill in skills %}
-          <option value="{{ skill.slug }}" {% if skill.slug == selected_skill %}selected{% endif %}>{{ skill.name }}</option>
+          {% for cat in job_categories %}
+          <option value="{{ cat.id }}" {% if cat.id|stringformat:"s" == selected_cat %}selected{% endif %}>{{ cat.title }}</option>
           {% endfor %}
         </select>
       </div>
@@ -46,7 +46,7 @@
         </select>
       </div>
       <!-- Temizle -->
-      {% if selected_skill or sort_by != 'puan' %}
+      {% if selected_cat or sort_by != 'puan' %}
       <div class="col-auto">
         <a href="{% url 'uzman_dizini' %}" class="btn btn-outline-secondary btn-sm">
           <i class="bi bi-x-circle me-1"></i>Temizle
@@ -144,13 +144,13 @@
           </div>
           {% endif %}
 
-          <!-- Uzmanlık alanları (skills) -->
+          <!-- Uzmanlık alanları -->
           {% if profile.skills.all %}
           <div class="d-flex flex-wrap gap-1 mb-3">
             {% for skill in profile.skills.all|slice:":5" %}
-            <a href="?skill={{ skill.slug }}" class="badge text-decoration-none"
-               style="background:{{ skill.color }}18;color:{{ skill.color }};border:1px solid {{ skill.color }}33;font-size:.68rem;font-weight:400;">
-              {{ skill.name }}
+            <a href="?cat={{ skill.id }}" class="badge text-decoration-none"
+               style="background:rgba(99,102,241,0.12);color:#a5b4fc;border:1px solid rgba(99,102,241,0.3);font-size:.68rem;font-weight:400;">
+              {{ skill.title }}
             </a>
             {% endfor %}
             {% if profile.skills.all|length > 5 %}

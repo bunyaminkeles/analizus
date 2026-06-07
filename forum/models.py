@@ -177,7 +177,7 @@ class Profile(models.Model):
     badges = models.ManyToManyField(Badge, blank=True, related_name='users', verbose_name="Rozetler")
 
     # GELİŞMİŞ PROFİL ALANLARI
-    skills = models.ManyToManyField(Skill, blank=True, related_name='users', verbose_name="Uzmanlık Alanları")
+    skills = models.ManyToManyField('JobCategory', blank=True, related_name='profiles', verbose_name="Uzmanlık Alanları")
     university = models.CharField(max_length=150, blank=True, default="", verbose_name="Üniversite")
     department = models.CharField(max_length=150, blank=True, default="", verbose_name="Bölüm")
     academic_title = models.CharField(max_length=50, blank=True, default="", verbose_name="Akademik Unvan")

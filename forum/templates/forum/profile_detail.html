@@ -182,9 +182,8 @@
                 </div>
                 <div style="display:flex;flex-wrap:wrap;gap:6px;">
                     {% for skill in profile_user.profile.skills.all|slice:":6" %}
-                    <span style="background:{{ skill.color }}18;color:{{ skill.color }};border:1px solid {{ skill.color }}33;font-size:.68rem;font-weight:500;padding:2px 8px;border-radius:20px;display:inline-flex;align-items:center;gap:4px;">
-                        {% if skill.icon %}<i class="{{ skill.icon }}" style="font-size:.65rem;"></i>{% endif %}
-                        {{ skill.name }}
+                    <span style="background:rgba(99,102,241,0.12);color:#a5b4fc;border:1px solid rgba(99,102,241,0.3);font-size:.68rem;font-weight:500;padding:2px 8px;border-radius:20px;display:inline-flex;align-items:center;gap:4px;">
+                        {{ skill.title }}
                     </span>
                     {% endfor %}
                     {% if profile_user.profile.skills.count > 6 %}
@@ -585,8 +584,7 @@
                     <div class="ax-profile-skill-tags">
                         {% for skill in profile_user.profile.skills.all %}
                         <span class="ax-profile-skill-tag">
-                            <i class="{{ skill.icon }}" style="color: {{ skill.color }};"></i>
-                            {{ skill.name }}
+                            {{ skill.title }}
                         </span>
                         {% endfor %}
                     </div>
