@@ -16,12 +16,28 @@
             <p class="text-muted">Akademik analiz ve istatistik sorularınızı yanıtlıyorum</p>
         </div>
 
+        <!-- Anonim kullanıcı teaser -->
+        {% if not is_authenticated %}
+        <div class="card border-0 mb-4" style="background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.25) !important; border-radius: 14px;">
+            <div class="card-body p-3 d-flex align-items-center justify-content-between flex-wrap gap-3">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-person-check-fill text-info fs-5"></i>
+                    <span class="text-white-50 small">Üye olarak <strong class="text-white">30 soru/gün</strong> hakkı kazanın — şu an anonim için <strong class="text-white">3 soru</strong></span>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="{% url 'register' %}" class="btn btn-sm btn-info rounded-pill fw-bold px-3">Üye Ol</a>
+                    <a href="{% url 'login' %}" class="btn btn-sm rounded-pill px-3" style="background: rgba(99,102,241,0.15); color: #a5b4fc; border: 1px solid rgba(99,102,241,0.4);">Giriş Yap</a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
         <!-- Kullanım Bilgisi -->
         <div class="usage-info mb-4">
             <div class="d-flex justify-content-between align-items-center">
                 <span class="text-muted small">
                     <i class="bi bi-lightning-fill text-warning me-1"></i>
-                    Günlük Kullanım
+                    Günlük Kullanım{% if not is_authenticated %} (Anonim){% endif %}
                 </span>
                 <span class="badge {% if remaining > 3 %}bg-success{% elif remaining > 0 %}bg-warning{% else %}bg-danger{% endif %}">
                     {{ remaining }}/{{ daily_limit }} hak kaldı

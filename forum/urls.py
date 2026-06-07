@@ -61,6 +61,7 @@ urlpatterns = [
     # AI Asistan
     path('ai-asistan/', views.ai_assistant, name='ai_assistant'),
     path('api/ai/suggest/<int:topic_id>/', views.ai_suggest_answer, name='ai_suggest_answer'),
+    path('api/ai/chat/', views.api_ai_chat, name='api_ai_chat'),
 
     # E-posta Doğrulama
     path('verify-email/<uuid:token>/', views.verify_email, name='verify_email'),

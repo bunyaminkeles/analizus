@@ -1952,22 +1952,30 @@ def user_search_api(request):
 
 # --- AI ASISTAN ---
 @feature_required('ai_assistant')
-@login_required
 def ai_assistant(request):
-    """AI Asistan sayfası"""
+    """AI Asistan sayfası — giriş yapanlar 10, anonim kullanıcılar 3 soru/gün"""
     from .services.ai_service import groq_service
     from django.core.cache import cache
 
-    # Kullanıcının günlük kullanım limiti
-    cache_key = f"ai_usage_{request.user.id}_{timezone.now().date()}"
+    is_authenticated = request.user.is_authenticated
+
+    if is_authenticated:
+        cache_key = f"ai_usage_{request.user.id}_{timezone.now().date()}"
+        daily_limit = 30
+    else:
+        ip = request.META.get('HTTP_X_FORWARDED_FOR', request.META.get('REMOTE_ADDR', 'unknown'))
+        ip = ip.split(',')[0].strip()
+        cache_key = f"ai_usage_anon_{ip}_{timezone.now().date()}"
+        daily_limit = 3
+
     usage_count = cache.get(cache_key, 0)
-    daily_limit = 10  # Günlük 10 soru hakkı
 
     context = {
         'usage_count': usage_count,
         'daily_limit': daily_limit,
         'remaining': max(0, daily_limit - usage_count),
         'ai_available': groq_service.is_available(),
+        'is_authenticated': is_authenticated,
     }
 
     if request.method == 'POST':
@@ -1978,18 +1986,19 @@ def ai_assistant(request):
             return render(request, 'forum/ai_assistant.html', context)
 
         if usage_count >= daily_limit:
-            messages.warning(request, f'Günlük {daily_limit} soru limitinizi doldurdunuz. Yarın tekrar deneyin.')
+            if is_authenticated:
+                messages.warning(request, f'Günlük {daily_limit} soru limitinizi doldurdunuz. Yarın tekrar deneyin.')
+            else:
+                messages.warning(request, f'Günlük anonim limit ({daily_limit} soru) doldu. Üye olarak 10 soruya kadar kullanabilirsiniz.')
             return render(request, 'forum/ai_assistant.html', context)
 
         if not groq_service.is_available():
             messages.error(request, 'AI servisi şu anda kullanılamıyor.')
             return render(request, 'forum/ai_assistant.html', context)
 
-        # AI'dan yanıt al
         result = groq_service.generate_response(user_message)
 
         if result['success']:
-            # Kullanım sayısını artır (24 saat cache)
             cache.set(cache_key, usage_count + 1, 60 * 60 * 24)
             context['ai_response'] = result['response']
             context['user_question'] = user_message
@@ -1999,6 +2008,66 @@ def ai_assistant(request):
             messages.error(request, result['error'])
 
     return render(request, 'forum/ai_assistant.html', context)
+
+
+@require_POST
+@feature_required('ai_assistant')
+def api_ai_chat(request):
+    """Floating widget için AI sohbet API endpoint'i — JSON döner"""
+    from .services.ai_service import groq_service
+    from django.core.cache import cache
+    import json
+
+    try:
+        data = json.loads(request.body)
+        user_message = data.get('message', '').strip()
+    except (json.JSONDecodeError, AttributeError):
+        return JsonResponse({'success': False, 'error': 'Geçersiz istek.'}, status=400)
+
+    if not user_message:
+        return JsonResponse({'success': False, 'error': 'Mesaj boş olamaz.'})
+
+    if len(user_message) > 2000:
+        return JsonResponse({'success': False, 'error': 'Mesaj çok uzun (max 2000 karakter).'})
+
+    is_authenticated = request.user.is_authenticated
+    if is_authenticated:
+        cache_key = f"ai_usage_{request.user.id}_{timezone.now().date()}"
+        daily_limit = 30
+    else:
+        ip = request.META.get('HTTP_X_FORWARDED_FOR', request.META.get('REMOTE_ADDR', 'unknown'))
+        ip = ip.split(',')[0].strip()
+        cache_key = f"ai_usage_anon_{ip}_{timezone.now().date()}"
+        daily_limit = 3
+
+    usage_count = cache.get(cache_key, 0)
+
+    if usage_count >= daily_limit:
+        return JsonResponse({
+            'success': False,
+            'limit_reached': True,
+            'error': f'Günlük {daily_limit} soru limitine ulaştınız.',
+            'remaining': 0,
+            'daily_limit': daily_limit,
+            'is_authenticated': is_authenticated,
+        })
+
+    if not groq_service.is_available():
+        return JsonResponse({'success': False, 'error': 'AI servisi şu anda kullanılamıyor.'})
+
+    result = groq_service.generate_response(user_message)
+
+    if result['success']:
+        cache.set(cache_key, usage_count + 1, 60 * 60 * 24)
+        new_remaining = max(0, daily_limit - usage_count - 1)
+        return JsonResponse({
+            'success': True,
+            'response': result['response'],
+            'remaining': new_remaining,
+            'daily_limit': daily_limit,
+        })
+
+    return JsonResponse({'success': False, 'error': result['error']})
 
 
 @login_required
