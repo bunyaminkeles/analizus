@@ -1136,7 +1136,7 @@ def profile_edit(request):
     user = request.user
     # Profil yoksa oluştur
     profile, created = Profile.objects.get_or_create(user=user)
-    all_skills = Skill.objects.all()
+    all_skills = JobCategory.objects.filter(is_active=True).order_by('order', 'title')
 
     if request.method == 'POST':
         # Kullanıcı Bilgileri
@@ -1210,28 +1210,8 @@ def profile_edit(request):
         profile.is_public = request.POST.get('is_public') == 'on'
         profile.show_email = request.POST.get('show_email') == 'on'
 
-        # Yetenekler (Skills)
+        # Uzmanlık alanları (JobCategory)
         selected_skills = request.POST.getlist('skills')
-
-        # Kullanıcının eklediği özel yetenekler (Virgülle ayrılmış)
-        custom_skills = request.POST.get('custom_skills')
-        if custom_skills:
-            for skill_name in custom_skills.split(','):
-                skill_name = skill_name.strip()
-                if skill_name:
-                    # Varsa getir (case-insensitive), yoksa oluştur
-                    skill = Skill.objects.filter(name__iexact=skill_name).first()
-                    if not skill:
-                        from django.utils.text import slugify as _slugify
-                        base_slug = _slugify(skill_name) or f"skill-{skill_name[:20]}"
-                        slug = base_slug
-                        counter = 1
-                        while Skill.objects.filter(slug=slug).exists():
-                            slug = f"{base_slug}-{counter}"
-                            counter += 1
-                        skill = Skill.objects.create(name=skill_name, slug=slug)
-                    selected_skills.append(str(skill.id))
-
         profile.skills.set(selected_skills)
 
         try:
@@ -2851,12 +2831,12 @@ def hangi_test(request):
 
 
 def uzman_dizini(request):
-    """Uzman Dizini — skill/rozet/puan bazlı filtrelenebilir analist listesi."""
-    skill_slug = request.GET.get('skill', '').strip()
+    """Uzman Dizini — iş kategorisi/puan bazlı filtrelenebilir analist listesi."""
+    cat_id = request.GET.get('cat', '').strip()
     sort_by = request.GET.get('sort', 'puan')  # puan | is | aktif
 
-    # Boş skill param → canonical URL'ye yönlendir (sort varsa koru)
-    if 'skill' in request.GET and not skill_slug:
+    # Boş cat param → canonical URL'ye yönlendir (sort varsa koru)
+    if 'cat' in request.GET and not cat_id:
         if sort_by and sort_by != 'puan':
             return redirect(f"{reverse('uzman_dizini')}?sort={sort_by}")
         return redirect('uzman_dizini')
@@ -2899,8 +2879,8 @@ def uzman_dizini(request):
         )
     )
 
-    if skill_slug:
-        profiles = profiles.filter(skills__slug=skill_slug)
+    if cat_id:
+        profiles = profiles.filter(skills__id=cat_id)
 
     if sort_by == 'is':
         profiles = profiles.order_by('-completed_jobs', '-reputation')
@@ -2909,12 +2889,12 @@ def uzman_dizini(request):
     else:
         profiles = profiles.order_by('-reputation', '-completed_jobs')
 
-    skills = Skill.objects.filter(users__isnull=False).distinct().order_by('name')
+    job_categories = JobCategory.objects.filter(is_active=True).order_by('order', 'title')
 
     return render(request, 'forum/uzman_dizini.html', {
         'profiles': profiles,
-        'skills': skills,
-        'selected_skill': skill_slug,
+        'job_categories': job_categories,
+        'selected_cat': cat_id,
         'sort_by': sort_by,
     })
 
