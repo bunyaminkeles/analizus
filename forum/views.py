@@ -2018,7 +2018,6 @@ def ai_assistant(request):
         if result['success']:
             cache.set(cache_key, usage_count + 1, 60 * 60 * 24)
             context['ai_response'] = result['response']
-            context['user_question'] = user_message
             context['usage_count'] = usage_count + 1
             context['remaining'] = max(0, daily_limit - usage_count - 1)
         else:
