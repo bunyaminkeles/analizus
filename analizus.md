@@ -913,9 +913,9 @@ Her önemli event'te `bkeles74@gmail.com` adresine bildirim:
 | Kullanıcı | Günlük Limit | Cache Key |
 |---|---|---|
 | Giriş yapmış | 30 soru/gün | `ai_usage_{user.id}_{date}` |
-| Anonim | 3 soru/gün | `ai_usage_anon_{ip}_{date}` |
+| Anonim | 3 soru/gün | `ai_usage_anon_{uuid}_{date}` |
 
-`@login_required` kaldırıldı — anonim erişim IP bazlı Django cache ile sınırlandırıldı. Her iki URL aynı cache key'i paylaşır (ortak kota).
+`@login_required` kaldırıldı — anonim erişim **cookie bazlı** sınırlandırıldı (`ax_anon_id` UUID cookie, `max_age=86400`, `HttpOnly`, `SameSite=Lax`). IP bazlı yapılamazdı: Nginx arkasındaki tüm kullanıcılar aynı `172.x.x.x` internal IP'yi paylaşır. Her iki URL aynı cache key'i paylaşır (ortak kota).
 
 #### URL'ler
 - `GET/POST /ai-asistan/` → Tam sayfa chat arayüzü (`forum/views.py:ai_assistant`)
@@ -938,11 +938,19 @@ Tüm sayfalarda `{% if features.ai_assistant %}` bloğunda görünen WhatsApp-ta
 - **Hak sayacı:** İlk başarılı mesajdan sonra header'da `N/30 hak` badge'i görünür
 - **Anonim notu:** Giriş yapılmamışsa footer'da "3 soru/gün · Üye ol → 30 soru" satırı çıkar
 
+#### Post-processing Filtreleri (`ai_service.py`)
+Groq yanıtı `generate_response()` içinde sırayla iki filtreden geçer:
+1. **`_CJK_RE.sub()`** — Llama'nın ara sıra eklediği Çince/Japonca/Korece karakterleri siler
+2. **`_sanitize_paths()`** — `_ALLOWED_PATHS` frozenset dışındaki her `/path/` URL'yi yanıttan kaldırır; silinen URL'in çevresindeki `→ Ad ()` kalıplarını da temizler
+
+`_ALLOWED_PATHS` güncellenirken `SYSTEM_PROMPT` platform haritası da eş zamanlı güncellenmelidir.
+
 #### Önemli Non-obvious Kurallar
 - `ai_assistant` view ve `api_ai_chat` view aynı cache key pattern'ini kullanır — birinden harcanan kota diğerini de etkiler
-- IP tespiti: `HTTP_X_FORWARDED_FOR` (Nginx arkasında reverse proxy) → ilk IP alınır, sonrası atılır
+- Anonim cache key: `_anon_ai_cache_key(request)` → `ax_anon_id` cookie'den UUID okur; cookie yoksa yeni oluşturur ve tüm return path'lerde `_set_anon_cookie(response, anon_id)` ile set eder
 - Groq API `max_tokens=1024`, `temperature=0.7` — uzun yanıtlar kesilebilir, bu değerler ayarlanabilir
 - Widget JS'de URL'ler `target="_blank"` açılır — popup içinde sayfa değişmez
+- Sistem prompt'ta URL'lerin "örnek amaçlı" veya "farklı olabilir" olduğunu söylemek kesinlikle yasak — bu kural KESİN YASAKLAR bölümünde açıkça belirtilmiştir
 
 ---
 
@@ -1200,6 +1208,9 @@ with connection.cursor() as c:
 | `analytics/admin.py` 500 — `NameError: name 'username' is not defined` | `chart_view`'dan `?user=` filtresi kaldırılınca `if not username:` satırı düzenlenmemişti. Grafik sayfası artık tek modda çalışır (filtre yok), `top_users` + `per_user_data` her zaman hesaplanır. |
 | `cleanup-pageviews` cron endpoint model uyumsuzluğu | `forum/api_views.py`'deki `cron_cleanup_pageviews` eski modele göre `unique_users` yazıyordu. `PageViewSummary`'ye `user` FK eklendikten sonra endpoint de `user_id` bazlı aggregate'e güncellendi. Her iki yer birlikte değiştirilmeli: `analytics/models.py` + `analytics/management/commands/cleanup_pageviews.py` + `forum/api_views.py`. |
 | `PageViewSummary` admin'de user araması çalışmıyor | Model `user` FK içermiyordu, `search_fields = ['tab_name', 'path']` kullanıcı adını aramıyordu. Migration 0002 ile `user` FK eklendi, `search_fields`'e `user__username` eklendi. |
+| AI anonim limit herkese uygulanıyor / "0/3 ama limit doldu" | Nginx arkasında tüm kullanıcılar aynı `172.x.x.x` internal IP'yi paylaşır — IP bazlı cache key tüm kullanıcıların kotasını tek sayaçta toplar. **Çözüm:** `ax_anon_id` UUID cookie (`max_age=86400`); her tarayıcının kendi sayacı olur. Session bazlı yapılmamalı: tarayıcı kapanınca sıfırlanır. |
+| AI olmayan platform URL'si veriyor (`/istatistik/nitel/`, `/maxqda/` vb.) | `_sanitize_paths()` post-processing filtresi devrede ama `_ALLOWED_PATHS` listesine eklenmemiş olabilir. Kontrol: `ai_service.py`'de `_ALLOWED_PATHS` frozenset'e ilgili path'i ekle; yoksa sadece SYSTEM_PROMPT ile önlenemiyor — model kuralı bazen görmezden geliyor. |
+| AI "Platform haritası örnek amaçlı / gerçek linkler farklı olabilir" diyor | Sistem prompt'un KESİN YASAKLAR bölümünde bu ifade açıkça yasaklı. Model yine de söylüyorsa `_sanitize_paths()` URL'yi sildiği için model bunu "uydurdu" sanıp özür diliyor. `_ALLOWED_PATHS`'e eksik path'i ekle — filtre URL'yi silmeyecek, model özür dilemeyecek. |
 
 ---
 
@@ -1269,7 +1280,8 @@ with connection.cursor() as c:
 - **Semantic Scholar e-posta revizyonu** (haziran 2026) — demo email OpenAlex ile hizalandı; "info@analizus.com'a yaz" kaldırıldı, sipariş sayfası linki eklendi; S3 linki varsa ek gönderilmez (OpenAlex pattern)
 - **İş ilanı kategorileri bağımsızlaştırıldı** (haziran 2026) — `JobCategory` modeli eklendi; `FreelanceJob.category` artık forum `Category`'ye değil `JobCategory`'ye bağlı; admin → İş Kategorileri menüsünden yönetilir; sidebar `settings.py` `UNFOLD.SIDEBAR.navigation`'dan kontrol ediliyor; migration `0124_job_category_independent`
 - **SEO — GSC "Alternative page with canonical tag" 30 sayfa düzeltmesi** (haziran 2026) — `blog_list.html`: kategori-only sayfalar (`/blog/?category=xyz`) self-referencing canonical → Google index'ler; sayfalama + level filtresi + arama sayfaları → `noindex, follow`; `uzman_dizini.html`: skill sayfaları (`/uzmanlar/?skill=nvivo`) self-referencing canonical; boş skill param (`/uzmanlar/?skill=`) → view'da 301 redirect `/uzmanlar/`'e; trailing `&` URL'leri (`/blog/?category=xyz&`) → `blog_list` view'da 301 redirect ile temizleniyor.
-- **AI Asistan iyileştirmeleri** (haziran 2026) — Platform-aware `SYSTEM_PROMPT`: tüm araçlar + URL'ler dahil, kullanıcıyı doğru sayfaya yönlendirir; `@login_required` kaldırıldı, anonim erişim açıldı (3 soru/gün, IP bazlı cache); üye limiti 10 → 30 soru/gün; `POST /api/ai/chat/` JSON API endpoint eklendi; `base.html`'e mobil-önce floating chat widget (WhatsApp tarzı — desktop 350×480px, mobil full bottom-sheet 72dvh, typing indicator, tıklanabilir platform linkleri `→ Ad (/url/)` regex dönüşümü, Enter=gönder, textarea auto-grow).
+- **AI Asistan iyileştirmeleri** (haziran 2026) — Platform-aware `SYSTEM_PROMPT`: tüm araçlar + URL'ler dahil, kullanıcıyı doğru sayfaya yönlendirir; `@login_required` kaldırıldı, anonim erişim açıldı (3 soru/gün); üye limiti 10 → 30 soru/gün; `POST /api/ai/chat/` JSON API endpoint eklendi; `base.html`'e mobil-önce floating chat widget (WhatsApp tarzı — desktop 350×480px, mobil full bottom-sheet 72dvh, typing indicator, tıklanabilir platform linkleri `→ Ad (/url/)` regex dönüşümü, Enter=gönder, textarea auto-grow); tam sayfa: cevap gelince smooth scroll + textarea clear; `/proje-talebi/` URL sistem prompt'a eklendi; `robots.txt`'e `/ai-asistan/` eklendi.
+- **AI Asistan güvenlik/kalite katmanları** (haziran 2026) — Anonim rate limiting IP → `ax_anon_id` UUID cookie'ye taşındı (`max_age=86400`, HttpOnly) — Nginx arkasındaki shared IP sorununu çözdü; `_CJK_RE` post-processing: Llama'nın Çince/Japonca karakter karıştırmasını engeller; `_sanitize_paths()` post-processing: `_ALLOWED_PATHS` frozenset dışındaki her platform URL'sini yanıttan kaldırır (hallüsinasyon önlemi); sistem prompt KESİN YASAKLAR güncellendi: sahte uzman adı yasağı, iç kural sızdırma yasağı, "linkler örnek amaçlı" yasağı, CJK karakter yasağı.
 
 ### Sıradaki Görevler
 - **ML Araçları** — Rastgele Orman, KNN (Karar Ağacı + SVM tamamlandı)
@@ -1284,4 +1296,4 @@ with connection.cursor() as c:
 
 ---
 
-*Son güncelleme: Haziran 2026 — AI Asistan: platform-aware prompt, floating chat widget, anonim erişim, üye limiti 30/gün. Önceki: İş ilanı kategorileri bağımsızlaştırıldı (JobCategory, migration 0124); SEO GSC canonical 30 sayfa; Analytics grafik in-place user filtresi; Semantic Scholar revizyonu; Kullanıcı navigasyon analizi; Ödeme/sipariş admin düzeltmeleri; Çalışma odası mesaj düzenleme/silme + @mention; Semantic Scholar modülü; WoS parser; DM okundu göstergesi; Karar Ağacı + SVM.*
+*Son güncelleme: Haziran 2026 — AI Asistan kalite/güvenlik katmanları: cookie bazlı anonim rate limiting (ax_anon_id), CJK filtresi, URL beyaz listesi (_sanitize_paths), "linkler örnek amaçlı" yasağı. Önceki: AI Asistan platform-aware prompt, floating chat widget, anonim erişim, üye limiti 30/gün; İş ilanı kategorileri bağımsızlaştırıldı; SEO GSC canonical düzeltmeleri; Analytics navigasyon takibi; Ödeme/sipariş admin düzeltmeleri; Çalışma odası mesaj düzenleme/silme + @mention; Semantic Scholar modülü; WoS parser; DM okundu göstergesi; Karar Ağacı + SVM.*
