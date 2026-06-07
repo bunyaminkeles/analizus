@@ -116,11 +116,27 @@
                 </div>
             </div>
             <div class="card-body p-4">
-                <div class="ai-response text-white" style="line-height: 1.8;">
-                    {{ ai_response|linebreaks }}
-                </div>
+                <div id="ai-response-body" class="ai-response text-white" style="line-height: 1.8;"></div>
+                {{ ai_response|json_script:"ai-response-data" }}
             </div>
         </div>
+        <script>
+        (function () {
+            function mdToHtml(text) {
+                return text
+                    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                    .replace(/`([^`\n]+)`/g, '<code>$1</code>')
+                    .replace(/→\s+([^(\n<]+?)\s*\(([/][^)\s<]+)\)/g,
+                        '→ <a href="$2" class="ax-ai-link" target="_blank">$1 ↗</a>')
+                    .replace(/\[([^\]\n<]+)\]\(([/][^)\s<]+)\)/g,
+                        '<a href="$2" class="ax-ai-link" target="_blank">$1 ↗</a>')
+                    .replace(/\n/g, '<br>');
+            }
+            var raw = JSON.parse(document.getElementById('ai-response-data').textContent);
+            document.getElementById('ai-response-body').innerHTML = mdToHtml(raw);
+        })();
+        </script>
         {% endif %}
 
         <!-- Örnek Sorular -->
@@ -201,16 +217,20 @@
     transform: translateY(-2px);
 }
 
-.ai-response {
-    white-space: pre-wrap;
-}
-
 .ai-response code {
     background: #1e293b;
     padding: 2px 6px;
     border-radius: 4px;
     color: #00d2ff;
 }
+
+.ai-response .ax-ai-link {
+    color: #a5b4fc;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    font-weight: 600;
+}
+.ai-response .ax-ai-link:hover { color: #c7d2fe; }
 
 .ai-response pre {
     background: #0b1120;
