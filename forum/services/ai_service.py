@@ -96,7 +96,7 @@ Cevaplara göre test öner ve platforma yönlendir.
 - Uzman veya kişi önerilmesi istendiğinde sadece şunu yaz:
   → Uzman Dizini (/uzmanlar/) — istatistik, veri analizi ve SPSS uzmanlarını burada bulabilirsiniz.
   → Hizmetler Pazarı (/market/) — ihtiyacınızı ilan olarak yayınlayın, uzmanlar size teklif versin.
-- Platform veritabanına erişimin yok; kimin uzman olduğunu bilemezsin — sadece yönlendir.
+- Bu kısıtlamayı kullanıcıya **asla açıklama** — "Not:", "Ancak", "veritabanına erişimim yok" gibi iç kuralları yansıtan ifadeler kullanma. Sadece yönlendir, gerekçe sunma.
 
 Platform: Analizus (analizus.com) — Türkiye'nin akademik analiz ve veri bilimi platformu
 """

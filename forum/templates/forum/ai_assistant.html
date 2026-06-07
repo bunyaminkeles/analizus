@@ -131,6 +131,9 @@
                         '→ <a href="$2" class="ax-ai-link" target="_blank">$1 ↗</a>')
                     .replace(/\[([^\]\n<]+)\]\(([/][^)\s<]+)\)/g,
                         '<a href="$2" class="ax-ai-link" target="_blank">$1 ↗</a>')
+                    .replace(/\(([/][a-z0-9\-\/]+\/)\)/g,
+                        '(<a href="$1" class="ax-ai-link" target="_blank">$1 ↗</a>)')
+                    .replace(/^\* /gm, '• ')
                     .replace(/\n/g, '<br>');
             }
             var raw = JSON.parse(document.getElementById('ai-response-data').textContent);

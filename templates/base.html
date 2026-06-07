@@ -1152,6 +1152,11 @@
       // [Ad](/path/)  →  Markdown link formatı
       .replace(/\[([^\]\n<]+)\]\(([/][^)\s<]+)\)/g,
         '<a href="$2" class="ax-ai-link" target="_blank">$1 ↗</a>')
+      // (/path/)  →  → olmasa da parantez içi tüm platform URL'leri
+      .replace(/\(([/][a-z0-9\-\/]+\/)\)/g,
+        '(<a href="$1" class="ax-ai-link" target="_blank">$1 ↗</a>)')
+      // * bullet → •
+      .replace(/^\* /gm, '• ')
       .replace(/\n/g, '<br>');
   }
 
