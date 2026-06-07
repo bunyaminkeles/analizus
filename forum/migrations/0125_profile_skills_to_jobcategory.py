@@ -10,6 +10,11 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        # Eski Skill M2M verisi JobCategory ile uyumsuz — önce temizle
+        migrations.RunSQL(
+            sql="DELETE FROM forum_profile_skills;",
+            reverse_sql=migrations.RunSQL.noop,
+        ),
         migrations.AlterField(
             model_name='profile',
             name='skills',
