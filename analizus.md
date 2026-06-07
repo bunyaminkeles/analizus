@@ -903,6 +903,47 @@ Her önemli event'te `bkeles74@gmail.com` adresine bildirim:
 - İlan sahibi ilanı iptal edince → beklemedeki teklif verenlere DM
 - İş tamamlanınca → başarı hikayesi daveti DM
 
+### AI Asistan (Groq Chat Servisi)
+
+**Dosya:** `forum/services/ai_service.py` (`GroqService` sınıfı, `SYSTEM_PROMPT`)
+**Model:** `llama-3.3-70b-versatile` (Groq ücretsiz tier — ~14.400 istek/gün, 30 istek/dk)
+**Feature flag:** `feature_ai_assistant` (SiteSettings) — kapalıysa her iki URL de 404 döner
+
+#### Erişim ve Limitler
+| Kullanıcı | Günlük Limit | Cache Key |
+|---|---|---|
+| Giriş yapmış | 30 soru/gün | `ai_usage_{user.id}_{date}` |
+| Anonim | 3 soru/gün | `ai_usage_anon_{ip}_{date}` |
+
+`@login_required` kaldırıldı — anonim erişim IP bazlı Django cache ile sınırlandırıldı. Her iki URL aynı cache key'i paylaşır (ortak kota).
+
+#### URL'ler
+- `GET/POST /ai-asistan/` → Tam sayfa chat arayüzü (`forum/views.py:ai_assistant`)
+- `POST /api/ai/chat/` → Floating widget JSON API (`forum/views.py:api_ai_chat`) — body: `{message: str}`, cevap: `{success, response, remaining, daily_limit}`
+
+#### System Prompt Mantığı
+`SYSTEM_PROMPT` içinde platformun tüm araçları ve URL'leri kayıtlıdır. Kullanıcı ne yapmak istediğini söyleyince AI önce "**Analizus'ta bunu yapabilirsiniz: → /url/**" bloğunu verir, ardından teorik açıklamayı ekler:
+- İstatistik analizi istiyorsa → `/istatistik/<araç>/` URL'i ile ilgili araca yönlendir
+- Test seçimi belirsizse → soru sor (bağımlı değişken tipi, grup sayısı, normallik) → `/hangi-test/`
+- Makale/tez araması → `/openalex/`, `/yoktez/`, `/semantic-scholar/`, `/bibliometrics/`
+- Uzman/iş → `/uzmanlar/`, `/market/`, `/market/new/`
+- Forum/topluluk → `/forum/`, `/odalar/`
+
+#### Floating Chat Widget (`base.html`)
+Tüm sayfalarda `{% if features.ai_assistant %}` bloğunda görünen WhatsApp-tarzı sohbet balonu:
+- **Buton:** Sabit sağ alt, indigo gradyan; WhatsApp butonu varsa onun üstünde (`bottom: 110px`), yoksa `bottom: 48px`
+- **Desktop popup:** 350×480px, sağ altta; butonun üstünde açılır
+- **Mobil (≤575px):** Full-width bottom sheet, 72dvh yükseklik; `border-radius: 18px 18px 0 0`
+- **Özellikler:** Typing indicator (3 nokta bounce), markdown render (`**bold**`, `` `code` ``), `→ Ad (/url/)` → `<a>` dönüşümü, Enter=gönder, Shift+Enter=yeni satır, textarea auto-grow, dışarı tıkla → kapat
+- **Hak sayacı:** İlk başarılı mesajdan sonra header'da `N/30 hak` badge'i görünür
+- **Anonim notu:** Giriş yapılmamışsa footer'da "3 soru/gün · Üye ol → 30 soru" satırı çıkar
+
+#### Önemli Non-obvious Kurallar
+- `ai_assistant` view ve `api_ai_chat` view aynı cache key pattern'ini kullanır — birinden harcanan kota diğerini de etkiler
+- IP tespiti: `HTTP_X_FORWARDED_FOR` (Nginx arkasında reverse proxy) → ilk IP alınır, sonrası atılır
+- Groq API `max_tokens=1024`, `temperature=0.7` — uzun yanıtlar kesilebilir, bu değerler ayarlanabilir
+- Widget JS'de URL'ler `target="_blank"` açılır — popup içinde sayfa değişmez
+
 ---
 
 ## 18. S3 DEPOLAMA YAPISI
@@ -1228,6 +1269,7 @@ with connection.cursor() as c:
 - **Semantic Scholar e-posta revizyonu** (haziran 2026) — demo email OpenAlex ile hizalandı; "info@analizus.com'a yaz" kaldırıldı, sipariş sayfası linki eklendi; S3 linki varsa ek gönderilmez (OpenAlex pattern)
 - **İş ilanı kategorileri bağımsızlaştırıldı** (haziran 2026) — `JobCategory` modeli eklendi; `FreelanceJob.category` artık forum `Category`'ye değil `JobCategory`'ye bağlı; admin → İş Kategorileri menüsünden yönetilir; sidebar `settings.py` `UNFOLD.SIDEBAR.navigation`'dan kontrol ediliyor; migration `0124_job_category_independent`
 - **SEO — GSC "Alternative page with canonical tag" 30 sayfa düzeltmesi** (haziran 2026) — `blog_list.html`: kategori-only sayfalar (`/blog/?category=xyz`) self-referencing canonical → Google index'ler; sayfalama + level filtresi + arama sayfaları → `noindex, follow`; `uzman_dizini.html`: skill sayfaları (`/uzmanlar/?skill=nvivo`) self-referencing canonical; boş skill param (`/uzmanlar/?skill=`) → view'da 301 redirect `/uzmanlar/`'e; trailing `&` URL'leri (`/blog/?category=xyz&`) → `blog_list` view'da 301 redirect ile temizleniyor.
+- **AI Asistan iyileştirmeleri** (haziran 2026) — Platform-aware `SYSTEM_PROMPT`: tüm araçlar + URL'ler dahil, kullanıcıyı doğru sayfaya yönlendirir; `@login_required` kaldırıldı, anonim erişim açıldı (3 soru/gün, IP bazlı cache); üye limiti 10 → 30 soru/gün; `POST /api/ai/chat/` JSON API endpoint eklendi; `base.html`'e mobil-önce floating chat widget (WhatsApp tarzı — desktop 350×480px, mobil full bottom-sheet 72dvh, typing indicator, tıklanabilir platform linkleri `→ Ad (/url/)` regex dönüşümü, Enter=gönder, textarea auto-grow).
 
 ### Sıradaki Görevler
 - **ML Araçları** — Rastgele Orman, KNN (Karar Ağacı + SVM tamamlandı)
@@ -1242,4 +1284,4 @@ with connection.cursor() as c:
 
 ---
 
-*Son güncelleme: Haziran 2026 — İş ilanı kategorileri forum'dan bağımsızlaştırıldı (JobCategory modeli, migration 0124). Önceki: SEO GSC canonical 30 sayfa; Analytics grafik in-place user filtresi; Semantic Scholar e-posta revizyonu; Kullanıcı navigasyon analizi; Ödeme/sipariş admin düzeltmeleri; Çalışma odası mesaj düzenleme/silme + @mention; Semantic Scholar modülü; WoS parser; DM okundu göstergesi; Karar Ağacı + SVM.*
+*Son güncelleme: Haziran 2026 — AI Asistan: platform-aware prompt, floating chat widget, anonim erişim, üye limiti 30/gün. Önceki: İş ilanı kategorileri bağımsızlaştırıldı (JobCategory, migration 0124); SEO GSC canonical 30 sayfa; Analytics grafik in-place user filtresi; Semantic Scholar revizyonu; Kullanıcı navigasyon analizi; Ödeme/sipariş admin düzeltmeleri; Çalışma odası mesaj düzenleme/silme + @mention; Semantic Scholar modülü; WoS parser; DM okundu göstergesi; Karar Ağacı + SVM.*
