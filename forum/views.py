@@ -1950,10 +1950,24 @@ def user_search_api(request):
     return JsonResponse({'users': data})
 
 
+def _anon_ai_cache_key(request):
+    """Cookie bazlı anonim AI kullanım cache key'i. (cache_key, anon_id) döner."""
+    import uuid as _uuid
+    anon_id = request.COOKIES.get('ax_anon_id') or str(_uuid.uuid4())
+    return f"ai_usage_anon_{anon_id}_{timezone.now().date()}", anon_id
+
+
+def _set_anon_cookie(response, anon_id):
+    """Persistent anonim kimlik cookie'sini response'a ekler (1 gün)."""
+    response.set_cookie('ax_anon_id', anon_id, max_age=86400,
+                        samesite='Lax', httponly=True)
+    return response
+
+
 # --- AI ASISTAN ---
 @feature_required('ai_assistant')
 def ai_assistant(request):
-    """AI Asistan sayfası — giriş yapanlar 10, anonim kullanıcılar 3 soru/gün"""
+    """AI Asistan sayfası — giriş yapanlar 30, anonim kullanıcılar 3 soru/gün"""
     from .services.ai_service import groq_service
     from django.core.cache import cache
 
@@ -1962,10 +1976,9 @@ def ai_assistant(request):
     if is_authenticated:
         cache_key = f"ai_usage_{request.user.id}_{timezone.now().date()}"
         daily_limit = 30
+        anon_id = None
     else:
-        if not request.session.session_key:
-            request.session.create()
-        cache_key = f"ai_usage_anon_{request.session.session_key}_{timezone.now().date()}"
+        cache_key, anon_id = _anon_ai_cache_key(request)
         daily_limit = 3
 
     usage_count = cache.get(cache_key, 0)
@@ -1978,23 +1991,27 @@ def ai_assistant(request):
         'is_authenticated': is_authenticated,
     }
 
+    def _render(ctx):
+        resp = render(request, 'forum/ai_assistant.html', ctx)
+        return _set_anon_cookie(resp, anon_id) if anon_id else resp
+
     if request.method == 'POST':
         user_message = request.POST.get('message', '').strip()
 
         if not user_message:
             messages.error(request, 'Lütfen bir soru girin.')
-            return render(request, 'forum/ai_assistant.html', context)
+            return _render(context)
 
         if usage_count >= daily_limit:
             if is_authenticated:
                 messages.warning(request, f'Günlük {daily_limit} soru limitinizi doldurdunuz. Yarın tekrar deneyin.')
             else:
-                messages.warning(request, f'Günlük anonim limit ({daily_limit} soru) doldu. Üye olarak 10 soruya kadar kullanabilirsiniz.')
-            return render(request, 'forum/ai_assistant.html', context)
+                messages.warning(request, f'Günlük anonim limit ({daily_limit} soru) doldu. Üye olarak 30 soruya kadar kullanabilirsiniz.')
+            return _render(context)
 
         if not groq_service.is_available():
             messages.error(request, 'AI servisi şu anda kullanılamıyor.')
-            return render(request, 'forum/ai_assistant.html', context)
+            return _render(context)
 
         result = groq_service.generate_response(user_message)
 
@@ -2007,7 +2024,7 @@ def ai_assistant(request):
         else:
             messages.error(request, result['error'])
 
-    return render(request, 'forum/ai_assistant.html', context)
+    return _render(context)
 
 
 @require_POST
@@ -2034,16 +2051,19 @@ def api_ai_chat(request):
     if is_authenticated:
         cache_key = f"ai_usage_{request.user.id}_{timezone.now().date()}"
         daily_limit = 30
+        anon_id = None
     else:
-        if not request.session.session_key:
-            request.session.create()
-        cache_key = f"ai_usage_anon_{request.session.session_key}_{timezone.now().date()}"
+        cache_key, anon_id = _anon_ai_cache_key(request)
         daily_limit = 3
 
     usage_count = cache.get(cache_key, 0)
 
+    def _json(data, **kwargs):
+        resp = JsonResponse(data, **kwargs)
+        return _set_anon_cookie(resp, anon_id) if anon_id else resp
+
     if usage_count >= daily_limit:
-        return JsonResponse({
+        return _json({
             'success': False,
             'limit_reached': True,
             'error': f'Günlük {daily_limit} soru limitine ulaştınız.',
@@ -2053,21 +2073,21 @@ def api_ai_chat(request):
         })
 
     if not groq_service.is_available():
-        return JsonResponse({'success': False, 'error': 'AI servisi şu anda kullanılamıyor.'})
+        return _json({'success': False, 'error': 'AI servisi şu anda kullanılamıyor.'})
 
     result = groq_service.generate_response(user_message)
 
     if result['success']:
         cache.set(cache_key, usage_count + 1, 60 * 60 * 24)
         new_remaining = max(0, daily_limit - usage_count - 1)
-        return JsonResponse({
+        return _json({
             'success': True,
             'response': result['response'],
             'remaining': new_remaining,
             'daily_limit': daily_limit,
         })
 
-    return JsonResponse({'success': False, 'error': result['error']})
+    return _json({'success': False, 'error': result['error']})
 
 
 @login_required
