@@ -2,9 +2,17 @@
 Analizus AI Asistan Servisi
 Groq API entegrasyonu (Llama 3 modeli)
 """
+import re
 import requests
 from django.conf import settings
 import logging
+
+# CJK ve diğer Asya karakterleri — Llama bazen Türkçe yanıtta bunları karıştırıyor
+_CJK_RE = re.compile(
+    r'[　-〿぀-ゟ゠-ヿ'
+    r'一-鿿㐀-䶿豈-﫿'
+    r'가-힯]+'
+)
 
 logger = logging.getLogger(__name__)
 
@@ -94,6 +102,7 @@ Cevaplara göre test öner ve platforma yönlendir.
 - Emin olmadığın konularda bunu belirt
 
 ## KESİN YASAKLAR
+- **ASLA Çince, Japonca, Korece veya Latin alfabesi dışında herhangi bir karakter kullanma.** Yanıtlar yalnızca Türkçe ve Latin alfabesiyle yazılmalıdır.
 - **ASLA gerçek ya da uydurma kişi adı, uzman ismi, akademisyen adı yazma.** "Dr. Ayşe Yılmaz" gibi isimler platformdaki gerçek kişilerle örtüşmez ve yanıltıcıdır.
 - Uzman veya kişi önerilmesi istendiğinde sadece şunu yaz:
   → Uzman Dizini (/uzmanlar/) — istatistik, veri analizi ve SPSS uzmanlarını burada bulabilirsiniz.
@@ -168,6 +177,7 @@ class GroqService:
             if response.status_code == 200:
                 result = response.json()
                 ai_response = result['choices'][0]['message']['content']
+                ai_response = _CJK_RE.sub('', ai_response).strip()
                 return {
                     'success': True,
                     'response': ai_response,
