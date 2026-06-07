@@ -2909,7 +2909,7 @@ def uzman_dizini(request):
     else:
         profiles = profiles.order_by('-reputation', '-completed_jobs')
 
-    skills = Skill.objects.all().order_by('name')
+    skills = Skill.objects.filter(users__isnull=False).distinct().order_by('name')
 
     return render(request, 'forum/uzman_dizini.html', {
         'profiles': profiles,
