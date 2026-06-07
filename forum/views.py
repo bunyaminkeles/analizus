@@ -2853,10 +2853,13 @@ def hangi_test(request):
 def uzman_dizini(request):
     """Uzman Dizini — skill/rozet/puan bazlı filtrelenebilir analist listesi."""
     skill_slug = request.GET.get('skill', '').strip()
-    if 'skill' in request.GET and not skill_slug:
-        return redirect('uzman_dizini', permanent=True)
-
     sort_by = request.GET.get('sort', 'puan')  # puan | is | aktif
+
+    # Boş skill param → canonical URL'ye yönlendir (sort varsa koru)
+    if 'skill' in request.GET and not skill_slug:
+        if sort_by and sort_by != 'puan':
+            return redirect(f"{reverse('uzman_dizini')}?sort={sort_by}")
+        return redirect('uzman_dizini')
 
     # Son forum yanıtı (subquery) — Post.created_by FK'sı, Topic.subject
     last_post_subq = Post.objects.filter(
