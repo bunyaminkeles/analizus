@@ -137,7 +137,9 @@
                     .replace(/\n/g, '<br>');
             }
             var raw = JSON.parse(document.getElementById('ai-response-data').textContent);
-            document.getElementById('ai-response-body').innerHTML = mdToHtml(raw);
+            var el = document.getElementById('ai-response-body');
+            el.innerHTML = mdToHtml(raw);
+            el.closest('.card').scrollIntoView({ behavior: 'smooth', block: 'start' });
         })();
         </script>
         {% endif %}
