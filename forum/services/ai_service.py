@@ -7,18 +7,66 @@ import requests
 from django.conf import settings
 import logging
 
-# CJK ve diğer Asya karakterleri — Llama bazen Türkçe yanıtta bunları karıştırıyor
+# CJK ve diger Asya karakterleri - Llama bazen Turkce yanita bunlari karistiriyor
 _CJK_RE = re.compile(
-    r'[　-〿぀-ゟ゠-ヿ'
-    r'一-鿿㐀-䶿豈-﫿'
-    r'가-힯]+'
+    '[　-〿'
+    '぀-ゟ'
+    '゠-ヿ'
+    '一-鿿'
+    '㐀-䶿'
+    '豈-﫿'
+    '가-힯]+'
 )
+
+# Platform URL beyaz listesi - bu listede olmayan hicbir /path/ yanita giremez
+_ALLOWED_PATHS = frozenset({
+    '/istatistik/cronbach/', '/istatistik/normallik/', '/istatistik/betimsel/',
+    '/istatistik/korelasyon/', '/istatistik/orneklem/', '/istatistik/ttesti/',
+    '/istatistik/anova/', '/istatistik/mann-whitney/', '/istatistik/kruskal-wallis/',
+    '/istatistik/ki-kare/', '/istatistik/lineer-regresyon/', '/istatistik/lojistik-regresyon/',
+    '/istatistik/afa/', '/istatistik/wilcoxon/', '/istatistik/friedman/',
+    '/istatistik/tekrarli-anova/', '/istatistik/karar-agaci/', '/istatistik/svm/',
+    '/hangi-test/', '/analiz/',
+    '/openalex/', '/semantic-scholar/', '/yoktez/', '/tezanaliz/', '/makaleanaliz/',
+    '/oaipmh/', '/bibliometrics/', '/tarama/',
+    '/uzmanlar/', '/market/', '/market/new/', '/proje-talebi/',
+    '/forum/', '/odalar/', '/blog/', '/ai-asistan/',
+})
+
+_PAREN_PATH_RE = re.compile(r'\((/[a-z][a-z0-9\-/]*/)\)')
+_MARKDOWN_LINK_RE = re.compile(r'\[([^\]\n<]+)\]\((/[a-z][a-z0-9\-/]*/)\)')
+_ARROW_LINK_RE = re.compile(r'(→\s+[^(\n<]{1,80}?)\s*\((/[a-z][a-z0-9\-/]*/)\)')
+
+
+def _sanitize_paths(text):
+    """Yanittaki platform disi URL'leri kaldirir; listede olmayanlar silinir."""
+    def _check_arrow(m):
+        path = m.group(2)
+        return m.group(0) if path in _ALLOWED_PATHS else ''
+
+    def _check_md_link(m):
+        path = m.group(2)
+        return m.group(0) if path in _ALLOWED_PATHS else m.group(1)
+
+    def _check_paren(m):
+        path = m.group(1)
+        return m.group(0) if path in _ALLOWED_PATHS else ''
+
+    cleaned = _ARROW_LINK_RE.sub(_check_arrow, text)
+    cleaned = _MARKDOWN_LINK_RE.sub(_check_md_link, cleaned)
+    cleaned = _PAREN_PATH_RE.sub(_check_paren, cleaned)
+    # URL'si silinen bos "-> Ad ()" kaliplarini temizle
+    cleaned = re.sub(r'[→-]\s+[^(\n<]{1,80}\(\s*\)\s*(?:[^\n]*)?', '', cleaned)
+    return cleaned.strip()
+
 
 logger = logging.getLogger(__name__)
 
 SYSTEM_PROMPT = """Sen Analizus platformunun özel AI asistanısın. Görevin yalnızca genel bilgi vermek değil — kullanıcının ne yapmak istediğini anlayıp onu Analizus platformundaki doğru araca, sayfaya veya hizmete yönlendirmektir.
 
-## PLATFORM HARİTASI
+## PLATFORM HARİTASI — GERÇEK VE AKTİF URL'LER
+
+Aşağıdaki URL'ler analizus.com'da GERÇEKTEN MEVCUT ve aktif sayfalardır. Bu listede OLMAYAN hiçbir URL yoktur — uydurma.
 
 ### İstatistik Araçları
 Kullanıcı analiz yapmak istediğinde doğru URL'yi ver:
@@ -102,7 +150,8 @@ Cevaplara göre test öner ve platforma yönlendir.
 - Emin olmadığın konularda bunu belirt
 
 ## KESİN YASAKLAR
-- **ASLA yukarıdaki Platform Haritasında listelenmemiş bir URL yazma.** `/nvivo/`, `/spss/`, `/atlas-ti/`, `/maxqda/` gibi var olmayan sayfaları kesinlikle uydurma. Platformda olmayan bir araç isteniyorsa: "Bu araç şu an Analizus'ta mevcut değil" de ve varsa yakın alternatifi öner.
+- **ASLA yukarıdaki Platform Haritasında listelenmemiş bir URL yazma.** `/nvivo/`, `/spss/`, `/atlas-ti/`, `/maxqda/`, `/istatistik/nitel/` gibi var olmayan sayfaları kesinlikle uydurma. Platformda olmayan bir araç isteniyorsa: "Bu araç şu an Analizus'ta mevcut değil" de ve varsa yakın alternatifi öner.
+- **ASLA "linkler örnek amaçlı", "gerçek linkler farklı olabilir", "platform haritası örnek" gibi ifadeler kullanma.** Yukarıdaki URL'ler gerçektir, aktiftir, doğrudur. Bunları küçümseme veya geçersizleştirme.
 - **ASLA Çince, Japonca, Korece veya Latin alfabesi dışında herhangi bir karakter kullanma.** Yanıtlar yalnızca Türkçe ve Latin alfabesiyle yazılmalıdır.
 - **ASLA gerçek ya da uydurma kişi adı, uzman ismi, akademisyen adı yazma.** "Dr. Ayşe Yılmaz" gibi isimler platformdaki gerçek kişilerle örtüşmez ve yanıltıcıdır.
 - Uzman veya kişi önerilmesi istendiğinde sadece şunu yaz:
@@ -123,16 +172,16 @@ class GroqService:
         self.model = "llama-3.3-70b-versatile"
 
     def is_available(self):
-        """Servis kullanılabilir mi?"""
+        """Servis kullanilabilir mi?"""
         return bool(self.api_key)
 
     def generate_response(self, user_message: str, context: str = None) -> dict:
         """
-        Kullanıcı mesajına yanıt üret
+        Kullanici mesajina yanit uret
 
         Args:
-            user_message: Kullanıcının sorusu
-            context: Ek bağlam (opsiyonel)
+            user_message: Kullanicinin sorusu
+            context: Ek baglam (opsiyonel)
 
         Returns:
             dict: {'success': bool, 'response': str, 'error': str}
@@ -145,7 +194,7 @@ class GroqService:
             }
 
         try:
-            # Mesajları hazırla
+            # Mesajlari hazirla
             messages = [
                 {"role": "system", "content": SYSTEM_PROMPT}
             ]
@@ -155,7 +204,7 @@ class GroqService:
 
             messages.append({"role": "user", "content": user_message})
 
-            # API isteği
+            # API istegi
             headers = {
                 "Authorization": f"Bearer {self.api_key}",
                 "Content-Type": "application/json"
@@ -178,7 +227,10 @@ class GroqService:
             if response.status_code == 200:
                 result = response.json()
                 ai_response = result['choices'][0]['message']['content']
+                # CJK karakterleri temizle
                 ai_response = _CJK_RE.sub('', ai_response).strip()
+                # Platform disi URL'leri temizle
+                ai_response = _sanitize_paths(ai_response)
                 return {
                     'success': True,
                     'response': ai_response,
@@ -186,7 +238,7 @@ class GroqService:
                 }
             else:
                 error_msg = response.json().get('error', {}).get('message', 'Bilinmeyen hata')
-                logger.error(f"Groq API hatası: {response.status_code} - {error_msg}")
+                logger.error(f"Groq API hatasi: {response.status_code} - {error_msg}")
                 return {
                     'success': False,
                     'response': None,
@@ -200,7 +252,7 @@ class GroqService:
                 'error': 'İstek zaman aşımına uğradı. Lütfen tekrar deneyin.'
             }
         except Exception as e:
-            logger.error(f"Groq API hatası: {e}")
+            logger.error(f"Groq API hatasi: {e}")
             return {
                 'success': False,
                 'response': None,
@@ -209,11 +261,11 @@ class GroqService:
 
     def suggest_answer(self, topic_subject: str, topic_content: str) -> dict:
         """
-        Forum konusu için yanıt önerisi üret
+        Forum konusu icin yanit onerisi uret
 
         Args:
-            topic_subject: Konu başlığı
-            topic_content: Konu içeriği
+            topic_subject: Konu basligi
+            topic_content: Konu icerigi
 
         Returns:
             dict: {'success': bool, 'suggestion': str, 'error': str}
