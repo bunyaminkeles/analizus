@@ -5,6 +5,7 @@ echo "🚀 Deploying to Render..."
 
 # Run migrations
 python manage.py migrate --noinput
+python manage.py createcachetable
 
 # Collect static files
 python manage.py collectstatic --noinput
