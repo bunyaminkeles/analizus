@@ -149,8 +149,9 @@ def send_demo_email(job):
         f"Toplam Bulunan: {job.total_results} yayın",
         f"Ekteki dosyada en yeni {len(job.demo_results)} makale yer almaktadır.\n",
         f"{'─'*40}",
-        f"Tüm veri talebi için:",
-        f"  info@analizus.com adresine yazabilirsiniz.",
+        f"Tüm veriye ihtiyacınız varsa:",
+        f"  https://www.analizus.com/proje-talebi/?source=trdizin",
+        f"  adresinden talep oluşturabilirsiniz.",
         f"\n---\nAnalizus - {site_url}",
     ]
 

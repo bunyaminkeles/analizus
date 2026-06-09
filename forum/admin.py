@@ -363,14 +363,14 @@ class ContactMessageAdmin(ModelAdmin):
 class ProjectRequestAdmin(ModelAdmin):
     warn_unsaved_changes = True
     compressed_fields = True
-    list_display = ('name', 'company', 'email', 'analysis_type_display', 'data_size', 'timeline', 'status', 'status_badge', 'created_at_formatted')
-    list_filter = ('status', 'analysis_type', 'timeline', 'data_size', 'created_at')
+    list_display = ('name', 'company', 'email', 'analysis_type_display', 'source', 'data_size', 'timeline', 'status', 'status_badge', 'created_at_formatted')
+    list_filter = ('status', 'source', 'analysis_type', 'timeline', 'data_size', 'created_at')
     search_fields = ('name', 'email', 'company', 'description')
     list_editable = ('status',)
     readonly_fields = ('created_at',)
     ordering = ('-created_at',)
     fieldsets = (
-        ('Talep Eden', {'fields': ('name', 'email', 'company')}),
+        ('Talep Eden', {'fields': ('name', 'email', 'company', 'source')}),
         ('Proje Detayları', {'fields': ('analysis_type', 'description', 'data_size', 'timeline')}),
         ('Yönetim', {'fields': ('status', 'admin_notes', 'created_at')}),
     )
