@@ -107,15 +107,18 @@
             </div>
           </div>
 
+          <input type="hidden" name="source" value="{{ source|default:'direct' }}">
+
           <div class="mb-3">
-            <label class="form-label text-white-50 small">Şirket / Kurum</label>
-            <input type="text" name="company" class="form-control" placeholder="Şirket adı (isteğe bağlı)">
+            <label class="form-label text-white-50 small">Kişi / Şirket / Kurum</label>
+            <input type="text" name="company" class="form-control" placeholder="Adınız, şirket veya kurum adı (isteğe bağlı)">
           </div>
 
           <div class="mb-3">
             <label class="form-label text-white-50 small">Analiz Türü <span class="text-danger">*</span></label>
             <select name="analysis_type" class="form-select" required>
               <option value="">Seçiniz…</option>
+              <option value="literature"{% if source == 'yoktez' or source == 'trdizin' %} selected{% endif %}>Tez / Makale Veri İndirme</option>
               <option value="visualization">Veri Görselleştirme</option>
               <option value="ml">Makine Öğrenmesi / Yapay Zeka</option>
               <option value="statistics">İstatistiksel Analiz</option>

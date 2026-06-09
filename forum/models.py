@@ -1495,6 +1495,7 @@ class ProjectRequest(models.Model):
         ('cleaning', 'Veri Temizleme / Hazırlama'),
         ('timeseries', 'Zaman Serisi Analizi'),
         ('nlp', 'Metin / NLP Analizi'),
+        ('literature', 'Tez / Makale Veri İndirme'),
         ('other', 'Diğer'),
     ]
     DATA_SIZE_CHOICES = [
@@ -1515,14 +1516,21 @@ class ProjectRequest(models.Model):
         ('closed', 'Kapatıldı'),
     ]
 
+    SOURCE_CHOICES = [
+        ('direct', 'Doğrudan Form'),
+        ('yoktez', 'YÖK Tez'),
+        ('trdizin', 'TR Dizin'),
+    ]
+
     name = models.CharField(max_length=150, verbose_name="Ad Soyad")
     email = models.EmailField(verbose_name="E-posta")
-    company = models.CharField(max_length=200, blank=True, verbose_name="Şirket / Kurum")
+    company = models.CharField(max_length=200, blank=True, verbose_name="Kişi / Şirket / Kurum")
     analysis_type = models.CharField(max_length=30, choices=ANALYSIS_CHOICES, verbose_name="Analiz Türü")
     description = models.TextField(verbose_name="Proje Açıklaması")
     data_size = models.CharField(max_length=20, choices=DATA_SIZE_CHOICES, verbose_name="Veri Boyutu")
     timeline = models.CharField(max_length=20, choices=TIMELINE_CHOICES, verbose_name="Süre Beklentisi")
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='new', verbose_name="Durum")
+    source = models.CharField(max_length=20, choices=SOURCE_CHOICES, default='direct', blank=True, verbose_name="Kaynak")
     admin_notes = models.TextField(blank=True, verbose_name="Admin Notları")
     created_at = models.DateTimeField(auto_now_add=True)
 

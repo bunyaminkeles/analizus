@@ -1734,16 +1734,19 @@ def proje_talebi(request):
         description = request.POST.get('description', '').strip()
         data_size = request.POST.get('data_size', '')
         timeline = request.POST.get('timeline', '')
+        source = request.POST.get('source', 'direct')
 
         if not all([name, email, analysis_type, description, data_size, timeline]):
             messages.error(request, 'Lütfen zorunlu alanları doldurunuz.')
             return redirect('proje_talebi')
 
         try:
+            valid_sources = {c[0] for c in ProjectRequest.SOURCE_CHOICES}
             req = ProjectRequest.objects.create(
                 name=name, email=email, company=company,
                 analysis_type=analysis_type, description=description,
                 data_size=data_size, timeline=timeline,
+                source=source if source in valid_sources else 'direct',
             )
 
             # Admine bildirim
@@ -1751,11 +1754,13 @@ def proje_talebi(request):
             analysis_label = dict(ProjectRequest.ANALYSIS_CHOICES).get(analysis_type, analysis_type)
             size_label = dict(ProjectRequest.DATA_SIZE_CHOICES).get(data_size, data_size)
             timeline_label = dict(ProjectRequest.TIMELINE_CHOICES).get(timeline, timeline)
+            source_label = dict(ProjectRequest.SOURCE_CHOICES).get(req.source, req.source)
             admin_html = (
                 f"<h3>Yeni Proje Talebi #{req.pk}</h3>"
                 f"<p><b>Ad:</b> {name}</p>"
                 f"<p><b>E-posta:</b> {email}</p>"
-                f"<p><b>Şirket/Kurum:</b> {company or '—'}</p>"
+                f"<p><b>Kişi/Şirket/Kurum:</b> {company or '—'}</p>"
+                f"<p><b>Kaynak:</b> {source_label}</p>"
                 f"<p><b>Analiz Türü:</b> {analysis_label}</p>"
                 f"<p><b>Veri Boyutu:</b> {size_label}</p>"
                 f"<p><b>Süre Beklentisi:</b> {timeline_label}</p>"
@@ -1790,7 +1795,8 @@ def proje_talebi(request):
             messages.error(request, 'Bir hata oluştu, lütfen tekrar deneyin.')
         return redirect('proje_talebi')
 
-    return render(request, 'forum/proje_talebi.html')
+    source = request.GET.get('source', 'direct')
+    return render(request, 'forum/proje_talebi.html', {'source': source})
 
 
 def search_result(request):

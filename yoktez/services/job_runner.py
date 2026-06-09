@@ -111,8 +111,9 @@ def send_demo_email_async(job_id: str) -> None:
                 body_lines.append('')
 
             body_lines.append('─' * 40)
-            body_lines.append('Tüm veri talebi için:')
-            body_lines.append('  info@analizus.com adresine yazabilirsiniz.')
+            body_lines.append('Tüm veriye ihtiyacınız varsa:')
+            body_lines.append('  https://www.analizus.com/proje-talebi/?source=yoktez')
+            body_lines.append('  adresinden talep oluşturabilirsiniz.')
 
             email = EmailMessage(
                 subject=f'YÖK Tez Arama Sonuçları — {job.get_query_summary()[:50]}',
