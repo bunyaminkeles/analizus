@@ -757,6 +757,17 @@
             </div>
         </div>
 
+    {% if is_owner %}
+    <div class="mt-4 p-3 rounded-3" style="border:1px solid rgba(239,68,68,0.25); background:rgba(239,68,68,0.04);">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+            <div>
+                <p class="mb-0 fw-semibold" style="color:#f87171; font-size:.85rem;"><i class="bi bi-exclamation-triangle me-1"></i>Hesabı Sil</p>
+                <small style="color:var(--ax-text-muted);">Hesabınızı ve kişisel verilerinizi kalıcı olarak silebilirsiniz.</small>
+            </div>
+            <a href="{% url 'account_delete_request' %}" class="btn btn-sm btn-outline-danger rounded-pill px-3">Hesabımı Sil</a>
+        </div>
+    </div>
+    {% endif %}
     </div><!-- /col-lg-8 -->
 </div><!-- /row -->
 

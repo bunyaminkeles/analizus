@@ -1606,6 +1606,82 @@ def profile_detail(request, username):
         'user_badge_ids': user_badge_ids,
     })
 
+# --- HESAP SİLME ---
+
+@login_required
+def account_delete_request(request):
+    """Kullanıcıya email ile onay linki gönderir."""
+    if request.method == 'POST':
+        from django.contrib.auth import logout
+        from django.utils import timezone
+        from .email_utils import send_email_async
+        import uuid, secrets
+        from datetime import timedelta
+
+        user = request.user
+        profile = user.profile
+
+        token = secrets.token_urlsafe(32)
+        profile.deletion_token = token
+        profile.deletion_token_expires_at = timezone.now() + timedelta(hours=24)
+        profile.save(update_fields=['deletion_token', 'deletion_token_expires_at'])
+
+        site_url = getattr(settings, 'SITE_URL', 'https://www.analizus.com')
+        confirm_url = f"{site_url}/account/delete/confirm/{token}/"
+
+        html = f"""
+        <p>Merhaba <strong>{user.username}</strong>,</p>
+        <p>Analizus hesabınızı silmek için aşağıdaki butona tıklayın.</p>
+        <p><a href="{confirm_url}" style="background:#dc2626;color:#fff;padding:10px 20px;border-radius:6px;text-decoration:none;">Hesabımı Kalıcı Olarak Sil</a></p>
+        <p>Bu link <strong>24 saat</strong> geçerlidir. Talepte bulunmadıysanız bu emaili görmezden gelin.</p>
+        <hr>
+        <small>Analizus.com — {site_url}</small>
+        """
+        send_email_async(
+            subject="Hesap Silme Onayı — Analizus",
+            message=f"Hesabınızı silmek için şu linke gidin: {confirm_url}",
+            recipient_list=[user.email],
+            html_message=html,
+        )
+        messages.success(request, "Onay linki email adresinize gönderildi. 24 saat içinde tıklayarak işlemi tamamlayın.")
+        return redirect('profile_detail', username=user.username)
+
+    return render(request, 'forum/account_delete.html')
+
+
+def account_delete_confirm(request, token):
+    """Email'deki link ile gelir; hesabı devre dışı bırakır."""
+    from django.contrib.auth import logout
+    from django.utils import timezone
+    from .models import Profile
+
+    try:
+        profile = Profile.objects.select_related('user').get(deletion_token=token)
+    except Profile.DoesNotExist:
+        messages.error(request, "Geçersiz veya süresi dolmuş link.")
+        return redirect('forum_index')
+
+    if not profile.deletion_token_expires_at or timezone.now() > profile.deletion_token_expires_at:
+        profile.deletion_token = ''
+        profile.deletion_token_expires_at = None
+        profile.save(update_fields=['deletion_token', 'deletion_token_expires_at'])
+        messages.error(request, "Bu link süresi dolmuş. Lütfen yeniden talep edin.")
+        return redirect('forum_index')
+
+    user = profile.user
+    profile.deletion_requested_at = timezone.now()
+    profile.deletion_token = ''
+    profile.deletion_token_expires_at = None
+    profile.save(update_fields=['deletion_requested_at', 'deletion_token', 'deletion_token_expires_at'])
+
+    user.is_active = False
+    user.save(update_fields=['is_active'])
+
+    logout(request)
+    messages.info(request, "Hesabınız devre dışı bırakıldı. Kişisel verileriniz 30 gün içinde kalıcı olarak silinecektir.")
+    return redirect('forum_index')
+
+
 # --- DİĞER ---
 def about(request):
     return render(request, 'forum/about.html')
