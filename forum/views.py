@@ -1545,8 +1545,11 @@ def profile_detail(request, username):
 
     posted_jobs = FreelanceJob.objects.filter(owner=profile_user).annotate(
         p_count=Count('proposals', distinct=True)
-    ).order_by('-created_at')[:20]
-    given_proposals = JobProposal.objects.filter(expert=profile_user).select_related('job').order_by('-created_at')[:20]
+    ).order_by('-created_at')[:5]
+    given_proposals = (
+        JobProposal.objects.filter(expert=profile_user).select_related('job').order_by('-created_at')[:20]
+        if is_owner else None
+    )
     received_reviews = JobReview.objects.filter(reviewed_user=profile_user, is_approved=True).select_related('reviewer', 'job').order_by('-created_at')[:20]
     completed_projects = JobProposal.objects.filter(
         expert=profile_user, status='accepted', job__status__in=['in_progress', 'completed']
@@ -1585,6 +1588,7 @@ def profile_detail(request, username):
 
     return render(request, 'forum/profile_detail.html', {
         'profile_user': profile_user,
+        'is_owner': is_owner,
         'posted_jobs': posted_jobs,
         'given_proposals': given_proposals,
         'received_reviews': received_reviews,
