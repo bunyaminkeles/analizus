@@ -459,7 +459,7 @@
                 <p class="ax-profile-section-title" style="margin-bottom: var(--ax-space-3); margin-top: var(--ax-space-5);">Tamamlanan ve Devam Eden Projeler</p>
                 <div class="ax-profile-job-list">
                     {% for proposal in completed_projects|slice:":5" %}
-                    <a href="{% url 'job_detail' pk=proposal.job.pk %}" class="ax-profile-job-item">
+                    <div class="ax-profile-job-item">
                         <div>
                             <div class="ax-profile-job-item__title">{{ proposal.job.title }}</div>
                             <div class="ax-profile-job-item__meta">
@@ -467,7 +467,8 @@
                                 {% if proposal.job.status == 'completed' %}<span class="ax-status-chip ax-status-chip--completed">Tamamlandı</span>{% else %}<span class="ax-status-chip ax-status-chip--in-progress">Devam Ediyor</span>{% endif %}
                             </div>
                         </div>
-                    </a>
+                        {% for review in proposal.job.reviews.all %}{% if review.reviewed_user == profile_user and review.is_approved %}<div class="ax-profile-job-stars">{% for i in "12345" %}{% if forloop.counter <= review.rating %}<i class="bi bi-star-fill" style="color:#fbbf24;font-size:.75rem;"></i>{% else %}<i class="bi bi-star" style="color:#475569;font-size:.75rem;"></i>{% endif %}{% endfor %}</div>{% endif %}{% endfor %}
+                    </div>
                     {% endfor %}
                 </div>
                 {% endif %}
