@@ -199,9 +199,9 @@ SEMANTIC_SCHOLAR_API_KEY=...
 ## 5. DEPLOY AKIŞI
 
 ### Branch Stratejisi
-- `main` → production (Hetzner buradan deploy eder)
-- `dev` → geliştirme — tüm geliştirmeler burada yapılır
-- Onay sonrası `dev → main` merge ve deploy
+- `dev` → **Render** (push'ta otomatik deploy — staging/preview)
+- `main` → **Hetzner** (manuel deploy — production)
+- Tüm geliştirmeler `dev`'de yapılır; onay sonrası `dev → main` merge + Hetzner deploy
 
 ### Standart Deploy Akışı
 ```bash
@@ -1211,6 +1211,8 @@ with connection.cursor() as c:
 | AI anonim limit herkese uygulanıyor / "0/3 ama limit doldu" | Nginx arkasında tüm kullanıcılar aynı `172.x.x.x` internal IP'yi paylaşır — IP bazlı cache key tüm kullanıcıların kotasını tek sayaçta toplar. **Çözüm:** `ax_anon_id` UUID cookie (`max_age=86400`); her tarayıcının kendi sayacı olur. Session bazlı yapılmamalı: tarayıcı kapanınca sıfırlanır. |
 | AI olmayan platform URL'si veriyor (`/istatistik/nitel/`, `/maxqda/` vb.) | `_sanitize_paths()` post-processing filtresi devrede ama `_ALLOWED_PATHS` listesine eklenmemiş olabilir. Kontrol: `ai_service.py`'de `_ALLOWED_PATHS` frozenset'e ilgili path'i ekle; yoksa sadece SYSTEM_PROMPT ile önlenemiyor — model kuralı bazen görmezden geliyor. |
 | AI "Platform haritası örnek amaçlı / gerçek linkler farklı olabilir" diyor | Sistem prompt'un KESİN YASAKLAR bölümünde bu ifade açıkça yasaklı. Model yine de söylüyorsa `_sanitize_paths()` URL'yi sildiği için model bunu "uydurdu" sanıp özür diliyor. `_ALLOWED_PATHS`'e eksik path'i ekle — filtre URL'yi silmeyecek, model özür dilemeyecek. |
+| `ProgrammingError: relation "django_cache_table" does not exist` | Render (veya yeni DB) ilk kurulumda cache tablosu oluşturulmamış. `python manage.py createcachetable` çalıştır. `deploy.sh`'e migrate'in hemen altına eklendi (haziran 2026). |
+| YÖK Tez "9538 tez bulundu" ama veri nerede? | Bu sayı YÖK'ün sonuç sayacı — gerçek veri değil. S3'e yalnızca 5 demo tezin TXT özeti kaydedilir (`yoktez/demo/<job_id>.txt`). Tam veri indirme (~954 sayfa pagination, 3-6 saat) için otomatik akış henüz yok — `proje-talebi` linki ile manuel süreç işliyor. |
 
 ---
 
@@ -1274,6 +1276,8 @@ with connection.cursor() as c:
 - **Çalışma Odası mesaj düzenleme / silme** (haziran 2026) — `StudyRoomPost`'a `edited_at` alanı (migration 0120); `/api/room-post/<id>/edit|delete/`; hover ile ✏️/🗑️ ikonları, inline textarea; hard delete (S3 signal); `(düzenlendi)` etiketi
 - **Çalışma Odası @mention e-postası** (haziran 2026) — `email_utils.notify_room_mention()`; etiketlenen oda üyesine async e-posta; tüm üyelere değil
 - **Migration çakışması düzeltmesi** (haziran 2026) — sunucuda lokal kalan `0119_alter_sitevisit_id`, `0120_merge_20260530_2123`, `0121_merge_20260601_1555` dosyaları git'e eklendi
+- **YÖK Tez / TR Dizin → Proje Talebi entegrasyonu** (haziran 2026) — email footer + landing page "info@analizus.com" → `/proje-talebi/?source=yoktez|trdizin`; `ProjectRequest` modeline `source` field (yoktez/trdizin/direct) + `SOURCE_CHOICES`; `ANALYSIS_CHOICES`'a "Tez / Makale Veri İndirme" eklendi; kaynağa göre analiz türü form'da otomatik seçili; admin'e `source` filtresi + sütunu; "Şirket/Kurum" → "Kişi/Şirket/Kurum"; migration `0126`
+- **deploy.sh createcachetable** (haziran 2026) — Render'da `django_cache_table does not exist` hatası; `deploy.sh`'e `python manage.py createcachetable` eklendi (migrate'in hemen altına; idempotent — tablo varsa sessizce geçer)
 - **SEO — GSC index hataları düzeltmesi** (haziran 2026) — `robots.txt`'e `Disallow: /istatistik/` ve `Disallow: /jobs/` eklendi; `/istatistik/<araç>/` URL'leri canonical olarak `/analiz/<araç>/`'a işaret ediyor ama Google her iki prefix'i de tarıyordu (33 "Alternative page with canonical" hatası); `blog_list.html` canonical'den `?category=` parametresi kaldırıldı — filtreli blog sayfaları artık `/blog/`'a canonical işaret ediyor
 - **Ödeme/sipariş admin düzeltmeleri** (haziran 2026) — `JobPayment.status` readonly yapıldı; `approve_feature` action `status='success'` ama `feature_status='pending'` olan kayıtları da işler; gerçek işlenen sayı mesajı düzeltildi; `Donation` modeline `pending_confirmation` status eklendi (migration 0122); `send_support_email` artık DB kaydı oluşturuyor; `mark_donation_transferred` view + URL eklendi; e-posta şablonuna "Havaleyi Yaptım" butonu eklendi; `AlexOrderProxy` + `AlexOrderAdmin` eklendi (`openalex/admin.py`) — dashboard linki düzeltildi (404 veriyordu); `BibliometricOrder.status` readonly yapıldı; Gelir Özeti'ne vitrin + biblio + openalex aylık/toplam gelir eklendi; bağış filtresi `'approved'`→`'completed'` düzeltildi; Vitrine Taşı butonu zaten vitrindekilerde gizleniyor
 - **Kullanıcı navigasyon analizi** (haziran 2026) — `analytics/` Django uygulaması; `PageView` (ham log, 5 gün TTL) + `PageViewSummary` (kalıcı özet, user FK ile); `PageViewMiddleware` login'li kullanıcıların GET 200 isteklerini loglar (`/static/`, `/admin/`, `/api/` vb. atlanır); URL → Türkçe sekme adı eşleştirmesi (`analytics/utils.py`); admin'de kullanıcı bazlı liste + `/admin/analytics/pageview/grafik/` Chart.js sayfası — "En Aktif Kullanıcılar" bar'ına tıklanınca üstteki "En Çok Ziyaret" + "Günlük Trend" grafikleri sayfa yenilemesiz in-place güncellenir, seçili kullanıcı badge ile gösterilir, tekrar tıklanınca filtre sıfırlanır; `PageViewSummary` user FK'lı (migration 0002), user bazlı arama admin'de çalışır; `cleanup_pageviews` management command + `/api/cron/cleanup-pageviews/` endpoint (her ikisi de user_id bazlı aggregate); Hetzner crontab'ında `0 4 * * *`
@@ -1284,6 +1288,20 @@ with connection.cursor() as c:
 - **AI Asistan güvenlik/kalite katmanları** (haziran 2026) — Anonim rate limiting IP → `ax_anon_id` UUID cookie'ye taşındı (`max_age=86400`, HttpOnly) — Nginx arkasındaki shared IP sorununu çözdü; `_CJK_RE` post-processing: Llama'nın Çince/Japonca karakter karıştırmasını engeller; `_sanitize_paths()` post-processing: `_ALLOWED_PATHS` frozenset dışındaki her platform URL'sini yanıttan kaldırır (hallüsinasyon önlemi); sistem prompt KESİN YASAKLAR güncellendi: sahte uzman adı yasağı, iç kural sızdırma yasağı, "linkler örnek amaçlı" yasağı, CJK karakter yasağı.
 
 ### Sıradaki Görevler
+
+#### Danışmanlık Dönüşümü (feature flag'lerle, detay: `danismanlik_roadmap.md`)
+- **Ödeme sistemi kararı** — Stripe / Papara / IBAN+fatura (iyzico yasak) — **blokaj**
+- **SiteSettings'e 6 flag** — `feature_consultancy_catalog`, `feature_consultancy_pricing`, `feature_client_portal`, `feature_project_pipeline`, `feature_verified_experts`, `feature_trust_stats` (hepsi `default=False`)
+- **Hizmet kataloğu** — `/hizmetler/` + 5 alt sayfa (tez-analiz, literatur-tarama, kurumsal-veri, gorsellestirme, ml-yapay-zeka)
+- **Müşteri portalı** — `/hesabim/talepler/` + `/<id>/` (login zorunlu, `feature_client_portal`)
+- **Navbar güncellemesi** — Hizmetler dropdown + Uzmanlar linki + Taleplerim koşullu
+- **Proje pipeline** — `ProjectRequest` → `Project` modeli, milestone, durum e-postaları
+- **Verified uzman vitrini** — `uzman-dizini`'ne `tier=verified` filtresi + onay mekanizması
+- **Referanslar sayfası** — `/referanslar/` + ana sayfa güven sayaçları (`SuccessStory` modeli mevcut)
+
+#### Teknik Borç / Özellikler
+- **Admin dashboard ProjectRequest bildirimi** — `dashboard_service.py`'e `status='new'` olan talepleri ekle; `ProjectRequest` şu an bildirim panelinde görünmüyor
+- **YÖK Tez filtre genişletmesi** — üniversite + anabilim_dali text alanları; dolu gelince `islem=2` (legacy form) kullan — `abdad` + `Konu` parametreleri legacy formda mevcut; 6 dosya + 1 migration
 - **ML Araçları** — Rastgele Orman, KNN (Karar Ağacı + SVM tamamlandı)
 - Sosyal kanıt iyileştirmeleri (ana sayfa — çok kolay)
 - Yeni kullanıcı onboarding akışı — altyapı hazır (migration `0067_profile_onboarding`; `segment`, `onboarding_completed`, `onboarding_interests`, `onboarding_tools` alanları + `/onboarding/` view mevcut); toplanan veri henüz kullanıcı deneyimine yansıtılmıyor; **pasif bekliyor**
@@ -1292,8 +1310,7 @@ with connection.cursor() as c:
 - Admin analytics dashboard — navigasyon takibi tamamlandı; gelişmiş kullanıcı segmentasyonu/funnel analizi eklenebilir
 - **Semantic Scholar → Bibliometrik Analiz entegrasyonu** — Semantic Scholar'dan BibTeX export ekle; sonuçları doğrudan `/bibliometrics/` aracına aktar; iki taraf değişiklik gerektirir (`semanticscholar/` export + `bibliometrics/` parser)
 - Gamification genişletmesi
-- Fiyatlandırma sayfası (iş kararı — en son)
 
 ---
 
-*Son güncelleme: Haziran 2026 — AI Asistan kalite/güvenlik katmanları: cookie bazlı anonim rate limiting (ax_anon_id), CJK filtresi, URL beyaz listesi (_sanitize_paths), "linkler örnek amaçlı" yasağı. Önceki: AI Asistan platform-aware prompt, floating chat widget, anonim erişim, üye limiti 30/gün; İş ilanı kategorileri bağımsızlaştırıldı; SEO GSC canonical düzeltmeleri; Analytics navigasyon takibi; Ödeme/sipariş admin düzeltmeleri; Çalışma odası mesaj düzenleme/silme + @mention; Semantic Scholar modülü; WoS parser; DM okundu göstergesi; Karar Ağacı + SVM.*
+*Son güncelleme: Haziran 2026 — YÖK Tez / TR Dizin → Proje Talebi entegrasyonu: `ProjectRequest.source` alanı eklendi, email footer'larda `mailto:` → `/proje-talebi/?source=yoktez|trdizin` dönüştürüldü; `deploy.sh`'e `createcachetable` eklendi (Render `django_cache_table` hatası); danışmanlık dönüşüm planı belgelendi (`danismanlik_roadmap.md`). Önceki: AI Asistan kalite/güvenlik katmanları: cookie bazlı anonim rate limiting (ax_anon_id), CJK filtresi, URL beyaz listesi (_sanitize_paths), "linkler örnek amaçlı" yasağı; AI Asistan platform-aware prompt, floating chat widget, anonim erişim, üye limiti 30/gün; İş ilanı kategorileri bağımsızlaştırıldı; SEO GSC canonical düzeltmeleri; Analytics navigasyon takibi; Ödeme/sipariş admin düzeltmeleri; Çalışma odası mesaj düzenleme/silme + @mention; Semantic Scholar modülü; WoS parser; DM okundu göstergesi; Karar Ağacı + SVM.*

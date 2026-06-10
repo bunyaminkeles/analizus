@@ -57,6 +57,8 @@ Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~1240 satır). Tamam
 
 ## Git & Deploy
 - Tüm geliştirme `dev` branch'inde — `main`'e kullanıcı "merge et" demeden dokunma
+- `dev` → **Render** (push'ta otomatik deploy — staging/preview)
+- `main` → **Hetzner** (manuel deploy — production)
 - Commit mesajları: `feat:`, `fix:`, `refactor:` prefix (Türkçe veya İngilizce)
 - `.env` değerlerini commit'e dahil etme
 
