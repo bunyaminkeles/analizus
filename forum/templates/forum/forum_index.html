@@ -81,48 +81,43 @@
         <a href="{% url 'category_topics' slug=cat.slug %}"
            class="forum-card {% if cat.is_popular %}forum-card-popular{% endif %}">
 
-          {# Popüler rozet #}
           {% if cat.is_popular %}
           <span class="popular-badge"><i class="bi bi-fire me-1"></i>Popüler</span>
           {% endif %}
 
-          {# İkon #}
           <div class="fc-icon">
             <i class="{{ cat.icon_class }}"></i>
           </div>
 
-          {# İçerik #}
           <div class="fc-body">
-            <div class="fc-title">{{ cat.title }}</div>
+            <div class="fc-row1">
+              <span class="fc-title">{{ cat.title }}</span>
+              <span class="fc-signals">
+                {% if cat.topic_count > 0 %}
+                  <span><i class="bi bi-chat-square-text"></i> {{ cat.topic_count }}</span>
+                  <span><i class="bi bi-reply-all"></i> {{ cat.post_count }}</span>
+                  {% if cat.show_last_activity %}
+                  <span class="fc-signal-fresh"><i class="bi bi-clock"></i> {{ cat.last_post_at|timesince }} önce</span>
+                  {% endif %}
+                {% else %}
+                  <span class="fc-empty-signal"><i class="bi bi-stars"></i> İlk sen sor</span>
+                {% endif %}
+              </span>
+            </div>
             {% if cat.description %}
             <div class="fc-desc">{{ cat.description }}</div>
             {% endif %}
-
-            {# Canlılık sinyalleri #}
-            <div class="fc-signals">
-              {% if cat.topic_count > 0 %}
-                <span><i class="bi bi-chat-square-text"></i> {{ cat.topic_count }} konu</span>
-                <span><i class="bi bi-reply-all"></i> {{ cat.post_count }} yanıt</span>
-                {% if cat.show_last_activity %}
-                <span class="fc-signal-fresh"><i class="bi bi-clock"></i> {{ cat.last_post_at|timesince }} önce</span>
-                {% endif %}
-              {% else %}
-                <span class="fc-empty-signal"><i class="bi bi-stars"></i> Henüz konu yok</span>
-              {% endif %}
-            </div>
           </div>
 
           <i class="bi bi-chevron-right fc-arrow"></i>
         </a>
 
-        {# Boş kategori CTA #}
         {% if cat.topic_count == 0 %}
         <a href="{% if user.is_authenticated %}{% url 'new_topic' slug=cat.slug %}{% else %}{% url 'register' %}{% endif %}"
            class="fc-first-cta">
           <i class="bi bi-plus-circle me-1"></i>İlk soruyu sen sor
         </a>
         {% else %}
-        {# + Soru Sor shortcut #}
         <a href="{% if user.is_authenticated %}{% url 'new_topic' slug=cat.slug %}{% else %}{% url 'register' %}{% endif %}"
            class="fc-ask-btn">
           <i class="bi bi-plus"></i> Soru Sor
@@ -224,9 +219,9 @@
 /* ─── Card ─── */
 .forum-card {
   display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  padding: 14px;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
   border-radius: 10px 10px 0 0;
   text-decoration: none;
   background: rgba(30,41,59,0.7);
@@ -235,6 +230,7 @@
   position: relative;
   flex: 1;
   transition: border-color .15s, background .15s;
+  min-height: 0;
 }
 .forum-card:hover {
   background: rgba(30,41,59,0.9);
@@ -259,23 +255,23 @@
   border: 1px solid rgba(251,191,36,0.35);
   border-top: none;
   color: #fbbf24;
-  font-size: .65rem;
+  font-size: .6rem;
   font-weight: 700;
-  padding: 2px 8px 3px;
+  padding: 1px 6px 2px;
   border-radius: 0 0 6px 6px;
 }
 
 /* İkon */
 .fc-icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
   background: rgba(0,210,255,0.08);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  font-size: 1rem;
+  font-size: .85rem;
   color: #38bdf8;
 }
 .forum-card-popular .fc-icon {
@@ -284,45 +280,58 @@
 }
 
 /* Body */
-.fc-body { flex: 1; overflow: hidden; }
+.fc-body { flex: 1; overflow: hidden; min-width: 0; }
+
+.fc-row1 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
 .fc-title {
   color: #e2e8f0;
-  font-size: .88rem;
+  font-size: .82rem;
   font-weight: 600;
-  margin-bottom: 2px;
-}
-.fc-desc {
-  color: #64748b;
-  font-size: .72rem;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  margin-bottom: 6px;
+  flex-shrink: 1;
+  min-width: 0;
+}
+.fc-desc {
+  color: #475569;
+  font-size: .68rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 1px;
 }
 
 /* Canlılık sinyalleri */
 .fc-signals {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  margin-left: auto;
 }
 .fc-signals span {
   color: #475569;
-  font-size: .68rem;
+  font-size: .65rem;
   display: flex;
   align-items: center;
-  gap: 3px;
+  gap: 2px;
+  white-space: nowrap;
 }
-.fc-signals span i { font-size: .65rem; }
+.fc-signals span i { font-size: .62rem; }
 .fc-empty-signal { color: #334155 !important; }
 .fc-signal-fresh { color: #4ade80 !important; }
 
 /* Ok */
 .fc-arrow {
   color: rgba(255,255,255,0.15);
-  font-size: .8rem;
+  font-size: .75rem;
   flex-shrink: 0;
-  margin-top: 2px;
 }
 
 /* ─── Alt butonlar ─── */

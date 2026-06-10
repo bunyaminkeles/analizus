@@ -85,15 +85,17 @@ def forum_index(request):
     now = timezone.now()
     cutoff = now - timedelta(days=30)
     sections = Section.objects.all().order_by('order')
+    from datetime import datetime as _dt
     sections_data = []
     for section in sections:
         cats = [c for c in categories_qs if c.section_id == section.pk]
         for c in cats:
             c.is_popular = c.slug in top_slugs
-            # Son aktivite sadece 30 gün içindeyse göster
             c.show_last_activity = (
                 c.last_post_at is not None and c.last_post_at >= cutoff
             )
+        # Son aktivitesi olanlar önce, hiç konu olmayanlar sona
+        cats.sort(key=lambda c: c.last_post_at or _dt.min.replace(tzinfo=timezone.utc), reverse=True)
         sections_data.append({'section': section, 'categories': cats})
 
     # Aktif çalışma odaları (en fazla 6)
