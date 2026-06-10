@@ -145,13 +145,10 @@
 
 <style>
 #chat-kutusu {
-    height: calc(100vh - 340px);
-    min-height: 320px;
-    overflow-y: auto;
     display: flex;
     flex-direction: column;
-    gap: .6rem;
-    padding: 1rem;
+    gap: .5rem;
+    padding: .75rem;
     background: var(--ax-bg-secondary);
     border: 1px solid var(--ax-border-default);
     border-radius: 12px;
@@ -245,10 +242,6 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    // En alta kaydır
-    const kutu = document.getElementById('chat-kutusu');
-    kutu.scrollTop = kutu.scrollHeight;
-
     // AI Öneri
     const aiBtn = document.getElementById('aiSuggestBtn');
     if (aiBtn) {
