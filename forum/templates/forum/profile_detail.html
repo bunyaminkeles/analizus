@@ -464,7 +464,7 @@
                             <div class="ax-profile-job-item__title">{{ proposal.job.title }}</div>
                             <div class="ax-profile-job-item__meta">
                                 {{ proposal.created_at|date:"d M Y" }}
-                                <span class="ax-status-chip ax-status-chip--completed">Tamamlandı</span>
+                                {% if proposal.job.status == 'completed' %}<span class="ax-status-chip ax-status-chip--completed">Tamamlandı</span>{% else %}<span class="ax-status-chip ax-status-chip--in-progress">Devam Ediyor</span>{% endif %}
                             </div>
                         </div>
                     </a>
