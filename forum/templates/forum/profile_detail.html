@@ -323,7 +323,7 @@
             <div class="ax-profile-panel">
                 <div style="display: flex; align-items: center; gap: var(--ax-space-2); margin-bottom: var(--ax-space-2); font-size: var(--ax-text-base); font-weight: var(--ax-font-semibold); color: var(--ax-text-primary);">
                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--ax-accent-secondary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-                    Tamamlanan Projeler
+                    Tamamlanan ve Devam Eden Projeler
                 </div>
                 <p style="font-size: var(--ax-text-xs); color: var(--ax-text-muted); margin-bottom: var(--ax-space-4);">
                     Gizlilik için müşteri ve proje detayları anonim tutulmaktadır.
@@ -456,7 +456,7 @@
 
                 {% else %}
                 {% if completed_projects %}
-                <p class="ax-profile-section-title" style="margin-bottom: var(--ax-space-3); margin-top: var(--ax-space-5);">Tamamlanan Projeler</p>
+                <p class="ax-profile-section-title" style="margin-bottom: var(--ax-space-3); margin-top: var(--ax-space-5);">Tamamlanan ve Devam Eden Projeler</p>
                 <div class="ax-profile-job-list">
                     {% for proposal in completed_projects|slice:":5" %}
                     <a href="{% url 'job_detail' pk=proposal.job.pk %}" class="ax-profile-job-item">
