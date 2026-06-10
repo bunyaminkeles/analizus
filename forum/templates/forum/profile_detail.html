@@ -424,7 +424,8 @@
                 </div>
                 {% endif %}
 
-                <p class="ax-profile-section-title ax-profile-section-title--warning" style="margin-bottom: var(--ax-space-3);">Verilen Teklifler</p>
+                {% if is_owner %}
+                <p class="ax-profile-section-title ax-profile-section-title--warning" style="margin-bottom: var(--ax-space-3); margin-top: var(--ax-space-5);">Verdiğim Teklifler</p>
                 {% if given_proposals %}
                 <div class="ax-profile-job-list">
                     {% for proposal in given_proposals %}
@@ -437,7 +438,9 @@
                                     {% if proposal.status == 'accepted' %}ax-status-chip--accepted
                                     {% elif proposal.status == 'rejected' %}ax-status-chip--rejected
                                     {% else %}ax-status-chip--pending{% endif %}">
-                                    {{ proposal.get_status_display }}
+                                    {% if proposal.status == 'accepted' %}Kabul Edildi
+                                    {% elif proposal.status == 'rejected' %}Kabul Edilmedi
+                                    {% else %}Beklemede{% endif %}
                                 </span>
                             </div>
                         </div>
@@ -447,8 +450,27 @@
                 </div>
                 {% else %}
                 <div class="ax-profile-empty" style="padding: var(--ax-space-6) 0;">
-                    <p class="ax-profile-empty__text">Bu kullanıcı henüz teklif vermemiş.</p>
+                    <p class="ax-profile-empty__text">Henüz teklif vermediniz.</p>
                 </div>
+                {% endif %}
+
+                {% else %}
+                {% if completed_projects %}
+                <p class="ax-profile-section-title" style="margin-bottom: var(--ax-space-3); margin-top: var(--ax-space-5);">Tamamlanan Projeler</p>
+                <div class="ax-profile-job-list">
+                    {% for proposal in completed_projects|slice:":5" %}
+                    <a href="{% url 'job_detail' pk=proposal.job.pk %}" class="ax-profile-job-item">
+                        <div>
+                            <div class="ax-profile-job-item__title">{{ proposal.job.title }}</div>
+                            <div class="ax-profile-job-item__meta">
+                                {{ proposal.created_at|date:"d M Y" }}
+                                <span class="ax-status-chip ax-status-chip--completed">Tamamlandı</span>
+                            </div>
+                        </div>
+                    </a>
+                    {% endfor %}
+                </div>
+                {% endif %}
                 {% endif %}
 
             </div>
