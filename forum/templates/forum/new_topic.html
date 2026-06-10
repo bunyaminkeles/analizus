@@ -72,12 +72,13 @@
                     </div>
 
                     <!-- Mesaj -->
-                    <div class="mb-4">
+                    <div class="mb-4 position-relative">
                         <label class="form-label text-white fw-bold">
                             <i class="bi bi-chat-text me-1"></i> Mesaj
                         </label>
                         <textarea name="message" class="form-control bg-dark text-white border-secondary"
                                   rows="10" placeholder="İçeriği buraya yazın..." required maxlength="4000">{{ form.message.value|default:'' }}</textarea>
+                        <div class="mention-dropdown" id="mention-dropdown"></div>
                         {% if form.message.errors %}
                             <div class="text-danger small mt-1">{{ form.message.errors.0 }}</div>
                         {% endif %}
@@ -114,6 +115,35 @@
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
+.mention-dropdown {
+    position: absolute;
+    background: var(--ax-bg-primary, #0b0f19);
+    border: 1px solid rgba(0,210,255,.3);
+    border-radius: 8px;
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 1050;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 20px rgba(0,0,0,.5);
+    display: none;
+    min-width: 200px;
+}
+.mention-dropdown .mention-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 12px; cursor: pointer;
+    transition: background .15s;
+    color: var(--ax-text-primary);
+}
+.mention-dropdown .mention-item:hover,
+.mention-dropdown .mention-item.active { background: rgba(0,210,255,.15); }
+.mention-dropdown .mention-item img { width:28px; height:28px; border-radius:50%; object-fit:cover; }
+.mention-dropdown .mention-item .mention-avatar-placeholder {
+    width:28px; height:28px; border-radius:50%;
+    background:rgba(0,210,255,.2); display:flex; align-items:center; justify-content:center;
+    font-size:.75rem; color:#00d2ff; font-weight:bold;
+}
+.mention-dropdown .mention-item .mention-username { font-weight:600; font-size:.85rem; }
+.mention-dropdown .mention-item .mention-rank { font-size:.7rem; color:var(--ax-text-muted); }
 </style>
 
 <script>
@@ -124,6 +154,71 @@ document.addEventListener('DOMContentLoaded', function() {
         const borderColor = label.style.borderColor;
         label.style.setProperty('--tag-color', borderColor);
     });
+
+    // @Mention Autocomplete
+    const textarea = document.querySelector('textarea[name="message"]');
+    const dropdown = document.getElementById('mention-dropdown');
+    if (!textarea || !dropdown) return;
+
+    let mentionStart = -1, activeIndex = -1, debounceTimer = null;
+
+    textarea.addEventListener('input', function () {
+        const text = this.value.substring(0, this.selectionStart);
+        const match = text.match(/@(\w*)$/);
+        if (match) {
+            mentionStart = this.selectionStart - match[0].length;
+            if (match[1].length >= 1) {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => fetchUsers(match[1]), 300);
+            } else { dropdown.style.display = 'none'; }
+        } else { mentionStart = -1; dropdown.style.display = 'none'; }
+    });
+
+    textarea.addEventListener('keydown', function (e) {
+        if (dropdown.style.display === 'none') return;
+        const items = dropdown.querySelectorAll('.mention-item');
+        if (!items.length) return;
+        if (e.key === 'ArrowDown') { e.preventDefault(); activeIndex = Math.min(activeIndex + 1, items.length - 1); updateActive(items); }
+        else if (e.key === 'ArrowUp') { e.preventDefault(); activeIndex = Math.max(activeIndex - 1, 0); updateActive(items); }
+        else if (e.key === 'Enter' || e.key === 'Tab') { if (activeIndex >= 0) { e.preventDefault(); selectMention(items[activeIndex].dataset.username); } }
+        else if (e.key === 'Escape') { dropdown.style.display = 'none'; }
+    });
+
+    document.addEventListener('click', e => { if (!dropdown.contains(e.target) && e.target !== textarea) dropdown.style.display = 'none'; });
+
+    async function fetchUsers(q) {
+        try {
+            const r = await fetch(`/api/users/search/?q=${encodeURIComponent(q)}`);
+            const data = await r.json();
+            if (data.users && data.users.length) {
+                dropdown.innerHTML = data.users.map(u => `
+                    <div class="mention-item" data-username="${u.username}">
+                        ${u.avatar ? `<img src="${u.avatar}" alt="">` : `<div class="mention-avatar-placeholder">${u.username[0].toUpperCase()}</div>`}
+                        <div><div class="mention-username">@${u.username}</div><div class="mention-rank">${u.rank || ''}</div></div>
+                    </div>`).join('');
+                dropdown.querySelectorAll('.mention-item').forEach(item => {
+                    item.addEventListener('mousedown', e => { e.preventDefault(); selectMention(item.dataset.username); });
+                });
+                activeIndex = -1;
+                dropdown.style.display = 'block';
+            } else { dropdown.style.display = 'none'; }
+        } catch { dropdown.style.display = 'none'; }
+    }
+
+    function updateActive(items) {
+        items.forEach((el, i) => el.classList.toggle('active', i === activeIndex));
+    }
+
+    function selectMention(username) {
+        const before = textarea.value.substring(0, mentionStart);
+        const after  = textarea.value.substring(textarea.selectionStart);
+        textarea.value = before + '@' + username + ' ' + after;
+        const pos = mentionStart + username.length + 2;
+        textarea.setSelectionRange(pos, pos);
+        textarea.focus();
+        dropdown.style.display = 'none';
+        mentionStart = -1; activeIndex = -1;
+    }
 });
 </script>
 {% endblock %}
