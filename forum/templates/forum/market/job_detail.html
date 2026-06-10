@@ -161,7 +161,7 @@
                         </div>
                         {% endif %}
 
-                        {% if user.is_authenticated and job.status == 'completed' %}
+                        {% if user.is_authenticated and job.status == 'completed' and (request.user == job.owner or is_expert) %}
                         <a href="{% url 'success_stories' %}?job={{ job.pk }}" class="btn btn-sm btn-outline-warning rounded-pill ms-auto">
                             <i class="bi bi-trophy me-1"></i> Başarı Hikayenizi Paylaşın
                         </a>
