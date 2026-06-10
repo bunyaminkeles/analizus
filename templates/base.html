@@ -246,6 +246,8 @@
                 <a href="{% url 'job_list' %}" class="site-nav__link">Pazaryeri</a>
                 {% endif %}
 
+                <a href="{% url 'proje_talebi' %}" class="site-nav__link">Proje Talebi</a>
+
                 <!-- Kurumsal Dropdown -->
                 <div class="site-nav__dropdown-wrap">
                     <button class="site-nav__link site-nav__dropdown-btn"
@@ -255,8 +257,8 @@
                         <svg class="site-nav__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
                     </button>
                     <div class="site-nav__dropdown" id="dropdown-kurumsal" role="menu">
-                        <a href="{% url 'proje_talebi' %}" class="site-nav__dropdown-item" role="menuitem">
-                            <i class="bi bi-briefcase-fill me-1" style="color:#818cf8;"></i> Proje Talebi
+                        <a href="{% url 'forum_index' %}" class="site-nav__dropdown-item" role="menuitem">
+                            <i class="bi bi-chat-square-text-fill me-1" style="color:#818cf8;"></i> Forum
                         </a>
                         <div class="site-nav__dropdown-divider"></div>
                         <a href="{% url 'neden_biz' %}" class="site-nav__dropdown-item" role="menuitem">Neden Analizus?</a>
@@ -400,13 +402,15 @@
 
             {% if features.market %}<a href="{% url 'job_list' %}" class="nav-drawer__link">Pazaryeri</a>{% endif %}
 
+            <a href="{% url 'proje_talebi' %}" class="nav-drawer__link">Proje Talebi</a>
+
             <div>
                 <button class="nav-drawer__accordion-btn" aria-expanded="false" data-accordion="mob-kurumsal">
                     Kurumsal
                     <svg class="nav-drawer__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
                 </button>
                 <div class="nav-drawer__accordion-body" id="mob-kurumsal">
-                    <a href="{% url 'proje_talebi' %}" class="nav-drawer__link">Proje Talebi</a>
+                    <a href="{% url 'forum_index' %}" class="nav-drawer__link">Forum</a>
                     <a href="{% url 'neden_biz' %}" class="nav-drawer__link">Neden Analizus?</a>
                     {% if features.blog %}<a href="{% url 'blog_list' %}" class="nav-drawer__link">Blog</a>{% endif %}
                     <a href="{% url 'about' %}" class="nav-drawer__link">Hakkımızda</a>
