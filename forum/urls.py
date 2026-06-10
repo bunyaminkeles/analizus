@@ -16,6 +16,8 @@ urlpatterns = [
     path('register/', views.register, name='register'),
     
     # Profil
+    path('account/delete/', views.account_delete_request, name='account_delete_request'),
+    path('account/delete/confirm/<str:token>/', views.account_delete_confirm, name='account_delete_confirm'),
     path('profile/edit/', views.profile_edit, name='profile_edit'),
     path('profile/<str:username>/', views.profile_detail, name='profile_detail'),
     
@@ -136,6 +138,7 @@ urlpatterns = [
     path('api/cron/cleanup-attachments/', api_views.cron_cleanup_attachments, name='cron_cleanup_attachments'),
     path('api/cron/cleanup-pageviews/', api_views.cron_cleanup_pageviews, name='cron_cleanup_pageviews'),
     path('api/cron/health/', api_views.cron_health_check, name='cron_health'),
+    path('api/cron/process-account-deletions/', api_views.cron_process_account_deletions, name='cron_process_account_deletions'),
     path('api/admin/queue-status/', api_views.admin_queue_status, name='admin_queue_status'),
 
     # Admin setup (kullandıktan sonra kaldırın!)

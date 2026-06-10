@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Hesabı Sil — Analizus{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-lg-6 col-md-8">
+        <div class="p-4 rounded-3" style="background:rgba(239,68,68,0.05); border:1px solid rgba(239,68,68,0.3);">
+            <h4 class="fw-bold mb-3" style="color:#f87171;">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>Hesabı Kalıcı Olarak Sil
+            </h4>
+
+            <p style="color:var(--ax-text-secondary);">
+                Bu işlemi onaylamadan önce aşağıdakileri dikkatle okuyun:
+            </p>
+
+            <ul style="color:var(--ax-text-muted); font-size:.9rem; line-height:1.8;">
+                <li>Email ve kişisel bilgileriniz <strong>kalıcı olarak</strong> silinecektir.</li>
+                <li>Forum gönderileriniz <strong>"Silinmiş Kullanıcı"</strong> adıyla anonim kalacaktır.</li>
+                <li>Tamamlanan iş kayıtlarınız anonimleştirilerek saklanacaktır.</li>
+                <li>DM mesajlarınız 30 gün içinde silinecektir.</li>
+                <li>30 günlük geri dönüş penceresi boyunca hesabınız yalnızca admin aracılığıyla aktifleştirilebilir.</li>
+            </ul>
+
+            <div class="mt-4 p-3 rounded" style="background:rgba(251,191,36,0.08); border:1px solid rgba(251,191,36,0.3);">
+                <small style="color:#fbbf24;">
+                    <i class="bi bi-envelope me-1"></i>
+                    Devam ederseniz <strong>{{ request.user.email }}</strong> adresine onay linki gönderilecektir.
+                    Linke tıkladığınızda hesabınız devre dışı bırakılacaktır.
+                </small>
+            </div>
+
+            <div class="d-flex gap-3 mt-4">
+                <a href="{% url 'profile_detail' username=request.user.username %}" class="ax-btn ax-btn--ghost flex-fill text-center">
+                    Vazgeç
+                </a>
+                <form method="post" class="flex-fill">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger w-100 fw-semibold">
+                        <i class="bi bi-send me-1"></i>Onay Emaili Gönder
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

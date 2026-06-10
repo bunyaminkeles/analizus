@@ -237,6 +237,11 @@ class Profile(models.Model):
     onboarding_interests = models.JSONField(default=list, blank=True, verbose_name="İlgi Alanları")
     onboarding_tools = models.JSONField(default=list, blank=True, verbose_name="Kullanılan Araçlar")
 
+    # Hesap silme
+    deletion_requested_at = models.DateTimeField(null=True, blank=True, verbose_name="Silme Talebi Tarihi")
+    deletion_token = models.CharField(max_length=64, blank=True, default="", verbose_name="Silme Token")
+    deletion_token_expires_at = models.DateTimeField(null=True, blank=True, verbose_name="Token Geçerlilik Süresi")
+
     def __str__(self):
         return self.user.username
 

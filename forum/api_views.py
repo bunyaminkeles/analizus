@@ -478,3 +478,81 @@ def run_initial_setup(request):
         'message': 'Başlangıç kurulumu tamamlandı',
         'results': results
     })
+
+@require_GET
+def cron_process_account_deletions(request):
+    """
+    deletion_requested_at üzerinden 30 gün geçmiş hesapları anonimleştirir
+    ve DM kayıtlarını siler.
+
+    Kullanım:
+    - GET /api/cron/process-account-deletions/?secret=YOUR_SECRET
+    - Günlük cron job olarak çalıştırılmalıdır.
+    """
+    if not _verify_cron_secret(request):
+        return JsonResponse({'success': False, 'error': 'Unauthorized'}, status=403)
+
+    from django.utils import timezone
+    from datetime import timedelta
+    import secrets
+    from forum.models import Profile, PrivateMessage
+
+    cutoff = timezone.now() - timedelta(days=30)
+    profiles = Profile.objects.filter(
+        deletion_requested_at__isnull=False,
+        deletion_requested_at__lte=cutoff,
+    ).select_related('user')
+
+    processed = 0
+    for profile in profiles:
+        user = profile.user
+        token = secrets.token_hex(6)
+
+        # Kullanıcı temel bilgilerini anonimleştir
+        user.email = f'deleted_{token}@deleted.invalid'
+        user.username = f'deleted_{token}'
+        user.first_name = ''
+        user.last_name = ''
+        user.set_unusable_password()
+        user.save()
+
+        # Avatar ve kapak fotoğrafını sil
+        for field in (profile.avatar, profile.cover_image):
+            if field:
+                try:
+                    field.storage.delete(field.name)
+                except Exception:
+                    pass
+
+        # Profil kişisel alanlarını temizle
+        profile.avatar = None
+        profile.cover_image = None
+        profile.bio = ''
+        profile.phone_number = ''
+        profile.linkedin = ''
+        profile.twitter = ''
+        profile.github = ''
+        profile.orcid = ''
+        profile.google_scholar = ''
+        profile.website = ''
+        profile.title = ''
+        profile.location = ''
+        profile.university = ''
+        profile.department = ''
+        profile.academic_title = ''
+        profile.onboarding_interests = []
+        profile.onboarding_tools = []
+        profile.deletion_requested_at = None  # işlem tamamlandı, tekrar çalışmasın
+        profile.save()
+
+        # DM kayıtlarını sil
+        PrivateMessage.objects.filter(sender=user).delete()
+        PrivateMessage.objects.filter(receiver=user).delete()
+
+        processed += 1
+
+    return JsonResponse({
+        'success': True,
+        'processed': processed,
+        'cutoff_days': 30,
+    })
