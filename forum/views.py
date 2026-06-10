@@ -85,7 +85,8 @@ def forum_index(request):
     now = timezone.now()
     cutoff = now - timedelta(days=30)
     sections = Section.objects.all().order_by('order')
-    from datetime import datetime as _dt
+    from datetime import datetime as _dt, timezone as _pytz
+    _epoch = _dt(1970, 1, 1, tzinfo=_pytz.utc)
     sections_data = []
     for section in sections:
         cats = [c for c in categories_qs if c.section_id == section.pk]
@@ -95,7 +96,7 @@ def forum_index(request):
                 c.last_post_at is not None and c.last_post_at >= cutoff
             )
         # Son aktivitesi olanlar önce, hiç konu olmayanlar sona
-        cats.sort(key=lambda c: c.last_post_at or _dt.min.replace(tzinfo=timezone.utc), reverse=True)
+        cats.sort(key=lambda c: c.last_post_at or _epoch, reverse=True)
         sections_data.append({'section': section, 'categories': cats})
 
     # Aktif çalışma odaları (en fazla 6)
