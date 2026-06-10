@@ -65,7 +65,7 @@ class PageViewAdmin(ModelAdmin):
         top_users = list(
             qs.values('user__username')
             .annotate(total=Count('id'))
-            .order_by('-total')[:10]
+            .order_by('-total')[:20]
         )
         per_user_data = {}
         for u in top_users:
