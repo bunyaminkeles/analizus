@@ -3,6 +3,8 @@
 
 {% block title %}Çalışma Odaları — Analizus{% endblock %}
 {% block meta_description %}Akademik çalışma odaları — araştırmacılarla birlikte çalışın, tez takvimi planlayın, ortak proje yönetin. Analizus çevrimiçi odaklanmış çalışma ortamı.{% endblock %}
+{% block canonical %}{% url 'studyroom_list' %}{% endblock %}
+{% block robots_content %}{% if request.GET.kategori or request.GET.durum or request.GET.q %}noindex, follow{% else %}index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1{% endif %}{% endblock %}
 
 {% block content %}
 <div class="container py-4" style="max-width:1100px;">

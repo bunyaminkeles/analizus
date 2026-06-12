@@ -1296,6 +1296,12 @@ with connection.cursor() as c:
 - **Forum @mention — yeni konu formu** (haziran 2026) — `new_topic.html`'e yanıt formundakiyle aynı @mention autocomplete eklendi (`/api/users/search/` endpoint, ok/tab/esc klavye navigasyonu, avatar dropdown)
 - **Forum topic_detail DM stili** (haziran 2026) — "Cevap Yaz" büyük bölümü → compact inline input (DM'deki gibi tek satır textarea + send butonu); mesaj balonları solid renk → gradient+border stiline güncellendi; AI Yanıt Öner butonu alt satıra taşındı; `#chat-kutusu` sabit yükseklik (`calc(100vh-340px)`) kaldırıldı — mesajlar doğal yükseklikte akıyor
 - **Forum index kompakt kartlar + aktivite sıralaması** (haziran 2026) — Section içinde kategoriler `last_post_at` azalan sırada (en son yazışma önce, hiç konu olmayanlar sona); kart yüksekliği ~50% azaltıldı: ikon + başlık + sinyaller tek satırda, açıklama 2. satıra küçük font; sinyal sayıları kısaltıldı (rakam+ikon, etiket yok); `django.utils.timezone.utc` → `datetime.timezone.utc` (Django 5.2 uyumluluğu)
+- **SEO — GSC indexing sorunları (canonical/noindex/CTA)** (haziran 2026):
+  - `uzman_dizini.html`: `?skill=` veya `?sort=` parametreli sayfalar → `noindex, follow` (canonical `/uzmanlar/`'a işaret ederken robots `index` kalıyordu — 31 "Alternative page" hatasının kaynağı)
+  - `blog_list.html`: `request.GET.page` koşulu eklendi — `?page=1` de artık `noindex` (önceden `has_previous=False` olduğu için yanlışlıkla index'leniyordu)
+  - `studyroom_list.html`: canonical block (`{% url 'studyroom_list' %}`) + robots_content block eklendi — `/odalar/?kategori=...` filtrelenmiş URL'ler `noindex, follow`
+  - `proje_talebi` view + template: stats bar (tamamlanan analiz / üye sayısı — DB'den dinamik) + sağ kolona "Son Tamamlanan Analizler" kartı (anonimleştirilmiş, `FreelanceJob.updated_at - created_at` → gün/hafta etiketi)
+  - `analiz_console_base.html`: 18 analiz aracının altına "Bu analizi uzmanına bırakmak ister misiniz?" CTA eklendi (`?source=tool` parametresi ile proje talebi iç link); `ProjectRequest.SOURCE_CHOICES`'a `('tool', 'Analiz Aracı')` eklendi; migration `0128_projectrequest_source_tool` (no-op — DB şeması değişmiyor)
 
 ### Sıradaki Görevler
 
@@ -1313,7 +1319,6 @@ with connection.cursor() as c:
 - **Admin dashboard ProjectRequest bildirimi** — `dashboard_service.py`'e `status='new'` olan talepleri ekle; `ProjectRequest` şu an bildirim panelinde görünmüyor
 - **YÖK Tez filtre genişletmesi** — üniversite + anabilim_dali text alanları; dolu gelince `islem=2` (legacy form) kullan — `abdad` + `Konu` parametreleri legacy formda mevcut; 6 dosya + 1 migration
 - **ML Araçları** — Rastgele Orman, KNN (Karar Ağacı + SVM tamamlandı)
-- Sosyal kanıt iyileştirmeleri (ana sayfa — çok kolay)
 - Yeni kullanıcı onboarding akışı — altyapı hazır (migration `0067_profile_onboarding`; `segment`, `onboarding_completed`, `onboarding_interests`, `onboarding_tools` alanları + `/onboarding/` view mevcut); toplanan veri henüz kullanıcı deneyimine yansıtılmıyor; **pasif bekliyor**
 - Analiz araçlarında akıllı hata yönetimi — `data_validator.py` mevcut ama yalnızca Cronbach'ta aktif; araç bazlı ön kontrol + Türkçe hata mesajları eksik; **pasif bekliyor**
 - Blog içerik altyapısı iyileştirmeleri
@@ -1323,4 +1328,4 @@ with connection.cursor() as c:
 
 ---
 
-*Son güncelleme: Haziran 2026 — Hesap silme akışı (email onaylı, KVKK uyumlu, 30 günlük bekleme + cron anonimleştirme); profil/pazar hata düzeltmeleri (tamamlanan proje badge, Başarı Hikayesi buton kısıtı, TemplateSyntaxError, İlanlar sekmesi gizlilik); profil gizlilik (verilen teklifler gizlendi); navbar yeniden düzeni; forum DM stili + kompakt kartlar + @mention. Önceki: YÖK Tez/TR Dizin → Proje Talebi; deploy.sh createcachetable; AI Asistan; İş ilanı kategorileri; SEO; Analytics; Ödeme/sipariş admin; Çalışma odası; Semantic Scholar; WoS parser.*
+*Son güncelleme: Haziran 2026 — SEO: GSC canonical/noindex düzeltmeleri (uzman_dizini + blog_list + studyroom_list); proje_talebi güven sinyalleri (DB'den dinamik stats + son tamamlanan analizler); 18 analiz aracına Proje Talebi CTA (analiz_console_base.html, source=tool tracking, migration 0128). Önceki: Hesap silme akışı; profil/pazar hata düzeltmeleri; forum DM stili + kompakt kartlar + @mention; navbar yeniden düzeni; YÖK Tez/TR Dizin → Proje Talebi; AI Asistan; İş ilanı kategorileri; Analytics; Ödeme/sipariş admin; Çalışma odası; Semantic Scholar; WoS parser.*

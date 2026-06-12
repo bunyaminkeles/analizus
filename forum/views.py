@@ -1879,7 +1879,36 @@ def proje_talebi(request):
         return redirect('proje_talebi')
 
     source = request.GET.get('source', 'direct')
-    return render(request, 'forum/proje_talebi.html', {'source': source})
+
+    completed_count = FreelanceJob.objects.filter(status='completed').count()
+    total_users = User.objects.count()
+
+    recent_jobs_qs = (
+        FreelanceJob.objects
+        .filter(status='completed')
+        .select_related('category')
+        .order_by('-updated_at')[:4]
+    )
+    recent_completed = []
+    for job in recent_jobs_qs:
+        days = max((job.updated_at - job.created_at).days, 1)
+        if days <= 7:
+            duration = f"{days} günde"
+        elif days <= 30:
+            duration = f"{days // 7} haftada"
+        else:
+            duration = f"{days // 30} ayda"
+        recent_completed.append({
+            'category': job.category.title if job.category else 'Veri Analizi',
+            'duration': duration,
+        })
+
+    return render(request, 'forum/proje_talebi.html', {
+        'source': source,
+        'completed_count': completed_count,
+        'total_users': total_users,
+        'recent_completed': recent_completed,
+    })
 
 
 def search_result(request):

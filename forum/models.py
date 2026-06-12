@@ -1525,6 +1525,7 @@ class ProjectRequest(models.Model):
         ('direct', 'Doğrudan Form'),
         ('yoktez', 'YÖK Tez'),
         ('trdizin', 'TR Dizin'),
+        ('tool', 'Analiz Aracı'),
     ]
 
     name = models.CharField(max_length=150, verbose_name="Ad Soyad")

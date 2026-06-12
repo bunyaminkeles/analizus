@@ -76,6 +76,28 @@
     </p>
   </div>
 
+  <!-- Platform Güven Sinyalleri -->
+  <div class="row g-3 mb-5 justify-content-center" style="max-width:580px;margin:0 auto 2.5rem;">
+    <div class="col-4 text-center">
+      <div class="p-3 rounded-3" style="background:rgba(99,102,241,.12);border:1px solid rgba(99,102,241,.25);">
+        <div class="fw-bold text-white" style="font-size:1.5rem;line-height:1.2;">{{ completed_count }}+</div>
+        <div class="text-white-50" style="font-size:.73rem;margin-top:4px;">Tamamlanan<br>Analiz</div>
+      </div>
+    </div>
+    <div class="col-4 text-center">
+      <div class="p-3 rounded-3" style="background:rgba(99,102,241,.12);border:1px solid rgba(99,102,241,.25);">
+        <div class="fw-bold text-white" style="font-size:1.5rem;line-height:1.2;">{{ total_users }}+</div>
+        <div class="text-white-50" style="font-size:.73rem;margin-top:4px;">Kayıtlı<br>Üye</div>
+      </div>
+    </div>
+    <div class="col-4 text-center">
+      <div class="p-3 rounded-3" style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);">
+        <div class="fw-bold" style="font-size:1.4rem;line-height:1.2;color:#4ade80;">Ücretsiz</div>
+        <div class="text-white-50" style="font-size:.73rem;margin-top:4px;">Ön<br>Değerlendirme</div>
+      </div>
+    </div>
+  </div>
+
   {% if messages %}
   {% for msg in messages %}
   <div class="alert {% if msg.tags == 'success' %}alert-success{% else %}alert-danger{% endif %} mb-4" role="alert">
@@ -170,6 +192,26 @@
 
     <!-- SAĞ: Neden + Güven -->
     <div class="col-lg-5">
+
+      <!-- Son Tamamlanan Analizler -->
+      {% if recent_completed %}
+      <div class="mb-4 p-4 rounded-3" style="background:rgba(30,41,59,.4);border:1px solid rgba(255,255,255,.06);">
+        <h3 class="text-white fw-semibold mb-3" style="font-size:.95rem;">
+          <i class="bi bi-check2-all text-success me-2"></i>Son Tamamlanan Analizler
+        </h3>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          {% for item in recent_completed %}
+          <div class="d-flex align-items-center justify-content-between p-2 rounded-2" style="background:rgba(255,255,255,.04);">
+            <span class="text-white-50 small">{{ item.category }}</span>
+            <span class="badge" style="background:rgba(34,197,94,.15);color:#4ade80;font-size:.72rem;">{{ item.duration }} tamamlandı</span>
+          </div>
+          {% endfor %}
+        </div>
+        <p class="text-white-50 mb-0 mt-2" style="font-size:.7rem;">
+          <i class="bi bi-shield-lock me-1"></i>Gizlilik gereği müşteri bilgileri gösterilmemektedir.
+        </p>
+      </div>
+      {% endif %}
 
       <!-- Neden Analizus? -->
       <div class="mb-4 p-4 rounded-3" style="background:rgba(30,41,59,.4);border:1px solid rgba(255,255,255,.06);">
