@@ -4,6 +4,7 @@
 {% block title %}Uzman Bul — Analizus Uzman Dizini{% endblock %}
 {% block meta_description %}SPSS, R ve Python uzmanları ile analistleri keşfedin. Teziniz için akademik destek veren uzmanın profilini inceleyin, uzmanlık alanlarını karşılaştırın, doğrudan iletişime geçin.{% endblock %}
 {% block canonical %}{% if selected_cat %}{% url 'uzman_dizini' %}?cat={{ selected_cat }}{% else %}{% url 'uzman_dizini' %}{% endif %}{% endblock %}
+{% block robots_content %}{% if request.GET.skill or sort_by != 'puan' %}noindex, follow{% else %}index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1{% endif %}{% endblock %}
 
 {% block content %}
 <div class="container py-4">
