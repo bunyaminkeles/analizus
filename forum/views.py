@@ -2656,6 +2656,14 @@ def blog_list(request):
     if qs.endswith('&'):
         return redirect(request.path + '?' + qs.rstrip('&'), permanent=True)
 
+    # ?level= parametresi SEO'da duplicate üretir — 301 ile temizle
+    level_filter_early = request.GET.get('level', '')
+    if level_filter_early:
+        category_slug_early = request.GET.get('category', '')
+        if category_slug_early:
+            return redirect(f"{request.path}?category={category_slug_early}", permanent=True)
+        return redirect(request.path, permanent=True)
+
     posts = BlogPost.objects.filter(status='published').select_related('author', 'category').prefetch_related('tags')
 
     # Arama
