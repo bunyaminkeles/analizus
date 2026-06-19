@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     'makaleanaliz',
     'istatistik',
     'analytics',
+    'transcript',
     'crispy_forms',
     'crispy_bootstrap5',
     'storages',  # AWS S3 için

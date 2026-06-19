@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}YouTube Transcript İndirici — Analizus{% endblock %}
+{% block meta_description %}YouTube video linkini girerek altyazı metnini TXT formatında indirin veya e-posta ile alın. Türkçe, Almanca, İngilizce ve 10+ dil desteği.{% endblock %}
+
+{% block content %}
+<div class="container mt-4 mb-5">
+  <div class="row">
+    <div class="col-lg-7 offset-lg-2">
+
+      <div class="card bg-dark border-secondary text-white mb-4">
+        <div class="card-body">
+          <h1 class="h3 mb-1">
+            <i class="bi bi-youtube me-2 text-danger"></i>YouTube Transcript İndirici
+          </h1>
+          <p class="text-muted mb-0">
+            Video linkini girin — altyazı metnini TXT olarak indirin veya e-posta ile alın.
+            Maksimum video süresi: <strong class="text-warning">{{ max_minutes }} dakika</strong>.
+          </p>
+        </div>
+      </div>
+
+      {% if not request.user.is_authenticated %}
+      <div class="alert alert-warning">
+        <i class="bi bi-lock me-2"></i>Bu aracı kullanabilmek için <a href="{% url 'login' %}">giriş yapmanız</a> gerekmektedir.
+      </div>
+      {% else %}
+
+      <div class="card bg-dark border-secondary text-white">
+        <div class="card-body">
+          <form method="post" id="transcript-form">
+            {% csrf_token %}
+
+            <div class="mb-3">
+              <label for="{{ form.video_url.id_for_label }}" class="form-label fw-semibold">
+                {{ form.video_url.label }}
+              </label>
+              {{ form.video_url }}
+              {% if form.video_url.errors %}
+              <div class="text-danger small mt-1">{{ form.video_url.errors.0 }}</div>
+              {% endif %}
+            </div>
+
+            <div class="mb-3">
+              <label for="{{ form.language.id_for_label }}" class="form-label fw-semibold">
+                {{ form.language.label }}
+              </label>
+              {{ form.language }}
+              <div class="form-text text-muted" id="lang-hint">
+                Seçilen dilde altyazı yoksa YouTube'un otomatik çevirisi denenir; o da yoksa orijinal dil kullanılır.
+              </div>
+              {% if form.language.errors %}
+              <div class="text-danger small mt-1">{{ form.language.errors.0 }}</div>
+              {% endif %}
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label fw-semibold">{{ form.delivery.label }}</label>
+              <div class="d-flex gap-4 mt-1">
+                {% for radio in form.delivery %}
+                <div class="form-check">
+                  {{ radio.tag }}
+                  <label class="form-check-label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</label>
+                </div>
+                {% endfor %}
+              </div>
+              {% if form.delivery.errors %}
+              <div class="text-danger small mt-1">{{ form.delivery.errors.0 }}</div>
+              {% endif %}
+            </div>
+
+            <div class="mb-4" id="email-field" style="display:none;">
+              <label for="{{ form.email.id_for_label }}" class="form-label fw-semibold">
+                {{ form.email.label }}
+              </label>
+              {{ form.email }}
+              <div class="form-text text-muted">{{ form.email.help_text }}</div>
+              {% if form.email.errors %}
+              <div class="text-danger small mt-1">{{ form.email.errors.0 }}</div>
+              {% endif %}
+            </div>
+
+            {% if form.non_field_errors %}
+            <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+            {% endif %}
+
+            <button type="submit" class="ax-btn ax-btn-primary" id="submit-btn">
+              <i class="bi bi-play-circle me-1"></i>Transcript'i Getir
+            </button>
+          </form>
+        </div>
+      </div>
+
+      {% endif %}
+
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  const deliveryRadios = document.querySelectorAll('input[name="delivery"]');
+  const emailField = document.getElementById('email-field');
+  const form = document.getElementById('transcript-form');
+  const submitBtn = document.getElementById('submit-btn');
+
+  function toggleEmail() {
+    const val = document.querySelector('input[name="delivery"]:checked')?.value;
+    if (emailField) emailField.style.display = val === 'email' ? '' : 'none';
+  }
+
+  deliveryRadios.forEach(r => r.addEventListener('change', toggleEmail));
+  toggleEmail();
+
+  if (form && submitBtn) {
+    form.addEventListener('submit', function () {
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status"></span>İşleniyor...';
+    });
+  }
+})();
+</script>
+{% endblock %}

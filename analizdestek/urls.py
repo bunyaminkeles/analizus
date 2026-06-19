@@ -67,6 +67,9 @@ urlpatterns = [
     # TR Dizin Makale Analizi
     path('makaleanaliz/', include('makaleanaliz.urls', namespace='makaleanaliz')),
 
+    # YouTube Transcript İndirici
+    path('transcript/', include('transcript.urls', namespace='transcript')),
+
     # İstatistik Analiz Araçları
     path('istatistik/', include('istatistik.urls', namespace='istatistik')),
 

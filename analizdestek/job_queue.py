@@ -40,6 +40,7 @@ def _recover():
         from bibliometrics.models import BibliometricJob
         from istatistik.models import IstatistikJob
         from semanticscholar.models import SemanticSearchJob
+        from transcript.models import TranscriptJob
 
         from django.utils import timezone
         stuck_cutoff = timezone.now() - timedelta(minutes=STUCK_THRESHOLD_MINUTES)
@@ -51,6 +52,7 @@ def _recover():
             (AlexSearchJob, 'openalex'),
             (SemanticSearchJob, 'semanticscholar'),
             (DizinSearchJob, 'trdizin'),
+            (TranscriptJob, 'transcript'),
         ]
 
         for Model, job_type in simple_models:
@@ -129,6 +131,9 @@ def _run_job(job_type: str, job_id: str):
             _execute_job_openalex(job_id)
         elif job_type in ('cronbach', 'normallik', 'betimsel', 'korelasyon', 'ttesti', 'anova', 'mann_whitney', 'kruskal_wallis', 'ki_kare', 'lineer_regresyon', 'lojistik_regresyon', 'afa', 'wilcoxon', 'friedman', 'tekrarli_anova', 'karar_agaci'):
             from istatistik.services.job_runner import _execute_job
+            _execute_job(job_id)
+        elif job_type == 'transcript':
+            from transcript.services.job_runner import _execute_job
             _execute_job(job_id)
         else:
             logger.warning(f'[job_queue] Bilinmeyen job_type: {job_type}')

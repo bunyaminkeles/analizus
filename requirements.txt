@@ -57,6 +57,10 @@ groq
 sickle
 feedparser
 
+# --- TRANSCRIPT ---
+youtube-transcript-api
+yt-dlp
+
 # --- TEST ---
 pytest
 pytest-django

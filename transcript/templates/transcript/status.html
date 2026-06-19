@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Transcript İşleniyor — Analizus{% endblock %}
+
+{% block content %}
+<div class="container mt-4 mb-5">
+  <div class="row">
+    <div class="col-lg-6 offset-lg-3">
+
+      <div class="card bg-dark border-secondary text-white" id="status-card">
+        <div class="card-body text-center py-5">
+
+          {# Bekliyor / İşleniyor #}
+          <div id="state-processing" {% if job.status == "completed" or job.status == "failed" %}style="display:none"{% endif %}>
+            <div class="spinner-border text-warning mb-3" role="status" style="width:3rem;height:3rem;">
+              <span class="visually-hidden">İşleniyor...</span>
+            </div>
+            <h2 class="h5 mb-1">Transcript hazırlanıyor</h2>
+            <p class="text-muted small" id="video-title-processing">
+              {% if job.video_title %}{{ job.video_title }}{% else %}Video bilgisi alınıyor...{% endif %}
+            </p>
+            <p class="text-muted small">Sayfa otomatik güncellenecek, beklemeniz yeterli.</p>
+          </div>
+
+          {# Tamamlandı #}
+          <div id="state-done" {% if job.status != "completed" %}style="display:none"{% endif %}>
+            <i class="bi bi-check-circle-fill text-success mb-3" style="font-size:3rem;"></i>
+            <h2 class="h5 mb-1">Transcript hazır!</h2>
+            <p class="text-muted small mb-1" id="video-title-done">{{ job.video_title }}</p>
+            <p class="text-muted small mb-3" id="lang-info">
+              Dil: <strong>{{ job.language_used }}</strong>
+              {% if job.translated %}<span class="badge bg-secondary ms-1">otomatik çeviri</span>{% endif %}
+            </p>
+
+            {% if job.delivery == "download" %}
+            <a href="{% url 'transcript:download' job.id %}" class="ax-btn ax-btn-primary" id="download-btn">
+              <i class="bi bi-download me-1"></i>TXT İndir
+            </a>
+            {% else %}
+            <div class="alert alert-success mt-2 mb-0">
+              <i class="bi bi-envelope-check me-2"></i>
+              Transcript <strong>{{ job.email_address }}</strong> adresine gönderildi.
+            </div>
+            {% endif %}
+
+            <div class="mt-3">
+              <a href="{% url 'transcript:form' %}" class="text-muted small">Yeni transcript</a>
+            </div>
+          </div>
+
+          {# Hata #}
+          <div id="state-error" {% if job.status != "failed" %}style="display:none"{% endif %}>
+            <i class="bi bi-x-circle-fill text-danger mb-3" style="font-size:3rem;"></i>
+            <h2 class="h5 mb-2">Transcript alınamadı</h2>
+            <p class="text-muted small mb-3" id="error-msg">{{ job.error_message }}</p>
+            <a href="{% url 'transcript:form' %}" class="ax-btn ax-btn-secondary">Tekrar Dene</a>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  const jobId = {{ job.id }};
+  const apiUrl = "{% url 'transcript:status_api' job.id %}";
+  let done = false;
+
+  if ('{{ job.status }}' === 'completed' || '{{ job.status }}' === 'failed') {
+    done = true;
+  }
+
+  function showState(state) {
+    ['processing', 'done', 'error'].forEach(function (s) {
+      const el = document.getElementById('state-' + s);
+      if (el) el.style.display = s === state ? '' : 'none';
+    });
+  }
+
+  function poll() {
+    fetch(apiUrl)
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (data.status === 'completed') {
+          document.getElementById('video-title-done').textContent = data.video_title || '';
+          const langInfo = document.getElementById('lang-info');
+          if (langInfo) {
+            langInfo.innerHTML = 'Dil: <strong>' + (data.language_used || '') + '</strong>'
+              + (data.translated ? ' <span class="badge bg-secondary ms-1">otomatik çeviri</span>' : '');
+          }
+          showState('done');
+          done = true;
+        } else if (data.status === 'failed') {
+          const errEl = document.getElementById('error-msg');
+          if (errEl) errEl.textContent = data.error_message || 'Bilinmeyen hata';
+          showState('error');
+          done = true;
+        } else {
+          if (data.video_title) {
+            const el = document.getElementById('video-title-processing');
+            if (el) el.textContent = data.video_title;
+          }
+          setTimeout(poll, 3000);
+        }
+      })
+      .catch(function () {
+        if (!done) setTimeout(poll, 5000);
+      });
+  }
+
+  if (!done) setTimeout(poll, 2000);
+})();
+</script>
+{% endblock %}
