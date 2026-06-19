@@ -8,5 +8,4 @@ urlpatterns = [
     path("status/<int:job_id>/", views.transcript_status, name="status"),
     path("status/<int:job_id>/api/", views.transcript_status_api, name="status_api"),
     path("download/<int:job_id>/", views.transcript_download, name="download"),
-    path("api/languages/", views.available_languages_api, name="available_languages"),
 ]

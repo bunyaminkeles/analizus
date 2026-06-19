@@ -1,4 +1,5 @@
 import logging
+from django.urls import reverse_lazy
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, JsonResponse
@@ -7,9 +8,83 @@ from django.utils.text import slugify
 
 from transcript.models import TranscriptJob, TranscriptSettings
 from transcript.forms import TranscriptRequestForm
-from transcript.services import extract_video_id, list_available_languages
+from transcript.services import extract_video_id
 
 logger = logging.getLogger(__name__)
+
+_SEO_GUIDE = {
+    'intro': (
+        'YouTube Transcript İndirici, herhangi bir YouTube videosunun altyazı metnini saniyeler '
+        'içinde TXT dosyası olarak indirmenizi veya e-posta ile almanızı sağlar. Ders kayıtları, '
+        'konferans sunumları, belgesel yorumları ve akademik içerikler için hızlı metin çıkarma '
+        'aracıdır. Türkçe, Almanca ve İngilizce öncelikli otomatik dil seçimi ile YouTube\'un '
+        'kendi altyazı altyapısını kullanır; API anahtarı veya ek yazılım gerekmez.'
+    ),
+    'when_to_use': (
+        'Bir YouTube dersinin, seminer kaydının veya konferans sunumunun metnini not almak, '
+        'alıntı yapmak ya da içerik analizine dahil etmek istediğinizde kullanın. Özellikle '
+        'altyazısı olan eğitim kanalları, TED konuşmaları ve akademik sempozyum kayıtları '
+        'için idealdir. Videoyu izleyecek vaktiniz olmadığında veya metni arama/indeksleme '
+        'amacıyla kullanmanız gerektiğinde en pratik çözümdür.'
+    ),
+    'assumptions': (
+        'Transcript yalnızca YouTube\'un sağladığı altyazılardan üretilir; videoda altyazı '
+        'yoksa işlem tamamlanamaz. Otomatik oluşturulmuş altyazılarda (auto-generated) telaffuz '
+        'hataları veya noktalama eksiklikleri olabilir. İstenen dilde altyazı bulunmazsa '
+        'YouTube\'un otomatik çeviri özelliği devreye girer; bu durumda çeviri kalitesi '
+        'YouTube altyapısına bağlıdır. Video süresi kullanıcı tipine göre sınırlıdır.'
+    ),
+    'how_to_interpret': (
+        'İndirilen TXT dosyası, videodaki konuşmaları zaman damgası olmaksızın düz metin '
+        'olarak içerir. Dosyanın başında video başlığı, URL ve kullanılan dil bilgisi yer alır. '
+        'Otomatik çeviri kullanıldıysa bu dosyada belirtilir. Metni doğrudan akademik çalışmaya '
+        'kaynak göstermeden önce videonun orijinal içeriğiyle karşılaştırarak doğrulamanız '
+        'önerilir.'
+    ),
+    'apa_example': (
+        'Yazar Soyadı, A. (Yıl, Ay Gün). Video başlığı [Video]. YouTube. '
+        'https://www.youtube.com/watch?v=XXXXX'
+    ),
+    'faq': [
+        {
+            'q': 'Videoda altyazı yoksa ne olur?',
+            'a': (
+                'Altyazısı tamamen kapalı olan videolarda transcript oluşturulamaz ve hata '
+                'mesajı gösterilir. Çoğu büyük kanal ve YouTube\'un otomatik altyazı '
+                'oluşturduğu İngilizce/Türkçe içerikler desteklenir.'
+            ),
+        },
+        {
+            'q': 'İstediğim dilde altyazı yoksa ne olur?',
+            'a': (
+                'Seçilen dilde doğrudan altyazı bulunamazsa YouTube\'un otomatik çeviri '
+                'özelliği denenir. O da yoksa videonun orijinal dilindeki altyazı kullanılır '
+                've dosyada bu durum belirtilir.'
+            ),
+        },
+        {
+            'q': 'Video süre sınırı neden var?',
+            'a': (
+                'Çok uzun videolar yüksek işlem süresi ve kaynak tüketimine yol açar. '
+                'Standart kullanıcılar için sınır admin kullanıcıların yarısıdır. '
+                'Daha uzun videolar için yönetici hesabıyla giriş yapabilirsiniz.'
+            ),
+        },
+        {
+            'q': 'Transcript kalitesi ne kadar güvenilir?',
+            'a': (
+                'İnsan tarafından yazılmış altyazılar oldukça doğrudur. YouTube\'un otomatik '
+                'altyazıları ise aksanlı konuşmalarda veya teknik terimlerde hata yapabilir. '
+                'Akademik kullanımdan önce kritik bölümleri orijinal videoyla karşılaştırmanız önerilir.'
+            ),
+        },
+    ],
+    'related_tools': [
+        ('/analiz/', 'İstatistik Analiz Araçları'),
+        ('/bibliometrics/', 'Bibliometrik Analiz'),
+        ('/yoktez/', 'YÖK Tez Tarama'),
+    ],
+}
 
 
 @login_required
@@ -95,15 +170,3 @@ def transcript_download(request, job_id):
     response = HttpResponse(content, content_type="text/plain; charset=utf-8")
     response["Content-Disposition"] = f'attachment; filename="{filename}"'
     return response
-
-
-@login_required
-@require_GET
-def available_languages_api(request):
-    """Video URL girildiğinde mevcut dilleri listeler (opsiyonel AJAX)."""
-    video_url = request.GET.get("url", "")
-    video_id = extract_video_id(video_url)
-    if not video_id:
-        return JsonResponse({"languages": []})
-    langs = list_available_languages(video_id)
-    return JsonResponse({"languages": langs, "video_id": video_id})
