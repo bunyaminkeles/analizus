@@ -1,148 +1,94 @@
 import re
+import os
 import logging
-from youtube_transcript_api import YouTubeTranscriptApi, NoTranscriptFound, TranscriptsDisabled
+import tempfile
+import threading
 import yt_dlp
 
 logger = logging.getLogger(__name__)
 
-# Otomatik dil öncelik sırası: Türkçe → Almanca → İngilizce → ilk mevcut
-AUTO_LANGUAGE_PRIORITY = ["tr", "de", "en"]
-
-# v1.x API: class değil instance üzerinden çağrılır
-_ytt = YouTubeTranscriptApi()
+# Model cache — bir kez yükle, thread-safe kilitle koru
+_model_cache: dict = {}
+_model_lock = threading.Lock()
 
 
 def extract_video_id(url: str) -> str | None:
     """YouTube URL'sinden video ID'sini çıkarır."""
-    patterns = [
-        r"(?:v=|youtu\.be/|embed/|shorts/)([A-Za-z0-9_-]{11})",
-    ]
-    for pattern in patterns:
-        match = re.search(pattern, url)
-        if match:
-            return match.group(1)
-    return None
+    match = re.search(r"(?:v=|youtu\.be/|embed/|shorts/)([A-Za-z0-9_-]{11})", url)
+    return match.group(1) if match else None
 
 
 def get_video_info(video_id: str) -> dict:
     """yt-dlp ile video başlığını ve süresini (saniye) getirir."""
     url = f"https://www.youtube.com/watch?v={video_id}"
-    ydl_opts = {
-        "quiet": True,
-        "no_warnings": True,
-        "skip_download": True,
-        "extract_flat": False,
-    }
+    ydl_opts = {"quiet": True, "no_warnings": True, "skip_download": True}
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(url, download=False)
-            return {
-                "title": info.get("title", ""),
-                "duration": info.get("duration"),
-            }
+            return {"title": info.get("title", ""), "duration": info.get("duration")}
     except Exception as exc:
         logger.warning("yt-dlp video bilgisi alınamadı: %s", exc)
         return {"title": "", "duration": None}
 
 
-def fetch_transcript(video_id: str, language_requested: str = "") -> dict:
+def download_audio(video_id: str, output_dir: str) -> str:
     """
-    Transcript metnini döndürür.
+    Videodan ses dosyasını indirir, dosya yolunu döndürür.
+    output_dir içine 'audio.%(ext)s' olarak kaydeder.
+    """
+    url = f"https://www.youtube.com/watch?v={video_id}"
+    output_template = os.path.join(output_dir, "audio.%(ext)s")
+    ydl_opts = {
+        "format": "bestaudio[ext=m4a]/bestaudio[ext=webm]/bestaudio/best",
+        "outtmpl": output_template,
+        "quiet": True,
+        "no_warnings": True,
+    }
+    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        ydl.download([url])
+
+    # İndirilen dosyayı bul
+    for fname in os.listdir(output_dir):
+        if fname.startswith("audio."):
+            return os.path.join(output_dir, fname)
+    raise FileNotFoundError("Ses dosyası indirilemedi.")
+
+
+def _get_model(model_size: str):
+    """Whisper modelini cache'den döndürür; ilk çağrıda yükler."""
+    with _model_lock:
+        if model_size not in _model_cache:
+            from faster_whisper import WhisperModel
+            logger.info("Whisper modeli yükleniyor: %s", model_size)
+            _model_cache[model_size] = WhisperModel(
+                model_size,
+                device="cpu",
+                compute_type="int8",  # CPU için hızlı ve az bellek
+            )
+            logger.info("Whisper modeli hazır: %s", model_size)
+        return _model_cache[model_size]
+
+
+def transcribe_audio(audio_path: str, language: str = "", model_size: str = "small") -> dict:
+    """
+    Ses dosyasını Whisper ile metne çevirir.
 
     Returns:
-        {
-            "text": str,
-            "language_used": str,
-            "translated": bool,
-            "error": str | None,
-        }
+        {"text": str, "language_used": str, "error": str | None}
     """
     try:
-        transcript_list = _ytt.list(video_id)
-    except TranscriptsDisabled:
-        return {"text": "", "language_used": "", "translated": False, "error": "Bu video için altyazı devre dışı bırakılmış."}
+        model = _get_model(model_size)
+        lang_hint = language if language else None
+        segments, info = model.transcribe(
+            audio_path,
+            language=lang_hint,
+            beam_size=5,
+            vad_filter=True,       # sessiz bölümleri atla
+            vad_parameters={"min_silence_duration_ms": 500},
+        )
+        text = "\n".join(segment.text.strip() for segment in segments if segment.text.strip())
+        detected_lang = info.language if hasattr(info, "language") else (language or "")
+        return {"text": text, "language_used": detected_lang, "error": None}
     except Exception as exc:
-        return {"text": "", "language_used": "", "translated": False, "error": str(exc)}
-
-    # Dil sıralaması
-    if language_requested:
-        priority = [language_requested] + [l for l in AUTO_LANGUAGE_PRIORITY if l != language_requested]
-    else:
-        priority = AUTO_LANGUAGE_PRIORITY
-
-    # 1. İstenilen/öncelikli dilde doğrudan transcript ara
-    for lang in priority:
-        try:
-            transcript = transcript_list.find_transcript([lang])
-            entries = transcript.fetch()
-            return {
-                "text": _entries_to_text(entries),
-                "language_used": lang,
-                "translated": False,
-                "error": None,
-            }
-        except NoTranscriptFound:
-            continue
-        except Exception:
-            continue
-
-    # 2. Bulunamadı → mevcut ilk transcript'i al, çevirmeyi dene
-    try:
-        available = list(transcript_list)
-        if not available:
-            return {"text": "", "language_used": "", "translated": False, "error": "Bu video için hiç altyazı bulunamadı."}
-
-        source_transcript = available[0]
-        target_lang = priority[0]
-
-        try:
-            translated = source_transcript.translate(target_lang)
-            entries = translated.fetch()
-            return {
-                "text": _entries_to_text(entries),
-                "language_used": target_lang,
-                "translated": True,
-                "error": None,
-            }
-        except Exception:
-            entries = source_transcript.fetch()
-            return {
-                "text": _entries_to_text(entries),
-                "language_used": source_transcript.language_code,
-                "translated": False,
-                "error": None,
-            }
-
-    except Exception as exc:
-        return {"text": "", "language_used": "", "translated": False, "error": str(exc)}
-
-
-def list_available_languages(video_id: str) -> list[dict]:
-    """Video için mevcut altyazı dillerini döndürür."""
-    try:
-        transcript_list = _ytt.list(video_id)
-        langs = []
-        for t in transcript_list:
-            langs.append({
-                "code": t.language_code,
-                "name": t.language,
-                "is_generated": t.is_generated,
-                "is_translatable": t.is_translatable,
-            })
-        return langs
-    except Exception:
-        return []
-
-
-def _entries_to_text(entries) -> str:
-    """FetchedTranscript entry listesini düz metne çevirir."""
-    lines = []
-    for entry in entries:
-        if isinstance(entry, dict):
-            text = entry.get("text", "")
-        else:
-            text = getattr(entry, "text", "")
-        text = text.strip()
-        if text:
-            lines.append(text)
-    return "\n".join(lines)
+        logger.error("Whisper transkripsiyon hatası: %s", exc, exc_info=True)
+        return {"text": "", "language_used": "", "error": str(exc)}
