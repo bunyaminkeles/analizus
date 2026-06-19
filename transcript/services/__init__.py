@@ -8,6 +8,9 @@ logger = logging.getLogger(__name__)
 # Otomatik dil öncelik sırası: Türkçe → Almanca → İngilizce → ilk mevcut
 AUTO_LANGUAGE_PRIORITY = ["tr", "de", "en"]
 
+# v1.x API: class değil instance üzerinden çağrılır
+_ytt = YouTubeTranscriptApi()
+
 
 def extract_video_id(url: str) -> str | None:
     """YouTube URL'sinden video ID'sini çıkarır."""
@@ -35,7 +38,7 @@ def get_video_info(video_id: str) -> dict:
             info = ydl.extract_info(url, download=False)
             return {
                 "title": info.get("title", ""),
-                "duration": info.get("duration"),  # saniye cinsinden int
+                "duration": info.get("duration"),
             }
     except Exception as exc:
         logger.warning("yt-dlp video bilgisi alınamadı: %s", exc)
@@ -48,20 +51,20 @@ def fetch_transcript(video_id: str, language_requested: str = "") -> dict:
 
     Returns:
         {
-            "text": str,          # birleşik düz metin
-            "language_used": str, # kullanılan dil kodu
-            "translated": bool,   # YouTube auto-translate kullanıldı mı
+            "text": str,
+            "language_used": str,
+            "translated": bool,
             "error": str | None,
         }
     """
     try:
-        transcript_list = YouTubeTranscriptApi.list_transcripts(video_id)
+        transcript_list = _ytt.list(video_id)
     except TranscriptsDisabled:
         return {"text": "", "language_used": "", "translated": False, "error": "Bu video için altyazı devre dışı bırakılmış."}
     except Exception as exc:
         return {"text": "", "language_used": "", "translated": False, "error": str(exc)}
 
-    # Dil sıralaması belirle
+    # Dil sıralaması
     if language_requested:
         priority = [language_requested] + [l for l in AUTO_LANGUAGE_PRIORITY if l != language_requested]
     else:
@@ -83,14 +86,14 @@ def fetch_transcript(video_id: str, language_requested: str = "") -> dict:
         except Exception:
             continue
 
-    # 2. Doğrudan bulunamadı → mevcut ilk transcript'i al, çevirmeyi dene
+    # 2. Bulunamadı → mevcut ilk transcript'i al, çevirmeyi dene
     try:
         available = list(transcript_list)
         if not available:
             return {"text": "", "language_used": "", "translated": False, "error": "Bu video için hiç altyazı bulunamadı."}
 
         source_transcript = available[0]
-        target_lang = priority[0]  # kullanıcı seçimi veya tr
+        target_lang = priority[0]
 
         try:
             translated = source_transcript.translate(target_lang)
@@ -102,7 +105,6 @@ def fetch_transcript(video_id: str, language_requested: str = "") -> dict:
                 "error": None,
             }
         except Exception:
-            # Çeviri de başarısız → orijinal dilde ver
             entries = source_transcript.fetch()
             return {
                 "text": _entries_to_text(entries),
@@ -118,7 +120,7 @@ def fetch_transcript(video_id: str, language_requested: str = "") -> dict:
 def list_available_languages(video_id: str) -> list[dict]:
     """Video için mevcut altyazı dillerini döndürür."""
     try:
-        transcript_list = YouTubeTranscriptApi.list_transcripts(video_id)
+        transcript_list = _ytt.list(video_id)
         langs = []
         for t in transcript_list:
             langs.append({
@@ -133,7 +135,7 @@ def list_available_languages(video_id: str) -> list[dict]:
 
 
 def _entries_to_text(entries) -> str:
-    """FetchedTranscript ya da dict listesini düz metne çevirir."""
+    """FetchedTranscript entry listesini düz metne çevirir."""
     lines = []
     for entry in entries:
         if isinstance(entry, dict):
