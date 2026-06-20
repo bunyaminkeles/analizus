@@ -10,20 +10,6 @@ class TranscriptSettings(models.Model):
         help_text="Admin/staff kullanıcılar için izin verilen maksimum video süresi (dakika). Standart kullanıcılar bu değerin yarısını kullanabilir.",
     )
 
-    WHISPER_MODEL_CHOICES = [
-        ("tiny", "Tiny — en hızlı, az bellek (~390MB)"),
-        ("base", "Base — hızlı, iyi doğruluk (~500MB)"),
-        ("small", "Small — dengeli (~1GB) ✓ Önerilen"),
-        ("medium", "Medium — yüksek doğruluk (~2.5GB)"),
-        ("large-v3", "Large v3 — en iyi doğruluk (~4GB)"),
-    ]
-    whisper_model = models.CharField(
-        max_length=20,
-        choices=WHISPER_MODEL_CHOICES,
-        default="small",
-        verbose_name="Whisper model boyutu",
-        help_text="Büyük model = daha doğru ama daha yavaş ve fazla bellek. Sunucu RAM'ine göre seçin.",
-    )
 
     class Meta:
         verbose_name = "Transcript Ayarları"

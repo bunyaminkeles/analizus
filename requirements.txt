@@ -58,8 +58,7 @@ sickle
 feedparser
 
 # --- TRANSCRIPT ---
-faster-whisper
-yt-dlp==2024.12.6
+youtube-transcript-api
 
 # --- TEST ---
 pytest
