@@ -59,7 +59,7 @@ feedparser
 
 # --- TRANSCRIPT ---
 faster-whisper
-yt-dlp
+yt-dlp==2024.12.6
 
 # --- TEST ---
 pytest
