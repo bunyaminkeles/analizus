@@ -11,6 +11,20 @@ logger = logging.getLogger(__name__)
 _model_cache: dict = {}
 _model_lock = threading.Lock()
 
+# Cookie dosyası — YouTube bot engelini aşmak için
+# Hetzner'de: /app/youtube_cookies.txt olarak bırakın
+COOKIES_FILE = os.environ.get("YOUTUBE_COOKIES_FILE", "/app/youtube_cookies.txt")
+
+
+def _yt_opts_base(extra: dict = None) -> dict:
+    """Ortak yt-dlp seçeneklerini döndürür; cookie varsa ekler."""
+    opts = {"quiet": True, "no_warnings": True}
+    if os.path.isfile(COOKIES_FILE):
+        opts["cookiefile"] = COOKIES_FILE
+    if extra:
+        opts.update(extra)
+    return opts
+
 
 def extract_video_id(url: str) -> str | None:
     """YouTube URL'sinden video ID'sini çıkarır."""
@@ -21,7 +35,7 @@ def extract_video_id(url: str) -> str | None:
 def get_video_info(video_id: str) -> dict:
     """yt-dlp ile video başlığını ve süresini (saniye) getirir."""
     url = f"https://www.youtube.com/watch?v={video_id}"
-    ydl_opts = {"quiet": True, "no_warnings": True, "skip_download": True}
+    ydl_opts = _yt_opts_base({"skip_download": True})
     try:
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             info = ydl.extract_info(url, download=False)
@@ -32,22 +46,16 @@ def get_video_info(video_id: str) -> dict:
 
 
 def download_audio(video_id: str, output_dir: str) -> str:
-    """
-    Videodan ses dosyasını indirir, dosya yolunu döndürür.
-    output_dir içine 'audio.%(ext)s' olarak kaydeder.
-    """
+    """Videodan ses dosyasını indirir, dosya yolunu döndürür."""
     url = f"https://www.youtube.com/watch?v={video_id}"
     output_template = os.path.join(output_dir, "audio.%(ext)s")
-    ydl_opts = {
+    ydl_opts = _yt_opts_base({
         "format": "bestaudio[ext=m4a]/bestaudio[ext=webm]/bestaudio/best",
         "outtmpl": output_template,
-        "quiet": True,
-        "no_warnings": True,
-    }
+    })
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         ydl.download([url])
 
-    # İndirilen dosyayı bul
     for fname in os.listdir(output_dir):
         if fname.startswith("audio."):
             return os.path.join(output_dir, fname)
