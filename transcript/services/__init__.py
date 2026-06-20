@@ -21,7 +21,7 @@ def _yt_opts_base(extra: dict = None) -> dict:
     opts = {
         "quiet": True,
         "no_warnings": True,
-        "js_runtimes": ["node"],
+        "js_runtimes": {"node": {}},
         "extractor_args": {"youtube": {"player_client": ["ios", "web"]}},
     }
     if os.path.isfile(COOKIES_FILE):
