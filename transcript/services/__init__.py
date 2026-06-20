@@ -18,7 +18,12 @@ COOKIES_FILE = os.environ.get("YOUTUBE_COOKIES_FILE", "/app/youtube_cookies.txt"
 
 def _yt_opts_base(extra: dict = None) -> dict:
     """Ortak yt-dlp seçeneklerini döndürür; cookie varsa ekler."""
-    opts = {"quiet": True, "no_warnings": True}
+    opts = {
+        "quiet": True,
+        "no_warnings": True,
+        # iOS player client: bot koruması ve JS challenge'ı atlar
+        "extractor_args": {"youtube": {"player_client": ["ios"]}},
+    }
     if os.path.isfile(COOKIES_FILE):
         opts["cookiefile"] = COOKIES_FILE
     if extra:
