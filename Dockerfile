@@ -3,8 +3,9 @@ FROM python:3.11-slim
 WORKDIR /app
 
 RUN apt-get update && apt-get install -y \
-    libpq-dev gcc ffmpeg nodejs \
-    && rm -rf /var/lib/apt/lists/*
+    libpq-dev gcc ffmpeg nodejs npm \
+    && rm -rf /var/lib/apt/lists/* \
+    && npm install -g @yt-dlp/ejs
 
 COPY requirements.txt .
 RUN pip install --no-cache-dir --root-user-action=ignore -r requirements.txt

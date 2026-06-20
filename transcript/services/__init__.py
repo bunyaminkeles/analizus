@@ -21,8 +21,8 @@ def _yt_opts_base(extra: dict = None) -> dict:
     opts = {
         "quiet": True,
         "no_warnings": True,
-        # iOS player client: bot koruması ve JS challenge'ı atlar
-        "extractor_args": {"youtube": {"player_client": ["ios"]}},
+        "js_runtimes": ["node"],
+        "extractor_args": {"youtube": {"player_client": ["ios", "web"]}},
     }
     if os.path.isfile(COOKIES_FILE):
         opts["cookiefile"] = COOKIES_FILE
