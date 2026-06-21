@@ -232,8 +232,6 @@
                         <a href="{% url 'ai_assistant' %}" class="site-nav__dropdown-item" role="menuitem">AI Asistan</a>
                         {% endif %}
                         <a href="{% url 'studyroom_list' %}" class="site-nav__dropdown-item" role="menuitem">Çalışma Odaları</a>
-                        <div class="site-nav__dropdown-divider"></div>
-                        <a href="{% url 'transcript:form' %}" class="site-nav__dropdown-item" role="menuitem">YouTube Transcript</a>
                     </div>
                 </div>
 
@@ -395,7 +393,6 @@
                     <a href="{% url 'hangi_test' %}" class="nav-drawer__link">Hangi Test?</a>
                     {% if features.ai_assistant %}<a href="{% url 'ai_assistant' %}" class="nav-drawer__link">AI Asistan</a>{% endif %}
                     <a href="{% url 'studyroom_list' %}" class="nav-drawer__link">Çalışma Odaları</a>
-                    <a href="{% url 'transcript:form' %}" class="nav-drawer__link">YouTube Transcript</a>
                 </div>
             </div>
 
