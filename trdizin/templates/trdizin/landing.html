@@ -1,12 +1,12 @@
 {% extends "tarama_console_base.html" %}
 {% load static %}
 
-{% block title %}TR Dizin Makale Kazıma ve İndirme Aracı — Kodsuz Veri Çekme | Analizus{% endblock %}
-{% block meta_description %}TR Dizin'den kodsuz makale veri kazıma aracı. Boolean operatörlerle gelişmiş arama yapın, en yeni 5 makalenin verilerini Excel veya TXT olarak indirin.{% endblock %}
-{% block meta_keywords %}TR Dizin kazıma, makale verisi indirme, TR Dizin excel, akademik makale scraper, kodsuz veri çekme, TÜBİTAK ULAKBİM veri, TR Dizin scraper{% endblock %}
+{% block title %}TR Dizin Makale Tarama ve Veri Kazıma — Kodsuz İndirme | Analizus{% endblock %}
+{% block meta_description %}TR Dizin'de makale tarama ve kodsuz veri kazıma aracı. Boolean operatörlerle gelişmiş tarama yapın, en yeni 5 makalenin verilerini Excel veya TXT olarak indirin.{% endblock %}
+{% block meta_keywords %}TR Dizin tarama, TR Dizin makale tarama, trdizin arama, makale tarama, TR Dizin kazıma, makale verisi indirme, TR Dizin excel, TÜBİTAK ULAKBİM veri, TR Dizin veri kazıma{% endblock %}
 {% block canonical %}/trdizin/{% endblock %}
-{% block og_title %}TR Dizin Makale Kazıma ve İndirme Aracı — Kodsuz | Analizus{% endblock %}
-{% block og_description %}TR Dizin'den kodsuz makale veri kazıma. En yeni 5 makalenin verilerini Excel veya TXT olarak indirin.{% endblock %}
+{% block og_title %}TR Dizin Makale Tarama ve Veri Kazıma — Kodsuz | Analizus{% endblock %}
+{% block og_description %}TR Dizin'de makale tarama ve kodsuz veri kazıma. En yeni 5 makalenin verilerini Excel veya TXT olarak indirin.{% endblock %}
 
 {% block tool_area %}
 <div class="container mt-4">
@@ -16,10 +16,10 @@
             <div class="card bg-dark border-secondary text-white mb-4">
                 <div class="card-body">
                     <h1 class="card-title h3 mb-2">
-                        <i class="bi bi-journal-text me-2 text-info"></i>TR Dizin Makale Kazıma ve İndirme
+                        <i class="bi bi-journal-text me-2 text-info"></i>TR Dizin Makale Tarama, Kazıma ve İndirme
                     </h1>
                     <p class="card-text text-muted mb-1">
-                        TR Dizin'den kodsuz veri çekin. Başlık, özet, yazar ve anahtar kelime alanlarında gelişmiş arama yapın; toplam sonuç sayısını görün. En yeni <strong class="text-info">5 makalenin</strong> verilerini <strong class="text-info">Excel veya TXT</strong> olarak indirin ya da e-posta ile alın.
+                        TR Dizin'de makale tarama yapın, kodsuz veri çekin. Başlık, özet, yazar ve anahtar kelime alanlarında gelişmiş tarama yapın; toplam sonuç sayısını görün. En yeni <strong class="text-info">5 makalenin</strong> verilerini <strong class="text-info">Excel veya TXT</strong> olarak indirin ya da e-posta ile alın.
                     </p>
                     <p class="text-muted small mb-0">
                         Günlük <strong>{{ daily_limit }}</strong> arama hakkı — Kalan: <strong>{{ remaining }}</strong>
@@ -444,6 +444,14 @@ createRule(true);
         <p class="text-secondary mb-0" style="font-size:.8rem;line-height:1.6;">Tüm sonuç setine ihtiyaç duyuyorsanız <a href="/proje-talebi/?source=trdizin" class="text-decoration-none" style="color:#a5b4fc;">talep formumuzu</a> doldurun.</p>
       </div>
     </div>
+  </div>
+</div>
+
+<div class="container mb-5" style="max-width:860px;">
+  <div class="p-3 rounded" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);">
+    <p class="text-secondary mb-0" style="font-size:.8rem;line-height:1.8;">
+      TR Dizin Makale Tarama aracı, <strong class="text-white">TÜBİTAK ULAKBİM TR Dizin</strong> veri tabanında Boolean mantığıyla gelişmiş <strong class="text-white">makale tarama</strong> yapmanızı sağlar. Başlık, özet, anahtar kelime ve yazar alanlarını AND/OR operatörleriyle birleştirerek hassas <strong class="text-white">trdizin arama</strong> sorguları oluşturun. Tarama sonuçlarını Python veya Selenium bilgisi gerektirmeksizin Excel formatında indirin ya da toplu veri talebi için proje formumuzu kullanın.
+    </p>
   </div>
 </div>
 

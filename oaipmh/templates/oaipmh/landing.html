@@ -1,12 +1,12 @@
 {% extends "tarama_console_base.html" %}
 {% load static %}
 
-{% block title %}Üniversite Tez Veri Kazıma Botu — 19 Üniversite, Kodsuz İndirme | Analizus{% endblock %}
-{% block meta_description %}19 Türk üniversitesinin tez arşivinden kodsuz veri kazıma botu. Anahtar kelimeyle arama yapın veya bir üniversitenin tüm tezlerini çekin; TXT olarak indirin. Python veya Selenium bilgisi gerekmez.{% endblock %}
-{% block meta_keywords %}üniversite tez kazıma, tez arşivi veri çekme, kodsuz tez scraper, akademik tez bot, üniversite tez indirme, tez verisi kazıma{% endblock %}
+{% block title %}Üniversite Tez Tarama ve Veri Kazıma Botu — 19 Üniversite Arşivi | Analizus{% endblock %}
+{% block meta_description %}19 Türk üniversitesinin açık erişim tez arşivini tarayın; kodsuz veri kazıma botu. Anahtar kelimeyle tez tarama yapın veya bir üniversitenin tüm tezlerini çekin; Excel veya TXT olarak indirin.{% endblock %}
+{% block meta_keywords %}üniversite tez tarama, tez arşivi tarama, açık erişim tez tarama, üniversite tez arşivi, tez tarama botu, üniversite tez kazıma, tez arşivi veri çekme, kodsuz tez scraper, üniversite tez indirme{% endblock %}
 {% block canonical %}/oaipmh/{% endblock %}
-{% block og_title %}Üniversite Tez Veri Kazıma Botu — 19 Üniversite | Analizus{% endblock %}
-{% block og_description %}19 Türk üniversitesinin tez arşivinden kodsuz veri kazıma botu. Toplu tez verisi çekin ve indirin.{% endblock %}
+{% block og_title %}Üniversite Tez Tarama ve Veri Kazıma — 19 Üniversite Arşivi | Analizus{% endblock %}
+{% block og_description %}19 Türk üniversitesinin tez arşivini tarayın. Kodsuz tez tarama ve toplu veri indirme botu.{% endblock %}
 
 {% block tool_area %}
 <div class="container mt-4">
@@ -16,10 +16,10 @@
             <div class="card bg-dark border-secondary text-white mb-4">
                 <div class="card-body">
                     <h1 class="card-title h3 mb-2">
-                        <i class="bi bi-mortarboard me-2 text-warning"></i>Üniversite Tez Veri Kazıma Botu
+                        <i class="bi bi-mortarboard me-2 text-warning"></i>Üniversite Tez Tarama ve Veri Kazıma Botu
                     </h1>
                     <p class="card-text text-muted mb-1">
-                        19 Türk üniversitesinin tez arşivinden kodsuz veri çekin. Anahtar kelimeyle arama yapın veya bir üniversitenin tüm tezlerini toplu olarak kazıyın. Python ya da Selenium bilgisi gerekmez.
+                        19 Türk üniversitesinin açık erişim tez arşivini tarayın; kodsuz veri çekin. Anahtar kelimeyle tez tarama yapın veya bir üniversitenin tüm tezlerini toplu olarak kazıyın. Python ya da Selenium bilgisi gerekmez.
                     </p>
                     {% if remaining is not None %}
                     <p class="text-muted small mb-0">
@@ -268,6 +268,14 @@ if (_eb) {
         <p class="text-secondary mb-0" style="font-size:.82rem;line-height:1.7;">Bulduğunuz tezin metodolojisini <a href="/tezanaliz/" class="text-decoration-none" style="color:#a5b4fc;">AI Tez Analizi</a> aracımızla inceleyin.</p>
       </div>
     </div>
+  </div>
+</div>
+
+<div class="container mb-5" style="max-width:860px;">
+  <div class="p-3 rounded" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);">
+    <p class="text-secondary mb-0" style="font-size:.8rem;line-height:1.8;">
+      Üniversite Tez Tarama aracı, OAI-PMH protokolü üzerinden 19 Türk üniversitesinin <strong class="text-white">açık erişim tez arşivi</strong>ni tarar. Anahtar kelimeyle <strong class="text-white">tez tarama</strong> yapabilir ya da seçtiğiniz üniversitenin tüm tez kayıtlarını toplu olarak getirebilirsiniz. Yüksek lisans ve doktora tezlerini filtreleyin; sonuçları Excel veya TXT olarak indirin. <strong class="text-white">Üniversite tez arşivi</strong> taraması için Python veya Selenium bilgisi gerekmez.
+    </p>
   </div>
 </div>
 

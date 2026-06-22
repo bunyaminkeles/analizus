@@ -1,12 +1,12 @@
 {% extends "tarama_console_base.html" %}
 {% load static %}
 
-{% block title %}YÖK Tez Kazıma ve İndirme Aracı — Kodsuz Veri Çekme | Analizus{% endblock %}
-{% block meta_description %}YÖK Ulusal Tez Merkezi'nden kodsuz veri kazıma aracı. Anahtar kelime, yazar veya danışmanla arama yapın; en yeni 5 tezin verilerini Excel veya TXT olarak indirin.{% endblock %}
-{% block meta_keywords %}YÖK tez kazıma, tez verisi indirme, YÖK tez excel, akademik web scraper, kodsuz veri çekme, tez scraper, üniversite tez verisi, YÖK tez veri kazıma{% endblock %}
+{% block title %}YÖK Tez Tarama ve Veri Kazıma — Tez Arşivi İndirme | Analizus{% endblock %}
+{% block meta_description %}YÖK Ulusal Tez Merkezi tez arşivini tarayın, kodsuz veri kazıyın. Anahtar kelime, yazar veya danışmanla tez tarama yapın; yüksek lisans ve doktora tezlerini Excel veya TXT olarak indirin.{% endblock %}
+{% block meta_keywords %}YÖK tez tarama, yök tez arşiv, tez tarama, yüksek lisans tez tarama, doktora tez tarama, YÖK tez kazıma, tez verisi indirme, YÖK tez excel, tez scraper, üniversite tez arşivi, YÖK tez arama, tez veri kazıma{% endblock %}
 {% block canonical %}/yoktez/{% endblock %}
-{% block og_title %}YÖK Tez Kazıma ve İndirme Aracı — Kodsuz | Analizus{% endblock %}
-{% block og_description %}YÖK Ulusal Tez Merkezi'nden kodsuz veri kazıma. En yeni 5 tezin verilerini Excel veya TXT olarak indirin.{% endblock %}
+{% block og_title %}YÖK Tez Tarama ve Veri Kazıma — Tez Arşivi | Analizus{% endblock %}
+{% block og_description %}YÖK Ulusal Tez Merkezi tez arşivini tarayın. Yüksek lisans ve doktora tezlerini Excel veya TXT olarak indirin.{% endblock %}
 
 {% block tool_area %}
 <div class="container mt-4">
@@ -17,10 +17,10 @@
                 <div class="card-body d-flex justify-content-between align-items-start">
                     <div>
                         <h1 class="card-title h3 mb-2">
-                            <i class="bi bi-mortarboard-fill me-2 text-success"></i>YÖK Tez Veri Kazıma
+                            <i class="bi bi-mortarboard-fill me-2 text-success"></i>YÖK Tez Tarama ve Veri Kazıma
                         </h1>
                         <p class="card-text text-muted mb-1">
-                            YÖK Ulusal Tez Merkezi'nden saniyeler içinde veri çekin. Toplam sonuç sayısını görün; en yeni <strong class="text-success">5 tezin</strong> bilgisini <strong class="text-success">Excel veya TXT</strong> olarak indirin ya da e-posta ile alın.
+                            YÖK Ulusal Tez Merkezi tez arşivini tarayın; saniyeler içinde veri çekin. Toplam sonuç sayısını görün, en yeni <strong class="text-success">5 tezin</strong> bilgisini <strong class="text-success">Excel veya TXT</strong> olarak indirin ya da e-posta ile alın.
                         </p>
                         <p class="text-muted small mb-0">
                             Günlük <strong>{{ daily_limit }}</strong> arama hakkı — Kalan: <strong>{{ remaining }}</strong>
@@ -363,6 +363,14 @@ document.getElementById('send-email-btn').addEventListener('click', function() {
         <p class="mb-0" style="font-size:.8rem;line-height:1.6;color:#94a3b8;">Rate-limiting ile YÖK güvenlik duvarı tetiklenmeden insan hızında veri çekilir.</p>
       </div>
     </div>
+  </div>
+</div>
+
+<div class="container mb-5" style="max-width:860px;">
+  <div class="p-3 rounded" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);">
+    <p class="text-secondary mb-0" style="font-size:.8rem;line-height:1.8;">
+      YÖK Tez Tarama aracı, <strong class="text-white">YÖK Ulusal Tez Merkezi (YÖKTEZ)</strong> tez arşivinde anahtar kelime, yazar adı veya danışman adıyla <strong class="text-white">tez tarama</strong> yapmanızı sağlar. Yüksek lisans tez tarama ve doktora tez tarama desteğiyle; tez adı, üniversite, enstitü ve yıl aralığı gibi filtreleri birleştirerek <strong class="text-white">yök tez arşiv</strong>inden hedefli sonuçlar çekebilirsiniz. Python veya Selenium bilgisi gerekmez; tarama sonuçlarını Excel veya TXT formatında doğrudan indirin.
+    </p>
   </div>
 </div>
 

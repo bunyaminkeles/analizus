@@ -6,8 +6,8 @@
 
   <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
     <div>
-      <h1 class="text-2xl font-semibold text-gray-900 dark:text-gray-100">{{ title }}</h1>
-      <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">{{ date_range }}</p>
+      <h1 class="text-2xl font-semibold" style="color:inherit">{{ title }}</h1>
+      <p class="text-sm mt-1" style="color:#9ca3af">{{ date_range }}</p>
     </div>
     <div class="flex items-center gap-3">
       <span id="active-user-badge" class="hidden items-center gap-2 px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 dark:bg-indigo-900/40 text-indigo-800 dark:text-indigo-200">
@@ -24,16 +24,16 @@
   <!-- Stat box'ları -->
   <div class="grid grid-cols-3 gap-4 mb-6">
     <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 shadow-sm text-center">
-      <p class="text-3xl font-bold text-indigo-600 dark:text-indigo-400">{{ total_visits }}</p>
-      <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 uppercase tracking-wide">Toplam Ziyaret</p>
+      <p class="text-3xl font-bold" style="color:#818cf8">{{ total_visits }}</p>
+      <p class="text-xs mt-1 uppercase tracking-wide" style="color:#9ca3af">Toplam Ziyaret</p>
     </div>
     <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 shadow-sm text-center">
-      <p class="text-3xl font-bold text-violet-600 dark:text-violet-400">{{ unique_users }}</p>
-      <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 uppercase tracking-wide">Benzersiz Kullanıcı</p>
+      <p class="text-3xl font-bold" style="color:#a78bfa">{{ unique_users }}</p>
+      <p class="text-xs mt-1 uppercase tracking-wide" style="color:#9ca3af">Benzersiz Kullanıcı</p>
     </div>
     <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 shadow-sm text-center">
-      <p class="text-3xl font-bold text-emerald-600 dark:text-emerald-400">{{ unique_pages }}</p>
-      <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 uppercase tracking-wide">Benzersiz Sayfa</p>
+      <p class="text-3xl font-bold" style="color:#34d399">{{ unique_pages }}</p>
+      <p class="text-xs mt-1 uppercase tracking-wide" style="color:#9ca3af">Benzersiz Sayfa</p>
     </div>
   </div>
 
@@ -41,7 +41,7 @@
 
     <!-- En Çok Ziyaret Edilen Sayfalar -->
     <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 shadow-sm">
-      <h2 id="top-pages-title" class="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide mb-4">
+      <h2 id="top-pages-title" class="text-sm font-semibold uppercase tracking-wide mb-4" style="color:#9ca3af">
         En Çok Ziyaret Edilen Sayfalar
       </h2>
       <canvas id="topPagesChart"></canvas>
@@ -49,7 +49,7 @@
 
     <!-- Günlük Trend -->
     <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 shadow-sm">
-      <h2 id="daily-title" class="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide mb-4">
+      <h2 id="daily-title" class="text-sm font-semibold uppercase tracking-wide mb-4" style="color:#9ca3af">
         Günlük Ziyaret Trendi
       </h2>
       <canvas id="dailyChart"></canvas>
@@ -59,10 +59,10 @@
 
   <!-- En Aktif Kullanıcılar -->
   <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 shadow-sm mb-6">
-    <h2 class="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide mb-1">
+    <h2 class="text-sm font-semibold uppercase tracking-wide mb-1" style="color:#9ca3af">
       En Aktif Kullanıcılar (Tüm Zamanlar)
     </h2>
-    <p class="text-xs text-gray-400 dark:text-gray-500 mb-4">Bir kullanıcıya tıklayarak üstteki grafikleri filtreleyin</p>
+    <p class="text-xs mb-4" style="color:#6b7280">Bir kullanıcıya tıklayarak üstteki grafikleri filtreleyin</p>
     <canvas id="topUsersChart"></canvas>
   </div>
 

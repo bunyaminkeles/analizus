@@ -1032,6 +1032,12 @@ analizus-files/
 - `BibliometricOrderProxyAdmin` (`tezanaliz/admin.py`) — `status` readonly; **"Onayla ve Tam Rapor Emailini Gönder"** action ile onaylanır; e-posta + `status=completed` otomatik set edilir
 - `AlexOrderAdmin` (`openalex/admin.py`) — OpenAlex siparişleri; `status` readonly; aynı action akışı
 
+### Davranış Analizi (`analytics/admin.py`)
+- `PageViewAdmin` — ham ziyaret logları (son 5 gün tutulur); kullanıcı adına tıklamak `/admin/analytics/pageview/grafik/` adresine yönlendirir (7 günlük bar+çizgi+kullanıcı grafikleri)
+- `PageViewSummaryAdmin` — özetler (sonsuza kadar tutulur); kullanıcı adına tıklamak `/admin/analytics/pageviewsummary/grafik/` adresine yönlendirir (tüm geçmiş: stat box'ları + bar + çizgi + kullanıcı grafikleri)
+- Ham loglar `cleanup_pageviews` yönetim komutu / `/api/cron/cleanup-pageviews/` endpoint'i ile özetlenir ve silinir
+- Admin grafik template'leri dark mode'da Tailwind `dark:` prefix sınıfları yerine inline style kullanır (Unfold PurgeCSS uyumu)
+
 ### Gelir Kaynakları ve Ödeme Akışları
 | Gelir | Model | Admin Onay Yolu |
 |---|---|---|
@@ -1093,7 +1099,7 @@ SESSION_COOKIE_DOMAIN = '.analizus.com'  # Prod'da
 - Env: `CRON_SECRET_KEY`
 - **Aktif:** `/api/cron/cleanup-s3/` — trdizin + openalex S3 temizliği
 - **Aktif:** `/api/cron/cleanup-attachments/` — 90 günden eski DM + oda mesajı dosyaları S3'ten silinir, mesaj/post kaydı korunur (haftalık çalıştırılması önerilir)
-- **Aktif:** `/api/cron/cleanup-pageviews/` — 5 günden eski sayfa ziyaret loglarını PageViewSummary'e toplar ve siler; Hetzner crontab'ında `0 4 * * *` ile çalışır
+- **Aktif:** `/api/cron/cleanup-pageviews/` — 5 günden eski sayfa ziyaret loglarını PageViewSummary'e toplar ve siler; Hetzner crontab'ında `0 4 * * * curl -s "https://analizus.com/api/cron/cleanup-pageviews/?secret=..." >> /var/log/cron_pageviews.log 2>&1` ile çalışır. ⚠️ `www.analizus.com` kullanan eski satır `curl -L` olmadığından redirect'i takip etmez — crontab'da yalnızca `analizus.com` (www'suz) satırı kalmalıdır.
 - **Aktif:** `/api/cron/process-account-deletions/` — `deletion_requested_at` üzerinden 30 gün geçmiş hesapları anonimleştirir (email/username/profil) + DM'leri siler; Hetzner crontab'ına `0 3 * * *` ile eklenmelidir
 - **Kaldırılacak** (artık gereksiz): `/api/cron/daily-quiz/`, `/api/cron/update-badges/`
 
@@ -1216,6 +1222,9 @@ with connection.cursor() as c:
 | YÖK Tez "9538 tez bulundu" ama veri nerede? | Bu sayı YÖK'ün sonuç sayacı — gerçek veri değil. S3'e yalnızca 5 demo tezin TXT özeti kaydedilir (`yoktez/demo/<job_id>.txt`). Tam veri indirme (~954 sayfa pagination, 3-6 saat) için otomatik akış henüz yok — `proje-talebi` linki ile manuel süreç işliyor. |
 | `AttributeError: module 'django.utils.timezone' has no attribute 'utc'` | Django 5.2'de `django.utils.timezone.utc` kaldırıldı. `from datetime import timezone as _tz` ile Python'un kendi `_tz.utc`'sini kullan. |
 | `TemplateSyntaxError: Could not parse the remainder: '(request.user'` | Django template `{% if %}` parantezi desteklemiyor. `A and (B or C)` yerine iç içe `{% if A %}{% if B or C %}` kullan. |
+| YouTube transcript — `TranscriptsDisabled` / bot hatası (sunucu) | Hetzner dahil tüm cloud provider IP'leri YouTube tarafından engelleniyor. Hem `youtube-transcript-api` hem `yt-dlp` başarısız olur. Çözüm: sunucuda özelliği kapat, lokal script kullan. |
+| yt-dlp lokalde 403 / "n challenge solving failed" | İki şey gerekli: (1) JS runtime — `deno` kur: `curl -fsSL https://deno.land/install.sh \| sh`, PATH'e ekle; (2) solver script indir: `yt_dlp` opts'a `"remote_components": ["ejs:github"]` ekle (string değil list — string olursa karakter karakter parse eder). Ayrıca `"cookiesfrombrowser": ("firefox",)` ile tarayıcı cookie'si gerekli. |
+| `ImportError: cannot import name 'list_available_languages'` | `youtube-transcript-api` v1.x'te bu fonksiyon kaldırıldı. Instance tabanlı API: `_ytt = YouTubeTranscriptApi()` → `_ytt.list(video_id)`. |
 
 ---
 
@@ -1302,6 +1311,11 @@ with connection.cursor() as c:
   - `studyroom_list.html`: canonical block (`{% url 'studyroom_list' %}`) + robots_content block eklendi — `/odalar/?kategori=...` filtrelenmiş URL'ler `noindex, follow`
   - `proje_talebi` view + template: stats bar (tamamlanan analiz / üye sayısı — DB'den dinamik) + sağ kolona "Son Tamamlanan Analizler" kartı (anonimleştirilmiş, `FreelanceJob.updated_at - created_at` → gün/hafta etiketi)
   - `analiz_console_base.html`: 18 analiz aracının altına "Bu analizi uzmanına bırakmak ister misiniz?" CTA eklendi (`?source=tool` parametresi ile proje talebi iç link); `ProjectRequest.SOURCE_CHOICES`'a `('tool', 'Analiz Aracı')` eklendi; migration `0128_projectrequest_source_tool` (no-op — DB şeması değişmiyor)
+- **YouTube Transcript altyapısı kuruldu, menüden kaldırıldı** (haziran 2026) — `transcript/` Django uygulaması: `TranscriptSettings` singleton (admin maks dakika), `TranscriptJob` modeli, `youtube-transcript-api` v1.x servisi (dil önceliği: tr→de→en→otomatik çeviri), download/e-posta teslim, job_queue entegrasyonu; `transcript_local.py` standalone script (yt-dlp + faster-whisper "small" modeli, CPU int8). **Sunucuda çalışmıyor:** Hetzner cloud IP YouTube tarafından engelleniyor — hem `youtube-transcript-api` hem `yt-dlp` 403/bot hatası alıyor. Menü linkleri kaldırıldı; backend kod ve migration'lar yerinde duruyor. Lokal script kendi IP'den çalışıyor.
+- **SEO — 36 blog yazısı 800+ kelimeye genişletildi** (haziran 2026) — GSC "Crawled - currently not indexed" sorunu için tüm blog yazıları data migration ile genişletildi; 3 batch, 11 migration (0130–0140); her yazıya akademik Türkçe h2 bölümleri, tablolar, APA örnekleri eklendi; içerik `<hr>` referans ayracından önce insert edildi (`content.rfind('<hr>')` pattern); kelime sayımı `re.sub(r'<[^>]+>', ' ', content).split()` ile yapıldı (HTML tag'leri soyularak)
+- **SEO — Landing page tarama keyword'leri** (haziran 2026) — `yoktez/landing.html`, `trdizin/landing.html`, `oaipmh/landing.html` güncellendi; title + H1 + meta_description + meta_keywords'e "tez tarama", "yök tez tarama", "yök tez arşiv", "trdizin tarama", "üniversite tez tarama" varyasyonları eklendi; her sayfanın altına görünür keyword paragrafı eklendi (Google'a on-page sinyal); hedef: "yök tez arşiv" (boşluklu) ve "tez tarama" aramalarında sıralama almak
+- **Backlink / Domain Authority** (haziran 2026) — Bing Webmaster "not enough inbound links" uyarısı üzerine: (1) AlternativeTo.net başvurusu yapıldı (22 Haz, 7 gün bekleme); (2) Product Hunt lansmanı planlandı ve form dolduruldu (13 saat 48 dk'ya launch zamanlandı); gallery için 4 ekran görüntüsü (`/tmp/ph_*.png`) + 14 saniyelik demo video (`/tmp/analizus_demo.mp4`) üretildi; yatırımcı formu dolduruldu; launch tags: Productivity, Education, No-Code
+- **YouTube içerik planı** (haziran 2026) — 4 video planlandı: Genel tanıtım (2-3 dk, hook+platform turu+CTA), YÖK Tez tutorial, İstatistik araçları tutorial, TR Dizin tutorial; demo video `/tmp/analizus_demo.mp4` (14 sn, ana sayfa + istatistik scroll)
 
 ### Sıradaki Görevler
 
@@ -1328,4 +1342,4 @@ with connection.cursor() as c:
 
 ---
 
-*Son güncelleme: Haziran 2026 — SEO: GSC canonical/noindex düzeltmeleri (uzman_dizini + blog_list + studyroom_list); proje_talebi güven sinyalleri (DB'den dinamik stats + son tamamlanan analizler); 18 analiz aracına Proje Talebi CTA (analiz_console_base.html, source=tool tracking, migration 0128). Önceki: Hesap silme akışı; profil/pazar hata düzeltmeleri; forum DM stili + kompakt kartlar + @mention; navbar yeniden düzeni; YÖK Tez/TR Dizin → Proje Talebi; AI Asistan; İş ilanı kategorileri; Analytics; Ödeme/sipariş admin; Çalışma odası; Semantic Scholar; WoS parser.*
+*Son güncelleme: Haziran 2026 — YouTube Transcript altyapısı (menüden kaldırıldı, Hetzner IP bloğu); lokal STT script (yt-dlp+faster-whisper). SEO: GSC canonical/noindex düzeltmeleri (uzman_dizini + blog_list + studyroom_list); proje_talebi güven sinyalleri (DB'den dinamik stats + son tamamlanan analizler); 18 analiz aracına Proje Talebi CTA (analiz_console_base.html, source=tool tracking, migration 0128). Önceki: Hesap silme akışı; profil/pazar hata düzeltmeleri; forum DM stili + kompakt kartlar + @mention; navbar yeniden düzeni; YÖK Tez/TR Dizin → Proje Talebi; AI Asistan; İş ilanı kategorileri; Analytics; Ödeme/sipariş admin; Çalışma odası; Semantic Scholar; WoS parser.*

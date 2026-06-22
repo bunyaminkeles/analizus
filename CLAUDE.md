@@ -63,3 +63,68 @@ Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~1240 satır). Tamam
 - `.env` değerlerini commit'e dahil etme
 
 **Her zaman hatırla: Kullanıcılar analiz sonuçlarına güvenmek zorunda — hızlı değil, doğru.**
+
+---
+
+## Workflow Orchestration
+
+### 1. Plan Mode Default
+
+- Önemsiz olmayan HER görev için plan moduna gir (3+ adım veya mimari kararlar)
+- Bir şeyler ters giderse DUR ve hemen yeniden planla — ısrarla devam etme
+- Plan modunu yalnızca üretim için değil, doğrulama adımları için de kullan
+- Belirsizliği azaltmak için önceden detaylı spec yaz
+
+### 2. Subagent Stratejisi
+
+- Ana context penceresini temiz tutmak için subagent'leri bolca kullan
+- Araştırma, keşif ve paralel analizleri subagent'lere devret
+- Karmaşık problemlerde subagent'ler aracılığıyla daha fazla hesaplama gücü kullan
+- Odaklı çalışma için her subagent'e tek görev ver
+
+### 3. Öz-İyileştirme Döngüsü
+
+- Kullanıcıdan HERHANGİ bir düzeltme geldikten sonra: `tasks/lessons.md` dosyasını kalıpla güncelle
+- Aynı hatayı önleyen kurallar yaz
+- Hata oranı düşene kadar bu dersleri amansızca gözden geçir
+- İlgili proje için oturum başında dersleri incele
+
+### 4. Tamamlamadan Önce Doğrulama
+
+- Çalıştığını kanıtlamadan görevi asla tamamlanmış sayma
+- Gerektiğinde main ile değişikliklerindeki davranış farkını karşılaştır
+- Kendine sor: "Bir senior engineer bunu onaylar mıydı?"
+- Test çalıştır, log kontrol et, doğruluğu göster
+
+### 5. Zarafet Talebi (Dengeli)
+
+- Önemsiz olmayan değişiklikler için dur ve "daha zarif bir yol var mı?" diye sor
+- Bir düzeltme hack gibi hissettiriyorsa: "Şu an bildiklerimin hepsiyle zarif çözümü uygula"
+- Basit ve açık düzeltmelerde bunu atlat — aşırı mühendislik yapma
+- Sunmadan önce kendi çalışmanı sorgula
+
+### 6. Otonom Hata Düzeltme
+
+- Bir hata raporu geldiğinde: sadece düzelt. El tutma isteme
+- Log'lara, hatalara, başarısız testlere bak — sonra çöz
+- Kullanıcı tarafında sıfır bağlam geçişi gereksin
+- Nasıl yapılacağı söylenmeden başarısız CI testlerini düzelt
+
+---
+
+## Görev Yönetimi
+
+1. **Önce Planla**: Planı işaretlenebilir maddelerle `tasks/todo.md`'ye yaz
+2. **Planı Doğrula**: Uygulamaya başlamadan önce kontrol et
+3. **İlerlemeyi Takip Et**: Tamamlandıkça maddeleri işaretle
+4. **Değişiklikleri Açıkla**: Her adımda üst düzey özet ver
+5. **Sonuçları Belgele**: `tasks/todo.md`'ye inceleme bölümü ekle
+6. **Dersleri Yakala**: Düzeltmelerden sonra `tasks/lessons.md`'yi güncelle
+
+---
+
+## Temel Prensipler
+
+- **Önce Sadelik**: Her değişikliği olabildiğince basit yap. Minimal kod etkisi.
+- **Tembellik Yok**: Kök nedeni bul. Geçici düzeltme yok. Senior developer standartları.
+- **Minimal Etki**: Değişiklikler yalnızca gerekliye dokunsun. Hata sokmaktan kaçın.

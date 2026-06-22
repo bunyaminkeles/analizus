@@ -26,6 +26,7 @@ def main():
     parser.add_argument("--language", "-l", default="", help="Dil kodu (tr, de, en...). Boş = otomatik algıla")
     parser.add_argument("--model", "-m", default="small", choices=["tiny", "base", "small", "medium", "large-v3"], help="Whisper model boyutu (varsayılan: small)")
     parser.add_argument("--output", "-o", default="", help="Çıktı dosyası (varsayılan: otomatik isim)")
+    parser.add_argument("--browser", "-b", default="chrome", help="Cookie kaynağı tarayıcı: chrome, firefox, edge (varsayılan: chrome)")
     args = parser.parse_args()
 
     try:
@@ -40,8 +41,13 @@ def main():
         print("Hata: faster-whisper kurulu değil. Kurmak için: pip install faster-whisper")
         sys.exit(1)
 
+    base_opts = {
+        "cookiesfrombrowser": (args.browser,),
+        "remote_components": ["ejs:github"],
+    }
+
     print(f"Video bilgisi alınıyor...")
-    with yt_dlp.YoutubeDL({"quiet": True, "skip_download": True}) as ydl:
+    with yt_dlp.YoutubeDL({"quiet": True, "skip_download": True, **base_opts}) as ydl:
         try:
             info = ydl.extract_info(args.url, download=False)
             title = info.get("title", "transcript")
@@ -58,6 +64,7 @@ def main():
             "format": "bestaudio/best",
             "outtmpl": os.path.join(tmpdir, "audio.%(ext)s"),
             "quiet": True,
+            **base_opts,
         }
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             try:

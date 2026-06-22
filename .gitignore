@@ -48,3 +48,5 @@ BingSiteAuth.xml
 .env.example
 templates/admin/index.html.jazzmin_backup
 gemini.md
+cookies.txt
+youtube_cookies.txt
