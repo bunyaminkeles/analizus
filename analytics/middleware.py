@@ -6,8 +6,8 @@ _SKIP_PREFIXES = (
     '/sitemap', '/robots', '/.well-known/', '/534e',
 )
 
-# /analiz/cronbach/status/uuid/ veya /semantic-scholar/status/uuid/ gibi polling URL'leri atla
-_STATUS_RE = re.compile(r'/status/[0-9a-f\-]{36}/')
+# /analiz/cronbach/status/uuid/ veya /transcript/status/3/api/ gibi polling URL'leri atla
+_STATUS_RE = re.compile(r'/status/([0-9a-f\-]{36}|\d+)(/api)?/')
 
 
 class PageViewMiddleware:

@@ -302,11 +302,14 @@
     border-radius: var(--ax-radius-lg);
     padding: var(--ax-space-6);
     transition: border-color var(--ax-transition-fast),
-                box-shadow var(--ax-transition-fast);
+                box-shadow var(--ax-transition-fast),
+                transform var(--ax-transition-fast);
 }
 .ax-card:hover {
-    border-color: var(--ax-border-hover);
-    box-shadow: var(--ax-shadow-md);
+    border-color: rgba(99, 102, 241, 0.45);
+    box-shadow: 0 0 24px rgba(99, 102, 241, 0.18),
+                0 8px 24px rgba(0, 0, 0, 0.25);
+    transform: translateY(-2px);
 }
 
 .ax-card--elevated {
@@ -382,4 +385,14 @@
 /* Body scroll kilidi (mobil menü açıkken) */
 body.ax-no-scroll {
     overflow: hidden;
+}
+
+/* Subtle noise grain overlay — dark temalarda derinlik verir */
+.ax-noise-overlay {
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity: 0.025;
+    pointer-events: none;
+    z-index: 1;
 }

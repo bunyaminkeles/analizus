@@ -1311,3 +1311,93 @@ a.ax-stat-pill:hover {
     text-transform: uppercase;
     letter-spacing: 0.3px;
 }
+
+/* =============================================================
+   COUNTER STRIP
+   ============================================================= */
+.ax-counter-strip {
+    padding: 20px 0;
+    border-top: 1px solid var(--ax-border-default);
+    border-bottom: 1px solid var(--ax-border-default);
+    background: rgba(99, 102, 241, 0.04);
+}
+
+.ax-counter-strip__inner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.ax-counter-strip__item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 36px;
+}
+
+.ax-counter-strip__number {
+    display: flex;
+    align-items: baseline;
+    gap: 2px;
+    line-height: 1;
+}
+
+.ax-counter-strip__num {
+    font-size: 1.875rem;
+    font-weight: 800;
+    color: var(--ax-text-primary);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+}
+
+.ax-counter-strip__suffix {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--ax-color-primary);
+}
+
+.ax-counter-strip__label {
+    margin-top: 4px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--ax-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+}
+
+.ax-counter-strip__divider {
+    width: 1px;
+    height: 40px;
+    background: var(--ax-border-default);
+    flex-shrink: 0;
+}
+
+@media (max-width: 575px) {
+    .ax-counter-strip__inner { gap: 0; }
+    .ax-counter-strip__item  { padding: 10px 20px; }
+    .ax-counter-strip__divider { display: none; }
+    .ax-counter-strip__num { font-size: 1.5rem; }
+}
+
+/* =============================================================
+   MARKET CARD — Dekoratif arka plan görseli
+   ============================================================= */
+.ax-market-visual {
+    position: absolute;
+    top: 10px;
+    right: -16px;
+    width: 260px;
+    height: 180px;
+    pointer-events: none;
+    opacity: 0.40;
+    transition: opacity 0.35s ease;
+}
+.ax-market-card:hover .ax-market-visual {
+    opacity: 0.60;
+}
+
+@media (max-width: 767px) {
+    .ax-market-visual { display: none; }
+}
