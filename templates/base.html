@@ -38,9 +38,9 @@
     <meta property="og:url" content="https://www.analizus.com{{ request.path }}">
     <meta property="og:title" content="{% block og_title %}Analizus - Analiz Ekosistemi{% endblock %}">
     <meta property="og:description" content="{% block og_description %}SPSS, Python, Yapay Zeka ve Nitel analizler ile akademik analiz desteği ve veri bilimi topluluğu.{% endblock %}">
-    <meta property="og:image" content="{% block og_image %}https://www.analizus.com{% static 'images/og-image.png' %}{% endblock %}">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
+    <meta property="og:image" content="{% block og_image %}https://www.analizus.com{% static 'img/analizus-logo-001.png' %}{% endblock %}">
+    <meta property="og:image:width" content="270">
+    <meta property="og:image:height" content="270">
     <meta property="og:locale" content="tr_TR">
     <meta property="og:site_name" content="Analizus">
 
@@ -49,7 +49,7 @@
     <meta name="twitter:site" content="@analizus">
     <meta name="twitter:title" content="{% block twitter_title %}Analizus - Analiz Ekosistemi{% endblock %}">
     <meta name="twitter:description" content="{% block twitter_description %}SPSS, Python, R ile akademik analiz desteği.{% endblock %}">
-    <meta name="twitter:image" content="{% block twitter_image %}https://www.analizus.com{% static 'images/og-image.png' %}{% endblock %}">
+    <meta name="twitter:image" content="{% block twitter_image %}https://www.analizus.com{% static 'img/analizus-logo-001.png' %}{% endblock %}">
 
     {% if GOOGLE_SITE_VERIFICATION %}
     <meta name="google-site-verification" content="{{ GOOGLE_SITE_VERIFICATION }}">
@@ -162,7 +162,7 @@
     "name": "Analizus",
     "description": "Akademik Analiz ve Veri Bilimi Topluluğu",
     "url": "https://www.analizus.com",
-    "logo": "https://www.analizus.com/static/images/og-image.png",
+    "logo": "https://www.analizus.com/static/img/analizus-logo-001.png",
     "sameAs": [
         "https://www.linkedin.com/company/analizus",
         "https://www.youtube.com/@analizus"
@@ -202,12 +202,7 @@
 
             <!-- Logo -->
             <a href="{% url 'home' %}" class="site-nav__logo" aria-label="Analizus Ana Sayfa">
-                <svg class="site-nav__logo-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                    <rect x="2"  y="12" width="4" height="10" rx="1" fill="currentColor"/>
-                    <rect x="9"  y="6"  width="4" height="16" rx="1" fill="currentColor" opacity="0.8"/>
-                    <rect x="16" y="2"  width="4" height="20" rx="1" fill="currentColor" opacity="0.6"/>
-                </svg>
-                <span>Analizus</span>
+                <img class="site-nav__logo-img" src="{% static 'img/analizus-logo-001.png' %}" alt="Analizus" height="40">
             </a>
 
             <!-- Desktop Menü -->
@@ -368,12 +363,7 @@
     <aside class="nav-drawer" id="navDrawer" aria-label="Mobil menü" aria-hidden="true">
         <div class="nav-drawer__header">
             <a href="{% url 'home' %}" class="site-nav__logo" aria-label="Analizus Ana Sayfa">
-                <svg class="site-nav__logo-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                    <rect x="2"  y="12" width="4" height="10" rx="1" fill="currentColor"/>
-                    <rect x="9"  y="6"  width="4" height="16" rx="1" fill="currentColor" opacity="0.8"/>
-                    <rect x="16" y="2"  width="4" height="20" rx="1" fill="currentColor" opacity="0.6"/>
-                </svg>
-                <span>Analizus</span>
+                <img class="site-nav__logo-img" src="{% static 'img/analizus-logo-001.png' %}" alt="Analizus" height="36">
             </a>
             <button class="site-nav__icon-btn" id="navDrawerClose" aria-label="Menüyü kapat">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
