@@ -555,7 +555,15 @@ Yeni araç eklerken `teal` / `purple` dışında bir renk kullanılıyorsa önce
 .ax-job-budget          → İlan bütçe alanı
 .ax-profile-*           → Profil sayfası bileşenleri
 .ax-market-*            → Market/ilan bileşenleri
+.ax-noise-overlay       → Site geneli subtle grain texture (base.html body hemen altında; SVG feTurbulence, opacity 0.025, position:fixed, pointer-events:none)
+.ax-market-visual       → Market kartlarına dekoratif SVG arka planı (home_sections.css; parent kart position:relative + overflow:hidden gerektirir; mobile hidden)
 ```
+
+### CSS Dosya Versiyonlama (Cache Busting)
+`<link href="{% static 'css/foo.css' %}?v=XXXX">` — dosya içeriği değiştiğinde `v=` sayısını artır.
+- **Neden:** nginx (production) `Cache-Control: max-age` ile CSS'i önbelleğe alır. `v=` değişmezse tarayıcı eski dosyayı sunar.
+- **Lokal tuzak:** Django dev server nginx'ten geçmez → lokalde güncel görünür, production'da eski stil kalır.
+- Bir CSS dosyasını her düzenleyişte o dosyanın `?v=` stringini güncelle.
 
 ### Geliştirici Kuralı
 Yeni bileşen yazarken:
@@ -563,6 +571,7 @@ Yeni bileşen yazarken:
 2. UI: İçeriği `ax-` sınıflarıyla tasarla
 3. JS: `data-bs-toggle` yerine vanilla event listener kullan
 4. Asla hardcode renk/pixel yazma — `var(--ax-primary)` kullan
+5. CSS dosyası değiştiğinde `?v=XXXX` string'ini güncelle (cache busting)
 
 ---
 
@@ -1221,6 +1230,7 @@ with connection.cursor() as c:
 | `ProgrammingError: relation "django_cache_table" does not exist` | Render (veya yeni DB) ilk kurulumda cache tablosu oluşturulmamış. `python manage.py createcachetable` çalıştır. `deploy.sh`'e migrate'in hemen altına eklendi (haziran 2026). |
 | YÖK Tez "9538 tez bulundu" ama veri nerede? | Bu sayı YÖK'ün sonuç sayacı — gerçek veri değil. S3'e yalnızca 5 demo tezin TXT özeti kaydedilir (`yoktez/demo/<job_id>.txt`). Tam veri indirme (~954 sayfa pagination, 3-6 saat) için otomatik akış henüz yok — `proje-talebi` linki ile manuel süreç işliyor. |
 | `AttributeError: module 'django.utils.timezone' has no attribute 'utc'` | Django 5.2'de `django.utils.timezone.utc` kaldırıldı. `from datetime import timezone as _tz` ile Python'un kendi `_tz.utc`'sini kullan. |
+| CSS değişikliği production'da görünmüyor (lokal tamam) | `static/css/*.css` içeriği değiştiğinde `<link href="...?v=XXXX">` versiyon stringi de güncellenmeli — nginx/tarayıcı `Cache-Control: max-age` ile eski dosyayı cache'den sunar. Lokalde fark edilmez: Django dev server nginx'ten geçmez. |
 | `TemplateSyntaxError: Could not parse the remainder: '(request.user'` | Django template `{% if %}` parantezi desteklemiyor. `A and (B or C)` yerine iç içe `{% if A %}{% if B or C %}` kullan. |
 | YouTube transcript — `TranscriptsDisabled` / bot hatası (sunucu) | Hetzner dahil tüm cloud provider IP'leri YouTube tarafından engelleniyor. Hem `youtube-transcript-api` hem `yt-dlp` başarısız olur. Çözüm: sunucuda özelliği kapat, lokal script kullan. |
 | yt-dlp lokalde 403 / "n challenge solving failed" | İki şey gerekli: (1) JS runtime — `deno` kur: `curl -fsSL https://deno.land/install.sh \| sh`, PATH'e ekle; (2) solver script indir: `yt_dlp` opts'a `"remote_components": ["ejs:github"]` ekle (string değil list — string olursa karakter karakter parse eder). Ayrıca `"cookiesfrombrowser": ("firefox",)` ile tarayıcı cookie'si gerekli. |
@@ -1316,6 +1326,15 @@ with connection.cursor() as c:
 - **SEO — Landing page tarama keyword'leri** (haziran 2026) — `yoktez/landing.html`, `trdizin/landing.html`, `oaipmh/landing.html` güncellendi; title + H1 + meta_description + meta_keywords'e "tez tarama", "yök tez tarama", "yök tez arşiv", "trdizin tarama", "üniversite tez tarama" varyasyonları eklendi; her sayfanın altına görünür keyword paragrafı eklendi (Google'a on-page sinyal); hedef: "yök tez arşiv" (boşluklu) ve "tez tarama" aramalarında sıralama almak
 - **Backlink / Domain Authority** (haziran 2026) — Bing Webmaster "not enough inbound links" uyarısı üzerine: (1) AlternativeTo.net başvurusu yapıldı (22 Haz, 7 gün bekleme); (2) Product Hunt lansmanı planlandı ve form dolduruldu (13 saat 48 dk'ya launch zamanlandı); gallery için 4 ekran görüntüsü (`/tmp/ph_*.png`) + 14 saniyelik demo video (`/tmp/analizus_demo.mp4`) üretildi; yatırımcı formu dolduruldu; launch tags: Productivity, Education, No-Code
 - **YouTube içerik planı** (haziran 2026) — 4 video planlandı: Genel tanıtım (2-3 dk, hook+platform turu+CTA), YÖK Tez tutorial, İstatistik araçları tutorial, TR Dizin tutorial; demo video `/tmp/analizus_demo.mp4` (14 sn, ana sayfa + istatistik scroll)
+- **Ana sayfa tasarım iyileştirmeleri — "Sihirli Dokunuş"** (haziran 2026)
+  - **Hero mesh gradient:** `hero.css`'te `::after` 3 asimetrik radial-gradient blob (indigo %18 + violet %14 + indigo %10); eski tek blob'un yerini aldı
+  - **Gradient text başlık:** `<mark>` elementleri `background: linear-gradient(135deg, #818cf8→#a78bfa→#c084fc)`; `-webkit-background-clip: text`; `hero.css`'te tanımlı — HTML içindeki inline style kaldırıldı
+  - **Card hover glow:** `.ax-card:hover` → indigo border (`rgba(99,102,241,0.45)`) + glow shadow (`0 0 24px rgba(99,102,241,0.18)`) + `transform: translateY(-2px)`; `base.css`
+  - **Noise overlay:** `.ax-noise-overlay` site geneli subtle grain texture (SVG feTurbulence base64 data-URI, `opacity: 0.025`, `position: fixed`); `base.html` body hemen altında tek div; `base.css`
+  - **Market kartları SVG görselleri:** Sol kart (çalışma ilanı) — 3 monitör sahnesi indigo renkli; sağ kart (uzman) — kitaplar + Σ sigma + veritabanı silindirleri amber/gold renk; `home_sections.css`'te `.ax-market-visual` sınıfı; mobile (`max-width:767px`) `display:none`
+  - **Market kartı metinleri güncellendi:** Sol → "Tezinizden makaleye, SPSS analizinden Python projesine — alanında doğrulanmış uzmanla dakikalar içinde eşleşin. %100 gizlilik, sürprizsiz fiyat." / Sağ → "SPSS, R, Python veya alan uzmanlığınızı gerçek akademik projelere dönüştürün. Komisyonsuz çalışın, akademik itibarınızı büyütün."
+- **`analytics/middleware.py` polling URL regex genişletildi** (haziran 2026) — `r'/status/[0-9a-f\-]{36}/'` → `r'/status/([0-9a-f\-]{36}|\d+)(/api)?/'`; transcript status polling endpoint'leri de kapsıyor
+- **Logo ve OG görseli yenilendi** (haziran 2026) — Navbar'daki inline SVG bar-chart logo + "Analizus" span kaldırıldı; `static/img/analizus-logo-001.png` (yuvarlak rozet stili) eklendi; `base.html` desktop + mobile logo `<img class="site-nav__logo-img">` tag'ine döndü; `navbar.css`'e `.site-nav__logo-img { height:40px; border-radius:50%; }` eklendi; favicon `favicon.svg` → `static/img/analizus-logo-001.png` (PNG); OG/Twitter image için 1200×630 koyu banner (`static/img/og-banner.png`) Pillow ile üretildi (logo sol + "Analizus / Analiz Ekosistemi / www.analizus.com" sağda); `og:image`, `twitter:image`, JSON-LD `logo` güncellendi; `navbar.css?v=0103` cache buster artırıldı. Deploy: `collectstatic` + `docker compose restart web` gerekli. LinkedIn önizlemesi için Post Inspector ile cache temizlenmeli.
 
 ### Sıradaki Görevler
 
