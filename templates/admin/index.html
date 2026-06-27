@@ -297,7 +297,7 @@
             <span style="color:#a78bfa;font-size:.7rem;font-weight:600;">VİTRİN</span>
             {{ p.job.owner.username }} — <em style="color:#94a3b8;">{{ p.job.title|truncatechars:25 }}</em> — <span style="color:#34d399;">{{ p.amount }} ₺</span>
           </span>
-          <a href="/admin/forum/jobpayment/{{ p.pk }}/change/" style="font-size:.75rem;color:#818cf8;text-decoration:none;">Onayla →</a>
+          <a href="/admin/forum/jobpayment/{{ p.pk }}/quick-approve/" style="font-size:.75rem;color:#818cf8;text-decoration:none;">Onayla →</a>
         </div>
         {% endfor %}
         {% for d in pending_donations %}
