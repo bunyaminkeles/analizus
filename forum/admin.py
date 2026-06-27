@@ -656,6 +656,32 @@ class JobPaymentAdmin(ModelAdmin):
         self.message_user(request, f'{queryset.count()} ilan reddedildi.')
     reject_feature.short_description = "Seçili ilanları reddet"
 
+    def get_urls(self):
+        from django.urls import path
+        urls = super().get_urls()
+        custom = [
+            path('<int:pk>/quick-approve/', self.admin_site.admin_view(self.quick_approve_view), name='jobpayment_quick_approve'),
+        ]
+        return custom + urls
+
+    def quick_approve_view(self, request, pk):
+        from django.utils import timezone
+        from datetime import timedelta
+        from django.shortcuts import redirect
+        payment = JobPayment.objects.filter(pk=pk).first()
+        if payment and payment.status in ['pending_confirmation', 'success'] and payment.job.feature_status == 'pending':
+            job = payment.job
+            payment.status = 'success'
+            payment.save()
+            job.is_featured = True
+            job.feature_status = 'approved'
+            now = timezone.now()
+            start_time = job.featured_until if job.featured_until and job.featured_until > now else now
+            job.featured_until = start_time + timedelta(days=payment.duration_days)
+            job.save()
+            self.message_user(request, f'"{job.title}" ilanı vitrine eklendi.')
+        return redirect('/admin/')
+
 
 # --- SITE AYARLARI ---
 @admin.register(SiteSettings)
