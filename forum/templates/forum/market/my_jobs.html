@@ -27,6 +27,18 @@
                     <div>
                         <h6 class="mb-1 fw-bold">{{ job.title }}</h6>
                         <small class="text-muted"><i class="bi bi-hash"></i> {{ job.reference_number }} · {{ job.created_at|date:"d M Y" }} · <span class="text-{{ job.status|yesno:'success,secondary' }}">{{ job.get_status_display }}</span></small>
+                        {% if job.status == 'open' and job.expires_at %}
+                        <br>
+                        {% with days=job.days_remaining %}
+                        {% if days == 0 %}
+                        <small class="text-danger"><i class="bi bi-hourglass-bottom me-1"></i>Bugün sona eriyor</small>
+                        {% elif days <= 3 %}
+                        <small class="text-warning"><i class="bi bi-hourglass-split me-1"></i>{{ days }} gün kaldı</small>
+                        {% else %}
+                        <small class="text-muted"><i class="bi bi-calendar-check me-1"></i>{{ days }} gün kaldı · {{ job.expires_at|date:"d M Y" }}'de sona erer</small>
+                        {% endif %}
+                        {% endwith %}
+                        {% endif %}
                     </div>
                     <div class="text-end">
                         <span class="badge bg-info rounded-pill">{{ job.p_count }} Teklif</span>

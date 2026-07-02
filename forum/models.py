@@ -383,12 +383,12 @@ class Profile(models.Model):
         return True, "İlan açabilirsiniz"
 
     def get_job_duration_days(self):
-        """Puana göre ilan süresi: <500p=5gün, 500-1000p=14gün, 1000+p=30gün"""
+        """Puana göre ilan süresi: <500p=10gün, 500-1000p=20gün, 1000+p=30gün"""
         if self.total_score >= 1000:
             return 30
         elif self.total_score >= 500:
-            return 14
-        return 5
+            return 20
+        return 10
 
     def is_first_job(self):
         """Kullanıcının ilk ilanı mı?"""

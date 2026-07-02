@@ -44,6 +44,11 @@
                             <div class="form-text text-muted">İşin kapsamını, beklenen teslim tarihini ve özel gereksinimleri detaylıca yazın.</div>
                         </div>
 
+                        <div class="alert alert-info border-0 py-2 px-3 mb-3" style="background: rgba(13,202,240,0.1); border-left: 3px solid #0dcaf0 !important;">
+                            <i class="bi bi-clock me-1"></i>
+                            İlanınız yayınlandıktan sonra <strong>{{ job_duration_days }} gün</strong> aktif kalacaktır.
+                            <small class="text-white-50 d-block mt-1">Süre puanınıza göre belirlenir: &lt;500p → 10 gün · 500–1000p → 20 gün · 1000+p → 30 gün</small>
+                        </div>
                         <div class="d-flex justify-content-end gap-2">
                             <a href="{% url 'job_list' %}" class="btn btn-outline-light">İptal</a>
                             <button type="submit" class="btn btn-info fw-bold px-4">İlanı Yayınla</button>
