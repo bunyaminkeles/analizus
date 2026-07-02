@@ -395,7 +395,11 @@ def post_job(request):
         form = JobPostForm()
     from .models import JobCategory
     job_categories = JobCategory.objects.filter(is_active=True).values_list('title', flat=True)
-    return render(request, 'forum/market/post_job.html', {'form': form, 'job_categories': job_categories})
+    return render(request, 'forum/market/post_job.html', {
+        'form': form,
+        'job_categories': job_categories,
+        'job_duration_days': profile.get_job_duration_days(),
+    })
 
 @login_required
 def toggle_job_like(request, pk):
