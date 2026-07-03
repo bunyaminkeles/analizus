@@ -46,21 +46,24 @@
       <div class="text-center mt-3 text-muted small">Adım 1 / 3</div>
     </div>
 
-    {# ─── ADIM 2: İlgi Alanları ─── #}
+    {# ─── ADIM 2: Platform İmkanları (bilgilendirme) ─── #}
     <div class="onboarding-step d-none" id="step-2">
       <div class="text-center mb-4">
         <div class="mb-3" style="font-size:2.5rem;">🎯</div>
-        <h2 class="fw-bold mb-1">Burada ne yapacaksınız?</h2>
-        <p class="text-muted">Birden fazla seçebilirsiniz.</p>
+        <h2 class="fw-bold mb-1">Platformda Neler Bulacaksınız?</h2>
+        <p class="text-muted">Analizus'ta sizi bekleyen imkanlar.</p>
       </div>
 
       <div class="card border-0 shadow-sm p-4 mb-3">
-        <div class="d-flex flex-wrap gap-2">
-          {% for value, label in interest_choices %}
-          <label class="interest-tag d-flex align-items-center gap-2 px-3 py-2 rounded border" style="cursor:pointer;">
-            <input type="checkbox" name="interests" value="{{ value }}" class="d-none interest-cb">
-            <span>{{ label }}</span>
-          </label>
+        <div class="d-flex flex-column gap-3">
+          {% for icon, label, desc in capability_info %}
+          <div class="capability-row d-flex align-items-start gap-3">
+            <span class="fs-4">{{ icon }}</span>
+            <div>
+              <div class="fw-semibold">{{ label }}</div>
+              <div class="text-muted small">{{ desc }}</div>
+            </div>
+          </div>
           {% endfor %}
         </div>
       </div>
@@ -72,21 +75,18 @@
       <div class="text-center mt-3 text-muted small">Adım 2 / 3</div>
     </div>
 
-    {# ─── ADIM 3: Araçlar ─── #}
+    {# ─── ADIM 3: Desteklenen Araçlar (bilgilendirme) ─── #}
     <div class="onboarding-step d-none" id="step-3">
       <div class="text-center mb-4">
         <div class="mb-3" style="font-size:2.5rem;">🛠️</div>
-        <h2 class="fw-bold mb-1">Hangi araçları kullanıyorsunuz?</h2>
-        <p class="text-muted">Şu an kullandığınız veya bildiğiniz araçları seçin.</p>
+        <h2 class="fw-bold mb-1">Hangi Araçlarla Destek Alabilirsiniz?</h2>
+        <p class="text-muted">Uzmanlarımız aşağıdaki araçlarla analiz ve danışmanlık desteği sunuyor.</p>
       </div>
 
       <div class="card border-0 shadow-sm p-4 mb-3">
         <div class="d-flex flex-wrap gap-2">
-          {% for value, label in tool_choices %}
-          <label class="tool-tag d-flex align-items-center gap-2 px-3 py-2 rounded border" style="cursor:pointer;">
-            <input type="checkbox" name="tools" value="{{ value }}" class="d-none tool-cb">
-            <span>{{ label }}</span>
-          </label>
+          {% for name in tool_names %}
+          <span class="tool-tag px-3 py-2 rounded border">{{ name }}</span>
           {% endfor %}
         </div>
       </div>
@@ -114,17 +114,7 @@
   border-color: #6366f1 !important;
   box-shadow: 0 0 0 2px #6366f133;
 }
-.interest-tag, .tool-tag {
-  transition: all .15s;
-  user-select: none;
-}
-.interest-tag:hover, .tool-tag:hover {
-  border-color: #6366f1 !important;
-  color: #6366f1;
-}
-.interest-tag.selected, .tool-tag.selected {
-  background: #eef2ff;
-  border-color: #6366f1 !important;
+.tool-tag {
   color: #4f46e5;
   font-weight: 500;
 }
@@ -150,24 +140,6 @@ document.querySelectorAll('.segment-card').forEach(card => {
     document.querySelectorAll('.segment-card').forEach(c => c.classList.remove('selected'));
     card.classList.add('selected');
     card.querySelector('.segment-radio').checked = true;
-  });
-});
-
-// Interest tag'ları
-document.querySelectorAll('.interest-tag').forEach(tag => {
-  tag.addEventListener('click', () => {
-    tag.classList.toggle('selected');
-    const cb = tag.querySelector('.interest-cb');
-    cb.checked = !cb.checked;
-  });
-});
-
-// Tool tag'ları
-document.querySelectorAll('.tool-tag').forEach(tag => {
-  tag.addEventListener('click', () => {
-    tag.classList.toggle('selected');
-    const cb = tag.querySelector('.tool-cb');
-    cb.checked = !cb.checked;
   });
 });
 </script>

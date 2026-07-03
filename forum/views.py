@@ -1107,6 +1107,7 @@ def custom_login(request):
     from django.contrib.auth import authenticate, login as auth_login
     from django.contrib.auth.forms import AuthenticationForm
     from django.utils import timezone
+    from django.utils.http import url_has_allowed_host_and_scheme
     from datetime import timedelta
 
     if request.user.is_authenticated:
@@ -1122,6 +1123,8 @@ def custom_login(request):
             _handle_edu_user(user)
 
             next_url = request.GET.get('next', 'home')
+            if not url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}, require_https=request.is_secure()):
+                next_url = 'home'
             return redirect(next_url)
     else:
         form = AuthenticationForm()
@@ -1701,14 +1704,14 @@ def account_delete_confirm(request, token):
         profile = Profile.objects.select_related('user').get(deletion_token=token)
     except Profile.DoesNotExist:
         messages.error(request, "Geçersiz veya süresi dolmuş link.")
-        return redirect('forum_index')
+        return redirect('home')
 
     if not profile.deletion_token_expires_at or timezone.now() > profile.deletion_token_expires_at:
         profile.deletion_token = ''
         profile.deletion_token_expires_at = None
         profile.save(update_fields=['deletion_token', 'deletion_token_expires_at'])
         messages.error(request, "Bu link süresi dolmuş. Lütfen yeniden talep edin.")
-        return redirect('forum_index')
+        return redirect('home')
 
     user = profile.user
     profile.deletion_requested_at = timezone.now()
@@ -1721,7 +1724,7 @@ def account_delete_confirm(request, token):
 
     logout(request)
     messages.info(request, "Hesabınız devre dışı bırakıldı. Kişisel verileriniz 30 gün içinde kalıcı olarak silinecektir.")
-    return redirect('forum_index')
+    return redirect('home')
 
 
 # --- DİĞER ---
@@ -3522,47 +3525,31 @@ def onboarding(request):
             return redirect('home')
 
         segment = request.POST.get('segment', '')
-        interests = request.POST.getlist('interests')
-        tools = request.POST.getlist('tools')
 
         if segment:
             profile.segment = segment
-        if interests:
-            profile.onboarding_interests = interests
-        if tools:
-            profile.onboarding_tools = tools
         profile.onboarding_completed = True
-        profile.save(update_fields=['segment', 'onboarding_interests', 'onboarding_tools', 'onboarding_completed'])
+        profile.save(update_fields=['segment', 'onboarding_completed'])
 
-        messages.success(request, 'Hoş geldiniz! Profiliniz kişiselleştirildi.')
+        messages.success(request, 'Hoş geldiniz!')
         return redirect('home')
 
     segment_choices = Profile.SEGMENT_CHOICES
-    interest_choices = [
-        ('analiz', 'Analiz Yapmak'),
-        ('uzman', 'Uzman Bulmak'),
-        ('forum', 'Sorular Sormak / Cevaplamak'),
-        ('tez', 'Tez Araştırması'),
-        ('makale', 'Makale Yazımı'),
-        ('ogrenme', 'İstatistik Öğrenmek'),
-        ('bibliometri', 'Bibliometrik Analiz'),
-        ('tarama', 'Literatür Taraması'),
+    capability_info = [
+        ('📊', 'İstatistik Analizi', 'SPSS, R, Python, AMOS, SmartPLS ile profesyonel istatistik analizleri'),
+        ('🔎', 'Veri Kazıma & Toplama', 'Anket, web ve akademik veritabanlarından veri toplama desteği'),
+        ('🧑‍🏫', 'Danışmanlık', 'Alanında uzman akademisyen ve danışmanlarla Pazaryeri üzerinden eşleşin'),
+        ('📁', 'Proje Desteği', 'Tez, makale ve kurumsal projeleriniz için uçtan uca destek'),
+        ('🎓', 'Akademik Destek', 'Tez ve makale yazım sürecinde yöntem ve rehberlik desteği'),
+        ('📈', 'Bibliometrik Analiz', 'Atıf ve yayın verileriyle bibliometrik analiz yaptırın'),
+        ('🔍', 'Literatür / Akademik Tarama', 'YÖK Tez, TR Dizin ve uluslararası veritabanlarında tarama'),
+        ('💬', 'Forumda Soru-Cevap', 'Merak ettiklerinizi sorun, bilgi birikiminizi toplulukla paylaşın'),
     ]
-    tool_choices = [
-        ('spss', 'SPSS'),
-        ('r', 'R'),
-        ('python', 'Python'),
-        ('excel', 'Excel'),
-        ('smartpls', 'SmartPLS'),
-        ('amos', 'AMOS'),
-        ('stata', 'Stata'),
-        ('nvivo', 'NVivo'),
-        ('hicbiri', 'Henüz Hiçbirini Kullanmıyorum'),
-    ]
+    tool_names = ['SPSS', 'R', 'Python', 'Excel', 'SmartPLS', 'AMOS', 'Stata', 'NVivo']
     return render(request, 'forum/onboarding.html', {
         'segment_choices': segment_choices,
-        'interest_choices': interest_choices,
-        'tool_choices': tool_choices,
+        'capability_info': capability_info,
+        'tool_names': tool_names,
     })
 
 

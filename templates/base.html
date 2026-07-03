@@ -312,6 +312,7 @@
                             <a href="{% url 'profile_detail' username=user.username %}" class="site-nav__dropdown-item" role="menuitem">Profilim</a>
                             <a href="{% url 'profile_edit' %}" class="site-nav__dropdown-item" role="menuitem">Profili Düzenle</a>
                             <a href="{% url 'my_payments' %}" class="site-nav__dropdown-item" role="menuitem">Ödemelerim</a>
+                            <a href="{% url 'referral_dashboard' %}" class="site-nav__dropdown-item" role="menuitem">Arkadaşını Davet Et</a>
                             {% if features.messaging %}
                             <a href="{% url 'inbox' %}" class="site-nav__dropdown-item" role="menuitem">Gelen Kutusu</a>
                             {% endif %}
@@ -416,6 +417,7 @@
             {% if user.is_authenticated %}
                 <a href="{% url 'profile_detail' username=user.username %}" class="nav-drawer__link">Profilim</a>
                 <a href="{% url 'profile_edit' %}" class="nav-drawer__link">Profili Düzenle</a>
+                <a href="{% url 'referral_dashboard' %}" class="nav-drawer__link">Arkadaşını Davet Et</a>
                 {% if features.messaging %}<a href="{% url 'inbox' %}" class="nav-drawer__link">Gelen Kutusu</a>{% endif %}
                 {% if user.is_staff %}<a href="{% url 'admin:index' %}" class="nav-drawer__link">Admin Dashboard</a>{% endif %}
                 <div class="nav-drawer__divider"></div>
