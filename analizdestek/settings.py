@@ -285,6 +285,16 @@ UNFOLD = {
                     "icon": "payments",
                     "link": reverse_lazy("admin:forum_jobpayment_changelist"),
                 },
+                {
+                    "title": "Davet Kodları",
+                    "icon": "card_giftcard",
+                    "link": reverse_lazy("admin:forum_referralcode_changelist"),
+                },
+                {
+                    "title": "Davet Kullanımları",
+                    "icon": "group_add",
+                    "link": reverse_lazy("admin:forum_referraluse_changelist"),
+                },
             ],
         },
         # ─── 2. FORUM & İÇERİK ──────────────────────────────────────
