@@ -7,14 +7,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" type="image/png" href="{% static 'img/analizus-logo-001.png' %}">
 
-    <!-- Performance: Preconnect to critical origins -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <!-- Performance: Font, CSS ve Bootstrap deferred yükleniyor — sadece font dosyalarına preconnect, gerisi ucuz dns-prefetch -->
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
-    <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
     <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
     <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+    <link rel="dns-prefetch" href="https://www.googletagmanager.com">
 
     <!-- Theme & PWA Meta -->
     <meta name="theme-color" content="#0f172a">
@@ -204,7 +202,7 @@
 
             <!-- Logo -->
             <a href="{% url 'home' %}" class="site-nav__logo" aria-label="Analizus Ana Sayfa">
-                <img class="site-nav__logo-img" src="{% static 'img/analizus-logo-001.png' %}" alt="Analizus" height="40">
+                <img class="site-nav__logo-img" src="{% static 'img/analizus-logo-001.png' %}" alt="Analizus" width="40" height="40">
             </a>
 
             <!-- Desktop Menü -->
@@ -366,7 +364,7 @@
     <aside class="nav-drawer" id="navDrawer" aria-label="Mobil menü" aria-hidden="true">
         <div class="nav-drawer__header">
             <a href="{% url 'home' %}" class="site-nav__logo" aria-label="Analizus Ana Sayfa">
-                <img class="site-nav__logo-img" src="{% static 'img/analizus-logo-001.png' %}" alt="Analizus" height="36">
+                <img class="site-nav__logo-img" src="{% static 'img/analizus-logo-001.png' %}" alt="Analizus" width="36" height="36">
             </a>
             <button class="site-nav__icon-btn" id="navDrawerClose" aria-label="Menüyü kapat">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
