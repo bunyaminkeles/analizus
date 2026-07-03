@@ -430,6 +430,33 @@ class JobProposal:
 - **Düzenleme:** `status=open` AND `proposals.exists()=False` AND `is_edited=False` → 1 kez düzenlenebilir
 - **İptal:** `close_job` view → `status=cancelled` → bekleyen teklif verenlere AnalizBot DM
 - **Teklif fiyat gizliliği:** `feature_proposal_price_privacy=True` → fiyatlar gizli, sadece taraflar görür
+- **İlan süresi:** `Profile.get_job_duration_days()` puana göre: &lt;500p → 10 gün, 500–1000p → 20 gün, 1000+p → 30 gün; yayınlama ekranında kullanıcıya gösterilir; "İlanlarım" sayfasında kalan gün + bitiş tarihi görünür
+- **Haftalık ilan limiti:** Free=1, Premium=3; her 5 geçerli referans için +1 bonus (maks +2) — `get_weekly_job_limit()` DB'den referral sayısını çeker
+
+### Referral (Davet) Sistemi
+```python
+class ReferralCode:          # Her kullanıcıya OneToOne, benzersiz 8-karakter kod
+    user: OneToOne → User
+    code: str                # secrets.token_urlsafe(6)[:8].upper()
+
+class ReferralUse:           # Davet bağlantısıyla kayıt olan her kullanıcı
+    referrer: FK → User      # Davet eden
+    referred: OneToOne → User  # Davet edilen (unique — 1 referrer)
+    ip_address: str          # Abuse tespiti
+    email_verified_at: datetime (null)
+    qualified_at: datetime (null)
+    rewarded: bool
+    flagged: bool            # IP abuse şüphesi
+    premium_days_awarded: int
+    reputation_awarded: int
+```
+**URL'ler:** `/davet/` (dashboard) · `/davet/<code>/` (landing → session'a kod yaz → register'a yönlendir)
+**Geçerlilik koşulları (hepsi zorunlu):** e-posta doğrulama + 48 saat bekleme + 1 quiz sorusu çözme
+**Abuse önleme:** aynı IP'den max 2 ödül; referrer 7 günlük hesap + email_verified; self-referral yasak
+**Ödül (azalan getiri):** 1–5. davet → 20 gün premium, 6–10. → 10 gün, 11+ → 5 gün; her davette +50 rep
+**Rozet kademeleri:** 1. davet → "Davetçi", 5. → "Topluluk Elçisi", 10. → "Büyükelçi"
+**Tetikleyici:** `user_logged_in` signal + `verify_email` view → `check_and_award_referral()` (forum/services/referral_service.py)
+**Admin:** Ekosistem → Davet Kodları / Davet Kullanımları; `rewarded` + `flagged` filtreleri
 
 ### İstatistik İşi
 ```python
@@ -846,10 +873,13 @@ def _broadcast_chat(uid1, uid2, event):
 - REST JSON API tabanlı (`search.trdizin.gov.tr/api/`)
 
 ### OAI-PMH (`oaipmh/`)
-- 19 üniversite arşivi aktif endpoint (ODTÜ, İTÜ, Dokuz Eylül, Akdeniz vb.)
+- 19 üniversite kayıtlı; **17 aktif** (Akdeniz ve Fırat `is_active=False` — sunucu erişilemez/WAF)
+- Çalışan 17: ODTÜ, İTÜ, Dokuz Eylül, Çukurova, Uludağ, Sakarya, Mersin, Muğla, Afyon Kocatepe, Kafkas, Giresun, Ordu, Isparta, Uşak, Düzce, BEUN, Sabancı
 - `sickle` kütüphanesi (OAI-PMH client)
 - **Job kuyruğu:** `job_queue.enqueue('oaipmh', job_id)` kullanır — eski raw `threading.Thread` kaldırıldı
 - Stale job cutoff: 60 dakika (scraping 19 üniversiteyi tarayabilir, kısa timeout uygun değil)
+- Çukurova + Uşak: HTTPS desteklemiyor → `http://` URL kullanılıyor
+- Uludağ + BEUN: DSpace 7'ye geçmiş → `/server/oai/request` path (migration `0008_fix_university_urls`)
 
 ### Akademik Tarama Unified Console
 - 4 tarama aracı tek sidebar'lı konsolda: `/tarama/` → `tarama_hub` view (hub sayfası; eski redirect kaldırıldı), her araç kendi URL'inde çalışır
@@ -1037,7 +1067,7 @@ analizus-files/
 - `JobProposalAdmin` — teklif (İlan Sahibi + Teklif Veren kolonları)
 - `ProfileAdmin` — kullanıcı profil
 - `SiteSettingsAdmin` — feature flag yönetimi
-- `JobPaymentAdmin` — vitrin ödemeleri; `status` readonly; **"Seçili ilanları vitrine ekle"** action ile onaylanır
+- `JobPaymentAdmin` — vitrin ödemeleri; `status` readonly; dashboard "VİTRİN" satırındaki **"Onayla →"** butonuyla tek tıkla onaylanır (`/admin/forum/jobpayment/<pk>/quick-approve/` — `quick_approve_view`); onay öncesi detay confirm dialogu çıkar; list view action ("Seçili ilanları vitrine ekle") da hâlâ çalışır
 - `BibliometricOrderProxyAdmin` (`tezanaliz/admin.py`) — `status` readonly; **"Onayla ve Tam Rapor Emailini Gönder"** action ile onaylanır; e-posta + `status=completed` otomatik set edilir
 - `AlexOrderAdmin` (`openalex/admin.py`) — OpenAlex siparişleri; `status` readonly; aynı action akışı
 
@@ -1051,7 +1081,7 @@ analizus-files/
 | Gelir | Model | Admin Onay Yolu |
 |---|---|---|
 | Bağış (Premium) | `Donation` | Dashboard "BAĞIŞ" → detail → action yok, `dashboard_approve_donation` view |
-| İlan Vitrini | `JobPayment` | Job Payments list → "Seçili ilanları vitrine ekle" action |
+| İlan Vitrini | `JobPayment` | Dashboard "VİTRİN" → **"Onayla →"** (tek tıkla, confirm dialog) veya Job Payments list → "Seçili ilanları vitrine ekle" action |
 | Bibliometrik Analiz | `BibliometricOrder` | Bibliometrik Siparişler list → "Onayla ve Tam Rapor Emailini Gönder" action |
 | OpenAlex Sipariş | `AlexOrder` | OpenAlex Siparişleri list → "Onayla ve Tam Rapor Emailini Gönder" action |
 
@@ -1357,8 +1387,8 @@ with connection.cursor() as c:
 - Blog içerik altyapısı iyileştirmeleri
 - Admin analytics dashboard — navigasyon takibi tamamlandı; gelişmiş kullanıcı segmentasyonu/funnel analizi eklenebilir
 - **Semantic Scholar → Bibliometrik Analiz entegrasyonu** — Semantic Scholar'dan BibTeX export ekle; sonuçları doğrudan `/bibliometrics/` aracına aktar; iki taraf değişiklik gerektirir (`semanticscholar/` export + `bibliometrics/` parser)
-- Gamification genişletmesi
+- ~~Gamification genişletmesi~~ → Referral sistemi tamamlandı (temmuz 2026)
 
 ---
 
-*Son güncelleme: Haziran 2026 — YouTube Transcript altyapısı (menüden kaldırıldı, Hetzner IP bloğu); lokal STT script (yt-dlp+faster-whisper). SEO: GSC canonical/noindex düzeltmeleri (uzman_dizini + blog_list + studyroom_list); proje_talebi güven sinyalleri (DB'den dinamik stats + son tamamlanan analizler); 18 analiz aracına Proje Talebi CTA (analiz_console_base.html, source=tool tracking, migration 0128). Önceki: Hesap silme akışı; profil/pazar hata düzeltmeleri; forum DM stili + kompakt kartlar + @mention; navbar yeniden düzeni; YÖK Tez/TR Dizin → Proje Talebi; AI Asistan; İş ilanı kategorileri; Analytics; Ödeme/sipariş admin; Çalışma odası; Semantic Scholar; WoS parser.*
+*Son güncelleme: Temmuz 2026 — İlan süresi artırıldı (10/20/30 gün) + kullanıcı bilgilendirmesi; Referral (Davet) sistemi: ReferralCode+ReferralUse modelleri (migration 0141), azalan getiri (20/10/5 gün), 3 koşul (e-posta+48h+quiz), IP abuse önleme, rozet kademeleri, +50 rep/davet, /davet/ dashboard. Önceki: Vitrin ödeme onayı dashboard'dan tek tıkla; YouTube Transcript altyapısı; SEO; Hesap silme; Forum iyileştirmeleri; AI Asistan; İş ilanı kategorileri; Analytics.*
