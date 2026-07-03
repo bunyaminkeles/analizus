@@ -3568,7 +3568,7 @@ def onboarding(request):
         ('🔍', 'Literatür / Akademik Tarama', 'YÖK Tez, TR Dizin ve uluslararası veritabanlarında tarama'),
         ('💬', 'Forumda Soru-Cevap', 'Merak ettiklerinizi sorun, bilgi birikiminizi toplulukla paylaşın'),
     ]
-    tool_names = ['SPSS', 'R', 'Python', 'Excel', 'SmartPLS', 'AMOS', 'Stata', 'NVivo', 'MAXQDA', 'AI Araçları']
+    tool_names = ['SPSS', 'R', 'Python', 'Excel', 'SmartPLS', 'AMOS', 'Stata', 'NVivo', 'MAXQDA', 'AI Araçları', 'Akademik Danışmanlık']
     return render(request, 'forum/onboarding.html', {
         'segment_choices': segment_choices,
         'capability_info': capability_info,
