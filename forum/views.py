@@ -660,6 +660,8 @@ def job_detail(request, pk):
     can_propose_reason = ""
     if request.user.is_authenticated and hasattr(request.user, 'profile'):
         _, can_propose_reason = request.user.profile.can_propose()
+    elif not request.user.is_authenticated:
+        can_propose_reason = "Teklif verebilmek için giriş yapmalısınız."
 
     # 1. Teklifleri görme yetkisi
     if request.user == job.owner or request.user.is_superuser or request.user.is_staff:
