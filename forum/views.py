@@ -1390,6 +1390,11 @@ def send_message(request, username):
 
     receiver = get_object_or_404(User, username=username)
 
+    # Hesabını silen / devre dışı bırakılmış kullanıcıya mesaj gönderilemez
+    if not receiver.is_active:
+        messages.error(request, 'Bu kullanıcı hesabını sildiği için mesaj gönderilemiyor.')
+        return redirect('inbox')
+
     # Bot kullanıcılarına mesaj gönderilemez
     if receiver.username == 'AnalizBot':
         if request.method == 'POST':
@@ -3545,7 +3550,7 @@ def onboarding(request):
         ('🔍', 'Literatür / Akademik Tarama', 'YÖK Tez, TR Dizin ve uluslararası veritabanlarında tarama'),
         ('💬', 'Forumda Soru-Cevap', 'Merak ettiklerinizi sorun, bilgi birikiminizi toplulukla paylaşın'),
     ]
-    tool_names = ['SPSS', 'R', 'Python', 'Excel', 'SmartPLS', 'AMOS', 'Stata', 'NVivo']
+    tool_names = ['SPSS', 'R', 'Python', 'Excel', 'SmartPLS', 'AMOS', 'Stata', 'NVivo', 'MAXQDA', 'AI Araçları']
     return render(request, 'forum/onboarding.html', {
         'segment_choices': segment_choices,
         'capability_info': capability_info,
