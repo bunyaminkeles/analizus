@@ -369,12 +369,30 @@
             {% if request.user != job.owner %}
                 {% if user_proposal %}
                 <!-- Zaten Teklif Verilmiş -->
+                {% if user_proposal.status == 'accepted' %}
+                <div class="card border-0 shadow-sm bg-success bg-opacity-10 border-success">
+                    <div class="card-body text-center p-4">
+                        <i class="bi bi-check-circle-fill text-success fs-1 mb-3"></i>
+                        <h5 class="text-white">Teklifiniz Kabul Edildi</h5>
+                        <p class="text-white-50 small">
+                            {% if job.status == 'completed' %}Bu iş tamamlandı.{% else %}Bu iş size atandı, çalışmaya devam edebilirsiniz.{% endif %}
+                        </p>
+                        <div class="bg-dark bg-opacity-25 p-2 rounded text-start mt-3">
+                {% elif user_proposal.status == 'rejected' %}
+                <div class="card border-0 shadow-sm bg-secondary bg-opacity-10 border-secondary">
+                    <div class="card-body text-center p-4">
+                        <i class="bi bi-x-circle-fill text-secondary fs-1 mb-3"></i>
+                        <h5 class="text-white">Teklifiniz Kabul Edilmedi</h5>
+                        <p class="text-white-50 small">İlan sahibi başka bir teklifi kabul etti.</p>
+                        <div class="bg-dark bg-opacity-25 p-2 rounded text-start mt-3">
+                {% else %}
                 <div class="card border-0 shadow-sm bg-success bg-opacity-10 border-success">
                     <div class="card-body text-center p-4">
                         <i class="bi bi-check-circle-fill text-success fs-1 mb-3"></i>
                         <h5 class="text-white">Teklifiniz Gönderildi</h5>
                         <p class="text-white-50 small">İlan sahibi teklifinizi değerlendiriyor.</p>
                         <div class="bg-dark bg-opacity-25 p-2 rounded text-start mt-3">
+                {% endif %}
                             <div class="d-flex justify-content-between mb-1">
                                 <span class="text-muted small">Tutar:</span>
                                 <span class="text-success fw-bold small">₺{{ user_proposal.price }}</span>
