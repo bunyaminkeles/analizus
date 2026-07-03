@@ -1,0 +1,207 @@
+{% extends 'base.html' %}
+
+{% block title %}Davet Sistemi - Analizus{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-9">
+
+      <!-- Başlık -->
+      <div class="mb-4">
+        <h3 class="text-white fw-bold mb-1"><i class="bi bi-people-fill text-info me-2"></i>Davet Sistemi</h3>
+        <p class="text-muted mb-0">Arkadaşlarını davet et, her geçerli davet için premium kazan.</p>
+      </div>
+
+      <!-- Özet Kartları -->
+      <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+          <div class="rounded-3 p-3 text-center" style="background:rgba(13,202,240,.1);border:1px solid rgba(13,202,240,.2)">
+            <div class="fs-3 fw-bold text-info">{{ total }}</div>
+            <div class="small text-muted">Toplam Davet</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="rounded-3 p-3 text-center" style="background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.2)">
+            <div class="fs-3 fw-bold text-success">{{ qualified }}</div>
+            <div class="small text-muted">Geçerli Davet</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="rounded-3 p-3 text-center" style="background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.2)">
+            <div class="fs-3 fw-bold" style="color:#a855f7">{{ total_premium_days }}</div>
+            <div class="small text-muted">Kazanılan Gün</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="rounded-3 p-3 text-center" style="background:rgba(234,179,8,.1);border:1px solid rgba(234,179,8,.2)">
+            <div class="fs-3 fw-bold" style="color:#eab308">{{ total_reputation }}</div>
+            <div class="small text-muted">Kazanılan Puan</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Davet Linki -->
+      <div class="card border-0 mb-4" style="background:rgba(30,41,59,.7);border:1px solid rgba(255,255,255,.08)!important">
+        <div class="card-body p-4">
+          <h6 class="text-white mb-3"><i class="bi bi-link-45deg text-info me-1"></i>Davet Bağlantın</h6>
+          <div class="input-group">
+            <input type="text" id="referral-url" class="form-control bg-dark text-white border-secondary" value="{{ referral_url }}" readonly>
+            <button class="btn btn-info" onclick="copyReferralUrl()">
+              <i class="bi bi-clipboard" id="copy-icon"></i> Kopyala
+            </button>
+          </div>
+          <div class="mt-2 text-muted small">
+            <i class="bi bi-info-circle me-1"></i>
+            Bu linki paylaştığında kayıt olan ve koşulları sağlayan her kullanıcı için <strong class="text-white">premium gün</strong> kazanırsın.
+          </div>
+        </div>
+      </div>
+
+      <!-- Nasıl Çalışır -->
+      <div class="card border-0 mb-4" style="background:rgba(30,41,59,.7);border:1px solid rgba(255,255,255,.08)!important">
+        <div class="card-body p-4">
+          <h6 class="text-white mb-3"><i class="bi bi-question-circle text-info me-1"></i>Nasıl Çalışır?</h6>
+          <div class="row g-3">
+            <div class="col-md-4">
+              <div class="d-flex gap-2">
+                <div class="rounded-circle bg-info bg-opacity-10 d-flex align-items-center justify-content-center flex-shrink-0" style="width:36px;height:36px"><span class="text-info fw-bold">1</span></div>
+                <div>
+                  <div class="text-white small fw-semibold">Linki Paylaş</div>
+                  <div class="text-muted" style="font-size:.78rem">Davet bağlantını arkadaşlarınla paylaş</div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="d-flex gap-2">
+                <div class="rounded-circle bg-info bg-opacity-10 d-flex align-items-center justify-content-center flex-shrink-0" style="width:36px;height:36px"><span class="text-info fw-bold">2</span></div>
+                <div>
+                  <div class="text-white small fw-semibold">Koşulları Sağlasın</div>
+                  <div class="text-muted" style="font-size:.78rem">E-posta doğrulama + 48 saat + 1 quiz sorusu</div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="d-flex gap-2">
+                <div class="rounded-circle bg-info bg-opacity-10 d-flex align-items-center justify-content-center flex-shrink-0" style="width:36px;height:36px"><span class="text-info fw-bold">3</span></div>
+                <div>
+                  <div class="text-white small fw-semibold">Premium Kazan</div>
+                  <div class="text-muted" style="font-size:.78rem">1–5. davet → 20 gün · 6–10. → 10 gün · 11+ → 5 gün</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rozet Kademeleri -->
+      <div class="card border-0 mb-4" style="background:rgba(30,41,59,.7);border:1px solid rgba(255,255,255,.08)!important">
+        <div class="card-body p-4">
+          <h6 class="text-white mb-3"><i class="bi bi-trophy text-warning me-1"></i>Rozet Kademeleri</h6>
+          <div class="row g-3">
+            {% for m in milestones %}
+            <div class="col-md-4">
+              <div class="rounded-3 p-3 text-center {% if m.earned %}opacity-100{% else %}opacity-50{% endif %}" style="background:rgba(255,255,255,.04);border:1px solid {% if m.earned %}{{ m.color }}40{% else %}rgba(255,255,255,.08){% endif %}">
+                <i class="{{ m.icon }} fs-2 mb-1 d-block" style="color:{{ m.color }}"></i>
+                <div class="text-white fw-semibold small">{{ m.label }}</div>
+                {% if m.earned %}
+                <span class="badge mt-1" style="background:{{ m.color }}20;color:{{ m.color }}"><i class="bi bi-check2 me-1"></i>Kazanıldı</span>
+                {% else %}
+                <div class="text-muted mt-1" style="font-size:.75rem">{{ m.remaining }} davet kaldı</div>
+                {% endif %}
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <!-- Davet Listesi -->
+      <div class="card border-0" style="background:rgba(30,41,59,.7);border:1px solid rgba(255,255,255,.08)!important">
+        <div class="card-body p-4">
+          <h6 class="text-white mb-3"><i class="bi bi-list-ul me-1"></i>Davetlerimin Durumu</h6>
+          {% if referrals %}
+          <div class="table-responsive">
+            <table class="table table-dark table-sm align-middle mb-0" style="border-color:rgba(255,255,255,.08)">
+              <thead>
+                <tr class="text-muted small">
+                  <th>Kullanıcı</th>
+                  <th>Kayıt Tarihi</th>
+                  <th>E-posta</th>
+                  <th>Quiz</th>
+                  <th>Durum</th>
+                  <th class="text-end">Ödül</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for r in referrals %}
+                <tr>
+                  <td class="text-white">
+                    {% with name=r.referred.username %}
+                    {{ name|slice:":2" }}***
+                    {% endwith %}
+                  </td>
+                  <td class="text-muted small">{{ r.created_at|date:"d M Y" }}</td>
+                  <td>
+                    {% if r.email_verified_at %}
+                    <i class="bi bi-check-circle-fill text-success" title="Doğrulandı"></i>
+                    {% else %}
+                    <i class="bi bi-clock text-muted" title="Bekliyor"></i>
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% with qs=r.referred.quiz_scores.first %}
+                    {% if qs and qs.total_points > 0 %}
+                    <i class="bi bi-check-circle-fill text-success" title="Tamamlandı"></i>
+                    {% else %}
+                    <i class="bi bi-clock text-muted" title="Bekliyor"></i>
+                    {% endif %}
+                    {% endwith %}
+                  </td>
+                  <td>
+                    {% if r.flagged %}
+                    <span class="badge bg-danger">Şüpheli</span>
+                    {% elif r.rewarded %}
+                    <span class="badge bg-success">Ödüllendirildi</span>
+                    {% elif r.email_verified_at %}
+                    <span class="badge bg-warning text-dark">Bekliyor</span>
+                    {% else %}
+                    <span class="badge bg-secondary">E-posta bekleniyor</span>
+                    {% endif %}
+                  </td>
+                  <td class="text-end">
+                    {% if r.rewarded %}
+                    <span class="text-success small fw-semibold">+{{ r.premium_days_awarded }} gün</span>
+                    {% else %}
+                    <span class="text-muted small">—</span>
+                    {% endif %}
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+          <div class="text-center py-4 text-muted">
+            <i class="bi bi-people fs-2 d-block mb-2 opacity-50"></i>
+            Henüz davet yok. Bağlantını paylaşmaya başla!
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+function copyReferralUrl() {
+  const input = document.getElementById('referral-url');
+  navigator.clipboard.writeText(input.value).then(() => {
+    const icon = document.getElementById('copy-icon');
+    icon.className = 'bi bi-clipboard-check';
+    setTimeout(() => { icon.className = 'bi bi-clipboard'; }, 2000);
+  });
+}
+</script>
+{% endblock %}

@@ -22,7 +22,7 @@ from datetime import timedelta
 import uuid
 from django_ratelimit.decorators import ratelimit
 from django_ratelimit.exceptions import Ratelimited
-from .models import Section, Category, Topic, Post, Profile, PrivateMessage, PostLike, Notification, EmailVerification, DailyTip, QuizQuestion, QuizScore, SuccessStory, FreelanceJob, JobCategory, JobProposal, JobReview, Skill, Badge, UserQuizAttempt, JobPayment, SiteSettings, BlogCategory, BlogPost, BlogTag, DonationTier, StudyRoom, StudyRoomMembership, StudyRoomPost, STUDYROOM_TERMS
+from .models import Section, Category, Topic, Post, Profile, PrivateMessage, PostLike, Notification, EmailVerification, DailyTip, QuizQuestion, QuizScore, SuccessStory, FreelanceJob, JobCategory, JobProposal, JobReview, Skill, Badge, UserQuizAttempt, JobPayment, SiteSettings, BlogCategory, BlogPost, BlogTag, DonationTier, StudyRoom, StudyRoomMembership, StudyRoomPost, STUDYROOM_TERMS, ReferralCode, ReferralUse
 from .forms import RegisterForm, NewTopicForm, PostForm, JobPostForm, ProposalForm
 from .email_utils import send_topic_reply_notification, send_private_message_notification
 from django.template.loader import render_to_string
@@ -1054,11 +1054,49 @@ def register(request):
             else:
                 messages.warning(request, 'Kayıt başarılı ancak doğrulama e-postası gönderilemedi. Profil sayfasından tekrar deneyebilirsiniz.')
 
+            # Referral: davet kodu varsa bağlantıyı kaydet
+            ref_code = request.session.pop('ref_code', None)
+            if ref_code:
+                _handle_referral_registration(request, user, ref_code)
+
             login(request, user)
             return redirect('verification_pending')
     else:
         form = RegisterForm()
     return render(request, 'forum/register.html', {'form': form})
+
+
+def _handle_referral_registration(request, new_user, code):
+    """Davet kodu ile kayıt olan kullanıcıyı referrer'a bağla."""
+    from .models import ReferralCode, ReferralUse
+    from .services.referral_service import notify_referral_registered
+    from datetime import timedelta
+    try:
+        referral_code = ReferralCode.objects.select_related('user__profile').get(code=code)
+        referrer = referral_code.user
+
+        # Self-referral yasak
+        if referrer == new_user:
+            return
+
+        # Referrer hesabı en az 7 gün eski ve e-postası doğrulanmış olmalı
+        if (timezone.now() - referrer.date_joined).days < 7:
+            return
+        if not referrer.profile.email_verified:
+            return
+
+        # Kullanıcının zaten bir referrer'ı var mı?
+        if ReferralUse.objects.filter(referred=new_user).exists():
+            return
+
+        ip = request.META.get('REMOTE_ADDR', '0.0.0.0')
+        ReferralUse.objects.create(referrer=referrer, referred=new_user, ip_address=ip)
+        notify_referral_registered(referrer, new_user)
+    except ReferralCode.DoesNotExist:
+        pass
+    except Exception as e:
+        import logging
+        logging.getLogger(__name__).warning(f"Referral kayıt hatası: {e}")
 
 
 # --- GİRİŞ (Rate Limited) ---
@@ -2248,6 +2286,18 @@ def verify_email(request, token):
 
     # Rozet kontrolü
     _check_and_award_trust_badge(request, user)
+
+    # Referral: e-posta doğrulandı, koşulları dene (48h/quiz henüz sağlanmamış olabilir)
+    try:
+        from .models import ReferralUse
+        from .services.referral_service import check_and_award_referral
+        referral = ReferralUse.objects.filter(referred=user, rewarded=False, flagged=False).first()
+        if referral:
+            referral.email_verified_at = timezone.now()
+            referral.save(update_fields=['email_verified_at'])
+            check_and_award_referral(referral)
+    except Exception:
+        pass
 
     # Token'ı kullanılmış olarak işaretle
     verification.is_used = True
@@ -3562,3 +3612,65 @@ def tarama_hub(request):
     settings = SiteSettings.load()
     tools = [t for t in tools if getattr(settings, f'feature_{t["feature_key"]}', True)]
     return render(request, 'tarama_hub.html', {'tools': tools})
+
+
+# ─────────────────────────────────────────────────────────────
+# REFERRAL (DAVET) SİSTEMİ
+# ─────────────────────────────────────────────────────────────
+
+def referral_landing(request, code):
+    """Davet linki: session'a kodu yaz, kayıt sayfasına yönlendir."""
+    if request.user.is_authenticated:
+        messages.info(request, 'Zaten giriş yaptınız. Davet sistemi yalnızca yeni kayıtlar için geçerlidir.')
+        return redirect('home')
+    try:
+        ReferralCode.objects.get(code=code)
+        request.session['ref_code'] = code
+        messages.success(request, 'Davet bağlantısıyla geldiniz! Kayıt olarak platforma katılın.')
+    except ReferralCode.DoesNotExist:
+        messages.warning(request, 'Geçersiz davet bağlantısı.')
+    return redirect('register')
+
+
+@login_required
+def referral_dashboard(request):
+    """Kullanıcının davet istatistikleri ve linki."""
+    referral_code = ReferralCode.get_or_create_for_user(request.user)
+    referrals = ReferralUse.objects.filter(
+        referrer=request.user
+    ).select_related('referred').order_by('-created_at')
+
+    total = referrals.count()
+    qualified = referrals.filter(rewarded=True).count()
+    pending = referrals.filter(rewarded=False, flagged=False).count()
+    total_premium_days = referrals.filter(rewarded=True).aggregate(
+        s=models.Sum('premium_days_awarded')
+    )['s'] or 0
+    total_reputation = referrals.filter(rewarded=True).aggregate(
+        s=models.Sum('reputation_awarded')
+    )['s'] or 0
+
+    # Rozet ilerleme: hangi eşiklere ulaşıldı / ne kadar kaldı
+    milestones = [
+        {'count': 1,  'slug': 'davetci',         'label': 'Davetçi',        'icon': 'bi-person-plus',  'color': '#22c55e'},
+        {'count': 5,  'slug': 'topluluk-elcisi', 'label': 'Topluluk Elçisi','icon': 'bi-people-fill',  'color': '#a855f7'},
+        {'count': 10, 'slug': 'buyukelci',        'label': 'Büyükelçi',      'icon': 'bi-award-fill',   'color': '#eab308'},
+    ]
+    for m in milestones:
+        m['earned'] = qualified >= m['count']
+        m['remaining'] = max(0, m['count'] - qualified)
+
+    referral_url = request.build_absolute_uri(f'/davet/{referral_code.code}/')
+
+    context = {
+        'referral_code': referral_code,
+        'referral_url': referral_url,
+        'referrals': referrals,
+        'total': total,
+        'qualified': qualified,
+        'pending': pending,
+        'total_premium_days': total_premium_days,
+        'total_reputation': total_reputation,
+        'milestones': milestones,
+    }
+    return render(request, 'forum/referral_dashboard.html', context)

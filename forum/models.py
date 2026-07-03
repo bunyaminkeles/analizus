@@ -6,6 +6,7 @@ from django.utils.text import slugify
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 import uuid
+import secrets
 from django.utils import timezone
 from datetime import timedelta
 from forum.storage import get_storage
@@ -361,10 +362,11 @@ class Profile(models.Model):
         return True, "Kayıtlı üye"
 
     def get_weekly_job_limit(self):
-        """Haftalık ilan limiti: Premium = 3, diğer = 1"""
-        if self.account_type == 'Premium':
-            return 3
-        return 1
+        """Haftalık ilan limiti: Premium=3, Free=1; her 5 geçerli referans +1 (maks +2)"""
+        base = 3 if self.account_type == 'Premium' else 1
+        ref_count = ReferralUse.objects.filter(referrer=self.user, rewarded=True).count()
+        bonus = min(ref_count // 5, 2)
+        return base + bonus
 
     def get_weekly_job_count(self):
         """Bu hafta açılan ilan sayısı"""
@@ -1135,6 +1137,71 @@ class JobPayment(models.Model):
 
     def __str__(self):
         return f"{self.job.title} - {self.amount}₺ - {self.get_status_display()}"
+
+
+class ReferralCode(models.Model):
+    """Her kullanıcıya ait benzersiz davet kodu"""
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='referral_code', verbose_name="Kullanıcı")
+    code = models.CharField(max_length=10, unique=True, verbose_name="Davet Kodu")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Davet Kodu"
+        verbose_name_plural = "Davet Kodları"
+
+    def __str__(self):
+        return f"{self.user.username} → {self.code}"
+
+    @classmethod
+    def get_or_create_for_user(cls, user):
+        """Kullanıcının davet kodunu döndür, yoksa üret."""
+        try:
+            return user.referral_code
+        except cls.DoesNotExist:
+            pass
+        while True:
+            code = secrets.token_urlsafe(6)[:8].upper()
+            if not cls.objects.filter(code=code).exists():
+                return cls.objects.create(user=user, code=code)
+
+
+class ReferralUse(models.Model):
+    """Davet bağlantısıyla kayıt olan her kullanıcı için bir kayıt"""
+    referrer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='referrals_made', verbose_name="Davet Eden")
+    referred = models.OneToOneField(User, on_delete=models.CASCADE, related_name='referred_by', verbose_name="Davet Edilen")
+    ip_address = models.GenericIPAddressField(verbose_name="IP Adresi")
+    created_at = models.DateTimeField(auto_now_add=True)
+    email_verified_at = models.DateTimeField(null=True, blank=True, verbose_name="E-posta Doğrulama Tarihi")
+    qualified_at = models.DateTimeField(null=True, blank=True, verbose_name="Koşul Sağlanma Tarihi")
+    rewarded = models.BooleanField(default=False, verbose_name="Ödüllendirildi")
+    flagged = models.BooleanField(default=False, verbose_name="Şüpheli (Ödülsüz)")
+    premium_days_awarded = models.PositiveIntegerField(default=0, verbose_name="Verilen Premium Gün")
+    reputation_awarded = models.PositiveIntegerField(default=0, verbose_name="Verilen Reputation")
+
+    class Meta:
+        verbose_name = "Davet Kullanımı"
+        verbose_name_plural = "Davet Kullanımları"
+
+    def __str__(self):
+        return f"{self.referrer.username} → {self.referred.username}"
+
+    @property
+    def status_display(self):
+        if self.flagged:
+            return "Şüpheli"
+        if self.rewarded:
+            return "Ödüllendirildi"
+        if self.qualified_at:
+            return "Bekliyor"
+        conditions = []
+        if not self.email_verified_at:
+            conditions.append("e-posta doğrulama")
+        if (timezone.now() - self.created_at).total_seconds() < 48 * 3600:
+            conditions.append("48 saat bekleme")
+        quiz_score = self.referred.quiz_scores.first()
+        if not quiz_score or quiz_score.total_points == 0:
+            conditions.append("quiz")
+        return "Bekliyor: " + ", ".join(conditions) if conditions else "Bekliyor"
 
 
 class SiteSettings(models.Model):
