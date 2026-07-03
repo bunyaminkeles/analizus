@@ -687,3 +687,20 @@ def delete_studyroom_files_on_room_delete(sender, instance, **kwargs):
     """Oda silinince tüm oda gönderilerindeki dosyaları temizle."""
     for post in instance.room_posts.exclude(file=''):
         _delete_storage_file(post.file)
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# REFERRAL ÖDÜL KONTROLÜ
+# ═══════════════════════════════════════════════════════════════════════════
+
+@receiver(user_logged_in)
+def check_referral_on_login(sender, request, user, **kwargs):
+    """Giriş yapan kullanıcının referral koşullarını kontrol et."""
+    try:
+        from forum.models import ReferralUse
+        from forum.services.referral_service import check_and_award_referral
+        referral = ReferralUse.objects.filter(referred=user, rewarded=False, flagged=False).first()
+        if referral:
+            check_and_award_referral(referral)
+    except Exception as e:
+        logger.error(f"Referral login kontrolü hatası: {e}")

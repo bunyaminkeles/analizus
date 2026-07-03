@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.utils.html import format_html
 from unfold.admin import ModelAdmin, TabularInline, StackedInline
-from .models import Section, Category, Topic, Post, Profile, ContactMessage, PrivateMessage, Badge, Skill, DailyTip, QuizQuestion, QuizScore, FreelanceJob, JobCategory, JobProposal, JobReview, UserQuizAttempt, DonationTier, Donation, JobPayment, TopicTag, SiteSettings, BlogCategory, BlogPost, BlogTag, SuccessStory, StudyRoom, ProjectRequest
+from .models import Section, Category, Topic, Post, Profile, ContactMessage, PrivateMessage, Badge, Skill, DailyTip, QuizQuestion, QuizScore, FreelanceJob, JobCategory, JobProposal, JobReview, UserQuizAttempt, DonationTier, Donation, JobPayment, TopicTag, SiteSettings, BlogCategory, BlogPost, BlogTag, SuccessStory, StudyRoom, ProjectRequest, ReferralCode, ReferralUse
 from .models import TeamMember
 
 
@@ -912,3 +912,19 @@ class TeamMemberAdmin(ModelAdmin):
     list_editable = ('order', 'is_active')
     search_fields = ('name', 'title', 'bio')
     ordering = ('order',)
+
+
+@admin.register(ReferralCode)
+class ReferralCodeAdmin(ModelAdmin):
+    list_display = ('user', 'code', 'created_at')
+    search_fields = ('user__username', 'code')
+    readonly_fields = ('code', 'created_at')
+
+
+@admin.register(ReferralUse)
+class ReferralUseAdmin(ModelAdmin):
+    list_display = ('referrer', 'referred', 'ip_address', 'created_at', 'rewarded', 'flagged', 'premium_days_awarded', 'qualified_at')
+    list_filter = ('rewarded', 'flagged')
+    search_fields = ('referrer__username', 'referred__username', 'ip_address')
+    readonly_fields = ('referrer', 'referred', 'ip_address', 'created_at', 'email_verified_at', 'qualified_at', 'premium_days_awarded', 'reputation_awarded')
+    ordering = ('-created_at',)
