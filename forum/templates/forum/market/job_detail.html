@@ -262,7 +262,7 @@
                 </div>
                 {% endif %}
 
-                {% if proposal.status == 'accepted' and request.user != job.owner %}
+                {% if proposal.status == 'accepted' and request.user != job.owner and request.user != proposal.expert %}
                 {% include 'forum/market/_review_section.html' %}
                 {% endif %}
                 {% endfor %}
@@ -273,7 +273,9 @@
             <div class="alert alert-info">
                 <strong>{{ proposal_count }} uzman teklif verdi.</strong> Teklif fiyatları yalnızca ilan sahibi ve teklif veren tarafından görüntülenir.
             </div>
+            {% if not accepted_proposal or request.user != accepted_proposal.expert %}
             {% include 'forum/market/_review_section.html' %}
+            {% endif %}
             {% endif %}
 
             <!-- Benzer İlanlar -->
@@ -367,6 +369,9 @@
                         {% endif %}
                     </div>
                 </div>
+                {% if user_proposal.status == 'accepted' %}
+                {% include 'forum/market/_review_section.html' %}
+                {% endif %}
                 {% elif is_expert and job.status == 'open' %}
                 <!-- Teklif Formu -->
                 <div class="card border-0 shadow-sm" style="background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(255, 255, 255, 0.08) !important;">

@@ -728,15 +728,16 @@ def job_detail(request, pk):
     # Review bilgileri
     reviews = job.reviews.filter(is_approved=True).select_related('reviewer', 'reviewed_user')
     can_review = False
+    own_review = None
     accepted_proposal = job.proposals.filter(status='accepted').first()
     if request.user.is_authenticated and accepted_proposal:
         # İlan sahibi veya kabul edilen uzman mı?
         is_owner = request.user == job.owner
         is_expert_accepted = request.user == accepted_proposal.expert
+        if is_owner or is_expert_accepted:
+            own_review = job.reviews.filter(reviewer=request.user).first()
         if (is_owner or is_expert_accepted) and job.status == 'in_progress':
-            # Daha önce review yapmış mı?
-            has_reviewed = job.reviews.filter(reviewer=request.user).exists()
-            can_review = not has_reviewed
+            can_review = own_review is None
 
     return render(request, 'forum/market/job_detail.html', {
         'job': job,
@@ -751,6 +752,7 @@ def job_detail(request, pk):
         'similar_jobs': similar_jobs,
         'reviews': reviews,
         'can_review': can_review,
+        'own_review': own_review,
         'accepted_proposal': accepted_proposal,
         'site_settings': site_settings,
     })
@@ -2390,6 +2392,20 @@ def dashboard_approve_review(request, pk):
     review = get_object_or_404(JobReview, pk=pk)
     review.is_approved = True
     review.save()
+
+    try:
+        bot_user = User.objects.get(username='AnalizBot')
+    except User.DoesNotExist:
+        bot_user = request.user
+    PrivateMessage.objects.create(
+        sender=bot_user,
+        receiver=review.reviewer,
+        message=(
+            f'Merhaba {review.reviewer.username},\n\n'
+            f'"{review.job.title}" projesi için yaptığınız değerlendirme onaylandı ve yayınlandı.'
+        )
+    )
+
     messages.success(request, f"{review.reviewer.username} değerlendirmesi onaylandı.")
     return redirect(request.META.get('HTTP_REFERER', reverse('admin:index')))
 
