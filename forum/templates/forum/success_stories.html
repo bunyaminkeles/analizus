@@ -20,7 +20,7 @@
             <p class="text-muted mb-0">Akademik zorlukları aşanların ilham veren deneyimleri</p>
         </div>
         {% if user.is_authenticated %}
-        <button class="btn btn-warning rounded-pill px-4 fw-bold" data-bs-toggle="modal" data-bs-target="#shareStoryModal">
+        <button class="btn btn-warning rounded-pill px-4 fw-bold" data-ax-toggle="modal" data-ax-target="#shareStoryModal">
             <i class="bi bi-plus-lg me-1"></i> Hikayeni Paylaş
         </button>
         {% endif %}
@@ -100,50 +100,48 @@
 
 <!-- Modal -->
 {% if user.is_authenticated %}
-<div class="modal fade" id="shareStoryModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content bg-dark border border-secondary">
-            <div class="modal-header border-secondary">
-                <h5 class="modal-title text-white"><i class="bi bi-pencil-square text-warning me-2"></i>Hikayeni Paylaş</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-            </div>
-            <form method="post">
-                {% csrf_token %}
-                {% if linked_job %}
-                <input type="hidden" name="job_id" value="{{ linked_job.pk }}">
-                {% endif %}
-                <div class="modal-body">
-                    {% if linked_job %}
-                    <div class="alert alert-info bg-info bg-opacity-10 border-info border-opacity-25 mb-3">
-                        <i class="bi bi-briefcase me-1"></i>
-                        <strong>{{ linked_job.title }}</strong> ilanı ile ilgili hikayenizi yazıyorsunuz.
-                    </div>
-                    {% endif %}
-                    <div class="mb-3">
-                        <label class="form-label text-white-50">{{ form.quote.label }}</label>
-                        {{ form.quote }}
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label text-white-50">{{ form.achievements_text.label }}</label>
-                        {{ form.achievements_text }}
-                        <div class="form-text text-muted">{{ form.achievements_text.help_text }}</div>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label text-white-50">{{ form.resources_text.label }}</label>
-                        {{ form.resources_text }}
-                    </div>
-                    <div class="form-text text-warning">
-                        <i class="bi bi-info-circle me-1"></i>Hikayeniz admin onayından sonra yayınlanacaktır.
-                    </div>
-                </div>
-                <div class="modal-footer border-secondary">
-                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">İptal</button>
-                    <button type="submit" class="btn btn-warning fw-bold">
-                        <i class="bi bi-send me-1"></i>Hikayeyi Gönder
-                    </button>
-                </div>
-            </form>
+<div class="ax-modal-backdrop" id="shareStoryModal" tabindex="-1" aria-hidden="true">
+    <div class="ax-modal">
+        <div class="ax-modal__header">
+            <h5 class="ax-modal__title"><i class="bi bi-pencil-square text-warning me-2"></i>Hikayeni Paylaş</h5>
+            <button type="button" class="ax-modal__close" data-ax-dismiss="modal">&times;</button>
         </div>
+        <form method="post">
+            {% csrf_token %}
+            {% if linked_job %}
+            <input type="hidden" name="job_id" value="{{ linked_job.pk }}">
+            {% endif %}
+            <div class="ax-modal__body">
+                {% if linked_job %}
+                <div class="alert alert-info bg-info bg-opacity-10 border-info border-opacity-25 mb-3">
+                    <i class="bi bi-briefcase me-1"></i>
+                    <strong>{{ linked_job.title }}</strong> ilanı ile ilgili hikayenizi yazıyorsunuz.
+                </div>
+                {% endif %}
+                <div class="mb-3">
+                    <label class="form-label text-white-50">{{ form.quote.label }}</label>
+                    {{ form.quote }}
+                </div>
+                <div class="mb-3">
+                    <label class="form-label text-white-50">{{ form.achievements_text.label }}</label>
+                    {{ form.achievements_text }}
+                    <div class="form-text text-muted">{{ form.achievements_text.help_text }}</div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label text-white-50">{{ form.resources_text.label }}</label>
+                    {{ form.resources_text }}
+                </div>
+                <div class="form-text text-warning">
+                    <i class="bi bi-info-circle me-1"></i>Hikayeniz admin onayından sonra yayınlanacaktır.
+                </div>
+            </div>
+            <div class="ax-modal__footer">
+                <button type="button" class="btn btn-outline-secondary" data-ax-dismiss="modal">İptal</button>
+                <button type="submit" class="btn btn-warning fw-bold">
+                    <i class="bi bi-send me-1"></i>Hikayeyi Gönder
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 {% endif %}
@@ -151,8 +149,7 @@
 {% if auto_open_modal %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    var modal = new bootstrap.Modal(document.getElementById('shareStoryModal'));
-    modal.show();
+    AxModal.open(document.getElementById('shareStoryModal'));
 });
 </script>
 {% endif %}

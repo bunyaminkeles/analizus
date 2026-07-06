@@ -89,7 +89,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/toolbar/prism-toolbar.min.css" rel="stylesheet" media="print" onload="this.media='all'">
 
     <!-- Modern Katman: Analizus Design System -->
-    <link rel="stylesheet" href="{% static 'css/base.css' %}?v=0100">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}?v=0101">
     <link rel="stylesheet" href="{% static 'css/navbar.css' %}?v=0103">
     <link rel="stylesheet" href="{% static 'css/footer.css' %}?v=0100">
     <link rel="stylesheet" href="{% static 'css/style.css' %}?v=2052">
@@ -275,7 +275,7 @@
 
                 <!-- Arama -->
                 <button class="site-nav__icon-btn" aria-label="Ara"
-                        data-bs-toggle="modal" data-bs-target="#searchModal">
+                        data-ax-toggle="modal" data-ax-target="#searchModal">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <circle cx="11" cy="11" r="8"/>
                         <line x1="21" y1="21" x2="16.65" y2="16.65"/>
@@ -436,76 +436,68 @@
 
         </nav>
     </aside>
-    <div class="modal fade" id="searchModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-body p-4">
-                    <form action="{% url 'search' %}" method="get">
-                        <div class="input-group">
-                            <input name="q" type="text" class="form-control form-control-lg border-0 shadow-none" placeholder="Akademik veri ara..." autofocus>
-                            <button class="btn btn-info px-4" type="submit"><i class="bi bi-search"></i></button>
-                        </div>
-                    </form>
-                </div>
+    <div class="ax-modal-backdrop" id="searchModal" tabindex="-1" aria-hidden="true">
+        <div class="ax-modal">
+            <div class="ax-modal__body">
+                <form action="{% url 'search' %}" method="get">
+                    <div class="input-group">
+                        <input name="q" type="text" class="form-control form-control-lg border-0 shadow-none" placeholder="Akademik veri ara..." autofocus>
+                        <button class="btn btn-info px-4" type="submit"><i class="bi bi-search"></i></button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 
     <!-- QUIZ MODAL -->
-    <div class="modal fade" id="quizModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content bg-dark border border-secondary shadow-lg">
-                <div class="modal-header border-secondary">
-                    <h5 class="modal-title text-white"><i class="bi bi-trophy-fill text-warning me-2"></i>İstatistik Arena</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+    <div class="ax-modal-backdrop" id="quizModal" tabindex="-1" aria-hidden="true">
+        <div class="ax-modal">
+            <div class="ax-modal__header">
+                <h5 class="ax-modal__title"><i class="bi bi-trophy-fill text-warning me-2"></i>İstatistik Arena</h5>
+                <button type="button" class="ax-modal__close" data-ax-dismiss="modal">&times;</button>
+            </div>
+            <div class="ax-modal__body" id="quizModalBody">
+                <!-- Soru buraya yüklenecek -->
+                <div class="text-center py-4">
+                    <div class="spinner-border text-info" role="status"></div>
+                    <p class="mt-2 text-muted">Soru yükleniyor...</p>
                 </div>
-                <div class="modal-body p-4" id="quizModalBody">
-                    <!-- Soru buraya yüklenecek -->
-                    <div class="text-center py-4">
-                        <div class="spinner-border text-info" role="status"></div>
-                        <p class="mt-2 text-muted">Soru yükleniyor...</p>
-                    </div>
-                </div>
-                <div class="modal-footer border-secondary justify-content-between">
-                    <span class="text-muted small" id="quizScoreDisplay"></span>
-                    <button type="button" class="btn btn-outline-light btn-sm" onclick="loadQuizQuestion()">Sonraki Soru <i class="bi bi-arrow-right"></i></button>
-                </div>
+            </div>
+            <div class="ax-modal__footer" style="justify-content: space-between;">
+                <span class="text-muted small" id="quizScoreDisplay"></span>
+                <button type="button" class="btn btn-outline-light btn-sm" onclick="loadQuizQuestion()">Sonraki Soru <i class="bi bi-arrow-right"></i></button>
             </div>
         </div>
     </div>
 
     <!-- PROFILE SUMMARY MODAL -->
-    <div class="modal fade" id="profileModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content bg-dark border border-secondary shadow-lg" style="background: rgba(15, 23, 42, 0.95);">
-                <div class="modal-header border-secondary">
-                    <h5 class="modal-title text-white"><i class="bi bi-person-lines-fill text-info me-2"></i>Kullanıcı Kartı</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body p-4" id="profileModalBody">
-                    <div class="text-center py-4"><div class="spinner-border text-info"></div></div>
-                </div>
+    <div class="ax-modal-backdrop" id="profileModal" tabindex="-1" aria-hidden="true">
+        <div class="ax-modal">
+            <div class="ax-modal__header">
+                <h5 class="ax-modal__title"><i class="bi bi-person-lines-fill text-info me-2"></i>Kullanıcı Kartı</h5>
+                <button type="button" class="ax-modal__close" data-ax-dismiss="modal">&times;</button>
+            </div>
+            <div class="ax-modal__body" id="profileModalBody">
+                <div class="text-center py-4"><div class="spinner-border text-info"></div></div>
             </div>
         </div>
     </div>
 
     <!-- SUCCESS STORY MODAL -->
-    <div class="modal fade" id="storyModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content bg-dark border border-secondary shadow-lg" style="background: linear-gradient(145deg, #1e293b, #0f172a);">
-                <div class="modal-header border-secondary">
-                    <h5 class="modal-title text-warning"><i class="bi bi-star-fill me-2"></i>Haftanın Başarı Hikayesi</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+    <div class="ax-modal-backdrop" id="storyModal" tabindex="-1" aria-hidden="true">
+        <div class="ax-modal ax-modal--lg">
+            <div class="ax-modal__header">
+                <h5 class="ax-modal__title" style="color: var(--ax-accent-warning);"><i class="bi bi-star-fill me-2"></i>Haftanın Başarı Hikayesi</h5>
+                <button type="button" class="ax-modal__close" data-ax-dismiss="modal">&times;</button>
+            </div>
+            <div class="ax-modal__body" id="storyModalBody" style="padding: 0;">
+                <div class="text-center py-5">
+                    <div class="spinner-border text-warning" role="status"></div>
                 </div>
-                <div class="modal-body p-0" id="storyModalBody">
-                    <div class="text-center py-5">
-                        <div class="spinner-border text-warning" role="status"></div>
-                    </div>
-                </div>
-                <div class="modal-footer border-secondary bg-dark bg-opacity-50">
-                    <a href="{% url 'success_stories' %}" class="btn btn-outline-warning btn-sm">Tüm Hikayeler</a>
-                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Kapat</button>
-                </div>
+            </div>
+            <div class="ax-modal__footer">
+                <a href="{% url 'success_stories' %}" class="btn btn-outline-warning btn-sm">Tüm Hikayeler</a>
+                <button type="button" class="btn btn-secondary btn-sm" data-ax-dismiss="modal">Kapat</button>
             </div>
         </div>
     </div>
@@ -626,6 +618,8 @@
     <!-- Modern Katman: Navbar JS + Main -->
     <script src="{% static 'js/navbar.js' %}?v=0100" defer></script>
     <script src="{% static 'js/main.js' %}?v=0100" defer></script>
+    <script src="{% static 'js/ax-modal.js' %}?v=0100" defer></script>
+    <script src="{% static 'js/ax-dropdown.js' %}?v=0100" defer></script>
 
     {% block extra_js %}
         {% if user.is_authenticated %}
@@ -635,11 +629,11 @@
         <script src="{% static 'js/widget_collapse.js' %}?v=2051"></script>
         <script>
             // QUIZ FUNCTIONS
-            const quizModal = new bootstrap.Modal(document.getElementById('quizModal'));
+            const quizModal = document.getElementById('quizModal');
             let currentQuestionId = null;
 
             function openQuizModal() {
-                quizModal.show();
+                AxModal.open(quizModal);
                 loadQuizQuestion();
             }
 
@@ -724,10 +718,10 @@
             }
 
             // PROFILE MODAL FUNCTIONS
-            const profileModal = new bootstrap.Modal(document.getElementById('profileModal'));
+            const profileModal = document.getElementById('profileModal');
 
             function openProfileModal(username) {
-                profileModal.show();
+                AxModal.open(profileModal);
                 const body = document.getElementById('profileModalBody');
                 body.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-info"></div></div>';
                 
@@ -786,10 +780,10 @@
             }
 
             // STORY FUNCTIONS
-            const storyModal = new bootstrap.Modal(document.getElementById('storyModal'));
+            const storyModal = document.getElementById('storyModal');
 
             function openStoryModal() {
-                storyModal.show();
+                AxModal.open(storyModal);
                 const body = document.getElementById('storyModalBody');
                 
                 fetch('{% url "api_get_featured_story" %}')
