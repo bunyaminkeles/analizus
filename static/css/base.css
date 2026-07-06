@@ -354,7 +354,335 @@
 }
 
 /* -------------------------------------------------------------
-   7. RESPONSIVE UTILITIES
+   7. ALERT COMPONENT — Bootstrap .alert ile çakışmaz
+   ------------------------------------------------------------- */
+.ax-alert {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--ax-space-3);
+    padding: var(--ax-space-4) var(--ax-space-5);
+    border: 1px solid transparent;
+    border-left-width: 4px;
+    border-radius: var(--ax-radius-md);
+    font-size: var(--ax-text-sm);
+    line-height: var(--ax-leading-normal);
+    color: var(--ax-text-primary);
+}
+
+.ax-alert__icon {
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+.ax-alert__body {
+    flex: 1;
+}
+
+.ax-alert__title {
+    font-weight: var(--ax-font-semibold);
+    margin: 0 0 var(--ax-space-1);
+}
+
+.ax-alert__close {
+    flex-shrink: 0;
+    background: none;
+    border: none;
+    padding: 0;
+    color: inherit;
+    opacity: 0.6;
+    cursor: pointer;
+    line-height: 1;
+    transition: opacity var(--ax-transition-fast);
+}
+.ax-alert__close:hover {
+    opacity: 1;
+}
+
+.ax-alert--success {
+    background-color: rgba(16, 185, 129, 0.1);
+    border-color: var(--ax-accent-secondary);
+}
+.ax-alert--danger {
+    background-color: rgba(239, 68, 68, 0.1);
+    border-color: var(--ax-accent-danger);
+}
+.ax-alert--warning {
+    background-color: rgba(245, 158, 11, 0.1);
+    border-color: var(--ax-accent-warning);
+}
+.ax-alert--info {
+    background-color: rgba(99, 102, 241, 0.1);
+    border-color: var(--ax-accent-primary);
+}
+
+/* -------------------------------------------------------------
+   8. MODAL COMPONENT — Bootstrap .modal ile çakışmaz
+   Açma/kapama sınıfı: .is-open (bkz. Faz 2 — vanilla JS controller)
+   ------------------------------------------------------------- */
+.ax-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--ax-space-4);
+    background-color: rgba(0, 0, 0, 0.6);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    z-index: var(--ax-z-modal);
+    transition: opacity var(--ax-transition-normal),
+                visibility var(--ax-transition-normal);
+}
+.ax-modal-backdrop.is-open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.ax-modal {
+    width: 100%;
+    max-width: 480px;
+    max-height: calc(100vh - var(--ax-space-8));
+    display: flex;
+    flex-direction: column;
+    background-color: var(--ax-bg-secondary);
+    border: 1px solid var(--ax-border-default);
+    border-radius: var(--ax-radius-lg);
+    box-shadow: var(--ax-shadow-xl);
+    transform: translateY(-16px) scale(0.98);
+    transition: transform var(--ax-transition-normal);
+}
+.ax-modal-backdrop.is-open .ax-modal {
+    transform: translateY(0) scale(1);
+}
+
+.ax-modal--lg { max-width: 720px; }
+.ax-modal--sm { max-width: 360px; }
+
+.ax-modal__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ax-space-3);
+    padding: var(--ax-space-5) var(--ax-space-6);
+    border-bottom: 1px solid var(--ax-border-default);
+}
+
+.ax-modal__title {
+    font-size: var(--ax-text-lg);
+    font-weight: var(--ax-font-semibold);
+    color: var(--ax-text-primary);
+    margin: 0;
+}
+
+.ax-modal__close {
+    flex-shrink: 0;
+    background: none;
+    border: none;
+    padding: var(--ax-space-1);
+    color: var(--ax-text-secondary);
+    cursor: pointer;
+    line-height: 1;
+    border-radius: var(--ax-radius-sm);
+    transition: color var(--ax-transition-fast),
+                background-color var(--ax-transition-fast);
+}
+.ax-modal__close:hover {
+    color: var(--ax-text-primary);
+    background-color: var(--ax-bg-tertiary);
+}
+
+.ax-modal__body {
+    padding: var(--ax-space-6);
+    overflow-y: auto;
+    color: var(--ax-text-secondary);
+}
+
+.ax-modal__footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--ax-space-3);
+    padding: var(--ax-space-5) var(--ax-space-6);
+    border-top: 1px solid var(--ax-border-default);
+}
+
+/* -------------------------------------------------------------
+   9. DROPDOWN COMPONENT — Bootstrap .dropdown ile çakışmaz
+   site-nav__dropdown* (navbar.css) ile aynı görsel dil, genel kullanım için.
+   Açma/kapama sınıfı: .is-open (bkz. Faz 2 — vanilla JS controller)
+   ------------------------------------------------------------- */
+.ax-dropdown-wrap {
+    position: relative;
+}
+
+.ax-dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    min-width: 220px;
+    background-color: var(--ax-bg-secondary);
+    border: 1px solid var(--ax-border-default);
+    border-radius: var(--ax-radius-lg);
+    box-shadow: var(--ax-shadow-lg);
+    padding: var(--ax-space-2);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+    transition: opacity var(--ax-transition-normal),
+                visibility var(--ax-transition-normal),
+                transform var(--ax-transition-normal);
+    z-index: var(--ax-z-dropdown);
+}
+.ax-dropdown--end {
+    left: auto;
+    right: 0;
+}
+.ax-dropdown-wrap.is-open .ax-dropdown {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.ax-dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: var(--ax-space-2);
+    width: 100%;
+    padding: var(--ax-space-2) var(--ax-space-3);
+    font-size: var(--ax-text-sm);
+    font-weight: var(--ax-font-normal);
+    font-family: var(--ax-font-family);
+    color: var(--ax-text-secondary);
+    text-decoration: none;
+    border-radius: var(--ax-radius-md);
+    border: none;
+    background: none;
+    cursor: pointer;
+    text-align: left;
+    white-space: nowrap;
+    transition: color var(--ax-transition-fast),
+                background-color var(--ax-transition-fast);
+}
+.ax-dropdown-item:hover {
+    color: var(--ax-text-primary);
+    background-color: var(--ax-bg-tertiary);
+}
+.ax-dropdown-item--danger { color: var(--ax-accent-danger); }
+.ax-dropdown-item--danger:hover {
+    background-color: rgba(239, 68, 68, 0.1);
+    color: var(--ax-accent-danger);
+}
+
+.ax-dropdown-divider {
+    height: 1px;
+    background-color: var(--ax-border-default);
+    margin: var(--ax-space-2) 0;
+}
+.ax-dropdown-label {
+    display: block;
+    padding: var(--ax-space-1) var(--ax-space-3);
+    font-size: var(--ax-text-xs);
+    font-weight: var(--ax-font-semibold);
+    color: var(--ax-text-muted);
+    text-transform: uppercase;
+}
+
+/* -------------------------------------------------------------
+   10. FORM CONTROLS — Bootstrap .form-control/.form-select ile çakışmaz
+   ------------------------------------------------------------- */
+.ax-form-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ax-space-2);
+    margin-bottom: var(--ax-space-4);
+}
+
+.ax-form-label {
+    font-size: var(--ax-text-sm);
+    font-weight: var(--ax-font-medium);
+    color: var(--ax-text-primary);
+}
+
+.ax-form-control,
+.ax-form-select {
+    width: 100%;
+    padding: var(--ax-space-2) var(--ax-space-3);
+    font-family: var(--ax-font-family);
+    font-size: var(--ax-text-sm);
+    line-height: var(--ax-leading-normal);
+    color: var(--ax-text-primary);
+    background-color: var(--ax-bg-tertiary);
+    border: 1px solid var(--ax-border-default);
+    border-radius: var(--ax-radius-md);
+    transition: border-color var(--ax-transition-fast),
+                box-shadow var(--ax-transition-fast);
+}
+.ax-form-control::placeholder {
+    color: var(--ax-text-muted);
+}
+.ax-form-control:focus,
+.ax-form-select:focus {
+    outline: none;
+    border-color: var(--ax-accent-primary);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+}
+.ax-form-control:disabled,
+.ax-form-select:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+.ax-form-control--error,
+.ax-form-select--error {
+    border-color: var(--ax-accent-danger);
+}
+.ax-form-control--error:focus,
+.ax-form-select--error:focus {
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.25);
+}
+
+textarea.ax-form-control {
+    min-height: 96px;
+    resize: vertical;
+}
+
+.ax-form-select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath fill='%2394a3b8' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right var(--ax-space-3) center;
+    padding-right: var(--ax-space-8);
+}
+
+.ax-form-hint {
+    font-size: var(--ax-text-xs);
+    color: var(--ax-text-muted);
+}
+.ax-form-hint--error {
+    color: var(--ax-accent-danger);
+}
+
+.ax-form-check {
+    display: flex;
+    align-items: center;
+    gap: var(--ax-space-2);
+}
+.ax-form-check-input {
+    width: 1rem;
+    height: 1rem;
+    accent-color: var(--ax-accent-primary);
+    background-color: var(--ax-bg-tertiary);
+    cursor: pointer;
+}
+.ax-form-check-label {
+    font-size: var(--ax-text-sm);
+    color: var(--ax-text-primary);
+    cursor: pointer;
+}
+
+/* -------------------------------------------------------------
+   11. RESPONSIVE UTILITIES
    Breakpoints: sm 640px | md 768px | lg 1024px | xl 1280px
    ------------------------------------------------------------- */
 @media (min-width: 640px) {
