@@ -1,5 +1,16 @@
 {% load static %}
 {% load i18n %}
+{% if features.ai_assistant or WHATSAPP_NUMBER %}
+<style>
+/* Sağ altta sabit duran AI Asistan / WhatsApp butonları sayfa sonuna
+   kaydırıldığında footer'ın "Bize Destek Ol" kolonunun üzerine biniyor
+   (position:fixed vs. normal akış çakışması) — alt boşluğu artırarak
+   footer içeriğini floating butonların üstünde tutuyoruz. */
+.ax-footer {
+    padding-bottom: {% if features.ai_assistant and WHATSAPP_NUMBER %}170px{% else %}110px{% endif %};
+}
+</style>
+{% endif %}
 <footer class="ax-footer">
     <div class="container">
         <div class="row g-4">
