@@ -230,6 +230,9 @@
                         <a href="{% url 'ai_assistant' %}" class="site-nav__dropdown-item" role="menuitem">AI Asistan</a>
                         {% endif %}
                         <a href="{% url 'studyroom_list' %}" class="site-nav__dropdown-item" role="menuitem">Çalışma Odaları</a>
+                        {% if features.transcript %}
+                        <a href="{% url 'transcript:form' %}" class="site-nav__dropdown-item" role="menuitem">YouTube Transcript İndir</a>
+                        {% endif %}
                     </div>
                 </div>
 
@@ -259,12 +262,11 @@
                             <i class="bi bi-chat-square-text-fill me-1" style="color:#818cf8;"></i> Forum
                         </a>
                         <div class="site-nav__dropdown-divider"></div>
-                        <a href="{% url 'neden_biz' %}" class="site-nav__dropdown-item" role="menuitem">Neden Analizus?</a>
                         {% if features.blog %}
                         <a href="{% url 'blog_list' %}" class="site-nav__dropdown-item" role="menuitem">Blog</a>
                         {% endif %}
                         <a href="{% url 'about' %}" class="site-nav__dropdown-item" role="menuitem">Hakkımızda</a>
-                        <a href="{% url 'about' %}#iletisim" class="site-nav__dropdown-item" role="menuitem">İletişim</a>
+                        <a href="{% url 'contact' %}" class="site-nav__dropdown-item" role="menuitem">İletişim</a>
                     </div>
                 </div>
 
@@ -405,10 +407,9 @@
                 </button>
                 <div class="nav-drawer__accordion-body" id="mob-kurumsal">
                     <a href="{% url 'forum_index' %}" class="nav-drawer__link">Forum</a>
-                    <a href="{% url 'neden_biz' %}" class="nav-drawer__link">Neden Analizus?</a>
                     {% if features.blog %}<a href="{% url 'blog_list' %}" class="nav-drawer__link">Blog</a>{% endif %}
                     <a href="{% url 'about' %}" class="nav-drawer__link">Hakkımızda</a>
-                    <a href="{% url 'about' %}#iletisim" class="nav-drawer__link">İletişim</a>
+                    <a href="{% url 'contact' %}" class="nav-drawer__link">İletişim</a>
                 </div>
             </div>
 

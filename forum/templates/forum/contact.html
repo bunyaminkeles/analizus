@@ -1,88 +1,298 @@
 {% extends 'base.html' %}
 
+{% block title %}İletişim — Analizus{% endblock %}
+{% block meta_description %}Analizus ekibiyle iletişime geçin. İstatistik analizi, akademik tarama, bibliyometrik analiz ve Hizmetler Pazarı hakkındaki sorularınız için e-posta, WhatsApp veya form ile bize ulaşın.{% endblock %}
+
 {% block main_content_classes %}col-lg-12{% endblock %}
 {% block right_sidebar %}{% endblock %}
-{% block meta_description %}Analizus ekibiyle iletişime geçin. Teknik destek, iş birliği önerileri ve platform hakkındaki sorularınız için e-posta veya form ile bize ulaşın.{% endblock %}
 
 {% block content %}
-<div class="container py-4">
+<div class="container py-5" style="max-width: 980px;">
+
     <div class="text-center mb-5">
-        <h1 class="display-5 fw-bold text-white">Ücretsiz Fiyat ve Metodoloji Teklifi Alın</h1>
-        <p class="text-muted">Projenizin detaylarını paylaşın, uzmanlarımız size özel metodoloji ve net fiyat teklifini sunsun.</p>
+        <h1 class="fw-bold text-white mb-2" style="font-size: 2.25rem;">Bize Ulaşın</h1>
+        <p class="text-secondary mx-auto" style="max-width: 640px; line-height: 1.6;">
+            İstatistik analizi, akademik tarama (YÖK Tez, OpenAlex, TR Dizin), bibliyometrik analiz ya da
+            Hizmetler Pazarı üzerinden uzman desteği almak istiyorsanız; sorunuzu, proje kapsamınızı veya
+            işbirliği teklifinizi aşağıdaki formdan iletin. Ekibimiz mesajınızı inceleyip en kısa sürede
+            size dönüş yapacaktır.
+        </p>
     </div>
 
     <div class="row g-4">
-        
-        <div class="col-md-5">
-            <div class="p-4 h-100" style="background: rgba(21, 32, 43, 0.6); border: 1px solid rgba(255,255,255,0.1); border-radius: 15px;">
-                <h3 class="text-info mb-4">Hızlı Erişim</h3>
-                
-                <div class="d-flex align-items-start mb-4">
-                    <div class="fs-3 text-info me-3"><i class="bi bi-envelope-at"></i></div>
-                    <div>
-                        <h5 class="text-white mb-1">E-posta</h5>
-                        <p class="text-muted mb-0">info@analizus.com</p>
-                    </div>
-                </div>
 
-                <div class="d-flex align-items-start mb-4">
-                    <div class="fs-3 text-info me-3"><i class="bi bi-geo-alt"></i></div>
-                    <div>
-                        <h5 class="text-white mb-1">Merkez</h5>
-                        <p class="text-muted mb-0">Dijital Akademi Kampüsü</p>
-                        <p class="text-muted small">Vizyon 2050 Kuleleri</p>
-                    </div>
+        <!-- SOL: İletişim Kanalları -->
+        <div class="col-lg-5">
+            <a href="mailto:info@analizus.com" class="ax-contact-info-card">
+                <div class="ax-contact-info-icon ax-contact-info-icon--primary">
+                    <i class="bi bi-envelope-at"></i>
                 </div>
+                <h3 class="ax-contact-info-title">E-posta</h3>
+                <span class="ax-contact-info-value">info@analizus.com</span>
+            </a>
 
-                <hr class="border-secondary my-4">
-                
-                <!-- Güven Metni (Gemini Görev 7) -->
-                <div class="p-3 rounded mt-4" style="background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.2);">
-                    <h5 class="text-success mb-2" style="font-size: 1.05rem;"><i class="bi bi-shield-lock-fill me-2"></i>Verileriniz Bizimle Güvende</h5>
-                    <p class="text-light small mb-0" style="line-height: 1.6;">
-                        Tüm veri dosyalarınız şifreli sunucularda saklanır ve analiz tamamlandıktan sonra tamamen silinir. 
-                        %100 KVKK ve Akademik Etik Kuralları çerçevesinde hareket ediyor, hiçbir veriyi üçüncü şahıslarla paylaşmıyoruz.
-                    </p>
+            {% if WHATSAPP_NUMBER %}
+            <a href="https://wa.me/{{ WHATSAPP_NUMBER }}?text=Merhaba%2C%20Analizus%20hakk%C4%B1nda%20bilgi%20almak%20istiyorum." target="_blank" rel="noopener" class="ax-contact-info-card">
+                <div class="ax-contact-info-icon ax-contact-info-icon--secondary">
+                    <i class="bi bi-whatsapp"></i>
                 </div>
-            </div>
+                <h3 class="ax-contact-info-title">WhatsApp</h3>
+                <span class="ax-contact-info-value">Hızlı mesaj gönder</span>
+            </a>
+            {% endif %}
         </div>
 
-        <div class="col-md-7">
-            <div class="p-4" style="background: rgba(21, 32, 43, 0.6); border: 1px solid rgba(255,255,255,0.1); border-radius: 15px;">
-                <form method="POST">
+        <!-- SAĞ: İletişim Formu -->
+        <div class="col-lg-7">
+            <div class="ax-contact-card">
+                <form method="POST" action="{% url 'contact' %}">
                     {% csrf_token %}
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label class="form-label text-info">Adınız Soyadınız *</label>
-                            <input type="text" name="name" class="form-control bg-dark text-white border-secondary" placeholder="Örn: Dr. Ahmet Yılmaz" required>
+                            <label class="ax-contact-label">Adınız Soyadınız</label>
+                            <input type="text" name="name" class="ax-contact-input" required>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label class="form-label text-info">E-posta Adresiniz *</label>
-                            <input type="email" name="email" class="form-control bg-dark text-white border-secondary" placeholder="iletisim@akademi.edu.tr" required>
+                            <label class="ax-contact-label">E-posta</label>
+                            <input type="email" name="email" class="ax-contact-input" required>
                         </div>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label text-info">Araştırma / Veri Türü *</label>
-                        <select name="subject" class="form-select bg-dark text-white border-secondary" required>
+                        <label class="ax-contact-label">Konu Türü</label>
+                        <select name="subject" class="ax-contact-select" required>
                             <option value="">Seçiniz...</option>
-                            <option value="Anket Verisi (SPSS/AMOS)">Anket Verisi (SPSS/AMOS)</option>
-                            <option value="Zaman Serisi / Panel Veri">Zaman Serisi / Panel Veri</option>
-                            <option value="Nitel / Mülakat Verisi (MAXQDA)">Nitel / Mülakat Verisi (MAXQDA vb.)</option>
-                            <option value="Diğer">Diğer / Karışık</option>
+                            <option value="İstatistik Analiz Talebi">İstatistik Analiz Talebi</option>
+                            <option value="Akademik Tarama / Bibliometri">Akademik Tarama / Bibliometri</option>
+                            <option value="Hizmetler Pazarı / Uzman İşbirliği">Hizmetler Pazarı / Uzman İşbirliği</option>
+                            <option value="Teknik Destek">Teknik Destek</option>
+                            <option value="Diğer">Diğer</option>
                         </select>
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label text-info">Talep Edilen Analiz ve Detaylar *</label>
-                        <textarea name="message" rows="5" class="form-control bg-dark text-white border-secondary" placeholder="Örn: Hipotez testleri yapılacak, anket verisi için Cronbach Alpha ve faktör analizi istiyorum. Tahmini bütçe ve süre ne olur?" required></textarea>
+                        <label class="ax-contact-label">Mesajınız</label>
+                        <textarea name="message" rows="5" class="ax-contact-textarea" required></textarea>
                     </div>
 
-                    <button type="submit" class="btn btn-info w-100 py-2 fw-bold"><i class="bi bi-send me-2"></i>Teklif İste</button>
+                    <div class="ax-contact-consent mb-3">
+                        <input type="checkbox" id="kvkk-onay" required>
+                        <label for="kvkk-onay">
+                            <a href="{% url 'gizlilik_politikasi' %}" target="_blank" rel="noopener">KVKK Aydınlatma Metni'ni</a> okudum, kabul ediyorum.
+                        </label>
+                    </div>
+
+                    <button type="submit" class="ax-contact-btn">
+                        <i class="bi bi-send me-2"></i>Gönder
+                    </button>
                 </form>
             </div>
         </div>
 
     </div>
+
+    {% if not user.is_authenticated %}
+    <div class="text-center mt-4">
+        <p class="text-secondary small mb-2">Topluluğumuza katılın</p>
+        <a href="{% url 'register' %}" class="btn btn-outline-primary rounded-pill px-4">
+            <i class="bi bi-person-plus me-2"></i>Kayıt Ol
+        </a>
+    </div>
+    {% endif %}
+
+    <style>
+    .ax-contact-info-card {
+        position: relative;
+        display: block;
+        padding: var(--ax-space-6) var(--ax-space-5);
+        border-radius: var(--ax-radius-xl);
+        background: var(--ax-bg-secondary);
+        border: 1px solid var(--ax-border-default);
+        overflow: hidden;
+        isolation: isolate;
+        margin-bottom: var(--ax-space-4);
+        text-decoration: none;
+        cursor: pointer;
+        transition: transform var(--ax-transition-fast), border-color var(--ax-transition-fast), box-shadow var(--ax-transition-fast);
+    }
+    .ax-contact-info-card:hover {
+        transform: translateY(-3px);
+        border-color: var(--ax-accent-primary);
+        box-shadow: 0 12px 28px rgba(99, 102, 241, 0.18);
+    }
+    .ax-contact-info-card::before {
+        content: "";
+        position: absolute;
+        width: 160px;
+        height: 160px;
+        border-radius: 50%;
+        filter: blur(50px);
+        top: -60px;
+        left: -40px;
+        z-index: -1;
+        opacity: 0.25;
+        transition: opacity var(--ax-transition-fast);
+    }
+    .ax-contact-info-card:hover::before { opacity: 0.4; }
+    .ax-contact-info-card:has(.ax-contact-info-icon--primary)::before { background: var(--ax-accent-primary); }
+    .ax-contact-info-card:has(.ax-contact-info-icon--secondary)::before { background: var(--ax-accent-secondary); }
+    .ax-contact-info-card:has(.ax-contact-info-icon--secondary):hover {
+        border-color: var(--ax-accent-secondary);
+        box-shadow: 0 12px 28px rgba(16, 185, 129, 0.18);
+    }
+
+    .ax-contact-info-icon {
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+        margin-bottom: var(--ax-space-3);
+    }
+    .ax-contact-info-icon--primary {
+        background: rgba(99, 102, 241, 0.14);
+        color: var(--ax-accent-primary);
+    }
+    .ax-contact-info-icon--secondary {
+        background: rgba(16, 185, 129, 0.14);
+        color: var(--ax-accent-secondary);
+    }
+
+    .ax-contact-info-title {
+        font-size: var(--ax-text-base);
+        font-weight: var(--ax-font-medium);
+        color: var(--ax-text-primary);
+        margin-bottom: var(--ax-space-1);
+    }
+    .ax-contact-info-value {
+        display: inline-block;
+        font-size: var(--ax-text-sm);
+        color: var(--ax-text-muted);
+        text-decoration: none;
+        transition: color var(--ax-transition-fast);
+    }
+    .ax-contact-info-value:hover {
+        color: var(--ax-accent-primary-hover);
+    }
+
+    .ax-contact-card {
+        position: relative;
+        padding: var(--ax-space-6);
+        border-radius: var(--ax-radius-xl);
+        background: var(--ax-bg-secondary);
+        border: 1px solid var(--ax-border-default);
+        overflow: hidden;
+        isolation: isolate;
+        height: 100%;
+    }
+    .ax-contact-card::before,
+    .ax-contact-card::after {
+        content: "";
+        position: absolute;
+        width: 220px;
+        height: 220px;
+        border-radius: 50%;
+        filter: blur(60px);
+        z-index: -1;
+        opacity: 0.25;
+    }
+    .ax-contact-card::before {
+        background: var(--ax-accent-primary);
+        top: -80px;
+        right: -60px;
+    }
+    .ax-contact-card::after {
+        background: var(--ax-accent-secondary);
+        bottom: -90px;
+        left: -60px;
+    }
+
+    .ax-contact-label {
+        display: block;
+        font-size: var(--ax-text-sm);
+        font-weight: var(--ax-font-medium);
+        color: var(--ax-accent-primary-hover);
+        margin-bottom: var(--ax-space-2);
+    }
+
+    .ax-contact-consent {
+        display: flex;
+        align-items: flex-start;
+        gap: var(--ax-space-2);
+    }
+    .ax-contact-consent input[type="checkbox"] {
+        width: 1rem;
+        height: 1rem;
+        margin-top: 3px;
+        accent-color: var(--ax-accent-primary);
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+    .ax-contact-consent label {
+        font-size: var(--ax-text-sm);
+        color: var(--ax-text-muted);
+        cursor: pointer;
+    }
+    .ax-contact-consent label a {
+        color: var(--ax-accent-primary-hover);
+    }
+
+    .ax-contact-input,
+    .ax-contact-select,
+    .ax-contact-textarea {
+        width: 100%;
+        padding: var(--ax-space-3) var(--ax-space-5);
+        font-family: var(--ax-font-family);
+        font-size: var(--ax-text-sm);
+        color: var(--ax-text-primary);
+        background-color: var(--ax-bg-tertiary);
+        border: 1px solid var(--ax-border-default);
+        transition: border-color var(--ax-transition-fast), box-shadow var(--ax-transition-fast);
+    }
+    .ax-contact-input,
+    .ax-contact-select {
+        border-radius: var(--ax-radius-full);
+    }
+    .ax-contact-textarea {
+        border-radius: var(--ax-radius-xl);
+        resize: vertical;
+        min-height: 120px;
+    }
+    .ax-contact-select {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath fill='%2394a3b8' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right var(--ax-space-5) center;
+        padding-right: var(--ax-space-8);
+    }
+    .ax-contact-input:focus,
+    .ax-contact-select:focus,
+    .ax-contact-textarea:focus {
+        outline: none;
+        border-color: var(--ax-accent-primary);
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.25);
+    }
+
+    .ax-contact-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        padding: var(--ax-space-3) var(--ax-space-5);
+        border-radius: var(--ax-radius-full);
+        border: none;
+        font-weight: var(--ax-font-medium);
+        color: #ffffff;
+        background: linear-gradient(135deg, var(--ax-accent-primary), var(--ax-accent-primary-hover));
+        cursor: pointer;
+        transition: transform var(--ax-transition-fast), box-shadow var(--ax-transition-fast);
+    }
+    .ax-contact-btn:hover {
+        transform: scale(1.02);
+        box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3);
+    }
+    </style>
 </div>
 {% endblock %}

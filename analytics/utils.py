@@ -59,8 +59,6 @@ def resolve_tab_name(path: str) -> str:
         return 'Test Rehberi'
     if p.startswith('/ai-asistan'):
         return 'AI Asistan'
-    if p.startswith('/neden-biz'):
-        return 'Neden Biz?'
     if p.startswith(('/quiz', '/arena')):
         return 'İstatistik Arenası'
     if p.startswith(('/forum', '/konu', '/b/')):

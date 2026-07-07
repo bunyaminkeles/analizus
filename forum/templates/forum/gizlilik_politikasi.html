@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block title %}KVKK Aydınlatma Metni ve Gizlilik Politikası — Analizus{% endblock %}
+{% block meta_description %}Analizus'ta kişisel verilerinizin hangi amaçla toplandığı, nasıl işlendiği ve KVKK kapsamındaki haklarınız hakkında aydınlatma metni.{% endblock %}
+
+{% block main_content_classes %}col-lg-12{% endblock %}
+{% block right_sidebar %}{% endblock %}
+
+{% block content %}
+<div class="container py-5" style="max-width: 820px;">
+
+    <h1 class="fw-bold text-white mb-2" style="font-size: 1.9rem;">KVKK Aydınlatma Metni ve Gizlilik Politikası</h1>
+    <p class="text-secondary mb-4">Son güncelleme: {% now "d.m.Y" %}</p>
+
+    <div class="rounded-3 p-3 mb-4 d-flex gap-2 align-items-start" style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3);">
+        <i class="bi bi-exclamation-triangle-fill" style="color: var(--ax-accent-warning); font-size: 1.1rem; flex-shrink: 0; margin-top: 2px;"></i>
+        <p class="text-light small mb-0" style="line-height: 1.6;">
+            Bu metin, sitede toplanan verilere dayanan <strong>taslak</strong> bir KVKK aydınlatma metnidir.
+            Yayına alınmadan önce bir hukuk danışmanı tarafından gözden geçirilmesi ve Analizus'un güncel
+            veri işleme süreçlerine göre teyit edilmesi gerekir; kesin yasal tavsiye yerine geçmez.
+        </p>
+    </div>
+
+    <div class="text-light" style="line-height: 1.8;">
+
+        <h2 class="text-white mt-4 mb-2" style="font-size: 1.2rem;">1. Veri Sorumlusu</h2>
+        <p class="text-secondary">
+            Analizus ("Platform"), 6698 sayılı Kişisel Verilerin Korunması Kanunu ("KVKK") kapsamında
+            veri sorumlusu sıfatıyla, aşağıda açıklanan kişisel verilerinizi işlemektedir.
+            Sorularınız için <a href="mailto:info@analizus.com">info@analizus.com</a> adresinden bize
+            ulaşabilirsiniz.
+        </p>
+
+        <h2 class="text-white mt-4 mb-2" style="font-size: 1.2rem;">2. Hangi Veriler Toplanır?</h2>
+        <ul class="text-secondary">
+            <li><strong>Hesap bilgileri:</strong> kullanıcı adı, e-posta, şifre (şifrelenmiş), profil bilgileri (unvan, biyografi, konum, avatar).</li>
+            <li><strong>İletişim formu:</strong> ad soyad, e-posta, konu, mesaj içeriği.</li>
+            <li><strong>Analiz dosyaları:</strong> istatistik/akademik tarama araçlarına yüklediğiniz veri dosyaları (şifreli sunucularda saklanır).</li>
+            <li><strong>Kullanım verileri:</strong> Google Analytics üzerinden anonim ziyaret istatistikleri; anonim AI Asistan kullanımı için tarayıcınıza atanan geçici bir kimlik çerezi (<code>ax_anon_id</code>).</li>
+            <li><strong>İşlem kayıtları:</strong> forum gönderileri, ilan/teklif bilgileri, bağış/destek kayıtları (banka havalesi bilgisi — kart bilgisi saklanmaz).</li>
+        </ul>
+
+        <h2 class="text-white mt-4 mb-2" style="font-size: 1.2rem;">3. Verileriniz Hangi Amaçla İşlenir?</h2>
+        <ul class="text-secondary">
+            <li>Hesabınızı oluşturmak, kimliğinizi doğrulamak ve platform hizmetlerini sunmak,</li>
+            <li>İletişim formu ve destek taleplerinize yanıt vermek,</li>
+            <li>Analiz araçlarının çalışmasını sağlamak ve sonuçları size ulaştırmak,</li>
+            <li>Hizmetler Pazarı üzerinden kullanıcılar ile uzmanları eşleştirmek,</li>
+            <li>Platform güvenliğini sağlamak, kötüye kullanımı önlemek,</li>
+            <li>Yasal yükümlülükleri yerine getirmek.</li>
+        </ul>
+
+        <h2 class="text-white mt-4 mb-2" style="font-size: 1.2rem;">4. Verileriniz Ne Kadar Süre Saklanır?</h2>
+        <p class="text-secondary">
+            Hesap verileri, hesabınız aktif olduğu sürece saklanır. Analiz için yüklediğiniz ham veri
+            dosyaları, analiz tamamlandıktan ve sonuçlar tarafınıza iletildikten sonra sunucularımızdan
+            kalıcı olarak silinir. İletişim formu kayıtları, talebiniz sonuçlandıktan sonra makul bir
+            süre daha saklanabilir.
+        </p>
+
+        <h2 class="text-white mt-4 mb-2" style="font-size: 1.2rem;">5. Verileriniz Kimlerle Paylaşılır?</h2>
+        <p class="text-secondary">
+            Verileriniz; e-posta gönderimi için SMTP sağlayıcımız, dosya depolama için bulut depolama
+            (S3 uyumlu) sağlayıcımız ve anonim kullanım istatistikleri için Google Analytics dışında,
+            yasal zorunluluk olmadıkça üçüncü kişilerle paylaşılmaz veya satılmaz.
+        </p>
+
+        <h2 class="text-white mt-4 mb-2" style="font-size: 1.2rem;">6. KVKK Kapsamındaki Haklarınız</h2>
+        <p class="text-secondary">KVKK'nın 11. maddesi uyarınca şu haklara sahipsiniz:</p>
+        <ul class="text-secondary">
+            <li>Kişisel verilerinizin işlenip işlenmediğini öğrenme,</li>
+            <li>İşlenmişse buna ilişkin bilgi talep etme,</li>
+            <li>İşlenme amacını ve amacına uygun kullanılıp kullanılmadığını öğrenme,</li>
+            <li>Eksik veya yanlış işlenmişse düzeltilmesini isteme,</li>
+            <li>Silinmesini veya yok edilmesini isteme,</li>
+            <li>İşlenen verilerin münhasıran otomatik sistemlerle analiz edilmesi suretiyle aleyhinize
+                bir sonucun ortaya çıkmasına itiraz etme,</li>
+            <li>Kanuna aykırı işlenme sebebiyle zarara uğramanız hâlinde zararın giderilmesini talep etme.</li>
+        </ul>
+        <p class="text-secondary">
+            Bu haklarınızı kullanmak için <a href="mailto:info@analizus.com">info@analizus.com</a>
+            adresinden bizimle iletişime geçebilirsiniz.
+        </p>
+
+        <h2 class="text-white mt-4 mb-2" style="font-size: 1.2rem;">7. Çerezler</h2>
+        <p class="text-secondary">
+            Platform, oturumunuzu yönetmek için zorunlu çerezler ve anonim kullanım istatistikleri için
+            Google Analytics çerezlerini kullanır. Tarayıcı ayarlarınızdan çerezleri
+            yönetebilir veya engelleyebilirsiniz; ancak bu, bazı özelliklerin çalışmamasına neden olabilir.
+        </p>
+
+    </div>
+
+    <div class="text-center mt-5">
+        <a href="{% url 'contact' %}" class="btn btn-outline-primary rounded-pill px-4">
+            <i class="bi bi-arrow-left me-2"></i>İletişim sayfasına dön
+        </a>
+    </div>
+
+</div>
+{% endblock %}

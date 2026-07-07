@@ -1738,9 +1738,6 @@ def account_delete_confirm(request, token):
 
 # --- DİĞER ---
 def about(request):
-    return render(request, 'forum/about.html')
-
-def neden_biz(request):
     from .models import SuccessStory
     stories = SuccessStory.objects.filter(approval_status='approved').select_related('user__profile').order_by('-created_at')[:3]
     check = '<i class="bi bi-check-circle-fill text-success"></i>'
@@ -1757,7 +1754,7 @@ def neden_biz(request):
         {'feature': 'Akademik Forum',  'analizus': f'{check} Var',              'spss': f'{cross} Yok',    'smartpls': f'{cross} Yok','excel': f'{cross} Yok'},
         {'feature': 'Türkçe Arayüz',   'analizus': f'{check} Tam Türkçe',       'spss': f'{partial} Kısmi','smartpls': f'{cross} İngilizce','excel': f'{partial} Kısmi'},
     ]
-    return render(request, 'forum/neden_biz.html', {'stories': stories, 'comparison_rows': comparison_rows})
+    return render(request, 'forum/about.html', {'stories': stories, 'comparison_rows': comparison_rows})
 
 def how_it_works(request):
     """Nasıl Çalışır? sayfası"""
@@ -1855,8 +1852,12 @@ def contact(request):
             messages.success(request, 'Mesajınız başarıyla gönderildi. En kısa sürede dönüş yapacağız.')
         except Exception:
             messages.error(request, 'Mesaj gönderilirken bir hata oluştu. Lütfen tekrar deneyin.')
-        return redirect('about')
-    return redirect('/hakkimizda/#iletisim')
+        return redirect('contact')
+    return render(request, 'forum/contact.html')
+
+
+def gizlilik_politikasi(request):
+    return render(request, 'forum/gizlilik_politikasi.html')
 
 
 def proje_talebi(request):

@@ -71,5 +71,6 @@ def feature_flags(request):
             'tezanaliz': site.feature_tezanaliz,
             'istatistik': site.feature_istatistik,
             'semanticscholar': site.feature_semanticscholar,
+            'transcript': site.feature_transcript,
         }
     }

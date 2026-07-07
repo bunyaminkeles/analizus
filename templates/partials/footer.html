@@ -92,10 +92,9 @@
             <div class="col-6 col-md-3 col-lg-2">
                 <p class="ax-footer-heading">Kurumsal</p>
                 <ul class="ax-footer-list">
-                    <li><a href="{% url 'neden_biz' %}"><i class="bi bi-patch-check"></i>Neden Analizus?</a></li>
                     <li><a href="{% url 'about' %}"><i class="bi bi-info-circle"></i>Hakkımızda</a></li>
-                    <li><a href="{% url 'about' %}#iletisim"><i class="bi bi-envelope"></i>İletişim</a></li>
-                    <li><a href="{% url 'about' %}#kvkk"><i class="bi bi-shield-check"></i>KVKK / Gizlilik</a></li>
+                    <li><a href="{% url 'contact' %}"><i class="bi bi-envelope"></i>İletişim</a></li>
+                    <li><a href="{% url 'gizlilik_politikasi' %}"><i class="bi bi-shield-check"></i>KVKK / Gizlilik</a></li>
                 </ul>
             </div>
 
@@ -126,7 +125,7 @@
             <p>&copy; 2026 Analizus — Akademik Araştırma Platformu <span class="ax-footer-visitor-counter"><i class="bi bi-eye"></i>{{ total_visitors|default:0 }} ziyaretçi</span></p>
             <div class="ax-footer-bottom-links">
                 <a href="{% url 'about' %}">Hakkımızda</a>
-                <a href="{% url 'neden_biz' %}">Neden Biz?</a>
+                <a href="{% url 'contact' %}">İletişim</a>
             </div>
         </div>
     </div>
