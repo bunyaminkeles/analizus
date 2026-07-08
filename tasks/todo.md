@@ -157,6 +157,15 @@ component borcu yok. Tek istisna: KVKK sayfasındaki tablo ilk halde
 satır renkleriyle çakışıp okunaksız görünüyordu) `.ax-kvkk-table`'a
 taşındı — yani net etki: envantere yeni satır eklenmedi.
 
+**Not (temmuz 2026) — cache-busting dersi tekrar uygulandı:** Navbar logosuna
+eklenen "Analizus" yazısının puntosu `navbar.css`'te iki kez büyütüldü, ama
+`templates/base.html:93`'teki `?v=0103` versiyon string'i ilk seferinde
+artırılmayı unutuldu — kullanıcı production'da değişikliği göremeyince fark
+edildi, `?v=0104`'e çekilip düzeltildi. Bu, §26'daki "CSS değişikliği
+production'da görünmüyor" hatasının canlı bir tekrarı; her `static/css/*.css`
+değişikliğinde ilgili `<link>` versiyon string'inin de artırılması gerektiği
+bir kez daha teyit edildi.
+
 ### Faz 4 — Bootstrap CDN'i kaldır
 `base.html`'den `bootstrap.min.css` + `bootstrap.bundle.min.js` linklerini
 sil. Tüm sayfalarda regresyon taraması (özellikle modal/dropdown/form
@@ -182,6 +191,48 @@ için düşük riskli, istenildiğinde başlanabilir.
 **Deploy notu:** Bu migration'ın tüm adımları yalnızca `dev` branch'ine push
 edilecek. `main`'e (Hetzner/prod) kullanıcı açıkça "merge et" demeden
 geçilmeyecek — bkz. genel proje kuralı (memory: `git_workflow`, `dev_first`).
+
+---
+
+# Homepage'e 3. Hero Seçeneği: "Bir Projem Var" (fikir aşaması)
+
+**Durum:** Sadece fikir — henüz uygulanmadı, kullanıcı "todo'ya yaz ve bırak"
+dedi. (Temmuz 2026)
+
+## Fikir
+Homepage'deki iki taraflı pazar yeri yönlendirmesine ("Analiz Yaptırmak
+İstiyorum" / "Uzman Olarak Katılmak İstiyorum") üçüncü bir seçenek eklemek:
+"Bir Projem Var..." → mevcut `/proje-talebi/` sayfasına (kurumsal danışmanlık
+talep formu) yönlendiren bir kart/şerit.
+
+## Teknik bulgular
+- İki mevcut kart `forum/templates/forum/home.html:257-341` içinde, `row g-4`
+  içinde iki `col-lg-6` — her biri özel SVG illüstrasyon, özellik listesi,
+  kategori etiketleri, çoklu CTA içeriyor (zengin/karmaşık içerik).
+- Kart shell'i `static/css/home_sections.css:71` — `.ax-market-card` (ortak
+  gövde) + `.ax-market-card--demand`/`--supply` (üst renkli çizgi varyantları,
+  indigo/amber). Üçüncü `.ax-market-card--project` varyantı (`--ax-accent-secondary`
+  yeşili ile) düşük riskli, küçük bir CSS eklemesi olur.
+- `/proje-talebi/` zaten var (`forum/views.py: proje_talebi`, "Projenizi
+  Anlatın, Size Uygun Uzmanı Bulalım" başlığı) — kurumsal/şirket odaklı.
+  **Dikkat:** "Analiz Yaptırmak İstiyorum" kartıyla hedef kitle örtüşmesi
+  olabilir (ikisi de "biri benim için analiz yapsın" diyor) — uygulamaya
+  geçilirken bu ayrım netleştirilmeli (örn. proje_talebi = kurumsal/resmi
+  teklif süreci, mevcut kart = bireysel/hızlı eşleşme).
+
+## Önerilen yaklaşım (kullanıcıya sunuldu, karar bekliyor)
+İki mevcut kart hiç değişmeden kalsın (zaten dönüşüm sağlıyorlar, riske
+atılmamalı). Altına tam genişlikte, sade/yatay bir üçüncü şerit eklensin —
+büyük SVG yok, kısa açıklama + tek CTA (`/proje-talebi/`), yeşil
+(`--ax-accent-secondary`) vurgusuyla diğer ikisinden ayrışır. **Reddedilen
+alternatif:** 3 eşit kolon (`col-lg-4`) — mevcut zengin kartların
+küçültülmesini gerektirir, çalışan/dönüşüm sağlayan elemanlara dokunma
+riski taşır.
+
+## Sıradaki adım
+Kullanıcı ne zaman uygulamaya geçmek isterse haber verecek; o zaman hedef
+kitle ayrımı netleştirilip yukarıdaki yaklaşımla (veya kullanıcının o an
+tercih edeceği alternatifle) uygulanacak.
 
 ---
 
