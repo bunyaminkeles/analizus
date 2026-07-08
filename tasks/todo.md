@@ -147,6 +147,16 @@ kök neden dosyası bulunmadı. Ayrı bir görev olarak ele alınacak.
   görüntüsüyle onayladı, kart/padding/buton hiç bozulmamış.
 - [ ] Sıradaki aday: `job_list.html` (3 component)
 
+**Not (temmuz 2026) — yeni sayfalar envanteri büyütmedi:** Bu oturumda
+oluşturulan `forum/templates/forum/contact.html` (İletişim landing page) ve
+`forum/templates/forum/gizlilik_politikasi.html` (KVKK sayfası) sıfırdan
+`ax-*` sistemiyle yazıldı — migrasyon kapsamına eklenecek yeni Bootstrap
+component borcu yok. Tek istisna: KVKK sayfasındaki tablo ilk halde
+`table table-dark table-borderless` ile yazılmıştı, aynı oturumda fark edilip
+(`table-dark`'ın `--bs-table-bg`/`--bs-table-color` değişkenleri inline
+satır renkleriyle çakışıp okunaksız görünüyordu) `.ax-kvkk-table`'a
+taşındı — yani net etki: envantere yeni satır eklenmedi.
+
 ### Faz 4 — Bootstrap CDN'i kaldır
 `base.html`'den `bootstrap.min.css` + `bootstrap.bundle.min.js` linklerini
 sil. Tüm sayfalarda regresyon taraması (özellikle modal/dropdown/form
