@@ -1231,7 +1231,12 @@ class SiteSettings(models.Model):
     feature_yoktez = models.BooleanField(default=True, verbose_name="YÖK Tez Arama")
     feature_tezanaliz = models.BooleanField(default=True, verbose_name="Tez & Makale Analizi")
     feature_istatistik = models.BooleanField(default=True, verbose_name="İstatistik Analiz Araçları")
-    feature_transcript = models.BooleanField(default=True, verbose_name="YouTube Transcript İndirici")
+    feature_transcript = models.BooleanField(
+        default=False,
+        verbose_name="YouTube Transcript İndirici",
+        help_text="Cloud provider IP'leri (Hetzner, Render vb.) YouTube tarafından engelleniyor — "
+                  "sunucuda çalışmıyor, sadece lokal ortamda test edilebilir. Bkz. analizus.md §26.",
+    )
 
     # Analiz Limitleri
     analiz_max_records = models.PositiveIntegerField(

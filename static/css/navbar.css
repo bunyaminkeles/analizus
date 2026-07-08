@@ -57,8 +57,6 @@ body {
     align-items: center;
     gap: var(--ax-space-2);
     text-decoration: none;
-    font-size: var(--ax-text-lg);
-    font-weight: var(--ax-font-bold);
     color: var(--ax-text-primary);
     flex-shrink: 0;
     transition: opacity var(--ax-transition-fast);
@@ -67,6 +65,12 @@ body {
 .site-nav__logo:hover { opacity: 0.85; color: var(--ax-text-primary); }
 .site-nav__logo-icon  { color: var(--ax-accent-primary); flex-shrink: 0; }
 .site-nav__logo-img   { height: 40px; width: auto; flex-shrink: 0; border-radius: 50%; }
+.site-nav__logo-text  {
+    font-size: var(--ax-text-3xl);
+    font-weight: var(--ax-font-bold);
+    letter-spacing: -0.01em;
+}
+.nav-drawer__header .site-nav__logo-text { font-size: var(--ax-text-2xl); }
 
 /* -------------------------------------------------------------
    DESKTOP MENU
