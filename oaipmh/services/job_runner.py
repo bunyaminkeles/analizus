@@ -241,8 +241,8 @@ def send_order_results_email(order):
         return False
 
 
-def cleanup_expired_oaipmh_s3_files(days=3):
-    """3 günden eski oaipmh/ S3 dosyalarını siler."""
+def cleanup_expired_oaipmh_s3_files(days=7):
+    """7 günden eski oaipmh/ S3 dosyalarını siler."""
     import boto3
     from botocore.exceptions import ClientError
     deleted_count = 0

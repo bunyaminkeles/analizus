@@ -231,8 +231,8 @@ def send_order_results_email(order):
         return False
 
 
-def cleanup_expired_trdizin_s3_files(days=3):
-    """3 günden eski trdizin/ altındaki tüm dosyaları S3'den siler.
+def cleanup_expired_trdizin_s3_files(days=7):
+    """7 günden eski trdizin/ altındaki tüm dosyaları S3'den siler.
     DB'ye değil, S3'deki dosya tarihine bakar."""
     import boto3
     deleted_count = 0

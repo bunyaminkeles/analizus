@@ -119,7 +119,7 @@ def _verify_cron_secret(request):
 @require_GET
 def cron_cleanup_s3_files(request):
     """
-    3 günden eski TR Dizin ve OpenAlex dosyalarını S3'den siler.
+    7 günden eski TR Dizin, OpenAlex ve OAI-PMH dosyalarını S3'den siler.
 
     Kullanım:
     - GET /api/cron/cleanup-s3/?secret=YOUR_SECRET
@@ -133,9 +133,9 @@ def cron_cleanup_s3_files(request):
         from openalex.services.job_runner import cleanup_expired_openalex_s3_files as cleanup_openalex
         from oaipmh.services.job_runner import cleanup_expired_oaipmh_s3_files as cleanup_oaipmh
 
-        trdizin_deleted = cleanup_trdizin(days=3)
-        openalex_deleted = cleanup_openalex(days=3)
-        oaipmh_deleted = cleanup_oaipmh(days=3)
+        trdizin_deleted = cleanup_trdizin(days=7)
+        openalex_deleted = cleanup_openalex(days=7)
+        oaipmh_deleted = cleanup_oaipmh(days=7)
 
         return JsonResponse({
             'success': True,

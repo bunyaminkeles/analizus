@@ -225,8 +225,8 @@ def send_order_results_email(order):
         return False
 
 
-def cleanup_expired_openalex_s3_files(days=3):
-    """3 günden eski openalex/ altındaki tüm dosyaları S3'den siler."""
+def cleanup_expired_openalex_s3_files(days=7):
+    """7 günden eski openalex/ altındaki tüm dosyaları S3'den siler."""
     import boto3
     deleted_count = 0
     cutoff = timezone.now() - timedelta(days=days)

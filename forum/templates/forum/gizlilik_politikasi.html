@@ -12,81 +12,73 @@
     <h1 class="fw-bold text-white mb-2" style="font-size: 1.9rem;">KVKK Aydınlatma Metni ve Gizlilik Politikası</h1>
     <p class="text-secondary mb-4">Son güncelleme: {% now "d.m.Y" %}</p>
 
-    <div class="rounded-3 p-3 mb-4 d-flex gap-2 align-items-start" style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3);">
-        <i class="bi bi-exclamation-triangle-fill" style="color: var(--ax-accent-warning); font-size: 1.1rem; flex-shrink: 0; margin-top: 2px;"></i>
-        <p class="text-light small mb-0" style="line-height: 1.6;">
-            Bu metin, sitede toplanan verilere dayanan <strong>taslak</strong> bir KVKK aydınlatma metnidir.
-            Yayına alınmadan önce bir hukuk danışmanı tarafından gözden geçirilmesi ve Analizus'un güncel
-            veri işleme süreçlerine göre teyit edilmesi gerekir; kesin yasal tavsiye yerine geçmez.
-        </p>
-    </div>
-
     <div class="text-light" style="line-height: 1.8;">
 
         <h2 class="text-white mt-4 mb-2" style="font-size: 1.2rem;">1. Veri Sorumlusu</h2>
-        <p class="text-secondary">
-            Analizus ("Platform"), 6698 sayılı Kişisel Verilerin Korunması Kanunu ("KVKK") kapsamında
-            veri sorumlusu sıfatıyla, aşağıda açıklanan kişisel verilerinizi işlemektedir.
-            Sorularınız için <a href="mailto:info@analizus.com">info@analizus.com</a> adresinden bize
-            ulaşabilirsiniz.
+        <p class="text-light">
+            6698 sayılı Kişisel Verilerin Korunması Kanunu ("KVKK") uyarınca, kişisel verileriniz;
+            veri sorumlusu sıfatıyla <strong>Analizus</strong> ("Platform") tarafından aşağıda açıklanan
+            amaçlar doğrultusunda işlenebilecektir. İletişim:
+            <a href="mailto:info@analizus.com">info@analizus.com</a>
         </p>
 
-        <h2 class="text-white mt-4 mb-2" style="font-size: 1.2rem;">2. Hangi Veriler Toplanır?</h2>
-        <ul class="text-secondary">
-            <li><strong>Hesap bilgileri:</strong> kullanıcı adı, e-posta, şifre (şifrelenmiş), profil bilgileri (unvan, biyografi, konum, avatar).</li>
-            <li><strong>İletişim formu:</strong> ad soyad, e-posta, konu, mesaj içeriği.</li>
-            <li><strong>Analiz dosyaları:</strong> istatistik/akademik tarama araçlarına yüklediğiniz veri dosyaları (şifreli sunucularda saklanır).</li>
-            <li><strong>Kullanım verileri:</strong> Google Analytics üzerinden anonim ziyaret istatistikleri; anonim AI Asistan kullanımı için tarayıcınıza atanan geçici bir kimlik çerezi (<code>ax_anon_id</code>).</li>
-            <li><strong>İşlem kayıtları:</strong> forum gönderileri, ilan/teklif bilgileri, bağış/destek kayıtları (banka havalesi bilgisi — kart bilgisi saklanmaz).</li>
-        </ul>
+        <h2 class="text-white mt-4 mb-2" style="font-size: 1.2rem;">2. Kişisel Verilerin İşlenme Amaçları ve Hukuki Sebepleri</h2>
+        <div class="ax-kvkk-table-wrap mb-3">
+            <table class="ax-kvkk-table">
+                <thead>
+                    <tr>
+                        <th>Veri Kategorisi</th>
+                        <th>Amaç</th>
+                        <th>Hukuki Sebep</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Kimlik, İletişim, Hesap</td>
+                        <td>Üyelik ve Kullanıcı Yönetimi</td>
+                        <td>Sözleşmenin İfası</td>
+                    </tr>
+                    <tr>
+                        <td>Analiz Dosyaları</td>
+                        <td>Hizmetin Sağlanması</td>
+                        <td>Sözleşmenin İfası</td>
+                    </tr>
+                    <tr>
+                        <td>Çerezler / Kullanım Verileri</td>
+                        <td>Güvenlik ve Optimizasyon</td>
+                        <td>Meşru Menfaat</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
 
-        <h2 class="text-white mt-4 mb-2" style="font-size: 1.2rem;">3. Verileriniz Hangi Amaçla İşlenir?</h2>
-        <ul class="text-secondary">
-            <li>Hesabınızı oluşturmak, kimliğinizi doğrulamak ve platform hizmetlerini sunmak,</li>
-            <li>İletişim formu ve destek taleplerinize yanıt vermek,</li>
-            <li>Analiz araçlarının çalışmasını sağlamak ve sonuçları size ulaştırmak,</li>
-            <li>Hizmetler Pazarı üzerinden kullanıcılar ile uzmanları eşleştirmek,</li>
-            <li>Platform güvenliğini sağlamak, kötüye kullanımı önlemek,</li>
-            <li>Yasal yükümlülükleri yerine getirmek.</li>
-        </ul>
-
-        <h2 class="text-white mt-4 mb-2" style="font-size: 1.2rem;">4. Verileriniz Ne Kadar Süre Saklanır?</h2>
-        <p class="text-secondary">
-            Hesap verileri, hesabınız aktif olduğu sürece saklanır. Analiz için yüklediğiniz ham veri
-            dosyaları, analiz tamamlandıktan ve sonuçlar tarafınıza iletildikten sonra sunucularımızdan
-            kalıcı olarak silinir. İletişim formu kayıtları, talebiniz sonuçlandıktan sonra makul bir
-            süre daha saklanabilir.
+        <h2 class="text-white mt-4 mb-2" style="font-size: 1.2rem;">3. Kişisel Verilerin Aktarımı</h2>
+        <p class="text-light">
+            Kişisel verileriniz; bilişim altyapı sağlayıcılarımız (sunucu barındırma, e-posta, bulut
+            depolama) ile yasal yükümlülüklerimizin gereği olarak yetkili kamu kurumları ile
+            paylaşılabilir. Teknik altyapı gereği verileriniz yurt dışı merkezli sunucularda işlenebilir.
         </p>
 
-        <h2 class="text-white mt-4 mb-2" style="font-size: 1.2rem;">5. Verileriniz Kimlerle Paylaşılır?</h2>
-        <p class="text-secondary">
-            Verileriniz; e-posta gönderimi için SMTP sağlayıcımız, dosya depolama için bulut depolama
-            (S3 uyumlu) sağlayıcımız ve anonim kullanım istatistikleri için Google Analytics dışında,
-            yasal zorunluluk olmadıkça üçüncü kişilerle paylaşılmaz veya satılmaz.
+        <h2 class="text-white mt-4 mb-2" style="font-size: 1.2rem;">4. Veri Saklama Süreleri</h2>
+        <p class="text-light">
+            Verileriniz, işleme amacının gerektirdiği süre boyunca saklanır. Akademik tarama araçlarımız
+            (YÖK Tez, OpenAlex, TR Dizin, OAI-PMH) için yüklenen/üretilen ham veriler, analiz süreci
+            tamamlandıktan sonra 7 gün süreyle kullanıcıya erişim kolaylığı sağlamak amacıyla saklanır
+            ve bu sürenin sonunda otomatik olarak silinir. Yasal zamanaşımı süreleri saklıdır.
         </p>
 
-        <h2 class="text-white mt-4 mb-2" style="font-size: 1.2rem;">6. KVKK Kapsamındaki Haklarınız</h2>
-        <p class="text-secondary">KVKK'nın 11. maddesi uyarınca şu haklara sahipsiniz:</p>
-        <ul class="text-secondary">
-            <li>Kişisel verilerinizin işlenip işlenmediğini öğrenme,</li>
-            <li>İşlenmişse buna ilişkin bilgi talep etme,</li>
-            <li>İşlenme amacını ve amacına uygun kullanılıp kullanılmadığını öğrenme,</li>
-            <li>Eksik veya yanlış işlenmişse düzeltilmesini isteme,</li>
-            <li>Silinmesini veya yok edilmesini isteme,</li>
-            <li>İşlenen verilerin münhasıran otomatik sistemlerle analiz edilmesi suretiyle aleyhinize
-                bir sonucun ortaya çıkmasına itiraz etme,</li>
-            <li>Kanuna aykırı işlenme sebebiyle zarara uğramanız hâlinde zararın giderilmesini talep etme.</li>
-        </ul>
-        <p class="text-secondary">
-            Bu haklarınızı kullanmak için <a href="mailto:info@analizus.com">info@analizus.com</a>
-            adresinden bizimle iletişime geçebilirsiniz.
+        <h2 class="text-white mt-4 mb-2" style="font-size: 1.2rem;">5. KVKK Madde 11 Kapsamındaki Haklarınız</h2>
+        <p class="text-light">
+            Veri sahibi olarak; verilerinizin işlenip işlenmediğini öğrenme, bilgi talep etme,
+            verilerinizin silinmesini veya düzeltilmesini isteme ve kanuna aykırı işleme sebebiyle
+            zararın giderilmesini talep etme gibi haklara sahipsiniz. Başvurularınızı
+            <strong>info@analizus.com</strong> adresi üzerinden yazılı olarak iletebilirsiniz.
         </p>
 
-        <h2 class="text-white mt-4 mb-2" style="font-size: 1.2rem;">7. Çerezler</h2>
-        <p class="text-secondary">
-            Platform, oturumunuzu yönetmek için zorunlu çerezler ve anonim kullanım istatistikleri için
-            Google Analytics çerezlerini kullanır. Tarayıcı ayarlarınızdan çerezleri
-            yönetebilir veya engelleyebilirsiniz; ancak bu, bazı özelliklerin çalışmamasına neden olabilir.
+        <h2 class="text-white mt-4 mb-2" style="font-size: 1.2rem;">6. Çerez Politikası</h2>
+        <p class="text-light">
+            Platformda zorunlu çerezler ve performans/analiz çerezleri kullanılmaktadır. Tarayıcı
+            ayarlarınızdan çerez tercihlerinizi yönetebilirsiniz.
         </p>
 
     </div>
@@ -96,6 +88,35 @@
             <i class="bi bi-arrow-left me-2"></i>İletişim sayfasına dön
         </a>
     </div>
+
+    <style>
+    .ax-kvkk-table-wrap {
+        overflow-x: auto;
+        border: 1px solid var(--ax-border-default);
+        border-radius: var(--ax-radius-lg);
+    }
+    .ax-kvkk-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: var(--ax-text-sm);
+    }
+    .ax-kvkk-table th {
+        text-align: left;
+        padding: var(--ax-space-3) var(--ax-space-4);
+        background: var(--ax-bg-tertiary);
+        color: var(--ax-text-primary);
+        font-weight: var(--ax-font-semibold);
+        border-bottom: 1px solid var(--ax-border-default);
+        white-space: nowrap;
+    }
+    .ax-kvkk-table td {
+        padding: var(--ax-space-3) var(--ax-space-4);
+        color: var(--ax-text-primary);
+        border-bottom: 1px solid var(--ax-border-default);
+    }
+    .ax-kvkk-table tbody tr:last-child td { border-bottom: none; }
+    .ax-kvkk-table tbody tr:hover td { background: var(--ax-bg-tertiary); color: var(--ax-text-primary); }
+    </style>
 
 </div>
 {% endblock %}

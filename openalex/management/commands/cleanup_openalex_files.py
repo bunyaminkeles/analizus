@@ -3,10 +3,10 @@ from openalex.services.job_runner import cleanup_expired_openalex_s3_files
 
 
 class Command(BaseCommand):
-    help = 'OpenAlex S3 dosyalarını temizler (varsayılan: 3 günden eski)'
+    help = 'OpenAlex S3 dosyalarını temizler (varsayılan: 7 günden eski)'
 
     def add_arguments(self, parser):
-        parser.add_argument('--days', type=int, default=3, help='Kaç günden eski dosyalar silinsin')
+        parser.add_argument('--days', type=int, default=7, help='Kaç günden eski dosyalar silinsin')
 
     def handle(self, *args, **options):
         days = options['days']
