@@ -88,12 +88,8 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-okaidia.min.css" rel="stylesheet" media="print" onload="this.media='all'">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/toolbar/prism-toolbar.min.css" rel="stylesheet" media="print" onload="this.media='all'">
 
-    <!-- Modern Katman: Analizus Design System -->
-    <link rel="stylesheet" href="{% static 'css/base.css' %}?v=0101">
-    <link rel="stylesheet" href="{% static 'css/navbar.css' %}?v=0104">
-    <link rel="stylesheet" href="{% static 'css/footer.css' %}?v=0100">
-    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=2052">
-    <link rel="stylesheet" href="{% static 'css/sidebar_widgets.css' %}?v=2051">
+    <!-- Modern Katman: Analizus Design System (base+navbar+footer+style+sidebar_widgets birleştirilmiş) -->
+    <link rel="stylesheet" href="{% static 'css/bundle.css' %}?v=0001">
 
     {% block extra_head %}{% endblock %}
 
@@ -364,7 +360,7 @@
     <div class="nav-overlay" id="navOverlay" aria-hidden="true"></div>
 
     <!-- Mobile Drawer -->
-    <aside class="nav-drawer" id="navDrawer" aria-label="Mobil menü" aria-hidden="true">
+    <aside class="nav-drawer" id="navDrawer" aria-label="Mobil menü" aria-hidden="true" inert>
         <div class="nav-drawer__header">
             <a href="{% url 'home' %}" class="site-nav__logo" aria-label="Analizus Ana Sayfa">
                 <img class="site-nav__logo-img" src="{% static 'img/analizus-logo-001.png' %}" alt="" width="36" height="36">

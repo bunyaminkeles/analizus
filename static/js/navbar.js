@@ -77,6 +77,7 @@ document.addEventListener('DOMContentLoaded', function () {
         document.body.classList.add('ax-no-scroll');
         drawer.setAttribute('aria-hidden', 'false');
         overlay.setAttribute('aria-hidden', 'false');
+        drawer.inert = false;
         hamburger.setAttribute('aria-expanded', 'true');
         if (hamOpen)  hamOpen.style.display  = 'none';
         if (hamClose) hamClose.style.display = 'block';
@@ -89,6 +90,7 @@ document.addEventListener('DOMContentLoaded', function () {
         document.body.classList.remove('ax-no-scroll');
         drawer.setAttribute('aria-hidden', 'true');
         overlay.setAttribute('aria-hidden', 'true');
+        drawer.inert = true;
         hamburger.setAttribute('aria-expanded', 'false');
         if (hamOpen)  hamOpen.style.display  = 'block';
         if (hamClose) hamClose.style.display = 'none';
