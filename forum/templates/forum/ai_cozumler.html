@@ -59,15 +59,18 @@
 {% endblock %}
 
 {% block extra_head %}
-<link rel="stylesheet" href="{% static 'css/agentic_landing.css' %}?v=0001">
+<link rel="stylesheet" href="{% static 'css/agentic_landing.css' %}?v=0002">
 {% endblock %}
 
 {% block content %}
 
 <!-- Hero -->
 <section class="ax-ai-hero">
+    <picture class="ax-ai-hero__media">
+        <source media="(min-width: 768px)" srcset="{% static 'img/agentic-hero.webp' %}">
+        <img src="{% static 'img/agentic-hero-mobile.webp' %}" alt="" width="800" height="446" fetchpriority="high" decoding="async" class="ax-ai-hero__media-img">
+    </picture>
     <div class="container">
-        <!-- İleride agentic-hero.webp/agentic-hero-mobile.webp eklenecek: <picture><source media="(min-width:768px)" srcset="...">...</picture> -->
         <h1 class="ax-ai-hero__title">Analizleriniz siz uyurken çalışsın.</h1>
         <p class="ax-ai-hero__subtitle">Veri toplayan, analiz eden, raporlayan yapay zeka sistemleri — her adımı bir uzmanın gözetiminde.</p>
         <a href="{% url 'proje_talebi' %}?source=agentic" class="ax-btn ax-btn--primary">Projenizi Anlatın</a>

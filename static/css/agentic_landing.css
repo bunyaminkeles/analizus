@@ -5,11 +5,24 @@
    Mobil-önce: taban stiller mobil, masaüstü @media (min-width:768px).
    ============================================================= */
 
-/* --- Hero (CSS-only mesh gradient, mevcut .ax-hero deseninin varyasyonu) --- */
+/* --- Hero (agentic-hero.webp fotoğrafı + koyu gradient overlay, .ax-market-hero deseninin varyasyonu) --- */
 .ax-ai-hero {
     padding: 32px 0 24px;
     position: relative;
     overflow: hidden;
+}
+
+.ax-ai-hero__media {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+}
+
+.ax-ai-hero__media-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 40%;
 }
 
 .ax-ai-hero::after {
@@ -17,13 +30,14 @@
     position: absolute;
     inset: 0;
     background:
+        linear-gradient(180deg, rgba(15, 23, 42, 0.55) 0%, rgba(15, 23, 42, 0.88) 100%),
         radial-gradient(ellipse 70% 55% at 20% 40%, rgba(99, 102, 241, 0.18) 0%, transparent 65%),
         radial-gradient(ellipse 60% 50% at 80% 60%, rgba(139, 92, 246, 0.14) 0%, transparent 60%);
     pointer-events: none;
-    z-index: 0;
+    z-index: 1;
 }
 
-.ax-ai-hero > * { position: relative; z-index: 1; }
+.ax-ai-hero > .container { position: relative; z-index: 2; }
 
 .ax-ai-hero__title {
     font-size: var(--ax-text-3xl);
