@@ -13,7 +13,8 @@
 <link rel="stylesheet" href="{% static 'css/testimonials.css' %}?v=0100">
 <link rel="stylesheet" href="{% static 'css/stats.css' %}?v=0100">
 <link rel="stylesheet" href="{% static 'css/news.css' %}?v=0100">
-<link rel="stylesheet" href="{% static 'css/home_sections.css' %}?v=0111">
+<link rel="stylesheet" href="{% static 'css/home_sections.css' %}?v=0112">
+<link rel="stylesheet" href="{% static 'css/expert_card.css' %}?v=0001">
 <link rel="stylesheet" href="{% static 'css/brand_visuals.css' %}?v=0100">
 {% endblock %}
 
@@ -888,34 +889,7 @@ document.addEventListener('DOMContentLoaded', function () {
         <h2 class="ax-section-title text-center mb-2">Uzmanlarla Tanış</h2>
         <p class="ax-section-subtitle text-center mb-5">Alanında doğrulanmış uzmanlarımızdan birkaçı.</p>
         <div class="ax-expert-grid">
-            {% for expert in featured_experts %}
-            <div class="ax-expert-card">
-                <div class="ax-expert-avatar-wrap">
-                    {% if expert.avatar %}
-                    <img src="{{ expert.avatar.url }}" alt="{{ expert.user.username }}" class="ax-expert-avatar">
-                    {% else %}
-                    <div class="ax-expert-avatar ax-expert-avatar--fallback">{{ expert.user.username|first|upper }}</div>
-                    {% endif %}
-                    {% if expert.is_online %}
-                    <span class="ax-online-dot" title="Çevrimiçi" style="position:absolute;bottom:2px;right:2px;width:14px;height:14px;background:#22c55e;border:2px solid var(--ax-bg-primary, #0f172a);border-radius:50%;display:block;"></span>
-                    {% endif %}
-                </div>
-                <a href="{% url 'profile_detail' expert.user.username %}" class="ax-expert-name">{{ expert.user.get_full_name|default:expert.user.username }}</a>
-                {% if expert.skills.all %}
-                <div class="ax-expert-skills">
-                    {% for skill in expert.skills.all|slice:":3" %}
-                    <span class="ax-badge ax-badge--primary">{{ skill.title }}</span>
-                    {% endfor %}
-                </div>
-                {% endif %}
-                <div class="ax-expert-stats">
-                    <span>{{ expert.showcase_completed_jobs }} tamamlanan proje</span>
-                    {% if expert.avg_rating %}
-                    <span class="ax-expert-rating">★ {{ expert.avg_rating|floatformat:1 }}</span>
-                    {% endif %}
-                </div>
-            </div>
-            {% endfor %}
+            {% include 'forum/partials/_expert_showcase.html' %}
         </div>
         <div class="text-center mt-5">
             <a href="{% url 'uzman_dizini' %}" class="ax-btn ax-btn--primary me-2">Tüm Uzmanlar</a>

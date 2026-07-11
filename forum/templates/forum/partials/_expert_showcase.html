@@ -1,0 +1,28 @@
+{% for expert in featured_experts %}
+<div class="ax-expert-card">
+    <div class="ax-expert-avatar-wrap">
+        {% if expert.avatar %}
+        <img src="{{ expert.avatar.url }}" alt="{{ expert.user.username }}" class="ax-expert-avatar">
+        {% else %}
+        <div class="ax-expert-avatar ax-expert-avatar--fallback">{{ expert.user.username|first|upper }}</div>
+        {% endif %}
+        {% if expert.is_online %}
+        <span class="ax-online-dot" title="Çevrimiçi" style="position:absolute;bottom:2px;right:2px;width:14px;height:14px;background:#22c55e;border:2px solid var(--ax-bg-primary, #0f172a);border-radius:50%;display:block;"></span>
+        {% endif %}
+    </div>
+    <a href="{% url 'profile_detail' expert.user.username %}" class="ax-expert-name">{{ expert.user.get_full_name|default:expert.user.username }}</a>
+    {% if expert.skills.all %}
+    <div class="ax-expert-skills">
+        {% for skill in expert.skills.all|slice:":3" %}
+        <span class="ax-badge ax-badge--primary">{{ skill.title }}</span>
+        {% endfor %}
+    </div>
+    {% endif %}
+    <div class="ax-expert-stats">
+        <span>{{ expert.showcase_completed_jobs }} tamamlanan proje</span>
+        {% if expert.avg_rating %}
+        <span class="ax-expert-rating">★ {{ expert.avg_rating|floatformat:1 }}</span>
+        {% endif %}
+    </div>
+</div>
+{% endfor %}

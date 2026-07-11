@@ -138,3 +138,70 @@
 .ax-market-chip--active:hover {
     color: #ffffff;
 }
+
+/* --- Başarı Hikayesi Şeridi --- */
+.ax-market-story-strip {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ax-space-3);
+}
+
+.ax-market-story-card {
+    background: var(--ax-bg-tertiary);
+    border: 1px solid var(--ax-border);
+    border-radius: var(--ax-radius-lg);
+    padding: var(--ax-space-4);
+}
+
+.ax-market-story-card__quote {
+    color: var(--ax-text-secondary);
+    font-size: var(--ax-text-sm);
+    font-style: italic;
+    line-height: var(--ax-leading-relaxed);
+    margin-bottom: var(--ax-space-2);
+}
+
+.ax-market-story-card__author {
+    display: block;
+    color: var(--ax-text-primary);
+    font-size: var(--ax-text-xs);
+    font-weight: var(--ax-font-semibold);
+}
+
+/* --- Oyunlaştırma Bandı --- */
+.ax-market-gamify-band {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ax-space-3);
+    align-items: flex-start;
+    background: rgba(139, 92, 246, 0.06);
+    border: 1px dashed rgba(139, 92, 246, 0.25);
+    border-radius: var(--ax-radius-lg);
+    padding: var(--ax-space-4);
+}
+
+.ax-market-gamify-band__text {
+    color: var(--ax-text-secondary);
+    font-size: var(--ax-text-sm);
+    line-height: var(--ax-leading-relaxed);
+}
+
+.ax-market-gamify-band__text i {
+    color: #a78bfa;
+    margin-right: var(--ax-space-2);
+}
+
+@media (min-width: 768px) {
+    .ax-market-story-strip {
+        flex-direction: row;
+    }
+    .ax-market-story-card {
+        flex: 1;
+    }
+
+    .ax-market-gamify-band {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+    }
+}

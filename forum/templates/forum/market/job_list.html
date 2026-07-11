@@ -5,7 +5,8 @@
 {% block meta_description %}Akademik analiz uzmanı bulun. SPSS, R, Python ve tez istatistiği için teklif alın. Analizus Hizmetler Pazarı — ücretsiz ilan açın, hızlı uzman eşleştirme, güvenilir akademik destek.{% endblock %}
 
 {% block extra_head %}
-<link rel="stylesheet" href="{% static 'css/market.css' %}?v=0002">
+<link rel="stylesheet" href="{% static 'css/expert_card.css' %}?v=0001">
+<link rel="stylesheet" href="{% static 'css/market.css' %}?v=0003">
 {% endblock %}
 
 {% block content %}
@@ -219,6 +220,47 @@
     <div class="rounded-3 p-4 text-center mt-2" style="background:rgba(99,102,241,0.06);border:1px dashed rgba(99,102,241,0.2);">
         <i class="bi bi-stars" style="font-size:2rem;color:#818cf8;opacity:0.7;"></i>
         <p class="text-muted mt-3 mb-1 small">İlk analiz işini sen tamamla, burası senin başarı vitrinIne dönüşsün.</p>
+    </div>
+    {% endif %}
+
+    <!-- Uzman Vitrini -->
+    {% if featured_experts %}
+    <div class="mt-5 pt-2">
+        <h5 class="text-white fw-semibold mb-1">Uzmanlarla Tanış</h5>
+        <p class="text-muted small mb-4">Alanında doğrulanmış uzmanlarımızdan birkaçı.</p>
+        <div class="ax-expert-grid">
+            {% include 'forum/partials/_expert_showcase.html' %}
+        </div>
+        <div class="text-center mt-4">
+            <a href="{% url 'uzman_dizini' %}" class="ax-btn ax-btn--primary">Tüm Uzmanlar</a>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Başarı Hikayesi Şeridi -->
+    {% if success_stories %}
+    <div class="mt-5 pt-2">
+        <h5 class="text-white fw-semibold mb-1">Başarı Hikayeleri</h5>
+        <p class="text-muted small mb-4">Platformda yolunu bulan kullanıcılarımızdan.</p>
+        <div class="ax-market-story-strip">
+            {% for story in success_stories %}
+            <div class="ax-market-story-card">
+                <p class="ax-market-story-card__quote">&ldquo;{{ story.quote|truncatechars:120 }}&rdquo;</p>
+                <span class="ax-market-story-card__author">{{ story.user.get_full_name|default:story.user.username }}</span>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Oyunlaştırma Bandı -->
+    {% if user.is_authenticated and not can_propose %}
+    <div class="ax-market-gamify-band mt-5">
+        <div class="ax-market-gamify-band__text">
+            <i class="bi bi-trophy" aria-hidden="true"></i>
+            Teklif verme yetkisi puanla kazanılır: forumda katkı yap, İstatistik Arena'da yarış, 1000+ puana ulaş.
+        </div>
+        <a href="{% url 'home' %}#istatistik-arenasi" class="ax-btn ax-btn--ghost ax-btn--sm">Arena'ya Git</a>
     </div>
     {% endif %}
 

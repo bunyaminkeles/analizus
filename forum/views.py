@@ -121,6 +121,43 @@ def forum_index(request):
     })
 
 
+def _get_featured_experts():
+    """Uzman Vitrini — /uzmanlar/ (uzman_dizini) varsayılan "puan" sıralamasıyla
+    birebir aynı kriter + sıra. 5 dk cache (home_experts). Ana sayfa ve /market/
+    arasında paylaşılır — tekrar hesaplama yapılmaz."""
+    from django.core.cache import cache
+
+    featured_experts = cache.get('home_experts')
+    if featured_experts is None:
+        featured_experts = list(
+            Profile.objects
+            .select_related('user')
+            .prefetch_related('skills')
+            .filter(is_public=True)
+            .filter(
+                Q(rank__in=['contributor', 'expert', 'master', 'legend', 'admin'])
+                | Q(skills__isnull=False)
+                | Q(best_answers_count__gt=0)
+            )
+            .exclude(user__username='admin')
+            .distinct()
+            .annotate(
+                showcase_completed_jobs=Count(
+                    'user__proposals',
+                    filter=Q(user__proposals__status='accepted', user__proposals__job__status='completed'),
+                    distinct=True,
+                ),
+                avg_rating=Avg(
+                    'user__received_reviews__rating',
+                    filter=Q(user__received_reviews__is_approved=True),
+                ),
+            )
+            .order_by('-reputation', '-showcase_completed_jobs')[:4]
+        )
+        cache.set('home_experts', featured_experts, 300)
+    return featured_experts
+
+
 # --- ANA SAYFA ---
 @ensure_csrf_cookie
 def home(request):
@@ -163,36 +200,7 @@ def home(request):
     completed_analyses = home_stats['completed_analyses']
     online_experts = home_stats['online_experts']
 
-    # Uzman Vitrini — /uzmanlar/ (uzman_dizini) varsayılan "puan" sıralamasıyla birebir aynı
-    # kriter + sıra: ilk 4 kişi iki sayfada da aynı olsun. 5 dk cache (home_experts).
-    featured_experts = cache.get('home_experts')
-    if featured_experts is None:
-        featured_experts = list(
-            Profile.objects
-            .select_related('user')
-            .prefetch_related('skills')
-            .filter(is_public=True)
-            .filter(
-                Q(rank__in=['contributor', 'expert', 'master', 'legend', 'admin'])
-                | Q(skills__isnull=False)
-                | Q(best_answers_count__gt=0)
-            )
-            .exclude(user__username='admin')
-            .distinct()
-            .annotate(
-                showcase_completed_jobs=Count(
-                    'user__proposals',
-                    filter=Q(user__proposals__status='accepted', user__proposals__job__status='completed'),
-                    distinct=True,
-                ),
-                avg_rating=Avg(
-                    'user__received_reviews__rating',
-                    filter=Q(user__received_reviews__is_approved=True),
-                ),
-            )
-            .order_by('-reputation', '-showcase_completed_jobs')[:4]
-        )
-        cache.set('home_experts', featured_experts, 300)
+    featured_experts = _get_featured_experts()
 
     # Son değerlendirmeler (sosyal kanıt)
     recent_reviews = JobReview.objects.filter(is_approved=True).select_related('reviewer', 'reviewed_user', 'job').order_by('-created_at')[:5]
@@ -413,18 +421,33 @@ def job_list(request):
     # Yetki bilgileri
     can_post = FreelanceJob.can_post(request.user)
     can_post_reason = ""
+    can_propose = False
     if request.user.is_authenticated and hasattr(request.user, 'profile'):
         _, can_post_reason = request.user.profile.can_post_job()
+        can_propose, _ = request.user.profile.can_propose()
+
+    # Uzman Vitrini — ana sayfayla aynı sorgu/cache (home_experts)
+    featured_experts = _get_featured_experts()
+
+    # Başarı Hikayesi şeridi (varsa)
+    success_stories = list(
+        SuccessStory.objects.filter(approval_status='approved')
+        .select_related('user', 'user__profile')
+        .order_by('-is_featured', '-created_at')[:3]
+    )
 
     return render(request, 'forum/market/job_list.html', {
         'jobs': jobs,
         'current_sort': sort,
         'can_post': can_post,
         'can_post_reason': can_post_reason,
+        'can_propose': can_propose,
         'market_stats': market_stats,
         'completed_jobs': completed_jobs,
         'market_categories': market_categories,
         'selected_category': selected_category,
+        'featured_experts': featured_experts,
+        'success_stories': success_stories,
     })
 
 @feature_required('market')
