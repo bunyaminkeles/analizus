@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load forum_extras %}
+{% load static %}
 
 {% block title %}Hakkımızda — Analizus Akademik Analiz ve Veri Bilimi Platformu{% endblock %}
 {% block meta_description %}Analizus, akademik araştırmacılara SPSS, R, Python ile istatistik analizi, YÖK Tez kazıma, TR Dizin tarama ve bibliometrik analiz hizmetleri sunan Türkiye'nin akademik veri platformudur.{% endblock %}
@@ -7,8 +8,24 @@
 {% block main_content_classes %}col-lg-12{% endblock %}
 {% block right_sidebar %}{% endblock %}
 
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/brand_visuals.css' %}?v=0100">
+{% endblock %}
+
 {% block content %}
 <div class="container py-5" style="max-width: 1000px;">
+
+    <!-- Marka görseli: hero bandı -->
+    <div class="ax-brand-visual">
+        <picture>
+            <source media="(min-width: 768px)" srcset="{% static 'img/kurumsal-hero.webp' %}">
+            <img src="{% static 'img/kurumsal-hero-mobile.webp' %}"
+                 alt="" width="800" height="446"
+                 fetchpriority="high" decoding="async"
+                 class="ax-brand-visual__img">
+        </picture>
+        <div class="ax-brand-visual__overlay"></div>
+    </div>
 
     <!-- Biz Kimiz -->
     <div class="mb-5">
@@ -86,6 +103,18 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- Marka görseli: vizyon bandı -->
+    <div class="ax-brand-visual">
+        <picture>
+            <source media="(min-width: 768px)" srcset="{% static 'img/studio-sonrasi.webp' %}">
+            <img src="{% static 'img/studio-sonrasi-mobile.webp' %}"
+                 alt="" width="800" height="446"
+                 loading="lazy" decoding="async"
+                 class="ax-brand-visual__img">
+        </picture>
+        <div class="ax-brand-visual__overlay"></div>
     </div>
 
     <!-- Neden Analizus: Rakip Karşılaştırma -->

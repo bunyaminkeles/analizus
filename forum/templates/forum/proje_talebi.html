@@ -64,8 +64,24 @@
 </script>
 {% endblock %}
 
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/brand_visuals.css' %}?v=0100">
+{% endblock %}
+
 {% block content %}
 <div class="container py-4 py-lg-5">
+
+  <!-- Marka görseli: hero bandı -->
+  <div class="ax-brand-visual">
+    <picture>
+      <source media="(min-width: 768px)" srcset="{% static 'img/proje-talebi-hero.webp' %}">
+      <img src="{% static 'img/proje-talebi-hero-mobile.webp' %}"
+           alt="" width="800" height="446"
+           fetchpriority="high" decoding="async"
+           class="ax-brand-visual__img">
+    </picture>
+    <div class="ax-brand-visual__overlay"></div>
+  </div>
 
   <!-- Başlık -->
   <div class="text-center mb-5">
@@ -147,6 +163,7 @@
               <option value="cleaning">Veri Temizleme / Hazırlama</option>
               <option value="timeseries">Zaman Serisi Analizi</option>
               <option value="nlp">Metin / NLP Analizi</option>
+              <option value="verification"{% if source == 'verification' %} selected{% endif %}>AI Analiz Doğrulama</option>
               <option value="other">Diğer</option>
             </select>
           </div>

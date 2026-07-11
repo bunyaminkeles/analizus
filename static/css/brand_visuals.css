@@ -1,0 +1,42 @@
+/* =============================================================
+   ANALIZUS — brand_visuals.css
+   Marka görselleri (.ax-brand-visual) — proje-talebi, hakkımızda,
+   tarama hub, analiz hub, ana sayfa AI doğrulama bandı.
+   Mobil-önce: taban stiller mobil, masaüstü @media (min-width:768px).
+   Yalnızca ilgili template'lerde {% block extra_head %} ile yüklenir.
+   ============================================================= */
+
+.ax-brand-visual {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--ax-border);
+    margin-bottom: 24px;
+}
+
+.ax-brand-visual__img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.ax-brand-visual__overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: flex-end;
+    padding: 16px;
+    background: linear-gradient(180deg,
+        rgba(15, 23, 42, 0.25) 0%,
+        rgba(15, 23, 42, 0.92) 100%);
+}
+
+@media (min-width: 768px) {
+    .ax-brand-visual {
+        border-radius: 16px;
+        margin-bottom: 32px;
+    }
+    .ax-brand-visual__overlay {
+        padding: 24px;
+    }
+}

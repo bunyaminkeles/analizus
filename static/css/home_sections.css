@@ -1401,3 +1401,201 @@ a.ax-stat-pill:hover {
 @media (max-width: 767px) {
     .ax-market-visual { display: none; }
 }
+
+/* =============================================================
+   FAZ 3 — UZMAN VİTRİNİ
+   ============================================================= */
+.ax-expert-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--ax-space-4, 16px);
+}
+
+.ax-expert-card {
+    background: var(--ax-bg-tertiary);
+    border: 1px solid var(--ax-border);
+    border-radius: var(--ax-radius-xl);
+    padding: var(--ax-space-5, 20px);
+    text-align: center;
+    transition: border-color var(--ax-transition-fast), transform var(--ax-transition-fast);
+}
+.ax-expert-card:hover {
+    border-color: rgba(99, 102, 241, 0.45);
+    transform: translateY(-3px);
+}
+
+.ax-expert-avatar-wrap {
+    position: relative;
+    display: inline-block;
+    margin-bottom: var(--ax-space-3, 12px);
+}
+
+.ax-expert-avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--ax-border);
+}
+
+.ax-expert-avatar--fallback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #1e3a5f, rgba(99, 102, 241, 0.25));
+    color: var(--ax-text-primary);
+    font-weight: var(--ax-font-bold);
+    font-size: var(--ax-text-lg);
+}
+
+.ax-expert-name {
+    display: block;
+    color: var(--ax-text-primary);
+    font-weight: var(--ax-font-semibold);
+    text-decoration: none;
+    margin-bottom: var(--ax-space-2, 8px);
+}
+.ax-expert-name:hover {
+    color: var(--ax-accent-primary);
+}
+
+.ax-expert-skills {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+    margin-bottom: var(--ax-space-3, 12px);
+}
+
+.ax-expert-stats {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ax-space-3, 12px);
+    font-size: var(--ax-text-xs);
+    color: var(--ax-text-muted);
+}
+
+.ax-expert-rating {
+    color: #f59e0b;
+    font-weight: var(--ax-font-semibold);
+}
+
+@media (max-width: 991px) {
+    .ax-expert-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 767px) {
+    .ax-expert-grid {
+        display: flex;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        gap: var(--ax-space-3, 12px);
+        padding-bottom: var(--ax-space-2, 8px);
+        -webkit-overflow-scrolling: touch;
+    }
+    .ax-expert-card {
+        flex: 0 0 78%;
+        scroll-snap-align: start;
+    }
+}
+
+/* =============================================================
+   FAZ 4 — AI ANALİZ DOĞRULAMA BANDI
+   ============================================================= */
+.ax-verify-band {
+    padding: var(--ax-space-6, 24px) 0;
+}
+
+.ax-verify-band .ax-brand-visual {
+    margin-bottom: 0;
+}
+
+.ax-verify-band__inner {
+    display: flex;
+    align-items: center;
+    gap: var(--ax-space-5, 20px);
+    width: 100%;
+}
+
+.ax-verify-band__icon {
+    flex-shrink: 0;
+    font-size: 2.25rem;
+    color: #a78bfa;
+}
+
+.ax-verify-band__content {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.ax-verify-band__title {
+    font-size: var(--ax-text-lg);
+    font-weight: var(--ax-font-bold);
+    color: var(--ax-text-primary);
+    margin: 0 0 4px;
+}
+
+.ax-verify-band__text {
+    font-size: var(--ax-text-sm);
+    color: var(--ax-text-muted);
+    margin: 0;
+    line-height: var(--ax-leading-relaxed);
+}
+
+.ax-verify-band__cta {
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+@media (max-width: 767px) {
+    .ax-verify-band__inner {
+        flex-direction: column;
+        text-align: center;
+    }
+    .ax-verify-band__cta {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* =============================================================
+   FAZ 5 — AI ASİSTAN SORU CHİP'LERİ
+   ============================================================= */
+.ax-ai-chips-section {
+    padding: var(--ax-space-6, 24px) 0;
+}
+
+.ax-ai-chips {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--ax-space-3, 12px);
+}
+
+.ax-ai-chip {
+    padding: 10px 20px;
+    font-size: var(--ax-text-sm);
+    font-family: var(--ax-font-family);
+    color: var(--ax-text-secondary);
+    background: var(--ax-bg-tertiary);
+    border: 1px solid var(--ax-border);
+    border-radius: var(--ax-radius-full);
+    cursor: pointer;
+    transition: border-color var(--ax-transition-fast), color var(--ax-transition-fast), transform var(--ax-transition-fast);
+}
+
+.ax-ai-chip:hover {
+    border-color: var(--ax-accent-primary);
+    color: var(--ax-text-primary);
+    transform: translateY(-1px);
+}
+
+@media (max-width: 479px) {
+    .ax-ai-chips {
+        flex-direction: column;
+    }
+    .ax-ai-chip {
+        width: 100%;
+    }
+}

@@ -1574,6 +1574,7 @@ class ProjectRequest(models.Model):
         ('timeseries', 'Zaman Serisi Analizi'),
         ('nlp', 'Metin / NLP Analizi'),
         ('literature', 'Tez / Makale Veri İndirme'),
+        ('verification', 'AI Analiz Doğrulama'),
         ('other', 'Diğer'),
     ]
     DATA_SIZE_CHOICES = [
@@ -1599,6 +1600,9 @@ class ProjectRequest(models.Model):
         ('yoktez', 'YÖK Tez'),
         ('trdizin', 'TR Dizin'),
         ('tool', 'Analiz Aracı'),
+        ('hero', 'Ana Sayfa Hero'),
+        ('home_corporate', 'Ana Sayfa Kurumsal'),
+        ('verification', 'AI Doğrulama Bandı'),
     ]
 
     name = models.CharField(max_length=150, verbose_name="Ad Soyad")

@@ -1,10 +1,27 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Akademik Tarama Araçları — Analizus{% endblock %}
 {% block meta_description %}YÖK Tez, OpenAlex, TR Dizin ve üniversite arşivlerinden kodsuz veri kazıma araçları. Anahtar kelime ile arama yapın, Excel veya TXT olarak indirin.{% endblock %}
 
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/brand_visuals.css' %}?v=0100">
+{% endblock %}
+
 {% block content %}
 <div class="container py-5">
+
+  <!-- Marka görseli: hub üst bandı -->
+  <div class="ax-brand-visual">
+    <picture>
+      <source media="(min-width: 768px)" srcset="{% static 'img/tarama-hero.webp' %}">
+      <img src="{% static 'img/tarama-hero-mobile.webp' %}"
+           alt="" width="800" height="446"
+           fetchpriority="high" decoding="async"
+           class="ax-brand-visual__img">
+    </picture>
+    <div class="ax-brand-visual__overlay"></div>
+  </div>
 
   <div class="text-center mb-5">
     <span class="fs-1 text-info"><i class="bi bi-search"></i></span>

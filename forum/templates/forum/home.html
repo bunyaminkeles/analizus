@@ -2,17 +2,19 @@
 {% load static %}
 {% load forum_extras %}
 
-{% block meta_description %}Teziniz için istatistik analizi araçları, uzman eşleştirme ve akademik destek. Cronbach Alpha, t-testi, ANOVA, regresyon ve daha fazlası — ücretsiz, Türkçe, PDF raporlu.{% endblock %}
+{% block title %}Analizus — Ücretsiz İstatistik Analizi ve Veri Analizi Platformu{% endblock %}
+{% block meta_description %}Dosyanı yükle, istatistik analizi ve veri analizi hızlıca APA formatında hazır — SPSS bilgisi gerekmez. Tez analizi ve akademik danışmanlık için uzman bul.{% endblock %}
 
 {% block extra_head %}
-<link rel="stylesheet" href="{% static 'css/hero.css' %}?v=0103">
+<link rel="stylesheet" href="{% static 'css/hero.css' %}?v=0105">
 <link rel="stylesheet" href="{% static 'css/cards.css' %}?v=0100">
 <link rel="stylesheet" href="{% static 'css/quiz.css' %}?v=0100">
 <link rel="stylesheet" href="{% static 'css/topics.css' %}?v=0100">
 <link rel="stylesheet" href="{% static 'css/testimonials.css' %}?v=0100">
 <link rel="stylesheet" href="{% static 'css/stats.css' %}?v=0100">
 <link rel="stylesheet" href="{% static 'css/news.css' %}?v=0100">
-<link rel="stylesheet" href="{% static 'css/home_sections.css' %}?v=0106">
+<link rel="stylesheet" href="{% static 'css/home_sections.css' %}?v=0110">
+<link rel="stylesheet" href="{% static 'css/brand_visuals.css' %}?v=0100">
 {% endblock %}
 
 {% block main_container %}container-fluid px-2 px-lg-3{% endblock %}
@@ -167,12 +169,26 @@
             <div class="col-12 col-lg-8 text-center">
 
                 <h1 class="ax-hero__title" style="font-size: 2.75rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1.2;">
-                    İstatistikten Yapay Zekaya,<br>
-                    <mark>Türkiye'nin Analiz Ekosistemi</mark>
+                    Analizini yap.<br>
+                    <mark>Yapamıyorsan, yapan burada.</mark>
                 </h1>
 
                 <p class="ax-hero__subtitle" style="max-width: 600px; margin: 0 auto 24px; line-height: 1.6;">
-                    Türkiye'nin analiz platformu — istatistik araçları, uzman pazarı ve kodsuz akademik veri kazıma/tarama bir arada.
+                    Türkiye'nin analiz ekosistemi — 18 ücretsiz istatistik aracı, AI asistan ve doğrulanmış uzmanlar tek çatıda.
+                </p>
+
+                <!-- Sürükle-bırak veri alanı -->
+                <div class="ax-hero-dropzone" id="axHeroDropzone">
+                    {% csrf_token %}
+                    <input type="file" id="axHeroFileInput" accept=".csv,.xlsx,.xls" hidden>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" class="ax-hero-dropzone__icon"><path d="M12 3v12"/><path d="m7 8 5-5 5 5"/><path d="M5 21h14a2 2 0 0 0 2-2v-5a2 2 0 0 0-2-2h-1"/><path d="M5 21a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h1"/></svg>
+                    <span class="ax-hero-dropzone__text" id="axHeroDropzoneText">CSV veya Excel dosyanı buraya bırak</span>
+                    <button type="button" class="ax-hero-dropzone__btn" id="axHeroFileBtn">Dosya Seç</button>
+                </div>
+                <p class="ax-hero-dropzone__error" id="axHeroDropzoneError" hidden></p>
+
+                <p class="ax-hero__secondary-cta">
+                    <a href="{% url 'proje_talebi' %}?source=hero">Ya da bu işi 24 saatte bir uzmana bırak →</a>
                 </p>
 
                 <div class="ax-hero__actions">
@@ -247,6 +263,18 @@
 
 
             </div>
+        </div>
+    </div>
+</section>
+
+<!-- =====================================================
+     FAZ 1: KİTLE YÖNLENDİRME BANDI
+     ===================================================== -->
+<section class="ax-audience-band">
+    <div class="container">
+        <div class="ax-audience-band__row">
+            <a href="{% url 'analiz_home' %}" class="ax-audience-band__pill">🎓 Tez / makale analizi için buradayım</a>
+            <a href="{% url 'proje_talebi' %}?source=home_corporate" class="ax-audience-band__pill">🏢 Kurumsal veri projesi için buradayım</a>
         </div>
     </div>
 </section>
@@ -507,6 +535,27 @@ document.addEventListener('DOMContentLoaded', function () {
 </script>
 
 <!-- =====================================================
+     FAZ 5: AI ASİSTAN SORU CHİP'LERİ
+     ===================================================== -->
+{% if features.ai_assistant %}
+<section class="ax-ai-chips-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-lg-8 text-center">
+                <h2 class="ax-section-title mb-2" style="font-size:1.5rem;">Hangi testi kullanmalıyım?</h2>
+                <p class="ax-section-subtitle mb-4">Bir soru seç, AI Asistan hemen cevaplasın.</p>
+                <div class="ax-ai-chips">
+                    <button type="button" class="ax-ai-chip" onclick="event.stopPropagation(); window.axOpenAiWidget && axOpenAiWidget('Ölçeğimin güvenirliğini nasıl ölçerim?')">Ölçeğimin güvenirliğini nasıl ölçerim?</button>
+                    <button type="button" class="ax-ai-chip" onclick="event.stopPropagation(); window.axOpenAiWidget && axOpenAiWidget('İki grup ortalamasını karşılaştırmak istiyorum')">İki grup ortalamasını karşılaştırmak istiyorum</button>
+                    <button type="button" class="ax-ai-chip" onclick="event.stopPropagation(); window.axOpenAiWidget && axOpenAiWidget('Verim normal dağılmıyor, ne yapmalıyım?')">Verim normal dağılmıyor, ne yapmalıyım?</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- =====================================================
      NASIL ÇALIŞIYORUZ? (Kompakt Timeline)
      ===================================================== -->
 <section class="ax-timeline-section">
@@ -757,6 +806,10 @@ document.addEventListener('DOMContentLoaded', function () {
             </div>
             <div class="col-6 col-md-2 mb-4 mb-md-0">
                 <div class="ax-stat-item" data-target="{{ completed_jobs }}" data-suffix="+">0+</div>
+                <div class="ax-stat-label">Tamamlanan Proje</div>
+            </div>
+            <div class="col-6 col-md-2 mb-4 mb-md-0">
+                <div class="ax-stat-item" data-target="{{ completed_analyses }}" data-suffix="+">0+</div>
                 <div class="ax-stat-label">Tamamlanan Analiz</div>
             </div>
             {% if open_jobs_count %}
@@ -768,14 +821,97 @@ document.addEventListener('DOMContentLoaded', function () {
             </div>
             {% endif %}
             {% if weekly_new_users %}
-            <div class="col-6 col-md-2">
+            <div class="col-6 col-md-2 mb-4 mb-md-0">
                 <div class="ax-stat-item" style="color:#6366f1;">+{{ weekly_new_users }}</div>
                 <div class="ax-stat-label">Bu Hafta Yeni Üye</div>
+            </div>
+            {% endif %}
+            {% if online_experts %}
+            <div class="col-6 col-md-2">
+                <div class="ax-stat-item" style="color:#22c55e;">{{ online_experts }}</div>
+                <div class="ax-stat-label">Şu An Çevrimiçi Uzman</div>
             </div>
             {% endif %}
         </div>
     </div>
 </section>
+
+<!-- =====================================================
+     FAZ 4: AI ANALİZ DOĞRULAMA BANDI
+     ===================================================== -->
+<section class="ax-verify-band">
+    <div class="container">
+        <div class="ax-brand-visual">
+            <picture>
+                <source media="(min-width: 768px)" srcset="{% static 'img/ai-dogrulama.webp' %}">
+                <img src="{% static 'img/ai-dogrulama-mobile.webp' %}"
+                     alt="" width="800" height="446"
+                     loading="lazy" decoding="async"
+                     class="ax-brand-visual__img">
+            </picture>
+            <div class="ax-brand-visual__overlay">
+                <div class="ax-verify-band__inner">
+                    <i class="bi bi-patch-question-fill ax-verify-band__icon" aria-hidden="true"></i>
+                    <div class="ax-verify-band__content">
+                        <h2 class="ax-verify-band__title">Analizini AI'a mı yaptırdın?</h2>
+                        <p class="ax-verify-band__text">ChatGPT hızlıdır ama jüri karşısında güvence vermez. Uzmanımız 24 saatte kontrol etsin, doğrulama raporu versin.</p>
+                    </div>
+                    <a href="{% url 'proje_talebi' %}?source=verification" class="ax-btn ax-btn--primary ax-verify-band__cta">Doğrulama Talep Et</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- =====================================================
+     FAZ 3: UZMAN VİTRİNİ
+     ===================================================== -->
+{% if featured_experts %}
+<section class="ax-expert-section py-5">
+    <div class="container">
+        <h2 class="ax-section-title text-center mb-2">Uzmanlarla Tanış</h2>
+        <p class="ax-section-subtitle text-center mb-5">Alanında doğrulanmış uzmanlarımızdan birkaçı.</p>
+        <div class="ax-expert-grid">
+            {% for expert in featured_experts %}
+            <div class="ax-expert-card">
+                <div class="ax-expert-avatar-wrap">
+                    {% if expert.avatar %}
+                    <img src="{{ expert.avatar.url }}" alt="{{ expert.user.username }}" class="ax-expert-avatar">
+                    {% else %}
+                    <div class="ax-expert-avatar ax-expert-avatar--fallback">{{ expert.user.username|first|upper }}</div>
+                    {% endif %}
+                    {% if expert.is_online %}
+                    <span class="ax-online-dot" title="Çevrimiçi" style="position:absolute;bottom:2px;right:2px;width:14px;height:14px;background:#22c55e;border:2px solid var(--ax-bg-primary, #0f172a);border-radius:50%;display:block;"></span>
+                    {% endif %}
+                </div>
+                <a href="{% url 'profile_detail' expert.user.username %}" class="ax-expert-name">{{ expert.user.get_full_name|default:expert.user.username }}</a>
+                {% if expert.skills.all %}
+                <div class="ax-expert-skills">
+                    {% for skill in expert.skills.all|slice:":3" %}
+                    <span class="ax-badge ax-badge--primary">{{ skill.title }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                <div class="ax-expert-stats">
+                    <span>{{ expert.showcase_completed_jobs }} tamamlanan proje</span>
+                    {% if expert.avg_rating %}
+                    <span class="ax-expert-rating">★ {{ expert.avg_rating|floatformat:1 }}</span>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="text-center mt-5">
+            <a href="{% url 'uzman_dizini' %}" class="ax-btn ax-btn--primary me-2">Tüm Uzmanlar</a>
+            {% if user.is_authenticated %}
+            <a href="{% url 'forum_index' %}" class="ax-btn ax-btn--ghost">Uzman Olarak Katıl</a>
+            {% else %}
+            <a href="{% url 'register' %}" class="ax-btn ax-btn--ghost">Uzman Olarak Katıl</a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endif %}
 
 <!-- =====================================================
      GEMINI GÖREV 6: GÜVEN UNSURLARI (Platform Güvencesi)
@@ -999,6 +1135,85 @@ function copyText(text, btn) {
         }, 2000);
     });
 }
+</script>
+
+<!-- Hero dropzone: dosyayı gerçekten yükler (session veri seti), sonra /analiz/?from=hero yönlendirir -->
+<script>
+(function () {
+    var dropzone = document.getElementById('axHeroDropzone');
+    var fileInput = document.getElementById('axHeroFileInput');
+    var fileBtn = document.getElementById('axHeroFileBtn');
+    var dropzoneText = document.getElementById('axHeroDropzoneText');
+    var errorEl = document.getElementById('axHeroDropzoneError');
+    if (!dropzone || !fileInput || !fileBtn) return;
+
+    function showError(msg) {
+        if (!errorEl) return;
+        errorEl.textContent = msg;
+        errorEl.hidden = false;
+    }
+
+    function clearError() {
+        if (!errorEl) return;
+        errorEl.hidden = true;
+        errorEl.textContent = '';
+    }
+
+    function uploadFile(file) {
+        if (!file) return;
+        clearError();
+        dropzoneText.textContent = 'Yükleniyor: ' + file.name + '…';
+        fileBtn.disabled = true;
+
+        var csrfInput = dropzone.querySelector('[name=csrfmiddlewaretoken]');
+        var formData = new FormData();
+        formData.append('file', file);
+
+        fetch('/analiz/hero-upload/', {
+            method: 'POST',
+            headers: { 'X-CSRFToken': csrfInput ? csrfInput.value : '' },
+            body: formData,
+        })
+        .then(function (r) { return r.json().then(function (data) { return { ok: r.ok, data: data }; }); })
+        .then(function (result) {
+            if (result.ok && result.data.success) {
+                window.location.href = '/analiz/?from=hero';
+            } else {
+                showError(result.data.error || 'Dosya yüklenemedi. Lütfen tekrar deneyin.');
+                dropzoneText.textContent = 'CSV veya Excel dosyanı buraya bırak';
+                fileBtn.disabled = false;
+            }
+        })
+        .catch(function () {
+            showError('Bağlantı hatası. Lütfen tekrar deneyin.');
+            dropzoneText.textContent = 'CSV veya Excel dosyanı buraya bırak';
+            fileBtn.disabled = false;
+        });
+    }
+
+    fileBtn.addEventListener('click', function () {
+        fileInput.click();
+    });
+
+    fileInput.addEventListener('change', function () {
+        uploadFile(fileInput.files[0]);
+    });
+
+    dropzone.addEventListener('dragover', function (e) {
+        e.preventDefault();
+        dropzone.classList.add('ax-hero-dropzone--drag');
+    });
+    dropzone.addEventListener('dragleave', function () {
+        dropzone.classList.remove('ax-hero-dropzone--drag');
+    });
+    dropzone.addEventListener('drop', function (e) {
+        e.preventDefault();
+        dropzone.classList.remove('ax-hero-dropzone--drag');
+        if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]) {
+            uploadFile(e.dataTransfer.files[0]);
+        }
+    });
+})();
 </script>
 
 <!-- Counter strip animasyonu -->

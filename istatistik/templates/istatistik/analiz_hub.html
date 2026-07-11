@@ -1,10 +1,27 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}İstatistik Analiz Araçları — Analizus{% endblock %}
 {% block meta_description %}Betimsel istatistik, t-testi, ANOVA, regresyon, faktör analizi ve daha fazlası. Veri dosyanızı yükleyin, APA formatında PDF rapor saniyeler içinde hazır.{% endblock %}
 
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/brand_visuals.css' %}?v=0100">
+{% endblock %}
+
 {% block content %}
 <div class="container py-5">
+
+  <!-- Marka görseli: hub üst bandı -->
+  <div class="ax-brand-visual">
+    <picture>
+      <source media="(min-width: 768px)" srcset="{% static 'img/akademik-hero.webp' %}">
+      <img src="{% static 'img/akademik-hero-mobile.webp' %}"
+           alt="" width="800" height="446"
+           fetchpriority="high" decoding="async"
+           class="ax-brand-visual__img">
+    </picture>
+    <div class="ax-brand-visual__overlay"></div>
+  </div>
 
   <div class="text-center mb-5">
     <span class="fs-1 text-success"><i class="bi bi-bar-chart-fill"></i></span>
@@ -23,6 +40,14 @@
     </div>
     {% endif %}
   </div>
+
+  {% if from_hero %}
+  <div class="text-center mb-4">
+    <span class="ax-badge ax-badge--success" style="padding:0.5em 1em;font-size:var(--ax-text-sm);">
+      <i class="bi bi-check-circle-fill me-1"></i>Dosyanı seçtin — şimdi bir araç seç
+    </span>
+  </div>
+  {% endif %}
 
   {% for cat_name, tools in tool_categories %}
   <h6 class="text-uppercase fw-semibold mb-3 mt-4 pb-2"

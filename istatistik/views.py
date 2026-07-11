@@ -817,9 +817,45 @@ def clear_session_dataset(request):
     return JsonResponse({'ok': True})
 
 
+@feature_required
+@ratelimit(key='ip', rate='30/h', method='POST', block=True)
+def hero_upload(request):
+    """Ana sayfa hero dropzone'undan gelen dosyayı session veri setine kaydeder.
+    Böylece kullanıcı /analiz/<slug>/ araç sayfasına geçtiğinde dosyayı
+    tekrar yüklemesine gerek kalmaz (mevcut session dataset mekanizması)."""
+    if request.method != 'POST':
+        from django.http import HttpResponseNotAllowed
+        return HttpResponseNotAllowed(['POST'])
+
+    from .services.job_runner import _parse_file, save_session_dataset
+
+    file = request.FILES.get('file')
+    if not file:
+        return JsonResponse({'error': 'Dosya seçilmedi.'}, status=400)
+    if not file.name.lower().endswith(('.csv', '.xlsx', '.xls')):
+        return JsonResponse({'error': 'CSV veya Excel dosyası yükleyin.'}, status=400)
+    if file.size > django_settings.MAX_UPLOAD_SIZE:
+        return JsonResponse({'error': 'Dosya boyutu 5 MB sınırını aşıyor.'}, status=400)
+
+    content = file.read()
+    try:
+        _parse_file(content, file.name)
+    except ValueError as e:
+        return JsonResponse({'error': str(e)}, status=400)
+
+    if not request.session.session_key:
+        request.session.create()
+    save_session_dataset(request.session.session_key, content, file.name)
+    request.session['_ax_dataset_name'] = file.name
+    request.session.modified = True
+
+    return JsonResponse({'success': True, 'filename': file.name})
+
+
 def analiz_hub(request):
     return render(request, 'istatistik/analiz_hub.html', {
         'tool_categories': TOOL_CATEGORIES,
+        'from_hero': request.GET.get('from') == 'hero',
     })
 
 

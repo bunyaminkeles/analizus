@@ -99,6 +99,101 @@
 }
 
 /* -------------------------------------------------------------
+   HERO DROPZONE — sürükle-bırak veri alanı
+   ------------------------------------------------------------- */
+.ax-hero-dropzone {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ax-space-3);
+    flex-wrap: wrap;
+    max-width: 560px;
+    margin: 0 auto var(--ax-space-3);
+    padding: var(--ax-space-5) var(--ax-space-6);
+    border: 1.5px dashed var(--ax-border-hover);
+    border-radius: var(--ax-radius-xl);
+    background: rgba(99, 102, 241, 0.04);
+    transition: border-color var(--ax-transition-fast), background-color var(--ax-transition-fast);
+}
+
+.ax-hero-dropzone--drag {
+    border-color: var(--ax-accent-primary);
+    background: rgba(99, 102, 241, 0.10);
+}
+
+.ax-hero-dropzone__icon {
+    color: var(--ax-accent-primary);
+    flex-shrink: 0;
+}
+
+.ax-hero-dropzone__text {
+    color: var(--ax-text-secondary);
+    font-size: var(--ax-text-sm);
+}
+
+.ax-hero-dropzone__btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 18px;
+    font-size: var(--ax-text-sm);
+    font-weight: var(--ax-font-semibold);
+    font-family: var(--ax-font-family);
+    color: #ffffff;
+    background-color: var(--ax-accent-primary);
+    border: none;
+    border-radius: var(--ax-radius-full);
+    cursor: pointer;
+    transition: background-color var(--ax-transition-fast), transform var(--ax-transition-fast);
+}
+
+.ax-hero-dropzone__btn:hover {
+    background-color: var(--ax-accent-primary-hover);
+    transform: translateY(-1px);
+}
+
+.ax-hero-dropzone__btn:disabled {
+    opacity: 0.6;
+    cursor: default;
+    transform: none;
+}
+
+.ax-hero-dropzone__error {
+    max-width: 560px;
+    margin: 0 auto var(--ax-space-3);
+    text-align: center;
+    color: var(--ax-accent-danger, #ef4444);
+    font-size: var(--ax-text-sm);
+}
+
+@media (max-width: 479px) {
+    .ax-hero-dropzone {
+        flex-direction: column;
+        padding: var(--ax-space-4);
+    }
+    .ax-hero-dropzone__btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+/* İkincil CTA — hero dropzone altı */
+.ax-hero__secondary-cta {
+    text-align: center;
+    margin: 0 0 var(--ax-space-6);
+}
+
+.ax-hero__secondary-cta a {
+    color: var(--ax-text-muted);
+    font-size: var(--ax-text-sm);
+    text-decoration: none;
+    transition: color var(--ax-transition-fast);
+}
+
+.ax-hero__secondary-cta a:hover {
+    color: var(--ax-text-secondary);
+}
+
+/* -------------------------------------------------------------
    BUTONLAR
    ------------------------------------------------------------- */
 .ax-hero__actions {
@@ -285,4 +380,52 @@
 }
 .ax-hero__personal-sep {
     color: var(--ax-border-hover);
+}
+
+/* -------------------------------------------------------------
+   KİTLE YÖNLENDİRME BANDI — hero altı, "kimsin?" sorusu
+   ------------------------------------------------------------- */
+.ax-audience-band {
+    padding: var(--ax-space-4) 0;
+    border-top: 1px solid var(--ax-border);
+    border-bottom: 1px solid var(--ax-border);
+}
+
+.ax-audience-band__row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--ax-space-4);
+    flex-wrap: wrap;
+}
+
+.ax-audience-band__pill {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ax-space-2);
+    padding: 8px 20px;
+    font-size: var(--ax-text-sm);
+    font-weight: var(--ax-font-medium);
+    color: var(--ax-text-secondary);
+    background: var(--ax-bg-tertiary);
+    border: 1px solid var(--ax-border);
+    border-radius: var(--ax-radius-full);
+    text-decoration: none;
+    transition: border-color var(--ax-transition-fast), color var(--ax-transition-fast), transform var(--ax-transition-fast);
+}
+
+.ax-audience-band__pill:hover {
+    border-color: var(--ax-accent-primary);
+    color: var(--ax-text-primary);
+    transform: translateY(-1px);
+}
+
+@media (max-width: 479px) {
+    .ax-audience-band__row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .ax-audience-band__pill {
+        justify-content: center;
+    }
 }

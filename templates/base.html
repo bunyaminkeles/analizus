@@ -1245,6 +1245,15 @@
     this.style.height = 'auto';
     this.style.height = Math.min(this.scrollHeight, 100) + 'px';
   });
+
+  // Dışarıdan tetiklenebilir köprü — hero/home sayfasındaki soru chip'leri için
+  window.axOpenAiWidget = function (question) {
+    if (!isOpen) toggle();
+    if (question) {
+      input.value = question;
+      sendMessage();
+    }
+  };
 })();
 </script>
 {% endif %}

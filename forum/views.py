@@ -127,11 +127,72 @@ def home(request):
     sections = Section.objects.all().order_by('order')
 
     # Widget verileri
-    # İstatistikler
-    total_topics = Topic.objects.count()
-    total_posts = Post.objects.count()
-    total_users = User.objects.count()
-    completed_jobs = FreelanceJob.objects.filter(status='completed').count()
+    # İstatistikler — 5 dk cache (home_stats): her istekte 8 ayrı sorgu yerine cache hit'te 0 sorgu
+    from django.core.cache import cache
+    from istatistik.models import IstatistikJob
+
+    home_stats = cache.get('home_stats')
+    if home_stats is None:
+        online_cutoff = timezone.now() - timedelta(minutes=5)
+        home_stats = {
+            'total_topics': Topic.objects.count(),
+            'total_posts': Post.objects.count(),
+            'total_users': User.objects.count(),
+            'completed_jobs': FreelanceJob.objects.filter(status='completed').count(),
+            'weekly_new_users': User.objects.filter(date_joined__gte=timezone.now() - timedelta(days=7)).count(),
+            'open_jobs_count': FreelanceJob.objects.filter(status='open').count(),
+            'active_experts_count': User.objects.filter(proposals__job__status='completed').distinct().count(),
+            # Tamamlanan Analiz — IstatistikJob bazlı; "Tamamlanan Proje" (FreelanceJob) ile karıştırılmasın
+            'completed_analyses': IstatistikJob.objects.filter(status='completed').count(),
+            # Şu an çevrimiçi uzman — Profile.is_online bir Python property, ORM'de kullanılamaz;
+            # last_seen üzerinden DB seviyesinde filtrelenir
+            'online_experts': Profile.objects.filter(
+                Q(rank__in=['expert', 'master', 'legend', 'admin']) | Q(account_type='Expert'),
+                last_seen__gte=online_cutoff,
+            ).count(),
+        }
+        cache.set('home_stats', home_stats, 300)
+
+    total_topics = home_stats['total_topics']
+    total_posts = home_stats['total_posts']
+    total_users = home_stats['total_users']
+    completed_jobs = home_stats['completed_jobs']
+    weekly_new_users = home_stats['weekly_new_users']
+    open_jobs_count = home_stats['open_jobs_count']
+    active_experts_count = home_stats['active_experts_count']
+    completed_analyses = home_stats['completed_analyses']
+    online_experts = home_stats['online_experts']
+
+    # Uzman Vitrini — /uzmanlar/ (uzman_dizini) varsayılan "puan" sıralamasıyla birebir aynı
+    # kriter + sıra: ilk 4 kişi iki sayfada da aynı olsun. 5 dk cache (home_experts).
+    featured_experts = cache.get('home_experts')
+    if featured_experts is None:
+        featured_experts = list(
+            Profile.objects
+            .select_related('user')
+            .prefetch_related('skills')
+            .filter(is_public=True)
+            .filter(
+                Q(rank__in=['contributor', 'expert', 'master', 'legend', 'admin'])
+                | Q(skills__isnull=False)
+                | Q(best_answers_count__gt=0)
+            )
+            .exclude(user__username='admin')
+            .distinct()
+            .annotate(
+                showcase_completed_jobs=Count(
+                    'user__proposals',
+                    filter=Q(user__proposals__status='accepted', user__proposals__job__status='completed'),
+                    distinct=True,
+                ),
+                avg_rating=Avg(
+                    'user__received_reviews__rating',
+                    filter=Q(user__received_reviews__is_approved=True),
+                ),
+            )
+            .order_by('-reputation', '-showcase_completed_jobs')[:4]
+        )
+        cache.set('home_experts', featured_experts, 300)
 
     # Son değerlendirmeler (sosyal kanıt)
     recent_reviews = JobReview.objects.filter(is_approved=True).select_related('reviewer', 'reviewed_user', 'job').order_by('-created_at')[:5]
@@ -188,19 +249,6 @@ def home(request):
     from .news_utils import get_science_news
     science_news = get_science_news()
 
-    # Son 7 günde yeni kayıt
-    weekly_new_users = User.objects.filter(
-        date_joined__gte=timezone.now() - timedelta(days=7)
-    ).count()
-
-    # Açık iş ilanı sayısı
-    open_jobs_count = FreelanceJob.objects.filter(status='open').count()
-
-    # En az 1 tamamlanmış işi olan aktif uzman sayısı
-    active_experts_count = User.objects.filter(
-        proposals__job__status='completed'
-    ).distinct().count()
-
     context = {
         'sections': sections,
         # İstatistikler
@@ -211,6 +259,9 @@ def home(request):
         'weekly_new_users': weekly_new_users,
         'open_jobs_count': open_jobs_count,
         'active_experts_count': active_experts_count,
+        'completed_analyses': completed_analyses,
+        'online_experts': online_experts,
+        'featured_experts': featured_experts,
         # Widgetlar
         'recent_topics': recent_topics,
         'popular_topics': popular_topics,
