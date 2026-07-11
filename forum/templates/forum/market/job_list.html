@@ -8,15 +8,19 @@
 
 {% block extra_head %}
 <link rel="stylesheet" href="{% static 'css/expert_card.css' %}?v=0001">
-<link rel="stylesheet" href="{% static 'css/market.css' %}?v=0004">
+<link rel="stylesheet" href="{% static 'css/market.css' %}?v=0005">
 {% endblock %}
 
 {% block content %}
 
 <!-- Hero -->
 <section class="ax-market-hero">
+    <picture class="ax-market-hero__media">
+        <source media="(min-width: 768px)" srcset="{% static 'img/market-hero.webp' %}">
+        <img src="{% static 'img/market-hero-mobile.webp' %}" alt="" width="800" height="436" fetchpriority="high" decoding="async" class="ax-market-hero__media-img">
+    </picture>
     <div class="container">
-        <!-- İleride market-hero.webp/market-hero-mobile.webp eklenecek: <picture><source media="(min-width:768px)" srcset="...">...</picture> -->
+
         <h1 class="ax-market-hero__title">Analiz Hizmetleri Pazarı</h1>
         <p class="ax-market-hero__subtitle">İhtiyacını anlat, doğrulanmış uzmanlardan teklif al — fiyatlar gizli, değerlendirmeler gerçek.</p>
         <div class="ax-market-hero__doors">
