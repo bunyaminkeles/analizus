@@ -91,6 +91,7 @@ urlpatterns = [
     path('iletisim/', views.contact, name='contact'),
     path('gizlilik-politikasi/', views.gizlilik_politikasi, name='gizlilik_politikasi'),
     path('proje-talebi/', views.proje_talebi, name='proje_talebi'),
+    path('ai-cozumler/', views.ai_cozumler, name='ai_cozumler'),
     
     # Section Detail
     path('section/<int:pk>/', views.section_detail, name='section_detail'),

@@ -2017,6 +2017,11 @@ def proje_talebi(request):
     })
 
 
+@feature_required('agentic_landing')
+def ai_cozumler(request):
+    return render(request, 'forum/ai_cozumler.html', {})
+
+
 def search_result(request):
     """Arama sonuçları"""
     query = request.GET.get('q', '').strip()

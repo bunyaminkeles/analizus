@@ -13,7 +13,7 @@
 <link rel="stylesheet" href="{% static 'css/testimonials.css' %}?v=0100">
 <link rel="stylesheet" href="{% static 'css/stats.css' %}?v=0100">
 <link rel="stylesheet" href="{% static 'css/news.css' %}?v=0100">
-<link rel="stylesheet" href="{% static 'css/home_sections.css' %}?v=0110">
+<link rel="stylesheet" href="{% static 'css/home_sections.css' %}?v=0111">
 <link rel="stylesheet" href="{% static 'css/brand_visuals.css' %}?v=0100">
 {% endblock %}
 
@@ -274,7 +274,7 @@
     <div class="container">
         <div class="ax-audience-band__row">
             <a href="{% url 'analiz_home' %}" class="ax-audience-band__pill">🎓 Tez / makale analizi için buradayım</a>
-            <a href="{% url 'proje_talebi' %}?source=home_corporate" class="ax-audience-band__pill">🏢 Kurumsal veri projesi için buradayım</a>
+            <a href="{% url 'proje_talebi' %}?source=home_corporate" class="ax-audience-band__pill">🏢 Kurumsal veri ve otomasyon projeleri</a>
         </div>
     </div>
 </section>
@@ -837,28 +837,44 @@ document.addEventListener('DOMContentLoaded', function () {
 </section>
 
 <!-- =====================================================
-     FAZ 4: AI ANALİZ DOĞRULAMA BANDI
+     FAZ 4: AI ÇAĞI BÖLÜMÜ (Doğrulama + Agentic)
      ===================================================== -->
 <section class="ax-verify-band">
     <div class="container">
-        <div class="ax-brand-visual">
-            <picture>
-                <source media="(min-width: 768px)" srcset="{% static 'img/ai-dogrulama.webp' %}">
-                <img src="{% static 'img/ai-dogrulama-mobile.webp' %}"
-                     alt="" width="800" height="446"
-                     loading="lazy" decoding="async"
-                     class="ax-brand-visual__img">
-            </picture>
-            <div class="ax-brand-visual__overlay">
-                <div class="ax-verify-band__inner">
-                    <i class="bi bi-patch-question-fill ax-verify-band__icon" aria-hidden="true"></i>
-                    <div class="ax-verify-band__content">
-                        <h2 class="ax-verify-band__title">Analizini AI'a mı yaptırdın?</h2>
-                        <p class="ax-verify-band__text">ChatGPT hızlıdır ama jüri karşısında güvence vermez. Uzmanımız 24 saatte kontrol etsin, doğrulama raporu versin.</p>
+        <h2 class="ax-ai-era-heading">AI çağında iki yol</h2>
+        <div class="ax-ai-era-grid{% if not features.agentic_landing %} ax-ai-era-grid--single{% endif %}">
+            <div class="ax-brand-visual">
+                <picture>
+                    <source media="(min-width: 768px)" srcset="{% static 'img/ai-dogrulama.webp' %}">
+                    <img src="{% static 'img/ai-dogrulama-mobile.webp' %}"
+                         alt="" width="800" height="446"
+                         loading="lazy" decoding="async"
+                         class="ax-brand-visual__img">
+                </picture>
+                <div class="ax-brand-visual__overlay">
+                    <div class="ax-verify-band__inner">
+                        <i class="bi bi-patch-question-fill ax-verify-band__icon" aria-hidden="true"></i>
+                        <div class="ax-verify-band__content">
+                            <h3 class="ax-verify-band__title">Analizini AI'a mı yaptırdın?</h3>
+                            <p class="ax-verify-band__text">ChatGPT hızlıdır ama jüri karşısında güvence vermez. Uzmanımız 24 saatte kontrol etsin, doğrulama raporu versin.</p>
+                        </div>
+                        <a href="{% url 'proje_talebi' %}?source=verification" class="ax-btn ax-btn--primary ax-verify-band__cta">Doğrulama Talep Et</a>
                     </div>
-                    <a href="{% url 'proje_talebi' %}?source=verification" class="ax-btn ax-btn--primary ax-verify-band__cta">Doğrulama Talep Et</a>
                 </div>
             </div>
+            {% if features.agentic_landing %}
+            <div class="ax-agentic-band-card">
+                <!-- İleride agentic-hero.webp/agentic-hero-mobile.webp eklenecek: <picture><source media="(min-width:768px)" srcset="...">...</picture> -->
+                <div class="ax-verify-band__inner">
+                    <i class="bi bi-cpu ax-verify-band__icon" aria-hidden="true"></i>
+                    <div class="ax-verify-band__content">
+                        <h3 class="ax-verify-band__title">Analizleriniz siz uyurken çalışsın.</h3>
+                        <p class="ax-verify-band__text">Veri toplayan, analiz eden, raporlayan AI sistemleri — uzman gözetiminde kuruyoruz.</p>
+                    </div>
+                    <a href="{% url 'ai_cozumler' %}" class="ax-btn ax-btn--primary ax-verify-band__cta">AI Çözümlerini Keşfet</a>
+                </div>
+            </div>
+            {% endif %}
         </div>
     </div>
 </section>

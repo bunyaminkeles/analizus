@@ -1501,14 +1501,39 @@ a.ax-stat-pill:hover {
 }
 
 /* =============================================================
-   FAZ 4 — AI ANALİZ DOĞRULAMA BANDI
+   FAZ 4 — AI ÇAĞI BÖLÜMÜ (Doğrulama + Agentic)
    ============================================================= */
 .ax-verify-band {
     padding: var(--ax-space-6, 24px) 0;
 }
 
+.ax-ai-era-heading {
+    font-size: var(--ax-text-2xl);
+    font-weight: var(--ax-font-bold);
+    color: var(--ax-text-primary);
+    text-align: center;
+    margin-bottom: var(--ax-space-5, 20px);
+}
+
+.ax-ai-era-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ax-space-5, 20px);
+}
+
 .ax-verify-band .ax-brand-visual {
     margin-bottom: 0;
+}
+
+.ax-agentic-band-card {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--ax-border, rgba(255,255,255,0.08));
+    background: var(--ax-bg-secondary, #111827);
+    display: flex;
+    align-items: center;
+    padding: var(--ax-space-5, 20px);
 }
 
 .ax-verify-band__inner {
@@ -1548,6 +1573,10 @@ a.ax-stat-pill:hover {
     white-space: nowrap;
 }
 
+.ax-agentic-band-card .ax-verify-band__inner {
+    width: 100%;
+}
+
 @media (max-width: 767px) {
     .ax-verify-band__inner {
         flex-direction: column;
@@ -1556,6 +1585,19 @@ a.ax-stat-pill:hover {
     .ax-verify-band__cta {
         width: 100%;
         justify-content: center;
+    }
+}
+
+@media (min-width: 768px) {
+    .ax-ai-era-grid {
+        grid-template-columns: 1fr 1fr;
+        align-items: stretch;
+    }
+    .ax-ai-era-grid--single {
+        grid-template-columns: 1fr;
+    }
+    .ax-agentic-band-card {
+        height: 100%;
     }
 }
 

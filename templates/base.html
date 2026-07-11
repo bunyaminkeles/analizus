@@ -262,6 +262,9 @@
                         {% if features.blog %}
                         <a href="{% url 'blog_list' %}" class="site-nav__dropdown-item" role="menuitem">Blog</a>
                         {% endif %}
+                        {% if features.agentic_landing %}
+                        <a href="{% url 'ai_cozumler' %}" class="site-nav__dropdown-item" role="menuitem">AI Çözümler</a>
+                        {% endif %}
                         <a href="{% url 'about' %}" class="site-nav__dropdown-item" role="menuitem">Hakkımızda</a>
                         <a href="{% url 'contact' %}" class="site-nav__dropdown-item" role="menuitem">İletişim</a>
                     </div>
@@ -406,6 +409,7 @@
                 <div class="nav-drawer__accordion-body" id="mob-kurumsal">
                     <a href="{% url 'forum_index' %}" class="nav-drawer__link">Forum</a>
                     {% if features.blog %}<a href="{% url 'blog_list' %}" class="nav-drawer__link">Blog</a>{% endif %}
+                    {% if features.agentic_landing %}<a href="{% url 'ai_cozumler' %}" class="nav-drawer__link">AI Çözümler</a>{% endif %}
                     <a href="{% url 'about' %}" class="nav-drawer__link">Hakkımızda</a>
                     <a href="{% url 'contact' %}" class="nav-drawer__link">İletişim</a>
                 </div>

@@ -1,0 +1,323 @@
+/* =============================================================
+   ANALIZUS — agentic_landing.css
+   /ai-cozumler/ sayfasına özel. Yalnızca bu template'te
+   {% block extra_head %} ile yüklenir, bundle.css'e girmez.
+   Mobil-önce: taban stiller mobil, masaüstü @media (min-width:768px).
+   ============================================================= */
+
+/* --- Hero (CSS-only mesh gradient, mevcut .ax-hero deseninin varyasyonu) --- */
+.ax-ai-hero {
+    padding: 32px 0 24px;
+    position: relative;
+    overflow: hidden;
+}
+
+.ax-ai-hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(ellipse 70% 55% at 20% 40%, rgba(99, 102, 241, 0.18) 0%, transparent 65%),
+        radial-gradient(ellipse 60% 50% at 80% 60%, rgba(139, 92, 246, 0.14) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.ax-ai-hero > * { position: relative; z-index: 1; }
+
+.ax-ai-hero__title {
+    font-size: var(--ax-text-3xl);
+    font-weight: var(--ax-font-bold);
+    color: var(--ax-text-primary);
+    line-height: var(--ax-leading-tight);
+    margin-bottom: var(--ax-space-4);
+}
+
+.ax-ai-hero__subtitle {
+    font-size: var(--ax-text-lg);
+    color: var(--ax-text-secondary);
+    line-height: var(--ax-leading-relaxed);
+    max-width: 640px;
+    margin-bottom: var(--ax-space-6);
+}
+
+@media (min-width: 768px) {
+    .ax-ai-hero { padding: 56px 0 40px; }
+    .ax-ai-hero__title { font-size: var(--ax-text-5xl); }
+}
+
+/* --- 3 Kullanım Senaryosu Kartı --- */
+.ax-agentic-card {
+    background: var(--ax-bg-secondary);
+    border: 1px solid var(--ax-border-default);
+    border-radius: var(--ax-radius-lg);
+    padding: var(--ax-space-6);
+    height: 100%;
+}
+
+.ax-agentic-card__icon {
+    width: 48px;
+    height: 48px;
+    border-radius: var(--ax-radius-lg);
+    background: rgba(99, 102, 241, 0.12);
+    color: var(--ax-accent-primary-hover);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: var(--ax-space-4);
+    font-size: var(--ax-text-xl);
+}
+
+.ax-agentic-card__title {
+    font-size: var(--ax-text-lg);
+    font-weight: var(--ax-font-semibold);
+    color: var(--ax-text-primary);
+    margin-bottom: var(--ax-space-2);
+}
+
+.ax-agentic-card__text {
+    font-size: var(--ax-text-sm);
+    color: var(--ax-text-secondary);
+    line-height: var(--ax-leading-relaxed);
+    margin-bottom: var(--ax-space-3);
+}
+
+.ax-agentic-card__infra {
+    font-size: var(--ax-text-xs);
+    color: var(--ax-text-muted);
+    padding-top: var(--ax-space-3);
+    border-top: 1px solid var(--ax-border-default);
+}
+
+/* --- Nasıl Çalışır Timeline (home.html ax-timeline-section deseninin kopyası) --- */
+.ax-timeline-section { padding: var(--ax-space-16) 0; }
+
+.ax-timeline-heading {
+    font-size: var(--ax-text-2xl);
+    font-weight: var(--ax-font-bold);
+    color: var(--ax-text-primary);
+    text-align: center;
+    margin-bottom: var(--ax-space-8);
+}
+
+.ax-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ax-space-4);
+}
+
+.ax-timeline-step {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--ax-space-3);
+    background: var(--ax-bg-secondary);
+    border: 1px solid var(--ax-border-default);
+    border-radius: var(--ax-radius-md);
+    padding: var(--ax-space-4);
+    flex: 1;
+}
+
+.ax-timeline-step--accent {
+    border-color: var(--ax-accent-warning);
+    background: rgba(245, 158, 11, 0.08);
+}
+
+.ax-timeline-num {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--ax-radius-full);
+    background: var(--ax-accent-primary);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: var(--ax-font-bold);
+    flex-shrink: 0;
+}
+
+.ax-timeline-step--accent .ax-timeline-num {
+    background: var(--ax-accent-warning);
+}
+
+.ax-timeline-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.ax-timeline-content strong {
+    color: var(--ax-text-primary);
+    font-size: var(--ax-text-base);
+}
+
+.ax-timeline-content span {
+    color: var(--ax-text-secondary);
+    font-size: var(--ax-text-sm);
+}
+
+.ax-timeline-arrow {
+    display: none;
+}
+
+@media (min-width: 768px) {
+    .ax-timeline { flex-direction: row; align-items: stretch; }
+    .ax-timeline-step { flex-direction: column; text-align: center; align-items: center; }
+    .ax-timeline-arrow {
+        display: flex;
+        align-items: center;
+        color: var(--ax-text-muted);
+        font-size: var(--ax-text-xl);
+    }
+}
+
+/* --- Dürüstlük Kutusu --- */
+.ax-honesty-box {
+    border: 1px solid var(--ax-border-default);
+    border-radius: var(--ax-radius-lg);
+    padding: var(--ax-space-6);
+    background: var(--ax-bg-secondary);
+}
+
+.ax-honesty-box__title {
+    font-size: var(--ax-text-2xl);
+    font-weight: var(--ax-font-bold);
+    color: var(--ax-text-primary);
+    text-align: center;
+    margin-bottom: var(--ax-space-6);
+}
+
+.ax-honesty-cols {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--ax-space-6);
+}
+
+.ax-honesty-col__title {
+    font-size: var(--ax-text-base);
+    font-weight: var(--ax-font-semibold);
+    margin-bottom: var(--ax-space-3);
+}
+
+.ax-honesty-col--agent .ax-honesty-col__title { color: var(--ax-accent-secondary-hover); }
+.ax-honesty-col--human .ax-honesty-col__title { color: var(--ax-accent-warning); }
+
+.ax-honesty-col ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--ax-space-2);
+}
+
+.ax-honesty-col li {
+    font-size: var(--ax-text-sm);
+    color: var(--ax-text-secondary);
+    line-height: var(--ax-leading-normal);
+    padding-left: var(--ax-space-5);
+    position: relative;
+}
+
+.ax-honesty-col--agent li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: var(--ax-accent-secondary-hover);
+}
+
+.ax-honesty-col--human li::before {
+    content: '○';
+    position: absolute;
+    left: 0;
+    color: var(--ax-accent-warning);
+}
+
+@media (min-width: 768px) {
+    .ax-honesty-cols { grid-template-columns: 1fr 1fr; gap: var(--ax-space-8); }
+}
+
+/* --- SSS Accordion (vanilla JS, Bootstrap collapse KULLANILMIYOR) --- */
+.ax-agentic-accordion-item {
+    background: var(--ax-bg-secondary);
+    border: 1px solid var(--ax-border-default);
+    border-radius: var(--ax-radius-lg);
+    margin-bottom: var(--ax-space-3);
+    overflow: hidden;
+}
+
+.ax-agentic-accordion-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--ax-space-3);
+    background: transparent;
+    border: none;
+    color: var(--ax-text-primary);
+    font-weight: var(--ax-font-semibold);
+    font-size: var(--ax-text-base);
+    text-align: left;
+    padding: var(--ax-space-4) var(--ax-space-5);
+    cursor: pointer;
+    min-height: 44px;
+}
+
+.ax-agentic-accordion-btn[aria-expanded="true"] {
+    color: var(--ax-accent-primary-hover);
+    background: rgba(99, 102, 241, 0.08);
+}
+
+.ax-agentic-accordion-chevron {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    transition: transform var(--ax-transition-fast);
+}
+
+.ax-agentic-accordion-btn[aria-expanded="true"] .ax-agentic-accordion-chevron {
+    transform: rotate(180deg);
+}
+
+.ax-agentic-accordion-body {
+    display: none;
+    padding: 0 var(--ax-space-5) var(--ax-space-4);
+    color: var(--ax-text-secondary);
+    font-size: var(--ax-text-sm);
+    line-height: var(--ax-leading-relaxed);
+    border-top: 1px solid var(--ax-border-default);
+    padding-top: var(--ax-space-3);
+}
+
+.ax-agentic-accordion-body.is-open {
+    display: block;
+}
+
+/* --- SEO metin kutusu --- */
+.ax-seo-note {
+    background: var(--ax-bg-secondary);
+    border: 1px solid var(--ax-border-default);
+    border-radius: var(--ax-radius-md);
+    padding: var(--ax-space-4);
+}
+
+.ax-seo-note p {
+    color: var(--ax-text-secondary);
+    font-size: var(--ax-text-sm);
+    line-height: var(--ax-leading-relaxed);
+    margin: 0;
+}
+
+.ax-seo-note strong { color: var(--ax-text-primary); }
+
+/* --- Kapanış CTA Bandı --- */
+.ax-agentic-cta-band {
+    text-align: center;
+    padding: var(--ax-space-12) 0;
+}
+
+.ax-agentic-cta-band__text {
+    font-size: var(--ax-text-lg);
+    color: var(--ax-text-primary);
+    max-width: 560px;
+    margin: 0 auto var(--ax-space-5);
+    line-height: var(--ax-leading-relaxed);
+}

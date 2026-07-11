@@ -29,7 +29,7 @@ _ALLOWED_PATHS = frozenset({
     '/hangi-test/', '/analiz/',
     '/openalex/', '/semantic-scholar/', '/yoktez/', '/tezanaliz/', '/makaleanaliz/',
     '/oaipmh/', '/bibliometrics/', '/tarama/',
-    '/uzmanlar/', '/market/', '/market/new/', '/proje-talebi/',
+    '/uzmanlar/', '/market/', '/market/new/', '/proje-talebi/', '/ai-cozumler/',
     '/forum/', '/odalar/', '/blog/', '/ai-asistan/',
 })
 
@@ -106,6 +106,7 @@ Kullanıcı analiz yapmak istediğinde doğru URL'yi ver:
 - Hizmetler Pazarı → /market/ (tüm iş ilanları)
 - İlan Ver → /market/new/ (analiz ihtiyacını yayınla, teklifler al)
 - Kurumsal / Proje Talebi → /proje-talebi/ (şirket verisi analizi, ML projesi, görselleştirme, NLP — form doldurulur, ekip geri döner)
+- AI Çözümleri (Ajan / Otomasyon) → /ai-cozumler/ (veri toplayan, analiz eden, raporlayan AI sistemleri kurulumu — uzman gözetiminde)
 
 ### Forum ve Topluluk
 - Forum → /forum/ (akademik sorular, tartışmalar)

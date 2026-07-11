@@ -1237,6 +1237,9 @@ class SiteSettings(models.Model):
         help_text="Cloud provider IP'leri (Hetzner, Render vb.) YouTube tarafından engelleniyor — "
                   "sunucuda çalışmıyor, sadece lokal ortamda test edilebilir. Bkz. analizus.md §26.",
     )
+    feature_agentic_landing = models.BooleanField(
+        default=False, verbose_name="AI Çözümler (Agentic) Sayfası"
+    )
 
     # Analiz Limitleri
     analiz_max_records = models.PositiveIntegerField(
@@ -1575,6 +1578,7 @@ class ProjectRequest(models.Model):
         ('nlp', 'Metin / NLP Analizi'),
         ('literature', 'Tez / Makale Veri İndirme'),
         ('verification', 'AI Analiz Doğrulama'),
+        ('agentic', 'AI Ajan / Otomasyon Projesi'),
         ('other', 'Diğer'),
     ]
     DATA_SIZE_CHOICES = [
@@ -1603,6 +1607,7 @@ class ProjectRequest(models.Model):
         ('hero', 'Ana Sayfa Hero'),
         ('home_corporate', 'Ana Sayfa Kurumsal'),
         ('verification', 'AI Doğrulama Bandı'),
+        ('agentic', 'AI Çözümler Sayfası'),
     ]
 
     name = models.CharField(max_length=150, verbose_name="Ad Soyad")

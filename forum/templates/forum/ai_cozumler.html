@@ -1,0 +1,279 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}AI Ajan ve Otomasyon Çözümleri | Analizus{% endblock %}
+{% block meta_description %}Veri toplayan, analiz eden ve raporlayan yapay zeka sistemleri — her adımı bir uzmanın gözetiminde. Kurumlar ve araştırma grupları için otomasyon projeleri.{% endblock %}
+
+{% block main_content_classes %}col-lg-12{% endblock %}
+{% block right_sidebar %}{% endblock %}
+
+{% block structured_data %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Verilerim nerede işleniyor?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Veri işleme süreçleri sunucularımızda gerçekleşir; üçüncü taraflarla yalnızca proje kapsamında ve KVKK'ya uygun şekilde paylaşım yapılır."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Mevcut sistemlerimize entegre olur mu?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Çoğu durumda evet — API, dosya paylaşımı veya e-posta tabanlı entegrasyonlar mümkündür. Keşif görüşmesinde mevcut altyapınızı değerlendiririz."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Ne kadar sürede kurulur?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Kapsam ve veri karmaşıklığına göre değişir; basit veri hatları birkaç günde, çok adımlı otomasyonlar birkaç haftada devreye alınır."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Ajan hata yaparsa ne olur?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Her ajan çıktısı, teslim öncesinde uzman doğrulama katmanından geçer; hatalı veya belirsiz sonuçlar otomatik olarak insana yönlendirilir."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Fiyatlandırma nasıl belirlenir?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Projenin kapsamına ve veri hacmine göre özelleştirilir; keşif görüşmesi sonrasında net bir teklif sunulur."
+      }
+    }
+  ]
+}
+</script>
+{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/agentic_landing.css' %}?v=0001">
+{% endblock %}
+
+{% block content %}
+
+<!-- Hero -->
+<section class="ax-ai-hero">
+    <div class="container">
+        <!-- İleride agentic-hero.webp/agentic-hero-mobile.webp eklenecek: <picture><source media="(min-width:768px)" srcset="...">...</picture> -->
+        <h1 class="ax-ai-hero__title">Analizleriniz siz uyurken çalışsın.</h1>
+        <p class="ax-ai-hero__subtitle">Veri toplayan, analiz eden, raporlayan yapay zeka sistemleri — her adımı bir uzmanın gözetiminde.</p>
+        <a href="{% url 'proje_talebi' %}?source=agentic" class="ax-btn ax-btn--primary">Projenizi Anlatın</a>
+    </div>
+</section>
+
+<!-- 3 Kullanım Senaryosu -->
+<section class="py-4">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="ax-agentic-card">
+                    <div class="ax-agentic-card__icon">
+                        <i class="bi bi-binoculars" aria-hidden="true"></i>
+                    </div>
+                    <h3 class="ax-agentic-card__title">Literatür Nöbetçisi</h3>
+                    <p class="ax-agentic-card__text">Belirlediğiniz anahtar kelimelerle akademik veritabanlarını periyodik tarar; yeni yayınları özetleyip e-postanıza bırakır.</p>
+                    <div class="ax-agentic-card__infra">Altyapı: OpenAlex + Semantic Scholar tarama modülleri</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="ax-agentic-card">
+                    <div class="ax-agentic-card__icon">
+                        <i class="bi bi-diagram-3" aria-hidden="true"></i>
+                    </div>
+                    <h3 class="ax-agentic-card__title">Veri Hattı</h3>
+                    <p class="ax-agentic-card__text">Düzenli gelen veriniz (satış, anket, sensör) her ulaştığında temizlenir, analiz edilir; dashboard'unuz ve PDF raporunuz kendiliğinden güncellenir.</p>
+                    <div class="ax-agentic-card__infra">Altyapı: İstatistik analiz motoru + otomatik PDF üretimi</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="ax-agentic-card">
+                    <div class="ax-agentic-card__icon">
+                        <i class="bi bi-file-earmark-text" aria-hidden="true"></i>
+                    </div>
+                    <h3 class="ax-agentic-card__title">Rapor Fabrikası</h3>
+                    <p class="ax-agentic-card__text">Aylık faaliyet ve analiz raporlarınızı taslaklar; uzman onayından geçtikten sonra ilgililere gönderir.</p>
+                    <div class="ax-agentic-card__infra">Altyapı: Uzman doğrulama katmanı + e-posta bildirim sistemi</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Nasıl Çalışır -->
+<section class="ax-timeline-section">
+    <div class="container">
+        <h2 class="ax-timeline-heading">Nasıl Çalışır?</h2>
+        <div class="ax-timeline">
+            <div class="ax-timeline-step">
+                <div class="ax-timeline-num">1</div>
+                <div class="ax-timeline-content">
+                    <strong>Keşif Görüşmesi</strong>
+                    <span>İhtiyacınızı ve mevcut veri akışınızı birlikte değerlendiririz.</span>
+                </div>
+            </div>
+            <div class="ax-timeline-arrow">→</div>
+            <div class="ax-timeline-step">
+                <div class="ax-timeline-num">2</div>
+                <div class="ax-timeline-content">
+                    <strong>Ajan Tasarımı</strong>
+                    <span>Verinizi toplayan, işleyen ve raporlayan sistemi kurarız.</span>
+                </div>
+            </div>
+            <div class="ax-timeline-arrow">→</div>
+            <div class="ax-timeline-step ax-timeline-step--accent">
+                <div class="ax-timeline-num">3</div>
+                <div class="ax-timeline-content">
+                    <strong>Uzman Doğrulama Katmanı</strong>
+                    <span>Her çıktı, teslim öncesinde bir uzman tarafından kontrol edilir.</span>
+                </div>
+            </div>
+            <div class="ax-timeline-arrow">→</div>
+            <div class="ax-timeline-step">
+                <div class="ax-timeline-num">4</div>
+                <div class="ax-timeline-content">
+                    <strong>Teslim + İzleme</strong>
+                    <span>Sistem devreye girer, performansı düzenli olarak izleriz.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Dürüstlük Kutusu -->
+<section class="py-4">
+    <div class="container">
+        <div class="ax-honesty-box">
+            <h2 class="ax-honesty-box__title">Yapay zeka ajanları her işi yapamaz.</h2>
+            <div class="ax-honesty-cols">
+                <div class="ax-honesty-col ax-honesty-col--agent">
+                    <h3 class="ax-honesty-col__title">Ajanlara Uygun</h3>
+                    <ul>
+                        <li>Tekrarlayan veri toplama ve tarama</li>
+                        <li>Kural tabanlı sınıflandırma</li>
+                        <li>Rutin rapor taslağı hazırlama</li>
+                        <li>Zaman damgalı izleme ve bildirim</li>
+                    </ul>
+                </div>
+                <div class="ax-honesty-col ax-honesty-col--human">
+                    <h3 class="ax-honesty-col__title">İnsan İşi</h3>
+                    <ul>
+                        <li>Yorum ve kuramsal çerçeveleme</li>
+                        <li>Etik ve hukuki karar</li>
+                        <li>Jüri veya karar mercii karşısında savunma</li>
+                        <li>Beklenmedik durumlarda karar verme</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SSS -->
+<section class="py-4">
+    <div class="container" style="max-width: 760px;">
+        <h2 class="ax-timeline-heading">Sık Sorulan Sorular</h2>
+
+        <div class="ax-agentic-accordion-item">
+            <button class="ax-agentic-accordion-btn" aria-expanded="false" data-accordion="ai-faq-1" type="button">
+                Verilerim nerede işleniyor?
+                <svg class="ax-agentic-accordion-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
+            <div class="ax-agentic-accordion-body" id="ai-faq-1">
+                Veri işleme süreçleri sunucularımızda gerçekleşir; üçüncü taraflarla yalnızca proje kapsamında ve KVKK'ya uygun şekilde paylaşım yapılır.
+            </div>
+        </div>
+
+        <div class="ax-agentic-accordion-item">
+            <button class="ax-agentic-accordion-btn" aria-expanded="false" data-accordion="ai-faq-2" type="button">
+                Mevcut sistemlerimize entegre olur mu?
+                <svg class="ax-agentic-accordion-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
+            <div class="ax-agentic-accordion-body" id="ai-faq-2">
+                Çoğu durumda evet — API, dosya paylaşımı veya e-posta tabanlı entegrasyonlar mümkündür. Keşif görüşmesinde mevcut altyapınızı değerlendiririz.
+            </div>
+        </div>
+
+        <div class="ax-agentic-accordion-item">
+            <button class="ax-agentic-accordion-btn" aria-expanded="false" data-accordion="ai-faq-3" type="button">
+                Ne kadar sürede kurulur?
+                <svg class="ax-agentic-accordion-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
+            <div class="ax-agentic-accordion-body" id="ai-faq-3">
+                Kapsam ve veri karmaşıklığına göre değişir; basit veri hatları birkaç günde, çok adımlı otomasyonlar birkaç haftada devreye alınır.
+            </div>
+        </div>
+
+        <div class="ax-agentic-accordion-item">
+            <button class="ax-agentic-accordion-btn" aria-expanded="false" data-accordion="ai-faq-4" type="button">
+                Ajan hata yaparsa ne olur?
+                <svg class="ax-agentic-accordion-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
+            <div class="ax-agentic-accordion-body" id="ai-faq-4">
+                Her ajan çıktısı, teslim öncesinde uzman doğrulama katmanından geçer; hatalı veya belirsiz sonuçlar otomatik olarak insana yönlendirilir.
+            </div>
+        </div>
+
+        <div class="ax-agentic-accordion-item">
+            <button class="ax-agentic-accordion-btn" aria-expanded="false" data-accordion="ai-faq-5" type="button">
+                Fiyatlandırma nasıl belirlenir?
+                <svg class="ax-agentic-accordion-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
+            <div class="ax-agentic-accordion-body" id="ai-faq-5">
+                Projenin kapsamına ve veri hacmine göre özelleştirilir; keşif görüşmesi sonrasında net bir teklif sunulur.
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- SEO Metin -->
+<section class="py-4">
+    <div class="container" style="max-width: 860px;">
+        <div class="ax-seo-note">
+            <p>
+                Analizus, kurumlara ve araştırma gruplarına yönelik <strong>yapay zeka ajan</strong> ve <strong>otomasyon projeleri</strong> geliştirir. Veri toplayan, analiz eden ve raporlayan <strong>AI otomasyonu</strong> sistemleri, her adımda bir uzmanın gözetiminde çalışır. Literatür taramasından düzenli veri hatlarına, aylık rapor üretiminden bildirim sistemlerine kadar tekrarlayan ve kural tabanlı süreçler <strong>iş süreçleri otomasyonu</strong> ile devralınabilir; yorum, etik karar ve beklenmedik durumlar her zaman insan uzmanda kalır.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- Kapanış CTA -->
+<section class="ax-agentic-cta-band">
+    <div class="container">
+        <p class="ax-agentic-cta-band__text">Otomatikleşebilecek bir süreciniz var mı? 15 dakikalık keşif görüşmesiyle başlayalım.</p>
+        <a href="{% url 'proje_talebi' %}?source=agentic" class="ax-btn ax-btn--primary">Projenizi Anlatın</a>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<script>
+document.querySelectorAll('.ax-agentic-accordion-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+        const body = document.getElementById(btn.getAttribute('data-accordion'));
+        if (!body) return;
+        const isOpen = body.classList.contains('is-open');
+        document.querySelectorAll('.ax-agentic-accordion-body').forEach(function (b) { b.classList.remove('is-open'); });
+        document.querySelectorAll('.ax-agentic-accordion-btn').forEach(function (b) { b.setAttribute('aria-expanded', 'false'); });
+        if (!isOpen) {
+            body.classList.add('is-open');
+            btn.setAttribute('aria-expanded', 'true');
+        }
+    });
+});
+</script>
+{% endblock %}

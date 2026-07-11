@@ -72,5 +72,6 @@ def feature_flags(request):
             'istatistik': site.feature_istatistik,
             'semanticscholar': site.feature_semanticscholar,
             'transcript': site.feature_transcript,
+            'agentic_landing': site.feature_agentic_landing,
         }
     }
