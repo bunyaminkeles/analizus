@@ -1608,6 +1608,8 @@ class ProjectRequest(models.Model):
         ('home_corporate', 'Ana Sayfa Kurumsal'),
         ('verification', 'AI Doğrulama Bandı'),
         ('agentic', 'AI Çözümler Sayfası'),
+        ('tableau', 'Tableau Sayfası'),
+        ('bibliometrics', 'Bibliometri Sayfası'),
     ]
 
     name = models.CharField(max_length=150, verbose_name="Ad Soyad")

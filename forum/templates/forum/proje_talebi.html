@@ -157,7 +157,7 @@
             <select name="analysis_type" class="form-select" required>
               <option value="">Seçiniz…</option>
               <option value="literature"{% if source == 'yoktez' or source == 'trdizin' %} selected{% endif %}>Tez / Makale Veri İndirme</option>
-              <option value="visualization">Veri Görselleştirme</option>
+              <option value="visualization"{% if source == 'tableau' %} selected{% endif %}>Veri Görselleştirme</option>
               <option value="ml">Makine Öğrenmesi / Yapay Zeka</option>
               <option value="statistics">İstatistiksel Analiz</option>
               <option value="cleaning">Veri Temizleme / Hazırlama</option>
