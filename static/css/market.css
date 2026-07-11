@@ -1,0 +1,104 @@
+/* =============================================================
+   ANALIZUS — market.css
+   /market/ sayfasına özel. Yalnızca job_list.html'de
+   {% block extra_head %} ile yüklenir, bundle.css'e girmez.
+   Mobil-önce: taban stiller mobil, masaüstü @media (min-width:768px).
+   ============================================================= */
+
+/* --- Hero (CSS-only mesh gradient, .ax-ai-hero deseninin varyasyonu) --- */
+.ax-market-hero {
+    padding: 32px 0 24px;
+    position: relative;
+    overflow: hidden;
+}
+
+.ax-market-hero::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(ellipse 70% 55% at 15% 30%, rgba(34, 211, 238, 0.16) 0%, transparent 65%),
+        radial-gradient(ellipse 60% 50% at 85% 70%, rgba(16, 185, 129, 0.12) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.ax-market-hero > * { position: relative; z-index: 1; }
+
+.ax-market-hero__title {
+    font-size: var(--ax-text-3xl);
+    font-weight: var(--ax-font-bold);
+    color: var(--ax-text-primary);
+    line-height: var(--ax-leading-tight);
+    margin-bottom: var(--ax-space-3);
+}
+
+.ax-market-hero__subtitle {
+    font-size: var(--ax-text-lg);
+    color: var(--ax-text-secondary);
+    line-height: var(--ax-leading-relaxed);
+    max-width: 640px;
+    margin-bottom: var(--ax-space-6);
+}
+
+.ax-market-hero__doors {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ax-space-3);
+    max-width: 420px;
+}
+
+.ax-market-hero__door {
+    width: 100%;
+    min-height: 44px;
+}
+
+.ax-market-hero__links {
+    margin-top: var(--ax-space-4);
+}
+
+.ax-market-hero__links a {
+    font-size: var(--ax-text-sm);
+    color: var(--ax-text-secondary);
+}
+
+/* --- Güven Şeridi --- */
+.ax-market-trust-strip {
+    background: rgba(16, 185, 129, 0.05);
+    border-top: 1px solid rgba(16, 185, 129, 0.1);
+    border-bottom: 1px solid rgba(16, 185, 129, 0.1);
+    padding: var(--ax-space-3) 0;
+}
+
+.ax-market-trust-strip .container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ax-space-2);
+    font-size: var(--ax-text-sm);
+    color: var(--ax-text-secondary);
+}
+
+.ax-market-trust-strip i {
+    color: var(--ax-accent-secondary);
+    margin-right: var(--ax-space-2);
+}
+
+@media (min-width: 768px) {
+    .ax-market-hero { padding: 56px 0 40px; }
+    .ax-market-hero__title { font-size: var(--ax-text-5xl); }
+
+    .ax-market-hero__doors {
+        flex-direction: row;
+        max-width: none;
+    }
+    .ax-market-hero__door {
+        width: auto;
+        min-width: 220px;
+    }
+
+    .ax-market-trust-strip .container {
+        flex-direction: row;
+        justify-content: center;
+        gap: var(--ax-space-6);
+    }
+}
