@@ -372,6 +372,15 @@ def job_list(request):
         p_count=Count('proposals', distinct=True)
     )
 
+    # Kategori Gezinmesi — chip listesi, filtre uygulanmadan önceki açık ilanlardan
+    # çıkarılır (seçili kategori değişince chip'ler daralmasın)
+    market_categories = JobCategory.objects.filter(jobs__status='open').distinct().order_by('order', 'title')
+    selected_category = None
+    category_id = request.GET.get('category')
+    if category_id and category_id.isdigit():
+        selected_category = int(category_id)
+        jobs = jobs.filter(category_id=selected_category)
+
     if sort == 'views':
         jobs = jobs.order_by('-views', '-created_at')
     elif sort == 'proposals':
@@ -414,6 +423,8 @@ def job_list(request):
         'can_post_reason': can_post_reason,
         'market_stats': market_stats,
         'completed_jobs': completed_jobs,
+        'market_categories': market_categories,
+        'selected_category': selected_category,
     })
 
 @feature_required('market')

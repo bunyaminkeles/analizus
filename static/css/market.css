@@ -102,3 +102,39 @@
         gap: var(--ax-space-6);
     }
 }
+
+/* --- Kategori Gezinmesi (.ax-market-cat ile aynı görsel dil, home_sections.css) --- */
+.ax-market-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ax-space-2);
+}
+
+.ax-market-chip {
+    display: inline-flex;
+    align-items: center;
+    min-height: 32px;
+    padding: 4px 14px;
+    border-radius: var(--ax-radius-full, 999px);
+    font-size: var(--ax-text-xs);
+    font-weight: var(--ax-font-medium);
+    color: var(--ax-text-secondary);
+    border: 1px solid var(--ax-border-hover);
+    text-decoration: none;
+    transition: border-color var(--ax-transition-fast), color var(--ax-transition-fast), background-color var(--ax-transition-fast);
+}
+
+.ax-market-chip:hover {
+    color: var(--ax-accent-primary-hover);
+    border-color: var(--ax-accent-primary);
+}
+
+.ax-market-chip--active {
+    background-color: var(--ax-accent-primary);
+    border-color: var(--ax-accent-primary);
+    color: #ffffff;
+}
+
+.ax-market-chip--active:hover {
+    color: #ffffff;
+}

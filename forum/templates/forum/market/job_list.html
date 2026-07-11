@@ -5,7 +5,7 @@
 {% block meta_description %}Akademik analiz uzmanı bulun. SPSS, R, Python ve tez istatistiği için teklif alın. Analizus Hizmetler Pazarı — ücretsiz ilan açın, hızlı uzman eşleştirme, güvenilir akademik destek.{% endblock %}
 
 {% block extra_head %}
-<link rel="stylesheet" href="{% static 'css/market.css' %}?v=0001">
+<link rel="stylesheet" href="{% static 'css/market.css' %}?v=0002">
 {% endblock %}
 
 {% block content %}
@@ -80,6 +80,16 @@
         </div>
     </div>
 
+    <!-- Kategori Gezinmesi -->
+    {% if market_categories %}
+    <div class="ax-market-chips mb-3">
+        <a href="?{% if current_sort != 'newest' %}sort={{ current_sort }}{% endif %}" class="ax-market-chip{% if not selected_category %} ax-market-chip--active{% endif %}">Tümü</a>
+        {% for cat in market_categories %}
+        <a href="?category={{ cat.id }}{% if current_sort != 'newest' %}&sort={{ current_sort }}{% endif %}" class="ax-market-chip{% if selected_category == cat.id %} ax-market-chip--active{% endif %}">{{ cat.title }}</a>
+        {% endfor %}
+    </div>
+    {% endif %}
+
     <!-- Aktif İlanlar -->
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h5 class="text-white fw-semibold mb-0">
@@ -97,9 +107,9 @@
                 {% else %}En Yeni{% endif %}
             </button>
             <ul class="dropdown-menu dropdown-menu-dark shadow">
-                <li><a class="dropdown-item {% if current_sort == 'newest' %}active{% endif %}" href="?sort=newest">En Yeni</a></li>
-                <li><a class="dropdown-item {% if current_sort == 'views' %}active{% endif %}" href="?sort=views">En Çok Görüntülenen</a></li>
-                <li><a class="dropdown-item {% if current_sort == 'proposals' %}active{% endif %}" href="?sort=proposals">En Çok Teklif Alan</a></li>
+                <li><a class="dropdown-item {% if current_sort == 'newest' %}active{% endif %}" href="?sort=newest{% if selected_category %}&category={{ selected_category }}{% endif %}">En Yeni</a></li>
+                <li><a class="dropdown-item {% if current_sort == 'views' %}active{% endif %}" href="?sort=views{% if selected_category %}&category={{ selected_category }}{% endif %}">En Çok Görüntülenen</a></li>
+                <li><a class="dropdown-item {% if current_sort == 'proposals' %}active{% endif %}" href="?sort=proposals{% if selected_category %}&category={{ selected_category }}{% endif %}">En Çok Teklif Alan</a></li>
             </ul>
         </div>
     </div>
