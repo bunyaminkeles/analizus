@@ -1,42 +1,50 @@
 from django.urls import path
+from django.shortcuts import redirect
 from . import views
 
 app_name = 'istatistik'
 
-urlpatterns = [
-    path('cronbach/', views.cronbach_landing, name='cronbach'),
-    path('cronbach/status/<uuid:job_id>/', views.job_status, name='cronbach_status'),
-    path('normallik/', views.normallik_landing, name='normallik'),
-    path('normallik/status/<uuid:job_id>/', views.job_status, name='normallik_status'),
-    path('betimsel/', views.betimsel_landing, name='betimsel'),
-    path('betimsel/status/<uuid:job_id>/', views.job_status, name='betimsel_status'),
-    path('korelasyon/', views.korelasyon_landing, name='korelasyon'),
-    path('korelasyon/status/<uuid:job_id>/', views.job_status, name='korelasyon_status'),
-    path('orneklem/', views.orneklem_landing, name='orneklem'),
-    path('ttesti/', views.ttesti_landing, name='ttesti'),
-    path('ttesti/status/<uuid:job_id>/', views.job_status, name='ttesti_status'),
-    path('anova/', views.anova_landing, name='anova'),
-    path('anova/status/<uuid:job_id>/', views.job_status, name='anova_status'),
-    path('mann-whitney/', views.mann_whitney_landing, name='mann_whitney'),
-    path('mann-whitney/status/<uuid:job_id>/', views.job_status, name='mann_whitney_status'),
-    path('kruskal-wallis/', views.kruskal_wallis_landing, name='kruskal_wallis'),
-    path('kruskal-wallis/status/<uuid:job_id>/', views.job_status, name='kruskal_wallis_status'),
-    path('ki-kare/', views.ki_kare_landing, name='ki_kare'),
-    path('ki-kare/status/<uuid:job_id>/', views.job_status, name='ki_kare_status'),
-    path('lineer-regresyon/', views.lineer_regresyon_landing, name='lineer_regresyon'),
-    path('lineer-regresyon/status/<uuid:job_id>/', views.job_status, name='lineer_regresyon_status'),
-    path('lojistik-regresyon/', views.lojistik_regresyon_landing, name='lojistik_regresyon'),
-    path('lojistik-regresyon/status/<uuid:job_id>/', views.job_status, name='lojistik_regresyon_status'),
-    path('afa/', views.afa_landing, name='afa'),
-    path('afa/status/<uuid:job_id>/', views.job_status, name='afa_status'),
-    path('wilcoxon/', views.wilcoxon_landing, name='wilcoxon'),
-    path('wilcoxon/status/<uuid:job_id>/', views.job_status, name='wilcoxon_status'),
-    path('friedman/', views.friedman_landing, name='friedman'),
-    path('friedman/status/<uuid:job_id>/', views.job_status, name='friedman_status'),
-    path('tekrarli-anova/', views.tekrarli_anova_landing, name='tekrarli_anova'),
-    path('tekrarli-anova/status/<uuid:job_id>/', views.job_status, name='tekrarli_anova_status'),
-    path('karar-agaci/', views.karar_agaci_landing, name='karar_agaci'),
-    path('karar-agaci/status/<uuid:job_id>/', views.job_status, name='karar_agaci_status'),
-    path('svm/', views.svm_landing, name='svm'),
-    path('svm/status/<uuid:job_id>/', views.job_status, name='svm_status'),
+# (url_slug, view_fn, name, has_status) — url_slug bazı araçlarda kısa çizgili
+# (mann-whitney), name'de alt çizgi kullanılır ({% url 'istatistik:mann_whitney' %}
+# — polling/form JS'i hâlâ bu isimlere bağlı). url_slug, urls_analiz.py'deki
+# _SLUG_MAP ve forum/sitemaps.py'deki IstatistikSitemap ile senkron tutulmalı.
+_TOOLS = [
+    ('cronbach', views.cronbach_landing, 'cronbach', True),
+    ('normallik', views.normallik_landing, 'normallik', True),
+    ('betimsel', views.betimsel_landing, 'betimsel', True),
+    ('korelasyon', views.korelasyon_landing, 'korelasyon', True),
+    ('orneklem', views.orneklem_landing, 'orneklem', False),
+    ('ttesti', views.ttesti_landing, 'ttesti', True),
+    ('anova', views.anova_landing, 'anova', True),
+    ('mann-whitney', views.mann_whitney_landing, 'mann_whitney', True),
+    ('kruskal-wallis', views.kruskal_wallis_landing, 'kruskal_wallis', True),
+    ('ki-kare', views.ki_kare_landing, 'ki_kare', True),
+    ('lineer-regresyon', views.lineer_regresyon_landing, 'lineer_regresyon', True),
+    ('lojistik-regresyon', views.lojistik_regresyon_landing, 'lojistik_regresyon', True),
+    ('afa', views.afa_landing, 'afa', True),
+    ('wilcoxon', views.wilcoxon_landing, 'wilcoxon', True),
+    ('friedman', views.friedman_landing, 'friedman', True),
+    ('tekrarli-anova', views.tekrarli_anova_landing, 'tekrarli_anova', True),
+    ('karar-agaci', views.karar_agaci_landing, 'karar_agaci', True),
+    ('svm', views.svm_landing, 'svm', True),
 ]
+
+
+def _analiz_entry(view_fn, slug):
+    """GET isteğini kalıcı olarak /analiz/<slug>/'e yönlendirir (SEO — /istatistik/
+    ile /analiz/ arasındaki içerik ikizliğini gidermek için). POST (analiz gönderimi
+    — TOOL_URL/fetch hedefi hâlâ bu isme bağlı) view_fn'e değişmeden ulaşır."""
+    def _entry(request, *args, **kwargs):
+        if request.method == 'GET':
+            qs = request.META.get('QUERY_STRING', '')
+            target = f'/analiz/{slug}/' + (f'?{qs}' if qs else '')
+            return redirect(target, permanent=True)
+        return view_fn(request, *args, **kwargs)
+    return _entry
+
+
+urlpatterns = []
+for _slug, _view, _name, _has_status in _TOOLS:
+    urlpatterns.append(path(f'{_slug}/', _analiz_entry(_view, _slug), name=_name))
+    if _has_status:
+        urlpatterns.append(path(f'{_slug}/status/<uuid:job_id>/', views.job_status, name=f'{_name}_status'))

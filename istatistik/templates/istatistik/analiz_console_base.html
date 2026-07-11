@@ -57,7 +57,7 @@
         <ul>
           {% for slug, name, icon, color, url_name in tools %}
           <li>
-            <a href="{% url url_name %}"
+            <a href="{% url 'analiz_console' url_name %}"
                class="ax-console-tool{% if active_tool == slug %} is-active{% endif %}"
                {% if active_tool == slug %}aria-current="page"{% endif %}>
               <i class="bi {{ icon }}" aria-hidden="true"></i>

@@ -12,6 +12,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Site URL (e-posta doğrulama linkleri için ve ortamı ayırt etmek için)
 SITE_URL = os.getenv('SITE_URL', 'https://www.analizus.com')
 
+# Gerçek production (Hetzner, www.analizus.com) mu yoksa dev/staging (Render) mi —
+# NoIndexMiddleware bu bayrağa göre production dışı yanıtlara noindex header'ı ekler.
+IS_PRODUCTION = 'analizus.com' in SITE_URL and 'onrender.com' not in SITE_URL
+
 # --- GÜVENLİK AYARLARI ---
 SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-varsayilan-anahtar')
 
@@ -81,6 +85,7 @@ MIDDLEWARE = [
     'django.middleware.locale.LocaleMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'forum.middleware.NoIndexMiddleware',              # Dev/staging noindex header
     'forum.middleware.HoneypotMiddleware',            # Bot honeypot kontrolü
     'forum.middleware.LastSeenMiddleware',            # Son görülme güncelleme
     'forum.middleware.EmailVerificationMiddleware',  # E-posta doğrulama kontrolü

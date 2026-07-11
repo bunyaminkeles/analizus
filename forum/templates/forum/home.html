@@ -229,9 +229,9 @@
                     {% if user_profile.segment == 'student' %}
                     <span class="ax-hero__personal-badge">🎓 Öğrenci</span>
                     <span class="ax-hero__personal-text">Tezin için: </span>
-                    <a href="{% url 'istatistik:cronbach' %}" class="ax-hero__personal-link">Güvenilirlik Analizi</a>
+                    <a href="{% url 'analiz_console' 'cronbach' %}" class="ax-hero__personal-link">Güvenilirlik Analizi</a>
                     <span class="ax-hero__personal-sep">·</span>
-                    <a href="{% url 'istatistik:normallik' %}" class="ax-hero__personal-link">Normallik Testi</a>
+                    <a href="{% url 'analiz_console' 'normallik' %}" class="ax-hero__personal-link">Normallik Testi</a>
                     <span class="ax-hero__personal-sep">·</span>
                     <a href="{% url 'hangi_test' %}" class="ax-hero__personal-link">Hangi Test?</a>
                     {% elif user_profile.segment == 'academic' %}
@@ -355,9 +355,9 @@
                             </div>
                             <div class="ax-market-diy mt-3">
                                 <span class="ax-market-diy__label">veya kendin yap →</span>
-                                <a href="{% url 'istatistik:cronbach' %}" class="ax-market-diy__link">Cronbach</a>
-                                <a href="{% url 'istatistik:normallik' %}" class="ax-market-diy__link">Normallik</a>
-                                <a href="{% url 'istatistik:betimsel' %}" class="ax-market-diy__link">Betimsel</a>
+                                <a href="{% url 'analiz_console' 'cronbach' %}" class="ax-market-diy__link">Cronbach</a>
+                                <a href="{% url 'analiz_console' 'normallik' %}" class="ax-market-diy__link">Normallik</a>
+                                <a href="{% url 'analiz_console' 'betimsel' %}" class="ax-market-diy__link">Betimsel</a>
                                 <a href="{% url 'hangi_test' %}" class="ax-market-diy__link">Hangi Test?</a>
                             </div>
                         </div>

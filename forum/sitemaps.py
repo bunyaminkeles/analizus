@@ -9,7 +9,11 @@ class StaticViewSitemap(Sitemap):
     changefreq = 'daily'
 
     def items(self):
-        return ['home', 'about', 'contact', 'gizlilik_politikasi', 'hangi_test', 'forum_index', 'uzman_dizini', 'blog_list', 'proje_talebi']
+        pages = ['home', 'about', 'contact', 'gizlilik_politikasi', 'hangi_test', 'forum_index', 'uzman_dizini', 'blog_list', 'proje_talebi']
+        from .models import SiteSettings
+        if SiteSettings.load().feature_agentic_landing:
+            pages.append('ai_cozumler')
+        return pages
 
     def location(self, item):
         return reverse(item)

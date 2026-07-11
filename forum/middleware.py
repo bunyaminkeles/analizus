@@ -1,6 +1,7 @@
 """
-Güvenlik middleware'leri: Honeypot + E-posta doğrulama + Son görülme
+Güvenlik middleware'leri: Honeypot + E-posta doğrulama + Son görülme + NoIndex
 """
+from django.conf import settings
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
 from django.urls import reverse
@@ -12,6 +13,20 @@ _GUARDED_PATHS = {'/login/', '/register/'}
 
 # last_seen en fazla bu sıklıkta yazılır (saniye) — gereksiz DB yazımını önler
 _LAST_SEEN_INTERVAL = 60
+
+
+class NoIndexMiddleware:
+    """Production dışı ortamlarda (dev/staging) tüm yanıtlara noindex header'ı ekler.
+    Production davranışı (settings.IS_PRODUCTION) değişmez."""
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        response = self.get_response(request)
+        if not settings.IS_PRODUCTION:
+            response['X-Robots-Tag'] = 'noindex, nofollow'
+        return response
 
 
 class VisitorCounterMiddleware:

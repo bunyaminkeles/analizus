@@ -22,34 +22,34 @@ def feature_required(view_func):
 
 TOOL_CATEGORIES = [
     ('Ön Analizler', [
-        ('betimsel',  'Betimleyici İstatistik',       'bi-clipboard2-data',    'success',  'istatistik:betimsel'),
-        ('normallik', 'Normallik Testi',               'bi-activity',           'warning',  'istatistik:normallik'),
-        ('orneklem',  'Örneklem Hesaplayıcı',          'bi-calculator-fill',    'info',     'istatistik:orneklem'),
+        ('betimsel',  'Betimleyici İstatistik',       'bi-clipboard2-data',    'success',  'betimsel'),
+        ('normallik', 'Normallik Testi',               'bi-activity',           'warning',  'normallik'),
+        ('orneklem',  'Örneklem Hesaplayıcı',          'bi-calculator-fill',    'info',     'orneklem'),
     ]),
     ('Geçerlik & Güvenirlik', [
-        ('cronbach',  'Cronbach Alpha',                'bi-shield-check',       'primary',  'istatistik:cronbach'),
-        ('afa',       'Açıklayıcı Faktör Analizi',     'bi-diagram-3',          'info',     'istatistik:afa'),
+        ('cronbach',  'Cronbach Alpha',                'bi-shield-check',       'primary',  'cronbach'),
+        ('afa',       'Açıklayıcı Faktör Analizi',     'bi-diagram-3',          'info',     'afa'),
     ]),
     ('İlişki Analizleri', [
-        ('korelasyon', 'Korelasyon Matrisi',           'bi-grid-3x3',           'info',     'istatistik:korelasyon'),
-        ('ki_kare',   'Ki-Kare Testi',                 'bi-table',              'warning',  'istatistik:ki_kare'),
+        ('korelasyon', 'Korelasyon Matrisi',           'bi-grid-3x3',           'info',     'korelasyon'),
+        ('ki_kare',   'Ki-Kare Testi',                 'bi-table',              'warning',  'ki-kare'),
     ]),
     ('Fark Analizleri', [
-        ('ttesti',         't-Testi',                  'bi-distribute-horizontal', 'primary', 'istatistik:ttesti'),
-        ('anova',          'Tek Yönlü ANOVA',           'bi-bar-chart-steps',   'danger',   'istatistik:anova'),
-        ('mann_whitney',   'Mann-Whitney U',            'bi-arrow-left-right',  'warning',  'istatistik:mann_whitney'),
-        ('kruskal_wallis', 'Kruskal-Wallis H',          'bi-funnel',            'teal',     'istatistik:kruskal_wallis'),
-        ('wilcoxon',       'Wilcoxon İşaret Testi',     'bi-arrows-collapse',   'info',     'istatistik:wilcoxon'),
-        ('friedman',       'Friedman Testi',            'bi-bar-chart-steps',   'success',  'istatistik:friedman'),
-        ('tekrarli_anova', 'Tekrarlayan Ölçümler ANOVA','bi-arrow-repeat',      'primary',  'istatistik:tekrarli_anova'),
+        ('ttesti',         't-Testi',                  'bi-distribute-horizontal', 'primary', 'ttesti'),
+        ('anova',          'Tek Yönlü ANOVA',           'bi-bar-chart-steps',   'danger',   'anova'),
+        ('mann_whitney',   'Mann-Whitney U',            'bi-arrow-left-right',  'warning',  'mann-whitney'),
+        ('kruskal_wallis', 'Kruskal-Wallis H',          'bi-funnel',            'teal',     'kruskal-wallis'),
+        ('wilcoxon',       'Wilcoxon İşaret Testi',     'bi-arrows-collapse',   'info',     'wilcoxon'),
+        ('friedman',       'Friedman Testi',            'bi-bar-chart-steps',   'success',  'friedman'),
+        ('tekrarli_anova', 'Tekrarlayan Ölçümler ANOVA','bi-arrow-repeat',      'primary',  'tekrarli-anova'),
     ]),
     ('Regresyon Analizleri', [
-        ('lineer_regresyon',  'Çoklu Doğrusal Regresyon', 'bi-graph-up-arrow',  'primary',  'istatistik:lineer_regresyon'),
-        ('lojistik_regresyon','Lojistik Regresyon',        'bi-bezier2',         'success',  'istatistik:lojistik_regresyon'),
+        ('lineer_regresyon',  'Çoklu Doğrusal Regresyon', 'bi-graph-up-arrow',  'primary',  'lineer-regresyon'),
+        ('lojistik_regresyon','Lojistik Regresyon',        'bi-bezier2',         'success',  'lojistik-regresyon'),
     ]),
     ('Makine Öğrenmesi', [
-        ('karar_agaci', 'Karar Ağacı', 'bi-diagram-2', 'purple', 'istatistik:karar_agaci'),
-        ('svm', 'Destek Vektör Makinesi', 'bi-cpu', 'teal', 'istatistik:svm'),
+        ('karar_agaci', 'Karar Ağacı', 'bi-diagram-2', 'purple', 'karar-agaci'),
+        ('svm', 'Destek Vektör Makinesi', 'bi-cpu', 'teal', 'svm'),
     ]),
 ]
 
