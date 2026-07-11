@@ -205,3 +205,11 @@
         justify-content: space-between;
     }
 }
+
+/* --- SEO Paragrafı --- */
+.ax-market-seo-text {
+    color: var(--ax-text-muted);
+    font-size: var(--ax-text-sm);
+    line-height: var(--ax-leading-relaxed);
+    max-width: 760px;
+}

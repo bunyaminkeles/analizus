@@ -3,10 +3,12 @@
 
 {% block title %}Analiz Hizmetleri Pazarı — Uzman Eşleştirme | Analizus{% endblock %}
 {% block meta_description %}Akademik analiz uzmanı bulun. SPSS, R, Python ve tez istatistiği için teklif alın. Analizus Hizmetler Pazarı — ücretsiz ilan açın, hızlı uzman eşleştirme, güvenilir akademik destek.{% endblock %}
+{% block og_title %}Analiz Hizmetleri Pazarı — Uzman Eşleştirme | Analizus{% endblock %}
+{% block og_description %}Akademik analiz uzmanı bulun. SPSS, R, Python ve tez istatistiği için teklif alın. Analizus Hizmetler Pazarı — ücretsiz ilan açın, hızlı uzman eşleştirme, güvenilir akademik destek.{% endblock %}
 
 {% block extra_head %}
 <link rel="stylesheet" href="{% static 'css/expert_card.css' %}?v=0001">
-<link rel="stylesheet" href="{% static 'css/market.css' %}?v=0003">
+<link rel="stylesheet" href="{% static 'css/market.css' %}?v=0004">
 {% endblock %}
 
 {% block content %}
@@ -53,9 +55,11 @@
 
 <div class="container py-4">
 
-    <!-- İstatistik Şeridi -->
+    <!-- İstatistik Şeridi (sıfır kuralı: 0 olan kutu gizli, üçü de 0 ise şerit gizli) -->
+    {% if market_stats.total_completed or market_stats.total_experts or market_stats.recent_completed %}
     <div class="row g-3 mb-5">
-        <div class="col-6 col-md-3">
+        {% if market_stats.total_completed %}
+        <div class="col-6 col-md">
             <div class="rounded-3 text-center py-3 px-2" style="background:rgba(34,211,238,0.07);border:1px solid rgba(34,211,238,0.15);">
                 <div class="fw-bold text-info mb-1" style="font-size:1.6rem;line-height:1;">
                     {{ market_stats.total_completed }}
@@ -63,7 +67,9 @@
                 <div class="text-muted" style="font-size:0.75rem;">Tamamlanan İş</div>
             </div>
         </div>
-        <div class="col-6 col-md-3">
+        {% endif %}
+        {% if market_stats.total_experts %}
+        <div class="col-6 col-md">
             <div class="rounded-3 text-center py-3 px-2" style="background:rgba(16,185,129,0.07);border:1px solid rgba(16,185,129,0.15);">
                 <div class="fw-bold text-success mb-1" style="font-size:1.6rem;line-height:1;">
                     {{ market_stats.total_experts }}
@@ -71,7 +77,9 @@
                 <div class="text-muted" style="font-size:0.75rem;">Aktif Uzman</div>
             </div>
         </div>
-        <div class="col-6 col-md-4">
+        {% endif %}
+        {% if market_stats.recent_completed %}
+        <div class="col-6 col-md">
             <div class="rounded-3 text-center py-3 px-2" style="background:rgba(139,92,246,0.07);border:1px solid rgba(139,92,246,0.15);">
                 <div class="fw-bold mb-1" style="font-size:1.6rem;line-height:1;color:#a78bfa;">
                     {{ market_stats.recent_completed }}
@@ -79,7 +87,9 @@
                 <div class="text-muted" style="font-size:0.75rem;">Son 90 Günde</div>
             </div>
         </div>
+        {% endif %}
     </div>
+    {% endif %}
 
     <!-- Kategori Gezinmesi -->
     {% if market_categories %}
@@ -302,6 +312,11 @@
             </div>
         </div>
     </div>
+
+    <!-- SEO Paragrafı -->
+    <p class="ax-market-seo-text mt-5">
+        Analizus Hizmetler Pazarı'nda akademik analiz uzmanı bulmak birkaç dakika sürer: SPSS analizi yaptırma, R/Python ile veri işleme veya tez istatistik danışmanlığı için ihtiyacınızı tanımlayın, doğrulanmış uzmanlardan teklif alın. Fiyatlar gizli tutulur, değerlendirmeler yalnızca işi tamamlayan taraflarca yazılır.
+    </p>
 
 </div>
 {% endblock %}
