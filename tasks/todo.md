@@ -326,7 +326,7 @@ Faz 1'i (envanter) çalıştırıp tabloyu onaya sunacağım.
 
 # Merge Öncesi Son Süpürme (analizus_son_supurme_prompt.md)
 
-**Durum:** Devam ediyor — Madde 1-8 tamamlandı. Kalan: 9, 10, 11.
+**Durum:** Devam ediyor — Madde 1-9 tamamlandı. Kalan: 10, 11.
 Kaynak: `~/Desktop/analizus_son_supurme_prompt.md`. Yeni oturumda önce bu dosya
 + bu bölüm okunmalı; `analizus_son_supurme_prompt.md`'nin ORİJİNAL Madde 1
 metni artık güncel değil (aşağıdaki kararlarla değişti), bu yüzden bu bölüm
@@ -382,6 +382,15 @@ esas alınmalı.
   yapmış/yapmamış iki varyantıyla) tamamen kaldırıldı. Dropzone, "uzmana
   bırak" linki, veri kazıma bandı, alt CTA kartları değişmedi — Playwright
   ile masaüstü+mobil görsel doğrulandı, orphan spacing/CSS sorunu yok.
+- **Madde 9 (Auth panelleri)** — `7837700`. `login.html`/`register.html`
+  base.css yüklemiyor (tamamen izole, hardcode renkli sayfalar) — bu yüzden
+  `var(--ax-bg)` yerine dosyanın kendi `#0a1628` rengiyle iç vinyet
+  (`box-shadow: inset 0 0 90px 70px #0a1628`) eklendi, kullanıcı onaylı.
+  Turuncu dikey ayraç çizgisi (`::after`+`@keyframes fall`) kaldırıldı.
+  Form `<label>` etiketleri nötr griye (#94a3b8) döndü — sadece etiketler,
+  form-subtitle rengi DEĞİŞMEDİ (kullanıcı onaylı kapsam). register.html
+  alt başlığı "Ücretsiz hesap — 30 saniye sürer."a çevrildi. <991px
+  gizleme davranışı değişmedi, Playwright ile masaüstü+mobil doğrulandı.
 
 ## Genel notlar (yeni oturum için önemli)
 
@@ -401,17 +410,11 @@ esas alınmalı.
 
 ## Kalan işler (sırasıyla)
 
-1. **Madde 9 — Auth panelleri (KARAR VERİLDİ):** login/register `.left-half`
-   görsellerine iç vinyet (`box-shadow: inset 0 0 90px 70px var(--ax-bg)`),
-   turuncu dikey ayraç çizgisi kaldırılacak, form etiketi rengi nötr token'a
-   çevrilecek (CTA butonunda turuncu kalır), alt başlık "Veri Üssü Protokolü
-   v3.0" → "Ücretsiz hesap — 30 saniye sürer." <991px gizleme davranışı
-   DEĞİŞMEZ.
-2. **Madde 10 — Testler + Deploy Notu:** tüm turun kapanışı, smoke testler,
+1. **Madde 10 — Testler + Deploy Notu:** tüm turun kapanışı, smoke testler,
    migration listesi (4 adet), `?v=` listesi, Hetzner deploy sırası, merge
    sonrası hatırlatmalar (robots GSC, sitemap resubmit, premium fiyat kaynağı
    kontrolü — prod 250/500/750/1000 TL, dev 50/100/250/500 TL).
-3. **Madde 11 (YENİ, bu oturumda eklendi) — Ana sayfa "AI çağında iki yol" sağ
+2. **Madde 11 (YENİ, bu oturumda eklendi) — Ana sayfa "AI çağında iki yol" sağ
    kartı:** `agentic-hero.webp`/`agentic-hero-mobile.webp` zaten
    `static/img/`'de hazır (kontrol edildi). Sol karttaki (`ax-brand-visual`,
    `forum/templates/forum/home.html` FAZ 4 bölümü) AYNI kalıp: `<picture>`
@@ -428,9 +431,9 @@ esas alınmalı.
 2. `~/Desktop/analizus_son_supurme_prompt.md`'yi oku — ama yukarıdaki
    "Tamamlananlar" ve "Genel notlar" bölümlerini esas al, orijinal metindeki
    Madde 1 artık güncel değil.
-3. "Madde 9 — Auth panelleri" ile başla, sonra "Kalan işler" sırasını takip
-   et — her madde için: envanter/plan → onay → uygulama → doğrulama → commit
-   → dur.
+3. "Madde 10 — Testler + Deploy Notu" ile başla, sonra "Kalan işler" sırasını
+   takip et — her madde için: envanter/plan → onay → uygulama → doğrulama →
+   commit → dur.
 
 ---
 
