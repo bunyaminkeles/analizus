@@ -276,9 +276,14 @@ gerekmediği) geçilmeyecek.
 
 # Site Geneli "Sıfır Kuralı" (Zero-State Sigortası)
 
-**Durum:** Bekliyor — henüz başlanmadı. Kaynak prompt kullanıcı tarafından
-hazırlandı (`analizus_sifir_kurali_prompt.md`, bu konuşmada paylaşıldı, repo'da
-dosya olarak yok). (Temmuz 2026)
+**Durum:** TAMAMLANDI (12 Temmuz 2026, commit `b39307c`). Kaynak prompt
+`~/Desktop/analizus_sifir_kurali_prompt.md`. Faz 1 envanteri çıkarıldı+onaylandı,
+Faz 2 uygulandı (ana sayfa 5 sayaç + `has_any_stats` grup kontrolü, uzman kartı
+"0 tamamlanan proje" satırı, "Akademik Haberler" placeholder kaldırıldı,
+Gündemdeki Tartışmalar+Akademik Haberler layout bütünlüğü, /hakkimizda/ "Ekip ve
+Güven" bölümü), Faz 3'te 9 smoke test eklendi (`forum/tests.py`). /market/ ve
+/proje-talebi/ zaten kurala uygun çıktı (yeni iş gerekmedi). Aşağıdaki eski not
+artık geçmiş kayıt olarak kalıyor:
 
 ## Amaç
 Değeri 0 olan hiçbir güven metriği ("0 tamamlanan analiz", "0 aktif uzman" vb.)
@@ -316,6 +321,112 @@ gerçekten 0 olabilir) — "boş dükkân" izlenimini önlemek.
 ## Sıradaki adım
 Kullanıcı başlamamı istediğinde `analizus_sifir_kurali_prompt.md` içeriğiyle
 Faz 1'i (envanter) çalıştırıp tabloyu onaya sunacağım.
+
+---
+
+# Merge Öncesi Son Süpürme (analizus_son_supurme_prompt.md)
+
+**Durum:** Devam ediyor — Madde 1-7a tamamlandı, 7b'den itibaren duraklatıldı.
+Kaynak: `~/Desktop/analizus_son_supurme_prompt.md`. Yeni oturumda önce bu dosya
++ bu bölüm okunmalı; `analizus_son_supurme_prompt.md`'nin ORİJİNAL Madde 1
+metni artık güncel değil (aşağıdaki kararlarla değişti), bu yüzden bu bölüm
+esas alınmalı.
+
+## Tamamlananlar (commit sırasıyla)
+
+- **Madde 1 (huni parametreleri)** — `cd84461`. Tableau CTA metni "Proje Talebi
+  Oluştur"a çevrildi; bibliometrik ön-seçim için `ANALYSIS_CHOICES`'a
+  `('bibliometric', 'Bibliyometrik Analiz')` eklendi (migration `0147`, no-op
+  AlterField). `proje_talebi` view artık `?type=` GET param'ını da okuyor.
+  **Karar (kullanıcı onaylı):** bibliometri istatistiksel analiz sayılmadı,
+  `statistics` seçeneği yeniden kullanılmadı — ayrı seçenek açıldı.
+- **Madde 2 (Sıfır Kuralı)** — `b39307c`. Yukarıdaki bölüme taşındı.
+- **Madde 3 (footer tutarsızlığı)** — iş YOK, zaten çözülmüştü (footer tek
+  partial, `{% url 'analiz_home' %}` kullanıyor, hardcode `/istatistik/` yok).
+- **Madde 4 (forum boş-durum sızıntısı)** — iş YOK, zaten çözülmüştü (`#noResults`
+  zaten `d-none` ile başlıyor, JS mantığı zaten doğruydu).
+- **Madde 5 (OG override + meta)** — `d73ab72`. 8 hedef sayfaya
+  og_title/og_description/twitter_title/twitter_description eklendi.
+  **Önemli bulgu:** `/bibliometrics/` misafir kullanıcı için `landing.html`
+  değil, PAYLAŞILAN `templates/service_promo.html` render ediyor (6+ istatistik
+  araç sayfası da aynı şablonu kullanıyor). Asıl düzeltme oraya, `promo_description`
+  context değişkeninden yapıldı — bonus: diğer araç sayfaları da özgün
+  og:description kazandı.
+- **Madde 6 (dev noindex middleware)** — iş YOK, zaten vardı
+  (`forum/middleware.py::NoIndexMiddleware` + `settings.IS_PRODUCTION`).
+- **Madde 7a (bibliometri örnek çıktılar + OpenAlex köprüsü)** — **commit
+  edilmedi, working tree'de bekliyor** (`bibliometrics/views.py`,
+  `templates/service_promo.html`). Galeri ve OpenAlex ters köprüsü zaten
+  vardı; eklenen tek şey hero altı "OpenAlex'te tarama mı yaptın?" bandı
+  (`promo_openalex_bridge` context bayrağı, yalnızca bibliometride true).
+  **Karar (kullanıcı onaylı):** galeri kartları spec'in istediği 5 başlıkla
+  (Anahtar Kelime Eş-Oluşum Ağı, Anahtar Kelime Zaman Trendi vb.) DEĞİL,
+  `static/img/`'de gerçekten var olan 6 görselin gerçek içeriğine uygun
+  başlıklarla kuruldu (Yayın Trendi, Anahtar Kelime Bulutu, Yazar İşbirliği
+  Ağı, Atıf Analizi & H-index, Araştırma Boşluğu Haritası, Lotka Kanunu) —
+  bu zaten `bibliometrics/views.py`'de mevcuttu, değiştirilmedi.
+
+## Genel notlar (yeni oturum için önemli)
+
+- **Deploy notu — migration sayısı:** Bu tur `0147`'ye kadar geldi (0144-0147,
+  toplam 4 migration). Madde 10'daki deploy notunda bu sayı kullanılmalı.
+- **Pre-existing test hatası (bu turla ilgisi yok, dokunma):**
+  `forum/tests.py::test_yoktez_job_daily_limit_normal_user` son commit'te de
+  başarısız (`assert 3 == 1`) — bu turun DIŞINDA bir konu, `python -m pytest`
+  çalıştırınca "1 failed" görürsen şaşırma.
+- **service_promo.html gotcha:** Bibliometri, cronbach, normallik, betimsel,
+  korelasyon, t-testi, anova, mann-whitney, kruskal-wallis, ki-kare, lineer/
+  lojistik regresyon guest (misafir) görünümlerinin HEPSİ bu tek şablonu
+  paylaşıyor. Bu sayfalardan birine özel bir düzenleme istenirse, view'daki
+  context dict'e yeni bir bayrak eklenip template'te `{% if %}` ile o bayrağa
+  göre gösterilmesi gerekir — aksi halde değişiklik ya hiçbir sayfada
+  görünmez ya da yanlışlıkla hepsinde birden görünür.
+
+## Kalan işler (sırasıyla)
+
+1. **Madde 7a'yı commit et** (working tree'de bekliyor).
+2. **Madde 7b — Tableau facade:** 4 embed (`tableau-poster-trdizin/obezite/
+   nufus/satis.webp` zaten `static/img/`'de hazır) → poster + "▶ İnteraktif
+   Dashboard'u Yükle" butonu; tıklamada vanilla JS gerçek embed'i enjekte
+   eder; embed kodu `<template>`'te saklanır; kabul kriteri: ilk yüklemede
+   public.tableau.com'a sıfır istek.
+3. **Madde 7c — Blog:** özgün og:title/description + `og:type=article`
+   (Madde 5'teki mekanizmayla — `base.html`'deki `{% block og_type %}` zaten
+   var); kapak yoksa kategori→görsel eşlemesi; pagination `?page=2` linki
+   düzeltmesi.
+4. **Madde 8 — Hero sadeleştirme (KARAR VERİLDİ: tam kaldırma):** eski üçlü
+   CTA satırı (Ücretsiz Başla / Uzman Bul / Foruma Katıl) tamamen kaldırılacak.
+   Kaldırmadan önce satırın tam HTML'i onaya gösterilmeli. Dropzone, "uzmana
+   bırak" linki, veri kazıma satırı, kitle bandı AYNEN kalacak.
+5. **Madde 9 — Auth panelleri (KARAR VERİLDİ):** login/register `.left-half`
+   görsellerine iç vinyet (`box-shadow: inset 0 0 90px 70px var(--ax-bg)`),
+   turuncu dikey ayraç çizgisi kaldırılacak, form etiketi rengi nötr token'a
+   çevrilecek (CTA butonunda turuncu kalır), alt başlık "Veri Üssü Protokolü
+   v3.0" → "Ücretsiz hesap — 30 saniye sürer." <991px gizleme davranışı
+   DEĞİŞMEZ.
+6. **Madde 10 — Testler + Deploy Notu:** tüm turun kapanışı, smoke testler,
+   migration listesi (4 adet), `?v=` listesi, Hetzner deploy sırası, merge
+   sonrası hatırlatmalar (robots GSC, sitemap resubmit, premium fiyat kaynağı
+   kontrolü — prod 250/500/750/1000 TL, dev 50/100/250/500 TL).
+7. **Madde 11 (YENİ, bu oturumda eklendi) — Ana sayfa "AI çağında iki yol" sağ
+   kartı:** `agentic-hero.webp`/`agentic-hero-mobile.webp` zaten
+   `static/img/`'de hazır (kontrol edildi). Sol karttaki (`ax-brand-visual`,
+   `forum/templates/forum/home.html` FAZ 4 bölümü) AYNI kalıp: `<picture>`
+   mobil-önce + overlay gradient + başlık/metin/CTA. Dikkat noktası: agentic
+   görseli 16:9 yatay, anlam merkezi ortadaki monitör —
+   `object-fit: cover; object-position: center` ile kadraj korunmalı. İki
+   kart yüksekliği eşit kalmalı, 380px mobilde alt alta ve taşmasız. Madde 7
+   ile aynı oturumda geçilebilir (kullanıcı notu).
+
+## Yeni oturumda nasıl devam edilir
+
+1. Bu dosyayı (`tasks/todo.md`) ve `CLAUDE.md`'yi oku (CLAUDE.md zaten proje
+   kökünde, otomatik yükleniyor).
+2. `~/Desktop/analizus_son_supurme_prompt.md`'yi oku — ama yukarıdaki
+   "Tamamlananlar" ve "Genel notlar" bölümlerini esas al, orijinal metindeki
+   Madde 1 artık güncel değil.
+3. "Madde 7a'yı commit et" ile başla, sonra "Kalan işler" sırasını takip et —
+   her madde için: envanter/plan → onay → uygulama → doğrulama → commit → dur.
 
 ---
 
