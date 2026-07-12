@@ -271,3 +271,100 @@ entegrasyonu daha zor ve ekstra maliyet/karmaşıklık getirir.
 Hangi modüle ekleneceği netleşmedi (mevcut akademik tarama mı, yeni özellik
 mi). Karar verilmeden somut plana (dosyalar, endpoint, migration gerekip
 gerekmediği) geçilmeyecek.
+
+---
+
+# Site Geneli "Sıfır Kuralı" (Zero-State Sigortası)
+
+**Durum:** Bekliyor — henüz başlanmadı. Kaynak prompt kullanıcı tarafından
+hazırlandı (`analizus_sifir_kurali_prompt.md`, bu konuşmada paylaşıldı, repo'da
+dosya olarak yok). (Temmuz 2026)
+
+## Amaç
+Değeri 0 olan hiçbir güven metriği ("0 tamamlanan analiz", "0 aktif uzman" vb.)
+ve içi boş hiçbir vitrin bölümü ziyaretçiye gösterilmeyecek. Gerekçe: dev DB
+boşluğu değil, canlının doğal dalgalanması (gece 03:00 çevrimiçi uzman
+gerçekten 0 olabilir) — "boş dükkân" izlenimini önlemek.
+
+## Protokol (kullanıcının vurguladığı 3 kritik nokta)
+1. **Kuralı tanımla, yerleri saydırma.** Talimat sabit bir liste değil: Faz 1
+   `grep` ile TÜM template'leri tarayıp tam bir envanter tablosu çıkarır
+   (Template · Bölüm · Metrik/Koleksiyon · Mevcut davranış · Önerilen işlem ·
+   Kategori), onay alınmadan tek satır değiştirilmez. Bilinen 8-9 aday
+   (ana sayfa `ax-stats-section`, uzman vitrini kart içi satırlar, "Akademik
+   haberler yakında" şeridi, /proje-talebi/ stats bar, /market/ sayaç üçlüsü,
+   /hakkimizda/ "Henüz uzman kadro eklenmedi.") başlangıç noktası, liste
+   bunlarla SINIRLI değil — asıl risk modelin kapsamı kendiliğinden
+   genişletmesi; envanter+onay kapısı bunu keser.
+2. **İstisnayı ilkeyle tanımla, örnekle sabitle — "davet vs itiraf" ayrımı.**
+   Davet (bilinçli tasarlanmış CTA içeren boş-durum metni, ör. market'teki
+   "İlk analiz işini sen tamamla…") KORUNUR; itiraf ("Henüz uzman kadro
+   eklenmedi." gibi) GİZLENİR. Gri kalan her örnek envanterde "karar gerekli"
+   işaretlenip kullanıcıya sorulacak.
+3. **Yan etkileri kurala bağla.** Bir öğe gizlenince grid/flex kırılmamalı
+   (7 sayaçtan 3'ü gizlenince kalan 4'ün doğal dağılması); bir sayaç
+   grubundaki TÜMÜ 0 ise kapsayıcı (şerit/başlık dahil) da gizlenir; yeni DB
+   sorgusu YASAK — "hepsi sıfır mı" kontrolü mevcut cache'li değerlerden
+   türetilen tek bir boolean ile yapılır; parantezli `{% if %}` yasağı
+   (analizus.md §26) geçerli.
+
+## Fazlar (kaynak promptta tanımlı)
+- Faz 1 — Envanter (uygulama yok, sadece rapor + onay)
+- Faz 2 — Uygulama (template `{% if %}`, gerekirse tek boolean context değişkeni)
+- Faz 3 — Test + Teslim (0/>0 smoke testleri, migration beklenmiyor)
+
+## Sıradaki adım
+Kullanıcı başlamamı istediğinde `analizus_sifir_kurali_prompt.md` içeriğiyle
+Faz 1'i (envanter) çalıştırıp tabloyu onaya sunacağım.
+
+---
+
+# /market/ Pazaryeri Zenginleştirme
+
+**Durum:** Bekliyor — henüz başlanmadı. Kaynak prompt kullanıcı tarafından
+hazırlandı (`analizus_pazaryeri_prompt.md`, bu konuşmada paylaşıldı, repo'da
+dosya olarak yok). (Temmuz 2026)
+
+## Amaç
+`/market/` işlevsel ama çıplak (stats + ilan listesi + 3 adım) — hedef, sayfayı
+gerçek bir pazaryeri vitrinine çevirmek: iki tarafı da (ilan açan / uzman)
+karşılayan çift kapı, güven işaretleri, gezilebilir kategoriler, akan sosyal
+kanıt.
+
+## Protokol (kullanıcının vurguladığı 3 kritik nokta — sıfır kuralıyla aynı disiplin)
+1. **Kuralı tanımla, yerleri saydırma.** İlk iş envanter: `/market/` view +
+   template, ana sayfa uzman vitrini sorgusu (`home()`), trust bandı, skill
+   chip yapısı incelenip YENİDEN KULLANILACAKLAR belirlenir; plan onaya
+   sunulmadan uygulamaya geçilmez.
+2. **İstisnayı ilkeyle tanımla, örnekle sabitle.** Bu görev "sıfır kuralı"
+   görevinin somut uygulama alanlarından biri: market'teki "İlk analiz işini
+   sen tamamla…" boş-durum metni bilinçli bir DAVETTİR, korunur — /hakkimizda/
+   "Henüz uzman kadro eklenmedi." gibi bir İTİRAF değildir. Faz 4'teki sayaç
+   üçlüsü (Tamamlanan İş / Aktif Uzman / Son 90 Günde) sıfır kuralına bağlanır:
+   0 olan sayaç gizlenir, üçü de 0 ise şerit tamamen gizlenir.
+3. **Yan etkileri kurala bağla.** Fiyat gizliliği kesin (uzman kartlarında
+   fiyat/teklif bilgisi ASLA gösterilmez); sayaç/uzman sorguları ana
+   sayfadaki `home_stats`/`home_experts` cache pattern'i yeniden kullanılır,
+   çift hesaplama yapılmaz; kategori chip'leri ilan modelinde gerçek bir
+   skill/kategori alanı yoksa "görsel chip + hepsi aynı listeye" şeklinde
+   sessizce degrade EDİLMEZ — durum kullanıcıya bildirilip birlikte karar
+   verilir; OG meta override mekanizması `base.html`'e dokunuyorsa ayrı onaya
+   sunulur.
+
+## Fazlar (kaynak promptta tanımlı)
+- Faz 1 — Hero Bandı + Çift Kapı (İlan Aç / Uzman Olarak Katıl, market-hero
+  görseli yoksa CSS-only placeholder)
+- Faz 2 — Kategori Gezinmesi (`?skill=` GET filtresi — ilan modelinde kategori
+  alanı yoksa DUR ve sor)
+- Faz 3 — Sosyal Kanıt Katmanı (uzman vitrini şeridi, başarı hikayeleri varsa,
+  oyunlaştırma/puan bandı)
+- Faz 4 — Sıfır Temizliği + SEO (sayaç üçlüsü sıfır kuralı, OG override, SEO
+  paragrafı)
+- Faz 5 — Deploy Notu
+
+## Sıradaki adım
+Kullanıcı başlamamı istediğinde `analizus_pazaryeri_prompt.md` içeriğiyle
+Faz 1'i çalıştırıp planı onaya sunacağım. Not: /market/ görevi, sıfır kuralı
+görevinden ÖNCE veya SONRA yapılabilir — market'in Faz 4'ü sıfır kuralına
+bağlı olduğundan, sıfır kuralı önce bitmişse market Faz 4 onun sonucunu
+doğrudan kullanabilir (tekrar iş çıkarmaz), ama bu bir ön koşul değil.

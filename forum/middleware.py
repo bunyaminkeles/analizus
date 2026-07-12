@@ -107,6 +107,7 @@ class EmailVerificationMiddleware:
         'search',
         'category_topics',
         'topic_detail',
+        'new_topic',
         'profile_detail',
         'section_detail',
         'health_check',

@@ -52,6 +52,14 @@ def bibliometrics_landing(request):
                 'Sistem otomatik olarak 10 farklı analizi çalıştırır.',
                 'Demo rapor (3 grafik) ücretsiz emailinize gelir.',
             ],
+            'promo_gallery': [
+                {'img': 'img/biblio-ornek-yayin-trendi.webp', 'caption': 'Yayın Trendi', 'width': 717, 'height': 638},
+                {'img': 'img/biblio-ornek-kelime-bulutu.webp', 'caption': 'Anahtar Kelime Bulutu', 'width': 695, 'height': 486},
+                {'img': 'img/biblio-ornek-yazar-agi.webp', 'caption': 'Yazar İşbirliği Ağı', 'width': 695, 'height': 719},
+                {'img': 'img/biblio-ornek-atif-hindex.webp', 'caption': 'Atıf Analizi & H-index', 'width': 695, 'height': 637},
+                {'img': 'img/biblio-ornek-arastirma-boslugu.webp', 'caption': 'Araştırma Boşluğu Haritası', 'width': 999, 'height': 739},
+                {'img': 'img/biblio-ornek-lotka.webp', 'caption': 'Yazar Üretkenlik Dağılımı (Lotka Kanunu)', 'width': 707, 'height': 641},
+            ],
             'seo_guide': TARAMA_SEO_CONTENT.get('bibliometrics'),
         })
     user = request.user

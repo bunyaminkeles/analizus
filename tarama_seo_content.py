@@ -554,7 +554,9 @@ TARAMA_SEO_CONTENT = {
             {
                 'q': 'Dashboard\'lar yüklenmiyorsa ne yapmalıyım?',
                 'a': (
-                    'Tableau Public\'in sunucularına bağlantı kesildiğinde embed yüklenmeyebilir. '
+                    'Sayfa performansı için dashboard\'lar otomatik değil, "İnteraktif Dashboard\'u '
+                    'Yükle" butonuna tıklandığında yüklenir — önce bu butona tıkladığınızdan emin '
+                    'olun. Tableau Public\'in sunucularına bağlantı kesildiğinde embed yüklenmeyebilir. '
                     'Sayfayı yenileyin veya her dashboard\'un yanındaki "Tam Ekran" bağlantısına '
                     'tıklayarak Tableau Public\'e doğrudan gidin. Sorun devam ederse '
                     'tarayıcınızın reklam engelleyicisini geçici olarak devre dışı bırakmayı deneyin.'

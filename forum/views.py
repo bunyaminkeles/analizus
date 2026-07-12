@@ -114,10 +114,16 @@ def forum_index(request):
     from forum.models import STUDYROOM_TERMS
     can_create_room, _ = _studyroom_eligibility(request.user)
 
+    # Gündemdeki Tartışmalar (en çok görüntülenen 5 konu) — ana sayfayla aynı sorgu
+    popular_topics = Topic.objects.select_related('starter', 'category').annotate(
+        replies_count=Count('posts')
+    ).order_by('-views')[:5]
+
     return render(request, 'forum/forum_index.html', {
         'sections_data': sections_data,
         'active_rooms': active_rooms,
         'can_create_room': can_create_room,
+        'popular_topics': popular_topics,
     })
 
 
@@ -1149,6 +1155,12 @@ def register(request):
                 _handle_referral_registration(request, user, ref_code)
 
             login(request, user)
+
+            next_url = request.GET.get('next')
+            if next_url:
+                from django.utils.http import url_has_allowed_host_and_scheme
+                if url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}, require_https=request.is_secure()):
+                    return redirect(next_url)
             return redirect('verification_pending')
     else:
         form = RegisterForm()

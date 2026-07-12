@@ -4,7 +4,7 @@
 {% block title %}Tableau Analizleri — TR Dizin, TÜİK ve Akademik Veri Görselleştirme | Analizus{% endblock %}
 {% block meta_description %}TR Dizin sağlık araştırmaları, TÜİK obezite ve nüfus verileri ile satış analizine ait interaktif Tableau dashboard'ları. Kendi verileriniz için özel dashboard hizmeti.{% endblock %}
 
-{% block extra_css %}
+{% block extra_head %}
 <style>
   #tableauTabs .nav-link {
     color: rgba(255, 255, 255, 0.55);
@@ -27,6 +27,40 @@
   }
 
   .dash-kpi-val { font-size: 18px; font-weight: 700; }
+
+  .ax-tableau-facade {
+    position: relative;
+    width: 100%;
+  }
+  .ax-tableau-facade__poster {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 4px;
+  }
+  .ax-tableau-facade__btn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-height: 44px;
+    padding: 0.6rem 1.25rem;
+    background: rgba(17, 24, 39, 0.85);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .ax-tableau-facade__btn:hover {
+    background: rgba(17, 24, 39, 0.95);
+    border-color: rgba(255, 255, 255, 0.4);
+  }
 </style>
 {% endblock %}
 
@@ -115,11 +149,19 @@
               </a>
             </div>
             <div class="tableau-wrap px-2 pb-2">
-              <tableau-viz
-                src="https://public.tableau.com/views/TrDizinSalkAratrmalar/SalkAratrmalar"
-                width="100%" height="700"
-                toolbar="bottom" hide-tabs>
-              </tableau-viz>
+              <div class="ax-tableau-facade">
+                <img src="{% static 'img/tableau-poster-trdizin.webp' %}" alt="" loading="lazy" width="964" height="722" class="ax-tableau-facade__poster">
+                <button type="button" class="ax-tableau-facade__btn" data-tableau-load>
+                  <i class="bi bi-play-circle-fill me-1"></i>İnteraktif Dashboard'u Yükle
+                </button>
+              </div>
+              <template data-tableau-embed>
+                <tableau-viz
+                  src="https://public.tableau.com/views/TrDizinSalkAratrmalar/SalkAratrmalar"
+                  width="100%" height="700"
+                  toolbar="bottom" hide-tabs>
+                </tableau-viz>
+              </template>
             </div>
             <div class="px-3 pb-3 pt-3" style="border-top:1px solid #2d3748; background-color:#1a1f2e;">
               <h2 class="h6 fw-bold text-white mb-2">TR Dizin Sağlık Araştırmaları Dashboard</h2>
@@ -145,11 +187,19 @@
               </a>
             </div>
             <div class="tableau-wrap px-2 pb-2">
-              <tableau-viz
-                src="https://public.tableau.com/views/Tuik-obezite/Dashboard2"
-                width="100%" height="700"
-                toolbar="bottom" hide-tabs>
-              </tableau-viz>
+              <div class="ax-tableau-facade">
+                <img src="{% static 'img/tableau-poster-obezite.webp' %}" alt="" loading="lazy" width="517" height="691" class="ax-tableau-facade__poster">
+                <button type="button" class="ax-tableau-facade__btn" data-tableau-load>
+                  <i class="bi bi-play-circle-fill me-1"></i>İnteraktif Dashboard'u Yükle
+                </button>
+              </div>
+              <template data-tableau-embed>
+                <tableau-viz
+                  src="https://public.tableau.com/views/Tuik-obezite/Dashboard2"
+                  width="100%" height="700"
+                  toolbar="bottom" hide-tabs>
+                </tableau-viz>
+              </template>
             </div>
             <div class="px-3 pb-3 pt-3" style="border-top:1px solid #2d3748; background-color:#1a1f2e;">
               <h2 class="h6 fw-bold text-white mb-2">TÜİK — Cinsiyete Göre Obezite Oranları</h2>
@@ -174,11 +224,19 @@
               </a>
             </div>
             <div class="tableau-wrap px-2 pb-2">
-              <tableau-viz
-                src="https://public.tableau.com/views/Binde5tenbyknfusart/Binde5denbykartlar"
-                width="100%" height="700"
-                toolbar="bottom" hide-tabs>
-              </tableau-viz>
+              <div class="ax-tableau-facade">
+                <img src="{% static 'img/tableau-poster-nufus.webp' %}" alt="" loading="lazy" width="919" height="462" class="ax-tableau-facade__poster">
+                <button type="button" class="ax-tableau-facade__btn" data-tableau-load>
+                  <i class="bi bi-play-circle-fill me-1"></i>İnteraktif Dashboard'u Yükle
+                </button>
+              </div>
+              <template data-tableau-embed>
+                <tableau-viz
+                  src="https://public.tableau.com/views/Binde5tenbyknfusart/Binde5denbykartlar"
+                  width="100%" height="700"
+                  toolbar="bottom" hide-tabs>
+                </tableau-viz>
+              </template>
             </div>
             <div class="px-3 pb-3 pt-3" style="border-top:1px solid #2d3748; background-color:#1a1f2e;">
               <h2 class="h6 fw-bold text-white mb-2">Türkiye — %0,5'den Yüksek Nüfus Artışı Gösteren İller</h2>
@@ -203,11 +261,19 @@
               </a>
             </div>
             <div class="tableau-wrap px-2 pb-2">
-              <tableau-viz
-                src="https://public.tableau.com/views/analizus_sales/Dashboard1"
-                width="100%" height="900"
-                toolbar="bottom" hide-tabs>
-              </tableau-viz>
+              <div class="ax-tableau-facade">
+                <img src="{% static 'img/tableau-poster-satis.webp' %}" alt="" loading="lazy" width="1245" height="726" class="ax-tableau-facade__poster">
+                <button type="button" class="ax-tableau-facade__btn" data-tableau-load>
+                  <i class="bi bi-play-circle-fill me-1"></i>İnteraktif Dashboard'u Yükle
+                </button>
+              </div>
+              <template data-tableau-embed>
+                <tableau-viz
+                  src="https://public.tableau.com/views/analizus_sales/Dashboard1"
+                  width="100%" height="900"
+                  toolbar="bottom" hide-tabs>
+                </tableau-viz>
+              </template>
             </div>
 
             <!-- Açıklama (görselin altında) -->
@@ -380,4 +446,16 @@
 
 {% block extra_js %}
 <script type="module" src="https://public.tableau.com/javascripts/api/tableau.embedding.3.latest.min.js"></script>
+<script>
+document.addEventListener('click', function (e) {
+  var btn = e.target.closest('[data-tableau-load]');
+  if (!btn) return;
+  var facade = btn.closest('.ax-tableau-facade');
+  var wrap = facade.parentElement;
+  var tpl = wrap.querySelector('template[data-tableau-embed]');
+  if (tpl) {
+    wrap.replaceChild(tpl.content.cloneNode(true), facade);
+  }
+});
+</script>
 {% endblock %}

@@ -4,6 +4,10 @@
 {% block title %}Bibliometrik Analiz — WoS, Scopus, BibTeX ile Atıf ve Yayın Analizi | Analizus{% endblock %}
 {% block meta_description %}WoS, Scopus, BibTeX veya OpenAlex verilerinizle bibliometrik analiz yapın. Yayın trendi, atıf analizi, H-index, işbirliği ağı, kelime bulutu — PDF rapor ile. Ücretsiz dene.{% endblock %}
 
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/bibliometrics.css' %}?v=0001">
+{% endblock %}
+
 {% block content %}
 <div class="row g-4">
 
@@ -62,6 +66,15 @@
           {% endif %}
         </div>
       </div>
+    </div>
+  </div>
+
+  {# ─── OpenAlex Köprü Bandı ─── #}
+  <div class="col-12">
+    <div class="ax-biblio-bridge">
+      <i class="bi bi-link-45deg ax-biblio-bridge__icon"></i>
+      <span class="ax-biblio-bridge__text">OpenAlex'te tarama mı yaptın? İndirdiğin Excel'i buraya doğrudan yükle, bibliometrik raporun hazır.</span>
+      <a href="{% url 'openalex:landing' %}" class="ax-biblio-bridge__link">OpenAlex Taramasına Git <i class="bi bi-arrow-right"></i></a>
     </div>
   </div>
 
@@ -259,6 +272,38 @@
     </div>
   </div>
   {% endif %}
+
+  {# ─── Örnek Rapor Çıktıları ─── #}
+  <div class="col-12">
+    <h2 class="ax-biblio-examples__title">Örnek Rapor Çıktıları</h2>
+    <div class="ax-biblio-examples">
+      <figure class="ax-biblio-examples__item">
+        <img src="{% static 'img/biblio-ornek-yayin-trendi.webp' %}" alt="" loading="lazy" width="717" height="638">
+        <figcaption>Yayın Trendi</figcaption>
+      </figure>
+      <figure class="ax-biblio-examples__item">
+        <img src="{% static 'img/biblio-ornek-kelime-bulutu.webp' %}" alt="" loading="lazy" width="695" height="486">
+        <figcaption>Anahtar Kelime Bulutu</figcaption>
+      </figure>
+      <figure class="ax-biblio-examples__item">
+        <img src="{% static 'img/biblio-ornek-yazar-agi.webp' %}" alt="" loading="lazy" width="695" height="719">
+        <figcaption>Yazar İşbirliği Ağı</figcaption>
+      </figure>
+      <figure class="ax-biblio-examples__item">
+        <img src="{% static 'img/biblio-ornek-atif-hindex.webp' %}" alt="" loading="lazy" width="695" height="637">
+        <figcaption>Atıf Analizi & H-index</figcaption>
+      </figure>
+      <figure class="ax-biblio-examples__item">
+        <img src="{% static 'img/biblio-ornek-arastirma-boslugu.webp' %}" alt="" loading="lazy" width="999" height="739">
+        <figcaption>Araştırma Boşluğu Haritası</figcaption>
+      </figure>
+      <figure class="ax-biblio-examples__item">
+        <img src="{% static 'img/biblio-ornek-lotka.webp' %}" alt="" loading="lazy" width="707" height="641">
+        <figcaption>Yazar Üretkenlik Dağılımı (Lotka Kanunu)</figcaption>
+      </figure>
+    </div>
+    <p class="ax-biblio-examples__note"><em>Bu grafikler aracın gerçek çıktısıdır — sizin verinizle aynı kalitede üretilir.</em></p>
+  </div>
 
 <!-- SEO: Bilgi metni -->
 <div class="container mb-5 mt-4" style="max-width:900px;">

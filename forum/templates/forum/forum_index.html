@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block title %}Akademik Analiz Forumu — SPSS, R, Python, Tez Yardımı | Analizus{% endblock %}
-{% block meta_description %}Türkiye'nin en büyük akademik analiz forumu. SPSS, R, Python, istatistik testleri, tez yazımı ve veri bilimi hakkında soru sorun, uzmanlardan yanıt alın. Ücretsiz, Türkçe.{% endblock %}
+{% block meta_description %}Türkçe akademik analiz forumu. SPSS, R, Python, istatistik testleri, tez yazımı ve veri bilimi hakkında soru sorun, uzmanlardan yanıt alın. Ücretsiz, Türkçe.{% endblock %}
 
 {% block content %}
 <div class="container py-4">
@@ -61,6 +61,13 @@
   </div>
   {% endif %}
 
+  {# ─── Gündemdeki Tartışmalar ─── #}
+  {% if popular_topics %}
+  <div class="mb-5">
+    {% include 'forum/partials/_gundem_tartismalar.html' with gundem_show_link=False gundem_zero_rule=True %}
+  </div>
+  {% endif %}
+
   {# ─── Anchor Navigasyon ─── #}
   <div class="forum-anchors mb-4" id="forumAnchors">
     {% for item in sections_data %}
@@ -113,12 +120,12 @@
         </a>
 
         {% if cat.topic_count == 0 %}
-        <a href="{% if user.is_authenticated %}{% url 'new_topic' slug=cat.slug %}{% else %}{% url 'register' %}{% endif %}"
+        <a href="{% if user.is_authenticated %}{% url 'new_topic' slug=cat.slug %}{% else %}{% url 'register' %}?next={% url 'new_topic' slug=cat.slug %}{% endif %}"
            class="fc-first-cta">
           <i class="bi bi-plus-circle me-1"></i>İlk soruyu sen sor
         </a>
         {% else %}
-        <a href="{% if user.is_authenticated %}{% url 'new_topic' slug=cat.slug %}{% else %}{% url 'register' %}{% endif %}"
+        <a href="{% if user.is_authenticated %}{% url 'new_topic' slug=cat.slug %}{% else %}{% url 'register' %}?next={% url 'new_topic' slug=cat.slug %}{% endif %}"
            class="fc-ask-btn">
           <i class="bi bi-plus"></i> Soru Sor
         </a>

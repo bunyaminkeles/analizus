@@ -3,6 +3,12 @@
 
 {% block title %}{{ promo_title }} - Analizus{% endblock %}
 
+{% block extra_head %}
+{% if promo_gallery %}
+<link rel="stylesheet" href="{% static 'css/bibliometrics.css' %}?v=0001">
+{% endif %}
+{% endblock %}
+
 {% block content %}
 <div class="container py-4">
 
@@ -44,6 +50,24 @@
     </div>
     {% endfor %}
   </div>
+
+  {% if promo_gallery %}
+  {# ─── Örnek Rapor Çıktıları ─── #}
+  <div class="row justify-content-center mb-5">
+    <div class="col-lg-10">
+      <h2 class="ax-biblio-examples__title text-center">Örnek Rapor Çıktıları</h2>
+      <div class="ax-biblio-examples">
+        {% for item in promo_gallery %}
+        <figure class="ax-biblio-examples__item">
+          <img src="{% static item.img %}" alt="" loading="lazy" width="{{ item.width }}" height="{{ item.height }}">
+          <figcaption>{{ item.caption }}</figcaption>
+        </figure>
+        {% endfor %}
+      </div>
+      <p class="ax-biblio-examples__note text-center"><em>Bu grafikler aracın gerçek çıktısıdır — sizin verinizle aynı kalitede üretilir.</em></p>
+    </div>
+  </div>
+  {% endif %}
 
   {# ─── Nasıl çalışır ─── #}
   <div class="row justify-content-center mb-5">

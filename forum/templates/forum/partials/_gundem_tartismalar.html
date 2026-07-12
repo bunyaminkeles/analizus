@@ -1,0 +1,26 @@
+{% if popular_topics or not gundem_zero_rule %}
+<div class="ax-section-card">
+    <div class="ax-section-card__header" style="color: #f97316;">
+        <i class="bi bi-fire"></i>
+        <span>Gündemdeki Tartışmalar</span>
+        {% if gundem_show_link %}
+        <a href="{% url 'forum_index' %}" class="ms-auto ax-section-card__more">Tümünü Gör →</a>
+        {% endif %}
+    </div>
+    <div class="ax-section-card__body">
+        <div class="row g-2">
+            {% for topic in popular_topics %}
+            <div class="col-12 col-sm-6">
+                <a href="{% url 'topic_detail' pk=topic.pk %}" class="ax-topic-row">
+                    <span class="ax-topic-row__rank">#{{ forloop.counter }}</span>
+                    <span class="ax-topic-row__title">{{ topic.subject|truncatechars:40 }}</span>
+                    <span class="ax-topic-row__meta"><i class="bi bi-eye"></i> {{ topic.views }} görüntülenme</span>
+                </a>
+            </div>
+            {% empty %}
+            <p class="text-muted small mb-0">Henüz popüler konu yok.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
