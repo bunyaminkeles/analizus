@@ -18,11 +18,15 @@
         {% endfor %}
     </div>
     {% endif %}
+    {% if expert.showcase_completed_jobs or expert.avg_rating %}
     <div class="ax-expert-stats">
+        {% if expert.showcase_completed_jobs %}
         <span>{{ expert.showcase_completed_jobs }} tamamlanan proje</span>
+        {% endif %}
         {% if expert.avg_rating %}
         <span class="ax-expert-rating">★ {{ expert.avg_rating|floatformat:1 }}</span>
         {% endif %}
     </div>
+    {% endif %}
 </div>
 {% endfor %}

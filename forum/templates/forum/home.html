@@ -722,18 +722,21 @@ document.addEventListener('DOMContentLoaded', function () {
 <!-- =====================================================
      FAZ 8: GÜNDEMDEKİ TARTIŞMALAR + AKADEMİK HABERLER
      ===================================================== -->
+{% if popular_topics or science_news %}
 <section class="ax-wide-section">
     <div class="container">
         <div class="row g-4">
 
             <!-- Gündemdeki Tartışmalar -->
-            <div class="col-12 col-md-6">
-                {% include 'forum/partials/_gundem_tartismalar.html' with gundem_show_link=True %}
+            {% if popular_topics %}
+            <div class="col-12{% if science_news %} col-md-6{% endif %}">
+                {% include 'forum/partials/_gundem_tartismalar.html' with gundem_show_link=True gundem_zero_rule=True %}
             </div>
+            {% endif %}
 
             <!-- Akademik Haberler -->
-            <div class="col-12 col-md-6">
-                {% if science_news %}
+            {% if science_news %}
+            <div class="col-12{% if popular_topics %} col-md-6{% endif %}">
                 <div class="ax-section-card">
                     <div class="ax-section-card__header" style="color: #38bdf8;">
                         <i class="bi bi-newspaper"></i>
@@ -752,47 +755,52 @@ document.addEventListener('DOMContentLoaded', function () {
                         </div>
                     </div>
                 </div>
-                {% else %}
-                <div class="ax-section-card" style="min-height:200px;display:flex;align-items:center;justify-content:center;">
-                    <div class="text-center py-4">
-                        <i class="bi bi-newspaper" style="font-size:2rem;color:#38bdf8;opacity:0.35;"></i>
-                        <p class="text-muted small mt-2 mb-0">Akademik haberler yakında burada</p>
-                    </div>
-                </div>
-                {% endif %}
             </div>
+            {% endif %}
 
         </div>
     </div>
 </section>
+{% endif %}
 
 
 <!-- =====================================================
      PLATFORM İSTATİSTİKLERİ BANDI
      ===================================================== -->
+{% if has_any_stats %}
 <section class="ax-stats-section">
     <div class="container">
         <div class="row text-center justify-content-center">
+            {% if total_users %}
             <div class="col-6 col-md-2 mb-4 mb-md-0">
                 <div class="ax-stat-item" data-target="{{ total_users }}" data-suffix="+">0+</div>
                 <div class="ax-stat-label">Aktif Üye</div>
             </div>
+            {% endif %}
+            {% if total_topics %}
             <div class="col-6 col-md-2 mb-4 mb-md-0">
                 <div class="ax-stat-item" data-target="{{ total_topics }}" data-suffix="+">0+</div>
                 <div class="ax-stat-label">Akademik Konu</div>
             </div>
+            {% endif %}
+            {% if total_posts %}
             <div class="col-6 col-md-2 mb-4 mb-md-0">
                 <div class="ax-stat-item" data-target="{{ total_posts }}" data-suffix="+">0+</div>
                 <div class="ax-stat-label">Forum Gönderisi</div>
             </div>
+            {% endif %}
+            {% if completed_jobs %}
             <div class="col-6 col-md-2 mb-4 mb-md-0">
                 <div class="ax-stat-item" data-target="{{ completed_jobs }}" data-suffix="+">0+</div>
                 <div class="ax-stat-label">Tamamlanan Proje</div>
             </div>
+            {% endif %}
+            {% if completed_analyses %}
             <div class="col-6 col-md-2 mb-4 mb-md-0">
                 <div class="ax-stat-item" data-target="{{ completed_analyses }}" data-suffix="+">0+</div>
                 <div class="ax-stat-label">Tamamlanan Analiz</div>
             </div>
+            {% endif %}
             {% if open_jobs_count %}
             <div class="col-6 col-md-2 mb-4 mb-md-0">
                 <a href="{% url 'job_list' %}" style="text-decoration:none;">
@@ -816,6 +824,7 @@ document.addEventListener('DOMContentLoaded', function () {
         </div>
     </div>
 </section>
+{% endif %}
 
 <!-- =====================================================
      FAZ 4: AI ÇAĞI BÖLÜMÜ (Doğrulama + Agentic)
