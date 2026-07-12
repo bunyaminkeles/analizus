@@ -165,7 +165,7 @@
     <p style="margin-bottom:1.25rem;">
       Verilerinizi gönderin, uzman analistlerimiz <strong style="color:#f1f5f9;">{{ promo_title }}</strong> analizini sizin adınıza gerçekleştirip raporlasın. Ücretsiz ön değerlendirme ile başlayın.
     </p>
-    <a href="{% url 'proje_talebi' %}?source={{ promo_cta_source|default:'tool' }}" class="ax-btn ax-btn--primary fw-semibold px-4 py-2">
+    <a href="{% url 'proje_talebi' %}?source={{ promo_cta_source|default:'tool' }}{% if promo_cta_source == 'bibliometrics' %}&type=bibliometric{% endif %}" class="ax-btn ax-btn--primary fw-semibold px-4 py-2">
       <i class="bi bi-send me-2"></i>Ücretsiz Proje Talebi Gönder
     </a>
   </div>

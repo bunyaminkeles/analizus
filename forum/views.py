@@ -2031,6 +2031,7 @@ def proje_talebi(request):
         return redirect('proje_talebi')
 
     source = request.GET.get('source', 'direct')
+    qs_type = request.GET.get('type', '')
 
     completed_count = FreelanceJob.objects.filter(status='completed').count()
     total_users = User.objects.count()
@@ -2057,6 +2058,7 @@ def proje_talebi(request):
 
     return render(request, 'forum/proje_talebi.html', {
         'source': source,
+        'qs_type': qs_type,
         'completed_count': completed_count,
         'total_users': total_users,
         'recent_completed': recent_completed,

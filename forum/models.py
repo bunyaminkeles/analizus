@@ -1579,6 +1579,7 @@ class ProjectRequest(models.Model):
         ('literature', 'Tez / Makale Veri İndirme'),
         ('verification', 'AI Analiz Doğrulama'),
         ('agentic', 'AI Ajan / Otomasyon Projesi'),
+        ('bibliometric', 'Bibliyometrik Analiz'),
         ('other', 'Diğer'),
     ]
     DATA_SIZE_CHOICES = [
