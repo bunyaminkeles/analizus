@@ -1323,6 +1323,26 @@ class BlogPost(models.Model):
         ('published', 'Yayında'),
     )
 
+    # Kapak görseli yüklenmemiş yazılar için kategoriye göre varsayılan görsel
+    # (static/img/'de hazır 5 tema görseli). Eşleşmeyen kategori 'studio-sonrasi'ya düşer.
+    CATEGORY_FALLBACK_COVERS = {
+        'istatistik': 'akademik-hero',
+        'istatistik-101': 'akademik-hero',
+        'spss-rehberleri': 'akademik-hero',
+        'saglik-istatistigi': 'akademik-hero',
+        'veri-kazima-ve-arastirma': 'tarama-hero',
+        'ekonometri-veri-politikasi': 'kurumsal-hero',
+        'saglik-verisi-bilim-politikasi': 'kurumsal-hero',
+        'akademik-etik-ai': 'agentic-hero',
+        'akademik-kariyer-etik': 'agentic-hero',
+        'acik-bilim-arastirma-etigi': 'agentic-hero',
+        'bilim-felsefesi-metodoloji': 'agentic-hero',
+        'veri-guvenligi-etik': 'agentic-hero',
+        'veri-guvenligi-arastirma-etigi': 'agentic-hero',
+        'bibliometri-turkiyede-bilim': 'agentic-hero',
+        'tez-sureci': 'studio-sonrasi',
+    }
+
     title = models.CharField(max_length=200, verbose_name="Başlık")
     slug = models.SlugField(unique=True, max_length=250)
     excerpt = models.TextField(max_length=300, verbose_name="Özet", help_text="Kısa açıklama (liste görünümünde gösterilir)")
@@ -1393,6 +1413,16 @@ class BlogPost(models.Model):
     @property
     def total_likes(self):
         return self.likes.count()
+
+    @property
+    def cover_image_url(self):
+        """Kapak görseli yoksa kategoriye göre varsayılan tema görseli döner."""
+        if self.cover_image:
+            return self.cover_image.url
+        from django.templatetags.static import static
+        slug = self.category.slug if self.category_id else None
+        fallback = self.CATEGORY_FALLBACK_COVERS.get(slug, 'studio-sonrasi')
+        return static(f'img/{fallback}.webp')
 
 
 # ─── ÇALIŞMA ODALARI ─────────────────────────────────────────────────────────

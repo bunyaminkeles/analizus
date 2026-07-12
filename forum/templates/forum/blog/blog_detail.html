@@ -7,7 +7,7 @@
 {% block og_type %}article{% endblock %}
 {% block og_title %}{{ post.title }}{% endblock %}
 {% block og_description %}{{ post.excerpt }}{% endblock %}
-{% block og_image %}{% if post.cover_image %}{{ request.scheme }}://{{ request.get_host }}{{ post.cover_image.url }}{% else %}{{ block.super }}{% endif %}{% endblock %}
+{% block og_image %}{{ request.scheme }}://{{ request.get_host }}{{ post.cover_image_url }}{% endblock %}
 
 {% block extra_head %}
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
@@ -31,9 +31,7 @@
     "url": "https://www.analizus.com"
   },
   "url": "{{ request.build_absolute_uri }}",
-  {% if post.cover_image %}
-  "image": "{{ request.scheme }}://{{ request.get_host }}{{ post.cover_image.url }}",
-  {% endif %}
+  "image": "{{ request.scheme }}://{{ request.get_host }}{{ post.cover_image_url }}",
   "mainEntityOfPage": {
     "@type": "WebPage",
     "@id": "{{ request.build_absolute_uri }}"
@@ -97,9 +95,7 @@
         <div class="col-lg-8">
             <div class="card border-0" style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255, 255, 255, 0.08) !important; border-radius: 16px;">
                 <!-- Kapak Görseli -->
-                {% if post.cover_image %}
-                <img src="{{ post.cover_image.url }}" class="card-img-top" style="border-radius: 16px 16px 0 0; max-height: 400px; object-fit: cover;">
-                {% endif %}
+                <img src="{{ post.cover_image_url }}" class="card-img-top" style="border-radius: 16px 16px 0 0; max-height: 400px; object-fit: cover;">
 
                 <div class="card-body p-4 p-lg-5">
                     <!-- Kategori & Tarih -->
@@ -172,9 +168,7 @@
                     <div class="col-md-4">
                         <a href="{% url 'blog_detail' slug=rpost.slug %}" class="text-decoration-none">
                             <div class="card h-100 border-0 related-card" style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.08) !important;">
-                                {% if rpost.cover_image %}
-                                <img src="{{ rpost.cover_image.url }}" class="card-img-top" style="height: 120px; object-fit: cover; border-radius: 12px 12px 0 0;">
-                                {% endif %}
+                                <img src="{{ rpost.cover_image_url }}" class="card-img-top" style="height: 120px; object-fit: cover; border-radius: 12px 12px 0 0;">
                                 <div class="card-body p-3">
                                     <h6 class="card-title text-white small mb-2">{{ rpost.title|truncatechars:50 }}</h6>
                                     <small class="text-muted">{{ rpost.published_at|date:"d M Y" }}</small>

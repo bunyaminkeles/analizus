@@ -85,9 +85,7 @@
                 <a href="{% url 'blog_detail' slug=post.slug %}" class="text-decoration-none">
                     <div class="ax-featured-card h-100" style="--cat-color: {{ post.category.color }};">
                         <div class="ax-featured-card__accent"></div>
-                        {% if post.cover_image %}
-                        <img src="{{ post.cover_image.url }}" alt="" loading="lazy" width="400" height="140" class="ax-featured-card__cover">
-                        {% endif %}
+                        <img src="{{ post.cover_image_url }}" alt="" loading="lazy" width="400" height="140" class="ax-featured-card__cover">
                         <div class="ax-featured-card__body">
                             <span class="ax-badge-cat mb-3 d-inline-block" style="background: {{ post.category.color }}20; color: {{ post.category.color }}; border-color: {{ post.category.color }}40;">
                                 <i class="bi {{ post.category.icon }} me-1"></i>{{ post.category.name }}
@@ -137,9 +135,7 @@
                 <div class="col-sm-6">
                     <article class="ax-blog-card h-100">
                         <a href="{% url 'blog_detail' slug=post.slug %}" class="text-decoration-none d-flex flex-column h-100">
-                            {% if post.cover_image %}
-                            <img src="{{ post.cover_image.url }}" alt="" loading="lazy" width="400" height="160" class="ax-blog-card__cover">
-                            {% endif %}
+                            <img src="{{ post.cover_image_url }}" alt="" loading="lazy" width="400" height="160" class="ax-blog-card__cover">
                             <div class="ax-blog-card__body flex-grow-1">
                                 <div class="d-flex align-items-center gap-2 mb-2 flex-wrap">
                                     <span class="ax-badge-cat" style="background: {{ post.category.color }}20; color: {{ post.category.color }}; border-color: {{ post.category.color }}40;">
