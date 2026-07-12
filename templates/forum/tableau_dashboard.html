@@ -449,11 +449,17 @@
 {% endblock %}
 
 {% block extra_js %}
-<script type="module" src="https://public.tableau.com/javascripts/api/tableau.embedding.3.latest.min.js"></script>
 <script>
 document.addEventListener('click', function (e) {
   var btn = e.target.closest('[data-tableau-load]');
   if (!btn) return;
+  if (!window.__axTableauScriptLoaded) {
+    var lib = document.createElement('script');
+    lib.type = 'module';
+    lib.src = 'https://public.tableau.com/javascripts/api/tableau.embedding.3.latest.min.js';
+    document.head.appendChild(lib);
+    window.__axTableauScriptLoaded = true;
+  }
   var facade = btn.closest('.ax-tableau-facade');
   var wrap = facade.parentElement;
   var tpl = wrap.querySelector('template[data-tableau-embed]');
