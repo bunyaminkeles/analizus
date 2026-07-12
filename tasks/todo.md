@@ -326,7 +326,9 @@ Faz 1'i (envanter) çalıştırıp tabloyu onaya sunacağım.
 
 # Merge Öncesi Son Süpürme (analizus_son_supurme_prompt.md)
 
-**Durum:** Devam ediyor — Madde 1-7a tamamlandı, 7b'den itibaren duraklatıldı.
+**Durum:** Devam ediyor — Madde 1-7a tamamlandı; 7b ve 7c'nin çoğu zaten önceki
+turda yapılmış olduğu doğrulandı (bkz. "Kalan işler" altındaki not). Kalan:
+7c'nin blog kapak/kategori eşlemesi parçası, 8, 9, 10, 11.
 Kaynak: `~/Desktop/analizus_son_supurme_prompt.md`. Yeni oturumda önce bu dosya
 + bu bölüm okunmalı; `analizus_son_supurme_prompt.md`'nin ORİJİNAL Madde 1
 metni artık güncel değil (aşağıdaki kararlarla değişti), bu yüzden bu bölüm
@@ -354,9 +356,8 @@ esas alınmalı.
   og:description kazandı.
 - **Madde 6 (dev noindex middleware)** — iş YOK, zaten vardı
   (`forum/middleware.py::NoIndexMiddleware` + `settings.IS_PRODUCTION`).
-- **Madde 7a (bibliometri örnek çıktılar + OpenAlex köprüsü)** — **commit
-  edilmedi, working tree'de bekliyor** (`bibliometrics/views.py`,
-  `templates/service_promo.html`). Galeri ve OpenAlex ters köprüsü zaten
+- **Madde 7a (bibliometri örnek çıktılar + OpenAlex köprüsü)** — `2029ce9`.
+  Galeri ve OpenAlex ters köprüsü zaten
   vardı; eklenen tek şey hero altı "OpenAlex'te tarama mı yaptın?" bandı
   (`promo_openalex_bridge` context bayrağı, yalnızca bibliometride true).
   **Karar (kullanıcı onaylı):** galeri kartları spec'in istediği 5 başlıkla
@@ -384,31 +385,37 @@ esas alınmalı.
 
 ## Kalan işler (sırasıyla)
 
-1. **Madde 7a'yı commit et** (working tree'de bekliyor).
-2. **Madde 7b — Tableau facade:** 4 embed (`tableau-poster-trdizin/obezite/
-   nufus/satis.webp` zaten `static/img/`'de hazır) → poster + "▶ İnteraktif
-   Dashboard'u Yükle" butonu; tıklamada vanilla JS gerçek embed'i enjekte
-   eder; embed kodu `<template>`'te saklanır; kabul kriteri: ilk yüklemede
-   public.tableau.com'a sıfır istek.
-3. **Madde 7c — Blog:** özgün og:title/description + `og:type=article`
-   (Madde 5'teki mekanizmayla — `base.html`'deki `{% block og_type %}` zaten
-   var); kapak yoksa kategori→görsel eşlemesi; pagination `?page=2` linki
-   düzeltmesi.
-4. **Madde 8 — Hero sadeleştirme (KARAR VERİLDİ: tam kaldırma):** eski üçlü
+**ÖNEMLİ — bu oturumda doğrulandı:** Madde 7b (Tableau facade) VE Madde 7c'nin
+og:title/description + `og:type=article` + kapak görseli + pagination
+kısımları **zaten "İçerik & Topluluk Güçlendirme" turunda yapılmıştı**
+(`templates/forum/tableau_dashboard.html`'de `ax-tableau-facade`/`<template
+data-tableau-embed>` yapısı canlı kodda doğrulandı; `blog_detail.html`'de
+`{% block og_type %}article{% endblock %}` + kapak fallback zaten var).
+Yeni oturumda bunları TEKRAR YAPMAYA ÇALIŞMA — analizus.md §27'ye bu bulgu
+işlendi.
+
+1. **Madde 7c'nin TEK kalan parçası — Blog kapak/kategori eşlemesi:**
+   `BlogPost.cover_image` boşsa hem liste kartında hem `og:image`'de kategoriye
+   göre bir görsel eşlemesi yok (İstatistik→akademik-hero, Veri Kazıma→tarama-hero,
+   Ekonometri/Veri Politikası→kurumsal-hero, Akademi ve AI→agentic-hero,
+   diğer→studio-sonrasi). `blog_detail.html`/`blog_list.html`'deki
+   `{% if post.cover_image %}` bloklarına `{% else %}` fallback eklenmesi
+   gerekiyor — görsellerin `static/img/`'de olup olmadığı kontrol edilmeli.
+2. **Madde 8 — Hero sadeleştirme (KARAR VERİLDİ: tam kaldırma):** eski üçlü
    CTA satırı (Ücretsiz Başla / Uzman Bul / Foruma Katıl) tamamen kaldırılacak.
    Kaldırmadan önce satırın tam HTML'i onaya gösterilmeli. Dropzone, "uzmana
    bırak" linki, veri kazıma satırı, kitle bandı AYNEN kalacak.
-5. **Madde 9 — Auth panelleri (KARAR VERİLDİ):** login/register `.left-half`
+3. **Madde 9 — Auth panelleri (KARAR VERİLDİ):** login/register `.left-half`
    görsellerine iç vinyet (`box-shadow: inset 0 0 90px 70px var(--ax-bg)`),
    turuncu dikey ayraç çizgisi kaldırılacak, form etiketi rengi nötr token'a
    çevrilecek (CTA butonunda turuncu kalır), alt başlık "Veri Üssü Protokolü
    v3.0" → "Ücretsiz hesap — 30 saniye sürer." <991px gizleme davranışı
    DEĞİŞMEZ.
-6. **Madde 10 — Testler + Deploy Notu:** tüm turun kapanışı, smoke testler,
+4. **Madde 10 — Testler + Deploy Notu:** tüm turun kapanışı, smoke testler,
    migration listesi (4 adet), `?v=` listesi, Hetzner deploy sırası, merge
    sonrası hatırlatmalar (robots GSC, sitemap resubmit, premium fiyat kaynağı
    kontrolü — prod 250/500/750/1000 TL, dev 50/100/250/500 TL).
-7. **Madde 11 (YENİ, bu oturumda eklendi) — Ana sayfa "AI çağında iki yol" sağ
+5. **Madde 11 (YENİ, bu oturumda eklendi) — Ana sayfa "AI çağında iki yol" sağ
    kartı:** `agentic-hero.webp`/`agentic-hero-mobile.webp` zaten
    `static/img/`'de hazır (kontrol edildi). Sol karttaki (`ax-brand-visual`,
    `forum/templates/forum/home.html` FAZ 4 bölümü) AYNI kalıp: `<picture>`
@@ -425,8 +432,9 @@ esas alınmalı.
 2. `~/Desktop/analizus_son_supurme_prompt.md`'yi oku — ama yukarıdaki
    "Tamamlananlar" ve "Genel notlar" bölümlerini esas al, orijinal metindeki
    Madde 1 artık güncel değil.
-3. "Madde 7a'yı commit et" ile başla, sonra "Kalan işler" sırasını takip et —
-   her madde için: envanter/plan → onay → uygulama → doğrulama → commit → dur.
+3. "Madde 7b — Tableau facade" ile başla, sonra "Kalan işler" sırasını takip
+   et — her madde için: envanter/plan → onay → uygulama → doğrulama → commit
+   → dur.
 
 ---
 
