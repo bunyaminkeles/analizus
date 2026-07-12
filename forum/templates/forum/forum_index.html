@@ -4,6 +4,10 @@
 {% block title %}Akademik Analiz Forumu — SPSS, R, Python, Tez Yardımı | Analizus{% endblock %}
 {% block meta_description %}Türkçe akademik analiz forumu. SPSS, R, Python, istatistik testleri, tez yazımı ve veri bilimi hakkında soru sorun, uzmanlardan yanıt alın. Ücretsiz, Türkçe.{% endblock %}
 
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/trend_topics.css' %}?v=0001">
+{% endblock %}
+
 {% block content %}
 <div class="container py-4">
 
@@ -64,7 +68,7 @@
   {# ─── Gündemdeki Tartışmalar ─── #}
   {% if popular_topics %}
   <div class="mb-5">
-    {% include 'forum/partials/_gundem_tartismalar.html' with gundem_show_link=False gundem_zero_rule=True %}
+    {% include 'forum/partials/_gundem_tartismalar.html' with gundem_show_link=False gundem_zero_rule=True gundem_variant='forum' %}
   </div>
   {% endif %}
 
@@ -247,6 +251,7 @@
   border-color: rgba(251,191,36,0.4) !important;
   background: linear-gradient(135deg, rgba(251,191,36,0.07) 0%, rgba(30,41,59,0.85) 60%) !important;
   box-shadow: 0 0 0 1px rgba(251,191,36,0.15), inset 0 1px 0 rgba(251,191,36,0.1);
+  padding-top: 20px; /* .popular-badge üstte -1px'ten sarkıyor, fc-row1 ile çakışmasın diye */
 }
 .forum-card-popular:hover {
   border-color: rgba(251,191,36,0.6) !important;

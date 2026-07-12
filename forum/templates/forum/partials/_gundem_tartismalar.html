@@ -1,6 +1,6 @@
 {% if popular_topics or not gundem_zero_rule %}
 <div class="ax-section-card">
-    <div class="ax-section-card__header" style="color: #f97316;">
+    <div class="ax-section-card__header{% if gundem_variant == 'forum' %} ax-topic-header--forum{% endif %}"{% if gundem_variant != 'forum' %} style="color: #f97316;"{% endif %}>
         <i class="bi bi-fire"></i>
         <span>Gündemdeki Tartışmalar</span>
         {% if gundem_show_link %}
@@ -8,6 +8,19 @@
         {% endif %}
     </div>
     <div class="ax-section-card__body">
+        {% if gundem_variant == 'forum' %}
+        <div class="ax-topic-list--forum">
+            {% for topic in popular_topics %}
+            <a href="{% url 'topic_detail' pk=topic.pk %}" class="ax-topic-row ax-topic-row--forum">
+                <span class="ax-topic-row__rank">#{{ forloop.counter }}</span>
+                <span class="ax-topic-row__title">{{ topic.subject|truncatechars:70 }}</span>
+                <span class="ax-topic-row__meta"><i class="bi bi-eye"></i> {{ topic.views }} görüntülenme</span>
+            </a>
+            {% empty %}
+            <p class="text-muted small mb-0">Henüz popüler konu yok.</p>
+            {% endfor %}
+        </div>
+        {% else %}
         <div class="row g-2">
             {% for topic in popular_topics %}
             <div class="col-12 col-sm-6">
@@ -21,6 +34,7 @@
             <p class="text-muted small mb-0">Henüz popüler konu yok.</p>
             {% endfor %}
         </div>
+        {% endif %}
     </div>
 </div>
 {% endif %}

@@ -1,0 +1,142 @@
+/* =============================================================
+   TREND TOPICS — Gündemdeki Tartışmalar (forum/partials/_gundem_tartismalar.html)
+   Bu dosya hem ana sayfa (forum/home.html) hem forum sayfası
+   (forum/forum_index.html) tarafından yüklenir — partial kendine yeten
+   bir stil dosyasına sahip, home_sections.css'e bağımlı değil.
+   ============================================================= */
+
+.ax-section-card {
+    background: linear-gradient(145deg, rgba(10,15,30,0.85) 0%, #161d2e 100%);
+    border: 1px solid rgba(255,255,255,0.05);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.30), 0 4px 8px rgba(0,0,0,0.20);
+    height: 100%;
+}
+.ax-section-card__header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 18px 24px;
+    font-weight: 600;
+    font-size: 1rem;
+    line-height: 1.6;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    border-left: 3px solid currentColor;
+}
+.ax-section-card__more {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: inherit !important;
+    text-decoration: none;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+.ax-section-card__more:hover { opacity: 1; }
+.ax-section-card__body { padding: 24px; }
+.ax-wide-section { padding-bottom: var(--ax-space-12, 48px); }
+
+@media (max-width: 768px) {
+    .ax-section-card__body { padding: 20px; }
+}
+
+/* Topic rows — ana sayfa varsayılan görünüm (2 sütunlu grid, değiştirilmedi) */
+.ax-topic-row {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    text-decoration: none;
+    border: 1px solid rgba(249,115,22,0.08);
+    background: rgba(249,115,22,0.03);
+    transition: background 0.2s, border-color 0.2s, transform 0.15s;
+    height: 100%;
+}
+.ax-topic-row:hover {
+    background: rgba(249,115,22,0.08);
+    border-color: rgba(249,115,22,0.25);
+    transform: translateY(-2px);
+}
+.ax-topic-row__rank {
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: #f97316;
+    opacity: 0.8;
+}
+.ax-topic-row__title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #e2e8f0;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.ax-topic-row__meta {
+    font-size: 0.72rem;
+    color: #64748b;
+    margin-top: auto;
+}
+
+/* =============================================================
+   FORUM VARYANTI — tek sütun satır kartları (ax dili)
+   gundem_variant='forum' ile aktifleşir. Turuncu yalnızca rank
+   rozeti/ikonda kalır; başlık linki --ax-accent-primary kullanır.
+   ============================================================= */
+.ax-topic-header--forum {
+    color: var(--ax-text-primary, #f1f5f9);
+    border-left-color: #f97316;
+}
+.ax-topic-header--forum i.bi-fire { color: #f97316; }
+
+.ax-topic-list--forum {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.ax-topic-row--forum {
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    height: auto;
+    min-height: 44px;
+    padding: 8px 14px;
+}
+.ax-topic-row--forum:hover { transform: none; }
+.ax-topic-row--forum .ax-topic-row__rank {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 7px;
+    background: rgba(249,115,22,0.14);
+    opacity: 1;
+}
+.ax-topic-row--forum .ax-topic-row__title {
+    flex: 1;
+    min-width: 0;
+    display: block;
+    -webkit-line-clamp: unset;
+    -webkit-box-orient: unset;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    color: var(--ax-accent-primary, #6366f1);
+    text-decoration: none;
+    transition: color 0.15s;
+}
+.ax-topic-row--forum:hover .ax-topic-row__title {
+    color: var(--ax-accent-primary-hover, #818cf8);
+    text-decoration: underline;
+}
+.ax-topic-row--forum .ax-topic-row__meta {
+    flex-shrink: 0;
+    margin-top: 0;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+}
