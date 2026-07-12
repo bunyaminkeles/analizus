@@ -2,6 +2,11 @@
 {% load static %}
 
 {% block title %}{{ promo_title }} - Analizus{% endblock %}
+{% block meta_description %}{{ promo_description }}{% endblock %}
+{% block og_title %}{{ promo_title }} - Analizus{% endblock %}
+{% block og_description %}{{ promo_description }}{% endblock %}
+{% block twitter_title %}{{ promo_title }} - Analizus{% endblock %}
+{% block twitter_description %}{{ promo_description }}{% endblock %}
 
 {% block extra_head %}
 {% if promo_gallery %}
