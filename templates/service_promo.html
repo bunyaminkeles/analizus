@@ -39,6 +39,22 @@
     </div>
   </div>
 
+  {% if promo_openalex_bridge %}
+  {# ─── OpenAlex Köprü Bandı ─── #}
+  <div class="row justify-content-center mb-5">
+    <div class="col-lg-8">
+      <div class="alert border-info bg-dark d-flex align-items-center gap-3 mb-0" style="border-left: 3px solid; border-top: none; border-right: none; border-bottom: none;">
+        <i class="bi bi-search text-info fs-4 flex-shrink-0"></i>
+        <div class="flex-grow-1">
+          <span class="text-white">OpenAlex'te tarama mı yaptın?</span>
+          <span class="text-secondary ms-1">İndirdiğin Excel'i doğrudan yükle, bibliyometrik analiz saniyeler içinde hazır olsun.</span>
+        </div>
+        <a href="{% url 'openalex:landing' %}" class="btn btn-outline-info btn-sm fw-semibold flex-shrink-0">OpenAlex'e Git</a>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
   {# ─── Özellikler ─── #}
   <div class="row g-3 justify-content-center mb-5">
     {% for feat in promo_features %}

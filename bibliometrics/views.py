@@ -38,6 +38,7 @@ def bibliometrics_landing(request):
             'promo_icon': 'bi-bar-chart-line-fill',
             'promo_color': 'info',
             'promo_cta_source': 'bibliometrics',
+            'promo_openalex_bridge': True,
             'promo_description': 'WoS, Scopus veya BibTeX dosyanızı yükleyin — yıllara göre yayın trendi, en çok atıf alan yazarlar, işbirliği ağı ve daha fazlası için 10 grafik içeren PDF rapor alın.',
             'promo_features': [
                 {'icon': 'bi-graph-up-arrow', 'title': 'Yayın Trendi', 'desc': 'Yıllar içinde yayın sayısı ve büyüme oranını grafikle görün.'},
