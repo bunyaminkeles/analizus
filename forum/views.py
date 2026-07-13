@@ -3245,7 +3245,7 @@ def studyroom_list(request):
     category_slug = request.GET.get('kategori', '')
     status_filter = request.GET.get('durum', 'active')
 
-    rooms = StudyRoom.objects.select_related('creator', 'category').prefetch_related('memberships')
+    rooms = StudyRoom.objects.select_related('creator__profile', 'category').prefetch_related('memberships')
 
     if status_filter == 'archived':
         rooms = rooms.filter(status='archived')

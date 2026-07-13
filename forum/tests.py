@@ -443,6 +443,16 @@ def test_studyroom_detail_hides_member_names_from_guest(client, user):
 
 
 @pytest.mark.django_db
+def test_studyroom_list_hides_creator_name_from_guest(client, user):
+    """Liste kartında kurucu adı misafire görünmemeli (rütbe metnine düşer)."""
+    _create_test_room(user, 'test-odasi-list-guest')
+
+    response = client.get('/odalar/')
+    content = response.content.decode()
+    assert user.username not in content
+
+
+@pytest.mark.django_db
 def test_studyroom_detail_shows_creator_to_logged_in_non_member(client, user):
     """Login olmuş ama üye olmayan kullanıcıya kurucu adı görünür (karar: madde 1)."""
     from forum.models import StudyRoomMembership
