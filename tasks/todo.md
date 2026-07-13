@@ -326,7 +326,9 @@ Faz 1'i (envanter) çalıştırıp tabloyu onaya sunacağım.
 
 # Merge Öncesi Son Süpürme (analizus_son_supurme_prompt.md)
 
-**Durum:** Devam ediyor — Madde 1-10 tamamlandı. Kalan: 11.
+**Durum:** TAMAMLANDI — Madde 1-11'in tümü bitti (13 Temmuz 2026). Sıradaki
+adım kullanıcı onayıyla `dev`'in `main`'e merge edilmesi (bkz. Madde 10
+deploy notu).
 Kaynak: `~/Desktop/analizus_son_supurme_prompt.md`. Yeni oturumda önce bu dosya
 + bu bölüm okunmalı; `analizus_son_supurme_prompt.md`'nin ORİJİNAL Madde 1
 metni artık güncel değil (aşağıdaki kararlarla değişti), bu yüzden bu bölüm
@@ -462,27 +464,43 @@ esas alınmalı.
   göre gösterilmesi gerekir — aksi halde değişiklik ya hiçbir sayfada
   görünmez ya da yanlışlıkla hepsinde birden görünür.
 
-## Kalan işler (sırasıyla)
+- **Madde 11 (Ana sayfa "AI çağında iki yol" sağ kartı)** — TAMAMLANDI.
+  `forum/templates/forum/home.html` FAZ 4 bölümündeki `.ax-agentic-band-card`
+  (836-853. satır) sol karttaki (`.ax-brand-visual`) desenle birebir aynı
+  yapıya geçti: `<picture>` (agentic-hero.webp masaüstü / agentic-hero-
+  mobile.webp mobil, `source media="(min-width:768px)"`) + `.ax-agentic-
+  band-card__overlay` gradient + mevcut başlık/metin/CTA içeriği değişmeden
+  overlay içine taşındı. `static/css/home_sections.css`'te eski flat-renk
+  flex kutusu CSS'i (`.ax-agentic-band-card { display:flex; background:...}`)
+  kaldırılıp `__img`/`__overlay` kuralları eklendi (brand_visuals.css'teki
+  `.ax-brand-visual__img`/`__overlay` ile aynı desen); `?v=0112`→`0113`.
+  **Kritik gözlem:** agentic-hero görselleri sol karttaki ai-dogrulama
+  görselleriyle piksel-piksel AYNI boyutta (1600×893 masaüstü, 800×446
+  mobil) — bu yüzden iki kart hiçbir grid-stretch hilesine gerek kalmadan
+  doğal olarak eşit yükseklikte oluştu, eski `@media(min-width:768px)
+  { .ax-agentic-band-card{height:100%} }` kuralı gereksiz hale gelip
+  kaldırıldı. `object-fit:cover;object-position:center` yine de güvenlik
+  amaçlı bırakıldı (boyutlar eşit olduğu için normal akışta devreye
+  girmiyor). Render'a push edilip (`analizus-dev.onrender.com`) Playwright
+  ile doğrulandı: masaüstünde iki kart TAM eşit yükseklik (306.7px),
+  380px mobilde neredeyse eşit (189.5 vs 190.4px, <1px fark), yatay taşma
+  yok, görsel/overlay/metin doğru render ediyor.
 
-1. **Madde 11 (YENİ, bu oturumda eklendi) — Ana sayfa "AI çağında iki yol" sağ
-   kartı:** `agentic-hero.webp`/`agentic-hero-mobile.webp` zaten
-   `static/img/`'de hazır (kontrol edildi). Sol karttaki (`ax-brand-visual`,
-   `forum/templates/forum/home.html` FAZ 4 bölümü) AYNI kalıp: `<picture>`
-   mobil-önce + overlay gradient + başlık/metin/CTA. Dikkat noktası: agentic
-   görseli 16:9 yatay, anlam merkezi ortadaki monitör —
-   `object-fit: cover; object-position: center` ile kadraj korunmalı. İki
-   kart yüksekliği eşit kalmalı, 380px mobilde alt alta ve taşmasız. Madde 7
-   ile aynı oturumda geçilebilir (kullanıcı notu).
+## Kalan işler
+
+Yok — "Merge Öncesi Son Süpürme" turunun 11 maddesi de tamamlandı. Sıradaki
+adım: kullanıcı onayıyla `dev`'i `main`'e merge etmek (bkz. Madde 10'daki
+deploy notu — migration, collectstatic, Hetzner sırası, merge sonrası
+hatırlatmalar, özellikle `feature_agentic_landing` flag'inin prod'da elle
+açılması gerektiği).
 
 ## Yeni oturumda nasıl devam edilir
 
 1. Bu dosyayı (`tasks/todo.md`) ve `CLAUDE.md`'yi oku (CLAUDE.md zaten proje
    kökünde, otomatik yükleniyor).
-2. `~/Desktop/analizus_son_supurme_prompt.md`'yi oku — ama yukarıdaki
-   "Tamamlananlar" ve "Genel notlar" bölümlerini esas al, orijinal metindeki
-   Madde 1 artık güncel değil.
-3. "Kalan işler" sırasını takip et (şu an yalnızca Madde 11 kaldı) — her
-   madde için: envanter/plan → onay → uygulama → doğrulama → commit → dur.
+2. Bu tur tamamlandı — yeni oturumda kullanıcı ya merge onayı verecek ya da
+   yeni bir görev başlatacak (`/market/` pazaryeri zenginleştirme veya
+   aşağıdaki fikir-aşaması maddelerinden biri gibi).
 
 ---
 
