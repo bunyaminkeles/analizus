@@ -86,7 +86,11 @@
             {% endif %}
           {% endif %}
           <span class="text-white-50 ms-auto" style="font-size:.7rem;">
+            {% if user.is_authenticated %}
             Kurucu: <a href="{% url 'profile_detail' room.creator.username %}" class="text-white-50">{{ room.creator.username }}</a>
+            {% else %}
+            Kurucu: {{ room.creator.profile.get_rank_display }} seviye üye
+            {% endif %}
           </span>
         </div>
 
@@ -136,6 +140,7 @@
         {% endif %}
 
         <div id="members-list" style="overflow-y:auto; flex:1;">
+          {% if is_member %}
           {% for m in members %}
           <div class="d-flex align-items-center gap-2 p-2 rounded {% if not forloop.last %}border-bottom border-secondary{% endif %}">
             {% if m.user.profile.avatar %}
@@ -152,6 +157,17 @@
             </div>
           </div>
           {% endfor %}
+          {% else %}
+          <div class="d-flex flex-wrap gap-2 p-1">
+            {% for slot in ""|ljust:room.max_members %}
+            <div class="rounded-circle flex-shrink-0 ax-room-slot {% if forloop.counter0 < room.member_count %}ax-room-slot--filled{% else %}ax-room-slot--empty{% endif %}"
+                 style="width:22px;height:22px;"></div>
+            {% endfor %}
+          </div>
+          <div class="text-white-50 small mt-2" style="font-size:.72rem;">
+            Üye adları yalnızca oda üyelerine görünür.
+          </div>
+          {% endif %}
         </div>
       </div>
     </div>
@@ -376,6 +392,8 @@
   resize: none;
 }
 .rm-edited { font-size: .62rem; color: #64748b; font-style: italic; }
+.ax-room-slot--filled { background: var(--ax-accent-secondary); opacity: .85; }
+.ax-room-slot--empty { border: 1px dashed var(--ax-border-hover); background: transparent; }
 </style>
 
 <script>

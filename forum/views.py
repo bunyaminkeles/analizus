@@ -3403,7 +3403,9 @@ def studyroom_create(request):
 
 def studyroom_detail(request, slug):
     """Oda detay sayfası: gönderiler + üyeler."""
-    room = get_object_or_404(StudyRoom, slug=slug)
+    room = get_object_or_404(
+        StudyRoom.objects.select_related('creator__profile', 'category'), slug=slug
+    )
     room.auto_archive_if_expired()
 
     if room.status == 'pending' and not (request.user.is_authenticated and
@@ -3475,7 +3477,9 @@ def studyroom_detail(request, slug):
         })
 
     posts = room.room_posts.select_related('author__profile').all() if is_member else []
-    members = room.memberships.select_related('user__profile').all()
+    # Üye adları/avatarları yalnızca oda üyelerine gönderilir — misafir/üye-olmayan
+    # kullanıcıya hiç context verisi gitmez (yalnızca CSS ile gizlemek yetmez).
+    members = room.memberships.select_related('user__profile').all() if is_member else []
 
     return render(request, 'forum/studyroom_detail.html', {
         'room': room,

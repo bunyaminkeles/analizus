@@ -411,3 +411,46 @@ def test_tableau_facade_no_live_embed_on_initial_load(client):
 
 # Madde 9: auth sayfaları 200 (mevcut testlerle örtüşür — bkz. test_register_get_returns_200 /
 # test_login_get_returns_200 yukarıda, ayrıca burada yinelenmiyor)
+
+
+# ─── Odalar Faz 1: Üye Gizliliği ──────────────────────────────────────────────
+
+def _create_test_room(creator, slug):
+    from forum.models import StudyRoom
+    from django.utils import timezone
+    import datetime
+    return StudyRoom.objects.create(
+        title='Test Odası', slug=slug, description='desc', goal='Test hedefi',
+        creator=creator, ends_at=timezone.now() + datetime.timedelta(days=30),
+        status='active',
+    )
+
+
+@pytest.mark.django_db
+def test_studyroom_detail_hides_member_names_from_guest(client, user):
+    """Misafir isteğinde hiçbir üye kullanıcı adı response body'de geçmemeli."""
+    from forum.models import StudyRoomMembership
+    room = _create_test_room(user, 'test-odasi-guest')
+    StudyRoomMembership.objects.create(room=room, user=user, role='creator')
+
+    other_user = User.objects.create_user(username='secretmember', password='testpass123')
+    StudyRoomMembership.objects.create(room=room, user=other_user, role='member')
+
+    response = client.get(f'/odalar/{room.slug}/')
+    content = response.content.decode()
+    assert 'secretmember' not in content
+    assert user.username not in content  # kurucu adı da misafire kapalı
+
+
+@pytest.mark.django_db
+def test_studyroom_detail_shows_creator_to_logged_in_non_member(client, user):
+    """Login olmuş ama üye olmayan kullanıcıya kurucu adı görünür (karar: madde 1)."""
+    from forum.models import StudyRoomMembership
+    room = _create_test_room(user, 'test-odasi-viewer')
+    StudyRoomMembership.objects.create(room=room, user=user, role='creator')
+
+    viewer = User.objects.create_user(username='viewer1', password='testpass123')
+    client.force_login(viewer)
+    response = client.get(f'/odalar/{room.slug}/')
+    content = response.content.decode()
+    assert user.username in content
