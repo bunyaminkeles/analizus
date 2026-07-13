@@ -128,8 +128,7 @@ def forum_index(request):
 
 
 def _get_featured_experts():
-    """Uzman Vitrini — en az 1 tamamlanmış projesi olan uzmanlar, tamamlanan
-    proje sayısına göre azalan sırayla (eşitlikte reputation tie-breaker).
+    """Uzman Vitrini — akademik puana (reputation) göre azalan sırayla.
     5 dk cache (home_experts). Ana sayfa ve /market/ arasında paylaşılır —
     tekrar hesaplama yapılmaz."""
     from django.core.cache import cache
@@ -149,18 +148,12 @@ def _get_featured_experts():
             .exclude(user__username='admin')
             .distinct()
             .annotate(
-                showcase_completed_jobs=Count(
-                    'user__proposals',
-                    filter=Q(user__proposals__status='accepted', user__proposals__job__status='completed'),
-                    distinct=True,
-                ),
                 avg_rating=Avg(
                     'user__received_reviews__rating',
                     filter=Q(user__received_reviews__is_approved=True),
                 ),
             )
-            .filter(showcase_completed_jobs__gt=0)
-            .order_by('-showcase_completed_jobs', '-reputation')[:4]
+            .order_by('-reputation')[:4]
         )
         cache.set('home_experts', featured_experts, 300)
     return featured_experts

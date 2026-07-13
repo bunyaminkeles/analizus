@@ -60,6 +60,17 @@
     color: var(--ax-accent-primary);
 }
 
+.ax-expert-bio {
+    font-size: var(--ax-text-xs);
+    color: var(--ax-text-muted);
+    line-height: 1.4;
+    margin-bottom: var(--ax-space-3, 12px);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
 .ax-expert-skills {
     display: flex;
     flex-wrap: wrap;
