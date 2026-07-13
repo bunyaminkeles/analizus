@@ -20,6 +20,7 @@
 
     --ax-accent-primary:        #6366f1;
     --ax-accent-primary-hover:  #818cf8;
+    --ax-accent-primary-light:  #a5b4fc; /* WCAG AA kontrast için — koyu/yarı-saydam zeminlerde metin rengi */
     --ax-accent-secondary:      #10b981;
     --ax-accent-secondary-hover:#34d399;
     --ax-accent-warning:        #f59e0b;
@@ -256,9 +257,10 @@
 }
 
 .ax-btn--primary {
-    background-color: var(--ax-accent-primary);
+    /* WCAG AA (4.5:1) için --ax-accent-primary'den biraz koyultulmuş — beyaz metinle kontrastı garantiler */
+    background-color: color-mix(in srgb, var(--ax-accent-primary) 95%, black);
     color: #ffffff;
-    border-color: var(--ax-accent-primary);
+    border-color: color-mix(in srgb, var(--ax-accent-primary) 95%, black);
 }
 .ax-btn--primary:hover {
     background-color: var(--ax-accent-primary-hover);
@@ -328,7 +330,7 @@
     border-radius: var(--ax-radius-full);
     line-height: 1;
 }
-.ax-badge--primary { background-color: rgba(99,102,241,0.2); color: var(--ax-accent-primary); }
+.ax-badge--primary { background-color: rgba(99,102,241,0.2); color: var(--ax-accent-primary-light); } /* WCAG AA kontrast fix */
 .ax-badge--success { background-color: rgba(16,185,129,0.2); color: var(--ax-accent-secondary); }
 .ax-badge--warning { background-color: rgba(245,158,11,0.2); color: var(--ax-accent-warning); }
 .ax-badge--danger  { background-color: rgba(239,68,68,0.2);  color: var(--ax-accent-danger); }
