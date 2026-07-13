@@ -128,9 +128,10 @@ def forum_index(request):
 
 
 def _get_featured_experts():
-    """Uzman Vitrini — /uzmanlar/ (uzman_dizini) varsayılan "puan" sıralamasıyla
-    birebir aynı kriter + sıra. 5 dk cache (home_experts). Ana sayfa ve /market/
-    arasında paylaşılır — tekrar hesaplama yapılmaz."""
+    """Uzman Vitrini — en az 1 tamamlanmış projesi olan uzmanlar, tamamlanan
+    proje sayısına göre azalan sırayla (eşitlikte reputation tie-breaker).
+    5 dk cache (home_experts). Ana sayfa ve /market/ arasında paylaşılır —
+    tekrar hesaplama yapılmaz."""
     from django.core.cache import cache
 
     featured_experts = cache.get('home_experts')
@@ -158,7 +159,8 @@ def _get_featured_experts():
                     filter=Q(user__received_reviews__is_approved=True),
                 ),
             )
-            .order_by('-reputation', '-showcase_completed_jobs')[:4]
+            .filter(showcase_completed_jobs__gt=0)
+            .order_by('-showcase_completed_jobs', '-reputation')[:4]
         )
         cache.set('home_experts', featured_experts, 300)
     return featured_experts
