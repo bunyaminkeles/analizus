@@ -2,7 +2,7 @@
 <div class="ax-expert-card">
     <div class="ax-expert-avatar-wrap">
         {% if expert.avatar %}
-        <img src="{{ expert.avatar.url }}" alt="{{ expert.user.username }}" class="ax-expert-avatar">
+        <img src="{{ expert.avatar.url }}" alt="{{ expert.user.username }}" class="ax-expert-avatar" width="64" height="64" loading="lazy">
         {% else %}
         <div class="ax-expert-avatar ax-expert-avatar--fallback">{{ expert.user.username|first|upper }}</div>
         {% endif %}
