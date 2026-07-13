@@ -54,10 +54,16 @@
     color: var(--ax-text-primary);
     font-weight: var(--ax-font-semibold);
     text-decoration: none;
-    margin-bottom: var(--ax-space-2, 8px);
+    margin-bottom: 2px;
 }
 .ax-expert-name:hover {
     color: var(--ax-accent-primary);
+}
+
+.ax-expert-title {
+    font-size: var(--ax-text-xs);
+    color: var(--ax-text-muted);
+    margin: 0 0 var(--ax-space-2, 8px);
 }
 
 .ax-expert-bio {

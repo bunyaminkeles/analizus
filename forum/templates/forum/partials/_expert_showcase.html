@@ -11,6 +11,9 @@
         {% endif %}
     </div>
     <a href="{% url 'profile_detail' expert.user.username %}" class="ax-expert-name">{{ expert.user.get_full_name|default:expert.user.username }}</a>
+    {% if expert.title %}
+    <p class="ax-expert-title">{{ expert.title }}</p>
+    {% endif %}
     {% if expert.bio %}
     <p class="ax-expert-bio">{{ expert.bio }}</p>
     {% endif %}

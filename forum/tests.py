@@ -271,6 +271,21 @@ def test_expert_showcase_includes_expert_with_zero_completed_jobs(client, user):
 
 
 @pytest.mark.django_db
+def test_expert_card_shows_profile_title(client, user):
+    """Profildeki Ünvan alanı (Profile.title) uzman kartında isim altında görünür."""
+    from forum.models import Profile
+    profile, _ = Profile.objects.get_or_create(user=user)
+    profile.rank = 'expert'
+    profile.is_public = True
+    profile.title = 'Veri Analisti'
+    profile.save()
+
+    _prime_home_caches()
+    response = client.get('/')
+    assert 'Veri Analisti' in response.content.decode()
+
+
+@pytest.mark.django_db
 def test_expert_card_never_shows_completed_jobs_text(client, user):
     """Uzmanın tamamlanmış işi olsa bile 'tamamlanan proje' metni artık hiç
     render edilmiyor — kart yalnızca uzmanlık alanlarını (skills) ve puanı gösterir."""
