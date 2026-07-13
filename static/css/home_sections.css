@@ -1370,10 +1370,25 @@ a.ax-stat-pill:hover {
     border-radius: 12px;
     overflow: hidden;
     border: 1px solid var(--ax-border, rgba(255,255,255,0.08));
-    background: var(--ax-bg-secondary, #111827);
+}
+
+.ax-agentic-band-card__img {
+    display: block;
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    object-position: center;
+}
+
+.ax-agentic-band-card__overlay {
+    position: absolute;
+    inset: 0;
     display: flex;
-    align-items: center;
-    padding: var(--ax-space-5, 20px);
+    align-items: flex-end;
+    padding: 16px;
+    background: linear-gradient(180deg,
+        rgba(15, 23, 42, 0.25) 0%,
+        rgba(15, 23, 42, 0.92) 100%);
 }
 
 .ax-verify-band__inner {
@@ -1413,10 +1428,6 @@ a.ax-stat-pill:hover {
     white-space: nowrap;
 }
 
-.ax-agentic-band-card .ax-verify-band__inner {
-    width: 100%;
-}
-
 @media (max-width: 767px) {
     .ax-verify-band__inner {
         flex-direction: column;
@@ -1436,8 +1447,8 @@ a.ax-stat-pill:hover {
     .ax-ai-era-grid--single {
         grid-template-columns: 1fr;
     }
-    .ax-agentic-band-card {
-        height: 100%;
+    .ax-agentic-band-card__overlay {
+        padding: 24px;
     }
 }
 

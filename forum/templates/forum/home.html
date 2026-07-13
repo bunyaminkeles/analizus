@@ -17,7 +17,7 @@
 <link rel="stylesheet" href="{% static 'css/testimonials.css' %}?v=0100">
 <link rel="stylesheet" href="{% static 'css/stats.css' %}?v=0100">
 <link rel="stylesheet" href="{% static 'css/news.css' %}?v=0100">
-<link rel="stylesheet" href="{% static 'css/home_sections.css' %}?v=0112">
+<link rel="stylesheet" href="{% static 'css/home_sections.css' %}?v=0113">
 <link rel="stylesheet" href="{% static 'css/trend_topics.css' %}?v=0001">
 <link rel="stylesheet" href="{% static 'css/expert_card.css' %}?v=0001">
 <link rel="stylesheet" href="{% static 'css/brand_visuals.css' %}?v=0100">
@@ -835,14 +835,22 @@ document.addEventListener('DOMContentLoaded', function () {
             </div>
             {% if features.agentic_landing %}
             <div class="ax-agentic-band-card">
-                <!-- İleride agentic-hero.webp/agentic-hero-mobile.webp eklenecek: <picture><source media="(min-width:768px)" srcset="...">...</picture> -->
-                <div class="ax-verify-band__inner">
-                    <i class="bi bi-cpu ax-verify-band__icon" aria-hidden="true"></i>
-                    <div class="ax-verify-band__content">
-                        <h3 class="ax-verify-band__title">Analizleriniz siz uyurken çalışsın.</h3>
-                        <p class="ax-verify-band__text">Veri toplayan, analiz eden, raporlayan AI sistemleri — uzman gözetiminde kuruyoruz.</p>
+                <picture>
+                    <source media="(min-width: 768px)" srcset="{% static 'img/agentic-hero.webp' %}">
+                    <img src="{% static 'img/agentic-hero-mobile.webp' %}"
+                         alt="" width="800" height="446"
+                         loading="lazy" decoding="async"
+                         class="ax-agentic-band-card__img">
+                </picture>
+                <div class="ax-agentic-band-card__overlay">
+                    <div class="ax-verify-band__inner">
+                        <i class="bi bi-cpu ax-verify-band__icon" aria-hidden="true"></i>
+                        <div class="ax-verify-band__content">
+                            <h3 class="ax-verify-band__title">Analizleriniz siz uyurken çalışsın.</h3>
+                            <p class="ax-verify-band__text">Veri toplayan, analiz eden, raporlayan AI sistemleri — uzman gözetiminde kuruyoruz.</p>
+                        </div>
+                        <a href="{% url 'ai_cozumler' %}" class="ax-btn ax-btn--primary ax-verify-band__cta">AI Çözümlerini Keşfet</a>
                     </div>
-                    <a href="{% url 'ai_cozumler' %}" class="ax-btn ax-btn--primary ax-verify-band__cta">AI Çözümlerini Keşfet</a>
                 </div>
             </div>
             {% endif %}
