@@ -10,7 +10,21 @@
 {% block twitter_description %}Türkiye'nin analiz ekosistemi — 18 ücretsiz istatistik aracı, AI asistan ve doğrulanmış uzmanlar tek çatıda.{% endblock %}
 
 {% block extra_head %}
+<!-- Hero yukarı katlanmadan hemen görünüyor — render-blocking kalıyor (FOUC/CLS riski yok) -->
 <link rel="stylesheet" href="{% static 'css/hero.css' %}?v=0105">
+
+<!-- Ekranın altındaki bölümlerin CSS'i — render'ı engellemesin diye deferred (base.html'deki font/bootstrap deseniyle aynı) -->
+<link rel="stylesheet" href="{% static 'css/cards.css' %}?v=0100" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="{% static 'css/quiz.css' %}?v=0100" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="{% static 'css/topics.css' %}?v=0100" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="{% static 'css/testimonials.css' %}?v=0100" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="{% static 'css/stats.css' %}?v=0100" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="{% static 'css/news.css' %}?v=0100" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="{% static 'css/home_sections.css' %}?v=0114" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="{% static 'css/trend_topics.css' %}?v=0001" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="{% static 'css/expert_card.css' %}?v=0003" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="{% static 'css/brand_visuals.css' %}?v=0103" media="print" onload="this.media='all'">
+<noscript>
 <link rel="stylesheet" href="{% static 'css/cards.css' %}?v=0100">
 <link rel="stylesheet" href="{% static 'css/quiz.css' %}?v=0100">
 <link rel="stylesheet" href="{% static 'css/topics.css' %}?v=0100">
@@ -21,6 +35,7 @@
 <link rel="stylesheet" href="{% static 'css/trend_topics.css' %}?v=0001">
 <link rel="stylesheet" href="{% static 'css/expert_card.css' %}?v=0003">
 <link rel="stylesheet" href="{% static 'css/brand_visuals.css' %}?v=0103">
+</noscript>
 {% endblock %}
 
 {% block main_container %}container-fluid px-2 px-lg-3{% endblock %}
@@ -1181,34 +1196,6 @@ function copyText(text, btn) {
             uploadFile(e.dataTransfer.files[0]);
         }
     });
-})();
-</script>
-
-<!-- Counter strip animasyonu -->
-<script>
-(function () {
-    function animateCounter(el, target, duration) {
-        var start = performance.now();
-        function step(now) {
-            var progress = Math.min((now - start) / duration, 1);
-            var eased = 1 - Math.pow(1 - progress, 3);
-            el.textContent = Math.floor(eased * target).toLocaleString('tr-TR');
-            if (progress < 1) requestAnimationFrame(step);
-        }
-        requestAnimationFrame(step);
-    }
-    var nums = document.querySelectorAll('.ax-counter-strip__num[data-target]');
-    if (!nums.length) return;
-    var observer = new IntersectionObserver(function (entries) {
-        entries.forEach(function (entry) {
-            if (entry.isIntersecting) {
-                var el = entry.target;
-                animateCounter(el, parseInt(el.dataset.target, 10), 1800);
-                observer.unobserve(el);
-            }
-        });
-    }, { threshold: 0.3 });
-    nums.forEach(function (el) { observer.observe(el); });
 })();
 </script>
 

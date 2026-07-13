@@ -253,9 +253,26 @@
             });
     }
 
+    function startWhenVisible() {
+        var app = document.getElementById('axQuizApp');
+        if (!app || typeof IntersectionObserver === 'undefined') {
+            initQuiz();
+            return;
+        }
+        var observer = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+                if (entry.isIntersecting) {
+                    observer.disconnect();
+                    initQuiz();
+                }
+            });
+        }, { rootMargin: '200px' });
+        observer.observe(app);
+    }
+
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initQuiz);
+        document.addEventListener('DOMContentLoaded', startWhenVisible);
     } else {
-        initQuiz();
+        startWhenVisible();
     }
 }());
