@@ -42,13 +42,22 @@
     height: auto;
     border-radius: 4px;
   }
-  .ax-tableau-facade__btn {
+  .ax-tableau-facade__panel {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    max-width: min(90%, 380px);
+    text-align: center;
+  }
+  .ax-tableau-facade__btn {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 0.4rem;
     min-height: 44px;
     padding: 0.6rem 1.25rem;
@@ -60,10 +69,48 @@
     font-size: 0.9rem;
     cursor: pointer;
     white-space: nowrap;
+    text-decoration: none;
   }
   .ax-tableau-facade__btn:hover {
     background: rgba(17, 24, 39, 0.95);
     border-color: rgba(255, 255, 255, 0.4);
+    color: #fff;
+  }
+  .ax-tableau-facade__btn:disabled {
+    cursor: default;
+    opacity: 0.85;
+  }
+  .ax-tableau-facade__hint {
+    margin: 0;
+    font-size: 0.72rem;
+    color: rgba(255, 255, 255, 0.55);
+  }
+  .ax-tableau-facade__error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    background: rgba(17, 24, 39, 0.92);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+    padding: 16px 20px;
+  }
+  .ax-tableau-facade__error-text {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #fca5a5;
+    font-weight: 600;
+  }
+  .ax-tableau-facade__error-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+  }
+  .ax-tableau-facade__error-actions .ax-tableau-facade__btn {
+    min-height: 38px;
+    padding: 0.45rem 1rem;
+    font-size: 0.82rem;
   }
 </style>
 {% endblock %}
@@ -153,12 +200,27 @@
               </a>
             </div>
             <div class="tableau-wrap px-2 pb-2">
-              <div class="ax-tableau-facade">
+              <div class="ax-tableau-facade" data-tableau-facade>
                 <img src="{% static 'img/tableau-poster-trdizin.webp' %}" alt="" loading="lazy" width="964" height="722" class="ax-tableau-facade__poster">
-                <button type="button" class="ax-tableau-facade__btn" data-tableau-load>
-                  <i class="bi bi-play-circle-fill me-1"></i>İnteraktif Dashboard'u Yükle
-                </button>
+                <div class="ax-tableau-facade__panel">
+                  <button type="button" class="ax-tableau-facade__btn" data-tableau-load>
+                    <i class="bi bi-play-circle-fill me-1"></i>İnteraktif Dashboard'u Yükle
+                  </button>
+                  <p class="ax-tableau-facade__hint" data-tableau-hint>İlk yükleme 5-10 sn sürebilir (Tableau Public sunucuları).</p>
+                  <div class="ax-tableau-facade__error d-none" data-tableau-error>
+                    <p class="ax-tableau-facade__error-text"><i class="bi bi-exclamation-triangle me-1"></i>Tableau Public şu an yavaş yanıt veriyor.</p>
+                    <div class="ax-tableau-facade__error-actions">
+                      <button type="button" class="ax-tableau-facade__btn" data-tableau-retry>
+                        <i class="bi bi-arrow-clockwise me-1"></i>Tekrar Dene
+                      </button>
+                      <a href="#" target="_blank" rel="noopener" class="ax-tableau-facade__btn" data-tableau-open-external>
+                        Tableau Public'te Aç <i class="bi bi-box-arrow-up-right ms-1"></i>
+                      </a>
+                    </div>
+                  </div>
+                </div>
               </div>
+              <div class="ax-tableau-embed-slot" data-tableau-embed-slot></div>
               <template data-tableau-embed>
                 <tableau-viz
                   src="https://public.tableau.com/views/TrDizinSalkAratrmalar/SalkAratrmalar"
@@ -191,12 +253,27 @@
               </a>
             </div>
             <div class="tableau-wrap px-2 pb-2">
-              <div class="ax-tableau-facade">
+              <div class="ax-tableau-facade" data-tableau-facade>
                 <img src="{% static 'img/tableau-poster-obezite.webp' %}" alt="" loading="lazy" width="517" height="691" class="ax-tableau-facade__poster">
-                <button type="button" class="ax-tableau-facade__btn" data-tableau-load>
-                  <i class="bi bi-play-circle-fill me-1"></i>İnteraktif Dashboard'u Yükle
-                </button>
+                <div class="ax-tableau-facade__panel">
+                  <button type="button" class="ax-tableau-facade__btn" data-tableau-load>
+                    <i class="bi bi-play-circle-fill me-1"></i>İnteraktif Dashboard'u Yükle
+                  </button>
+                  <p class="ax-tableau-facade__hint" data-tableau-hint>İlk yükleme 5-10 sn sürebilir (Tableau Public sunucuları).</p>
+                  <div class="ax-tableau-facade__error d-none" data-tableau-error>
+                    <p class="ax-tableau-facade__error-text"><i class="bi bi-exclamation-triangle me-1"></i>Tableau Public şu an yavaş yanıt veriyor.</p>
+                    <div class="ax-tableau-facade__error-actions">
+                      <button type="button" class="ax-tableau-facade__btn" data-tableau-retry>
+                        <i class="bi bi-arrow-clockwise me-1"></i>Tekrar Dene
+                      </button>
+                      <a href="#" target="_blank" rel="noopener" class="ax-tableau-facade__btn" data-tableau-open-external>
+                        Tableau Public'te Aç <i class="bi bi-box-arrow-up-right ms-1"></i>
+                      </a>
+                    </div>
+                  </div>
+                </div>
               </div>
+              <div class="ax-tableau-embed-slot" data-tableau-embed-slot></div>
               <template data-tableau-embed>
                 <tableau-viz
                   src="https://public.tableau.com/views/Tuik-obezite/Dashboard2"
@@ -228,12 +305,27 @@
               </a>
             </div>
             <div class="tableau-wrap px-2 pb-2">
-              <div class="ax-tableau-facade">
+              <div class="ax-tableau-facade" data-tableau-facade>
                 <img src="{% static 'img/tableau-poster-nufus.webp' %}" alt="" loading="lazy" width="919" height="462" class="ax-tableau-facade__poster">
-                <button type="button" class="ax-tableau-facade__btn" data-tableau-load>
-                  <i class="bi bi-play-circle-fill me-1"></i>İnteraktif Dashboard'u Yükle
-                </button>
+                <div class="ax-tableau-facade__panel">
+                  <button type="button" class="ax-tableau-facade__btn" data-tableau-load>
+                    <i class="bi bi-play-circle-fill me-1"></i>İnteraktif Dashboard'u Yükle
+                  </button>
+                  <p class="ax-tableau-facade__hint" data-tableau-hint>İlk yükleme 5-10 sn sürebilir (Tableau Public sunucuları).</p>
+                  <div class="ax-tableau-facade__error d-none" data-tableau-error>
+                    <p class="ax-tableau-facade__error-text"><i class="bi bi-exclamation-triangle me-1"></i>Tableau Public şu an yavaş yanıt veriyor.</p>
+                    <div class="ax-tableau-facade__error-actions">
+                      <button type="button" class="ax-tableau-facade__btn" data-tableau-retry>
+                        <i class="bi bi-arrow-clockwise me-1"></i>Tekrar Dene
+                      </button>
+                      <a href="#" target="_blank" rel="noopener" class="ax-tableau-facade__btn" data-tableau-open-external>
+                        Tableau Public'te Aç <i class="bi bi-box-arrow-up-right ms-1"></i>
+                      </a>
+                    </div>
+                  </div>
+                </div>
               </div>
+              <div class="ax-tableau-embed-slot" data-tableau-embed-slot></div>
               <template data-tableau-embed>
                 <tableau-viz
                   src="https://public.tableau.com/views/Binde5tenbyknfusart/Binde5denbykartlar"
@@ -265,12 +357,27 @@
               </a>
             </div>
             <div class="tableau-wrap px-2 pb-2">
-              <div class="ax-tableau-facade">
+              <div class="ax-tableau-facade" data-tableau-facade>
                 <img src="{% static 'img/tableau-poster-satis.webp' %}" alt="" loading="lazy" width="1245" height="726" class="ax-tableau-facade__poster">
-                <button type="button" class="ax-tableau-facade__btn" data-tableau-load>
-                  <i class="bi bi-play-circle-fill me-1"></i>İnteraktif Dashboard'u Yükle
-                </button>
+                <div class="ax-tableau-facade__panel">
+                  <button type="button" class="ax-tableau-facade__btn" data-tableau-load>
+                    <i class="bi bi-play-circle-fill me-1"></i>İnteraktif Dashboard'u Yükle
+                  </button>
+                  <p class="ax-tableau-facade__hint" data-tableau-hint>İlk yükleme 5-10 sn sürebilir (Tableau Public sunucuları).</p>
+                  <div class="ax-tableau-facade__error d-none" data-tableau-error>
+                    <p class="ax-tableau-facade__error-text"><i class="bi bi-exclamation-triangle me-1"></i>Tableau Public şu an yavaş yanıt veriyor.</p>
+                    <div class="ax-tableau-facade__error-actions">
+                      <button type="button" class="ax-tableau-facade__btn" data-tableau-retry>
+                        <i class="bi bi-arrow-clockwise me-1"></i>Tekrar Dene
+                      </button>
+                      <a href="#" target="_blank" rel="noopener" class="ax-tableau-facade__btn" data-tableau-open-external>
+                        Tableau Public'te Aç <i class="bi bi-box-arrow-up-right ms-1"></i>
+                      </a>
+                    </div>
+                  </div>
+                </div>
               </div>
+              <div class="ax-tableau-embed-slot" data-tableau-embed-slot></div>
               <template data-tableau-embed>
                 <tableau-viz
                   src="https://public.tableau.com/views/analizus_sales/Dashboard1"
@@ -450,56 +557,143 @@
 
 {% block extra_js %}
 <script>
-document.addEventListener('click', function (e) {
-  var btn = e.target.closest('[data-tableau-load]');
-  if (!btn) return;
+(function () {
+  var LOAD_TIMEOUT_MS = 15000;
+  var SCRIPT_WAIT_TIMEOUT_MS = 8000;
+  var currentPaneId = 'tab-salk';
 
-  var facade = btn.closest('.ax-tableau-facade');
-  var wrap = facade.parentElement;
-  var tpl = wrap.querySelector('template[data-tableau-embed]');
-  if (!tpl) return;
+  function getRefs(facade) {
+    var wrap = facade.closest('.tableau-wrap');
+    return {
+      wrap: wrap,
+      facade: facade,
+      btn: facade.querySelector('[data-tableau-load]'),
+      hint: facade.querySelector('[data-tableau-hint]'),
+      errorBox: facade.querySelector('[data-tableau-error]'),
+      slot: wrap.querySelector('[data-tableau-embed-slot]'),
+      tpl: wrap.querySelector('template[data-tableau-embed]')
+    };
+  }
 
-  function showEmbed() {
-    if (facade.isConnected) {
-      wrap.replaceChild(tpl.content.cloneNode(true), facade);
+  // Bir wrap için bekleyen async işlemleri (script polling, timeout) geçersiz kılar.
+  function bumpGeneration(wrap) {
+    wrap.__axGen = (wrap.__axGen || 0) + 1;
+    if (wrap.__axTimer) {
+      clearTimeout(wrap.__axTimer);
+      wrap.__axTimer = null;
     }
+    return wrap.__axGen;
   }
 
-  function showError() {
-    if (!facade.isConnected) return;
-    btn.disabled = false;
-    btn.innerHTML = '<i class="bi bi-exclamation-triangle me-1"></i>Yüklenemedi — tekrar dene veya "Tam Ekran"ı kullan';
+  function resetToIdle(refs) {
+    bumpGeneration(refs.wrap);
+    refs.slot.innerHTML = '';
+    refs.facade.classList.remove('d-none');
+    refs.btn.classList.remove('d-none');
+    refs.btn.disabled = false;
+    refs.btn.innerHTML = '<i class="bi bi-play-circle-fill me-1"></i>İnteraktif Dashboard\'u Yükle';
+    refs.hint.classList.remove('d-none');
+    refs.errorBox.classList.add('d-none');
   }
 
-  if (window.__axTableauScriptState === 'ready') {
-    showEmbed();
-    return;
+  function showError(refs) {
+    bumpGeneration(refs.wrap);
+    refs.slot.innerHTML = '';
+    refs.btn.classList.add('d-none');
+    refs.hint.classList.add('d-none');
+    refs.errorBox.classList.remove('d-none');
   }
 
-  btn.disabled = true;
-  btn.innerHTML = '<i class="bi bi-hourglass-split me-1"></i>Yükleniyor…';
+  function loadEmbed(refs) {
+    var gen = bumpGeneration(refs.wrap);
+    var vizSrc = refs.tpl.content.querySelector('tableau-viz').getAttribute('src');
+    var externalLink = refs.errorBox.querySelector('[data-tableau-open-external]');
+    if (externalLink) externalLink.href = vizSrc;
 
-  if (!window.__axTableauScriptState) {
-    window.__axTableauScriptState = 'loading';
-    var lib = document.createElement('script');
-    lib.type = 'module';
-    lib.src = 'https://public.tableau.com/javascripts/api/tableau.embedding.3.latest.min.js';
-    lib.onload = function () { window.__axTableauScriptState = 'ready'; };
-    lib.onerror = function () { window.__axTableauScriptState = 'error'; };
-    document.head.appendChild(lib);
-  }
+    refs.btn.disabled = true;
+    refs.btn.innerHTML = '<i class="bi bi-hourglass-split me-1"></i>Yükleniyor…';
 
-  var waited = 0;
-  var iv = setInterval(function () {
-    waited += 300;
+    function insertViz() {
+      if (refs.wrap.__axGen !== gen) return;
+      refs.slot.innerHTML = '';
+      var node = refs.tpl.content.cloneNode(true);
+      var viz = node.querySelector('tableau-viz');
+      refs.slot.appendChild(node);
+      refs.facade.classList.add('d-none');
+
+      refs.wrap.__axTimer = setTimeout(function () {
+        if (refs.wrap.__axGen !== gen) return;
+        showError(refs);
+      }, LOAD_TIMEOUT_MS);
+
+      viz.addEventListener('firstinteractive', function () {
+        if (refs.wrap.__axGen !== gen) return;
+        if (refs.wrap.__axTimer) {
+          clearTimeout(refs.wrap.__axTimer);
+          refs.wrap.__axTimer = null;
+        }
+      }, { once: true });
+    }
+
     if (window.__axTableauScriptState === 'ready') {
-      clearInterval(iv);
-      showEmbed();
-    } else if (window.__axTableauScriptState === 'error' || waited >= 8000) {
-      clearInterval(iv);
-      showError();
+      insertViz();
+      return;
     }
-  }, 300);
-});
+
+    if (!window.__axTableauScriptState) {
+      window.__axTableauScriptState = 'loading';
+      var lib = document.createElement('script');
+      lib.type = 'module';
+      lib.src = 'https://public.tableau.com/javascripts/api/tableau.embedding.3.latest.min.js';
+      lib.onload = function () { window.__axTableauScriptState = 'ready'; };
+      lib.onerror = function () { window.__axTableauScriptState = 'error'; };
+      document.head.appendChild(lib);
+    }
+
+    var waited = 0;
+    var iv = setInterval(function () {
+      if (refs.wrap.__axGen !== gen) { clearInterval(iv); return; }
+      waited += 300;
+      if (window.__axTableauScriptState === 'ready') {
+        clearInterval(iv);
+        insertViz();
+      } else if (window.__axTableauScriptState === 'error' || waited >= SCRIPT_WAIT_TIMEOUT_MS) {
+        clearInterval(iv);
+        showError(refs);
+      }
+    }, 300);
+  }
+
+  document.addEventListener('click', function (e) {
+    var loadBtn = e.target.closest('[data-tableau-load]');
+    if (loadBtn) {
+      loadEmbed(getRefs(loadBtn.closest('[data-tableau-facade]')));
+      return;
+    }
+    var retryBtn = e.target.closest('[data-tableau-retry]');
+    if (retryBtn) {
+      var refs = getRefs(retryBtn.closest('[data-tableau-facade]'));
+      resetToIdle(refs);
+      loadEmbed(refs);
+      return;
+    }
+  });
+
+  var tabsEl = document.getElementById('tableauTabs');
+  if (tabsEl) {
+    tabsEl.addEventListener('click', function (e) {
+      var link = e.target.closest('.nav-link[data-bs-target]');
+      if (!link) return;
+      var targetId = link.getAttribute('data-bs-target').replace('#', '');
+      if (targetId === currentPaneId) return;
+      var prevPane = document.getElementById(currentPaneId);
+      if (prevPane) {
+        var facade = prevPane.querySelector('[data-tableau-facade]');
+        if (facade) resetToIdle(getRefs(facade));
+      }
+      currentPaneId = targetId;
+    });
+  }
+})();
 </script>
 {% endblock %}
