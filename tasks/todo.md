@@ -326,7 +326,7 @@ Faz 1'i (envanter) çalıştırıp tabloyu onaya sunacağım.
 
 # Merge Öncesi Son Süpürme (analizus_son_supurme_prompt.md)
 
-**Durum:** Devam ediyor — Madde 1-9 tamamlandı. Kalan: 10, 11.
+**Durum:** Devam ediyor — Madde 1-10 tamamlandı. Kalan: 11.
 Kaynak: `~/Desktop/analizus_son_supurme_prompt.md`. Yeni oturumda önce bu dosya
 + bu bölüm okunmalı; `analizus_son_supurme_prompt.md`'nin ORİJİNAL Madde 1
 metni artık güncel değil (aşağıdaki kararlarla değişti), bu yüzden bu bölüm
@@ -382,6 +382,60 @@ esas alınmalı.
   yapmış/yapmamış iki varyantıyla) tamamen kaldırıldı. Dropzone, "uzmana
   bırak" linki, veri kazıma bandı, alt CTA kartları değişmedi — Playwright
   ile masaüstü+mobil görsel doğrulandı, orphan spacing/CSS sorunu yok.
+- **Madde 10 (Testler + Deploy Notu)** — bu tur. `forum/tests.py`'e 8 yeni smoke
+  test eklendi: Madde 1'in 4 ön-seçimi (`?source=verification/agentic/tableau/
+  bibliometrics` → `proje_talebi` formunda doğru `<option selected>`), Madde 4
+  (forum arama sonucu boş-durumu varsayılan görünümde `d-none` ile gizli),
+  Madde 6 (`NoIndexMiddleware` — `IS_PRODUCTION=False`'da header var,
+  `True`'da yok, 2 test), Madde 7b (tableau `<tableau-viz>` yalnızca
+  `<template>` içinde, ilk yüklemede canlı DOM'da yok). Madde 2 ve 9'un
+  testleri zaten mevcuttu (bkz. yukarı Sıfır Kuralı bölümü ve
+  `test_register_get_returns_200`/`test_login_get_returns_200`).
+  **Sonuç:** 31 test, 30 geçti; tek hata `test_yoktez_job_daily_limit_normal_user`
+  — bu turla ilgisiz, önceden bilinen, dokunulmadı (bkz. "Genel notlar").
+
+  **DEPLOY NOTU (main'e merge öncesi — dev, main'den 28 commit ileride):**
+  - **Migration:** main→dev arası tam 4 migration — `0144_projectrequest_
+    source_choices`, `0145_sitesettings_feature_agentic_landing_and_more`,
+    `0146_projectrequest_source_tableau_bibliometrics`,
+    `0147_projectrequest_analysis_bibliometric`. Hepsi `AlterField` (choices
+    genişletme) + tek `AddField` (boolean flag) — veri kaybı riski yok,
+    `--fake` gerekmiyor.
+  - **collectstatic:** GEREKLİ. Yeni statik dosyalar: 6 yeni CSS
+    (`agentic_landing.css`, `bibliometrics.css`, `brand_visuals.css`,
+    `expert_card.css`, `market.css`, `trend_topics.css`) + görseller
+    (`agentic-hero(-mobile).webp`, `auth-login(-mobile)/auth-register
+    (-mobile).webp`, `biblio-ornek-*.webp` ×6, `tableau-poster-*.webp` ×4).
+  - **`?v=` denetimi:** main'de zaten var olup dev'de içeriği değişen yalnızca
+    2 CSS dosyası var — ikisi de doğru bump edilmiş: `hero.css` 0103→0105,
+    `home_sections.css` 0106→0112. Diğer 6 CSS dosyası main'de hiç yok
+    (prod'da eski cache'lenmiş kopya yok), versiyon numaraları (v=0001/0002)
+    bu yüzden önemsiz.
+  - **Hetzner sırası:** `git pull` (main) → `docker compose exec web python
+    manage.py migrate` → `docker compose exec web python manage.py
+    collectstatic --noinput` → `docker compose restart web` → `docker compose
+    restart nginx` (IP cache sorunu, CLAUDE.md kuralı).
+  - **Merge sonrası hatırlatmalar:**
+    1. **Feature flag açılmalı:** `feature_agentic_landing` migration'da
+       `default=False` geliyor — admin'den `SiteSettings`'te AÇILMAZSA
+       `/ai-cozumler/` ne navbar'da (`context_processors.py:75`) ne sitemap'te
+       (`sitemaps.py:14`) görünür. Bu adım atlanırsa Madde 1b/7a'nın tüm
+       huni işi görünmez kalır.
+    2. `robots.txt` içeriği değişti (`Disallow: /istatistik/` satırı
+       kaldırıldı, artık 301 üzerinden /analiz/'e akıyor) — GSC "robots.txt
+       Test Aracı"ndan yeniden okutulmalı.
+    3. Sitemap resubmit (GSC → Sitemaps).
+    4. `/ai-cozumler/` + Madde 7'deki araç sayfaları (bibliometrics,
+       tableau-analiz vb.) için GSC URL denetimi → elle dizine ekleme iste.
+    5. `/istatistik/` → `/analiz/` 301'i GSC URL denetim aracıyla doğrula
+       (robots.txt artık bunu engellemiyor, redirect aktif görünmeli).
+    6. **Premium fiyat kaynağı kontrol edildi — DÜZELTME GEREKMEDİ.** Kaynak
+       tamamen DB: `DonationTier.min_amount` (migration'ları 0031/0032/0045/
+       0076, zaten prod'da uygulanmış, bu merge'e dahil değil).
+       `footer.html:154-167` yalnızca `{{ tier.min_amount }}` render ediyor,
+       hardcode TL değeri yok — prod (250/500/750/1000) ve dev (50/100/250/
+       500) farkı tamamen DB seed farkı, template/kod fark yaratmıyor.
+
 - **Madde 9 (Auth panelleri)** — `7837700`. `login.html`/`register.html`
   base.css yüklemiyor (tamamen izole, hardcode renkli sayfalar) — bu yüzden
   `var(--ax-bg)` yerine dosyanın kendi `#0a1628` rengiyle iç vinyet
@@ -410,11 +464,7 @@ esas alınmalı.
 
 ## Kalan işler (sırasıyla)
 
-1. **Madde 10 — Testler + Deploy Notu:** tüm turun kapanışı, smoke testler,
-   migration listesi (4 adet), `?v=` listesi, Hetzner deploy sırası, merge
-   sonrası hatırlatmalar (robots GSC, sitemap resubmit, premium fiyat kaynağı
-   kontrolü — prod 250/500/750/1000 TL, dev 50/100/250/500 TL).
-2. **Madde 11 (YENİ, bu oturumda eklendi) — Ana sayfa "AI çağında iki yol" sağ
+1. **Madde 11 (YENİ, bu oturumda eklendi) — Ana sayfa "AI çağında iki yol" sağ
    kartı:** `agentic-hero.webp`/`agentic-hero-mobile.webp` zaten
    `static/img/`'de hazır (kontrol edildi). Sol karttaki (`ax-brand-visual`,
    `forum/templates/forum/home.html` FAZ 4 bölümü) AYNI kalıp: `<picture>`
@@ -431,9 +481,8 @@ esas alınmalı.
 2. `~/Desktop/analizus_son_supurme_prompt.md`'yi oku — ama yukarıdaki
    "Tamamlananlar" ve "Genel notlar" bölümlerini esas al, orijinal metindeki
    Madde 1 artık güncel değil.
-3. "Madde 10 — Testler + Deploy Notu" ile başla, sonra "Kalan işler" sırasını
-   takip et — her madde için: envanter/plan → onay → uygulama → doğrulama →
-   commit → dur.
+3. "Kalan işler" sırasını takip et (şu an yalnızca Madde 11 kaldı) — her
+   madde için: envanter/plan → onay → uygulama → doğrulama → commit → dur.
 
 ---
 

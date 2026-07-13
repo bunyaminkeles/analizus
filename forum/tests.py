@@ -321,3 +321,77 @@ def test_market_empty_listing_keeps_invite_cta(client):
     """Boş ilan listesi 'davet' metnini korur — sıfır kuralı kapsamı dışında istisna."""
     response = client.get('/market/')
     assert 'Şu anda açık ilan bulunmuyor.' in response.content.decode()
+
+
+# ─── Madde 10: Son Süpürme Kapanışı ───────────────────────────────────────────
+
+# Madde 1: proje_talebi ön-seçim (source/type → analysis_type <select> "selected")
+
+@pytest.mark.django_db
+def test_proje_talebi_preselects_verification(client):
+    response = client.get('/proje-talebi/?source=verification&type=verification')
+    content = response.content.decode()
+    assert '<option value="verification" selected>' in content
+
+
+@pytest.mark.django_db
+def test_proje_talebi_preselects_agentic(client):
+    response = client.get('/proje-talebi/?source=agentic&type=agentic')
+    content = response.content.decode()
+    assert '<option value="agentic" selected>' in content
+
+
+@pytest.mark.django_db
+def test_proje_talebi_preselects_tableau(client):
+    response = client.get('/proje-talebi/?source=tableau')
+    content = response.content.decode()
+    assert '<option value="visualization" selected>' in content
+
+
+@pytest.mark.django_db
+def test_proje_talebi_preselects_bibliometric(client):
+    response = client.get('/proje-talebi/?source=bibliometrics')
+    content = response.content.decode()
+    assert '<option value="bibliometric" selected>' in content
+
+
+# Madde 4: forum arama boş-durumu varsayılan görünümde gizli
+
+@pytest.mark.django_db
+def test_forum_index_no_results_hidden_by_default(client):
+    """Arama yapılmamışken '#noResults' bloğu d-none ile gizli kalmalı."""
+    response = client.get('/forum/')
+    content = response.content.decode()
+    assert 'id="noResults" class="text-center text-white-50 py-5 d-none"' in content
+
+
+# Madde 6: NoIndexMiddleware — dev'de header var, prod'da yok
+
+@pytest.mark.django_db
+def test_noindex_header_present_when_not_production(client, settings):
+    settings.IS_PRODUCTION = False
+    response = client.get('/')
+    assert response.get('X-Robots-Tag') == 'noindex, nofollow'
+
+
+@pytest.mark.django_db
+def test_noindex_header_absent_when_production(client, settings):
+    settings.IS_PRODUCTION = True
+    response = client.get('/')
+    assert response.get('X-Robots-Tag') is None
+
+
+# Madde 7b: Tableau facade — ilk yüklemede gerçek embed DOM'da değil
+
+@pytest.mark.django_db
+def test_tableau_facade_no_live_embed_on_initial_load(client):
+    """<tableau-viz> yalnızca <template> içinde saklı, ilk yüklemede canlı DOM'da yok."""
+    response = client.get('/tableau-analiz/')
+    content = response.content.decode()
+    assert '<template data-tableau-embed>' in content
+    live_dom = content.split('<template data-tableau-embed>')[0]
+    assert '<tableau-viz' not in live_dom
+
+
+# Madde 9: auth sayfaları 200 (mevcut testlerle örtüşür — bkz. test_register_get_returns_200 /
+# test_login_get_returns_200 yukarıda, ayrıca burada yinelenmiyor)
