@@ -112,6 +112,37 @@
     padding: 0.45rem 1rem;
     font-size: 0.82rem;
   }
+  .ax-tableau-embed-slot {
+    position: relative;
+  }
+  .ax-tableau-loading-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: rgba(17, 24, 39, 0.9);
+    border-radius: 4px;
+  }
+  .ax-tableau-loading-overlay__spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid rgba(255, 255, 255, 0.2);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: ax-tableau-spin 0.8s linear infinite;
+  }
+  @keyframes ax-tableau-spin {
+    to { transform: rotate(360deg); }
+  }
+  .ax-tableau-loading-overlay__text {
+    margin: 0;
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.7);
+  }
 </style>
 {% endblock %}
 
@@ -588,6 +619,7 @@
   function resetToIdle(refs) {
     bumpGeneration(refs.wrap);
     refs.slot.innerHTML = '';
+    refs.slot.style.minHeight = '';
     refs.facade.classList.remove('d-none');
     refs.btn.classList.remove('d-none');
     refs.btn.disabled = false;
@@ -599,6 +631,7 @@
   function showError(refs) {
     bumpGeneration(refs.wrap);
     refs.slot.innerHTML = '';
+    refs.slot.style.minHeight = '';
     refs.btn.classList.add('d-none');
     refs.hint.classList.add('d-none');
     refs.errorBox.classList.remove('d-none');
@@ -618,8 +651,15 @@
       refs.slot.innerHTML = '';
       var node = refs.tpl.content.cloneNode(true);
       var viz = node.querySelector('tableau-viz');
+      refs.slot.style.minHeight = (viz.getAttribute('height') || '700') + 'px';
       refs.slot.appendChild(node);
       refs.facade.classList.add('d-none');
+
+      var overlay = document.createElement('div');
+      overlay.className = 'ax-tableau-loading-overlay';
+      overlay.innerHTML = '<div class="ax-tableau-loading-overlay__spinner"></div>' +
+        '<p class="ax-tableau-loading-overlay__text">Yükleniyor…</p>';
+      refs.slot.appendChild(overlay);
 
       refs.wrap.__axTimer = setTimeout(function () {
         if (refs.wrap.__axGen !== gen) return;
@@ -632,6 +672,7 @@
           clearTimeout(refs.wrap.__axTimer);
           refs.wrap.__axTimer = null;
         }
+        if (overlay.isConnected) overlay.remove();
       }, { once: true });
     }
 
