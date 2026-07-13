@@ -1,0 +1,36 @@
+{% load static %}
+<div class="card border-secondary mb-3 p-3" style="background:#16213e;">
+  <div class="d-flex align-items-center gap-2">
+    {% if user.is_authenticated and room.creator.profile.avatar %}
+    <img src="{{ room.creator.profile.avatar.url }}" class="ax-expert-avatar" width="48" height="48" style="width:48px;height:48px;flex-shrink:0;">
+    {% elif user.is_authenticated %}
+    <div class="ax-expert-avatar ax-expert-avatar--fallback" style="width:48px;height:48px;flex-shrink:0;">{{ room.creator.username|first|upper }}</div>
+    {% else %}
+    <div class="ax-expert-avatar ax-expert-avatar--fallback d-flex align-items-center justify-content-center" style="width:48px;height:48px;flex-shrink:0;">
+      <i class="bi bi-person-fill"></i>
+    </div>
+    {% endif %}
+    <div class="flex-grow-1 min-w-0">
+      {% if user.is_authenticated %}
+      <a href="{% url 'profile_detail' room.creator.username %}" class="ax-expert-name d-block" style="font-size:.85rem;">{{ room.creator.username }}</a>
+      {% else %}
+      <span class="text-white fw-semibold d-block" style="font-size:.85rem;">Kurucu</span>
+      {% endif %}
+      <span class="text-white-50 d-block" style="font-size:.7rem;">
+        {{ room.creator.profile.get_rank_display }} seviye üye
+      </span>
+      {% if room.creator_bio %}
+      <p class="text-white-50 mb-0 mt-1" style="font-size:.72rem;line-height:1.4;">{{ room.creator_bio }}</p>
+      {% endif %}
+      {% with creator_skills=room.creator.profile.skills.all|slice:":3" %}
+      {% if creator_skills %}
+      <div class="ax-expert-skills mt-2" style="justify-content:flex-start;">
+        {% for skill in creator_skills %}
+        <span class="ax-badge ax-badge--primary" style="font-size:.6rem;">{{ skill.title }}</span>
+        {% endfor %}
+      </div>
+      {% endif %}
+      {% endwith %}
+    </div>
+  </div>
+</div>

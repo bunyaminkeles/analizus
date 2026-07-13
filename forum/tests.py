@@ -577,3 +577,29 @@ def test_studyroom_list_archived_strip_visible_when_nonempty(client, user):
 
     response = client.get('/odalar/')
     assert 'Tamamlanan Odalar' in response.content.decode()
+
+
+# ─── Odalar Faz 6: Kilit Ekranı Teaser ─────────────────────────────────────────
+
+@pytest.mark.django_db
+def test_studyroom_lock_screen_hides_activity_metrics_when_zero(client, user):
+    """Hiç gönderi yokken misafir kilit ekranında aktivite metrik satırı gizli (sıfır kuralı)."""
+    room = _create_test_room(user, 'test-odasi-kilit-sifir')
+
+    response = client.get(f'/odalar/{room.slug}/')
+    content = response.content.decode()
+    assert 'gönderi' not in content.split('Bu odanın yazışmaları')[1].split('Tartışmalara katılmak')[0]
+
+
+@pytest.mark.django_db
+def test_studyroom_lock_screen_shows_activity_metrics_when_posts_exist(client, user):
+    """Gönderi varken misafir kilit ekranında gönderi sayısı görünür, ama mesaj içeriği/yazar sızmaz."""
+    from forum.models import StudyRoomMembership, StudyRoomPost
+    room = _create_test_room(user, 'test-odasi-kilit-dolu')
+    StudyRoomMembership.objects.create(room=room, user=user, role='creator')
+    StudyRoomPost.objects.create(room=room, author=user, message='gizli-mesaj-icerigi')
+
+    response = client.get(f'/odalar/{room.slug}/')
+    content = response.content.decode()
+    assert '1 gönderi' in content
+    assert 'gizli-mesaj-icerigi' not in content

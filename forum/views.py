@@ -11,7 +11,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.db import models
 from django.contrib.contenttypes.models import ContentType
-from django.db.models import Count, Sum, Q, Avg, Subquery, OuterRef
+from django.db.models import Count, Sum, Q, Avg, Subquery, OuterRef, Max
 from django.contrib import messages
 from django.utils import timezone
 from django.utils.html import strip_tags
@@ -3417,7 +3417,12 @@ def studyroom_create(request):
 def studyroom_detail(request, slug):
     """Oda detay sayfası: gönderiler + üyeler."""
     room = get_object_or_404(
-        StudyRoom.objects.select_related('creator__profile', 'category'), slug=slug
+        StudyRoom.objects.select_related('creator__profile', 'category').annotate(
+            post_cnt=Count('room_posts', distinct=True),
+            file_cnt=Count('room_posts', filter=~Q(room_posts__file=''), distinct=True),
+            last_post_at=Max('room_posts__created_at'),
+        ),
+        slug=slug
     )
     room.auto_archive_if_expired()
 
