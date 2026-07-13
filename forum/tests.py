@@ -255,8 +255,10 @@ def test_home_completed_jobs_stat_visible_when_nonzero(client, user):
 
 
 @pytest.mark.django_db
-def test_expert_card_hides_completed_jobs_row_when_zero(client, user):
-    """Uzman kartında tamamlanan proje 0 ise satır gizlenir, kart kendisi kalır."""
+def test_expert_with_zero_completed_jobs_excluded_from_showcase(client, user):
+    """0 tamamlanan projesi olan uzman Uzmanlarla Tanış vitrininde hiç görünmez
+    (8d2fb82: showcase_completed_jobs__gt=0 filtresi — kasıtlı, sadece bu vitrine özel,
+    diğer Sıfır Kuralı yerlerini etkilemiyor)."""
     from forum.models import Profile
     profile, _ = Profile.objects.get_or_create(user=user)
     profile.rank = 'expert'
@@ -265,9 +267,7 @@ def test_expert_card_hides_completed_jobs_row_when_zero(client, user):
 
     _prime_home_caches()
     response = client.get('/')
-    content = response.content.decode()
-    assert user.username in content
-    assert 'tamamlanan proje' not in content
+    assert user.username not in response.content.decode()
 
 
 @pytest.mark.django_db
