@@ -453,19 +453,53 @@
 document.addEventListener('click', function (e) {
   var btn = e.target.closest('[data-tableau-load]');
   if (!btn) return;
-  if (!window.__axTableauScriptLoaded) {
-    var lib = document.createElement('script');
-    lib.type = 'module';
-    lib.src = 'https://public.tableau.com/javascripts/api/tableau.embedding.3.latest.min.js';
-    document.head.appendChild(lib);
-    window.__axTableauScriptLoaded = true;
-  }
+
   var facade = btn.closest('.ax-tableau-facade');
   var wrap = facade.parentElement;
   var tpl = wrap.querySelector('template[data-tableau-embed]');
-  if (tpl) {
-    wrap.replaceChild(tpl.content.cloneNode(true), facade);
+  if (!tpl) return;
+
+  function showEmbed() {
+    if (facade.isConnected) {
+      wrap.replaceChild(tpl.content.cloneNode(true), facade);
+    }
   }
+
+  function showError() {
+    if (!facade.isConnected) return;
+    btn.disabled = false;
+    btn.innerHTML = '<i class="bi bi-exclamation-triangle me-1"></i>Yüklenemedi — tekrar dene veya "Tam Ekran"ı kullan';
+  }
+
+  if (window.__axTableauScriptState === 'ready') {
+    showEmbed();
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = '<i class="bi bi-hourglass-split me-1"></i>Yükleniyor…';
+
+  if (!window.__axTableauScriptState) {
+    window.__axTableauScriptState = 'loading';
+    var lib = document.createElement('script');
+    lib.type = 'module';
+    lib.src = 'https://public.tableau.com/javascripts/api/tableau.embedding.3.latest.min.js';
+    lib.onload = function () { window.__axTableauScriptState = 'ready'; };
+    lib.onerror = function () { window.__axTableauScriptState = 'error'; };
+    document.head.appendChild(lib);
+  }
+
+  var waited = 0;
+  var iv = setInterval(function () {
+    waited += 300;
+    if (window.__axTableauScriptState === 'ready') {
+      clearInterval(iv);
+      showEmbed();
+    } else if (window.__axTableauScriptState === 'error' || waited >= 8000) {
+      clearInterval(iv);
+      showError();
+    }
+  }, 300);
 });
 </script>
 {% endblock %}
