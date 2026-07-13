@@ -1617,7 +1617,9 @@ def api_delete_conversation(request, username):
 @login_required
 @require_POST
 def api_edit_room_post(request, post_id):
-    post = get_object_or_404(StudyRoomPost, id=post_id, author=request.user)
+    post = get_object_or_404(StudyRoomPost.objects.select_related('room'), id=post_id, author=request.user)
+    if post.room.status != 'active':
+        return JsonResponse({'ok': False, 'error': 'Bu oda artık düzenlemeye kapalı.'}, status=403)
     new_text = request.POST.get('message', '').strip()
     if not new_text:
         return JsonResponse({'ok': False, 'error': 'Mesaj boş olamaz.'}, status=400)
@@ -1633,7 +1635,9 @@ def api_edit_room_post(request, post_id):
 @login_required
 @require_POST
 def api_delete_room_post(request, post_id):
-    post = get_object_or_404(StudyRoomPost, id=post_id, author=request.user)
+    post = get_object_or_404(StudyRoomPost.objects.select_related('room'), id=post_id, author=request.user)
+    if post.room.status != 'active':
+        return JsonResponse({'ok': False, 'error': 'Bu oda artık düzenlemeye kapalı.'}, status=403)
     post.delete()  # post_delete signal S3 dosyasını temizler
     return JsonResponse({'ok': True})
 
@@ -3262,6 +3266,14 @@ def studyroom_list(request):
     categories = Category.objects.filter(study_rooms__status='active').distinct()
     can_create, reason = _studyroom_eligibility(request.user)
 
+    recent_archived = []
+    if status_filter == 'active':
+        recent_archived = StudyRoom.objects.filter(status='archived').select_related(
+            'creator__profile', 'category'
+        ).annotate(
+            member_cnt=Count('memberships', distinct=True),
+        ).order_by('-updated_at')[:3]
+
     return render(request, 'forum/studyroom_list.html', {
         'rooms': rooms,
         'categories': categories,
@@ -3270,6 +3282,7 @@ def studyroom_list(request):
         'can_create': can_create,
         'ineligibility_reason': reason,
         'STUDYROOM_MIN_POINTS': STUDYROOM_MIN_POINTS,
+        'recent_archived': recent_archived,
     })
 
 

@@ -210,6 +210,7 @@
         {% if post.author == request.user %}
         <div class="rm-wrap rm-benim" data-post-id="{{ post.id }}">
           <div class="rm-meta rm-meta--sag">
+            {% if room.status == 'active' %}
             <div class="rm-actions">
               <button class="rm-action-btn rm-edit-btn" data-post-id="{{ post.id }}" title="Düzenle">
                 <i class="bi bi-pencil"></i>
@@ -218,6 +219,7 @@
                 <i class="bi bi-trash"></i>
               </button>
             </div>
+            {% endif %}
             <a href="{% url 'profile_detail' post.author.username %}" class="rm-yazar">{{ post.author.username }}</a>
           </div>
           <div class="rm-balon rm-balon--benim">

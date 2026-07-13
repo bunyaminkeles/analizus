@@ -524,3 +524,56 @@ def test_studyroom_leave_notifies_next_waitlist_entry(client, user):
     time.sleep(0.2)  # async e-posta thread'i tamamlansın
     entry = StudyRoomWaitlist.objects.get(room=room, user=waiter)
     assert entry.notified is True
+
+
+# ─── Odalar Faz 4: Arşiv ───────────────────────────────────────────────────────
+
+@pytest.mark.django_db
+def test_studyroom_archived_post_edit_rejected(client, user):
+    """Arşivlenmiş odada mesaj düzenleme API'si 403 döner."""
+    from forum.models import StudyRoomMembership, StudyRoomPost
+    room = _create_test_room(user, 'test-odasi-arsiv-duzenle')
+    StudyRoomMembership.objects.create(room=room, user=user, role='creator')
+    post = StudyRoomPost.objects.create(room=room, author=user, message='eski mesaj')
+    room.status = 'archived'
+    room.save(update_fields=['status'])
+
+    client.force_login(user)
+    response = client.post(f'/api/room-post/{post.id}/edit/', {'message': 'yeni mesaj'})
+    assert response.status_code == 403
+    post.refresh_from_db()
+    assert post.message == 'eski mesaj'
+
+
+@pytest.mark.django_db
+def test_studyroom_archived_post_delete_rejected(client, user):
+    """Arşivlenmiş odada mesaj silme API'si 403 döner."""
+    from forum.models import StudyRoomMembership, StudyRoomPost
+    room = _create_test_room(user, 'test-odasi-arsiv-sil')
+    StudyRoomMembership.objects.create(room=room, user=user, role='creator')
+    post = StudyRoomPost.objects.create(room=room, author=user, message='silinmeyecek')
+    room.status = 'archived'
+    room.save(update_fields=['status'])
+
+    client.force_login(user)
+    response = client.post(f'/api/room-post/{post.id}/delete/')
+    assert response.status_code == 403
+    assert StudyRoomPost.objects.filter(id=post.id).exists()
+
+
+@pytest.mark.django_db
+def test_studyroom_list_archived_strip_hidden_when_empty(client):
+    """Hiç arşiv oda yokken 'Tamamlanan Odalar' şeridi hiç render edilmez."""
+    response = client.get('/odalar/')
+    assert 'Tamamlanan Odalar' not in response.content.decode()
+
+
+@pytest.mark.django_db
+def test_studyroom_list_archived_strip_visible_when_nonempty(client, user):
+    """Arşivde oda varsa aktif sekme altında 'Tamamlanan Odalar' şeridi görünür."""
+    room = _create_test_room(user, 'test-odasi-arsiv-serit')
+    room.status = 'archived'
+    room.save(update_fields=['status'])
+
+    response = client.get('/odalar/')
+    assert 'Tamamlanan Odalar' in response.content.decode()
