@@ -464,3 +464,63 @@ def test_studyroom_detail_shows_creator_to_logged_in_non_member(client, user):
     response = client.get(f'/odalar/{room.slug}/')
     content = response.content.decode()
     assert user.username in content
+
+
+# ─── Odalar Faz 2: Bekleme Listesi ────────────────────────────────────────────
+
+@pytest.mark.django_db
+def test_studyroom_waitlist_join_rejected_when_room_not_full(client, user):
+    """Oda dolu değilken bekleme listesine katılma isteği reddedilir."""
+    from forum.models import StudyRoomMembership
+    room = _create_test_room(user, 'test-odasi-bos')
+    room.max_members = 5
+    room.save(update_fields=['max_members'])
+    StudyRoomMembership.objects.create(room=room, user=user, role='creator')
+
+    other = User.objects.create_user(username='bekleyen1', password='testpass123')
+    client.force_login(other)
+    response = client.post(f'/odalar/{room.slug}/bekle/')
+    assert response.status_code == 400
+
+
+@pytest.mark.django_db
+def test_studyroom_waitlist_join_succeeds_when_room_full(client, user):
+    """Oda dolduğunda bekleme listesine katılma isteği kabul edilir ve kaydediliyor."""
+    from forum.models import StudyRoomMembership, StudyRoomWaitlist
+    room = _create_test_room(user, 'test-odasi-dolu')
+    room.max_members = 1
+    room.save(update_fields=['max_members'])
+    StudyRoomMembership.objects.create(room=room, user=user, role='creator')
+
+    other = User.objects.create_user(username='bekleyen2', password='testpass123')
+    client.force_login(other)
+    response = client.post(f'/odalar/{room.slug}/bekle/')
+    assert response.status_code == 200
+    assert StudyRoomWaitlist.objects.filter(room=room, user=other).exists()
+
+
+@pytest.mark.django_db
+def test_studyroom_leave_notifies_next_waitlist_entry(client, user):
+    """Üye ayrılınca bekleme listesindeki ilk kişiye e-posta bildirimi gider."""
+    from forum.models import StudyRoomMembership, StudyRoomWaitlist
+    room = _create_test_room(user, 'test-odasi-bildirim')
+    room.max_members = 2
+    room.save(update_fields=['max_members'])
+    StudyRoomMembership.objects.create(room=room, user=user, role='creator')
+
+    leaving = User.objects.create_user(username='ayrilanuye', password='testpass123')
+    StudyRoomMembership.objects.create(room=room, user=leaving, role='member')
+
+    waiter = User.objects.create_user(
+        username='bekleyen3', password='testpass123', email='bekleyen3@example.com'
+    )
+    StudyRoomWaitlist.objects.create(room=room, user=waiter)
+
+    client.force_login(leaving)
+    response = client.post(f'/odalar/{room.slug}/katil/')
+    assert response.status_code == 200
+
+    import time
+    time.sleep(0.2)  # async e-posta thread'i tamamlansın
+    entry = StudyRoomWaitlist.objects.get(room=room, user=waiter)
+    assert entry.notified is True

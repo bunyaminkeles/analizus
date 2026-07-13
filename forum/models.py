@@ -1552,6 +1552,22 @@ class StudyRoomMembership(models.Model):
         return f"{self.user.username} @ {self.room.title}"
 
 
+class StudyRoomWaitlist(models.Model):
+    room = models.ForeignKey(StudyRoom, on_delete=models.CASCADE, related_name='waitlist_entries')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='room_waitlist_entries')
+    created_at = models.DateTimeField(auto_now_add=True)
+    notified = models.BooleanField(default=False, verbose_name="Bildirim Gönderildi")
+
+    class Meta:
+        unique_together = ('room', 'user')
+        ordering = ['created_at']
+        verbose_name = "Bekleme Listesi Kaydı"
+        verbose_name_plural = "Bekleme Listesi Kayıtları"
+
+    def __str__(self):
+        return f"{self.user.username} bekliyor @ {self.room.title}"
+
+
 class StudyRoomPost(models.Model):
     room = models.ForeignKey(StudyRoom, on_delete=models.CASCADE, related_name='room_posts')
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='room_posts')

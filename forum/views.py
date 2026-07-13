@@ -22,7 +22,7 @@ from datetime import timedelta
 import uuid
 from django_ratelimit.decorators import ratelimit
 from django_ratelimit.exceptions import Ratelimited
-from .models import Section, Category, Topic, Post, Profile, PrivateMessage, PostLike, Notification, EmailVerification, DailyTip, QuizQuestion, QuizScore, SuccessStory, FreelanceJob, JobCategory, JobProposal, JobReview, Skill, Badge, UserQuizAttempt, JobPayment, SiteSettings, BlogCategory, BlogPost, BlogTag, DonationTier, StudyRoom, StudyRoomMembership, StudyRoomPost, STUDYROOM_TERMS, ReferralCode, ReferralUse
+from .models import Section, Category, Topic, Post, Profile, PrivateMessage, PostLike, Notification, EmailVerification, DailyTip, QuizQuestion, QuizScore, SuccessStory, FreelanceJob, JobCategory, JobProposal, JobReview, Skill, Badge, UserQuizAttempt, JobPayment, SiteSettings, BlogCategory, BlogPost, BlogTag, DonationTier, StudyRoom, StudyRoomMembership, StudyRoomPost, StudyRoomWaitlist, STUDYROOM_TERMS, ReferralCode, ReferralUse
 from .forms import RegisterForm, NewTopicForm, PostForm, JobPostForm, ProposalForm
 from .email_utils import send_topic_reply_notification, send_private_message_notification
 from django.template.loader import render_to_string
@@ -3414,9 +3414,14 @@ def studyroom_detail(request, slug):
 
     is_member = False
     membership = None
+    on_waitlist = False
     if request.user.is_authenticated:
         membership = StudyRoomMembership.objects.filter(room=room, user=request.user).first()
         is_member = membership is not None
+        if not is_member:
+            on_waitlist = StudyRoomWaitlist.objects.filter(room=room, user=request.user).exists()
+
+    waitlist_count = room.waitlist_entries.count() if (membership and membership.role == 'creator') else 0
 
     # POST: yeni mesaj
     if request.method == 'POST' and request.user.is_authenticated:
@@ -3487,6 +3492,8 @@ def studyroom_detail(request, slug):
         'members': members,
         'is_member': is_member,
         'membership': membership,
+        'on_waitlist': on_waitlist,
+        'waitlist_count': waitlist_count,
     })
 
 
@@ -3505,6 +3512,7 @@ def studyroom_join(request, slug):
         if membership.role == 'creator':
             return JsonResponse({'error': 'Kurucu odadan ayrılamaz.'}, status=400)
         membership.delete()
+        _notify_next_waitlist_entry(room)
         return JsonResponse({'action': 'left', 'member_count': room.member_count})
     else:
         if not room.is_public:
@@ -3512,7 +3520,35 @@ def studyroom_join(request, slug):
         if room.member_count >= room.max_members:
             return JsonResponse({'error': 'Oda kapasitesi doldu.'}, status=400)
         StudyRoomMembership.objects.create(room=room, user=request.user, role='member')
+        StudyRoomWaitlist.objects.filter(room=room, user=request.user).delete()
         return JsonResponse({'action': 'joined', 'member_count': room.member_count})
+
+
+def _notify_next_waitlist_entry(room):
+    """Kapasitede yer açılınca bekleme listesindeki ilk bildirilmemiş kişiye e-posta gönderir."""
+    entry = room.waitlist_entries.filter(notified=False).order_by('created_at').first()
+    if entry:
+        entry.notified = True
+        entry.save(update_fields=['notified'])
+        from .email_utils import notify_waitlist_slot
+        notify_waitlist_slot(room, entry.user)
+
+
+@login_required
+@require_POST
+def studyroom_waitlist_join(request, slug):
+    """Dolu odada bekleme listesine katıl."""
+    room = get_object_or_404(StudyRoom, slug=slug, status='active')
+
+    if room.is_expired:
+        return JsonResponse({'error': 'Odanın süresi dolmuş.'}, status=400)
+    if StudyRoomMembership.objects.filter(room=room, user=request.user).exists():
+        return JsonResponse({'error': 'Zaten oda üyesisiniz.'}, status=400)
+    if room.member_count < room.max_members:
+        return JsonResponse({'error': 'Oda dolu değil, doğrudan katılabilirsiniz.'}, status=400)
+
+    StudyRoomWaitlist.objects.get_or_create(room=room, user=request.user)
+    return JsonResponse({'action': 'waitlisted', 'waitlist_count': room.waitlist_entries.count()})
 
 
 @login_required

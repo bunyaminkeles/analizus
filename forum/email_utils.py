@@ -476,3 +476,24 @@ Bu bir otomatik bildirimdir.
 Analizus - Akademik Veri Üssü"""
 
     send_email_async(subject, plain, [recipient.email])
+
+
+def notify_waitlist_slot(room, user):
+    """Bekleme listesindeki kullanıcıya odada yer açıldığını bildirir."""
+    if not user.email:
+        return
+    site = getattr(settings, 'SITE_URL', 'https://www.analizus.com')
+    room_url = f"{site}/odalar/{room.slug}/"
+    subject = f"'{room.title}' odasında yer açıldı"
+    plain = f"""Merhaba {user.username},
+
+Bekleme listesinde olduğunuz "{room.title}" çalışma odasında bir yer açıldı.
+
+Katılmak için hemen gidin — yer ilk gelen alır:
+{room_url}
+
+---
+Bu bir otomatik bildirimdir.
+Analizus - Akademik Veri Üssü"""
+
+    send_email_async(subject, plain, [user.email])

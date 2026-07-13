@@ -73,6 +73,17 @@
                   <i class="bi bi-box-arrow-left me-1"></i>Ayrıl
                 </button>
                 {% endif %}
+              {% elif room.member_count >= room.max_members %}
+                {% if on_waitlist %}
+                <span class="btn btn-outline-secondary btn-sm disabled" style="font-size:.72rem;">
+                  <i class="bi bi-hourglass-split me-1"></i>Bekleme Listesindesin
+                </span>
+                {% else %}
+                <button class="btn btn-outline-warning btn-sm fw-semibold" id="waitlist-btn"
+                        onclick="joinWaitlist('{{ room.slug }}')">
+                  <i class="bi bi-hourglass-split me-1"></i>Bekleme Listesine Katıl
+                </button>
+                {% endif %}
               {% else %}
               <button class="btn btn-warning btn-sm fw-semibold" id="join-btn" data-action="join"
                       onclick="toggleJoin('{{ room.slug }}')">
@@ -80,10 +91,21 @@
               </button>
               {% endif %}
             {% else %}
-            <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-warning btn-sm fw-semibold">
-              <i class="bi bi-door-open me-1"></i>Giriş Yap & Katıl
-            </a>
+              {% if room.member_count >= room.max_members %}
+              <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-outline-warning btn-sm fw-semibold">
+                <i class="bi bi-hourglass-split me-1"></i>Giriş Yap & Bekleme Listesine Katıl
+              </a>
+              {% else %}
+              <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-warning btn-sm fw-semibold">
+                <i class="bi bi-door-open me-1"></i>Giriş Yap & Katıl
+              </a>
+              {% endif %}
             {% endif %}
+          {% endif %}
+          {% if waitlist_count > 0 %}
+          <span class="badge" style="background:rgba(234,179,8,0.18);color:#fde68a;font-size:.68rem;">
+            <i class="bi bi-hourglass-split me-1"></i>{{ waitlist_count }} kişi bekliyor
+          </span>
           {% endif %}
           <span class="text-white-50 ms-auto" style="font-size:.7rem;">
             {% if user.is_authenticated %}
@@ -679,6 +701,18 @@ function deleteRoomPost(postId) {
 
 function toggleJoin(slug) {
   fetch(`/odalar/${slug}/katil/`, {
+    method: 'POST',
+    headers: { 'X-CSRFToken': csrfToken, 'Content-Type': 'application/json' },
+  })
+  .then(r => r.json())
+  .then(data => {
+    if (data.error) { alert(data.error); return; }
+    location.reload();
+  });
+}
+
+function joinWaitlist(slug) {
+  fetch(`/odalar/${slug}/bekle/`, {
     method: 'POST',
     headers: { 'X-CSRFToken': csrfToken, 'Content-Type': 'application/json' },
   })
