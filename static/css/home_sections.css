@@ -1369,7 +1369,6 @@ a.ax-stat-pill:hover {
     position: relative;
     border-radius: 12px;
     overflow: hidden;
-    border: 1px solid var(--ax-border, rgba(255,255,255,0.08));
 }
 
 .ax-agentic-band-card__img {
@@ -1378,6 +1377,8 @@ a.ax-stat-pill:hover {
     height: auto;
     object-fit: cover;
     object-position: center;
+    -webkit-mask-image: radial-gradient(ellipse 65% 65% at 50% 50%, #000 25%, transparent 100%);
+    mask-image: radial-gradient(ellipse 65% 65% at 50% 50%, #000 25%, transparent 100%);
 }
 
 .ax-agentic-band-card__overlay {

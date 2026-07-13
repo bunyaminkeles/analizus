@@ -255,8 +255,10 @@ def test_home_completed_jobs_stat_visible_when_nonzero(client, user):
 
 
 @pytest.mark.django_db
-def test_expert_card_hides_completed_jobs_row_when_zero(client, user):
-    """Uzman kartında tamamlanan proje 0 ise satır gizlenir, kart kendisi kalır."""
+def test_expert_showcase_includes_expert_with_zero_completed_jobs(client, user):
+    """0 tamamlanan projesi olan uzman da Uzmanlarla Tanış vitrininde görünür —
+    vitrin artık tamamlanan proje sayısına göre filtrelenmiyor/sıralanmıyor,
+    yalnızca reputation (akademik puan) sıralaması kullanılıyor."""
     from forum.models import Profile
     profile, _ = Profile.objects.get_or_create(user=user)
     profile.rank = 'expert'
@@ -265,14 +267,13 @@ def test_expert_card_hides_completed_jobs_row_when_zero(client, user):
 
     _prime_home_caches()
     response = client.get('/')
-    content = response.content.decode()
-    assert user.username in content
-    assert 'tamamlanan proje' not in content
+    assert user.username in response.content.decode()
 
 
 @pytest.mark.django_db
-def test_expert_card_shows_completed_jobs_row_when_nonzero(client, user):
-    """Uzmanın tamamlanmış işi varsa 'X tamamlanan proje' satırı render edilir."""
+def test_expert_card_never_shows_completed_jobs_text(client, user):
+    """Uzmanın tamamlanmış işi olsa bile 'tamamlanan proje' metni artık hiç
+    render edilmiyor — kart yalnızca uzmanlık alanlarını (skills) ve puanı gösterir."""
     from forum.models import Profile, FreelanceJob, JobProposal
     profile, _ = Profile.objects.get_or_create(user=user)
     profile.rank = 'expert'
@@ -291,7 +292,7 @@ def test_expert_card_shows_completed_jobs_row_when_nonzero(client, user):
 
     _prime_home_caches()
     response = client.get('/')
-    assert 'tamamlanan proje' in response.content.decode()
+    assert 'tamamlanan proje' not in response.content.decode()
 
 
 @pytest.mark.django_db

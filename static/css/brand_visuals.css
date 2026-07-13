@@ -10,7 +10,6 @@
     position: relative;
     border-radius: 12px;
     overflow: hidden;
-    border: 1px solid var(--ax-border);
     margin-bottom: 24px;
 }
 
@@ -18,6 +17,8 @@
     display: block;
     width: 100%;
     height: auto;
+    -webkit-mask-image: radial-gradient(ellipse 65% 65% at 50% 50%, #000 25%, transparent 100%);
+    mask-image: radial-gradient(ellipse 65% 65% at 50% 50%, #000 25%, transparent 100%);
 }
 
 .ax-brand-visual__overlay {
