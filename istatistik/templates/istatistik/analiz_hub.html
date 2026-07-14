@@ -50,6 +50,12 @@
     <span class="ax-badge ax-badge--success" style="padding:0.5em 1em;font-size:var(--ax-text-sm);">
       <i class="bi bi-check-circle-fill me-1"></i>Dosyanı seçtin — şimdi bir araç seç
     </span>
+    <p class="mt-2 mb-0 text-white-50 small">
+      Hangi aracı seçeceğinden emin değil misin?
+      <a href="{% url 'hangi_test' %}" style="color:var(--ax-accent-primary);">Hangi Test? sihirbazı</a>
+      {% if features.ai_assistant %}· <a href="#" onclick="event.preventDefault(); window.axOpenAiWidget && axOpenAiWidget();" style="color:var(--ax-accent-primary);">AI Asistan'a sor</a>{% endif %}
+      · <a href="{% url 'proje_talebi' %}?source=analiz_triyaj" style="color:var(--ax-accent-primary);">Bu işi uzmana bırak</a>
+    </p>
   </div>
   {% endif %}
 

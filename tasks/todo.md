@@ -584,3 +584,98 @@ yaygınlaştığında.
 - **Faz 8 — SEO + teknik temizlik:** Slug Türkçe karakter düzeltmesi
   (mevcut oda slug'larına dokunma), JSON-LD Event schema, sitemap,
   test hesap temizliği (kullanıcı kararı gerekiyor).
+
+---
+
+# Ana Sayfa & Navbar İyileştirme Turu — Faz 12 + Faz 13 (bekleyen)
+
+**Kaynak:** `analizus_anasayfa_prompt.md` (proje kökünde dosya olarak mevcut).
+Faz 0,1,2,3,4,5,6,7,8,9,10,11 tamamlandı ve
+`main`'e merge edildi (bkz. memory `project_anasayfa_iyilestirme`). Faz 12 ve
+13 o turdan kalan, henüz başlanmamış iki faz.
+
+## Faz 12 — Forum vitrini dönüşümü (seed içerik + sahte sayaç temizliği)
+Ana sayfadaki "Gündemdeki Tartışmalar" jenerik AI konularıyla (Fine-tuning vs
+RAG, Prompt Engineering...) tohumlanmış — foruma değer katmıyor ve sitenin
+"AI'a güvenme, doğrulat" konumlanmasıyla çelişiyor. Görüntülenme sayıları da
+üretilmiş görünüyor (5678/4567/4321 ardışık desen, 4567 iki kez) — 90 üyeli
+sitede inandırıcı değil.
+
+- Migration KULLANILMAZ — idempotent `manage.py reseed_forum_topics` komutu
+  ya da (konu sayısı azsa) admin'den elle giriş; **KARAR NOKTASI:** komut mu,
+  elle mi — kullanıcıya sorulacak.
+- Gerçek kullanıcı cevabı almış konulara DOKUNULMAZ, yalnızca cevapsız seed
+  konular değiştirilir/silinir. Silinen konu URL'leri Google'da indeksliyse
+  raporla.
+- Uydurma görüntülenme sayaçları sıfırlanır; alan gerçek sayaca bağlı değilse
+  vitrinde hiç gösterilmez (sıfır kuralı). Cevap sayısı + "Uzman cevapladı"
+  rozeti gösterilir.
+- Vitrin sorgusu yeniden hedeflenir: öncelik uzman cevaplı konularda,
+  doldurmazsa son aktif konular. Mevcut cache desenine uyar, N+1 üretmez.
+- **Seed konu metinleri hazır:** `analizus_forum_seed_konular.md` (proje
+  kökünde dosya olarak mevcut) — 12 konu, 3 kategori (Akademik Süreç · Veri
+  Analizi & BI · AI/ML/Agentic), her biri kategori+huni+birinci ağızdan
+  senaryo içeriyor. Yayınlama kuralları dosyada tanımlı: kademeli yayın
+  (haftada 2-3 konu), her konuya doğrulanmış uzman hesabından cevap,
+  sahte metrik yok, gerçek hesaplardan açılır.
+
+## Faz 13 — Dropzone akışı: vaat + triyaj şeridi
+Hero dropzone'a dosya bırakan kullanıcı `/analiz/?from=hero` araç listesine
+düşüyor ama analiz bilmeyen kullanıcı 18 araç arasında yol göstericisiz
+kalıyor — H1 "yapamıyorsan yapan burada" vaadiyle çelişki.
+
+- **Keşif (metinden önce zorunlu):** dosya hero'da sunucuya mı yükleniyor,
+  tarayıcıda mı tutuluyor; misafir kullanabiliyor mu; `/analiz/`de dosya
+  durumu nasıl taşınıyor.
+- **Triyaj şeridi:** `/analiz/`de yalnızca `from=hero` + dosya seçili durumda,
+  rozetin altına üç link: Hangi Test? sihirbazı · AI Asistan'a sor
+  (`axOpenAiWidget`) · Bu işi uzmana bırak (`?source=analiz_triyaj`). Yeni
+  motor yok, mevcut hedefler kullanılır.
+- **Hero mikrometni (keşif sonrası):** vaat gerçeğe göre yazılır, yalnızca
+  teknik olarak doğrulanan ifadeler kullanılır; uygulamadan önce kullanıcıya
+  sunulur.
+- ERTELENEN (bu fazın kapsamı dışı): kolon-tipine dayalı gerçek öneri motoru.
+
+## Sıradaki adım
+Kullanıcı başlamamı istediğinde önce Faz 12 için karar noktasını (komut mu
+elle mi) sorup uygulayacağım; Faz 13 keşif adımıyla başlayacak. İkisi
+birbirinden bağımsız, istenen sırada yapılabilir.
+
+## Faz 13 — DURUM: mikrometin + triyaj şeridi tamamlandı (temmuz 2026)
+Keşif + uygulama bitti: hero dropzone altına "Kayıt gerekmez — hemen dene"
+mikrometni (`forum/templates/forum/home.html` + `static/css/hero.css`,
+`.ax-hero-dropzone__trust`, `?v=0107`), `/analiz/` sayfasına `from_hero`
+rozetinin altına triyaj şeridi (Hangi Test? · AI Asistan'a sor · Bu işi
+uzmana bırak `?source=analiz_triyaj`) eklendi
+(`istatistik/templates/istatistik/analiz_hub.html`).
+
+**Doğrulanan mimari bulgular (Faz 13 keşfinden):**
+- Hero'dan yüklenen dosya gerçekten sunucuya gidiyor, session'da RAM'de
+  tutuluyor (`istatistik/services/job_runner.py` — `_session_datasets`,
+  `_pending_file_contents`); disk/DB'ye yazılmıyor.
+- Login zorunlu değil — misafir hem yükleyip hem analiz çalıştırabiliyor
+  (`is_demo=not request.user.is_authenticated` deseni).
+- Production tek process/tek container (Hetzner: `docker-compose.yml` tek
+  `web` servisi, `Dockerfile` CMD'si tek `daphne` process, nginx tek
+  `web:8000` upstream'ine proxy; Render/`Procfile` de aynı). **Modül seviyesi
+  dict için multi-worker veri kaybı riski şu an gerçek değil** — yalnızca
+  ileride yatay ölçeklendirilirse (birden fazla container/process) mimari
+  kırılır, dikkat edilecek kısıt olarak not düşülüyor.
+- Dosya boyutu limiti zaten var: `MAX_UPLOAD_SIZE = 5MB`
+  (`analizdestek/settings.py:529`), `hero_upload` kontrol ediyor — ek iş yok.
+
+## SIRADAKİ KÜÇÜK GÖREV — `_session_datasets` TTL temizliği
+Faz 13 keşfinde bulundu: `_session_datasets` (session_key → dosya içeriği,
+RAM'de) yalnızca kullanıcı manuel "×" butonuna (`axClearSession()` →
+`POST /analiz/clear-session/`) basarsa siliniyor. Otomatik/zamanlı temizlik
+YOK — terkedilmiş veri setleri süresiz RAM'de birikiyor (bellek sızıntısı
+riski).
+
+**Yapılacak:** `forum/tasks.py`'deki cron desenine uygun bir zamanlı görev —
+son erişimden N saat sonra `_session_datasets` girdisini sil. Not: veri
+şu an yalnızca in-memory dict (DB modeli yok) — TTL için ya (a) dict değerine
+`last_accessed` timestamp eklenip periyodik bir cron bunu tarasın, ya da
+(b) mevcut cron altyapısı (Celery/APScheduler — hangisi kullanılıyorsa)
+üzerinden bir periyodik task tanımlanır. Uygulamaya geçmeden önce: N saat
+değeri (öneri: 24 saat) ve hangi cron mekanizmasının kullanılacağı kullanıcıya
+sorulacak — iş/karar noktası, varsayılmayacak.
