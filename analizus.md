@@ -358,8 +358,20 @@ CLAUDE.md                   # AI geliştirme kuralları ve görev listesi
 /api/message/<int:message_id>/edit/              → api_edit_message (POST)
 /api/message/<int:message_id>/delete/            → api_delete_message (POST, soft delete)
 /api/chat/<str:username>/delete-conversation/    → api_delete_conversation (POST, hard delete)
-/api/room-post/<int:post_id>/edit/               → api_edit_room_post (POST)
-/api/room-post/<int:post_id>/delete/             → api_delete_room_post (POST, hard delete — S3 signal)
+/api/room-post/<int:post_id>/edit/               → api_edit_room_post (POST, oda arşivse 403)
+/api/room-post/<int:post_id>/delete/             → api_delete_room_post (POST, hard delete — S3 signal, oda arşivse 403)
+
+# forum.urls içindeki /odalar/ (Çalışma Odaları):
+/odalar/                        → studyroom_list (?durum=active|archived|all, ?kategori=, ?tip=)
+/odalar/ac/                     → studyroom_create (login + reputation eşiği gerekli)
+/odalar/<slug:slug>/            → studyroom_detail
+/odalar/<slug:slug>/katil/      → studyroom_join (POST, katıl/ayrıl toggle)
+/odalar/<slug:slug>/bekle/      → studyroom_waitlist_join (POST, oda doluyken bekleme listesi)
+/odalar/<slug:slug>/poll/       → studyroom_poll (GET, mesaj polling)
+/odalar/<slug:slug>/davet/      → studyroom_invite
+/odalar/<slug:slug>/duzenle/    → studyroom_edit
+/odalar/<slug:slug>/sil/        → studyroom_delete
+/odalar/<slug:slug>/onayla/     → studyroom_approve (admin onay/red)
 ```
 
 ---
@@ -524,9 +536,31 @@ class PrivateMessage:    # Kullanıcılar arası DM (attachment: FileField → S
     # edited_at: DateTimeField (null=True) — düzenleme zamanı
     # is_deleted: BooleanField (default=False) — yumuşak silme; mesaj='' olur, kayıt kalır
 class BlogPost / BlogCategory
-class StudyRoom:         # Çalışma odaları
+class StudyRoom:         # Çalışma odaları (temmuz 2026'da 8 fazlı dönüşüm — bkz. §27)
+    # title, slug (SlugField, unique) — save()'de boşsa turkish_slugify() ile üretilir (§26)
+    # description, goal (TextField), creator_bio (opsiyonel kısa tanıtım)
+    # room_type: 'study'|'project'|'thesis' (default 'study') — mevcut odalara veri migrasyonu UYGULANMADI
+    # category: FK → Category (forum'un genel kategorisi, StudyRoom'a özel değil)
+    # creator: FK → User; ends_at (DateTimeField); max_members (default 20, form'da 5-200 clamp)
+    # is_public: BooleanField(default=True)
+    # status: 'pending'|'active'|'archived'|'rejected' — auto_archive_if_expired() ile ends_at geçince
+    #   lazy tetiklenir (cron yok, list/detail view çağrılınca senkronize olur)
+    # reviewed_by, review_note — admin onay akışı (pending→active/rejected)
+    # ÜYE GİZLİLİĞİ (Faz 1): studyroom_detail context'i `members` listesini yalnızca is_member=True
+    #   iken doldurur — misafir/üye-olmayana context'te hiç veri gönderilmez. Kurucu adı: login
+    #   olana tam (ad+profil linki), misafire yalnızca rütbe metni ("Uzman seviye üye"). Bu kural
+    #   liste kartında, kilit ekranı teaser'ında ve JSON-LD Event schema'sında da uygulanıyor
+    #   (organizer="Analizus" platformu, kurucu kullanıcı adı hiçbir yüzeyde misafire sızmıyor).
+class StudyRoomMembership:  # room FK, user FK, role: 'creator'|'member', unique_together
+class StudyRoomWaitlist:    # Faz 2 — oda dolunca bekleme listesi
+    # room FK, user FK, notified: BooleanField(default=False), unique_together
+    # Üye ayrılınca ilk bildirilmemiş kayda async e-posta (notify_waitlist_slot); otomatik
+    # katılım YOK — kullanıcı linke tıklayıp kendisi katılır (slot ilk gelen alır)
 class StudyRoomPost:     # Oda mesajları (file: FileField → S3)
     # edited_at: DateTimeField(null=True) — düzenleme zamanı (migration 0120)
+    # ARŞİV YAZMA KİLİDİ (Faz 4): api_edit_room_post/api_delete_room_post artık post.room.status
+    #   != 'active' ise 403 döner — önceden yalnızca yazar kontrolü vardı, arşivlenmiş odada eski
+    #   mesajlar sonsuza kadar düzenlenebiliyordu
 class QuizQuestion / QuizScore:  # İstatistik Arena — 432 soru (hedef: 1000)
 class Badge:             # Rozetler
 class SuccessStory:      # Başarı hikayeleri
@@ -1303,6 +1337,8 @@ with connection.cursor() as c:
 | Django dev server (`runserver`, ASGI/Daphne) `curl` ile hemen bağlanmıyor (`Connection refused`) | Arka planda başlatılan `manage.py runserver` süreci ~5 saniye içinde port'a bind ediyor (system check + ASGI/Daphne başlatma gecikmesi); 1-2 saniyelik `sleep` sonrası test etmek yanlış negatif verir. Ayrıca `manage.py runserver` autoreload modunda watcher+worker olmak üzere **iki ayrı process** açar — sadece watcher PID'i `kill` etmek worker'ı öldürmez, arka planda biriken zombi süreçler yeni test portlarını meşgul edebilir. Yerel smoke test için `--noreload` kullan, tek process kalır, `pkill -f "manage.py runserver"` ile temizle. |
 | `/istatistik/<slug>/` gibi "eski/legacy" görünen bir route'u toptan 301'e çevirince analiz gönderimi bozulur | Bu rotalar yalnızca eski giriş sayfası değil — 18 istatistik aracının HEPSİNDE aynı zamanda POST (analiz gönderimi) hedefi: JS'teki `TOOL_URL`/fetch her zaman `{% url "istatistik:X" %}` isimlendirmesini kullanıyor (entry `/analiz/` veya `/istatistik/` olsun fark etmez). Naif bir `RedirectView`/blanket 301 bu POST'ları da yakalar ve analiz asla çalışmaz. **Çözüm (temmuz 2026):** method-aware wrapper — yalnızca `request.method == 'GET'` ise 301 `/analiz/<slug>/`'e; POST ise view'a değişmeden devam. `/status/<job_id>/` polling endpoint'leri de aynı sebeple hiç dokunulmadı (tek çalışan implementasyon `/istatistik/` altında). Genel ders: bir route'u "sadece eski giriş noktası" sanıp yönlendirmeden önce, o route'u üreten template'teki TÜM `{% url %}`/`fetch` kullanımlarını (form submit, polling, AJAX) grep'le doğrula — GET-only landing page varsayımı yanlış olabilir. |
 | `TOOL_CATEGORIES` (istatistik/views.py) gibi paylaşılan bir sidebar/nav veri yapısı sessizce en çok tıklanan linkleri üretiyor olabilir | `analiz_console_base.html` sidebar'ı (18 araç sayfasının HEPSİNDE görünür) ve `analiz_hub.html` grid'i aynı `TOOL_CATEGORIES` listesindeki 5. tuple elemanını `{% url %}` ile çözüyordu — bu eleman `istatistik:X` namespace'li isimdi, yani her tıklama `/istatistik/`'e gidiyordu (site genelinde tek en yüksek hacimli iç link kaynağı). Bir prefix'i "kaldırıyoruz" derken yalnızca doğrudan grep sonuçlarına güvenme — Python içinde tuple/dict olarak saklanan URL isimleri de tara (`grep "istatistik:"` hem `.py` hem `.html` dosyalarında). |
+| Türkçe başlıktan üretilen slug'da harf düşüyor (`Akademik Çalışmaya Destek` → `akademik-calsmaya-destek`, "ı" kayboldu) | Django'nun standart `slugify()`'ı NFKD normalizasyonu kullanır — dotless-ı (`ı`, U+0131) ASCII'ye çevrilemediği için sessizce silinir, çeviri hatası vermez. **Çözüm:** `forum/utils.py`'deki `turkish_slugify()` — `slugify()`'dan ÖNCE `str.translate()` ile ı/ş/ğ/ü/ö/ç → i/s/g/u/o/c transliterasyonu yapar. Yeni bir modelde Türkçe slug gerekiyorsa bu yardımcıyı kullan, aynı mapping'i tekrar yazma (StudyRoom'da kullanılıyor; `populate_skills.py`'de ayrı, tekrar eden bir inline mapping var — henüz ortak yardımcıya taşınmadı). |
+| robots.txt'teki `Disallow` kuralı hiç eşleşmiyor (crawler engellenmiyor) | URL prefix'i değiştiğinde (`/studyroom/`→`/odalar/` gibi) `templates/robots.txt`'teki eski path'ler otomatik güncellenmez — sessizce ölü kural olarak kalır, hata vermez. Yeni bir URL prefix taşıması yapılırken `templates/robots.txt`'i de grep'le kontrol et. |
 
 ---
 
@@ -1505,6 +1541,17 @@ with connection.cursor() as c:
   - **Deneme 3 (başarılı):** Teknik tamamen değiştirildi — `box-shadow` yerine `.ax-brand-visual__img`e `mask-image: radial-gradient(ellipse ...)` uygulandı; görsel gerçekten oval bir siluetle sönüyor, sadece renk tonu değişmiyor (`d48bf4f`). Lokal bir test harness'inde (gerçek görsel + kırmızı arka planlı sanity-check + 6 varyant) mekanizmanın çalıştığı kanıtlanıp en belirgin varyant (`ellipse 65% 65%`, `%25`'te solma başlangıcı) seçildi. **Bulgu:** ana sayfanın sağ kartı (`.ax-agentic-band-card`) `.ax-brand-visual`'i hiç paylaşmıyordu (Madde 11'de ayrı bir component olarak yazılmıştı) — kullanıcı "sol düzeldi, sağ aynı kaldı" diye fark edince aynı mask-image `.ax-agentic-band-card__img`'e de uygulandı (`084291a`). `?v=0100→0103` (brand_visuals.css, 5 template), `?v=0113→0114` (home_sections.css).
   - **Ders:** Koyu-tema fotoğraflarda kenar yumuşatma denerken önce görselin kendi doğal ton aralığını kontrol etmek gerekiyor — dark-to-dark blend/shadow teknikleri düşük kontrastta neredeyse görünmez kalabiliyor; `mask-image` ile şeklin kendisini değiştirmek (renk tonundan bağımsız) daha güvenilir bir çözüm.
 
+- **Çalışma Odaları (StudyRoom) dönüşümü** (temmuz 2026) — kaynak prompt `analizus_odalar_prompt.md` (repoda dosya olarak yok, yalnızca sohbet eki, karakter kodlaması bozuk geldiği için repoya yazılmadı — bkz. `tasks/todo.md`); 8 fazda tamamlandı, `dev`'den `main`'e merge edildi:
+  - **Faz 0 keşif:** Kod tabanı önceki varsayımlardan (kaynak prompttaki hayali ekran görüntüsü) farklı çıktı — `category` StudyRoom'a özel değil, forum'un genel `Category` modeline FK; `room_type` diye bir alan hiç yoktu; onay akışı (`pending`/`rejected`, `studyroom_approve`) prompt'ta hiç bahsedilmemişti.
+  - **Faz 1 — Üye gizliliği (etik öncelik, flag'siz, hemen):** `studyroom_detail` view'ı `members` context'ini yalnızca `is_member=True` iken dolduruyordu ama misafir yine de tam üye listesini görüyordu (view context'ine koşulsuz gönderiliyordu) — düzeltildi. Aynı sınıf ikinci bir sızıntı liste kartında bulundu (`studyroom_list.html`'de kurucu adı misafire koşulsuz gösteriliyordu) — ayrı commit'le kapatıldı. Karar: kurucu adı login olana tam, misafire yalnızca rütbe metni; oda açma formuna bu görünürlüğü bildiren bir bilgilendirme satırı eklendi (açık rıza).
+  - **Faz 2 — Bekleme listesi:** `StudyRoomWaitlist` modeli (migration `0148`) — kullanıcı "tam sürüm" seçti (basit "haber ver" kaydı değil). Detay CTA'sı artık dolu/boş, misafir/üye, kurucu durumlarını ayırt eden tam bir durum makinesi.
+  - **Faz 3 — Oda tipleri:** `room_type` alanı (`study`/`project`/`thesis`, migration `0149`). **Veri migrasyonu kararı:** mevcut 2 oda (ikisi de "Danışmanlık" kategorisinde, prompt'taki "Tez Danışmanlığı" ile literal eşleşme yok) hiçbirine `thesis` atanmadı — kullanıcı kararıyla hepsi varsayılan `study` kaldı. **Ertelendi:** proje odaları için milestone (ilerleme çeklisti) özelliği eklenmedi, `tasks/todo.md`'ye not düşüldü.
+  - **Faz 4 — Arşiv:** `api_edit_room_post`/`api_delete_room_post` artık arşivlenmiş odada 403 dönüyor (önceden yalnızca yazar kontrolü vardı — eski mesajlar sonsuza kadar düzenlenebiliyordu). Oda kartı `_studyroom_card.html` partial'ına çıkarıldı; "Tamamlanan Odalar" mini şeridi (son 3 arşiv oda, sıfır kuralına uygun — arşiv boşsa hiç render edilmiyor).
+  - **Faz 5+6 — Kurucu güven kartı + kilit teaser:** Mevcut `_expert_showcase.html`/`expert_card.css` (`ax-expert-*` sınıfları) yeniden kullanıldı. Kilit ekranına aktivite metrikleri eklendi (gönderi/dosya sayısı, son aktivite — sıfır kuralı: gönderi 0 ise metrik satırı gizli); mesaj içeriği/yazar adı misafire hâlâ hiç gitmiyor.
+  - **Faz 7 — Görsel yükseltme:** Kullanıcının sağladığı `odalar-hero(-mobile).webp` ile market/agentic sayfalarındaki cinematic hero deseni uygulandı (`static/css/odalar.css`, bundle.css'e girmiyor); oda kartlarına doluluk bar'ı eklendi.
+  - **Faz 8 — SEO:** `turkish_slugify()` (bkz. §26) yeni odalarda kullanılıyor, mevcut slug'lara dokunulmadı; yalnızca aktif odada basılan JSON-LD Event schema (organizer="Analizus", kurucu adı sızdırılmıyor); `StudyRoomSitemap` eklendi; `robots.txt`'teki asla eşleşmeyen `/studyroom/*/katil/` kuralı (§26) `/odalar/*/katil/` + diğer aksiyon endpoint'leri olarak düzeltildi.
+  - Toplamda forum test paketine ~24 smoke test eklendi (gizlilik, bekleme listesi, arşiv yazma kilidi, room_type, slug, sitemap, JSON-LD).
+
 ### Sıradaki Görevler
 
 #### Danışmanlık Dönüşümü (feature flag'lerle, detay: `danismanlik_roadmap.md`)
@@ -1534,4 +1581,6 @@ with connection.cursor() as c:
 
 ---
 
-*Son güncelleme: Temmuz 2026 — Merge öncesi son süpürme turu TAMAMLANDI (11/11 madde, kaynak: `analizus_son_supurme_prompt.md`), `main`'e merge edildi. Aynı gün, merge sonrası canlıda gelen 3 hata raporuna yanıt olarak iki yeni tur yapıldı ve bunlar da `main`'e merge edildi: **Tableau facade dayanıklılık turu** (script yüklenemezse hata geri bildirimi; 15sn timeout + tek-canlı-iframe disiplini + sekme başına nesil sayacı; embed yüklenirken dönen spinner katmanı — üç ayrı canlı hata raporunun her biri kod incelemesi + Playwright doğrulamasıyla kapatıldı, ikisi gerçek kod bug'ı çıktı, biri Tableau Public'in kendi geçici kesintisi olduğu doğrulandı); **Marka görseli kenar yumuşatma turu** (3 iterasyon — box-shadow vinyet iki kez denenip koyu-tema fotoğraflarda görünmediği için terk edildi, `mask-image: radial-gradient` ile görselin şeklini gerçekten söndüren üçüncü deneme başarılı oldu; ana sayfanın sağ kartının ayrı bir component olduğu ve ilk düzeltmeyi almadığı kullanıcı tarafından fark edilip ayrıca düzeltildi). Son süpürme turunun kendi içeriği: huni parametreleri (Tableau CTA metni + bibliometrik `ANALYSIS_CHOICES`/`?type=` ön-seçimi, migration `0147`); site geneli Sıfır Kuralı (ana sayfa 5 sayaç + `has_any_stats`, uzman kartı satırı, Akademik Haberler + Gündemdeki Tartışmalar layout bütünlüğü, /hakkimizda/ Ekip bölümü); 8 sayfaya özgün og/twitter meta; bibliometri OpenAlex köprü bandı; blog kapaksız yazılara kategoriye göre varsayılan görsel; hero'daki eski üçlü CTA satırı kaldırıldı; login/register görsel panellerine iç vinyet; 39 smoke test (Madde 2'den 9, Madde 10'a); deploy notu + Hetzner sırası; ana sayfa sağ karta agentic-hero görseli. **Kritik hatırlatma (henüz yapılmadı olabilir):** `feature_agentic_landing` flag'i migration'da `default=False` geliyor, prod admin panelden elle açılmazsa `/ai-cozumler/` navbar'da/sitemap'te görünmez. Önceki turlar (İçerik & Topluluk Güçlendirme, Merge öncesi kapanış turu, `/market/` zenginleştirme, `/ai-cozumler/` landing, vb.) için yukarıdaki "Tamamlananlar" listesine bakın.*
+*Son güncelleme: Temmuz 2026 — Merge öncesi son süpürme turu TAMAMLANDI (11/11 madde, kaynak: `analizus_son_supurme_prompt.md`), `main`'e merge edildi. Aynı gün, merge sonrası canlıda gelen 3 hata raporuna yanıt olarak iki yeni tur yapıldı ve bunlar da `main`'e merge edildi: **Tableau facade dayanıklılık turu** (script yüklenemezse hata geri bildirimi; 15sn timeout + tek-canlı-iframe disiplini + sekme başına nesil sayacı; embed yüklenirken dönen spinner katmanı — üç ayrı canlı hata raporunun her biri kod incelemesi + Playwright doğrulamasıyla kapatıldı, ikisi gerçek kod bug'ı çıktı, biri Tableau Public'in kendi geçici kesintisi olduğu doğrulandı); **Marka görseli kenar yumuşatma turu** (3 iterasyon — box-shadow vinyet iki kez denenip koyu-tema fotoğraflarda görünmediği için terk edildi, `mask-image: radial-gradient` ile görselin şeklini gerçekten söndüren üçüncü deneme başarılı oldu; ana sayfanın sağ kartının ayrı bir component olduğu ve ilk düzeltmeyi almadığı kullanıcı tarafından fark edilip ayrıca düzeltildi). Son süpürme turunun kendi içeriği: huni parametreleri (Tableau CTA metni + bibliometrik `ANALYSIS_CHOICES`/`?type=` ön-seçimi, migration `0147`); site geneli Sıfır Kuralı (ana sayfa 5 sayaç + `has_any_stats`, uzman kartı satırı, Akademik Haberler + Gündemdeki Tartışmalar layout bütünlüğü, /hakkimizda/ Ekip bölümü); 8 sayfaya özgün og/twitter meta; bibliometri OpenAlex köprü bandı; blog kapaksız yazılara kategoriye göre varsayılan görsel; hero'daki eski üçlü CTA satırı kaldırıldı; login/register görsel panellerine iç vinyet; 39 smoke test (Madde 2'den 9, Madde 10'a); deploy notu + Hetzner sırası; ana sayfa sağ karta agentic-hero görseli. `feature_agentic_landing` flag'i o tur sonrası elle açıldı (doğrulandı, `/ai-cozumler/` artık görünür). Önceki turlar (İçerik & Topluluk Güçlendirme, Merge öncesi kapanış turu, `/market/` zenginleştirme, `/ai-cozumler/` landing, vb.) için yukarıdaki "Tamamlananlar" listesine bakın.
+
+**En son (temmuz 2026):** Çalışma Odaları (StudyRoom) 8 fazlı dönüşümü tamamlandı, `dev`'den `main`'e merge edildi (yukarıdaki "Tamamlananlar" listesine bakın). **Kritik hatırlatma (henüz yapılmadı olabilir):** Hetzner production'a bu merge henüz manuel deploy edilmedi — deploy sırasında `docker compose exec web python manage.py migrate` (migration `0148_studyroomwaitlist`, `0149_studyroom_room_type`) + `docker compose restart web` + `docker compose restart nginx` gerekiyor.*
