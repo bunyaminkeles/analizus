@@ -648,6 +648,35 @@ Yeni araç eklerken `teal` / `purple` dışında bir renk kullanılıyorsa önce
 .ax-market-visual       → Market kartlarına dekoratif SVG arka planı (home_sections.css; parent kart position:relative + overflow:hidden gerektirir; mobile hidden)
 ```
 
+**Not:** `base.css`'teki gerçek accent değişken adları `--ax-primary`/`--ax-accent` değil,
+`--ax-accent-primary` / `--ax-accent-secondary` / `--ax-accent-warning` / `--ax-accent-danger`
+(+ `-hover`/`-light` varyantları) — yukarıdaki `:root` örneği basitleştirilmiş, koddaki gerçek
+isimlerle birebir eşleşmiyor.
+
+### İki-Vurgu Renk Kuralı (temmuz 2026, anasayfa turu Faz 11)
+Ana sayfa + navbar + footer kapsamında uygulanan semantik kural: **mor
+(`--ax-accent-primary`) = ürün/aksiyon**, **sarı (`--ax-accent-warning`) = topluluk/puan**.
+Yeni buton varyantları (`base.css`, `.ax-btn` ailesine ek):
+```
+.ax-btn--warning         → Solid sarı CTA (koyu metin — beyaz metin WCAG AA'yı geçmiyor)
+.ax-btn--outline-primary → Mor kenarlıklı, şeffaf zemin (ikincil aksiyonlar, ör. navbar arama)
+```
+**Kritik tuzak:** `base.css`/`navbar.css`/`footer.css`/`style.css`/`sidebar_widgets.css`
+artık ölü dosyalar — `base.html` yalnızca `static/css/bundle.css`'i yüklüyor (bkz. §26).
+Bu 5 kaynak dosyaya yapılan HİÇBİR değişiklik `bundle.css` elle yeniden üretilmeden siteye
+yansımaz. Yeniden üretim (temmuz 2026'da doğrulanan yöntem — `rcssmin` gerekiyor, kalıcı
+`requirements.txt` bağımlılığı DEĞİL, tek seferlik `pip install`):
+```bash
+docker compose exec web pip install --quiet rcssmin
+docker compose exec web python -c "
+import rcssmin
+files = ['static/css/base.css','static/css/navbar.css','static/css/footer.css','static/css/style.css','static/css/sidebar_widgets.css']
+combined = ''.join(open(f, encoding='utf-8').read() + '\n' for f in files)
+open('static/css/bundle.css','w', encoding='utf-8').write(rcssmin.cssmin(combined))
+"
+```
+Ardından `templates/base.html`'deki `bundle.css?v=XXXX` sürümünü artırmayı unutma.
+
 ### CSS Dosya Versiyonlama (Cache Busting)
 `<link href="{% static 'css/foo.css' %}?v=XXXX">` — dosya içeriği değiştiğinde `v=` sayısını artır.
 - **Neden:** nginx (production) `Cache-Control: max-age` ile CSS'i önbelleğe alır. `v=` değişmezse tarayıcı eski dosyayı sunar.
@@ -1566,47 +1595,23 @@ with connection.cursor() as c:
   - **Faz 8 — SEO:** `turkish_slugify()` (bkz. §26) yeni odalarda kullanılıyor, mevcut slug'lara dokunulmadı; yalnızca aktif odada basılan JSON-LD Event schema (organizer="Analizus", kurucu adı sızdırılmıyor); `StudyRoomSitemap` eklendi; `robots.txt`'teki asla eşleşmeyen `/studyroom/*/katil/` kuralı (§26) `/odalar/*/katil/` + diğer aksiyon endpoint'leri olarak düzeltildi.
   - Toplamda forum test paketine ~24 smoke test eklendi (gizlilik, bekleme listesi, arşiv yazma kilidi, room_type, slug, sitemap, JSON-LD).
 
-### Sıradaki Görevler
+- **Ana Sayfa & Navbar İyileştirme Turu** (temmuz 2026) — kaynak prompt `analizus_anasayfa_prompt.md`; 11 fazda tamamlandı (11 ayrı commit), `dev`'den `main`'e merge edildi ve her iki branch `origin`'e push edildi:
+  - **Faz 0 — Keşif:** Doc'un bazı teşhisleri koddan doğrulanamadı: anahtar kelime bandı `home.html`'de değil **site geneli** `base.html`'de çıktı; yüzen buton çakışması kodda yoktu (gerçek sorun butonların hero altı chip'leri örtmesiydi); "Neden Analizus?" linki hiç var olmamıştı (silinmemiş).
+  - **Faz 1 — Navbar Topluluk grubu:** Forum/Çalışma Odaları/İstatistik Arena/Blog "Topluluk" dropdown'ında birleşti; Kurumsal'a "Neden Analizus?" eklendi (`about.html#analizusun-farki` ankrajı — ayrı sayfa değil); pazar ürünü tek isimde birleşti: **"Pazaryeri"** (navbar/footer/`job_list.html` title-meta-H1/`home.html` JSON-LD hepsi eşitlendi, URL değişmedi `/market/`). Bkz. "Navigasyon Menüsü" bölümü.
+  - **Faz 2 — Tek yüzen buton:** floating WhatsApp kaldırıldı, AI Asistan tek yüzen buton; WhatsApp footer linkine + `post_job.html` sayfa-içi mütevazı bloğa taşındı.
+  - **Faz 3 — Hero sadeleştirme:** kitle yönlendirme chip'leri kaldırıldı; veri kazıma atıf satırı hero'dan kapı kartlarının altına taşındı; kaybolan `?source=home_corporate` yeni kurumsal yönlendirme linkine taşındı.
+  - **Faz 7 — Sayaç eşiği:** `SiteSettings.stat_min_display` (migration `0150`, default 25, admin'den yönetilir) — altındaki sayaçlar gösterilmez, eşik üstü sayaç sayısı 2'den azsa şerit tamamen gizlenir. `online_experts` bu genel eşikten **muaf** — kendi ayrı eşiği var (≥2), çünkü "şu an çevrimiçi uzman" küçük ölçekli anlık bir metrik, 25 eşiği gerçekçi değildi (neredeyse hiç görünmezdi).
+  - **Faz 8 — Akademik Haberler kaldırıldı:** Google News RSS kartı (YKS/eğitim-magazin haberleri de çekebiliyordu) kaldırıldı; "Gündemdeki Tartışmalar" tam genişlik oldu. `forum/news_utils.py` artık hiçbir yerden çağrılmıyor ama dosya silinmedi.
+  - **Faz 9 — Uzman vitrini kalite kapısı:** `_get_featured_experts()`'a foto+bio+en az 1 skill zorunluluğu eklendi; uygun uzman sayısı 3'ten azsa şerit tamamen gizlenir. Aynı fonksiyon `/market/` sayfasıyla da paylaşılıyor (bilinçli).
+  - **Faz 10 — Anahtar kelime bandı kaldırıldı:** site geneli kayan bant `base.html`'den tamamen temizlendi (içinde gerçek link yoktu).
+  - **Faz 4 — Bölüm sıralaması:** "araç önce, kanıt sonra" → "kanıt önce" sırasına geçti. Yeni sıra: Hero+kapı kartları → Nasıl Çalışıyoruz → sayaçlar+güven bandı (art arda) → Uzmanlarla Tanış → Uzman Arayan Projeler → Araştırma Konsolu → Kendini Test Et (birleşik) → AI Çağında İki Yol → Gündemdeki Tartışmalar → SSS → Blog. Yalnızca blok taşıma, view sorguları/içerik değişmedi.
+  - **Faz 5 — Nasıl Çalışıyoruz büyütme:** Kompakt `.ax-timeline-*` yerine zaten CSS'te tanımlı ama hiç kullanılmayan `.ax-step-card`/`.ax-step-number`/`.ax-step-icon` ailesi canlandırıldı (büyük numaralı/ikonlu kartlar). `.ax-timeline-*`'a bilinçli dokunulmadı — `ai_cozumler.html` aynı sınıfları paylaşıyor.
+  - **Faz 6 — Kendini Test Et birleştirme:** "Hangi testi kullanmalıyım?" (AI chip'leri) + Arena quiz tek section'da birleşti (`id="istatistik-arenasi"` korundu — 6 dosyadan link alıyor). **Kritik:** `{% if features.ai_assistant %}` yalnızca chip sütununu sarmalıyor, quiz flag'den bağımsız her zaman render oluyor — aksi hâlde flag kapatılınca Arena anchor'ı tamamen kaybolurdu. Sonradan kullanıcı geri bildirimiyle görsel düzeltme: chip'ler üstten hizalı tam-genişlik dikey liste oldu (pill-wrap'te uzun metin taşıyordu), her sütuna mini başlık, chip sayısı 5'e çıktı + "Kendi sorunu sor →" linki.
+  - **Faz 11 — Renk boyama geçişi (iki-vurgu kuralı):** mor (`--ax-accent-primary`) = ürün/aksiyon, sarı (`--ax-accent-warning`) = topluluk/puan. Navbar arama butonu mavi→mor outline (yeni `.ax-btn--outline-primary`); uzman kapı kartı CTA'sı `.ax-btn-outline-amber`'dan (base.css'te **hiç renk tanımı yoktu**, buton görünmez stilsiz render oluyordu) yeni `.ax-btn--warning`'e geçti — demand kartıyla eşit ağırlıklı solid buton oldu; footer "Bize Destek Ol" kolonu + bağış modalı magenta (`#ec4899`) ailesinden tamamen sarıya taşındı (donation tier renk merdiveni ayrı semantik olduğu için dokunulmadı). **Altyapı bulgusu:** `base.css` düzenlemeleri `bundle.css` elle yeniden üretilmeden hiçbir etki yaratmıyordu (bkz. §26) — `rcssmin` ile (tek seferlik, `requirements.txt`'e eklenmeden) regenerate edildi.
+  - Bu turda ayrıca: Faz 7/9'un `forum/tests.py`'de bıraktığı 5 test hatası (eski varsayımlarla yazılmış testler) ayrı bir commit'le düzeltildi.
+  - **Deploy notu:** `main`'e merge + push edildi (temmuz 2026), Hetzner production'a **henüz manuel deploy edilmedi** — `git pull origin main` + `docker compose exec web python manage.py migrate` (migration `0150_sitesettings_stat_min_display`) + `docker compose exec web python manage.py collectstatic --noinput` + `docker compose restart web` + `docker compose restart nginx` gerekiyor.
 
-#### Ana Sayfa & Navbar İyileştirme Turu (temmuz 2026 — devam ediyor, kaynak: `analizus_anasayfa_prompt.md`)
-`dev` branch'inde 8 faz commit edildi (henüz `main`'e merge/deploy edilmedi), her faz
-ayrı commit (`anasayfa: faz-N — ...`):
-- **Faz 0 — Keşif:** Doc'un bazı teşhisleri koddan doğrulanamadı — düzeltilerek not edildi:
-  anahtar kelime bandı `home.html`'de değil **site geneli** `base.html`'de çıktı; yüzen
-  buton çakışması kodda yoktu (offsetler zaten ayrıktı, gerçek sorun butonların hero
-  altı chip'leri örtmesiydi); "Neden Analizus?" linki hiç var olmamıştı (silinmemiş).
-- **Faz 1 — Navbar Topluluk grubu:** bkz. yukarıdaki "Navigasyon Menüsü" bölümü — tam
-  güncel yapı orada.
-- **Faz 2 — Tek yüzen buton:** floating WhatsApp kaldırıldı, AI Asistan tek buton;
-  WhatsApp footer linkine + `post_job.html` sayfa-içi mütevazı bloğa taşındı
-  (`proje_talebi.html`'de zaten sayfa-içi blok vardı, dokunulmadı).
-- **Faz 3 — Hero sadeleştirme:** kitle yönlendirme chip'leri (`ax-audience-band`)
-  kaldırıldı; veri kazıma atıf satırı hero'dan kapı kartlarının altına taşındı,
-  kontrastı artırıldı; kaybolan `?source=home_corporate` parametresi kapı kartlarının
-  altına eklenen yeni tek satırlık kurumsal yönlendirme linkine taşındı (post_job CTA'sına
-  eklenmedi — farklı segment, veri kirlenir).
-- **Faz 7 — Sayaç eşiği:** `SiteSettings.stat_min_display` (migration `0150`, default 25,
-  admin'den yönetilir) — altındaki sayaçlar ana sayfa şeridinde gösterilmez, eşik üstü
-  sayaç sayısı 2'den azsa şerit tamamen gizlenir. **Yerel sqlite ortamında bu migration
-  elle çalıştırılmalı** (`python manage.py migrate forum`).
-- **Faz 8 — Akademik Haberler kaldırıldı:** Google News RSS kartı (YKS/eğitim-magazin
-  haberleri de çekebiliyordu) kaldırıldı; "Gündemdeki Tartışmalar" tam genişlik oldu.
-  `get_science_news()` view'dan çıkarıldı; `forum/news_utils.py` artık hiçbir yerden
-  çağrılmıyor ama dosya silinmedi (kapsam dışı bırakıldı).
-- **Faz 9 — Uzman vitrini kalite kapısı:** `_get_featured_experts()`'a foto+bio+en az 1
-  skill zorunluluğu eklendi (yarım profiller/harf-avatar fallback vitrine çıkmıyor);
-  uygun uzman sayısı 3'ten azsa şerit tamamen gizlenir. Aynı fonksiyon `/market/`
-  sayfasıyla da paylaşılıyor (bilinçli — yalnızca `/uzmanlar/` dizini etkilenmez).
-  **Dev veritabanında şu an bu kriteri karşılayan 0 uzman var** — bug değil, production
-  verisiyle doğrulanmalı.
-- **Faz 10 — Anahtar kelime bandı kaldırıldı:** site geneli (yalnızca ana sayfa değil)
-  kayan bant `base.html`'den HTML+CSS olarak tamamen temizlendi; bant içinde gerçek link
-  yoktu (düz `<span>`), footer'a taşınacak bir şey çıkmadı.
-- **Kalan (henüz yapılmadı):** Faz 4+5+6 (bölüm sıralaması + "Nasıl Çalışıyoruz"
-  büyütme + "Hangi testi kullanmalıyım?"/Arena birleştirme — **tek merge zorunlu**, üçü
-  aynı bölgeleri düzenliyor) ve Faz 11 (renk boyama geçişi — **mutlaka en son**, önce
-  yapılırsa taşınan bölüm iki kez boyanır). Faz 8 (haber kararı) tamamlandı, ayrı
-  sıralama kısıtı yoktu.
+### Sıradaki Görevler
 
 #### Danışmanlık Dönüşümü (feature flag'lerle, detay: `danismanlik_roadmap.md`)
 - **Ödeme sistemi kararı** — Stripe / Papara / IBAN+fatura (iyzico yasak) — **blokaj**
@@ -1637,6 +1642,6 @@ ayrı commit (`anasayfa: faz-N — ...`):
 
 *Son güncelleme: Temmuz 2026 — Merge öncesi son süpürme turu TAMAMLANDI (11/11 madde, kaynak: `analizus_son_supurme_prompt.md`), `main`'e merge edildi. Aynı gün, merge sonrası canlıda gelen 3 hata raporuna yanıt olarak iki yeni tur yapıldı ve bunlar da `main`'e merge edildi: **Tableau facade dayanıklılık turu** (script yüklenemezse hata geri bildirimi; 15sn timeout + tek-canlı-iframe disiplini + sekme başına nesil sayacı; embed yüklenirken dönen spinner katmanı — üç ayrı canlı hata raporunun her biri kod incelemesi + Playwright doğrulamasıyla kapatıldı, ikisi gerçek kod bug'ı çıktı, biri Tableau Public'in kendi geçici kesintisi olduğu doğrulandı); **Marka görseli kenar yumuşatma turu** (3 iterasyon — box-shadow vinyet iki kez denenip koyu-tema fotoğraflarda görünmediği için terk edildi, `mask-image: radial-gradient` ile görselin şeklini gerçekten söndüren üçüncü deneme başarılı oldu; ana sayfanın sağ kartının ayrı bir component olduğu ve ilk düzeltmeyi almadığı kullanıcı tarafından fark edilip ayrıca düzeltildi). Son süpürme turunun kendi içeriği: huni parametreleri (Tableau CTA metni + bibliometrik `ANALYSIS_CHOICES`/`?type=` ön-seçimi, migration `0147`); site geneli Sıfır Kuralı (ana sayfa 5 sayaç + `has_any_stats`, uzman kartı satırı, Akademik Haberler + Gündemdeki Tartışmalar layout bütünlüğü, /hakkimizda/ Ekip bölümü); 8 sayfaya özgün og/twitter meta; bibliometri OpenAlex köprü bandı; blog kapaksız yazılara kategoriye göre varsayılan görsel; hero'daki eski üçlü CTA satırı kaldırıldı; login/register görsel panellerine iç vinyet; 39 smoke test (Madde 2'den 9, Madde 10'a); deploy notu + Hetzner sırası; ana sayfa sağ karta agentic-hero görseli. `feature_agentic_landing` flag'i o tur sonrası elle açıldı (doğrulandı, `/ai-cozumler/` artık görünür). Önceki turlar (İçerik & Topluluk Güçlendirme, Merge öncesi kapanış turu, `/market/` zenginleştirme, `/ai-cozumler/` landing, vb.) için yukarıdaki "Tamamlananlar" listesine bakın.
 
-**En son (temmuz 2026):** Çalışma Odaları (StudyRoom) 8 fazlı dönüşümü tamamlandı, `dev`'den `main`'e merge edildi (yukarıdaki "Tamamlananlar" listesine bakın). **Kritik hatırlatma (henüz yapılmadı olabilir):** Hetzner production'a bu merge henüz manuel deploy edilmedi — deploy sırasında `docker compose exec web python manage.py migrate` (migration `0148_studyroomwaitlist`, `0149_studyroom_room_type`) + `docker compose restart web` + `docker compose restart nginx` gerekiyor.
+**Önceki (temmuz 2026):** Çalışma Odaları (StudyRoom) 8 fazlı dönüşümü tamamlandı, `dev`'den `main`'e merge edildi (yukarıdaki "Tamamlananlar" listesine bakın). Hetzner production'a bu merge deploy edildiyse §27'deki not artık geçerli değildir; edilmediyse aşağıdaki anasayfa turuyla birlikte tek seferde deploy edilebilir (migration'lar birikimli çalışır, sıra önemli değil).
 
-**Devam eden (temmuz 2026):** Ana Sayfa & Navbar İyileştirme Turu — 8 faz `dev`'e commit edildi (Faz 0,1,2,3,7,8,9,10; detay: yukarıdaki "Sıradaki Görevler" bölümü), **henüz `main`'e merge/deploy edilmedi**. Kalan: Faz 4+5+6 (tek merge zorunlu) + Faz 11 (en son zorunlu). Migration `0150_sitesettings_stat_min_display` yerel sqlite ortamında elle çalıştırılmalı.*
+**En son (temmuz 2026):** Ana Sayfa & Navbar İyileştirme Turu tamamlandı — 11 faz, 11 ayrı commit (detay: yukarıdaki "Tamamlananlar" listesi). `dev`'den `main`'e fast-forward merge edildi, hem `dev` hem `main` `origin`'e push edildi. **Kritik hatırlatma (henüz yapılmadı):** Hetzner production'a bu merge henüz manuel deploy edilmedi — `git pull origin main` + `docker compose exec web python manage.py migrate` (migration `0150_sitesettings_stat_min_display`) + `docker compose exec web python manage.py collectstatic --noinput` + `docker compose restart web` + `docker compose restart nginx` gerekiyor. Yerel sqlite geliştirme ortamında da aynı migration elle çalıştırılmalı (`python manage.py migrate forum`).*
