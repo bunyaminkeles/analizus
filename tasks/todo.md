@@ -553,3 +553,34 @@ Faz 1'i çalıştırıp planı onaya sunacağım. Not: /market/ görevi, sıfır
 görevinden ÖNCE veya SONRA yapılabilir — market'in Faz 4'ü sıfır kuralına
 bağlı olduğundan, sıfır kuralı önce bitmişse market Faz 4 onun sonucunu
 doğrudan kullanabilir (tekrar iş çıkarmaz), ama bu bir ön koşul değil.
+
+---
+
+# Çalışma Odaları Dönüşümü — Ertelenmiş İşler
+
+**Kaynak:** `analizus_odalar_prompt.md` (repoda dosya olarak yok — yalnızca
+sohbet eki olarak verildi, karakter kodlaması bozuk geldiği için repoya
+olduğu gibi yazılmadı). Faz 1/2/3/4/5/6 tamamlandı (temmuz 2026, `dev`
+branch'inde commit'lendi: faz-1, faz-1 ek, faz-2, faz-4, faz-3, faz-5+6).
+
+## Ertelenen: Faz 3 milestone (proje odası ilerleme çekliste)
+Proje tipi (`room_type='project'`) odalar için kurucunun işaretleyebildiği
+3–7 maddelik ilerleme kontrol listesi özelliği **şimdilik eklenmedi**.
+Karar: yalnızca `room_type` etiketi + görsel ayrım yeterli kabul edildi;
+milestone checklist'i (JSONField `milestones = models.JSONField(default=list)`
++ kurucunun inline ekleyip işaretlediği küçük bir POST endpoint'i, üyeler
+tam listeyi görür, misafir yalnızca "%40 tamamlandı" bar'ını görür) ayrı
+bir görev olarak ele alınacak.
+
+**Ne zaman gündeme gelir:** Kullanıcı proje odaları için ilerleme takibi
+isteğini tekrar gündeme getirdiğinde, veya `room_type='project'` kullanımı
+yaygınlaştığında.
+
+## Henüz yapılmayan fazlar
+- **Faz 7 — Görsel yükseltme:** `static/img/odalar-hero.webp` ve
+  `odalar-hero-mobile.webp` artık mevcut (kullanıcı sağladı, henüz repoya
+  commit'lenmedi/kullanılmadı). Hero + kart dilini market/agentic sayfalarıyla
+  hizala.
+- **Faz 8 — SEO + teknik temizlik:** Slug Türkçe karakter düzeltmesi
+  (mevcut oda slug'larına dokunma), JSON-LD Event schema, sitemap,
+  test hesap temizliği (kullanıcı kararı gerekiyor).
