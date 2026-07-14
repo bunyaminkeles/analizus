@@ -105,19 +105,19 @@
 
             <!-- Bize Destek Ol -->
             <div class="col-12 col-md-6 col-lg-2">
-                <p class="ax-footer-heading" style="color:#ec4899;">Bize Destek Ol</p>
+                <p class="ax-footer-heading" style="color:var(--ax-accent-warning);">Bize Destek Ol</p>
                 <p style="font-size:.8rem;color:#64748b;margin-bottom:12px;line-height:1.5;">
                     Analizus'u seviyorsan destekle — Destekçi rozeti, premium üyelik ve daha fazlası seni bekliyor.
                 </p>
                 <ul class="ax-footer-list mb-3" style="margin-bottom:10px;">
-                    <li style="color:#94a3b8;font-size:.78rem;"><i class="bi bi-heart-fill" style="color:#ec4899;"></i>Destekçi Rozeti</li>
-                    <li style="color:#94a3b8;font-size:.78rem;"><i class="bi bi-gem" style="color:#a855f7;"></i>Premium Üyelik</li>
-                    <li style="color:#94a3b8;font-size:.78rem;"><i class="bi bi-people-fill" style="color:#f59e0b;"></i>Destekçiler Listesi</li>
+                    <li style="color:#94a3b8;font-size:.78rem;"><i class="bi bi-heart-fill" style="color:var(--ax-accent-warning);"></i>Destekçi Rozeti</li>
+                    <li style="color:#94a3b8;font-size:.78rem;"><i class="bi bi-gem" style="color:var(--ax-accent-warning);"></i>Premium Üyelik</li>
+                    <li style="color:#94a3b8;font-size:.78rem;"><i class="bi bi-people-fill" style="color:var(--ax-accent-warning);"></i>Destekçiler Listesi</li>
                 </ul>
                 <button data-bs-toggle="modal" data-bs-target="#donationModal"
                         style="padding:8px 20px;border-radius:20px;border:none;font-size:.82rem;
                                font-weight:600;cursor:pointer;width:100%;
-                               background:linear-gradient(135deg,#ec4899,#a855f7);color:#fff;
+                               background:linear-gradient(135deg,var(--ax-accent-warning),#fbbf24);color:#1e293b;
                                transition:opacity .15s;"
                         onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
                     <i class="bi bi-gem me-1" style="font-size:.75rem;"></i>Premium Üye Ol
@@ -142,7 +142,7 @@
         <div class="modal-content bg-dark border border-secondary" style="border-radius:20px;">
             <div class="modal-header border-secondary">
                 <h5 class="modal-title text-white" id="donationModalLabel">
-                    <i class="bi bi-gem me-2" style="color:#a855f7;"></i>Premium Üye Ol
+                    <i class="bi bi-gem me-2" style="color:var(--ax-accent-warning);"></i>Premium Üye Ol
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Kapat"></button>
             </div>
@@ -151,7 +151,7 @@
                 <p style="font-size:.75rem;color:#475569;margin-bottom:1rem;">Aynı zamanda platformumuzun gelişimine de katkıda bulunmuş olursunuz.</p>
 
                 {% if donation_tiers %}
-                <h6 class="text-white mb-3"><i class="bi bi-gem me-2" style="color:#ec4899;"></i>Destek Paketini Seçiniz</h6>
+                <h6 class="text-white mb-3"><i class="bi bi-gem me-2" style="color:var(--ax-accent-warning);"></i>Destek Paketini Seçiniz</h6>
                 <div class="d-flex flex-column gap-2 mb-4" id="tierSelectionContainer">
                     {% for tier in donation_tiers %}
                     <div class="tier-option p-3 rounded"
@@ -198,11 +198,11 @@
                         <span class="text-white small">Haftada <strong>3 ilan</strong> yayınlama hakkı <span class="text-muted">(Normal: 1)</span></span>
                     </div>
                     <div class="d-flex align-items-center gap-2">
-                        <i class="bi bi-heart-fill" style="color:#ec4899;"></i>
+                        <i class="bi bi-heart-fill" style="color:var(--ax-accent-warning);"></i>
                         <span class="text-white small">Profil üzerinde özel <strong>Destekçi Rozeti</strong></span>
                     </div>
                     <div class="d-flex align-items-center gap-2">
-                        <i class="bi bi-people-fill" style="color:#f59e0b;"></i>
+                        <i class="bi bi-people-fill" style="color:var(--ax-accent-warning);"></i>
                         <span class="text-white small"><strong>Destekçiler listesinde</strong> yer alma</span>
                     </div>
                 </div>
@@ -223,8 +223,8 @@ function selectTier(el) {
         o.style.borderColor = 'rgba(255,255,255,0.1)';
         o.style.backgroundColor = 'rgba(255,255,255,0.05)';
     });
-    el.style.borderColor = '#ec4899';
-    el.style.backgroundColor = 'rgba(236,72,153,0.15)';
+    el.style.borderColor = 'var(--ax-accent-warning)';
+    el.style.backgroundColor = 'rgba(245,158,11,0.15)';
     el.querySelector('input[type=radio]').checked = true;
 }
 

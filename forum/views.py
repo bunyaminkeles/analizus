@@ -208,12 +208,17 @@ def home(request):
     online_experts = home_stats['online_experts']
 
     stat_min_display = SiteSettings.load().stat_min_display
+    # online_experts genel stat_min_display eşiğinden (varsayılan 25) muaf —
+    # "şu an çevrimiçi uzman" küçük ölçekli anlık bir metrik, 25 eşiği bu sayaç
+    # için gerçekçi değil (neredeyse hiç görünmezdi). Kendi eşiği: en az 2.
     stats_above_threshold = [
         v for v in [
             total_users, total_topics, total_posts, completed_jobs,
-            completed_analyses, open_jobs_count, weekly_new_users, online_experts,
+            completed_analyses, open_jobs_count, weekly_new_users,
         ] if v >= stat_min_display
     ]
+    if online_experts >= 2:
+        stats_above_threshold.append(online_experts)
     has_any_stats = len(stats_above_threshold) >= 2
 
     featured_experts = _get_featured_experts()

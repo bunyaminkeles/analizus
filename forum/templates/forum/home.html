@@ -53,7 +53,7 @@
 <link rel="stylesheet" href="{% static 'css/testimonials.css' %}?v=0100" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="{% static 'css/stats.css' %}?v=0100" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="{% static 'css/news.css' %}?v=0100" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="{% static 'css/home_sections.css' %}?v=0116" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="{% static 'css/home_sections.css' %}?v=0117" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="{% static 'css/trend_topics.css' %}?v=0001" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="{% static 'css/expert_card.css' %}?v=0003" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="{% static 'css/brand_visuals.css' %}?v=0103" media="print" onload="this.media='all'">
@@ -64,7 +64,7 @@
 <link rel="stylesheet" href="{% static 'css/testimonials.css' %}?v=0100">
 <link rel="stylesheet" href="{% static 'css/stats.css' %}?v=0100">
 <link rel="stylesheet" href="{% static 'css/news.css' %}?v=0100">
-<link rel="stylesheet" href="{% static 'css/home_sections.css' %}?v=0116">
+<link rel="stylesheet" href="{% static 'css/home_sections.css' %}?v=0117">
 <link rel="stylesheet" href="{% static 'css/trend_topics.css' %}?v=0001">
 <link rel="stylesheet" href="{% static 'css/expert_card.css' %}?v=0003">
 <link rel="stylesheet" href="{% static 'css/brand_visuals.css' %}?v=0103">
@@ -435,7 +435,7 @@
                             </a>
                         </div>
                         <div class="ax-market-footer mt-4">
-                            <a href="{% url 'job_list' %}" class="ax-btn-outline-amber ax-btn-lg ax-block ax-w-full">Freelance Projelere Göz At</a>
+                            <a href="{% url 'job_list' %}" class="ax-btn ax-btn--warning ax-btn--lg ax-block ax-w-full">Freelance Projelere Göz At</a>
                         </div>
                     </div>
                 </div>
@@ -546,20 +546,20 @@
             {% if open_jobs_count >= stat_min_display %}
             <div class="col-6 col-md-2 mb-4 mb-md-0">
                 <a href="{% url 'job_list' %}" style="text-decoration:none;">
-                    <div class="ax-stat-item" style="color:#38bdf8;">{{ open_jobs_count }}</div>
+                    <div class="ax-stat-item">{{ open_jobs_count }}</div>
                     <div class="ax-stat-label">Açık İlan</div>
                 </a>
             </div>
             {% endif %}
             {% if weekly_new_users >= stat_min_display %}
             <div class="col-6 col-md-2 mb-4 mb-md-0">
-                <div class="ax-stat-item" style="color:#6366f1;">+{{ weekly_new_users }}</div>
+                <div class="ax-stat-item">+{{ weekly_new_users }}</div>
                 <div class="ax-stat-label">Bu Hafta Yeni Üye</div>
             </div>
             {% endif %}
-            {% if online_experts >= stat_min_display %}
+            {% if online_experts >= 2 %}
             <div class="col-6 col-md-2">
-                <div class="ax-stat-item" style="color:#22c55e;">{{ online_experts }}</div>
+                <div class="ax-stat-item" style="color:var(--ax-accent-secondary);">{{ online_experts }}</div>
                 <div class="ax-stat-label">Şu An Çevrimiçi Uzman</div>
             </div>
             {% endif %}

@@ -83,8 +83,8 @@
     position: absolute;
     top: 0; left: 0; right: 0; height: 4px;
 }
-.ax-market-card--demand::before { background: linear-gradient(90deg, #6366f1, #818cf8); }
-.ax-market-card--supply::before { background: linear-gradient(90deg, #f59e0b, #f97316); }
+.ax-market-card--demand::before { background: linear-gradient(90deg, var(--ax-accent-primary), var(--ax-accent-primary-hover)); }
+.ax-market-card--supply::before { background: linear-gradient(90deg, var(--ax-accent-warning), #f97316); }
 .ax-market-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
@@ -101,12 +101,12 @@
     width: 64px;
     height: 64px;
     border-radius: 16px;
-    background-color: rgba(99, 102, 241, 0.1);
-    color: #6366f1;
+    background-color: color-mix(in srgb, var(--ax-accent-primary) 10%, transparent);
+    color: var(--ax-accent-primary);
 }
 .ax-market-icon--amber {
-    background-color: rgba(245, 158, 11, 0.1);
-    color: #f59e0b;
+    background-color: color-mix(in srgb, var(--ax-accent-warning) 10%, transparent);
+    color: var(--ax-accent-warning);
 }
 .ax-timeline-section {
     padding: 32px 0;

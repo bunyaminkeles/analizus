@@ -90,7 +90,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/toolbar/prism-toolbar.min.css" rel="stylesheet" media="print" onload="this.media='all'">
 
     <!-- Modern Katman: Analizus Design System (base+navbar+footer+style+sidebar_widgets birleştirilmiş) -->
-    <link rel="stylesheet" href="{% static 'css/bundle.css' %}?v=0001">
+    <link rel="stylesheet" href="{% static 'css/bundle.css' %}?v=0002">
 
     {% block extra_head %}{% endblock %}
 
@@ -466,7 +466,7 @@
                 <form action="{% url 'search' %}" method="get">
                     <div class="input-group">
                         <input name="q" type="text" class="form-control form-control-lg border-0 shadow-none" placeholder="Akademik veri ara..." autofocus>
-                        <button class="btn btn-info px-4" type="submit"><i class="bi bi-search"></i></button>
+                        <button class="ax-btn ax-btn--outline-primary px-4" type="submit"><i class="bi bi-search"></i></button>
                     </div>
                 </form>
             </div>

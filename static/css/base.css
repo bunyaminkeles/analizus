@@ -279,10 +279,35 @@
     color: var(--ax-text-primary);
 }
 
+.ax-btn--outline-primary {
+    background-color: transparent;
+    color: var(--ax-accent-primary-hover);
+    border-color: var(--ax-accent-primary);
+}
+.ax-btn--outline-primary:hover {
+    background-color: color-mix(in srgb, var(--ax-accent-primary) 10%, transparent);
+    color: var(--ax-accent-primary-hover);
+    border-color: var(--ax-accent-primary-hover);
+}
+
 .ax-btn--danger {
     background-color: var(--ax-accent-danger);
     color: #ffffff;
     border-color: var(--ax-accent-danger);
+}
+
+.ax-btn--warning {
+    /* Topluluk/puan vurgusu (sarı aile). Amber zemin üzerinde beyaz metin WCAG AA'yı
+       geçemiyor — koyu metin kullanılır (bkz. mevcut badge bg-warning text-dark deseni). */
+    background-color: var(--ax-accent-warning);
+    color: #1e293b;
+    border-color: var(--ax-accent-warning);
+}
+.ax-btn--warning:hover {
+    background-color: #fbbf24;
+    border-color: #fbbf24;
+    transform: scale(1.02);
+    color: #1e293b;
 }
 
 .ax-btn--sm {
