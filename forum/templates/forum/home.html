@@ -53,7 +53,7 @@
 <link rel="stylesheet" href="{% static 'css/testimonials.css' %}?v=0100" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="{% static 'css/stats.css' %}?v=0100" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="{% static 'css/news.css' %}?v=0100" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="{% static 'css/home_sections.css' %}?v=0115" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="{% static 'css/home_sections.css' %}?v=0116" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="{% static 'css/trend_topics.css' %}?v=0001" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="{% static 'css/expert_card.css' %}?v=0003" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="{% static 'css/brand_visuals.css' %}?v=0103" media="print" onload="this.media='all'">
@@ -64,7 +64,7 @@
 <link rel="stylesheet" href="{% static 'css/testimonials.css' %}?v=0100">
 <link rel="stylesheet" href="{% static 'css/stats.css' %}?v=0100">
 <link rel="stylesheet" href="{% static 'css/news.css' %}?v=0100">
-<link rel="stylesheet" href="{% static 'css/home_sections.css' %}?v=0115">
+<link rel="stylesheet" href="{% static 'css/home_sections.css' %}?v=0116">
 <link rel="stylesheet" href="{% static 'css/trend_topics.css' %}?v=0001">
 <link rel="stylesheet" href="{% static 'css/expert_card.css' %}?v=0003">
 <link rel="stylesheet" href="{% static 'css/brand_visuals.css' %}?v=0103">
@@ -740,17 +740,22 @@ document.addEventListener('DOMContentLoaded', function () {
         </div>
         <div class="row g-4 justify-content-center">
             {% if features.ai_assistant %}
-            <div class="col-12 col-lg-6 d-flex flex-column justify-content-center">
+            <div class="col-12 col-lg-6 d-flex flex-column justify-content-start">
+                <h3 class="ax-quiz-col-heading">AI Asistan'a sor</h3>
                 <div class="ax-ai-chips">
                     <button type="button" class="ax-ai-chip" onclick="event.stopPropagation(); window.axOpenAiWidget && axOpenAiWidget('Ölçeğimin güvenirliğini nasıl ölçerim?')">Ölçeğimin güvenirliğini nasıl ölçerim?</button>
                     <button type="button" class="ax-ai-chip" onclick="event.stopPropagation(); window.axOpenAiWidget && axOpenAiWidget('İki grup ortalamasını karşılaştırmak istiyorum')">İki grup ortalamasını karşılaştırmak istiyorum</button>
                     <button type="button" class="ax-ai-chip" onclick="event.stopPropagation(); window.axOpenAiWidget && axOpenAiWidget('Verim normal dağılmıyor, ne yapmalıyım?')">Verim normal dağılmıyor, ne yapmalıyım?</button>
+                    <button type="button" class="ax-ai-chip" onclick="event.stopPropagation(); window.axOpenAiWidget && axOpenAiWidget('Hangi korelasyon testini kullanmalıyım?')">Hangi korelasyon testini kullanmalıyım?</button>
+                    <button type="button" class="ax-ai-chip" onclick="event.stopPropagation(); window.axOpenAiWidget && axOpenAiWidget('Örneklem büyüklüğümü nasıl hesaplarım?')">Örneklem büyüklüğümü nasıl hesaplarım?</button>
                 </div>
+                <a href="#" class="ax-ai-chips-more" onclick="event.preventDefault(); event.stopPropagation(); window.axOpenAiWidget && axOpenAiWidget()">Kendi sorunu sor →</a>
             </div>
             <div class="col-12 col-lg-6">
             {% else %}
             <div class="col-12 col-lg-8">
             {% endif %}
+                <h3 class="ax-quiz-col-heading text-center text-lg-start">ya da Arena'da kendini test et</h3>
                 <div class="ax-quiz-card"
                      id="axQuizApp"
                      data-authenticated="{{ user.is_authenticated|yesno:'true,false' }}"
