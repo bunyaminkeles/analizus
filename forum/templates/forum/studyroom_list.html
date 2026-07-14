@@ -50,6 +50,20 @@
     </a>
     {% endif %}
     {% endif %}
+    {% if room_types %}
+    <div class="vr opacity-25 mx-1"></div>
+    {% for value, label in room_types %}
+    <a href="?durum={{ status_filter }}{% if selected_category %}&kategori={{ selected_category }}{% endif %}&tip={{ value }}"
+       class="btn btn-sm {% if selected_type == value %}btn-outline-warning{% else %}btn-outline-secondary text-white-50{% endif %}">
+      {{ label }}
+    </a>
+    {% endfor %}
+    {% if selected_type %}
+    <a href="?durum={{ status_filter }}{% if selected_category %}&kategori={{ selected_category }}{% endif %}" class="btn btn-sm btn-outline-secondary text-white-50">
+      <i class="bi bi-x"></i> Temizle
+    </a>
+    {% endif %}
+    {% endif %}
   </div>
 
   {% if rooms %}

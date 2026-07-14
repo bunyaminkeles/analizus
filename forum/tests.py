@@ -592,6 +592,49 @@ def test_studyroom_lock_screen_hides_activity_metrics_when_zero(client, user):
 
 
 @pytest.mark.django_db
+def test_studyroom_existing_room_defaults_to_study_type(user):
+    """Mevcut/yeni oda room_type belirtilmezse varsayılan 'study' olur (veri migrasyonu yok kararı)."""
+    room = _create_test_room(user, 'test-odasi-varsayilan-tip')
+    assert room.room_type == 'study'
+
+
+@pytest.mark.django_db
+def test_studyroom_create_saves_room_type(client, staff_user):
+    """Oda açma formunda seçilen room_type kaydedilir (staff eşik/e-posta doğrulamasından muaf)."""
+    from forum.models import StudyRoom, Profile
+    from django.utils import timezone
+    import datetime
+    Profile.objects.get_or_create(user=staff_user)
+
+    client.force_login(staff_user)
+    client.post('/odalar/ac/', {
+        'title': 'Proje Odası Test Başlığı',
+        'description': 'Bu oda proje çalışması için açıldı, en az elli karakter olmalı.',
+        'goal': 'Proje hedefi en az yirmi karakter olmalı',
+        'room_type': 'project',
+        'ends_at': (timezone.now() + datetime.timedelta(days=30)).strftime('%Y-%m-%d'),
+        'max_members': 20,
+        'is_public': '1',
+        'terms_agreed': '1',
+    })
+    room = StudyRoom.objects.get(title='Proje Odası Test Başlığı')
+    assert room.room_type == 'project'
+
+
+@pytest.mark.django_db
+def test_studyroom_list_type_chip_only_for_used_types(client, user):
+    """Yalnızca fiilen kullanılan oda tiplerinden filtre chip'i üretilir."""
+    room = _create_test_room(user, 'test-odasi-tip-chip')
+    room.room_type = 'project'
+    room.save(update_fields=['room_type'])
+
+    response = client.get('/odalar/')
+    content = response.content.decode()
+    assert 'Proje Odası' in content
+    assert 'Tez Danışmanlığı' not in content
+
+
+@pytest.mark.django_db
 def test_studyroom_lock_screen_shows_activity_metrics_when_posts_exist(client, user):
     """Gönderi varken misafir kilit ekranında gönderi sayısı görünür, ama mesaj içeriği/yazar sızmaz."""
     from forum.models import StudyRoomMembership, StudyRoomPost

@@ -1452,10 +1452,17 @@ class StudyRoom(models.Model):
         ('rejected', 'Reddedildi'),
     ]
 
+    ROOM_TYPES = [
+        ('study', 'Çalışma Grubu'),
+        ('project', 'Proje Odası'),
+        ('thesis', 'Tez Danışmanlığı'),
+    ]
+
     title = models.CharField(max_length=200, verbose_name="Oda Başlığı")
     slug = models.SlugField(unique=True, max_length=220)
     description = models.TextField(verbose_name="Açıklama")
     goal = models.TextField(max_length=500, verbose_name="Hedef")
+    room_type = models.CharField(max_length=10, choices=ROOM_TYPES, default='study', verbose_name="Oda Tipi")
     category = models.ForeignKey(
         'Category', on_delete=models.SET_NULL, null=True, blank=True,
         related_name='study_rooms', verbose_name="İlgili Kategori"

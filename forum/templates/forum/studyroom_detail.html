@@ -31,6 +31,11 @@
           {% elif room.status == 'archived' %}
           <span class="badge bg-secondary">Arşivlendi</span>
           {% endif %}
+          {% if room.room_type == 'project' %}
+          <span class="badge" style="background:rgba(99,102,241,0.18);color:#a5b4fc;">Proje Odası</span>
+          {% elif room.room_type == 'thesis' %}
+          <span class="badge" style="background:rgba(234,179,8,0.18);color:#fde68a;">Tez Danışmanlığı</span>
+          {% endif %}
           {% if room.category %}
           <span class="badge bg-white bg-opacity-10 text-white-50">{{ room.category.title }}</span>
           {% endif %}
@@ -50,7 +55,7 @@
         <div class="d-inline-flex gap-2 align-items-start p-2 rounded mb-3" style="background:rgba(255,255,255,0.04);">
           <i class="bi bi-bullseye text-warning mt-1 flex-shrink-0"></i>
           <div>
-            <span class="text-white-50" style="font-size:.72rem;">Hedef:</span>
+            <span class="text-white-50" style="font-size:.72rem;">{% if room.room_type == 'project' %}Proje Hedefi:{% else %}Hedef:{% endif %}</span>
             <p class="text-white small mb-0">{{ room.goal }}</p>
           </div>
         </div>

@@ -18,9 +18,16 @@
       {% endif %}
     </div>
 
-    {% if room.category %}
-    <div class="mb-2">
+    {% if room.room_type != 'study' or room.category %}
+    <div class="mb-2 d-flex flex-wrap gap-1">
+      {% if room.room_type == 'project' %}
+      <span class="badge" style="font-size:.68rem;background:rgba(99,102,241,0.18);color:#a5b4fc;">Proje Odası</span>
+      {% elif room.room_type == 'thesis' %}
+      <span class="badge" style="font-size:.68rem;background:rgba(234,179,8,0.18);color:#fde68a;">Tez Danışmanlığı</span>
+      {% endif %}
+      {% if room.category %}
       <span class="badge bg-white bg-opacity-10 text-white-50" style="font-size:.68rem;">{{ room.category.title }}</span>
+      {% endif %}
     </div>
     {% endif %}
 

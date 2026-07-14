@@ -3248,6 +3248,7 @@ def studyroom_list(request):
 
     category_slug = request.GET.get('kategori', '')
     status_filter = request.GET.get('durum', 'active')
+    type_filter = request.GET.get('tip', '')
 
     rooms = StudyRoom.objects.select_related('creator__profile', 'category').prefetch_related('memberships')
 
@@ -3260,6 +3261,13 @@ def studyroom_list(request):
 
     if category_slug:
         rooms = rooms.filter(category__slug=category_slug)
+
+    # Yalnızca fiilen kullanılan oda tiplerinden chip üret (durum/kategori filtresine göre)
+    used_types_set = set(rooms.values_list('room_type', flat=True).distinct())
+    room_types = [(value, label) for value, label in StudyRoom.ROOM_TYPES if value in used_types_set]
+
+    if type_filter:
+        rooms = rooms.filter(room_type=type_filter)
 
     rooms = rooms.annotate(member_cnt=Count('memberships', distinct=True)).order_by('-created_at')
 
@@ -3283,6 +3291,8 @@ def studyroom_list(request):
         'ineligibility_reason': reason,
         'STUDYROOM_MIN_POINTS': STUDYROOM_MIN_POINTS,
         'recent_archived': recent_archived,
+        'room_types': room_types,
+        'selected_type': type_filter,
     })
 
 
@@ -3300,6 +3310,9 @@ def studyroom_create(request):
         title = request.POST.get('title', '').strip()
         description = request.POST.get('description', '').strip()
         goal = request.POST.get('goal', '').strip()
+        room_type = request.POST.get('room_type', 'study')
+        if room_type not in dict(StudyRoom.ROOM_TYPES):
+            room_type = 'study'
         category_id = request.POST.get('category', '')
         ends_at_str = request.POST.get('ends_at', '')
         max_members = int(request.POST.get('max_members', 20))
@@ -3348,6 +3361,7 @@ def studyroom_create(request):
                 title=title,
                 description=description,
                 goal=goal,
+                room_type=room_type,
                 creator_bio=creator_bio,
                 category=category,
                 creator=request.user,
@@ -3391,6 +3405,7 @@ def studyroom_create(request):
         return render(request, 'forum/studyroom_create.html', {
             'terms': STUDYROOM_TERMS,
             'categories': categories,
+            'room_types': StudyRoom.ROOM_TYPES,
             'errors': errors,
             'post': request.POST,
             'STUDYROOM_MAX_DAYS': STUDYROOM_MAX_DAYS,
@@ -3406,6 +3421,7 @@ def studyroom_create(request):
     return render(request, 'forum/studyroom_create.html', {
         'terms': STUDYROOM_TERMS,
         'categories': categories,
+        'room_types': StudyRoom.ROOM_TYPES,
         'default_end': default_end,
         'max_end': max_end,
         'min_end': min_end,
