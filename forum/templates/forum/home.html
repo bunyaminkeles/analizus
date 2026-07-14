@@ -728,33 +728,29 @@ document.addEventListener('DOMContentLoaded', function () {
 </script>
 
 <!-- =====================================================
-     FAZ 5: AI ASİSTAN SORU CHİP'LERİ
+     KENDİNİ TEST ET (AI Asistan soru chip'leri + Arena quiz birleşik)
      ===================================================== -->
-{% if features.ai_assistant %}
-<section class="ax-ai-chips-section">
+<section class="ax-quiz-section" id="istatistik-arenasi">
     <div class="container">
-        <div class="row justify-content-center">
+        <div class="row justify-content-center mb-4">
             <div class="col-12 col-lg-8 text-center">
                 <h2 class="ax-section-title mb-2" style="font-size:1.5rem;">Hangi testi kullanmalıyım?</h2>
-                <p class="ax-section-subtitle mb-4">Bir soru seç, AI Asistan hemen cevaplasın.</p>
+                <p class="ax-section-subtitle">Bir soru seç, AI Asistan hemen cevaplasın — ya da kendini Arena'da test et.</p>
+            </div>
+        </div>
+        <div class="row g-4 justify-content-center">
+            {% if features.ai_assistant %}
+            <div class="col-12 col-lg-6 d-flex flex-column justify-content-center">
                 <div class="ax-ai-chips">
                     <button type="button" class="ax-ai-chip" onclick="event.stopPropagation(); window.axOpenAiWidget && axOpenAiWidget('Ölçeğimin güvenirliğini nasıl ölçerim?')">Ölçeğimin güvenirliğini nasıl ölçerim?</button>
                     <button type="button" class="ax-ai-chip" onclick="event.stopPropagation(); window.axOpenAiWidget && axOpenAiWidget('İki grup ortalamasını karşılaştırmak istiyorum')">İki grup ortalamasını karşılaştırmak istiyorum</button>
                     <button type="button" class="ax-ai-chip" onclick="event.stopPropagation(); window.axOpenAiWidget && axOpenAiWidget('Verim normal dağılmıyor, ne yapmalıyım?')">Verim normal dağılmıyor, ne yapmalıyım?</button>
                 </div>
             </div>
-        </div>
-    </div>
-</section>
-{% endif %}
-
-<!-- =====================================================
-     FAZ 3: KENDİNİ TEST ET (Quiz)
-     ===================================================== -->
-<section class="ax-quiz-section" id="istatistik-arenasi">
-    <div class="container">
-        <div class="row justify-content-center">
+            <div class="col-12 col-lg-6">
+            {% else %}
             <div class="col-12 col-lg-8">
+            {% endif %}
                 <div class="ax-quiz-card"
                      id="axQuizApp"
                      data-authenticated="{{ user.is_authenticated|yesno:'true,false' }}"

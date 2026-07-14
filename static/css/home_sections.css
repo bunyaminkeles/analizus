@@ -1457,10 +1457,6 @@ a.ax-stat-pill:hover {
 /* =============================================================
    FAZ 5 — AI ASİSTAN SORU CHİP'LERİ
    ============================================================= */
-.ax-ai-chips-section {
-    padding: var(--ax-space-6, 24px) 0;
-}
-
 .ax-ai-chips {
     display: flex;
     flex-wrap: wrap;
