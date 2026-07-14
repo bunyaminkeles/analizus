@@ -705,6 +705,11 @@ class SiteSettingsAdmin(ModelAdmin):
             ),
             'classes': ('collapse',),
         }),
+        ('Ana Sayfa', {
+            'description': 'Ana sayfa istatistik şeridi görünürlük eşiği.',
+            'fields': ('stat_min_display',),
+            'classes': ('collapse',),
+        }),
         ('Limitler', {
             'description': 'Scraping: TR Dizin, OpenAlex, OAI-PMH scraperlarının çekebileceği maks. kayıt (default 5000). Analiz: Tez & Makale Analizi için işlenecek maks. kayıt (Render için 500, Hetzner için 2000–5000 önerilir).',
             'fields': ('scrap_max_records', 'analiz_max_records'),

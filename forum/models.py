@@ -1241,6 +1241,13 @@ class SiteSettings(models.Model):
         default=False, verbose_name="AI Çözümler (Agentic) Sayfası"
     )
 
+    # Ana Sayfa
+    stat_min_display = models.PositiveIntegerField(
+        default=25,
+        verbose_name="Sayaç Minimum Gösterim Eşiği",
+        help_text="Ana sayfa istatistik şeridinde bu değerin altındaki sayaçlar hiç gösterilmez (ör. '1 Açık İlan' yerine gizlenir). Eşik üstü sayaç sayısı 2'den azsa şerit tamamen gizlenir.",
+    )
+
     # Analiz Limitleri
     analiz_max_records = models.PositiveIntegerField(
         default=500,

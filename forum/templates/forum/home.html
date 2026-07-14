@@ -796,37 +796,37 @@ document.addEventListener('DOMContentLoaded', function () {
 <section class="ax-stats-section">
     <div class="container">
         <div class="row text-center justify-content-center">
-            {% if total_users %}
+            {% if total_users >= stat_min_display %}
             <div class="col-6 col-md-2 mb-4 mb-md-0">
                 <div class="ax-stat-item" data-target="{{ total_users }}" data-suffix="+">0+</div>
                 <div class="ax-stat-label">Aktif Üye</div>
             </div>
             {% endif %}
-            {% if total_topics %}
+            {% if total_topics >= stat_min_display %}
             <div class="col-6 col-md-2 mb-4 mb-md-0">
                 <div class="ax-stat-item" data-target="{{ total_topics }}" data-suffix="+">0+</div>
                 <div class="ax-stat-label">Akademik Konu</div>
             </div>
             {% endif %}
-            {% if total_posts %}
+            {% if total_posts >= stat_min_display %}
             <div class="col-6 col-md-2 mb-4 mb-md-0">
                 <div class="ax-stat-item" data-target="{{ total_posts }}" data-suffix="+">0+</div>
                 <div class="ax-stat-label">Forum Gönderisi</div>
             </div>
             {% endif %}
-            {% if completed_jobs %}
+            {% if completed_jobs >= stat_min_display %}
             <div class="col-6 col-md-2 mb-4 mb-md-0">
                 <div class="ax-stat-item" data-target="{{ completed_jobs }}" data-suffix="+">0+</div>
                 <div class="ax-stat-label">Tamamlanan Proje</div>
             </div>
             {% endif %}
-            {% if completed_analyses %}
+            {% if completed_analyses >= stat_min_display %}
             <div class="col-6 col-md-2 mb-4 mb-md-0">
                 <div class="ax-stat-item" data-target="{{ completed_analyses }}" data-suffix="+">0+</div>
                 <div class="ax-stat-label">Tamamlanan Analiz</div>
             </div>
             {% endif %}
-            {% if open_jobs_count %}
+            {% if open_jobs_count >= stat_min_display %}
             <div class="col-6 col-md-2 mb-4 mb-md-0">
                 <a href="{% url 'job_list' %}" style="text-decoration:none;">
                     <div class="ax-stat-item" style="color:#38bdf8;">{{ open_jobs_count }}</div>
@@ -834,13 +834,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 </a>
             </div>
             {% endif %}
-            {% if weekly_new_users %}
+            {% if weekly_new_users >= stat_min_display %}
             <div class="col-6 col-md-2 mb-4 mb-md-0">
                 <div class="ax-stat-item" style="color:#6366f1;">+{{ weekly_new_users }}</div>
                 <div class="ax-stat-label">Bu Hafta Yeni Üye</div>
             </div>
             {% endif %}
-            {% if online_experts %}
+            {% if online_experts >= stat_min_display %}
             <div class="col-6 col-md-2">
                 <div class="ax-stat-item" style="color:#22c55e;">{{ online_experts }}</div>
                 <div class="ax-stat-label">Şu An Çevrimiçi Uzman</div>

@@ -201,10 +201,14 @@ def home(request):
     completed_analyses = home_stats['completed_analyses']
     online_experts = home_stats['online_experts']
 
-    has_any_stats = any([
-        total_users, total_topics, total_posts, completed_jobs,
-        completed_analyses, open_jobs_count, weekly_new_users, online_experts,
-    ])
+    stat_min_display = SiteSettings.load().stat_min_display
+    stats_above_threshold = [
+        v for v in [
+            total_users, total_topics, total_posts, completed_jobs,
+            completed_analyses, open_jobs_count, weekly_new_users, online_experts,
+        ] if v >= stat_min_display
+    ]
+    has_any_stats = len(stats_above_threshold) >= 2
 
     featured_experts = _get_featured_experts()
 
@@ -276,6 +280,7 @@ def home(request):
         'completed_analyses': completed_analyses,
         'online_experts': online_experts,
         'has_any_stats': has_any_stats,
+        'stat_min_display': stat_min_display,
         'featured_experts': featured_experts,
         # Widgetlar
         'recent_topics': recent_topics,
