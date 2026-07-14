@@ -262,14 +262,26 @@ def home(request):
         p_count=Count('proposals', distinct=True)
     ).order_by('-created_at')[:5]
 
-    # Vitrin İlanları (Öne Çıkanlar) - Süresi dolmamış olanlar
-    featured_jobs = FreelanceJob.objects.filter(
+    # Vitrin İlanları (Öne Çıkanlar) - Süresi dolmamış olanlar. Vitrin ücretli
+    # ürün olduğundan sayısı ne olursa olsun (eşiksiz) gösterilir. Vitrin < 3
+    # ise kalan slotlar organik (vitrinsiz, en yeni açık) ilanlarla 3'e
+    # tamamlanır — vitrin >= 3 olduğunda organik ilan eklenmez.
+    showcase_jobs = list(FreelanceJob.objects.filter(
         status='open',
         is_featured=True,
         featured_until__gte=timezone.now()  # Vitrin süresi dolmamış
     ).select_related('owner', 'category').annotate(
         p_count=Count('proposals', distinct=True)
-    ).order_by('-created_at')[:4]
+    ).order_by('-created_at')[:4])
+
+    organic_fill_count = 3 - len(showcase_jobs)
+    if organic_fill_count > 0:
+        showcase_jobs += list(FreelanceJob.objects.filter(
+            status='open',
+            is_featured=False,
+        ).select_related('owner', 'category').annotate(
+            p_count=Count('proposals', distinct=True)
+        ).order_by('-created_at')[:organic_fill_count])
 
     # Bağış Katmanları
     donation_tiers = DonationTier.objects.filter(is_active=True).order_by('min_amount')
@@ -300,7 +312,7 @@ def home(request):
         'latest_posts': latest_posts,
         'recent_jobs': recent_jobs,
         'recent_reviews': recent_reviews,
-        'featured_jobs': featured_jobs,
+        'showcase_jobs': showcase_jobs,
     }
     return render(request, 'forum/home.html', context)
 

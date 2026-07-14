@@ -628,7 +628,7 @@
 </section>
 {% endif %}
 
-{% if featured_jobs %}
+{% if showcase_jobs %}
 <section style="padding-bottom: var(--ax-space-8, 32px);">
     <div class="container">
         <div class="ax-section-card">
@@ -638,26 +638,42 @@
                 <a href="{% url 'job_list' %}" class="ms-auto ax-section-card__more">Tümünü Gör →</a>
             </div>
             <div class="ax-section-card__body">
+                {% if showcase_jobs|length == 1 %}
+                {% with job=showcase_jobs.0 %}
+                <div class="p-3 border border-warning border-opacity-25 rounded-3 position-relative bg-dark bg-opacity-25 job-card-hover d-flex align-items-center justify-content-between flex-wrap gap-2">
+                    <div class="d-flex align-items-center gap-2" style="min-width:0;">
+                        {% if job.is_featured %}<span class="badge bg-warning text-dark" style="font-size: 0.65rem;">VİTRİN</span>{% endif %}
+                        <a href="{% url 'job_detail' pk=job.pk %}" class="text-white text-decoration-none fw-semibold text-truncate stretched-link">{{ job.title }}</a>
+                    </div>
+                    <div class="d-flex align-items-center gap-3 small flex-shrink-0">
+                        <span class="text-secondary"><i class="bi bi-clock"></i> {{ job.created_at|timesince }} önce</span>
+                        <span class="fw-bold" style="color: var(--ax-accent-warning);">{{ job.budget_max|floatformat:0 }} ₺'ye kadar</span>
+                        {% if job.p_count %}<span class="text-secondary"><i class="bi bi-people"></i> {{ job.p_count }} Teklif</span>{% endif %}
+                    </div>
+                </div>
+                {% endwith %}
+                {% else %}
                 <div class="row g-3">
-                    {% for job in featured_jobs %}
+                    {% for job in showcase_jobs %}
                     <div class="col-md-6 col-lg-4">
                         <div class="p-3 border border-warning border-opacity-25 rounded-3 h-100 position-relative bg-dark bg-opacity-25 job-card-hover">
                             <div class="d-flex justify-content-between align-items-start mb-2">
                                 <h6 class="mb-0 text-white text-truncate" style="max-width: 80%;">
                                     <a href="{% url 'job_detail' pk=job.pk %}" class="text-white text-decoration-none stretched-link">{{ job.title }}</a>
                                 </h6>
-                                <span class="badge bg-warning text-dark" style="font-size: 0.65rem;">VİTRİN</span>
+                                {% if job.is_featured %}<span class="badge bg-warning text-dark" style="font-size: 0.65rem;">VİTRİN</span>{% endif %}
                             </div>
                             <p class="small text-muted mb-3">{{ job.description|truncatechars:90 }}</p>
                             <div class="d-flex justify-content-between align-items-center small">
                                 <span class="text-secondary"><i class="bi bi-clock"></i> {{ job.created_at|timesince }} önce</span>
-                                <span class="text-primary fw-bold">{{ job.budget_max|floatformat:0 }} ₺'ye kadar</span>
-                                <span class="text-secondary ms-3"><i class="bi bi-people"></i> {{ job.p_count }} Teklif</span>
+                                <span class="fw-bold" style="color: var(--ax-accent-warning);">{{ job.budget_max|floatformat:0 }} ₺'ye kadar</span>
+                                {% if job.p_count %}<span class="text-secondary ms-3"><i class="bi bi-people"></i> {{ job.p_count }} Teklif</span>{% endif %}
                             </div>
                         </div>
                     </div>
                     {% endfor %}
                 </div>
+                {% endif %}
             </div>
         </div>
     </div>
