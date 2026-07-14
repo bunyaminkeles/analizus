@@ -227,7 +227,6 @@
                         {% if features.ai_assistant %}
                         <a href="{% url 'ai_assistant' %}" class="site-nav__dropdown-item" role="menuitem">AI Asistan</a>
                         {% endif %}
-                        <a href="{% url 'studyroom_list' %}" class="site-nav__dropdown-item" role="menuitem">Çalışma Odaları</a>
                         {% if features.transcript %}
                         <a href="{% url 'transcript:form' %}" class="site-nav__dropdown-item" role="menuitem">YouTube Transcript İndir</a>
                         {% endif %}
@@ -245,6 +244,26 @@
                 <a href="{% url 'job_list' %}" class="site-nav__link">Pazaryeri</a>
                 {% endif %}
 
+                <!-- Topluluk Dropdown -->
+                <div class="site-nav__dropdown-wrap">
+                    <button class="site-nav__link site-nav__dropdown-btn {% if '/forum/' in request.path or '/odalar/' in request.path or '/blog/' in request.path %}is-active{% endif %}"
+                            aria-expanded="false" aria-haspopup="true"
+                            data-dropdown="topluluk">
+                        Topluluk
+                        <svg class="site-nav__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+                    </button>
+                    <div class="site-nav__dropdown" id="dropdown-topluluk" role="menu">
+                        <a href="{% url 'forum_index' %}" class="site-nav__dropdown-item" role="menuitem">
+                            <i class="bi bi-chat-square-text-fill me-1" style="color:#818cf8;"></i> Forum
+                        </a>
+                        <a href="{% url 'studyroom_list' %}" class="site-nav__dropdown-item" role="menuitem">Çalışma Odaları</a>
+                        <a href="{% url 'home' %}#istatistik-arenasi" class="site-nav__dropdown-item" role="menuitem">İstatistik Arena</a>
+                        {% if features.blog %}
+                        <a href="{% url 'blog_list' %}" class="site-nav__dropdown-item" role="menuitem">Blog</a>
+                        {% endif %}
+                    </div>
+                </div>
+
                 <a href="{% url 'proje_talebi' %}" class="site-nav__link">Proje Talebi</a>
 
                 <!-- Kurumsal Dropdown -->
@@ -256,13 +275,7 @@
                         <svg class="site-nav__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
                     </button>
                     <div class="site-nav__dropdown" id="dropdown-kurumsal" role="menu">
-                        <a href="{% url 'forum_index' %}" class="site-nav__dropdown-item" role="menuitem">
-                            <i class="bi bi-chat-square-text-fill me-1" style="color:#818cf8;"></i> Forum
-                        </a>
-                        <div class="site-nav__dropdown-divider"></div>
-                        {% if features.blog %}
-                        <a href="{% url 'blog_list' %}" class="site-nav__dropdown-item" role="menuitem">Blog</a>
-                        {% endif %}
+                        <a href="{% url 'about' %}#analizusun-farki" class="site-nav__dropdown-item" role="menuitem">Neden Analizus?</a>
                         {% if features.agentic_landing %}
                         <a href="{% url 'ai_cozumler' %}" class="site-nav__dropdown-item" role="menuitem">AI Çözümler</a>
                         {% endif %}
@@ -309,7 +322,9 @@
                                 <circle cx="12" cy="7" r="4"/>
                             </svg>
                             <span>{{ user.username }}</span>
-                            <span class="site-nav__rep">★ {{ user_profile.reputation }}</span>
+                            <span class="site-nav__rep" title="Puanını Arena'da artır" role="link" tabindex="0"
+                                  onclick="event.stopPropagation(); window.location.href='{% url 'home' %}#istatistik-arenasi';"
+                                  onkeydown="if(event.key==='Enter'){event.stopPropagation(); window.location.href='{% url 'home' %}#istatistik-arenasi';}">★ {{ user_profile.reputation }}</span>
                         </button>
                         <div class="site-nav__dropdown site-nav__dropdown--end" id="dropdown-user" role="menu">
                             <a href="{% url 'profile_detail' username=user.username %}" class="site-nav__dropdown-item" role="menuitem">Profilim</a>
@@ -390,7 +405,6 @@
                     <a href="{% url 'tableau_dashboard' %}" class="nav-drawer__link">Tableau Analizleri</a>
                     <a href="{% url 'hangi_test' %}" class="nav-drawer__link">Hangi Test?</a>
                     {% if features.ai_assistant %}<a href="{% url 'ai_assistant' %}" class="nav-drawer__link">AI Asistan</a>{% endif %}
-                    <a href="{% url 'studyroom_list' %}" class="nav-drawer__link">Çalışma Odaları</a>
                 </div>
             </div>
 
@@ -400,6 +414,19 @@
 
             {% if features.market %}<a href="{% url 'job_list' %}" class="nav-drawer__link">Pazaryeri</a>{% endif %}
 
+            <div>
+                <button class="nav-drawer__accordion-btn" aria-expanded="false" data-accordion="mob-topluluk">
+                    Topluluk
+                    <svg class="nav-drawer__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
+                </button>
+                <div class="nav-drawer__accordion-body" id="mob-topluluk">
+                    <a href="{% url 'forum_index' %}" class="nav-drawer__link">Forum</a>
+                    <a href="{% url 'studyroom_list' %}" class="nav-drawer__link">Çalışma Odaları</a>
+                    <a href="{% url 'home' %}#istatistik-arenasi" class="nav-drawer__link">İstatistik Arena</a>
+                    {% if features.blog %}<a href="{% url 'blog_list' %}" class="nav-drawer__link">Blog</a>{% endif %}
+                </div>
+            </div>
+
             <a href="{% url 'proje_talebi' %}" class="nav-drawer__link">Proje Talebi</a>
 
             <div>
@@ -408,8 +435,7 @@
                     <svg class="nav-drawer__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
                 </button>
                 <div class="nav-drawer__accordion-body" id="mob-kurumsal">
-                    <a href="{% url 'forum_index' %}" class="nav-drawer__link">Forum</a>
-                    {% if features.blog %}<a href="{% url 'blog_list' %}" class="nav-drawer__link">Blog</a>{% endif %}
+                    <a href="{% url 'about' %}#analizusun-farki" class="nav-drawer__link">Neden Analizus?</a>
                     {% if features.agentic_landing %}<a href="{% url 'ai_cozumler' %}" class="nav-drawer__link">AI Çözümler</a>{% endif %}
                     <a href="{% url 'about' %}" class="nav-drawer__link">Hakkımızda</a>
                     <a href="{% url 'contact' %}" class="nav-drawer__link">İletişim</a>
