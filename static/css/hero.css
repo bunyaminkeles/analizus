@@ -330,22 +330,22 @@
     justify-content: center;
     flex-wrap: wrap;
     gap: 8px;
-    margin-top: var(--ax-space-3);
-    margin-bottom: var(--ax-space-4);
-    font-size: var(--ax-text-xs);
-    color: var(--ax-text-muted);
+    margin: 0 0 var(--ax-space-3);
+    font-size: var(--ax-text-sm);
+    color: var(--ax-text-secondary);
 }
 .ax-hero__kazima-bar span:first-child {
-    opacity: .6;
-    font-size: var(--ax-text-xs);
+    opacity: .8;
+    font-size: var(--ax-text-sm);
 }
 .ax-hero__kazima-bar a {
-    color: var(--ax-text-muted);
+    color: var(--ax-color-primary);
     text-decoration: none;
+    font-weight: var(--ax-font-medium);
     transition: color var(--ax-transition-fast);
 }
 .ax-hero__kazima-bar a:hover {
-    color: var(--ax-text-secondary);
+    color: var(--ax-text-primary);
 }
 .ax-hero__kazima-sep { display: none; }
 
@@ -383,49 +383,25 @@
 }
 
 /* -------------------------------------------------------------
-   KİTLE YÖNLENDİRME BANDI — hero altı, "kimsin?" sorusu
+   KAPI KARTLARI ALTI — veri kazıma + kurumsal yönlendirme şeridi
    ------------------------------------------------------------- */
-.ax-audience-band {
-    padding: var(--ax-space-4) 0;
+.ax-below-doors {
+    padding: var(--ax-space-5) 0 var(--ax-space-6);
     border-top: 1px solid var(--ax-border);
-    border-bottom: 1px solid var(--ax-border);
 }
 
-.ax-audience-band__row {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: var(--ax-space-4);
-    flex-wrap: wrap;
-}
-
-.ax-audience-band__pill {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--ax-space-2);
-    padding: 8px 20px;
+.ax-below-doors__corporate {
+    margin: 0;
     font-size: var(--ax-text-sm);
-    font-weight: var(--ax-font-medium);
+}
+
+.ax-below-doors__corporate a {
     color: var(--ax-text-secondary);
-    background: var(--ax-bg-tertiary);
-    border: 1px solid var(--ax-border);
-    border-radius: var(--ax-radius-full);
     text-decoration: none;
-    transition: border-color var(--ax-transition-fast), color var(--ax-transition-fast), transform var(--ax-transition-fast);
+    font-weight: var(--ax-font-medium);
+    transition: color var(--ax-transition-fast);
 }
 
-.ax-audience-band__pill:hover {
-    border-color: var(--ax-accent-primary);
-    color: var(--ax-text-primary);
-    transform: translateY(-1px);
-}
-
-@media (max-width: 479px) {
-    .ax-audience-band__row {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    .ax-audience-band__pill {
-        justify-content: center;
-    }
+.ax-below-doors__corporate a:hover {
+    color: var(--ax-color-primary);
 }

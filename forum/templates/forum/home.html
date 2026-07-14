@@ -36,25 +36,15 @@
 .ax-hero__secondary-cta{text-align:center;margin:0 0 var(--ax-space-6)}
 .ax-hero__secondary-cta a{color:var(--ax-text-muted);font-size:var(--ax-text-sm);text-decoration:none;transition:color var(--ax-transition-fast)}
 .ax-hero__secondary-cta a:hover{color:var(--ax-text-secondary)}
-.ax-hero__kazima-bar{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:8px;margin-top:var(--ax-space-3);margin-bottom:var(--ax-space-4);font-size:var(--ax-text-xs);color:var(--ax-text-muted)}
-.ax-hero__kazima-bar span:first-child{opacity:.6;font-size:var(--ax-text-xs)}
-.ax-hero__kazima-bar a{color:var(--ax-text-muted);text-decoration:none;transition:color var(--ax-transition-fast)}
-.ax-hero__kazima-bar a:hover{color:var(--ax-text-secondary)}
-.ax-hero__kazima-sep{display:none}
 .ax-hero__personal{display:flex;align-items:center;flex-wrap:wrap;gap:var(--ax-space-2);justify-content:center;padding:var(--ax-space-3) var(--ax-space-6);background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.2);border-radius:var(--ax-radius-full);font-size:var(--ax-text-sm)}
 .ax-hero__personal-badge{font-weight:var(--ax-font-semibold);color:var(--ax-color-primary)}
 .ax-hero__personal-text{color:var(--ax-text-muted)}
 .ax-hero__personal-link{color:var(--ax-text-secondary);text-decoration:none;font-weight:var(--ax-font-medium);transition:color var(--ax-transition-fast)}
 .ax-hero__personal-link:hover{color:var(--ax-color-primary)}
 .ax-hero__personal-sep{color:var(--ax-border-hover)}
-.ax-audience-band{padding:var(--ax-space-4) 0;border-top:1px solid var(--ax-border);border-bottom:1px solid var(--ax-border)}
-.ax-audience-band__row{display:flex;align-items:center;justify-content:center;gap:var(--ax-space-4);flex-wrap:wrap}
-.ax-audience-band__pill{display:inline-flex;align-items:center;gap:var(--ax-space-2);padding:8px 20px;font-size:var(--ax-text-sm);font-weight:var(--ax-font-medium);color:var(--ax-text-secondary);background:var(--ax-bg-tertiary);border:1px solid var(--ax-border);border-radius:var(--ax-radius-full);text-decoration:none;transition:border-color var(--ax-transition-fast),color var(--ax-transition-fast),transform var(--ax-transition-fast)}
-.ax-audience-band__pill:hover{border-color:var(--ax-accent-primary);color:var(--ax-text-primary);transform:translateY(-1px)}
-@media (max-width:479px){.ax-audience-band__row{flex-direction:column;align-items:stretch}.ax-audience-band__pill{justify-content:center}}
 </style>
-<link rel="stylesheet" href="{% static 'css/hero.css' %}?v=0105" media="print" onload="this.media='all'">
-<noscript><link rel="stylesheet" href="{% static 'css/hero.css' %}?v=0105"></noscript>
+<link rel="stylesheet" href="{% static 'css/hero.css' %}?v=0106" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="{% static 'css/hero.css' %}?v=0106"></noscript>
 
 <!-- Ekranın altındaki bölümlerin CSS'i — render'ı engellemesin diye deferred (base.html'deki font/bootstrap deseniyle aynı) -->
 <link rel="stylesheet" href="{% static 'css/cards.css' %}?v=0100" media="print" onload="this.media='all'">
@@ -255,15 +245,6 @@
                     <a href="{% url 'proje_talebi' %}?source=hero">Ya da bu işi 24 saatte bir uzmana bırak →</a>
                 </p>
 
-                <!-- Veri kazıma atıf satırı -->
-                <p class="ax-hero__kazima-bar">
-                    <span>Kodsuz veri kazıma:</span>
-                    <a href="{% url 'yoktez:landing' %}">YÖK Tez</a>
-                    <a href="{% url 'trdizin:landing' %}">TR Dizin</a>
-                    <a href="{% url 'openalex:landing' %}">OpenAlex</a>
-                    <a href="{% url 'oaipmh:landing' %}">Üniversite Arşivleri</a>
-                </p>
-
                 {% if user.is_authenticated and user_profile.segment %}
                 <div class="ax-hero__personal mt-4">
                     {% if user_profile.segment == 'student' %}
@@ -304,18 +285,6 @@
 
 
             </div>
-        </div>
-    </div>
-</section>
-
-<!-- =====================================================
-     FAZ 1: KİTLE YÖNLENDİRME BANDI
-     ===================================================== -->
-<section class="ax-audience-band">
-    <div class="container">
-        <div class="ax-audience-band__row">
-            <a href="{% url 'analiz_home' %}" class="ax-audience-band__pill">🎓 Tez / makale analizi için buradayım</a>
-            <a href="{% url 'proje_talebi' %}?source=home_corporate" class="ax-audience-band__pill">🏢 Kurumsal veri ve otomasyon projeleri</a>
         </div>
     </div>
 </section>
@@ -475,6 +444,23 @@
     </div>
 </section>
 
+<!-- =====================================================
+     KAPI KARTLARI ALTI: VERİ KAZIMA + KURUMSAL YÖNLENDİRME
+     ===================================================== -->
+<section class="ax-below-doors">
+    <div class="container text-center">
+        <p class="ax-hero__kazima-bar">
+            <span>Kodsuz veri kazıma:</span>
+            <a href="{% url 'yoktez:landing' %}">YÖK Tez</a>
+            <a href="{% url 'trdizin:landing' %}">TR Dizin</a>
+            <a href="{% url 'openalex:landing' %}">OpenAlex</a>
+            <a href="{% url 'oaipmh:landing' %}">Üniversite Arşivleri</a>
+        </p>
+        <p class="ax-below-doors__corporate">
+            <a href="{% url 'proje_talebi' %}?source=home_corporate">Kurumsal veri, otomasyon veya AI projesi mi? → Proje talebi bırakın</a>
+        </p>
+    </div>
+</section>
 
 {% if featured_jobs %}
 <section style="padding-bottom: var(--ax-space-8, 32px);">
