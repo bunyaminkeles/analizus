@@ -1,11 +1,26 @@
 import requests
 from bs4 import BeautifulSoup
 from django.core.cache import cache
+from django.utils.text import slugify
 import logging
 from asgiref.sync import async_to_sync
 from channels.layers import get_channel_layer
 
 logger = logging.getLogger(__name__)
+
+_TR_SLUG_MAP = str.maketrans({
+    'ı': 'i', 'İ': 'i', 'ş': 's', 'Ş': 's', 'ğ': 'g', 'Ğ': 'g',
+    'ü': 'u', 'Ü': 'u', 'ö': 'o', 'Ö': 'o', 'ç': 'c', 'Ç': 'c',
+})
+
+
+def turkish_slugify(value, max_length=None):
+    """Türkçe karakterleri (ı/ş/ğ/ü/ö/ç) ASCII karşılıklarına çevirip slugify eder.
+    Django'nun standart slugify'ı dotless-ı gibi ASCII karşılığı olmayan karakterleri
+    sessizce siler (örn. "Çalışmaya" -> "calsmaya") — bu yardımcı önce transliterasyon yapar.
+    """
+    slug = slugify(value.translate(_TR_SLUG_MAP))
+    return slug[:max_length] if max_length else slug
 
 def get_altinkaynak_rates():
     """

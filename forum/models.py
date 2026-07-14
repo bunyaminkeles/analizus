@@ -1533,9 +1533,9 @@ class StudyRoom(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            from django.utils.text import slugify
+            from .utils import turkish_slugify
             import uuid
-            base = slugify(self.title)[:180]
+            base = turkish_slugify(self.title, max_length=180)
             self.slug = f"{base}-{uuid.uuid4().hex[:6]}"
         super().save(*args, **kwargs)
 

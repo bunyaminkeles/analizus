@@ -1,6 +1,6 @@
 from django.contrib.sitemaps import Sitemap
 from django.urls import reverse
-from .models import Topic, Category, FreelanceJob, BlogPost
+from .models import Topic, Category, FreelanceJob, BlogPost, StudyRoom
 
 
 class StaticViewSitemap(Sitemap):
@@ -108,6 +108,21 @@ class IstatistikSitemap(Sitemap):
 
     def location(self, item):
         return f'/analiz/{item}/'
+
+
+class StudyRoomSitemap(Sitemap):
+    """Aktif çalışma odaları için sitemap — arşiv/onay bekleyen odalar dahil edilmez"""
+    changefreq = 'daily'
+    priority = 0.6
+
+    def items(self):
+        return StudyRoom.objects.filter(status='active').order_by('-created_at')
+
+    def lastmod(self, obj):
+        return obj.updated_at
+
+    def location(self, obj):
+        return reverse('studyroom_detail', kwargs={'slug': obj.slug})
 
 
 class ToolsSitemap(Sitemap):

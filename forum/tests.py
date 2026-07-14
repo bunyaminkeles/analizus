@@ -634,6 +634,68 @@ def test_studyroom_list_type_chip_only_for_used_types(client, user):
     assert 'Tez Danışmanlığı' not in content
 
 
+# ─── Odalar Faz 8: SEO + Teknik Temizlik ───────────────────────────────────────
+
+@pytest.mark.django_db
+def test_studyroom_slug_keeps_turkish_i(user):
+    """Yeni oda slug'ı Türkçe 'ı' harfini düşürmez (eski slugify bug'ı)."""
+    from forum.models import StudyRoom
+    from django.utils import timezone
+    import datetime
+    room = StudyRoom.objects.create(
+        title='Akademik Çalışmaya Destek Odası', description='desc', goal='Test hedefi',
+        creator=user, ends_at=timezone.now() + datetime.timedelta(days=30), status='active',
+    )
+    assert room.slug.startswith('akademik-calismaya-destek-odasi')
+
+
+@pytest.mark.django_db
+def test_studyroom_existing_slug_untouched_on_resave(user):
+    """Mevcut bir odanın slug'ı yeniden save() edilince değişmez (URL kırılmasın)."""
+    room = _create_test_room(user, 'sabit-slug-degismez')
+    original_slug = room.slug
+    room.description = 'güncellenmiş açıklama'
+    room.save()
+    assert room.slug == original_slug
+
+
+@pytest.mark.django_db
+def test_studyroom_active_room_in_sitemap(user):
+    """Aktif oda sitemap'te yer alır, arşiv/onay bekleyen odalar yer almaz."""
+    from forum.sitemaps import StudyRoomSitemap
+    active_room = _create_test_room(user, 'sitemap-aktif-oda')
+    archived_room = _create_test_room(user, 'sitemap-arsiv-oda')
+    archived_room.status = 'archived'
+    archived_room.save(update_fields=['status'])
+
+    items = list(StudyRoomSitemap().items())
+    assert active_room in items
+    assert archived_room not in items
+
+
+@pytest.mark.django_db
+def test_sitemap_xml_includes_active_studyroom_url(client, user):
+    """/sitemap.xml endpoint'i aktif odanın URL'ini gerçekten içerir (sitemap kaydı doğru bağlanmış)."""
+    room = _create_test_room(user, 'sitemap-xml-oda')
+    response = client.get('/sitemap.xml')
+    assert response.status_code == 200
+    assert f'/odalar/{room.slug}/' in response.content.decode()
+
+
+@pytest.mark.django_db
+def test_studyroom_jsonld_only_on_active_room(client, user):
+    """JSON-LD Event schema yalnızca aktif odada basılır, arşivde basılmaz (base.html'in kendi
+    genel JSON-LD'si her sayfada var olduğundan "@type": "Event" için özel olarak bakılır)."""
+    room = _create_test_room(user, 'jsonld-aktif-oda')
+    response = client.get(f'/odalar/{room.slug}/')
+    assert '"@type": "Event"' in response.content.decode()
+
+    room.status = 'archived'
+    room.save(update_fields=['status'])
+    response = client.get(f'/odalar/{room.slug}/')
+    assert '"@type": "Event"' not in response.content.decode()
+
+
 @pytest.mark.django_db
 def test_studyroom_list_hero_renders(client):
     """Faz 7: /odalar/ hero bölümü ve cinematic görseller doğru render edilir."""

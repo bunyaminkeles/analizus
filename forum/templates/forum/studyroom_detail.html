@@ -2,6 +2,9 @@
 {% load static %}
 
 {% block title %}{{ room.title }} — Çalışma Odası{% endblock %}
+{% block meta_description %}{{ room.description|striptags|truncatewords:25 }}{% endblock %}
+{% block og_title %}{{ room.title }} — Çalışma Odası{% endblock %}
+{% block og_description %}{{ room.description|striptags|truncatewords:25 }}{% endblock %}
 
 {% block extra_head %}
 <link rel="stylesheet" href="{% static 'css/expert_card.css' %}?v=0003" media="print" onload="this.media='all'">
@@ -9,6 +12,31 @@
 {% endblock %}
 
 {% block content %}
+
+{% if room.status == 'active' %}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "Event",
+    "name": "{{ room.title|escapejs }}",
+    "description": "{{ room.description|striptags|escapejs|truncatechars:300 }}",
+    "startDate": "{{ room.created_at|date:'c' }}",
+    "endDate": "{{ room.ends_at|date:'c' }}",
+    "eventAttendanceMode": "https://schema.org/OnlineEventAttendanceMode",
+    "eventStatus": "https://schema.org/EventScheduled",
+    "location": {
+        "@type": "VirtualLocation",
+        "url": "{{ request.build_absolute_uri }}"
+    },
+    "organizer": {
+        "@type": "Organization",
+        "name": "Analizus",
+        "url": "https://www.analizus.com"
+    }
+}
+</script>
+{% endif %}
+
 <div class="container py-4" style="max-width:900px;">
 
   <div class="mb-3">

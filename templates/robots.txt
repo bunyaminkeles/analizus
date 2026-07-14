@@ -31,7 +31,12 @@ Disallow: /market/job/*/delete/
 
 # Çalışma odaları — aksiyon
 Disallow: /odalar/ac/
-Disallow: /studyroom/*/katil/
+Disallow: /odalar/*/katil/
+Disallow: /odalar/*/bekle/
+Disallow: /odalar/*/duzenle/
+Disallow: /odalar/*/sil/
+Disallow: /odalar/*/onayla/
+Disallow: /odalar/*/davet/
 
 # Blog — oluşturma
 Disallow: /blog/create/
