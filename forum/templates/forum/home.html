@@ -745,44 +745,15 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 <!-- =====================================================
-     FAZ 8: GÜNDEMDEKİ TARTIŞMALAR + AKADEMİK HABERLER
+     GÜNDEMDEKİ TARTIŞMALAR
      ===================================================== -->
-{% if popular_topics or science_news %}
+{% if popular_topics %}
 <section class="ax-wide-section">
     <div class="container">
         <div class="row g-4">
-
-            <!-- Gündemdeki Tartışmalar -->
-            {% if popular_topics %}
-            <div class="col-12{% if science_news %} col-md-6{% endif %}">
+            <div class="col-12">
                 {% include 'forum/partials/_gundem_tartismalar.html' with gundem_show_link=True gundem_zero_rule=True %}
             </div>
-            {% endif %}
-
-            <!-- Akademik Haberler -->
-            {% if science_news %}
-            <div class="col-12{% if popular_topics %} col-md-6{% endif %}">
-                <div class="ax-section-card">
-                    <div class="ax-section-card__header" style="color: #38bdf8;">
-                        <i class="bi bi-newspaper"></i>
-                        <span>Akademik Haberler</span>
-                    </div>
-                    <div class="ax-section-card__body">
-                        <div class="row g-2">
-                            {% for item in science_news|slice:":6" %}
-                            <div class="col-12 col-sm-6">
-                                <a href="{{ item.url }}" target="_blank" rel="noopener noreferrer" class="ax-news-row">
-                                    <span class="ax-news-row__title">{{ item.title|truncatechars:55 }}</span>
-                                    {% if item.source %}<span class="ax-news-row__meta"><i class="bi bi-broadcast"></i> {{ item.source }}</span>{% endif %}
-                                </a>
-                            </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {% endif %}
-
         </div>
     </div>
 </section>
