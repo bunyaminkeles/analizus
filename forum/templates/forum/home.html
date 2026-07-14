@@ -462,6 +462,170 @@
     </div>
 </section>
 
+<!-- =====================================================
+     NASIL ÇALIŞIYORUZ? (Kompakt Timeline)
+     ===================================================== -->
+<section class="ax-timeline-section">
+    <div class="container">
+        <h2 class="ax-timeline-heading">Nasıl Çalışıyoruz?</h2>
+        <div class="ax-timeline">
+            <div class="ax-timeline-step">
+                <div class="ax-timeline-num">1</div>
+                <div class="ax-timeline-content">
+                    <strong>İlan Aç</strong>
+                    <span>Projenizi ve ihtiyacınızı ücretsiz olarak yayınlayın.</span>
+                </div>
+            </div>
+            <div class="ax-timeline-arrow">→</div>
+            <div class="ax-timeline-step">
+                <div class="ax-timeline-num">2</div>
+                <div class="ax-timeline-content">
+                    <strong>Teklif Al</strong>
+                    <span>Alanında uzman kişiler metodoloji ve fiyat teklifleri sunar.</span>
+                </div>
+            </div>
+            <div class="ax-timeline-arrow">→</div>
+            <div class="ax-timeline-step">
+                <div class="ax-timeline-num">3</div>
+                <div class="ax-timeline-content">
+                    <strong>Analiz & Raporlama</strong>
+                    <span>Seçtiğiniz uzman analizi yapar, APA 7 formatında raporlar.</span>
+                </div>
+            </div>
+            <div class="ax-timeline-arrow">→</div>
+            <div class="ax-timeline-step">
+                <div class="ax-timeline-num">4</div>
+                <div class="ax-timeline-content">
+                    <strong>Teslim & Revizyon</strong>
+                    <span>Raporu teslim alırsınız. Danışman/hakem dönüşleri için revizyon hakkınız var.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- =====================================================
+     PLATFORM İSTATİSTİKLERİ BANDI
+     ===================================================== -->
+{% if has_any_stats %}
+<section class="ax-stats-section">
+    <div class="container">
+        <div class="row text-center justify-content-center">
+            {% if total_users >= stat_min_display %}
+            <div class="col-6 col-md-2 mb-4 mb-md-0">
+                <div class="ax-stat-item" data-target="{{ total_users }}" data-suffix="+">0+</div>
+                <div class="ax-stat-label">Aktif Üye</div>
+            </div>
+            {% endif %}
+            {% if total_topics >= stat_min_display %}
+            <div class="col-6 col-md-2 mb-4 mb-md-0">
+                <div class="ax-stat-item" data-target="{{ total_topics }}" data-suffix="+">0+</div>
+                <div class="ax-stat-label">Akademik Konu</div>
+            </div>
+            {% endif %}
+            {% if total_posts >= stat_min_display %}
+            <div class="col-6 col-md-2 mb-4 mb-md-0">
+                <div class="ax-stat-item" data-target="{{ total_posts }}" data-suffix="+">0+</div>
+                <div class="ax-stat-label">Forum Gönderisi</div>
+            </div>
+            {% endif %}
+            {% if completed_jobs >= stat_min_display %}
+            <div class="col-6 col-md-2 mb-4 mb-md-0">
+                <div class="ax-stat-item" data-target="{{ completed_jobs }}" data-suffix="+">0+</div>
+                <div class="ax-stat-label">Tamamlanan Proje</div>
+            </div>
+            {% endif %}
+            {% if completed_analyses >= stat_min_display %}
+            <div class="col-6 col-md-2 mb-4 mb-md-0">
+                <div class="ax-stat-item" data-target="{{ completed_analyses }}" data-suffix="+">0+</div>
+                <div class="ax-stat-label">Tamamlanan Analiz</div>
+            </div>
+            {% endif %}
+            {% if open_jobs_count >= stat_min_display %}
+            <div class="col-6 col-md-2 mb-4 mb-md-0">
+                <a href="{% url 'job_list' %}" style="text-decoration:none;">
+                    <div class="ax-stat-item" style="color:#38bdf8;">{{ open_jobs_count }}</div>
+                    <div class="ax-stat-label">Açık İlan</div>
+                </a>
+            </div>
+            {% endif %}
+            {% if weekly_new_users >= stat_min_display %}
+            <div class="col-6 col-md-2 mb-4 mb-md-0">
+                <div class="ax-stat-item" style="color:#6366f1;">+{{ weekly_new_users }}</div>
+                <div class="ax-stat-label">Bu Hafta Yeni Üye</div>
+            </div>
+            {% endif %}
+            {% if online_experts >= stat_min_display %}
+            <div class="col-6 col-md-2">
+                <div class="ax-stat-item" style="color:#22c55e;">{{ online_experts }}</div>
+                <div class="ax-stat-label">Şu An Çevrimiçi Uzman</div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- =====================================================
+     GEMINI GÖREV 6: GÜVEN UNSURLARI (Platform Güvencesi)
+     ===================================================== -->
+<section class="ax-trust-section py-5 my-4" style="background: rgba(16, 185, 129, 0.05); border-top: 1px solid rgba(16, 185, 129, 0.1); border-bottom: 1px solid rgba(16, 185, 129, 0.1);">
+    <div class="container">
+        <div class="row text-center justify-content-center g-4">
+            <div class="col-lg-4 col-md-6">
+                <div class="d-flex align-items-center justify-content-center justify-content-md-start gap-3">
+                    <i class="bi bi-shield-check text-success" style="font-size: 2.5rem;"></i>
+                    <div class="text-start">
+                        <h3 class="text-white mb-1" style="font-size: 1.1rem; font-weight: 700;">Platform Güvencesi</h3>
+                        <span class="text-muted small">Güvenli ödeme ve KVKK uyumlu veri gizliliği. Verileriniz 3. şahıslara aktarılmaz.</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="d-flex align-items-center justify-content-center justify-content-md-start gap-3">
+                    <i class="bi bi-patch-check-fill text-info" style="font-size: 2.5rem;"></i>
+                    <div class="text-start">
+                        <h3 class="text-white mb-1" style="font-size: 1.1rem; font-weight: 700;">Uzman Doğrulama</h3>
+                        <span class="text-muted small">Platformdaki analistler akademik ve yetkinlik doğrulamasından geçer.</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6">
+                <div class="d-flex align-items-center justify-content-center justify-content-md-start gap-3">
+                    <i class="bi bi-star-fill text-warning" style="font-size: 2.5rem;"></i>
+                    <div class="text-start">
+                        <h3 class="text-white mb-1" style="font-size: 1.1rem; font-weight: 700;">Şeffaf Değerlendirme</h3>
+                        <span class="text-muted small">Sadece projeyi tamamlayanların yapabildiği 5 yıldızlı dürüst yorum sistemi.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- =====================================================
+     FAZ 3: UZMAN VİTRİNİ
+     ===================================================== -->
+{% if featured_experts|length >= 3 %}
+<section class="ax-expert-section py-5">
+    <div class="container">
+        <h2 class="ax-section-title text-center mb-2">Uzmanlarla Tanış</h2>
+        <p class="ax-section-subtitle text-center mb-5">Alanında doğrulanmış uzmanlarımızdan birkaçı.</p>
+        <div class="ax-expert-grid">
+            {% include 'forum/partials/_expert_showcase.html' %}
+        </div>
+        <div class="text-center mt-5">
+            <a href="{% url 'uzman_dizini' %}" class="ax-btn ax-btn--primary me-2">Tüm Uzmanlar</a>
+            {% if user.is_authenticated %}
+            <a href="{% url 'forum_index' %}" class="ax-btn ax-btn--ghost">Uzman Olarak Katıl</a>
+            {% else %}
+            <a href="{% url 'register' %}" class="ax-btn ax-btn--ghost">Uzman Olarak Katıl</a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
 {% if featured_jobs %}
 <section style="padding-bottom: var(--ax-space-8, 32px);">
     <div class="container">
@@ -583,48 +747,6 @@ document.addEventListener('DOMContentLoaded', function () {
 {% endif %}
 
 <!-- =====================================================
-     NASIL ÇALIŞIYORUZ? (Kompakt Timeline)
-     ===================================================== -->
-<section class="ax-timeline-section">
-    <div class="container">
-        <h2 class="ax-timeline-heading">Nasıl Çalışıyoruz?</h2>
-        <div class="ax-timeline">
-            <div class="ax-timeline-step">
-                <div class="ax-timeline-num">1</div>
-                <div class="ax-timeline-content">
-                    <strong>İlan Aç</strong>
-                    <span>Projenizi ve ihtiyacınızı ücretsiz olarak yayınlayın.</span>
-                </div>
-            </div>
-            <div class="ax-timeline-arrow">→</div>
-            <div class="ax-timeline-step">
-                <div class="ax-timeline-num">2</div>
-                <div class="ax-timeline-content">
-                    <strong>Teklif Al</strong>
-                    <span>Alanında uzman kişiler metodoloji ve fiyat teklifleri sunar.</span>
-                </div>
-            </div>
-            <div class="ax-timeline-arrow">→</div>
-            <div class="ax-timeline-step">
-                <div class="ax-timeline-num">3</div>
-                <div class="ax-timeline-content">
-                    <strong>Analiz & Raporlama</strong>
-                    <span>Seçtiğiniz uzman analizi yapar, APA 7 formatında raporlar.</span>
-                </div>
-            </div>
-            <div class="ax-timeline-arrow">→</div>
-            <div class="ax-timeline-step">
-                <div class="ax-timeline-num">4</div>
-                <div class="ax-timeline-content">
-                    <strong>Teslim & Revizyon</strong>
-                    <span>Raporu teslim alırsınız. Danışman/hakem dönüşleri için revizyon hakkınız var.</span>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- =====================================================
      FAZ 3: KENDİNİ TEST ET (Quiz)
      ===================================================== -->
 <section class="ax-quiz-section" id="istatistik-arenasi">
@@ -652,6 +774,72 @@ document.addEventListener('DOMContentLoaded', function () {
 </section>
 
 <!-- =====================================================
+     FAZ 4: AI ÇAĞI BÖLÜMÜ (Doğrulama + Agentic)
+     ===================================================== -->
+<section class="ax-verify-band">
+    <div class="container">
+        <h2 class="ax-ai-era-heading">AI çağında iki yol</h2>
+        <div class="ax-ai-era-grid{% if not features.agentic_landing %} ax-ai-era-grid--single{% endif %}">
+            <div class="ax-brand-visual">
+                <picture>
+                    <source media="(min-width: 768px)" srcset="{% static 'img/ai-dogrulama.webp' %}">
+                    <img src="{% static 'img/ai-dogrulama-mobile.webp' %}"
+                         alt="" width="800" height="446"
+                         loading="lazy" decoding="async"
+                         class="ax-brand-visual__img">
+                </picture>
+                <div class="ax-brand-visual__overlay">
+                    <div class="ax-verify-band__inner">
+                        <i class="bi bi-patch-question-fill ax-verify-band__icon" aria-hidden="true"></i>
+                        <div class="ax-verify-band__content">
+                            <h3 class="ax-verify-band__title">Analizini AI'a mı yaptırdın?</h3>
+                            <p class="ax-verify-band__text">ChatGPT hızlıdır ama jüri karşısında güvence vermez. Uzmanımız 24 saatte kontrol etsin, doğrulama raporu versin.</p>
+                        </div>
+                        <a href="{% url 'proje_talebi' %}?source=verification" class="ax-btn ax-btn--primary ax-verify-band__cta">Doğrulama Talep Et</a>
+                    </div>
+                </div>
+            </div>
+            {% if features.agentic_landing %}
+            <div class="ax-agentic-band-card">
+                <picture>
+                    <source media="(min-width: 768px)" srcset="{% static 'img/agentic-hero.webp' %}">
+                    <img src="{% static 'img/agentic-hero-mobile.webp' %}"
+                         alt="" width="800" height="446"
+                         loading="lazy" decoding="async"
+                         class="ax-agentic-band-card__img">
+                </picture>
+                <div class="ax-agentic-band-card__overlay">
+                    <div class="ax-verify-band__inner">
+                        <i class="bi bi-cpu ax-verify-band__icon" aria-hidden="true"></i>
+                        <div class="ax-verify-band__content">
+                            <h3 class="ax-verify-band__title">Analizleriniz siz uyurken çalışsın.</h3>
+                            <p class="ax-verify-band__text">Veri toplayan, analiz eden, raporlayan AI sistemleri — uzman gözetiminde kuruyoruz.</p>
+                        </div>
+                        <a href="{% url 'ai_cozumler' %}" class="ax-btn ax-btn--primary ax-verify-band__cta">AI Çözümlerini Keşfet</a>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- =====================================================
+     GÜNDEMDEKİ TARTIŞMALAR
+     ===================================================== -->
+{% if popular_topics %}
+<section class="ax-wide-section">
+    <div class="container">
+        <div class="row g-4">
+            <div class="col-12">
+                {% include 'forum/partials/_gundem_tartismalar.html' with gundem_show_link=True gundem_zero_rule=True %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- =====================================================
      FAZ 1 (GÖREV 4): SIKÇA SORULAN SORULAR (SSS)
      ===================================================== -->
 <section class="ax-faq-section py-5">
@@ -666,7 +854,7 @@ document.addEventListener('DOMContentLoaded', function () {
         <div class="row justify-content-center">
             <div class="col-lg-8">
                 <div class="accordion ax-accordion" id="faqAccordion">
-                    
+
                     <!-- Soru 1 -->
                     <div class="accordion-item">
                         <h2 class="accordion-header" id="faqOne">
@@ -737,196 +925,6 @@ document.addEventListener('DOMContentLoaded', function () {
                         </div>
                     </div>
 
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-
-<!-- =====================================================
-     GÜNDEMDEKİ TARTIŞMALAR
-     ===================================================== -->
-{% if popular_topics %}
-<section class="ax-wide-section">
-    <div class="container">
-        <div class="row g-4">
-            <div class="col-12">
-                {% include 'forum/partials/_gundem_tartismalar.html' with gundem_show_link=True gundem_zero_rule=True %}
-            </div>
-        </div>
-    </div>
-</section>
-{% endif %}
-
-
-<!-- =====================================================
-     PLATFORM İSTATİSTİKLERİ BANDI
-     ===================================================== -->
-{% if has_any_stats %}
-<section class="ax-stats-section">
-    <div class="container">
-        <div class="row text-center justify-content-center">
-            {% if total_users >= stat_min_display %}
-            <div class="col-6 col-md-2 mb-4 mb-md-0">
-                <div class="ax-stat-item" data-target="{{ total_users }}" data-suffix="+">0+</div>
-                <div class="ax-stat-label">Aktif Üye</div>
-            </div>
-            {% endif %}
-            {% if total_topics >= stat_min_display %}
-            <div class="col-6 col-md-2 mb-4 mb-md-0">
-                <div class="ax-stat-item" data-target="{{ total_topics }}" data-suffix="+">0+</div>
-                <div class="ax-stat-label">Akademik Konu</div>
-            </div>
-            {% endif %}
-            {% if total_posts >= stat_min_display %}
-            <div class="col-6 col-md-2 mb-4 mb-md-0">
-                <div class="ax-stat-item" data-target="{{ total_posts }}" data-suffix="+">0+</div>
-                <div class="ax-stat-label">Forum Gönderisi</div>
-            </div>
-            {% endif %}
-            {% if completed_jobs >= stat_min_display %}
-            <div class="col-6 col-md-2 mb-4 mb-md-0">
-                <div class="ax-stat-item" data-target="{{ completed_jobs }}" data-suffix="+">0+</div>
-                <div class="ax-stat-label">Tamamlanan Proje</div>
-            </div>
-            {% endif %}
-            {% if completed_analyses >= stat_min_display %}
-            <div class="col-6 col-md-2 mb-4 mb-md-0">
-                <div class="ax-stat-item" data-target="{{ completed_analyses }}" data-suffix="+">0+</div>
-                <div class="ax-stat-label">Tamamlanan Analiz</div>
-            </div>
-            {% endif %}
-            {% if open_jobs_count >= stat_min_display %}
-            <div class="col-6 col-md-2 mb-4 mb-md-0">
-                <a href="{% url 'job_list' %}" style="text-decoration:none;">
-                    <div class="ax-stat-item" style="color:#38bdf8;">{{ open_jobs_count }}</div>
-                    <div class="ax-stat-label">Açık İlan</div>
-                </a>
-            </div>
-            {% endif %}
-            {% if weekly_new_users >= stat_min_display %}
-            <div class="col-6 col-md-2 mb-4 mb-md-0">
-                <div class="ax-stat-item" style="color:#6366f1;">+{{ weekly_new_users }}</div>
-                <div class="ax-stat-label">Bu Hafta Yeni Üye</div>
-            </div>
-            {% endif %}
-            {% if online_experts >= stat_min_display %}
-            <div class="col-6 col-md-2">
-                <div class="ax-stat-item" style="color:#22c55e;">{{ online_experts }}</div>
-                <div class="ax-stat-label">Şu An Çevrimiçi Uzman</div>
-            </div>
-            {% endif %}
-        </div>
-    </div>
-</section>
-{% endif %}
-
-<!-- =====================================================
-     FAZ 4: AI ÇAĞI BÖLÜMÜ (Doğrulama + Agentic)
-     ===================================================== -->
-<section class="ax-verify-band">
-    <div class="container">
-        <h2 class="ax-ai-era-heading">AI çağında iki yol</h2>
-        <div class="ax-ai-era-grid{% if not features.agentic_landing %} ax-ai-era-grid--single{% endif %}">
-            <div class="ax-brand-visual">
-                <picture>
-                    <source media="(min-width: 768px)" srcset="{% static 'img/ai-dogrulama.webp' %}">
-                    <img src="{% static 'img/ai-dogrulama-mobile.webp' %}"
-                         alt="" width="800" height="446"
-                         loading="lazy" decoding="async"
-                         class="ax-brand-visual__img">
-                </picture>
-                <div class="ax-brand-visual__overlay">
-                    <div class="ax-verify-band__inner">
-                        <i class="bi bi-patch-question-fill ax-verify-band__icon" aria-hidden="true"></i>
-                        <div class="ax-verify-band__content">
-                            <h3 class="ax-verify-band__title">Analizini AI'a mı yaptırdın?</h3>
-                            <p class="ax-verify-band__text">ChatGPT hızlıdır ama jüri karşısında güvence vermez. Uzmanımız 24 saatte kontrol etsin, doğrulama raporu versin.</p>
-                        </div>
-                        <a href="{% url 'proje_talebi' %}?source=verification" class="ax-btn ax-btn--primary ax-verify-band__cta">Doğrulama Talep Et</a>
-                    </div>
-                </div>
-            </div>
-            {% if features.agentic_landing %}
-            <div class="ax-agentic-band-card">
-                <picture>
-                    <source media="(min-width: 768px)" srcset="{% static 'img/agentic-hero.webp' %}">
-                    <img src="{% static 'img/agentic-hero-mobile.webp' %}"
-                         alt="" width="800" height="446"
-                         loading="lazy" decoding="async"
-                         class="ax-agentic-band-card__img">
-                </picture>
-                <div class="ax-agentic-band-card__overlay">
-                    <div class="ax-verify-band__inner">
-                        <i class="bi bi-cpu ax-verify-band__icon" aria-hidden="true"></i>
-                        <div class="ax-verify-band__content">
-                            <h3 class="ax-verify-band__title">Analizleriniz siz uyurken çalışsın.</h3>
-                            <p class="ax-verify-band__text">Veri toplayan, analiz eden, raporlayan AI sistemleri — uzman gözetiminde kuruyoruz.</p>
-                        </div>
-                        <a href="{% url 'ai_cozumler' %}" class="ax-btn ax-btn--primary ax-verify-band__cta">AI Çözümlerini Keşfet</a>
-                    </div>
-                </div>
-            </div>
-            {% endif %}
-        </div>
-    </div>
-</section>
-
-<!-- =====================================================
-     FAZ 3: UZMAN VİTRİNİ
-     ===================================================== -->
-{% if featured_experts|length >= 3 %}
-<section class="ax-expert-section py-5">
-    <div class="container">
-        <h2 class="ax-section-title text-center mb-2">Uzmanlarla Tanış</h2>
-        <p class="ax-section-subtitle text-center mb-5">Alanında doğrulanmış uzmanlarımızdan birkaçı.</p>
-        <div class="ax-expert-grid">
-            {% include 'forum/partials/_expert_showcase.html' %}
-        </div>
-        <div class="text-center mt-5">
-            <a href="{% url 'uzman_dizini' %}" class="ax-btn ax-btn--primary me-2">Tüm Uzmanlar</a>
-            {% if user.is_authenticated %}
-            <a href="{% url 'forum_index' %}" class="ax-btn ax-btn--ghost">Uzman Olarak Katıl</a>
-            {% else %}
-            <a href="{% url 'register' %}" class="ax-btn ax-btn--ghost">Uzman Olarak Katıl</a>
-            {% endif %}
-        </div>
-    </div>
-</section>
-{% endif %}
-
-<!-- =====================================================
-     GEMINI GÖREV 6: GÜVEN UNSURLARI (Platform Güvencesi)
-     ===================================================== -->
-<section class="ax-trust-section py-5 my-4" style="background: rgba(16, 185, 129, 0.05); border-top: 1px solid rgba(16, 185, 129, 0.1); border-bottom: 1px solid rgba(16, 185, 129, 0.1);">
-    <div class="container">
-        <div class="row text-center justify-content-center g-4">
-            <div class="col-lg-4 col-md-6">
-                <div class="d-flex align-items-center justify-content-center justify-content-md-start gap-3">
-                    <i class="bi bi-shield-check text-success" style="font-size: 2.5rem;"></i>
-                    <div class="text-start">
-                        <h3 class="text-white mb-1" style="font-size: 1.1rem; font-weight: 700;">Platform Güvencesi</h3>
-                        <span class="text-muted small">Güvenli ödeme ve KVKK uyumlu veri gizliliği. Verileriniz 3. şahıslara aktarılmaz.</span>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-6">
-                <div class="d-flex align-items-center justify-content-center justify-content-md-start gap-3">
-                    <i class="bi bi-patch-check-fill text-info" style="font-size: 2.5rem;"></i>
-                    <div class="text-start">
-                        <h3 class="text-white mb-1" style="font-size: 1.1rem; font-weight: 700;">Uzman Doğrulama</h3>
-                        <span class="text-muted small">Platformdaki analistler akademik ve yetkinlik doğrulamasından geçer.</span>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-6">
-                <div class="d-flex align-items-center justify-content-center justify-content-md-start gap-3">
-                    <i class="bi bi-star-fill text-warning" style="font-size: 2.5rem;"></i>
-                    <div class="text-start">
-                        <h3 class="text-white mb-1" style="font-size: 1.1rem; font-weight: 700;">Şeffaf Değerlendirme</h3>
-                        <span class="text-muted small">Sadece projeyi tamamlayanların yapabildiği 5 yıldızlı dürüst yorum sistemi.</span>
-                    </div>
                 </div>
             </div>
         </div>
