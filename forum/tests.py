@@ -202,6 +202,25 @@ _ZERO_HOME_STATS = {
 }
 
 
+def _make_qualified_expert(username, bio='Test bio', title=''):
+    """Ana sayfa uzman vitrini (Faz 9) foto+bio+en az 1 skill zorunlu kılıyor —
+    bu üçü olmayan profil vitrine hiç çıkmaz. Testlerde vitrine girecek her
+    profil bu üçünü taşımalı; ayrıca vitrin `length >= 3` şartı taşıdığından
+    tek bir uzmanı test etmek için de en az 3 nitelikli profil gerekir."""
+    from forum.models import Profile, JobCategory
+    user_obj = User.objects.create_user(username=username, password='testpass123')
+    profile, _ = Profile.objects.get_or_create(user=user_obj)
+    profile.rank = 'expert'
+    profile.is_public = True
+    profile.bio = bio
+    profile.title = title
+    profile.avatar = 'avatars/test.jpg'
+    profile.save()
+    category, _ = JobCategory.objects.get_or_create(title='Test Kategori')
+    profile.skills.add(category)
+    return profile
+
+
 @pytest.mark.django_db
 def test_home_stats_band_hidden_when_all_zero(client):
     """Hiç veri yokken istatistik bandı (ax-stats-section) hiç render edilmez."""
@@ -212,13 +231,11 @@ def test_home_stats_band_hidden_when_all_zero(client):
 
 @pytest.mark.django_db
 def test_home_stats_band_visible_when_nonzero(client, user):
-    """En az bir metrik doluyken bant görünür ve o metnik render edilir."""
-    from forum.models import Topic, Post, Section, Category
-    section = Section.objects.create(title='Test Bölüm', order=1)
-    category = Category.objects.create(title='Test Kat', slug='test-kat', section=section)
-    Topic.objects.create(subject='Test Konu', category=category, starter=user)
-
-    _prime_home_caches()
+    """Eşik üstü en az 2 metrik doluyken bant görünür ve metrikler render edilir
+    (Faz 7 — SiteSettings.stat_min_display eşiği; tek metrik yetmez, has_any_stats
+    en az 2 eşik-üstü sayaç şartı koşuyor)."""
+    stats = dict(_ZERO_HOME_STATS, total_topics=30, total_users=30)
+    _prime_home_caches(stats_override=stats)
     response = client.get('/')
     content = response.content.decode()
     assert 'ax-stats-section' in content
@@ -227,13 +244,10 @@ def test_home_stats_band_visible_when_nonzero(client, user):
 
 @pytest.mark.django_db
 def test_home_completed_jobs_stat_hidden_when_zero(client, user):
-    """Diğer sayaçlar doluyken tamamlanan proje 0'sa yalnızca o kutu gizlenir."""
-    from forum.models import Topic, Section, Category
-    section = Section.objects.create(title='Test Bölüm', order=1)
-    category = Category.objects.create(title='Test Kat', slug='test-kat', section=section)
-    Topic.objects.create(subject='Test Konu', category=category, starter=user)
-
-    _prime_home_caches()
+    """Diğer sayaçlar eşik üstü doluyken tamamlanan proje eşik altındaysa (0)
+    yalnızca o kutu gizlenir."""
+    stats = dict(_ZERO_HOME_STATS, total_topics=30, total_users=30, completed_jobs=0)
+    _prime_home_caches(stats_override=stats)
     response = client.get('/')
     content = response.content.decode()
     assert 'Aktif Üye' in content
@@ -242,14 +256,9 @@ def test_home_completed_jobs_stat_hidden_when_zero(client, user):
 
 @pytest.mark.django_db
 def test_home_completed_jobs_stat_visible_when_nonzero(client, user):
-    """Tamamlanan iş varsa 'Tamamlanan Proje' kutusu render edilir."""
-    from forum.models import FreelanceJob
-    FreelanceJob.objects.create(
-        owner=user, title='Test İş', description='desc',
-        budget_max=1000, status='completed',
-    )
-
-    _prime_home_caches()
+    """Tamamlanan proje eşik üstündeyse 'Tamamlanan Proje' kutusu render edilir."""
+    stats = dict(_ZERO_HOME_STATS, total_topics=30, completed_jobs=30)
+    _prime_home_caches(stats_override=stats)
     response = client.get('/')
     assert 'Tamamlanan Proje' in response.content.decode()
 
@@ -258,12 +267,22 @@ def test_home_completed_jobs_stat_visible_when_nonzero(client, user):
 def test_expert_showcase_includes_expert_with_zero_completed_jobs(client, user):
     """0 tamamlanan projesi olan uzman da Uzmanlarla Tanış vitrininde görünür —
     vitrin artık tamamlanan proje sayısına göre filtrelenmiyor/sıralanmıyor,
-    yalnızca reputation (akademik puan) sıralaması kullanılıyor."""
+    yalnızca reputation (akademik puan) sıralaması kullanılıyor. Vitrin foto+bio+
+    en az 1 skill zorunlu kılıyor (Faz 9) ve `length >= 3` şartı taşıyor — bu
+    yüzden test kullanıcısı nitelikli hâle getirilip 2 dolgu uzmanla birlikte
+    3'e tamamlanıyor."""
     from forum.models import Profile
     profile, _ = Profile.objects.get_or_create(user=user)
     profile.rank = 'expert'
     profile.is_public = True
+    profile.bio = 'Test bio'
+    profile.avatar = 'avatars/test.jpg'
     profile.save()
+    from forum.models import JobCategory
+    category, _ = JobCategory.objects.get_or_create(title='Test Kategori')
+    profile.skills.add(category)
+    _make_qualified_expert('filler1')
+    _make_qualified_expert('filler2')
 
     _prime_home_caches()
     response = client.get('/')
@@ -272,13 +291,22 @@ def test_expert_showcase_includes_expert_with_zero_completed_jobs(client, user):
 
 @pytest.mark.django_db
 def test_expert_card_shows_profile_title(client, user):
-    """Profildeki Ünvan alanı (Profile.title) uzman kartında isim altında görünür."""
-    from forum.models import Profile
+    """Profildeki Ünvan alanı (Profile.title) uzman kartında isim altında görünür.
+    Vitrin foto+bio+en az 1 skill zorunlu kılıyor (Faz 9) ve `length >= 3` şartı
+    taşıyor — test kullanıcısı nitelikli hâle getirilip 2 dolgu uzmanla 3'e
+    tamamlanıyor."""
+    from forum.models import Profile, JobCategory
     profile, _ = Profile.objects.get_or_create(user=user)
     profile.rank = 'expert'
     profile.is_public = True
     profile.title = 'Veri Analisti'
+    profile.bio = 'Test bio'
+    profile.avatar = 'avatars/test.jpg'
     profile.save()
+    category, _ = JobCategory.objects.get_or_create(title='Test Kategori')
+    profile.skills.add(category)
+    _make_qualified_expert('filler1')
+    _make_qualified_expert('filler2')
 
     _prime_home_caches()
     response = client.get('/')
