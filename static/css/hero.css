@@ -166,10 +166,26 @@
 }
 
 .ax-hero-dropzone__trust {
-    margin: 0 0 var(--ax-space-2);
+    margin: 0 0 var(--ax-space-1);
+    text-align: center;
+    color: var(--ax-text-secondary);
+    font-size: var(--ax-text-sm);
+}
+
+.ax-hero-dropzone__examples {
+    margin: 0 0 var(--ax-space-3);
     text-align: center;
     color: var(--ax-text-muted);
     font-size: var(--ax-text-xs);
+}
+
+.ax-hero-dropzone__examples a {
+    color: var(--ax-accent-primary);
+    text-decoration: none;
+}
+
+.ax-hero-dropzone__examples a:hover {
+    text-decoration: underline;
 }
 
 @media (max-width: 479px) {
