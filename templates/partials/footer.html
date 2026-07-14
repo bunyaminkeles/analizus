@@ -1,13 +1,13 @@
 {% load static %}
 {% load i18n %}
-{% if features.ai_assistant or WHATSAPP_NUMBER %}
+{% if features.ai_assistant %}
 <style>
-/* Sağ altta sabit duran AI Asistan / WhatsApp butonları sayfa sonuna
-   kaydırıldığında footer'ın "Bize Destek Ol" kolonunun üzerine biniyor
+/* Sağ altta sabit duran AI Asistan butonu sayfa sonuna kaydırıldığında
+   footer'ın "Bize Destek Ol" kolonunun üzerine biniyor
    (position:fixed vs. normal akış çakışması) — alt boşluğu artırarak
-   footer içeriğini floating butonların üstünde tutuyoruz. */
+   footer içeriğini floating butonun üstünde tutuyoruz. */
 .ax-footer {
-    padding-bottom: {% if features.ai_assistant and WHATSAPP_NUMBER %}170px{% else %}110px{% endif %};
+    padding-bottom: 110px;
 }
 </style>
 {% endif %}
@@ -96,6 +96,9 @@
                 <ul class="ax-footer-list">
                     <li><a href="{% url 'about' %}"><i class="bi bi-info-circle"></i>Hakkımızda</a></li>
                     <li><a href="{% url 'contact' %}"><i class="bi bi-envelope"></i>İletişim</a></li>
+                    {% if WHATSAPP_NUMBER %}
+                    <li><a href="https://wa.me/{{ WHATSAPP_NUMBER }}?text=Merhaba%2C%20proje%20hakk%C4%B1nda%20g%C3%B6r%C3%BC%C5%9Fmek%20istiyorum." target="_blank" rel="noopener noreferrer"><i class="bi bi-whatsapp"></i>WhatsApp'tan Yaz</a></li>
+                    {% endif %}
                     <li><a href="{% url 'gizlilik_politikasi' %}"><i class="bi bi-shield-check"></i>KVKK / Gizlilik</a></li>
                 </ul>
             </div>
