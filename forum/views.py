@@ -130,7 +130,9 @@ def forum_index(request):
 def _get_featured_experts():
     """Uzman Vitrini — akademik puana (reputation) göre azalan sırayla.
     5 dk cache (home_experts). Ana sayfa ve /market/ arasında paylaşılır —
-    tekrar hesaplama yapılmaz."""
+    tekrar hesaplama yapılmaz.
+    Vitrin kalite kapısı: profil fotoğrafı + bio + en az 1 skill zorunlu —
+    yarım kalmış profiller (harf-avatar fallback) vitrine çıkmasın."""
     from django.core.cache import cache
 
     featured_experts = cache.get('home_experts')
@@ -146,6 +148,10 @@ def _get_featured_experts():
                 | Q(best_answers_count__gt=0)
             )
             .exclude(user__username='admin')
+            .exclude(avatar='')
+            .exclude(avatar__isnull=True)
+            .exclude(bio='')
+            .filter(skills__isnull=False)
             .distinct()
             .annotate(
                 avg_rating=Avg(

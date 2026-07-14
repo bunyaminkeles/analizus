@@ -905,7 +905,7 @@ document.addEventListener('DOMContentLoaded', function () {
 <!-- =====================================================
      FAZ 3: UZMAN VİTRİNİ
      ===================================================== -->
-{% if featured_experts %}
+{% if featured_experts|length >= 3 %}
 <section class="ax-expert-section py-5">
     <div class="container">
         <h2 class="ax-section-title text-center mb-2">Uzmanlarla Tanış</h2>
