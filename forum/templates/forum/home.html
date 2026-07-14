@@ -53,7 +53,7 @@
 <link rel="stylesheet" href="{% static 'css/testimonials.css' %}?v=0100" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="{% static 'css/stats.css' %}?v=0100" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="{% static 'css/news.css' %}?v=0100" media="print" onload="this.media='all'">
-<link rel="stylesheet" href="{% static 'css/home_sections.css' %}?v=0114" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="{% static 'css/home_sections.css' %}?v=0115" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="{% static 'css/trend_topics.css' %}?v=0001" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="{% static 'css/expert_card.css' %}?v=0003" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="{% static 'css/brand_visuals.css' %}?v=0103" media="print" onload="this.media='all'">
@@ -64,7 +64,7 @@
 <link rel="stylesheet" href="{% static 'css/testimonials.css' %}?v=0100">
 <link rel="stylesheet" href="{% static 'css/stats.css' %}?v=0100">
 <link rel="stylesheet" href="{% static 'css/news.css' %}?v=0100">
-<link rel="stylesheet" href="{% static 'css/home_sections.css' %}?v=0114">
+<link rel="stylesheet" href="{% static 'css/home_sections.css' %}?v=0115">
 <link rel="stylesheet" href="{% static 'css/trend_topics.css' %}?v=0001">
 <link rel="stylesheet" href="{% static 'css/expert_card.css' %}?v=0003">
 <link rel="stylesheet" href="{% static 'css/brand_visuals.css' %}?v=0103">
@@ -463,41 +463,43 @@
 </section>
 
 <!-- =====================================================
-     NASIL ÇALIŞIYORUZ? (Kompakt Timeline)
+     NASIL ÇALIŞIYORUZ? (Büyütülmüş adım kartları)
      ===================================================== -->
-<section class="ax-timeline-section">
+<section class="ax-steps-section py-5">
     <div class="container">
-        <h2 class="ax-timeline-heading">Nasıl Çalışıyoruz?</h2>
-        <div class="ax-timeline">
-            <div class="ax-timeline-step">
-                <div class="ax-timeline-num">1</div>
-                <div class="ax-timeline-content">
-                    <strong>İlan Aç</strong>
-                    <span>Projenizi ve ihtiyacınızı ücretsiz olarak yayınlayın.</span>
+        <h2 class="ax-section-title text-center mb-2">Nasıl Çalışıyoruz?</h2>
+        <p class="ax-section-subtitle text-center mb-5">Dört adımda ilan açmaktan raporu teslim almaya.</p>
+        <div class="row g-4 ax-steps-row position-relative">
+            <div class="col-12 col-md-6 col-lg-3 ax-step-col">
+                <div class="ax-step-card h-100">
+                    <div class="ax-step-number">1</div>
+                    <div class="ax-step-icon"><i class="bi bi-megaphone"></i></div>
+                    <h3 class="ax-step-title">İlan Aç</h3>
+                    <p class="ax-step-text">Projenizi ve ihtiyacınızı ücretsiz olarak yayınlayın.</p>
                 </div>
             </div>
-            <div class="ax-timeline-arrow">→</div>
-            <div class="ax-timeline-step">
-                <div class="ax-timeline-num">2</div>
-                <div class="ax-timeline-content">
-                    <strong>Teklif Al</strong>
-                    <span>Alanında uzman kişiler metodoloji ve fiyat teklifleri sunar.</span>
+            <div class="col-12 col-md-6 col-lg-3 ax-step-col">
+                <div class="ax-step-card h-100">
+                    <div class="ax-step-number">2</div>
+                    <div class="ax-step-icon"><i class="bi bi-inboxes"></i></div>
+                    <h3 class="ax-step-title">Teklif Al</h3>
+                    <p class="ax-step-text">Alanında uzman kişiler metodoloji ve fiyat teklifleri sunar.</p>
                 </div>
             </div>
-            <div class="ax-timeline-arrow">→</div>
-            <div class="ax-timeline-step">
-                <div class="ax-timeline-num">3</div>
-                <div class="ax-timeline-content">
-                    <strong>Analiz & Raporlama</strong>
-                    <span>Seçtiğiniz uzman analizi yapar, APA 7 formatında raporlar.</span>
+            <div class="col-12 col-md-6 col-lg-3 ax-step-col">
+                <div class="ax-step-card h-100">
+                    <div class="ax-step-number">3</div>
+                    <div class="ax-step-icon"><i class="bi bi-graph-up-arrow"></i></div>
+                    <h3 class="ax-step-title">Analiz & Raporlama</h3>
+                    <p class="ax-step-text">Seçtiğiniz uzman analizi yapar, APA 7 formatında raporlar.</p>
                 </div>
             </div>
-            <div class="ax-timeline-arrow">→</div>
-            <div class="ax-timeline-step">
-                <div class="ax-timeline-num">4</div>
-                <div class="ax-timeline-content">
-                    <strong>Teslim & Revizyon</strong>
-                    <span>Raporu teslim alırsınız. Danışman/hakem dönüşleri için revizyon hakkınız var.</span>
+            <div class="col-12 col-md-6 col-lg-3 ax-step-col">
+                <div class="ax-step-card h-100">
+                    <div class="ax-step-number">4</div>
+                    <div class="ax-step-icon"><i class="bi bi-patch-check"></i></div>
+                    <h3 class="ax-step-title">Teslim & Revizyon</h3>
+                    <p class="ax-step-text">Raporu teslim alırsınız. Danışman/hakem dönüşleri için revizyon hakkınız var.</p>
                 </div>
             </div>
         </div>

@@ -279,6 +279,7 @@
 }
 /* --- NASIL ÇALIŞIYORUZ & SSS --- */
 .ax-steps-section { background-color: transparent; }
+.ax-step-icon i { font-size: 1.75rem; }
 .ax-custom-tabs { gap: 16px; }
 .ax-custom-tabs .nav-link { background: rgba(30, 41, 59, 0.4); border: 1px solid rgba(255, 255, 255, 0.05); color: #94a3b8; border-radius: 50px; padding: 12px 24px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; transition: all 0.3s ease; }
 .ax-custom-tabs .nav-link:hover { background: rgba(99, 102, 241, 0.1); color: #cbd5e1; }
