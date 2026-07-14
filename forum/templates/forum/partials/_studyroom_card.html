@@ -47,10 +47,16 @@
 
     <!-- İstatistikler -->
     <div class="d-flex gap-3 text-white-50" style="font-size:.72rem;">
-      <span><i class="bi bi-people me-1"></i>{{ room.member_cnt }} üye</span>
+      <span><i class="bi bi-people me-1"></i>{{ room.member_cnt }}/{{ room.max_members }} üye</span>
       <span><i class="bi bi-chat me-1"></i>{{ room.post_count }} gönderi</span>
       <span class="ms-auto"><i class="bi bi-person me-1"></i>{% if user.is_authenticated %}{{ room.creator.username }}{% else %}{{ room.creator.profile.get_rank_display }} seviye üye{% endif %}</span>
     </div>
+    {% if room.status == 'active' %}
+    <div class="ax-room-fill-bar">
+      <div class="ax-room-fill-bar__inner {% if room.member_cnt >= room.max_members %}ax-room-fill-bar__inner--full{% endif %}"
+           style="width:{% widthratio room.member_cnt room.max_members 100 %}%;"></div>
+    </div>
+    {% endif %}
   </div>
   <div class="card-footer border-secondary p-2" style="background:rgba(0,0,0,.15);">
     <a href="{{ room.get_absolute_url }}" class="btn btn-outline-warning btn-sm w-100 py-1" style="font-size:.78rem;">

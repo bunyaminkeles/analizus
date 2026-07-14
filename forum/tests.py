@@ -635,6 +635,18 @@ def test_studyroom_list_type_chip_only_for_used_types(client, user):
 
 
 @pytest.mark.django_db
+def test_studyroom_list_hero_renders(client):
+    """Faz 7: /odalar/ hero bölümü ve cinematic görseller doğru render edilir."""
+    response = client.get('/odalar/')
+    assert response.status_code == 200
+    content = response.content.decode()
+    assert 'ax-odalar-hero' in content
+    assert 'Birlikte çalış' in content
+    assert 'odalar-hero.webp' in content
+    assert 'odalar-hero-mobile.webp' in content
+
+
+@pytest.mark.django_db
 def test_studyroom_lock_screen_shows_activity_metrics_when_posts_exist(client, user):
     """Gönderi varken misafir kilit ekranında gönderi sayısı görünür, ama mesaj içeriği/yazar sızmaz."""
     from forum.models import StudyRoomMembership, StudyRoomPost

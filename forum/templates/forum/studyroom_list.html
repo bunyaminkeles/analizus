@@ -6,28 +6,47 @@
 {% block canonical %}{% url 'studyroom_list' %}{% endblock %}
 {% block robots_content %}{% if request.GET.kategori or request.GET.durum or request.GET.q %}noindex, follow{% else %}index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1{% endif %}{% endblock %}
 
-{% block content %}
-<div class="container py-4" style="max-width:1100px;">
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/odalar.css' %}?v=0001" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="{% static 'css/odalar.css' %}?v=0001"></noscript>
+{% endblock %}
 
-  <div class="d-flex align-items-start justify-content-between flex-wrap gap-3 mb-4">
-    <div>
-      <h1 class="fw-bold text-white mb-1" style="font-size:1.6rem;">
-        <i class="bi bi-door-open-fill text-warning me-2"></i>Çalışma Odaları
-      </h1>
-      <p class="text-white-50 small mb-0">Dönemlik, konu odaklı akademik çalışma grupları. Aktif odaya katıl veya kendin aç.</p>
-    </div>
-    <div class="d-flex gap-2 flex-wrap align-items-center">
+{% block content %}
+
+<!-- Hero -->
+<section class="ax-odalar-hero">
+  <picture class="ax-odalar-hero__media">
+    <source media="(min-width: 768px)" srcset="{% static 'img/odalar-hero.webp' %}">
+    <img src="{% static 'img/odalar-hero-mobile.webp' %}" alt="" width="800" height="1000" fetchpriority="high" decoding="async" class="ax-odalar-hero__media-img">
+  </picture>
+  <div class="container">
+    <h1 class="ax-odalar-hero__title">Birlikte çalış. Birlikte bitir.</h1>
+    <p class="ax-odalar-hero__subtitle">Konu odaklı çalışma grupları ve proje odaları — analistler, araştırmacılar ve uzmanlar aynı masada.</p>
+    <div class="ax-odalar-hero__doors">
       {% if can_create %}
-      <a href="{% url 'studyroom_create' %}" class="btn btn-warning btn-sm fw-semibold">
+      <a href="{% url 'studyroom_create' %}" class="ax-btn ax-btn--primary ax-btn--lg ax-odalar-hero__door">
         <i class="bi bi-plus-circle me-1"></i>Oda Aç
       </a>
       {% else %}
-      <button class="btn btn-outline-secondary btn-sm" disabled title="{{ ineligibility_reason }}">
-        <i class="bi bi-lock me-1"></i>Oda Aç
-      </button>
+      <span class="d-inline-block ax-odalar-hero__door" tabindex="0" title="{{ ineligibility_reason }}">
+        <button class="ax-btn ax-btn--ghost ax-btn--lg w-100" disabled>
+          <i class="bi bi-lock me-1"></i>Oda Aç
+        </button>
+      </span>
       {% endif %}
+      <a href="#odalar-listesi" class="ax-btn ax-btn--ghost ax-btn--lg ax-odalar-hero__door">
+        <i class="bi bi-search me-1"></i>Aktif Odalara Göz At
+      </a>
     </div>
+    {% if not can_create and 'puan' in ineligibility_reason %}
+    <p class="mt-2 mb-0" style="font-size:.8rem;">
+      <a href="{% url 'home' %}#istatistik-arenasi" class="text-white-50">Puanını Arena'da artır →</a>
+    </p>
+    {% endif %}
   </div>
+</section>
+
+<div class="container py-4" style="max-width:1100px;" id="odalar-listesi">
 
   <!-- Filtreler -->
   <div class="d-flex flex-wrap gap-2 mb-4">
