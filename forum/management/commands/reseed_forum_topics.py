@@ -329,6 +329,313 @@ TOPICS = [
             "geçilebilir. Pilot için 1 ay, tek adım, düşük risk — böyle başlamak en gerçekçi yol."
         ),
     },
+    # --- Gemini ile üretilen 2. dalga (10 konu, her kategoriden 1) ---
+    {
+        "category_slug": "spss",
+        "subject": "SPSS'te faktör analizi yaparken KMO değerim 0,58 çıktı, örneklemi artırmalı mıyım?",
+        "starter": "Sahada_Arastirma",
+        "first_post": (
+            "Yüksek lisans tezim için 28 maddelik bir tutum ölçeği geliştiriyorum. 142 kişilik "
+            "örneklemle SPSS 29'da açımlayıcı faktör analizi denedim ama KMO değeri 0,58 çıktı, "
+            "Bartlett testi anlamlı. Danışmanım KMO'nun en az 0,60 olması gerektiğini söyledi. "
+            "Veri toplamaya devam mı etmeliyim yoksa bazı maddeleri çıkararak bu veriyle "
+            "ilerleyebilir miyim? Savunmaya 3 ay var, yeni veri toplamak zaman alacak."
+        ),
+        "expert": "figen",
+        "answer": (
+            "KMO 0,58 sınırda bir değer; Kaiser'in sınıflamasında 0,50 altı kabul edilemez, "
+            "0,60-0,70 arası vasat sayılır. İki yönlü ilerleyebilirsiniz ve ikisini birlikte yapmak "
+            "en sağlıklısı. Önce SPSS çıktısındaki Anti-Image Correlation matrisinin köşegenine "
+            "bakın: her maddenin kendi örneklem yeterliliği (MSA) değeri orada yazar. MSA değeri "
+            "0,50'nin altında kalan maddeleri tek tek (hepsini aynı anda değil) analizden çıkarıp "
+            "KMO'yu yeniden hesaplayın; çoğu zaman 2-3 sorunlu madde genel KMO'yu belirgin "
+            "yükseltir. İkincisi örneklem-madde oranı: 28 madde için 142 kişi 5:1 oranının hemen "
+            "üzerinde, ideal kabul edilen 10:1 için 280 civarı gözlem gerekir. Madde eleme sonrası "
+            "KMO 0,60'ı geçiyorsa ve her faktör en az 3 maddeyle, 0,40 üzeri yüklerle temsil "
+            "ediliyorsa mevcut veriyle savunulabilir bir açımlayıcı faktör analizi "
+            "raporlayabilirsiniz. Yine 0,60 altında kalıyorsa veri toplamaya devam etmek tek "
+            "gerçek çözümdür; ölçek geliştirme çalışmasında zayıf örneklem yeterliliği jüride "
+            "mutlaka sorulur. Bartlett küresellik testinin anlamlı olması iyi haber, korelasyon "
+            "matrisi faktörleşmeye uygun demektir."
+        ),
+    },
+    {
+        "category_slug": "regresyon",
+        "subject": "Çoklu regresyonda iki değişkenin VIF değeri 8'in üzerinde, birini modelden çıkarmalı mıyım?",
+        "starter": "Yonetim_Aras",
+        "first_post": (
+            "Örgütsel bağlılığı yordayan bir model kuruyorum. 5 bağımsız değişkenli çoklu doğrusal "
+            "regresyonda iş doyumu ve örgütsel güven değişkenlerinin VIF değerleri 8,4 ve 8,9 "
+            "çıktı, diğerleri 2'nin altında. İki değişken arasındaki korelasyon 0,87. Örneklemim "
+            "315 kişi, veriyi SPSS'te analiz ediyorum. Kuramsal olarak ikisi de modelde önemli ama "
+            "çoklu bağlantı sorunu makale hakemlerinden döner mi diye endişeliyim."
+        ),
+        "expert": "Dr_Mehmet_Stats",
+        "answer": (
+            "VIF 8 civarı değerler gri bölgededir: bazı kaynaklar eşiği 10, daha muhafazakar "
+            "olanlar 5 kabul eder, dolayısıyla hakemin itiraz etme ihtimali gerçektir. Ancak asıl "
+            "sorun VIF sayısı değil, 0,87'lik korelasyonun işaret ettiği şey: iş doyumu ve "
+            "örgütsel güven ölçekleriniz büyük olasılıkla aynı örtük yapıyı ölçüyor. Bu durumda "
+            "çoklu bağlantı, katsayıların standart hatalarını şişirir; iki değişkenin beta "
+            "işaretleri tutarsızlaşabilir veya ikisi de anlamsız görünürken model R karesi yüksek "
+            "kalır. Çıktınızda bu belirtiler varsa müdahale şart. Seçenekleriniz şunlar: birini "
+            "kuramsal gerekçeyle modelden çıkarmak; ikisini standartlaştırıp tek bir bileşik "
+            "endekse dönüştürmek; ya da iki ayrı model kurup sonuçları karşılaştırmalı "
+            "raporlamak. Değişken silmek istemiyorsanız hiyerarşik regresyonda ayrı bloklarda "
+            "girerek her birinin tekil katkısını da gösterebilirsiniz. Ridge regresyon teknik bir "
+            "alternatif olsa da sosyal bilim dergilerinde yorumlaması zor bulunur. Hangi yolu "
+            "seçerseniz seçin, makalede tolerans ve VIF değerlerini tablo halinde raporlayıp "
+            "verdiğiniz kararı gerekçelendirin; hakemler sorunu görmezden gelmenize değil, "
+            "yönetmemenize itiraz eder."
+        ),
+    },
+    {
+        "category_slug": "metodoloji",
+        "subject": "Nitel tez görüşmelerinde 12 katılımcıya ulaştım, veri doyumuna ulaştığımı nasıl anlarım?",
+        "starter": "Zeynep_Nitel",
+        "first_post": (
+            "Doktora tezimde göçmen kadınların çalışma deneyimlerini fenomenolojik desenle "
+            "inceliyorum. Şu ana kadar 12 yarı yapılandırılmış görüşme yaptım, her biri 45-70 "
+            "dakika sürdü. Son iki görüşmede önceki kodlara çok benzer ifadeler duymaya "
+            "başladım ama emin olamıyorum. Danışmanım en az 15 görüşme bekliyor. Doyuma "
+            "ulaştığımı jüriye nasıl kanıtlarım, sadece sayı yeterli mi yoksa somut bir gösterim "
+            "mi gerekiyor?"
+        ),
+        "expert": "TezDanismani_Prof",
+        "answer": (
+            "Doyum bir sayı değil, gözlemlenebilir bir durumdur ve jüriye tam da bunu göstermeniz "
+            "gerekir. Literatürde Guest ve arkadaşlarının sık atıf alan çalışması, görece homojen "
+            "gruplarda temel temaların ilk 12 görüşmede büyük ölçüde ortaya çıktığını bulmuştur; "
+            "yani sayınız savunulabilir bir aralıkta. Ancak sayıya yaslanmak yerine bir doyum "
+            "tablosu hazırlayın: satırlarda kodlarınız, sütunlarda görüşme sırası olsun ve her "
+            "kodun ilk hangi görüşmede ortaya çıktığını işaretleyin. Son üç-dört görüşmede yeni "
+            "kod üretilmediğini bu tabloyla görselleştirdiğinizde doyum iddianız ampirik bir "
+            "dayanak kazanır; MAXQDA veya NVivo bu matrisi kolayca üretir. İkinci olarak kod "
+            "doyumu ile anlam doyumunu ayırın: yeni kod çıkmıyor olabilir ama mevcut temaların "
+            "içeriği hâlâ zenginleşiyorsa birkaç görüşme daha değerlidir. Fenomenolojik desende "
+            "örneklemin homojenliği de gerekçenizin parçası olmalı; katılımcı profillerinizin "
+            "ortak deneyim ölçütünü nasıl karşıladığını yöntem bölümünde açıkça yazın. "
+            "Danışmanınızın 15 görüşme beklentisiyle çatışmak yerine doyum tablosunu 12 "
+            "görüşmeyle hazırlayıp gösterin; tablo iki-üç görüşme daha gerektiğini söylüyorsa bu, "
+            "keyfi bir sayıdan çok daha ikna edici bir gerekçedir."
+        ),
+    },
+    {
+        "category_slug": "python",
+        "subject": "Pandas 2 milyon satırlık CSV dosyamı okurken bellek hatası veriyor, ne yapabilirim?",
+        "starter": "opendata",
+        "first_post": (
+            "Açık veri portalından indirdiğim 2,1 milyon satır ve 34 sütunluk bir CSV ile "
+            "çalışıyorum, dosya boyutu yaklaşık 1,8 GB. 8 GB RAM'li dizüstümde pd.read_csv ile "
+            "okumaya çalışınca MemoryError alıyorum, bazen de bilgisayar tamamen donuyor. Python "
+            "3.12 ve pandas 2.2 kullanıyorum. Amacım birkaç sütunda gruplama ve özet istatistik "
+            "çıkarmak. Donanım yükseltmeden bu veriyi işleyebilmemin bir yolu var mı?"
+        ),
+        "expert": "PythonGurusu",
+        "answer": (
+            "Var, hem de birkaç katmanlı. İlk ve en etkili adım usecols parametresi: 34 sütunun "
+            "tamamına ihtiyacınız yoksa read_csv çağrısında yalnızca gruplama ve özet için "
+            "gereken sütunları isteyin; bellek kullanımı doğrudan sütun sayısıyla orantılı "
+            "düşer. İkinci adım dtype optimizasyonu: pandas varsayılan olarak metin sütunlarını "
+            "object, sayıları int64/float64 tutar. Tekrarlayan kategorik metinleri dtype olarak "
+            "category, küçük tam sayıları int32 veya int16 belirterek okursanız bellek çoğu "
+            "zaman dörtte bire iner. Üçüncü seçenek chunksize ile parçalı okuma: read_csv'ye "
+            "chunksize=200000 verip her parçada ara toplamları biriktirir, sonda "
+            "birleştirirsiniz; groupby-agg işlemleri bu desene çok uygundur. Pandas 2.2 "
+            "kullandığınız için engine='pyarrow' ve dtype_backend='pyarrow' da deneyin; Arrow "
+            "tabanlı string tipi klasik object'ten çok daha ekonomiktir. Bunların ötesine geçmek "
+            "isterseniz Polars kütüphanesinin lazy API'si veya DuckDB, 1,8 GB'lık CSV'yi 8 GB "
+            "RAM'de sorgu mantığıyla rahatça işler; DuckDB'de tek satır SQL ile gruplama yapıp "
+            "sonucu küçük bir pandas DataFrame olarak alabilirsiniz. Dosyayı bir kez Parquet "
+            "formatına çevirmek de sonraki okumaları hem hızlandırır hem küçültür."
+        ),
+    },
+    {
+        "category_slug": "r-programlama",
+        "subject": "R'da plm paketiyle panel regresyonda sabit etkiler mi rassal etkiler mi seçmeliyim?",
+        "starter": "Ekonometri_S",
+        "first_post": (
+            "Tezimde 2010-2023 dönemi için 26 OECD ülkesinin verileriyle dengeli panel kurdum, R "
+            "4.4 ve plm paketi kullanıyorum. Bağımlı değişkenim işsizlik oranı, 4 makro bağımsız "
+            "değişkenim var. Hem within hem random tahmincisiyle model çalıştırdım, katsayılar "
+            "birbirine yakın ama tam aynı değil. Hangi modeli raporlayacağıma karar veremiyorum, "
+            "seçimi hangi testle ve hangi sırayla yapmalıyım?"
+        ),
+        "expert": "R_Uzmani",
+        "answer": (
+            "Standart karar zinciri üç testten oluşur ve plm hepsini içerir. Önce havuzlanmış "
+            "EKK'ya karşı sabit etkileri sınayın: pFtest(fe_model, pooled_model) anlamlıysa "
+            "birim etkileri vardır, havuzlama uygun değildir. Ardından rassal etkilerin "
+            "havuzlamaya karşı geçerliliği için Breusch-Pagan LM testi: plmtest(pooled_model, "
+            "type = \"bp\"). İki test de birim etkisine işaret ediyorsa asıl karar Hausman "
+            "testiyle verilir: phtest(fe_model, re_model). Sıfır hipotez, birim etkilerinin "
+            "açıklayıcılarla ilişkisiz olduğudur; p değeri 0,05'in altındaysa rassal etkiler "
+            "tahmincisi tutarsızdır, sabit etkileri raporlarsınız. P değeri yüksekse rassal "
+            "etkiler hem tutarlı hem daha etkindir. 26 ülkelik makro panelde ülkeye özgü "
+            "gözlenmeyen özelliklerin (kurumsal yapı, işgücü piyasası rejimi) açıklayıcılarınızla "
+            "ilişkili olması kuvvetle muhtemel olduğundan Hausman genellikle sabit etkileri "
+            "işaret eder. Hangi model seçilirse seçilsin standart hataları vcovHC ile, ülke "
+            "bazında kümelenmiş (arellano yöntemi) olarak düzeltin; makro panellerde değişen "
+            "varyans ve otokorelasyon neredeyse kuraldır. Zaman etkilerini de effect = "
+            "\"twoways\" ile sınayıp anlamlıysa modele katmayı unutmayın."
+        ),
+    },
+    {
+        "category_slug": "icerik",
+        "subject": "İçerik analizinde Krippendorff alfa 0,62 çıktı, kodlayıcılar arası güvenirliği nasıl yükseltirim?",
+        "starter": "Iletisimci",
+        "first_post": (
+            "Yüksek lisans tezimde 480 gazete haberini 9 kategorili bir kod şemasıyla analiz "
+            "ediyorum. İkinci kodlayıcıyla örneklemin yüzde 15'ini bağımsız kodladık ve "
+            "Krippendorff alfa 0,62 çıktı. Okuduğum kaynaklar 0,80 eşiğinden söz ediyor. "
+            "Kodlayıcım da ben de şemayı anladığımızı düşünüyorduk ama bazı kategorilerde "
+            "sürekli ayrışıyoruz. Tüm kodlamayı baştan mı yapmalıyım yoksa şemayı düzeltip "
+            "devam edebilir miyim?"
+        ),
+        "expert": "Sosyolog_N",
+        "answer": (
+            "Baştan kodlamadan önce ayrışmanın nerede olduğunu teşhis edin; 0,62'lik genel alfa "
+            "çoğu zaman iki-üç sorunlu kategorinin eseridir. Krippendorff'un kendi önerisi 0,80 "
+            "üzerinin güvenilir, 0,667-0,80 arasının ancak ihtiyatlı çıkarımlar için kabul "
+            "edilebilir olduğu yönündedir; 0,62 bu eşiğin de altında, dolayısıyla mevcut "
+            "kodlamayla sonuç raporlayamazsınız. Yapılacak iş sırasıyla şu: uyuşmazlık matrisini "
+            "çıkarıp hangi kategori çiftlerinin karıştığına bakın. Genellikle sorun, kavramsal "
+            "olarak örtüşen kategorilerdedir; iki kategori sürekli birbirine karışıyorsa ya "
+            "birleştirilmeli ya da kod kitabındaki tanımlara ayırt edici karar kuralları ve "
+            "sınır örnekleri eklenmelidir. Kod kitabını revize ettikten sonra kodlayıcınızla "
+            "uyuşmazlık örneklerini tek tek tartışın, ancak nihai kararları müzakereyle değil "
+            "kurala bağlayın; müzakere edilmiş mutabakat güvenirlik katsayısını yapay şişirir. "
+            "Sonra daha önce kullanılmamış yeni bir alt örneklemde (yine yüzde 10-15) pilot "
+            "kodlamayı tekrarlayın ve alfayı yeniden hesaplayın. Eşik aşıldığında ana kodlamaya "
+            "geçersiniz; revizyon öncesi kodlanan haberler yeni şemayla yeniden kodlanmalıdır. "
+            "Tezde her kategori için ayrı alfa raporlamak, genel katsayının maskeleyebileceği "
+            "zayıflıkları şeffaflaştırdığı için jüride güven yaratır."
+        ),
+    },
+    {
+        "category_slug": "danismanlik",
+        "subject": "Anket verimi analiz için danışmana gönderirken KVKK açısından nasıl anonimleştirmeliyim?",
+        "starter": "tegmen",
+        "first_post": (
+            "Kurumumda 240 personelle yürüttüğüm bir iş doyumu anketinin analizini dışarıdan bir "
+            "istatistik danışmanına yaptırmak istiyorum. Veri setinde ad soyad yok ama sicil "
+            "numarası, doğum tarihi, birim adı ve rütbe bilgisi var. Excel dosyasını olduğu gibi "
+            "göndermekten çekiniyorum çünkü kurum içinde bazı birimlerde 3-4 kişi çalışıyor, kim "
+            "olduğu tahmin edilebilir. Hangi alanları nasıl dönüştürmeliyim, hukuken de "
+            "sorumluluğum var mı?"
+        ),
+        "expert": "Klinik_Aras",
+        "answer": (
+            "Endişeniz yerinde; ad soyad olmaması veriyi anonim yapmaz, KVKK dolaylı yoldan "
+            "kimliği belirlenebilir kişileri de kapsar. Sizin tarif ettiğiniz durum tam olarak "
+            "yarı-tanımlayıcı (quasi-identifier) sorunudur: doğum tarihi, birim ve rütbe "
+            "kombinasyonu 3-4 kişilik birimlerde kişiyi tekil olarak işaret eder. Yapmanız "
+            "gerekenler sırasıyla şunlar: sicil numarasını tamamen silin veya analiz sırasında "
+            "eşleştirme gerekiyorsa yalnızca sizde kalan ayrı bir anahtar dosyayla rastgele "
+            "katılımcı kodlarına (K001, K002) dönüştürün; danışmana anahtar dosya asla "
+            "gitmesin. Doğum tarihini yaş grubuna çevirin (25-34, 35-44 gibi). Birim ve rütbeyi, "
+            "her hücrede en az 5 kişi kalacak şekilde üst kategorilerde birleştirin; buna "
+            "k-anonimlik ilkesi denir ve k=5 makul bir başlangıçtır. Analiz açısından da "
+            "kaybınız az olur çünkü grup karşılaştırmaları zaten kategorik düzeyde yapılır. "
+            "Hukuki tarafta veri sorumlusu kurumunuz, danışman veri işleyen konumundadır; "
+            "aranızda gizlilik ve veri işleme taahhüdü içeren yazılı bir sözleşme olmalı, "
+            "aktarım şifreli kanaldan yapılmalı ve iş bitiminde verinin silineceği yazıya "
+            "bağlanmalıdır. Analizus üzerinden açılan proje taleplerinde bu gizlilik çerçevesi "
+            "zaten sürecin parçasıdır."
+        ),
+    },
+    {
+        "category_slug": "akademik-surec",
+        "subject": "SSCI dergisine gönderdiğim makale 5 aydır hakemde görünüyor, editöre hatırlatma yazmak uygun mu?",
+        "starter": "Prof_Deneyimli",
+        "first_post": (
+            "Şubat ayında bir SSCI Q2 dergisine makale gönderdim. İlk iki hafta with editor "
+            "göründü, sonra under review statüsüne geçti ve 5 aydır orada duruyor. Derginin "
+            "sitesinde ortalama ilk karar süresi 90 gün yazıyor. Doçentlik dosyam için bu yayın "
+            "önemli ve süre daralıyor. Editöre yazmak süreci olumsuz etkiler mi, yazacaksam "
+            "nasıl bir üslup kullanmalıyım, yoksa geri çekip başka dergiye mi göndermeliyim?"
+        ),
+        "expert": "AkademikEtik",
+        "answer": (
+            "Beyan edilen ortalama süreyi yüzde 50'den fazla aştığınız için nazik bir durum "
+            "sorgusu tamamen meşrudur ve süreci olumsuz etkilemez; editörler bu tür mesajlara "
+            "alışkındır, hatta bazen unutulmuş bir hakem davetini fark etmelerini sağlar. Under "
+            "review statüsünde 5 ay geçmesi çoğunlukla hakem bulma güçlüğüne veya geciken tek "
+            "bir hakeme işaret eder. Mesajınız kısa olsun: makale numarası, başlık, gönderim "
+            "tarihi ve derginin ilan ettiği ortalama süreye kibar bir atıfla sürecin hangi "
+            "aşamada olduğunu sormanız yeterli; aciliyet gerekçenizi (doçentlik takvimi) "
+            "yazmanıza gerek yok, bu editörün karar hızını değiştirmez ve profesyonel durmaz. "
+            "Yanıt gelmezse 3-4 hafta sonra bir kez daha yazabilirsiniz. Geri çekme kararını "
+            "aceleye getirmeyin: makaleyi çekip yeni dergiye göndermek süreci sıfırlar ve yeni "
+            "dergide de 3-6 ay ilk karar beklersiniz; toplamda muhtemelen daha çok zaman "
+            "kaybedersiniz. Geri çekme ancak editörden iki sorguya rağmen hiç yanıt alamazsanız "
+            "veya süre 8-9 ayı bulursa rasyonel hale gelir. Bu arada makaleyi eş zamanlı başka "
+            "dergiye göndermeyin; çoklu gönderim yayın etiği ihlalidir ve tespit edildiğinde her "
+            "iki dergiden de ret getirir."
+        ),
+    },
+    {
+        "category_slug": "veri-analizi-bi",
+        "subject": "50 şubenin aylık satış verisini Tableau dashboard'ına çevirirken hangi grafikleri kullanmalıyım?",
+        "starter": "GorselAnaliz",
+        "first_post": (
+            "Perakende firmamızda 50 şubenin 24 aylık satış verisini Excel'de tutuyoruz, "
+            "yönetim artık aylık toplantılarda tek ekranlık bir Tableau dashboard'ı görmek "
+            "istiyor. Denedim ama 50 şubeyi tek çizgi grafiğe koyunca okunmaz bir spagetti "
+            "çıktı, pasta grafik de öneriliyor ama içime sinmedi. Hem genel trendi hem sorunlu "
+            "şubeleri aynı ekranda gösterecek bir düzen için hangi grafik türlerini ve "
+            "filtreleri kurgulamalıyım?"
+        ),
+        "expert": "VeriGorselci",
+        "answer": (
+            "İçgüdünüz doğru; 50 kategorili pasta grafik de 50 çizgili trend de okunmaz. Doğru "
+            "kurgu, dashboard'ı genelden özele üç katmanda düşünmektir. En üste toplam ciro, "
+            "önceki aya ve geçen yılın aynı ayına göre değişim yüzdesi gibi 3-4 KPI kartı koyun; "
+            "yönetim ekrana baktığı ilk saniyede genel durumu görsün. Orta katmanda tek bir "
+            "toplam satış çizgi grafiği (24 aylık trend) ve yanına şube karşılaştırması için "
+            "yatay çubuk grafik yerleştirin; çubuğu son ay cirosuna göre sıralayıp Top N "
+            "parametresiyle ilk ve son 10 şubeyi gösterilebilir yapın, böylece hem yıldızlar "
+            "hem sorunlu şubeler tek bakışta seçilir. Sorunlu şubeleri vurgulamak için çubuk "
+            "rengini hedefe ulaşma oranına bağlayın; kırmızı-gri ikili renk, gökkuşağı "
+            "paletinden çok daha net okunur. Üçüncü katman etkileşimdir: çubuktaki bir şubeye "
+            "tıklandığında dashboard action ile trend grafiği o şubeye filtrelensin, spagetti "
+            "sorununu böyle çözersiniz. Bölge bilgisi varsa harita yerine bölge bazlı küçük "
+            "çoklu grafikler (small multiples) de değerlendirilebilir. Tarihi ay düzeyinde "
+            "DATETRUNC ile toplayıp extract kullanırsanız 50 şube 24 ay boyutundaki veri "
+            "performans sorunu çıkarmaz."
+        ),
+    },
+    {
+        "category_slug": "ai-ml-agentic",
+        "subject": "ChatGPT'ye yaptırdığım regresyon analizinin sonuçlarına güvenebilir miyim, nasıl doğrularım?",
+        "starter": "AI_Junior",
+        "first_post": (
+            "Bitirme projem için 380 kişilik anket verimin özetini ChatGPT'ye verdim ve çoklu "
+            "regresyon yorumu istedim. Bana R kare, F ve p değerleriyle dolu, gayet ikna edici "
+            "bir sonuç tablosu yazdı. Sonra aynı veriyi arkadaşımın SPSS'inde denedik, "
+            "katsayılar tutmuyor. Hangisine güveneceğim, yapay zekanın verdiği istatistik "
+            "sonuçları ne kadar gerçek? Teslim tarihine 2 hafta var ve kafam çok karışık."
+        ),
+        "expert": "ModelEgitmeni",
+        "answer": (
+            "SPSS çıktısına güvenin; yaşadığınız durum bilinen bir olgudur. Bir dil modeline "
+            "verinin kendisini değil özetini verdiğinizde model gerçek bir hesaplama yapmaz, "
+            "eğitim verisinde gördüğü regresyon tablolarına biçimsel olarak benzeyen, akla "
+            "yatkın görünen sayılar üretir. Buna halüsinasyon denir ve R kare, F, p değerleri "
+            "gibi kesinlik hissi veren rakamlarda özellikle tehlikelidir çünkü çıktı formatı "
+            "gerçek bir SPSS tablosundan ayırt edilemez. Doğrulamanın yolu basit bir ilkeye "
+            "dayanır: yapay zekadan sonuç değil, çalıştırılabilir kod isteyin. Modele veri "
+            "yapınızı tarif edip Python (statsmodels) veya R kodu yazdırın, kodu kendi "
+            "verinizle kendiniz çalıştırın; hesaplamayı yazılım yapar, model yalnızca kod "
+            "iskeletini kurar. Çıktıyı kontrol ederken üç şeye bakın: gözlem sayısı ve "
+            "serbestlik dereceleri sizin verinizle tutarlı mı, katsayı işaretleri korelasyon "
+            "matrisiyle uyumlu mu, varsayım kontrolleri (artıkların normalliği, çoklu bağlantı "
+            "için VIF) yapılmış mı. Yapay zekanın yazdığı yorum paragrafını da mutlaka gerçek "
+            "çıktıdaki sayılarla satır satır karşılaştırın; model bazen doğru tabloya yanlış "
+            "yorum ekler. Analizus'un AI analiz doğrulama hizmeti de tam bu ihtiyaç için var; "
+            "teslimden önce sonuçlarınızı bağımsız olarak kontrol ettirebilirsiniz."
+        ),
+    },
 ]
 
 
