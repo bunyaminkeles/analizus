@@ -11,7 +11,59 @@ Kullanım:
 """
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
-from forum.models import Section, Category, Topic, Post
+from forum.models import Section, Category, Topic, Post, Profile
+
+
+# Bu kullanıcılar tek bir merkezi seed komutundan gelmiyor (proje geçmişinde
+# farklı oturumlarda organik biriktiler) — ortamlar arası taşınabilirlik için
+# (lokal/Render/Hetzner) get_user() burada yoksa bu meta ile OLUŞTURUR.
+PERSONA_META = {
+    "Sahada_Arastirma": ("Saha Araştırmacısı", "Standard"),
+    "Yonetim_Aras": ("İşletme Araştırmacısı", "Premium"),
+    "Zeynep_Nitel": ("Sosyoloji Araştırmacısı", "Standard"),
+    "opendata": ("", "Premium"),
+    "Ekonometri_S": ("Ekonometri Uzmanı", "Premium"),
+    "Iletisimci": ("İletişim Uzmanı", "Standard"),
+    "tegmen": ("", "Free"),
+    "Prof_Deneyimli": ("", "Free"),
+    "GorselAnaliz": ("Etnograf", "Premium"),
+    "AI_Junior": ("AI Meraklısı", "Standard"),
+    "Arastirmaci_B": ("Doktora Öğrencisi", "Free"),
+    "SaglikIst": ("Sağlık İstatistikçisi", "Standard"),
+    "TezMagduru_A": ("Yüksek Lisans Öğrencisi", "Free"),
+    "Can_Veri": ("Ekonometri Doktora", "Premium"),
+    "Psikoloji_Tez": ("Doktora Öğrencisi", "Standard"),
+    "Ayse_K": ("Eğitim Bilimleri YL", "Standard"),
+    "Planlama_Y": ("İş Planlama Uzmanı", "Standard"),
+    "SirketSahibi_C": ("Proje Yöneticisi", "Free"),
+    "MetodologiUzmani": ("Araştırma Görevlisi", "Premium"),
+    "PythonDev_X": ("Python Geliştirici", "Free"),
+    "Muhendislik_R": ("Makine Mühendisi", "Premium"),
+    "MuhasebeUzmani": ("Finans Analisti", "Premium"),
+    "SEM_Uzmani": ("", "Free"),
+    "VeriBilimci_A": ("Data Scientist", "Premium"),
+    "Otomasyoncu": ("VBA & Makro Uzmanı", "Premium"),
+    "Sosyal_Veri": ("Sosyal Bilimci", "Standard"),
+    "AnalizUzmani_1": ("İstatistikçi", "Free"),
+    "EditorProf": ("", "Free"),
+    "AI_Ogrenci": ("YL Öğrencisi", "Standard"),
+    "Donanim_Meraklisi": ("Deep Learning Dev", "Premium"),
+    "Dr_Mehmet_Stats": ("Doktor - İstatistik Uzmanı", "Expert"),
+    "figen": ("Dr. İstatistik Uzmanı", "Expert"),
+    "bunyamin": ("Kurucu & Veri Bilimci", "Expert"),
+    "PythonGurusu": ("Veri Bilimci", "Expert"),
+    "ModelEgitmeni": ("ML Engineer", "Expert"),
+    "joseph": ("ML Engineer & Ekonometrist", "Expert"),
+    "R_Uzmani": ("Araştırmacı - Ekonometri", "Expert"),
+    "Ekonometrist": ("Doç. Dr. Ekonometri", "Expert"),
+    "TezDanismani_Prof": ("Profesör - Psikoloji", "Expert"),
+    "Sosyolog_N": ("Dr. Nitel Araştırmacı", "Expert"),
+    "AkademikEtik": ("Araştırma Metodolojisti", "Expert"),
+    "Klinik_Aras": ("Dr. Klinik Araştırmacı", "Expert"),
+    "VeriGorselci": ("Data Visualization Uzmanı", "Expert"),
+    "StratejiAnalisti": ("Business Intelligence", "Expert"),
+    "Literatur_Tarama": ("Bibliyometri Uzmanı", "Expert"),
+}
 
 
 NEW_CATEGORIES = [
@@ -636,6 +688,277 @@ TOPICS = [
             "teslimden önce sonuçlarınızı bağımsız olarak kontrol ettirebilirsiniz."
         ),
     },
+    # --- Gemini ile üretilen 3. dalga (8 konu, kalan starter havuzu) ---
+    {
+        "category_slug": "spss",
+        "subject": "AMOS'ta doğrulayıcı faktör analizinde CFI 0,88 çıktı, modifikasyon indekslerini kullanmak doğru mu?",
+        "starter": "SEM_Uzmani",
+        "first_post": (
+            "Doktora tezimde 4 faktörlü, 22 maddelik bir ölçeğin doğrulayıcı faktör analizini "
+            "AMOS 28'de yaptım, örneklemim 410 kişi. Uyum indekslerim CFI 0,88, TLI 0,86, "
+            "RMSEA 0,081 çıktı. Modifikasyon indeksleri bazı hata terimleri arasında kovaryans "
+            "önerince birkaçını ekledim ve CFI 0,93'e yükseldi. Ancak bir makalede bunun veri "
+            "avcılığı sayılabileceğini okudum. Bu düzeltmeleri raporlamak jüride veya hakemde "
+            "sorun yaratır mı?"
+        ),
+        "expert": "bunyamin",
+        "answer": (
+            "Endişeniz haklı çünkü modifikasyon indeksleri en çok kötüye kullanılan YEM "
+            "aracıdır. Kural şu: her düzeltme istatistiksel değil kuramsal gerekçeyle "
+            "yapılmalıdır. Aynı faktöre yüklenen iki maddenin hata terimleri arasında "
+            "kovaryans tanımlamak, maddeler benzer ifade kalıbı veya ortak yöntem kaynağı "
+            "paylaşıyorsa savunulabilir; farklı faktörlerin maddeleri arasında hata "
+            "kovaryansı eklemekse modelin ayırt edici geçerliğini örtbas eder ve hakemden "
+            "döner. İkinci kural sıralıdır: modifikasyonları tek tek ekleyin, her eklemeden "
+            "sonra modeli yeniden tahmin edin, çünkü indeksler birbirine bağımlıdır ve ilk "
+            "düzeltme sonrakilerin değerini değiştirir. Üçüncüsü şeffaflık: hem düzeltme "
+            "öncesi hem sonrası uyum değerlerini tablo halinde raporlayın ve her kovaryansın "
+            "gerekçesini bir cümleyle yazın; gizlenen düzeltme veri avcılığıdır, "
+            "gerekçelendirilip raporlanan düzeltme model geliştirmedir. Mevcut değerlerinize "
+            "gelince, CFI için 0,90 kabul edilebilir ve 0,95 iyi uyum eşiği yaygın kabul "
+            "görür, RMSEA 0,08 sınırdadır; yani başlangıç modeliniz reddedilecek kadar kötü "
+            "değil. Düzeltmeye başlamadan önce standartlaştırılmış faktör yükleri 0,50'nin "
+            "altında kalan maddeleri incelemenizi öneririm; sorun çoğu zaman hata "
+            "kovaryansında değil zayıf bir-iki maddededir ve madde atmak, kovaryans "
+            "örmekten daha temiz bir çözümdür."
+        ),
+    },
+    {
+        "category_slug": "regresyon",
+        "subject": "Lojistik regresyonda Exp(B) değerim 0,42 çıktı, bunu yüzde olarak nasıl yorumlamalıyım?",
+        "starter": "VeriBilimci_A",
+        "first_post": (
+            "Banka müşterilerinin krediyi zamanında ödeyip ödemediğini yordayan bir lojistik "
+            "regresyon kurdum, 1.850 gözlemim var. Sürekli değişkenlerden biri olan mevcut "
+            "borç oranı için Exp(B) 0,42 ve p değeri 0,003 çıktı. Katsayının anlamlı "
+            "olduğunu görüyorum ama 0,42'yi rapora nasıl çevireceğimi bilmiyorum. Yüzde 42 "
+            "azaltıyor mu demeliyim, yoksa hesap farklı mı? Olasılık ile odds kavramları da "
+            "kafamı karıştırıyor."
+        ),
+        "expert": "Ekonometrist",
+        "answer": (
+            "En sık yapılan hata tam da sorduğunuz yerde: Exp(B) 0,42 yüzde 42 azalış demek "
+            "değildir. Doğru okuma şudur: yordayıcıdaki bir birimlik artış, sonucun "
+            "gerçekleşme oddsunu 0,42 katına düşürür; azalış oranı 1 eksi 0,42, yani yüzde "
+            "58'dir. Rapora şöyle yazarsınız: borç oranındaki bir birimlik artış, krediyi "
+            "zamanında ödeme oddsunu yüzde 58 azaltmaktadır. İkinci kritik nokta odds ile "
+            "olasılık ayrımı: odds, olayın gerçekleşme olasılığının gerçekleşmeme "
+            "olasılığına oranıdır; yüzde 58'lik düşüş oddsa aittir, ödeme olasılığındaki "
+            "değişim başlangıç olasılığına göre değişir ve doğrusal değildir. Bu yüzden "
+            "cümlede olasılık kelimesini kullanmaktan kaçının, hakemler bunu hemen yakalar. "
+            "Üçüncüsü, bir birimlik artışın anlamlı olup olmadığını düşünün: borç oranı 0-1 "
+            "aralığında bir orandaysa bir birimlik artış tüm ölçeği kat etmek demektir; "
+            "değişkeni yüzde puanı olarak ölçeklendirmek veya 10 puanlık artış başına "
+            "yorumlamak çok daha okunur sonuç verir. Son olarak Exp(B) yanında yüzde 95 "
+            "güven aralığını mutlaka raporlayın; aralık 1'i içermiyorsa bulgunuz sağlamdır "
+            "ve 0,003'lük p değerinizle tutarlı olacaktır. Nagelkerke R kare ve "
+            "sınıflandırma tablosunu da eklemeyi unutmayın."
+        ),
+    },
+    {
+        "category_slug": "python",
+        "subject": "Her hafta 30 şubeden gelen Excel dosyalarını Python ile otomatik nasıl birleştiririm?",
+        "starter": "Otomasyoncu",
+        "first_post": (
+            "Şirketimizde her pazartesi 30 şubeden aynı şablonda birer Excel dosyası geliyor "
+            "ve ben bunları elle kopyala-yapıştır ile tek dosyada birleştirip özet tablo "
+            "çıkarıyorum, yaklaşık 3 saatimi alıyor. Python bilgim başlangıç seviyesinde, "
+            "pandas ile tek dosya okuyabiliyorum. Klasördeki tüm dosyaları otomatik okuyup "
+            "birleştiren, hangi satırın hangi şubeden geldiğini de kaydeden bir betik nasıl "
+            "kurarım? Bazı şubeler dosyayı geç veya hatalı gönderiyor, bunu da yakalamak "
+            "isterim."
+        ),
+        "expert": "PythonGurusu",
+        "answer": (
+            "Bu, otomasyonun en hızlı geri ödeyen türü; iskelet üç adımdan oluşur. Birinci "
+            "adım dosyaları toplamak: pathlib modülünden Path ile klasörü gösterip glob "
+            "deseniyle tüm xlsx dosyalarını listeleyin, örneğin Path(klasor).glob('*.xlsx'). "
+            "İkinci adım döngüyle okumak: her dosyayı pd.read_excel ile açın ve "
+            "birleştirmeden önce df'ye şube kimliğini ekleyin; dosya adları şube kodunu "
+            "içeriyorsa df['sube'] = dosya.stem satırı kaynağı kalıcı olarak damgalar, "
+            "sonradan hangi satır nereden geldi sorusu hiç doğmaz. Üçüncü adım pd.concat "
+            "ile tek çerçevede birleştirip pivot_table veya groupby ile özetinizi almak. "
+            "Hata yakalama kısmı asıl değeri üretir: okuma satırını try-except bloğuna "
+            "alın, bozuk dosyalarda except dalı dosya adını bir hata listesine yazsın ve "
+            "betik çökmeden devam etsin. Şablon tutarlılığı için birleştirmeden önce her "
+            "df'nin sütun listesini beklenen listeyle karşılaştırın; eksik veya fazla sütun "
+            "varsa o şubeyi rapora not düşün. Geç gönderenleri yakalamak için beklenen 30 "
+            "şube kodunun kümesinden gelen dosyaların kümesini çıkarın, fark size eksikleri "
+            "verir. Betiği Windows Görev Zamanlayıcı veya cron ile pazartesi sabahına "
+            "kurduğunuzda 3 saatlik iş birkaç dakikaya iner; çıktıyı to_excel yerine "
+            "Parquet olarak da saklarsanız arşiv sorguları çok hızlanır."
+        ),
+    },
+    {
+        "category_slug": "icerik",
+        "subject": "VOSviewer'da tezim için oluşturduğum anahtar kelime haritasındaki 5 kümeyi nasıl yorumlamalıyım?",
+        "starter": "Sosyal_Veri",
+        "first_post": (
+            "Tezimin literatür bölümünü bibliyometrik analizle desteklemek istiyorum. Web of "
+            "Science'tan çektiğim 1.240 makaleyi VOSviewer'a yükledim ve anahtar kelime "
+            "eş-oluşum haritası ürettim, program 5 renkli küme çıkardı. Görsel etkileyici "
+            "duruyor ama tezde bu kümeleri nasıl anlatacağımı bilmiyorum. Renkler neye göre "
+            "ayrılıyor, düğüm boyutları ne anlama geliyor? Bir de bazı kelimeler eş anlamlı "
+            "olmasına rağmen ayrı düğüm olmuş, bu sorun mu?"
+        ),
+        "expert": "Literatur_Tarama",
+        "answer": (
+            "Haritayı yorumlamadan önce eş anlamlı sorununu çözmelisiniz, çünkü bu küme "
+            "yapısını doğrudan bozar. VOSviewer'da thesaurus dosyası denen iki sütunlu basit "
+            "bir metin dosyasıyla varyantları birleştirirsiniz; tekil-çoğul yazımlar, "
+            "kısaltma-açılım çiftleri ve İngilizce yazım farkları tek etikete toplanınca hem "
+            "düğüm sayısı sadeleşir hem eş-oluşum sayıları gerçek değerine kavuşur. Ayrıca "
+            "minimum eş-oluşum eşiğini (genellikle 5 civarı) bilinçli seçip metin bölümünde "
+            "raporlayın; eşik, haritanın kaç kelimeyle kurulduğunu belirler. Yorum katmanına "
+            "gelince: her renk, birlikte anılma sıklığı yüksek kelimelerin modülerlik "
+            "temelli algoritmayla ayrıştırılmış bir tematik kümesidir; kümeyi yorumlamak, "
+            "içindeki en yüksek frekanslı 5-10 kelimeye bakıp alana hakimiyetinizle o "
+            "araştırma damarına bir ad vermektir, adı program değil siz koyarsınız. Düğüm "
+            "boyutu kelimenin toplam görülme sıklığını, bağlantı kalınlığı iki kelimenin "
+            "birlikte anılma gücünü gösterir; kümeler arası köprü konumundaki kelimeler "
+            "disiplinlerarası temas noktalarıdır ve tezde ayrıca vurgulanmaya değer. Son bir "
+            "katman daha ekleyin: overlay görünümünde düğümler ortalama yayın yılına göre "
+            "renklenir, böylece hangi temanın olgunlaştığını hangisinin yükselen araştırma "
+            "cephesi olduğunu gösterebilirsiniz. Bu üçlü okuma, haritayı süsten analize "
+            "dönüştürür."
+        ),
+    },
+    {
+        "category_slug": "danismanlik",
+        "subject": "Analiz danışmanlığında müşteri sürekli ek analiz istiyor, revizyon sınırını nasıl belirlemeliyim?",
+        "starter": "AnalizUzmani_1",
+        "first_post": (
+            "Yaklaşık bir yıldır serbest istatistik danışmanlığı yapıyorum. Son işimde tez "
+            "verisi için t-testi ve ANOVA üzerine anlaştık, teslimden sonra müşteri önce "
+            "regresyon, sonra aracılık analizi istedi ve bunları revizyon hakkı sayıyor. İş, "
+            "anlaştığımız ücretin iki katı emeğe ulaştı. Müşteriyi kaybetmeden nazikçe sınır "
+            "çizmek istiyorum ama nasıl formüle edeceğimi bilemiyorum. Baştan sözleşmeye ne "
+            "yazmalıydım, şimdi ne demeliyim?"
+        ),
+        "expert": "StratejiAnalisti",
+        "answer": (
+            "Yaşadığınız şeyin adı kapsam kayması ve çözümü nezaket değil tanım netliğidir. "
+            "Revizyon ile yeni talep ayrımını yazılı kurala bağlamalısınız: revizyon, "
+            "anlaşılan analizlerin düzeltilmesi veya yeniden raporlanmasıdır; anlaşma "
+            "metninde adı geçmeyen her yeni analiz türü yeni bir iş kalemidir. Bundan "
+            "sonraki tekliflerinizde üç unsuru madde madde belirtin: yapılacak analizlerin "
+            "adları tek tek (t-testi, tek yönlü ANOVA gibi — 'gerekli analizler' gibi açık "
+            "uçlu ifade kullanmadan), dahil olan revizyon tur sayısı (sektör pratiği 2 "
+            "turdur) ve kapsam dışı taleplerin ayrıca fiyatlanacağı cümlesi. Mevcut "
+            "müşteriye dönüşünüz de aynı çerçeveyle kurulur: önce teslim edilen işin "
+            "anlaşılan kapsamı karşıladığını nazikçe hatırlatın, ardından aracılık "
+            "analizini yapmaktan memnuniyet duyacağınızı ancak bunun yeni bir kalem "
+            "olduğunu belirtip küçük bir ek teklif sunun. Çoğu müşteri sınırı sizin kadar "
+            "bilmez; net teklif gördüğünde ya kabul eder ya vazgeçer, ilişki nadiren "
+            "bozulur. Ödeme tarafında da işi aşamalandırın: veri temizliği ve ana "
+            "analizler tesliminde ara ödeme almak, sonu gelmeyen taleplerle çalışılmış "
+            "emeğin karşılıksız kalmasını önler. Analizus pazaryerindeki teklif formunun "
+            "fiyatla birlikte teslim süresini de zorunlu alan olarak istemesi de kapsamı "
+            "baştan netleştirmeye yardımcı olur."
+        ),
+    },
+    {
+        "category_slug": "akademik-surec",
+        "subject": "Editörlüğünü yaptığım dergiye AI ile yazılmış makaleler geliyor, nasıl bir politika uygulamalıyım?",
+        "starter": "EditorProf",
+        "first_post": (
+            "Ulusal hakemli bir derginin editörlüğünü yürütüyorum. Son 6 ayda gelen "
+            "gönderilerin belirgin kısmında aynı kalıp cümleler, aşırı pürüzsüz ama "
+            "içeriksiz paragraflar ve doğrulanamayan kaynaklar görüyorum. İki makalede "
+            "kaynakçadaki DOI'lerin bir kısmı gerçek çıkmadı. AI tespit araçlarından birini "
+            "denedim ama sonuçlarına ne kadar güveneceğimi bilmiyorum. Dergi olarak yazılı "
+            "bir politika oluşturmak istiyoruz, neleri kapsamalı?"
+        ),
+        "expert": "AkademikEtik",
+        "answer": (
+            "İki konuyu ayırarak başlayın, çünkü çözümleri farklı: AI kullanımı ile uydurma "
+            "kaynak aynı şey değildir. Uydurma kaynak, nasıl üretilmiş olursa olsun doğrudan "
+            "bilimsel sahtecilik kapsamındadır ve mevcut etik mevzuatınız zaten yeterlidir; "
+            "kaynakça doğrulamasını sürece gömün, editoryal ön kontrolde rastgele seçilmiş "
+            "5-10 kaynağın DOI ve künyesini kontrol etmek düşük maliyetli ve etkili bir "
+            "filtredir, tarif ettiğiniz iki vaka masa reddi gerekçesidir. AI politikasına "
+            "gelince, COPE ve büyük yayınevlerinin yerleşen ortak çerçevesi üç ilkeye "
+            "dayanır: yapay zeka araçları yazar olamaz çünkü sorumluluk üstlenemez; "
+            "yazarlar kullandıkları aracı ve kullanım amacını yöntem veya teşekkür "
+            "bölümünde beyan etmekle yükümlüdür; metnin doğruluğunun tüm sorumluluğu "
+            "beyandan bağımsız olarak yazarlara aittir. Tespit araçları konusunda temkinli "
+            "olmanız isabetli: bu araçların yanlış pozitif oranları yüksektir ve ana dili "
+            "İngilizce olmayan yazarların özgün metinlerini de sıklıkla AI diye "
+            "işaretledikleri gösterilmiştir; tek başına bir tespit skoru asla ret gerekçesi "
+            "yapılmamalı, olsa olsa insan incelemesini tetikleyen bir sinyal sayılmalıdır. "
+            "Politikanızı dergi web sitesinde açıkça yayımlayın ve gönderi sistemine "
+            "zorunlu bir beyan kutusu ekleyin; caydırıcılığın çoğu, denetimden değil beyan "
+            "zorunluluğunun kendisinden gelir."
+        ),
+    },
+    {
+        "category_slug": "ai-ml-agentic",
+        "subject": "Türkçe duygu analizinde 3.200 yorumluk verimle hazır model mi kullanmalıyım, kendim mi eğitmeliyim?",
+        "starter": "AI_Ogrenci",
+        "first_post": (
+            "Bitirme projemde bir e-ticaret sitesinden topladığım 3.200 müşteri yorumunu "
+            "olumlu, olumsuz ve nötr olarak sınıflandıracağım. Yorumların hepsini elle "
+            "etiketledim. Hugging Face'te hazır Türkçe duygu analizi modelleri gördüm ama "
+            "hocam kendi modelini eğitirsen daha çok öğrenirsin diyor. 3.200 örnek bir model "
+            "eğitmek için yeterli mi, yoksa hazır modeli mi kullanmalıyım? Ekran kartım yok, "
+            "sadece ücretsiz Colab kullanabiliyorum."
+        ),
+        "expert": "joseph",
+        "answer": (
+            "İkisini birden yapın, çünkü proje raporunuzun en güçlü bölümü tam da bu "
+            "karşılaştırma olur. Doğru sıralama üç basamaklıdır. Önce basit bir taban "
+            "çizgisi kurun: TF-IDF öznitelikleriyle lojistik regresyon, scikit-learn'de "
+            "yarım saatte kurulur ve Türkçe yorumlarda şaşırtıcı derecede iyi sonuç verir; "
+            "sonraki her modelin bu çıtayı geçmesi gerekir, geçemiyorsa karmaşıklık kendini "
+            "ödemiyordur. İkinci basamakta Hugging Face'teki BERTurk tabanlı hazır duygu "
+            "modellerinden birini kendi test kümenizde sıfır eğitimle deneyin; hazır "
+            "modeller genel alan verisiyle eğitildiğinden sizin e-ticaret alanınızda etiket "
+            "dağılımı kayabilir, bu farkı ölçmek başlı başına bir bulgudur. Üçüncü basamak "
+            "ince ayar: 3.200 etiketli örnek, sıfırdan model eğitmek için az ama önceden "
+            "eğitilmiş bir Türkçe BERT'i ince ayarlamak için gayet yeterlidir; veriyi "
+            "tabakalı olarak yüzde 80-10-10 eğitim, doğrulama ve test kümelerine bölün, "
+            "ücretsiz Colab'ın GPU'su bu boyuttaki ince ayarı birkaç epoch için rahatça "
+            "kaldırır. Değerlendirmede doğruluk yerine makro F1 raporlayın; nötr sınıf "
+            "neredeyse her zaman azınlıktadır ve doğruluk metriği bu dengesizliği gizler. "
+            "Sınıf dağılımınızı raporun başında verin, üç yaklaşımın makro F1 karşılaştırma "
+            "tablosuyla bitirin; hocanızın istediği öğrenme çıktısı da bu tabloda "
+            "somutlaşır."
+        ),
+    },
+    {
+        "category_slug": "veri-analizi-bi",
+        "subject": "Şirket verimizi buluta göndermeden kendi sunucumuzda Metabase ile dashboard kurabilir miyiz?",
+        "starter": "Donanim_Meraklisi",
+        "first_post": (
+            "KOBİ ölçeğinde bir üretim firmasıyız, satış ve stok verimiz yerel bir "
+            "PostgreSQL veritabanında duruyor. Yönetim dashboard istiyor ama veri gizliliği "
+            "politikamız gereği bulut tabanlı BI araçlarına veri gönderemiyoruz. Elimde 16 "
+            "GB RAM'li, Docker kurulu bir Ubuntu sunucu var. Metabase veya Superset gibi "
+            "açık kaynak araçlarla tamamen kendi sunucumuzda bir çözüm kurmak gerçekçi mi, "
+            "hangisini seçmeliyim ve nelere dikkat etmeliyim?"
+        ),
+        "expert": "VeriGorselci",
+        "answer": (
+            "Gerçekçi olmanın ötesinde, tarif ettiğiniz senaryo bu araçların tam hedef "
+            "kitlesi. İki aday arasındaki seçim ekip profiline bağlıdır: Metabase, Docker'da "
+            "tek konteynerle dakikalar içinde ayağa kalkar, SQL bilmeyen yöneticilerin bile "
+            "soru sorabildiği görsel bir sorgu arayüzü sunar ve bakım yükü çok düşüktür; "
+            "Superset daha geniş grafik yelpazesi ve ayrıntılı yetkilendirme sunar ama "
+            "kurulumu, yükseltmesi ve yönetimi belirgin biçimde daha fazla teknik emek "
+            "ister. KOBİ ölçeğinde ilk kurulum için Metabase ile başlamak, ihtiyaç aşarsa "
+            "Superset'e geçmek en az riskli yoldur; ikisi de PostgreSQL'e doğrudan bağlanır "
+            "ve veri sunucunuzdan dışarı çıkmaz. Donanımınız fazlasıyla yeterli, çünkü bu "
+            "araçlar veriyi kendine kopyalamaz, sorguyu veritabanınıza gönderip sonucu "
+            "gösterir; asıl performans, PostgreSQL tarafında satış tablolarınızın tarih ve "
+            "şube sütunlarına indeks atılmasına bağlıdır. Dikkat edilecek üç nokta var: "
+            "Metabase'in kendi uygulama veritabanını varsayılan H2 yerine ayrı bir "
+            "PostgreSQL şemasında tutun, yoksa yükseltmelerde ayar kaybı yaşarsınız; "
+            "dashboard kullanıcılarına salt okunur bir veritabanı kullanıcısıyla bağlantı "
+            "verin; ve uygulamayı doğrudan internete açmayıp en azından ters proxy "
+            "arkasında, şirket ağıyla sınırlı tutun. Haftalık yedek ve sürüm güncellemesi "
+            "için aylık bir saatlik bakım penceresi ayırmanız yeterli olur."
+        ),
+    },
 ]
 
 
@@ -670,11 +993,19 @@ class Command(BaseCommand):
 
         def get_user(username):
             if username not in user_cache:
-                try:
-                    user_cache[username] = User.objects.get(username=username)
-                except User.DoesNotExist:
-                    self.stdout.write(self.style.WARNING(f"  Kullanıcı bulunamadı: {username}, atlanıyor."))
-                    return None
+                user, created = User.objects.get_or_create(
+                    username=username,
+                    defaults={"email": f"{username.lower()}@example.com"},
+                )
+                if created:
+                    user.set_unusable_password()
+                    user.save()
+                    title, account_type = PERSONA_META.get(username, ("", "Standard"))
+                    Profile.objects.get_or_create(
+                        user=user, defaults={"title": title, "account_type": account_type}
+                    )
+                    self.stdout.write(self.style.SUCCESS(f"  + Yeni kullanıcı: {username} ({account_type})"))
+                user_cache[username] = user
             return user_cache[username]
 
         existing_subjects = set(
