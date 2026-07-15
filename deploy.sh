@@ -50,9 +50,4 @@ else
     python manage.py populate_success_stories
 fi
 
-# --- GEÇİCİ: Faz 12 forum seed senkronizasyonu (bir sonraki deploy'dan önce kaldırılacak) ---
-python manage.py remove_generic_seed_topics
-python manage.py reseed_forum_topics --count 3
-# --- GEÇİCİ SON ---
-
 echo "✅ Deployment complete!"
