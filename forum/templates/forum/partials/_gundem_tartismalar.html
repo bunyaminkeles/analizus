@@ -14,7 +14,13 @@
             <a href="{% url 'topic_detail' pk=topic.pk %}" class="ax-topic-row ax-topic-row--forum">
                 <span class="ax-topic-row__rank">#{{ forloop.counter }}</span>
                 <span class="ax-topic-row__title">{{ topic.subject|truncatechars:70 }}</span>
-                <span class="ax-topic-row__meta"><i class="bi bi-eye"></i> {{ topic.views }} görüntülenme</span>
+                <span class="ax-topic-row__meta">
+                    <i class="bi bi-eye"></i> {{ topic.views }} görüntülenme
+                    <span>· {{ topic.replies_count }} cevap</span>
+                    {% if topic.has_expert_reply %}
+                    <span class="ax-badge ax-badge--primary ax-topic-row__expert-badge"><i class="bi bi-patch-check-fill"></i> Uzman cevapladı</span>
+                    {% endif %}
+                </span>
             </a>
             {% empty %}
             <p class="text-muted small mb-0">Henüz popüler konu yok.</p>
@@ -27,7 +33,13 @@
                 <a href="{% url 'topic_detail' pk=topic.pk %}" class="ax-topic-row">
                     <span class="ax-topic-row__rank">#{{ forloop.counter }}</span>
                     <span class="ax-topic-row__title">{{ topic.subject|truncatechars:40 }}</span>
-                    <span class="ax-topic-row__meta"><i class="bi bi-eye"></i> {{ topic.views }} görüntülenme</span>
+                    <span class="ax-topic-row__meta">
+                    <i class="bi bi-eye"></i> {{ topic.views }} görüntülenme
+                    <span>· {{ topic.replies_count }} cevap</span>
+                    {% if topic.has_expert_reply %}
+                    <span class="ax-badge ax-badge--primary ax-topic-row__expert-badge"><i class="bi bi-patch-check-fill"></i> Uzman cevapladı</span>
+                    {% endif %}
+                </span>
                 </a>
             </div>
             {% empty %}

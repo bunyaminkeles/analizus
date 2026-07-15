@@ -594,30 +594,44 @@ Faz 0,1,2,3,4,5,6,7,8,9,10,11 tamamlandı ve
 `main`'e merge edildi (bkz. memory `project_anasayfa_iyilestirme`). Faz 12 ve
 13 o turdan kalan, henüz başlanmamış iki faz.
 
-## Faz 12 — Forum vitrini dönüşümü (seed içerik + sahte sayaç temizliği)
-Ana sayfadaki "Gündemdeki Tartışmalar" jenerik AI konularıyla (Fine-tuning vs
-RAG, Prompt Engineering...) tohumlanmış — foruma değer katmıyor ve sitenin
-"AI'a güvenme, doğrulat" konumlanmasıyla çelişiyor. Görüntülenme sayıları da
-üretilmiş görünüyor (5678/4567/4321 ardışık desen, 4567 iki kez) — 90 üyeli
-sitede inandırıcı değil.
+## Faz 12 — Forum vitrini dönüşümü — TAMAMLANDI (kısmi yayın), Temmuz 2026, dev branch
+Ana sayfadaki "Gündemdeki Tartışmalar" 6 jenerik AI konusu (Fine-tuning vs RAG,
+Prompt Engineering, Açık kaynak LLM'ler, LLM Halüsinasyonu, GPU olmadan Deep
+Learning, LLM etik sınırları — hepsi `seed_forum.py`'den sabit views=3456-5678
+ile) `forum/management/commands/remove_generic_seed_topics.py` ile silindi.
+Konuyla alakalı ama sahte-seed 4 konuya (SPSS normallik, anket örneklem,
+Google Forms, Türkçe NLP model) kullanıcı kararıyla dokunulmadı.
 
-- Migration KULLANILMAZ — idempotent `manage.py reseed_forum_topics` komutu
-  ya da (konu sayısı azsa) admin'den elle giriş; **KARAR NOKTASI:** komut mu,
-  elle mi — kullanıcıya sorulacak.
-- Gerçek kullanıcı cevabı almış konulara DOKUNULMAZ, yalnızca cevapsız seed
-  konular değiştirilir/silinir. Silinen konu URL'leri Google'da indeksliyse
-  raporla.
-- Uydurma görüntülenme sayaçları sıfırlanır; alan gerçek sayaca bağlı değilse
-  vitrinde hiç gösterilmez (sıfır kuralı). Cevap sayısı + "Uzman cevapladı"
-  rozeti gösterilir.
-- Vitrin sorgusu yeniden hedeflenir: öncelik uzman cevaplı konularda,
-  doldurmazsa son aktif konular. Mevcut cache desenine uyar, N+1 üretmez.
-- **Seed konu metinleri hazır:** `analizus_forum_seed_konular.md` (proje
-  kökünde dosya olarak mevcut) — 12 konu, 3 kategori (Akademik Süreç · Veri
-  Analizi & BI · AI/ML/Agentic), her biri kategori+huni+birinci ağızdan
-  senaryo içeriyor. Yayınlama kuralları dosyada tanımlı: kademeli yayın
-  (haftada 2-3 konu), her konuya doğrulanmış uzman hesabından cevap,
-  sahte metrik yok, gerçek hesaplardan açılır.
+`forum/management/commands/reseed_forum_topics.py` (yeni, idempotent,
+`--count N` ile kademeli yayın) 12 yeni konu+uzman cevabını (SEO'ya dikkat
+edilerek yazıldı) ve 3 yeni Category'yi (`akademik-surec`, `veri-analizi-bi`,
+`ai-ml-agentic`) içeriyor — kaynak: `analizus_forum_seed_konular.md`. Bu turda
+`--count 3` ile yalnızca ilk 3 konu (Hakem 2/SEM, Etik kurul onam muafiyeti,
+YÖK Tez benzerlik) canlıya alındı; kalan 9 konu dosyada hazır, sonraki
+haftalarda `docker compose exec web python manage.py reseed_forum_topics
+--count N` ile devreye alınır (kademeli yayın kuralı — hepsi bir günde
+açılmaz).
+
+`forum/views.py` — yeni `_trending_topics()` yardımcı fonksiyonu (`home()` ve
+`forum_index()` ortak kullanıyor, N+1 yok): sıralama artık `-views` değil,
+`Exists()` ile uzman (`account_type='Expert'`) cevaplı konular önce, dolmazsa
+son aktif konular. `views` alanı DEĞİŞMEDİ (gerçek sayaç, `topic_detail()`'da
+artıyor), sadece sıralama kriteri değişti.
+
+`_gundem_tartismalar.html` — "Uzman cevapladı" rozeti (`ax-badge
+ax-badge--primary`) + cevap sayısı eklendi. `trend_topics.css`'te forum
+varyantı meta satırına `flex-wrap`/`max-width` eklendi (rozet mobilde
+taşmasın diye), `?v=0001`→`0002` bump edildi (forum_index.html + home.html×2).
+
+Doğrulama: `python -m pytest forum/tests.py` → 52/53 geçti (tek hata
+`test_yoktez_job_daily_limit_normal_user`, bu turla ilgisiz, önceden bilinen).
+Django shell üzerinden `/` ve `/forum/` render edildi, "Uzman cevapladı" 5
+kez görünüyor, "Fine-tuning" metni artık hiç yok. Playwright ile görsel
+(mobil taşma) doğrulaması henüz yapılmadı — sıradaki oturumda önerilir.
+
+**Kalan iş:** 9 konunun kademeli yayını (haftada 2-3, `--count` artırılarak)
++ her yayından sonra ilgili uzman hesabın cevabının gerçekten "vitrin
+kalitesinde" durduğunu gözden geçirmek.
 
 ## Faz 13 — Dropzone akışı: vaat + triyaj şeridi
 Hero dropzone'a dosya bırakan kullanıcı `/analiz/?from=hero` araç listesine

@@ -11,7 +11,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.db import models
 from django.contrib.contenttypes.models import ContentType
-from django.db.models import Count, Sum, Q, Avg, Subquery, OuterRef, Max
+from django.db.models import Count, Sum, Q, Avg, Subquery, OuterRef, Max, Exists
 from django.contrib import messages
 from django.utils import timezone
 from django.utils.html import strip_tags
@@ -58,6 +58,25 @@ def health_check(request):
 def ratelimit_error(request, exception):
     """Rate limit aşıldığında gösterilecek hata sayfası"""
     return render(request, 'forum/ratelimit_error.html', status=429)
+
+
+def _trending_topics(limit=5):
+    """Gündemdeki Tartışmalar — önce uzman cevaplı konular, dolmazsa son aktif konular.
+    (Faz 12: eski '-views' sıralaması sahte/seed'lenmiş sayaçlara dayanıyordu.)"""
+    has_expert_reply = Exists(
+        Post.objects.filter(topic=OuterRef('pk'), created_by__profile__account_type='Expert')
+    )
+    base = Topic.objects.select_related('starter', 'category').annotate(
+        has_expert_reply=has_expert_reply,
+        replies_count=Count('posts'),
+    )
+    topics = list(base.filter(has_expert_reply=True).order_by('-created_at')[:limit])
+    if len(topics) < limit:
+        have_ids = [t.pk for t in topics]
+        topics += list(
+            base.exclude(pk__in=have_ids).order_by('-created_at')[:limit - len(topics)]
+        )
+    return topics
 
 
 # --- FORUM BÖLÜMLER ---
@@ -114,10 +133,8 @@ def forum_index(request):
     from forum.models import STUDYROOM_TERMS
     can_create_room, _ = _studyroom_eligibility(request.user)
 
-    # Gündemdeki Tartışmalar (en çok görüntülenen 5 konu) — ana sayfayla aynı sorgu
-    popular_topics = Topic.objects.select_related('starter', 'category').annotate(
-        replies_count=Count('posts')
-    ).order_by('-views')[:5]
+    # Gündemdeki Tartışmalar — ana sayfayla aynı sorgu
+    popular_topics = _trending_topics()
 
     return render(request, 'forum/forum_index.html', {
         'sections_data': sections_data,
@@ -231,10 +248,8 @@ def home(request):
         replies_count=Count('posts')
     ).order_by('-created_at')[:5]
 
-    # Popüler konular (en çok görüntülenen 5 konu)
-    popular_topics = Topic.objects.select_related('starter', 'category').annotate(
-        replies_count=Count('posts')
-    ).order_by('-views')[:5]
+    # Popüler konular — uzman cevaplı öncelik, dolmazsa son aktif konular
+    popular_topics = _trending_topics()
 
     # Günün İpucu
     daily_tip = DailyTip.get_today_tip()
