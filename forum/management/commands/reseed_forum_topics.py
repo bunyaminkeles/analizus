@@ -69,6 +69,22 @@ PERSONA_META = {
 }
 
 
+# Bu 7 kategori slug'ı (yeni oluşturulan 3 kategorinin aksine) ortamdan
+# ortama farklı — ör. lokal DB'de 'spss', production'da 'spss-amos'.
+# Tam slug eşleşmezse başlıkta bu anahtar kelimeyi arayarak devam edilir;
+# o da bulunamazsa konu atlanır (yeni kategori icat edilmez — mevcut
+# taksonomiye uymayan bir konu yanlış kovaya zorlanmaz).
+CATEGORY_KEYWORD_FALLBACK = {
+    "spss": "SPSS",
+    "regresyon": "Regresyon",
+    "metodoloji": "Metodoloji",
+    "python": "Python",
+    "r-programlama": "R Studio",
+    "icerik": "İçerik",
+    "danismanlik": "Danışman",
+}
+
+
 NEW_CATEGORIES = [
     {"slug": "akademik-surec", "title": "Akademik Süreç & Etik"},
     {"slug": "veri-analizi-bi", "title": "Veri Analizi & BI"},
@@ -1033,11 +1049,17 @@ class Command(BaseCommand):
 
             category = category_cache.get(t["category_slug"])
             if category is None:
+                slug = t["category_slug"]
                 try:
-                    category = Category.objects.get(slug=t["category_slug"])
+                    category = Category.objects.get(slug=slug)
                 except Category.DoesNotExist:
-                    self.stdout.write(self.style.WARNING(f"  Kategori bulunamadı: {t['category_slug']}, atlanıyor."))
-                    continue
+                    keyword = CATEGORY_KEYWORD_FALLBACK.get(slug)
+                    category = Category.objects.filter(title__icontains=keyword).first() if keyword else None
+                    if category is None:
+                        self.stdout.write(self.style.WARNING(f"  Kategori bulunamadı: {slug} (yedek anahtar kelime de eşleşmedi), atlanıyor."))
+                        continue
+                    self.stdout.write(f"  ~ '{slug}' slug'ı bulunamadı, '{category.title}' kategorisine (anahtar kelime: {keyword}) düşüldü.")
+                category_cache[slug] = category
 
             starter = get_user(t["starter"])
             expert = get_user(t["expert"])
