@@ -72,17 +72,18 @@ PERSONA_META = {
 
 # Bu 7 kategori slug'ı (yeni oluşturulan 3 kategorinin aksine) ortamdan
 # ortama farklı — ör. lokal DB'de 'spss', production'da 'spss-amos'.
-# Tam slug eşleşmezse başlıkta bu anahtar kelimeyi arayarak devam edilir;
-# o da bulunamazsa konu atlanır (yeni kategori icat edilmez — mevcut
-# taksonomiye uymayan bir konu yanlış kovaya zorlanmaz).
+# Tam slug eşleşmezse listedeki anahtar kelimeler sırayla title+description
+# alanında aranır (ilk eşleşen kazanır); hiçbiri bulunamazsa konu atlanır
+# (yeni kategori icat edilmez — mevcut taksonomiye uymayan bir konu yanlış
+# kovaya zorlanmaz).
 CATEGORY_KEYWORD_FALLBACK = {
-    "spss": "SPSS",
-    "regresyon": "Regresyon",
-    "metodoloji": "Metodoloji",
-    "python": "Python",
-    "r-programlama": "R Studio",
-    "icerik": "İçerik",
-    "danismanlik": "Danışman",
+    "spss": ["SPSS"],
+    "regresyon": ["Regresyon"],
+    "metodoloji": ["Metodoloji", "Nitel"],
+    "python": ["Python"],
+    "r-programlama": ["R Studio"],
+    "icerik": ["İçerik", "Nitel"],
+    "danismanlik": ["Danışman"],
 }
 
 
@@ -1054,17 +1055,19 @@ class Command(BaseCommand):
                 try:
                     category = Category.objects.get(slug=slug)
                 except Category.DoesNotExist:
-                    keyword = CATEGORY_KEYWORD_FALLBACK.get(slug)
-                    category = (
-                        Category.objects.filter(
+                    category = None
+                    matched_keyword = None
+                    for keyword in CATEGORY_KEYWORD_FALLBACK.get(slug, []):
+                        category = Category.objects.filter(
                             Q(title__icontains=keyword) | Q(description__icontains=keyword)
                         ).first()
-                        if keyword else None
-                    )
+                        if category is not None:
+                            matched_keyword = keyword
+                            break
                     if category is None:
-                        self.stdout.write(self.style.WARNING(f"  Kategori bulunamadı: {slug} (yedek anahtar kelime de eşleşmedi), atlanıyor."))
+                        self.stdout.write(self.style.WARNING(f"  Kategori bulunamadı: {slug} (yedek anahtar kelimeler de eşleşmedi), atlanıyor."))
                         continue
-                    self.stdout.write(f"  ~ '{slug}' slug'ı bulunamadı, '{category.title}' kategorisine (anahtar kelime: {keyword}) düşüldü.")
+                    self.stdout.write(f"  ~ '{slug}' slug'ı bulunamadı, '{category.title}' kategorisine (anahtar kelime: {matched_keyword}) düşüldü.")
                 category_cache[slug] = category
 
             starter = get_user(t["starter"])
