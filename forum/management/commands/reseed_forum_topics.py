@@ -13,6 +13,7 @@ import random
 from datetime import timedelta
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
+from django.db.models import Q
 from django.utils import timezone
 from forum.models import Section, Category, Topic, Post, Profile
 
@@ -1054,7 +1055,12 @@ class Command(BaseCommand):
                     category = Category.objects.get(slug=slug)
                 except Category.DoesNotExist:
                     keyword = CATEGORY_KEYWORD_FALLBACK.get(slug)
-                    category = Category.objects.filter(title__icontains=keyword).first() if keyword else None
+                    category = (
+                        Category.objects.filter(
+                            Q(title__icontains=keyword) | Q(description__icontains=keyword)
+                        ).first()
+                        if keyword else None
+                    )
                     if category is None:
                         self.stdout.write(self.style.WARNING(f"  Kategori bulunamadı: {slug} (yedek anahtar kelime de eşleşmedi), atlanıyor."))
                         continue
