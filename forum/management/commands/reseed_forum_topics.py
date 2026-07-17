@@ -9,8 +9,11 @@ Kullanım:
     python manage.py reseed_forum_topics --count 3
     docker compose exec web python manage.py reseed_forum_topics --count 3
 """
+import random
+from datetime import timedelta
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
+from django.utils import timezone
 from forum.models import Section, Category, Topic, Post, Profile
 
 
@@ -1013,6 +1016,13 @@ class Command(BaseCommand):
         )
 
         created_count = 0
+        # created_at auto_now_add olduğu için .create() sırasında yazılamaz —
+        # aşağıda .update() ile geriye dönük ezilir. Amaç: aynı çalıştırmada
+        # oluşan konular tek bir zaman damgasında kümelenip hem forum
+        # akışında hem Google'a "toplu içerik dökümü" gibi görünmesin; her
+        # konu bir öncekinden 1-3 gün geriye kayar, cevabı sorudan birkaç
+        # saat sonrasına damgalanır.
+        cursor_dt = timezone.now() - timedelta(days=1)
 
         for t in TOPICS:
             if created_count >= limit:
@@ -1034,13 +1044,22 @@ class Command(BaseCommand):
             if not starter or not expert:
                 continue
 
+            topic_dt = cursor_dt
+            reply_dt = topic_dt + timedelta(hours=random.randint(2, 20))
+
             topic = Topic.objects.create(category=category, subject=t["subject"], starter=starter)
-            Post.objects.create(topic=topic, created_by=starter, message=t["first_post"])
-            Post.objects.create(topic=topic, created_by=expert, message=t["answer"], is_best_answer=True)
+            first_post = Post.objects.create(topic=topic, created_by=starter, message=t["first_post"])
+            reply = Post.objects.create(topic=topic, created_by=expert, message=t["answer"], is_best_answer=True)
+
+            Topic.objects.filter(pk=topic.pk).update(created_at=topic_dt)
+            Post.objects.filter(pk=first_post.pk).update(created_at=topic_dt)
+            Post.objects.filter(pk=reply.pk).update(created_at=reply_dt)
+
+            cursor_dt = topic_dt - timedelta(days=random.randint(1, 3), hours=random.randint(0, 6))
 
             created_count += 1
             existing_subjects.add(t["subject"])
-            self.stdout.write(self.style.SUCCESS(f"  ✓ {t['subject'][:70]}"))
+            self.stdout.write(self.style.SUCCESS(f"  ✓ {t['subject'][:70]} ({topic_dt.date()})"))
 
         self.stdout.write(self.style.SUCCESS(f"\nTamamlandı: {created_count} yeni konu eklendi."))
         remaining = sum(1 for t in TOPICS if t["subject"] not in existing_subjects)

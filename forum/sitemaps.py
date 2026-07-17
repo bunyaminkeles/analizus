@@ -1,5 +1,6 @@
 from django.contrib.sitemaps import Sitemap
 from django.urls import reverse
+from django.db.models import Q
 from .models import Topic, Category, FreelanceJob, BlogPost, StudyRoom
 
 
@@ -20,12 +21,18 @@ class StaticViewSitemap(Sitemap):
 
 
 class TopicSitemap(Sitemap):
-    """Forum konuları için sitemap — sadece 1000+ görüntüleme alanlar"""
+    """Forum konuları için sitemap — 1000+ görüntüleme VEYA en faydalı yanıtı
+    işaretlenmiş (is_best_answer=True) konular. İkinci kriter, henüz trafik
+    almamış ama küratörlü/cevaplanmış konuların (örn. Faz 12 seed içeriği)
+    1000 görüntüleme tavuk-yumurta engeline takılmadan sitemap'e girmesini
+    sağlar — cevapsız/düşük kaliteli gürültü yine dışarıda kalır."""
     changefreq = 'weekly'
     priority = 0.6
 
     def items(self):
-        return Topic.objects.filter(views__gte=1000).order_by('-views')
+        return Topic.objects.filter(
+            Q(views__gte=1000) | Q(posts__is_best_answer=True)
+        ).distinct().order_by('-views')
 
     def lastmod(self, obj):
         return obj.created_at
