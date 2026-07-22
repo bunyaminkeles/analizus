@@ -1,0 +1,184 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Eğitim Talebi | Analizus{% endblock %}
+{% block meta_description %}Bireysel veya kurumsal eğitim talebinizi iletin, 24 saat içinde dönüş yapalım.{% endblock %}
+{% block og_title %}Eğitim Talebi | Analizus{% endblock %}
+{% block og_description %}Bireysel veya kurumsal eğitim talebinizi iletin, 24 saat içinde dönüş yapalım.{% endblock %}
+
+{% block main_content_classes %}col-lg-12{% endblock %}
+{% block right_sidebar %}{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/training.css' %}?v=0001">
+{% endblock %}
+
+{% block content %}
+<section class="py-4">
+    <div class="container" style="max-width: 720px;">
+
+        <h1 class="ax-training-heading">Eğitim Talebi</h1>
+        <p class="ax-training-form-intro">
+            Formu doldurun, 24 saat içinde sizinle iletişime geçelim.
+            {% if kurs_item %}Seçtiğiniz eğitim: <strong>{{ kurs_item.title }}</strong>.{% endif %}
+        </p>
+
+        {% if messages %}
+        {% for msg in messages %}
+        <div class="ax-training-form-alert {% if msg.tags == 'success' %}ax-training-form-alert--success{% else %}ax-training-form-alert--error{% endif %}">
+            {{ msg }}
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        <div class="ax-training-form-card">
+            <form method="POST" novalidate>
+                {% csrf_token %}
+                <input type="hidden" name="source" value="{{ source|default:'direct' }}">
+
+                <!-- Honeypot: botlar doldurur, insanlar görmez -->
+                <div style="position:absolute;left:-9999px;top:-9999px;" aria-hidden="true">
+                    <label for="website">Web sitesi</label>
+                    <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+                </div>
+
+                <div class="ax-training-form-row">
+                    <div class="ax-training-form-group">
+                        <label class="ax-training-form-label">Ad Soyad <span class="ax-training-form-required">*</span></label>
+                        <input type="text" name="name" class="ax-training-form-input" required>
+                    </div>
+                    <div class="ax-training-form-group">
+                        <label class="ax-training-form-label">E-posta <span class="ax-training-form-required">*</span></label>
+                        <input type="email" name="email" class="ax-training-form-input" required>
+                    </div>
+                </div>
+
+                <div class="ax-training-form-row">
+                    <div class="ax-training-form-group">
+                        <label class="ax-training-form-label">Telefon</label>
+                        <input type="text" name="phone" class="ax-training-form-input">
+                    </div>
+                    <div class="ax-training-form-group">
+                        <label class="ax-training-form-label">Kurum / Şirket</label>
+                        <input type="text" name="organization" class="ax-training-form-input">
+                    </div>
+                </div>
+
+                <div class="ax-training-form-group ax-training-form-group--full">
+                    <label class="ax-training-form-label">Talep Türü <span class="ax-training-form-required">*</span></label>
+                    <select name="request_type" class="ax-training-form-select" required>
+                        <option value="">Seçiniz…</option>
+                        <option value="individual"{% if tur == 'bireysel' %} selected{% endif %}>Bireysel</option>
+                        <option value="corporate"{% if tur == 'kurumsal' %} selected{% endif %}>Kurumsal</option>
+                    </select>
+                </div>
+
+                <div class="ax-training-form-group ax-training-form-group--full">
+                    <label class="ax-training-form-label">Eğitim Konusu</label>
+                    <select name="topic" id="egitim-talebi-topic" class="ax-training-form-select">
+                        <option value="">Seçiniz…</option>
+                        {% for category in training_categories %}
+                        <optgroup label="{{ category.title }}">
+                            {% for item in category.items %}
+                            <option value="{{ item.slug }}"{% if kurs == item.slug %} selected{% endif %}>{{ item.title }}</option>
+                            {% endfor %}
+                        </optgroup>
+                        {% endfor %}
+                        <option value="other">Diğer / Emin değilim</option>
+                    </select>
+                </div>
+
+                <div class="ax-training-form-group ax-training-form-group--full" id="egitim-talebi-other-topic-wrap" style="display:none;">
+                    <label class="ax-training-form-label">Diğer Konu</label>
+                    <input type="text" name="other_topic" class="ax-training-form-input" placeholder="Aradığınız eğitimi kısaca yazın">
+                </div>
+
+                <div class="ax-training-form-row">
+                    <div class="ax-training-form-group">
+                        <label class="ax-training-form-label">Seviye <span class="ax-training-form-required">*</span></label>
+                        <select name="level" class="ax-training-form-select" required>
+                            <option value="">Seçiniz…</option>
+                            <option value="beginner">Başlangıç</option>
+                            <option value="intermediate">Orta</option>
+                            <option value="advanced">İleri</option>
+                            <option value="unknown">Emin değilim</option>
+                        </select>
+                    </div>
+                    <div class="ax-training-form-group">
+                        <label class="ax-training-form-label">Format <span class="ax-training-form-required">*</span></label>
+                        <select name="training_format" class="ax-training-form-select" required>
+                            <option value="">Seçiniz…</option>
+                            <option value="online_live">Online canlı</option>
+                            <option value="onsite">Yerinde</option>
+                            <option value="hybrid">Hibrit</option>
+                            <option value="flexible">Farketmez</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="ax-training-form-row">
+                    <div class="ax-training-form-group">
+                        <label class="ax-training-form-label">Katılımcı Sayısı <span class="ax-training-form-required">*</span></label>
+                        <select name="participants" class="ax-training-form-select" required>
+                            <option value="">Seçiniz…</option>
+                            <option value="1">1 kişi</option>
+                            <option value="2-5">2-5 kişi</option>
+                            <option value="6-15">6-15 kişi</option>
+                            <option value="16+">16+ kişi</option>
+                        </select>
+                    </div>
+                    <div class="ax-training-form-group">
+                        <label class="ax-training-form-label">Süre Beklentisi <span class="ax-training-form-required">*</span></label>
+                        <select name="timeline" class="ax-training-form-select" required>
+                            <option value="">Seçiniz…</option>
+                            <option value="urgent">2 hafta içinde</option>
+                            <option value="month">1 ay içinde</option>
+                            <option value="flexible">Esnek</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="ax-training-form-group ax-training-form-group--full">
+                    <label class="ax-training-form-label">Açıklama <span class="ax-training-form-required">*</span></label>
+                    <textarea name="description" rows="5" class="ax-training-form-textarea" placeholder="Hedeflerinizi, mevcut bilgi seviyenizi ve varsa verinizi kısaca anlatın." required></textarea>
+                </div>
+
+                <div class="ax-training-form-consent">
+                    <input type="checkbox" id="egitim-kvkk-onay" name="kvkk_consent" required>
+                    <label for="egitim-kvkk-onay">
+                        <a href="{% url 'gizlilik_politikasi' %}" target="_blank" rel="noopener">KVKK Aydınlatma Metni'ni</a> okudum, kabul ediyorum.
+                    </label>
+                </div>
+
+                <button type="submit" class="ax-training-form-btn ax-training-form-submit">Talebi Gönder</button>
+                <p class="ax-training-form-trust">Taleplere 24 saat içinde dönüş yapılır.</p>
+            </form>
+        </div>
+
+        {% if WHATSAPP_NUMBER %}
+        <p class="ax-training-form-alt">
+            Form doldurmak yerine doğrudan konuşmayı tercih ediyorsanız:
+            <a href="https://wa.me/{{ WHATSAPP_NUMBER }}?text=Merhaba%2C%20e%C4%9Fitim%20talebi%20hakk%C4%B1nda%20bilgi%20almak%20istiyorum." target="_blank" rel="noopener noreferrer">
+                <i class="bi bi-whatsapp" aria-hidden="true"></i> WhatsApp'tan Yaz
+            </a>
+        </p>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<script>
+(function () {
+    var topicSelect = document.getElementById('egitim-talebi-topic');
+    var otherWrap = document.getElementById('egitim-talebi-other-topic-wrap');
+    if (!topicSelect || !otherWrap) return;
+    function toggleOther() {
+        otherWrap.style.display = topicSelect.value === 'other' ? 'block' : 'none';
+    }
+    topicSelect.addEventListener('change', toggleOther);
+    toggleOther();
+})();
+</script>
+{% endblock %}

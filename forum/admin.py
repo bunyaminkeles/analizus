@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.utils.html import format_html
 from unfold.admin import ModelAdmin, TabularInline, StackedInline
-from .models import Section, Category, Topic, Post, Profile, ContactMessage, PrivateMessage, Badge, Skill, DailyTip, QuizQuestion, QuizScore, FreelanceJob, JobCategory, JobProposal, JobReview, UserQuizAttempt, DonationTier, Donation, JobPayment, TopicTag, SiteSettings, BlogCategory, BlogPost, BlogTag, SuccessStory, StudyRoom, ProjectRequest, ReferralCode, ReferralUse
+from .models import Section, Category, Topic, Post, Profile, ContactMessage, PrivateMessage, Badge, Skill, DailyTip, QuizQuestion, QuizScore, FreelanceJob, JobCategory, JobProposal, JobReview, UserQuizAttempt, DonationTier, Donation, JobPayment, TopicTag, SiteSettings, BlogCategory, BlogPost, BlogTag, SuccessStory, StudyRoom, ProjectRequest, ReferralCode, ReferralUse, TrainingRequest
 from .models import TeamMember
 
 
@@ -390,6 +390,54 @@ class ProjectRequestAdmin(ModelAdmin):
     created_at_formatted.short_description = "Tarih"
 
 
+@admin.register(TrainingRequest)
+class TrainingRequestAdmin(ModelAdmin):
+    warn_unsaved_changes = True
+    compressed_fields = True
+    list_display = ('name', 'organization', 'email', 'request_type', 'topic', 'source', 'timeline', 'status', 'status_badge', 'created_at_formatted')
+    list_filter = ('status', 'source', 'request_type', 'level', 'training_format', 'timeline', 'created_at')
+    search_fields = ('name', 'email', 'organization', 'description', 'topic')
+    list_editable = ('status',)
+    readonly_fields = ('created_at',)
+    ordering = ('-created_at',)
+    actions = ['generate_certificate']
+    fieldsets = (
+        ('Talep Eden', {'fields': ('name', 'email', 'phone', 'organization', 'source')}),
+        ('Eğitim Detayları', {'fields': ('request_type', 'topic', 'other_topic', 'level', 'training_format', 'participants', 'timeline', 'description')}),
+        ('Onay', {'fields': ('kvkk_consent',)}),
+        ('Yönetim', {'fields': ('status', 'admin_notes', 'created_at')}),
+    )
+
+    def generate_certificate(self, request, queryset):
+        from django.http import HttpResponse
+        corporate_qs = queryset.filter(request_type='corporate')
+        if corporate_qs.count() != 1:
+            self.message_user(
+                request,
+                'Katılım belgesi yalnızca tek bir kurumsal kayıt seçildiğinde üretilir.',
+                level='error',
+            )
+            return None
+        obj = corporate_qs.first()
+        from .services.training_certificate import build_certificate_pdf
+        pdf_bytes = build_certificate_pdf(obj)
+        response = HttpResponse(pdf_bytes, content_type='application/pdf')
+        filename = f"katilim-belgesi-{obj.pk}.pdf"
+        response['Content-Disposition'] = f'attachment; filename="{filename}"'
+        return response
+    generate_certificate.short_description = "Katılım belgesi (PDF) üret — yalnızca kurumsal"
+
+    def status_badge(self, obj):
+        colors = {'new': '#ef4444', 'in_review': '#f59e0b', 'contacted': '#3b82f6', 'scheduled': '#8b5cf6', 'closed': '#6b7280'}
+        color = colors.get(obj.status, '#6b7280')
+        return format_html('<span style="background:{};color:#fff;padding:2px 8px;border-radius:10px;font-size:.75rem;">{}</span>', color, obj.get_status_display())
+    status_badge.short_description = "Durum"
+
+    def created_at_formatted(self, obj):
+        return format_html('<span style="color:#00d2ff;">{}</span>', obj.created_at.strftime('%d %b %Y, %H:%M'))
+    created_at_formatted.short_description = "Tarih"
+
+
 # 10. Günlük İpucu Yönetimi
 @admin.register(DailyTip)
 class DailyTipAdmin(ModelAdmin):
@@ -701,7 +749,7 @@ class SiteSettingsAdmin(ModelAdmin):
                 'feature_trdizin', 'feature_openalex', 'feature_oaipmh', 'feature_quiz', 'feature_messaging',
                 'feature_donation', 'feature_success_stories', 'feature_bibliometrics', 'feature_yoktez',
                 'feature_semanticscholar', 'feature_istatistik', 'feature_transcript',
-                'feature_agentic_landing',
+                'feature_agentic_landing', 'feature_training',
             ),
             'classes': ('collapse',),
         }),

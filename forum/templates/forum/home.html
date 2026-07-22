@@ -796,7 +796,7 @@ document.addEventListener('DOMContentLoaded', function () {
 <section class="ax-verify-band">
     <div class="container">
         <h2 class="ax-ai-era-heading">AI çağında iki yol</h2>
-        <div class="ax-ai-era-grid{% if not features.agentic_landing %} ax-ai-era-grid--single{% endif %}">
+        <div class="ax-ai-era-grid{% if not features.agentic_landing and not features.training %} ax-ai-era-grid--single{% elif features.agentic_landing and features.training %} ax-ai-era-grid--triple{% endif %}">
             <div class="ax-brand-visual">
                 <picture>
                     <source media="(min-width: 768px)" srcset="{% static 'img/ai-dogrulama.webp' %}">
@@ -834,6 +834,18 @@ document.addEventListener('DOMContentLoaded', function () {
                         </div>
                         <a href="{% url 'ai_cozumler' %}" class="ax-btn ax-btn--primary ax-verify-band__cta">AI Çözümlerini Keşfet</a>
                     </div>
+                </div>
+            </div>
+            {% endif %}
+            {% if features.training %}
+            <div class="ax-training-band-card">
+                <div class="ax-verify-band__inner">
+                    <i class="bi bi-mortarboard-fill ax-verify-band__icon" aria-hidden="true"></i>
+                    <div class="ax-verify-band__content">
+                        <h3 class="ax-verify-band__title">Aracı öğren, analizini kendin yap.</h3>
+                        <p class="ax-verify-band__text">SPSS'ten Python'a, ölçek geliştirmeden makine öğrenmesine — birebir eğitimle kendi verinizle çalışın.</p>
+                    </div>
+                    <a href="{% url 'egitim' %}" class="ax-btn ax-btn--primary ax-verify-band__cta">Eğitimleri Keşfet</a>
                 </div>
             </div>
             {% endif %}

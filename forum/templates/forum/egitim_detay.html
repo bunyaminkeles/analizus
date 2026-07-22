@@ -1,0 +1,197 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ item.title }} — Eğitim | Analizus{% endblock %}
+{% block meta_description %}{{ item.summary }}{% endblock %}
+{% block og_title %}{{ item.title }} — Eğitim | Analizus{% endblock %}
+{% block og_description %}{{ item.summary }}{% endblock %}
+{% block twitter_title %}{{ item.title }} — Eğitim | Analizus{% endblock %}
+{% block twitter_description %}{{ item.summary }}{% endblock %}
+
+{% block main_content_classes %}col-lg-12{% endblock %}
+{% block right_sidebar %}{% endblock %}
+
+{% block structured_data %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Course",
+  "name": "{{ item.title|escapejs }}",
+  "description": "{{ item.summary|escapejs }}",
+  "provider": {
+    "@type": "Organization",
+    "name": "Analizus",
+    "sameAs": "https://analizus.com"
+  },
+  "hasCourseInstance": {
+    "@type": "CourseInstance",
+    "courseMode": ["online", "onsite"]
+  }
+}
+</script>
+{% if item.faq %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {% for faq in item.faq %}
+    {
+      "@type": "Question",
+      "name": "{{ faq.q|escapejs }}",
+      "acceptedAnswer": { "@type": "Answer", "text": "{{ faq.a|escapejs }}" }
+    }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+  ]
+}
+</script>
+{% endif %}
+{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/training.css' %}?v=0001">
+{% endblock %}
+
+{% block content %}
+<section class="py-4">
+    <div class="container" style="max-width: 800px;">
+
+        <p class="ax-training-detail-back"><a href="{% url 'egitim' %}">← Eğitim Kataloğuna Dön</a></p>
+
+        <div class="ax-training-detail-header">
+            <span class="ax-training-course-card__level">{{ item.level_label }}</span>
+            <h1 class="ax-training-detail-title">{{ item.title }}</h1>
+            <p class="ax-training-detail-meta">{{ item.hours }} saat</p>
+            <p class="ax-training-detail-summary">{{ item.summary }}</p>
+            <a href="{% url 'egitim_talebi' %}?kurs={{ item.slug }}" class="ax-btn ax-btn--primary">Bu Eğitimi Talep Et</a>
+        </div>
+
+        <!-- Kimler İçin -->
+        <div class="ax-training-detail-section">
+            <h2 class="ax-training-detail-heading">Kimler İçin</h2>
+            {% if item.audience %}
+            <p class="ax-training-detail-text">
+                {% if 'bireysel' in item.audience %}Akademik araştırmacılar (bireysel){% endif %}
+                {% if 'bireysel' in item.audience and 'kurumsal' in item.audience %} ve {% endif %}
+                {% if 'kurumsal' in item.audience %}kurumsal ekipler{% endif %} için uygundur.
+            </p>
+            {% else %}
+            <p class="ax-training-detail-text">Hem akademik araştırmacılar hem de kurumsal ekipler için uygundur.</p>
+            {% endif %}
+        </div>
+
+        <!-- Ön Koşul -->
+        {% if item.prerequisites %}
+        <div class="ax-training-detail-section">
+            <h2 class="ax-training-detail-heading">Ön Koşul</h2>
+            <ul class="ax-training-reasons">
+                {% for pre in item.prerequisites %}
+                <li>{{ pre }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <!-- Kazanımlar -->
+        {% if item.outcomes %}
+        <div class="ax-training-detail-section">
+            <h2 class="ax-training-detail-heading">Kazanımlar</h2>
+            <ul class="ax-training-reasons">
+                {% for outcome in item.outcomes %}
+                <li>{{ outcome }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <!-- Haftalık Program -->
+        {% if item.syllabus %}
+        <div class="ax-training-detail-section">
+            <h2 class="ax-training-detail-heading">Program</h2>
+            <div class="ax-training-syllabus">
+                {% for module in item.syllabus %}
+                <div class="ax-training-syllabus-item">
+                    <div class="ax-training-syllabus-item__num">{{ module.week }}</div>
+                    <div class="ax-training-syllabus-item__content">
+                        <strong>{{ module.title }}</strong>
+                        <ul>
+                            {% for topic in module.topics %}
+                            <li>{{ topic }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Kullanılan Araçlar -->
+        {% if item.tools %}
+        <div class="ax-training-detail-section">
+            <h2 class="ax-training-detail-heading">Kullanılan Araçlar</h2>
+            <div class="ax-training-detail-tools">
+                {% for tool in item.tools %}
+                <span class="ax-training-detail-tool">{{ tool }}</span>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- İlgili Platform Aracı -->
+        {% if item.related_tool_url %}
+        <div class="ax-training-detail-section">
+            <div class="ax-training-detail-related-card">
+                <p>Bu eğitim, platformdaki ilgili aracı kullanmayı da içerir.</p>
+                <a href="{{ item.related_tool_url }}" class="ax-btn ax-btn--outline-primary ax-btn--sm">İlgili Aracı İncele</a>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- SSS -->
+        {% if item.faq %}
+        <div class="ax-training-detail-section">
+            <h2 class="ax-training-detail-heading">Sık Sorulan Sorular</h2>
+            {% for faq in item.faq %}
+            <div class="ax-training-accordion-item">
+                <button class="ax-training-accordion-btn" aria-expanded="false" data-accordion="kurs-faq-{{ forloop.counter }}" type="button">
+                    {{ faq.q }}
+                    <svg class="ax-training-accordion-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </button>
+                <div class="ax-training-accordion-body" id="kurs-faq-{{ forloop.counter }}">
+                    {{ faq.a }}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Kapanış CTA -->
+        <div class="ax-training-cta-band">
+            <p class="ax-training-cta-band__text">Bu eğitimi almak için talebinizi iletin.</p>
+            <a href="{% url 'egitim_talebi' %}?kurs={{ item.slug }}" class="ax-btn ax-btn--primary">Bu Eğitimi Talep Et</a>
+            <p class="ax-training-cta-band__trust">Taleplere 24 saat içinde dönüş yapılır.</p>
+        </div>
+
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<script>
+document.querySelectorAll('.ax-training-accordion-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+        const body = document.getElementById(btn.getAttribute('data-accordion'));
+        if (!body) return;
+        const isOpen = body.classList.contains('is-open');
+        document.querySelectorAll('.ax-training-accordion-body').forEach(function (b) { b.classList.remove('is-open'); });
+        document.querySelectorAll('.ax-training-accordion-btn').forEach(function (b) { b.setAttribute('aria-expanded', 'false'); });
+        if (!isOpen) {
+            body.classList.add('is-open');
+            btn.setAttribute('aria-expanded', 'true');
+        }
+    });
+});
+</script>
+{% endblock %}

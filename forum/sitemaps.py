@@ -12,12 +12,31 @@ class StaticViewSitemap(Sitemap):
     def items(self):
         pages = ['home', 'about', 'contact', 'gizlilik_politikasi', 'hangi_test', 'forum_index', 'uzman_dizini', 'blog_list', 'proje_talebi']
         from .models import SiteSettings
-        if SiteSettings.load().feature_agentic_landing:
+        site = SiteSettings.load()
+        if site.feature_agentic_landing:
             pages.append('ai_cozumler')
+        if site.feature_training:
+            pages.append('egitim')
         return pages
 
     def location(self, item):
         return reverse(item)
+
+
+class TrainingSitemap(Sitemap):
+    """Eğitim kurs detay sayfaları için sitemap — yalnızca feature_training açıkken üretilir."""
+    changefreq = 'weekly'
+    priority = 0.7
+
+    def items(self):
+        from .models import SiteSettings
+        if not SiteSettings.load().feature_training:
+            return []
+        from .training_catalog import get_all_items
+        return get_all_items()
+
+    def location(self, item):
+        return reverse('egitim_detay', args=[item['slug']])
 
 
 class TopicSitemap(Sitemap):

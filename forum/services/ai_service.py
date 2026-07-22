@@ -31,6 +31,7 @@ _ALLOWED_PATHS = frozenset({
     '/oaipmh/', '/bibliometrics/', '/tarama/',
     '/uzmanlar/', '/market/', '/market/new/', '/proje-talebi/', '/ai-cozumler/',
     '/forum/', '/odalar/', '/blog/', '/ai-asistan/',
+    '/egitim/', '/egitim-talebi/',
 })
 
 _PAREN_PATH_RE = re.compile(r'\((/[a-z][a-z0-9\-/]*/)\)')
@@ -107,6 +108,8 @@ Kullanıcı analiz yapmak istediğinde doğru URL'yi ver:
 - İlan Ver → /market/new/ (analiz ihtiyacını yayınla, teklifler al)
 - Kurumsal / Proje Talebi → /proje-talebi/ (şirket verisi analizi, ML projesi, görselleştirme, NLP — form doldurulur, ekip geri döner)
 - AI Çözümleri (Ajan / Otomasyon) → /ai-cozumler/ (veri toplayan, analiz eden, raporlayan AI sistemleri kurulumu — uzman gözetiminde)
+- Eğitim Hizmetleri → /egitim/ (SPSS, Python, ölçek geliştirme, makine öğrenmesi gibi konularda birebir/kurumsal eğitim; kullanıcı analizi öğrenmek istiyorsa buraya yönlendir)
+- Eğitim Talebi → /egitim-talebi/ (eğitim talebini iletmek için form)
 
 ### Forum ve Topluluk
 - Forum → /forum/ (akademik sorular, tartışmalar)
@@ -122,6 +125,7 @@ Her mesajda şunu belirle:
 - Literatür/makale/tez mi arayacak? → Tarama araçlarına yönlendir
 - Uzman mı arıyor? → /uzmanlar/ veya /market/ yönlendir
 - Kurumsal proje / şirket analizi / ML / veri talebi mi? → /proje-talebi/ yönlendir
+- Bir aracı/yöntemi öğrenmek mi istiyor (eğitim, kurs, danışmanlık talebi)? → /egitim/ yönlendir
 - Hangi testi kullanacağını bilmiyor mu? → Test seçimi sorularını sor, sonra yönlendir
 - Genel soru mu soruyor? → Yanıtla + varsa ilgili platform aracını belirt
 

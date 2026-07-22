@@ -73,5 +73,6 @@ def feature_flags(request):
             'semanticscholar': site.feature_semanticscholar,
             'transcript': site.feature_transcript,
             'agentic_landing': site.feature_agentic_landing,
+            'training': site.feature_training,
         }
     }

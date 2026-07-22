@@ -2113,6 +2113,155 @@ def ai_cozumler(request):
     return render(request, 'forum/ai_cozumler.html', {})
 
 
+@feature_required('training')
+def egitim(request):
+    from .training_catalog import TRAINING_CATEGORIES, LEVEL_LABELS, get_item_by_slug
+
+    categories = []
+    for category in TRAINING_CATEGORIES:
+        items = [
+            {**item, 'level_label': LEVEL_LABELS.get(item['level'], item['level'])}
+            for item in category['items']
+        ]
+        categories.append({**category, 'items': items})
+
+    konu = request.GET.get('konu', '')
+    active_category = categories[0]['slug'] if categories else None
+    if konu:
+        konu_item = get_item_by_slug(konu)
+        if konu_item:
+            active_category = konu_item['category_slug']
+
+    return render(request, 'forum/egitim.html', {
+        'training_categories': categories,
+        'active_category': active_category,
+    })
+
+
+@feature_required('training')
+@ratelimit(key='ip', rate='5/h', method='POST', block=True)
+def egitim_talebi(request):
+    from .models import TrainingRequest
+    from .services.email_service import EmailService
+    from .training_catalog import get_item_by_slug
+
+    if request.method == 'POST':
+        # Bot honeypot'u doldurdu — sessizce reddet
+        if request.POST.get('website', '').strip():
+            return redirect('egitim_talebi')
+
+        name = request.POST.get('name', '').strip()
+        email = request.POST.get('email', '').strip()
+        phone = request.POST.get('phone', '').strip()
+        organization = request.POST.get('organization', '').strip()
+        request_type = request.POST.get('request_type', '')
+        topic = request.POST.get('topic', '').strip()
+        other_topic = request.POST.get('other_topic', '').strip()
+        level = request.POST.get('level', '')
+        training_format = request.POST.get('training_format', '')
+        participants = request.POST.get('participants', '')
+        timeline = request.POST.get('timeline', '')
+        description = request.POST.get('description', '').strip()
+        kvkk_consent = request.POST.get('kvkk_consent') == 'on'
+        source = request.POST.get('source', 'direct')
+
+        if not all([name, email, request_type, level, training_format, participants, timeline, description]):
+            messages.error(request, 'Lütfen zorunlu alanları doldurunuz.')
+            return redirect('egitim_talebi')
+
+        if not kvkk_consent:
+            messages.error(request, 'Devam etmek için KVKK Aydınlatma Metni onayı gereklidir.')
+            return redirect('egitim_talebi')
+
+        try:
+            valid_sources = {c[0] for c in TrainingRequest.SOURCE_CHOICES}
+            req = TrainingRequest.objects.create(
+                name=name, email=email, phone=phone, organization=organization,
+                request_type=request_type, topic=topic, other_topic=other_topic,
+                level=level, training_format=training_format, participants=participants,
+                timeline=timeline, description=description, kvkk_consent=kvkk_consent,
+                source=source if source in valid_sources else 'direct',
+            )
+
+            type_label = dict(TrainingRequest.REQUEST_TYPE_CHOICES).get(request_type, request_type)
+            level_label = dict(TrainingRequest.LEVEL_CHOICES).get(level, level)
+            format_label = dict(TrainingRequest.FORMAT_CHOICES).get(training_format, training_format)
+            participants_label = dict(TrainingRequest.PARTICIPANTS_CHOICES).get(participants, participants)
+            timeline_label = dict(TrainingRequest.TIMELINE_CHOICES).get(timeline, timeline)
+            topic_label = other_topic or (get_item_by_slug(topic) or {}).get('title', topic) or '—'
+
+            admin_html = (
+                f"<h3>Yeni Eğitim Talebi #{req.pk}</h3>"
+                f"<p><b>Ad:</b> {name}</p>"
+                f"<p><b>E-posta:</b> {email}</p>"
+                f"<p><b>Telefon:</b> {phone or '—'}</p>"
+                f"<p><b>Kurum/Şirket:</b> {organization or '—'}</p>"
+                f"<p><b>Talep Türü:</b> {type_label}</p>"
+                f"<p><b>Konu:</b> {topic_label}</p>"
+                f"<p><b>Seviye:</b> {level_label}</p>"
+                f"<p><b>Format:</b> {format_label}</p>"
+                f"<p><b>Katılımcı Sayısı:</b> {participants_label}</p>"
+                f"<p><b>Süre Beklentisi:</b> {timeline_label}</p>"
+                f"<p><b>Açıklama:</b></p><p>{description}</p>"
+            )
+            EmailService._send_email(
+                to_email=settings.ADMIN_NOTIFICATION_EMAIL,
+                subject=f"[Analizus] Yeni Eğitim Talebi: {name} ({type_label})",
+                html_content=admin_html,
+                plain_content=f"Yeni eğitim talebi #{req.pk}\nAd: {name}\nEmail: {email}\nTür: {type_label}\nKonu: {topic_label}\n\n{description}",
+            )
+
+            user_html = (
+                f"<p>Sayın {name},</p>"
+                f"<p>Eğitim talebiniz başarıyla alındı. 24 saat içinde sizinle iletişime geçeceğiz.</p>"
+                f"<p><b>Talep Özeti:</b><br>"
+                f"Talep Türü: {type_label}<br>"
+                f"Konu: {topic_label}<br>"
+                f"Seviye: {level_label}<br>"
+                f"Format: {format_label}</p>"
+                f"<p>— Analizus Ekibi</p>"
+            )
+            EmailService._send_email(
+                to_email=email,
+                subject="Eğitim talebiniz alındı — Analizus",
+                html_content=user_html,
+                plain_content=f"Sayın {name},\n\nEğitim talebiniz alındı. 24 saat içinde sizinle iletişime geçeceğiz.\n\n— Analizus Ekibi",
+            )
+
+            messages.success(request, 'Talebiniz alındı! 24 saat içinde size dönüş yapacağız.')
+        except Exception:
+            messages.error(request, 'Bir hata oluştu, lütfen tekrar deneyin.')
+        return redirect('egitim_talebi')
+
+    from .training_catalog import TRAINING_CATEGORIES
+
+    tur = request.GET.get('tur', '')
+    kurs = request.GET.get('kurs', '')
+    source = request.GET.get('source', 'direct')
+    kurs_item = get_item_by_slug(kurs) if kurs else None
+
+    return render(request, 'forum/egitim_talebi.html', {
+        'tur': tur,
+        'kurs': kurs,
+        'kurs_item': kurs_item,
+        'source': source,
+        'training_categories': TRAINING_CATEGORIES,
+    })
+
+
+@feature_required('training')
+def egitim_detay(request, slug):
+    from django.http import Http404
+    from .training_catalog import get_item_by_slug, LEVEL_LABELS
+
+    item = get_item_by_slug(slug)
+    if item is None:
+        raise Http404
+
+    item = {**item, 'level_label': LEVEL_LABELS.get(item['level'], item['level'])}
+    return render(request, 'forum/egitim_detay.html', {'item': item})
+
+
 def search_result(request):
     """Arama sonuçları"""
     query = request.GET.get('q', '').strip()

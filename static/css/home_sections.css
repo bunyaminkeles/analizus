@@ -1441,6 +1441,21 @@ a.ax-stat-pill:hover {
     }
 }
 
+.ax-training-band-card {
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.16), rgba(15, 23, 42, 0.92));
+    border: 1px solid var(--ax-border-default);
+    padding: 16px;
+    display: flex;
+    align-items: center;
+}
+
+.ax-training-band-card .ax-verify-band__icon {
+    color: var(--ax-accent-secondary);
+}
+
 @media (min-width: 768px) {
     .ax-ai-era-grid {
         grid-template-columns: 1fr 1fr;
@@ -1449,7 +1464,13 @@ a.ax-stat-pill:hover {
     .ax-ai-era-grid--single {
         grid-template-columns: 1fr;
     }
+    .ax-ai-era-grid--triple {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
     .ax-agentic-band-card__overlay {
+        padding: 24px;
+    }
+    .ax-training-band-card {
         padding: 24px;
     }
 }

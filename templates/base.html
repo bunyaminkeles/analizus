@@ -252,6 +252,10 @@
 
                 <a href="{% url 'proje_talebi' %}" class="site-nav__link">Proje Talebi</a>
 
+                {% if features.training %}
+                <a href="{% url 'egitim' %}" class="site-nav__link {% if '/egitim' in request.path %}is-active{% endif %}">Eğitim</a>
+                {% endif %}
+
                 <!-- Kurumsal Dropdown -->
                 <div class="site-nav__dropdown-wrap">
                     <button class="site-nav__link site-nav__dropdown-btn"
@@ -414,6 +418,10 @@
             </div>
 
             <a href="{% url 'proje_talebi' %}" class="nav-drawer__link">Proje Talebi</a>
+
+            {% if features.training %}
+            <a href="{% url 'egitim' %}" class="nav-drawer__link">Eğitim</a>
+            {% endif %}
 
             <div>
                 <button class="nav-drawer__accordion-btn" aria-expanded="false" data-accordion="mob-kurumsal">

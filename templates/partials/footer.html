@@ -48,6 +48,9 @@
                     <li><a href="{% url 'ai_assistant' %}"><i class="bi bi-robot"></i>AI Asistan</a></li>
                     <li><a href="{% url 'uzman_dizini' %}"><i class="bi bi-people"></i>Uzman Bul</a></li>
                     <li><a href="{% url 'job_list' %}"><i class="bi bi-briefcase"></i>Pazaryeri</a></li>
+                    {% if features.training %}
+                    <li><a href="{% url 'egitim' %}"><i class="bi bi-mortarboard"></i>Eğitimler</a></li>
+                    {% endif %}
                 </ul>
             </div>
 

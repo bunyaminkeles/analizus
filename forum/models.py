@@ -1240,6 +1240,9 @@ class SiteSettings(models.Model):
     feature_agentic_landing = models.BooleanField(
         default=False, verbose_name="AI Çözümler (Agentic) Sayfası"
     )
+    feature_training = models.BooleanField(
+        default=False, verbose_name="Eğitim Hizmetleri Sayfası"
+    )
 
     # Ana Sayfa
     stat_min_display = models.PositiveIntegerField(
@@ -1692,6 +1695,77 @@ class ProjectRequest(models.Model):
 
     def __str__(self):
         return f"{self.name} — {self.get_analysis_type_display()} ({self.created_at.strftime('%d.%m.%Y')})"
+
+
+class TrainingRequest(models.Model):
+    REQUEST_TYPE_CHOICES = [
+        ('individual', 'Bireysel'),
+        ('corporate', 'Kurumsal'),
+    ]
+    LEVEL_CHOICES = [
+        ('beginner', 'Başlangıç'),
+        ('intermediate', 'Orta'),
+        ('advanced', 'İleri'),
+        ('unknown', 'Emin değilim'),
+    ]
+    FORMAT_CHOICES = [
+        ('online_live', 'Online canlı'),
+        ('onsite', 'Yerinde'),
+        ('hybrid', 'Hibrit'),
+        ('flexible', 'Farketmez'),
+    ]
+    PARTICIPANTS_CHOICES = [
+        ('1', '1 kişi'),
+        ('2-5', '2-5 kişi'),
+        ('6-15', '6-15 kişi'),
+        ('16+', '16+ kişi'),
+    ]
+    TIMELINE_CHOICES = [
+        ('urgent', '2 hafta içinde'),
+        ('month', '1 ay içinde'),
+        ('flexible', 'Esnek'),
+    ]
+    STATUS_CHOICES = [
+        ('new', 'Yeni'),
+        ('in_review', 'İncelemede'),
+        ('contacted', 'İletişime Geçildi'),
+        ('scheduled', 'Planlandı'),
+        ('closed', 'Kapandı'),
+    ]
+    SOURCE_CHOICES = [
+        ('egitim_hero', 'Eğitim Sayfası Hero'),
+        ('egitim_kurs', 'Eğitim Kurs Kartı'),
+        ('home', 'Ana Sayfa'),
+        ('navbar', 'Navbar'),
+        ('analiz_araci', 'Analiz Aracı'),
+        ('direct', 'Doğrudan Form'),
+    ]
+
+    name = models.CharField(max_length=150, verbose_name="Ad Soyad")
+    email = models.EmailField(verbose_name="E-posta")
+    phone = models.CharField(max_length=30, blank=True, verbose_name="Telefon")
+    organization = models.CharField(max_length=200, blank=True, verbose_name="Kurum / Şirket")
+    request_type = models.CharField(max_length=20, choices=REQUEST_TYPE_CHOICES, verbose_name="Talep Türü")
+    topic = models.CharField(max_length=100, blank=True, verbose_name="Eğitim Konusu (katalog slug'ı)")
+    other_topic = models.CharField(max_length=150, blank=True, verbose_name="Diğer Konu")
+    level = models.CharField(max_length=20, choices=LEVEL_CHOICES, verbose_name="Seviye")
+    training_format = models.CharField(max_length=20, choices=FORMAT_CHOICES, verbose_name="Format")
+    participants = models.CharField(max_length=10, choices=PARTICIPANTS_CHOICES, verbose_name="Katılımcı Sayısı")
+    timeline = models.CharField(max_length=20, choices=TIMELINE_CHOICES, verbose_name="Süre Beklentisi")
+    description = models.TextField(verbose_name="Açıklama")
+    kvkk_consent = models.BooleanField(default=False, verbose_name="KVKK Onayı")
+    source = models.CharField(max_length=20, choices=SOURCE_CHOICES, default='direct', blank=True, verbose_name="Kaynak")
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='new', verbose_name="Durum")
+    admin_notes = models.TextField(blank=True, verbose_name="Admin Notları")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Eğitim Talebi"
+        verbose_name_plural = "Eğitim Talepleri"
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.name} — {self.get_request_type_display()} ({self.created_at.strftime('%d.%m.%Y')})"
 
 
 class SiteVisit(models.Model):

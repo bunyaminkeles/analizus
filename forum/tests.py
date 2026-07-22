@@ -748,3 +748,107 @@ def test_studyroom_lock_screen_shows_activity_metrics_when_posts_exist(client, u
     content = response.content.decode()
     assert '1 gönderi' in content
     assert 'gizli-mesaj-icerigi' not in content
+
+
+# ─── Eğitim Hizmetleri (feature_training) ──────────────────────────────────────
+
+@pytest.fixture
+def training_enabled(db):
+    """feature_training flag'ini test süresince açar, sonunda kapatır."""
+    from forum.models import SiteSettings
+    site = SiteSettings.load()
+    site.feature_training = True
+    site.save()
+    yield site
+    site.feature_training = False
+    site.save()
+
+
+@pytest.mark.django_db
+def test_egitim_pages_404_when_flag_off(client):
+    """feature_training kapalıyken eğitim sayfalarının hiçbiri erişilebilir olmamalı."""
+    assert client.get('/egitim/').status_code == 404
+    assert client.get('/egitim/agentic-ai/').status_code == 404
+    assert client.get('/egitim-talebi/').status_code == 404
+
+
+@pytest.mark.django_db
+def test_egitim_pages_200_when_flag_on(client, training_enabled):
+    """feature_training açıkken misafir kullanıcı üç sayfayı da görebilmeli."""
+    assert client.get('/egitim/').status_code == 200
+    assert client.get('/egitim/agentic-ai/').status_code == 200
+    assert client.get('/egitim-talebi/').status_code == 200
+
+
+@pytest.mark.django_db
+def test_egitim_detay_invalid_slug_404(client, training_enabled):
+    """Katalogda olmayan bir slug 404 döner."""
+    response = client.get('/egitim/bu-slug-yok/')
+    assert response.status_code == 404
+
+
+@pytest.mark.django_db
+def test_egitim_talebi_valid_post_creates_record(client, training_enabled):
+    """Geçerli ve KVKK onaylı POST, TrainingRequest kaydı oluşturur."""
+    from forum.models import TrainingRequest
+    response = client.post('/egitim-talebi/', {
+        'name': 'Test Kullanici', 'email': 'test-egitim@example.com',
+        'request_type': 'corporate', 'topic': 'agentic-ai', 'level': 'intermediate',
+        'training_format': 'hybrid', 'participants': '6-15', 'timeline': 'month',
+        'description': 'Ekip icin egitim istiyoruz.', 'kvkk_consent': 'on',
+        'source': 'direct',
+    }, follow=True)
+    assert response.status_code == 200
+    assert TrainingRequest.objects.filter(email='test-egitim@example.com').exists()
+
+
+@pytest.mark.django_db
+def test_egitim_talebi_missing_required_field_rejected(client, training_enabled):
+    """Zorunlu bir alan eksikse kayıt oluşmaz."""
+    from forum.models import TrainingRequest
+    client.post('/egitim-talebi/', {
+        'name': 'Eksik Kisi', 'email': 'eksik@example.com',
+        'request_type': 'individual',
+        # 'level' eksik
+        'training_format': 'online_live', 'participants': '1', 'timeline': 'flexible',
+        'description': 'aciklama', 'kvkk_consent': 'on', 'source': 'direct',
+    }, follow=True)
+    assert not TrainingRequest.objects.filter(email='eksik@example.com').exists()
+
+
+@pytest.mark.django_db
+def test_egitim_talebi_kvkk_required_backend(client, training_enabled):
+    """KVKK onayı işaretlenmeden POST edilirse backend reddeder — /iletisim/'deki
+    eksik doğrulama hatası burada tekrarlanmaz."""
+    from forum.models import TrainingRequest
+    client.post('/egitim-talebi/', {
+        'name': 'Kvkksiz Kisi', 'email': 'kvkksiz@example.com',
+        'request_type': 'individual', 'level': 'beginner',
+        'training_format': 'online_live', 'participants': '1', 'timeline': 'flexible',
+        'description': 'aciklama', 'source': 'direct',
+        # kvkk_consent gönderilmiyor
+    }, follow=True)
+    assert not TrainingRequest.objects.filter(email='kvkksiz@example.com').exists()
+
+
+@pytest.mark.django_db
+def test_egitim_talebi_honeypot_silently_rejected(client, training_enabled):
+    """Honeypot (website) alanı doluysa kayıt oluşturulmaz."""
+    from forum.models import TrainingRequest
+    client.post('/egitim-talebi/', {
+        'name': 'Bot Kisi', 'email': 'bot-egitim@example.com',
+        'request_type': 'individual', 'level': 'beginner',
+        'training_format': 'online_live', 'participants': '1', 'timeline': 'flexible',
+        'description': 'spam', 'kvkk_consent': 'on', 'source': 'direct',
+        'website': 'http://spam.example.com',
+    }, follow=True)
+    assert not TrainingRequest.objects.filter(email='bot-egitim@example.com').exists()
+
+
+@pytest.mark.django_db
+def test_egitim_talebi_prefill_from_query_params(client, training_enabled):
+    """?tur= ve ?kurs= parametreleri forma ön-seçili olarak yansır."""
+    response = client.get('/egitim-talebi/?tur=kurumsal&kurs=agentic-ai')
+    content = response.content.decode()
+    assert 'value="corporate" selected' in content
+    assert 'value="agentic-ai" selected' in content

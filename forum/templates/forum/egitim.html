@@ -1,0 +1,382 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Eğitim Hizmetleri — Analizini Öğren | Analizus{% endblock %}
+{% block meta_description %}SPSS'ten Python'a, ölçek geliştirmeden makine öğrenmesine — akademik araştırmacılar ve kurumsal ekipler için birebir eğitim. Kendi verinizle çalışılır.{% endblock %}
+{% block og_title %}Eğitim Hizmetleri — Analizini Öğren | Analizus{% endblock %}
+{% block og_description %}SPSS'ten Python'a, ölçek geliştirmeden makine öğrenmesine — akademik araştırmacılar ve kurumsal ekipler için birebir eğitim. Kendi verinizle çalışılır.{% endblock %}
+{% block twitter_title %}Eğitim Hizmetleri — Analizini Öğren | Analizus{% endblock %}
+{% block twitter_description %}SPSS'ten Python'a, ölçek geliştirmeden makine öğrenmesine — akademik araştırmacılar ve kurumsal ekipler için birebir eğitim.{% endblock %}
+
+{% block main_content_classes %}col-lg-12{% endblock %}
+{% block right_sidebar %}{% endblock %}
+
+{% block structured_data %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Hiç istatistik bilmiyorum, sıfırdan başlayabilir miyim?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Evet; ön görüşmede seviye tespiti yapılır, program buna göre kurulur." }
+    },
+    {
+      "@type": "Question",
+      "name": "Eğitimler canlı mı, kayıttan mı?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Tamamı canlı ve birebir/küçük grup. Hazır video kursu satılmıyor." }
+    },
+    {
+      "@type": "Question",
+      "name": "Kendi tez/şirket verimle çalışabilir miyim?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Evet, tercih edilen yöntem bu. Demo veri yalnızca veri hazır değilse kullanılır." }
+    },
+    {
+      "@type": "Question",
+      "name": "Kurumsal eğitimde kaç kişi katılabilir?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Birebir online, küçük grup, kurumsal yerinde ve hibrit formatlar mevcuttur; kapsam ön görüşmede netleşir." }
+    },
+    {
+      "@type": "Question",
+      "name": "Sertifika veriliyor mu?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Bireysel eğitimlerde akredite sertifika verilmiyor, odak uygulanabilir beceride. Kurumsal eğitimde talep hâlinde katılım belgesi düzenlenir; bu akredite sertifika değil, katılım kaydıdır." }
+    },
+    {
+      "@type": "Question",
+      "name": "Ders kaydını sonradan izleyebilir miyim?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Kayıt paylaşılmıyor. Bunun yerine kalıcı materyal veriliyor: kullanılan veri seti, SPSS syntax / Python notebook dosyası ve adım adım uygulama notu." }
+    },
+    {
+      "@type": "Question",
+      "name": "Eğitim yerine analizi sizin yapmanızı istersem?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Proje Talebi sayfamızdan bize ulaşabilirsiniz; ekibimiz analizi sizin adınıza yürütür." }
+    },
+    {
+      "@type": "Question",
+      "name": "Talep gönderdikten sonra süreç nasıl ilerliyor?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Form gönderildikten sonra 24 saat içinde dönüş yapılır, ardından ücretsiz bir ön görüşme planlanır ve size özel program ile teklif sunulur." }
+    }
+  ]
+}
+</script>
+{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/training.css' %}?v=0001">
+{% endblock %}
+
+{% block content %}
+
+<!-- 1. Hero -->
+<section class="ax-training-hero">
+    <div class="container">
+        <h1 class="ax-training-hero__title">Aracı öğren, analizini kendin yap.</h1>
+        <p class="ax-training-hero__subtitle">SPSS'ten Python'a, ölçek geliştirmeden makine öğrenmesine — akademik araştırmacılar ve kurumsal ekipler için birebir eğitim. Kendi verinizle çalışılır; ders sonunda elinizde çalışan bir analiz, bir rapor ve tekrar edebileceğiniz bir yöntem kalır.</p>
+        <div class="ax-training-hero__ctas">
+            <a href="{% url 'egitim_talebi' %}?tur=bireysel" class="ax-btn ax-btn--primary">Bireysel Eğitim</a>
+            <a href="{% url 'egitim_talebi' %}?tur=kurumsal" class="ax-btn ax-btn--outline-primary">Kurumsal Program</a>
+        </div>
+        <p class="ax-training-hero__trust">Taleplere 24 saat içinde dönüş yapılır.</p>
+    </div>
+</section>
+
+<!-- 2. Kime uygun? -->
+<section class="py-4">
+    <div class="container">
+        <h2 class="ax-training-heading">Kime Uygun?</h2>
+        <div class="row g-4 justify-content-center">
+            <div class="col-12 col-md-6">
+                <div class="ax-training-audience-card">
+                    <h3 class="ax-training-audience-card__title">Akademik</h3>
+                    <ul class="ax-training-audience-card__list">
+                        <li>Tez öğrencisi, doktora adayı, akademisyen</li>
+                        <li>SPSS/istatistik, ölçek geliştirme</li>
+                        <li>Kaynakça, bibliyometri, literatür tarama</li>
+                    </ul>
+                    <a href="{% url 'egitim_talebi' %}?tur=bireysel" class="ax-btn ax-btn--outline-primary ax-btn--sm">Akademik Eğitim Talep Et</a>
+                </div>
+            </div>
+            <div class="col-12 col-md-6">
+                <div class="ax-training-audience-card">
+                    <h3 class="ax-training-audience-card__title">Kurumsal</h3>
+                    <ul class="ax-training-audience-card__list">
+                        <li>Şirket ekipleri, üniversite birimleri, kamu</li>
+                        <li>Ekip içi yetkinlik geliştirme</li>
+                        <li>Yerinde/online program, Excel/Python/agentic AI</li>
+                    </ul>
+                    <a href="{% url 'egitim_talebi' %}?tur=kurumsal" class="ax-btn ax-btn--outline-primary ax-btn--sm">Kurumsal Program Talep Et</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 3. Eğitim Kataloğu -->
+<section class="py-4">
+    <div class="container">
+        <h2 class="ax-training-heading">Eğitim Kataloğu</h2>
+        <div class="ax-training-catalog-tabs" role="tablist">
+            {% for category in training_categories %}
+            <button type="button" class="ax-training-catalog-tab{% if category.slug == active_category %} is-active{% endif %}"
+                    role="tab" aria-selected="{% if category.slug == active_category %}true{% else %}false{% endif %}"
+                    aria-controls="catalog-panel-{{ category.slug }}" data-catalog-tab="{{ category.slug }}">
+                {% if category.icon %}<i class="bi {{ category.icon }}" aria-hidden="true"></i>{% endif %}
+                {{ category.title }}
+            </button>
+            {% endfor %}
+        </div>
+        {% for category in training_categories %}
+        <div class="ax-training-catalog-panel{% if category.slug == active_category %} is-active{% endif %}"
+             id="catalog-panel-{{ category.slug }}" role="tabpanel">
+            <div class="ax-training-catalog-grid">
+                {% for item in category.items %}
+                <div class="ax-training-course-card">
+                    <span class="ax-training-course-card__level">{{ item.level_label }}</span>
+                    <h3 class="ax-training-course-card__title">{{ item.title }}</h3>
+                    <p class="ax-training-course-card__meta">{{ item.hours }} saat</p>
+                    <div class="ax-training-course-card__actions">
+                        <a href="{% url 'egitim_detay' item.slug %}" class="ax-training-course-card__link">Detay</a>
+                        <a href="{% url 'egitim_talebi' %}?kurs={{ item.slug }}" class="ax-btn ax-btn--outline-primary ax-btn--sm">Talep Oluştur</a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<!-- 4. Nasıl İşliyor -->
+<section class="ax-timeline-section">
+    <div class="container">
+        <h2 class="ax-timeline-heading">Nasıl İşliyor?</h2>
+        <div class="ax-timeline">
+            <div class="ax-timeline-step">
+                <div class="ax-timeline-num">1</div>
+                <div class="ax-timeline-content">
+                    <strong>Talep</strong>
+                    <span>Bireysel veya kurumsal eğitim talebinizi iletirsiniz.</span>
+                </div>
+            </div>
+            <div class="ax-timeline-arrow">→</div>
+            <div class="ax-timeline-step">
+                <div class="ax-timeline-num">2</div>
+                <div class="ax-timeline-content">
+                    <strong>Ön Görüşme &amp; Seviye Tespiti</strong>
+                    <span>Ücretsiz görüşmede mevcut bilgi seviyeniz ve hedefiniz netleşir.</span>
+                </div>
+            </div>
+            <div class="ax-timeline-arrow">→</div>
+            <div class="ax-timeline-step">
+                <div class="ax-timeline-num">3</div>
+                <div class="ax-timeline-content">
+                    <strong>Program Tasarımı</strong>
+                    <span>Seviyenize ve verinize göre özel bir müfredat kurulur.</span>
+                </div>
+            </div>
+            <div class="ax-timeline-arrow">→</div>
+            <div class="ax-timeline-step ax-timeline-step--accent">
+                <div class="ax-timeline-num">4</div>
+                <div class="ax-timeline-content">
+                    <strong>Canlı Ders + Ödev + Takip</strong>
+                    <span>Kendi verinizle uygulama yapar, kalıcı materyalle devam edersiniz.</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 5. Neden Analizus -->
+<section class="py-4">
+    <div class="container">
+        <h2 class="ax-training-heading">Neden Analizus?</h2>
+        <ul class="ax-training-reasons">
+            <li>Eğitim kendi verinizle yapılır, hazır demo datasetle değil.</li>
+            <li>Eğitimi, bu sitedeki 18 istatistik aracını, bibliyometrik analiz motorunu ve YÖK Tez tarama altyapısını geliştiren ekip veriyor.</li>
+            <li>Ders sonunda elinizde çalışır materyal kalır: kullanılan veri seti, SPSS syntax / Python notebook dosyası, adım adım uygulama notu.</li>
+            <li>Eğitim sonrası platform araçları (<a href="/analiz/">/analiz/</a>, <a href="/tarama/">/tarama/</a>, {% if features.bibliometrics %}<a href="{% url 'bibliometrics:landing' %}">/bibliometrics/</a>{% else %}/bibliometrics/{% endif %}) uygulama alanı olarak açık.</li>
+        </ul>
+    </div>
+</section>
+
+<!-- 6. Formatlar & Süreler -->
+<section class="py-4">
+    <div class="container">
+        <h2 class="ax-training-heading">Formatlar &amp; Süreler</h2>
+        <div class="ax-training-table-wrap">
+            <table class="ax-training-table">
+                <thead>
+                    <tr><th>Format</th><th>Kimler İçin</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Birebir Online</td><td>Bireysel, kişiye özel tempo</td></tr>
+                    <tr><td>Küçük Grup</td><td>2-5 kişilik akademik/kurumsal gruplar</td></tr>
+                    <tr><td>Kurumsal Yerinde</td><td>Ekip içi yetkinlik geliştirme</td></tr>
+                    <tr><td>Hibrit</td><td>Online + yerinde karışık program</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <p class="ax-training-price-anchor">Birebir eğitimler 6–8 saatlik paketler hâlinde planlanır; kapsam ön görüşmede netleşir.</p>
+    </div>
+</section>
+
+<!-- 7. Eğitmen / Ekip -->
+<section class="py-4">
+    <div class="container">
+        <div class="ax-training-team-box">
+            <h2 class="ax-training-heading">Eğitmen / Ekip</h2>
+            <p>Eğitimi, bu sitedeki 18 istatistik aracını, bibliyometrik analiz motorunu ve YÖK Tez tarama altyapısını geliştiren ekip veriyor. Menüden <a href="/analiz/">/analiz/</a> ve <a href="/tarama/">/tarama/</a> sayfalarını inceleyerek doğrulayabilirsiniz.</p>
+        </div>
+    </div>
+</section>
+
+<!-- 9. SSS -->
+<section class="py-4">
+    <div class="container" style="max-width: 760px;">
+        <h2 class="ax-training-heading">Sık Sorulan Sorular</h2>
+
+        <div class="ax-training-accordion-item">
+            <button class="ax-training-accordion-btn" aria-expanded="false" data-accordion="egitim-faq-1" type="button">
+                Hiç istatistik bilmiyorum, sıfırdan başlayabilir miyim?
+                <svg class="ax-training-accordion-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
+            <div class="ax-training-accordion-body" id="egitim-faq-1">
+                Evet; ön görüşmede seviye tespiti yapılır, program buna göre kurulur.
+            </div>
+        </div>
+
+        <div class="ax-training-accordion-item">
+            <button class="ax-training-accordion-btn" aria-expanded="false" data-accordion="egitim-faq-2" type="button">
+                Eğitimler canlı mı, kayıttan mı?
+                <svg class="ax-training-accordion-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
+            <div class="ax-training-accordion-body" id="egitim-faq-2">
+                Tamamı canlı ve birebir/küçük grup. Hazır video kursu satılmıyor.
+            </div>
+        </div>
+
+        <div class="ax-training-accordion-item">
+            <button class="ax-training-accordion-btn" aria-expanded="false" data-accordion="egitim-faq-3" type="button">
+                Kendi tez/şirket verimle çalışabilir miyim?
+                <svg class="ax-training-accordion-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
+            <div class="ax-training-accordion-body" id="egitim-faq-3">
+                Evet, tercih edilen yöntem bu. Demo veri yalnızca veri hazır değilse kullanılır.
+            </div>
+        </div>
+
+        <div class="ax-training-accordion-item">
+            <button class="ax-training-accordion-btn" aria-expanded="false" data-accordion="egitim-faq-4" type="button">
+                Kurumsal eğitimde kaç kişi katılabilir?
+                <svg class="ax-training-accordion-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
+            <div class="ax-training-accordion-body" id="egitim-faq-4">
+                Birebir online, küçük grup, kurumsal yerinde ve hibrit formatlar mevcuttur; kapsam ön görüşmede netleşir.
+            </div>
+        </div>
+
+        <div class="ax-training-accordion-item">
+            <button class="ax-training-accordion-btn" aria-expanded="false" data-accordion="egitim-faq-5" type="button">
+                Sertifika veriliyor mu?
+                <svg class="ax-training-accordion-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
+            <div class="ax-training-accordion-body" id="egitim-faq-5">
+                Bireysel eğitimlerde akredite sertifika verilmiyor, odak uygulanabilir beceride. Kurumsal eğitimde talep hâlinde katılım belgesi düzenlenir; bu akredite sertifika değil, katılım kaydıdır.
+            </div>
+        </div>
+
+        <div class="ax-training-accordion-item">
+            <button class="ax-training-accordion-btn" aria-expanded="false" data-accordion="egitim-faq-6" type="button">
+                Ders kaydını sonradan izleyebilir miyim?
+                <svg class="ax-training-accordion-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
+            <div class="ax-training-accordion-body" id="egitim-faq-6">
+                Kayıt paylaşılmıyor. Bunun yerine kalıcı materyal veriliyor: kullanılan veri seti, SPSS syntax / Python notebook dosyası ve adım adım uygulama notu.
+            </div>
+        </div>
+
+        <div class="ax-training-accordion-item">
+            <button class="ax-training-accordion-btn" aria-expanded="false" data-accordion="egitim-faq-7" type="button">
+                Eğitim yerine analizi sizin yapmanızı istersem?
+                <svg class="ax-training-accordion-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
+            <div class="ax-training-accordion-body" id="egitim-faq-7">
+                <a href="{% url 'proje_talebi' %}?source=egitim">Proje Talebi</a> sayfamızdan bize ulaşabilirsiniz; ekibimiz analizi sizin adınıza yürütür.
+            </div>
+        </div>
+
+        <div class="ax-training-accordion-item">
+            <button class="ax-training-accordion-btn" aria-expanded="false" data-accordion="egitim-faq-8" type="button">
+                Talep gönderdikten sonra süreç nasıl ilerliyor?
+                <svg class="ax-training-accordion-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </button>
+            <div class="ax-training-accordion-body" id="egitim-faq-8">
+                Form gönderildikten sonra 24 saat içinde dönüş yapılır, ardından ücretsiz bir ön görüşme planlanır ve size özel program ile teklif sunulur.
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 11. SEO Metni -->
+<section class="py-4">
+    <div class="container" style="max-width: 860px;">
+        <div class="ax-seo-note">
+            <p>
+                Analizus, akademik araştırmacılara ve kurumsal ekiplere yönelik <strong>istatistik eğitimi</strong>, <strong>SPSS eğitimi</strong> ve <strong>Python ile veri analizi eğitimi</strong> verir. Ölçek geliştirme, güvenirlik-geçerlik analizi, bibliyometrik analiz ve sistematik literatür taramadan makine öğrenmesi ve derin öğrenmeye kadar geniş bir müfredat, katılımcının kendi tez veya şirket verisiyle işlenir. Eğitimler canlı ve birebir/küçük grup formatında yürütülür; ders sonunda elinizde kalıcı materyal — kullanılan veri seti, kod dosyası ve uygulama notu — kalır.
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- 10. Kapanış CTA -->
+<section class="ax-training-cta-band">
+    <div class="container">
+        <p class="ax-training-cta-band__text">Hangi eğitimin size uygun olduğundan emin değil misiniz? 20 dakikalık ücretsiz ön görüşmeyle başlayalım.</p>
+        <a href="{% url 'egitim_talebi' %}" class="ax-btn ax-btn--primary">Eğitim Talebi Oluştur</a>
+        <p class="ax-training-cta-band__trust">Taleplere 24 saat içinde dönüş yapılır.</p>
+        {% if WHATSAPP_NUMBER %}
+        <p class="ax-training-cta-band__whatsapp">
+            <a href="https://wa.me/{{ WHATSAPP_NUMBER }}?text=Merhaba%2C%20e%C4%9Fitim%20hakk%C4%B1nda%20g%C3%B6r%C3%BC%C5%9Fmek%20istiyorum." target="_blank" rel="noopener noreferrer">
+                <i class="bi bi-whatsapp" aria-hidden="true"></i> WhatsApp'tan Yaz
+            </a>
+        </p>
+        {% endif %}
+    </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<script>
+document.querySelectorAll('.ax-training-accordion-btn').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+        const body = document.getElementById(btn.getAttribute('data-accordion'));
+        if (!body) return;
+        const isOpen = body.classList.contains('is-open');
+        document.querySelectorAll('.ax-training-accordion-body').forEach(function (b) { b.classList.remove('is-open'); });
+        document.querySelectorAll('.ax-training-accordion-btn').forEach(function (b) { b.setAttribute('aria-expanded', 'false'); });
+        if (!isOpen) {
+            body.classList.add('is-open');
+            btn.setAttribute('aria-expanded', 'true');
+        }
+    });
+});
+
+document.querySelectorAll('.ax-training-catalog-tab').forEach(function (tab) {
+    tab.addEventListener('click', function () {
+        const target = tab.getAttribute('data-catalog-tab');
+        document.querySelectorAll('.ax-training-catalog-tab').forEach(function (t) {
+            t.classList.remove('is-active');
+            t.setAttribute('aria-selected', 'false');
+        });
+        document.querySelectorAll('.ax-training-catalog-panel').forEach(function (p) { p.classList.remove('is-active'); });
+        tab.classList.add('is-active');
+        tab.setAttribute('aria-selected', 'true');
+        const panel = document.getElementById('catalog-panel-' + target);
+        if (panel) panel.classList.add('is-active');
+    });
+});
+</script>
+{% endblock %}
