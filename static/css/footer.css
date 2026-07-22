@@ -34,7 +34,7 @@
 
 .ax-footer-brand p {
     font-size: var(--ax-text-sm);
-    color: var(--ax-text-muted);
+    color: var(--ax-text-secondary);
     line-height: var(--ax-leading-relaxed);
     margin: 0;
 }
@@ -94,7 +94,7 @@
     align-items: center;
     gap: var(--ax-space-2);
     font-size: var(--ax-text-sm);
-    color: var(--ax-text-muted);
+    color: var(--ax-text-secondary);
     text-decoration: none;
     transition: color var(--ax-transition-fast);
 }
@@ -126,7 +126,7 @@
 
 .ax-footer-bottom p {
     font-size: var(--ax-text-xs);
-    color: var(--ax-text-muted);
+    color: var(--ax-text-secondary);
     margin: 0;
 }
 
