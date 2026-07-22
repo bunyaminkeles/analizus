@@ -10,6 +10,12 @@
     <!-- Performance: Font, CSS ve Bootstrap deferred yükleniyor — sadece font dosyalarına preconnect, gerisi ucuz dns-prefetch -->
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://analizus-files.s3.eu-north-1.amazonaws.com">
+
+    <!-- CLS: bootstrap-icons webfont'u erkenden preload et — ikonlar (bi bi-*) sayfada
+         yaygın kullanılıyor, font geç gelirse glyph genişliği değişip body'de reflow'a
+         (layout shift) yol açıyor (Lighthouse: body 0.102 CLS, "Web yazı tipi") -->
+    <link rel="preload" as="font" type="font/woff2" crossorigin
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6">
     <link rel="dns-prefetch" href="https://fonts.googleapis.com">
     <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
     <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
