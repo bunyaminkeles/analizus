@@ -332,6 +332,9 @@ CLAUDE.md                   # AI geliştirme kuralları ve görev listesi
 /tarama/            → tarama_hub view (yoktez, openalex, trdizin, oaipmh kartları; guest + login)
 /proje-talebi/      → proje_talebi view (kurumsal talep formu — ProjectRequest modeli, FAQPage schema)
 /ai-cozumler/       → ai_cozumler view (AI ajan/otomasyon landing page — feature flag: feature_agentic_landing, default False)
+/egitim/            → egitim view (eğitim hizmetleri landing page, kurs kataloğu — feature flag: feature_training, default False)
+                      /egitim/<slug>/ → egitim_detay view (kurs detay sayfası; slug training_catalog.py'de, yoksa 404)
+/egitim-talebi/     → egitim_talebi view (TrainingRequest formu — GET ?tur=/?kurs=/?source= ile alanlar ön-seçili, POST ile kayıt)
 /sitemap.xml        → Django sitemaps (StaticView, Topic, Category, Job, BlogPost, Istatistik, Tools)
 /robots.txt         → TemplateView
 /534e22a9f9e4d375119c5bc6d006aad0.txt → IndexNow key (Bing doğrulama)
@@ -529,6 +532,32 @@ class ProjectRequest:
     # destekler — ikisi de yalnızca bibliometri true geçiyor, diğer araç sayfalarını etkilemez.
 ```
 
+### Eğitim Talebi (TrainingRequest)
+```python
+class TrainingRequest:
+    name: str                  # Ad Soyad
+    email: EmailField
+    phone: str (blank)
+    organization: str (blank)  # Kurum / Şirket
+    request_type: choice       # individual | corporate
+    topic: str (blank)         # training_catalog.py'deki kurs slug'ı (serbest metin, FK değil)
+    other_topic: str (blank)   # "Diğer" seçilince serbest metin
+    level: choice               # beginner | intermediate | advanced | unknown
+    training_format: choice     # online_live | onsite | hybrid | flexible
+    participants: choice        # 1 | 2-5 | 6-15 | 16+
+    timeline: choice            # urgent(2 hafta) | month | flexible
+    description: TextField
+    kvkk_consent: BooleanField  # required — hem HTML hem backend'de doğrulanır (POST'ta yoksa reddedilir)
+    source: choice               # egitim_hero | egitim_kurs | home | navbar | analiz_araci | direct (default: direct)
+    status: choice                # new | in_review | contacted | scheduled | closed
+    admin_notes: TextField
+    # `/egitim-talebi/` view: GET ?tur=bireysel|kurumsal (template'te individual/corporate'a çevrilir)
+    # & ?kurs=<slug> & ?source=<X> ile request_type/topic/source alanları forma ön-seçili gelir;
+    # POST'ta honeypot (`website` alanı
+    # doluysa sessizce reddedilir) + ratelimit 5/saat (IP) + KVKK zorunluluğu var.
+    # Gönderimde admine bildirim + kullanıcıya onay e-postası gider (email_utils.py + signals.py deseni).
+```
+
 ### Diğer Önemli Modeller
 ```python
 class SiteSettings:      # Singleton (tek kayıt) — feature flag'ler admin'den yönetilir
@@ -598,6 +627,7 @@ class JobPayment:        # İlan vitrin ödemeleri
 | `feature_istatistik` | True | İstatistik Araçları |
 | `feature_transcript` | **False** | YouTube Transcript İndirici — cloud IP engeli nedeniyle Render'da doğrulanamadı, kapalı (bkz. §26) |
 | `feature_agentic_landing` | **False** | AI Çözümler (Agentic) Sayfası — `/ai-cozumler/` |
+| `feature_training` | **False** | Eğitim Hizmetleri Landing Page — `/egitim/` |
 
 Template kullanımı: `{% if features.openalex %}...{% endif %}`
 Kaynak: `forum/context_processors.py` → `feature_flags()`
@@ -1141,6 +1171,14 @@ analizus-files/
 - `upload_bytes_to_s3(content_bytes, s3_key, content_type)`
 - `delete_from_s3(s3_key)`
 
+### AWS Hesap Durumu (Fatura/Bütçe)
+- Hesap: `analizus` (ID: 909489253044), `eu-north-1`
+- 20.07.2026: AWS Free Plan → **standard (paid) plan**'a yükseltildi (Free Plan 04.08.2026'da kapanacaktı, $99 kredi kalan bakiyeydi)
+- Paid plan'a geçişte kayıtlı kart üzerinden işlem tamamlandı — kart aktifliği periyodik kontrol edilmeli
+- AWS Budgets üzerinde **$5,00/ay** sabit bütçe + **%80 eşiğinde e-posta uyarısı** kuruldu (bütçe adı: `analizus`, alıcı: `bkeles74@gmail.com`) — beklenmedik yüksek fatura riskine karşı erken uyarı
+- Gerçek kullanım (20.07.2026 itibarıyla): 308 obje, ~100 MB — aylık maliyet pay-as-you-go bazında $1'ın çok altında
+- `analizus-s3-user` IAM anahtarı yalnızca S3'e scope'lu (bucket-level); `ListAllMyBuckets`, `budgets:*` gibi hesap/fatura işlemlerine erişimi **yok** — bu işlemler için AWS Console'a **root** ile giriş gerekir
+
 ---
 
 ## 19. GÜVENLİK VE BOT KORUMASI
@@ -1624,6 +1662,13 @@ with connection.cursor() as c:
   - **Render dev'deki bilinen boşluk:** 2 konu (`danismanlik` kategorisi — KVKK anonimleştirme, kapsam kayması) Render'da yayınlanamadı çünkü o ortamın taksonomisinde danışmanlık/serbest-çalışma temalı **hiçbir kategori yok** (kod hatası değil, gerçek eksiklik) — production'da aynı konular `tez-danismanligi` kategorisine düştü ve sorunsuz yayınlandı.
   - **Deploy notu:** Hetzner'de migration gerekmedi (sadece veri + 2 yeni management komutu). Render dev senkronu `deploy.sh`'e geçici satır ekleyip push edilerek yapıldı, doğrulandıktan sonra kaldırıldı (§26'daki "Render'da shell erişimi yok" dersine bkz.).
 
+- **Eğitim Hizmetleri Landing Page** (temmuz 2026) — kaynak `analizus_egitim_prompt2.md`; sitenin "kendin yap / yaptır" iki kapısına üçüncü kapı: "öğren". `feature_training` flag'i arkasında (default `False`), `dev`'den `main`'e merge edildi (3 commit, fast-forward):
+  - **Faz 1-6 — İlk kurulum (commit `8636101`):** `SiteSettings.feature_training` + `feature_flags()` context processor + `SiteSettingsAdmin.fieldsets` (üçü birlikte — bkz. §26); `forum/training_catalog.py` — DB'siz Python sabiti, 6 kategori × 18 kurs (`summary`/`outcomes`/`prerequisites`/`tools`/`syllabus`/`faq`/opsiyonel `related_tool_url`), URL adı değil yalnızca slug tutuluyor (§26 dersi); `TrainingRequest` modeli (yukarıda §8) + migration `0151_add_feature_training` + `0152_add_training_request`; `/egitim/` (hub, `?konu=<slug>` ile kategori ön-seçimi), `/egitim/<slug>/` (kurs detay — `Course` + `FAQPage` JSON-LD, `offers`/`price` yok, fiyat kararı gereği), `/egitim-talebi/` (form, honeypot + ratelimit 5/saat + KVKK zorunlu backend doğrulaması); `static/css/training.css` (mobil-önce, `bundle.css`'e girmiyor); navbar bağımsız üst seviye "Eğitim" linki (desktop + mobil drawer, `{% if features.training %}`); `TrainingSitemap` (flag koşullu) + `StaticViewSitemap`'e `egitim` flag koşuluyla eklendi; `ai_service.py` `_ALLOWED_PATHS`/`SYSTEM_PROMPT`'a `/egitim/`+`/egitim-talebi/` eklendi; `home.html`'deki "AI çağında iki/üç yol" bandına üçüncü kart (`{% if features.training %}`, flag kapalıyken grid `--single`/normal kalıyor); `service_promo.html`'e (10+ araç sayfası paylaşıyor) opsiyonel "Bu analizi öğrenmek ister misiniz?" bandı eklendi.
+  - **Canlı denetim Tur 2 — hızlı düzeltmeler (commit `8d2a679`):** kaynak `analizus_egitim_prompt2.md` Ek bölümü. `egitim_talebi.html`'de eksik olan `twitter_title`/`twitter_description` blokları eklendi (og ile eşitlendi — `egitim`/`egitim_detay` zaten doğruydu); `prerequisites: ["Yok"]` tek elemanlı liste olarak basılıp sıfır kuralını ihlal ediyordu (`• Yok`) → "Ön bilgi gerekmiyor." tek cümlesine çevrildi; SSS "Kurumsal eğitimde kaç kişi katılabilir?" cevabı sayı sormasına rağmen format listesiyle başlıyordu → "Tipik grup 2–15 kişidir; 16+ katılımcıda program modüllere bölünerek planlanır." (görünür akordiyon + `FAQPage` JSON-LD birebir güncellendi); `spss-uygulamali` kursunun `related_tool_url`'ü genel `/hangi-test/`'ten kursun asıl uyguladığı çalışan araca, `/analiz/ttesti/`'ye çevrildi.
+  - **Canlı denetim — "Düzeltme Listesi" turu (commit `0864bcc`):** kaynak `analizus_duzeltme_listesi-egitim-sonrası.md`; www.analizus.com'un ham HTML'i üzerinden çıkarılan bulgular kodla/tarayıcıyla çapraz doğrulandı, **iki bulgu yanlış pozitif çıktı**: (1) ana sayfa 4 sayacının "0+" göstermesi — `data-target` gerçek (canlıda 114/118/235/74), `static/js/stats-carousel.js` production'da local ile birebir aynı ve doğru yükleniyor; "0+" yalnızca scroll-tetiklemeli `IntersectionObserver` animasyonunun henüz ateşlenmediği SSR ilk durumu, denetim muhtemelen scroll yapılmadan yapılmıştı — kod değişikliği yapılmadı; (2) üçüncü ("Aracı öğren") kartın görselsiz/çıplak göründüğü iddiası — `.ax-training-band-card` (`home_sections.css`) zaten kendi CSS-only gradient arka planına sahip (diğer projelerin CSS-only fallback deseniyle aynı), ham HTML denetimi bu CSS'i yakalayamamış — kod değişikliği yapılmadı. **Gerçek çıkan bulgular düzeltildi:** `home.html` "AI çağında iki yol" başlığı 3. kart (eğitim) eklendiğinde güncellenmemişti → sayıdan bağımsız "AI çağında size uygun yolu seçin"; "Nasıl Çalışıyoruz" 2. adımdaki "Alanında uzman kişiler metodoloji ve fiyat teklifleri sunar." (eğitim sayfalarında zaten yasak olan kalıp, sadece ana sayfada unutulmuş) → "Doğrulamadan geçmiş analistler metodoloji ve fiyat teklifi sunar."; `training_catalog.py`'de `olcek-gelistirme` ve `makine-ogrenmesi` kurslarının `related_tool_url`'leri (`/istatistik/cronbach/`, `/istatistik/karar-agaci/`) gereksiz 301 üzerinden gidiyordu → nihai `/analiz/cronbach/`, `/analiz/karar-agaci/`'ye çevrildi (katalogdaki 7 `related_tool_url` tek tek test edilip hiçbirinin redirect vermediği doğrulandı); araç sayfalarındaki "Bu analizi öğrenmek ister misiniz?" bandı (`service_promo.html`) her zaman genel `/egitim/`'e düşüyordu, hazır `promo_egitim_konu` context hook'unu hiçbir view doldurmuyordu → kullanıcı kararıyla kapsam 3 net eşleşmeyle sınırlandı (`cronbach`→`olcek-gelistirme`, `ttesti`→`spss-uygulamali`, `karar_agaci`→`makine-ogrenmesi`, `istatistik/views.py`'de 3 view'a `promo_egitim_konu` eklendi); bant artık eşleşen kursun **detay sayfasına** gidiyor (hub değil), `?source=analiz_araci` huni parametresi `egitim_detay` view'ı üzerinden `egitim_talebi`'ne kadar taşınıyor (`TrainingRequest.SOURCE_CHOICES`'ta `analiz_araci` zaten tanımlıydı, ilk kurulumda öngörülmüş ama hiç kullanılmamıştı). `Course` şemasında `offers`/`price` kontrolü zaten uygundu, değişiklik gerekmedi.
+  - **Migration:** `0151_add_feature_training`, `0152_add_training_request` — Hetzner'de `docker compose exec web python manage.py migrate` + `collectstatic` (yeni `training.css`) + `restart web` + `restart nginx` gerekiyor. Düzeltme turlarının ikisi de migration içermiyor (yalnızca template/view/Python sabiti), `collectstatic` de gerekmiyor.
+  - **Deploy notu:** her üç commit de `dev`'den `main`'e fast-forward merge edilip `origin`'e push edildi. **Hetzner production'a deploy edilip edilmediği bu oturumdan doğrulanamadı** — kullanıcıya deploy komutları verildi, çalıştırıldığı teyit edilmedi. Flag `feature_training` migration'da `default=False` geliyor; deploy sonrası admin panelden elle açılmazsa `/egitim/` (ve navbar linki, sitemap girişi) production'da görünmez — `feature_agentic_landing` ile aynı unutma riski (bkz. §26/§27 önceki notlar).
+
 ### Sıradaki Görevler
 
 #### Danışmanlık Dönüşümü (feature flag'lerle, detay: `danismanlik_roadmap.md`)
@@ -1657,4 +1702,6 @@ with connection.cursor() as c:
 
 **Önceki (temmuz 2026):** Çalışma Odaları (StudyRoom) 8 fazlı dönüşümü tamamlandı, `dev`'den `main`'e merge edildi (yukarıdaki "Tamamlananlar" listesine bakın). Hetzner production'a bu merge deploy edildiyse §27'deki not artık geçerli değildir; edilmediyse aşağıdaki anasayfa turuyla birlikte tek seferde deploy edilebilir (migration'lar birikimli çalışır, sıra önemli değil).
 
-**En son (temmuz 2026):** Ana Sayfa & Navbar İyileştirme Turu tamamlandı — 11 faz, 11 ayrı commit (detay: yukarıdaki "Tamamlananlar" listesi). `dev`'den `main`'e fast-forward merge edildi, hem `dev` hem `main` `origin`'e push edildi. **Kritik hatırlatma (henüz yapılmadı):** Hetzner production'a bu merge henüz manuel deploy edilmedi — `git pull origin main` + `docker compose exec web python manage.py migrate` (migration `0150_sitesettings_stat_min_display`) + `docker compose exec web python manage.py collectstatic --noinput` + `docker compose restart web` + `docker compose restart nginx` gerekiyor. Yerel sqlite geliştirme ortamında da aynı migration elle çalıştırılmalı (`python manage.py migrate forum`).*
+**Önceki (temmuz 2026):** Ana Sayfa & Navbar İyileştirme Turu tamamlandı — 11 faz, 11 ayrı commit (detay: yukarıdaki "Tamamlananlar" listesi). `dev`'den `main`'e fast-forward merge edildi, hem `dev` hem `main` `origin`'e push edildi. Migration `0150_sitesettings_stat_min_display`.
+
+**En son (temmuz 2026):** Eğitim Hizmetleri Landing Page — ilk kurulum (`feature_training` flag, `TrainingRequest` modeli, `training_catalog.py` 6 kategori/18 kurs, `/egitim/`+`/egitim/<slug>/`+`/egitim-talebi/`, navbar+sitemap+AI asistan+ana sayfa entegrasyonu) ve ardından iki ayrı canlı denetim turu (twitter meta/sıfır kuralı/SSS tutarlılığı/`related_tool_url` düzeltmeleri; ardından başlık/ifade/301-zinciri/araç→kurs bandı düzeltmeleri — ikisinde de en az bir bulgu koda bakılınca **yanlış pozitif** çıktı, detay: yukarıdaki "Tamamlananlar" listesindeki ilgili madde). 3 commit, `dev`'den `main`'e fast-forward merge edildi, `origin`'e push edildi. **Kritik hatırlatma (doğrulanmadı):** Hetzner production'a deploy edilip edilmediği bu oturumdan teyit edilemedi — `git pull origin main` + `docker compose exec web python manage.py migrate` (migration `0151_add_feature_training`, `0152_add_training_request`) + `docker compose exec web python manage.py collectstatic --noinput` + `docker compose restart web` + `docker compose restart nginx` gerekiyor; deploy sonrası `SiteSettings.feature_training` admin panelden elle açılmalı, aksi hâlde `/egitim/` production'da 404 kalır.*
