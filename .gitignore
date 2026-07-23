@@ -1,5 +1,7 @@
 
 db.sqlite3
+nginx/local-ssl/
+docker-compose.override.yml
 scripts/oai_discover.py
 scripts/oai_endpoints.json
 __pycache__/

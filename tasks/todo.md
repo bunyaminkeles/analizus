@@ -1,6 +1,7 @@
 # [ÖNCELİKLİ] Local Docker Ortamı — nginx crash-loop + yanlış DB fallback
 
-**Durum:** Kök neden bulundu, henüz düzeltme uygulanmadı (onay bekliyor). 23 Temmuz 2026.
+**Durum:** TAMAMLANDI (23 Temmuz 2026) — nginx crash-loop çözüldü, DB fallback
+çözüldü. Aşağıdaki "Önerilen düzeltme" bölümü artık geçmiş kayıt.
 
 ## Bulgular
 
@@ -43,6 +44,46 @@ yanlış/boş çıktı verdi — gerçek veri kaybı DEĞİL, yanlış DB'ye ba�
 **Not:** Bu değişiklikler yalnızca local geliştirme ortamını ilgilendiriyor,
 production (Hetzner/Render) etkilenmiyor — ama yine de dosya bazlı onay
 istenecek (CLAUDE.md kuralı).
+
+## nginx düzeltmesi + KRİTİK git-güvenlik düzeltmesi (23 Temmuz 2026, TAMAMLANDI)
+
+Self-signed sertifika üretildi (`openssl req -x509 ...` → `nginx/local-ssl/
+selfsigned.crt`+`.key`, 825 gün geçerli, `.gitignore`'a eklendi — makineye
+özel, commit edilmeyecek).
+
+**⚠️ ÖNEMLİ BULGU — `docker-compose.yml` Hetzner ile PAYLAŞILAN tek dosya:**
+`analizus.md` §3 doğruladı: Hetzner production da `git pull origin main` ile
+aynı `docker-compose.yml`'i çekip `docker compose` ile çalıştırıyor (container
+adları `app-web-1`/`app-db-1`/`app-nginx-1`, aynı `web`/`db`/`nginx` servis
+isimleri). İlk denemede nginx volume mount'unu VE `web` servisine bir
+`environment: DATABASE_URL: ...` override'ını doğrudan bu paylaşılan dosyaya
+yazmıştım — bu, Hetzner'in `main`'e merge sonrası `git pull` yapmasıyla
+**production nginx'ini (Let's Encrypt yerine self-signed/local config) ve
+olası DB bağlantısını kırma riski** taşıyordu (Docker Compose'da `environment:`
+her zaman `env_file`'dan önceliklidir — Hetzner'in gerçek `.env`'indeki
+`DATABASE_URL`'i sessizce ezebilirdi).
+
+**Düzeltme:** `docker-compose.yml` **main ile birebir aynı** hale geri
+döndürüldü (`diff <(git show main:docker-compose.yml) docker-compose.yml` →
+fark yok, doğrulandı). Tüm local-only override'lar (`web.environment.
+DATABASE_URL`, `nginx.volumes` → `conf.d.local`+`local-ssl`) yeni bir
+**`docker-compose.override.yml`** dosyasına taşındı — Docker Compose bunu
+`docker compose up`'ta otomatik yükler (ekstra `-f` bayrağı gerekmez) ama
+dosya `.gitignore`'a eklendiği için **hiçbir zaman commit'lenmez, Hetzner'e
+asla ulaşmaz**. Doğrulama: `docker compose config` ile birleşmiş ayarlar
+kontrol edildi (DATABASE_URL doğru, nginx conf.d.local+local-ssl doğru),
+`docker compose up -d` sonrası hem Postgres bağlantısı (`ENGINE: postgresql`)
+hem nginx (`https://localhost/` → 200, restart döngüsü yok) çalışır durumda.
+
+**Ders (gelecek oturumlar için kritik):** `docker-compose.yml` Hetzner
+production'da da kullanılan paylaşılan bir dosya — local-only ayarlar asla
+doğrudan bu dosyaya yazılmamalı, her zaman gitignore'lu bir
+`docker-compose.override.yml`'e (veya benzeri) izole edilmeli. `nginx/conf.d.
+local/local.conf` (sertifika/secret içermiyor) git'e eklenip commit'lendi —
+gelecekte tekrar kurulum gerekmesin diye.
+
+**Sonuç:** `docker compose ps` → 4 container da stabil (`db` healthy, `redis`/
+`web`/`nginx` Up, hiçbiri restart döngüsünde değil).
 
 ## Madde 3 sonucu — TAMAMLANDI (23 Temmuz 2026)
 "Tamamlanan pazar talebi istatistikleri" (FreelanceJob completed count)
