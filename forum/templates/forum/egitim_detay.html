@@ -84,11 +84,15 @@
         {% if item.prerequisites %}
         <div class="ax-training-detail-section">
             <h2 class="ax-training-detail-heading">Ön Koşul</h2>
+            {% if item.prerequisites|length == 1 and item.prerequisites.0 == 'Yok' %}
+            <p class="ax-training-detail-text">Ön bilgi gerekmiyor.</p>
+            {% else %}
             <ul class="ax-training-reasons">
                 {% for pre in item.prerequisites %}
                 <li>{{ pre }}</li>
                 {% endfor %}
             </ul>
+            {% endif %}
         </div>
         {% endif %}
 

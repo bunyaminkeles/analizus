@@ -135,7 +135,7 @@ TRAINING_CATEGORIES = [
                     {"week": 3, "title": "Karşılaştırma Testleri", "topics": ["t-testi", "Tek yönlü ANOVA"]},
                     {"week": 4, "title": "Raporlama", "topics": ["APA tablo formatı", "Sonuç yazımı"]},
                 ],
-                "related_tool_url": "/hangi-test/",
+                "related_tool_url": "/analiz/ttesti/",
                 "faq": [
                     {"q": "Hangi SPSS sürümü kullanılıyor?", "a": "Güncel IBM SPSS Statistics sürümleriyle uyumludur; kurumunuzdaki lisanslı sürümle de çalışılabilir."},
                 ],
