@@ -80,7 +80,7 @@
 
     function animateCount(el) {
         const target   = parseInt(el.dataset.target, 10);
-        const suffix   = el.dataset.suffix || '+';
+        const suffix   = el.dataset.suffix ?? '+';
         const duration = 2000;
         const step     = 16;
         const steps    = Math.floor(duration / step);

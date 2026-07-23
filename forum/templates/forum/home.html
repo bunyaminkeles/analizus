@@ -513,31 +513,31 @@
         <div class="row text-center justify-content-center">
             {% if total_users >= stat_min_display %}
             <div class="col-6 col-md-2 mb-4 mb-md-0">
-                <div class="ax-stat-item" data-target="{{ total_users }}" data-suffix="+">0+</div>
+                <div class="ax-stat-item" data-target="{{ total_users }}" data-suffix="">0</div>
                 <div class="ax-stat-label">Aktif Üye</div>
             </div>
             {% endif %}
             {% if total_topics >= stat_min_display %}
             <div class="col-6 col-md-2 mb-4 mb-md-0">
-                <div class="ax-stat-item" data-target="{{ total_topics }}" data-suffix="+">0+</div>
+                <div class="ax-stat-item" data-target="{{ total_topics }}" data-suffix="">0</div>
                 <div class="ax-stat-label">Akademik Konu</div>
             </div>
             {% endif %}
             {% if total_posts >= stat_min_display %}
             <div class="col-6 col-md-2 mb-4 mb-md-0">
-                <div class="ax-stat-item" data-target="{{ total_posts }}" data-suffix="+">0+</div>
+                <div class="ax-stat-item" data-target="{{ total_posts }}" data-suffix="">0</div>
                 <div class="ax-stat-label">Forum Gönderisi</div>
             </div>
             {% endif %}
             {% if completed_jobs >= stat_min_display %}
             <div class="col-6 col-md-2 mb-4 mb-md-0">
-                <div class="ax-stat-item" data-target="{{ completed_jobs }}" data-suffix="+">0+</div>
+                <div class="ax-stat-item" data-target="{{ completed_jobs }}" data-suffix="">0</div>
                 <div class="ax-stat-label">Tamamlanan Proje</div>
             </div>
             {% endif %}
             {% if completed_analyses >= stat_min_display %}
             <div class="col-6 col-md-2 mb-4 mb-md-0">
-                <div class="ax-stat-item" data-target="{{ completed_analyses }}" data-suffix="+">0+</div>
+                <div class="ax-stat-item" data-target="{{ completed_analyses }}" data-suffix="">0</div>
                 <div class="ax-stat-label">Tamamlanan Analiz</div>
             </div>
             {% endif %}
@@ -551,7 +551,7 @@
             {% endif %}
             {% if weekly_new_users >= stat_min_display %}
             <div class="col-6 col-md-2 mb-4 mb-md-0">
-                <div class="ax-stat-item">+{{ weekly_new_users }}</div>
+                <div class="ax-stat-item">{{ weekly_new_users }}</div>
                 <div class="ax-stat-label">Bu Hafta Yeni Üye</div>
             </div>
             {% endif %}
@@ -1009,7 +1009,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 {{ block.super }}
 <script src="{% static 'js/quiz.js' %}?v=0102" defer></script>
-<script src="{% static 'js/stats-carousel.js' %}?v=0100" defer></script>
+<script src="{% static 'js/stats-carousel.js' %}?v=0101" defer></script>
 
 
 
