@@ -10,7 +10,7 @@
 
 {% block extra_head %}
 <link rel="stylesheet" href="{% static 'css/expert_card.css' %}?v=0003">
-<link rel="stylesheet" href="{% static 'css/market.css' %}?v=0005">
+<link rel="stylesheet" href="{% static 'css/market.css' %}?v=0009">
 {% endblock %}
 
 {% block content %}
@@ -66,31 +66,25 @@
     <div class="row g-3 mb-5">
         {% if market_stats.total_completed %}
         <div class="col-6 col-md">
-            <div class="rounded-3 text-center py-3 px-2" style="background:rgba(34,211,238,0.07);border:1px solid rgba(34,211,238,0.15);">
-                <div class="fw-bold text-info mb-1" style="font-size:1.6rem;line-height:1;">
-                    {{ market_stats.total_completed }}
-                </div>
-                <div class="text-muted" style="font-size:0.75rem;">Tamamlanan İş</div>
+            <div class="ax-market-stat">
+                <div class="ax-market-stat__value">{{ market_stats.total_completed }}</div>
+                <div class="ax-market-stat__label">Tamamlanan İş</div>
             </div>
         </div>
         {% endif %}
         {% if market_stats.total_experts %}
         <div class="col-6 col-md">
-            <div class="rounded-3 text-center py-3 px-2" style="background:rgba(16,185,129,0.07);border:1px solid rgba(16,185,129,0.15);">
-                <div class="fw-bold text-success mb-1" style="font-size:1.6rem;line-height:1;">
-                    {{ market_stats.total_experts }}
-                </div>
-                <div class="text-muted" style="font-size:0.75rem;">Aktif Uzman</div>
+            <div class="ax-market-stat">
+                <div class="ax-market-stat__value">{{ market_stats.total_experts }}</div>
+                <div class="ax-market-stat__label">Aktif Uzman</div>
             </div>
         </div>
         {% endif %}
         {% if market_stats.recent_completed %}
         <div class="col-6 col-md">
-            <div class="rounded-3 text-center py-3 px-2" style="background:rgba(139,92,246,0.07);border:1px solid rgba(139,92,246,0.15);">
-                <div class="fw-bold mb-1" style="font-size:1.6rem;line-height:1;color:#a78bfa;">
-                    {{ market_stats.recent_completed }}
-                </div>
-                <div class="text-muted" style="font-size:0.75rem;">Son 90 Günde</div>
+            <div class="ax-market-stat">
+                <div class="ax-market-stat__value">{{ market_stats.recent_completed }}</div>
+                <div class="ax-market-stat__label">Son 90 Günde</div>
             </div>
         </div>
         {% endif %}
@@ -100,9 +94,9 @@
     <!-- Kategori Gezinmesi -->
     {% if market_categories %}
     <div class="ax-market-chips mb-3">
-        <a href="?{% if current_sort != 'newest' %}sort={{ current_sort }}{% endif %}" class="ax-market-chip{% if not selected_category %} ax-market-chip--active{% endif %}">Tümü</a>
+        <a href="?{% if current_sort != 'newest' %}sort={{ current_sort }}{% endif %}" class="ax-market-chip ax-tag--category{% if not selected_category %} ax-market-chip--active{% endif %}">Tümü</a>
         {% for cat in market_categories %}
-        <a href="?category={{ cat.id }}{% if current_sort != 'newest' %}&sort={{ current_sort }}{% endif %}" class="ax-market-chip{% if selected_category == cat.id %} ax-market-chip--active{% endif %}">{{ cat.title }}</a>
+        <a href="?category={{ cat.id }}{% if current_sort != 'newest' %}&sort={{ current_sort }}{% endif %}" class="ax-market-chip ax-tag--category{% if selected_category == cat.id %} ax-market-chip--active{% endif %}">{{ cat.title }}</a>
         {% endfor %}
     </div>
     {% endif %}
@@ -113,7 +107,7 @@
             <i class="bi bi-circle-fill text-success me-2" style="font-size:0.55rem;vertical-align:middle;"></i>
             Açık İlanlar
             {% if market_stats.open_count %}
-            <span class="badge bg-success bg-opacity-20 text-success ms-2" style="font-size:0.7rem;">{{ market_stats.open_count }}</span>
+            <span class="ax-status-badge ms-2">{{ market_stats.open_count }}</span>
             {% endif %}
         </h5>
         <div class="dropdown">
@@ -137,7 +131,7 @@
             <div class="card h-100 border-0 shadow-sm" style="background:rgba(30,41,59,0.6);border:1px solid rgba(255,255,255,0.08)!important;">
                 <div class="card-body p-4 d-flex flex-column">
                     <div class="d-flex justify-content-between align-items-start mb-3">
-                        <span class="badge bg-info bg-opacity-10 text-info border border-info border-opacity-25">
+                        <span class="badge ax-tag--category">
                             {{ job.category.title|truncatechars:28 }}
                         </span>
                         <div class="text-end flex-shrink-0">
@@ -163,7 +157,7 @@
                     <small class="text-muted d-block mb-2"><i class="bi bi-hash"></i>{{ job.reference_number }}</small>
                     <p class="card-text text-white-50 small mb-4 flex-grow-1">{{ job.description|truncatechars:100 }}</p>
                     <div class="d-flex justify-content-between align-items-center pt-3 border-top border-secondary border-opacity-25">
-                        <div class="text-success fw-bold">₺{{ job.budget_max|floatformat:0 }}'ye kadar</div>
+                        <div class="text-white fw-bold">₺{{ job.budget_max|floatformat:0 }}'ye kadar</div>
                         <div class="text-muted small">
                             <span class="me-2"><i class="bi bi-eye"></i> {{ job.views }}</span>
                             <span><i class="bi bi-people-fill me-1"></i>{{ job.p_count }} Teklif</span>
@@ -209,7 +203,7 @@
                 <div class="flex-grow-1 min-w-0">
                     <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
                         {% if job.category %}
-                        <span class="badge" style="background:rgba(34,211,238,0.1);color:#67e8f9;font-size:0.65rem;border:1px solid rgba(34,211,238,0.2);">
+                        <span class="badge ax-tag--category" style="font-size:0.65rem;">
                             {{ job.category.title }}
                         </span>
                         {% endif %}
@@ -219,7 +213,7 @@
                         {{ job.title|truncatechars:55 }}
                     </div>
                     <div class="d-flex align-items-center justify-content-between">
-                        <span class="text-success fw-bold" style="font-size:0.82rem;">
+                        <span class="text-white fw-bold" style="font-size:0.82rem;">
                             ₺{{ job.budget_max|floatformat:0 }}'ye kadar
                         </span>
                         <span class="text-muted" style="font-size:0.72rem;">

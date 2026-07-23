@@ -132,15 +132,27 @@
     border-radius: var(--ax-radius-full, 999px);
     font-size: var(--ax-text-xs);
     font-weight: var(--ax-font-medium);
-    color: var(--ax-text-secondary);
-    border: 1px solid var(--ax-border-hover);
     text-decoration: none;
+    border: 1px solid var(--ax-border-hover);
+    background-color: transparent;
     transition: border-color var(--ax-transition-fast), color var(--ax-transition-fast), background-color var(--ax-transition-fast);
 }
 
 .ax-market-chip:hover {
     color: var(--ax-accent-primary-hover);
     border-color: var(--ax-accent-primary);
+}
+
+/* Kategori kimliği — filtre çipi ve ilan kartındaki etiket aynı METİN rengini
+   paylaşır (Madde 2), ama iki bağlam görsel olarak birbirine karışmasın diye
+   sunum farklı: çip kenarlıklı/dolgusuz kalır (.ax-market-chip), kart etiketi
+   dolgulu/kenarlıksız olur (.badge.ax-tag--category). */
+.ax-tag--category {
+    color: var(--ax-text-secondary);
+}
+
+.badge.ax-tag--category {
+    background-color: var(--ax-bg-tertiary);
 }
 
 .ax-market-chip--active {
@@ -151,6 +163,45 @@
 
 .ax-market-chip--active:hover {
     color: #ffffff;
+}
+
+/* --- Durum rozeti (ör. "Açık İlanlar" sayacı) — küçük punto için WCAG AA kontrast.
+   Yeşil zaten başlıktaki noktada kullanıldığı için rozet nötr yüzeyde tutulur
+   (aynı bilgiyi iki kez farklı renkte tekrarlamamak için). --- */
+.ax-status-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    padding: 2px 8px;
+    border-radius: var(--ax-radius-full, 999px);
+    background-color: var(--ax-bg-tertiary);
+    color: var(--ax-text-primary);
+    font-size: 0.7rem;
+    font-weight: var(--ax-font-semibold);
+    line-height: 1.4;
+}
+
+/* --- İstatistik Şeridi (Tamamlanan İş / Aktif Uzman / Son 90 Günde) — tek vurgu rengi --- */
+.ax-market-stat {
+    text-align: center;
+    padding: var(--ax-space-3, 12px) var(--ax-space-2, 8px);
+    border-radius: var(--ax-radius-lg, 12px);
+    background-color: var(--ax-bg-tertiary);
+    border: 1px solid var(--ax-border-default);
+}
+
+.ax-market-stat__value {
+    font-weight: var(--ax-font-bold);
+    font-size: 1.6rem;
+    line-height: 1;
+    color: var(--ax-accent-primary-light);
+    margin-bottom: var(--ax-space-1, 4px);
+}
+
+.ax-market-stat__label {
+    font-size: var(--ax-text-xs);
+    color: var(--ax-text-muted);
 }
 
 /* --- Başarı Hikayesi Şeridi --- */

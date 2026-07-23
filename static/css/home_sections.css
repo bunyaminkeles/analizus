@@ -1465,7 +1465,15 @@ a.ax-stat-pill:hover {
         grid-template-columns: 1fr;
     }
     .ax-ai-era-grid--triple {
-        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-columns: 1fr 1fr;
+    }
+    .ax-ai-era-grid--triple .ax-training-band-card {
+        grid-column: 1 / -1;
+        justify-content: center;
+    }
+    .ax-ai-era-grid--triple .ax-training-band-card .ax-verify-band__inner {
+        width: auto;
+        max-width: 640px;
     }
     .ax-agentic-band-card__overlay {
         padding: 24px;
