@@ -7,14 +7,14 @@
 
         <!-- Sol: Profil Kartı (Kompakt) -->
         <div class="col-lg-2 col-md-3">
-            <div class="card border-0 sticky-top" style="top: 80px; background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(0, 210, 255, 0.2) !important; backdrop-filter: blur(10px);">
+            <div class="card border-0 ax-msg-sidebar" style="background: rgba(15, 23, 42, 0.8); border: 1px solid color-mix(in srgb, var(--ax-accent-primary) 20%, transparent) !important; backdrop-filter: blur(10px);">
                 <div class="card-body text-center p-3">
                             <!-- Avatar -->
                             <div class="mb-3 position-relative d-inline-block">
                                 {% if receiver.profile.avatar %}
-                                    <img src="{{ receiver.profile.avatar.url }}" class="rounded-circle shadow" style="width: 80px; height: 80px; object-fit: cover; border: 2px solid rgba(0, 210, 255, 0.3);">
+                                    <img src="{{ receiver.profile.avatar.url }}" class="rounded-circle shadow" style="width: 80px; height: 80px; object-fit: cover; border: 2px solid color-mix(in srgb, var(--ax-accent-primary) 30%, transparent);">
                                 {% else %}
-                                    <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto text-white fs-2 shadow" style="width: 80px; height: 80px; background: linear-gradient(135deg, rgba(0, 210, 255, 0.2), rgba(58, 123, 213, 0.2)); border: 2px solid rgba(0, 210, 255, 0.3);">
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center mx-auto text-white fs-2 shadow" style="width: 80px; height: 80px; background: linear-gradient(135deg, color-mix(in srgb, var(--ax-accent-primary) 20%, transparent), color-mix(in srgb, var(--ax-accent-primary-hover) 20%, transparent)); border: 2px solid color-mix(in srgb, var(--ax-accent-primary) 30%, transparent);">
                                         {{ receiver.username|slice:":1"|upper }}
                                     </div>
                                 {% endif %}
@@ -24,13 +24,13 @@
                             </div>
 
                             <h5 class="text-white fw-bold mb-1">{{ receiver.username }}</h5>
-                            <p class="small mb-2" style="color: #00d2ff;">{{ receiver.profile.title|default:"Üye" }}</p>
+                            <p class="small mb-2" style="color: var(--ax-accent-primary);">{{ receiver.profile.title|default:"Üye" }}</p>
 
                             <div class="d-flex justify-content-center gap-2 mb-3 flex-wrap">
-                                <span class="badge" style="background: rgba(234, 179, 8, 0.15); color: #eab308; border: 1px solid rgba(234, 179, 8, 0.3);">
+                                <span class="badge" style="background: var(--ax-bg-tertiary); color: var(--ax-text-primary); border: 1px solid var(--ax-border-default);">
                                     <i class="bi bi-star-fill me-1"></i>{{ receiver.profile.reputation }}
                                 </span>
-                                <span class="badge" style="background: rgba(0, 210, 255, 0.1); color: #00d2ff; border: 1px solid rgba(0, 210, 255, 0.2);">
+                                <span class="badge" style="background: color-mix(in srgb, var(--ax-accent-primary) 10%, transparent); color: var(--ax-accent-primary); border: 1px solid color-mix(in srgb, var(--ax-accent-primary) 20%, transparent);">
                                     {{ receiver.profile.get_rank_display }}
                                 </span>
                             </div>
@@ -54,7 +54,7 @@
                             {% endif %}
 
                             <hr class="border-secondary my-3">
-                            <a href="{% url 'profile_detail' username=receiver.username %}" class="btn btn-sm w-100" style="background: rgba(0, 210, 255, 0.1); color: #00d2ff; border: 1px solid rgba(0, 210, 255, 0.2);">
+                            <a href="{% url 'profile_detail' username=receiver.username %}" class="btn btn-sm w-100" style="background: color-mix(in srgb, var(--ax-accent-primary) 10%, transparent); color: var(--ax-accent-primary); border: 1px solid color-mix(in srgb, var(--ax-accent-primary) 20%, transparent);">
                                 <i class="bi bi-person me-1"></i>Profili Gör
                             </a>
                         </div>
@@ -64,16 +64,16 @@
         <!-- Sağ: Sohbet Alanı -->
         <div class="col-lg-10 col-md-9">
             <!-- Sohbet Geçmişi -->
-            <div class="card border-0 mb-3" style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(0, 210, 255, 0.2) !important; backdrop-filter: blur(10px);">
-                <div class="card-header py-2 d-flex align-items-center" style="background: rgba(0, 210, 255, 0.08); border-bottom: 1px solid rgba(0, 210, 255, 0.2);">
-                            <i class="bi bi-chat-dots-fill me-2" style="color: #00d2ff;"></i>
+            <div class="card border-0 mb-3" style="background: rgba(15, 23, 42, 0.8); border: 1px solid color-mix(in srgb, var(--ax-accent-primary) 20%, transparent) !important; backdrop-filter: blur(10px);">
+                <div class="card-header py-2 d-flex align-items-center" style="background: color-mix(in srgb, var(--ax-accent-primary) 8%, transparent); border-bottom: 1px solid color-mix(in srgb, var(--ax-accent-primary) 20%, transparent);">
+                            <i class="bi bi-chat-dots-fill me-2" style="color: var(--ax-accent-primary);"></i>
                             <span class="text-white fw-medium">Sohbet</span>
                             {% if chat_messages %}
-                            <span class="badge ms-2" style="background: rgba(0, 210, 255, 0.15); color: #00d2ff;">{{ chat_messages|length }} mesaj</span>
+                            <span class="badge ms-2" style="background: color-mix(in srgb, var(--ax-accent-primary) 15%, transparent); color: var(--ax-accent-primary);">{{ chat_messages|length }} mesaj</span>
                             {% endif %}
                             {% if not is_bot %}
                             <button class="btn btn-sm ms-auto" id="delete-conv-btn"
-                                    style="background: rgba(220,53,69,0.1); color: #dc3545; border: 1px solid rgba(220,53,69,0.2);"
+                                    style="background: color-mix(in srgb, var(--ax-accent-danger) 10%, transparent); color: var(--ax-accent-danger); border: 1px solid color-mix(in srgb, var(--ax-accent-danger) 20%, transparent);"
                                     title="Sohbeti tamamen sil">
                                 <i class="bi bi-trash3 me-1"></i>Sohbeti Sil
                             </button>
@@ -93,16 +93,16 @@
                                     <div class="position-relative msg-wrap {% if msg.sender == request.user %}own-msg{% endif %}">
                                         {% if msg.sender == request.user %}
                                         <div class="msg-actions">
-                                            <button class="btn btn-sm p-0 px-1 edit-btn" data-msg-id="{{ msg.id }}" title="Düzenle" style="color:#00d2ff;">
+                                            <button class="btn btn-sm p-0 px-1 edit-btn" data-msg-id="{{ msg.id }}" title="Düzenle" style="color:var(--ax-accent-primary);">
                                                 <i class="bi bi-pencil" style="font-size:0.75rem;"></i>
                                             </button>
-                                            <button class="btn btn-sm p-0 px-1 del-btn" data-msg-id="{{ msg.id }}" title="Sil" style="color:#dc3545;">
+                                            <button class="btn btn-sm p-0 px-1 del-btn" data-msg-id="{{ msg.id }}" title="Sil" style="color:var(--ax-accent-danger);">
                                                 <i class="bi bi-trash" style="font-size:0.75rem;"></i>
                                             </button>
                                         </div>
                                         {% endif %}
                                         <div class="p-2 px-3 rounded-3 {% if msg.sender == request.user %}text-white{% else %}text-light{% endif %}"
-                                             style="{% if msg.sender == request.user %}background: linear-gradient(135deg, rgba(0, 210, 255, 0.35), rgba(58, 123, 213, 0.35)); border: 1px solid rgba(0, 210, 255, 0.4); box-shadow: 0 2px 8px rgba(0, 210, 255, 0.15);{% else %}background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(255, 255, 255, 0.15);{% endif %}">
+                                             style="{% if msg.sender == request.user %}background: linear-gradient(135deg, color-mix(in srgb, var(--ax-accent-primary) 35%, transparent), color-mix(in srgb, var(--ax-accent-primary-hover) 35%, transparent)); border: 1px solid color-mix(in srgb, var(--ax-accent-primary) 40%, transparent); box-shadow: 0 2px 8px color-mix(in srgb, var(--ax-accent-primary) 15%, transparent);{% else %}background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(255, 255, 255, 0.15);{% endif %}">
                                             {% if msg.message %}
                                             <p class="mb-1 small msg-text" id="msg-text-{{ msg.id }}">{{ msg.message|render_mentions }}</p>
                                             {% endif %}
@@ -114,11 +114,11 @@
                                                     <img src="{{ msg.attachment.url }}" alt="Resim" class="img-fluid rounded" style="max-height: 150px;">
                                                 </a>
                                                 {% elif msg.get_attachment_type == 'pdf' %}
-                                                <a href="{{ msg.attachment.url }}" target="_blank" class="btn btn-sm" style="background: rgba(220, 53, 69, 0.15); color: #dc3545; border: 1px solid rgba(220, 53, 69, 0.3);">
+                                                <a href="{{ msg.attachment.url }}" target="_blank" class="btn btn-sm" style="background: color-mix(in srgb, var(--ax-accent-danger) 15%, transparent); color: var(--ax-accent-danger); border: 1px solid color-mix(in srgb, var(--ax-accent-danger) 30%, transparent);">
                                                     <i class="bi bi-file-pdf me-1"></i>{{ msg.attachment_name|truncatechars:20 }}
                                                 </a>
                                                 {% else %}
-                                                <a href="{{ msg.attachment.url }}" target="_blank" class="btn btn-sm" style="background: rgba(0, 210, 255, 0.15); color: #00d2ff; border: 1px solid rgba(0, 210, 255, 0.3);">
+                                                <a href="{{ msg.attachment.url }}" target="_blank" class="btn btn-sm" style="background: color-mix(in srgb, var(--ax-accent-primary) 15%, transparent); color: var(--ax-accent-primary); border: 1px solid color-mix(in srgb, var(--ax-accent-primary) 30%, transparent);">
                                                     <i class="bi bi-file-earmark me-1"></i>{{ msg.attachment_name|truncatechars:20 }}
                                                 </a>
                                                 {% endif %}
@@ -148,7 +148,7 @@
                     </div>
 
             <!-- Mesaj Gönder -->
-            <div class="card border-0" style="background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(0, 210, 255, 0.2) !important; backdrop-filter: blur(10px);">
+            <div class="card border-0" style="background: rgba(15, 23, 42, 0.8); border: 1px solid color-mix(in srgb, var(--ax-accent-primary) 20%, transparent) !important; backdrop-filter: blur(10px);">
                 <div class="card-body p-3">
                 {% if is_bot %}
                     <p class="text-muted small text-center mb-0" style="padding: 0.5rem 0;">
@@ -159,7 +159,7 @@
                                 {% csrf_token %}
                                 <div class="d-flex gap-2 align-items-end">
                                     <!-- Dosya Butonu -->
-                                    <label class="btn" for="file-input" title="Dosya Ekle" style="background: rgba(0, 210, 255, 0.1); color: #00d2ff; border: 1px solid rgba(0, 210, 255, 0.2);">
+                                    <label class="btn" for="file-input" title="Dosya Ekle" style="background: color-mix(in srgb, var(--ax-accent-primary) 10%, transparent); color: var(--ax-accent-primary); border: 1px solid color-mix(in srgb, var(--ax-accent-primary) 20%, transparent);">
                                         <i class="bi bi-paperclip"></i>
                                     </label>
                                     <input type="file" name="attachment" id="file-input" class="d-none"
@@ -167,20 +167,20 @@
 
                                     <!-- Mesaj Input -->
                                     <div class="flex-grow-1 position-relative">
-                                        <textarea name="message" id="message-input" class="form-control text-white" rows="1" placeholder="Mesajınızı yazın..." style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(0, 210, 255, 0.3); resize: none;"></textarea>
+                                        <textarea name="message" id="message-input" class="form-control text-white" rows="1" placeholder="Mesajınızı yazın..." style="background: rgba(15, 23, 42, 0.6); border: 1px solid color-mix(in srgb, var(--ax-accent-primary) 30%, transparent); resize: none;"></textarea>
                                         <div class="mention-dropdown" id="mention-dropdown"></div>
                                     </div>
 
                                     <!-- Gönder Butonu -->
-                                    <button type="button" id="send-btn" class="btn px-4" style="background: linear-gradient(135deg, #00d2ff, #3a7bd5); border: none; color: white;">
+                                    <button type="button" id="send-btn" class="btn px-4" style="background: linear-gradient(135deg, var(--ax-accent-primary), var(--ax-accent-primary-hover)); border: none; color: white;">
                                         <i class="bi bi-send-fill"></i>
                                     </button>
                                 </div>
 
                                 <!-- Dosya Önizleme -->
                                 <div id="file-preview" class="mt-2 d-none">
-                                    <div class="d-inline-flex align-items-center gap-2 px-2 py-1 rounded" style="background: rgba(0, 210, 255, 0.1); border: 1px solid rgba(0, 210, 255, 0.2);">
-                                        <i class="bi bi-file-earmark" id="preview-icon" style="color: #00d2ff;"></i>
+                                    <div class="d-inline-flex align-items-center gap-2 px-2 py-1 rounded" style="background: color-mix(in srgb, var(--ax-accent-primary) 10%, transparent); border: 1px solid color-mix(in srgb, var(--ax-accent-primary) 20%, transparent);">
+                                        <i class="bi bi-file-earmark" id="preview-icon" style="color: var(--ax-accent-primary);"></i>
                                         <span class="small text-light" id="preview-name"></span>
                                         <span class="badge bg-secondary small" id="preview-size"></span>
                                         <button type="button" class="btn btn-sm p-0 text-danger" onclick="clearFile()">
@@ -202,6 +202,19 @@
 </div>
 
 <style>
+    /* Sol profil kartı: navbar'ın (z-index: var(--ax-z-sticky) = 200) altında kalmalı */
+    .ax-msg-sidebar {
+        position: sticky;
+        top: 80px; /* navbar 64px + 16px boşluk */
+        z-index: 10;
+    }
+    @media (max-width: 1023px) {
+        .ax-msg-sidebar { top: 72px; } /* navbar 56px + 16px boşluk */
+    }
+    @media (max-width: 767px) {
+        .ax-msg-sidebar { position: static; }
+    }
+
     /* Mesaj aksiyonları */
     .msg-wrap { position: relative; max-width: 75%; }
     .msg-actions {
@@ -212,7 +225,7 @@
         display: none;
         gap: 2px;
         background: rgba(15,23,42,0.9);
-        border: 1px solid rgba(0,210,255,0.2);
+        border: 1px solid color-mix(in srgb, var(--ax-accent-primary) 20%, transparent);
         border-radius: 6px;
         padding: 2px 4px;
         white-space: nowrap;
@@ -224,7 +237,7 @@
     /* Okundu göstergesi */
     .read-receipt { font-size: 0.6rem; margin-left: 4px; }
     .read-receipt-sent { color: rgba(255,255,255,0.35); }
-    .read-receipt-seen { color: #00d2ff; }
+    .read-receipt-seen { color: var(--ax-accent-primary); }
 
     /* Inline edit alanı */
     .msg-edit-area {
@@ -234,7 +247,7 @@
     .msg-edit-area textarea {
         width: 100%;
         background: rgba(0,0,0,0.3);
-        border: 1px solid rgba(0,210,255,0.4);
+        border: 1px solid color-mix(in srgb, var(--ax-accent-primary) 40%, transparent);
         color: #fff;
         border-radius: 6px;
         padding: 4px 8px;
@@ -242,13 +255,13 @@
         resize: none;
     }
     .mention-link {
-        color: #00d2ff;
+        color: var(--ax-accent-primary);
         font-weight: 600;
         text-decoration: none;
         transition: all 0.2s ease;
     }
     .mention-link:hover {
-        color: #3a7bd5;
+        color: var(--ax-accent-primary-hover);
         text-decoration: underline;
     }
     .mention-dropdown {
@@ -257,7 +270,7 @@
         left: 0;
         right: 0;
         background: rgba(15, 23, 42, 0.95);
-        border: 1px solid rgba(0, 210, 255, 0.3);
+        border: 1px solid color-mix(in srgb, var(--ax-accent-primary) 30%, transparent);
         border-radius: 8px;
         max-height: 200px;
         overflow-y: auto;
@@ -277,16 +290,16 @@
     }
     .mention-dropdown .mention-item:hover,
     .mention-dropdown .mention-item.active {
-        background: rgba(0, 210, 255, 0.15);
+        background: color-mix(in srgb, var(--ax-accent-primary) 15%, transparent);
     }
     .mention-dropdown .mention-item img {
         width: 28px; height: 28px; border-radius: 50%; object-fit: cover;
     }
     .mention-dropdown .mention-item .mention-avatar-placeholder {
         width: 28px; height: 28px; border-radius: 50%;
-        background: rgba(0, 210, 255, 0.2);
+        background: color-mix(in srgb, var(--ax-accent-primary) 20%, transparent);
         display: flex; align-items: center; justify-content: center;
-        font-size: 0.75rem; color: #00d2ff; font-weight: bold;
+        font-size: 0.75rem; color: var(--ax-accent-primary); font-weight: bold;
     }
     .mention-dropdown .mention-item .mention-info {
         display: flex; flex-direction: column;
@@ -527,10 +540,10 @@ document.addEventListener('DOMContentLoaded', function() {
         const msgId = data.id || data.message_id || '';
         const actionsHtml = isOwn && msgId ? `
             <div class="msg-actions">
-                <button class="btn btn-sm p-0 px-1 edit-btn" data-msg-id="${msgId}" title="Düzenle" style="color:#00d2ff;">
+                <button class="btn btn-sm p-0 px-1 edit-btn" data-msg-id="${msgId}" title="Düzenle" style="color:var(--ax-accent-primary);">
                     <i class="bi bi-pencil" style="font-size:0.75rem;"></i>
                 </button>
-                <button class="btn btn-sm p-0 px-1 del-btn" data-msg-id="${msgId}" title="Sil" style="color:#dc3545;">
+                <button class="btn btn-sm p-0 px-1 del-btn" data-msg-id="${msgId}" title="Sil" style="color:var(--ax-accent-danger);">
                     <i class="bi bi-trash" style="font-size:0.75rem;"></i>
                 </button>
             </div>` : '';
@@ -542,7 +555,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     ${actionsHtml}
                     <div class="p-2 px-3 rounded-3 ${isOwn ? 'text-white' : 'text-light'}"
                          style="${isOwn
-                            ? 'background: linear-gradient(135deg, rgba(0, 210, 255, 0.35), rgba(58, 123, 213, 0.35)); border: 1px solid rgba(0, 210, 255, 0.4); box-shadow: 0 2px 8px rgba(0, 210, 255, 0.15);'
+                            ? 'background: linear-gradient(135deg, color-mix(in srgb, var(--ax-accent-primary) 35%, transparent), color-mix(in srgb, var(--ax-accent-primary-hover) 35%, transparent)); border: 1px solid color-mix(in srgb, var(--ax-accent-primary) 40%, transparent); box-shadow: 0 2px 8px color-mix(in srgb, var(--ax-accent-primary) 15%, transparent);'
                             : 'background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(255, 255, 255, 0.15);'}">
                         ${data.message ? `<p class="mb-1 small" ${msgId ? `id="msg-text-${msgId}"` : ''}>${linkifyUrls(renderMentions(escapeHtml(data.message)))}</p>` : ''}
                         ${data.attachment_url ? getAttachmentHtml(data) : ''}
@@ -560,9 +573,9 @@ document.addEventListener('DOMContentLoaded', function() {
         if (data.attachment_type === 'image') {
             return `<div class="mt-2"><a href="${data.attachment_url}" target="_blank"><img src="${data.attachment_url}" alt="Resim" class="img-fluid rounded" style="max-height: 150px;"></a></div>`;
         } else if (data.attachment_type === 'pdf') {
-            return `<div class="mt-2"><a href="${data.attachment_url}" target="_blank" class="btn btn-sm" style="background: rgba(220, 53, 69, 0.15); color: #dc3545; border: 1px solid rgba(220, 53, 69, 0.3);"><i class="bi bi-file-pdf me-1"></i>${data.attachment_name}</a></div>`;
+            return `<div class="mt-2"><a href="${data.attachment_url}" target="_blank" class="btn btn-sm" style="background: color-mix(in srgb, var(--ax-accent-danger) 15%, transparent); color: var(--ax-accent-danger); border: 1px solid color-mix(in srgb, var(--ax-accent-danger) 30%, transparent);"><i class="bi bi-file-pdf me-1"></i>${data.attachment_name}</a></div>`;
         } else if (data.attachment_url) {
-            return `<div class="mt-2"><a href="${data.attachment_url}" target="_blank" class="btn btn-sm" style="background: rgba(0, 210, 255, 0.15); color: #00d2ff; border: 1px solid rgba(0, 210, 255, 0.3);"><i class="bi bi-file-earmark me-1"></i>${data.attachment_name}</a></div>`;
+            return `<div class="mt-2"><a href="${data.attachment_url}" target="_blank" class="btn btn-sm" style="background: color-mix(in srgb, var(--ax-accent-primary) 15%, transparent); color: var(--ax-accent-primary); border: 1px solid color-mix(in srgb, var(--ax-accent-primary) 30%, transparent);"><i class="bi bi-file-earmark me-1"></i>${data.attachment_name}</a></div>`;
         }
         return '';
     }
@@ -579,7 +592,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function linkifyUrls(text) {
         return text
-            .replace(/(https?:\/\/[^\s<>"]+)/g, '<a href="$1" target="_blank" rel="noopener noreferrer" class="text-info">$1</a>')
+            .replace(/(https?:\/\/[^\s<>"]+)/g, '<a href="$1" target="_blank" rel="noopener noreferrer" class="mention-link">$1</a>')
             .replace(/\n/g, '<br>');
     }
 
@@ -683,7 +696,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 previewIcon.className = 'bi bi-file-excel text-success';
             } else {
                 previewIcon.className = 'bi bi-file-earmark';
-                previewIcon.style.color = '#00d2ff';
+                previewIcon.style.color = 'var(--ax-accent-primary)';
             }
         }
     });
@@ -771,7 +784,7 @@ document.addEventListener('DOMContentLoaded', function() {
         editArea.innerHTML = `
             <textarea rows="2">${escapeHtml(currentText)}</textarea>
             <div class="d-flex gap-1 mt-1">
-                <button class="btn btn-sm save-edit-btn" style="background:rgba(0,210,255,0.2);color:#00d2ff;border:1px solid rgba(0,210,255,0.3);font-size:0.75rem;">Kaydet</button>
+                <button class="btn btn-sm save-edit-btn" style="background:color-mix(in srgb, var(--ax-accent-primary) 20%, transparent);color:var(--ax-accent-primary);border:1px solid color-mix(in srgb, var(--ax-accent-primary) 30%, transparent);font-size:0.75rem;">Kaydet</button>
                 <button class="btn btn-sm cancel-edit-btn" style="background:rgba(255,255,255,0.05);color:#94a3b8;border:1px solid rgba(255,255,255,0.1);font-size:0.75rem;">İptal</button>
             </div>`;
         editArea.style.display = 'block';
