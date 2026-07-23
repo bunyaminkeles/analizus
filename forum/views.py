@@ -2259,7 +2259,8 @@ def egitim_detay(request, slug):
         raise Http404
 
     item = {**item, 'level_label': LEVEL_LABELS.get(item['level'], item['level'])}
-    return render(request, 'forum/egitim_detay.html', {'item': item})
+    source = request.GET.get('source', 'egitim_kurs')
+    return render(request, 'forum/egitim_detay.html', {'item': item, 'source': source})
 
 
 def search_result(request):

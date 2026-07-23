@@ -85,6 +85,7 @@ def cronbach_landing(request):
             'promo_title': 'Güvenilirlik Analizi — Cronbach Alpha',
             'promo_icon': 'bi-shield-check',
             'promo_color': 'primary',
+            'promo_egitim_konu': 'olcek-gelistirme',
             'promo_description': 'Anket ölçeğinizin iç tutarlılığını ölçün. CSV/Excel dosyanızı yükleyin; Cronbach Alpha katsayısı, madde-toplam korelasyonları ve madde çıkarma tablosu PDF olarak hazır.',
             'promo_features': [
                 {'icon': 'bi-upload', 'title': 'Kolay Yükleme', 'desc': 'CSV veya Excel dosyanızı sürükle-bırak ile yükleyin. Her sütun bir madde, her satır bir katılımcı olmalıdır.'},
@@ -255,6 +256,7 @@ def ttesti_landing(request):
             'promo_title': 't-Testi',
             'promo_icon': 'bi-distribute-horizontal',
             'promo_color': 'purple',
+            'promo_egitim_konu': 'spss-uygulamali',
             'promo_description': 'İki grup arasındaki ortalama farkını test edin. Bağımsız veya bağımlı örneklem t-testi, Cohen\'s d etki büyüklüğü ve %95 güven aralığı ile PDF raporu alın.',
             'promo_features': [
                 {'icon': 'bi-people-fill', 'title': 'Bağımsız Örneklem', 'desc': 'Farklı iki grubun ortalamalarını karşılaştırın. Levene testi ile varyans homojenliği otomatik kontrol edilir.'},
@@ -628,6 +630,7 @@ def karar_agaci_landing(request):
             'promo_title': 'Karar Ağacı Sınıflandırması',
             'promo_icon': 'bi-diagram-2',
             'promo_color': 'purple',
+            'promo_egitim_konu': 'makine-ogrenmesi',
             'promo_description': 'Veri setinizdeki kategorik hedef değişkeni sınıflandırın. Özellik önemi, confusion matrix ve ağaç yapısı görselleştirmesiyle tam ML raporu.',
             'promo_features': [
                 {'icon': 'bi-diagram-2', 'title': 'Ağaç Modeli', 'desc': 'Gini veya Entropy kriteri ile karar ağacı eğitilir. Maksimum derinliği kendiniz belirleyebilirsiniz.'},

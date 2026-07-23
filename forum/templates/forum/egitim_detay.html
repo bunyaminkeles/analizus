@@ -63,7 +63,7 @@
             <h1 class="ax-training-detail-title">{{ item.title }}</h1>
             <p class="ax-training-detail-meta">{{ item.hours }} saat</p>
             <p class="ax-training-detail-summary">{{ item.summary }}</p>
-            <a href="{% url 'egitim_talebi' %}?kurs={{ item.slug }}" class="ax-btn ax-btn--primary">Bu Eğitimi Talep Et</a>
+            <a href="{% url 'egitim_talebi' %}?kurs={{ item.slug }}&source={{ source }}" class="ax-btn ax-btn--primary">Bu Eğitimi Talep Et</a>
         </div>
 
         <!-- Kimler İçin -->
@@ -173,7 +173,7 @@
         <!-- Kapanış CTA -->
         <div class="ax-training-cta-band">
             <p class="ax-training-cta-band__text">Bu eğitimi almak için talebinizi iletin.</p>
-            <a href="{% url 'egitim_talebi' %}?kurs={{ item.slug }}" class="ax-btn ax-btn--primary">Bu Eğitimi Talep Et</a>
+            <a href="{% url 'egitim_talebi' %}?kurs={{ item.slug }}&source={{ source }}" class="ax-btn ax-btn--primary">Bu Eğitimi Talep Et</a>
             <p class="ax-training-cta-band__trust">Taleplere 24 saat içinde dönüş yapılır.</p>
         </div>
 

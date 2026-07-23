@@ -180,7 +180,7 @@ TRAINING_CATEGORIES = [
                     {"week": 3, "title": "Güvenirlik", "topics": ["Cronbach Alfa", "Madde-toplam korelasyonu"]},
                     {"week": 4, "title": "Raporlama", "topics": ["Geçerlik-güvenirlik tablosu", "Tez/makale metin yazımı"]},
                 ],
-                "related_tool_url": "/istatistik/cronbach/",
+                "related_tool_url": "/analiz/cronbach/",
                 "faq": [
                     {"q": "Doğrulayıcı faktör analizi (DFA) de kapsanıyor mu?", "a": "Bu eğitim AFA odaklıdır; DFA/SEM ihtiyacı varsa Yapısal Eşitlik Modellemesi eğitimiyle devam edilir."},
                 ],
@@ -232,7 +232,7 @@ TRAINING_CATEGORIES = [
                     {"week": 3, "title": "Regresyon ve Değerlendirme", "topics": ["Regresyon modelleri", "Çapraz doğrulama, metrikler"]},
                     {"week": 4, "title": "Model Optimizasyonu", "topics": ["Hiperparametre arama", "Aşırı öğrenmeyi önleme"]},
                 ],
-                "related_tool_url": "/istatistik/karar-agaci/",
+                "related_tool_url": "/analiz/karar-agaci/",
                 "faq": [
                     {"q": "Derin öğrenmeyi de bu eğitimde görecek miyim?", "a": "Hayır; bu eğitim klasik ML'e odaklanır. Derin öğrenme ayrı bir eğitimdir."},
                 ],
