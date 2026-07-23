@@ -1,3 +1,132 @@
+# [ÖNCELİKLİ] Local Docker Ortamı — nginx crash-loop + yanlış DB fallback
+
+**Durum:** Kök neden bulundu, henüz düzeltme uygulanmadı (onay bekliyor). 23 Temmuz 2026.
+
+## Bulgular
+
+**1. nginx sürekli restart oluyor (`docker compose ps` → `Restarting (1)`)**
+Log (`docker compose logs nginx`): her ~60 saniyede bir
+`cannot load certificate "/etc/letsencrypt/live/analizus.com/fullchain.pem"`
+hatasıyla çöküyor. Kök neden: `docker-compose.yml:41` production nginx config'ini
+(`./nginx/conf.d` — Let's Encrypt sertifika yolu bekliyor) mount ediyor, ama bu
+sertifika yerel makinede yok (yalnızca Hetzner'de var).
+
+Zaten 13 Temmuz'da (10 gün önce) bunun için bir local override hazırlanmış ama
+hiç bağlanmamış: `nginx/conf.d.local/local.conf` (untracked dosya, git'e hiç
+eklenmemiş) self-signed sertifika (`/etc/nginx/local-ssl/selfsigned.crt`)
+kullanacak şekilde yazılmış — ama:
+  - `docker-compose.yml` hâlâ `./nginx/conf.d`'yi mount ediyor, `conf.d.local`'ı değil
+  - Self-signed sertifika dosyaları (`selfsigned.crt`/`.key`) henüz üretilmemiş,
+    docker-compose.yml'de mount edilecek bir volume de tanımlı değil
+
+**2. Web container Postgres yerine SQLite'a düşüyor**
+`.env:9` içinde `DATABASE_URL` satırı yorumlu (`# DATABASE_URL=postgres://...`).
+`analizdestek/settings.py:124-129`'daki `dj_database_url.config(default='sqlite:///...')`
+bu yüzden sessizce `db.sqlite3`'e fallback yapıyor — halbuki `analizdestek-db-1`
+(Postgres) container'ı zaten ayakta ve çalışıyor, web ona hiç bağlanmıyor.
+Bu yüzden shell'den sorgulanan sayılar (ör. `FreelanceJob` tamamlanan iş sayısı)
+yanlış/boş çıktı verdi — gerçek veri kaybı DEĞİL, yanlış DB'ye bağlanma sorunu.
+
+## Önerilen düzeltme (uygulanmadan önce onay gerekiyor — CLAUDE.md kırmızı çizgi: çoklu dosya değişikliği)
+1. **Self-signed sertifika üretimi — ASKIDA (kullanıcı kararı, 23 Temmuz 2026).**
+   Ne zaman/nasıl üretileceği henüz karara bağlanmadı, bu adıma geçilmeyecek.
+2. `docker-compose.yml`'de nginx servisinin volume mount'unu `./nginx/conf.d.local`
+   ve yeni sertifika dizinine işaret edecek şekilde güncelle (yalnızca local/dev
+   docker-compose dosyasında — production Hetzner compose dosyasına dokunulmayacak,
+   ikisi ayrı mı kontrol edilmeli)
+3. ~~`.env`'de `DATABASE_URL` satırının yorumunu aç...`~~ — **TAMAMLANDI (23
+   Temmuz 2026)**, bkz. aşağıdaki "Madde 3 sonucu" bölümü.
+4. `docker compose restart nginx web` (veya gerekiyorsa `up -d --force-recreate`)
+5. Doğrulama: `docker compose ps` her iki container da stabil mi, `docker compose
+   exec web python manage.py shell` içinden Postgres'e bağlandığı teyit edilsin
+
+**Not:** Bu değişiklikler yalnızca local geliştirme ortamını ilgilendiriyor,
+production (Hetzner/Render) etkilenmiyor — ama yine de dosya bazlı onay
+istenecek (CLAUDE.md kuralı).
+
+## Madde 3 sonucu — TAMAMLANDI (23 Temmuz 2026)
+"Tamamlanan pazar talebi istatistikleri" (FreelanceJob completed count)
+sorunu çözüldü, 3 katmanlı kök neden bulundu ve düzeltildi:
+
+1. `.env`'de `DATABASE_URL=postgres://bunyamin:analizus@db:5432/analizus`
+   eklendi (satır yorumdan çıkarıldı) — web artık SQLite'a değil Postgres'e
+   bağlanıyor.
+2. **Yeni bulgu:** Bağlantı denenince şifre hatası çıktı — `app_postgres_data`
+   volume'ü daha önce farklı bir şifreyle init edilmiş olduğundan `bunyamin`
+   rolünün gerçek şifresi `.env`'deki değerle uyuşmuyordu. Yerel unix socket
+   üzerinden (`docker exec -u postgres analizdestek-db-1 psql -U bunyamin -d
+   analizus`) bağlanılıp `ALTER ROLE bunyamin WITH PASSWORD 'analizus';` ile
+   düzeltildi.
+3. **Yeni bulgu:** Şifre düzelince DB'nin 107 migration geride olduğu ortaya
+   çıktı (forum uygulaması `0068`'de kalmıştı — `seed_initial_users`,
+   `freelancejob` alan eklemeleri gibi kritik migration'lar uygulanmamıştı).
+   Local/dev DB olduğu için (production etkilenmiyor)
+   `docker compose exec web python manage.py migrate` çalıştırıldı, hepsi
+   başarıyla uygulandı (`showmigrations` artık 0 bekleyen gösteriyor).
+
+**Yan etki — istenmeyen e-posta patlaması (23 Temmuz 2026, aynı gün çözüldü):**
+`docker compose restart web` iki kez çalıştırıldı (madde 1 ve madde 3 sonrası
+doğrulama için). `Dockerfile` CMD'si her başlangıçta `deploy.sh`'i çalıştırıyor;
+`deploy.sh` "DB boşsa seed yükle" idempotency kontrolü (`Topic.objects.count()`)
+kullanıyor. İkinci restart'ta Postgres'e ilk kez gerçekten bağlanıldığı ve forum
+tabloları taze/boş olduğu için bu kontrol "boş" algıladı, `load_seed_content`
+gerçek `User.objects.create_user()` ile ~78 sahte kullanıcı oluşturdu →
+`forum/signals.py:578` `post_save` sinyali → `notify_admin_new_user` →
+**gerçek SMTP** (`.env`'deki `mail.analizus.com`) üzerinden admin'in gerçek
+Gmail'ine (`ADMIN_NOTIFICATION_EMAIL`) ~78 ayrı e-posta gitti (her biri ayrı
+async thread, birkaç dakikaya yayılarak ulaştı). Kaynak süreç kendi kendine
+bitti, kalıcı bir hata değildi — bir daha aynı restart'ta tekrar tetiklenmez
+çünkü DB artık boş değil (idempotency guard tutar).
+
+**Kök neden düzeltmesi — host/Docker DB ayrışması (23 Temmuz 2026, TAMAMLANDI):**
+Yukarıdaki 1. maddede `.env`'e yazılan `DATABASE_URL=postgres://...@db:...`
+host'ta (`.venv`/conda ile) normal `python manage.py runserver` çalıştıran
+günlük local iş akışını kırdı — `db` hostname'i yalnızca docker-compose
+network'ünde çözülüyor (`could not translate host name "db"`).
+`analizus.md` §24 ("DATABASE_URL boş bırak, SQLite kullanılır" — host için
+dokümante edilmiş varsayılan) ile §26 ("host Docker servis adı olmalı" — bu
+kural Docker/prod bağlamı için) referans alınarak iki ortam ayrıştırıldı:
+- `.env`'deki `DATABASE_URL` tekrar yorum satırına döndürüldü (host →
+  SQLite, eski/dokümante davranış).
+- `docker-compose.yml`'de `web` servisine `environment: DATABASE_URL:
+  postgres://${POSTGRES_USER:-bunyamin}:${POSTGRES_PASSWORD:-analizus}@db:
+  5432/${POSTGRES_DB:-analizus}` override'ı eklendi (yalnızca container için
+  Postgres, `env_file`'daki boş değeri ezer).
+Doğrulandı: `docker compose up -d web` sonrası container hâlâ Postgres'e
+bağlı (`ENGINE: postgresql`, `NAME: analizus`); bu recreate'te `deploy.sh`
+seed adımı tekrar denedi ama kaynak `.md` dosyaları bulunamadığından
+(`AnalizDestek_Forum_Seed_Content.md` yok) hiç yeni kullanıcı oluşturmadı,
+kullanıcı sayısı 97'de sabit kaldı — **yeni e-posta gitmedi**.
+
+**/market/ istatistik bandının local'de görünmemesi — bug DEĞİL, kasıtlı
+sıfır kuralı (23 Temmuz 2026, doğrulandı):** Kullanıcı local'de `/market/`
+sayfasındaki "Tamamlanan İş / Aktif Uzman / Son 90 Gün" üçlü sayaç bandının
+hiç görünmediğini bildirdi. İnceleme: `forum/views.py:450-456`'daki
+`market_stats` (`total_completed`, `recent_completed`, `total_experts`) ve
+`forum/templates/forum/market/job_list.html:65` `{% if market_stats.
+total_completed or market_stats.total_experts or market_stats.
+recent_completed %}` — template yorumu bunu zaten "sıfır kuralı: üçü de 0
+ise şerit gizli" diye adlandırıyor. Local Postgres DB'de `FreelanceJob` ve
+`JobProposal` tabloları tamamen boş (0 kayıt, yukarıdaki DB fallback
+sorunundan bağımsız — local ortamda hiç gerçek pazar verisi girilmemiş)
+olduğu için üçü de 0 çıkıyor, şerit kasıtlı olarak gizleniyor. Kod tarafında
+hata/cache bayatlığı/isim uyuşmazlığı yok. Ana sayfadaki `showcase_jobs`
+(views.py:284-299) de aynı sebeple boş. **İş gerekmiyor** — local'de gerçek
+iş ilanı/teklif verisi oluşturulursa bant otomatik görünür.
+
+**Sonuç:** `FreelanceJob.objects.count()` artık hatasız çalışıyor, sonuç **0**.
+Repo kökündeki `yedek_2026-07-13.sql` yedeği de kontrol edildi — orada da
+yalnızca 1 kullanıcı (admin) ve 0 iş var. Yani local ortamda hiçbir zaman
+gerçek pazar verisi olmamış; "0 tamamlanan iş" artık **doğru** sonuç,
+önceki yanlış/boş çıktı tamamen yanlış DB bağlantısından kaynaklanıyordu.
+
+## Sıradaki adım
+Sertifika üretimi (Madde 1) hâlâ askıda, nginx düzeltmesi (Madde 2, 4-5)
+kullanıcı karar verene kadar ilerletilmeyecek. DB fallback sorunu (Madde 3)
+tamamen bağımsız şekilde çözüldü ve kapatıldı.
+
+---
+
 # Bootstrap Kaldırma — Kademeli Migration Planı
 
 **Durum:** Envanter çıkarıldı, uygulama henüz başlamadı. (Temmuz 2026)
@@ -693,3 +822,34 @@ son erişimden N saat sonra `_session_datasets` girdisini sil. Not: veri
 üzerinden bir periyodik task tanımlanır. Uygulamaya geçmeden önce: N saat
 değeri (öneri: 24 saat) ve hangi cron mekanizmasının kullanılacağı kullanıcıya
 sorulacak — iş/karar noktası, varsayılmayacak.
+
+## PageSpeed Insights — Kalan Optimizasyon Fırsatları (ertelendi, temmuz 2026)
+
+MathJax/Prism/Font Awesome kaldırma, footer kontrast (WCAG AA) ve
+bootstrap-icons preload (CLS 0.102→0.009) düzeltmeleri uygulandı ve
+`main`'e merge edildi (masaüstü 86→96, mobil 70→80, erişilebilirlik
+96→100). Kullanıcı kararıyla burada duruldu — kalanlar ayrı, daha büyük
+işler:
+
+- [ ] **Kullanılmayan CSS (Bootstrap, 43 KiB)** — ayrı görev olarak zaten
+  planlı, bkz. bu dosyanın başındaki "Bootstrap Kaldırma — Kademeli
+  Migration Planı"
+- [ ] **Render-blocking `bundle.css`** (188-190ms) + **Ağ bağımlılık ağacı**
+  (kritik yol ~588ms) — aynı kök neden: `bundle.css` above-the-fold
+  navbar/layout stilini içeriyor, deferred yapmak FOUC riski taşır; kritik
+  CSS ayıklama (inline critical CSS + async geri kalan) gerektirir
+- [ ] **Yandex Metrica** — verimli önbellek (71 KiB) + kullanılmayan JS
+  (43 KiB) + olası uzun görevler; üçüncü parti, init'i `requestIdleCallback`
+  ile ertelemek TBT'yi düşürür ama webvisor/bounce-tracking doğruluğunu
+  etkileyebilir — iş kararı, kullanıcıya sorulmadan yapılmayacak
+- [ ] **Zorunlu yeniden düzenleme** (~103ms ilişkilendirilmemiş) — kesin
+  kaynağı Chrome DevTools Performance profiliyle tespit edilmeli, first-party
+  JS'te (navbar.js/ax-dropdown.js/widget_collapse.js/main.js) layout-thrashing
+  deseni yok (grep ile doğrulandı)
+- [ ] **28 birleştirilmemiş (uncomposited) animasyon** — `border-color`/
+  `background-color`/`box-shadow` geçişleri ax- tasarım sisteminde ~20 CSS
+  dosyasına yaygın, düzeltmek geniş kapsamlı bir tasarım sistemi revizyonu
+  gerektirir
+- [x] **Görsel boyutu** (`ai-dogrulama.webp`/`agentic-hero.webp`) —
+  1600×893 → 1100×614 küçültüldü, kullanıcı kararıyla burada bırakıldı
+  (retina netliği öncelikli, 30 KiB'lik kalan Lighthouse uyarısı kabul edildi)
