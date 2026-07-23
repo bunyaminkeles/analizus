@@ -251,7 +251,7 @@
                     <a href="{% url 'proje_talebi' %}?source=hero">Ya da bu işi 24 saatte bir uzmana bırak →</a>
                 </p>
 
-                {% if user.is_authenticated and user_profile.segment in "student,academic,expert" %}
+                {% if user.is_authenticated and user_profile.segment and user_profile.segment in "student,academic,expert" %}
                 <div class="ax-hero__personal mt-4">
                     {% if user_profile.segment == 'student' %}
                     <span class="ax-hero__personal-badge">🎓 Öğrenci</span>
