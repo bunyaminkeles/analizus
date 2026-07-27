@@ -887,6 +887,10 @@
     width: 100%;
     border-left: none; border-right: none; border-bottom: none;
   }
+  /* iOS WebKit (Safari/Firefox), 16px altındaki input font-size'ında
+     odaklanmada sayfayı otomatik yakınlaştırır — bu da popup'ı kaydırıp
+     gönder butonunu ekran dışına itiyordu. */
+  .ax-ai-input { font-size: 16px; }
 }
 
 /* Header */
