@@ -1047,10 +1047,17 @@
   // yalnızca visualViewport küçülüyor — popup'ı klavyenin üstünde tutmak için
   // klavye yüksekliğini CSS değişkenine yazıyoruz.
   const vv = window.visualViewport;
+  const mqMobile = window.matchMedia('(max-width: 575px)');
   function updateKeyboardOffset() {
     if (!vv) return;
     const offset = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
     document.documentElement.style.setProperty('--ax-ai-kb-offset', offset + 'px');
+    // iOS Safari'de fixed popup'ın height:72dvh'i klavye açıldığında küçülmüyor,
+    // sadece bottom kayıyor — bu da popup'ın tepesinin görünür alanın dışına
+    // taşmasına yol açabiliyor. Klavye açıkken yüksekliği görünür alanla sınırla.
+    if (mqMobile.matches) {
+      popup.style.maxHeight = offset > 0 ? Math.max(200, vv.height - 16) + 'px' : '';
+    }
     if (isOpen) scrollToBottom();
   }
   if (vv) {
@@ -1070,9 +1077,11 @@
       // animasyon
       requestAnimationFrame(() => popup.classList.add('ax-ai-popup--visible'));
       input.focus();
+      updateKeyboardOffset();
       scrollToBottom();
     } else {
       popup.classList.remove('ax-ai-popup--visible');
+      popup.style.maxHeight = '';
     }
   }
 
