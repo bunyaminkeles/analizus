@@ -880,7 +880,8 @@
   }
   .ax-ai-fab__label { display: none; }
   .ax-ai-popup {
-    left: 0; right: 0; bottom: 0;
+    left: 0; right: 0;
+    bottom: var(--ax-ai-kb-offset, 0px);
     border-radius: 18px 18px 0 0;
     height: 72dvh;
     width: 100%;
@@ -1040,6 +1041,21 @@
   function getCsrf() {
     const m = document.cookie.match(/csrftoken=([^;]+)/);
     return m ? m[1] : '';
+  }
+
+  // Mobilde ekran klavyesi açıldığında layout viewport (dvh) sabit kalıyor,
+  // yalnızca visualViewport küçülüyor — popup'ı klavyenin üstünde tutmak için
+  // klavye yüksekliğini CSS değişkenine yazıyoruz.
+  const vv = window.visualViewport;
+  function updateKeyboardOffset() {
+    if (!vv) return;
+    const offset = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
+    document.documentElement.style.setProperty('--ax-ai-kb-offset', offset + 'px');
+    if (isOpen) scrollToBottom();
+  }
+  if (vv) {
+    vv.addEventListener('resize', updateKeyboardOffset);
+    vv.addEventListener('scroll', updateKeyboardOffset);
   }
 
   // Aç / Kapat
