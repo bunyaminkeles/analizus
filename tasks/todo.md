@@ -837,21 +837,26 @@ uzmana bırak `?source=analiz_triyaj`) eklendi
 - Dosya boyutu limiti zaten var: `MAX_UPLOAD_SIZE = 5MB`
   (`analizdestek/settings.py:529`), `hero_upload` kontrol ediyor — ek iş yok.
 
-## SIRADAKİ KÜÇÜK GÖREV — `_session_datasets` TTL temizliği
-Faz 13 keşfinde bulundu: `_session_datasets` (session_key → dosya içeriği,
-RAM'de) yalnızca kullanıcı manuel "×" butonuna (`axClearSession()` →
-`POST /analiz/clear-session/`) basarsa siliniyor. Otomatik/zamanlı temizlik
-YOK — terkedilmiş veri setleri süresiz RAM'de birikiyor (bellek sızıntısı
-riski).
+## `_session_datasets` TTL temizliği — KOD TAMAMLANDI, crontab satırı eksik (31 Temmuz 2026)
+Faz 13 keşfinde bulunan bellek sızıntısı riski (terkedilmiş veri setleri
+süresiz RAM'de birikiyor) çözüldü:
+- `istatistik/services/job_runner.py` — `_session_datasets` artık
+  `(content, filename, saved_at)` tutuyor, `SESSION_DATASET_TTL_SECONDS = 2 saat`
+  (kullanıcı kararı — `SESSION_COOKIE_AGE` ile hizalı, 24 saat önerisi session
+  zaten 2 saatte geçersiz olduğu için gereksiz bulundu), yeni
+  `cleanup_expired_session_datasets()` fonksiyonu eklendi.
+- `forum/api_views.py` + `forum/urls.py` — mevcut `/api/cron/*` desenine uygun
+  yeni `cron_cleanup_session_datasets` endpoint'i (`X-Cron-Secret` doğrulamalı).
+  DB değil RAM temizlediği için (ayrı process bu dict'e erişemez) yalnızca bu
+  HTTP-tetiklemeli desen çalışır — management command seçeneği mimari olarak
+  elenmiş oldu.
 
-**Yapılacak:** `forum/tasks.py`'deki cron desenine uygun bir zamanlı görev —
-son erişimden N saat sonra `_session_datasets` girdisini sil. Not: veri
-şu an yalnızca in-memory dict (DB modeli yok) — TTL için ya (a) dict değerine
-`last_accessed` timestamp eklenip periyodik bir cron bunu tarasın, ya da
-(b) mevcut cron altyapısı (Celery/APScheduler — hangisi kullanılıyorsa)
-üzerinden bir periyodik task tanımlanır. Uygulamaya geçmeden önce: N saat
-değeri (öneri: 24 saat) ve hangi cron mekanizmasının kullanılacağı kullanıcıya
-sorulacak — iş/karar noktası, varsayılmayacak.
+**Kalan iş:** Hetzner crontab'ına satır eklenmesi (ben production crontab'ı
+doğrudan değiştiremiyorum, kullanıcı kendi terminalinden eklemeli):
+`0 * * * * curl -s "https://www.analizus.com/api/cron/cleanup-session-datasets/?secret=..." >> /var/log/cron_cleanup_session_datasets.log 2>&1`
+(saatlik — 2 saatlik TTL'e göre makul sıklık). Deploy notu: migration yok,
+`dev`'e push edilip test edildikten sonra `main`'e merge + Hetzner'de
+`git pull` + `restart web` yeterli.
 
 ## PageSpeed Insights — Kalan Optimizasyon Fırsatları (ertelendi, temmuz 2026)
 

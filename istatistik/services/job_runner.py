@@ -5,11 +5,14 @@ Dosya içeriği in-memory dict'te tutulur (bibliometrics pattern'i ile aynı).
 """
 import io
 import logging
+import time
 
 logger = logging.getLogger(__name__)
 
+SESSION_DATASET_TTL_SECONDS = 60 * 60 * 2  # 2 saat — SESSION_COOKIE_AGE ile hizalı
+
 _pending_file_contents: dict[str, bytes] = {}
-_session_datasets: dict[str, tuple[bytes, str]] = {}  # session_key → (content, filename)
+_session_datasets: dict[str, tuple[bytes, str, float]] = {}  # session_key → (content, filename, saved_at)
 
 
 def store_file_content(job_id: str, content: bytes):
@@ -17,11 +20,24 @@ def store_file_content(job_id: str, content: bytes):
 
 
 def save_session_dataset(session_key: str, content: bytes, filename: str):
-    _session_datasets[session_key] = (content, filename)
+    _session_datasets[session_key] = (content, filename, time.time())
 
 
 def get_session_dataset(session_key: str) -> tuple[bytes, str] | None:
-    return _session_datasets.get(session_key)
+    stored = _session_datasets.get(session_key)
+    if stored is None:
+        return None
+    content, filename, _saved_at = stored
+    return content, filename
+
+
+def cleanup_expired_session_datasets(ttl_seconds: int = SESSION_DATASET_TTL_SECONDS) -> int:
+    """TTL'i geçmiş session veri setlerini RAM'den siler. Cron endpoint'inden çağrılır."""
+    cutoff = time.time() - ttl_seconds
+    expired_keys = [key for key, (_, _, saved_at) in _session_datasets.items() if saved_at < cutoff]
+    for key in expired_keys:
+        _session_datasets.pop(key, None)
+    return len(expired_keys)
 
 
 def run_job(job_id: str):

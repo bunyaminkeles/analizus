@@ -261,6 +261,26 @@ def cron_cleanup_pageviews(request):
 
 
 @require_GET
+def cron_cleanup_session_datasets(request):
+    """
+    2 saatten eski, RAM'de duran istatistik araçları session veri setlerini siler.
+
+    Kullanım:
+    - GET /api/cron/cleanup-session-datasets/?secret=YOUR_SECRET
+    - Saatlik cron job olarak çalıştırılmalıdır.
+    """
+    if not _verify_cron_secret(request):
+        return JsonResponse({'success': False, 'error': 'Unauthorized'}, status=403)
+
+    try:
+        from istatistik.services.job_runner import cleanup_expired_session_datasets
+        deleted = cleanup_expired_session_datasets()
+        return JsonResponse({'success': True, 'deleted': deleted})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
+
+
+@require_GET
 def admin_queue_status(request):
     """Admin dashboard için kuyruk durumu JSON endpoint'i (sadece staff)."""
     if not request.user.is_authenticated or not request.user.is_staff:
