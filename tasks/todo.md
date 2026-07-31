@@ -837,9 +837,9 @@ uzmana bırak `?source=analiz_triyaj`) eklendi
 - Dosya boyutu limiti zaten var: `MAX_UPLOAD_SIZE = 5MB`
   (`analizdestek/settings.py:529`), `hero_upload` kontrol ediyor — ek iş yok.
 
-## `_session_datasets` TTL temizliği — KOD TAMAMLANDI, crontab satırı eksik (31 Temmuz 2026)
+## `_session_datasets` TTL temizliği — TAMAMLANDI (31 Temmuz 2026)
 Faz 13 keşfinde bulunan bellek sızıntısı riski (terkedilmiş veri setleri
-süresiz RAM'de birikiyor) çözüldü:
+süresiz RAM'de birikiyor) çözüldü ve canlıda doğrulandı:
 - `istatistik/services/job_runner.py` — `_session_datasets` artık
   `(content, filename, saved_at)` tutuyor, `SESSION_DATASET_TTL_SECONDS = 2 saat`
   (kullanıcı kararı — `SESSION_COOKIE_AGE` ile hizalı, 24 saat önerisi session
@@ -850,13 +850,17 @@ süresiz RAM'de birikiyor) çözüldü:
   DB değil RAM temizlediği için (ayrı process bu dict'e erişemez) yalnızca bu
   HTTP-tetiklemeli desen çalışır — management command seçeneği mimari olarak
   elenmiş oldu.
+- `dev`'den `main`'e fast-forward merge edildi, Hetzner'e deploy edildi
+  (`git pull` + `restart web`/`nginx`, migration yok), crontab'a saatlik satır
+  eklendi (`0 * * * * curl ... cleanup-session-datasets/?secret=...`).
+- Canlı doğrulama: doğru secret → `{"success": true, "deleted": 0}`, yanlış
+  secret → `403`; `crontab -l` ile satır teyit edildi.
 
-**Kalan iş:** Hetzner crontab'ına satır eklenmesi (ben production crontab'ı
-doğrudan değiştiremiyorum, kullanıcı kendi terminalinden eklemeli):
-`0 * * * * curl -s "https://www.analizus.com/api/cron/cleanup-session-datasets/?secret=..." >> /var/log/cron_cleanup_session_datasets.log 2>&1`
-(saatlik — 2 saatlik TTL'e göre makul sıklık). Deploy notu: migration yok,
-`dev`'e push edilip test edildikten sonra `main`'e merge + Hetzner'de
-`git pull` + `restart web` yeterli.
+Aynı turda ayrıca bulunup düzeltilen ilgisiz bug: `cleanup-pageviews` cron
+satırı www'suz domain kullandığından 301'e takılıp hiç çalışmıyordu (canonical
+domain `www.analizus.com`'a dönmüş, crontab güncellenmemişti); `cleanup-s3`
+ve `cleanup-attachments` dokümantasyonda "Aktif" görünüp crontab'da hiç
+yoktu. Üçü de düzeltildi/eklendi — detay: `analizus.md` §23.
 
 ## PageSpeed Insights — Kalan Optimizasyon Fırsatları (ertelendi, temmuz 2026)
 
