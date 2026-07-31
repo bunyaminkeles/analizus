@@ -1279,11 +1279,14 @@ SESSION_COOKIE_DOMAIN = '.analizus.com'  # Prod'da
 
 - Doğrulama: `X-Cron-Secret` header veya `?secret=` query param
 - Env: `CRON_SECRET_KEY`
-- **Aktif:** `/api/cron/cleanup-s3/` — trdizin + openalex S3 temizliği
-- **Aktif:** `/api/cron/cleanup-attachments/` — 90 günden eski DM + oda mesajı dosyaları S3'ten silinir, mesaj/post kaydı korunur (haftalık çalıştırılması önerilir)
-- **Aktif:** `/api/cron/cleanup-pageviews/` — 5 günden eski sayfa ziyaret loglarını PageViewSummary'e toplar ve siler; Hetzner crontab'ında `0 4 * * * curl -s "https://analizus.com/api/cron/cleanup-pageviews/?secret=..." >> /var/log/cron_pageviews.log 2>&1` ile çalışır. ⚠️ `www.analizus.com` kullanan eski satır `curl -L` olmadığından redirect'i takip etmez — crontab'da yalnızca `analizus.com` (www'suz) satırı kalmalıdır.
-- **Aktif:** `/api/cron/process-account-deletions/` — `deletion_requested_at` üzerinden 30 gün geçmiş hesapları anonimleştirir (email/username/profil) + DM'leri siler; Hetzner crontab'ına `0 3 * * *` ile eklenmelidir
+**⚠️ Canonical domain `www.analizus.com`'dur** (31 Temmuz 2026'da doğrulandı — `analizus.com` www'suz istek attığında 301 ile `www.analizus.com`'a yönlendiriyor, `curl -L` olmadan bu redirect takip edilmez). Önceki not bunun tersini söylüyordu (o zaman www'suz canonical'mış) — site bir noktada www'ye geçmiş, crontab güncellenmemişti. **Kural: yeni eklenen her cron satırı `www.analizus.com` kullanmalı.**
+
+- **Aktif:** `/api/cron/cleanup-s3/` — trdizin + openalex + oaipmh S3 temizliği (7 gün); Hetzner crontab'ında `0 5 * * *` ile günlük çalışır (31 Temmuz 2026'da eklendi — önceden dokümante "Aktif" ama crontab'da hiç yoktu, hiç otomatik çalışmıyordu)
+- **Aktif:** `/api/cron/cleanup-attachments/` — 90 günden eski DM + oda mesajı dosyaları S3'ten silinir, mesaj/post kaydı korunur; Hetzner crontab'ında `0 6 * * 0` ile haftalık (Pazar) çalışır (31 Temmuz 2026'da eklendi — önceden dokümante "Aktif" ama crontab'da hiç yoktu)
+- **Aktif:** `/api/cron/cleanup-pageviews/` — 5 günden eski sayfa ziyaret loglarını PageViewSummary'e toplar ve siler; Hetzner crontab'ında `0 4 * * * curl -s "https://www.analizus.com/api/cron/cleanup-pageviews/?secret=..." >> /var/log/cron_pageviews.log 2>&1` ile çalışır (31 Temmuz 2026'da www'siz→www'li URL'e düzeltildi, önceki satır redirect yüzünden fiilen hiç çalışmıyordu)
+- **Aktif:** `/api/cron/process-account-deletions/` — `deletion_requested_at` üzerinden 30 gün geçmiş hesapları anonimleştirir (email/username/profil) + DM'leri siler; Hetzner crontab'ında `0 3 * * *` ile çalışıyor (www'li, doğru)
 - **Kaldırılacak** (artık gereksiz): `/api/cron/daily-quiz/`, `/api/cron/update-badges/`
+- **Not (Celery değil):** `forum/tasks.py`'deki `@shared_task check_featured_jobs_expiration` Celery deseninde yazılmış ama proje Celery kullanmıyor (`requirements.txt`'te yok, `CELERY_BEAT_SCHEDULE`/`celery.py` app config yok) — bağlı olmayan/ölü kod, gerçek periyodik iş mekanizması yukarıdaki `/api/cron/*` + Hetzner sistem crontab'ı.
 
 ---
 
@@ -1691,7 +1694,6 @@ with connection.cursor() as c:
 
 #### Teknik Borç / Özellikler
 - **Hizmetler Pazarı dosya otomatik silme mekanizması eksik** — `home.html` FAQ'i "proje teslim sonrası 30 gün saklanır, sonra silinir" diyor ama kodda bu sürece özel hiçbir cron/silme fonksiyonu yok (`grep "def cleanup"` yalnızca trdizin/openalex/oaipmh döndürüyor); dosyalar muhtemelen DM ekleri üzerinden gidiyorsa `cleanup-attachments` cronu (90 gün, genel DM/oda ekleri) devreye giriyor ama FreelanceJob'a özel değil ve süre de uyuşmuyor. Karar bekliyor: gerçek bir 30 günlük mekanizma mı eklensin, yoksa metin mi düzeltilsin.
-- **`cleanup-s3` cron'unun Hetzner crontab'ında olduğu doğrulanmadı** — yalnızca `cleanup-pageviews` için crontab satırı dokümante edilmiş (§23); `crontab -l` ile sunucuda kontrol edilmeli, yoksa 7 güne çekilen kod hiç çalışmaz.
 - **Admin dashboard ProjectRequest bildirimi** — `dashboard_service.py`'e `status='new'` olan talepleri ekle; `ProjectRequest` şu an bildirim panelinde görünmüyor
 - **YÖK Tez filtre genişletmesi** — üniversite + anabilim_dali text alanları; dolu gelince `islem=2` (legacy form) kullan — `abdad` + `Konu` parametreleri legacy formda mevcut; 6 dosya + 1 migration
 - **ML Araçları** — Rastgele Orman, KNN (Karar Ağacı + SVM tamamlandı)

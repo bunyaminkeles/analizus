@@ -28,22 +28,9 @@ bu yüzden sessizce `db.sqlite3`'e fallback yapıyor — halbuki `analizdestek-d
 Bu yüzden shell'den sorgulanan sayılar (ör. `FreelanceJob` tamamlanan iş sayısı)
 yanlış/boş çıktı verdi — gerçek veri kaybı DEĞİL, yanlış DB'ye bağlanma sorunu.
 
-## Önerilen düzeltme (uygulanmadan önce onay gerekiyor — CLAUDE.md kırmızı çizgi: çoklu dosya değişikliği)
-1. **Self-signed sertifika üretimi — ASKIDA (kullanıcı kararı, 23 Temmuz 2026).**
-   Ne zaman/nasıl üretileceği henüz karara bağlanmadı, bu adıma geçilmeyecek.
-2. `docker-compose.yml`'de nginx servisinin volume mount'unu `./nginx/conf.d.local`
-   ve yeni sertifika dizinine işaret edecek şekilde güncelle (yalnızca local/dev
-   docker-compose dosyasında — production Hetzner compose dosyasına dokunulmayacak,
-   ikisi ayrı mı kontrol edilmeli)
-3. ~~`.env`'de `DATABASE_URL` satırının yorumunu aç...`~~ — **TAMAMLANDI (23
-   Temmuz 2026)**, bkz. aşağıdaki "Madde 3 sonucu" bölümü.
-4. `docker compose restart nginx web` (veya gerekiyorsa `up -d --force-recreate`)
-5. Doğrulama: `docker compose ps` her iki container da stabil mi, `docker compose
-   exec web python manage.py shell` içinden Postgres'e bağlandığı teyit edilsin
-
-**Not:** Bu değişiklikler yalnızca local geliştirme ortamını ilgilendiriyor,
-production (Hetzner/Render) etkilenmiyor — ama yine de dosya bazlı onay
-istenecek (CLAUDE.md kuralı).
+## Önerilen düzeltme — TÜMÜ TAMAMLANDI (bkz. aşağıdaki "nginx düzeltmesi +
+KRİTİK git-güvenlik düzeltmesi" ve "Madde 3 sonucu" bölümleri için uygulama
+detayları). Bu blok artık geçmiş kayıt.
 
 ## nginx düzeltmesi + KRİTİK git-güvenlik düzeltmesi (23 Temmuz 2026, TAMAMLANDI)
 
@@ -162,9 +149,9 @@ gerçek pazar verisi olmamış; "0 tamamlanan iş" artık **doğru** sonuç,
 önceki yanlış/boş çıktı tamamen yanlış DB bağlantısından kaynaklanıyordu.
 
 ## Sıradaki adım
-Sertifika üretimi (Madde 1) hâlâ askıda, nginx düzeltmesi (Madde 2, 4-5)
-kullanıcı karar verene kadar ilerletilmeyecek. DB fallback sorunu (Madde 3)
-tamamen bağımsız şekilde çözüldü ve kapatıldı.
+Yok — sertifika üretimi de (bkz. yukarı "nginx düzeltmesi" bölümü, 23 Temmuz
+2026) dahil tüm maddeler tamamlandı, doğrulandı: 31 Temmuz 2026 itibarıyla
+`docker compose ps` 4 container da stabil, nginx restart döngüsünde değil.
 
 ---
 
@@ -496,9 +483,11 @@ Faz 1'i (envanter) çalıştırıp tabloyu onaya sunacağım.
 
 # Merge Öncesi Son Süpürme (analizus_son_supurme_prompt.md)
 
-**Durum:** TAMAMLANDI — Madde 1-11'in tümü bitti (13 Temmuz 2026). Sıradaki
-adım kullanıcı onayıyla `dev`'in `main`'e merge edilmesi (bkz. Madde 10
-deploy notu).
+**Durum:** TAMAMLANDI — Madde 1-11'in tümü bitti (13 Temmuz 2026). `dev`→`main`
+merge de yapıldı (31 Temmuz 2026 itibarıyla iki branch aynı commit'te,
+`9b6f58d`). Merge sonrası hatırlatmalardan `feature_agentic_landing` flag'inin
+prod'da elle açılıp açılmadığı DOĞRULANMADI — sıradaki oturumda kontrol
+edilmeli (bkz. Madde 10 deploy notu).
 Kaynak: `~/Desktop/analizus_son_supurme_prompt.md`. Yeni oturumda önce bu dosya
 + bu bölüm okunmalı; `analizus_son_supurme_prompt.md`'nin ORİJİNAL Madde 1
 metni artık güncel değil (aşağıdaki kararlarla değişti), bu yüzden bu bölüm
@@ -658,11 +647,11 @@ esas alınmalı.
 
 ## Kalan işler
 
-Yok — "Merge Öncesi Son Süpürme" turunun 11 maddesi de tamamlandı. Sıradaki
-adım: kullanıcı onayıyla `dev`'i `main`'e merge etmek (bkz. Madde 10'daki
-deploy notu — migration, collectstatic, Hetzner sırası, merge sonrası
-hatırlatmalar, özellikle `feature_agentic_landing` flag'inin prod'da elle
-açılması gerektiği).
+Yok — "Merge Öncesi Son Süpürme" turunun 11 maddesi tamamlandı ve `dev`→`main`
+merge'i de yapıldı (31 Temmuz 2026). Tek açık nokta: `feature_agentic_landing`
+flag'inin prod'da elle açıldığı doğrulanmadı (bkz. Madde 10 deploy notu,
+"Merge sonrası hatırlatmalar" #1) — sıradaki oturumda admin panelinden
+kontrol edilmeli.
 
 ## Yeni oturumda nasıl devam edilir
 
