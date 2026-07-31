@@ -302,7 +302,7 @@
         <!-- Sidebar / Teklif Formu -->
         <div class="col-lg-4">
             {% if request.user == job.owner %}
-                {% if accepted_proposal %}
+                {% if accepted_proposal.expert.username %}
                 <div class="card border-0 shadow-sm bg-success bg-opacity-10 border-success mb-3">
                     <div class="card-body p-4">
                         <h5 class="text-white mb-3"><i class="bi bi-person-check-fill text-success me-2"></i>Kabul Edilen Uzman</h5>
