@@ -1959,14 +1959,26 @@ def liderboard(request):
         'user_alltime_rank': user_alltime_rank,
     })
 
+@ratelimit(key='ip', rate='5/h', method='POST', block=True)
 def contact(request):
     if request.method == 'POST':
         from .models import ContactMessage
         from .services.email_service import EmailService
+
+        # Bot honeypot'u doldurdu — sessizce reddet
+        if request.POST.get('website', '').strip():
+            return redirect('contact')
+
         name = request.POST.get('name', '')
         email = request.POST.get('email', '')
         subject = request.POST.get('subject', '')
         message = request.POST.get('message', '')
+
+        # Bot isim üretimi (ör. "sspnuwhrvl"): hiç sesli harf içermiyorsa reddet
+        _vowels = set('aeıioöuüAEIİOÖUÜ')
+        if name.strip() and not any(ch in _vowels for ch in name):
+            return redirect('contact')
+
         try:
             ContactMessage.objects.create(
                 name=name,

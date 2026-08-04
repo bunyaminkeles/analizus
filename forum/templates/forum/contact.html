@@ -47,6 +47,9 @@
             <div class="ax-contact-card">
                 <form method="POST" action="{% url 'contact' %}">
                     {% csrf_token %}
+                    <div style="position:absolute;left:-9999px;top:-9999px;" aria-hidden="true">
+                        <input type="text" name="website" id="id_website" tabindex="-1" autocomplete="off">
+                    </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="ax-contact-label">Adınız Soyadınız</label>
