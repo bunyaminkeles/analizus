@@ -980,6 +980,130 @@ TOPICS = [
             "için aylık bir saatlik bakım penceresi ayırmanız yeterli olur."
         ),
     },
+    # --- YÖK Tez veri kazıma SEO turu (3. dalga, 6 konu, akademik-lounge) ---
+    {
+        "category_slug": "akademik-lounge",
+        "subject": "YÖK Tez'den toplu veri çekmek yasal mı, resmi bir API var mı?",
+        "starter": "AI_Ogrenci",
+        "first_post": (
+            "Tez taramamda YÖK Tez Merkezi'nden birden fazla anahtar kelimeyle sonuç almam "
+            "gerekiyor. Kendi Python scriptimle deneyeyim mi diye düşünüyordum ama YÖK'ün "
+            "bunu yasakladığını okudum. Analizus'un veri kazıma aracı bu konuda resmi bir "
+            "izinle mi çalışıyor, yoksa ben mi riske giriyorum?"
+        ),
+        "expert": "admin",
+        "answer": (
+            "YÖK Tez Merkezi genel kullanıma açık bir arama arayüzü sunuyor ama resmi bir "
+            "açık API yayınlamıyor; kendi scriptinizle yoğun otomatik istek göndermek, "
+            "sitenin kullanım şartlarına ve rate-limiting korumasına aykırı olabilir, IP "
+            "engeliyle sonuçlanabilir. Analizus'un YÖK Tez aracı, YÖK'ün herkese açık arama "
+            "sonuçlarını sunucuyu zorlamayan kontrollü bir hızda çekiyor ve size "
+            "yapılandırılmış (Excel/TXT) çıktı olarak sunuyor — ham HTML kazıma değil. "
+            "Büyük hacimli veri ihtiyaçlarında 'Proje Talebi' üzerinden planlı bir çekim "
+            "yapıyoruz, böylece hem siz hem YÖK'ün sunucusu risk altında kalmıyor."
+        ),
+    },
+    {
+        "category_slug": "akademik-lounge",
+        "subject": "YÖK Tez aramasında sonuç 0 çıkıyor, arama neden boş dönüyor?",
+        "starter": "AkademikKariyer",
+        "first_post": (
+            "Danışmanımın adını yazıp aradım ama '0 sonuç' diyor, ama YÖK Tez'in kendi "
+            "sitesinde aynı isimle 14 tez buluyorum. Analizus'taki arama neden farklı sonuç "
+            "veriyor, bir yazım kuralı mı var?"
+        ),
+        "expert": "admin",
+        "answer": (
+            "En sık sebep Türkçe karakter farkı: YÖK Tez veritabanı bazı kayıtlarda "
+            "'ş, ç, ğ, ö, ü, ı' harflerini, bazılarında ASCII karşılıklarını (s, c, g, o, u, "
+            "i) barındırıyor. Danışman adını hem orijinal Türkçe hem ASCII haliyle "
+            "aramanızı öneririm. İkinci sık sebep: 'Danışman' alanı tam soyadı eşleşmesi "
+            "bekliyor, isim sırası ters yazılmışsa (önce soyadı) sonuç boş dönebilir. Yine "
+            "sonuç alamıyorsanız aynı aramayı 'Metin/Özet' alanına da girip deneyin; bazı "
+            "danışman kayıtları farklı formatta girilmiş olabiliyor."
+        ),
+    },
+    {
+        "category_slug": "akademik-lounge",
+        "subject": "YÖK Tez'de aynı danışmanın tüm tezlerini tek listede nasıl toplarım?",
+        "starter": "Literatur_Tarama",
+        "first_post": (
+            "Bir hocanın yönettiği tüm tezleri (yüksek lisans + doktora) tek bir Excel'de "
+            "görmek istiyorum, YÖK Tez'in kendi sitesinde her tezi tek tek açıp not almam "
+            "gerekiyor. Analizus'un aracıyla bunu otomatikleştirebilir miyim?"
+        ),
+        "expert": "admin",
+        "answer": (
+            "Evet, tam olarak bu senaryo için tasarlandı. Arama formunda 'Danışman' alanına "
+            "ismi girip 'Tez Türü' filtresini boş bırakırsanız (ya da 'Tümü' seçerseniz) o "
+            "danışmana bağlı tüm tez türleri tek sonuç listesinde gelir; listeyi tek tıkla "
+            "Excel'e aktarabilirsiniz, sütunlarda tez no, başlık, yazar, yıl ve üniversite "
+            "bilgisi yapılandırılmış halde bulunur. Demo modunda en yeni 5 sonuç "
+            "gösteriliyor; danışmanın tez sayısı bunu aşıyorsa 'Proje Talebi' ile tam listeyi "
+            "talep edebilirsiniz."
+        ),
+    },
+    {
+        "category_slug": "akademik-lounge",
+        "subject": "YÖK Tez'i kendi scriptimle kazımaya çalıştım, IP'm bloklandı — kurtarma yolu var mı?",
+        "starter": "Muhendislik_R",
+        "first_post": (
+            "Selenium ile YÖK Tez'den 300 kadar tez kaydı çekmeye çalıştım, yarısında "
+            "'erişim engellendi' hatası almaya başladım. Muhtemelen IP'm bloklandı. Bu "
+            "engel ne zaman kalkar, kalkana kadar Analizus'un aracını kullanabilir miyim?"
+        ),
+        "expert": "admin",
+        "answer": (
+            "YÖK Tez Merkezi'nin engeli genellikle IP bazlı ve geçici oluyor (bizim "
+            "gözlemimize göre saatler-günler arası değişebiliyor, YÖK bu süreyi resmi olarak "
+            "açıklamıyor). Engel kendi IP'nizde olduğu için Analizus üzerinden yaptığınız "
+            "aramalar farklı bir altyapıdan gittiğinden etkilenmez, aracı kullanabilirsiniz. "
+            "İleride benzer bir tıkanmayı yaşamamak için: 300 kayıtlık ihtiyaçlar için kendi "
+            "scriptinizle art arda istek göndermek yerine 'Proje Talebi' oluşturup toplu "
+            "veriyi bizden talep etmenizi öneririz; bu yol hem sizi IP riskinden korur hem "
+            "daha hızlı ve düzenli bir çıktı (Excel) verir."
+        ),
+    },
+    {
+        "category_slug": "akademik-lounge",
+        "subject": "YÖK Tez'den çektiğim verileri bibliyometrik analize nasıl aktarırım?",
+        "starter": "VeriBilimci_A",
+        "first_post": (
+            "YÖK Tez aracıyla 40 kadar tez kaydı indirdim (Excel). Bunları VOSviewer'da "
+            "yıl/danışman dağılımı olarak görselleştirmek istiyorum ama format uyuşmuyor "
+            "gibi. Analizus'ta bu adım için ayrı bir araç var mı, yoksa manuel mi "
+            "dönüştürmem gerekiyor?"
+        ),
+        "expert": "admin",
+        "answer": (
+            "Manuel dönüştürmeye gerek yok — YÖK Tez sonuç ekranındaki 'Analiz Yap' butonu, "
+            "indirdiğiniz sonuçları (10 ve üzeri kayıt olduğunda aktif olur) doğrudan "
+            "Analizus'un bibliyometrik analiz moduluna gönderir; yıl bazlı yayın trendi, "
+            "danışman/üniversite dağılımı gibi grafikleri otomatik üretip PDF olarak sunar, "
+            "VOSviewer formatına elle dönüştürme gerekmez. VOSviewer'a özel bir eşleştirme "
+            "istiyorsanız indirdiğiniz Excel'deki 'Başlık' ve 'Özet' sütunlarını VOSviewer'ın "
+            "metin madenciliği modülüne doğrudan verebilirsiniz, ek dönüşüm gerekmiyor."
+        ),
+    },
+    {
+        "category_slug": "akademik-lounge",
+        "subject": "YÖK Tez'de günlük arama limitine takıldım, sınır ne kadar ve nasıl yükseltilir?",
+        "starter": "SaglikIst",
+        "first_post": (
+            "Bugün YÖK Tez aracında 3 arama yaptıktan sonra 'günlük arama limitiniz doldu' "
+            "uyarısı aldım. Bu limit neye göre belirleniyor, premium üyelik bu sınırı "
+            "kaldırıyor mu?"
+        ),
+        "expert": "admin",
+        "answer": (
+            "Şu an günlük arama hakkı hesap başına 3 ile sınırlı — bu, YÖK'ün sunucusuna "
+            "aşırı yük bindirmemek için platform genelinde uyguladığımız bir koruma. Aynı "
+            "gün içinde ek arama ihtiyacınız olursa yarın limit sıfırlanır; kısa vadede "
+            "acil ve toplu bir ihtiyacınız varsa 'Proje Talebi' üzerinden istediğiniz "
+            "kriterleri tek seferde bize iletip tam veri setini alabilirsiniz, bu yol "
+            "günlük arama limitine tabi değildir."
+        ),
+    },
 ]
 
 
