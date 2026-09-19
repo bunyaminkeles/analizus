@@ -1008,39 +1008,45 @@ TOPICS = [
         "subject": "YÖK Tez aramasında sonuç 0 çıkıyor, arama neden boş dönüyor?",
         "starter": "AkademikKariyer",
         "first_post": (
-            "Danışmanımın adını yazıp aradım ama '0 sonuç' diyor, ama YÖK Tez'in kendi "
-            "sitesinde aynı isimle 14 tez buluyorum. Analizus'taki arama neden farklı sonuç "
-            "veriyor, bir yazım kuralı mı var?"
+            "Tez konumu 'Tez Adı / Anahtar Kelime' alanına yazıp aradım ama '0 sonuç' "
+            "diyor, ama YÖK Tez'in kendi sitesinde aynı kelimeyle onlarca tez buluyorum. "
+            "Analizus'taki arama neden farklı sonuç veriyor, bir yazım kuralı mı var?"
         ),
         "expert": "admin",
         "answer": (
             "En sık sebep Türkçe karakter farkı: YÖK Tez veritabanı bazı kayıtlarda "
             "'ş, ç, ğ, ö, ü, ı' harflerini, bazılarında ASCII karşılıklarını (s, c, g, o, u, "
-            "i) barındırıyor. Danışman adını hem orijinal Türkçe hem ASCII haliyle "
-            "aramanızı öneririm. İkinci sık sebep: 'Danışman' alanı tam soyadı eşleşmesi "
-            "bekliyor, isim sırası ters yazılmışsa (önce soyadı) sonuç boş dönebilir. Yine "
-            "sonuç alamıyorsanız aynı aramayı 'Metin/Özet' alanına da girip deneyin; bazı "
-            "danışman kayıtları farklı formatta girilmiş olabiliyor."
+            "i) barındırıyor. Aynı terimi hem orijinal Türkçe hem ASCII haliyle aramanızı "
+            "öneririm. İkinci sık sebep: 'Tez Adı / Anahtar Kelime' alanı yalnızca başlıkta "
+            "geçen kelimeleri tarar; aradığınız kavram başlıkta değil tezin özetinde "
+            "geçiyorsa sonuç boş döner — aynı terimi 'Özet/Metin' alanına da girip deneyin, "
+            "çoğu zaman sonuç oradan gelir. Üçüncü olarak Başlangıç/Bitiş Yılı aralığının "
+            "aradığınız dönemi dışlamadığından emin olun; varsayılan aralık dışındaki "
+            "tezler otomatik elenir."
         ),
     },
     {
         "category_slug": "akademik-lounge",
-        "subject": "YÖK Tez'de aynı danışmanın tüm tezlerini tek listede nasıl toplarım?",
+        "subject": "YÖK Tez'de sadece doktora tezlerini görmek istiyorum, 'Tez Türü' filtresi nasıl çalışıyor?",
         "starter": "Literatur_Tarama",
         "first_post": (
-            "Bir hocanın yönettiği tüm tezleri (yüksek lisans + doktora) tek bir Excel'de "
-            "görmek istiyorum, YÖK Tez'in kendi sitesinde her tezi tek tek açıp not almam "
-            "gerekiyor. Analizus'un aracıyla bunu otomatikleştirebilir miyim?"
+            "Bir konuda hem yüksek lisans hem doktora tezi çıkıyor, ben sadece doktora "
+            "tezlerini incelemek istiyorum. 'Tez Türü' filtresini 'Doktora' seçtiğimde "
+            "bazı tezlerin listeden kaybolduğunu fark ettim — bu doğru mu çalışıyor, yoksa "
+            "filtre bir şeyi mi kaçırıyor?"
         ),
         "expert": "admin",
         "answer": (
-            "Evet, tam olarak bu senaryo için tasarlandı. Arama formunda 'Danışman' alanına "
-            "ismi girip 'Tez Türü' filtresini boş bırakırsanız (ya da 'Tümü' seçerseniz) o "
-            "danışmana bağlı tüm tez türleri tek sonuç listesinde gelir; listeyi tek tıkla "
-            "Excel'e aktarabilirsiniz, sütunlarda tez no, başlık, yazar, yıl ve üniversite "
-            "bilgisi yapılandırılmış halde bulunur. Demo modunda en yeni 5 sonuç "
-            "gösteriliyor; danışmanın tez sayısı bunu aşıyorsa 'Proje Talebi' ile tam listeyi "
-            "talep edebilirsiniz."
+            "Doğru çalışıyor — 'Tez Türü' filtresi YÖK'ün kendi sınıflandırmasına göre "
+            "süzme yapıyor (Yüksek Lisans, Doktora, Tıpta Uzmanlık, Sanatta Yeterlik). "
+            "'Doktora' seçtiğinizde yüksek lisans tezleri listeden düşer, bu beklenen "
+            "davranış. Belirli bir tezin YÖK'ün kendi sitesinde doktora olarak görünüp "
+            "bizim sonuçlarımızda görünmediğini düşünüyorsanız iki olası sebep var: "
+            "Başlangıç/Bitiş Yılı aralığı o tezi kapsam dışı bırakıyor olabilir (aralığı "
+            "geniş tutun), ya da YÖK'ün kendi veritabanında o tezin türü farklı kodlanmış "
+            "olabilir (nadir ama olur). İlk denemenizde 'Tez Türü'nü 'Hepsi' bırakıp sadece "
+            "anahtar kelimeyle arayın, sonuç listesindeki tez türü etiketlerini gözle "
+            "kontrol ederek doğrulayın."
         ),
     },
     {
@@ -1066,23 +1072,26 @@ TOPICS = [
     },
     {
         "category_slug": "akademik-lounge",
-        "subject": "YÖK Tez'den çektiğim verileri bibliyometrik analize nasıl aktarırım?",
+        "subject": "YÖK Tez arama sonuçlarını Excel yerine e-posta ile almak ne işe yarar, ikisi farklı veri mi veriyor?",
         "starter": "VeriBilimci_A",
         "first_post": (
-            "YÖK Tez aracıyla 40 kadar tez kaydı indirdim (Excel). Bunları VOSviewer'da "
-            "yıl/danışman dağılımı olarak görselleştirmek istiyorum ama format uyuşmuyor "
-            "gibi. Analizus'ta bu adım için ayrı bir araç var mı, yoksa manuel mi "
-            "dönüştürmem gerekiyor?"
+            "YÖK Tez aracında arama yaptıktan sonra ekranda 'E-posta Gönder', 'TXT İndir' "
+            "ve 'Excel İndir' seçenekleri çıkıyor. Excel'i zaten tarayıcıdan "
+            "indirebiliyorken e-posta seçeneği ne işe yarıyor, farklı bir veri mi "
+            "gönderiyor?"
         ),
         "expert": "admin",
         "answer": (
-            "Manuel dönüştürmeye gerek yok — YÖK Tez sonuç ekranındaki 'Analiz Yap' butonu, "
-            "indirdiğiniz sonuçları (10 ve üzeri kayıt olduğunda aktif olur) doğrudan "
-            "Analizus'un bibliyometrik analiz moduluna gönderir; yıl bazlı yayın trendi, "
-            "danışman/üniversite dağılımı gibi grafikleri otomatik üretip PDF olarak sunar, "
-            "VOSviewer formatına elle dönüştürme gerekmez. VOSviewer'a özel bir eşleştirme "
-            "istiyorsanız indirdiğiniz Excel'deki 'Başlık' ve 'Özet' sütunlarını VOSviewer'ın "
-            "metin madenciliği modülüne doğrudan verebilirsiniz, ek dönüşüm gerekmiyor."
+            "Üçü de aynı sonuç setini farklı teslim şekilleriyle sunuyor, veri içeriği "
+            "aynı. 'Excel İndir' ve 'TXT İndir' sonucu doğrudan tarayıcınıza indirir; "
+            "'E-posta Gönder' ise aynı Excel dosyasını hesabınıza kayıtlı e-posta adresine "
+            "gönderir — özellikle mobil cihazdan çalışıyorsanız ya da sonucu ayrı bir "
+            "yerde (başka bilgisayar, arşiv klasörü) tutmak istiyorsanız pratik oluyor. "
+            "Demo modunda gösterilen 5 sonuç, hangi teslim şeklini seçerseniz seçin aynı "
+            "kapsamdadır; toplam sonuç sayısı arama ekranının üstünde ayrıca belirtilir. "
+            "Şu an için sonuçları doğrudan bir bibliyometrik analiz modülüne aktaran "
+            "otomatik bir buton yok — indirdiğiniz Excel'i kendi pivot tablo veya "
+            "grafiklerinizle değerlendirebilirsiniz."
         ),
     },
     {

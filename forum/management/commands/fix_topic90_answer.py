@@ -11,9 +11,10 @@ from forum.models import Topic
 
 NEW_ANSWER = (
     "Merhaba,\n\n"
-    "Analizus YÖK Tez veri kazıma aracı, YÖK Ulusal Tez Merkezi'nden anahtar kelime, "
-    "yazar veya danışman bazında arama yapmanızı ve sonuçları Excel/TXT formatında "
-    "indirmenizi sağlıyor.\n\n"
+    "Analizus YÖK Tez veri kazıma aracı, YÖK Ulusal Tez Merkezi'nden tez adı/anahtar "
+    "kelime veya özet/metin bazında arama yapmanızı, tez türü ve yıl aralığına göre "
+    "daraltmanızı ve sonuçları Excel/TXT formatında indirmenizi ya da e-posta ile "
+    "almanızı sağlıyor.\n\n"
     "Demo modunda her arama için en yeni 5 sonuç gösteriliyor. Bunun sebebi teknik bir "
     "kısıtlama değil, YÖK'ün kendi sunucusundaki rate-limiting korumasıdır: aynı IP'den "
     "kısa aralıklarla çok sayıda istek gönderilmesi (örneğin kendi Python/Selenium "
