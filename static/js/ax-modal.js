@@ -18,6 +18,8 @@
         modal.classList.add('is-open');
         modal.setAttribute('aria-hidden', 'false');
         document.body.classList.add('ax-no-scroll');
+        const focusTarget = modal.querySelector('input, textarea');
+        if (focusTarget) focusTarget.focus();
     }
 
     function closeModal(modal) {
