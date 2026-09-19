@@ -1089,9 +1089,14 @@ TOPICS = [
             "yerde (başka bilgisayar, arşiv klasörü) tutmak istiyorsanız pratik oluyor. "
             "Demo modunda gösterilen 5 sonuç, hangi teslim şeklini seçerseniz seçin aynı "
             "kapsamdadır; toplam sonuç sayısı arama ekranının üstünde ayrıca belirtilir. "
-            "Şu an için sonuçları doğrudan bir bibliyometrik analiz modülüne aktaran "
-            "otomatik bir buton yok — indirdiğiniz Excel'i kendi pivot tablo veya "
-            "grafiklerinizle değerlendirebilirsiniz."
+            "Şunu da netleştireyim: bu Excel dosyasını bizim bibliyometrik analiz "
+            "modülümüze doğrudan yükleyemezsiniz — o modül WoS/Scopus/BibTeX/OpenAlex "
+            "formatlarını okuyor, YÖK Tez'in çıktısı (tez no, başlık, yazar, danışman, "
+            "üniversite, yıl, özet) bu şemayla uyumlu değil, atıf/işbirliği ağı verisi de "
+            "içermiyor. YÖK Tez sonuçlarıyla yapabileceğiniz şey, kendi Excel'inizde "
+            "yıl/üniversite/tez türü kırılımında betimsel istatistik (sayım, yüzde, basit "
+            "grafik) çıkarmaktır; atıf temelli bibliyometrik analiz için WoS/Scopus gibi "
+            "farklı bir kaynaktan veri almanız gerekir."
         ),
     },
     {
