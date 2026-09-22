@@ -4,7 +4,6 @@ from . import views
 from . import api_views
 
 urlpatterns = [
-    path('', views.home, name='home'),
     path('health/', views.health_check, name='health_check'),
 
     # Blog
@@ -13,8 +12,6 @@ urlpatterns = [
     path('blog/<slug:slug>/', views.blog_detail, name='blog_detail'),
     path('blog/<slug:slug>/like/', views.blog_like, name='blog_like'),
 
-    path('register/', views.register, name='register'),
-    
     # Profil
     path('account/delete/', views.account_delete_request, name='account_delete_request'),
     path('account/delete/confirm/<str:token>/', views.account_delete_confirm, name='account_delete_confirm'),
@@ -91,11 +88,6 @@ urlpatterns = [
     path('tableau-analiz/', views.tableau_dashboard, name='tableau_dashboard'),
     path('iletisim/', views.contact, name='contact'),
     path('gizlilik-politikasi/', views.gizlilik_politikasi, name='gizlilik_politikasi'),
-    path('proje-talebi/', views.proje_talebi, name='proje_talebi'),
-    path('ai-cozumler/', views.ai_cozumler, name='ai_cozumler'),
-    path('egitim/', views.egitim, name='egitim'),
-    path('egitim-talebi/', views.egitim_talebi, name='egitim_talebi'),
-    path('egitim/<slug:slug>/', views.egitim_detay, name='egitim_detay'),
 
     # Section Detail
     path('section/<int:pk>/', views.section_detail, name='section_detail'),

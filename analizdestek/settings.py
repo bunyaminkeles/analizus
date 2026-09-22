@@ -195,6 +195,7 @@ RATELIMIT_VIEW = 'forum.views.ratelimit_error'
 LANGUAGES = [
     ('tr', _('Turkish')),
     ('en', _('English')),
+    ('de', _('German')),
 ]
 
 LOCALE_PATHS = [

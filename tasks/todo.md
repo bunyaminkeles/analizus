@@ -1,3 +1,109 @@
+# Çok Dilli Yayın (EN/DE) — Kapsam Belirlendi, Uygulama Bekliyor
+
+**Durum:** PLANLANDI (22 Eylül 2026) — kapsam kullanıcı ile netleştirildi,
+uygulamaya başlanmadı. KIRMIZI ÇİZGİ kuralı gereği: birden fazla dosya
+değişecek, önce bu liste onaylanmalı.
+
+## Kapsam Kararı
+
+**Dahil (EN + DE çevrilecek):**
+- Ana sayfa, navbar, footer, kayıt/giriş akışı
+- Makale Analiz (`makaleanaliz/`), OpenAlex (`openalex/`), Semantic
+  Scholar (`semanticscholar/`) — uluslararası kaynaklar, Türkiye'ye özgü değil
+- 18 istatistik aracının açıklama/giriş sayfaları (evrensel yöntemler):
+  ttesti, anova, mann_whitney, kruskal_wallis, ki_kare, korelasyon,
+  cronbach, normallik, betimsel, orneklem, lineer_regresyon,
+  lojistik_regresyon, friedman, tekrarli_anova, karar_agaci, svm, afa,
+  wilcoxon
+
+**Kapsam dışı (Türkiye'ye özgü / UGC / karar bekliyor):**
+- YÖK Tez (`yoktez/`), TR Dizin (`trdizin/`), Tez Analiz (`tezanaliz/`)
+  — YÖK Tez tabanlı, Türkiye'ye özgü
+- OAI-PMH (`oaipmh/`) — 17 aktif arşivin hepsi Türk üniversitesi
+- Forum + Market/iş ilanları — TL fiyatlandırma, UGC, Türkçe topluluk
+- Blog — mevcut içerik Türkiye SEO'suna göre üretilmiş
+- ~~Proje talebi / Danışmanlık / Eğitim landing sayfaları~~ → **DAHİL edildi**
+  (22 Eylül 2026 kullanıcı kararı), aşağıdaki dosya listesine eklendi
+
+## Uygulama Adımları (sırayla, her adım sonrası onay bekle)
+
+- [x] **1. Ayarlar:** `analizdestek/settings.py` → `LANGUAGES` listesine
+  `('de', _('German'))` eklendi (22 Eylül 2026)
+- [x] **2. URL yapısı:** TAMAMLANDI (22 Eylül 2026). `analizdestek/urls.py`
+  → `i18n_patterns(..., prefix_default_language=False)` ile sarıldı:
+  `forum.urls_i18n` (yeni dosya — home/register/proje-talebi/ai-cozumler/
+  egitim*), `makaleanaliz.urls`, `openalex.urls`, `semanticscholar.urls`,
+  `istatistik.urls_analiz`. Kapsam dışı app'ler (yoktez, trdizin, tezanaliz,
+  oaipmh, bibliometrics, transcript, istatistik.urls legacy polling, tarama,
+  forum.urls geri kalanı, admin, sitemap, robots.txt) prefix dışında kaldı.
+  - `forum/urls.py` → 7 path (`home`, `register`, `proje_talebi`,
+    `ai_cozumler`, `egitim`, `egitim_talebi`, `egitim_detay`) yeni
+    `forum/urls_i18n.py`'ye taşındı.
+  - **Bulunup düzeltilen regresyon:** `login` adı hem `django.contrib.auth.urls`
+    (dahili) hem `custom_login`'de (rate-limited) kullanılıyor —
+    `reverse()` aynı isimde son kayıt edileni döndürüyor. `login`'i
+    i18n_patterns'e alınca dahili view kazanmaya başladı. Düzeltme: `login`
+    orijinal konumunda (accounts/ include'undan SONRA), prefix'siz bırakıldı
+    — çeviri için soruna yol açmaz, `LocaleMiddleware` prefix'siz sayfalarda
+    da dil çerezine bakar.
+  - **Bulunup düzeltilen 3 sabit-kodlanmış link** (i18n_patterns'e alınan
+    URL'lere `{% url %}` yerine `/analiz/` veya `/register/` hardcode
+    edilmişti — EN/DE sayfalarda tıklanınca kullanıcıyı sessizce Türkçe'ye
+    geri atıyordu): `templates/base.html` (2× navbar `/analiz/` linki + 1×
+    quiz "Üye ol" linki), `istatistik/templates/istatistik/
+    analiz_console_base.html` ("İlgili Araçlar" linki).
+  - **Ertelenen (düşük risk, AJAX/JSON, görünür metin değil):**
+    `fetch('/analiz/clear-session/')`, `makaleanaliz/results.html`
+    `STATUS_URL`, `openalex`/`semanticscholar` landing'lerindeki
+    `/status/` polling fetch'leri — hardcoded kalsa da sadece job durumu
+    döndürüyor, dil karışıklığı görünür değil. İstenirse adım 6'da ele alınır.
+  - **Doğrulama:** `manage.py check` temiz; `reverse()` ile tr/en/de için
+    `home`/`login`/`analiz_home`/`register`/`proje_talebi` test edildi;
+    local runserver ile `/`, `/en/`, `/de/`, `/analiz/`, `/en/analiz/ttesti/`,
+    `/de/openalex/`, `/de/semantic-scholar/`, `/login/`, `/forum/`,
+    `/yoktez/`, `/istatistik/ttesti/` (301→/analiz/ttesti/, değişmedi)
+    curl ile 200/301 olarak doğrulandı; ana sayfa HTML çıktısında `/en/`
+    için navbar linklerinin doğru prefix aldığı görüldü.
+- [ ] **3. Şablonlarda `{% trans %}` / `{% blocktrans %}` işaretleme**
+  (kapsam listesi, dosya sayısı büyük olduğu için alt gruplar halinde
+  onaya sunulacak):
+  - `templates/base.html` (navbar, footer için ortak iskelet)
+  - `templates/partials/footer.html`
+  - `forum/templates/forum/home.html` (ana sayfa)
+  - `forum/templates/forum/register.html`, `registration/login.html`
+  - `makaleanaliz/templates/makaleanaliz/results.html`
+  - `openalex/templates/openalex/landing.html`, `order.html`
+  - `semanticscholar/templates/semanticscholar/landing.html`, `order.html`
+  - `forum/templates/forum/proje_talebi.html`, `ai_cozumler.html`,
+    `egitim.html`, `egitim_detay.html`, `egitim_talebi.html`
+    (Proje talebi / Danışmanlık / Eğitim — 22 Eylül 2026 kararıyla DAHİL)
+  - `istatistik/templates/istatistik/{afa,anova,betimsel,cronbach,
+    friedman,karar_agaci,ki_kare,korelasyon,kruskal_wallis,
+    lineer_regresyon,lojistik_regresyon,mann_whitney,normallik,
+    orneklem,svm,tekrarli_anova,ttesti,wilcoxon}.html`
+    (+ ortak `analiz_console_base.html`/`tool_base.html` iskelet metinleri)
+- [ ] **4. Çeviri dosyaları:** `django-admin makemessages -l en -l de`
+  (mevcut `locale/en/` var, `locale/de/` yeni oluşacak) → `.po` doldur →
+  `compilemessages`
+- [ ] **5. SEO:** kapsamdaki sayfalara `hreflang` alternate linkleri +
+  `x-default`, sitemap'e dil varyantları, navbar'a dil seçici, dinamik
+  `<html lang>`
+- [ ] **6. Python tarafı metinler:** kapsamdaki app'lerin (istatistik
+  servisleri, makaleanaliz, openalex, semanticscholar) view/form hata
+  mesajları ve PDF çıktı metinleri — ayrı görev olarak scope'u netleştir
+  (PDF font/layout Türkçe karaktere göre ayarlı, `pdf_fonts.py` etkilenir mi
+  kontrol edilmeli)
+- [ ] **7. Deploy:** dev → Render'da doğrula, sonra kullanıcı onayıyla
+  main → Hetzner'de `docker compose exec web python manage.py
+  compilemessages` + `restart web` + `restart nginx`
+
+## Açık Sorular (kullanıcıya soruldu, netleşince ilerlenir)
+- Proje talebi / Danışmanlık / Eğitim sayfaları kapsama girecek mi?
+- İstatistik araçlarının analiz sonuç metinleri (PDF rapor içerikleri) de
+  çevrilecek mi, yoksa sadece giriş/açıklama sayfaları mı?
+
+---
+
 # [ÖNCELİKLİ] Local Docker Ortamı — nginx crash-loop + yanlış DB fallback
 
 **Durum:** TAMAMLANDI (23 Temmuz 2026) — nginx crash-loop çözüldü, DB fallback

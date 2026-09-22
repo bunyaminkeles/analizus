@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.urls import path, include
+from django.conf.urls.i18n import i18n_patterns
 from django.contrib.auth import views as auth_views
 from django.contrib.sitemaps.views import sitemap
 from django.views.generic import TemplateView
@@ -22,9 +23,26 @@ sitemaps = {
     'training': TrainingSitemap,
 }
 
-urlpatterns = [
+# Çok dilli (tr/en/de) kapsam — bkz. tasks/todo.md "Çok Dilli Yayın (EN/DE)".
+# prefix_default_language=False: tr (varsayılan) prefix'siz kalır, en/de /en/ /de/ alır.
+urlpatterns = i18n_patterns(
+    # Ana sayfa, kayıt, proje talebi/danışmanlık/eğitim landing sayfaları
+    path('', include('forum.urls_i18n')),
+
+    # Makale Analizi, OpenAlex, Semantic Scholar — uluslararası kaynaklar
+    path('makaleanaliz/', include('makaleanaliz.urls', namespace='makaleanaliz')),
+    path('openalex/', include('openalex.urls')),
+    path('semantic-scholar/', include('semanticscholar.urls')),
+
+    # Unified Analiz Konsolu — 18 istatistik aracının açıklama/giriş sayfaları
+    path('analiz/', include('istatistik.urls_analiz')),
+
+    prefix_default_language=False,
+)
+
+urlpatterns += [
     path('admin/', admin.site.urls),
-    
+
     # 1. Kimlik Doğrulama Yolları - Şifre sıfırlama için özel template'ler
     path('accounts/password_reset/', auth_views.PasswordResetView.as_view(
         template_name='registration/password_reset_form.html'
@@ -40,48 +58,42 @@ urlpatterns = [
     ), name='password_reset_complete'),
     # Django'nun diğer dahili giriş/çıkış sistemini aktif eder
     path('accounts/', include('django.contrib.auth.urls')),
-    
-    # 2. Özel Giriş/Çıkış Sayfaları (Rate limited)
+
+    # 2. Özel Giriş/Çıkış Sayfaları (Rate limited). URL prefix'siz kalıyor —
+    # 'login' adı auth.urls ile çakışıyor, reverse() son kayıt edilen kazanıyor
+    # (bkz. tasks/todo.md), bu yüzden orijinal sırada (accounts/ include'undan
+    # SONRA) kalmalı. Çeviri için prefix'e ihtiyaç yok: LocaleMiddleware
+    # prefix'siz sayfalarda da dil çerezine (set_language) bakar.
     path('login/', custom_login, name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
 
-    # TR Dizin Tarama
+    # TR Dizin Tarama — kapsam dışı (Türkiye'ye özgü)
     path('trdizin/', include('trdizin.urls')),
 
-    # OpenAlex Yayın Tarama
-    path('openalex/', include('openalex.urls')),
-
-    # Semantic Scholar Yayın Kazıma
-    path('semantic-scholar/', include('semanticscholar.urls')),
-
-    # Üniversite Tez Arşivi (OAI-PMH)
+    # Üniversite Tez Arşivi (OAI-PMH) — kapsam dışı (17 aktif arşivin hepsi Türk üniversitesi)
     path('oaipmh/', include('oaipmh.urls')),
 
-    # YÖK Tez Arama
+    # YÖK Tez Arama — kapsam dışı (Türkiye'ye özgü)
     path('yoktez/', include('yoktez.urls')),
 
-    # Bibliometrik Analiz
+    # Bibliometrik Analiz — kapsam dışı
     path('bibliometrics/', include('bibliometrics.urls')),
 
-    # Tez & Makale Analizi
+    # Tez Analizi (YÖK Tez tabanlı) — kapsam dışı
     path('tezanaliz/', include('tezanaliz.urls', namespace='tezanaliz')),
 
-    # TR Dizin Makale Analizi
-    path('makaleanaliz/', include('makaleanaliz.urls', namespace='makaleanaliz')),
-
-    # YouTube Transcript İndirici
+    # YouTube Transcript İndirici — kapsam dışı
     path('transcript/', include('transcript.urls', namespace='transcript')),
 
-    # İstatistik Analiz Araçları
+    # İstatistik Analiz Araçları — legacy POST/status endpoint'leri (KASITLI dokunulmadı,
+    # bkz. analizus.md §26 "istatistik double-duty"; i18n_patterns'e alınmadı)
     path('istatistik/', include('istatistik.urls', namespace='istatistik')),
 
-    # Unified Analiz Konsolu (/analiz/ prefix)
-    path('analiz/', include('istatistik.urls_analiz')),
-
-    # Akademik Tarama Unified Console — ilk aktif araca yönlendir
+    # Akademik Tarama Unified Console — kapsam dışı (yoktez/trdizin/oaipmh kartları)
     path('tarama/', tarama_hub, name='tarama_hub'),
 
-    # 4. Forum Uygulaması (En sona koymak çakışmaları önler)
+    # 4. Forum Uygulaması — geri kalanı (forum, market, blog, DM...) kapsam dışı.
+    # En sona koymak çakışmaları önler.
     path('', include('forum.urls')),
     path('i18n/', include('django.conf.urls.i18n')), # DİL MOTORU BURADA
 

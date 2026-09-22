@@ -202,7 +202,7 @@
                     </button>
                     <div class="site-nav__dropdown" id="dropdown-analizler" role="menu">
                         {% if features.istatistik %}
-                        <a href="/analiz/" class="site-nav__dropdown-item" role="menuitem">İstatistik Analiz Araçları</a>
+                        <a href="{% url 'analiz_home' %}" class="site-nav__dropdown-item" role="menuitem">İstatistik Analiz Araçları</a>
                         {% endif %}
                         {% if features.bibliometrics %}
                         <a href="{% url 'bibliometrics:landing' %}" class="site-nav__dropdown-item" role="menuitem">Bibliometrik Analiz</a>
@@ -390,7 +390,7 @@
                     <svg class="nav-drawer__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
                 </button>
                 <div class="nav-drawer__accordion-body" id="mob-analizler">
-                    {% if features.istatistik %}<a href="/analiz/" class="nav-drawer__link">İstatistik Analiz Araçları</a>{% endif %}
+                    {% if features.istatistik %}<a href="{% url 'analiz_home' %}" class="nav-drawer__link">İstatistik Analiz Araçları</a>{% endif %}
                     {% if features.bibliometrics %}<a href="{% url 'bibliometrics:landing' %}" class="nav-drawer__link">Bibliometrik Analiz</a>{% endif %}
                     <a href="{% url 'tableau_dashboard' %}" class="nav-drawer__link">Tableau Analizleri</a>
                     <a href="{% url 'hangi_test' %}" class="nav-drawer__link">Hangi Test?</a>
@@ -1188,7 +1188,7 @@
         updateBadge(data.remaining, data.daily_limit);
       } else if (data.limit_reached) {
         const hint = data.is_authenticated === false
-          ? ' <a href="/register/" style="color:#818cf8">Üye ol</a> ile 30 soruya çıkar.'
+          ? ' <a href="{% url 'register' %}" style="color:#818cf8">Üye ol</a> ile 30 soruya çıkar.'
           : '';
         addMsg(`⚠️ ${data.error}${hint}`, 'bot');
         updateBadge(0, data.daily_limit);
