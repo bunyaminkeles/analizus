@@ -214,6 +214,18 @@ body {
     padding: 0;
 }
 
+/* Dil seçici tetikleyici — icon-btn'in kare kalıbını genişletip kod etiketi ekler */
+.site-nav__lang-trigger {
+    width: auto;
+    gap: var(--ax-space-1);
+    padding-inline: var(--ax-space-2);
+}
+.site-nav__lang-code {
+    font-size: var(--ax-text-xs);
+    font-weight: var(--ax-font-semibold);
+    letter-spacing: 0.02em;
+}
+
 .site-nav__dropdown-divider {
     height: 1px;
     background-color: var(--ax-border-default);

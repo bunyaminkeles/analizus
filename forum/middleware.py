@@ -29,6 +29,23 @@ class NoIndexMiddleware:
         return response
 
 
+class ForceDefaultLanguageMiddleware:
+    """Tarayıcının Accept-Language header'ına göre otomatik dil algılamayı
+    kapatır. Kullanıcı navbar'daki dil seçiciden açıkça seçim yapmadıkça
+    (django_language çerezi set edilmeden) site her zaman varsayılan dille
+    (LANGUAGE_CODE = 'tr') açılır — /en/ veya /de/ URL prefix'i her zaman
+    çalışmaya devam eder, bu yalnızca prefix'siz (varsayılan) istekleri
+    etkiler. LocaleMiddleware'den ÖNCE çalışmalı (bkz. settings.MIDDLEWARE)."""
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        if settings.LANGUAGE_COOKIE_NAME not in request.COOKIES:
+            request.META['HTTP_ACCEPT_LANGUAGE'] = ''
+        return self.get_response(request)
+
+
 class VisitorCounterMiddleware:
     """Her sayfa isteğinde (bot dahil) ziyaretçi sayacını artırır."""
 

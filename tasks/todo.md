@@ -106,6 +106,26 @@ değişecek, önce bu liste onaylanmalı.
     + `language=de` gönderildi → `Location: /de/analiz/ttesti/` +
     `Set-Cookie: django_language=de` doğrulandı (Django'nun `translate_url()`
     mekanizması sorunsuz çalışıyor).
+  - **5a-devam (aynı gün, kullanıcı isteğiyle):** (1) dil butonuna seçili
+    dili gösteren rozet eklendi (`{{ LANGUAGE_CODE|upper }}`, `.site-nav__
+    lang-trigger`/`.site-nav__lang-code` CSS). (2) `forum/middleware.py` →
+    yeni `ForceDefaultLanguageMiddleware` (settings.py'de
+    `AuthenticationMiddleware`'den sonra, `LocaleMiddleware`'den ÖNCE) —
+    çerez yoksa `Accept-Language` header'ını temizler, tarayıcı dili ne
+    olursa olsun prefix'siz sayfa hep `tr` açılır. **Araştırılıp Django'nun
+    kendi tasarımı olduğu doğrulanan (bug değil) davranış:** `prefix_default
+    _language=False` ile çıplak `/` URL'si, `django_language` çerezi ne
+    olursa olsun HER ZAMAN varsayılan dili (`tr`) gösterir — Django'nun
+    `LocaleMiddleware.process_request`'i bunu kasıtlı yapıyor (bkz. Django
+    kaynağı: `language_from_path` yoksa + `i18n_patterns` kullanılıyorsa +
+    `prefixed_default_language=False`'sa → `language = settings.LANGUAGE_CODE`
+    ile override eder). Kullanıcı dil değiştirince (`/i18n/setlang/` POST)
+    `translate_url()` doğru prefix'li URL'ye (`/de/`) yönlendiriyor, oradan
+    itibaren tüm `{% url %}` linkleri prefix'i koruyor — sorun yalnızca
+    "çerez set edilmişken çıplak `/`'i elle tekrar ziyaret etme" senaryosunda
+    ve bu, tek-URL=tek-dil SEO ilkesiyle örtüştüğü için kasıtlı bırakıldı.
+    Doğrulama: curl ile Accept-Language:en-US + çerezsiz → tr; `/en/` hâlâ
+    çalışıyor; gerçek POST ile `next=/` + `language=de` → `Location: /de/`.
 - [ ] **5b. Kalan SEO işleri:** `hreflang` alternate linkleri + `x-default`,
   sitemap'e dil varyantları
 - [ ] **6. Python tarafı metinler:** kapsamdaki app'lerin (istatistik
