@@ -1,8 +1,50 @@
-# Çok Dilli Yayın (EN/DE) — Kapsam Belirlendi, Uygulama Bekliyor
+# Çok Dilli Yayın (EN/DE) — DURAKLATILDI, buradan devam edilecek
 
-**Durum:** PLANLANDI (22 Eylül 2026) — kapsam kullanıcı ile netleştirildi,
-uygulamaya başlanmadı. KIRMIZI ÇİZGİ kuralı gereği: birden fazla dosya
-değişecek, önce bu liste onaylanmalı.
+**Durum:** 22 Eylül 2026 — kullanıcı isteğiyle DURAKLATILDI. Aşağıdaki
+"DEVAM NOKTASI" bölümünden başla.
+
+## DEVAM NOKTASI (bir sonraki oturum buradan başlasın)
+
+**Tamamlanan:** Adım 1 (ayarlar), Adım 2 (URL yapısı + 3 kritik bug
+düzeltildi), Adım 3a (base.html+footer.html), Adım 3b-1 (register.html+
+login.html), Adım 5a (dil seçici UI + admin flag). Detay ve bulunan
+bug'lar için aşağıdaki ilgili adım maddelerine bak.
+
+**Sırada:** Adım 3b-2 — kalan ~26 şablon dosyasında `{% trans %}`
+işaretleme, `home.html`'den başla (dosya listesi aşağıda, "3b-2. Kalan
+dosyalar" maddesinde).
+
+**Sona bırakılan (kullanıcı kararı, 22 Eylül 2026):** "Ufak tefek
+aksamalar" — oturum boyunca fark edilen küçük UI/UX pürüzler (henüz
+net bir liste çıkarılmadı, kullanıcı belirtmedi hangileri) — adım 3b-2/4
+tamamlandıktan SONRA, ayrı bir "cilalama" turunda ele alınacak. Yeni
+oturumda kullanıcıya "hangi ufak aksamalar" diye sorulup somut bir liste
+çıkarılmalı.
+
+**Açık kapsam kararı bekliyor:** Adım 6 (Python tarafı metinler — form
+hata mesajları, PDF rapor içerikleri) kapsamı henüz netleşmedi.
+
+**Tahmini kalan iş (saf çalışma, test döngüleri hariç, 22 Eylül 2026
+tahmini):**
+| Adım | Tahmin |
+|---|---|
+| 3b-2: home.html | ~1.5-2 saat |
+| 3b-2: 18 istatistik şablonu + ortak iskelet | ~1.5-2 saat |
+| 3b-2: makaleanaliz+openalex+semanticscholar (5 dosya) | ~45dk-1 saat |
+| 3b-2: proje-talebi/ai-çözümler/eğitim (5 dosya) | ~45dk-1 saat |
+| **3b-2 toplamı** | **~4.5-6 saat** |
+| 4: `.po` çeviri (EN+DE) | ~3-5 saat |
+| 5b: hreflang + sitemap | ~30-45 dk |
+| 6: Python tarafı metinler | kapsam netleşmeden bilinmiyor |
+| 7: Deploy | ~15-30 dk |
+| **Toplam (6 hariç)** | **~9-12 saat** |
+
+Not: Bu oturumda plan dışı 3 kritik bug bulunup düzeltildi (dil
+değiştirici çalışmıyordu, login/logout prefix kaybı, bozuk inbox HTML'i)
+— gerçek geçen süre tahminlerin çok üzerinde oldu. Benzer sürprizler
+olabilir, tahminler iyimser kabul edilmeli.
+
+---
 
 ## Kapsam Kararı
 
