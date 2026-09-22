@@ -203,6 +203,16 @@ body {
     background-color: rgba(239, 68, 68, 0.1);
     color: var(--ax-accent-danger);
 }
+.site-nav__dropdown-item.is-active {
+    color: var(--ax-accent-primary-light);
+    font-weight: var(--ax-font-medium);
+}
+
+/* Dil seçici form sıfırlama (dropdown-item'ı bir <form> içine alıyor) */
+.site-nav__lang-form {
+    margin: 0;
+    padding: 0;
+}
 
 .site-nav__dropdown-divider {
     height: 1px;
@@ -512,6 +522,41 @@ body {
 .nav-drawer__logout-form {
     padding: 0;
     margin: 0;
+}
+
+/* Dil seçici — mobil drawer'da yatay buton grubu */
+.nav-drawer__lang-row {
+    display: flex;
+    gap: var(--ax-space-2);
+    padding: 0 var(--ax-space-4) var(--ax-space-2);
+}
+.nav-drawer__lang-form {
+    flex: 1;
+    margin: 0;
+}
+.nav-drawer__lang-btn {
+    width: 100%;
+    padding: var(--ax-space-2) var(--ax-space-3);
+    font-size: var(--ax-text-sm);
+    font-weight: var(--ax-font-medium);
+    font-family: var(--ax-font-family);
+    color: var(--ax-text-secondary);
+    background: none;
+    border: 1px solid var(--ax-border-hover);
+    border-radius: var(--ax-radius-md);
+    cursor: pointer;
+    transition: color var(--ax-transition-fast),
+                background-color var(--ax-transition-fast),
+                border-color var(--ax-transition-fast);
+}
+.nav-drawer__lang-btn:hover {
+    color: var(--ax-text-primary);
+    background-color: var(--ax-bg-tertiary);
+}
+.nav-drawer__lang-btn.is-active {
+    color: var(--ax-accent-primary-light);
+    border-color: var(--ax-accent-primary);
+    background-color: rgba(99, 102, 241, 0.1);
 }
 
 /* Scroll Spy: sayfa kaydırılınca navbar arka planı güçlenir */

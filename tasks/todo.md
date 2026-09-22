@@ -85,9 +85,29 @@ değişecek, önce bu liste onaylanmalı.
 - [ ] **4. Çeviri dosyaları:** `django-admin makemessages -l en -l de`
   (mevcut `locale/en/` var, `locale/de/` yeni oluşacak) → `.po` doldur →
   `compilemessages`
-- [ ] **5. SEO:** kapsamdaki sayfalara `hreflang` alternate linkleri +
-  `x-default`, sitemap'e dil varyantları, navbar'a dil seçici, dinamik
-  `<html lang>`
+- [x] **5a. Navbar dil seçici + dinamik `<html lang>`:** TAMAMLANDI
+  (22 Eylül 2026, kullanıcı isteğiyle sıra dışı erken yapıldı — adım 3'ten
+  önce test kolaylığı için). `templates/base.html`: desktop navbar'da globe
+  ikonlu dropdown + mobil drawer'da TR/EN/DE buton satırı, ikisi de
+  `{% get_language_info_list %}` ile `django.conf.urls.i18n`'in `set_language`
+  view'ına POST eden mini formlar (`next` = `request.get_full_path`, Django
+  `translate_url()` otomatik doğru dil prefix'ine çeviriyor — ayrıca kod
+  yazmaya gerek yok). `<html lang="tr">` → `<html lang="{{ LANGUAGE_CODE }}">`.
+  - **Kritik tuzak bulundu:** `static/css/navbar.css` **ölü dosya** —
+    `base.html` yalnızca `static/css/bundle.css`'i yüklüyor (temmuz 2026'da
+    5 kaynak dosya birleştirilip minify edildi, bkz. analizus.md §26).
+    CSS eklerken doğru akış izlendi: `navbar.css`'e yeni kurallar eklendi →
+    `rcssmin` ile `bundle.css` container içinde yeniden üretildi → `?v=0004`
+    → `?v=0005`.
+  - **Doğrulama (lokal Docker):** `manage.py check` temiz, `collectstatic`
+    ile `staticfiles_data` volume güncellendi, `web`+`nginx` restart edildi,
+    curl ile `/`, `/en/`, `/de/` üzerinde dropdown markup + `<html lang>`
+    doğru görüldü, `/i18n/setlang/`'e gerçek POST ile `next=/analiz/ttesti/`
+    + `language=de` gönderildi → `Location: /de/analiz/ttesti/` +
+    `Set-Cookie: django_language=de` doğrulandı (Django'nun `translate_url()`
+    mekanizması sorunsuz çalışıyor).
+- [ ] **5b. Kalan SEO işleri:** `hreflang` alternate linkleri + `x-default`,
+  sitemap'e dil varyantları
 - [ ] **6. Python tarafı metinler:** kapsamdaki app'lerin (istatistik
   servisleri, makaleanaliz, openalex, semanticscholar) view/form hata
   mesajları ve PDF çıktı metinleri — ayrı görev olarak scope'u netleştir
