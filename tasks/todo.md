@@ -242,6 +242,31 @@ kod tabanında `password_change` hiç kullanılmıyor, grep ile doğrulandı),
 prefix'ini koruyor; kapsam içi sayfalarda (`/`, `/analiz/ttesti/`) seçici
 görünüyor, kapsam dışında (`/tarama/`, `/forum/`) gizli.
 
+## Bulunup Düzeltilen 3. Bug + Karar Değişikliği (22 Eylül 2026)
+
+**Belirti 1 (Render):** Navbar'da "EN" rozetinin yanında boş/kırık bir
+kutu görünüyordu (giriş yapmış kullanıcıda).
+**Kök neden:** `Gelen kutusu` (`inbox`) linkine `{% trans %}` eklerken
+`<a ...>` etiketinin kapanış `>` işareti yanlışlıkla silinmişti — `<svg>`
+bir sonraki satırda geldiği için tarayıcı etiketi bozuk parse ediyor,
+ikon hiç render olmuyordu. `templates/base.html` düzeltildi, aynı hata
+için diğer tüm `aria-label="{% trans ... %}"` satırları taranıp
+doğrulandı (başka bozuk yer yok).
+
+**Belirti 2 (Render):** Sayfa değiştikçe dil seçici görünüp kayboluyordu.
+**Karar değişikliği:** Kapsam dışı sayfalarda (tarama, forum, yoktez...)
+dil seçiciyi gizleme kararı ("Gizle") kullanıcıyı şaşırttı — geri alındı.
+Artık **her sayfada her zaman görünür** (kapsam dışı sayfada tıklarsa
+çerez set edilir ama görünür bir değişiklik olmaz — kabul edilebilir).
+`multilingual_page_context()` context processor'ü ve `is_multilingual_page`
+kontrolü kaldırıldı (kullanılmıyordu, sadelik için silindi).
+
+**Ortam notu:** Yerel makinede İKİ ayrı sunucu çalışıyor — Docker
+(nginx/443, postgres) ve bağımsız `manage.py runserver` (port 8000,
+`db.sqlite3`, .env'de `DATABASE_URL` kapalı olduğu için fallback).
+İkisi FARKLI veritabanı kullanıyor — birinde yapılan flag/veri değişikliği
+diğerinde görünmez. Test ederken hangi sunucuda olduğunuza dikkat edin.
+
 ## Açık Sorular (kullanıcıya soruldu, netleşince ilerlenir)
 - Proje talebi / Danışmanlık / Eğitim sayfaları kapsama girecek mi?
 - İstatistik araçlarının analiz sonuç metinleri (PDF rapor içerikleri) de
