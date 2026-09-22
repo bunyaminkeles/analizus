@@ -1,10 +1,11 @@
 {% load static %}
+{% load i18n %}
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="{{ LANGUAGE_CODE }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kayıt Ol - Analizus</title>
+    <title>{% trans "Kayıt Ol" %} - Analizus</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
     <style>
@@ -238,19 +239,19 @@
         <div class="right-half">
             <div class="top-bar">
                 <a href="{% url 'home' %}" class="back-link">
-                    <i class="bi bi-arrow-left"></i> Ana Sayfa
+                    <i class="bi bi-arrow-left"></i> {% trans "Ana Sayfa" %}
                 </a>
             </div>
 
             <div class="form-area">
                 <div class="form-header">
-                    <h1 class="form-title">Bize Katılın</h1>
-                    <p class="form-subtitle">Ücretsiz hesap — 30 saniye sürer.</p>
+                    <h1 class="form-title">{% trans "Bize Katılın" %}</h1>
+                    <p class="form-subtitle">{% trans "Ücretsiz hesap — 30 saniye sürer." %}</p>
                 </div>
 
                 <div class="tabs">
-                    <a href="{% url 'login' %}" class="tab">Giriş Yap</a>
-                    <a href="{% url 'register' %}" class="tab active">Kayıt Ol</a>
+                    <a href="{% url 'login' %}" class="tab">{% trans "Giriş Yap" %}</a>
+                    <a href="{% url 'register' %}" class="tab active">{% trans "Kayıt Ol" %}</a>
                 </div>
 
                 <form method="post">
@@ -259,27 +260,27 @@
                         <input type="text" name="website" id="id_website" tabindex="-1" autocomplete="off">
                     </div>
                     <div class="field">
-                        <label>Kullanıcı adı*</label>
+                        <label>{% trans "Kullanıcı adı" %}*</label>
                         <div class="input-box">
                             <i class="bi bi-person"></i>
                             <input type="text" name="username" value="{{ form.username.value|default:'' }}" required autocomplete="username">
                         </div>
-                        <p class="hint">Zorunlu. 150 karakter ya da daha az.</p>
+                        <p class="hint">{% trans "Zorunlu. 150 karakter ya da daha az." %}</p>
                         {% if form.username.errors %}<ul class="err">{% for e in form.username.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
                     </div>
 
                     <div class="field">
-                        <label>E-Posta Adresi*</label>
+                        <label>{% trans "E-Posta Adresi" %}*</label>
                         <div class="input-box">
                             <i class="bi bi-envelope"></i>
                             <input type="email" name="email" value="{{ form.email.value|default:'' }}" required autocomplete="email">
                         </div>
-                        <p class="hint">Geçerli bir e-posta adresi giriniz.</p>
+                        <p class="hint">{% trans "Geçerli bir e-posta adresi giriniz." %}</p>
                         {% if form.email.errors %}<ul class="err">{% for e in form.email.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
                     </div>
 
                     <div class="field">
-                        <label>Parola*</label>
+                        <label>{% trans "Parola" %}*</label>
                         <div class="input-box">
                             <i class="bi bi-lock"></i>
                             <input type="password" name="password1" required autocomplete="new-password">
@@ -288,24 +289,24 @@
                     </div>
 
                     <div class="field">
-                        <label>Parola onayı*</label>
+                        <label>{% trans "Parola onayı" %}*</label>
                         <div class="input-box">
                             <i class="bi bi-lock-fill"></i>
                             <input type="password" name="password2" required autocomplete="new-password">
                         </div>
-                        <p class="hint">Doğrulama için aynı parolayı girin.</p>
+                        <p class="hint">{% trans "Doğrulama için aynı parolayı girin." %}</p>
                         {% if form.password2.errors %}<ul class="err">{% for e in form.password2.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
                     </div>
 
                     <div class="terms">
                         <input type="checkbox" name="terms_confirmed" required id="t">
-                        <label for="t"><a href="#" data-bs-toggle="modal" data-bs-target="#m">Kullanım Şartlarını ve Etik Beyanı</a> okudum, kabul ediyorum.*</label>
+                        <label for="t">{% blocktrans %}<a href="#" data-bs-toggle="modal" data-bs-target="#m">Kullanım Şartlarını ve Etik Beyanı</a> okudum, kabul ediyorum.{% endblocktrans %}*</label>
                     </div>
 
-                    <button type="submit" class="btn" id="rb">Kayıt Ol</button>
+                    <button type="submit" class="btn" id="rb">{% trans "Kayıt Ol" %}</button>
                 </form>
 
-                <p class="footer">Zaten hesabınız var mı? <a href="{% url 'login' %}">Giriş Yap</a></p>
+                <p class="footer">{% trans "Zaten hesabınız var mı?" %} <a href="{% url 'login' %}">{% trans "Giriş Yap" %}</a></p>
             </div>
         </div>
     </div>
@@ -314,7 +315,7 @@
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" style="color:#ff6b4a;"><i class="bi bi-shield-check me-2"></i>Akademik Etik Protokolü</h5>
+                    <h5 class="modal-title" style="color:#ff6b4a;"><i class="bi bi-shield-check me-2"></i>{% trans "Akademik Etik Protokolü" %}</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body" style="max-height:450px;overflow-y:auto;line-height:1.7;font-size:0.95rem;">
@@ -333,7 +334,7 @@
                     <p><strong>7. Gizlilik:</strong> Kişisel verileriniz KVKK kapsamında korunur, ancak halka açık alanlarda paylaştığınız verilerin gizliliğinden kullanıcı sorumludur.</p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn px-4" style="background:#ff6b4a;color:#fff;" data-bs-dismiss="modal">Anladım</button>
+                    <button type="button" class="btn px-4" style="background:#ff6b4a;color:#fff;" data-bs-dismiss="modal">{% trans "Anladım" %}</button>
                 </div>
             </div>
         </div>
@@ -344,7 +345,7 @@
         document.querySelector('form').addEventListener('submit', function() {
             var b = document.getElementById('rb');
             b.disabled = true;
-            b.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>İşleniyor...';
+            b.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>{% trans "İşleniyor..." %}';
         });
     </script>
 </body>

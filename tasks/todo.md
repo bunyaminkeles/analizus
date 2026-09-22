@@ -79,9 +79,21 @@ değişecek, önce bu liste onaylanmalı.
   Doğrulama: `manage.py check` temiz, local Docker'da restart+curl ile
   sayfa 200 dönüyor, `{% trans %}` sarılan metinler `.po` derlenmediği için
   (beklendiği gibi) hâlâ Türkçe kaynak metin olarak görünüyor.
-- [ ] **3b. Kalan dosyalar** (alt gruplar halinde onaya sunulacak):
+- [x] **3b-1. `templates/forum/register.html` + `forum/templates/registration/login.html`:**
+  TAMAMLANDI (22 Eylül 2026). İkisi de `base.html`'i extend ETMEYEN bağımsız
+  sayfalar (özel split-screen tasarım) — `{% load i18n %}` eklendi,
+  `<html lang="tr">` → `<html lang="{{ LANGUAGE_CODE }}">`, form label/hint/
+  buton metinleri `{% trans %}` ile işaretlendi. **Kasıtlı işaretlenmedi:**
+  register.html'deki "Akademik Etik Protokolü" modalının 7 paragraflık
+  metni — KVKK ve Türk Ceza Kanunu'na doğrudan atıf yapıyor, EN/DE
+  kullanıcılar için hukuken anlamsız/yanıltıcı olur; ayrı bir hukuki karar
+  gerektirir (GDPR'a uyarlanmış ayrı metin mi, yoksa sadece Türkçe mi
+  kalacak — henüz karar yok).
+  Doğrulama: `manage.py check` temiz, `/login/` ve `/register/` 200,
+  `/en/login/` 404 (beklenen — login kasıtlı olarak i18n_patterns dışında,
+  bkz. yukarıdaki bug notu).
+- [ ] **3b-2. Kalan dosyalar** (alt gruplar halinde onaya sunulacak):
   - `forum/templates/forum/home.html` (ana sayfa)
-  - `forum/templates/forum/register.html`, `registration/login.html`
   - `makaleanaliz/templates/makaleanaliz/results.html`
   - `openalex/templates/openalex/landing.html`, `order.html`
   - `semanticscholar/templates/semanticscholar/landing.html`, `order.html`
@@ -147,6 +159,36 @@ değişecek, önce bu liste onaylanmalı.
 - [ ] **7. Deploy:** dev → Render'da doğrula, sonra kullanıcı onayıyla
   main → Hetzner'de `docker compose exec web python manage.py
   compilemessages` + `restart web` + `restart nginx`
+
+## Bulunup Düzeltilen Kritik Bug (22 Eylül 2026, kullanıcı raporu)
+
+**Belirti:** "de ve tr seçilmiyor, en seçilebiliyor" — `/en/` veya `/de/`
+sayfasındayken dil dropdown'undan başka bir dile geçiş çoğunlukla
+çalışmıyordu (sessizce aynı sayfada kalıyordu).
+
+**Kök neden:** `path('i18n/', include('django.conf.urls.i18n'))`
+`i18n_patterns` dışında (prefix'siz) tanımlıydı. Django'nun
+`LocaleMiddleware`'i, prefix'siz HER isteğin aktif dilini zorla varsayılana
+(`tr`) çeviriyor (`prefix_default_language=False` tasarımının bir parçası —
+bkz. yukarıdaki "5a-devam" notu). `/i18n/setlang/`'in KENDİSİ prefix'siz
+olduğu için, bu POST isteği işlenirken aktif dil hep `tr`'ye zorlanıyordu.
+Django'nun `set_language` view'ı içindeki `translate_url(next, lang_code)`,
+`next` değerini (`/en/...` gibi) çözerken bu yanlış ('tr') aktif dil
+bağlamını kullanıyor — `i18n_patterns`'in prefix regex'i dinamik olarak
+aktif dile göre kurulduğu için (`LocalePrefixPattern.language_prefix`),
+`/en/...` yolu 'tr' bağlamında hiçbir pattern'e uymuyor (`Resolver404`),
+`translate_url` `next`'i DEĞİŞTİRMEDEN döndürüyor.
+
+**Düzeltme:** `analizdestek/urls.py` → `i18n/` path'i `i18n_patterns(...)`
+bloğunun İÇİNE taşındı. Artık `{% url 'set_language' %}` her sayfada kendi
+dil prefix'ini taşıyor (`/en/i18n/setlang/`, `/de/i18n/setlang/`), bu
+isteğin aktif dili artık her zaman doğru (`en`/`de`) oluyor, `translate_url`
+`next`'i doğru çözüyor.
+
+**Doğrulama:** 3 kaynak sayfa (`/`, `/en/`, `/de/`) × 3 hedef dil = 9
+kombinasyonun hepsi gerçek POST ile test edildi, hepsi doğru `Location`
+başlığı döndürdü. `/en/analiz/ttesti/` → `de` seçimi de ayrıca doğrulandı
+(`/de/analiz/ttesti/`).
 
 ## Açık Sorular (kullanıcıya soruldu, netleşince ilerlenir)
 - Proje talebi / Danışmanlık / Eğitim sayfaları kapsama girecek mi?

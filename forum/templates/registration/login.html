@@ -1,12 +1,13 @@
 {% load static %}
+{% load i18n %}
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="{{ LANGUAGE_CODE }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, follow">
     <link rel="canonical" href="https://www.analizus.com/login/">
-    <title>Giriş Yap - Analizus</title>
+    <title>{% trans "Giriş Yap" %} - Analizus</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -227,24 +228,24 @@
         <div class="right-half">
             <div class="top-bar">
                 <a href="{% url 'home' %}" class="back-link">
-                    <i class="bi bi-arrow-left"></i> Ana Sayfa
+                    <i class="bi bi-arrow-left"></i> {% trans "Ana Sayfa" %}
                 </a>
             </div>
 
             <div class="form-area">
                 <div class="form-box">
                     <div class="form-header">
-                        <h1 class="form-title">Hoş Geldiniz</h1>
-                        <p class="form-subtitle">Hesabınıza giriş yapın</p>
+                        <h1 class="form-title">{% trans "Hoş Geldiniz" %}</h1>
+                        <p class="form-subtitle">{% trans "Hesabınıza giriş yapın" %}</p>
                     </div>
 
                     <div class="tabs">
-                        <a href="{% url 'login' %}" class="tab active">Giriş Yap</a>
-                        <a href="{% url 'register' %}" class="tab">Kayıt Ol</a>
+                        <a href="{% url 'login' %}" class="tab active">{% trans "Giriş Yap" %}</a>
+                        <a href="{% url 'register' %}" class="tab">{% trans "Kayıt Ol" %}</a>
                     </div>
 
                     {% if form.errors %}
-                    <div class="error-msg">Kullanıcı adı veya şifre hatalı.</div>
+                    <div class="error-msg">{% trans "Kullanıcı adı veya şifre hatalı." %}</div>
                     {% endif %}
 
                     <form method="post" novalidate id="loginForm">
@@ -254,7 +255,7 @@
                         </div>
 
                         <div class="field">
-                            <label class="label">Kullanıcı Adı</label>
+                            <label class="label">{% trans "Kullanıcı Adı" %}</label>
                             <div class="input-wrap">
                                 <i class="bi bi-person"></i>
                                 <input type="text" name="username" placeholder="kullaniciadi" required>
@@ -262,15 +263,15 @@
                         </div>
 
                         <div class="field">
-                            <label class="label">Şifre</label>
+                            <label class="label">{% trans "Şifre" %}</label>
                             <div class="input-wrap">
                                 <i class="bi bi-lock"></i>
                                 <input type="password" name="password" placeholder="••••••••" required>
                             </div>
-                            <a href="{% url 'password_reset' %}" class="forgot">Şifremi Unuttum</a>
+                            <a href="{% url 'password_reset' %}" class="forgot">{% trans "Şifremi Unuttum" %}</a>
                         </div>
 
-                        <button type="submit" class="submit-btn" id="submitBtn">Giriş Yap</button>
+                        <button type="submit" class="submit-btn" id="submitBtn">{% trans "Giriş Yap" %}</button>
                     </form>
                     <script>
                         document.getElementById('loginForm').addEventListener('submit', function(e) {
@@ -280,12 +281,12 @@
                                 return false;
                             }
                             btn.disabled = true;
-                            btn.textContent = 'Giriş yapılıyor...';
+                            btn.textContent = '{% trans "Giriş yapılıyor..." %}';
                         });
                     </script>
 
                     <p class="footer-text">
-                        Hesabınız yok mu? <a href="{% url 'register' %}">Hemen Kayıt Ol</a>
+                        {% trans "Hesabınız yok mu?" %} <a href="{% url 'register' %}">{% trans "Hemen Kayıt Ol" %}</a>
                     </p>
                 </div>
             </div>

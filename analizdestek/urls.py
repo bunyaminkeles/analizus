@@ -37,6 +37,18 @@ urlpatterns = i18n_patterns(
     # Unified Analiz Konsolu — 18 istatistik aracının açıklama/giriş sayfaları
     path('analiz/', include('istatistik.urls_analiz')),
 
+    # DİL MOTORU — i18n_patterns İÇİNDE olmalı: set_language view'ı prefix'siz
+    # kalırsa (/i18n/setlang/), bu isteğin KENDİSİ prefix'siz olduğu için
+    # LocaleMiddleware aktif dili zorla varsayılana (tr) çeker — set_language
+    # içindeki translate_url(next, lang) o anda 'tr' aktifken next'i (örn.
+    # /en/...) çözmeye çalışır, prefix uyuşmaz, Resolver404, next DEĞİŞMEDEN
+    # döner (kullanıcı /en/ veya /de/ sayfasından dil değiştiremez, sessizce
+    # aynı sayfada kalır — 22 Eylül 2026, kullanıcı raporu: "de ve tr
+    # seçilmiyor, en seçilebiliyor"). i18n_patterns içine alınca istek
+    # /en/i18n/setlang/ gibi kendi prefix'ini taşır, aktif dil doğru kalır,
+    # translate_url doğru çözer.
+    path('i18n/', include('django.conf.urls.i18n')),
+
     prefix_default_language=False,
 )
 
@@ -95,7 +107,6 @@ urlpatterns += [
     # 4. Forum Uygulaması — geri kalanı (forum, market, blog, DM...) kapsam dışı.
     # En sona koymak çakışmaları önler.
     path('', include('forum.urls')),
-    path('i18n/', include('django.conf.urls.i18n')), # DİL MOTORU BURADA
 
     # 4. SEO - Sitemap & Robots
     path('sitemap.xml', sitemap, {'sitemaps': sitemaps}, name='django.contrib.sitemaps.views.sitemap'),
