@@ -78,12 +78,29 @@ PostgreSQL (host) + Redis (host)
 ```
 
 **VPS IP:** `89.167.5.224`
-**Uygulama dizini (container içi):** `/app`
+**Uygulama dizini (host + container içi):** `/app`
 **Servis yönetimi:** `docker compose`
 **Container adları:** `app-web-1`, `app-db-1`, `app-redis-1`
 **Compose servis adları:** `web`, `db`, `redis`
 
 > Not: `DATABASE_URL` içinde servis adı kullanılır (`db`) — `localhost` container içinden host'a ulaşamaz.
+
+> ⚠️ **Sunucu paylaşımlı (2026-09-22 itibarıyla):** Bu sunucuda analizus.com'un yanında
+> **almanyalirehber.com** de çalışıyor — ayrı Hetzner sunucusu (204.168.195.246) yerine
+> maliyet birleştirmek için buraya taşındı. Host'taki `/app` dizini artık iki projeyi
+> birden barındırıyor:
+> ```
+> /app/                     ← analizdestek (bu repo), docker-compose.yml, nginx/, certbot/
+> /app/rlprehber/           ← almanyalirehber.com kodu (ayrı repo: rlprehber), kendi .env'i
+> ```
+> Aynı `docker-compose.yml`'de ikinci bir
+> servis (`rlprehber`, `/app/rlprehber`), aynı `db` container'ında ayrı bir veritabanı
+> (`almanyalirehber`), aynı nginx container'ında ikinci bir `server_name` bloğu
+> (`/app/nginx/conf.d/almanyalirehber.conf`). `docker compose restart nginx` veya
+> `docker compose up -d nginx` çalıştırırken **her iki site de** kısa süreli etkilenir.
+> almanyalirehber.com detayları için o projenin kendi repo'sundaki `SUNUCU.md`'ye bak.
+> Eski sunucu (204.168.195.246) silinmedi — kullanıcı isteğiyle ileride başka bir proje
+> için saklı tutuluyor, artık trafik almıyor.
 
 ### Bağlantı
 ```bash
