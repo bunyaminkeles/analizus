@@ -190,6 +190,58 @@ kombinasyonun hepsi gerçek POST ile test edildi, hepsi doğru `Location`
 başlığı döndürdü. `/en/analiz/ttesti/` → `de` seçimi de ayrıca doğrulandı
 (`/de/analiz/ttesti/`).
 
+## Bulunup Düzeltilen 2. Kritik Bug + Admin Flag (22 Eylül 2026)
+
+**Belirti:** "dil seçiminden sonra sayfa değiştiğinde otomatik olarak tr'ye
+geçiliyor" — `/en/`/`/de/` sayfasındayken "Giriş" linkine tıklayınca dil
+bağlamı kayboluyordu.
+
+**Kök neden:** `login`/`logout` bilinçli olarak `i18n_patterns` dışında
+(prefix'siz) tutulmuştu — `django.contrib.auth.urls`'ün kendi `login`/
+`logout` adlarıyla çakıştığı için (`reverse()` belirsizliği). Prefix'siz
+kalınca aynı "5a-devam"/"i18n/ path'i" bug'larıyla aynı kök sorun: bu
+sayfaya giden isteğin KENDİSİ prefix'siz olduğu için `LocaleMiddleware`
+aktif dili zorla `tr`'ye çekiyordu.
+
+**Düzeltme:** `django.contrib.auth.urls` include'u KALDIRILDI (sadece
+kullanılmayan `password_change`/`password_change_done` elle tanımlandı —
+kod tabanında `password_change` hiç kullanılmıyor, grep ile doğrulandı),
+`login`/`logout` artık `i18n_patterns` içinde. Artık isim çakışması yok,
+`{% url 'login' %}` her sayfada kendi dil prefix'ini koruyor
+(`/en/login/`, `/de/login/`).
+
+**Ek — Admin'den açılır/kapanır flag (kullanıcı isteği):**
+- `SiteSettings.feature_multilingual` (BooleanField, `default=False` —
+  diğer "hazır ama henüz yayında değil" flag'leriyle tutarlı:
+  `feature_agentic_landing`/`feature_training` gibi)
+- `forum/context_processors.py` → `feature_flags()`'e eklendi
+- `forum/admin.py` → `SiteSettingsAdmin.fieldsets`'e eklendi (KRİTİK adım —
+  unutulursa flag DB'de var ama admin'den hiç değiştirilemez, bkz.
+  analizus.md §26 "Yeni SiteSettings feature flag" dersi)
+- `forum/middleware.py` → yeni `MultilingualFeatureMiddleware`: flag
+  kapalıyken `/en/`, `/de/` prefix'li TÜM istekleri 404 ile keser
+  (`settings.MIDDLEWARE`'de `ForceDefaultLanguageMiddleware`'den sonra,
+  `LocaleMiddleware`'den önce)
+- `templates/base.html` → navbar'daki dil seçici (desktop + mobil)
+  `{% if features.multilingual and is_multilingual_page %}` ile sarıldı
+
+**Ek — kapsam dışı sayfalarda dil seçici gizleme (kullanıcı kararı: "Gizle"):**
+- `forum/context_processors.py` → yeni `multilingual_page_context()`:
+  Django'nun `set_language` view'ının kullandığı AYNI `translate_url()`
+  mekanizmasıyla, `'en'` ve `'de'` hedeflerine çeviri farklı URL üretiyorsa
+  sayfa kapsamda demektir (`is_multilingual_page=True`); kapsam dışı
+  sayfalarda (tarama, forum, yoktez, trdizin, oaipmh) ikisi de değişmeden
+  aynı path'e eşit döner → seçici hiç gösterilmez. Öncesinde seçici orada
+  da görünüyordu ama tıklayınca "görünürde hiçbir şey değişmiyordu" (çerez
+  set ediliyordu ama gidecek prefix'li adres yoktu) — kafa karıştırıcıydı.
+
+**Doğrulama:** `manage.py check` temiz; migration uygulandı; flag kapalıyken
+`/en/`→404 + navbar'da seçici yok, flag açıkken `/en/`→200 + seçici var;
+`reverse('login')`/`reverse('logout')` tr/en/de için doğru prefix'li;
+`/en/login/` 200 + `<html lang="en">` + sayfadaki tüm linkler `/en/`
+prefix'ini koruyor; kapsam içi sayfalarda (`/`, `/analiz/ttesti/`) seçici
+görünüyor, kapsam dışında (`/tarama/`, `/forum/`) gizli.
+
 ## Açık Sorular (kullanıcıya soruldu, netleşince ilerlenir)
 - Proje talebi / Danışmanlık / Eğitim sayfaları kapsama girecek mi?
 - İstatistik araçlarının analiz sonuç metinleri (PDF rapor içerikleri) de

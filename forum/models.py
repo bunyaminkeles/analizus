@@ -1243,6 +1243,14 @@ class SiteSettings(models.Model):
     feature_training = models.BooleanField(
         default=False, verbose_name="Eğitim Hizmetleri Sayfası"
     )
+    feature_multilingual = models.BooleanField(
+        default=False,
+        verbose_name="Çok Dilli Yayın (EN/DE)",
+        help_text="Kapalıyken navbar'daki dil seçici gizlenir ve /en/, /de/ "
+                  "URL'leri 404 döner. Kapsam: ana sayfa, navbar/footer, "
+                  "kayıt/giriş, proje talebi/danışmanlık/eğitim, makale "
+                  "analizi, OpenAlex, Semantic Scholar, istatistik araçları.",
+    )
 
     # Ana Sayfa
     stat_min_display = models.PositiveIntegerField(

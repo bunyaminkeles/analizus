@@ -37,6 +37,17 @@ urlpatterns = i18n_patterns(
     # Unified Analiz Konsolu — 18 istatistik aracının açıklama/giriş sayfaları
     path('analiz/', include('istatistik.urls_analiz')),
 
+    # Özel Giriş/Çıkış Sayfaları (Rate limited). i18n_patterns İÇİNDE olmalı —
+    # dışarıda kalırsa (prefix'siz /login/) LocaleMiddleware aktif dili zorla
+    # varsayılana (tr) çeker, kullanıcı /en/ veya /de/ sayfasından "Giriş"e
+    # tıklayınca dil bağlamı kayboluyordu (22 Eylül 2026, kullanıcı raporu:
+    # "dil seçiminden sonra sayfa değiştiğinde otomatik olarak tr'ye geçiliyor").
+    # 'login'/'logout' adı django.contrib.auth.urls ile çakışıyordu (reverse()
+    # belirsizliği) — bu yüzden aşağıda o include KALDIRILDI, sadece
+    # kullanılmayan password_change* elle tanımlandı (bkz. yorum).
+    path('login/', custom_login, name='login'),
+    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+
     # DİL MOTORU — i18n_patterns İÇİNDE olmalı: set_language view'ı prefix'siz
     # kalırsa (/i18n/setlang/), bu isteğin KENDİSİ prefix'siz olduğu için
     # LocaleMiddleware aktif dili zorla varsayılana (tr) çeker — set_language
@@ -68,16 +79,13 @@ urlpatterns += [
     path('accounts/reset/done/', auth_views.PasswordResetCompleteView.as_view(
         template_name='registration/password_reset_complete.html'
     ), name='password_reset_complete'),
-    # Django'nun diğer dahili giriş/çıkış sistemini aktif eder
-    path('accounts/', include('django.contrib.auth.urls')),
-
-    # 2. Özel Giriş/Çıkış Sayfaları (Rate limited). URL prefix'siz kalıyor —
-    # 'login' adı auth.urls ile çakışıyor, reverse() son kayıt edilen kazanıyor
-    # (bkz. tasks/todo.md), bu yüzden orijinal sırada (accounts/ include'undan
-    # SONRA) kalmalı. Çeviri için prefix'e ihtiyaç yok: LocaleMiddleware
-    # prefix'siz sayfalarda da dil çerezine (set_language) bakar.
-    path('login/', custom_login, name='login'),
-    path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+    # django.contrib.auth.urls'ün geri kalanı (yalnızca password_change*,
+    # login/logout YUKARIDA i18n_patterns içinde özel view'larla tanımlı —
+    # include() kullanılmıyor ki 'login'/'logout' adı çakışmasın). Kod
+    # tabanında kullanılmıyor (grep: 0 sonuç) ama Django admin dışı bir
+    # yerden çağrılabilir ihtimaline karşı korunuyor.
+    path('accounts/password_change/', auth_views.PasswordChangeView.as_view(), name='password_change'),
+    path('accounts/password_change/done/', auth_views.PasswordChangeDoneView.as_view(), name='password_change_done'),
 
     # TR Dizin Tarama — kapsam dışı (Türkiye'ye özgü)
     path('trdizin/', include('trdizin.urls')),

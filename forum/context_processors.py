@@ -74,5 +74,22 @@ def feature_flags(request):
             'transcript': site.feature_transcript,
             'agentic_landing': site.feature_agentic_landing,
             'training': site.feature_training,
+            'multilingual': site.feature_multilingual,
         }
     }
+
+
+def multilingual_page_context(request):
+    """Bu sayfanın çok dilli kapsamda olup olmadığını belirler — dil seçiciyi
+    kapsam dışı sayfalarda (tarama, forum, yoktez, trdizin, oaipmh...) gizlemek
+    için. Django'nun set_language view'ının kullandığı AYNI translate_url()
+    mekanizmasını kullanır: 'en' ve 'de' hedeflerine çeviri FARKLI URL'ler
+    üretiyorsa sayfa i18n_patterns kapsamında demektir; kapsam dışı sayfalarda
+    ikisi de (resolve() aynı prefix'siz pattern'i bulduğu için) DEĞİŞMEDEN
+    orijinal path'e eşit döner."""
+    from django.urls import translate_url
+    try:
+        is_scoped = translate_url(request.path, 'en') != translate_url(request.path, 'de')
+    except Exception:
+        is_scoped = False
+    return {'is_multilingual_page': is_scoped}

@@ -289,6 +289,7 @@
                 </button>
 
                 <!-- Dil Seçici -->
+                {% if features.multilingual and is_multilingual_page %}
                 {% get_available_languages as AX_AVAILABLE_LANGUAGES %}
                 {% get_language_info_list for AX_AVAILABLE_LANGUAGES as AX_LANGUAGES %}
                 <div class="site-nav__dropdown-wrap">
@@ -315,6 +316,7 @@
                         {% endfor %}
                     </div>
                 </div>
+                {% endif %}
 
                 {% if user.is_authenticated %}
 
@@ -464,6 +466,7 @@
                 </div>
             </div>
 
+            {% if features.multilingual and is_multilingual_page %}
             <div class="nav-drawer__divider"></div>
 
             <div class="nav-drawer__sub-label">{% trans "Dil" %}</div>
@@ -477,6 +480,7 @@
                 </form>
                 {% endfor %}
             </div>
+            {% endif %}
 
             <div class="nav-drawer__divider"></div>
 

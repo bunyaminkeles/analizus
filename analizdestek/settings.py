@@ -83,6 +83,7 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'forum.middleware.ForceDefaultLanguageMiddleware',  # Accept-Language auto-detect kapalı, varsayılan tr
+    'forum.middleware.MultilingualFeatureMiddleware',  # feature_multilingual kapalıyken /en/ /de/ 404
     'django.middleware.locale.LocaleMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -111,6 +112,7 @@ TEMPLATES = [
                 'forum.context_processors.profile_context',  # Profil, bildirimler vb. için
                 'forum.context_processors.google_analytics',  # Google Analytics
                 'forum.context_processors.feature_flags',  # Feature Flags
+                'forum.context_processors.multilingual_page_context',  # Dil seçici görünürlüğü
                 'forum.context_processors.donation_context',  # Bağış paketleri (footer modal)
                 'forum.context_processors.visitor_counter',  # Ziyaretçi sayacı
             ],

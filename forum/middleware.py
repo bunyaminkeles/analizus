@@ -46,6 +46,28 @@ class ForceDefaultLanguageMiddleware:
         return self.get_response(request)
 
 
+class MultilingualFeatureMiddleware:
+    """`feature_multilingual` flag'i kapalıyken /en/, /de/ gibi varsayılan
+    olmayan dil prefix'li URL'leri 404 ile keser. i18n_patterns URLconf'ta
+    her zaman statik olarak kayıtlı (request-time'da DB'ye göre değiştirilemez)
+    — bu middleware, flag'i dinamik olarak uygulamanın tek yolu.
+    LocaleMiddleware'den ÖNCE çalışabilir, sadece ham path string'ine bakar."""
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+        self._non_default_prefixes = tuple(
+            f'/{code}/' for code, _ in settings.LANGUAGES if code != settings.LANGUAGE_CODE
+        )
+
+    def __call__(self, request):
+        if request.path_info.startswith(self._non_default_prefixes):
+            from forum.models import SiteSettings
+            if not SiteSettings.load().feature_multilingual:
+                from django.http import Http404
+                raise Http404("Çok dilli yayın şu an kapalı.")
+        return self.get_response(request)
+
+
 class VisitorCounterMiddleware:
     """Her sayfa isteğinde (bot dahil) ziyaretçi sayacını artırır."""
 

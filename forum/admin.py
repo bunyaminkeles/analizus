@@ -749,7 +749,7 @@ class SiteSettingsAdmin(ModelAdmin):
                 'feature_trdizin', 'feature_openalex', 'feature_oaipmh', 'feature_quiz', 'feature_messaging',
                 'feature_donation', 'feature_success_stories', 'feature_bibliometrics', 'feature_yoktez',
                 'feature_semanticscholar', 'feature_istatistik', 'feature_transcript',
-                'feature_agentic_landing', 'feature_training',
+                'feature_agentic_landing', 'feature_training', 'feature_multilingual',
             ),
             'classes': ('collapse',),
         }),
