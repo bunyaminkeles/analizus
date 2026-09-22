@@ -30,8 +30,8 @@
     <meta name="application-name" content="Analizus">
     <meta name="msapplication-TileColor" content="#0f172a">
 
-    <title>{% block title %}Analizus - Akademik Analiz ve Veri Bilimi Topluluğu{% endblock %}</title>
-    <meta name="description" content="{% block meta_description %}SPSS, Python, R Studio, Nitel analizler ve AI ile istatistik analizi, tez yazımı ve akademik araştırma desteği.{% endblock %}">
+    <title>{% block title %}{% trans "Analizus - Akademik Analiz ve Veri Bilimi Topluluğu" %}{% endblock %}</title>
+    <meta name="description" content="{% block meta_description %}{% trans "SPSS, Python, R Studio, Nitel analizler ve AI ile istatistik analizi, tez yazımı ve akademik araştırma desteği." %}{% endblock %}">
     <meta name="keywords" content="{% block meta_keywords %}SPSS, Python, R Studio, istatistik analizi, tez yazımı, akademik araştırma, veri bilimi, regresyon, ANOVA, t-test, akademik danışmanlık, tez istatistik{% endblock %}">
     <meta name="author" content="Analizus">
     <meta name="robots" content="{% block robots_content %}index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1{% endblock %}">
@@ -184,7 +184,7 @@
         <div class="site-nav__inner ax-container">
 
             <!-- Logo -->
-            <a href="{% url 'home' %}" class="site-nav__logo" aria-label="Analizus Ana Sayfa">
+            <a href="{% url 'home' %}" class="site-nav__logo" aria-label="{% trans 'Analizus Ana Sayfa' %}">
                 <img class="site-nav__logo-img" src="{% static 'img/analizus-logo-001.png' %}" alt="" width="40" height="40">
                 <span class="site-nav__logo-text">Analizus</span>
             </a>
@@ -197,24 +197,24 @@
                     <button class="site-nav__link site-nav__dropdown-btn"
                             aria-expanded="false" aria-haspopup="true"
                             data-dropdown="analizler">
-                        Analizler
+                        {% trans "Analizler" %}
                         <svg class="site-nav__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
                     </button>
                     <div class="site-nav__dropdown" id="dropdown-analizler" role="menu">
                         {% if features.istatistik %}
-                        <a href="{% url 'analiz_home' %}" class="site-nav__dropdown-item" role="menuitem">İstatistik Analiz Araçları</a>
+                        <a href="{% url 'analiz_home' %}" class="site-nav__dropdown-item" role="menuitem">{% trans "İstatistik Analiz Araçları" %}</a>
                         {% endif %}
                         {% if features.bibliometrics %}
-                        <a href="{% url 'bibliometrics:landing' %}" class="site-nav__dropdown-item" role="menuitem">Bibliometrik Analiz</a>
+                        <a href="{% url 'bibliometrics:landing' %}" class="site-nav__dropdown-item" role="menuitem">{% trans "Bibliometrik Analiz" %}</a>
                         {% endif %}
-                        <a href="{% url 'tableau_dashboard' %}" class="site-nav__dropdown-item" role="menuitem">Tableau Analizleri</a>
+                        <a href="{% url 'tableau_dashboard' %}" class="site-nav__dropdown-item" role="menuitem">{% trans "Tableau Analizleri" %}</a>
                         <div class="site-nav__dropdown-divider"></div>
-                        <a href="{% url 'hangi_test' %}" class="site-nav__dropdown-item" role="menuitem">Hangi Test?</a>
+                        <a href="{% url 'hangi_test' %}" class="site-nav__dropdown-item" role="menuitem">{% trans "Hangi Test?" %}</a>
                         {% if features.ai_assistant %}
-                        <a href="{% url 'ai_assistant' %}" class="site-nav__dropdown-item" role="menuitem">AI Asistan</a>
+                        <a href="{% url 'ai_assistant' %}" class="site-nav__dropdown-item" role="menuitem">{% trans "AI Asistan" %}</a>
                         {% endif %}
                         {% if features.transcript %}
-                        <a href="{% url 'transcript:form' %}" class="site-nav__dropdown-item" role="menuitem">YouTube Transcript İndir</a>
+                        <a href="{% url 'transcript:form' %}" class="site-nav__dropdown-item" role="menuitem">{% trans "YouTube Transcript İndir" %}</a>
                         {% endif %}
                     </div>
                 </div>
@@ -222,12 +222,12 @@
                 <!-- Akademik Tarama -->
                 {% if features.oaipmh or features.yoktez or features.openalex or features.trdizin or features.semanticscholar %}
                 <a href="/tarama/" class="site-nav__link {% if '/tarama/' in request.path or '/yoktez/' in request.path or '/openalex/' in request.path or '/trdizin/' in request.path or '/oaipmh/' in request.path or '/semantic-scholar/' in request.path %}is-active{% endif %}">
-                    Akademik Tarama
+                    {% trans "Akademik Tarama" %}
                 </a>
                 {% endif %}
 
                 {% if features.market %}
-                <a href="{% url 'job_list' %}" class="site-nav__link">Pazaryeri</a>
+                <a href="{% url 'job_list' %}" class="site-nav__link">{% trans "Pazaryeri" %}</a>
                 {% endif %}
 
                 <!-- Topluluk Dropdown -->
@@ -235,25 +235,25 @@
                     <button class="site-nav__link site-nav__dropdown-btn {% if '/forum/' in request.path or '/odalar/' in request.path or '/blog/' in request.path %}is-active{% endif %}"
                             aria-expanded="false" aria-haspopup="true"
                             data-dropdown="topluluk">
-                        Topluluk
+                        {% trans "Topluluk" %}
                         <svg class="site-nav__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
                     </button>
                     <div class="site-nav__dropdown" id="dropdown-topluluk" role="menu">
                         <a href="{% url 'forum_index' %}" class="site-nav__dropdown-item" role="menuitem">
                             <i class="bi bi-chat-square-text-fill me-1" style="color:#818cf8;"></i> Forum
                         </a>
-                        <a href="{% url 'studyroom_list' %}" class="site-nav__dropdown-item" role="menuitem">Çalışma Odaları</a>
-                        <a href="{% url 'home' %}#istatistik-arenasi" class="site-nav__dropdown-item" role="menuitem">İstatistik Arena</a>
+                        <a href="{% url 'studyroom_list' %}" class="site-nav__dropdown-item" role="menuitem">{% trans "Çalışma Odaları" %}</a>
+                        <a href="{% url 'home' %}#istatistik-arenasi" class="site-nav__dropdown-item" role="menuitem">{% trans "İstatistik Arena" %}</a>
                         {% if features.blog %}
                         <a href="{% url 'blog_list' %}" class="site-nav__dropdown-item" role="menuitem">Blog</a>
                         {% endif %}
                     </div>
                 </div>
 
-                <a href="{% url 'proje_talebi' %}" class="site-nav__link">Proje Talebi</a>
+                <a href="{% url 'proje_talebi' %}" class="site-nav__link">{% trans "Proje Talebi" %}</a>
 
                 {% if features.training %}
-                <a href="{% url 'egitim' %}" class="site-nav__link {% if '/egitim' in request.path %}is-active{% endif %}">Eğitim</a>
+                <a href="{% url 'egitim' %}" class="site-nav__link {% if '/egitim' in request.path %}is-active{% endif %}">{% trans "Eğitim" %}</a>
                 {% endif %}
 
                 <!-- Kurumsal Dropdown -->
@@ -261,16 +261,16 @@
                     <button class="site-nav__link site-nav__dropdown-btn"
                             aria-expanded="false" aria-haspopup="true"
                             data-dropdown="kurumsal">
-                        Kurumsal
+                        {% trans "Kurumsal" %}
                         <svg class="site-nav__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
                     </button>
                     <div class="site-nav__dropdown" id="dropdown-kurumsal" role="menu">
-                        <a href="{% url 'about' %}#analizusun-farki" class="site-nav__dropdown-item" role="menuitem">Neden Analizus?</a>
+                        <a href="{% url 'about' %}#analizusun-farki" class="site-nav__dropdown-item" role="menuitem">{% trans "Neden Analizus?" %}</a>
                         {% if features.agentic_landing %}
-                        <a href="{% url 'ai_cozumler' %}" class="site-nav__dropdown-item" role="menuitem">AI Çözümler</a>
+                        <a href="{% url 'ai_cozumler' %}" class="site-nav__dropdown-item" role="menuitem">{% trans "AI Çözümler" %}</a>
                         {% endif %}
-                        <a href="{% url 'about' %}" class="site-nav__dropdown-item" role="menuitem">Hakkımızda</a>
-                        <a href="{% url 'contact' %}" class="site-nav__dropdown-item" role="menuitem">İletişim</a>
+                        <a href="{% url 'about' %}" class="site-nav__dropdown-item" role="menuitem">{% trans "Hakkımızda" %}</a>
+                        <a href="{% url 'contact' %}" class="site-nav__dropdown-item" role="menuitem">{% trans "İletişim" %}</a>
                     </div>
                 </div>
 
@@ -280,7 +280,7 @@
             <div class="site-nav__actions">
 
                 <!-- Arama -->
-                <button class="site-nav__icon-btn" aria-label="Ara"
+                <button class="site-nav__icon-btn" aria-label="{% trans 'Ara' %}"
                         data-ax-toggle="modal" data-ax-target="#searchModal">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <circle cx="11" cy="11" r="8"/>
@@ -292,7 +292,7 @@
                 {% get_available_languages as AX_AVAILABLE_LANGUAGES %}
                 {% get_language_info_list for AX_AVAILABLE_LANGUAGES as AX_LANGUAGES %}
                 <div class="site-nav__dropdown-wrap">
-                    <button class="site-nav__icon-btn site-nav__lang-trigger site-nav__dropdown-btn" aria-label="Dil seç"
+                    <button class="site-nav__icon-btn site-nav__lang-trigger site-nav__dropdown-btn" aria-label="{% trans 'Dil seç' %}"
                             aria-expanded="false" aria-haspopup="true"
                             data-dropdown="lang">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -319,7 +319,7 @@
                 {% if user.is_authenticated %}
 
                     {% if features.messaging %}
-                    <a href="{% url 'inbox' %}" class="site-nav__icon-btn" aria-label="Gelen kutusu">
+                    <a href="{% url 'inbox' %}" class="site-nav__icon-btn" aria-label="{% trans 'Gelen kutusu' %}"
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                             <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
                             <polyline points="22,6 12,13 2,6"/>
@@ -340,17 +340,17 @@
                                 <circle cx="12" cy="7" r="4"/>
                             </svg>
                             <span>{{ user.username }}</span>
-                            <span class="site-nav__rep" title="Puanını Arena'da artır" role="link" tabindex="0"
+                            <span class="site-nav__rep" title="{% trans "Puanını Arena'da artır" %}" role="link" tabindex="0"
                                   onclick="event.stopPropagation(); window.location.href='{% url 'home' %}#istatistik-arenasi';"
                                   onkeydown="if(event.key==='Enter'){event.stopPropagation(); window.location.href='{% url 'home' %}#istatistik-arenasi';}">★ {{ user_profile.reputation }}</span>
                         </button>
                         <div class="site-nav__dropdown site-nav__dropdown--end" id="dropdown-user" role="menu">
-                            <a href="{% url 'profile_detail' username=user.username %}" class="site-nav__dropdown-item" role="menuitem">Profilim</a>
-                            <a href="{% url 'profile_edit' %}" class="site-nav__dropdown-item" role="menuitem">Profili Düzenle</a>
-                            <a href="{% url 'my_payments' %}" class="site-nav__dropdown-item" role="menuitem">Ödemelerim</a>
-                            <a href="{% url 'referral_dashboard' %}" class="site-nav__dropdown-item" role="menuitem">Arkadaşını Davet Et</a>
+                            <a href="{% url 'profile_detail' username=user.username %}" class="site-nav__dropdown-item" role="menuitem">{% trans "Profilim" %}</a>
+                            <a href="{% url 'profile_edit' %}" class="site-nav__dropdown-item" role="menuitem">{% trans "Profili Düzenle" %}</a>
+                            <a href="{% url 'my_payments' %}" class="site-nav__dropdown-item" role="menuitem">{% trans "Ödemelerim" %}</a>
+                            <a href="{% url 'referral_dashboard' %}" class="site-nav__dropdown-item" role="menuitem">{% trans "Arkadaşını Davet Et" %}</a>
                             {% if features.messaging %}
-                            <a href="{% url 'inbox' %}" class="site-nav__dropdown-item" role="menuitem">Gelen Kutusu</a>
+                            <a href="{% url 'inbox' %}" class="site-nav__dropdown-item" role="menuitem">{% trans "Gelen Kutusu" %}</a>
                             {% endif %}
                             {% if user.is_staff %}
                             <div class="site-nav__dropdown-divider"></div>
@@ -360,7 +360,7 @@
                             <form action="{% url 'logout' %}" method="post" class="site-nav__logout-form">
                                 {% csrf_token %}
                                 <button type="submit" class="site-nav__dropdown-item site-nav__dropdown-item--danger" role="menuitem">
-                                    Çıkış Yap
+                                    {% trans "Çıkış Yap" %}
                                 </button>
                             </form>
                         </div>
@@ -369,15 +369,15 @@
                 {% else %}
 
                     <div class="site-nav__auth">
-                        <a href="{% url 'login' %}" class="ax-btn ax-btn--ghost ax-btn--sm">Giriş</a>
-                        <a href="{% url 'register' %}" class="ax-btn ax-btn--primary ax-btn--sm">Kayıt Ol</a>
+                        <a href="{% url 'login' %}" class="ax-btn ax-btn--ghost ax-btn--sm">{% trans "Giriş" %}</a>
+                        <a href="{% url 'register' %}" class="ax-btn ax-btn--primary ax-btn--sm">{% trans "Kayıt Ol" %}</a>
                     </div>
 
                 {% endif %}
 
                 <!-- Hamburger — Mobil -->
                 <button class="site-nav__hamburger" id="navHamburger"
-                        aria-expanded="false" aria-label="Menüyü aç" aria-controls="navDrawer">
+                        aria-expanded="false" aria-label="{% trans 'Menüyü aç' %}" aria-controls="navDrawer">
                     <svg id="hamIconOpen" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
                         <line x1="3" y1="6"  x2="21" y2="6"/>
                         <line x1="3" y1="12" x2="21" y2="12"/>
@@ -397,13 +397,13 @@
     <div class="nav-overlay" id="navOverlay" aria-hidden="true"></div>
 
     <!-- Mobile Drawer -->
-    <aside class="nav-drawer" id="navDrawer" aria-label="Mobil menü" aria-hidden="true" inert>
+    <aside class="nav-drawer" id="navDrawer" aria-label="{% trans 'Mobil menü' %}" aria-hidden="true" inert>
         <div class="nav-drawer__header">
-            <a href="{% url 'home' %}" class="site-nav__logo" aria-label="Analizus Ana Sayfa">
+            <a href="{% url 'home' %}" class="site-nav__logo" aria-label="{% trans 'Analizus Ana Sayfa' %}">
                 <img class="site-nav__logo-img" src="{% static 'img/analizus-logo-001.png' %}" alt="" width="36" height="36">
                 <span class="site-nav__logo-text">Analizus</span>
             </a>
-            <button class="site-nav__icon-btn" id="navDrawerClose" aria-label="Menüyü kapat">
+            <button class="site-nav__icon-btn" id="navDrawerClose" aria-label="{% trans 'Menüyü kapat' %}">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
                     <line x1="18" y1="6"  x2="6"  y2="18"/>
                     <line x1="6"  y1="6"  x2="18" y2="18"/>
@@ -414,59 +414,59 @@
 
             <div>
                 <button class="nav-drawer__accordion-btn" aria-expanded="false" data-accordion="mob-analizler">
-                    Analizler
+                    {% trans "Analizler" %}
                     <svg class="nav-drawer__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
                 </button>
                 <div class="nav-drawer__accordion-body" id="mob-analizler">
-                    {% if features.istatistik %}<a href="{% url 'analiz_home' %}" class="nav-drawer__link">İstatistik Analiz Araçları</a>{% endif %}
-                    {% if features.bibliometrics %}<a href="{% url 'bibliometrics:landing' %}" class="nav-drawer__link">Bibliometrik Analiz</a>{% endif %}
-                    <a href="{% url 'tableau_dashboard' %}" class="nav-drawer__link">Tableau Analizleri</a>
-                    <a href="{% url 'hangi_test' %}" class="nav-drawer__link">Hangi Test?</a>
-                    {% if features.ai_assistant %}<a href="{% url 'ai_assistant' %}" class="nav-drawer__link">AI Asistan</a>{% endif %}
+                    {% if features.istatistik %}<a href="{% url 'analiz_home' %}" class="nav-drawer__link">{% trans "İstatistik Analiz Araçları" %}</a>{% endif %}
+                    {% if features.bibliometrics %}<a href="{% url 'bibliometrics:landing' %}" class="nav-drawer__link">{% trans "Bibliometrik Analiz" %}</a>{% endif %}
+                    <a href="{% url 'tableau_dashboard' %}" class="nav-drawer__link">{% trans "Tableau Analizleri" %}</a>
+                    <a href="{% url 'hangi_test' %}" class="nav-drawer__link">{% trans "Hangi Test?" %}</a>
+                    {% if features.ai_assistant %}<a href="{% url 'ai_assistant' %}" class="nav-drawer__link">{% trans "AI Asistan" %}</a>{% endif %}
                 </div>
             </div>
 
             {% if features.oaipmh or features.yoktez or features.openalex or features.trdizin or features.semanticscholar %}
-            <a href="/tarama/" class="nav-drawer__link">Akademik Tarama</a>
+            <a href="/tarama/" class="nav-drawer__link">{% trans "Akademik Tarama" %}</a>
             {% endif %}
 
-            {% if features.market %}<a href="{% url 'job_list' %}" class="nav-drawer__link">Pazaryeri</a>{% endif %}
+            {% if features.market %}<a href="{% url 'job_list' %}" class="nav-drawer__link">{% trans "Pazaryeri" %}</a>{% endif %}
 
             <div>
                 <button class="nav-drawer__accordion-btn" aria-expanded="false" data-accordion="mob-topluluk">
-                    Topluluk
+                    {% trans "Topluluk" %}
                     <svg class="nav-drawer__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
                 </button>
                 <div class="nav-drawer__accordion-body" id="mob-topluluk">
                     <a href="{% url 'forum_index' %}" class="nav-drawer__link">Forum</a>
-                    <a href="{% url 'studyroom_list' %}" class="nav-drawer__link">Çalışma Odaları</a>
-                    <a href="{% url 'home' %}#istatistik-arenasi" class="nav-drawer__link">İstatistik Arena</a>
+                    <a href="{% url 'studyroom_list' %}" class="nav-drawer__link">{% trans "Çalışma Odaları" %}</a>
+                    <a href="{% url 'home' %}#istatistik-arenasi" class="nav-drawer__link">{% trans "İstatistik Arena" %}</a>
                     {% if features.blog %}<a href="{% url 'blog_list' %}" class="nav-drawer__link">Blog</a>{% endif %}
                 </div>
             </div>
 
-            <a href="{% url 'proje_talebi' %}" class="nav-drawer__link">Proje Talebi</a>
+            <a href="{% url 'proje_talebi' %}" class="nav-drawer__link">{% trans "Proje Talebi" %}</a>
 
             {% if features.training %}
-            <a href="{% url 'egitim' %}" class="nav-drawer__link">Eğitim</a>
+            <a href="{% url 'egitim' %}" class="nav-drawer__link">{% trans "Eğitim" %}</a>
             {% endif %}
 
             <div>
                 <button class="nav-drawer__accordion-btn" aria-expanded="false" data-accordion="mob-kurumsal">
-                    Kurumsal
+                    {% trans "Kurumsal" %}
                     <svg class="nav-drawer__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
                 </button>
                 <div class="nav-drawer__accordion-body" id="mob-kurumsal">
-                    <a href="{% url 'about' %}#analizusun-farki" class="nav-drawer__link">Neden Analizus?</a>
-                    {% if features.agentic_landing %}<a href="{% url 'ai_cozumler' %}" class="nav-drawer__link">AI Çözümler</a>{% endif %}
-                    <a href="{% url 'about' %}" class="nav-drawer__link">Hakkımızda</a>
-                    <a href="{% url 'contact' %}" class="nav-drawer__link">İletişim</a>
+                    <a href="{% url 'about' %}#analizusun-farki" class="nav-drawer__link">{% trans "Neden Analizus?" %}</a>
+                    {% if features.agentic_landing %}<a href="{% url 'ai_cozumler' %}" class="nav-drawer__link">{% trans "AI Çözümler" %}</a>{% endif %}
+                    <a href="{% url 'about' %}" class="nav-drawer__link">{% trans "Hakkımızda" %}</a>
+                    <a href="{% url 'contact' %}" class="nav-drawer__link">{% trans "İletişim" %}</a>
                 </div>
             </div>
 
             <div class="nav-drawer__divider"></div>
 
-            <div class="nav-drawer__sub-label">Dil</div>
+            <div class="nav-drawer__sub-label">{% trans "Dil" %}</div>
             <div class="nav-drawer__lang-row">
                 {% for lang in AX_LANGUAGES %}
                 <form action="{% url 'set_language' %}" method="post" class="nav-drawer__lang-form">
@@ -481,22 +481,22 @@
             <div class="nav-drawer__divider"></div>
 
             {% if user.is_authenticated %}
-                <a href="{% url 'profile_detail' username=user.username %}" class="nav-drawer__link">Profilim</a>
-                <a href="{% url 'profile_edit' %}" class="nav-drawer__link">Profili Düzenle</a>
-                <a href="{% url 'referral_dashboard' %}" class="nav-drawer__link">Arkadaşını Davet Et</a>
-                {% if features.messaging %}<a href="{% url 'inbox' %}" class="nav-drawer__link">Gelen Kutusu</a>{% endif %}
+                <a href="{% url 'profile_detail' username=user.username %}" class="nav-drawer__link">{% trans "Profilim" %}</a>
+                <a href="{% url 'profile_edit' %}" class="nav-drawer__link">{% trans "Profili Düzenle" %}</a>
+                <a href="{% url 'referral_dashboard' %}" class="nav-drawer__link">{% trans "Arkadaşını Davet Et" %}</a>
+                {% if features.messaging %}<a href="{% url 'inbox' %}" class="nav-drawer__link">{% trans "Gelen Kutusu" %}</a>{% endif %}
                 {% if user.is_staff %}<a href="{% url 'admin:index' %}" class="nav-drawer__link">Admin Dashboard</a>{% endif %}
                 <div class="nav-drawer__divider"></div>
                 <div class="nav-drawer__logout-form">
                     <form action="{% url 'logout' %}" method="post">
                         {% csrf_token %}
-                        <button type="submit" class="nav-drawer__link nav-drawer__link--danger">Çıkış Yap</button>
+                        <button type="submit" class="nav-drawer__link nav-drawer__link--danger">{% trans "Çıkış Yap" %}</button>
                     </form>
                 </div>
             {% else %}
                 <div class="nav-drawer__auth">
-                    <a href="{% url 'login' %}" class="ax-btn ax-btn--ghost ax-w-full">Giriş Yap</a>
-                    <a href="{% url 'register' %}" class="ax-btn ax-btn--primary ax-w-full">Kayıt Ol</a>
+                    <a href="{% url 'login' %}" class="ax-btn ax-btn--ghost ax-w-full">{% trans "Giriş Yap" %}</a>
+                    <a href="{% url 'register' %}" class="ax-btn ax-btn--primary ax-w-full">{% trans "Kayıt Ol" %}</a>
                 </div>
             {% endif %}
 

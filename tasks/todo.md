@@ -64,11 +64,22 @@ değişecek, önce bu liste onaylanmalı.
     `/yoktez/`, `/istatistik/ttesti/` (301→/analiz/ttesti/, değişmedi)
     curl ile 200/301 olarak doğrulandı; ana sayfa HTML çıktısında `/en/`
     için navbar linklerinin doğru prefix aldığı görüldü.
-- [ ] **3. Şablonlarda `{% trans %}` / `{% blocktrans %}` işaretleme**
-  (kapsam listesi, dosya sayısı büyük olduğu için alt gruplar halinde
-  onaya sunulacak):
-  - `templates/base.html` (navbar, footer için ortak iskelet)
-  - `templates/partials/footer.html`
+- [x] **3a. `templates/base.html` + `templates/partials/footer.html`:**
+  TAMAMLANDI (22 Eylül 2026). Navbar (desktop dropdown'lar, mobil drawer,
+  auth butonları, hamburger/close/arama/dil-seç aria-label'ları), `<title>`/
+  meta description varsayılanları, footer (marka tagline, Araçlar/Topluluk/
+  Kurumsal kolonları, alt satır copyright+link) `{% trans %}` ile işaretlendi.
+  **Kasıtlı olarak İŞARETLENMEDİ:** "Forum"/"Blog" (dilller arası aynı
+  kelime), footer "Akademik Kaynaklar" kolonu (Google Scholar/DergiPark/
+  Semantic Scholar/YÖK Tez Merkezi — marka isimleri), footer "Bize Destek
+  Ol" + bağış modalı (TL/IBAN havale bazlı ödeme — kapsam dışı, proje
+  kuralı: ödeme sistemi belirsiz, sormadan genişletme), fiziksel adres,
+  ana sayfadaki quiz limit-aşımı JS metni (İstatistik Arena/quiz soru
+  içeriği zaten Türkçe kalacak, forum-bitişik özellik).
+  Doğrulama: `manage.py check` temiz, local Docker'da restart+curl ile
+  sayfa 200 dönüyor, `{% trans %}` sarılan metinler `.po` derlenmediği için
+  (beklendiği gibi) hâlâ Türkçe kaynak metin olarak görünüyor.
+- [ ] **3b. Kalan dosyalar** (alt gruplar halinde onaya sunulacak):
   - `forum/templates/forum/home.html` (ana sayfa)
   - `forum/templates/forum/register.html`, `registration/login.html`
   - `makaleanaliz/templates/makaleanaliz/results.html`

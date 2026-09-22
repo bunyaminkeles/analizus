@@ -24,7 +24,7 @@
                         </svg>
                         Analizus
                     </span>
-                    <p>Akademik araştırma ve istatistik analiz için Türkçe platform. Tezini güvenle yaz, verini doğru analiz et.</p>
+                    <p>{% trans "Akademik araştırma ve istatistik analiz için Türkçe platform. Tezini güvenle yaz, verini doğru analiz et." %}</p>
                     <div class="ax-footer-social">
                         <a href="https://www.linkedin.com/company/analizus" target="_blank" rel="noopener" aria-label="LinkedIn">
                             <i class="bi bi-linkedin"></i>
@@ -41,28 +41,28 @@
 
             <!-- Araçlar -->
             <div class="col-6 col-md-3 col-lg-2">
-                <p class="ax-footer-heading">Araçlar</p>
+                <p class="ax-footer-heading">{% trans "Araçlar" %}</p>
                 <ul class="ax-footer-list">
-                    <li><a href="{% url 'hangi_test' %}"><i class="bi bi-question-circle"></i>Hangi Test?</a></li>
-                    <li><a href="{% url 'analiz_home' %}"><i class="bi bi-calculator"></i>Analiz Araçları</a></li>
-                    <li><a href="{% url 'ai_assistant' %}"><i class="bi bi-robot"></i>AI Asistan</a></li>
-                    <li><a href="{% url 'uzman_dizini' %}"><i class="bi bi-people"></i>Uzman Bul</a></li>
-                    <li><a href="{% url 'job_list' %}"><i class="bi bi-briefcase"></i>Pazaryeri</a></li>
+                    <li><a href="{% url 'hangi_test' %}"><i class="bi bi-question-circle"></i>{% trans "Hangi Test?" %}</a></li>
+                    <li><a href="{% url 'analiz_home' %}"><i class="bi bi-calculator"></i>{% trans "Analiz Araçları" %}</a></li>
+                    <li><a href="{% url 'ai_assistant' %}"><i class="bi bi-robot"></i>{% trans "AI Asistan" %}</a></li>
+                    <li><a href="{% url 'uzman_dizini' %}"><i class="bi bi-people"></i>{% trans "Uzman Bul" %}</a></li>
+                    <li><a href="{% url 'job_list' %}"><i class="bi bi-briefcase"></i>{% trans "Pazaryeri" %}</a></li>
                     {% if features.training %}
-                    <li><a href="{% url 'egitim' %}"><i class="bi bi-mortarboard"></i>Eğitimler</a></li>
+                    <li><a href="{% url 'egitim' %}"><i class="bi bi-mortarboard"></i>{% trans "Eğitimler" %}</a></li>
                     {% endif %}
                 </ul>
             </div>
 
             <!-- Topluluk -->
             <div class="col-6 col-md-3 col-lg-2">
-                <p class="ax-footer-heading">Topluluk</p>
+                <p class="ax-footer-heading">{% trans "Topluluk" %}</p>
                 <ul class="ax-footer-list">
                     <li><a href="{% url 'forum_index' %}"><i class="bi bi-chat-dots"></i>Forum</a></li>
-                    <li><a href="{% url 'studyroom_list' %}"><i class="bi bi-door-open"></i>Çalışma Odaları</a></li>
-                    <li><a href="{% url 'home' %}#istatistik-arenasi"><i class="bi bi-trophy-fill"></i>İstatistik Arena</a></li>
+                    <li><a href="{% url 'studyroom_list' %}"><i class="bi bi-door-open"></i>{% trans "Çalışma Odaları" %}</a></li>
+                    <li><a href="{% url 'home' %}#istatistik-arenasi"><i class="bi bi-trophy-fill"></i>{% trans "İstatistik Arena" %}</a></li>
                     <li><a href="{% url 'blog_list' %}"><i class="bi bi-newspaper"></i>Blog</a></li>
-                    <li><a href="{% url 'success_stories' %}"><i class="bi bi-trophy"></i>Başarı Hikayeleri</a></li>
+                    <li><a href="{% url 'success_stories' %}"><i class="bi bi-trophy"></i>{% trans "Başarı Hikayeleri" %}</a></li>
                 </ul>
             </div>
 
@@ -95,14 +95,14 @@
 
             <!-- Kurumsal -->
             <div class="col-6 col-md-3 col-lg-2">
-                <p class="ax-footer-heading">Kurumsal</p>
+                <p class="ax-footer-heading">{% trans "Kurumsal" %}</p>
                 <ul class="ax-footer-list">
-                    <li><a href="{% url 'about' %}"><i class="bi bi-info-circle"></i>Hakkımızda</a></li>
-                    <li><a href="{% url 'contact' %}"><i class="bi bi-envelope"></i>İletişim</a></li>
+                    <li><a href="{% url 'about' %}"><i class="bi bi-info-circle"></i>{% trans "Hakkımızda" %}</a></li>
+                    <li><a href="{% url 'contact' %}"><i class="bi bi-envelope"></i>{% trans "İletişim" %}</a></li>
                     {% if WHATSAPP_NUMBER %}
-                    <li><a href="https://wa.me/{{ WHATSAPP_NUMBER }}?text=Merhaba%2C%20proje%20hakk%C4%B1nda%20g%C3%B6r%C3%BC%C5%9Fmek%20istiyorum." target="_blank" rel="noopener noreferrer"><i class="bi bi-whatsapp"></i>WhatsApp'tan Yaz</a></li>
+                    <li><a href="https://wa.me/{{ WHATSAPP_NUMBER }}?text=Merhaba%2C%20proje%20hakk%C4%B1nda%20g%C3%B6r%C3%BC%C5%9Fmek%20istiyorum." target="_blank" rel="noopener noreferrer"><i class="bi bi-whatsapp"></i>{% trans "WhatsApp'tan Yaz" %}</a></li>
                     {% endif %}
-                    <li><a href="{% url 'gizlilik_politikasi' %}"><i class="bi bi-shield-check"></i>KVKK / Gizlilik</a></li>
+                    <li><a href="{% url 'gizlilik_politikasi' %}"><i class="bi bi-shield-check"></i>{% trans "KVKK / Gizlilik" %}</a></li>
                 </ul>
             </div>
 
@@ -130,10 +130,10 @@
         </div>
 
         <div class="ax-footer-bottom">
-            <p>&copy; 2026 Analizus — Akademik Araştırma Platformu <span class="ax-footer-visitor-counter"><i class="bi bi-eye"></i>{{ total_visitors|default:0 }} ziyaretçi</span></p>
+            <p>&copy; 2026 Analizus — {% trans "Akademik Araştırma Platformu" %} <span class="ax-footer-visitor-counter"><i class="bi bi-eye"></i>{{ total_visitors|default:0 }} {% trans "ziyaretçi" %}</span></p>
             <div class="ax-footer-bottom-links">
-                <a href="{% url 'about' %}">Hakkımızda</a>
-                <a href="{% url 'contact' %}">İletişim</a>
+                <a href="{% url 'about' %}">{% trans "Hakkımızda" %}</a>
+                <a href="{% url 'contact' %}">{% trans "İletişim" %}</a>
             </div>
         </div>
         <p class="text-center" style="font-size:.72rem;color:#64748b;margin-top:8px;">
