@@ -1,4 +1,5 @@
 import json
+from collections import defaultdict
 from datetime import date, timedelta
 
 from django.contrib import admin
@@ -43,39 +44,55 @@ class PageViewAdmin(ModelAdmin):
         return extra + urls
 
     def chart_view(self, request):
+        """
+        Ham loglar (PageView) 5 günden eskisi cleanup_pageviews tarafından
+        PageViewSummary'e taşınıp silindiği için, tüm geçmişi göstermek adına
+        burada iki kaynak da birleştiriliyor: son ~6 gün ham'dan, öncesi
+        özet'ten okunuyor. Aksi halde grafik yalnızca son birkaç günü gösterir.
+        """
         today = date.today()
         cutoff = today - timedelta(days=6)
 
-        qs = PageView.objects.filter(timestamp__date__gte=cutoff)
+        recent_qs = PageView.objects.filter(timestamp__date__gte=cutoff)
+        summary_qs = PageViewSummary.objects.all()
 
-        top_pages = list(
-            qs.values('tab_name')
-            .annotate(total=Count('id'))
-            .order_by('-total')[:10]
-        )
+        def top_n(field, n, extra_filter=None):
+            totals = defaultdict(int)
+            rqs = recent_qs.filter(**extra_filter) if extra_filter else recent_qs
+            sqs = summary_qs.filter(**extra_filter) if extra_filter else summary_qs
+            for row in rqs.values(field).annotate(total=Count('id')):
+                if row[field]:
+                    totals[row[field]] += row['total']
+            for row in sqs.values(field).annotate(total=Sum('visit_count')):
+                if row[field]:
+                    totals[row[field]] += row['total'] or 0
+            return [{field: k, 'total': v} for k, v in sorted(totals.items(), key=lambda x: -x[1])[:n]]
 
-        daily = list(
-            qs.values('timestamp__date')
-            .annotate(total=Count('id'))
-            .order_by('timestamp__date')
-        )
-        for row in daily:
-            row['timestamp__date'] = str(row['timestamp__date'])
+        def daily_series(extra_filter=None):
+            totals = defaultdict(int)
+            rqs = recent_qs.filter(**extra_filter) if extra_filter else recent_qs
+            sqs = summary_qs.filter(**extra_filter) if extra_filter else summary_qs
+            for row in rqs.values('timestamp__date').annotate(total=Count('id')):
+                totals[row['timestamp__date']] += row['total']
+            for row in sqs.values('date').annotate(total=Sum('visit_count')):
+                totals[row['date']] += row['total'] or 0
+            return [{'timestamp__date': str(d), 'total': t} for d, t in sorted(totals.items())]
 
-        top_users = list(
-            qs.values('user__username')
-            .annotate(total=Count('id'))
-            .order_by('-total')[:20]
-        )
+        top_pages = top_n('tab_name', 10)
+        daily = daily_series()
+        top_users = top_n('user__username', 20)
+
         per_user_data = {}
         for u in top_users:
             uname = u['user__username']
-            u_qs = qs.filter(user__username=uname)
-            u_pages = list(u_qs.values('tab_name').annotate(total=Count('id')).order_by('-total')[:10])
-            u_daily = list(u_qs.values('timestamp__date').annotate(total=Count('id')).order_by('timestamp__date'))
-            for r in u_daily:
-                r['timestamp__date'] = str(r['timestamp__date'])
-            per_user_data[uname] = {'pages': u_pages, 'daily': u_daily}
+            flt = {'user__username': uname}
+            per_user_data[uname] = {
+                'pages': top_n('tab_name', 10, extra_filter=flt),
+                'daily': daily_series(extra_filter=flt),
+            }
+
+        earliest = summary_qs.aggregate(m=Min('date'))['m']
+        range_start = earliest if earliest and earliest < cutoff else cutoff
 
         context = {
             **self.admin_site.each_context(request),
@@ -84,7 +101,7 @@ class PageViewAdmin(ModelAdmin):
             'daily_json': json.dumps(daily, cls=DjangoJSONEncoder),
             'top_users_json': json.dumps(top_users, cls=DjangoJSONEncoder),
             'per_user_data_json': json.dumps(per_user_data, cls=DjangoJSONEncoder),
-            'date_range': f'{cutoff} — {today}',
+            'date_range': f'{range_start} — {today}',
         }
         return render(request, 'admin/analytics/chart.html', context)
 
