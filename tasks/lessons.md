@@ -18,3 +18,20 @@ bu kuralın dışında — sadece **var olan** dosyayı düzenlerken geçerli.
 o dosyayı `{% static %}` ile çağıran tüm template'lerde `?v=` değerini kontrol
 et ve bir artır (örn. `0100` → `0101`). Değişikliği "tamamlandı" olarak
 raporlamadan önce bu adımı unutma.
+
+## i18n: "kalan Türkçe" taramasını özel harfe (ç/ğ/ı/ş) göre yapma (23 Eylül 2026)
+
+İstatistik araçlarını çevirirken hem işaretleyici hem doğrulama taraması
+yalnızca Türkçe özel harf içeren metinleri Türkçe saydı. "Metodoloji",
+"Normallik Testi Nedir?", "Normal kabul edilir", "Karar:", "Hesapla" gibi
+özel harfsiz metinler iki aşamada da görünmez kaldı; kullanıcı ekran
+görüntüsüyle bildirdi. Ayrıca Python regex'inde `re.I` ile `[İ]` karakter
+sınıfı düz `i` ile eşleşir — dedektör her İngilizce metni yakaladı.
+
+**Kural:** Şablon işaretlemede "Türkçe mi?" sezgisine güvenme. Önce
+trans'sız TÜM metin düğümlerini (harf içeriğinden bağımsız) listele, elle
+ayıkla (kaynakça/formül/evrensel terim hariç), sonra sar. Doğrulamada da
+render edilen sayfada özel harfsiz Türkçe kelime listesiyle tara; karakter
+sınıfını `re.I` olmadan, kelime listesini ayrı regex'le kontrol et.
+Kısa ve yeniden kullanılan msgid'lerin (ör. "Orta") mevcut çevirisini
+bağlama uygunluk için kontrol et; farklı anlamdaysa `context` ekle.
