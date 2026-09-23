@@ -1,12 +1,13 @@
 {% extends "tarama_console_base.html" %}
 {% load static %}
+{% load i18n %}
 
-{% block title %}Semantic Scholar Yayın Kazıma — 200M+ Makale Araması | Analizus{% endblock %}
-{% block meta_description %}Semantic Scholar'dan kodsuz yayın kazıma. 200 milyondan fazla akademik makale arasında anahtar kelime, yazar ve araştırma alanı filtresiyle arama yapın; Excel veya TXT olarak indirin.{% endblock %}
+{% block title %}{% trans "Semantic Scholar Yayın Kazıma — 200M+ Makale Araması" %} | Analizus{% endblock %}
+{% block meta_description %}{% trans "Semantic Scholar'dan kodsuz yayın kazıma. 200 milyondan fazla akademik makale arasında anahtar kelime, yazar ve araştırma alanı filtresiyle arama yapın; Excel veya TXT olarak indirin." %}{% endblock %}
 {% block meta_keywords %}Semantic Scholar kazıma, makale verisi indirme, akademik makale scraper, kodsuz veri çekme, atıf analizi, CrossRef zenginleştirme{% endblock %}
 {% block canonical %}/semantic-scholar/{% endblock %}
-{% block og_title %}Semantic Scholar Yayın Kazıma — 200M+ Makale | Analizus{% endblock %}
-{% block og_description %}Semantic Scholar'dan kodsuz yayın kazıma. En yeni 5 yayının verilerini Excel veya TXT olarak indirin.{% endblock %}
+{% block og_title %}{% trans "Semantic Scholar Yayın Kazıma — 200M+ Makale" %} | Analizus{% endblock %}
+{% block og_description %}{% trans "Semantic Scholar'dan kodsuz yayın kazıma. En yeni 5 yayının verilerini Excel veya TXT olarak indirin." %}{% endblock %}
 
 {% block extra_head %}
 {{ block.super }}
@@ -22,14 +23,14 @@
             <div class="card bg-dark border-secondary text-white mb-4">
                 <div class="card-body">
                     <h1 class="card-title h3 mb-2">
-                        <i class="bi bi-diagram-3-fill me-2 text-info"></i>Semantic Scholar Yayın Kazıma
+                        <i class="bi bi-diagram-3-fill me-2 text-info"></i>{% trans "Semantic Scholar Yayın Kazıma" %}
                     </h1>
                     <p class="card-text text-muted mb-1">
-                        200 milyondan fazla akademik yayın arasında kodsuz arama yapın. Başlık, yazar, araştırma alanı ve yıl filtresiyle sorgulayın; toplam sonuç sayısını görün. En yeni <strong class="text-info">5 yayının</strong> verilerini <strong class="text-info">Excel veya TXT</strong> olarak indirin ya da e-posta ile alın.
+                        {% blocktrans %}200 milyondan fazla akademik yayın arasında kodsuz arama yapın. Başlık, yazar, araştırma alanı ve yıl filtresiyle sorgulayın; toplam sonuç sayısını görün. En yeni <strong class="text-info">5 yayının</strong> verilerini <strong class="text-info">Excel veya TXT</strong> olarak indirin ya da e-posta ile alın.{% endblocktrans %}
                     </p>
                     <p class="text-muted small mb-0">
-                        Günlük <strong>{{ daily_limit }}</strong> arama hakkı — Kalan: <strong>{{ remaining }}</strong>
-                        <span class="ms-2 badge" style="background:rgba(34,211,238,0.12);color:#22d3ee;font-size:.7rem;font-weight:500;">CrossRef ile zenginleştirilir</span>
+                        {% blocktrans %}Günlük <strong>{{ daily_limit }}</strong> arama hakkı — Kalan: <strong>{{ remaining }}</strong>{% endblocktrans %}
+                        <span class="ms-2 badge" style="background:rgba(34,211,238,0.12);color:#22d3ee;font-size:.7rem;font-weight:500;">{% trans "CrossRef ile zenginleştirilir" %}</span>
                     </p>
                 </div>
             </div>
@@ -41,12 +42,12 @@
             {% if not request.user.profile.email_verified %}
             <div class="alert alert-warning">
                 <i class="bi bi-envelope-exclamation me-2"></i>
-                Bu aracı kullanabilmek için e-posta adresinizi doğrulamanız gerekmektedir.
+                {% trans "Bu aracı kullanabilmek için e-posta adresinizi doğrulamanız gerekmektedir." %}
             </div>
             {% else %}
 
             <div class="card bg-dark border-secondary text-white mb-3">
-                <div class="card-header">Arama Kriterleri</div>
+                <div class="card-header">{% trans "Arama Kriterleri" %}</div>
                 <div class="card-body">
                     <form id="semantic-form" method="post">
                         {% csrf_token %}
@@ -62,10 +63,10 @@
 
                         <div class="d-flex justify-content-between mt-3">
                             <button type="button" id="add-rule-btn" class="btn btn-secondary btn-sm">
-                                <i class="fas fa-plus me-1"></i>Kriter Ekle
+                                <i class="fas fa-plus me-1"></i>{% trans "Kriter Ekle" %}
                             </button>
                             <button type="submit" class="btn btn-info text-dark fw-semibold" id="search-btn">
-                                <i class="bi bi-search me-1"></i>Ara
+                                <i class="bi bi-search me-1"></i>{% trans "Ara" %}
                             </button>
                         </div>
                     </form>
@@ -75,7 +76,7 @@
             <!-- Devam eden tarama banner -->
             <div id="resume-banner" style="display:none;" class="alert alert-info mb-3">
                 <i class="bi bi-arrow-repeat me-2"></i>
-                Devam eden bir tarama var. Sonuçlar hazır olduğunda burada görünecek.
+                {% trans "Devam eden bir tarama var. Sonuçlar hazır olduğunda burada görünecek." %}
             </div>
 
             <!-- Yükleniyor -->
@@ -83,9 +84,9 @@
                 <div class="card bg-dark border-secondary text-white">
                     <div class="card-body text-center py-4">
                         <div class="spinner-border text-info mb-3" role="status"></div>
-                        <p id="status-msg" class="mb-2">Semantic Scholar'dan veri çekiliyor, lütfen bekleyin...</p>
+                        <p id="status-msg" class="mb-2">{% trans "Semantic Scholar'dan veri çekiliyor, lütfen bekleyin..." %}</p>
                         <button id="cancel-btn" class="btn btn-sm btn-outline-danger" onclick="cancelJob()">
-                            <i class="bi bi-x-circle me-1"></i>İptal
+                            <i class="bi bi-x-circle me-1"></i>{% trans "İptal" %}
                         </button>
                     </div>
                 </div>
@@ -95,19 +96,19 @@
             <div id="results-area" style="display:none;">
                 <div class="card bg-dark border-secondary text-white mb-3">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <span id="results-summary">Sonuçlar</span>
+                        <span id="results-summary">{% trans "Sonuçlar" %}</span>
                         <div class="d-flex gap-2 flex-wrap">
                             <button id="send-email-btn" class="btn btn-sm btn-outline-warning" style="display:none;">
-                                <i class="bi bi-envelope me-1"></i>E-posta Gönder
+                                <i class="bi bi-envelope me-1"></i>{% trans "E-posta Gönder" %}
                             </button>
                             <a id="download-excel-btn" href="#" class="btn btn-sm btn-success" style="display:none;">
-                                <i class="bi bi-file-earmark-excel me-1"></i>Excel İndir
+                                <i class="bi bi-file-earmark-excel me-1"></i>{% trans "Excel İndir" %}
                             </a>
                         </div>
                     </div>
                     <div class="card-body">
                         <div id="email-sent-alert" class="alert alert-success" style="display:none;">
-                            <i class="bi bi-check-circle me-2"></i>Sonuçlar e-posta adresinize ek dosya olarak gönderildi.
+                            <i class="bi bi-check-circle me-2"></i>{% trans "Sonuçlar e-posta adresinize ek dosya olarak gönderildi." %}
                         </div>
                         <div id="results-list"></div>
 
@@ -115,8 +116,8 @@
                             <div class="d-flex align-items-start gap-2">
                                 <i class="bi bi-database-fill-lock text-warning mt-1"></i>
                                 <div>
-                                    <div class="text-white fw-semibold small mb-1">Tüm Veri Talebi</div>
-                                    <div class="text-muted small">Yukarıdaki örnek, en yeni 5 yayını içermektedir. Tüm sonuçlara erişmek için <a href="mailto:info@analizus.com" class="text-warning text-decoration-none fw-semibold">info@analizus.com</a> adresine aramanızı belirterek yazabilirsiniz.</div>
+                                    <div class="text-white fw-semibold small mb-1">{% trans "Tüm Veri Talebi" %}</div>
+                                    <div class="text-muted small">{% blocktrans %}Yukarıdaki örnek, en yeni 5 yayını içermektedir. Tüm sonuçlara erişmek için <a href="mailto:info@analizus.com" class="text-warning text-decoration-none fw-semibold">info@analizus.com</a> adresine aramanızı belirterek yazabilirsiniz.{% endblocktrans %}</div>
                                 </div>
                             </div>
                         </div>
@@ -138,7 +139,7 @@ currentJobId = '{{ active_job_id }}';
 sessionStorage.setItem('s2_job_id', currentJobId);
 document.getElementById('status-area').style.display = 'block';
 document.getElementById('search-btn').disabled = true;
-document.getElementById('search-btn').innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Aranıyor...';
+document.getElementById('search-btn').innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>{% trans "Aranıyor..." %}';
 pollInterval = setInterval(pollStatus, 3000);
 {% else %}
 (function() {
@@ -154,7 +155,7 @@ pollInterval = setInterval(pollStatus, 3000);
             } else if (data.status === 'pending' || data.status === 'running') {
                 showResumeBanner();
                 document.getElementById('search-btn').disabled = true;
-                document.getElementById('search-btn').innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Aranıyor...';
+                document.getElementById('search-btn').innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>{% trans "Aranıyor..." %}';
                 pollInterval = setInterval(pollStatus, 3000);
             } else {
                 sessionStorage.removeItem('s2_job_id');
@@ -168,12 +169,12 @@ document.getElementById('semantic-form').addEventListener('submit', function(e) 
     e.preventDefault();
     const form = this;
     const data = collectData();
-    if (data.length === 0) { alert('Lütfen en az bir arama kriteri girin.'); return; }
+    if (data.length === 0) { alert('{% trans "Lütfen en az bir arama kriteri girin." %}'); return; }
     document.querySelector('[name=query_parts_json]').value = JSON.stringify(data);
 
     const btn = document.getElementById('search-btn');
     btn.disabled = true;
-    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Aranıyor...';
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>{% trans "Aranıyor..." %}';
     document.getElementById('status-area').style.display = 'block';
     document.getElementById('results-area').style.display = 'none';
 
@@ -191,15 +192,15 @@ document.getElementById('semantic-form').addEventListener('submit', function(e) 
         } else {
             document.getElementById('status-area').style.display = 'none';
             btn.disabled = false;
-            btn.innerHTML = '<i class="bi bi-search me-1"></i>Ara';
-            alert(resp.error || 'Bir hata oluştu.');
+            btn.innerHTML = '<i class="bi bi-search me-1"></i>{% trans "Ara" %}';
+            alert(resp.error || '{% trans "Bir hata oluştu." %}');
         }
     })
     .catch(err => {
         document.getElementById('status-area').style.display = 'none';
         btn.disabled = false;
-        btn.innerHTML = '<i class="bi bi-search me-1"></i>Ara';
-        alert('Bağlantı hatası: ' + err);
+        btn.innerHTML = '<i class="bi bi-search me-1"></i>{% trans "Ara" %}';
+        alert('{% trans "Bağlantı hatası:" %} ' + err);
     });
 });
 
@@ -212,22 +213,22 @@ function pollStatus() {
                 clearInterval(pollInterval); pollInterval = null;
                 showResults(data);
                 document.getElementById('search-btn').disabled = false;
-                document.getElementById('search-btn').innerHTML = '<i class="bi bi-search me-1"></i>Ara';
+                document.getElementById('search-btn').innerHTML = '<i class="bi bi-search me-1"></i>{% trans "Ara" %}';
             } else if (data.status === 'failed') {
                 clearInterval(pollInterval); pollInterval = null;
                 sessionStorage.removeItem('s2_job_id');
                 document.getElementById('resume-banner').style.display = 'none';
                 document.getElementById('status-area').style.display = 'none';
                 document.getElementById('search-btn').disabled = false;
-                document.getElementById('search-btn').innerHTML = '<i class="bi bi-search me-1"></i>Ara';
-                alert('Arama başarısız: ' + (data.error || 'Bilinmeyen hata'));
+                document.getElementById('search-btn').innerHTML = '<i class="bi bi-search me-1"></i>{% trans "Ara" %}';
+                alert('{% trans "Arama başarısız:" %} ' + (data.error || '{% trans "Bilinmeyen hata" %}'));
             } else if (data.status === 'pending') {
                 const pos = data.queue_position;
                 const msg = document.getElementById('status-msg');
-                if (pos > 1) msg.textContent = `Sırada bekliyorsunuz — tahmini sıra: ${pos}. Lütfen bekleyin...`;
-                else msg.textContent = 'Sıradaki tarama başlıyor...';
+                if (pos > 1) msg.textContent = `{% trans "Sırada bekliyorsunuz — tahmini sıra:" %} ${pos}. {% trans "Lütfen bekleyin..." %}`;
+                else msg.textContent = '{% trans "Sıradaki tarama başlıyor..." %}';
             } else if (data.status === 'running') {
-                document.getElementById('status-msg').textContent = 'Semantic Scholar\'dan veri çekiliyor, lütfen bekleyin...';
+                document.getElementById('status-msg').textContent = "{% trans "Semantic Scholar'dan veri çekiliyor, lütfen bekleyin..." %}";
             }
         });
 }
@@ -245,7 +246,7 @@ function cancelJob() {
         document.getElementById('status-area').style.display = 'none';
         document.getElementById('resume-banner').style.display = 'none';
         document.getElementById('search-btn').disabled = false;
-        document.getElementById('search-btn').innerHTML = '<i class="bi bi-search me-1"></i>Ara';
+        document.getElementById('search-btn').innerHTML = '<i class="bi bi-search me-1"></i>{% trans "Ara" %}';
     });
 }
 
@@ -261,7 +262,7 @@ function showResults(data) {
 
     const demo = data.demo_results || [];
     document.getElementById('results-summary').textContent =
-        `${data.total_results.toLocaleString('tr-TR')} yayın bulundu — En yeni ${demo.length} örnek aşağıda`;
+        `${data.total_results.toLocaleString('{{ LANGUAGE_CODE }}')} {% trans "yayın bulundu — En yeni" %} ${demo.length} {% trans "örnek aşağıda" %}`;
 
     const list = document.getElementById('results-list');
     list.innerHTML = '';
@@ -274,11 +275,11 @@ function showResults(data) {
 
         list.innerHTML += `
         <div class="border-bottom border-secondary pb-3 mb-3">
-            <h6 class="mb-1">${i+1}. ${r.title || '(Başlık yok)'}${oa}</h6>
+            <h6 class="mb-1">${i+1}. ${r.title || '({% trans "Başlık yok" %})'}${oa}</h6>
             <small class="text-muted d-block">
                 ${r.authors || ''} ${r.year ? '· ' + r.year : ''} ${r.journal ? '· <em>' + r.journal + '</em>' : ''}
                 ${doi}
-                ${r.cited_by_count ? `· <span class="text-secondary"><i class="bi bi-quote me-1"></i>${r.cited_by_count} atıf</span>` : ''}
+                ${r.cited_by_count ? `· <span class="text-secondary"><i class="bi bi-quote me-1"></i>${r.cited_by_count} {% trans "atıf" %}</span>` : ''}
             </small>
             ${fos ? `<small class="text-muted d-block mt-1"><i class="bi bi-tag me-1"></i>${fos}</small>` : ''}
             ${institutions}
@@ -302,7 +303,7 @@ function showResults(data) {
 document.getElementById('send-email-btn').addEventListener('click', function() {
     const btn = this;
     const jobId = btn.dataset.jobId || currentJobId;
-    if (!jobId) { alert('Oturum bilgisi kayboldu, lütfen sayfayı yenileyin.'); return; }
+    if (!jobId) { alert('{% trans "Oturum bilgisi kayboldu, lütfen sayfayı yenileyin." %}'); return; }
     btn.disabled = true;
     const csrf = document.querySelector('[name=csrfmiddlewaretoken]').value;
     fetch(`/semantic-scholar/send-demo/${jobId}/`, {
@@ -316,18 +317,18 @@ document.getElementById('send-email-btn').addEventListener('click', function() {
             document.getElementById('email-sent-alert').style.display = 'block';
         } else {
             btn.disabled = false;
-            alert(data.error || 'E-posta gönderilemedi.');
+            alert(data.error || '{% trans "E-posta gönderilemedi." %}');
         }
     });
 });
 
 // Query Builder
 const fieldOptions = [
-    { value: 'keyword', text: 'Anahtar Kelime' },
-    { value: 'title', text: 'Başlık' },
-    { value: 'author', text: 'Yazar' },
-    { value: 'year', text: 'Yıl Aralığı (örn: 2020-2023)' },
-    { value: 'field_of_study', text: 'Araştırma Alanı (örn: Computer Science)' },
+    { value: 'keyword', text: '{% trans "Anahtar Kelime" %}' },
+    { value: 'title', text: '{% trans "Başlık" %}' },
+    { value: 'author', text: '{% trans "Yazar" %}' },
+    { value: 'year', text: '{% trans "Yıl Aralığı (örn: 2020-2023)" %}' },
+    { value: 'field_of_study', text: '{% trans "Araştırma Alanı (örn: Computer Science)" %}' },
     { value: 'doi', text: 'DOI' },
 ];
 const fieldLabels = {};
@@ -377,7 +378,7 @@ function createRule(isFirst = false) {
     const inp = document.createElement('input');
     inp.type = 'text';
     inp.className = 'form-control bg-dark text-white border-secondary value-input';
-    inp.placeholder = 'Değer girin...';
+    inp.placeholder = '{% trans "Değer girin..." %}';
     inp.addEventListener('input', updateQueryPreview);
     valueCol.appendChild(inp);
 
@@ -432,20 +433,20 @@ createRule(true);
   <div class="row g-3">
     <div class="col-md-4">
       <div class="p-3 rounded h-100" style="background:rgba(34,211,238,0.06);border:1px solid rgba(34,211,238,0.15);">
-        <h3 class="text-white fw-semibold mb-2" style="font-size:.9rem;"><i class="bi bi-globe me-2" style="color:#22d3ee;"></i>Geniş Kapsam</h3>
-        <p class="text-secondary mb-0" style="font-size:.8rem;line-height:1.6;">WoS, Scopus, PubMed, arXiv ve daha fazlası dahil 200M+ yayın. WoS erişimi olmadan WoS kaynaklarına ulaşın.</p>
+        <h3 class="text-white fw-semibold mb-2" style="font-size:.9rem;"><i class="bi bi-globe me-2" style="color:#22d3ee;"></i>{% trans "Geniş Kapsam" %}</h3>
+        <p class="text-secondary mb-0" style="font-size:.8rem;line-height:1.6;">{% trans "WoS, Scopus, PubMed, arXiv ve daha fazlası dahil 200M+ yayın. WoS erişimi olmadan WoS kaynaklarına ulaşın." %}</p>
       </div>
     </div>
     <div class="col-md-4">
       <div class="p-3 rounded h-100" style="background:rgba(34,211,238,0.06);border:1px solid rgba(34,211,238,0.15);">
-        <h3 class="text-white fw-semibold mb-2" style="font-size:.9rem;"><i class="bi bi-link-45deg me-2" style="color:#22d3ee;"></i>CrossRef Zenginleştirme</h3>
-        <p class="text-secondary mb-0" style="font-size:.8rem;line-height:1.6;">DOI'si olan her kayıt için CrossRef'ten kurum, yayıncı ve konu bilgisi otomatik eklenir.</p>
+        <h3 class="text-white fw-semibold mb-2" style="font-size:.9rem;"><i class="bi bi-link-45deg me-2" style="color:#22d3ee;"></i>{% trans "CrossRef Zenginleştirme" %}</h3>
+        <p class="text-secondary mb-0" style="font-size:.8rem;line-height:1.6;">{% blocktrans %}DOI'si olan her kayıt için CrossRef'ten kurum, yayıncı ve konu bilgisi otomatik eklenir.{% endblocktrans %}</p>
       </div>
     </div>
     <div class="col-md-4">
       <div class="p-3 rounded h-100" style="background:rgba(34,211,238,0.06);border:1px solid rgba(34,211,238,0.15);">
-        <h3 class="text-white fw-semibold mb-2" style="font-size:.9rem;"><i class="bi bi-envelope-at me-2" style="color:#22d3ee;"></i>Tam Veri Talebi</h3>
-        <p class="text-secondary mb-0" style="font-size:.8rem;line-height:1.6;">Tüm sonuç setine ihtiyaç duyuyorsanız <a href="mailto:info@analizus.com" class="text-decoration-none" style="color:#67e8f9;">info@analizus.com</a> adresine yazın.</p>
+        <h3 class="text-white fw-semibold mb-2" style="font-size:.9rem;"><i class="bi bi-envelope-at me-2" style="color:#22d3ee;"></i>{% trans "Tam Veri Talebi" %}</h3>
+        <p class="text-secondary mb-0" style="font-size:.8rem;line-height:1.6;">{% blocktrans %}Tüm sonuç setine ihtiyaç duyuyorsanız <a href="mailto:info@analizus.com" class="text-decoration-none" style="color:#67e8f9;">info@analizus.com</a> adresine yazın.{% endblocktrans %}</p>
       </div>
     </div>
   </div>

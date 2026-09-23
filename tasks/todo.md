@@ -156,10 +156,14 @@ olabilir, tahminler iyimser kabul edilmeli.
   Doğrulama: `manage.py check` temiz, sayfa 200 dönüyor, kalan düz Türkçe
   metin taraması yalnızca marka isimleri (TR Dizin, Cronbach, OpenAlex)
   buldu.
-- [ ] **3b-2b. Kalan dosyalar** (alt gruplar halinde onaya sunulacak):
-  - `makaleanaliz/templates/makaleanaliz/results.html`
-  - `openalex/templates/openalex/landing.html`, `order.html`
-  - `semanticscholar/templates/semanticscholar/landing.html`, `order.html`
+- [x] **3b-2b. `makaleanaliz/results.html` + `openalex/landing.html` +
+  `semanticscholar/landing.html`:** TAMAMLANDI (23 Eylül 2026).
+  **`order.html` (her iki app'te) KASITLI ATLANDI** — TL fiyatlı sipariş/
+  ödeme akışı (IBAN havale benzeri), footer bağış modalıyla aynı kapsam
+  dışı kategori (proje kuralı: ödeme sistemi belirsiz, sormadan genişletme).
+  Doğrulama: `manage.py check` temiz, `/openalex/` ve `/semantic-scholar/`
+  200, kalan Türkçe metin taraması yalnızca CSS `font-family` değeri buldu.
+- [ ] **3b-2c. Kalan dosyalar** (alt gruplar halinde onaya sunulacak):
   - `forum/templates/forum/proje_talebi.html`, `ai_cozumler.html`,
     `egitim.html`, `egitim_detay.html`, `egitim_talebi.html`
     (Proje talebi / Danışmanlık / Eğitim — 22 Eylül 2026 kararıyla DAHİL)
