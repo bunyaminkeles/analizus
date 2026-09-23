@@ -134,8 +134,29 @@ olabilir, tahminler iyimser kabul edilmeli.
   Doğrulama: `manage.py check` temiz, `/login/` ve `/register/` 200,
   `/en/login/` 404 (beklenen — login kasıtlı olarak i18n_patterns dışında,
   bkz. yukarıdaki bug notu).
-- [ ] **3b-2. Kalan dosyalar** (alt gruplar halinde onaya sunulacak):
-  - `forum/templates/forum/home.html` (ana sayfa)
+- [x] **3b-2a. `forum/templates/forum/home.html`:** TAMAMLANDI (23 Eylül
+  2026). **Karar değişikliği (kullanıcı):** ana sayfanın büyük kısmının
+  Pazaryeri/Uzman/Quiz içeriği olduğu keşfedildi (kapsam dışı diye
+  kararlaştırılan Market özelliği doğrudan ana sayfaya gömülü) — kullanıcı
+  "tüm sayfayı çevir" dedi, tutarlılık için TÜMÜ işaretlendi (navbar'da
+  uygulanan aynı mantık: hedef sayfa çevrili olmasa bile UI metni çevrilir).
+  İşaretlenen bölümler: title/meta, hero, pazar yeri yönlendirme (2 kart),
+  nasıl çalışıyoruz (4 adım), istatistik şeridi, güven unsurları, uzman
+  vitrini + iş ilanı kartları (statik chrome; `job.title`/`job.description`
+  DB içeriği olduğu için dokunulmadı), araştırma konsolu, AI Asistan+Arena
+  (statik chrome; quiz soru bankası DB içeriği hâlâ Türkçe), AI çağı bandı,
+  SSS (5 soru-cevap), haberler bölümü (statik chrome; blog post içeriği
+  dokunulmadı), hero dropzone + quiz JS'teki statik metinler.
+  **Kasıtlı atlanan:** JSON-LD structured data (4 `<script type="application/
+  ld+json">` bloğu — SEO metadata, ayrı küçük bir iş olarak bırakıldı),
+  "Gündemdeki Tartışmalar" include'u (`_gundem_tartismalar.html` — forum
+  konuları, dinamik DB içeriği), `q.difficulty` JS karşılaştırma mantığı
+  ('Kolay'/'Zor' — CSS class routing için backend-bağımlı, çevrilirse mantık
+  bozulur).
+  Doğrulama: `manage.py check` temiz, sayfa 200 dönüyor, kalan düz Türkçe
+  metin taraması yalnızca marka isimleri (TR Dizin, Cronbach, OpenAlex)
+  buldu.
+- [ ] **3b-2b. Kalan dosyalar** (alt gruplar halinde onaya sunulacak):
   - `makaleanaliz/templates/makaleanaliz/results.html`
   - `openalex/templates/openalex/landing.html`, `order.html`
   - `semanticscholar/templates/semanticscholar/landing.html`, `order.html`
