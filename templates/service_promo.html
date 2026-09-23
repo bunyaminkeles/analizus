@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load static %}
+{% load i18n %}
 
 {% block title %}{{ promo_title }} - Analizus{% endblock %}
 {% block meta_description %}{{ promo_description }}{% endblock %}
@@ -29,11 +30,11 @@
       <div class="d-flex gap-3 justify-content-center flex-wrap">
         <a href="{% url 'register' %}?next={{ request.path }}"
            class="btn btn-{{ promo_color }} btn-lg fw-bold px-4">
-          <i class="bi bi-person-plus-fill me-2"></i>Ücretsiz Dene
+          <i class="bi bi-person-plus-fill me-2"></i>{% trans "Ücretsiz Dene" %}
         </a>
         <a href="{% url 'login' %}?next={{ request.path }}"
            class="btn btn-outline-light btn-lg px-4">
-          <i class="bi bi-box-arrow-in-right me-2"></i>Giriş Yap
+          <i class="bi bi-box-arrow-in-right me-2"></i>{% trans "Giriş Yap" %}
         </a>
       </div>
     </div>
@@ -46,10 +47,10 @@
       <div class="alert border-info bg-dark d-flex align-items-center gap-3 mb-0" style="border-left: 3px solid; border-top: none; border-right: none; border-bottom: none;">
         <i class="bi bi-search text-info fs-4 flex-shrink-0"></i>
         <div class="flex-grow-1">
-          <span class="text-white">OpenAlex'te tarama mı yaptın?</span>
-          <span class="text-secondary ms-1">İndirdiğin Excel'i doğrudan yükle, bibliyometrik analiz saniyeler içinde hazır olsun.</span>
+          <span class="text-white">{% trans "OpenAlex'te tarama mı yaptın?" %}</span>
+          <span class="text-secondary ms-1">{% trans "İndirdiğin Excel'i doğrudan yükle, bibliyometrik analiz saniyeler içinde hazır olsun." %}</span>
         </div>
-        <a href="{% url 'openalex:landing' %}" class="btn btn-outline-info btn-sm fw-semibold flex-shrink-0">OpenAlex'e Git</a>
+        <a href="{% url 'openalex:landing' %}" class="btn btn-outline-info btn-sm fw-semibold flex-shrink-0">{% trans "OpenAlex'e Git" %}</a>
       </div>
     </div>
   </div>
@@ -76,7 +77,7 @@
   {# ─── Örnek Rapor Çıktıları ─── #}
   <div class="row justify-content-center mb-5">
     <div class="col-lg-10">
-      <h2 class="ax-biblio-examples__title text-center">Örnek Rapor Çıktıları</h2>
+      <h2 class="ax-biblio-examples__title text-center">{% trans "Örnek Rapor Çıktıları" %}</h2>
       <div class="ax-biblio-examples">
         {% for item in promo_gallery %}
         <figure class="ax-biblio-examples__item">
@@ -85,7 +86,7 @@
         </figure>
         {% endfor %}
       </div>
-      <p class="ax-biblio-examples__note text-center"><em>Bu grafikler aracın gerçek çıktısıdır — sizin verinizle aynı kalitede üretilir.</em></p>
+      <p class="ax-biblio-examples__note text-center"><em>{% trans "Bu grafikler aracın gerçek çıktısıdır — sizin verinizle aynı kalitede üretilir." %}</em></p>
     </div>
   </div>
   {% endif %}
@@ -95,7 +96,7 @@
     <div class="col-lg-8">
       <div class="card border-secondary" style="background-color:#16213e;">
         <div class="card-body p-4">
-          <h5 class="text-white fw-bold mb-4 text-center">Nasıl Çalışır?</h5>
+          <h5 class="text-white fw-bold mb-4 text-center">{% trans "Nasıl Çalışır?" %}</h5>
           <div class="row g-3">
             {% for step in promo_steps %}
             <div class="col-md-4 text-center">
@@ -115,10 +116,10 @@
   {# ─── Alt CTA ─── #}
   <div class="row justify-content-center">
     <div class="col-lg-6 text-center">
-      <p class="text-white-50 small mb-3">Ücretsiz hesap açın, hemen kullanmaya başlayın.</p>
+      <p class="text-white-50 small mb-3">{% trans "Ücretsiz hesap açın, hemen kullanmaya başlayın." %}</p>
       <a href="{% url 'register' %}?next={{ request.path }}"
          class="btn btn-{{ promo_color }} fw-bold px-5">
-        <i class="bi bi-rocket-takeoff-fill me-2"></i>Başla — Ücretsiz
+        <i class="bi bi-rocket-takeoff-fill me-2"></i>{% trans "Başla — Ücretsiz" %}
       </a>
     </div>
   </div>
@@ -135,32 +136,32 @@
       <div class="d-flex flex-column gap-2 mb-4">
         {% if seo_guide.when_to_use %}
         <details class="ax-tool-guide-detail">
-          <summary>Ne Zaman Kullanılır?</summary>
+          <summary>{% trans "Ne Zaman Kullanılır?" %}</summary>
           <p>{{ seo_guide.when_to_use }}</p>
         </details>
         {% endif %}
         {% if seo_guide.assumptions %}
         <details class="ax-tool-guide-detail">
-          <summary>Varsayımlar ve Sınırlılıklar</summary>
+          <summary>{% trans "Varsayımlar ve Sınırlılıklar" %}</summary>
           <p>{{ seo_guide.assumptions }}</p>
         </details>
         {% endif %}
         {% if seo_guide.how_to_interpret %}
         <details class="ax-tool-guide-detail">
-          <summary>Sonuçlar Nasıl Yorumlanır?</summary>
+          <summary>{% trans "Sonuçlar Nasıl Yorumlanır?" %}</summary>
           <p>{{ seo_guide.how_to_interpret }}</p>
         </details>
         {% endif %}
         {% if seo_guide.apa_example %}
         <details class="ax-tool-guide-detail">
-          <summary>APA Formatı Örneği</summary>
+          <summary>{% trans "APA Formatı Örneği" %}</summary>
           <blockquote class="ax-tool-guide-apa">{{ seo_guide.apa_example }}</blockquote>
         </details>
         {% endif %}
       </div>
 
       {% if seo_guide.faq %}
-      <h2 class="ax-tool-guide-faq-title">Sık Sorulan Sorular</h2>
+      <h2 class="ax-tool-guide-faq-title">{% trans "Sık Sorulan Sorular" %}</h2>
       <div class="d-flex flex-column gap-2">
         {% for item in seo_guide.faq %}
         <details class="ax-tool-guide-detail">
@@ -181,13 +182,13 @@
 <div class="ax-tool-guide" style="margin-top:0;background:linear-gradient(135deg,rgba(99,102,241,.1),rgba(34,197,94,.06));border:1px solid rgba(99,102,241,.2);">
   <div class="ax-tool-guide-intro" style="text-align:center;">
     <p style="font-size:1.05rem;font-weight:600;color:#f1f5f9;margin-bottom:.5rem;">
-      Bu analizi kendiniz yapmak yerine uzmanına bırakmak ister misiniz?
+      {% trans "Bu analizi kendiniz yapmak yerine uzmanına bırakmak ister misiniz?" %}
     </p>
     <p style="margin-bottom:1.25rem;">
-      Verilerinizi gönderin, uzman analistlerimiz <strong style="color:#f1f5f9;">{{ promo_title }}</strong> analizini sizin adınıza gerçekleştirip raporlasın. Ücretsiz ön değerlendirme ile başlayın.
+      {% blocktrans %}Verilerinizi gönderin, uzman analistlerimiz <strong style="color:#f1f5f9;">{{ promo_title }}</strong> analizini sizin adınıza gerçekleştirip raporlasın. Ücretsiz ön değerlendirme ile başlayın.{% endblocktrans %}
     </p>
     <a href="{% url 'proje_talebi' %}?source={{ promo_cta_source|default:'tool' }}{% if promo_cta_source == 'bibliometrics' %}&type=bibliometric{% endif %}" class="ax-btn ax-btn--primary fw-semibold px-4 py-2">
-      <i class="bi bi-send me-2"></i>Ücretsiz Proje Talebi Gönder
+      <i class="bi bi-send me-2"></i>{% trans "Ücretsiz Proje Talebi Gönder" %}
     </a>
   </div>
 </div>
@@ -196,13 +197,13 @@
 <div class="ax-tool-guide" style="margin-top:1rem;background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.2);">
   <div class="ax-tool-guide-intro" style="text-align:center;">
     <p style="font-size:1.05rem;font-weight:600;color:#f1f5f9;margin-bottom:.5rem;">
-      Bu analizi öğrenmek ister misiniz?
+      {% trans "Bu analizi öğrenmek ister misiniz?" %}
     </p>
     <p style="margin-bottom:1.25rem;">
-      <strong style="color:#f1f5f9;">{{ promo_title }}</strong> analizini kendi verinizle yapmayı birebir eğitimle öğrenin.
+      {% blocktrans %}<strong style="color:#f1f5f9;">{{ promo_title }}</strong> analizini kendi verinizle yapmayı birebir eğitimle öğrenin.{% endblocktrans %}
     </p>
     <a href="{% if promo_egitim_konu %}{% url 'egitim_detay' promo_egitim_konu %}{% else %}{% url 'egitim' %}{% endif %}?source=analiz_araci" class="ax-btn ax-btn--outline-primary fw-semibold px-4 py-2">
-      <i class="bi bi-mortarboard me-2"></i>Eğitimleri Keşfet
+      <i class="bi bi-mortarboard me-2"></i>{% trans "Eğitimleri Keşfet" %}
     </a>
   </div>
 </div>

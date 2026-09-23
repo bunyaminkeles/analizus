@@ -1,7 +1,8 @@
 {% extends "base.html" %}
 {% load static %}
+{% load i18n %}
 
-{% block meta_description %}{{ tool_description }} Excel veya CSV yükleyin, APA formatında PDF rapor alın. Ücretsiz online istatistik analizi — Analizus.{% endblock %}
+{% block meta_description %}{{ tool_description }} {% trans "Excel veya CSV yükleyin, APA formatında PDF rapor alın. Ücretsiz online istatistik analizi — Analizus." %}{% endblock %}
 
 {% block structured_data %}
 <script type="application/ld+json">
@@ -24,13 +25,13 @@
 
 {% block content %}
 
-<h1 class="visually-hidden">{{ tool_title }} — Ücretsiz Online Hesaplama</h1>
+<h1 class="visually-hidden">{{ tool_title }} — {% trans "Ücretsiz Online Hesaplama" %}</h1>
 
 {# ── Mobile: sidebar açma butonu ── #}
 <div class="ax-console-mobile-bar d-lg-none">
   <button class="ax-console-mobile-btn" onclick="axSidebarToggle()" type="button" aria-expanded="false" aria-controls="ax-console-sidebar">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-    Araç Seç
+    {% trans "Araç Seç" %}
     <svg id="ax-sidebar-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="margin-left:auto;transition:transform .2s;"><polyline points="6 9 12 15 18 9"/></svg>
   </button>
 </div>
@@ -39,14 +40,14 @@
 <div class="ax-console-layout">
 
   {# ── Sidebar ── #}
-  <aside class="ax-console-sidebar" id="ax-console-sidebar" aria-label="Analiz araçları menüsü">
+  <aside class="ax-console-sidebar" id="ax-console-sidebar" aria-label="{% trans 'Analiz araçları menüsü' %}">
 
     {# Aktif veri seti göstergesi #}
     {% if session_dataset_name %}
     <div class="ax-console-dataset">
       <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
       <span class="ax-console-dataset-name" title="{{ session_dataset_name }}">{{ session_dataset_name }}</span>
-      <button class="ax-console-dataset-clear" onclick="axClearSession()" title="Veri setini temizle" type="button">×</button>
+      <button class="ax-console-dataset-clear" onclick="axClearSession()" title="{% trans 'Veri setini temizle' %}" type="button">×</button>
     </div>
     {% endif %}
 
@@ -154,26 +155,26 @@ function axClearSession() {
 
   <div class="ax-tool-guide-sections">
     <details class="ax-tool-guide-detail">
-      <summary>Ne Zaman Kullanılır?</summary>
+      <summary>{% trans "Ne Zaman Kullanılır?" %}</summary>
       <p>{{ seo_guide.when_to_use }}</p>
     </details>
     <details class="ax-tool-guide-detail">
-      <summary>Varsayımlar</summary>
+      <summary>{% trans "Varsayımlar" %}</summary>
       <p>{{ seo_guide.assumptions }}</p>
     </details>
     <details class="ax-tool-guide-detail">
-      <summary>Sonuçlar Nasıl Yorumlanır?</summary>
+      <summary>{% trans "Sonuçlar Nasıl Yorumlanır?" %}</summary>
       <p>{{ seo_guide.how_to_interpret }}</p>
     </details>
     <details class="ax-tool-guide-detail">
-      <summary>APA Formatı Örneği</summary>
+      <summary>{% trans "APA Formatı Örneği" %}</summary>
       <blockquote class="ax-tool-guide-apa">{{ seo_guide.apa_example }}</blockquote>
     </details>
   </div>
 
   {% if seo_guide.faq %}
   <div class="ax-tool-guide-faq">
-    <h2 class="ax-tool-guide-faq-title">Sık Sorulan Sorular</h2>
+    <h2 class="ax-tool-guide-faq-title">{% trans "Sık Sorulan Sorular" %}</h2>
     {% for item in seo_guide.faq %}
     <details class="ax-tool-guide-detail">
       <summary>{{ item.q }}</summary>
@@ -185,7 +186,7 @@ function axClearSession() {
 
   {% if seo_guide.related_tools %}
   <div class="ax-tool-guide-related">
-    <span class="ax-tool-guide-related-label">İlgili Araçlar:</span>
+    <span class="ax-tool-guide-related-label">{% trans "İlgili Araçlar:" %}</span>
     {% for slug, name in seo_guide.related_tools %}
     <a href="{% url 'analiz_console' tool_slug=slug %}" class="ax-tool-guide-related-link">{{ name }}</a>
     {% endfor %}
@@ -198,13 +199,13 @@ function axClearSession() {
 <div class="ax-tool-guide" style="margin-top:0;background:linear-gradient(135deg,rgba(99,102,241,.1),rgba(34,197,94,.06));border:1px solid rgba(99,102,241,.2);">
   <div class="ax-tool-guide-intro" style="text-align:center;">
     <p style="font-size:1.05rem;font-weight:600;color:#f1f5f9;margin-bottom:.5rem;">
-      Bu analizi kendiniz yapmak yerine uzmanına bırakmak ister misiniz?
+      {% trans "Bu analizi kendiniz yapmak yerine uzmanına bırakmak ister misiniz?" %}
     </p>
     <p style="margin-bottom:1.25rem;">
-      Verilerinizi gönderin, uzman analistlerimiz <strong style="color:#f1f5f9;">{{ tool_title }}</strong> analizini sizin adınıza gerçekleştirip raporlasın. Ücretsiz ön değerlendirme ile başlayın.
+      {% blocktrans %}Verilerinizi gönderin, uzman analistlerimiz <strong style="color:#f1f5f9;">{{ tool_title }}</strong> analizini sizin adınıza gerçekleştirip raporlasın. Ücretsiz ön değerlendirme ile başlayın.{% endblocktrans %}
     </p>
     <a href="{% url 'proje_talebi' %}?source=tool" class="ax-btn ax-btn--primary fw-semibold px-4 py-2">
-      <i class="bi bi-send me-2"></i>Ücretsiz Proje Talebi Gönder
+      <i class="bi bi-send me-2"></i>{% trans "Ücretsiz Proje Talebi Gönder" %}
     </a>
   </div>
 </div>

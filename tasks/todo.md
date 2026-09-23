@@ -352,6 +352,51 @@ kontrolü kaldırıldı (kullanılmıyordu, sadelik için silindi).
 İkisi FARKLI veritabanı kullanıyor — birinde yapılan flag/veri değişikliği
 diğerinde görünmez. Test ederken hangi sunucuda olduğunuza dikkat edin.
 
+## Adım 4 — İlk Çeviri Turu Tamamlandı (23 Eylül 2026, kullanıcı isteğiyle öne alındı)
+
+**Neden öne alındı:** 3b-2 grubu (proje talebi/eğitim/AI çözümler) bitince
+kullanıcı "hâlâ çeviriler sayfalarında gözükmüyor" dedi — haklı olarak,
+o ana kadarki iş sadece `{% trans %}` işaretlemesiydi, gerçek çeviri
+metni yoktu. Sırayı değiştirip o ana kadar işaretlenen HER ŞEYİN gerçek
+İngilizce+Almanca çevirisini yazdım.
+
+**Yapılanlar:**
+- `gettext` container'a geçici kuruldu (kalıcı `requirements.txt`
+  bağımlılığı DEĞİL, tek seferlik)
+- `makemessages -l en -l de` → 601 msgid çıkarıldı
+- `polib` ile Python script (`translate_po.py`, scratchpad'te) yazılıp
+  601 metnin TAMAMI için EN+DE çevirisi elle yazıldı (plural + python-format
+  placeholder'lar korunarak: `%(daily_limit)s`, `%(job_id)s`,
+  `%(tool_title)s`/`%(promo_title)s` vb.)
+- `compilemessages` ile derlendi
+
+**Bulunup düzeltilen 2 ek sorun:**
+1. **Fuzzy işaretler:** `makemessages` benzer eski msgid'lere göre bazı
+   yeni string'leri otomatik "fuzzy" işaretliyor (ör. "Ücretsiz" →
+   "Ücretsiz Dene" benzerliği) — `compilemessages` fuzzy girişleri
+   VARSAYILAN OLARAK derlemeye dahil etmiyor, msgstr dolu olsa bile
+   sessizce atlanıyor. `msgattrib --clear-fuzzy` ile temizlendi (6 kayıt
+   etkilenmişti). **Bu adımı gelecekte her `makemessages` sonrası
+   unutma.**
+2. **`service_promo.html` keşfi:** Anonim kullanıcılar (yeni ziyaretçilerin
+   çoğu) istatistik/openalex/semanticscholar araçlarında asıl çevirdiğim
+   şablonu değil, `service_promo.html` adında paylaşılan bir "kayıt ol"
+   davet şablonunu görüyor (`if not request.user.is_authenticated`).
+   Bu dosya orijinal 26 dosyalık listede yoktu — küçük (211 satır) ve
+   doğrudan kapsamdaki araçların giriş kapısı olduğu için ek onay
+   almadan işaretlendi ve çevrildi.
+
+**Doğrulama:** Giriş yapmış VE anonim oturumla `/en/`, `/de/` üzerinde
+home, footer, navbar, openalex, semanticscholar, analiz/anova,
+proje-talebi, login/register sayfaları curl ile test edildi — gerçek
+İngilizce/Almanca metin görünüyor (`manage.py check` temiz).
+
+**Kasıtlı hâlâ çevrilmemiş (adım 6 kapsamı, Python tarafı):**
+`training_catalog.py` kurs verileri, `TOOL_CATEGORIES` sidebar etiketleri,
+`seo_guide`/SEO_GUIDES sözlüğü (intro/faq/apa_example vb.), quiz soru
+bankası, `analyses_list` (makaleanaliz), tablo satırları (`{{ label }}` /
+`{{ m.title }}` gibi DB/servis çıktısı alanlar).
+
 ## Açık Sorular (kullanıcıya soruldu, netleşince ilerlenir)
 - Proje talebi / Danışmanlık / Eğitim sayfaları kapsama girecek mi?
 - İstatistik araçlarının analiz sonuç metinleri (PDF rapor içerikleri) de
