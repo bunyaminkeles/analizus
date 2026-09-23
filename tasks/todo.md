@@ -12,12 +12,20 @@ bölümünden başla.
 admin flag), Market arayüzü (commit `52bd6dc`, 176 metin daha — bkz.
 "Kapsam Kararı"). Detaylar aşağıdaki ilgili maddelerde.
 
-**Sırada:** Adım 3b-2d — 18 istatistik aracı şablonu + `tool_base.html`.
-`/analiz/<araç>/` sayfaları bu şablonları render ediyor (`analiz_console`
-→ araç view'ı → `istatistik/<araç>.html`, `analiz_console_base.html`'i
-extend ediyor). İskelet çevrili; 18 şablonun hiçbirinde `{% trans %}`
-yok (her birinde ~23-44 satır Türkçe metin, `tool_base.html`'de 16).
-İşaretlemeden sonra makemessages → EN/DE çeviri → compilemessages.
+**3b-2d TAMAMLANDI (23 Eylül 2026):** `/analiz/` hub + 18 araç şablonu +
+landing view metinleri + yükleme/önizleme hata mesajları (commit'ler
+`ddff5d4`, `e363169`). `tool_base.html` ölü dosya (hiçbir yerden
+kullanılmıyor). Kullanıcı kararıyla APA cümleleri + sunucu sonuç
+metinleri Türkçe bırakıldı (Adım 6'da PDF ile birlikte).
+
+**Sırada — EN/DE sayfalarda hâlâ Türkçe kalanlar (öncelik sırasıyla):**
+1. `istatistik/seo_content.py` — her aracın "Nedir / ne zaman / SSS /
+   APA örneği" rehberi (anonim + giriş sayfalarının alt bölümü, SEO
+   açısından en değerli metin). Büyük iş (18 araç × ~10 paragraf).
+2. `base.html` ortak kalıntılar: "İçeriğe geç", "İstatistik Arena",
+   "Kullanıcı Kartı", "Haftanın Başarı Hikayesi", AI widget metinleri
+   ("Anonim: 3 soru/gün", karşılama mesajı).
+3. Footer bağış/destekçi modalı — önceden kasıtlı kapsam dışı (TL/IBAN).
 
 **Sonra:** 5b (hreflang + sitemap), 6 (Python tarafı — kapsam kararı
 bekliyor), 7 (deploy).
