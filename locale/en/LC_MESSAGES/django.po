@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-23 23:22+0300\n"
+"POT-Creation-Date: 2026-09-23 23:28+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1202,13 +1202,13 @@ msgstr "I Want an Analysis Done"
 #: forum/templates/forum/home.html:351
 #, python-format
 msgid ""
-"Tezinizden makaleye, SPSS analizinden Python projesine — alanında "
-"doğrulanmış uzmanla dakikalar içinde eşleşin. %%100 gizlilik, sürprizsiz "
-"fiyat."
+"İstatistik analizinden veri bilimine, araştırma projesinden kurumsal rapora "
+"— alanında doğrulanmış uzmanla dakikalar içinde eşleşin. %%100 gizlilik, "
+"sürprizsiz fiyat."
 msgstr ""
-"From your thesis to a paper, from SPSS analysis to a Python project — get "
-"matched with a verified expert in minutes. 100%% privacy, no surprise "
-"pricing."
+"From statistical analysis to data science, from research projects to "
+"corporate reports — get matched with a verified expert in your field within "
+"minutes. 100%% privacy, no surprise pricing."
 
 #: forum/templates/forum/home.html:353
 msgid "Alanında doğrulanmış uzmanlar"
@@ -1268,11 +1268,11 @@ msgstr "I Want to Join as an Expert"
 
 #: forum/templates/forum/home.html:426
 msgid ""
-"SPSS, R, Python veya alan uzmanlığınızı gerçek akademik projelere "
-"dönüştürün. Komisyonsuz çalışın, akademik itibarınızı büyütün."
+"SPSS, R, Python veya alan uzmanlığınızı gerçek projelere dönüştürün. "
+"Komisyonsuz çalışın, itibarınızı büyütün."
 msgstr ""
-"Turn your SPSS, R, Python, or domain expertise into real academic projects. "
-"Work commission-free and grow your academic reputation."
+"Turn your SPSS, R, Python, or domain expertise into real projects. Work "
+"commission-free and grow your reputation."
 
 #: forum/templates/forum/home.html:428
 msgid "Sıfır komisyon ile hemen başla"
@@ -1283,8 +1283,8 @@ msgid "Sadece alanınıza uygun projeler"
 msgstr "Projects that match your field only"
 
 #: forum/templates/forum/home.html:430
-msgid "Akademik profilini ve itibarını güçlendir"
-msgstr "Strengthen your academic profile and reputation"
+msgid "Profilini ve itibarını güçlendir"
+msgstr "Strengthen your profile and reputation"
 
 #: forum/templates/forum/home.html:433
 msgid "İstatistik Arenası'nda puan kazan →"
