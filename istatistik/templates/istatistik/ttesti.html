@@ -1,9 +1,9 @@
 {% extends "istatistik/analiz_console_base.html" %}
-{% load static %}
+{% load static i18n %}
 {% block canonical %}/analiz/ttesti/{% endblock %}
 
-{% block title %}t-Testi (Bağımsız, Bağımlı, Tek Örneklem) - Analizus{% endblock %}
-{% block meta_description %}Bağımsız örneklem, bağımlı örneklem ve tek örneklem t-testi online hesaplayın. Gruplar arası fark analizi, APA formatında PDF rapor.{% endblock %}
+{% block title %}{% trans "t-Testi (Bağımsız, Bağımlı, Tek Örneklem)" %} - Analizus{% endblock %}
+{% block meta_description %}{% trans "Bağımsız örneklem, bağımlı örneklem ve tek örneklem t-testi online hesaplayın. Gruplar arası fark analizi, APA formatında PDF rapor." %}{% endblock %}
 
 {% block tool_area %}
 <style>
@@ -174,13 +174,13 @@
     <div class="col">
       <h2 class="fw-bold ax-text-primary mb-1 d-flex align-items-center">
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ax-text-accent me-2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
-        t-Testi
+        {% trans "t-Testi" %}
       </h2>
-      <p class="ax-text-muted mb-0">Bağımsız veya bağımlı örneklem t-testi — iki grup arasındaki ortalama farkını test edin.</p>
+      <p class="ax-text-muted mb-0">{% trans "Bağımsız veya bağımlı örneklem t-testi — iki grup arasındaki ortalama farkını test edin." %}</p>
     </div>
     {% if user.is_authenticated %}
     <div class="col-auto">
-      <span class="ax-badge ax-badge-secondary">Günlük: {{ daily_remaining }} analiz hakkı</span>
+      <span class="ax-badge ax-badge-secondary">{% blocktrans %}Günlük: {{ daily_remaining }} analiz hakkı{% endblocktrans %}</span>
     </div>
     {% endif %}
   </div>
@@ -195,26 +195,26 @@
         <div id="step-upload">
           <h5 class="ax-text-primary fw-semibold mb-3 d-flex align-items-center">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ax-text-accent me-2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-            Dosya Yükle
+            {% trans "Dosya Yükle" %}
           </h5>
 
           {% if not user.is_authenticated %}
           <div class="ax-alert-info mb-3 ax-text-sm">
             <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" class="flex-shrink-0"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-            <span><a href="{% url 'login' %}?next={{ request.path }}" class="ax-link">Giriş yapın</a> veya <a href="{% url 'register' %}?next={{ request.path }}" class="ax-link">kayıt olun</a> — geçmişiniz kaydedilsin.</span>
+            <span><a href="{% url 'login' %}?next={{ request.path }}" class="ax-link">{% trans "Giriş yapın" %}</a> {% trans "veya" %} <a href="{% url 'register' %}?next={{ request.path }}" class="ax-link">{% trans "kayıt olun" %}</a> — {% trans "geçmişiniz kaydedilsin." %}</span>
           </div>
           {% endif %}
 
           <div id="upload-area" class="ax-upload-area mb-3" onclick="document.getElementById('file-input').click()">
             <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ax-text-accent mb-2 mx-auto d-block"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M12 12v9"/><path d="m8 16 4-4 4 4"/></svg>
-            <p class="ax-text-muted ax-text-sm mb-1">Dosyayı buraya sürükleyin veya tıklayın</p>
-            <p class="ax-text-muted ax-text-sm mb-0" id="file-name">CSV, XLSX, XLS — Maks. {{ max_upload_mb }} MB</p>
+            <p class="ax-text-muted ax-text-sm mb-1">{% trans "Dosyayı buraya sürükleyin veya tıklayın" %}</p>
+            <p class="ax-text-muted ax-text-sm mb-0" id="file-name">{% blocktrans with mb=max_upload_mb %}CSV, XLSX, XLS — Maks. {{ mb }} MB{% endblocktrans %}</p>
           </div>
           <input type="file" id="file-input" accept=".csv,.xlsx,.xls" class="d-none">
 
           <button id="preview-btn" class="ax-btn ax-btn-accent w-100 fw-semibold" disabled>
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 8 16 12 12 16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-            Sütunları Getir
+            {% trans "Sütunları Getir" %}
           </button>
           <div id="upload-error" class="ax-alert-danger mt-3 d-none ax-text-sm"></div>
         </div>
@@ -224,20 +224,20 @@
           <div class="d-flex align-items-center justify-content-between mb-3">
             <h5 class="ax-text-primary fw-semibold mb-0 d-flex align-items-center">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ax-text-accent me-2"><path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/></svg>
-              Sütun Seçimi
+              {% trans "Sütun Seçimi" %}
             </h5>
             <button class="ax-btn-outline-secondary" onclick="resetToUpload()">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
-              Geri
+              {% trans "Geri" %}
             </button>
           </div>
           <p class="ax-text-muted ax-text-sm mb-3" id="config-file-info">—</p>
 
           <div class="mb-3">
-            <label class="ax-text-secondary ax-text-sm fw-semibold mb-2 d-block">Test Tipi</label>
+            <label class="ax-text-secondary ax-text-sm fw-semibold mb-2 d-block">{% trans "Test Tipi" %}</label>
             <div class="d-flex gap-2" id="test-type-btns">
-              <button type="button" class="ax-method-btn active" data-tt="independent">Bağımsız</button>
-              <button type="button" class="ax-method-btn" data-tt="paired">Bağımlı</button>
+              <button type="button" class="ax-method-btn active" data-tt="independent">{% trans "Bağımsız" %}</button>
+              <button type="button" class="ax-method-btn" data-tt="paired">{% trans "Bağımlı" %}</button>
             </div>
             <input type="hidden" id="test-type-val" value="independent">
           </div>
@@ -245,11 +245,11 @@
           <!-- Bağımsız -->
           <div id="independent-opts">
             <div class="mb-2">
-              <label class="ax-text-secondary ax-text-sm mb-1 d-block">Grup Sütunu (kategorik)</label>
+              <label class="ax-text-secondary ax-text-sm mb-1 d-block">{% trans "Grup Sütunu (kategorik)" %}</label>
               <select id="group-col" class="ax-form-control ax-text-sm"></select>
             </div>
             <div class="mb-3">
-              <label class="ax-text-secondary ax-text-sm mb-1 d-block">Bağımlı Değişken (sayısal)</label>
+              <label class="ax-text-secondary ax-text-sm mb-1 d-block">{% trans "Bağımlı Değişken (sayısal)" %}</label>
               <select id="dep-col" class="ax-form-control ax-text-sm"></select>
             </div>
           </div>
@@ -257,18 +257,18 @@
           <!-- Bağımlı/Eşleştirilmiş -->
           <div id="paired-opts" class="d-none">
             <div class="mb-2">
-              <label class="ax-text-secondary ax-text-sm mb-1 d-block">1. Ölçüm (öntest / grup A)</label>
+              <label class="ax-text-secondary ax-text-sm mb-1 d-block">{% trans "1. Ölçüm (öntest / grup A)" %}</label>
               <select id="col1" class="ax-form-control ax-text-sm"></select>
             </div>
             <div class="mb-3">
-              <label class="ax-text-secondary ax-text-sm mb-1 d-block">2. Ölçüm (sontest / grup B)</label>
+              <label class="ax-text-secondary ax-text-sm mb-1 d-block">{% trans "2. Ölçüm (sontest / grup B)" %}</label>
               <select id="col2" class="ax-form-control ax-text-sm"></select>
             </div>
           </div>
 
           <button id="run-btn" class="ax-btn ax-btn-accent w-100 fw-semibold">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
-            Analizi Başlat
+            {% trans "Analizi Başlat" %}
           </button>
           <div id="run-error" class="ax-alert-danger mt-3 d-none ax-text-sm"></div>
         </div>
@@ -281,18 +281,18 @@
       <div class="ax-card p-4 h-100">
 
         <div id="panel-idle">
-          <h5 class="ax-text-muted fw-semibold mb-3">Sonuçlar burada görünecek</h5>
+          <h5 class="ax-text-muted fw-semibold mb-3">{% trans "Sonuçlar burada görünecek" %}</h5>
           <ul class="ax-text-muted ax-text-sm ps-3">
-            <li class="mb-1"><strong class="ax-text-secondary">Bağımsız t-testi:</strong> Her satır bir kişi, bir sütun grup etiketi (ör. Erkek/Kadın), bir sütun ölçüm değeri.</li>
-            <li class="mb-1"><strong class="ax-text-secondary">Bağımlı t-testi:</strong> Her satır bir kişi, iki sütun farklı ölçüm zamanları (öntest/sontest).</li>
-            <li class="mb-1">Başlık satırı otomatik algılanır.</li>
-            <li class="mb-1">Boş hücreler ilgili satırdan çıkarılır.</li>
+            <li class="mb-1"><strong class="ax-text-secondary">{% trans "Bağımsız t-testi:" %}</strong> {% trans "Her satır bir kişi, bir sütun grup etiketi (ör. Erkek/Kadın), bir sütun ölçüm değeri." %}</li>
+            <li class="mb-1"><strong class="ax-text-secondary">{% trans "Bağımlı t-testi:" %}</strong> {% trans "Her satır bir kişi, iki sütun farklı ölçüm zamanları (öntest/sontest)." %}</li>
+            <li class="mb-1">{% trans "Başlık satırı otomatik algılanır." %}</li>
+            <li class="mb-1">{% trans "Boş hücreler ilgili satırdan çıkarılır." %}</li>
           </ul>
         </div>
 
         <div id="panel-loading" class="text-center d-none py-4">
           <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="ax-text-accent mb-3 mx-auto d-block" style="animation: ax-spin 1s linear infinite;"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
-          <p class="ax-text-muted">Analiz yapılıyor, lütfen bekleyin…</p>
+          <p class="ax-text-muted">{% trans "Analiz yapılıyor, lütfen bekleyin…" %}</p>
         </div>
 
         <div id="panel-error" class="d-none">
@@ -300,7 +300,7 @@
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="flex-shrink-0"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
             <span id="panel-error-msg"></span>
           </div>
-          <button class="ax-btn-outline-secondary" onclick="resetToUpload()">Tekrar Dene</button>
+          <button class="ax-btn-outline-secondary" onclick="resetToUpload()">{% trans "Tekrar Dene" %}</button>
         </div>
 
         <div id="panel-done" class="d-none">
@@ -313,13 +313,13 @@
             <div class="col-6">
               <div class="ax-stat-box">
                 <div class="ax-stat-val" id="res-t">—</div>
-                <div class="ax-stat-label">t istatistiği</div>
+                <div class="ax-stat-label">{% trans "t istatistiği" %}</div>
               </div>
             </div>
             <div class="col-6">
               <div class="ax-stat-box">
                 <div class="ax-stat-val" id="res-p">—</div>
-                <div class="ax-stat-label">p-değeri</div>
+                <div class="ax-stat-label">{% trans "p-değeri" %}</div>
               </div>
             </div>
           </div>
@@ -331,32 +331,32 @@
           <table class="ax-table mb-3">
             <tbody>
               <tr><td>Cohen's d</td><td id="res-d">—</td></tr>
-              <tr><td>%95 Güven Aralığı</td><td id="res-ci">—</td></tr>
-              <tr><td>Serbestlik Derecesi</td><td id="res-df">—</td></tr>
-              <tr><td>Etki Büyüklüğü</td><td id="res-effect">—</td></tr>
+              <tr><td>{% trans "%95 Güven Aralığı" %}</td><td id="res-ci">—</td></tr>
+              <tr><td>{% trans "Serbestlik Derecesi" %}</td><td id="res-df">—</td></tr>
+              <tr><td>{% trans "Etki Büyüklüğü" %}</td><td id="res-effect">—</td></tr>
             </tbody>
           </table>
 
           <div class="ax-section-box mb-3">
-            <p class="ax-text-secondary ax-text-sm fw-semibold mb-1">Sonuç</p>
+            <p class="ax-text-secondary ax-text-sm fw-semibold mb-1">{% trans "Sonuç" %}</p>
             <p class="ax-text-primary ax-text-sm mb-0" id="res-conclusion">—</p>
           </div>
 
           <div class="ax-apa-box">
-            <p class="ax-text-secondary ax-text-sm fw-semibold mb-2">Tezinde Nasıl Raporlarsın?</p>
+            <p class="ax-text-secondary ax-text-sm fw-semibold mb-2">{% trans "Tezinde Nasıl Raporlarsın?" %}</p>
             <p class="ax-text-primary ax-text-sm mb-2" id="res-apa" style="font-style:italic;"></p>
             <div class="d-flex gap-2 flex-wrap">
               <a id="pdf-btn" href="#" target="_blank" class="ax-btn-danger">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-                PDF İndir
+                {% trans "PDF İndir" %}
               </a>
               <button class="ax-btn-outline-secondary" onclick="copyApa(this)">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                Kopyala
+                {% trans "Kopyala" %}
               </button>
               <button class="ax-btn-outline-secondary" onclick="resetToUpload()">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                Yeni
+                {% trans "Yeni" %}
               </button>
             </div>
           </div>
@@ -370,19 +370,19 @@
   <div class="mt-4 ax-section-box p-4">
     <h5 class="ax-text-primary fw-semibold mb-3 d-flex align-items-center">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ax-text-accent me-2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
-      Metodoloji
+      {% trans "Metodoloji" %}
     </h5>
     <div class="row g-4">
       <div class="col-md-6">
-        <h6 class="ax-text-secondary text-uppercase ax-text-sm fw-bold mb-2">Varsayımlar</h6>
+        <h6 class="ax-text-secondary text-uppercase ax-text-sm fw-bold mb-2">{% trans "Varsayımlar" %}</h6>
         <ul class="ax-text-muted ax-text-sm ps-3 mb-0">
-          <li>Bağımsız gözlemler</li>
-          <li>Normal dağılım (küçük örneklemlerde önemli; n > 30'da Merkezi Limit Teoremi ile gevşetilebilir)</li>
-          <li>Bağımsız t-testi: varyans homojenliği (Levene testi ile otomatik kontrol edilir)</li>
+          <li>{% trans "Bağımsız gözlemler" %}</li>
+          <li>{% trans "Normal dağılım (küçük örneklemlerde önemli; n > 30'da Merkezi Limit Teoremi ile gevşetilebilir)" %}</li>
+          <li>{% trans "Bağımsız t-testi: varyans homojenliği (Levene testi ile otomatik kontrol edilir)" %}</li>
         </ul>
       </div>
       <div class="col-md-6">
-        <h6 class="ax-text-secondary text-uppercase ax-text-sm fw-bold mb-2">Akademik Kaynak</h6>
+        <h6 class="ax-text-secondary text-uppercase ax-text-sm fw-bold mb-2">{% trans "Akademik Kaynak" %}</h6>
         <p class="ax-text-muted ax-text-sm mb-0">
           Cohen, J. (1988). <em>Statistical power analysis for the behavioral sciences</em> (2nd ed.). Lawrence Erlbaum.<br>
           Welch, B. L. (1947). The generalization of Student's problem when several different population variances are involved.
@@ -394,15 +394,29 @@
 
   <!-- SEO: Bu Test Nedir? -->
   <div class="ax-card mt-4 p-4">
-    <h5 class="ax-text-primary fw-semibold mb-3">t-Testi Nedir?</h5>
-    <p class="ax-text-muted ax-text-sm mb-3">t-Testi, iki grup ortalaması arasında istatistiksel olarak anlamlı bir fark olup olmadığını sınamak için kullanılan parametrik bir testtir. Normal dağılım varsayımını gerektiren en temel karşılaştırma testlerinden biridir.</p>
-    <p class="ax-text-muted ax-text-sm mb-3"><strong class="ax-text-secondary">Bağımsız Örneklem t-Testi:</strong> İki farklı gruptan (örn. deney ve kontrol) elde edilen ölçümleri karşılaştırır. <strong class="ax-text-secondary">Bağımlı (Eşleştirilmiş) t-Testi:</strong> Aynı kişilere ait iki ölçüm zamanı (ön test–son test) karşılaştırılır. <strong class="ax-text-secondary">Tek Örneklem t-Testi:</strong> Bir grubun ortalamasının belirli bir teorik değerden farklı olup olmadığını test eder.</p>
-    <p class="ax-text-muted ax-text-sm mb-0">Normallik varsayımı karşılanmadığında bağımsız gruplar için Mann-Whitney U, eşleştirilmiş gruplar için ise Wilcoxon İşaret Testi tercih edilmelidir. Cohen's d etki büyüklüğü ile sonuçların pratik önemi de raporlanmalıdır.</p>
+    <h5 class="ax-text-primary fw-semibold mb-3">{% trans "t-Testi Nedir?" %}</h5>
+    <p class="ax-text-muted ax-text-sm mb-3">{% trans "t-Testi, iki grup ortalaması arasında istatistiksel olarak anlamlı bir fark olup olmadığını sınamak için kullanılan parametrik bir testtir. Normal dağılım varsayımını gerektiren en temel karşılaştırma testlerinden biridir." %}</p>
+    <p class="ax-text-muted ax-text-sm mb-3"><strong class="ax-text-secondary">{% trans "Bağımsız Örneklem t-Testi:" %}</strong> {% trans "İki farklı gruptan (örn. deney ve kontrol) elde edilen ölçümleri karşılaştırır." %} <strong class="ax-text-secondary">{% trans "Bağımlı (Eşleştirilmiş) t-Testi:" %}</strong> {% trans "Aynı kişilere ait iki ölçüm zamanı (ön test–son test) karşılaştırılır." %} <strong class="ax-text-secondary">{% trans "Tek Örneklem t-Testi:" %}</strong> {% trans "Bir grubun ortalamasının belirli bir teorik değerden farklı olup olmadığını test eder." %}</p>
+    <p class="ax-text-muted ax-text-sm mb-0">{% trans "Normallik varsayımı karşılanmadığında bağımsız gruplar için Mann-Whitney U, eşleştirilmiş gruplar için ise Wilcoxon İşaret Testi tercih edilmelidir. Cohen's d etki büyüklüğü ile sonuçların pratik önemi de raporlanmalıdır." %}</p>
   </div>
 
 </div>
 
 <script>
+{% blocktrans with mb=max_upload_mb asvar t_max_size %}CSV, XLSX, XLS — Maks. {{ mb }} MB{% endblocktrans %}
+const T = {
+  loading: '{% trans "Yükleniyor…" as t %}{{ t|escapejs }}',
+  fetchCols: '{% trans "Sütunları Getir" as t %}{{ t|escapejs }}',
+  starting: '{% trans "Analiz başlatılıyor…" as t %}{{ t|escapejs }}',
+  runAnalysis: '{% trans "Analizi Başlat" as t %}{{ t|escapejs }}',
+  connError: '{% trans "Bağlantı hatası." as t %}{{ t|escapejs }}',
+  failed: '{% trans "Analiz başarısız." as t %}{{ t|escapejs }}',
+  fileInfo: '{% trans "{rows} satır, {cols} sütun" as t %}{{ t|escapejs }}',
+  sigYes: '{% trans "✓ İstatistiksel olarak anlamlı fark var (p < .05)" as t %}{{ t|escapejs }}',
+  sigNo: '{% trans "✗ İstatistiksel olarak anlamlı fark yok (p ≥ .05)" as t %}{{ t|escapejs }}',
+  copied: '{% trans "Kopyalandı" as t %}{{ t|escapejs }}',
+  maxSize: '{{ t_max_size|escapejs }}',
+};
 const TTESTI_URL = '{% url "istatistik:ttesti" %}';
 const STATUS_BASE = '{% url "istatistik:ttesti_status" job_id="00000000-0000-0000-0000-000000000000" %}';
 let previewId = null, previewFilename = null, currentJobId = null, pollInterval = null;
@@ -430,7 +444,7 @@ document.getElementById('preview-btn').addEventListener('click', function() {
   const f = fileInput._file;
   if (!f) return;
   this.disabled = true;
-  this.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="animation:ax-spin 1s linear infinite"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> Yükleniyor…';
+  this.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="animation:ax-spin 1s linear infinite"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> ' + T.loading;
 
   const fd = new FormData();
   fd.append('csrfmiddlewaretoken', '{{ csrf_token }}');
@@ -441,7 +455,7 @@ document.getElementById('preview-btn').addEventListener('click', function() {
   .then(r => r.json())
   .then(data => {
     this.disabled = false;
-    this.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 8 16 12 12 16"/><line x1="8" y1="12" x2="16" y2="12"/></svg> Sütunları Getir';
+    this.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 8 16 12 12 16"/><line x1="8" y1="12" x2="16" y2="12"/></svg> ' + T.fetchCols;
     if (data.error) {
       document.getElementById('upload-error').textContent = data.error;
       document.getElementById('upload-error').classList.remove('d-none');
@@ -453,8 +467,8 @@ document.getElementById('preview-btn').addEventListener('click', function() {
   })
   .catch(() => {
     this.disabled = false;
-    this.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 8 16 12 12 16"/><line x1="8" y1="12" x2="16" y2="12"/></svg> Sütunları Getir';
-    document.getElementById('upload-error').textContent = 'Bağlantı hatası.';
+    this.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 8 16 12 12 16"/><line x1="8" y1="12" x2="16" y2="12"/></svg> ' + T.fetchCols;
+    document.getElementById('upload-error').textContent = T.connError;
     document.getElementById('upload-error').classList.remove('d-none');
   });
 });
@@ -462,7 +476,7 @@ document.getElementById('preview-btn').addEventListener('click', function() {
 function showConfigStep(cols, numCols, nRows, fname) {
   document.getElementById('step-upload').classList.add('d-none');
   document.getElementById('step-config').classList.remove('d-none');
-  document.getElementById('config-file-info').textContent = `${fname} — ${nRows} satır, ${cols.length} sütun`;
+  document.getElementById('config-file-info').textContent = `${fname} — ${T.fileInfo.replace('{rows}', nRows).replace('{cols}', cols.length)}`;
 
   ['group-col', 'dep-col', 'col1', 'col2'].forEach(id => {
     const sel = document.getElementById(id);
@@ -488,7 +502,7 @@ document.getElementById('run-btn').addEventListener('click', function() {
   const errEl = document.getElementById('run-error');
   errEl.classList.add('d-none');
   this.disabled = true;
-  this.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="animation:ax-spin 1s linear infinite"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> Analiz başlatılıyor…';
+  this.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="animation:ax-spin 1s linear infinite"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> ' + T.starting;
   showPanel('loading');
 
   const tt = document.getElementById('test-type-val').value;
@@ -510,15 +524,15 @@ document.getElementById('run-btn').addEventListener('click', function() {
   .then(r => r.json())
   .then(data => {
     this.disabled = false;
-    this.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg> Analizi Başlat';
+    this.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg> ' + T.runAnalysis;
     if (data.error) { errEl.textContent = data.error; errEl.classList.remove('d-none'); showPanel('idle'); return; }
     currentJobId = data.job_id;
     startPolling(currentJobId);
   })
   .catch(() => {
     this.disabled = false;
-    this.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg> Analizi Başlat';
-    errEl.textContent = 'Bağlantı hatası.';
+    this.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg> ' + T.runAnalysis;
+    errEl.textContent = T.connError;
     errEl.classList.remove('d-none');
     showPanel('idle');
   });
@@ -529,7 +543,7 @@ function startPolling(jobId) {
   pollInterval = setInterval(() => {
     fetch(url).then(r => r.json()).then(data => {
       if (data.status === 'completed') { clearInterval(pollInterval); onCompleted(data); }
-      else if (data.status === 'failed') { clearInterval(pollInterval); showPanelError(data.error || 'Analiz başarısız.'); }
+      else if (data.status === 'failed') { clearInterval(pollInterval); showPanelError(data.error || T.failed); }
     }).catch(() => {});
   }, 2500);
 }
@@ -546,10 +560,10 @@ function onCompleted(data) {
   const sigBox = document.getElementById('res-sig-box');
   if (r.significant) {
     sigBox.className = 'ax-sig-box ax-sig-success mb-3';
-    document.getElementById('res-sig-text').textContent = '✓ İstatistiksel olarak anlamlı fark var (p < .05)';
+    document.getElementById('res-sig-text').textContent = T.sigYes;
   } else {
     sigBox.className = 'ax-sig-box ax-sig-fail mb-3';
-    document.getElementById('res-sig-text').textContent = '✗ İstatistiksel olarak anlamlı fark yok (p ≥ .05)';
+    document.getElementById('res-sig-text').textContent = T.sigNo;
   }
 
   document.getElementById('res-d').textContent = r.cohens_d.toFixed(3);
@@ -582,10 +596,10 @@ function resetToUpload() {
   if (pollInterval) clearInterval(pollInterval);
   previewId = null; previewFilename = null; currentJobId = null;
   fileInput.value = ''; fileInput._file = null;
-  document.getElementById('file-name').textContent = 'CSV, XLSX, XLS — Maks. {{ max_upload_mb }} MB';
+  document.getElementById('file-name').textContent = T.maxSize;
   const prevBtn = document.getElementById('preview-btn');
   prevBtn.disabled = true;
-  prevBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 8 16 12 12 16"/><line x1="8" y1="12" x2="16" y2="12"/></svg> Sütunları Getir';
+  prevBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 8 16 12 12 16"/><line x1="8" y1="12" x2="16" y2="12"/></svg> ' + T.fetchCols;
   document.getElementById('step-upload').classList.remove('d-none');
   document.getElementById('step-config').classList.add('d-none');
   showPanel('idle');
@@ -593,7 +607,7 @@ function resetToUpload() {
 function copyApa(btn) {
   navigator.clipboard.writeText(document.getElementById('res-apa').textContent).then(() => {
     const orig = btn.innerHTML;
-    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Kopyalandı';
+    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> ' + T.copied;
     setTimeout(() => { btn.innerHTML = orig; }, 2000);
   });
 }

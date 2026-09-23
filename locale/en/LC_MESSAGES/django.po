@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-23 22:02+0300\n"
+"POT-Creation-Date: 2026-09-23 22:18+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1124,7 +1124,7 @@ msgstr "For your thesis:"
 msgid "Güvenilirlik Analizi"
 msgstr "Reliability Analysis"
 
-#: forum/templates/forum/home.html:262
+#: forum/templates/forum/home.html:262 istatistik/views.py:27
 msgid "Normallik Testi"
 msgstr "Normality Test"
 
@@ -1521,6 +1521,7 @@ msgstr ""
 " in the Arena."
 
 #: forum/templates/forum/home.html:759
+#: istatistik/templates/istatistik/analiz_hub.html:56
 msgid "AI Asistan'a sor"
 msgstr "Ask the AI Assistant"
 
@@ -2073,7 +2074,8 @@ msgstr "View My Profile"
 #: forum/templates/forum/market/job_detail.html:424
 #: forum/templates/registration/login.html:10
 #: forum/templates/registration/login.html:243
-#: forum/templates/registration/login.html:274 templates/base.html:502
+#: forum/templates/registration/login.html:274
+#: istatistik/templates/istatistik/analiz_hub.html:42 templates/base.html:502
 #: templates/forum/register.html:253 templates/forum/register.html:309
 #: templates/service_promo.html:37
 msgid "Giriş Yap"
@@ -2825,6 +2827,7 @@ msgid "Ne Zaman Kullanılır?"
 msgstr "When to Use It?"
 
 #: istatistik/templates/istatistik/analiz_console_base.html:162
+#: istatistik/templates/istatistik/ttesti.html:377
 msgid "Varsayımlar"
 msgstr "Assumptions"
 
@@ -2864,6 +2867,522 @@ msgstr ""
 #: templates/service_promo.html:191
 msgid "Ücretsiz Proje Talebi Gönder"
 msgstr "Send a Free Project Request"
+
+#: istatistik/templates/istatistik/analiz_hub.html:4
+#: istatistik/templates/istatistik/analiz_hub.html:6
+#: istatistik/templates/istatistik/analiz_hub.html:8
+#: istatistik/templates/istatistik/analiz_hub.html:32 templates/base.html:205
+#: templates/base.html:423
+msgid "İstatistik Analiz Araçları"
+msgstr "Statistics Tools"
+
+#: istatistik/templates/istatistik/analiz_hub.html:5
+#: istatistik/templates/istatistik/analiz_hub.html:7
+#: istatistik/templates/istatistik/analiz_hub.html:9
+msgid ""
+"Betimsel istatistik, t-testi, ANOVA, regresyon, faktör analizi ve daha "
+"fazlası. Veri dosyanızı yükleyin, APA formatında PDF rapor saniyeler içinde "
+"hazır."
+msgstr ""
+"Descriptive statistics, t-tests, ANOVA, regression, factor analysis and "
+"more. Upload your data file and get an APA-style PDF report in seconds."
+
+#: istatistik/templates/istatistik/analiz_hub.html:34
+msgid ""
+"Veri dosyanızı yükleyin; analiz otomatik tamamlanır, APA formatında PDF "
+"rapor hazır. Python veya SPSS bilgisi gerekmez."
+msgstr ""
+"Upload your data file; the analysis runs automatically and an APA-style PDF "
+"report is ready. No Python or SPSS knowledge required."
+
+#: istatistik/templates/istatistik/analiz_hub.html:39
+#: templates/service_promo.html:33
+msgid "Ücretsiz Dene"
+msgstr "Try for Free"
+
+#: istatistik/templates/istatistik/analiz_hub.html:51
+msgid "Dosyanı seçtin — şimdi bir araç seç"
+msgstr "You've selected your file — now choose a tool"
+
+#: istatistik/templates/istatistik/analiz_hub.html:54
+msgid "Hangi aracı seçeceğinden emin değil misin?"
+msgstr "Not sure which tool to choose?"
+
+#: istatistik/templates/istatistik/analiz_hub.html:55
+msgid "Hangi Test? sihirbazı"
+msgstr "Which Test? wizard"
+
+#: istatistik/templates/istatistik/analiz_hub.html:57
+msgid "Bu işi uzmana bırak"
+msgstr "Leave it to an expert"
+
+#: istatistik/templates/istatistik/analiz_hub.html:83
+msgid "Ücretsiz hesap açın, tüm araçlara hemen erişin."
+msgstr "Create a free account and get instant access to all tools."
+
+#: istatistik/templates/istatistik/analiz_hub.html:85
+#: templates/service_promo.html:122
+msgid "Başla — Ücretsiz"
+msgstr "Get Started — Free"
+
+#: istatistik/templates/istatistik/ttesti.html:5
+msgid "t-Testi (Bağımsız, Bağımlı, Tek Örneklem)"
+msgstr "t-Test (Independent, Paired, One-Sample)"
+
+#: istatistik/templates/istatistik/ttesti.html:6
+msgid ""
+"Bağımsız örneklem, bağımlı örneklem ve tek örneklem t-testi online "
+"hesaplayın. Gruplar arası fark analizi, APA formatında PDF rapor."
+msgstr ""
+"Run independent-samples, paired-samples and one-sample t-tests online. "
+"Between-group difference analysis with an APA-style PDF report."
+
+#: istatistik/templates/istatistik/ttesti.html:177 istatistik/views.py:39
+#: istatistik/views.py:257 istatistik/views.py:274
+msgid "t-Testi"
+msgstr "t-Test"
+
+#: istatistik/templates/istatistik/ttesti.html:179
+msgid ""
+"Bağımsız veya bağımlı örneklem t-testi — iki grup arasındaki ortalama "
+"farkını test edin."
+msgstr ""
+"Independent or paired-samples t-test — test the mean difference between two "
+"groups."
+
+#: istatistik/templates/istatistik/ttesti.html:183
+#, python-format
+msgid "Günlük: %(daily_remaining)s analiz hakkı"
+msgstr "Daily: %(daily_remaining)s analyses left"
+
+#: istatistik/templates/istatistik/ttesti.html:198
+msgid "Dosya Yükle"
+msgstr "Upload File"
+
+#: istatistik/templates/istatistik/ttesti.html:204
+msgid "Giriş yapın"
+msgstr "Log in"
+
+#: istatistik/templates/istatistik/ttesti.html:204
+msgid "veya"
+msgstr "or"
+
+#: istatistik/templates/istatistik/ttesti.html:204
+msgid "kayıt olun"
+msgstr "sign up"
+
+#: istatistik/templates/istatistik/ttesti.html:204
+msgid "geçmişiniz kaydedilsin."
+msgstr "so your history is saved."
+
+#: istatistik/templates/istatistik/ttesti.html:210
+msgid "Dosyayı buraya sürükleyin veya tıklayın"
+msgstr "Drag your file here or click"
+
+#: istatistik/templates/istatistik/ttesti.html:211
+#: istatistik/templates/istatistik/ttesti.html:406
+#, python-format
+msgid "CSV, XLSX, XLS — Maks. %(mb)s MB"
+msgstr "CSV, XLSX, XLS — Max. %(mb)s MB"
+
+#: istatistik/templates/istatistik/ttesti.html:217
+#: istatistik/templates/istatistik/ttesti.html:409
+msgid "Sütunları Getir"
+msgstr "Load Columns"
+
+#: istatistik/templates/istatistik/ttesti.html:227
+msgid "Sütun Seçimi"
+msgstr "Column Selection"
+
+#: istatistik/templates/istatistik/ttesti.html:231
+msgid "Geri"
+msgstr "Back"
+
+#: istatistik/templates/istatistik/ttesti.html:237
+msgid "Test Tipi"
+msgstr "Test Type"
+
+#: istatistik/templates/istatistik/ttesti.html:239
+msgid "Bağımsız"
+msgstr "Independent"
+
+#: istatistik/templates/istatistik/ttesti.html:240
+msgid "Bağımlı"
+msgstr "Paired"
+
+#: istatistik/templates/istatistik/ttesti.html:248
+msgid "Grup Sütunu (kategorik)"
+msgstr "Group Column (categorical)"
+
+#: istatistik/templates/istatistik/ttesti.html:252
+msgid "Bağımlı Değişken (sayısal)"
+msgstr "Dependent Variable (numeric)"
+
+#: istatistik/templates/istatistik/ttesti.html:260
+msgid "1. Ölçüm (öntest / grup A)"
+msgstr "Measurement 1 (pre-test / group A)"
+
+#: istatistik/templates/istatistik/ttesti.html:264
+msgid "2. Ölçüm (sontest / grup B)"
+msgstr "Measurement 2 (post-test / group B)"
+
+#: istatistik/templates/istatistik/ttesti.html:271
+#: istatistik/templates/istatistik/ttesti.html:411
+msgid "Analizi Başlat"
+msgstr "Run Analysis"
+
+#: istatistik/templates/istatistik/ttesti.html:284
+msgid "Sonuçlar burada görünecek"
+msgstr "Results will appear here"
+
+#: istatistik/templates/istatistik/ttesti.html:286
+msgid "Bağımsız t-testi:"
+msgstr "Independent t-test:"
+
+#: istatistik/templates/istatistik/ttesti.html:286
+msgid ""
+"Her satır bir kişi, bir sütun grup etiketi (ör. Erkek/Kadın), bir sütun "
+"ölçüm değeri."
+msgstr ""
+"Each row is one participant, one column is the group label (e.g. "
+"Male/Female), one column is the measured value."
+
+#: istatistik/templates/istatistik/ttesti.html:287
+msgid "Bağımlı t-testi:"
+msgstr "Paired t-test:"
+
+#: istatistik/templates/istatistik/ttesti.html:287
+msgid "Her satır bir kişi, iki sütun farklı ölçüm zamanları (öntest/sontest)."
+msgstr ""
+"Each row is one participant, two columns are different measurement times "
+"(pre-test/post-test)."
+
+#: istatistik/templates/istatistik/ttesti.html:288
+msgid "Başlık satırı otomatik algılanır."
+msgstr "The header row is detected automatically."
+
+#: istatistik/templates/istatistik/ttesti.html:289
+msgid "Boş hücreler ilgili satırdan çıkarılır."
+msgstr "Empty cells are excluded from the corresponding row."
+
+#: istatistik/templates/istatistik/ttesti.html:295
+msgid "Analiz yapılıyor, lütfen bekleyin…"
+msgstr "Running analysis, please wait…"
+
+#: istatistik/templates/istatistik/ttesti.html:303
+msgid "Tekrar Dene"
+msgstr "Try Again"
+
+#: istatistik/templates/istatistik/ttesti.html:316
+msgid "t istatistiği"
+msgstr "t statistic"
+
+#: istatistik/templates/istatistik/ttesti.html:322
+msgid "p-değeri"
+msgstr "p-value"
+
+#: istatistik/templates/istatistik/ttesti.html:334
+#, python-format
+msgid "%%95 Güven Aralığı"
+msgstr "95%% Confidence Interval"
+
+#: istatistik/templates/istatistik/ttesti.html:335
+msgid "Serbestlik Derecesi"
+msgstr "Degrees of Freedom"
+
+#: istatistik/templates/istatistik/ttesti.html:336 istatistik/views.py:265
+msgid "Etki Büyüklüğü"
+msgstr "Effect Size"
+
+#: istatistik/templates/istatistik/ttesti.html:341
+msgid "Sonuç"
+msgstr "Conclusion"
+
+#: istatistik/templates/istatistik/ttesti.html:346
+msgid "Tezinde Nasıl Raporlarsın?"
+msgstr "How to Report It in Your Thesis?"
+
+#: istatistik/templates/istatistik/ttesti.html:351
+#: makaleanaliz/templates/makaleanaliz/results.html:70
+msgid "PDF İndir"
+msgstr "Download PDF"
+
+#: istatistik/templates/istatistik/ttesti.html:355
+msgid "Kopyala"
+msgstr "Copy"
+
+#: istatistik/templates/istatistik/ttesti.html:359
+msgid "Yeni"
+msgstr "New"
+
+#: istatistik/templates/istatistik/ttesti.html:373
+msgid "Metodoloji"
+msgstr "Methodology"
+
+#: istatistik/templates/istatistik/ttesti.html:379
+msgid "Bağımsız gözlemler"
+msgstr "Independent observations"
+
+#: istatistik/templates/istatistik/ttesti.html:380
+msgid ""
+"Normal dağılım (küçük örneklemlerde önemli; n > 30'da Merkezi Limit Teoremi "
+"ile gevşetilebilir)"
+msgstr ""
+"Normal distribution (important for small samples; can be relaxed for n > 30 "
+"via the Central Limit Theorem)"
+
+#: istatistik/templates/istatistik/ttesti.html:381
+msgid ""
+"Bağımsız t-testi: varyans homojenliği (Levene testi ile otomatik kontrol "
+"edilir)"
+msgstr ""
+"Independent t-test: homogeneity of variance (checked automatically with "
+"Levene's test)"
+
+#: istatistik/templates/istatistik/ttesti.html:385
+msgid "Akademik Kaynak"
+msgstr "Academic Reference"
+
+#: istatistik/templates/istatistik/ttesti.html:397
+msgid "t-Testi Nedir?"
+msgstr "What Is a t-Test?"
+
+#: istatistik/templates/istatistik/ttesti.html:398
+msgid ""
+"t-Testi, iki grup ortalaması arasında istatistiksel olarak anlamlı bir fark "
+"olup olmadığını sınamak için kullanılan parametrik bir testtir. Normal "
+"dağılım varsayımını gerektiren en temel karşılaştırma testlerinden biridir."
+msgstr ""
+"The t-test is a parametric test used to determine whether there is a "
+"statistically significant difference between two group means. It is one of "
+"the most fundamental comparison tests and assumes a normal distribution."
+
+#: istatistik/templates/istatistik/ttesti.html:399
+msgid "Bağımsız Örneklem t-Testi:"
+msgstr "Independent-Samples t-Test:"
+
+#: istatistik/templates/istatistik/ttesti.html:399
+msgid ""
+"İki farklı gruptan (örn. deney ve kontrol) elde edilen ölçümleri "
+"karşılaştırır."
+msgstr ""
+"Compares measurements obtained from two different groups (e.g. experimental "
+"and control)."
+
+#: istatistik/templates/istatistik/ttesti.html:399
+msgid "Bağımlı (Eşleştirilmiş) t-Testi:"
+msgstr "Paired (Dependent) t-Test:"
+
+#: istatistik/templates/istatistik/ttesti.html:399
+msgid "Aynı kişilere ait iki ölçüm zamanı (ön test–son test) karşılaştırılır."
+msgstr ""
+"Compares two measurement times (pre-test–post-test) from the same "
+"participants."
+
+#: istatistik/templates/istatistik/ttesti.html:399
+msgid "Tek Örneklem t-Testi:"
+msgstr "One-Sample t-Test:"
+
+#: istatistik/templates/istatistik/ttesti.html:399
+msgid ""
+"Bir grubun ortalamasının belirli bir teorik değerden farklı olup olmadığını "
+"test eder."
+msgstr "Tests whether a group mean differs from a specific theoretical value."
+
+#: istatistik/templates/istatistik/ttesti.html:400
+msgid ""
+"Normallik varsayımı karşılanmadığında bağımsız gruplar için Mann-Whitney U, "
+"eşleştirilmiş gruplar için ise Wilcoxon İşaret Testi tercih edilmelidir. "
+"Cohen's d etki büyüklüğü ile sonuçların pratik önemi de raporlanmalıdır."
+msgstr ""
+"When the normality assumption is not met, the Mann-Whitney U test should be "
+"used for independent groups and the Wilcoxon signed-rank test for paired "
+"groups. The practical significance of the results should also be reported "
+"with Cohen's d effect size."
+
+#: istatistik/templates/istatistik/ttesti.html:408
+msgid "Yükleniyor…"
+msgstr "Loading…"
+
+#: istatistik/templates/istatistik/ttesti.html:410
+msgid "Analiz başlatılıyor…"
+msgstr "Starting analysis…"
+
+#: istatistik/templates/istatistik/ttesti.html:412
+msgid "Bağlantı hatası."
+msgstr "Connection error."
+
+#: istatistik/templates/istatistik/ttesti.html:413
+msgid "Analiz başarısız."
+msgstr "Analysis failed."
+
+#: istatistik/templates/istatistik/ttesti.html:414
+#, python-brace-format
+msgid "{rows} satır, {cols} sütun"
+msgstr "{rows} rows, {cols} columns"
+
+#: istatistik/templates/istatistik/ttesti.html:415
+msgid "✓ İstatistiksel olarak anlamlı fark var (p < .05)"
+msgstr "✓ There is a statistically significant difference (p < .05)"
+
+#: istatistik/templates/istatistik/ttesti.html:416
+msgid "✗ İstatistiksel olarak anlamlı fark yok (p ≥ .05)"
+msgstr "✗ There is no statistically significant difference (p ≥ .05)"
+
+#: istatistik/templates/istatistik/ttesti.html:417
+msgid "Kopyalandı"
+msgstr "Copied"
+
+#: istatistik/views.py:25
+msgid "Ön Analizler"
+msgstr "Preliminary Analyses"
+
+#: istatistik/views.py:26
+msgid "Betimleyici İstatistik"
+msgstr "Descriptive Statistics"
+
+#: istatistik/views.py:28
+msgid "Örneklem Hesaplayıcı"
+msgstr "Sample Size Calculator"
+
+#: istatistik/views.py:30
+msgid "Geçerlik & Güvenirlik"
+msgstr "Validity & Reliability"
+
+#: istatistik/views.py:31
+msgid "Cronbach Alpha"
+msgstr "Cronbach's Alpha"
+
+#: istatistik/views.py:32
+msgid "Açıklayıcı Faktör Analizi"
+msgstr "Exploratory Factor Analysis"
+
+#: istatistik/views.py:34
+msgid "İlişki Analizleri"
+msgstr "Relationship Analyses"
+
+#: istatistik/views.py:35
+msgid "Korelasyon Matrisi"
+msgstr "Correlation Matrix"
+
+#: istatistik/views.py:36
+msgid "Ki-Kare Testi"
+msgstr "Chi-Square Test"
+
+#: istatistik/views.py:38
+msgid "Fark Analizleri"
+msgstr "Difference Analyses"
+
+#: istatistik/views.py:40
+msgid "Tek Yönlü ANOVA"
+msgstr "One-Way ANOVA"
+
+#: istatistik/views.py:41
+msgid "Mann-Whitney U"
+msgstr "Mann-Whitney U"
+
+#: istatistik/views.py:42
+msgid "Kruskal-Wallis H"
+msgstr "Kruskal-Wallis H"
+
+#: istatistik/views.py:43
+msgid "Wilcoxon İşaret Testi"
+msgstr "Wilcoxon Signed-Rank Test"
+
+#: istatistik/views.py:44
+msgid "Friedman Testi"
+msgstr "Friedman Test"
+
+#: istatistik/views.py:45
+msgid "Tekrarlayan Ölçümler ANOVA"
+msgstr "Repeated Measures ANOVA"
+
+#: istatistik/views.py:47
+msgid "Regresyon Analizleri"
+msgstr "Regression Analyses"
+
+#: istatistik/views.py:48
+msgid "Çoklu Doğrusal Regresyon"
+msgstr "Multiple Linear Regression"
+
+#: istatistik/views.py:49
+msgid "Lojistik Regresyon"
+msgstr "Logistic Regression"
+
+#: istatistik/views.py:51
+msgid "Makine Öğrenmesi"
+msgstr "Machine Learning"
+
+#: istatistik/views.py:52
+msgid "Karar Ağacı"
+msgstr "Decision Tree"
+
+#: istatistik/views.py:53
+msgid "Destek Vektör Makinesi"
+msgstr "Support Vector Machine"
+
+#: istatistik/views.py:72
+msgid "CSV veya Excel dosyanızı yükleyin."
+msgstr "Upload your CSV or Excel file."
+
+#: istatistik/views.py:73
+msgid "Analiz otomatik olarak saniyeler içinde tamamlanır."
+msgstr "The analysis completes automatically within seconds."
+
+#: istatistik/views.py:74
+msgid "Sonuçları ekranda görün ve PDF olarak indirin."
+msgstr "View the results on screen and download them as a PDF."
+
+#: istatistik/views.py:261
+msgid ""
+"İki grup arasındaki ortalama farkını test edin. Bağımsız veya bağımlı "
+"örneklem t-testi, Cohen's d etki büyüklüğü ve %95 güven aralığı ile PDF "
+"raporu alın."
+msgstr ""
+"Test the mean difference between two groups. Get a PDF report with an "
+"independent or paired-samples t-test, Cohen's d effect size and a 95% "
+"confidence interval."
+
+#: istatistik/views.py:263
+msgid "Bağımsız Örneklem"
+msgstr "Independent Samples"
+
+#: istatistik/views.py:263
+msgid ""
+"Farklı iki grubun ortalamalarını karşılaştırın. Levene testi ile varyans "
+"homojenliği otomatik kontrol edilir."
+msgstr ""
+"Compare the means of two different groups. Homogeneity of variance is "
+"checked automatically with Levene's test."
+
+#: istatistik/views.py:264
+msgid "Bağımlı Örneklem"
+msgstr "Paired Samples"
+
+#: istatistik/views.py:264
+msgid ""
+"Aynı gruba ait iki ölçüm arasındaki farkı test edin (öntest-sontest, "
+"eşleştirilmiş)."
+msgstr ""
+"Test the difference between two measurements from the same group (pre-"
+"test/post-test, paired)."
+
+#: istatistik/views.py:265
+msgid "Cohen's d katsayısı ve %95 güven aralığı otomatik hesaplanır."
+msgstr ""
+"Cohen's d and the 95% confidence interval are calculated automatically."
+
+#: istatistik/views.py:266
+msgid "PDF Rapor"
+msgstr "PDF Report"
+
+#: istatistik/views.py:266
+msgid ""
+"Grup istatistikleri ve test sonuçları düzenli tablolar halinde PDF'e "
+"aktarılır."
+msgstr ""
+"Group statistics and test results are exported to PDF in well-organized "
+"tables."
 
 #: makaleanaliz/templates/makaleanaliz/results.html:5
 msgid "Makale Analizi"
@@ -2917,10 +3436,6 @@ msgstr "PDF Report Ready"
 #, python-format
 msgid "%(count)s makale · 7 analiz grafik içeriyor"
 msgstr "%(count)s articles · includes 7 analysis charts"
-
-#: makaleanaliz/templates/makaleanaliz/results.html:70
-msgid "PDF İndir"
-msgstr "Download PDF"
 
 #: makaleanaliz/templates/makaleanaliz/results.html:82
 msgid "Analiz Edilen Makale"
@@ -3569,10 +4084,6 @@ msgstr "Analizus Home"
 msgid "Analizler"
 msgstr "Analyses"
 
-#: templates/base.html:205 templates/base.html:423
-msgid "İstatistik Analiz Araçları"
-msgstr "Statistics Tools"
-
 #: templates/base.html:210 templates/base.html:425
 msgid "Tableau Analizleri"
 msgstr "Tableau Analyses"
@@ -3758,10 +4269,6 @@ msgstr "Academic Research Platform"
 msgid "ziyaretçi"
 msgstr "visitors"
 
-#: templates/service_promo.html:33
-msgid "Ücretsiz Dene"
-msgstr "Try for Free"
-
 #: templates/service_promo.html:50
 msgid "OpenAlex'te tarama mı yaptın?"
 msgstr "Already scanned OpenAlex?"
@@ -3793,10 +4300,6 @@ msgstr ""
 #: templates/service_promo.html:119
 msgid "Ücretsiz hesap açın, hemen kullanmaya başlayın."
 msgstr "Create a free account and start using it right away."
-
-#: templates/service_promo.html:122
-msgid "Başla — Ücretsiz"
-msgstr "Get Started — Free"
 
 #: templates/service_promo.html:145
 msgid "Varsayımlar ve Sınırlılıklar"

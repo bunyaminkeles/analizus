@@ -4,6 +4,7 @@ from django.views.decorators.http import require_GET
 from django_ratelimit.decorators import ratelimit
 from django.conf import settings as django_settings
 from functools import wraps
+from django.utils.translation import gettext, gettext_lazy
 
 from .models import IstatistikJob
 from .seo_content import SEO_CONTENT
@@ -21,35 +22,35 @@ def feature_required(view_func):
 
 
 TOOL_CATEGORIES = [
-    ('Ön Analizler', [
-        ('betimsel',  'Betimleyici İstatistik',       'bi-clipboard2-data',    'success',  'betimsel'),
-        ('normallik', 'Normallik Testi',               'bi-activity',           'warning',  'normallik'),
-        ('orneklem',  'Örneklem Hesaplayıcı',          'bi-calculator-fill',    'info',     'orneklem'),
+    (gettext_lazy('Ön Analizler'), [
+        ('betimsel',  gettext_lazy('Betimleyici İstatistik'),       'bi-clipboard2-data',    'success',  'betimsel'),
+        ('normallik', gettext_lazy('Normallik Testi'),               'bi-activity',           'warning',  'normallik'),
+        ('orneklem',  gettext_lazy('Örneklem Hesaplayıcı'),          'bi-calculator-fill',    'info',     'orneklem'),
     ]),
-    ('Geçerlik & Güvenirlik', [
-        ('cronbach',  'Cronbach Alpha',                'bi-shield-check',       'primary',  'cronbach'),
-        ('afa',       'Açıklayıcı Faktör Analizi',     'bi-diagram-3',          'info',     'afa'),
+    (gettext_lazy('Geçerlik & Güvenirlik'), [
+        ('cronbach',  gettext_lazy('Cronbach Alpha'),                'bi-shield-check',       'primary',  'cronbach'),
+        ('afa',       gettext_lazy('Açıklayıcı Faktör Analizi'),     'bi-diagram-3',          'info',     'afa'),
     ]),
-    ('İlişki Analizleri', [
-        ('korelasyon', 'Korelasyon Matrisi',           'bi-grid-3x3',           'info',     'korelasyon'),
-        ('ki_kare',   'Ki-Kare Testi',                 'bi-table',              'warning',  'ki-kare'),
+    (gettext_lazy('İlişki Analizleri'), [
+        ('korelasyon', gettext_lazy('Korelasyon Matrisi'),           'bi-grid-3x3',           'info',     'korelasyon'),
+        ('ki_kare',   gettext_lazy('Ki-Kare Testi'),                 'bi-table',              'warning',  'ki-kare'),
     ]),
-    ('Fark Analizleri', [
-        ('ttesti',         't-Testi',                  'bi-distribute-horizontal', 'primary', 'ttesti'),
-        ('anova',          'Tek Yönlü ANOVA',           'bi-bar-chart-steps',   'danger',   'anova'),
-        ('mann_whitney',   'Mann-Whitney U',            'bi-arrow-left-right',  'warning',  'mann-whitney'),
-        ('kruskal_wallis', 'Kruskal-Wallis H',          'bi-funnel',            'teal',     'kruskal-wallis'),
-        ('wilcoxon',       'Wilcoxon İşaret Testi',     'bi-arrows-collapse',   'info',     'wilcoxon'),
-        ('friedman',       'Friedman Testi',            'bi-bar-chart-steps',   'success',  'friedman'),
-        ('tekrarli_anova', 'Tekrarlayan Ölçümler ANOVA','bi-arrow-repeat',      'primary',  'tekrarli-anova'),
+    (gettext_lazy('Fark Analizleri'), [
+        ('ttesti',         gettext_lazy('t-Testi'),                  'bi-distribute-horizontal', 'primary', 'ttesti'),
+        ('anova',          gettext_lazy('Tek Yönlü ANOVA'),           'bi-bar-chart-steps',   'danger',   'anova'),
+        ('mann_whitney',   gettext_lazy('Mann-Whitney U'),            'bi-arrow-left-right',  'warning',  'mann-whitney'),
+        ('kruskal_wallis', gettext_lazy('Kruskal-Wallis H'),          'bi-funnel',            'teal',     'kruskal-wallis'),
+        ('wilcoxon',       gettext_lazy('Wilcoxon İşaret Testi'),     'bi-arrows-collapse',   'info',     'wilcoxon'),
+        ('friedman',       gettext_lazy('Friedman Testi'),            'bi-bar-chart-steps',   'success',  'friedman'),
+        ('tekrarli_anova', gettext_lazy('Tekrarlayan Ölçümler ANOVA'),'bi-arrow-repeat',      'primary',  'tekrarli-anova'),
     ]),
-    ('Regresyon Analizleri', [
-        ('lineer_regresyon',  'Çoklu Doğrusal Regresyon', 'bi-graph-up-arrow',  'primary',  'lineer-regresyon'),
-        ('lojistik_regresyon','Lojistik Regresyon',        'bi-bezier2',         'success',  'lojistik-regresyon'),
+    (gettext_lazy('Regresyon Analizleri'), [
+        ('lineer_regresyon',  gettext_lazy('Çoklu Doğrusal Regresyon'), 'bi-graph-up-arrow',  'primary',  'lineer-regresyon'),
+        ('lojistik_regresyon',gettext_lazy('Lojistik Regresyon'),        'bi-bezier2',         'success',  'lojistik-regresyon'),
     ]),
-    ('Makine Öğrenmesi', [
-        ('karar_agaci', 'Karar Ağacı', 'bi-diagram-2', 'purple', 'karar-agaci'),
-        ('svm', 'Destek Vektör Makinesi', 'bi-cpu', 'teal', 'svm'),
+    (gettext_lazy('Makine Öğrenmesi'), [
+        ('karar_agaci', gettext_lazy('Karar Ağacı'), 'bi-diagram-2', 'purple', 'karar-agaci'),
+        ('svm', gettext_lazy('Destek Vektör Makinesi'), 'bi-cpu', 'teal', 'svm'),
     ]),
 ]
 
@@ -68,9 +69,9 @@ def _console_ctx(active_tool, request=None):
 
 PROMO_BASE = {
     'promo_steps': [
-        'CSV veya Excel dosyanızı yükleyin.',
-        'Analiz otomatik olarak saniyeler içinde tamamlanır.',
-        'Sonuçları ekranda görün ve PDF olarak indirin.',
+        gettext_lazy('CSV veya Excel dosyanızı yükleyin.'),
+        gettext_lazy('Analiz otomatik olarak saniyeler içinde tamamlanır.'),
+        gettext_lazy('Sonuçları ekranda görün ve PDF olarak indirin.'),
     ],
 }
 
@@ -253,16 +254,16 @@ def ttesti_landing(request):
         return render(request, 'service_promo.html', {
             **PROMO_BASE,
             'seo_guide': SEO_CONTENT.get('ttesti'),
-            'promo_title': 't-Testi',
+            'promo_title': gettext('t-Testi'),
             'promo_icon': 'bi-distribute-horizontal',
             'promo_color': 'purple',
             'promo_egitim_konu': 'spss-uygulamali',
-            'promo_description': 'İki grup arasındaki ortalama farkını test edin. Bağımsız veya bağımlı örneklem t-testi, Cohen\'s d etki büyüklüğü ve %95 güven aralığı ile PDF raporu alın.',
+            'promo_description': gettext('İki grup arasındaki ortalama farkını test edin. Bağımsız veya bağımlı örneklem t-testi, Cohen\'s d etki büyüklüğü ve %95 güven aralığı ile PDF raporu alın.'),
             'promo_features': [
-                {'icon': 'bi-people-fill', 'title': 'Bağımsız Örneklem', 'desc': 'Farklı iki grubun ortalamalarını karşılaştırın. Levene testi ile varyans homojenliği otomatik kontrol edilir.'},
-                {'icon': 'bi-arrow-left-right', 'title': 'Bağımlı Örneklem', 'desc': 'Aynı gruba ait iki ölçüm arasındaki farkı test edin (öntest-sontest, eşleştirilmiş).'},
-                {'icon': 'bi-rulers', 'title': 'Etki Büyüklüğü', 'desc': 'Cohen\'s d katsayısı ve %95 güven aralığı otomatik hesaplanır.'},
-                {'icon': 'bi-file-earmark-pdf-fill', 'color': 'danger', 'title': 'PDF Rapor', 'desc': 'Grup istatistikleri ve test sonuçları düzenli tablolar halinde PDF\'e aktarılır.'},
+                {'icon': 'bi-people-fill', 'title': gettext('Bağımsız Örneklem'), 'desc': gettext('Farklı iki grubun ortalamalarını karşılaştırın. Levene testi ile varyans homojenliği otomatik kontrol edilir.')},
+                {'icon': 'bi-arrow-left-right', 'title': gettext('Bağımlı Örneklem'), 'desc': gettext('Aynı gruba ait iki ölçüm arasındaki farkı test edin (öntest-sontest, eşleştirilmiş).')},
+                {'icon': 'bi-rulers', 'title': gettext('Etki Büyüklüğü'), 'desc': gettext('Cohen\'s d katsayısı ve %95 güven aralığı otomatik hesaplanır.')},
+                {'icon': 'bi-file-earmark-pdf-fill', 'color': 'danger', 'title': gettext('PDF Rapor'), 'desc': gettext('Grup istatistikleri ve test sonuçları düzenli tablolar halinde PDF\'e aktarılır.')},
             ],
         })
     if request.method == 'POST':
@@ -270,7 +271,7 @@ def ttesti_landing(request):
     return render(request, 'istatistik/ttesti.html', {
         'active_job_id': str(_get_active_job(request.user, 'ttesti').id) if _get_active_job(request.user, 'ttesti') else None,
         'daily_remaining': _daily_remaining(request.user),
-        'tool_title': 't-Testi',
+        'tool_title': gettext('t-Testi'),
         'tool_icon': 'bi-distribute-horizontal',
         'tool_color': 'purple',
         **_console_ctx('ttesti', request),
