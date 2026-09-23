@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-23 22:45+0300\n"
+"POT-Creation-Date: 2026-09-23 23:01+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1724,7 +1724,7 @@ msgstr "Wrong! The correct answer:"
 msgid "Yükleniyor..."
 msgstr "Loading..."
 
-#: forum/templates/forum/home.html:1131
+#: forum/templates/forum/home.html:1131 templates/base.html:538
 msgid "Sonraki Soru"
 msgstr "Next Question"
 
@@ -8155,9 +8155,17 @@ msgstr ""
 "Statistical analysis, thesis writing, and academic research support with "
 "SPSS, Python, R Studio, qualitative analysis, and AI."
 
+#: templates/base.html:173
+msgid "İçeriğe geç"
+msgstr "Skip to content"
+
 #: templates/base.html:187 templates/base.html:404
 msgid "Analizus Ana Sayfa"
 msgstr "Analizus Home"
+
+#: templates/base.html:193
+msgid "Ana menü"
+msgstr "Main menu"
 
 #: templates/base.html:200 templates/base.html:419
 msgid "Analizler"
@@ -8167,7 +8175,8 @@ msgstr "Analyses"
 msgid "Tableau Analizleri"
 msgstr "Tableau Analyses"
 
-#: templates/base.html:214 templates/base.html:427
+#: templates/base.html:214 templates/base.html:427 templates/base.html:811
+#: templates/base.html:815 templates/base.html:821
 #: templates/partials/footer.html:48
 msgid "AI Asistan"
 msgstr "AI Assistant"
@@ -8181,7 +8190,7 @@ msgstr "Download YouTube Transcript"
 msgid "Topluluk"
 msgstr "Community"
 
-#: templates/base.html:246 templates/base.html:445
+#: templates/base.html:246 templates/base.html:445 templates/base.html:526
 #: templates/partials/footer.html:63
 msgid "İstatistik Arena"
 msgstr "Statistics Arena"
@@ -8251,6 +8260,127 @@ msgstr "Close menu"
 #: templates/base.html:472
 msgid "Dil"
 msgstr "Language"
+
+#: templates/base.html:514
+msgid "Forum konusu veya kullanıcı ara..."
+msgstr "Search forum topics or users..."
+
+#: templates/base.html:527 templates/base.html:548 templates/base.html:561
+#: templates/base.html:570 templates/base.html:828
+msgid "Kapat"
+msgstr "Close"
+
+#: templates/base.html:533
+msgid "Soru yükleniyor..."
+msgstr "Loading question..."
+
+#: templates/base.html:547
+msgid "Kullanıcı Kartı"
+msgstr "User Card"
+
+#: templates/base.html:560
+msgid "Haftanın Başarı Hikayesi"
+msgstr "Success Story of the Week"
+
+#: templates/base.html:569
+msgid "Tüm Hikayeler"
+msgstr "All Stories"
+
+#: templates/base.html:661
+msgid "Soru yüklenemedi."
+msgstr "Could not load the question."
+
+#: templates/base.html:690
+msgid "Doğru Cevap! (+10 Puan)"
+msgstr "Correct! (+10 Points)"
+
+#: templates/base.html:692
+msgid ""
+"TEBRİKLER! \"İstatistik Ustası\" rozeti kazandınız! Artık ilan "
+"açabilirsiniz."
+msgstr ""
+"CONGRATULATIONS! You earned the \"Statistics Master\" badge! You can now "
+"post listings."
+
+#: templates/base.html:698
+msgid "Yanlış. Doğru cevap:"
+msgstr "Incorrect. The correct answer:"
+
+#: templates/base.html:703
+msgid "Toplam Doğru:"
+msgstr "Total Correct:"
+
+#: templates/base.html:723
+msgid "Profil yüklenemedi."
+msgstr "Could not load the profile."
+
+#: templates/base.html:765
+msgid "İşlem başarısız."
+msgstr "The action failed."
+
+#: templates/base.html:783
+msgid "Hikaye bulunamadı."
+msgstr "Story not found."
+
+#: templates/base.html:809
+msgid "AI Asistan ile sohbet et"
+msgstr "Chat with the AI Assistant"
+
+#: templates/base.html:825
+msgid "Tam sayfa aç"
+msgstr "Open full page"
+
+#: templates/base.html:838
+msgid ""
+"Merhaba! İstatistik testi, akademik makale arama ya da veri analizi "
+"konularında yardımcı olabilirim."
+msgstr ""
+"Hello! I can help you with statistical tests, academic literature search or "
+"data analysis."
+
+#: templates/base.html:839
+msgid "Ne yapmak istiyorsunuz?"
+msgstr "What would you like to do?"
+
+#: templates/base.html:849
+msgid "Anonim: 3 soru/gün"
+msgstr "Anonymous: 3 questions/day"
+
+#: templates/base.html:849 templates/base.html:1237
+msgid "Üye ol"
+msgstr "Sign up"
+
+#: templates/base.html:849
+msgid "30 soru"
+msgstr "30 questions"
+
+#: templates/base.html:854
+msgid "Sorunuzu yazın…"
+msgstr "Type your question…"
+
+#: templates/base.html:854
+msgid "Mesaj"
+msgstr "Message"
+
+#: templates/base.html:855
+msgid "Gönder"
+msgstr "Send"
+
+#: templates/base.html:1202
+msgid "hak"
+msgstr "left"
+
+#: templates/base.html:1237
+msgid "ile 30 soruya çıkar."
+msgstr "to increase your limit to 30 questions."
+
+#: templates/base.html:1242
+msgid "Bir hata oluştu, tekrar deneyin."
+msgstr "An error occurred, please try again."
+
+#: templates/base.html:1246
+msgid "Bağlantı hatası. İnternet bağlantınızı kontrol edin."
+msgstr "Connection error. Please check your internet connection."
 
 #: templates/forum/register.html:248
 msgid "Bize Katılın"

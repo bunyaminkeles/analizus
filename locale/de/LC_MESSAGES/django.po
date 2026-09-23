@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-23 22:45+0300\n"
+"POT-Creation-Date: 2026-09-23 23:01+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1768,7 +1768,7 @@ msgstr "Falsch! Die richtige Antwort:"
 msgid "Yükleniyor..."
 msgstr "Wird geladen..."
 
-#: forum/templates/forum/home.html:1131
+#: forum/templates/forum/home.html:1131 templates/base.html:538
 msgid "Sonraki Soru"
 msgstr "Nächste Frage"
 
@@ -8299,9 +8299,17 @@ msgstr ""
 " akademischer Forschung mit SPSS, Python, R Studio, qualitativer Analyse und"
 " KI."
 
+#: templates/base.html:173
+msgid "İçeriğe geç"
+msgstr "Zum Inhalt springen"
+
 #: templates/base.html:187 templates/base.html:404
 msgid "Analizus Ana Sayfa"
 msgstr "Analizus Startseite"
+
+#: templates/base.html:193
+msgid "Ana menü"
+msgstr "Hauptmenü"
 
 #: templates/base.html:200 templates/base.html:419
 msgid "Analizler"
@@ -8311,7 +8319,8 @@ msgstr "Analysen"
 msgid "Tableau Analizleri"
 msgstr "Tableau-Analysen"
 
-#: templates/base.html:214 templates/base.html:427
+#: templates/base.html:214 templates/base.html:427 templates/base.html:811
+#: templates/base.html:815 templates/base.html:821
 #: templates/partials/footer.html:48
 msgid "AI Asistan"
 msgstr "KI-Assistent"
@@ -8325,7 +8334,7 @@ msgstr "YouTube-Transkript herunterladen"
 msgid "Topluluk"
 msgstr "Community"
 
-#: templates/base.html:246 templates/base.html:445
+#: templates/base.html:246 templates/base.html:445 templates/base.html:526
 #: templates/partials/footer.html:63
 msgid "İstatistik Arena"
 msgstr "Statistik-Arena"
@@ -8395,6 +8404,127 @@ msgstr "Menü schließen"
 #: templates/base.html:472
 msgid "Dil"
 msgstr "Sprache"
+
+#: templates/base.html:514
+msgid "Forum konusu veya kullanıcı ara..."
+msgstr "Forenthemen oder Nutzer suchen..."
+
+#: templates/base.html:527 templates/base.html:548 templates/base.html:561
+#: templates/base.html:570 templates/base.html:828
+msgid "Kapat"
+msgstr "Schließen"
+
+#: templates/base.html:533
+msgid "Soru yükleniyor..."
+msgstr "Frage wird geladen..."
+
+#: templates/base.html:547
+msgid "Kullanıcı Kartı"
+msgstr "Nutzerkarte"
+
+#: templates/base.html:560
+msgid "Haftanın Başarı Hikayesi"
+msgstr "Erfolgsgeschichte der Woche"
+
+#: templates/base.html:569
+msgid "Tüm Hikayeler"
+msgstr "Alle Geschichten"
+
+#: templates/base.html:661
+msgid "Soru yüklenemedi."
+msgstr "Die Frage konnte nicht geladen werden."
+
+#: templates/base.html:690
+msgid "Doğru Cevap! (+10 Puan)"
+msgstr "Richtig! (+10 Punkte)"
+
+#: templates/base.html:692
+msgid ""
+"TEBRİKLER! \"İstatistik Ustası\" rozeti kazandınız! Artık ilan "
+"açabilirsiniz."
+msgstr ""
+"HERZLICHEN GLÜCKWUNSCH! Sie haben das Abzeichen „Statistik-Meister“ "
+"erhalten! Sie können jetzt Aufträge einstellen."
+
+#: templates/base.html:698
+msgid "Yanlış. Doğru cevap:"
+msgstr "Falsch. Die richtige Antwort:"
+
+#: templates/base.html:703
+msgid "Toplam Doğru:"
+msgstr "Richtige insgesamt:"
+
+#: templates/base.html:723
+msgid "Profil yüklenemedi."
+msgstr "Das Profil konnte nicht geladen werden."
+
+#: templates/base.html:765
+msgid "İşlem başarısız."
+msgstr "Die Aktion ist fehlgeschlagen."
+
+#: templates/base.html:783
+msgid "Hikaye bulunamadı."
+msgstr "Geschichte nicht gefunden."
+
+#: templates/base.html:809
+msgid "AI Asistan ile sohbet et"
+msgstr "Mit dem KI-Assistenten chatten"
+
+#: templates/base.html:825
+msgid "Tam sayfa aç"
+msgstr "Als ganze Seite öffnen"
+
+#: templates/base.html:838
+msgid ""
+"Merhaba! İstatistik testi, akademik makale arama ya da veri analizi "
+"konularında yardımcı olabilirim."
+msgstr ""
+"Hallo! Ich helfe Ihnen gern bei statistischen Tests, der Suche nach "
+"Fachliteratur oder der Datenanalyse."
+
+#: templates/base.html:839
+msgid "Ne yapmak istiyorsunuz?"
+msgstr "Was möchten Sie tun?"
+
+#: templates/base.html:849
+msgid "Anonim: 3 soru/gün"
+msgstr "Anonym: 3 Fragen/Tag"
+
+#: templates/base.html:849 templates/base.html:1237
+msgid "Üye ol"
+msgstr "Registrieren"
+
+#: templates/base.html:849
+msgid "30 soru"
+msgstr "30 Fragen"
+
+#: templates/base.html:854
+msgid "Sorunuzu yazın…"
+msgstr "Geben Sie Ihre Frage ein…"
+
+#: templates/base.html:854
+msgid "Mesaj"
+msgstr "Nachricht"
+
+#: templates/base.html:855
+msgid "Gönder"
+msgstr "Senden"
+
+#: templates/base.html:1202
+msgid "hak"
+msgstr "übrig"
+
+#: templates/base.html:1237
+msgid "ile 30 soruya çıkar."
+msgstr "und erhöhen Sie Ihr Limit auf 30 Fragen."
+
+#: templates/base.html:1242
+msgid "Bir hata oluştu, tekrar deneyin."
+msgstr "Ein Fehler ist aufgetreten, bitte versuchen Sie es erneut."
+
+#: templates/base.html:1246
+msgid "Bağlantı hatası. İnternet bağlantınızı kontrol edin."
+msgstr "Verbindungsfehler. Bitte prüfen Sie Ihre Internetverbindung."
 
 #: templates/forum/register.html:248
 msgid "Bize Katılın"

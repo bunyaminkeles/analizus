@@ -170,7 +170,7 @@
     <div class="ax-noise-overlay" aria-hidden="true"></div>
 
     <!-- Erişilebilirlik: İçeriğe geç -->
-    <a href="#main-content" class="ax-skip-link">İçeriğe geç</a>
+    <a href="#main-content" class="ax-skip-link">{% trans "İçeriğe geç" %}</a>
 
     <!-- BİLDİRİMLERİN GÖRÜNECEĞİ ALAN -->
     <div id="notification-container" class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1080;">
@@ -190,7 +190,7 @@
             </a>
 
             <!-- Desktop Menü -->
-            <nav class="site-nav__menu" aria-label="Ana menü">
+            <nav class="site-nav__menu" aria-label="{% trans 'Ana menü' %}">
 
                 <!-- Analizler Dropdown -->
                 <div class="site-nav__dropdown-wrap">
@@ -511,7 +511,7 @@
             <div class="ax-modal__body">
                 <form action="{% url 'search' %}" method="get">
                     <div class="input-group">
-                        <input name="q" type="text" class="form-control form-control-lg border-0 shadow-none" placeholder="Forum konusu veya kullanıcı ara..." autofocus>
+                        <input name="q" type="text" class="form-control form-control-lg border-0 shadow-none" placeholder="{% trans 'Forum konusu veya kullanıcı ara...' %}" autofocus>
                         <button class="ax-btn ax-btn--outline-primary px-4" type="submit"><i class="bi bi-search"></i></button>
                     </div>
                 </form>
@@ -523,19 +523,19 @@
     <div class="ax-modal-backdrop" id="quizModal" tabindex="-1" aria-hidden="true">
         <div class="ax-modal">
             <div class="ax-modal__header">
-                <h5 class="ax-modal__title"><i class="bi bi-trophy-fill text-warning me-2"></i>İstatistik Arena</h5>
-                <button type="button" class="ax-modal__close" data-ax-dismiss="modal">&times;</button>
+                <h5 class="ax-modal__title"><i class="bi bi-trophy-fill text-warning me-2"></i>{% trans "İstatistik Arena" %}</h5>
+                <button type="button" class="ax-modal__close" data-ax-dismiss="modal" aria-label="{% trans 'Kapat' %}">&times;</button>
             </div>
             <div class="ax-modal__body" id="quizModalBody">
                 <!-- Soru buraya yüklenecek -->
                 <div class="text-center py-4">
                     <div class="spinner-border text-info" role="status"></div>
-                    <p class="mt-2 text-muted">Soru yükleniyor...</p>
+                    <p class="mt-2 text-muted">{% trans "Soru yükleniyor..." %}</p>
                 </div>
             </div>
             <div class="ax-modal__footer" style="justify-content: space-between;">
                 <span class="text-muted small" id="quizScoreDisplay"></span>
-                <button type="button" class="btn btn-outline-light btn-sm" onclick="loadQuizQuestion()">Sonraki Soru <i class="bi bi-arrow-right"></i></button>
+                <button type="button" class="btn btn-outline-light btn-sm" onclick="loadQuizQuestion()">{% trans "Sonraki Soru" %} <i class="bi bi-arrow-right"></i></button>
             </div>
         </div>
     </div>
@@ -544,8 +544,8 @@
     <div class="ax-modal-backdrop" id="profileModal" tabindex="-1" aria-hidden="true">
         <div class="ax-modal">
             <div class="ax-modal__header">
-                <h5 class="ax-modal__title"><i class="bi bi-person-lines-fill text-info me-2"></i>Kullanıcı Kartı</h5>
-                <button type="button" class="ax-modal__close" data-ax-dismiss="modal">&times;</button>
+                <h5 class="ax-modal__title"><i class="bi bi-person-lines-fill text-info me-2"></i>{% trans "Kullanıcı Kartı" %}</h5>
+                <button type="button" class="ax-modal__close" data-ax-dismiss="modal" aria-label="{% trans 'Kapat' %}">&times;</button>
             </div>
             <div class="ax-modal__body" id="profileModalBody">
                 <div class="text-center py-4"><div class="spinner-border text-info"></div></div>
@@ -557,8 +557,8 @@
     <div class="ax-modal-backdrop" id="storyModal" tabindex="-1" aria-hidden="true">
         <div class="ax-modal ax-modal--lg">
             <div class="ax-modal__header">
-                <h5 class="ax-modal__title" style="color: var(--ax-accent-warning);"><i class="bi bi-star-fill me-2"></i>Haftanın Başarı Hikayesi</h5>
-                <button type="button" class="ax-modal__close" data-ax-dismiss="modal">&times;</button>
+                <h5 class="ax-modal__title" style="color: var(--ax-accent-warning);"><i class="bi bi-star-fill me-2"></i>{% trans "Haftanın Başarı Hikayesi" %}</h5>
+                <button type="button" class="ax-modal__close" data-ax-dismiss="modal" aria-label="{% trans 'Kapat' %}">&times;</button>
             </div>
             <div class="ax-modal__body" id="storyModalBody" style="padding: 0;">
                 <div class="text-center py-5">
@@ -566,8 +566,8 @@
                 </div>
             </div>
             <div class="ax-modal__footer">
-                <a href="{% url 'success_stories' %}" class="btn btn-outline-warning btn-sm">Tüm Hikayeler</a>
-                <button type="button" class="btn btn-secondary btn-sm" data-ax-dismiss="modal">Kapat</button>
+                <a href="{% url 'success_stories' %}" class="btn btn-outline-warning btn-sm">{% trans "Tüm Hikayeler" %}</a>
+                <button type="button" class="btn btn-secondary btn-sm" data-ax-dismiss="modal">{% trans "Kapat" %}</button>
             </div>
         </div>
     </div>
@@ -658,7 +658,7 @@
                             // API'den gelen hatayı göster
                             body.innerHTML = `<div class="text-center py-4">
                                                 <i class="bi bi-info-circle-fill text-warning display-4 mb-3"></i>
-                                                <p class="text-warning">${data.error || 'Soru yüklenemedi.'}</p>
+                                                <p class="text-warning">${data.error || '{% filter escapejs %}{% trans "Soru yüklenemedi." %}{% endfilter %}'}</p>
                                               </div>`;
                         }
                     });
@@ -687,20 +687,20 @@
                         if(data.is_correct) {
                             btnElement.classList.remove('btn-outline-light');
                             btnElement.classList.add('btn-success');
-                            resultDiv.innerHTML = `<div class="alert alert-success py-2"><i class="bi bi-check-circle-fill me-2"></i>Doğru Cevap! (+10 Puan)</div>`;
+                            resultDiv.innerHTML = `<div class="alert alert-success py-2"><i class="bi bi-check-circle-fill me-2"></i>{% filter escapejs %}{% trans "Doğru Cevap! (+10 Puan)" %}{% endfilter %}</div>`;
                             if(data.badge_awarded) {
-                                resultDiv.innerHTML += `<div class="alert alert-warning py-2 mt-2 border-warning"><i class="bi bi-award-fill me-2"></i>TEBRİKLER! "İstatistik Ustası" rozeti kazandınız! Artık ilan açabilirsiniz.</div>`;
+                                resultDiv.innerHTML += `<div class="alert alert-warning py-2 mt-2 border-warning"><i class="bi bi-award-fill me-2"></i>{% filter escapejs %}{% trans 'TEBRİKLER! "İstatistik Ustası" rozeti kazandınız! Artık ilan açabilirsiniz.' %}{% endfilter %}</div>`;
                             }
                         } else {
                             btnElement.classList.remove('btn-outline-light');
                             btnElement.classList.add('btn-danger');
                             resultDiv.innerHTML = `<div class="alert alert-danger py-2">
-                                <i class="bi bi-x-circle-fill me-2"></i>Yanlış. Doğru cevap: <b>${correctAnswerText}</b>
+                                <i class="bi bi-x-circle-fill me-2"></i>{% filter escapejs %}{% trans "Yanlış. Doğru cevap:" %}{% endfilter %} <b>${correctAnswerText}</b>
                                 <hr class="my-1 border-danger border-opacity-25">
                                 <small>${data.explanation || ''}</small>
                             </div>`;
                         }
-                        document.getElementById('quizScoreDisplay').innerText = `Toplam Doğru: ${data.total_correct}`;
+                        document.getElementById('quizScoreDisplay').innerText = `{% filter escapejs %}{% trans "Toplam Doğru:" %}{% endfilter %} ${data.total_correct}`;
                     }
                 });
             }
@@ -720,7 +720,7 @@
                         if(data.success) {
                             body.innerHTML = data.html;
                         } else {
-                            body.innerHTML = '<p class="text-center text-danger">Profil yüklenemedi.</p>';
+                            body.innerHTML = '<p class="text-center text-danger">{% filter escapejs %}{% trans "Profil yüklenemedi." %}{% endfilter %}</p>';
                         }
                     });
             }
@@ -762,7 +762,7 @@
                         }
 
                     } else {
-                        alert(data.error || 'İşlem başarısız.');
+                        alert(data.error || '{% filter escapejs %}{% trans "İşlem başarısız." %}{% endfilter %}');
                     }
                 });
             }
@@ -780,7 +780,7 @@
                         if(data.success) {
                             body.innerHTML = data.html;
                         } else {
-                            body.innerHTML = '<p class="text-center text-white p-4">Hikaye bulunamadı.</p>';
+                            body.innerHTML = '<p class="text-center text-white p-4">{% filter escapejs %}{% trans "Hikaye bulunamadı." %}{% endfilter %}</p>';
                         }
                     });
             }
@@ -806,26 +806,26 @@
 <div id="ax-ai-widget">
 
   <!-- Floating Buton -->
-  <button id="ax-ai-fab" class="ax-ai-fab" aria-label="AI Asistan ile sohbet et" aria-expanded="false">
+  <button id="ax-ai-fab" class="ax-ai-fab" aria-label="{% trans 'AI Asistan ile sohbet et' %}" aria-expanded="false">
     <i class="bi bi-robot ax-ai-fab__icon" id="ax-ai-fab-icon"></i>
-    <span class="ax-ai-fab__label">AI Asistan</span>
+    <span class="ax-ai-fab__label">{% trans "AI Asistan" %}</span>
   </button>
 
   <!-- Chat Popup -->
-  <div id="ax-ai-popup" class="ax-ai-popup" role="dialog" aria-label="AI Asistan" aria-hidden="true" hidden>
+  <div id="ax-ai-popup" class="ax-ai-popup" role="dialog" aria-label="{% trans 'AI Asistan' %}" aria-hidden="true" hidden>
 
     <!-- Header -->
     <div class="ax-ai-popup__header">
       <div class="ax-ai-popup__title">
         <span class="ax-ai-status-dot"></span>
-        <span class="fw-bold">AI Asistan</span>
+        <span class="fw-bold">{% trans "AI Asistan" %}</span>
         <span class="ax-ai-badge" id="ax-ai-badge" hidden></span>
       </div>
       <div class="d-flex align-items-center gap-2">
-        <a href="{% url 'ai_assistant' %}" class="ax-ai-popup__fullpage" title="Tam sayfa aç" target="_blank">
+        <a href="{% url 'ai_assistant' %}" class="ax-ai-popup__fullpage" title="{% trans 'Tam sayfa aç' %}" target="_blank">
           <i class="bi bi-arrows-fullscreen" style="font-size:.85rem;"></i>
         </a>
-        <button id="ax-ai-close" class="ax-ai-popup__close" aria-label="Kapat">
+        <button id="ax-ai-close" class="ax-ai-popup__close" aria-label="{% trans 'Kapat' %}">
           <i class="bi bi-x-lg"></i>
         </button>
       </div>
@@ -835,8 +835,8 @@
     <div id="ax-ai-messages" class="ax-ai-popup__messages">
       <div class="ax-ai-msg ax-ai-msg--bot">
         <div class="ax-ai-bubble">
-          Merhaba! İstatistik testi, akademik makale arama ya da veri analizi konularında yardımcı olabilirim.<br><br>
-          Ne yapmak istiyorsunuz?
+          {% trans "Merhaba! İstatistik testi, akademik makale arama ya da veri analizi konularında yardımcı olabilirim." %}<br><br>
+          {% trans "Ne yapmak istiyorsunuz?" %}
         </div>
       </div>
     </div>
@@ -846,13 +846,13 @@
       {% if not request.user.is_authenticated %}
       <div class="ax-ai-anon-bar">
         <i class="bi bi-info-circle-fill me-1"></i>
-        <span>Anonim: 3 soru/gün &nbsp;·&nbsp; <a href="{% url 'register' %}">Üye ol</a> → 30 soru</span>
+        <span>{% trans "Anonim: 3 soru/gün" %} &nbsp;·&nbsp; <a href="{% url 'register' %}">{% trans "Üye ol" %}</a> → {% trans "30 soru" %}</span>
       </div>
       {% endif %}
       <div class="ax-ai-input-row">
         <textarea id="ax-ai-input" class="ax-ai-input" rows="1"
-                  placeholder="Sorunuzu yazın…" aria-label="Mesaj"></textarea>
-        <button id="ax-ai-send" class="ax-ai-send" aria-label="Gönder">
+                  placeholder="{% trans 'Sorunuzu yazın…' %}" aria-label="{% trans 'Mesaj' %}"></textarea>
+        <button id="ax-ai-send" class="ax-ai-send" aria-label="{% trans 'Gönder' %}">
           <i class="bi bi-send-fill"></i>
         </button>
       </div>
@@ -1199,7 +1199,7 @@
   // Badge güncelle
   function updateBadge(remaining, dailyLimit) {
     if (remaining === undefined) return;
-    badge.textContent = `${remaining}/${dailyLimit} hak`;
+    badge.textContent = `${remaining}/${dailyLimit} {% filter escapejs %}{% trans "hak" %}{% endfilter %}`;
     badge.hidden = false;
   }
 
@@ -1234,16 +1234,16 @@
         updateBadge(data.remaining, data.daily_limit);
       } else if (data.limit_reached) {
         const hint = data.is_authenticated === false
-          ? ' <a href="{% url 'register' %}" style="color:#818cf8">Üye ol</a> ile 30 soruya çıkar.'
+          ? ' <a href="{% url 'register' %}" style="color:#818cf8">{% filter escapejs %}{% trans "Üye ol" %}{% endfilter %}</a> {% filter escapejs %}{% trans "ile 30 soruya çıkar." %}{% endfilter %}'
           : '';
         addMsg(`⚠️ ${data.error}${hint}`, 'bot');
         updateBadge(0, data.daily_limit);
       } else {
-        addMsg(`⚠️ ${data.error || 'Bir hata oluştu, tekrar deneyin.'}`, 'bot');
+        addMsg(`⚠️ ${data.error || '{% filter escapejs %}{% trans "Bir hata oluştu, tekrar deneyin." %}{% endfilter %}'}`, 'bot');
       }
     } catch (err) {
       typingEl.remove();
-      addMsg('⚠️ Bağlantı hatası. İnternet bağlantınızı kontrol edin.', 'bot');
+      addMsg('⚠️ {% filter escapejs %}{% trans "Bağlantı hatası. İnternet bağlantınızı kontrol edin." %}{% endfilter %}', 'bot');
     }
 
     isBusy = false;
