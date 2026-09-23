@@ -1,48 +1,39 @@
-# Çok Dilli Yayın (EN/DE) — DURAKLATILDI, buradan devam edilecek
+# Çok Dilli Yayın (EN/DE) — DEVAM EDİYOR
 
-**Durum:** 22 Eylül 2026 — kullanıcı isteğiyle DURAKLATILDI. Aşağıdaki
-"DEVAM NOKTASI" bölümünden başla.
+**Durum:** 23 Eylül 2026 — devam ediyor. Aşağıdaki "DEVAM NOKTASI"
+bölümünden başla.
 
 ## DEVAM NOKTASI (bir sonraki oturum buradan başlasın)
 
-**Tamamlanan:** Adım 1 (ayarlar), Adım 2 (URL yapısı + 3 kritik bug
-düzeltildi), Adım 3a (base.html+footer.html), Adım 3b-1 (register.html+
-login.html), Adım 5a (dil seçici UI + admin flag). Detay ve bulunan
-bug'lar için aşağıdaki ilgili adım maddelerine bak.
+**Tamamlanan:** Adım 1 (ayarlar), 2 (URL yapısı + 3 kritik bug), 3a
+(base+footer), 3b-1 (register+login), 3b-2a (home.html), 3b-2b
+(makaleanaliz/openalex/semanticscholar), 3b-2c (proje talebi/AI
+çözümler/eğitim), 4 — ilk çeviri turu (601 metin), 5a (dil seçici +
+admin flag), Market arayüzü (commit `52bd6dc`, 176 metin daha — bkz.
+"Kapsam Kararı"). Detaylar aşağıdaki ilgili maddelerde.
 
-**Sırada:** Adım 3b-2 — kalan ~26 şablon dosyasında `{% trans %}`
-işaretleme, `home.html`'den başla (dosya listesi aşağıda, "3b-2. Kalan
-dosyalar" maddesinde).
+**Sırada:** Adım 3b-2d — 18 istatistik aracı şablonu + `tool_base.html`.
+`/analiz/<araç>/` sayfaları bu şablonları render ediyor (`analiz_console`
+→ araç view'ı → `istatistik/<araç>.html`, `analiz_console_base.html`'i
+extend ediyor). İskelet çevrili; 18 şablonun hiçbirinde `{% trans %}`
+yok (her birinde ~23-44 satır Türkçe metin, `tool_base.html`'de 16).
+İşaretlemeden sonra makemessages → EN/DE çeviri → compilemessages.
+
+**Sonra:** 5b (hreflang + sitemap), 6 (Python tarafı — kapsam kararı
+bekliyor), 7 (deploy).
 
 **Sona bırakılan (kullanıcı kararı, 22 Eylül 2026):** "Ufak tefek
-aksamalar" — oturum boyunca fark edilen küçük UI/UX pürüzler (henüz
-net bir liste çıkarılmadı, kullanıcı belirtmedi hangileri) — adım 3b-2/4
-tamamlandıktan SONRA, ayrı bir "cilalama" turunda ele alınacak. Yeni
-oturumda kullanıcıya "hangi ufak aksamalar" diye sorulup somut bir liste
-çıkarılmalı.
+aksamalar" — somut liste henüz çıkarılmadı; 3b-2d/4 bittikten sonra
+kullanıcıya "hangi ufak aksamalar" diye sorulacak, ayrı cilalama turu.
 
-**Açık kapsam kararı bekliyor:** Adım 6 (Python tarafı metinler — form
-hata mesajları, PDF rapor içerikleri) kapsamı henüz netleşmedi.
+**Açık kapsam kararı bekliyor:** Adım 6 (Python tarafı metinler —
+istatistik hata mesajları, PDF rapor içerikleri, SEO_GUIDES,
+training_catalog, TOOL_CATEGORIES, quiz bankası).
 
-**Tahmini kalan iş (saf çalışma, test döngüleri hariç, 22 Eylül 2026
-tahmini):**
-| Adım | Tahmin |
-|---|---|
-| 3b-2: home.html | ~1.5-2 saat |
-| 3b-2: 18 istatistik şablonu + ortak iskelet | ~1.5-2 saat |
-| 3b-2: makaleanaliz+openalex+semanticscholar (5 dosya) | ~45dk-1 saat |
-| 3b-2: proje-talebi/ai-çözümler/eğitim (5 dosya) | ~45dk-1 saat |
-| **3b-2 toplamı** | **~4.5-6 saat** |
-| 4: `.po` çeviri (EN+DE) | ~3-5 saat |
-| 5b: hreflang + sitemap | ~30-45 dk |
-| 6: Python tarafı metinler | kapsam netleşmeden bilinmiyor |
-| 7: Deploy | ~15-30 dk |
-| **Toplam (6 hariç)** | **~9-12 saat** |
-
-Not: Bu oturumda plan dışı 3 kritik bug bulunup düzeltildi (dil
-değiştirici çalışmıyordu, login/logout prefix kaybı, bozuk inbox HTML'i)
-— gerçek geçen süre tahminlerin çok üzerinde oldu. Benzer sürprizler
-olabilir, tahminler iyimser kabul edilmeli.
+**Her makemessages sonrası hatırlatma:** fuzzy girişleri temizle
+(compilemessages fuzzy'leri sessizce atlar); aynı msgid'in hem tekil hem
+çoğul kullanımı xgettext uyarısı verir — farklı değişken adı
+(`counter`) ile ayrıştır.
 
 ---
 
