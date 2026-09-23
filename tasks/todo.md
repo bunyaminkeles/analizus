@@ -18,14 +18,16 @@ landing view metinleri + yükleme/önizleme hata mesajları (commit'ler
 kullanılmıyor). Kullanıcı kararıyla APA cümleleri + sunucu sonuç
 metinleri Türkçe bırakıldı (Adım 6'da PDF ile birlikte).
 
-**Sırada — EN/DE sayfalarda hâlâ Türkçe kalanlar (öncelik sırasıyla):**
-1. `istatistik/seo_content.py` — her aracın "Nedir / ne zaman / SSS /
-   APA örneği" rehberi (anonim + giriş sayfalarının alt bölümü, SEO
-   açısından en değerli metin). Büyük iş (18 araç × ~10 paragraf).
-2. `base.html` ortak kalıntılar: "İçeriğe geç", "İstatistik Arena",
-   "Kullanıcı Kartı", "Haftanın Başarı Hikayesi", AI widget metinleri
-   ("Anonim: 3 soru/gün", karşılama mesajı).
-3. Footer bağış/destekçi modalı — önceden kasıtlı kapsam dışı (TL/IBAN).
+**23 Eylül 2026 devamı — TAMAMLANDI:** base.html kalıntıları (skip-link,
+quiz/profil/hikaye modalları, AI widget), DE terim birliği (Ausschreibung →
+Auftrag), `seo_content.py` rehberi (18 araç, 176 metin), footer "Bize Destek
+Ol" + bağış modalı (paket adları `gettext_noop` ile), footer alt satırı
+"Araştırma ve Analiz Platformu", yeni slogan "Veriden karara…".
+EN/DE araç sayfalarında kalan Türkçe: yalnızca yasal adres satırı (kasıtlı).
+
+**Not (kullanıcıya sorulacak):** ana sayfa og/twitter açıklaması hâlâ
+"Türkiye'nin analiz ekosistemi…" diyor — yeni sloganla aynı konumlandırma
+sorunu (yalnızca Türkiye vurgusu); değiştirilsin mi?
 
 **Sonra:** 5b (hreflang + sitemap), 6 (Python tarafı — kapsam kararı
 bekliyor), 7 (deploy).
