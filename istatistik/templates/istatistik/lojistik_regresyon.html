@@ -1,9 +1,9 @@
 {% extends "istatistik/analiz_console_base.html" %}
-{% load static %}
+{% load static i18n %}
 {% block canonical %}/analiz/lojistik-regresyon/{% endblock %}
 
 {% block title %}Lojistik Regresyon Analizi (Binary) - Analizus{% endblock %}
-{% block meta_description %}Binary lojistik regresyon analizi: Nagelkerke R², Odds Ratio, sınıflandırma tablosu ve APA formatında rapor. Tez için hazır çıktı, ücretsiz online analiz.{% endblock %}
+{% block meta_description %}{% trans "Binary lojistik regresyon analizi: Nagelkerke R², Odds Ratio, sınıflandırma tablosu ve APA formatında rapor. Tez için hazır çıktı, ücretsiz online analiz." %}{% endblock %}
 
 {% block tool_area %}
 <div class="container py-4">
@@ -13,11 +13,11 @@
       <h2 class="fw-bold text-white mb-1">
         <i class="bi bi-diagram-3 me-2" style="color:#34d399;"></i>Lojistik Regresyon
       </h2>
-      <p class="text-white-50 mb-0">İkili (binary) bir sonuç değişkenini yordayın — Odds Ratio, Nagelkerke R² ve sınıflandırma tablosu dahil.</p>
+      <p class="text-white-50 mb-0">{% trans "İkili (binary) bir sonuç değişkenini yordayın — Odds Ratio, Nagelkerke R² ve sınıflandırma tablosu dahil." %}</p>
     </div>
     {% if user.is_authenticated %}
     <div class="col-auto">
-      <span class="badge bg-secondary fs-6">Günlük: {{ daily_remaining }} analiz hakkı</span>
+      <span class="badge bg-secondary fs-6">{% blocktrans %}Günlük: {{ daily_remaining }} analiz hakkı{% endblocktrans %}</span>
     </div>
     {% endif %}
   </div>
@@ -32,18 +32,18 @@
           <!-- Adım 1: Yükleme -->
           <div id="step-upload">
             <h5 class="text-white fw-semibold mb-3">
-              <i class="bi bi-upload me-2" style="color:#34d399;"></i>Dosya Yükle
+              <i class="bi bi-upload me-2" style="color:#34d399;"></i>{% trans "Dosya Yükle" %}
             </h5>
             <div id="upload-area"
                  class="border border-secondary rounded-3 text-center p-4 mb-3"
                  style="border-style:dashed!important;cursor:pointer;"
                  onclick="document.getElementById('file-input').click()">
               <i class="bi bi-cloud-upload-fill fs-2 mb-2 d-block" style="color:#34d399;"></i>
-              <p class="text-white-50 small mb-0" id="file-name">CSV, XLSX, XLS — Maks. {{ max_upload_mb }} MB</p>
+              <p class="text-white-50 small mb-0" id="file-name">{% blocktrans with mb=max_upload_mb %}CSV, XLSX, XLS — Maks. {{ mb }} MB{% endblocktrans %}</p>
             </div>
             <input type="file" id="file-input" accept=".csv,.xlsx,.xls" class="d-none">
             <button id="preview-btn" class="btn w-100 fw-semibold disabled" style="background:#065f46;color:#fff;" disabled>
-              <i class="bi bi-arrow-right-circle me-2"></i>Sütunları Getir
+              <i class="bi bi-arrow-right-circle me-2"></i>{% trans "Sütunları Getir" %}
             </button>
             <div id="upload-error" class="alert alert-danger mt-3 d-none small"></div>
           </div>
@@ -52,35 +52,35 @@
           <div id="step-config" class="d-none">
             <div class="d-flex align-items-center justify-content-between mb-3">
               <h5 class="text-white fw-semibold mb-0">
-                <i class="bi bi-list-check me-2" style="color:#34d399;"></i>Değişken Seçimi
+                <i class="bi bi-list-check me-2" style="color:#34d399;"></i>{% trans "Değişken Seçimi" %}
               </h5>
               <button class="btn btn-sm btn-outline-secondary" onclick="resetToUpload()">
-                <i class="bi bi-arrow-left me-1"></i>Geri
+                <i class="bi bi-arrow-left me-1"></i>{% trans "Geri" %}
               </button>
             </div>
             <p class="text-white-50 small mb-3" id="config-file-info">—</p>
 
             <div class="mb-3">
-              <label class="text-white-50 small mb-1 d-block">Bağımlı Değişken (Y — binary: 2 kategori)</label>
+              <label class="text-white-50 small mb-1 d-block">{% trans "Bağımlı Değişken (Y — binary: 2 kategori)" %}</label>
               <select id="dep-col" class="form-select form-select-sm bg-dark text-white border-secondary" onchange="updateIndepList()">
-                <option value="">— Seçiniz —</option>
+                <option value="">{% trans "— Seçiniz —" %}</option>
               </select>
-              <p class="text-white-50 small mt-1 mb-0">Tam 2 farklı değer içermelidir (ör. 0/1, Evet/Hayır).</p>
+              <p class="text-white-50 small mt-1 mb-0">{% trans "Tam 2 farklı değer içermelidir (ör. 0/1, Evet/Hayır)." %}</p>
             </div>
 
             <div class="mb-3">
               <div class="d-flex justify-content-between align-items-center mb-1">
-                <label class="text-white-50 small mb-0">Bağımsız Değişkenler (X — en az 1)</label>
-                <button type="button" class="btn btn-link btn-sm p-0" style="color:#34d399;" onclick="toggleAllIndep()">Tümünü Seç/Kaldır</button>
+                <label class="text-white-50 small mb-0">{% trans "Bağımsız Değişkenler (X — en az 1)" %}</label>
+                <button type="button" class="btn btn-link btn-sm p-0" style="color:#34d399;" onclick="toggleAllIndep()">{% trans "Tümünü Seç/Kaldır" %}</button>
               </div>
               <div id="indep-list" class="border border-secondary rounded p-2" style="max-height:200px;overflow-y:auto;background:#12122a;">
-                <p class="text-white-50 small mb-0">Önce bağımlı değişkeni seçin.</p>
+                <p class="text-white-50 small mb-0">{% trans "Önce bağımlı değişkeni seçin." %}</p>
               </div>
-              <p class="text-white-50 small mt-1 mb-0">Seçilen: <span id="indep-count">0</span></p>
+              <p class="text-white-50 small mt-1 mb-0">{% trans "Seçilen:" %} <span id="indep-count">0</span></p>
             </div>
 
             <button id="run-btn" class="btn w-100 fw-semibold" style="background:#065f46;color:#fff;" disabled>
-              <i class="bi bi-play-circle-fill me-2"></i>Analizi Başlat
+              <i class="bi bi-play-circle-fill me-2"></i>{% trans "Analizi Başlat" %}
             </button>
             <div id="run-error" class="alert alert-danger mt-3 d-none small"></div>
           </div>
@@ -95,19 +95,19 @@
         <div class="card-body p-4">
 
           <div id="panel-idle">
-            <h5 class="text-white-50 fw-semibold mb-3">Sonuçlar burada görünecek</h5>
+            <h5 class="text-white-50 fw-semibold mb-3">{% trans "Sonuçlar burada görünecek" %}</h5>
             <ul class="text-white-50 small ps-3">
-              <li class="mb-1">Bağımlı değişken tam 2 kategorili olmalıdır.</li>
-              <li class="mb-1">Kategorik yordayıcılar otomatik dummy'e dönüştürülür.</li>
-              <li class="mb-1">Exp(B) = Odds Ratio; 1'den büyükse pozitif, küçükse negatif ilişki.</li>
-              <li class="mb-1">Nagelkerke R² modelin varyans açıklama oranını gösterir.</li>
-              <li class="mb-1">Sınıflandırma tablosu model doğruluğunu gösterir.</li>
+              <li class="mb-1">{% trans "Bağımlı değişken tam 2 kategorili olmalıdır." %}</li>
+              <li class="mb-1">{% trans "Kategorik yordayıcılar otomatik dummy'e dönüştürülür." %}</li>
+              <li class="mb-1">{% trans "Exp(B) = Odds Ratio; 1'den büyükse pozitif, küçükse negatif ilişki." %}</li>
+              <li class="mb-1">{% trans "Nagelkerke R² modelin varyans açıklama oranını gösterir." %}</li>
+              <li class="mb-1">{% trans "Sınıflandırma tablosu model doğruluğunu gösterir." %}</li>
             </ul>
           </div>
 
           <div id="panel-loading" class="text-center d-none py-4">
             <div class="spinner-border mb-3" style="width:3rem;height:3rem;color:#34d399;"></div>
-            <p class="text-white-50">Lojistik regresyon analizi yapılıyor…</p>
+            <p class="text-white-50">{% trans "Lojistik regresyon analizi yapılıyor…" %}</p>
           </div>
 
           <div id="panel-error" class="d-none">
@@ -122,9 +122,9 @@
 
             <!-- Başlık + PDF -->
             <div class="d-flex justify-content-between align-items-center mb-3">
-              <h5 class="text-white fw-semibold mb-0">Model Sonuçları</h5>
+              <h5 class="text-white fw-semibold mb-0">{% trans "Model Sonuçları" %}</h5>
               <a id="pdf-btn" href="#" class="btn btn-sm btn-outline-danger" target="_blank">
-                <i class="bi bi-file-earmark-pdf-fill me-1"></i>PDF İndir
+                <i class="bi bi-file-earmark-pdf-fill me-1"></i>{% trans "PDF İndir" %}
               </a>
             </div>
 
@@ -138,13 +138,13 @@
               <div class="col-6 col-md-3">
                 <div class="rounded-3 p-3 text-center" style="background:rgba(255,255,255,0.05);">
                   <div class="fs-5 fw-bold" id="res-chi2" style="color:#34d399;">—</div>
-                  <div class="text-white-50 small">χ² (Model)</div>
+                  <div class="text-white-50 small">{% trans "χ² (Model)" %}</div>
                 </div>
               </div>
               <div class="col-6 col-md-3">
                 <div class="rounded-3 p-3 text-center" style="background:rgba(255,255,255,0.05);">
                   <div class="fs-5 fw-bold" id="res-p" style="color:#a78bfa;">—</div>
-                  <div class="text-white-50 small">p-değeri</div>
+                  <div class="text-white-50 small">{% trans "p-değeri" %}</div>
                 </div>
               </div>
               <div class="col-6 col-md-3">
@@ -156,33 +156,33 @@
               <div class="col-6 col-md-3">
                 <div class="rounded-3 p-3 text-center" style="background:rgba(255,255,255,0.05);">
                   <div class="fs-5 fw-bold text-warning" id="res-accuracy">—</div>
-                  <div class="text-white-50 small">Doğruluk</div>
+                  <div class="text-white-50 small">{% trans "Doğruluk" %}</div>
                 </div>
               </div>
             </div>
 
             <!-- Katsayılar tablosu -->
-            <h6 class="text-white fw-semibold mb-2">Değişkenlerin Denklemdeki Değerleri</h6>
+            <h6 class="text-white fw-semibold mb-2">{% trans "Değişkenlerin Denklemdeki Değerleri" %}</h6>
             <div class="table-responsive mb-3" style="max-height:260px;overflow-y:auto;">
               <table class="table table-dark table-sm table-hover mb-0" style="font-size:0.78rem;">
                 <thead id="coef-head"></thead>
                 <tbody id="coef-body"></tbody>
               </table>
             </div>
-            <p class="text-white-50 small mb-3">* Yeşil hücre p &lt; .05 | Exp(B) = Odds Ratio</p>
+            <p class="text-white-50 small mb-3">{% trans "* Yeşil hücre p &lt; .05 | Exp(B) = Odds Ratio" %}</p>
 
             <!-- Sınıflandırma tablosu -->
-            <h6 class="text-white fw-semibold mb-2">Sınıflandırma Tablosu</h6>
+            <h6 class="text-white fw-semibold mb-2">{% trans "Sınıflandırma Tablosu" %}</h6>
             <div class="table-responsive mb-3">
               <table class="table table-dark table-sm mb-0" id="cl-table" style="font-size:0.8rem;"></table>
             </div>
 
             <!-- APA -->
             <div class="rounded-3 p-3 mb-2" style="background:rgba(52,211,153,0.08);border:1px solid rgba(52,211,153,0.2);">
-              <p class="text-white-50 small fw-semibold mb-2">Tezinde Nasıl Raporlarsın?</p>
+              <p class="text-white-50 small fw-semibold mb-2">{% trans "Tezinde Nasıl Raporlarsın?" %}</p>
               <p class="text-white small mb-2" id="res-apa" style="font-style:italic;"></p>
               <button class="btn btn-sm btn-outline-success" onclick="copyApa()">
-                <i class="bi bi-clipboard me-1"></i>Kopyala
+                <i class="bi bi-clipboard me-1"></i>{% trans "Kopyala" %}
               </button>
             </div>
 
@@ -196,13 +196,27 @@
   <!-- SEO: Bu Test Nedir? -->
   <div class="ax-card mt-4 p-4">
     <h5 class="ax-text-primary fw-semibold mb-3">Lojistik Regresyon Nedir?</h5>
-    <p class="ax-text-muted ax-text-sm mb-3">Lojistik regresyon, ikili (0/1, evet/hayır, başarılı/başarısız) bir bağımlı değişkeni tahmin etmek için kullanılır. Bir olayın gerçekleşme olasılığını bağımsız değişkenlerle modeller. Doğrusal regresyondan farklı olarak çıktısı olasılık değeridir ve 0–1 arasındadır.</p>
-    <p class="ax-text-muted ax-text-sm mb-3">Her bağımsız değişken için odds oranı (OR) hesaplanır. OR &gt; 1 olası etkiyi artırdığını, OR &lt; 1 ise azalttığını gösterir. Hosmer-Lemeshow testi modelin uyum iyiliğini değerlendirirken ROC eğrisi ve AUC modelin sınıflandırma başarısını ölçer.</p>
-    <p class="ax-text-muted ax-text-sm mb-0">Bağımlı değişkeninizin üç veya daha fazla kategorisi varsa Multinomial Lojistik Regresyon, sıralı kategoriler söz konusu ise Ordinal Lojistik Regresyon tercih edilmelidir.</p>
+    <p class="ax-text-muted ax-text-sm mb-3">{% trans "Lojistik regresyon, ikili (0/1, evet/hayır, başarılı/başarısız) bir bağımlı değişkeni tahmin etmek için kullanılır. Bir olayın gerçekleşme olasılığını bağımsız değişkenlerle modeller. Doğrusal regresyondan farklı olarak çıktısı olasılık değeridir ve 0–1 arasındadır." %}</p>
+    <p class="ax-text-muted ax-text-sm mb-3">{% trans "Her bağımsız değişken için odds oranı (OR) hesaplanır. OR &gt; 1 olası etkiyi artırdığını, OR &lt; 1 ise azalttığını gösterir. Hosmer-Lemeshow testi modelin uyum iyiliğini değerlendirirken ROC eğrisi ve AUC modelin sınıflandırma başarısını ölçer." %}</p>
+    <p class="ax-text-muted ax-text-sm mb-0">{% trans "Bağımlı değişkeninizin üç veya daha fazla kategorisi varsa Multinomial Lojistik Regresyon, sıralı kategoriler söz konusu ise Ordinal Lojistik Regresyon tercih edilmelidir." %}</p>
   </div>
 </div>
 
 <script>
+{% blocktrans with mb=max_upload_mb asvar t_max_size %}CSV, XLSX, XLS — Maks. {{ mb }} MB{% endblocktrans %}
+const T = {
+  maxSize: '{{ t_max_size|escapejs }}',
+  s1: '{% trans " satır, " as t %}{{ t|escapejs }}',
+  s2: '{% trans " sütun" as t %}{{ t|escapejs }}',
+  s3: '{% trans "Sunucu hatası." as t %}{{ t|escapejs }}',
+  s4: '{% trans "Bağımlı değişken seçilmedi." as t %}{{ t|escapejs }}',
+  s5: '{% trans "En az 1 bağımsız değişken seçin." as t %}{{ t|escapejs }}',
+  s6: '{% trans "Analiz başarısız." as t %}{{ t|escapejs }}',
+  s7: '{% trans "Durum sorgulanamadı: " as t %}{{ t|escapejs }}',
+  s8: '{% trans "Değişken" as t %}{{ t|escapejs }}',
+  s9: '{% trans "%95 GA Üst OR" as t %}{{ t|escapejs }}',
+  s10: '{% trans "Kopyalandı" as t %}{{ t|escapejs }}',
+};
 const TOOL_URL = '{% url "istatistik:lojistik_regresyon" %}';
 const STATUS_TEMPLATE = '{% url "istatistik:lojistik_regresyon_status" "00000000-0000-0000-0000-000000000000" %}';
 
@@ -215,7 +229,7 @@ fileInput.addEventListener('change', () => {
   const f = fileInput.files[0];
   if (!f) return;
   if (f.size > {{ max_upload_mb }} * 1024 * 1024) {
-    document.getElementById('upload-error').textContent = 'Dosya boyutu {{ max_upload_mb }} MB sınırını aşıyor.';
+    document.getElementById('upload-error').textContent = '{% filter escapejs %}{% blocktrans with mb=max_upload_mb %}Dosya boyutu {{ mb }} MB sınırını aşıyor.{% endblocktrans %}{% endfilter %}';
     document.getElementById('upload-error').classList.remove('d-none');
     fileInput.value = '';
     return;
@@ -242,18 +256,18 @@ function previewFile() {
       previewId = data.preview_id; previewFilename = data.filename;
       allCols = data.columns || [];
       allNumCols = data.numeric_cols || [];
-      document.getElementById('config-file-info').textContent = data.filename + ' — ' + data.n_rows + ' satır, ' + data.columns.length + ' sütun';
+      document.getElementById('config-file-info').textContent = data.filename + ' — ' + data.n_rows + T.s1 + data.columns.length + T.s2;
       buildDepSelect(allCols);
       updateIndepList();
       document.getElementById('step-upload').classList.add('d-none');
       document.getElementById('step-config').classList.remove('d-none');
     })
-    .catch(() => { previewBtn.disabled = false; showUploadError('Sunucu hatası.'); });
+    .catch(() => { previewBtn.disabled = false; showUploadError(T.s3); });
 }
 
 function buildDepSelect(cols) {
   const sel = document.getElementById('dep-col');
-  sel.innerHTML = '<option value="">— Seçiniz —</option>';
+  sel.innerHTML = '<option value="">— {% filter escapejs %}{% trans "Seçiniz" %}{% endfilter %} —</option>';
   cols.forEach(c => { sel.innerHTML += `<option value="${c}">${c}</option>`; });
 }
 
@@ -262,13 +276,13 @@ function updateIndepList() {
   const container = document.getElementById('indep-list');
   const available = allCols.filter(c => c !== depVal);
   if (!depVal) {
-    container.innerHTML = '<p class="text-white-50 small mb-0">Önce bağımlı değişkeni seçin.</p>';
+    container.innerHTML = '<p class="text-white-50 small mb-0">{% filter escapejs %}{% trans "Önce bağımlı değişkeni seçin." %}{% endfilter %}</p>';
     document.getElementById('indep-count').textContent = '0';
     document.getElementById('run-btn').disabled = true;
     return;
   }
   if (available.length === 0) {
-    container.innerHTML = '<p class="text-white-50 small mb-0">Başka sütun yok.</p>';
+    container.innerHTML = '<p class="text-white-50 small mb-0">{% filter escapejs %}{% trans "Başka sütun yok." %}{% endfilter %}</p>';
     document.getElementById('run-btn').disabled = true;
     return;
   }
@@ -299,8 +313,8 @@ document.getElementById('run-btn').addEventListener('click', runAnalysis);
 function runAnalysis() {
   const depVal = document.getElementById('dep-col').value;
   const indepVals = Array.from(document.querySelectorAll('.indep-cb:checked')).map(cb => cb.value);
-  if (!depVal) { showRunError('Bağımlı değişken seçilmedi.'); return; }
-  if (indepVals.length === 0) { showRunError('En az 1 bağımsız değişken seçin.'); return; }
+  if (!depVal) { showRunError(T.s4); return; }
+  if (indepVals.length === 0) { showRunError(T.s5); return; }
 
   document.getElementById('run-error').classList.add('d-none');
   showPanel('loading');
@@ -319,7 +333,7 @@ function runAnalysis() {
       if (!data.success) { showPanel('idle'); showRunError(data.error || 'Hata'); return; }
       startPolling(data.job_id);
     })
-    .catch(() => { showPanel('idle'); showRunError('Sunucu hatası.'); });
+    .catch(() => { showPanel('idle'); showRunError(T.s3); });
 }
 
 function startPolling(jobId) {
@@ -334,13 +348,13 @@ function startPolling(jobId) {
         } else if (data.status === 'failed') {
           clearInterval(pollInterval);
           showPanel('error');
-          document.getElementById('panel-error-msg').textContent = data.error || 'Analiz başarısız.';
+          document.getElementById('panel-error-msg').textContent = data.error || T.s6;
         }
       })
       .catch(err => {
         clearInterval(pollInterval);
         showPanel('error');
-        document.getElementById('panel-error-msg').textContent = 'Durum sorgulanamadı: ' + err.message;
+        document.getElementById('panel-error-msg').textContent = T.s7 + err.message;
       });
   }, 2000);
 }
@@ -351,10 +365,10 @@ function showResults(data) {
   const sigBox = document.getElementById('sig-box');
   if (sig) {
     sigBox.style.background = 'rgba(74,222,128,0.08)'; sigBox.style.border = '1px solid rgba(74,222,128,0.2)';
-    document.getElementById('sig-text').innerHTML = `<span style="color:#4ade80;">✓ Model istatistiksel olarak anlamlı (p &lt; .05)</span>`;
+    document.getElementById('sig-text').innerHTML = `<span style="color:#4ade80;">{% filter escapejs %}{% trans "✓ Model istatistiksel olarak anlamlı (p < .05)" %}{% endfilter %}</span>`;
   } else {
     sigBox.style.background = 'rgba(248,113,113,0.08)'; sigBox.style.border = '1px solid rgba(248,113,113,0.2)';
-    document.getElementById('sig-text').innerHTML = `<span style="color:#f87171;">✗ Model istatistiksel olarak anlamlı değil (p ≥ .05)</span>`;
+    document.getElementById('sig-text').innerHTML = `<span style="color:#f87171;">{% filter escapejs %}{% trans "✗ Model istatistiksel olarak anlamlı değil (p ≥ .05)" %}{% endfilter %}</span>`;
   }
 
   const pDisp = r.chi2_p < 0.001 ? '< .001' : r.chi2_p.toFixed(3);
@@ -365,7 +379,7 @@ function showResults(data) {
 
   // Katsayılar tablosu
   document.getElementById('coef-head').innerHTML = '<tr>' +
-    ['Değişken','B','SE','Wald','p','Exp(B)','%95 GA Alt OR','%95 GA Üst OR'].map(h => `<th>${h}</th>`).join('') + '</tr>';
+    [T.s8,'B','SE','Wald','p','Exp(B)','%95 GA Alt OR',T.s9].map(h => `<th>${h}</th>`).join('') + '</tr>';
   document.getElementById('coef-body').innerHTML = r.coefficients.map(c => {
     const pStr = c.p < 0.001 ? '&lt; .001' : c.p.toFixed(4);
     const pCell = c.significant && c.name !== 'Sabit'
@@ -387,22 +401,22 @@ function showResults(data) {
   const cl = r.classification;
   const n0 = cl.tn + cl.fp, n1 = cl.fn + cl.tp;
   document.getElementById('cl-table').innerHTML = `
-    <thead><tr><th></th><th>Tahmin: ${cl.cat0}</th><th>Tahmin: ${cl.cat1}</th><th>Doğruluk</th></tr></thead>
+    <thead><tr><th></th><th>{% filter escapejs %}{% trans "Tahmin:" %}{% endfilter %} ${cl.cat0}</th><th>{% filter escapejs %}{% trans "Tahmin:" %}{% endfilter %} ${cl.cat1}</th><th>{% filter escapejs %}{% trans "Doğruluk" %}{% endfilter %}</th></tr></thead>
     <tbody>
       <tr>
-        <td class="fw-semibold">Gerçek: ${cl.cat0}</td>
+        <td class="fw-semibold">{% filter escapejs %}{% trans "Gerçek:" %}{% endfilter %} ${cl.cat0}</td>
         <td style="color:#4ade80;">${cl.tn}</td>
         <td style="color:#f87171;">${cl.fp}</td>
         <td>${n0 > 0 ? (cl.tn/n0*100).toFixed(1)+'%' : '—'}</td>
       </tr>
       <tr>
-        <td class="fw-semibold">Gerçek: ${cl.cat1}</td>
+        <td class="fw-semibold">{% filter escapejs %}{% trans "Gerçek:" %}{% endfilter %} ${cl.cat1}</td>
         <td style="color:#f87171;">${cl.fn}</td>
         <td style="color:#4ade80;">${cl.tp}</td>
         <td>${n1 > 0 ? (cl.tp/n1*100).toFixed(1)+'%' : '—'}</td>
       </tr>
       <tr style="background:rgba(52,211,153,0.08);">
-        <td class="fw-semibold">Genel Doğruluk</td>
+        <td class="fw-semibold">{% filter escapejs %}{% trans "Genel Doğruluk" %}{% endfilter %}</td>
         <td></td><td></td>
         <td class="fw-bold" style="color:#34d399;">${cl.accuracy}%</td>
       </tr>
@@ -422,7 +436,7 @@ function showResults(data) {
 function copyApa() {
   navigator.clipboard.writeText(document.getElementById('res-apa').textContent).then(() => {
     const btn = event.target.closest('button');
-    btn.innerHTML = '<i class="bi bi-check-lg me-1"></i>Kopyalandı';
+    btn.innerHTML = '<i class="bi bi-check-lg me-1"></i>' + T.s10;
     setTimeout(() => { btn.innerHTML = '<i class="bi bi-clipboard me-1"></i>Kopyala'; }, 2000);
   });
 }
@@ -438,7 +452,7 @@ function resetToUpload() {
   if (pollInterval) clearInterval(pollInterval);
   previewId = null; previewFilename = null;
   fileInput.value = ''; previewBtn.disabled = true; previewBtn.classList.add('disabled');
-  document.getElementById('file-name').textContent = 'CSV, XLSX, XLS — Maks. {{ max_upload_mb }} MB';
+  document.getElementById('file-name').textContent = T.maxSize;
   document.getElementById('step-config').classList.add('d-none');
   document.getElementById('step-upload').classList.remove('d-none');
   document.getElementById('upload-error').classList.add('d-none');

@@ -1,9 +1,9 @@
 {% extends "istatistik/analiz_console_base.html" %}
-{% load static %}
+{% load static i18n %}
 {% block canonical %}/analiz/orneklem/{% endblock %}
 
-{% block title %}Örneklem Büyüklüğü Hesaplayıcı - Analizus{% endblock %}
-{% block meta_description %}Teziniz için gereken örneklem büyüklüğünü anında hesaplayın. Evren büyüklüğü, güven aralığı ve hata payına göre ücretsiz örneklem hesaplayıcı.{% endblock %}
+{% block title %}{% trans "Örneklem Büyüklüğü Hesaplayıcı" %} - Analizus{% endblock %}
+{% block meta_description %}{% trans "Teziniz için gereken örneklem büyüklüğünü anında hesaplayın. Evren büyüklüğü, güven aralığı ve hata payına göre ücretsiz örneklem hesaplayıcı." %}{% endblock %}
 
 {% block tool_area %}
 <div class="container py-4">
@@ -11,9 +11,9 @@
   <div class="row mb-4">
     <div class="col">
       <h2 class="fw-bold text-white mb-1">
-        <i class="bi bi-calculator-fill text-warning me-2"></i>Örneklem Büyüklüğü Hesaplayıcı
+        <i class="bi bi-calculator-fill text-warning me-2"></i>{% trans "Örneklem Büyüklüğü Hesaplayıcı" %}
       </h2>
-      <p class="text-white-50 mb-0">G*Power alternatifi — etki büyüklüğü, alfa ve güç parametrelerine göre gerekli örneklem sayısını hesaplayın.</p>
+      <p class="text-white-50 mb-0">{% trans "G*Power alternatifi — etki büyüklüğü, alfa ve güç parametrelerine göre gerekli örneklem sayısını hesaplayın." %}</p>
     </div>
   </div>
 
@@ -29,11 +29,11 @@
 
           {# Test tipi #}
           <div class="mb-3">
-            <label class="text-white-50 small fw-semibold mb-2 d-block">Test Tipi</label>
+            <label class="text-white-50 small fw-semibold mb-2 d-block">{% trans "Test Tipi" %}</label>
             <select id="test-type" class="form-select form-select-sm bg-dark text-white border-secondary">
-              <option value="ttest_independent">Bağımsız Örneklem t-Testi</option>
-              <option value="ttest_paired">Bağımlı Örneklem t-Testi (Eşleştirilmiş)</option>
-              <option value="anova">Tek Yönlü ANOVA</option>
+              <option value="ttest_independent">{% trans "Bağımsız Örneklem t-Testi" %}</option>
+              <option value="ttest_paired">{% trans "Bağımlı Örneklem t-Testi (Eşleştirilmiş)" %}</option>
+              <option value="anova">{% trans "Tek Yönlü ANOVA" %}</option>
               <option value="correlation">Korelasyon Analizi</option>
             </select>
           </div>
@@ -41,7 +41,7 @@
           {# Grup sayısı (sadece ANOVA için) #}
           <div id="groups-row" class="mb-3 d-none">
             <label class="text-white-50 small fw-semibold mb-1 d-block">
-              Grup Sayısı (k) <span class="text-white-50 fw-normal">— ANOVA için</span>
+              {% trans "Grup Sayısı (k)" %} <span class="text-white-50 fw-normal">{% trans "— ANOVA için" %}</span>
             </label>
             <input type="number" id="groups" class="form-control form-control-sm bg-dark text-white border-secondary"
                    value="3" min="2" max="20" step="1">
@@ -50,23 +50,23 @@
           {# Etki büyüklüğü #}
           <div class="mb-3">
             <label class="text-white-50 small fw-semibold mb-1 d-block">
-              Etki Büyüklüğü
+              {% trans "Etki Büyüklüğü" %}
               <span id="effect-label" class="text-warning fw-normal">(Cohen's d)</span>
             </label>
             <div class="d-flex gap-2 mb-2">
-              <button type="button" class="btn btn-sm btn-outline-secondary effect-preset" data-val="0.2">Küçük</button>
+              <button type="button" class="btn btn-sm btn-outline-secondary effect-preset" data-val="0.2">{% trans "Küçük" %}</button>
               <button type="button" class="btn btn-sm btn-outline-secondary effect-preset" data-val="0.5">Orta</button>
-              <button type="button" class="btn btn-sm btn-outline-secondary effect-preset" data-val="0.8">Büyük</button>
+              <button type="button" class="btn btn-sm btn-outline-secondary effect-preset" data-val="0.8">{% trans "Büyük" %}</button>
             </div>
             <input type="number" id="effect-size" class="form-control form-control-sm bg-dark text-white border-secondary"
                    value="0.5" min="0.01" max="2" step="0.01">
-            <p id="effect-desc" class="text-white-50 small mt-1 mb-0">Orta düzey etki — sosyal bilimler araştırmalarında en yaygın kullanılan değer.</p>
+            <p id="effect-desc" class="text-white-50 small mt-1 mb-0">{% trans "Orta düzey etki — sosyal bilimler araştırmalarında en yaygın kullanılan değer." %}</p>
           </div>
 
           {# Alfa #}
           <div class="mb-3">
             <label class="text-white-50 small fw-semibold mb-1 d-block">
-              Anlamlılık Düzeyi (α)
+              {% trans "Anlamlılık Düzeyi (α)" %}
             </label>
             <div class="d-flex gap-2 mb-2">
               <button type="button" class="btn btn-sm btn-outline-secondary alpha-preset active" data-val="0.05">0.05</button>
@@ -80,7 +80,7 @@
           {# Güç #}
           <div class="mb-4">
             <label class="text-white-50 small fw-semibold mb-1 d-block">
-              İstatistiksel Güç (1−β)
+              {% trans "İstatistiksel Güç (1−β)" %}
             </label>
             <div class="d-flex gap-2 mb-2">
               <button type="button" class="btn btn-sm btn-outline-secondary power-preset active" data-val="0.80">0.80</button>
@@ -106,16 +106,16 @@
 
           {# Boş durum #}
           <div id="result-idle">
-            <h5 class="text-white-50 fw-semibold mb-3">Sonuç burada görünecek</h5>
-            <p class="text-white-50 small">Parametreleri girin ve "Hesapla" butonuna tıklayın.</p>
+            <h5 class="text-white-50 fw-semibold mb-3">{% trans "Sonuç burada görünecek" %}</h5>
+            <p class="text-white-50 small">{% trans 'Parametreleri girin ve "Hesapla" butonuna tıklayın.' %}</p>
             <hr style="border-color:rgba(255,255,255,0.08);">
-            <h6 class="text-white-50 small fw-bold text-uppercase mb-2">Hızlı Rehber</h6>
+            <h6 class="text-white-50 small fw-bold text-uppercase mb-2">{% trans "Hızlı Rehber" %}</h6>
             <ul class="text-white-50 small ps-3">
-              <li class="mb-1"><strong class="text-white-50">Cohen's d</strong>: 0.2 küçük, 0.5 orta, 0.8 büyük etki</li>
-              <li class="mb-1"><strong class="text-white-50">Cohen's f</strong>: 0.1 küçük, 0.25 orta, 0.4 büyük (ANOVA)</li>
-              <li class="mb-1"><strong class="text-white-50">Pearson r</strong>: 0.1 küçük, 0.3 orta, 0.5 büyük (Korelasyon)</li>
+              <li class="mb-1"><strong class="text-white-50">Cohen's d</strong>{% trans ": 0.2 küçük, 0.5 orta, 0.8 büyük etki" %}</li>
+              <li class="mb-1"><strong class="text-white-50">Cohen's f</strong>{% trans ": 0.1 küçük, 0.25 orta, 0.4 büyük (ANOVA)" %}</li>
+              <li class="mb-1"><strong class="text-white-50">Pearson r</strong>{% trans ": 0.1 küçük, 0.3 orta, 0.5 büyük (Korelasyon)" %}</li>
               <li class="mb-1"><strong class="text-white-50">α = 0.05</strong>: Sosyal bilimlerde standart</li>
-              <li class="mb-1"><strong class="text-white-50">Güç = 0.80</strong>: Cohen (1988) önerisi</li>
+              <li class="mb-1"><strong class="text-white-50">{% trans "Güç = 0.80" %}</strong>{% trans ": Cohen (1988) önerisi" %}</li>
             </ul>
           </div>
 
@@ -131,7 +131,7 @@
               <div class="col-6">
                 <div class="rounded-3 p-4 text-center" style="background:rgba(255,193,7,0.1); border:1px solid rgba(255,193,7,0.3);">
                   <div class="display-5 fw-bold text-warning" id="res-n-total">—</div>
-                  <div class="text-white-50 small mt-1">Toplam Örneklem</div>
+                  <div class="text-white-50 small mt-1">{% trans "Toplam Örneklem" %}</div>
                 </div>
               </div>
               <div class="col-6">
@@ -146,11 +146,11 @@
             <table class="table table-dark table-sm table-borderless small mb-3">
               <tbody>
                 <tr>
-                  <td class="text-white-50">Elde Edilen Güç</td>
+                  <td class="text-white-50">{% trans "Elde Edilen Güç" %}</td>
                   <td class="text-white fw-semibold" id="res-power">—</td>
                 </tr>
                 <tr>
-                  <td class="text-white-50">Etki Büyüklüğü</td>
+                  <td class="text-white-50">{% trans "Etki Büyüklüğü" %}</td>
                   <td class="text-white" id="res-effect">—</td>
                 </tr>
               </tbody>
@@ -164,10 +164,10 @@
 
             {# APA cümlesi #}
             <div class="rounded-3 p-3" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07);">
-              <p class="text-white-50 small mb-2 fw-semibold">Tezinde Nasıl Raporlarsın?</p>
+              <p class="text-white-50 small mb-2 fw-semibold">{% trans "Tezinde Nasıl Raporlarsın?" %}</p>
               <p class="text-white small mb-2" id="res-apa" style="font-style:italic;"></p>
               <button class="btn btn-sm btn-outline-secondary" onclick="copyApa(this)" style="font-size:0.75rem;">
-                <i class="bi bi-clipboard me-1"></i>Kopyala
+                <i class="bi bi-clipboard me-1"></i>{% trans "Kopyala" %}
               </button>
             </div>
           </div>
@@ -182,11 +182,9 @@
     <h5 class="text-white fw-semibold mb-3"><i class="bi bi-journal-text me-2 text-warning"></i>Metodoloji</h5>
     <div class="row g-4">
       <div class="col-md-6">
-        <h6 class="text-white-50 text-uppercase small fw-bold mb-2">Güç Analizi Nedir?</h6>
+        <h6 class="text-white-50 text-uppercase small fw-bold mb-2">{% trans "Güç Analizi Nedir?" %}</h6>
         <p class="text-white-50 small mb-0">
-          İstatistiksel güç (1−β), gerçekten var olan bir etkiyi tespit etme olasılığıdır.
-          Güç analizi, bu olasılığı hedeflenen düzeye (genellikle 0.80) ulaştıracak minimum örneklem büyüklüğünü hesaplar.
-          Yetersiz örneklem, gerçek etkilerin gözden kaçmasına (Tip II hata) yol açar.
+          {% trans "İstatistiksel güç (1−β), gerçekten var olan bir etkiyi tespit etme olasılığıdır. Güç analizi, bu olasılığı hedeflenen düzeye (genellikle 0.80) ulaştıracak minimum örneklem büyüklüğünü hesaplar. Yetersiz örneklem, gerçek etkilerin gözden kaçmasına (Tip II hata) yol açar." %}
         </p>
       </div>
       <div class="col-md-6">
@@ -205,6 +203,20 @@
 </div>
 
 <script>
+const T = {
+  s1: '{% trans "Küçük etki (d=0.2)" as t %}{{ t|escapejs }}',
+  s2: '{% trans "Orta etki (d=0.5) — sosyal bilimlerde yaygın" as t %}{{ t|escapejs }}',
+  s3: '{% trans "Büyük etki (d=0.8)" as t %}{{ t|escapejs }}',
+  s4: '{% trans "Küçük etki (f=0.1)" as t %}{{ t|escapejs }}',
+  s5: '{% trans "Büyük etki (f=0.40)" as t %}{{ t|escapejs }}',
+  s6: '{% trans "Küçük etki (r=0.1)" as t %}{{ t|escapejs }}',
+  s7: '{% trans "Büyük etki (r=0.5)" as t %}{{ t|escapejs }}',
+  s8: '{% trans "Küçük" as t %}{{ t|escapejs }}',
+  s9: '{% trans "Büyük" as t %}{{ t|escapejs }}',
+  s10: '{% trans "Hesaplanıyor…" as t %}{{ t|escapejs }}',
+  s11: '{% trans "Bağlantı hatası. Lütfen tekrar deneyin." as t %}{{ t|escapejs }}',
+  s12: '{% trans "Kopyalandı" as t %}{{ t|escapejs }}',
+};
 const EFFECT_LABELS = {
   ttest_independent: "Cohen's d",
   ttest_paired:      "Cohen's d",
@@ -218,10 +230,10 @@ const EFFECT_PRESETS = {
   correlation:       [0.1, 0.3, 0.5],
 };
 const EFFECT_DESCS = {
-  ttest_independent: ['Küçük etki (d=0.2)', 'Orta etki (d=0.5) — sosyal bilimlerde yaygın', 'Büyük etki (d=0.8)'],
-  ttest_paired:      ['Küçük etki (d=0.2)', 'Orta etki (d=0.5)', 'Büyük etki (d=0.8)'],
-  anova:             ['Küçük etki (f=0.1)', 'Orta etki (f=0.25)', 'Büyük etki (f=0.40)'],
-  correlation:       ['Küçük etki (r=0.1)', 'Orta etki (r=0.3)', 'Büyük etki (r=0.5)'],
+  ttest_independent: [T.s1, T.s2, T.s3],
+  ttest_paired:      [T.s1, 'Orta etki (d=0.5)', T.s3],
+  anova:             [T.s4, 'Orta etki (f=0.25)', T.s5],
+  correlation:       [T.s6, 'Orta etki (r=0.3)', T.s7],
 };
 
 document.getElementById('test-type').addEventListener('change', function() {
@@ -232,7 +244,7 @@ document.getElementById('test-type').addEventListener('change', function() {
   const btns = document.querySelectorAll('.effect-preset');
   btns.forEach((btn, i) => {
     btn.dataset.val = presets[i];
-    btn.textContent = i === 0 ? 'Küçük' : i === 1 ? 'Orta' : 'Büyük';
+    btn.textContent = i === 0 ? T.s8 : i === 1 ? 'Orta' : T.s9;
   });
   document.getElementById('effect-size').value = presets[1];
   document.getElementById('effect-desc').textContent = EFFECT_DESCS[t][1];
@@ -270,7 +282,7 @@ document.getElementById('calc-btn').addEventListener('click', function() {
   fd.append('groups', document.getElementById('groups').value);
 
   this.disabled = true;
-  this.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Hesaplanıyor…';
+  this.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>' + T.s10;
 
   fetch('{% url "istatistik:orneklem" %}', {
     method: 'POST',
@@ -291,7 +303,7 @@ document.getElementById('calc-btn').addEventListener('click', function() {
   .catch(() => {
     this.disabled = false;
     this.innerHTML = '<i class="bi bi-calculator me-2"></i>Hesapla';
-    errEl.textContent = 'Bağlantı hatası. Lütfen tekrar deneyin.';
+    errEl.textContent = T.s11;
     errEl.classList.remove('d-none');
   });
 });
@@ -317,7 +329,7 @@ function copyApa(btn) {
   const text = document.getElementById('res-apa').textContent;
   navigator.clipboard.writeText(text).then(() => {
     const orig = btn.innerHTML;
-    btn.innerHTML = '<i class="bi bi-check me-1"></i>Kopyalandı';
+    btn.innerHTML = '<i class="bi bi-check me-1"></i>' + T.s12;
     btn.classList.add('btn-success');
     btn.classList.remove('btn-outline-secondary');
     setTimeout(() => {

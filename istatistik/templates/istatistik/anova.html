@@ -1,9 +1,9 @@
 {% extends "istatistik/analiz_console_base.html" %}
-{% load static %}
+{% load static i18n %}
 {% block canonical %}/analiz/anova/{% endblock %}
 
-{% block title %}Tek Yönlü ANOVA (Tukey, Bonferroni Post-Hoc) - Analizus{% endblock %}
-{% block meta_description %}Tek yönlü ANOVA analizi ile 3 veya daha fazla grup arasındaki farkı test edin. Tukey ve Bonferroni post-hoc testleri, eta kare, PDF rapor dahil.{% endblock %}
+{% block title %}{% trans "Tek Yönlü ANOVA (Tukey, Bonferroni Post-Hoc)" %} - Analizus{% endblock %}
+{% block meta_description %}{% trans "Tek yönlü ANOVA analizi ile 3 veya daha fazla grup arasındaki farkı test edin. Tukey ve Bonferroni post-hoc testleri, eta kare, PDF rapor dahil." %}{% endblock %}
 
 {% block tool_area %}
 <div class="container py-4">
@@ -11,13 +11,13 @@
   <div class="row mb-4 align-items-center">
     <div class="col">
       <h2 class="fw-bold ax-text-primary mb-1 d-flex align-items-center">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ax-text-danger me-2"><path d="M18 20v-5M12 20v-9M6 20V4"/></svg> Tek Yönlü ANOVA
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ax-text-danger me-2"><path d="M18 20v-5M12 20v-9M6 20V4"/></svg> {% trans "Tek Yönlü ANOVA" %}
       </h2>
-      <p class="ax-text-muted mb-0">3 veya daha fazla grup ortalamalarını karşılaştırın — post-hoc testleri ve η² etki büyüklüğü ile.</p>
+      <p class="ax-text-muted mb-0">{% trans "3 veya daha fazla grup ortalamalarını karşılaştırın — post-hoc testleri ve η² etki büyüklüğü ile." %}</p>
     </div>
     {% if user.is_authenticated %}
     <div class="col-auto">
-      <span class="ax-badge ax-badge--secondary ax-text-base">Günlük: {{ daily_remaining }} analiz hakkı</span>
+      <span class="ax-badge ax-badge--secondary ax-text-base">{% blocktrans %}Günlük: {{ daily_remaining }} analiz hakkı{% endblocktrans %}</span>
     </div>
     {% endif %}
   </div>
@@ -29,18 +29,18 @@
 
           <div id="step-upload">
             <h5 class="ax-text-primary fw-semibold mb-3 d-flex align-items-center">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ax-text-danger me-2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> Dosya Yükle
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ax-text-danger me-2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg> {% trans "Dosya Yükle" %}
             </h5>
             <div id="upload-area"
                  class="ax-rounded-lg ax-text-center p-4 mb-3"
                  style="border: 2px dashed var(--ax-border-default); background: rgba(0,0,0,0.1); cursor:pointer; transition: border-color 0.2s;"
                  onclick="document.getElementById('file-input').click()">
               <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ax-text-danger mb-2 mx-auto d-block"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M12 12v9"/><path d="m8 16 4-4 4 4"/></svg>
-              <p class="ax-text-muted ax-text-sm mb-0" id="file-name">CSV, XLSX, XLS — Maks. {{ max_upload_mb }} MB</p>
+              <p class="ax-text-muted ax-text-sm mb-0" id="file-name">{% blocktrans with mb=max_upload_mb %}CSV, XLSX, XLS — Maks. {{ mb }} MB{% endblocktrans %}</p>
             </div>
             <input type="file" id="file-input" accept=".csv,.xlsx,.xls" class="d-none">
             <button id="preview-btn" class="ax-btn ax-btn--danger ax-w-full fw-semibold" disabled>
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2"><circle cx="12" cy="12" r="10"/><polyline points="12 16 16 12 12 8"/><line x1="8" y1="12" x2="16" y2="12"/></svg> Sütunları Getir
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2"><circle cx="12" cy="12" r="10"/><polyline points="12 16 16 12 12 8"/><line x1="8" y1="12" x2="16" y2="12"/></svg> {% trans "Sütunları Getir" %}
             </button>
             <div id="upload-error" class="ax-alert-danger mt-3 d-none ax-text-sm"></div>
           </div>
@@ -48,21 +48,21 @@
           <div id="step-config" class="d-none">
             <div class="d-flex align-items-center justify-content-between mb-3">
               <h5 class="ax-text-primary fw-semibold mb-0 d-flex align-items-center">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ax-text-danger me-2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg> Sütun Seçimi
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ax-text-danger me-2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg> {% trans "Sütun Seçimi" %}
               </h5>
               <button class="ax-btn ax-btn--outline-secondary ax-btn--sm" onclick="resetToUpload()">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> Geri
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg> {% trans "Geri" %}
               </button>
             </div>
             <p class="ax-text-muted ax-text-sm mb-3" id="config-file-info">—</p>
 
             <div class="mb-2">
-              <label class="ax-text-muted ax-text-sm mb-1 d-block">Grup Sütunu (kategorik)</label>
+              <label class="ax-text-muted ax-text-sm mb-1 d-block">{% trans "Grup Sütunu (kategorik)" %}</label>
               <select id="group-col" class="ax-form-control"></select>
-              <p class="ax-text-muted ax-text-sm mt-1 mb-0">Bu sütun grup etiketlerini içermeli (ör. Sınıf, Cinsiyet, Tedavi).</p>
+              <p class="ax-text-muted ax-text-sm mt-1 mb-0">{% trans "Bu sütun grup etiketlerini içermeli (ör. Sınıf, Cinsiyet, Tedavi)." %}</p>
             </div>
             <div class="mb-3">
-              <label class="ax-text-muted ax-text-sm mb-1 d-block">Bağımlı Değişken (sayısal)</label>
+              <label class="ax-text-muted ax-text-sm mb-1 d-block">{% trans "Bağımlı Değişken (sayısal)" %}</label>
               <select id="dep-col" class="ax-form-control"></select>
             </div>
 
@@ -76,7 +76,7 @@
             </div>
 
             <button id="run-btn" class="ax-btn ax-btn--danger ax-w-full fw-semibold">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg> Analizi Başlat
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg> {% trans "Analizi Başlat" %}
             </button>
             <div id="run-error" class="ax-alert-danger mt-3 d-none ax-text-sm"></div>
           </div>
@@ -88,18 +88,18 @@
       <div class="ax-card ax-h-full">
 
           <div id="panel-idle">
-            <h5 class="ax-text-muted fw-semibold mb-3">Sonuçlar burada görünecek</h5>
+            <h5 class="ax-text-muted fw-semibold mb-3">{% trans "Sonuçlar burada görünecek" %}</h5>
             <ul class="ax-text-muted ax-text-sm ps-3">
-              <li class="mb-1">Her satır bir gözlem (kişi/ölçüm) olmalıdır.</li>
-              <li class="mb-1">Grup sütunu kategorik değerler içermelidir (ör. A/B/C veya 1/2/3).</li>
-              <li class="mb-1">p &lt; .05 ise post-hoc testler otomatik olarak hesaplanır.</li>
+              <li class="mb-1">{% trans "Her satır bir gözlem (kişi/ölçüm) olmalıdır." %}</li>
+              <li class="mb-1">{% trans "Grup sütunu kategorik değerler içermelidir (ör. A/B/C veya 1/2/3)." %}</li>
+              <li class="mb-1">{% trans "p &lt; .05 ise post-hoc testler otomatik olarak hesaplanır." %}</li>
               <li class="mb-1">En az 2, en fazla 20 grup desteklenir.</li>
             </ul>
           </div>
 
           <div id="panel-loading" class="text-center d-none py-4">
             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="ax-text-danger mb-3 mx-auto d-block" style="animation: ax-spin 1s linear infinite;"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
-            <p class="ax-text-muted">Analiz yapılıyor…</p>
+            <p class="ax-text-muted">{% trans "Analiz yapılıyor…" %}</p>
           </div>
 
           <div id="panel-error" class="d-none">
@@ -113,20 +113,20 @@
           <div id="panel-done" class="d-none">
             <div class="d-flex align-items-center gap-2 mb-3">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ax-text-success"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-              <h5 class="ax-text-primary mb-0">Tek Yönlü ANOVA</h5>
+              <h5 class="ax-text-primary mb-0">{% trans "Tek Yönlü ANOVA" %}</h5>
             </div>
 
             <div class="row g-3 mb-3">
               <div class="col-4">
                 <div class="ax-rounded-md p-3 ax-text-center" style="background: rgba(0,0,0,0.2); border: 1px solid var(--ax-border-default);">
                   <div class="ax-text-3xl fw-bold ax-text-danger" id="res-f">—</div>
-                  <div class="ax-text-muted ax-text-sm">F istatistiği</div>
+                  <div class="ax-text-muted ax-text-sm">{% trans "F istatistiği" %}</div>
                 </div>
               </div>
               <div class="col-4">
                 <div class="ax-rounded-md p-3 ax-text-center" style="background: rgba(0,0,0,0.2); border: 1px solid var(--ax-border-default);">
                   <div class="ax-text-3xl fw-bold" id="res-p" style="color: var(--ax-accent-danger);">—</div>
-                  <div class="ax-text-muted ax-text-sm">p-değeri</div>
+                  <div class="ax-text-muted ax-text-sm">{% trans "p-değeri" %}</div>
                 </div>
               </div>
               <div class="col-4">
@@ -142,7 +142,7 @@
             </div>
 
             <div class="mb-3">
-              <p class="ax-text-muted ax-text-sm mb-1 fw-semibold">Grup İstatistikleri</p>
+              <p class="ax-text-muted ax-text-sm mb-1 fw-semibold">{% trans "Grup İstatistikleri" %}</p>
               <div style="overflow-x:auto;">
                 <table id="group-table" class="ax-table"></table>
               </div>
@@ -156,22 +156,22 @@
             </div>
 
             <div class="ax-rounded-md p-3 mb-3" style="background:rgba(0,0,0,0.2); border:1px solid var(--ax-border-default);">
-              <p class="ax-text-muted ax-text-sm fw-semibold mb-1">Sonuç</p>
+              <p class="ax-text-muted ax-text-sm fw-semibold mb-1">{% trans "Sonuç" %}</p>
               <p class="ax-text-primary ax-text-sm mb-0" id="res-conclusion">—</p>
             </div>
 
             <div class="ax-rounded-md p-3" style="background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.2);">
-              <p class="ax-text-muted ax-text-sm fw-semibold mb-2">Tezinde Nasıl Raporlarsın?</p>
+              <p class="ax-text-muted ax-text-sm fw-semibold mb-2">{% trans "Tezinde Nasıl Raporlarsın?" %}</p>
               <p class="ax-text-primary ax-text-sm mb-2" id="res-apa" style="font-style:italic;"></p>
               <div class="d-flex gap-2">
                 <a id="pdf-btn" href="#" target="_blank" class="ax-btn ax-btn--sm ax-btn--danger fw-semibold">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg> PDF İndir
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg> {% trans "PDF İndir" %}
                 </a>
                 <button class="ax-btn ax-btn--sm ax-btn--outline-secondary" onclick="copyApa(this)">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> Kopyala
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg> {% trans "Kopyala" %}
                 </button>
                 <button class="ax-btn ax-btn--sm ax-btn--outline-secondary" onclick="resetToUpload()">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg> Yeni
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg> {% trans "Yeni" %}
                 </button>
               </div>
             </div>
@@ -187,21 +187,21 @@
     </h5>
     <div class="row g-4">
       <div class="col-md-6">
-        <h6 class="ax-text-muted text-uppercase ax-text-sm fw-bold mb-2">Varsayımlar</h6>
+        <h6 class="ax-text-muted text-uppercase ax-text-sm fw-bold mb-2">{% trans "Varsayımlar" %}</h6>
         <ul class="ax-text-muted ax-text-sm ps-3 mb-0">
-          <li>Bağımsız gözlemler</li>
-          <li>Her grupta yaklaşık normal dağılım</li>
-          <li>Varyans homojenliği (Levene testi ile raporlanır)</li>
+          <li>{% trans "Bağımsız gözlemler" %}</li>
+          <li>{% trans "Her grupta yaklaşık normal dağılım" %}</li>
+          <li>{% trans "Varyans homojenliği (Levene testi ile raporlanır)" %}</li>
         </ul>
       </div>
       <div class="col-md-6">
-        <h6 class="ax-text-muted text-uppercase ax-text-sm fw-bold mb-2">Etki Büyüklüğü (η²)</h6>
+        <h6 class="ax-text-muted text-uppercase ax-text-sm fw-bold mb-2">{% trans "Etki Büyüklüğü (η²)" %}</h6>
         <table class="ax-table">
           <tbody>
-            <tr><td>η² &lt; .01</td><td class="ax-text-muted">İhmal edilebilir</td></tr>
-            <tr><td>.01 – .06</td><td class="ax-text-warning">Küçük</td></tr>
+            <tr><td>η² &lt; .01</td><td class="ax-text-muted">{% trans "İhmal edilebilir" %}</td></tr>
+            <tr><td>.01 – .06</td><td class="ax-text-warning">{% trans "Küçük" %}</td></tr>
             <tr><td>.06 – .14</td><td class="ax-text-info">Orta</td></tr>
-            <tr><td>&gt; .14</td><td class="ax-text-success fw-bold">Büyük</td></tr>
+            <tr><td>&gt; .14</td><td class="ax-text-success fw-bold">{% trans "Büyük" %}</td></tr>
           </tbody>
         </table>
       </div>
@@ -210,15 +210,28 @@
 
   <!-- SEO: Bu Test Nedir? -->
   <div class="ax-card mt-4 p-4">
-    <h5 class="ax-text-primary fw-semibold mb-3">Tek Yönlü ANOVA Nedir?</h5>
-    <p class="ax-text-muted ax-text-sm mb-3">Tek Yönlü ANOVA (Analysis of Variance), üç veya daha fazla bağımsız grubun ortalamalarını eş zamanlı olarak karşılaştıran parametrik bir testtir. Birden fazla t-testi yapmanın tip-I hata riskini artırdığı durumlarda tek bir testle çoklu grup karşılaştırması yapılmasını sağlar.</p>
-    <p class="ax-text-muted ax-text-sm mb-3">ANOVA anlamlı bir sonuç verdiğinde hangi grupların birbirinden farklı olduğunu bulmak için post-hoc testlerine ihtiyaç duyulur. <strong class="ax-text-secondary">Tukey HSD</strong> en yaygın kullanılan post-hoc testidir; <strong class="ax-text-secondary">Bonferroni</strong> daha muhafazakâr, <strong class="ax-text-secondary">Games-Howell</strong> ise varyansların homojen olmadığı durumlarda tercih edilir.</p>
-    <p class="ax-text-muted ax-text-sm mb-0">Normallik ve varyans homojenliği (Levene testi) varsayımları karşılanmadığında Kruskal-Wallis H Testi'ne geçilmesi önerilir. Etki büyüklüğü için η² (eta kare) hesaplanmalı ve raporlanmalıdır.</p>
+    <h5 class="ax-text-primary fw-semibold mb-3">{% trans "Tek Yönlü ANOVA Nedir?" %}</h5>
+    <p class="ax-text-muted ax-text-sm mb-3">{% trans "Tek Yönlü ANOVA (Analysis of Variance), üç veya daha fazla bağımsız grubun ortalamalarını eş zamanlı olarak karşılaştıran parametrik bir testtir. Birden fazla t-testi yapmanın tip-I hata riskini artırdığı durumlarda tek bir testle çoklu grup karşılaştırması yapılmasını sağlar." %}</p>
+    <p class="ax-text-muted ax-text-sm mb-3">{% trans "ANOVA anlamlı bir sonuç verdiğinde hangi grupların birbirinden farklı olduğunu bulmak için post-hoc testlerine ihtiyaç duyulur." %} <strong class="ax-text-secondary">Tukey HSD</strong> {% trans "en yaygın kullanılan post-hoc testidir;" %} <strong class="ax-text-secondary">Bonferroni</strong> daha muhafazakâr, <strong class="ax-text-secondary">Games-Howell</strong> {% trans "ise varyansların homojen olmadığı durumlarda tercih edilir." %}</p>
+    <p class="ax-text-muted ax-text-sm mb-0">{% trans "Normallik ve varyans homojenliği (Levene testi) varsayımları karşılanmadığında Kruskal-Wallis H Testi'ne geçilmesi önerilir. Etki büyüklüğü için η² (eta kare) hesaplanmalı ve raporlanmalıdır." %}</p>
   </div>
 
 </div>
 
 <script>
+{% blocktrans with mb=max_upload_mb asvar t_max_size %}CSV, XLSX, XLS — Maks. {{ mb }} MB{% endblocktrans %}
+const T = {
+  maxSize: '{{ t_max_size|escapejs }}',
+  fileInfo: '{% trans "{rows} satır, {cols} sütun" as t %}{{ t|escapejs }}',
+  s1: '{% trans "Yükleniyor…" as t %}{{ t|escapejs }}',
+  s2: '{% trans "Sütunları Getir" as t %}{{ t|escapejs }}',
+  s3: '{% trans "Başlatılıyor…" as t %}{{ t|escapejs }}',
+  s4: '{% trans "Analizi Başlat" as t %}{{ t|escapejs }}',
+  s5: '{% trans "Analiz başarısız." as t %}{{ t|escapejs }}',
+  s6: '{% trans "✓ Gruplar arasında anlamlı fark var (p < .05)" as t %}{{ t|escapejs }}',
+  s7: '{% trans "✗ Gruplar arasında anlamlı fark yok (p ≥ .05)" as t %}{{ t|escapejs }}',
+  s8: '{% trans "Kopyalandı" as t %}{{ t|escapejs }}',
+};
 const ANOVA_URL = '{% url "istatistik:anova" %}';
 const STATUS_BASE = '{% url "istatistik:anova_status" job_id="00000000-0000-0000-0000-000000000000" %}';
 let previewId = null, previewFilename = null, pollInterval = null;
@@ -239,23 +252,23 @@ function setFile(f) {
 
 document.getElementById('preview-btn').addEventListener('click', function() {
   const f = fileInput._file; if (!f) return;
-  this.disabled = true; this.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2" style="animation: ax-spin 1s linear infinite;"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> Yükleniyor…';
+  this.disabled = true; this.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2" style="animation: ax-spin 1s linear infinite;"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> ' + T.s1;
   const fd = new FormData();
   fd.append('csrfmiddlewaretoken', '{{ csrf_token }}');
   fd.append('step', 'preview'); fd.append('file', f);
   fetch(ANOVA_URL, { method: 'POST', headers: {'X-Requested-With': 'XMLHttpRequest'}, body: fd })
   .then(r => r.json()).then(data => {
-    this.disabled = false; this.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2"><circle cx="12" cy="12" r="10"/><polyline points="12 16 16 12 12 8"/><line x1="8" y1="12" x2="16" y2="12"/></svg> Sütunları Getir';
+    this.disabled = false; this.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2"><circle cx="12" cy="12" r="10"/><polyline points="12 16 16 12 12 8"/><line x1="8" y1="12" x2="16" y2="12"/></svg> ' + T.s2;
     if (data.error) { document.getElementById('upload-error').textContent = data.error; document.getElementById('upload-error').classList.remove('d-none'); return; }
     previewId = data.preview_id; previewFilename = data.filename;
     showConfigStep(data.columns, data.numeric_cols, data.n_rows, data.filename);
-  }).catch(() => { this.disabled = false; this.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2"><circle cx="12" cy="12" r="10"/><polyline points="12 16 16 12 12 8"/><line x1="8" y1="12" x2="16" y2="12"/></svg> Sütunları Getir'; });
+  }).catch(() => { this.disabled = false; this.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2"><circle cx="12" cy="12" r="10"/><polyline points="12 16 16 12 12 8"/><line x1="8" y1="12" x2="16" y2="12"/></svg> ' + T.s2; });
 });
 
 function showConfigStep(cols, numCols, nRows, fname) {
   document.getElementById('step-upload').classList.add('d-none');
   document.getElementById('step-config').classList.remove('d-none');
-  document.getElementById('config-file-info').textContent = `${fname} — ${nRows} satır, ${cols.length} sütun`;
+  document.getElementById('config-file-info').textContent = `${fname} — ${T.fileInfo.replace('{rows}', nRows).replace('{cols}', cols.length)}`;
   ['group-col'].forEach(id => { const sel = document.getElementById(id); sel.innerHTML = ''; cols.forEach(c => { const o = document.createElement('option'); o.value=c; o.textContent=c; sel.appendChild(o); }); });
   ['dep-col'].forEach(id => { const sel = document.getElementById(id); sel.innerHTML = ''; numCols.forEach(c => { const o = document.createElement('option'); o.value=c; o.textContent=c; sel.appendChild(o); }); if (numCols.length > 1) sel.selectedIndex = 1; });
 }
@@ -270,7 +283,7 @@ document.querySelectorAll('[data-ph]').forEach(btn => {
 
 document.getElementById('run-btn').addEventListener('click', function() {
   const errEl = document.getElementById('run-error'); errEl.classList.add('d-none');
-  this.disabled = true; this.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2" style="animation: ax-spin 1s linear infinite;"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> Başlatılıyor…';
+  this.disabled = true; this.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2" style="animation: ax-spin 1s linear infinite;"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> ' + T.s3;
   showPanel('loading');
   const fd = new FormData();
   fd.append('csrfmiddlewaretoken', '{{ csrf_token }}');
@@ -280,10 +293,10 @@ document.getElementById('run-btn').addEventListener('click', function() {
   fd.append('posthoc', document.getElementById('posthoc-val').value);
   fetch(ANOVA_URL, { method: 'POST', headers: {'X-Requested-With': 'XMLHttpRequest'}, body: fd })
   .then(r => r.json()).then(data => {
-    this.disabled = false; this.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg> Analizi Başlat';
+    this.disabled = false; this.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg> ' + T.s4;
     if (data.error) { errEl.textContent = data.error; errEl.classList.remove('d-none'); showPanel('idle'); return; }
     startPolling(data.job_id);
-  }).catch(() => { this.disabled = false; this.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg> Analizi Başlat'; showPanel('idle'); });
+  }).catch(() => { this.disabled = false; this.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg> ' + T.s4; showPanel('idle'); });
 });
 
 function startPolling(jobId) {
@@ -291,7 +304,7 @@ function startPolling(jobId) {
   pollInterval = setInterval(() => {
     fetch(url).then(r => r.json()).then(data => {
       if (data.status === 'completed') { clearInterval(pollInterval); onCompleted(data); }
-      else if (data.status === 'failed') { clearInterval(pollInterval); showPanelError(data.error || 'Analiz başarısız.'); }
+      else if (data.status === 'failed') { clearInterval(pollInterval); showPanelError(data.error || T.s5); }
     }).catch(() => {});
   }, 2500);
 }
@@ -307,10 +320,10 @@ function onCompleted(data) {
   const sigBox = document.getElementById('res-sig-box');
   if (r.significant) {
     sigBox.style.background = 'rgba(74,222,128,0.08)'; sigBox.style.border = '1px solid rgba(74,222,128,0.2)';
-    document.getElementById('res-sig-text').textContent = '✓ Gruplar arasında anlamlı fark var (p < .05)';
+    document.getElementById('res-sig-text').textContent = T.s6;
   } else {
     sigBox.style.background = 'rgba(248,113,113,0.08)'; sigBox.style.border = '1px solid rgba(248,113,113,0.2)';
-    document.getElementById('res-sig-text').textContent = '✗ Gruplar arasında anlamlı fark yok (p ≥ .05)';
+    document.getElementById('res-sig-text').textContent = T.s7;
   }
 
   let gtHead = '<thead><tr><th>Grup</th><th>n</th><th>Ort.</th><th>SS</th><th>Min</th><th>Maks</th></tr></thead>';
@@ -320,7 +333,7 @@ function onCompleted(data) {
   if (r.posthoc && r.posthoc.length > 0) {
     document.getElementById('posthoc-section').classList.remove('d-none');
     document.getElementById('posthoc-title').textContent = `Post-Hoc Testler (${r.posthoc_method})`;
-    let phHead = '<thead><tr><th>Grup 1</th><th>Grup 2</th><th>Ort. Fark</th><th>p</th><th>p (düz.)</th><th>Anlamlı</th></tr></thead>';
+    let phHead = '<thead><tr><th>{% filter escapejs %}{% trans "Grup 1" %}{% endfilter %}</th><th>{% filter escapejs %}{% trans "Grup 2" %}{% endfilter %}</th><th>{% filter escapejs %}{% trans "Ort. Fark" %}{% endfilter %}</th><th>p</th><th>{% filter escapejs %}{% trans "p (düz.)" %}{% endfilter %}</th><th>{% filter escapejs %}{% trans "Anlamlı" %}{% endfilter %}</th></tr></thead>';
     let phBody = '<tbody>' + r.posthoc.map(ph => `<tr${ph.significant ? ' style="color: var(--ax-accent-secondary);"' : ''}><td>${ph.g1}</td><td>${ph.g2}</td><td>${ph.mean_diff.toFixed(3)}</td><td>${ph.p_value.toFixed(4)}</td><td>${ph.p_adj.toFixed(4)}</td><td>${ph.significant ? '✓' : '—'}</td></tr>`).join('') + '</tbody>';
     document.getElementById('posthoc-table').innerHTML = phHead + phBody;
   }
@@ -340,7 +353,7 @@ function resetToUpload() {
   if (pollInterval) clearInterval(pollInterval);
   previewId = null; previewFilename = null;
   fileInput.value = ''; fileInput._file = null;
-  document.getElementById('file-name').textContent = 'CSV, XLSX, XLS — Maks. {{ max_upload_mb }} MB';
+  document.getElementById('file-name').textContent = T.maxSize;
   document.getElementById('preview-btn').disabled = true;
   document.getElementById('step-upload').classList.remove('d-none');
   document.getElementById('step-config').classList.add('d-none');
@@ -349,7 +362,7 @@ function resetToUpload() {
 function copyApa(btn) {
   navigator.clipboard.writeText(document.getElementById('res-apa').textContent).then(() => {
     const orig = btn.innerHTML;
-    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-1"><polyline points="20 6 9 17 4 12"/></svg> Kopyalandı';
+    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-1"><polyline points="20 6 9 17 4 12"/></svg> ' + T.s8;
     btn.classList.add('ax-btn--success');
     setTimeout(() => { btn.innerHTML = orig; btn.classList.remove('ax-btn--success'); }, 2000);
   });

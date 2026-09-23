@@ -1,9 +1,9 @@
 {% extends "istatistik/analiz_console_base.html" %}
-{% load static %}
+{% load static i18n %}
 {% block canonical %}/analiz/korelasyon/{% endblock %}
 
 {% block title %}Korelasyon Analizi (Pearson, Spearman, Kendall) - Analizus{% endblock %}
-{% block meta_description %}Pearson, Spearman ve Kendall korelasyon matrisi hesaplayın. Değişkenler arası ilişkiyi analiz edin, APA formatında PDF rapor alın.{% endblock %}
+{% block meta_description %}{% trans "Pearson, Spearman ve Kendall korelasyon matrisi hesaplayın. Değişkenler arası ilişkiyi analiz edin, APA formatında PDF rapor alın." %}{% endblock %}
 
 {% block tool_area %}
 <div class="container py-4">
@@ -14,11 +14,11 @@
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ax-text-accent me-2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg>
         Korelasyon Matrisi
       </h2>
-      <p class="ax-text-muted mb-0">Değişkenler arasındaki ilişkileri Pearson, Spearman veya Kendall yöntemiyle analiz edin — ısı haritası ve PDF rapor ile.</p>
+      <p class="ax-text-muted mb-0">{% trans "Değişkenler arasındaki ilişkileri Pearson, Spearman veya Kendall yöntemiyle analiz edin — ısı haritası ve PDF rapor ile." %}</p>
     </div>
     {% if user.is_authenticated %}
     <div class="col-auto">
-      <span class="ax-badge ax-badge-secondary">Günlük: {{ daily_remaining }} analiz hakkı</span>
+      <span class="ax-badge ax-badge-secondary">{% blocktrans %}Günlük: {{ daily_remaining }} analiz hakkı{% endblocktrans %}</span>
     </div>
     {% endif %}
   </div>
@@ -31,14 +31,14 @@
 
         <h5 class="ax-text-primary fw-semibold mb-3 d-flex align-items-center">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ax-text-accent me-2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-          Dosya Yükle
+          {% trans "Dosya Yükle" %}
         </h5>
-        <p class="ax-text-muted ax-text-sm mb-3">CSV veya Excel (.xlsx/.xls) dosyanızı yükleyin.</p>
+        <p class="ax-text-muted ax-text-sm mb-3">{% trans "CSV veya Excel (.xlsx/.xls) dosyanızı yükleyin." %}</p>
 
         {% if not user.is_authenticated %}
         <div class="ax-alert-info mb-3 ax-text-sm">
           <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" class="me-2 flex-shrink-0" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-          <span><a href="{% url 'login' %}?next={{ request.path }}" class="ax-link">Giriş yapın</a> veya <a href="{% url 'register' %}?next={{ request.path }}" class="ax-link">kayıt olun</a> — geçmişiniz kaydedilsin.</span>
+          <span><a href="{% url 'login' %}?next={{ request.path }}" class="ax-link">{% trans "Giriş yapın" %}</a> veya <a href="{% url 'register' %}?next={{ request.path }}" class="ax-link">{% trans "kayıt olun" %}</a> {% trans "— geçmişiniz kaydedilsin." %}</span>
         </div>
         {% endif %}
 
@@ -46,14 +46,14 @@
              class="ax-upload-area mb-3"
              onclick="document.getElementById('file-input').click()">
           <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ax-text-accent mb-2 mx-auto d-block"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M12 12v9"/><path d="m8 16 4-4 4 4"/></svg>
-          <p class="ax-text-muted ax-text-sm mb-1">Dosyayı buraya sürükleyin veya tıklayın</p>
-          <p class="ax-text-muted ax-text-sm mb-0" id="file-name-display">CSV, XLSX, XLS — Maks. {{ max_upload_mb }} MB</p>
+          <p class="ax-text-muted ax-text-sm mb-1">{% trans "Dosyayı buraya sürükleyin veya tıklayın" %}</p>
+          <p class="ax-text-muted ax-text-sm mb-0" id="file-name-display">{% blocktrans with mb=max_upload_mb %}CSV, XLSX, XLS — Maks. {{ mb }} MB{% endblocktrans %}</p>
         </div>
         <input type="file" id="file-input" accept=".csv,.xlsx,.xls" class="d-none">
 
         <!-- Yöntem Seçici -->
         <div class="mb-4">
-          <label class="ax-text-secondary fw-semibold ax-text-sm mb-2 d-block">Korelasyon Yöntemi</label>
+          <label class="ax-text-secondary fw-semibold ax-text-sm mb-2 d-block">{% trans "Korelasyon Yöntemi" %}</label>
           <div class="d-flex gap-2 flex-wrap" id="method-selector">
             <button type="button" class="ax-method-btn active" data-method="pearson">
               <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" class="me-1" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Pearson
@@ -61,13 +61,13 @@
             <button type="button" class="ax-method-btn" data-method="spearman">Spearman</button>
             <button type="button" class="ax-method-btn" data-method="kendall">Kendall</button>
           </div>
-          <p class="ax-text-muted ax-text-sm mt-2 mb-0" id="method-desc">Parametrik — normal dağılımlı sürekli değişkenler için önerilir.</p>
+          <p class="ax-text-muted ax-text-sm mt-2 mb-0" id="method-desc">{% trans "Parametrik — normal dağılımlı sürekli değişkenler için önerilir." %}</p>
           <input type="hidden" id="method-input" value="pearson">
         </div>
 
         <button id="analyze-btn" class="ax-btn ax-btn-accent w-100 fw-semibold" disabled>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
-          İleri → Sütun Seç
+          {% trans "İleri → Sütun Seç" %}
         </button>
 
         <div id="error-msg" class="ax-alert-danger mt-3 d-none ax-text-sm"></div>
@@ -75,10 +75,10 @@
         <!-- Sütun seçimi (preview sonrası görünür) -->
         <div id="col-config-section" class="d-none mt-4 pt-3" style="border-top: 1px solid var(--ax-border-default);">
           <div class="d-flex justify-content-between align-items-center mb-2">
-            <span class="ax-text-secondary fw-semibold ax-text-sm">Sütun Seçimi</span>
+            <span class="ax-text-secondary fw-semibold ax-text-sm">{% trans "Sütun Seçimi" %}</span>
             <div class="d-flex align-items-center gap-2">
-              <span class="ax-text-muted ax-text-sm" id="col-count-label">0 sütun seçili</span>
-              <button class="ax-btn ax-btn-outline-secondary ax-btn-sm" id="toggle-all-btn" onclick="toggleAllColumns()" style="padding:2px 10px;font-size:.75rem;">Tümünü Seç</button>
+              <span class="ax-text-muted ax-text-sm" id="col-count-label">{% trans "0 sütun seçili" %}</span>
+              <button class="ax-btn ax-btn-outline-secondary ax-btn-sm" id="toggle-all-btn" onclick="toggleAllColumns()" style="padding:2px 10px;font-size:.75rem;">{% trans "Tümünü Seç" %}</button>
             </div>
           </div>
           <div id="col-checkbox-list" class="mb-3 ax-rounded-md"
@@ -87,9 +87,9 @@
           <div class="d-flex gap-2">
             <button id="run-analysis-btn" class="ax-btn ax-btn-accent fw-semibold flex-grow-1" disabled onclick="runAnalysis()">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
-              Analizi Başlat
+              {% trans "Analizi Başlat" %}
             </button>
-            <button class="ax-btn ax-btn-outline-secondary" onclick="resetUI()">İptal</button>
+            <button class="ax-btn ax-btn-outline-secondary" onclick="resetUI()">{% trans "İptal" %}</button>
           </div>
         </div>
 
@@ -102,19 +102,19 @@
 
         <!-- Başlangıç -->
         <div id="panel-idle">
-          <h5 class="ax-text-muted fw-semibold mb-3">Sonuçlar burada görünecek</h5>
+          <h5 class="ax-text-muted fw-semibold mb-3">{% trans "Sonuçlar burada görünecek" %}</h5>
           <ul class="ax-text-muted ax-text-sm ps-3">
-            <li class="mb-1">Her sütun bir değişken, her satır bir gözlem olmalıdır.</li>
-            <li class="mb-1">Sayısal sütunlar otomatik seçilir; metin sütunları atlanır.</li>
-            <li class="mb-1">En az 2 sayısal sütun gereklidir.</li>
-            <li class="mb-1">Güçlü korelasyonlar (|r| ≥ .30, p &lt; .05) yeşil renkte gösterilir.</li>
+            <li class="mb-1">{% trans "Her sütun bir değişken, her satır bir gözlem olmalıdır." %}</li>
+            <li class="mb-1">{% trans "Sayısal sütunlar otomatik seçilir; metin sütunları atlanır." %}</li>
+            <li class="mb-1">{% trans "En az 2 sayısal sütun gereklidir." %}</li>
+            <li class="mb-1">{% trans "Güçlü korelasyonlar (|r| ≥ .30, p &lt; .05) yeşil renkte gösterilir." %}</li>
           </ul>
         </div>
 
         <!-- Yükleniyor -->
         <div id="panel-loading" class="text-center d-none py-4">
           <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="ax-text-accent mb-3 mx-auto d-block" style="animation: ax-spin 1s linear infinite;"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
-          <p class="ax-text-muted">Analiz yapılıyor, lütfen bekleyin…</p>
+          <p class="ax-text-muted">{% trans "Analiz yapılıyor, lütfen bekleyin…" %}</p>
         </div>
 
         <!-- Hata -->
@@ -133,16 +133,16 @@
           <div class="ax-alert-warning mb-3">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2 flex-shrink-0"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
             <div>
-              <strong class="ax-text-warning d-block mb-2">Veri uyarıları tespit edildi</strong>
+              <strong class="ax-text-warning d-block mb-2">{% trans "Veri uyarıları tespit edildi" %}</strong>
               <ul id="panel-warning-list" class="mb-3 ax-text-sm ps-3"></ul>
-              <p class="ax-text-muted ax-text-sm mb-0">Bu uyarılar veri kalitenizi etkileyebilir. Yine de devam edebilirsiniz.</p>
+              <p class="ax-text-muted ax-text-sm mb-0">{% trans "Bu uyarılar veri kalitenizi etkileyebilir. Yine de devam edebilirsiniz." %}</p>
             </div>
           </div>
           <div class="d-flex gap-2">
             <button id="confirm-warnings-btn" class="ax-btn ax-btn-warning ax-btn-sm fw-semibold">
               <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" class="me-1" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 16 16 12 12 8"/><line x1="8" y1="12" x2="16" y2="12"/></svg>Yine de devam et
             </button>
-            <button class="ax-btn ax-btn-outline-secondary ax-btn-sm" onclick="resetUI()">İptal</button>
+            <button class="ax-btn ax-btn-outline-secondary ax-btn-sm" onclick="resetUI()">{% trans "İptal" %}</button>
           </div>
         </div>
 
@@ -150,7 +150,7 @@
         <div id="panel-done" class="d-none">
           <div class="d-flex align-items-center gap-2 mb-3">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ax-text-success"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-            <h5 class="ax-text-primary mb-0">Analiz Tamamlandı</h5>
+            <h5 class="ax-text-primary mb-0">{% trans "Analiz Tamamlandı" %}</h5>
           </div>
 
           <!-- Özet istatistikler -->
@@ -158,31 +158,31 @@
             <div class="col-4">
               <div class="ax-stat-box text-center">
                 <div class="ax-stat-val ax-text-accent" id="k-vars">—</div>
-                <div class="ax-stat-label">Değişken</div>
+                <div class="ax-stat-label">{% trans "Değişken" %}</div>
               </div>
             </div>
             <div class="col-4">
               <div class="ax-stat-box text-center">
                 <div class="ax-stat-val ax-text-accent" id="k-cases">—</div>
-                <div class="ax-stat-label">Gözlem</div>
+                <div class="ax-stat-label">{% trans "Gözlem" %}</div>
               </div>
             </div>
             <div class="col-4">
               <div class="ax-stat-box text-center">
                 <div class="ax-stat-val ax-text-primary" id="k-method">—</div>
-                <div class="ax-stat-label">Yöntem</div>
+                <div class="ax-stat-label">{% trans "Yöntem" %}</div>
               </div>
             </div>
           </div>
 
           <!-- Heatmap -->
           <div id="heatmap-container" class="text-center d-none mb-3">
-            <img id="heatmap-img" src="" alt="Korelasyon Isı Haritası" style="max-width:100%; max-height:300px; border-radius: var(--ax-radius-md);">
+            <img id="heatmap-img" src="" alt="{% trans 'Korelasyon Isı Haritası' %}" style="max-width:100%; max-height:300px; border-radius: var(--ax-radius-md);">
           </div>
 
           <!-- Korelasyon tablosu -->
           <div id="corr-table-container" class="d-none mb-3">
-            <p class="ax-text-muted ax-text-sm mb-2 fw-semibold">Korelasyon Katsayıları (r)</p>
+            <p class="ax-text-muted ax-text-sm mb-2 fw-semibold">{% trans "Korelasyon Katsayıları (r)" %}</p>
             <div style="overflow-x:auto; max-height:220px; overflow-y:auto;">
               <table id="corr-table" class="ax-table mb-0"></table>
             </div>
@@ -191,10 +191,10 @@
           <!-- Butonlar -->
           <div class="d-flex gap-2 flex-wrap mt-3">
             <a id="pdf-download-btn" href="#" target="_blank" class="ax-btn ax-btn-danger fw-semibold ax-btn-sm">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-1"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>PDF İndir
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-1"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>{% trans "PDF İndir" %}
             </a>
             <button class="ax-btn ax-btn-outline-secondary ax-btn-sm" onclick="resetUI()">
-              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" class="me-1" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>Yeni Analiz
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" class="me-1" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>{% trans "Yeni Analiz" %}
             </button>
           </div>
         </div>
@@ -212,24 +212,24 @@
 
     <div class="row g-4 mb-4">
       <div class="col-md-6">
-        <h6 class="ax-text-muted text-uppercase ax-text-sm fw-bold mb-2">Yöntem Seçim Rehberi</h6>
+        <h6 class="ax-text-muted text-uppercase ax-text-sm fw-bold mb-2">{% trans "Yöntem Seçim Rehberi" %}</h6>
         <table class="ax-table mb-0">
-          <thead><tr><th>Yöntem</th><th>Kullanım Durumu</th></tr></thead>
+          <thead><tr><th>{% trans "Yöntem" %}</th><th>{% trans "Kullanım Durumu" %}</th></tr></thead>
           <tbody>
-            <tr><td class="ax-text-accent">Pearson</td><td class="ax-text-muted">Normal dağılımlı sürekli veriler</td></tr>
-            <tr><td class="ax-text-accent">Spearman</td><td class="ax-text-muted">Sıralı veri, normallik sağlanmıyor</td></tr>
-            <tr><td class="ax-text-accent">Kendall</td><td class="ax-text-muted">Küçük örneklem, çok sayıda eşik</td></tr>
+            <tr><td class="ax-text-accent">Pearson</td><td class="ax-text-muted">{% trans "Normal dağılımlı sürekli veriler" %}</td></tr>
+            <tr><td class="ax-text-accent">Spearman</td><td class="ax-text-muted">{% trans "Sıralı veri, normallik sağlanmıyor" %}</td></tr>
+            <tr><td class="ax-text-accent">Kendall</td><td class="ax-text-muted">{% trans "Küçük örneklem, çok sayıda eşik" %}</td></tr>
           </tbody>
         </table>
       </div>
       <div class="col-md-6">
-        <h6 class="ax-text-muted text-uppercase ax-text-sm fw-bold mb-2">Katsayı Yorum Eşikleri</h6>
+        <h6 class="ax-text-muted text-uppercase ax-text-sm fw-bold mb-2">{% trans "Katsayı Yorum Eşikleri" %}</h6>
         <table class="ax-table mb-0">
           <tbody>
-            <tr><td>|r| &lt; .10</td><td class="ax-text-muted">İhmal edilebilir ilişki</td></tr>
-            <tr><td>.10 – .30</td><td class="ax-text-warning">Zayıf ilişki</td></tr>
-            <tr><td>.30 – .50</td><td class="ax-text-accent">Orta düzey ilişki</td></tr>
-            <tr><td>&gt; .50</td><td class="ax-text-success fw-bold">Güçlü ilişki</td></tr>
+            <tr><td>|r| &lt; .10</td><td class="ax-text-muted">{% trans "İhmal edilebilir ilişki" %}</td></tr>
+            <tr><td>.10 – .30</td><td class="ax-text-warning">{% trans "Zayıf ilişki" %}</td></tr>
+            <tr><td>.30 – .50</td><td class="ax-text-accent">{% trans "Orta düzey ilişki" %}</td></tr>
+            <tr><td>&gt; .50</td><td class="ax-text-success fw-bold">{% trans "Güçlü ilişki" %}</td></tr>
           </tbody>
         </table>
       </div>
@@ -237,18 +237,18 @@
 
     <hr style="border-color: var(--ax-border-default); margin: 1.5rem 0;">
 
-    <h6 class="ax-text-secondary fw-semibold mb-2">Tezinde Nasıl Raporlarsın?</h6>
+    <h6 class="ax-text-secondary fw-semibold mb-2">{% trans "Tezinde Nasıl Raporlarsın?" %}</h6>
     <div id="korelasyon-apa-box" class="d-none ax-rounded-md p-3 mb-3" style="background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.2);">
       <p class="ax-text-primary ax-text-sm mb-2" id="korelasyon-apa-display" style="font-style:italic;"></p>
       <button class="ax-btn ax-btn-outline-secondary ax-btn-sm" onclick="copyApa(this)">
-        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" class="me-1" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Kopyala
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" class="me-1" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>{% trans "Kopyala" %}
       </button>
       <span id="korelasyon-report-text" class="d-none"></span>
     </div>
     <div id="korelasyon-apa-placeholder" class="ax-rounded-md p-3" style="background: rgba(99,102,241,0.05); border: 1px dashed rgba(99,102,241,0.2);">
       <p class="ax-text-muted ax-text-sm mb-0">
         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" class="me-1" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        Analizi tamamladıktan sonra APA formatında rapor cümlesi burada otomatik oluşacak.
+        {% trans "Analizi tamamladıktan sonra APA formatında rapor cümlesi burada otomatik oluşacak." %}
       </p>
     </div>
 
@@ -263,14 +263,29 @@
   <!-- SEO: Bu Test Nedir? -->
   <div class="ax-card mt-4 p-4">
     <h5 class="ax-text-primary fw-semibold mb-3">Korelasyon Analizi Nedir?</h5>
-    <p class="ax-text-muted ax-text-sm mb-3">Korelasyon analizi, iki veya daha fazla sayısal değişken arasındaki ilişkinin yönünü ve gücünü ölçer. Katsayı −1 ile +1 arasında değer alır: +1 mükemmel pozitif, −1 mükemmel negatif, 0 ise ilişki olmadığı anlamına gelir.</p>
-    <p class="ax-text-muted ax-text-sm mb-3"><strong class="ax-text-secondary">Pearson r:</strong> Her iki değişkenin de normal dağılım gösterdiği ve sürekli ölçekte olduğu durumlarda kullanılır. <strong class="ax-text-secondary">Spearman ρ:</strong> Sıralı (Likert) veriler veya normallik varsayımının karşılanamadığı durumlarda tercih edilir. <strong class="ax-text-secondary">Kendall τ:</strong> Küçük örneklemlerde daha sağlam sonuçlar verir.</p>
-    <p class="ax-text-muted ax-text-sm mb-0">Korelasyon nedensellik kanıtlamaz; yalnızca birlikte değişim örüntüsünü ortaya koyar. İki değişken arasında güçlü bir korelasyon bulunsa da bu, birinin diğerine neden olduğu anlamına gelmez.</p>
+    <p class="ax-text-muted ax-text-sm mb-3">{% trans "Korelasyon analizi, iki veya daha fazla sayısal değişken arasındaki ilişkinin yönünü ve gücünü ölçer. Katsayı −1 ile +1 arasında değer alır: +1 mükemmel pozitif, −1 mükemmel negatif, 0 ise ilişki olmadığı anlamına gelir." %}</p>
+    <p class="ax-text-muted ax-text-sm mb-3"><strong class="ax-text-secondary">Pearson r:</strong> {% trans "Her iki değişkenin de normal dağılım gösterdiği ve sürekli ölçekte olduğu durumlarda kullanılır." %} <strong class="ax-text-secondary">Spearman ρ:</strong> {% trans "Sıralı (Likert) veriler veya normallik varsayımının karşılanamadığı durumlarda tercih edilir." %} <strong class="ax-text-secondary">Kendall τ:</strong> {% trans "Küçük örneklemlerde daha sağlam sonuçlar verir." %}</p>
+    <p class="ax-text-muted ax-text-sm mb-0">{% trans "Korelasyon nedensellik kanıtlamaz; yalnızca birlikte değişim örüntüsünü ortaya koyar. İki değişken arasında güçlü bir korelasyon bulunsa da bu, birinin diğerine neden olduğu anlamına gelmez." %}</p>
   </div>
 
 </div>
 
 <script>
+{% blocktrans with mb=max_upload_mb asvar t_max_size %}CSV, XLSX, XLS — Maks. {{ mb }} MB{% endblocktrans %}
+const T = {
+  maxSize: '{{ t_max_size|escapejs }}',
+  s1: '{% trans "Parametrik — normal dağılımlı sürekli değişkenler için önerilir." as t %}{{ t|escapejs }}',
+  s2: '{% trans "Non-parametrik — sıralı veri veya normallik varsayımı sağlanmıyorsa kullanın." as t %}{{ t|escapejs }}',
+  s3: '{% trans "Non-parametrik — küçük örneklem veya çok sayıda bağlı sıra olduğunda tercih edilir." as t %}{{ t|escapejs }}',
+  s4: '{% trans "Bağlantı hatası. Lütfen tekrar deneyin." as t %}{{ t|escapejs }}',
+  s5: '{% trans " sütun seçili" as t %}{{ t|escapejs }}',
+  s6: '{% trans "Tümünü Kaldır" as t %}{{ t|escapejs }}',
+  s7: '{% trans "Tümünü Seç" as t %}{{ t|escapejs }}',
+  s8: '{% trans "Analiz başarısız oldu." as t %}{{ t|escapejs }}',
+  s9: '{% trans "Günlük: " as t %}{{ t|escapejs }}',
+  s10: '{% trans " analiz hakkı" as t %}{{ t|escapejs }}',
+  s11: '{% trans "Kopyalandı" as t %}{{ t|escapejs }}',
+};
 const STATUS_BASE = '{% url "istatistik:korelasyon_status" job_id="00000000-0000-0000-0000-000000000000" %}';
 let pollInterval = null;
 let currentJobId = null;
@@ -298,9 +313,9 @@ function setFile(f) {
 
 // Yöntem seçici
 const methodDescs = {
-  pearson:  'Parametrik — normal dağılımlı sürekli değişkenler için önerilir.',
-  spearman: 'Non-parametrik — sıralı veri veya normallik varsayımı sağlanmıyorsa kullanın.',
-  kendall:  'Non-parametrik — küçük örneklem veya çok sayıda bağlı sıra olduğunda tercih edilir.',
+  pearson:  T.s1,
+  spearman: T.s2,
+  kendall:  T.s3,
 };
 document.querySelectorAll('#method-selector button').forEach(btn => {
   btn.addEventListener('click', () => {
@@ -334,7 +349,7 @@ function uploadPreview() {
     document.getElementById('col-config-section').classList.remove('d-none');
     showPanel('idle');
   })
-  .catch(() => { analyzeBtn.disabled = false; showError('Bağlantı hatası. Lütfen tekrar deneyin.'); });
+  .catch(() => { analyzeBtn.disabled = false; showError(T.s4); });
 }
 
 function buildColumnCheckboxes(cols) {
@@ -352,9 +367,9 @@ function buildColumnCheckboxes(cols) {
 function updateColCount() {
   const cbs = document.querySelectorAll('.col-cb');
   const selected = [...cbs].filter(cb => cb.checked).length;
-  document.getElementById('col-count-label').textContent = selected + ' sütun seçili';
+  document.getElementById('col-count-label').textContent = selected + T.s5;
   runAnalysisBtn.disabled = selected < 2;
-  document.getElementById('toggle-all-btn').textContent = selected === cbs.length ? 'Tümünü Kaldır' : 'Tümünü Seç';
+  document.getElementById('toggle-all-btn').textContent = selected === cbs.length ? T.s6 : T.s7;
 }
 
 function toggleAllColumns() {
@@ -387,7 +402,7 @@ function runAnalysis(confirmWarnings = false) {
     currentJobId = data.job_id;
     startPolling(currentJobId);
   })
-  .catch(() => showError('Bağlantı hatası. Lütfen tekrar deneyin.'));
+  .catch(() => showError(T.s4));
 }
 
 function startPolling(jobId) {
@@ -397,7 +412,7 @@ function startPolling(jobId) {
     .then(r => r.json())
     .then(data => {
       if (data.status === 'completed') { clearInterval(pollInterval); onCompleted(data); }
-      else if (data.status === 'failed') { clearInterval(pollInterval); showError(data.error || 'Analiz başarısız oldu.'); }
+      else if (data.status === 'failed') { clearInterval(pollInterval); showError(data.error || T.s8); }
     }).catch(() => {});
   }, 2500);
 }
@@ -406,7 +421,7 @@ function onCompleted(data) {
   document.getElementById('pdf-download-btn').href = data.pdf_url;
   if (data.daily_remaining !== undefined) {
     const badge = document.querySelector('.ax-badge-secondary');
-    if (badge) badge.textContent = 'Günlük: ' + data.daily_remaining + ' analiz hakkı';
+    if (badge) badge.textContent = T.s9 + data.daily_remaining + T.s10;
   }
   if (data.result_data) {
     const r = data.result_data;
@@ -463,7 +478,7 @@ function showWarning(warnings) {
   runAnalysisBtn.disabled = false;
   confirmWarningsBtn.disabled = false;
   document.getElementById('panel-warning-list').innerHTML = warnings.map(w =>
-    `<li class="mb-1"><span class="ax-badge ax-badge-${w.level === 'danger' ? 'danger' : 'warning'} me-2">${w.level === 'danger' ? 'Hata' : 'Uyarı'}</span><strong>${w.title}:</strong> ${w.message}</li>`
+    `<li class="mb-1"><span class="ax-badge ax-badge-${w.level === 'danger' ? 'danger' : 'warning'} me-2">${w.level === 'danger' ? '{% filter escapejs %}{% trans "Hata" %}{% endfilter %}' : '{% filter escapejs %}{% trans "Uyarı" %}{% endfilter %}'}</span><strong>${w.title}:</strong> ${w.message}</li>`
   ).join('');
   showPanel('warning');
 }
@@ -472,7 +487,7 @@ function resetUI() {
   currentJobId = null;
   previewData = null;
   fileInput.value = ''; fileInput._selectedFile = null;
-  fileNameDisplay.textContent = 'CSV, XLSX, XLS — Maks. {{ max_upload_mb }} MB';
+  fileNameDisplay.textContent = T.maxSize;
   analyzeBtn.disabled = true;
   confirmWarningsBtn.disabled = false;
   document.getElementById('error-msg').classList.add('d-none');
@@ -488,7 +503,7 @@ function resetUI() {
 function copyApa(btn) {
   navigator.clipboard.writeText(document.getElementById('korelasyon-report-text').textContent).then(() => {
     const orig = btn.innerHTML;
-    btn.innerHTML = '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" class="me-1" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Kopyalandı';
+    btn.innerHTML = '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" class="me-1" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>' + T.s11;
     btn.classList.add('ax-btn-success');
     setTimeout(() => { btn.innerHTML = orig; btn.classList.remove('ax-btn-success'); }, 2000);
   });

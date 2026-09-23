@@ -83,16 +83,16 @@ def cronbach_landing(request):
         return render(request, 'service_promo.html', {
             **PROMO_BASE,
             'seo_guide': SEO_CONTENT.get('cronbach'),
-            'promo_title': 'Güvenilirlik Analizi — Cronbach Alpha',
+            'promo_title': gettext('Güvenilirlik Analizi — Cronbach Alpha'),
             'promo_icon': 'bi-shield-check',
             'promo_color': 'primary',
             'promo_egitim_konu': 'olcek-gelistirme',
-            'promo_description': 'Anket ölçeğinizin iç tutarlılığını ölçün. CSV/Excel dosyanızı yükleyin; Cronbach Alpha katsayısı, madde-toplam korelasyonları ve madde çıkarma tablosu PDF olarak hazır.',
+            'promo_description': gettext('Anket ölçeğinizin iç tutarlılığını ölçün. CSV/Excel dosyanızı yükleyin; Cronbach Alpha katsayısı, madde-toplam korelasyonları ve madde çıkarma tablosu PDF olarak hazır.'),
             'promo_features': [
-                {'icon': 'bi-upload', 'title': 'Kolay Yükleme', 'desc': 'CSV veya Excel dosyanızı sürükle-bırak ile yükleyin. Her sütun bir madde, her satır bir katılımcı olmalıdır.'},
-                {'icon': 'bi-calculator', 'title': 'Cronbach Alpha', 'desc': 'α katsayısı ve "Kabul Edilemez / Düşük / Kabul Edilebilir / İyi / Mükemmel" yorumu otomatik hesaplanır.'},
-                {'icon': 'bi-table', 'title': 'Madde İstatistikleri', 'desc': 'Her madde için ortalama, standart sapma, düzeltilmiş madde-toplam korelasyonu ve madde silinince alpha tablosu.'},
-                {'icon': 'bi-file-earmark-pdf-fill', 'color': 'danger', 'title': 'PDF Rapor', 'desc': 'Tüm sonuçlar düzenli tablolar halinde PDF olarak indirilebilir.'},
+                {'icon': 'bi-upload', 'title': gettext('Kolay Yükleme'), 'desc': gettext('CSV veya Excel dosyanızı sürükle-bırak ile yükleyin. Her sütun bir madde, her satır bir katılımcı olmalıdır.')},
+                {'icon': 'bi-calculator', 'title': gettext('Cronbach Alpha'), 'desc': gettext('α katsayısı ve "Kabul Edilemez / Düşük / Kabul Edilebilir / İyi / Mükemmel" yorumu otomatik hesaplanır.')},
+                {'icon': 'bi-table', 'title': gettext('Madde İstatistikleri'), 'desc': gettext('Her madde için ortalama, standart sapma, düzeltilmiş madde-toplam korelasyonu ve madde silinince alpha tablosu.')},
+                {'icon': 'bi-file-earmark-pdf-fill', 'color': 'danger', 'title': gettext('PDF Rapor'), 'desc': gettext('Tüm sonuçlar düzenli tablolar halinde PDF olarak indirilebilir.')},
             ],
         })
 
@@ -103,15 +103,15 @@ def cronbach_landing(request):
     return render(request, 'istatistik/cronbach.html', {
         'active_job_id': str(active_job.id) if active_job else None,
         'daily_remaining': _daily_remaining(request.user),
-        'tool_title': 'Güvenilirlik Analizi — Cronbach Alpha',
+        'tool_title': gettext('Güvenilirlik Analizi — Cronbach Alpha'),
         'tool_icon': 'bi-shield-check',
         'tool_color': 'primary',
-        'tool_description': 'Anket ölçeğinizin iç tutarlılığını ölçün. Her sütun bir madde, her satır bir katılımcı olmalıdır.',
+        'tool_description': gettext('Anket ölçeğinizin iç tutarlılığını ölçün. Her sütun bir madde, her satır bir katılımcı olmalıdır.'),
         'tool_hints': [
-            'Her sütun bir ölçek maddesi olmalıdır (örn. S1, S2, S3…).',
-            'Her satır bir katılımcıyı temsil etmelidir.',
-            'Başlık satırı otomatik algılanır.',
-            'Boş hücreler (NA) satırdan çıkarılır.',
+            gettext('Her sütun bir ölçek maddesi olmalıdır (örn. S1, S2, S3…).'),
+            gettext('Her satır bir katılımcıyı temsil etmelidir.'),
+            gettext('Başlık satırı otomatik algılanır.'),
+            gettext('Boş hücreler (NA) satırdan çıkarılır.'),
         ],
         **_console_ctx('cronbach', request),
     })
@@ -124,15 +124,15 @@ def normallik_landing(request):
         return render(request, 'service_promo.html', {
             **PROMO_BASE,
             'seo_guide': SEO_CONTENT.get('normallik'),
-            'promo_title': 'Normallik Testi',
+            'promo_title': gettext('Normallik Testi'),
             'promo_icon': 'bi-bell-curve',
             'promo_color': 'warning',
-            'promo_description': '"Parametrik mi, non-parametrik mi?" sorusunu yanıtlayın. Shapiro-Wilk testi, çarpıklık/basıklık değerleri ve Q-Q plot içeren PDF raporu saniyeler içinde alın.',
+            'promo_description': gettext('"Parametrik mi, non-parametrik mi?" sorusunu yanıtlayın. Shapiro-Wilk testi, çarpıklık/basıklık değerleri ve Q-Q plot içeren PDF raporu saniyeler içinde alın.'),
             'promo_features': [
-                {'icon': 'bi-graph-up', 'title': 'Shapiro-Wilk Testi', 'desc': 'Her değişken için W istatistiği ve p-değeri hesaplanır. p < 0.05 normal dağılımdan sapma anlamına gelir.'},
-                {'icon': 'bi-bar-chart-steps', 'title': 'Çarpıklık & Basıklık', 'desc': 'Skewness ve kurtosis değerleri ±1.96 ve ±2.58 kritik sınırlarıyla yorumlanır.'},
-                {'icon': 'bi-scatter-chart', 'color': 'info', 'title': 'Q-Q Plot', 'desc': 'Her değişken için görsel normallik grafiği PDF\'e eklenir.'},
-                {'icon': 'bi-check-circle-fill', 'color': 'success', 'title': 'Otomatik Öneri', 'desc': '"Parametrik test kullanılabilir" veya "Non-parametrik test önerilir" kararı otomatik verilir.'},
+                {'icon': 'bi-graph-up', 'title': gettext('Shapiro-Wilk Testi'), 'desc': gettext('Her değişken için W istatistiği ve p-değeri hesaplanır. p < 0.05 normal dağılımdan sapma anlamına gelir.')},
+                {'icon': 'bi-bar-chart-steps', 'title': gettext('Çarpıklık & Basıklık'), 'desc': gettext('Skewness ve kurtosis değerleri ±1.96 ve ±2.58 kritik sınırlarıyla yorumlanır.')},
+                {'icon': 'bi-scatter-chart', 'color': 'info', 'title': gettext('Q-Q Plot'), 'desc': gettext('Her değişken için görsel normallik grafiği PDF\'e eklenir.')},
+                {'icon': 'bi-check-circle-fill', 'color': 'success', 'title': gettext('Otomatik Öneri'), 'desc': gettext('"Parametrik test kullanılabilir" veya "Non-parametrik test önerilir" kararı otomatik verilir.')},
             ],
         })
 
@@ -143,15 +143,15 @@ def normallik_landing(request):
     return render(request, 'istatistik/normallik.html', {
         'active_job_id': str(active_job.id) if active_job else None,
         'daily_remaining': _daily_remaining(request.user),
-        'tool_title': 'Normallik Testi',
+        'tool_title': gettext('Normallik Testi'),
         'tool_icon': 'bi-activity',
         'tool_color': 'warning',
-        'tool_description': 'Shapiro-Wilk testi, çarpıklık/basıklık ve Q-Q plot ile değişkenlerinizin normal dağılıma uygunluğunu test edin.',
+        'tool_description': gettext('Shapiro-Wilk testi, çarpıklık/basıklık ve Q-Q plot ile değişkenlerinizin normal dağılıma uygunluğunu test edin.'),
         'tool_hints': [
-            'Her sütun ayrı bir değişken olarak analiz edilir.',
-            'Shapiro-Wilk testi N ≤ 5000 için; üzerinde D\'Agostino-Pearson kullanılır.',
-            'p ≥ 0.05 → normal dağılım varsayımı reddedilemez.',
-            'Hem istatistiksel hem görsel (Q-Q plot) sonuçlar PDF\'e eklenir.',
+            gettext('Her sütun ayrı bir değişken olarak analiz edilir.'),
+            gettext('Shapiro-Wilk testi N ≤ 5000 için; üzerinde D\'Agostino-Pearson kullanılır.'),
+            gettext('p ≥ 0.05 → normal dağılım varsayımı reddedilemez.'),
+            gettext('Hem istatistiksel hem görsel (Q-Q plot) sonuçlar PDF\'e eklenir.'),
         ],
         **_console_ctx('normallik', request),
     })
@@ -164,15 +164,15 @@ def betimsel_landing(request):
         return render(request, 'service_promo.html', {
             **PROMO_BASE,
             'seo_guide': SEO_CONTENT.get('betimsel'),
-            'promo_title': 'Betimleyici İstatistik Raporu',
+            'promo_title': gettext('Betimleyici İstatistik Raporu'),
             'promo_icon': 'bi-clipboard2-data',
             'promo_color': 'success',
-            'promo_description': 'Verinizi yükleyin; frekans tabloları, ortalama, standart sapma ve grafikler otomatik oluşsun. Tez bulgular bölümünüzün ilk sayfası hazır.',
+            'promo_description': gettext('Verinizi yükleyin; frekans tabloları, ortalama, standart sapma ve grafikler otomatik oluşsun. Tez bulgular bölümünüzün ilk sayfası hazır.'),
             'promo_features': [
-                {'icon': 'bi-list-ol', 'title': 'Frekans Tabloları', 'desc': 'Kategorik değişkenler için frekans ve yüzde dağılım tabloları otomatik oluşturulur.'},
-                {'icon': 'bi-calculator-fill', 'color': 'primary', 'title': 'Merkezi Eğilim', 'desc': 'Sürekli değişkenler için n, ortalama, standart sapma, min, max, medyan, Q1-Q3 hesaplanır.'},
-                {'icon': 'bi-bar-chart-fill', 'title': 'Otomatik Grafikler', 'desc': 'Kategorik değişkenler için çubuk grafik, sürekli değişkenler için histogram PDF\'e eklenir.'},
-                {'icon': 'bi-file-earmark-pdf-fill', 'color': 'danger', 'title': 'Hazır PDF Rapor', 'desc': 'Tüm tablolar ve grafikler düzenli formatta PDF olarak indirilir.'},
+                {'icon': 'bi-list-ol', 'title': gettext('Frekans Tabloları'), 'desc': gettext('Kategorik değişkenler için frekans ve yüzde dağılım tabloları otomatik oluşturulur.')},
+                {'icon': 'bi-calculator-fill', 'color': 'primary', 'title': gettext('Merkezi Eğilim'), 'desc': gettext('Sürekli değişkenler için n, ortalama, standart sapma, min, max, medyan, Q1-Q3 hesaplanır.')},
+                {'icon': 'bi-bar-chart-fill', 'title': gettext('Otomatik Grafikler'), 'desc': gettext('Kategorik değişkenler için çubuk grafik, sürekli değişkenler için histogram PDF\'e eklenir.')},
+                {'icon': 'bi-file-earmark-pdf-fill', 'color': 'danger', 'title': gettext('Hazır PDF Rapor'), 'desc': gettext('Tüm tablolar ve grafikler düzenli formatta PDF olarak indirilir.')},
             ],
         })
 
@@ -183,15 +183,15 @@ def betimsel_landing(request):
     return render(request, 'istatistik/betimsel.html', {
         'active_job_id': str(active_job.id) if active_job else None,
         'daily_remaining': _daily_remaining(request.user),
-        'tool_title': 'Betimleyici İstatistik Raporu',
+        'tool_title': gettext('Betimleyici İstatistik Raporu'),
         'tool_icon': 'bi-clipboard2-data',
         'tool_color': 'success',
-        'tool_description': 'Verinizdeki her sütun için frekans tabloları, merkezi eğilim ölçüleri ve grafikler otomatik oluşturulur.',
+        'tool_description': gettext('Verinizdeki her sütun için frekans tabloları, merkezi eğilim ölçüleri ve grafikler otomatik oluşturulur.'),
         'tool_hints': [
-            'Kategorik değişkenler (≤10 farklı değer veya metin) → frekans tablosu + çubuk grafik.',
-            'Sürekli sayısal değişkenler → ortalama, SS, medyan, Q1-Q3 + histogram.',
-            'Başlık satırı otomatik algılanır.',
-            'Boş hücreler (NA) değişken bazında çıkarılır.',
+            gettext('Kategorik değişkenler (≤10 farklı değer veya metin) → frekans tablosu + çubuk grafik.'),
+            gettext('Sürekli sayısal değişkenler → ortalama, SS, medyan, Q1-Q3 + histogram.'),
+            gettext('Başlık satırı otomatik algılanır.'),
+            gettext('Boş hücreler (NA) değişken bazında çıkarılır.'),
         ],
         **_console_ctx('betimsel', request),
     })
@@ -204,15 +204,15 @@ def korelasyon_landing(request):
         return render(request, 'service_promo.html', {
             **PROMO_BASE,
             'seo_guide': SEO_CONTENT.get('korelasyon'),
-            'promo_title': 'Korelasyon Matrisi',
+            'promo_title': gettext('Korelasyon Matrisi'),
             'promo_icon': 'bi-grid-3x3',
             'promo_color': 'info',
-            'promo_description': 'Değişkenleriniz arasındaki ilişkileri tek bakışta görün. Pearson, Spearman veya Kendall yöntemiyle p-değerleri ve ısı haritası içeren PDF raporu saniyeler içinde alın.',
+            'promo_description': gettext('Değişkenleriniz arasındaki ilişkileri tek bakışta görün. Pearson, Spearman veya Kendall yöntemiyle p-değerleri ve ısı haritası içeren PDF raporu saniyeler içinde alın.'),
             'promo_features': [
-                {'icon': 'bi-table', 'title': 'Korelasyon Tablosu', 'desc': 'Tüm değişken çiftleri için r katsayısı ve p-değeri hesaplanır. p < 0.05 anlamlı ilişkiyi gösterir.'},
-                {'icon': 'bi-grid-fill', 'color': 'info', 'title': 'Isı Haritası', 'desc': 'Korelasyon katsayıları renk skalasıyla görselleştirilir. Güçlü ilişkiler anında fark edilir.'},
-                {'icon': 'bi-sliders', 'title': 'Üç Yöntem', 'desc': 'Pearson (parametrik), Spearman (non-parametrik sıralı) veya Kendall (küçük örneklem) yöntemlerinden seçin.'},
-                {'icon': 'bi-file-earmark-pdf-fill', 'color': 'danger', 'title': 'PDF Rapor', 'desc': 'Tablo ve ısı haritası düzenli formatta PDF olarak indirilir.'},
+                {'icon': 'bi-table', 'title': gettext('Korelasyon Tablosu'), 'desc': gettext('Tüm değişken çiftleri için r katsayısı ve p-değeri hesaplanır. p < 0.05 anlamlı ilişkiyi gösterir.')},
+                {'icon': 'bi-grid-fill', 'color': 'info', 'title': gettext('Isı Haritası'), 'desc': gettext('Korelasyon katsayıları renk skalasıyla görselleştirilir. Güçlü ilişkiler anında fark edilir.')},
+                {'icon': 'bi-sliders', 'title': gettext('Üç Yöntem'), 'desc': gettext('Pearson (parametrik), Spearman (non-parametrik sıralı) veya Kendall (küçük örneklem) yöntemlerinden seçin.')},
+                {'icon': 'bi-file-earmark-pdf-fill', 'color': 'danger', 'title': gettext('PDF Rapor'), 'desc': gettext('Tablo ve ısı haritası düzenli formatta PDF olarak indirilir.')},
             ],
         })
 
@@ -223,15 +223,15 @@ def korelasyon_landing(request):
     return render(request, 'istatistik/korelasyon.html', {
         'active_job_id': str(active_job.id) if active_job else None,
         'daily_remaining': _daily_remaining(request.user),
-        'tool_title': 'Korelasyon Matrisi',
+        'tool_title': gettext('Korelasyon Matrisi'),
         'tool_icon': 'bi-grid-3x3',
         'tool_color': 'info',
-        'tool_description': 'Değişkenleriniz arasındaki ilişkileri Pearson, Spearman veya Kendall yöntemiyle hesaplayın. Her sütun bir değişken, her satır bir gözlem olmalıdır.',
+        'tool_description': gettext('Değişkenleriniz arasındaki ilişkileri Pearson, Spearman veya Kendall yöntemiyle hesaplayın. Her sütun bir değişken, her satır bir gözlem olmalıdır.'),
         'tool_hints': [
-            'Her sütun bir değişkeni temsil etmelidir.',
-            'Pearson: normal dağılımlı sürekli veriler için.',
-            'Spearman: sıralı veriler veya normallik varsayımı sağlanmıyorsa.',
-            'Kendall: küçük örneklem veya çok sayıda bağlı sıra olduğunda.',
+            gettext('Her sütun bir değişkeni temsil etmelidir.'),
+            gettext('Pearson: normal dağılımlı sürekli veriler için.'),
+            gettext('Spearman: sıralı veriler veya normallik varsayımı sağlanmıyorsa.'),
+            gettext('Kendall: küçük örneklem veya çok sayıda bağlı sıra olduğunda.'),
         ],
         **_console_ctx('korelasyon', request),
     })
@@ -242,7 +242,7 @@ def orneklem_landing(request):
     if request.method == 'POST':
         return _handle_orneklem_calc(request)
     return render(request, 'istatistik/orneklem.html', {
-        'tool_title': 'Örneklem Büyüklüğü Hesaplayıcı',
+        'tool_title': gettext('Örneklem Büyüklüğü Hesaplayıcı'),
         **_console_ctx('orneklem', request),
     })
 
@@ -285,15 +285,15 @@ def anova_landing(request):
         return render(request, 'service_promo.html', {
             **PROMO_BASE,
             'seo_guide': SEO_CONTENT.get('anova'),
-            'promo_title': 'Tek Yönlü ANOVA',
+            'promo_title': gettext('Tek Yönlü ANOVA'),
             'promo_icon': 'bi-bar-chart-steps',
             'promo_color': 'danger',
-            'promo_description': 'Üç veya daha fazla grubun ortalamalarını karşılaştırın. Tukey/Bonferroni post-hoc testleri ve η² etki büyüklüğü ile tam bir ANOVA raporu alın.',
+            'promo_description': gettext('Üç veya daha fazla grubun ortalamalarını karşılaştırın. Tukey/Bonferroni post-hoc testleri ve η² etki büyüklüğü ile tam bir ANOVA raporu alın.'),
             'promo_features': [
-                {'icon': 'bi-bar-chart-fill', 'title': 'Tek Yönlü ANOVA', 'desc': 'F istatistiği, serbestlik dereceleri ve p-değeri otomatik hesaplanır.'},
-                {'icon': 'bi-search', 'color': 'warning', 'title': 'Post-Hoc Testler', 'desc': 'Hangi gruplar arasında fark var? Tukey veya Bonferroni post-hoc testi ile belirleyin.'},
-                {'icon': 'bi-rulers', 'title': 'Etki Büyüklüğü', 'desc': 'Eta-kare (η²) ile etki büyüklüğü raporlanır.'},
-                {'icon': 'bi-file-earmark-pdf-fill', 'color': 'danger', 'title': 'PDF Rapor', 'desc': 'Grup istatistikleri, ANOVA tablosu ve post-hoc sonuçları PDF\'e aktarılır.'},
+                {'icon': 'bi-bar-chart-fill', 'title': gettext('Tek Yönlü ANOVA'), 'desc': gettext('F istatistiği, serbestlik dereceleri ve p-değeri otomatik hesaplanır.')},
+                {'icon': 'bi-search', 'color': 'warning', 'title': gettext('Post-Hoc Testler'), 'desc': gettext('Hangi gruplar arasında fark var? Tukey veya Bonferroni post-hoc testi ile belirleyin.')},
+                {'icon': 'bi-rulers', 'title': gettext('Etki Büyüklüğü'), 'desc': gettext('Eta-kare (η²) ile etki büyüklüğü raporlanır.')},
+                {'icon': 'bi-file-earmark-pdf-fill', 'color': 'danger', 'title': gettext('PDF Rapor'), 'desc': gettext('Grup istatistikleri, ANOVA tablosu ve post-hoc sonuçları PDF\'e aktarılır.')},
             ],
         })
     if request.method == 'POST':
@@ -301,7 +301,7 @@ def anova_landing(request):
     return render(request, 'istatistik/anova.html', {
         'active_job_id': str(_get_active_job(request.user, 'anova').id) if _get_active_job(request.user, 'anova') else None,
         'daily_remaining': _daily_remaining(request.user),
-        'tool_title': 'Tek Yönlü ANOVA',
+        'tool_title': gettext('Tek Yönlü ANOVA'),
         'tool_icon': 'bi-bar-chart-steps',
         'tool_color': 'danger',
         **_console_ctx('anova', request),
@@ -327,17 +327,17 @@ def _handle_group_tool_post(request, tool):
             session_key = request.session.session_key
             stored = get_session_dataset(session_key) if session_key else None
             if not stored:
-                return JsonResponse({'error': 'Oturum verisi bulunamadı. Lütfen dosyayı tekrar yükleyin.'}, status=400)
+                return JsonResponse({'error': gettext('Oturum verisi bulunamadı. Lütfen dosyayı tekrar yükleyin.')}, status=400)
             content, original_filename = stored
         elif file:
             if not file.name.lower().endswith(('.csv', '.xlsx', '.xls')):
-                return JsonResponse({'error': 'CSV veya Excel dosyası yükleyin.'}, status=400)
+                return JsonResponse({'error': gettext('CSV veya Excel dosyası yükleyin.')}, status=400)
             if file.size > django_settings.MAX_UPLOAD_SIZE:
-                return JsonResponse({'error': 'Dosya boyutu 5 MB sınırını aşıyor.'}, status=400)
+                return JsonResponse({'error': gettext('Dosya boyutu 5 MB sınırını aşıyor.')}, status=400)
             content = file.read()
             original_filename = file.name
         else:
-            return JsonResponse({'error': 'Dosya seçilmedi.'}, status=400)
+            return JsonResponse({'error': gettext('Dosya seçilmedi.')}, status=400)
 
         try:
             df = _parse_file(content, original_filename)
@@ -371,9 +371,9 @@ def _handle_group_tool_post(request, tool):
         if request.user.is_authenticated:
             remaining = _daily_remaining(request.user)
             if remaining <= 0:
-                return JsonResponse({'error': 'Günlük analiz limitiniz doldu.'}, status=429)
+                return JsonResponse({'error': gettext('Günlük analiz limitiniz doldu.')}, status=429)
             if not request.user.profile.email_verified:
-                return JsonResponse({'error': 'E-posta doğrulaması gereklidir.'}, status=403)
+                return JsonResponse({'error': gettext('E-posta doğrulaması gereklidir.')}, status=403)
 
         preview_id = request.POST.get('preview_id', '')
         filename = request.POST.get('filename', 'dosya')
@@ -381,7 +381,7 @@ def _handle_group_tool_post(request, tool):
 
         content = _pending_file_contents.pop('preview_' + preview_id, None)
         if content is None:
-            return JsonResponse({'error': 'Önizleme süresi doldu. Lütfen dosyayı tekrar yükleyin.'}, status=400)
+            return JsonResponse({'error': gettext('Önizleme süresi doldu. Lütfen dosyayı tekrar yükleyin.')}, status=400)
 
         if tool == 'ttesti':
             options = {
@@ -463,7 +463,7 @@ def _handle_group_tool_post(request, tool):
         run_job(str(job.id))
         return JsonResponse({'success': True, 'job_id': str(job.id)})
 
-    return JsonResponse({'error': 'Geçersiz adım.'}, status=400)
+    return JsonResponse({'error': gettext('Geçersiz adım.')}, status=400)
 
 
 @feature_required
@@ -473,15 +473,15 @@ def mann_whitney_landing(request):
         return render(request, 'service_promo.html', {
             **PROMO_BASE,
             'seo_guide': SEO_CONTENT.get('mann_whitney'),
-            'promo_title': 'Mann-Whitney U Testi',
+            'promo_title': gettext('Mann-Whitney U Testi'),
             'promo_icon': 'bi-distribute-horizontal',
             'promo_color': 'warning',
-            'promo_description': 'İki bağımsız grubun dağılımını karşılaştırın. Normallik varsayımı gerekmez. Medyan farkı, sıra ortalamaları ve rank-biserial etki büyüklüğü ile PDF raporu alın.',
+            'promo_description': gettext('İki bağımsız grubun dağılımını karşılaştırın. Normallik varsayımı gerekmez. Medyan farkı, sıra ortalamaları ve rank-biserial etki büyüklüğü ile PDF raporu alın.'),
             'promo_features': [
-                {'icon': 'bi-people-fill', 'title': 'Non-Parametrik', 'desc': 'Normallik varsayımı sağlanmadığında t-testine güçlü bir alternatif.'},
-                {'icon': 'bi-bar-chart-line', 'title': 'Sıra Analizi', 'desc': 'Medyanlar ve ortalama sıralar raporlanır.'},
-                {'icon': 'bi-rulers', 'title': 'Etki Büyüklüğü', 'desc': 'Rank-biserial korelasyon (r) ile etki büyüklüğü hesaplanır.'},
-                {'icon': 'bi-file-earmark-pdf-fill', 'color': 'danger', 'title': 'PDF Rapor', 'desc': 'Sonuçlar düzenli tablolar halinde PDF olarak indirilir.'},
+                {'icon': 'bi-people-fill', 'title': gettext('Non-Parametrik'), 'desc': gettext('Normallik varsayımı sağlanmadığında t-testine güçlü bir alternatif.')},
+                {'icon': 'bi-bar-chart-line', 'title': gettext('Sıra Analizi'), 'desc': gettext('Medyanlar ve ortalama sıralar raporlanır.')},
+                {'icon': 'bi-rulers', 'title': gettext('Etki Büyüklüğü'), 'desc': gettext('Rank-biserial korelasyon (r) ile etki büyüklüğü hesaplanır.')},
+                {'icon': 'bi-file-earmark-pdf-fill', 'color': 'danger', 'title': gettext('PDF Rapor'), 'desc': gettext('Sonuçlar düzenli tablolar halinde PDF olarak indirilir.')},
             ],
         })
     if request.method == 'POST':
@@ -490,7 +490,7 @@ def mann_whitney_landing(request):
     return render(request, 'istatistik/mann_whitney.html', {
         'active_job_id': str(active_job.id) if active_job else None,
         'daily_remaining': _daily_remaining(request.user),
-        'tool_title': 'Mann-Whitney U Testi',
+        'tool_title': gettext('Mann-Whitney U Testi'),
         'tool_icon': 'bi-distribute-horizontal',
         'tool_color': 'warning',
         **_console_ctx('mann_whitney', request),
@@ -504,15 +504,15 @@ def kruskal_wallis_landing(request):
         return render(request, 'service_promo.html', {
             **PROMO_BASE,
             'seo_guide': SEO_CONTENT.get('kruskal_wallis'),
-            'promo_title': 'Kruskal-Wallis H Testi',
+            'promo_title': gettext('Kruskal-Wallis H Testi'),
             'promo_icon': 'bi-bar-chart-steps',
             'promo_color': 'teal',
-            'promo_description': 'Üç veya daha fazla bağımsız grubun dağılımını non-parametrik olarak karşılaştırın. Bonferroni düzeltmeli post-hoc testleri ve η² etki büyüklüğü ile PDF raporu alın.',
+            'promo_description': gettext('Üç veya daha fazla bağımsız grubun dağılımını non-parametrik olarak karşılaştırın. Bonferroni düzeltmeli post-hoc testleri ve η² etki büyüklüğü ile PDF raporu alın.'),
             'promo_features': [
-                {'icon': 'bi-bar-chart-fill', 'title': '3+ Grup', 'desc': 'ANOVA\'nın parametrik olmayan alternatifi. Normallik gerekmez.'},
-                {'icon': 'bi-search', 'color': 'warning', 'title': 'Post-Hoc', 'desc': 'Anlamlı fark bulunursa çiftli Mann-Whitney U + Bonferroni düzeltmesi uygulanır.'},
-                {'icon': 'bi-rulers', 'title': 'Etki Büyüklüğü', 'desc': 'Eta-kare (η²) ile etki büyüklüğü raporlanır.'},
-                {'icon': 'bi-file-earmark-pdf-fill', 'color': 'danger', 'title': 'PDF Rapor', 'desc': 'Grup istatistikleri ve post-hoc sonuçları PDF\'e aktarılır.'},
+                {'icon': 'bi-bar-chart-fill', 'title': gettext('3+ Grup'), 'desc': gettext('ANOVA\'nın parametrik olmayan alternatifi. Normallik gerekmez.')},
+                {'icon': 'bi-search', 'color': 'warning', 'title': gettext('Post-Hoc'), 'desc': gettext('Anlamlı fark bulunursa çiftli Mann-Whitney U + Bonferroni düzeltmesi uygulanır.')},
+                {'icon': 'bi-rulers', 'title': gettext('Etki Büyüklüğü'), 'desc': gettext('Eta-kare (η²) ile etki büyüklüğü raporlanır.')},
+                {'icon': 'bi-file-earmark-pdf-fill', 'color': 'danger', 'title': gettext('PDF Rapor'), 'desc': gettext('Grup istatistikleri ve post-hoc sonuçları PDF\'e aktarılır.')},
             ],
         })
     if request.method == 'POST':
@@ -521,7 +521,7 @@ def kruskal_wallis_landing(request):
     return render(request, 'istatistik/kruskal_wallis.html', {
         'active_job_id': str(active_job.id) if active_job else None,
         'daily_remaining': _daily_remaining(request.user),
-        'tool_title': 'Kruskal-Wallis H Testi',
+        'tool_title': gettext('Kruskal-Wallis H Testi'),
         'tool_icon': 'bi-bar-chart-steps',
         'tool_color': 'teal',
         **_console_ctx('kruskal_wallis', request),
@@ -535,15 +535,15 @@ def ki_kare_landing(request):
         return render(request, 'service_promo.html', {
             **PROMO_BASE,
             'seo_guide': SEO_CONTENT.get('ki_kare'),
-            'promo_title': 'Ki-Kare Testi',
+            'promo_title': gettext('Ki-Kare Testi'),
             'promo_icon': 'bi-grid-3x3',
             'promo_color': 'purple',
-            'promo_description': 'İki kategorik değişken arasındaki ilişkiyi test edin. Çapraz tablo ve Cramér\'s V etki büyüklüğü ile PDF raporu alın.',
+            'promo_description': gettext('İki kategorik değişken arasındaki ilişkiyi test edin. Çapraz tablo ve Cramér\'s V etki büyüklüğü ile PDF raporu alın.'),
             'promo_features': [
-                {'icon': 'bi-grid-3x3', 'title': 'Bağımsızlık Testi', 'desc': 'Pearson\'s Ki-Kare testi ile iki kategorik değişken arasındaki ilişki sınanır.'},
-                {'icon': 'bi-table', 'color': 'info', 'title': 'Çapraz Tablo', 'desc': 'Gözlenen frekanslar ve satır/sütun toplamları ile tam çapraz tablo.'},
-                {'icon': 'bi-rulers', 'title': 'Cramér\'s V', 'desc': 'Etki büyüklüğü V katsayısı ile ilişkinin gücü raporlanır.'},
-                {'icon': 'bi-file-earmark-pdf-fill', 'color': 'danger', 'title': 'PDF Rapor', 'desc': 'APA formatında raporlanabilir sonuçlar PDF olarak indirilir.'},
+                {'icon': 'bi-grid-3x3', 'title': gettext('Bağımsızlık Testi'), 'desc': gettext('Pearson\'s Ki-Kare testi ile iki kategorik değişken arasındaki ilişki sınanır.')},
+                {'icon': 'bi-table', 'color': 'info', 'title': gettext('Çapraz Tablo'), 'desc': gettext('Gözlenen frekanslar ve satır/sütun toplamları ile tam çapraz tablo.')},
+                {'icon': 'bi-rulers', 'title': gettext('Cramér\'s V'), 'desc': gettext('Etki büyüklüğü V katsayısı ile ilişkinin gücü raporlanır.')},
+                {'icon': 'bi-file-earmark-pdf-fill', 'color': 'danger', 'title': gettext('PDF Rapor'), 'desc': gettext('APA formatında raporlanabilir sonuçlar PDF olarak indirilir.')},
             ],
         })
     if request.method == 'POST':
@@ -552,7 +552,7 @@ def ki_kare_landing(request):
     return render(request, 'istatistik/ki_kare.html', {
         'active_job_id': str(active_job.id) if active_job else None,
         'daily_remaining': _daily_remaining(request.user),
-        'tool_title': 'Ki-Kare Testi',
+        'tool_title': gettext('Ki-Kare Testi'),
         'tool_icon': 'bi-grid-3x3',
         'tool_color': 'purple',
         **_console_ctx('ki_kare', request),
@@ -566,15 +566,15 @@ def lineer_regresyon_landing(request):
         return render(request, 'service_promo.html', {
             **PROMO_BASE,
             'seo_guide': SEO_CONTENT.get('lineer_regresyon'),
-            'promo_title': 'Çoklu Doğrusal Regresyon',
+            'promo_title': gettext('Çoklu Doğrusal Regresyon'),
             'promo_icon': 'bi-graph-up-arrow',
             'promo_color': 'primary',
-            'promo_description': 'Bir veya birden fazla bağımsız değişkenin sürekli bir bağımlı değişkeni ne kadar açıkladığını analiz edin. R², F testi, standardize beta ve VIF dahil tam OLS regresyon raporu.',
+            'promo_description': gettext('Bir veya birden fazla bağımsız değişkenin sürekli bir bağımlı değişkeni ne kadar açıkladığını analiz edin. R², F testi, standardize beta ve VIF dahil tam OLS regresyon raporu.'),
             'promo_features': [
-                {'icon': 'bi-graph-up-arrow', 'title': 'OLS Regresyon', 'desc': 'R², düzeltilmiş R², F istatistiği ve model anlamlılığı otomatik hesaplanır.'},
-                {'icon': 'bi-table', 'color': 'info', 'title': 'Katsayı Tablosu', 'desc': 'Her yordayıcı için B, β (standardize), SE, t, p ve %95 güven aralığı raporlanır.'},
-                {'icon': 'bi-exclamation-triangle', 'color': 'warning', 'title': 'VIF (Çoklu Bağlantı)', 'desc': 'Variance Inflation Factor ile çoklu bağlantı sorunu kontrol edilir.'},
-                {'icon': 'bi-file-earmark-pdf-fill', 'color': 'danger', 'title': 'PDF Rapor', 'desc': 'APA formatında raporlanabilir sonuçlar PDF olarak indirilir.'},
+                {'icon': 'bi-graph-up-arrow', 'title': gettext('OLS Regresyon'), 'desc': gettext('R², düzeltilmiş R², F istatistiği ve model anlamlılığı otomatik hesaplanır.')},
+                {'icon': 'bi-table', 'color': 'info', 'title': gettext('Katsayı Tablosu'), 'desc': gettext('Her yordayıcı için B, β (standardize), SE, t, p ve %95 güven aralığı raporlanır.')},
+                {'icon': 'bi-exclamation-triangle', 'color': 'warning', 'title': gettext('VIF (Çoklu Bağlantı)'), 'desc': gettext('Variance Inflation Factor ile çoklu bağlantı sorunu kontrol edilir.')},
+                {'icon': 'bi-file-earmark-pdf-fill', 'color': 'danger', 'title': gettext('PDF Rapor'), 'desc': gettext('APA formatında raporlanabilir sonuçlar PDF olarak indirilir.')},
             ],
         })
     if request.method == 'POST':
@@ -583,7 +583,7 @@ def lineer_regresyon_landing(request):
     return render(request, 'istatistik/lineer_regresyon.html', {
         'active_job_id': str(active_job.id) if active_job else None,
         'daily_remaining': _daily_remaining(request.user),
-        'tool_title': 'Çoklu Doğrusal Regresyon',
+        'tool_title': gettext('Çoklu Doğrusal Regresyon'),
         'tool_icon': 'bi-graph-up-arrow',
         'tool_color': 'primary',
         **_console_ctx('lineer_regresyon', request),
@@ -597,15 +597,15 @@ def lojistik_regresyon_landing(request):
         return render(request, 'service_promo.html', {
             **PROMO_BASE,
             'seo_guide': SEO_CONTENT.get('lojistik_regresyon'),
-            'promo_title': 'Lojistik Regresyon',
+            'promo_title': gettext('Lojistik Regresyon'),
             'promo_icon': 'bi-diagram-3',
             'promo_color': 'success',
-            'promo_description': 'İkili (binary) bir sonuç değişkenini yordayın. Odds Ratio, Nagelkerke R² ve sınıflandırma tablosu ile tam lojistik regresyon raporu.',
+            'promo_description': gettext('İkili (binary) bir sonuç değişkenini yordayın. Odds Ratio, Nagelkerke R² ve sınıflandırma tablosu ile tam lojistik regresyon raporu.'),
             'promo_features': [
-                {'icon': 'bi-toggles', 'title': 'Binary Sonuç', 'desc': '0/1 veya iki kategorili bağımlı değişken ile çalışır. Kategorik yordayıcılar otomatik dummy\'e dönüştürülür.'},
-                {'icon': 'bi-table', 'color': 'info', 'title': 'Odds Ratio', 'desc': 'Her yordayıcı için B, SE, Wald, p ve Exp(B) = Odds Ratio %95 GA ile raporlanır.'},
-                {'icon': 'bi-check2-square', 'color': 'warning', 'title': 'Sınıflandırma', 'desc': 'Model doğruluğu ve sınıflandırma tablosu (TP, TN, FP, FN) gösterilir.'},
-                {'icon': 'bi-file-earmark-pdf-fill', 'color': 'danger', 'title': 'PDF Rapor', 'desc': 'Nagelkerke R², model χ² ve APA formatında raporlanabilir sonuçlar PDF olarak indirilir.'},
+                {'icon': 'bi-toggles', 'title': gettext('Binary Sonuç'), 'desc': gettext('0/1 veya iki kategorili bağımlı değişken ile çalışır. Kategorik yordayıcılar otomatik dummy\'e dönüştürülür.')},
+                {'icon': 'bi-table', 'color': 'info', 'title': gettext('Odds Ratio'), 'desc': gettext('Her yordayıcı için B, SE, Wald, p ve Exp(B) = Odds Ratio %95 GA ile raporlanır.')},
+                {'icon': 'bi-check2-square', 'color': 'warning', 'title': gettext('Sınıflandırma'), 'desc': gettext('Model doğruluğu ve sınıflandırma tablosu (TP, TN, FP, FN) gösterilir.')},
+                {'icon': 'bi-file-earmark-pdf-fill', 'color': 'danger', 'title': gettext('PDF Rapor'), 'desc': gettext('Nagelkerke R², model χ² ve APA formatında raporlanabilir sonuçlar PDF olarak indirilir.')},
             ],
         })
     if request.method == 'POST':
@@ -614,7 +614,7 @@ def lojistik_regresyon_landing(request):
     return render(request, 'istatistik/lojistik_regresyon.html', {
         'active_job_id': str(active_job.id) if active_job else None,
         'daily_remaining': _daily_remaining(request.user),
-        'tool_title': 'Lojistik Regresyon',
+        'tool_title': gettext('Lojistik Regresyon'),
         'tool_icon': 'bi-diagram-3',
         'tool_color': 'success',
         **_console_ctx('lojistik_regresyon', request),
@@ -628,16 +628,16 @@ def karar_agaci_landing(request):
         return render(request, 'service_promo.html', {
             **PROMO_BASE,
             'seo_guide': SEO_CONTENT.get('karar_agaci'),
-            'promo_title': 'Karar Ağacı Sınıflandırması',
+            'promo_title': gettext('Karar Ağacı Sınıflandırması'),
             'promo_icon': 'bi-diagram-2',
             'promo_color': 'purple',
             'promo_egitim_konu': 'makine-ogrenmesi',
-            'promo_description': 'Veri setinizdeki kategorik hedef değişkeni sınıflandırın. Özellik önemi, confusion matrix ve ağaç yapısı görselleştirmesiyle tam ML raporu.',
+            'promo_description': gettext('Veri setinizdeki kategorik hedef değişkeni sınıflandırın. Özellik önemi, confusion matrix ve ağaç yapısı görselleştirmesiyle tam ML raporu.'),
             'promo_features': [
-                {'icon': 'bi-diagram-2', 'title': 'Ağaç Modeli', 'desc': 'Gini veya Entropy kriteri ile karar ağacı eğitilir. Maksimum derinliği kendiniz belirleyebilirsiniz.'},
-                {'icon': 'bi-bar-chart-steps', 'color': 'warning', 'title': 'Özellik Önemi', 'desc': 'Hangi değişkenin sınıflandırmaya en çok katkı yaptığı sıralı tablo ile gösterilir.'},
-                {'icon': 'bi-grid-3x3', 'color': 'info', 'title': 'Confusion Matrix', 'desc': 'Test seti üzerindeki doğruluk, kesinlik, duyarlılık ve F1 skoru raporlanır.'},
-                {'icon': 'bi-file-earmark-pdf-fill', 'color': 'danger', 'title': 'PDF Rapor', 'desc': 'Ağaç yapısı, metrikler ve APA formatında raporlama cümlesi PDF olarak indirilir.'},
+                {'icon': 'bi-diagram-2', 'title': gettext('Ağaç Modeli'), 'desc': gettext('Gini veya Entropy kriteri ile karar ağacı eğitilir. Maksimum derinliği kendiniz belirleyebilirsiniz.')},
+                {'icon': 'bi-bar-chart-steps', 'color': 'warning', 'title': gettext('Özellik Önemi'), 'desc': gettext('Hangi değişkenin sınıflandırmaya en çok katkı yaptığı sıralı tablo ile gösterilir.')},
+                {'icon': 'bi-grid-3x3', 'color': 'info', 'title': gettext('Confusion Matrix'), 'desc': gettext('Test seti üzerindeki doğruluk, kesinlik, duyarlılık ve F1 skoru raporlanır.')},
+                {'icon': 'bi-file-earmark-pdf-fill', 'color': 'danger', 'title': gettext('PDF Rapor'), 'desc': gettext('Ağaç yapısı, metrikler ve APA formatında raporlama cümlesi PDF olarak indirilir.')},
             ],
         })
     if request.method == 'POST':
@@ -646,7 +646,7 @@ def karar_agaci_landing(request):
     return render(request, 'istatistik/karar_agaci.html', {
         'active_job_id': str(active_job.id) if active_job else None,
         'daily_remaining': _daily_remaining(request.user),
-        'tool_title': 'Karar Ağacı Sınıflandırması',
+        'tool_title': gettext('Karar Ağacı Sınıflandırması'),
         'tool_icon': 'bi-diagram-2',
         'tool_color': 'purple',
         **_console_ctx('karar_agaci', request),
@@ -660,15 +660,15 @@ def svm_landing(request):
         return render(request, 'service_promo.html', {
             **PROMO_BASE,
             'seo_guide': SEO_CONTENT.get('svm'),
-            'promo_title': 'Destek Vektör Makinesi (SVM)',
+            'promo_title': gettext('Destek Vektör Makinesi (SVM)'),
             'promo_icon': 'bi-cpu',
             'promo_color': 'teal',
-            'promo_description': 'Veri setinizdeki kategorik hedef değişkeni yüksek doğrulukla sınıflandırın. RBF, Doğrusal ve Polinom kernel seçenekleriyle confusion matrix ve permutation importance dahil tam ML raporu.',
+            'promo_description': gettext('Veri setinizdeki kategorik hedef değişkeni yüksek doğrulukla sınıflandırın. RBF, Doğrusal ve Polinom kernel seçenekleriyle confusion matrix ve permutation importance dahil tam ML raporu.'),
             'promo_features': [
-                {'icon': 'bi-cpu', 'title': 'SVM Modeli', 'desc': 'RBF, Doğrusal veya Polinom kernel ve C düzenleme parametresiyle Destek Vektör Makinesi eğitilir.'},
-                {'icon': 'bi-bar-chart-steps', 'color': 'warning', 'title': 'Permutation Importance', 'desc': 'Her değişkenin sınıflandırmaya gerçek katkısı permütasyon yöntemiyle hesaplanır ve sıralanır.'},
-                {'icon': 'bi-grid-3x3', 'color': 'info', 'title': 'Confusion Matrix', 'desc': 'Test seti üzerindeki doğruluk, kesinlik, duyarlılık ve F1 skoru raporlanır.'},
-                {'icon': 'bi-file-earmark-pdf-fill', 'color': 'danger', 'title': 'PDF Rapor', 'desc': 'Metrikler, confusion matrix ve APA formatında raporlama cümlesi PDF olarak indirilir.'},
+                {'icon': 'bi-cpu', 'title': gettext('SVM Modeli'), 'desc': gettext('RBF, Doğrusal veya Polinom kernel ve C düzenleme parametresiyle Destek Vektör Makinesi eğitilir.')},
+                {'icon': 'bi-bar-chart-steps', 'color': 'warning', 'title': gettext('Permutation Importance'), 'desc': gettext('Her değişkenin sınıflandırmaya gerçek katkısı permütasyon yöntemiyle hesaplanır ve sıralanır.')},
+                {'icon': 'bi-grid-3x3', 'color': 'info', 'title': gettext('Confusion Matrix'), 'desc': gettext('Test seti üzerindeki doğruluk, kesinlik, duyarlılık ve F1 skoru raporlanır.')},
+                {'icon': 'bi-file-earmark-pdf-fill', 'color': 'danger', 'title': gettext('PDF Rapor'), 'desc': gettext('Metrikler, confusion matrix ve APA formatında raporlama cümlesi PDF olarak indirilir.')},
             ],
         })
     if request.method == 'POST':
@@ -677,7 +677,7 @@ def svm_landing(request):
     return render(request, 'istatistik/svm.html', {
         'active_job_id': str(active_job.id) if active_job else None,
         'daily_remaining': _daily_remaining(request.user),
-        'tool_title': 'Destek Vektör Makinesi (SVM)',
+        'tool_title': gettext('Destek Vektör Makinesi (SVM)'),
         'tool_icon': 'bi-cpu',
         'tool_color': 'teal',
         **_console_ctx('svm', request),
@@ -691,15 +691,15 @@ def afa_landing(request):
         return render(request, 'service_promo.html', {
             **PROMO_BASE,
             'seo_guide': SEO_CONTENT.get('afa'),
-            'promo_title': 'Açıklayıcı Faktör Analizi (AFA)',
+            'promo_title': gettext('Açıklayıcı Faktör Analizi (AFA)'),
             'promo_icon': 'bi-diagram-2',
             'promo_color': 'info',
-            'promo_description': 'Ölçek geçerliğini kanıtlayın. KMO, Bartlett testi, faktör yük matrisi ve açıklanan varyans tablosu ile tam AFA raporu.',
+            'promo_description': gettext('Ölçek geçerliğini kanıtlayın. KMO, Bartlett testi, faktör yük matrisi ve açıklanan varyans tablosu ile tam AFA raporu.'),
             'promo_features': [
-                {'icon': 'bi-grid-3x3', 'title': 'Faktör Yapısı', 'desc': 'Varimax rotasyonlu faktör yük matrisi ile her maddenin hangi faktöre yüklendiğini görün.'},
-                {'icon': 'bi-bar-chart-steps', 'color': 'warning', 'title': 'KMO & Bartlett', 'desc': 'Örneklem yeterliliği (KMO) ve Bartlett küresellik testi ile faktör analizine uygunluğu sınayın.'},
-                {'icon': 'bi-percent', 'color': 'success', 'title': 'Açıklanan Varyans', 'desc': 'Her faktörün açıkladığı varyans yüzdesi ve kümülatif varyans tablosu.'},
-                {'icon': 'bi-file-earmark-pdf-fill', 'color': 'danger', 'title': 'PDF Rapor', 'desc': 'APA formatında raporlanabilir tablo ve yorum içeren PDF indirilir.'},
+                {'icon': 'bi-grid-3x3', 'title': gettext('Faktör Yapısı'), 'desc': gettext('Varimax rotasyonlu faktör yük matrisi ile her maddenin hangi faktöre yüklendiğini görün.')},
+                {'icon': 'bi-bar-chart-steps', 'color': 'warning', 'title': gettext('KMO & Bartlett'), 'desc': gettext('Örneklem yeterliliği (KMO) ve Bartlett küresellik testi ile faktör analizine uygunluğu sınayın.')},
+                {'icon': 'bi-percent', 'color': 'success', 'title': gettext('Açıklanan Varyans'), 'desc': gettext('Her faktörün açıkladığı varyans yüzdesi ve kümülatif varyans tablosu.')},
+                {'icon': 'bi-file-earmark-pdf-fill', 'color': 'danger', 'title': gettext('PDF Rapor'), 'desc': gettext('APA formatında raporlanabilir tablo ve yorum içeren PDF indirilir.')},
             ],
         })
     if request.method == 'POST':
@@ -708,15 +708,15 @@ def afa_landing(request):
     return render(request, 'istatistik/afa.html', {
         'active_job_id': str(active_job.id) if active_job else None,
         'daily_remaining': _daily_remaining(request.user),
-        'tool_title': 'Açıklayıcı Faktör Analizi (AFA)',
+        'tool_title': gettext('Açıklayıcı Faktör Analizi (AFA)'),
         'tool_icon': 'bi-diagram-2',
         'tool_color': 'info',
-        'tool_description': 'Ölçek geçerliğini sınayın. Her sütun bir madde, her satır bir katılımcı olmalıdır.',
+        'tool_description': gettext('Ölçek geçerliğini sınayın. Her sütun bir madde, her satır bir katılımcı olmalıdır.'),
         'tool_hints': [
-            'Her sütun bir ölçek maddesi olmalıdır (örn. M1, M2…).',
-            'Tüm sütunlar sayısal olmalıdır (Likert vb.).',
-            'Faktör sayısı otomatik belirlenir (özdeğer > 1 kuralı).',
-            'En az 3 madde ve 10 katılımcı gereklidir.',
+            gettext('Her sütun bir ölçek maddesi olmalıdır (örn. M1, M2…).'),
+            gettext('Tüm sütunlar sayısal olmalıdır (Likert vb.).'),
+            gettext('Faktör sayısı otomatik belirlenir (özdeğer > 1 kuralı).'),
+            gettext('En az 3 madde ve 10 katılımcı gereklidir.'),
         ],
         **_console_ctx('afa', request),
     })
@@ -729,15 +729,15 @@ def wilcoxon_landing(request):
         return render(request, 'service_promo.html', {
             **PROMO_BASE,
             'seo_guide': SEO_CONTENT.get('wilcoxon'),
-            'promo_title': 'Wilcoxon İşaret Testi',
+            'promo_title': gettext('Wilcoxon İşaret Testi'),
             'promo_icon': 'bi-arrow-left-right',
             'promo_color': 'warning',
-            'promo_description': 'İki bağımlı (eşleştirilmiş) ölçümü karşılaştırın. Bağımlı t-testinin parametrik olmayan alternatifi.',
+            'promo_description': gettext('İki bağımlı (eşleştirilmiş) ölçümü karşılaştırın. Bağımlı t-testinin parametrik olmayan alternatifi.'),
             'promo_features': [
-                {'icon': 'bi-bar-chart-steps', 'title': 'W İstatistiği', 'desc': 'Wilcoxon W istatistiği ve p değeri ile iki ölçüm arasındaki farkı sınayın.'},
-                {'icon': 'bi-arrows-collapse', 'color': 'warning', 'title': 'Etki Büyüklüğü', 'desc': 'Rank-biserial korelasyon (r) ile etki büyüklüğünü hesaplayın.'},
-                {'icon': 'bi-table', 'color': 'success', 'title': 'Betimsel Tablo', 'desc': 'Her ölçüm için medyan, ortalama ve fark istatistikleri.'},
-                {'icon': 'bi-file-earmark-pdf-fill', 'color': 'danger', 'title': 'PDF Rapor', 'desc': 'APA formatında otomatik rapor cümlesi ve PDF indirme.'},
+                {'icon': 'bi-bar-chart-steps', 'title': gettext('W İstatistiği'), 'desc': gettext('Wilcoxon W istatistiği ve p değeri ile iki ölçüm arasındaki farkı sınayın.')},
+                {'icon': 'bi-arrows-collapse', 'color': 'warning', 'title': gettext('Etki Büyüklüğü'), 'desc': gettext('Rank-biserial korelasyon (r) ile etki büyüklüğünü hesaplayın.')},
+                {'icon': 'bi-table', 'color': 'success', 'title': gettext('Betimsel Tablo'), 'desc': gettext('Her ölçüm için medyan, ortalama ve fark istatistikleri.')},
+                {'icon': 'bi-file-earmark-pdf-fill', 'color': 'danger', 'title': gettext('PDF Rapor'), 'desc': gettext('APA formatında otomatik rapor cümlesi ve PDF indirme.')},
             ],
         })
     if request.method == 'POST':
@@ -757,15 +757,15 @@ def friedman_landing(request):
         return render(request, 'service_promo.html', {
             **PROMO_BASE,
             'seo_guide': SEO_CONTENT.get('friedman'),
-            'promo_title': 'Friedman Testi',
+            'promo_title': gettext('Friedman Testi'),
             'promo_icon': 'bi-bar-chart-steps',
             'promo_color': 'success',
-            'promo_description': '3 veya daha fazla bağımlı (eşleştirilmiş) ölçümü karşılaştırın. Tekrarlayan ölçümler ANOVA\'nın parametrik olmayan alternatifi.',
+            'promo_description': gettext('3 veya daha fazla bağımlı (eşleştirilmiş) ölçümü karşılaştırın. Tekrarlayan ölçümler ANOVA\'nın parametrik olmayan alternatifi.'),
             'promo_features': [
-                {'icon': 'bi-bar-chart-steps', 'title': 'χ² İstatistiği', 'desc': 'Friedman χ² istatistiği, serbestlik derecesi ve p değeri ile ölçümler arası farkı sınayın.'},
-                {'icon': 'bi-rulers', 'color': 'success', 'title': "Kendall's W", 'desc': "Etki büyüklüğü Kendall's W katsayısı ile raporlanır."},
-                {'icon': 'bi-diagram-3', 'color': 'warning', 'title': 'Post-Hoc', 'desc': 'Anlamlı bulunursa Bonferroni düzeltmeli pairwise Wilcoxon karşılaştırmaları.'},
-                {'icon': 'bi-file-earmark-pdf-fill', 'color': 'danger', 'title': 'PDF Rapor', 'desc': 'APA formatında hazır raporlama cümlesi ve PDF indirme.'},
+                {'icon': 'bi-bar-chart-steps', 'title': gettext('χ² İstatistiği'), 'desc': gettext('Friedman χ² istatistiği, serbestlik derecesi ve p değeri ile ölçümler arası farkı sınayın.')},
+                {'icon': 'bi-rulers', 'color': 'success', 'title': gettext("Kendall's W"), 'desc': gettext("Etki büyüklüğü Kendall's W katsayısı ile raporlanır.")},
+                {'icon': 'bi-diagram-3', 'color': 'warning', 'title': gettext('Post-Hoc'), 'desc': gettext('Anlamlı bulunursa Bonferroni düzeltmeli pairwise Wilcoxon karşılaştırmaları.')},
+                {'icon': 'bi-file-earmark-pdf-fill', 'color': 'danger', 'title': gettext('PDF Rapor'), 'desc': gettext('APA formatında hazır raporlama cümlesi ve PDF indirme.')},
             ],
         })
     if request.method == 'POST':
@@ -785,15 +785,15 @@ def tekrarli_anova_landing(request):
         return render(request, 'service_promo.html', {
             **PROMO_BASE,
             'seo_guide': SEO_CONTENT.get('tekrarli_anova'),
-            'promo_title': 'Tekrarlayan Ölçümler ANOVA',
+            'promo_title': gettext('Tekrarlayan Ölçümler ANOVA'),
             'promo_icon': 'bi-graph-up-arrow',
             'promo_color': 'primary',
-            'promo_description': 'Aynı katılımcıların 3+ farklı koşulda/zamanda ölçüldüğü verileri analiz edin. F istatistiği, η² etki büyüklüğü ve Bonferroni post-hoc ile PDF raporu alın.',
+            'promo_description': gettext('Aynı katılımcıların 3+ farklı koşulda/zamanda ölçüldüğü verileri analiz edin. F istatistiği, η² etki büyüklüğü ve Bonferroni post-hoc ile PDF raporu alın.'),
             'promo_features': [
-                {'icon': 'bi-graph-up-arrow', 'title': 'F İstatistiği', 'desc': 'Tekrarlayan ölçümler ANOVA ile F istatistiği, serbestlik derecesi ve p değeri hesaplanır.'},
-                {'icon': 'bi-rulers', 'color': 'primary', 'title': 'Etki Büyüklüğü (η²)', 'desc': 'Partial eta-squared (η²) ile etki büyüklüğü raporlanır.'},
-                {'icon': 'bi-diagram-3', 'color': 'warning', 'title': 'Post-Hoc', 'desc': 'Bonferroni düzeltmeli bağımlı t-testi ile hangi ölçüm çiftlerinin farklılaştığı belirlenir.'},
-                {'icon': 'bi-file-earmark-pdf-fill', 'color': 'danger', 'title': 'PDF Rapor', 'desc': 'ANOVA tablosu, post-hoc ve APA formatında otomatik raporlama cümlesi.'},
+                {'icon': 'bi-graph-up-arrow', 'title': gettext('F İstatistiği'), 'desc': gettext('Tekrarlayan ölçümler ANOVA ile F istatistiği, serbestlik derecesi ve p değeri hesaplanır.')},
+                {'icon': 'bi-rulers', 'color': 'primary', 'title': gettext('Etki Büyüklüğü (η²)'), 'desc': gettext('Partial eta-squared (η²) ile etki büyüklüğü raporlanır.')},
+                {'icon': 'bi-diagram-3', 'color': 'warning', 'title': gettext('Post-Hoc'), 'desc': gettext('Bonferroni düzeltmeli bağımlı t-testi ile hangi ölçüm çiftlerinin farklılaştığı belirlenir.')},
+                {'icon': 'bi-file-earmark-pdf-fill', 'color': 'danger', 'title': gettext('PDF Rapor'), 'desc': gettext('ANOVA tablosu, post-hoc ve APA formatında otomatik raporlama cümlesi.')},
             ],
         })
     if request.method == 'POST':
@@ -835,11 +835,11 @@ def hero_upload(request):
 
     file = request.FILES.get('file')
     if not file:
-        return JsonResponse({'error': 'Dosya seçilmedi.'}, status=400)
+        return JsonResponse({'error': gettext('Dosya seçilmedi.')}, status=400)
     if not file.name.lower().endswith(('.csv', '.xlsx', '.xls')):
-        return JsonResponse({'error': 'CSV veya Excel dosyası yükleyin.'}, status=400)
+        return JsonResponse({'error': gettext('CSV veya Excel dosyası yükleyin.')}, status=400)
     if file.size > django_settings.MAX_UPLOAD_SIZE:
-        return JsonResponse({'error': 'Dosya boyutu 5 MB sınırını aşıyor.'}, status=400)
+        return JsonResponse({'error': gettext('Dosya boyutu 5 MB sınırını aşıyor.')}, status=400)
 
     content = file.read()
     try:
@@ -910,7 +910,7 @@ def _handle_orneklem_calc(request):
     except ValueError as e:
         return JsonResponse({'error': str(e)}, status=400)
     except Exception as e:
-        return JsonResponse({'error': f'Hesaplama hatası: {e}'}, status=500)
+        return JsonResponse({'error': gettext('Hesaplama hatası: %(e)s') % {'e': e}}, status=500)
 
 
 @require_GET
@@ -942,24 +942,24 @@ def _handle_upload(request, tool, options=None):
     if request.user.is_authenticated:
         remaining = _daily_remaining(request.user)
         if remaining <= 0:
-            msg = 'Günlük analiz limitiniz doldu.'
+            msg = gettext('Günlük analiz limitiniz doldu.')
             return JsonResponse({'error': msg}, status=429) if is_ajax else \
                    JsonResponse({'error': msg}, status=429)
 
         if not request.user.profile.email_verified:
-            msg = 'E-posta doğrulaması gereklidir.'
+            msg = gettext('E-posta doğrulaması gereklidir.')
             return JsonResponse({'error': msg}, status=403)
 
     file = request.FILES.get('file')
     if not file:
-        return JsonResponse({'error': 'Dosya seçilmedi.'}, status=400)
+        return JsonResponse({'error': gettext('Dosya seçilmedi.')}, status=400)
 
     allowed_ext = ('.csv', '.xlsx', '.xls')
     if not file.name.lower().endswith(allowed_ext):
-        return JsonResponse({'error': 'Yalnızca CSV veya Excel (.xlsx/.xls) dosyası yükleyebilirsiniz.'}, status=400)
+        return JsonResponse({'error': gettext('Yalnızca CSV veya Excel (.xlsx/.xls) dosyası yükleyebilirsiniz.')}, status=400)
 
     if file.size > django_settings.MAX_UPLOAD_SIZE:  # 10 MB
-        return JsonResponse({'error': 'Dosya boyutu 5 MB sınırını aşıyor.'}, status=400)
+        return JsonResponse({'error': gettext('Dosya boyutu 5 MB sınırını aşıyor.')}, status=400)
 
     content = file.read()
 

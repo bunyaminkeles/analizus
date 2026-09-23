@@ -1,9 +1,9 @@
 {% extends "istatistik/analiz_console_base.html" %}
-{% load static %}
+{% load static i18n %}
 {% block canonical %}/analiz/wilcoxon/{% endblock %}
 
-{% block title %}Wilcoxon İşaret Testi - Analizus{% endblock %}
-{% block meta_description %}İki eşleştirilmiş ölçümü Wilcoxon İşaret Testi ile ücretsiz karşılaştırın. W istatistiği, etki büyüklüğü ve APA formatında PDF rapor alın.{% endblock %}
+{% block title %}{% trans "Wilcoxon İşaret Testi" %} - Analizus{% endblock %}
+{% block meta_description %}{% trans "İki eşleştirilmiş ölçümü Wilcoxon İşaret Testi ile ücretsiz karşılaştırın. W istatistiği, etki büyüklüğü ve APA formatında PDF rapor alın." %}{% endblock %}
 
 {% block tool_area %}
 <div class="container py-4">
@@ -12,13 +12,13 @@
     <div class="col">
       <h2 class="fw-bold ax-text-primary mb-1 d-flex align-items-center">
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ax-text-accent me-2"><path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M21 8V5a2 2 0 0 0-2-2h-3"/><path d="M3 16v3a2 2 0 0 0 2 2h3"/><path d="M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
-        Wilcoxon İşaret Testi
+        {% trans "Wilcoxon İşaret Testi" %}
       </h2>
-      <p class="ax-text-muted mb-0">İki bağımlı (eşleştirilmiş) ölçümü karşılaştırın — bağımlı t-testinin parametrik olmayan alternatifi.</p>
+      <p class="ax-text-muted mb-0">{% trans "İki bağımlı (eşleştirilmiş) ölçümü karşılaştırın — bağımlı t-testinin parametrik olmayan alternatifi." %}</p>
     </div>
     {% if user.is_authenticated %}
     <div class="col-auto">
-      <span class="ax-badge ax-badge-secondary">Günlük: {{ daily_remaining }} analiz hakkı</span>
+      <span class="ax-badge ax-badge-secondary">{% blocktrans %}Günlük: {{ daily_remaining }} analiz hakkı{% endblocktrans %}</span>
     </div>
     {% endif %}
   </div>
@@ -31,27 +31,27 @@
 
         <h5 class="ax-text-primary fw-semibold mb-3 d-flex align-items-center">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ax-text-accent me-2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-          Dosya Yükle
+          {% trans "Dosya Yükle" %}
         </h5>
-        <p class="ax-text-muted ax-text-sm mb-3">CSV veya Excel (.xlsx/.xls) dosyanızı yükleyin.</p>
+        <p class="ax-text-muted ax-text-sm mb-3">{% trans "CSV veya Excel (.xlsx/.xls) dosyanızı yükleyin." %}</p>
 
         {% if not user.is_authenticated %}
         <div class="ax-alert-info mb-3 ax-text-sm">
           <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" class="me-2 flex-shrink-0" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-          <span><a href="{% url 'login' %}?next={{ request.path }}" class="ax-link">Giriş yapın</a> veya <a href="{% url 'register' %}?next={{ request.path }}" class="ax-link">kayıt olun</a> — geçmişiniz kaydedilsin.</span>
+          <span><a href="{% url 'login' %}?next={{ request.path }}" class="ax-link">{% trans "Giriş yapın" %}</a> veya <a href="{% url 'register' %}?next={{ request.path }}" class="ax-link">{% trans "kayıt olun" %}</a> {% trans "— geçmişiniz kaydedilsin." %}</span>
         </div>
         {% endif %}
 
         <div id="upload-area" class="ax-upload-area mb-3" onclick="document.getElementById('file-input').click()">
           <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ax-text-accent mb-2 mx-auto d-block"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M12 12v9"/><path d="m8 16 4-4 4 4"/></svg>
-          <p class="ax-text-muted ax-text-sm mb-1">Dosyayı buraya sürükleyin veya tıklayın</p>
-          <p class="ax-text-muted ax-text-sm mb-0" id="file-name-display">CSV, XLSX, XLS — Maks. {{ max_upload_mb }} MB</p>
+          <p class="ax-text-muted ax-text-sm mb-1">{% trans "Dosyayı buraya sürükleyin veya tıklayın" %}</p>
+          <p class="ax-text-muted ax-text-sm mb-0" id="file-name-display">{% blocktrans with mb=max_upload_mb %}CSV, XLSX, XLS — Maks. {{ mb }} MB{% endblocktrans %}</p>
         </div>
         <input type="file" id="file-input" accept=".csv,.xlsx,.xls" class="d-none">
 
         <button id="analyze-btn" class="ax-btn ax-btn-accent w-100 fw-semibold" disabled>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2"><path d="M4 6h16"/><path d="M8 12h8"/><path d="M11 18h2"/></svg>
-          Sütunları Getir
+          {% trans "Sütunları Getir" %}
         </button>
 
         <div id="error-msg" class="ax-alert-danger mt-3 d-none ax-text-sm"></div>
@@ -63,43 +63,43 @@
       <div class="ax-card p-4 h-100">
 
         <div id="panel-idle">
-          <h5 class="ax-text-muted fw-semibold mb-3">Sonuçlar burada görünecek</h5>
+          <h5 class="ax-text-muted fw-semibold mb-3">{% trans "Sonuçlar burada görünecek" %}</h5>
           <ul class="ax-text-muted ax-text-sm ps-3">
-            <li class="mb-1">İki sütun seçin: ön test ve son test (ya da iki ilgili ölçüm).</li>
-            <li class="mb-1">Her satır bir katılımcıyı temsil etmelidir.</li>
-            <li class="mb-1">Her iki sütun da sayısal olmalıdır.</li>
-            <li class="mb-1">En az 5 eşleştirilmiş gözlem gereklidir.</li>
+            <li class="mb-1">{% trans "İki sütun seçin: ön test ve son test (ya da iki ilgili ölçüm)." %}</li>
+            <li class="mb-1">{% trans "Her satır bir katılımcıyı temsil etmelidir." %}</li>
+            <li class="mb-1">{% trans "Her iki sütun da sayısal olmalıdır." %}</li>
+            <li class="mb-1">{% trans "En az 5 eşleştirilmiş gözlem gereklidir." %}</li>
           </ul>
         </div>
 
         <div id="panel-config" class="d-none">
           <h5 class="ax-text-primary fw-semibold mb-1 d-flex align-items-center">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ax-text-accent me-2"><path d="M4 6h16"/><path d="M8 12h8"/><path d="M11 18h2"/></svg>
-            Sütun Seçimi
+            {% trans "Sütun Seçimi" %}
           </h5>
-          <p class="ax-text-muted ax-text-sm mb-3">Karşılaştırılacak iki sayısal sütunu seçin (örn. ön test – son test).</p>
+          <p class="ax-text-muted ax-text-sm mb-3">{% trans "Karşılaştırılacak iki sayısal sütunu seçin (örn. ön test – son test)." %}</p>
 
           <div class="mb-3">
-            <label class="ax-text-muted ax-text-sm mb-1 d-block">1. Ölçüm (ön test / grup 1)</label>
+            <label class="ax-text-muted ax-text-sm mb-1 d-block">{% trans "1. Ölçüm (ön test / grup 1)" %}</label>
             <select id="col1-select" class="ax-select w-100"></select>
           </div>
           <div class="mb-3">
-            <label class="ax-text-muted ax-text-sm mb-1 d-block">2. Ölçüm (son test / grup 2)</label>
+            <label class="ax-text-muted ax-text-sm mb-1 d-block">{% trans "2. Ölçüm (son test / grup 2)" %}</label>
             <select id="col2-select" class="ax-select w-100"></select>
           </div>
 
           <div class="d-flex gap-2">
             <button id="run-analysis-btn" class="ax-btn ax-btn-accent fw-semibold flex-grow-1">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
-              Analizi Başlat
+              {% trans "Analizi Başlat" %}
             </button>
-            <button class="ax-btn ax-btn-outline-secondary" onclick="resetUI()">İptal</button>
+            <button class="ax-btn ax-btn-outline-secondary" onclick="resetUI()">{% trans "İptal" %}</button>
           </div>
         </div>
 
         <div id="panel-loading" class="text-center d-none py-4">
           <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="ax-text-accent mb-3 mx-auto d-block" style="animation: ax-spin 1s linear infinite;"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
-          <p class="ax-text-muted">Analiz yapılıyor, lütfen bekleyin…</p>
+          <p class="ax-text-muted">{% trans "Analiz yapılıyor, lütfen bekleyin…" %}</p>
         </div>
 
         <div id="panel-error" class="d-none">
@@ -115,20 +115,20 @@
         <div id="panel-done" class="d-none">
           <div class="d-flex align-items-center gap-2 mb-3">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ax-text-success"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-            <h5 class="ax-text-primary mb-0">Analiz Tamamlandı</h5>
+            <h5 class="ax-text-primary mb-0">{% trans "Analiz Tamamlandı" %}</h5>
           </div>
 
           <div class="row g-2 mb-2">
             <div class="col-4">
               <div class="ax-stat-box text-center">
                 <div class="ax-stat-val ax-text-accent" id="w-value">—</div>
-                <div class="ax-stat-label">W İstatistiği</div>
+                <div class="ax-stat-label">{% trans "W İstatistiği" %}</div>
               </div>
             </div>
             <div class="col-4">
               <div class="ax-stat-box text-center">
                 <div class="ax-stat-val ax-text-primary" id="p-value">—</div>
-                <div class="ax-stat-label">p-değeri</div>
+                <div class="ax-stat-label">{% trans "p-değeri" %}</div>
               </div>
             </div>
             <div class="col-4">
@@ -142,13 +142,13 @@
             <div class="col-6">
               <div class="ax-stat-box text-center">
                 <div class="ax-stat-val ax-text-primary" id="median1-val">—</div>
-                <div class="ax-stat-label" id="col1-label">1. Ölçüm Medyan</div>
+                <div class="ax-stat-label" id="col1-label">{% trans "1. Ölçüm Medyan" %}</div>
               </div>
             </div>
             <div class="col-6">
               <div class="ax-stat-box text-center">
                 <div class="ax-stat-val ax-text-primary" id="median2-val">—</div>
-                <div class="ax-stat-label" id="col2-label">2. Ölçüm Medyan</div>
+                <div class="ax-stat-label" id="col2-label">{% trans "2. Ölçüm Medyan" %}</div>
               </div>
             </div>
           </div>
@@ -157,10 +157,10 @@
 
           <div class="d-flex gap-2 flex-wrap">
             <a id="pdf-download-btn" href="#" target="_blank" class="ax-btn ax-btn-danger fw-semibold ax-btn-sm">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-1"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>PDF İndir
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-1"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>{% trans "PDF İndir" %}
             </a>
             <button class="ax-btn ax-btn-outline-secondary ax-btn-sm" onclick="resetUI()">
-              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" class="me-1" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>Yeni Analiz
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" class="me-1" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>{% trans "Yeni Analiz" %}
             </button>
           </div>
         </div>
@@ -178,18 +178,18 @@
 
     <div class="row g-4 mb-4">
       <div class="col-md-6">
-        <h6 class="ax-text-muted text-uppercase ax-text-sm fw-bold mb-2">Yöntem &amp; Varsayımlar</h6>
-        <p class="ax-text-muted ax-text-sm mb-2">Wilcoxon işaret testi, eşleştirilmiş iki ölçüm arasındaki farkın sıfırdan anlamlı biçimde farklı olup olmadığını sınar. Verilerin normal dağılım göstermediği durumlarda bağımlı t-testinin yerine kullanılır.</p>
-        <p class="ax-text-muted ax-text-sm mb-0"><strong class="ax-text-secondary">Ne zaman kullanılır?</strong> Ön test–son test karşılaştırması, eşleştirilmiş grup fark analizi ve tekrarlı ölçüm tasarımlarında tercih edilir.</p>
+        <h6 class="ax-text-muted text-uppercase ax-text-sm fw-bold mb-2">{% trans "Yöntem &amp; Varsayımlar" %}</h6>
+        <p class="ax-text-muted ax-text-sm mb-2">{% trans "Wilcoxon işaret testi, eşleştirilmiş iki ölçüm arasındaki farkın sıfırdan anlamlı biçimde farklı olup olmadığını sınar. Verilerin normal dağılım göstermediği durumlarda bağımlı t-testinin yerine kullanılır." %}</p>
+        <p class="ax-text-muted ax-text-sm mb-0"><strong class="ax-text-secondary">{% trans "Ne zaman kullanılır?" %}</strong> {% trans "Ön test–son test karşılaştırması, eşleştirilmiş grup fark analizi ve tekrarlı ölçüm tasarımlarında tercih edilir." %}</p>
       </div>
       <div class="col-md-6">
-        <h6 class="ax-text-muted text-uppercase ax-text-sm fw-bold mb-2">Etki Büyüklüğü (r)</h6>
+        <h6 class="ax-text-muted text-uppercase ax-text-sm fw-bold mb-2">{% trans "Etki Büyüklüğü (r)" %}</h6>
         <table class="ax-table mb-0">
           <tbody>
-            <tr><td>r &lt; .10</td><td class="ax-text-muted">İhmal edilebilir</td></tr>
-            <tr><td>.10 – .29</td><td class="ax-text-warning">Küçük etki</td></tr>
-            <tr><td>.30 – .49</td><td class="ax-text-accent">Orta düzey etki</td></tr>
-            <tr><td>≥ .50</td><td class="ax-text-success fw-bold">Büyük etki</td></tr>
+            <tr><td>r &lt; .10</td><td class="ax-text-muted">{% trans "İhmal edilebilir" %}</td></tr>
+            <tr><td>.10 – .29</td><td class="ax-text-warning">{% trans "Küçük etki" %}</td></tr>
+            <tr><td>.30 – .49</td><td class="ax-text-accent">{% trans "Orta düzey etki" %}</td></tr>
+            <tr><td>≥ .50</td><td class="ax-text-success fw-bold">{% trans "Büyük etki" %}</td></tr>
           </tbody>
         </table>
       </div>
@@ -197,18 +197,18 @@
 
     <hr style="border-color: var(--ax-border-default); margin: 1.5rem 0;">
 
-    <h6 class="ax-text-secondary fw-semibold mb-2">Tezinde Nasıl Raporlarsın?</h6>
+    <h6 class="ax-text-secondary fw-semibold mb-2">{% trans "Tezinde Nasıl Raporlarsın?" %}</h6>
     <div id="wilcoxon-apa-box" class="d-none ax-rounded-md p-3 mb-3" style="background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.2);">
       <p class="ax-text-primary ax-text-sm mb-2" id="wilcoxon-apa-display" style="font-style:italic;"></p>
       <button class="ax-btn ax-btn-outline-secondary ax-btn-sm" onclick="copyApa(this, 'wilcoxon-report-text')">
-        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" class="me-1" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Kopyala
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" class="me-1" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>{% trans "Kopyala" %}
       </button>
       <span id="wilcoxon-report-text" class="d-none"></span>
     </div>
     <div id="wilcoxon-apa-placeholder" class="ax-rounded-md p-3" style="background: rgba(99,102,241,0.05); border: 1px dashed rgba(99,102,241,0.2);">
       <p class="ax-text-muted ax-text-sm mb-0">
         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" class="me-1" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        Analizi tamamladıktan sonra APA formatında rapor cümlesi burada otomatik oluşacak.
+        {% trans "Analizi tamamladıktan sonra APA formatında rapor cümlesi burada otomatik oluşacak." %}
       </p>
     </div>
 
@@ -221,15 +221,27 @@
 
   <!-- SEO: Bu Test Nedir? -->
   <div class="ax-card mt-4 p-4">
-    <h5 class="ax-text-primary fw-semibold mb-3">Wilcoxon İşaret Testi Nedir?</h5>
-    <p class="ax-text-muted ax-text-sm mb-3">Wilcoxon işaret testi, iki bağımlı (eşleştirilmiş) ölçüm arasındaki farkın istatistiksel olarak anlamlı olup olmadığını sınamak için kullanılan non-parametrik bir testtir. Bağımlı örneklem t-testinin varsayımlarının (normallik gibi) karşılanamadığı durumlarda güçlü bir alternatif sağlar.</p>
-    <p class="ax-text-muted ax-text-sm mb-3">Tipik kullanım senaryoları arasında ön test – son test karşılaştırması (örneğin bir eğitimin etkisini değerlendirmek), iki yöntemin aynı katılımcılar üzerindeki etkisinin karşılaştırılması ve tekrarlı ölçüm çalışmaları yer alır. Test, sadece farkların işaretini ve büyüklük sıralamasını kullanarak çalışır; bu da aykırı değerlere karşı daha dayanıklı olmasını sağlar.</p>
-    <p class="ax-text-muted ax-text-sm mb-0">Sonuçlar W istatistiği ve p-değeri ile raporlanır. Etki büyüklüğü için rank-biserial korelasyon (r) hesaplanır. p &lt; .05 olduğunda iki ölçüm arasında anlamlı bir fark olduğu kabul edilir.</p>
+    <h5 class="ax-text-primary fw-semibold mb-3">{% trans "Wilcoxon İşaret Testi Nedir?" %}</h5>
+    <p class="ax-text-muted ax-text-sm mb-3">{% trans "Wilcoxon işaret testi, iki bağımlı (eşleştirilmiş) ölçüm arasındaki farkın istatistiksel olarak anlamlı olup olmadığını sınamak için kullanılan non-parametrik bir testtir. Bağımlı örneklem t-testinin varsayımlarının (normallik gibi) karşılanamadığı durumlarda güçlü bir alternatif sağlar." %}</p>
+    <p class="ax-text-muted ax-text-sm mb-3">{% trans "Tipik kullanım senaryoları arasında ön test – son test karşılaştırması (örneğin bir eğitimin etkisini değerlendirmek), iki yöntemin aynı katılımcılar üzerindeki etkisinin karşılaştırılması ve tekrarlı ölçüm çalışmaları yer alır. Test, sadece farkların işaretini ve büyüklük sıralamasını kullanarak çalışır; bu da aykırı değerlere karşı daha dayanıklı olmasını sağlar." %}</p>
+    <p class="ax-text-muted ax-text-sm mb-0">{% trans "Sonuçlar W istatistiği ve p-değeri ile raporlanır. Etki büyüklüğü için rank-biserial korelasyon (r) hesaplanır. p &lt; .05 olduğunda iki ölçüm arasında anlamlı bir fark olduğu kabul edilir." %}</p>
   </div>
 
 </div>
 
 <script>
+{% blocktrans with mb=max_upload_mb asvar t_max_size %}CSV, XLSX, XLS — Maks. {{ mb }} MB{% endblocktrans %}
+const T = {
+  maxSize: '{{ t_max_size|escapejs }}',
+  s1: '{% trans "Bağlantı hatası. Lütfen tekrar deneyin." as t %}{{ t|escapejs }}',
+  s2: '{% trans "İki farklı sütun seçmelisiniz." as t %}{{ t|escapejs }}',
+  s3: '{% trans "Analiz başarısız oldu." as t %}{{ t|escapejs }}',
+  s4: '{% trans "Günlük: " as t %}{{ t|escapejs }}',
+  s5: '{% trans " analiz hakkı" as t %}{{ t|escapejs }}',
+  s6: '{% trans "Anlamlı fark bulundu (p < .05)" as t %}{{ t|escapejs }}',
+  s7: '{% trans "Anlamlı fark yok (p ≥ .05)" as t %}{{ t|escapejs }}',
+  s8: '{% trans "Kopyalandı" as t %}{{ t|escapejs }}',
+};
 const STATUS_BASE = '{% url "istatistik:wilcoxon_status" job_id="00000000-0000-0000-0000-000000000000" %}';
 let pollInterval = null, currentJobId = null, previewData = null;
 
@@ -271,7 +283,7 @@ function previewFile() {
     buildColumnSelects(data.numeric_cols);
     showPanel('config');
   })
-  .catch(() => showError('Bağlantı hatası. Lütfen tekrar deneyin.'));
+  .catch(() => showError(T.s1));
 }
 
 function buildColumnSelects(cols) {
@@ -287,7 +299,7 @@ function runAnalysis() {
   if (!previewData) return;
   const col1 = document.getElementById('col1-select').value;
   const col2 = document.getElementById('col2-select').value;
-  if (col1 === col2) { showError('İki farklı sütun seçmelisiniz.'); return; }
+  if (col1 === col2) { showError(T.s2); return; }
   runAnalysisBtn.disabled = true;
   showPanel('loading');
   const fd = new FormData();
@@ -304,7 +316,7 @@ function runAnalysis() {
     currentJobId = data.job_id;
     startPolling(currentJobId);
   })
-  .catch(() => showError('Bağlantı hatası. Lütfen tekrar deneyin.'));
+  .catch(() => showError(T.s1));
 }
 
 function startPolling(jobId) {
@@ -314,7 +326,7 @@ function startPolling(jobId) {
     .then(r => r.json())
     .then(data => {
       if (data.status === 'completed') { clearInterval(pollInterval); onCompleted(data); }
-      else if (data.status === 'failed') { clearInterval(pollInterval); showError(data.error || 'Analiz başarısız oldu.'); }
+      else if (data.status === 'failed') { clearInterval(pollInterval); showError(data.error || T.s3); }
     }).catch(() => {});
   }, 2500);
 }
@@ -323,7 +335,7 @@ function onCompleted(data) {
   document.getElementById('pdf-download-btn').href = data.pdf_url;
   if (data.daily_remaining !== undefined) {
     const badge = document.querySelector('.ax-badge-secondary');
-    if (badge) badge.textContent = 'Günlük: ' + data.daily_remaining + ' analiz hakkı';
+    if (badge) badge.textContent = T.s4 + data.daily_remaining + T.s5;
   }
   if (data.result_data) {
     const r = data.result_data;
@@ -336,8 +348,8 @@ function onCompleted(data) {
     document.getElementById('col1-label').textContent = r.col1 + ' (Medyan)';
     document.getElementById('col2-label').textContent = r.col2 + ' (Medyan)';
     document.getElementById('sign-stats').textContent =
-      `n = ${r.n} · Pozitif fark: ${r.n_positive} · Negatif fark: ${r.n_negative} · Eşit: ${r.n_ties}`;
-    const sigText = r.significant ? 'Anlamlı fark bulundu (p < .05)' : 'Anlamlı fark yok (p ≥ .05)';
+      `n = ${r.n} · {% filter escapejs %}{% trans "Pozitif fark:" %}{% endfilter %} ${r.n_positive} · {% filter escapejs %}{% trans "Negatif fark:" %}{% endfilter %} ${r.n_negative} · {% filter escapejs %}{% trans "Eşit:" %}{% endfilter %} ${r.n_ties}`;
+    const sigText = r.significant ? T.s6 : T.s7;
     const sigColor = r.significant ? 'ax-text-success' : 'ax-text-muted';
     document.getElementById('significance-badge').innerHTML =
       `<span class="${sigColor} fw-semibold">${sigText}</span> · ${r.effect_interpretation}`;
@@ -365,7 +377,7 @@ function resetUI() {
   if (pollInterval) clearInterval(pollInterval);
   currentJobId = null; previewData = null;
   fileInput.value = ''; fileInput._selectedFile = null;
-  fileNameDisplay.textContent = 'CSV, XLSX, XLS — Maks. {{ max_upload_mb }} MB';
+  fileNameDisplay.textContent = T.maxSize;
   analyzeBtn.disabled = true;
   document.getElementById('error-msg').classList.add('d-none');
   document.getElementById('wilcoxon-apa-box').classList.add('d-none');
@@ -375,7 +387,7 @@ function resetUI() {
 function copyApa(btn, spanId) {
   navigator.clipboard.writeText(document.getElementById(spanId).textContent).then(() => {
     const orig = btn.innerHTML;
-    btn.innerHTML = '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" class="me-1" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Kopyalandı';
+    btn.innerHTML = '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" class="me-1" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>' + T.s8;
     setTimeout(() => { btn.innerHTML = orig; }, 2000);
   });
 }

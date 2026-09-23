@@ -1,9 +1,9 @@
 {% extends "istatistik/analiz_console_base.html" %}
-{% load static %}
+{% load static i18n %}
 {% block canonical %}/analiz/cronbach/{% endblock %}
 
-{% block title %}Güvenilirlik Analizi (Cronbach Alpha) - Analizus{% endblock %}
-{% block meta_description %}Anket ölçeğinizin iç tutarlılığını Cronbach Alpha ile ücretsiz hesaplayın. Excel veya CSV yükleyin, madde analizi ve APA formatında PDF rapor alın.{% endblock %}
+{% block title %}{% trans "Güvenilirlik Analizi (Cronbach Alpha)" %} - Analizus{% endblock %}
+{% block meta_description %}{% trans "Anket ölçeğinizin iç tutarlılığını Cronbach Alpha ile ücretsiz hesaplayın. Excel veya CSV yükleyin, madde analizi ve APA formatında PDF rapor alın." %}{% endblock %}
 
 {% block tool_area %}
 <div class="container py-4">
@@ -12,13 +12,13 @@
     <div class="col">
       <h2 class="fw-bold ax-text-primary mb-1 d-flex align-items-center">
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ax-text-accent me-2"><path d="m9 11 3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-        Güvenilirlik Analizi — Cronbach Alpha
+        {% trans "Güvenilirlik Analizi — Cronbach Alpha" %}
       </h2>
-      <p class="ax-text-muted mb-0">Anket ölçeğinizin iç tutarlılığını ölçün — madde analizi ve PDF rapor ile.</p>
+      <p class="ax-text-muted mb-0">{% trans "Anket ölçeğinizin iç tutarlılığını ölçün — madde analizi ve PDF rapor ile." %}</p>
     </div>
     {% if user.is_authenticated %}
     <div class="col-auto">
-      <span class="ax-badge ax-badge-secondary">Günlük: {{ daily_remaining }} analiz hakkı</span>
+      <span class="ax-badge ax-badge-secondary">{% blocktrans %}Günlük: {{ daily_remaining }} analiz hakkı{% endblocktrans %}</span>
     </div>
     {% endif %}
   </div>
@@ -31,27 +31,27 @@
 
         <h5 class="ax-text-primary fw-semibold mb-3 d-flex align-items-center">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ax-text-accent me-2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-          Dosya Yükle
+          {% trans "Dosya Yükle" %}
         </h5>
-        <p class="ax-text-muted ax-text-sm mb-3">CSV veya Excel (.xlsx/.xls) dosyanızı yükleyin.</p>
+        <p class="ax-text-muted ax-text-sm mb-3">{% trans "CSV veya Excel (.xlsx/.xls) dosyanızı yükleyin." %}</p>
 
         {% if not user.is_authenticated %}
         <div class="ax-alert-info mb-3 ax-text-sm">
           <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" class="me-2 flex-shrink-0" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-          <span><a href="{% url 'login' %}?next={{ request.path }}" class="ax-link">Giriş yapın</a> veya <a href="{% url 'register' %}?next={{ request.path }}" class="ax-link">kayıt olun</a> — geçmişiniz kaydedilsin.</span>
+          <span><a href="{% url 'login' %}?next={{ request.path }}" class="ax-link">{% trans "Giriş yapın" %}</a> veya <a href="{% url 'register' %}?next={{ request.path }}" class="ax-link">{% trans "kayıt olun" %}</a> {% trans "— geçmişiniz kaydedilsin." %}</span>
         </div>
         {% endif %}
 
         <div id="upload-area" class="ax-upload-area mb-3" onclick="document.getElementById('file-input').click()">
           <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ax-text-accent mb-2 mx-auto d-block"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M12 12v9"/><path d="m8 16 4-4 4 4"/></svg>
-          <p class="ax-text-muted ax-text-sm mb-1">Dosyayı buraya sürükleyin veya tıklayın</p>
-          <p class="ax-text-muted ax-text-sm mb-0" id="file-name-display">CSV, XLSX, XLS — Maks. {{ max_upload_mb }} MB</p>
+          <p class="ax-text-muted ax-text-sm mb-1">{% trans "Dosyayı buraya sürükleyin veya tıklayın" %}</p>
+          <p class="ax-text-muted ax-text-sm mb-0" id="file-name-display">{% blocktrans with mb=max_upload_mb %}CSV, XLSX, XLS — Maks. {{ mb }} MB{% endblocktrans %}</p>
         </div>
         <input type="file" id="file-input" accept=".csv,.xlsx,.xls" class="d-none">
 
         <button id="analyze-btn" class="ax-btn ax-btn-accent w-100 fw-semibold" disabled>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2"><path d="M4 6h16"/><path d="M8 12h8"/><path d="M11 18h2"/></svg>
-          Sütunları Getir
+          {% trans "Sütunları Getir" %}
         </button>
 
         <div id="error-msg" class="ax-alert-danger mt-3 d-none ax-text-sm"></div>
@@ -63,25 +63,25 @@
       <div class="ax-card p-4 h-100">
 
         <div id="panel-idle">
-          <h5 class="ax-text-muted fw-semibold mb-3">Sonuçlar burada görünecek</h5>
+          <h5 class="ax-text-muted fw-semibold mb-3">{% trans "Sonuçlar burada görünecek" %}</h5>
           <ul class="ax-text-muted ax-text-sm ps-3">
-            <li class="mb-1">Her sütun bir ölçek maddesi (soru) olmalıdır.</li>
-            <li class="mb-1">Her satır bir katılımcıyı temsil etmelidir.</li>
-            <li class="mb-1">Tüm değerlerin sayısal (Likert) olması gerekir.</li>
-            <li class="mb-1">Önerilen minimum madde sayısı: 3.</li>
+            <li class="mb-1">{% trans "Her sütun bir ölçek maddesi (soru) olmalıdır." %}</li>
+            <li class="mb-1">{% trans "Her satır bir katılımcıyı temsil etmelidir." %}</li>
+            <li class="mb-1">{% trans "Tüm değerlerin sayısal (Likert) olması gerekir." %}</li>
+            <li class="mb-1">{% trans "Önerilen minimum madde sayısı: 3." %}</li>
           </ul>
         </div>
 
         <div id="panel-config" class="d-none">
           <h5 class="ax-text-primary fw-semibold mb-1 d-flex align-items-center">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ax-text-accent me-2"><path d="M4 6h16"/><path d="M8 12h8"/><path d="M11 18h2"/></svg>
-            Madde (Sütun) Seçimi
+            {% trans "Madde (Sütun) Seçimi" %}
           </h5>
-          <p class="ax-text-muted ax-text-sm mb-3">Cronbach Alpha hesaplanacak maddeleri seçin. Yalnızca sayısal sütunlar listelenir.</p>
+          <p class="ax-text-muted ax-text-sm mb-3">{% trans "Cronbach Alpha hesaplanacak maddeleri seçin. Yalnızca sayısal sütunlar listelenir." %}</p>
 
           <div class="d-flex justify-content-between align-items-center mb-2">
-            <span class="ax-text-muted ax-text-sm" id="col-count-label">0 madde seçili</span>
-            <button class="ax-btn ax-btn-outline-secondary ax-btn-sm" id="toggle-all-btn">Tümünü Seç</button>
+            <span class="ax-text-muted ax-text-sm" id="col-count-label">{% trans "0 madde seçili" %}</span>
+            <button class="ax-btn ax-btn-outline-secondary ax-btn-sm" id="toggle-all-btn">{% trans "Tümünü Seç" %}</button>
           </div>
 
           <div id="col-checkbox-list" class="mb-3 ax-rounded-md" style="max-height: 260px; overflow-y: auto; border: 1px solid var(--ax-border-default); background: rgba(0,0,0,0.12);">
@@ -90,15 +90,15 @@
           <div class="d-flex gap-2">
             <button id="run-analysis-btn" class="ax-btn ax-btn-accent fw-semibold flex-grow-1" disabled>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
-              Analizi Başlat
+              {% trans "Analizi Başlat" %}
             </button>
-            <button class="ax-btn ax-btn-outline-secondary" onclick="resetUI()">İptal</button>
+            <button class="ax-btn ax-btn-outline-secondary" onclick="resetUI()">{% trans "İptal" %}</button>
           </div>
         </div>
 
         <div id="panel-loading" class="text-center d-none py-4">
           <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="ax-text-accent mb-3 mx-auto d-block" style="animation: ax-spin 1s linear infinite;"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
-          <p class="ax-text-muted">Analiz yapılıyor, lütfen bekleyin…</p>
+          <p class="ax-text-muted">{% trans "Analiz yapılıyor, lütfen bekleyin…" %}</p>
         </div>
 
         <div id="panel-error" class="d-none">
@@ -115,23 +115,23 @@
           <div class="ax-alert-warning mb-3">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-2 flex-shrink-0"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
             <div>
-              <strong class="ax-text-warning d-block mb-2">Veri uyarıları tespit edildi</strong>
+              <strong class="ax-text-warning d-block mb-2">{% trans "Veri uyarıları tespit edildi" %}</strong>
               <ul id="panel-warning-list" class="mb-3 ax-text-sm ps-3"></ul>
-              <p class="ax-text-muted ax-text-sm mb-0">Bu uyarılar veri kalitenizi etkileyebilir. Yine de devam edebilirsiniz.</p>
+              <p class="ax-text-muted ax-text-sm mb-0">{% trans "Bu uyarılar veri kalitenizi etkileyebilir. Yine de devam edebilirsiniz." %}</p>
             </div>
           </div>
           <div class="d-flex gap-2">
             <button id="confirm-warnings-btn" class="ax-btn ax-btn-warning ax-btn-sm fw-semibold">
               <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" class="me-1" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 16 16 12 12 8"/><line x1="8" y1="12" x2="16" y2="12"/></svg>Yine de devam et
             </button>
-            <button class="ax-btn ax-btn-outline-secondary ax-btn-sm" onclick="resetUI()">İptal</button>
+            <button class="ax-btn ax-btn-outline-secondary ax-btn-sm" onclick="resetUI()">{% trans "İptal" %}</button>
           </div>
         </div>
 
         <div id="panel-done" class="d-none">
           <div class="d-flex align-items-center gap-2 mb-3">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ax-text-success"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-            <h5 class="ax-text-primary mb-0">Analiz Tamamlandı</h5>
+            <h5 class="ax-text-primary mb-0">{% trans "Analiz Tamamlandı" %}</h5>
           </div>
 
           <div class="row g-3 mb-3">
@@ -149,15 +149,15 @@
             </div>
           </div>
           <p class="ax-text-muted ax-text-sm text-center mb-3">
-            <span id="n-items">—</span> madde &nbsp;·&nbsp; <span id="n-cases">—</span> katılımcı
+            <span id="n-items">—</span> madde &nbsp;·&nbsp; <span id="n-cases">—</span> {% trans "katılımcı" %}
           </p>
 
           <div class="d-flex gap-2 flex-wrap">
             <a id="pdf-download-btn" href="#" target="_blank" class="ax-btn ax-btn-danger fw-semibold ax-btn-sm">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-1"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>PDF İndir
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-1"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>{% trans "PDF İndir" %}
             </a>
             <button class="ax-btn ax-btn-outline-secondary ax-btn-sm" onclick="resetUI()">
-              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" class="me-1" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>Yeni Analiz
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" class="me-1" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>{% trans "Yeni Analiz" %}
             </button>
           </div>
         </div>
@@ -175,19 +175,19 @@
 
     <div class="row g-4 mb-4">
       <div class="col-md-6">
-        <h6 class="ax-text-muted text-uppercase ax-text-sm fw-bold mb-2">Yöntem &amp; Varsayımlar</h6>
-        <p class="ax-text-muted ax-text-sm mb-2">Cronbach Alpha, bir ölçeğin iç tutarlılığını ölçen katsayıdır. Her maddenin toplam puanla korelasyonuna dayalı olarak hesaplanır. Ölçek maddelerinin aynı yapıyı ölçtüğü varsayılır.</p>
-        <p class="ax-text-muted ax-text-sm mb-0"><strong class="ax-text-secondary">Formül:</strong> α = (k / k−1) × (1 − Σσ²ᵢ / σ²ₜ)<br><em>k</em> = madde sayısı, <em>σ²ᵢ</em> = madde varyansı, <em>σ²ₜ</em> = toplam puan varyansı</p>
+        <h6 class="ax-text-muted text-uppercase ax-text-sm fw-bold mb-2">{% trans "Yöntem &amp; Varsayımlar" %}</h6>
+        <p class="ax-text-muted ax-text-sm mb-2">{% trans "Cronbach Alpha, bir ölçeğin iç tutarlılığını ölçen katsayıdır. Her maddenin toplam puanla korelasyonuna dayalı olarak hesaplanır. Ölçek maddelerinin aynı yapıyı ölçtüğü varsayılır." %}</p>
+        <p class="ax-text-muted ax-text-sm mb-0"><strong class="ax-text-secondary">{% trans "Formül:" %}</strong> α = (k / k−1) × (1 − Σσ²ᵢ / σ²ₜ)<br><em>k</em> {% trans "= madde sayısı," %} <em>σ²ᵢ</em> {% trans "= madde varyansı," %} <em>σ²ₜ</em> {% trans "= toplam puan varyansı" %}</p>
       </div>
       <div class="col-md-6">
-        <h6 class="ax-text-muted text-uppercase ax-text-sm fw-bold mb-2">Yorum Eşikleri</h6>
+        <h6 class="ax-text-muted text-uppercase ax-text-sm fw-bold mb-2">{% trans "Yorum Eşikleri" %}</h6>
         <table class="ax-table mb-0">
           <tbody>
             <tr><td>α &lt; .50</td><td class="ax-text-danger">Kabul edilemez</td></tr>
-            <tr><td>.50 – .70</td><td class="ax-text-warning">Düşük güvenilirlik</td></tr>
-            <tr><td>.70 – .80</td><td class="ax-text-accent">Yeterli güvenilirlik</td></tr>
-            <tr><td>.80 – .90</td><td class="ax-text-success">Yüksek güvenilirlik</td></tr>
-            <tr><td>&gt; .90</td><td class="ax-text-success fw-bold">Çok yüksek güvenilirlik</td></tr>
+            <tr><td>.50 – .70</td><td class="ax-text-warning">{% trans "Düşük güvenilirlik" %}</td></tr>
+            <tr><td>.70 – .80</td><td class="ax-text-accent">{% trans "Yeterli güvenilirlik" %}</td></tr>
+            <tr><td>.80 – .90</td><td class="ax-text-success">{% trans "Yüksek güvenilirlik" %}</td></tr>
+            <tr><td>&gt; .90</td><td class="ax-text-success fw-bold">{% trans "Çok yüksek güvenilirlik" %}</td></tr>
           </tbody>
         </table>
       </div>
@@ -195,18 +195,18 @@
 
     <hr style="border-color: var(--ax-border-default); margin: 1.5rem 0;">
 
-    <h6 class="ax-text-secondary fw-semibold mb-2">Tezinde Nasıl Raporlarsın?</h6>
+    <h6 class="ax-text-secondary fw-semibold mb-2">{% trans "Tezinde Nasıl Raporlarsın?" %}</h6>
     <div id="cronbach-apa-box" class="d-none ax-rounded-md p-3 mb-3" style="background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.2);">
       <p class="ax-text-primary ax-text-sm mb-2" id="cronbach-apa-display" style="font-style:italic;"></p>
       <button class="ax-btn ax-btn-outline-secondary ax-btn-sm" onclick="copyApa(this, 'cronbach-report-text')">
-        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" class="me-1" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Kopyala
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" class="me-1" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>{% trans "Kopyala" %}
       </button>
       <span id="cronbach-report-text" class="d-none"></span>
     </div>
     <div id="cronbach-apa-placeholder" class="ax-rounded-md p-3" style="background: rgba(99,102,241,0.05); border: 1px dashed rgba(99,102,241,0.2);">
       <p class="ax-text-muted ax-text-sm mb-0">
         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" class="me-1" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        Analizi tamamladıktan sonra APA formatında rapor cümlesi burada otomatik oluşacak.
+        {% trans "Analizi tamamladıktan sonra APA formatında rapor cümlesi burada otomatik oluşacak." %}
       </p>
     </div>
 
@@ -219,15 +219,28 @@
 
   <!-- SEO: Bu Test Nedir? -->
   <div class="ax-card mt-4 p-4">
-    <h5 class="ax-text-primary fw-semibold mb-3">Cronbach Alpha Güvenilirlik Analizi Nedir?</h5>
-    <p class="ax-text-muted ax-text-sm mb-3">Cronbach Alpha (α), bir ölçeğin veya anketin iç tutarlılığını ölçen en yaygın güvenilirlik katsayısıdır. Birden fazla maddenin aynı yapıyı ölçüp ölçmediğini test eder. Sosyal bilimler, eğitim araştırmaları ve psikoloji alanlarında ölçek geliştirme çalışmalarında zorunlu bir adımdır.</p>
-    <p class="ax-text-muted ax-text-sm mb-3">Her sütunun bir ölçek maddesi (soru), her satırın ise bir katılımcıyı temsil etmesi gerekir. Tüm maddelerin aynı Likert ölçeğinde olması ve aynı yönde puanlanması önerilir. Analiz sonucunda elde edilen α değeri, ölçeğin güvenilirlik düzeyini gösterir.</p>
-    <p class="ax-text-muted ax-text-sm mb-0">Genel kabul gören eşiğe göre α ≥ .70 yeterli güvenilirlik, α ≥ .80 ise yüksek güvenilirlik olarak değerlendirilir. Madde-toplam korelasyonu düşük olan maddeler (r &lt; .30) ölçekten çıkarılması için değerlendirilmelidir.</p>
+    <h5 class="ax-text-primary fw-semibold mb-3">{% trans "Cronbach Alpha Güvenilirlik Analizi Nedir?" %}</h5>
+    <p class="ax-text-muted ax-text-sm mb-3">{% trans "Cronbach Alpha (α), bir ölçeğin veya anketin iç tutarlılığını ölçen en yaygın güvenilirlik katsayısıdır. Birden fazla maddenin aynı yapıyı ölçüp ölçmediğini test eder. Sosyal bilimler, eğitim araştırmaları ve psikoloji alanlarında ölçek geliştirme çalışmalarında zorunlu bir adımdır." %}</p>
+    <p class="ax-text-muted ax-text-sm mb-3">{% trans "Her sütunun bir ölçek maddesi (soru), her satırın ise bir katılımcıyı temsil etmesi gerekir. Tüm maddelerin aynı Likert ölçeğinde olması ve aynı yönde puanlanması önerilir. Analiz sonucunda elde edilen α değeri, ölçeğin güvenilirlik düzeyini gösterir." %}</p>
+    <p class="ax-text-muted ax-text-sm mb-0">{% trans "Genel kabul gören eşiğe göre α ≥ .70 yeterli güvenilirlik, α ≥ .80 ise yüksek güvenilirlik olarak değerlendirilir. Madde-toplam korelasyonu düşük olan maddeler (r &lt; .30) ölçekten çıkarılması için değerlendirilmelidir." %}</p>
   </div>
 
 </div>
 
 <script>
+{% blocktrans with mb=max_upload_mb asvar t_max_size %}CSV, XLSX, XLS — Maks. {{ mb }} MB{% endblocktrans %}
+const T = {
+  maxSize: '{{ t_max_size|escapejs }}',
+  s1: '{% trans "Bağlantı hatası. Lütfen tekrar deneyin." as t %}{{ t|escapejs }}',
+  s2: '{% trans " madde seçili" as t %}{{ t|escapejs }}',
+  s3: '{% trans "Tümünü Kaldır" as t %}{{ t|escapejs }}',
+  s4: '{% trans "Tümünü Seç" as t %}{{ t|escapejs }}',
+  s5: '{% trans "Analiz başarısız oldu." as t %}{{ t|escapejs }}',
+  s6: '{% trans "Günlük: " as t %}{{ t|escapejs }}',
+  s7: '{% trans " analiz hakkı" as t %}{{ t|escapejs }}',
+  s8: '{% trans " katılımcı" as t %}{{ t|escapejs }}',
+  s9: '{% trans "Kopyalandı" as t %}{{ t|escapejs }}',
+};
 const STATUS_BASE = '{% url "istatistik:cronbach_status" job_id="00000000-0000-0000-0000-000000000000" %}';
 let pollInterval = null, currentJobId = null, previewData = null;
 
@@ -271,7 +284,7 @@ function previewFile() {
     buildColumnCheckboxes(data.numeric_cols);
     showPanel('config');
   })
-  .catch(() => showError('Bağlantı hatası. Lütfen tekrar deneyin.'));
+  .catch(() => showError(T.s1));
 }
 
 function buildColumnCheckboxes(cols) {
@@ -289,9 +302,9 @@ function buildColumnCheckboxes(cols) {
 function updateColCount() {
   const cbs = document.querySelectorAll('.col-cb');
   const selected = [...cbs].filter(cb => cb.checked).length;
-  document.getElementById('col-count-label').textContent = selected + ' madde seçili';
+  document.getElementById('col-count-label').textContent = selected + T.s2;
   runAnalysisBtn.disabled = selected < 2;
-  toggleAllBtn.textContent = selected === cbs.length ? 'Tümünü Kaldır' : 'Tümünü Seç';
+  toggleAllBtn.textContent = selected === cbs.length ? T.s3 : T.s4;
 }
 
 function toggleAllColumns() {
@@ -320,7 +333,7 @@ function runAnalysis() {
     currentJobId = data.job_id;
     startPolling(currentJobId);
   })
-  .catch(() => showError('Bağlantı hatası. Lütfen tekrar deneyin.'));
+  .catch(() => showError(T.s1));
 }
 
 function startPolling(jobId) {
@@ -330,7 +343,7 @@ function startPolling(jobId) {
     .then(r => r.json())
     .then(data => {
       if (data.status === 'completed') { clearInterval(pollInterval); onCompleted(data); }
-      else if (data.status === 'failed') { clearInterval(pollInterval); showError(data.error || 'Analiz başarısız oldu.'); }
+      else if (data.status === 'failed') { clearInterval(pollInterval); showError(data.error || T.s5); }
     }).catch(() => {});
   }, 2500);
 }
@@ -339,7 +352,7 @@ function onCompleted(data) {
   document.getElementById('pdf-download-btn').href = data.pdf_url;
   if (data.daily_remaining !== undefined) {
     const badge = document.querySelector('.ax-badge-secondary');
-    if (badge) badge.textContent = 'Günlük: ' + data.daily_remaining + ' analiz hakkı';
+    if (badge) badge.textContent = T.s6 + data.daily_remaining + T.s7;
   }
   if (data.result_data) {
     const r = data.result_data;
@@ -347,7 +360,7 @@ function onCompleted(data) {
     document.getElementById('alpha-value').textContent = alpha;
     document.getElementById('alpha-interp').textContent = r.interpretation;
     document.getElementById('n-items').textContent = r.n_items + ' madde';
-    document.getElementById('n-cases').textContent = r.n_cases + ' katılımcı';
+    document.getElementById('n-cases').textContent = r.n_cases + T.s8;
     const apaText = `${r.n_items} maddeden oluşan ölçeğin iç tutarlılık katsayısı Cronbach Alpha değeri α = ${alpha} olarak hesaplanmıştır (n = ${r.n_cases}). Bu değer, ölçeğin ${(r.interpretation || '').toLowerCase()} düzeyde güvenilir olduğunu göstermektedir (Nunnally, 1978).`;
     document.getElementById('cronbach-apa-display').textContent = apaText;
     document.getElementById('cronbach-report-text').textContent = apaText;
@@ -370,7 +383,7 @@ function resetUI() {
   if (pollInterval) clearInterval(pollInterval);
   currentJobId = null; previewData = null;
   fileInput.value = ''; fileInput._selectedFile = null;
-  fileNameDisplay.textContent = 'CSV, XLSX, XLS — Maks. {{ max_upload_mb }} MB';
+  fileNameDisplay.textContent = T.maxSize;
   analyzeBtn.disabled = true;
   document.getElementById('error-msg').classList.add('d-none');
   document.getElementById('cronbach-apa-box').classList.add('d-none');
@@ -380,7 +393,7 @@ function resetUI() {
 function copyApa(btn, spanId) {
   navigator.clipboard.writeText(document.getElementById(spanId).textContent).then(() => {
     const orig = btn.innerHTML;
-    btn.innerHTML = '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" class="me-1" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Kopyalandı';
+    btn.innerHTML = '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" class="me-1" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>' + T.s9;
     setTimeout(() => { btn.innerHTML = orig; }, 2000);
   });
 }
