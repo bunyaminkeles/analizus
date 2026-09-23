@@ -81,11 +81,11 @@
 
             <!-- Model parametreleri -->
             <div class="mb-3">
-              <label class="text-white-50 small mb-1 d-block">Kernel Fonksiyonu</label>
+              <label class="text-white-50 small mb-1 d-block">{% trans "Kernel Fonksiyonu" %}</label>
               <select id="kernel" class="form-select form-select-sm bg-dark text-white border-secondary">
                 <option value="rbf" selected>{% trans "RBF (Radyal Tabanlı) — Önerilen" %}</option>
                 <option value="linear">{% trans "Doğrusal (Linear)" %}</option>
-                <option value="poly">Polinom</option>
+                <option value="poly">{% trans "Polinom" %}</option>
               </select>
             </div>
 
@@ -152,7 +152,7 @@
               <i class="bi bi-exclamation-triangle-fill me-2"></i>
               <span id="panel-error-msg"></span>
             </div>
-            <button class="btn btn-outline-secondary btn-sm" onclick="resetToUpload()">Yeniden Dene</button>
+            <button class="btn btn-outline-secondary btn-sm" onclick="resetToUpload()">{% trans "Yeniden Dene" %}</button>
           </div>
 
           <div id="panel-done" class="d-none">
@@ -176,7 +176,7 @@
               <div class="col-6 col-md-3">
                 <div class="rounded-3 p-3 text-center" style="background:rgba(255,255,255,0.05);">
                   <div class="fs-5 fw-bold text-info" id="res-precision">—</div>
-                  <div class="text-white-50 small">Kesinlik</div>
+                  <div class="text-white-50 small">{% trans "Kesinlik" %}</div>
                 </div>
               </div>
               <div class="col-6 col-md-3">
@@ -188,7 +188,7 @@
               <div class="col-6 col-md-3">
                 <div class="rounded-3 p-3 text-center" style="background:rgba(255,255,255,0.05);">
                   <div class="fs-5 fw-bold text-success" id="res-f1">—</div>
-                  <div class="text-white-50 small">F1 Skoru</div>
+                  <div class="text-white-50 small">{% trans "F1 Skoru" %}</div>
                 </div>
               </div>
             </div>

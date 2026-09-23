@@ -2,7 +2,7 @@
 {% load static i18n %}
 {% block canonical %}/analiz/kruskal-wallis/{% endblock %}
 
-{% block title %}Kruskal-Wallis H Testi (ANOVA Alternatifi) - Analizus{% endblock %}
+{% block title %}{% trans "Kruskal-Wallis H Testi (ANOVA Alternatifi)" %} - Analizus{% endblock %}
 {% block meta_description %}{% trans "Parametrik olmayan çoklu grup karşılaştırması için Kruskal-Wallis H testi. Normal dağılım varsayımı gerektirmez, online ücretsiz analiz ve PDF rapor." %}{% endblock %}
 
 {% block tool_area %}
@@ -11,7 +11,7 @@
   <div class="row mb-4 align-items-center">
     <div class="col">
       <h2 class="fw-bold text-white mb-1">
-        <i class="bi bi-bar-chart-steps text-info me-2"></i>Kruskal-Wallis H Testi
+        <i class="bi bi-bar-chart-steps text-info me-2"></i>{% trans "Kruskal-Wallis H Testi" %}
       </h2>
       <p class="text-white-50 mb-0">{% trans "3 veya daha fazla grubun dağılımını non-parametrik olarak karşılaştırın — ANOVA'nın parametrik olmayan alternatifi." %}</p>
     </div>
@@ -101,13 +101,13 @@
               <i class="bi bi-exclamation-triangle-fill me-2"></i>
               <span id="panel-error-msg"></span>
             </div>
-            <button class="btn btn-outline-light btn-sm" onclick="resetToUpload()">Tekrar Dene</button>
+            <button class="btn btn-outline-light btn-sm" onclick="resetToUpload()">{% trans "Tekrar Dene" %}</button>
           </div>
 
           <div id="panel-done" class="d-none">
             <div class="d-flex align-items-center gap-2 mb-3">
               <i class="bi bi-check-circle-fill text-success fs-4"></i>
-              <h5 class="text-white mb-0">Kruskal-Wallis H Testi</h5>
+              <h5 class="text-white mb-0">{% trans "Kruskal-Wallis H Testi" %}</h5>
             </div>
 
             <div class="row g-3 mb-3">
@@ -143,7 +143,7 @@
             </div>
 
             <div id="posthoc-section" class="d-none mb-3">
-              <p class="text-white-50 small mb-1 fw-semibold">Post-Hoc Testler (Mann-Whitney U + Bonferroni)</p>
+              <p class="text-white-50 small mb-1 fw-semibold">{% trans "Post-Hoc Testler (Mann-Whitney U + Bonferroni)" %}</p>
               <div style="overflow-x:auto;">
                 <table id="posthoc-table" class="table table-dark table-bordered table-sm small mb-0" style="font-size:0.75rem;"></table>
               </div>
@@ -177,14 +177,14 @@
   </div>
 
   <div class="mt-4 rounded-3 p-4" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07);">
-    <h5 class="text-white fw-semibold mb-3"><i class="bi bi-journal-text me-2 text-info"></i>Metodoloji</h5>
+    <h5 class="text-white fw-semibold mb-3"><i class="bi bi-journal-text me-2 text-info"></i>{% trans "Metodoloji" %}</h5>
     <div class="row g-4">
       <div class="col-md-6">
         <h6 class="text-white-50 text-uppercase small fw-bold mb-2">{% trans "Varsayımlar" %}</h6>
         <ul class="text-white-50 small ps-3 mb-0">
           <li>{% trans "Bağımsız gözlemler" %}</li>
           <li>{% trans "Ordinal veya sürekli bağımlı değişken" %}</li>
-          <li>{% trans "Normallik varsayımı" %} <strong class="text-white">gerekmez</strong></li>
+          <li>{% trans "Normallik varsayımı" %} <strong class="text-white">{% trans "gerekmez" %}</strong></li>
           <li>{% trans "Her grupta en az 3 gözlem önerilir" %}</li>
         </ul>
       </div>
@@ -194,7 +194,7 @@
           <tbody>
             <tr><td>η² &lt; .01</td><td class="text-white-50">{% trans "İhmal edilebilir" %}</td></tr>
             <tr><td>.01 – .06</td><td class="text-warning">{% trans "Küçük" %}</td></tr>
-            <tr><td>.06 – .14</td><td class="text-info">Orta</td></tr>
+            <tr><td>.06 – .14</td><td class="text-info">{% trans "Orta" context "etki büyüklüğü" %}</td></tr>
             <tr><td>&gt; .14</td><td class="text-success fw-bold">{% trans "Büyük" %}</td></tr>
           </tbody>
         </table>
@@ -204,7 +204,7 @@
 
   <!-- SEO: Bu Test Nedir? -->
   <div class="ax-card mt-4 p-4">
-    <h5 class="ax-text-primary fw-semibold mb-3">Kruskal-Wallis H Testi Nedir?</h5>
+    <h5 class="ax-text-primary fw-semibold mb-3">{% trans "Kruskal-Wallis H Testi Nedir?" %}</h5>
     <p class="ax-text-muted ax-text-sm mb-3">{% trans "Kruskal-Wallis H testi, üç veya daha fazla bağımsız grubu karşılaştıran non-parametrik bir testtir. Tek Yönlü ANOVA'nın normallik varsayımı karşılanamadığında kullanılan alternatifidir. Sıralı (ordinal) veya sürekli verilerle çalışabilir." %}</p>
     <p class="ax-text-muted ax-text-sm mb-3">{% trans "Test anlamlı bir sonuç verdiğinde hangi grupların birbirinden farklı olduğunu belirlemek için post-hoc testlerine ihtiyaç duyulur. Dunn testi (Bonferroni düzeltmeli) en yaygın kullanılan post-hoc yöntemidir." %}</p>
     <p class="ax-text-muted ax-text-sm mb-0">{% trans "Etki büyüklüğü için η² (eta kare) veya ε² (epsilon kare) hesaplanmalıdır. İki gruplu karşılaştırmalarda Mann-Whitney U tercih edilmelidir; Kruskal-Wallis üç ve üzeri grup içindir." %}</p>

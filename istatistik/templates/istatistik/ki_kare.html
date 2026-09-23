@@ -2,7 +2,7 @@
 {% load static i18n %}
 {% block canonical %}/analiz/ki-kare/{% endblock %}
 
-{% block title %}Ki-Kare Testi ve Fisher's Exact Test - Analizus{% endblock %}
+{% block title %}{% trans "Ki-Kare Testi ve Fisher's Exact Test" %} - Analizus{% endblock %}
 {% block meta_description %}{% trans "Ki-Kare ve Fisher's Exact testleri ile kategorik değişkenler arasındaki ilişkiyi analiz edin. Çapraz tablo, beklenen frekanslar ve APA formatında PDF rapor." %}{% endblock %}
 
 {% block tool_area %}
@@ -101,7 +101,7 @@
               <i class="bi bi-exclamation-triangle-fill me-2"></i>
               <span id="panel-error-msg"></span>
             </div>
-            <button class="btn btn-outline-light btn-sm" onclick="resetToUpload()">Tekrar Dene</button>
+            <button class="btn btn-outline-light btn-sm" onclick="resetToUpload()">{% trans "Tekrar Dene" %}</button>
           </div>
 
           <div id="panel-done" class="d-none">
@@ -180,7 +180,7 @@
   </div>
 
   <div class="mt-4 rounded-3 p-4" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07);">
-    <h5 class="text-white fw-semibold mb-3"><i class="bi bi-journal-text me-2" style="color:#a78bfa;"></i>Metodoloji</h5>
+    <h5 class="text-white fw-semibold mb-3"><i class="bi bi-journal-text me-2" style="color:#a78bfa;"></i>{% trans "Metodoloji" %}</h5>
     <div class="row g-4">
       <div class="col-md-6">
         <h6 class="text-white-50 text-uppercase small fw-bold mb-2">{% trans "Varsayımlar" %}</h6>
@@ -197,7 +197,7 @@
           <tbody>
             <tr><td>V &lt; .10</td><td class="text-white-50">{% trans "Çok küçük" %}</td></tr>
             <tr><td>.10 – .30</td><td class="text-info">{% trans "Küçük" %}</td></tr>
-            <tr><td>.30 – .50</td><td class="text-warning">Orta</td></tr>
+            <tr><td>.30 – .50</td><td class="text-warning">{% trans "Orta" context "etki büyüklüğü" %}</td></tr>
             <tr><td>&gt; .50</td><td class="text-success fw-bold">{% trans "Büyük" %}</td></tr>
           </tbody>
         </table>
@@ -207,7 +207,7 @@
 
   <!-- SEO: Bu Test Nedir? -->
   <div class="ax-card mt-4 p-4">
-    <h5 class="ax-text-primary fw-semibold mb-3">Ki-Kare Testi Nedir?</h5>
+    <h5 class="ax-text-primary fw-semibold mb-3">{% trans "Ki-Kare Testi Nedir?" %}</h5>
     <p class="ax-text-muted ax-text-sm mb-3">{% trans "Ki-Kare (χ²) Bağımsızlık Testi, iki kategorik değişken arasında istatistiksel bir ilişki olup olmadığını sınar. Cinsiyet ile tercih, eğitim düzeyi ile tutum gibi kategorik değişken çiftleri için kullanılır. Parametrik olmayan bir testtir ve verilerin normal dağılmasını gerektirmez." %}</p>
     <p class="ax-text-muted ax-text-sm mb-3">{% trans "Testin temel koşulları şunlardır: her hücredeki beklenen frekansın 5'ten büyük olması ve gözlemlerin birbirinden bağımsız olması. Beklenen frekanslar küçükse Fisher'ın Tam Testi tercih edilmelidir." %}</p>
     <p class="ax-text-muted ax-text-sm mb-0">{% trans "İlişkinin gücünü raporlamak için Cramér's V etki büyüklüğü hesaplanmalıdır. V &gt; .30 orta, V &gt; .50 ise büyük etki büyüklüğü olarak yorumlanır. Contingency tablosunun göstergesi değil, anlamlı bir pratik öneme sahip olup olmadığını da değerlendirin." %}</p>

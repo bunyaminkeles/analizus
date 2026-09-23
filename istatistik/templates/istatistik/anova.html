@@ -67,7 +67,7 @@
             </div>
 
             <div class="mb-3">
-              <label class="ax-text-muted ax-text-sm mb-2 d-block">Post-Hoc Testi</label>
+              <label class="ax-text-muted ax-text-sm mb-2 d-block">{% trans "Post-Hoc Testi" %}</label>
               <div class="d-flex gap-2">
                 <button type="button" class="ax-btn ax-btn--sm ax-btn--danger active" data-ph="tukey">Tukey</button>
                 <button type="button" class="ax-btn ax-btn--sm ax-btn--outline-secondary" data-ph="bonferroni">Bonferroni</button>
@@ -93,7 +93,7 @@
               <li class="mb-1">{% trans "Her satır bir gözlem (kişi/ölçüm) olmalıdır." %}</li>
               <li class="mb-1">{% trans "Grup sütunu kategorik değerler içermelidir (ör. A/B/C veya 1/2/3)." %}</li>
               <li class="mb-1">{% trans "p &lt; .05 ise post-hoc testler otomatik olarak hesaplanır." %}</li>
-              <li class="mb-1">En az 2, en fazla 20 grup desteklenir.</li>
+              <li class="mb-1">{% trans "En az 2, en fazla 20 grup desteklenir." %}</li>
             </ul>
           </div>
 
@@ -107,7 +107,7 @@
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
               <span id="panel-error-msg" class="ax-text-sm"></span>
             </div>
-            <button class="ax-btn ax-btn--outline-secondary ax-btn--sm" onclick="resetToUpload()">Tekrar Dene</button>
+            <button class="ax-btn ax-btn--outline-secondary ax-btn--sm" onclick="resetToUpload()">{% trans "Tekrar Dene" %}</button>
           </div>
 
           <div id="panel-done" class="d-none">
@@ -149,7 +149,7 @@
             </div>
 
             <div id="posthoc-section" class="d-none mb-3">
-              <p class="ax-text-muted ax-text-sm mb-1 fw-semibold" id="posthoc-title">Post-Hoc Testler</p>
+              <p class="ax-text-muted ax-text-sm mb-1 fw-semibold" id="posthoc-title">{% trans "Post-Hoc Testler" %}</p>
               <div style="overflow-x:auto;">
                 <table id="posthoc-table" class="ax-table"></table>
               </div>
@@ -183,7 +183,7 @@
 
   <div class="ax-card mt-4">
     <h5 class="ax-text-primary fw-semibold mb-3 d-flex align-items-center">
-      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ax-text-danger me-2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="16" y2="11"/><line x1="8" y1="15" x2="12" y2="15"/></svg> Metodoloji
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ax-text-danger me-2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="16" y2="11"/><line x1="8" y1="15" x2="12" y2="15"/></svg> {% trans "Metodoloji" %}
     </h5>
     <div class="row g-4">
       <div class="col-md-6">
@@ -200,7 +200,7 @@
           <tbody>
             <tr><td>η² &lt; .01</td><td class="ax-text-muted">{% trans "İhmal edilebilir" %}</td></tr>
             <tr><td>.01 – .06</td><td class="ax-text-warning">{% trans "Küçük" %}</td></tr>
-            <tr><td>.06 – .14</td><td class="ax-text-info">Orta</td></tr>
+            <tr><td>.06 – .14</td><td class="ax-text-info">{% trans "Orta" context "etki büyüklüğü" %}</td></tr>
             <tr><td>&gt; .14</td><td class="ax-text-success fw-bold">{% trans "Büyük" %}</td></tr>
           </tbody>
         </table>
@@ -212,7 +212,7 @@
   <div class="ax-card mt-4 p-4">
     <h5 class="ax-text-primary fw-semibold mb-3">{% trans "Tek Yönlü ANOVA Nedir?" %}</h5>
     <p class="ax-text-muted ax-text-sm mb-3">{% trans "Tek Yönlü ANOVA (Analysis of Variance), üç veya daha fazla bağımsız grubun ortalamalarını eş zamanlı olarak karşılaştıran parametrik bir testtir. Birden fazla t-testi yapmanın tip-I hata riskini artırdığı durumlarda tek bir testle çoklu grup karşılaştırması yapılmasını sağlar." %}</p>
-    <p class="ax-text-muted ax-text-sm mb-3">{% trans "ANOVA anlamlı bir sonuç verdiğinde hangi grupların birbirinden farklı olduğunu bulmak için post-hoc testlerine ihtiyaç duyulur." %} <strong class="ax-text-secondary">Tukey HSD</strong> {% trans "en yaygın kullanılan post-hoc testidir;" %} <strong class="ax-text-secondary">Bonferroni</strong> daha muhafazakâr, <strong class="ax-text-secondary">Games-Howell</strong> {% trans "ise varyansların homojen olmadığı durumlarda tercih edilir." %}</p>
+    <p class="ax-text-muted ax-text-sm mb-3">{% trans "ANOVA anlamlı bir sonuç verdiğinde hangi grupların birbirinden farklı olduğunu bulmak için post-hoc testlerine ihtiyaç duyulur." %} <strong class="ax-text-secondary">Tukey HSD</strong> {% trans "en yaygın kullanılan post-hoc testidir;" %} <strong class="ax-text-secondary">Bonferroni</strong> {% trans "daha muhafazakâr," %} <strong class="ax-text-secondary">Games-Howell</strong> {% trans "ise varyansların homojen olmadığı durumlarda tercih edilir." %}</p>
     <p class="ax-text-muted ax-text-sm mb-0">{% trans "Normallik ve varyans homojenliği (Levene testi) varsayımları karşılanmadığında Kruskal-Wallis H Testi'ne geçilmesi önerilir. Etki büyüklüğü için η² (eta kare) hesaplanmalı ve raporlanmalıdır." %}</p>
   </div>
 

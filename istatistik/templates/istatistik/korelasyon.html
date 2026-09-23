@@ -2,7 +2,7 @@
 {% load static i18n %}
 {% block canonical %}/analiz/korelasyon/{% endblock %}
 
-{% block title %}Korelasyon Analizi (Pearson, Spearman, Kendall) - Analizus{% endblock %}
+{% block title %}{% trans "Korelasyon Analizi (Pearson, Spearman, Kendall)" %} - Analizus{% endblock %}
 {% block meta_description %}{% trans "Pearson, Spearman ve Kendall korelasyon matrisi hesaplayın. Değişkenler arası ilişkiyi analiz edin, APA formatında PDF rapor alın." %}{% endblock %}
 
 {% block tool_area %}
@@ -12,7 +12,7 @@
     <div class="col">
       <h2 class="fw-bold ax-text-primary mb-1 d-flex align-items-center">
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ax-text-accent me-2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/><line x1="15" y1="3" x2="15" y2="21"/></svg>
-        Korelasyon Matrisi
+        {% trans "Korelasyon Matrisi" %}
       </h2>
       <p class="ax-text-muted mb-0">{% trans "Değişkenler arasındaki ilişkileri Pearson, Spearman veya Kendall yöntemiyle analiz edin — ısı haritası ve PDF rapor ile." %}</p>
     </div>
@@ -38,7 +38,7 @@
         {% if not user.is_authenticated %}
         <div class="ax-alert-info mb-3 ax-text-sm">
           <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" class="me-2 flex-shrink-0" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-          <span><a href="{% url 'login' %}?next={{ request.path }}" class="ax-link">{% trans "Giriş yapın" %}</a> veya <a href="{% url 'register' %}?next={{ request.path }}" class="ax-link">{% trans "kayıt olun" %}</a> {% trans "— geçmişiniz kaydedilsin." %}</span>
+          <span><a href="{% url 'login' %}?next={{ request.path }}" class="ax-link">{% trans "Giriş yapın" %}</a> {% trans "veya" %} <a href="{% url 'register' %}?next={{ request.path }}" class="ax-link">{% trans "kayıt olun" %}</a> {% trans "— geçmişiniz kaydedilsin." %}</span>
         </div>
         {% endif %}
 
@@ -124,7 +124,7 @@
             <span id="panel-error-msg" class="ax-text-sm"></span>
           </div>
           <button class="ax-btn ax-btn-outline-secondary ax-btn-sm" onclick="resetUI()">
-            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" class="me-1" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>Tekrar Dene
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" class="me-1" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>{% trans "Tekrar Dene" %}
           </button>
         </div>
 
@@ -140,7 +140,7 @@
           </div>
           <div class="d-flex gap-2">
             <button id="confirm-warnings-btn" class="ax-btn ax-btn-warning ax-btn-sm fw-semibold">
-              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" class="me-1" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 16 16 12 12 8"/><line x1="8" y1="12" x2="16" y2="12"/></svg>Yine de devam et
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" class="me-1" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 16 16 12 12 8"/><line x1="8" y1="12" x2="16" y2="12"/></svg>{% trans "Yine de devam et" %}
             </button>
             <button class="ax-btn ax-btn-outline-secondary ax-btn-sm" onclick="resetUI()">{% trans "İptal" %}</button>
           </div>
@@ -207,7 +207,7 @@
   <div class="ax-card mt-4 p-4">
     <h5 class="ax-text-primary fw-semibold mb-3 d-flex align-items-center">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ax-text-accent me-2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="16" y2="11"/><line x1="8" y1="15" x2="12" y2="15"/></svg>
-      Metodoloji
+      {% trans "Metodoloji" %}
     </h5>
 
     <div class="row g-4 mb-4">
@@ -254,7 +254,7 @@
 
     <hr style="border-color: var(--ax-border-default); margin: 1.5rem 0;">
 
-    <h6 class="ax-text-secondary fw-semibold mb-2">Akademik Kaynaklar</h6>
+    <h6 class="ax-text-secondary fw-semibold mb-2">{% trans "Akademik Kaynaklar" %}</h6>
     <p class="ax-text-muted ax-text-sm mb-1">Cohen, J. (1988). <em>Statistical power analysis for the behavioral sciences</em> (2nd ed.). Lawrence Erlbaum.</p>
     <p class="ax-text-muted ax-text-sm mb-1">Pearson, K. (1895). Notes on regression and inheritance in the case of two parents. <em>Proceedings of the Royal Society of London, 58</em>, 240–242.</p>
     <p class="ax-text-muted ax-text-sm mb-0">Spearman, C. (1904). The proof and measurement of association between two things. <em>The American Journal of Psychology, 15</em>(1), 72–101.</p>
@@ -262,7 +262,7 @@
 
   <!-- SEO: Bu Test Nedir? -->
   <div class="ax-card mt-4 p-4">
-    <h5 class="ax-text-primary fw-semibold mb-3">Korelasyon Analizi Nedir?</h5>
+    <h5 class="ax-text-primary fw-semibold mb-3">{% trans "Korelasyon Analizi Nedir?" %}</h5>
     <p class="ax-text-muted ax-text-sm mb-3">{% trans "Korelasyon analizi, iki veya daha fazla sayısal değişken arasındaki ilişkinin yönünü ve gücünü ölçer. Katsayı −1 ile +1 arasında değer alır: +1 mükemmel pozitif, −1 mükemmel negatif, 0 ise ilişki olmadığı anlamına gelir." %}</p>
     <p class="ax-text-muted ax-text-sm mb-3"><strong class="ax-text-secondary">Pearson r:</strong> {% trans "Her iki değişkenin de normal dağılım gösterdiği ve sürekli ölçekte olduğu durumlarda kullanılır." %} <strong class="ax-text-secondary">Spearman ρ:</strong> {% trans "Sıralı (Likert) veriler veya normallik varsayımının karşılanamadığı durumlarda tercih edilir." %} <strong class="ax-text-secondary">Kendall τ:</strong> {% trans "Küçük örneklemlerde daha sağlam sonuçlar verir." %}</p>
     <p class="ax-text-muted ax-text-sm mb-0">{% trans "Korelasyon nedensellik kanıtlamaz; yalnızca birlikte değişim örüntüsünü ortaya koyar. İki değişken arasında güçlü bir korelasyon bulunsa da bu, birinin diğerine neden olduğu anlamına gelmez." %}</p>

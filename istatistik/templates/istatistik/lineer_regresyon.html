@@ -114,7 +114,7 @@
               <i class="bi bi-exclamation-triangle-fill me-2"></i>
               <span id="panel-error-msg"></span>
             </div>
-            <button class="btn btn-outline-secondary btn-sm" onclick="resetToUpload()">Yeniden Dene</button>
+            <button class="btn btn-outline-secondary btn-sm" onclick="resetToUpload()">{% trans "Yeniden Dene" %}</button>
           </div>
 
           <div id="panel-done" class="d-none">
@@ -376,7 +376,7 @@ function _showResults(data) {
 
   // Katsayılar tablosu
   document.getElementById('coef-head').innerHTML = '<tr>' +
-    [T.s9,'B','β','SE','t','p','%95 GA Alt',T.s10,'VIF'].map(h => `<th>${h}</th>`).join('') + '</tr>';
+    [T.s9,'B','β','SE','t','p','{% filter escapejs %}{% trans "%95 GA Alt" %}{% endfilter %}',T.s10,'VIF'].map(h => `<th>${h}</th>`).join('') + '</tr>';
   document.getElementById('coef-body').innerHTML = r.coefficients.map(c => {
     const pStr = c.p < 0.001 ? '&lt; .001' : c.p.toFixed(4);
     const pCell = c.significant && c.name !== 'Sabit'

@@ -24,7 +24,7 @@
       <div class="card border-secondary h-100" style="background-color:#1a1a2e;">
         <div class="card-body p-4">
           <h5 class="text-white fw-semibold mb-4">
-            <i class="bi bi-sliders me-2 text-warning"></i>Parametreler
+            <i class="bi bi-sliders me-2 text-warning"></i>{% trans "Parametreler" %}
           </h5>
 
           {# Test tipi #}
@@ -34,7 +34,7 @@
               <option value="ttest_independent">{% trans "Bağımsız Örneklem t-Testi" %}</option>
               <option value="ttest_paired">{% trans "Bağımlı Örneklem t-Testi (Eşleştirilmiş)" %}</option>
               <option value="anova">{% trans "Tek Yönlü ANOVA" %}</option>
-              <option value="correlation">Korelasyon Analizi</option>
+              <option value="correlation">{% trans "Korelasyon Analizi" %}</option>
             </select>
           </div>
 
@@ -55,7 +55,7 @@
             </label>
             <div class="d-flex gap-2 mb-2">
               <button type="button" class="btn btn-sm btn-outline-secondary effect-preset" data-val="0.2">{% trans "Küçük" %}</button>
-              <button type="button" class="btn btn-sm btn-outline-secondary effect-preset" data-val="0.5">Orta</button>
+              <button type="button" class="btn btn-sm btn-outline-secondary effect-preset" data-val="0.5">{% trans "Orta" context "etki büyüklüğü" %}</button>
               <button type="button" class="btn btn-sm btn-outline-secondary effect-preset" data-val="0.8">{% trans "Büyük" %}</button>
             </div>
             <input type="number" id="effect-size" class="form-control form-control-sm bg-dark text-white border-secondary"
@@ -92,7 +92,7 @@
           </div>
 
           <button id="calc-btn" class="btn btn-warning w-100 fw-semibold">
-            <i class="bi bi-calculator me-2"></i>Hesapla
+            <i class="bi bi-calculator me-2"></i>{% trans "Hesapla" %}
           </button>
           <div id="calc-error" class="alert alert-danger mt-3 d-none small"></div>
         </div>
@@ -114,7 +114,7 @@
               <li class="mb-1"><strong class="text-white-50">Cohen's d</strong>{% trans ": 0.2 küçük, 0.5 orta, 0.8 büyük etki" %}</li>
               <li class="mb-1"><strong class="text-white-50">Cohen's f</strong>{% trans ": 0.1 küçük, 0.25 orta, 0.4 büyük (ANOVA)" %}</li>
               <li class="mb-1"><strong class="text-white-50">Pearson r</strong>{% trans ": 0.1 küçük, 0.3 orta, 0.5 büyük (Korelasyon)" %}</li>
-              <li class="mb-1"><strong class="text-white-50">α = 0.05</strong>: Sosyal bilimlerde standart</li>
+              <li class="mb-1"><strong class="text-white-50">α = 0.05</strong>{% trans ": Sosyal bilimlerde standart" %}</li>
               <li class="mb-1"><strong class="text-white-50">{% trans "Güç = 0.80" %}</strong>{% trans ": Cohen (1988) önerisi" %}</li>
             </ul>
           </div>
@@ -158,7 +158,7 @@
 
             {# Yorum #}
             <div class="rounded-3 p-3 mb-3" style="background:rgba(255,193,7,0.05); border:1px solid rgba(255,193,7,0.15);">
-              <p class="text-white-50 small mb-1 fw-semibold"><i class="bi bi-info-circle me-1 text-warning"></i>Yorum</p>
+              <p class="text-white-50 small mb-1 fw-semibold"><i class="bi bi-info-circle me-1 text-warning"></i>{% trans "Yorum" %}</p>
               <p class="text-white small mb-0" id="res-recommendation">—</p>
             </div>
 
@@ -179,7 +179,7 @@
 
   {# Metodoloji #}
   <div class="mt-4 rounded-3 p-4" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.07);">
-    <h5 class="text-white fw-semibold mb-3"><i class="bi bi-journal-text me-2 text-warning"></i>Metodoloji</h5>
+    <h5 class="text-white fw-semibold mb-3"><i class="bi bi-journal-text me-2 text-warning"></i>{% trans "Metodoloji" %}</h5>
     <div class="row g-4">
       <div class="col-md-6">
         <h6 class="text-white-50 text-uppercase small fw-bold mb-2">{% trans "Güç Analizi Nedir?" %}</h6>
@@ -188,7 +188,7 @@
         </p>
       </div>
       <div class="col-md-6">
-        <h6 class="text-white-50 text-uppercase small fw-bold mb-2">Akademik Kaynak</h6>
+        <h6 class="text-white-50 text-uppercase small fw-bold mb-2">{% trans "Akademik Kaynak" %}</h6>
         <p class="text-white-50 small mb-1">
           Cohen, J. (1988). <em>Statistical power analysis for the behavioral sciences</em> (2nd ed.). Lawrence Erlbaum.
         </p>
