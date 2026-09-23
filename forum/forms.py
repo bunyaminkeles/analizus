@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from .models import Topic, Post, FreelanceJob, JobCategory, JobProposal, TopicTag
 from django.utils.safestring import mark_safe
+from django.utils.translation import gettext_lazy
 
 # --- 1. KAYIT FORMU ---
 class RegisterForm(UserCreationForm):
@@ -130,10 +131,10 @@ class PostForm(forms.ModelForm):
 class JobPostForm(forms.ModelForm):
     category_input = forms.CharField(
         required=False,
-        label='Kategori',
+        label=gettext_lazy('Kategori'),
         widget=forms.TextInput(attrs={
             'class': 'form-control bg-dark text-light border-secondary',
-            'placeholder': 'Örn: SPSS, Veri Analizi, Makine Öğrenmesi...',
+            'placeholder': gettext_lazy('Örn: SPSS, Veri Analizi, Makine Öğrenmesi...'),
             'list': 'job-category-list',
             'autocomplete': 'off',
         })
@@ -143,16 +144,16 @@ class JobPostForm(forms.ModelForm):
         model = FreelanceJob
         fields = ['title', 'description', 'budget_max', 'expected_duration']
         widgets = {
-            'title': forms.TextInput(attrs={'class': 'form-control bg-dark text-light border-secondary', 'placeholder': 'Örn: SPSS Veri Analizi'}),
-            'description': forms.Textarea(attrs={'class': 'form-control bg-dark text-light border-secondary', 'rows': 5, 'placeholder': 'İşin detaylarını açıklayın...'}),
-            'budget_max': forms.NumberInput(attrs={'class': 'form-control bg-dark text-light border-secondary', 'placeholder': 'Örn: 500'}),
-            'expected_duration': forms.TextInput(attrs={'class': 'form-control bg-dark text-light border-secondary', 'placeholder': 'Örn: 3 gün'}),
+            'title': forms.TextInput(attrs={'class': 'form-control bg-dark text-light border-secondary', 'placeholder': gettext_lazy('Örn: SPSS Veri Analizi')}),
+            'description': forms.Textarea(attrs={'class': 'form-control bg-dark text-light border-secondary', 'rows': 5, 'placeholder': gettext_lazy('İşin detaylarını açıklayın...')}),
+            'budget_max': forms.NumberInput(attrs={'class': 'form-control bg-dark text-light border-secondary', 'placeholder': gettext_lazy('Örn: 500')}),
+            'expected_duration': forms.TextInput(attrs={'class': 'form-control bg-dark text-light border-secondary', 'placeholder': gettext_lazy('Örn: 3 gün')}),
         }
         labels = {
-            'title': 'İlan Başlığı',
-            'description': 'İş Tanımı',
-            'budget_max': 'Bütçe (TL)',
-            'expected_duration': 'Tahmini Süre',
+            'title': gettext_lazy('İlan Başlığı'),
+            'description': gettext_lazy('İş Tanımı'),
+            'budget_max': gettext_lazy('Bütçe (TL)'),
+            'expected_duration': gettext_lazy('Tahmini Süre'),
         }
 
     def __init__(self, *args, **kwargs):
@@ -177,12 +178,12 @@ class ProposalForm(forms.ModelForm):
         model = JobProposal
         fields = ['price', 'duration', 'message']
         widgets = {
-            'price': forms.NumberInput(attrs={'class': 'form-control bg-dark text-light border-secondary', 'placeholder': 'Teklifiniz (TL)'}),
-            'duration': forms.TextInput(attrs={'class': 'form-control bg-dark text-light border-secondary', 'placeholder': 'Örn: 3 gün'}),
-            'message': forms.Textarea(attrs={'class': 'form-control bg-dark text-light border-secondary', 'rows': 3, 'placeholder': 'Neden sizi seçmeliyim?'}),
+            'price': forms.NumberInput(attrs={'class': 'form-control bg-dark text-light border-secondary', 'placeholder': gettext_lazy('Teklifiniz (TL)')}),
+            'duration': forms.TextInput(attrs={'class': 'form-control bg-dark text-light border-secondary', 'placeholder': gettext_lazy('Örn: 3 gün')}),
+            'message': forms.Textarea(attrs={'class': 'form-control bg-dark text-light border-secondary', 'rows': 3, 'placeholder': gettext_lazy('Neden sizi seçmeliyim?')}),
         }
         labels = {
-            'price': 'Teklif Tutarı (TL)',
-            'duration': 'Tahmini Süre',
-            'message': 'Ön Yazı',
+            'price': gettext_lazy('Teklif Tutarı (TL)'),
+            'duration': gettext_lazy('Tahmini Süre'),
+            'message': gettext_lazy('Ön Yazı'),
         }

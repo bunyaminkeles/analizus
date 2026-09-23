@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
-{% block title %}İlanı Düzenle - {{ job.title }}{% endblock %}
+{% block title %}{% trans "İlanı Düzenle" %} - {{ job.title }}{% endblock %}
 
 {% block content %}
 <div class="container py-4">
@@ -9,11 +10,11 @@
             <div class="card border-0 shadow-sm" style="background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(255, 255, 255, 0.08) !important;">
                 <div class="card-header bg-transparent border-bottom border-secondary border-opacity-25 py-3">
                     <h4 class="text-white mb-0">
-                        <i class="bi bi-pencil-square text-warning me-2"></i>İlanı Düzenle
+                        <i class="bi bi-pencil-square text-warning me-2"></i>{% trans "İlanı Düzenle" %}
                     </h4>
                     <p class="text-warning small mb-0 mt-1">
                         <i class="bi bi-exclamation-triangle me-1"></i>
-                        Bu hakkı yalnızca bir kez kullanabilirsiniz. Teklif alındıktan sonra düzenleme yapılamaz.
+                        {% trans "Bu hakkı yalnızca bir kez kullanabilirsiniz. Teklif alındıktan sonra düzenleme yapılamaz." %}
                     </p>
                 </div>
                 <div class="card-body p-4">
@@ -57,9 +58,9 @@
 
                         <div class="d-flex gap-2">
                             <button type="submit" class="btn btn-warning fw-semibold">
-                                <i class="bi bi-check-circle me-1"></i>Güncelle (Son Hakkım)
+                                <i class="bi bi-check-circle me-1"></i>{% trans "Güncelle (Son Hakkım)" %}
                             </button>
-                            <a href="{% url 'job_detail' job.pk %}" class="btn btn-outline-secondary">İptal</a>
+                            <a href="{% url 'job_detail' job.pk %}" class="btn btn-outline-secondary">{% trans "İptal" %}</a>
                         </div>
                     </form>
                 </div>

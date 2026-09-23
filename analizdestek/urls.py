@@ -112,7 +112,7 @@ urlpatterns += [
     # Akademik Tarama Unified Console — kapsam dışı (yoktez/trdizin/oaipmh kartları)
     path('tarama/', tarama_hub, name='tarama_hub'),
 
-    # 4. Forum Uygulaması — geri kalanı (forum, market, blog, DM...) kapsam dışı.
+    # 4. Forum Uygulaması — geri kalanı (forum, blog, DM...) kapsam dışı; market urls_i18n.py'de.
     # En sona koymak çakışmaları önler.
     path('', include('forum.urls')),
 

@@ -99,21 +99,8 @@ urlpatterns = [
     path('jobs/', RedirectView.as_view(url='/market/', permanent=True)),
     path('jobs/<int:pk>/', RedirectView.as_view(pattern_name='job_detail', permanent=True)),
 
-    # Freelance Market
-    path('market/', views.job_list, name='job_list'),
-    path('market/new/', views.post_job, name='post_job'),
-    path('market/job/<int:pk>/', views.job_detail, name='job_detail'),
-    path('market/job/<int:pk>/close/', views.close_job, name='close_job'),
-    path('market/job/<int:pk>/edit/', views.edit_job, name='edit_job'),
-    path('market/job/<int:pk>/accept/<int:proposal_id>/', views.accept_proposal, name='accept_proposal'),
-    path('market/job/<int:job_pk>/proposal/<int:proposal_id>/manage/', views.admin_manage_proposal, name='admin_manage_proposal'),
-    path('market/job/<int:pk>/review/', views.add_job_review, name='add_job_review'),
-    path('market/job/<int:pk>/like/', views.toggle_job_like, name='toggle_job_like'),
-    path('market/job/<int:pk>/bookmark/', views.toggle_job_bookmark, name='toggle_job_bookmark'),
-    path('market/my-jobs/', views.my_jobs, name='my_jobs'),
+    # Freelance Market — market/* path'leri forum/urls_i18n.py'de (çok dilli arayüz)
     path('my-payments/', views.my_payments, name='my_payments'),
-    path('market/job/<int:pk>/promote/', views.promote_job, name='promote_job'),
-    path('market/job/<int:pk>/payment-transferred/', views.mark_payment_transferred, name='mark_payment_transferred'),
 
     # API Endpoints (Quiz & Stories)
     path('api/quiz/random/', views.api_get_quiz_question, name='api_get_quiz_question'),

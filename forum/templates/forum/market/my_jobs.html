@@ -1,20 +1,21 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
-{% block title %}İlanlarım ve Tekliflerim - Analizus Market{% endblock %}
+{% block title %}{% trans "İlanlarım ve Tekliflerim" %} - Analizus Market{% endblock %}
 
 {% block content %}
 <div class="container py-4">
-    <h2 class="fw-bold text-white mb-4"><i class="bi bi-person-workspace text-info me-2"></i>Panelim</h2>
+    <h2 class="fw-bold text-white mb-4"><i class="bi bi-person-workspace text-info me-2"></i>{% trans "Panelim" %}</h2>
 
     <ul class="nav nav-tabs border-secondary mb-4" id="myTab" role="tablist">
         <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="posted-tab" data-bs-toggle="tab" data-bs-target="#posted" type="button">Yayınladığım İlanlar</button>
+            <button class="nav-link active" id="posted-tab" data-bs-toggle="tab" data-bs-target="#posted" type="button">{% trans "Yayınladığım İlanlar" %}</button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link" id="proposals-tab" data-bs-toggle="tab" data-bs-target="#proposals" type="button">Verdiğim Teklifler</button>
+            <button class="nav-link" id="proposals-tab" data-bs-toggle="tab" data-bs-target="#proposals" type="button">{% trans "Verdiğim Teklifler" %}</button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link" id="saved-tab" data-bs-toggle="tab" data-bs-target="#saved" type="button">Kaydedilenler</button>
+            <button class="nav-link" id="saved-tab" data-bs-toggle="tab" data-bs-target="#saved" type="button">{% trans "Kaydedilenler" %}</button>
         </li>
     </ul>
 
@@ -31,21 +32,21 @@
                         <br>
                         {% with days=job.days_remaining %}
                         {% if days == 0 %}
-                        <small class="text-danger"><i class="bi bi-hourglass-bottom me-1"></i>Bugün sona eriyor</small>
+                        <small class="text-danger"><i class="bi bi-hourglass-bottom me-1"></i>{% trans "Bugün sona eriyor" %}</small>
                         {% elif days <= 3 %}
-                        <small class="text-warning"><i class="bi bi-hourglass-split me-1"></i>{{ days }} gün kaldı</small>
+                        <small class="text-warning"><i class="bi bi-hourglass-split me-1"></i>{% blocktrans count days=days %}{{ days }} gün kaldı{% plural %}{{ days }} gün kaldı{% endblocktrans %}</small>
                         {% else %}
-                        <small class="text-muted"><i class="bi bi-calendar-check me-1"></i>{{ days }} gün kaldı · {{ job.expires_at|date:"d M Y" }}'de sona erer</small>
+                        <small class="text-muted"><i class="bi bi-calendar-check me-1"></i>{% blocktrans with date=job.expires_at|date:"d M Y" count days=days %}{{ days }} gün kaldı · {{ date }}'de sona erer{% plural %}{{ days }} gün kaldı · {{ date }}'de sona erer{% endblocktrans %}</small>
                         {% endif %}
                         {% endwith %}
                         {% endif %}
                     </div>
                     <div class="text-end">
-                        <span class="badge bg-info rounded-pill">{{ job.p_count }} Teklif</span>
+                        <span class="badge bg-info rounded-pill">{% blocktrans count counter=job.p_count %}{{ counter }} Teklif{% plural %}{{ counter }} Teklif{% endblocktrans %}</span>
                     </div>
                 </a>
                 {% empty %}
-                <div class="text-center py-4 text-muted">Henüz ilan yayınlamadınız.</div>
+                <div class="text-center py-4 text-muted">{% trans "Henüz ilan yayınlamadınız." %}</div>
                 {% endfor %}
             </div>
         </div>
@@ -54,10 +55,10 @@
         <div class="tab-pane fade" id="proposals" role="tabpanel">
             <!-- Durum Filtresi -->
             <div class="d-flex justify-content-center gap-2 mb-4">
-                <a href="?status=all#proposals" class="btn btn-sm {% if current_status == 'all' %}btn-info{% else %}btn-outline-secondary{% endif %}">Tümü</a>
-                <a href="?status=pending#proposals" class="btn btn-sm {% if current_status == 'pending' %}btn-warning{% else %}btn-outline-secondary{% endif %}">Beklemede</a>
-                <a href="?status=accepted#proposals" class="btn btn-sm {% if current_status == 'accepted' %}btn-success{% else %}btn-outline-secondary{% endif %}">Kabul Edildi</a>
-                <a href="?status=rejected#proposals" class="btn btn-sm {% if current_status == 'rejected' %}btn-danger{% else %}btn-outline-secondary{% endif %}">Reddedildi</a>
+                <a href="?status=all#proposals" class="btn btn-sm {% if current_status == 'all' %}btn-info{% else %}btn-outline-secondary{% endif %}">{% trans "Tümü" %}</a>
+                <a href="?status=pending#proposals" class="btn btn-sm {% if current_status == 'pending' %}btn-warning{% else %}btn-outline-secondary{% endif %}">{% trans "Beklemede" %}</a>
+                <a href="?status=accepted#proposals" class="btn btn-sm {% if current_status == 'accepted' %}btn-success{% else %}btn-outline-secondary{% endif %}">{% trans "Kabul Edildi" %}</a>
+                <a href="?status=rejected#proposals" class="btn btn-sm {% if current_status == 'rejected' %}btn-danger{% else %}btn-outline-secondary{% endif %}">{% trans "Reddedildi" %}</a>
             </div>
 
             <div class="list-group">
@@ -72,15 +73,15 @@
                             {% elif proposal.job.status == 'in_progress' %}bg-info text-dark
                             {% else %}bg-success
                             {% endif %}
-                        ">{% if proposal.status == 'accepted' %}{% if proposal.job.status == 'completed' %}Tamamlandı{% else %}Devam Ediyor{% endif %}{% else %}{{ proposal.get_status_display }}{% endif %}</span>
+                        ">{% if proposal.status == 'accepted' %}{% if proposal.job.status == 'completed' %}{% trans "Tamamlandı" %}{% else %}{% trans "Devam Ediyor" %}{% endif %}{% else %}{{ proposal.get_status_display }}{% endif %}</span>
                     </div>
                     <div class="d-flex justify-content-between small">
-                        <span class="text-muted">Teklifim: <span class="text-success">₺{{ proposal.price }}</span></span>
-                        <span class="text-muted">{{ proposal.created_at|timesince }} önce</span>
+                        <span class="text-muted">{% trans "Teklifim:" %} <span class="text-success">₺{{ proposal.price }}</span></span>
+                        <span class="text-muted">{% blocktrans with time=proposal.created_at|timesince %}{{ time }} önce{% endblocktrans %}</span>
                     </div>
                 </a>
                 {% empty %}
-                <div class="text-center py-4 text-muted">Bu filtreye uygun teklif bulunamadı.</div>
+                <div class="text-center py-4 text-muted">{% trans "Bu filtreye uygun teklif bulunamadı." %}</div>
                 {% endfor %}
             </div>
         </div>
@@ -95,11 +96,11 @@
                         <small class="text-muted"><i class="bi bi-hash"></i> {{ job.reference_number }} · {{ job.created_at|date:"d M Y" }} · <span class="text-{{ job.status|yesno:'success,secondary' }}">{{ job.get_status_display }}</span> · {{ job.owner.username }}</small>
                     </div>
                     <div class="text-end">
-                        <span class="badge bg-info rounded-pill">{{ job.p_count }} Teklif</span>
+                        <span class="badge bg-info rounded-pill">{% blocktrans count counter=job.p_count %}{{ counter }} Teklif{% plural %}{{ counter }} Teklif{% endblocktrans %}</span>
                     </div>
                 </a>
                 {% empty %}
-                <div class="text-center py-4 text-muted">Henüz kaydedilmiş ilan yok.</div>
+                <div class="text-center py-4 text-muted">{% trans "Henüz kaydedilmiş ilan yok." %}</div>
                 {% endfor %}
             </div>
         </div>

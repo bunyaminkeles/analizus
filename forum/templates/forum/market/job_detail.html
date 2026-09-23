@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
 {% block title %}{{ job.title }} - Analizus Market{% endblock %}
 {% block meta_description %}{{ job.description|striptags|truncatechars:155 }}{% endblock %}
@@ -51,7 +52,7 @@
     {
       "@type": "ListItem",
       "position": 1,
-      "name": "Ana Sayfa",
+      "name": "{% trans "Ana Sayfa" %}",
       "item": "{{ request.scheme }}://{{ request.get_host }}{% url 'home' %}"
     },
     {
@@ -81,7 +82,7 @@
                     {% if job.status == 'cancelled' %}
                     <div class="alert alert-danger text-center">
                         <i class="bi bi-x-circle-fill me-2"></i>
-                        Bu ilan sahibi tarafından kapatılmıştır ve artık tekliflere açık değildir.
+                        {% trans "Bu ilan sahibi tarafından kapatılmıştır ve artık tekliflere açık değildir." %}
                     </div>
                     {% endif %}
 
@@ -98,17 +99,17 @@
                         {% if job.status == 'open' and job.expires_at %}
                             {% with days=job.days_remaining %}
                             {% if days == 0 %}
-                            <span class="text-danger fw-bold"><i class="bi bi-hourglass-bottom me-1"></i> Son gün!</span>
+                            <span class="text-danger fw-bold"><i class="bi bi-hourglass-bottom me-1"></i> {% trans "Son gün!" %}</span>
                             {% elif days <= 3 %}
-                            <span class="text-warning"><i class="bi bi-hourglass-split me-1"></i> {{ days }} gün kaldı</span>
+                            <span class="text-warning"><i class="bi bi-hourglass-split me-1"></i> {% blocktrans count days=days %}{{ days }} gün kaldı{% plural %}{{ days }} gün kaldı{% endblocktrans %}</span>
                             {% else %}
-                            <span><i class="bi bi-calendar-check me-1"></i> {{ days }} gün kaldı</span>
+                            <span><i class="bi bi-calendar-check me-1"></i> {% blocktrans count days=days %}{{ days }} gün kaldı{% plural %}{{ days }} gün kaldı{% endblocktrans %}</span>
                             {% endif %}
                             {% endwith %}
                         {% endif %}
                         <span>
-                            <i class="bi bi-person me-1"></i> 
-                            <a href="{% url 'send_message' username=job.owner.username %}" class="text-decoration-none text-info" title="Mesaj Gönder">
+                            <i class="bi bi-person me-1"></i>
+                            <a href="{% url 'send_message' username=job.owner.username %}" class="text-decoration-none text-info" title="{% trans 'Mesaj Gönder' %}">
                                 {{ job.owner.username }}
                             </a>
                         </span>
@@ -120,12 +121,12 @@
 
                     <div class="bg-dark bg-opacity-50 p-3 rounded border border-secondary border-opacity-25">
                         <div class="d-flex justify-content-between align-items-center {% if job.expected_duration %}mb-2{% endif %}">
-                            <span class="text-muted">Bütçe:</span>
-                            <span class="text-success fw-bold fs-5">₺{{ job.budget_max|floatformat:0 }}'ye kadar</span>
+                            <span class="text-muted">{% trans "Bütçe:" %}</span>
+                            <span class="text-success fw-bold fs-5">{% blocktrans with amount=job.budget_max|floatformat:0 %}₺{{ amount }}'ye kadar{% endblocktrans %}</span>
                         </div>
                         {% if job.expected_duration %}
                         <div class="d-flex justify-content-between align-items-center">
-                            <span class="text-muted">Tahmini Süre:</span>
+                            <span class="text-muted">{% trans "Tahmini Süre:" %}</span>
                             <span class="text-white fw-semibold">{{ job.expected_duration }}</span>
                         </div>
                         {% endif %}
@@ -136,12 +137,12 @@
                             <i class="bi bi-heart{% if is_liked %}-fill{% endif %} me-1"></i> {{ job.total_likes }}
                         </a>
                         <a href="{% url 'toggle_job_bookmark' pk=job.pk %}" class="btn btn-sm {% if is_saved %}btn-warning{% else %}btn-outline-warning{% endif %} rounded-pill">
-                            <i class="bi bi-bookmark{% if is_saved %}-fill{% endif %} me-1"></i> {% if is_saved %}Kaydedildi{% else %}Kaydet{% endif %}
+                            <i class="bi bi-bookmark{% if is_saved %}-fill{% endif %} me-1"></i> {% if is_saved %}{% trans "Kaydedildi" %}{% else %}{% trans "Kaydet" %}{% endif %}
                         </a>
 
                         {% if user.is_authenticated and job.owner == user and job.status == 'open' and not job.is_featured and job.feature_status != 'pending' and job.feature_status != 'approved' %}
                         <a href="{% url 'promote_job' pk=job.pk %}" class="btn btn-sm btn-warning text-dark fw-bold">
-                            <i class="bi bi-stars me-1"></i> Vitrine Taşı
+                            <i class="bi bi-stars me-1"></i> {% trans "Vitrine Taşı" %}
                         </a>
                         {% endif %}
 
@@ -149,13 +150,13 @@
                         <div class="d-flex gap-2 ms-auto">
                             {% if not job.is_edited and not job.proposals.exists %}
                             <a href="{% url 'edit_job' pk=job.pk %}" class="btn btn-sm btn-outline-warning">
-                                <i class="bi bi-pencil me-1"></i> Düzenle
+                                <i class="bi bi-pencil me-1"></i> {% trans "Düzenle" %}
                             </a>
                             {% endif %}
-                            <form method="post" action="{% url 'close_job' pk=job.pk %}" onsubmit="return confirm('İlanı kapatmak istediğinizden emin misiniz? Teklif verenlere bildirim gönderilecek.');">
+                            <form method="post" action="{% url 'close_job' pk=job.pk %}" onsubmit="return {% trans "İlanı kapatmak istediğinizden emin misiniz? Teklif verenlere bildirim gönderilecek." as close_confirm %}confirm('{{ close_confirm|escapejs }}');">
                                 {% csrf_token %}
                                 <button type="submit" class="btn btn-sm btn-outline-danger">
-                                    <i class="bi bi-power me-1"></i> Yayından Kaldır
+                                    <i class="bi bi-power me-1"></i> {% trans "Yayından Kaldır" %}
                                 </button>
                             </form>
                         </div>
@@ -163,7 +164,7 @@
 
                         {% if user.is_authenticated and job.status == 'completed' %}{% if user == job.owner or user == accepted_proposal.expert %}
                         <a href="{% url 'success_stories' %}?job={{ job.pk }}" class="btn btn-sm btn-outline-warning rounded-pill ms-auto">
-                            <i class="bi bi-trophy me-1"></i> Başarı Hikayenizi Paylaşın
+                            <i class="bi bi-trophy me-1"></i> {% trans "Başarı Hikayenizi Paylaşın" %}
                         </a>
                         {% endif %}{% endif %}
                     </div>
@@ -172,7 +173,7 @@
 
             <!-- Teklifler (Sadece İlan Sahibi ve Adminler Görür) -->
             {% if proposals is not None %}
-            <h4 class="text-white mb-3">Gelen Teklifler ({{ proposals.count }})</h4>
+            <h4 class="text-white mb-3">{% blocktrans with count=proposals.count %}Gelen Teklifler ({{ count }}){% endblocktrans %}</h4>
             {% if proposals %}
                 {% for proposal in proposals %}
                 <div class="card border-0 shadow-sm mb-3" style="background: rgba(30, 41, 59, 0.4);">
@@ -184,34 +185,34 @@
                             </div>
                             <div>
                                 {% if proposal.status == 'accepted' %}
-                                <span class="badge bg-success">Kabul Edildi</span>
+                                <span class="badge bg-success">{% trans "Kabul Edildi" %}</span>
                                 {% elif proposal.status == 'rejected' %}
-                                <span class="badge bg-danger">Kabul Edilmedi</span>
+                                <span class="badge bg-danger">{% trans "Kabul Edilmedi" %}</span>
                                 {% else %}
-                                <span class="badge bg-warning text-dark">Beklemede</span>
+                                <span class="badge bg-warning text-dark">{% trans "Beklemede" %}</span>
                                 {% endif %}
-                                <span class="text-muted small ms-2">{{ proposal.created_at|timesince }} önce</span>
+                                <span class="text-muted small ms-2">{% blocktrans with time=proposal.created_at|timesince %}{{ time }} önce{% endblocktrans %}</span>
                             </div>
                         </div>
                         <p class="text-light small mb-2 mt-2">{{ proposal.message }}</p>
                         <div class="d-flex justify-content-between align-items-center mt-2">
                             <div class="text-success fw-bold">₺{{ proposal.price }} <span class="text-muted fw-normal ms-2">({{ proposal.duration }})</span></div>
                             <div class="d-flex align-items-center gap-2">
-                                <a href="{% url 'send_message' username=proposal.expert.username %}" class="btn btn-sm btn-outline-light">Mesaj At</a>
+                                <a href="{% url 'send_message' username=proposal.expert.username %}" class="btn btn-sm btn-outline-light">{% trans "Mesaj At" %}</a>
                                 {% if job.status == 'open' and proposal.status == 'pending' and request.user == job.owner %}
                                 <form method="post" action="{% url 'accept_proposal' pk=job.pk proposal_id=proposal.pk %}" class="d-inline">
                                     {% csrf_token %}
-                                    <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('Bu teklifi kabul etmek istediğinize emin misiniz?')">Kabul Et</button>
+                                    <button type="submit" class="btn btn-sm btn-success" onclick="return {% trans "Bu teklifi kabul etmek istediğinize emin misiniz?" as accept_confirm %}confirm('{{ accept_confirm|escapejs }}')">{% trans "Kabul Et" %}</button>
                                 </form>
                                 {% endif %}
                                 {% if request.user.is_superuser or request.user.is_staff %}
                                 <!-- Admin Yönetim Butonları -->
                                 <div class="dropdown">
                                     <button class="btn btn-sm btn-outline-danger dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <i class="bi bi-shield-lock"></i> Yönet
+                                        <i class="bi bi-shield-lock"></i> {% trans "Yönet" %}
                                     </button>
                                     <ul class="dropdown-menu dropdown-menu-dark shadow">
-                                        <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#adminManageProposalModal-{{ proposal.pk }}">Teklifi Yönet</a></li>
+                                        <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#adminManageProposalModal-{{ proposal.pk }}">{% trans "Teklifi Yönet" %}</a></li>
                                     </ul>
                                 </div>
                                 {% endif %}
@@ -228,33 +229,33 @@
                             <form method="post" action="{% url 'admin_manage_proposal' job_pk=job.pk proposal_id=proposal.pk %}">
                                 {% csrf_token %}
                                 <div class="modal-header border-secondary">
-                                    <h5 class="modal-title" id="adminManageProposalLabel-{{ proposal.pk }}">Teklifi Yönet: {{ proposal.expert.username }}</h5>
+                                    <h5 class="modal-title" id="adminManageProposalLabel-{{ proposal.pk }}">{% blocktrans with username=proposal.expert.username %}Teklifi Yönet: {{ username }}{% endblocktrans %}</h5>
                                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
-                                    <p class="small text-muted">Bu işlem geri alınamaz. Kullanıcıya bildirim gönderilecektir.</p>
+                                    <p class="small text-muted">{% trans "Bu işlem geri alınamaz. Kullanıcıya bildirim gönderilecektir." %}</p>
                                     <div class="mb-3">
-                                        <label class="form-label">İşlem</label>
+                                        <label class="form-label">{% trans "İşlem" %}</label>
                                         <select name="action" class="form-select bg-secondary text-white border-dark">
-                                            <option value="reject">Reddet</option>
-                                            <option value="delete">Sil</option>
+                                            <option value="reject">{% trans "Reddet" %}</option>
+                                            <option value="delete">{% trans "Sil" %}</option>
                                         </select>
                                     </div>
                                     <div class="mb-3">
-                                        <label class="form-label">Sebep</label>
+                                        <label class="form-label">{% trans "Sebep" %}</label>
                                         <select name="reason_option" class="form-select bg-secondary text-white border-dark" onchange="this.value === 'other' ? this.nextElementSibling.style.display='block' : this.nextElementSibling.style.display='none'">
-                                            <option value="spam">Spam veya yanıltıcı içerik</option>
-                                            <option value="low_quality">Düşük kalite veya yetersiz açıklama</option>
-                                            <option value="inappropriate">Uygunsuz dil veya içerik</option>
-                                            <option value="irrelevant">İlanla ilgisiz teklif</option>
-                                            <option value="other">Diğer (Açıklama Girin)</option>
+                                            <option value="spam">{% trans "Spam veya yanıltıcı içerik" %}</option>
+                                            <option value="low_quality">{% trans "Düşük kalite veya yetersiz açıklama" %}</option>
+                                            <option value="inappropriate">{% trans "Uygunsuz dil veya içerik" %}</option>
+                                            <option value="irrelevant">{% trans "İlanla ilgisiz teklif" %}</option>
+                                            <option value="other">{% trans "Diğer (Açıklama Girin)" %}</option>
                                         </select>
-                                        <textarea name="custom_reason" class="form-control bg-secondary text-white border-dark mt-2" rows="2" placeholder="Reddetme/silme sebebini buraya yazın..." style="display:none;"></textarea>
+                                        <textarea name="custom_reason" class="form-control bg-secondary text-white border-dark mt-2" rows="2" placeholder="{% trans 'Reddetme/silme sebebini buraya yazın...' %}" style="display:none;"></textarea>
                                     </div>
                                 </div>
                                 <div class="modal-footer border-secondary">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
-                                    <button type="submit" class="btn btn-danger">İşlemi Onayla</button>
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% trans "İptal" %}</button>
+                                    <button type="submit" class="btn btn-danger">{% trans "İşlemi Onayla" %}</button>
                                 </div>
                             </form>
                         </div>
@@ -267,11 +268,11 @@
                 {% endif %}
                 {% endfor %}
             {% else %}
-                <p class="text-muted">Henüz teklif gelmemiş.</p>
+                <p class="text-muted">{% trans "Henüz teklif gelmemiş." %}</p>
             {% endif %}
             {% elif proposal_count > 0 %}
             <div class="alert alert-info">
-                <strong>{{ proposal_count }} uzman teklif verdi.</strong> Teklif fiyatları yalnızca ilan sahibi ve teklif veren tarafından görüntülenir.
+                <strong>{% blocktrans count counter=proposal_count %}{{ counter }} uzman teklif verdi.{% plural %}{{ counter }} uzman teklif verdi.{% endblocktrans %}</strong> {% trans "Teklif fiyatları yalnızca ilan sahibi ve teklif veren tarafından görüntülenir." %}
             </div>
             {% if not accepted_proposal or request.user != accepted_proposal.expert %}
             {% include 'forum/market/_review_section.html' %}
@@ -281,16 +282,16 @@
             <!-- Benzer İlanlar -->
             {% if similar_jobs %}
             <div class="mt-5">
-                <h5 class="text-white mb-3"><i class="bi bi-collection text-info me-2"></i>Benzer İlanlar</h5>
+                <h5 class="text-white mb-3"><i class="bi bi-collection text-info me-2"></i>{% trans "Benzer İlanlar" %}</h5>
                 <div class="list-group">
                     {% for sjob in similar_jobs %}
                     <a href="{% url 'job_detail' pk=sjob.pk %}" class="list-group-item list-group-item-action bg-dark text-white border-secondary d-flex justify-content-between align-items-center p-3" style="background: rgba(30, 41, 59, 0.4) !important;">
                         <div>
                             <h6 class="mb-1 fw-bold small">{{ sjob.title }}</h6>
-                            <small class="text-muted" style="font-size: 0.75rem;">{{ sjob.created_at|timesince }} önce · {{ sjob.owner.username }}</small>
+                            <small class="text-muted" style="font-size: 0.75rem;">{% blocktrans with time=sjob.created_at|timesince %}{{ time }} önce{% endblocktrans %} · {{ sjob.owner.username }}</small>
                         </div>
                         <div class="text-end">
-                            <span class="text-success fw-bold small">₺{{ sjob.budget_max|floatformat:0 }}'ye kadar</span>
+                            <span class="text-success fw-bold small">{% blocktrans with amount=sjob.budget_max|floatformat:0 %}₺{{ amount }}'ye kadar{% endblocktrans %}</span>
                         </div>
                     </a>
                     {% endfor %}
@@ -305,22 +306,22 @@
                 {% if accepted_proposal.expert.username %}
                 <div class="card border-0 shadow-sm bg-success bg-opacity-10 border-success mb-3">
                     <div class="card-body p-4">
-                        <h5 class="text-white mb-3"><i class="bi bi-person-check-fill text-success me-2"></i>Kabul Edilen Uzman</h5>
+                        <h5 class="text-white mb-3"><i class="bi bi-person-check-fill text-success me-2"></i>{% trans "Kabul Edilen Uzman" %}</h5>
                         <div class="d-flex align-items-center justify-content-between mb-2">
                             <a href="{% url 'profile_detail' accepted_proposal.expert.username %}" class="text-info fw-bold text-decoration-none">{{ accepted_proposal.expert.username }}</a>
                             <span class="badge bg-secondary small">{{ accepted_proposal.expert.profile.get_rank_display }}</span>
                         </div>
                         <div class="bg-dark bg-opacity-25 p-2 rounded text-start">
                             <div class="d-flex justify-content-between mb-1">
-                                <span class="text-muted small">Tutar:</span>
+                                <span class="text-muted small">{% trans "Tutar:" %}</span>
                                 <span class="text-success fw-bold small">₺{{ accepted_proposal.price }}</span>
                             </div>
                             <div class="d-flex justify-content-between">
-                                <span class="text-muted small">Süre:</span>
+                                <span class="text-muted small">{% trans "Süre:" %}</span>
                                 <span class="text-white small">{{ accepted_proposal.duration }}</span>
                             </div>
                         </div>
-                        <a href="{% url 'send_message' username=accepted_proposal.expert.username %}" class="btn btn-sm btn-outline-light w-100 mt-3">Mesaj At</a>
+                        <a href="{% url 'send_message' username=accepted_proposal.expert.username %}" class="btn btn-sm btn-outline-light w-100 mt-3">{% trans "Mesaj At" %}</a>
                     </div>
                 </div>
                 {% include 'forum/market/_review_section.html' %}
@@ -332,39 +333,39 @@
                 <div class="card border-0 shadow-sm bg-success bg-opacity-10 border-success">
                     <div class="card-body text-center p-4">
                         <i class="bi bi-check-circle-fill text-success fs-1 mb-3"></i>
-                        <h5 class="text-white">Teklifiniz Kabul Edildi</h5>
+                        <h5 class="text-white">{% trans "Teklifiniz Kabul Edildi" %}</h5>
                         <p class="text-white-50 small">
-                            {% if job.status == 'completed' %}Bu iş tamamlandı.{% else %}Bu iş size atandı, çalışmaya devam edebilirsiniz.{% endif %}
+                            {% if job.status == 'completed' %}{% trans "Bu iş tamamlandı." %}{% else %}{% trans "Bu iş size atandı, çalışmaya devam edebilirsiniz." %}{% endif %}
                         </p>
                         <div class="bg-dark bg-opacity-25 p-2 rounded text-start mt-3">
                 {% elif user_proposal.status == 'rejected' %}
                 <div class="card border-0 shadow-sm bg-secondary bg-opacity-10 border-secondary">
                     <div class="card-body text-center p-4">
                         <i class="bi bi-x-circle-fill text-secondary fs-1 mb-3"></i>
-                        <h5 class="text-white">Teklifiniz Kabul Edilmedi</h5>
-                        <p class="text-white-50 small">İlan sahibi başka bir teklifi kabul etti.</p>
+                        <h5 class="text-white">{% trans "Teklifiniz Kabul Edilmedi" %}</h5>
+                        <p class="text-white-50 small">{% trans "İlan sahibi başka bir teklifi kabul etti." %}</p>
                         <div class="bg-dark bg-opacity-25 p-2 rounded text-start mt-3">
                 {% else %}
                 <div class="card border-0 shadow-sm bg-success bg-opacity-10 border-success">
                     <div class="card-body text-center p-4">
                         <i class="bi bi-check-circle-fill text-success fs-1 mb-3"></i>
-                        <h5 class="text-white">Teklifiniz Gönderildi</h5>
-                        <p class="text-white-50 small">İlan sahibi teklifinizi değerlendiriyor.</p>
+                        <h5 class="text-white">{% trans "Teklifiniz Gönderildi" %}</h5>
+                        <p class="text-white-50 small">{% trans "İlan sahibi teklifinizi değerlendiriyor." %}</p>
                         <div class="bg-dark bg-opacity-25 p-2 rounded text-start mt-3">
                 {% endif %}
                             <div class="d-flex justify-content-between mb-1">
-                                <span class="text-muted small">Tutar:</span>
+                                <span class="text-muted small">{% trans "Tutar:" %}</span>
                                 <span class="text-success fw-bold small">₺{{ user_proposal.price }}</span>
                             </div>
                             <div class="d-flex justify-content-between">
-                                <span class="text-muted small">Süre:</span>
+                                <span class="text-muted small">{% trans "Süre:" %}</span>
                                 <span class="text-white small">{{ user_proposal.duration }}</span>
                             </div>
                         </div>
                         {% if proposal_count > 0 %}
                         <div class="mt-3 p-3 rounded bg-white bg-opacity-10 border border-secondary text-start">
-                            <span class="text-muted small">Bu ilana toplam</span>
-                            <div class="fw-bold text-white">{{ proposal_count }} kişi teklif verdi.</div>
+                            <span class="text-muted small">{% trans "Bu ilana toplam" %}</span>
+                            <div class="fw-bold text-white">{% blocktrans count counter=proposal_count %}{{ counter }} kişi teklif verdi.{% plural %}{{ counter }} kişi teklif verdi.{% endblocktrans %}</div>
                         </div>
                         {% endif %}
                     </div>
@@ -376,7 +377,7 @@
                 <!-- Teklif Formu -->
                 <div class="card border-0 shadow-sm" style="background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(255, 255, 255, 0.08) !important;">
                     <div class="card-header bg-transparent border-bottom border-secondary border-opacity-25">
-                        <h5 class="text-white mb-0">Teklif Ver</h5>
+                        <h5 class="text-white mb-0">{% trans "Teklif Ver" %}</h5>
                     </div>
                     <div class="card-body">
                         <form method="post">
@@ -393,7 +394,7 @@
                                 <label class="form-label text-white-50 small">{{ proposal_form.message.label }}</label>
                                 {{ proposal_form.message }}
                             </div>
-                            <button type="submit" class="btn btn-success w-100 fw-bold">Teklifi Gönder</button>
+                            <button type="submit" class="btn btn-success w-100 fw-bold">{% trans "Teklifi Gönder" %}</button>
                         </form>
                     </div>
                 </div>
@@ -401,32 +402,32 @@
                 <div class="card border-0 shadow-sm" style="background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(251, 191, 36, 0.3) !important;">
                     <div class="card-body text-center p-4">
                         <i class="bi bi-lock-fill text-warning fs-1 mb-3"></i>
-                        <h5 class="text-white mb-2">Teklif Verme Yetkisi Gerekli</h5>
+                        <h5 class="text-white mb-2">{% trans "Teklif Verme Yetkisi Gerekli" %}</h5>
                         <p class="text-muted small mb-3">{{ can_propose_reason }}</p>
 
                         <div class="bg-dark bg-opacity-50 p-3 rounded text-start mb-3">
-                            <h6 class="text-info small mb-2">Nasıl Yetki Kazanılır?</h6>
+                            <h6 class="text-info small mb-2">{% trans "Nasıl Yetki Kazanılır?" %}</h6>
                             <ul class="list-unstyled text-muted small mb-0">
-                                <li class="mb-1"><i class="bi bi-check-circle text-success me-2"></i>1000+ akademik puan kazan</li>
-                                <li class="mb-1"><i class="bi bi-check-circle text-success me-2"></i>Quiz'de puan kazan (her doğru cevap 10 puan)</li>
-                                <li class="mb-1"><i class="bi bi-check-circle text-success me-2"></i>10 kez "En Faydalı Cevap" al</li>
-                                <li><i class="bi bi-check-circle text-success me-2"></i>Premium/Uzman hesaba yükselt</li>
+                                <li class="mb-1"><i class="bi bi-check-circle text-success me-2"></i>{% trans "1000+ akademik puan kazan" %}</li>
+                                <li class="mb-1"><i class="bi bi-check-circle text-success me-2"></i>{% trans "Quiz'de puan kazan (her doğru cevap 10 puan)" %}</li>
+                                <li class="mb-1"><i class="bi bi-check-circle text-success me-2"></i>{% trans '10 kez "En Faydalı Cevap" al' %}</li>
+                                <li><i class="bi bi-check-circle text-success me-2"></i>{% trans "Premium/Uzman hesaba yükselt" %}</li>
                             </ul>
                         </div>
 
                         {% if user.is_authenticated %}
                         <a href="{% url 'profile_detail' user.username %}" class="btn btn-outline-warning btn-sm rounded-pill">
-                            <i class="bi bi-person me-1"></i>Profilimi Gör
+                            <i class="bi bi-person me-1"></i>{% trans "Profilimi Gör" %}
                         </a>
                         {% else %}
                         <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-outline-warning btn-sm rounded-pill">
-                            <i class="bi bi-box-arrow-in-right me-1"></i>Giriş Yap
+                            <i class="bi bi-box-arrow-in-right me-1"></i>{% trans "Giriş Yap" %}
                         </a>
                         {% endif %}
                     </div>
                 </div>
                 {% else %}
-                <div class="alert alert-secondary">Bu ilan tekliflere kapalıdır.</div>
+                <div class="alert alert-secondary">{% trans "Bu ilan tekliflere kapalıdır." %}</div>
                 {% endif %}
             {% endif %}
         </div>

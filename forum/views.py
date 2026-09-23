@@ -13,6 +13,7 @@ from django.db import models
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Count, Sum, Q, Avg, Subquery, OuterRef, Max, Exists
 from django.contrib import messages
+from django.utils.translation import gettext
 from django.utils import timezone
 from django.utils.html import strip_tags
 from django.http import JsonResponse
@@ -517,9 +518,9 @@ def post_job(request):
             if profile.is_first_job():
                 job.is_featured = True
                 job.featured_until = timezone.now() + timedelta(days=3)  # 3 gün hediye
-                messages.info(request, 'İlk ilanınız olduğu için 3 gün öne çıkarma hediyesi kazandınız!')
+                messages.info(request, gettext('İlk ilanınız olduğu için 3 gün öne çıkarma hediyesi kazandınız!'))
             job.save()
-            messages.success(request, f'İş ilanı başarıyla oluşturuldu. ({profile.get_job_duration_days()} gün aktif kalacak)')
+            messages.success(request, gettext('İş ilanı başarıyla oluşturuldu. (%(days)s gün aktif kalacak)') % {'days': profile.get_job_duration_days()})
             return redirect('job_detail', pk=job.pk)
     else:
         form = JobPostForm()
@@ -536,10 +537,10 @@ def toggle_job_like(request, pk):
     job = get_object_or_404(FreelanceJob, pk=pk)
     if request.user in job.likes.all():
         job.likes.remove(request.user)
-        messages.info(request, "Beğeni geri alındı.")
+        messages.info(request, gettext("Beğeni geri alındı."))
     else:
         job.likes.add(request.user)
-        messages.success(request, "İlan beğenildi!")
+        messages.success(request, gettext("İlan beğenildi!"))
     return redirect('job_detail', pk=pk)
 
 @login_required
@@ -547,10 +548,10 @@ def toggle_job_bookmark(request, pk):
     job = get_object_or_404(FreelanceJob, pk=pk)
     if request.user in job.saved_by.all():
         job.saved_by.remove(request.user)
-        messages.info(request, "İlan kaydedilenlerden çıkarıldı.")
+        messages.info(request, gettext("İlan kaydedilenlerden çıkarıldı."))
     else:
         job.saved_by.add(request.user)
-        messages.success(request, "İlan kaydedildi!")
+        messages.success(request, gettext("İlan kaydedildi!"))
     return redirect('job_detail', pk=pk)
 
 @login_required
@@ -580,9 +581,9 @@ def close_job(request, pk):
 
         job.status = 'cancelled'
         job.save()
-        messages.success(request, 'İlanınız yayından kaldırıldı, teklif verenlere bildirim gönderildi.')
+        messages.success(request, gettext('İlanınız yayından kaldırıldı, teklif verenlere bildirim gönderildi.'))
     else:
-        messages.warning(request, 'Bu ilan zaten kapalı veya işlemde.')
+        messages.warning(request, gettext('Bu ilan zaten kapalı veya işlemde.'))
 
     return redirect('job_detail', pk=pk)
 
@@ -592,15 +593,15 @@ def edit_job(request, pk):
     job = get_object_or_404(FreelanceJob, pk=pk, owner=request.user)
 
     if job.status != 'open':
-        messages.error(request, 'Yalnızca açık ilanlar düzenlenebilir.')
+        messages.error(request, gettext('Yalnızca açık ilanlar düzenlenebilir.'))
         return redirect('job_detail', pk=pk)
 
     if job.is_edited:
-        messages.error(request, 'Her ilan yalnızca bir kez düzenlenebilir.')
+        messages.error(request, gettext('Her ilan yalnızca bir kez düzenlenebilir.'))
         return redirect('job_detail', pk=pk)
 
     if job.proposals.exists():
-        messages.error(request, 'Teklif alınmış ilanlar düzenlenemez.')
+        messages.error(request, gettext('Teklif alınmış ilanlar düzenlenemez.'))
         return redirect('job_detail', pk=pk)
 
     from .forms import JobPostForm
@@ -610,7 +611,7 @@ def edit_job(request, pk):
             updated = form.save(commit=False)
             updated.is_edited = True
             updated.save()
-            messages.success(request, 'İlanınız güncellendi. (Düzenleme hakkınız kullanıldı.)')
+            messages.success(request, gettext('İlanınız güncellendi. (Düzenleme hakkınız kullanıldı.)'))
             return redirect('job_detail', pk=pk)
     else:
         form = JobPostForm(instance=job)
@@ -628,7 +629,7 @@ def accept_proposal(request, pk, proposal_id):
     proposal = get_object_or_404(JobProposal, pk=proposal_id, job=job)
 
     if job.status != 'open':
-        messages.warning(request, 'Bu ilan artık aktif değil.')
+        messages.warning(request, gettext('Bu ilan artık aktif değil.'))
         return redirect('job_detail', pk=pk)
 
     # Reddedilecek teklifçileri update öncesi al
@@ -681,7 +682,7 @@ def accept_proposal(request, pk, proposal_id):
             )
         )
 
-    messages.success(request, f'{proposal.expert.username} kullanıcısının teklifi kabul edildi. İlan askıya alındı.')
+    messages.success(request, gettext('%(username)s kullanıcısının teklifi kabul edildi. İlan askıya alındı.') % {'username': proposal.expert.username})
     return redirect('job_detail', pk=pk)
 
 
@@ -690,7 +691,7 @@ def accept_proposal(request, pk, proposal_id):
 def admin_manage_proposal(request, job_pk, proposal_id):
     """Adminlerin teklifleri yönetmesi (Silme/Reddetme)"""
     if not (request.user.is_superuser or request.user.is_staff):
-        messages.error(request, "Bu işlem için yetkiniz yok.")
+        messages.error(request, gettext("Bu işlem için yetkiniz yok."))
         return redirect('job_detail', pk=job_pk)
 
     job = get_object_or_404(FreelanceJob, pk=job_pk)
@@ -735,7 +736,7 @@ def admin_manage_proposal(request, job_pk, proposal_id):
             object_id=job.id
         )
         
-        messages.success(request, f"Teklif silindi ve kullanıcıya mesaj gönderildi.")
+        messages.success(request, gettext("Teklif silindi ve kullanıcıya mesaj gönderildi."))
         
     elif action == 'reject':
         # Reddetme işlemi
@@ -760,10 +761,10 @@ def admin_manage_proposal(request, job_pk, proposal_id):
             object_id=proposal.id
         )
         
-        messages.success(request, f"Teklif reddedildi ve kullanıcıya mesaj gönderildi.")
+        messages.success(request, gettext("Teklif reddedildi ve kullanıcıya mesaj gönderildi."))
         
     else:
-        messages.warning(request, "Geçersiz işlem.")
+        messages.warning(request, gettext("Geçersiz işlem."))
 
     return redirect('job_detail', pk=job_pk)
 
@@ -791,7 +792,7 @@ def job_detail(request, pk):
     if request.user.is_authenticated and hasattr(request.user, 'profile'):
         _, can_propose_reason = request.user.profile.can_propose()
     elif not request.user.is_authenticated:
-        can_propose_reason = "Teklif verebilmek için giriş yapmalısınız."
+        can_propose_reason = gettext("Teklif verebilmek için giriş yapmalısınız.")
 
     # 1. Teklifleri görme yetkisi
     if request.user == job.owner or request.user.is_superuser or request.user.is_staff:
@@ -838,7 +839,7 @@ def job_detail(request, pk):
                     _pm._skip_email = True
                     _pm.save()
 
-                    messages.success(request, 'Teklifiniz başarıyla gönderildi!')
+                    messages.success(request, gettext('Teklifiniz başarıyla gönderildi!'))
                     return redirect('job_detail', pk=pk)
             else:
                 proposal_form = ProposalForm()
@@ -894,26 +895,26 @@ def add_job_review(request, pk):
     accepted_proposal = job.proposals.filter(status='accepted').first()
 
     if not accepted_proposal:
-        messages.error(request, 'Bu ilan için değerlendirme yapılamaz.')
+        messages.error(request, gettext('Bu ilan için değerlendirme yapılamaz.'))
         return redirect('job_detail', pk=pk)
 
     # Yetki kontrolü
     is_owner = request.user == job.owner
     is_expert = request.user == accepted_proposal.expert
     if not (is_owner or is_expert):
-        messages.error(request, 'Bu işlem için yetkiniz yok.')
+        messages.error(request, gettext('Bu işlem için yetkiniz yok.'))
         return redirect('job_detail', pk=pk)
 
     # Daha önce review yapmış mı?
     if job.reviews.filter(reviewer=request.user).exists():
-        messages.warning(request, 'Zaten değerlendirme yapmışsınız.')
+        messages.warning(request, gettext('Zaten değerlendirme yapmışsınız.'))
         return redirect('job_detail', pk=pk)
 
     rating = request.POST.get('rating')
     comment = request.POST.get('comment', '')[:300]
 
     if not rating or int(rating) not in range(1, 6):
-        messages.error(request, 'Geçerli bir puan seçin.')
+        messages.error(request, gettext('Geçerli bir puan seçin.'))
         return redirect('job_detail', pk=pk)
 
     # Karşı tarafı bul
@@ -961,7 +962,7 @@ def add_job_review(request, pk):
             )
         )
 
-    messages.success(request, 'Değerlendirmeniz gönderildi. Admin onayından sonra yayınlanacak.')
+    messages.success(request, gettext('Değerlendirmeniz gönderildi. Admin onayından sonra yayınlanacak.'))
     return redirect('job_detail', pk=pk)
 
 

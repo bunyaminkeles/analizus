@@ -62,7 +62,17 @@ olabilir, tahminler iyimser kabul edilmeli.
 - YÖK Tez (`yoktez/`), TR Dizin (`trdizin/`), Tez Analiz (`tezanaliz/`)
   — YÖK Tez tabanlı, Türkiye'ye özgü
 - OAI-PMH (`oaipmh/`) — 17 aktif arşivin hepsi Türk üniversitesi
-- Forum + Market/iş ilanları — TL fiyatlandırma, UGC, Türkçe topluluk
+- Forum — UGC, Türkçe topluluk
+- ~~Market/iş ilanları~~ → **YALNIZCA ARAYÜZ DAHİL edildi** (23 Eylül 2026
+  kullanıcı kararı): `market/*` URL'leri `forum/urls_i18n.py`'ye taşındı;
+  şablonlar + pazar view'larındaki flash mesajları + ilan/teklif form
+  etiketleri çevrildi. Çevrilmeyen (kasıtlı): ilan/teklif içerikleri (UGC),
+  ₺ fiyatlar, `promote_job_iban.html` (TL/IBAN ödeme akışı), otomatik
+  DM/bildirim metinleri (alıcının dil tercihi bilinmiyor). Ayrıca çevrildi:
+  `forum/models.py` → `FreelanceJob`/`JobProposal` durum etiketleri
+  (`gettext_lazy`, migration gerekmedi — `makemigrations --check` temiz) ve
+  `Profile.can_post_job*/can_propose()` sebep metinleri. Rütbe adları
+  (`get_rank_display`, ör. "Çaylak") ve rozet adları (DB) Türkçe kalıyor.
 - Blog — mevcut içerik Türkiye SEO'suna göre üretilmiş
 - ~~Proje talebi / Danışmanlık / Eğitim landing sayfaları~~ → **DAHİL edildi**
   (22 Eylül 2026 kullanıcı kararı), aşağıdaki dosya listesine eklendi

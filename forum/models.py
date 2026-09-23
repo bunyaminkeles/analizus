@@ -8,6 +8,7 @@ from django.contrib.contenttypes.models import ContentType
 import uuid
 import secrets
 from django.utils import timezone
+from django.utils.translation import gettext, gettext_lazy
 from datetime import timedelta
 from forum.storage import get_storage
 
@@ -359,7 +360,7 @@ class Profile(models.Model):
 
     def can_post_job(self):
         """İlan açma yetkisi kontrolü - Tüm kayıtlı kullanıcılar ilan açabilir"""
-        return True, "Kayıtlı üye"
+        return True, gettext("Kayıtlı üye")
 
     def get_weekly_job_limit(self):
         """Haftalık ilan limiti: Premium=3, Free=1; her 5 geçerli referans +1 (maks +2)"""
@@ -378,11 +379,11 @@ class Profile(models.Model):
     def can_post_job_now(self):
         """Kullanıcı şu an ilan açabilir mi? (limit + e-posta kontrolü)"""
         if not self.email_verified:
-            return False, "İlan açmak için e-posta doğrulaması gerekli"
+            return False, gettext("İlan açmak için e-posta doğrulaması gerekli")
         if self.get_weekly_job_count() >= self.get_weekly_job_limit():
             limit = self.get_weekly_job_limit()
-            return False, f"Haftalık ilan limitinize ({limit}) ulaştınız"
-        return True, "İlan açabilirsiniz"
+            return False, gettext("Haftalık ilan limitinize (%(limit)s) ulaştınız") % {'limit': limit}
+        return True, gettext("İlan açabilirsiniz")
 
     def get_job_duration_days(self):
         """Puana göre ilan süresi: <500p=10gün, 500-1000p=20gün, 1000+p=30gün"""
@@ -402,20 +403,20 @@ class Profile(models.Model):
 
         # Admin/Staff her zaman verebilir
         if self.user.is_superuser or self.user.is_staff:
-            return True, "Yönetici yetkisi"
+            return True, gettext("Yönetici yetkisi")
 
         # Premium üyeler verebilir
         if self.account_type == 'Premium':
-            return True, "Premium üyelik"
+            return True, gettext("Premium üyelik")
 
         # EDU mail ile geçici teklif hakkı
         if self.edu_proposal_expires and self.edu_proposal_expires > timezone.now():
-            return True, "EDU mail ayrıcalığı (3 günlük)"
+            return True, gettext("EDU mail ayrıcalığı (3 günlük)")
 
         # Belirli rütbeler verebilir (expert ve üstü)
         allowed_ranks = ['expert', 'master', 'legend', 'admin']
         if self.rank in allowed_ranks:
-            return True, f"{self.get_rank_display()} rütbesi"
+            return True, gettext("%(rank)s rütbesi") % {'rank': self.get_rank_display()}
 
         # Belirli rozetler ile verebilir
         proposal_badges = [
@@ -431,7 +432,7 @@ class Profile(models.Model):
         if user_badges.exists():
             return True, user_badges.first().name
 
-        return False, "Teklif vermek için 1000+ puan veya özel rozet gerekli"
+        return False, gettext("Teklif vermek için 1000+ puan veya özel rozet gerekli")
 
     def get_permissions_summary(self):
         """Kullanıcının tüm yetkilerinin özetini döndürür"""
@@ -821,10 +822,10 @@ class JobCategory(models.Model):
 class FreelanceJob(models.Model):
     """Kullanıcıların verdiği iş ilanları (Freelance Market)"""
     STATUS_CHOICES = (
-        ('open', 'Açık (Teklif Bekliyor)'),
-        ('in_progress', 'Devam Ediyor'),
-        ('completed', 'Tamamlandı'),
-        ('cancelled', 'İptal Edildi'),
+        ('open', gettext_lazy('Açık (Teklif Bekliyor)')),
+        ('in_progress', gettext_lazy('Devam Ediyor')),
+        ('completed', gettext_lazy('Tamamlandı')),
+        ('cancelled', gettext_lazy('İptal Edildi')),
     )
 
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posted_jobs', verbose_name="İlan Sahibi")
@@ -931,9 +932,9 @@ class FreelanceJob(models.Model):
 class JobProposal(models.Model):
     """Uzmanların iş ilanlarına verdiği teklifler"""
     STATUS_CHOICES = (
-        ('pending', 'Beklemede'),
-        ('accepted', 'Kabul Edildi'),
-        ('rejected', 'Reddedildi'),
+        ('pending', gettext_lazy('Beklemede')),
+        ('accepted', gettext_lazy('Kabul Edildi')),
+        ('rejected', gettext_lazy('Reddedildi')),
     )
 
     job = models.ForeignKey(FreelanceJob, on_delete=models.CASCADE, related_name='proposals', verbose_name="İlan")

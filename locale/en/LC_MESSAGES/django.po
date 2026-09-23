@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-23 12:26+0300\n"
+"POT-Creation-Date: 2026-09-23 22:02+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,6 +29,130 @@ msgstr "English"
 msgid "German"
 msgstr "German"
 
+#: forum/forms.py:134
+msgid "Kategori"
+msgstr "Category"
+
+#: forum/forms.py:137
+msgid "Örn: SPSS, Veri Analizi, Makine Öğrenmesi..."
+msgstr "E.g. SPSS, Data Analysis, Machine Learning..."
+
+#: forum/forms.py:147
+msgid "Örn: SPSS Veri Analizi"
+msgstr "E.g. SPSS data analysis"
+
+#: forum/forms.py:148
+msgid "İşin detaylarını açıklayın..."
+msgstr "Describe the details of the job..."
+
+#: forum/forms.py:149
+msgid "Örn: 500"
+msgstr "E.g. 500"
+
+#: forum/forms.py:150 forum/forms.py:182
+msgid "Örn: 3 gün"
+msgstr "E.g. 3 days"
+
+#: forum/forms.py:153
+msgid "İlan Başlığı"
+msgstr "Listing Title"
+
+#: forum/forms.py:154
+msgid "İş Tanımı"
+msgstr "Job Description"
+
+#: forum/forms.py:155
+msgid "Bütçe (TL)"
+msgstr "Budget (TRY)"
+
+#: forum/forms.py:156 forum/forms.py:187
+msgid "Tahmini Süre"
+msgstr "Estimated Duration"
+
+#: forum/forms.py:181
+msgid "Teklifiniz (TL)"
+msgstr "Your offer (TRY)"
+
+#: forum/forms.py:183
+msgid "Neden sizi seçmeliyim?"
+msgstr "Why should I choose you?"
+
+#: forum/forms.py:186
+msgid "Teklif Tutarı (TL)"
+msgstr "Offer Amount (TRY)"
+
+#: forum/forms.py:188
+msgid "Ön Yazı"
+msgstr "Cover Letter"
+
+#: forum/models.py:363
+msgid "Kayıtlı üye"
+msgstr "Registered member"
+
+#: forum/models.py:382
+msgid "İlan açmak için e-posta doğrulaması gerekli"
+msgstr "Email verification is required to post a listing"
+
+#: forum/models.py:385
+#, python-format
+msgid "Haftalık ilan limitinize (%(limit)s) ulaştınız"
+msgstr "You have reached your weekly listing limit (%(limit)s)"
+
+#: forum/models.py:386
+msgid "İlan açabilirsiniz"
+msgstr "You can post a listing"
+
+#: forum/models.py:406
+msgid "Yönetici yetkisi"
+msgstr "Administrator permission"
+
+#: forum/models.py:410 openalex/templates/openalex/landing.html:31
+msgid "Premium üyelik"
+msgstr "Premium membership"
+
+#: forum/models.py:414
+msgid "EDU mail ayrıcalığı (3 günlük)"
+msgstr "EDU email privilege (3 days)"
+
+#: forum/models.py:419
+#, python-format
+msgid "%(rank)s rütbesi"
+msgstr "%(rank)s rank"
+
+#: forum/models.py:435
+msgid "Teklif vermek için 1000+ puan veya özel rozet gerekli"
+msgstr "1000+ points or a special badge is required to make offers"
+
+#: forum/models.py:825
+msgid "Açık (Teklif Bekliyor)"
+msgstr "Open (Awaiting Offers)"
+
+#: forum/models.py:826 forum/templates/forum/market/my_jobs.html:76
+msgid "Devam Ediyor"
+msgstr "In Progress"
+
+#: forum/models.py:827 forum/templates/forum/market/my_jobs.html:76
+msgid "Tamamlandı"
+msgstr "Completed"
+
+#: forum/models.py:828
+msgid "İptal Edildi"
+msgstr "Cancelled"
+
+#: forum/models.py:935 forum/templates/forum/market/job_detail.html:192
+#: forum/templates/forum/market/my_jobs.html:59
+msgid "Beklemede"
+msgstr "Pending"
+
+#: forum/models.py:936 forum/templates/forum/market/job_detail.html:188
+#: forum/templates/forum/market/my_jobs.html:60
+msgid "Kabul Edildi"
+msgstr "Accepted"
+
+#: forum/models.py:937 forum/templates/forum/market/my_jobs.html:61
+msgid "Reddedildi"
+msgstr "Rejected"
+
 #: forum/templates/forum/ai_cozumler.html:5
 #: forum/templates/forum/ai_cozumler.html:7
 #: forum/templates/forum/ai_cozumler.html:9
@@ -43,8 +167,8 @@ msgid ""
 "bir uzmanın gözetiminde. Kurumlar ve araştırma grupları için otomasyon "
 "projeleri."
 msgstr ""
-"AI systems that collect, analyze, and report data — every step supervised by "
-"an expert. Automation projects for organizations and research groups."
+"AI systems that collect, analyze, and report data — every step supervised by"
+" an expert. Automation projects for organizations and research groups."
 
 #: forum/templates/forum/ai_cozumler.html:79
 #: forum/templates/forum/home.html:833
@@ -53,11 +177,11 @@ msgstr "Let your analyses run while you sleep."
 
 #: forum/templates/forum/ai_cozumler.html:80
 msgid ""
-"Veri toplayan, analiz eden, raporlayan yapay zeka sistemleri — her adımı bir "
-"uzmanın gözetiminde."
+"Veri toplayan, analiz eden, raporlayan yapay zeka sistemleri — her adımı bir"
+" uzmanın gözetiminde."
 msgstr ""
-"AI systems that collect, analyze, and report data — every step supervised by "
-"an expert."
+"AI systems that collect, analyze, and report data — every step supervised by"
+" an expert."
 
 #: forum/templates/forum/ai_cozumler.html:81
 #: forum/templates/forum/ai_cozumler.html:264
@@ -70,11 +194,11 @@ msgstr "Literature Watchdog"
 
 #: forum/templates/forum/ai_cozumler.html:95
 msgid ""
-"Belirlediğiniz anahtar kelimelerle akademik veritabanlarını periyodik tarar; "
-"yeni yayınları özetleyip e-postanıza bırakır."
+"Belirlediğiniz anahtar kelimelerle akademik veritabanlarını periyodik tarar;"
+" yeni yayınları özetleyip e-postanıza bırakır."
 msgstr ""
-"Periodically scans academic databases using your chosen keywords; summarizes "
-"new publications and delivers them to your inbox."
+"Periodically scans academic databases using your chosen keywords; summarizes"
+" new publications and delivers them to your inbox."
 
 #: forum/templates/forum/ai_cozumler.html:96
 msgid "Altyapı: OpenAlex + Semantic Scholar tarama modülleri"
@@ -94,7 +218,8 @@ msgstr ""
 
 #: forum/templates/forum/ai_cozumler.html:106
 msgid "Altyapı: İstatistik analiz motoru + otomatik PDF üretimi"
-msgstr "Infrastructure: Statistical analysis engine + automatic PDF generation"
+msgstr ""
+"Infrastructure: Statistical analysis engine + automatic PDF generation"
 
 #: forum/templates/forum/ai_cozumler.html:114
 msgid "Rapor Fabrikası"
@@ -112,7 +237,9 @@ msgstr ""
 msgid "Altyapı: Uzman doğrulama katmanı + e-posta bildirim sistemi"
 msgstr "Infrastructure: Expert verification layer + email notification system"
 
-#: forum/templates/forum/ai_cozumler.html:126 templates/service_promo.html:99
+#: forum/templates/forum/ai_cozumler.html:126
+#: forum/templates/forum/market/job_list.html:281
+#: templates/service_promo.html:99
 msgid "Nasıl Çalışır?"
 msgstr "How It Works?"
 
@@ -220,8 +347,8 @@ msgstr "Will it integrate with our existing systems?"
 
 #: forum/templates/forum/ai_cozumler.html:213
 msgid ""
-"Çoğu durumda evet — API, dosya paylaşımı veya e-posta tabanlı entegrasyonlar "
-"mümkündür. Keşif görüşmesinde mevcut altyapınızı değerlendiririz."
+"Çoğu durumda evet — API, dosya paylaşımı veya e-posta tabanlı entegrasyonlar"
+" mümkündür. Keşif görüşmesinde mevcut altyapınızı değerlendiririz."
 msgstr ""
 "In most cases, yes — API, file-sharing, or email-based integrations are "
 "possible. We assess your existing infrastructure during the discovery call."
@@ -232,11 +359,11 @@ msgstr "How long does setup take?"
 
 #: forum/templates/forum/ai_cozumler.html:223
 msgid ""
-"Kapsam ve veri karmaşıklığına göre değişir; basit veri hatları birkaç günde, "
-"çok adımlı otomasyonlar birkaç haftada devreye alınır."
+"Kapsam ve veri karmaşıklığına göre değişir; basit veri hatları birkaç günde,"
+" çok adımlı otomasyonlar birkaç haftada devreye alınır."
 msgstr ""
-"It varies by scope and data complexity; simple data pipelines go live within "
-"days, multi-step automations within a few weeks."
+"It varies by scope and data complexity; simple data pipelines go live within"
+" days, multi-step automations within a few weeks."
 
 #: forum/templates/forum/ai_cozumler.html:229
 msgid "Ajan hata yaparsa ne olur?"
@@ -244,11 +371,12 @@ msgstr "What happens if an agent makes a mistake?"
 
 #: forum/templates/forum/ai_cozumler.html:233
 msgid ""
-"Her ajan çıktısı, teslim öncesinde uzman doğrulama katmanından geçer; hatalı "
-"veya belirsiz sonuçlar otomatik olarak insana yönlendirilir."
+"Her ajan çıktısı, teslim öncesinde uzman doğrulama katmanından geçer; hatalı"
+" veya belirsiz sonuçlar otomatik olarak insana yönlendirilir."
 msgstr ""
 "Every agent output passes through the expert verification layer before "
-"delivery; erroneous or ambiguous results are automatically routed to a human."
+"delivery; erroneous or ambiguous results are automatically routed to a "
+"human."
 
 #: forum/templates/forum/ai_cozumler.html:239
 msgid "Fiyatlandırma nasıl belirlenir?"
@@ -264,23 +392,23 @@ msgstr ""
 
 #: forum/templates/forum/ai_cozumler.html:254
 msgid ""
-"Analizus, kurumlara ve araştırma gruplarına yönelik <strong>yapay zeka ajan</"
-"strong> ve <strong>otomasyon projeleri</strong> geliştirir. Veri toplayan, "
-"analiz eden ve raporlayan <strong>AI otomasyonu</strong> sistemleri, her "
-"adımda bir uzmanın gözetiminde çalışır. Literatür taramasından düzenli veri "
-"hatlarına, aylık rapor üretiminden bildirim sistemlerine kadar tekrarlayan "
-"ve kural tabanlı süreçler <strong>iş süreçleri otomasyonu</strong> ile "
-"devralınabilir; yorum, etik karar ve beklenmedik durumlar her zaman insan "
-"uzmanda kalır."
+"Analizus, kurumlara ve araştırma gruplarına yönelik <strong>yapay zeka "
+"ajan</strong> ve <strong>otomasyon projeleri</strong> geliştirir. Veri "
+"toplayan, analiz eden ve raporlayan <strong>AI otomasyonu</strong> "
+"sistemleri, her adımda bir uzmanın gözetiminde çalışır. Literatür "
+"taramasından düzenli veri hatlarına, aylık rapor üretiminden bildirim "
+"sistemlerine kadar tekrarlayan ve kural tabanlı süreçler <strong>iş "
+"süreçleri otomasyonu</strong> ile devralınabilir; yorum, etik karar ve "
+"beklenmedik durumlar her zaman insan uzmanda kalır."
 msgstr ""
-"Analizus develops <strong>AI agent</strong> and <strong>automation projects</"
-"strong> for organizations and research groups. <strong>AI automation</"
-"strong> systems that collect, analyze, and report data operate under expert "
-"supervision at every step. From literature scanning to recurring data "
-"pipelines, monthly report generation to notification systems, repetitive "
-"rule-based processes can be handed over to <strong>business process "
-"automation</strong>; interpretation, ethical decisions, and unexpected "
-"situations always stay with a human expert."
+"Analizus develops <strong>AI agent</strong> and <strong>automation "
+"projects</strong> for organizations and research groups. <strong>AI "
+"automation</strong> systems that collect, analyze, and report data operate "
+"under expert supervision at every step. From literature scanning to "
+"recurring data pipelines, monthly report generation to notification systems,"
+" repetitive rule-based processes can be handed over to <strong>business "
+"process automation</strong>; interpretation, ethical decisions, and "
+"unexpected situations always stay with a human expert."
 
 #: forum/templates/forum/ai_cozumler.html:263
 msgid ""
@@ -455,8 +583,8 @@ msgstr "Training is done with your own data, not a ready-made demo dataset."
 
 #: forum/templates/forum/egitim.html:197 forum/templates/forum/egitim.html:230
 msgid ""
-"Eğitimi, bu sitedeki 18 istatistik aracını, bibliyometrik analiz motorunu ve "
-"YÖK Tez tarama altyapısını geliştiren ekip veriyor."
+"Eğitimi, bu sitedeki 18 istatistik aracını, bibliyometrik analiz motorunu ve"
+" YÖK Tez tarama altyapısını geliştiren ekip veriyor."
 msgstr ""
 "Training is delivered by the team that built this site's 18 statistics "
 "tools, its bibliometric analysis engine, and its thesis-scanning "
@@ -563,8 +691,8 @@ msgstr "Are the sessions live or recorded?"
 #: forum/templates/forum/egitim.html:256
 msgid "Tamamı canlı ve birebir/küçük grup. Hazır video kursu satılmıyor."
 msgstr ""
-"All sessions are live and one-on-one/small group. We don't sell pre-recorded "
-"video courses."
+"All sessions are live and one-on-one/small group. We don't sell pre-recorded"
+" video courses."
 
 #: forum/templates/forum/egitim.html:262
 msgid "Kendi tez/şirket verimle çalışabilir miyim?"
@@ -611,8 +739,8 @@ msgstr "Can I watch a recording afterward?"
 
 #: forum/templates/forum/egitim.html:296
 msgid ""
-"Kayıt paylaşılmıyor. Bunun yerine kalıcı materyal veriliyor: kullanılan veri "
-"seti, SPSS syntax / Python notebook dosyası ve adım adım uygulama notu."
+"Kayıt paylaşılmıyor. Bunun yerine kalıcı materyal veriliyor: kullanılan veri"
+" seti, SPSS syntax / Python notebook dosyası ve adım adım uygulama notu."
 msgstr ""
 "Sessions are not recorded. Instead you receive lasting materials: the "
 "dataset used, the SPSS syntax / Python notebook file, and a step-by-step "
@@ -630,7 +758,8 @@ msgstr "Project Request"
 #: forum/templates/forum/egitim.html:306
 msgid ""
 "sayfamızdan bize ulaşabilirsiniz; ekibimiz analizi sizin adınıza yürütür."
-msgstr "page to reach us; our team will carry out the analysis on your behalf."
+msgstr ""
+"page to reach us; our team will carry out the analysis on your behalf."
 
 #: forum/templates/forum/egitim.html:312
 msgid "Talep gönderdikten sonra süreç nasıl ilerliyor?"
@@ -641,8 +770,8 @@ msgid ""
 "Form gönderildikten sonra 24 saat içinde dönüş yapılır, ardından ücretsiz "
 "bir ön görüşme planlanır ve size özel program ile teklif sunulur."
 msgstr ""
-"We respond within 24 hours of your submission, then schedule a free pre-call "
-"and present you with a custom program and quote."
+"We respond within 24 hours of your submission, then schedule a free pre-call"
+" and present you with a custom program and quote."
 
 #: forum/templates/forum/egitim.html:327
 msgid ""
@@ -661,8 +790,8 @@ msgstr ""
 "development, reliability-validity analysis, bibliometric analysis, and "
 "systematic literature review to machine learning and deep learning — is "
 "taught using the participant's own thesis or company data. Sessions are "
-"live, one-on-one or small group; by the end you keep lasting materials — the "
-"dataset used, code file, and application notes."
+"live, one-on-one or small group; by the end you keep lasting materials — the"
+" dataset used, code file, and application notes."
 
 #: forum/templates/forum/egitim.html:336
 msgid ""
@@ -933,8 +1062,8 @@ msgid ""
 "hazır — SPSS bilgisi gerekmez. Tez analizi ve akademik danışmanlık için "
 "uzman bul."
 msgstr ""
-"Upload your file, get statistical and data analysis ready in APA format — no "
-"SPSS knowledge required. Find an expert for thesis analysis and academic "
+"Upload your file, get statistical and data analysis ready in APA format — no"
+" SPSS knowledge required. Find an expert for thesis analysis and academic "
 "consulting."
 
 #: forum/templates/forum/home.html:8 forum/templates/forum/home.html:10
@@ -947,8 +1076,8 @@ msgid ""
 "Türkiye'nin analiz ekosistemi — 18 ücretsiz istatistik aracı, AI asistan ve "
 "doğrulanmış uzmanlar tek çatıda."
 msgstr ""
-"Turkey's analysis ecosystem — 18 free statistics tools, an AI assistant, and "
-"verified experts under one roof."
+"Turkey's analysis ecosystem — 18 free statistics tools, an AI assistant, and"
+" verified experts under one roof."
 
 #: forum/templates/forum/home.html:231
 msgid "Analizini yap."
@@ -1032,6 +1161,7 @@ msgid "Fırsatlar:"
 msgstr "Opportunities:"
 
 #: forum/templates/forum/home.html:276
+#: forum/templates/forum/market/job_list.html:109
 msgid "Açık İlanlar"
 msgstr "Open Listings"
 
@@ -1198,7 +1328,8 @@ msgstr "Delivery & Revisions"
 
 #: forum/templates/forum/home.html:501
 msgid ""
-"Raporu teslim alırsınız. Danışman/hakem dönüşleri için revizyon hakkınız var."
+"Raporu teslim alırsınız. Danışman/hakem dönüşleri için revizyon hakkınız "
+"var."
 msgstr ""
 "You receive the report. You're entitled to revisions for advisor/reviewer "
 "feedback."
@@ -1268,18 +1399,23 @@ msgstr ""
 "project."
 
 #: forum/templates/forum/home.html:613
+#: forum/templates/forum/market/job_list.html:240
 msgid "Uzmanlarla Tanış"
 msgstr "Meet the Experts"
 
 #: forum/templates/forum/home.html:614
+#: forum/templates/forum/market/job_list.html:241
 msgid "Alanında doğrulanmış uzmanlarımızdan birkaçı."
 msgstr "A few of our field-verified experts."
 
 #: forum/templates/forum/home.html:619
+#: forum/templates/forum/market/job_list.html:246
 msgid "Tüm Uzmanlar"
 msgstr "All Experts"
 
 #: forum/templates/forum/home.html:621 forum/templates/forum/home.html:623
+#: forum/templates/forum/market/job_list.html:35
+#: forum/templates/forum/market/job_list.html:42
 msgid "Uzman Olarak Katıl"
 msgstr "Join as an Expert"
 
@@ -1296,6 +1432,11 @@ msgid "VİTRİN"
 msgstr "FEATURED"
 
 #: forum/templates/forum/home.html:648 forum/templates/forum/home.html:667
+#: forum/templates/forum/market/job_detail.html:194
+#: forum/templates/forum/market/job_detail.html:291
+#: forum/templates/forum/market/job_list.html:139
+#: forum/templates/forum/market/job_list.html:211
+#: forum/templates/forum/market/my_jobs.html:80
 #, python-format
 msgid "%(time)s önce"
 msgstr "%(time)s ago"
@@ -1376,8 +1517,8 @@ msgstr "Which test should I use?"
 msgid ""
 "Bir soru seç, AI Asistan hemen cevaplasın — ya da kendini Arena'da test et."
 msgstr ""
-"Pick a question and let the AI Assistant answer instantly — or test yourself "
-"in the Arena."
+"Pick a question and let the AI Assistant answer instantly — or test yourself"
+" in the Arena."
 
 #: forum/templates/forum/home.html:759
 msgid "AI Asistan'a sor"
@@ -1453,8 +1594,8 @@ msgstr "Explore AI Solutions"
 
 #: forum/templates/forum/home.html:847
 msgid ""
-"SPSS'ten Python'a, ölçek geliştirmeden makine öğrenmesine — birebir eğitimle "
-"kendi verinizle çalışın."
+"SPSS'ten Python'a, ölçek geliştirmeden makine öğrenmesine — birebir eğitimle"
+" kendi verinizle çalışın."
 msgstr ""
 "From SPSS to Python, scale development to machine learning — work with your "
 "own data in one-on-one training."
@@ -1486,13 +1627,13 @@ msgstr "Is my analysis data safe? Is it shared with others?"
 #, python-format
 msgid ""
 "Kesinlikle hayır. Verileriniz %%100 KVKK ve akademik etik standartlarına "
-"uygun olarak şifreli sunucularda işlenir. Analiz dosyalarınız veya araştırma "
-"detaylarınız 3. şahıslarla, kurumlarla veya diğer uzmanlarla asla "
+"uygun olarak şifreli sunucularda işlenir. Analiz dosyalarınız veya araştırma"
+" detaylarınız 3. şahıslarla, kurumlarla veya diğer uzmanlarla asla "
 "paylaşılmaz."
 msgstr ""
-"Absolutely not. Your data is processed on encrypted servers, fully compliant "
-"with data-protection law and academic ethics standards. Your analysis files "
-"or research details are never shared with third parties, institutions, or "
+"Absolutely not. Your data is processed on encrypted servers, fully compliant"
+" with data-protection law and academic ethics standards. Your analysis files"
+" or research details are never shared with third parties, institutions, or "
 "other experts."
 
 #: forum/templates/forum/home.html:906
@@ -1530,15 +1671,15 @@ msgstr "How long until my analysis results are delivered?"
 
 #: forum/templates/forum/home.html:939
 msgid ""
-"Teslimat süresi verinizin karmaşıklığına (veri temizliği gereksinimi vb.) ve "
-"istenen testlerin sayısına göre değişmekle birlikte, genellikle 3 ila 7 iş "
+"Teslimat süresi verinizin karmaşıklığına (veri temizliği gereksinimi vb.) ve"
+" istenen testlerin sayısına göre değişmekle birlikte, genellikle 3 ila 7 iş "
 "günü içerisinde APA formatında raporlanmış olarak teslim edilir. Zaman "
 "kısıtlaması olan projeler için \"Acil Teslimat\" seçeneğimiz bulunmaktadır."
 msgstr ""
 "Delivery time varies with your data's complexity (e.g. cleaning needs) and "
 "the number of tests requested, but it's typically delivered as an APA-"
-"formatted report within 3 to 7 business days. For time-constrained projects, "
-"we offer an \"Express Delivery\" option."
+"formatted report within 3 to 7 business days. For time-constrained projects,"
+" we offer an \"Express Delivery\" option."
 
 #: forum/templates/forum/home.html:948
 msgid "Süreç bittikten sonra verilerime ve dosyalarıma ne oluyor?"
@@ -1546,8 +1687,8 @@ msgstr "What happens to my data and files after the process ends?"
 
 #: forum/templates/forum/home.html:953
 msgid ""
-"Proje teslim edilip tarafınızdan onay alındıktan sonra, verileriniz ve sonuç "
-"raporlarınız olası revizyon taleplerine karşın sistemlerimizde 30 gün "
+"Proje teslim edilip tarafınızdan onay alındıktan sonra, verileriniz ve sonuç"
+" raporlarınız olası revizyon taleplerine karşın sistemlerimizde 30 gün "
 "boyunca güvenle muhafaza edilir. 30 günün sonunda tüm dosyalar "
 "sunucularımızdan kalıcı olarak ve geri döndürülemez şekilde silinir."
 msgstr ""
@@ -1596,6 +1737,622 @@ msgstr "File upload failed. Please try again."
 msgid "Bağlantı hatası. Lütfen tekrar deneyin."
 msgstr "Connection error. Please try again."
 
+#: forum/templates/forum/market/_review_section.html:4
+msgid "Değerlendirmeler"
+msgstr "Reviews"
+
+#: forum/templates/forum/market/_review_section.html:9
+msgid "Değerlendirmeniz gönderildi, admin onayından sonra burada görünecek."
+msgstr ""
+"Your review has been submitted and will appear here after admin approval."
+
+#: forum/templates/forum/market/_review_section.html:36
+msgid "Henüz değerlendirme yapılmamış."
+msgstr "No reviews yet."
+
+#: forum/templates/forum/market/_review_section.html:45
+#, python-format
+msgid ""
+"<strong>%(username)s</strong> ile olan çalışmanızı değerlendiriyorsunuz."
+msgstr ""
+"You are reviewing your collaboration with <strong>%(username)s</strong>."
+
+#: forum/templates/forum/market/_review_section.html:50
+msgid "Puan"
+msgstr "Rating"
+
+#: forum/templates/forum/market/_review_section.html:72
+msgid "Yorum (max 300 karakter)"
+msgstr "Comment (max. 300 characters)"
+
+#: forum/templates/forum/market/_review_section.html:73
+msgid "Deneyiminizi kısaca paylaşın..."
+msgstr "Briefly share your experience..."
+
+#: forum/templates/forum/market/_review_section.html:76
+msgid "Değerlendirme Gönder"
+msgstr "Submit Review"
+
+#: forum/templates/forum/market/edit_job.html:4
+#: forum/templates/forum/market/edit_job.html:13
+msgid "İlanı Düzenle"
+msgstr "Edit Listing"
+
+#: forum/templates/forum/market/edit_job.html:17
+msgid ""
+"Bu hakkı yalnızca bir kez kullanabilirsiniz. Teklif alındıktan sonra "
+"düzenleme yapılamaz."
+msgstr ""
+"You can use this right only once. Listings cannot be edited after receiving "
+"an offer."
+
+#: forum/templates/forum/market/edit_job.html:61
+msgid "Güncelle (Son Hakkım)"
+msgstr "Update (Final Edit)"
+
+#: forum/templates/forum/market/edit_job.html:63
+#: forum/templates/forum/market/job_detail.html:257
+#: forum/templates/forum/market/post_job.html:54
+#: semanticscholar/templates/semanticscholar/landing.html:89
+msgid "İptal"
+msgstr "Cancel"
+
+#: forum/templates/forum/market/job_detail.html:55
+#: forum/templates/registration/login.html:231
+#: templates/forum/register.html:242
+msgid "Ana Sayfa"
+msgstr "Home"
+
+#: forum/templates/forum/market/job_detail.html:85
+msgid ""
+"Bu ilan sahibi tarafından kapatılmıştır ve artık tekliflere açık değildir."
+msgstr ""
+"This listing has been closed by its owner and is no longer open for offers."
+
+#: forum/templates/forum/market/job_detail.html:102
+#: forum/templates/forum/market/job_list.html:143
+msgid "Son gün!"
+msgstr "Last day!"
+
+#: forum/templates/forum/market/job_detail.html:104
+#: forum/templates/forum/market/job_detail.html:106
+#: forum/templates/forum/market/job_list.html:145
+#: forum/templates/forum/market/job_list.html:147
+#: forum/templates/forum/market/my_jobs.html:37
+#, python-format
+msgid "%(days)s gün kaldı"
+msgid_plural "%(days)s gün kaldı"
+msgstr[0] "%(days)s day left"
+msgstr[1] "%(days)s days left"
+
+#: forum/templates/forum/market/job_detail.html:112
+msgid "Mesaj Gönder"
+msgstr "Send Message"
+
+#: forum/templates/forum/market/job_detail.html:124
+msgid "Bütçe:"
+msgstr "Budget:"
+
+#: forum/templates/forum/market/job_detail.html:125
+#: forum/templates/forum/market/job_detail.html:294
+#: forum/templates/forum/market/job_list.html:161
+#: forum/templates/forum/market/job_list.html:218
+#, python-format
+msgid "₺%(amount)s'ye kadar"
+msgstr "up to ₺%(amount)s"
+
+#: forum/templates/forum/market/job_detail.html:129
+msgid "Tahmini Süre:"
+msgstr "Estimated Duration:"
+
+#: forum/templates/forum/market/job_detail.html:140
+msgid "Kaydedildi"
+msgstr "Saved"
+
+#: forum/templates/forum/market/job_detail.html:140
+msgid "Kaydet"
+msgstr "Save"
+
+#: forum/templates/forum/market/job_detail.html:145
+msgid "Vitrine Taşı"
+msgstr "Feature Listing"
+
+#: forum/templates/forum/market/job_detail.html:153
+msgid "Düzenle"
+msgstr "Edit"
+
+#: forum/templates/forum/market/job_detail.html:156
+msgid ""
+"İlanı kapatmak istediğinizden emin misiniz? Teklif verenlere bildirim "
+"gönderilecek."
+msgstr ""
+"Are you sure you want to close this listing? Everyone who made an offer will"
+" be notified."
+
+#: forum/templates/forum/market/job_detail.html:159
+msgid "Yayından Kaldır"
+msgstr "Unpublish"
+
+#: forum/templates/forum/market/job_detail.html:167
+msgid "Başarı Hikayenizi Paylaşın"
+msgstr "Share Your Success Story"
+
+#: forum/templates/forum/market/job_detail.html:176
+#, python-format
+msgid "Gelen Teklifler (%(count)s)"
+msgstr "Received Offers (%(count)s)"
+
+#: forum/templates/forum/market/job_detail.html:190
+msgid "Kabul Edilmedi"
+msgstr "Not Accepted"
+
+#: forum/templates/forum/market/job_detail.html:201
+#: forum/templates/forum/market/job_detail.html:324
+msgid "Mesaj At"
+msgstr "Message"
+
+#: forum/templates/forum/market/job_detail.html:205
+msgid "Bu teklifi kabul etmek istediğinize emin misiniz?"
+msgstr "Are you sure you want to accept this offer?"
+
+#: forum/templates/forum/market/job_detail.html:205
+msgid "Kabul Et"
+msgstr "Accept"
+
+#: forum/templates/forum/market/job_detail.html:212
+msgid "Yönet"
+msgstr "Manage"
+
+#: forum/templates/forum/market/job_detail.html:215
+msgid "Teklifi Yönet"
+msgstr "Manage Offer"
+
+#: forum/templates/forum/market/job_detail.html:232
+#, python-format
+msgid "Teklifi Yönet: %(username)s"
+msgstr "Manage Offer: %(username)s"
+
+#: forum/templates/forum/market/job_detail.html:236
+msgid "Bu işlem geri alınamaz. Kullanıcıya bildirim gönderilecektir."
+msgstr "This action cannot be undone. The user will be notified."
+
+#: forum/templates/forum/market/job_detail.html:238
+msgid "İşlem"
+msgstr "Action"
+
+#: forum/templates/forum/market/job_detail.html:240
+msgid "Reddet"
+msgstr "Reject"
+
+#: forum/templates/forum/market/job_detail.html:241
+msgid "Sil"
+msgstr "Delete"
+
+#: forum/templates/forum/market/job_detail.html:245
+msgid "Sebep"
+msgstr "Reason"
+
+#: forum/templates/forum/market/job_detail.html:247
+msgid "Spam veya yanıltıcı içerik"
+msgstr "Spam or misleading content"
+
+#: forum/templates/forum/market/job_detail.html:248
+msgid "Düşük kalite veya yetersiz açıklama"
+msgstr "Low quality or insufficient description"
+
+#: forum/templates/forum/market/job_detail.html:249
+msgid "Uygunsuz dil veya içerik"
+msgstr "Inappropriate language or content"
+
+#: forum/templates/forum/market/job_detail.html:250
+msgid "İlanla ilgisiz teklif"
+msgstr "Offer unrelated to the listing"
+
+#: forum/templates/forum/market/job_detail.html:251
+msgid "Diğer (Açıklama Girin)"
+msgstr "Other (enter explanation)"
+
+#: forum/templates/forum/market/job_detail.html:253
+msgid "Reddetme/silme sebebini buraya yazın..."
+msgstr "Enter the reason for rejection/deletion here..."
+
+#: forum/templates/forum/market/job_detail.html:258
+msgid "İşlemi Onayla"
+msgstr "Confirm Action"
+
+#: forum/templates/forum/market/job_detail.html:271
+msgid "Henüz teklif gelmemiş."
+msgstr "No offers received yet."
+
+#: forum/templates/forum/market/job_detail.html:275
+#, python-format
+msgid "%(counter)s uzman teklif verdi."
+msgid_plural "%(counter)s uzman teklif verdi."
+msgstr[0] "%(counter)s expert has made an offer."
+msgstr[1] "%(counter)s experts have made offers."
+
+#: forum/templates/forum/market/job_detail.html:275
+msgid ""
+"Teklif fiyatları yalnızca ilan sahibi ve teklif veren tarafından "
+"görüntülenir."
+msgstr "Offer prices are visible only to the listing owner and the bidder."
+
+#: forum/templates/forum/market/job_detail.html:285
+msgid "Benzer İlanlar"
+msgstr "Similar Listings"
+
+#: forum/templates/forum/market/job_detail.html:309
+msgid "Kabul Edilen Uzman"
+msgstr "Accepted Expert"
+
+#: forum/templates/forum/market/job_detail.html:316
+#: forum/templates/forum/market/job_detail.html:357
+msgid "Tutar:"
+msgstr "Amount:"
+
+#: forum/templates/forum/market/job_detail.html:320
+#: forum/templates/forum/market/job_detail.html:361
+msgid "Süre:"
+msgstr "Duration:"
+
+#: forum/templates/forum/market/job_detail.html:336
+msgid "Teklifiniz Kabul Edildi"
+msgstr "Your Offer Was Accepted"
+
+#: forum/templates/forum/market/job_detail.html:338
+msgid "Bu iş tamamlandı."
+msgstr "This job has been completed."
+
+#: forum/templates/forum/market/job_detail.html:338
+msgid "Bu iş size atandı, çalışmaya devam edebilirsiniz."
+msgstr "This job has been assigned to you; you can continue working on it."
+
+#: forum/templates/forum/market/job_detail.html:345
+msgid "Teklifiniz Kabul Edilmedi"
+msgstr "Your Offer Was Not Accepted"
+
+#: forum/templates/forum/market/job_detail.html:346
+msgid "İlan sahibi başka bir teklifi kabul etti."
+msgstr "The listing owner accepted another offer."
+
+#: forum/templates/forum/market/job_detail.html:352
+msgid "Teklifiniz Gönderildi"
+msgstr "Your Offer Has Been Sent"
+
+#: forum/templates/forum/market/job_detail.html:353
+msgid "İlan sahibi teklifinizi değerlendiriyor."
+msgstr "The listing owner is reviewing your offer."
+
+#: forum/templates/forum/market/job_detail.html:367
+msgid "Bu ilana toplam"
+msgstr "In total for this listing"
+
+#: forum/templates/forum/market/job_detail.html:368
+#, python-format
+msgid "%(counter)s kişi teklif verdi."
+msgid_plural "%(counter)s kişi teklif verdi."
+msgstr[0] "%(counter)s person has made an offer."
+msgstr[1] "%(counter)s people have made offers."
+
+#: forum/templates/forum/market/job_detail.html:380
+msgid "Teklif Ver"
+msgstr "Make an Offer"
+
+#: forum/templates/forum/market/job_detail.html:397
+msgid "Teklifi Gönder"
+msgstr "Send Offer"
+
+#: forum/templates/forum/market/job_detail.html:405
+msgid "Teklif Verme Yetkisi Gerekli"
+msgstr "Permission to Make Offers Required"
+
+#: forum/templates/forum/market/job_detail.html:409
+msgid "Nasıl Yetki Kazanılır?"
+msgstr "How to Earn Permission?"
+
+#: forum/templates/forum/market/job_detail.html:411
+msgid "1000+ akademik puan kazan"
+msgstr "Earn 1000+ academic points"
+
+#: forum/templates/forum/market/job_detail.html:412
+msgid "Quiz'de puan kazan (her doğru cevap 10 puan)"
+msgstr "Earn points in the quiz (10 points per correct answer)"
+
+#: forum/templates/forum/market/job_detail.html:413
+msgid "10 kez \"En Faydalı Cevap\" al"
+msgstr "Receive \"Most Helpful Answer\" 10 times"
+
+#: forum/templates/forum/market/job_detail.html:414
+msgid "Premium/Uzman hesaba yükselt"
+msgstr "Upgrade to a Premium/Expert account"
+
+#: forum/templates/forum/market/job_detail.html:420
+msgid "Profilimi Gör"
+msgstr "View My Profile"
+
+#: forum/templates/forum/market/job_detail.html:424
+#: forum/templates/registration/login.html:10
+#: forum/templates/registration/login.html:243
+#: forum/templates/registration/login.html:274 templates/base.html:502
+#: templates/forum/register.html:253 templates/forum/register.html:309
+#: templates/service_promo.html:37
+msgid "Giriş Yap"
+msgstr "Sign In"
+
+#: forum/templates/forum/market/job_detail.html:430
+msgid "Bu ilan tekliflere kapalıdır."
+msgstr "This listing is closed for offers."
+
+#: forum/templates/forum/market/job_list.html:5
+#: forum/templates/forum/market/job_list.html:7
+#: forum/templates/forum/market/job_list.html:9
+msgid "Pazaryeri — Uzman Eşleştirme"
+msgstr "Marketplace — Expert Matching"
+
+#: forum/templates/forum/market/job_list.html:6
+#: forum/templates/forum/market/job_list.html:8
+#: forum/templates/forum/market/job_list.html:10
+msgid ""
+"Akademik analiz uzmanı bulun. SPSS, R, Python ve tez istatistiği için teklif"
+" alın. Analizus Pazaryeri — ücretsiz ilan açın, hızlı uzman eşleştirme, "
+"güvenilir akademik destek."
+msgstr ""
+"Find an academic analysis expert. Get offers for SPSS, R, Python and thesis "
+"statistics. Analizus Marketplace — post a listing for free, fast expert "
+"matching, reliable academic support."
+
+#: forum/templates/forum/market/job_list.html:27 templates/base.html:230
+#: templates/base.html:435 templates/partials/footer.html:50
+msgid "Pazaryeri"
+msgstr "Marketplace"
+
+#: forum/templates/forum/market/job_list.html:28
+msgid ""
+"İhtiyacını anlat, doğrulanmış uzmanlardan teklif al — fiyatlar gizli, "
+"değerlendirmeler gerçek."
+msgstr ""
+"Describe your need and get offers from verified experts — prices stay "
+"private, reviews are real."
+
+#: forum/templates/forum/market/job_list.html:32
+#: forum/templates/forum/market/job_list.html:39
+msgid "İlan Aç (Ücretsiz)"
+msgstr "Post a Listing (Free)"
+
+#: forum/templates/forum/market/job_list.html:48
+msgid "İlanlarım &amp; Tekliflerim"
+msgstr "My Listings &amp; Offers"
+
+#: forum/templates/forum/market/job_list.html:57
+msgid "Fiyatlar gizli — yalnızca taraflar görür"
+msgstr "Prices are private — visible only to the parties"
+
+#: forum/templates/forum/market/job_list.html:58
+msgid "Rozetli uzmanlar teklif verir"
+msgstr "Badge-holding experts make offers"
+
+#: forum/templates/forum/market/job_list.html:59
+msgid "Yorumu yalnızca işi tamamlayan yazar"
+msgstr "Only those who complete the job can review"
+
+#: forum/templates/forum/market/job_list.html:72
+msgid "Tamamlanan İş"
+msgstr "Completed Jobs"
+
+#: forum/templates/forum/market/job_list.html:80
+msgid "Aktif Uzman"
+msgstr "Active Experts"
+
+#: forum/templates/forum/market/job_list.html:88
+msgid "Son 90 Günde"
+msgstr "In the Last 90 Days"
+
+#: forum/templates/forum/market/job_list.html:98
+#: forum/templates/forum/market/my_jobs.html:58
+msgid "Tümü"
+msgstr "All"
+
+#: forum/templates/forum/market/job_list.html:117
+#: forum/templates/forum/market/job_list.html:123
+msgid "En Çok Görüntülenen"
+msgstr "Most Viewed"
+
+#: forum/templates/forum/market/job_list.html:118
+#: forum/templates/forum/market/job_list.html:124
+msgid "En Çok Teklif Alan"
+msgstr "Most Offers"
+
+#: forum/templates/forum/market/job_list.html:119
+#: forum/templates/forum/market/job_list.html:122
+msgid "En Yeni"
+msgstr "Newest"
+
+#: forum/templates/forum/market/job_list.html:164
+#: forum/templates/forum/market/my_jobs.html:45
+#: forum/templates/forum/market/my_jobs.html:99
+#, python-format
+msgid "%(counter)s Teklif"
+msgid_plural "%(counter)s Teklif"
+msgstr[0] "%(counter)s Offer"
+msgstr[1] "%(counter)s Offers"
+
+#: forum/templates/forum/market/job_list.html:174
+msgid "Şu anda açık ilan bulunmuyor."
+msgstr "There are no open listings at the moment."
+
+#: forum/templates/forum/market/job_list.html:177
+msgid "İlk İlanı Sen Ver"
+msgstr "Be the First to Post a Listing"
+
+#: forum/templates/forum/market/job_list.html:189
+msgid "Son 90 Günde Tamamlananlar"
+msgstr "Completed in the Last 90 Days"
+
+#: forum/templates/forum/market/job_list.html:191
+msgid "Platformda başarıyla teslim edilen analizler"
+msgstr "Analyses successfully delivered on the platform"
+
+#: forum/templates/forum/market/job_list.html:221
+#, python-format
+msgid "%(counter)s teklif"
+msgid_plural "%(counter)s teklif"
+msgstr[0] "%(counter)s offer"
+msgstr[1] "%(counter)s offers"
+
+#: forum/templates/forum/market/job_list.html:233
+msgid "İlk analiz işini sen tamamla, burası senin başarı vitrinine dönüşsün."
+msgstr "Complete the first analysis job and make this your success showcase."
+
+#: forum/templates/forum/market/job_list.html:254
+#: templates/partials/footer.html:65
+msgid "Başarı Hikayeleri"
+msgstr "Success Stories"
+
+#: forum/templates/forum/market/job_list.html:255
+msgid "Platformda yolunu bulan kullanıcılarımızdan."
+msgstr "From users who found their way on the platform."
+
+#: forum/templates/forum/market/job_list.html:272
+msgid ""
+"Teklif verme yetkisi puanla kazanılır: forumda katkı yap, İstatistik "
+"Arena'da yarış, 1000+ puana ulaş."
+msgstr ""
+"The right to make offers is earned with points: contribute to the forum, "
+"compete in the Statistics Arena, reach 1000+ points."
+
+#: forum/templates/forum/market/job_list.html:274
+msgid "Arena'ya Git"
+msgstr "Go to the Arena"
+
+#: forum/templates/forum/market/job_list.html:289
+#: forum/templates/forum/market/post_job.html:4
+msgid "İlan Ver"
+msgstr "Post a Listing"
+
+#: forum/templates/forum/market/job_list.html:290
+msgid "Analiz ihtiyacınızı tanımlayın, bütçenizi ve teslim sürenizi belirtin."
+msgstr "Define your analysis need and specify your budget and delivery time."
+
+#: forum/templates/forum/market/job_list.html:299
+msgid "Teklif Alın"
+msgstr "Receive Offers"
+
+#: forum/templates/forum/market/job_list.html:300
+msgid "Rozet sahibi uzmanlar tekliflerini sunar; en uygun teklifi kabul edin."
+msgstr ""
+"Badge-holding experts submit their offers; accept the one that suits you "
+"best."
+
+#: forum/templates/forum/market/job_list.html:309
+msgid "Tamamlayın"
+msgstr "Complete"
+
+#: forum/templates/forum/market/job_list.html:310
+msgid "Analizi teslim alın, değerlendirme yapın. İşlem buraya yansır."
+msgstr "Receive the analysis and leave a review. The job will be shown here."
+
+#: forum/templates/forum/market/job_list.html:319
+msgid ""
+"Analizus Hizmetler Pazarı'nda akademik analiz uzmanı bulmak birkaç dakika "
+"sürer: SPSS analizi yaptırma, R/Python ile veri işleme veya tez istatistik "
+"danışmanlığı için ihtiyacınızı tanımlayın, doğrulanmış uzmanlardan teklif "
+"alın. Fiyatlar gizli tutulur, değerlendirmeler yalnızca işi tamamlayan "
+"taraflarca yazılır."
+msgstr ""
+"Finding an academic analysis expert on the Analizus Services Marketplace "
+"takes just a few minutes: describe your need for SPSS analysis, data "
+"processing with R/Python or thesis statistics consulting, and get offers "
+"from verified experts. Prices are kept private, and reviews are written only"
+" by the parties who completed the job."
+
+#: forum/templates/forum/market/my_jobs.html:4
+msgid "İlanlarım ve Tekliflerim"
+msgstr "My Listings and Offers"
+
+#: forum/templates/forum/market/my_jobs.html:8
+msgid "Panelim"
+msgstr "My Dashboard"
+
+#: forum/templates/forum/market/my_jobs.html:12
+msgid "Yayınladığım İlanlar"
+msgstr "My Published Listings"
+
+#: forum/templates/forum/market/my_jobs.html:15
+msgid "Verdiğim Teklifler"
+msgstr "My Offers"
+
+#: forum/templates/forum/market/my_jobs.html:18
+msgid "Kaydedilenler"
+msgstr "Saved"
+
+#: forum/templates/forum/market/my_jobs.html:35
+msgid "Bugün sona eriyor"
+msgstr "Expires today"
+
+#: forum/templates/forum/market/my_jobs.html:39
+#, python-format
+msgid "%(days)s gün kaldı · %(date)s'de sona erer"
+msgid_plural "%(days)s gün kaldı · %(date)s'de sona erer"
+msgstr[0] "%(days)s day left · expires on %(date)s"
+msgstr[1] "%(days)s days left · expires on %(date)s"
+
+#: forum/templates/forum/market/my_jobs.html:49
+msgid "Henüz ilan yayınlamadınız."
+msgstr "You haven't published any listings yet."
+
+#: forum/templates/forum/market/my_jobs.html:79
+msgid "Teklifim:"
+msgstr "My offer:"
+
+#: forum/templates/forum/market/my_jobs.html:84
+msgid "Bu filtreye uygun teklif bulunamadı."
+msgstr "No offers match this filter."
+
+#: forum/templates/forum/market/my_jobs.html:103
+msgid "Henüz kaydedilmiş ilan yok."
+msgstr "No saved listings yet."
+
+#: forum/templates/forum/market/post_job.html:12
+msgid "Yeni İş İlanı Oluştur"
+msgstr "Create a New Job Listing"
+
+#: forum/templates/forum/market/post_job.html:45
+msgid ""
+"İşin kapsamını, beklenen teslim tarihini ve özel gereksinimleri detaylıca "
+"yazın."
+msgstr ""
+"Describe the scope of the job, the expected delivery date and any special "
+"requirements in detail."
+
+#: forum/templates/forum/market/post_job.html:50
+#, python-format
+msgid ""
+"İlanınız yayınlandıktan sonra <strong>%(job_duration_days)s gün</strong> "
+"aktif kalacaktır."
+msgstr ""
+"Your listing will remain active for <strong>%(job_duration_days)s "
+"days</strong> after publication."
+
+#: forum/templates/forum/market/post_job.html:51
+msgid ""
+"Süre puanınıza göre belirlenir: &lt;500p → 10 gün · 500–1000p → 20 gün · "
+"1000+p → 30 gün"
+msgstr ""
+"The duration depends on your points: &lt;500p → 10 days · 500–1000p → 20 "
+"days · 1000+p → 30 days"
+
+#: forum/templates/forum/market/post_job.html:55
+msgid "İlanı Yayınla"
+msgstr "Publish Listing"
+
+#: forum/templates/forum/market/post_job.html:60
+msgid "İlan oluştururken takıldınız mı?"
+msgstr "Stuck while creating a listing?"
+
+#: forum/templates/forum/market/post_job.html:62
+msgid "WhatsApp'tan sorun"
+msgstr "Ask on WhatsApp"
+
 #: forum/templates/forum/proje_talebi.html:5
 #: forum/templates/forum/proje_talebi.html:7
 #: forum/templates/forum/proje_talebi.html:9
@@ -1606,11 +2363,12 @@ msgstr "Project Request — Data Analysis and Consulting"
 #: forum/templates/forum/proje_talebi.html:8
 #: forum/templates/forum/proje_talebi.html:10
 msgid ""
-"Şirketinizin veri analizi, görselleştirme veya makine öğrenmesi ihtiyacınızı "
-"bizimle paylaşın. Uzman analistlerle eşleştirilip projenize özel teklif alın."
+"Şirketinizin veri analizi, görselleştirme veya makine öğrenmesi ihtiyacınızı"
+" bizimle paylaşın. Uzman analistlerle eşleştirilip projenize özel teklif "
+"alın."
 msgstr ""
-"Share your company's data analysis, visualization, or machine learning needs "
-"with us. Get matched with expert analysts and receive a quote tailored to "
+"Share your company's data analysis, visualization, or machine learning needs"
+" with us. Get matched with expert analysts and receive a quote tailored to "
 "your project."
 
 #: forum/templates/forum/proje_talebi.html:93
@@ -1729,7 +2487,8 @@ msgstr "Project Description"
 #: forum/templates/forum/proje_talebi.html:185
 msgid ""
 "Hedeflerinizi, elinizde bulunan veriyi ve beklentilerinizi kısaca anlatın."
-msgstr "Briefly describe your goals, the data you have, and your expectations."
+msgstr ""
+"Briefly describe your goals, the data you have, and your expectations."
 
 #: forum/templates/forum/proje_talebi.html:190
 msgid "Veri Boyutu"
@@ -1817,8 +2576,8 @@ msgid ""
 msgstr ""
 "We work with companies from every data-generating sector, especially "
 "finance, retail, healthcare, manufacturing, e-commerce, and the public "
-"sector. Whatever your industry, we can extract meaningful insights from your "
-"data."
+"sector. Whatever your industry, we can extract meaningful insights from your"
+" data."
 
 #: forum/templates/forum/proje_talebi.html:318
 msgid "Veri gizliliğim nasıl korunuyor?"
@@ -1826,9 +2585,9 @@ msgstr "How is my data privacy protected?"
 
 #: forum/templates/forum/proje_talebi.html:323
 msgid ""
-"Tüm veriler şifreli aktarım kanallarıyla iletilir, yalnızca proje kapsamında "
-"kullanılır ve analiz tamamlandıktan sonra imha edilir. KVKK uyumluluğu temel "
-"ilkemizdir."
+"Tüm veriler şifreli aktarım kanallarıyla iletilir, yalnızca proje kapsamında"
+" kullanılır ve analiz tamamlandıktan sonra imha edilir. KVKK uyumluluğu "
+"temel ilkemizdir."
 msgstr ""
 "All data is transmitted through encrypted channels, used solely within the "
 "project scope, and deleted once the analysis is complete. Data-protection "
@@ -1841,10 +2600,11 @@ msgstr "How long does a project take to complete?"
 #: forum/templates/forum/proje_talebi.html:337
 msgid ""
 "Basit görselleştirme ve betimsel analiz çalışmaları genellikle 1–3 iş günü; "
-"makine öğrenmesi modelleme projeleri ise 2–6 hafta arasında tamamlanmaktadır."
+"makine öğrenmesi modelleme projeleri ise 2–6 hafta arasında "
+"tamamlanmaktadır."
 msgstr ""
-"Simple visualization and descriptive analysis work is usually completed in 1–"
-"3 business days; machine learning modeling projects take 2–6 weeks."
+"Simple visualization and descriptive analysis work is usually completed in "
+"1–3 business days; machine learning modeling projects take 2–6 weeks."
 
 #: forum/templates/forum/proje_talebi.html:346
 msgid "Hangi araç ve teknolojileri kullanıyorsunuz?"
@@ -1880,26 +2640,13 @@ msgstr "What do I need to provide to get started?"
 
 #: forum/templates/forum/proje_talebi.html:379
 msgid ""
-"Proje hedeflerinizi ve mevcut verinizi (CSV, Excel, veri tabanı erişimi vb.) "
-"paylaşmanız yeterlidir. İhtiyaç duyulursa uzmanımız sizi yönlendirir ve "
+"Proje hedeflerinizi ve mevcut verinizi (CSV, Excel, veri tabanı erişimi vb.)"
+" paylaşmanız yeterlidir. İhtiyaç duyulursa uzmanımız sizi yönlendirir ve "
 "gerekli veriyi birlikte tanımlarız."
 msgstr ""
 "Just share your project goals and existing data (CSV, Excel, database "
 "access, etc.). If needed, our expert will guide you and we'll define the "
 "required data together."
-
-#: forum/templates/registration/login.html:10
-#: forum/templates/registration/login.html:243
-#: forum/templates/registration/login.html:274 templates/base.html:502
-#: templates/forum/register.html:253 templates/forum/register.html:309
-#: templates/service_promo.html:37
-msgid "Giriş Yap"
-msgstr "Sign In"
-
-#: forum/templates/registration/login.html:231
-#: templates/forum/register.html:242
-msgid "Ana Sayfa"
-msgstr "Home"
 
 #: forum/templates/registration/login.html:238
 msgid "Hoş Geldiniz"
@@ -1943,13 +2690,118 @@ msgstr "Don't have an account?"
 msgid "Hemen Kayıt Ol"
 msgstr "Sign Up Now"
 
+#: forum/views.py:521
+msgid "İlk ilanınız olduğu için 3 gün öne çıkarma hediyesi kazandınız!"
+msgstr ""
+"Since this is your first listing, you have won a free 3-day featured "
+"placement!"
+
+#: forum/views.py:523
+#, python-format
+msgid "İş ilanı başarıyla oluşturuldu. (%(days)s gün aktif kalacak)"
+msgstr ""
+"Job listing created successfully. (It will remain active for %(days)s days)"
+
+#: forum/views.py:540
+msgid "Beğeni geri alındı."
+msgstr "Like removed."
+
+#: forum/views.py:543
+msgid "İlan beğenildi!"
+msgstr "Listing liked!"
+
+#: forum/views.py:551
+msgid "İlan kaydedilenlerden çıkarıldı."
+msgstr "Listing removed from saved."
+
+#: forum/views.py:554
+msgid "İlan kaydedildi!"
+msgstr "Listing saved!"
+
+#: forum/views.py:584
+msgid "İlanınız yayından kaldırıldı, teklif verenlere bildirim gönderildi."
+msgstr ""
+"Your listing has been unpublished and everyone who made an offer has been "
+"notified."
+
+#: forum/views.py:586
+msgid "Bu ilan zaten kapalı veya işlemde."
+msgstr "This listing is already closed or in progress."
+
+#: forum/views.py:596
+msgid "Yalnızca açık ilanlar düzenlenebilir."
+msgstr "Only open listings can be edited."
+
+#: forum/views.py:600
+msgid "Her ilan yalnızca bir kez düzenlenebilir."
+msgstr "Each listing can be edited only once."
+
+#: forum/views.py:604
+msgid "Teklif alınmış ilanlar düzenlenemez."
+msgstr "Listings that have received offers cannot be edited."
+
+#: forum/views.py:614
+msgid "İlanınız güncellendi. (Düzenleme hakkınız kullanıldı.)"
+msgstr "Your listing has been updated. (Your edit right has been used.)"
+
+#: forum/views.py:632
+msgid "Bu ilan artık aktif değil."
+msgstr "This listing is no longer active."
+
+#: forum/views.py:685
+#, python-format
+msgid "%(username)s kullanıcısının teklifi kabul edildi. İlan askıya alındı."
+msgstr ""
+"%(username)s's offer has been accepted. The listing has been suspended."
+
+#: forum/views.py:694 forum/views.py:905
+msgid "Bu işlem için yetkiniz yok."
+msgstr "You are not authorized to perform this action."
+
+#: forum/views.py:739
+msgid "Teklif silindi ve kullanıcıya mesaj gönderildi."
+msgstr "The offer has been deleted and the user has been notified."
+
+#: forum/views.py:764
+msgid "Teklif reddedildi ve kullanıcıya mesaj gönderildi."
+msgstr "The offer has been rejected and the user has been notified."
+
+#: forum/views.py:767
+msgid "Geçersiz işlem."
+msgstr "Invalid action."
+
+#: forum/views.py:795
+msgid "Teklif verebilmek için giriş yapmalısınız."
+msgstr "You must log in to make an offer."
+
+#: forum/views.py:842
+msgid "Teklifiniz başarıyla gönderildi!"
+msgstr "Your offer has been sent successfully!"
+
+#: forum/views.py:898
+msgid "Bu ilan için değerlendirme yapılamaz."
+msgstr "This listing cannot be reviewed."
+
+#: forum/views.py:910
+msgid "Zaten değerlendirme yapmışsınız."
+msgstr "You have already submitted a review."
+
+#: forum/views.py:917
+msgid "Geçerli bir puan seçin."
+msgstr "Please select a valid rating."
+
+#: forum/views.py:965
+msgid "Değerlendirmeniz gönderildi. Admin onayından sonra yayınlanacak."
+msgstr ""
+"Your review has been submitted. It will be published after admin approval."
+
 #: istatistik/templates/istatistik/analiz_console_base.html:5
 msgid ""
 "Excel veya CSV yükleyin, APA formatında PDF rapor alın. Ücretsiz online "
 "istatistik analizi — Analizus."
 msgstr ""
-"Upload Excel or CSV, get a PDF report in APA format. Free online statistical "
-"analysis — Analizus."
+"Upload Excel or CSV, get a PDF report in APA format. Free online statistical"
+" analysis — Analizus."
 
 #: istatistik/templates/istatistik/analiz_console_base.html:28
 msgid "Ücretsiz Online Hesaplama"
@@ -1973,7 +2825,6 @@ msgid "Ne Zaman Kullanılır?"
 msgstr "When to Use It?"
 
 #: istatistik/templates/istatistik/analiz_console_base.html:162
-#| msgid "Kazanımlar"
 msgid "Varsayımlar"
 msgstr "Assumptions"
 
@@ -1988,7 +2839,6 @@ msgid "APA Formatı Örneği"
 msgstr "APA Format Example"
 
 #: istatistik/templates/istatistik/analiz_console_base.html:189
-#| msgid "Analiz Araçları"
 msgid "İlgili Araçlar:"
 msgstr "Related Tools:"
 
@@ -2001,10 +2851,6 @@ msgstr ""
 
 #: istatistik/templates/istatistik/analiz_console_base.html:205
 #, python-format
-#| msgid ""
-#| "Verilerinizi gönderin, uzman analistlerimiz <strong "
-#| "style=\"color:#f1f5f9;\">%(promo_title)s</strong> analizini sizin adınıza "
-#| "gerçekleştirip raporlasın. Ücretsiz ön değerlendirme ile başlayın."
 msgid ""
 "Verilerinizi gönderin, uzman analistlerimiz <strong "
 "style=\"color:#f1f5f9;\">%(tool_title)s</strong> analizini sizin adınıza "
@@ -2159,8 +3005,8 @@ msgstr "OpenAlex Publication Scraping and Data Download — 240M+"
 
 #: openalex/templates/openalex/landing.html:10
 msgid ""
-"OpenAlex'ten kodsuz akademik yayın kazıma. 240M+ kayıt arasında arama yapın, "
-"Excel veya TXT indirin."
+"OpenAlex'ten kodsuz akademik yayın kazıma. 240M+ kayıt arasında arama yapın,"
+" Excel veya TXT indirin."
 msgstr ""
 "No-code academic publication scraping from OpenAlex. Search among 240M+ "
 "records and download as Excel or TXT."
@@ -2172,8 +3018,8 @@ msgstr "OpenAlex Publication Scraping and Data Download"
 #: openalex/templates/openalex/landing.html:27
 msgid ""
 "OpenAlex'teki 240 milyondan fazla akademik yayından kodsuz veri çekin. "
-"Başlık, özet, yazar, anahtar kelime, dergi ve kurum alanlarında arama yapın; "
-"sonuçları"
+"Başlık, özet, yazar, anahtar kelime, dergi ve kurum alanlarında arama yapın;"
+" sonuçları"
 msgstr ""
 "Extract data with no code from 240 million+ academic publications on "
 "OpenAlex. Search by title, abstract, author, keyword, journal, and "
@@ -2197,10 +3043,6 @@ msgstr ""
 "You can download your search results for free. You have "
 "<strong>%(daily_limit)s</strong> searches per day. Remaining: "
 "<strong>%(remaining)s</strong>."
-
-#: openalex/templates/openalex/landing.html:31
-msgid "Premium üyelik"
-msgstr "Premium membership"
 
 #: openalex/templates/openalex/landing.html:31
 msgid "ile günlük 7 aramaya yükseltebilirsiniz."
@@ -2355,8 +3197,8 @@ msgid ""
 "ağ haritası oluşturun."
 msgstr ""
 "With 100+ results, import into the <a href=\"/bibliometrics/\" class=\"text-"
-"decoration-none\" style=\"color:#a5b4fc;\">Bibliometric Analysis</a> tool to "
-"build citation and network maps."
+"decoration-none\" style=\"color:#a5b4fc;\">Bibliometric Analysis</a> tool to"
+" build citation and network maps."
 
 #: openalex/templates/openalex/landing.html:214
 msgid "Özet"
@@ -2497,8 +3339,8 @@ msgid ""
 "Bibliometrik analiz kuyruğa alındı. Demo rapor (3 grafik PDF) hazır "
 "olduğunda e-postanıza gönderilecek."
 msgstr ""
-"Bibliometric analysis queued. A demo report (3-chart PDF) will be emailed to "
-"you once ready."
+"Bibliometric analysis queued. A demo report (3-chart PDF) will be emailed to"
+" you once ready."
 
 #: openalex/templates/openalex/landing.html:545
 msgid "Bibliometrik analizlerim"
@@ -2540,8 +3382,8 @@ msgstr "Semantic Scholar Publication Scraping — 200M+ Articles"
 
 #: semanticscholar/templates/semanticscholar/landing.html:10
 msgid ""
-"Semantic Scholar'dan kodsuz yayın kazıma. En yeni 5 yayının verilerini Excel "
-"veya TXT olarak indirin."
+"Semantic Scholar'dan kodsuz yayın kazıma. En yeni 5 yayının verilerini Excel"
+" veya TXT olarak indirin."
 msgstr ""
 "No-code publication scraping from Semantic Scholar. Download data for the 5 "
 "most recent publications as Excel or TXT."
@@ -2555,8 +3397,8 @@ msgid ""
 "200 milyondan fazla akademik yayın arasında kodsuz arama yapın. Başlık, "
 "yazar, araştırma alanı ve yıl filtresiyle sorgulayın; toplam sonuç sayısını "
 "görün. En yeni <strong class=\"text-info\">5 yayının</strong> verilerini "
-"<strong class=\"text-info\">Excel veya TXT</strong> olarak indirin ya da e-"
-"posta ile alın."
+"<strong class=\"text-info\">Excel veya TXT</strong> olarak indirin ya da "
+"e-posta ile alın."
 msgstr ""
 "Search with no code among 200 million+ academic publications. Query by "
 "title, author, field of study, and year; see the total result count. "
@@ -2600,10 +3442,6 @@ msgstr "A scan is already in progress. Results will appear here once ready."
 #: semanticscholar/templates/semanticscholar/landing.html:231
 msgid "Semantic Scholar'dan veri çekiliyor, lütfen bekleyin..."
 msgstr "Fetching data from Semantic Scholar, please wait..."
-
-#: semanticscholar/templates/semanticscholar/landing.html:89
-msgid "İptal"
-msgstr "Cancel"
 
 #: semanticscholar/templates/semanticscholar/landing.html:99
 msgid "Sonuçlar"
@@ -2700,12 +3538,12 @@ msgstr "Full Data Request"
 #: semanticscholar/templates/semanticscholar/landing.html:449
 msgid ""
 "Tüm sonuç setine ihtiyaç duyuyorsanız <a href=\"mailto:info@analizus.com\" "
-"class=\"text-decoration-none\" style=\"color:#67e8f9;\">info@analizus.com</"
-"a> adresine yazın."
+"class=\"text-decoration-none\" "
+"style=\"color:#67e8f9;\">info@analizus.com</a> adresine yazın."
 msgstr ""
 "If you need the full result set, email <a href=\"mailto:info@analizus.com\" "
-"class=\"text-decoration-none\" style=\"color:#67e8f9;\">info@analizus.com</"
-"a>."
+"class=\"text-decoration-none\" "
+"style=\"color:#67e8f9;\">info@analizus.com</a>."
 
 #: templates/admin/index.html:4
 msgid "Django site admin"
@@ -2747,11 +3585,6 @@ msgstr "AI Assistant"
 #: templates/base.html:217
 msgid "YouTube Transcript İndir"
 msgstr "Download YouTube Transcript"
-
-#: templates/base.html:230 templates/base.html:435
-#: templates/partials/footer.html:50
-msgid "Pazaryeri"
-msgstr "Marketplace"
 
 #: templates/base.html:238 templates/base.html:439
 #: templates/partials/footer.html:59
@@ -2891,11 +3724,11 @@ msgstr "Processing..."
 
 #: templates/partials/footer.html:27
 msgid ""
-"Akademik araştırma ve istatistik analiz için Türkçe platform. Tezini güvenle "
-"yaz, verini doğru analiz et."
+"Akademik araştırma ve istatistik analiz için Türkçe platform. Tezini güvenle"
+" yaz, verini doğru analiz et."
 msgstr ""
-"A platform for academic research and statistical analysis. Write your thesis "
-"with confidence, analyze your data correctly."
+"A platform for academic research and statistical analysis. Write your thesis"
+" with confidence, analyze your data correctly."
 
 #: templates/partials/footer.html:44
 msgid "Araçlar"
@@ -2912,10 +3745,6 @@ msgstr "Find an Expert"
 #: templates/partials/footer.html:52
 msgid "Eğitimler"
 msgstr "Trainings"
-
-#: templates/partials/footer.html:65
-msgid "Başarı Hikayeleri"
-msgstr "Success Stories"
 
 #: templates/partials/footer.html:105
 msgid "KVKK / Gizlilik"
