@@ -25,6 +25,18 @@ Ol" + bağış modalı (paket adları `gettext_noop` ile), footer alt satırı
 "Araştırma ve Analiz Platformu", yeni slogan "Veriden karara…".
 EN/DE araç sayfalarında kalan Türkçe: yalnızca yasal adres satırı (kasıtlı).
 
+**Kayıt akışı — yapılacaklar (kullanıcı isteği, 23 Eylül 2026):**
+- [ ] **Akademik Etik Protokolü modalı** (kayıt sayfası, "Kullanım Şartları ve
+  Etik Beyanı" linkiyle açılıyor; başlık + "Verstanden" butonu çevrili ama
+  6 maddelik gövde metni hiç işaretlenmemiş, EN/DE'de Türkçe görünüyor).
+  Hukuki metin: "Türk Ceza Kanunu" atfı, yer sağlayıcı sorumluluğu vb. —
+  çeviride hukuki anlam korunmalı; gerekirse kullanıcı/avukat onayı.
+- [ ] **Kayıt sonrası akış tek dilli:** /verification-pending/, /onboarding/
+  ve /accounts/password_reset/* sayfaları i18n_patterns dışında ve
+  şablonları işaretlenmemiş → EN/DE ile kaydolan kullanıcı Türkçe sayfalara
+  düşüyor. URL'leri i18n'e taşıma + şablon/mesaj çevirisi gerekiyor
+  (middleware.py:198 doğrulama uyarısı dahil).
+
 **Not (kullanıcıya sorulacak):** ana sayfa og/twitter açıklaması hâlâ
 "Türkiye'nin analiz ekosistemi…" diyor — yeni sloganla aynı konumlandırma
 sorunu (yalnızca Türkiye vurgusu); değiştirilsin mi?
