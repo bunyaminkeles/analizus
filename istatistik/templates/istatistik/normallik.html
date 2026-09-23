@@ -1,6 +1,6 @@
 {% extends "istatistik/analiz_console_base.html" %}
 {% load static i18n %}
-{% block canonical %}/analiz/normallik/{% endblock %}
+{% block canonical %}{% url 'analiz_console' 'normallik' %}{% endblock %}
 
 {% block title %}{% trans "Normallik Testi (Shapiro-Wilk, Kolmogorov-Smirnov)" %} - Analizus{% endblock %}
 {% block meta_description %}{% trans "Verilerinizin normal dağılıma uygunluğunu Shapiro-Wilk ve Kolmogorov-Smirnov testleriyle online analiz edin. Tez için hazır APA raporu ile PDF çıktısı." %}{% endblock %}

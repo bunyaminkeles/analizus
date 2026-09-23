@@ -4,13 +4,41 @@ from django.db.models import Q
 from .models import Topic, Category, FreelanceJob, BlogPost, StudyRoom
 
 
+class MultilingualSitemapMixin:
+    """i18n_patterns altındaki sayfalar için tr/en/de URL'leri + hreflang
+    alternatifleri (xhtml:link) üretir. feature_multilingual kapalıyken
+    /en/ /de/ 404 döndüğünden yalnızca varsayılan (tr) URL'ler listelenir."""
+    x_default = True
+
+    @property
+    def i18n(self):
+        from .models import SiteSettings
+        return SiteSettings.load().feature_multilingual
+
+    @property
+    def alternates(self):
+        return self.i18n
+
+
 class StaticViewSitemap(Sitemap):
-    """Ana sayfa ve statik sayfalar için sitemap"""
+    """Tek dilli (yalnızca TR) statik sayfalar için sitemap"""
     priority = 1.0
     changefreq = 'daily'
 
     def items(self):
-        pages = ['home', 'about', 'contact', 'gizlilik_politikasi', 'hangi_test', 'forum_index', 'uzman_dizini', 'blog_list', 'proje_talebi']
+        return ['about', 'contact', 'gizlilik_politikasi', 'hangi_test', 'forum_index', 'uzman_dizini', 'blog_list']
+
+    def location(self, item):
+        return reverse(item)
+
+
+class StaticI18nSitemap(MultilingualSitemapMixin, Sitemap):
+    """Çok dilli (tr/en/de) statik sayfalar — forum/urls_i18n.py"""
+    priority = 1.0
+    changefreq = 'daily'
+
+    def items(self):
+        pages = ['home', 'proje_talebi']
         from .models import SiteSettings
         site = SiteSettings.load()
         if site.feature_agentic_landing:
@@ -23,7 +51,7 @@ class StaticViewSitemap(Sitemap):
         return reverse(item)
 
 
-class TrainingSitemap(Sitemap):
+class TrainingSitemap(MultilingualSitemapMixin, Sitemap):
     """Eğitim kurs detay sayfaları için sitemap — yalnızca feature_training açıkken üretilir."""
     changefreq = 'weekly'
     priority = 0.7
@@ -105,7 +133,7 @@ class BlogPostSitemap(Sitemap):
         return reverse('blog_detail', kwargs={'slug': obj.slug})
 
 
-class IstatistikSitemap(Sitemap):
+class IstatistikSitemap(MultilingualSitemapMixin, Sitemap):
     """İstatistik araç landing sayfaları için sitemap"""
     changefreq = 'monthly'
     priority = 0.9
@@ -133,7 +161,7 @@ class IstatistikSitemap(Sitemap):
         ]
 
     def location(self, item):
-        return f'/analiz/{item}/'
+        return reverse('analiz_console', args=[item])
 
 
 class StudyRoomSitemap(Sitemap):
@@ -160,11 +188,22 @@ class ToolsSitemap(Sitemap):
         return [
             ('yoktez', 'landing'),
             ('trdizin', 'landing'),
-            ('openalex', 'landing'),
             ('oaipmh', 'landing'),
             ('bibliometrics', 'landing'),
-            ('semanticscholar', 'landing'),
         ]
+
+    def location(self, item):
+        namespace, name = item
+        return reverse(f'{namespace}:{name}')
+
+
+class ToolsI18nSitemap(MultilingualSitemapMixin, Sitemap):
+    """Çok dilli araç landing sayfaları (OpenAlex, Semantic Scholar)"""
+    changefreq = 'weekly'
+    priority = 0.9
+
+    def items(self):
+        return [('openalex', 'landing'), ('semanticscholar', 'landing')]
 
     def location(self, item):
         namespace, name = item

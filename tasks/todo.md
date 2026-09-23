@@ -29,8 +29,7 @@ EN/DE araç sayfalarında kalan Türkçe: yalnızca yasal adres satırı (kasıt
 "Türkiye'nin analiz ekosistemi…" diyor — yeni sloganla aynı konumlandırma
 sorunu (yalnızca Türkiye vurgusu); değiştirilsin mi?
 
-**Sonra:** 5b (hreflang + sitemap), 6 (Python tarafı — kapsam kararı
-bekliyor), 7 (deploy).
+**Sonra:** 6 (Python tarafı — kapsam kararı bekliyor), 7 (deploy).
 
 **Sona bırakılan (kullanıcı kararı, 22 Eylül 2026):** "Ufak tefek
 aksamalar" — somut liste henüz çıkarılmadı; 3b-2d/4 bittikten sonra
@@ -245,8 +244,18 @@ training_catalog, TOOL_CATEGORIES, quiz bankası).
     ve bu, tek-URL=tek-dil SEO ilkesiyle örtüştüğü için kasıtlı bırakıldı.
     Doğrulama: curl ile Accept-Language:en-US + çerezsiz → tr; `/en/` hâlâ
     çalışıyor; gerçek POST ile `next=/` + `language=de` → `Location: /de/`.
-- [ ] **5b. Kalan SEO işleri:** `hreflang` alternate linkleri + `x-default`,
-  sitemap'e dil varyantları
+- [x] **5b. Kalan SEO işleri:** TAMAMLANDI (23 Eylül 2026).
+  `forum.context_processors.hreflang_alternates` → base.html'de tr/en/de +
+  x-default `<link rel="alternate">` (yalnızca i18n_patterns sayfaları:
+  translate_url her dilde farklı yol üretirse) + dile göre `og:locale` /
+  `og:locale:alternate`. Sitemap: `MultilingualSitemapMixin` (Django
+  `i18n`/`alternates`/`x_default`) — static-i18n, istatistik, training,
+  tools-i18n; tek dilliler (forum, blog, uzman dizini, yoktez…, ilanlar)
+  değişmedi. Hepsi `feature_multilingual`'a bağlı (kapalıyken /en/ 404).
+  18 araç şablonundaki sabit TR canonical → `{% url 'analiz_console' %}`.
+  robots.txt'ye özel sayfaların /en/ /de/ karşılıkları eklendi.
+  Kasıtlı: ilan detayları sitemap'te tek dilli (içerik Türkçe UGC — ince
+  kopya içerik riski); sayfa başlığındaki hreflang yine üretilir.
 - [ ] **6. Python tarafı metinler:** kapsamdaki app'lerin (istatistik
   servisleri, makaleanaliz, openalex, semanticscholar) view/form hata
   mesajları ve PDF çıktı metinleri — ayrı görev olarak scope'u netleştir

@@ -8,17 +8,19 @@ from django.http import HttpResponse
 from django.views.generic import RedirectView
 from django.conf import settings
 from django.conf.urls.static import static
-from forum.sitemaps import StaticViewSitemap, TopicSitemap, CategorySitemap, JobSitemap, BlogPostSitemap, IstatistikSitemap, ToolsSitemap, StudyRoomSitemap, TrainingSitemap
+from forum.sitemaps import StaticViewSitemap, StaticI18nSitemap, TopicSitemap, CategorySitemap, JobSitemap, BlogPostSitemap, IstatistikSitemap, ToolsSitemap, ToolsI18nSitemap, StudyRoomSitemap, TrainingSitemap
 from forum.views import custom_login, tarama_hub
 
 sitemaps = {
     'static': StaticViewSitemap,
+    'static-i18n': StaticI18nSitemap,
     'topics': TopicSitemap,
     'categories': CategorySitemap,
     'jobs': JobSitemap,
     'blog': BlogPostSitemap,
     'istatistik': IstatistikSitemap,
     'tools': ToolsSitemap,
+    'tools-i18n': ToolsI18nSitemap,
     'studyrooms': StudyRoomSitemap,
     'training': TrainingSitemap,
 }

@@ -1,6 +1,6 @@
 {% extends "istatistik/analiz_console_base.html" %}
 {% load static i18n %}
-{% block canonical %}/analiz/lineer-regresyon/{% endblock %}
+{% block canonical %}{% url 'analiz_console' 'lineer-regresyon' %}{% endblock %}
 
 {% block title %}{% trans "Çoklu Doğrusal Regresyon Analizi (OLS)" %} - Analizus{% endblock %}
 {% block meta_description %}{% trans "Çoklu doğrusal regresyon (OLS) analizi: R², düzeltilmiş R², beta katsayıları, VIF ve APA formatında hazır rapor metni. Excel veya CSV yükleyin." %}{% endblock %}

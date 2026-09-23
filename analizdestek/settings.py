@@ -114,6 +114,7 @@ TEMPLATES = [
                 'forum.context_processors.feature_flags',  # Feature Flags
                 'forum.context_processors.donation_context',  # Bağış paketleri (footer modal)
                 'forum.context_processors.visitor_counter',  # Ziyaretçi sayacı
+                'forum.context_processors.hreflang_alternates',  # hreflang + og:locale (çok dilli sayfalar)
             ],
         },
     },

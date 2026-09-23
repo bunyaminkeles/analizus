@@ -1,6 +1,6 @@
 {% extends "istatistik/analiz_console_base.html" %}
 {% load static i18n %}
-{% block canonical %}/analiz/wilcoxon/{% endblock %}
+{% block canonical %}{% url 'analiz_console' 'wilcoxon' %}{% endblock %}
 
 {% block title %}{% trans "Wilcoxon İşaret Testi" %} - Analizus{% endblock %}
 {% block meta_description %}{% trans "İki eşleştirilmiş ölçümü Wilcoxon İşaret Testi ile ücretsiz karşılaştırın. W istatistiği, etki büyüklüğü ve APA formatında PDF rapor alın." %}{% endblock %}

@@ -1,6 +1,6 @@
 {% extends "istatistik/analiz_console_base.html" %}
 {% load static i18n %}
-{% block canonical %}/analiz/ki-kare/{% endblock %}
+{% block canonical %}{% url 'analiz_console' 'ki-kare' %}{% endblock %}
 
 {% block title %}{% trans "Ki-Kare Testi ve Fisher's Exact Test" %} - Analizus{% endblock %}
 {% block meta_description %}{% trans "Ki-Kare ve Fisher's Exact testleri ile kategorik değişkenler arasındaki ilişkiyi analiz edin. Çapraz tablo, beklenen frekanslar ve APA formatında PDF rapor." %}{% endblock %}

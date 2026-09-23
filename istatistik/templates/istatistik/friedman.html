@@ -1,6 +1,6 @@
 {% extends "istatistik/analiz_console_base.html" %}
 {% load static i18n %}
-{% block canonical %}/analiz/friedman/{% endblock %}
+{% block canonical %}{% url 'analiz_console' 'friedman' %}{% endblock %}
 
 {% block title %}{% trans "Friedman Testi" %} - Analizus{% endblock %}
 {% block meta_description %}{% trans "Tekrarlayan ölçümler için Friedman Testi ile ücretsiz analiz yapın. χ² istatistiği, Kendall's W etki büyüklüğü ve Bonferroni post-hoc karşılaştırmaları ile APA formatında PDF rapor alın." %}{% endblock %}

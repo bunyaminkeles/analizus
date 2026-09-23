@@ -1,6 +1,6 @@
 {% extends "istatistik/analiz_console_base.html" %}
 {% load static i18n %}
-{% block canonical %}/analiz/tekrarli-anova/{% endblock %}
+{% block canonical %}{% url 'analiz_console' 'tekrarli-anova' %}{% endblock %}
 
 {% block title %}{% trans "Tekrarlayan Ölçümler ANOVA" %} - Analizus{% endblock %}
 {% block meta_description %}{% trans "Tekrarlayan ölçümler ANOVA ile ücretsiz analiz yapın. F istatistiği, partial η² etki büyüklüğü, Bonferroni post-hoc karşılaştırmaları ve APA formatında PDF rapor alın." %}{% endblock %}

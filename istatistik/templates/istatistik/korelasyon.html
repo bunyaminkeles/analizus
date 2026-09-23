@@ -1,6 +1,6 @@
 {% extends "istatistik/analiz_console_base.html" %}
 {% load static i18n %}
-{% block canonical %}/analiz/korelasyon/{% endblock %}
+{% block canonical %}{% url 'analiz_console' 'korelasyon' %}{% endblock %}
 
 {% block title %}{% trans "Korelasyon Analizi (Pearson, Spearman, Kendall)" %} - Analizus{% endblock %}
 {% block meta_description %}{% trans "Pearson, Spearman ve Kendall korelasyon matrisi hesaplayın. Değişkenler arası ilişkiyi analiz edin, APA formatında PDF rapor alın." %}{% endblock %}

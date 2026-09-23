@@ -77,3 +77,35 @@ def feature_flags(request):
             'multilingual': site.feature_multilingual,
         }
     }
+
+# og:locale değerleri (LANGUAGES kodu → Open Graph biçimi)
+OG_LOCALES = {'tr': 'tr_TR', 'en': 'en_US', 'de': 'de_DE'}
+
+
+def hreflang_alternates(request):
+    """Çok dilli sayfalar için hreflang alternatifleri + og:locale.
+
+    Yalnızca i18n_patterns altındaki sayfalarda (translate_url her dil için
+    farklı yol üretir) ve feature_multilingual açıkken alternatif üretir;
+    forum/blog gibi tek dilli sayfalarda liste boş döner. Kapalı flag'de
+    /en/ /de/ 404 olduğundan Google'a var olmayan sürüm bildirilmez.
+    """
+    from django.urls import translate_url
+    from django.utils.translation import get_language
+
+    lang = (get_language() or settings.LANGUAGE_CODE).split('-')[0]
+    ctx = {
+        'og_locale': OG_LOCALES.get(lang, 'tr_TR'),
+        'hreflang_alternates': [],
+    }
+    if not SiteSettings.load().feature_multilingual:
+        return ctx
+
+    paths = {code: translate_url(request.path, code) for code, _ in settings.LANGUAGES}
+    if len(set(paths.values())) != len(paths):
+        return ctx  # tek dilli sayfa
+
+    ctx['hreflang_alternates'] = [(code, paths[code]) for code, _ in settings.LANGUAGES]
+    ctx['hreflang_default'] = paths[settings.LANGUAGE_CODE]
+    ctx['og_locale_alternates'] = [OG_LOCALES[c] for c, _ in settings.LANGUAGES if c != lang and c in OG_LOCALES]
+    return ctx

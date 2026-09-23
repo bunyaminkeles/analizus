@@ -1,6 +1,6 @@
 {% extends "istatistik/analiz_console_base.html" %}
 {% load static i18n %}
-{% block canonical %}/analiz/betimsel/{% endblock %}
+{% block canonical %}{% url 'analiz_console' 'betimsel' %}{% endblock %}
 
 {% block title %}{% trans "Betimsel İstatistik Analizi (Ortalama, SS, Çeyrekler)" %} - Analizus{% endblock %}
 {% block meta_description %}{% trans "Minimum, maksimum, ortalama, standart sapma ve çeyreklik değerleri hesaplayın. Excel veya CSV yükleyin, betimsel istatistik PDF raporu alın." %}{% endblock %}

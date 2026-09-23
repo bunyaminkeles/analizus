@@ -1,6 +1,6 @@
 {% extends "istatistik/analiz_console_base.html" %}
 {% load static i18n %}
-{% block canonical %}/analiz/karar-agaci/{% endblock %}
+{% block canonical %}{% url 'analiz_console' 'karar-agaci' %}{% endblock %}
 
 {% block title %}{% trans "Karar Ağacı Sınıflandırması" %} - Analizus{% endblock %}
 {% block meta_description %}{% trans "Karar ağacı sınıflandırma analizi: Özellik önemi, confusion matrix, F1 skoru ve APA formatında rapor. Tez için hazır ML çıktısı, ücretsiz online analiz." %}{% endblock %}

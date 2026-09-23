@@ -1,6 +1,6 @@
 {% extends "istatistik/analiz_console_base.html" %}
 {% load static i18n %}
-{% block canonical %}/analiz/afa/{% endblock %}
+{% block canonical %}{% url 'analiz_console' 'afa' %}{% endblock %}
 
 {% block title %}{% trans "Açıklayıcı Faktör Analizi (AFA)" %} - Analizus{% endblock %}
 {% block meta_description %}{% trans "Ölçek geçerliğinizi AFA ile ücretsiz kanıtlayın. KMO, Bartlett testi, faktör yük matrisi ve açıklanan varyans tablosu içeren APA raporlu PDF alın." %}{% endblock %}

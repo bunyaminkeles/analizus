@@ -1,6 +1,6 @@
 {% extends "istatistik/analiz_console_base.html" %}
 {% load static i18n %}
-{% block canonical %}/analiz/lojistik-regresyon/{% endblock %}
+{% block canonical %}{% url 'analiz_console' 'lojistik-regresyon' %}{% endblock %}
 
 {% block title %}{% trans "Lojistik Regresyon Analizi (Binary)" %} - Analizus{% endblock %}
 {% block meta_description %}{% trans "Binary lojistik regresyon analizi: Nagelkerke R², Odds Ratio, sınıflandırma tablosu ve APA formatında rapor. Tez için hazır çıktı, ücretsiz online analiz." %}{% endblock %}

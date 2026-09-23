@@ -60,5 +60,37 @@ Disallow: /ai-asistan/
 Disallow: /api/
 Disallow: /analiz/clear-session/
 
+# Çok dilli (i18n_patterns) sayfaların /en/ ve /de/ sürümleri — yukarıdaki
+# TR kurallarının dil önekli karşılıkları
+Disallow: /en/login/
+Disallow: /en/logout/
+Disallow: /en/register/
+Disallow: /en/market/new/
+Disallow: /en/market/job/*/edit/
+Disallow: /en/market/job/*/delete/
+Disallow: /en/semantic-scholar/status/
+Disallow: /en/semantic-scholar/send-demo/
+Disallow: /en/semantic-scholar/download/
+Disallow: /en/semantic-scholar/download-excel/
+Disallow: /en/semantic-scholar/cancel/
+Disallow: /en/semantic-scholar/siparis/
+Disallow: /en/analiz/clear-session/
+Disallow: /en/i18n/
+Disallow: /de/login/
+Disallow: /de/logout/
+Disallow: /de/register/
+Disallow: /de/market/new/
+Disallow: /de/market/job/*/edit/
+Disallow: /de/market/job/*/delete/
+Disallow: /de/semantic-scholar/status/
+Disallow: /de/semantic-scholar/send-demo/
+Disallow: /de/semantic-scholar/download/
+Disallow: /de/semantic-scholar/download-excel/
+Disallow: /de/semantic-scholar/cancel/
+Disallow: /de/semantic-scholar/siparis/
+Disallow: /de/analiz/clear-session/
+Disallow: /de/i18n/
+Disallow: /i18n/
+
 # Sitemap
 Sitemap: https://www.analizus.com/sitemap.xml
