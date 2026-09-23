@@ -8,7 +8,7 @@ from django.contrib.contenttypes.models import ContentType
 import uuid
 import secrets
 from django.utils import timezone
-from django.utils.translation import gettext, gettext_lazy
+from django.utils.translation import gettext, gettext_lazy, gettext_noop
 from datetime import timedelta
 from forum.storage import get_storage
 
@@ -985,6 +985,14 @@ class JobReview(models.Model):
         if self.job.reviews.filter(is_approved=True).count() >= 2:
             self.job.status = 'completed'
             self.job.save()
+
+
+# Admin'de tanımlı bağış katmanı adlarının çeviri kaydı — footer'da {% trans tier.name %}
+# ile gösterilir; DB değeri (ve e-postaya giden tier_name) Türkçe kalır.
+DONATION_TIER_NAME_MSGIDS = (
+    gettext_noop('Platin Destekçi'), gettext_noop('Altın Destekçi'),
+    gettext_noop('Gümüş Destekçi'), gettext_noop('Bronz Destekçi'),
+)
 
 
 class DonationTier(models.Model):
