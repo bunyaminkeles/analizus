@@ -1191,7 +1191,7 @@ msgstr "Chancen:"
 #: forum/templates/forum/home.html:276
 #: forum/templates/forum/market/job_list.html:109
 msgid "Açık İlanlar"
-msgstr "Offene Ausschreibungen"
+msgstr "Offene Aufträge"
 
 #: forum/templates/forum/home.html:278 templates/base.html:350
 #: templates/base.html:488
@@ -1263,7 +1263,7 @@ msgstr "Deskriptiv"
 
 #: forum/templates/forum/home.html:373
 msgid "İlan Açarak Uzman Bul"
-msgstr "Ausschreibung veröffentlichen, um einen Experten zu finden"
+msgstr "Auftrag einstellen und Experten finden"
 
 #: forum/templates/forum/home.html:374
 msgid "Dizindeki Uzmanları İncele"
@@ -1326,11 +1326,11 @@ msgstr "So arbeiten wir"
 
 #: forum/templates/forum/home.html:470
 msgid "Dört adımda ilan açmaktan raporu teslim almaya."
-msgstr "In vier Schritten von der Ausschreibung bis zum fertigen Bericht."
+msgstr "In vier Schritten vom Auftrag bis zum fertigen Bericht."
 
 #: forum/templates/forum/home.html:476
 msgid "İlan Aç"
-msgstr "Ausschreibung veröffentlichen"
+msgstr "Auftrag einstellen"
 
 #: forum/templates/forum/home.html:477
 msgid "Projenizi ve ihtiyacınızı ücretsiz olarak yayınlayın."
@@ -1388,7 +1388,7 @@ msgstr "Abgeschlossene Analysen"
 
 #: forum/templates/forum/home.html:549
 msgid "Açık İlan"
-msgstr "Offene Ausschreibungen"
+msgstr "Offene Aufträge"
 
 #: forum/templates/forum/home.html:556
 msgid "Bu Hafta Yeni Üye"
