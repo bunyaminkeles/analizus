@@ -161,9 +161,9 @@
 
         {% if WHATSAPP_NUMBER %}
         <p class="ax-training-form-alt">
-            Form doldurmak yerine doğrudan konuşmayı tercih ediyorsanız:
+            {% trans "Form doldurmak yerine doğrudan konuşmayı tercih ediyorsanız:" %}
             <a href="https://wa.me/{{ WHATSAPP_NUMBER }}?text=Merhaba%2C%20e%C4%9Fitim%20talebi%20hakk%C4%B1nda%20bilgi%20almak%20istiyorum." target="_blank" rel="noopener noreferrer">
-                <i class="bi bi-whatsapp" aria-hidden="true"></i> WhatsApp'tan Yaz
+                <i class="bi bi-whatsapp" aria-hidden="true"></i> {% trans "WhatsApp'tan Yaz" %}
             </a>
         </p>
         {% endif %}

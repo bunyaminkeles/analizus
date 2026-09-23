@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-23 23:28+0300\n"
+"POT-Creation-Date: 2026-09-23 23:49+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,15 +17,15 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: analizdestek/settings.py:198
+#: analizdestek/settings.py:199
 msgid "Turkish"
 msgstr "Turkish"
 
-#: analizdestek/settings.py:199
+#: analizdestek/settings.py:200
 msgid "English"
 msgstr "English"
 
-#: analizdestek/settings.py:200
+#: analizdestek/settings.py:201
 msgid "German"
 msgstr "German"
 
@@ -183,8 +183,8 @@ msgid ""
 "bir uzmanın gözetiminde. Kurumlar ve araştırma grupları için otomasyon "
 "projeleri."
 msgstr ""
-"AI systems that collect, analyze, and report data — every step supervised by"
-" an expert. Automation projects for organizations and research groups."
+"AI systems that collect, analyze, and report data — every step supervised by "
+"an expert. Automation projects for organizations and research groups."
 
 #: forum/templates/forum/ai_cozumler.html:79
 #: forum/templates/forum/home.html:833
@@ -193,11 +193,11 @@ msgstr "Let your analyses run while you sleep."
 
 #: forum/templates/forum/ai_cozumler.html:80
 msgid ""
-"Veri toplayan, analiz eden, raporlayan yapay zeka sistemleri — her adımı bir"
-" uzmanın gözetiminde."
+"Veri toplayan, analiz eden, raporlayan yapay zeka sistemleri — her adımı bir "
+"uzmanın gözetiminde."
 msgstr ""
-"AI systems that collect, analyze, and report data — every step supervised by"
-" an expert."
+"AI systems that collect, analyze, and report data — every step supervised by "
+"an expert."
 
 #: forum/templates/forum/ai_cozumler.html:81
 #: forum/templates/forum/ai_cozumler.html:264
@@ -210,11 +210,11 @@ msgstr "Literature Watchdog"
 
 #: forum/templates/forum/ai_cozumler.html:95
 msgid ""
-"Belirlediğiniz anahtar kelimelerle akademik veritabanlarını periyodik tarar;"
-" yeni yayınları özetleyip e-postanıza bırakır."
+"Belirlediğiniz anahtar kelimelerle akademik veritabanlarını periyodik tarar; "
+"yeni yayınları özetleyip e-postanıza bırakır."
 msgstr ""
-"Periodically scans academic databases using your chosen keywords; summarizes"
-" new publications and delivers them to your inbox."
+"Periodically scans academic databases using your chosen keywords; summarizes "
+"new publications and delivers them to your inbox."
 
 #: forum/templates/forum/ai_cozumler.html:96
 msgid "Altyapı: OpenAlex + Semantic Scholar tarama modülleri"
@@ -234,8 +234,7 @@ msgstr ""
 
 #: forum/templates/forum/ai_cozumler.html:106
 msgid "Altyapı: İstatistik analiz motoru + otomatik PDF üretimi"
-msgstr ""
-"Infrastructure: Statistical analysis engine + automatic PDF generation"
+msgstr "Infrastructure: Statistical analysis engine + automatic PDF generation"
 
 #: forum/templates/forum/ai_cozumler.html:114
 msgid "Rapor Fabrikası"
@@ -363,8 +362,8 @@ msgstr "Will it integrate with our existing systems?"
 
 #: forum/templates/forum/ai_cozumler.html:213
 msgid ""
-"Çoğu durumda evet — API, dosya paylaşımı veya e-posta tabanlı entegrasyonlar"
-" mümkündür. Keşif görüşmesinde mevcut altyapınızı değerlendiririz."
+"Çoğu durumda evet — API, dosya paylaşımı veya e-posta tabanlı entegrasyonlar "
+"mümkündür. Keşif görüşmesinde mevcut altyapınızı değerlendiririz."
 msgstr ""
 "In most cases, yes — API, file-sharing, or email-based integrations are "
 "possible. We assess your existing infrastructure during the discovery call."
@@ -375,11 +374,11 @@ msgstr "How long does setup take?"
 
 #: forum/templates/forum/ai_cozumler.html:223
 msgid ""
-"Kapsam ve veri karmaşıklığına göre değişir; basit veri hatları birkaç günde,"
-" çok adımlı otomasyonlar birkaç haftada devreye alınır."
+"Kapsam ve veri karmaşıklığına göre değişir; basit veri hatları birkaç günde, "
+"çok adımlı otomasyonlar birkaç haftada devreye alınır."
 msgstr ""
-"It varies by scope and data complexity; simple data pipelines go live within"
-" days, multi-step automations within a few weeks."
+"It varies by scope and data complexity; simple data pipelines go live within "
+"days, multi-step automations within a few weeks."
 
 #: forum/templates/forum/ai_cozumler.html:229
 msgid "Ajan hata yaparsa ne olur?"
@@ -387,12 +386,11 @@ msgstr "What happens if an agent makes a mistake?"
 
 #: forum/templates/forum/ai_cozumler.html:233
 msgid ""
-"Her ajan çıktısı, teslim öncesinde uzman doğrulama katmanından geçer; hatalı"
-" veya belirsiz sonuçlar otomatik olarak insana yönlendirilir."
+"Her ajan çıktısı, teslim öncesinde uzman doğrulama katmanından geçer; hatalı "
+"veya belirsiz sonuçlar otomatik olarak insana yönlendirilir."
 msgstr ""
 "Every agent output passes through the expert verification layer before "
-"delivery; erroneous or ambiguous results are automatically routed to a "
-"human."
+"delivery; erroneous or ambiguous results are automatically routed to a human."
 
 #: forum/templates/forum/ai_cozumler.html:239
 msgid "Fiyatlandırma nasıl belirlenir?"
@@ -408,23 +406,23 @@ msgstr ""
 
 #: forum/templates/forum/ai_cozumler.html:254
 msgid ""
-"Analizus, kurumlara ve araştırma gruplarına yönelik <strong>yapay zeka "
-"ajan</strong> ve <strong>otomasyon projeleri</strong> geliştirir. Veri "
-"toplayan, analiz eden ve raporlayan <strong>AI otomasyonu</strong> "
-"sistemleri, her adımda bir uzmanın gözetiminde çalışır. Literatür "
-"taramasından düzenli veri hatlarına, aylık rapor üretiminden bildirim "
-"sistemlerine kadar tekrarlayan ve kural tabanlı süreçler <strong>iş "
-"süreçleri otomasyonu</strong> ile devralınabilir; yorum, etik karar ve "
-"beklenmedik durumlar her zaman insan uzmanda kalır."
+"Analizus, kurumlara ve araştırma gruplarına yönelik <strong>yapay zeka ajan</"
+"strong> ve <strong>otomasyon projeleri</strong> geliştirir. Veri toplayan, "
+"analiz eden ve raporlayan <strong>AI otomasyonu</strong> sistemleri, her "
+"adımda bir uzmanın gözetiminde çalışır. Literatür taramasından düzenli veri "
+"hatlarına, aylık rapor üretiminden bildirim sistemlerine kadar tekrarlayan "
+"ve kural tabanlı süreçler <strong>iş süreçleri otomasyonu</strong> ile "
+"devralınabilir; yorum, etik karar ve beklenmedik durumlar her zaman insan "
+"uzmanda kalır."
 msgstr ""
-"Analizus develops <strong>AI agent</strong> and <strong>automation "
-"projects</strong> for organizations and research groups. <strong>AI "
-"automation</strong> systems that collect, analyze, and report data operate "
-"under expert supervision at every step. From literature scanning to "
-"recurring data pipelines, monthly report generation to notification systems,"
-" repetitive rule-based processes can be handed over to <strong>business "
-"process automation</strong>; interpretation, ethical decisions, and "
-"unexpected situations always stay with a human expert."
+"Analizus develops <strong>AI agent</strong> and <strong>automation projects</"
+"strong> for organizations and research groups. <strong>AI automation</"
+"strong> systems that collect, analyze, and report data operate under expert "
+"supervision at every step. From literature scanning to recurring data "
+"pipelines, monthly report generation to notification systems, repetitive "
+"rule-based processes can be handed over to <strong>business process "
+"automation</strong>; interpretation, ethical decisions, and unexpected "
+"situations always stay with a human expert."
 
 #: forum/templates/forum/ai_cozumler.html:263
 msgid ""
@@ -512,8 +510,8 @@ msgid "Akademik Eğitim Talep Et"
 msgstr "Request Academic Training"
 
 #: forum/templates/forum/egitim.html:103
-#: forum/templates/forum/egitim_talebi.html:75 templates/base.html:264
-#: templates/base.html:458 templates/partials/footer.html:98
+#: forum/templates/forum/egitim_talebi.html:75 templates/base.html:270
+#: templates/base.html:464 templates/partials/footer.html:98
 msgid "Kurumsal"
 msgstr "Corporate"
 
@@ -588,8 +586,8 @@ msgid "Kendi verinizle uygulama yapar, kalıcı materyalle devam edersiniz."
 msgstr "You practice with your own data and continue with lasting materials."
 
 #: forum/templates/forum/egitim.html:194
-#: forum/templates/forum/proje_talebi.html:246 templates/base.html:268
-#: templates/base.html:462
+#: forum/templates/forum/proje_talebi.html:246 templates/base.html:274
+#: templates/base.html:468
 msgid "Neden Analizus?"
 msgstr "Why Analizus?"
 
@@ -599,8 +597,8 @@ msgstr "Training is done with your own data, not a ready-made demo dataset."
 
 #: forum/templates/forum/egitim.html:197 forum/templates/forum/egitim.html:230
 msgid ""
-"Eğitimi, bu sitedeki 18 istatistik aracını, bibliyometrik analiz motorunu ve"
-" YÖK Tez tarama altyapısını geliştiren ekip veriyor."
+"Eğitimi, bu sitedeki 18 istatistik aracını, bibliyometrik analiz motorunu ve "
+"YÖK Tez tarama altyapısını geliştiren ekip veriyor."
 msgstr ""
 "Training is delivered by the team that built this site's 18 statistics "
 "tools, its bibliometric analysis engine, and its thesis-scanning "
@@ -707,8 +705,8 @@ msgstr "Are the sessions live or recorded?"
 #: forum/templates/forum/egitim.html:256
 msgid "Tamamı canlı ve birebir/küçük grup. Hazır video kursu satılmıyor."
 msgstr ""
-"All sessions are live and one-on-one/small group. We don't sell pre-recorded"
-" video courses."
+"All sessions are live and one-on-one/small group. We don't sell pre-recorded "
+"video courses."
 
 #: forum/templates/forum/egitim.html:262
 msgid "Kendi tez/şirket verimle çalışabilir miyim?"
@@ -755,8 +753,8 @@ msgstr "Can I watch a recording afterward?"
 
 #: forum/templates/forum/egitim.html:296
 msgid ""
-"Kayıt paylaşılmıyor. Bunun yerine kalıcı materyal veriliyor: kullanılan veri"
-" seti, SPSS syntax / Python notebook dosyası ve adım adım uygulama notu."
+"Kayıt paylaşılmıyor. Bunun yerine kalıcı materyal veriliyor: kullanılan veri "
+"seti, SPSS syntax / Python notebook dosyası ve adım adım uygulama notu."
 msgstr ""
 "Sessions are not recorded. Instead you receive lasting materials: the "
 "dataset used, the SPSS syntax / Python notebook file, and a step-by-step "
@@ -766,16 +764,15 @@ msgstr ""
 msgid "Eğitim yerine analizi sizin yapmanızı istersem?"
 msgstr "What if I'd rather you do the analysis instead of training me?"
 
-#: forum/templates/forum/egitim.html:306 templates/base.html:253
-#: templates/base.html:450
+#: forum/templates/forum/egitim.html:306 templates/base.html:259
+#: templates/base.html:456
 msgid "Proje Talebi"
 msgstr "Project Request"
 
 #: forum/templates/forum/egitim.html:306
 msgid ""
 "sayfamızdan bize ulaşabilirsiniz; ekibimiz analizi sizin adınıza yürütür."
-msgstr ""
-"page to reach us; our team will carry out the analysis on your behalf."
+msgstr "page to reach us; our team will carry out the analysis on your behalf."
 
 #: forum/templates/forum/egitim.html:312
 msgid "Talep gönderdikten sonra süreç nasıl ilerliyor?"
@@ -786,8 +783,8 @@ msgid ""
 "Form gönderildikten sonra 24 saat içinde dönüş yapılır, ardından ücretsiz "
 "bir ön görüşme planlanır ve size özel program ile teklif sunulur."
 msgstr ""
-"We respond within 24 hours of your submission, then schedule a free pre-call"
-" and present you with a custom program and quote."
+"We respond within 24 hours of your submission, then schedule a free pre-call "
+"and present you with a custom program and quote."
 
 #: forum/templates/forum/egitim.html:327
 msgid ""
@@ -806,8 +803,8 @@ msgstr ""
 "development, reliability-validity analysis, bibliometric analysis, and "
 "systematic literature review to machine learning and deep learning — is "
 "taught using the participant's own thesis or company data. Sessions are "
-"live, one-on-one or small group; by the end you keep lasting materials — the"
-" dataset used, code file, and application notes."
+"live, one-on-one or small group; by the end you keep lasting materials — the "
+"dataset used, code file, and application notes."
 
 #: forum/templates/forum/egitim.html:336
 msgid ""
@@ -821,14 +818,16 @@ msgstr ""
 msgid "Eğitim Talebi Oluştur"
 msgstr "Create Training Request"
 
-#: forum/templates/forum/egitim.html:342 templates/partials/footer.html:103
+#: forum/templates/forum/egitim.html:342
+#: forum/templates/forum/egitim_talebi.html:166
+#: templates/partials/footer.html:103
 msgid "WhatsApp'tan Yaz"
 msgstr "Message on WhatsApp"
 
 #: forum/templates/forum/egitim_detay.html:5
 #: forum/templates/forum/egitim_detay.html:7
-#: forum/templates/forum/egitim_detay.html:9 templates/base.html:256
-#: templates/base.html:453
+#: forum/templates/forum/egitim_detay.html:9 templates/base.html:262
+#: templates/base.html:459
 msgid "Eğitim"
 msgstr "Training"
 
@@ -976,15 +975,15 @@ msgstr "Briefly describe the training you're looking for"
 msgid "Seviye"
 msgstr "Level"
 
-#: forum/templates/forum/egitim_talebi.html:104
+#: forum/templates/forum/egitim_talebi.html:104 forum/training_catalog.py:471
 msgid "Başlangıç"
 msgstr "Beginner"
 
-#: forum/templates/forum/egitim_talebi.html:105
+#: forum/templates/forum/egitim_talebi.html:105 forum/training_catalog.py:472
 msgid "Orta"
 msgstr "Intermediate"
 
-#: forum/templates/forum/egitim_talebi.html:106
+#: forum/templates/forum/egitim_talebi.html:106 forum/training_catalog.py:473
 msgid "İleri"
 msgstr "Advanced"
 
@@ -1068,6 +1067,11 @@ msgstr ""
 msgid "Talebi Gönder"
 msgstr "Send Request"
 
+#: forum/templates/forum/egitim_talebi.html:164
+#: forum/templates/forum/proje_talebi.html:272
+msgid "Form doldurmak yerine doğrudan konuşmayı tercih ediyorsanız:"
+msgstr "If you'd rather talk directly instead of filling out the form:"
+
 #: forum/templates/forum/home.html:6
 msgid "Analizus — Ücretsiz İstatistik Analizi ve Veri Analizi Platformu"
 msgstr "Analizus — Free Statistical Analysis and Data Analysis Platform"
@@ -1078,8 +1082,8 @@ msgid ""
 "hazır — SPSS bilgisi gerekmez. Tez analizi ve akademik danışmanlık için "
 "uzman bul."
 msgstr ""
-"Upload your file, get statistical and data analysis ready in APA format — no"
-" SPSS knowledge required. Find an expert for thesis analysis and academic "
+"Upload your file, get statistical and data analysis ready in APA format — no "
+"SPSS knowledge required. Find an expert for thesis analysis and academic "
 "consulting."
 
 #: forum/templates/forum/home.html:8 forum/templates/forum/home.html:10
@@ -1092,8 +1096,8 @@ msgid ""
 "Türkiye'nin analiz ekosistemi — 18 ücretsiz istatistik aracı, AI asistan ve "
 "doğrulanmış uzmanlar tek çatıda."
 msgstr ""
-"Turkey's analysis ecosystem — 18 free statistics tools, an AI assistant, and"
-" verified experts under one roof."
+"Turkey's analysis ecosystem — 18 free statistics tools, an AI assistant, and "
+"verified experts under one roof."
 
 #: forum/templates/forum/home.html:231
 msgid "Analizini yap."
@@ -1150,7 +1154,7 @@ msgid "Normallik Testi"
 msgstr "Normality Test"
 
 #: forum/templates/forum/home.html:264 forum/templates/forum/home.html:369
-#: templates/base.html:212 templates/base.html:426
+#: templates/base.html:218 templates/base.html:432
 #: templates/partials/footer.html:46
 msgid "Hangi Test?"
 msgstr "Which Test?"
@@ -1168,8 +1172,8 @@ msgid "YÖK Tez Kazıma"
 msgstr "Thesis Center Scraping"
 
 #: forum/templates/forum/home.html:272
-#: openalex/templates/openalex/landing.html:155 templates/base.html:208
-#: templates/base.html:424
+#: openalex/templates/openalex/landing.html:155 templates/base.html:214
+#: templates/base.html:430
 msgid "Bibliometrik Analiz"
 msgstr "Bibliometric Analysis"
 
@@ -1186,8 +1190,8 @@ msgstr "Opportunities:"
 msgid "Açık İlanlar"
 msgstr "Open Listings"
 
-#: forum/templates/forum/home.html:278 templates/base.html:350
-#: templates/base.html:488
+#: forum/templates/forum/home.html:278 templates/base.html:356
+#: templates/base.html:494
 msgid "Profilim"
 msgstr "My Profile"
 
@@ -1349,8 +1353,7 @@ msgstr "Delivery & Revisions"
 
 #: forum/templates/forum/home.html:501
 msgid ""
-"Raporu teslim alırsınız. Danışman/hakem dönüşleri için revizyon hakkınız "
-"var."
+"Raporu teslim alırsınız. Danışman/hakem dönüşleri için revizyon hakkınız var."
 msgstr ""
 "You receive the report. You're entitled to revisions for advisor/reviewer "
 "feedback."
@@ -1496,8 +1499,8 @@ msgstr "Assistant"
 msgid "Literatür tarama ve tez yazımında yapay zeka destekli rehberiniz."
 msgstr "Your AI-powered guide for literature review and thesis writing."
 
-#: forum/templates/forum/home.html:705 templates/base.html:225
-#: templates/base.html:432
+#: forum/templates/forum/home.html:705 templates/base.html:231
+#: templates/base.html:438
 msgid "Akademik Tarama"
 msgstr "Academic Search"
 
@@ -1517,8 +1520,8 @@ msgstr "OpenAlex Search"
 msgid "TR Dizin Tarama"
 msgstr "TR Dizin Search"
 
-#: forum/templates/forum/home.html:717 templates/base.html:245
-#: templates/base.html:444 templates/partials/footer.html:62
+#: forum/templates/forum/home.html:717 templates/base.html:251
+#: templates/base.html:450 templates/partials/footer.html:62
 msgid "Çalışma Odaları"
 msgstr "Study Rooms"
 
@@ -1538,8 +1541,8 @@ msgstr "Which test should I use?"
 msgid ""
 "Bir soru seç, AI Asistan hemen cevaplasın — ya da kendini Arena'da test et."
 msgstr ""
-"Pick a question and let the AI Assistant answer instantly — or test yourself"
-" in the Arena."
+"Pick a question and let the AI Assistant answer instantly — or test yourself "
+"in the Arena."
 
 #: forum/templates/forum/home.html:759
 #: istatistik/templates/istatistik/analiz_hub.html:56
@@ -1616,8 +1619,8 @@ msgstr "Explore AI Solutions"
 
 #: forum/templates/forum/home.html:847
 msgid ""
-"SPSS'ten Python'a, ölçek geliştirmeden makine öğrenmesine — birebir eğitimle"
-" kendi verinizle çalışın."
+"SPSS'ten Python'a, ölçek geliştirmeden makine öğrenmesine — birebir eğitimle "
+"kendi verinizle çalışın."
 msgstr ""
 "From SPSS to Python, scale development to machine learning — work with your "
 "own data in one-on-one training."
@@ -1649,13 +1652,13 @@ msgstr "Is my analysis data safe? Is it shared with others?"
 #, python-format
 msgid ""
 "Kesinlikle hayır. Verileriniz %%100 KVKK ve akademik etik standartlarına "
-"uygun olarak şifreli sunucularda işlenir. Analiz dosyalarınız veya araştırma"
-" detaylarınız 3. şahıslarla, kurumlarla veya diğer uzmanlarla asla "
+"uygun olarak şifreli sunucularda işlenir. Analiz dosyalarınız veya araştırma "
+"detaylarınız 3. şahıslarla, kurumlarla veya diğer uzmanlarla asla "
 "paylaşılmaz."
 msgstr ""
-"Absolutely not. Your data is processed on encrypted servers, fully compliant"
-" with data-protection law and academic ethics standards. Your analysis files"
-" or research details are never shared with third parties, institutions, or "
+"Absolutely not. Your data is processed on encrypted servers, fully compliant "
+"with data-protection law and academic ethics standards. Your analysis files "
+"or research details are never shared with third parties, institutions, or "
 "other experts."
 
 #: forum/templates/forum/home.html:906
@@ -1693,15 +1696,15 @@ msgstr "How long until my analysis results are delivered?"
 
 #: forum/templates/forum/home.html:939
 msgid ""
-"Teslimat süresi verinizin karmaşıklığına (veri temizliği gereksinimi vb.) ve"
-" istenen testlerin sayısına göre değişmekle birlikte, genellikle 3 ila 7 iş "
+"Teslimat süresi verinizin karmaşıklığına (veri temizliği gereksinimi vb.) ve "
+"istenen testlerin sayısına göre değişmekle birlikte, genellikle 3 ila 7 iş "
 "günü içerisinde APA formatında raporlanmış olarak teslim edilir. Zaman "
 "kısıtlaması olan projeler için \"Acil Teslimat\" seçeneğimiz bulunmaktadır."
 msgstr ""
 "Delivery time varies with your data's complexity (e.g. cleaning needs) and "
 "the number of tests requested, but it's typically delivered as an APA-"
-"formatted report within 3 to 7 business days. For time-constrained projects,"
-" we offer an \"Express Delivery\" option."
+"formatted report within 3 to 7 business days. For time-constrained projects, "
+"we offer an \"Express Delivery\" option."
 
 #: forum/templates/forum/home.html:948
 msgid "Süreç bittikten sonra verilerime ve dosyalarıma ne oluyor?"
@@ -1709,8 +1712,8 @@ msgstr "What happens to my data and files after the process ends?"
 
 #: forum/templates/forum/home.html:953
 msgid ""
-"Proje teslim edilip tarafınızdan onay alındıktan sonra, verileriniz ve sonuç"
-" raporlarınız olası revizyon taleplerine karşın sistemlerimizde 30 gün "
+"Proje teslim edilip tarafınızdan onay alındıktan sonra, verileriniz ve sonuç "
+"raporlarınız olası revizyon taleplerine karşın sistemlerimizde 30 gün "
 "boyunca güvenle muhafaza edilir. 30 günün sonunda tüm dosyalar "
 "sunucularımızdan kalıcı olarak ve geri döndürülemez şekilde silinir."
 msgstr ""
@@ -1743,7 +1746,7 @@ msgstr "Wrong! The correct answer:"
 msgid "Yükleniyor..."
 msgstr "Loading..."
 
-#: forum/templates/forum/home.html:1131 templates/base.html:538
+#: forum/templates/forum/home.html:1131 templates/base.html:544
 msgid "Sonraki Soru"
 msgstr "Next Question"
 
@@ -1912,8 +1915,8 @@ msgid ""
 "İlanı kapatmak istediğinizden emin misiniz? Teklif verenlere bildirim "
 "gönderilecek."
 msgstr ""
-"Are you sure you want to close this listing? Everyone who made an offer will"
-" be notified."
+"Are you sure you want to close this listing? Everyone who made an offer will "
+"be notified."
 
 #: forum/templates/forum/market/job_detail.html:159
 msgid "Yayından Kaldır"
@@ -2120,7 +2123,7 @@ msgstr "View My Profile"
 #: forum/templates/registration/login.html:10
 #: forum/templates/registration/login.html:243
 #: forum/templates/registration/login.html:274
-#: istatistik/templates/istatistik/analiz_hub.html:42 templates/base.html:502
+#: istatistik/templates/istatistik/analiz_hub.html:42 templates/base.html:508
 #: templates/forum/register.html:253 templates/forum/register.html:309
 #: templates/service_promo.html:37
 msgid "Giriş Yap"
@@ -2140,16 +2143,16 @@ msgstr "Marketplace — Expert Matching"
 #: forum/templates/forum/market/job_list.html:8
 #: forum/templates/forum/market/job_list.html:10
 msgid ""
-"Akademik analiz uzmanı bulun. SPSS, R, Python ve tez istatistiği için teklif"
-" alın. Analizus Pazaryeri — ücretsiz ilan açın, hızlı uzman eşleştirme, "
+"Akademik analiz uzmanı bulun. SPSS, R, Python ve tez istatistiği için teklif "
+"alın. Analizus Pazaryeri — ücretsiz ilan açın, hızlı uzman eşleştirme, "
 "güvenilir akademik destek."
 msgstr ""
 "Find an academic analysis expert. Get offers for SPSS, R, Python and thesis "
 "statistics. Analizus Marketplace — post a listing for free, fast expert "
 "matching, reliable academic support."
 
-#: forum/templates/forum/market/job_list.html:27 templates/base.html:230
-#: templates/base.html:435 templates/partials/footer.html:50
+#: forum/templates/forum/market/job_list.html:27 templates/base.html:236
+#: templates/base.html:441 templates/partials/footer.html:50
 msgid "Pazaryeri"
 msgstr "Marketplace"
 
@@ -2309,8 +2312,8 @@ msgstr ""
 "Finding an academic analysis expert on the Analizus Services Marketplace "
 "takes just a few minutes: describe your need for SPSS analysis, data "
 "processing with R/Python or thesis statistics consulting, and get offers "
-"from verified experts. Prices are kept private, and reviews are written only"
-" by the parties who completed the job."
+"from verified experts. Prices are kept private, and reviews are written only "
+"by the parties who completed the job."
 
 #: forum/templates/forum/market/my_jobs.html:4
 msgid "İlanlarım ve Tekliflerim"
@@ -2377,8 +2380,8 @@ msgid ""
 "İlanınız yayınlandıktan sonra <strong>%(job_duration_days)s gün</strong> "
 "aktif kalacaktır."
 msgstr ""
-"Your listing will remain active for <strong>%(job_duration_days)s "
-"days</strong> after publication."
+"Your listing will remain active for <strong>%(job_duration_days)s days</"
+"strong> after publication."
 
 #: forum/templates/forum/market/post_job.html:51
 msgid ""
@@ -2410,12 +2413,11 @@ msgstr "Project Request — Data Analysis and Consulting"
 #: forum/templates/forum/proje_talebi.html:8
 #: forum/templates/forum/proje_talebi.html:10
 msgid ""
-"Şirketinizin veri analizi, görselleştirme veya makine öğrenmesi ihtiyacınızı"
-" bizimle paylaşın. Uzman analistlerle eşleştirilip projenize özel teklif "
-"alın."
+"Şirketinizin veri analizi, görselleştirme veya makine öğrenmesi ihtiyacınızı "
+"bizimle paylaşın. Uzman analistlerle eşleştirilip projenize özel teklif alın."
 msgstr ""
-"Share your company's data analysis, visualization, or machine learning needs"
-" with us. Get matched with expert analysts and receive a quote tailored to "
+"Share your company's data analysis, visualization, or machine learning needs "
+"with us. Get matched with expert analysts and receive a quote tailored to "
 "your project."
 
 #: forum/templates/forum/proje_talebi.html:93
@@ -2534,8 +2536,7 @@ msgstr "Project Description"
 #: forum/templates/forum/proje_talebi.html:185
 msgid ""
 "Hedeflerinizi, elinizde bulunan veriyi ve beklentilerinizi kısaca anlatın."
-msgstr ""
-"Briefly describe your goals, the data you have, and your expectations."
+msgstr "Briefly describe your goals, the data you have, and your expectations."
 
 #: forum/templates/forum/proje_talebi.html:190
 msgid "Veri Boyutu"
@@ -2603,10 +2604,6 @@ msgstr ""
 msgid "Hızlı Görüşme"
 msgstr "Quick Chat"
 
-#: forum/templates/forum/proje_talebi.html:272
-msgid "Form doldurmak yerine doğrudan konuşmayı tercih ediyorsanız:"
-msgstr "If you'd rather talk directly instead of filling out the form:"
-
 #: forum/templates/forum/proje_talebi.html:278
 msgid "WhatsApp ile Yaz"
 msgstr "Message on WhatsApp"
@@ -2623,8 +2620,8 @@ msgid ""
 msgstr ""
 "We work with companies from every data-generating sector, especially "
 "finance, retail, healthcare, manufacturing, e-commerce, and the public "
-"sector. Whatever your industry, we can extract meaningful insights from your"
-" data."
+"sector. Whatever your industry, we can extract meaningful insights from your "
+"data."
 
 #: forum/templates/forum/proje_talebi.html:318
 msgid "Veri gizliliğim nasıl korunuyor?"
@@ -2632,9 +2629,9 @@ msgstr "How is my data privacy protected?"
 
 #: forum/templates/forum/proje_talebi.html:323
 msgid ""
-"Tüm veriler şifreli aktarım kanallarıyla iletilir, yalnızca proje kapsamında"
-" kullanılır ve analiz tamamlandıktan sonra imha edilir. KVKK uyumluluğu "
-"temel ilkemizdir."
+"Tüm veriler şifreli aktarım kanallarıyla iletilir, yalnızca proje kapsamında "
+"kullanılır ve analiz tamamlandıktan sonra imha edilir. KVKK uyumluluğu temel "
+"ilkemizdir."
 msgstr ""
 "All data is transmitted through encrypted channels, used solely within the "
 "project scope, and deleted once the analysis is complete. Data-protection "
@@ -2647,11 +2644,10 @@ msgstr "How long does a project take to complete?"
 #: forum/templates/forum/proje_talebi.html:337
 msgid ""
 "Basit görselleştirme ve betimsel analiz çalışmaları genellikle 1–3 iş günü; "
-"makine öğrenmesi modelleme projeleri ise 2–6 hafta arasında "
-"tamamlanmaktadır."
+"makine öğrenmesi modelleme projeleri ise 2–6 hafta arasında tamamlanmaktadır."
 msgstr ""
-"Simple visualization and descriptive analysis work is usually completed in "
-"1–3 business days; machine learning modeling projects take 2–6 weeks."
+"Simple visualization and descriptive analysis work is usually completed in 1–"
+"3 business days; machine learning modeling projects take 2–6 weeks."
 
 #: forum/templates/forum/proje_talebi.html:346
 msgid "Hangi araç ve teknolojileri kullanıyorsunuz?"
@@ -2687,8 +2683,8 @@ msgstr "What do I need to provide to get started?"
 
 #: forum/templates/forum/proje_talebi.html:379
 msgid ""
-"Proje hedeflerinizi ve mevcut verinizi (CSV, Excel, veri tabanı erişimi vb.)"
-" paylaşmanız yeterlidir. İhtiyaç duyulursa uzmanımız sizi yönlendirir ve "
+"Proje hedeflerinizi ve mevcut verinizi (CSV, Excel, veri tabanı erişimi vb.) "
+"paylaşmanız yeterlidir. İhtiyaç duyulursa uzmanımız sizi yönlendirir ve "
 "gerekli veriyi birlikte tanımlarız."
 msgstr ""
 "Just share your project goals and existing data (CSV, Excel, database "
@@ -2703,8 +2699,8 @@ msgstr "Welcome"
 msgid "Hesabınıza giriş yapın"
 msgstr "Sign in to your account"
 
-#: forum/templates/registration/login.html:244 templates/base.html:375
-#: templates/base.html:503 templates/forum/register.html:8
+#: forum/templates/registration/login.html:244 templates/base.html:381
+#: templates/base.html:509 templates/forum/register.html:8
 #: templates/forum/register.html:254 templates/forum/register.html:306
 msgid "Kayıt Ol"
 msgstr "Sign Up"
@@ -2736,6 +2732,1610 @@ msgstr "Don't have an account?"
 #: forum/templates/registration/login.html:289
 msgid "Hemen Kayıt Ol"
 msgstr "Sign Up Now"
+
+#: forum/training_catalog.py:17
+msgid "Ofis & Veri"
+msgstr "Office & Data"
+
+#: forum/training_catalog.py:21
+msgid "Excel ile Veri Analizi"
+msgstr "Data Analysis with Excel"
+
+#: forum/training_catalog.py:23
+msgid ""
+"Ham veriyi Excel'de düzenleme, pivot tablo ve temel formüllerle özetleme, "
+"basit grafiklerle raporlama."
+msgstr ""
+"Organizing raw data in Excel, summarizing it with pivot tables and basic "
+"formulas, and reporting with simple charts."
+
+#: forum/training_catalog.py:25
+msgid "Pivot tablo ile veri özetleme"
+msgstr "Summarizing data with pivot tables"
+
+#: forum/training_catalog.py:26
+msgid "VLOOKUP / INDEX-MATCH ile veri eşleştirme"
+msgstr "Matching data with VLOOKUP / INDEX-MATCH"
+
+#: forum/training_catalog.py:27
+msgid "Temel grafik ve dashboard hazırlama"
+msgstr "Building basic charts and dashboards"
+
+#: forum/training_catalog.py:28
+msgid "Veri temizleme (kopya/hata giderme)"
+msgstr "Data cleaning (removing duplicates/errors)"
+
+#: forum/training_catalog.py:30 forum/training_catalog.py:82
+#: forum/training_catalog.py:133 forum/training_catalog.py:156
+#: forum/training_catalog.py:325 forum/training_catalog.py:346
+#: forum/training_catalog.py:368 forum/training_catalog.py:388
+#: forum/training_catalog.py:417
+msgid "Yok"
+msgstr "None"
+
+#: forum/training_catalog.py:31
+msgid "Microsoft Excel"
+msgstr "Microsoft Excel"
+
+#: forum/training_catalog.py:33
+msgid "Veri Düzenleme ve Temizleme"
+msgstr "Organizing and Cleaning Data"
+
+#: forum/training_catalog.py:33
+msgid "Hücre biçimlendirme"
+msgstr "Cell formatting"
+
+#: forum/training_catalog.py:33
+msgid "Kopya/hatalı veri temizleme"
+msgstr "Cleaning duplicate/erroneous data"
+
+#: forum/training_catalog.py:33
+msgid "Metin-sayı dönüşümleri"
+msgstr "Text-to-number conversions"
+
+#: forum/training_catalog.py:34
+msgid "Formüller ve Fonksiyonlar"
+msgstr "Formulas and Functions"
+
+#: forum/training_catalog.py:34
+msgid "VLOOKUP / INDEX-MATCH"
+msgstr "VLOOKUP / INDEX-MATCH"
+
+#: forum/training_catalog.py:34
+msgid "Koşullu fonksiyonlar (SUMIF, COUNTIF)"
+msgstr "Conditional functions (SUMIF, COUNTIF)"
+
+#: forum/training_catalog.py:35
+msgid "Pivot Tablo ve Özetleme"
+msgstr "Pivot Tables and Summarizing"
+
+#: forum/training_catalog.py:35
+msgid "Pivot tablo kurulumu"
+msgstr "Setting up pivot tables"
+
+#: forum/training_catalog.py:35
+msgid "Gruplama ve filtreleme"
+msgstr "Grouping and filtering"
+
+#: forum/training_catalog.py:36
+msgid "Görselleştirme ve Raporlama"
+msgstr "Visualization and Reporting"
+
+#: forum/training_catalog.py:36
+msgid "Grafik türleri"
+msgstr "Chart types"
+
+#: forum/training_catalog.py:36
+msgid "Basit dashboard tasarımı"
+msgstr "Simple dashboard design"
+
+#: forum/training_catalog.py:39
+msgid "Excel'in hangi sürümüyle çalışılıyor?"
+msgstr "Which version of Excel is used?"
+
+#: forum/training_catalog.py:39
+msgid ""
+"Microsoft 365 güncel sürüm önerilir; 2016 ve sonrası sürümlerle de uyumludur."
+msgstr ""
+"The current Microsoft 365 version is recommended; it is also compatible with "
+"2016 and later versions."
+
+#: forum/training_catalog.py:40
+msgid "Kendi Excel dosyamla çalışabilir miyim?"
+msgstr "Can I work with my own Excel file?"
+
+#: forum/training_catalog.py:40
+msgid "Evet, tercih edilen yöntem budur."
+msgstr "Yes, that is the preferred approach."
+
+#: forum/training_catalog.py:44
+msgid "İleri Excel: Power Query, Power Pivot, DAX"
+msgstr "Advanced Excel: Power Query, Power Pivot, DAX"
+
+#: forum/training_catalog.py:46
+msgid ""
+"Büyük ve dağınık veri kaynaklarını Power Query ile otomatik temizleme, Power "
+"Pivot ve DAX ile ileri veri modelleme."
+msgstr ""
+"Automatically cleaning large, messy data sources with Power Query, and "
+"advanced data modeling with Power Pivot and DAX."
+
+#: forum/training_catalog.py:48
+msgid "Power Query ile otomatik veri temizleme akışı kurma"
+msgstr "Building an automated data cleaning workflow with Power Query"
+
+#: forum/training_catalog.py:49
+msgid "Power Pivot ile çoklu tablo veri modeli oluşturma"
+msgstr "Creating a multi-table data model with Power Pivot"
+
+#: forum/training_catalog.py:50
+msgid "DAX ile hesaplanan alan ve ölçü yazma"
+msgstr "Writing calculated fields and measures with DAX"
+
+#: forum/training_catalog.py:51
+msgid "Periyodik güncellenen rapor şablonu hazırlama"
+msgstr "Creating report templates that update periodically"
+
+#: forum/training_catalog.py:53
+msgid "Excel ile Veri Analizi eğitimi veya dengi deneyim"
+msgstr "The \"Data Analysis with Excel\" course or equivalent experience"
+
+#: forum/training_catalog.py:54
+msgid "Microsoft Excel (Power Query, Power Pivot, DAX)"
+msgstr "Microsoft Excel (Power Query, Power Pivot, DAX)"
+
+#: forum/training_catalog.py:56
+msgid "Power Query ile Veri Hazırlama"
+msgstr "Data Preparation with Power Query"
+
+#: forum/training_catalog.py:56
+msgid "Çoklu kaynaktan veri çekme"
+msgstr "Importing data from multiple sources"
+
+#: forum/training_catalog.py:56
+msgid "Dönüşüm adımlarını otomatikleştirme"
+msgstr "Automating transformation steps"
+
+#: forum/training_catalog.py:57
+msgid "Veri Modelleme"
+msgstr "Data Modeling"
+
+#: forum/training_catalog.py:57
+msgid "İlişkisel tablo modeli"
+msgstr "Relational table model"
+
+#: forum/training_catalog.py:57
+msgid "Power Pivot'a giriş"
+msgstr "Introduction to Power Pivot"
+
+#: forum/training_catalog.py:58
+msgid "DAX Formülleri"
+msgstr "DAX Formulas"
+
+#: forum/training_catalog.py:58
+msgid "Hesaplanan sütun ve ölçüler"
+msgstr "Calculated columns and measures"
+
+#: forum/training_catalog.py:58
+msgid "Zaman zekâsı fonksiyonları"
+msgstr "Time intelligence functions"
+
+#: forum/training_catalog.py:59
+msgid "Otomatik Raporlama"
+msgstr "Automated Reporting"
+
+#: forum/training_catalog.py:59
+msgid "Yenilenebilir rapor şablonları"
+msgstr "Refreshable report templates"
+
+#: forum/training_catalog.py:59
+msgid "Performans optimizasyonu"
+msgstr "Performance optimization"
+
+#: forum/training_catalog.py:62
+msgid "Power BI ile farkı nedir?"
+msgstr "How is it different from Power BI?"
+
+#: forum/training_catalog.py:62
+msgid ""
+"Aynı Power Query/DAX motorunu kullanır; bu eğitim Excel içinde kalarak aynı "
+"yetkinliği kazandırır."
+msgstr ""
+"It uses the same Power Query/DAX engine; this course builds the same skills "
+"while staying within Excel."
+
+#: forum/training_catalog.py:69
+msgid "Programlama"
+msgstr "Programming"
+
+#: forum/training_catalog.py:73
+msgid "Sıfırdan Python"
+msgstr "Python from Scratch"
+
+#: forum/training_catalog.py:75
+msgid ""
+"Programlamaya hiç girmemiş katılımcılar için Python'a sıfırdan, veri "
+"analizine hazırlık odaklı giriş."
+msgstr ""
+"A from-scratch introduction to Python for participants with no programming "
+"experience, focused on preparing for data analysis."
+
+#: forum/training_catalog.py:77
+msgid "Python temel sözdizimi ve veri tipleri"
+msgstr "Basic Python syntax and data types"
+
+#: forum/training_catalog.py:78
+msgid "Döngü ve koşul yapılarıyla script yazma"
+msgstr "Writing scripts with loops and conditionals"
+
+#: forum/training_catalog.py:79 forum/training_catalog.py:87
+msgid "Fonksiyon tanımlama"
+msgstr "Defining functions"
+
+#: forum/training_catalog.py:80
+msgid "pandas'a geçişe hazır bir temel"
+msgstr "A foundation ready for moving on to pandas"
+
+#: forum/training_catalog.py:83 forum/training_catalog.py:297
+msgid "Python"
+msgstr "Python"
+
+#: forum/training_catalog.py:83 forum/training_catalog.py:105
+msgid "Jupyter Notebook"
+msgstr "Jupyter Notebook"
+
+#: forum/training_catalog.py:85
+msgid "Python'a Giriş"
+msgstr "Introduction to Python"
+
+#: forum/training_catalog.py:85
+msgid "Kurulum (Anaconda/Jupyter)"
+msgstr "Setup (Anaconda/Jupyter)"
+
+#: forum/training_catalog.py:85
+msgid "Değişkenler ve veri tipleri"
+msgstr "Variables and data types"
+
+#: forum/training_catalog.py:86
+msgid "Kontrol Yapıları"
+msgstr "Control Structures"
+
+#: forum/training_catalog.py:86
+msgid "Koşullar (if/elif/else)"
+msgstr "Conditionals (if/elif/else)"
+
+#: forum/training_catalog.py:86
+msgid "Döngüler (for/while)"
+msgstr "Loops (for/while)"
+
+#: forum/training_catalog.py:87
+msgid "Fonksiyonlar ve Veri Yapıları"
+msgstr "Functions and Data Structures"
+
+#: forum/training_catalog.py:87
+msgid "Liste, sözlük, demet"
+msgstr "Lists, dictionaries, tuples"
+
+#: forum/training_catalog.py:88
+msgid "Dosya İşlemleri ve Hazırlık"
+msgstr "File Handling and Preparation"
+
+#: forum/training_catalog.py:88
+msgid "CSV okuma/yazma"
+msgstr "Reading/writing CSV"
+
+#: forum/training_catalog.py:88
+msgid "pandas'a giriş önizlemesi"
+msgstr "A preview of pandas"
+
+#: forum/training_catalog.py:91
+msgid "Hiç kod yazmadım, zor olur mu?"
+msgstr "I've never written code — will it be hard?"
+
+#: forum/training_catalog.py:91
+msgid "Hayır; eğitim tam olarak sıfır deneyim varsayımıyla kurulur."
+msgstr ""
+"No; the course is designed from the ground up assuming zero experience."
+
+#: forum/training_catalog.py:95
+msgid "Python ile Veri Analizi (pandas, numpy, matplotlib)"
+msgstr "Data Analysis with Python (pandas, numpy, matplotlib)"
+
+#: forum/training_catalog.py:97
+msgid ""
+"Gerçek veri setiyle pandas ile veri temizleme, numpy ile sayısal işlemler, "
+"matplotlib ile görselleştirme."
+msgstr ""
+"Data cleaning with pandas, numerical operations with numpy and visualization "
+"with matplotlib — using a real dataset."
+
+#: forum/training_catalog.py:99
+msgid "pandas DataFrame ile veri manipülasyonu"
+msgstr "Data manipulation with pandas DataFrames"
+
+#: forum/training_catalog.py:100
+msgid "Eksik/aykırı veri temizleme"
+msgstr "Cleaning missing/outlier data"
+
+#: forum/training_catalog.py:101
+msgid "numpy ile vektörel hesaplama"
+msgstr "Vectorized computation with numpy"
+
+#: forum/training_catalog.py:102
+msgid "matplotlib/seaborn ile grafik üretme"
+msgstr "Creating charts with matplotlib/seaborn"
+
+#: forum/training_catalog.py:104
+msgid "Temel Python bilgisi (Sıfırdan Python eğitimi veya dengi)"
+msgstr ""
+"Basic Python knowledge (the \"Python from Scratch\" course or equivalent)"
+
+#: forum/training_catalog.py:105
+msgid "Python (pandas, numpy, matplotlib)"
+msgstr "Python (pandas, numpy, matplotlib)"
+
+#: forum/training_catalog.py:107
+msgid "pandas Temelleri"
+msgstr "pandas Basics"
+
+#: forum/training_catalog.py:107
+msgid "DataFrame ve Series"
+msgstr "DataFrame and Series"
+
+#: forum/training_catalog.py:107
+msgid "Veri okuma (CSV/Excel)"
+msgstr "Reading data (CSV/Excel)"
+
+#: forum/training_catalog.py:108
+msgid "Veri Temizleme"
+msgstr "Data Cleaning"
+
+#: forum/training_catalog.py:108
+msgid "Eksik veri yönetimi"
+msgstr "Handling missing data"
+
+#: forum/training_catalog.py:108
+msgid "Aykırı değer tespiti"
+msgstr "Outlier detection"
+
+#: forum/training_catalog.py:109
+msgid "Gruplama ve Birleştirme"
+msgstr "Grouping and Merging"
+
+#: forum/training_catalog.py:109
+msgid "groupby/agg"
+msgstr "groupby/agg"
+
+#: forum/training_catalog.py:109
+msgid "merge/join"
+msgstr "merge/join"
+
+#: forum/training_catalog.py:110
+msgid "Görselleştirme"
+msgstr "Visualization"
+
+#: forum/training_catalog.py:110
+msgid "matplotlib temelleri"
+msgstr "matplotlib basics"
+
+#: forum/training_catalog.py:110
+msgid "seaborn ile istatistiksel grafikler"
+msgstr "Statistical charts with seaborn"
+
+#: forum/training_catalog.py:113
+msgid "R yerine neden Python?"
+msgstr "Why Python instead of R?"
+
+#: forum/training_catalog.py:113
+msgid ""
+"İkisi de öğretilebilir; Python'un genel amaçlı kullanımı ve geniş kütüphane "
+"ekosistemi nedeniyle çoğu katılımcı bunu tercih ediyor, talebe göre R'a da "
+"uyarlanabilir."
+msgstr ""
+"Both can be taught; most participants prefer Python for its general-purpose "
+"use and broad library ecosystem, but the course can be adapted to R on "
+"request."
+
+#: forum/training_catalog.py:120
+msgid "İstatistik & Ölçme"
+msgstr "Statistics & Measurement"
+
+#: forum/training_catalog.py:124
+msgid "SPSS ile Uygulamalı İstatistik"
+msgstr "Applied Statistics with SPSS"
+
+#: forum/training_catalog.py:126
+msgid ""
+"SPSS arayüzünde veri girişinden hipotez testine, tablo okumadan APA "
+"raporlamaya kadar uygulamalı istatistik."
+msgstr ""
+"Hands-on statistics in SPSS — from data entry to hypothesis testing, and "
+"from reading output tables to APA reporting."
+
+#: forum/training_catalog.py:128
+msgid "SPSS'te veri girişi ve değişken tanımlama"
+msgstr "Data entry and variable definition in SPSS"
+
+#: forum/training_catalog.py:129
+msgid "Betimsel istatistik ve frekans tabloları"
+msgstr "Descriptive statistics and frequency tables"
+
+#: forum/training_catalog.py:130
+msgid "t-testi, ANOVA, ki-kare gibi temel testleri uygulama"
+msgstr "Running core tests such as the t-test, ANOVA and chi-square"
+
+#: forum/training_catalog.py:131
+msgid "SPSS çıktısını APA formatında raporlama"
+msgstr "Reporting SPSS output in APA format"
+
+#: forum/training_catalog.py:134
+msgid "IBM SPSS Statistics"
+msgstr "IBM SPSS Statistics"
+
+#: forum/training_catalog.py:136
+msgid "SPSS Arayüzü ve Veri Girişi"
+msgstr "SPSS Interface and Data Entry"
+
+#: forum/training_catalog.py:136
+msgid "Değişken görünümü"
+msgstr "Variable view"
+
+#: forum/training_catalog.py:136
+msgid "Veri girişi ve kodlama"
+msgstr "Data entry and coding"
+
+#: forum/training_catalog.py:137 istatistik/seo_content.py:407
+#: istatistik/seo_content.py:461 istatistik/seo_content.py:956
+msgid "Betimsel İstatistik"
+msgstr "Descriptive Statistics"
+
+#: forum/training_catalog.py:137
+msgid "Frekans ve merkezi eğilim"
+msgstr "Frequencies and central tendency"
+
+#: forum/training_catalog.py:137 forum/training_catalog.py:160
+msgid "Normallik testleri"
+msgstr "Normality tests"
+
+#: forum/training_catalog.py:138
+msgid "Karşılaştırma Testleri"
+msgstr "Comparison Tests"
+
+#: forum/training_catalog.py:138
+msgid "t-testi"
+msgstr "t-test"
+
+#: forum/training_catalog.py:138
+msgid "Tek yönlü ANOVA"
+msgstr "One-way ANOVA"
+
+#: forum/training_catalog.py:139 forum/training_catalog.py:184
+#: forum/training_catalog.py:207 forum/training_catalog.py:441
+msgid "Raporlama"
+msgstr "Reporting"
+
+#: forum/training_catalog.py:139
+msgid "APA tablo formatı"
+msgstr "APA table format"
+
+#: forum/training_catalog.py:139 forum/training_catalog.py:207
+msgid "Sonuç yazımı"
+msgstr "Writing up results"
+
+#: forum/training_catalog.py:143
+msgid "Hangi SPSS sürümü kullanılıyor?"
+msgstr "Which SPSS version is used?"
+
+#: forum/training_catalog.py:143
+msgid ""
+"Güncel IBM SPSS Statistics sürümleriyle uyumludur; kurumunuzdaki lisanslı "
+"sürümle de çalışılabilir."
+msgstr ""
+"It is compatible with current IBM SPSS Statistics versions; you can also use "
+"your institution's licensed version."
+
+#: forum/training_catalog.py:147
+msgid "Doğru Testi Seçme ve APA ile Raporlama"
+msgstr "Choosing the Right Test and Reporting in APA"
+
+#: forum/training_catalog.py:149
+msgid ""
+"Değişken türü ve araştırma sorusuna göre doğru istatistiksel testi seçme, "
+"sonucu APA 7 standardında yazma."
+msgstr ""
+"Choosing the right statistical test based on variable type and research "
+"question, and writing up the result to APA 7 standards."
+
+#: forum/training_catalog.py:151
+msgid "Parametrik / parametrik olmayan test ayrımı"
+msgstr "Distinguishing parametric and non-parametric tests"
+
+#: forum/training_catalog.py:152
+msgid "Değişken türüne göre test seçim ağacı kullanma"
+msgstr "Using a test selection tree based on variable type"
+
+#: forum/training_catalog.py:153
+msgid "Varsayım kontrollerini (normallik, homojenlik) yorumlama"
+msgstr "Interpreting assumption checks (normality, homogeneity)"
+
+#: forum/training_catalog.py:154
+msgid "APA 7 formatında sonuç raporlama"
+msgstr "Reporting results in APA 7 format"
+
+#: forum/training_catalog.py:157
+msgid "SPSS veya Python (isteğe göre)"
+msgstr "SPSS or Python (as preferred)"
+
+#: forum/training_catalog.py:159
+msgid "Test Seçim Mantığı"
+msgstr "The Logic of Test Selection"
+
+#: forum/training_catalog.py:159
+msgid "Değişken türleri"
+msgstr "Variable types"
+
+#: forum/training_catalog.py:159
+msgid "Bağımsız/bağımlı örneklem ayrımı"
+msgstr "Independent vs. dependent samples"
+
+#: forum/training_catalog.py:160
+msgid "Varsayım Kontrolleri"
+msgstr "Assumption Checks"
+
+#: forum/training_catalog.py:160
+msgid "Varyans homojenliği"
+msgstr "Homogeneity of variance"
+
+#: forum/training_catalog.py:161
+msgid "APA Raporlama"
+msgstr "APA Reporting"
+
+#: forum/training_catalog.py:161
+msgid "Tablo ve metin formatı"
+msgstr "Table and text format"
+
+#: forum/training_catalog.py:161
+msgid "Etki büyüklüğü raporlama"
+msgstr "Reporting effect sizes"
+
+#: forum/training_catalog.py:165
+msgid "Bu eğitim hangi platform aracıyla ilişkili?"
+msgstr "Which platform tool is this course related to?"
+
+#: forum/training_catalog.py:165
+msgid ""
+"/hangi-test/ sayfasındaki karar ağacı bu eğitimin temelini oluşturur; ders "
+"sırasında birlikte kullanılır."
+msgstr ""
+"The decision tree on the /hangi-test/ page forms the basis of this course "
+"and is used together during the sessions."
+
+#: forum/training_catalog.py:169
+msgid "Ölçek Geliştirme, Geçerlik ve Güvenirlik"
+msgstr "Scale Development, Validity and Reliability"
+
+#: forum/training_catalog.py:171
+msgid ""
+"Yeni bir ölçme aracı geliştirme sürecinde madde yazımından açımlayıcı faktör "
+"analizine, güvenirlik hesaplamasına kadar tüm adımlar."
+msgstr ""
+"Every step of developing a new measurement instrument — from item writing to "
+"exploratory factor analysis and reliability calculation."
+
+#: forum/training_catalog.py:173
+msgid "Madde havuzu oluşturma ve uzman görüşü süreci"
+msgstr "Building an item pool and the expert review process"
+
+#: forum/training_catalog.py:174
+msgid "Açımlayıcı faktör analizi (AFA) uygulama"
+msgstr "Conducting exploratory factor analysis (EFA)"
+
+#: forum/training_catalog.py:175
+msgid "Cronbach Alfa ile güvenirlik hesaplama"
+msgstr "Calculating reliability with Cronbach's alpha"
+
+#: forum/training_catalog.py:176
+msgid "Geçerlik-güvenirlik raporlama"
+msgstr "Reporting validity and reliability"
+
+#: forum/training_catalog.py:178
+msgid "Temel istatistik bilgisi (SPSS ile Uygulamalı İstatistik önerilir)"
+msgstr ""
+"Basic knowledge of statistics (\"Applied Statistics with SPSS\" recommended)"
+
+#: forum/training_catalog.py:179
+msgid "SPSS"
+msgstr "SPSS"
+
+#: forum/training_catalog.py:179
+msgid "AMOS (isteğe bağlı)"
+msgstr "AMOS (optional)"
+
+#: forum/training_catalog.py:181
+msgid "Ölçek Geliştirme Süreci"
+msgstr "The Scale Development Process"
+
+#: forum/training_catalog.py:181
+msgid "Madde yazımı"
+msgstr "Item writing"
+
+#: forum/training_catalog.py:181
+msgid "Uzman görüşü ve kapsam geçerliği"
+msgstr "Expert review and content validity"
+
+#: forum/training_catalog.py:182
+msgid "Faktör Analizi"
+msgstr "Factor Analysis"
+
+#: forum/training_catalog.py:182
+msgid "AFA varsayımları (KMO, Bartlett)"
+msgstr "EFA assumptions (KMO, Bartlett)"
+
+#: forum/training_catalog.py:182
+msgid "Faktör çıkarma ve döndürme"
+msgstr "Factor extraction and rotation"
+
+#: forum/training_catalog.py:183
+msgid "Güvenirlik"
+msgstr "Reliability"
+
+#: forum/training_catalog.py:183 istatistik/seo_content.py:514
+#: istatistik/seo_content.py:954
+msgid "Cronbach Alfa"
+msgstr "Cronbach's Alpha"
+
+#: forum/training_catalog.py:183
+msgid "Madde-toplam korelasyonu"
+msgstr "Item-total correlation"
+
+#: forum/training_catalog.py:184
+msgid "Geçerlik-güvenirlik tablosu"
+msgstr "Validity-reliability table"
+
+#: forum/training_catalog.py:184
+msgid "Tez/makale metin yazımı"
+msgstr "Writing it up for a thesis/article"
+
+#: forum/training_catalog.py:188
+msgid "Doğrulayıcı faktör analizi (DFA) de kapsanıyor mu?"
+msgstr "Is confirmatory factor analysis (CFA) also covered?"
+
+#: forum/training_catalog.py:188
+msgid ""
+"Bu eğitim AFA odaklıdır; DFA/SEM ihtiyacı varsa Yapısal Eşitlik Modellemesi "
+"eğitimiyle devam edilir."
+msgstr ""
+"This course focuses on EFA; if you need CFA/SEM, continue with the "
+"Structural Equation Modeling course."
+
+#: forum/training_catalog.py:192
+msgid "Yapısal Eşitlik Modellemesi (AMOS / SmartPLS)"
+msgstr "Structural Equation Modeling (AMOS / SmartPLS)"
+
+#: forum/training_catalog.py:194
+msgid ""
+"Ölçüm modeli ve yapısal modelin birlikte test edildiği yapısal eşitlik "
+"modellemesine (YEM/SEM) AMOS veya SmartPLS ile uygulamalı giriş."
+msgstr ""
+"A hands-on introduction with AMOS or SmartPLS to structural equation "
+"modeling (SEM), in which the measurement model and the structural model are "
+"tested together."
+
+#: forum/training_catalog.py:196
+msgid "Ölçüm modeli kurma ve DFA"
+msgstr "Building the measurement model and CFA"
+
+#: forum/training_catalog.py:197
+msgid "Yapısal model ve yol katsayılarını yorumlama"
+msgstr "Interpreting the structural model and path coefficients"
+
+#: forum/training_catalog.py:198
+msgid "Model uyum indekslerini (CFI, RMSEA vb.) değerlendirme"
+msgstr "Evaluating model fit indices (CFI, RMSEA, etc.)"
+
+#: forum/training_catalog.py:199
+msgid "YEM sonuçlarını tez/makalede raporlama"
+msgstr "Reporting SEM results in a thesis/article"
+
+#: forum/training_catalog.py:201
+msgid "Ölçek Geliştirme eğitimi veya temel faktör analizi bilgisi"
+msgstr "The Scale Development course or basic knowledge of factor analysis"
+
+#: forum/training_catalog.py:202
+msgid "AMOS"
+msgstr "AMOS"
+
+#: forum/training_catalog.py:202
+msgid "SmartPLS"
+msgstr "SmartPLS"
+
+#: forum/training_catalog.py:204
+msgid "YEM'e Giriş"
+msgstr "Introduction to SEM"
+
+#: forum/training_catalog.py:204
+msgid "Ölçüm modeli vs yapısal model"
+msgstr "Measurement model vs. structural model"
+
+#: forum/training_catalog.py:204
+msgid "Örneklem büyüklüğü gereksinimleri"
+msgstr "Sample size requirements"
+
+#: forum/training_catalog.py:205
+msgid "Doğrulayıcı Faktör Analizi"
+msgstr "Confirmatory Factor Analysis"
+
+#: forum/training_catalog.py:205
+msgid "DFA kurulumu"
+msgstr "Setting up a CFA"
+
+#: forum/training_catalog.py:205
+msgid "Uyum indeksleri"
+msgstr "Fit indices"
+
+#: forum/training_catalog.py:206
+msgid "Yapısal Model"
+msgstr "Structural Model"
+
+#: forum/training_catalog.py:206
+msgid "Yol analizi"
+msgstr "Path analysis"
+
+#: forum/training_catalog.py:206
+msgid "Aracı/düzenleyici değişkenler"
+msgstr "Mediator/moderator variables"
+
+#: forum/training_catalog.py:207
+msgid "Model diyagramı"
+msgstr "Model diagram"
+
+#: forum/training_catalog.py:210
+msgid "AMOS mu SmartPLS mi kullanmalıyım?"
+msgstr "Should I use AMOS or SmartPLS?"
+
+#: forum/training_catalog.py:210
+msgid ""
+"Kovaryans tabanlı SEM için AMOS, varyans tabanlı (PLS-SEM) için SmartPLS "
+"önerilir; ön görüşmede veriniz ve modelinize göre netleştirilir."
+msgstr ""
+"AMOS is recommended for covariance-based SEM and SmartPLS for variance-based "
+"(PLS-SEM); the choice is clarified in a preliminary meeting based on your "
+"data and model."
+
+#: forum/training_catalog.py:217
+msgid "Yapay Zekâ & Modelleme"
+msgstr "AI & Modeling"
+
+#: forum/training_catalog.py:221
+msgid "Makine Öğrenmesi (scikit-learn)"
+msgstr "Machine Learning (scikit-learn)"
+
+#: forum/training_catalog.py:223
+msgid ""
+"scikit-learn ile sınıflandırma, regresyon ve model değerlendirme; kendi "
+"verinizle uçtan uca bir ML projesi kurma."
+msgstr ""
+"Classification, regression and model evaluation with scikit-learn; building "
+"an end-to-end ML project with your own data."
+
+#: forum/training_catalog.py:225
+msgid "Sınıflandırma ve regresyon modelleri kurma"
+msgstr "Building classification and regression models"
+
+#: forum/training_catalog.py:226
+msgid "Eğitim/test ayrımı ve çapraz doğrulama"
+msgstr "Train/test split and cross-validation"
+
+#: forum/training_catalog.py:227
+msgid "Model performans metriklerini yorumlama"
+msgstr "Interpreting model performance metrics"
+
+#: forum/training_catalog.py:228
+msgid "Hiperparametre optimizasyonu"
+msgstr "Hyperparameter optimization"
+
+#: forum/training_catalog.py:230 forum/training_catalog.py:275
+msgid "Python ile Veri Analizi eğitimi veya dengi deneyim"
+msgstr "The \"Data Analysis with Python\" course or equivalent experience"
+
+#: forum/training_catalog.py:231
+msgid "Python (scikit-learn, pandas)"
+msgstr "Python (scikit-learn, pandas)"
+
+#: forum/training_catalog.py:233
+msgid "ML'e Giriş"
+msgstr "Introduction to ML"
+
+#: forum/training_catalog.py:233
+msgid "Denetimli/denetimsiz öğrenme"
+msgstr "Supervised/unsupervised learning"
+
+#: forum/training_catalog.py:233
+msgid "Eğitim-test ayrımı"
+msgstr "Train-test split"
+
+#: forum/training_catalog.py:234 istatistik/views.py:607
+msgid "Sınıflandırma"
+msgstr "Classification"
+
+#: forum/training_catalog.py:234
+msgid "Karar ağaçları, SVM, lojistik regresyon"
+msgstr "Decision trees, SVM, logistic regression"
+
+#: forum/training_catalog.py:235
+msgid "Regresyon ve Değerlendirme"
+msgstr "Regression and Evaluation"
+
+#: forum/training_catalog.py:235
+msgid "Regresyon modelleri"
+msgstr "Regression models"
+
+#: forum/training_catalog.py:235
+msgid "Çapraz doğrulama, metrikler"
+msgstr "Cross-validation, metrics"
+
+#: forum/training_catalog.py:236
+msgid "Model Optimizasyonu"
+msgstr "Model Optimization"
+
+#: forum/training_catalog.py:236
+msgid "Hiperparametre arama"
+msgstr "Hyperparameter search"
+
+#: forum/training_catalog.py:236
+msgid "Aşırı öğrenmeyi önleme"
+msgstr "Preventing overfitting"
+
+#: forum/training_catalog.py:240
+msgid "Derin öğrenmeyi de bu eğitimde görecek miyim?"
+msgstr "Will this course also cover deep learning?"
+
+#: forum/training_catalog.py:240
+msgid ""
+"Hayır; bu eğitim klasik ML'e odaklanır. Derin öğrenme ayrı bir eğitimdir."
+msgstr ""
+"No; this course focuses on classical ML. Deep learning is a separate course."
+
+#: forum/training_catalog.py:244
+msgid "Derin Öğrenme (TensorFlow / Keras)"
+msgstr "Deep Learning (TensorFlow / Keras)"
+
+#: forum/training_catalog.py:246
+msgid ""
+"Sinir ağı temellerinden görüntü/metin verisiyle çalışan derin öğrenme "
+"modellerine TensorFlow/Keras ile uygulamalı giriş."
+msgstr ""
+"A hands-on introduction with TensorFlow/Keras — from neural network "
+"fundamentals to deep learning models for image and text data."
+
+#: forum/training_catalog.py:248
+msgid "Yapay sinir ağı mimarisi kurma"
+msgstr "Building neural network architectures"
+
+#: forum/training_catalog.py:249
+msgid "CNN ile görüntü sınıflandırma"
+msgstr "Image classification with CNNs"
+
+#: forum/training_catalog.py:250
+msgid "RNN/Transformer temellerine giriş"
+msgstr "Introduction to RNN/Transformer fundamentals"
+
+#: forum/training_catalog.py:251
+msgid "Model eğitimi ve aşırı öğrenmeyi önleme"
+msgstr "Model training and preventing overfitting"
+
+#: forum/training_catalog.py:253
+msgid "Makine Öğrenmesi eğitimi veya dengi deneyim"
+msgstr "The Machine Learning course or equivalent experience"
+
+#: forum/training_catalog.py:254
+msgid "Python (TensorFlow, Keras)"
+msgstr "Python (TensorFlow, Keras)"
+
+#: forum/training_catalog.py:254
+msgid "Google Colab"
+msgstr "Google Colab"
+
+#: forum/training_catalog.py:256
+msgid "Sinir Ağı Temelleri"
+msgstr "Neural Network Fundamentals"
+
+#: forum/training_catalog.py:256
+msgid "Perceptron"
+msgstr "Perceptron"
+
+#: forum/training_catalog.py:256
+msgid "İleri/geri yayılım"
+msgstr "Forward/backpropagation"
+
+#: forum/training_catalog.py:257
+msgid "Keras ile Model Kurma"
+msgstr "Building Models with Keras"
+
+#: forum/training_catalog.py:257
+msgid "Katman tasarımı"
+msgstr "Layer design"
+
+#: forum/training_catalog.py:257
+msgid "Kayıp fonksiyonu ve optimizasyon"
+msgstr "Loss functions and optimization"
+
+#: forum/training_catalog.py:258
+msgid "CNN"
+msgstr "CNN"
+
+#: forum/training_catalog.py:258
+msgid "Evrişimli katmanlar"
+msgstr "Convolutional layers"
+
+#: forum/training_catalog.py:258
+msgid "Görüntü sınıflandırma"
+msgstr "Image classification"
+
+#: forum/training_catalog.py:259
+msgid "İleri Konular"
+msgstr "Advanced Topics"
+
+#: forum/training_catalog.py:259
+msgid "RNN/Transformer'a giriş"
+msgstr "Introduction to RNNs/Transformers"
+
+#: forum/training_catalog.py:259
+msgid "Transfer öğrenme"
+msgstr "Transfer learning"
+
+#: forum/training_catalog.py:262
+msgid "GPU'suz bilgisayarımla takip edebilir miyim?"
+msgstr "Can I follow along on a computer without a GPU?"
+
+#: forum/training_catalog.py:262
+msgid ""
+"Evet; eğitimde ücretsiz Google Colab GPU'su kullanılır, kendi donanımınız "
+"yeterli değilse sorun olmaz."
+msgstr ""
+"Yes; the course uses Google Colab's free GPU, so it's no problem if your own "
+"hardware isn't powerful enough."
+
+#: forum/training_catalog.py:266
+msgid "NLP ve Türkçe Metin Madenciliği"
+msgstr "NLP and Turkish Text Mining"
+
+#: forum/training_catalog.py:268
+msgid ""
+"Türkçe metin verisiyle ön işleme, duygu analizi ve temel NLP modellerini "
+"kurma."
+msgstr ""
+"Preprocessing, sentiment analysis and building core NLP models with Turkish "
+"text data."
+
+#: forum/training_catalog.py:270
+msgid "Türkçe metin ön işleme (temizleme, kök bulma)"
+msgstr "Turkish text preprocessing (cleaning, stemming)"
+
+#: forum/training_catalog.py:271
+msgid "TF-IDF ve kelime gömme temelleri"
+msgstr "Fundamentals of TF-IDF and word embeddings"
+
+#: forum/training_catalog.py:272
+msgid "Duygu analizi modeli kurma"
+msgstr "Building a sentiment analysis model"
+
+#: forum/training_catalog.py:273
+msgid "Hazır Türkçe dil modellerini (BERTurk vb.) kullanma"
+msgstr "Using pre-trained Turkish language models (BERTurk, etc.)"
+
+#: forum/training_catalog.py:276
+msgid "Python (NLTK/Zemberek, scikit-learn, Hugging Face)"
+msgstr "Python (NLTK/Zemberek, scikit-learn, Hugging Face)"
+
+#: forum/training_catalog.py:278
+msgid "Metin Ön İşleme"
+msgstr "Text Preprocessing"
+
+#: forum/training_catalog.py:278
+msgid "Türkçe'ye özgü zorluklar"
+msgstr "Challenges specific to Turkish"
+
+#: forum/training_catalog.py:278
+msgid "Temizleme ve normalizasyon"
+msgstr "Cleaning and normalization"
+
+#: forum/training_catalog.py:279
+msgid "Klasik NLP"
+msgstr "Classical NLP"
+
+#: forum/training_catalog.py:279
+msgid "TF-IDF"
+msgstr "TF-IDF"
+
+#: forum/training_catalog.py:279
+msgid "Bag-of-words ile sınıflandırma"
+msgstr "Classification with bag-of-words"
+
+#: forum/training_catalog.py:280
+msgid "Modern NLP"
+msgstr "Modern NLP"
+
+#: forum/training_catalog.py:280
+msgid "Kelime gömme (embedding)"
+msgstr "Word embeddings"
+
+#: forum/training_catalog.py:280
+msgid "Hazır Türkçe BERT modelleri"
+msgstr "Pre-trained Turkish BERT models"
+
+#: forum/training_catalog.py:283
+msgid "Sosyal medya verisiyle çalışabilir miyiz?"
+msgstr "Can we work with social media data?"
+
+#: forum/training_catalog.py:283
+msgid ""
+"Evet, kendi topladığınız veya paylaştığınız veri setiyle çalışmak tercih "
+"edilen yöntemdir."
+msgstr ""
+"Yes, working with a dataset you collected or provide yourself is the "
+"preferred approach."
+
+#: forum/training_catalog.py:287
+msgid "Agentic AI: Yapay Zekâ Ajanları ve İş Otomasyonu"
+msgstr "Agentic AI: AI Agents and Business Automation"
+
+#: forum/training_catalog.py:289
+msgid ""
+"Tekrarlayan veri toplama, analiz ve raporlama süreçlerini yapay zekâ "
+"ajanlarıyla otomatikleştirme mantığı ve kurulumu."
+msgstr ""
+"The logic and setup of automating repetitive data collection, analysis and "
+"reporting processes with AI agents."
+
+#: forum/training_catalog.py:291
+msgid "Ajan tabanlı otomasyon mimarisini tasarlama"
+msgstr "Designing an agent-based automation architecture"
+
+#: forum/training_catalog.py:292
+msgid "Veri toplama/analiz/raporlama hattı kurma"
+msgstr "Building a data collection/analysis/reporting pipeline"
+
+#: forum/training_catalog.py:293
+msgid "Uzman doğrulama katmanı ekleme"
+msgstr "Adding an expert review layer"
+
+#: forum/training_catalog.py:294
+msgid "Kurum içi süreçlere uygulanabilir bir prototip çıkarma"
+msgstr "Producing a prototype applicable to in-house processes"
+
+#: forum/training_catalog.py:296
+msgid "Temel Python bilgisi önerilir (zorunlu değil)"
+msgstr "Basic Python knowledge is recommended (not required)"
+
+#: forum/training_catalog.py:297
+msgid "LLM API'leri"
+msgstr "LLM APIs"
+
+#: forum/training_catalog.py:299
+msgid "Agentic AI Temelleri"
+msgstr "Agentic AI Fundamentals"
+
+#: forum/training_catalog.py:299
+msgid "Ajan mimarisi"
+msgstr "Agent architecture"
+
+#: forum/training_catalog.py:299
+msgid "Kural tabanlı vs. LLM tabanlı otomasyon"
+msgstr "Rule-based vs. LLM-based automation"
+
+#: forum/training_catalog.py:300
+msgid "Veri Hattı Tasarımı"
+msgstr "Data Pipeline Design"
+
+#: forum/training_catalog.py:300
+msgid "Veri toplama ve işleme"
+msgstr "Data collection and processing"
+
+#: forum/training_catalog.py:300
+msgid "Rapor üretimi"
+msgstr "Report generation"
+
+#: forum/training_catalog.py:301
+msgid "Doğrulama ve Devreye Alma"
+msgstr "Validation and Deployment"
+
+#: forum/training_catalog.py:301
+msgid "Uzman doğrulama katmanı"
+msgstr "Expert review layer"
+
+#: forum/training_catalog.py:301
+msgid "İzleme ve bildirim"
+msgstr "Monitoring and notifications"
+
+#: forum/training_catalog.py:305
+msgid "AI Çözümler (agentic) hizmetinden farkı ne?"
+msgstr "How is it different from the AI Solutions (agentic) service?"
+
+#: forum/training_catalog.py:305
+msgid ""
+"Bu eğitimde ekibiniz sistemi kendisi kurmayı öğrenir; /ai-cozumler/ "
+"sayfasındaki hizmette ise sistemi ekibimiz sizin için kurar."
+msgstr ""
+"In this course, your team learns to build the system itself; with the "
+"service on the /ai-cozumler/ page, our team builds the system for you."
+
+#: forum/training_catalog.py:312
+msgid "Akademik Süreç"
+msgstr "Academic Process"
+
+#: forum/training_catalog.py:316
+msgid "Tez ve Makale Süreci Danışmanlığı"
+msgstr "Thesis and Article Process Consulting"
+
+#: forum/training_catalog.py:318
+msgid ""
+"Araştırma sorusundan yöntem seçimine, veri analizinden tez/makale yazımına "
+"kadar akademik süreç boyunca danışmanlık."
+msgstr ""
+"Consulting throughout the academic process — from the research question and "
+"choice of method to data analysis and writing the thesis/article."
+
+#: forum/training_catalog.py:320
+msgid "Araştırma sorusu ve hipotez kurma"
+msgstr "Formulating research questions and hypotheses"
+
+#: forum/training_catalog.py:321
+msgid "Uygun yöntem ve analiz planı belirleme"
+msgstr "Determining the right method and analysis plan"
+
+#: forum/training_catalog.py:322
+msgid "Bulguları APA formatında yazma"
+msgstr "Writing up findings in APA format"
+
+#: forum/training_catalog.py:323
+msgid "Jüri/hakem sürecine hazırlık"
+msgstr "Preparing for the defense/peer review process"
+
+#: forum/training_catalog.py:326
+msgid "İhtiyaca göre SPSS/Python/R"
+msgstr "SPSS/Python/R as needed"
+
+#: forum/training_catalog.py:328
+msgid "Araştırma Tasarımı"
+msgstr "Research Design"
+
+#: forum/training_catalog.py:328
+msgid "Araştırma sorusu"
+msgstr "Research question"
+
+#: forum/training_catalog.py:328
+msgid "Yöntem seçimi"
+msgstr "Choice of method"
+
+#: forum/training_catalog.py:329
+msgid "Analiz Planı"
+msgstr "Analysis Plan"
+
+#: forum/training_catalog.py:329
+msgid "Uygun testlerin belirlenmesi"
+msgstr "Identifying the appropriate tests"
+
+#: forum/training_catalog.py:329
+msgid "Veri toplama stratejisi"
+msgstr "Data collection strategy"
+
+#: forum/training_catalog.py:330
+msgid "Yazım ve Raporlama"
+msgstr "Writing and Reporting"
+
+#: forum/training_catalog.py:330
+msgid "Bulgular bölümü"
+msgstr "Results section"
+
+#: forum/training_catalog.py:330
+msgid "Tartışma ve sonuç"
+msgstr "Discussion and conclusion"
+
+#: forum/training_catalog.py:333
+msgid "Analizi de sizin yapmanızı istersem?"
+msgstr "What if I want you to do the analysis as well?"
+
+#: forum/training_catalog.py:333
+msgid ""
+"Bu eğitim danışmanlık ve öğretim odaklıdır; analizi doğrudan yaptırmak "
+"isterseniz Proje Talebi sayfasına yönlendirilirsiniz."
+msgstr ""
+"This course focuses on consulting and teaching; if you want the analysis "
+"done for you, you will be directed to the Project Request page."
+
+#: forum/training_catalog.py:337
+msgid "Bibliyometrik Analiz (VOSviewer, Bibliometrix)"
+msgstr "Bibliometric Analysis (VOSviewer, Bibliometrix)"
+
+#: forum/training_catalog.py:339
+msgid ""
+"Yayın, atıf ve işbirliği ağlarını VOSviewer ve Bibliometrix ile "
+"görselleştirerek bibliyometrik analiz yapma."
+msgstr ""
+"Conducting bibliometric analysis by visualizing publication, citation and "
+"collaboration networks with VOSviewer and Bibliometrix."
+
+#: forum/training_catalog.py:341
+msgid "Bibliyometrik veri indirme (Scopus/WoS/OpenAlex)"
+msgstr "Downloading bibliometric data (Scopus/WoS/OpenAlex)"
+
+#: forum/training_catalog.py:342
+msgid "VOSviewer ile atıf/işbirliği haritası oluşturma"
+msgstr "Creating citation/collaboration maps with VOSviewer"
+
+#: forum/training_catalog.py:343
+msgid "Bibliometrix (R) ile tematik analiz"
+msgstr "Thematic analysis with Bibliometrix (R)"
+
+#: forum/training_catalog.py:344
+msgid "Bulguları makalede raporlama"
+msgstr "Reporting findings in an article"
+
+#: forum/training_catalog.py:347 forum/training_catalog.py:350
+msgid "VOSviewer"
+msgstr "VOSviewer"
+
+#: forum/training_catalog.py:347
+msgid "R (Bibliometrix)"
+msgstr "R (Bibliometrix)"
+
+#: forum/training_catalog.py:349
+msgid "Veri Toplama"
+msgstr "Data Collection"
+
+#: forum/training_catalog.py:349
+msgid "Scopus/WoS/OpenAlex'ten veri indirme"
+msgstr "Downloading data from Scopus/WoS/OpenAlex"
+
+#: forum/training_catalog.py:349
+msgid "Veri formatlama"
+msgstr "Data formatting"
+
+#: forum/training_catalog.py:350
+msgid "Atıf ve işbirliği ağları"
+msgstr "Citation and collaboration networks"
+
+#: forum/training_catalog.py:350
+msgid "Kümeleme ve görselleştirme"
+msgstr "Clustering and visualization"
+
+#: forum/training_catalog.py:351
+msgid "Bibliometrix"
+msgstr "Bibliometrix"
+
+#: forum/training_catalog.py:351
+msgid "Tematik harita"
+msgstr "Thematic map"
+
+#: forum/training_catalog.py:351
+msgid "Performans analizi"
+msgstr "Performance analysis"
+
+#: forum/training_catalog.py:355
+msgid "Kendi alanımdaki yayınlarla mı çalışacağız?"
+msgstr "Will we work with publications from my own field?"
+
+#: forum/training_catalog.py:355
+msgid "Evet; kendi araştırma alanınızdaki veri setiyle uygulama yapılır."
+msgstr "Yes; the exercises use a dataset from your own research field."
+
+#: forum/training_catalog.py:359
+msgid "Kaynakça Yönetimi: EndNote, Mendeley, Zotero"
+msgstr "Reference Management: EndNote, Mendeley, Zotero"
+
+#: forum/training_catalog.py:361
+msgid ""
+"Akademik kaynakları düzenleme, atıf ekleme ve otomatik kaynakça oluşturma "
+"için EndNote, Mendeley veya Zotero kullanımı."
+msgstr ""
+"Using EndNote, Mendeley or Zotero to organize academic sources, insert "
+"citations and generate bibliographies automatically."
+
+#: forum/training_catalog.py:363
+msgid "Kaynak kütüphanesi oluşturma ve organize etme"
+msgstr "Building and organizing a reference library"
+
+#: forum/training_catalog.py:364
+msgid "Word/Google Docs'a otomatik atıf ekleme"
+msgstr "Inserting citations automatically in Word/Google Docs"
+
+#: forum/training_catalog.py:365
+msgid "Atıf stili değiştirme (APA, Vancouver vb.)"
+msgstr "Changing citation styles (APA, Vancouver, etc.)"
+
+#: forum/training_catalog.py:366
+msgid "PDF içinden otomatik künye çıkarma"
+msgstr "Extracting bibliographic metadata from PDFs automatically"
+
+#: forum/training_catalog.py:369
+msgid "EndNote"
+msgstr "EndNote"
+
+#: forum/training_catalog.py:369
+msgid "Mendeley"
+msgstr "Mendeley"
+
+#: forum/training_catalog.py:369
+msgid "Zotero"
+msgstr "Zotero"
+
+#: forum/training_catalog.py:371
+msgid "Kurulum ve Kütüphane"
+msgstr "Setup and Library"
+
+#: forum/training_catalog.py:371
+msgid "Program seçimi"
+msgstr "Choosing a program"
+
+#: forum/training_catalog.py:371
+msgid "Kaynak ekleme yöntemleri"
+msgstr "Ways to add references"
+
+#: forum/training_catalog.py:372
+msgid "Atıf ve Kaynakça"
+msgstr "Citations and Bibliography"
+
+#: forum/training_catalog.py:372
+msgid "Word eklentisiyle atıf"
+msgstr "Citing with the Word plug-in"
+
+#: forum/training_catalog.py:372
+msgid "Stil değiştirme"
+msgstr "Changing styles"
+
+#: forum/training_catalog.py:375
+msgid "Hangi programı seçmeliyim?"
+msgstr "Which program should I choose?"
+
+#: forum/training_catalog.py:375
+msgid ""
+"Üçü de öğretilir; ön görüşmede kurumunuzun/danışmanınızın tercihine göre "
+"birine odaklanılır."
+msgstr ""
+"All three are taught; in a preliminary meeting we focus on one based on your "
+"institution's or supervisor's preference."
+
+#: forum/training_catalog.py:379
+msgid "Sistematik Literatür Tarama ve Veri Kazıma"
+msgstr "Systematic Literature Review and Data Scraping"
+
+#: forum/training_catalog.py:381
+msgid ""
+"PRISMA yaklaşımıyla sistematik literatür taraması yapma ve akademik "
+"veritabanlarından veri kazıma."
+msgstr ""
+"Conducting a systematic literature review using the PRISMA approach and "
+"scraping data from academic databases."
+
+#: forum/training_catalog.py:383
+msgid "Arama stratejisi ve anahtar kelime kurma"
+msgstr "Building a search strategy and keywords"
+
+#: forum/training_catalog.py:384
+msgid "PRISMA akış şemasıyla tarama sürecini belgeleme"
+msgstr "Documenting the review process with a PRISMA flow diagram"
+
+#: forum/training_catalog.py:385
+msgid "OpenAlex/YÖK Tez gibi kaynaklardan veri kazıma"
+msgstr "Scraping data from sources such as OpenAlex/YÖK Thesis"
+
+#: forum/training_catalog.py:386
+msgid "Tarama sonuçlarını sentezleme"
+msgstr "Synthesizing review results"
+
+#: forum/training_catalog.py:389
+msgid "OpenAlex, YÖK Tez, TR Dizin (platform tarama araçları)"
+msgstr "OpenAlex, YÖK Thesis, TR Dizin (platform search tools)"
+
+#: forum/training_catalog.py:391
+msgid "Tarama Stratejisi"
+msgstr "Search Strategy"
+
+#: forum/training_catalog.py:391
+msgid "Anahtar kelime ve arama dizeleri"
+msgstr "Keywords and search strings"
+
+#: forum/training_catalog.py:391
+msgid "Dahil etme/dışlama kriterleri"
+msgstr "Inclusion/exclusion criteria"
+
+#: forum/training_catalog.py:392
+msgid "PRISMA ve Veri Kazıma"
+msgstr "PRISMA and Data Scraping"
+
+#: forum/training_catalog.py:392
+msgid "PRISMA akış şeması"
+msgstr "PRISMA flow diagram"
+
+#: forum/training_catalog.py:392
+msgid "Otomatik veri indirme"
+msgstr "Automated data download"
+
+#: forum/training_catalog.py:393
+msgid "Sentez"
+msgstr "Synthesis"
+
+#: forum/training_catalog.py:393
+msgid "Bulguları tablolaştırma"
+msgstr "Tabulating findings"
+
+#: forum/training_catalog.py:393
+msgid "Tarama bölümü yazımı"
+msgstr "Writing the literature review section"
+
+#: forum/training_catalog.py:397
+msgid "Platformdaki tarama araçlarını kullanacak mıyız?"
+msgstr "Will we use the platform's search tools?"
+
+#: forum/training_catalog.py:397
+msgid ""
+"Evet; /tarama/ altındaki YÖK Tez, OpenAlex ve TR Dizin araçları ders "
+"sırasında birlikte kullanılır."
+msgstr ""
+"Yes; the YÖK Thesis, OpenAlex and TR Dizin tools under /tarama/ are used "
+"together during the sessions."
+
+#: forum/training_catalog.py:404
+msgid "Dijital Analitik"
+msgstr "Digital Analytics"
+
+#: forum/training_catalog.py:408
+msgid "Google Search Console ve SEO Veri Analizi"
+msgstr "Google Search Console and SEO Data Analysis"
+
+#: forum/training_catalog.py:410
+msgid ""
+"Google Search Console verisiyle bir web sitesinin arama performansını analiz "
+"etme ve SEO fırsatlarını tespit etme."
+msgstr ""
+"Analyzing a website's search performance with Google Search Console data and "
+"identifying SEO opportunities."
+
+#: forum/training_catalog.py:412
+msgid "Search Console kurulumu ve doğrulama"
+msgstr "Setting up and verifying Search Console"
+
+#: forum/training_catalog.py:413
+msgid "Tıklama/gösterim/CTR verisini yorumlama"
+msgstr "Interpreting click/impression/CTR data"
+
+#: forum/training_catalog.py:414
+msgid "Anahtar kelime fırsatlarını tespit etme"
+msgstr "Identifying keyword opportunities"
+
+#: forum/training_catalog.py:415
+msgid "Temel teknik SEO kontrol listesi uygulama"
+msgstr "Applying a basic technical SEO checklist"
+
+#: forum/training_catalog.py:418
+msgid "Google Search Console"
+msgstr "Google Search Console"
+
+#: forum/training_catalog.py:418
+msgid "Excel/Google Sheets"
+msgstr "Excel/Google Sheets"
+
+#: forum/training_catalog.py:420
+msgid "Kurulum ve Temel Metrikler"
+msgstr "Setup and Key Metrics"
+
+#: forum/training_catalog.py:420
+msgid "Site doğrulama"
+msgstr "Site verification"
+
+#: forum/training_catalog.py:420
+msgid "Performans raporu okuma"
+msgstr "Reading the performance report"
+
+#: forum/training_catalog.py:421
+msgid "Analiz ve Fırsatlar"
+msgstr "Analysis and Opportunities"
+
+#: forum/training_catalog.py:421
+msgid "Anahtar kelime analizi"
+msgstr "Keyword analysis"
+
+#: forum/training_catalog.py:421
+msgid "Sayfa bazlı performans"
+msgstr "Page-level performance"
+
+#: forum/training_catalog.py:424
+msgid "Kendi web sitem yoksa katılabilir miyim?"
+msgstr "Can I join if I don't have my own website?"
+
+#: forum/training_catalog.py:424
+msgid ""
+"Katılabilirsiniz; örnek veri setiyle çalışılır, ancak kendi siteniz varsa "
+"gerçek veriyle ilerlemek önerilir."
+msgstr ""
+"Yes, you can; we work with a sample dataset, but if you have your own site, "
+"working with real data is recommended."
+
+#: forum/training_catalog.py:428
+msgid "Google Analytics 4 + Looker Studio"
+msgstr "Google Analytics 4 + Looker Studio"
+
+#: forum/training_catalog.py:430
+msgid ""
+"GA4 ile web/uygulama verisini analiz etme, Looker Studio ile otomatik "
+"güncellenen dashboard hazırlama."
+msgstr ""
+"Analyzing web/app data with GA4 and building automatically updated "
+"dashboards with Looker Studio."
+
+#: forum/training_catalog.py:432
+msgid "GA4 olay ve dönüşüm yapılandırması"
+msgstr "Configuring GA4 events and conversions"
+
+#: forum/training_catalog.py:433
+msgid "Kullanıcı davranışı raporlarını yorumlama"
+msgstr "Interpreting user behavior reports"
+
+#: forum/training_catalog.py:434
+msgid "Looker Studio'da dashboard tasarlama"
+msgstr "Designing dashboards in Looker Studio"
+
+#: forum/training_catalog.py:435
+msgid "GA4 verisini Looker Studio'ya bağlama"
+msgstr "Connecting GA4 data to Looker Studio"
+
+#: forum/training_catalog.py:437
+msgid "Temel dijital analitik bilgisi önerilir"
+msgstr "Basic knowledge of digital analytics is recommended"
+
+#: forum/training_catalog.py:438
+msgid "Google Analytics 4"
+msgstr "Google Analytics 4"
+
+#: forum/training_catalog.py:438
+msgid "Looker Studio"
+msgstr "Looker Studio"
+
+#: forum/training_catalog.py:440
+msgid "GA4 Temelleri"
+msgstr "GA4 Fundamentals"
+
+#: forum/training_catalog.py:440
+msgid "Olay tabanlı veri modeli"
+msgstr "Event-based data model"
+
+#: forum/training_catalog.py:440
+msgid "Dönüşüm takibi"
+msgstr "Conversion tracking"
+
+#: forum/training_catalog.py:441
+msgid "Standart ve özel raporlar"
+msgstr "Standard and custom reports"
+
+#: forum/training_catalog.py:441
+msgid "Kullanıcı segmentleri"
+msgstr "User segments"
+
+#: forum/training_catalog.py:442
+msgid "Looker Studio Dashboard"
+msgstr "Looker Studio Dashboard"
+
+#: forum/training_catalog.py:442
+msgid "Veri kaynağı bağlama"
+msgstr "Connecting data sources"
+
+#: forum/training_catalog.py:442
+msgid "Görselleştirme ve paylaşım"
+msgstr "Visualization and sharing"
+
+#: forum/training_catalog.py:445
+msgid "Evrensel Analytics (UA) yerine neden GA4?"
+msgstr "Why GA4 instead of Universal Analytics (UA)?"
+
+#: forum/training_catalog.py:445
+msgid "UA kullanımdan kaldırıldığı için tüm eğitim GA4 üzerinden verilir."
+msgstr ""
+"Because UA has been discontinued, the entire course is taught using GA4."
+
+#: forum/training_catalog.py:474
+msgid "Tüm Seviyeler"
+msgstr "All Levels"
 
 #: forum/views.py:521
 msgid "İlk ilanınız olduğu için 3 gün öne çıkarma hediyesi kazandınız!"
@@ -2847,24 +4447,24 @@ msgid ""
 "T-testi, iki grup ya da ölçüm seti arasındaki ortalama farkın istatistiksel "
 "olarak anlamlı olup olmadığını belirleyen parametrik bir hipotez testidir. "
 "Sosyal bilimler, tıp, eğitim ve mühendislik araştırmalarında en sık "
-"başvurulan analizlerden biridir. Üç temel türü vardır: bağımsız örneklem "
-"t-testi iki ayrı grubu karşılaştırır; bağımlı (eşleştirilmiş) t-testi aynı "
-"gruba iki farklı zamanda yapılan ölçümleri analiz eder; tek örneklem t-testi"
-" ise bir grubun ortalamasını bilinen teorik bir değerle sınar."
+"başvurulan analizlerden biridir. Üç temel türü vardır: bağımsız örneklem t-"
+"testi iki ayrı grubu karşılaştırır; bağımlı (eşleştirilmiş) t-testi aynı "
+"gruba iki farklı zamanda yapılan ölçümleri analiz eder; tek örneklem t-testi "
+"ise bir grubun ortalamasını bilinen teorik bir değerle sınar."
 msgstr ""
 "The t-test is a parametric hypothesis test that determines whether the mean "
 "difference between two groups or sets of measurements is statistically "
 "significant. It is one of the most frequently used analyses in the social "
-"sciences, medicine, education and engineering research. There are three main"
-" types: the independent-samples t-test compares two separate groups; the "
-"paired (dependent) t-test analyzes measurements taken from the same group at"
-" two different times; and the one-sample t-test compares a group mean "
-"against a known theoretical value."
+"sciences, medicine, education and engineering research. There are three main "
+"types: the independent-samples t-test compares two separate groups; the "
+"paired (dependent) t-test analyzes measurements taken from the same group at "
+"two different times; and the one-sample t-test compares a group mean against "
+"a known theoretical value."
 
 #: istatistik/seo_content.py:16
 msgid ""
-"Bağımsız örneklem t-testini; iki farklı ve birbirinden bağımsız grubu "
-"(deney/kontrol, erkek/kadın) sürekli bir değişken üzerinden karşılaştırmak "
+"Bağımsız örneklem t-testini; iki farklı ve birbirinden bağımsız grubu (deney/"
+"kontrol, erkek/kadın) sürekli bir değişken üzerinden karşılaştırmak "
 "istediğinizde kullanın. Bağımlı t-testini; öntest-sontest tasarımı veya "
 "eşleştirilmiş katılımcı çiftleri söz konusu olduğunda tercih edin. Veri "
 "normal dağılım göstermiyor ya da örneklem küçükse (n < 30) bağımsız gruplar "
@@ -2873,22 +4473,22 @@ msgid ""
 msgstr ""
 "Use the independent-samples t-test when you want to compare two different, "
 "independent groups (experimental/control, male/female) on a continuous "
-"variable. Choose the paired t-test for pre-test/post-test designs or matched"
-" pairs of participants. If the data are not normally distributed or the "
+"variable. Choose the paired t-test for pre-test/post-test designs or matched "
+"pairs of participants. If the data are not normally distributed or the "
 "sample is small (n < 30), the Mann-Whitney U test (independent groups) or "
 "the Wilcoxon test (paired groups) gives more reliable results."
 
 #: istatistik/seo_content.py:25
 msgid ""
-"Normallik: Her grup yaklaşık normal dağılıma sahip olmalıdır (Shapiro-Wilk p"
-" > 0.05 veya n ≥ 30). Varyans homojenliği (yalnızca bağımsız t-testi): "
-"Levene testi ile kontrol edilir; p < 0.05 ise Welch düzeltmesi otomatik "
-"uygulanır. Bağımsızlık: Gözlemler birbirini etkilememelidir. Sürekli ölçüm: "
-"Bağımlı değişken en az aralık ölçeğinde olmalıdır."
+"Normallik: Her grup yaklaşık normal dağılıma sahip olmalıdır (Shapiro-Wilk p "
+"> 0.05 veya n ≥ 30). Varyans homojenliği (yalnızca bağımsız t-testi): Levene "
+"testi ile kontrol edilir; p < 0.05 ise Welch düzeltmesi otomatik uygulanır. "
+"Bağımsızlık: Gözlemler birbirini etkilememelidir. Sürekli ölçüm: Bağımlı "
+"değişken en az aralık ölçeğinde olmalıdır."
 msgstr ""
 "Normality: Each group should be approximately normally distributed (Shapiro-"
-"Wilk p > 0.05 or n ≥ 30). Homogeneity of variance (independent t-test only):"
-" checked with Levene's test; if p < 0.05, the Welch correction is applied "
+"Wilk p > 0.05 or n ≥ 30). Homogeneity of variance (independent t-test only): "
+"checked with Levene's test; if p < 0.05, the Welch correction is applied "
 "automatically. Independence: Observations must not influence each other. "
 "Continuous measurement: The dependent variable must be measured at least on "
 "an interval scale."
@@ -2896,17 +4496,17 @@ msgstr ""
 #: istatistik/seo_content.py:32
 msgid ""
 "p < 0.05: Gruplar arasındaki fark istatistiksel olarak anlamlıdır. t "
-"istatistiği: Mutlak değer büyüdükçe gruplar arasındaki fark artar. Cohen's d"
-" etki büyüklüğü: 0.2 küçük, 0.5 orta, 0.8 ve üzeri büyük etki. Güven "
-"aralığı: %95 GA sıfırı kapsamıyorsa fark anlamlıdır. Yalnızca p değerine "
-"değil, etki büyüklüğüne ve güven aralığının genişliğine de dikkat edin."
+"istatistiği: Mutlak değer büyüdükçe gruplar arasındaki fark artar. Cohen's d "
+"etki büyüklüğü: 0.2 küçük, 0.5 orta, 0.8 ve üzeri büyük etki. Güven aralığı: "
+"%95 GA sıfırı kapsamıyorsa fark anlamlıdır. Yalnızca p değerine değil, etki "
+"büyüklüğüne ve güven aralığının genişliğine de dikkat edin."
 msgstr ""
 "p < 0.05: The difference between the groups is statistically significant. t "
 "statistic: The larger its absolute value, the larger the difference between "
 "the groups. Cohen's d effect size: 0.2 small, 0.5 medium, 0.8 and above "
 "large. Confidence interval: If the 95% CI does not include zero, the "
-"difference is significant. Pay attention not only to the p-value but also to"
-" the effect size and the width of the confidence interval."
+"difference is significant. Pay attention not only to the p-value but also to "
+"the effect size and the width of the confidence interval."
 
 #: istatistik/seo_content.py:40
 msgid ""
@@ -2914,8 +4514,8 @@ msgid ""
 "kıyasla anlamlı düzeyde yüksek puan almıştır, t(58) = 2.84, p = .006, d = "
 "0.71, %95 GA [1.98, 11.62]."
 msgstr ""
-"The experimental group (M = 78.4, SD = 9.2) scored significantly higher than"
-" the control group (M = 71.6, SD = 10.1), t(58) = 2.84, p = .006, d = 0.71, "
+"The experimental group (M = 78.4, SD = 9.2) scored significantly higher than "
+"the control group (M = 71.6, SD = 10.1), t(58) = 2.84, p = .006, d = 0.71, "
 "95% CI [1.98, 11.62]."
 
 #: istatistik/seo_content.py:46
@@ -2929,8 +4529,8 @@ msgid ""
 "güvenilir sonuç verir."
 msgstr ""
 "If the data are normally distributed or n ≥ 30, choose the t-test. With a "
-"small sample that does not meet the normality assumption, the Mann-Whitney U"
-" test gives more reliable results."
+"small sample that does not meet the normality assumption, the Mann-Whitney U "
+"test gives more reliable results."
 
 #: istatistik/seo_content.py:52
 msgid "Levene testi p < 0.05 çıktı, ne yapmalıyım?"
@@ -3009,8 +4609,8 @@ msgid ""
 msgstr ""
 "One-way ANOVA (Analysis of Variance) tests whether there is a statistically "
 "significant difference between the means of three or more independent "
-"groups. Based on the F statistic, it generalizes the t-test to more than two"
-" groups. When F is significant, Tukey HSD or Bonferroni post-hoc tests are "
+"groups. Based on the F statistic, it generalizes the t-test to more than two "
+"groups. When F is significant, Tukey HSD or Bonferroni post-hoc tests are "
 "applied to determine which groups differ."
 
 #: istatistik/seo_content.py:87
@@ -3019,15 +4619,15 @@ msgid ""
 "tedavisi) tek bir sürekli değişken üzerinden karşılaştırmak istediğinizde "
 "kullanın. Yalnızca iki grup söz konusuysa t-testi; bağımlı gruplar veya "
 "tekrarlı ölçümler varsa Tekrarlı Ölçümler ANOVA daha uygun seçenektir. "
-"Normallik ve varyans homojenliği sağlanmıyorsa Kruskal-Wallis testini tercih"
-" edin."
+"Normallik ve varyans homojenliği sağlanmıyorsa Kruskal-Wallis testini tercih "
+"edin."
 msgstr ""
-"Use it when you want to compare three or more independent groups (e.g. "
-"low/medium/high income; treatment A/B/C) on a single continuous variable. "
-"With only two groups, the t-test is more appropriate; with dependent groups "
-"or repeated measurements, repeated measures ANOVA is the better choice. If "
-"normality and homogeneity of variance are not met, choose the Kruskal-Wallis"
-" test."
+"Use it when you want to compare three or more independent groups (e.g. low/"
+"medium/high income; treatment A/B/C) on a single continuous variable. With "
+"only two groups, the t-test is more appropriate; with dependent groups or "
+"repeated measurements, repeated measures ANOVA is the better choice. If "
+"normality and homogeneity of variance are not met, choose the Kruskal-Wallis "
+"test."
 
 #: istatistik/seo_content.py:94
 msgid ""
@@ -3051,18 +4651,17 @@ msgid ""
 "karşılaştırır ve hata oranını kontrol altında tutar. Eta-kare (η²): Etki "
 "büyüklüğü göstergesi — 0.01 küçük, 0.06 orta, 0.14 büyük."
 msgstr ""
-"F statistic and p-value: p < 0.05 indicates a significant difference between"
-" at least two groups; it does not tell you which groups differ. Post-hoc "
+"F statistic and p-value: p < 0.05 indicates a significant difference between "
+"at least two groups; it does not tell you which groups differ. Post-hoc "
 "tests (Tukey / Bonferroni): compare the differences between pairs of groups "
-"while controlling the error rate. Eta squared (η²): an effect size indicator"
-" — 0.01 small, 0.06 medium, 0.14 large."
+"while controlling the error rate. Eta squared (η²): an effect size indicator "
+"— 0.01 small, 0.06 medium, 0.14 large."
 
 #: istatistik/seo_content.py:108
 msgid ""
 "Gruplar arasında akademik başarı ortalamaları açısından anlamlı fark "
 "bulunmuştur, F(2, 87) = 5.43, p = .006, η² = .11. Tukey post-hoc analizi A "
-"grubu ile C grubu arasındaki farkın anlamlı olduğunu göstermiştir (p = "
-".004)."
+"grubu ile C grubu arasındaki farkın anlamlı olduğunu göstermiştir (p = .004)."
 msgstr ""
 "There was a significant difference in mean academic achievement between the "
 "groups, F(2, 87) = 5.43, p = .006, η² = .11. Tukey post-hoc analysis showed "
@@ -3079,8 +4678,8 @@ msgid ""
 "çiftler anlamlı çıkmayabilir; bu tutarlı bir durumdur."
 msgstr ""
 "ANOVA indicates an overall difference across all groups. Because the post-"
-"hoc multiple comparison correction (Bonferroni) lowers the alpha level, some"
-" pairs may not reach significance; this is consistent."
+"hoc multiple comparison correction (Bonferroni) lowers the alpha level, some "
+"pairs may not reach significance; this is consistent."
 
 #: istatistik/seo_content.py:121
 msgid "Kaç grubu karşılaştırabilirim?"
@@ -3093,8 +4692,8 @@ msgid ""
 "ANOVA idealdir."
 msgstr ""
 "There is no theoretical upper limit, but many groups make post-hoc "
-"comparisons harder and increase the risk of Type I error. ANOVA is ideal for"
-" 3–6 groups."
+"comparisons harder and increase the risk of Type I error. ANOVA is ideal for "
+"3–6 groups."
 
 #: istatistik/seo_content.py:127
 msgid "Tukey mu, Bonferroni mu seçmeliyim?"
@@ -3138,8 +4737,7 @@ msgstr ""
 "distributions of two independent groups. It is the alternative to the "
 "independent-samples t-test that does not require normality. It works by "
 "comparing mean ranks, which makes it robust to outliers and skewed "
-"distributions. It gives reliable results with small samples and ordinal "
-"data."
+"distributions. It gives reliable results with small samples and ordinal data."
 
 #: istatistik/seo_content.py:149
 msgid ""
@@ -3164,14 +4762,14 @@ msgid ""
 msgstr ""
 "Independence: The two groups must be independent of each other. Continuity "
 "or rankability: The dependent variable must be at least ordinal. Similar "
-"shape: To compare central tendency only, the distributions of the groups are"
-" expected to have a similar shape."
+"shape: To compare central tendency only, the distributions of the groups are "
+"expected to have a similar shape."
 
 #: istatistik/seo_content.py:162
 msgid ""
-"U istatistiği: Küçük U değeri iki grubun birbirinden ayrıştığını gösterir. p"
-" değeri: p < 0.05 gruplar arasında istatistiksel olarak anlamlı fark vardır."
-" r (etki büyüklüğü): r = Z / √N formülüyle hesaplanır; 0.1 küçük, 0.3 orta, "
+"U istatistiği: Küçük U değeri iki grubun birbirinden ayrıştığını gösterir. p "
+"değeri: p < 0.05 gruplar arasında istatistiksel olarak anlamlı fark vardır. "
+"r (etki büyüklüğü): r = Z / √N formülüyle hesaplanır; 0.1 küçük, 0.3 orta, "
 "0.5 büyük etki. Sıra ortalamaları (Mean Rank): Hangi grubun daha yüksek "
 "değerlere sahip olduğunu gösterir."
 msgstr ""
@@ -3250,8 +4848,8 @@ msgid ""
 "merkezi eğilimi karşılaştırmak için dağılım şekillerinin benzer olması "
 "beklenir."
 msgstr ""
-"Independence: All groups must be independent of each other. Rankability: The"
-" dependent variable must be at least ordinal. Similar shape: To compare "
+"Independence: All groups must be independent of each other. Rankability: The "
+"dependent variable must be at least ordinal. Similar shape: To compare "
 "central tendency only, the distributions are expected to have a similar "
 "shape."
 
@@ -3264,8 +4862,8 @@ msgid ""
 msgstr ""
 "H statistic: A larger H value indicates a larger difference between groups. "
 "p-value: p < 0.05 means there is a significant difference between at least "
-"two groups. Dunn's post-hoc: identifies which pairs of groups differ. Effect"
-" size (η²): calculated as H / (N−1)."
+"two groups. Dunn's post-hoc: identifies which pairs of groups differ. Effect "
+"size (η²): calculated as H / (N−1)."
 
 #: istatistik/seo_content.py:223
 msgid ""
@@ -3318,8 +4916,8 @@ msgid ""
 "gözlenen dağılımın teorik bir dağılıma ne kadar uyduğunu değerlendirir. "
 "Küçük örneklemlerde Fisher's Exact Test otomatik olarak devreye girer."
 msgstr ""
-"The chi-square test examines the relationship between categorical variables,"
-" or whether observed frequencies differ significantly from expected "
+"The chi-square test examines the relationship between categorical variables, "
+"or whether observed frequencies differ significantly from expected "
 "frequencies. It has two forms: the test of independence examines the "
 "relationship between two categorical variables; the goodness-of-fit test "
 "assesses how well an observed distribution fits a theoretical one. With "
@@ -3328,23 +4926,23 @@ msgstr ""
 #: istatistik/seo_content.py:258
 msgid ""
 "İki kategorik değişken arasında ilişki olup olmadığını araştırmak "
-"istediğinizde kullanın (örn. cinsiyet ile tercih, eğitim düzeyi ile istihdam"
-" durumu). Tüm hücrelerin beklenen frekansı 5 veya üzerinde olmalıdır; "
-"değilse Fisher's Exact Test tercih edilmelidir. Sürekli değişkenler için "
-"korelasyon veya regresyon daha uygun seçenektir."
+"istediğinizde kullanın (örn. cinsiyet ile tercih, eğitim düzeyi ile istihdam "
+"durumu). Tüm hücrelerin beklenen frekansı 5 veya üzerinde olmalıdır; değilse "
+"Fisher's Exact Test tercih edilmelidir. Sürekli değişkenler için korelasyon "
+"veya regresyon daha uygun seçenektir."
 msgstr ""
 "Use it when you want to find out whether two categorical variables are "
-"related (e.g. gender and preference, education level and employment status)."
-" The expected frequency in all cells should be 5 or more; otherwise, "
-"Fisher's exact test should be used. For continuous variables, correlation or"
-" regression is the better choice."
+"related (e.g. gender and preference, education level and employment status). "
+"The expected frequency in all cells should be 5 or more; otherwise, Fisher's "
+"exact test should be used. For continuous variables, correlation or "
+"regression is the better choice."
 
 #: istatistik/seo_content.py:265
 msgid ""
 "Bağımsızlık: Her gözlem yalnızca bir kategoride yer almalıdır. Beklenen "
 "frekans: Hücrelerin %80'inden fazlasında beklenen frekans ≥ 5 olmalıdır. "
-"Minimum gözlem: Toplam n ≥ 20 önerilir. Ölçek: Her iki değişken de kategorik"
-" (nominal veya ordinal) olmalıdır."
+"Minimum gözlem: Toplam n ≥ 20 önerilir. Ölçek: Her iki değişken de kategorik "
+"(nominal veya ordinal) olmalıdır."
 msgstr ""
 "Independence: Each observation must fall into only one category. Expected "
 "frequency: More than 80% of cells should have an expected frequency ≥ 5. "
@@ -3361,8 +4959,8 @@ msgid ""
 msgstr ""
 "χ² statistic: A larger value indicates a larger difference between observed "
 "and expected frequencies. p-value: p < 0.05 means there is a significant "
-"relationship between the variables. Cramér's V (effect size): 0.1 small, 0.3"
-" medium, 0.5 large relationship. Residual analysis: shows which cells "
+"relationship between the variables. Cramér's V (effect size): 0.1 small, 0.3 "
+"medium, 0.5 large relationship. Residual analysis: shows which cells "
 "contribute most to the relationship."
 
 #: istatistik/seo_content.py:278
@@ -3382,8 +4980,8 @@ msgid ""
 "Herhangi bir hücrenin beklenen frekansı 5'in altındaysa Fisher's Exact Test "
 "tercih edilmelidir. Analizus bunu otomatik kontrol eder."
 msgstr ""
-"If the expected frequency of any cell is below 5, Fisher's exact test should"
-" be used. Analizus checks this automatically."
+"If the expected frequency of any cell is below 5, Fisher's exact test should "
+"be used. Analizus checks this automatically."
 
 #: istatistik/seo_content.py:288
 msgid "Ki-Kare ilişkinin gücünü gösterir mi?"
@@ -3391,8 +4989,8 @@ msgstr "Does chi-square show the strength of the relationship?"
 
 #: istatistik/seo_content.py:289
 msgid ""
-"Hayır; χ² yalnızca anlamlılığı gösterir. İlişkinin gücü için Cramer's V veya"
-" Phi katsayısına bakın."
+"Hayır; χ² yalnızca anlamlılığı gösterir. İlişkinin gücü için Cramer's V veya "
+"Phi katsayısına bakın."
 msgstr ""
 "No; χ² only shows significance. For the strength of the relationship, look "
 "at Cramér's V or the phi coefficient."
@@ -3424,21 +5022,21 @@ msgstr ""
 "relationship between two continuous variables. Pearson correlation is the "
 "standard choice for normally distributed data; the Spearman and Kendall "
 "coefficients are alternatives that do not require normality and are robust "
-"to outliers. Correlation does not prove causation; it only reveals a pattern"
-" of co-variation."
+"to outliers. Correlation does not prove causation; it only reveals a pattern "
+"of co-variation."
 
 #: istatistik/seo_content.py:309
 msgid ""
-"İki sürekli değişken arasında ilişki olup olmadığını ve varsa yönünü anlamak"
-" istediğinizde kullanın. Veriler normal dağılımlıysa Pearson; ordinal "
-"veriler veya normallik ihlali varsa Spearman; küçük örneklemde ya da "
-"bağların (tied ranks) fazla olduğu durumlarda Kendall tercih edin. "
-"Nedensellik iddiası için regresyon analizi gerekir."
+"İki sürekli değişken arasında ilişki olup olmadığını ve varsa yönünü anlamak "
+"istediğinizde kullanın. Veriler normal dağılımlıysa Pearson; ordinal veriler "
+"veya normallik ihlali varsa Spearman; küçük örneklemde ya da bağların (tied "
+"ranks) fazla olduğu durumlarda Kendall tercih edin. Nedensellik iddiası için "
+"regresyon analizi gerekir."
 msgstr ""
 "Use it when you want to know whether two continuous variables are related "
 "and, if so, in which direction. Choose Pearson for normally distributed "
-"data, Spearman for ordinal data or violated normality, and Kendall for small"
-" samples or many tied ranks. Claims about causation require regression "
+"data, Spearman for ordinal data or violated normality, and Kendall for small "
+"samples or many tied ranks. Claims about causation require regression "
 "analysis."
 
 #: istatistik/seo_content.py:316
@@ -3458,8 +5056,8 @@ msgid ""
 "r değeri: +1 mükemmel pozitif, −1 mükemmel negatif, 0 ilişki yok. |r| < 0.3 "
 "zayıf, 0.3–0.5 orta, > 0.5 güçlü ilişki olarak yorumlanır (alan normlarına "
 "göre değişir). p değeri: p < 0.05 ilişkinin istatistiksel olarak anlamlı "
-"olduğunu gösterir. r²: Açıklanan varyans oranı — örn. r = 0.6 ise r² = 0.36,"
-" değişkenliğin %36'sı paylaşılmaktadır."
+"olduğunu gösterir. r²: Açıklanan varyans oranı — örn. r = 0.6 ise r² = 0.36, "
+"değişkenliğin %36'sı paylaşılmaktadır."
 msgstr ""
 "r value: +1 perfect positive, −1 perfect negative, 0 no relationship. |r| < "
 "0.3 is interpreted as weak, 0.3–0.5 as moderate and > 0.5 as strong (varies "
@@ -3508,14 +5106,14 @@ msgstr "Linear Regression"
 #: istatistik/seo_content.py:355
 msgid ""
 "Cronbach Alfa katsayısı, bir ölçeğin veya anketin iç tutarlılığını "
-"değerlendiren en yaygın güvenilirlik ölçütüdür. 0 ile 1 arasında değer alır;"
-" yüksek alfa, ölçek maddelerinin aynı yapıyı tutarlı biçimde ölçtüğüne "
-"işaret eder. Tez, makale ve anket çalışmalarında ölçek geçerleme sürecinin "
+"değerlendiren en yaygın güvenilirlik ölçütüdür. 0 ile 1 arasında değer alır; "
+"yüksek alfa, ölçek maddelerinin aynı yapıyı tutarlı biçimde ölçtüğüne işaret "
+"eder. Tez, makale ve anket çalışmalarında ölçek geçerleme sürecinin "
 "vazgeçilmez adımlarından biridir."
 msgstr ""
 "Cronbach's alpha is the most widely used reliability measure for assessing "
-"the internal consistency of a scale or questionnaire. It ranges from 0 to 1;"
-" a high alpha indicates that the scale items consistently measure the same "
+"the internal consistency of a scale or questionnaire. It ranges from 0 to 1; "
+"a high alpha indicates that the scale items consistently measure the same "
 "construct. It is an indispensable step in scale validation for theses, "
 "articles and survey studies."
 
@@ -3606,18 +5204,13 @@ msgstr ""
 msgid "Açıklayıcı Faktör Analizi"
 msgstr "Exploratory Factor Analysis"
 
-#: istatistik/seo_content.py:407 istatistik/seo_content.py:461
-#: istatistik/seo_content.py:956
-msgid "Betimsel İstatistik"
-msgstr "Descriptive Statistics"
-
 #: istatistik/seo_content.py:413
 msgid ""
 "Normallik testi, bir veri setinin normal (Gaussian) dağılıma ne ölçüde "
 "uyduğunu değerlendirir. Pek çok parametrik testin (t-testi, ANOVA, Pearson "
-"korelasyonu) temel varsayımı olan normallik, Shapiro-Wilk testi ve "
-"çarpıklık/basıklık katsayıları ile ölçülür. Q-Q grafikleri görsel kontrol "
-"imkânı sağlar."
+"korelasyonu) temel varsayımı olan normallik, Shapiro-Wilk testi ve çarpıklık/"
+"basıklık katsayıları ile ölçülür. Q-Q grafikleri görsel kontrol imkânı "
+"sağlar."
 msgstr ""
 "A normality test assesses how well a dataset fits a normal (Gaussian) "
 "distribution. Normality, a key assumption of many parametric tests (t-test, "
@@ -3680,8 +5273,8 @@ msgid ""
 "U, üç veya daha fazla grup için Kruskal-Wallis, bağımlı gruplar için "
 "Wilcoxon uygun alternatiflerdir."
 msgstr ""
-"Consider using a non-parametric test. Suitable alternatives are Mann-Whitney"
-" U for two groups, Kruskal-Wallis for three or more groups and Wilcoxon for "
+"Consider using a non-parametric test. Suitable alternatives are Mann-Whitney "
+"U for two groups, Kruskal-Wallis for three or more groups and Wilcoxon for "
 "dependent groups."
 
 #: istatistik/seo_content.py:452
@@ -3723,19 +5316,18 @@ msgid ""
 msgstr ""
 "Use it to get to know your data before any advanced analysis. It helps you "
 "spot outliers and data quality issues early. It is also the standard way to "
-"present participant/variable characteristics in theses, articles and "
-"reports."
+"present participant/variable characteristics in theses, articles and reports."
 
 #: istatistik/seo_content.py:481
 msgid ""
-"Betimsel istatistik herhangi bir dağılım varsayımı gerektirmez; ham verileri"
-" özetler. Ancak ortalama ve standart sapma aykırı değerlerden etkilenir — "
+"Betimsel istatistik herhangi bir dağılım varsayımı gerektirmez; ham verileri "
+"özetler. Ancak ortalama ve standart sapma aykırı değerlerden etkilenir — "
 "çarpık dağılımlarda medyan ve IQR daha temsil edici ölçütlerdir."
 msgstr ""
 "Descriptive statistics do not require any distributional assumption; they "
 "summarize the raw data. However, the mean and standard deviation are "
-"affected by outliers — for skewed distributions, the median and IQR are more"
-" representative measures."
+"affected by outliers — for skewed distributions, the median and IQR are more "
+"representative measures."
 
 #: istatistik/seo_content.py:487
 msgid ""
@@ -3785,10 +5377,6 @@ msgstr ""
 "tabulation shows two variables together and lays the groundwork for a chi-"
 "square analysis."
 
-#: istatistik/seo_content.py:514 istatistik/seo_content.py:954
-msgid "Cronbach Alfa"
-msgstr "Cronbach's Alpha"
-
 #: istatistik/seo_content.py:520
 msgid ""
 "Örneklem büyüklüğü hesaplayıcı, bir araştırmanın istenen istatistiksel gücü "
@@ -3824,8 +5412,8 @@ msgid ""
 "yüksek riskli araştırmalarda 0.90 veya 0.95 önerilir."
 msgstr ""
 "Effect size estimate: Enter the effect size from previous research or a "
-"pilot study. Alpha (α): usually set at 0.05 (probability of a Type I error)."
-" Power (1 − β): 0.80 is the standard value; 0.90 or 0.95 is recommended for "
+"pilot study. Alpha (α): usually set at 0.05 (probability of a Type I error). "
+"Power (1 − β): 0.80 is the standard value; 0.90 or 0.95 is recommended for "
 "high-stakes research."
 
 #: istatistik/seo_content.py:541
@@ -3855,8 +5443,8 @@ msgstr "I don't know the effect size — what should I enter?"
 
 #: istatistik/seo_content.py:554
 msgid ""
-"Alanyazında benzer çalışmaların raporladığı etki büyüklüğünü kullanın. Bilgi"
-" yoksa orta etki (d = 0.5, f = 0.25) kabul görmüş muhafazakâr bir başlangıç "
+"Alanyazında benzer çalışmaların raporladığı etki büyüklüğünü kullanın. Bilgi "
+"yoksa orta etki (d = 0.5, f = 0.25) kabul görmüş muhafazakâr bir başlangıç "
 "noktasıdır."
 msgstr ""
 "Use the effect size reported by similar studies in the literature. If none "
@@ -3886,8 +5474,8 @@ msgstr ""
 "Multiple linear regression (OLS) explains and predicts a continuous "
 "dependent variable using several independent variables. It quantifies the "
 "unique effect of each independent variable on the dependent variable with "
-"coefficients (β). It is one of the most widely used analytical frameworks in"
-" the social sciences, economics and medicine."
+"coefficients (β). It is one of the most widely used analytical frameworks in "
+"the social sciences, economics and medicine."
 
 #: istatistik/seo_content.py:581
 msgid ""
@@ -3896,8 +5484,8 @@ msgid ""
 "kullanın. Bağımlı değişken kategorik ise lojistik regresyon; veriler zaman "
 "serisi içeriyorsa uygun zaman serisi modelleri tercih edilmelidir."
 msgstr ""
-"Use it when you want to explain a continuous dependent variable with several"
-" continuous or categorical (dummy-coded) independent variables. If the "
+"Use it when you want to explain a continuous dependent variable with several "
+"continuous or categorical (dummy-coded) independent variables. If the "
 "dependent variable is categorical, use logistic regression; if the data are "
 "a time series, appropriate time-series models should be used."
 
@@ -3913,15 +5501,15 @@ msgstr ""
 "independent variables. Normality: The residuals must be normally "
 "distributed. Constant variance (homoscedasticity): The variance of the "
 "residuals must be constant across all predicted values. No "
-"multicollinearity: VIF < 10 is expected. Independence: The residuals must be"
-" independent of each other."
+"multicollinearity: VIF < 10 is expected. Independence: The residuals must be "
+"independent of each other."
 
 #: istatistik/seo_content.py:596
 msgid ""
 "R²: Modelin bağımlı değişkendeki varyansı açıklama oranı. Düzeltilmiş R²: "
 "Değişken sayısını hesaba katar; modeller arasında karşılaştırma için tercih "
-"edilir. β katsayısı: Diğer değişkenler sabitken bir birimlik artışın bağımlı"
-" değişkende yarattığı değişim. p < 0.05: İlgili bağımsız değişken modelde "
+"edilir. β katsayısı: Diğer değişkenler sabitken bir birimlik artışın bağımlı "
+"değişkende yarattığı değişim. p < 0.05: İlgili bağımsız değişken modelde "
 "anlamlı katkı sağlar."
 msgstr ""
 "R²: the proportion of variance in the dependent variable explained by the "
@@ -3932,12 +5520,12 @@ msgstr ""
 
 #: istatistik/seo_content.py:604
 msgid ""
-"Regresyon modeli toplam varyansın %43'ünü açıklamıştır, R² = .43, F(3, 96) ="
-" 24.13, p < .001. Yalnızca çalışma süresi β = .52, t(96) = 5.87, p < .001 "
-"ile anlamlı bir yordayıcı olmuştur."
+"Regresyon modeli toplam varyansın %43'ünü açıklamıştır, R² = .43, F(3, 96) = "
+"24.13, p < .001. Yalnızca çalışma süresi β = .52, t(96) = 5.87, p < .001 ile "
+"anlamlı bir yordayıcı olmuştur."
 msgstr ""
-"The regression model explained 43% of the total variance, R² = .43, F(3, 96)"
-" = 24.13, p < .001. Only study time was a significant predictor, β = .52, "
+"The regression model explained 43% of the total variance, R² = .43, F(3, 96) "
+"= 24.13, p < .001. Only study time was a significant predictor, β = .52, "
 "t(96) = 5.87, p < .001."
 
 #: istatistik/seo_content.py:610
@@ -3967,10 +5555,10 @@ msgstr ""
 
 #: istatistik/seo_content.py:630
 msgid ""
-"Lojistik regresyon, ikili (0/1) kategorik bir bağımlı değişkeni birden fazla"
-" bağımsız değişken aracılığıyla tahmin eder. Doğrudan olasılık yerine log-"
-"odds modeller; sonuçlar odds oranı (OR) olarak yorumlanır. Tıp, psikoloji ve"
-" sosyal bilimlerde yaygın kullanımı olan güçlü bir sınıflandırma aracıdır."
+"Lojistik regresyon, ikili (0/1) kategorik bir bağımlı değişkeni birden fazla "
+"bağımsız değişken aracılığıyla tahmin eder. Doğrudan olasılık yerine log-"
+"odds modeller; sonuçlar odds oranı (OR) olarak yorumlanır. Tıp, psikoloji ve "
+"sosyal bilimlerde yaygın kullanımı olan güçlü bir sınıflandırma aracıdır."
 msgstr ""
 "Logistic regression predicts a binary (0/1) categorical dependent variable "
 "from several independent variables. Instead of modeling the probability "
@@ -3980,10 +5568,10 @@ msgstr ""
 
 #: istatistik/seo_content.py:637
 msgid ""
-"Bağımlı değişkeniniz ikili kategorik olduğunda (hasta/sağlıklı, geçti/kaldı,"
-" satın aldı/almadı) kullanın. Bağımsız değişkenler sürekli, ordinal veya "
-"kategorik (kukla kodlanmış) olabilir. İkiden fazla kategori için çok sınıflı"
-" lojistik regresyon ya da yapay sinir ağları değerlendirilebilir."
+"Bağımlı değişkeniniz ikili kategorik olduğunda (hasta/sağlıklı, geçti/kaldı, "
+"satın aldı/almadı) kullanın. Bağımsız değişkenler sürekli, ordinal veya "
+"kategorik (kukla kodlanmış) olabilir. İkiden fazla kategori için çok sınıflı "
+"lojistik regresyon ya da yapay sinir ağları değerlendirilebilir."
 msgstr ""
 "Use it when your dependent variable is binary (ill/healthy, passed/failed, "
 "purchased/did not purchase). The independent variables can be continuous, "
@@ -3994,27 +5582,27 @@ msgstr ""
 msgid ""
 "İkili bağımlı değişken: Sonuç değişkeni 0 ve 1 değerlerini almalıdır. "
 "Bağımsızlık: Gözlemler birbirinden bağımsız olmalıdır. Çoklu doğrusallık "
-"olmamalıdır: VIF < 10. Yeterli örneklem: Her sonuç kategorisinde en az 10–15"
-" olay önerilir. Doğrusallık (logit ölçeğinde): Sürekli bağımsız değişkenler "
+"olmamalıdır: VIF < 10. Yeterli örneklem: Her sonuç kategorisinde en az 10–15 "
+"olay önerilir. Doğrusallık (logit ölçeğinde): Sürekli bağımsız değişkenler "
 "log-odds ile doğrusal ilişkide olmalıdır."
 msgstr ""
 "Binary dependent variable: The outcome variable must take the values 0 and "
 "1. Independence: Observations must be independent of each other. No "
 "multicollinearity: VIF < 10. Sufficient sample: At least 10–15 events per "
-"outcome category are recommended. Linearity (on the logit scale): Continuous"
-" independent variables must be linearly related to the log-odds."
+"outcome category are recommended. Linearity (on the logit scale): Continuous "
+"independent variables must be linearly related to the log-odds."
 
 #: istatistik/seo_content.py:652
 msgid ""
 "Odds Oranı (OR): OR > 1 bağımsız değişken arttıkça olayın gerçekleşme "
 "olasılığı artar; OR < 1 azalır. OR = 1 ilişki yoktur. p < 0.05: İlgili "
-"değişken modelde anlamlı katkı sağlar. Nagelkerke R²: Doğrusal regresyondaki"
-" R²'ye benzer; modelin açıklama gücünü özetler."
+"değişken modelde anlamlı katkı sağlar. Nagelkerke R²: Doğrusal regresyondaki "
+"R²'ye benzer; modelin açıklama gücünü özetler."
 msgstr ""
 "Odds ratio (OR): OR > 1 means the probability of the event increases as the "
 "independent variable increases; OR < 1 means it decreases. OR = 1 means no "
-"relationship. p < 0.05: the variable makes a significant contribution to the"
-" model. Nagelkerke R²: similar to R² in linear regression; summarizes the "
+"relationship. p < 0.05: the variable makes a significant contribution to the "
+"model. Nagelkerke R²: similar to R² in linear regression; summarizes the "
 "explanatory power of the model."
 
 #: istatistik/seo_content.py:659
@@ -4036,9 +5624,8 @@ msgid ""
 "oranınız %20 ise en az 250 katılımcı önerilir."
 msgstr ""
 "You need at least 10 events in the rarer outcome category (0 or 1) for each "
-"independent variable. For example, if you build a model with 5 variables and"
-" your negative outcome rate is 20%, at least 250 participants are "
-"recommended."
+"independent variable. For example, if you build a model with 5 variables and "
+"your negative outcome rate is 20%, at least 250 participants are recommended."
 
 #: istatistik/seo_content.py:670
 msgid "Sınıflandırma doğruluğu yeterli bir ölçüt mü?"
@@ -4052,8 +5639,8 @@ msgstr ""
 "Accuracy can be misleading with imbalanced datasets. AUC-ROC, sensitivity "
 "and specificity should be evaluated together."
 
-#: istatistik/seo_content.py:677 istatistik/views.py:36
-#: istatistik/views.py:538 istatistik/views.py:555
+#: istatistik/seo_content.py:677 istatistik/views.py:36 istatistik/views.py:538
+#: istatistik/views.py:555
 msgid "Ki-Kare Testi"
 msgstr "Chi-Square Test"
 
@@ -4070,24 +5657,23 @@ msgid ""
 "küçük örneklemlerde ve ordinal verilerde güvenilir sonuçlar üretir."
 msgstr ""
 "The Friedman test is a non-parametric test that compares three or more "
-"related groups with repeated measurements. It is the alternative to repeated"
-" measures ANOVA that does not require normality. Based on ranks, it produces"
-" reliable results with small samples and ordinal data."
+"related groups with repeated measurements. It is the alternative to repeated "
+"measures ANOVA that does not require normality. Based on ranks, it produces "
+"reliable results with small samples and ordinal data."
 
 #: istatistik/seo_content.py:692
 msgid ""
-"Aynı katılımcıların üç veya daha fazla farklı koşulda ölçüldüğü ve normallik"
-" varsayımının karşılanmadığı durumlarda kullanın. Örneğin üç farklı tedavi "
+"Aynı katılımcıların üç veya daha fazla farklı koşulda ölçüldüğü ve normallik "
+"varsayımının karşılanmadığı durumlarda kullanın. Örneğin üç farklı tedavi "
 "yönteminin aynı hasta grubuna sırayla uygulandığı çapraz tasarımlarda "
 "idealdir. İki bağımlı grup için Wilcoxon Testi, normallik sağlanıyorsa "
 "Tekrarlı Ölçümler ANOVA daha uygun seçenektir."
 msgstr ""
-"Use it when the same participants are measured under three or more different"
-" conditions and the normality assumption is not met. For example, it is "
-"ideal for crossover designs in which three different treatments are applied "
-"to the same group of patients in turn. For two dependent groups, the "
-"Wilcoxon test is more appropriate; if normality holds, repeated measures "
-"ANOVA."
+"Use it when the same participants are measured under three or more different "
+"conditions and the normality assumption is not met. For example, it is ideal "
+"for crossover designs in which three different treatments are applied to the "
+"same group of patients in turn. For two dependent groups, the Wilcoxon test "
+"is more appropriate; if normality holds, repeated measures ANOVA."
 
 #: istatistik/seo_content.py:700
 msgid ""
@@ -4101,8 +5687,8 @@ msgstr ""
 
 #: istatistik/seo_content.py:705
 msgid ""
-"χ² istatistiği ve p değeri: p < 0.05 en az iki ölçüm koşulu arasında anlamlı"
-" fark var demektir. Post-hoc (Wilcoxon ile Bonferroni düzeltmesi): Hangi "
+"χ² istatistiği ve p değeri: p < 0.05 en az iki ölçüm koşulu arasında anlamlı "
+"fark var demektir. Post-hoc (Wilcoxon ile Bonferroni düzeltmesi): Hangi "
 "koşul çiftlerinin birbirinden farklı olduğunu belirler. Etki büyüklüğü (W — "
 "Kendall's W): 0 ilişki yok, 1 tam uyum."
 msgstr ""
@@ -4129,17 +5715,17 @@ msgid ""
 "Küçük örneklem veya normallik ihlali varsa Friedman daha güvenilir sonuç "
 "verir."
 msgstr ""
-"If the normality assumption holds, repeated measures ANOVA is more powerful."
-" With a small sample or violated normality, Friedman gives more reliable "
+"If the normality assumption holds, repeated measures ANOVA is more powerful. "
+"With a small sample or violated normality, Friedman gives more reliable "
 "results."
 
 #: istatistik/seo_content.py:732
 msgid ""
 "Tekrarlı Ölçümler ANOVA, aynı bireylerin üç veya daha fazla koşul ya da "
-"zaman noktasında ölçüldüğü verileri analiz eder. Bireyler arası değişkenliği"
-" kontrol altına aldığından bağımsız örneklem ANOVA'ya kıyasla daha yüksek "
-"istatistiksel güç sağlar. Öntest-sontest-izlem tasarımları ve çapraz geçişli"
-" denemelerde yaygın olarak kullanılır."
+"zaman noktasında ölçüldüğü verileri analiz eder. Bireyler arası değişkenliği "
+"kontrol altına aldığından bağımsız örneklem ANOVA'ya kıyasla daha yüksek "
+"istatistiksel güç sağlar. Öntest-sontest-izlem tasarımları ve çapraz geçişli "
+"denemelerde yaygın olarak kullanılır."
 msgstr ""
 "Repeated measures ANOVA analyzes data in which the same individuals are "
 "measured under three or more conditions or at three or more time points. "
@@ -4154,8 +5740,8 @@ msgid ""
 "Küresellik ihlali durumunda Greenhouse-Geisser düzeltmesi otomatik "
 "uygulanır. Normallik sağlanamıyorsa Friedman Testi tercih edilmelidir."
 msgstr ""
-"Use it when the same group of participants is measured at three or more time"
-" points or under three or more conditions. The assumptions of normality and "
+"Use it when the same group of participants is measured at three or more time "
+"points or under three or more conditions. The assumptions of normality and "
 "sphericity must be met. If sphericity is violated, the Greenhouse-Geisser "
 "correction is applied automatically. If normality cannot be assumed, the "
 "Friedman test should be used."
@@ -4181,10 +5767,10 @@ msgid ""
 "büyük etki. Post-hoc (eşleştirilmiş t-testi + Bonferroni): Hangi zaman "
 "noktaları arasında fark olduğunu belirler."
 msgstr ""
-"F statistic and p-value: p < 0.05 indicates a significant difference between"
-" measurement times. Partial eta squared (ηp²): 0.01 small, 0.06 medium, 0.14"
-" large effect. Post-hoc (paired t-tests + Bonferroni): identifies which time"
-" points differ."
+"F statistic and p-value: p < 0.05 indicates a significant difference between "
+"measurement times. Partial eta squared (ηp²): 0.01 small, 0.06 medium, 0.14 "
+"large effect. Post-hoc (paired t-tests + Bonferroni): identifies which time "
+"points differ."
 
 #: istatistik/seo_content.py:760
 msgid ""
@@ -4213,8 +5799,8 @@ msgstr "What happens if a participant is missing data for one measurement?"
 #: istatistik/seo_content.py:772
 msgid ""
 "Tekrarlı ANOVA tam veri gerektirir; eksik gözlem olan katılımcı varsayılan "
-"olarak analizden çıkarılır. Çok sayıda eksik varsa karma model (mixed model)"
-" yaklaşımını değerlendirin."
+"olarak analizden çıkarılır. Çok sayıda eksik varsa karma model (mixed model) "
+"yaklaşımını değerlendirin."
 msgstr ""
 "Repeated measures ANOVA requires complete data; participants with missing "
 "observations are excluded from the analysis by default. If there are many "
@@ -4228,11 +5814,11 @@ msgid ""
 "çıkar. Gini safsızlığını minimize ederek en iyi bölme noktalarını belirler; "
 "sonuçlar kolayca görselleştirilebilir ve raporlanabilir."
 msgstr ""
-"A decision tree is a machine learning method that performs classification or"
-" regression by splitting the data into a hierarchical branch structure. "
-"Based on the CART algorithm, it stands out for its interpretability and "
-"visual presentation. It finds the best split points by minimizing Gini "
-"impurity; the results can be easily visualized and reported."
+"A decision tree is a machine learning method that performs classification or "
+"regression by splitting the data into a hierarchical branch structure. Based "
+"on the CART algorithm, it stands out for its interpretability and visual "
+"presentation. It finds the best split points by minimizing Gini impurity; "
+"the results can be easily visualized and reported."
 
 #: istatistik/seo_content.py:794
 msgid ""
@@ -4253,9 +5839,9 @@ msgid ""
 "çok küçük örneklemlerde aşırı uyum (overfitting) riski yüksektir. Derinlik "
 "kontrolü: max_depth parametresi ile aşırı büyüme önlenir."
 msgstr ""
-"Dependent variable: categorical (classification) or continuous (regression)."
-" Sample size: Deeper trees need more data; with very small samples, the risk"
-" of overfitting is high. Depth control: The max_depth parameter prevents "
+"Dependent variable: categorical (classification) or continuous (regression). "
+"Sample size: Deeper trees need more data; with very small samples, the risk "
+"of overfitting is high. Depth control: The max_depth parameter prevents "
 "excessive growth."
 
 #: istatistik/seo_content.py:807
@@ -4267,15 +5853,14 @@ msgid ""
 "verisini ezberler; test doğruluğunu kontrol edin."
 msgstr ""
 "Accuracy: the proportion of correctly classified cases. Confusion matrix: "
-"shows true/false positives and negatives for each class. Feature importance:"
-" shows which variables contribute most to the split decisions. Tree depth: "
+"shows true/false positives and negatives for each class. Feature importance: "
+"shows which variables contribute most to the split decisions. Tree depth: "
 "Deep trees memorize the training data; check the test accuracy."
 
 #: istatistik/seo_content.py:815
 msgid ""
-"Karar ağacı modeli (max_depth = 4) test setinde %82 doğruluk, AUC = .88 elde"
-" etmiştir. En önemli yordayıcı değişken X1 olarak belirlenmiştir (önem = "
-".41)."
+"Karar ağacı modeli (max_depth = 4) test setinde %82 doğruluk, AUC = .88 elde "
+"etmiştir. En önemli yordayıcı değişken X1 olarak belirlenmiştir (önem = .41)."
 msgstr ""
 "The decision tree model (max_depth = 4) achieved 82% accuracy and AUC = .88 "
 "on the test set. The most important predictor was X1 (importance = .41)."
@@ -4287,8 +5872,8 @@ msgstr "Should I choose a decision tree or logistic regression?"
 #: istatistik/seo_content.py:822
 msgid ""
 "Yorumlanabilirlik ve doğrusal olmayan ilişkiler önemliyse karar ağacı; "
-"istatistiksel katsayı ve olasılık yorumlaması gerekiyorsa lojistik regresyon"
-" tercih edin."
+"istatistiksel katsayı ve olasılık yorumlaması gerekiyorsa lojistik regresyon "
+"tercih edin."
 msgstr ""
 "Choose a decision tree if interpretability and non-linear relationships "
 "matter; choose logistic regression if you need statistical coefficients and "
@@ -4300,11 +5885,11 @@ msgstr "How do I prevent overfitting?"
 
 #: istatistik/seo_content.py:828
 msgid ""
-"max_depth, min_samples_leaf ve min_samples_split parametrelerini sınırlayın."
-" Çapraz doğrulama (cross-validation) ile model performansını test edin."
+"max_depth, min_samples_leaf ve min_samples_split parametrelerini sınırlayın. "
+"Çapraz doğrulama (cross-validation) ile model performansını test edin."
 msgstr ""
-"Limit the max_depth, min_samples_leaf and min_samples_split parameters. Test"
-" model performance with cross-validation."
+"Limit the max_depth, min_samples_leaf and min_samples_split parameters. Test "
+"model performance with cross-validation."
 
 #: istatistik/seo_content.py:835 istatistik/views.py:53
 msgid "Destek Vektör Makinesi"
@@ -4312,15 +5897,15 @@ msgstr "Support Vector Machine"
 
 #: istatistik/seo_content.py:841
 msgid ""
-"Destek Vektör Makinesi (SVM), sınıflar arasındaki marjini maksimize eden bir"
-" karar sınırı (hyperplane) bulan gözetimli öğrenme algoritmasıdır. Doğrusal "
+"Destek Vektör Makinesi (SVM), sınıflar arasındaki marjini maksimize eden bir "
+"karar sınırı (hyperplane) bulan gözetimli öğrenme algoritmasıdır. Doğrusal "
 "olarak ayrılamayan veriler için çekirdek fonksiyonları (RBF, polinom) ile "
 "yüksek boyutlu uzaya projeksiyon yapar. Küçük ve orta ölçekli veri "
 "setlerinde yüksek doğruluk oranları elde edebilir."
 msgstr ""
-"A Support Vector Machine (SVM) is a supervised learning algorithm that finds"
-" a decision boundary (hyperplane) maximizing the margin between classes. For"
-" data that are not linearly separable, it projects them into a higher-"
+"A Support Vector Machine (SVM) is a supervised learning algorithm that finds "
+"a decision boundary (hyperplane) maximizing the margin between classes. For "
+"data that are not linearly separable, it projects them into a higher-"
 "dimensional space using kernel functions (RBF, polynomial). It can achieve "
 "high accuracy on small and medium-sized datasets."
 
@@ -4358,10 +5943,10 @@ msgid ""
 "örnekleri. Karmaşıklık matrisi: Hangi sınıfların daha sık karıştırıldığını "
 "gösterir."
 msgstr ""
-"Accuracy, F1 score, AUC-ROC: the key measures of classification performance."
-" Support vectors: the training examples closest to the margin that define "
-"the decision boundary. Confusion matrix: shows which classes are confused "
-"most often."
+"Accuracy, F1 score, AUC-ROC: the key measures of classification performance. "
+"Support vectors: the training examples closest to the margin that define the "
+"decision boundary. Confusion matrix: shows which classes are confused most "
+"often."
 
 #: istatistik/seo_content.py:870
 msgid ""
@@ -4382,8 +5967,8 @@ msgid ""
 "hızlıdır."
 msgstr ""
 "SVM is strong with high-dimensional data and few observations, but it is "
-"hard to interpret. A decision tree is more interpretable and faster on large"
-" datasets."
+"hard to interpret. A decision tree is more interpretable and faster on large "
+"datasets."
 
 #: istatistik/seo_content.py:881
 msgid "Çekirdek fonksiyonunu nasıl seçerim?"
@@ -4395,8 +5980,8 @@ msgid ""
 "Doğrusal veri setleri için linear, polinom ilişkiler için poly çekirdeği "
 "değerlendirilebilir."
 msgstr ""
-"Start with the RBF kernel; it works well in most cases. For linear datasets,"
-" consider the linear kernel; for polynomial relationships, the poly kernel."
+"Start with the RBF kernel; it works well in most cases. For linear datasets, "
+"consider the linear kernel; for polynomial relationships, the poly kernel."
 
 #: istatistik/seo_content.py:895
 msgid ""
@@ -4415,14 +6000,14 @@ msgstr ""
 
 #: istatistik/seo_content.py:903
 msgid ""
-"Çok sayıda değişken arasındaki gizli yapıyı keşfetmek ve boyut sayısını veri"
-" odaklı belirlemek istediğinizde kullanın. Ölçek geliştirme çalışmalarında "
+"Çok sayıda değişken arasındaki gizli yapıyı keşfetmek ve boyut sayısını veri "
+"odaklı belirlemek istediğinizde kullanın. Ölçek geliştirme çalışmalarında "
 "geçerlik (yapı geçerliği) kanıtı sağlamak için zorunludur. Faktör yapısı "
 "önceden biliniyorsa Doğrulayıcı Faktör Analizi (DFA) daha uygun seçenektir."
 msgstr ""
 "Use it when you want to discover the hidden structure among many variables "
-"and determine the number of dimensions in a data-driven way. It is essential"
-" for providing (construct) validity evidence in scale development. If the "
+"and determine the number of dimensions in a data-driven way. It is essential "
+"for providing (construct) validity evidence in scale development. If the "
 "factor structure is known in advance, Confirmatory Factor Analysis (CFA) is "
 "the better choice."
 
@@ -4445,8 +6030,8 @@ msgid ""
 "KMO (Kaiser-Meyer-Olkin): ≥ 0.80 \"iyi\", ≥ 0.70 \"orta\", < 0.60 "
 "\"yetersiz\" örneklem yeterliliği. Bartlett Testi p < 0.05: Korelasyon "
 "matrisi faktör analizine uygundur. Özdeğer (Eigenvalue) > 1: Kaiser "
-"kriterine göre faktör sayısını belirler. Faktör yükü ≥ 0.40: İlgili maddenin"
-" faktöre kabul edilebilir katkısı. Açıklanan varyans: Tüm faktörlerin "
+"kriterine göre faktör sayısını belirler. Faktör yükü ≥ 0.40: İlgili maddenin "
+"faktöre kabul edilebilir katkısı. Açıklanan varyans: Tüm faktörlerin "
 "birlikte açıkladığı oran ≥ %50 beklenir."
 msgstr ""
 "KMO (Kaiser-Meyer-Olkin): ≥ 0.80 \"good\", ≥ 0.70 \"middling\", < 0.60 "
@@ -4461,8 +6046,8 @@ msgid ""
 "KMO = .84, Bartlett χ²(66) = 512.3, p < .001. Varimax döndürme sonucunda "
 "toplam varyansın %58.4'ünü açıklayan iki faktörlü yapı elde edilmiştir."
 msgstr ""
-"KMO = .84, Bartlett χ²(66) = 512.3, p < .001. Varimax rotation yielded a "
-"two-factor structure explaining 58.4% of the total variance."
+"KMO = .84, Bartlett χ²(66) = 512.3, p < .001. Varimax rotation yielded a two-"
+"factor structure explaining 58.4% of the total variance."
 
 #: istatistik/seo_content.py:935
 msgid "Kaç faktör seçmeliyim?"
@@ -4501,8 +6086,8 @@ msgid ""
 "üzerindeyse analiz dışında bırakmayı değerlendirin; teorik açıdan da "
 "anlamlılığını sorgulayın."
 msgstr ""
-"If a cross-loading item exceeds the 0.40 threshold on both factors, consider"
-" excluding it from the analysis; also question its theoretical meaning."
+"If a cross-loading item exceeds the 0.40 threshold on both factors, consider "
+"excluding it from the analysis; also question its theoretical meaning."
 
 #: istatistik/seo_content.py:962
 msgid ""
@@ -4526,10 +6111,10 @@ msgid ""
 "tasarımları için idealdir. İki gruptan fazlası varsa Friedman Testi tercih "
 "edilmelidir."
 msgstr ""
-"Use it when you want to compare two measurements from the same group and the"
-" normality assumption is not met or the sample is small. It is ideal for "
-"pre-test/post-test designs, matched pairs and counterbalanced designs. With "
-"more than two groups, the Friedman test should be used."
+"Use it when you want to compare two measurements from the same group and the "
+"normality assumption is not met or the sample is small. It is ideal for pre-"
+"test/post-test designs, matched pairs and counterbalanced designs. With more "
+"than two groups, the Friedman test should be used."
 
 #: istatistik/seo_content.py:977
 msgid ""
@@ -4548,14 +6133,14 @@ msgid ""
 "değeri: p < 0.05 iki ölçüm arasında anlamlı fark var demektir. r (etki "
 "büyüklüğü): r = Z / √N; 0.1 küçük, 0.3 orta, 0.5 büyük."
 msgstr ""
-"W statistic: In a two-tailed test, a small W value indicates significance. "
-"p-value: p < 0.05 means there is a significant difference between the two "
+"W statistic: In a two-tailed test, a small W value indicates significance. p-"
+"value: p < 0.05 means there is a significant difference between the two "
 "measurements. r (effect size): r = Z / √N; 0.1 small, 0.3 medium, 0.5 large."
 
 #: istatistik/seo_content.py:988
 msgid ""
-"Sontest puanları öntest puanlarından anlamlı düzeyde yüksektir, Z = −3.42, p"
-" = .001, r = .48."
+"Sontest puanları öntest puanlarından anlamlı düzeyde yüksektir, Z = −3.42, p "
+"= .001, r = .48."
 msgstr ""
 "Post-test scores were significantly higher than pre-test scores, Z = −3.42, "
 "p = .001, r = .48."
@@ -4569,8 +6154,8 @@ msgid ""
 "Fark puanları normal dağılım gösteriyorsa bağımlı t-testi daha güçlüdür. "
 "Normallik yoksa veya örneklem küçükse Wilcoxon daha güvenilir sonuç verir."
 msgstr ""
-"If the difference scores are normally distributed, the paired t-test is more"
-" powerful. Without normality or with a small sample, Wilcoxon gives more "
+"If the difference scores are normally distributed, the paired t-test is more "
+"powerful. Without normality or with a small sample, Wilcoxon gives more "
 "reliable results."
 
 #: istatistik/templates/istatistik/afa.html:5 istatistik/views.py:694
@@ -4580,11 +6165,11 @@ msgstr "Exploratory Factor Analysis (EFA)"
 
 #: istatistik/templates/istatistik/afa.html:6
 msgid ""
-"Ölçek geçerliğinizi AFA ile ücretsiz kanıtlayın. KMO, Bartlett testi, faktör"
-" yük matrisi ve açıklanan varyans tablosu içeren APA raporlu PDF alın."
+"Ölçek geçerliğinizi AFA ile ücretsiz kanıtlayın. KMO, Bartlett testi, faktör "
+"yük matrisi ve açıklanan varyans tablosu içeren APA raporlu PDF alın."
 msgstr ""
-"Establish your scale validity with EFA for free. Get an APA-style PDF report"
-" with KMO, Bartlett's test, the factor loading matrix and the explained "
+"Establish your scale validity with EFA for free. Get an APA-style PDF report "
+"with KMO, Bartlett's test, the factor loading matrix and the explained "
 "variance table."
 
 #: istatistik/templates/istatistik/afa.html:15
@@ -4823,8 +6408,8 @@ msgid ""
 "Faktör analizine dahil edilecek maddeleri seçin. Yalnızca sayısal sütunlar "
 "listelenir."
 msgstr ""
-"Select the items to include in the factor analysis. Only numeric columns are"
-" listed."
+"Select the items to include in the factor analysis. Only numeric columns are "
+"listed."
 
 #: istatistik/templates/istatistik/afa.html:83
 #: istatistik/templates/istatistik/cronbach.html:83
@@ -4933,8 +6518,7 @@ msgstr "Data warnings detected"
 #: istatistik/templates/istatistik/cronbach.html:120
 #: istatistik/templates/istatistik/friedman.html:120
 #: istatistik/templates/istatistik/korelasyon.html:138
-msgid ""
-"Bu uyarılar veri kalitenizi etkileyebilir. Yine de devam edebilirsiniz."
+msgid "Bu uyarılar veri kalitenizi etkileyebilir. Yine de devam edebilirsiniz."
 msgstr "These warnings may affect your data quality. You can still continue."
 
 #: istatistik/templates/istatistik/afa.html:141
@@ -5070,8 +6654,8 @@ msgid ""
 "Korelasyon matrisinin birim matristen farklı olup olmadığını sınar (p &lt; "
 ".05 gereklidir)."
 msgstr ""
-"Tests whether the correlation matrix differs from an identity matrix (p &lt;"
-" .05 required)."
+"Tests whether the correlation matrix differs from an identity matrix (p &lt; "
+".05 required)."
 
 #: istatistik/templates/istatistik/afa.html:227
 #: istatistik/templates/istatistik/cronbach.html:186
@@ -5193,8 +6777,8 @@ msgstr ""
 msgid ""
 "AFA'da her sütun bir ölçek maddesi (örneğin \"M1, M2…\"), her satır ise bir "
 "katılımcıyı temsil etmelidir. Analiz, hangi maddelerin birlikte yüksek "
-"korelasyon gösterdiğini belirleyerek bunları ortak faktörler altında toplar."
-" Faktörler, ölçülen yapıyı (örn. kaygı, motivasyon, tutum) temsil eder."
+"korelasyon gösterdiğini belirleyerek bunları ortak faktörler altında toplar. "
+"Faktörler, ölçülen yapıyı (örn. kaygı, motivasyon, tutum) temsil eder."
 msgstr ""
 "In EFA, each column must be a scale item (e.g. \"M1, M2…\") and each row a "
 "participant. The analysis identifies which items are highly correlated with "
@@ -5306,8 +6890,8 @@ msgid ""
 "Excel veya CSV yükleyin, APA formatında PDF rapor alın. Ücretsiz online "
 "istatistik analizi — Analizus."
 msgstr ""
-"Upload Excel or CSV, get a PDF report in APA format. Free online statistical"
-" analysis — Analizus."
+"Upload Excel or CSV, get a PDF report in APA format. Free online statistical "
+"analysis — Analizus."
 
 #: istatistik/templates/istatistik/analiz_console_base.html:28
 msgid "Ücretsiz Online Hesaplama"
@@ -5379,8 +6963,8 @@ msgstr "Send a Free Project Request"
 #: istatistik/templates/istatistik/analiz_hub.html:4
 #: istatistik/templates/istatistik/analiz_hub.html:6
 #: istatistik/templates/istatistik/analiz_hub.html:8
-#: istatistik/templates/istatistik/analiz_hub.html:32 templates/base.html:205
-#: templates/base.html:423
+#: istatistik/templates/istatistik/analiz_hub.html:32 templates/base.html:211
+#: templates/base.html:429
 msgid "İstatistik Analiz Araçları"
 msgstr "Statistics Tools"
 
@@ -5906,10 +7490,9 @@ msgstr ""
 
 #: istatistik/templates/istatistik/betimsel.html:228
 msgid ""
-"Her sütun bir değişkeni, her satır ise bir gözlem birimini (katılımcı, ürün,"
-" gün vb.) temsil etmelidir. CSV veya Excel formatındaki verilerinizi "
-"yükleyerek tüm sayısal sütunlar için anında özet istatistikler "
-"alabilirsiniz."
+"Her sütun bir değişkeni, her satır ise bir gözlem birimini (katılımcı, ürün, "
+"gün vb.) temsil etmelidir. CSV veya Excel formatındaki verilerinizi "
+"yükleyerek tüm sayısal sütunlar için anında özet istatistikler alabilirsiniz."
 msgstr ""
 "Each column must represent a variable and each row an observation unit "
 "(participant, product, day, etc.). Upload your data in CSV or Excel format "
@@ -5954,8 +7537,8 @@ msgid ""
 "Cronbach Alpha hesaplanacak maddeleri seçin. Yalnızca sayısal sütunlar "
 "listelenir."
 msgstr ""
-"Select the items for which Cronbach's alpha will be calculated. Only numeric"
-" columns are listed."
+"Select the items for which Cronbach's alpha will be calculated. Only numeric "
+"columns are listed."
 
 #: istatistik/templates/istatistik/cronbach.html:141
 msgid "Cronbach Alpha (α)"
@@ -6031,8 +7614,8 @@ msgstr ""
 
 #: istatistik/templates/istatistik/cronbach.html:224
 msgid ""
-"Her sütunun bir ölçek maddesi (soru), her satırın ise bir katılımcıyı temsil"
-" etmesi gerekir. Tüm maddelerin aynı Likert ölçeğinde olması ve aynı yönde "
+"Her sütunun bir ölçek maddesi (soru), her satırın ise bir katılımcıyı temsil "
+"etmesi gerekir. Tüm maddelerin aynı Likert ölçeğinde olması ve aynı yönde "
 "puanlanması önerilir. Analiz sonucunda elde edilen α değeri, ölçeğin "
 "güvenilirlik düzeyini gösterir."
 msgstr ""
@@ -6071,8 +7654,8 @@ msgstr ""
 #: istatistik/templates/istatistik/friedman.html:68
 msgid "En az 3 ölçüm sütunu seçilmelidir (ön test, son test, takip vb.)."
 msgstr ""
-"At least 3 measurement columns must be selected (pre-test, post-test, "
-"follow-up, etc.)."
+"At least 3 measurement columns must be selected (pre-test, post-test, follow-"
+"up, etc.)."
 
 #: istatistik/templates/istatistik/friedman.html:70
 msgid "Sütunlar sayısal olmalıdır (Likert veya sürekli ölçüm)."
@@ -6140,8 +7723,8 @@ msgid ""
 "gerekmez. Sıralı veya sürekli ölçek verilerine uygulanabilir."
 msgstr ""
 "The Friedman test is a non-parametric test used in designs where the same "
-"individuals are measured under 3 or more conditions. It does not require the"
-" normality assumption and can be applied to ordinal or continuous data."
+"individuals are measured under 3 or more conditions. It does not require the "
+"normality assumption and can be applied to ordinal or continuous data."
 
 #: istatistik/templates/istatistik/friedman.html:204
 #: istatistik/templates/istatistik/wilcoxon.html:183
@@ -6153,8 +7736,8 @@ msgid ""
 "Ön test – son test – takip ölçümü gibi tekrarlayan tasarımlarda; normallik "
 "sağlanamadığında ya da Likert ölçeğiyle elde edilen verilerde."
 msgstr ""
-"In repeated designs such as pre-test – post-test – follow-up; when normality"
-" cannot be assumed or with data obtained from Likert scales."
+"In repeated designs such as pre-test – post-test – follow-up; when normality "
+"cannot be assumed or with data obtained from Likert scales."
 
 #: istatistik/templates/istatistik/friedman.html:207
 msgid "Kendall's W Yorumu"
@@ -6223,11 +7806,11 @@ msgstr "Decision Tree Classification"
 
 #: istatistik/templates/istatistik/karar_agaci.html:6
 msgid ""
-"Karar ağacı sınıflandırma analizi: Özellik önemi, confusion matrix, F1 skoru"
-" ve APA formatında rapor. Tez için hazır ML çıktısı, ücretsiz online analiz."
+"Karar ağacı sınıflandırma analizi: Özellik önemi, confusion matrix, F1 skoru "
+"ve APA formatında rapor. Tez için hazır ML çıktısı, ücretsiz online analiz."
 msgstr ""
-"Decision tree classification analysis: feature importance, confusion matrix,"
-" F1 score and an APA-style report. Thesis-ready ML output, free online "
+"Decision tree classification analysis: feature importance, confusion matrix, "
+"F1 score and an APA-style report. Thesis-ready ML output, free online "
 "analysis."
 
 #: istatistik/templates/istatistik/karar_agaci.html:16
@@ -6323,8 +7906,7 @@ msgid ""
 "Ağaç derinliğini artırmak doğruluğu yükseltebilir ama aşırı öğrenme riski "
 "taşır."
 msgstr ""
-"Increasing tree depth can improve accuracy but carries a risk of "
-"overfitting."
+"Increasing tree depth can improve accuracy but carries a risk of overfitting."
 
 #: istatistik/templates/istatistik/karar_agaci.html:135
 msgid "En önemli değişkenler feature importance sıralamasıyla gösterilir."
@@ -6418,8 +8000,8 @@ msgid ""
 msgstr ""
 "Gini impurity and entropy are the criteria used to choose split points when "
 "building the tree. Maximum depth (max_depth) is an important hyperparameter "
-"for preventing overfitting. The model splits the data into training and test"
-" sets; metrics are calculated on the test set."
+"for preventing overfitting. The model splits the data into training and test "
+"sets; metrics are calculated on the test set."
 
 #: istatistik/templates/istatistik/karar_agaci.html:231
 msgid ""
@@ -6622,8 +8204,8 @@ msgstr ""
 #: istatistik/templates/istatistik/ki_kare.html:212
 msgid ""
 "Testin temel koşulları şunlardır: her hücredeki beklenen frekansın 5'ten "
-"büyük olması ve gözlemlerin birbirinden bağımsız olması. Beklenen frekanslar"
-" küçükse Fisher'ın Tam Testi tercih edilmelidir."
+"büyük olması ve gözlemlerin birbirinden bağımsız olması. Beklenen frekanslar "
+"küçükse Fisher'ın Tam Testi tercih edilmelidir."
 msgstr ""
 "The main requirements of the test are an expected frequency greater than 5 "
 "in each cell and independent observations. If expected frequencies are "
@@ -6633,12 +8215,12 @@ msgstr ""
 msgid ""
 "İlişkinin gücünü raporlamak için Cramér's V etki büyüklüğü hesaplanmalıdır. "
 "V &gt; .30 orta, V &gt; .50 ise büyük etki büyüklüğü olarak yorumlanır. "
-"Contingency tablosunun göstergesi değil, anlamlı bir pratik öneme sahip olup"
-" olmadığını da değerlendirin."
+"Contingency tablosunun göstergesi değil, anlamlı bir pratik öneme sahip olup "
+"olmadığını da değerlendirin."
 msgstr ""
-"To report the strength of the relationship, Cramér's V effect size should be"
-" calculated. V &gt; .30 is interpreted as a medium and V &gt; .50 as a large"
-" effect. Also assess whether the result has meaningful practical "
+"To report the strength of the relationship, Cramér's V effect size should be "
+"calculated. V &gt; .30 is interpreted as a medium and V &gt; .50 as a large "
+"effect. Also assess whether the result has meaningful practical "
 "significance, not just what the contingency table indicates."
 
 #: istatistik/templates/istatistik/ki_kare.html:228
@@ -6684,8 +8266,8 @@ msgid ""
 "Değişkenler arasındaki ilişkileri Pearson, Spearman veya Kendall yöntemiyle "
 "analiz edin — ısı haritası ve PDF rapor ile."
 msgstr ""
-"Analyze relationships between variables using Pearson, Spearman or Kendall —"
-" with a heatmap and a PDF report."
+"Analyze relationships between variables using Pearson, Spearman or Kendall — "
+"with a heatmap and a PDF report."
 
 #: istatistik/templates/istatistik/korelasyon.html:56
 msgid "Korelasyon Yöntemi"
@@ -6790,10 +8372,10 @@ msgid ""
 "ilişkinin yönünü ve gücünü ölçer. Katsayı −1 ile +1 arasında değer alır: +1 "
 "mükemmel pozitif, −1 mükemmel negatif, 0 ise ilişki olmadığı anlamına gelir."
 msgstr ""
-"Correlation analysis measures the direction and strength of the relationship"
-" between two or more numeric variables. The coefficient ranges from −1 to "
-"+1: +1 means a perfect positive, −1 a perfect negative relationship and 0 no"
-" relationship."
+"Correlation analysis measures the direction and strength of the relationship "
+"between two or more numeric variables. The coefficient ranges from −1 to +1: "
+"+1 means a perfect positive, −1 a perfect negative relationship and 0 no "
+"relationship."
 
 #: istatistik/templates/istatistik/korelasyon.html:267
 msgid ""
@@ -6827,8 +8409,7 @@ msgstr ""
 
 #: istatistik/templates/istatistik/korelasyon.html:278
 msgid ""
-"Non-parametrik — sıralı veri veya normallik varsayımı sağlanmıyorsa "
-"kullanın."
+"Non-parametrik — sıralı veri veya normallik varsayımı sağlanmıyorsa kullanın."
 msgstr ""
 "Non-parametric — use for ordinal data or when the normality assumption is "
 "not met."
@@ -7051,8 +8632,7 @@ msgid "VIF &gt; 10 çoklu bağlantı sorununa işaret edebilir."
 msgstr "VIF &gt; 10 may indicate a multicollinearity problem."
 
 #: istatistik/templates/istatistik/lineer_regresyon.html:103
-msgid ""
-"β katsayıları yordayıcılar arası etki büyüklüğü karşılaştırması sağlar."
+msgid "β katsayıları yordayıcılar arası etki büyüklüğü karşılaştırması sağlar."
 msgstr "β coefficients allow effect sizes to be compared across predictors."
 
 #: istatistik/templates/istatistik/lineer_regresyon.html:109
@@ -7086,8 +8666,8 @@ msgstr "What Is Multiple Linear Regression?"
 #: istatistik/templates/istatistik/lineer_regresyon.html:190
 msgid ""
 "Çoklu doğrusal regresyon, bir bağımlı (sonuç) değişkeni iki veya daha fazla "
-"bağımsız (açıklayıcı) değişkenle tahmin etmek için kullanılan parametrik bir"
-" analiz yöntemidir. Her bağımsız değişkenin bağımlı değişken üzerindeki "
+"bağımsız (açıklayıcı) değişkenle tahmin etmek için kullanılan parametrik bir "
+"analiz yöntemidir. Her bağımsız değişkenin bağımlı değişken üzerindeki "
 "etkisini diğerleri sabit tutularak hesaplar."
 msgstr ""
 "Multiple linear regression is a parametric method used to predict a "
@@ -7171,11 +8751,11 @@ msgstr ""
 
 #: istatistik/templates/istatistik/lojistik_regresyon.html:16
 msgid ""
-"İkili (binary) bir sonuç değişkenini yordayın — Odds Ratio, Nagelkerke R² ve"
-" sınıflandırma tablosu dahil."
+"İkili (binary) bir sonuç değişkenini yordayın — Odds Ratio, Nagelkerke R² ve "
+"sınıflandırma tablosu dahil."
 msgstr ""
-"Predict a binary outcome variable — including odds ratios, Nagelkerke R² and"
-" a classification table."
+"Predict a binary outcome variable — including odds ratios, Nagelkerke R² and "
+"a classification table."
 
 #: istatistik/templates/istatistik/lojistik_regresyon.html:64
 msgid "Bağımlı Değişken (Y — binary: 2 kategori)"
@@ -7196,13 +8776,12 @@ msgstr "Categorical predictors are automatically converted to dummies."
 #: istatistik/templates/istatistik/lojistik_regresyon.html:102
 msgid "Exp(B) = Odds Ratio; 1'den büyükse pozitif, küçükse negatif ilişki."
 msgstr ""
-"Exp(B) = odds ratio; greater than 1 means a positive, less than 1 a negative"
-" relationship."
+"Exp(B) = odds ratio; greater than 1 means a positive, less than 1 a negative "
+"relationship."
 
 #: istatistik/templates/istatistik/lojistik_regresyon.html:103
 msgid "Nagelkerke R² modelin varyans açıklama oranını gösterir."
-msgstr ""
-"Nagelkerke R² shows the proportion of variance explained by the model."
+msgstr "Nagelkerke R² shows the proportion of variance explained by the model."
 
 #: istatistik/templates/istatistik/lojistik_regresyon.html:104
 msgid "Sınıflandırma tablosu model doğruluğunu gösterir."
@@ -7236,12 +8815,12 @@ msgstr "What Is Logistic Regression?"
 msgid ""
 "Lojistik regresyon, ikili (0/1, evet/hayır, başarılı/başarısız) bir bağımlı "
 "değişkeni tahmin etmek için kullanılır. Bir olayın gerçekleşme olasılığını "
-"bağımsız değişkenlerle modeller. Doğrusal regresyondan farklı olarak çıktısı"
-" olasılık değeridir ve 0–1 arasındadır."
+"bağımsız değişkenlerle modeller. Doğrusal regresyondan farklı olarak çıktısı "
+"olasılık değeridir ve 0–1 arasındadır."
 msgstr ""
-"Logistic regression is used to predict a binary dependent variable (0/1, "
-"yes/no, success/failure). It models the probability of an event occurring "
-"from the independent variables. Unlike linear regression, its output is a "
+"Logistic regression is used to predict a binary dependent variable (0/1, yes/"
+"no, success/failure). It models the probability of an event occurring from "
+"the independent variables. Unlike linear regression, its output is a "
 "probability between 0 and 1."
 
 #: istatistik/templates/istatistik/lojistik_regresyon.html:200
@@ -7263,8 +8842,8 @@ msgid ""
 "Regresyon tercih edilmelidir."
 msgstr ""
 "If your dependent variable has three or more categories, multinomial "
-"logistic regression should be used; for ordered categories, ordinal logistic"
-" regression."
+"logistic regression should be used; for ordered categories, ordinal logistic "
+"regression."
 
 #: istatistik/templates/istatistik/lojistik_regresyon.html:217
 #, python-format
@@ -7298,8 +8877,8 @@ msgid ""
 "Normal dağılım gerektirmeyen iki grup karşılaştırması için Mann-Whitney U "
 "testi. Parametrik olmayan analiz, ücretsiz online hesaplama ve PDF rapor."
 msgstr ""
-"Mann-Whitney U test for comparing two groups without assuming normality. "
-"Non-parametric analysis, free online calculation and a PDF report."
+"Mann-Whitney U test for comparing two groups without assuming normality. Non-"
+"parametric analysis, free online calculation and a PDF report."
 
 #: istatistik/templates/istatistik/mann_whitney.html:16
 msgid ""
@@ -7315,8 +8894,7 @@ msgstr "Group Column (2 groups, categorical)"
 
 #: istatistik/templates/istatistik/mann_whitney.html:63
 msgid "Bu sütun tam olarak 2 farklı değer içermelidir (ör. Cinsiyet: 1/2)."
-msgstr ""
-"This column must contain exactly 2 distinct values (e.g. Gender: 1/2)."
+msgstr "This column must contain exactly 2 distinct values (e.g. Gender: 1/2)."
 
 #: istatistik/templates/istatistik/mann_whitney.html:88
 msgid "Grup sütunu tam olarak 2 farklı değer içermelidir."
@@ -7368,12 +8946,12 @@ msgstr "What Is the Mann-Whitney U Test?"
 msgid ""
 "Mann-Whitney U testi, iki bağımsız grubun merkezi eğilimini (medyan) "
 "karşılaştıran non-parametrik bir testtir. Bağımsız örneklem t-testinin "
-"normallik varsayımını karşılayamadığı durumlarda güçlü bir alternatif sunar."
-" Sıralı (ordinal) veya sürekli verilerle çalışabilir."
+"normallik varsayımını karşılayamadığı durumlarda güçlü bir alternatif sunar. "
+"Sıralı (ordinal) veya sürekli verilerle çalışabilir."
 msgstr ""
 "The Mann-Whitney U test is a non-parametric test that compares the central "
-"tendency (median) of two independent groups. It is a strong alternative when"
-" the normality assumption of the independent-samples t-test is not met, and "
+"tendency (median) of two independent groups. It is a strong alternative when "
+"the normality assumption of the independent-samples t-test is not met, and "
 "works with ordinal or continuous data."
 
 #: istatistik/templates/istatistik/mann_whitney.html:202
@@ -7395,8 +8973,8 @@ msgid ""
 "eşleştirilmiş gruplar için ise Wilcoxon İşaret Testi kullanılmalıdır."
 msgstr ""
 "The rank-biserial correlation (r) is calculated as the effect size. To "
-"compare three or more independent groups, use the Kruskal-Wallis H test; for"
-" paired groups, use the Wilcoxon signed-rank test."
+"compare three or more independent groups, use the Kruskal-Wallis H test; for "
+"paired groups, use the Wilcoxon signed-rank test."
 
 #: istatistik/templates/istatistik/normallik.html:5
 msgid "Normallik Testi (Shapiro-Wilk, Kolmogorov-Smirnov)"
@@ -7404,11 +8982,11 @@ msgstr "Normality Test (Shapiro-Wilk, Kolmogorov-Smirnov)"
 
 #: istatistik/templates/istatistik/normallik.html:6
 msgid ""
-"Verilerinizin normal dağılıma uygunluğunu Shapiro-Wilk ve Kolmogorov-Smirnov"
-" testleriyle online analiz edin. Tez için hazır APA raporu ile PDF çıktısı."
+"Verilerinizin normal dağılıma uygunluğunu Shapiro-Wilk ve Kolmogorov-Smirnov "
+"testleriyle online analiz edin. Tez için hazır APA raporu ile PDF çıktısı."
 msgstr ""
-"Test whether your data are normally distributed online with the Shapiro-Wilk"
-" and Kolmogorov-Smirnov tests. PDF output with a thesis-ready APA report."
+"Test whether your data are normally distributed online with the Shapiro-Wilk "
+"and Kolmogorov-Smirnov tests. PDF output with a thesis-ready APA report."
 
 #: istatistik/templates/istatistik/normallik.html:17
 msgid ""
@@ -7476,8 +9054,7 @@ msgstr "p &gt; .05 → Normality is assumed."
 #: istatistik/templates/istatistik/normallik.html:170
 msgid ""
 "p ≤ .05 → Normal dağılım reddedilir; parametrik olmayan testler önerilir."
-msgstr ""
-"p ≤ .05 → Normality is rejected; non-parametric tests are recommended."
+msgstr "p ≤ .05 → Normality is rejected; non-parametric tests are recommended."
 
 #: istatistik/templates/istatistik/normallik.html:173
 msgid "Kolmogorov-Smirnov Testi"
@@ -7485,8 +9062,8 @@ msgstr "Kolmogorov-Smirnov Test"
 
 #: istatistik/templates/istatistik/normallik.html:174
 msgid ""
-"Büyük örneklemlerde (n ≥ 2000) Kolmogorov-Smirnov testi kullanılır. Ancak bu"
-" test büyük örneklemlerde aşırı duyarlı olabilir; histogram ve Q-Q grafiği "
+"Büyük örneklemlerde (n ≥ 2000) Kolmogorov-Smirnov testi kullanılır. Ancak bu "
+"test büyük örneklemlerde aşırı duyarlı olabilir; histogram ve Q-Q grafiği "
 "ile birlikte değerlendirilmesi önerilir."
 msgstr ""
 "For large samples (n ≥ 2000), the Kolmogorov-Smirnov test is used. However, "
@@ -7499,15 +9076,15 @@ msgstr "What Is a Normality Test?"
 
 #: istatistik/templates/istatistik/normallik.html:205
 msgid ""
-"Normallik testi, bir veri setinin normal (Gaussian) dağılıma uyup uymadığını"
-" istatistiksel olarak sınar. t-Testi, ANOVA, Pearson korelasyon ve doğrusal "
+"Normallik testi, bir veri setinin normal (Gaussian) dağılıma uyup uymadığını "
+"istatistiksel olarak sınar. t-Testi, ANOVA, Pearson korelasyon ve doğrusal "
 "regresyon gibi parametrik testlerin varsayımı, verilerin yaklaşık olarak "
 "normal dağılmasıdır."
 msgstr ""
 "A normality test statistically checks whether a dataset follows a normal "
-"(Gaussian) distribution. Parametric tests such as the t-test, ANOVA, Pearson"
-" correlation and linear regression assume approximately normally distributed"
-" data."
+"(Gaussian) distribution. Parametric tests such as the t-test, ANOVA, Pearson "
+"correlation and linear regression assume approximately normally distributed "
+"data."
 
 #: istatistik/templates/istatistik/normallik.html:206
 msgid "Shapiro-Wilk testi"
@@ -7558,8 +9135,8 @@ msgid ""
 "G*Power alternatifi — etki büyüklüğü, alfa ve güç parametrelerine göre "
 "gerekli örneklem sayısını hesaplayın."
 msgstr ""
-"A G*Power alternative — calculate the required sample size from effect size,"
-" alpha and power."
+"A G*Power alternative — calculate the required sample size from effect size, "
+"alpha and power."
 
 #: istatistik/templates/istatistik/orneklem.html:27
 msgid "Parametreler"
@@ -7657,11 +9234,11 @@ msgstr "What Is Power Analysis?"
 msgid ""
 "İstatistiksel güç (1−β), gerçekten var olan bir etkiyi tespit etme "
 "olasılığıdır. Güç analizi, bu olasılığı hedeflenen düzeye (genellikle 0.80) "
-"ulaştıracak minimum örneklem büyüklüğünü hesaplar. Yetersiz örneklem, gerçek"
-" etkilerin gözden kaçmasına (Tip II hata) yol açar."
+"ulaştıracak minimum örneklem büyüklüğünü hesaplar. Yetersiz örneklem, gerçek "
+"etkilerin gözden kaçmasına (Tip II hata) yol açar."
 msgstr ""
-"Statistical power (1−β) is the probability of detecting an effect that truly"
-" exists. Power analysis calculates the minimum sample size needed to reach "
+"Statistical power (1−β) is the probability of detecting an effect that truly "
+"exists. Power analysis calculates the minimum sample size needed to reach "
 "the target level (usually 0.80). An insufficient sample leads to missing "
 "real effects (Type II error)."
 
@@ -7803,8 +9380,8 @@ msgid ""
 "güçlü bir makine öğrenmesi algoritmasıdır. İki sınıf arasındaki sınıra en "
 "yakın olan eğitim örneklerine \"destek vektörleri\" adı verilir."
 msgstr ""
-"A Support Vector Machine (SVM) is a powerful machine learning algorithm that"
-" finds an optimal decision boundary (hyperplane) by maximizing the margin "
+"A Support Vector Machine (SVM) is a powerful machine learning algorithm that "
+"finds an optimal decision boundary (hyperplane) by maximizing the margin "
 "between classes. The training examples closest to the boundary between two "
 "classes are called \"support vectors\"."
 
@@ -7816,9 +9393,9 @@ msgid ""
 "hatalı sınıflandırmalara verilen cezayı ve dolayısıyla model karmaşıklığını "
 "düzenler."
 msgstr ""
-"The kernel function maps the data into a higher-dimensional space, making it"
-" possible to solve non-linear classification problems. The RBF (Radial Basis"
-" Function) kernel is the most widely used option. The C parameter controls "
+"The kernel function maps the data into a higher-dimensional space, making it "
+"possible to solve non-linear classification problems. The RBF (Radial Basis "
+"Function) kernel is the most widely used option. The C parameter controls "
 "the penalty for misclassifications and therefore the model complexity."
 
 #: istatistik/templates/istatistik/svm.html:237
@@ -7849,8 +9426,8 @@ msgstr "Repeated Measures ANOVA"
 
 #: istatistik/templates/istatistik/tekrarli_anova.html:6
 msgid ""
-"Tekrarlayan ölçümler ANOVA ile ücretsiz analiz yapın. F istatistiği, partial"
-" η² etki büyüklüğü, Bonferroni post-hoc karşılaştırmaları ve APA formatında "
+"Tekrarlayan ölçümler ANOVA ile ücretsiz analiz yapın. F istatistiği, partial "
+"η² etki büyüklüğü, Bonferroni post-hoc karşılaştırmaları ve APA formatında "
 "PDF rapor alın."
 msgstr ""
 "Analyze with repeated measures ANOVA for free. Get an APA-style PDF report "
@@ -7862,14 +9439,13 @@ msgid ""
 "Aynı katılımcıların 3+ koşulda ölçüldüğü verileri analiz edin — F "
 "istatistiği, η² etki büyüklüğü ve Bonferroni post-hoc."
 msgstr ""
-"Analyze data in which the same participants are measured under 3+ conditions"
-" — F statistic, η² effect size and Bonferroni post-hoc."
+"Analyze data in which the same participants are measured under 3+ conditions "
+"— F statistic, η² effect size and Bonferroni post-hoc."
 
 #: istatistik/templates/istatistik/tekrarli_anova.html:68
 msgid "En az 3 ölçüm sütunu seçin (ön test, son test, takip vb.)."
 msgstr ""
-"Select at least 3 measurement columns (pre-test, post-test, follow-up, "
-"etc.)."
+"Select at least 3 measurement columns (pre-test, post-test, follow-up, etc.)."
 
 #: istatistik/templates/istatistik/tekrarli_anova.html:70
 msgid ""
@@ -7893,8 +9469,8 @@ msgstr "Post-Hoc Comparisons (Paired t-test — Bonferroni)"
 
 #: istatistik/templates/istatistik/tekrarli_anova.html:201
 msgid ""
-"Tekrarlayan ölçümler ANOVA, aynı bireylerin 3+ farklı koşulda (zaman, tedavi"
-" vb.) ölçüldüğü tasarımlara uygulanır. Bağımlı değişkendeki farklılığın "
+"Tekrarlayan ölçümler ANOVA, aynı bireylerin 3+ farklı koşulda (zaman, tedavi "
+"vb.) ölçüldüğü tasarımlara uygulanır. Bağımlı değişkendeki farklılığın "
 "bireyler arası varyansı kontrol ederek daha hassas sonuç verir."
 msgstr ""
 "Repeated measures ANOVA is applied to designs in which the same individuals "
@@ -7973,8 +9549,8 @@ msgid ""
 "Her satır bir kişi, bir sütun grup etiketi (ör. Erkek/Kadın), bir sütun "
 "ölçüm değeri."
 msgstr ""
-"Each row is one participant, one column is the group label (e.g. "
-"Male/Female), one column is the measured value."
+"Each row is one participant, one column is the group label (e.g. Male/"
+"Female), one column is the measured value."
 
 #: istatistik/templates/istatistik/ttesti.html:287
 msgid "Bağımlı t-testi:"
@@ -8101,19 +9677,19 @@ msgstr "Wilcoxon Signed-Rank Test"
 
 #: istatistik/templates/istatistik/wilcoxon.html:6
 msgid ""
-"İki eşleştirilmiş ölçümü Wilcoxon İşaret Testi ile ücretsiz karşılaştırın. W"
-" istatistiği, etki büyüklüğü ve APA formatında PDF rapor alın."
+"İki eşleştirilmiş ölçümü Wilcoxon İşaret Testi ile ücretsiz karşılaştırın. W "
+"istatistiği, etki büyüklüğü ve APA formatında PDF rapor alın."
 msgstr ""
-"Compare two paired measurements for free with the Wilcoxon signed-rank test."
-" Get an APA-style PDF report with the W statistic and effect size."
+"Compare two paired measurements for free with the Wilcoxon signed-rank test. "
+"Get an APA-style PDF report with the W statistic and effect size."
 
 #: istatistik/templates/istatistik/wilcoxon.html:17
 msgid ""
 "İki bağımlı (eşleştirilmiş) ölçümü karşılaştırın — bağımlı t-testinin "
 "parametrik olmayan alternatifi."
 msgstr ""
-"Compare two dependent (paired) measurements — the non-parametric alternative"
-" to the paired t-test."
+"Compare two dependent (paired) measurements — the non-parametric alternative "
+"to the paired t-test."
 
 #: istatistik/templates/istatistik/wilcoxon.html:68
 msgid "İki sütun seçin: ön test ve son test (ya da iki ilgili ölçüm)."
@@ -8130,8 +9706,7 @@ msgstr "At least 5 paired observations are required."
 
 #: istatistik/templates/istatistik/wilcoxon.html:80
 msgid "Karşılaştırılacak iki sayısal sütunu seçin (örn. ön test – son test)."
-msgstr ""
-"Select the two numeric columns to compare (e.g. pre-test – post-test)."
+msgstr "Select the two numeric columns to compare (e.g. pre-test – post-test)."
 
 #: istatistik/templates/istatistik/wilcoxon.html:83
 msgid "1. Ölçüm (ön test / grup 1)"
@@ -8197,13 +9772,13 @@ msgid ""
 "(örneğin bir eğitimin etkisini değerlendirmek), iki yöntemin aynı "
 "katılımcılar üzerindeki etkisinin karşılaştırılması ve tekrarlı ölçüm "
 "çalışmaları yer alır. Test, sadece farkların işaretini ve büyüklük "
-"sıralamasını kullanarak çalışır; bu da aykırı değerlere karşı daha dayanıklı"
-" olmasını sağlar."
+"sıralamasını kullanarak çalışır; bu da aykırı değerlere karşı daha dayanıklı "
+"olmasını sağlar."
 msgstr ""
 "Typical use cases include pre-test – post-test comparisons (e.g. evaluating "
 "the effect of a training), comparing the effect of two methods on the same "
-"participants and repeated measures studies. The test uses only the signs and"
-" ranks of the differences, which makes it more robust to outliers."
+"participants and repeated measures studies. The test uses only the signs and "
+"ranks of the differences, which makes it more robust to outliers."
 
 #: istatistik/templates/istatistik/wilcoxon.html:227
 msgid ""
@@ -8211,8 +9786,8 @@ msgid ""
 "biserial korelasyon (r) hesaplanır. p &lt; .05 olduğunda iki ölçüm arasında "
 "anlamlı bir fark olduğu kabul edilir."
 msgstr ""
-"Results are reported with the W statistic and the p-value. The rank-biserial"
-" correlation (r) is calculated as the effect size. When p &lt; .05, the "
+"Results are reported with the W statistic and the p-value. The rank-biserial "
+"correlation (r) is calculated as the effect size. When p &lt; .05, the "
 "difference between the two measurements is considered significant."
 
 #: istatistik/templates/istatistik/wilcoxon.html:237
@@ -8301,8 +9876,8 @@ msgid ""
 "Cronbach Alpha katsayısı, madde-toplam korelasyonları ve madde çıkarma "
 "tablosu PDF olarak hazır."
 msgstr ""
-"Measure the internal consistency of your survey scale. Upload your CSV/Excel"
-" file; Cronbach's alpha, item-total correlations and the alpha-if-item-"
+"Measure the internal consistency of your survey scale. Upload your CSV/Excel "
+"file; Cronbach's alpha, item-total correlations and the alpha-if-item-"
 "deleted table are ready as a PDF."
 
 #: istatistik/views.py:92
@@ -8322,8 +9897,8 @@ msgid ""
 "α katsayısı ve \"Kabul Edilemez / Düşük / Kabul Edilebilir / İyi / "
 "Mükemmel\" yorumu otomatik hesaplanır."
 msgstr ""
-"The α coefficient and its interpretation (\"Unacceptable / Low / Acceptable "
-"/ Good / Excellent\") are calculated automatically."
+"The α coefficient and its interpretation (\"Unacceptable / Low / "
+"Acceptable / Good / Excellent\") are calculated automatically."
 
 #: istatistik/views.py:94
 msgid "Madde İstatistikleri"
@@ -8351,8 +9926,8 @@ msgstr "All results can be downloaded as a PDF in well-organized tables."
 
 #: istatistik/views.py:109
 msgid ""
-"Anket ölçeğinizin iç tutarlılığını ölçün. Her sütun bir madde, her satır bir"
-" katılımcı olmalıdır."
+"Anket ölçeğinizin iç tutarlılığını ölçün. Her sütun bir madde, her satır bir "
+"katılımcı olmalıdır."
 msgstr ""
 "Measure the internal consistency of your survey scale. Each column must be "
 "an item and each row a participant."
@@ -8371,8 +9946,8 @@ msgid ""
 "testi, çarpıklık/basıklık değerleri ve Q-Q plot içeren PDF raporu saniyeler "
 "içinde alın."
 msgstr ""
-"Answer the question \"parametric or non-parametric?\". Get a PDF report with"
-" the Shapiro-Wilk test, skewness/kurtosis values and Q-Q plots in seconds."
+"Answer the question \"parametric or non-parametric?\". Get a PDF report with "
+"the Shapiro-Wilk test, skewness/kurtosis values and Q-Q plots in seconds."
 
 #: istatistik/views.py:132
 msgid ""
@@ -8388,8 +9963,7 @@ msgstr "Skewness & Kurtosis"
 
 #: istatistik/views.py:133
 msgid ""
-"Skewness ve kurtosis değerleri ±1.96 ve ±2.58 kritik sınırlarıyla "
-"yorumlanır."
+"Skewness ve kurtosis değerleri ±1.96 ve ±2.58 kritik sınırlarıyla yorumlanır."
 msgstr ""
 "Skewness and kurtosis values are interpreted against the critical limits of "
 "±1.96 and ±2.58."
@@ -8411,8 +9985,8 @@ msgid ""
 "\"Parametrik test kullanılabilir\" veya \"Non-parametrik test önerilir\" "
 "kararı otomatik verilir."
 msgstr ""
-"The decision \"a parametric test can be used\" or \"a non-parametric test is"
-" recommended\" is made automatically."
+"The decision \"a parametric test can be used\" or \"a non-parametric test is "
+"recommended\" is made automatically."
 
 #: istatistik/views.py:149
 msgid ""
@@ -8447,8 +10021,7 @@ msgid ""
 "otomatik oluşsun. Tez bulgular bölümünüzün ilk sayfası hazır."
 msgstr ""
 "Upload your data and get frequency tables, means, standard deviations and "
-"charts automatically. The first page of your thesis results chapter is "
-"ready."
+"charts automatically. The first page of your thesis results chapter is ready."
 
 #: istatistik/views.py:172
 msgid "Frekans Tabloları"
@@ -8468,8 +10041,8 @@ msgstr "Central Tendency"
 
 #: istatistik/views.py:173
 msgid ""
-"Sürekli değişkenler için n, ortalama, standart sapma, min, max, medyan, "
-"Q1-Q3 hesaplanır."
+"Sürekli değişkenler için n, ortalama, standart sapma, min, max, medyan, Q1-"
+"Q3 hesaplanır."
 msgstr ""
 "n, mean, standard deviation, min, max, median and Q1–Q3 are calculated for "
 "continuous variables."
@@ -8483,8 +10056,8 @@ msgid ""
 "Kategorik değişkenler için çubuk grafik, sürekli değişkenler için histogram "
 "PDF'e eklenir."
 msgstr ""
-"Bar charts for categorical variables and histograms for continuous variables"
-" are added to the PDF."
+"Bar charts for categorical variables and histograms for continuous variables "
+"are added to the PDF."
 
 #: istatistik/views.py:175
 msgid "Hazır PDF Rapor"
@@ -8623,8 +10196,8 @@ msgid ""
 "Aynı gruba ait iki ölçüm arasındaki farkı test edin (öntest-sontest, "
 "eşleştirilmiş)."
 msgstr ""
-"Test the difference between two measurements from the same group (pre-"
-"test/post-test, paired)."
+"Test the difference between two measurements from the same group (pre-test/"
+"post-test, paired)."
 
 #: istatistik/views.py:265
 msgid "Cohen's d katsayısı ve %95 güven aralığı otomatik hesaplanır."
@@ -8650,15 +10223,13 @@ msgstr ""
 #: istatistik/views.py:293
 msgid "F istatistiği, serbestlik dereceleri ve p-değeri otomatik hesaplanır."
 msgstr ""
-"The F statistic, degrees of freedom and p-value are calculated "
-"automatically."
+"The F statistic, degrees of freedom and p-value are calculated automatically."
 
 #: istatistik/views.py:294
 msgid ""
 "Hangi gruplar arasında fark var? Tukey veya Bonferroni post-hoc testi ile "
 "belirleyin."
-msgstr ""
-"Which groups differ? Find out with Tukey or Bonferroni post-hoc tests."
+msgstr "Which groups differ? Find out with Tukey or Bonferroni post-hoc tests."
 
 #: istatistik/views.py:295 istatistik/views.py:514
 msgid "Eta-kare (η²) ile etki büyüklüğü raporlanır."
@@ -8784,8 +10355,7 @@ msgstr "Test of Independence"
 
 #: istatistik/views.py:543
 msgid ""
-"Pearson's Ki-Kare testi ile iki kategorik değişken arasındaki ilişki "
-"sınanır."
+"Pearson's Ki-Kare testi ile iki kategorik değişken arasındaki ilişki sınanır."
 msgstr ""
 "The relationship between two categorical variables is tested with Pearson's "
 "chi-square test."
@@ -8868,8 +10438,8 @@ msgstr "Binary Outcome"
 
 #: istatistik/views.py:605
 msgid ""
-"0/1 veya iki kategorili bağımlı değişken ile çalışır. Kategorik yordayıcılar"
-" otomatik dummy'e dönüştürülür."
+"0/1 veya iki kategorili bağımlı değişken ile çalışır. Kategorik yordayıcılar "
+"otomatik dummy'e dönüştürülür."
 msgstr ""
 "Works with a 0/1 or two-category dependent variable. Categorical predictors "
 "are automatically converted to dummies."
@@ -8887,18 +10457,14 @@ msgstr ""
 "predictor."
 
 #: istatistik/views.py:607
-msgid "Sınıflandırma"
-msgstr "Classification"
-
-#: istatistik/views.py:607
 msgid "Model doğruluğu ve sınıflandırma tablosu (TP, TN, FP, FN) gösterilir."
 msgstr ""
 "Model accuracy and the classification table (TP, TN, FP, FN) are shown."
 
 #: istatistik/views.py:608
 msgid ""
-"Nagelkerke R², model χ² ve APA formatında raporlanabilir sonuçlar PDF olarak"
-" indirilir."
+"Nagelkerke R², model χ² ve APA formatında raporlanabilir sonuçlar PDF olarak "
+"indirilir."
 msgstr ""
 "Nagelkerke R², model χ² and results ready for APA-style reporting are "
 "downloaded as a PDF."
@@ -8942,8 +10508,7 @@ msgstr "Confusion Matrix"
 #: istatistik/views.py:639 istatistik/views.py:670
 msgid ""
 "Test seti üzerindeki doğruluk, kesinlik, duyarlılık ve F1 skoru raporlanır."
-msgstr ""
-"Accuracy, precision, recall and F1 score on the test set are reported."
+msgstr "Accuracy, precision, recall and F1 score on the test set are reported."
 
 #: istatistik/views.py:640
 msgid ""
@@ -8959,8 +10524,8 @@ msgid ""
 "RBF, Doğrusal ve Polinom kernel seçenekleriyle confusion matrix ve "
 "permutation importance dahil tam ML raporu."
 msgstr ""
-"Classify the categorical target variable in your dataset with high accuracy."
-" A complete ML report with RBF, linear and polynomial kernel options, "
+"Classify the categorical target variable in your dataset with high accuracy. "
+"A complete ML report with RBF, linear and polynomial kernel options, "
 "including a confusion matrix and permutation importance."
 
 #: istatistik/views.py:668
@@ -8972,8 +10537,8 @@ msgid ""
 "RBF, Doğrusal veya Polinom kernel ve C düzenleme parametresiyle Destek "
 "Vektör Makinesi eğitilir."
 msgstr ""
-"A Support Vector Machine is trained with an RBF, linear or polynomial kernel"
-" and the C regularization parameter."
+"A Support Vector Machine is trained with an RBF, linear or polynomial kernel "
+"and the C regularization parameter."
 
 #: istatistik/views.py:669
 msgid "Permutation Importance"
@@ -8984,8 +10549,8 @@ msgid ""
 "Her değişkenin sınıflandırmaya gerçek katkısı permütasyon yöntemiyle "
 "hesaplanır ve sıralanır."
 msgstr ""
-"Each variable's actual contribution to the classification is calculated with"
-" the permutation method and ranked."
+"Each variable's actual contribution to the classification is calculated with "
+"the permutation method and ranked."
 
 #: istatistik/views.py:671
 msgid ""
@@ -9021,8 +10586,8 @@ msgstr "KMO & Bartlett"
 
 #: istatistik/views.py:700
 msgid ""
-"Örneklem yeterliliği (KMO) ve Bartlett küresellik testi ile faktör analizine"
-" uygunluğu sınayın."
+"Örneklem yeterliliği (KMO) ve Bartlett küresellik testi ile faktör analizine "
+"uygunluğu sınayın."
 msgstr ""
 "Test suitability for factor analysis with sampling adequacy (KMO) and "
 "Bartlett's test of sphericity."
@@ -9129,8 +10694,8 @@ msgstr "A ready-made APA-style report sentence and PDF download."
 #: istatistik/views.py:791
 msgid ""
 "Aynı katılımcıların 3+ farklı koşulda/zamanda ölçüldüğü verileri analiz "
-"edin. F istatistiği, η² etki büyüklüğü ve Bonferroni post-hoc ile PDF raporu"
-" alın."
+"edin. F istatistiği, η² etki büyüklüğü ve Bonferroni post-hoc ile PDF raporu "
+"alın."
 msgstr ""
 "Analyze data in which the same participants are measured under 3+ different "
 "conditions/time points. Get a PDF report with the F statistic, η² effect "
@@ -9141,8 +10706,8 @@ msgid ""
 "Tekrarlayan ölçümler ANOVA ile F istatistiği, serbestlik derecesi ve p "
 "değeri hesaplanır."
 msgstr ""
-"The F statistic, degrees of freedom and p-value are calculated with repeated"
-" measures ANOVA."
+"The F statistic, degrees of freedom and p-value are calculated with repeated "
+"measures ANOVA."
 
 #: istatistik/views.py:794
 msgid "Partial eta-squared (η²) ile etki büyüklüğü raporlanır."
@@ -9306,8 +10871,8 @@ msgstr "OpenAlex Publication Scraping and Data Download — 240M+"
 
 #: openalex/templates/openalex/landing.html:10
 msgid ""
-"OpenAlex'ten kodsuz akademik yayın kazıma. 240M+ kayıt arasında arama yapın,"
-" Excel veya TXT indirin."
+"OpenAlex'ten kodsuz akademik yayın kazıma. 240M+ kayıt arasında arama yapın, "
+"Excel veya TXT indirin."
 msgstr ""
 "No-code academic publication scraping from OpenAlex. Search among 240M+ "
 "records and download as Excel or TXT."
@@ -9319,8 +10884,8 @@ msgstr "OpenAlex Publication Scraping and Data Download"
 #: openalex/templates/openalex/landing.html:27
 msgid ""
 "OpenAlex'teki 240 milyondan fazla akademik yayından kodsuz veri çekin. "
-"Başlık, özet, yazar, anahtar kelime, dergi ve kurum alanlarında arama yapın;"
-" sonuçları"
+"Başlık, özet, yazar, anahtar kelime, dergi ve kurum alanlarında arama yapın; "
+"sonuçları"
 msgstr ""
 "Extract data with no code from 240 million+ academic publications on "
 "OpenAlex. Search by title, abstract, author, keyword, journal, and "
@@ -9498,8 +11063,8 @@ msgid ""
 "ağ haritası oluşturun."
 msgstr ""
 "With 100+ results, import into the <a href=\"/bibliometrics/\" class=\"text-"
-"decoration-none\" style=\"color:#a5b4fc;\">Bibliometric Analysis</a> tool to"
-" build citation and network maps."
+"decoration-none\" style=\"color:#a5b4fc;\">Bibliometric Analysis</a> tool to "
+"build citation and network maps."
 
 #: openalex/templates/openalex/landing.html:214
 msgid "Özet"
@@ -9642,8 +11207,8 @@ msgid ""
 "Bibliometrik analiz kuyruğa alındı. Demo rapor (3 grafik PDF) hazır "
 "olduğunda e-postanıza gönderilecek."
 msgstr ""
-"Bibliometric analysis queued. A demo report (3-chart PDF) will be emailed to"
-" you once ready."
+"Bibliometric analysis queued. A demo report (3-chart PDF) will be emailed to "
+"you once ready."
 
 #: openalex/templates/openalex/landing.html:545
 msgid "Bibliometrik analizlerim"
@@ -9685,8 +11250,8 @@ msgstr "Semantic Scholar Publication Scraping — 200M+ Articles"
 
 #: semanticscholar/templates/semanticscholar/landing.html:10
 msgid ""
-"Semantic Scholar'dan kodsuz yayın kazıma. En yeni 5 yayının verilerini Excel"
-" veya TXT olarak indirin."
+"Semantic Scholar'dan kodsuz yayın kazıma. En yeni 5 yayının verilerini Excel "
+"veya TXT olarak indirin."
 msgstr ""
 "No-code publication scraping from Semantic Scholar. Download data for the 5 "
 "most recent publications as Excel or TXT."
@@ -9700,8 +11265,8 @@ msgid ""
 "200 milyondan fazla akademik yayın arasında kodsuz arama yapın. Başlık, "
 "yazar, araştırma alanı ve yıl filtresiyle sorgulayın; toplam sonuç sayısını "
 "görün. En yeni <strong class=\"text-info\">5 yayının</strong> verilerini "
-"<strong class=\"text-info\">Excel veya TXT</strong> olarak indirin ya da "
-"e-posta ile alın."
+"<strong class=\"text-info\">Excel veya TXT</strong> olarak indirin ya da e-"
+"posta ile alın."
 msgstr ""
 "Search with no code among 200 million+ academic publications. Query by "
 "title, author, field of study, and year; see the total result count. "
@@ -9733,7 +11298,7 @@ msgstr "You need to verify your email address to use this tool."
 #: semanticscholar/templates/semanticscholar/landing.html:216
 #: semanticscholar/templates/semanticscholar/landing.html:223
 #: semanticscholar/templates/semanticscholar/landing.html:249
-#: templates/base.html:283
+#: templates/base.html:289
 msgid "Ara"
 msgstr "Search"
 
@@ -9842,12 +11407,12 @@ msgstr "Full Data Request"
 #: semanticscholar/templates/semanticscholar/landing.html:449
 msgid ""
 "Tüm sonuç setine ihtiyaç duyuyorsanız <a href=\"mailto:info@analizus.com\" "
-"class=\"text-decoration-none\" "
-"style=\"color:#67e8f9;\">info@analizus.com</a> adresine yazın."
+"class=\"text-decoration-none\" style=\"color:#67e8f9;\">info@analizus.com</"
+"a> adresine yazın."
 msgstr ""
 "If you need the full result set, email <a href=\"mailto:info@analizus.com\" "
-"class=\"text-decoration-none\" "
-"style=\"color:#67e8f9;\">info@analizus.com</a>."
+"class=\"text-decoration-none\" style=\"color:#67e8f9;\">info@analizus.com</"
+"a>."
 
 #: templates/admin/index.html:4
 msgid "Django site admin"
@@ -9865,183 +11430,182 @@ msgstr ""
 "Statistical analysis, thesis writing, and academic research support with "
 "SPSS, Python, R Studio, qualitative analysis, and AI."
 
-#: templates/base.html:173
+#: templates/base.html:179
 msgid "İçeriğe geç"
 msgstr "Skip to content"
 
-#: templates/base.html:187 templates/base.html:404
+#: templates/base.html:193 templates/base.html:410
 msgid "Analizus Ana Sayfa"
 msgstr "Analizus Home"
 
-#: templates/base.html:193
+#: templates/base.html:199
 msgid "Ana menü"
 msgstr "Main menu"
 
-#: templates/base.html:200 templates/base.html:419
+#: templates/base.html:206 templates/base.html:425
 msgid "Analizler"
 msgstr "Analyses"
 
-#: templates/base.html:210 templates/base.html:425
+#: templates/base.html:216 templates/base.html:431
 msgid "Tableau Analizleri"
 msgstr "Tableau Analyses"
 
-#: templates/base.html:214 templates/base.html:427 templates/base.html:811
-#: templates/base.html:815 templates/base.html:821
+#: templates/base.html:220 templates/base.html:433 templates/base.html:817
+#: templates/base.html:821 templates/base.html:827
 #: templates/partials/footer.html:48
 msgid "AI Asistan"
 msgstr "AI Assistant"
 
-#: templates/base.html:217
+#: templates/base.html:223
 msgid "YouTube Transcript İndir"
 msgstr "Download YouTube Transcript"
 
-#: templates/base.html:238 templates/base.html:439
+#: templates/base.html:244 templates/base.html:445
 #: templates/partials/footer.html:59
 msgid "Topluluk"
 msgstr "Community"
 
-#: templates/base.html:246 templates/base.html:445 templates/base.html:526
+#: templates/base.html:252 templates/base.html:451 templates/base.html:532
 #: templates/partials/footer.html:63
 msgid "İstatistik Arena"
 msgstr "Statistics Arena"
 
-#: templates/base.html:270 templates/base.html:463
+#: templates/base.html:276 templates/base.html:469
 msgid "AI Çözümler"
 msgstr "AI Solutions"
 
-#: templates/base.html:272 templates/base.html:464
+#: templates/base.html:278 templates/base.html:470
 #: templates/partials/footer.html:100 templates/partials/footer.html:135
 msgid "Hakkımızda"
 msgstr "About Us"
 
-#: templates/base.html:273 templates/base.html:465
+#: templates/base.html:279 templates/base.html:471
 #: templates/partials/footer.html:101 templates/partials/footer.html:136
 msgid "İletişim"
 msgstr "Contact"
 
-#: templates/base.html:296
+#: templates/base.html:302
 msgid "Dil seç"
 msgstr "Select language"
 
-#: templates/base.html:324
+#: templates/base.html:330
 msgid "Gelen kutusu"
 msgstr "Inbox"
 
-#: templates/base.html:345
+#: templates/base.html:351
 msgid "Puanını Arena'da artır"
 msgstr "Boost your score in the Arena"
 
-#: templates/base.html:351 templates/base.html:489
+#: templates/base.html:357 templates/base.html:495
 msgid "Profili Düzenle"
 msgstr "Edit Profile"
 
-#: templates/base.html:352
+#: templates/base.html:358
 msgid "Ödemelerim"
 msgstr "My Payments"
 
-#: templates/base.html:353 templates/base.html:490
+#: templates/base.html:359 templates/base.html:496
 msgid "Arkadaşını Davet Et"
 msgstr "Invite a Friend"
 
-#: templates/base.html:355 templates/base.html:491
+#: templates/base.html:361 templates/base.html:497
 msgid "Gelen Kutusu"
 msgstr "Inbox"
 
-#: templates/base.html:365 templates/base.html:497
+#: templates/base.html:371 templates/base.html:503
 msgid "Çıkış Yap"
 msgstr "Log Out"
 
-#: templates/base.html:374
+#: templates/base.html:380
 msgid "Giriş"
 msgstr "Log In"
 
-#: templates/base.html:382
+#: templates/base.html:388
 msgid "Menüyü aç"
 msgstr "Open menu"
 
-#: templates/base.html:402
+#: templates/base.html:408
 msgid "Mobil menü"
 msgstr "Mobile menu"
 
-#: templates/base.html:408
+#: templates/base.html:414
 msgid "Menüyü kapat"
 msgstr "Close menu"
 
-#: templates/base.html:472
+#: templates/base.html:478
 msgid "Dil"
 msgstr "Language"
 
-#: templates/base.html:514
+#: templates/base.html:520
 msgid "Forum konusu veya kullanıcı ara..."
 msgstr "Search forum topics or users..."
 
-#: templates/base.html:527 templates/base.html:548 templates/base.html:561
-#: templates/base.html:570 templates/base.html:828
+#: templates/base.html:533 templates/base.html:554 templates/base.html:567
+#: templates/base.html:576 templates/base.html:834
 #: templates/partials/footer.html:153 templates/partials/footer.html:217
 msgid "Kapat"
 msgstr "Close"
 
-#: templates/base.html:533
+#: templates/base.html:539
 msgid "Soru yükleniyor..."
 msgstr "Loading question..."
 
-#: templates/base.html:547
+#: templates/base.html:553
 msgid "Kullanıcı Kartı"
 msgstr "User Card"
 
-#: templates/base.html:560
+#: templates/base.html:566
 msgid "Haftanın Başarı Hikayesi"
 msgstr "Success Story of the Week"
 
-#: templates/base.html:569
+#: templates/base.html:575
 msgid "Tüm Hikayeler"
 msgstr "All Stories"
 
-#: templates/base.html:661
+#: templates/base.html:667
 msgid "Soru yüklenemedi."
 msgstr "Could not load the question."
 
-#: templates/base.html:690
+#: templates/base.html:696
 msgid "Doğru Cevap! (+10 Puan)"
 msgstr "Correct! (+10 Points)"
 
-#: templates/base.html:692
+#: templates/base.html:698
 msgid ""
-"TEBRİKLER! \"İstatistik Ustası\" rozeti kazandınız! Artık ilan "
-"açabilirsiniz."
+"TEBRİKLER! \"İstatistik Ustası\" rozeti kazandınız! Artık ilan açabilirsiniz."
 msgstr ""
 "CONGRATULATIONS! You earned the \"Statistics Master\" badge! You can now "
 "post listings."
 
-#: templates/base.html:698
+#: templates/base.html:704
 msgid "Yanlış. Doğru cevap:"
 msgstr "Incorrect. The correct answer:"
 
-#: templates/base.html:703
+#: templates/base.html:709
 msgid "Toplam Doğru:"
 msgstr "Total Correct:"
 
-#: templates/base.html:723
+#: templates/base.html:729
 msgid "Profil yüklenemedi."
 msgstr "Could not load the profile."
 
-#: templates/base.html:765
+#: templates/base.html:771
 msgid "İşlem başarısız."
 msgstr "The action failed."
 
-#: templates/base.html:783
+#: templates/base.html:789
 msgid "Hikaye bulunamadı."
 msgstr "Story not found."
 
-#: templates/base.html:809
+#: templates/base.html:815
 msgid "AI Asistan ile sohbet et"
 msgstr "Chat with the AI Assistant"
 
-#: templates/base.html:825
+#: templates/base.html:831
 msgid "Tam sayfa aç"
 msgstr "Open full page"
 
-#: templates/base.html:838
+#: templates/base.html:844
 msgid ""
 "Merhaba! İstatistik testi, akademik makale arama ya da veri analizi "
 "konularında yardımcı olabilirim."
@@ -10049,47 +11613,47 @@ msgstr ""
 "Hello! I can help you with statistical tests, academic literature search or "
 "data analysis."
 
-#: templates/base.html:839
+#: templates/base.html:845
 msgid "Ne yapmak istiyorsunuz?"
 msgstr "What would you like to do?"
 
-#: templates/base.html:849
+#: templates/base.html:855
 msgid "Anonim: 3 soru/gün"
 msgstr "Anonymous: 3 questions/day"
 
-#: templates/base.html:849 templates/base.html:1237
+#: templates/base.html:855 templates/base.html:1243
 msgid "Üye ol"
 msgstr "Sign up"
 
-#: templates/base.html:849
+#: templates/base.html:855
 msgid "30 soru"
 msgstr "30 questions"
 
-#: templates/base.html:854
+#: templates/base.html:860
 msgid "Sorunuzu yazın…"
 msgstr "Type your question…"
 
-#: templates/base.html:854
+#: templates/base.html:860
 msgid "Mesaj"
 msgstr "Message"
 
-#: templates/base.html:855
+#: templates/base.html:861
 msgid "Gönder"
 msgstr "Send"
 
-#: templates/base.html:1202
+#: templates/base.html:1208
 msgid "hak"
 msgstr "left"
 
-#: templates/base.html:1237
+#: templates/base.html:1243
 msgid "ile 30 soruya çıkar."
 msgstr "to increase your limit to 30 questions."
 
-#: templates/base.html:1242
+#: templates/base.html:1248
 msgid "Bir hata oluştu, tekrar deneyin."
 msgstr "An error occurred, please try again."
 
-#: templates/base.html:1246
+#: templates/base.html:1252
 msgid "Bağlantı hatası. İnternet bağlantınızı kontrol edin."
 msgstr "Connection error. Please check your internet connection."
 
@@ -10190,8 +11754,8 @@ msgid ""
 "Analizus'u seviyorsan destekle — Destekçi rozeti, premium üyelik ve daha "
 "fazlası seni bekliyor."
 msgstr ""
-"If you like Analizus, support us — a supporter badge, premium membership and"
-" more await you."
+"If you like Analizus, support us — a supporter badge, premium membership and "
+"more await you."
 
 #: templates/partials/footer.html:116
 msgid "Destekçi Rozeti"
@@ -10241,7 +11805,8 @@ msgid "Paketini seç"
 msgstr "Choose your package"
 
 #: templates/partials/footer.html:191
-msgid "\"Ödeme Talimatlarını Al\" butonuna bas — IBAN bilgileri e-postana gelir"
+msgid ""
+"\"Ödeme Talimatlarını Al\" butonuna bas — IBAN bilgileri e-postana gelir"
 msgstr ""
 "Click \"Get Payment Instructions\" — the IBAN details will be sent to your "
 "email"
@@ -10356,8 +11921,8 @@ msgstr ""
 "analysis with your own data through one-on-one training."
 
 #~ msgid ""
-#~ "Akademik araştırma ve istatistik analiz için Türkçe platform. Tezini güvenle"
-#~ " yaz, verini doğru analiz et."
+#~ "Akademik araştırma ve istatistik analiz için Türkçe platform. Tezini "
+#~ "güvenle yaz, verini doğru analiz et."
 #~ msgstr ""
-#~ "A platform for academic research and statistical analysis. Write your thesis"
-#~ " with confidence, analyze your data correctly."
+#~ "A platform for academic research and statistical analysis. Write your "
+#~ "thesis with confidence, analyze your data correctly."
