@@ -163,10 +163,28 @@ olabilir, tahminler iyimser kabul edilmeli.
   dışı kategori (proje kuralı: ödeme sistemi belirsiz, sormadan genişletme).
   Doğrulama: `manage.py check` temiz, `/openalex/` ve `/semantic-scholar/`
   200, kalan Türkçe metin taraması yalnızca CSS `font-family` değeri buldu.
-- [ ] **3b-2c. Kalan dosyalar** (alt gruplar halinde onaya sunulacak):
-  - `forum/templates/forum/proje_talebi.html`, `ai_cozumler.html`,
-    `egitim.html`, `egitim_detay.html`, `egitim_talebi.html`
-    (Proje talebi / Danışmanlık / Eğitim — 22 Eylül 2026 kararıyla DAHİL)
+- [x] **3b-2c. `proje_talebi.html` + `ai_cozumler.html` + `egitim.html` +
+  `egitim_detay.html` + `egitim_talebi.html`:** TAMAMLANDI (23 Eylül 2026).
+  Title/meta blokları, form alanları (label/placeholder/option), SSS
+  akordeonları, zaman çizelgeleri, kart metinleri işaretlendi.
+  **Kasıtlı atlanan:** `item.title`/`item.summary`/`item.audience`/
+  `item.syllabus`/`item.faq` gibi `training_catalog.py`'den (Python) gelen
+  DİNAMİK kurs verileri — bunlar adım 6'nın (Python tarafı metinler)
+  kapsamına giriyor, şablon seviyesinde çevrilemez. JSON-LD blokları da
+  (home.html'deki gibi) kasıtlı atlandı.
+  **Bulunup düzeltilen 2. tür hata:** `{% blocktrans %}` içine `{% url %}`/
+  `{% if %}` gibi iç içe template tag koymak `TemplateSyntaxError` verir
+  (Django blocktrans yalnızca basit `{{ değişken }}` enterpolasyonuna izin
+  verir). İki yerde bu hata yapılmıştı (egitim.html, egitim_talebi.html) —
+  fark edilip URL'yi `{% url ... as x %}` ile önceden hesaplayıp
+  `{{ x }}` olarak geçirme veya cümleyi ayrı `{% trans %}` parçalarına
+  bölme yöntemiyle düzeltildi. Tüm dosyalar bu kalıp için ayrıca tarandı,
+  başka örnek çıkmadı.
+  Doğrulama: `manage.py check` temiz; flag'ler geçici açılıp (sonra
+  kapatılıp) `/egitim/`, `/ai-cozumler/`, `/egitim-talebi/`,
+  `/egitim/spss-uygulamali/` gerçek render ile 200 test edildi; kalan
+  Türkçe metin taraması temiz.
+- [ ] **3b-2d. Kalan dosyalar** (18 istatistik şablonu):
   - `istatistik/templates/istatistik/{afa,anova,betimsel,cronbach,
     friedman,karar_agaci,ki_kare,korelasyon,kruskal_wallis,
     lineer_regresyon,lojistik_regresyon,mann_whitney,normallik,

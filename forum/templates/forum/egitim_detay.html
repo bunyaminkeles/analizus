@@ -1,11 +1,12 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load i18n %}
 
-{% block title %}{{ item.title }} — Eğitim | Analizus{% endblock %}
+{% block title %}{{ item.title }} — {% trans "Eğitim" %} | Analizus{% endblock %}
 {% block meta_description %}{{ item.summary }}{% endblock %}
-{% block og_title %}{{ item.title }} — Eğitim | Analizus{% endblock %}
+{% block og_title %}{{ item.title }} — {% trans "Eğitim" %} | Analizus{% endblock %}
 {% block og_description %}{{ item.summary }}{% endblock %}
-{% block twitter_title %}{{ item.title }} — Eğitim | Analizus{% endblock %}
+{% block twitter_title %}{{ item.title }} — {% trans "Eğitim" %} | Analizus{% endblock %}
 {% block twitter_description %}{{ item.summary }}{% endblock %}
 
 {% block main_content_classes %}col-lg-12{% endblock %}
@@ -56,36 +57,36 @@
 <section class="py-4">
     <div class="container" style="max-width: 800px;">
 
-        <p class="ax-training-detail-back"><a href="{% url 'egitim' %}">← Eğitim Kataloğuna Dön</a></p>
+        <p class="ax-training-detail-back"><a href="{% url 'egitim' %}">← {% trans "Eğitim Kataloğuna Dön" %}</a></p>
 
         <div class="ax-training-detail-header">
             <span class="ax-training-course-card__level">{{ item.level_label }}</span>
             <h1 class="ax-training-detail-title">{{ item.title }}</h1>
-            <p class="ax-training-detail-meta">{{ item.hours }} saat</p>
+            <p class="ax-training-detail-meta">{% blocktrans with hours=item.hours %}{{ hours }} saat{% endblocktrans %}</p>
             <p class="ax-training-detail-summary">{{ item.summary }}</p>
-            <a href="{% url 'egitim_talebi' %}?kurs={{ item.slug }}&source={{ source }}" class="ax-btn ax-btn--primary">Bu Eğitimi Talep Et</a>
+            <a href="{% url 'egitim_talebi' %}?kurs={{ item.slug }}&source={{ source }}" class="ax-btn ax-btn--primary">{% trans "Bu Eğitimi Talep Et" %}</a>
         </div>
 
         <!-- Kimler İçin -->
         <div class="ax-training-detail-section">
-            <h2 class="ax-training-detail-heading">Kimler İçin</h2>
+            <h2 class="ax-training-detail-heading">{% trans "Kimler İçin" %}</h2>
             {% if item.audience %}
             <p class="ax-training-detail-text">
-                {% if 'bireysel' in item.audience %}Akademik araştırmacılar (bireysel){% endif %}
-                {% if 'bireysel' in item.audience and 'kurumsal' in item.audience %} ve {% endif %}
-                {% if 'kurumsal' in item.audience %}kurumsal ekipler{% endif %} için uygundur.
+                {% if 'bireysel' in item.audience %}{% trans "Akademik araştırmacılar (bireysel)" %}{% endif %}
+                {% if 'bireysel' in item.audience and 'kurumsal' in item.audience %} {% trans "ve" %} {% endif %}
+                {% if 'kurumsal' in item.audience %}{% trans "kurumsal ekipler" %}{% endif %} {% trans "için uygundur." %}
             </p>
             {% else %}
-            <p class="ax-training-detail-text">Hem akademik araştırmacılar hem de kurumsal ekipler için uygundur.</p>
+            <p class="ax-training-detail-text">{% trans "Hem akademik araştırmacılar hem de kurumsal ekipler için uygundur." %}</p>
             {% endif %}
         </div>
 
         <!-- Ön Koşul -->
         {% if item.prerequisites %}
         <div class="ax-training-detail-section">
-            <h2 class="ax-training-detail-heading">Ön Koşul</h2>
+            <h2 class="ax-training-detail-heading">{% trans "Ön Koşul" %}</h2>
             {% if item.prerequisites|length == 1 and item.prerequisites.0 == 'Yok' %}
-            <p class="ax-training-detail-text">Ön bilgi gerekmiyor.</p>
+            <p class="ax-training-detail-text">{% trans "Ön bilgi gerekmiyor." %}</p>
             {% else %}
             <ul class="ax-training-reasons">
                 {% for pre in item.prerequisites %}
@@ -99,7 +100,7 @@
         <!-- Kazanımlar -->
         {% if item.outcomes %}
         <div class="ax-training-detail-section">
-            <h2 class="ax-training-detail-heading">Kazanımlar</h2>
+            <h2 class="ax-training-detail-heading">{% trans "Kazanımlar" %}</h2>
             <ul class="ax-training-reasons">
                 {% for outcome in item.outcomes %}
                 <li>{{ outcome }}</li>
@@ -111,7 +112,7 @@
         <!-- Haftalık Program -->
         {% if item.syllabus %}
         <div class="ax-training-detail-section">
-            <h2 class="ax-training-detail-heading">Program</h2>
+            <h2 class="ax-training-detail-heading">{% trans "Program" %}</h2>
             <div class="ax-training-syllabus">
                 {% for module in item.syllabus %}
                 <div class="ax-training-syllabus-item">
@@ -133,7 +134,7 @@
         <!-- Kullanılan Araçlar -->
         {% if item.tools %}
         <div class="ax-training-detail-section">
-            <h2 class="ax-training-detail-heading">Kullanılan Araçlar</h2>
+            <h2 class="ax-training-detail-heading">{% trans "Kullanılan Araçlar" %}</h2>
             <div class="ax-training-detail-tools">
                 {% for tool in item.tools %}
                 <span class="ax-training-detail-tool">{{ tool }}</span>
@@ -146,8 +147,8 @@
         {% if item.related_tool_url %}
         <div class="ax-training-detail-section">
             <div class="ax-training-detail-related-card">
-                <p>Bu eğitim, platformdaki ilgili aracı kullanmayı da içerir.</p>
-                <a href="{{ item.related_tool_url }}" class="ax-btn ax-btn--outline-primary ax-btn--sm">İlgili Aracı İncele</a>
+                <p>{% trans "Bu eğitim, platformdaki ilgili aracı kullanmayı da içerir." %}</p>
+                <a href="{{ item.related_tool_url }}" class="ax-btn ax-btn--outline-primary ax-btn--sm">{% trans "İlgili Aracı İncele" %}</a>
             </div>
         </div>
         {% endif %}
@@ -155,7 +156,7 @@
         <!-- SSS -->
         {% if item.faq %}
         <div class="ax-training-detail-section">
-            <h2 class="ax-training-detail-heading">Sık Sorulan Sorular</h2>
+            <h2 class="ax-training-detail-heading">{% trans "Sık Sorulan Sorular" %}</h2>
             {% for faq in item.faq %}
             <div class="ax-training-accordion-item">
                 <button class="ax-training-accordion-btn" aria-expanded="false" data-accordion="kurs-faq-{{ forloop.counter }}" type="button">
@@ -172,9 +173,9 @@
 
         <!-- Kapanış CTA -->
         <div class="ax-training-cta-band">
-            <p class="ax-training-cta-band__text">Bu eğitimi almak için talebinizi iletin.</p>
-            <a href="{% url 'egitim_talebi' %}?kurs={{ item.slug }}&source={{ source }}" class="ax-btn ax-btn--primary">Bu Eğitimi Talep Et</a>
-            <p class="ax-training-cta-band__trust">Taleplere 24 saat içinde dönüş yapılır.</p>
+            <p class="ax-training-cta-band__text">{% trans "Bu eğitimi almak için talebinizi iletin." %}</p>
+            <a href="{% url 'egitim_talebi' %}?kurs={{ item.slug }}&source={{ source }}" class="ax-btn ax-btn--primary">{% trans "Bu Eğitimi Talep Et" %}</a>
+            <p class="ax-training-cta-band__trust">{% trans "Taleplere 24 saat içinde dönüş yapılır." %}</p>
         </div>
 
     </div>
