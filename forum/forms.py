@@ -3,22 +3,22 @@ from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from .models import Topic, Post, FreelanceJob, JobCategory, JobProposal, TopicTag
 from django.utils.safestring import mark_safe
-from django.utils.translation import gettext_lazy
+from django.utils.translation import gettext, gettext_lazy
 
 # --- 1. KAYIT FORMU ---
 class RegisterForm(UserCreationForm):
     email = forms.EmailField(
         required=True,
-        label="E-Posta Adresi",
-        help_text="Geçerli bir e-posta adresi giriniz."
+        label=gettext_lazy("E-Posta Adresi"),
+        help_text=gettext_lazy("Geçerli bir e-posta adresi giriniz.")
     )
 
     # Checkbox
     terms_confirmed = forms.BooleanField(
         required=True,
         widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}),
-        label="Kullanım Şartları",
-        error_messages={'required': 'Kayıt olmak için şartları kabul etmelisiniz.'}
+        label=gettext_lazy("Kullanım Şartları"),
+        error_messages={'required': gettext_lazy('Kayıt olmak için şartları kabul etmelisiniz.')}
     )
 
     # Honeypot — botlar doldurur, insanlar görmez
@@ -38,7 +38,7 @@ class RegisterForm(UserCreationForm):
     def clean_website(self):
         # Bot honeypot'u doldurdu
         if self.cleaned_data.get('website'):
-            raise forms.ValidationError("Geçersiz kayıt.")
+            raise forms.ValidationError(gettext("Geçersiz kayıt."))
         return ''
 
     def clean_username(self):
@@ -48,15 +48,15 @@ class RegisterForm(UserCreationForm):
 
         # Kural 1: 2+ adet q/w/x → kesinlikle bot
         if sum(1 for c in username_lower if c in 'qwx') >= 2:
-            raise forms.ValidationError("Geçerli bir kullanıcı adı seçin.")
+            raise forms.ValidationError(gettext("Geçerli bir kullanıcı adı seçin."))
 
         # Kural 2: 4+ ardışık ünsüz → bot imzası
         if re.search(r'[bcçdfgğhjklmnpqrsştvwxyz]{4,}', username_lower):
-            raise forms.ValidationError("Geçerli bir kullanıcı adı seçin (örn: ahmet42, bilge_ar).")
+            raise forms.ValidationError(gettext("Geçerli bir kullanıcı adı seçin (örn: ahmet42, bilge_ar)."))
 
         # Kural 3: Aynı karakter 3+ kez art arda (yikeeofuuu → uuu)
         if re.search(r'(.)\1\1', username_lower):
-            raise forms.ValidationError("Geçerli bir kullanıcı adı seçin.")
+            raise forms.ValidationError(gettext("Geçerli bir kullanıcı adı seçin."))
 
         # Kural 4: Skor tabanlı rastgele isim tespiti
         # Yalnızca 8–12 karakter, tamamı küçük harf ve sadece harf olan kullanıcı adlarına uygulanır
@@ -81,7 +81,7 @@ class RegisterForm(UserCreationForm):
 
             if score >= 3:
                 raise forms.ValidationError(
-                    "Geçerli bir kullanıcı adı seçin (örn: ahmet42, bilge_ar)."
+                    gettext("Geçerli bir kullanıcı adı seçin (örn: ahmet42, bilge_ar).")
                 )
 
         return username
@@ -89,7 +89,7 @@ class RegisterForm(UserCreationForm):
     def clean_email(self):
         email = self.cleaned_data.get('email')
         if User.objects.filter(email=email).exists():
-            raise forms.ValidationError("Bu e-posta adresi sistemde zaten kayıtlı.")
+            raise forms.ValidationError(gettext("Bu e-posta adresi sistemde zaten kayıtlı."))
         return email
 
 # --- 2. YENİ KONU FORMU ---

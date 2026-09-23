@@ -1185,9 +1185,9 @@ def register(request):
             email_sent = EmailService.send_verification_email(user, verification)
 
             if email_sent:
-                messages.success(request, 'Kayıt başarılı! Lütfen e-posta adresinizi doğrulayın. Doğrulama linki gönderildi.')
+                messages.success(request, gettext('Kayıt başarılı! Lütfen e-posta adresinizi doğrulayın. Doğrulama linki gönderildi.'))
             else:
-                messages.warning(request, 'Kayıt başarılı ancak doğrulama e-postası gönderilemedi. Profil sayfasından tekrar deneyebilirsiniz.')
+                messages.warning(request, gettext('Kayıt başarılı ancak doğrulama e-postası gönderilemedi. Profil sayfasından tekrar deneyebilirsiniz.'))
 
             # Referral: davet kodu varsa bağlantıyı kaydet
             ref_code = request.session.pop('ref_code', None)
