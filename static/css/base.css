@@ -251,6 +251,13 @@
     user-select: none;
 }
 
+/* Tam genişlik butonlar genişleyemez — uzun (ör. DE/EN çeviri) metin nowrap
+   ile butondan taşıyordu; bu durumda satır kaydırmaya izin ver. */
+.ax-btn.ax-w-full {
+    white-space: normal;
+    text-align: center;
+}
+
 .ax-btn:focus-visible {
     outline: 2px solid var(--ax-accent-primary);
     outline-offset: 2px;
