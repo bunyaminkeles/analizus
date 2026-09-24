@@ -1,9 +1,9 @@
-<!DOCTYPE html>
-<html lang="tr">
+{% load i18n %}<!DOCTYPE html>
+{% get_current_language as LANG %}<html lang="{{ LANG }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hoş Geldiniz</title>
+    <title>{% trans "Hoş Geldiniz" %}</title>
 </head>
 <body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;">
     <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #f8fafc;">
@@ -15,7 +15,7 @@
                         <td style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 30px 40px; border-radius: 12px 12px 0 0; text-align: center;">
                             <div style="font-size: 48px; margin-bottom: 10px;">🎉</div>
                             <h1 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 600;">
-                                Hoş Geldiniz!
+                                {% trans "Hoş Geldiniz!" %}
                             </h1>
                         </td>
                     </tr>
@@ -24,15 +24,15 @@
                     <tr>
                         <td style="padding: 40px;">
                             <h2 style="margin: 0 0 20px 0; color: #1e293b; font-size: 20px; font-weight: 600;">
-                                Merhaba {{ user.username }},
+                                {% blocktrans with username=user.username %}Merhaba {{ username }},{% endblocktrans %}
                             </h2>
 
                             <p style="margin: 0 0 20px 0; color: #475569; font-size: 16px; line-height: 1.6;">
-                                E-posta adresiniz başarıyla doğrulandı! Artık {{ site_name }} topluluğunun bir üyesisiniz.
+                                {% blocktrans %}E-posta adresiniz başarıyla doğrulandı! Artık {{ site_name }} topluluğunun bir üyesisiniz.{% endblocktrans %}
                             </p>
 
                             <p style="margin: 0 0 30px 0; color: #475569; font-size: 16px; line-height: 1.6;">
-                                Şimdi yapabileceğiniz bazı şeyler:
+                                {% trans "Şimdi yapabileceğiniz bazı şeyler:" %}
                             </p>
 
                             <!-- Features List -->
@@ -45,7 +45,7 @@
                                                     <span style="font-size: 20px;">💬</span>
                                                 </td>
                                                 <td style="color: #475569; font-size: 15px;">
-                                                    <strong>Tartışmalara Katılın</strong> - Konulara yorum yapın ve sorular sorun
+                                                    <strong>{% trans "Tartışmalara Katılın" %}</strong> - {% trans "Konulara yorum yapın ve sorular sorun" %}
                                                 </td>
                                             </tr>
                                         </table>
@@ -59,7 +59,7 @@
                                                     <span style="font-size: 20px;">📝</span>
                                                 </td>
                                                 <td style="color: #475569; font-size: 15px;">
-                                                    <strong>Konu Açın</strong> - Merak ettiğiniz konuları toplulukla paylaşın
+                                                    <strong>{% trans "Konu Açın" %}</strong> - {% trans "Merak ettiğiniz konuları toplulukla paylaşın" %}
                                                 </td>
                                             </tr>
                                         </table>
@@ -73,7 +73,7 @@
                                                     <span style="font-size: 20px;">🤖</span>
                                                 </td>
                                                 <td style="color: #475569; font-size: 15px;">
-                                                    <strong>AI Asistanı Kullanın</strong> - Günlük 10 ücretsiz soru hakkınız var
+                                                    <strong>{% trans "AI Asistanı Kullanın" %}</strong> - {% trans "Günlük 10 ücretsiz soru hakkınız var" %}
                                                 </td>
                                             </tr>
                                         </table>
@@ -87,7 +87,7 @@
                                                     <span style="font-size: 20px;">🏆</span>
                                                 </td>
                                                 <td style="color: #475569; font-size: 15px;">
-                                                    <strong>Rozet Kazanın</strong> - Katkılarınızla rütbe ve rozetler kazanın
+                                                    <strong>{% trans "Rozet Kazanın" %}</strong> - {% trans "Katkılarınızla rütbe ve rozetler kazanın" %}
                                                 </td>
                                             </tr>
                                         </table>
@@ -101,7 +101,7 @@
                                                     <span style="font-size: 20px;">🎁</span>
                                                 </td>
                                                 <td style="color: #475569; font-size: 15px;">
-                                                    <strong>Arkadaşlarınızı Davet Edin</strong> - Her geçerli davet için ücretsiz premium süresi kazanın
+                                                    <strong>{% trans "Arkadaşlarınızı Davet Edin" %}</strong> - {% trans "Her geçerli davet için ücretsiz premium süresi kazanın" %}
                                                 </td>
                                             </tr>
                                         </table>
@@ -114,7 +114,7 @@
                                 <tr>
                                     <td style="background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); border-radius: 8px;">
                                         <a href="{{ site_url }}" style="display: inline-block; padding: 14px 32px; color: #ffffff; text-decoration: none; font-size: 16px; font-weight: 600;">
-                                            Forumu Keşfet
+                                            {% trans "Forumu Keşfet" %}
                                         </a>
                                     </td>
                                 </tr>
@@ -126,7 +126,7 @@
                     <tr>
                         <td style="background-color: #f8fafc; padding: 20px 40px; border-radius: 0 0 12px 12px; border-top: 1px solid #e2e8f0;">
                             <p style="margin: 0; color: #94a3b8; font-size: 12px; text-align: center;">
-                                &copy; 2024 {{ site_name }} - Akademik Analiz ve Veri Bilimi Forumu
+                                &copy; 2024 {{ site_name }} - {% trans "Akademik Analiz ve Veri Bilimi Forumu" %}
                             </p>
                         </td>
                     </tr>

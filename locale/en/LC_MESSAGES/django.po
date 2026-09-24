@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-23 23:51+0300\n"
+"POT-Creation-Date: 2026-09-24 22:38+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,15 +17,15 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: analizdestek/settings.py:199
+#: analizdestek/settings.py:200
 msgid "Turkish"
 msgstr "Turkish"
 
-#: analizdestek/settings.py:200
+#: analizdestek/settings.py:201
 msgid "English"
 msgstr "English"
 
-#: analizdestek/settings.py:201
+#: analizdestek/settings.py:202
 msgid "German"
 msgstr "German"
 
@@ -117,89 +117,136 @@ msgstr "Offer Amount (TRY)"
 msgid "Ön Yazı"
 msgstr "Cover Letter"
 
-#: forum/models.py:363
+#: forum/models.py:371
 msgid "Kayıtlı üye"
 msgstr "Registered member"
 
-#: forum/models.py:382
+#: forum/models.py:390
 msgid "İlan açmak için e-posta doğrulaması gerekli"
 msgstr "Email verification is required to post a listing"
 
-#: forum/models.py:385
+#: forum/models.py:393
 #, python-format
 msgid "Haftalık ilan limitinize (%(limit)s) ulaştınız"
 msgstr "You have reached your weekly listing limit (%(limit)s)"
 
-#: forum/models.py:386
+#: forum/models.py:394
 msgid "İlan açabilirsiniz"
 msgstr "You can post a listing"
 
-#: forum/models.py:406
+#: forum/models.py:414
 msgid "Yönetici yetkisi"
 msgstr "Administrator permission"
 
-#: forum/models.py:410 openalex/templates/openalex/landing.html:31
+#: forum/models.py:418 openalex/templates/openalex/landing.html:31
 msgid "Premium üyelik"
 msgstr "Premium membership"
 
-#: forum/models.py:414
+#: forum/models.py:422
 msgid "EDU mail ayrıcalığı (3 günlük)"
 msgstr "EDU email privilege (3 days)"
 
-#: forum/models.py:419
+#: forum/models.py:427
 #, python-format
 msgid "%(rank)s rütbesi"
 msgstr "%(rank)s rank"
 
-#: forum/models.py:435
+#: forum/models.py:443
 msgid "Teklif vermek için 1000+ puan veya özel rozet gerekli"
 msgstr "1000+ points or a special badge is required to make offers"
 
-#: forum/models.py:825
+#: forum/models.py:833
 msgid "Açık (Teklif Bekliyor)"
 msgstr "Open (Awaiting Offers)"
 
-#: forum/models.py:826 forum/templates/forum/market/my_jobs.html:76
+#: forum/models.py:834 forum/templates/forum/market/my_jobs.html:76
 msgid "Devam Ediyor"
 msgstr "In Progress"
 
-#: forum/models.py:827 forum/templates/forum/market/my_jobs.html:76
+#: forum/models.py:835 forum/templates/forum/market/my_jobs.html:76
 msgid "Tamamlandı"
 msgstr "Completed"
 
-#: forum/models.py:828
+#: forum/models.py:836
 msgid "İptal Edildi"
 msgstr "Cancelled"
 
-#: forum/models.py:935 forum/templates/forum/market/job_detail.html:192
+#: forum/models.py:943 forum/templates/forum/market/job_detail.html:192
 #: forum/templates/forum/market/my_jobs.html:59
 msgid "Beklemede"
 msgstr "Pending"
 
-#: forum/models.py:936 forum/templates/forum/market/job_detail.html:188
+#: forum/models.py:944 forum/templates/forum/market/job_detail.html:188
 #: forum/templates/forum/market/my_jobs.html:60
 msgid "Kabul Edildi"
 msgstr "Accepted"
 
-#: forum/models.py:937 forum/templates/forum/market/my_jobs.html:61
+#: forum/models.py:945 forum/templates/forum/market/my_jobs.html:61
 msgid "Reddedildi"
 msgstr "Rejected"
 
-#: forum/models.py:993
+#: forum/models.py:1001
 msgid "Platin Destekçi"
 msgstr "Platinum Supporter"
 
-#: forum/models.py:993
+#: forum/models.py:1001
 msgid "Altın Destekçi"
 msgstr "Gold Supporter"
 
-#: forum/models.py:994
+#: forum/models.py:1002
 msgid "Gümüş Destekçi"
 msgstr "Silver Supporter"
 
-#: forum/models.py:994
+#: forum/models.py:1002
 msgid "Bronz Destekçi"
 msgstr "Bronze Supporter"
+
+#: forum/services/email_service.py:81
+msgid "Analizus - E-posta Adresinizi Doğrulayın"
+msgstr "Analizus - Verify Your Email Address"
+
+#: forum/services/email_service.py:106
+msgid "Analizus'a Hoş Geldiniz!"
+msgstr "Welcome to Analizus!"
+
+#: forum/services/email_service.py:130
+msgid "Analizus - Doğrulanmış Akademisyen Rozeti Kazandınız!"
+msgstr "Analizus - You Earned the Verified Academic Badge!"
+
+#: forum/services/email_service.py:133
+#, python-format
+msgid "Tebrikler %(username)s!"
+msgstr "Congratulations, %(username)s!"
+
+#: forum/services/email_service.py:134
+msgid ""
+"EDU uzantılı mail adresiniz ile giriş yaptığınız için <strong>Doğrulanmış "
+"Akademisyen</strong> rozeti kazandınız!"
+msgstr ""
+"Because you signed in with an EDU email address, you have earned the "
+"<strong>Verified Academic</strong> badge!"
+
+#: forum/services/email_service.py:135
+msgid "Ayrıca <strong>3 gün boyunca teklif verme hakkına</strong> sahipsiniz."
+msgstr "You also have <strong>the right to make offers for 3 days</strong>."
+
+#: forum/services/email_service.py:136
+msgid "İyi çalışmalar,"
+msgstr "Best regards,"
+
+#: forum/services/email_service.py:136
+msgid "Analizus Ekibi"
+msgstr "The Analizus Team"
+
+#: forum/services/email_service.py:139
+#, python-format
+msgid ""
+"Tebrikler %(username)s! EDU mail ile giriş yaptığınız için Doğrulanmış "
+"Akademisyen rozeti kazandınız. 3 gün teklif verme hakkınız var."
+msgstr ""
+"Congratulations, %(username)s! Because you signed in with an EDU email "
+"address, you have earned the Verified Academic badge. You can make offers "
+"for 3 days."
 
 #: forum/templates/forum/ai_cozumler.html:5
 #: forum/templates/forum/ai_cozumler.html:7
@@ -1106,6 +1153,126 @@ msgstr "Send Request"
 #: forum/templates/forum/proje_talebi.html:272
 msgid "Form doldurmak yerine doğrudan konuşmayı tercih ediyorsanız:"
 msgstr "If you'd rather talk directly instead of filling out the form:"
+
+#: forum/templates/forum/emails/verification_email.html:6
+msgid "E-posta Doğrulama"
+msgstr "Email Verification"
+
+#: forum/templates/forum/emails/verification_email.html:26
+#: forum/templates/forum/emails/welcome_email.html:27
+#, python-format
+msgid "Merhaba %(username)s,"
+msgstr "Hello %(username)s,"
+
+#: forum/templates/forum/emails/verification_email.html:30
+#, python-format
+msgid ""
+"%(site_name)s'a kayıt olduğunuz için teşekkür ederiz! Hesabınızı "
+"aktifleştirmek için lütfen aşağıdaki butona tıklayarak e-posta adresinizi "
+"doğrulayın."
+msgstr ""
+"Thank you for signing up for %(site_name)s! To activate your account, please"
+" verify your email address by clicking the button below."
+
+#: forum/templates/forum/emails/verification_email.html:38
+msgid "E-postamı Doğrula"
+msgstr "Verify My Email"
+
+#: forum/templates/forum/emails/verification_email.html:45
+#, python-format
+msgid ""
+"Bu link <strong>%(hours)s saat</strong> içinde geçerliliğini yitirecektir."
+msgid_plural ""
+"Bu link <strong>%(hours)s saat</strong> içinde geçerliliğini yitirecektir."
+msgstr[0] "This link will expire in <strong>%(hours)s hour</strong>."
+msgstr[1] "This link will expire in <strong>%(hours)s hours</strong>."
+
+#: forum/templates/forum/emails/verification_email.html:49
+msgid ""
+"Eğer buton çalışmıyorsa, aşağıdaki linki tarayıcınıza kopyalayıp "
+"yapıştırabilirsiniz:"
+msgstr ""
+"If the button doesn't work, you can copy and paste the link below into your "
+"browser:"
+
+#: forum/templates/forum/emails/verification_email.html:59
+msgid ""
+"Bu e-postayı siz talep etmediyseniz, lütfen dikkate almayın. Hesabınız "
+"güvende kalacaktır."
+msgstr ""
+"If you didn't request this email, please ignore it. Your account will remain"
+" secure."
+
+#: forum/templates/forum/emails/verification_email.html:68
+#: forum/templates/forum/emails/welcome_email.html:129
+msgid "Akademik Analiz ve Veri Bilimi Forumu"
+msgstr "Academic Analysis and Data Science Forum"
+
+#: forum/templates/forum/emails/welcome_email.html:6
+#: forum/templates/registration/login.html:238
+msgid "Hoş Geldiniz"
+msgstr "Welcome"
+
+#: forum/templates/forum/emails/welcome_email.html:18
+msgid "Hoş Geldiniz!"
+msgstr "Welcome!"
+
+#: forum/templates/forum/emails/welcome_email.html:31
+#, python-format
+msgid ""
+"E-posta adresiniz başarıyla doğrulandı! Artık %(site_name)s topluluğunun bir"
+" üyesisiniz."
+msgstr ""
+"Your email address has been verified! You are now a member of the "
+"%(site_name)s community."
+
+#: forum/templates/forum/emails/welcome_email.html:35
+msgid "Şimdi yapabileceğiniz bazı şeyler:"
+msgstr "Here are some things you can do now:"
+
+#: forum/templates/forum/emails/welcome_email.html:48
+msgid "Tartışmalara Katılın"
+msgstr "Join Discussions"
+
+#: forum/templates/forum/emails/welcome_email.html:48
+msgid "Konulara yorum yapın ve sorular sorun"
+msgstr "Comment on topics and ask questions"
+
+#: forum/templates/forum/emails/welcome_email.html:62
+msgid "Konu Açın"
+msgstr "Start a Topic"
+
+#: forum/templates/forum/emails/welcome_email.html:62
+msgid "Merak ettiğiniz konuları toplulukla paylaşın"
+msgstr "Share what you're curious about with the community"
+
+#: forum/templates/forum/emails/welcome_email.html:76
+msgid "AI Asistanı Kullanın"
+msgstr "Use the AI Assistant"
+
+#: forum/templates/forum/emails/welcome_email.html:76
+msgid "Günlük 10 ücretsiz soru hakkınız var"
+msgstr "You have 10 free questions per day"
+
+#: forum/templates/forum/emails/welcome_email.html:90
+msgid "Rozet Kazanın"
+msgstr "Earn Badges"
+
+#: forum/templates/forum/emails/welcome_email.html:90
+msgid "Katkılarınızla rütbe ve rozetler kazanın"
+msgstr "Earn ranks and badges through your contributions"
+
+#: forum/templates/forum/emails/welcome_email.html:104
+msgid "Arkadaşlarınızı Davet Edin"
+msgstr "Invite Your Friends"
+
+#: forum/templates/forum/emails/welcome_email.html:104
+msgid "Her geçerli davet için ücretsiz premium süresi kazanın"
+msgstr "Earn free premium time for every valid invitation"
+
+#: forum/templates/forum/emails/welcome_email.html:117
+msgid "Forumu Keşfet"
+msgstr "Explore the Platform"
 
 #: forum/templates/forum/home.html:6
 msgid "Analizus — Ücretsiz İstatistik Analizi ve Veri Analizi Platformu"
@@ -2729,10 +2896,6 @@ msgstr ""
 "Just share your project goals and existing data (CSV, Excel, database "
 "access, etc.). If needed, our expert will guide you and we'll define the "
 "required data together."
-
-#: forum/templates/registration/login.html:238
-msgid "Hoş Geldiniz"
-msgstr "Welcome"
 
 #: forum/templates/registration/login.html:239
 msgid "Hesabınıza giriş yapın"
@@ -4481,7 +4644,7 @@ msgid "Değerlendirmeniz gönderildi. Admin onayından sonra yayınlanacak."
 msgstr ""
 "Your review has been submitted. It will be published after admin approval."
 
-#: forum/views.py:1188
+#: forum/views.py:1194
 msgid ""
 "Kayıt başarılı! Lütfen e-posta adresinizi doğrulayın. Doğrulama linki "
 "gönderildi."
@@ -4489,7 +4652,7 @@ msgstr ""
 "Registration successful! Please verify your email address. A verification "
 "link has been sent."
 
-#: forum/views.py:1190
+#: forum/views.py:1196
 msgid ""
 "Kayıt başarılı ancak doğrulama e-postası gönderilemedi. Profil sayfasından "
 "tekrar deneyebilirsiniz."
