@@ -78,6 +78,13 @@ URL taşıma + şablon + sitemap(static-i18n) + robots.txt.
   yerelden yüklüyor, gstatic preconnect / googleapis dns-prefetch kaldırıldı.
   Net-log ile doğrulandı: sayfadan fonts.googleapis/gstatic isteği yok.
   Deploy'da `collectstatic` şart (yeni statik dosyalar).
+- [ ] **ÖNEMLİ — Hesap silme vaadi uygulanmıyor (KVKK/GDPR):** `confirm
+  deletion` view'ı (forum/views.py ~1873) `deletion_requested_at` yazıp
+  kullanıcıyı pasifleştiriyor ve "verileriniz 30 gün içinde kalıcı olarak
+  silinecektir" diyor; ama bu alanı okuyup silen hiçbir cron/komut yok
+  (grep: yalnızca views/models). Gerekli: 30 günü dolanları silen/anonimleştiren
+  yönetim komutu + cron; neyin silinip neyin anonimleşeceği (forum gönderileri,
+  pazar ilanları, mesajlar) kullanıcı kararı. Mesaj da çevrilmemiş.
 - [ ] **Küçük i18n kaçağı (B sırasında görüldü):** ana sayfa hero'sundaki test
   çipleri "t-testi · korelasyon · regresyon" EN/DE'de Türkçe kalıyor.
 - [ ] **C. Gizlilik sayfası: KVKK çevirisi + GDPR bölümü** — taslak kullanıcı
