@@ -30,7 +30,6 @@ urlpatterns = [
     path('api/room-post/<int:post_id>/delete/', views.api_delete_room_post, name='api_delete_room_post'),
 
     # Araçlar
-    path('hangi-test/', views.hangi_test, name='hangi_test'),
     path('uzmanlar/', views.uzman_dizini, name='uzman_dizini'),
 
     # Çalışma Odaları

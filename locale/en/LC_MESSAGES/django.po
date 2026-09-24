@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-24 23:03+0300\n"
+"POT-Creation-Date: 2026-09-24 23:09+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -301,7 +301,8 @@ msgstr "Open (Awaiting Offers)"
 msgid "Devam Ediyor"
 msgstr "In Progress"
 
-#: forum/models.py:835 forum/templates/forum/market/my_jobs.html:76
+#: forum/models.py:835 forum/templates/forum/hangi_test.html:866
+#: forum/templates/forum/market/my_jobs.html:76
 msgid "Tamamlandı"
 msgstr "Completed"
 
@@ -339,7 +340,8 @@ msgstr "Silver Supporter"
 msgid "Bronz Destekçi"
 msgstr "Bronze Supporter"
 
-#: forum/models.py:1661 forum/templates/forum/proje_talebi.html:169
+#: forum/models.py:1661 forum/templates/forum/hangi_test.html:749
+#: forum/templates/forum/proje_talebi.html:169
 msgid "Veri Görselleştirme"
 msgstr "Data Visualization"
 
@@ -2019,6 +2021,1301 @@ msgstr "Earn free premium time for every valid invitation"
 msgid "Forumu Keşfet"
 msgstr "Explore the Platform"
 
+#: forum/templates/forum/hangi_test.html:4
+msgid "Hangi İstatistik Testini Kullanmalıyım? — İnteraktif Karar Ağacı"
+msgstr "Which Statistical Test Should I Use? — Interactive Decision Tree"
+
+#: forum/templates/forum/hangi_test.html:6
+msgid ""
+"Tezin için hangi istatistik testini kullanmalısın? Adım adım karar rehberi —"
+" t-testi, ANOVA, Ki-Kare, korelasyon, regresyon ve daha fazlası. Ücretsiz "
+"online analiz araçlarıyla hemen hesapla."
+msgstr ""
+"Which statistical test should you use for your research? A step-by-step "
+"decision guide — t-test, ANOVA, chi-square, correlation, regression and "
+"more. Calculate instantly with free online analysis tools."
+
+#: forum/templates/forum/hangi_test.html:16
+msgid "T-testi mi ANOVA mı kullanmalıyım?"
+msgstr "Should I use a t-test or ANOVA?"
+
+#: forum/templates/forum/hangi_test.html:19
+msgid ""
+"İki grubu karşılaştırıyorsanız t-testi kullanın. Üç veya daha fazla grup söz"
+" konusuysa tek yönlü ANOVA tercih edilmelidir. Her iki test de normallik "
+"varsayımı gerektirir."
+msgstr ""
+"If you are comparing two groups, use a t-test. For three or more groups, "
+"one-way ANOVA should be used. Both tests assume normality."
+
+#: forum/templates/forum/hangi_test.html:24
+msgid "Parametrik mi, parametrik olmayan mı test seçmeliyim?"
+msgstr "Should I choose a parametric or non-parametric test?"
+
+#: forum/templates/forum/hangi_test.html:27
+msgid ""
+"Verileriniz normal dağılım gösteriyorsa ve örneklem yeterliyse (n ≥ 30) "
+"parametrik testler (t-testi, ANOVA) tercih edin. Normallik varsayımı "
+"karşılanmıyorsa veya örneklem küçükse parametrik olmayan alternatifler "
+"(Mann-Whitney U, Kruskal-Wallis, Wilcoxon) daha güvenilir sonuç verir."
+msgstr ""
+"If your data are normally distributed and the sample is large enough (n ≥ "
+"30), choose parametric tests (t-test, ANOVA). If normality is not met or the"
+" sample is small, non-parametric alternatives (Mann-Whitney U, Kruskal-"
+"Wallis, Wilcoxon) give more reliable results."
+
+#: forum/templates/forum/hangi_test.html:32
+#: forum/templates/forum/home.html:764
+msgid "Hangi korelasyon testini kullanmalıyım?"
+msgstr "Which correlation test should I use?"
+
+#: forum/templates/forum/hangi_test.html:35
+msgid ""
+"Veriler normal dağılımlıysa Pearson korelasyon katsayısı; ordinal veriler "
+"veya normallik ihlali varsa Spearman sıra korelasyonu tercih edilmelidir. "
+"Küçük örneklem veya çok sayıda bağ (tied rank) durumunda Kendall tau "
+"uygundur."
+msgstr ""
+"Use the Pearson correlation coefficient if the data are normally "
+"distributed; use Spearman's rank correlation for ordinal data or when "
+"normality is violated. Kendall's tau is suitable for small samples or many "
+"tied ranks."
+
+#: forum/templates/forum/hangi_test.html:40
+msgid "Kategorik veriler için hangi test kullanılır?"
+msgstr "Which test is used for categorical data?"
+
+#: forum/templates/forum/hangi_test.html:43
+msgid ""
+"İki kategorik değişken arasındaki ilişkiyi test etmek için Ki-Kare "
+"Bağımsızlık Testi kullanılır. Hücre frekansları küçükse (beklenen < 5) "
+"Fisher's Exact Test tercih edilmelidir."
+msgstr ""
+"The chi-square test of independence is used to test the relationship between"
+" two categorical variables. If cell frequencies are small (expected < 5), "
+"Fisher's exact test should be used."
+
+#: forum/templates/forum/hangi_test.html:48
+msgid "Öntest-sontest tasarımında hangi test uygulanır?"
+msgstr "Which test is used in a pre-test/post-test design?"
+
+#: forum/templates/forum/hangi_test.html:51
+msgid ""
+"Aynı gruba iki ölçüm yapıldıysa bağımlı örneklem t-testi (eşleştirilmiş "
+"t-testi) kullanın. Normallik varsayımı karşılanmıyorsa Wilcoxon İşaret Testi"
+" tercih edin. Üç veya daha fazla ölçüm noktası varsa Tekrarlı Ölçümler ANOVA"
+" veya Friedman Testi uygulanmalıdır."
+msgstr ""
+"If the same group was measured twice, use the paired-samples t-test. If the "
+"normality assumption is not met, use the Wilcoxon signed-rank test. With "
+"three or more measurement points, use repeated measures ANOVA or the "
+"Friedman test."
+
+#: forum/templates/forum/hangi_test.html:56
+msgid "Ölçek güvenilirliği için hangi analiz yapılır?"
+msgstr "Which analysis is used for scale reliability?"
+
+#: forum/templates/forum/hangi_test.html:59
+msgid ""
+"Anket veya ölçeğin iç tutarlılığını ölçmek için Cronbach Alfa katsayısı "
+"hesaplanır. α ≥ 0.70 kabul edilebilir, α ≥ 0.80 iyi, α ≥ 0.90 mükemmel "
+"güvenilirlik göstergesidir."
+msgstr ""
+"Cronbach's alpha is calculated to measure the internal consistency of a "
+"questionnaire or scale. α ≥ 0.70 indicates acceptable, α ≥ 0.80 good and α ≥"
+" 0.90 excellent reliability."
+
+#: forum/templates/forum/hangi_test.html:64
+msgid ""
+"Sürekli bir bağımlı değişkeni tahmin etmek için hangi analiz kullanılır?"
+msgstr "Which analysis is used to predict a continuous dependent variable?"
+
+#: forum/templates/forum/hangi_test.html:67
+msgid ""
+"Tek bağımsız değişkenle basit doğrusal regresyon, birden fazla bağımsız "
+"değişkenle çoklu doğrusal regresyon kullanın. Bağımlı değişken ikili "
+"kategorikse (0/1) lojistik regresyon tercih edilmelidir."
+msgstr ""
+"Use simple linear regression with one independent variable and multiple "
+"linear regression with several. If the dependent variable is binary (0/1), "
+"logistic regression should be used."
+
+#: forum/templates/forum/hangi_test.html:83
+msgid "Hangi İstatistik Testini Kullanmalıyım?"
+msgstr "Which Statistical Test Should I Use?"
+
+#: forum/templates/forum/hangi_test.html:84
+msgid ""
+"Soruları yanıtlayarak araştırmanıza uygun testi saniyeler içinde bulun."
+msgstr ""
+"Answer a few questions and find the right test for your research in seconds."
+
+#: forum/templates/forum/hangi_test.html:90
+msgid "Adım 1"
+msgstr "Step 1"
+
+#: forum/templates/forum/hangi_test.html:116
+msgid "Önerilen Test"
+msgstr "Recommended Test"
+
+#: forum/templates/forum/hangi_test.html:130
+msgid "Forumda Tartış"
+msgstr "Discuss in the Forum"
+
+#: forum/templates/forum/hangi_test.html:133
+msgid "Analizini Paylaş"
+msgstr "Share Your Analysis"
+
+#: forum/templates/forum/hangi_test.html:136
+msgid "AI Asistan'a Sor"
+msgstr "Ask the AI Assistant"
+
+#: forum/templates/forum/hangi_test.html:139
+msgid "Baştan Başla"
+msgstr "Start Over"
+
+#: forum/templates/forum/hangi_test.html:145
+msgid "İlgili konular:"
+msgstr "Related topics:"
+
+#: forum/templates/forum/hangi_test.html:160
+msgid "Testler Hakkında Kısa Bilgi"
+msgstr "Quick Guide to the Tests"
+
+#: forum/templates/forum/hangi_test.html:161
+msgid ""
+"Karar ağacının önerdiği testi Analizus'ta ücretsiz olarak "
+"çalıştırabilirsiniz."
+msgstr ""
+"You can run the test recommended by the decision tree on Analizus for free."
+
+#: forum/templates/forum/hangi_test.html:166 istatistik/seo_content.py:133
+#: istatistik/seo_content.py:187 istatistik/seo_content.py:348
+#: istatistik/seo_content.py:459 istatistik/seo_content.py:566
+#: istatistik/seo_content.py:780 istatistik/seo_content.py:1000
+msgid "T-Testi"
+msgstr "t-Test"
+
+#: forum/templates/forum/hangi_test.html:168
+msgid ""
+"İki grup ortalamasını karşılaştırmak için kullanılır. Bağımsız örneklem "
+"t-testi farklı grupları, bağımlı örneklem t-testi aynı grubun iki ölçümünü "
+"karşılaştırır. Normallik varsayımı gerektirir."
+msgstr ""
+"Used to compare two group means. The independent-samples t-test compares "
+"different groups; the paired-samples t-test compares two measurements from "
+"the same group. It assumes normality."
+
+#: forum/templates/forum/hangi_test.html:169
+#: forum/templates/forum/hangi_test.html:178
+#: forum/templates/forum/hangi_test.html:187
+#: forum/templates/forum/hangi_test.html:196
+#: forum/templates/forum/hangi_test.html:205
+#: forum/templates/forum/hangi_test.html:214
+#: forum/templates/forum/hangi_test.html:223
+#: forum/templates/forum/hangi_test.html:232
+msgid "Analizus'ta Hesapla →"
+msgstr "Calculate on Analizus →"
+
+#: forum/templates/forum/hangi_test.html:175
+#: forum/templates/forum/hangi_test.html:497 istatistik/seo_content.py:71
+#: istatistik/seo_content.py:240 istatistik/seo_content.py:567
+#: istatistik/seo_content.py:779 istatistik/templates/istatistik/anova.html:14
+#: istatistik/templates/istatistik/anova.html:116
+#: istatistik/templates/istatistik/orneklem.html:36 istatistik/views.py:40
+#: istatistik/views.py:288 istatistik/views.py:293 istatistik/views.py:304
+msgid "Tek Yönlü ANOVA"
+msgstr "One-Way ANOVA"
+
+#: forum/templates/forum/hangi_test.html:177
+msgid ""
+"Üç veya daha fazla bağımsız grubun ortalamalarını karşılaştırır. Anlamlı F "
+"sonrasında Tukey veya Bonferroni post-hoc testleri hangi grupların "
+"farklılaştığını belirler."
+msgstr ""
+"Compares the means of three or more independent groups. After a significant "
+"F, Tukey or Bonferroni post-hoc tests identify which groups differ."
+
+#: forum/templates/forum/hangi_test.html:184 istatistik/seo_content.py:294
+#: istatistik/seo_content.py:513 istatistik/seo_content.py:568
+#: istatistik/seo_content.py:622 istatistik/seo_content.py:955
+#: istatistik/templates/istatistik/orneklem.html:37
+msgid "Korelasyon Analizi"
+msgstr "Correlation Analysis"
+
+#: forum/templates/forum/hangi_test.html:186
+msgid ""
+"İki değişken arasındaki ilişkinin yönünü ve gücünü ölçer. Pearson parametrik"
+" (normal dağılım); Spearman, Kendall parametrik olmayan (sıralı veri) "
+"korelasyon testleridir."
+msgstr ""
+"Measures the direction and strength of the relationship between two "
+"variables. Pearson is parametric (normal distribution); Spearman and Kendall"
+" are non-parametric (ordinal data) correlation tests."
+
+#: forum/templates/forum/hangi_test.html:193 istatistik/seo_content.py:347
+#: istatistik/seo_content.py:678
+msgid "Doğrusal Regresyon"
+msgstr "Linear Regression"
+
+#: forum/templates/forum/hangi_test.html:195
+msgid ""
+"Sürekli bir bağımlı değişkeni bir veya daha fazla bağımsız değişkenle tahmin"
+" eder. R², β katsayıları ve VIF ile çoklu doğrusallık kontrolü raporlanır."
+msgstr ""
+"Predicts a continuous dependent variable from one or more independent "
+"variables. R², β coefficients and a VIF multicollinearity check are "
+"reported."
+
+#: forum/templates/forum/hangi_test.html:202 istatistik/seo_content.py:677
+#: istatistik/views.py:36 istatistik/views.py:538 istatistik/views.py:555
+msgid "Ki-Kare Testi"
+msgstr "Chi-Square Test"
+
+#: forum/templates/forum/hangi_test.html:204
+msgid ""
+"İki kategorik değişken arasındaki ilişkiyi test eder. Beklenen hücre "
+"frekansı 5'in altında olduğunda Fisher's Exact Test otomatik devreye girer."
+msgstr ""
+"Tests the relationship between two categorical variables. When an expected "
+"cell frequency is below 5, Fisher's exact test is applied automatically."
+
+#: forum/templates/forum/hangi_test.html:211 istatistik/seo_content.py:406
+#: istatistik/views.py:32
+msgid "Açıklayıcı Faktör Analizi"
+msgstr "Exploratory Factor Analysis"
+
+#: forum/templates/forum/hangi_test.html:213
+msgid ""
+"Çok sayıda değişkenin ardında yatan gizli faktörleri ortaya koyar. Ölçek "
+"geçerliği için KMO (≥ .60), Bartlett testi (p &lt; .05) ve faktör yük "
+"matrisi incelenir."
+msgstr ""
+"Uncovers the latent factors underlying many variables. For scale validity, "
+"KMO (≥ .60), Bartlett's test (p &lt; .05) and the factor loading matrix are "
+"examined."
+
+#: forum/templates/forum/hangi_test.html:220 istatistik/seo_content.py:72
+#: istatistik/seo_content.py:188 istatistik/seo_content.py:725
+msgid "Wilcoxon Testi"
+msgstr "Wilcoxon Test"
+
+#: forum/templates/forum/hangi_test.html:222
+msgid ""
+"İki bağımlı ölçümü karşılaştıran parametrik olmayan testtir. Bağımlı "
+"t-testinin normallik varsayımı karşılanamadığında tercih edilir. Öntest-"
+"sontest tasarımları için idealdir."
+msgstr ""
+"A non-parametric test comparing two dependent measurements. It is preferred "
+"when the normality assumption of the paired t-test is not met. Ideal for "
+"pre-test/post-test designs."
+
+#: forum/templates/forum/hangi_test.html:229 forum/training_catalog.py:183
+#: istatistik/seo_content.py:514 istatistik/seo_content.py:954
+msgid "Cronbach Alfa"
+msgstr "Cronbach's Alpha"
+
+#: forum/templates/forum/hangi_test.html:231
+msgid ""
+"Anket veya ölçeğin iç tutarlılığını ölçer. α ≥ 0.70 kabul edilebilir, α ≥ "
+"0.80 iyi düzey. Tez ve makale çalışmalarında ölçek güvenilirlik kanıtı "
+"olarak raporlanır."
+msgstr ""
+"Measures the internal consistency of a questionnaire or scale. α ≥ 0.70 is "
+"acceptable, α ≥ 0.80 good. It is reported as evidence of scale reliability "
+"in theses and articles."
+
+#: forum/templates/forum/hangi_test.html:244
+msgid "Analizini Forumda Paylaş"
+msgstr "Share Your Analysis in the Forum"
+
+#: forum/templates/forum/hangi_test.html:250
+msgid ""
+"Aşağıdaki şablon otomatik oluşturuldu. Düzenleyip forum kategorisine "
+"gönderebilirsin."
+msgstr ""
+"The template below was generated automatically. Edit it and post it to the "
+"forum category."
+
+#: forum/templates/forum/hangi_test.html:256
+msgid "Forum'a Git"
+msgstr "Go to the Forum"
+
+#: forum/templates/forum/hangi_test.html:260
+msgid "Kayıt Ol &amp; Paylaş"
+msgstr "Sign Up &amp; Share"
+
+#: forum/templates/forum/hangi_test.html:263 templates/base.html:533
+#: templates/base.html:554 templates/base.html:567 templates/base.html:576
+#: templates/base.html:834 templates/partials/footer.html:153
+#: templates/partials/footer.html:217
+msgid "Kapat"
+msgstr "Close"
+
+#: forum/templates/forum/hangi_test.html:286
+msgid "Analiz Amacı"
+msgstr "Analysis Goal"
+
+#: forum/templates/forum/hangi_test.html:287
+#: forum/templates/forum/hangi_test.html:420 templates/base.html:845
+msgid "Ne yapmak istiyorsunuz?"
+msgstr "What would you like to do?"
+
+#: forum/templates/forum/hangi_test.html:288
+msgid "Araştırmanızın temel amacını seçin."
+msgstr "Choose the main goal of your research."
+
+#: forum/templates/forum/hangi_test.html:290
+msgid "🔀  Gruplar arasındaki farkı test etmek"
+msgstr "🔀  Test differences between groups"
+
+#: forum/templates/forum/hangi_test.html:291
+msgid "🔗  İki değişken arasındaki ilişkiyi incelemek"
+msgstr "🔗  Examine the relationship between two variables"
+
+#: forum/templates/forum/hangi_test.html:292
+msgid "📈  Bir değişkeni başka değişkenlerle tahmin etmek"
+msgstr "📈  Predict a variable from other variables"
+
+#: forum/templates/forum/hangi_test.html:293
+msgid "📐  Ölçeğin güvenilirliği / geçerliliği"
+msgstr "📐  Scale reliability / validity"
+
+#: forum/templates/forum/hangi_test.html:294
+msgid "📊  Veri dağılımı veya tanımlayıcı istatistikler"
+msgstr "📊  Data distribution or descriptive statistics"
+
+#: forum/templates/forum/hangi_test.html:300
+msgid "Grup Sayısı"
+msgstr "Number of Groups"
+
+#: forum/templates/forum/hangi_test.html:301
+msgid "Kaç grup karşılaştırıyorsunuz?"
+msgstr "How many groups are you comparing?"
+
+#: forum/templates/forum/hangi_test.html:304
+msgid "2 grup"
+msgstr "2 groups"
+
+#: forum/templates/forum/hangi_test.html:305
+msgid "3 veya daha fazla grup"
+msgstr "3 or more groups"
+
+#: forum/templates/forum/hangi_test.html:309
+#: forum/templates/forum/hangi_test.html:336
+msgid "Grup Yapısı"
+msgstr "Group Structure"
+
+#: forum/templates/forum/hangi_test.html:310
+#: forum/templates/forum/hangi_test.html:337
+msgid "Gruplar birbirinden bağımsız mı?"
+msgstr "Are the groups independent of each other?"
+
+#: forum/templates/forum/hangi_test.html:311
+msgid ""
+"Bağımsız: farklı kişilerden oluşan ayrı gruplar. Bağımlı/tekrarlı: aynı kişi"
+" iki farklı koşulda (ön-test/son-test veya eşleştirilmiş çiftler)."
+msgstr ""
+"Independent: separate groups of different people. Dependent/repeated: the "
+"same person under two different conditions (pre-test/post-test or matched "
+"pairs)."
+
+#: forum/templates/forum/hangi_test.html:313
+#: forum/templates/forum/hangi_test.html:340
+msgid "Evet — farklı kişilerden oluşan bağımsız gruplar"
+msgstr "Yes — independent groups of different people"
+
+#: forum/templates/forum/hangi_test.html:314
+msgid "Hayır — aynı kişiler ya da eşleştirilmiş çiftler"
+msgstr "No — the same people or matched pairs"
+
+#: forum/templates/forum/hangi_test.html:318
+#: forum/templates/forum/hangi_test.html:327
+#: forum/templates/forum/hangi_test.html:345
+#: forum/templates/forum/hangi_test.html:354
+#: forum/templates/forum/hangi_test.html:375
+msgid "Dağılım"
+msgstr "Distribution"
+
+#: forum/templates/forum/hangi_test.html:319
+#: forum/templates/forum/hangi_test.html:346
+#: forum/templates/forum/hangi_test.html:355
+msgid "Veriler normal dağılıyor mu?"
+msgstr "Are the data normally distributed?"
+
+#: forum/templates/forum/hangi_test.html:320
+msgid ""
+"Shapiro-Wilk (n<50) veya Kolmogorov-Smirnov testiyle kontrol edin. Büyük "
+"örneklemlerde (n>30) merkezi limit teoremi sayesinde normal dağılım "
+"genellikle varsayılabilir."
+msgstr ""
+"Check with the Shapiro-Wilk (n<50) or Kolmogorov-Smirnov test. For large "
+"samples (n>30), normality can usually be assumed thanks to the central limit"
+" theorem."
+
+#: forum/templates/forum/hangi_test.html:322
+msgid "Evet — normal dağılım var (ya da n > 30)"
+msgstr "Yes — normally distributed (or n > 30)"
+
+#: forum/templates/forum/hangi_test.html:323
+#: forum/templates/forum/hangi_test.html:332
+#: forum/templates/forum/hangi_test.html:350
+#: forum/templates/forum/hangi_test.html:359
+#: forum/templates/forum/hangi_test.html:380
+msgid "Hayır veya emin değilim"
+msgstr "No, or I'm not sure"
+
+#: forum/templates/forum/hangi_test.html:328
+msgid "Fark skorları normal dağılıyor mu?"
+msgstr "Are the difference scores normally distributed?"
+
+#: forum/templates/forum/hangi_test.html:329
+msgid "İki ölçüm arasındaki fark değerlerinin normalliğini test edin."
+msgstr "Test the normality of the differences between the two measurements."
+
+#: forum/templates/forum/hangi_test.html:331
+#: forum/templates/forum/hangi_test.html:349
+#: forum/templates/forum/hangi_test.html:358
+#: forum/templates/forum/hangi_test.html:379
+msgid "Evet — normal dağılım var"
+msgstr "Yes — normally distributed"
+
+#: forum/templates/forum/hangi_test.html:338
+msgid ""
+"Bağımsız: her grupta farklı kişiler. Tekrarlı: aynı kişiler farklı "
+"koşullarda ya da zaman noktalarında."
+msgstr ""
+"Independent: different people in each group. Repeated: the same people under"
+" different conditions or at different time points."
+
+#: forum/templates/forum/hangi_test.html:341
+msgid "Hayır — tekrarlı ölçüm (aynı kişiler)"
+msgstr "No — repeated measures (same people)"
+
+#: forum/templates/forum/hangi_test.html:347
+msgid "Her grubun dağılımını ayrı ayrı kontrol edin."
+msgstr "Check the distribution of each group separately."
+
+#: forum/templates/forum/hangi_test.html:365
+msgid "Değişken Türü"
+msgstr "Variable Type"
+
+#: forum/templates/forum/hangi_test.html:366
+msgid "Değişkenleriniz ne tür?"
+msgstr "What type are your variables?"
+
+#: forum/templates/forum/hangi_test.html:369
+msgid "İkisi de sürekli/sayısal (örn. yaş ve gelir)"
+msgstr "Both continuous/numeric (e.g. age and income)"
+
+#: forum/templates/forum/hangi_test.html:370
+msgid "İkisi de kategorik (örn. cinsiyet ve tercih)"
+msgstr "Both categorical (e.g. gender and preference)"
+
+#: forum/templates/forum/hangi_test.html:371
+msgid "Biri sıralı (Likert) veya normallik yok"
+msgstr "One is ordinal (Likert) or not normally distributed"
+
+#: forum/templates/forum/hangi_test.html:376
+msgid "Her iki değişken de normal dağılıyor mu?"
+msgstr "Are both variables normally distributed?"
+
+#: forum/templates/forum/hangi_test.html:386
+msgid "Bağımlı Değişken"
+msgstr "Dependent Variable"
+
+#: forum/templates/forum/hangi_test.html:387
+msgid "Tahmin etmek istediğiniz (bağımlı) değişken ne tür?"
+msgstr "What type is the (dependent) variable you want to predict?"
+
+#: forum/templates/forum/hangi_test.html:390
+msgid "Sürekli / sayısal (örn. skor, gelir, süre)"
+msgstr "Continuous / numeric (e.g. score, income, duration)"
+
+#: forum/templates/forum/hangi_test.html:391
+msgid "İkili kategorik (evet/hayır, 0/1, başarılı/başarısız)"
+msgstr "Binary categorical (yes/no, 0/1, success/failure)"
+
+#: forum/templates/forum/hangi_test.html:392
+msgid "Üç veya daha fazla kategorik değer"
+msgstr "Three or more categorical values"
+
+#: forum/templates/forum/hangi_test.html:396
+msgid "Bağımsız Değişken Sayısı"
+msgstr "Number of Independent Variables"
+
+#: forum/templates/forum/hangi_test.html:397
+msgid "Kaç tane açıklayıcı (bağımsız) değişken var?"
+msgstr "How many explanatory (independent) variables are there?"
+
+#: forum/templates/forum/hangi_test.html:400
+msgid "1 bağımsız değişken"
+msgstr "1 independent variable"
+
+#: forum/templates/forum/hangi_test.html:401
+msgid "2 veya daha fazla bağımsız değişken"
+msgstr "2 or more independent variables"
+
+#: forum/templates/forum/hangi_test.html:407
+msgid "Ölçek Analizi"
+msgstr "Scale Analysis"
+
+#: forum/templates/forum/hangi_test.html:408
+msgid "Ne test etmek istiyorsunuz?"
+msgstr "What do you want to test?"
+
+#: forum/templates/forum/hangi_test.html:411
+msgid "Güvenilirlik — maddelerin iç tutarlılığı"
+msgstr "Reliability — internal consistency of items"
+
+#: forum/templates/forum/hangi_test.html:412
+msgid "Faktör yapısını keşfetmek istiyorum (EFA)"
+msgstr "I want to explore the factor structure (EFA)"
+
+#: forum/templates/forum/hangi_test.html:413
+msgid "Teorik bir modeli doğrulamak istiyorum (CFA)"
+msgstr "I want to confirm a theoretical model (CFA)"
+
+#: forum/templates/forum/hangi_test.html:419
+#: forum/templates/forum/proje_talebi.html:165
+#: makaleanaliz/templates/makaleanaliz/results.html:90
+msgid "Analiz Türü"
+msgstr "Analysis Type"
+
+#: forum/templates/forum/hangi_test.html:423
+msgid "Verinin normal dağılıp dağılmadığını test etmek"
+msgstr "Test whether the data are normally distributed"
+
+#: forum/templates/forum/hangi_test.html:424
+msgid "Ortalama, SD gibi tanımlayıcı istatistikler hesaplamak"
+msgstr "Calculate descriptive statistics such as mean and SD"
+
+#: forum/templates/forum/hangi_test.html:432
+#: istatistik/templates/istatistik/orneklem.html:34
+msgid "Bağımsız Örneklem t-Testi"
+msgstr "Independent-Samples t-Test"
+
+#: forum/templates/forum/hangi_test.html:434
+msgid ""
+"Birbirinden bağımsız iki grubun ortalamasını karşılaştırmak için kullanılan "
+"parametrik testtir."
+msgstr ""
+"A parametric test used to compare the means of two independent groups."
+
+#: forum/templates/forum/hangi_test.html:436
+msgid "Bağımlı değişken sürekli/sayısal"
+msgstr "The dependent variable is continuous/numeric"
+
+#: forum/templates/forum/hangi_test.html:437
+msgid "İki bağımsız grup (farklı kişiler)"
+msgstr "Two independent groups (different people)"
+
+#: forum/templates/forum/hangi_test.html:438
+msgid "Her grupta normal dağılım (veya n > 30)"
+msgstr "Normal distribution in each group (or n > 30)"
+
+#: forum/templates/forum/hangi_test.html:439
+msgid "Grupların varyansları homojen olmalı (Levene testi)"
+msgstr "Group variances should be homogeneous (Levene's test)"
+
+#: forum/templates/forum/hangi_test.html:443
+#: forum/templates/forum/hangi_test.html:491
+#: forum/templates/forum/hangi_test.html:525
+#: forum/templates/forum/hangi_test.html:589 istatistik/views.py:41
+msgid "Mann-Whitney U"
+msgstr "Mann-Whitney U"
+
+#: forum/templates/forum/hangi_test.html:443
+#: forum/templates/forum/hangi_test.html:525
+msgid "ANOVA"
+msgstr "ANOVA"
+
+#: forum/templates/forum/hangi_test.html:443
+#: forum/templates/forum/hangi_test.html:491
+#: forum/templates/forum/hangi_test.html:541
+msgid "Bağımlı t-Testi"
+msgstr "Paired t-Test"
+
+#: forum/templates/forum/hangi_test.html:449 istatistik/seo_content.py:70
+#: istatistik/seo_content.py:241 istatistik/seo_content.py:460
+#: istatistik/seo_content.py:1001
+#: istatistik/templates/istatistik/mann_whitney.html:14
+#: istatistik/templates/istatistik/mann_whitney.html:110
+#: istatistik/views.py:476 istatistik/views.py:493
+msgid "Mann-Whitney U Testi"
+msgstr "Mann-Whitney U Test"
+
+#: forum/templates/forum/hangi_test.html:451
+msgid ""
+"Normal dağılım varsayımını karşılamayan iki bağımsız grubun medyanlarını "
+"karşılaştıran non-parametrik alternatiftir."
+msgstr ""
+"A non-parametric alternative that compares the medians of two independent "
+"groups that do not meet the normality assumption."
+
+#: forum/templates/forum/hangi_test.html:453
+msgid "Bağımlı değişken sürekli veya sıralı (ordinal)"
+msgstr "The dependent variable is continuous or ordinal"
+
+#: forum/templates/forum/hangi_test.html:454
+msgid "İki bağımsız grup"
+msgstr "Two independent groups"
+
+#: forum/templates/forum/hangi_test.html:455
+#: forum/templates/forum/hangi_test.html:486
+#: forum/templates/forum/hangi_test.html:520
+#: forum/templates/forum/hangi_test.html:552
+msgid "Normal dağılım varsayımı karşılanmıyor"
+msgstr "The normality assumption is not met"
+
+#: forum/templates/forum/hangi_test.html:459
+#: forum/templates/forum/hangi_test.html:475
+#: forum/templates/forum/hangi_test.html:509
+#: forum/templates/forum/hangi_test.html:733
+msgid "Bağımsız t-Testi"
+msgstr "Independent t-Test"
+
+#: forum/templates/forum/hangi_test.html:459
+#: forum/templates/forum/hangi_test.html:475
+#: forum/templates/forum/hangi_test.html:557
+msgid "Wilcoxon"
+msgstr "Wilcoxon"
+
+#: forum/templates/forum/hangi_test.html:459
+#: forum/templates/forum/hangi_test.html:509
+#: forum/templates/forum/hangi_test.html:557
+msgid "Kruskal-Wallis"
+msgstr "Kruskal-Wallis"
+
+#: forum/templates/forum/hangi_test.html:465
+#: istatistik/templates/istatistik/orneklem.html:35
+msgid "Bağımlı Örneklem t-Testi (Eşleştirilmiş)"
+msgstr "Paired-Samples t-Test"
+
+#: forum/templates/forum/hangi_test.html:467
+msgid ""
+"Aynı grubun iki farklı zamandaki veya iki eşleştirilmiş grubun "
+"ortalamalarını karşılaştırır."
+msgstr ""
+"Compares the means of the same group at two different times, or of two "
+"matched groups."
+
+#: forum/templates/forum/hangi_test.html:469
+msgid ""
+"Aynı kişilerden iki ölçüm (ön-test/son-test) veya eşleştirilmiş çiftler"
+msgstr ""
+"Two measurements from the same people (pre-test/post-test) or matched pairs"
+
+#: forum/templates/forum/hangi_test.html:470
+msgid "Fark skorları normal dağılmalı"
+msgstr "Difference scores should be normally distributed"
+
+#: forum/templates/forum/hangi_test.html:471
+msgid "Sürekli bağımlı değişken"
+msgstr "Continuous dependent variable"
+
+#: forum/templates/forum/hangi_test.html:475
+#: forum/templates/forum/hangi_test.html:557
+msgid "Tekrarlı ANOVA"
+msgstr "Repeated Measures ANOVA"
+
+#: forum/templates/forum/hangi_test.html:481
+#: istatistik/templates/istatistik/wilcoxon.html:5
+#: istatistik/templates/istatistik/wilcoxon.html:15 istatistik/views.py:43
+#: istatistik/views.py:732
+msgid "Wilcoxon İşaret Testi"
+msgstr "Wilcoxon Signed-Rank Test"
+
+#: forum/templates/forum/hangi_test.html:483
+msgid ""
+"Bağımlı t-testinin non-parametrik alternatifi; normal dağılım yoksa aynı "
+"kişinin iki ölçümünü karşılaştırır."
+msgstr ""
+"The non-parametric alternative to the paired t-test; compares two "
+"measurements from the same person when data are not normally distributed."
+
+#: forum/templates/forum/hangi_test.html:485
+msgid "Aynı kişilerden iki ölçüm"
+msgstr "Two measurements from the same people"
+
+#: forum/templates/forum/hangi_test.html:487
+#: forum/templates/forum/hangi_test.html:521
+msgid "Sürekli veya ordinal bağımlı değişken"
+msgstr "Continuous or ordinal dependent variable"
+
+#: forum/templates/forum/hangi_test.html:491
+#: forum/templates/forum/hangi_test.html:525
+#: forum/templates/forum/hangi_test.html:541
+msgid "Friedman"
+msgstr "Friedman"
+
+#: forum/templates/forum/hangi_test.html:499
+msgid ""
+"Üç veya daha fazla bağımsız grubun ortalamasını eş zamanlı karşılaştıran "
+"parametrik testtir."
+msgstr ""
+"A parametric test that simultaneously compares the means of three or more "
+"independent groups."
+
+#: forum/templates/forum/hangi_test.html:501
+#: forum/templates/forum/hangi_test.html:519
+msgid "3+ bağımsız grup"
+msgstr "3+ independent groups"
+
+#: forum/templates/forum/hangi_test.html:502
+msgid "Bağımlı değişken sürekli"
+msgstr "The dependent variable is continuous"
+
+#: forum/templates/forum/hangi_test.html:503
+msgid "Her grupta normal dağılım"
+msgstr "Normal distribution in each group"
+
+#: forum/templates/forum/hangi_test.html:504
+msgid "Grupların varyansları homojen (Levene)"
+msgstr "Homogeneous group variances (Levene)"
+
+#: forum/templates/forum/hangi_test.html:505
+msgid "Fark bulunursa post-hoc test gerekir (Tukey, Bonferroni)"
+msgstr ""
+"If a difference is found, a post-hoc test is needed (Tukey, Bonferroni)"
+
+#: forum/templates/forum/hangi_test.html:509
+msgid "MANOVA"
+msgstr "MANOVA"
+
+#: forum/templates/forum/hangi_test.html:515 istatistik/seo_content.py:134
+#: istatistik/seo_content.py:189 istatistik/seo_content.py:726
+msgid "Kruskal-Wallis Testi"
+msgstr "Kruskal-Wallis Test"
+
+#: forum/templates/forum/hangi_test.html:517
+msgid ""
+"ANOVA'nın non-parametrik alternatifi; 3+ bağımsız grubun medyanlarını "
+"karşılaştırır."
+msgstr ""
+"The non-parametric alternative to ANOVA; compares the medians of 3+ "
+"independent groups."
+
+#: forum/templates/forum/hangi_test.html:531 istatistik/seo_content.py:135
+#: istatistik/seo_content.py:724
+msgid "Tekrarlı Ölçümler ANOVA"
+msgstr "Repeated Measures ANOVA"
+
+#: forum/templates/forum/hangi_test.html:533
+msgid ""
+"Aynı kişilerin üç veya daha fazla farklı zaman noktasındaki/koşuldaki "
+"ortalamalarını karşılaştırır."
+msgstr ""
+"Compares the means of the same people at three or more time "
+"points/conditions."
+
+#: forum/templates/forum/hangi_test.html:535
+#: forum/templates/forum/hangi_test.html:551
+msgid "Aynı kişilerden 3+ tekrarlı ölçüm"
+msgstr "3+ repeated measurements from the same people"
+
+#: forum/templates/forum/hangi_test.html:536
+msgid "Normal dağılım varsayımı"
+msgstr "Normality assumption"
+
+#: forum/templates/forum/hangi_test.html:537
+msgid ""
+"Küresellik varsayımı (Mauchly testi; ihlalde Greenhouse-Geisser düzeltmesi)"
+msgstr ""
+"Sphericity assumption (Mauchly's test; Greenhouse-Geisser correction if "
+"violated)"
+
+#: forum/templates/forum/hangi_test.html:541
+msgid "Karma ANOVA"
+msgstr "Mixed ANOVA"
+
+#: forum/templates/forum/hangi_test.html:547 istatistik/seo_content.py:242
+#: istatistik/seo_content.py:778 istatistik/seo_content.py:1002
+#: istatistik/templates/istatistik/friedman.html:5
+#: istatistik/templates/istatistik/friedman.html:15 istatistik/views.py:44
+#: istatistik/views.py:760
+msgid "Friedman Testi"
+msgstr "Friedman Test"
+
+#: forum/templates/forum/hangi_test.html:549
+msgid ""
+"Tekrarlı ölçümler ANOVA'nın non-parametrik alternatifi; 3+ tekrarlı ölçümü "
+"karşılaştırır."
+msgstr ""
+"The non-parametric alternative to repeated measures ANOVA; compares 3+ "
+"repeated measurements."
+
+#: forum/templates/forum/hangi_test.html:553
+msgid "Sıralı veya sürekli bağımlı değişken"
+msgstr "Ordinal or continuous dependent variable"
+
+#: forum/templates/forum/hangi_test.html:563
+msgid "Pearson Korelasyon Katsayısı"
+msgstr "Pearson Correlation Coefficient"
+
+#: forum/templates/forum/hangi_test.html:565
+msgid ""
+"İki sürekli değişken arasındaki doğrusal ilişkinin yönünü ve gücünü ölçen "
+"parametrik testtir."
+msgstr ""
+"A parametric test that measures the direction and strength of the linear "
+"relationship between two continuous variables."
+
+#: forum/templates/forum/hangi_test.html:567
+msgid "Her iki değişken de sürekli/sayısal"
+msgstr "Both variables are continuous/numeric"
+
+#: forum/templates/forum/hangi_test.html:568
+msgid "Her iki değişken de normal dağılmalı"
+msgstr "Both variables should be normally distributed"
+
+#: forum/templates/forum/hangi_test.html:569
+msgid "Doğrusal ilişki varsayımı (scatter plot ile kontrol edin)"
+msgstr "Linearity assumption (check with a scatter plot)"
+
+#: forum/templates/forum/hangi_test.html:573
+msgid "Spearman Korelasyon"
+msgstr "Spearman Correlation"
+
+#: forum/templates/forum/hangi_test.html:573
+#: forum/templates/forum/hangi_test.html:639
+msgid "Basit Regresyon"
+msgstr "Simple Regression"
+
+#: forum/templates/forum/hangi_test.html:573
+#: forum/templates/forum/hangi_test.html:589
+#: forum/templates/forum/hangi_test.html:655
+#: forum/templates/forum/hangi_test.html:670
+msgid "Ki-Kare"
+msgstr "Chi-Square"
+
+#: forum/templates/forum/hangi_test.html:579
+msgid "Spearman Sıra Korelasyonu"
+msgstr "Spearman's Rank Correlation"
+
+#: forum/templates/forum/hangi_test.html:581
+msgid ""
+"Normal dağılım gerektirmeyen, sıralı veya sürekli değişkenler için ilişki "
+"katsayısı."
+msgstr ""
+"A correlation coefficient for ordinal or continuous variables that does not "
+"require normality."
+
+#: forum/templates/forum/hangi_test.html:583
+msgid "Sürekli veya sıralı (Likert, ordinal) değişkenler"
+msgstr "Continuous or ordinal (Likert) variables"
+
+#: forum/templates/forum/hangi_test.html:584
+msgid "Normal dağılım varsayımı gerekmiyor"
+msgstr "No normality assumption required"
+
+#: forum/templates/forum/hangi_test.html:585
+msgid "Monoton ilişki (mutlaka doğrusal olması gerekmez)"
+msgstr "Monotonic relationship (not necessarily linear)"
+
+#: forum/templates/forum/hangi_test.html:589
+#: forum/templates/forum/hangi_test.html:605
+#: forum/templates/forum/hangi_test.html:622
+msgid "Pearson Korelasyon"
+msgstr "Pearson Correlation"
+
+#: forum/templates/forum/hangi_test.html:595
+#: istatistik/templates/istatistik/ki_kare.html:14
+#: istatistik/templates/istatistik/ki_kare.html:110
+msgid "Ki-Kare Bağımsızlık Testi"
+msgstr "Chi-Square Test of Independence"
+
+#: forum/templates/forum/hangi_test.html:597
+msgid ""
+"İki kategorik değişken arasında istatistiksel bir ilişki olup olmadığını "
+"test eder."
+msgstr ""
+"Tests whether there is a statistical relationship between two categorical "
+"variables."
+
+#: forum/templates/forum/hangi_test.html:599
+msgid "Her iki değişken de kategorik (nominal veya ordinal)"
+msgstr "Both variables are categorical (nominal or ordinal)"
+
+#: forum/templates/forum/hangi_test.html:600
+msgid "Her hücrede beklenen frekans ≥ 5 olmalı"
+msgstr "Expected frequency in each cell should be ≥ 5"
+
+#: forum/templates/forum/hangi_test.html:601
+msgid "Gözlemler birbirinden bağımsız"
+msgstr "Observations are independent of each other"
+
+#: forum/templates/forum/hangi_test.html:605
+msgid "Fisher's Exact Test"
+msgstr "Fisher's Exact Test"
+
+#: forum/templates/forum/hangi_test.html:605
+#: forum/templates/forum/hangi_test.html:622
+#: forum/templates/forum/hangi_test.html:639
+#: forum/templates/forum/hangi_test.html:645
+#: forum/templates/forum/hangi_test.html:670 istatistik/seo_content.py:295
+#: istatistik/seo_content.py:623 istatistik/seo_content.py:834
+#: istatistik/seo_content.py:889
+#: istatistik/templates/istatistik/lojistik_regresyon.html:14
+#: istatistik/views.py:49 istatistik/views.py:600 istatistik/views.py:617
+msgid "Lojistik Regresyon"
+msgstr "Logistic Regression"
+
+#: forum/templates/forum/hangi_test.html:611
+msgid "Basit Doğrusal Regresyon"
+msgstr "Simple Linear Regression"
+
+#: forum/templates/forum/hangi_test.html:613
+msgid ""
+"Tek bağımsız değişkenle sürekli bir bağımlı değişkeni tahmin eden parametrik"
+" analiz."
+msgstr ""
+"A parametric analysis that predicts a continuous dependent variable from a "
+"single independent variable."
+
+#: forum/templates/forum/hangi_test.html:615
+msgid "1 bağımsız + 1 sürekli bağımlı değişken"
+msgstr "1 independent + 1 continuous dependent variable"
+
+#: forum/templates/forum/hangi_test.html:616
+msgid "Artıklar normal dağılmalı (normallik varsayımı)"
+msgstr "Residuals should be normally distributed (normality assumption)"
+
+#: forum/templates/forum/hangi_test.html:617
+msgid "Doğrusal ilişki"
+msgstr "Linear relationship"
+
+#: forum/templates/forum/hangi_test.html:618
+msgid "Bağımsız artıklar (Durbin-Watson)"
+msgstr "Independent residuals (Durbin-Watson)"
+
+#: forum/templates/forum/hangi_test.html:622
+#: forum/templates/forum/hangi_test.html:655
+msgid "Çoklu Regresyon"
+msgstr "Multiple Regression"
+
+#: forum/templates/forum/hangi_test.html:628
+#: istatistik/templates/istatistik/lineer_regresyon.html:14
+#: istatistik/views.py:48 istatistik/views.py:569 istatistik/views.py:586
+msgid "Çoklu Doğrusal Regresyon"
+msgstr "Multiple Linear Regression"
+
+#: forum/templates/forum/hangi_test.html:630
+msgid ""
+"Birden fazla bağımsız değişkenle sürekli bir bağımlı değişkeni tahmin eden "
+"parametrik analiz."
+msgstr ""
+"A parametric analysis that predicts a continuous dependent variable from "
+"several independent variables."
+
+#: forum/templates/forum/hangi_test.html:632
+msgid "2+ bağımsız + 1 sürekli bağımlı değişken"
+msgstr "2+ independent + 1 continuous dependent variable"
+
+#: forum/templates/forum/hangi_test.html:633
+msgid "Artıkların normal dağılımı"
+msgstr "Normally distributed residuals"
+
+#: forum/templates/forum/hangi_test.html:634
+msgid "Çoklu bağlantı sorunu yok (VIF < 10)"
+msgstr "No multicollinearity (VIF < 10)"
+
+#: forum/templates/forum/hangi_test.html:635
+msgid "Doğrusallık ve sabit varyans (homoscedasticity)"
+msgstr "Linearity and constant variance (homoscedasticity)"
+
+#: forum/templates/forum/hangi_test.html:639
+msgid "Panel Veri"
+msgstr "Panel Data"
+
+#: forum/templates/forum/hangi_test.html:647
+msgid ""
+"İkili (0/1) kategorik bağımlı değişkeni tahmin etmek için kullanılır; bir "
+"olayın gerçekleşme olasılığını modeller."
+msgstr ""
+"Used to predict a binary (0/1) categorical dependent variable; it models the"
+" probability of an event occurring."
+
+#: forum/templates/forum/hangi_test.html:649
+msgid "Bağımlı değişken ikili (evet/hayır, 0/1)"
+msgstr "The dependent variable is binary (yes/no, 0/1)"
+
+#: forum/templates/forum/hangi_test.html:650
+#: forum/templates/forum/hangi_test.html:665
+msgid "Bağımsız değişkenler sürekli veya kategorik olabilir"
+msgstr "Independent variables can be continuous or categorical"
+
+#: forum/templates/forum/hangi_test.html:651
+msgid "Yeterli örneklem (her olay için en az 10 gözlem önerilir)"
+msgstr "Sufficient sample (at least 10 observations per event recommended)"
+
+#: forum/templates/forum/hangi_test.html:655
+msgid "Multinomial Lojistik"
+msgstr "Multinomial Logistic"
+
+#: forum/templates/forum/hangi_test.html:661
+msgid "Multinomial Lojistik Regresyon"
+msgstr "Multinomial Logistic Regression"
+
+#: forum/templates/forum/hangi_test.html:662
+msgid "Üç veya daha fazla kategorik değer alan bağımlı değişkeni tahmin eder."
+msgstr "Predicts a dependent variable with three or more categorical values."
+
+#: forum/templates/forum/hangi_test.html:664
+msgid "Bağımlı değişken 3+ nominal kategorik değer alıyor"
+msgstr "The dependent variable has 3+ nominal categorical values"
+
+#: forum/templates/forum/hangi_test.html:666
+msgid ""
+"Kategoriler arasında sıralama yok (sıralı ise Ordinal Regresyon tercih "
+"edilir)"
+msgstr ""
+"No order between categories (if ordered, ordinal regression is preferred)"
+
+#: forum/templates/forum/hangi_test.html:670
+msgid "Diskriminant Analizi"
+msgstr "Discriminant Analysis"
+
+#: forum/templates/forum/hangi_test.html:677
+msgid "Cronbach's Alpha (İç Tutarlılık)"
+msgstr "Cronbach's Alpha (Internal Consistency)"
+
+#: forum/templates/forum/hangi_test.html:678
+msgid ""
+"Bir ölçeğin veya anketin maddelerinin birbiriyle ne kadar tutarlı olduğunu "
+"ölçen güvenilirlik katsayısı."
+msgstr ""
+"A reliability coefficient that measures how consistent the items of a scale "
+"or questionnaire are with each other."
+
+#: forum/templates/forum/hangi_test.html:680
+msgid "Aynı yapıyı ölçen birden fazla madde (soru) var"
+msgstr "There are multiple items (questions) measuring the same construct"
+
+#: forum/templates/forum/hangi_test.html:681
+msgid "Maddeler Likert veya sürekli ölçekte"
+msgstr "Items are on a Likert or continuous scale"
+
+#: forum/templates/forum/hangi_test.html:682
+msgid "α ≥ 0.70 kabul edilebilir, ≥ 0.80 iyi sayılır"
+msgstr "α ≥ 0.70 is acceptable, ≥ 0.80 is considered good"
+
+#: forum/templates/forum/hangi_test.html:686
+#: forum/templates/forum/hangi_test.html:717
+msgid "EFA"
+msgstr "EFA"
+
+#: forum/templates/forum/hangi_test.html:686
+#: forum/templates/forum/hangi_test.html:702
+msgid "CFA"
+msgstr "CFA"
+
+#: forum/templates/forum/hangi_test.html:686
+msgid "Madde Analizi"
+msgstr "Item Analysis"
+
+#: forum/templates/forum/hangi_test.html:692
+#: istatistik/templates/istatistik/afa.html:5 istatistik/views.py:694
+#: istatistik/views.py:711
+msgid "Açıklayıcı Faktör Analizi (AFA)"
+msgstr "Exploratory Factor Analysis (EFA)"
+
+#: forum/templates/forum/hangi_test.html:694
+msgid ""
+"Çok sayıda değişken arasındaki örüntülerden gizli faktör yapılarını "
+"keşfetmek için kullanılır."
+msgstr ""
+"Used to discover latent factor structures from patterns among many "
+"variables."
+
+#: forum/templates/forum/hangi_test.html:696
+msgid "Faktör yapısı önceden bilinmiyor veya keşfedilmek isteniyor"
+msgstr "The factor structure is not known in advance or is to be explored"
+
+#: forum/templates/forum/hangi_test.html:697
+msgid "Yeterli örneklem (n ≥ 5 × madde sayısı önerilir; minimum 100)"
+msgstr "Sufficient sample (n ≥ 5 × number of items recommended; minimum 100)"
+
+#: forum/templates/forum/hangi_test.html:698
+msgid "KMO > 0.60, Bartlett testi anlamlı olmalı"
+msgstr "KMO > 0.60, Bartlett's test should be significant"
+
+#: forum/templates/forum/hangi_test.html:702
+#: forum/templates/forum/hangi_test.html:717
+msgid "Cronbach's Alpha"
+msgstr "Cronbach's Alpha"
+
+#: forum/templates/forum/hangi_test.html:702
+msgid "PCA"
+msgstr "PCA"
+
+#: forum/templates/forum/hangi_test.html:708
+msgid "Doğrulayıcı Faktör Analizi (CFA)"
+msgstr "Confirmatory Factor Analysis (CFA)"
+
+#: forum/templates/forum/hangi_test.html:709
+msgid ""
+"Teorik olarak belirlenen faktör yapısının veriye ne kadar uyduğunu test eden"
+" yapısal analiz yöntemi."
+msgstr ""
+"A structural analysis method that tests how well a theoretically specified "
+"factor structure fits the data."
+
+#: forum/templates/forum/hangi_test.html:711
+msgid "Teorik bir model veya faktör yapısı önceden tanımlanmış"
+msgstr "A theoretical model or factor structure has been defined in advance"
+
+#: forum/templates/forum/hangi_test.html:712
+msgid "Yeterli örneklem (n ≥ 200 önerilir)"
+msgstr "Sufficient sample (n ≥ 200 recommended)"
+
+#: forum/templates/forum/hangi_test.html:713
+msgid "Uyum indeksleri: CFI > 0.90, RMSEA < 0.08, SRMR < 0.08"
+msgstr "Fit indices: CFI > 0.90, RMSEA < 0.08, SRMR < 0.08"
+
+#: forum/templates/forum/hangi_test.html:715
+msgid "AMOS (SPSS eklentisi) | R: lavaan::cfa() | Python: semopy kütüphanesi"
+msgstr "AMOS (SPSS add-on) | R: lavaan::cfa() | Python: semopy library"
+
+#: forum/templates/forum/hangi_test.html:717
+msgid "SEM"
+msgstr "SEM"
+
+#: forum/templates/forum/hangi_test.html:724
+msgid "Normallik Testi (Shapiro-Wilk / K-S)"
+msgstr "Normality Test (Shapiro-Wilk / K-S)"
+
+#: forum/templates/forum/hangi_test.html:725
+msgid ""
+"Bir veri setinin normal dağılıma uyup uymadığını test eder. Diğer parametrik"
+" testler için ön koşuldur."
+msgstr ""
+"Tests whether a dataset follows a normal distribution. It is a prerequisite "
+"for other parametric tests."
+
+#: forum/templates/forum/hangi_test.html:727
+msgid "Shapiro-Wilk: küçük/orta örneklem (n < 50) için önerilir"
+msgstr "Shapiro-Wilk: recommended for small/medium samples (n < 50)"
+
+#: forum/templates/forum/hangi_test.html:728
+msgid "Kolmogorov-Smirnov: büyük örneklem için"
+msgstr "Kolmogorov-Smirnov: for large samples"
+
+#: forum/templates/forum/hangi_test.html:729
+msgid "p > 0.05 → normal dağılım varsayımı reddedilemiyor"
+msgstr "p > 0.05 → the normality assumption cannot be rejected"
+
+#: forum/templates/forum/hangi_test.html:733 forum/training_catalog.py:137
+#: istatistik/seo_content.py:407 istatistik/seo_content.py:461
+#: istatistik/seo_content.py:956
+msgid "Betimsel İstatistik"
+msgstr "Descriptive Statistics"
+
+#: forum/templates/forum/hangi_test.html:733 istatistik/views.py:134
+msgid "Q-Q Plot"
+msgstr "Q-Q Plot"
+
+#: forum/templates/forum/hangi_test.html:740
+msgid "Betimsel / Tanımlayıcı İstatistikler"
+msgstr "Descriptive Statistics"
+
+#: forum/templates/forum/hangi_test.html:741
+msgid ""
+"Veriyi özetlemek için ortalama, medyan, standart sapma, min-max, frekans "
+"gibi istatistikler hesaplanır."
+msgstr ""
+"Statistics such as the mean, median, standard deviation, min-max and "
+"frequencies are calculated to summarize the data."
+
+#: forum/templates/forum/hangi_test.html:743
+msgid "Temel veri özelliklerini anlamak için kullanılır"
+msgstr "Used to understand the basic characteristics of the data"
+
+#: forum/templates/forum/hangi_test.html:744
+msgid "Diğer tüm analizlerden önce yapılması önerilir"
+msgstr "Recommended before any other analysis"
+
+#: forum/templates/forum/hangi_test.html:745
+msgid ""
+"Gruplar arası karşılaştırmalar için kesitli tablolar (crosstab) "
+"oluşturulabilir"
+msgstr ""
+"Cross-tabulations (crosstabs) can be created for between-group comparisons"
+
+#: forum/templates/forum/hangi_test.html:749
+#: forum/templates/forum/home.html:262 forum/views.py:1899
+#: istatistik/seo_content.py:73 istatistik/seo_content.py:190
+#: istatistik/seo_content.py:243 istatistik/seo_content.py:349
+#: istatistik/seo_content.py:512 istatistik/seo_content.py:624
+#: istatistik/seo_content.py:1003
+#: istatistik/templates/istatistik/normallik.html:15 istatistik/views.py:27
+#: istatistik/views.py:127 istatistik/views.py:146
+msgid "Normallik Testi"
+msgstr "Normality Test"
+
+#: forum/templates/forum/hangi_test.html:749
+msgid "Frekans Analizi"
+msgstr "Frequency Analysis"
+
+#: forum/templates/forum/hangi_test.html:810
+msgid "Kullanım koşulları:"
+msgstr "Conditions of use:"
+
+#: forum/templates/forum/hangi_test.html:821
+msgid "Analizus'ta Yap →"
+msgstr "Run it on Analizus →"
+
+#: forum/templates/forum/hangi_test.html:825
+msgid "Bu test yakında Analizus'ta"
+msgstr "This test is coming soon to Analizus"
+
+#: forum/templates/forum/hangi_test.html:832
+msgid "Zamanınız Yok Mu?"
+msgstr "No Time?"
+
+#: forum/templates/forum/hangi_test.html:833
+#, python-brace-format
+msgid ""
+"{title} analizini akademik standartlarda ve hatasız bir şekilde "
+"platformumuzdaki uzmanlara yaptırabilirsiniz."
+msgstr ""
+"You can have the {title} analysis done accurately and to academic standards "
+"by the experts on our platform."
+
+#: forum/templates/forum/hangi_test.html:834
+msgid "Bu Analiz İçin Uzman Bul"
+msgstr "Find an Expert for This Analysis"
+
+#: forum/templates/forum/hangi_test.html:866
+#, python-brace-format
+msgid "Adım {step}"
+msgstr "Step {step}"
+
+#: forum/templates/forum/hangi_test.html:882
+#, python-brace-format
+msgid ""
+"Merhaba,\n"
+"\n"
+"{title} testini kullanmayı düşünüyorum.\n"
+"\n"
+"Araştırma tasarımım:\n"
+"- [Araştırma konunuzu buraya yazın]\n"
+"- [Değişken sayınızı ve türlerini belirtin]\n"
+"- [Örneklem büyüklüğünüzü yazın]\n"
+"\n"
+"Bu test için doğru bir seçim mi? Varsayımlarının kontrolünde yardımcı olabilir misiniz?"
+msgstr ""
+"Hello,\n"
+"\n"
+"I'm thinking of using the {title} test.\n"
+"\n"
+"My research design:\n"
+"- [Describe your research topic here]\n"
+"- [State the number and types of your variables]\n"
+"- [Enter your sample size]\n"
+"\n"
+"Is this the right choice for this test? Could you help me check its assumptions?"
+
 #: forum/templates/forum/home.html:6
 msgid "Analizus — Ücretsiz İstatistik Analizi ve Veri Analizi Platformu"
 msgstr "Analizus — Free Statistical Analysis and Data Analysis Platform"
@@ -2090,16 +3387,6 @@ msgstr "For your thesis:"
 #: forum/templates/forum/home.html:260
 msgid "Güvenilirlik Analizi"
 msgstr "Reliability Analysis"
-
-#: forum/templates/forum/home.html:262 forum/views.py:1899
-#: istatistik/seo_content.py:73 istatistik/seo_content.py:190
-#: istatistik/seo_content.py:243 istatistik/seo_content.py:349
-#: istatistik/seo_content.py:512 istatistik/seo_content.py:624
-#: istatistik/seo_content.py:1003
-#: istatistik/templates/istatistik/normallik.html:15 istatistik/views.py:27
-#: istatistik/views.py:127 istatistik/views.py:146
-msgid "Normallik Testi"
-msgstr "Normality Test"
 
 #: forum/templates/forum/home.html:266
 msgid "Akademisyen"
@@ -2503,10 +3790,6 @@ msgstr "I want to compare the means of two groups"
 #: forum/templates/forum/home.html:763
 msgid "Verim normal dağılmıyor, ne yapmalıyım?"
 msgstr "My data isn't normally distributed — what should I do?"
-
-#: forum/templates/forum/home.html:764
-msgid "Hangi korelasyon testini kullanmalıyım?"
-msgstr "Which correlation test should I use?"
 
 #: forum/templates/forum/home.html:765
 msgid "Örneklem büyüklüğümü nasıl hesaplarım?"
@@ -3424,11 +4707,6 @@ msgstr "Person / Company / Institution"
 msgid "Adınız, şirket veya kurum adı (isteğe bağlı)"
 msgstr "Your name, company, or institution name (optional)"
 
-#: forum/templates/forum/proje_talebi.html:165
-#: makaleanaliz/templates/makaleanaliz/results.html:90
-msgid "Analiz Türü"
-msgstr "Analysis Type"
-
 #: forum/templates/forum/proje_talebi.html:183
 msgid "Proje Açıklaması"
 msgstr "Project Description"
@@ -4057,11 +5335,6 @@ msgstr "Variable view"
 msgid "Veri girişi ve kodlama"
 msgstr "Data entry and coding"
 
-#: forum/training_catalog.py:137 istatistik/seo_content.py:407
-#: istatistik/seo_content.py:461 istatistik/seo_content.py:956
-msgid "Betimsel İstatistik"
-msgstr "Descriptive Statistics"
-
 #: forum/training_catalog.py:137
 msgid "Frekans ve merkezi eğilim"
 msgstr "Frequencies and central tendency"
@@ -4251,11 +5524,6 @@ msgstr "Factor extraction and rotation"
 #: forum/training_catalog.py:183
 msgid "Güvenirlik"
 msgstr "Reliability"
-
-#: forum/training_catalog.py:183 istatistik/seo_content.py:514
-#: istatistik/seo_content.py:954
-msgid "Cronbach Alfa"
-msgstr "Cronbach's Alpha"
 
 #: forum/training_catalog.py:183
 msgid "Madde-toplam korelasyonu"
@@ -5658,28 +6926,6 @@ msgstr ""
 "and the 95% confidence interval. The Analizus PDF report provides all of "
 "this information ready to use."
 
-#: istatistik/seo_content.py:70 istatistik/seo_content.py:241
-#: istatistik/seo_content.py:460 istatistik/seo_content.py:1001
-#: istatistik/templates/istatistik/mann_whitney.html:14
-#: istatistik/templates/istatistik/mann_whitney.html:110
-#: istatistik/views.py:476 istatistik/views.py:493
-msgid "Mann-Whitney U Testi"
-msgstr "Mann-Whitney U Test"
-
-#: istatistik/seo_content.py:71 istatistik/seo_content.py:240
-#: istatistik/seo_content.py:567 istatistik/seo_content.py:779
-#: istatistik/templates/istatistik/anova.html:14
-#: istatistik/templates/istatistik/anova.html:116
-#: istatistik/templates/istatistik/orneklem.html:36 istatistik/views.py:40
-#: istatistik/views.py:288 istatistik/views.py:293 istatistik/views.py:304
-msgid "Tek Yönlü ANOVA"
-msgstr "One-Way ANOVA"
-
-#: istatistik/seo_content.py:72 istatistik/seo_content.py:188
-#: istatistik/seo_content.py:725
-msgid "Wilcoxon Testi"
-msgstr "Wilcoxon Test"
-
 #: istatistik/seo_content.py:74 istatistik/seo_content.py:136
 msgid "Örneklem Büyüklüğü"
 msgstr "Sample Size"
@@ -5794,22 +7040,6 @@ msgstr ""
 "Tukey HSD is preferred with equal sample sizes and is more powerful. "
 "Bonferroni is suitable for a small number of comparisons and unbalanced "
 "groups."
-
-#: istatistik/seo_content.py:133 istatistik/seo_content.py:187
-#: istatistik/seo_content.py:348 istatistik/seo_content.py:459
-#: istatistik/seo_content.py:566 istatistik/seo_content.py:780
-#: istatistik/seo_content.py:1000
-msgid "T-Testi"
-msgstr "t-Test"
-
-#: istatistik/seo_content.py:134 istatistik/seo_content.py:189
-#: istatistik/seo_content.py:726
-msgid "Kruskal-Wallis Testi"
-msgstr "Kruskal-Wallis Test"
-
-#: istatistik/seo_content.py:135 istatistik/seo_content.py:724
-msgid "Tekrarlı Ölçümler ANOVA"
-msgstr "Repeated Measures ANOVA"
 
 #: istatistik/seo_content.py:142
 msgid ""
@@ -5987,14 +7217,6 @@ msgstr ""
 "Apply Dunn's post-hoc test to find out which pairs of groups differ. "
 "Analizus calculates this automatically."
 
-#: istatistik/seo_content.py:242 istatistik/seo_content.py:778
-#: istatistik/seo_content.py:1002
-#: istatistik/templates/istatistik/friedman.html:5
-#: istatistik/templates/istatistik/friedman.html:15 istatistik/views.py:44
-#: istatistik/views.py:760
-msgid "Friedman Testi"
-msgstr "Friedman Test"
-
 #: istatistik/seo_content.py:249
 msgid ""
 "Ki-Kare Testi, kategorik değişkenler arasındaki ilişkiyi veya gözlenen "
@@ -6082,20 +7304,6 @@ msgid ""
 msgstr ""
 "No; χ² only shows significance. For the strength of the relationship, look "
 "at Cramér's V or the phi coefficient."
-
-#: istatistik/seo_content.py:294 istatistik/seo_content.py:513
-#: istatistik/seo_content.py:568 istatistik/seo_content.py:622
-#: istatistik/seo_content.py:955
-#: istatistik/templates/istatistik/orneklem.html:37
-msgid "Korelasyon Analizi"
-msgstr "Correlation Analysis"
-
-#: istatistik/seo_content.py:295 istatistik/seo_content.py:623
-#: istatistik/seo_content.py:834 istatistik/seo_content.py:889
-#: istatistik/templates/istatistik/lojistik_regresyon.html:14
-#: istatistik/views.py:49 istatistik/views.py:600 istatistik/views.py:617
-msgid "Lojistik Regresyon"
-msgstr "Logistic Regression"
 
 #: istatistik/seo_content.py:301
 msgid ""
@@ -6186,10 +7394,6 @@ msgid ""
 msgstr ""
 "For datasets with multiple variables, Analizus automatically creates a "
 "correlation matrix for all pairs."
-
-#: istatistik/seo_content.py:347 istatistik/seo_content.py:678
-msgid "Doğrusal Regresyon"
-msgstr "Linear Regression"
 
 #: istatistik/seo_content.py:355
 msgid ""
@@ -6287,10 +7491,6 @@ msgid ""
 msgstr ""
 "Yes. For multidimensional scales, run a separate reliability analysis for "
 "each subscale; a single alpha for the whole scale can be misleading."
-
-#: istatistik/seo_content.py:406 istatistik/views.py:32
-msgid "Açıklayıcı Faktör Analizi"
-msgstr "Exploratory Factor Analysis"
 
 #: istatistik/seo_content.py:413
 msgid ""
@@ -6728,11 +7928,6 @@ msgid ""
 msgstr ""
 "Accuracy can be misleading with imbalanced datasets. AUC-ROC, sensitivity "
 "and specificity should be evaluated together."
-
-#: istatistik/seo_content.py:677 istatistik/views.py:36
-#: istatistik/views.py:538 istatistik/views.py:555
-msgid "Ki-Kare Testi"
-msgstr "Chi-Square Test"
 
 #: istatistik/seo_content.py:679 istatistik/seo_content.py:888
 #: istatistik/views.py:52
@@ -7249,11 +8444,6 @@ msgstr ""
 "If the difference scores are normally distributed, the paired t-test is more"
 " powerful. Without normality or with a small sample, Wilcoxon gives more "
 "reliable results."
-
-#: istatistik/templates/istatistik/afa.html:5 istatistik/views.py:694
-#: istatistik/views.py:711
-msgid "Açıklayıcı Faktör Analizi (AFA)"
-msgstr "Exploratory Factor Analysis (EFA)"
 
 #: istatistik/templates/istatistik/afa.html:6
 msgid ""
@@ -9200,11 +10390,6 @@ msgstr ""
 "Fisher's exact tests. Cross-tabulation, expected frequencies and an APA-"
 "style PDF report."
 
-#: istatistik/templates/istatistik/ki_kare.html:14
-#: istatistik/templates/istatistik/ki_kare.html:110
-msgid "Ki-Kare Bağımsızlık Testi"
-msgstr "Chi-Square Test of Independence"
-
 #: istatistik/templates/istatistik/ki_kare.html:16
 msgid ""
 "İki kategorik değişken arasındaki ilişkiyi test edin — çapraz tablo ve "
@@ -9679,11 +10864,6 @@ msgstr ""
 "Multiple linear regression (OLS) analysis: R², adjusted R², beta "
 "coefficients, VIF and ready-to-use APA-style report text. Upload Excel or "
 "CSV."
-
-#: istatistik/templates/istatistik/lineer_regresyon.html:14
-#: istatistik/views.py:48 istatistik/views.py:569 istatistik/views.py:586
-msgid "Çoklu Doğrusal Regresyon"
-msgstr "Multiple Linear Regression"
 
 #: istatistik/templates/istatistik/lineer_regresyon.html:16
 msgid ""
@@ -10242,14 +11422,6 @@ msgstr "Parameters"
 msgid "Test Tipi"
 msgstr "Test Type"
 
-#: istatistik/templates/istatistik/orneklem.html:34
-msgid "Bağımsız Örneklem t-Testi"
-msgstr "Independent-Samples t-Test"
-
-#: istatistik/templates/istatistik/orneklem.html:35
-msgid "Bağımlı Örneklem t-Testi (Eşleştirilmiş)"
-msgstr "Paired-Samples t-Test"
-
 #: istatistik/templates/istatistik/orneklem.html:44
 msgid "Grup Sayısı (k)"
 msgstr "Number of Groups (k)"
@@ -10765,12 +11937,6 @@ msgstr "✓ There is a statistically significant difference (p < .05)"
 msgid "✗ İstatistiksel olarak anlamlı fark yok (p ≥ .05)"
 msgstr "✗ There is no statistically significant difference (p ≥ .05)"
 
-#: istatistik/templates/istatistik/wilcoxon.html:5
-#: istatistik/templates/istatistik/wilcoxon.html:15 istatistik/views.py:43
-#: istatistik/views.py:732
-msgid "Wilcoxon İşaret Testi"
-msgstr "Wilcoxon Signed-Rank Test"
-
 #: istatistik/templates/istatistik/wilcoxon.html:6
 msgid ""
 "İki eşleştirilmiş ölçümü Wilcoxon İşaret Testi ile ücretsiz karşılaştırın. W"
@@ -10935,10 +12101,6 @@ msgstr "Relationship Analyses"
 msgid "Fark Analizleri"
 msgstr "Difference Analyses"
 
-#: istatistik/views.py:41
-msgid "Mann-Whitney U"
-msgstr "Mann-Whitney U"
-
 #: istatistik/views.py:42
 msgid "Kruskal-Wallis H"
 msgstr "Kruskal-Wallis H"
@@ -11061,10 +12223,6 @@ msgid ""
 msgstr ""
 "Skewness and kurtosis values are interpreted against the critical limits of "
 "±1.96 and ±2.58."
-
-#: istatistik/views.py:134
-msgid "Q-Q Plot"
-msgstr "Q-Q Plot"
 
 #: istatistik/views.py:134
 msgid "Her değişken için görsel normallik grafiği PDF'e eklenir."
@@ -12746,12 +13904,6 @@ msgstr "Language"
 msgid "Forum konusu veya kullanıcı ara..."
 msgstr "Search forum topics or users..."
 
-#: templates/base.html:533 templates/base.html:554 templates/base.html:567
-#: templates/base.html:576 templates/base.html:834
-#: templates/partials/footer.html:153 templates/partials/footer.html:217
-msgid "Kapat"
-msgstr "Close"
-
 #: templates/base.html:539
 msgid "Soru yükleniyor..."
 msgstr "Loading question..."
@@ -12819,10 +13971,6 @@ msgid ""
 msgstr ""
 "Hello! I can help you with statistical tests, academic literature search or "
 "data analysis."
-
-#: templates/base.html:845
-msgid "Ne yapmak istiyorsunuz?"
-msgstr "What would you like to do?"
 
 #: templates/base.html:855
 msgid "Anonim: 3 soru/gün"

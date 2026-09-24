@@ -42,10 +42,12 @@ EN/DE araç sayfalarında kalan Türkçe: yalnızca yasal adres satırı (kasıt
 **Menüden erişilen tek dilli sayfalar (kullanıcı isteği, 24 Eylül 2026):**
 Hiçbiri i18n_patterns'te değil ve şablonları işaretlenmemiş — her biri için
 URL taşıma + şablon + sitemap(static-i18n) + robots.txt.
-- [ ] (bu tur) Hakkımızda (+ "Neden Analizus?" anchor'ı) — önce TR metin
-  yeni konumlandırmaya göre güncellenecek (kullanıcı kararı), sonra çeviri
-- [ ] (bu tur) İletişim — form mesajları + onay e-postası dahil
-- [ ] (bu tur) Hangi Test? — 1016 satır, çoğu JS karar ağacı
+- [x] Hakkımızda (+ "Neden Analizus?") — TR metin güncellendi (11 madde,
+  kullanıcı onayı) + EN/DE — `fc543cc`
+- [x] İletişim — form + flash mesajları EN/DE — `fc543cc`
+- [x] Hangi Test? — karar ağacı (233 metin) + SSS JSON-LD + araç linkleri
+  dile duyarlı. Açık soru: meta açıklama "Tezin için…" (tez vurgusu) TR'de
+  aynen bırakıldı
 - [ ] **AI Asistan** (`ai_assistant.html`) — arayüz + limit/hata mesajları;
   kullanıcı kararı: asistan kullanıcının dilinde cevap versin (sunucu
   tarafı sistem talimatına dil talimatı eklenecek)
@@ -53,6 +55,13 @@ URL taşıma + şablon + sitemap(static-i18n) + robots.txt.
   çeviri kullanıcı onayıyla yayına girer (etik protokol modalıyla aynı tur)
 
 **Kayıt akışı — yapılacaklar (kullanıcı isteği, 23 Eylül 2026):**
+- [ ] **Giriş/kayıt sayfasında dil seçici yok** (kullanıcı raporu, 24 Eylül
+  2026) — login.html ve register.html base.html'i extend etmeyen bağımsız
+  split-screen sayfalar; navbar'daki dil seçici bu yüzden görünmüyor.
+  Sayfaya kompakt bir TR/EN/DE seçici eklenecek (set_language formu).
+- [ ] **Kullanım Şartları ve Etik Beyanı hâlâ Türkçe** (kullanıcı raporu) —
+  aşağıdaki etik protokol maddesiyle aynı iş; başlık/buton çevrili, gövde
+  değil.
 - [ ] **Akademik Etik Protokolü modalı** (kayıt sayfası, "Kullanım Şartları ve
   Etik Beyanı" linkiyle açılıyor; başlık + "Verstanden" butonu çevrili ama
   6 maddelik gövde metni hiç işaretlenmemiş, EN/DE'de Türkçe görünüyor).

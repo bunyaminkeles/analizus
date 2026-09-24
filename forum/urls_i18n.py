@@ -35,4 +35,5 @@ urlpatterns = [
     # Kurumsal sayfalar (24 Eylül 2026)
     path('hakkimizda/', views.about, name='about'),
     path('iletisim/', views.contact, name='contact'),
+    path('hangi-test/', views.hangi_test, name='hangi_test'),
 ]
