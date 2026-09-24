@@ -26,7 +26,7 @@ class StaticViewSitemap(Sitemap):
     changefreq = 'daily'
 
     def items(self):
-        return ['about', 'contact', 'gizlilik_politikasi', 'hangi_test', 'forum_index', 'uzman_dizini', 'blog_list']
+        return ['gizlilik_politikasi', 'hangi_test', 'forum_index', 'uzman_dizini', 'blog_list']
 
     def location(self, item):
         return reverse(item)
@@ -38,7 +38,7 @@ class StaticI18nSitemap(MultilingualSitemapMixin, Sitemap):
     changefreq = 'daily'
 
     def items(self):
-        pages = ['home', 'proje_talebi']
+        pages = ['home', 'proje_talebi', 'about', 'contact']
         from .models import SiteSettings
         site = SiteSettings.load()
         if site.feature_agentic_landing:

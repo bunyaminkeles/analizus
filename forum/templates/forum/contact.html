@@ -1,7 +1,8 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
-{% block title %}İletişim — Analizus{% endblock %}
-{% block meta_description %}Analizus ekibiyle iletişime geçin. İstatistik analizi, akademik tarama, bibliyometrik analiz ve Hizmetler Pazarı hakkındaki sorularınız için e-posta, WhatsApp veya form ile bize ulaşın.{% endblock %}
+{% block title %}{% trans "İletişim" %} — Analizus{% endblock %}
+{% block meta_description %}{% trans "Analizus ekibiyle iletişime geçin. İstatistik analizi, akademik tarama, bibliyometrik analiz ve Hizmetler Pazarı hakkındaki sorularınız için e-posta, WhatsApp veya form ile bize ulaşın." %}{% endblock %}
 
 {% block main_content_classes %}col-lg-12{% endblock %}
 {% block right_sidebar %}{% endblock %}
@@ -10,12 +11,9 @@
 <div class="container py-5" style="max-width: 980px;">
 
     <div class="text-center mb-5">
-        <h1 class="fw-bold text-white mb-2" style="font-size: 2.25rem;">Bize Ulaşın</h1>
+        <h1 class="fw-bold text-white mb-2" style="font-size: 2.25rem;">{% trans "Bize Ulaşın" %}</h1>
         <p class="text-secondary mx-auto" style="max-width: 640px; line-height: 1.6;">
-            İstatistik analizi, akademik tarama (YÖK Tez, OpenAlex, TR Dizin), bibliyometrik analiz ya da
-            Hizmetler Pazarı üzerinden uzman desteği almak istiyorsanız; sorunuzu, proje kapsamınızı veya
-            işbirliği teklifinizi aşağıdaki formdan iletin. Ekibimiz mesajınızı inceleyip en kısa sürede
-            size dönüş yapacaktır.
+            {% trans "İstatistik analizi, akademik tarama (YÖK Tez, OpenAlex, TR Dizin), bibliyometrik analiz ya da Hizmetler Pazarı üzerinden uzman desteği almak istiyorsanız; sorunuzu, proje kapsamınızı veya işbirliği teklifinizi aşağıdaki formdan iletin. Ekibimiz mesajınızı inceleyip en kısa sürede size dönüş yapacaktır." %}
         </p>
     </div>
 
@@ -27,7 +25,7 @@
                 <div class="ax-contact-info-icon ax-contact-info-icon--primary">
                     <i class="bi bi-envelope-at"></i>
                 </div>
-                <h3 class="ax-contact-info-title">E-posta</h3>
+                <h3 class="ax-contact-info-title">{% trans "E-posta" %}</h3>
                 <span class="ax-contact-info-value">info@analizus.com</span>
             </a>
 
@@ -37,7 +35,7 @@
                     <i class="bi bi-whatsapp"></i>
                 </div>
                 <h3 class="ax-contact-info-title">WhatsApp</h3>
-                <span class="ax-contact-info-value">Hızlı mesaj gönder</span>
+                <span class="ax-contact-info-value">{% trans "Hızlı mesaj gönder" %}</span>
             </a>
             {% endif %}
 
@@ -45,7 +43,7 @@
                 <div class="ax-contact-info-icon ax-contact-info-icon--primary">
                     <i class="bi bi-geo-alt"></i>
                 </div>
-                <h3 class="ax-contact-info-title">Adres</h3>
+                <h3 class="ax-contact-info-title">{% trans "Adres" %}</h3>
                 <span class="ax-contact-info-value">Bünyamin Keleş — Şehit Kubilay Mah. 1697. Sokak No:15/A13, 06220 Keçiören/Ankara</span>
             </div>
         </div>
@@ -60,41 +58,41 @@
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label class="ax-contact-label">Adınız Soyadınız</label>
+                            <label class="ax-contact-label">{% trans "Adınız Soyadınız" %}</label>
                             <input type="text" name="name" class="ax-contact-input" required>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label class="ax-contact-label">E-posta</label>
+                            <label class="ax-contact-label">{% trans "E-posta" %}</label>
                             <input type="email" name="email" class="ax-contact-input" required>
                         </div>
                     </div>
 
                     <div class="mb-3">
-                        <label class="ax-contact-label">Konu Türü</label>
+                        <label class="ax-contact-label">{% trans "Konu Türü" %}</label>
                         <select name="subject" class="ax-contact-select" required>
-                            <option value="">Seçiniz...</option>
-                            <option value="İstatistik Analiz Talebi">İstatistik Analiz Talebi</option>
-                            <option value="Akademik Tarama / Bibliometri">Akademik Tarama / Bibliometri</option>
-                            <option value="Hizmetler Pazarı / Uzman İşbirliği">Hizmetler Pazarı / Uzman İşbirliği</option>
-                            <option value="Teknik Destek">Teknik Destek</option>
-                            <option value="Diğer">Diğer</option>
+                            <option value="">{% trans "Seçiniz..." %}</option>
+                            <option value="İstatistik Analiz Talebi">{% trans "İstatistik Analiz Talebi" %}</option>
+                            <option value="Akademik Tarama / Bibliometri">{% trans "Akademik Tarama / Bibliometri" %}</option>
+                            <option value="Hizmetler Pazarı / Uzman İşbirliği">{% trans "Hizmetler Pazarı / Uzman İşbirliği" %}</option>
+                            <option value="Teknik Destek">{% trans "Teknik Destek" %}</option>
+                            <option value="Diğer">{% trans "Diğer" %}</option>
                         </select>
                     </div>
 
                     <div class="mb-3">
-                        <label class="ax-contact-label">Mesajınız</label>
+                        <label class="ax-contact-label">{% trans "Mesajınız" %}</label>
                         <textarea name="message" rows="5" class="ax-contact-textarea" required></textarea>
                     </div>
 
                     <div class="ax-contact-consent mb-3">
                         <input type="checkbox" id="kvkk-onay" required>
                         <label for="kvkk-onay">
-                            <a href="{% url 'gizlilik_politikasi' %}" target="_blank" rel="noopener">KVKK Aydınlatma Metni'ni</a> okudum, kabul ediyorum.
+                            <a href="{% url 'gizlilik_politikasi' %}" target="_blank" rel="noopener">{% trans "KVKK Aydınlatma Metni'ni" %}</a> {% trans "okudum, kabul ediyorum." %}
                         </label>
                     </div>
 
                     <button type="submit" class="ax-contact-btn">
-                        <i class="bi bi-send me-2"></i>Gönder
+                        <i class="bi bi-send me-2"></i>{% trans "Gönder" %}
                     </button>
                 </form>
             </div>
@@ -104,9 +102,9 @@
 
     {% if not user.is_authenticated %}
     <div class="text-center mt-4">
-        <p class="text-secondary small mb-2">Topluluğumuza katılın</p>
+        <p class="text-secondary small mb-2">{% trans "Topluluğumuza katılın" %}</p>
         <a href="{% url 'register' %}" class="btn btn-outline-primary rounded-pill px-4">
-            <i class="bi bi-person-plus me-2"></i>Kayıt Ol
+            <i class="bi bi-person-plus me-2"></i>{% trans "Kayıt Ol" %}
         </a>
     </div>
     {% endif %}

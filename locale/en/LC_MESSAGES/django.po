@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-24 22:47+0300\n"
+"POT-Creation-Date: 2026-09-24 23:03+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -379,7 +379,8 @@ msgstr "AI Agent / Automation Project"
 msgid "Bibliyometrik Analiz"
 msgstr "Bibliometric Analysis"
 
-#: forum/models.py:1671 forum/templates/forum/proje_talebi.html:178
+#: forum/models.py:1671 forum/templates/forum/contact.html:78
+#: forum/templates/forum/proje_talebi.html:178
 msgid "Diğer"
 msgstr "Other"
 
@@ -530,6 +531,321 @@ msgstr ""
 "Congratulations, %(username)s! Because you signed in with an EDU email "
 "address, you have earned the Verified Academic badge. You can make offers "
 "for 3 days."
+
+#: forum/templates/forum/about.html:5
+msgid "Hakkımızda — Analizus Araştırma ve Analiz Platformu"
+msgstr "About Us — Analizus Research and Analysis Platform"
+
+#: forum/templates/forum/about.html:6
+msgid ""
+"Analizus; araştırmacılara, öğrencilere ve kurumlara istatistik analiz "
+"araçları, AI asistan, akademik tarama ve doğrulanmış uzmanlardan oluşan bir "
+"hizmet pazarı sunan araştırma ve analiz platformudur."
+msgstr ""
+"Analizus is a research and analysis platform that offers researchers, "
+"students and organizations statistical analysis tools, an AI assistant, "
+"academic search and a services marketplace of verified experts."
+
+#: forum/templates/forum/about.html:32
+msgid "Biz Kimiz?"
+msgstr "Who We Are"
+
+#: forum/templates/forum/about.html:33
+msgid ""
+"Sadece istatistik değil; yapay zeka, veri bilimi, ekonometri ve metin "
+"analizi gibi verinin dokunduğu her alanda, araştırmacılarla uzmanları "
+"buluşturan kapsamlı bir <strong>Analiz ve Uzmanlık Ekosistemi</strong>yiz."
+msgstr ""
+"Not just statistics: we are a comprehensive <strong>Analysis and Expertise "
+"Ecosystem</strong> that brings researchers and experts together in every "
+"field data touches — from artificial intelligence and data science to "
+"econometrics and text analysis."
+
+#: forum/templates/forum/about.html:38
+msgid "Misyonumuz"
+msgstr "Our Mission"
+
+#: forum/templates/forum/about.html:40
+msgid ""
+"Araştırmacılar, öğrenciler ve kurumlar ile alanında yetkinliği doğrulanmış "
+"veri bilimcileri, istatistikçileri ve yapay zeka uzmanlarını güvenli bir "
+"<strong>Hizmetler Pazarında</strong> buluşturmak. Aynı zamanda ücretsiz "
+"araştırma konsolu araçlarımızla veri analizini herkes için erişilebilir "
+"kılmak."
+msgstr ""
+"To connect researchers, students and organizations with verified data "
+"scientists, statisticians and AI experts in a secure <strong>Services "
+"Marketplace</strong> — while making data analysis accessible to everyone "
+"through our free research console tools."
+
+#: forum/templates/forum/about.html:46
+msgid "Vizyonumuz"
+msgstr "Our Vision"
+
+#: forum/templates/forum/about.html:48
+msgid ""
+"Disiplinler arası sınırları kaldırarak; bir sosyoloğun yapay zeka "
+"uzmanından, bir mühendisin istatistikçiden kolayca destek alabildiği, "
+"bilginin ve emeğin adilce değere dönüştüğü <strong>en güvenilir analiz pazar"
+" yeri ve topluluğu</strong> olmak."
+msgstr ""
+"To become <strong>the most trusted analysis marketplace and "
+"community</strong> — one that removes the boundaries between disciplines, "
+"where a sociologist can easily get help from an AI expert and an engineer "
+"from a statistician, and where knowledge and work are fairly valued."
+
+#: forum/templates/forum/about.html:54
+msgid "Ne Yapıyoruz?"
+msgstr "What We Do"
+
+#: forum/templates/forum/about.html:59
+msgid "Forum"
+msgstr "Forum"
+
+#: forum/templates/forum/about.html:60
+msgid "İstatistik, analiz yöntemleri ve araştırma konularında soru-cevap"
+msgstr "Q&A on statistics, analysis methods and research topics"
+
+#: forum/templates/forum/about.html:66
+msgid "Hizmetler Pazarı"
+msgstr "Services Marketplace"
+
+#: forum/templates/forum/about.html:67
+msgid "Uzmanlarla proje bazlı eşleşme ve analiz hizmeti"
+msgstr "Project-based matching with experts and analysis services"
+
+#: forum/templates/forum/about.html:73 templates/base.html:220
+#: templates/base.html:433 templates/base.html:817 templates/base.html:821
+#: templates/base.html:827 templates/partials/footer.html:48
+msgid "AI Asistan"
+msgstr "AI Assistant"
+
+#: forum/templates/forum/about.html:74
+msgid "Yapay zeka destekli istatistik danışmanlığı"
+msgstr "AI-powered statistical consulting"
+
+#: forum/templates/forum/about.html:80
+msgid "Blog"
+msgstr "Blog"
+
+#: forum/templates/forum/about.html:81
+msgid "Adım adım analiz rehberleri ve yazılar"
+msgstr "Step-by-step analysis guides and articles"
+
+#: forum/templates/forum/about.html:89
+msgid "Değerlerimiz"
+msgstr "Our Values"
+
+#: forum/templates/forum/about.html:93
+msgid "Akademik Dürüstlük"
+msgstr "Academic Integrity"
+
+#: forum/templates/forum/about.html:93
+msgid "Bilimsel etik ve doğruluk her şeyin önünde"
+msgstr "Scientific ethics and accuracy come first"
+
+#: forum/templates/forum/about.html:97
+msgid "Erişilebilirlik"
+msgstr "Accessibility"
+
+#: forum/templates/forum/about.html:97
+msgid "Bilgi herkese açık, destek herkese eşit"
+msgstr "Knowledge open to all, support equal for all"
+
+#: forum/templates/forum/about.html:101
+msgid "Topluluk Gücü"
+msgstr "Community Strength"
+
+#: forum/templates/forum/about.html:101
+msgid "Uzmanların birbirine destek olduğu bir ekosistem"
+msgstr "An ecosystem where experts support one another"
+
+#: forum/templates/forum/about.html:122
+msgid "Rakiplerle Karşılaştırma"
+msgstr "Comparison with Alternatives"
+
+#: forum/templates/forum/about.html:127
+#: istatistik/templates/istatistik/karar_agaci.html:200
+#: istatistik/templates/istatistik/svm.html:206
+msgid "Özellik"
+msgstr "Feature"
+
+#: forum/templates/forum/about.html:151
+msgid "Analizus'un Farkı"
+msgstr "What Makes Analizus Different"
+
+#: forum/templates/forum/about.html:156
+msgid "APA Formatında Otomatik Rapor"
+msgstr "Automatic APA-Style Report"
+
+#: forum/templates/forum/about.html:157
+msgid ""
+"Analiz tamamlanınca raporuna ya da tezine ekleyebileceğin APA cümlesi "
+"otomatik oluşur. \"α = .873 … yüksek güvenilirlik (Nunnally, 1978).\""
+msgstr ""
+"When the analysis is complete, an APA sentence you can add to your report or"
+" thesis is generated automatically. \"α = .873 … high reliability (Nunnally,"
+" 1978).\""
+
+#: forum/templates/forum/about.html:163
+msgid "Hangi Test? Karar Ağacı"
+msgstr "\"Which Test?\" Decision Tree"
+
+#: forum/templates/forum/about.html:164
+msgid ""
+"Araştırma sorunsalına göre doğru istatistik testini bul; platform varsa "
+"doğrudan analiz sayfasına yönlen."
+msgstr ""
+"Find the right statistical test for your research question — and go straight"
+" to the analysis page if the platform offers it."
+
+#: forum/templates/forum/about.html:170
+msgid "Uzman Hizmetler Pazarı"
+msgstr "Expert Services Marketplace"
+
+#: forum/templates/forum/about.html:171
+msgid ""
+"Kendi yapamazsan doğrulanmış uzman ağımızdan teklif al; fiyat gizli, teslim "
+"hızlı."
+msgstr ""
+"If you can't do it yourself, get offers from our network of verified experts"
+" — private pricing, fast delivery."
+
+#: forum/templates/forum/about.html:177
+msgid "AI İstatistik Asistanı"
+msgstr "AI Statistics Assistant"
+
+#: forum/templates/forum/about.html:178
+msgid ""
+"Analiz sonucunu yorumlamakta takıldın mı? AI asistan sana özel, anlaşılır "
+"bir açıklama yapar."
+msgstr ""
+"Stuck interpreting your results? The AI assistant gives you a personalized, "
+"easy-to-understand explanation."
+
+#: forum/templates/forum/about.html:184
+msgid "Akademik Tarama Araçları"
+msgstr "Academic Search Tools"
+
+#: forum/templates/forum/about.html:185
+msgid ""
+"YÖK Tez, OpenAlex, TR Dizin — 240 milyon akademik kaynağa tek yerden eriş; "
+"bibliyometrik analiz yap."
+msgstr ""
+"YÖK Thesis, OpenAlex, TR Dizin — access 240 million academic sources in one "
+"place and run bibliometric analyses."
+
+#: forum/templates/forum/about.html:191
+msgid "Aktif Topluluk Forumu"
+msgstr "Active Community Forum"
+
+#: forum/templates/forum/about.html:192
+msgid ""
+"Analiz sürecindeki sorularını araştırmacılar ve uzmanlarla paylaş; "
+"metodoloji, örneklem, etik — her konu tartışılıyor."
+msgstr ""
+"Share your analysis questions with researchers and experts — methodology, "
+"sampling, ethics: every topic is discussed."
+
+#: forum/templates/forum/about.html:200
+msgid "Danışmanlık ve Hizmet Garantilerimiz"
+msgstr "Our Consulting and Service Guarantees"
+
+#: forum/templates/forum/about.html:208
+msgid "Zamanında Teslimat Garantisi"
+msgstr "On-Time Delivery Guarantee"
+
+#: forum/templates/forum/about.html:209
+msgid ""
+"Gecikmelere tahammülümüz yok. Anlaşılan teslim tarihini aşan projelerde "
+"koşulsuz destek ve ücretsiz ekstra revizyon garantisi sunuyoruz."
+msgstr ""
+"We do not tolerate delays. For projects that exceed the agreed delivery "
+"date, we guarantee unconditional support and free extra revisions."
+
+#: forum/templates/forum/about.html:219
+#, python-format
+msgid "%%100 Etik ve Veri Gizliliği"
+msgstr "100%% Ethics and Data Privacy"
+
+#: forum/templates/forum/about.html:220
+msgid ""
+"Araştırma verileriniz namusumuzdur. Analiz bitiminde tüm ham verileriniz ve "
+"sonuçlarınız şifreli sistemlerimizden kalıcı olarak silinir."
+msgstr ""
+"Your research data is a matter of honor for us. When the analysis is "
+"finished, all your raw data and results are permanently deleted from our "
+"encrypted systems."
+
+#: forum/templates/forum/about.html:230
+msgid "Ücretsiz Metodoloji Görüşmesi"
+msgstr "Free Methodology Consultation"
+
+#: forum/templates/forum/about.html:231
+msgid ""
+"Yanlış test seçimiyle zaman kaybetmeyin. İşe başlamadan önce verilerinizi "
+"inceliyor, doğru istatistiksel yöntemi uzmanlarımızla birlikte belirliyoruz."
+msgstr ""
+"Don't waste time on the wrong test. Before we start, we review your data and"
+" determine the right statistical method together with our experts."
+
+#: forum/templates/forum/about.html:241
+msgid "Jüri ve Hakem Ön Onay Desteği"
+msgstr "Examiner and Reviewer Support"
+
+#: forum/templates/forum/about.html:242
+msgid ""
+"İşi teslim edip gitmiyoruz. Raporlarımızın sonuna kadar arkasındayız; olası "
+"hakem veya jüri düzeltmelerinde ücretsiz revizyon sağlıyoruz."
+msgstr ""
+"We don't just deliver and disappear. We stand behind our reports all the way"
+" and provide free revisions for any reviewer or examiner corrections."
+
+#: forum/templates/forum/about.html:252
+msgid "Kullanıcı Deneyimleri"
+msgstr "User Experiences"
+
+#: forum/templates/forum/about.html:281
+msgid "Geniş Uzman Ağı"
+msgstr "Wide Expert Network"
+
+#: forum/templates/forum/about.html:282
+msgid "Platformdaki Uzmanlardan Örnekler"
+msgstr "Some of the Experts on Our Platform"
+
+#: forum/templates/forum/about.html:283
+msgid ""
+"Farklı disiplinlerden, akademik ve teknik yeterliliği doğrulanmış yüzlerce "
+"uzman Analizus'ta size destek olmak için bekliyor."
+msgstr ""
+"Hundreds of experts from different disciplines, with verified academic and "
+"technical qualifications, are ready to help you on Analizus."
+
+#: forum/templates/forum/about.html:396
+msgid "Analizini bekletme"
+msgstr "Don't put your analysis on hold"
+
+#: forum/templates/forum/about.html:397
+msgid "Ücretsiz başla — kredi kartı gerekmez, kurulum yok."
+msgstr "Start for free — no credit card required, no installation."
+
+#: forum/templates/forum/about.html:400
+msgid "Ücretsiz Kayıt Ol"
+msgstr "Sign Up for Free"
+
+#: forum/templates/forum/about.html:404 forum/templates/forum/home.html:264
+#: forum/templates/forum/home.html:369 templates/base.html:218
+#: templates/base.html:432 templates/partials/footer.html:46
+msgid "Hangi Test?"
+msgstr "Which Test?"
+
+#: forum/templates/forum/about.html:410
+msgid "Analizus, Bünyamin Keleş tarafından işletilmektedir."
+msgstr "Analizus is operated by Bünyamin Keleş."
+
+#: forum/templates/forum/about.html:410
+msgid "Adres:"
+msgstr "Address:"
 
 #: forum/templates/forum/ai_cozumler.html:5
 #: forum/templates/forum/ai_cozumler.html:7
@@ -795,6 +1111,109 @@ msgid ""
 msgstr ""
 "Do you have a process that could be automated? Let's start with a 15-minute "
 "discovery call."
+
+#: forum/templates/forum/contact.html:4 templates/base.html:279
+#: templates/base.html:471 templates/partials/footer.html:101
+#: templates/partials/footer.html:136
+msgid "İletişim"
+msgstr "Contact"
+
+#: forum/templates/forum/contact.html:5
+msgid ""
+"Analizus ekibiyle iletişime geçin. İstatistik analizi, akademik tarama, "
+"bibliyometrik analiz ve Hizmetler Pazarı hakkındaki sorularınız için "
+"e-posta, WhatsApp veya form ile bize ulaşın."
+msgstr ""
+"Get in touch with the Analizus team. For questions about statistical "
+"analysis, academic search, bibliometric analysis or the Services "
+"Marketplace, reach us by email, WhatsApp or the contact form."
+
+#: forum/templates/forum/contact.html:14
+msgid "Bize Ulaşın"
+msgstr "Contact Us"
+
+#: forum/templates/forum/contact.html:16
+msgid ""
+"İstatistik analizi, akademik tarama (YÖK Tez, OpenAlex, TR Dizin), "
+"bibliyometrik analiz ya da Hizmetler Pazarı üzerinden uzman desteği almak "
+"istiyorsanız; sorunuzu, proje kapsamınızı veya işbirliği teklifinizi "
+"aşağıdaki formdan iletin. Ekibimiz mesajınızı inceleyip en kısa sürede size "
+"dönüş yapacaktır."
+msgstr ""
+"If you would like expert support with statistical analysis, academic search "
+"(YÖK Thesis, OpenAlex, TR Dizin), bibliometric analysis or via the Services "
+"Marketplace, send us your question, project scope or collaboration proposal "
+"using the form below. Our team will review your message and get back to you "
+"as soon as possible."
+
+#: forum/templates/forum/contact.html:28 forum/templates/forum/contact.html:65
+#: forum/templates/forum/egitim_talebi.html:54
+#: forum/templates/forum/proje_talebi.html:152
+msgid "E-posta"
+msgstr "Email"
+
+#: forum/templates/forum/contact.html:38
+msgid "Hızlı mesaj gönder"
+msgstr "Send a quick message"
+
+#: forum/templates/forum/contact.html:46
+msgid "Adres"
+msgstr "Address"
+
+#: forum/templates/forum/contact.html:61
+msgid "Adınız Soyadınız"
+msgstr "Full Name"
+
+#: forum/templates/forum/contact.html:71
+msgid "Konu Türü"
+msgstr "Subject"
+
+#: forum/templates/forum/contact.html:73
+msgid "Seçiniz..."
+msgstr "Please select..."
+
+#: forum/templates/forum/contact.html:74
+msgid "İstatistik Analiz Talebi"
+msgstr "Statistical Analysis Request"
+
+#: forum/templates/forum/contact.html:75
+msgid "Akademik Tarama / Bibliometri"
+msgstr "Academic Search / Bibliometrics"
+
+#: forum/templates/forum/contact.html:76
+msgid "Hizmetler Pazarı / Uzman İşbirliği"
+msgstr "Services Marketplace / Expert Collaboration"
+
+#: forum/templates/forum/contact.html:77
+msgid "Teknik Destek"
+msgstr "Technical Support"
+
+#: forum/templates/forum/contact.html:83
+msgid "Mesajınız"
+msgstr "Your Message"
+
+#: forum/templates/forum/contact.html:90
+msgid "KVKK Aydınlatma Metni'ni"
+msgstr "KVKK Privacy Notice"
+
+#: forum/templates/forum/contact.html:90
+msgid "okudum, kabul ediyorum."
+msgstr "— I have read and accept it."
+
+#: forum/templates/forum/contact.html:95 templates/base.html:861
+msgid "Gönder"
+msgstr "Send"
+
+#: forum/templates/forum/contact.html:105
+msgid "Topluluğumuza katılın"
+msgstr "Join our community"
+
+#: forum/templates/forum/contact.html:107
+#: forum/templates/registration/login.html:244 templates/base.html:381
+#: templates/base.html:509 templates/forum/register.html:8
+#: templates/forum/register.html:254 templates/forum/register.html:306
+msgid "Kayıt Ol"
+msgstr "Sign Up"
 
 #: forum/templates/forum/egitim.html:5 forum/templates/forum/egitim.html:7
 #: forum/templates/forum/egitim.html:9
@@ -1276,11 +1695,6 @@ msgstr "Website"
 msgid "Ad Soyad"
 msgstr "Full Name"
 
-#: forum/templates/forum/egitim_talebi.html:54
-#: forum/templates/forum/proje_talebi.html:152
-msgid "E-posta"
-msgstr "Email"
-
 #: forum/templates/forum/egitim_talebi.html:61
 msgid "Telefon"
 msgstr "Phone"
@@ -1677,20 +2091,15 @@ msgstr "For your thesis:"
 msgid "Güvenilirlik Analizi"
 msgstr "Reliability Analysis"
 
-#: forum/templates/forum/home.html:262 istatistik/seo_content.py:73
-#: istatistik/seo_content.py:190 istatistik/seo_content.py:243
-#: istatistik/seo_content.py:349 istatistik/seo_content.py:512
-#: istatistik/seo_content.py:624 istatistik/seo_content.py:1003
+#: forum/templates/forum/home.html:262 forum/views.py:1899
+#: istatistik/seo_content.py:73 istatistik/seo_content.py:190
+#: istatistik/seo_content.py:243 istatistik/seo_content.py:349
+#: istatistik/seo_content.py:512 istatistik/seo_content.py:624
+#: istatistik/seo_content.py:1003
 #: istatistik/templates/istatistik/normallik.html:15 istatistik/views.py:27
 #: istatistik/views.py:127 istatistik/views.py:146
 msgid "Normallik Testi"
 msgstr "Normality Test"
-
-#: forum/templates/forum/home.html:264 forum/templates/forum/home.html:369
-#: templates/base.html:218 templates/base.html:432
-#: templates/partials/footer.html:46
-msgid "Hangi Test?"
-msgstr "Which Test?"
 
 #: forum/templates/forum/home.html:266
 msgid "Akademisyen"
@@ -2987,7 +3396,7 @@ msgstr "Registered"
 msgid "Üye"
 msgstr "Members"
 
-#: forum/templates/forum/proje_talebi.html:120
+#: forum/templates/forum/proje_talebi.html:120 forum/views.py:1894
 msgid "Ücretsiz"
 msgstr "Free"
 
@@ -3168,12 +3577,6 @@ msgstr ""
 msgid "Hesabınıza giriş yapın"
 msgstr "Sign in to your account"
 
-#: forum/templates/registration/login.html:244 templates/base.html:381
-#: templates/base.html:509 templates/forum/register.html:8
-#: templates/forum/register.html:254 templates/forum/register.html:306
-msgid "Kayıt Ol"
-msgstr "Sign Up"
-
 #: forum/templates/registration/login.html:248
 msgid "Kullanıcı adı veya şifre hatalı."
 msgstr "Incorrect username or password."
@@ -3238,7 +3641,8 @@ msgstr "Data cleaning (removing duplicates/errors)"
 #: forum/training_catalog.py:133 forum/training_catalog.py:156
 #: forum/training_catalog.py:325 forum/training_catalog.py:346
 #: forum/training_catalog.py:368 forum/training_catalog.py:388
-#: forum/training_catalog.py:417
+#: forum/training_catalog.py:417 forum/views.py:1896 forum/views.py:1898
+#: forum/views.py:1899 forum/views.py:1900 forum/views.py:1901
 msgid "Yok"
 msgstr "None"
 
@@ -4926,6 +5330,99 @@ msgid ""
 msgstr ""
 "Registration successful, but the verification email could not be sent. You "
 "can try again from your profile page."
+
+#: forum/views.py:1894
+msgid "Ücret"
+msgstr "Price"
+
+#: forum/views.py:1894
+msgid "~$1,500/yıl"
+msgstr "~$1,500/year"
+
+#: forum/views.py:1894
+msgid "~$900/yıl"
+msgstr "~$900/year"
+
+#: forum/views.py:1894
+msgid "Ücretli"
+msgstr "Paid"
+
+#: forum/views.py:1895
+msgid "Kurulum"
+msgstr "Installation"
+
+#: forum/views.py:1895
+msgid "Yok (tarayıcı)"
+msgstr "None (browser)"
+
+#: forum/views.py:1895
+msgid "Gerekli"
+msgstr "Required"
+
+#: forum/views.py:1896
+msgid "APA Rapor"
+msgstr "APA Report"
+
+#: forum/views.py:1896
+msgid "Otomatik"
+msgstr "Automatic"
+
+#: forum/views.py:1897
+msgid "PDF Çıktı"
+msgstr "PDF Output"
+
+#: forum/views.py:1897
+msgid "Hazır"
+msgstr "Ready-made"
+
+#: forum/views.py:1897
+msgid "Manuel"
+msgstr "Manual"
+
+#: forum/views.py:1898 istatistik/views.py:31 istatistik/views.py:93
+msgid "Cronbach Alpha"
+msgstr "Cronbach's Alpha"
+
+#: forum/views.py:1898 forum/views.py:1899 forum/views.py:1901
+msgid "Var"
+msgstr "Yes"
+
+#: forum/views.py:1900
+msgid "Uzman Desteği"
+msgstr "Expert Support"
+
+#: forum/views.py:1900
+msgid "Pazar yeri"
+msgstr "Marketplace"
+
+#: forum/views.py:1901
+msgid "Akademik Forum"
+msgstr "Academic Forum"
+
+#: forum/views.py:1902
+msgid "Türkçe Arayüz"
+msgstr "Turkish Interface"
+
+#: forum/views.py:1902
+msgid "Tam Türkçe"
+msgstr "Fully Turkish"
+
+#: forum/views.py:1902
+msgid "Kısmi"
+msgstr "Partial"
+
+#: forum/views.py:1902
+msgid "İngilizce"
+msgstr "English"
+
+#: forum/views.py:2011
+msgid "Mesajınız başarıyla gönderildi. En kısa sürede dönüş yapacağız."
+msgstr ""
+"Your message has been sent. We will get back to you as soon as possible."
+
+#: forum/views.py:2013
+msgid "Mesaj gönderilirken bir hata oluştu. Lütfen tekrar deneyin."
+msgstr "An error occurred while sending your message. Please try again."
 
 #: forum/views.py:2037 forum/views.py:2194
 msgid "Lütfen zorunlu alanları doldurunuz."
@@ -8558,11 +9055,6 @@ msgstr "Variable Importance Ranking"
 msgid "Sıra"
 msgstr "Rank"
 
-#: istatistik/templates/istatistik/karar_agaci.html:200
-#: istatistik/templates/istatistik/svm.html:206
-msgid "Özellik"
-msgstr "Feature"
-
 #: istatistik/templates/istatistik/karar_agaci.html:201
 #: istatistik/templates/istatistik/svm.html:207
 msgid "Önem Skoru"
@@ -10435,10 +10927,6 @@ msgstr "Sample Size Calculator"
 msgid "Geçerlik & Güvenirlik"
 msgstr "Validity & Reliability"
 
-#: istatistik/views.py:31 istatistik/views.py:93
-msgid "Cronbach Alpha"
-msgstr "Cronbach's Alpha"
-
 #: istatistik/views.py:34
 msgid "İlişki Analizleri"
 msgstr "Relationship Analyses"
@@ -12179,12 +12667,6 @@ msgstr "Analyses"
 msgid "Tableau Analizleri"
 msgstr "Tableau Analyses"
 
-#: templates/base.html:220 templates/base.html:433 templates/base.html:817
-#: templates/base.html:821 templates/base.html:827
-#: templates/partials/footer.html:48
-msgid "AI Asistan"
-msgstr "AI Assistant"
-
 #: templates/base.html:223
 msgid "YouTube Transcript İndir"
 msgstr "Download YouTube Transcript"
@@ -12207,11 +12689,6 @@ msgstr "AI Solutions"
 #: templates/partials/footer.html:100 templates/partials/footer.html:135
 msgid "Hakkımızda"
 msgstr "About Us"
-
-#: templates/base.html:279 templates/base.html:471
-#: templates/partials/footer.html:101 templates/partials/footer.html:136
-msgid "İletişim"
-msgstr "Contact"
 
 #: templates/base.html:302
 msgid "Dil seç"
@@ -12366,10 +12843,6 @@ msgstr "Type your question…"
 #: templates/base.html:860
 msgid "Mesaj"
 msgstr "Message"
-
-#: templates/base.html:861
-msgid "Gönder"
-msgstr "Send"
 
 #: templates/base.html:1208
 msgid "hak"

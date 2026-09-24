@@ -81,12 +81,10 @@ urlpatterns = [
 
     # Diğer
     path('search/', views.search_result, name='search'),
-    path('hakkimizda/', views.about, name='about'),
     path('neden-biz/', RedirectView.as_view(url='/hakkimizda/', permanent=True)),
     path('liderboard/', views.liderboard, name='liderboard'),
     path('nasil-calisir/', views.how_it_works, name='how_it_works'),
     path('tableau-analiz/', views.tableau_dashboard, name='tableau_dashboard'),
-    path('iletisim/', views.contact, name='contact'),
     path('gizlilik-politikasi/', views.gizlilik_politikasi, name='gizlilik_politikasi'),
 
     # Section Detail

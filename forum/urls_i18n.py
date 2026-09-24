@@ -31,4 +31,8 @@ urlpatterns = [
     path('market/my-jobs/', views.my_jobs, name='my_jobs'),
     path('market/job/<int:pk>/promote/', views.promote_job, name='promote_job'),
     path('market/job/<int:pk>/payment-transferred/', views.mark_payment_transferred, name='mark_payment_transferred'),
+
+    # Kurumsal sayfalar (24 Eylül 2026)
+    path('hakkimizda/', views.about, name='about'),
+    path('iletisim/', views.contact, name='contact'),
 ]

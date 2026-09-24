@@ -1891,15 +1891,15 @@ def about(request):
     partial = '<i class="bi bi-dash-circle text-warning"></i>'
     cross = '<i class="bi bi-x-circle text-danger"></i>'
     comparison_rows = [
-        {'feature': 'Ücret',           'analizus': f'{check} Ücretsiz',         'spss': '~$1,500/yıl',    'smartpls': '~$900/yıl',  'excel': 'Ücretli'},
-        {'feature': 'Kurulum',         'analizus': f'{check} Yok (tarayıcı)',   'spss': 'Gerekli',         'smartpls': 'Gerekli',     'excel': 'Gerekli'},
-        {'feature': 'APA Rapor',       'analizus': f'{check} Otomatik',         'spss': f'{cross} Yok',    'smartpls': f'{cross} Yok','excel': f'{cross} Yok'},
-        {'feature': 'PDF Çıktı',       'analizus': f'{check} Hazır',            'spss': f'{partial} Manuel','smartpls': f'{partial} Manuel','excel': f'{partial} Manuel'},
-        {'feature': 'Cronbach Alpha',  'analizus': f'{check} Var',              'spss': f'{check} Var',    'smartpls': f'{check} Var','excel': f'{cross} Yok'},
-        {'feature': 'Normallik Testi', 'analizus': f'{check} Var',              'spss': f'{check} Var',    'smartpls': f'{cross} Yok','excel': f'{cross} Yok'},
-        {'feature': 'Uzman Desteği',   'analizus': f'{check} Pazar yeri',       'spss': f'{cross} Yok',    'smartpls': f'{cross} Yok','excel': f'{cross} Yok'},
-        {'feature': 'Akademik Forum',  'analizus': f'{check} Var',              'spss': f'{cross} Yok',    'smartpls': f'{cross} Yok','excel': f'{cross} Yok'},
-        {'feature': 'Türkçe Arayüz',   'analizus': f'{check} Tam Türkçe',       'spss': f'{partial} Kısmi','smartpls': f'{cross} İngilizce','excel': f'{partial} Kısmi'},
+        {'feature': gettext('Ücret'),           'analizus': f'{check} {gettext("Ücretsiz")}',         'spss': gettext('~$1,500/yıl'),    'smartpls': gettext('~$900/yıl'),  'excel': gettext('Ücretli')},
+        {'feature': gettext('Kurulum'),         'analizus': f'{check} {gettext("Yok (tarayıcı)")}',   'spss': gettext('Gerekli'),         'smartpls': gettext('Gerekli'),     'excel': gettext('Gerekli')},
+        {'feature': gettext('APA Rapor'),       'analizus': f'{check} {gettext("Otomatik")}',         'spss': f'{cross} {gettext("Yok")}',    'smartpls': f'{cross} {gettext("Yok")}','excel': f'{cross} {gettext("Yok")}'},
+        {'feature': gettext('PDF Çıktı'),       'analizus': f'{check} {gettext("Hazır")}',            'spss': f'{partial} {gettext("Manuel")}','smartpls': f'{partial} {gettext("Manuel")}','excel': f'{partial} {gettext("Manuel")}'},
+        {'feature': gettext('Cronbach Alpha'),  'analizus': f'{check} {gettext("Var")}',              'spss': f'{check} {gettext("Var")}',    'smartpls': f'{check} {gettext("Var")}','excel': f'{cross} {gettext("Yok")}'},
+        {'feature': gettext('Normallik Testi'), 'analizus': f'{check} {gettext("Var")}',              'spss': f'{check} {gettext("Var")}',    'smartpls': f'{cross} {gettext("Yok")}','excel': f'{cross} {gettext("Yok")}'},
+        {'feature': gettext('Uzman Desteği'),   'analizus': f'{check} {gettext("Pazar yeri")}',       'spss': f'{cross} {gettext("Yok")}',    'smartpls': f'{cross} {gettext("Yok")}','excel': f'{cross} {gettext("Yok")}'},
+        {'feature': gettext('Akademik Forum'),  'analizus': f'{check} {gettext("Var")}',              'spss': f'{cross} {gettext("Yok")}',    'smartpls': f'{cross} {gettext("Yok")}','excel': f'{cross} {gettext("Yok")}'},
+        {'feature': gettext('Türkçe Arayüz'),   'analizus': f'{check} {gettext("Tam Türkçe")}',       'spss': f'{partial} {gettext("Kısmi")}','smartpls': f'{cross} {gettext("İngilizce")}','excel': f'{partial} {gettext("Kısmi")}'},
     ]
     return render(request, 'forum/about.html', {'stories': stories, 'comparison_rows': comparison_rows})
 
@@ -2008,9 +2008,9 @@ def contact(request):
                 html_content=html_content,
                 plain_content=f"Ad: {name}\nEmail: {email}\nKonu: {subject}\n\n{message}",
             )
-            messages.success(request, 'Mesajınız başarıyla gönderildi. En kısa sürede dönüş yapacağız.')
+            messages.success(request, gettext('Mesajınız başarıyla gönderildi. En kısa sürede dönüş yapacağız.'))
         except Exception:
-            messages.error(request, 'Mesaj gönderilirken bir hata oluştu. Lütfen tekrar deneyin.')
+            messages.error(request, gettext('Mesaj gönderilirken bir hata oluştu. Lütfen tekrar deneyin.'))
         return redirect('contact')
     return render(request, 'forum/contact.html')
 
