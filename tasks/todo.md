@@ -65,6 +65,21 @@ URL taşıma + şablon + sitemap(static-i18n) + robots.txt.
   qwen/qwen3.8-27b… Model seçimi kullanıcı kararı. Not: gpt-oss-120b
   ücretsiz katmanda 8000 token/dk limitine takılıyor (istek başına ~2900
   token: talimat + 1024 yanıt payı → dakikada ~2-3 soru).
+- [x] **A. Çerez onayı + Yandex kaldırma** — TAMAMLANDI (24 Eylül 2026,
+  kullanıcı kararı: Yandex kaldır). `partials/cookie_consent.html`: Reddet /
+  Kabul et (eşit boyut), `ax_cookie_consent` çerezi 180 gün; GA yalnızca
+  onayla yüklenir (`axLoadAnalytics`), onay geri çekilince _ga* silinir;
+  eski `_ym_*` çerezleri temizlenir; footer'da "Çerez ayarları". GA ID
+  yoksa banner/bağlantı hiç çıkmaz. `yandex-verification` meta etiketi
+  (yalnızca Webmaster sahiplik doğrulaması, veri göndermez) bırakıldı.
+- [ ] **B. Google Fonts self-host** (Inter → static/) — DE'de LG München
+  2022 kararı (IP'nin Google'a aktarımı)
+- [ ] **C. Gizlilik sayfası: KVKK çevirisi + GDPR bölümü** — taslak kullanıcı
+  onayına; avukat kontrolü önerildi. Olgular: Hetzner (DE), AWS S3
+  eu-north-1 (SE), Groq (ABD, AI soruları), Google Analytics (ABD, onaylı),
+  e-posta Gmail üzerinden (Google, ABD; alan adı hosting.com.tr), Render
+  yalnızca test verisi (metne girmez). "Son güncelleme" `{% now %}` → sabit
+  tarih. Açık: AB temsilcisi (GDPR md. 27), somut saklama süreleri.
 - [ ] **Gizlilik/KVKK** (`gizlilik_politikasi.html`) — hukuki metin;
   çeviri kullanıcı onayıyla yayına girer (etik protokol modalıyla aynı tur)
 

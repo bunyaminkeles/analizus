@@ -1,0 +1,121 @@
+{% load i18n %}
+{% comment %}
+Çerez onayı (KVKK Çerez Rehberi 2022 + GDPR/TTDSG): zorunlu olmayan analiz
+çerezleri (Google Analytics) yalnızca açık onayla yüklenir — yükleyici
+base.html <head>'deki axLoadAnalytics(). Tercih ax_cookie_consent çerezinde
+(granted/denied, 180 gün) tutulur; footer'daki "Çerez ayarları" bağlantısı
+(data-ax-cookie-settings) banner'ı yeniden açar. "Reddet", "Kabul et" ile aynı
+boyutta ve aynı adımda — reddetmek kabul etmek kadar kolay olmalı.
+{% endcomment %}
+<div id="ax-cookie" class="ax-cookie" role="dialog" aria-live="polite"
+     aria-label="{% trans 'Çerez tercihleri' %}" hidden>
+    <p class="ax-cookie__text">
+        {% url 'gizlilik_politikasi' as privacy_url %}{% blocktrans trimmed %}
+        Zorunlu çerezlerin yanı sıra, siteyi iyileştirmek için yalnızca onay vermeniz hâlinde analiz çerezleri (Google Analytics) kullanıyoruz. Ayrıntılar için <a href="{{ privacy_url }}">Gizlilik Politikası</a>.
+        {% endblocktrans %}
+    </p>
+    <div class="ax-cookie__actions">
+        <button type="button" class="ax-btn ax-btn--ghost" data-ax-consent="denied">{% trans "Reddet" %}</button>
+        <button type="button" class="ax-btn ax-btn--primary" data-ax-consent="granted">{% trans "Kabul et" %}</button>
+    </div>
+</div>
+<style>
+.ax-cookie {
+    position: fixed;
+    left: var(--ax-space-3);
+    right: var(--ax-space-3);
+    bottom: var(--ax-space-3);
+    z-index: 10000; /* AI/WhatsApp/destek float butonlarının (9991-9992) üstünde */
+    background: var(--ax-bg-secondary);
+    border: 1px solid var(--ax-border-hover);
+    border-radius: var(--ax-radius-lg);
+    box-shadow: var(--ax-shadow-lg);
+    padding: var(--ax-space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ax-space-3);
+}
+.ax-cookie[hidden] { display: none; }
+.ax-cookie__text {
+    margin: 0;
+    color: var(--ax-text-secondary);
+    font-size: var(--ax-text-sm);
+    line-height: 1.5;
+}
+.ax-cookie__text a { color: var(--ax-accent-primary-light); }
+.ax-cookie__actions {
+    display: flex;
+    gap: var(--ax-space-2);
+}
+.ax-cookie__actions .ax-btn { flex: 1 1 0; justify-content: center; }
+@media (min-width: 768px) {
+    .ax-cookie {
+        left: 50%;
+        right: auto;
+        transform: translateX(-50%);
+        width: min(760px, calc(100% - 2 * var(--ax-space-6)));
+        flex-direction: row;
+        align-items: center;
+        gap: var(--ax-space-6);
+    }
+    .ax-cookie__actions { flex: 0 0 auto; }
+    .ax-cookie__actions .ax-btn { flex: 0 0 auto; }
+}
+</style>
+<script>
+(function () {
+    var NAME = 'ax_cookie_consent';
+    var banner = document.getElementById('ax-cookie');
+    if (!banner) return;
+
+    function current() {
+        var m = document.cookie.match(/(?:^|; )ax_cookie_consent=([^;]*)/);
+        return m ? m[1] : null;
+    }
+
+    // Eşleşen çerezleri hem host hem üst alan adı (.analizus.com) için sil
+    function clearCookies(re) {
+        var host = location.hostname.replace(/^www\./, '');
+        document.cookie.split('; ').forEach(function (c) {
+            var n = c.split('=')[0];
+            if (re.test(n)) {
+                ['', '; domain=' + host, '; domain=.' + host].forEach(function (d) {
+                    document.cookie = n + '=; Max-Age=0; path=/' + d;
+                });
+            }
+        });
+    }
+    // Onay geri çekilince GA çerezleri (_ga, _ga_XXXX, _gid, _gat)
+    function clearAnalyticsCookies() { clearCookies(/^_ga($|_)|^_gid$|^_gat/); }
+    // Yandex Metrica kaldırıldı (24 Eylül 2026) — eski ziyaretlerden kalan
+    // birinci taraf _ym_* çerezlerini temizle
+    clearCookies(/^_ym/);
+
+    function save(value) {
+        var prev = current();
+        document.cookie = NAME + '=' + value + '; Max-Age=' + (180 * 86400) +
+            '; path=/; SameSite=Lax' + (location.protocol === 'https:' ? '; Secure' : '');
+        banner.hidden = true;
+        if (value === 'granted') {
+            if (window.axLoadAnalytics) window.axLoadAnalytics();
+        } else {
+            clearAnalyticsCookies();
+            // GA bu sayfada zaten yüklüyse ancak yenilemeyle durur
+            if (prev === 'granted') location.reload();
+        }
+    }
+
+    banner.querySelectorAll('[data-ax-consent]').forEach(function (btn) {
+        btn.addEventListener('click', function () { save(btn.getAttribute('data-ax-consent')); });
+    });
+
+    document.querySelectorAll('[data-ax-cookie-settings]').forEach(function (el) {
+        el.addEventListener('click', function (e) {
+            e.preventDefault();
+            banner.hidden = false;
+        });
+    });
+
+    if (!current()) banner.hidden = false;
+})();
+</script>
