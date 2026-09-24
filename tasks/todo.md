@@ -25,6 +25,20 @@ Ol" + bağış modalı (paket adları `gettext_noop` ile), footer alt satırı
 "Araştırma ve Analiz Platformu", yeni slogan "Veriden karara…".
 EN/DE araç sayfalarında kalan Türkçe: yalnızca yasal adres satırı (kasıtlı).
 
+**24 Eylül 2026 — TAMAMLANDI (kullanıcı isteği: eğitim kataloğu, kayıt/giriş, e-postalar):**
+- Eğitim kataloğu (`training_catalog.py`, 362 metin) — `56c597f`
+- Kayıt formu hataları + kayıt mesajları — `9bfad5d` (giriş formu hataları
+  Django kataloğundan zaten çevrili)
+- E-postalar (alıcının dilinde): E1 `Profile.preferred_language` +
+  middleware + `forum/i18n_utils.py` (`91154b0`) → E2 hesap e-postaları →
+  E3 kullanıcı bildirimleri (admin bildirimleri TR sabit) → E4 Makale
+  Analiz/OpenAlex/Semantic Scholar sonuç e-postaları → E5 destek/eğitim/
+  proje talebi onayları (`0cc2b4d`).
+  ⚠ **Canlıya alırken MIGRATION 0154 zorunlu:** `docker compose exec web
+  python manage.py migrate` — mevcut tüm kullanıcılar 'tr' etiketlenir.
+  Kasıtlı TR kalan: yoktez/trdizin/tezanaliz/bibliometrics e-postaları,
+  TXT/PDF sonuç dosyası içerikleri (Adım 6), havale açıklaması.
+
 **Kayıt akışı — yapılacaklar (kullanıcı isteği, 23 Eylül 2026):**
 - [ ] **Akademik Etik Protokolü modalı** (kayıt sayfası, "Kullanım Şartları ve
   Etik Beyanı" linkiyle açılıyor; başlık + "Verstanden" butonu çevrili ama
