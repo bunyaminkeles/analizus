@@ -14,7 +14,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db.models import Count, Sum, Q, Avg, Subquery, OuterRef, Max, Exists
 from django.contrib import messages
 from django.utils.translation import gettext
-from django.utils import timezone
+from django.utils import timezone, translation
 from django.utils.html import strip_tags
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET, require_POST
@@ -2482,21 +2482,21 @@ def ai_assistant(request):
         user_message = request.POST.get('message', '').strip()
 
         if not user_message:
-            messages.error(request, 'Lütfen bir soru girin.')
+            messages.error(request, gettext('Lütfen bir soru girin.'))
             return _render(context)
 
         if usage_count >= daily_limit:
             if is_authenticated:
-                messages.warning(request, f'Günlük {daily_limit} soru limitinizi doldurdunuz. Yarın tekrar deneyin.')
+                messages.warning(request, gettext('Günlük %(limit)s soru limitinizi doldurdunuz. Yarın tekrar deneyin.') % {'limit': daily_limit})
             else:
-                messages.warning(request, f'Günlük anonim limit ({daily_limit} soru) doldu. Üye olarak 30 soruya kadar kullanabilirsiniz.')
+                messages.warning(request, gettext('Günlük anonim limit (%(limit)s soru) doldu. Üye olarak 30 soruya kadar kullanabilirsiniz.') % {'limit': daily_limit})
             return _render(context)
 
         if not groq_service.is_available():
-            messages.error(request, 'AI servisi şu anda kullanılamıyor.')
+            messages.error(request, gettext('AI servisi şu anda kullanılamıyor.'))
             return _render(context)
 
-        result = groq_service.generate_response(user_message)
+        result = groq_service.generate_response(user_message, lang=translation.get_language())
 
         if result['success']:
             cache.set(cache_key, usage_count + 1, 60 * 60 * 24)
@@ -2513,21 +2513,32 @@ def ai_assistant(request):
 @feature_required('ai_assistant')
 def api_ai_chat(request):
     """Floating widget için AI sohbet API endpoint'i — JSON döner"""
-    from .services.ai_service import groq_service
-    from django.core.cache import cache
     import json
 
     try:
         data = json.loads(request.body)
         user_message = data.get('message', '').strip()
     except (json.JSONDecodeError, AttributeError):
-        return JsonResponse({'success': False, 'error': 'Geçersiz istek.'}, status=400)
+        return JsonResponse({'success': False, 'error': gettext('Geçersiz istek.')}, status=400)
+
+    # API öneksiz (/api/ai/chat/) → aktif dil hep tr; widget sayfanın dilini
+    # 'lang' ile gönderir. Hata mesajları ve AI yanıtı o dilde döner.
+    lang = data.get('lang')
+    if lang not in dict(settings.LANGUAGES):
+        lang = settings.LANGUAGE_CODE
+    with translation.override(lang):
+        return _api_ai_chat(request, user_message, lang)
+
+
+def _api_ai_chat(request, user_message, lang):
+    from .services.ai_service import groq_service
+    from django.core.cache import cache
 
     if not user_message:
-        return JsonResponse({'success': False, 'error': 'Mesaj boş olamaz.'})
+        return JsonResponse({'success': False, 'error': gettext('Mesaj boş olamaz.')})
 
     if len(user_message) > 2000:
-        return JsonResponse({'success': False, 'error': 'Mesaj çok uzun (max 2000 karakter).'})
+        return JsonResponse({'success': False, 'error': gettext('Mesaj çok uzun (max 2000 karakter).')})
 
     is_authenticated = request.user.is_authenticated
     if is_authenticated:
@@ -2548,16 +2559,16 @@ def api_ai_chat(request):
         return _json({
             'success': False,
             'limit_reached': True,
-            'error': f'Günlük {daily_limit} soru limitine ulaştınız.',
+            'error': gettext('Günlük %(limit)s soru limitine ulaştınız.') % {'limit': daily_limit},
             'remaining': 0,
             'daily_limit': daily_limit,
             'is_authenticated': is_authenticated,
         })
 
     if not groq_service.is_available():
-        return _json({'success': False, 'error': 'AI servisi şu anda kullanılamıyor.'})
+        return _json({'success': False, 'error': gettext('AI servisi şu anda kullanılamıyor.')})
 
-    result = groq_service.generate_response(user_message)
+    result = groq_service.generate_response(user_message, lang=lang)
 
     if result['success']:
         cache.set(cache_key, usage_count + 1, 60 * 60 * 24)

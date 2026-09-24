@@ -16,6 +16,8 @@ urlpatterns = [
     path('verification-pending/', views.verification_pending, name='verification_pending'),
     path('resend-verification/', views.resend_verification, name='resend_verification'),
     path('onboarding/', views.onboarding, name='onboarding'),
+    # AI Asistan tam sayfa (forum/urls.py'den taşındı, 24 Eylül 2026)
+    path('ai-asistan/', views.ai_assistant, name='ai_assistant'),
     path('proje-talebi/', views.proje_talebi, name='proje_talebi'),
     path('ai-cozumler/', views.ai_cozumler, name='ai_cozumler'),
     path('egitim/', views.egitim, name='egitim'),

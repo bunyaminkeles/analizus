@@ -48,9 +48,23 @@ URL taşıma + şablon + sitemap(static-i18n) + robots.txt.
 - [x] Hangi Test? — karar ağacı (233 metin) + SSS JSON-LD + araç linkleri
   dile duyarlı. Açık soru: meta açıklama "Tezin için…" (tez vurgusu) TR'de
   aynen bırakıldı
-- [ ] **AI Asistan** (`ai_assistant.html`) — arayüz + limit/hata mesajları;
-  kullanıcı kararı: asistan kullanıcının dilinde cevap versin (sunucu
-  tarafı sistem talimatına dil talimatı eklenecek)
+- [x] **AI Asistan** — TAMAMLANDI (24 Eylül 2026): `ai-asistan/` sayfası
+  urls_i18n'e taşındı (API `/api/ai/chat/` öneksiz kaldı — doğrulanmamış
+  kullanıcı `/api/` muafiyeti), sayfa + limit/hata mesajları EN/DE. Widget
+  `lang` gönderiyor (tr/en/de dışı → tr). EN/DE'de sistem talimatının başına
+  ve sonuna dil kuralı ekleniyor (TR talimatı birebir aynı). Yanıttaki
+  platform linkleri `translate_url` ile dil önekini alıyor (/en/hangi-test/);
+  tek dilli sayfalar (/istatistik/…, /forum/) öneksiz kalıyor. Gerçek API
+  testi (gpt-oss-120b ile, betikte geçici): EN/DE yanıtlar tamamen hedef
+  dilde. İlk denemede DE gövde Türkçe kalmıştı → dil kuralı başa da eklendi.
+  Açık soru: TR meta açıklama "anında Türkçe yanıt… tez yazımı" (EN/DE'de
+  "Türkçe" düşürülerek çevrildi).
+- [ ] **ACİL — AI Asistan hiç yanıt vermiyor (dilden bağımsız, önceden var):**
+  Groq `llama-3.3-70b-versatile` modelini artık tanımıyor (404, 24 Eylül
+  2026). Hesapta erişilebilen: openai/gpt-oss-120b, openai/gpt-oss-20b,
+  qwen/qwen3.8-27b… Model seçimi kullanıcı kararı. Not: gpt-oss-120b
+  ücretsiz katmanda 8000 token/dk limitine takılıyor (sistem talimatı tek
+  başına ~3000 token → dakikada ~2 soru).
 - [ ] **Gizlilik/KVKK** (`gizlilik_politikasi.html`) — hukuki metin;
   çeviri kullanıcı onayıyla yayına girer (etik protokol modalıyla aynı tur)
 

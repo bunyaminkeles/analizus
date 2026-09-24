@@ -5,6 +5,9 @@ Groq API entegrasyonu (Llama 3 modeli)
 import re
 import requests
 from django.conf import settings
+from django.urls import translate_url
+from django.utils import translation
+from django.utils.translation import gettext
 import logging
 
 # CJK ve diger Asya karakterleri - Llama bazen Turkce yanita bunlari karistiriyor
@@ -59,6 +62,55 @@ def _sanitize_paths(text):
     # URL'si silinen bos "-> Ad ()" kaliplarini temizle
     cleaned = re.sub(r'[→-]\s+[^(\n<]{1,80}\(\s*\)\s*(?:[^\n]*)?', '', cleaned)
     return cleaned.strip()
+
+
+def _localize_paths(text, lang):
+    """Yanıttaki platform path'lerini kullanıcının diline çevirir: çok dilli
+    (i18n_patterns) sayfalar /en/… /de/… önekini alır, tek dilli sayfalar
+    (/istatistik/…, /forum/…) olduğu gibi kalır. Model her zaman öneksiz
+    (TR) path yazar; eşleme translate_url ile yapılır, ayrı liste tutulmaz."""
+    if not lang or lang == settings.LANGUAGE_CODE:
+        return text
+    with translation.override(settings.LANGUAGE_CODE):
+        mapping = {p: translate_url(p, lang) for p in _ALLOWED_PATHS}
+    return _PAREN_PATH_RE.sub(
+        lambda m: '(' + mapping.get(m.group(1), m.group(1)) + ')', text)
+
+
+# Kullanıcı arayüz dili TR değilse sistem talimatının SONUNA eklenir —
+# TR talimatı birebir aynı kalır. Model URL'leri öneksiz yazmaya devam eder;
+# dil öneki _localize_paths ile sunucu tarafında eklenir.
+_LANGUAGE_NAMES = {'en': 'İngilizce (English)', 'de': 'Almanca (Deutsch)'}
+_HEADER_TRANSLATIONS = {
+    'en': "**You can do this on Analizus:**",
+    'de': "**Das können Sie auf Analizus tun:**",
+}
+
+
+def _language_prefix(lang):
+    """Talimatın BAŞINA eklenen kısa dil uyarısı — uzun Türkçe talimat modeli
+    Türkçeye çektiği için (test: DE'de başlık Almanca, gövde Türkçe kaldı)
+    dil kuralı hem başta hem sonda tekrarlanır."""
+    name = _LANGUAGE_NAMES.get(lang)
+    if not name:
+        return ''
+    return (f"ANSWER LANGUAGE: {name}. Aşağıdaki talimat Türkçe yazılmıştır, ancak "
+            f"yanıtının tamamını — açıklamalar, maddeler, araç adları dahil — {name} yazmalısın.\n\n")
+
+
+def _language_block(lang):
+    name = _LANGUAGE_NAMES.get(lang)
+    if not name:
+        return ''
+    return f"""
+
+## YANIT DİLİ — ÖNCELİKLİ KURAL
+Kullanıcının arayüz dili {name}. Yukarıdaki "Türkçe yanıt ver" ve "yalnızca Türkçe" kuralları bu kullanıcı için GEÇERSİZDİR:
+- Yanıtının TAMAMINI {name} yaz (kullanıcı başka dilde yazsa bile).
+- "**Analizus'ta bunu yapabilirsiniz:**" başlığı yerine şunu kullan: {_HEADER_TRANSLATIONS[lang]}
+- Platform haritasındaki Türkçe araç adlarını ve açıklamalarını {name} diline ÇEVİREREK yaz (örn. "Normallik Testi" → hedef dildeki karşılığı); URL'leri (/hangi-test/ gibi) listede olduğu gibi AYNEN yaz — değiştirme, önek ekleme.
+- Yalnızca Latin alfabesi kullan.
+"""
 
 
 logger = logging.getLogger(__name__)
@@ -180,13 +232,14 @@ class GroqService:
         """Servis kullanilabilir mi?"""
         return bool(self.api_key)
 
-    def generate_response(self, user_message: str, context: str = None) -> dict:
+    def generate_response(self, user_message: str, context: str = None, lang: str = None) -> dict:
         """
         Kullanici mesajina yanit uret
 
         Args:
             user_message: Kullanicinin sorusu
             context: Ek baglam (opsiyonel)
+            lang: Kullanici arayuz dili (tr/en/de); None/tr -> Turkce
 
         Returns:
             dict: {'success': bool, 'response': str, 'error': str}
@@ -195,13 +248,13 @@ class GroqService:
             return {
                 'success': False,
                 'response': None,
-                'error': 'AI servisi şu anda kullanılamıyor.'
+                'error': gettext('AI servisi şu anda kullanılamıyor.')
             }
 
         try:
             # Mesajlari hazirla
             messages = [
-                {"role": "system", "content": SYSTEM_PROMPT}
+                {"role": "system", "content": _language_prefix(lang) + SYSTEM_PROMPT + _language_block(lang)}
             ]
 
             if context:
@@ -236,6 +289,8 @@ class GroqService:
                 ai_response = _CJK_RE.sub('', ai_response).strip()
                 # Platform disi URL'leri temizle
                 ai_response = _sanitize_paths(ai_response)
+                # Çok dilli sayfalara kullanıcının dil önekini ekle
+                ai_response = _localize_paths(ai_response, lang)
                 return {
                     'success': True,
                     'response': ai_response,
@@ -247,21 +302,21 @@ class GroqService:
                 return {
                     'success': False,
                     'response': None,
-                    'error': f'API hatası: {error_msg}'
+                    'error': gettext('API hatası: %(error)s') % {'error': error_msg}
                 }
 
         except requests.Timeout:
             return {
                 'success': False,
                 'response': None,
-                'error': 'İstek zaman aşımına uğradı. Lütfen tekrar deneyin.'
+                'error': gettext('İstek zaman aşımına uğradı. Lütfen tekrar deneyin.')
             }
         except Exception as e:
             logger.error(f"Groq API hatasi: {e}")
             return {
                 'success': False,
                 'response': None,
-                'error': f'Bir hata oluştu: {str(e)}'
+                'error': gettext('Bir hata oluştu: %(error)s') % {'error': str(e)}
             }
 
     def suggest_answer(self, topic_subject: str, topic_content: str) -> dict:

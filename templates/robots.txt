@@ -67,6 +67,7 @@ Disallow: /en/logout/
 Disallow: /en/register/
 Disallow: /en/accounts/
 Disallow: /en/onboarding/
+Disallow: /en/ai-asistan/
 Disallow: /en/market/new/
 Disallow: /en/market/job/*/edit/
 Disallow: /en/market/job/*/delete/
@@ -83,6 +84,7 @@ Disallow: /de/logout/
 Disallow: /de/register/
 Disallow: /de/accounts/
 Disallow: /de/onboarding/
+Disallow: /de/ai-asistan/
 Disallow: /de/market/new/
 Disallow: /de/market/job/*/edit/
 Disallow: /de/market/job/*/delete/

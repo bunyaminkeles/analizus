@@ -1230,7 +1230,7 @@
           'Content-Type': 'application/json',
           'X-CSRFToken': getCsrf(),
         },
-        body: JSON.stringify({ message: text }),
+        body: JSON.stringify({ message: text, lang: document.documentElement.lang }),
       });
       const data = await res.json();
       typingEl.remove();

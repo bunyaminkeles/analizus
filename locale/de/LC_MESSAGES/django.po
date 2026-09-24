@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-24 23:31+0300\n"
+"POT-Creation-Date: 2026-09-24 23:38+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -508,27 +508,46 @@ msgstr "16+ Personen"
 msgid "2 hafta içinde"
 msgstr "Innerhalb von 2 Wochen"
 
-#: forum/services/email_service.py:81
+#: forum/services/ai_service.py:240 forum/views.py:2496 forum/views.py:2569
+msgid "AI servisi şu anda kullanılamıyor."
+msgstr "Der KI-Dienst ist derzeit nicht verfügbar."
+
+#: forum/services/ai_service.py:294
+#, python-format
+msgid "API hatası: %(error)s"
+msgstr "API-Fehler: %(error)s"
+
+#: forum/services/ai_service.py:301
+msgid "İstek zaman aşımına uğradı. Lütfen tekrar deneyin."
+msgstr ""
+"Die Anfrage hat das Zeitlimit überschritten. Bitte versuchen Sie es erneut."
+
+#: forum/services/ai_service.py:308
+#, python-format
+msgid "Bir hata oluştu: %(error)s"
+msgstr "Ein Fehler ist aufgetreten: %(error)s"
+
+#: forum/services/email_service.py:79
 msgid "Analizus - E-posta Adresinizi Doğrulayın"
 msgstr "Analizus - Bestätigen Sie Ihre E-Mail-Adresse"
 
-#: forum/services/email_service.py:106
+#: forum/services/email_service.py:104
 #: forum/templates/forum/onboarding.html:19
 msgid "Analizus'a Hoş Geldiniz!"
 msgstr "Willkommen bei Analizus!"
 
-#: forum/services/email_service.py:130
+#: forum/services/email_service.py:128
 msgid "Analizus - Doğrulanmış Akademisyen Rozeti Kazandınız!"
 msgstr ""
 "Analizus - Sie haben das Abzeichen „Verifizierte Akademikerin/Verifizierter "
 "Akademiker“ erhalten!"
 
-#: forum/services/email_service.py:133
+#: forum/services/email_service.py:131
 #, python-format
 msgid "Tebrikler %(username)s!"
 msgstr "Herzlichen Glückwunsch, %(username)s!"
 
-#: forum/services/email_service.py:134
+#: forum/services/email_service.py:132
 msgid ""
 "EDU uzantılı mail adresiniz ile giriş yaptığınız için <strong>Doğrulanmış "
 "Akademisyen</strong> rozeti kazandınız!"
@@ -537,22 +556,22 @@ msgstr ""
 "Abzeichen <strong>Verifizierte Akademikerin/Verifizierter "
 "Akademiker</strong>!"
 
-#: forum/services/email_service.py:135
+#: forum/services/email_service.py:133
 msgid "Ayrıca <strong>3 gün boyunca teklif verme hakkına</strong> sahipsiniz."
 msgstr "Außerdem können Sie <strong>3 Tage lang Angebote abgeben</strong>."
 
-#: forum/services/email_service.py:136
+#: forum/services/email_service.py:134
 msgid "İyi çalışmalar,"
 msgstr "Viele Grüße,"
 
-#: forum/services/email_service.py:136
+#: forum/services/email_service.py:134
 #: forum/templates/forum/emails/support_payment_details.html:112
 #: forum/views.py:2086 forum/views.py:2093 forum/views.py:2254
 #: forum/views.py:2261
 msgid "Analizus Ekibi"
 msgstr "Ihr Analizus-Team"
 
-#: forum/services/email_service.py:139
+#: forum/services/email_service.py:137
 #, python-format
 msgid ""
 "Tebrikler %(username)s! EDU mail ile giriş yaptığınız için Doğrulanmış "
@@ -649,7 +668,9 @@ msgstr "Dienstleistungsmarktplatz"
 msgid "Uzmanlarla proje bazlı eşleşme ve analiz hizmeti"
 msgstr "Projektbasierte Vermittlung von Experten und Analysedienstleistungen"
 
-#: forum/templates/forum/about.html:73 templates/base.html:220
+#: forum/templates/forum/about.html:73
+#: forum/templates/forum/ai_assistant.html:4
+#: forum/templates/forum/ai_assistant.html:16 templates/base.html:220
 #: templates/base.html:433 templates/base.html:817 templates/base.html:821
 #: templates/base.html:827 templates/partials/footer.html:48
 msgid "AI Asistan"
@@ -885,6 +906,133 @@ msgstr "Analizus wird von Bünyamin Keleş betrieben."
 #: forum/templates/forum/about.html:410
 msgid "Adres:"
 msgstr "Adresse:"
+
+#: forum/templates/forum/ai_assistant.html:5
+msgid ""
+"İstatistik testleri, tez yazımı ve veri analizi hakkında anında Türkçe yanıt"
+" alın. Analizus AI Asistan, akademik düzeyde yapay zeka desteği sunar — "
+"ücretsiz, 7/24."
+msgstr ""
+"Erhalten Sie sofort Antworten zu statistischen Tests, Abschlussarbeiten und "
+"Datenanalyse. Der Analizus KI-Assistent bietet KI-Unterstützung auf "
+"akademischem Niveau — kostenlos, rund um die Uhr."
+
+#: forum/templates/forum/ai_assistant.html:17
+msgid "Akademik analiz ve istatistik sorularınızı yanıtlıyorum"
+msgstr ""
+"Ich beantworte Ihre Fragen zu wissenschaftlicher Analyse und Statistik"
+
+#: forum/templates/forum/ai_assistant.html:26
+msgid ""
+"Üye olarak <strong class=\"text-white\">30 soru/gün</strong> hakkı kazanın —"
+" şu an anonim için <strong class=\"text-white\">3 soru</strong>"
+msgstr ""
+"Registrieren Sie sich für <strong class=\"text-white\">30 "
+"Fragen/Tag</strong> — anonym sind es derzeit <strong class=\"text-white\">3 "
+"Fragen</strong>"
+
+#: forum/templates/forum/ai_assistant.html:29
+msgid "Üye Ol"
+msgstr "Registrieren"
+
+#: forum/templates/forum/ai_assistant.html:30
+#: forum/templates/forum/market/job_detail.html:424
+#: forum/templates/registration/login.html:10
+#: forum/templates/registration/login.html:249
+#: forum/templates/registration/login.html:280
+#: istatistik/templates/istatistik/analiz_hub.html:42 templates/base.html:508
+#: templates/forum/register.html:259 templates/forum/register.html:315
+#: templates/registration/password_reset_complete.html:201
+#: templates/registration/password_reset_form.html:262
+#: templates/service_promo.html:37
+msgid "Giriş Yap"
+msgstr "Anmelden"
+
+#: forum/templates/forum/ai_assistant.html:41
+msgid "Günlük Kullanım"
+msgstr "Tägliche Nutzung"
+
+#: forum/templates/forum/ai_assistant.html:41
+msgid "Anonim"
+msgstr "Anonym"
+
+#: forum/templates/forum/ai_assistant.html:44
+#, python-format
+msgid "%(remaining)s/%(daily_limit)s hak kaldı"
+msgstr "%(remaining)s/%(daily_limit)s übrig"
+
+#: forum/templates/forum/ai_assistant.html:55
+msgid "AI servisi şu anda yapılandırılmamış. Yönetici ile iletişime geçin."
+msgstr ""
+"Der KI-Dienst ist derzeit nicht eingerichtet. Bitte wenden Sie sich an die "
+"Administration."
+
+#: forum/templates/forum/ai_assistant.html:67
+msgid "Yapay Zeka Yerine İnsan Dokunuşu Mu Lazım?"
+msgstr "Lieber Mensch statt KI?"
+
+#: forum/templates/forum/ai_assistant.html:68
+msgid ""
+"Karmaşık analizleriniz için doğrulanmış uzmanlardan anında metodoloji ve "
+"fiyat teklifi alın."
+msgstr ""
+"Erhalten Sie für komplexe Analysen Methodenberatung und Preisangebote von "
+"verifizierten Fachleuten."
+
+#: forum/templates/forum/ai_assistant.html:73
+#: templates/partials/footer.html:49
+msgid "Uzman Bul"
+msgstr "Experten finden"
+
+#: forum/templates/forum/ai_assistant.html:76
+#: forum/templates/forum/market/job_list.html:289
+#: forum/templates/forum/market/post_job.html:4
+msgid "İlan Ver"
+msgstr "Auftrag einstellen"
+
+#: forum/templates/forum/ai_assistant.html:89
+msgid "Sorunuzu Yazın"
+msgstr "Ihre Frage"
+
+#: forum/templates/forum/ai_assistant.html:92
+msgid ""
+"Örn: T-test ve ANOVA arasındaki fark nedir? Hangi durumlarda hangisini "
+"kullanmalıyım?"
+msgstr ""
+"Z. B. Was ist der Unterschied zwischen t-Test und ANOVA? Wann sollte ich "
+"welchen verwenden?"
+
+#: forum/templates/forum/ai_assistant.html:99
+msgid "Akademik etik kurallarına uygun sorular sorun"
+msgstr "Bitte stellen Sie Fragen im Einklang mit der wissenschaftlichen Ethik"
+
+#: forum/templates/forum/ai_assistant.html:103
+msgid "Sor"
+msgstr "Fragen"
+
+#: forum/templates/forum/ai_assistant.html:116
+msgid "AI Yanıtı"
+msgstr "KI-Antwort"
+
+#: forum/templates/forum/ai_assistant.html:151
+msgid "Örnek Sorular"
+msgstr "Beispielfragen"
+
+#: forum/templates/forum/ai_assistant.html:156
+msgid "SPSS'te regresyon analizi nasıl yapılır?"
+msgstr "Wie führe ich eine Regressionsanalyse in SPSS durch?"
+
+#: forum/templates/forum/ai_assistant.html:162
+msgid "Normallik testi için hangi yöntemleri kullanabilirim?"
+msgstr "Welche Methoden kann ich für einen Normalitätstest verwenden?"
+
+#: forum/templates/forum/ai_assistant.html:168
+msgid "Python'da pandas ile veri temizleme nasıl yapılır?"
+msgstr "Wie bereinige ich Daten mit pandas in Python?"
+
+#: forum/templates/forum/ai_assistant.html:174
+msgid "Tez için literatür taraması nasıl yapılmalı?"
+msgstr "Wie führt man eine Literaturrecherche für eine Abschlussarbeit durch?"
 
 #: forum/templates/forum/ai_cozumler.html:5
 #: forum/templates/forum/ai_cozumler.html:7
@@ -1842,7 +1990,7 @@ msgstr ""
 "Wenn Sie lieber direkt sprechen möchten, statt das Formular auszufüllen:"
 
 #: forum/templates/forum/emails/support_payment_details.html:6
-#: forum/views.py:3312
+#: forum/views.py:3323
 msgid "Analizus Bağış İşlemi"
 msgstr "Analizus – Unterstützungszahlung"
 
@@ -3477,7 +3625,7 @@ msgstr "Scraping-Tools:"
 msgid "YÖK Tez Kazıma"
 msgstr "Thesis-Center-Scraping"
 
-#: forum/templates/forum/home.html:272 forum/views.py:3972
+#: forum/templates/forum/home.html:272 forum/views.py:3983
 #: openalex/templates/openalex/landing.html:155 templates/base.html:214
 #: templates/base.html:430
 msgid "Bibliometrik Analiz"
@@ -3545,7 +3693,7 @@ msgstr "Data Science"
 msgid "Editörlük"
 msgstr "Lektorat"
 
-#: forum/templates/forum/home.html:362 forum/views.py:3969
+#: forum/templates/forum/home.html:362 forum/views.py:3980
 msgid "Danışmanlık"
 msgstr "Beratung"
 
@@ -4444,18 +4592,6 @@ msgstr "Upgrade auf ein Premium-/Expertenkonto"
 msgid "Profilimi Gör"
 msgstr "Mein Profil anzeigen"
 
-#: forum/templates/forum/market/job_detail.html:424
-#: forum/templates/registration/login.html:10
-#: forum/templates/registration/login.html:249
-#: forum/templates/registration/login.html:280
-#: istatistik/templates/istatistik/analiz_hub.html:42 templates/base.html:508
-#: templates/forum/register.html:259 templates/forum/register.html:315
-#: templates/registration/password_reset_complete.html:201
-#: templates/registration/password_reset_form.html:262
-#: templates/service_promo.html:37
-msgid "Giriş Yap"
-msgstr "Anmelden"
-
 #: forum/templates/forum/market/job_detail.html:430
 msgid "Bu ilan tekliflere kapalıdır."
 msgstr "Dieser Auftrag nimmt keine Angebote an."
@@ -4603,11 +4739,6 @@ msgstr ""
 #: forum/templates/forum/market/job_list.html:274
 msgid "Arena'ya Git"
 msgstr "Zur Arena"
-
-#: forum/templates/forum/market/job_list.html:289
-#: forum/templates/forum/market/post_job.html:4
-msgid "İlan Ver"
-msgstr "Auftrag einstellen"
 
 #: forum/templates/forum/market/job_list.html:290
 msgid "Analiz ihtiyacınızı tanımlayın, bütçenizi ve teslim sürenizi belirtin."
@@ -7053,111 +7184,148 @@ msgstr ""
 "Ihre Anfrage ist eingegangen! Wir melden uns innerhalb von 24 Stunden bei "
 "Ihnen."
 
-#: forum/views.py:2604 forum/views.py:2674
+#: forum/views.py:2485
+msgid "Lütfen bir soru girin."
+msgstr "Bitte geben Sie eine Frage ein."
+
+#: forum/views.py:2490
+#, python-format
+msgid "Günlük %(limit)s soru limitinizi doldurdunuz. Yarın tekrar deneyin."
+msgstr ""
+"Sie haben Ihr Tageslimit von %(limit)s Fragen erreicht. Bitte versuchen Sie "
+"es morgen erneut."
+
+#: forum/views.py:2492
+#, python-format
+msgid ""
+"Günlük anonim limit (%(limit)s soru) doldu. Üye olarak 30 soruya kadar "
+"kullanabilirsiniz."
+msgstr ""
+"Das tägliche anonyme Limit (%(limit)s Fragen) ist erreicht. Mit einem Konto "
+"können Sie bis zu 30 Fragen stellen."
+
+#: forum/views.py:2522
+msgid "Geçersiz istek."
+msgstr "Ungültige Anfrage."
+
+#: forum/views.py:2538
+msgid "Mesaj boş olamaz."
+msgstr "Die Nachricht darf nicht leer sein."
+
+#: forum/views.py:2541
+msgid "Mesaj çok uzun (max 2000 karakter)."
+msgstr "Die Nachricht ist zu lang (max. 2000 Zeichen)."
+
+#: forum/views.py:2562
+#, python-format
+msgid "Günlük %(limit)s soru limitine ulaştınız."
+msgstr "Sie haben Ihr Tageslimit von %(limit)s Fragen erreicht."
+
+#: forum/views.py:2615 forum/views.py:2685
 msgid "E-posta adresiniz zaten doğrulanmış."
 msgstr "Ihre E-Mail-Adresse wurde bereits bestätigt."
 
-#: forum/views.py:2617
+#: forum/views.py:2628
 msgid "Geçersiz doğrulama linki."
 msgstr "Ungültiger Bestätigungslink."
 
-#: forum/views.py:2621
+#: forum/views.py:2632
 msgid "Bu doğrulama linki süresi dolmuş veya daha önce kullanılmış."
 msgstr "Dieser Bestätigungslink ist abgelaufen oder wurde bereits verwendet."
 
-#: forum/views.py:2652
+#: forum/views.py:2663
 msgid "E-posta adresiniz başarıyla doğrulandı! Hoş geldiniz."
 msgstr "Ihre E-Mail-Adresse wurde bestätigt. Willkommen!"
 
-#: forum/views.py:2682
+#: forum/views.py:2693
 msgid ""
 "Doğrulama e-postası tekrar gönderildi. Lütfen e-posta kutunuzu kontrol edin."
 msgstr ""
 "Die Bestätigungs-E-Mail wurde erneut gesendet. Bitte prüfen Sie Ihr "
 "Postfach."
 
-#: forum/views.py:2684
+#: forum/views.py:2695
 msgid "E-posta gönderilemedi. Lütfen daha sonra tekrar deneyin."
 msgstr ""
 "Die E-Mail konnte nicht gesendet werden. Bitte versuchen Sie es später "
 "erneut."
 
-#: forum/views.py:3962
+#: forum/views.py:3973
 msgid "Hoş geldiniz!"
 msgstr "Willkommen!"
 
-#: forum/views.py:3967
+#: forum/views.py:3978
 msgid "İstatistik Analizi"
 msgstr "Statistische Analyse"
 
-#: forum/views.py:3967
+#: forum/views.py:3978
 msgid "SPSS, R, Python, AMOS, SmartPLS ile profesyonel istatistik analizleri"
 msgstr ""
 "Professionelle statistische Analysen mit SPSS, R, Python, AMOS und SmartPLS"
 
-#: forum/views.py:3968
+#: forum/views.py:3979
 msgid "Veri Kazıma & Toplama"
 msgstr "Datenextraktion & -erhebung"
 
-#: forum/views.py:3968
+#: forum/views.py:3979
 msgid "Anket, web ve akademik veritabanlarından veri toplama desteği"
 msgstr ""
 "Unterstützung bei der Datenerhebung aus Umfragen, dem Web und "
 "wissenschaftlichen Datenbanken"
 
-#: forum/views.py:3969
+#: forum/views.py:3980
 msgid ""
 "Alanında uzman akademisyen ve danışmanlarla Pazaryeri üzerinden eşleşin"
 msgstr ""
 "Finden Sie über den Marktplatz passende Fachleute aus Wissenschaft und "
 "Beratung"
 
-#: forum/views.py:3970
+#: forum/views.py:3981
 msgid "Proje Desteği"
 msgstr "Projektunterstützung"
 
-#: forum/views.py:3970
+#: forum/views.py:3981
 msgid "Tez, makale ve kurumsal projeleriniz için uçtan uca destek"
 msgstr ""
 "Durchgängige Unterstützung für Abschlussarbeiten, Artikel und "
 "Unternehmensprojekte"
 
-#: forum/views.py:3971
+#: forum/views.py:3982
 msgid "Akademik Destek"
 msgstr "Akademische Unterstützung"
 
-#: forum/views.py:3971
+#: forum/views.py:3982
 msgid "Tez ve makale yazım sürecinde yöntem ve rehberlik desteği"
 msgstr ""
 "Methodische Begleitung beim Verfassen von Abschlussarbeiten und Artikeln"
 
-#: forum/views.py:3972
+#: forum/views.py:3983
 msgid "Atıf ve yayın verileriyle bibliometrik analiz yaptırın"
 msgstr ""
 "Lassen Sie bibliometrische Analysen auf Basis von Zitations- und "
 "Publikationsdaten erstellen"
 
-#: forum/views.py:3973
+#: forum/views.py:3984
 msgid "Literatür / Akademik Tarama"
 msgstr "Literatur- / wissenschaftliche Recherche"
 
-#: forum/views.py:3973
+#: forum/views.py:3984
 msgid "YÖK Tez, TR Dizin ve uluslararası veritabanlarında tarama"
 msgstr "Recherchen in YÖK Tez, TR Dizin und internationalen Datenbanken"
 
-#: forum/views.py:3974
+#: forum/views.py:3985
 msgid "Forumda Soru-Cevap"
 msgstr "Fragen & Antworten im Forum"
 
-#: forum/views.py:3974
+#: forum/views.py:3985
 msgid "Merak ettiklerinizi sorun, bilgi birikiminizi toplulukla paylaşın"
 msgstr "Stellen Sie Ihre Fragen und teilen Sie Ihr Wissen mit der Community"
 
-#: forum/views.py:3976
+#: forum/views.py:3987
 msgid "AI Araçları"
 msgstr "KI-Tools"
 
-#: forum/views.py:3976
+#: forum/views.py:3987
 msgid "Akademik Danışmanlık"
 msgstr "Wissenschaftliche Beratung"
 
@@ -14630,10 +14798,6 @@ msgstr "Werkzeuge"
 #: templates/partials/footer.html:47
 msgid "Analiz Araçları"
 msgstr "Analyse-Tools"
-
-#: templates/partials/footer.html:49
-msgid "Uzman Bul"
-msgstr "Experten finden"
 
 #: templates/partials/footer.html:52
 msgid "Eğitimler"

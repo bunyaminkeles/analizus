@@ -57,8 +57,8 @@ urlpatterns = [
     path('api/notifications/<int:notification_id>/read/', views.mark_notification_read, name='mark_notification_read'),
     path('api/notifications/read-all/', views.mark_all_notifications_read, name='mark_all_notifications_read'),
 
-    # AI Asistan
-    path('ai-asistan/', views.ai_assistant, name='ai_assistant'),
+    # AI Asistan (sayfa → forum/urls_i18n.py; API burada kalır — /api/ öneki
+    # EmailVerificationMiddleware'de doğrulanmamış kullanıcıya da açık)
     path('api/ai/suggest/<int:topic_id>/', views.ai_suggest_answer, name='ai_suggest_answer'),
     path('api/ai/chat/', views.api_ai_chat, name='api_ai_chat'),
 
