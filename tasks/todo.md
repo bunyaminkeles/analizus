@@ -61,14 +61,13 @@ URL taşıma + şablon + sitemap(static-i18n) + robots.txt.
   eklendi. Mobilde top-bar akışa alındı (`position: static`) ve form
   `margin-block: auto` ile ortalandı — uzun kayıt formunda üst kısım artık
   kırpılmıyor.
-- [ ] **Kullanım Şartları ve Etik Beyanı hâlâ Türkçe** (kullanıcı raporu) —
-  aşağıdaki etik protokol maddesiyle aynı iş; başlık/buton çevrili, gövde
-  değil.
-- [ ] **Akademik Etik Protokolü modalı** (kayıt sayfası, "Kullanım Şartları ve
-  Etik Beyanı" linkiyle açılıyor; başlık + "Verstanden" butonu çevrili ama
-  6 maddelik gövde metni hiç işaretlenmemiş, EN/DE'de Türkçe görünüyor).
-  Hukuki metin: "Türk Ceza Kanunu" atfı, yer sağlayıcı sorumluluğu vb. —
-  çeviride hukuki anlam korunmalı; gerekirse kullanıcı/avukat onayı.
+- [x] **Kullanım Şartları / Akademik Etik Protokolü modalı** — TAMAMLANDI
+  (24 Eylül 2026): 7 maddelik gövde `blocktrans trimmed` ile işaretlendi,
+  EN/DE çeviri kullanıcı onayıyla ("devam") yayına alındı. Açık kalan
+  (hukuki karar, çeviri değil): 4. ve 7. maddeler yalnızca TCK/KVKK'ya atıf
+  yapıyor — AB kullanıcıları için DSGVO/GDPR atfı eklenip eklenmeyeceği;
+  modal başlığı "Akademik Etik Protokolü" yeni konumlandırmayla uyumsuz;
+  yayın öncesi avukat kontrolü önerildi.
 - [ ] **Kayıt sonrası akış tek dilli:** /verification-pending/, /onboarding/
   ve /accounts/password_reset/* sayfaları i18n_patterns dışında ve
   şablonları işaretlenmemiş → EN/DE ile kaydolan kullanıcı Türkçe sayfalara
