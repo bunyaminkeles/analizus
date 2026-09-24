@@ -72,8 +72,14 @@ URL taşıma + şablon + sitemap(static-i18n) + robots.txt.
   eski `_ym_*` çerezleri temizlenir; footer'da "Çerez ayarları". GA ID
   yoksa banner/bağlantı hiç çıkmaz. `yandex-verification` meta etiketi
   (yalnızca Webmaster sahiplik doğrulaması, veri göndermez) bırakıldı.
-- [ ] **B. Google Fonts self-host** (Inter → static/) — DE'de LG München
-  2022 kararı (IP'nin Google'a aktarımı)
+- [x] **B. Google Fonts self-host** — TAMAMLANDI (24 Eylül 2026): Inter
+  değişken font (latin + latin-ext, Google Fonts v20) `static/fonts/inter/`
+  + OFL.txt, `static/css/inter.css`; base.html ve admin_theme_v2.css artık
+  yerelden yüklüyor, gstatic preconnect / googleapis dns-prefetch kaldırıldı.
+  Net-log ile doğrulandı: sayfadan fonts.googleapis/gstatic isteği yok.
+  Deploy'da `collectstatic` şart (yeni statik dosyalar).
+- [ ] **Küçük i18n kaçağı (B sırasında görüldü):** ana sayfa hero'sundaki test
+  çipleri "t-testi · korelasyon · regresyon" EN/DE'de Türkçe kalıyor.
 - [ ] **C. Gizlilik sayfası: KVKK çevirisi + GDPR bölümü** — taslak kullanıcı
   onayına; avukat kontrolü önerildi. Olgular: Hetzner (DE), AWS S3
   eu-north-1 (SE), Groq (ABD, AI soruları), Google Analytics (ABD, onaylı),

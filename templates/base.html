@@ -8,7 +8,6 @@
     <link rel="icon" type="image/png" href="{% static 'img/analizus-logo-001.png' %}">
 
     <!-- Performance: Font, CSS ve Bootstrap deferred yükleniyor — sadece font dosyalarına preconnect, gerisi ucuz dns-prefetch -->
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://analizus-files.s3.eu-north-1.amazonaws.com">
 
     <!-- CLS: bootstrap-icons webfont'u erkenden preload et — ikonlar (bi bi-*) sayfada
@@ -16,7 +15,6 @@
          (layout shift) yol açıyor (Lighthouse: body 0.102 CLS, "Web yazı tipi") -->
     <link rel="preload" as="font" type="font/woff2" crossorigin
           href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6">
-    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
     <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
     <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
     <link rel="dns-prefetch" href="https://www.googletagmanager.com">
@@ -92,9 +90,10 @@
     </script>
     {% endif %}
 
-    <!-- Font: Inter — deferred (render-blocking olmasın diye) -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"></noscript>
+    <!-- Font: Inter — kendi sunucumuzdan (Google Fonts IP aktarımı yok, bkz.
+         static/css/inter.css); deferred (render-blocking olmasın diye) -->
+    <link href="{% static 'css/inter.css' %}" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="{% static 'css/inter.css' %}" rel="stylesheet"></noscript>
 
     <!-- Bootstrap: sadece grid (container/row/col) için kullanılıyor, deferred -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" media="print" onload="this.media='all'">
