@@ -1,7 +1,8 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
-{% block title %}KVKK Aydınlatma Metni ve Gizlilik Politikası — Analizus{% endblock %}
-{% block meta_description %}Analizus'ta kişisel verilerinizin hangi amaçla toplandığı, nasıl işlendiği ve KVKK kapsamındaki haklarınız hakkında aydınlatma metni.{% endblock %}
+{% block title %}{% trans "KVKK Aydınlatma Metni ve Gizlilik Politikası" %} — Analizus{% endblock %}
+{% block meta_description %}{% trans "Analizus'ta kişisel verilerinizin hangi amaçla toplandığı, nasıl işlendiği ve KVKK ile GDPR kapsamındaki haklarınız hakkında aydınlatma metni." %}{% endblock %}
 
 {% block main_content_classes %}col-lg-12{% endblock %}
 {% block right_sidebar %}{% endblock %}
@@ -9,84 +10,138 @@
 {% block content %}
 <div class="container py-5" style="max-width: 820px;">
 
-    <h1 class="fw-bold text-white mb-2" style="font-size: 1.9rem;">KVKK Aydınlatma Metni ve Gizlilik Politikası</h1>
-    <p class="text-secondary mb-4">Son güncelleme: {% now "d.m.Y" %}</p>
+    <h1 class="fw-bold text-white mb-2" style="font-size: 1.9rem;">{% trans "KVKK Aydınlatma Metni ve Gizlilik Politikası" %}</h1>
+    {# Sabit tarih — {% now %} her gün bugünü gösteriyordu (hukuki metinde yanıltıcı). Metin değişince güncelle. #}
+    <p class="text-secondary mb-4">{% trans "Son güncelleme" %}: 24.09.2026</p>
 
     <div class="text-light" style="line-height: 1.8;">
 
-        <h2 class="text-white mt-4 mb-2" style="font-size: 1.2rem;">1. Veri Sorumlusu</h2>
+        <h2 class="text-white mt-4 mb-2" style="font-size: 1.2rem;">{% trans "1. Veri Sorumlusu" %}</h2>
         <p class="text-light">
+            {% blocktrans trimmed %}
             6698 sayılı Kişisel Verilerin Korunması Kanunu ("KVKK") uyarınca, kişisel verileriniz;
             veri sorumlusu sıfatıyla <strong>Bünyamin Keleş</strong> (Analizus Platformu) tarafından
-            aşağıda açıklanan amaçlar doğrultusunda işlenebilecektir.<br>
-            Adres: Şehit Kubilay Mah. 1697. Sokak No:15/A13, 06220 Keçiören/Ankara<br>
-            İletişim: <a href="mailto:info@analizus.com">info@analizus.com</a>
+            aşağıda açıklanan amaçlar doğrultusunda işlenebilecektir.
+            {% endblocktrans %}<br>
+            {% trans "Adres" %}: Şehit Kubilay Mah. 1697. Sokak No:15/A13, 06220 Keçiören/Ankara<br>
+            {% trans "İletişim" %}: <a href="mailto:info@analizus.com">info@analizus.com</a>
         </p>
 
-        <h2 class="text-white mt-4 mb-2" style="font-size: 1.2rem;">2. Kişisel Verilerin İşlenme Amaçları ve Hukuki Sebepleri</h2>
+        <h2 class="text-white mt-4 mb-2" style="font-size: 1.2rem;">{% trans "2. Kişisel Verilerin İşlenme Amaçları ve Hukuki Sebepleri" %}</h2>
         <div class="ax-kvkk-table-wrap mb-3">
             <table class="ax-kvkk-table">
                 <thead>
                     <tr>
-                        <th>Veri Kategorisi</th>
-                        <th>Amaç</th>
-                        <th>Hukuki Sebep</th>
+                        <th>{% trans "Veri Kategorisi" %}</th>
+                        <th>{% trans "Amaç" %}</th>
+                        <th>{% trans "Hukuki Sebep" %}</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td>Kimlik, İletişim, Hesap</td>
-                        <td>Üyelik ve Kullanıcı Yönetimi</td>
-                        <td>Sözleşmenin İfası</td>
+                        <td>{% trans "Kimlik, İletişim, Hesap" %}</td>
+                        <td>{% trans "Üyelik ve Kullanıcı Yönetimi" %}</td>
+                        <td>{% trans "Sözleşmenin İfası" %}</td>
                     </tr>
                     <tr>
-                        <td>Analiz Dosyaları</td>
-                        <td>Hizmetin Sağlanması</td>
-                        <td>Sözleşmenin İfası</td>
+                        <td>{% trans "Analiz Dosyaları" %}</td>
+                        <td>{% trans "Hizmetin Sağlanması" %}</td>
+                        <td>{% trans "Sözleşmenin İfası" %}</td>
                     </tr>
                     <tr>
-                        <td>Çerezler / Kullanım Verileri</td>
-                        <td>Güvenlik ve Optimizasyon</td>
-                        <td>Meşru Menfaat</td>
+                        <td>{% trans "AI Asistan'a yazılan sorular" %}</td>
+                        <td>{% trans "Yanıt üretilmesi" %}</td>
+                        <td>{% trans "Sözleşmenin İfası" %}</td>
+                    </tr>
+                    <tr>
+                        <td>{% trans "İletişim, proje ve eğitim talep formları" %}</td>
+                        <td>{% trans "Talebin yanıtlanması" %}</td>
+                        <td>{% trans "Sözleşmenin kurulması / Meşru Menfaat" %}</td>
+                    </tr>
+                    <tr>
+                        <td>{% trans "Zorunlu çerezler (oturum, güvenlik, dil ve çerez tercihi)" %}</td>
+                        <td>{% trans "Güvenlik ve oturum yönetimi" %}</td>
+                        <td>{% trans "Meşru Menfaat" %}</td>
+                    </tr>
+                    <tr>
+                        <td>{% trans "Analiz çerezleri (Google Analytics)" %}</td>
+                        <td>{% trans "Site kullanım istatistikleri" %}</td>
+                        <td>{% trans "Açık Rıza" %}</td>
                     </tr>
                 </tbody>
             </table>
         </div>
 
-        <h2 class="text-white mt-4 mb-2" style="font-size: 1.2rem;">3. Kişisel Verilerin Aktarımı</h2>
+        <h2 class="text-white mt-4 mb-2" style="font-size: 1.2rem;">{% trans "3. Kişisel Verilerin Aktarımı" %}</h2>
         <p class="text-light">
-            Kişisel verileriniz; bilişim altyapı sağlayıcılarımız (sunucu barındırma, e-posta, bulut
-            depolama) ile yasal yükümlülüklerimizin gereği olarak yetkili kamu kurumları ile
-            paylaşılabilir. Teknik altyapı gereği verileriniz yurt dışı merkezli sunucularda işlenebilir.
+            {% blocktrans trimmed %}
+            Kişisel verileriniz, hizmetin sağlanması için aşağıdaki hizmet sağlayıcılarla ve yasal
+            yükümlülüklerimiz gereği yetkili kamu kurumlarıyla paylaşılabilir. Teknik altyapı gereği
+            verileriniz yurt dışı merkezli sunucularda işlenebilir.
+            {% endblocktrans %}
         </p>
+        <ul class="text-light">
+            <li><strong>Hetzner Online GmbH</strong> ({% trans "Almanya" %}): {% trans "sunucu barındırma" %}</li>
+            <li><strong>Amazon Web Services</strong> ({% trans "AWS S3, İsveç / AB bölgesi" %}): {% trans "dosya depolama" %}</li>
+            <li><strong>Google LLC</strong> ({% trans "ABD" %}): {% trans "e-posta gönderimi (Gmail) ve yalnızca onayınızla Google Analytics" %}</li>
+            <li><strong>Groq, Inc.</strong> ({% trans "ABD" %}): {% trans "AI Asistan'a yazdığınız soruların işlenmesi" %}</li>
+        </ul>
 
-        <h2 class="text-white mt-4 mb-2" style="font-size: 1.2rem;">4. Veri Saklama Süreleri</h2>
+        <h2 class="text-white mt-4 mb-2" style="font-size: 1.2rem;">{% trans "4. Veri Saklama Süreleri" %}</h2>
         <p class="text-light">
+            {% blocktrans trimmed %}
             Verileriniz, işleme amacının gerektirdiği süre boyunca saklanır. Akademik tarama araçlarımız
             (YÖK Tez, OpenAlex, TR Dizin, OAI-PMH) için yüklenen/üretilen ham veriler, analiz süreci
             tamamlandıktan sonra 7 gün süreyle kullanıcıya erişim kolaylığı sağlamak amacıyla saklanır
             ve bu sürenin sonunda otomatik olarak silinir. Yasal zamanaşımı süreleri saklıdır.
+            {% endblocktrans %}
         </p>
 
-        <h2 class="text-white mt-4 mb-2" style="font-size: 1.2rem;">5. KVKK Madde 11 Kapsamındaki Haklarınız</h2>
+        <h2 class="text-white mt-4 mb-2" style="font-size: 1.2rem;">{% trans "5. KVKK Madde 11 Kapsamındaki Haklarınız" %}</h2>
         <p class="text-light">
+            {% blocktrans trimmed %}
             Veri sahibi olarak; verilerinizin işlenip işlenmediğini öğrenme, bilgi talep etme,
             verilerinizin silinmesini veya düzeltilmesini isteme ve kanuna aykırı işleme sebebiyle
             zararın giderilmesini talep etme gibi haklara sahipsiniz. Başvurularınızı
             <strong>info@analizus.com</strong> adresi üzerinden yazılı olarak iletebilirsiniz.
+            {% endblocktrans %}
         </p>
 
-        <h2 class="text-white mt-4 mb-2" style="font-size: 1.2rem;">6. Çerez Politikası</h2>
+        <h2 class="text-white mt-4 mb-2" style="font-size: 1.2rem;">{% trans "6. Çerez Politikası" %}</h2>
         <p class="text-light">
-            Platformda zorunlu çerezler ve performans/analiz çerezleri kullanılmaktadır. Tarayıcı
-            ayarlarınızdan çerez tercihlerinizi yönetebilirsiniz.
+            {% blocktrans trimmed %}
+            Platformda oturum, güvenlik, dil ve çerez tercihlerinizin hatırlanması için zorunlu çerezler
+            kullanılır. Analiz çerezleri (Google Analytics) yalnızca çerez bildiriminde açık onay vermeniz
+            hâlinde yüklenir. Onayınızı sayfanın altındaki "Çerez ayarları" bağlantısından istediğiniz
+            zaman geri çekebilirsiniz. Tercihiniz 180 gün saklanır.
+            {% endblocktrans %}
         </p>
+
+        <h2 class="text-white mt-4 mb-2" style="font-size: 1.2rem;">{% trans "7. Avrupa Birliği / AEA'daki Kullanıcılar İçin Ek Bilgiler (GDPR)" %}</h2>
+        <p class="text-light">
+            {% blocktrans trimmed %}
+            Avrupa Birliği veya Avrupa Ekonomik Alanı'nda bulunuyorsanız, kişisel verileriniz ayrıca
+            Genel Veri Koruma Tüzüğü (AB) 2016/679 ("GDPR") kapsamında işlenir.
+            {% endblocktrans %}
+        </p>
+        {% comment %}Avukat/kullanıcı kararı bekleyen maddeler BİLEREK yok (tasks/todo.md):
+           AB dışı aktarım güvencesi (SCC/DPF), hesap silme süresi, GA saklama süresi,
+           AB temsilcisi (md. 27).{% endcomment %}
+        <ul class="text-light">
+            <li>{% blocktrans trimmed %}<strong>Hukuki dayanaklar:</strong> üyelik, analiz araçları, AI Asistan ve talepler için md. 6(1)(b) (sözleşme); güvenlik ve zorunlu çerezler için md. 6(1)(f) (meşru menfaat); analiz çerezleri için md. 6(1)(a) (açık rıza); yasal yükümlülükler için md. 6(1)(c).{% endblocktrans %}</li>
+            <li>{% blocktrans trimmed %}<strong>AB dışına aktarım:</strong> Google ve Groq verileri ABD'de işler.{% endblocktrans %}</li>
+            <li>{% blocktrans trimmed %}<strong>Saklama süreleri:</strong> hesap verileri hesabınızı silene kadar; akademik tarama araçlarının ham verileri 7 gün; çerez tercihi 180 gün saklanır.{% endblocktrans %}</li>
+            <li>{% blocktrans trimmed %}<strong>Haklarınız:</strong> erişim (md. 15), düzeltme (md. 16), silme (md. 17), işlemenin kısıtlanması (md. 18), veri taşınabilirliği (md. 20) ve itiraz (md. 21) haklarına; ayrıca verdiğiniz onayı istediğiniz zaman geri çekme hakkına (md. 7/3) sahipsiniz. Başvurularınızı info@analizus.com adresine iletebilirsiniz; en geç bir ay içinde yanıtlanır.{% endblocktrans %}</li>
+            <li>{% blocktrans trimmed %}<strong>Şikâyet hakkı:</strong> Bulunduğunuz AB/AEA ülkesindeki veri koruma denetim makamına şikâyette bulunabilirsiniz.{% endblocktrans %}</li>
+            <li>{% blocktrans trimmed %}<strong>Otomatik karar verme:</strong> GDPR md. 22 anlamında hakkınızda otomatik karar verilmez; AI Asistan yalnızca bilgi amaçlı yanıt üretir.{% endblocktrans %}</li>
+            <li>{% blocktrans trimmed %}<strong>Zorunluluk:</strong> Üyelik için kullanıcı adı ve e-posta adresi gereklidir; bunlar olmadan hesap oluşturulamaz.{% endblocktrans %}</li>
+        </ul>
 
     </div>
 
     <div class="text-center mt-5">
         <a href="{% url 'contact' %}" class="btn btn-outline-primary rounded-pill px-4">
-            <i class="bi bi-arrow-left me-2"></i>İletişim sayfasına dön
+            <i class="bi bi-arrow-left me-2"></i>{% trans "İletişim sayfasına dön" %}
         </a>
     </div>
 

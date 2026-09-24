@@ -35,3 +35,9 @@ render edilen sayfada özel harfsiz Türkçe kelime listesiyle tara; karakter
 sınıfını `re.I` olmadan, kelime listesini ayrı regex'le kontrol et.
 Kısa ve yeniden kullanılan msgid'lerin (ör. "Orta") mevcut çevirisini
 bağlama uygunluk için kontrol et; farklı anlamdaysa `context` ekle.
+
+## Django `{# #}` yorumu tek satırlıktır (24 Eylül 2026)
+**Hata:** Gizlilik şablonuna çok satırlı `{# … #}` yorum yazıldı → Django bunu
+yorum saymadı, metin sayfada göründü (render testinde yakalandı).
+**Kural:** Çok satırlı şablon yorumu için her zaman `{% comment %}…{% endcomment %}`.
+Şablona yorum ekledikten sonra render edilmiş HTML'de `{#` / `#}` ara.

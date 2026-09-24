@@ -18,6 +18,8 @@ urlpatterns = [
     path('onboarding/', views.onboarding, name='onboarding'),
     # AI Asistan tam sayfa (forum/urls.py'den taşındı, 24 Eylül 2026)
     path('ai-asistan/', views.ai_assistant, name='ai_assistant'),
+    # Gizlilik / KVKK + GDPR (forum/urls.py'den taşındı, 24 Eylül 2026)
+    path('gizlilik-politikasi/', views.gizlilik_politikasi, name='gizlilik_politikasi'),
     path('proje-talebi/', views.proje_talebi, name='proje_talebi'),
     path('ai-cozumler/', views.ai_cozumler, name='ai_cozumler'),
     path('egitim/', views.egitim, name='egitim'),

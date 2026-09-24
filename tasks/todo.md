@@ -87,8 +87,24 @@ URL taşıma + şablon + sitemap(static-i18n) + robots.txt.
   pazar ilanları, mesajlar) kullanıcı kararı. Mesaj da çevrilmemiş.
 - [ ] **Küçük i18n kaçağı (B sırasında görüldü):** ana sayfa hero'sundaki test
   çipleri "t-testi · korelasyon · regresyon" EN/DE'de Türkçe kalıyor.
-- [ ] **C. Gizlilik sayfası: KVKK çevirisi + GDPR bölümü** — taslak kullanıcı
-  onayına; avukat kontrolü önerildi. Olgular: Hetzner (DE), AWS S3
+- [x] **C. Gizlilik sayfası: KVKK çevirisi + GDPR bölümü** — TAMAMLANDI
+  (24 Eylül 2026, kullanıcı onayı): TR metni güncellendi (tablo: AI soruları,
+  talep formları, zorunlu/analiz çerezi ayrımı; alıcılar adıyla; çerez
+  bölümü banner'a göre; yeni 7. GDPR bölümü; sabit tarih 24.09.2026), EN/DE
+  çevrildi, URL i18n'e + StaticI18nSitemap'e taşındı. [KARAR] cümleleri ve
+  "30 gün içinde silinir" BİLEREK çıkarıldı — aşağıdaki maddeye bak.
+- [ ] **Gizlilik metnine eklenecekler — karar/uygulama bekliyor:**
+  - **"Hesap silme talebinden sonra 30 gün içinde silinir"** — önce silme
+    işlevi gerçekten çalışır hale getirilmeli (aşağıdaki ÖNEMLİ madde), sonra
+    GDPR "Saklama süreleri" maddesine eklenir.
+  - **AB dışı aktarım güvencesi** (Google, Groq → ABD): SCC ve/veya AB-ABD
+    Veri Gizliliği Çerçevesi — sağlayıcı sözleşmeleri kontrol edilmeli.
+  - **KVKK md. 9 yurt dışı aktarım** (2024 değişikliği): standart sözleşme +
+    KVK Kurumu'na bildirim yapıldıysa bölüm 3'e cümle eklenir.
+  - **Google Analytics saklama süresi** (GA hesabındaki ayar: 2 / 14 ay).
+  - **AB temsilcisi (GDPR md. 27)** — avukat görüşü.
+  - Avukat kontrolü EN/DE canlıya açılmadan önce önerildi.
+  Olgular: Olgular: Hetzner (DE), AWS S3
   eu-north-1 (SE), Groq (ABD, AI soruları), Google Analytics (ABD, onaylı),
   e-posta Gmail üzerinden (Google, ABD; alan adı hosting.com.tr), Render
   yalnızca test verisi (metne girmez). "Son güncelleme" `{% now %}` → sabit

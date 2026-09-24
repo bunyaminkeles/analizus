@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-24 23:53+0300\n"
+"POT-Creation-Date: 2026-09-25 00:07+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -447,8 +447,8 @@ msgid "Bireysel"
 msgstr "Individuell"
 
 #: forum/models.py:1728 forum/templates/forum/egitim.html:103
-#: forum/templates/forum/egitim_talebi.html:75 templates/base.html:280
-#: templates/base.html:474 templates/partials/footer.html:98
+#: forum/templates/forum/egitim_talebi.html:75 templates/base.html:279
+#: templates/base.html:473 templates/partials/footer.html:98
 msgid "Kurumsal"
 msgstr "Unternehmen"
 
@@ -508,21 +508,21 @@ msgstr "16+ Personen"
 msgid "2 hafta içinde"
 msgstr "Innerhalb von 2 Wochen"
 
-#: forum/services/ai_service.py:251 forum/views.py:2496 forum/views.py:2569
+#: forum/services/ai_service.py:253 forum/views.py:2496 forum/views.py:2569
 msgid "AI servisi şu anda kullanılamıyor."
 msgstr "Der KI-Dienst ist derzeit nicht verfügbar."
 
-#: forum/services/ai_service.py:305
+#: forum/services/ai_service.py:307
 #, python-format
 msgid "API hatası: %(error)s"
 msgstr "API-Fehler: %(error)s"
 
-#: forum/services/ai_service.py:312
+#: forum/services/ai_service.py:314
 msgid "İstek zaman aşımına uğradı. Lütfen tekrar deneyin."
 msgstr ""
 "Die Anfrage hat das Zeitlimit überschritten. Bitte versuchen Sie es erneut."
 
-#: forum/services/ai_service.py:319
+#: forum/services/ai_service.py:321
 #, python-format
 msgid "Bir hata oluştu: %(error)s"
 msgstr "Ein Fehler ist aufgetreten: %(error)s"
@@ -670,9 +670,9 @@ msgstr "Projektbasierte Vermittlung von Experten und Analysedienstleistungen"
 
 #: forum/templates/forum/about.html:73
 #: forum/templates/forum/ai_assistant.html:4
-#: forum/templates/forum/ai_assistant.html:16 templates/base.html:230
-#: templates/base.html:443 templates/base.html:816 templates/base.html:820
-#: templates/base.html:826 templates/partials/footer.html:48
+#: forum/templates/forum/ai_assistant.html:16 templates/base.html:229
+#: templates/base.html:442 templates/base.html:815 templates/base.html:819
+#: templates/base.html:825 templates/partials/footer.html:48
 msgid "AI Asistan"
 msgstr "KI-Assistent"
 
@@ -894,8 +894,8 @@ msgid "Ücretsiz Kayıt Ol"
 msgstr "Kostenlos registrieren"
 
 #: forum/templates/forum/about.html:404 forum/templates/forum/home.html:264
-#: forum/templates/forum/home.html:369 templates/base.html:228
-#: templates/base.html:442 templates/partials/footer.html:46
+#: forum/templates/forum/home.html:369 templates/base.html:227
+#: templates/base.html:441 templates/partials/footer.html:46
 msgid "Hangi Test?"
 msgstr "Welcher Test?"
 
@@ -940,7 +940,7 @@ msgstr "Registrieren"
 #: forum/templates/registration/login.html:10
 #: forum/templates/registration/login.html:249
 #: forum/templates/registration/login.html:280
-#: istatistik/templates/istatistik/analiz_hub.html:42 templates/base.html:518
+#: istatistik/templates/istatistik/analiz_hub.html:42 templates/base.html:517
 #: templates/forum/register.html:259 templates/forum/register.html:315
 #: templates/registration/password_reset_complete.html:201
 #: templates/registration/password_reset_form.html:262
@@ -1305,8 +1305,9 @@ msgstr ""
 "Haben Sie einen Prozess, der automatisiert werden könnte? Beginnen wir mit "
 "einem 15-minütigen Erstgespräch."
 
-#: forum/templates/forum/contact.html:4 templates/base.html:289
-#: templates/base.html:481 templates/partials/footer.html:101
+#: forum/templates/forum/contact.html:4
+#: forum/templates/forum/gizlilik_politikasi.html:27 templates/base.html:288
+#: templates/base.html:480 templates/partials/footer.html:101
 #: templates/partials/footer.html:139
 msgid "İletişim"
 msgstr "Kontakt"
@@ -1351,6 +1352,7 @@ msgid "Hızlı mesaj gönder"
 msgstr "Schnell eine Nachricht senden"
 
 #: forum/templates/forum/contact.html:46
+#: forum/templates/forum/gizlilik_politikasi.html:26
 msgid "Adres"
 msgstr "Adresse"
 
@@ -1394,7 +1396,7 @@ msgstr "KVKK-Datenschutzhinweis"
 msgid "okudum, kabul ediyorum."
 msgstr "— gelesen und akzeptiert."
 
-#: forum/templates/forum/contact.html:95 templates/base.html:860
+#: forum/templates/forum/contact.html:95 templates/base.html:859
 msgid "Gönder"
 msgstr "Senden"
 
@@ -1403,8 +1405,8 @@ msgid "Topluluğumuza katılın"
 msgstr "Werden Sie Teil unserer Community"
 
 #: forum/templates/forum/contact.html:107
-#: forum/templates/registration/login.html:250 templates/base.html:391
-#: templates/base.html:519 templates/forum/register.html:8
+#: forum/templates/registration/login.html:250 templates/base.html:390
+#: templates/base.html:518 templates/forum/register.html:8
 #: templates/forum/register.html:260 templates/forum/register.html:312
 msgid "Kayıt Ol"
 msgstr "Registrieren"
@@ -1562,8 +1564,8 @@ msgstr ""
 "Materialien weiter."
 
 #: forum/templates/forum/egitim.html:194
-#: forum/templates/forum/proje_talebi.html:246 templates/base.html:284
-#: templates/base.html:478
+#: forum/templates/forum/proje_talebi.html:246 templates/base.html:283
+#: templates/base.html:477
 msgid "Neden Analizus?"
 msgstr "Warum Analizus?"
 
@@ -1741,8 +1743,8 @@ msgstr ""
 "Was, wenn ich lieber möchte, dass Sie die Analyse übernehmen statt mich zu "
 "schulen?"
 
-#: forum/templates/forum/egitim.html:306 templates/base.html:269
-#: templates/base.html:466
+#: forum/templates/forum/egitim.html:306 templates/base.html:268
+#: templates/base.html:465
 msgid "Proje Talebi"
 msgstr "Projektanfrage"
 
@@ -1805,8 +1807,8 @@ msgstr "Über WhatsApp schreiben"
 
 #: forum/templates/forum/egitim_detay.html:5
 #: forum/templates/forum/egitim_detay.html:7
-#: forum/templates/forum/egitim_detay.html:9 templates/base.html:272
-#: templates/base.html:469
+#: forum/templates/forum/egitim_detay.html:9 templates/base.html:271
+#: templates/base.html:468
 msgid "Eğitim"
 msgstr "Schulung"
 
@@ -2233,6 +2235,317 @@ msgstr "Für jede gültige Einladung kostenlose Premium-Zeit erhalten"
 msgid "Forumu Keşfet"
 msgstr "Plattform entdecken"
 
+#: forum/templates/forum/gizlilik_politikasi.html:4
+#: forum/templates/forum/gizlilik_politikasi.html:13
+msgid "KVKK Aydınlatma Metni ve Gizlilik Politikası"
+msgstr "Datenschutzhinweise nach dem KVKK und Datenschutzerklärung"
+
+#: forum/templates/forum/gizlilik_politikasi.html:5
+msgid ""
+"Analizus'ta kişisel verilerinizin hangi amaçla toplandığı, nasıl işlendiği "
+"ve KVKK ile GDPR kapsamındaki haklarınız hakkında aydınlatma metni."
+msgstr ""
+"Informationen darüber, zu welchen Zwecken Ihre personenbezogenen Daten auf "
+"Analizus erhoben und wie sie verarbeitet werden, sowie über Ihre Rechte nach"
+" dem KVKK und der DSGVO."
+
+#: forum/templates/forum/gizlilik_politikasi.html:15
+msgid "Son güncelleme"
+msgstr "Letzte Aktualisierung"
+
+#: forum/templates/forum/gizlilik_politikasi.html:19
+msgid "1. Veri Sorumlusu"
+msgstr "1. Verantwortlicher"
+
+#: forum/templates/forum/gizlilik_politikasi.html:21
+msgid ""
+"6698 sayılı Kişisel Verilerin Korunması Kanunu (\"KVKK\") uyarınca, kişisel "
+"verileriniz; veri sorumlusu sıfatıyla <strong>Bünyamin Keleş</strong> "
+"(Analizus Platformu) tarafından aşağıda açıklanan amaçlar doğrultusunda "
+"işlenebilecektir."
+msgstr ""
+"Gemäß dem türkischen Gesetz Nr. 6698 zum Schutz personenbezogener Daten "
+"(„KVKK“) können Ihre personenbezogenen Daten von <strong>Bünyamin "
+"Keleş</strong> (Analizus-Plattform) als Verantwortlichem zu den nachstehend "
+"beschriebenen Zwecken verarbeitet werden."
+
+#: forum/templates/forum/gizlilik_politikasi.html:30
+msgid "2. Kişisel Verilerin İşlenme Amaçları ve Hukuki Sebepleri"
+msgstr "2. Zwecke und Rechtsgrundlagen der Verarbeitung"
+
+#: forum/templates/forum/gizlilik_politikasi.html:35
+msgid "Veri Kategorisi"
+msgstr "Datenkategorie"
+
+#: forum/templates/forum/gizlilik_politikasi.html:36
+msgid "Amaç"
+msgstr "Zweck"
+
+#: forum/templates/forum/gizlilik_politikasi.html:37
+msgid "Hukuki Sebep"
+msgstr "Rechtsgrundlage"
+
+#: forum/templates/forum/gizlilik_politikasi.html:42
+msgid "Kimlik, İletişim, Hesap"
+msgstr "Identitäts-, Kontakt- und Kontodaten"
+
+#: forum/templates/forum/gizlilik_politikasi.html:43
+msgid "Üyelik ve Kullanıcı Yönetimi"
+msgstr "Mitgliedschaft und Nutzerverwaltung"
+
+#: forum/templates/forum/gizlilik_politikasi.html:44
+#: forum/templates/forum/gizlilik_politikasi.html:49
+#: forum/templates/forum/gizlilik_politikasi.html:54
+msgid "Sözleşmenin İfası"
+msgstr "Vertragserfüllung"
+
+#: forum/templates/forum/gizlilik_politikasi.html:47
+msgid "Analiz Dosyaları"
+msgstr "Analysedateien"
+
+#: forum/templates/forum/gizlilik_politikasi.html:48
+msgid "Hizmetin Sağlanması"
+msgstr "Erbringung der Dienstleistung"
+
+#: forum/templates/forum/gizlilik_politikasi.html:52
+msgid "AI Asistan'a yazılan sorular"
+msgstr "An den KI-Assistenten gesendete Fragen"
+
+#: forum/templates/forum/gizlilik_politikasi.html:53
+msgid "Yanıt üretilmesi"
+msgstr "Erstellung von Antworten"
+
+#: forum/templates/forum/gizlilik_politikasi.html:57
+msgid "İletişim, proje ve eğitim talep formları"
+msgstr "Kontakt-, Projekt- und Schulungsanfrageformulare"
+
+#: forum/templates/forum/gizlilik_politikasi.html:58
+msgid "Talebin yanıtlanması"
+msgstr "Beantwortung der Anfrage"
+
+#: forum/templates/forum/gizlilik_politikasi.html:59
+msgid "Sözleşmenin kurulması / Meşru Menfaat"
+msgstr "Vertragsanbahnung / Berechtigtes Interesse"
+
+#: forum/templates/forum/gizlilik_politikasi.html:62
+msgid "Zorunlu çerezler (oturum, güvenlik, dil ve çerez tercihi)"
+msgstr ""
+"Technisch notwendige Cookies (Sitzung, Sicherheit, Sprach- und Cookie-"
+"Einstellung)"
+
+#: forum/templates/forum/gizlilik_politikasi.html:63
+msgid "Güvenlik ve oturum yönetimi"
+msgstr "Sicherheit und Sitzungsverwaltung"
+
+#: forum/templates/forum/gizlilik_politikasi.html:64
+msgid "Meşru Menfaat"
+msgstr "Berechtigtes Interesse"
+
+#: forum/templates/forum/gizlilik_politikasi.html:67
+msgid "Analiz çerezleri (Google Analytics)"
+msgstr "Analyse-Cookies (Google Analytics)"
+
+#: forum/templates/forum/gizlilik_politikasi.html:68
+msgid "Site kullanım istatistikleri"
+msgstr "Nutzungsstatistiken der Website"
+
+#: forum/templates/forum/gizlilik_politikasi.html:69
+msgid "Açık Rıza"
+msgstr "Ausdrückliche Einwilligung"
+
+#: forum/templates/forum/gizlilik_politikasi.html:75
+msgid "3. Kişisel Verilerin Aktarımı"
+msgstr "3. Übermittlung personenbezogener Daten"
+
+#: forum/templates/forum/gizlilik_politikasi.html:77
+msgid ""
+"Kişisel verileriniz, hizmetin sağlanması için aşağıdaki hizmet "
+"sağlayıcılarla ve yasal yükümlülüklerimiz gereği yetkili kamu kurumlarıyla "
+"paylaşılabilir. Teknik altyapı gereği verileriniz yurt dışı merkezli "
+"sunucularda işlenebilir."
+msgstr ""
+"Zur Erbringung der Dienstleistung können Ihre personenbezogenen Daten an die"
+" unten aufgeführten Dienstleister sowie, soweit gesetzlich vorgeschrieben, "
+"an zuständige Behörden weitergegeben werden. Aus technischen Gründen können "
+"Ihre Daten auf Servern im Ausland verarbeitet werden."
+
+#: forum/templates/forum/gizlilik_politikasi.html:84
+msgid "Almanya"
+msgstr "Deutschland"
+
+#: forum/templates/forum/gizlilik_politikasi.html:84
+msgid "sunucu barındırma"
+msgstr "Server-Hosting"
+
+#: forum/templates/forum/gizlilik_politikasi.html:85
+msgid "AWS S3, İsveç / AB bölgesi"
+msgstr "AWS S3, Schweden / EU-Region"
+
+#: forum/templates/forum/gizlilik_politikasi.html:85
+msgid "dosya depolama"
+msgstr "Dateispeicherung"
+
+#: forum/templates/forum/gizlilik_politikasi.html:86
+#: forum/templates/forum/gizlilik_politikasi.html:87
+msgid "ABD"
+msgstr "USA"
+
+#: forum/templates/forum/gizlilik_politikasi.html:86
+msgid "e-posta gönderimi (Gmail) ve yalnızca onayınızla Google Analytics"
+msgstr ""
+"E-Mail-Versand (Gmail) und, nur mit Ihrer Einwilligung, Google Analytics"
+
+#: forum/templates/forum/gizlilik_politikasi.html:87
+msgid "AI Asistan'a yazdığınız soruların işlenmesi"
+msgstr "Verarbeitung der Fragen, die Sie an den KI-Assistenten senden"
+
+#: forum/templates/forum/gizlilik_politikasi.html:90
+msgid "4. Veri Saklama Süreleri"
+msgstr "4. Speicherdauer"
+
+#: forum/templates/forum/gizlilik_politikasi.html:92
+msgid ""
+"Verileriniz, işleme amacının gerektirdiği süre boyunca saklanır. Akademik "
+"tarama araçlarımız (YÖK Tez, OpenAlex, TR Dizin, OAI-PMH) için "
+"yüklenen/üretilen ham veriler, analiz süreci tamamlandıktan sonra 7 gün "
+"süreyle kullanıcıya erişim kolaylığı sağlamak amacıyla saklanır ve bu "
+"sürenin sonunda otomatik olarak silinir. Yasal zamanaşımı süreleri saklıdır."
+msgstr ""
+"Ihre Daten werden so lange gespeichert, wie es der Verarbeitungszweck "
+"erfordert. Rohdaten, die in unseren wissenschaftlichen Recherchetools (YÖK "
+"Tez, OpenAlex, TR Dizin, OAI-PMH) hochgeladen oder erzeugt werden, werden "
+"nach Abschluss der Analyse zur Erleichterung des Zugriffs 7 Tage lang "
+"gespeichert und danach automatisch gelöscht. Gesetzliche Verjährungsfristen "
+"bleiben unberührt."
+
+#: forum/templates/forum/gizlilik_politikasi.html:100
+msgid "5. KVKK Madde 11 Kapsamındaki Haklarınız"
+msgstr "5. Ihre Rechte nach Art. 11 KVKK"
+
+#: forum/templates/forum/gizlilik_politikasi.html:102
+msgid ""
+"Veri sahibi olarak; verilerinizin işlenip işlenmediğini öğrenme, bilgi talep"
+" etme, verilerinizin silinmesini veya düzeltilmesini isteme ve kanuna aykırı"
+" işleme sebebiyle zararın giderilmesini talep etme gibi haklara sahipsiniz. "
+"Başvurularınızı <strong>info@analizus.com</strong> adresi üzerinden yazılı "
+"olarak iletebilirsiniz."
+msgstr ""
+"Als betroffene Person haben Sie unter anderem das Recht, zu erfahren, ob "
+"Ihre Daten verarbeitet werden, Auskunft zu verlangen, die Löschung oder "
+"Berichtigung Ihrer Daten zu verlangen sowie Ersatz des durch rechtswidrige "
+"Verarbeitung entstandenen Schadens zu fordern. Ihre Anfragen können Sie "
+"schriftlich an <strong>info@analizus.com</strong> richten."
+
+#: forum/templates/forum/gizlilik_politikasi.html:110
+msgid "6. Çerez Politikası"
+msgstr "6. Cookie-Richtlinie"
+
+#: forum/templates/forum/gizlilik_politikasi.html:112
+msgid ""
+"Platformda oturum, güvenlik, dil ve çerez tercihlerinizin hatırlanması için "
+"zorunlu çerezler kullanılır. Analiz çerezleri (Google Analytics) yalnızca "
+"çerez bildiriminde açık onay vermeniz hâlinde yüklenir. Onayınızı sayfanın "
+"altındaki \"Çerez ayarları\" bağlantısından istediğiniz zaman geri "
+"çekebilirsiniz. Tercihiniz 180 gün saklanır."
+msgstr ""
+"Auf der Plattform werden technisch notwendige Cookies für Sitzung, "
+"Sicherheit sowie zur Speicherung Ihrer Sprach- und Cookie-Einstellungen "
+"verwendet. Analyse-Cookies (Google Analytics) werden nur geladen, wenn Sie "
+"im Cookie-Hinweis ausdrücklich einwilligen. Ihre Einwilligung können Sie "
+"jederzeit über den Link „Cookie-Einstellungen“ am Seitenende widerrufen. "
+"Ihre Auswahl wird 180 Tage gespeichert."
+
+#: forum/templates/forum/gizlilik_politikasi.html:120
+msgid "7. Avrupa Birliği / AEA'daki Kullanıcılar İçin Ek Bilgiler (GDPR)"
+msgstr ""
+"7. Zusätzliche Informationen für Nutzer in der Europäischen Union / im EWR "
+"(DSGVO)"
+
+#: forum/templates/forum/gizlilik_politikasi.html:122
+msgid ""
+"Avrupa Birliği veya Avrupa Ekonomik Alanı'nda bulunuyorsanız, kişisel "
+"verileriniz ayrıca Genel Veri Koruma Tüzüğü (AB) 2016/679 (\"GDPR\") "
+"kapsamında işlenir."
+msgstr ""
+"Wenn Sie sich in der Europäischen Union oder im Europäischen Wirtschaftsraum"
+" befinden, werden Ihre personenbezogenen Daten zusätzlich nach der "
+"Datenschutz-Grundverordnung (EU) 2016/679 („DSGVO“) verarbeitet."
+
+#: forum/templates/forum/gizlilik_politikasi.html:131
+msgid ""
+"<strong>Hukuki dayanaklar:</strong> üyelik, analiz araçları, AI Asistan ve "
+"talepler için md. 6(1)(b) (sözleşme); güvenlik ve zorunlu çerezler için md. "
+"6(1)(f) (meşru menfaat); analiz çerezleri için md. 6(1)(a) (açık rıza); "
+"yasal yükümlülükler için md. 6(1)(c)."
+msgstr ""
+"<strong>Rechtsgrundlagen:</strong> Art. 6 Abs. 1 lit. b (Vertrag) für "
+"Mitgliedschaft, Analysetools, KI-Assistent und Anfragen; Art. 6 Abs. 1 lit. "
+"f (berechtigtes Interesse) für Sicherheit und technisch notwendige Cookies; "
+"Art. 6 Abs. 1 lit. a (Einwilligung) für Analyse-Cookies; Art. 6 Abs. 1 lit. "
+"c für gesetzliche Pflichten."
+
+#: forum/templates/forum/gizlilik_politikasi.html:132
+msgid ""
+"<strong>AB dışına aktarım:</strong> Google ve Groq verileri ABD'de işler."
+msgstr ""
+"<strong>Übermittlung außerhalb der EU:</strong> Google und Groq verarbeiten "
+"Daten in den USA."
+
+#: forum/templates/forum/gizlilik_politikasi.html:133
+msgid ""
+"<strong>Saklama süreleri:</strong> hesap verileri hesabınızı silene kadar; "
+"akademik tarama araçlarının ham verileri 7 gün; çerez tercihi 180 gün "
+"saklanır."
+msgstr ""
+"<strong>Speicherdauer:</strong> Kontodaten bis zur Löschung Ihres Kontos; "
+"Rohdaten der wissenschaftlichen Recherchetools 7 Tage; Ihre Cookie-"
+"Einstellung 180 Tage."
+
+#: forum/templates/forum/gizlilik_politikasi.html:134
+msgid ""
+"<strong>Haklarınız:</strong> erişim (md. 15), düzeltme (md. 16), silme (md. "
+"17), işlemenin kısıtlanması (md. 18), veri taşınabilirliği (md. 20) ve "
+"itiraz (md. 21) haklarına; ayrıca verdiğiniz onayı istediğiniz zaman geri "
+"çekme hakkına (md. 7/3) sahipsiniz. Başvurularınızı info@analizus.com "
+"adresine iletebilirsiniz; en geç bir ay içinde yanıtlanır."
+msgstr ""
+"<strong>Ihre Rechte:</strong> Sie haben das Recht auf Auskunft (Art. 15), "
+"Berichtigung (Art. 16), Löschung (Art. 17), Einschränkung der Verarbeitung "
+"(Art. 18), Datenübertragbarkeit (Art. 20) und Widerspruch (Art. 21) sowie "
+"das Recht, Ihre Einwilligung jederzeit zu widerrufen (Art. 7 Abs. 3). Ihre "
+"Anfragen können Sie an info@analizus.com richten; sie werden spätestens "
+"innerhalb eines Monats beantwortet."
+
+#: forum/templates/forum/gizlilik_politikasi.html:135
+msgid ""
+"<strong>Şikâyet hakkı:</strong> Bulunduğunuz AB/AEA ülkesindeki veri koruma "
+"denetim makamına şikâyette bulunabilirsiniz."
+msgstr ""
+"<strong>Beschwerderecht:</strong> Sie können sich bei der Datenschutz-"
+"Aufsichtsbehörde des EU-/EWR-Staates, in dem Sie sich befinden, beschweren."
+
+#: forum/templates/forum/gizlilik_politikasi.html:136
+msgid ""
+"<strong>Otomatik karar verme:</strong> GDPR md. 22 anlamında hakkınızda "
+"otomatik karar verilmez; AI Asistan yalnızca bilgi amaçlı yanıt üretir."
+msgstr ""
+"<strong>Automatisierte Entscheidungsfindung:</strong> Es finden keine "
+"automatisierten Entscheidungen im Sinne von Art. 22 DSGVO statt; der KI-"
+"Assistent erzeugt ausschließlich informative Antworten."
+
+#: forum/templates/forum/gizlilik_politikasi.html:137
+msgid ""
+"<strong>Zorunluluk:</strong> Üyelik için kullanıcı adı ve e-posta adresi "
+"gereklidir; bunlar olmadan hesap oluşturulamaz."
+msgstr ""
+"<strong>Pflicht zur Bereitstellung:</strong> Für die Mitgliedschaft sind ein"
+" Benutzername und eine E-Mail-Adresse erforderlich; ohne diese kann kein "
+"Konto erstellt werden."
+
+#: forum/templates/forum/gizlilik_politikasi.html:144
+msgid "İletişim sayfasına dön"
+msgstr "Zurück zur Kontaktseite"
+
 #: forum/templates/forum/hangi_test.html:4
 msgid "Hangi İstatistik Testini Kullanmalıyım? — İnteraktif Karar Ağacı"
 msgstr ""
@@ -2567,9 +2880,9 @@ msgstr "Zum Forum"
 msgid "Kayıt Ol &amp; Paylaş"
 msgstr "Registrieren &amp; teilen"
 
-#: forum/templates/forum/hangi_test.html:263 templates/base.html:543
-#: templates/base.html:564 templates/base.html:577 templates/base.html:586
-#: templates/base.html:833 templates/partials/footer.html:156
+#: forum/templates/forum/hangi_test.html:263 templates/base.html:542
+#: templates/base.html:563 templates/base.html:576 templates/base.html:585
+#: templates/base.html:832 templates/partials/footer.html:156
 #: templates/partials/footer.html:220
 msgid "Kapat"
 msgstr "Schließen"
@@ -2579,7 +2892,7 @@ msgid "Analiz Amacı"
 msgstr "Analyseziel"
 
 #: forum/templates/forum/hangi_test.html:287
-#: forum/templates/forum/hangi_test.html:420 templates/base.html:844
+#: forum/templates/forum/hangi_test.html:420 templates/base.html:843
 msgid "Ne yapmak istiyorsunuz?"
 msgstr "Was möchten Sie tun?"
 
@@ -3626,8 +3939,8 @@ msgid "YÖK Tez Kazıma"
 msgstr "Thesis-Center-Scraping"
 
 #: forum/templates/forum/home.html:272 forum/views.py:3983
-#: openalex/templates/openalex/landing.html:155 templates/base.html:224
-#: templates/base.html:440
+#: openalex/templates/openalex/landing.html:155 templates/base.html:223
+#: templates/base.html:439
 msgid "Bibliometrik Analiz"
 msgstr "Bibliometrische Analyse"
 
@@ -3640,8 +3953,8 @@ msgstr "Chancen:"
 msgid "Açık İlanlar"
 msgstr "Offene Aufträge"
 
-#: forum/templates/forum/home.html:278 templates/base.html:366
-#: templates/base.html:504
+#: forum/templates/forum/home.html:278 templates/base.html:365
+#: templates/base.html:503
 msgid "Profilim"
 msgstr "Mein Profil"
 
@@ -3958,8 +4271,8 @@ msgstr ""
 "Ihr KI-gestützter Leitfaden für Literaturrecherche und das Schreiben Ihrer "
 "Abschlussarbeit."
 
-#: forum/templates/forum/home.html:705 templates/base.html:241
-#: templates/base.html:448
+#: forum/templates/forum/home.html:705 templates/base.html:240
+#: templates/base.html:447
 msgid "Akademik Tarama"
 msgstr "Akademische Recherche"
 
@@ -3979,8 +4292,8 @@ msgstr "OpenAlex-Suche"
 msgid "TR Dizin Tarama"
 msgstr "TR-Dizin-Suche"
 
-#: forum/templates/forum/home.html:717 templates/base.html:261
-#: templates/base.html:460 templates/partials/footer.html:62
+#: forum/templates/forum/home.html:717 templates/base.html:260
+#: templates/base.html:459 templates/partials/footer.html:62
 msgid "Çalışma Odaları"
 msgstr "Lernräume"
 
@@ -4211,7 +4524,7 @@ msgstr "Falsch! Die richtige Antwort:"
 msgid "Yükleniyor..."
 msgstr "Wird geladen..."
 
-#: forum/templates/forum/home.html:1131 templates/base.html:554
+#: forum/templates/forum/home.html:1131 templates/base.html:553
 msgid "Sonraki Soru"
 msgstr "Nächste Frage"
 
@@ -4616,8 +4929,8 @@ msgstr ""
 " — kostenlos inserieren, schnelle Expertenvermittlung, verlässliche "
 "akademische Unterstützung."
 
-#: forum/templates/forum/market/job_list.html:27 templates/base.html:246
-#: templates/base.html:451 templates/partials/footer.html:50
+#: forum/templates/forum/market/job_list.html:27 templates/base.html:245
+#: templates/base.html:450 templates/partials/footer.html:50
 msgid "Pazaryeri"
 msgstr "Marktplatz"
 
@@ -9820,8 +10133,8 @@ msgstr "Kostenlose Projektanfrage senden"
 #: istatistik/templates/istatistik/analiz_hub.html:4
 #: istatistik/templates/istatistik/analiz_hub.html:6
 #: istatistik/templates/istatistik/analiz_hub.html:8
-#: istatistik/templates/istatistik/analiz_hub.html:32 templates/base.html:221
-#: templates/base.html:439
+#: istatistik/templates/istatistik/analiz_hub.html:32 templates/base.html:220
+#: templates/base.html:438
 msgid "İstatistik Analiz Araçları"
 msgstr "Statistik-Tools"
 
@@ -14315,7 +14628,7 @@ msgstr "Sie müssen Ihre E-Mail-Adresse bestätigen, um dieses Tool zu nutzen."
 #: semanticscholar/templates/semanticscholar/landing.html:216
 #: semanticscholar/templates/semanticscholar/landing.html:223
 #: semanticscholar/templates/semanticscholar/landing.html:249
-#: templates/base.html:299
+#: templates/base.html:298
 msgid "Ara"
 msgstr "Suchen"
 
@@ -14437,11 +14750,11 @@ msgstr ""
 msgid "Django site admin"
 msgstr "Django-Seitenverwaltung"
 
-#: templates/base.html:33
+#: templates/base.html:31
 msgid "Analizus - Akademik Analiz ve Veri Bilimi Topluluğu"
 msgstr "Analizus - Community für akademische Analyse und Datenwissenschaft"
 
-#: templates/base.html:34
+#: templates/base.html:32
 msgid ""
 "SPSS, Python, R Studio, Nitel analizler ve AI ile istatistik analizi, tez "
 "yazımı ve akademik araştırma desteği."
@@ -14450,130 +14763,130 @@ msgstr ""
 " akademischer Forschung mit SPSS, Python, R Studio, qualitativer Analyse und"
 " KI."
 
-#: templates/base.html:189
+#: templates/base.html:188
 msgid "İçeriğe geç"
 msgstr "Zum Inhalt springen"
 
-#: templates/base.html:203 templates/base.html:420
+#: templates/base.html:202 templates/base.html:419
 msgid "Analizus Ana Sayfa"
 msgstr "Analizus Startseite"
 
-#: templates/base.html:209
+#: templates/base.html:208
 msgid "Ana menü"
 msgstr "Hauptmenü"
 
-#: templates/base.html:216 templates/base.html:435
+#: templates/base.html:215 templates/base.html:434
 msgid "Analizler"
 msgstr "Analysen"
 
-#: templates/base.html:226 templates/base.html:441
+#: templates/base.html:225 templates/base.html:440
 msgid "Tableau Analizleri"
 msgstr "Tableau-Analysen"
 
-#: templates/base.html:233
+#: templates/base.html:232
 msgid "YouTube Transcript İndir"
 msgstr "YouTube-Transkript herunterladen"
 
-#: templates/base.html:254 templates/base.html:455
+#: templates/base.html:253 templates/base.html:454
 #: templates/partials/footer.html:59
 msgid "Topluluk"
 msgstr "Community"
 
-#: templates/base.html:262 templates/base.html:461 templates/base.html:542
+#: templates/base.html:261 templates/base.html:460 templates/base.html:541
 #: templates/partials/footer.html:63
 msgid "İstatistik Arena"
 msgstr "Statistik-Arena"
 
-#: templates/base.html:286 templates/base.html:479
+#: templates/base.html:285 templates/base.html:478
 msgid "AI Çözümler"
 msgstr "KI-Lösungen"
 
-#: templates/base.html:288 templates/base.html:480
+#: templates/base.html:287 templates/base.html:479
 #: templates/partials/footer.html:100 templates/partials/footer.html:138
 msgid "Hakkımızda"
 msgstr "Über uns"
 
-#: templates/base.html:312 templates/partials/auth_lang_switcher.html:9
+#: templates/base.html:311 templates/partials/auth_lang_switcher.html:9
 msgid "Dil seç"
 msgstr "Sprache wählen"
 
-#: templates/base.html:340
+#: templates/base.html:339
 msgid "Gelen kutusu"
 msgstr "Posteingang"
 
-#: templates/base.html:361
+#: templates/base.html:360
 msgid "Puanını Arena'da artır"
 msgstr "Punkte in der Arena steigern"
 
-#: templates/base.html:367 templates/base.html:505
+#: templates/base.html:366 templates/base.html:504
 msgid "Profili Düzenle"
 msgstr "Profil bearbeiten"
 
-#: templates/base.html:368
+#: templates/base.html:367
 msgid "Ödemelerim"
 msgstr "Meine Zahlungen"
 
-#: templates/base.html:369 templates/base.html:506
+#: templates/base.html:368 templates/base.html:505
 msgid "Arkadaşını Davet Et"
 msgstr "Freund einladen"
 
-#: templates/base.html:371 templates/base.html:507
+#: templates/base.html:370 templates/base.html:506
 msgid "Gelen Kutusu"
 msgstr "Posteingang"
 
-#: templates/base.html:381 templates/base.html:513
+#: templates/base.html:380 templates/base.html:512
 msgid "Çıkış Yap"
 msgstr "Abmelden"
 
-#: templates/base.html:390
+#: templates/base.html:389
 msgid "Giriş"
 msgstr "Anmelden"
 
-#: templates/base.html:398
+#: templates/base.html:397
 msgid "Menüyü aç"
 msgstr "Menü öffnen"
 
-#: templates/base.html:418
+#: templates/base.html:417
 msgid "Mobil menü"
 msgstr "Mobiles Menü"
 
-#: templates/base.html:424
+#: templates/base.html:423
 msgid "Menüyü kapat"
 msgstr "Menü schließen"
 
-#: templates/base.html:488
+#: templates/base.html:487
 msgid "Dil"
 msgstr "Sprache"
 
-#: templates/base.html:530
+#: templates/base.html:529
 msgid "Forum konusu veya kullanıcı ara..."
 msgstr "Forenthemen oder Nutzer suchen..."
 
-#: templates/base.html:549
+#: templates/base.html:548
 msgid "Soru yükleniyor..."
 msgstr "Frage wird geladen..."
 
-#: templates/base.html:563
+#: templates/base.html:562
 msgid "Kullanıcı Kartı"
 msgstr "Nutzerkarte"
 
-#: templates/base.html:576
+#: templates/base.html:575
 msgid "Haftanın Başarı Hikayesi"
 msgstr "Erfolgsgeschichte der Woche"
 
-#: templates/base.html:585
+#: templates/base.html:584
 msgid "Tüm Hikayeler"
 msgstr "Alle Geschichten"
 
-#: templates/base.html:677
+#: templates/base.html:676
 msgid "Soru yüklenemedi."
 msgstr "Die Frage konnte nicht geladen werden."
 
-#: templates/base.html:706
+#: templates/base.html:705
 msgid "Doğru Cevap! (+10 Puan)"
 msgstr "Richtig! (+10 Punkte)"
 
-#: templates/base.html:708
+#: templates/base.html:707
 msgid ""
 "TEBRİKLER! \"İstatistik Ustası\" rozeti kazandınız! Artık ilan "
 "açabilirsiniz."
@@ -14581,35 +14894,35 @@ msgstr ""
 "HERZLICHEN GLÜCKWUNSCH! Sie haben das Abzeichen „Statistik-Meister“ "
 "erhalten! Sie können jetzt Aufträge einstellen."
 
-#: templates/base.html:714
+#: templates/base.html:713
 msgid "Yanlış. Doğru cevap:"
 msgstr "Falsch. Die richtige Antwort:"
 
-#: templates/base.html:719
+#: templates/base.html:718
 msgid "Toplam Doğru:"
 msgstr "Richtige insgesamt:"
 
-#: templates/base.html:739
+#: templates/base.html:738
 msgid "Profil yüklenemedi."
 msgstr "Das Profil konnte nicht geladen werden."
 
-#: templates/base.html:781
+#: templates/base.html:780
 msgid "İşlem başarısız."
 msgstr "Die Aktion ist fehlgeschlagen."
 
-#: templates/base.html:799
+#: templates/base.html:798
 msgid "Hikaye bulunamadı."
 msgstr "Geschichte nicht gefunden."
 
-#: templates/base.html:814
+#: templates/base.html:813
 msgid "AI Asistan ile sohbet et"
 msgstr "Mit dem KI-Assistenten chatten"
 
-#: templates/base.html:830
+#: templates/base.html:829
 msgid "Tam sayfa aç"
 msgstr "Als ganze Seite öffnen"
 
-#: templates/base.html:843
+#: templates/base.html:842
 msgid ""
 "Merhaba! İstatistik testi, akademik makale arama ya da veri analizi "
 "konularında yardımcı olabilirim."
@@ -14617,39 +14930,39 @@ msgstr ""
 "Hallo! Ich helfe Ihnen gern bei statistischen Tests, der Suche nach "
 "Fachliteratur oder der Datenanalyse."
 
-#: templates/base.html:854
+#: templates/base.html:853
 msgid "Anonim: 3 soru/gün"
 msgstr "Anonym: 3 Fragen/Tag"
 
-#: templates/base.html:854 templates/base.html:1242
+#: templates/base.html:853 templates/base.html:1241
 msgid "Üye ol"
 msgstr "Registrieren"
 
-#: templates/base.html:854
+#: templates/base.html:853
 msgid "30 soru"
 msgstr "30 Fragen"
 
-#: templates/base.html:859
+#: templates/base.html:858
 msgid "Sorunuzu yazın…"
 msgstr "Geben Sie Ihre Frage ein…"
 
-#: templates/base.html:859
+#: templates/base.html:858
 msgid "Mesaj"
 msgstr "Nachricht"
 
-#: templates/base.html:1207
+#: templates/base.html:1206
 msgid "hak"
 msgstr "übrig"
 
-#: templates/base.html:1242
+#: templates/base.html:1241
 msgid "ile 30 soruya çıkar."
 msgstr "und erhöhen Sie Ihr Limit auf 30 Fragen."
 
-#: templates/base.html:1247
+#: templates/base.html:1246
 msgid "Bir hata oluştu, tekrar deneyin."
 msgstr "Ein Fehler ist aufgetreten, bitte versuchen Sie es erneut."
 
-#: templates/base.html:1251
+#: templates/base.html:1250
 msgid "Bağlantı hatası. İnternet bağlantınızı kontrol edin."
 msgstr "Verbindungsfehler. Bitte prüfen Sie Ihre Internetverbindung."
 
