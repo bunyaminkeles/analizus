@@ -1,0 +1,29 @@
+{% load i18n %}
+{% comment %}
+Giriş/kayıt sayfaları base.html'i extend etmediği için navbar'daki dil seçici
+burada görünmüyordu — aynı set_language akışıyla kompakt TR · EN · DE seçici.
+{% endcomment %}
+{% if features.multilingual %}
+{% get_available_languages as AUTH_LANGS %}
+{% get_current_language as AUTH_LANG %}
+<div class="auth-lang" role="group" aria-label="{% trans 'Dil seç' %}">
+    <i class="bi bi-globe2" aria-hidden="true"></i>
+    {% for code, name in AUTH_LANGS %}
+    <form action="{% url 'set_language' %}" method="post" class="auth-lang__form">
+        {% csrf_token %}
+        <input type="hidden" name="language" value="{{ code }}">
+        <input type="hidden" name="next" value="{{ request.get_full_path }}">
+        <button type="submit" class="auth-lang__btn{% if code == AUTH_LANG %} is-active{% endif %}"
+                {% if code == AUTH_LANG %}aria-current="true"{% endif %} lang="{{ code }}">{{ code|upper }}</button>
+    </form>
+    {% if not forloop.last %}<span class="auth-lang__sep" aria-hidden="true">·</span>{% endif %}
+    {% endfor %}
+</div>
+<style>
+    .auth-lang { display: inline-flex; align-items: center; gap: .35rem; color: #666; font-size: .85rem; }
+    .auth-lang__form { display: inline; margin: 0; }
+    .auth-lang__btn { background: none; border: 0; padding: .1rem .15rem; color: #666; font: inherit; cursor: pointer; }
+    .auth-lang__btn:hover { color: #fff; }
+    .auth-lang__btn.is-active { color: #fff; font-weight: 600; }
+</style>
+{% endif %}

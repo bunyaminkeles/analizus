@@ -55,10 +55,12 @@ URL taşıma + şablon + sitemap(static-i18n) + robots.txt.
   çeviri kullanıcı onayıyla yayına girer (etik protokol modalıyla aynı tur)
 
 **Kayıt akışı — yapılacaklar (kullanıcı isteği, 23 Eylül 2026):**
-- [ ] **Giriş/kayıt sayfasında dil seçici yok** (kullanıcı raporu, 24 Eylül
-  2026) — login.html ve register.html base.html'i extend etmeyen bağımsız
-  split-screen sayfalar; navbar'daki dil seçici bu yüzden görünmüyor.
-  Sayfaya kompakt bir TR/EN/DE seçici eklenecek (set_language formu).
+- [x] **Giriş/kayıt sayfasında dil seçici yok** (kullanıcı raporu, 24 Eylül
+  2026) — TAMAMLANDI: `templates/partials/auth_lang_switcher.html` (set_language
+  formu, `features.multilingual` kapalıysa gizli) iki sayfanın `.top-bar`'ına
+  eklendi. Mobilde top-bar akışa alındı (`position: static`) ve form
+  `margin-block: auto` ile ortalandı — uzun kayıt formunda üst kısım artık
+  kırpılmıyor.
 - [ ] **Kullanım Şartları ve Etik Beyanı hâlâ Türkçe** (kullanıcı raporu) —
   aşağıdaki etik protokol maddesiyle aynı iş; başlık/buton çevrili, gövde
   değil.

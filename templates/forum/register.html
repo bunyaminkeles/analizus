@@ -55,6 +55,9 @@
             position: absolute;
             top: 1.5rem;
             right: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
         }
 
         .back-link {
@@ -226,7 +229,9 @@
         @media (max-width: 991px) {
             .split-container { flex-direction: column; }
             .left-half { display: none; }
-            .right-half { flex-basis: 100%; }
+            .right-half { flex-basis: 100%; flex-direction: column; justify-content: flex-start; }
+            .form-area { margin-block: auto; }
+            .top-bar { position: static; align-self: stretch; justify-content: flex-end; padding: 1rem 1rem 0; }
         }
     </style>
 </head>
@@ -238,6 +243,7 @@
         <!-- Sağ Yarı - Form -->
         <div class="right-half">
             <div class="top-bar">
+                {% include 'partials/auth_lang_switcher.html' %}
                 <a href="{% url 'home' %}" class="back-link">
                     <i class="bi bi-arrow-left"></i> {% trans "Ana Sayfa" %}
                 </a>
