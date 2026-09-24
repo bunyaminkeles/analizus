@@ -5,6 +5,67 @@ bölümünden başla.
 
 ## DEVAM NOKTASI (bir sonraki oturum buradan başlasın)
 
+### AÇIK İŞLER — TEK LİSTE (24 Eylül 2026 sonu; 25 Eylül buradan başla)
+Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
+bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
+maddelerde.
+
+**A. Kod işleri (öncelik sırasıyla)**
+- [ ] **Hesap silme vaadi uygulanmıyor (KVKK/GDPR, ÖNEMLİ):** "30 gün içinde
+  silinir" deniyor ama silen kod yok. Karar: neyin silineceği / anonimleşeceği
+  (forum gönderileri, ilanlar, mesajlar, dosyalar). Sonra yönetim komutu +
+  cron + silme mesajının çevirisi + gizlilik metnine "30 gün" ekleme.
+- [ ] **Ana sayfa hero test çipleri** "t-testi · korelasyon · regresyon"
+  EN/DE'de Türkçe.
+- [ ] **"Güvenilir Üye" rozet mesajı** (`_check_and_award_trust_badge`,
+  forum/views.py ~1700) Türkçe — e-posta doğrulama sonrasında çıkabiliyor.
+- [ ] **AI Asistan `/istatistik/…` linkleri** EN/DE kullanıcısını TR araç
+  sayfasına götürüyor; `/analiz/<slug>/` EN/DE karşılıklarına eşlenebilir mi
+  (slug'lar birebir mi) kontrol edilecek.
+- [ ] **AI Asistan kapasite riski:** Groq ücretsiz katman TÜM site için
+  8000 token/dk + 1000 istek/gün (istek ≈ 2900 token → dakikada ~2-3 soru).
+  Yoğunlukta 429 hatası; kullanıcı başı 30/gün limiti bunu korumaz.
+  Karar: ücretli katman / max_tokens düşürme / talimatı kısaltma.
+- [ ] **`manage.py test forum` 0 test buluyor** (forum/tests.py var ama
+  keşfedilmiyor) — test altyapısı kontrol edilmeli.
+- [ ] **Ölü kod temizliği** (ayrı onayla): `forum/templates/registration/
+  password_reset_*.html` (templates/registration gölgeliyor),
+  `forum/ai_service.py` (hiçbir yerden import edilmiyor, openai kullanıyor),
+  `tool_base.html`.
+- [ ] **Gizlilik tablosu mobilde yatay kayıyor** (kozmetik; kart düzeni?).
+- [ ] **Float buton çakışması** (AI/WhatsApp/destek, dar ekran) — alttaki
+  "AYRI BULGU" maddesi.
+
+**B. Kullanıcı / avukat kararı bekleyen**
+- [ ] Gizlilik metnine eklenecekler: ABD aktarım güvencesi (SCC/DPF), KVKK
+  md. 9 bildirimi, GA saklama süresi, AB temsilcisi (md. 27) — "Gizlilik
+  metnine eklenecekler" maddesi.
+- [ ] Etik Protokolü: 4. ve 7. maddeler yalnızca TCK/KVKK'ya atıf (GDPR?),
+  başlık "Akademik Etik Protokolü" yeni konumlandırmayla uyumsuz.
+- [ ] Avukat kontrolü — EN/DE canlıya açılmadan önce (gizlilik + etik).
+- [ ] Konumlandırma metinleri: ana sayfa og/twitter + hero alt metni
+  "Türkiye'nin analiz ekosistemi…" (DE'de "Das Analyse-Ökosystem der Türkei"
+  görünüyor); Hangi Test meta "Tezin için…"; AI Asistan meta "anında Türkçe
+  yanıt… tez yazımı"; e-posta imzası → "Araştırma ve Analiz Platformu"?;
+  Hakkımızda karşılaştırma satırı "Türkçe Arayüz / Tam Türkçe" (EN/DE'de
+  birebir çevrildi).
+- [ ] Adım 6 kapsamı: APA cümleleri, sunucu sonuç metinleri, PDF/TXT sonuç
+  dosyaları EN/DE olacak mı?
+- [ ] "Ufak tefek aksamalar" listesi kullanıcıdan alınacak (cilalama turu).
+
+**C. Canlıya alma (yalnızca kullanıcı "merge et" deyince)**
+- [ ] dev → main merge, Hetzner'de: `docker compose exec web python
+  manage.py migrate` (**0154** — preferred_language) → `collectstatic`
+  (**yeni Inter font dosyaları**) → `compilemessages` → `docker compose
+  restart web` → `docker compose restart nginx`.
+- [ ] Admin'de `feature_multilingual` aç (avukat kontrolünden sonra).
+- [ ] Canlıda kontrol: `GOOGLE_ANALYTICS_ID` tanımlı mı (banner ona bağlı);
+  canlı `GROQ_API_KEY` ile gpt-oss-120b yanıt veriyor mu.
+- [ ] Yandex Metrica hesabı/sayacı kapatılabilir (kod kaldırıldı).
+- [ ] `feature_agentic_landing` flag'i merge sonrası elle açılmalı (önceki
+  turdan hatırlatma).
+
+
 **Tamamlanan:** Adım 1 (ayarlar), 2 (URL yapısı + 3 kritik bug), 3a
 (base+footer), 3b-1 (register+login), 3b-2a (home.html), 3b-2b
 (makaleanaliz/openalex/semanticscholar), 3b-2c (proje talebi/AI
