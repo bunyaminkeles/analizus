@@ -6,6 +6,12 @@ from django.conf import settings
 from django.utils import timezone as tz
 import threading
 import logging
+from functools import wraps
+
+from django.urls import reverse
+from django.utils.translation import gettext
+
+from forum.i18n_utils import recipient_language, admin_language
 
 logger = logging.getLogger(__name__)
 
@@ -34,34 +40,37 @@ def send_email_async(subject, message, recipient_list, html_message=None):
 
 
 def send_proposal_notification(proposal):
-    """Yeni teklif geldiğinde ilan sahibine email gönderir"""
+    """Yeni teklif geldiğinde ilan sahibine email gönderir (ilan sahibinin dilinde)"""
     job = proposal.job
     owner = job.owner
     if not owner.email:
         return
 
-    site = getattr(settings, 'SITE_URL', 'https://www.analizus.com')
-    subject = f"İlanınıza yeni bir teklif geldi: {job.title}"
-    message = f"""Merhaba {owner.username},
-
-"{job.title}" ilanınıza {proposal.expert.username} teklif verdi!
-
-Teklif: {proposal.price} TL
-Süre: {proposal.duration}
-Ön Yazı: {proposal.message[:300]}
-
-Teklifi görmek ve değerlendirmek için:
-{site}/market/job/{job.pk}/
-
----
-Bu bir otomatik bildirimdir.
-Analizus - Akademik Veri Üssü"""
+    site = getattr(settings, 'SITE_URL', 'https://www.analizus.com').rstrip('/')
+    with recipient_language(owner):
+        subject = gettext("İlanınıza yeni bir teklif geldi: %(title)s") % {'title': job.title}
+        message = gettext(
+            "Merhaba %(owner)s,\n\n"
+            "\"%(title)s\" ilanınıza %(expert)s teklif verdi!\n\n"
+            "Teklif: %(price)s TL\n"
+            "Süre: %(duration)s\n"
+            "Ön Yazı: %(cover)s\n\n"
+            "Teklifi görmek ve değerlendirmek için:\n"
+            "%(url)s\n\n"
+            "---\n"
+            "Bu bir otomatik bildirimdir.\n"
+            "Analizus - Araştırma ve Analiz Platformu"
+        ) % {
+            'owner': owner.username, 'title': job.title, 'expert': proposal.expert.username,
+            'price': proposal.price, 'duration': proposal.duration, 'cover': proposal.message[:300],
+            'url': site + reverse('job_detail', args=[job.pk]),
+        }
 
     send_email_async(subject, message, [owner.email])
 
 
 def send_topic_reply_notification(post, topic):
-    """Bir konuya cevap yazıldığında konu sahibine email gönderir"""
+    """Bir konuya cevap yazıldığında konu sahibine email gönderir (alıcının dilinde)"""
     if post.created_by == topic.starter:
         return
     if not topic.starter.email:
@@ -69,64 +78,73 @@ def send_topic_reply_notification(post, topic):
     if hasattr(topic.starter, 'profile') and not topic.starter.profile.email_on_reply:
         return
 
-    subject = f"{post.created_by.username} konunuza cevap yazdı: {topic.subject}"
-    message = f"""Merhaba {topic.starter.username},
-
-"{topic.subject}" başlıklı konunuza yeni bir cevap geldi!
-
-Cevap Yazan: {post.created_by.username}
-Mesaj: {post.message[:200]}...
-
-Cevabın tamamını görmek için:
-https://analizus.com/topic/{topic.pk}/
-
----
-Bu bir otomatik bildirimdir.
-Analizus - Akademik Veri Üssü"""
+    with recipient_language(topic.starter):
+        subject = gettext("%(author)s konunuza cevap yazdı: %(subject)s") % {
+            'author': post.created_by.username, 'subject': topic.subject}
+        message = gettext(
+            "Merhaba %(starter)s,\n\n"
+            "\"%(subject)s\" başlıklı konunuza yeni bir cevap geldi!\n\n"
+            "Cevap Yazan: %(author)s\n"
+            "Mesaj: %(excerpt)s...\n\n"
+            "Cevabın tamamını görmek için:\n"
+            "%(url)s\n\n"
+            "---\n"
+            "Bu bir otomatik bildirimdir.\n"
+            "Analizus - Araştırma ve Analiz Platformu"
+        ) % {
+            'starter': topic.starter.username, 'subject': topic.subject,
+            'author': post.created_by.username, 'excerpt': post.message[:200],
+            'url': f"https://analizus.com/topic/{topic.pk}/",
+        }
 
     send_email_async(subject, message, [topic.starter.email])
 
 
 def send_private_message_notification(sender, receiver, message_content):
-    """Özel mesaj geldiğinde alıcıya email gönderir"""
+    """Özel mesaj geldiğinde alıcıya email gönderir (alıcının dilinde)"""
     if not receiver.email:
         return
     if hasattr(receiver, 'profile') and not receiver.profile.email_on_private_message:
         return
 
-    subject = f"{sender.username} size özel mesaj gönderdi"
-    message = f"""Merhaba {receiver.username},
-
-{sender.username} size yeni bir özel mesaj gönderdi!
-
-Mesaj İçeriği:
-{message_content[:300]}...
-
-Mesajı okumak ve cevaplamak için:
-https://analizus.com/inbox/
-
----
-Bu bir otomatik bildirimdir.
-Analizus - Akademik Veri Üssü"""
+    with recipient_language(receiver):
+        subject = gettext("%(sender)s size özel mesaj gönderdi") % {'sender': sender.username}
+        message = gettext(
+            "Merhaba %(receiver)s,\n\n"
+            "%(sender)s size yeni bir özel mesaj gönderdi!\n\n"
+            "Mesaj İçeriği:\n"
+            "%(excerpt)s...\n\n"
+            "Mesajı okumak ve cevaplamak için:\n"
+            "%(url)s\n\n"
+            "---\n"
+            "Bu bir otomatik bildirimdir.\n"
+            "Analizus - Araştırma ve Analiz Platformu"
+        ) % {
+            'receiver': receiver.username, 'sender': sender.username,
+            'excerpt': message_content[:300], 'url': "https://analizus.com/inbox/",
+        }
 
     send_email_async(subject, message, [receiver.email])
 
 
 def send_mention_notification(mentioned_user, post, topic):
-    """Bir mesajda @mention edildiğinde kullanıcıya email gönderir"""
+    """Bir mesajda @mention edildiğinde kullanıcıya email gönderir (alıcının dilinde)"""
     if not mentioned_user.email:
         return
 
-    subject = f"{post.created_by.username} sizi bir tartışmada etiketledi"
-    message = f"""Merhaba {mentioned_user.username},
-
-{post.created_by.username} sizi "{topic.subject}" konusunda etiketledi!
-
-Konuya gitmek için:
-https://analizus.com/topic/{topic.pk}/
-
----
-Analizus - Akademik Veri Üssü"""
+    with recipient_language(mentioned_user):
+        subject = gettext("%(author)s sizi bir tartışmada etiketledi") % {'author': post.created_by.username}
+        message = gettext(
+            "Merhaba %(user)s,\n\n"
+            "%(author)s sizi \"%(subject)s\" konusunda etiketledi!\n\n"
+            "Konuya gitmek için:\n"
+            "%(url)s\n\n"
+            "---\n"
+            "Analizus - Araştırma ve Analiz Platformu"
+        ) % {
+            'user': mentioned_user.username, 'author': post.created_by.username,
+            'subject': topic.subject, 'url': f"https://analizus.com/topic/{topic.pk}/",
+        }
 
     send_email_async(subject, message, [mentioned_user.email])
 
@@ -198,6 +216,16 @@ def _build_admin_html(event_label: str, color: str, title: str, rows: list[tuple
 </html>"""
 
 
+def _in_admin_language(func):
+    """Admin bildirimleri her zaman Türkçe üretilsin — tetikleyen isteğin dili
+    (ör. EN kullanıcı) lazy çevrili değerleri (araç/kurs adı) değiştirmesin."""
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        with admin_language():
+            return func(*args, **kwargs)
+    return wrapper
+
+
 def _send_admin(subject: str, html: str, plain: str):
     """Admin bildirim e-postasını arka planda gönderir."""
     admin_email = getattr(settings, 'ADMIN_NOTIFICATION_EMAIL', None)
@@ -208,6 +236,7 @@ def _send_admin(subject: str, html: str, plain: str):
 
 # ── Olay bazlı yardımcılar ──────────────────────────────────────────────
 
+@_in_admin_language
 def notify_admin_new_user(user):
     """Yeni kullanıcı kaydı admin bildirimi"""
     try:
@@ -232,6 +261,7 @@ def notify_admin_new_user(user):
         logger.error(f"Admin yeni üye bildirimi gönderilemedi: {e}")
 
 
+@_in_admin_language
 def notify_admin_new_topic(topic):
     """Yeni forum konusu admin bildirimi"""
     try:
@@ -256,6 +286,7 @@ def notify_admin_new_topic(topic):
         logger.error(f"Admin yeni konu bildirimi gönderilemedi: {e}")
 
 
+@_in_admin_language
 def notify_admin_new_post(post):
     """Yeni forum cevabı admin bildirimi"""
     try:
@@ -281,6 +312,7 @@ def notify_admin_new_post(post):
         logger.error(f"Admin yeni cevap bildirimi gönderilemedi: {e}")
 
 
+@_in_admin_language
 def notify_admin_new_job(job):
     """Yeni iş ilanı admin bildirimi"""
     try:
@@ -307,6 +339,7 @@ def notify_admin_new_job(job):
         logger.error(f"Admin yeni ilan bildirimi gönderilemedi: {e}")
 
 
+@_in_admin_language
 def notify_admin_new_proposal(proposal):
     """Yeni teklif admin bildirimi"""
     try:
@@ -335,6 +368,7 @@ def notify_admin_new_proposal(proposal):
         logger.error(f"Admin yeni teklif bildirimi gönderilemedi: {e}")
 
 
+@_in_admin_language
 def notify_admin_proposal_accepted(proposal):
     """Teklif kabul edildi admin bildirimi"""
     try:
@@ -360,6 +394,7 @@ def notify_admin_proposal_accepted(proposal):
         logger.error(f"Admin teklif kabul bildirimi gönderilemedi: {e}")
 
 
+@_in_admin_language
 def notify_admin_job_completed(job):
     """İş ilanı tamamlandı admin bildirimi"""
     try:
@@ -386,6 +421,7 @@ def notify_admin_job_completed(job):
         logger.error(f"Admin iş tamamlandı bildirimi gönderilemedi: {e}")
 
 
+@_in_admin_language
 def notify_admin_blog_published(blog_post):
     """Blog yazısı yayınlandı admin bildirimi"""
     try:
@@ -410,6 +446,7 @@ def notify_admin_blog_published(blog_post):
         logger.error(f"Admin blog bildirimi gönderilemedi: {e}")
 
 
+@_in_admin_language
 def notify_admin_analysis_completed(job):
     """İstatistik analizi tamamlandı admin bildirimi"""
     try:
