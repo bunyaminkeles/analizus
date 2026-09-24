@@ -197,3 +197,33 @@ class EmailVerificationMiddleware:
         # Diğer tüm sayfalar için doğrulama gerekli
         messages.warning(request, 'Bu özelliği kullanmak için e-posta adresinizi doğrulamanız gerekiyor.')
         return redirect('verification_pending')
+
+
+class PreferredLanguageMiddleware:
+    """Giriş yapmış kullanıcının dil tercihini (Profile.preferred_language)
+    e-postalar için günceller. LocaleMiddleware'den SONRA çalışmalı.
+
+    - /en/ /de/ önekli bir sayfa ziyaret edilirse o dil kaydedilir.
+    - Dil seçici (i18n/setlang/ POST) ile seçilen dil (tr dahil) kaydedilir.
+    - Öneksiz sayfalar (forum, blog…) tercihi tr'ye ÇEVİRMEZ — bu sayfalar
+      tek dilli olduğundan kullanıcının seçimini yansıtmaz.
+    """
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        user = getattr(request, 'user', None)
+        if user is not None and user.is_authenticated:
+            lang = None
+            if request.method == 'POST' and request.path_info.rstrip('/').endswith('/i18n/setlang'):
+                lang = request.POST.get('language')
+            else:
+                from django.utils.translation import get_language_from_path
+                lang = get_language_from_path(request.path_info)
+            if lang and lang in {code for code, _ in settings.LANGUAGES}:
+                profile = getattr(user, 'profile', None)
+                if profile is not None and profile.preferred_language != lang:
+                    type(profile).objects.filter(pk=profile.pk).update(preferred_language=lang)
+                    profile.preferred_language = lang
+        return self.get_response(request)

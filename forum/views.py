@@ -1178,6 +1178,12 @@ def register(request):
             user = form.save()
             if not hasattr(user, 'profile'):
                 Profile.objects.create(user=user)
+            # E-postalar kullanıcının kayıt olduğu dilde gitsin
+            from django.utils.translation import get_language
+            lang = (get_language() or 'tr').split('-')[0]
+            if lang in {code for code, _ in settings.LANGUAGES}:
+                Profile.objects.filter(user=user).update(preferred_language=lang)
+                user.profile.preferred_language = lang
 
             # E-posta doğrulama token'ı oluştur ve gönder
             from .services.email_service import EmailService

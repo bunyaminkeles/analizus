@@ -171,6 +171,14 @@ class Profile(models.Model):
     title = models.CharField(max_length=100, blank=True, default="", verbose_name="Ünvan")
     location = models.CharField(max_length=100, blank=True, default="", verbose_name="Konum")
     account_type = models.CharField(max_length=20, choices=ACCOUNT_TYPES, default='Free')
+    # E-postaların gönderileceği dil — kayıtta ve dil değiştirildiğinde
+    # (forum.middleware.PreferredLanguageMiddleware) güncellenir.
+    preferred_language = models.CharField(
+        max_length=5,
+        choices=[('tr', 'Türkçe'), ('en', 'English'), ('de', 'Deutsch')],
+        default='tr',
+        verbose_name="Tercih Edilen Dil (e-postalar)",
+    )
     premium_expires_at = models.DateTimeField(null=True, blank=True, verbose_name="Premium Bitiş Tarihi")
     reputation = models.IntegerField(default=0, verbose_name="Akademik Puan")
 

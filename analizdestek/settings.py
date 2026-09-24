@@ -85,6 +85,7 @@ MIDDLEWARE = [
     'forum.middleware.ForceDefaultLanguageMiddleware',  # Accept-Language auto-detect kapalı, varsayılan tr
     'forum.middleware.MultilingualFeatureMiddleware',  # feature_multilingual kapalıyken /en/ /de/ 404
     'django.middleware.locale.LocaleMiddleware',
+    'forum.middleware.PreferredLanguageMiddleware',  # Profile.preferred_language (e-posta dili)
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'forum.middleware.NoIndexMiddleware',              # Dev/staging noindex header
