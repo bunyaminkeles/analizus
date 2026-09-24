@@ -39,6 +39,19 @@ EN/DE araç sayfalarında kalan Türkçe: yalnızca yasal adres satırı (kasıt
   Kasıtlı TR kalan: yoktez/trdizin/tezanaliz/bibliometrics e-postaları,
   TXT/PDF sonuç dosyası içerikleri (Adım 6), havale açıklaması.
 
+**Menüden erişilen tek dilli sayfalar (kullanıcı isteği, 24 Eylül 2026):**
+Hiçbiri i18n_patterns'te değil ve şablonları işaretlenmemiş — her biri için
+URL taşıma + şablon + sitemap(static-i18n) + robots.txt.
+- [ ] (bu tur) Hakkımızda (+ "Neden Analizus?" anchor'ı) — önce TR metin
+  yeni konumlandırmaya göre güncellenecek (kullanıcı kararı), sonra çeviri
+- [ ] (bu tur) İletişim — form mesajları + onay e-postası dahil
+- [ ] (bu tur) Hangi Test? — 1016 satır, çoğu JS karar ağacı
+- [ ] **AI Asistan** (`ai_assistant.html`) — arayüz + limit/hata mesajları;
+  kullanıcı kararı: asistan kullanıcının dilinde cevap versin (sunucu
+  tarafı sistem talimatına dil talimatı eklenecek)
+- [ ] **Gizlilik/KVKK** (`gizlilik_politikasi.html`) — hukuki metin;
+  çeviri kullanıcı onayıyla yayına girer (etik protokol modalıyla aynı tur)
+
 **Kayıt akışı — yapılacaklar (kullanıcı isteği, 23 Eylül 2026):**
 - [ ] **Akademik Etik Protokolü modalı** (kayıt sayfası, "Kullanım Şartları ve
   Etik Beyanı" linkiyle açılıyor; başlık + "Verstanden" butonu çevrili ama
