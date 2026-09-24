@@ -63,8 +63,8 @@ URL taşıma + şablon + sitemap(static-i18n) + robots.txt.
   Groq `llama-3.3-70b-versatile` modelini artık tanımıyor (404, 24 Eylül
   2026). Hesapta erişilebilen: openai/gpt-oss-120b, openai/gpt-oss-20b,
   qwen/qwen3.8-27b… Model seçimi kullanıcı kararı. Not: gpt-oss-120b
-  ücretsiz katmanda 8000 token/dk limitine takılıyor (sistem talimatı tek
-  başına ~3000 token → dakikada ~2 soru).
+  ücretsiz katmanda 8000 token/dk limitine takılıyor (istek başına ~2900
+  token: talimat + 1024 yanıt payı → dakikada ~2-3 soru).
 - [ ] **Gizlilik/KVKK** (`gizlilik_politikasi.html`) — hukuki metin;
   çeviri kullanıcı onayıyla yayına girer (etik protokol modalıyla aynı tur)
 
