@@ -1,6 +1,6 @@
 """
 Analizus AI Asistan Servisi
-Groq API entegrasyonu (Llama 3 modeli)
+Groq API entegrasyonu (openai/gpt-oss-120b)
 """
 import re
 import requests
@@ -221,12 +221,14 @@ Platform: Analizus (analizus.com) — Türkiye'nin akademik analiz ve veri bilim
 
 
 class GroqService:
-    """Groq AI servisi (Llama 3)"""
+    """Groq AI servisi"""
 
     def __init__(self):
         self.api_key = settings.GROQ_API_KEY
         self.api_url = "https://api.groq.com/openai/v1/chat/completions"
-        self.model = "llama-3.3-70b-versatile"
+        # llama-3.3-70b-versatile Groq'da kaldırıldı (404, 24 Eylül 2026). Ücretsiz
+        # katmanda en yüksek limitli model: 8000 token/dk, 1000 istek/gün, 131K bağlam
+        self.model = "openai/gpt-oss-120b"
 
     def is_available(self):
         """Servis kullanilabilir mi?"""

@@ -59,7 +59,7 @@ URL taşıma + şablon + sitemap(static-i18n) + robots.txt.
   dilde. İlk denemede DE gövde Türkçe kalmıştı → dil kuralı başa da eklendi.
   Açık soru: TR meta açıklama "anında Türkçe yanıt… tez yazımı" (EN/DE'de
   "Türkçe" düşürülerek çevrildi).
-- [ ] **ACİL — AI Asistan hiç yanıt vermiyor (dilden bağımsız, önceden var):**
+- [x] **ACİL — AI Asistan hiç yanıt vermiyor** — ÇÖZÜLDÜ (24 Eylül 2026): kullanıcı kararı "ücretsiz en yüksek limitli model" → ölçüldü (API yanıt başlıkları): gpt-oss-120b = gpt-oss-20b (8000 TPM, 1000 RPD, 131K bağlam) > qwen3.8-27b (16K çıktı) > allam-2-7b (4K bağlam); `openai/gpt-oss-120b` seçildi, uçtan uca test OK. Eski not:
   Groq `llama-3.3-70b-versatile` modelini artık tanımıyor (404, 24 Eylül
   2026). Hesapta erişilebilen: openai/gpt-oss-120b, openai/gpt-oss-20b,
   qwen/qwen3.8-27b… Model seçimi kullanıcı kararı. Not: gpt-oss-120b
