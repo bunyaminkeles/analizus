@@ -62,13 +62,8 @@ urlpatterns = i18n_patterns(
     # translate_url doğru çözer.
     path('i18n/', include('django.conf.urls.i18n')),
 
-    prefix_default_language=False,
-)
-
-urlpatterns += [
-    path('admin/', admin.site.urls),
-
-    # 1. Kimlik Doğrulama Yolları - Şifre sıfırlama için özel template'ler
+    # Şifre sıfırlama — özel template'ler. i18n_patterns İÇİNDE: EN/DE giriş
+    # sayfasından "Şifremi unuttum"a tıklayan kullanıcı dil bağlamını korusun.
     path('accounts/password_reset/', auth_views.PasswordResetView.as_view(
         template_name='registration/password_reset_form.html'
     ), name='password_reset'),
@@ -81,6 +76,13 @@ urlpatterns += [
     path('accounts/reset/done/', auth_views.PasswordResetCompleteView.as_view(
         template_name='registration/password_reset_complete.html'
     ), name='password_reset_complete'),
+
+    prefix_default_language=False,
+)
+
+urlpatterns += [
+    path('admin/', admin.site.urls),
+
     # django.contrib.auth.urls'ün geri kalanı (yalnızca password_change*,
     # login/logout YUKARIDA i18n_patterns içinde özel view'larla tanımlı —
     # include() kullanılmıyor ki 'login'/'logout' adı çakışmasın). Kod

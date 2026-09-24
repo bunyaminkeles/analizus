@@ -68,11 +68,18 @@ URL taşıma + şablon + sitemap(static-i18n) + robots.txt.
   yapıyor — AB kullanıcıları için DSGVO/GDPR atfı eklenip eklenmeyeceği;
   modal başlığı "Akademik Etik Protokolü" yeni konumlandırmayla uyumsuz;
   yayın öncesi avukat kontrolü önerildi.
-- [ ] **Kayıt sonrası akış tek dilli:** /verification-pending/, /onboarding/
-  ve /accounts/password_reset/* sayfaları i18n_patterns dışında ve
-  şablonları işaretlenmemiş → EN/DE ile kaydolan kullanıcı Türkçe sayfalara
-  düşüyor. URL'leri i18n'e taşıma + şablon/mesaj çevirisi gerekiyor
-  (middleware.py:198 doğrulama uyarısı dahil).
+- [x] **Kayıt sonrası akış tek dilli** — TAMAMLANDI (24 Eylül 2026):
+  verify-email, verification-pending, resend-verification, onboarding
+  (forum/urls.py → urls_i18n.py) ve 4 şifre sıfırlama URL'i i18n_patterns'e
+  alındı (TR adresleri değişmedi, eski linkler çalışır). Şablonlar, view
+  mesajları, SEGMENT_CHOICES (gettext_lazy — migration YOK, `makemigrations
+  --check` doğrulandı) ve middleware doğrulama uyarısı EN/DE. Şifre sıfırlama
+  sayfalarına dil seçici + dinamik `<html lang>` + login'deki mobil düzeltme.
+  Doğrulama e-postasındaki link artık alıcının dil önekiyle (`reverse()` +
+  `recipient_language`). robots.txt: /en|de/accounts/, /en|de/onboarding/.
+  Not: `forum/templates/registration/password_reset_*.html` kopyaları
+  `templates/registration/` tarafından gölgeleniyor (ölü kod, dokunulmadı);
+  `_check_and_award_trust_badge` mesajı hâlâ Türkçe (nadir, kapsam dışı).
 
 **Not (kullanıcıya sorulacak):** ana sayfa og/twitter açıklaması hâlâ
 "Türkiye'nin analiz ekosistemi…" diyor — yeni sloganla aynı konumlandırma

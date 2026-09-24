@@ -2601,7 +2601,7 @@ def verification_pending(request):
     profile = request.user.profile
 
     if profile.email_verified:
-        messages.info(request, 'E-posta adresiniz zaten doğrulanmış.')
+        messages.info(request, gettext('E-posta adresiniz zaten doğrulanmış.'))
         return redirect('home')
 
     return render(request, 'forum/verification_pending.html')
@@ -2614,11 +2614,11 @@ def verify_email(request, token):
     try:
         verification = EmailVerification.objects.get(token=token)
     except EmailVerification.DoesNotExist:
-        messages.error(request, 'Geçersiz doğrulama linki.')
+        messages.error(request, gettext('Geçersiz doğrulama linki.'))
         return redirect('home')
 
     if not verification.is_valid():
-        messages.error(request, 'Bu doğrulama linki süresi dolmuş veya daha önce kullanılmış.')
+        messages.error(request, gettext('Bu doğrulama linki süresi dolmuş veya daha önce kullanılmış.'))
         return redirect('home')
 
     # Kullanıcıyı doğrula
@@ -2649,7 +2649,7 @@ def verify_email(request, token):
     # Hoş geldin e-postası gönder
     EmailService.send_welcome_email(user)
 
-    messages.success(request, 'E-posta adresiniz başarıyla doğrulandı! Hoş geldiniz.')
+    messages.success(request, gettext('E-posta adresiniz başarıyla doğrulandı! Hoş geldiniz.'))
 
     # Kullanıcı giriş yapmamışsa giriş yap
     if not request.user.is_authenticated:
@@ -2671,7 +2671,7 @@ def resend_verification(request):
     profile = request.user.profile
 
     if profile.email_verified:
-        messages.info(request, 'E-posta adresiniz zaten doğrulanmış.')
+        messages.info(request, gettext('E-posta adresiniz zaten doğrulanmış.'))
         return redirect('home')
 
     # Yeni token oluştur ve gönder
@@ -2679,9 +2679,9 @@ def resend_verification(request):
     email_sent = EmailService.send_verification_email(request.user, verification)
 
     if email_sent:
-        messages.success(request, 'Doğrulama e-postası tekrar gönderildi. Lütfen e-posta kutunuzu kontrol edin.')
+        messages.success(request, gettext('Doğrulama e-postası tekrar gönderildi. Lütfen e-posta kutunuzu kontrol edin.'))
     else:
-        messages.error(request, 'E-posta gönderilemedi. Lütfen daha sonra tekrar deneyin.')
+        messages.error(request, gettext('E-posta gönderilemedi. Lütfen daha sonra tekrar deneyin.'))
 
     return redirect('verification_pending')
 
@@ -3959,21 +3959,21 @@ def onboarding(request):
         profile.onboarding_completed = True
         profile.save(update_fields=['segment', 'onboarding_completed'])
 
-        messages.success(request, 'Hoş geldiniz!')
+        messages.success(request, gettext('Hoş geldiniz!'))
         return redirect('home')
 
     segment_choices = Profile.SEGMENT_CHOICES
     capability_info = [
-        ('📊', 'İstatistik Analizi', 'SPSS, R, Python, AMOS, SmartPLS ile profesyonel istatistik analizleri'),
-        ('🔎', 'Veri Kazıma & Toplama', 'Anket, web ve akademik veritabanlarından veri toplama desteği'),
-        ('🧑‍🏫', 'Danışmanlık', 'Alanında uzman akademisyen ve danışmanlarla Pazaryeri üzerinden eşleşin'),
-        ('📁', 'Proje Desteği', 'Tez, makale ve kurumsal projeleriniz için uçtan uca destek'),
-        ('🎓', 'Akademik Destek', 'Tez ve makale yazım sürecinde yöntem ve rehberlik desteği'),
-        ('📈', 'Bibliometrik Analiz', 'Atıf ve yayın verileriyle bibliometrik analiz yaptırın'),
-        ('🔍', 'Literatür / Akademik Tarama', 'YÖK Tez, TR Dizin ve uluslararası veritabanlarında tarama'),
-        ('💬', 'Forumda Soru-Cevap', 'Merak ettiklerinizi sorun, bilgi birikiminizi toplulukla paylaşın'),
+        ('📊', gettext('İstatistik Analizi'), gettext('SPSS, R, Python, AMOS, SmartPLS ile profesyonel istatistik analizleri')),
+        ('🔎', gettext('Veri Kazıma & Toplama'), gettext('Anket, web ve akademik veritabanlarından veri toplama desteği')),
+        ('🧑‍🏫', gettext('Danışmanlık'), gettext('Alanında uzman akademisyen ve danışmanlarla Pazaryeri üzerinden eşleşin')),
+        ('📁', gettext('Proje Desteği'), gettext('Tez, makale ve kurumsal projeleriniz için uçtan uca destek')),
+        ('🎓', gettext('Akademik Destek'), gettext('Tez ve makale yazım sürecinde yöntem ve rehberlik desteği')),
+        ('📈', gettext('Bibliometrik Analiz'), gettext('Atıf ve yayın verileriyle bibliometrik analiz yaptırın')),
+        ('🔍', gettext('Literatür / Akademik Tarama'), gettext('YÖK Tez, TR Dizin ve uluslararası veritabanlarında tarama')),
+        ('💬', gettext('Forumda Soru-Cevap'), gettext('Merak ettiklerinizi sorun, bilgi birikiminizi toplulukla paylaşın')),
     ]
-    tool_names = ['SPSS', 'R', 'Python', 'Excel', 'SmartPLS', 'AMOS', 'Stata', 'NVivo', 'MAXQDA', 'AI Araçları', 'Akademik Danışmanlık']
+    tool_names = ['SPSS', 'R', 'Python', 'Excel', 'SmartPLS', 'AMOS', 'Stata', 'NVivo', 'MAXQDA', gettext('AI Araçları'), gettext('Akademik Danışmanlık')]
     return render(request, 'forum/onboarding.html', {
         'segment_choices': segment_choices,
         'capability_info': capability_info,

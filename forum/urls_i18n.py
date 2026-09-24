@@ -11,6 +11,11 @@ from . import views
 urlpatterns = [
     path('', views.home, name='home'),
     path('register/', views.register, name='register'),
+    # Kayıt sonrası akış (forum/urls.py'den taşındı, 24 Eylül 2026)
+    path('verify-email/<uuid:token>/', views.verify_email, name='verify_email'),
+    path('verification-pending/', views.verification_pending, name='verification_pending'),
+    path('resend-verification/', views.resend_verification, name='resend_verification'),
+    path('onboarding/', views.onboarding, name='onboarding'),
     path('proje-talebi/', views.proje_talebi, name='proje_talebi'),
     path('ai-cozumler/', views.ai_cozumler, name='ai_cozumler'),
     path('egitim/', views.egitim, name='egitim'),

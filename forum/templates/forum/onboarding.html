@@ -1,8 +1,9 @@
 {% extends "base.html" %}
 {% load static %}
+{% load i18n %}
 
-{% block title %}Analizus'a Hoş Geldiniz{% endblock %}
-{% block meta_description %}Kişiselleştirilmiş deneyim için birkaç soruyu yanıtlayın.{% endblock %}
+{% block title %}{% trans "Analizus'a Hoş Geldiniz" %}{% endblock %}
+{% block meta_description %}{% trans "Kişiselleştirilmiş deneyim için birkaç soruyu yanıtlayın." %}{% endblock %}
 {% block extra_head %}<meta name="robots" content="noindex, nofollow">{% endblock %}
 
 {% block content %}
@@ -15,12 +16,12 @@
     <div class="onboarding-step" id="step-1">
       <div class="text-center mb-4">
         <div class="mb-3" style="font-size:2.5rem;">👋</div>
-        <h2 class="fw-bold mb-1">Analizus'a Hoş Geldiniz!</h2>
-        <p class="text-muted">Sizi daha iyi tanımak için birkaç soru sormak istiyoruz.<br>Sadece 30 saniye sürecek.</p>
+        <h2 class="fw-bold mb-1">{% trans "Analizus'a Hoş Geldiniz!" %}</h2>
+        <p class="text-muted">{% trans "Sizi daha iyi tanımak için birkaç soru sormak istiyoruz." %}<br>{% trans "Sadece 30 saniye sürecek." %}</p>
       </div>
 
       <div class="card border-0 shadow-sm p-4 mb-3">
-        <h5 class="fw-semibold mb-3">Sizi en iyi hangisi tanımlıyor?</h5>
+        <h5 class="fw-semibold mb-3">{% trans "Sizi en iyi hangisi tanımlıyor?" %}</h5>
         <div class="d-flex flex-column gap-2">
           {% for value, label in segment_choices %}
           <label class="segment-card d-flex align-items-center gap-3 p-3 rounded border cursor-pointer" style="cursor:pointer;">
@@ -36,22 +37,22 @@
           </label>
           {% endfor %}
         </div>
-        <div class="text-danger small mt-2 d-none" id="segment-error">Lütfen bir seçenek seçin.</div>
+        <div class="text-danger small mt-2 d-none" id="segment-error">{% trans "Lütfen bir seçenek seçin." %}</div>
       </div>
 
       <div class="d-flex justify-content-between align-items-center mt-3">
-        <button type="submit" name="skip" class="btn btn-link text-muted text-decoration-none">Atla →</button>
-        <button type="button" class="btn btn-primary px-4" onclick="goToStep(2)">Devam Et</button>
+        <button type="submit" name="skip" class="btn btn-link text-muted text-decoration-none">{% trans "Atla" %} →</button>
+        <button type="button" class="btn btn-primary px-4" onclick="goToStep(2)">{% trans "Devam Et" %}</button>
       </div>
-      <div class="text-center mt-3 text-muted small">Adım 1 / 3</div>
+      <div class="text-center mt-3 text-muted small">{% blocktrans with step=1 total=3 %}Adım {{ step }} / {{ total }}{% endblocktrans %}</div>
     </div>
 
     {# ─── ADIM 2: Platform İmkanları (bilgilendirme) ─── #}
     <div class="onboarding-step d-none" id="step-2">
       <div class="text-center mb-4">
         <div class="mb-3" style="font-size:2.5rem;">🎯</div>
-        <h2 class="fw-bold mb-1">Platformda Neler Bulacaksınız?</h2>
-        <p class="text-muted">Analizus'ta sizi bekleyen imkanlar.</p>
+        <h2 class="fw-bold mb-1">{% trans "Platformda Neler Bulacaksınız?" %}</h2>
+        <p class="text-muted">{% trans "Analizus'ta sizi bekleyen imkanlar." %}</p>
       </div>
 
       <div class="card border-0 shadow-sm p-4 mb-3">
@@ -69,18 +70,18 @@
       </div>
 
       <div class="d-flex justify-content-between align-items-center mt-3">
-        <button type="button" class="btn btn-outline-secondary" onclick="goToStep(1)">← Geri</button>
-        <button type="button" class="btn btn-primary px-4" onclick="goToStep(3)">Devam Et</button>
+        <button type="button" class="btn btn-outline-secondary" onclick="goToStep(1)">← {% trans "Geri" %}</button>
+        <button type="button" class="btn btn-primary px-4" onclick="goToStep(3)">{% trans "Devam Et" %}</button>
       </div>
-      <div class="text-center mt-3 text-muted small">Adım 2 / 3</div>
+      <div class="text-center mt-3 text-muted small">{% blocktrans with step=2 total=3 %}Adım {{ step }} / {{ total }}{% endblocktrans %}</div>
     </div>
 
     {# ─── ADIM 3: Desteklenen Araçlar (bilgilendirme) ─── #}
     <div class="onboarding-step d-none" id="step-3">
       <div class="text-center mb-4">
         <div class="mb-3" style="font-size:2.5rem;">🛠️</div>
-        <h2 class="fw-bold mb-1">Hangi Araçlarla Destek Alabilirsiniz?</h2>
-        <p class="text-muted">Uzmanlarımız aşağıdaki araçlarla analiz ve danışmanlık desteği sunuyor.</p>
+        <h2 class="fw-bold mb-1">{% trans "Hangi Araçlarla Destek Alabilirsiniz?" %}</h2>
+        <p class="text-muted">{% trans "Uzmanlarımız aşağıdaki araçlarla analiz ve danışmanlık desteği sunuyor." %}</p>
       </div>
 
       <div class="card border-0 shadow-sm p-4 mb-3">
@@ -92,10 +93,10 @@
       </div>
 
       <div class="d-flex justify-content-between align-items-center mt-3">
-        <button type="button" class="btn btn-outline-secondary" onclick="goToStep(2)">← Geri</button>
-        <button type="submit" class="btn btn-success px-4">Başlayalım! 🚀</button>
+        <button type="button" class="btn btn-outline-secondary" onclick="goToStep(2)">← {% trans "Geri" %}</button>
+        <button type="submit" class="btn btn-success px-4">{% trans "Başlayalım!" %} 🚀</button>
       </div>
-      <div class="text-center mt-3 text-muted small">Adım 3 / 3</div>
+      <div class="text-center mt-3 text-muted small">{% blocktrans with step=3 total=3 %}Adım {{ step }} / {{ total }}{% endblocktrans %}</div>
     </div>
 
   </form>

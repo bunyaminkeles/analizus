@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 
-{% block title %}E-posta Doğrulama - Analizus{% endblock %}
+{% load i18n %}
+{% block title %}{% trans "E-posta Doğrulama" %} - Analizus{% endblock %}
 {% block extra_head %}<meta name="robots" content="noindex, nofollow">{% endblock %}
 
 {% block content %}
@@ -19,26 +20,26 @@
                 </div>
 
                 <!-- Title -->
-                <h2 class="fw-bold text-white mb-3">E-posta Doğrulaması Gerekiyor</h2>
+                <h2 class="fw-bold text-white mb-3">{% trans "E-posta Doğrulaması Gerekiyor" %}</h2>
 
                 <!-- Description -->
                 <p class="text-muted mb-4">
-                    Hesabınızı aktifleştirmek için <strong class="text-info">{{ user.email }}</strong> adresine bir doğrulama e-postası gönderdik.
+                    {% blocktrans trimmed with email=user.email %}Hesabınızı aktifleştirmek için <strong class="text-info">{{ email }}</strong> adresine bir doğrulama e-postası gönderdik.{% endblocktrans %}
                 </p>
 
                 <div class="alert border-0 rounded-3 mb-4" style="background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.3) !important;">
                     <i class="bi bi-info-circle me-2 text-info"></i>
-                    <span class="text-light">E-postanızdaki linke tıklayarak hesabınızı doğrulayın. Link 24 saat geçerlidir.</span>
+                    <span class="text-light">{% trans "E-postanızdaki linke tıklayarak hesabınızı doğrulayın. Link 24 saat geçerlidir." %}</span>
                 </div>
 
                 <!-- Features While Waiting -->
                 <div class="text-start mb-4 p-3 rounded-3" style="background: rgba(30, 41, 59, 0.8);">
-                    <p class="text-muted mb-2 small">E-postanız doğrulanmadan:</p>
+                    <p class="text-muted mb-2 small">{% trans "E-postanız doğrulanmadan:" %}</p>
                     <ul class="list-unstyled text-muted small mb-0">
-                        <li class="mb-1"><i class="bi bi-x-circle text-danger me-2"></i> Yeni konu açamazsınız</li>
-                        <li class="mb-1"><i class="bi bi-x-circle text-danger me-2"></i> Yorum yazamazsınız</li>
-                        <li class="mb-1"><i class="bi bi-x-circle text-danger me-2"></i> AI Asistanı kullanamazsınız</li>
-                        <li><i class="bi bi-check-circle text-success me-2"></i> Konuları okuyabilirsiniz</li>
+                        <li class="mb-1"><i class="bi bi-x-circle text-danger me-2"></i> {% trans "Yeni konu açamazsınız" %}</li>
+                        <li class="mb-1"><i class="bi bi-x-circle text-danger me-2"></i> {% trans "Yorum yazamazsınız" %}</li>
+                        <li class="mb-1"><i class="bi bi-x-circle text-danger me-2"></i> {% trans "AI Asistanı kullanamazsınız" %}</li>
+                        <li><i class="bi bi-check-circle text-success me-2"></i> {% trans "Konuları okuyabilirsiniz" %}</li>
                     </ul>
                 </div>
 
@@ -46,18 +47,18 @@
                 <div class="d-flex flex-column gap-3">
                     <a href="{% url 'resend_verification' %}" class="btn btn-primary btn-lg rounded-pill">
                         <i class="bi bi-arrow-repeat me-2"></i>
-                        Doğrulama E-postasını Tekrar Gönder
+                        {% trans "Doğrulama E-postasını Tekrar Gönder" %}
                     </a>
                     <a href="{% url 'home' %}" class="btn btn-outline-secondary rounded-pill">
                         <i class="bi bi-house me-2"></i>
-                        Ana Sayfaya Dön
+                        {% trans "Ana Sayfaya Dön" %}
                     </a>
                 </div>
 
                 <!-- Help Text -->
                 <p class="text-muted small mt-4 mb-0">
-                    E-postayı alamadınız mı? Spam klasörünüzü kontrol edin veya
-                    <a href="{% url 'contact' %}" class="text-info">bizimle iletişime geçin</a>.
+                    {% url 'contact' as contact_url %}{% blocktrans trimmed %}E-postayı alamadınız mı? Spam klasörünüzü kontrol edin veya
+                    <a href="{{ contact_url }}" class="text-info">bizimle iletişime geçin</a>.{% endblocktrans %}
                 </p>
             </div>
         </div>

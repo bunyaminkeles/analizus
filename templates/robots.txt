@@ -65,6 +65,8 @@ Disallow: /analiz/clear-session/
 Disallow: /en/login/
 Disallow: /en/logout/
 Disallow: /en/register/
+Disallow: /en/accounts/
+Disallow: /en/onboarding/
 Disallow: /en/market/new/
 Disallow: /en/market/job/*/edit/
 Disallow: /en/market/job/*/delete/
@@ -79,6 +81,8 @@ Disallow: /en/i18n/
 Disallow: /de/login/
 Disallow: /de/logout/
 Disallow: /de/register/
+Disallow: /de/accounts/
+Disallow: /de/onboarding/
 Disallow: /de/market/new/
 Disallow: /de/market/job/*/edit/
 Disallow: /de/market/job/*/delete/

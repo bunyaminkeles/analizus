@@ -237,10 +237,10 @@ class Profile(models.Model):
 
     # Onboarding
     SEGMENT_CHOICES = (
-        ('student', 'Öğrenci'),
-        ('academic', 'Akademisyen'),
-        ('expert', 'Uzman'),
-        ('curious', 'Meraklı'),
+        ('student', gettext_lazy('Öğrenci')),
+        ('academic', gettext_lazy('Akademisyen')),
+        ('expert', gettext_lazy('Uzman')),
+        ('curious', gettext_lazy('Meraklı')),
     )
     segment = models.CharField(max_length=20, choices=SEGMENT_CHOICES, blank=True, default='', verbose_name="Segment")
     onboarding_completed = models.BooleanField(default=False, verbose_name="Onboarding Tamamlandı")

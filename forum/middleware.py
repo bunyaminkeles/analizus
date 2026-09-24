@@ -7,6 +7,7 @@ from django.shortcuts import redirect
 from django.urls import reverse
 from django.contrib import messages
 from django.utils import timezone
+from django.utils.translation import gettext
 
 _HONEYPOT_FIELD = 'website'
 _GUARDED_PATHS = {'/login/', '/register/'}
@@ -195,7 +196,7 @@ class EmailVerificationMiddleware:
             pass
 
         # Diğer tüm sayfalar için doğrulama gerekli
-        messages.warning(request, 'Bu özelliği kullanmak için e-posta adresinizi doğrulamanız gerekiyor.')
+        messages.warning(request, gettext('Bu özelliği kullanmak için e-posta adresinizi doğrulamanız gerekiyor.'))
         return redirect('verification_pending')
 
 

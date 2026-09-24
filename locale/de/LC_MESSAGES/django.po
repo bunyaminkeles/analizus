@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-24 23:24+0300\n"
+"POT-Creation-Date: 2026-09-24 23:31+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -255,6 +255,27 @@ msgstr "Angebotsbetrag (TRY)"
 msgid "Ön Yazı"
 msgstr "Anschreiben"
 
+#: forum/middleware.py:199
+msgid "Bu özelliği kullanmak için e-posta adresinizi doğrulamanız gerekiyor."
+msgstr ""
+"Um diese Funktion zu nutzen, müssen Sie Ihre E-Mail-Adresse bestätigen."
+
+#: forum/models.py:240 forum/templates/forum/home.html:258
+msgid "Öğrenci"
+msgstr "Student"
+
+#: forum/models.py:241 forum/templates/forum/home.html:266
+msgid "Akademisyen"
+msgstr "Wissenschaftler"
+
+#: forum/models.py:242 forum/templates/forum/home.html:274
+msgid "Uzman"
+msgstr "Experte"
+
+#: forum/models.py:243
+msgid "Meraklı"
+msgstr "Neugierig"
+
 #: forum/models.py:371
 msgid "Kayıtlı üye"
 msgstr "Registriertes Mitglied"
@@ -492,6 +513,7 @@ msgid "Analizus - E-posta Adresinizi Doğrulayın"
 msgstr "Analizus - Bestätigen Sie Ihre E-Mail-Adresse"
 
 #: forum/services/email_service.py:106
+#: forum/templates/forum/onboarding.html:19
 msgid "Analizus'a Hoş Geldiniz!"
 msgstr "Willkommen bei Analizus!"
 
@@ -1943,6 +1965,7 @@ msgid "İyi günler,"
 msgstr "Viele Grüße,"
 
 #: forum/templates/forum/emails/verification_email.html:6
+#: forum/templates/forum/verification_pending.html:4
 msgid "E-posta Doğrulama"
 msgstr "E-Mail-Bestätigung"
 
@@ -3438,10 +3461,6 @@ msgstr "Alle 18 Tools →"
 msgid "Ya da bu işi 24 saatte bir uzmana bırak →"
 msgstr "Oder überlassen Sie es innerhalb von 24 Stunden einem Experten →"
 
-#: forum/templates/forum/home.html:258
-msgid "Öğrenci"
-msgstr "Student"
-
 #: forum/templates/forum/home.html:259
 msgid "Tezin için:"
 msgstr "Für Ihre Abschlussarbeit:"
@@ -3449,10 +3468,6 @@ msgstr "Für Ihre Abschlussarbeit:"
 #: forum/templates/forum/home.html:260
 msgid "Güvenilirlik Analizi"
 msgstr "Reliabilitätsanalyse"
-
-#: forum/templates/forum/home.html:266
-msgid "Akademisyen"
-msgstr "Wissenschaftler"
 
 #: forum/templates/forum/home.html:267
 msgid "Kazıma araçları:"
@@ -3462,15 +3477,11 @@ msgstr "Scraping-Tools:"
 msgid "YÖK Tez Kazıma"
 msgstr "Thesis-Center-Scraping"
 
-#: forum/templates/forum/home.html:272
+#: forum/templates/forum/home.html:272 forum/views.py:3972
 #: openalex/templates/openalex/landing.html:155 templates/base.html:214
 #: templates/base.html:430
 msgid "Bibliometrik Analiz"
 msgstr "Bibliometrische Analyse"
-
-#: forum/templates/forum/home.html:274
-msgid "Uzman"
-msgstr "Experte"
 
 #: forum/templates/forum/home.html:275
 msgid "Fırsatlar:"
@@ -3534,7 +3545,7 @@ msgstr "Data Science"
 msgid "Editörlük"
 msgstr "Lektorat"
 
-#: forum/templates/forum/home.html:362
+#: forum/templates/forum/home.html:362 forum/views.py:3969
 msgid "Danışmanlık"
 msgstr "Beratung"
 
@@ -4155,6 +4166,9 @@ msgstr "Abbrechen"
 #: forum/templates/forum/market/job_detail.html:55
 #: forum/templates/registration/login.html:237
 #: templates/forum/register.html:248
+#: templates/registration/password_reset_complete.html:186
+#: templates/registration/password_reset_confirm.html:253
+#: templates/registration/password_reset_done.html:185
 msgid "Ana Sayfa"
 msgstr "Startseite"
 
@@ -4436,6 +4450,8 @@ msgstr "Mein Profil anzeigen"
 #: forum/templates/registration/login.html:280
 #: istatistik/templates/istatistik/analiz_hub.html:42 templates/base.html:508
 #: templates/forum/register.html:259 templates/forum/register.html:315
+#: templates/registration/password_reset_complete.html:201
+#: templates/registration/password_reset_form.html:262
 #: templates/service_promo.html:37
 msgid "Giriş Yap"
 msgstr "Anmelden"
@@ -4721,6 +4737,84 @@ msgstr "Probleme beim Erstellen eines Auftrags?"
 msgid "WhatsApp'tan sorun"
 msgstr "Fragen Sie per WhatsApp"
 
+#: forum/templates/forum/onboarding.html:5
+msgid "Analizus'a Hoş Geldiniz"
+msgstr "Willkommen bei Analizus"
+
+#: forum/templates/forum/onboarding.html:6
+msgid "Kişiselleştirilmiş deneyim için birkaç soruyu yanıtlayın."
+msgstr "Beantworten Sie ein paar Fragen für ein personalisiertes Erlebnis."
+
+#: forum/templates/forum/onboarding.html:20
+msgid "Sizi daha iyi tanımak için birkaç soru sormak istiyoruz."
+msgstr ""
+"Wir möchten Ihnen ein paar Fragen stellen, um Sie besser kennenzulernen."
+
+#: forum/templates/forum/onboarding.html:20
+msgid "Sadece 30 saniye sürecek."
+msgstr "Es dauert nur 30 Sekunden."
+
+#: forum/templates/forum/onboarding.html:24
+msgid "Sizi en iyi hangisi tanımlıyor?"
+msgstr "Was beschreibt Sie am besten?"
+
+#: forum/templates/forum/onboarding.html:40
+msgid "Lütfen bir seçenek seçin."
+msgstr "Bitte wählen Sie eine Option."
+
+#: forum/templates/forum/onboarding.html:44
+msgid "Atla"
+msgstr "Überspringen"
+
+#: forum/templates/forum/onboarding.html:45
+#: forum/templates/forum/onboarding.html:74
+msgid "Devam Et"
+msgstr "Weiter"
+
+#: forum/templates/forum/onboarding.html:47
+#: forum/templates/forum/onboarding.html:76
+#: forum/templates/forum/onboarding.html:99
+#, python-format
+msgid "Adım %(step)s / %(total)s"
+msgstr "Schritt %(step)s von %(total)s"
+
+#: forum/templates/forum/onboarding.html:54
+msgid "Platformda Neler Bulacaksınız?"
+msgstr "Was Sie auf der Plattform finden"
+
+#: forum/templates/forum/onboarding.html:55
+msgid "Analizus'ta sizi bekleyen imkanlar."
+msgstr "Was Sie auf Analizus erwartet."
+
+#: forum/templates/forum/onboarding.html:73
+#: forum/templates/forum/onboarding.html:96
+#: istatistik/templates/istatistik/anova.html:54
+#: istatistik/templates/istatistik/karar_agaci.html:58
+#: istatistik/templates/istatistik/ki_kare.html:56
+#: istatistik/templates/istatistik/kruskal_wallis.html:55
+#: istatistik/templates/istatistik/lineer_regresyon.html:58
+#: istatistik/templates/istatistik/lojistik_regresyon.html:58
+#: istatistik/templates/istatistik/mann_whitney.html:55
+#: istatistik/templates/istatistik/svm.html:58
+#: istatistik/templates/istatistik/ttesti.html:231
+msgid "Geri"
+msgstr "Zurück"
+
+#: forum/templates/forum/onboarding.html:83
+msgid "Hangi Araçlarla Destek Alabilirsiniz?"
+msgstr "Für welche Tools erhalten Sie Unterstützung?"
+
+#: forum/templates/forum/onboarding.html:84
+msgid ""
+"Uzmanlarımız aşağıdaki araçlarla analiz ve danışmanlık desteği sunuyor."
+msgstr ""
+"Unsere Expertinnen und Experten bieten Analyse- und Beratungsunterstützung "
+"mit folgenden Tools."
+
+#: forum/templates/forum/onboarding.html:97
+msgid "Başlayalım!"
+msgstr "Los geht’s!"
+
 #: forum/templates/forum/proje_talebi.html:5
 #: forum/templates/forum/proje_talebi.html:7
 #: forum/templates/forum/proje_talebi.html:9
@@ -4946,6 +5040,64 @@ msgstr ""
 "Datenbankzugang usw.) mitzuteilen. Bei Bedarf berät Sie unser Experte, und "
 "wir definieren die benötigten Daten gemeinsam."
 
+#: forum/templates/forum/verification_pending.html:23
+msgid "E-posta Doğrulaması Gerekiyor"
+msgstr "E-Mail-Bestätigung erforderlich"
+
+#: forum/templates/forum/verification_pending.html:27
+#, python-format
+msgid ""
+"Hesabınızı aktifleştirmek için <strong class=\"text-"
+"info\">%(email)s</strong> adresine bir doğrulama e-postası gönderdik."
+msgstr ""
+"Um Ihr Konto zu aktivieren, haben wir eine Bestätigungs-E-Mail an <strong "
+"class=\"text-info\">%(email)s</strong> gesendet."
+
+#: forum/templates/forum/verification_pending.html:32
+msgid ""
+"E-postanızdaki linke tıklayarak hesabınızı doğrulayın. Link 24 saat "
+"geçerlidir."
+msgstr ""
+"Bestätigen Sie Ihr Konto über den Link in der E-Mail. Der Link ist 24 "
+"Stunden gültig."
+
+#: forum/templates/forum/verification_pending.html:37
+msgid "E-postanız doğrulanmadan:"
+msgstr "Solange Ihre E-Mail nicht bestätigt ist:"
+
+#: forum/templates/forum/verification_pending.html:39
+msgid "Yeni konu açamazsınız"
+msgstr "Sie können keine neuen Themen eröffnen"
+
+#: forum/templates/forum/verification_pending.html:40
+msgid "Yorum yazamazsınız"
+msgstr "Sie können keine Kommentare schreiben"
+
+#: forum/templates/forum/verification_pending.html:41
+msgid "AI Asistanı kullanamazsınız"
+msgstr "Sie können den KI-Assistenten nicht nutzen"
+
+#: forum/templates/forum/verification_pending.html:42
+msgid "Konuları okuyabilirsiniz"
+msgstr "Sie können Themen lesen"
+
+#: forum/templates/forum/verification_pending.html:50
+msgid "Doğrulama E-postasını Tekrar Gönder"
+msgstr "Bestätigungs-E-Mail erneut senden"
+
+#: forum/templates/forum/verification_pending.html:54
+msgid "Ana Sayfaya Dön"
+msgstr "Zur Startseite"
+
+#: forum/templates/forum/verification_pending.html:60
+#, python-format
+msgid ""
+"E-postayı alamadınız mı? Spam klasörünüzü kontrol edin veya <a "
+"href=\"%(contact_url)s\" class=\"text-info\">bizimle iletişime geçin</a>."
+msgstr ""
+"Keine E-Mail erhalten? Prüfen Sie Ihren Spam-Ordner oder <a "
+"href=\"%(contact_url)s\" class=\"text-info\">kontaktieren Sie uns</a>."
+
 #: forum/templates/registration/login.html:245
 msgid "Hesabınıza giriş yapın"
 msgstr "Melden Sie sich bei Ihrem Konto an"
@@ -4963,6 +5115,8 @@ msgid "Şifre"
 msgstr "Passwort"
 
 #: forum/templates/registration/login.html:277
+#: templates/registration/password_reset_form.html:9
+#: templates/registration/password_reset_form.html:231
 msgid "Şifremi Unuttum"
 msgstr "Passwort vergessen"
 
@@ -6898,6 +7052,114 @@ msgid "Talebiniz alındı! 24 saat içinde size dönüş yapacağız."
 msgstr ""
 "Ihre Anfrage ist eingegangen! Wir melden uns innerhalb von 24 Stunden bei "
 "Ihnen."
+
+#: forum/views.py:2604 forum/views.py:2674
+msgid "E-posta adresiniz zaten doğrulanmış."
+msgstr "Ihre E-Mail-Adresse wurde bereits bestätigt."
+
+#: forum/views.py:2617
+msgid "Geçersiz doğrulama linki."
+msgstr "Ungültiger Bestätigungslink."
+
+#: forum/views.py:2621
+msgid "Bu doğrulama linki süresi dolmuş veya daha önce kullanılmış."
+msgstr "Dieser Bestätigungslink ist abgelaufen oder wurde bereits verwendet."
+
+#: forum/views.py:2652
+msgid "E-posta adresiniz başarıyla doğrulandı! Hoş geldiniz."
+msgstr "Ihre E-Mail-Adresse wurde bestätigt. Willkommen!"
+
+#: forum/views.py:2682
+msgid ""
+"Doğrulama e-postası tekrar gönderildi. Lütfen e-posta kutunuzu kontrol edin."
+msgstr ""
+"Die Bestätigungs-E-Mail wurde erneut gesendet. Bitte prüfen Sie Ihr "
+"Postfach."
+
+#: forum/views.py:2684
+msgid "E-posta gönderilemedi. Lütfen daha sonra tekrar deneyin."
+msgstr ""
+"Die E-Mail konnte nicht gesendet werden. Bitte versuchen Sie es später "
+"erneut."
+
+#: forum/views.py:3962
+msgid "Hoş geldiniz!"
+msgstr "Willkommen!"
+
+#: forum/views.py:3967
+msgid "İstatistik Analizi"
+msgstr "Statistische Analyse"
+
+#: forum/views.py:3967
+msgid "SPSS, R, Python, AMOS, SmartPLS ile profesyonel istatistik analizleri"
+msgstr ""
+"Professionelle statistische Analysen mit SPSS, R, Python, AMOS und SmartPLS"
+
+#: forum/views.py:3968
+msgid "Veri Kazıma & Toplama"
+msgstr "Datenextraktion & -erhebung"
+
+#: forum/views.py:3968
+msgid "Anket, web ve akademik veritabanlarından veri toplama desteği"
+msgstr ""
+"Unterstützung bei der Datenerhebung aus Umfragen, dem Web und "
+"wissenschaftlichen Datenbanken"
+
+#: forum/views.py:3969
+msgid ""
+"Alanında uzman akademisyen ve danışmanlarla Pazaryeri üzerinden eşleşin"
+msgstr ""
+"Finden Sie über den Marktplatz passende Fachleute aus Wissenschaft und "
+"Beratung"
+
+#: forum/views.py:3970
+msgid "Proje Desteği"
+msgstr "Projektunterstützung"
+
+#: forum/views.py:3970
+msgid "Tez, makale ve kurumsal projeleriniz için uçtan uca destek"
+msgstr ""
+"Durchgängige Unterstützung für Abschlussarbeiten, Artikel und "
+"Unternehmensprojekte"
+
+#: forum/views.py:3971
+msgid "Akademik Destek"
+msgstr "Akademische Unterstützung"
+
+#: forum/views.py:3971
+msgid "Tez ve makale yazım sürecinde yöntem ve rehberlik desteği"
+msgstr ""
+"Methodische Begleitung beim Verfassen von Abschlussarbeiten und Artikeln"
+
+#: forum/views.py:3972
+msgid "Atıf ve yayın verileriyle bibliometrik analiz yaptırın"
+msgstr ""
+"Lassen Sie bibliometrische Analysen auf Basis von Zitations- und "
+"Publikationsdaten erstellen"
+
+#: forum/views.py:3973
+msgid "Literatür / Akademik Tarama"
+msgstr "Literatur- / wissenschaftliche Recherche"
+
+#: forum/views.py:3973
+msgid "YÖK Tez, TR Dizin ve uluslararası veritabanlarında tarama"
+msgstr "Recherchen in YÖK Tez, TR Dizin und internationalen Datenbanken"
+
+#: forum/views.py:3974
+msgid "Forumda Soru-Cevap"
+msgstr "Fragen & Antworten im Forum"
+
+#: forum/views.py:3974
+msgid "Merak ettiklerinizi sorun, bilgi birikiminizi toplulukla paylaşın"
+msgstr "Stellen Sie Ihre Fragen und teilen Sie Ihr Wissen mit der Community"
+
+#: forum/views.py:3976
+msgid "AI Araçları"
+msgstr "KI-Tools"
+
+#: forum/views.py:3976
+msgid "Akademik Danışmanlık"
+msgstr "Wissenschaftliche Beratung"
 
 #: istatistik/seo_content.py:7
 msgid ""
@@ -8920,6 +9182,7 @@ msgstr "Faktorenanalyse läuft, bitte warten…"
 #: istatistik/templates/istatistik/tekrarli_anova.html:110
 #: istatistik/templates/istatistik/ttesti.html:303
 #: istatistik/templates/istatistik/wilcoxon.html:111
+#: templates/registration/password_reset_confirm.html:312
 msgid "Tekrar Dene"
 msgstr "Erneut versuchen"
 
@@ -9475,18 +9738,6 @@ msgstr ""
 #: istatistik/templates/istatistik/wilcoxon.html:78
 msgid "Sütun Seçimi"
 msgstr "Spaltenauswahl"
-
-#: istatistik/templates/istatistik/anova.html:54
-#: istatistik/templates/istatistik/karar_agaci.html:58
-#: istatistik/templates/istatistik/ki_kare.html:56
-#: istatistik/templates/istatistik/kruskal_wallis.html:55
-#: istatistik/templates/istatistik/lineer_regresyon.html:58
-#: istatistik/templates/istatistik/lojistik_regresyon.html:58
-#: istatistik/templates/istatistik/mann_whitney.html:55
-#: istatistik/templates/istatistik/svm.html:58
-#: istatistik/templates/istatistik/ttesti.html:231
-msgid "Geri"
-msgstr "Zurück"
 
 #: istatistik/templates/istatistik/anova.html:60
 #: istatistik/templates/istatistik/ttesti.html:248
@@ -14485,6 +14736,115 @@ msgid ""
 msgstr ""
 "Die IBAN-Daten wurden an Ihre E-Mail gesendet! Nach der Überweisung wird "
 "Ihre Premium-Mitgliedschaft innerhalb von 24 Stunden aktiviert."
+
+#: templates/registration/password_reset_complete.html:8
+msgid "Şifre Değiştirildi"
+msgstr "Passwort geändert"
+
+#: templates/registration/password_reset_complete.html:194
+msgid "Tebrikler!"
+msgstr "Herzlichen Glückwunsch!"
+
+#: templates/registration/password_reset_complete.html:196
+msgid "Şifreniz başarıyla güncellendi."
+msgstr "Ihr Passwort wurde erfolgreich aktualisiert."
+
+#: templates/registration/password_reset_complete.html:197
+msgid "Artık yeni şifrenizle giriş yapabilirsiniz."
+msgstr "Sie können sich jetzt mit Ihrem neuen Passwort anmelden."
+
+#: templates/registration/password_reset_confirm.html:8
+#: templates/registration/password_reset_confirm.html:263
+msgid "Yeni Şifre Belirle"
+msgstr "Neues Passwort festlegen"
+
+#: templates/registration/password_reset_confirm.html:264
+msgid "Güvenli bir şifre oluşturun."
+msgstr "Erstellen Sie ein sicheres Passwort."
+
+#: templates/registration/password_reset_confirm.html:281
+msgid "Yeni Şifre"
+msgstr "Neues Passwort"
+
+#: templates/registration/password_reset_confirm.html:286
+msgid "En az 8 karakter, harf ve rakam içermeli."
+msgstr "Mindestens 8 Zeichen, mit Buchstaben und Ziffern."
+
+#: templates/registration/password_reset_confirm.html:290
+msgid "Şifre Tekrar"
+msgstr "Passwort bestätigen"
+
+#: templates/registration/password_reset_confirm.html:298
+msgid "Şifreyi Güncelle"
+msgstr "Passwort aktualisieren"
+
+#: templates/registration/password_reset_confirm.html:307
+msgid "Geçersiz Bağlantı"
+msgstr "Ungültiger Link"
+
+#: templates/registration/password_reset_confirm.html:309
+msgid "Şifre sıfırlama bağlantısı geçersiz veya süresi dolmuş olabilir."
+msgstr ""
+"Der Link zum Zurücksetzen des Passworts ist möglicherweise ungültig oder "
+"abgelaufen."
+
+#: templates/registration/password_reset_done.html:8
+msgid "E-posta Gönderildi"
+msgstr "E-Mail gesendet"
+
+#: templates/registration/password_reset_done.html:193
+msgid "E-posta Gönderildi!"
+msgstr "E-Mail gesendet!"
+
+#: templates/registration/password_reset_done.html:195
+msgid "Şifre sıfırlama talimatlarını içeren bir e-posta gönderdik."
+msgstr ""
+"Wir haben Ihnen eine E-Mail mit Anweisungen zum Zurücksetzen Ihres Passworts"
+" gesendet."
+
+#: templates/registration/password_reset_done.html:199
+msgid "E-postayı göremiyorsanız spam/gereksiz klasörünü kontrol edin."
+msgstr "Wenn Sie die E-Mail nicht sehen, prüfen Sie Ihren Spam-Ordner."
+
+#: templates/registration/password_reset_done.html:203
+msgid "Giriş Sayfasına Dön"
+msgstr "Zurück zur Anmeldung"
+
+#: templates/registration/password_reset_done.html:207
+#, python-format
+msgid ""
+"E-posta gelmedi mi? Birkaç dakika bekleyin veya <a href=\"%(reset_url)s\" "
+"style=\"color: #ff6b4a;\">tekrar deneyin</a>."
+msgstr ""
+"Keine E-Mail erhalten? Warten Sie ein paar Minuten oder <a "
+"href=\"%(reset_url)s\" style=\"color: #ff6b4a;\">versuchen Sie es "
+"erneut</a>."
+
+#: templates/registration/password_reset_form.html:222
+msgid "Giriş Sayfası"
+msgstr "Anmeldung"
+
+#: templates/registration/password_reset_form.html:232
+msgid "E-posta adresinizi girin, size şifre sıfırlama bağlantısı gönderelim."
+msgstr ""
+"Geben Sie Ihre E-Mail-Adresse ein, und wir senden Ihnen einen Link zum "
+"Zurücksetzen des Passworts."
+
+#: templates/registration/password_reset_form.html:249
+msgid "E-posta Adresi"
+msgstr "E-Mail-Adresse"
+
+#: templates/registration/password_reset_form.html:252
+msgid "ornek@email.com"
+msgstr "name@beispiel.de"
+
+#: templates/registration/password_reset_form.html:257
+msgid "Sıfırlama Linki Gönder"
+msgstr "Link zum Zurücksetzen senden"
+
+#: templates/registration/password_reset_form.html:262
+msgid "Şifrenizi hatırladınız mı?"
+msgstr "Passwort wieder eingefallen?"
 
 #: templates/service_promo.html:50
 msgid "OpenAlex'te tarama mı yaptın?"

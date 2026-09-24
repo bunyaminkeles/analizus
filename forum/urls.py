@@ -62,13 +62,8 @@ urlpatterns = [
     path('api/ai/suggest/<int:topic_id>/', views.ai_suggest_answer, name='ai_suggest_answer'),
     path('api/ai/chat/', views.api_ai_chat, name='api_ai_chat'),
 
-    # E-posta Doğrulama
-    path('verify-email/<uuid:token>/', views.verify_email, name='verify_email'),
-    path('verification-pending/', views.verification_pending, name='verification_pending'),
-    path('resend-verification/', views.resend_verification, name='resend_verification'),
-
-    # Onboarding
-    path('onboarding/', views.onboarding, name='onboarding'),
+    # E-posta Doğrulama + Onboarding → forum/urls_i18n.py'ye taşındı (EN/DE
+    # ile kaydolan kullanıcı kayıt sonrası akışta Türkçe sayfaya düşmesin)
 
     # Admin Actions (Django admin dashboard'dan kullanılıyor)
     path('admin-actions/verify-linkedin/<int:user_id>/', views.admin_verify_linkedin, name='admin_verify_linkedin'),
