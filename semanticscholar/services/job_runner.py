@@ -4,6 +4,8 @@ from datetime import timedelta
 from django.utils import timezone
 from django.conf import settings
 from django.core.mail import EmailMessage
+from django.utils.translation import gettext
+from forum.i18n_utils import recipient_language
 from django.db import close_old_connections
 from semanticscholar.models import SemanticSearchJob
 from forum.s3_utils import upload_to_s3
@@ -128,17 +130,18 @@ def send_demo_email(job):
     if not to_email:
         return False
 
-    subject = f"Semantic Scholar Arama Sonuçları: {job.get_query_summary()}"
     site_url = getattr(settings, 'SITE_URL', 'https://www.analizus.com')
 
-    body_lines = [
-        f"Merhaba {user.first_name or user.username},\n",
-        "Semantic Scholar arama sonuçlarınız hazırlanmıştır.\n",
-        f"Sorgu: {job.get_query_summary()}",
-        f"Toplam Sonuç: {job.total_results}\n",
-    ]
-
-    body_lines.append("Tüm sonuçlara erişmek için sipariş sayfasını ziyaret edebilirsiniz:")
+    # Alıcının kayıtlı dilinde (Profile.preferred_language)
+    with recipient_language(user):
+        subject = gettext("Semantic Scholar Arama Sonuçları: %(query)s") % {'query': job.get_query_summary()}
+        body_lines = [
+            gettext("Merhaba %(name)s,") % {'name': user.first_name or user.username} + "\n",
+            gettext("Semantic Scholar arama sonuçlarınız hazırlanmıştır.") + "\n",
+            gettext("Sorgu: %(query)s") % {'query': job.get_query_summary()},
+            gettext("Toplam Sonuç: %(total)s") % {'total': job.total_results} + "\n",
+        ]
+        body_lines.append(gettext("Tüm sonuçlara erişmek için sipariş sayfasını ziyaret edebilirsiniz:"))
     body_lines.append(f"  {site_url}/semantic-scholar/siparis/{job.id}/\n")
     body_lines.append(f"---\nAnalizus - {site_url}")
 
@@ -172,19 +175,21 @@ def send_order_results_email(order):
     if not to_email:
         return False
 
-    subject = f"Semantic Scholar Arama Sonuçları: {job.get_query_summary()}"
-    lines = [
-        f"Merhaba {user.first_name or user.username},\n",
-        "Siparişiniz onaylanmış ve Semantic Scholar yayın sonuçlarınız hazırlanmıştır.\n",
-        f"Sipariş No: #{str(order.id)[:8]}",
-        f"Sorgu: {job.get_query_summary()}",
-        f"Toplam Sonuç: {job.total_results}",
-        f"Gönderilen Yayın Sayısı: {order.abstract_count}",
-        f"Ödenen Tutar: {order.total_price} TL\n",
-    ]
-    if job.all_results_file_url:
-        lines.append("Sonuçlarınızı aşağıdaki linkten indirebilirsiniz:")
-        lines.append(f"  {job.all_results_file_url}\n")
+    # Alıcının kayıtlı dilinde (Profile.preferred_language)
+    with recipient_language(user):
+        subject = gettext("Semantic Scholar Arama Sonuçları: %(query)s") % {'query': job.get_query_summary()}
+        lines = [
+            gettext("Merhaba %(name)s,") % {'name': user.first_name or user.username} + "\n",
+            gettext("Siparişiniz onaylanmış ve Semantic Scholar yayın sonuçlarınız hazırlanmıştır.") + "\n",
+            gettext("Sipariş No: #%(order)s") % {'order': str(order.id)[:8]},
+            gettext("Sorgu: %(query)s") % {'query': job.get_query_summary()},
+            gettext("Toplam Sonuç: %(total)s") % {'total': job.total_results},
+            gettext("Gönderilen Yayın Sayısı: %(count)s") % {'count': order.abstract_count},
+            gettext("Ödenen Tutar: %(amount)s TL") % {'amount': order.total_price} + "\n",
+        ]
+        if job.all_results_file_url:
+            lines.append(gettext("Sonuçlarınızı aşağıdaki linkten indirebilirsiniz:"))
+            lines.append(f"  {job.all_results_file_url}\n")
     lines.append("\n---\nAnalizus - www.analizus.com")
 
     try:

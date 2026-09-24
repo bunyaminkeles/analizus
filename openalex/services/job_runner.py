@@ -4,6 +4,8 @@ from datetime import timedelta
 from django.utils import timezone
 from django.conf import settings
 from django.core.mail import EmailMessage
+from django.utils.translation import gettext
+from forum.i18n_utils import recipient_language
 from django.db import close_old_connections
 from openalex.models import AlexSearchJob
 from forum.s3_utils import delete_from_s3, upload_to_s3
@@ -136,18 +138,20 @@ def send_demo_email(job):
         logger.warning(f"Kullanıcının emaili yok: {user.username}")
         return False
 
-    subject = f"OpenAlex Arama Sonuçları: {job.get_query_summary()}"
     site_url = getattr(settings, 'SITE_URL', 'https://www.analizus.com')
 
-    body_lines = [
-        f"Merhaba {user.first_name or user.username},\n",
-        f"OpenAlex arama sonuçlarınız hazırlanmıştır.\n",
-        f"Sorgu: {job.get_query_summary()}",
-        f"Toplam Sonuç: {job.total_results}\n",
-        "Tüm sonuçlara erişmek için sipariş sayfasını ziyaret edebilirsiniz:",
-        f"  {site_url}/openalex/siparis/{job.id}/\n",
-        f"---\nAnalizus - {site_url}",
-    ]
+    # Alıcının kayıtlı dilinde (Profile.preferred_language)
+    with recipient_language(user):
+        subject = gettext("OpenAlex Arama Sonuçları: %(query)s") % {'query': job.get_query_summary()}
+        body_lines = [
+            gettext("Merhaba %(name)s,") % {'name': user.first_name or user.username} + "\n",
+            gettext("OpenAlex arama sonuçlarınız hazırlanmıştır.") + "\n",
+            gettext("Sorgu: %(query)s") % {'query': job.get_query_summary()},
+            gettext("Toplam Sonuç: %(total)s") % {'total': job.total_results} + "\n",
+            gettext("Tüm sonuçlara erişmek için sipariş sayfasını ziyaret edebilirsiniz:"),
+            f"  {site_url}/openalex/siparis/{job.id}/\n",
+            f"---\nAnalizus - {site_url}",
+        ]
 
     try:
         email = EmailMessage(
@@ -183,22 +187,23 @@ def send_order_results_email(order):
     if not to_email:
         return False
 
-    subject = f"OpenAlex Arama Sonuçları: {job.get_query_summary()}"
+    # Alıcının kayıtlı dilinde (Profile.preferred_language)
+    with recipient_language(user):
+        subject = gettext("OpenAlex Arama Sonuçları: %(query)s") % {'query': job.get_query_summary()}
+        lines = [
+            gettext("Merhaba %(name)s,") % {'name': user.first_name or user.username} + "\n",
+            gettext("Siparişiniz onaylanmış ve OpenAlex yayın sonuçlarınız hazırlanmıştır.") + "\n",
+            gettext("Sipariş No: #%(order)s") % {'order': str(order.id)[:8]},
+            gettext("Sorgu: %(query)s") % {'query': job.get_query_summary()},
+            gettext("Toplam Sonuç: %(total)s") % {'total': job.total_results},
+            gettext("Gönderilen Yayın Sayısı: %(count)s") % {'count': order.abstract_count},
+            gettext("Ödenen Tutar: %(amount)s TL") % {'amount': order.total_price} + "\n",
+        ]
 
-    lines = [
-        f"Merhaba {user.first_name or user.username},\n",
-        f"Siparişiniz onaylanmış ve OpenAlex yayın sonuçlarınız hazırlanmıştır.\n",
-        f"Sipariş No: #{str(order.id)[:8]}",
-        f"Sorgu: {job.get_query_summary()}",
-        f"Toplam Sonuç: {job.total_results}",
-        f"Gönderilen Yayın Sayısı: {order.abstract_count}",
-        f"Ödenen Tutar: {order.total_price} TL\n",
-    ]
-
-    download_url = job.all_results_file_url
-    if download_url:
-        lines.append(f"Sonuçlarınızı aşağıdaki linkten indirebilirsiniz:")
-        lines.append(f"  {download_url}\n")
+        download_url = job.all_results_file_url
+        if download_url:
+            lines.append(gettext("Sonuçlarınızı aşağıdaki linkten indirebilirsiniz:"))
+            lines.append(f"  {download_url}\n")
 
     lines.append(f"\n---\nAnalizus - www.analizus.com")
 

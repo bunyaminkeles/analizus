@@ -8,6 +8,8 @@ import threading
 import logging
 
 from django.core.mail import EmailMessage
+from django.utils.translation import gettext
+from forum.i18n_utils import recipient_language
 from django.db import close_old_connections
 from django.conf import settings
 
@@ -138,33 +140,37 @@ def send_completion_email_async(job_id: str, pdf_url: str = '') -> None:
             job = MakaleAnaliz.objects.get(id=job_id)
             user = job.user
             site_url = getattr(settings, 'SITE_URL', 'https://analizus.com')
-            result_url = f'{site_url}/makaleanaliz/sonuc/{job.id}/'
 
-            subject = f'TR Dizin Makale Analizi Tamamlandı — {job.get_query_summary()[:50]}'
-            body_lines = [
-                f'Merhaba {user.first_name or user.username},',
-                '',
-                f'"{job.get_query_summary()}" sorgunuz için makale analizi tamamlandı.',
-                '',
-                f'Toplam Analiz Edilen Makale: {job.total_records}',
-                '',
-                'Analiz sonuçlarınızı ve PDF raporunuzu görüntülemek için:',
-                f'  {result_url}',
-                '',
-            ]
-            if pdf_url:
-                body_lines += [
-                    'PDF raporunuzu doğrudan indirmek için:',
-                    f'  {pdf_url}',
+            # Alıcının kayıtlı dilinde (Profile.preferred_language)
+            with recipient_language(user):
+                from django.urls import reverse
+                result_url = site_url.rstrip('/') + reverse('makaleanaliz:results', args=[job.id])
+                query = job.get_query_summary()
+                subject = gettext('TR Dizin Makale Analizi Tamamlandı — %(query)s') % {'query': query[:50]}
+                body_lines = [
+                    gettext('Merhaba %(name)s,') % {'name': user.first_name or user.username},
                     '',
-                    'Not: İndirme linki 3 gün geçerlidir.',
+                    gettext('"%(query)s" sorgunuz için makale analizi tamamlandı.') % {'query': query},
+                    '',
+                    gettext('Toplam Analiz Edilen Makale: %(total)s') % {'total': job.total_records},
+                    '',
+                    gettext('Analiz sonuçlarınızı ve PDF raporunuzu görüntülemek için:'),
+                    f'  {result_url}',
                     '',
                 ]
-            body_lines += [
-                '---',
-                'Bu bir otomatik bildirimdir.',
-                'Analizus — Akademik Veri Üssü  |  analizus.com',
-            ]
+                if pdf_url:
+                    body_lines += [
+                        gettext('PDF raporunuzu doğrudan indirmek için:'),
+                        f'  {pdf_url}',
+                        '',
+                        gettext('Not: İndirme linki 3 gün geçerlidir.'),
+                        '',
+                    ]
+                body_lines += [
+                    '---',
+                    gettext('Bu bir otomatik bildirimdir.'),
+                    gettext('Analizus — Araştırma ve Analiz Platformu  |  analizus.com'),
+                ]
 
             email = EmailMessage(
                 subject=subject,

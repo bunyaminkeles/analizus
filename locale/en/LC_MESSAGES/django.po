@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-24 22:41+0300\n"
+"POT-Creation-Date: 2026-09-24 22:43+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -11113,6 +11113,49 @@ msgstr "Calculation error: %(e)s"
 msgid "Yalnızca CSV veya Excel (.xlsx/.xls) dosyası yükleyebilirsiniz."
 msgstr "You can only upload CSV or Excel (.xlsx/.xls) files."
 
+#: makaleanaliz/services/job_runner.py:149
+#, python-format
+msgid "TR Dizin Makale Analizi Tamamlandı — %(query)s"
+msgstr "TR Dizin Article Analysis Complete — %(query)s"
+
+#: makaleanaliz/services/job_runner.py:151 openalex/services/job_runner.py:147
+#: openalex/services/job_runner.py:194
+#: semanticscholar/services/job_runner.py:139
+#: semanticscholar/services/job_runner.py:182
+#, python-format
+msgid "Merhaba %(name)s,"
+msgstr "Hello %(name)s,"
+
+#: makaleanaliz/services/job_runner.py:153
+#, python-format
+msgid "\"%(query)s\" sorgunuz için makale analizi tamamlandı."
+msgstr "The article analysis for your query \"%(query)s\" is complete."
+
+#: makaleanaliz/services/job_runner.py:155
+#, python-format
+msgid "Toplam Analiz Edilen Makale: %(total)s"
+msgstr "Total articles analyzed: %(total)s"
+
+#: makaleanaliz/services/job_runner.py:157
+msgid "Analiz sonuçlarınızı ve PDF raporunuzu görüntülemek için:"
+msgstr "To view your analysis results and PDF report:"
+
+#: makaleanaliz/services/job_runner.py:163
+msgid "PDF raporunuzu doğrudan indirmek için:"
+msgstr "To download your PDF report directly:"
+
+#: makaleanaliz/services/job_runner.py:166
+msgid "Not: İndirme linki 3 gün geçerlidir."
+msgstr "Note: The download link is valid for 3 days."
+
+#: makaleanaliz/services/job_runner.py:171
+msgid "Bu bir otomatik bildirimdir."
+msgstr "This is an automated notification."
+
+#: makaleanaliz/services/job_runner.py:172
+msgid "Analizus — Araştırma ve Analiz Platformu  |  analizus.com"
+msgstr "Analizus — Research and Analysis Platform  |  analizus.com"
+
 #: makaleanaliz/templates/makaleanaliz/results.html:5
 msgid "Makale Analizi"
 msgstr "Article Analysis"
@@ -11227,6 +11270,63 @@ msgstr "You're next in line, your analysis will begin shortly"
 #: makaleanaliz/templates/makaleanaliz/results.html:222
 msgid ". sıradasınız — önceki analizin bitmesi bekleniyor"
 msgstr " in queue — waiting for the previous analysis to finish"
+
+#: openalex/services/job_runner.py:145 openalex/services/job_runner.py:192
+#, python-format
+msgid "OpenAlex Arama Sonuçları: %(query)s"
+msgstr "OpenAlex Search Results: %(query)s"
+
+#: openalex/services/job_runner.py:148
+msgid "OpenAlex arama sonuçlarınız hazırlanmıştır."
+msgstr "Your OpenAlex search results are ready."
+
+#: openalex/services/job_runner.py:149 openalex/services/job_runner.py:197
+#: semanticscholar/services/job_runner.py:141
+#: semanticscholar/services/job_runner.py:185
+#, python-format
+msgid "Sorgu: %(query)s"
+msgstr "Query: %(query)s"
+
+#: openalex/services/job_runner.py:150 openalex/services/job_runner.py:198
+#: semanticscholar/services/job_runner.py:142
+#: semanticscholar/services/job_runner.py:186
+#, python-format
+msgid "Toplam Sonuç: %(total)s"
+msgstr "Total results: %(total)s"
+
+#: openalex/services/job_runner.py:151
+#: semanticscholar/services/job_runner.py:144
+msgid "Tüm sonuçlara erişmek için sipariş sayfasını ziyaret edebilirsiniz:"
+msgstr "To access all results, you can visit the order page:"
+
+#: openalex/services/job_runner.py:195
+msgid "Siparişiniz onaylanmış ve OpenAlex yayın sonuçlarınız hazırlanmıştır."
+msgstr ""
+"Your order has been approved and your OpenAlex publication results are "
+"ready."
+
+#: openalex/services/job_runner.py:196
+#: semanticscholar/services/job_runner.py:184
+#, python-format
+msgid "Sipariş No: #%(order)s"
+msgstr "Order No: #%(order)s"
+
+#: openalex/services/job_runner.py:199
+#: semanticscholar/services/job_runner.py:187
+#, python-format
+msgid "Gönderilen Yayın Sayısı: %(count)s"
+msgstr "Number of publications sent: %(count)s"
+
+#: openalex/services/job_runner.py:200
+#: semanticscholar/services/job_runner.py:188
+#, python-format
+msgid "Ödenen Tutar: %(amount)s TL"
+msgstr "Amount paid: %(amount)s TL"
+
+#: openalex/services/job_runner.py:205
+#: semanticscholar/services/job_runner.py:191
+msgid "Sonuçlarınızı aşağıdaki linkten indirebilirsiniz:"
+msgstr "You can download your results from the link below:"
 
 #: openalex/templates/openalex/landing.html:5
 msgid "OpenAlex Yayın Kazıma ve İndirme Aracı — 240M+ Akademik Veri"
@@ -11607,6 +11707,24 @@ msgstr "Your search is running in the background, please wait..."
 #: openalex/templates/openalex/landing.html:584
 msgid "Önceki arama sonuçları"
 msgstr "Previous search results"
+
+#: semanticscholar/services/job_runner.py:137
+#: semanticscholar/services/job_runner.py:180
+#, python-format
+msgid "Semantic Scholar Arama Sonuçları: %(query)s"
+msgstr "Semantic Scholar Search Results: %(query)s"
+
+#: semanticscholar/services/job_runner.py:140
+msgid "Semantic Scholar arama sonuçlarınız hazırlanmıştır."
+msgstr "Your Semantic Scholar search results are ready."
+
+#: semanticscholar/services/job_runner.py:183
+msgid ""
+"Siparişiniz onaylanmış ve Semantic Scholar yayın sonuçlarınız "
+"hazırlanmıştır."
+msgstr ""
+"Your order has been approved and your Semantic Scholar publication results "
+"are ready."
 
 #: semanticscholar/templates/semanticscholar/landing.html:5
 msgid "Semantic Scholar Yayın Kazıma — 200M+ Makale Araması"
