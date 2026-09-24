@@ -1658,28 +1658,28 @@ class TeamMember(models.Model):
 
 class ProjectRequest(models.Model):
     ANALYSIS_CHOICES = [
-        ('visualization', 'Veri Görselleştirme'),
-        ('ml', 'Makine Öğrenmesi / Yapay Zeka'),
-        ('statistics', 'İstatistiksel Analiz'),
-        ('cleaning', 'Veri Temizleme / Hazırlama'),
-        ('timeseries', 'Zaman Serisi Analizi'),
-        ('nlp', 'Metin / NLP Analizi'),
-        ('literature', 'Tez / Makale Veri İndirme'),
-        ('verification', 'AI Analiz Doğrulama'),
-        ('agentic', 'AI Ajan / Otomasyon Projesi'),
-        ('bibliometric', 'Bibliyometrik Analiz'),
-        ('other', 'Diğer'),
+        ('visualization', gettext_lazy('Veri Görselleştirme')),
+        ('ml', gettext_lazy('Makine Öğrenmesi / Yapay Zeka')),
+        ('statistics', gettext_lazy('İstatistiksel Analiz')),
+        ('cleaning', gettext_lazy('Veri Temizleme / Hazırlama')),
+        ('timeseries', gettext_lazy('Zaman Serisi Analizi')),
+        ('nlp', gettext_lazy('Metin / NLP Analizi')),
+        ('literature', gettext_lazy('Tez / Makale Veri İndirme')),
+        ('verification', gettext_lazy('AI Analiz Doğrulama')),
+        ('agentic', gettext_lazy('AI Ajan / Otomasyon Projesi')),
+        ('bibliometric', gettext_lazy('Bibliyometrik Analiz')),
+        ('other', gettext_lazy('Diğer')),
     ]
     DATA_SIZE_CHOICES = [
-        ('small', '1.000 satırdan az'),
-        ('medium', '1.000 – 100.000 satır'),
-        ('large', '100.000 satır ve üzeri'),
-        ('unknown', 'Bilmiyorum'),
+        ('small', gettext_lazy('1.000 satırdan az')),
+        ('medium', gettext_lazy('1.000 – 100.000 satır')),
+        ('large', gettext_lazy('100.000 satır ve üzeri')),
+        ('unknown', gettext_lazy('Bilmiyorum')),
     ]
     TIMELINE_CHOICES = [
-        ('urgent', '1 hafta içinde'),
-        ('short', '1 ay içinde'),
-        ('flexible', 'Esnek'),
+        ('urgent', gettext_lazy('1 hafta içinde')),
+        ('short', gettext_lazy('1 ay içinde')),
+        ('flexible', gettext_lazy('Esnek')),
     ]
     STATUS_CHOICES = [
         ('new', 'Yeni'),
@@ -1724,31 +1724,31 @@ class ProjectRequest(models.Model):
 
 class TrainingRequest(models.Model):
     REQUEST_TYPE_CHOICES = [
-        ('individual', 'Bireysel'),
-        ('corporate', 'Kurumsal'),
+        ('individual', gettext_lazy('Bireysel')),
+        ('corporate', gettext_lazy('Kurumsal')),
     ]
     LEVEL_CHOICES = [
-        ('beginner', 'Başlangıç'),
-        ('intermediate', 'Orta'),
-        ('advanced', 'İleri'),
-        ('unknown', 'Emin değilim'),
+        ('beginner', gettext_lazy('Başlangıç')),
+        ('intermediate', gettext_lazy('Orta')),
+        ('advanced', gettext_lazy('İleri')),
+        ('unknown', gettext_lazy('Emin değilim')),
     ]
     FORMAT_CHOICES = [
-        ('online_live', 'Online canlı'),
-        ('onsite', 'Yerinde'),
-        ('hybrid', 'Hibrit'),
-        ('flexible', 'Farketmez'),
+        ('online_live', gettext_lazy('Online canlı')),
+        ('onsite', gettext_lazy('Yerinde')),
+        ('hybrid', gettext_lazy('Hibrit')),
+        ('flexible', gettext_lazy('Farketmez')),
     ]
     PARTICIPANTS_CHOICES = [
-        ('1', '1 kişi'),
-        ('2-5', '2-5 kişi'),
-        ('6-15', '6-15 kişi'),
-        ('16+', '16+ kişi'),
+        ('1', gettext_lazy('1 kişi')),
+        ('2-5', gettext_lazy('2-5 kişi')),
+        ('6-15', gettext_lazy('6-15 kişi')),
+        ('16+', gettext_lazy('16+ kişi')),
     ]
     TIMELINE_CHOICES = [
-        ('urgent', '2 hafta içinde'),
-        ('month', '1 ay içinde'),
-        ('flexible', 'Esnek'),
+        ('urgent', gettext_lazy('2 hafta içinde')),
+        ('month', gettext_lazy('1 ay içinde')),
+        ('flexible', gettext_lazy('Esnek')),
     ]
     STATUS_CHOICES = [
         ('new', 'Yeni'),

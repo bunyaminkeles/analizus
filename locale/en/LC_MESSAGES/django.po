@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-24 22:43+0300\n"
+"POT-Creation-Date: 2026-09-24 22:47+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -339,6 +339,148 @@ msgstr "Silver Supporter"
 msgid "Bronz Destekçi"
 msgstr "Bronze Supporter"
 
+#: forum/models.py:1661 forum/templates/forum/proje_talebi.html:169
+msgid "Veri Görselleştirme"
+msgstr "Data Visualization"
+
+#: forum/models.py:1662 forum/templates/forum/proje_talebi.html:170
+msgid "Makine Öğrenmesi / Yapay Zeka"
+msgstr "Machine Learning / AI"
+
+#: forum/models.py:1663 forum/templates/forum/proje_talebi.html:171
+msgid "İstatistiksel Analiz"
+msgstr "Statistical Analysis"
+
+#: forum/models.py:1664 forum/templates/forum/proje_talebi.html:172
+msgid "Veri Temizleme / Hazırlama"
+msgstr "Data Cleaning / Preparation"
+
+#: forum/models.py:1665 forum/templates/forum/proje_talebi.html:173
+msgid "Zaman Serisi Analizi"
+msgstr "Time Series Analysis"
+
+#: forum/models.py:1666 forum/templates/forum/proje_talebi.html:174
+msgid "Metin / NLP Analizi"
+msgstr "Text / NLP Analysis"
+
+#: forum/models.py:1667 forum/templates/forum/proje_talebi.html:168
+msgid "Tez / Makale Veri İndirme"
+msgstr "Thesis / Article Data Download"
+
+#: forum/models.py:1668 forum/templates/forum/proje_talebi.html:175
+msgid "AI Analiz Doğrulama"
+msgstr "AI Analysis Verification"
+
+#: forum/models.py:1669 forum/templates/forum/proje_talebi.html:176
+msgid "AI Ajan / Otomasyon Projesi"
+msgstr "AI Agent / Automation Project"
+
+#: forum/models.py:1670 forum/templates/forum/proje_talebi.html:177
+msgid "Bibliyometrik Analiz"
+msgstr "Bibliometric Analysis"
+
+#: forum/models.py:1671 forum/templates/forum/proje_talebi.html:178
+msgid "Diğer"
+msgstr "Other"
+
+#: forum/models.py:1674 forum/templates/forum/proje_talebi.html:193
+msgid "1.000 satırdan az"
+msgstr "Under 1,000 rows"
+
+#: forum/models.py:1675 forum/templates/forum/proje_talebi.html:194
+msgid "1.000 – 100.000 satır"
+msgstr "1,000 – 100,000 rows"
+
+#: forum/models.py:1676 forum/templates/forum/proje_talebi.html:195
+msgid "100.000 satır ve üzeri"
+msgstr "Over 100,000 rows"
+
+#: forum/models.py:1677 forum/templates/forum/proje_talebi.html:196
+msgid "Bilmiyorum"
+msgstr "I don't know"
+
+#: forum/models.py:1680 forum/templates/forum/proje_talebi.html:203
+msgid "1 hafta içinde"
+msgstr "Within 1 week"
+
+#: forum/models.py:1681 forum/models.py:1750
+#: forum/templates/forum/egitim_talebi.html:138
+#: forum/templates/forum/proje_talebi.html:204
+msgid "1 ay içinde"
+msgstr "Within 1 month"
+
+#: forum/models.py:1682 forum/models.py:1751
+#: forum/templates/forum/egitim_talebi.html:139
+#: forum/templates/forum/proje_talebi.html:205
+msgid "Esnek"
+msgstr "Flexible"
+
+#: forum/models.py:1727 forum/templates/forum/egitim_talebi.html:74
+msgid "Bireysel"
+msgstr "Individual"
+
+#: forum/models.py:1728 forum/templates/forum/egitim.html:103
+#: forum/templates/forum/egitim_talebi.html:75 templates/base.html:270
+#: templates/base.html:464 templates/partials/footer.html:98
+msgid "Kurumsal"
+msgstr "Corporate"
+
+#: forum/models.py:1731 forum/templates/forum/egitim_talebi.html:104
+#: forum/training_catalog.py:471
+msgid "Başlangıç"
+msgstr "Beginner"
+
+#: forum/models.py:1732 forum/templates/forum/egitim_talebi.html:105
+#: forum/training_catalog.py:472
+msgid "Orta"
+msgstr "Intermediate"
+
+#: forum/models.py:1733 forum/templates/forum/egitim_talebi.html:106
+#: forum/training_catalog.py:473
+msgid "İleri"
+msgstr "Advanced"
+
+#: forum/models.py:1734 forum/templates/forum/egitim_talebi.html:107
+msgid "Emin değilim"
+msgstr "Not sure"
+
+#: forum/models.py:1737 forum/templates/forum/egitim_talebi.html:114
+msgid "Online canlı"
+msgstr "Live online"
+
+#: forum/models.py:1738 forum/templates/forum/egitim_talebi.html:115
+msgid "Yerinde"
+msgstr "On-site"
+
+#: forum/models.py:1739 forum/templates/forum/egitim.html:217
+#: forum/templates/forum/egitim_talebi.html:116
+msgid "Hibrit"
+msgstr "Hybrid"
+
+#: forum/models.py:1740 forum/templates/forum/egitim_talebi.html:117
+msgid "Farketmez"
+msgstr "No preference"
+
+#: forum/models.py:1743 forum/templates/forum/egitim_talebi.html:127
+msgid "1 kişi"
+msgstr "1 person"
+
+#: forum/models.py:1744 forum/templates/forum/egitim_talebi.html:128
+msgid "2-5 kişi"
+msgstr "2-5 people"
+
+#: forum/models.py:1745 forum/templates/forum/egitim_talebi.html:129
+msgid "6-15 kişi"
+msgstr "6-15 people"
+
+#: forum/models.py:1746 forum/templates/forum/egitim_talebi.html:130
+msgid "16+ kişi"
+msgstr "16+ people"
+
+#: forum/models.py:1749 forum/templates/forum/egitim_talebi.html:137
+msgid "2 hafta içinde"
+msgstr "Within 2 weeks"
+
 #: forum/services/email_service.py:81
 msgid "Analizus - E-posta Adresinizi Doğrulayın"
 msgstr "Analizus - Verify Your Email Address"
@@ -373,6 +515,9 @@ msgid "İyi çalışmalar,"
 msgstr "Best regards,"
 
 #: forum/services/email_service.py:136
+#: forum/templates/forum/emails/support_payment_details.html:112
+#: forum/views.py:2086 forum/views.py:2093 forum/views.py:2254
+#: forum/views.py:2261
 msgid "Analizus Ekibi"
 msgstr "The Analizus Team"
 
@@ -728,12 +873,6 @@ msgstr "Bibliography, bibliometrics, literature review"
 msgid "Akademik Eğitim Talep Et"
 msgstr "Request Academic Training"
 
-#: forum/templates/forum/egitim.html:103
-#: forum/templates/forum/egitim_talebi.html:75 templates/base.html:270
-#: templates/base.html:464 templates/partials/footer.html:98
-msgid "Kurumsal"
-msgstr "Corporate"
-
 #: forum/templates/forum/egitim.html:105
 msgid "Şirket ekipleri, üniversite birimleri, kamu"
 msgstr "Corporate teams, university units, public sector"
@@ -872,11 +1011,6 @@ msgstr "Academic/corporate groups of 2-5 people"
 #: forum/templates/forum/egitim.html:216
 msgid "Kurumsal Yerinde"
 msgstr "Corporate On-Site"
-
-#: forum/templates/forum/egitim.html:217
-#: forum/templates/forum/egitim_talebi.html:116
-msgid "Hibrit"
-msgstr "Hybrid"
 
 #: forum/templates/forum/egitim.html:217
 msgid "Online + yerinde karışık program"
@@ -1171,10 +1305,6 @@ msgstr "Request Type"
 msgid "Seçiniz…"
 msgstr "Select…"
 
-#: forum/templates/forum/egitim_talebi.html:74
-msgid "Bireysel"
-msgstr "Individual"
-
 #: forum/templates/forum/egitim_talebi.html:80
 msgid "Eğitim Konusu"
 msgstr "Training Topic"
@@ -1195,74 +1325,17 @@ msgstr "Briefly describe the training you're looking for"
 msgid "Seviye"
 msgstr "Level"
 
-#: forum/templates/forum/egitim_talebi.html:104 forum/training_catalog.py:471
-msgid "Başlangıç"
-msgstr "Beginner"
-
-#: forum/templates/forum/egitim_talebi.html:105 forum/training_catalog.py:472
-msgid "Orta"
-msgstr "Intermediate"
-
-#: forum/templates/forum/egitim_talebi.html:106 forum/training_catalog.py:473
-msgid "İleri"
-msgstr "Advanced"
-
-#: forum/templates/forum/egitim_talebi.html:107
-msgid "Emin değilim"
-msgstr "Not sure"
-
-#: forum/templates/forum/egitim_talebi.html:114
-msgid "Online canlı"
-msgstr "Live online"
-
-#: forum/templates/forum/egitim_talebi.html:115
-msgid "Yerinde"
-msgstr "On-site"
-
-#: forum/templates/forum/egitim_talebi.html:117
-msgid "Farketmez"
-msgstr "No preference"
-
 #: forum/templates/forum/egitim_talebi.html:124
 msgid "Katılımcı Sayısı"
 msgstr "Number of Participants"
-
-#: forum/templates/forum/egitim_talebi.html:127
-msgid "1 kişi"
-msgstr "1 person"
-
-#: forum/templates/forum/egitim_talebi.html:128
-msgid "2-5 kişi"
-msgstr "2-5 people"
-
-#: forum/templates/forum/egitim_talebi.html:129
-msgid "6-15 kişi"
-msgstr "6-15 people"
-
-#: forum/templates/forum/egitim_talebi.html:130
-msgid "16+ kişi"
-msgstr "16+ people"
 
 #: forum/templates/forum/egitim_talebi.html:134
 #: forum/templates/forum/proje_talebi.html:200
 msgid "Süre Beklentisi"
 msgstr "Expected Timeline"
 
-#: forum/templates/forum/egitim_talebi.html:137
-msgid "2 hafta içinde"
-msgstr "Within 2 weeks"
-
-#: forum/templates/forum/egitim_talebi.html:138
-#: forum/templates/forum/proje_talebi.html:204
-msgid "1 ay içinde"
-msgstr "Within 1 month"
-
-#: forum/templates/forum/egitim_talebi.html:139
-#: forum/templates/forum/proje_talebi.html:205
-msgid "Esnek"
-msgstr "Flexible"
-
 #: forum/templates/forum/egitim_talebi.html:145
+#: forum/templates/forum/emails/support_payment_details.html:50
 msgid "Açıklama"
 msgstr "Description"
 
@@ -1291,6 +1364,126 @@ msgstr "Send Request"
 #: forum/templates/forum/proje_talebi.html:272
 msgid "Form doldurmak yerine doğrudan konuşmayı tercih ediyorsanız:"
 msgstr "If you'd rather talk directly instead of filling out the form:"
+
+#: forum/templates/forum/emails/support_payment_details.html:6
+#: forum/views.py:3312
+msgid "Analizus Bağış İşlemi"
+msgstr "Analizus Support Payment"
+
+#: forum/templates/forum/emails/support_payment_details.html:17
+msgid "Desteğiniz için teşekkür ederiz!"
+msgstr "Thank you for your support!"
+
+#: forum/templates/forum/emails/support_payment_details.html:26
+#, python-format
+msgid "Merhaba <strong>%(username)s</strong>,"
+msgstr "Hello <strong>%(username)s</strong>,"
+
+#: forum/templates/forum/emails/support_payment_details.html:27
+msgid "Analizus'a gösterdiğiniz desteğe içtenlikle teşekkür ederiz."
+msgstr "We sincerely thank you for supporting Analizus."
+
+#: forum/templates/forum/emails/support_payment_details.html:28
+msgid ""
+"Aşağıdaki banka hesabına havale yaparak destek sürecinizi başlatabilirsiniz."
+msgstr ""
+"You can start the process by making a bank transfer to the account below."
+
+#: forum/templates/forum/emails/support_payment_details.html:35
+msgid "Banka Bilgileri"
+msgstr "Bank Details"
+
+#: forum/templates/forum/emails/support_payment_details.html:38
+msgid "Hesap Sahibi"
+msgstr "Account Holder"
+
+#: forum/templates/forum/emails/support_payment_details.html:46
+msgid "Tutar"
+msgstr "Amount"
+
+#: forum/templates/forum/emails/support_payment_details.html:62
+msgid "Seçtiğiniz Paket"
+msgstr "Your Selected Package"
+
+#: forum/templates/forum/emails/support_payment_details.html:64
+#, python-format
+msgid "%(days)s gün Premium üyelik"
+msgid_plural "%(days)s gün Premium üyelik"
+msgstr[0] "%(days)s day of Premium membership"
+msgstr[1] "%(days)s days of Premium membership"
+
+#: forum/templates/forum/emails/support_payment_details.html:70
+msgid "İşlem Adımları"
+msgstr "Steps"
+
+#: forum/templates/forum/emails/support_payment_details.html:72
+#, python-format
+msgid "Yukarıdaki IBAN'a <strong>%(tier_amount)s TL</strong> havale yapınız."
+msgstr "Transfer <strong>%(tier_amount)s TL</strong> to the IBAN above."
+
+#: forum/templates/forum/emails/support_payment_details.html:73
+#, python-format
+msgid "Açıklama alanına <strong>%(username)s — Destek</strong> yazınız."
+msgstr ""
+"Enter <strong>%(username)s — Destek</strong> in the payment reference field."
+
+#: forum/templates/forum/emails/support_payment_details.html:74
+msgid "Havaleyi yaptıktan sonra aşağıdaki butona tıklayarak bize bildirin."
+msgstr "After making the transfer, let us know by clicking the button below."
+
+#: forum/templates/forum/emails/support_payment_details.html:75
+msgid ""
+"Onaylandıktan sonra Premium ve Destekçi Rozeti <strong>24 saat "
+"içinde</strong> aktifleştirilir."
+msgstr ""
+"Once confirmed, Premium and the Supporter Badge are activated <strong>within"
+" 24 hours</strong>."
+
+#: forum/templates/forum/emails/support_payment_details.html:84
+msgid "Havaleyi Yaptım — Bildir"
+msgstr "I've Made the Transfer — Notify"
+
+#: forum/templates/forum/emails/support_payment_details.html:92
+msgid "Kazanacağınız Ayrıcalıklar"
+msgstr "Your Benefits"
+
+#: forum/templates/forum/emails/support_payment_details.html:94
+#: templates/partials/footer.html:200
+msgid "Süresi içinde ilanlara teklif verebilme"
+msgstr "Make offers on listings during your membership"
+
+#: forum/templates/forum/emails/support_payment_details.html:95
+#: templates/partials/footer.html:204
+msgid "Haftada <strong>3 ilan</strong> yayınlama hakkı"
+msgstr "Post up to <strong>3 listings</strong> per week"
+
+#: forum/templates/forum/emails/support_payment_details.html:95
+#: templates/partials/footer.html:204
+msgid "Normal: 1"
+msgstr "Standard: 1"
+
+#: forum/templates/forum/emails/support_payment_details.html:96
+#: templates/partials/footer.html:208
+msgid "Profil üzerinde özel <strong>Destekçi Rozeti</strong>"
+msgstr "A special <strong>Supporter Badge</strong> on your profile"
+
+#: forum/templates/forum/emails/support_payment_details.html:97
+#: templates/partials/footer.html:212
+msgid "<strong>Destekçiler listesinde</strong> yer alma"
+msgstr "A place on the <strong>supporters list</strong>"
+
+#: forum/templates/forum/emails/support_payment_details.html:101
+msgid ""
+"Herhangi bir sorunuz için <a href=\"mailto:info@analizus.com\" "
+"style=\"color:#a855f7;text-decoration:none;\">info@analizus.com</a> adresine"
+" yazabilirsiniz."
+msgstr ""
+"For any questions, you can write to <a href=\"mailto:info@analizus.com\" "
+"style=\"color:#a855f7;text-decoration:none;\">info@analizus.com</a>."
+
+#: forum/templates/forum/emails/support_payment_details.html:111
+msgid "İyi günler,"
+msgstr "Best regards,"
 
 #: forum/templates/forum/emails/verification_email.html:6
 msgid "E-posta Doğrulama"
@@ -2827,50 +3020,6 @@ msgstr "Your name, company, or institution name (optional)"
 msgid "Analiz Türü"
 msgstr "Analysis Type"
 
-#: forum/templates/forum/proje_talebi.html:168
-msgid "Tez / Makale Veri İndirme"
-msgstr "Thesis / Article Data Download"
-
-#: forum/templates/forum/proje_talebi.html:169
-msgid "Veri Görselleştirme"
-msgstr "Data Visualization"
-
-#: forum/templates/forum/proje_talebi.html:170
-msgid "Makine Öğrenmesi / Yapay Zeka"
-msgstr "Machine Learning / AI"
-
-#: forum/templates/forum/proje_talebi.html:171
-msgid "İstatistiksel Analiz"
-msgstr "Statistical Analysis"
-
-#: forum/templates/forum/proje_talebi.html:172
-msgid "Veri Temizleme / Hazırlama"
-msgstr "Data Cleaning / Preparation"
-
-#: forum/templates/forum/proje_talebi.html:173
-msgid "Zaman Serisi Analizi"
-msgstr "Time Series Analysis"
-
-#: forum/templates/forum/proje_talebi.html:174
-msgid "Metin / NLP Analizi"
-msgstr "Text / NLP Analysis"
-
-#: forum/templates/forum/proje_talebi.html:175
-msgid "AI Analiz Doğrulama"
-msgstr "AI Analysis Verification"
-
-#: forum/templates/forum/proje_talebi.html:176
-msgid "AI Ajan / Otomasyon Projesi"
-msgstr "AI Agent / Automation Project"
-
-#: forum/templates/forum/proje_talebi.html:177
-msgid "Bibliyometrik Analiz"
-msgstr "Bibliometric Analysis"
-
-#: forum/templates/forum/proje_talebi.html:178
-msgid "Diğer"
-msgstr "Other"
-
 #: forum/templates/forum/proje_talebi.html:183
 msgid "Proje Açıklaması"
 msgstr "Project Description"
@@ -2884,26 +3033,6 @@ msgstr ""
 #: forum/templates/forum/proje_talebi.html:190
 msgid "Veri Boyutu"
 msgstr "Data Size"
-
-#: forum/templates/forum/proje_talebi.html:193
-msgid "1.000 satırdan az"
-msgstr "Under 1,000 rows"
-
-#: forum/templates/forum/proje_talebi.html:194
-msgid "1.000 – 100.000 satır"
-msgstr "1,000 – 100,000 rows"
-
-#: forum/templates/forum/proje_talebi.html:195
-msgid "100.000 satır ve üzeri"
-msgstr "Over 100,000 rows"
-
-#: forum/templates/forum/proje_talebi.html:196
-msgid "Bilmiyorum"
-msgstr "I don't know"
-
-#: forum/templates/forum/proje_talebi.html:203
-msgid "1 hafta içinde"
-msgstr "Within 1 week"
 
 #: forum/templates/forum/proje_talebi.html:215
 msgid ""
@@ -4797,6 +4926,110 @@ msgid ""
 msgstr ""
 "Registration successful, but the verification email could not be sent. You "
 "can try again from your profile page."
+
+#: forum/views.py:2037 forum/views.py:2194
+msgid "Lütfen zorunlu alanları doldurunuz."
+msgstr "Please fill in the required fields."
+
+#: forum/views.py:2080 forum/views.py:2092 forum/views.py:2247
+#: forum/views.py:2260
+#, python-format
+msgid "Sayın %(name)s,"
+msgstr "Dear %(name)s,"
+
+#: forum/views.py:2081
+msgid ""
+"Proje talebiniz başarıyla alındı. En kısa sürede sizinle iletişime "
+"geçeceğiz."
+msgstr ""
+"Your project request has been received. We will contact you as soon as "
+"possible."
+
+#: forum/views.py:2082 forum/views.py:2249
+msgid "Talep Özeti:"
+msgstr "Request Summary:"
+
+#: forum/views.py:2083
+#, python-format
+msgid "Analiz Türü: %(value)s"
+msgstr "Analysis type: %(value)s"
+
+#: forum/views.py:2084
+#, python-format
+msgid "Veri Boyutu: %(value)s"
+msgstr "Data size: %(value)s"
+
+#: forum/views.py:2085
+#, python-format
+msgid "Süre Beklentisi: %(value)s"
+msgstr "Expected timeline: %(value)s"
+
+#: forum/views.py:2090
+msgid "Proje talebiniz alındı — Analizus"
+msgstr "Your project request has been received — Analizus"
+
+#: forum/views.py:2093
+msgid "Proje talebiniz alındı. En kısa sürede sizinle iletişime geçeceğiz."
+msgstr ""
+"Your project request has been received. We will contact you as soon as "
+"possible."
+
+#: forum/views.py:2096
+msgid "Talebiniz alındı! En kısa sürede size dönüş yapacağız."
+msgstr ""
+"Your request has been received! We will get back to you as soon as possible."
+
+#: forum/views.py:2098 forum/views.py:2266
+msgid "Bir hata oluştu, lütfen tekrar deneyin."
+msgstr "An error occurred, please try again."
+
+#: forum/views.py:2198
+msgid "Devam etmek için KVKK Aydınlatma Metni onayı gereklidir."
+msgstr ""
+"To continue, you must accept the KVKK (personal data protection) notice."
+
+#: forum/views.py:2248
+msgid ""
+"Eğitim talebiniz başarıyla alındı. 24 saat içinde sizinle iletişime "
+"geçeceğiz."
+msgstr ""
+"Your training request has been received. We will contact you within 24 "
+"hours."
+
+#: forum/views.py:2250
+#, python-format
+msgid "Talep Türü: %(value)s"
+msgstr "Request type: %(value)s"
+
+#: forum/views.py:2251
+#, python-format
+msgid "Konu: %(value)s"
+msgstr "Topic: %(value)s"
+
+#: forum/views.py:2252
+#, python-format
+msgid "Seviye: %(value)s"
+msgstr "Level: %(value)s"
+
+#: forum/views.py:2253
+#, python-format
+msgid "Format: %(value)s"
+msgstr "Format: %(value)s"
+
+#: forum/views.py:2258
+msgid "Eğitim talebiniz alındı — Analizus"
+msgstr "Your training request has been received — Analizus"
+
+#: forum/views.py:2261
+msgid "Eğitim talebiniz alındı. 24 saat içinde sizinle iletişime geçeceğiz."
+msgstr ""
+"Your training request has been received. We will contact you within 24 "
+"hours."
+
+#: forum/views.py:2264
+msgid "Talebiniz alındı! 24 saat içinde size dönüş yapacağız."
+msgstr ""
+"Your request has been received! We will get back to you within 24 hours."
 
 #: istatistik/seo_content.py:7
 msgid ""
@@ -12310,26 +12543,6 @@ msgstr ""
 #: templates/partials/footer.html:196
 msgid "Ne Kazanırsınız?"
 msgstr "What Do You Get?"
-
-#: templates/partials/footer.html:200
-msgid "Süresi içinde ilanlara teklif verebilme"
-msgstr "Make offers on listings during your membership"
-
-#: templates/partials/footer.html:204
-msgid "Haftada <strong>3 ilan</strong> yayınlama hakkı"
-msgstr "Post up to <strong>3 listings</strong> per week"
-
-#: templates/partials/footer.html:204
-msgid "Normal: 1"
-msgstr "Standard: 1"
-
-#: templates/partials/footer.html:208
-msgid "Profil üzerinde özel <strong>Destekçi Rozeti</strong>"
-msgstr "A special <strong>Supporter Badge</strong> on your profile"
-
-#: templates/partials/footer.html:212
-msgid "<strong>Destekçiler listesinde</strong> yer alma"
-msgstr "A place on the <strong>supporters list</strong>"
 
 #: templates/partials/footer.html:219 templates/partials/footer.html:252
 #: templates/partials/footer.html:260

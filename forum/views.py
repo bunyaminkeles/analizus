@@ -2034,7 +2034,7 @@ def proje_talebi(request):
         source = request.POST.get('source', 'direct')
 
         if not all([name, email, analysis_type, description, data_size, timeline]):
-            messages.error(request, 'Lütfen zorunlu alanları doldurunuz.')
+            messages.error(request, gettext('Lütfen zorunlu alanları doldurunuz.'))
             return redirect('proje_talebi')
 
         try:
@@ -2046,13 +2046,15 @@ def proje_talebi(request):
                 source=source if source in valid_sources else 'direct',
             )
 
-            # Admine bildirim
+            # Admine bildirim — her zaman Türkçe (etiketler gettext_lazy)
+            from forum.i18n_utils import admin_language
             admin_email = settings.ADMIN_NOTIFICATION_EMAIL
             analysis_label = dict(ProjectRequest.ANALYSIS_CHOICES).get(analysis_type, analysis_type)
             size_label = dict(ProjectRequest.DATA_SIZE_CHOICES).get(data_size, data_size)
             timeline_label = dict(ProjectRequest.TIMELINE_CHOICES).get(timeline, timeline)
             source_label = dict(ProjectRequest.SOURCE_CHOICES).get(req.source, req.source)
-            admin_html = (
+            with admin_language():
+              admin_html = (
                 f"<h3>Yeni Proje Talebi #{req.pk}</h3>"
                 f"<p><b>Ad:</b> {name}</p>"
                 f"<p><b>E-posta:</b> {email}</p>"
@@ -2062,34 +2064,38 @@ def proje_talebi(request):
                 f"<p><b>Veri Boyutu:</b> {size_label}</p>"
                 f"<p><b>Süre Beklentisi:</b> {timeline_label}</p>"
                 f"<p><b>Açıklama:</b></p><p>{description}</p>"
-            )
+              )
+              admin_subject = f"[Analizus] Yeni Proje Talebi: {name} ({analysis_label})"
+              admin_plain = f"Yeni talep #{req.pk}\nAd: {name}\nEmail: {email}\nŞirket: {company}\nTür: {analysis_label}\n\n{description}"
             EmailService._send_email(
                 to_email=admin_email,
-                subject=f"[Analizus] Yeni Proje Talebi: {name} ({analysis_label})",
+                subject=admin_subject,
                 html_content=admin_html,
-                plain_content=f"Yeni talep #{req.pk}\nAd: {name}\nEmail: {email}\nŞirket: {company}\nTür: {analysis_label}\n\n{description}",
+                plain_content=admin_plain,
             )
 
-            # Kullanıcıya onay
+            # Kullanıcıya onay — formu gönderdiği sayfanın dilinde
+            from django.utils.html import escape
             user_html = (
-                f"<p>Sayın {name},</p>"
-                f"<p>Proje talebiniz başarıyla alındı. En kısa sürede sizinle iletişime geçeceğiz.</p>"
-                f"<p><b>Talep Özeti:</b><br>"
-                f"Analiz Türü: {analysis_label}<br>"
-                f"Veri Boyutu: {size_label}<br>"
-                f"Süre Beklentisi: {timeline_label}</p>"
-                f"<p>— Analizus Ekibi</p>"
+                "<p>" + gettext("Sayın %(name)s,") % {'name': escape(name)} + "</p>"
+                "<p>" + gettext("Proje talebiniz başarıyla alındı. En kısa sürede sizinle iletişime geçeceğiz.") + "</p>"
+                "<p><b>" + gettext("Talep Özeti:") + "</b><br>"
+                + gettext("Analiz Türü: %(value)s") % {'value': analysis_label} + "<br>"
+                + gettext("Veri Boyutu: %(value)s") % {'value': size_label} + "<br>"
+                + gettext("Süre Beklentisi: %(value)s") % {'value': timeline_label} + "</p>"
+                "<p>— " + gettext("Analizus Ekibi") + "</p>"
             )
             EmailService._send_email(
                 to_email=email,
-                subject="Proje talebiniz alındı — Analizus",
+                subject=gettext("Proje talebiniz alındı — Analizus"),
                 html_content=user_html,
-                plain_content=f"Sayın {name},\n\nProje talebiniz alındı. En kısa sürede sizinle iletişime geçeceğiz.\n\n— Analizus Ekibi",
+                plain_content=gettext("Sayın %(name)s,") % {'name': name} + "\n\n"
+                    + gettext("Proje talebiniz alındı. En kısa sürede sizinle iletişime geçeceğiz.") + "\n\n— " + gettext("Analizus Ekibi"),
             )
 
-            messages.success(request, 'Talebiniz alındı! En kısa sürede size dönüş yapacağız.')
+            messages.success(request, gettext('Talebiniz alındı! En kısa sürede size dönüş yapacağız.'))
         except Exception:
-            messages.error(request, 'Bir hata oluştu, lütfen tekrar deneyin.')
+            messages.error(request, gettext('Bir hata oluştu, lütfen tekrar deneyin.'))
         return redirect('proje_talebi')
 
     source = request.GET.get('source', 'direct')
@@ -2185,11 +2191,11 @@ def egitim_talebi(request):
         source = request.POST.get('source', 'direct')
 
         if not all([name, email, request_type, level, training_format, participants, timeline, description]):
-            messages.error(request, 'Lütfen zorunlu alanları doldurunuz.')
+            messages.error(request, gettext('Lütfen zorunlu alanları doldurunuz.'))
             return redirect('egitim_talebi')
 
         if not kvkk_consent:
-            messages.error(request, 'Devam etmek için KVKK Aydınlatma Metni onayı gereklidir.')
+            messages.error(request, gettext('Devam etmek için KVKK Aydınlatma Metni onayı gereklidir.'))
             return redirect('egitim_talebi')
 
         try:
@@ -2209,7 +2215,10 @@ def egitim_talebi(request):
             timeline_label = dict(TrainingRequest.TIMELINE_CHOICES).get(timeline, timeline)
             topic_label = other_topic or (get_item_by_slug(topic) or {}).get('title', topic) or '—'
 
-            admin_html = (
+            # Admine bildirim — her zaman Türkçe (etiketler/kurs adı gettext_lazy)
+            from forum.i18n_utils import admin_language
+            with admin_language():
+              admin_html = (
                 f"<h3>Yeni Eğitim Talebi #{req.pk}</h3>"
                 f"<p><b>Ad:</b> {name}</p>"
                 f"<p><b>E-posta:</b> {email}</p>"
@@ -2222,34 +2231,39 @@ def egitim_talebi(request):
                 f"<p><b>Katılımcı Sayısı:</b> {participants_label}</p>"
                 f"<p><b>Süre Beklentisi:</b> {timeline_label}</p>"
                 f"<p><b>Açıklama:</b></p><p>{description}</p>"
-            )
+              )
+              admin_subject = f"[Analizus] Yeni Eğitim Talebi: {name} ({type_label})"
+              admin_plain = f"Yeni eğitim talebi #{req.pk}\nAd: {name}\nEmail: {email}\nTür: {type_label}\nKonu: {topic_label}\n\n{description}"
             EmailService._send_email(
                 to_email=settings.ADMIN_NOTIFICATION_EMAIL,
-                subject=f"[Analizus] Yeni Eğitim Talebi: {name} ({type_label})",
+                subject=admin_subject,
                 html_content=admin_html,
-                plain_content=f"Yeni eğitim talebi #{req.pk}\nAd: {name}\nEmail: {email}\nTür: {type_label}\nKonu: {topic_label}\n\n{description}",
+                plain_content=admin_plain,
             )
 
+            # Kullanıcıya onay — formu gönderdiği sayfanın dilinde
+            from django.utils.html import escape
             user_html = (
-                f"<p>Sayın {name},</p>"
-                f"<p>Eğitim talebiniz başarıyla alındı. 24 saat içinde sizinle iletişime geçeceğiz.</p>"
-                f"<p><b>Talep Özeti:</b><br>"
-                f"Talep Türü: {type_label}<br>"
-                f"Konu: {topic_label}<br>"
-                f"Seviye: {level_label}<br>"
-                f"Format: {format_label}</p>"
-                f"<p>— Analizus Ekibi</p>"
+                "<p>" + gettext("Sayın %(name)s,") % {'name': escape(name)} + "</p>"
+                "<p>" + gettext("Eğitim talebiniz başarıyla alındı. 24 saat içinde sizinle iletişime geçeceğiz.") + "</p>"
+                "<p><b>" + gettext("Talep Özeti:") + "</b><br>"
+                + gettext("Talep Türü: %(value)s") % {'value': type_label} + "<br>"
+                + gettext("Konu: %(value)s") % {'value': escape(str(topic_label))} + "<br>"
+                + gettext("Seviye: %(value)s") % {'value': level_label} + "<br>"
+                + gettext("Format: %(value)s") % {'value': format_label} + "</p>"
+                "<p>— " + gettext("Analizus Ekibi") + "</p>"
             )
             EmailService._send_email(
                 to_email=email,
-                subject="Eğitim talebiniz alındı — Analizus",
+                subject=gettext("Eğitim talebiniz alındı — Analizus"),
                 html_content=user_html,
-                plain_content=f"Sayın {name},\n\nEğitim talebiniz alındı. 24 saat içinde sizinle iletişime geçeceğiz.\n\n— Analizus Ekibi",
+                plain_content=gettext("Sayın %(name)s,") % {'name': name} + "\n\n"
+                    + gettext("Eğitim talebiniz alındı. 24 saat içinde sizinle iletişime geçeceğiz.") + "\n\n— " + gettext("Analizus Ekibi"),
             )
 
-            messages.success(request, 'Talebiniz alındı! 24 saat içinde size dönüş yapacağız.')
+            messages.success(request, gettext('Talebiniz alındı! 24 saat içinde size dönüş yapacağız.'))
         except Exception:
-            messages.error(request, 'Bir hata oluştu, lütfen tekrar deneyin.')
+            messages.error(request, gettext('Bir hata oluştu, lütfen tekrar deneyin.'))
         return redirect('egitim_talebi')
 
     from .training_catalog import TRAINING_CATEGORIES
@@ -3291,12 +3305,16 @@ def send_support_email(request):
             'confirm_url': confirm_url,
         }
 
-        html_message = render_to_string('forum/emails/support_payment_details.html', context)
+        # Alıcının kayıtlı dilinde (Profile.preferred_language)
+        from forum.i18n_utils import recipient_language
+        with recipient_language(user):
+            html_message = render_to_string('forum/emails/support_payment_details.html', context)
+            subject = gettext("Analizus Bağış İşlemi")
         plain_message = strip_tags(html_message)
 
         email_sent = EmailService._send_email(
             to_email=user.email,
-            subject="Analizus Bağış İşlemi",
+            subject=subject,
             html_content=html_message,
             plain_content=plain_message
         )

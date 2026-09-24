@@ -1,9 +1,9 @@
-<!DOCTYPE html>
-<html lang="tr">
+{% load i18n %}<!DOCTYPE html>
+{% get_current_language as LANG %}<html lang="{{ LANG }}">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Analizus Bağış İşlemi</title>
+<title>{% trans "Analizus Bağış İşlemi" %}</title>
 </head>
 <body style="margin:0;padding:0;background:#f1f5f9;font-family:Arial,sans-serif;">
 <table width="100%" cellpadding="0" cellspacing="0" style="background:#f1f5f9;padding:32px 0;">
@@ -14,7 +14,7 @@
       <tr>
         <td style="background:linear-gradient(135deg,#ec4899,#a855f7);padding:28px 32px;text-align:center;">
           <p style="margin:0;font-size:22px;font-weight:700;color:#fff;">❤️ Analizus</p>
-          <p style="margin:6px 0 0;font-size:14px;color:rgba(255,255,255,0.85);">Desteğiniz için teşekkür ederiz!</p>
+          <p style="margin:6px 0 0;font-size:14px;color:rgba(255,255,255,0.85);">{% trans "Desteğiniz için teşekkür ederiz!" %}</p>
         </td>
       </tr>
 
@@ -23,19 +23,19 @@
         <td style="padding:32px;">
 
           <p style="margin:0 0 20px;font-size:15px;color:#e2e8f0;">
-            Merhaba <strong>{{ username }}</strong>,<br><br>
-            Analizus'a gösterdiğiniz desteğe içtenlikle teşekkür ederiz. 🙏<br>
-            Aşağıdaki banka hesabına havale yaparak destek sürecinizi başlatabilirsiniz.
+            {% blocktrans %}Merhaba <strong>{{ username }}</strong>,{% endblocktrans %}<br><br>
+            {% trans "Analizus'a gösterdiğiniz desteğe içtenlikle teşekkür ederiz." %} 🙏<br>
+            {% trans "Aşağıdaki banka hesabına havale yaparak destek sürecinizi başlatabilirsiniz." %}
           </p>
 
           <!-- IBAN Kutusu -->
           <table width="100%" cellpadding="0" cellspacing="0" style="background:#0f172a;border:1px solid rgba(236,72,153,0.3);border-radius:8px;margin-bottom:24px;">
             <tr>
               <td style="padding:18px 20px;">
-                <p style="margin:0 0 12px;font-size:12px;font-weight:700;color:#ec4899;text-transform:uppercase;letter-spacing:.08em;">📌 Banka Bilgileri</p>
+                <p style="margin:0 0 12px;font-size:12px;font-weight:700;color:#ec4899;text-transform:uppercase;letter-spacing:.08em;">📌 {% trans "Banka Bilgileri" %}</p>
                 <table width="100%" cellpadding="4" cellspacing="0">
                   <tr>
-                    <td style="font-size:13px;color:#94a3b8;width:120px;">Hesap Sahibi</td>
+                    <td style="font-size:13px;color:#94a3b8;width:120px;">{% trans "Hesap Sahibi" %}</td>
                     <td style="font-size:13px;color:#f1f5f9;font-weight:600;">Bünyamin Keleş</td>
                   </tr>
                   <tr>
@@ -43,11 +43,11 @@
                     <td style="font-size:13px;color:#f1f5f9;font-weight:600;letter-spacing:.04em;">TR73 0003 2000 0000 0079 1034 65</td>
                   </tr>
                   <tr>
-                    <td style="font-size:13px;color:#94a3b8;">Tutar</td>
+                    <td style="font-size:13px;color:#94a3b8;">{% trans "Tutar" %}</td>
                     <td style="font-size:15px;color:#f59e0b;font-weight:700;">{{ tier_amount }} TL</td>
                   </tr>
                   <tr>
-                    <td style="font-size:13px;color:#94a3b8;">Açıklama</td>
+                    <td style="font-size:13px;color:#94a3b8;">{% trans "Açıklama" %}</td>
                     <td style="font-size:13px;color:#f1f5f9;">{{ username }} — Destek</td>
                   </tr>
                 </table>
@@ -59,20 +59,20 @@
           <table width="100%" cellpadding="0" cellspacing="0" style="background:#0f172a;border:1px solid rgba(168,85,247,0.3);border-radius:8px;margin-bottom:24px;">
             <tr>
               <td style="padding:18px 20px;">
-                <p style="margin:0 0 8px;font-size:12px;font-weight:700;color:#a855f7;text-transform:uppercase;letter-spacing:.08em;">✅ Seçtiğiniz Paket</p>
-                <p style="margin:0;font-size:16px;font-weight:700;color:#f1f5f9;">{{ tier_name }}</p>
-                <p style="margin:4px 0 0;font-size:13px;color:#94a3b8;">{{ premium_days }} gün Premium üyelik</p>
+                <p style="margin:0 0 8px;font-size:12px;font-weight:700;color:#a855f7;text-transform:uppercase;letter-spacing:.08em;">✅ {% trans "Seçtiğiniz Paket" %}</p>
+                <p style="margin:0;font-size:16px;font-weight:700;color:#f1f5f9;">{% trans tier_name %}</p>
+                <p style="margin:4px 0 0;font-size:13px;color:#94a3b8;">{% blocktrans count days=premium_days %}{{ days }} gün Premium üyelik{% plural %}{{ days }} gün Premium üyelik{% endblocktrans %}</p>
               </td>
             </tr>
           </table>
 
           <!-- Adımlar -->
-          <p style="margin:0 0 12px;font-size:12px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.08em;">⏱️ İşlem Adımları</p>
+          <p style="margin:0 0 12px;font-size:12px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.08em;">⏱️ {% trans "İşlem Adımları" %}</p>
           <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:24px;">
-            <tr><td style="padding:6px 0;font-size:13px;color:#cbd5e1;"><span style="color:#a855f7;font-weight:700;">1.</span> Yukarıdaki IBAN'a <strong>{{ tier_amount }} TL</strong> havale yapınız.</td></tr>
-            <tr><td style="padding:6px 0;font-size:13px;color:#cbd5e1;"><span style="color:#a855f7;font-weight:700;">2.</span> Açıklama alanına <strong>{{ username }} — Destek</strong> yazınız.</td></tr>
-            <tr><td style="padding:6px 0;font-size:13px;color:#cbd5e1;"><span style="color:#a855f7;font-weight:700;">3.</span> Havaleyi yaptıktan sonra aşağıdaki butona tıklayarak bize bildirin.</td></tr>
-            <tr><td style="padding:6px 0;font-size:13px;color:#cbd5e1;"><span style="color:#a855f7;font-weight:700;">4.</span> Onaylandıktan sonra Premium ve Destekçi Rozeti <strong>24 saat içinde</strong> aktifleştirilir.</td></tr>
+            <tr><td style="padding:6px 0;font-size:13px;color:#cbd5e1;"><span style="color:#a855f7;font-weight:700;">1.</span> {% blocktrans %}Yukarıdaki IBAN'a <strong>{{ tier_amount }} TL</strong> havale yapınız.{% endblocktrans %}</td></tr>
+            <tr><td style="padding:6px 0;font-size:13px;color:#cbd5e1;"><span style="color:#a855f7;font-weight:700;">2.</span> {% blocktrans %}Açıklama alanına <strong>{{ username }} — Destek</strong> yazınız.{% endblocktrans %}</td></tr>
+            <tr><td style="padding:6px 0;font-size:13px;color:#cbd5e1;"><span style="color:#a855f7;font-weight:700;">3.</span> {% trans "Havaleyi yaptıktan sonra aşağıdaki butona tıklayarak bize bildirin." %}</td></tr>
+            <tr><td style="padding:6px 0;font-size:13px;color:#cbd5e1;"><span style="color:#a855f7;font-weight:700;">4.</span> {% blocktrans %}Onaylandıktan sonra Premium ve Destekçi Rozeti <strong>24 saat içinde</strong> aktifleştirilir.{% endblocktrans %}</td></tr>
           </table>
 
           <!-- Bildir Butonu -->
@@ -81,7 +81,7 @@
             <tr>
               <td align="center">
                 <a href="{{ confirm_url }}" style="display:inline-block;padding:12px 32px;background:linear-gradient(135deg,#ec4899,#a855f7);color:#fff;font-size:14px;font-weight:700;border-radius:8px;text-decoration:none;">
-                  ✅ Havaleyi Yaptım — Bildir
+                  ✅ {% trans "Havaleyi Yaptım — Bildir" %}
                 </a>
               </td>
             </tr>
@@ -89,18 +89,16 @@
           {% endif %}
 
           <!-- Ayrıcalıklar -->
-          <p style="margin:0 0 12px;font-size:12px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.08em;">🎁 Kazanacağınız Ayrıcalıklar</p>
+          <p style="margin:0 0 12px;font-size:12px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.08em;">🎁 {% trans "Kazanacağınız Ayrıcalıklar" %}</p>
           <table width="100%" cellpadding="4" cellspacing="0" style="margin-bottom:28px;">
-            <tr><td style="font-size:13px;color:#cbd5e1;">💬 &nbsp;Süresi içinde ilanlara teklif verebilme</td></tr>
-            <tr><td style="font-size:13px;color:#cbd5e1;">📋 &nbsp;Haftada <strong>3 ilan</strong> yayınlama hakkı <span style="color:#64748b;">(Normal: 1)</span></td></tr>
-            <tr><td style="font-size:13px;color:#cbd5e1;">❤️ &nbsp;Profil üzerinde özel <strong>Destekçi Rozeti</strong></td></tr>
-            <tr><td style="font-size:13px;color:#cbd5e1;">👥 &nbsp;<strong>Destekçiler listesinde</strong> yer alma</td></tr>
+            <tr><td style="font-size:13px;color:#cbd5e1;">💬 &nbsp;{% trans "Süresi içinde ilanlara teklif verebilme" %}</td></tr>
+            <tr><td style="font-size:13px;color:#cbd5e1;">📋 &nbsp;{% blocktrans %}Haftada <strong>3 ilan</strong> yayınlama hakkı{% endblocktrans %} <span style="color:#64748b;">({% trans "Normal: 1" %})</span></td></tr>
+            <tr><td style="font-size:13px;color:#cbd5e1;">❤️ &nbsp;{% blocktrans %}Profil üzerinde özel <strong>Destekçi Rozeti</strong>{% endblocktrans %}</td></tr>
+            <tr><td style="font-size:13px;color:#cbd5e1;">👥 &nbsp;{% blocktrans %}<strong>Destekçiler listesinde</strong> yer alma{% endblocktrans %}</td></tr>
           </table>
 
           <p style="margin:0;font-size:13px;color:#64748b;">
-            Herhangi bir sorunuz için
-            <a href="mailto:info@analizus.com" style="color:#a855f7;text-decoration:none;">info@analizus.com</a>
-            adresine yazabilirsiniz.
+            {% blocktrans %}Herhangi bir sorunuz için <a href="mailto:info@analizus.com" style="color:#a855f7;text-decoration:none;">info@analizus.com</a> adresine yazabilirsiniz.{% endblocktrans %}
           </p>
 
         </td>
@@ -110,8 +108,8 @@
       <tr>
         <td style="padding:16px 32px 24px;border-top:1px solid rgba(255,255,255,0.06);">
           <p style="margin:0;font-size:12px;color:#475569;text-align:center;">
-            İyi günler,<br>
-            <strong style="color:#94a3b8;">Analizus Ekibi</strong> &mdash; analizus.com
+            {% trans "İyi günler," %}<br>
+            <strong style="color:#94a3b8;">{% trans "Analizus Ekibi" %}</strong> &mdash; analizus.com
           </p>
         </td>
       </tr>
