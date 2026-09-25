@@ -87,9 +87,15 @@ maddelerde.
   AI talimatı son satırı; Hakkımızda "Türkçe Arayüz" satırı KALDIRILDI.
   Olgusal olanlar korundu (TR Dizin/YÖK/19 Türk üniversitesi, KVKK/TCK, Türkçe
   NLP dersi, transkript dil listesi, blog yazı içerikleri).
-- [ ] **Kalan konumlandırma kararları:** "tez yazımı" vurgusu (AI Asistan,
-  blog, forum açıklamaları; Hangi Test meta "Tezin için…"); e-posta imzası →
-  "Araştırma ve Analiz Platformu"?
+- [x] **"Tez" vurgusu genelleştirildi** (25 Eylül 2026, kullanıcı onayı, 14 madde):
+  varsayılan meta + keywords, ana sayfa JSON-LD (Tez Danışmanlığı → Araştırma
+  Danışmanlığı) + AI kartı, Hangi Test/AI Asistan/blog/forum/bölüm/örneklem/
+  uzman dizini/başarı hikayeleri açıklamaları; forum açıklamasındaki kaçak
+  "Ücretsiz, Türkçe." da düzeltildi. E-posta imzası zaten "Araştırma ve Analiz
+  Platformu"ydu; doğrulama + hoş geldin e-postası altlığı "© 2024 … Akademik
+  Analiz ve Veri Bilimi Forumu" → "© {yıl} … Araştırma ve Analiz Platformu".
+  Korunan: öğrenci segmentine özel "Tezin için:", onboarding "Akademik Destek",
+  tez araçları. JSON-LD geçerli, pytest 61/61.
 - [ ] Adım 6 kapsamı: APA cümleleri, sunucu sonuç metinleri, PDF/TXT sonuç
   dosyaları EN/DE olacak mı?
 - [ ] "Ufak tefek aksamalar" listesi kullanıcıdan alınacak (cilalama turu).

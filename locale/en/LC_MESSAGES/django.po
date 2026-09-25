@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-25 21:26+0300\n"
+"POT-Creation-Date: 2026-09-25 21:33+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -996,12 +996,13 @@ msgstr "Restore my account"
 
 #: forum/templates/forum/ai_assistant.html:5
 msgid ""
-"İstatistik testleri, tez yazımı ve veri analizi hakkında anında yanıt alın. "
-"Analizus AI Asistan, akademik düzeyde yapay zeka desteği sunar — ücretsiz, "
-"7/24."
+"İstatistik testleri, araştırma yöntemleri ve veri analizi hakkında anında "
+"yanıt alın. Analizus AI Asistan, akademik düzeyde yapay zeka desteği sunar —"
+" ücretsiz, 7/24."
 msgstr ""
-"Get instant answers on statistical tests, thesis writing and data analysis. "
-"The Analizus AI Assistant offers academic-level AI support — free, 24/7."
+"Get instant answers on statistical tests, research methods and data "
+"analysis. The Analizus AI Assistant offers academic-level AI support — free,"
+" 24/7."
 
 #: forum/templates/forum/ai_assistant.html:17
 msgid "Akademik analiz ve istatistik sorularınızı yanıtlıyorum"
@@ -2226,8 +2227,9 @@ msgstr ""
 
 #: forum/templates/forum/emails/verification_email.html:68
 #: forum/templates/forum/emails/welcome_email.html:129
-msgid "Akademik Analiz ve Veri Bilimi Forumu"
-msgstr "Academic Analysis and Data Science Forum"
+#: templates/partials/footer.html:136
+msgid "Araştırma ve Analiz Platformu"
+msgstr "Research and Analysis Platform"
 
 #: forum/templates/forum/emails/welcome_email.html:6
 #: forum/templates/registration/login.html:244
@@ -2615,13 +2617,13 @@ msgstr "Which Statistical Test Should I Use? — Interactive Decision Tree"
 
 #: forum/templates/forum/hangi_test.html:6
 msgid ""
-"Tezin için hangi istatistik testini kullanmalısın? Adım adım karar rehberi —"
+"Verin için hangi istatistik testini kullanmalısın? Adım adım karar rehberi —"
 " t-testi, ANOVA, Ki-Kare, korelasyon, regresyon ve daha fazlası. Ücretsiz "
 "online analiz araçlarıyla hemen hesapla."
 msgstr ""
-"Which statistical test should you use for your research? A step-by-step "
-"decision guide — t-test, ANOVA, chi-square, correlation, regression and "
-"more. Calculate instantly with free online analysis tools."
+"Which statistical test should you use for your data? A step-by-step decision"
+" guide — t-test, ANOVA, chi-square, correlation, regression and more. "
+"Calculate instantly with free online analysis tools."
 
 #: forum/templates/forum/hangi_test.html:16
 msgid "T-testi mi ANOVA mı kullanmalıyım?"
@@ -4314,8 +4316,12 @@ msgid "Asistan"
 msgstr "Assistant"
 
 #: forum/templates/forum/home.html:698
-msgid "Literatür tarama ve tez yazımında yapay zeka destekli rehberiniz."
-msgstr "Your AI-powered guide for literature review and thesis writing."
+msgid ""
+"Literatür taramada ve araştırmanın her aşamasında yapay zeka destekli "
+"rehberiniz."
+msgstr ""
+"Your AI-powered guide for literature review and every stage of your "
+"research."
 
 #: forum/templates/forum/home.html:705 templates/base.html:240
 #: templates/base.html:447
@@ -12278,10 +12284,10 @@ msgstr "Sample Size Calculator"
 
 #: istatistik/templates/istatistik/orneklem.html:6
 msgid ""
-"Teziniz için gereken örneklem büyüklüğünü anında hesaplayın. Evren "
+"Araştırmanız için gereken örneklem büyüklüğünü anında hesaplayın. Evren "
 "büyüklüğü, güven aralığı ve hata payına göre ücretsiz örneklem hesaplayıcı."
 msgstr ""
-"Instantly calculate the sample size you need for your thesis. Free sample "
+"Instantly calculate the sample size you need for your research. Free sample "
 "size calculator based on population size, confidence level and margin of "
 "error."
 
@@ -14679,11 +14685,11 @@ msgstr "Analizus - Academic Analysis and Data Science Community"
 
 #: templates/base.html:32
 msgid ""
-"SPSS, Python, R Studio, Nitel analizler ve AI ile istatistik analizi, tez "
-"yazımı ve akademik araştırma desteği."
+"SPSS, Python, R Studio, Nitel analizler ve AI ile istatistik analizi, veri "
+"analizi ve araştırma desteği."
 msgstr ""
-"Statistical analysis, thesis writing, and academic research support with "
-"SPSS, Python, R Studio, qualitative analysis, and AI."
+"Statistical analysis, data analysis and research support with SPSS, Python, "
+"R Studio, qualitative analysis and AI."
 
 #: templates/base.html:188
 msgid "İçeriğe geç"
@@ -15090,10 +15096,6 @@ msgid "Premium Üye Ol"
 msgstr "Become a Premium Member"
 
 #: templates/partials/footer.html:136
-msgid "Araştırma ve Analiz Platformu"
-msgstr "Research and Analysis Platform"
-
-#: templates/partials/footer.html:136
 msgid "ziyaretçi"
 msgstr "visitors"
 
@@ -15317,6 +15319,9 @@ msgid ""
 msgstr ""
 "Learn to perform <strong style=\"color:#f1f5f9;\">%(promo_title)s</strong> "
 "analysis with your own data through one-on-one training."
+
+#~ msgid "Akademik Analiz ve Veri Bilimi Forumu"
+#~ msgstr "Academic Analysis and Data Science Forum"
 
 #~ msgid "Türkçe Arayüz"
 #~ msgstr "Turkish Interface"
