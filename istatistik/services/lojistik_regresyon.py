@@ -3,6 +3,7 @@ Lojistik Regresyon Analizi (Binary)
 Statsmodels Logit; Wald testi, Odds Ratio, Nagelkerke R², sınıflandırma tablosu.
 """
 import io
+from django.utils.translation import gettext
 import numpy as np
 
 
@@ -12,14 +13,14 @@ def analyze(df, dep_col: str, indep_cols: list) -> dict:
     from scipy import stats
 
     if dep_col not in df.columns:
-        raise ValueError(f'"{dep_col}" bağımlı değişken sütunu bulunamadı.')
+        raise ValueError(gettext('"%(dep_col)s" bağımlı değişken sütunu bulunamadı.') % {'dep_col': dep_col})
     missing = [c for c in indep_cols if c not in df.columns]
     if missing:
-        raise ValueError(f'Şu sütunlar bulunamadı: {", ".join(missing)}')
+        raise ValueError(gettext('Şu sütunlar bulunamadı: %(v)s') % {'v': ', '.join(missing)})
     if not indep_cols:
-        raise ValueError('En az 1 bağımsız değişken seçilmelidir.')
+        raise ValueError(gettext('En az 1 bağımsız değişken seçilmelidir.'))
     if dep_col in indep_cols:
-        raise ValueError('Bağımlı değişken, bağımsız değişkenler arasında olamaz.')
+        raise ValueError(gettext('Bağımlı değişken, bağımsız değişkenler arasında olamaz.'))
 
     sub = df[[dep_col] + list(indep_cols)].dropna()
     n = len(sub)
@@ -27,12 +28,10 @@ def analyze(df, dep_col: str, indep_cols: list) -> dict:
     dep_series = sub[dep_col]
     unique_vals = dep_series.unique()
     if len(unique_vals) != 2:
-        raise ValueError(f'Lojistik regresyon için bağımlı değişkenin tam 2 kategorisi olmalıdır. '
-                         f'"{dep_col}" sütununda {len(unique_vals)} farklı değer bulundu.')
+        raise ValueError(gettext('Lojistik regresyon için bağımlı değişkenin tam 2 kategorisi olmalıdır. "%(dep_col)s" sütununda %(unique_vals)s farklı değer bulundu.') % {'dep_col': dep_col, 'unique_vals': len(unique_vals)})
 
     if n < len(indep_cols) + 5:
-        raise ValueError(f'Yetersiz gözlem sayısı (n = {n}). '
-                         f'En az {len(indep_cols) + 5} satır gereklidir.')
+        raise ValueError(gettext('Yetersiz gözlem sayısı (n = %(n)s). En az %(v)s satır gereklidir.') % {'n': n, 'v': len(indep_cols) + 5})
 
     sorted_vals = sorted(unique_vals, key=str)
     cat0, cat1 = str(sorted_vals[0]), str(sorted_vals[1])
@@ -52,7 +51,7 @@ def analyze(df, dep_col: str, indep_cols: list) -> dict:
             predictor_names.append(col)
 
     if X_df.empty or X_df.shape[1] == 0:
-        raise ValueError('Bağımsız değişkenler işlenemedi.')
+        raise ValueError(gettext('Bağımsız değişkenler işlenemedi.'))
 
     X_np = X_df.values.astype(float)
     X_sm = sm.add_constant(X_np)
@@ -60,7 +59,7 @@ def analyze(df, dep_col: str, indep_cols: list) -> dict:
     try:
         model = sm.Logit(y, X_sm).fit(maxiter=200, disp=False)
     except Exception as e:
-        raise ValueError(f'Model yakınsama hatası: {e}')
+        raise ValueError(gettext('Model yakınsama hatası: %(e)s') % {'e': e})
 
     # Model fit
     llf = float(model.llf)
@@ -76,7 +75,9 @@ def analyze(df, dep_col: str, indep_cols: list) -> dict:
     # Katsayılar
     ci = np.array(model.conf_int())
     coefficients = [{
-        'name': 'Sabit',
+        # is_const: sabit terim adla değil bayrakla tanınır — ad çevrilir
+        'name': gettext('Sabit'),
+        'is_const': True,
         'B': round(float(model.params[0]), 4),
         'se': round(float(model.bse[0]), 4),
         'wald': round(float(model.tvalues[0] ** 2), 3),
@@ -154,27 +155,27 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
     norm_s = ParagraphStyle('N', parent=styles['Normal'], fontName='DejaVuSans', fontSize=9)
 
     story = []
-    story.append(Paragraph('Lojistik Regresyon Raporu', title_s))
-    story.append(Paragraph(f'Dosya: {filename}', norm_s))
+    story.append(Paragraph(gettext('Lojistik Regresyon Raporu'), title_s))
+    story.append(Paragraph(gettext('Dosya: %(filename)s') % {'filename': filename}, norm_s))
     story.append(Spacer(1, 0.4*cm))
 
     # Model özeti
-    story.append(Paragraph('Model Özeti', h2_s))
+    story.append(Paragraph(gettext('Model Özeti'), h2_s))
     sig = result['significant']
     p_str = '< .001' if result['chi2_p'] < 0.001 else f"{result['chi2_p']:.3f}"
     summary_rows = [
-        ['Bağımlı Değişken', result['dep_col']],
-        ['Referans Kategori (0)', result['cat0']],
-        ['Hedef Kategori (1)', result['cat1']],
-        ['Bağımsız Değişkenler', ', '.join(result['indep_cols'])],
+        [gettext('Bağımlı Değişken'), result['dep_col']],
+        [gettext('Referans Kategori (0)'), result['cat0']],
+        [gettext('Hedef Kategori (1)'), result['cat1']],
+        [gettext('Bağımsız Değişkenler'), ', '.join(result['indep_cols'])],
         ['N', str(result['n'])],
         ['-2 Log Likelihood', f"{result['log_likelihood']:.3f}"],
         ['Model χ²', f"χ²({result['chi2_df']}) = {result['chi2']:.3f}"],
-        ['p-değeri (Model)', p_str],
+        [gettext('p-değeri (Model)'), p_str],
         ['Cox & Snell R²', f"{result['cox_snell_r2']:.4f}"],
         ['Nagelkerke R²', f"{result['nagelkerke_r2']:.4f}"],
-        ['Doğruluk', f"{result['classification']['accuracy']}%"],
-        ['Sonuç', 'Anlamlı (p < .05)' if sig else 'Anlamlı değil (p ≥ .05)'],
+        [gettext('Doğruluk'), gettext('%%%(value)s') % {'value': result['classification']['accuracy']}],
+        [gettext('Sonuç'), gettext('Anlamlı (p < .05)') if sig else gettext('Anlamlı değil (p ≥ .05)')],
     ]
     sum_tbl = Table(summary_rows, colWidths=[6*cm, 10*cm])
     sum_tbl.setStyle(TableStyle([
@@ -192,8 +193,8 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
     story.append(Spacer(1, 0.5*cm))
 
     # Katsayılar
-    story.append(Paragraph('Değişkenlerin Denklemdeki Değerleri', h2_s))
-    coef_header = ['Değişken', 'B', 'SE', 'Wald', 'p', 'Exp(B)', '%95 GA Alt', '%95 GA Üst']
+    story.append(Paragraph(gettext('Değişkenlerin Denklemdeki Değerleri'), h2_s))
+    coef_header = [gettext('Değişken'), 'B', 'SE', 'Wald', 'p', 'Exp(B)', gettext('%%95 GA Alt') % {}, gettext('%%95 GA Üst') % {}]
     coef_rows = [coef_header]
     for c in result['coefficients']:
         p_c = c['p']
@@ -218,31 +219,30 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
         ('ALIGN', (1, 0), (-1, -1), 'CENTER'),
     ]
     for i, c in enumerate(result['coefficients'], start=1):
-        if c['significant'] and c['name'] != 'Sabit':
+        if c['significant'] and not c.get('is_const'):
             coef_style.append(('BACKGROUND', (4, i), (4, i), colors.HexColor('#d4edda')))
     coef_tbl.setStyle(TableStyle(coef_style))
     story.append(coef_tbl)
 
     story.append(Spacer(1, 0.3*cm))
     story.append(Paragraph(
-        '<font color="#666666" size="8">Not: Exp(B) = Odds Ratio. '
-        'Exp(B) &gt; 1 pozitif ilişki, Exp(B) &lt; 1 negatif ilişki anlamına gelir.</font>',
+        '<font color="#666666" size="8">' + gettext('Not: Exp(B) = Odds Ratio. Exp(B) &gt; 1 pozitif ilişki, Exp(B) &lt; 1 negatif ilişki anlamına gelir.') + '</font>',
         ParagraphStyle('note', parent=styles['Normal'], fontName='DejaVuSans', fontSize=8)
     ))
 
     # Sınıflandırma tablosu
     story.append(Spacer(1, 0.5*cm))
-    story.append(Paragraph('Sınıflandırma Tablosu', h2_s))
+    story.append(Paragraph(gettext('Sınıflandırma Tablosu'), h2_s))
     cl = result['classification']
     n0 = cl['tn'] + cl['fp']
     n1 = cl['fn'] + cl['tp']
     cl_rows = [
-        ['', f'Tahmin: {cl["cat0"]}', f'Tahmin: {cl["cat1"]}', 'Doğruluk'],
-        [f'Gerçek: {cl["cat0"]}', str(cl['tn']), str(cl['fp']),
-         f"{round(cl['tn'] / n0 * 100, 1)}%" if n0 > 0 else '—'],
-        [f'Gerçek: {cl["cat1"]}', str(cl['fn']), str(cl['tp']),
-         f"{round(cl['tp'] / n1 * 100, 1)}%" if n1 > 0 else '—'],
-        ['Genel Doğruluk', '', '', f"{cl['accuracy']}%"],
+        ['', gettext('Tahmin: %(cat)s') % {'cat': cl['cat0']}, gettext('Tahmin: %(cat)s') % {'cat': cl['cat1']}, gettext('Doğruluk')],
+        [gettext('Gerçek: %(cat)s') % {'cat': cl['cat0']}, str(cl['tn']), str(cl['fp']),
+         gettext('%%%(value)s') % {'value': round(cl['tn'] / n0 * 100, 1)} if n0 > 0 else '—'],
+        [gettext('Gerçek: %(cat)s') % {'cat': cl['cat1']}, str(cl['fn']), str(cl['tp']),
+         gettext('%%%(value)s') % {'value': round(cl['tp'] / n1 * 100, 1)} if n1 > 0 else '—'],
+        [gettext('Genel Doğruluk'), '', '', gettext('%%%(value)s') % {'value': cl['accuracy']}],
     ]
     cl_tbl = Table(cl_rows, colWidths=[4*cm, 3.5*cm, 3.5*cm, 3*cm])
     cl_tbl.setStyle(TableStyle([
@@ -264,14 +264,22 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
 
     # APA
     story.append(Spacer(1, 0.5*cm))
-    story.append(Paragraph('Tezinde Nasıl Raporlarsın?', h2_s))
-    apa_text = (f"Lojistik regresyon analizi sonucunda kurulan model istatistiksel açıdan "
-                f"{'anlamlı bulunmuştur' if sig else 'anlamlı bulunmamıştır'}, "
-                f"χ²({result['chi2_df']}) = {result['chi2']:.3f}, p = {p_str}, "
-                f"Nagelkerke R² = {result['nagelkerke_r2']:.4f}. "
-                f"Model gözlemlerin %{result['classification']['accuracy']} kadarını doğru sınıflandırmıştır.")
+    story.append(Paragraph(gettext('APA Formatında Raporlama'), h2_s))
+    # Şablon JS ile ortak msgid'ler; 'p < .001' / 'p = 0.123' (önceden 'p = < .001'); yüzde dile göre
+    v = dict(df=result['chi2_df'], chi2=f"{result['chi2']:.3f}",
+             p='p < .001' if result['chi2_p'] < 0.001 else f"p = {result['chi2_p']:.3f}",
+             r2=f"{result['nagelkerke_r2']:.4f}",
+             pct=gettext('%%%(value)s') % {'value': result['classification']['accuracy']})
+    if sig:
+        apa_text = gettext('Lojistik regresyon analizi sonucunda kurulan model istatistiksel açıdan anlamlı bulunmuştur, '
+                           'χ²({df}) = {chi2}, {p}, Nagelkerke R² = {r2}. Model gözlemlerin {pct} kadarını doğru '
+                           'sınıflandırmıştır.').format(**v)
+    else:
+        apa_text = gettext('Lojistik regresyon analizi sonucunda kurulan model istatistiksel açıdan anlamlı bulunmamıştır, '
+                           'χ²({df}) = {chi2}, {p}, Nagelkerke R² = {r2}. Model gözlemlerin {pct} kadarını doğru '
+                           'sınıflandırmıştır.').format(**v)
     if result['sig_predictors']:
-        apa_text += f" Anlamlı yordayıcılar: {', '.join(result['sig_predictors'])}."
+        apa_text += ' ' + gettext('Anlamlı yordayıcılar: {list}.').format(list=', '.join(result['sig_predictors']))
     apa_tbl = Table([[Paragraph(apa_text, norm_s)]], colWidths=[16*cm])
     apa_tbl.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#f0fff8')),

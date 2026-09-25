@@ -121,9 +121,20 @@ maddelerde.
     APA metinleri farklıydı → tek ortak metin (afa._apa_text + JS). Yüzde biçimi
     dile göre ('%%%(value)s' / '%{value}' msgid'leri: %62.3 / 62.3% / 62.3 %).
     Kaçaklar: wilcoxon "(Medyan)", afa "madde". EN PDF TR kalıntı yok; 12 sayfa JS OK.
-  - [ ] Parti 5'te: lineer_regresyon.py:228 ve karar_agaci.py:229'da Türkçe
-    yüzde kalıbı (f"%{…}") — aynı yöntemle düzeltilecek.
-  - [ ] Parti 5: lineer_regresyon, lojistik_regresyon, karar_agaci, svm
+  - [x] Parti 5 yüzde kalıpları düzeltildi.
+  - [x] Parti 5 (25 Eylül 2026): lineer_regresyon, lojistik_regresyon,
+    karar_agaci, svm — servis + şablon JS. **Tuzak düzeltildi:** JS ve PDF sabit
+    terimi `c.name !== 'Sabit'` ile tanıyordu (Türkçe harfsiz olduğu için
+    karşılaştırma taramasında görünmedi) → `is_const` bayrağı; ad artık
+    çevriliyor (Intercept/Konstante). Önceden var: APA'da "p = < .001",
+    yüzdeler karışık ("85.2%" tabloda / "%85.2" APA'da) → dile göre tek biçim
+    (betimsel frekans tablosu dahil). Kaçaklar: "Kriter:", "Yaprak:", "Polinom".
+  - [x] **ADIM 6 TAMAMLANDI (25 Eylül 2026):** 20 servis + 18 şablon; son tam
+    taramada kalan yalnız yöntem/terim adları (Bonferroni, Pearson, Wald…),
+    HTML etiketleri ve dosya yolları.
+  - [ ] Ekrandaki APA kutusu başlığı hâlâ "Tezinde Nasıl Raporlarsın?" (18
+    şablon, trans'lı) — PDF'teki gibi "APA Formatında Raporlama" olsun mu?
+    (kullanıcı kararı; "Tez için" maddesiyle birlikte ele alınabilir)
   Ölçüm notu: istatistik
   servislerinde (20 dosya) çeviriye işaretlenmemiş Türkçe: EKRAN 221 metin /
   ~1380 kelime (APA cümleleri, etki yorumları, veri uyarıları, hata mesajları),

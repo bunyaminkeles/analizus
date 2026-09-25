@@ -216,7 +216,15 @@ const T = {
   s8: '{% trans "Değişken" as t %}{{ t|escapejs }}',
   s9: '{% trans "%95 GA Üst OR" as t %}{{ t|escapejs }}',
   s10: '{% trans "Kopyalandı" as t %}{{ t|escapejs }}',
+  // Sonuç/APA metinleri — servis (PDF) ile aynı msgid'ler, {süslü} yer tutucular
+  pct: '{% trans "%{value}" as t %}{{ t|escapejs }}',
+  apaSig: '{% trans "Lojistik regresyon analizi sonucunda kurulan model istatistiksel açıdan anlamlı bulunmuştur, χ²({df}) = {chi2}, {p}, Nagelkerke R² = {r2}. Model gözlemlerin {pct} kadarını doğru sınıflandırmıştır." as t %}{{ t|escapejs }}',
+  apaNs: '{% trans "Lojistik regresyon analizi sonucunda kurulan model istatistiksel açıdan anlamlı bulunmamıştır, χ²({df}) = {chi2}, {p}, Nagelkerke R² = {r2}. Model gözlemlerin {pct} kadarını doğru sınıflandırmıştır." as t %}{{ t|escapejs }}',
+  apaPreds: '{% trans "Anlamlı yordayıcılar: {list}." as t %}{{ t|escapejs }}',
 };
+const fmt = (s, o) => s.replace(/\{(\w+)\}/g, (m, k) => (k in o ? o[k] : m));
+const pStr = (p) => p < 0.001 ? 'p < .001' : 'p = ' + p.toFixed(3);
+const pc = (v) => fmt(T.pct, {value: v});
 const TOOL_URL = '{% url "istatistik:lojistik_regresyon" %}';
 const STATUS_TEMPLATE = '{% url "istatistik:lojistik_regresyon_status" "00000000-0000-0000-0000-000000000000" %}';
 
@@ -375,16 +383,16 @@ function showResults(data) {
   document.getElementById('res-chi2').textContent = `χ²(${r.chi2_df})=${r.chi2.toFixed(3)}`;
   document.getElementById('res-p').textContent = pDisp;
   document.getElementById('res-nagelkerke').textContent = r.nagelkerke_r2.toFixed(4);
-  document.getElementById('res-accuracy').textContent = r.classification.accuracy + '%';
+  document.getElementById('res-accuracy').textContent = pc(r.classification.accuracy);
 
   // Katsayılar tablosu
   document.getElementById('coef-head').innerHTML = '<tr>' +
     [T.s8,'B','SE','Wald','p','Exp(B)','{% filter escapejs %}{% trans "%95 GA Alt OR" %}{% endfilter %}',T.s9].map(h => `<th>${h}</th>`).join('') + '</tr>';
   document.getElementById('coef-body').innerHTML = r.coefficients.map(c => {
-    const pStr = c.p < 0.001 ? '&lt; .001' : c.p.toFixed(4);
-    const pCell = c.significant && c.name !== 'Sabit'
-      ? `<td style="color:#4ade80;font-weight:bold;">${pStr}</td>`
-      : `<td>${pStr}</td>`;
+    const pCellTxt = c.p < 0.001 ? '&lt; .001' : c.p.toFixed(4);
+    const pCell = c.significant && !c.is_const
+      ? `<td style="color:#4ade80;font-weight:bold;">${pCellTxt}</td>`
+      : `<td>${pCellTxt}</td>`;
     return `<tr>
       <td class="fw-semibold">${c.name}</td>
       <td>${c.B.toFixed(4)}</td>
@@ -407,26 +415,25 @@ function showResults(data) {
         <td class="fw-semibold">{% filter escapejs %}{% trans "Gerçek:" %}{% endfilter %} ${cl.cat0}</td>
         <td style="color:#4ade80;">${cl.tn}</td>
         <td style="color:#f87171;">${cl.fp}</td>
-        <td>${n0 > 0 ? (cl.tn/n0*100).toFixed(1)+'%' : '—'}</td>
+        <td>${n0 > 0 ? pc((cl.tn/n0*100).toFixed(1)) : '—'}</td>
       </tr>
       <tr>
         <td class="fw-semibold">{% filter escapejs %}{% trans "Gerçek:" %}{% endfilter %} ${cl.cat1}</td>
         <td style="color:#f87171;">${cl.fn}</td>
         <td style="color:#4ade80;">${cl.tp}</td>
-        <td>${n1 > 0 ? (cl.tp/n1*100).toFixed(1)+'%' : '—'}</td>
+        <td>${n1 > 0 ? pc((cl.tp/n1*100).toFixed(1)) : '—'}</td>
       </tr>
       <tr style="background:rgba(52,211,153,0.08);">
         <td class="fw-semibold">{% filter escapejs %}{% trans "Genel Doğruluk" %}{% endfilter %}</td>
         <td></td><td></td>
-        <td class="fw-bold" style="color:#34d399;">${cl.accuracy}%</td>
+        <td class="fw-bold" style="color:#34d399;">${pc(cl.accuracy)}</td>
       </tr>
     </tbody>`;
 
   // APA
-  const sigTxt = sig ? 'anlamlı bulunmuştur' : 'anlamlı bulunmamıştır';
-  let apa = `Lojistik regresyon analizi sonucunda kurulan model istatistiksel açıdan ${sigTxt}, χ²(${r.chi2_df}) = ${r.chi2.toFixed(3)}, p = ${pDisp}, Nagelkerke R² = ${r.nagelkerke_r2.toFixed(4)}. Model gözlemlerin %${r.classification.accuracy} kadarını doğru sınıflandırmıştır.`;
+  let apa = fmt(sig ? T.apaSig : T.apaNs, {df: r.chi2_df, chi2: r.chi2.toFixed(3), p: pStr(r.chi2_p), r2: r.nagelkerke_r2.toFixed(4), pct: pc(r.classification.accuracy)});
   if (r.sig_predictors && r.sig_predictors.length > 0) {
-    apa += ` Anlamlı yordayıcılar: ${r.sig_predictors.join(', ')}.`;
+    apa += ' ' + fmt(T.apaPreds, {list: r.sig_predictors.join(', ')});
   }
   document.getElementById('res-apa').textContent = apa;
   document.getElementById('pdf-btn').href = data.pdf_url;

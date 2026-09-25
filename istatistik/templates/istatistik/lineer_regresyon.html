@@ -208,7 +208,16 @@ const T = {
   s9: '{% trans "Değişken" as t %}{{ t|escapejs }}',
   s10: '{% trans "%95 GA Üst" as t %}{{ t|escapejs }}',
   s12: '{% trans "Kopyalandı" as t %}{{ t|escapejs }}',
+  // Sonuç/APA metinleri — servis (PDF) ile aynı msgid'ler, {süslü} yer tutucular
+  pct: '{% trans "%{value}" as t %}{{ t|escapejs }}',
+  apaSig: '{% trans "Çoklu doğrusal regresyon analizi sonucunda, {dep} değişkenini yordamak amacıyla kurulan model istatistiksel açıdan anlamlı bulunmuştur, F({df1}, {df2}) = {f}, {p}. Model, bağımlı değişkendeki varyansın {pct} kadarını açıklamaktadır (R² = {r2}, düzeltilmiş R² = {adj})." as t %}{{ t|escapejs }}',
+  apaNs: '{% trans "Çoklu doğrusal regresyon analizi sonucunda, {dep} değişkenini yordamak amacıyla kurulan model istatistiksel açıdan anlamlı bulunmamıştır, F({df1}, {df2}) = {f}, {p}. Model, bağımlı değişkendeki varyansın {pct} kadarını açıklamaktadır (R² = {r2}, düzeltilmiş R² = {adj})." as t %}{{ t|escapejs }}',
+  apaPreds: '{% trans "Bağımsız değişkenler arasında istatistiksel açıdan anlamlı yordayıcılar şunlardır: {list}." as t %}{{ t|escapejs }}',
+  apaNoPreds: '{% trans "Hiçbir bağımsız değişken bağımlı değişkeni anlamlı düzeyde yordamamıştır." as t %}{{ t|escapejs }}',
 };
+const fmt = (s, o) => s.replace(/\{(\w+)\}/g, (m, k) => (k in o ? o[k] : m));
+const pStr = (p) => p < 0.001 ? 'p < .001' : 'p = ' + p.toFixed(3);
+const pc = (v) => fmt(T.pct, {value: v});
 const TOOL_URL = '{% url "istatistik:lineer_regresyon" %}';
 const STATUS_TEMPLATE = '{% url "istatistik:lineer_regresyon_status" "00000000-0000-0000-0000-000000000000" %}';
 
@@ -378,10 +387,10 @@ function _showResults(data) {
   document.getElementById('coef-head').innerHTML = '<tr>' +
     [T.s9,'B','β','SE','t','p','{% filter escapejs %}{% trans "%95 GA Alt" %}{% endfilter %}',T.s10,'VIF'].map(h => `<th>${h}</th>`).join('') + '</tr>';
   document.getElementById('coef-body').innerHTML = r.coefficients.map(c => {
-    const pStr = c.p < 0.001 ? '&lt; .001' : c.p.toFixed(4);
-    const pCell = c.significant && c.name !== 'Sabit'
-      ? `<td style="color:#4ade80;font-weight:bold;">${pStr}</td>`
-      : `<td>${pStr}</td>`;
+    const pCellTxt = c.p < 0.001 ? '&lt; .001' : c.p.toFixed(4);
+    const pCell = c.significant && !c.is_const
+      ? `<td style="color:#4ade80;font-weight:bold;">${pCellTxt}</td>`
+      : `<td>${pCellTxt}</td>`;
     const betaStr = c.beta === '—' ? '—' : c.beta.toFixed(4);
     const vifStr = c.vif === '—' ? '—' : (typeof c.vif === 'number' ? c.vif.toFixed(3) : c.vif);
     const vifCell = (c.vif !== '—' && c.vif > 10)
@@ -400,17 +409,15 @@ function _showResults(data) {
   }).join('');
 
   // APA
-  const sigTxt = sig ? 'anlamlı bulunmuştur' : 'anlamlı bulunmamıştır';
-  let apa = `Çoklu doğrusal regresyon analizi sonucunda, ${r.dep_col} değişkenini yordamak amacıyla kurulan model istatistiksel açıdan ${sigTxt}, F(${r.df_model}, ${r.df_resid}) = ${r.f_stat.toFixed(3)}, p = ${pDisp}. Model, bağımlı değişkendeki varyansın %${(r.r_squared * 100).toFixed(1)}'ini açıklamaktadır (R² = ${r.r_squared.toFixed(4)}, düzeltilmiş R² = ${r.adj_r_squared.toFixed(4)}).`;
+  let apa = fmt(sig ? T.apaSig : T.apaNs, {dep: r.dep_col, df1: r.df_model, df2: r.df_resid, f: r.f_stat.toFixed(3), p: pStr(r.f_p), pct: pc((r.r_squared * 100).toFixed(1)), r2: r.r_squared.toFixed(4), adj: r.adj_r_squared.toFixed(4)});
   const sigCoefs = r.coefficients.slice(1).filter(c => c.significant);
   if (sigCoefs.length > 0) {
     const details = sigCoefs.map(c => {
-      const cp = c.p < 0.001 ? '< .001' : c.p.toFixed(3);
-      return `${c.name} (B = ${c.B.toFixed(3)}, β = ${typeof c.beta === 'number' ? c.beta.toFixed(3) : c.beta}, p = ${cp})`;
+      return `${c.name} (B = ${c.B.toFixed(3)}, β = ${typeof c.beta === 'number' ? c.beta.toFixed(3) : c.beta}, ${pStr(c.p)})`;
     });
-    apa += ` Bağımsız değişkenler arasında istatistiksel açıdan anlamlı yordayıcılar şunlardır: ${details.join('; ')}.`;
+    apa += ' ' + fmt(T.apaPreds, {list: details.join('; ')});
   } else {
-    apa += ' Hiçbir bağımsız değişken bağımlı değişkeni anlamlı düzeyde yordamamıştır.';
+    apa += ' ' + T.apaNoPreds;
   }
   document.getElementById('res-apa').textContent = apa;
   document.getElementById('pdf-btn').href = data.pdf_url;

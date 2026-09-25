@@ -3,6 +3,7 @@
 Statsmodels tabanlı; standardize beta, VIF, güven aralıkları dahil.
 """
 import io
+from django.utils.translation import gettext
 import numpy as np
 
 
@@ -12,25 +13,24 @@ def analyze(df, dep_col: str, indep_cols: list) -> dict:
     from statsmodels.stats.outliers_influence import variance_inflation_factor
 
     if dep_col not in df.columns:
-        raise ValueError(f'"{dep_col}" bağımlı değişken sütunu bulunamadı.')
+        raise ValueError(gettext('"%(dep_col)s" bağımlı değişken sütunu bulunamadı.') % {'dep_col': dep_col})
     missing = [c for c in indep_cols if c not in df.columns]
     if missing:
-        raise ValueError(f'Şu sütunlar bulunamadı: {", ".join(missing)}')
+        raise ValueError(gettext('Şu sütunlar bulunamadı: %(v)s') % {'v': ', '.join(missing)})
     if not indep_cols:
-        raise ValueError('En az 1 bağımsız değişken seçilmelidir.')
+        raise ValueError(gettext('En az 1 bağımsız değişken seçilmelidir.'))
     if dep_col in indep_cols:
-        raise ValueError('Bağımlı değişken, bağımsız değişkenler arasında olamaz.')
+        raise ValueError(gettext('Bağımlı değişken, bağımsız değişkenler arasında olamaz.'))
 
     sub = df[[dep_col] + list(indep_cols)].dropna()
     n = len(sub)
     if n < len(indep_cols) + 3:
-        raise ValueError(f'Yetersiz gözlem sayısı (n = {n}). '
-                         f'En az {len(indep_cols) + 3} satır gereklidir.')
+        raise ValueError(gettext('Yetersiz gözlem sayısı (n = %(n)s). En az %(v)s satır gereklidir.') % {'n': n, 'v': len(indep_cols) + 3})
 
     try:
         y = sub[dep_col].astype(float).values
     except Exception:
-        raise ValueError(f'"{dep_col}" sayısal bir değişken olmalıdır.')
+        raise ValueError(gettext('"%(dep_col)s" sayısal bir değişken olmalıdır.') % {'dep_col': dep_col})
 
     # Bağımsız değişkenler: kategorik → dummy
     X_df = pd.DataFrame(index=sub.index)
@@ -46,7 +46,7 @@ def analyze(df, dep_col: str, indep_cols: list) -> dict:
             predictor_names.append(col)
 
     if X_df.empty or X_df.shape[1] == 0:
-        raise ValueError('Bağımsız değişkenler işlenemedi.')
+        raise ValueError(gettext('Bağımsız değişkenler işlenemedi.'))
 
     X_np = X_df.values.astype(float)
     p = X_np.shape[1]
@@ -56,7 +56,7 @@ def analyze(df, dep_col: str, indep_cols: list) -> dict:
     try:
         model = sm.OLS(y, X_sm).fit()
     except Exception as e:
-        raise ValueError(f'Model hesaplama hatası: {e}')
+        raise ValueError(gettext('Model hesaplama hatası: %(e)s') % {'e': e})
 
     # Standardize beta
     from sklearn.preprocessing import StandardScaler
@@ -76,7 +76,10 @@ def analyze(df, dep_col: str, indep_cols: list) -> dict:
     # Katsayılar
     ci = np.array(model.conf_int())
     coefficients = [{
-        'name': 'Sabit',
+        # is_const: sabit terim adla değil bayrakla tanınır — ad çevrilir
+        # ('Sabit'/'Intercept'/'Konstante'), karşılaştırma dilden bağımsız kalır
+        'name': gettext('Sabit'),
+        'is_const': True,
         'B': round(float(model.params[0]), 4),
         'beta': '—',
         'se': round(float(model.bse[0]), 4),
@@ -142,23 +145,23 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
     norm_s = ParagraphStyle('N', parent=styles['Normal'], fontName='DejaVuSans', fontSize=9)
 
     story = []
-    story.append(Paragraph('Çoklu Doğrusal Regresyon Raporu', title_s))
-    story.append(Paragraph(f'Dosya: {filename}', norm_s))
+    story.append(Paragraph(gettext('Çoklu Doğrusal Regresyon Raporu'), title_s))
+    story.append(Paragraph(gettext('Dosya: %(filename)s') % {'filename': filename}, norm_s))
     story.append(Spacer(1, 0.4*cm))
 
     # Model özeti
-    story.append(Paragraph('Model Özeti', h2_s))
+    story.append(Paragraph(gettext('Model Özeti'), h2_s))
     sig = result['significant']
     p_str = '< .001' if result['f_p'] < 0.001 else f"{result['f_p']:.3f}"
     summary_rows = [
-        ['Bağımlı Değişken', result['dep_col']],
-        ['Bağımsız Değişkenler', ', '.join(result['indep_cols'])],
+        [gettext('Bağımlı Değişken'), result['dep_col']],
+        [gettext('Bağımsız Değişkenler'), ', '.join(result['indep_cols'])],
         ['N', str(result['n'])],
         ['R²', f"{result['r_squared']:.4f}"],
-        ['Düzeltilmiş R²', f"{result['adj_r_squared']:.4f}"],
-        ['F istatistiği', f"F({result['df_model']}, {result['df_resid']}) = {result['f_stat']:.3f}"],
-        ['p-değeri', p_str],
-        ['Sonuç', 'Anlamlı (p < .05)' if sig else 'Anlamlı değil (p ≥ .05)'],
+        [gettext('Düzeltilmiş R²'), f"{result['adj_r_squared']:.4f}"],
+        [gettext('F istatistiği'), f"F({result['df_model']}, {result['df_resid']}) = {result['f_stat']:.3f}"],
+        [gettext('p-değeri'), p_str],
+        [gettext('Sonuç'), gettext('Anlamlı (p < .05)') if sig else gettext('Anlamlı değil (p ≥ .05)')],
     ]
     sum_tbl = Table(summary_rows, colWidths=[6*cm, 10*cm])
     sum_tbl.setStyle(TableStyle([
@@ -176,8 +179,8 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
     story.append(Spacer(1, 0.5*cm))
 
     # Katsayılar tablosu
-    story.append(Paragraph('Katsayılar', h2_s))
-    coef_header = ['Değişken', 'B', 'β', 'SE', 't', 'p', '%95 GA Alt', '%95 GA Üst', 'VIF']
+    story.append(Paragraph(gettext('Katsayılar'), h2_s))
+    coef_header = [gettext('Değişken'), 'B', 'β', 'SE', 't', 'p', gettext('%%95 GA Alt') % {}, gettext('%%95 GA Üst') % {}, 'VIF']
     coef_rows = [coef_header]
     for c in result['coefficients']:
         beta_str = str(c['beta']) if c['beta'] == '—' else f"{c['beta']:.4f}"
@@ -204,41 +207,45 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
         ('ALIGN', (1, 0), (-1, -1), 'CENTER'),
     ]
     for i, c in enumerate(result['coefficients'], start=1):
-        if c['significant'] and c['name'] != 'Sabit':
+        if c['significant'] and not c.get('is_const'):
             coef_style.append(('BACKGROUND', (5, i), (5, i), colors.HexColor('#d4edda')))
     coef_tbl.setStyle(TableStyle(coef_style))
     story.append(coef_tbl)
 
     story.append(Spacer(1, 0.3*cm))
     story.append(Paragraph(
-        '<font color="#666666" size="8">Not: VIF &gt; 10 çoklu bağlantı sorununa işaret edebilir. '
-        'β = standardize edilmiş katsayı (yordayıcılar arası etki büyüklüğü karşılaştırması için kullanılır).</font>',
+        '<font color="#666666" size="8">' + gettext('Not: VIF &gt; 10 çoklu bağlantı sorununa işaret edebilir. '
+        'β = standardize edilmiş katsayı (yordayıcılar arası etki büyüklüğü karşılaştırması için kullanılır).') + '</font>',
         ParagraphStyle('note', parent=styles['Normal'], fontName='DejaVuSans', fontSize=8)
     ))
 
     # APA
     story.append(Spacer(1, 0.5*cm))
-    story.append(Paragraph('Tezinde Nasıl Raporlarsın?', h2_s))
-    apa_text = (
-        f"Çoklu doğrusal regresyon analizi sonucunda, {result['dep_col']} değişkenini "
-        f"yordamak amacıyla kurulan model istatistiksel açıdan "
-        f"{'anlamlı bulunmuştur' if sig else 'anlamlı bulunmamıştır'}, "
-        f"F({result['df_model']}, {result['df_resid']}) = {result['f_stat']:.3f}, "
-        f"p = {p_str}. Model, bağımlı değişkendeki varyansın "
-        f"%{result['r_squared']*100:.1f}'ini açıklamaktadır "
-        f"(R² = {result['r_squared']:.4f}, düzeltilmiş R² = {result['adj_r_squared']:.4f})."
-    )
+    story.append(Paragraph(gettext('APA Formatında Raporlama'), h2_s))
+    # Şablon JS ile ortak msgid'ler; 'p < .001' / 'p = 0.123' (önceden 'p = < .001');
+    # yüzde dile göre ('%%%(value)s'), önceden '%…'ini' sabit Türkçe
+    v = dict(dep=result['dep_col'], df1=result['df_model'], df2=result['df_resid'], f=f"{result['f_stat']:.3f}",
+             p='p < .001' if result['f_p'] < 0.001 else f"p = {result['f_p']:.3f}",
+             pct=gettext('%%%(value)s') % {'value': f"{result['r_squared']*100:.1f}"},
+             r2=f"{result['r_squared']:.4f}", adj=f"{result['adj_r_squared']:.4f}")
+    if sig:
+        apa_text = gettext('Çoklu doğrusal regresyon analizi sonucunda, {dep} değişkenini yordamak amacıyla kurulan model '
+                           'istatistiksel açıdan anlamlı bulunmuştur, F({df1}, {df2}) = {f}, {p}. Model, bağımlı değişkendeki '
+                           'varyansın {pct} kadarını açıklamaktadır (R² = {r2}, düzeltilmiş R² = {adj}).').format(**v)
+    else:
+        apa_text = gettext('Çoklu doğrusal regresyon analizi sonucunda, {dep} değişkenini yordamak amacıyla kurulan model '
+                           'istatistiksel açıdan anlamlı bulunmamıştır, F({df1}, {df2}) = {f}, {p}. Model, bağımlı değişkendeki '
+                           'varyansın {pct} kadarını açıklamaktadır (R² = {r2}, düzeltilmiş R² = {adj}).').format(**v)
     if result['sig_predictors']:
         sig_details = []
         for c in result['coefficients'][1:]:
             if c['significant']:
-                p_c = '< .001' if c['p'] < 0.001 else f"{c['p']:.3f}"
-                sig_details.append(
-                    f"{c['name']} (B = {c['B']:.3f}, β = {c['beta']:.3f}, p = {p_c})"
-                )
-        apa_text += f" Bağımsız değişkenler arasında istatistiksel açıdan anlamlı yordayıcılar şunlardır: {'; '.join(sig_details)}."
+                p_c = 'p < .001' if c['p'] < 0.001 else f"p = {c['p']:.3f}"
+                sig_details.append(f"{c['name']} (B = {c['B']:.3f}, β = {c['beta']:.3f}, {p_c})")
+        apa_text += ' ' + gettext('Bağımsız değişkenler arasında istatistiksel açıdan anlamlı yordayıcılar şunlardır: {list}.').format(
+            list='; '.join(sig_details))
     else:
-        apa_text += " Hiçbir bağımsız değişken bağımlı değişkeni anlamlı düzeyde yordamamıştır."
+        apa_text += ' ' + gettext('Hiçbir bağımsız değişken bağımlı değişkeni anlamlı düzeyde yordamamıştır.')
     apa_tbl = Table([[Paragraph(apa_text, norm_s)]], colWidths=[16*cm])
     apa_tbl.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#f0f4ff')),

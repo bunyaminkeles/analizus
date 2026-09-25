@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-25 22:50+0300\n"
+"POT-Creation-Date: 2026-09-25 23:15+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -720,7 +720,8 @@ msgstr "Ein Ökosystem, in dem sich Experten gegenseitig unterstützen"
 msgid "Rakiplerle Karşılaştırma"
 msgstr "Vergleich mit Alternativen"
 
-#: forum/templates/forum/about.html:127
+#: forum/templates/forum/about.html:127 istatistik/services/karar_agaci.py:199
+#: istatistik/services/svm.py:204
 #: istatistik/templates/istatistik/karar_agaci.html:200
 #: istatistik/templates/istatistik/svm.html:206
 msgid "Özellik"
@@ -3178,6 +3179,8 @@ msgid "Her iki değişken de normal dağılıyor mu?"
 msgstr "Sind beide Variablen normalverteilt?"
 
 #: forum/templates/forum/hangi_test.html:386
+#: istatistik/services/lineer_regresyon.py:157
+#: istatistik/services/lojistik_regresyon.py:167
 msgid "Bağımlı Değişken"
 msgstr "Abhängige Variable"
 
@@ -9557,6 +9560,22 @@ msgstr "Inakzeptabel (< 0.50)"
 
 #: istatistik/services/afa.py:174 istatistik/services/afa.py:233
 #: istatistik/services/afa.py:284 istatistik/services/afa.py:285
+#: istatistik/services/betimsel.py:140 istatistik/services/betimsel.py:228
+#: istatistik/services/karar_agaci.py:156
+#: istatistik/services/karar_agaci.py:157
+#: istatistik/services/karar_agaci.py:158
+#: istatistik/services/karar_agaci.py:159
+#: istatistik/services/karar_agaci.py:203
+#: istatistik/services/karar_agaci.py:227
+#: istatistik/services/lineer_regresyon.py:229
+#: istatistik/services/lojistik_regresyon.py:177
+#: istatistik/services/lojistik_regresyon.py:242
+#: istatistik/services/lojistik_regresyon.py:244
+#: istatistik/services/lojistik_regresyon.py:245
+#: istatistik/services/lojistik_regresyon.py:272
+#: istatistik/services/svm.py:161 istatistik/services/svm.py:162
+#: istatistik/services/svm.py:163 istatistik/services/svm.py:164
+#: istatistik/services/svm.py:208 istatistik/services/svm.py:227
 #, python-format
 msgid "%%%(value)s"
 msgstr "%(value)s %%"
@@ -9615,11 +9634,13 @@ msgstr "Bericht zur explorativen Faktorenanalyse"
 
 #: istatistik/services/afa.py:221 istatistik/services/anova.py:138
 #: istatistik/services/betimsel.py:96 istatistik/services/cronbach.py:128
-#: istatistik/services/friedman.py:119 istatistik/services/ki_kare.py:131
-#: istatistik/services/korelasyon.py:155
+#: istatistik/services/friedman.py:119 istatistik/services/karar_agaci.py:142
+#: istatistik/services/ki_kare.py:131 istatistik/services/korelasyon.py:155
 #: istatistik/services/kruskal_wallis.py:138
+#: istatistik/services/lineer_regresyon.py:149
+#: istatistik/services/lojistik_regresyon.py:159
 #: istatistik/services/mann_whitney.py:123
-#: istatistik/services/normallik.py:115
+#: istatistik/services/normallik.py:115 istatistik/services/svm.py:147
 #: istatistik/services/tekrarli_anova.py:149 istatistik/services/ttesti.py:211
 #: istatistik/services/wilcoxon.py:114
 #, python-format
@@ -9685,11 +9706,13 @@ msgstr "Kumulativ %"
 
 #: istatistik/services/afa.py:302 istatistik/services/anova.py:224
 #: istatistik/services/betimsel.py:152 istatistik/services/cronbach.py:182
-#: istatistik/services/friedman.py:201 istatistik/services/ki_kare.py:234
-#: istatistik/services/korelasyon.py:249
+#: istatistik/services/friedman.py:201 istatistik/services/karar_agaci.py:225
+#: istatistik/services/ki_kare.py:234 istatistik/services/korelasyon.py:249
 #: istatistik/services/kruskal_wallis.py:222
+#: istatistik/services/lineer_regresyon.py:224
+#: istatistik/services/lojistik_regresyon.py:267
 #: istatistik/services/mann_whitney.py:178
-#: istatistik/services/normallik.py:172
+#: istatistik/services/normallik.py:172 istatistik/services/svm.py:225
 #: istatistik/services/tekrarli_anova.py:251 istatistik/services/ttesti.py:272
 #: istatistik/services/wilcoxon.py:191
 msgid "APA Formatında Raporlama"
@@ -9817,6 +9840,7 @@ msgid "ANOVA Tablosu"
 msgstr "ANOVA-Tabelle"
 
 #: istatistik/services/anova.py:168
+#: istatistik/services/lineer_regresyon.py:162
 #: istatistik/templates/istatistik/anova.html:123
 msgid "F istatistiği"
 msgstr "F-Statistik"
@@ -9831,6 +9855,7 @@ msgstr "df (innerhalb der Gruppen)"
 
 #: istatistik/services/anova.py:171 istatistik/services/friedman.py:152
 #: istatistik/services/kruskal_wallis.py:170
+#: istatistik/services/lineer_regresyon.py:163
 #: istatistik/services/mann_whitney.py:154 istatistik/services/ttesti.py:247
 #: istatistik/services/wilcoxon.py:167
 #: istatistik/templates/istatistik/anova.html:129
@@ -9867,6 +9892,8 @@ msgstr "Levene p"
 
 #: istatistik/services/anova.py:175 istatistik/services/friedman.py:155
 #: istatistik/services/kruskal_wallis.py:173
+#: istatistik/services/lineer_regresyon.py:164
+#: istatistik/services/lojistik_regresyon.py:178
 #: istatistik/services/mann_whitney.py:157
 #: istatistik/services/tekrarli_anova.py:204 istatistik/services/ttesti.py:250
 #: istatistik/services/wilcoxon.py:170
@@ -9879,6 +9906,8 @@ msgstr "Ergebnis"
 
 #: istatistik/services/anova.py:175 istatistik/services/friedman.py:155
 #: istatistik/services/kruskal_wallis.py:173
+#: istatistik/services/lineer_regresyon.py:164
+#: istatistik/services/lojistik_regresyon.py:178
 #: istatistik/services/mann_whitney.py:157
 #: istatistik/services/tekrarli_anova.py:204 istatistik/services/ttesti.py:250
 #: istatistik/services/wilcoxon.py:170
@@ -9887,6 +9916,8 @@ msgstr "Signifikant (p < .05)"
 
 #: istatistik/services/anova.py:175 istatistik/services/friedman.py:155
 #: istatistik/services/kruskal_wallis.py:173
+#: istatistik/services/lineer_regresyon.py:164
+#: istatistik/services/lojistik_regresyon.py:178
 #: istatistik/services/mann_whitney.py:157
 #: istatistik/services/tekrarli_anova.py:204 istatistik/services/ttesti.py:250
 #: istatistik/services/wilcoxon.py:170
@@ -9996,7 +10027,10 @@ msgstr "Zeilen: %(n)s"
 msgid "Sürekli Değişkenler"
 msgstr "Stetige Variablen"
 
-#: istatistik/services/betimsel.py:105 istatistik/services/normallik.py:122
+#: istatistik/services/betimsel.py:105
+#: istatistik/services/lineer_regresyon.py:183
+#: istatistik/services/lojistik_regresyon.py:197
+#: istatistik/services/normallik.py:122
 #: istatistik/templates/istatistik/korelasyon.html:161
 #: istatistik/templates/istatistik/lineer_regresyon.html:208
 #: istatistik/templates/istatistik/lojistik_regresyon.html:216
@@ -10375,6 +10409,185 @@ msgstr ""
 "Mindestens 5 Zeilen (Teilnehmende/Beobachtungen) sind erforderlich; "
 "%(count)s gefunden."
 
+#: istatistik/services/karar_agaci.py:20 istatistik/services/svm.py:21
+#, python-format
+msgid "\"%(target_col)s\" hedef sütunu bulunamadı."
+msgstr "Die Zielspalte „%(target_col)s“ wurde nicht gefunden."
+
+#: istatistik/services/karar_agaci.py:23
+#: istatistik/services/lineer_regresyon.py:19
+#: istatistik/services/lojistik_regresyon.py:19 istatistik/services/svm.py:24
+#, python-format
+msgid "Şu sütunlar bulunamadı: %(v)s"
+msgstr "Folgende Spalten wurden nicht gefunden: %(v)s"
+
+#: istatistik/services/karar_agaci.py:25 istatistik/services/svm.py:26
+msgid "En az 1 özellik sütunu seçilmelidir."
+msgstr "Es muss mindestens 1 Merkmalsspalte ausgewählt werden."
+
+#: istatistik/services/karar_agaci.py:27 istatistik/services/svm.py:28
+msgid "Hedef sütun, özellik sütunları arasında olamaz."
+msgstr "Die Zielspalte darf nicht zu den Merkmalsspalten gehören."
+
+#: istatistik/services/karar_agaci.py:32 istatistik/services/svm.py:33
+#, python-format
+msgid "En az 10 satır gereklidir, %(n)s satır bulundu."
+msgstr "Mindestens 10 Zeilen sind erforderlich; %(n)s gefunden."
+
+#: istatistik/services/karar_agaci.py:37 istatistik/services/svm.py:41
+msgid "Hedef sütunun en az 2 farklı kategorisi olmalıdır."
+msgstr "Die Zielspalte muss mindestens 2 verschiedene Kategorien haben."
+
+#: istatistik/services/karar_agaci.py:39
+#, python-format
+msgid ""
+"Hedef sütunda %(n_classes)s farklı değer var. Karar ağacı en fazla 20 "
+"sınıfla çalışır."
+msgstr ""
+"Die Zielspalte hat %(n_classes)s verschiedene Werte. Der Entscheidungsbaum "
+"unterstützt höchstens 20 Klassen."
+
+#: istatistik/services/karar_agaci.py:141
+msgid "Karar Ağacı Sınıflandırma Raporu"
+msgstr "Bericht zur Entscheidungsbaum-Klassifikation"
+
+#: istatistik/services/karar_agaci.py:145
+#: istatistik/services/lineer_regresyon.py:153
+#: istatistik/services/lojistik_regresyon.py:163
+#: istatistik/services/svm.py:151
+#: istatistik/templates/istatistik/lineer_regresyon.html:124
+msgid "Model Özeti"
+msgstr "Modellzusammenfassung"
+
+#: istatistik/services/karar_agaci.py:147 istatistik/services/svm.py:153
+msgid "Hedef Değişken"
+msgstr "Zielvariable"
+
+#: istatistik/services/karar_agaci.py:148 istatistik/services/svm.py:154
+msgid "Sınıflar"
+msgstr "Klassen"
+
+#: istatistik/services/karar_agaci.py:149 istatistik/services/svm.py:155
+msgid "Özellik Sayısı"
+msgstr "Anzahl der Merkmale"
+
+#: istatistik/services/karar_agaci.py:150 istatistik/services/svm.py:158
+msgid "Eğitim Seti (n)"
+msgstr "Trainingsdaten (n)"
+
+#: istatistik/services/karar_agaci.py:151 istatistik/services/svm.py:159
+msgid "Test Seti (n)"
+msgstr "Testdaten (n)"
+
+#: istatistik/services/karar_agaci.py:152
+msgid "Kriter"
+msgstr "Kriterium"
+
+#: istatistik/services/karar_agaci.py:153
+msgid "Maks. Derinlik (parametre)"
+msgstr "Max. Tiefe (Parameter)"
+
+#: istatistik/services/karar_agaci.py:154
+msgid "Gerçek Derinlik"
+msgstr "Tatsächliche Tiefe"
+
+#: istatistik/services/karar_agaci.py:155
+msgid "Yaprak Sayısı"
+msgstr "Anzahl der Blätter"
+
+#: istatistik/services/karar_agaci.py:156 istatistik/services/svm.py:161
+msgid "Doğruluk (Accuracy)"
+msgstr "Genauigkeit (Accuracy)"
+
+#: istatistik/services/karar_agaci.py:157 istatistik/services/svm.py:162
+msgid "Kesinlik (Precision)"
+msgstr "Präzision (Precision)"
+
+#: istatistik/services/karar_agaci.py:158 istatistik/services/svm.py:163
+msgid "Duyarlılık (Recall)"
+msgstr "Sensitivität (Recall)"
+
+#: istatistik/services/karar_agaci.py:159 istatistik/services/svm.py:164
+#: istatistik/templates/istatistik/karar_agaci.html:185
+#: istatistik/templates/istatistik/svm.html:191
+msgid "F1 Skoru"
+msgstr "F1-Score"
+
+#: istatistik/services/karar_agaci.py:174 istatistik/services/svm.py:179
+msgid "Karmaşıklık Matrisi (Confusion Matrix)"
+msgstr "Konfusionsmatrix"
+
+#: istatistik/services/karar_agaci.py:183 istatistik/services/svm.py:188
+msgid "Tahmin Edilen"
+msgstr "Vorhergesagt"
+
+#: istatistik/services/karar_agaci.py:184 istatistik/services/svm.py:189
+msgid "Gerçek"
+msgstr "Tatsächlich"
+
+#: istatistik/services/karar_agaci.py:185 istatistik/services/svm.py:190
+#: istatistik/views.py:639 istatistik/views.py:670
+msgid "Confusion Matrix"
+msgstr "Konfusionsmatrix"
+
+#: istatistik/services/karar_agaci.py:198
+msgid "Değişken Önem Sıralaması (Feature Importance)"
+msgstr "Rangfolge der Variablenwichtigkeit (Feature Importance)"
+
+#: istatistik/services/karar_agaci.py:199 istatistik/services/svm.py:204
+#: istatistik/templates/istatistik/karar_agaci.html:199
+#: istatistik/templates/istatistik/svm.html:205
+msgid "Sıra"
+msgstr "Rang"
+
+#: istatistik/services/karar_agaci.py:199 istatistik/services/svm.py:204
+#: istatistik/templates/istatistik/karar_agaci.html:201
+#: istatistik/templates/istatistik/svm.html:207
+msgid "Önem Skoru"
+msgstr "Wichtigkeitswert"
+
+#: istatistik/services/karar_agaci.py:199 istatistik/services/svm.py:204
+#: istatistik/templates/istatistik/karar_agaci.html:202
+#: istatistik/templates/istatistik/svm.html:208
+msgid "Göreli Ağırlık"
+msgstr "Relatives Gewicht"
+
+#: istatistik/services/karar_agaci.py:220
+msgid "Ağaç Yapısı (ilk 5 seviye)"
+msgstr "Baumstruktur (erste 5 Ebenen)"
+
+#: istatistik/services/karar_agaci.py:228
+#: istatistik/templates/istatistik/karar_agaci.html:251
+msgid "Gini safsızlığı"
+msgstr "Gini-Unreinheit"
+
+#: istatistik/services/karar_agaci.py:228
+#: istatistik/templates/istatistik/karar_agaci.html:252
+msgid "Bilgi kazancı (entropy)"
+msgstr "Informationsgewinn (Entropie)"
+
+#: istatistik/services/karar_agaci.py:229
+#: istatistik/templates/istatistik/karar_agaci.html:253
+#, python-brace-format
+msgid ""
+"Karar ağacı sınıflandırma analizi ({criterion} kriteri, maksimum derinlik = "
+"{depth}) uygulanmıştır. Model, test seti üzerinde {acc} doğruluk oranı elde "
+"etmiştir (n_eğitim = {ntrain}, n_test = {ntest}). Kesinlik = {prec}, "
+"Duyarlılık = {rec}, F1 = {f1} olarak bulunmuştur."
+msgstr ""
+"Es wurde eine Klassifikationsanalyse mit einem Entscheidungsbaum "
+"durchgeführt (Kriterium: {criterion}, maximale Tiefe = {depth}). Das Modell "
+"erreichte auf den Testdaten eine Genauigkeit von {acc} (n_Training = "
+"{ntrain}, n_Test = {ntest}). Präzision = {prec}, Recall = {rec}, F1 = {f1}."
+
+#: istatistik/services/karar_agaci.py:237
+#: istatistik/templates/istatistik/karar_agaci.html:254
+#, python-brace-format
+msgid ""
+"En önemli yordayıcı değişken '{name}' (önem skoru = {score}) olarak "
+"belirlenmiştir."
+msgstr "Der wichtigste Prädiktor war „{name}“ (Wichtigkeitswert = {score})."
+
 #: istatistik/services/ki_kare.py:15 istatistik/services/ttesti.py:98
 #: istatistik/services/wilcoxon.py:14
 #, python-format
@@ -10670,6 +10883,244 @@ msgid ""
 msgstr ""
 "Ein Kruskal-Wallis-H-Test ergab keinen signifikanten Unterschied in {dep} "
 "zwischen den Gruppen von {group}, H({df}) = {h}, {p}, η² = {eta} ({effect})."
+
+#: istatistik/services/lineer_regresyon.py:16
+#: istatistik/services/lojistik_regresyon.py:16
+#, python-format
+msgid "\"%(dep_col)s\" bağımlı değişken sütunu bulunamadı."
+msgstr ""
+"Die Spalte der abhängigen Variable „%(dep_col)s“ wurde nicht gefunden."
+
+#: istatistik/services/lineer_regresyon.py:21
+#: istatistik/services/lojistik_regresyon.py:21
+msgid "En az 1 bağımsız değişken seçilmelidir."
+msgstr "Es muss mindestens 1 unabhängige Variable ausgewählt werden."
+
+#: istatistik/services/lineer_regresyon.py:23
+#: istatistik/services/lojistik_regresyon.py:23
+msgid "Bağımlı değişken, bağımsız değişkenler arasında olamaz."
+msgstr ""
+"Die abhängige Variable darf nicht zu den unabhängigen Variablen gehören."
+
+#: istatistik/services/lineer_regresyon.py:28
+#: istatistik/services/lojistik_regresyon.py:34
+#, python-format
+msgid "Yetersiz gözlem sayısı (n = %(n)s). En az %(v)s satır gereklidir."
+msgstr ""
+"Zu wenige Beobachtungen (n = %(n)s). Mindestens %(v)s Zeilen sind "
+"erforderlich."
+
+#: istatistik/services/lineer_regresyon.py:33
+#, python-format
+msgid "\"%(dep_col)s\" sayısal bir değişken olmalıdır."
+msgstr "„%(dep_col)s“ muss eine numerische Variable sein."
+
+#: istatistik/services/lineer_regresyon.py:49
+#: istatistik/services/lojistik_regresyon.py:54
+msgid "Bağımsız değişkenler işlenemedi."
+msgstr "Die unabhängigen Variablen konnten nicht verarbeitet werden."
+
+#: istatistik/services/lineer_regresyon.py:59
+#, python-format
+msgid "Model hesaplama hatası: %(e)s"
+msgstr "Fehler bei der Modellberechnung: %(e)s"
+
+#: istatistik/services/lineer_regresyon.py:81
+#: istatistik/services/lojistik_regresyon.py:79
+msgid "Sabit"
+msgstr "Konstante"
+
+#: istatistik/services/lineer_regresyon.py:148
+msgid "Çoklu Doğrusal Regresyon Raporu"
+msgstr "Bericht zur multiplen linearen Regression"
+
+#: istatistik/services/lineer_regresyon.py:158
+#: istatistik/services/lojistik_regresyon.py:170
+msgid "Bağımsız Değişkenler"
+msgstr "Unabhängige Variablen"
+
+#: istatistik/services/lineer_regresyon.py:161
+msgid "Düzeltilmiş R²"
+msgstr "Korrigiertes R²"
+
+#: istatistik/services/lineer_regresyon.py:182
+#: istatistik/templates/istatistik/lineer_regresyon.html:162
+msgid "Katsayılar"
+msgstr "Koeffizienten"
+
+#: istatistik/services/lineer_regresyon.py:183
+#: istatistik/services/lojistik_regresyon.py:197
+#: istatistik/templates/istatistik/lineer_regresyon.html:388
+#, python-format
+msgid "%%95 GA Alt"
+msgstr "95-%%-KI unten"
+
+#: istatistik/services/lineer_regresyon.py:183
+#: istatistik/services/lojistik_regresyon.py:197
+#: istatistik/templates/istatistik/lineer_regresyon.html:209
+#, python-format
+msgid "%%95 GA Üst"
+msgstr "95-%%-KI oben"
+
+#: istatistik/services/lineer_regresyon.py:217
+msgid ""
+"Not: VIF &gt; 10 çoklu bağlantı sorununa işaret edebilir. β = standardize "
+"edilmiş katsayı (yordayıcılar arası etki büyüklüğü karşılaştırması için "
+"kullanılır)."
+msgstr ""
+"Hinweis: VIF &gt; 10 kann auf Multikollinearität hindeuten. β = "
+"standardisierter Koeffizient (zum Vergleich der Effektstärken zwischen "
+"Prädiktoren)."
+
+#: istatistik/services/lineer_regresyon.py:232
+#: istatistik/templates/istatistik/lineer_regresyon.html:213
+#, python-brace-format
+msgid ""
+"Çoklu doğrusal regresyon analizi sonucunda, {dep} değişkenini yordamak "
+"amacıyla kurulan model istatistiksel açıdan anlamlı bulunmuştur, F({df1}, "
+"{df2}) = {f}, {p}. Model, bağımlı değişkendeki varyansın {pct} kadarını "
+"açıklamaktadır (R² = {r2}, düzeltilmiş R² = {adj})."
+msgstr ""
+"Eine multiple lineare Regressionsanalyse zeigte, dass das Modell zur "
+"Vorhersage von {dep} statistisch signifikant war, F({df1}, {df2}) = {f}, "
+"{p}. Das Modell erklärte {pct} der Varianz der abhängigen Variable (R² = "
+"{r2}, korrigiertes R² = {adj})."
+
+#: istatistik/services/lineer_regresyon.py:236
+#: istatistik/templates/istatistik/lineer_regresyon.html:214
+#, python-brace-format
+msgid ""
+"Çoklu doğrusal regresyon analizi sonucunda, {dep} değişkenini yordamak "
+"amacıyla kurulan model istatistiksel açıdan anlamlı bulunmamıştır, F({df1}, "
+"{df2}) = {f}, {p}. Model, bağımlı değişkendeki varyansın {pct} kadarını "
+"açıklamaktadır (R² = {r2}, düzeltilmiş R² = {adj})."
+msgstr ""
+"Eine multiple lineare Regressionsanalyse zeigte, dass das Modell zur "
+"Vorhersage von {dep} statistisch nicht signifikant war, F({df1}, {df2}) = "
+"{f}, {p}. Das Modell erklärte {pct} der Varianz der abhängigen Variable (R² "
+"= {r2}, korrigiertes R² = {adj})."
+
+#: istatistik/services/lineer_regresyon.py:245
+#: istatistik/templates/istatistik/lineer_regresyon.html:215
+#, python-brace-format
+msgid ""
+"Bağımsız değişkenler arasında istatistiksel açıdan anlamlı yordayıcılar "
+"şunlardır: {list}."
+msgstr ""
+"Statistisch signifikante Prädiktoren unter den unabhängigen Variablen waren:"
+" {list}."
+
+#: istatistik/services/lineer_regresyon.py:248
+#: istatistik/templates/istatistik/lineer_regresyon.html:216
+msgid ""
+"Hiçbir bağımsız değişken bağımlı değişkeni anlamlı düzeyde yordamamıştır."
+msgstr ""
+"Keine der unabhängigen Variablen sagte die abhängige Variable signifikant "
+"vorher."
+
+#: istatistik/services/lojistik_regresyon.py:31
+#, python-format
+msgid ""
+"Lojistik regresyon için bağımlı değişkenin tam 2 kategorisi olmalıdır. "
+"\"%(dep_col)s\" sütununda %(unique_vals)s farklı değer bulundu."
+msgstr ""
+"Für die logistische Regression muss die abhängige Variable genau 2 "
+"Kategorien haben. In der Spalte „%(dep_col)s“ wurden %(unique_vals)s "
+"verschiedene Werte gefunden."
+
+#: istatistik/services/lojistik_regresyon.py:62
+#, python-format
+msgid "Model yakınsama hatası: %(e)s"
+msgstr "Konvergenzfehler des Modells: %(e)s"
+
+#: istatistik/services/lojistik_regresyon.py:158
+msgid "Lojistik Regresyon Raporu"
+msgstr "Bericht zur logistischen Regression"
+
+#: istatistik/services/lojistik_regresyon.py:168
+msgid "Referans Kategori (0)"
+msgstr "Referenzkategorie (0)"
+
+#: istatistik/services/lojistik_regresyon.py:169
+msgid "Hedef Kategori (1)"
+msgstr "Zielkategorie (1)"
+
+#: istatistik/services/lojistik_regresyon.py:174
+msgid "p-değeri (Model)"
+msgstr "p-Wert (Modell)"
+
+#: istatistik/services/lojistik_regresyon.py:177
+#: istatistik/services/lojistik_regresyon.py:240
+#: istatistik/templates/istatistik/karar_agaci.html:167
+#: istatistik/templates/istatistik/lojistik_regresyon.html:159
+#: istatistik/templates/istatistik/lojistik_regresyon.html:412
+#: istatistik/templates/istatistik/svm.html:173
+msgid "Doğruluk"
+msgstr "Genauigkeit"
+
+#: istatistik/services/lojistik_regresyon.py:196
+#: istatistik/templates/istatistik/lojistik_regresyon.html:165
+msgid "Değişkenlerin Denklemdeki Değerleri"
+msgstr "Variablen in der Gleichung"
+
+#: istatistik/services/lojistik_regresyon.py:229
+msgid ""
+"Not: Exp(B) = Odds Ratio. Exp(B) &gt; 1 pozitif ilişki, Exp(B) &lt; 1 "
+"negatif ilişki anlamına gelir."
+msgstr ""
+"Hinweis: Exp(B) = Odds Ratio. Exp(B) &gt; 1 bedeutet einen positiven, Exp(B)"
+" &lt; 1 einen negativen Zusammenhang."
+
+#: istatistik/services/lojistik_regresyon.py:235
+#: istatistik/templates/istatistik/lojistik_regresyon.html:175
+msgid "Sınıflandırma Tablosu"
+msgstr "Klassifikationstabelle"
+
+#: istatistik/services/lojistik_regresyon.py:240
+#, python-format
+msgid "Tahmin: %(cat)s"
+msgstr "Vorhergesagt: %(cat)s"
+
+#: istatistik/services/lojistik_regresyon.py:241
+#: istatistik/services/lojistik_regresyon.py:243
+#, python-format
+msgid "Gerçek: %(cat)s"
+msgstr "Tatsächlich: %(cat)s"
+
+#: istatistik/services/lojistik_regresyon.py:245
+#: istatistik/templates/istatistik/lojistik_regresyon.html:427
+msgid "Genel Doğruluk"
+msgstr "Gesamtgenauigkeit"
+
+#: istatistik/services/lojistik_regresyon.py:274
+#: istatistik/templates/istatistik/lojistik_regresyon.html:221
+#, python-brace-format
+msgid ""
+"Lojistik regresyon analizi sonucunda kurulan model istatistiksel açıdan "
+"anlamlı bulunmuştur, χ²({df}) = {chi2}, {p}, Nagelkerke R² = {r2}. Model "
+"gözlemlerin {pct} kadarını doğru sınıflandırmıştır."
+msgstr ""
+"Eine logistische Regressionsanalyse zeigte, dass das Modell statistisch "
+"signifikant war, χ²({df}) = {chi2}, {p}, Nagelkerke R² = {r2}. Das Modell "
+"klassifizierte {pct} der Beobachtungen korrekt."
+
+#: istatistik/services/lojistik_regresyon.py:278
+#: istatistik/templates/istatistik/lojistik_regresyon.html:222
+#, python-brace-format
+msgid ""
+"Lojistik regresyon analizi sonucunda kurulan model istatistiksel açıdan "
+"anlamlı bulunmamıştır, χ²({df}) = {chi2}, {p}, Nagelkerke R² = {r2}. Model "
+"gözlemlerin {pct} kadarını doğru sınıflandırmıştır."
+msgstr ""
+"Eine logistische Regressionsanalyse zeigte, dass das Modell statistisch "
+"nicht signifikant war, χ²({df}) = {chi2}, {p}, Nagelkerke R² = {r2}. Das "
+"Modell klassifizierte {pct} der Beobachtungen korrekt."
+
+#: istatistik/services/lojistik_regresyon.py:282
+#: istatistik/templates/istatistik/lojistik_regresyon.html:223
+#, python-brace-format
+msgid "Anlamlı yordayıcılar: {list}."
+msgstr "Signifikante Prädiktoren: {list}."
 
 #: istatistik/services/mann_whitney.py:22
 #, python-format
@@ -10975,6 +11426,73 @@ msgid ""
 msgstr ""
 "Große Stichprobe — bietet hohe Teststärke und Generalisierbarkeit; prüfen "
 "Sie die praktische Umsetzbarkeit."
+
+#: istatistik/services/svm.py:43
+#, python-format
+msgid ""
+"Hedef sütunda %(n_classes)s farklı değer var. SVM en fazla 20 sınıfla "
+"çalışır."
+msgstr ""
+"Die Zielspalte hat %(n_classes)s verschiedene Werte. SVM unterstützt "
+"höchstens 20 Klassen."
+
+#: istatistik/services/svm.py:146
+msgid "Destek Vektör Makinesi (SVM) Sınıflandırma Raporu"
+msgstr "Bericht zur SVM-Klassifikation"
+
+#: istatistik/services/svm.py:150 istatistik/templates/istatistik/svm.html:87
+#: istatistik/templates/istatistik/svm.html:257
+msgid "Doğrusal (Linear)"
+msgstr "Linear"
+
+#: istatistik/services/svm.py:150 istatistik/templates/istatistik/svm.html:258
+msgid "RBF (Radyal Tabanlı)"
+msgstr "RBF (radiale Basisfunktion)"
+
+#: istatistik/services/svm.py:150 istatistik/templates/istatistik/svm.html:88
+#: istatistik/templates/istatistik/svm.html:256
+msgid "Polinom"
+msgstr "Polynom"
+
+#: istatistik/services/svm.py:156
+msgid "Kernel"
+msgstr "Kernel"
+
+#: istatistik/services/svm.py:157
+msgid "C (Düzenleme)"
+msgstr "C (Regularisierung)"
+
+#: istatistik/services/svm.py:160
+msgid "Destek Vektörü Sayısı"
+msgstr "Anzahl der Stützvektoren"
+
+#: istatistik/services/svm.py:203
+msgid "Değişken Önem Sıralaması (Permutation Importance)"
+msgstr "Rangfolge der Variablenwichtigkeit (Permutation Importance)"
+
+#: istatistik/services/svm.py:229 istatistik/templates/istatistik/svm.html:259
+#, python-brace-format
+msgid ""
+"Destek vektör makinesi (SVM) sınıflandırma analizi ({kernel} kernel, C = "
+"{c}) uygulanmıştır. Model, test seti üzerinde {acc} doğruluk oranı elde "
+"etmiştir (n_eğitim = {ntrain}, n_test = {ntest}). Kesinlik = {prec}, "
+"Duyarlılık = {rec}, F1 = {f1} olarak bulunmuştur. Model toplam {nsv} destek "
+"vektörü kullanmıştır."
+msgstr ""
+"Es wurde eine Klassifikationsanalyse mit einer Support-Vector-Machine (SVM) "
+"durchgeführt ({kernel}-Kernel, C = {c}). Das Modell erreichte auf den "
+"Testdaten eine Genauigkeit von {acc} (n_Training = {ntrain}, n_Test = "
+"{ntest}). Präzision = {prec}, Recall = {rec}, F1 = {f1}. Das Modell "
+"verwendete insgesamt {nsv} Stützvektoren."
+
+#: istatistik/services/svm.py:238 istatistik/templates/istatistik/svm.html:260
+#, python-brace-format
+msgid ""
+"Permütasyon önem analizi sonucunda en etkili değişken '{name}' (önem skoru ="
+" {score}) olarak belirlenmiştir."
+msgstr ""
+"Die Permutationswichtigkeitsanalyse ergab „{name}“ als einflussreichste "
+"Variable (Wichtigkeitswert = {score})."
 
 #: istatistik/services/tekrarli_anova.py:15
 msgid "Tekrarlayan ölçümler ANOVA için en az 3 sütun seçilmelidir."
@@ -12036,6 +12554,10 @@ msgid "{n} madde"
 msgstr "{n} Items"
 
 #: istatistik/templates/istatistik/afa.html:287
+#: istatistik/templates/istatistik/karar_agaci.html:248
+#: istatistik/templates/istatistik/lineer_regresyon.html:212
+#: istatistik/templates/istatistik/lojistik_regresyon.html:220
+#: istatistik/templates/istatistik/svm.html:255
 #, python-format, python-brace-format
 msgid "%%{value}"
 msgstr "{value} %%"
@@ -12897,9 +13419,9 @@ msgid "Tümünü Seç/Kaldır"
 msgstr "Alle aus-/abwählen"
 
 #: istatistik/templates/istatistik/karar_agaci.html:77
-#: istatistik/templates/istatistik/karar_agaci.html:306
+#: istatistik/templates/istatistik/karar_agaci.html:317
 #: istatistik/templates/istatistik/svm.html:77
-#: istatistik/templates/istatistik/svm.html:321
+#: istatistik/templates/istatistik/svm.html:331
 msgid "Önce hedef değişkeni seçin."
 msgstr "Wählen Sie zuerst die Zielvariable."
 
@@ -12979,13 +13501,6 @@ msgstr "Erneut versuchen"
 msgid "Model Sonuçları"
 msgstr "Modellergebnisse"
 
-#: istatistik/templates/istatistik/karar_agaci.html:167
-#: istatistik/templates/istatistik/lojistik_regresyon.html:159
-#: istatistik/templates/istatistik/lojistik_regresyon.html:404
-#: istatistik/templates/istatistik/svm.html:173
-msgid "Doğruluk"
-msgstr "Genauigkeit"
-
 #: istatistik/templates/istatistik/karar_agaci.html:173
 #: istatistik/templates/istatistik/svm.html:179
 msgid "Kesinlik"
@@ -12996,29 +13511,9 @@ msgstr "Präzision"
 msgid "Duyarlılık"
 msgstr "Sensitivität"
 
-#: istatistik/templates/istatistik/karar_agaci.html:185
-#: istatistik/templates/istatistik/svm.html:191
-msgid "F1 Skoru"
-msgstr "F1-Score"
-
 #: istatistik/templates/istatistik/karar_agaci.html:194
 msgid "Değişken Önem Sıralaması"
 msgstr "Rangfolge der Variablenwichtigkeit"
-
-#: istatistik/templates/istatistik/karar_agaci.html:199
-#: istatistik/templates/istatistik/svm.html:205
-msgid "Sıra"
-msgstr "Rang"
-
-#: istatistik/templates/istatistik/karar_agaci.html:201
-#: istatistik/templates/istatistik/svm.html:207
-msgid "Önem Skoru"
-msgstr "Wichtigkeitswert"
-
-#: istatistik/templates/istatistik/karar_agaci.html:202
-#: istatistik/templates/istatistik/svm.html:208
-msgid "Göreli Ağırlık"
-msgstr "Relatives Gewicht"
 
 #: istatistik/templates/istatistik/karar_agaci.html:228
 msgid "Karar Ağacı Sınıflandırması Nedir?"
@@ -13099,47 +13594,55 @@ msgstr "Wählen Sie mindestens 1 Merkmalsvariable."
 msgid "Durum sorgulanamadı: "
 msgstr "Status konnte nicht abgefragt werden: "
 
-#: istatistik/templates/istatistik/karar_agaci.html:260
-#: istatistik/templates/istatistik/lineer_regresyon.html:224
-#: istatistik/templates/istatistik/lojistik_regresyon.html:232
-#: istatistik/templates/istatistik/svm.html:275
+#: istatistik/templates/istatistik/karar_agaci.html:249
+msgid "Kriter:"
+msgstr "Kriterium:"
+
+#: istatistik/templates/istatistik/karar_agaci.html:250
+msgid "Yaprak:"
+msgstr "Blätter:"
+
+#: istatistik/templates/istatistik/karar_agaci.html:271
+#: istatistik/templates/istatistik/lineer_regresyon.html:233
+#: istatistik/templates/istatistik/lojistik_regresyon.html:240
+#: istatistik/templates/istatistik/svm.html:285
 #, python-format
 msgid "Dosya boyutu %(mb)s MB sınırını aşıyor."
 msgstr "Die Datei überschreitet die Größenbeschränkung von %(mb)s MB."
 
-#: istatistik/templates/istatistik/karar_agaci.html:297
-#: istatistik/templates/istatistik/lineer_regresyon.html:261
-#: istatistik/templates/istatistik/lojistik_regresyon.html:270
-#: istatistik/templates/istatistik/svm.html:312
+#: istatistik/templates/istatistik/karar_agaci.html:308
+#: istatistik/templates/istatistik/lineer_regresyon.html:270
+#: istatistik/templates/istatistik/lojistik_regresyon.html:278
+#: istatistik/templates/istatistik/svm.html:322
 msgid "Seçiniz"
 msgstr "Bitte wählen"
 
-#: istatistik/templates/istatistik/karar_agaci.html:312
-#: istatistik/templates/istatistik/lojistik_regresyon.html:285
-#: istatistik/templates/istatistik/svm.html:327
+#: istatistik/templates/istatistik/karar_agaci.html:323
+#: istatistik/templates/istatistik/lojistik_regresyon.html:293
+#: istatistik/templates/istatistik/svm.html:337
 msgid "Başka sütun yok."
 msgstr "Keine weiteren Spalten."
 
-#: istatistik/templates/istatistik/karar_agaci.html:403
+#: istatistik/templates/istatistik/karar_agaci.html:414
 msgid "Maks. derinlik:"
 msgstr "Max. Tiefe:"
 
-#: istatistik/templates/istatistik/karar_agaci.html:403
+#: istatistik/templates/istatistik/karar_agaci.html:414
 msgid "gerçek:"
 msgstr "tatsächlich:"
 
-#: istatistik/templates/istatistik/karar_agaci.html:405
-#: istatistik/templates/istatistik/svm.html:423
+#: istatistik/templates/istatistik/karar_agaci.html:416
+#: istatistik/templates/istatistik/svm.html:433
 msgid "Sınıflar:"
 msgstr "Klassen:"
 
-#: istatistik/templates/istatistik/karar_agaci.html:406
-#: istatistik/templates/istatistik/svm.html:424
+#: istatistik/templates/istatistik/karar_agaci.html:417
+#: istatistik/templates/istatistik/svm.html:434
 msgid "Eğitim:"
 msgstr "Training:"
 
-#: istatistik/templates/istatistik/karar_agaci.html:406
-#: istatistik/templates/istatistik/svm.html:424
+#: istatistik/templates/istatistik/karar_agaci.html:417
+#: istatistik/templates/istatistik/svm.html:434
 msgid "Test:"
 msgstr "Test:"
 
@@ -13588,9 +14091,9 @@ msgid "Bağımsız Değişkenler (X — en az 1)"
 msgstr "Unabhängige Variablen (X — mindestens 1)"
 
 #: istatistik/templates/istatistik/lineer_regresyon.html:76
-#: istatistik/templates/istatistik/lineer_regresyon.html:270
+#: istatistik/templates/istatistik/lineer_regresyon.html:279
 #: istatistik/templates/istatistik/lojistik_regresyon.html:77
-#: istatistik/templates/istatistik/lojistik_regresyon.html:279
+#: istatistik/templates/istatistik/lojistik_regresyon.html:287
 msgid "Önce bağımlı değişkeni seçin."
 msgstr "Wählen Sie zuerst die abhängige Variable."
 
@@ -13619,17 +14122,9 @@ msgstr ""
 msgid "Regresyon analizi yapılıyor…"
 msgstr "Regressionsanalyse läuft…"
 
-#: istatistik/templates/istatistik/lineer_regresyon.html:124
-msgid "Model Özeti"
-msgstr "Modellzusammenfassung"
-
 #: istatistik/templates/istatistik/lineer_regresyon.html:144
 msgid "Düz. R²"
 msgstr "Korr. R²"
-
-#: istatistik/templates/istatistik/lineer_regresyon.html:162
-msgid "Katsayılar"
-msgstr "Koeffizienten"
 
 #: istatistik/templates/istatistik/lineer_regresyon.html:169
 msgid ""
@@ -13691,29 +14186,19 @@ msgstr "Wählen Sie mindestens 1 unabhängige Variable."
 msgid "Sonuç gösterilirken hata: "
 msgstr "Fehler beim Anzeigen der Ergebnisse: "
 
-#: istatistik/templates/istatistik/lineer_regresyon.html:209
-#, python-format
-msgid "%%95 GA Üst"
-msgstr "95-%%-KI oben"
-
-#: istatistik/templates/istatistik/lineer_regresyon.html:276
+#: istatistik/templates/istatistik/lineer_regresyon.html:285
 msgid "Başka sayısal sütun yok."
 msgstr "Keine weiteren numerischen Spalten."
 
-#: istatistik/templates/istatistik/lineer_regresyon.html:365
-#: istatistik/templates/istatistik/lojistik_regresyon.html:368
+#: istatistik/templates/istatistik/lineer_regresyon.html:374
+#: istatistik/templates/istatistik/lojistik_regresyon.html:376
 msgid "✓ Model istatistiksel olarak anlamlı (p < .05)"
 msgstr "✓ Das Modell ist statistisch signifikant (p < .05)"
 
-#: istatistik/templates/istatistik/lineer_regresyon.html:368
-#: istatistik/templates/istatistik/lojistik_regresyon.html:371
+#: istatistik/templates/istatistik/lineer_regresyon.html:377
+#: istatistik/templates/istatistik/lojistik_regresyon.html:379
 msgid "✗ Model istatistiksel olarak anlamlı değil (p ≥ .05)"
 msgstr "✗ Das Modell ist statistisch nicht signifikant (p ≥ .05)"
-
-#: istatistik/templates/istatistik/lineer_regresyon.html:379
-#, python-format
-msgid "%%95 GA Alt"
-msgstr "95-%%-KI unten"
 
 #: istatistik/templates/istatistik/lojistik_regresyon.html:5
 msgid "Lojistik Regresyon Analizi (Binary)"
@@ -13777,17 +14262,9 @@ msgstr "Logistische Regression läuft…"
 msgid "χ² (Model)"
 msgstr "χ² (Modell)"
 
-#: istatistik/templates/istatistik/lojistik_regresyon.html:165
-msgid "Değişkenlerin Denklemdeki Değerleri"
-msgstr "Variablen in der Gleichung"
-
 #: istatistik/templates/istatistik/lojistik_regresyon.html:172
 msgid "* Yeşil hücre p &lt; .05 | Exp(B) = Odds Ratio"
 msgstr "* Grüne Zelle p &lt; .05 | Exp(B) = Odds Ratio"
-
-#: istatistik/templates/istatistik/lojistik_regresyon.html:175
-msgid "Sınıflandırma Tablosu"
-msgstr "Klassifikationstabelle"
 
 #: istatistik/templates/istatistik/lojistik_regresyon.html:198
 msgid "Lojistik Regresyon Nedir?"
@@ -13833,23 +14310,19 @@ msgstr ""
 msgid "%%95 GA Üst OR"
 msgstr "95-%%-KI oben OR"
 
-#: istatistik/templates/istatistik/lojistik_regresyon.html:382
+#: istatistik/templates/istatistik/lojistik_regresyon.html:390
 #, python-format
 msgid "%%95 GA Alt OR"
 msgstr "95-%%-KI unten OR"
 
-#: istatistik/templates/istatistik/lojistik_regresyon.html:404
+#: istatistik/templates/istatistik/lojistik_regresyon.html:412
 msgid "Tahmin:"
 msgstr "Vorhergesagt:"
 
-#: istatistik/templates/istatistik/lojistik_regresyon.html:407
-#: istatistik/templates/istatistik/lojistik_regresyon.html:413
+#: istatistik/templates/istatistik/lojistik_regresyon.html:415
+#: istatistik/templates/istatistik/lojistik_regresyon.html:421
 msgid "Gerçek:"
 msgstr "Tatsächlich:"
-
-#: istatistik/templates/istatistik/lojistik_regresyon.html:419
-msgid "Genel Doğruluk"
-msgstr "Gesamtgenauigkeit"
 
 #: istatistik/templates/istatistik/mann_whitney.html:5
 msgid "Mann-Whitney U Testi (Parametrik Olmayan)"
@@ -14312,14 +14785,6 @@ msgstr "Kernelfunktion"
 msgid "RBF (Radyal Tabanlı) — Önerilen"
 msgstr "RBF (radiale Basisfunktion) — empfohlen"
 
-#: istatistik/templates/istatistik/svm.html:87
-msgid "Doğrusal (Linear)"
-msgstr "Linear"
-
-#: istatistik/templates/istatistik/svm.html:88
-msgid "Polinom"
-msgstr "Polynom"
-
 #: istatistik/templates/istatistik/svm.html:95
 msgid "C (Düzenleme):"
 msgstr "C (Regularisierung):"
@@ -14419,7 +14884,7 @@ msgstr ""
 msgid "Doğrusal"
 msgstr "Linear"
 
-#: istatistik/templates/istatistik/svm.html:422
+#: istatistik/templates/istatistik/svm.html:432
 msgid "Destek Vektörü:"
 msgstr "Stützvektoren:"
 
@@ -15501,10 +15966,6 @@ msgid ""
 msgstr ""
 "Eine sortierte Tabelle zeigt, welche Variable am meisten zur Klassifikation "
 "beiträgt."
-
-#: istatistik/views.py:639 istatistik/views.py:670
-msgid "Confusion Matrix"
-msgstr "Konfusionsmatrix"
 
 #: istatistik/views.py:639 istatistik/views.py:670
 msgid ""

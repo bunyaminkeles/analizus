@@ -137,7 +137,7 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
             story.append(Paragraph(gettext('%(var)s  (N=%(n)s, %(k)s kategori)') % {'var': v['variable'], 'n': v['n'], 'k': v['unique']}, h3_style))
             freq_rows = [[gettext('Değer'), gettext('Frekans'), gettext('Yüzde (%)')]]
             for row in v['freq_table'][:20]:
-                freq_rows.append([str(row['value']), str(row['freq']), f"{row['pct']:.1f}%"])
+                freq_rows.append([str(row['value']), str(row['freq']), gettext('%%%(value)s') % {'value': f"{row['pct']:.1f}"}])
             tbl2 = Table(freq_rows, colWidths=[7*cm, 4*cm, 4*cm])
             tbl2.setStyle(_base_table_style())
             story.append(tbl2)
@@ -225,7 +225,7 @@ def _bar_chart(v: dict) -> io.BytesIO:
     ax.set_ylabel(gettext('Frekans'))
     for bar, row in zip(bars, top):
         ax.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.1,
-                f"{row['pct']:.1f}%", ha='center', va='bottom', fontsize=7)
+                gettext('%%%(value)s') % {'value': f"{row['pct']:.1f}"}, ha='center', va='bottom', fontsize=7)
     plt.tight_layout()
     buf = io.BytesIO()
     fig.savefig(buf, format='png', dpi=100, bbox_inches='tight')
