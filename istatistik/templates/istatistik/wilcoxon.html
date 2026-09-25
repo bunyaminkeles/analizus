@@ -241,7 +241,13 @@ const T = {
   s6: '{% trans "Anlamlı fark bulundu (p < .05)" as t %}{{ t|escapejs }}',
   s7: '{% trans "Anlamlı fark yok (p ≥ .05)" as t %}{{ t|escapejs }}',
   s8: '{% trans "Kopyalandı" as t %}{{ t|escapejs }}',
+  // APA / sonuç metinleri — servis (PDF) ile aynı msgid'ler, {süslü} yer tutucular
+  medianSuffix: '{% trans "(Medyan)" as t %}{{ t|escapejs }}',
+  apaSig: '{% trans "Wilcoxon işaret testi sonucunda {c1} ve {c2} ölçümleri arasındaki fark istatistiksel olarak anlamlı bulunmuştur, W = {w}, {p}, r = {r} ({effect}) (N = {n})." as t %}{{ t|escapejs }}',
+  apaNs: '{% trans "Wilcoxon işaret testi sonucunda {c1} ve {c2} ölçümleri arasındaki fark istatistiksel olarak anlamlı bulunmamıştır, W = {w}, {p}, r = {r} ({effect}) (N = {n})." as t %}{{ t|escapejs }}',
 };
+const fmt = (s, o) => s.replace(/\{(\w+)\}/g, (m, k) => (k in o ? o[k] : m));
+const pStr = (p) => p < 0.001 ? 'p < .001' : 'p = ' + p.toFixed(3);
 const STATUS_BASE = '{% url "istatistik:wilcoxon_status" job_id="00000000-0000-0000-0000-000000000000" %}';
 let pollInterval = null, currentJobId = null, previewData = null;
 
@@ -340,13 +346,12 @@ function onCompleted(data) {
   if (data.result_data) {
     const r = data.result_data;
     document.getElementById('w-value').textContent = r.w_stat !== undefined ? r.w_stat.toFixed(3) : '—';
-    const pStr = r.p_value < 0.001 ? '< .001' : r.p_value.toFixed(3);
     document.getElementById('p-value').textContent = r.p_value < 0.001 ? '< .001' : r.p_value.toFixed(4);
     document.getElementById('r-value').textContent = r.r_rb !== undefined ? r.r_rb.toFixed(3) : '—';
     document.getElementById('median1-val').textContent = r.median1 !== undefined ? r.median1.toFixed(3) : '—';
     document.getElementById('median2-val').textContent = r.median2 !== undefined ? r.median2.toFixed(3) : '—';
-    document.getElementById('col1-label').textContent = r.col1 + ' (Medyan)';
-    document.getElementById('col2-label').textContent = r.col2 + ' (Medyan)';
+    document.getElementById('col1-label').textContent = r.col1 + ' ' + T.medianSuffix;
+    document.getElementById('col2-label').textContent = r.col2 + ' ' + T.medianSuffix;
     document.getElementById('sign-stats').textContent =
       `n = ${r.n} · {% filter escapejs %}{% trans "Pozitif fark:" %}{% endfilter %} ${r.n_positive} · {% filter escapejs %}{% trans "Negatif fark:" %}{% endfilter %} ${r.n_negative} · {% filter escapejs %}{% trans "Eşit:" %}{% endfilter %} ${r.n_ties}`;
     const sigText = r.significant ? T.s6 : T.s7;
@@ -354,7 +359,7 @@ function onCompleted(data) {
     document.getElementById('significance-badge').innerHTML =
       `<span class="${sigColor} fw-semibold">${sigText}</span> · ${r.effect_interpretation}`;
 
-    const apaText = `Wilcoxon işaret testi sonucunda ${r.col1} ve ${r.col2} ölçümleri arasındaki fark ${r.significant ? 'istatistiksel olarak anlamlı bulunmuştur' : 'istatistiksel olarak anlamlı bulunmamıştır'}, W = ${r.w_stat.toFixed(3)}, p ${pStr}, r = ${Math.abs(r.r_rb).toFixed(3)} (${r.effect_interpretation}) (N = ${r.n}).`;
+    const apaText = fmt(r.significant ? T.apaSig : T.apaNs, {c1: r.col1, c2: r.col2, w: r.w_stat.toFixed(3), p: pStr(r.p_value), r: Math.abs(r.r_rb).toFixed(3), effect: r.effect_interpretation, n: r.n});
     document.getElementById('wilcoxon-apa-display').textContent = apaText;
     document.getElementById('wilcoxon-report-text').textContent = apaText;
     document.getElementById('wilcoxon-apa-box').classList.remove('d-none');

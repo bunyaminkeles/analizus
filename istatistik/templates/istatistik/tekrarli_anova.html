@@ -252,7 +252,12 @@ const T = {
   s7: '{% trans "Günlük: " as t %}{{ t|escapejs }}',
   s8: '{% trans " analiz hakkı" as t %}{{ t|escapejs }}',
   s9: '{% trans "Kopyalandı" as t %}{{ t|escapejs }}',
+  // APA / sonuç metinleri — servis (PDF) ile aynı msgid'ler, {süslü} yer tutucular
+  apaSig: '{% trans "Tekrarlayan ölçümler ANOVA sonuçlarına göre {cols} koşulları arasındaki fark istatistiksel olarak anlamlı bulunmuştur, F({df1}, {df2}) = {f}, {p}, η² = {eta} ({effect})." as t %}{{ t|escapejs }}',
+  apaNs: '{% trans "Tekrarlayan ölçümler ANOVA sonuçlarına göre {cols} koşulları arasındaki fark istatistiksel olarak anlamlı bulunmamıştır, F({df1}, {df2}) = {f}, {p}, η² = {eta} ({effect})." as t %}{{ t|escapejs }}',
 };
+const fmt = (s, o) => s.replace(/\{(\w+)\}/g, (m, k) => (k in o ? o[k] : m));
+const pStr = (p) => p < 0.001 ? 'p < .001' : 'p = ' + p.toFixed(3);
 const STATUS_BASE = '{% url "istatistik:tekrarli_anova_status" job_id="00000000-0000-0000-0000-000000000000" %}';
 let pollInterval = null, currentJobId = null, previewData = null, _lastCols = [];
 
@@ -427,10 +432,8 @@ function onCompleted(data) {
       document.getElementById('posthoc-section').classList.remove('d-none');
     }
 
-    const pStr = r.p_value < 0.001 ? '< .001' : r.p_value.toFixed(3);
-    const sigTxt = r.significant ? 'istatistiksel olarak anlamlı bulunmuştur' : 'istatistiksel olarak anlamlı bulunmamıştır';
     const colStr = r.columns.join(', ');
-    const apaText = `Tekrarlayan ölçümler ANOVA sonuçlarına göre ${colStr} koşulları arasındaki fark ${sigTxt}, F(${r.df_between}, ${r.df_error}) = ${r.F.toFixed(3)}, p ${pStr}, η² = ${r.eta_sq.toFixed(3)} (${r.effect_interpretation}).`;
+    const apaText = fmt(r.significant ? T.apaSig : T.apaNs, {cols: colStr, df1: r.df_between, df2: r.df_error, f: r.F.toFixed(3), p: pStr(r.p_value), eta: r.eta_sq.toFixed(3), effect: r.effect_interpretation});
     document.getElementById('apa-display').textContent = apaText;
     document.getElementById('apa-report-text').textContent = apaText;
     document.getElementById('apa-box').classList.remove('d-none');

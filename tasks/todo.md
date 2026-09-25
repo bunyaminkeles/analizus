@@ -112,8 +112,17 @@ maddelerde.
     (bağlamsız çevirisi "Total of"). EN PDF'lerde TR kalıntı yok; 15 sayfa JS OK.
   - [ ] Sonuç cümlelerinde "p = 0.0000" (APA: "p < .001") — ttesti, mann_whitney,
     anova, kruskal_wallis `conclusion` metinleri (.4f); kozmetik, önceden var.
-  - [ ] Parti 4'te Wilcoxon'da benzer yön hatası kontrol edilecek.
-  - [ ] Parti 4: wilcoxon, friedman, tekrarli_anova, afa
+  - [x] Wilcoxon yön kontrolü — hata yok (Parti 4).
+  - [x] Parti 4 (25 Eylül 2026): wilcoxon, friedman, tekrarli_anova, afa —
+    servis + şablon JS. Wilcoxon yönü DOĞRU (diff = col2 − col1). Düzeltilen
+    önceden var hatalar: APA'da "p 0.123" (eşittir eksikti) — 4 araç, ekran+PDF;
+    **AFA: Bartlett anlamsızken de "anlamlı bulunmuştur" yazıyordu** (PDF+ekran);
+    faktör sayısı elle seçilince de "Özdeğer > 1 kriteri" diyordu; ekran ve PDF
+    APA metinleri farklıydı → tek ortak metin (afa._apa_text + JS). Yüzde biçimi
+    dile göre ('%%%(value)s' / '%{value}' msgid'leri: %62.3 / 62.3% / 62.3 %).
+    Kaçaklar: wilcoxon "(Medyan)", afa "madde". EN PDF TR kalıntı yok; 12 sayfa JS OK.
+  - [ ] Parti 5'te: lineer_regresyon.py:228 ve karar_agaci.py:229'da Türkçe
+    yüzde kalıbı (f"%{…}") — aynı yöntemle düzeltilecek.
   - [ ] Parti 5: lineer_regresyon, lojistik_regresyon, karar_agaci, svm
   Ölçüm notu: istatistik
   servislerinde (20 dosya) çeviriye işaretlenmemiş Türkçe: EKRAN 221 metin /

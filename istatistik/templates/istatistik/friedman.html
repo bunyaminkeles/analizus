@@ -255,7 +255,12 @@ const T = {
   s8: '{% trans " analiz hakkı" as t %}{{ t|escapejs }}',
   s9: '{% trans " katılımcı" as t %}{{ t|escapejs }}',
   s10: '{% trans "Kopyalandı" as t %}{{ t|escapejs }}',
+  // APA / sonuç metinleri — servis (PDF) ile aynı msgid'ler, {süslü} yer tutucular
+  apaSig: '{% trans "Friedman testi sonucuna göre {cols} ölçümleri arasındaki fark istatistiksel olarak anlamlı bulunmuştur, χ²({df}, N = {n}) = {chi2}, {p}, W = {w} ({effect})." as t %}{{ t|escapejs }}',
+  apaNs: '{% trans "Friedman testi sonucuna göre {cols} ölçümleri arasındaki fark istatistiksel olarak anlamlı bulunmamıştır, χ²({df}, N = {n}) = {chi2}, {p}, W = {w} ({effect})." as t %}{{ t|escapejs }}',
 };
+const fmt = (s, o) => s.replace(/\{(\w+)\}/g, (m, k) => (k in o ? o[k] : m));
+const pStr = (p) => p < 0.001 ? 'p < .001' : 'p = ' + p.toFixed(3);
 const STATUS_BASE = '{% url "istatistik:friedman_status" job_id="00000000-0000-0000-0000-000000000000" %}';
 let pollInterval = null, currentJobId = null, previewData = null;
 
@@ -429,10 +434,8 @@ function onCompleted(data) {
       document.getElementById('posthoc-section').classList.remove('d-none');
     }
 
-    const pStr = r.p_value < 0.001 ? '< .001' : r.p_value.toFixed(3);
-    const sigTxt = r.significant ? 'istatistiksel olarak anlamlı bulunmuştur' : 'istatistiksel olarak anlamlı bulunmamıştır';
     const colStr = r.columns.join(', ');
-    const apaText = `Friedman testi sonucuna göre ${colStr} ölçümleri arasındaki fark ${sigTxt}, χ²(${r.df}, N = ${r.n}) = ${r.chi2.toFixed(3)}, p ${pStr}, W = ${r.kendall_w.toFixed(3)} (${r.effect_interpretation}).`;
+    const apaText = fmt(r.significant ? T.apaSig : T.apaNs, {cols: colStr, df: r.df, n: r.n, chi2: r.chi2.toFixed(3), p: pStr(r.p_value), w: r.kendall_w.toFixed(3), effect: r.effect_interpretation});
     document.getElementById('apa-display').textContent = apaText;
     document.getElementById('apa-report-text').textContent = apaText;
     document.getElementById('apa-box').classList.remove('d-none');

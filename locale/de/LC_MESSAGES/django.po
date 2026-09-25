@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-25 22:14+0300\n"
+"POT-Creation-Date: 2026-09-25 22:50+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2054,7 +2054,7 @@ msgstr "Beschreiben Sie kurz die gesuchte Schulung"
 msgid "Seviye"
 msgstr "Niveau"
 
-#: forum/templates/forum/egitim_talebi.html:124
+#: forum/templates/forum/egitim_talebi.html:124 istatistik/services/afa.py:228
 #: istatistik/services/cronbach.py:135
 msgid "Katılımcı Sayısı"
 msgstr "Teilnehmerzahl"
@@ -9507,6 +9507,194 @@ msgstr ""
 "Stichproben teststärker. Ohne Normalverteilung oder bei kleiner Stichprobe "
 "liefert Wilcoxon zuverlässigere Ergebnisse."
 
+#: istatistik/services/afa.py:39 istatistik/services/cronbach.py:15
+#: istatistik/services/normallik.py:17
+msgid "Seçilen sütunlar sayısal değil veya bulunamadı."
+msgstr ""
+"Die ausgewählten Spalten sind nicht numerisch oder wurden nicht gefunden."
+
+#: istatistik/services/afa.py:47
+msgid "En az 3 madde (sütun) gereklidir."
+msgstr "Mindestens 3 Items (Spalten) sind erforderlich."
+
+#: istatistik/services/afa.py:49
+msgid "En az 10 katılımcı (satır) gereklidir."
+msgstr "Mindestens 10 Teilnehmende (Zeilen) sind erforderlich."
+
+#: istatistik/services/afa.py:54
+#, python-format
+msgid ""
+"Örneklem yetersiz olabilir: %(n)s katılımcı / %(k)s madde = %(v)s:1 oran. "
+"Önerilen minimum 5:1 (ideali 10:1). Sonuçlar kararsız olabilir."
+msgstr ""
+"Die Stichprobe könnte zu klein sein: %(n)s Teilnehmende / %(k)s Items = "
+"Verhältnis %(v)s:1. Empfohlen sind mindestens 5:1 (ideal 10:1). Die "
+"Ergebnisse können instabil sein."
+
+#: istatistik/services/afa.py:148
+msgid "Mükemmel (≥ 0.90)"
+msgstr "Hervorragend (≥ 0.90)"
+
+#: istatistik/services/afa.py:150
+msgid "Çok İyi (0.80–0.90)"
+msgstr "Sehr gut (0.80–0.90)"
+
+#: istatistik/services/afa.py:152
+msgid "İyi (0.70–0.80)"
+msgstr "Mittel (0.70–0.80)"
+
+#: istatistik/services/afa.py:154
+msgid "Orta (0.60–0.70)"
+msgstr "Mittelmäßig (0.60–0.70)"
+
+#: istatistik/services/afa.py:156
+msgid "Düşük (0.50–0.60)"
+msgstr "Schlecht (0.50–0.60)"
+
+#: istatistik/services/afa.py:157
+msgid "Kabul Edilemez (< 0.50)"
+msgstr "Inakzeptabel (< 0.50)"
+
+#: istatistik/services/afa.py:174 istatistik/services/afa.py:233
+#: istatistik/services/afa.py:284 istatistik/services/afa.py:285
+#, python-format
+msgid "%%%(value)s"
+msgstr "%(value)s %%"
+
+#: istatistik/services/afa.py:175 istatistik/templates/istatistik/afa.html:288
+#, python-brace-format
+msgid ""
+"{k} maddeden oluşan ölçeğin faktör yapısını belirlemek amacıyla {rotation} "
+"rotasyonu ile Açıklayıcı Faktör Analizi (AFA) uygulanmıştır (n = {n})."
+msgstr ""
+"Zur Bestimmung der Faktorenstruktur der Skala mit {k} Items wurde eine "
+"explorative Faktorenanalyse (EFA) mit {rotation}-Rotation durchgeführt (n = "
+"{n})."
+
+#: istatistik/services/afa.py:182 istatistik/templates/istatistik/afa.html:289
+#, python-brace-format
+msgid ""
+"KMO örneklem yeterlilik katsayısı {kmo} ({level}) olarak hesaplanmış, "
+"Bartlett Küresellik Testi anlamlı bulunmuştur (χ² = {chi2}, {p})."
+msgstr ""
+"Das Kaiser-Meyer-Olkin-Kriterium betrug {kmo} ({level}), und der Bartlett-"
+"Test auf Sphärizität war signifikant (χ² = {chi2}, {p})."
+
+#: istatistik/services/afa.py:185 istatistik/templates/istatistik/afa.html:290
+#, python-brace-format
+msgid ""
+"KMO örneklem yeterlilik katsayısı {kmo} ({level}) olarak hesaplanmış, "
+"Bartlett Küresellik Testi anlamlı bulunmamıştır (χ² = {chi2}, {p}); veri "
+"faktör analizi için uygun olmayabilir."
+msgstr ""
+"Das Kaiser-Meyer-Olkin-Kriterium betrug {kmo} ({level}), und der Bartlett-"
+"Test auf Sphärizität war nicht signifikant (χ² = {chi2}, {p}); die Daten "
+"sind möglicherweise nicht für eine Faktorenanalyse geeignet."
+
+#: istatistik/services/afa.py:189 istatistik/templates/istatistik/afa.html:291
+#, python-brace-format
+msgid ""
+"Özdeğer > 1 kriterine göre {nf} faktörlü yapı elde edilmiş ve bu yapı toplam"
+" varyansın {pct} kadarını açıklamıştır."
+msgstr ""
+"Nach dem Eigenwertkriterium (> 1) ergab sich eine {nf}-faktorielle Struktur,"
+" die {pct} der Gesamtvarianz erklärt."
+
+#: istatistik/services/afa.py:192 istatistik/templates/istatistik/afa.html:292
+#, python-brace-format
+msgid ""
+"Araştırmacı tarafından belirlenen {nf} faktörlü yapı toplam varyansın {pct} "
+"kadarını açıklamıştır."
+msgstr ""
+"Die von der forschenden Person festgelegte {nf}-faktorielle Struktur erklärt"
+" {pct} der Gesamtvarianz."
+
+#: istatistik/services/afa.py:220
+msgid "Açıklayıcı Faktör Analizi Raporu"
+msgstr "Bericht zur explorativen Faktorenanalyse"
+
+#: istatistik/services/afa.py:221 istatistik/services/anova.py:138
+#: istatistik/services/betimsel.py:96 istatistik/services/cronbach.py:128
+#: istatistik/services/friedman.py:119 istatistik/services/ki_kare.py:131
+#: istatistik/services/korelasyon.py:155
+#: istatistik/services/kruskal_wallis.py:138
+#: istatistik/services/mann_whitney.py:123
+#: istatistik/services/normallik.py:115
+#: istatistik/services/tekrarli_anova.py:149 istatistik/services/ttesti.py:211
+#: istatistik/services/wilcoxon.py:114
+#, python-format
+msgid "Dosya: %(filename)s"
+msgstr "Datei: %(filename)s"
+
+#: istatistik/services/afa.py:227 istatistik/services/cronbach.py:134
+msgid "Madde Sayısı"
+msgstr "Anzahl der Items"
+
+#: istatistik/services/afa.py:229
+msgid "Çıkarılan Faktör Sayısı"
+msgstr "Anzahl extrahierter Faktoren"
+
+#: istatistik/services/afa.py:230
+msgid "Rotasyon"
+msgstr "Rotation"
+
+#: istatistik/services/afa.py:231
+msgid "KMO Örneklem Yeterliliği"
+msgstr "KMO-Stichprobeneignung"
+
+#: istatistik/services/afa.py:232 istatistik/templates/istatistik/afa.html:267
+msgid "Bartlett Küresellik Testi"
+msgstr "Bartlett-Test auf Sphärizität"
+
+#: istatistik/services/afa.py:233
+msgid "Açıklanan Toplam Varyans"
+msgstr "Erklärte Gesamtvarianz"
+
+#: istatistik/services/afa.py:251
+msgid "Faktör Yük Matrisi (Rotasyonlu)"
+msgstr "Faktorladungsmatrix (rotiert)"
+
+#: istatistik/services/afa.py:253 istatistik/services/cronbach.py:155
+msgid "Madde"
+msgstr "Item"
+
+#: istatistik/services/afa.py:253
+msgid "Communality"
+msgstr "Kommunalität"
+
+#: istatistik/services/afa.py:279 istatistik/templates/istatistik/afa.html:181
+#: istatistik/views.py:701
+msgid "Açıklanan Varyans"
+msgstr "Erklärte Varianz"
+
+#: istatistik/services/afa.py:280
+msgid "Faktör"
+msgstr "Faktor"
+
+#: istatistik/services/afa.py:280
+msgid "SS Yüklemeler"
+msgstr "SS-Ladungen"
+
+#: istatistik/services/afa.py:280
+msgid "% Varyans"
+msgstr "% Varianz"
+
+#: istatistik/services/afa.py:280
+msgid "Kümülatif %"
+msgstr "Kumulativ %"
+
+#: istatistik/services/afa.py:302 istatistik/services/anova.py:224
+#: istatistik/services/betimsel.py:152 istatistik/services/cronbach.py:182
+#: istatistik/services/friedman.py:201 istatistik/services/ki_kare.py:234
+#: istatistik/services/korelasyon.py:249
+#: istatistik/services/kruskal_wallis.py:222
+#: istatistik/services/mann_whitney.py:178
+#: istatistik/services/normallik.py:172
+#: istatistik/services/tekrarli_anova.py:251 istatistik/services/ttesti.py:272
+#: istatistik/services/wilcoxon.py:191
+msgid "APA Formatında Raporlama"
+msgstr "Berichterstattung im APA-Format"
+
 #: istatistik/services/anova.py:13 istatistik/services/kruskal_wallis.py:16
 #: istatistik/services/mann_whitney.py:14 istatistik/services/ttesti.py:28
 #, python-format
@@ -9537,18 +9725,22 @@ msgid "Tukey (Bonferroni yaklaşımı)"
 msgstr "Tukey (Bonferroni-Näherung)"
 
 #: istatistik/services/anova.py:100 istatistik/services/kruskal_wallis.py:99
+#: istatistik/services/tekrarli_anova.py:111
 msgid "İhmal edilebilir etki (η² < .01)"
 msgstr "Vernachlässigbarer Effekt (η² < .01)"
 
 #: istatistik/services/anova.py:102 istatistik/services/kruskal_wallis.py:101
+#: istatistik/services/tekrarli_anova.py:113
 msgid "Küçük etki (.01 ≤ η² < .06)"
 msgstr "Kleiner Effekt (.01 ≤ η² < .06)"
 
 #: istatistik/services/anova.py:104 istatistik/services/kruskal_wallis.py:103
+#: istatistik/services/tekrarli_anova.py:115
 msgid "Orta düzey etki (.06 ≤ η² < .14)"
 msgstr "Mittlerer Effekt (.06 ≤ η² < .14)"
 
 #: istatistik/services/anova.py:105 istatistik/services/kruskal_wallis.py:104
+#: istatistik/services/tekrarli_anova.py:116
 msgid "Büyük etki (η² ≥ .14)"
 msgstr "Großer Effekt (η² ≥ .14)"
 
@@ -9580,16 +9772,6 @@ msgstr ""
 msgid "Tek Yönlü ANOVA Raporu"
 msgstr "Bericht zur einfaktoriellen ANOVA"
 
-#: istatistik/services/anova.py:138 istatistik/services/betimsel.py:96
-#: istatistik/services/cronbach.py:128 istatistik/services/ki_kare.py:131
-#: istatistik/services/korelasyon.py:155
-#: istatistik/services/kruskal_wallis.py:138
-#: istatistik/services/mann_whitney.py:123
-#: istatistik/services/normallik.py:115 istatistik/services/ttesti.py:211
-#, python-format
-msgid "Dosya: %(filename)s"
-msgstr "Datei: %(filename)s"
-
 #: istatistik/services/anova.py:142 istatistik/services/kruskal_wallis.py:142
 #: istatistik/services/mann_whitney.py:127 istatistik/services/ttesti.py:239
 #: istatistik/templates/istatistik/anova.html:145
@@ -9607,27 +9789,30 @@ msgid "Grup"
 msgstr "Gruppe"
 
 #: istatistik/services/anova.py:143 istatistik/services/betimsel.py:105
-#: istatistik/services/cronbach.py:155
+#: istatistik/services/cronbach.py:155 istatistik/services/friedman.py:124
 #: istatistik/services/kruskal_wallis.py:143
 #: istatistik/services/mann_whitney.py:128
 #: istatistik/services/normallik.py:122
+#: istatistik/services/tekrarli_anova.py:154
 #: istatistik/templates/istatistik/anova.html:236
 #: istatistik/templates/istatistik/kruskal_wallis.html:325
 #: istatistik/templates/istatistik/mann_whitney.html:318
 msgid "Ort."
 msgstr "MW"
 
-#: istatistik/services/anova.py:143
+#: istatistik/services/anova.py:143 istatistik/services/friedman.py:124
+#: istatistik/services/tekrarli_anova.py:154
 msgid "Min"
 msgstr "Min"
 
 #: istatistik/services/anova.py:143 istatistik/services/betimsel.py:105
-#: istatistik/services/betimsel.py:198
+#: istatistik/services/betimsel.py:198 istatistik/services/friedman.py:124
+#: istatistik/services/tekrarli_anova.py:154
 #: istatistik/templates/istatistik/anova.html:238
 msgid "Maks"
 msgstr "Max"
 
-#: istatistik/services/anova.py:165
+#: istatistik/services/anova.py:165 istatistik/services/tekrarli_anova.py:177
 msgid "ANOVA Tablosu"
 msgstr "ANOVA-Tabelle"
 
@@ -9644,8 +9829,10 @@ msgstr "df (zwischen Gruppen)"
 msgid "df (gruplar içi)"
 msgstr "df (innerhalb der Gruppen)"
 
-#: istatistik/services/anova.py:171 istatistik/services/kruskal_wallis.py:170
+#: istatistik/services/anova.py:171 istatistik/services/friedman.py:152
+#: istatistik/services/kruskal_wallis.py:170
 #: istatistik/services/mann_whitney.py:154 istatistik/services/ttesti.py:247
+#: istatistik/services/wilcoxon.py:167
 #: istatistik/templates/istatistik/anova.html:129
 #: istatistik/templates/istatistik/friedman.html:147
 #: istatistik/templates/istatistik/ki_kare.html:123
@@ -9678,8 +9865,11 @@ msgstr "Effektstärke"
 msgid "Levene p"
 msgstr "Levene p"
 
-#: istatistik/services/anova.py:175 istatistik/services/kruskal_wallis.py:173
-#: istatistik/services/mann_whitney.py:157 istatistik/services/ttesti.py:250
+#: istatistik/services/anova.py:175 istatistik/services/friedman.py:155
+#: istatistik/services/kruskal_wallis.py:173
+#: istatistik/services/mann_whitney.py:157
+#: istatistik/services/tekrarli_anova.py:204 istatistik/services/ttesti.py:250
+#: istatistik/services/wilcoxon.py:170
 #: istatistik/templates/istatistik/anova.html:159
 #: istatistik/templates/istatistik/kruskal_wallis.html:153
 #: istatistik/templates/istatistik/mann_whitney.html:146
@@ -9687,13 +9877,19 @@ msgstr "Levene p"
 msgid "Sonuç"
 msgstr "Ergebnis"
 
-#: istatistik/services/anova.py:175 istatistik/services/kruskal_wallis.py:173
-#: istatistik/services/mann_whitney.py:157 istatistik/services/ttesti.py:250
+#: istatistik/services/anova.py:175 istatistik/services/friedman.py:155
+#: istatistik/services/kruskal_wallis.py:173
+#: istatistik/services/mann_whitney.py:157
+#: istatistik/services/tekrarli_anova.py:204 istatistik/services/ttesti.py:250
+#: istatistik/services/wilcoxon.py:170
 msgid "Anlamlı (p < .05)"
 msgstr "Signifikant (p < .05)"
 
-#: istatistik/services/anova.py:175 istatistik/services/kruskal_wallis.py:173
-#: istatistik/services/mann_whitney.py:157 istatistik/services/ttesti.py:250
+#: istatistik/services/anova.py:175 istatistik/services/friedman.py:155
+#: istatistik/services/kruskal_wallis.py:173
+#: istatistik/services/mann_whitney.py:157
+#: istatistik/services/tekrarli_anova.py:204 istatistik/services/ttesti.py:250
+#: istatistik/services/wilcoxon.py:170
 msgid "Anlamlı değil (p ≥ .05)"
 msgstr "Nicht signifikant (p ≥ .05)"
 
@@ -9732,37 +9928,32 @@ msgstr "Signifikant"
 #: istatistik/services/anova.py:198 istatistik/services/ki_kare.py:184
 #: istatistik/services/kruskal_wallis.py:196
 #: istatistik/services/normallik.py:134
-#: istatistik/templates/istatistik/friedman.html:426
-#: istatistik/templates/istatistik/tekrarli_anova.html:424
+#: istatistik/templates/istatistik/friedman.html:431
+#: istatistik/templates/istatistik/tekrarli_anova.html:429
 msgid "Evet"
 msgstr "Ja"
 
-#: istatistik/services/anova.py:198 istatistik/services/ki_kare.py:184
+#: istatistik/services/anova.py:198 istatistik/services/friedman.py:179
+#: istatistik/services/ki_kare.py:184
 #: istatistik/services/kruskal_wallis.py:196
 #: istatistik/services/normallik.py:134
-#: istatistik/templates/istatistik/friedman.html:426
+#: istatistik/services/tekrarli_anova.py:229
+#: istatistik/templates/istatistik/friedman.html:431
 #: istatistik/templates/istatistik/ki_kare.html:230
-#: istatistik/templates/istatistik/tekrarli_anova.html:424
+#: istatistik/templates/istatistik/tekrarli_anova.html:429
 msgid "Hayır"
 msgstr "Nein"
 
 #: istatistik/services/anova.py:220 istatistik/services/cronbach.py:137
-#: istatistik/services/ki_kare.py:166
+#: istatistik/services/friedman.py:197 istatistik/services/ki_kare.py:166
 #: istatistik/services/kruskal_wallis.py:218
-#: istatistik/services/mann_whitney.py:174 istatistik/services/ttesti.py:268
+#: istatistik/services/mann_whitney.py:174
+#: istatistik/services/tekrarli_anova.py:247 istatistik/services/ttesti.py:268
+#: istatistik/services/wilcoxon.py:187
 #: istatistik/templates/istatistik/cronbach.html:147
 #: istatistik/templates/istatistik/orneklem.html:161
 msgid "Yorum"
 msgstr "Interpretation"
-
-#: istatistik/services/anova.py:224 istatistik/services/betimsel.py:152
-#: istatistik/services/cronbach.py:182 istatistik/services/ki_kare.py:234
-#: istatistik/services/korelasyon.py:249
-#: istatistik/services/kruskal_wallis.py:222
-#: istatistik/services/mann_whitney.py:178
-#: istatistik/services/normallik.py:172 istatistik/services/ttesti.py:272
-msgid "APA Formatında Raporlama"
-msgstr "Berichterstattung im APA-Format"
 
 #: istatistik/services/anova.py:231
 #: istatistik/templates/istatistik/anova.html:240
@@ -9822,7 +10013,7 @@ msgstr "SD"
 
 #: istatistik/services/betimsel.py:105 istatistik/services/betimsel.py:198
 #: istatistik/services/kruskal_wallis.py:143
-#: istatistik/services/mann_whitney.py:128
+#: istatistik/services/mann_whitney.py:128 istatistik/services/wilcoxon.py:123
 #: istatistik/templates/istatistik/kruskal_wallis.html:325
 #: istatistik/templates/istatistik/mann_whitney.html:318
 msgid "Medyan"
@@ -9885,11 +10076,6 @@ msgstr "%(var)s — Übersicht  (M=%(mean)s, SD=%(sd)s)"
 msgid "%(var)s — Frekans Dağılımı"
 msgstr "%(var)s — Häufigkeitsverteilung"
 
-#: istatistik/services/cronbach.py:15 istatistik/services/normallik.py:17
-msgid "Seçilen sütunlar sayısal değil veya bulunamadı."
-msgstr ""
-"Die ausgewählten Spalten sind nicht numerisch oder wurden nicht gefunden."
-
 #: istatistik/services/cronbach.py:22
 msgid "En az 2 sayısal sütun (madde) gereklidir."
 msgstr "Mindestens 2 numerische Spalten (Items) sind erforderlich."
@@ -9930,17 +10116,9 @@ msgstr "Exzellent (α ≥ 0.90)"
 msgid "Güvenilirlik Analizi Raporu"
 msgstr "Bericht zur Reliabilitätsanalyse"
 
-#: istatistik/services/cronbach.py:134
-msgid "Madde Sayısı"
-msgstr "Anzahl der Items"
-
 #: istatistik/services/cronbach.py:154 istatistik/views.py:94
 msgid "Madde İstatistikleri"
 msgstr "Itemstatistiken"
-
-#: istatistik/services/cronbach.py:155
-msgid "Madde"
-msgstr "Item"
 
 #: istatistik/services/cronbach.py:155
 msgid "Düz. M-T Kor."
@@ -10017,6 +10195,155 @@ msgid "Analize sayısal olarak dahil edilmeyecek sütunlar: %(cols)s."
 msgstr ""
 "Spalten, die nicht als numerische Variablen einbezogen werden: %(cols)s."
 
+#: istatistik/services/friedman.py:15
+msgid "Friedman testi için en az 3 sütun seçilmelidir."
+msgstr "Für den Friedman-Test müssen mindestens 3 Spalten ausgewählt werden."
+
+#: istatistik/services/friedman.py:19 istatistik/services/tekrarli_anova.py:19
+#, python-format
+msgid "Sütunlar bulunamadı: %(v)s"
+msgstr "Spalten nicht gefunden: %(v)s"
+
+#: istatistik/services/friedman.py:26 istatistik/services/tekrarli_anova.py:26
+#, python-format
+msgid "En az 5 katılımcı gereklidir, %(n)s satır bulundu."
+msgstr "Mindestens 5 Teilnehmende sind erforderlich; %(n)s Zeilen gefunden."
+
+#: istatistik/services/friedman.py:83
+msgid "İhmal edilebilir etki (W < .10)"
+msgstr "Vernachlässigbarer Effekt (W < .10)"
+
+#: istatistik/services/friedman.py:85
+msgid "Küçük etki (.10 ≤ W < .30)"
+msgstr "Kleiner Effekt (.10 ≤ W < .30)"
+
+#: istatistik/services/friedman.py:87
+msgid "Orta düzey etki (.30 ≤ W < .50)"
+msgstr "Mittlerer Effekt (.30 ≤ W < .50)"
+
+#: istatistik/services/friedman.py:88
+msgid "Büyük etki (W ≥ .50)"
+msgstr "Großer Effekt (W ≥ .50)"
+
+#: istatistik/services/friedman.py:94
+#, python-format
+msgid ""
+"%(col_str)s ölçümleri arasında istatistiksel olarak anlamlı bir fark "
+"bulunmaktadır (p = %(p)s). Post-hoc Wilcoxon testi (Bonferroni düzeltmeli) "
+"ile anlamlı farklı çiftler belirlenmiştir."
+msgstr ""
+"Zwischen den Messungen %(col_str)s besteht ein statistisch signifikanter "
+"Unterschied (p = %(p)s). Signifikant unterschiedliche Paare wurden mit Post-"
+"hoc-Wilcoxon-Tests (Bonferroni-korrigiert) ermittelt."
+
+#: istatistik/services/friedman.py:95
+#, python-format
+msgid ""
+"%(col_str)s ölçümleri arasında istatistiksel olarak anlamlı bir fark "
+"bulunmamaktadır (p = %(p)s)."
+msgstr ""
+"Zwischen den Messungen %(col_str)s besteht kein statistisch signifikanter "
+"Unterschied (p = %(p)s)."
+
+#: istatistik/services/friedman.py:118
+msgid "Friedman Testi Raporu"
+msgstr "Bericht zum Friedman-Test"
+
+#: istatistik/services/friedman.py:123
+#: istatistik/services/tekrarli_anova.py:153
+#: istatistik/services/wilcoxon.py:118
+msgid "Betimsel İstatistikler"
+msgstr "Deskriptive Statistik"
+
+#: istatistik/services/friedman.py:124
+#: istatistik/services/tekrarli_anova.py:154
+msgid "Ölçüm"
+msgstr "Messung"
+
+#: istatistik/services/friedman.py:124
+#: istatistik/services/tekrarli_anova.py:154
+msgid "Med."
+msgstr "Med."
+
+#: istatistik/services/friedman.py:147 istatistik/services/ki_kare.py:135
+#: istatistik/services/kruskal_wallis.py:165
+#: istatistik/services/mann_whitney.py:150 istatistik/services/ttesti.py:264
+#: istatistik/services/wilcoxon.py:163
+msgid "Test Sonuçları"
+msgstr "Testergebnisse"
+
+#: istatistik/services/friedman.py:150
+#: istatistik/templates/istatistik/ki_kare.html:117
+msgid "χ² istatistiği"
+msgstr "χ²-Statistik"
+
+#: istatistik/services/friedman.py:151
+msgid "Serbestlik derecesi (df)"
+msgstr "Freiheitsgrade (df)"
+
+#: istatistik/services/friedman.py:153 istatistik/views.py:766
+msgid "Kendall's W"
+msgstr "Kendalls W"
+
+#: istatistik/services/friedman.py:154
+#: istatistik/services/kruskal_wallis.py:172
+#: istatistik/services/mann_whitney.py:156
+#: istatistik/services/tekrarli_anova.py:203
+#: istatistik/services/wilcoxon.py:169
+msgid "Etki Yorumu"
+msgstr "Effektinterpretation"
+
+#: istatistik/services/friedman.py:174
+msgid "Post-Hoc Karşılaştırmalar (Wilcoxon — Bonferroni)"
+msgstr "Post-hoc-Vergleiche (Wilcoxon — Bonferroni)"
+
+#: istatistik/services/friedman.py:175
+#: istatistik/services/tekrarli_anova.py:226
+#: istatistik/templates/istatistik/friedman.html:174
+#: istatistik/templates/istatistik/tekrarli_anova.html:172
+msgid "Çift"
+msgstr "Paar"
+
+#: istatistik/services/friedman.py:175
+#: istatistik/services/tekrarli_anova.py:226
+#: istatistik/templates/istatistik/anova.html:346
+#: istatistik/templates/istatistik/friedman.html:174
+#: istatistik/templates/istatistik/tekrarli_anova.html:172
+msgid "p (düz.)"
+msgstr "p (adj.)"
+
+#: istatistik/services/friedman.py:175
+msgid "Anlamlı mı?"
+msgstr "Signifikant?"
+
+#: istatistik/services/friedman.py:179
+#: istatistik/services/tekrarli_anova.py:229
+msgid "Evet *"
+msgstr "Ja *"
+
+#: istatistik/services/friedman.py:207
+#: istatistik/templates/istatistik/friedman.html:259
+#, python-brace-format
+msgid ""
+"Friedman testi sonucuna göre {cols} ölçümleri arasındaki fark istatistiksel "
+"olarak anlamlı bulunmuştur, χ²({df}, N = {n}) = {chi2}, {p}, W = {w} "
+"({effect})."
+msgstr ""
+"Ein Friedman-Test ergab einen statistisch signifikanten Unterschied zwischen"
+" den Messungen {cols}, χ²({df}, N = {n}) = {chi2}, {p}, W = {w} ({effect})."
+
+#: istatistik/services/friedman.py:210
+#: istatistik/templates/istatistik/friedman.html:260
+#, python-brace-format
+msgid ""
+"Friedman testi sonucuna göre {cols} ölçümleri arasındaki fark istatistiksel "
+"olarak anlamlı bulunmamıştır, χ²({df}, N = {n}) = {chi2}, {p}, W = {w} "
+"({effect})."
+msgstr ""
+"Ein Friedman-Test ergab keinen statistisch signifikanten Unterschied "
+"zwischen den Messungen {cols}, χ²({df}, N = {n}) = {chi2}, {p}, W = {w} "
+"({effect})."
+
 #: istatistik/services/job_runner.py:77
 msgid "Dosya içeriği bulunamadı. Lütfen tekrar yükleyin."
 msgstr "Dateiinhalt nicht gefunden. Bitte laden Sie die Datei erneut hoch."
@@ -10049,11 +10376,13 @@ msgstr ""
 "%(count)s gefunden."
 
 #: istatistik/services/ki_kare.py:15 istatistik/services/ttesti.py:98
+#: istatistik/services/wilcoxon.py:14
 #, python-format
 msgid "\"%(col1)s\" sütunu bulunamadı."
 msgstr "Die Spalte „%(col1)s“ wurde nicht gefunden."
 
 #: istatistik/services/ki_kare.py:17 istatistik/services/ttesti.py:100
+#: istatistik/services/wilcoxon.py:16
 #, python-format
 msgid "\"%(col2)s\" sütunu bulunamadı."
 msgstr "Die Spalte „%(col2)s“ wurde nicht gefunden."
@@ -10116,12 +10445,6 @@ msgstr ""
 msgid "Ki-Kare Bağımsızlık Testi Raporu"
 msgstr "Bericht zum Chi-Quadrat-Unabhängigkeitstest"
 
-#: istatistik/services/ki_kare.py:135
-#: istatistik/services/kruskal_wallis.py:165
-#: istatistik/services/mann_whitney.py:150 istatistik/services/ttesti.py:264
-msgid "Test Sonuçları"
-msgstr "Testergebnisse"
-
 #: istatistik/services/ki_kare.py:137
 msgid "Değişken 1"
 msgstr "Variable 1"
@@ -10171,6 +10494,7 @@ msgid "p (Fisher)"
 msgstr "p (Fisher)"
 
 #: istatistik/services/ki_kare.py:183
+#: istatistik/services/tekrarli_anova.py:226
 #: istatistik/templates/istatistik/friedman.html:174
 #: istatistik/templates/istatistik/tekrarli_anova.html:172
 msgid "Anlamlı?"
@@ -10315,11 +10639,6 @@ msgstr "H-Statistik"
 msgid "Serbestlik Derecesi (df)"
 msgstr "Freiheitsgrade (df)"
 
-#: istatistik/services/kruskal_wallis.py:172
-#: istatistik/services/mann_whitney.py:156
-msgid "Etki Yorumu"
-msgstr "Effektinterpretation"
-
 #: istatistik/services/kruskal_wallis.py:193
 #: istatistik/templates/istatistik/kruskal_wallis.html:333
 msgid "Med. Fark"
@@ -10365,19 +10684,19 @@ msgstr ""
 msgid "Her grupta en az 3 gözlem olmalıdır."
 msgstr "Jede Gruppe muss mindestens 3 Beobachtungen enthalten."
 
-#: istatistik/services/mann_whitney.py:79
+#: istatistik/services/mann_whitney.py:79 istatistik/services/wilcoxon.py:69
 msgid "İhmal edilebilir etki (r < .10)"
 msgstr "Vernachlässigbarer Effekt (r < .10)"
 
-#: istatistik/services/mann_whitney.py:81
+#: istatistik/services/mann_whitney.py:81 istatistik/services/wilcoxon.py:71
 msgid "Küçük etki (.10 ≤ r < .30)"
 msgstr "Kleiner Effekt (.10 ≤ r < .30)"
 
-#: istatistik/services/mann_whitney.py:83
+#: istatistik/services/mann_whitney.py:83 istatistik/services/wilcoxon.py:73
 msgid "Orta düzey etki (.30 ≤ r < .50)"
 msgstr "Mittlerer Effekt (.30 ≤ r < .50)"
 
-#: istatistik/services/mann_whitney.py:84
+#: istatistik/services/mann_whitney.py:84 istatistik/services/wilcoxon.py:74
 msgid "Büyük etki (r ≥ .50)"
 msgstr "Großer Effekt (r ≥ .50)"
 
@@ -10421,7 +10740,7 @@ msgstr "Bericht zum Mann-Whitney-U-Test"
 msgid "U istatistiği"
 msgstr "U-Statistik"
 
-#: istatistik/services/mann_whitney.py:155
+#: istatistik/services/mann_whitney.py:155 istatistik/services/wilcoxon.py:168
 #: istatistik/templates/istatistik/mann_whitney.html:185
 #: istatistik/templates/istatistik/wilcoxon.html:186
 msgid "Etki Büyüklüğü (r)"
@@ -10657,6 +10976,104 @@ msgstr ""
 "Große Stichprobe — bietet hohe Teststärke und Generalisierbarkeit; prüfen "
 "Sie die praktische Umsetzbarkeit."
 
+#: istatistik/services/tekrarli_anova.py:15
+msgid "Tekrarlayan ölçümler ANOVA için en az 3 sütun seçilmelidir."
+msgstr ""
+"Für die ANOVA mit Messwiederholung müssen mindestens 3 Spalten ausgewählt "
+"werden."
+
+#: istatistik/services/tekrarli_anova.py:67
+msgid ""
+"Küresellik (Mauchly) testi bu sürümde desteklenmemektedir. Küresellik ihlali"
+" şüphesi varsa Greenhouse-Geisser düzeltmeli SPSS/JASP çıktısıyla "
+"karşılaştırın."
+msgstr ""
+"Der Mauchly-Test auf Sphärizität wird in dieser Version nicht unterstützt. "
+"Bei Verdacht auf eine Verletzung der Sphärizität vergleichen Sie mit "
+"Greenhouse-Geisser-korrigierten SPSS/JASP-Ergebnissen."
+
+#: istatistik/services/tekrarli_anova.py:122
+#, python-format
+msgid ""
+"%(col_str)s ölçümleri arasında istatistiksel olarak anlamlı bir fark "
+"bulunmaktadır, F(%(df1)s, %(df2)s) = %(F)s, p = %(p)s. Post-hoc "
+"karşılaştırmalarda Bonferroni düzeltmesi uygulanmıştır."
+msgstr ""
+"Zwischen den Messungen %(col_str)s besteht ein statistisch signifikanter "
+"Unterschied, F(%(df1)s, %(df2)s) = %(F)s, p = %(p)s. Für die Post-hoc-"
+"Vergleiche wurde eine Bonferroni-Korrektur angewandt."
+
+#: istatistik/services/tekrarli_anova.py:123
+#, python-format
+msgid ""
+"%(col_str)s ölçümleri arasında istatistiksel olarak anlamlı bir fark "
+"bulunmamaktadır, F(%(df1)s, %(df2)s) = %(F)s, p = %(p)s."
+msgstr ""
+"Zwischen den Messungen %(col_str)s besteht kein statistisch signifikanter "
+"Unterschied, F(%(df1)s, %(df2)s) = %(F)s, p = %(p)s."
+
+#: istatistik/services/tekrarli_anova.py:148
+msgid "Tekrarlayan Ölçümler ANOVA Raporu"
+msgstr "Bericht zur ANOVA mit Messwiederholung"
+
+#: istatistik/services/tekrarli_anova.py:180
+msgid "Kaynak"
+msgstr "Quelle"
+
+#: istatistik/services/tekrarli_anova.py:180
+msgid "KT (SS)"
+msgstr "QS (SS)"
+
+#: istatistik/services/tekrarli_anova.py:180
+msgid "KO (MS)"
+msgstr "MQ (MS)"
+
+#: istatistik/services/tekrarli_anova.py:181
+msgid "Ölçümler arası"
+msgstr "Zwischen den Messungen"
+
+#: istatistik/services/tekrarli_anova.py:183
+#: istatistik/templates/istatistik/korelasyon.html:484
+msgid "Hata"
+msgstr "Fehler"
+
+#: istatistik/services/tekrarli_anova.py:202
+msgid "Partial η²"
+msgstr "Partielles η²"
+
+#: istatistik/services/tekrarli_anova.py:225
+#: istatistik/templates/istatistik/tekrarli_anova.html:169
+msgid "Post-Hoc Karşılaştırmalar (Bağımlı t-testi — Bonferroni)"
+msgstr "Post-hoc-Vergleiche (t-Test für abhängige Stichproben — Bonferroni)"
+
+#: istatistik/services/tekrarli_anova.py:226 istatistik/services/ttesti.py:248
+msgid "Cohen's d"
+msgstr "Cohens d"
+
+#: istatistik/services/tekrarli_anova.py:257
+#: istatistik/templates/istatistik/tekrarli_anova.html:256
+#, python-brace-format
+msgid ""
+"Tekrarlayan ölçümler ANOVA sonuçlarına göre {cols} koşulları arasındaki fark"
+" istatistiksel olarak anlamlı bulunmuştur, F({df1}, {df2}) = {f}, {p}, η² = "
+"{eta} ({effect})."
+msgstr ""
+"Eine ANOVA mit Messwiederholung ergab einen statistisch signifikanten "
+"Unterschied zwischen den Bedingungen {cols}, F({df1}, {df2}) = {f}, {p}, η² "
+"= {eta} ({effect})."
+
+#: istatistik/services/tekrarli_anova.py:260
+#: istatistik/templates/istatistik/tekrarli_anova.html:257
+#, python-brace-format
+msgid ""
+"Tekrarlayan ölçümler ANOVA sonuçlarına göre {cols} koşulları arasındaki fark"
+" istatistiksel olarak anlamlı bulunmamıştır, F({df1}, {df2}) = {f}, {p}, η² "
+"= {eta} ({effect})."
+msgstr ""
+"Eine ANOVA mit Messwiederholung ergab keinen statistisch signifikanten "
+"Unterschied zwischen den Bedingungen {cols}, F({df1}, {df2}) = {f}, {p}, η² "
+"= {eta} ({effect})."
+
 #: istatistik/services/ttesti.py:23
 #, python-format
 msgid "Bilinmeyen test tipi: %(test_type)s"
@@ -10752,6 +11169,7 @@ msgid "%(test)s Raporu"
 msgstr "Bericht: %(test)s"
 
 #: istatistik/services/ttesti.py:218 istatistik/services/ttesti.py:224
+#: istatistik/services/wilcoxon.py:124
 msgid "Ortalama"
 msgstr "Mittelwert"
 
@@ -10759,10 +11177,6 @@ msgstr "Mittelwert"
 #: istatistik/templates/istatistik/ttesti.html:316
 msgid "t istatistiği"
 msgstr "t-Statistik"
-
-#: istatistik/services/ttesti.py:248
-msgid "Cohen's d"
-msgstr "Cohens d"
 
 #: istatistik/services/ttesti.py:249
 #, python-format
@@ -10790,6 +11204,111 @@ msgid ""
 msgstr ""
 "Der Unterschied zwischen {c1} und {c2} wurde mit einem {test} geprüft: "
 "t({df}) = {t}, {p}, d = {d}."
+
+#: istatistik/services/wilcoxon.py:18
+msgid "İki farklı sütun seçilmelidir."
+msgstr "Es müssen zwei verschiedene Spalten ausgewählt werden."
+
+#: istatistik/services/wilcoxon.py:22
+#, python-format
+msgid "En az 5 eşleştirilmiş gözlem gereklidir, %(sub)s çift bulundu."
+msgstr ""
+"Mindestens 5 gepaarte Beobachtungen sind erforderlich; %(sub)s Paare "
+"gefunden."
+
+#: istatistik/services/wilcoxon.py:30
+msgid "İki sütun arasında hiç fark bulunamadı (tüm farklar sıfır)."
+msgstr ""
+"Zwischen den beiden Spalten wurden keine Unterschiede gefunden (alle "
+"Differenzen sind null)."
+
+#: istatistik/services/wilcoxon.py:83
+#, python-brace-format
+msgid ""
+"{c1} ile {c2} ölçümleri arasında istatistiksel olarak anlamlı bir fark "
+"bulunmaktadır (p = {p}). Medyan değerleri sırasıyla {m1} ve {m2} olup ikinci"
+" ölçümde artış gözlemlenmiştir."
+msgstr ""
+"Zwischen den Messungen {c1} und {c2} besteht ein statistisch signifikanter "
+"Unterschied (p = {p}). Die Mediane betrugen {m1} bzw. {m2}; in der zweiten "
+"Messung zeigte sich ein Anstieg."
+
+#: istatistik/services/wilcoxon.py:86
+#, python-brace-format
+msgid ""
+"{c1} ile {c2} ölçümleri arasında istatistiksel olarak anlamlı bir fark "
+"bulunmaktadır (p = {p}). Medyan değerleri sırasıyla {m1} ve {m2} olup ikinci"
+" ölçümde azalış gözlemlenmiştir."
+msgstr ""
+"Zwischen den Messungen {c1} und {c2} besteht ein statistisch signifikanter "
+"Unterschied (p = {p}). Die Mediane betrugen {m1} bzw. {m2}; in der zweiten "
+"Messung zeigte sich ein Rückgang."
+
+#: istatistik/services/wilcoxon.py:89
+#, python-brace-format
+msgid ""
+"{c1} ile {c2} ölçümleri arasında istatistiksel olarak anlamlı bir fark "
+"bulunmamaktadır (p = {p}). Medyan değerleri sırasıyla {m1} ve {m2} olarak "
+"bulunmuştur."
+msgstr ""
+"Zwischen den Messungen {c1} und {c2} besteht kein statistisch signifikanter "
+"Unterschied (p = {p}). Die Mediane betrugen {m1} bzw. {m2}."
+
+#: istatistik/services/wilcoxon.py:113
+msgid "Wilcoxon İşaret Testi Raporu"
+msgstr "Bericht zum Wilcoxon-Vorzeichen-Rang-Test"
+
+#: istatistik/services/wilcoxon.py:143
+msgid "Fark İstatistikleri"
+msgstr "Differenzstatistik"
+
+#: istatistik/services/wilcoxon.py:145
+msgid "Pozitif fark (n)"
+msgstr "Positive Differenzen (n)"
+
+#: istatistik/services/wilcoxon.py:146
+msgid "Negatif fark (n)"
+msgstr "Negative Differenzen (n)"
+
+#: istatistik/services/wilcoxon.py:147
+msgid "Eşit (n)"
+msgstr "Bindungen (n)"
+
+#: istatistik/services/wilcoxon.py:148
+msgid "Ortalama fark"
+msgstr "Mittlere Differenz"
+
+#: istatistik/services/wilcoxon.py:149
+msgid "Medyan fark"
+msgstr "Median der Differenzen"
+
+#: istatistik/services/wilcoxon.py:166
+msgid "W istatistiği"
+msgstr "W-Statistik"
+
+#: istatistik/services/wilcoxon.py:197
+#: istatistik/templates/istatistik/wilcoxon.html:246
+#, python-brace-format
+msgid ""
+"Wilcoxon işaret testi sonucunda {c1} ve {c2} ölçümleri arasındaki fark "
+"istatistiksel olarak anlamlı bulunmuştur, W = {w}, {p}, r = {r} ({effect}) "
+"(N = {n})."
+msgstr ""
+"Ein Wilcoxon-Vorzeichen-Rang-Test ergab einen statistisch signifikanten "
+"Unterschied zwischen den Messungen {c1} und {c2}, W = {w}, {p}, r = {r} "
+"({effect}) (N = {n})."
+
+#: istatistik/services/wilcoxon.py:200
+#: istatistik/templates/istatistik/wilcoxon.html:247
+#, python-brace-format
+msgid ""
+"Wilcoxon işaret testi sonucunda {c1} ve {c2} ölçümleri arasındaki fark "
+"istatistiksel olarak anlamlı bulunmamıştır, W = {w}, {p}, r = {r} ({effect})"
+" (N = {n})."
+msgstr ""
+"Ein Wilcoxon-Vorzeichen-Rang-Test ergab keinen statistisch signifikanten "
+"Unterschied zwischen den Messungen {c1} und {c2}, W = {w}, {p}, r = {r} "
+"({effect}) (N = {n})."
 
 #: istatistik/templates/istatistik/afa.html:6
 msgid ""
@@ -11183,10 +11702,6 @@ msgstr "KMO-Wert"
 msgid "KMO Yorumu"
 msgstr "KMO-Interpretation"
 
-#: istatistik/templates/istatistik/afa.html:181 istatistik/views.py:701
-msgid "Açıklanan Varyans"
-msgstr "Erklärte Varianz"
-
 #: istatistik/templates/istatistik/afa.html:192
 #: istatistik/templates/istatistik/cronbach.html:152
 msgid "madde &nbsp;·&nbsp;"
@@ -11431,10 +11946,6 @@ msgid "örneklem yeterliliğini ölçer (≥ .60 önerilir) ve"
 msgstr "misst die Stichprobeneignung (≥ .60 empfohlen) und"
 
 #: istatistik/templates/istatistik/afa.html:267
-msgid "Bartlett Küresellik Testi"
-msgstr "Bartlett-Test auf Sphärizität"
-
-#: istatistik/templates/istatistik/afa.html:267
 msgid ""
 "değişkenler arasında yeterli korelasyon bulunduğunu doğrular (p &lt; .05). "
 "Her iki koşul sağlandığında faktör analizi anlamlı sonuçlar üretebilir."
@@ -11517,6 +12028,17 @@ msgstr " Teilnehmende"
 #: istatistik/templates/istatistik/wilcoxon.html:243
 msgid "Kopyalandı"
 msgstr "Kopiert"
+
+#: istatistik/templates/istatistik/afa.html:286
+#: istatistik/templates/istatistik/cronbach.html:244
+#, python-brace-format
+msgid "{n} madde"
+msgstr "{n} Items"
+
+#: istatistik/templates/istatistik/afa.html:287
+#, python-format, python-brace-format
+msgid "%%{value}"
+msgstr "{value} %%"
 
 #: istatistik/templates/istatistik/analiz_console_base.html:5
 msgid ""
@@ -11891,12 +12413,6 @@ msgstr ""
 msgid "Post-Hoc Testler ({method})"
 msgstr "Post-hoc-Tests ({method})"
 
-#: istatistik/templates/istatistik/anova.html:346
-#: istatistik/templates/istatistik/friedman.html:174
-#: istatistik/templates/istatistik/tekrarli_anova.html:172
-msgid "p (düz.)"
-msgstr "p (adj.)"
-
 #: istatistik/templates/istatistik/betimsel.html:5
 msgid "Betimsel İstatistik Analizi (Ortalama, SS, Çeyrekler)"
 msgstr "Deskriptive Statistik (Mittelwert, SD, Quartile)"
@@ -12210,11 +12726,6 @@ msgstr ""
 ".80 als hohe Reliabilität. Items mit niedriger Item-Skala-Korrelation (r "
 "&lt; .30) sollten für eine Entfernung aus der Skala geprüft werden."
 
-#: istatistik/templates/istatistik/cronbach.html:244
-#, python-brace-format
-msgid "{n} madde"
-msgstr "{n} Items"
-
 #: istatistik/templates/istatistik/friedman.html:6
 msgid ""
 "Tekrarlayan ölçümler için Friedman Testi ile ücretsiz analiz yapın. χ² "
@@ -12278,11 +12789,6 @@ msgstr "Messungen &nbsp;·&nbsp;"
 msgid "Post-Hoc Karşılaştırmalar (Bonferroni)"
 msgstr "Post-hoc-Vergleiche (Bonferroni)"
 
-#: istatistik/templates/istatistik/friedman.html:174
-#: istatistik/templates/istatistik/tekrarli_anova.html:172
-msgid "Çift"
-msgstr "Paar"
-
 #: istatistik/templates/istatistik/friedman.html:203
 msgid ""
 "Friedman testi, aynı bireylerin 3 veya daha fazla koşulda ölçüldüğü "
@@ -12328,13 +12834,13 @@ msgstr " Messungen ausgewählt"
 msgid "Bağlantı hatası."
 msgstr "Verbindungsfehler."
 
-#: istatistik/templates/istatistik/friedman.html:413
-#: istatistik/templates/istatistik/tekrarli_anova.html:410
+#: istatistik/templates/istatistik/friedman.html:418
+#: istatistik/templates/istatistik/tekrarli_anova.html:415
 msgid "✓ İstatistiksel olarak anlamlı (p < .05)"
 msgstr "✓ Statistisch signifikant (p < .05)"
 
-#: istatistik/templates/istatistik/friedman.html:415
-#: istatistik/templates/istatistik/tekrarli_anova.html:412
+#: istatistik/templates/istatistik/friedman.html:420
+#: istatistik/templates/istatistik/tekrarli_anova.html:417
 msgid "✗ İstatistiksel olarak anlamlı değil (p ≥ .05)"
 msgstr "✗ Statistisch nicht signifikant (p ≥ .05)"
 
@@ -12684,10 +13190,6 @@ msgstr "Erwartete Zellhäufigkeiten von ≥ 5 werden empfohlen."
 msgid "H₀: İki değişken arasında ilişki yoktur."
 msgstr "H₀: Zwischen den beiden Variablen besteht kein Zusammenhang."
 
-#: istatistik/templates/istatistik/ki_kare.html:117
-msgid "χ² istatistiği"
-msgstr "χ²-Statistik"
-
 #: istatistik/templates/istatistik/ki_kare.html:148
 msgid "Anlamlı:"
 msgstr "Signifikant:"
@@ -12943,10 +13445,6 @@ msgstr ""
 #: istatistik/templates/istatistik/korelasyon.html:281
 msgid " sütun seçili"
 msgstr " Spalten ausgewählt"
-
-#: istatistik/templates/istatistik/korelasyon.html:484
-msgid "Hata"
-msgstr "Fehler"
 
 #: istatistik/templates/istatistik/korelasyon.html:484
 msgid "Uyarı"
@@ -13970,10 +14468,6 @@ msgstr "Wählen Sie mindestens 3 numerische Spalten für die Analyse."
 msgid "F İstatistiği"
 msgstr "F-Statistik"
 
-#: istatistik/templates/istatistik/tekrarli_anova.html:169
-msgid "Post-Hoc Karşılaştırmalar (Bağımlı t-testi — Bonferroni)"
-msgstr "Post-hoc-Vergleiche (t-Test für abhängige Stichproben — Bonferroni)"
-
 #: istatistik/templates/istatistik/tekrarli_anova.html:201
 msgid ""
 "Tekrarlayan ölçümler ANOVA, aynı bireylerin 3+ farklı koşulda (zaman, tedavi"
@@ -14300,15 +14794,19 @@ msgstr "Signifikanter Unterschied gefunden (p < .05)"
 msgid "Anlamlı fark yok (p ≥ .05)"
 msgstr "Kein signifikanter Unterschied (p ≥ .05)"
 
-#: istatistik/templates/istatistik/wilcoxon.html:351
+#: istatistik/templates/istatistik/wilcoxon.html:245
+msgid "(Medyan)"
+msgstr "(Median)"
+
+#: istatistik/templates/istatistik/wilcoxon.html:356
 msgid "Pozitif fark:"
 msgstr "Positive Differenzen:"
 
-#: istatistik/templates/istatistik/wilcoxon.html:351
+#: istatistik/templates/istatistik/wilcoxon.html:356
 msgid "Negatif fark:"
 msgstr "Negative Differenzen:"
 
-#: istatistik/templates/istatistik/wilcoxon.html:351
+#: istatistik/templates/istatistik/wilcoxon.html:356
 msgid "Eşit:"
 msgstr "Bindungen:"
 
@@ -15181,10 +15679,6 @@ msgid ""
 msgstr ""
 "Prüfen Sie den Unterschied zwischen den Messungen mit der Friedman-χ²-"
 "Statistik, den Freiheitsgraden und dem p-Wert."
-
-#: istatistik/views.py:766
-msgid "Kendall's W"
-msgstr "Kendalls W"
 
 #: istatistik/views.py:766
 msgid "Etki büyüklüğü Kendall's W katsayısı ile raporlanır."

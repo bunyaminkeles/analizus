@@ -282,7 +282,17 @@ const T = {
   s7: '{% trans " analiz hakkı" as t %}{{ t|escapejs }}',
   s8: '{% trans " katılımcı" as t %}{{ t|escapejs }}',
   s9: '{% trans "Kopyalandı" as t %}{{ t|escapejs }}',
+  // APA / sonuç metinleri — servis (PDF) ile aynı msgid'ler, {süslü} yer tutucular
+  items: '{% trans "{n} madde" as t %}{{ t|escapejs }}',
+  pct: '{% trans "%{value}" as t %}{{ t|escapejs }}',
+  apaIntro: '{% trans "{k} maddeden oluşan ölçeğin faktör yapısını belirlemek amacıyla {rotation} rotasyonu ile Açıklayıcı Faktör Analizi (AFA) uygulanmıştır (n = {n})." as t %}{{ t|escapejs }}',
+  apaBartOk: '{% trans "KMO örneklem yeterlilik katsayısı {kmo} ({level}) olarak hesaplanmış, Bartlett Küresellik Testi anlamlı bulunmuştur (χ² = {chi2}, {p})." as t %}{{ t|escapejs }}',
+  apaBartNs: '{% trans "KMO örneklem yeterlilik katsayısı {kmo} ({level}) olarak hesaplanmış, Bartlett Küresellik Testi anlamlı bulunmamıştır (χ² = {chi2}, {p}); veri faktör analizi için uygun olmayabilir." as t %}{{ t|escapejs }}',
+  apaEigen: '{% trans "Özdeğer > 1 kriterine göre {nf} faktörlü yapı elde edilmiş ve bu yapı toplam varyansın {pct} kadarını açıklamıştır." as t %}{{ t|escapejs }}',
+  apaManual: '{% trans "Araştırmacı tarafından belirlenen {nf} faktörlü yapı toplam varyansın {pct} kadarını açıklamıştır." as t %}{{ t|escapejs }}',
 };
+const fmt = (s, o) => s.replace(/\{(\w+)\}/g, (m, k) => (k in o ? o[k] : m));
+const pStr = (p) => p < 0.001 ? 'p < .001' : 'p = ' + p.toFixed(3);
 const STATUS_BASE = '{% url "istatistik:afa_status" job_id="00000000-0000-0000-0000-000000000000" %}';
 let pollInterval = null, currentJobId = null, previewData = null;
 
@@ -409,15 +419,21 @@ function onCompleted(data) {
     document.getElementById('kmo-value').textContent = r.kmo ? r.kmo.toFixed(3) : '—';
     document.getElementById('kmo-interp').textContent = r.kmo_interpretation || '—';
     document.getElementById('n-factors-val').textContent = r.n_factors || '—';
-    document.getElementById('variance-val').textContent = r.total_variance_explained ? '%' + r.total_variance_explained.toFixed(1) : '—';
+    document.getElementById('variance-val').textContent = r.total_variance_explained ? fmt(T.pct, {value: r.total_variance_explained.toFixed(1)}) : '—';
     document.getElementById('bartlett-val').textContent = r.bartlett_p !== undefined ? (r.bartlett_p < .001 ? '< .001' : r.bartlett_p.toFixed(3)) : '—';
-    document.getElementById('n-items').textContent = (r.n_items || '—') + ' madde';
+    document.getElementById('n-items').textContent = fmt(T.items, {n: r.n_items || '—'});
     document.getElementById('n-cases').textContent = (r.n_cases || '—') + T.s8;
 
     const rotation = document.getElementById('rotation-select').value;
     const rotationLabel = {'varimax': 'Varimax', 'promax': 'Promax', 'oblimin': 'Oblimin'}[rotation] || rotation;
-    const pStr = r.bartlett_p < .001 ? '< .001' : r.bartlett_p.toFixed(3);
-    const apaText = `${r.n_items} maddeden oluşan ölçeğin faktör yapısını belirlemek amacıyla ${rotationLabel} rotasyonu ile Açıklayıcı Faktör Analizi (AFA) uygulanmıştır (n = ${r.n_cases}). KMO örneklem yeterlilik katsayısı ${r.kmo.toFixed(3)} (${(r.kmo_interpretation || '').toLowerCase()}) olarak hesaplanmış, Bartlett Küresellik Testi anlamlı bulunmuştur (χ² = ${r.bartlett_chi2 ? r.bartlett_chi2.toFixed(2) : '—'}, p ${pStr}). Analiz sonucunda ${r.n_factors} faktör elde edilmiş ve toplam varyansın %${r.total_variance_explained.toFixed(1)}'i açıklanmıştır.`;
+    const lvl = (r.kmo_interpretation || '').split(' (')[0].toLocaleLowerCase(document.documentElement.lang || 'tr');
+    const bv = {kmo: r.kmo.toFixed(3), level: lvl, chi2: r.bartlett_chi2 ? r.bartlett_chi2.toFixed(2) : '—', p: pStr(r.bartlett_p)};
+    const pct = fmt(T.pct, {value: r.total_variance_explained});
+    const apaText = [
+      fmt(T.apaIntro, {k: r.n_items, rotation: rotationLabel, n: r.n_cases}),
+      fmt(r.bartlett_ok ? T.apaBartOk : T.apaBartNs, bv),
+      fmt(r.n_factors === r.n_factors_auto ? T.apaEigen : T.apaManual, {nf: r.n_factors, pct: pct}),
+    ].join(' ');
     document.getElementById('afa-apa-display').textContent = apaText;
     document.getElementById('afa-report-text').textContent = apaText;
     document.getElementById('afa-apa-box').classList.remove('d-none');

@@ -4,6 +4,7 @@ Friedman Testi — non-parametrik tekrarlayan ölçümler testi.
 Tek yönlü tekrarlayan ölçümler ANOVA'nın parametrik olmayan alternatifi.
 """
 import io
+from django.utils.translation import gettext
 import numpy as np
 from itertools import combinations
 from scipy import stats
@@ -11,18 +12,18 @@ from scipy import stats
 
 def analyze(df, columns: list) -> dict:
     if not columns or len(columns) < 3:
-        raise ValueError('Friedman testi için en az 3 sütun seçilmelidir.')
+        raise ValueError(gettext('Friedman testi için en az 3 sütun seçilmelidir.'))
 
     missing = [c for c in columns if c not in df.columns]
     if missing:
-        raise ValueError(f'Sütunlar bulunamadı: {", ".join(missing)}')
+        raise ValueError(gettext('Sütunlar bulunamadı: %(v)s') % {'v': ', '.join(missing)})
 
     sub = df[columns].dropna()
     n = len(sub)
     k = len(columns)
 
     if n < 5:
-        raise ValueError(f'En az 5 katılımcı gereklidir, {n} satır bulundu.')
+        raise ValueError(gettext('En az 5 katılımcı gereklidir, %(n)s satır bulundu.') % {'n': n})
 
     arrays = [sub[c].values.astype(float) for c in columns]
     chi2, p_val = stats.friedmanchisquare(*arrays)
@@ -79,22 +80,19 @@ def analyze(df, columns: list) -> dict:
 
 def _interpret_w(w: float) -> str:
     if w < 0.1:
-        return 'İhmal edilebilir etki (W < .10)'
+        return gettext('İhmal edilebilir etki (W < .10)')
     if w < 0.3:
-        return 'Küçük etki (.10 ≤ W < .30)'
+        return gettext('Küçük etki (.10 ≤ W < .30)')
     if w < 0.5:
-        return 'Orta düzey etki (.30 ≤ W < .50)'
-    return 'Büyük etki (W ≥ .50)'
+        return gettext('Orta düzey etki (.30 ≤ W < .50)')
+    return gettext('Büyük etki (W ≥ .50)')
 
 
 def _conclusion(p, columns: list) -> str:
     col_str = ', '.join(columns)
     if float(p) < 0.05:
-        return (f'{col_str} ölçümleri arasında istatistiksel olarak anlamlı bir fark '
-                f'bulunmaktadır (p = {p:.4f}). Post-hoc Wilcoxon testi (Bonferroni '
-                f'düzeltmeli) ile anlamlı farklı çiftler belirlenmiştir.')
-    return (f'{col_str} ölçümleri arasında istatistiksel olarak anlamlı bir fark '
-            f'bulunmamaktadır (p = {p:.4f}).')
+        return (gettext('%(col_str)s ölçümleri arasında istatistiksel olarak anlamlı bir fark bulunmaktadır (p = %(p)s). Post-hoc Wilcoxon testi (Bonferroni düzeltmeli) ile anlamlı farklı çiftler belirlenmiştir.') % {'col_str': col_str, 'p': f'{p:.4f}'})
+    return (gettext('%(col_str)s ölçümleri arasında istatistiksel olarak anlamlı bir fark bulunmamaktadır (p = %(p)s).') % {'col_str': col_str, 'p': f'{p:.4f}'})
 
 
 def build_pdf(result: dict, filename: str, df=None) -> bytes:
@@ -117,13 +115,13 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
     norm_s  = ParagraphStyle('N', parent=styles['Normal'], fontName='DejaVuSans', fontSize=9)
 
     story = []
-    story.append(Paragraph('Friedman Testi Raporu', title_s))
-    story.append(Paragraph(f'Dosya: {filename}', norm_s))
+    story.append(Paragraph(gettext('Friedman Testi Raporu'), title_s))
+    story.append(Paragraph(gettext('Dosya: %(filename)s') % {'filename': filename}, norm_s))
     story.append(Spacer(1, 0.4*cm))
 
     # Betimsel
-    story.append(Paragraph('Betimsel İstatistikler', h2_s))
-    desc_header = ['Ölçüm', 'n', 'Ort.', 'Med.', 'SS', 'Min', 'Maks']
+    story.append(Paragraph(gettext('Betimsel İstatistikler'), h2_s))
+    desc_header = [gettext('Ölçüm'), 'n', gettext('Ort.'), gettext('Med.'), 'SS', gettext('Min'), gettext('Maks')]
     desc_rows = [desc_header] + [
         [d['col'], str(d['n']), f"{d['mean']:.3f}", f"{d['median']:.3f}",
          f"{d['std']:.3f}", f"{d['min']:.3f}", f"{d['max']:.3f}"]
@@ -146,15 +144,15 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
     story.append(Spacer(1, 0.4*cm))
 
     # Test sonuçları
-    story.append(Paragraph('Test Sonuçları', h2_s))
+    story.append(Paragraph(gettext('Test Sonuçları'), h2_s))
     sig = result['significant']
     res_rows = [
-        ['χ² istatistiği', f"{result['chi2']:.3f}"],
-        ['Serbestlik derecesi (df)', str(result['df'])],
-        ['p-değeri', f"{result['p_value']:.4f}"],
-        ['Kendall\'s W', f"{result['kendall_w']:.3f}"],
-        ['Etki Yorumu', result['effect_interpretation']],
-        ['Sonuç', 'Anlamlı (p < .05)' if sig else 'Anlamlı değil (p ≥ .05)'],
+        [gettext('χ² istatistiği'), f"{result['chi2']:.3f}"],
+        [gettext('Serbestlik derecesi (df)'), str(result['df'])],
+        [gettext('p-değeri'), f"{result['p_value']:.4f}"],
+        [gettext("Kendall's W"), f"{result['kendall_w']:.3f}"],
+        [gettext('Etki Yorumu'), result['effect_interpretation']],
+        [gettext('Sonuç'), gettext('Anlamlı (p < .05)') if sig else gettext('Anlamlı değil (p ≥ .05)')],
     ]
     res_tbl = Table(res_rows, colWidths=[7*cm, 9*cm])
     res_tbl.setStyle(TableStyle([
@@ -173,12 +171,12 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
 
     # Post-hoc
     if sig and result['posthoc']:
-        story.append(Paragraph('Post-Hoc Karşılaştırmalar (Wilcoxon — Bonferroni)', h2_s))
-        ph_header = ['Çift', 'W', 'p', 'p (düz.)', 'Anlamlı mı?']
+        story.append(Paragraph(gettext('Post-Hoc Karşılaştırmalar (Wilcoxon — Bonferroni)'), h2_s))
+        ph_header = [gettext('Çift'), 'W', 'p', gettext('p (düz.)'), gettext('Anlamlı mı?')]
         ph_rows = [ph_header] + [
             [f"{r['col1']} vs {r['col2']}", f"{r['W']:.3f}",
              f"{r['p']:.4f}", f"{r['p_adj']:.4f}",
-             'Evet *' if r['significant'] else 'Hayır']
+             gettext('Evet *') if r['significant'] else gettext('Hayır')]
             for r in result['posthoc']
         ]
         ph_tbl = Table(ph_rows, colWidths=[5.5*cm, 2*cm, 2.5*cm, 2.5*cm, 3.5*cm])
@@ -196,18 +194,21 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
         story.append(ph_tbl)
         story.append(Spacer(1, 0.3*cm))
 
-    story.append(Paragraph('Yorum', h2_s))
+    story.append(Paragraph(gettext('Yorum'), h2_s))
     story.append(Paragraph(result['conclusion'], norm_s))
     story.append(Spacer(1, 0.5*cm))
 
-    story.append(Paragraph('Tezinde Nasıl Raporlarsın?', h2_s))
-    p_str = '< .001' if result['p_value'] < 0.001 else f"{result['p_value']:.3f}"
-    sig_txt = ('istatistiksel olarak anlamlı bulunmuştur'
-               if result['significant'] else 'istatistiksel olarak anlamlı bulunmamıştır')
-    cols_str = ', '.join(result['columns'])
-    apa_text = (f"Friedman testi sonucuna göre {cols_str} ölçümleri arasındaki fark "
-                f"{sig_txt}, χ²({result['df']}, N = {result['n']}) = {result['chi2']:.3f}, "
-                f"p {p_str}, W = {result['kendall_w']:.3f} ({result['effect_interpretation']}).")
+    story.append(Paragraph(gettext('APA Formatında Raporlama'), h2_s))
+    # 'p < .001' / 'p = 0.123' (önceden 'p 0.123' — eşittir eksikti); şablon JS ile ortak msgid
+    v = dict(cols=', '.join(result['columns']), df=result['df'], n=result['n'], chi2=f"{result['chi2']:.3f}",
+             p='p < .001' if result['p_value'] < 0.001 else f"p = {result['p_value']:.3f}",
+             w=f"{result['kendall_w']:.3f}", effect=result['effect_interpretation'])
+    if result['significant']:
+        apa_text = gettext('Friedman testi sonucuna göre {cols} ölçümleri arasındaki fark istatistiksel olarak anlamlı '
+                           'bulunmuştur, χ²({df}, N = {n}) = {chi2}, {p}, W = {w} ({effect}).').format(**v)
+    else:
+        apa_text = gettext('Friedman testi sonucuna göre {cols} ölçümleri arasındaki fark istatistiksel olarak anlamlı '
+                           'bulunmamıştır, χ²({df}, N = {n}) = {chi2}, {p}, W = {w} ({effect}).').format(**v)
     apa_tbl = Table([[Paragraph(apa_text, norm_s)]], colWidths=[16*cm])
     apa_tbl.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#f0fdf4')),

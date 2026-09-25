@@ -3,6 +3,7 @@ Açıklayıcı Faktör Analizi (AFA / EFA)
 Girdi: pandas DataFrame (satır=katılımcı, sütun=madde)
 """
 import io
+from django.utils.translation import gettext
 import numpy as np
 
 
@@ -35,7 +36,7 @@ def analyze(df, columns=None, n_factors=None, rotation='varimax', method='minres
     if columns:
         valid = [c for c in columns if c in df_num.columns]
         if not valid:
-            raise ValueError('Seçilen sütunlar sayısal değil veya bulunamadı.')
+            raise ValueError(gettext('Seçilen sütunlar sayısal değil veya bulunamadı.'))
         df_num = df_num[valid]
     df_num = df_num.dropna()
 
@@ -43,15 +44,14 @@ def analyze(df, columns=None, n_factors=None, rotation='varimax', method='minres
     n = len(df_num)
 
     if k < 3:
-        raise ValueError('En az 3 madde (sütun) gereklidir.')
+        raise ValueError(gettext('En az 3 madde (sütun) gereklidir.'))
     if n < 10:
-        raise ValueError('En az 10 katılımcı (satır) gereklidir.')
+        raise ValueError(gettext('En az 10 katılımcı (satır) gereklidir.'))
 
     warnings = []
     if n < k * 5:
         warnings.append(
-            f'Örneklem yetersiz olabilir: {n} katılımcı / {k} madde = {n/k:.1f}:1 oran. '
-            f'Önerilen minimum 5:1 (ideali 10:1). Sonuçlar kararsız olabilir.'
+            gettext('Örneklem yetersiz olabilir: %(n)s katılımcı / %(k)s madde = %(v)s:1 oran. Önerilen minimum 5:1 (ideali 10:1). Sonuçlar kararsız olabilir.') % {'n': n, 'k': k, 'v': f'{n / k:.1f}'}
         )
 
     data = df_num.values
@@ -145,16 +145,53 @@ def analyze(df, columns=None, n_factors=None, rotation='varimax', method='minres
 
 def _interpret_kmo(kmo: float) -> str:
     if kmo >= 0.90:
-        return 'Mükemmel (≥ 0.90)'
+        return gettext('Mükemmel (≥ 0.90)')
     if kmo >= 0.80:
-        return 'Çok İyi (0.80–0.90)'
+        return gettext('Çok İyi (0.80–0.90)')
     if kmo >= 0.70:
-        return 'İyi (0.70–0.80)'
+        return gettext('İyi (0.70–0.80)')
     if kmo >= 0.60:
-        return 'Orta (0.60–0.70)'
+        return gettext('Orta (0.60–0.70)')
     if kmo >= 0.50:
-        return 'Düşük (0.50–0.60)'
-    return 'Kabul Edilemez (< 0.50)'
+        return gettext('Düşük (0.50–0.60)')
+    return gettext('Kabul Edilemez (< 0.50)')
+
+
+def _sentence_level(label: str) -> str:
+    """'Orta (0.60–0.70)' → 'orta': cümle içi kullanım; Türkçede 'İ'.lower() sorunu."""
+    from django.utils.translation import get_language
+    level = label.split(' (')[0]
+    if (get_language() or '').startswith('tr'):
+        level = level.replace('İ', 'i').replace('I', 'ı')
+    return level.lower()
+
+
+def _apa_text(result: dict) -> str:
+    """AFA APA paragrafı — ekrandaki JS (afa.html) ile AYNI msgid'ler.
+    25 Eylül 2026 düzeltmeleri: Bartlett anlamsızsa 'anlamlı bulunmuştur'
+    yazılmıyordu değil, HEP yazılıyordu; özdeğer>1 ifadesi faktör sayısı elle
+    seçildiğinde de yazılıyordu; ekran ve PDF metinleri farklıydı."""
+    pct = gettext('%%%(value)s') % {'value': result['total_variance_explained']}
+    parts = [gettext('{k} maddeden oluşan ölçeğin faktör yapısını belirlemek amacıyla {rotation} rotasyonu ile '
+                     'Açıklayıcı Faktör Analizi (AFA) uygulanmıştır (n = {n}).').format(
+        k=result['n_items'], rotation=result['rotation'].capitalize(), n=result['n_cases'])]
+    bv = dict(kmo=f"{result['kmo']:.3f}", level=_sentence_level(result['kmo_interpretation']),
+              chi2=f"{result['bartlett_chi2']:.2f}",
+              p='p < .001' if result['bartlett_p'] < 0.001 else f"p = {result['bartlett_p']:.3f}")
+    if result['bartlett_ok']:
+        parts.append(gettext('KMO örneklem yeterlilik katsayısı {kmo} ({level}) olarak hesaplanmış, Bartlett Küresellik '
+                             'Testi anlamlı bulunmuştur (χ² = {chi2}, {p}).').format(**bv))
+    else:
+        parts.append(gettext('KMO örneklem yeterlilik katsayısı {kmo} ({level}) olarak hesaplanmış, Bartlett Küresellik '
+                             'Testi anlamlı bulunmamıştır (χ² = {chi2}, {p}); veri faktör analizi için uygun '
+                             'olmayabilir.').format(**bv))
+    if result['n_factors'] == result['n_factors_auto']:
+        parts.append(gettext('Özdeğer > 1 kriterine göre {nf} faktörlü yapı elde edilmiş ve bu yapı toplam varyansın '
+                             '{pct} kadarını açıklamıştır.').format(nf=result['n_factors'], pct=pct))
+    else:
+        parts.append(gettext('Araştırmacı tarafından belirlenen {nf} faktörlü yapı toplam varyansın {pct} kadarını '
+                             'açıklamıştır.').format(nf=result['n_factors'], pct=pct))
+    return ' '.join(parts)
 
 
 def build_pdf(result: dict, filename: str, df=None) -> bytes:
@@ -180,20 +217,20 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
     normal = ParagraphStyle('N', parent=styles['Normal'], fontName='DejaVuSans', fontSize=9)
 
     story = []
-    story.append(Paragraph('Açıklayıcı Faktör Analizi Raporu', title_style))
-    story.append(Paragraph(f'Dosya: {filename}', normal))
+    story.append(Paragraph(gettext('Açıklayıcı Faktör Analizi Raporu'), title_style))
+    story.append(Paragraph(gettext('Dosya: %(filename)s') % {'filename': filename}, normal))
     story.append(Spacer(1, 0.3*cm))
 
     # Özet
     kmo_ok = result['kmo'] >= 0.50
     summary = [
-        ['Madde Sayısı', str(result['n_items'])],
-        ['Katılımcı Sayısı', str(result['n_cases'])],
-        ['Çıkarılan Faktör Sayısı', str(result['n_factors'])],
-        ['Rotasyon', result['rotation'].capitalize()],
-        ['KMO Örneklem Yeterliliği', f"{result['kmo']} — {result['kmo_interpretation']}"],
-        ['Bartlett Küresellik Testi', f"χ²={result['bartlett_chi2']}, {result['bartlett_sig']}"],
-        ['Açıklanan Toplam Varyans', f"%{result['total_variance_explained']}"],
+        [gettext('Madde Sayısı'), str(result['n_items'])],
+        [gettext('Katılımcı Sayısı'), str(result['n_cases'])],
+        [gettext('Çıkarılan Faktör Sayısı'), str(result['n_factors'])],
+        [gettext('Rotasyon'), result['rotation'].capitalize()],
+        [gettext('KMO Örneklem Yeterliliği'), f"{result['kmo']} — {result['kmo_interpretation']}"],
+        [gettext('Bartlett Küresellik Testi'), f"χ²={result['bartlett_chi2']}, {result['bartlett_sig']}"],
+        [gettext('Açıklanan Toplam Varyans'), gettext('%%%(value)s') % {'value': result['total_variance_explained']}],
     ]
     t = Table(summary, colWidths=[7*cm, 9*cm])
     t.setStyle(TableStyle([
@@ -211,9 +248,9 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
     story.append(Spacer(1, 0.5*cm))
 
     # Faktör yükleri tablosu
-    story.append(Paragraph('Faktör Yük Matrisi (Rotasyonlu)', h2))
+    story.append(Paragraph(gettext('Faktör Yük Matrisi (Rotasyonlu)'), h2))
     factor_names = result['factor_names']
-    headers = ['Madde'] + factor_names + ['Communality']
+    headers = [gettext('Madde')] + factor_names + [gettext('Communality')]
     rows = [headers]
     for row in result['loading_table']:
         r = [row['item']] + [f"{row[f]:.3f}" for f in factor_names] + [f"{row['communality']:.3f}"]
@@ -239,11 +276,13 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
     story.append(Spacer(1, 0.5*cm))
 
     # Varyans açıklama tablosu
-    story.append(Paragraph('Açıklanan Varyans', h2))
-    var_headers = ['Faktör', 'SS Yüklemeler', '% Varyans', 'Kümülatif %']
+    story.append(Paragraph(gettext('Açıklanan Varyans'), h2))
+    var_headers = [gettext('Faktör'), gettext('SS Yüklemeler'), gettext('% Varyans'), gettext('Kümülatif %')]
     var_rows = [var_headers]
     for vr in result['variance_table']:
-        var_rows.append([vr['factor'], f"{vr['ss_loadings']:.3f}", f"%{vr['pct_variance']:.2f}", f"%{vr['cumulative_pct']:.2f}"])
+        var_rows.append([vr['factor'], f"{vr['ss_loadings']:.3f}",
+                         gettext('%%%(value)s') % {'value': f"{vr['pct_variance']:.2f}"},
+                         gettext('%%%(value)s') % {'value': f"{vr['cumulative_pct']:.2f}"}])
     var_tbl = Table(var_rows, colWidths=[3*cm, 4*cm, 4*cm, 5*cm])
     var_tbl.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor(TEAL)),
@@ -260,17 +299,8 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
     story.append(Spacer(1, 0.5*cm))
 
     # APA raporlama
-    story.append(Paragraph('Tezinde Nasıl Raporlarsın?', h2))
-    rot = result['rotation'].capitalize()
-    n_f = result['n_factors']
-    apa = (
-        f"{result['n_items']} maddeli ölçeğe {rot} rotasyonlu açıklayıcı faktör analizi uygulanmıştır "
-        f"(n = {result['n_cases']}). Kaiser-Meyer-Olkin örneklem yeterliliği KMO = {result['kmo']} "
-        f"({result['kmo_interpretation']}) ve Bartlett küresellik testi anlamlı bulunmuştur "
-        f"(χ² = {result['bartlett_chi2']}, {result['bartlett_sig']}). "
-        f"Özdeğer > 1 kriteri temel alınarak {n_f} faktörlü yapı benimsenmiş; "
-        f"bu yapı toplam varyansın %{result['total_variance_explained']}'ını açıklamaktadır."
-    )
+    story.append(Paragraph(gettext('APA Formatında Raporlama'), h2))
+    apa = _apa_text(result)
     apa_tbl = Table([[Paragraph(apa, normal)]], colWidths=[16*cm])
     apa_tbl.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#f0fff4')),

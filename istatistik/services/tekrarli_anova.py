@@ -4,6 +4,7 @@ Aynı katılımcıların 3+ farklı koşulda/zamanda ölçüldüğü parametrik 
 Friedman testinin parametrik alternatifi (normallik varsayımı gerektirir).
 """
 import io
+from django.utils.translation import gettext
 import numpy as np
 from itertools import combinations
 from scipy import stats
@@ -11,18 +12,18 @@ from scipy import stats
 
 def analyze(df, columns: list) -> dict:
     if not columns or len(columns) < 3:
-        raise ValueError('Tekrarlayan ölçümler ANOVA için en az 3 sütun seçilmelidir.')
+        raise ValueError(gettext('Tekrarlayan ölçümler ANOVA için en az 3 sütun seçilmelidir.'))
 
     missing = [c for c in columns if c not in df.columns]
     if missing:
-        raise ValueError(f'Sütunlar bulunamadı: {", ".join(missing)}')
+        raise ValueError(gettext('Sütunlar bulunamadı: %(v)s') % {'v': ', '.join(missing)})
 
     sub = df[columns].dropna()
     n = len(sub)
     k = len(columns)
 
     if n < 5:
-        raise ValueError(f'En az 5 katılımcı gereklidir, {n} satır bulundu.')
+        raise ValueError(gettext('En az 5 katılımcı gereklidir, %(n)s satır bulundu.') % {'n': n})
 
     arrays = [sub[c].values.astype(float) for c in columns]
 
@@ -63,9 +64,7 @@ def analyze(df, columns: list) -> dict:
 
     # Mauchly küresellik testi (scipy yok, kısmi uygulama — notla)
     # Epsilon düzeltmesi için Greenhouse-Geisser — yalnızca bilgilendirici
-    sphericity_note = ('Küresellik (Mauchly) testi bu sürümde desteklenmemektedir. '
-                       'Küresellik ihlali şüphesi varsa Greenhouse-Geisser düzeltmeli '
-                       'SPSS/JASP çıktısıyla karşılaştırın.')
+    sphericity_note = (gettext('Küresellik (Mauchly) testi bu sürümde desteklenmemektedir. Küresellik ihlali şüphesi varsa Greenhouse-Geisser düzeltmeli SPSS/JASP çıktısıyla karşılaştırın.'))
 
     # Post-hoc: pairwise bağımlı t-test + Bonferroni
     pairs = list(combinations(range(k), 2))
@@ -109,22 +108,19 @@ def analyze(df, columns: list) -> dict:
 
 def _interpret_eta(eta: float) -> str:
     if eta < 0.01:
-        return 'İhmal edilebilir etki (η² < .01)'
+        return gettext('İhmal edilebilir etki (η² < .01)')
     if eta < 0.06:
-        return 'Küçük etki (.01 ≤ η² < .06)'
+        return gettext('Küçük etki (.01 ≤ η² < .06)')
     if eta < 0.14:
-        return 'Orta düzey etki (.06 ≤ η² < .14)'
-    return 'Büyük etki (η² ≥ .14)'
+        return gettext('Orta düzey etki (.06 ≤ η² < .14)')
+    return gettext('Büyük etki (η² ≥ .14)')
 
 
 def _conclusion(p, F, df1, df2, columns: list) -> str:
     col_str = ', '.join(columns)
     if float(p) < 0.05:
-        return (f'{col_str} ölçümleri arasında istatistiksel olarak anlamlı bir fark '
-                f'bulunmaktadır, F({df1}, {df2}) = {F:.3f}, p = {p:.4f}. '
-                f'Post-hoc karşılaştırmalarda Bonferroni düzeltmesi uygulanmıştır.')
-    return (f'{col_str} ölçümleri arasında istatistiksel olarak anlamlı bir fark '
-            f'bulunmamaktadır, F({df1}, {df2}) = {F:.3f}, p = {p:.4f}.')
+        return (gettext('%(col_str)s ölçümleri arasında istatistiksel olarak anlamlı bir fark bulunmaktadır, F(%(df1)s, %(df2)s) = %(F)s, p = %(p)s. Post-hoc karşılaştırmalarda Bonferroni düzeltmesi uygulanmıştır.') % {'col_str': col_str, 'df1': df1, 'df2': df2, 'F': f'{F:.3f}', 'p': f'{p:.4f}'})
+    return (gettext('%(col_str)s ölçümleri arasında istatistiksel olarak anlamlı bir fark bulunmamaktadır, F(%(df1)s, %(df2)s) = %(F)s, p = %(p)s.') % {'col_str': col_str, 'df1': df1, 'df2': df2, 'F': f'{F:.3f}', 'p': f'{p:.4f}'})
 
 
 def build_pdf(result: dict, filename: str, df=None) -> bytes:
@@ -149,13 +145,13 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
                              textColor=colors.HexColor('#64748b'))
 
     story = []
-    story.append(Paragraph('Tekrarlayan Ölçümler ANOVA Raporu', title_s))
-    story.append(Paragraph(f'Dosya: {filename}', norm_s))
+    story.append(Paragraph(gettext('Tekrarlayan Ölçümler ANOVA Raporu'), title_s))
+    story.append(Paragraph(gettext('Dosya: %(filename)s') % {'filename': filename}, norm_s))
     story.append(Spacer(1, 0.4*cm))
 
     # Betimsel
-    story.append(Paragraph('Betimsel İstatistikler', h2_s))
-    desc_header = ['Ölçüm', 'n', 'Ort.', 'Med.', 'SS', 'Min', 'Maks']
+    story.append(Paragraph(gettext('Betimsel İstatistikler'), h2_s))
+    desc_header = [gettext('Ölçüm'), 'n', gettext('Ort.'), gettext('Med.'), 'SS', gettext('Min'), gettext('Maks')]
     desc_rows = [desc_header] + [
         [d['col'], str(d['n']), f"{d['mean']:.3f}", f"{d['median']:.3f}",
          f"{d['std']:.3f}", f"{d['min']:.3f}", f"{d['max']:.3f}"]
@@ -178,13 +174,13 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
     story.append(Spacer(1, 0.4*cm))
 
     # ANOVA tablosu
-    story.append(Paragraph('ANOVA Tablosu', h2_s))
+    story.append(Paragraph(gettext('ANOVA Tablosu'), h2_s))
     sig = result['significant']
     anova_rows = [
-        ['Kaynak', 'KT (SS)', 'sd', 'KO (MS)', 'F', 'p'],
-        ['Ölçümler arası', f"{result['ss_between']:.3f}", str(result['df_between']),
+        [gettext('Kaynak'), gettext('KT (SS)'), 'sd', gettext('KO (MS)'), 'F', 'p'],
+        [gettext('Ölçümler arası'), f"{result['ss_between']:.3f}", str(result['df_between']),
          f"{result['ms_between']:.3f}", f"{result['F']:.3f}", f"{result['p_value']:.4f}"],
-        ['Hata', f"{result['ss_error']:.3f}", str(result['df_error']),
+        [gettext('Hata'), f"{result['ss_error']:.3f}", str(result['df_error']),
          f"{result['ms_error']:.3f}", '', ''],
     ]
     anova_tbl = Table(anova_rows, colWidths=[4*cm, 2.5*cm, 1.5*cm, 2.5*cm, 2*cm, 2*cm])
@@ -203,9 +199,9 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
     story.append(Spacer(1, 0.2*cm))
 
     eff_rows = [
-        ['Partial η²', f"{result['eta_sq']:.3f}"],
-        ['Etki Yorumu', result['effect_interpretation']],
-        ['Sonuç', 'Anlamlı (p < .05)' if sig else 'Anlamlı değil (p ≥ .05)'],
+        [gettext('Partial η²'), f"{result['eta_sq']:.3f}"],
+        [gettext('Etki Yorumu'), result['effect_interpretation']],
+        [gettext('Sonuç'), gettext('Anlamlı (p < .05)') if sig else gettext('Anlamlı değil (p ≥ .05)')],
     ]
     eff_tbl = Table(eff_rows, colWidths=[7*cm, 9*cm])
     eff_tbl.setStyle(TableStyle([
@@ -226,11 +222,11 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
 
     # Post-hoc
     if sig and result['posthoc']:
-        story.append(Paragraph('Post-Hoc Karşılaştırmalar (Bağımlı t-testi — Bonferroni)', h2_s))
-        ph_header = ['Çift', 't', 'p', 'p (düz.)', "Cohen's d", 'Anlamlı?']
+        story.append(Paragraph(gettext('Post-Hoc Karşılaştırmalar (Bağımlı t-testi — Bonferroni)'), h2_s))
+        ph_header = [gettext('Çift'), 't', 'p', gettext('p (düz.)'), gettext("Cohen's d"), gettext('Anlamlı?')]
         ph_rows = [ph_header] + [
             [f"{r['col1']} vs {r['col2']}", f"{r['t']:.3f}", f"{r['p']:.4f}",
-             f"{r['p_adj']:.4f}", f"{r['d']:.3f}", 'Evet *' if r['significant'] else 'Hayır']
+             f"{r['p_adj']:.4f}", f"{r['d']:.3f}", gettext('Evet *') if r['significant'] else gettext('Hayır')]
             for r in result['posthoc']
         ]
         ph_tbl = Table(ph_rows, colWidths=[5*cm, 1.8*cm, 2.2*cm, 2.2*cm, 2.2*cm, 2.6*cm])
@@ -248,18 +244,21 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
         story.append(ph_tbl)
         story.append(Spacer(1, 0.4*cm))
 
-    story.append(Paragraph('Yorum', h2_s))
+    story.append(Paragraph(gettext('Yorum'), h2_s))
     story.append(Paragraph(result['conclusion'], norm_s))
     story.append(Spacer(1, 0.5*cm))
 
-    story.append(Paragraph('Tezinde Nasıl Raporlarsın?', h2_s))
-    p_str = '< .001' if result['p_value'] < 0.001 else f"{result['p_value']:.3f}"
-    sig_txt = ('istatistiksel olarak anlamlı bulunmuştur'
-               if result['significant'] else 'istatistiksel olarak anlamlı bulunmamıştır')
-    cols_str = ', '.join(result['columns'])
-    apa_text = (f"Tekrarlayan ölçümler ANOVA sonuçlarına göre {cols_str} koşulları arasındaki fark "
-                f"{sig_txt}, F({result['df_between']}, {result['df_error']}) = {result['F']:.3f}, "
-                f"p {p_str}, η² = {result['eta_sq']:.3f} ({result['effect_interpretation']}).")
+    story.append(Paragraph(gettext('APA Formatında Raporlama'), h2_s))
+    # 'p < .001' / 'p = 0.123' (önceden 'p 0.123' — eşittir eksikti); şablon JS ile ortak msgid
+    v = dict(cols=', '.join(result['columns']), df1=result['df_between'], df2=result['df_error'],
+             f=f"{result['F']:.3f}", p='p < .001' if result['p_value'] < 0.001 else f"p = {result['p_value']:.3f}",
+             eta=f"{result['eta_sq']:.3f}", effect=result['effect_interpretation'])
+    if result['significant']:
+        apa_text = gettext('Tekrarlayan ölçümler ANOVA sonuçlarına göre {cols} koşulları arasındaki fark istatistiksel '
+                           'olarak anlamlı bulunmuştur, F({df1}, {df2}) = {f}, {p}, η² = {eta} ({effect}).').format(**v)
+    else:
+        apa_text = gettext('Tekrarlayan ölçümler ANOVA sonuçlarına göre {cols} koşulları arasındaki fark istatistiksel '
+                           'olarak anlamlı bulunmamıştır, F({df1}, {df2}) = {f}, {p}, η² = {eta} ({effect}).').format(**v)
     apa_tbl = Table([[Paragraph(apa_text, norm_s)]], colWidths=[16*cm])
     apa_tbl.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#eff6ff')),
