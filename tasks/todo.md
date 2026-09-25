@@ -59,9 +59,9 @@ maddelerde.
 - [x] ~~`manage.py test forum` 0 test buluyor~~ — ÇÖZÜLDÜ: proje pytest
   kullanıyor (`conftest.py`, `analizdestek/test_settings.py`); doğru komut
   `docker compose exec web python -m pytest forum/tests.py` (61 test).
-- [ ] **Başarısız test: `test_yoktez_job_daily_limit_normal_user`** (beklenen
-  1, gelen 3) — önceden beri kırık; yoktez EN/DE kapsamında değil ama limit
-  mantığı mı test mi yanlış, ayrıca incelenmeli.
+- [x] **Başarısız test: `test_yoktez_job_daily_limit_normal_user`** — ÇÖZÜLDÜ
+  (25 Eylül 2026): test eskimişti; limit fa1c281 (18 Mayıs 2026) ile bilinçli
+  olarak herkese 3 yapılmış. Test 3'e güncellendi → pytest 61/61.
 - [ ] **Ölü kod temizliği** (ayrı onayla): `forum/templates/registration/
   password_reset_*.html` (templates/registration gölgeliyor),
   `forum/ai_service.py` (hiçbir yerden import edilmiyor, openai kullanıyor),

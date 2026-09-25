@@ -146,10 +146,11 @@ def test_alex_job_mark_failed(user):
 
 @pytest.mark.django_db
 def test_yoktez_job_daily_limit_normal_user(user):
-    """Normal kullanıcı için günlük limit 1 olmalı."""
+    """Normal kullanıcı için günlük limit 3 olmalı (fa1c281, 18 Mayıs 2026:
+    normal 1 / premium 7 yerine admin hariç herkese 3)."""
     from yoktez.models import YokTezSearchJob
     limit = YokTezSearchJob.get_daily_limit(user)
-    assert limit == 1
+    assert limit == 3
 
 
 @pytest.mark.django_db
