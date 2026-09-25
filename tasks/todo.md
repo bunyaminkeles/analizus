@@ -69,8 +69,10 @@ maddelerde.
   Sayfalar 200, pytest 61/61. `forum/tasks.py` (Celery, bağlı değil — analizus.md
   §23) bu tura dahil edilmedi.
 - [ ] **Gizlilik tablosu mobilde yatay kayıyor** (kozmetik; kart düzeni?).
-- [ ] **Float buton çakışması** (AI/WhatsApp/destek, dar ekran) — alttaki
-  "AYRI BULGU" maddesi.
+- [x] **Float buton çakışması** — ARTIK YOK (25 Eylül 2026 doğrulandı): kodda
+  sabit (position:fixed) duran tek buton AI Asistan; WhatsApp/Destekçi sabit
+  butonları kaldırılmış (sayfa içi link olarak duruyor). 390px ve 700px ekran
+  görüntüsünde çakışma yok. (Alttaki "AYRI BULGU" notu tarihçe.)
 
 **B. Kullanıcı / avukat kararı bekleyen**
 - [ ] Gizlilik metnine eklenecekler: ABD aktarım güvencesi (SCC/DPF), KVKK
