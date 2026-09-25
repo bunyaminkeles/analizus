@@ -1273,6 +1273,22 @@ def custom_login(request):
             if not url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}, require_https=request.is_secure()):
                 next_url = 'home'
             return redirect(next_url)
+
+        # Silme talebi bekleyen (pasif) hesap: Django pasif kullanıcıyı genel
+        # "hatalı giriş" ile reddeder. Şifre doğruysa ve 30 günlük süre
+        # dolmadıysa geri alma sayfasına yönlendir (kullanıcı kararı, 25 Eylül 2026).
+        # Anonimleştirilmiş hesapta şifre kullanılamaz → bu yol açılmaz.
+        pending = User.objects.filter(
+            username=request.POST.get('username', ''),
+            is_active=False,
+            profile__deletion_requested_at__gt=timezone.now() - timedelta(days=30),
+        ).first()
+        if pending and pending.check_password(request.POST.get('password', '')):
+            request.session['account_restore'] = {
+                'user_id': pending.pk,
+                'expires': (timezone.now() + timedelta(minutes=10)).timestamp(),
+            }
+            return redirect('account_restore')
     else:
         form = AuthenticationForm()
 
@@ -1881,6 +1897,45 @@ def account_delete_confirm(request, token):
     logout(request)
     messages.info(request, "Hesabınız devre dışı bırakıldı. Kişisel verileriniz 30 gün içinde kalıcı olarak silinecektir.")
     return redirect('home')
+
+
+def account_restore(request):
+    """Silme talebi bekleyen hesabı geri alma. Yalnızca custom_login'de şifre
+    doğrulandıktan sonra oturuma yazılan 10 dakikalık işaretle açılır."""
+    from datetime import timedelta
+    from django.utils import timezone
+    from django.utils.formats import date_format
+
+    data = request.session.get('account_restore') or {}
+    user = None
+    if data.get('expires', 0) > timezone.now().timestamp():
+        user = User.objects.filter(
+            pk=data.get('user_id'),
+            is_active=False,
+            profile__deletion_requested_at__gt=timezone.now() - timedelta(days=30),
+        ).select_related('profile').first()
+    if user is None:
+        request.session.pop('account_restore', None)
+        return redirect('login')
+
+    if request.method == 'POST':
+        request.session.pop('account_restore', None)
+        if 'restore' not in request.POST:
+            return redirect('home')
+        profile = user.profile
+        profile.deletion_requested_at = None
+        profile.save(update_fields=['deletion_requested_at'])
+        user.is_active = True
+        user.save(update_fields=['is_active'])
+        login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+        messages.success(request, gettext('Hesabınız geri alındı. Tekrar hoş geldiniz!'))
+        return redirect('home')
+
+    deletion_date = user.profile.deletion_requested_at + timedelta(days=30)
+    return render(request, 'forum/account_restore.html', {
+        'restore_user': user,
+        'deletion_date': date_format(timezone.localtime(deletion_date), 'DATE_FORMAT'),
+    })
 
 
 # --- DİĞER ---

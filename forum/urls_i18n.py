@@ -16,6 +16,8 @@ urlpatterns = [
     path('verification-pending/', views.verification_pending, name='verification_pending'),
     path('resend-verification/', views.resend_verification, name='resend_verification'),
     path('onboarding/', views.onboarding, name='onboarding'),
+    # Silme talebi bekleyen hesabı geri alma (girişten yönlenir, 25 Eylül 2026)
+    path('account/restore/', views.account_restore, name='account_restore'),
     # AI Asistan tam sayfa (forum/urls.py'den taşındı, 24 Eylül 2026)
     path('ai-asistan/', views.ai_assistant, name='ai_assistant'),
     # Gizlilik / KVKK + GDPR (forum/urls.py'den taşındı, 24 Eylül 2026)

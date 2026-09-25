@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Hesabı Geri Al" %} — Analizus{% endblock %}
+{% block extra_head %}<meta name="robots" content="noindex, nofollow">{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-lg-6 col-md-8">
+        <div class="ax-restore">
+            <h1 class="ax-restore__title">
+                <i class="bi bi-arrow-counterclockwise" aria-hidden="true"></i>
+                {% trans "Hesabınız silinmek üzere" %}
+            </h1>
+            <p class="ax-restore__text">
+                {% blocktrans trimmed with username=restore_user.username date=deletion_date %}
+                <strong>{{ username }}</strong> hesabı için silme talebinde bulundunuz. Hesabınız ve kişisel verileriniz <strong>{{ date }}</strong> tarihinde kalıcı olarak silinecek.
+                {% endblocktrans %}
+            </p>
+            <p class="ax-restore__text">{% trans "Fikrinizi değiştirdiyseniz hesabınızı şimdi geri alabilirsiniz; tüm verileriniz olduğu gibi korunur." %}</p>
+
+            <form method="post" class="ax-restore__actions">
+                {% csrf_token %}
+                <button type="submit" name="cancel" class="ax-btn ax-btn--ghost">{% trans "Silme işlemi devam etsin" %}</button>
+                <button type="submit" name="restore" class="ax-btn ax-btn--primary">{% trans "Hesabımı geri al" %}</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+.ax-restore {
+    background: var(--ax-bg-secondary);
+    border: 1px solid var(--ax-border-hover);
+    border-radius: var(--ax-radius-lg);
+    padding: var(--ax-space-6);
+}
+.ax-restore__title {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--ax-text-primary);
+    margin-bottom: var(--ax-space-4);
+}
+.ax-restore__title .bi { color: var(--ax-accent-warning); margin-right: var(--ax-space-2); }
+.ax-restore__text { color: var(--ax-text-secondary); line-height: 1.6; }
+.ax-restore__actions {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: var(--ax-space-3);
+    margin-top: var(--ax-space-6);
+}
+.ax-restore__actions .ax-btn { justify-content: center; white-space: normal; }
+@media (min-width: 576px) {
+    .ax-restore__actions { flex-direction: row; justify-content: flex-end; }
+}
+</style>
+{% endblock %}

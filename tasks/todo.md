@@ -25,8 +25,16 @@ maddelerde.
     — DM'ler kalır, bağış scrub, siparişli iş korunur (URL+S3 dosyası silinir),
     özel veriler silinir, açık ilan iptal, tek transaction + S3 on_commit.
     Rollback testinde doğrulandı. Canlıya merge ile gider (cron aynı URL).
-  - [ ] 2. 30 gün içinde giriş yapınca "geri al" akışı.
-  - [ ] 3. Silme mesajlarının çevirisi + gizlilik metnine "30 gün" geri ekleme.
+  - [x] 2. "Geri al" akışı (25 Eylül 2026): custom_login pasif + 30 gün içi +
+    şifre doğru → oturuma 10 dk'lık işaret → `/account/restore/` (i18n);
+    "Hesabımı geri al" / "Silme işlemi devam etsin". 7 senaryo test edildi.
+  - [ ] 3. Metinler: silme e-postası, flash mesajları ve `account_delete.html`
+    çevrilmedi; ayrıca `account_delete.html`'de 3 YANLIŞ ifade var — "DM
+    mesajlarınız 30 gün içinde silinecektir" (artık silinmiyor), "yalnızca admin
+    aracılığıyla aktifleştirilebilir" (artık girişle geri alınabiliyor),
+    "Silinmiş Kullanıcı" adıyla (gerçekte `deleted_xxxx` görünüyor). Silme
+    e-postası `{site_url}/account/delete/confirm/` — i18n dışı. Gizlilik
+    metnine "30 gün içinde silinir" geri eklenecek.
 - [ ] **Ana sayfa hero test çipleri** "t-testi · korelasyon · regresyon"
   EN/DE'de Türkçe.
 - [ ] **"Güvenilir Üye" rozet mesajı** (`_check_and_award_trust_badge`,
