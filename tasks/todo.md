@@ -169,16 +169,15 @@ en son dev'i çalıştırıyor, 200.
 **Gerekli migration'lar: forum 0153 (SiteSettings.feature_multilingual, şema),
 0154 (Profile.preferred_language, şema, varsayılan 'tr' — mevcut kullanıcılar
 TR), 0155 (anonim kullanıcı adları, veri, geri alınabilir).** Başka uygulamada yok.
-- [ ] 0. Canlı DB yedeği: `docker compose exec -T db sh -c 'pg_dump -U "$POSTGRES_USER" "$POSTGRES_DB"' > /root/yedek_$(date +%F).sql`
-- [ ] 1. `git checkout main && git merge --ff-only dev && git push origin main` (lokal)
-- [ ] 2. Hetzner: `cd /app && git pull origin main`
-- [ ] 3. `docker compose exec web python manage.py showmigrations forum | tail -5` (0152 [X], 0153-0155 [ ] beklenir)
-- [ ] 4. `docker compose exec web python manage.py migrate` → `collectstatic --noinput`
-- [ ] 5. `docker compose restart web && docker compose restart nginx` (almanyalirehber de kısa süre etkilenir)
-- [ ] 6. Kontroller: ana sayfa/giriş/araç sayfası 200; çerez banner'ı (GA ID varsa);
+- [x] 0. Canlı DB yedeği (kullanıcı aldı, 25 Eylül 2026): `docker compose exec -T db sh -c 'pg_dump -U "$POSTGRES_USER" "$POSTGRES_DB"' > /root/yedek_$(date +%F).sql`
+- [x] 1. main ← dev fast-forward merge + push (132327f, 25 Eylül 2026)
+- [x] 2. Hetzner: git pull
+- [x] 3-4. migrate + collectstatic — container yeniden başlarken deploy.sh uyguladı (0153-0155 applied 2026-09-25 21:07 UTC; 0152 23 Temmuz → staging canlı DB'yi kullanmıyor, doğrulandı)
+- [x] 5. web + nginx yeniden başlatıldı
+- [x] 6. Kontroller (curl): tüm sayfalar 200, /en/ 404 (bayrak kapalı), inter.css + font 200, log temiz; canlı HTML: yeni og açıklaması, Yandex yok, Google Fonts yok, GDPR bölümü var. Tarayıcıda AI Asistan testi kullanıcıda. Eski not: ana sayfa/giriş/araç sayfası 200; çerez banner'ı (GA ID varsa);
       AI Asistan bir soru; `showmigrations` hepsi [X]; nginx/web log hata yok.
 - [ ] 7. Admin'de `feature_multilingual` aç — AVUKAT KONTROLÜNDEN SONRA (kapalıyken EN/DE sayfaları 404, TR etkilenmez).
-- [ ] Canlıda kontrol: `GOOGLE_ANALYTICS_ID` tanımlı mı (banner ona bağlı);
+- [ ] **Canlıda `GOOGLE_ANALYTICS_ID` TANIMLI DEĞİL** (25 Eylül 2026, canlı HTML'de GA script/banner yok; deploy öncesi de yoktu) → sitede hiç analiz aracı çalışmıyor. İstenirse .env'e eklenir, banner otomatik devreye girer. Eski not: Canlıda kontrol: `GOOGLE_ANALYTICS_ID` tanımlı mı (banner ona bağlı);
   canlı `GROQ_API_KEY` ile gpt-oss-120b yanıt veriyor mu.
 - [ ] Yandex Metrica hesabı/sayacı kapatılabilir (kod kaldırıldı).
 - [ ] **Deploy sonrası (bayrak kapalı) — arama/analitik panelleri:**
