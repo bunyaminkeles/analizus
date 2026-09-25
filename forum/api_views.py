@@ -503,7 +503,7 @@ def run_initial_setup(request):
 def cron_process_account_deletions(request):
     """
     deletion_requested_at üzerinden 30 gün geçmiş hesapları anonimleştirir
-    ve DM kayıtlarını siler.
+    (ayrıntı: _anonymize_deleted_account).
 
     Kullanım:
     - GET /api/cron/process-account-deletions/?secret=YOUR_SECRET
@@ -514,8 +514,7 @@ def cron_process_account_deletions(request):
 
     from django.utils import timezone
     from datetime import timedelta
-    import secrets
-    from forum.models import Profile, PrivateMessage
+    from forum.models import Profile
 
     cutoff = timezone.now() - timedelta(days=30)
     profiles = Profile.objects.filter(
@@ -524,32 +523,98 @@ def cron_process_account_deletions(request):
     ).select_related('user')
 
     processed = 0
+    failed = 0
     for profile in profiles:
-        user = profile.user
-        token = secrets.token_hex(6)
+        try:
+            _anonymize_deleted_account(profile)
+            processed += 1
+        except Exception:
+            # Bu kullanıcının tüm DB değişiklikleri geri alındı (atomic);
+            # deletion_requested_at duruyor → ertesi gün tekrar denenir
+            logger.exception(f"Hesap anonimleştirme hatası (profile {profile.pk})")
+            failed += 1
 
+    return JsonResponse({
+        'success': failed == 0,
+        'processed': processed,
+        'failed': failed,
+        'cutoff_days': 30,
+    })
+
+
+# Kullanıcının özel tarama/analiz işleri: (model, sipariş modeli, siparişteki FK).
+# Siparişi olan iş SİLİNMEZ — sipariş iş'e CASCADE bağlı, iş silinirse mali
+# kayıt da giderdi (kullanıcı kararı 25 Eylül 2026: mali kayıt anonim saklanır);
+# bu işlerin yalnızca dosyaları silinir ve *_url alanları boşaltılır.
+_ACCOUNT_DELETION_JOB_MODELS = [
+    ('trdizin.DizinSearchJob', 'trdizin.DizinOrder', 'search_job'),
+    ('openalex.AlexSearchJob', 'openalex.AlexOrder', 'search_job'),
+    ('semanticscholar.SemanticSearchJob', 'semanticscholar.SemanticOrder', 'search_job'),
+    ('oaipmh.OAIPMHSearchJob', 'oaipmh.OAIPMHOrder', 'search_job'),
+    ('bibliometrics.BibliometricJob', 'bibliometrics.BibliometricOrder', 'job'),
+    ('yoktez.YokTezSearchJob', None, None),
+    ('tezanaliz.TezAnaliz', None, None),
+    ('makaleanaliz.MakaleAnaliz', None, None),
+    ('transcript.TranscriptJob', None, None),
+    ('istatistik.IstatistikJob', None, None),
+]
+
+
+def _own_s3_key(url):
+    """Yalnızca kendi bucket'ımızdaki URL'lerin S3 anahtarını döndürür —
+    dış bağlantılara (ör. video_url'deki YouTube linki) dokunulmaz."""
+    from django.conf import settings
+    prefix = f"https://{settings.AWS_S3_CUSTOM_DOMAIN}/"
+    return url[len(prefix):] if url and url.startswith(prefix) else None
+
+
+def _anonymize_deleted_account(profile):
+    """Silme talebinin 30 günü dolmuş hesabı anonimleştirir (kullanıcı
+    kararları, 25 Eylül 2026):
+    - Açık içerik (forum, blog, oda paylaşımları, ilanlar, teklifler,
+      değerlendirmeler) KALIR, yazar anonim kullanıcı adıyla görünür.
+    - DM'ler karşı tarafta KALIR (gönderen anonim görünür).
+    - Mali kayıtlar (bağış, siparişler) KALIR; bağıştaki ad/e-posta/mesaj silinir.
+    - Özel veriler (tarama/analiz işleri + dosyaları, bildirimler, ziyaret
+      kayıtları, quiz skorları, oda üyelikleri, takip listesi) SİLİNİR.
+    Tüm DB değişiklikleri tek transaction'da; S3 dosyaları commit sonrası silinir."""
+    import secrets
+    from django.apps import apps
+    from django.db import transaction
+    from django.db.models import Q
+    from forum.models import (
+        Notification, EmailVerification, UserQuizAttempt, QuizScore,
+        QuizCategoryScore, StudyRoomMembership, StudyRoomWaitlist,
+        FreelanceJob, Donation,
+    )
+    from analytics.models import PageView, PageViewSummary
+    from forum.s3_utils import delete_from_s3
+
+    user = profile.user
+    s3_keys = []
+
+    with transaction.atomic():
         # Kullanıcı temel bilgilerini anonimleştir
+        token = secrets.token_hex(6)
         user.email = f'deleted_{token}@deleted.invalid'
         user.username = f'deleted_{token}'
         user.first_name = ''
         user.last_name = ''
+        user.is_active = False
         user.set_unusable_password()
         user.save()
 
-        # Avatar ve kapak fotoğrafını sil
-        for field in (profile.avatar, profile.cover_image):
-            if field:
-                try:
-                    field.storage.delete(field.name)
-                except Exception:
-                    pass
+        # Avatar ve kapak fotoğrafı (dosyalar commit sonrası silinir)
+        media_names = [(f.storage, f.name) for f in (profile.avatar, profile.cover_image) if f]
 
         # Profil kişisel alanlarını temizle
         profile.avatar = None
         profile.cover_image = None
         profile.bio = ''
         profile.phone_number = ''
+        profile.phone_verified = False
         profile.linkedin = ''
+        profile.linkedin_verified = False
         profile.twitter = ''
         profile.github = ''
         profile.orcid = ''
@@ -560,19 +625,60 @@ def cron_process_account_deletions(request):
         profile.university = ''
         profile.department = ''
         profile.academic_title = ''
+        profile.segment = ''
         profile.onboarding_interests = []
         profile.onboarding_tools = []
+        profile.is_public = False
+        profile.show_email = False
+        profile.email_on_reply = False
+        profile.email_on_private_message = False
         profile.deletion_requested_at = None  # işlem tamamlandı, tekrar çalışmasın
         profile.save()
+        profile.badges.clear()
+        profile.skills.clear()
+        profile.following.clear()
+        profile.followers.clear()
 
-        # DM kayıtlarını sil
-        PrivateMessage.objects.filter(sender=user).delete()
-        PrivateMessage.objects.filter(receiver=user).delete()
+        # Özel tarama/analiz işleri
+        for job_label, order_label, order_fk in _ACCOUNT_DELETION_JOB_MODELS:
+            Job = apps.get_model(job_label)
+            url_fields = [f.name for f in Job._meta.concrete_fields if f.name.endswith('_url')]
+            ordered_ids = set()
+            if order_label:
+                Order = apps.get_model(order_label)
+                ordered_ids = set(Order.objects.filter(**{f'{order_fk}__user': user})
+                                  .values_list(f'{order_fk}_id', flat=True))
+            jobs = list(Job.objects.filter(user=user).only('pk', *url_fields))
+            for job in jobs:
+                s3_keys += [k for k in (_own_s3_key(getattr(job, f)) for f in url_fields) if k]
+            Job.objects.filter(user=user).exclude(pk__in=ordered_ids).delete()
+            if ordered_ids and url_fields:
+                Job.objects.filter(pk__in=ordered_ids).update(**{f: '' for f in url_fields})
 
-        processed += 1
+        # Diğer özel veriler
+        Notification.objects.filter(Q(recipient=user) | Q(sender=user)).delete()
+        EmailVerification.objects.filter(user=user).delete()
+        UserQuizAttempt.objects.filter(user=user).delete()
+        QuizScore.objects.filter(user=user).delete()
+        QuizCategoryScore.objects.filter(user=user).delete()
+        StudyRoomMembership.objects.filter(user=user).delete()
+        StudyRoomWaitlist.objects.filter(user=user).delete()
+        PageView.objects.filter(user=user).delete()
+        PageViewSummary.objects.filter(user=user).update(user=None)
 
-    return JsonResponse({
-        'success': True,
-        'processed': processed,
-        'cutoff_days': 30,
-    })
+        # Silinmiş kullanıcının açık ilanına teklif verilemesin
+        FreelanceJob.objects.filter(owner=user, status='open').update(status='cancelled')
+
+        # Mali kayıt kalır, kişiyle bağı kopar
+        Donation.objects.filter(user=user).update(name='', email='', message='')
+
+        def _delete_files():
+            for storage, name in media_names:
+                try:
+                    storage.delete(name)
+                except Exception:
+                    logger.exception(f"Profil görseli silinemedi: {name}")
+            for key in s3_keys:
+                delete_from_s3(key)
+
+        transaction.on_commit(_delete_files)

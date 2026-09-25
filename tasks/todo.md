@@ -20,8 +20,13 @@ maddelerde.
   sakla ⚠️ (Donation.name/email temizlenmiyor); 30 gün içinde giriş yapınca
   iptal ❌ (yok). Ek eksik: tarama/analiz işleri+dosyaları, bildirim,
   PageView, quiz skorları, oda üyelikleri, takip listesi silinmiyor; açık
-  ilanlar iptal edilmiyor. Silme mesajı çevrilmemiş. Plan kullanıcı onayı
-  bekliyor. Bitince gizlilik metnine "30 gün içinde silinir" geri eklenir.
+  ilanlar iptal edilmiyor. Silme mesajı çevrilmemiş.
+  - [x] 1. Cron kararlara uyduruldu (25 Eylül 2026): `_anonymize_deleted_account`
+    — DM'ler kalır, bağış scrub, siparişli iş korunur (URL+S3 dosyası silinir),
+    özel veriler silinir, açık ilan iptal, tek transaction + S3 on_commit.
+    Rollback testinde doğrulandı. Canlıya merge ile gider (cron aynı URL).
+  - [ ] 2. 30 gün içinde giriş yapınca "geri al" akışı.
+  - [ ] 3. Silme mesajlarının çevirisi + gizlilik metnine "30 gün" geri ekleme.
 - [ ] **Ana sayfa hero test çipleri** "t-testi · korelasyon · regresyon"
   EN/DE'de Türkçe.
 - [ ] **"Güvenilir Üye" rozet mesajı** (`_check_and_award_trust_badge`,
@@ -60,6 +65,11 @@ maddelerde.
   dosyaları EN/DE olacak mı?
 - [ ] "Ufak tefek aksamalar" listesi kullanıcıdan alınacak (cilalama turu).
 
+- [ ] **GÜVENLİK — `_verify_cron_secret` beklenen anahtarı loga yazıyor**
+  (forum/api_views.py ~114: `logger.warning(f"... Beklenen='{expected_secret}'")`).
+  Yanlış anahtarla gelen HER istek gerçek anahtarı loga düşürüyor. Beklenen
+  değer loglanmamalı. Ayrıca varsayılan `'default-dev-secret-change-in-prod'`
+  — env yoksa herkes cron'u tetikleyebilir; prod'da env tanımlı mı kontrol.
 - [ ] **CRON_SECRET_KEY yenileme:** 25 Eylül 2026'da anahtarın TAMAMI
   nginx log çıktısıyla sohbete yapıştırıldı (yerel oturum). Ayrıca anahtar
   `?secret=` ile URL'de gittiği için nginx access loguna düz metin yazılıyor —
