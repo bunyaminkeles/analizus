@@ -71,8 +71,16 @@ def _localize_paths(text, lang):
     (TR) path yazar; eşleme translate_url ile yapılır, ayrı liste tutulmaz."""
     if not lang or lang == settings.LANGUAGE_CODE:
         return text
+
+    def _target(p):
+        # /istatistik/<slug>/ tek dilli (TR); aynı 18 aracın çok dilli
+        # karşılığı /analiz/<slug>/ (slug'lar birebir, 25 Eylül 2026 doğrulandı)
+        if p.startswith('/istatistik/'):
+            p = '/analiz/' + p[len('/istatistik/'):]
+        return translate_url(p, lang)
+
     with translation.override(settings.LANGUAGE_CODE):
-        mapping = {p: translate_url(p, lang) for p in _ALLOWED_PATHS}
+        mapping = {p: _target(p) for p in _ALLOWED_PATHS}
     return _PAREN_PATH_RE.sub(
         lambda m: '(' + mapping.get(m.group(1), m.group(1)) + ')', text)
 

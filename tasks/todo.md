@@ -42,9 +42,13 @@ maddelerde.
   EN/DE'de Türkçe.
 - [x] **"Güvenilir Üye" rozet mesajı** — ÇEVRİLDİ (25 Eylül 2026) (`_check_and_award_trust_badge`,
   forum/views.py ~1700) Türkçe — e-posta doğrulama sonrasında çıkabiliyor.
-- [ ] **AI Asistan `/istatistik/…` linkleri** EN/DE kullanıcısını TR araç
-  sayfasına götürüyor; `/analiz/<slug>/` EN/DE karşılıklarına eşlenebilir mi
-  (slug'lar birebir mi) kontrol edilecek.
+- [x] **AI Asistan `/istatistik/…` linkleri** — ÇÖZÜLDÜ (25 Eylül 2026):
+  EN/DE'de `/istatistik/<slug>/` → `/<dil>/analiz/<slug>/` (18 slug birebir,
+  hepsi 200, bilinmeyen slug 404 — doğrulandı). TR davranışı aynı.
+- [ ] **AI Asistan ölü/koşullu linkler (önceden var, dilden bağımsız):**
+  `/makaleanaliz/` her ortamda 404 (izinli listede + talimatta var ama kökte
+  sayfa yok); `/ai-cozumler/`, `/egitim/`, `/egitim-talebi/` feature flag
+  kapalıyken 404 — talimat/izinli liste flag'e göre filtrelenmeli.
 - [ ] **AI Asistan kapasite riski:** Groq ücretsiz katman TÜM site için
   8000 token/dk + 1000 istek/gün (istek ≈ 2900 token → dakikada ~2-3 soru).
   Yoğunlukta 429 hatası; kullanıcı başı 30/gün limiti bunu korumaz.
