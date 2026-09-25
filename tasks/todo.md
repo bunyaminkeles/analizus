@@ -52,29 +52,15 @@ maddelerde.
   `/makaleanaliz/` her ortamda 404 (izinli listede + talimatta var ama kökte
   sayfa yok); `/ai-cozumler/`, `/egitim/`, `/egitim-talebi/` feature flag
   kapalıyken 404 — talimat/izinli liste flag'e göre filtrelenmeli.
-- [ ] **AI Asistan kapasite riski:** Groq ücretsiz katman TÜM site için
-  8000 token/dk + 1000 istek/gün (istek ≈ 2900 token → dakikada ~2-3 soru).
-  Yoğunlukta 429 hatası; kullanıcı başı 30/gün limiti bunu korumaz.
-  Karar: ücretli katman / max_tokens düşürme / talimatı kısaltma.
-- [x] ~~`manage.py test forum` 0 test buluyor~~ — ÇÖZÜLDÜ: proje pytest
-  kullanıyor (`conftest.py`, `analizdestek/test_settings.py`); doğru komut
-  `docker compose exec web python -m pytest forum/tests.py` (61 test).
-- [x] **Başarısız test: `test_yoktez_job_daily_limit_normal_user`** — ÇÖZÜLDÜ
-  (25 Eylül 2026): test eskimişti; limit fa1c281 (18 Mayıs 2026) ile bilinçli
-  olarak herkese 3 yapılmış. Test 3'e güncellendi → pytest 61/61.
-- [x] **Ölü kod temizliği** — TAMAMLANDI (25 Eylül 2026, kullanıcı onayı):
-  forum/templates/registration/password_reset_{form,done,confirm,complete}.html
-  (templates/registration gölgeliyordu — get_template ile doğrulandı),
-  forum/ai_service.py (import yok), istatistik/tool_base.html (referans yok).
-  Sayfalar 200, pytest 61/61. `forum/tasks.py` (Celery, bağlı değil — analizus.md
-  §23) bu tura dahil edilmedi.
-- [x] **Gizlilik tablosu mobilde yatay kayıyor** — ÇÖZÜLDÜ (25 Eylül 2026): mobil önce kart düzeni (data-label ile sütun adı, 3 dil), 576px+ tablo; 390/1100px ekran görüntüsüyle doğrulandı.
-- [x] **Float buton çakışması** — ARTIK YOK (25 Eylül 2026 doğrulandı): kodda
-  sabit (position:fixed) duran tek buton AI Asistan; WhatsApp/Destekçi sabit
-  butonları kaldırılmış (sayfa içi link olarak duruyor). 390px ve 700px ekran
-  görüntüsünde çakışma yok. (Alttaki "AYRI BULGU" notu tarihçe.)
-
-**B. Kullanıcı / avukat kararı bekleyen**
+- [x] **AI Asistan kapasite** — İYİLEŞTİRİLDİ (25 Eylül 2026): talimat kural
+  kaybı olmadan sıkıştırıldı; ölçülen istek başı token TR 2625→1772 (-%32), EN
+  ~2994→1868 (-%38) → dakikada ~3 → ~4,5 soru (~1,5x). 5 senaryo canlı test
+  (test seçimi, uzman isteği, NVivo yok, kapalı eğitim sayfası, tez yazdırma
+  reddi) + EN/DE dil: OK. `reasoning_effort=low` ölçüldü (+%15) ama yanıtları
+  kısalttığı için EKLENMEDİ.
+- [ ] **AI Asistan — kalan kapasite sınırı:** ücretsiz katman yine site geneli
+  8000 token/dk + **1000 istek/gün**. Trafik artarsa: Groq ücretli katman
+  (kullanıcı kararı) ya da `reasoning_effort=low` (kalite ödünü).
 - [ ] Gizlilik metnine eklenecekler: ABD aktarım güvencesi (SCC/DPF), KVKK
   md. 9 bildirimi, GA saklama süresi, AB temsilcisi (md. 27) — "Gizlilik
   metnine eklenecekler" maddesi.
