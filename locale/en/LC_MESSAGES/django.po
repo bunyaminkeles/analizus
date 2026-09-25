@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-25 14:18+0300\n"
+"POT-Creation-Date: 2026-09-25 14:29+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -3953,6 +3953,18 @@ msgstr ""
 "Upload → choose the test (we'll guide you if you're not sure) → get your "
 "report in APA format · No signup required"
 
+#: forum/templates/forum/home.html:249 forum/training_catalog.py:138
+msgid "t-testi"
+msgstr "t-test"
+
+#: forum/templates/forum/home.html:249
+msgid "korelasyon"
+msgstr "correlation"
+
+#: forum/templates/forum/home.html:249
+msgid "regresyon"
+msgstr "regression"
+
 #: forum/templates/forum/home.html:249
 msgid "18 aracın tümü →"
 msgstr "All 18 tools →"
@@ -6044,10 +6056,6 @@ msgstr "Normality tests"
 #: forum/training_catalog.py:138
 msgid "Karşılaştırma Testleri"
 msgstr "Comparison Tests"
-
-#: forum/training_catalog.py:138
-msgid "t-testi"
-msgstr "t-test"
 
 #: forum/training_catalog.py:138
 msgid "Tek yönlü ANOVA"

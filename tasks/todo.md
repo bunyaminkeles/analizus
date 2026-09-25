@@ -38,7 +38,7 @@ maddelerde.
   (çok sayıda şablon — ayrı iş, önce kapsam listesi).
 - [ ] **Profil sayfaları tek dilli:** profil/profil düzenleme (ve "Hesabımı Sil"
   butonu) i18n dışında — EN/DE kullanıcı silme sayfasına TR olarak ulaşır.
-- [ ] **Ana sayfa hero test çipleri** "t-testi · korelasyon · regresyon"
+- [x] **Ana sayfa hero test çipleri** — ÇEVRİLDİ (25 Eylül 2026) "t-testi · korelasyon · regresyon"
   EN/DE'de Türkçe.
 - [ ] **"Güvenilir Üye" rozet mesajı** (`_check_and_award_trust_badge`,
   forum/views.py ~1700) Türkçe — e-posta doğrulama sonrasında çıkabiliyor.

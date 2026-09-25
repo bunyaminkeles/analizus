@@ -246,7 +246,7 @@
                 </div>
                 <p class="ax-hero-dropzone__error" id="axHeroDropzoneError" hidden></p>
                 <p class="ax-hero-dropzone__trust">{% trans "Yükle → testi seç (bilmiyorsan yol gösteririz) → APA formatında raporunu al · Kayıt gerekmez" %}</p>
-                <p class="ax-hero-dropzone__examples">t-testi · ANOVA · korelasyon · Cronbach α · regresyon · <a href="{% url 'analiz_home' %}">{% trans "18 aracın tümü →" %}</a></p>
+                <p class="ax-hero-dropzone__examples">{% trans "t-testi" %} · ANOVA · {% trans "korelasyon" %} · Cronbach α · {% trans "regresyon" %} · <a href="{% url 'analiz_home' %}">{% trans "18 aracın tümü →" %}</a></p>
 
                 <p class="ax-hero__secondary-cta">
                     <a href="{% url 'proje_talebi' %}?source=hero">{% trans "Ya da bu işi 24 saatte bir uzmana bırak →" %}</a>
