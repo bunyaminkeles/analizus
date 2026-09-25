@@ -30,7 +30,7 @@ _ALLOWED_PATHS = frozenset({
     '/istatistik/afa/', '/istatistik/wilcoxon/', '/istatistik/friedman/',
     '/istatistik/tekrarli-anova/', '/istatistik/karar-agaci/', '/istatistik/svm/',
     '/hangi-test/', '/analiz/',
-    '/openalex/', '/semantic-scholar/', '/yoktez/', '/tezanaliz/', '/makaleanaliz/',
+    '/openalex/', '/semantic-scholar/', '/yoktez/', '/tezanaliz/',
     '/oaipmh/', '/bibliometrics/', '/tarama/',
     '/uzmanlar/', '/market/', '/market/new/', '/proje-talebi/', '/ai-cozumler/',
     '/forum/', '/odalar/', '/blog/', '/ai-asistan/',
@@ -42,19 +42,53 @@ _MARKDOWN_LINK_RE = re.compile(r'\[([^\]\n<]+)\]\((/[a-z][a-z0-9\-/]*/)\)')
 _ARROW_LINK_RE = re.compile(r'(→\s+[^(\n<]{1,80}?)\s*\((/[a-z][a-z0-9\-/]*/)\)')
 
 
-def _sanitize_paths(text):
+# Özellik bayrağıyla kapatılabilen sayfalar (SiteSettings). Bayrak kapalıyken
+# sayfa 404 döner → talimattan satırı çıkarılır ve izinli listeden düşer.
+_PATH_FEATURE_FLAGS = {
+    '/ai-cozumler/': 'feature_agentic_landing',
+    '/egitim/': 'feature_training',
+    '/egitim-talebi/': 'feature_training',
+    '/market/': 'feature_market',
+    '/market/new/': 'feature_market',
+    '/blog/': 'feature_blog',
+    '/ai-asistan/': 'feature_ai_assistant',
+    '/openalex/': 'feature_openalex',
+    '/semantic-scholar/': 'feature_semanticscholar',
+    '/oaipmh/': 'feature_oaipmh',
+    '/bibliometrics/': 'feature_bibliometrics',
+    '/yoktez/': 'feature_yoktez',
+    '/tezanaliz/': 'feature_tezanaliz',
+}
+
+
+def _disabled_paths():
+    """Şu an bayrağı kapalı olan platform path'leri."""
+    from forum.models import SiteSettings
+    site = SiteSettings.load()
+    return {p for p, flag in _PATH_FEATURE_FLAGS.items() if not getattr(site, flag, True)}
+
+
+def _prompt_without(prompt, disabled):
+    """Kapalı sayfalardan birini anan talimat satırlarını çıkarır (harita
+    satırı + o sayfaya yönlendiren kural satırı) — model 404'e link vermesin."""
+    if not disabled:
+        return prompt
+    return '\n'.join(l for l in prompt.split('\n') if not any(p in l for p in disabled))
+
+
+def _sanitize_paths(text, allowed=_ALLOWED_PATHS):
     """Yanittaki platform disi URL'leri kaldirir; listede olmayanlar silinir."""
     def _check_arrow(m):
         path = m.group(2)
-        return m.group(0) if path in _ALLOWED_PATHS else ''
+        return m.group(0) if path in allowed else ''
 
     def _check_md_link(m):
         path = m.group(2)
-        return m.group(0) if path in _ALLOWED_PATHS else m.group(1)
+        return m.group(0) if path in allowed else m.group(1)
 
     def _check_paren(m):
         path = m.group(1)
-        return m.group(0) if path in _ALLOWED_PATHS else ''
+        return m.group(0) if path in allowed else ''
 
     cleaned = _ARROW_LINK_RE.sub(_check_arrow, text)
     cleaned = _MARKDOWN_LINK_RE.sub(_check_md_link, cleaned)
@@ -157,7 +191,7 @@ Kullanıcı analiz yapmak istediğinde doğru URL'yi ver:
 - Semantic Scholar → /semantic-scholar/ (AI destekli akademik makale arama)
 - YÖK Tez → /yoktez/ (Türk tez veri tabanı)
 - Tez Analizi → /tezanaliz/ (tez metodoloji ve içerik analizi)
-- Makale Analizi → /makaleanaliz/ (makale içerik analizi)
+- Makale Analizi → /tarama/ (ayrı sayfası yok; OAI-PMH veya TR Dizin taramasının sonuç sayfasından başlatılır)
 - OAI-PMH Üniversite Arşivi → /oaipmh/ (üniversite açık erişim arşivleri)
 - Bibliometrik Analiz → /bibliometrics/ (atıf analizi, işbirliği ağları)
 - Tüm Tarama Araçları → /tarama/
@@ -262,9 +296,12 @@ class GroqService:
             }
 
         try:
+            # Bayrağı kapalı sayfalar talimattan ve izinli linklerden çıkarılır
+            disabled = _disabled_paths()
+
             # Mesajlari hazirla
             messages = [
-                {"role": "system", "content": _language_prefix(lang) + SYSTEM_PROMPT + _language_block(lang)}
+                {"role": "system", "content": _language_prefix(lang) + _prompt_without(SYSTEM_PROMPT, disabled) + _language_block(lang)}
             ]
 
             if context:
@@ -298,7 +335,7 @@ class GroqService:
                 # CJK karakterleri temizle
                 ai_response = _CJK_RE.sub('', ai_response).strip()
                 # Platform disi URL'leri temizle
-                ai_response = _sanitize_paths(ai_response)
+                ai_response = _sanitize_paths(ai_response, _ALLOWED_PATHS - disabled)
                 # Çok dilli sayfalara kullanıcının dil önekini ekle
                 ai_response = _localize_paths(ai_response, lang)
                 return {

@@ -45,7 +45,7 @@ maddelerde.
 - [x] **AI Asistan `/istatistik/…` linkleri** — ÇÖZÜLDÜ (25 Eylül 2026):
   EN/DE'de `/istatistik/<slug>/` → `/<dil>/analiz/<slug>/` (18 slug birebir,
   hepsi 200, bilinmeyen slug 404 — doğrulandı). TR davranışı aynı.
-- [ ] **AI Asistan ölü/koşullu linkler (önceden var, dilden bağımsız):**
+- [x] **AI Asistan ölü/koşullu linkler** — ÇÖZÜLDÜ (25 Eylül 2026): `/makaleanaliz/` kaldırıldı (giriş sayfası yok → talimatta `/tarama/` + "tarama sonucundan başlatılır"); `_PATH_FEATURE_FLAGS` ile bayrağı kapalı sayfaların talimat satırları ve izinli linkleri istek anında çıkarılıyor. Açık tüm hedefler 3 dilde 200/302 doğrulandı. Eski not:
   `/makaleanaliz/` her ortamda 404 (izinli listede + talimatta var ama kökte
   sayfa yok); `/ai-cozumler/`, `/egitim/`, `/egitim-talebi/` feature flag
   kapalıyken 404 — talimat/izinli liste flag'e göre filtrelenmeli.
