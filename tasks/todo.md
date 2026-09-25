@@ -159,17 +159,29 @@ maddelerde.
   yenilerken `X-Cron-Secret` header'ına geçmek de değerlendirilmeli. Yenilenirse
   `.env` + Hetzner crontab'daki TÜM `/api/cron/*` satırları birlikte güncellenmeli.
 
-**C. Canlıya alma (yalnızca kullanıcı "merge et" deyince)**
-- [ ] dev → main merge, Hetzner'de: `docker compose exec web python
-  manage.py migrate` (**0154** preferred_language + **0155** anonim kullanıcı
-  adları — veri migration'ı) → `collectstatic`
-  (**yeni Inter font dosyaları**) → `compilemessages` → `docker compose
-  restart web` → `docker compose restart nginx`.
-- [ ] Admin'de `feature_multilingual` aç (avukat kontrolünden sonra).
+**C. Canlıya alma (yalnızca kullanıcı "merge et" deyince)** — 25 Eylül 2026 ölçümü:
+dev, main'den 78 commit ileride, main'de dev'de olmayan commit yok (fast-forward);
+requirements.txt değişmedi (--build GEREKMEZ); settings.py: 3 middleware +
+hreflang context processor + 'de' dili; .mo dosyaları git'te (compilemessages
+şart değil); container başlarken deploy.sh migrate + collectstatic çalıştırır
+(yine de elle çalıştırıp çıktıyı görmek önerilir). Staging (analizus-dev.onrender.com)
+en son dev'i çalıştırıyor, 200.
+**Gerekli migration'lar: forum 0153 (SiteSettings.feature_multilingual, şema),
+0154 (Profile.preferred_language, şema, varsayılan 'tr' — mevcut kullanıcılar
+TR), 0155 (anonim kullanıcı adları, veri, geri alınabilir).** Başka uygulamada yok.
+- [ ] 0. Canlı DB yedeği: `docker compose exec -T db sh -c 'pg_dump -U "$POSTGRES_USER" "$POSTGRES_DB"' > /root/yedek_$(date +%F).sql`
+- [ ] 1. `git checkout main && git merge --ff-only dev && git push origin main` (lokal)
+- [ ] 2. Hetzner: `cd /app && git pull origin main`
+- [ ] 3. `docker compose exec web python manage.py showmigrations forum | tail -5` (0152 [X], 0153-0155 [ ] beklenir)
+- [ ] 4. `docker compose exec web python manage.py migrate` → `collectstatic --noinput`
+- [ ] 5. `docker compose restart web && docker compose restart nginx` (almanyalirehber de kısa süre etkilenir)
+- [ ] 6. Kontroller: ana sayfa/giriş/araç sayfası 200; çerez banner'ı (GA ID varsa);
+      AI Asistan bir soru; `showmigrations` hepsi [X]; nginx/web log hata yok.
+- [ ] 7. Admin'de `feature_multilingual` aç — AVUKAT KONTROLÜNDEN SONRA (kapalıyken EN/DE sayfaları 404, TR etkilenmez).
 - [ ] Canlıda kontrol: `GOOGLE_ANALYTICS_ID` tanımlı mı (banner ona bağlı);
   canlı `GROQ_API_KEY` ile gpt-oss-120b yanıt veriyor mu.
 - [ ] Yandex Metrica hesabı/sayacı kapatılabilir (kod kaldırıldı).
-- [ ] `feature_agentic_landing` flag'i merge sonrası elle açılmalı (önceki
+- [ ] 8. `feature_agentic_landing` flag'i merge sonrası elle açılmalı (önceki
   turdan hatırlatma).
 
 
