@@ -181,6 +181,18 @@ TR), 0155 (anonim kullanıcı adları, veri, geri alınabilir).** Başka uygulam
 - [ ] Canlıda kontrol: `GOOGLE_ANALYTICS_ID` tanımlı mı (banner ona bağlı);
   canlı `GROQ_API_KEY` ile gpt-oss-120b yanıt veriyor mu.
 - [ ] Yandex Metrica hesabı/sayacı kapatılabilir (kod kaldırıldı).
+- [ ] **Deploy sonrası (bayrak kapalı) — arama/analitik panelleri:**
+  Google Search Console: sitemap.xml yeniden gönder; ana sayfa + gizlilik için
+  URL denetimi → dizine eklenmeyi iste; 1-2 hafta "Sayfalar" raporunda 404/5xx
+  artışı izle. GA4: Yönetici → Veri ayarları → Veri saklama süresini kontrol et
+  (2/14 ay → gizlilik metnine yazılacak), Google sinyalleri kapalı mı; onay
+  banner'ı nedeniyle trafik düşüşünü açıklama (annotation) olarak not et.
+  Bing Webmaster Tools: site doğrulandı mı (BING_SITE_VERIFICATION ya da GSC'den
+  içe aktar), sitemap gönder. Canlı .env'de GOOGLE/BING_SITE_VERIFICATION dolu mu.
+- [ ] **feature_multilingual açıldıktan sonra:** GSC + Bing'e sitemap'i yeniden
+  gönder (artık /en/ /de/ + hreflang içerir); /en/ ve /de/ ana sayfa + birkaç
+  araç sayfası için URL denetimi → dizine eklenmeyi iste; oluşturulan HTML'de
+  hreflang ve <html lang> doğrula (GSC'de ayrı hreflang raporu yok).
 - [ ] 8. `feature_agentic_landing` flag'i merge sonrası elle açılmalı (önceki
   turdan hatırlatma).
 
