@@ -91,8 +91,8 @@ def _interpret_w(w: float) -> str:
 def _conclusion(p, columns: list) -> str:
     col_str = ', '.join(columns)
     if float(p) < 0.05:
-        return (gettext('%(col_str)s ölçümleri arasında istatistiksel olarak anlamlı bir fark bulunmaktadır (p = %(p)s). Post-hoc Wilcoxon testi (Bonferroni düzeltmeli) ile anlamlı farklı çiftler belirlenmiştir.') % {'col_str': col_str, 'p': f'{p:.4f}'})
-    return (gettext('%(col_str)s ölçümleri arasında istatistiksel olarak anlamlı bir fark bulunmamaktadır (p = %(p)s).') % {'col_str': col_str, 'p': f'{p:.4f}'})
+        return (gettext('%(col_str)s ölçümleri arasında istatistiksel olarak anlamlı bir fark bulunmaktadır (%(p)s). Post-hoc Wilcoxon testi (Bonferroni düzeltmeli) ile anlamlı farklı çiftler belirlenmiştir.') % {'col_str': col_str, 'p': ('p < .001' if p < 0.001 else f'p = {p:.4f}')})
+    return (gettext('%(col_str)s ölçümleri arasında istatistiksel olarak anlamlı bir fark bulunmamaktadır (%(p)s).') % {'col_str': col_str, 'p': ('p < .001' if p < 0.001 else f'p = {p:.4f}')})
 
 
 def build_pdf(result: dict, filename: str, df=None) -> bytes:

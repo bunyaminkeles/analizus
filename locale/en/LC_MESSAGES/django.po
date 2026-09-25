@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-25 23:15+0300\n"
+"POT-Creation-Date: 2026-09-26 00:00+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1118,8 +1118,8 @@ msgid "Python'da pandas ile veri temizleme nasıl yapılır?"
 msgstr "How do I clean data with pandas in Python?"
 
 #: forum/templates/forum/ai_assistant.html:174
-msgid "Tez için literatür taraması nasıl yapılmalı?"
-msgstr "How should a literature review for a thesis be conducted?"
+msgid "Araştırmam için literatür taraması nasıl yapılmalı?"
+msgstr "How should I conduct a literature review for my research?"
 
 #: forum/templates/forum/ai_cozumler.html:5
 #: forum/templates/forum/ai_cozumler.html:7
@@ -3921,11 +3921,11 @@ msgstr "Analizus — Free Statistical Analysis and Data Analysis Platform"
 #: forum/templates/forum/home.html:7
 msgid ""
 "Dosyanı yükle, istatistik analizi ve veri analizi hızlıca APA formatında "
-"hazır — SPSS bilgisi gerekmez. Tez analizi ve akademik danışmanlık için "
+"hazır — SPSS bilgisi gerekmez. Veri analizi ve araştırma danışmanlığı için "
 "uzman bul."
 msgstr ""
 "Upload your file, get statistical and data analysis ready in APA format — no"
-" SPSS knowledge required. Find an expert for thesis analysis and academic "
+" SPSS knowledge required. Find an expert for data analysis and research "
 "consulting."
 
 #: forum/templates/forum/home.html:8 forum/templates/forum/home.html:10
@@ -9553,6 +9553,24 @@ msgstr "Cumulative %"
 #: istatistik/services/normallik.py:172 istatistik/services/svm.py:225
 #: istatistik/services/tekrarli_anova.py:251 istatistik/services/ttesti.py:272
 #: istatistik/services/wilcoxon.py:191
+#: istatistik/templates/istatistik/afa.html:240
+#: istatistik/templates/istatistik/anova.html:164
+#: istatistik/templates/istatistik/betimsel.html:201
+#: istatistik/templates/istatistik/cronbach.html:198
+#: istatistik/templates/istatistik/friedman.html:221
+#: istatistik/templates/istatistik/karar_agaci.html:212
+#: istatistik/templates/istatistik/ki_kare.html:161
+#: istatistik/templates/istatistik/korelasyon.html:240
+#: istatistik/templates/istatistik/kruskal_wallis.html:158
+#: istatistik/templates/istatistik/lineer_regresyon.html:173
+#: istatistik/templates/istatistik/lojistik_regresyon.html:182
+#: istatistik/templates/istatistik/mann_whitney.html:151
+#: istatistik/templates/istatistik/normallik.html:180
+#: istatistik/templates/istatistik/orneklem.html:167
+#: istatistik/templates/istatistik/svm.html:218
+#: istatistik/templates/istatistik/tekrarli_anova.html:219
+#: istatistik/templates/istatistik/ttesti.html:346
+#: istatistik/templates/istatistik/wilcoxon.html:200
 msgid "APA Formatında Raporlama"
 msgstr "Reporting in APA Format"
 
@@ -9609,19 +9627,19 @@ msgstr "Large effect (η² ≥ .14)"
 #, python-format
 msgid ""
 "Gruplar arasında %(dep_col)s açısından istatistiksel olarak anlamlı bir fark"
-" bulunmamaktadır [F = —, p = %(p)s]."
+" bulunmamaktadır [F = —, %(p)s]."
 msgstr ""
 "There is no statistically significant difference between the groups in "
-"%(dep_col)s [F = —, p = %(p)s]."
+"%(dep_col)s [F = —, %(p)s]."
 
 #: istatistik/services/anova.py:112 istatistik/services/kruskal_wallis.py:111
 #, python-format
 msgid ""
 "Gruplar arasında %(dep_col)s açısından istatistiksel olarak anlamlı bir fark"
-" bulunmaktadır (p = %(p)s)."
+" bulunmaktadır (%(p)s)."
 msgstr ""
 "There is a statistically significant difference between the groups in "
-"%(dep_col)s (p = %(p)s)."
+"%(dep_col)s (%(p)s)."
 
 #: istatistik/services/anova.py:114 istatistik/services/kruskal_wallis.py:113
 #, python-format
@@ -10097,21 +10115,21 @@ msgstr "Large effect (W ≥ .50)"
 #, python-format
 msgid ""
 "%(col_str)s ölçümleri arasında istatistiksel olarak anlamlı bir fark "
-"bulunmaktadır (p = %(p)s). Post-hoc Wilcoxon testi (Bonferroni düzeltmeli) "
-"ile anlamlı farklı çiftler belirlenmiştir."
+"bulunmaktadır (%(p)s). Post-hoc Wilcoxon testi (Bonferroni düzeltmeli) ile "
+"anlamlı farklı çiftler belirlenmiştir."
 msgstr ""
 "There is a statistically significant difference between the measurements "
-"%(col_str)s (p = %(p)s). Significantly different pairs were identified with "
+"%(col_str)s (%(p)s). Significantly different pairs were identified with "
 "post-hoc Wilcoxon tests (Bonferroni-corrected)."
 
 #: istatistik/services/friedman.py:95
 #, python-format
 msgid ""
 "%(col_str)s ölçümleri arasında istatistiksel olarak anlamlı bir fark "
-"bulunmamaktadır (p = %(p)s)."
+"bulunmamaktadır (%(p)s)."
 msgstr ""
 "There is no statistically significant difference between the measurements "
-"%(col_str)s (p = %(p)s)."
+"%(col_str)s (%(p)s)."
 
 #: istatistik/services/friedman.py:118
 msgid "Friedman Testi Raporu"
@@ -10655,10 +10673,10 @@ msgstr "Kruskal-Wallis H Test"
 #, python-format
 msgid ""
 "Gruplar arasında %(dep_col)s açısından istatistiksel olarak anlamlı bir fark"
-" bulunmamaktadır (p = %(p)s)."
+" bulunmamaktadır (%(p)s)."
 msgstr ""
 "There is no statistically significant difference between the groups in "
-"%(dep_col)s (p = %(p)s)."
+"%(dep_col)s (%(p)s)."
 
 #: istatistik/services/kruskal_wallis.py:137
 msgid "Kruskal-Wallis H Testi Raporu"
@@ -10979,32 +10997,32 @@ msgstr "Large effect (r ≥ .50)"
 #, python-brace-format
 msgid ""
 "{g1} grubu ile {g2} grubu arasında {dep} açısından istatistiksel olarak "
-"anlamlı bir fark bulunmaktadır (p = {p}). {g1} grubunun medyanı ({m1}), {g2}"
-" grubuna ({m2}) göre daha yüksektir."
+"anlamlı bir fark bulunmaktadır ({p}). {g1} grubunun medyanı ({m1}), {g2} "
+"grubuna ({m2}) göre daha yüksektir."
 msgstr ""
 "There is a statistically significant difference in {dep} between groups {g1}"
-" and {g2} (p = {p}). The median of group {g1} ({m1}) is higher than that of "
+" and {g2} ({p}). The median of group {g1} ({m1}) is higher than that of "
 "group {g2} ({m2})."
 
 #: istatistik/services/mann_whitney.py:95
 #, python-brace-format
 msgid ""
 "{g1} grubu ile {g2} grubu arasında {dep} açısından istatistiksel olarak "
-"anlamlı bir fark bulunmaktadır (p = {p}). {g1} grubunun medyanı ({m1}), {g2}"
-" grubuna ({m2}) göre daha düşüktür."
+"anlamlı bir fark bulunmaktadır ({p}). {g1} grubunun medyanı ({m1}), {g2} "
+"grubuna ({m2}) göre daha düşüktür."
 msgstr ""
 "There is a statistically significant difference in {dep} between groups {g1}"
-" and {g2} (p = {p}). The median of group {g1} ({m1}) is lower than that of "
-"group {g2} ({m2})."
+" and {g2} ({p}). The median of group {g1} ({m1}) is lower than that of group"
+" {g2} ({m2})."
 
 #: istatistik/services/mann_whitney.py:98 istatistik/services/ttesti.py:174
 #, python-brace-format
 msgid ""
 "{g1} grubu ile {g2} grubu arasında {dep} açısından istatistiksel olarak "
-"anlamlı bir fark bulunmamaktadır (p = {p})."
+"anlamlı bir fark bulunmamaktadır ({p})."
 msgstr ""
 "There is no statistically significant difference in {dep} between groups "
-"{g1} and {g2} (p = {p})."
+"{g1} and {g2} ({p})."
 
 #: istatistik/services/mann_whitney.py:122
 msgid "Mann-Whitney U Testi Raporu"
@@ -11330,21 +11348,21 @@ msgstr ""
 #, python-format
 msgid ""
 "%(col_str)s ölçümleri arasında istatistiksel olarak anlamlı bir fark "
-"bulunmaktadır, F(%(df1)s, %(df2)s) = %(F)s, p = %(p)s. Post-hoc "
+"bulunmaktadır, F(%(df1)s, %(df2)s) = %(F)s, %(p)s. Post-hoc "
 "karşılaştırmalarda Bonferroni düzeltmesi uygulanmıştır."
 msgstr ""
 "There is a statistically significant difference between the measurements "
-"%(col_str)s, F(%(df1)s, %(df2)s) = %(F)s, p = %(p)s. A Bonferroni correction"
-" was applied to the post-hoc comparisons."
+"%(col_str)s, F(%(df1)s, %(df2)s) = %(F)s, %(p)s. A Bonferroni correction was"
+" applied to the post-hoc comparisons."
 
 #: istatistik/services/tekrarli_anova.py:123
 #, python-format
 msgid ""
 "%(col_str)s ölçümleri arasında istatistiksel olarak anlamlı bir fark "
-"bulunmamaktadır, F(%(df1)s, %(df2)s) = %(F)s, p = %(p)s."
+"bulunmamaktadır, F(%(df1)s, %(df2)s) = %(F)s, %(p)s."
 msgstr ""
 "There is no statistically significant difference between the measurements "
-"%(col_str)s, F(%(df1)s, %(df2)s) = %(F)s, p = %(p)s."
+"%(col_str)s, F(%(df1)s, %(df2)s) = %(F)s, %(p)s."
 
 #: istatistik/services/tekrarli_anova.py:148
 msgid "Tekrarlayan Ölçümler ANOVA Raporu"
@@ -11452,50 +11470,48 @@ msgstr "Large effect (d ≥ 0.80)"
 #, python-brace-format
 msgid ""
 "{g1} grubu ile {g2} grubu arasında {dep} açısından istatistiksel olarak "
-"anlamlı bir fark bulunmaktadır (p = {p}). {g1} grubunun ortalaması ({m1}), "
-"{g2} grubuna ({m2}) göre daha yüksektir."
+"anlamlı bir fark bulunmaktadır ({p}). {g1} grubunun ortalaması ({m1}), {g2} "
+"grubuna ({m2}) göre daha yüksektir."
 msgstr ""
 "There is a statistically significant difference in {dep} between groups {g1}"
-" and {g2} (p = {p}). The mean of group {g1} ({m1}) is higher than that of "
-"group {g2} ({m2})."
+" and {g2} ({p}). The mean of group {g1} ({m1}) is higher than that of group "
+"{g2} ({m2})."
 
 #: istatistik/services/ttesti.py:171
 #, python-brace-format
 msgid ""
 "{g1} grubu ile {g2} grubu arasında {dep} açısından istatistiksel olarak "
-"anlamlı bir fark bulunmaktadır (p = {p}). {g1} grubunun ortalaması ({m1}), "
-"{g2} grubuna ({m2}) göre daha düşüktür."
+"anlamlı bir fark bulunmaktadır ({p}). {g1} grubunun ortalaması ({m1}), {g2} "
+"grubuna ({m2}) göre daha düşüktür."
 msgstr ""
 "There is a statistically significant difference in {dep} between groups {g1}"
-" and {g2} (p = {p}). The mean of group {g1} ({m1}) is lower than that of "
-"group {g2} ({m2})."
+" and {g2} ({p}). The mean of group {g1} ({m1}) is lower than that of group "
+"{g2} ({m2})."
 
 #: istatistik/services/ttesti.py:184
 #, python-brace-format
 msgid ""
-"{c1} ile {c2} arasındaki fark istatistiksel olarak anlamlıdır (p = {p}). "
+"{c1} ile {c2} arasındaki fark istatistiksel olarak anlamlıdır ({p}). "
 "Ortalama fark {diff} olup ölçüm artmıştır."
 msgstr ""
-"The difference between {c1} and {c2} is statistically significant (p = {p})."
-" The mean difference is {diff}, indicating an increase."
+"The difference between {c1} and {c2} is statistically significant ({p}). The"
+" mean difference is {diff}, indicating an increase."
 
 #: istatistik/services/ttesti.py:186
 #, python-brace-format
 msgid ""
-"{c1} ile {c2} arasındaki fark istatistiksel olarak anlamlıdır (p = {p}). "
+"{c1} ile {c2} arasındaki fark istatistiksel olarak anlamlıdır ({p}). "
 "Ortalama fark {diff} olup ölçüm azalmıştır."
 msgstr ""
-"The difference between {c1} and {c2} is statistically significant (p = {p})."
-" The mean difference is {diff}, indicating a decrease."
+"The difference between {c1} and {c2} is statistically significant ({p}). The"
+" mean difference is {diff}, indicating a decrease."
 
 #: istatistik/services/ttesti.py:188
 #, python-brace-format
 msgid ""
-"{c1} ile {c2} arasındaki fark istatistiksel olarak anlamlı değildir (p = "
-"{p})."
+"{c1} ile {c2} arasındaki fark istatistiksel olarak anlamlı değildir ({p})."
 msgstr ""
-"The difference between {c1} and {c2} is not statistically significant (p = "
-"{p})."
+"The difference between {c1} and {c2} is not statistically significant ({p})."
 
 #: istatistik/services/ttesti.py:210
 #, python-format
@@ -11558,33 +11574,33 @@ msgstr ""
 #, python-brace-format
 msgid ""
 "{c1} ile {c2} ölçümleri arasında istatistiksel olarak anlamlı bir fark "
-"bulunmaktadır (p = {p}). Medyan değerleri sırasıyla {m1} ve {m2} olup ikinci"
-" ölçümde artış gözlemlenmiştir."
+"bulunmaktadır ({p}). Medyan değerleri sırasıyla {m1} ve {m2} olup ikinci "
+"ölçümde artış gözlemlenmiştir."
 msgstr ""
 "There is a statistically significant difference between the measurements "
-"{c1} and {c2} (p = {p}). The medians were {m1} and {m2}, respectively, "
+"{c1} and {c2} ({p}). The medians were {m1} and {m2}, respectively, "
 "indicating an increase in the second measurement."
 
 #: istatistik/services/wilcoxon.py:86
 #, python-brace-format
 msgid ""
 "{c1} ile {c2} ölçümleri arasında istatistiksel olarak anlamlı bir fark "
-"bulunmaktadır (p = {p}). Medyan değerleri sırasıyla {m1} ve {m2} olup ikinci"
-" ölçümde azalış gözlemlenmiştir."
+"bulunmaktadır ({p}). Medyan değerleri sırasıyla {m1} ve {m2} olup ikinci "
+"ölçümde azalış gözlemlenmiştir."
 msgstr ""
 "There is a statistically significant difference between the measurements "
-"{c1} and {c2} (p = {p}). The medians were {m1} and {m2}, respectively, "
+"{c1} and {c2} ({p}). The medians were {m1} and {m2}, respectively, "
 "indicating a decrease in the second measurement."
 
 #: istatistik/services/wilcoxon.py:89
 #, python-brace-format
 msgid ""
 "{c1} ile {c2} ölçümleri arasında istatistiksel olarak anlamlı bir fark "
-"bulunmamaktadır (p = {p}). Medyan değerleri sırasıyla {m1} ve {m2} olarak "
+"bulunmamaktadır ({p}). Medyan değerleri sırasıyla {m1} ve {m2} olarak "
 "bulunmuştur."
 msgstr ""
 "There is no statistically significant difference between the measurements "
-"{c1} and {c2} (p = {p}). The medians were {m1} and {m2}, respectively."
+"{c1} and {c2} ({p}). The medians were {m1} and {m2}, respectively."
 
 #: istatistik/services/wilcoxon.py:113
 msgid "Wilcoxon İşaret Testi Raporu"
@@ -12164,27 +12180,6 @@ msgstr "Very Good"
 #: istatistik/templates/istatistik/afa.html:232
 msgid "Mükemmel"
 msgstr "Excellent"
-
-#: istatistik/templates/istatistik/afa.html:240
-#: istatistik/templates/istatistik/anova.html:164
-#: istatistik/templates/istatistik/betimsel.html:201
-#: istatistik/templates/istatistik/cronbach.html:198
-#: istatistik/templates/istatistik/friedman.html:221
-#: istatistik/templates/istatistik/karar_agaci.html:212
-#: istatistik/templates/istatistik/ki_kare.html:161
-#: istatistik/templates/istatistik/korelasyon.html:240
-#: istatistik/templates/istatistik/kruskal_wallis.html:158
-#: istatistik/templates/istatistik/lineer_regresyon.html:173
-#: istatistik/templates/istatistik/lojistik_regresyon.html:182
-#: istatistik/templates/istatistik/mann_whitney.html:151
-#: istatistik/templates/istatistik/normallik.html:180
-#: istatistik/templates/istatistik/orneklem.html:167
-#: istatistik/templates/istatistik/svm.html:218
-#: istatistik/templates/istatistik/tekrarli_anova.html:219
-#: istatistik/templates/istatistik/ttesti.html:346
-#: istatistik/templates/istatistik/wilcoxon.html:200
-msgid "Tezinde Nasıl Raporlarsın?"
-msgstr "How to Report It in Your Thesis?"
 
 #: istatistik/templates/istatistik/afa.html:244
 #: istatistik/templates/istatistik/anova.html:171
@@ -13176,10 +13171,11 @@ msgstr "Decision Tree Classification"
 #: istatistik/templates/istatistik/karar_agaci.html:6
 msgid ""
 "Karar ağacı sınıflandırma analizi: Özellik önemi, confusion matrix, F1 skoru"
-" ve APA formatında rapor. Tez için hazır ML çıktısı, ücretsiz online analiz."
+" ve APA formatında rapor. Raporlamaya hazır ML çıktısı, ücretsiz online "
+"analiz."
 msgstr ""
 "Decision tree classification analysis: feature importance, confusion matrix,"
-" F1 score and an APA-style report. Thesis-ready ML output, free online "
+" F1 score and an APA-style report. Report-ready ML output, free online "
 "analysis."
 
 #: istatistik/templates/istatistik/karar_agaci.html:16
@@ -13988,11 +13984,11 @@ msgstr "Logistic Regression Analysis (Binary)"
 #: istatistik/templates/istatistik/lojistik_regresyon.html:6
 msgid ""
 "Binary lojistik regresyon analizi: Nagelkerke R², Odds Ratio, sınıflandırma "
-"tablosu ve APA formatında rapor. Tez için hazır çıktı, ücretsiz online "
+"tablosu ve APA formatında rapor. Raporlamaya hazır çıktı, ücretsiz online "
 "analiz."
 msgstr ""
 "Binary logistic regression analysis: Nagelkerke R², odds ratios, "
-"classification table and an APA-style report. Thesis-ready output, free "
+"classification table and an APA-style report. Report-ready output, free "
 "online analysis."
 
 #: istatistik/templates/istatistik/lojistik_regresyon.html:16
@@ -14210,10 +14206,11 @@ msgstr "Normality Test (Shapiro-Wilk, Kolmogorov-Smirnov)"
 #: istatistik/templates/istatistik/normallik.html:6
 msgid ""
 "Verilerinizin normal dağılıma uygunluğunu Shapiro-Wilk ve Kolmogorov-Smirnov"
-" testleriyle online analiz edin. Tez için hazır APA raporu ile PDF çıktısı."
+" testleriyle online analiz edin. Raporlamaya hazır APA metni ile PDF "
+"çıktısı."
 msgstr ""
 "Test whether your data are normally distributed online with the Shapiro-Wilk"
-" and Kolmogorov-Smirnov tests. PDF output with a thesis-ready APA report."
+" and Kolmogorov-Smirnov tests. PDF output with report-ready APA text."
 
 #: istatistik/templates/istatistik/normallik.html:17
 msgid ""
@@ -14534,11 +14531,11 @@ msgstr "Support Vector Machine (SVM)"
 #: istatistik/templates/istatistik/svm.html:6
 msgid ""
 "SVM sınıflandırma analizi: RBF, doğrusal ve polinom kernel, confusion "
-"matrix, permutation importance ve APA formatında rapor. Tez için hazır ML "
-"çıktısı, ücretsiz online analiz."
+"matrix, permutation importance ve APA formatında rapor. Raporlamaya hazır ML"
+" çıktısı, ücretsiz online analiz."
 msgstr ""
 "SVM classification analysis: RBF, linear and polynomial kernels, confusion "
-"matrix, permutation importance and an APA-style report. Thesis-ready ML "
+"matrix, permutation importance and an APA-style report. Report-ready ML "
 "output, free online analysis."
 
 #: istatistik/templates/istatistik/svm.html:16
@@ -15229,10 +15226,10 @@ msgstr "Both statistical and visual (Q-Q plot) results are added to the PDF."
 #: istatistik/views.py:170
 msgid ""
 "Verinizi yükleyin; frekans tabloları, ortalama, standart sapma ve grafikler "
-"otomatik oluşsun. Tez bulgular bölümünüzün ilk sayfası hazır."
+"otomatik oluşsun. Raporunuzun bulgular bölümünün ilk sayfası hazır."
 msgstr ""
 "Upload your data and get frequency tables, means, standard deviations and "
-"charts automatically. The first page of your thesis results chapter is "
+"charts automatically. The first page of your report's results section is "
 "ready."
 
 #: istatistik/views.py:172
@@ -17376,6 +17373,9 @@ msgid ""
 msgstr ""
 "Learn to perform <strong style=\"color:#f1f5f9;\">%(promo_title)s</strong> "
 "analysis with your own data through one-on-one training."
+
+#~ msgid "Tezinde Nasıl Raporlarsın?"
+#~ msgstr "How to Report It in Your Thesis?"
 
 #~ msgid "Akademik Analiz ve Veri Bilimi Forumu"
 #~ msgstr "Academic Analysis and Data Science Forum"

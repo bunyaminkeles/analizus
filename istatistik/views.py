@@ -167,7 +167,7 @@ def betimsel_landing(request):
             'promo_title': gettext('Betimleyici İstatistik Raporu'),
             'promo_icon': 'bi-clipboard2-data',
             'promo_color': 'success',
-            'promo_description': gettext('Verinizi yükleyin; frekans tabloları, ortalama, standart sapma ve grafikler otomatik oluşsun. Tez bulgular bölümünüzün ilk sayfası hazır.'),
+            'promo_description': gettext('Verinizi yükleyin; frekans tabloları, ortalama, standart sapma ve grafikler otomatik oluşsun. Raporunuzun bulgular bölümünün ilk sayfası hazır.'),
             'promo_features': [
                 {'icon': 'bi-list-ol', 'title': gettext('Frekans Tabloları'), 'desc': gettext('Kategorik değişkenler için frekans ve yüzde dağılım tabloları otomatik oluşturulur.')},
                 {'icon': 'bi-calculator-fill', 'color': 'primary', 'title': gettext('Merkezi Eğilim'), 'desc': gettext('Sürekli değişkenler için n, ortalama, standart sapma, min, max, medyan, Q1-Q3 hesaplanır.')},

@@ -3,7 +3,7 @@
 {% block canonical %}{% url 'analiz_console' 'karar-agaci' %}{% endblock %}
 
 {% block title %}{% trans "Karar Ağacı Sınıflandırması" %} - Analizus{% endblock %}
-{% block meta_description %}{% trans "Karar ağacı sınıflandırma analizi: Özellik önemi, confusion matrix, F1 skoru ve APA formatında rapor. Tez için hazır ML çıktısı, ücretsiz online analiz." %}{% endblock %}
+{% block meta_description %}{% trans "Karar ağacı sınıflandırma analizi: Özellik önemi, confusion matrix, F1 skoru ve APA formatında rapor. Raporlamaya hazır ML çıktısı, ücretsiz online analiz." %}{% endblock %}
 
 {% block tool_area %}
 <div class="container py-4">
@@ -209,7 +209,7 @@
 
             <!-- APA -->
             <div class="rounded-3 p-3 mb-2" style="background:rgba(167,139,250,0.08);border:1px solid rgba(167,139,250,0.2);">
-              <p class="text-white-50 small fw-semibold mb-2">{% trans "Tezinde Nasıl Raporlarsın?" %}</p>
+              <p class="text-white-50 small fw-semibold mb-2">{% trans "APA Formatında Raporlama" %}</p>
               <p class="text-white small mb-2" id="res-apa" style="font-style:italic;"></p>
               <button class="btn btn-sm btn-outline-secondary" onclick="copyApa()">
                 <i class="bi bi-clipboard me-1"></i>{% trans "Kopyala" %}

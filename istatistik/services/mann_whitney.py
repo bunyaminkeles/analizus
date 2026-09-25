@@ -86,17 +86,17 @@ def _interpret_r(r: float) -> str:
 
 def _conclusion(p, g1, g2, dep, med1, med2) -> str:
     # Tam cümle msgid'ler (yön parçası + 'tir' eki çevrilemez)
-    v = {'g1': g1, 'g2': g2, 'dep': dep, 'p': f'{p:.4f}', 'm1': f'{med1:.3f}', 'm2': f'{med2:.3f}'}
+    v = {'g1': g1, 'g2': g2, 'dep': dep, 'p': ('p < .001' if p < 0.001 else f'p = {p:.4f}'), 'm1': f'{med1:.3f}', 'm2': f'{med2:.3f}'}
     if float(p) < 0.05:
         if med1 > med2:
             return gettext('{g1} grubu ile {g2} grubu arasında {dep} açısından istatistiksel olarak anlamlı '
-                           'bir fark bulunmaktadır (p = {p}). {g1} grubunun medyanı ({m1}), {g2} grubuna '
+                           'bir fark bulunmaktadır ({p}). {g1} grubunun medyanı ({m1}), {g2} grubuna '
                            '({m2}) göre daha yüksektir.').format(**v)
         return gettext('{g1} grubu ile {g2} grubu arasında {dep} açısından istatistiksel olarak anlamlı '
-                       'bir fark bulunmaktadır (p = {p}). {g1} grubunun medyanı ({m1}), {g2} grubuna '
+                       'bir fark bulunmaktadır ({p}). {g1} grubunun medyanı ({m1}), {g2} grubuna '
                        '({m2}) göre daha düşüktür.').format(**v)
     return gettext('{g1} grubu ile {g2} grubu arasında {dep} açısından istatistiksel olarak anlamlı '
-                   'bir fark bulunmamaktadır (p = {p}).').format(**v)
+                   'bir fark bulunmamaktadır ({p}).').format(**v)
 
 
 def build_pdf(result: dict, filename: str, df=None) -> bytes:

@@ -107,9 +107,9 @@ def _interpret_eta(eta: float) -> str:
 
 def _conclusion(p, group_col, dep_col, posthoc) -> str:
     if p >= 0.05:
-        return (gettext('Gruplar arasında %(dep_col)s açısından istatistiksel olarak anlamlı bir fark bulunmamaktadır [F = —, p = %(p)s].') % {'dep_col': dep_col, 'p': f'{p:.4f}'})
+        return (gettext('Gruplar arasında %(dep_col)s açısından istatistiksel olarak anlamlı bir fark bulunmamaktadır [F = —, %(p)s].') % {'dep_col': dep_col, 'p': ('p < .001' if p < 0.001 else f'p = {p:.4f}')})
     sig_pairs = [f'{r["g1"]} – {r["g2"]}' for r in posthoc if r['significant']]
-    base = (gettext('Gruplar arasında %(dep_col)s açısından istatistiksel olarak anlamlı bir fark bulunmaktadır (p = %(p)s).') % {'dep_col': dep_col, 'p': f'{p:.4f}'})
+    base = (gettext('Gruplar arasında %(dep_col)s açısından istatistiksel olarak anlamlı bir fark bulunmaktadır (%(p)s).') % {'dep_col': dep_col, 'p': ('p < .001' if p < 0.001 else f'p = {p:.4f}')})
     if sig_pairs:
         base += gettext(' Post-hoc analizde anlamlı farklılık gösteren çiftler: %(v)s.') % {'v': ', '.join(sig_pairs)}
     return base

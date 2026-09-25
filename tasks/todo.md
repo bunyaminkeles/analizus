@@ -82,9 +82,7 @@ maddelerde.
   Analiz ve Veri Bilimi Forumu" → "© {yıl} … Araştırma ve Analiz Platformu".
   Korunan: öğrenci segmentine özel "Tezin için:", onboarding "Akademik Destek",
   tez araçları. JSON-LD geçerli, pytest 61/61.
-- [ ] **"Tez için" kalıbı (7 yer)** — "tez" genelleştirme taramasında aranmadı
-  (ör. araç açıklamaları "Tez için hazır APA raporu"); kullanıcı onayıyla
-  genelleştirilecek.
+- [x] **"Tez için" kalıbı** — genelleştirildi (Adım 6 altındaki maddeye bak).
 - [ ] **Adım 6 — KARAR: hepsi, aşamalı (ekran + PDF birlikte); PDF başlığı
   "Tezinde Nasıl Raporlarsın?" → "APA Formatında Raporlama"** (25 Eylül 2026)
   - [x] Aşama 1 altyapı: dil işçi thread'ine taşındı (`_pending_job_languages`,
@@ -110,8 +108,8 @@ maddelerde.
     DÜZELTİLDİ:** eşleştirilmiş t-testinde yön tersti (son > ilk iken "ölçüm
     azalmıştır" diyordu). Ki-kare tablosunda 'Toplam' → pgettext('tablo')
     (bağlamsız çevirisi "Total of"). EN PDF'lerde TR kalıntı yok; 15 sayfa JS OK.
-  - [ ] Sonuç cümlelerinde "p = 0.0000" (APA: "p < .001") — ttesti, mann_whitney,
-    anova, kruskal_wallis `conclusion` metinleri (.4f); kozmetik, önceden var.
+  - [x] Sonuç cümlelerinde "p = 0.0000" → "p < .001" (7 servis, 18 msgid; p ifadesi
+    tek parça) — 25 Eylül 2026.
   - [x] Wilcoxon yön kontrolü — hata yok (Parti 4).
   - [x] Parti 4 (25 Eylül 2026): wilcoxon, friedman, tekrarli_anova, afa —
     servis + şablon JS. Wilcoxon yönü DOĞRU (diff = col2 − col1). Düzeltilen
@@ -132,9 +130,11 @@ maddelerde.
   - [x] **ADIM 6 TAMAMLANDI (25 Eylül 2026):** 20 servis + 18 şablon; son tam
     taramada kalan yalnız yöntem/terim adları (Bonferroni, Pearson, Wald…),
     HTML etiketleri ve dosya yolları.
-  - [ ] Ekrandaki APA kutusu başlığı hâlâ "Tezinde Nasıl Raporlarsın?" (18
-    şablon, trans'lı) — PDF'teki gibi "APA Formatında Raporlama" olsun mu?
-    (kullanıcı kararı; "Tez için" maddesiyle birlikte ele alınabilir)
+  - [x] Ekran APA başlığı → "APA Formatında Raporlama" (18 şablon) + "Tez için"
+    kalıbı genelleştirildi (4 araç açıklaması, ana sayfa açıklaması + SSS sorusu,
+    AI Asistan örnek sorusu, betimsel tanıtım metni) — 25 Eylül 2026. Korunan:
+    eğitici metinlerdeki olgusal "tezlerde ve raporlarda", tez tarama aracı,
+    öğrenci segmentine özel öneri.
   Ölçüm notu: istatistik
   servislerinde (20 dosya) çeviriye işaretlenmemiş Türkçe: EKRAN 221 metin /
   ~1380 kelime (APA cümleleri, etki yorumları, veri uyarıları, hata mesajları),

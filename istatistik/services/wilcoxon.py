@@ -77,17 +77,17 @@ def _interpret_r(r: float) -> str:
 def _conclusion(p, col1, col2, med1, med2) -> str:
     # Tam cümle msgid'ler — 'artış/azalış' parçası ve '…tir' eki çevrilemez.
     # Yön: diff = col2 − col1 → med2 > med1 ise ikinci ölçümde artış (doğru).
-    v = {'c1': col1, 'c2': col2, 'p': f'{p:.4f}', 'm1': f'{med1:.3f}', 'm2': f'{med2:.3f}'}
+    v = {'c1': col1, 'c2': col2, 'p': ('p < .001' if p < 0.001 else f'p = {p:.4f}'), 'm1': f'{med1:.3f}', 'm2': f'{med2:.3f}'}
     if float(p) < 0.05:
         if med2 > med1:
             return gettext('{c1} ile {c2} ölçümleri arasında istatistiksel olarak anlamlı bir fark bulunmaktadır '
-                           '(p = {p}). Medyan değerleri sırasıyla {m1} ve {m2} olup ikinci ölçümde artış '
+                           '({p}). Medyan değerleri sırasıyla {m1} ve {m2} olup ikinci ölçümde artış '
                            'gözlemlenmiştir.').format(**v)
         return gettext('{c1} ile {c2} ölçümleri arasında istatistiksel olarak anlamlı bir fark bulunmaktadır '
-                       '(p = {p}). Medyan değerleri sırasıyla {m1} ve {m2} olup ikinci ölçümde azalış '
+                       '({p}). Medyan değerleri sırasıyla {m1} ve {m2} olup ikinci ölçümde azalış '
                        'gözlemlenmiştir.').format(**v)
     return gettext('{c1} ile {c2} ölçümleri arasında istatistiksel olarak anlamlı bir fark bulunmamaktadır '
-                   '(p = {p}). Medyan değerleri sırasıyla {m1} ve {m2} olarak bulunmuştur.').format(**v)
+                   '({p}). Medyan değerleri sırasıyla {m1} ve {m2} olarak bulunmuştur.').format(**v)
 
 
 def build_pdf(result: dict, filename: str, df=None) -> bytes:

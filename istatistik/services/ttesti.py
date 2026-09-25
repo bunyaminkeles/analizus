@@ -162,30 +162,30 @@ def _interpret_d(d: float) -> str:
 # Sonuç cümleleri tam cümle msgid (yön/anlamlılık parçaları dillerde farklı
 # çekimlenir — 'daha yüksek' + 'tir' gibi birleştirme çevrilemez)
 def _conclusion_independent(p, g1, g2, dep, m1, m2) -> str:
-    v = {'g1': g1, 'g2': g2, 'dep': dep, 'p': f'{p:.4f}', 'm1': f'{m1:.3f}', 'm2': f'{m2:.3f}'}
+    v = {'g1': g1, 'g2': g2, 'dep': dep, 'p': ('p < .001' if p < 0.001 else f'p = {p:.4f}'), 'm1': f'{m1:.3f}', 'm2': f'{m2:.3f}'}
     if p < 0.05:
         if m1 > m2:
             return gettext('{g1} grubu ile {g2} grubu arasında {dep} açısından istatistiksel olarak anlamlı '
-                           'bir fark bulunmaktadır (p = {p}). {g1} grubunun ortalaması ({m1}), {g2} grubuna '
+                           'bir fark bulunmaktadır ({p}). {g1} grubunun ortalaması ({m1}), {g2} grubuna '
                            '({m2}) göre daha yüksektir.').format(**v)
         return gettext('{g1} grubu ile {g2} grubu arasında {dep} açısından istatistiksel olarak anlamlı '
-                       'bir fark bulunmaktadır (p = {p}). {g1} grubunun ortalaması ({m1}), {g2} grubuna '
+                       'bir fark bulunmaktadır ({p}). {g1} grubunun ortalaması ({m1}), {g2} grubuna '
                        '({m2}) göre daha düşüktür.').format(**v)
     return gettext('{g1} grubu ile {g2} grubu arasında {dep} açısından istatistiksel olarak anlamlı '
-                   'bir fark bulunmamaktadır (p = {p}).').format(**v)
+                   'bir fark bulunmamaktadır ({p}).').format(**v)
 
 
 def _conclusion_paired(p, c1, c2, diff_mean) -> str:
-    v = {'c1': c1, 'c2': c2, 'p': f'{p:.4f}', 'diff': f'{abs(diff_mean):.3f}'}
+    v = {'c1': c1, 'c2': c2, 'p': ('p < .001' if p < 0.001 else f'p = {p:.4f}'), 'diff': f'{abs(diff_mean):.3f}'}
     if p < 0.05:
         # diff_mean = c1 − c2 (ttest_rel(a, b)): c2 > c1 ise ölçüm ARTMIŞTIR.
         # 25 Eylül 2026'ya kadar koşul ters (diff_mean > 0 → "artmıştır") idi.
         if diff_mean < 0:
-            return gettext('{c1} ile {c2} arasındaki fark istatistiksel olarak anlamlıdır (p = {p}). '
+            return gettext('{c1} ile {c2} arasındaki fark istatistiksel olarak anlamlıdır ({p}). '
                            'Ortalama fark {diff} olup ölçüm artmıştır.').format(**v)
-        return gettext('{c1} ile {c2} arasındaki fark istatistiksel olarak anlamlıdır (p = {p}). '
+        return gettext('{c1} ile {c2} arasındaki fark istatistiksel olarak anlamlıdır ({p}). '
                        'Ortalama fark {diff} olup ölçüm azalmıştır.').format(**v)
-    return gettext('{c1} ile {c2} arasındaki fark istatistiksel olarak anlamlı değildir (p = {p}).').format(**v)
+    return gettext('{c1} ile {c2} arasındaki fark istatistiksel olarak anlamlı değildir ({p}).').format(**v)
 
 
 def build_pdf(result: dict, filename: str, df=None) -> bytes:
