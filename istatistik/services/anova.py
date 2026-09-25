@@ -2,6 +2,7 @@
 Tek Yönlü ANOVA + Tukey / Bonferroni post-hoc testleri.
 """
 import io
+from django.utils.translation import gettext
 import numpy as np
 from scipy import stats
 from itertools import combinations
@@ -9,23 +10,23 @@ from itertools import combinations
 
 def analyze(df, group_col: str, dep_col: str, posthoc: str = 'tukey') -> dict:
     if group_col not in df.columns:
-        raise ValueError(f'"{group_col}" sütunu bulunamadı.')
+        raise ValueError(gettext('"%(group_col)s" sütunu bulunamadı.') % {'group_col': group_col})
     if dep_col not in df.columns:
-        raise ValueError(f'"{dep_col}" sütunu bulunamadı.')
+        raise ValueError(gettext('"%(dep_col)s" sütunu bulunamadı.') % {'dep_col': dep_col})
 
     sub = df[[group_col, dep_col]].dropna()
     group_labels = sorted(sub[group_col].unique(), key=str)
 
     if len(group_labels) < 2:
-        raise ValueError('En az 2 grup gereklidir.')
+        raise ValueError(gettext('En az 2 grup gereklidir.'))
     if len(group_labels) > 20:
-        raise ValueError('En fazla 20 grup desteklenmektedir.')
+        raise ValueError(gettext('En fazla 20 grup desteklenmektedir.'))
 
     groups = [sub[sub[group_col] == g][dep_col].values.astype(float)
               for g in group_labels]
     for g, lbl in zip(groups, group_labels):
         if len(g) < 3:
-            raise ValueError(f'"{lbl}" grubunda en az 3 gözlem olmalıdır.')
+            raise ValueError(gettext('"%(lbl)s" grubunda en az 3 gözlem olmalıdır.') % {'lbl': lbl})
 
     f_stat, p_val = stats.f_oneway(*groups)
 
@@ -64,7 +65,7 @@ def analyze(df, group_col: str, dep_col: str, posthoc: str = 'tukey') -> dict:
                 # Tukey HSD yaklaşımı: Bonferroni ile karşılaştırılabilir ve scipy ile uygulanabilir
                 # Tam Tukey için statsmodels gerekir; burada Bonferroni fallback kullanıyoruz
                 p_adj = min(p_pair * n_comparisons, 1.0)
-                method = 'Tukey (Bonferroni yaklaşımı)'
+                method = gettext('Tukey (Bonferroni yaklaşımı)')
             posthoc_results.append({
                 'g1': str(group_labels[i]),
                 'g2': str(group_labels[j]),
@@ -75,7 +76,7 @@ def analyze(df, group_col: str, dep_col: str, posthoc: str = 'tukey') -> dict:
             })
 
     return {
-        'test_label': 'Tek Yönlü ANOVA',
+        'test_label': gettext('Tek Yönlü ANOVA'),
         'group_col': group_col,
         'dep_col': dep_col,
         'k_groups': len(group_labels),
@@ -96,23 +97,21 @@ def analyze(df, group_col: str, dep_col: str, posthoc: str = 'tukey') -> dict:
 
 def _interpret_eta(eta: float) -> str:
     if eta < 0.01:
-        return 'İhmal edilebilir etki (η² < .01)'
+        return gettext('İhmal edilebilir etki (η² < .01)')
     if eta < 0.06:
-        return 'Küçük etki (.01 ≤ η² < .06)'
+        return gettext('Küçük etki (.01 ≤ η² < .06)')
     if eta < 0.14:
-        return 'Orta düzey etki (.06 ≤ η² < .14)'
-    return 'Büyük etki (η² ≥ .14)'
+        return gettext('Orta düzey etki (.06 ≤ η² < .14)')
+    return gettext('Büyük etki (η² ≥ .14)')
 
 
 def _conclusion(p, group_col, dep_col, posthoc) -> str:
     if p >= 0.05:
-        return (f'Gruplar arasında {dep_col} açısından istatistiksel olarak '
-                f'anlamlı bir fark bulunmamaktadır [F = —, p = {p:.4f}].')
+        return (gettext('Gruplar arasında %(dep_col)s açısından istatistiksel olarak anlamlı bir fark bulunmamaktadır [F = —, p = %(p)s].') % {'dep_col': dep_col, 'p': f'{p:.4f}'})
     sig_pairs = [f'{r["g1"]} – {r["g2"]}' for r in posthoc if r['significant']]
-    base = (f'Gruplar arasında {dep_col} açısından istatistiksel olarak '
-            f'anlamlı bir fark bulunmaktadır (p = {p:.4f}).')
+    base = (gettext('Gruplar arasında %(dep_col)s açısından istatistiksel olarak anlamlı bir fark bulunmaktadır (p = %(p)s).') % {'dep_col': dep_col, 'p': f'{p:.4f}'})
     if sig_pairs:
-        base += f' Post-hoc analizde anlamlı farklılık gösteren çiftler: {", ".join(sig_pairs)}.'
+        base += gettext(' Post-hoc analizde anlamlı farklılık gösteren çiftler: %(v)s.') % {'v': ', '.join(sig_pairs)}
     return base
 
 
@@ -135,13 +134,13 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
     norm_s = ParagraphStyle('N', parent=styles['Normal'], fontName='DejaVuSans', fontSize=9)
 
     story = []
-    story.append(Paragraph('Tek Yönlü ANOVA Raporu', title_s))
-    story.append(Paragraph(f'Dosya: {filename}', norm_s))
+    story.append(Paragraph(gettext('Tek Yönlü ANOVA Raporu'), title_s))
+    story.append(Paragraph(gettext('Dosya: %(filename)s') % {'filename': filename}, norm_s))
     story.append(Spacer(1, 0.4*cm))
 
     # Grup istatistikleri
-    story.append(Paragraph('Grup İstatistikleri', h2_s))
-    gs_header = ['Grup', 'n', 'Ort.', 'SS', 'Min', 'Maks']
+    story.append(Paragraph(gettext('Grup İstatistikleri'), h2_s))
+    gs_header = [gettext('Grup'), 'n', gettext('Ort.'), 'SS', gettext('Min'), gettext('Maks')]
     gs_rows = [gs_header] + [
         [s['label'], str(s['n']), f"{s['mean']:.3f}", f"{s['std']:.3f}",
          f"{s['min']:.3f}", f"{s['max']:.3f}"]
@@ -163,17 +162,17 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
     story.append(Spacer(1, 0.5*cm))
 
     # ANOVA tablosu
-    story.append(Paragraph('ANOVA Tablosu', h2_s))
+    story.append(Paragraph(gettext('ANOVA Tablosu'), h2_s))
     sig = result['significant']
     anova_rows = [
-        ['F istatistiği', f"{result['f_stat']:.3f}"],
-        ['df (gruplar arası)', str(result['df_between'])],
-        ['df (gruplar içi)', str(result['df_within'])],
-        ['p-değeri', f"{result['p_value']:.4f}"],
-        ['Eta-kare (η²)', f"{result['eta_sq']:.3f}"],
-        ['Etki Büyüklüğü', result['effect_interpretation']],
-        ['Levene p', f"{result['levene_p']:.4f}"],
-        ['Sonuç', 'Anlamlı (p < .05)' if sig else 'Anlamlı değil (p ≥ .05)'],
+        [gettext('F istatistiği'), f"{result['f_stat']:.3f}"],
+        [gettext('df (gruplar arası)'), str(result['df_between'])],
+        [gettext('df (gruplar içi)'), str(result['df_within'])],
+        [gettext('p-değeri'), f"{result['p_value']:.4f}"],
+        [gettext('Eta-kare (η²)'), f"{result['eta_sq']:.3f}"],
+        [gettext('Etki Büyüklüğü'), result['effect_interpretation']],
+        [gettext('Levene p'), f"{result['levene_p']:.4f}"],
+        [gettext('Sonuç'), gettext('Anlamlı (p < .05)') if sig else gettext('Anlamlı değil (p ≥ .05)')],
     ]
     a_tbl = Table(anova_rows, colWidths=[7*cm, 9*cm])
     a_tbl.setStyle(TableStyle([
@@ -192,11 +191,11 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
     # Post-hoc
     if result['posthoc']:
         story.append(Spacer(1, 0.5*cm))
-        story.append(Paragraph(f'Post-Hoc Testler ({result["posthoc_method"]})', h2_s))
-        ph_header = ['Grup 1', 'Grup 2', 'Ort. Fark', 'p', 'p (düzeltilmiş)', 'Anlamlı']
+        story.append(Paragraph(gettext('Post-Hoc Testler (%(posthoc_method)s)') % {'posthoc_method': result['posthoc_method']}, h2_s))
+        ph_header = [gettext('Grup 1'), gettext('Grup 2'), gettext('Ort. Fark'), 'p', gettext('p (düzeltilmiş)'), gettext('Anlamlı')]
         ph_rows = [ph_header] + [
             [r['g1'], r['g2'], f"{r['mean_diff']:.3f}", f"{r['p_value']:.4f}",
-             f"{r['p_adj']:.4f}", 'Evet' if r['significant'] else 'Hayır']
+             f"{r['p_adj']:.4f}", gettext('Evet') if r['significant'] else gettext('Hayır')]
             for r in result['posthoc']
         ]
         ph_tbl = Table(ph_rows, colWidths=[3*cm, 3*cm, 3*cm, 2.5*cm, 3.5*cm, 2*cm])
@@ -218,17 +217,22 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
         story.append(ph_tbl)
 
     story.append(Spacer(1, 0.5*cm))
-    story.append(Paragraph('Yorum', h2_s))
+    story.append(Paragraph(gettext('Yorum'), h2_s))
     story.append(Paragraph(result['conclusion'], norm_s))
 
     story.append(Spacer(1, 0.5*cm))
-    story.append(Paragraph('Tezinde Nasıl Raporlarsın?', h2_s))
-    p_str = '< .001' if result['p_value'] < 0.001 else f"{result['p_value']:.3f}"
-    sig_txt = 'anlamlı' if result['significant'] else 'anlamlı olmayan'
-    apa_text = (f"Tek yönlü ANOVA sonucunda {result['group_col']} grupları arasında "
-                f"{result['dep_col']} açısından {sig_txt} bir fark bulunmuştur, "
-                f"F({result['df_between']}, {result['df_within']}) = {result['f_stat']:.3f}, "
-                f"p = {p_str}, η² = {result['eta_sq']:.3f} ({result['effect_interpretation']}).")
+    story.append(Paragraph(gettext('APA Formatında Raporlama'), h2_s))
+    # 'p < .001' / 'p = 0.123'; anlamlı/anlamsız ayrı tam cümle — şablon JS ile ortak msgid
+    v = dict(group=result['group_col'], dep=result['dep_col'], df1=result['df_between'],
+             df2=result['df_within'], f=f"{result['f_stat']:.3f}",
+             p='p < .001' if result['p_value'] < 0.001 else f"p = {result['p_value']:.3f}",
+             eta=f"{result['eta_sq']:.3f}", effect=result['effect_interpretation'])
+    if result['significant']:
+        apa_text = gettext('Tek yönlü ANOVA sonucunda {group} grupları arasında {dep} açısından anlamlı bir fark '
+                           'bulunmuştur, F({df1}, {df2}) = {f}, {p}, η² = {eta} ({effect}).').format(**v)
+    else:
+        apa_text = gettext('Tek yönlü ANOVA sonucunda {group} grupları arasında {dep} açısından anlamlı bir fark '
+                           'bulunmamıştır, F({df1}, {df2}) = {f}, {p}, η² = {eta} ({effect}).').format(**v)
     apa_tbl = Table([[Paragraph(apa_text, norm_s)]], colWidths=[16*cm])
     apa_tbl.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#f0f4ff')),

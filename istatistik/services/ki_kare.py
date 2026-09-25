@@ -3,6 +3,7 @@ Ki-Kare Bağımsızlık Testi (χ²) — İki kategorik değişken arasındaki i
 Pearson's Chi-Square test of independence + Cramér's V etki büyüklüğü.
 """
 import io
+from django.utils.translation import gettext, pgettext
 import numpy as np
 
 
@@ -11,20 +12,20 @@ def analyze(df, col1: str, col2: str) -> dict:
     from scipy import stats
 
     if col1 not in df.columns:
-        raise ValueError(f'"{col1}" sütunu bulunamadı.')
+        raise ValueError(gettext('"%(col1)s" sütunu bulunamadı.') % {'col1': col1})
     if col2 not in df.columns:
-        raise ValueError(f'"{col2}" sütunu bulunamadı.')
+        raise ValueError(gettext('"%(col2)s" sütunu bulunamadı.') % {'col2': col2})
     if col1 == col2:
-        raise ValueError('İki farklı sütun seçmelisiniz.')
+        raise ValueError(gettext('İki farklı sütun seçmelisiniz.'))
 
     sub = df[[col1, col2]].dropna()
     n = len(sub)
     if n < 5:
-        raise ValueError('En az 5 geçerli satır gereklidir.')
+        raise ValueError(gettext('En az 5 geçerli satır gereklidir.'))
 
     ct = pd.crosstab(sub[col1], sub[col2])
     if ct.shape[0] < 2 or ct.shape[1] < 2:
-        raise ValueError('Her değişkenin en az 2 farklı kategorisi olmalıdır.')
+        raise ValueError(gettext('Her değişkenin en az 2 farklı kategorisi olmalıdır.'))
 
     chi2, p_val, dof, expected = stats.chi2_contingency(ct)
 
@@ -46,28 +47,26 @@ def analyze(df, col1: str, col2: str) -> dict:
         fisher_result = None
 
     if v < 0.10:
-        effect_label = 'Çok küçük etki'
+        effect_label = gettext('Çok küçük etki')
         effect_color = 'secondary'
     elif v < 0.30:
-        effect_label = 'Küçük etki'
+        effect_label = gettext('Küçük etki')
         effect_color = 'info'
     elif v < 0.50:
-        effect_label = 'Orta etki'
+        effect_label = gettext('Orta etki')
         effect_color = 'warning'
     else:
-        effect_label = 'Büyük etki'
+        effect_label = gettext('Büyük etki')
         effect_color = 'danger'
 
     is_significant = bool(p_val < 0.05)
     if is_significant:
         conclusion = (
-            f'{col1} ile {col2} arasında istatistiksel olarak anlamlı bir ilişki '
-            f'bulunmuştur (p < .05). Cramér\'s V = {v:.3f} ({effect_label.lower()}).'
+            gettext("%(col1)s ile %(col2)s arasında istatistiksel olarak anlamlı bir ilişki bulunmuştur (p < .05). Cramér's V = %(v)s (%(v2)s).") % {'col1': col1, 'col2': col2, 'v': f'{v:.3f}', 'v2': effect_label.lower()}
         )
     else:
         conclusion = (
-            f'{col1} ile {col2} arasında istatistiksel olarak anlamlı bir ilişki '
-            f'bulunmamıştır (p ≥ .05).'
+            gettext('%(col1)s ile %(col2)s arasında istatistiksel olarak anlamlı bir ilişki bulunmamıştır (p ≥ .05).') % {'col1': col1, 'col2': col2}
         )
 
     ct_index = [str(i) for i in ct.index]
@@ -128,14 +127,14 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
     small = ParagraphStyle('S', parent=styles['Normal'], fontName='DejaVuSans', fontSize=9)
 
     story = []
-    story.append(Paragraph('Ki-Kare Bağımsızlık Testi Raporu', title_style))
-    story.append(Paragraph(f'Dosya: {filename}', normal))
+    story.append(Paragraph(gettext('Ki-Kare Bağımsızlık Testi Raporu'), title_style))
+    story.append(Paragraph(gettext('Dosya: %(filename)s') % {'filename': filename}, normal))
     story.append(Spacer(1, 0.3*cm))
 
     # Özet istatistikler tablosu
-    story.append(Paragraph('Test Sonuçları', h2))
+    story.append(Paragraph(gettext('Test Sonuçları'), h2))
     summary_data = [
-        ['Değişken 1', 'Değişken 2', 'N', 'χ²', 'df', 'p', 'Cramér\'s V', 'Etki'],
+        [gettext('Değişken 1'), gettext('Değişken 2'), 'N', 'χ²', 'df', 'p', gettext("Cramér's V"), gettext('Etki')],
         [
             result['col1'], result['col2'],
             str(result['n']),
@@ -164,15 +163,13 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
     story.append(Spacer(1, 0.4*cm))
 
     # Sonuç
-    story.append(Paragraph('Yorum', h2))
+    story.append(Paragraph(gettext('Yorum'), h2))
     story.append(Paragraph(result['conclusion'], normal))
     story.append(Spacer(1, 0.3*cm))
 
     if result['low_expected_warning']:
         story.append(Paragraph(
-            f'⚠ Uyarı: {result["low_expected_count"]} hücrede beklenen frekans 5\'in altındadır '
-            f'(toplam {result["total_cells"]} hücreden). Ki-kare testi bu durumda güvenilmez '
-            f'olabilir; Fisher\'s Exact Test değerlendirilmelidir.',
+            gettext("⚠ Uyarı: %(low_expected_count)s hücrede beklenen frekans 5'in altındadır (toplam %(total_cells)s hücreden). Ki-kare testi bu durumda güvenilmez olabilir; Fisher's Exact Test değerlendirilmelidir.") % {'low_expected_count': result['low_expected_count'], 'total_cells': result['total_cells']},
             small,
         ))
         story.append(Spacer(1, 0.3*cm))
@@ -180,11 +177,11 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
     # Fisher sonucu (2x2 ise)
     if result.get('fisher'):
         f = result['fisher']
-        f_sig = 'anlamlı' if f['is_significant'] else 'anlamlı değil'
-        story.append(Paragraph('Fisher\'s Exact Test (2×2 tablo)', h2))
+        f_sig = gettext('anlamlı') if f['is_significant'] else gettext('anlamlı değil')
+        story.append(Paragraph(gettext("Fisher's Exact Test (2×2 tablo)"), h2))
         fisher_data = [
-            ['Odds Ratio', 'p (Fisher)', 'Anlamlı?'],
-            [f"{f['odds_ratio']:.4f}", f"{f['p_value']:.4f}", 'Evet' if f['is_significant'] else 'Hayır'],
+            [gettext('Odds Ratio'), gettext('p (Fisher)'), gettext('Anlamlı?')],
+            [f"{f['odds_ratio']:.4f}", f"{f['p_value']:.4f}", gettext('Evet') if f['is_significant'] else gettext('Hayır')],
         ]
         f_tbl = Table(fisher_data, colWidths=[4*cm, 4*cm, 4*cm])
         f_tbl.setStyle(TableStyle([
@@ -203,16 +200,16 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
         story.append(Spacer(1, 0.4*cm))
 
     # Çapraz tablo
-    story.append(Paragraph('Çapraz Tablo (Gözlenen Frekanslar)', h2))
-    story.append(Paragraph(f'Sütunlar: {result["col2"]}', small))
+    story.append(Paragraph(gettext('Çapraz Tablo (Gözlenen Frekanslar)'), h2))
+    story.append(Paragraph(gettext('Sütunlar: %(col2)s') % {'col2': result['col2']}, small))
     story.append(Spacer(1, 0.15*cm))
     ct = result['contingency_table']
-    header = [result['col1']] + ct['columns'] + ['Toplam']
+    header = [result['col1']] + ct['columns'] + [pgettext('tablo', 'Toplam')]
     rows = [header]
     for i, idx in enumerate(ct['index']):
         row = [idx] + [str(v) for v in ct['values'][i]] + [str(ct['row_totals'][i])]
         rows.append(row)
-    total_row = ['Toplam'] + [str(v) for v in ct['col_totals']] + [str(ct['grand_total'])]
+    total_row = [pgettext('tablo', 'Toplam')] + [str(v) for v in ct['col_totals']] + [str(ct['grand_total'])]
     rows.append(total_row)
 
     n_cols = len(header)
@@ -234,14 +231,17 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
     story.append(tbl2)
 
     story.append(Spacer(1, 0.5*cm))
-    story.append(Paragraph('Tezinde Nasıl Raporlarsın?', h2))
-    p_str = '< .001' if result['p_value'] < 0.001 else f"{result['p_value']:.3f}"
-    sig_txt = ('istatistiksel olarak anlamlı bir ilişki bulunmuştur'
-               if result['is_significant'] else 'anlamlı bir ilişki bulunmamıştır')
-    apa_text = (f"Ki-kare bağımsızlık testi sonucunda {result['col1']} ile {result['col2']} "
-                f"arasında {sig_txt}, "
-                f"χ²({result['dof']}, N = {result['n']}) = {result['chi2']:.3f}, "
-                f"p = {p_str}, V = {result['cramers_v']:.3f} ({result['effect_label'].lower()}).")
+    story.append(Paragraph(gettext('APA Formatında Raporlama'), h2))
+    # 'p < .001' / 'p = 0.123'; anlamlı/anlamsız ayrı tam cümle — şablon JS ile ortak msgid
+    v = dict(c1=result['col1'], c2=result['col2'], dof=result['dof'], n=result['n'], chi2=f"{result['chi2']:.3f}",
+             p='p < .001' if result['p_value'] < 0.001 else f"p = {result['p_value']:.3f}",
+             v=f"{result['cramers_v']:.3f}", effect=result['effect_label'].lower())
+    if result['is_significant']:
+        apa_text = gettext('Ki-kare bağımsızlık testi sonucunda {c1} ile {c2} arasında istatistiksel olarak anlamlı '
+                           'bir ilişki bulunmuştur, χ²({dof}, N = {n}) = {chi2}, {p}, V = {v} ({effect}).').format(**v)
+    else:
+        apa_text = gettext('Ki-kare bağımsızlık testi sonucunda {c1} ile {c2} arasında anlamlı bir ilişki '
+                           'bulunmamıştır, χ²({dof}, N = {n}) = {chi2}, {p}, V = {v} ({effect}).').format(**v)
     apa_tbl = Table([[Paragraph(apa_text, normal)]], colWidths=[16*cm])
     apa_tbl.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#f5f0ff')),

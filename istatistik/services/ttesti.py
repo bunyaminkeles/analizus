@@ -3,6 +3,7 @@ t-Testi Analizi
 Bağımsız örneklem t-testi ve bağımlı (eşleştirilmiş) örneklem t-testi.
 """
 import io
+from django.utils.translation import gettext
 import numpy as np
 from scipy import stats
 
@@ -19,27 +20,26 @@ def analyze(df, test_type: str, group_col: str = None,
     elif test_type == 'paired':
         return _paired(df, col1, col2)
     else:
-        raise ValueError(f'Bilinmeyen test tipi: {test_type}')
+        raise ValueError(gettext('Bilinmeyen test tipi: %(test_type)s') % {'test_type': test_type})
 
 
 def _independent(df, group_col: str, dep_col: str) -> dict:
     if group_col not in df.columns:
-        raise ValueError(f'"{group_col}" sütunu bulunamadı.')
+        raise ValueError(gettext('"%(group_col)s" sütunu bulunamadı.') % {'group_col': group_col})
     if dep_col not in df.columns:
-        raise ValueError(f'"{dep_col}" sütunu bulunamadı.')
+        raise ValueError(gettext('"%(dep_col)s" sütunu bulunamadı.') % {'dep_col': dep_col})
 
     groups = df[group_col].dropna().unique()
     if len(groups) != 2:
         raise ValueError(
-            f'Bağımsız t-testi için tam 2 grup gereklidir. '
-            f'"{group_col}" sütununda {len(groups)} farklı değer bulundu.')
+            gettext('Bağımsız t-testi için tam 2 grup gereklidir. "%(group_col)s" sütununda %(groups)s farklı değer bulundu.') % {'group_col': group_col, 'groups': len(groups)})
 
     g1_label, g2_label = str(groups[0]), str(groups[1])
     g1 = df[df[group_col] == groups[0]][dep_col].dropna().values.astype(float)
     g2 = df[df[group_col] == groups[1]][dep_col].dropna().values.astype(float)
 
     if len(g1) < 3 or len(g2) < 3:
-        raise ValueError('Her grupta en az 3 gözlem olmalıdır.')
+        raise ValueError(gettext('Her grupta en az 3 gözlem olmalıdır.'))
 
     t_stat, p_val = stats.ttest_ind(g1, g2, equal_var=True)
     # Levene varyans homojenliği testi
@@ -68,7 +68,7 @@ def _independent(df, group_col: str, dep_col: str) -> dict:
 
     return {
         'test_type': 'independent',
-        'test_label': 'Bağımsız Örneklem t-Testi' + (' (Welch)' if used_welch else ''),
+        'test_label': gettext('Bağımsız Örneklem t-Testi') + (gettext(' (Welch)') if used_welch else ''),
         'group_col': group_col,
         'dep_col': dep_col,
         'g1_label': g1_label,
@@ -95,13 +95,13 @@ def _independent(df, group_col: str, dep_col: str) -> dict:
 
 def _paired(df, col1: str, col2: str) -> dict:
     if col1 not in df.columns:
-        raise ValueError(f'"{col1}" sütunu bulunamadı.')
+        raise ValueError(gettext('"%(col1)s" sütunu bulunamadı.') % {'col1': col1})
     if col2 not in df.columns:
-        raise ValueError(f'"{col2}" sütunu bulunamadı.')
+        raise ValueError(gettext('"%(col2)s" sütunu bulunamadı.') % {'col2': col2})
 
     data = df[[col1, col2]].dropna()
     if len(data) < 5:
-        raise ValueError('En az 5 çift gözlem gereklidir.')
+        raise ValueError(gettext('En az 5 çift gözlem gereklidir.'))
 
     a = data[col1].values.astype(float)
     b = data[col2].values.astype(float)
@@ -119,7 +119,7 @@ def _paired(df, col1: str, col2: str) -> dict:
 
     return {
         'test_type': 'paired',
-        'test_label': 'Bağımlı Örneklem t-Testi (Eşleştirilmiş)',
+        'test_label': gettext('Bağımlı Örneklem t-Testi (Eşleştirilmiş)'),
         'col1': col1,
         'col2': col2,
         'n': n,
@@ -151,30 +151,41 @@ def _welch_df(g1, g2) -> float:
 
 def _interpret_d(d: float) -> str:
     if d < 0.2:
-        return 'İhmal edilebilir etki'
+        return gettext('İhmal edilebilir etki')
     if d < 0.5:
-        return 'Küçük etki (d < 0.50)'
+        return gettext('Küçük etki (d < 0.50)')
     if d < 0.8:
-        return 'Orta düzey etki (0.50 ≤ d < 0.80)'
-    return 'Büyük etki (d ≥ 0.80)'
+        return gettext('Orta düzey etki (0.50 ≤ d < 0.80)')
+    return gettext('Büyük etki (d ≥ 0.80)')
 
 
+# Sonuç cümleleri tam cümle msgid (yön/anlamlılık parçaları dillerde farklı
+# çekimlenir — 'daha yüksek' + 'tir' gibi birleştirme çevrilemez)
 def _conclusion_independent(p, g1, g2, dep, m1, m2) -> str:
-    dir_str = 'daha yüksek' if m1 > m2 else 'daha düşük'
+    v = {'g1': g1, 'g2': g2, 'dep': dep, 'p': f'{p:.4f}', 'm1': f'{m1:.3f}', 'm2': f'{m2:.3f}'}
     if p < 0.05:
-        return (f'{g1} grubu ile {g2} grubu arasında {dep} açısından '
-                f'istatistiksel olarak anlamlı bir fark bulunmaktadır (p = {p:.4f}). '
-                f'{g1} grubunun ortalaması ({m1:.3f}), {g2} grubuna ({m2:.3f}) göre {dir_str}tir.')
-    return (f'{g1} grubu ile {g2} grubu arasında {dep} açısından '
-            f'istatistiksel olarak anlamlı bir fark bulunmamaktadır (p = {p:.4f}).')
+        if m1 > m2:
+            return gettext('{g1} grubu ile {g2} grubu arasında {dep} açısından istatistiksel olarak anlamlı '
+                           'bir fark bulunmaktadır (p = {p}). {g1} grubunun ortalaması ({m1}), {g2} grubuna '
+                           '({m2}) göre daha yüksektir.').format(**v)
+        return gettext('{g1} grubu ile {g2} grubu arasında {dep} açısından istatistiksel olarak anlamlı '
+                       'bir fark bulunmaktadır (p = {p}). {g1} grubunun ortalaması ({m1}), {g2} grubuna '
+                       '({m2}) göre daha düşüktür.').format(**v)
+    return gettext('{g1} grubu ile {g2} grubu arasında {dep} açısından istatistiksel olarak anlamlı '
+                   'bir fark bulunmamaktadır (p = {p}).').format(**v)
 
 
 def _conclusion_paired(p, c1, c2, diff_mean) -> str:
-    dir_str = 'artmıştır' if diff_mean > 0 else 'azalmıştır'
+    v = {'c1': c1, 'c2': c2, 'p': f'{p:.4f}', 'diff': f'{abs(diff_mean):.3f}'}
     if p < 0.05:
-        return (f'{c1} ile {c2} arasındaki fark istatistiksel olarak anlamlıdır (p = {p:.4f}). '
-                f'Ortalama fark {abs(diff_mean):.3f} olup ölçüm {dir_str}.')
-    return (f'{c1} ile {c2} arasındaki fark istatistiksel olarak anlamlı değildir (p = {p:.4f}).')
+        # diff_mean = c1 − c2 (ttest_rel(a, b)): c2 > c1 ise ölçüm ARTMIŞTIR.
+        # 25 Eylül 2026'ya kadar koşul ters (diff_mean > 0 → "artmıştır") idi.
+        if diff_mean < 0:
+            return gettext('{c1} ile {c2} arasındaki fark istatistiksel olarak anlamlıdır (p = {p}). '
+                           'Ortalama fark {diff} olup ölçüm artmıştır.').format(**v)
+        return gettext('{c1} ile {c2} arasındaki fark istatistiksel olarak anlamlıdır (p = {p}). '
+                       'Ortalama fark {diff} olup ölçüm azalmıştır.').format(**v)
+    return gettext('{c1} ile {c2} arasındaki fark istatistiksel olarak anlamlı değildir (p = {p}).').format(**v)
 
 
 def build_pdf(result: dict, filename: str, df=None) -> bytes:
@@ -196,21 +207,21 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
     norm_s = ParagraphStyle('N', parent=styles['Normal'], fontName='DejaVuSans', fontSize=9)
 
     story = []
-    story.append(Paragraph(result['test_label'] + ' Raporu', title_s))
-    story.append(Paragraph(f'Dosya: {filename}', norm_s))
+    story.append(Paragraph(gettext('%(test)s Raporu') % {'test': result['test_label']}, title_s))
+    story.append(Paragraph(gettext('Dosya: %(filename)s') % {'filename': filename}, norm_s))
     story.append(Spacer(1, 0.4*cm))
 
     if result['test_type'] == 'independent':
         rows = [
             ['', result['g1_label'], result['g2_label']],
             ['n', str(result['g1_n']), str(result['g2_n'])],
-            ['Ortalama', f"{result['g1_mean']:.3f}", f"{result['g2_mean']:.3f}"],
+            [gettext('Ortalama'), f"{result['g1_mean']:.3f}", f"{result['g2_mean']:.3f}"],
             ['SS', f"{result['g1_std']:.3f}", f"{result['g2_std']:.3f}"],
         ]
     else:
         rows = [
             ['', result['col1'], result['col2']],
-            ['Ortalama', f"{result['col1_mean']:.3f}", f"{result['col2_mean']:.3f}"],
+            [gettext('Ortalama'), f"{result['col1_mean']:.3f}", f"{result['col2_mean']:.3f}"],
             ['SS', f"{result['col1_std']:.3f}", f"{result['col2_std']:.3f}"],
         ]
 
@@ -225,18 +236,18 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
         ('PADDING', (0, 0), (-1, -1), 6),
         ('ALIGN', (1, 0), (-1, -1), 'CENTER'),
     ]))
-    story.append(Paragraph('Grup İstatistikleri', h2_s))
+    story.append(Paragraph(gettext('Grup İstatistikleri'), h2_s))
     story.append(grp_tbl)
     story.append(Spacer(1, 0.5*cm))
 
     sig = result['significant']
     res_rows = [
-        ['t istatistiği', f"{result['t_stat']:.3f}"],
-        ['Serbestlik Derecesi (df)', str(result['df'])],
-        ['p-değeri', f"{result['p_value']:.4f}"],
-        ['Cohen\'s d', f"{result['cohens_d']:.3f}"],
-        ['%95 GA (fark)', f"[{result['ci_low']:.3f}, {result['ci_high']:.3f}]"],
-        ['Sonuç', 'Anlamlı (p < .05)' if sig else 'Anlamlı değil (p ≥ .05)'],
+        [gettext('t istatistiği'), f"{result['t_stat']:.3f}"],
+        [gettext('Serbestlik Derecesi (df)'), str(result['df'])],
+        [gettext('p-değeri'), f"{result['p_value']:.4f}"],
+        [gettext("Cohen's d"), f"{result['cohens_d']:.3f}"],
+        [gettext('%%95 GA (fark)') % {}, f"[{result['ci_low']:.3f}, {result['ci_high']:.3f}]"],  # %%: python-format msgid (EN: 95%% CI)
+        [gettext('Sonuç'), gettext('Anlamlı (p < .05)') if sig else gettext('Anlamlı değil (p ≥ .05)')],
     ]
     res_tbl = Table(res_rows, colWidths=[7*cm, 9*cm])
     res_tbl.setStyle(TableStyle([
@@ -250,27 +261,28 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
         ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
         ('PADDING', (0, 0), (-1, -1), 6),
     ]))
-    story.append(Paragraph('Test Sonuçları', h2_s))
+    story.append(Paragraph(gettext('Test Sonuçları'), h2_s))
     story.append(res_tbl)
     story.append(Spacer(1, 0.5*cm))
 
-    story.append(Paragraph('Yorum', h2_s))
+    story.append(Paragraph(gettext('Yorum'), h2_s))
     story.append(Paragraph(result['conclusion'], norm_s))
 
     story.append(Spacer(1, 0.5*cm))
-    story.append(Paragraph('Tezinde Nasıl Raporlarsın?', h2_s))
-    p_str = '< .001' if result['p_value'] < 0.001 else f"{result['p_value']:.3f}"
+    story.append(Paragraph(gettext('APA Formatında Raporlama'), h2_s))
+    # APA: 'p < .001' ya da 'p = 0.123' (önceden 'p = < .001'); şablon JS ile ortak msgid
+    p_str = 'p < .001' if result['p_value'] < 0.001 else f"p = {result['p_value']:.3f}"
     if result['test_type'] == 'independent':
-        apa_text = (f"{result['group_col']} grupları ({result['g1_label']} ve {result['g2_label']}) "
-                    f"arasındaki {result['dep_col']} farkı {result['test_label']} ile test edilmiştir: "
-                    f"t({result['df']}) = {result['t_stat']:.3f}, p = {p_str}, "
-                    f"d = {result['cohens_d']:.3f} "
-                    f"({result['g1_label']}: M = {result['g1_mean']:.3f}, SS = {result['g1_std']:.3f}; "
-                    f"{result['g2_label']}: M = {result['g2_mean']:.3f}, SS = {result['g2_std']:.3f}).")
+        apa_text = gettext('{group} grupları ({g1} ve {g2}) arasındaki {dep} farkı {test} ile test edilmiştir: '
+                           't({df}) = {t}, {p}, d = {d} ({g1}: M = {m1}, SS = {s1}; {g2}: M = {m2}, SS = {s2}).').format(
+            group=result['group_col'], g1=result['g1_label'], g2=result['g2_label'], dep=result['dep_col'],
+            test=result['test_label'], df=result['df'], t=f"{result['t_stat']:.3f}", p=p_str,
+            d=f"{result['cohens_d']:.3f}", m1=f"{result['g1_mean']:.3f}", s1=f"{result['g1_std']:.3f}",
+            m2=f"{result['g2_mean']:.3f}", s2=f"{result['g2_std']:.3f}")
     else:
-        apa_text = (f"{result['col1']} ve {result['col2']} arasındaki fark {result['test_label']} "
-                    f"ile test edilmiştir: t({result['df']}) = {result['t_stat']:.3f}, "
-                    f"p = {p_str}, d = {result['cohens_d']:.3f}.")
+        apa_text = gettext('{c1} ve {c2} arasındaki fark {test} ile test edilmiştir: t({df}) = {t}, {p}, d = {d}.').format(
+            c1=result['col1'], c2=result['col2'], test=result['test_label'], df=result['df'],
+            t=f"{result['t_stat']:.3f}", p=p_str, d=f"{result['cohens_d']:.3f}")
     apa_tbl = Table([[Paragraph(apa_text, norm_s)]], colWidths=[16*cm])
     apa_tbl.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#f0f4ff')),

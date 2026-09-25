@@ -103,7 +103,16 @@ maddelerde.
     EN'de TR kalıntı yok; 15 sayfa JS node --check + APA node'da üretildi.
     NOT: AST tarayıcı Türkçe harfsiz metinleri ("Yorum", "Madde", "Hesapla")
     kaçırıyor — kalan partilerde dosyalar ayrıca gözle okunmalı.
-  - [ ] Parti 3: ttesti, anova, mann_whitney, kruskal_wallis, ki_kare
+  - [x] Parti 3 (25 Eylül 2026): ttesti, anova, mann_whitney, kruskal_wallis,
+    ki_kare — servis + şablon JS (ANOVA JS tablo başlıkları, Post-Hoc başlığı,
+    ki-kare "Toplam" dahil); parça birleştirmeli sonuç/APA cümleleri tam cümle
+    msgid'lerine bölündü; JS'te de "p < .001" (pStr). **DOĞRULUK HATASI
+    DÜZELTİLDİ:** eşleştirilmiş t-testinde yön tersti (son > ilk iken "ölçüm
+    azalmıştır" diyordu). Ki-kare tablosunda 'Toplam' → pgettext('tablo')
+    (bağlamsız çevirisi "Total of"). EN PDF'lerde TR kalıntı yok; 15 sayfa JS OK.
+  - [ ] Sonuç cümlelerinde "p = 0.0000" (APA: "p < .001") — ttesti, mann_whitney,
+    anova, kruskal_wallis `conclusion` metinleri (.4f); kozmetik, önceden var.
+  - [ ] Parti 4'te Wilcoxon'da benzer yön hatası kontrol edilecek.
   - [ ] Parti 4: wilcoxon, friedman, tekrarli_anova, afa
   - [ ] Parti 5: lineer_regresyon, lojistik_regresyon, karar_agaci, svm
   Ölçüm notu: istatistik

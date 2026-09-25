@@ -231,7 +231,17 @@ const T = {
   s6: '{% trans "✓ Gruplar arasında anlamlı fark var (p < .05)" as t %}{{ t|escapejs }}',
   s7: '{% trans "✗ Gruplar arasında anlamlı fark yok (p ≥ .05)" as t %}{{ t|escapejs }}',
   s8: '{% trans "Kopyalandı" as t %}{{ t|escapejs }}',
+  // APA / sonuç metinleri — servis (PDF) ile aynı msgid'ler, {süslü} yer tutucular
+  thGroup: '{% trans "Grup" as t %}{{ t|escapejs }}',
+  thMean: '{% trans "Ort." as t %}{{ t|escapejs }}',
+  thSd: '{% trans "SS" as t %}{{ t|escapejs }}',
+  thMax: '{% trans "Maks" as t %}{{ t|escapejs }}',
+  posthocTitle: '{% trans "Post-Hoc Testler ({method})" as t %}{{ t|escapejs }}',
+  apaSig: '{% trans "Tek yönlü ANOVA sonucunda {group} grupları arasında {dep} açısından anlamlı bir fark bulunmuştur, F({df1}, {df2}) = {f}, {p}, η² = {eta} ({effect})." as t %}{{ t|escapejs }}',
+  apaNs: '{% trans "Tek yönlü ANOVA sonucunda {group} grupları arasında {dep} açısından anlamlı bir fark bulunmamıştır, F({df1}, {df2}) = {f}, {p}, η² = {eta} ({effect})." as t %}{{ t|escapejs }}',
 };
+const fmt = (s, o) => s.replace(/\{(\w+)\}/g, (m, k) => (k in o ? o[k] : m));
+const pStr = (p) => p < 0.001 ? 'p < .001' : 'p = ' + p.toFixed(3);
 const ANOVA_URL = '{% url "istatistik:anova" %}';
 const STATUS_BASE = '{% url "istatistik:anova_status" job_id="00000000-0000-0000-0000-000000000000" %}';
 let previewId = null, previewFilename = null, pollInterval = null;
@@ -326,20 +336,20 @@ function onCompleted(data) {
     document.getElementById('res-sig-text').textContent = T.s7;
   }
 
-  let gtHead = '<thead><tr><th>Grup</th><th>n</th><th>Ort.</th><th>SS</th><th>Min</th><th>Maks</th></tr></thead>';
+  let gtHead = `<thead><tr><th>${T.thGroup}</th><th>n</th><th>${T.thMean}</th><th>${T.thSd}</th><th>Min</th><th>${T.thMax}</th></tr></thead>`;
   let gtBody = '<tbody>' + r.group_stats.map(s => `<tr><td>${s.label}</td><td>${s.n}</td><td>${s.mean.toFixed(3)}</td><td>${s.std.toFixed(3)}</td><td>${s.min.toFixed(3)}</td><td>${s.max.toFixed(3)}</td></tr>`).join('') + '</tbody>';
   document.getElementById('group-table').innerHTML = gtHead + gtBody;
 
   if (r.posthoc && r.posthoc.length > 0) {
     document.getElementById('posthoc-section').classList.remove('d-none');
-    document.getElementById('posthoc-title').textContent = `Post-Hoc Testler (${r.posthoc_method})`;
+    document.getElementById('posthoc-title').textContent = fmt(T.posthocTitle, {method: r.posthoc_method});
     let phHead = '<thead><tr><th>{% filter escapejs %}{% trans "Grup 1" %}{% endfilter %}</th><th>{% filter escapejs %}{% trans "Grup 2" %}{% endfilter %}</th><th>{% filter escapejs %}{% trans "Ort. Fark" %}{% endfilter %}</th><th>p</th><th>{% filter escapejs %}{% trans "p (düz.)" %}{% endfilter %}</th><th>{% filter escapejs %}{% trans "Anlamlı" %}{% endfilter %}</th></tr></thead>';
     let phBody = '<tbody>' + r.posthoc.map(ph => `<tr${ph.significant ? ' style="color: var(--ax-accent-secondary);"' : ''}><td>${ph.g1}</td><td>${ph.g2}</td><td>${ph.mean_diff.toFixed(3)}</td><td>${ph.p_value.toFixed(4)}</td><td>${ph.p_adj.toFixed(4)}</td><td>${ph.significant ? '✓' : '—'}</td></tr>`).join('') + '</tbody>';
     document.getElementById('posthoc-table').innerHTML = phHead + phBody;
   }
 
   document.getElementById('res-conclusion').textContent = r.conclusion;
-  const apa = `Tek yönlü ANOVA sonucunda ${r.group_col} grupları arasında ${r.dep_col} açısından ${r.significant ? 'anlamlı' : 'anlamlı olmayan'} bir fark bulunmuştur, F(${r.df_between}, ${r.df_within}) = ${r.f_stat.toFixed(3)}, p = ${r.p_value < 0.001 ? '< .001' : r.p_value.toFixed(3)}, η² = ${r.eta_sq.toFixed(3)} (${r.effect_interpretation}).`;
+  const apa = fmt(r.significant ? T.apaSig : T.apaNs, {group: r.group_col, dep: r.dep_col, df1: r.df_between, df2: r.df_within, f: r.f_stat.toFixed(3), p: pStr(r.p_value), eta: r.eta_sq.toFixed(3), effect: r.effect_interpretation});
   document.getElementById('res-apa').textContent = apa;
   document.getElementById('pdf-btn').href = data.pdf_url;
   showPanel('done');

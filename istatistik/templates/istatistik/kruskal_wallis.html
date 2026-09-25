@@ -225,7 +225,12 @@ const T = {
   s6: '{% trans "✓ Gruplar arasında anlamlı fark var (p < .05)" as t %}{{ t|escapejs }}',
   s7: '{% trans "✗ Gruplar arasında anlamlı fark yok (p ≥ .05)" as t %}{{ t|escapejs }}',
   s8: '{% trans "Kopyalandı" as t %}{{ t|escapejs }}',
+  // APA / sonuç metinleri — servis (PDF) ile aynı msgid'ler, {süslü} yer tutucular
+  apaSig: '{% trans "Kruskal-Wallis H testi sonucunda {group} grupları arasında {dep} açısından istatistiksel olarak anlamlı bir fark bulunmuştur, H({df}) = {h}, {p}, η² = {eta} ({effect})." as t %}{{ t|escapejs }}',
+  apaNs: '{% trans "Kruskal-Wallis H testi sonucunda {group} grupları arasında {dep} açısından anlamlı bir fark bulunmamıştır, H({df}) = {h}, {p}, η² = {eta} ({effect})." as t %}{{ t|escapejs }}',
 };
+const fmt = (s, o) => s.replace(/\{(\w+)\}/g, (m, k) => (k in o ? o[k] : m));
+const pStr = (p) => p < 0.001 ? 'p < .001' : 'p = ' + p.toFixed(3);
 const TOOL_URL    = '{% url "istatistik:kruskal_wallis" %}';
 const STATUS_BASE = '{% url "istatistik:kruskal_wallis_status" job_id="00000000-0000-0000-0000-000000000000" %}';
 let previewId = null, previewFilename = null, pollInterval = null;
@@ -333,7 +338,7 @@ function onCompleted(data) {
   }
 
   document.getElementById('res-conclusion').textContent = r.conclusion;
-  const apa = `Kruskal-Wallis H testi sonucunda ${r.group_col} grupları arasında ${r.dep_col} açısından ${r.significant ? 'istatistiksel olarak anlamlı bir fark bulunmuştur' : 'anlamlı bir fark bulunmamıştır'}, H(${r.df}) = ${r.h_stat.toFixed(3)}, p = ${r.p_value < 0.001 ? '< .001' : r.p_value.toFixed(3)}, η² = ${r.eta_sq.toFixed(3)} (${r.effect_interpretation}).`;
+  const apa = fmt(r.significant ? T.apaSig : T.apaNs, {group: r.group_col, dep: r.dep_col, df: r.df, h: r.h_stat.toFixed(3), p: pStr(r.p_value), eta: r.eta_sq.toFixed(3), effect: r.effect_interpretation});
   document.getElementById('res-apa').textContent = apa;
   document.getElementById('pdf-btn').href = data.pdf_url;
   showPanel('done');

@@ -416,7 +416,12 @@ const T = {
   sigNo: '{% trans "✗ İstatistiksel olarak anlamlı fark yok (p ≥ .05)" as t %}{{ t|escapejs }}',
   copied: '{% trans "Kopyalandı" as t %}{{ t|escapejs }}',
   maxSize: '{{ t_max_size|escapejs }}',
+  // APA / sonuç metinleri — servis (PDF) ile aynı msgid'ler, {süslü} yer tutucular
+  apaInd: '{% trans "{group} grupları ({g1} ve {g2}) arasındaki {dep} farkı {test} ile test edilmiştir: t({df}) = {t}, {p}, d = {d} ({g1}: M = {m1}, SS = {s1}; {g2}: M = {m2}, SS = {s2})." as t %}{{ t|escapejs }}',
+  apaPaired: '{% trans "{c1} ve {c2} arasındaki fark {test} ile test edilmiştir: t({df}) = {t}, {p}, d = {d}." as t %}{{ t|escapejs }}',
 };
+const fmt = (s, o) => s.replace(/\{(\w+)\}/g, (m, k) => (k in o ? o[k] : m));
+const pStr = (p) => p < 0.001 ? 'p < .001' : 'p = ' + p.toFixed(3);
 const TTESTI_URL = '{% url "istatistik:ttesti" %}';
 const STATUS_BASE = '{% url "istatistik:ttesti_status" job_id="00000000-0000-0000-0000-000000000000" %}';
 let previewId = null, previewFilename = null, currentJobId = null, pollInterval = null;
@@ -574,9 +579,9 @@ function onCompleted(data) {
 
   let apa;
   if (r.test_type === 'independent') {
-    apa = `${r.group_col} grupları (${r.g1_label} ve ${r.g2_label}) arasındaki ${r.dep_col} farkı ${r.test_label} ile test edilmiştir: t(${r.df}) = ${r.t_stat.toFixed(3)}, p = ${r.p_value < 0.001 ? '< .001' : r.p_value.toFixed(3)}, d = ${r.cohens_d.toFixed(3)} (${r.g1_label}: M = ${r.g1_mean.toFixed(3)}, SS = ${r.g1_std.toFixed(3)}; ${r.g2_label}: M = ${r.g2_mean.toFixed(3)}, SS = ${r.g2_std.toFixed(3)}).`;
+    apa = fmt(T.apaInd, {group: r.group_col, g1: r.g1_label, g2: r.g2_label, dep: r.dep_col, test: r.test_label, df: r.df, t: r.t_stat.toFixed(3), p: pStr(r.p_value), d: r.cohens_d.toFixed(3), m1: r.g1_mean.toFixed(3), s1: r.g1_std.toFixed(3), m2: r.g2_mean.toFixed(3), s2: r.g2_std.toFixed(3)});
   } else {
-    apa = `${r.col1} ve ${r.col2} arasındaki fark ${r.test_label} ile test edilmiştir: t(${r.df}) = ${r.t_stat.toFixed(3)}, p = ${r.p_value < 0.001 ? '< .001' : r.p_value.toFixed(3)}, d = ${r.cohens_d.toFixed(3)}.`;
+    apa = fmt(T.apaPaired, {c1: r.col1, c2: r.col2, test: r.test_label, df: r.df, t: r.t_stat.toFixed(3), p: pStr(r.p_value), d: r.cohens_d.toFixed(3)});
   }
   document.getElementById('res-apa').textContent = apa;
   document.getElementById('pdf-btn').href = data.pdf_url;

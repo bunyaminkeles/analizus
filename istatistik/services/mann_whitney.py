@@ -4,29 +4,29 @@ Mann-Whitney U Testi (Wilcoxon sıra toplamı testi).
 t-testinin parametrik olmayan alternatifi.
 """
 import io
+from django.utils.translation import gettext
 import numpy as np
 from scipy import stats
 
 
 def analyze(df, group_col: str, dep_col: str) -> dict:
     if group_col not in df.columns:
-        raise ValueError(f'"{group_col}" sütunu bulunamadı.')
+        raise ValueError(gettext('"%(group_col)s" sütunu bulunamadı.') % {'group_col': group_col})
     if dep_col not in df.columns:
-        raise ValueError(f'"{dep_col}" sütunu bulunamadı.')
+        raise ValueError(gettext('"%(dep_col)s" sütunu bulunamadı.') % {'dep_col': dep_col})
 
     sub = df[[group_col, dep_col]].dropna()
     groups = sub[group_col].unique()
     if len(groups) != 2:
         raise ValueError(
-            f'Mann-Whitney U testi için tam 2 grup gereklidir. '
-            f'"{group_col}" sütununda {len(groups)} farklı değer bulundu.')
+            gettext('Mann-Whitney U testi için tam 2 grup gereklidir. "%(group_col)s" sütununda %(groups)s farklı değer bulundu.') % {'group_col': group_col, 'groups': len(groups)})
 
     g1_label, g2_label = str(groups[0]), str(groups[1])
     g1 = sub[sub[group_col] == groups[0]][dep_col].values.astype(float)
     g2 = sub[sub[group_col] == groups[1]][dep_col].values.astype(float)
 
     if len(g1) < 3 or len(g2) < 3:
-        raise ValueError('Her grupta en az 3 gözlem olmalıdır.')
+        raise ValueError(gettext('Her grupta en az 3 gözlem olmalıdır.'))
 
     u_stat, p_val = stats.mannwhitneyu(g1, g2, alternative='two-sided')
 
@@ -58,7 +58,7 @@ def analyze(df, group_col: str, dep_col: str) -> dict:
     ]
 
     return {
-        'test_label': 'Mann-Whitney U Testi',
+        'test_label': gettext('Mann-Whitney U Testi'),
         'group_col': group_col,
         'dep_col': dep_col,
         'g1_label': g1_label,
@@ -76,22 +76,27 @@ def analyze(df, group_col: str, dep_col: str) -> dict:
 
 def _interpret_r(r: float) -> str:
     if r < 0.1:
-        return 'İhmal edilebilir etki (r < .10)'
+        return gettext('İhmal edilebilir etki (r < .10)')
     if r < 0.3:
-        return 'Küçük etki (.10 ≤ r < .30)'
+        return gettext('Küçük etki (.10 ≤ r < .30)')
     if r < 0.5:
-        return 'Orta düzey etki (.30 ≤ r < .50)'
-    return 'Büyük etki (r ≥ .50)'
+        return gettext('Orta düzey etki (.30 ≤ r < .50)')
+    return gettext('Büyük etki (r ≥ .50)')
 
 
 def _conclusion(p, g1, g2, dep, med1, med2) -> str:
-    dir_str = 'daha yüksek' if med1 > med2 else 'daha düşük'
+    # Tam cümle msgid'ler (yön parçası + 'tir' eki çevrilemez)
+    v = {'g1': g1, 'g2': g2, 'dep': dep, 'p': f'{p:.4f}', 'm1': f'{med1:.3f}', 'm2': f'{med2:.3f}'}
     if float(p) < 0.05:
-        return (f'{g1} grubu ile {g2} grubu arasında {dep} açısından '
-                f'istatistiksel olarak anlamlı bir fark bulunmaktadır (p = {p:.4f}). '
-                f'{g1} grubunun medyanı ({med1:.3f}), {g2} grubuna ({med2:.3f}) göre {dir_str}tir.')
-    return (f'{g1} grubu ile {g2} grubu arasında {dep} açısından '
-            f'istatistiksel olarak anlamlı bir fark bulunmamaktadır (p = {p:.4f}).')
+        if med1 > med2:
+            return gettext('{g1} grubu ile {g2} grubu arasında {dep} açısından istatistiksel olarak anlamlı '
+                           'bir fark bulunmaktadır (p = {p}). {g1} grubunun medyanı ({m1}), {g2} grubuna '
+                           '({m2}) göre daha yüksektir.').format(**v)
+        return gettext('{g1} grubu ile {g2} grubu arasında {dep} açısından istatistiksel olarak anlamlı '
+                       'bir fark bulunmaktadır (p = {p}). {g1} grubunun medyanı ({m1}), {g2} grubuna '
+                       '({m2}) göre daha düşüktür.').format(**v)
+    return gettext('{g1} grubu ile {g2} grubu arasında {dep} açısından istatistiksel olarak anlamlı '
+                   'bir fark bulunmamaktadır (p = {p}).').format(**v)
 
 
 def build_pdf(result: dict, filename: str, df=None) -> bytes:
@@ -114,13 +119,13 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
     norm_s  = ParagraphStyle('N', parent=styles['Normal'], fontName='DejaVuSans', fontSize=9)
 
     story = []
-    story.append(Paragraph('Mann-Whitney U Testi Raporu', title_s))
-    story.append(Paragraph(f'Dosya: {filename}', norm_s))
+    story.append(Paragraph(gettext('Mann-Whitney U Testi Raporu'), title_s))
+    story.append(Paragraph(gettext('Dosya: %(filename)s') % {'filename': filename}, norm_s))
     story.append(Spacer(1, 0.4*cm))
 
     # Grup istatistikleri
-    story.append(Paragraph('Grup İstatistikleri', h2_s))
-    gs_header = ['Grup', 'n', 'Medyan', 'Ort.', 'SS', 'Ort. Sıra']
+    story.append(Paragraph(gettext('Grup İstatistikleri'), h2_s))
+    gs_header = [gettext('Grup'), 'n', gettext('Medyan'), gettext('Ort.'), 'SS', gettext('Ort. Sıra')]
     gs_rows = [gs_header] + [
         [s['label'], str(s['n']), f"{s['median']:.3f}", f"{s['mean']:.3f}",
          f"{s['std']:.3f}", f"{s['mean_rank']:.3f}"]
@@ -142,14 +147,14 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
     story.append(Spacer(1, 0.5*cm))
 
     # Test sonuçları
-    story.append(Paragraph('Test Sonuçları', h2_s))
+    story.append(Paragraph(gettext('Test Sonuçları'), h2_s))
     sig = result['significant']
     res_rows = [
-        ['U istatistiği', f"{result['u_stat']:.3f}"],
-        ['p-değeri', f"{result['p_value']:.4f}"],
-        ['Etki Büyüklüğü (r)', f"{result['r_rb']:.3f}"],
-        ['Etki Yorumu', result['effect_interpretation']],
-        ['Sonuç', 'Anlamlı (p < .05)' if sig else 'Anlamlı değil (p ≥ .05)'],
+        [gettext('U istatistiği'), f"{result['u_stat']:.3f}"],
+        [gettext('p-değeri'), f"{result['p_value']:.4f}"],
+        [gettext('Etki Büyüklüğü (r)'), f"{result['r_rb']:.3f}"],
+        [gettext('Etki Yorumu'), result['effect_interpretation']],
+        [gettext('Sonuç'), gettext('Anlamlı (p < .05)') if sig else gettext('Anlamlı değil (p ≥ .05)')],
     ]
     res_tbl = Table(res_rows, colWidths=[7*cm, 9*cm])
     res_tbl.setStyle(TableStyle([
@@ -166,19 +171,22 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
     story.append(res_tbl)
     story.append(Spacer(1, 0.5*cm))
 
-    story.append(Paragraph('Yorum', h2_s))
+    story.append(Paragraph(gettext('Yorum'), h2_s))
     story.append(Paragraph(result['conclusion'], norm_s))
 
     story.append(Spacer(1, 0.5*cm))
-    story.append(Paragraph('Tezinde Nasıl Raporlarsın?', h2_s))
-    p_str = '< .001' if result['p_value'] < 0.001 else f"{result['p_value']:.3f}"
-    sig_txt = ('istatistiksel olarak anlamlı bir fark bulunmuştur'
-               if result['significant'] else 'anlamlı bir fark bulunmamıştır')
-    apa_text = (f"Mann-Whitney U testi sonucunda {result['group_col']} grupları "
-                f"({result['g1_label']} ve {result['g2_label']}) arasında "
-                f"{result['dep_col']} açısından {sig_txt}, "
-                f"U = {result['u_stat']:.3f}, p = {p_str}, "
-                f"r = {abs(result['r_rb']):.3f} ({result['effect_interpretation']}).")
+    story.append(Paragraph(gettext('APA Formatında Raporlama'), h2_s))
+    # 'p < .001' / 'p = 0.123'; anlamlı/anlamsız ayrı tam cümle — şablon JS ile ortak msgid
+    v = dict(group=result['group_col'], g1=result['g1_label'], g2=result['g2_label'], dep=result['dep_col'],
+             u=f"{result['u_stat']:.3f}",
+             p='p < .001' if result['p_value'] < 0.001 else f"p = {result['p_value']:.3f}",
+             r=f"{abs(result['r_rb']):.3f}", effect=result['effect_interpretation'])
+    if result['significant']:
+        apa_text = gettext('Mann-Whitney U testi sonucunda {group} grupları ({g1} ve {g2}) arasında {dep} açısından '
+                           'istatistiksel olarak anlamlı bir fark bulunmuştur, U = {u}, {p}, r = {r} ({effect}).').format(**v)
+    else:
+        apa_text = gettext('Mann-Whitney U testi sonucunda {group} grupları ({g1} ve {g2}) arasında {dep} açısından '
+                           'anlamlı bir fark bulunmamıştır, U = {u}, {p}, r = {r} ({effect}).').format(**v)
     apa_tbl = Table([[Paragraph(apa_text, norm_s)]], colWidths=[16*cm])
     apa_tbl.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#fff8f0')),
