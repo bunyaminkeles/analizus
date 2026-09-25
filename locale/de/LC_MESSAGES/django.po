@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-25 14:29+0300\n"
+"POT-Creation-Date: 2026-09-25 14:32+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -7418,6 +7418,14 @@ msgid ""
 msgstr ""
 "Registrierung erfolgreich, aber die Bestätigungs-E-Mail konnte nicht "
 "gesendet werden. Sie können es über Ihre Profilseite erneut versuchen."
+
+#: forum/views.py:1716
+msgid ""
+"TEBRİKLER! Tüm doğrulamaları tamamladığınız için \"Güvenilir Üye\" rozeti ve"
+" 50 Puan kazandınız."
+msgstr ""
+"HERZLICHEN GLÜCKWUNSCH! Sie haben alle Verifizierungen abgeschlossen und das"
+" Abzeichen „Vertrauenswürdiges Mitglied“ sowie 50 Punkte erhalten."
 
 #: forum/views.py:1855
 msgid "Analizus hesabınızı silmek için aşağıdaki butona tıklayın."

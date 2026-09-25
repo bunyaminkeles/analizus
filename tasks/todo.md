@@ -40,7 +40,7 @@ maddelerde.
   butonu) i18n dışında — EN/DE kullanıcı silme sayfasına TR olarak ulaşır.
 - [x] **Ana sayfa hero test çipleri** — ÇEVRİLDİ (25 Eylül 2026) "t-testi · korelasyon · regresyon"
   EN/DE'de Türkçe.
-- [ ] **"Güvenilir Üye" rozet mesajı** (`_check_and_award_trust_badge`,
+- [x] **"Güvenilir Üye" rozet mesajı** — ÇEVRİLDİ (25 Eylül 2026) (`_check_and_award_trust_badge`,
   forum/views.py ~1700) Türkçe — e-posta doğrulama sonrasında çıkabiliyor.
 - [ ] **AI Asistan `/istatistik/…` linkleri** EN/DE kullanıcısını TR araç
   sayfasına götürüyor; `/analiz/<slug>/` EN/DE karşılıklarına eşlenebilir mi

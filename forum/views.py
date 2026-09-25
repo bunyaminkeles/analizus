@@ -1713,7 +1713,7 @@ def _check_and_award_trust_badge(request, user):
         score, _ = QuizScore.objects.get_or_create(user=user)
         score.total_points += 50
         score.save()
-        messages.success(request, 'TEBRİKLER! Tüm doğrulamaları tamamladığınız için "Güvenilir Üye" rozeti ve 50 Puan kazandınız.')
+        messages.success(request, gettext('TEBRİKLER! Tüm doğrulamaları tamamladığınız için "Güvenilir Üye" rozeti ve 50 Puan kazandınız.'))
 
 # --- PROFİL DETAY ---
 @login_required
