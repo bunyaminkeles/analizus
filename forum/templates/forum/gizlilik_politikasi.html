@@ -28,6 +28,7 @@
         </p>
 
         <h2 class="text-white mt-4 mb-2" style="font-size: 1.2rem;">{% trans "2. Kişisel Verilerin İşlenme Amaçları ve Hukuki Sebepleri" %}</h2>
+        {% trans "Veri Kategorisi" as lbl_cat %}{% trans "Amaç" as lbl_purpose %}{% trans "Hukuki Sebep" as lbl_basis %}
         <div class="ax-kvkk-table-wrap mb-3">
             <table class="ax-kvkk-table">
                 <thead>
@@ -39,34 +40,34 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td>{% trans "Kimlik, İletişim, Hesap" %}</td>
-                        <td>{% trans "Üyelik ve Kullanıcı Yönetimi" %}</td>
-                        <td>{% trans "Sözleşmenin İfası" %}</td>
+                        <td data-label="{{ lbl_cat }}">{% trans "Kimlik, İletişim, Hesap" %}</td>
+                        <td data-label="{{ lbl_purpose }}">{% trans "Üyelik ve Kullanıcı Yönetimi" %}</td>
+                        <td data-label="{{ lbl_basis }}">{% trans "Sözleşmenin İfası" %}</td>
                     </tr>
                     <tr>
-                        <td>{% trans "Analiz Dosyaları" %}</td>
-                        <td>{% trans "Hizmetin Sağlanması" %}</td>
-                        <td>{% trans "Sözleşmenin İfası" %}</td>
+                        <td data-label="{{ lbl_cat }}">{% trans "Analiz Dosyaları" %}</td>
+                        <td data-label="{{ lbl_purpose }}">{% trans "Hizmetin Sağlanması" %}</td>
+                        <td data-label="{{ lbl_basis }}">{% trans "Sözleşmenin İfası" %}</td>
                     </tr>
                     <tr>
-                        <td>{% trans "AI Asistan'a yazılan sorular" %}</td>
-                        <td>{% trans "Yanıt üretilmesi" %}</td>
-                        <td>{% trans "Sözleşmenin İfası" %}</td>
+                        <td data-label="{{ lbl_cat }}">{% trans "AI Asistan'a yazılan sorular" %}</td>
+                        <td data-label="{{ lbl_purpose }}">{% trans "Yanıt üretilmesi" %}</td>
+                        <td data-label="{{ lbl_basis }}">{% trans "Sözleşmenin İfası" %}</td>
                     </tr>
                     <tr>
-                        <td>{% trans "İletişim, proje ve eğitim talep formları" %}</td>
-                        <td>{% trans "Talebin yanıtlanması" %}</td>
-                        <td>{% trans "Sözleşmenin kurulması / Meşru Menfaat" %}</td>
+                        <td data-label="{{ lbl_cat }}">{% trans "İletişim, proje ve eğitim talep formları" %}</td>
+                        <td data-label="{{ lbl_purpose }}">{% trans "Talebin yanıtlanması" %}</td>
+                        <td data-label="{{ lbl_basis }}">{% trans "Sözleşmenin kurulması / Meşru Menfaat" %}</td>
                     </tr>
                     <tr>
-                        <td>{% trans "Zorunlu çerezler (oturum, güvenlik, dil ve çerez tercihi)" %}</td>
-                        <td>{% trans "Güvenlik ve oturum yönetimi" %}</td>
-                        <td>{% trans "Meşru Menfaat" %}</td>
+                        <td data-label="{{ lbl_cat }}">{% trans "Zorunlu çerezler (oturum, güvenlik, dil ve çerez tercihi)" %}</td>
+                        <td data-label="{{ lbl_purpose }}">{% trans "Güvenlik ve oturum yönetimi" %}</td>
+                        <td data-label="{{ lbl_basis }}">{% trans "Meşru Menfaat" %}</td>
                     </tr>
                     <tr>
-                        <td>{% trans "Analiz çerezleri (Google Analytics)" %}</td>
-                        <td>{% trans "Site kullanım istatistikleri" %}</td>
-                        <td>{% trans "Açık Rıza" %}</td>
+                        <td data-label="{{ lbl_cat }}">{% trans "Analiz çerezleri (Google Analytics)" %}</td>
+                        <td data-label="{{ lbl_purpose }}">{% trans "Site kullanım istatistikleri" %}</td>
+                        <td data-label="{{ lbl_basis }}">{% trans "Açık Rıza" %}</td>
                     </tr>
                 </tbody>
             </table>
@@ -146,32 +147,79 @@
     </div>
 
     <style>
-    .ax-kvkk-table-wrap {
-        overflow-x: auto;
-        border: 1px solid var(--ax-border-default);
-        border-radius: var(--ax-radius-lg);
-    }
+    /* Mobil önce: dar ekranda her satır bir kart, hücre başında sütun adı
+       (data-label); 576px+ klasik tablo. Önceden telefonda yatay kaydırma
+       gerekiyordu ve "Hukuki Sebep" sütunu ekran dışında kalıyordu. */
     .ax-kvkk-table {
         width: 100%;
         border-collapse: collapse;
         font-size: var(--ax-text-sm);
     }
-    .ax-kvkk-table th {
-        text-align: left;
+    .ax-kvkk-table thead {
+        position: absolute;
+        width: 1px; height: 1px;
+        overflow: hidden;
+        clip: rect(0 0 0 0);
+    }
+    .ax-kvkk-table tr {
+        display: block;
+        border: 1px solid var(--ax-border-hover);
+        border-radius: var(--ax-radius-lg);
         padding: var(--ax-space-3) var(--ax-space-4);
-        background: var(--ax-bg-tertiary);
-        color: var(--ax-text-primary);
-        font-weight: var(--ax-font-semibold);
-        border-bottom: 1px solid var(--ax-border-default);
-        white-space: nowrap;
+        margin-bottom: var(--ax-space-3);
     }
     .ax-kvkk-table td {
-        padding: var(--ax-space-3) var(--ax-space-4);
+        display: block;
+        padding: var(--ax-space-1) 0;
         color: var(--ax-text-primary);
-        border-bottom: 1px solid var(--ax-border-default);
     }
-    .ax-kvkk-table tbody tr:last-child td { border-bottom: none; }
-    .ax-kvkk-table tbody tr:hover td { background: var(--ax-bg-tertiary); color: var(--ax-text-primary); }
+    .ax-kvkk-table td::before {
+        content: attr(data-label);
+        display: block;
+        font-size: 0.75rem;
+        color: var(--ax-text-secondary);
+    }
+    .ax-kvkk-table td:first-child { font-weight: var(--ax-font-semibold); }
+
+    @media (min-width: 576px) {
+        .ax-kvkk-table-wrap {
+            border: 1px solid var(--ax-border-default);
+            border-radius: var(--ax-radius-lg);
+            overflow: hidden;
+        }
+        .ax-kvkk-table thead {
+            position: static;
+            width: auto; height: auto;
+            overflow: visible;
+            clip: auto;
+            display: table-header-group;
+        }
+        .ax-kvkk-table tr {
+            display: table-row;
+            border: 0;
+            border-radius: 0;
+            padding: 0;
+            margin: 0;
+        }
+        .ax-kvkk-table th {
+            text-align: left;
+            padding: var(--ax-space-3) var(--ax-space-4);
+            background: var(--ax-bg-tertiary);
+            color: var(--ax-text-primary);
+            font-weight: var(--ax-font-semibold);
+            border-bottom: 1px solid var(--ax-border-default);
+            white-space: nowrap;
+        }
+        .ax-kvkk-table td {
+            display: table-cell;
+            padding: var(--ax-space-3) var(--ax-space-4);
+            border-bottom: 1px solid var(--ax-border-default);
+        }
+        .ax-kvkk-table td::before { content: none; }
+        .ax-kvkk-table td:first-child { font-weight: inherit; }
+        .ax-kvkk-table tbody tr:last-child td { border-bottom: none; }
+        .ax-kvkk-table tbody tr:hover td { background: var(--ax-bg-tertiary); color: var(--ax-text-primary); }
+    }
     </style>
 
 </div>

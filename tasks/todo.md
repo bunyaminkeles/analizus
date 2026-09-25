@@ -68,7 +68,7 @@ maddelerde.
   forum/ai_service.py (import yok), istatistik/tool_base.html (referans yok).
   Sayfalar 200, pytest 61/61. `forum/tasks.py` (Celery, bağlı değil — analizus.md
   §23) bu tura dahil edilmedi.
-- [ ] **Gizlilik tablosu mobilde yatay kayıyor** (kozmetik; kart düzeni?).
+- [x] **Gizlilik tablosu mobilde yatay kayıyor** — ÇÖZÜLDÜ (25 Eylül 2026): mobil önce kart düzeni (data-label ile sütun adı, 3 dil), 576px+ tablo; 390/1100px ekran görüntüsüyle doğrulandı.
 - [x] **Float buton çakışması** — ARTIK YOK (25 Eylül 2026 doğrulandı): kodda
   sabit (position:fixed) duran tek buton AI Asistan; WhatsApp/Destekçi sabit
   butonları kaldırılmış (sayfa içi link olarak duruyor). 390px ve 700px ekran
