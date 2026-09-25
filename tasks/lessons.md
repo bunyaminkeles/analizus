@@ -41,3 +41,15 @@ bağlama uygunluk için kontrol et; farklı anlamdaysa `context` ekle.
 yorum saymadı, metin sayfada göründü (render testinde yakalandı).
 **Kural:** Çok satırlı şablon yorumu için her zaman `{% comment %}…{% endcomment %}`.
 Şablona yorum ekledikten sonra render edilmiş HTML'de `{#` / `#}` ara.
+
+## grep -v ile dosya adı filtrelerken alt dizgi tuzağı (25 Eylül 2026)
+**Hata:** "Silme işlemini yapan kod var mı?" aranırken `grep ... | grep -v
+"views.py\|models.py"` kullanıldı — `views.py` alt dizgisi `api_views.py`'yi de
+eledi; var olan cron (`cron_process_account_deletions`) görülmedi ve kullanıcıya
+"silen kod yok" diye YANLIŞ bulgu raporlandı, gizlilik metninden gereksiz yere
+bir ifade çıkarıldı. Ayrıca önceki aramada `head -10` sonuçları kesmişti.
+**Kural:** "X yok" demeden önce filtresiz tam arama yap (`grep -rn` + `head`
+yok); dosya elerken tam yol/`--exclude` kullan (`grep -v "/views.py:"` değil
+`--exclude=views.py`). Olumsuz bulguyu raporlamadan önce analizus.md'de de ara
+(orada dokümante edilmişti). Yokluk iddiası = en yüksek doğrulama çıtası.
+

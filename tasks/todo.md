@@ -11,10 +11,17 @@ bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
 **A. Kod işleri (öncelik sırasıyla)**
-- [ ] **Hesap silme vaadi uygulanmıyor (KVKK/GDPR, ÖNEMLİ):** "30 gün içinde
-  silinir" deniyor ama silen kod yok. Karar: neyin silineceği / anonimleşeceği
-  (forum gönderileri, ilanlar, mesajlar, dosyalar). Sonra yönetim komutu +
-  cron + silme mesajının çevirisi + gizlilik metnine "30 gün" ekleme.
+- [ ] **Hesap silme cron'u kullanıcı kararlarına uydurulacak** (25 Eylül 2026).
+  DÜZELTME: 24 Eylül'deki "silen kod yok" bulgusu YANLIŞTI — işlev var:
+  `forum/api_views.py` `cron_process_account_deletions`, Hetzner crontab
+  `0 3 * * *`, nginx logunda 23-25 Eylül her gün 200 (processed: 0).
+  Kullanıcı kararları (25 Eylül): açık içerik anonimleştir ✅ (zaten öyle);
+  DM'ler karşı tarafta kalsın ❌ (kod ikisini de siliyor); mali kayıt anonim
+  sakla ⚠️ (Donation.name/email temizlenmiyor); 30 gün içinde giriş yapınca
+  iptal ❌ (yok). Ek eksik: tarama/analiz işleri+dosyaları, bildirim,
+  PageView, quiz skorları, oda üyelikleri, takip listesi silinmiyor; açık
+  ilanlar iptal edilmiyor. Silme mesajı çevrilmemiş. Plan kullanıcı onayı
+  bekliyor. Bitince gizlilik metnine "30 gün içinde silinir" geri eklenir.
 - [ ] **Ana sayfa hero test çipleri** "t-testi · korelasyon · regresyon"
   EN/DE'de Türkçe.
 - [ ] **"Güvenilir Üye" rozet mesajı** (`_check_and_award_trust_badge`,
@@ -53,8 +60,10 @@ maddelerde.
   dosyaları EN/DE olacak mı?
 - [ ] "Ufak tefek aksamalar" listesi kullanıcıdan alınacak (cilalama turu).
 
-- [ ] **CRON_SECRET_KEY yenileme (düşük risk):** 25 Eylül 2026'da crontab
-  ekran görüntüsünde anahtarın büyük kısmı görüldü (yerel oturum). Yenilenirse
+- [ ] **CRON_SECRET_KEY yenileme:** 25 Eylül 2026'da anahtarın TAMAMI
+  nginx log çıktısıyla sohbete yapıştırıldı (yerel oturum). Ayrıca anahtar
+  `?secret=` ile URL'de gittiği için nginx access loguna düz metin yazılıyor —
+  yenilerken `X-Cron-Secret` header'ına geçmek de değerlendirilmeli. Yenilenirse
   `.env` + Hetzner crontab'daki TÜM `/api/cron/*` satırları birlikte güncellenmeli.
 
 **C. Canlıya alma (yalnızca kullanıcı "merge et" deyince)**
@@ -143,13 +152,7 @@ URL taşıma + şablon + sitemap(static-i18n) + robots.txt.
   yerelden yüklüyor, gstatic preconnect / googleapis dns-prefetch kaldırıldı.
   Net-log ile doğrulandı: sayfadan fonts.googleapis/gstatic isteği yok.
   Deploy'da `collectstatic` şart (yeni statik dosyalar).
-- [ ] **ÖNEMLİ — Hesap silme vaadi uygulanmıyor (KVKK/GDPR):** `confirm
-  deletion` view'ı (forum/views.py ~1873) `deletion_requested_at` yazıp
-  kullanıcıyı pasifleştiriyor ve "verileriniz 30 gün içinde kalıcı olarak
-  silinecektir" diyor; ama bu alanı okuyup silen hiçbir cron/komut yok
-  (grep: yalnızca views/models). Gerekli: 30 günü dolanları silen/anonimleştiren
-  yönetim komutu + cron; neyin silinip neyin anonimleşeceği (forum gönderileri,
-  pazar ilanları, mesajlar) kullanıcı kararı. Mesaj da çevrilmemiş.
+- [x] ~~ÖNEMLİ — Hesap silme vaadi uygulanmıyor~~ — YANLIŞ BULGU (25 Eylül 2026 düzeltildi): cron mevcut ve çalışıyor; bkz. AÇIK İŞLER'deki "Hesap silme cron'u kullanıcı kararlarına uydurulacak".
 - [ ] **Küçük i18n kaçağı (B sırasında görüldü):** ana sayfa hero'sundaki test
   çipleri "t-testi · korelasyon · regresyon" EN/DE'de Türkçe kalıyor.
 - [x] **C. Gizlilik sayfası: KVKK çevirisi + GDPR bölümü** — TAMAMLANDI
@@ -159,9 +162,9 @@ URL taşıma + şablon + sitemap(static-i18n) + robots.txt.
   çevrildi, URL i18n'e + StaticI18nSitemap'e taşındı. [KARAR] cümleleri ve
   "30 gün içinde silinir" BİLEREK çıkarıldı — aşağıdaki maddeye bak.
 - [ ] **Gizlilik metnine eklenecekler — karar/uygulama bekliyor:**
-  - **"Hesap silme talebinden sonra 30 gün içinde silinir"** — önce silme
-    işlevi gerçekten çalışır hale getirilmeli (aşağıdaki ÖNEMLİ madde), sonra
-    GDPR "Saklama süreleri" maddesine eklenir.
+  - **"Hesap silme talebinden sonra 30 gün içinde silinir"** — işlev zaten
+    çalışıyor (24 Eylül bulgusu yanlıştı); cron kullanıcı kararlarına
+    uydurulunca GDPR "Saklama süreleri" maddesine geri eklenir.
   - **AB dışı aktarım güvencesi** (Google, Groq → ABD): SCC ve/veya AB-ABD
     Veri Gizliliği Çerçevesi — sağlayıcı sözleşmeleri kontrol edilmeli.
   - **KVKK md. 9 yurt dışı aktarım** (2024 değişikliği): standart sözleşme +
