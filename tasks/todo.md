@@ -62,10 +62,12 @@ maddelerde.
 - [x] **Başarısız test: `test_yoktez_job_daily_limit_normal_user`** — ÇÖZÜLDÜ
   (25 Eylül 2026): test eskimişti; limit fa1c281 (18 Mayıs 2026) ile bilinçli
   olarak herkese 3 yapılmış. Test 3'e güncellendi → pytest 61/61.
-- [ ] **Ölü kod temizliği** (ayrı onayla): `forum/templates/registration/
-  password_reset_*.html` (templates/registration gölgeliyor),
-  `forum/ai_service.py` (hiçbir yerden import edilmiyor, openai kullanıyor),
-  `tool_base.html`.
+- [x] **Ölü kod temizliği** — TAMAMLANDI (25 Eylül 2026, kullanıcı onayı):
+  forum/templates/registration/password_reset_{form,done,confirm,complete}.html
+  (templates/registration gölgeliyordu — get_template ile doğrulandı),
+  forum/ai_service.py (import yok), istatistik/tool_base.html (referans yok).
+  Sayfalar 200, pytest 61/61. `forum/tasks.py` (Celery, bağlı değil — analizus.md
+  §23) bu tura dahil edilmedi.
 - [ ] **Gizlilik tablosu mobilde yatay kayıyor** (kozmetik; kart düzeni?).
 - [ ] **Float buton çakışması** (AI/WhatsApp/destek, dar ekran) — alttaki
   "AYRI BULGU" maddesi.
