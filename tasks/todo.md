@@ -49,8 +49,12 @@ maddelerde.
   8000 token/dk + 1000 istek/gün (istek ≈ 2900 token → dakikada ~2-3 soru).
   Yoğunlukta 429 hatası; kullanıcı başı 30/gün limiti bunu korumaz.
   Karar: ücretli katman / max_tokens düşürme / talimatı kısaltma.
-- [ ] **`manage.py test forum` 0 test buluyor** (forum/tests.py var ama
-  keşfedilmiyor) — test altyapısı kontrol edilmeli.
+- [x] ~~`manage.py test forum` 0 test buluyor~~ — ÇÖZÜLDÜ: proje pytest
+  kullanıyor (`conftest.py`, `analizdestek/test_settings.py`); doğru komut
+  `docker compose exec web python -m pytest forum/tests.py` (61 test).
+- [ ] **Başarısız test: `test_yoktez_job_daily_limit_normal_user`** (beklenen
+  1, gelen 3) — önceden beri kırık; yoktez EN/DE kapsamında değil ama limit
+  mantığı mı test mi yanlış, ayrıca incelenmeli.
 - [ ] **Ölü kod temizliği** (ayrı onayla): `forum/templates/registration/
   password_reset_*.html` (templates/registration gölgeliyor),
   `forum/ai_service.py` (hiçbir yerden import edilmiyor, openai kullanıyor),
@@ -76,11 +80,12 @@ maddelerde.
   dosyaları EN/DE olacak mı?
 - [ ] "Ufak tefek aksamalar" listesi kullanıcıdan alınacak (cilalama turu).
 
-- [ ] **GÜVENLİK — `_verify_cron_secret` beklenen anahtarı loga yazıyor**
-  (forum/api_views.py ~114: `logger.warning(f"... Beklenen='{expected_secret}'")`).
-  Yanlış anahtarla gelen HER istek gerçek anahtarı loga düşürüyor. Beklenen
-  değer loglanmamalı. Ayrıca varsayılan `'default-dev-secret-change-in-prod'`
-  — env yoksa herkes cron'u tetikleyebilir; prod'da env tanımlı mı kontrol.
+- [x] **GÜVENLİK — `_verify_cron_secret` beklenen anahtarı loga yazıyor** —
+  DÜZELTİLDİ (25 Eylül 2026): anahtar hiç loglanmıyor (yalnızca yol + IP),
+  `hmac.compare_digest`, env yoksa varsayılan anahtar yalnızca DEBUG'da
+  geçerli (prod'da red + error log). pytest: 60/61 (tek hata yoktez — önceden
+  bilinen). NOT: canlıdaki mevcut loglarda eski anahtar düz metin duruyor →
+  anahtar yenileme maddesi hâlâ geçerli.
 - [ ] **CRON_SECRET_KEY yenileme:** 25 Eylül 2026'da anahtarın TAMAMI
   nginx log çıktısıyla sohbete yapıştırıldı (yerel oturum). Ayrıca anahtar
   `?secret=` ile URL'de gittiği için nginx access loguna düz metin yazılıyor —

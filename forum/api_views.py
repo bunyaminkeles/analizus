@@ -106,14 +106,23 @@ def widget_latest_proposals(request):
 
 def _verify_cron_secret(request):
     """Cron job isteklerini doğrular"""
+    import hmac
     # Header veya query param olarak secret key kontrolü
-    secret = request.headers.get('X-Cron-Secret') or request.GET.get('secret')
-    expected_secret = os.environ.get('CRON_SECRET_KEY', 'default-dev-secret-change-in-prod')
+    secret = request.headers.get('X-Cron-Secret') or request.GET.get('secret') or ''
+    expected_secret = os.environ.get('CRON_SECRET_KEY')
+    if not expected_secret:
+        # Herkesçe bilinen varsayılan anahtar yalnızca geliştirmede geçerli
+        if not settings.DEBUG:
+            logger.error("CRON_SECRET_KEY tanımlı değil — cron istekleri reddediliyor")
+            return False
+        expected_secret = 'default-dev-secret-change-in-prod'
 
-    if secret != expected_secret:
-        logger.warning(f"CRON AUTH ERROR: Gelen='{secret}', Beklenen='{expected_secret}'")
-
-    return secret == expected_secret
+    ok = hmac.compare_digest(secret.encode(), expected_secret.encode())
+    if not ok:
+        # Anahtar (gelen ya da beklenen) ASLA loglanmaz — 25 Eylül 2026'ya kadar
+        # beklenen anahtar her hatalı istekte düz metin loga yazılıyordu
+        logger.warning(f"CRON AUTH ERROR: {request.path} ({request.META.get('REMOTE_ADDR')})")
+    return ok
 
 
 @require_GET
