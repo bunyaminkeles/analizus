@@ -82,8 +82,16 @@ maddelerde.
   Analiz ve Veri Bilimi Forumu" → "© {yıl} … Araştırma ve Analiz Platformu".
   Korunan: öğrenci segmentine özel "Tezin için:", onboarding "Akademik Destek",
   tez araçları. JSON-LD geçerli, pytest 61/61.
-- [ ] Adım 6 kapsamı: APA cümleleri, sunucu sonuç metinleri, PDF/TXT sonuç
-  dosyaları EN/DE olacak mı?
+- [ ] **Adım 6 kapsamı — ÖLÇÜLDÜ (25 Eylül 2026), karar bekliyor:** istatistik
+  servislerinde (20 dosya) çeviriye işaretlenmemiş Türkçe: EKRAN 221 metin /
+  ~1380 kelime (APA cümleleri, etki yorumları, veri uyarıları, hata mesajları),
+  PDF 300 metin / ~1190 kelime (başlık/tablo etiketleri). Türkçe değerle mantık
+  karşılaştırması YOK (güvenli). Mimari bulgular: (1) PDF ekran metinlerini
+  yeniden kullanıyor (`Paragraph(result['conclusion'])`) → yalnız ekran
+  çevrilirse PDF karışık dilli olur; (2) analiz işçi thread'inde çalışıyor
+  (`job_queue.enqueue`) → dil thread'e taşınmalı (aktif dil thread-local).
+  PDF başlığında "Tezinde Nasıl Raporlarsın?" (tez vurgusu) var. Tarayıcı:
+  scratchpad `scan_tr.py` (AST; docstring/log/gettext hariç).
 - [ ] "Ufak tefek aksamalar" listesi kullanıcıdan alınacak (cilalama turu).
 
 - [x] **GÜVENLİK — `_verify_cron_secret` beklenen anahtarı loga yazıyor** —
