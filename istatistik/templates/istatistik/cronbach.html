@@ -240,7 +240,11 @@ const T = {
   s7: '{% trans " analiz hakkı" as t %}{{ t|escapejs }}',
   s8: '{% trans " katılımcı" as t %}{{ t|escapejs }}',
   s9: '{% trans "Kopyalandı" as t %}{{ t|escapejs }}',
+  // APA / sonuç metinleri — servis (PDF) ile aynı msgid'ler, {süslü} yer tutucular
+  items: '{% trans "{n} madde" as t %}{{ t|escapejs }}',
+  apa: '{% trans "{k} maddeden oluşan ölçeğin iç tutarlılık katsayısı Cronbach Alpha değeri α = {alpha} olarak hesaplanmıştır (n = {n}). Bu değer, ölçeğin {level} düzeyde güvenilir olduğunu göstermektedir (Nunnally, 1978)." as t %}{{ t|escapejs }}',
 };
+const fmt = (s, o) => s.replace(/\{(\w+)\}/g, (m, k) => (k in o ? o[k] : m));
 const STATUS_BASE = '{% url "istatistik:cronbach_status" job_id="00000000-0000-0000-0000-000000000000" %}';
 let pollInterval = null, currentJobId = null, previewData = null;
 
@@ -359,9 +363,9 @@ function onCompleted(data) {
     const alpha = r.alpha.toFixed(3);
     document.getElementById('alpha-value').textContent = alpha;
     document.getElementById('alpha-interp').textContent = r.interpretation;
-    document.getElementById('n-items').textContent = r.n_items + ' madde';
+    document.getElementById('n-items').textContent = fmt(T.items, {n: r.n_items});
     document.getElementById('n-cases').textContent = r.n_cases + T.s8;
-    const apaText = `${r.n_items} maddeden oluşan ölçeğin iç tutarlılık katsayısı Cronbach Alpha değeri α = ${alpha} olarak hesaplanmıştır (n = ${r.n_cases}). Bu değer, ölçeğin ${(r.interpretation || '').toLowerCase()} düzeyde güvenilir olduğunu göstermektedir (Nunnally, 1978).`;
+    const apaText = fmt(T.apa, {k: r.n_items, alpha: alpha, n: r.n_cases, level: (r.interpretation || '').split(' (')[0].toLocaleLowerCase(document.documentElement.lang || 'tr')});
     document.getElementById('cronbach-apa-display').textContent = apaText;
     document.getElementById('cronbach-report-text').textContent = apaText;
     document.getElementById('cronbach-apa-box').classList.remove('d-none');

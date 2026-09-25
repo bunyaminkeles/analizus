@@ -4,6 +4,7 @@ Girdi: pandas DataFrame (her sütun bir değişken)
 """
 import io
 import numpy as np
+from django.utils.translation import gettext
 
 
 def analyze(df, columns=None) -> dict:
@@ -13,11 +14,11 @@ def analyze(df, columns=None) -> dict:
     if columns:
         valid = [c for c in columns if c in df_num.columns]
         if not valid:
-            raise ValueError('Seçilen sütunlar sayısal değil veya bulunamadı.')
+            raise ValueError(gettext('Seçilen sütunlar sayısal değil veya bulunamadı.'))
         df_num = df_num[valid]
     df_num = df_num.dropna()
     if df_num.empty:
-        raise ValueError('Hiç sayısal sütun bulunamadı.')
+        raise ValueError(gettext('Hiç sayısal sütun bulunamadı.'))
 
     results = []
     for col in df_num.columns:
@@ -41,13 +42,13 @@ def analyze(df, columns=None) -> dict:
         kurt_ok = abs(kurt) < 1.96
 
         if is_normal and skew_ok and kurt_ok:
-            recommendation = 'Parametrik test kullanılabilir'
+            recommendation = gettext('Parametrik test kullanılabilir')
             rec_color = 'success'
         elif is_normal or (skew_ok and kurt_ok):
-            recommendation = 'Parametrik test kullanılabilir (sınırda)'
+            recommendation = gettext('Parametrik test kullanılabilir (sınırda)')
             rec_color = 'warning'
         else:
-            recommendation = 'Non-parametrik test önerilir'
+            recommendation = gettext('Non-parametrik test önerilir')
             rec_color = 'danger'
 
         results.append({
@@ -65,16 +66,16 @@ def analyze(df, columns=None) -> dict:
         })
 
     if not results:
-        raise ValueError('En az 3 geçerli değere sahip sayısal değişken bulunamadı.')
+        raise ValueError(gettext('En az 3 geçerli değere sahip sayısal değişken bulunamadı.'))
 
     all_normal = all(r['is_normal'] for r in results)
     any_normal = any(r['is_normal'] for r in results)
     if all_normal:
-        overall = 'Tüm değişkenler normal dağılım gösteriyor. Parametrik testler uygundur.'
+        overall = gettext('Tüm değişkenler normal dağılım gösteriyor. Parametrik testler uygundur.')
     elif any_normal:
-        overall = 'Bazı değişkenler normal dağılımdan sapıyor. Değişken bazında karar veriniz.'
+        overall = gettext('Bazı değişkenler normal dağılımdan sapıyor. Değişken bazında karar veriniz.')
     else:
-        overall = 'Değişkenler normal dağılım göstermiyor. Non-parametrik testler önerilir.'
+        overall = gettext('Değişkenler normal dağılım göstermiyor. Non-parametrik testler önerilir.')
 
     return {'variables': results, 'overall_recommendation': overall}
 
@@ -110,15 +111,15 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
     normal = ParagraphStyle('Normal2', parent=styles['Normal'], fontName='DejaVuSans')
 
     story = []
-    story.append(Paragraph('Normallik Testi Raporu', title_style))
-    story.append(Paragraph(f'Dosya: {filename}', normal))
+    story.append(Paragraph(gettext('Normallik Testi Raporu'), title_style))
+    story.append(Paragraph(gettext('Dosya: %(filename)s') % {'filename': filename}, normal))
     story.append(Spacer(1, 0.3*cm))
     story.append(Paragraph(result['overall_recommendation'], normal))
     story.append(Spacer(1, 0.5*cm))
 
     # Özet tablo
-    story.append(Paragraph('Normallik Test Sonuçları', h2_style))
-    headers = ['Değişken', 'N', 'Ort.', 'SS', 'Çarpıklık', 'Basıklık', 'W/stat', 'p', 'Normal?']
+    story.append(Paragraph(gettext('Normallik Test Sonuçları'), h2_style))
+    headers = [gettext('Değişken'), 'N', gettext('Ort.'), gettext('SS'), gettext('Çarpıklık'), gettext('Basıklık'), 'W/stat', 'p', gettext('Normal?')]
     rows = [headers]
     for r in result['variables']:
         rows.append([
@@ -130,7 +131,7 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
             f"{r['kurtosis']:.3f}",
             f"{r['shapiro_stat']:.4f}",
             f"{r['shapiro_p']:.4f}",
-            'Evet' if r['is_normal'] else 'Hayır',
+            gettext('Evet') if r['is_normal'] else gettext('Hayır'),
         ])
 
     col_w = [3.5*cm, 1.2*cm, 1.8*cm, 1.8*cm, 2*cm, 2*cm, 2*cm, 1.8*cm, 1.8*cm]
@@ -156,7 +157,7 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
     vars_for_plot = result['variables'][:6]
     if vars_for_plot:
         story.append(Spacer(1, 0.6*cm))
-        story.append(Paragraph('Q-Q Grafikleri', h2_style))
+        story.append(Paragraph(gettext('Q-Q Grafikleri'), h2_style))
         df_num = df.select_dtypes(include=[np.number]) if df is not None else None
         for r in vars_for_plot:
             col_data = None
@@ -168,15 +169,20 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
             story.append(Spacer(1, 0.3*cm))
 
     story.append(Spacer(1, 0.5*cm))
-    story.append(Paragraph('Tezinde Nasıl Raporlarsın?', h2_style))
+    story.append(Paragraph(gettext('APA Formatında Raporlama'), h2_style))
     apa_lines = []
     for r in result['variables']:
-        dist = 'normal dağılım gösterdiği' if r['is_normal'] else 'normal dağılım göstermediği'
-        p_s = '< .001' if r['shapiro_p'] < 0.001 else str(r['shapiro_p'])
-        apa_lines.append(f"{r['variable']} değişkeninin {dist} belirlenmiştir "
-                         f"(W = {r['shapiro_stat']}, p = {p_s}).")
-    apa_text = ('Verilerin normal dağılım gösterip göstermediği Shapiro-Wilk testi ile '
-                'incelenmiştir. ' + ' '.join(apa_lines))
+        # APA: 'p < .001' ya da 'p = 0.11' (önceden 'p = < .001' yazıyordu)
+        p_s = 'p < .001' if r['shapiro_p'] < 0.001 else f"p = {r['shapiro_p']}"
+        # Tam cümle msgid — dillerde kelime sırası farklı
+        # {süslü} yer tutucu: şablondaki {% trans %} %-işaretini kaçışladığından
+        # Python ve JS ancak bu biçimde AYNI msgid'i paylaşır
+        tmpl = (gettext('{var} değişkeninin normal dağılım gösterdiği belirlenmiştir (W = {w}, {p}).')
+                if r['is_normal'] else
+                gettext('{var} değişkeninin normal dağılım göstermediği belirlenmiştir (W = {w}, {p}).'))
+        apa_lines.append(tmpl.format(var=r['variable'], w=r['shapiro_stat'], p=p_s))
+    apa_text = (gettext('Verilerin normal dağılım gösterip göstermediği Shapiro-Wilk testi ile incelenmiştir.')
+                + ' ' + ' '.join(apa_lines))
     apa_tbl = Table([[Paragraph(apa_text, normal)]], colWidths=[16*cm])
     apa_tbl.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#f0f4ff')),
@@ -201,13 +207,13 @@ def _qq_plot(r: dict, data=None) -> io.BytesIO:
     from scipy import stats as sp_stats
 
     fig, axes = plt.subplots(1, 2, figsize=(12, 4))
-    fig.suptitle(f"Değişken: {r['variable']} (N={r['n']})", fontsize=12)
+    fig.suptitle(gettext('Değişken: %(var)s (N=%(n)s)') % {'var': r['variable'], 'n': r['n']}, fontsize=12)
 
     # Histogram
     ax1 = axes[0]
-    ax1.set_title('Dağılım Histogramı')
-    ax1.set_xlabel('Değer')
-    ax1.set_ylabel('Frekans')
+    ax1.set_title(gettext('Dağılım Histogramı'))
+    ax1.set_xlabel(gettext('Değer'))
+    ax1.set_ylabel(gettext('Frekans'))
     if data is not None and len(data) > 0:
         ax1.hist(data, bins='auto', color='steelblue', edgecolor='white', alpha=0.8)
         # Normal eğrisi üst üste
@@ -216,23 +222,23 @@ def _qq_plot(r: dict, data=None) -> io.BytesIO:
         pdf = sp_stats.norm.pdf(x, loc=data.mean(), scale=data.std(ddof=1))
         ax1_twin = ax1.twinx()
         ax1_twin.plot(x, pdf, 'r-', linewidth=1.5, label='Normal')
-        ax1_twin.set_ylabel('Yoğunluk', color='red', fontsize=8)
+        ax1_twin.set_ylabel(gettext('Yoğunluk'), color='red', fontsize=8)
         ax1_twin.tick_params(axis='y', labelcolor='red', labelsize=7)
     else:
-        ax1.text(0.5, 0.5, 'Ham veri mevcut değil', ha='center', va='center',
+        ax1.text(0.5, 0.5, gettext('Ham veri mevcut değil'), ha='center', va='center',
                  transform=ax1.transAxes, color='grey')
 
     # Q-Q plot
     ax2 = axes[1]
-    ax2.set_title('Q-Q Plot (Teorik Normal)')
+    ax2.set_title(gettext('Q-Q Plot (Teorik Normal)'))
     if data is not None and len(data) > 0:
         (osm, osr), (slope, intercept, _) = sp_stats.probplot(data, dist='norm')
         ax2.scatter(osm, osr, s=15, color='steelblue', alpha=0.7)
         import numpy as _np
         line_x = _np.array([osm[0], osm[-1]])
         ax2.plot(line_x, slope * line_x + intercept, 'r-', linewidth=1.5)
-        ax2.set_xlabel('Teorik Kantiller')
-        ax2.set_ylabel('Örnek Kantiller')
+        ax2.set_xlabel(gettext('Teorik Kantiller'))
+        ax2.set_ylabel(gettext('Örnek Kantiller'))
         color = '#28a745' if r['is_normal'] else '#dc3545'
         ax2.text(0.05, 0.95,
                  f"W={r['shapiro_stat']}, p={r['shapiro_p']}",

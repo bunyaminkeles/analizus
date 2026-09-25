@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-25 21:50+0300\n"
+"POT-Creation-Date: 2026-09-25 22:03+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2055,6 +2055,7 @@ msgid "Seviye"
 msgstr "Niveau"
 
 #: forum/templates/forum/egitim_talebi.html:124
+#: istatistik/services/cronbach.py:135
 msgid "Katılımcı Sayısı"
 msgstr "Teilnehmerzahl"
 
@@ -2891,6 +2892,7 @@ msgstr ""
 #: forum/templates/forum/hangi_test.html:184 istatistik/seo_content.py:294
 #: istatistik/seo_content.py:513 istatistik/seo_content.py:568
 #: istatistik/seo_content.py:622 istatistik/seo_content.py:955
+#: istatistik/services/orneklem.py:42
 #: istatistik/templates/istatistik/orneklem.html:37
 msgid "Korelasyon Analizi"
 msgstr "Korrelationsanalyse"
@@ -3246,6 +3248,7 @@ msgid "Ortalama, SD gibi tanımlayıcı istatistikler hesaplamak"
 msgstr "Deskriptive Statistiken wie Mittelwert und SD berechnen"
 
 #: forum/templates/forum/hangi_test.html:432
+#: istatistik/services/orneklem.py:25
 #: istatistik/templates/istatistik/orneklem.html:34
 msgid "Bağımsız Örneklem t-Testi"
 msgstr "t-Test für unabhängige Stichproben"
@@ -3344,6 +3347,7 @@ msgid "Kruskal-Wallis"
 msgstr "Kruskal-Wallis"
 
 #: forum/templates/forum/hangi_test.html:465
+#: istatistik/services/orneklem.py:30
 #: istatistik/templates/istatistik/orneklem.html:35
 msgid "Bağımlı Örneklem t-Testi (Eşleştirilmiş)"
 msgstr "t-Test für abhängige (gepaarte) Stichproben"
@@ -9502,6 +9506,207 @@ msgstr ""
 "Stichproben teststärker. Ohne Normalverteilung oder bei kleiner Stichprobe "
 "liefert Wilcoxon zuverlässigere Ergebnisse."
 
+#: istatistik/services/betimsel.py:61
+msgid "Analiz edilecek sütun bulunamadı."
+msgstr "Es wurden keine zu analysierenden Spalten gefunden."
+
+#: istatistik/services/betimsel.py:95
+#: istatistik/templates/istatistik/betimsel.html:15 istatistik/views.py:167
+#: istatistik/views.py:186
+msgid "Betimleyici İstatistik Raporu"
+msgstr "Bericht zur deskriptiven Statistik"
+
+#: istatistik/services/betimsel.py:96 istatistik/services/cronbach.py:128
+#: istatistik/services/korelasyon.py:155 istatistik/services/normallik.py:115
+#, python-format
+msgid "Dosya: %(filename)s"
+msgstr "Datei: %(filename)s"
+
+#: istatistik/services/betimsel.py:96
+#, python-format
+msgid "Satır sayısı: %(n)s"
+msgstr "Zeilen: %(n)s"
+
+#: istatistik/services/betimsel.py:104
+msgid "Sürekli Değişkenler"
+msgstr "Stetige Variablen"
+
+#: istatistik/services/betimsel.py:105 istatistik/services/normallik.py:122
+#: istatistik/templates/istatistik/korelasyon.html:161
+#: istatistik/templates/istatistik/lineer_regresyon.html:208
+#: istatistik/templates/istatistik/lojistik_regresyon.html:216
+msgid "Değişken"
+msgstr "Variable"
+
+#: istatistik/services/betimsel.py:105 istatistik/services/cronbach.py:155
+#: istatistik/services/normallik.py:122
+#: istatistik/templates/istatistik/kruskal_wallis.html:320
+#: istatistik/templates/istatistik/mann_whitney.html:313
+msgid "Ort."
+msgstr "MW"
+
+#: istatistik/services/betimsel.py:105 istatistik/services/cronbach.py:155
+#: istatistik/services/normallik.py:122
+#: istatistik/templates/istatistik/kruskal_wallis.html:320
+#: istatistik/templates/istatistik/mann_whitney.html:313
+msgid "SS"
+msgstr "SD"
+
+#: istatistik/services/betimsel.py:105 istatistik/services/betimsel.py:198
+#: istatistik/templates/istatistik/kruskal_wallis.html:320
+#: istatistik/templates/istatistik/mann_whitney.html:313
+msgid "Medyan"
+msgstr "Median"
+
+#: istatistik/services/betimsel.py:105 istatistik/services/betimsel.py:198
+msgid "Maks"
+msgstr "Max"
+
+#: istatistik/services/betimsel.py:135
+msgid "Kategorik Değişkenler"
+msgstr "Kategoriale Variablen"
+
+#: istatistik/services/betimsel.py:137
+#, python-format
+msgid "%(var)s  (N=%(n)s, %(k)s kategori)"
+msgstr "%(var)s  (N=%(n)s, %(k)s Kategorien)"
+
+#: istatistik/services/betimsel.py:138 istatistik/services/betimsel.py:202
+#: istatistik/services/normallik.py:215
+msgid "Değer"
+msgstr "Wert"
+
+#: istatistik/services/betimsel.py:138 istatistik/services/betimsel.py:225
+#: istatistik/services/normallik.py:216
+msgid "Frekans"
+msgstr "Häufigkeit"
+
+#: istatistik/services/betimsel.py:138
+msgid "Yüzde (%)"
+msgstr "Prozent (%)"
+
+#: istatistik/services/betimsel.py:152 istatistik/services/cronbach.py:182
+#: istatistik/services/korelasyon.py:249 istatistik/services/normallik.py:172
+msgid "APA Formatında Raporlama"
+msgstr "Berichterstattung im APA-Format"
+
+#: istatistik/services/betimsel.py:156
+#: istatistik/templates/istatistik/betimsel.html:246
+#, python-brace-format
+msgid "{var} değişkeni için ortalama = {mean} (SS = {sd})"
+msgstr "für {var} der Mittelwert {mean} (SD = {sd})"
+
+#: istatistik/services/betimsel.py:159
+#: istatistik/templates/istatistik/betimsel.html:247
+#, python-brace-format
+msgid ""
+"Araştırmaya katılan {n} kişinin puanlarına ilişkin betimleyici istatistikler"
+" incelendiğinde {lines} olarak bulunmuştur."
+msgstr ""
+"Die deskriptive Statistik der Werte der {n} Teilnehmenden ergab {lines}."
+
+#: istatistik/services/betimsel.py:162
+#, python-brace-format
+msgid ""
+"Araştırmaya katılan {n} kişiye ait {k} değişkene ilişkin betimleyici "
+"istatistikler yukarıda sunulmuştur."
+msgstr ""
+"Die deskriptive Statistik für {k} Variablen der {n} Teilnehmenden ist oben "
+"dargestellt."
+
+#: istatistik/services/betimsel.py:201
+#, python-format
+msgid "%(var)s — Özet  (Ort=%(mean)s, SS=%(sd)s)"
+msgstr "%(var)s — Übersicht  (M=%(mean)s, SD=%(sd)s)"
+
+#: istatistik/services/betimsel.py:224
+#, python-format
+msgid "%(var)s — Frekans Dağılımı"
+msgstr "%(var)s — Häufigkeitsverteilung"
+
+#: istatistik/services/cronbach.py:15 istatistik/services/normallik.py:17
+msgid "Seçilen sütunlar sayısal değil veya bulunamadı."
+msgstr ""
+"Die ausgewählten Spalten sind nicht numerisch oder wurden nicht gefunden."
+
+#: istatistik/services/cronbach.py:22
+msgid "En az 2 sayısal sütun (madde) gereklidir."
+msgstr "Mindestens 2 numerische Spalten (Items) sind erforderlich."
+
+#: istatistik/services/cronbach.py:24
+msgid "En az 5 geçerli satır (katılımcı) gereklidir."
+msgstr "Mindestens 5 gültige Zeilen (Teilnehmende) sind erforderlich."
+
+#: istatistik/services/cronbach.py:39
+msgid "Toplam varyans sıfır — tüm satırlar aynı değere sahip."
+msgstr "Die Gesamtvarianz ist null — alle Zeilen haben denselben Wert."
+
+#: istatistik/services/cronbach.py:79
+msgid "Kabul Edilemez (α < 0.50)"
+msgstr "Inakzeptabel (α < 0.50)"
+
+#: istatistik/services/cronbach.py:81
+msgid "Düşük (0.50 ≤ α < 0.60)"
+msgstr "Schwach (0.50 ≤ α < 0.60)"
+
+#: istatistik/services/cronbach.py:83
+msgid "Kabul Edilebilir (0.60 ≤ α < 0.70)"
+msgstr "Akzeptabel (0.60 ≤ α < 0.70)"
+
+#: istatistik/services/cronbach.py:85
+msgid "İyi (0.70 ≤ α < 0.80)"
+msgstr "Gut (0.70 ≤ α < 0.80)"
+
+#: istatistik/services/cronbach.py:87
+msgid "Çok İyi (0.80 ≤ α < 0.90)"
+msgstr "Sehr gut (0.80 ≤ α < 0.90)"
+
+#: istatistik/services/cronbach.py:88
+msgid "Mükemmel (α ≥ 0.90)"
+msgstr "Exzellent (α ≥ 0.90)"
+
+#: istatistik/services/cronbach.py:127
+msgid "Güvenilirlik Analizi Raporu"
+msgstr "Bericht zur Reliabilitätsanalyse"
+
+#: istatistik/services/cronbach.py:134
+msgid "Madde Sayısı"
+msgstr "Anzahl der Items"
+
+#: istatistik/services/cronbach.py:137
+#: istatistik/templates/istatistik/cronbach.html:147
+#: istatistik/templates/istatistik/orneklem.html:161
+msgid "Yorum"
+msgstr "Interpretation"
+
+#: istatistik/services/cronbach.py:154 istatistik/views.py:94
+msgid "Madde İstatistikleri"
+msgstr "Itemstatistiken"
+
+#: istatistik/services/cronbach.py:155
+msgid "Madde"
+msgstr "Item"
+
+#: istatistik/services/cronbach.py:155
+msgid "Düz. M-T Kor."
+msgstr "Korr. Item-Skala"
+
+#: istatistik/services/cronbach.py:155
+msgid "Silinince α"
+msgstr "α bei Ausschluss"
+
+#: istatistik/services/cronbach.py:184
+#: istatistik/templates/istatistik/cronbach.html:245
+#, python-brace-format
+msgid ""
+"{k} maddeden oluşan ölçeğin iç tutarlılık katsayısı Cronbach Alpha değeri α "
+"= {alpha} olarak hesaplanmıştır (n = {n}). Bu değer, ölçeğin {level} düzeyde"
+" güvenilir olduğunu göstermektedir (Nunnally, 1978)."
+msgstr ""
+"Die interne Konsistenz der Skala mit {k} Items wurde mit Cronbachs Alpha "
+"bestimmt, α = {alpha} (n = {n}). Dieser Wert zeigt, dass die Reliabilität "
+"der Skala {level} ist (Nunnally, 1978)."
+
 #: istatistik/services/data_validator.py:69
 #, python-format
 msgid "+%(count)s sütun"
@@ -9534,11 +9739,11 @@ msgstr ""
 "Likert-Bereichs 1–7 gefunden: %(values)s. Diese Werte können die Ergebnisse "
 "beeinflussen."
 
-#: istatistik/services/data_validator.py:121
+#: istatistik/services/data_validator.py:122
 msgid "Olası ID alanı bulundu"
 msgstr "Mögliche ID-Spalte gefunden"
 
-#: istatistik/services/data_validator.py:122
+#: istatistik/services/data_validator.py:123
 #, python-format
 msgid ""
 "Analizde kullanılmaması önerilen aşağıdaki alanlar bulundu: %(cols)s. Bu tür"
@@ -9547,11 +9752,11 @@ msgstr ""
 "Folgende Spalten sollten nicht in die Analyse einbezogen werden: %(cols)s. "
 "Solche Kennungsspalten verfälschen in der Regel die Ergebnisse."
 
-#: istatistik/services/data_validator.py:129
+#: istatistik/services/data_validator.py:130
 msgid "Sayısal olmayan sütunlar"
 msgstr "Nicht-numerische Spalten"
 
-#: istatistik/services/data_validator.py:130
+#: istatistik/services/data_validator.py:131
 #, python-format
 msgid "Analize sayısal olarak dahil edilmeyecek sütunlar: %(cols)s."
 msgstr ""
@@ -9587,6 +9792,294 @@ msgid "En az 5 satır (katılımcı/gözlem) gereklidir, %(count)s satır bulund
 msgstr ""
 "Mindestens 5 Zeilen (Teilnehmende/Beobachtungen) sind erforderlich; "
 "%(count)s gefunden."
+
+#: istatistik/services/korelasyon.py:33
+msgid "En az 2 sayısal sütun (değişken) gereklidir."
+msgstr "Mindestens 2 numerische Spalten (Variablen) sind erforderlich."
+
+#: istatistik/services/korelasyon.py:35
+msgid "En az 5 geçerli satır (gözlem) gereklidir."
+msgstr "Mindestens 5 gültige Zeilen (Beobachtungen) sind erforderlich."
+
+#: istatistik/services/korelasyon.py:113
+#, python-format
+msgid "%(method)s Korelasyon Matrisi"
+msgstr "%(method)s-Korrelationsmatrix"
+
+#: istatistik/services/korelasyon.py:154
+msgid "Korelasyon Matrisi Raporu"
+msgstr "Bericht zur Korrelationsmatrix"
+
+#: istatistik/services/korelasyon.py:159
+#: istatistik/templates/istatistik/korelasyon.html:173
+#: istatistik/templates/istatistik/korelasyon.html:217
+msgid "Yöntem"
+msgstr "Methode"
+
+#: istatistik/services/korelasyon.py:160
+msgid "Değişken Sayısı"
+msgstr "Anzahl der Variablen"
+
+#: istatistik/services/korelasyon.py:161
+msgid "Gözlem Sayısı"
+msgstr "Anzahl der Beobachtungen"
+
+#: istatistik/services/korelasyon.py:183
+#: istatistik/templates/istatistik/korelasyon.html:180
+msgid "Korelasyon Isı Haritası"
+msgstr "Korrelations-Heatmap"
+
+#: istatistik/services/korelasyon.py:188
+#: istatistik/templates/istatistik/korelasyon.html:185
+msgid "Korelasyon Katsayıları (r)"
+msgstr "Korrelationskoeffizienten (r)"
+
+#: istatistik/services/korelasyon.py:221
+msgid "P-Değerleri"
+msgstr "p-Werte"
+
+#: istatistik/services/korelasyon.py:244
+msgid ""
+"Not: Yeşil hücreler p &lt; 0.05 anlamına gelir (istatistiksel olarak "
+"anlamlı)."
+msgstr "Hinweis: Grüne Zellen bedeuten p &lt; 0.05 (statistisch signifikant)."
+
+#: istatistik/services/korelasyon.py:251
+#: istatistik/templates/istatistik/korelasyon.html:289
+#, python-brace-format
+msgid ""
+"Değişkenler arasındaki ilişkiler {method} korelasyon analizi ile "
+"incelenmiştir (n = {n}). Korelasyon katsayıları ve p-değerleri raporun ek "
+"tablosunda sunulmuştur (Cohen, 1988)."
+msgstr ""
+"Die Zusammenhänge zwischen den Variablen wurden mit einer "
+"{method}-Korrelationsanalyse untersucht (n = {n}). Korrelationskoeffizienten"
+" und p-Werte sind in der Anhangstabelle des Berichts aufgeführt (Cohen, "
+"1988)."
+
+#: istatistik/services/normallik.py:21
+msgid "Hiç sayısal sütun bulunamadı."
+msgstr "Es wurden keine numerischen Spalten gefunden."
+
+#: istatistik/services/normallik.py:45
+msgid "Parametrik test kullanılabilir"
+msgstr "Ein parametrischer Test kann verwendet werden"
+
+#: istatistik/services/normallik.py:48
+msgid "Parametrik test kullanılabilir (sınırda)"
+msgstr "Ein parametrischer Test kann verwendet werden (Grenzfall)"
+
+#: istatistik/services/normallik.py:51
+msgid "Non-parametrik test önerilir"
+msgstr "Ein nichtparametrischer Test wird empfohlen"
+
+#: istatistik/services/normallik.py:69
+msgid "En az 3 geçerli değere sahip sayısal değişken bulunamadı."
+msgstr ""
+"Es wurde keine numerische Variable mit mindestens 3 gültigen Werten "
+"gefunden."
+
+#: istatistik/services/normallik.py:74
+msgid ""
+"Tüm değişkenler normal dağılım gösteriyor. Parametrik testler uygundur."
+msgstr ""
+"Alle Variablen sind normalverteilt. Parametrische Tests sind geeignet."
+
+#: istatistik/services/normallik.py:76
+msgid ""
+"Bazı değişkenler normal dağılımdan sapıyor. Değişken bazında karar veriniz."
+msgstr ""
+"Einige Variablen weichen von der Normalverteilung ab. Entscheiden Sie für "
+"jede Variable einzeln."
+
+#: istatistik/services/normallik.py:78
+msgid ""
+"Değişkenler normal dağılım göstermiyor. Non-parametrik testler önerilir."
+msgstr ""
+"Die Variablen sind nicht normalverteilt. Nichtparametrische Tests werden "
+"empfohlen."
+
+#: istatistik/services/normallik.py:114
+msgid "Normallik Testi Raporu"
+msgstr "Bericht zum Normalitätstest"
+
+#: istatistik/services/normallik.py:121
+msgid "Normallik Test Sonuçları"
+msgstr "Ergebnisse des Normalitätstests"
+
+#: istatistik/services/normallik.py:122
+msgid "Çarpıklık"
+msgstr "Schiefe"
+
+#: istatistik/services/normallik.py:122
+msgid "Basıklık"
+msgstr "Kurtosis"
+
+#: istatistik/services/normallik.py:122
+msgid "Normal?"
+msgstr "Normal?"
+
+#: istatistik/services/normallik.py:134
+#: istatistik/templates/istatistik/friedman.html:426
+#: istatistik/templates/istatistik/tekrarli_anova.html:424
+msgid "Evet"
+msgstr "Ja"
+
+#: istatistik/services/normallik.py:134
+#: istatistik/templates/istatistik/friedman.html:426
+#: istatistik/templates/istatistik/ki_kare.html:230
+#: istatistik/templates/istatistik/tekrarli_anova.html:424
+msgid "Hayır"
+msgstr "Nein"
+
+#: istatistik/services/normallik.py:160
+msgid "Q-Q Grafikleri"
+msgstr "Q-Q-Plots"
+
+#: istatistik/services/normallik.py:180
+#: istatistik/templates/istatistik/normallik.html:226
+#, python-brace-format
+msgid ""
+"{var} değişkeninin normal dağılım gösterdiği belirlenmiştir (W = {w}, {p})."
+msgstr "{var} erwies sich als normalverteilt (W = {w}, {p})."
+
+#: istatistik/services/normallik.py:182
+#: istatistik/templates/istatistik/normallik.html:227
+#, python-brace-format
+msgid ""
+"{var} değişkeninin normal dağılım göstermediği belirlenmiştir (W = {w}, "
+"{p})."
+msgstr "{var} erwies sich als nicht normalverteilt (W = {w}, {p})."
+
+#: istatistik/services/normallik.py:184
+#: istatistik/templates/istatistik/normallik.html:225
+msgid ""
+"Verilerin normal dağılım gösterip göstermediği Shapiro-Wilk testi ile "
+"incelenmiştir."
+msgstr ""
+"Die Normalverteilung der Daten wurde mit dem Shapiro-Wilk-Test geprüft."
+
+#: istatistik/services/normallik.py:210
+#, python-format
+msgid "Değişken: %(var)s (N=%(n)s)"
+msgstr "Variable: %(var)s (N=%(n)s)"
+
+#: istatistik/services/normallik.py:214
+msgid "Dağılım Histogramı"
+msgstr "Verteilungshistogramm"
+
+#: istatistik/services/normallik.py:225
+msgid "Yoğunluk"
+msgstr "Dichte"
+
+#: istatistik/services/normallik.py:228
+msgid "Ham veri mevcut değil"
+msgstr "Rohdaten nicht verfügbar"
+
+#: istatistik/services/normallik.py:233
+msgid "Q-Q Plot (Teorik Normal)"
+msgstr "Q-Q-Plot (theoretische Normalverteilung)"
+
+#: istatistik/services/normallik.py:240
+msgid "Teorik Kantiller"
+msgstr "Theoretische Quantile"
+
+#: istatistik/services/normallik.py:241
+msgid "Örnek Kantiller"
+msgstr "Stichprobenquantile"
+
+#: istatistik/services/orneklem.py:16
+msgid "Alfa 0 ile 1 arasında olmalıdır."
+msgstr "Alpha muss zwischen 0 und 1 liegen."
+
+#: istatistik/services/orneklem.py:18
+msgid "Güç 0 ile 1 arasında olmalıdır."
+msgstr "Die Teststärke muss zwischen 0 und 1 liegen."
+
+#: istatistik/services/orneklem.py:20
+msgid "Etki büyüklüğü 0'dan büyük olmalıdır."
+msgstr "Die Effektstärke muss größer als 0 sein."
+
+#: istatistik/services/orneklem.py:26
+#, python-format
+msgid "%(n)s kişi/grup × 2 grup"
+msgstr "%(n)s pro Gruppe × 2 Gruppen"
+
+#: istatistik/services/orneklem.py:31
+#, python-format
+msgid "%(n)s çift"
+msgstr "%(n)s Paare"
+
+#: istatistik/services/orneklem.py:34
+msgid "ANOVA için en az 2 grup gereklidir."
+msgstr "Für eine ANOVA sind mindestens 2 Gruppen erforderlich."
+
+#: istatistik/services/orneklem.py:37
+#, python-format
+msgid "Tek Yönlü ANOVA (%(groups)s grup)"
+msgstr "Einfaktorielle ANOVA (%(groups)s Gruppen)"
+
+#: istatistik/services/orneklem.py:38
+#, python-format
+msgid "%(n)s kişi/grup × %(groups)s grup"
+msgstr "%(n)s pro Gruppe × %(groups)s Gruppen"
+
+#: istatistik/services/orneklem.py:43
+#, python-format
+msgid "%(n)s çift gözlem"
+msgstr "%(n)s gepaarte Beobachtungen"
+
+#: istatistik/services/orneklem.py:45
+#, python-format
+msgid "Bilinmeyen test tipi: %(type)s"
+msgstr "Unbekannter Testtyp: %(type)s"
+
+#: istatistik/services/orneklem.py:137 istatistik/services/orneklem.py:146
+#: istatistik/services/orneklem.py:155
+msgid "Çok küçük etki"
+msgstr "Sehr kleiner Effekt"
+
+#: istatistik/services/orneklem.py:139 istatistik/services/orneklem.py:148
+#: istatistik/services/orneklem.py:157
+msgid "Küçük etki (Cohen, 1988)"
+msgstr "Kleiner Effekt (Cohen, 1988)"
+
+#: istatistik/services/orneklem.py:141 istatistik/services/orneklem.py:150
+#: istatistik/services/orneklem.py:159
+msgid "Orta düzey etki (Cohen, 1988)"
+msgstr "Mittlerer Effekt (Cohen, 1988)"
+
+#: istatistik/services/orneklem.py:142 istatistik/services/orneklem.py:151
+#: istatistik/services/orneklem.py:160
+msgid "Büyük etki (Cohen, 1988)"
+msgstr "Großer Effekt (Cohen, 1988)"
+
+#: istatistik/services/orneklem.py:165
+msgid ""
+"Küçük örneklem — pilot çalışma için uygun olabilir, genel çalışmalar için "
+"kayıp gözetilerek artırın."
+msgstr ""
+"Kleine Stichprobe — ggf. für eine Pilotstudie geeignet; für Hauptstudien "
+"unter Berücksichtigung von Ausfällen erhöhen."
+
+#: istatistik/services/orneklem.py:167
+msgid ""
+"Orta örneklem — çoğu sosyal bilim araştırması için yeterli kabul edilir."
+msgstr ""
+"Mittlere Stichprobe — für die meisten sozialwissenschaftlichen Studien "
+"ausreichend."
+
+#: istatistik/services/orneklem.py:169
+msgid "İyi örneklem — güvenilir sonuçlar için uygun büyüklük."
+msgstr "Gute Stichprobe — angemessene Größe für verlässliche Ergebnisse."
+
+#: istatistik/services/orneklem.py:170
+msgid ""
+"Büyük örneklem — yüksek güç ve genellenebilirlik sağlar; pratik "
+"uygulanabilirliği değerlendirin."
+msgstr ""
+"Große Stichprobe — bietet hohe Teststärke und Generalisierbarkeit; prüfen "
+"Sie die praktische Umsetzbarkeit."
 
 #: istatistik/templates/istatistik/afa.html:6
 msgid ""
@@ -10751,11 +11244,6 @@ msgstr ""
 " Laden Sie Excel oder CSV hoch und erhalten Sie einen PDF-Bericht zur "
 "deskriptiven Statistik."
 
-#: istatistik/templates/istatistik/betimsel.html:15 istatistik/views.py:167
-#: istatistik/views.py:186
-msgid "Betimleyici İstatistik Raporu"
-msgstr "Bericht zur deskriptiven Statistik"
-
 #: istatistik/templates/istatistik/betimsel.html:17
 msgid ""
 "Veri setinizin ortalama, medyan, standart sapma, çarpıklık ve frekans "
@@ -10971,11 +11459,6 @@ msgstr ""
 msgid "Cronbach Alpha (α)"
 msgstr "Cronbachs Alpha (α)"
 
-#: istatistik/templates/istatistik/cronbach.html:147
-#: istatistik/templates/istatistik/orneklem.html:161
-msgid "Yorum"
-msgstr "Interpretation"
-
 #: istatistik/templates/istatistik/cronbach.html:179
 msgid ""
 "Cronbach Alpha, bir ölçeğin iç tutarlılığını ölçen katsayıdır. Her maddenin "
@@ -11060,6 +11543,11 @@ msgstr ""
 "Nach allgemein anerkannter Schwelle gilt α ≥ .70 als ausreichende und α ≥ "
 ".80 als hohe Reliabilität. Items mit niedriger Item-Skala-Korrelation (r "
 "&lt; .30) sollten für eine Entfernung aus der Skala geprüft werden."
+
+#: istatistik/templates/istatistik/cronbach.html:244
+#, python-brace-format
+msgid "{n} madde"
+msgstr "{n} Items"
 
 #: istatistik/templates/istatistik/friedman.html:6
 msgid ""
@@ -11215,17 +11703,6 @@ msgstr "✓ Statistisch signifikant (p < .05)"
 #: istatistik/templates/istatistik/tekrarli_anova.html:412
 msgid "✗ İstatistiksel olarak anlamlı değil (p ≥ .05)"
 msgstr "✗ Statistisch nicht signifikant (p ≥ .05)"
-
-#: istatistik/templates/istatistik/friedman.html:426
-#: istatistik/templates/istatistik/tekrarli_anova.html:424
-msgid "Evet"
-msgstr "Ja"
-
-#: istatistik/templates/istatistik/friedman.html:426
-#: istatistik/templates/istatistik/ki_kare.html:230
-#: istatistik/templates/istatistik/tekrarli_anova.html:424
-msgid "Hayır"
-msgstr "Nein"
 
 #: istatistik/templates/istatistik/karar_agaci.html:5
 #: istatistik/templates/istatistik/karar_agaci.html:14 istatistik/views.py:631
@@ -11728,28 +12205,9 @@ msgstr "Es sind mindestens 2 numerische Spalten erforderlich."
 msgid "Güçlü korelasyonlar (|r| ≥ .30, p &lt; .05) yeşil renkte gösterilir."
 msgstr "Starke Korrelationen (|r| ≥ .30, p &lt; .05) werden grün dargestellt."
 
-#: istatistik/templates/istatistik/korelasyon.html:161
-#: istatistik/templates/istatistik/lineer_regresyon.html:208
-#: istatistik/templates/istatistik/lojistik_regresyon.html:216
-msgid "Değişken"
-msgstr "Variable"
-
 #: istatistik/templates/istatistik/korelasyon.html:167
 msgid "Gözlem"
 msgstr "Beobachtungen"
-
-#: istatistik/templates/istatistik/korelasyon.html:173
-#: istatistik/templates/istatistik/korelasyon.html:217
-msgid "Yöntem"
-msgstr "Methode"
-
-#: istatistik/templates/istatistik/korelasyon.html:180
-msgid "Korelasyon Isı Haritası"
-msgstr "Korrelations-Heatmap"
-
-#: istatistik/templates/istatistik/korelasyon.html:185
-msgid "Korelasyon Katsayıları (r)"
-msgstr "Korrelationskoeffizienten (r)"
 
 #: istatistik/templates/istatistik/korelasyon.html:215
 msgid "Yöntem Seçim Rehberi"
@@ -11856,11 +12314,11 @@ msgstr ""
 msgid " sütun seçili"
 msgstr " Spalten ausgewählt"
 
-#: istatistik/templates/istatistik/korelasyon.html:481
+#: istatistik/templates/istatistik/korelasyon.html:484
 msgid "Hata"
 msgstr "Fehler"
 
-#: istatistik/templates/istatistik/korelasyon.html:481
+#: istatistik/templates/istatistik/korelasyon.html:484
 msgid "Uyarı"
 msgstr "Warnung"
 
@@ -11985,21 +12443,6 @@ msgstr ""
 #: istatistik/templates/istatistik/mann_whitney.html:313
 msgid "Grup"
 msgstr "Gruppe"
-
-#: istatistik/templates/istatistik/kruskal_wallis.html:320
-#: istatistik/templates/istatistik/mann_whitney.html:313
-msgid "Medyan"
-msgstr "Median"
-
-#: istatistik/templates/istatistik/kruskal_wallis.html:320
-#: istatistik/templates/istatistik/mann_whitney.html:313
-msgid "Ort."
-msgstr "MW"
-
-#: istatistik/templates/istatistik/kruskal_wallis.html:320
-#: istatistik/templates/istatistik/mann_whitney.html:313
-msgid "SS"
-msgstr "SD"
 
 #: istatistik/templates/istatistik/kruskal_wallis.html:320
 #: istatistik/templates/istatistik/mann_whitney.html:313
@@ -12619,6 +13062,7 @@ msgid "İstatistiksel Güç (1−β)"
 msgstr "Teststärke (1−β)"
 
 #: istatistik/templates/istatistik/orneklem.html:95
+#: istatistik/templates/istatistik/orneklem.html:223
 msgid "Hesapla"
 msgstr "Berechnen"
 
@@ -12719,6 +13163,31 @@ msgstr "Großer Effekt (r=0.5)"
 #: istatistik/templates/istatistik/orneklem.html:216
 msgid "Hesaplanıyor…"
 msgstr "Wird berechnet…"
+
+#: istatistik/templates/istatistik/orneklem.html:220
+msgid "Orta etki (d=0.5)"
+msgstr "Mittlerer Effekt (d=0.5)"
+
+#: istatistik/templates/istatistik/orneklem.html:221
+msgid "Orta etki (f=0.25)"
+msgstr "Mittlerer Effekt (f=0.25)"
+
+#: istatistik/templates/istatistik/orneklem.html:222
+msgid "Orta etki (r=0.3)"
+msgstr "Mittlerer Effekt (r=0.3)"
+
+#: istatistik/templates/istatistik/orneklem.html:224
+#, python-brace-format
+msgid ""
+"Çalışmanın örneklem büyüklüğü a priori güç analizi ile belirlenmiştir "
+"({label}; Cohen, 1988). Etki büyüklüğü {effect}, α = {alpha}, istatistiksel "
+"güç = {power} olarak alındığında gerekli örneklem büyüklüğü n = {n} olarak "
+"hesaplanmıştır."
+msgstr ""
+"Die Stichprobengröße wurde mit einer A-priori-Poweranalyse bestimmt "
+"({label}; Cohen, 1988). Bei einer Effektstärke von {effect}, α = {alpha} und"
+" einer Teststärke von {power} ergab sich eine erforderliche Stichprobengröße"
+" von n = {n}."
 
 #: istatistik/templates/istatistik/svm.html:5
 #: istatistik/templates/istatistik/svm.html:14 istatistik/views.py:663
@@ -13336,10 +13805,6 @@ msgid ""
 msgstr ""
 "Der α-Koeffizient und seine Einstufung („Inakzeptabel / Niedrig / Akzeptabel"
 " / Gut / Ausgezeichnet“) werden automatisch berechnet."
-
-#: istatistik/views.py:94
-msgid "Madde İstatistikleri"
-msgstr "Itemstatistiken"
 
 #: istatistik/views.py:94
 msgid ""

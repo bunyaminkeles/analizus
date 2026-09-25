@@ -216,7 +216,14 @@ const T = {
   s10: '{% trans "Hesaplanıyor…" as t %}{{ t|escapejs }}',
   s11: '{% trans "Bağlantı hatası. Lütfen tekrar deneyin." as t %}{{ t|escapejs }}',
   s12: '{% trans "Kopyalandı" as t %}{{ t|escapejs }}',
+  // APA / sonuç metinleri — servis (PDF) ile aynı msgid'ler, {süslü} yer tutucular
+  s13: '{% trans "Orta etki (d=0.5)" as t %}{{ t|escapejs }}',
+  s14: '{% trans "Orta etki (f=0.25)" as t %}{{ t|escapejs }}',
+  s15: '{% trans "Orta etki (r=0.3)" as t %}{{ t|escapejs }}',
+  s16: '{% trans "Hesapla" as t %}{{ t|escapejs }}',
+  apa: '{% trans "Çalışmanın örneklem büyüklüğü a priori güç analizi ile belirlenmiştir ({label}; Cohen, 1988). Etki büyüklüğü {effect}, α = {alpha}, istatistiksel güç = {power} olarak alındığında gerekli örneklem büyüklüğü n = {n} olarak hesaplanmıştır." as t %}{{ t|escapejs }}',
 };
+const fmt = (s, o) => s.replace(/\{(\w+)\}/g, (m, k) => (k in o ? o[k] : m));
 const EFFECT_LABELS = {
   ttest_independent: "Cohen's d",
   ttest_paired:      "Cohen's d",
@@ -231,9 +238,9 @@ const EFFECT_PRESETS = {
 };
 const EFFECT_DESCS = {
   ttest_independent: [T.s1, T.s2, T.s3],
-  ttest_paired:      [T.s1, 'Orta etki (d=0.5)', T.s3],
-  anova:             [T.s4, 'Orta etki (f=0.25)', T.s5],
-  correlation:       [T.s6, 'Orta etki (r=0.3)', T.s7],
+  ttest_paired:      [T.s1, T.s13, T.s3],
+  anova:             [T.s4, T.s14, T.s5],
+  correlation:       [T.s6, T.s15, T.s7],
 };
 
 document.getElementById('test-type').addEventListener('change', function() {
@@ -292,7 +299,7 @@ document.getElementById('calc-btn').addEventListener('click', function() {
   .then(r => r.json())
   .then(data => {
     this.disabled = false;
-    this.innerHTML = '<i class="bi bi-calculator me-2"></i>Hesapla';
+    this.innerHTML = '<i class="bi bi-calculator me-2"></i>' + T.s16;
     if (data.error) {
       errEl.textContent = data.error;
       errEl.classList.remove('d-none');
@@ -302,7 +309,7 @@ document.getElementById('calc-btn').addEventListener('click', function() {
   })
   .catch(() => {
     this.disabled = false;
-    this.innerHTML = '<i class="bi bi-calculator me-2"></i>Hesapla';
+    this.innerHTML = '<i class="bi bi-calculator me-2"></i>' + T.s16;
     errEl.textContent = T.s11;
     errEl.classList.remove('d-none');
   });
@@ -321,7 +328,7 @@ function showResult(r) {
   document.getElementById('res-recommendation').textContent = r.recommendation;
 
   const inputs = r.inputs;
-  const apaText = `Çalışmanın örneklem büyüklüğü a priori güç analizi ile belirlenmiştir (${r.label}; Cohen, 1988). Etki büyüklüğü ${r.effect_interpretation.split(' — ')[0]}, α = ${inputs.alpha}, istatistiksel güç = ${(inputs.power * 100).toFixed(0)}% olarak alındığında gerekli örneklem büyüklüğü n = ${r.n_total} olarak hesaplanmıştır.`;
+  const apaText = fmt(T.apa, {label: r.label, effect: r.effect_interpretation.split(' — ')[0], alpha: inputs.alpha, power: (inputs.power * 100).toFixed(0) + '%', n: r.n_total});
   document.getElementById('res-apa').textContent = apaText;
 }
 

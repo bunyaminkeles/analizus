@@ -3,6 +3,7 @@
 Test tipleri: t-test (bağımsız/bağımlı), ANOVA, korelasyon.
 """
 from scipy import stats
+from django.utils.translation import gettext
 
 
 def calculate(test_type: str, effect_size: float, alpha: float,
@@ -12,36 +13,36 @@ def calculate(test_type: str, effect_size: float, alpha: float,
     Dönüş: {n, n_total, achieved_power, test_type, inputs, interpretation}
     """
     if not (0 < alpha < 1):
-        raise ValueError('Alfa 0 ile 1 arasında olmalıdır.')
+        raise ValueError(gettext('Alfa 0 ile 1 arasında olmalıdır.'))
     if not (0 < power < 1):
-        raise ValueError('Güç 0 ile 1 arasında olmalıdır.')
+        raise ValueError(gettext('Güç 0 ile 1 arasında olmalıdır.'))
     if effect_size <= 0:
-        raise ValueError('Etki büyüklüğü 0\'dan büyük olmalıdır.')
+        raise ValueError(gettext("Etki büyüklüğü 0'dan büyük olmalıdır."))
 
     if test_type == 'ttest_independent':
         n, achieved = _ttest_independent(effect_size, alpha, power)
         n_total = n * 2
-        label = 'Bağımsız Örneklem t-Testi'
-        unit = f'{n} kişi/grup × 2 grup'
+        label = gettext('Bağımsız Örneklem t-Testi')
+        unit = gettext('%(n)s kişi/grup × 2 grup') % {'n': n}
     elif test_type == 'ttest_paired':
         n, achieved = _ttest_paired(effect_size, alpha, power)
         n_total = n
-        label = 'Bağımlı Örneklem t-Testi (Eşleştirilmiş)'
-        unit = f'{n} çift'
+        label = gettext('Bağımlı Örneklem t-Testi (Eşleştirilmiş)')
+        unit = gettext('%(n)s çift') % {'n': n}
     elif test_type == 'anova':
         if groups < 2:
-            raise ValueError('ANOVA için en az 2 grup gereklidir.')
+            raise ValueError(gettext('ANOVA için en az 2 grup gereklidir.'))
         n, achieved = _anova(effect_size, alpha, power, groups)
         n_total = n * groups
-        label = f'Tek Yönlü ANOVA ({groups} grup)'
-        unit = f'{n} kişi/grup × {groups} grup'
+        label = gettext('Tek Yönlü ANOVA (%(groups)s grup)') % {'groups': groups}
+        unit = gettext('%(n)s kişi/grup × %(groups)s grup') % {'n': n, 'groups': groups}
     elif test_type == 'correlation':
         n, achieved = _correlation(effect_size, alpha, power)
         n_total = n
-        label = 'Korelasyon Analizi'
-        unit = f'{n} çift gözlem'
+        label = gettext('Korelasyon Analizi')
+        unit = gettext('%(n)s çift gözlem') % {'n': n}
     else:
-        raise ValueError(f'Bilinmeyen test tipi: {test_type}')
+        raise ValueError(gettext('Bilinmeyen test tipi: %(type)s') % {'type': test_type})
 
     return {
         'test_type': test_type,
@@ -133,37 +134,37 @@ def _interpret_effect(test_type: str, effect_size: float) -> str:
     if test_type in ('ttest_independent', 'ttest_paired'):
         # Cohen's d
         if effect_size < 0.2:
-            return f'd = {effect_size} — Çok küçük etki'
+            return f'd = {effect_size} — ' + gettext('Çok küçük etki')
         if effect_size < 0.5:
-            return f'd = {effect_size} — Küçük etki (Cohen, 1988)'
+            return f'd = {effect_size} — ' + gettext('Küçük etki (Cohen, 1988)')
         if effect_size < 0.8:
-            return f'd = {effect_size} — Orta düzey etki (Cohen, 1988)'
-        return f'd = {effect_size} — Büyük etki (Cohen, 1988)'
+            return f'd = {effect_size} — ' + gettext('Orta düzey etki (Cohen, 1988)')
+        return f'd = {effect_size} — ' + gettext('Büyük etki (Cohen, 1988)')
     elif test_type == 'anova':
         # Cohen's f
         if effect_size < 0.1:
-            return f'f = {effect_size} — Çok küçük etki'
+            return f'f = {effect_size} — ' + gettext('Çok küçük etki')
         if effect_size < 0.25:
-            return f'f = {effect_size} — Küçük etki (Cohen, 1988)'
+            return f'f = {effect_size} — ' + gettext('Küçük etki (Cohen, 1988)')
         if effect_size < 0.40:
-            return f'f = {effect_size} — Orta düzey etki (Cohen, 1988)'
-        return f'f = {effect_size} — Büyük etki (Cohen, 1988)'
+            return f'f = {effect_size} — ' + gettext('Orta düzey etki (Cohen, 1988)')
+        return f'f = {effect_size} — ' + gettext('Büyük etki (Cohen, 1988)')
     else:
         # Pearson r
         if effect_size < 0.1:
-            return f'r = {effect_size} — Çok küçük etki'
+            return f'r = {effect_size} — ' + gettext('Çok küçük etki')
         if effect_size < 0.3:
-            return f'r = {effect_size} — Küçük etki (Cohen, 1988)'
+            return f'r = {effect_size} — ' + gettext('Küçük etki (Cohen, 1988)')
         if effect_size < 0.5:
-            return f'r = {effect_size} — Orta düzey etki (Cohen, 1988)'
-        return f'r = {effect_size} — Büyük etki (Cohen, 1988)'
+            return f'r = {effect_size} — ' + gettext('Orta düzey etki (Cohen, 1988)')
+        return f'r = {effect_size} — ' + gettext('Büyük etki (Cohen, 1988)')
 
 
 def _recommendation(n_total: int) -> str:
     if n_total <= 30:
-        return 'Küçük örneklem — pilot çalışma için uygun olabilir, genel çalışmalar için kayıp gözetilerek artırın.'
+        return gettext('Küçük örneklem — pilot çalışma için uygun olabilir, genel çalışmalar için kayıp gözetilerek artırın.')
     if n_total <= 100:
-        return 'Orta örneklem — çoğu sosyal bilim araştırması için yeterli kabul edilir.'
+        return gettext('Orta örneklem — çoğu sosyal bilim araştırması için yeterli kabul edilir.')
     if n_total <= 300:
-        return 'İyi örneklem — güvenilir sonuçlar için uygun büyüklük.'
-    return 'Büyük örneklem — yüksek güç ve genellenebilirlik sağlar; pratik uygulanabilirliği değerlendirin.'
+        return gettext('İyi örneklem — güvenilir sonuçlar için uygun büyüklük.')
+    return gettext('Büyük örneklem — yüksek güç ve genellenebilirlik sağlar; pratik uygulanabilirliği değerlendirin.')

@@ -5,6 +5,7 @@ Yöntem: Pearson, Spearman veya Kendall
 """
 import io
 import numpy as np
+from django.utils.translation import gettext
 
 
 METHOD_LABELS = {
@@ -29,9 +30,9 @@ def analyze(df, method: str = 'pearson', columns=None) -> dict:
     n = len(df_num)
 
     if k < 2:
-        raise ValueError('En az 2 sayısal sütun (değişken) gereklidir.')
+        raise ValueError(gettext('En az 2 sayısal sütun (değişken) gereklidir.'))
     if n < 5:
-        raise ValueError('En az 5 geçerli satır (gözlem) gereklidir.')
+        raise ValueError(gettext('En az 5 geçerli satır (gözlem) gereklidir.'))
 
     corr_matrix = []
     pval_matrix = []
@@ -109,7 +110,7 @@ def _build_heatmap(corr_matrix, cols, method: str) -> str:
     cbar.ax.yaxis.set_tick_params(color='white')
     plt.setp(cbar.ax.yaxis.get_ticklabels(), color='white')
 
-    ax.set_title(f'{METHOD_LABELS[method]} Korelasyon Matrisi',
+    ax.set_title(gettext('%(method)s Korelasyon Matrisi') % {'method': METHOD_LABELS[method]},
                  color='white', fontsize=11, pad=12)
     ax.tick_params(colors='white')
     for spine in ax.spines.values():
@@ -150,14 +151,14 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
 
     story = []
 
-    story.append(Paragraph('Korelasyon Matrisi Raporu', title_style))
-    story.append(Paragraph(f'Dosya: {filename}', normal))
+    story.append(Paragraph(gettext('Korelasyon Matrisi Raporu'), title_style))
+    story.append(Paragraph(gettext('Dosya: %(filename)s') % {'filename': filename}, normal))
     story.append(Spacer(1, 0.3*cm))
 
     summary_data = [
-        ['Yöntem', result['method_label']],
-        ['Değişken Sayısı', str(result['n_vars'])],
-        ['Gözlem Sayısı', str(result['n_cases'])],
+        [gettext('Yöntem'), result['method_label']],
+        [gettext('Değişken Sayısı'), str(result['n_vars'])],
+        [gettext('Gözlem Sayısı'), str(result['n_cases'])],
     ]
     t = Table(summary_data, colWidths=[7*cm, 9*cm])
     t.setStyle(TableStyle([
@@ -179,12 +180,12 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
         img_buf = io.BytesIO(img_data)
         n = result['n_vars']
         img_size = min(14*cm, max(8*cm, n * 1.2 * cm))
-        story.append(Paragraph('Korelasyon Isı Haritası', h2_style))
+        story.append(Paragraph(gettext('Korelasyon Isı Haritası'), h2_style))
         story.append(Image(img_buf, width=img_size, height=img_size))
         story.append(Spacer(1, 0.6*cm))
 
     # Korelasyon tablosu
-    story.append(Paragraph('Korelasyon Katsayıları (r)', h2_style))
+    story.append(Paragraph(gettext('Korelasyon Katsayıları (r)'), h2_style))
     cols = result['columns']
     col_w = 16 * cm / (len(cols) + 1)
     header = [''] + [str(c)[:10] for c in cols]
@@ -217,7 +218,7 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
     story.append(Spacer(1, 0.6*cm))
 
     # P-değeri tablosu
-    story.append(Paragraph('P-Değerleri', h2_style))
+    story.append(Paragraph(gettext('P-Değerleri'), h2_style))
     p_rows = [header]
     for i, c in enumerate(cols):
         row = [str(c)[:10]]
@@ -240,15 +241,16 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
 
     story.append(Spacer(1, 0.4*cm))
     story.append(Paragraph(
-        '<font color="#666666" size="8">Not: Yeşil hücreler p &lt; 0.05 anlamına gelir (istatistiksel olarak anlamlı).</font>',
+        '<font color="#666666" size="8">' + gettext('Not: Yeşil hücreler p &lt; 0.05 anlamına gelir (istatistiksel olarak anlamlı).') + '</font>',
         ParagraphStyle('note', parent=styles['Normal'], fontName='DejaVuSans', fontSize=8)
     ))
 
     story.append(Spacer(1, 0.5*cm))
-    story.append(Paragraph('Tezinde Nasıl Raporlarsın?', h2_style))
-    apa_text = (f"Değişkenler arasındaki ilişkiler {result['method_label']} korelasyon analizi ile "
-                f"incelenmiştir (n = {result['n_cases']}). Korelasyon katsayıları ve p-değerleri "
-                f"raporun ek tablosunda sunulmuştur (Cohen, 1988).")
+    story.append(Paragraph(gettext('APA Formatında Raporlama'), h2_style))
+    # {süslü} yer tutucular — şablondaki JS ile aynı msgid
+    apa_text = gettext('Değişkenler arasındaki ilişkiler {method} korelasyon analizi ile incelenmiştir '
+                       '(n = {n}). Korelasyon katsayıları ve p-değerleri raporun ek tablosunda sunulmuştur '
+                       '(Cohen, 1988).').format(method=result['method_label'], n=result['n_cases'])
     apa_tbl = Table([[Paragraph(apa_text, normal)]], colWidths=[16*cm])
     apa_tbl.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#f0f4ff')),

@@ -242,7 +242,11 @@ const T = {
   s6: '{% trans "Günlük: " as t %}{{ t|escapejs }}',
   s7: '{% trans " analiz hakkı" as t %}{{ t|escapejs }}',
   s8: '{% trans "Kopyalandı" as t %}{{ t|escapejs }}',
+  // APA / sonuç metinleri — servis (PDF) ile aynı msgid'ler, {süslü} yer tutucular
+  apaVar: '{% trans "{var} değişkeni için ortalama = {mean} (SS = {sd})" as t %}{{ t|escapejs }}',
+  apaIntro: '{% trans "Araştırmaya katılan {n} kişinin puanlarına ilişkin betimleyici istatistikler incelendiğinde {lines} olarak bulunmuştur." as t %}{{ t|escapejs }}',
 };
+const fmt = (s, o) => s.replace(/\{(\w+)\}/g, (m, k) => (k in o ? o[k] : m));
 const STATUS_BASE = '{% url "istatistik:betimsel_status" job_id="00000000-0000-0000-0000-000000000000" %}';
 let pollInterval = null, currentJobId = null, previewData = null;
 
@@ -357,8 +361,8 @@ function onCompleted(data) {
     document.getElementById('n-cont').textContent = contVars.length;
     document.getElementById('n-cat').textContent = catVars.length;
     if (contVars.length > 0) {
-      const lines = contVars.map(v => `${v.variable} değişkeni için ortalama = ${v.mean.toFixed(2)} (SS = ${v.std.toFixed(2)})`);
-      const apaText = `Araştırmaya katılan ${r.n_rows} kişinin puanlarına ilişkin betimleyici istatistikler incelendiğinde ${lines.join('; ')} olarak bulunmuştur.`;
+      const lines = contVars.map(v => fmt(T.apaVar, {var: v.variable, mean: v.mean.toFixed(2), sd: v.std.toFixed(2)}));
+      const apaText = fmt(T.apaIntro, {n: r.n_rows, lines: lines.join('; ')});
       document.getElementById('betimsel-apa-display').textContent = apaText;
       document.getElementById('betimsel-report-text').textContent = apaText;
       document.getElementById('betimsel-apa-box').classList.remove('d-none');

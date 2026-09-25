@@ -82,13 +82,27 @@ maddelerde.
   Analiz ve Veri Bilimi Forumu" → "© {yıl} … Araştırma ve Analiz Platformu".
   Korunan: öğrenci segmentine özel "Tezin için:", onboarding "Akademik Destek",
   tez araçları. JSON-LD geçerli, pytest 61/61.
+- [ ] **"Tez için" kalıbı (7 yer)** — "tez" genelleştirme taramasında aranmadı
+  (ör. araç açıklamaları "Tez için hazır APA raporu"); kullanıcı onayıyla
+  genelleştirilecek.
 - [ ] **Adım 6 — KARAR: hepsi, aşamalı (ekran + PDF birlikte); PDF başlığı
   "Tezinde Nasıl Raporlarsın?" → "APA Formatında Raporlama"** (25 Eylül 2026)
   - [x] Aşama 1 altyapı: dil işçi thread'ine taşındı (`_pending_job_languages`,
     run_job yakalar, `_execute_job` translation.override) — gerçek kuyrukla
     TR/EN/DE doğrulandı; job_runner (6) + data_validator (9) mesajları EN/DE;
     Likert uyarısındaki numpy repr sızıntısı ("np.int64(9)") düzeltildi.
-  - [ ] Parti 2: normallik, betimsel, cronbach, korelasyon, orneklem
+  - EK ÖLÇÜM: şablonlardaki JS (ekranda APA cümlesi üretimi) 46 metin / ~790
+    kelime, 18 şablon — ilk ölçüm yalnız .py taradığı için eksikti; partilere dahil.
+  - [x] Parti 2 (25 Eylül 2026): normallik, betimsel, cronbach, korelasyon,
+    orneklem — servis (ekran+PDF) + şablon JS; APA cümleleri {süslü} yer
+    tutucu ile Python/JS ORTAK msgid ({% trans %} %-işaretini kaçışladığından
+    %(x)s ortak olamaz). Yan düzeltmeler: "p = < .001" → "p < .001"; Cronbach
+    cümlesinde etiket aralıksız + TR'ye duyarlı küçük harf ("İyi".lower() →
+    "i̇yi" sorunu); 3b-2d'den kalan kaçaklar (örneklem "Orta etki…" ×3,
+    "Hesapla" butonu, cronbach "' madde'"). Doğrulama: PDF metni (pdftotext)
+    EN'de TR kalıntı yok; 15 sayfa JS node --check + APA node'da üretildi.
+    NOT: AST tarayıcı Türkçe harfsiz metinleri ("Yorum", "Madde", "Hesapla")
+    kaçırıyor — kalan partilerde dosyalar ayrıca gözle okunmalı.
   - [ ] Parti 3: ttesti, anova, mann_whitney, kruskal_wallis, ki_kare
   - [ ] Parti 4: wilcoxon, friedman, tekrarli_anova, afa
   - [ ] Parti 5: lineer_regresyon, lojistik_regresyon, karar_agaci, svm

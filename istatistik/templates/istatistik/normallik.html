@@ -221,7 +221,12 @@ const T = {
   s6: '{% trans "Günlük: " as t %}{{ t|escapejs }}',
   s7: '{% trans " analiz hakkı" as t %}{{ t|escapejs }}',
   s8: '{% trans "Kopyalandı" as t %}{{ t|escapejs }}',
+  // APA cümleleri — PDF (normallik.py) ile aynı msgid'ler, {süslü} yer tutucular
+  apaIntro: '{% trans "Verilerin normal dağılım gösterip göstermediği Shapiro-Wilk testi ile incelenmiştir." as t %}{{ t|escapejs }}',
+  apaNormal: '{% trans "{var} değişkeninin normal dağılım gösterdiği belirlenmiştir (W = {w}, {p})." as t %}{{ t|escapejs }}',
+  apaNotNormal: '{% trans "{var} değişkeninin normal dağılım göstermediği belirlenmiştir (W = {w}, {p})." as t %}{{ t|escapejs }}',
 };
+const fmt = (s, o) => s.replace(/\{(\w+)\}/g, (m, k) => (k in o ? o[k] : m));
 const STATUS_BASE = '{% url "istatistik:normallik_status" job_id="00000000-0000-0000-0000-000000000000" %}';
 let pollInterval = null, currentJobId = null, previewData = null;
 
@@ -345,10 +350,9 @@ function onCompleted(data) {
       badges.innerHTML += `<span class="ax-var-badge ${isNormal ? 'ax-var-badge-success' : 'ax-var-badge-danger'}">${v.variable} <span class="ax-var-p">p=${v.shapiro_p}</span></span>`;
     });
     const lines = r.variables.map(v => {
-      const dist = v.is_normal ? 'normal dağılım gösterdiği' : 'normal dağılım göstermediği';
-      return `${v.variable} değişkeninin ${dist} belirlenmiştir (W = ${v.shapiro_stat}, p = ${v.shapiro_p}).`;
+      return fmt(v.is_normal ? T.apaNormal : T.apaNotNormal, {var: v.variable, w: v.shapiro_stat, p: v.shapiro_p < 0.001 ? 'p < .001' : 'p = ' + v.shapiro_p});
     });
-    const apaText = `Verilerin normal dağılım gösterip göstermediği Shapiro-Wilk testi ile incelenmiştir. ${lines.join(' ')}`;
+    const apaText = `${T.apaIntro} ${lines.join(' ')}`;
     document.getElementById('normallik-apa-display').textContent = apaText;
     document.getElementById('normallik-report-text').textContent = apaText;
     document.getElementById('normallik-apa-box').classList.remove('d-none');

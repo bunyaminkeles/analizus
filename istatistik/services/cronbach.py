@@ -3,6 +3,7 @@ Güvenilirlik Analizi — Cronbach Alpha
 Girdi: pandas DataFrame (satır=katılımcı, sütun=madde)
 """
 import io
+from django.utils.translation import gettext
 import numpy as np
 
 
@@ -11,16 +12,16 @@ def analyze(df, columns=None) -> dict:
     if columns:
         valid = [c for c in columns if c in df_num.columns]
         if not valid:
-            raise ValueError('Seçilen sütunlar sayısal değil veya bulunamadı.')
+            raise ValueError(gettext('Seçilen sütunlar sayısal değil veya bulunamadı.'))
         df_num = df_num[valid]
     df_num = df_num.dropna()
     k = len(df_num.columns)
     n = len(df_num)
 
     if k < 2:
-        raise ValueError('En az 2 sayısal sütun (madde) gereklidir.')
+        raise ValueError(gettext('En az 2 sayısal sütun (madde) gereklidir.'))
     if n < 5:
-        raise ValueError('En az 5 geçerli satır (katılımcı) gereklidir.')
+        raise ValueError(gettext('En az 5 geçerli satır (katılımcı) gereklidir.'))
 
     data = df_num.values  # (n, k)
 
@@ -35,7 +36,7 @@ def analyze(df, columns=None) -> dict:
     total_var = total.var(ddof=1)
 
     if total_var == 0:
-        raise ValueError('Toplam varyans sıfır — tüm satırlar aynı değere sahip.')
+        raise ValueError(gettext('Toplam varyans sıfır — tüm satırlar aynı değere sahip.'))
 
     alpha = (k / (k - 1)) * (1 - sum_item_var / total_var)
 
@@ -75,16 +76,26 @@ def analyze(df, columns=None) -> dict:
 
 def _interpret(alpha: float) -> str:
     if alpha < 0.50:
-        return 'Kabul Edilemez (α < 0.50)'
+        return gettext('Kabul Edilemez (α < 0.50)')
     if alpha < 0.60:
-        return 'Düşük (0.50 ≤ α < 0.60)'
+        return gettext('Düşük (0.50 ≤ α < 0.60)')
     if alpha < 0.70:
-        return 'Kabul Edilebilir (0.60 ≤ α < 0.70)'
+        return gettext('Kabul Edilebilir (0.60 ≤ α < 0.70)')
     if alpha < 0.80:
-        return 'İyi (0.70 ≤ α < 0.80)'
+        return gettext('İyi (0.70 ≤ α < 0.80)')
     if alpha < 0.90:
-        return 'Çok İyi (0.80 ≤ α < 0.90)'
-    return 'Mükemmel (α ≥ 0.90)'
+        return gettext('Çok İyi (0.80 ≤ α < 0.90)')
+    return gettext('Mükemmel (α ≥ 0.90)')
+
+
+def _sentence_level(label: str) -> str:
+    """'İyi (0.70 ≤ α < 0.80)' → 'iyi': cümle içi kullanım için aralık atılır;
+    Türkçede str.lower() 'İ'yi 'i̇' (birleşik nokta) yapar → önce elle çevrilir."""
+    from django.utils.translation import get_language
+    level = label.split(' (')[0]
+    if (get_language() or '').startswith('tr'):
+        level = level.replace('İ', 'i').replace('I', 'ı')
+    return level.lower()
 
 
 def build_pdf(result: dict, filename: str, df=None) -> bytes:
@@ -113,17 +124,17 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
     story = []
 
     # Başlık
-    story.append(Paragraph('Güvenilirlik Analizi Raporu', title_style))
-    story.append(Paragraph(f'Dosya: {filename}', normal))
+    story.append(Paragraph(gettext('Güvenilirlik Analizi Raporu'), title_style))
+    story.append(Paragraph(gettext('Dosya: %(filename)s') % {'filename': filename}, normal))
     story.append(Spacer(1, 0.4*cm))
 
     # Özet kutusu
     alpha = result['alpha']
     summary_data = [
-        ['Madde Sayısı', str(result['n_items'])],
-        ['Katılımcı Sayısı', str(result['n_cases'])],
+        [gettext('Madde Sayısı'), str(result['n_items'])],
+        [gettext('Katılımcı Sayısı'), str(result['n_cases'])],
         ['Cronbach Alpha (α)', f"{alpha:.3f}"],
-        ['Yorum', result['interpretation']],
+        [gettext('Yorum'), result['interpretation']],
     ]
     t = Table(summary_data, colWidths=[7*cm, 9*cm])
     t.setStyle(TableStyle([
@@ -140,8 +151,8 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
     story.append(Spacer(1, 0.6*cm))
 
     # Madde istatistikleri tablosu
-    story.append(Paragraph('Madde İstatistikleri', h2_style))
-    headers = ['Madde', 'Ort.', 'SS', 'Düz. M-T Kor.', 'Silinince α']
+    story.append(Paragraph(gettext('Madde İstatistikleri'), h2_style))
+    headers = [gettext('Madde'), gettext('Ort.'), gettext('SS'), gettext('Düz. M-T Kor.'), gettext('Silinince α')]
     rows = [headers]
     for s in result['item_stats']:
         rows.append([
@@ -168,12 +179,13 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
     story.append(tbl)
 
     story.append(Spacer(1, 0.5*cm))
-    story.append(Paragraph('Tezinde Nasıl Raporlarsın?', h2_style))
-    apa_text = (f"{result['n_items']} maddeden oluşan ölçeğin iç tutarlılık katsayısı "
-                f"Cronbach Alpha değeri α = {result['alpha']:.3f} olarak hesaplanmıştır "
-                f"(n = {result['n_cases']}). Bu değer, ölçeğin "
-                f"{result['interpretation'].lower()} düzeyde güvenilir olduğunu göstermektedir "
-                f"(Nunnally, 1978).")
+    story.append(Paragraph(gettext('APA Formatında Raporlama'), h2_style))
+    # {süslü} yer tutucular — şablondaki JS ile aynı msgid
+    apa_text = gettext('{k} maddeden oluşan ölçeğin iç tutarlılık katsayısı Cronbach Alpha değeri '
+                       'α = {alpha} olarak hesaplanmıştır (n = {n}). Bu değer, ölçeğin {level} düzeyde '
+                       'güvenilir olduğunu göstermektedir (Nunnally, 1978).').format(
+        k=result['n_items'], alpha=f"{result['alpha']:.3f}", n=result['n_cases'],
+        level=_sentence_level(result['interpretation']))
     apa_tbl = Table([[Paragraph(apa_text, normal)]], colWidths=[16*cm])
     apa_tbl.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#f0f4ff')),

@@ -285,7 +285,10 @@ const T = {
   s9: '{% trans "Günlük: " as t %}{{ t|escapejs }}',
   s10: '{% trans " analiz hakkı" as t %}{{ t|escapejs }}',
   s11: '{% trans "Kopyalandı" as t %}{{ t|escapejs }}',
+  // APA / sonuç metinleri — servis (PDF) ile aynı msgid'ler, {süslü} yer tutucular
+  apa: '{% trans "Değişkenler arasındaki ilişkiler {method} korelasyon analizi ile incelenmiştir (n = {n}). Korelasyon katsayıları ve p-değerleri raporun ek tablosunda sunulmuştur (Cohen, 1988)." as t %}{{ t|escapejs }}',
 };
+const fmt = (s, o) => s.replace(/\{(\w+)\}/g, (m, k) => (k in o ? o[k] : m));
 const STATUS_BASE = '{% url "istatistik:korelasyon_status" job_id="00000000-0000-0000-0000-000000000000" %}';
 let pollInterval = null;
 let currentJobId = null;
@@ -452,7 +455,7 @@ function onCompleted(data) {
     document.getElementById('corr-table').innerHTML = thead + tbody;
     document.getElementById('corr-table-container').classList.remove('d-none');
 
-    const apaText = `Değişkenler arasındaki ilişkiler ${r.method_label} korelasyon analizi ile incelenmiştir (n = ${r.n_cases}). Korelasyon katsayıları ve p-değerleri raporun ek tablosunda sunulmuştur (Cohen, 1988).`;
+    const apaText = fmt(T.apa, {method: r.method_label, n: r.n_cases});
     document.getElementById('korelasyon-apa-display').textContent = apaText;
     document.getElementById('korelasyon-report-text').textContent = apaText;
     document.getElementById('korelasyon-apa-box').classList.remove('d-none');

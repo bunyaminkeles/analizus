@@ -3,6 +3,7 @@ Betimleyici İstatistik Raporu
 Girdi: pandas DataFrame
 """
 import io
+from django.utils.translation import gettext
 import numpy as np
 
 
@@ -57,7 +58,7 @@ def analyze(df, columns=None) -> dict:
             })
 
     if not results:
-        raise ValueError('Analiz edilecek sütun bulunamadı.')
+        raise ValueError(gettext('Analiz edilecek sütun bulunamadı.'))
 
     return {'variables': results, 'n_rows': len(df)}
 
@@ -91,8 +92,8 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
     normal = ParagraphStyle('Normal2', parent=styles['Normal'], fontName='DejaVuSans')
 
     story = []
-    story.append(Paragraph('Betimleyici İstatistik Raporu', title_style))
-    story.append(Paragraph(f'Dosya: {filename}  |  Satır sayısı: {result["n_rows"]}', normal))
+    story.append(Paragraph(gettext('Betimleyici İstatistik Raporu'), title_style))
+    story.append(Paragraph(gettext('Dosya: %(filename)s') % {'filename': filename} + '  |  ' + gettext('Satır sayısı: %(n)s') % {'n': result['n_rows']}, normal))
     story.append(Spacer(1, 0.5*cm))
 
     cont_vars = [v for v in result['variables'] if v['type'] == 'continuous']
@@ -100,8 +101,8 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
 
     # Sürekli değişkenler özet tablosu
     if cont_vars:
-        story.append(Paragraph('Sürekli Değişkenler', h2_style))
-        headers = ['Değişken', 'N', 'Ort.', 'SS', 'Min', 'Medyan', 'Maks', 'Q1', 'Q3']
+        story.append(Paragraph(gettext('Sürekli Değişkenler'), h2_style))
+        headers = [gettext('Değişken'), 'N', gettext('Ort.'), gettext('SS'), 'Min', gettext('Medyan'), gettext('Maks'), 'Q1', 'Q3']
         rows = [headers]
         for v in cont_vars:
             rows.append([
@@ -131,10 +132,10 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
     # Kategorik değişkenler
     if cat_vars:
         story.append(Spacer(1, 0.3*cm))
-        story.append(Paragraph('Kategorik Değişkenler', h2_style))
+        story.append(Paragraph(gettext('Kategorik Değişkenler'), h2_style))
         for v in cat_vars:
-            story.append(Paragraph(f"{v['variable']}  (N={v['n']}, {v['unique']} kategori)", h3_style))
-            freq_rows = [['Değer', 'Frekans', 'Yüzde (%)']]
+            story.append(Paragraph(gettext('%(var)s  (N=%(n)s, %(k)s kategori)') % {'var': v['variable'], 'n': v['n'], 'k': v['unique']}, h3_style))
+            freq_rows = [[gettext('Değer'), gettext('Frekans'), gettext('Yüzde (%)')]]
             for row in v['freq_table'][:20]:
                 freq_rows.append([str(row['value']), str(row['freq']), f"{row['pct']:.1f}%"])
             tbl2 = Table(freq_rows, colWidths=[7*cm, 4*cm, 4*cm])
@@ -148,17 +149,18 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
             story.append(Spacer(1, 0.4*cm))
 
     story.append(Spacer(1, 0.5*cm))
-    story.append(Paragraph('Tezinde Nasıl Raporlarsın?', h2_style))
+    story.append(Paragraph(gettext('APA Formatında Raporlama'), h2_style))
     cont_vars_for_apa = [v for v in result['variables'] if v['type'] == 'continuous']
+    # {süslü} yer tutucular — şablondaki JS ile aynı msgid'ler
     if cont_vars_for_apa:
-        lines = [f"{v['variable']} değişkeni için ortalama = {v['mean']:.2f} (SS = {v['std']:.2f})"
+        lines = [gettext('{var} değişkeni için ortalama = {mean} (SS = {sd})').format(
+                     var=v['variable'], mean=f"{v['mean']:.2f}", sd=f"{v['std']:.2f}")
                  for v in cont_vars_for_apa]
-        apa_text = (f"Araştırmaya katılan {result['n_rows']} kişinin puanlarına ilişkin betimleyici "
-                    f"istatistikler incelendiğinde {'; '.join(lines)} olarak bulunmuştur.")
+        apa_text = gettext('Araştırmaya katılan {n} kişinin puanlarına ilişkin betimleyici istatistikler '
+                           'incelendiğinde {lines} olarak bulunmuştur.').format(n=result['n_rows'], lines='; '.join(lines))
     else:
-        apa_text = (f"Araştırmaya katılan {result['n_rows']} kişiye ait "
-                    f"{len(result['variables'])} değişkene ilişkin betimleyici istatistikler "
-                    f"yukarıda sunulmuştur.")
+        apa_text = gettext('Araştırmaya katılan {n} kişiye ait {k} değişkene ilişkin betimleyici istatistikler '
+                           'yukarıda sunulmuştur.').format(n=result['n_rows'], k=len(result['variables']))
     apa_tbl = Table([[Paragraph(apa_text, normal)]], colWidths=[16*cm])
     apa_tbl.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#f0f4ff')),
@@ -193,11 +195,11 @@ def _histogram(v: dict) -> io.BytesIO:
     import matplotlib.pyplot as plt
 
     fig, ax = plt.subplots(figsize=(8, 3.5))
-    ax.bar(['Min', 'Q1', 'Medyan', 'Q3', 'Maks'],
+    ax.bar(['Min', 'Q1', gettext('Medyan'), 'Q3', gettext('Maks')],
            [v['min'], v['q1'], v['median'], v['q3'], v['max']],
            color=['#6c757d', '#17a2b8', '#007bff', '#17a2b8', '#6c757d'])
-    ax.set_title(f"{v['variable']} — Özet  (Ort={v['mean']:.2f}, SS={v['std']:.2f})")
-    ax.set_ylabel('Değer')
+    ax.set_title(gettext('%(var)s — Özet  (Ort=%(mean)s, SS=%(sd)s)') % {'var': v['variable'], 'mean': f"{v['mean']:.2f}", 'sd': f"{v['std']:.2f}"})
+    ax.set_ylabel(gettext('Değer'))
     plt.tight_layout()
     buf = io.BytesIO()
     fig.savefig(buf, format='png', dpi=100, bbox_inches='tight')
@@ -219,8 +221,8 @@ def _bar_chart(v: dict) -> io.BytesIO:
     bars = ax.bar(range(len(labels)), freqs, color='#007bff', alpha=0.8)
     ax.set_xticks(range(len(labels)))
     ax.set_xticklabels(labels, rotation=30, ha='right', fontsize=8)
-    ax.set_title(f"{v['variable']} — Frekans Dağılımı")
-    ax.set_ylabel('Frekans')
+    ax.set_title(gettext('%(var)s — Frekans Dağılımı') % {'var': v['variable']})
+    ax.set_ylabel(gettext('Frekans'))
     for bar, row in zip(bars, top):
         ax.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.1,
                 f"{row['pct']:.1f}%", ha='center', va='bottom', fontsize=7)
