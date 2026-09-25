@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 from pandas.api.types import is_numeric_dtype
+from django.utils.translation import gettext
 
 ID_KEYWORDS = [
     'id', 'no', 'num', 'kod', 'sira', 'katilimci', 'ogrenci', 'participant', 'respondent',
@@ -65,11 +66,12 @@ def detect_missing_values(df: pd.DataFrame) -> list[dict]:
 
     cols = [col for col, cnt in missing.items() if cnt > 0]
     cols_summary = ', '.join(f'{col} ({int(missing[col])})' for col in cols[:3])
-    more_text = f' +{len(cols) - 3} sütun' if len(cols) > 3 else ''
+    more_text = (' ' + gettext('+%(count)s sütun') % {'count': len(cols) - 3}) if len(cols) > 3 else ''
     warnings.append({
         'level': 'warning',
-        'title': 'Boş değerler tespit edildi',
-        'message': f'{len(cols)} sütunda toplam {total_missing} boş değer var: {cols_summary}{more_text}. Boş hücreler analizde otomatik olarak atılacaktır.',
+        'title': gettext('Boş değerler tespit edildi'),
+        'message': gettext('%(cols)s sütunda toplam %(total)s boş değer var: %(summary)s%(more)s. Boş hücreler analizde otomatik olarak atılacaktır.') % {
+            'cols': len(cols), 'total': total_missing, 'summary': cols_summary, 'more': more_text},
     })
     return warnings
 
@@ -99,8 +101,11 @@ def detect_likert_issues(df: pd.DataFrame) -> list[dict]:
             unique_out = sorted(np.unique(out_of_range))
             warnings.append({
                 'level': 'danger',
-                'title': 'Likert aralığı dışı değerler',
-                'message': f'"{col}" sütununda tipik Likert aralığı 1–7 dışında {len(out_of_range)} değer bulundu: {unique_out[:5]}{"..." if len(unique_out) > 5 else ""}. Bu değerler analiz sonuçlarını etkileyebilir.',
+                'title': gettext('Likert aralığı dışı değerler'),
+                'message': gettext('"%(col)s" sütununda tipik Likert aralığı 1–7 dışında %(count)s değer bulundu: %(values)s. Bu değerler analiz sonuçlarını etkileyebilir.') % {
+                    'col': col, 'count': len(out_of_range),
+                    # int(): numpy 2 repr'i ("np.int64(9)") kullanıcıya sızıyordu
+                    'values': ', '.join(str(int(v)) for v in unique_out[:5]) + ('…' if len(unique_out) > 5 else '')},
             })
     return warnings
 
@@ -114,16 +119,16 @@ def validate_dataframe(df: pd.DataFrame, tool: str) -> list[dict]:
     if id_columns:
         warnings.append({
             'level': 'warning',
-            'title': 'Olası ID alanı bulundu',
-            'message': f'Analizde kullanılmaması önerilen aşağıdaki alanlar bulundu: {", ".join(id_columns)}. Bu tür kimlik sütunları genellikle analiz sonuçlarını bozar.',
+            'title': gettext('Olası ID alanı bulundu'),
+            'message': gettext('Analizde kullanılmaması önerilen aşağıdaki alanlar bulundu: %(cols)s. Bu tür kimlik sütunları genellikle analiz sonuçlarını bozar.') % {'cols': ', '.join(id_columns)},
         })
 
     non_numeric = detect_non_numeric_columns(df, tool)
     if non_numeric:
         warnings.append({
             'level': 'warning',
-            'title': 'Sayısal olmayan sütunlar',
-            'message': f'Analize sayısal olarak dahil edilmeyecek sütunlar: {", ".join(non_numeric)}.',
+            'title': gettext('Sayısal olmayan sütunlar'),
+            'message': gettext('Analize sayısal olarak dahil edilmeyecek sütunlar: %(cols)s.') % {'cols': ', '.join(non_numeric)},
         })
 
     if tool == 'cronbach':

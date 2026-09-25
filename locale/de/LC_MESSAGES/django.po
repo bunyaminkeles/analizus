@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-25 21:33+0300\n"
+"POT-Creation-Date: 2026-09-25 21:50+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -508,21 +508,21 @@ msgstr "16+ Personen"
 msgid "2 hafta içinde"
 msgstr "Innerhalb von 2 Wochen"
 
-#: forum/services/ai_service.py:295 forum/views.py:2556 forum/views.py:2629
+#: forum/services/ai_service.py:264 forum/views.py:2556 forum/views.py:2629
 msgid "AI servisi şu anda kullanılamıyor."
 msgstr "Der KI-Dienst ist derzeit nicht verfügbar."
 
-#: forum/services/ai_service.py:352
+#: forum/services/ai_service.py:321
 #, python-format
 msgid "API hatası: %(error)s"
 msgstr "API-Fehler: %(error)s"
 
-#: forum/services/ai_service.py:359
+#: forum/services/ai_service.py:328
 msgid "İstek zaman aşımına uğradı. Lütfen tekrar deneyin."
 msgstr ""
 "Die Anfrage hat das Zeitlimit überschritten. Bitte versuchen Sie es erneut."
 
-#: forum/services/ai_service.py:366
+#: forum/services/ai_service.py:335
 #, python-format
 msgid "Bir hata oluştu: %(error)s"
 msgstr "Ein Fehler ist aufgetreten: %(error)s"
@@ -9501,6 +9501,92 @@ msgstr ""
 "Sind die Differenzwerte normalverteilt, ist der t-Test für abhängige "
 "Stichproben teststärker. Ohne Normalverteilung oder bei kleiner Stichprobe "
 "liefert Wilcoxon zuverlässigere Ergebnisse."
+
+#: istatistik/services/data_validator.py:69
+#, python-format
+msgid "+%(count)s sütun"
+msgstr "+%(count)s Spalten"
+
+#: istatistik/services/data_validator.py:72
+msgid "Boş değerler tespit edildi"
+msgstr "Fehlende Werte erkannt"
+
+#: istatistik/services/data_validator.py:73
+#, python-format
+msgid ""
+"%(cols)s sütunda toplam %(total)s boş değer var: %(summary)s%(more)s. Boş "
+"hücreler analizde otomatik olarak atılacaktır."
+msgstr ""
+"%(total)s fehlende Werte in %(cols)s Spalten: %(summary)s%(more)s. Leere "
+"Zellen werden automatisch von der Analyse ausgeschlossen."
+
+#: istatistik/services/data_validator.py:104
+msgid "Likert aralığı dışı değerler"
+msgstr "Werte außerhalb des Likert-Bereichs"
+
+#: istatistik/services/data_validator.py:105
+#, python-format
+msgid ""
+"\"%(col)s\" sütununda tipik Likert aralığı 1–7 dışında %(count)s değer "
+"bulundu: %(values)s. Bu değerler analiz sonuçlarını etkileyebilir."
+msgstr ""
+"In der Spalte „%(col)s“ wurden %(count)s Werte außerhalb des typischen "
+"Likert-Bereichs 1–7 gefunden: %(values)s. Diese Werte können die Ergebnisse "
+"beeinflussen."
+
+#: istatistik/services/data_validator.py:121
+msgid "Olası ID alanı bulundu"
+msgstr "Mögliche ID-Spalte gefunden"
+
+#: istatistik/services/data_validator.py:122
+#, python-format
+msgid ""
+"Analizde kullanılmaması önerilen aşağıdaki alanlar bulundu: %(cols)s. Bu tür"
+" kimlik sütunları genellikle analiz sonuçlarını bozar."
+msgstr ""
+"Folgende Spalten sollten nicht in die Analyse einbezogen werden: %(cols)s. "
+"Solche Kennungsspalten verfälschen in der Regel die Ergebnisse."
+
+#: istatistik/services/data_validator.py:129
+msgid "Sayısal olmayan sütunlar"
+msgstr "Nicht-numerische Spalten"
+
+#: istatistik/services/data_validator.py:130
+#, python-format
+msgid "Analize sayısal olarak dahil edilmeyecek sütunlar: %(cols)s."
+msgstr ""
+"Spalten, die nicht als numerische Variablen einbezogen werden: %(cols)s."
+
+#: istatistik/services/job_runner.py:77
+msgid "Dosya içeriği bulunamadı. Lütfen tekrar yükleyin."
+msgstr "Dateiinhalt nicht gefunden. Bitte laden Sie die Datei erneut hoch."
+
+#: istatistik/services/job_runner.py:219
+#, python-format
+msgid "Bilinmeyen araç: %(tool)s"
+msgstr "Unbekanntes Tool: %(tool)s"
+
+#: istatistik/services/job_runner.py:237
+#, python-format
+msgid "Analiz sırasında hata oluştu: %(error)s"
+msgstr "Bei der Analyse ist ein Fehler aufgetreten: %(error)s"
+
+#: istatistik/services/job_runner.py:252
+msgid "Desteklenmeyen dosya formatı. CSV veya Excel yükleyin."
+msgstr ""
+"Nicht unterstütztes Dateiformat. Bitte laden Sie eine CSV- oder Excel-Datei "
+"hoch."
+
+#: istatistik/services/job_runner.py:255
+msgid "Dosya boş veya okunamadı."
+msgstr "Die Datei ist leer oder konnte nicht gelesen werden."
+
+#: istatistik/services/job_runner.py:257
+#, python-format
+msgid "En az 5 satır (katılımcı/gözlem) gereklidir, %(count)s satır bulundu."
+msgstr ""
+"Mindestens 5 Zeilen (Teilnehmende/Beobachtungen) sind erforderlich; "
+"%(count)s gefunden."
 
 #: istatistik/templates/istatistik/afa.html:6
 msgid ""

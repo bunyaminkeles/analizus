@@ -53,3 +53,11 @@ yok); dosya elerken tam yol/`--exclude` kullan (`grep -v "/views.py:"` değil
 `--exclude=views.py`). Olumsuz bulguyu raporlamadan önce analizus.md'de de ara
 (orada dokümante edilmişti). Yokluk iddiası = en yüksek doğrulama çıtası.
 
+## polib ile fuzzy temizlerken tüm "previous" alanlarını sil (25 Eylül 2026)
+**Hata:** Çeviri betiği fuzzy girişte yalnızca `e.previous_msgid=None` yaptı;
+girişte `#| msgid_plural` (previous_msgid_plural) kalınca msgfmt "syntax error"
+verdi ve compilemessages TÜM çevirileri derlemedi (sessiz değil ama kolay kaçar).
+**Kural:** fuzzy temizlerken `previous_msgid`, `previous_msgid_plural`,
+`previous_msgctxt` üçünü birden None yap; compilemessages çıktısında "error"
+kontrolünü her seferinde yap.
+

@@ -82,7 +82,17 @@ maddelerde.
   Analiz ve Veri Bilimi Forumu" → "© {yıl} … Araştırma ve Analiz Platformu".
   Korunan: öğrenci segmentine özel "Tezin için:", onboarding "Akademik Destek",
   tez araçları. JSON-LD geçerli, pytest 61/61.
-- [ ] **Adım 6 kapsamı — ÖLÇÜLDÜ (25 Eylül 2026), karar bekliyor:** istatistik
+- [ ] **Adım 6 — KARAR: hepsi, aşamalı (ekran + PDF birlikte); PDF başlığı
+  "Tezinde Nasıl Raporlarsın?" → "APA Formatında Raporlama"** (25 Eylül 2026)
+  - [x] Aşama 1 altyapı: dil işçi thread'ine taşındı (`_pending_job_languages`,
+    run_job yakalar, `_execute_job` translation.override) — gerçek kuyrukla
+    TR/EN/DE doğrulandı; job_runner (6) + data_validator (9) mesajları EN/DE;
+    Likert uyarısındaki numpy repr sızıntısı ("np.int64(9)") düzeltildi.
+  - [ ] Parti 2: normallik, betimsel, cronbach, korelasyon, orneklem
+  - [ ] Parti 3: ttesti, anova, mann_whitney, kruskal_wallis, ki_kare
+  - [ ] Parti 4: wilcoxon, friedman, tekrarli_anova, afa
+  - [ ] Parti 5: lineer_regresyon, lojistik_regresyon, karar_agaci, svm
+  Ölçüm notu: istatistik
   servislerinde (20 dosya) çeviriye işaretlenmemiş Türkçe: EKRAN 221 metin /
   ~1380 kelime (APA cümleleri, etki yorumları, veri uyarıları, hata mesajları),
   PDF 300 metin / ~1190 kelime (başlık/tablo etiketleri). Türkçe değerle mantık

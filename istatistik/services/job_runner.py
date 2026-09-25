@@ -7,11 +7,16 @@ import io
 import logging
 import time
 
+from django.utils.translation import gettext
+
 logger = logging.getLogger(__name__)
 
 SESSION_DATASET_TTL_SECONDS = 60 * 60 * 2  # 2 saat — SESSION_COOKIE_AGE ile hizalı
 
 _pending_file_contents: dict[str, bytes] = {}
+# Kullanıcının arayüz dili — aktif dil thread-local olduğundan işçi thread'i
+# bilemez; run_job (istek thread'i) yakalar, _execute_job etkinleştirir.
+_pending_job_languages: dict[str, str] = {}
 _session_datasets: dict[str, tuple[bytes, str, float]] = {}  # session_key → (content, filename, saved_at)
 
 
@@ -41,14 +46,25 @@ def cleanup_expired_session_datasets(ttl_seconds: int = SESSION_DATASET_TTL_SECO
 
 
 def run_job(job_id: str):
+    from django.utils import translation
     from analizdestek.job_queue import enqueue
     from istatistik.models import IstatistikJob
     job = IstatistikJob.objects.get(id=job_id)
+    _pending_job_languages[job_id] = translation.get_language()
     enqueue(job.tool, job_id)
 
 
 def _execute_job(job_id: str):
-    """Worker thread'inde çalışır."""
+    """Worker thread'inde çalışır — sonuç metinleri ve PDF, işi başlatan
+    kullanıcının dilinde üretilir."""
+    from django.conf import settings
+    from django.utils import translation
+    lang = _pending_job_languages.pop(job_id, None) or settings.LANGUAGE_CODE
+    with translation.override(lang):
+        _execute_job_in_language(job_id)
+
+
+def _execute_job_in_language(job_id: str):
     from istatistik.models import IstatistikJob
     try:
         job = IstatistikJob.objects.get(id=job_id)
@@ -58,7 +74,7 @@ def _execute_job(job_id: str):
 
     content = _pending_file_contents.pop(job_id, None)
     if content is None:
-        job.mark_failed('Dosya içeriği bulunamadı. Lütfen tekrar yükleyin.')
+        job.mark_failed(gettext('Dosya içeriği bulunamadı. Lütfen tekrar yükleyin.'))
         return
 
     job.mark_running()
@@ -200,7 +216,7 @@ def _execute_job(job_id: str):
                 test_size=float(t_size) if t_size else 0.2,
             )
         else:
-            job.mark_failed(f'Bilinmeyen araç: {job.tool}')
+            job.mark_failed(gettext('Bilinmeyen araç: %(tool)s') % {'tool': job.tool})
             return
 
         pdf_bytes = build_pdf(result_data, job.original_filename, df)
@@ -218,7 +234,7 @@ def _execute_job(job_id: str):
         job.mark_failed(str(e))
         logger.warning(f'[istatistik] Veri hatası {job.tool}/{job_id}: {e}')
     except Exception as e:
-        job.mark_failed(f'Analiz sırasında hata oluştu: {e}')
+        job.mark_failed(gettext('Analiz sırasında hata oluştu: %(error)s') % {'error': e})
         logger.error(f'[istatistik] Hata {job.tool}/{job_id}: {e}', exc_info=True)
 
 
@@ -233,12 +249,12 @@ def _parse_file(content: bytes, filename: str):
     elif name_lower.endswith(('.xlsx', '.xls')):
         df = pd.read_excel(io.BytesIO(content))
     else:
-        raise ValueError('Desteklenmeyen dosya formatı. CSV veya Excel yükleyin.')
+        raise ValueError(gettext('Desteklenmeyen dosya formatı. CSV veya Excel yükleyin.'))
 
     if df.empty:
-        raise ValueError('Dosya boş veya okunamadı.')
+        raise ValueError(gettext('Dosya boş veya okunamadı.'))
     if len(df) < 5:
-        raise ValueError(f'En az 5 satır (katılımcı/gözlem) gereklidir, {len(df)} satır bulundu.')
+        raise ValueError(gettext('En az 5 satır (katılımcı/gözlem) gereklidir, %(count)s satır bulundu.') % {'count': len(df)})
 
     return df
 

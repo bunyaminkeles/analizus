@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-25 21:33+0300\n"
+"POT-Creation-Date: 2026-09-25 21:50+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -504,20 +504,20 @@ msgstr "16+ people"
 msgid "2 hafta içinde"
 msgstr "Within 2 weeks"
 
-#: forum/services/ai_service.py:295 forum/views.py:2556 forum/views.py:2629
+#: forum/services/ai_service.py:264 forum/views.py:2556 forum/views.py:2629
 msgid "AI servisi şu anda kullanılamıyor."
 msgstr "The AI service is currently unavailable."
 
-#: forum/services/ai_service.py:352
+#: forum/services/ai_service.py:321
 #, python-format
 msgid "API hatası: %(error)s"
 msgstr "API error: %(error)s"
 
-#: forum/services/ai_service.py:359
+#: forum/services/ai_service.py:328
 msgid "İstek zaman aşımına uğradı. Lütfen tekrar deneyin."
 msgstr "The request timed out. Please try again."
 
-#: forum/services/ai_service.py:366
+#: forum/services/ai_service.py:335
 #, python-format
 msgid "Bir hata oluştu: %(error)s"
 msgstr "An error occurred: %(error)s"
@@ -9341,6 +9341,87 @@ msgstr ""
 "If the difference scores are normally distributed, the paired t-test is more"
 " powerful. Without normality or with a small sample, Wilcoxon gives more "
 "reliable results."
+
+#: istatistik/services/data_validator.py:69
+#, python-format
+msgid "+%(count)s sütun"
+msgstr "+%(count)s columns"
+
+#: istatistik/services/data_validator.py:72
+msgid "Boş değerler tespit edildi"
+msgstr "Missing values detected"
+
+#: istatistik/services/data_validator.py:73
+#, python-format
+msgid ""
+"%(cols)s sütunda toplam %(total)s boş değer var: %(summary)s%(more)s. Boş "
+"hücreler analizde otomatik olarak atılacaktır."
+msgstr ""
+"%(total)s missing values in %(cols)s columns: %(summary)s%(more)s. Empty "
+"cells will be excluded from the analysis automatically."
+
+#: istatistik/services/data_validator.py:104
+msgid "Likert aralığı dışı değerler"
+msgstr "Values outside the Likert range"
+
+#: istatistik/services/data_validator.py:105
+#, python-format
+msgid ""
+"\"%(col)s\" sütununda tipik Likert aralığı 1–7 dışında %(count)s değer "
+"bulundu: %(values)s. Bu değerler analiz sonuçlarını etkileyebilir."
+msgstr ""
+"%(count)s values outside the typical Likert range 1–7 were found in column "
+"\"%(col)s\": %(values)s. These values may affect the results."
+
+#: istatistik/services/data_validator.py:121
+msgid "Olası ID alanı bulundu"
+msgstr "Possible ID column found"
+
+#: istatistik/services/data_validator.py:122
+#, python-format
+msgid ""
+"Analizde kullanılmaması önerilen aşağıdaki alanlar bulundu: %(cols)s. Bu tür"
+" kimlik sütunları genellikle analiz sonuçlarını bozar."
+msgstr ""
+"The following columns should not be used in the analysis: %(cols)s. "
+"Identifier columns like these usually distort the results."
+
+#: istatistik/services/data_validator.py:129
+msgid "Sayısal olmayan sütunlar"
+msgstr "Non-numeric columns"
+
+#: istatistik/services/data_validator.py:130
+#, python-format
+msgid "Analize sayısal olarak dahil edilmeyecek sütunlar: %(cols)s."
+msgstr "Columns that will not be included as numeric variables: %(cols)s."
+
+#: istatistik/services/job_runner.py:77
+msgid "Dosya içeriği bulunamadı. Lütfen tekrar yükleyin."
+msgstr "File content not found. Please upload the file again."
+
+#: istatistik/services/job_runner.py:219
+#, python-format
+msgid "Bilinmeyen araç: %(tool)s"
+msgstr "Unknown tool: %(tool)s"
+
+#: istatistik/services/job_runner.py:237
+#, python-format
+msgid "Analiz sırasında hata oluştu: %(error)s"
+msgstr "An error occurred during the analysis: %(error)s"
+
+#: istatistik/services/job_runner.py:252
+msgid "Desteklenmeyen dosya formatı. CSV veya Excel yükleyin."
+msgstr "Unsupported file format. Please upload a CSV or Excel file."
+
+#: istatistik/services/job_runner.py:255
+msgid "Dosya boş veya okunamadı."
+msgstr "The file is empty or could not be read."
+
+#: istatistik/services/job_runner.py:257
+#, python-format
+msgid "En az 5 satır (katılımcı/gözlem) gereklidir, %(count)s satır bulundu."
+msgstr ""
+"At least 5 rows (participants/observations) are required; %(count)s found."
 
 #: istatistik/templates/istatistik/afa.html:6
 msgid ""
