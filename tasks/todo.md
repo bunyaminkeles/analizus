@@ -33,9 +33,12 @@ maddelerde.
     dilinde, onay linki `reverse()` ile dil önekli (URL'ler urls_i18n'e taşındı,
     TR yolları aynı); flash mesajları çevrildi; gizlilik metnine "30 gün" +
     anonim mali kayıt geri eklendi.
-- [ ] **Silinmiş hesabın görünen adı:** anonim hesaplar açık alanlarda
-  `deleted_a3f9…` görünüyor; şablonlarda "Silinmiş kullanıcı" gösterimi
-  (çok sayıda şablon — ayrı iş, önce kapsam listesi).
+- [x] **Silinmiş hesabın görünen adı** — ÇÖZÜLDÜ (25 Eylül 2026, kullanıcı
+  kararı "okunur kullanıcı adı"): cron artık `silinmis-kullanici-<hex>` üretiyor;
+  mevcut `deleted_<hex>` hesaplar **veri migration 0155** ile dönüştürülüyor
+  (yalnızca `@deleted.invalid` e-postalılar; ileri/geri test edildi).
+  Dile göre "Silinmiş kullanıcı / Deleted user" gösterimi YAPILMADI (37 şablon,
+  83 yer + Python tarafı) — istenirse ayrı iş.
 - [ ] **Profil sayfaları tek dilli:** profil/profil düzenleme (ve "Hesabımı Sil"
   butonu) i18n dışında — EN/DE kullanıcı silme sayfasına TR olarak ulaşır.
 - [x] **Ana sayfa hero test çipleri** — ÇEVRİLDİ (25 Eylül 2026) "t-testi · korelasyon · regresyon"
@@ -98,7 +101,8 @@ maddelerde.
 
 **C. Canlıya alma (yalnızca kullanıcı "merge et" deyince)**
 - [ ] dev → main merge, Hetzner'de: `docker compose exec web python
-  manage.py migrate` (**0154** — preferred_language) → `collectstatic`
+  manage.py migrate` (**0154** preferred_language + **0155** anonim kullanıcı
+  adları — veri migration'ı) → `collectstatic`
   (**yeni Inter font dosyaları**) → `compilemessages` → `docker compose
   restart web` → `docker compose restart nginx`.
 - [ ] Admin'de `feature_multilingual` aç (avukat kontrolünden sonra).

@@ -603,10 +603,12 @@ def _anonymize_deleted_account(profile):
     s3_keys = []
 
     with transaction.atomic():
-        # Kullanıcı temel bilgilerini anonimleştir
+        # Kullanıcı temel bilgilerini anonimleştir. Kullanıcı adı açık alanlarda
+        # (forum, DM, ilan) görünür → okunur biçim (kullanıcı kararı 25 Eylül 2026;
+        # eski `deleted_<hex>` adları migration 0155 ile dönüştürüldü)
         token = secrets.token_hex(6)
         user.email = f'deleted_{token}@deleted.invalid'
-        user.username = f'deleted_{token}'
+        user.username = f'silinmis-kullanici-{token}'
         user.first_name = ''
         user.last_name = ''
         user.is_active = False
