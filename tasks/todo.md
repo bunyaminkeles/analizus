@@ -53,6 +53,10 @@ maddelerde.
   dosyaları EN/DE olacak mı?
 - [ ] "Ufak tefek aksamalar" listesi kullanıcıdan alınacak (cilalama turu).
 
+- [ ] **CRON_SECRET_KEY yenileme (düşük risk):** 25 Eylül 2026'da crontab
+  ekran görüntüsünde anahtarın büyük kısmı görüldü (yerel oturum). Yenilenirse
+  `.env` + Hetzner crontab'daki TÜM `/api/cron/*` satırları birlikte güncellenmeli.
+
 **C. Canlıya alma (yalnızca kullanıcı "merge et" deyince)**
 - [ ] dev → main merge, Hetzner'de: `docker compose exec web python
   manage.py migrate` (**0154** — preferred_language) → `collectstatic`
