@@ -83,7 +83,7 @@ maddelerde.
   Korunan: öğrenci segmentine özel "Tezin için:", onboarding "Akademik Destek",
   tez araçları. JSON-LD geçerli, pytest 61/61.
 - [x] **"Tez için" kalıbı** — genelleştirildi (Adım 6 altındaki maddeye bak).
-- [ ] **Adım 6 — KARAR: hepsi, aşamalı (ekran + PDF birlikte); PDF başlığı
+- [x] **Adım 6 — TAMAMLANDI (25 Eylül 2026). KARAR: hepsi, aşamalı (ekran + PDF birlikte); PDF başlığı
   "Tezinde Nasıl Raporlarsın?" → "APA Formatında Raporlama"** (25 Eylül 2026)
   - [x] Aşama 1 altyapı: dil işçi thread'ine taşındı (`_pending_job_languages`,
     run_job yakalar, `_execute_job` translation.override) — gerçek kuyrukla
@@ -247,7 +247,7 @@ URL taşıma + şablon + sitemap(static-i18n) + robots.txt.
   Net-log ile doğrulandı: sayfadan fonts.googleapis/gstatic isteği yok.
   Deploy'da `collectstatic` şart (yeni statik dosyalar).
 - [x] ~~ÖNEMLİ — Hesap silme vaadi uygulanmıyor~~ — YANLIŞ BULGU (25 Eylül 2026 düzeltildi): cron mevcut ve çalışıyor; bkz. AÇIK İŞLER'deki "Hesap silme cron'u kullanıcı kararlarına uydurulacak".
-- [ ] **Küçük i18n kaçağı (B sırasında görüldü):** ana sayfa hero'sundaki test
+- [x] **Küçük i18n kaçağı (B sırasında görüldü)** — ÇEVRİLDİ (88c10d5): ana sayfa hero'sundaki test
   çipleri "t-testi · korelasyon · regresyon" EN/DE'de Türkçe kalıyor.
 - [x] **C. Gizlilik sayfası: KVKK çevirisi + GDPR bölümü** — TAMAMLANDI
   (24 Eylül 2026, kullanıcı onayı): TR metni güncellendi (tablo: AI soruları,
@@ -271,7 +271,7 @@ URL taşıma + şablon + sitemap(static-i18n) + robots.txt.
   e-posta Gmail üzerinden (Google, ABD; alan adı hosting.com.tr), Render
   yalnızca test verisi (metne girmez). "Son güncelleme" `{% now %}` → sabit
   tarih. Açık: AB temsilcisi (GDPR md. 27), somut saklama süreleri.
-- [ ] **Gizlilik/KVKK** (`gizlilik_politikasi.html`) — hukuki metin;
+- [x] **Gizlilik/KVKK** — çevrildi (C paketi, 3f648ee) (`gizlilik_politikasi.html`) — hukuki metin;
   çeviri kullanıcı onayıyla yayına girer (etik protokol modalıyla aynı tur)
 
 **Kayıt akışı — yapılacaklar (kullanıcı isteği, 23 Eylül 2026):**
