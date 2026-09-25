@@ -1960,7 +1960,6 @@ def about(request):
         {'feature': gettext('Normallik Testi'), 'analizus': f'{check} {gettext("Var")}',              'spss': f'{check} {gettext("Var")}',    'smartpls': f'{cross} {gettext("Yok")}','excel': f'{cross} {gettext("Yok")}'},
         {'feature': gettext('Uzman Desteği'),   'analizus': f'{check} {gettext("Pazar yeri")}',       'spss': f'{cross} {gettext("Yok")}',    'smartpls': f'{cross} {gettext("Yok")}','excel': f'{cross} {gettext("Yok")}'},
         {'feature': gettext('Akademik Forum'),  'analizus': f'{check} {gettext("Var")}',              'spss': f'{cross} {gettext("Yok")}',    'smartpls': f'{cross} {gettext("Yok")}','excel': f'{cross} {gettext("Yok")}'},
-        {'feature': gettext('Türkçe Arayüz'),   'analizus': f'{check} {gettext("Tam Türkçe")}',       'spss': f'{partial} {gettext("Kısmi")}','smartpls': f'{cross} {gettext("İngilizce")}','excel': f'{partial} {gettext("Kısmi")}'},
     ]
     return render(request, 'forum/about.html', {'stories': stories, 'comparison_rows': comparison_rows})
 

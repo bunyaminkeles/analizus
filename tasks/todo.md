@@ -81,12 +81,15 @@ maddelerde.
 - [ ] Etik Protokolü: 4. ve 7. maddeler yalnızca TCK/KVKK'ya atıf (GDPR?),
   başlık "Akademik Etik Protokolü" yeni konumlandırmayla uyumsuz.
 - [ ] Avukat kontrolü — EN/DE canlıya açılmadan önce (gizlilik + etik).
-- [ ] Konumlandırma metinleri: ana sayfa og/twitter + hero alt metni
-  "Türkiye'nin analiz ekosistemi…" (DE'de "Das Analyse-Ökosystem der Türkei"
-  görünüyor); Hangi Test meta "Tezin için…"; AI Asistan meta "anında Türkçe
-  yanıt… tez yazımı"; e-posta imzası → "Araştırma ve Analiz Platformu"?;
-  Hakkımızda karşılaştırma satırı "Türkçe Arayüz / Tam Türkçe" (EN/DE'de
-  birebir çevrildi).
+- [x] **"Türkiye/Türkçe" vurgusu genelleştirildi** (25 Eylül 2026, kullanıcı
+  onayı): ana sayfa alt başlığı + og/twitter → "Uçtan uca analiz ekosistemi…",
+  AI Asistan/blog/forum/Tez Analizi açıklamaları, forum kategori açıklaması,
+  AI talimatı son satırı; Hakkımızda "Türkçe Arayüz" satırı KALDIRILDI.
+  Olgusal olanlar korundu (TR Dizin/YÖK/19 Türk üniversitesi, KVKK/TCK, Türkçe
+  NLP dersi, transkript dil listesi, blog yazı içerikleri).
+- [ ] **Kalan konumlandırma kararları:** "tez yazımı" vurgusu (AI Asistan,
+  blog, forum açıklamaları; Hangi Test meta "Tezin için…"); e-posta imzası →
+  "Araştırma ve Analiz Platformu"?
 - [ ] Adım 6 kapsamı: APA cümleleri, sunucu sonuç metinleri, PDF/TXT sonuç
   dosyaları EN/DE olacak mı?
 - [ ] "Ufak tefek aksamalar" listesi kullanıcıdan alınacak (cilalama turu).

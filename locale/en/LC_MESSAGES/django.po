@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-25 14:32+0300\n"
+"POT-Creation-Date: 2026-09-25 21:26+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -504,20 +504,20 @@ msgstr "16+ people"
 msgid "2 hafta içinde"
 msgstr "Within 2 weeks"
 
-#: forum/services/ai_service.py:253 forum/views.py:2557 forum/views.py:2630
+#: forum/services/ai_service.py:295 forum/views.py:2556 forum/views.py:2629
 msgid "AI servisi şu anda kullanılamıyor."
 msgstr "The AI service is currently unavailable."
 
-#: forum/services/ai_service.py:307
+#: forum/services/ai_service.py:352
 #, python-format
 msgid "API hatası: %(error)s"
 msgstr "API error: %(error)s"
 
-#: forum/services/ai_service.py:314
+#: forum/services/ai_service.py:359
 msgid "İstek zaman aşımına uğradı. Lütfen tekrar deneyin."
 msgstr "The request timed out. Please try again."
 
-#: forum/services/ai_service.py:321
+#: forum/services/ai_service.py:366
 #, python-format
 msgid "Bir hata oluştu: %(error)s"
 msgstr "An error occurred: %(error)s"
@@ -558,8 +558,8 @@ msgstr "Best regards,"
 
 #: forum/services/email_service.py:134
 #: forum/templates/forum/emails/support_payment_details.html:112
-#: forum/views.py:2147 forum/views.py:2154 forum/views.py:2315
-#: forum/views.py:2322
+#: forum/views.py:2146 forum/views.py:2153 forum/views.py:2314
+#: forum/views.py:2321
 msgid "Analizus Ekibi"
 msgstr "The Analizus Team"
 
@@ -996,9 +996,9 @@ msgstr "Restore my account"
 
 #: forum/templates/forum/ai_assistant.html:5
 msgid ""
-"İstatistik testleri, tez yazımı ve veri analizi hakkında anında Türkçe yanıt"
-" alın. Analizus AI Asistan, akademik düzeyde yapay zeka desteği sunar — "
-"ücretsiz, 7/24."
+"İstatistik testleri, tez yazımı ve veri analizi hakkında anında yanıt alın. "
+"Analizus AI Asistan, akademik düzeyde yapay zeka desteği sunar — ücretsiz, "
+"7/24."
 msgstr ""
 "Get instant answers on statistical tests, thesis writing and data analysis. "
 "The Analizus AI Assistant offers academic-level AI support — free, 24/7."
@@ -2054,7 +2054,7 @@ msgid "Form doldurmak yerine doğrudan konuşmayı tercih ediyorsanız:"
 msgstr "If you'd rather talk directly instead of filling out the form:"
 
 #: forum/templates/forum/emails/support_payment_details.html:6
-#: forum/views.py:3384
+#: forum/views.py:3383
 msgid "Analizus Bağış İşlemi"
 msgstr "Analizus Support Payment"
 
@@ -2331,91 +2331,94 @@ msgstr ""
 msgid "2. Kişisel Verilerin İşlenme Amaçları ve Hukuki Sebepleri"
 msgstr "2. Purposes of and Legal Grounds for Processing"
 
-#: forum/templates/forum/gizlilik_politikasi.html:35
+#: forum/templates/forum/gizlilik_politikasi.html:31
+#: forum/templates/forum/gizlilik_politikasi.html:36
 msgid "Veri Kategorisi"
 msgstr "Data Category"
 
-#: forum/templates/forum/gizlilik_politikasi.html:36
+#: forum/templates/forum/gizlilik_politikasi.html:31
+#: forum/templates/forum/gizlilik_politikasi.html:37
 msgid "Amaç"
 msgstr "Purpose"
 
-#: forum/templates/forum/gizlilik_politikasi.html:37
+#: forum/templates/forum/gizlilik_politikasi.html:31
+#: forum/templates/forum/gizlilik_politikasi.html:38
 msgid "Hukuki Sebep"
 msgstr "Legal Ground"
 
-#: forum/templates/forum/gizlilik_politikasi.html:42
+#: forum/templates/forum/gizlilik_politikasi.html:43
 msgid "Kimlik, İletişim, Hesap"
 msgstr "Identity, Contact, Account"
 
-#: forum/templates/forum/gizlilik_politikasi.html:43
+#: forum/templates/forum/gizlilik_politikasi.html:44
 msgid "Üyelik ve Kullanıcı Yönetimi"
 msgstr "Membership and User Management"
 
-#: forum/templates/forum/gizlilik_politikasi.html:44
-#: forum/templates/forum/gizlilik_politikasi.html:49
-#: forum/templates/forum/gizlilik_politikasi.html:54
+#: forum/templates/forum/gizlilik_politikasi.html:45
+#: forum/templates/forum/gizlilik_politikasi.html:50
+#: forum/templates/forum/gizlilik_politikasi.html:55
 msgid "Sözleşmenin İfası"
 msgstr "Performance of a Contract"
 
-#: forum/templates/forum/gizlilik_politikasi.html:47
+#: forum/templates/forum/gizlilik_politikasi.html:48
 msgid "Analiz Dosyaları"
 msgstr "Analysis Files"
 
-#: forum/templates/forum/gizlilik_politikasi.html:48
+#: forum/templates/forum/gizlilik_politikasi.html:49
 msgid "Hizmetin Sağlanması"
 msgstr "Provision of the Service"
 
-#: forum/templates/forum/gizlilik_politikasi.html:52
+#: forum/templates/forum/gizlilik_politikasi.html:53
 msgid "AI Asistan'a yazılan sorular"
 msgstr "Questions sent to the AI Assistant"
 
-#: forum/templates/forum/gizlilik_politikasi.html:53
+#: forum/templates/forum/gizlilik_politikasi.html:54
 msgid "Yanıt üretilmesi"
 msgstr "Generating responses"
 
-#: forum/templates/forum/gizlilik_politikasi.html:57
+#: forum/templates/forum/gizlilik_politikasi.html:58
 msgid "İletişim, proje ve eğitim talep formları"
 msgstr "Contact, project and training request forms"
 
-#: forum/templates/forum/gizlilik_politikasi.html:58
+#: forum/templates/forum/gizlilik_politikasi.html:59
 msgid "Talebin yanıtlanması"
 msgstr "Responding to the request"
 
-#: forum/templates/forum/gizlilik_politikasi.html:59
+#: forum/templates/forum/gizlilik_politikasi.html:60
 msgid "Sözleşmenin kurulması / Meşru Menfaat"
 msgstr "Entering into a Contract / Legitimate Interest"
 
-#: forum/templates/forum/gizlilik_politikasi.html:62
+#: forum/templates/forum/gizlilik_politikasi.html:63
 msgid "Zorunlu çerezler (oturum, güvenlik, dil ve çerez tercihi)"
 msgstr ""
 "Strictly necessary cookies (session, security, language and cookie "
 "preference)"
 
-#: forum/templates/forum/gizlilik_politikasi.html:63
+#: forum/templates/forum/gizlilik_politikasi.html:64
 msgid "Güvenlik ve oturum yönetimi"
 msgstr "Security and session management"
 
-#: forum/templates/forum/gizlilik_politikasi.html:64
+#: forum/templates/forum/gizlilik_politikasi.html:65
 msgid "Meşru Menfaat"
 msgstr "Legitimate Interest"
 
-#: forum/templates/forum/gizlilik_politikasi.html:67
+#: forum/templates/forum/gizlilik_politikasi.html:68
 msgid "Analiz çerezleri (Google Analytics)"
 msgstr "Analytics cookies (Google Analytics)"
 
-#: forum/templates/forum/gizlilik_politikasi.html:68
+#: forum/templates/forum/gizlilik_politikasi.html:69
 msgid "Site kullanım istatistikleri"
 msgstr "Website usage statistics"
 
-#: forum/templates/forum/gizlilik_politikasi.html:69
+#: forum/templates/forum/gizlilik_politikasi.html:70
 msgid "Açık Rıza"
 msgstr "Explicit Consent"
 
-#: forum/templates/forum/gizlilik_politikasi.html:75
+#: forum/templates/forum/gizlilik_politikasi.html:76
 msgid "3. Kişisel Verilerin Aktarımı"
 msgstr "3. Transfer of Personal Data"
 
-#: forum/templates/forum/gizlilik_politikasi.html:77
+#: forum/templates/forum/gizlilik_politikasi.html:78
 msgid ""
 "Kişisel verileriniz, hizmetin sağlanması için aşağıdaki hizmet "
 "sağlayıcılarla ve yasal yükümlülüklerimiz gereği yetkili kamu kurumlarıyla "
@@ -2427,40 +2430,40 @@ msgstr ""
 "competent public authorities. Due to our technical infrastructure, your data"
 " may be processed on servers located abroad."
 
-#: forum/templates/forum/gizlilik_politikasi.html:84
+#: forum/templates/forum/gizlilik_politikasi.html:85
 msgid "Almanya"
 msgstr "Germany"
 
-#: forum/templates/forum/gizlilik_politikasi.html:84
+#: forum/templates/forum/gizlilik_politikasi.html:85
 msgid "sunucu barındırma"
 msgstr "server hosting"
 
-#: forum/templates/forum/gizlilik_politikasi.html:85
+#: forum/templates/forum/gizlilik_politikasi.html:86
 msgid "AWS S3, İsveç / AB bölgesi"
 msgstr "AWS S3, Sweden / EU region"
 
-#: forum/templates/forum/gizlilik_politikasi.html:85
+#: forum/templates/forum/gizlilik_politikasi.html:86
 msgid "dosya depolama"
 msgstr "file storage"
 
-#: forum/templates/forum/gizlilik_politikasi.html:86
 #: forum/templates/forum/gizlilik_politikasi.html:87
+#: forum/templates/forum/gizlilik_politikasi.html:88
 msgid "ABD"
 msgstr "USA"
 
-#: forum/templates/forum/gizlilik_politikasi.html:86
+#: forum/templates/forum/gizlilik_politikasi.html:87
 msgid "e-posta gönderimi (Gmail) ve yalnızca onayınızla Google Analytics"
 msgstr "sending emails (Gmail) and, only with your consent, Google Analytics"
 
-#: forum/templates/forum/gizlilik_politikasi.html:87
+#: forum/templates/forum/gizlilik_politikasi.html:88
 msgid "AI Asistan'a yazdığınız soruların işlenmesi"
 msgstr "processing the questions you send to the AI Assistant"
 
-#: forum/templates/forum/gizlilik_politikasi.html:90
+#: forum/templates/forum/gizlilik_politikasi.html:91
 msgid "4. Veri Saklama Süreleri"
 msgstr "4. Retention Periods"
 
-#: forum/templates/forum/gizlilik_politikasi.html:92
+#: forum/templates/forum/gizlilik_politikasi.html:93
 msgid ""
 "Verileriniz, işleme amacının gerektirdiği süre boyunca saklanır. Akademik "
 "tarama araçlarımız (YÖK Tez, OpenAlex, TR Dizin, OAI-PMH) için "
@@ -2474,11 +2477,11 @@ msgstr ""
 "completed, for the user's convenience, and is then deleted automatically. "
 "Statutory limitation periods remain unaffected."
 
-#: forum/templates/forum/gizlilik_politikasi.html:100
+#: forum/templates/forum/gizlilik_politikasi.html:101
 msgid "5. KVKK Madde 11 Kapsamındaki Haklarınız"
 msgstr "5. Your Rights under Article 11 KVKK"
 
-#: forum/templates/forum/gizlilik_politikasi.html:102
+#: forum/templates/forum/gizlilik_politikasi.html:103
 msgid ""
 "Veri sahibi olarak; verilerinizin işlenip işlenmediğini öğrenme, bilgi talep"
 " etme, verilerinizin silinmesini veya düzeltilmesini isteme ve kanuna aykırı"
@@ -2492,11 +2495,11 @@ msgstr ""
 "processing. You may submit your requests in writing to "
 "<strong>info@analizus.com</strong>."
 
-#: forum/templates/forum/gizlilik_politikasi.html:110
+#: forum/templates/forum/gizlilik_politikasi.html:111
 msgid "6. Çerez Politikası"
 msgstr "6. Cookie Policy"
 
-#: forum/templates/forum/gizlilik_politikasi.html:112
+#: forum/templates/forum/gizlilik_politikasi.html:113
 msgid ""
 "Platformda oturum, güvenlik, dil ve çerez tercihlerinizin hatırlanması için "
 "zorunlu çerezler kullanılır. Analiz çerezleri (Google Analytics) yalnızca "
@@ -2511,12 +2514,12 @@ msgstr ""
 "settings\" link at the bottom of the page. Your preference is stored for 180"
 " days."
 
-#: forum/templates/forum/gizlilik_politikasi.html:120
+#: forum/templates/forum/gizlilik_politikasi.html:121
 msgid "7. Avrupa Birliği / AEA'daki Kullanıcılar İçin Ek Bilgiler (GDPR)"
 msgstr ""
 "7. Additional Information for Users in the European Union / EEA (GDPR)"
 
-#: forum/templates/forum/gizlilik_politikasi.html:122
+#: forum/templates/forum/gizlilik_politikasi.html:123
 msgid ""
 "Avrupa Birliği veya Avrupa Ekonomik Alanı'nda bulunuyorsanız, kişisel "
 "verileriniz ayrıca Genel Veri Koruma Tüzüğü (AB) 2016/679 (\"GDPR\") "
@@ -2526,7 +2529,7 @@ msgstr ""
 " personal data is also processed in accordance with the General Data "
 "Protection Regulation (EU) 2016/679 (\"GDPR\")."
 
-#: forum/templates/forum/gizlilik_politikasi.html:132
+#: forum/templates/forum/gizlilik_politikasi.html:133
 msgid ""
 "<strong>Hukuki dayanaklar:</strong> üyelik, analiz araçları, AI Asistan ve "
 "talepler için md. 6(1)(b) (sözleşme); güvenlik ve zorunlu çerezler için md. "
@@ -2538,14 +2541,14 @@ msgstr ""
 "interest) for security and strictly necessary cookies; Art. 6(1)(a) "
 "(consent) for analytics cookies; Art. 6(1)(c) for legal obligations."
 
-#: forum/templates/forum/gizlilik_politikasi.html:133
+#: forum/templates/forum/gizlilik_politikasi.html:134
 msgid ""
 "<strong>AB dışına aktarım:</strong> Google ve Groq verileri ABD'de işler."
 msgstr ""
 "<strong>Transfers outside the EU:</strong> Google and Groq process data in "
 "the USA."
 
-#: forum/templates/forum/gizlilik_politikasi.html:134
+#: forum/templates/forum/gizlilik_politikasi.html:135
 msgid ""
 "<strong>Saklama süreleri:</strong> hesap verileri hesabınızı silene kadar "
 "saklanır; hesap silme talebinden sonra 30 gün içinde kişisel verileriniz "
@@ -2561,7 +2564,7 @@ msgstr ""
 "due to financial obligations; raw data from the academic search tools is "
 "kept for 7 days and your cookie preference for 180 days."
 
-#: forum/templates/forum/gizlilik_politikasi.html:135
+#: forum/templates/forum/gizlilik_politikasi.html:136
 msgid ""
 "<strong>Haklarınız:</strong> erişim (md. 15), düzeltme (md. 16), silme (md. "
 "17), işlemenin kısıtlanması (md. 18), veri taşınabilirliği (md. 20) ve "
@@ -2576,7 +2579,7 @@ msgstr ""
 "requests to info@analizus.com; they will be answered within one month at the"
 " latest."
 
-#: forum/templates/forum/gizlilik_politikasi.html:136
+#: forum/templates/forum/gizlilik_politikasi.html:137
 msgid ""
 "<strong>Şikâyet hakkı:</strong> Bulunduğunuz AB/AEA ülkesindeki veri koruma "
 "denetim makamına şikâyette bulunabilirsiniz."
@@ -2585,7 +2588,7 @@ msgstr ""
 "the data protection supervisory authority in the EU/EEA country where you "
 "are located."
 
-#: forum/templates/forum/gizlilik_politikasi.html:137
+#: forum/templates/forum/gizlilik_politikasi.html:138
 msgid ""
 "<strong>Otomatik karar verme:</strong> GDPR md. 22 anlamında hakkınızda "
 "otomatik karar verilmez; AI Asistan yalnızca bilgi amaçlı yanıt üretir."
@@ -2594,7 +2597,7 @@ msgstr ""
 "the meaning of Art. 22 GDPR are made about you; the AI Assistant only "
 "generates informational responses."
 
-#: forum/templates/forum/gizlilik_politikasi.html:138
+#: forum/templates/forum/gizlilik_politikasi.html:139
 msgid ""
 "<strong>Zorunluluk:</strong> Üyelik için kullanıcı adı ve e-posta adresi "
 "gereklidir; bunlar olmadan hesap oluşturulamaz."
@@ -2602,7 +2605,7 @@ msgstr ""
 "<strong>Obligation to provide data:</strong> a username and email address "
 "are required for membership; an account cannot be created without them."
 
-#: forum/templates/forum/gizlilik_politikasi.html:145
+#: forum/templates/forum/gizlilik_politikasi.html:146
 msgid "İletişim sayfasına dön"
 msgstr "Back to the contact page"
 
@@ -3922,11 +3925,11 @@ msgstr "Do Your Analysis. If You Can't, Someone Here Can. | Analizus"
 #: forum/templates/forum/home.html:9 forum/templates/forum/home.html:11
 #: forum/templates/forum/home.html:236
 msgid ""
-"Türkiye'nin analiz ekosistemi — 18 ücretsiz istatistik aracı, AI asistan ve "
+"Uçtan uca analiz ekosistemi — 18 ücretsiz istatistik aracı, AI asistan ve "
 "doğrulanmış uzmanlar tek çatıda."
 msgstr ""
-"Turkey's analysis ecosystem — 18 free statistics tools, an AI assistant, and"
-" verified experts under one roof."
+"An end-to-end analysis ecosystem — 18 free statistics tools, an AI "
+"assistant, and verified experts under one roof."
 
 #: forum/templates/forum/home.html:231
 msgid "Analizini yap."
@@ -3989,7 +3992,7 @@ msgstr "Scraping tools:"
 msgid "YÖK Tez Kazıma"
 msgstr "Thesis Center Scraping"
 
-#: forum/templates/forum/home.html:272 forum/views.py:4044
+#: forum/templates/forum/home.html:272 forum/views.py:4043
 #: openalex/templates/openalex/landing.html:155 templates/base.html:223
 #: templates/base.html:439
 msgid "Bibliometrik Analiz"
@@ -4056,7 +4059,7 @@ msgstr "Data Science"
 msgid "Editörlük"
 msgstr "Editing"
 
-#: forum/templates/forum/home.html:362 forum/views.py:4041
+#: forum/templates/forum/home.html:362 forum/views.py:4040
 msgid "Danışmanlık"
 msgstr "Consulting"
 
@@ -7436,42 +7439,26 @@ msgstr "Marketplace"
 msgid "Akademik Forum"
 msgstr "Academic Forum"
 
-#: forum/views.py:1963
-msgid "Türkçe Arayüz"
-msgstr "Turkish Interface"
-
-#: forum/views.py:1963
-msgid "Tam Türkçe"
-msgstr "Fully Turkish"
-
-#: forum/views.py:1963
-msgid "Kısmi"
-msgstr "Partial"
-
-#: forum/views.py:1963
-msgid "İngilizce"
-msgstr "English"
-
-#: forum/views.py:2072
+#: forum/views.py:2071
 msgid "Mesajınız başarıyla gönderildi. En kısa sürede dönüş yapacağız."
 msgstr ""
 "Your message has been sent. We will get back to you as soon as possible."
 
-#: forum/views.py:2074
+#: forum/views.py:2073
 msgid "Mesaj gönderilirken bir hata oluştu. Lütfen tekrar deneyin."
 msgstr "An error occurred while sending your message. Please try again."
 
-#: forum/views.py:2098 forum/views.py:2255
+#: forum/views.py:2097 forum/views.py:2254
 msgid "Lütfen zorunlu alanları doldurunuz."
 msgstr "Please fill in the required fields."
 
-#: forum/views.py:2141 forum/views.py:2153 forum/views.py:2308
-#: forum/views.py:2321
+#: forum/views.py:2140 forum/views.py:2152 forum/views.py:2307
+#: forum/views.py:2320
 #, python-format
 msgid "Sayın %(name)s,"
 msgstr "Dear %(name)s,"
 
-#: forum/views.py:2142
+#: forum/views.py:2141
 msgid ""
 "Proje talebiniz başarıyla alındı. En kısa sürede sizinle iletişime "
 "geçeceğiz."
@@ -7479,50 +7466,50 @@ msgstr ""
 "Your project request has been received. We will contact you as soon as "
 "possible."
 
-#: forum/views.py:2143 forum/views.py:2310
+#: forum/views.py:2142 forum/views.py:2309
 msgid "Talep Özeti:"
 msgstr "Request Summary:"
 
-#: forum/views.py:2144
+#: forum/views.py:2143
 #, python-format
 msgid "Analiz Türü: %(value)s"
 msgstr "Analysis type: %(value)s"
 
-#: forum/views.py:2145
+#: forum/views.py:2144
 #, python-format
 msgid "Veri Boyutu: %(value)s"
 msgstr "Data size: %(value)s"
 
-#: forum/views.py:2146
+#: forum/views.py:2145
 #, python-format
 msgid "Süre Beklentisi: %(value)s"
 msgstr "Expected timeline: %(value)s"
 
-#: forum/views.py:2151
+#: forum/views.py:2150
 msgid "Proje talebiniz alındı — Analizus"
 msgstr "Your project request has been received — Analizus"
 
-#: forum/views.py:2154
+#: forum/views.py:2153
 msgid "Proje talebiniz alındı. En kısa sürede sizinle iletişime geçeceğiz."
 msgstr ""
 "Your project request has been received. We will contact you as soon as "
 "possible."
 
-#: forum/views.py:2157
+#: forum/views.py:2156
 msgid "Talebiniz alındı! En kısa sürede size dönüş yapacağız."
 msgstr ""
 "Your request has been received! We will get back to you as soon as possible."
 
-#: forum/views.py:2159 forum/views.py:2327
+#: forum/views.py:2158 forum/views.py:2326
 msgid "Bir hata oluştu, lütfen tekrar deneyin."
 msgstr "An error occurred, please try again."
 
-#: forum/views.py:2259
+#: forum/views.py:2258
 msgid "Devam etmek için KVKK Aydınlatma Metni onayı gereklidir."
 msgstr ""
 "To continue, you must accept the KVKK (personal data protection) notice."
 
-#: forum/views.py:2309
+#: forum/views.py:2308
 msgid ""
 "Eğitim talebiniz başarıyla alındı. 24 saat içinde sizinle iletişime "
 "geçeceğiz."
@@ -7530,53 +7517,53 @@ msgstr ""
 "Your training request has been received. We will contact you within 24 "
 "hours."
 
-#: forum/views.py:2311
+#: forum/views.py:2310
 #, python-format
 msgid "Talep Türü: %(value)s"
 msgstr "Request type: %(value)s"
 
-#: forum/views.py:2312
+#: forum/views.py:2311
 #, python-format
 msgid "Konu: %(value)s"
 msgstr "Topic: %(value)s"
 
-#: forum/views.py:2313
+#: forum/views.py:2312
 #, python-format
 msgid "Seviye: %(value)s"
 msgstr "Level: %(value)s"
 
-#: forum/views.py:2314
+#: forum/views.py:2313
 #, python-format
 msgid "Format: %(value)s"
 msgstr "Format: %(value)s"
 
-#: forum/views.py:2319
+#: forum/views.py:2318
 msgid "Eğitim talebiniz alındı — Analizus"
 msgstr "Your training request has been received — Analizus"
 
-#: forum/views.py:2322
+#: forum/views.py:2321
 msgid "Eğitim talebiniz alındı. 24 saat içinde sizinle iletişime geçeceğiz."
 msgstr ""
 "Your training request has been received. We will contact you within 24 "
 "hours."
 
-#: forum/views.py:2325
+#: forum/views.py:2324
 msgid "Talebiniz alındı! 24 saat içinde size dönüş yapacağız."
 msgstr ""
 "Your request has been received! We will get back to you within 24 hours."
 
-#: forum/views.py:2546
+#: forum/views.py:2545
 msgid "Lütfen bir soru girin."
 msgstr "Please enter a question."
 
-#: forum/views.py:2551
+#: forum/views.py:2550
 #, python-format
 msgid "Günlük %(limit)s soru limitinizi doldurdunuz. Yarın tekrar deneyin."
 msgstr ""
 "You have used up your daily limit of %(limit)s questions. Please try again "
 "tomorrow."
 
-#: forum/views.py:2553
+#: forum/views.py:2552
 #, python-format
 msgid ""
 "Günlük anonim limit (%(limit)s soru) doldu. Üye olarak 30 soruya kadar "
@@ -7585,118 +7572,118 @@ msgstr ""
 "The daily anonymous limit (%(limit)s questions) has been reached. Sign up to"
 " ask up to 30 questions."
 
-#: forum/views.py:2583
+#: forum/views.py:2582
 msgid "Geçersiz istek."
 msgstr "Invalid request."
 
-#: forum/views.py:2599
+#: forum/views.py:2598
 msgid "Mesaj boş olamaz."
 msgstr "The message cannot be empty."
 
-#: forum/views.py:2602
+#: forum/views.py:2601
 msgid "Mesaj çok uzun (max 2000 karakter)."
 msgstr "The message is too long (max. 2000 characters)."
 
-#: forum/views.py:2623
+#: forum/views.py:2622
 #, python-format
 msgid "Günlük %(limit)s soru limitine ulaştınız."
 msgstr "You have reached your daily limit of %(limit)s questions."
 
-#: forum/views.py:2676 forum/views.py:2746
+#: forum/views.py:2675 forum/views.py:2745
 msgid "E-posta adresiniz zaten doğrulanmış."
 msgstr "Your email address has already been verified."
 
-#: forum/views.py:2689
+#: forum/views.py:2688
 msgid "Geçersiz doğrulama linki."
 msgstr "Invalid verification link."
 
-#: forum/views.py:2693
+#: forum/views.py:2692
 msgid "Bu doğrulama linki süresi dolmuş veya daha önce kullanılmış."
 msgstr "This verification link has expired or has already been used."
 
-#: forum/views.py:2724
+#: forum/views.py:2723
 msgid "E-posta adresiniz başarıyla doğrulandı! Hoş geldiniz."
 msgstr "Your email address has been verified. Welcome!"
 
-#: forum/views.py:2754
+#: forum/views.py:2753
 msgid ""
 "Doğrulama e-postası tekrar gönderildi. Lütfen e-posta kutunuzu kontrol edin."
 msgstr "The verification email has been resent. Please check your inbox."
 
-#: forum/views.py:2756
+#: forum/views.py:2755
 msgid "E-posta gönderilemedi. Lütfen daha sonra tekrar deneyin."
 msgstr "The email could not be sent. Please try again later."
 
-#: forum/views.py:4034
+#: forum/views.py:4033
 msgid "Hoş geldiniz!"
 msgstr "Welcome!"
 
-#: forum/views.py:4039
+#: forum/views.py:4038
 msgid "İstatistik Analizi"
 msgstr "Statistical Analysis"
 
-#: forum/views.py:4039
+#: forum/views.py:4038
 msgid "SPSS, R, Python, AMOS, SmartPLS ile profesyonel istatistik analizleri"
 msgstr ""
 "Professional statistical analyses with SPSS, R, Python, AMOS and SmartPLS"
 
-#: forum/views.py:4040
+#: forum/views.py:4039
 msgid "Veri Kazıma & Toplama"
 msgstr "Data Scraping & Collection"
 
-#: forum/views.py:4040
+#: forum/views.py:4039
 msgid "Anket, web ve akademik veritabanlarından veri toplama desteği"
 msgstr ""
 "Support with collecting data from surveys, the web and academic databases"
 
-#: forum/views.py:4041
+#: forum/views.py:4040
 msgid ""
 "Alanında uzman akademisyen ve danışmanlarla Pazaryeri üzerinden eşleşin"
 msgstr ""
 "Get matched with expert academics and consultants through the Marketplace"
 
-#: forum/views.py:4042
+#: forum/views.py:4041
 msgid "Proje Desteği"
 msgstr "Project Support"
 
-#: forum/views.py:4042
+#: forum/views.py:4041
 msgid "Tez, makale ve kurumsal projeleriniz için uçtan uca destek"
 msgstr "End-to-end support for your theses, articles and corporate projects"
 
-#: forum/views.py:4043
+#: forum/views.py:4042
 msgid "Akademik Destek"
 msgstr "Academic Support"
 
-#: forum/views.py:4043
+#: forum/views.py:4042
 msgid "Tez ve makale yazım sürecinde yöntem ve rehberlik desteği"
 msgstr "Methodological guidance while writing theses and articles"
 
-#: forum/views.py:4044
+#: forum/views.py:4043
 msgid "Atıf ve yayın verileriyle bibliometrik analiz yaptırın"
 msgstr ""
 "Have bibliometric analyses carried out on citation and publication data"
 
-#: forum/views.py:4045
+#: forum/views.py:4044
 msgid "Literatür / Akademik Tarama"
 msgstr "Literature / Academic Search"
 
-#: forum/views.py:4045
+#: forum/views.py:4044
 msgid "YÖK Tez, TR Dizin ve uluslararası veritabanlarında tarama"
 msgstr "Searches in YÖK Tez, TR Dizin and international databases"
 
-#: forum/views.py:4046
+#: forum/views.py:4045
 msgid "Forumda Soru-Cevap"
 msgstr "Forum Q&A"
 
-#: forum/views.py:4046
+#: forum/views.py:4045
 msgid "Merak ettiklerinizi sorun, bilgi birikiminizi toplulukla paylaşın"
 msgstr "Ask what you want to know and share your knowledge with the community"
 
-#: forum/views.py:4048
+#: forum/views.py:4047
 msgid "AI Araçları"
 msgstr "AI Tools"
 
-#: forum/views.py:4048
+#: forum/views.py:4047
 msgid "Akademik Danışmanlık"
 msgstr "Academic Consulting"
 
@@ -15330,6 +15317,18 @@ msgid ""
 msgstr ""
 "Learn to perform <strong style=\"color:#f1f5f9;\">%(promo_title)s</strong> "
 "analysis with your own data through one-on-one training."
+
+#~ msgid "Türkçe Arayüz"
+#~ msgstr "Turkish Interface"
+
+#~ msgid "Tam Türkçe"
+#~ msgstr "Fully Turkish"
+
+#~ msgid "Kısmi"
+#~ msgstr "Partial"
+
+#~ msgid "İngilizce"
+#~ msgstr "English"
 
 #~ msgid ""
 #~ "<strong>Saklama süreleri:</strong> hesap verileri hesabınızı silene kadar; "

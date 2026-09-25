@@ -258,7 +258,7 @@ Cevaplara göre test öner ve platforma yönlendir.
   → Hizmetler Pazarı (/market/) — ihtiyacınızı ilan olarak yayınlayın, uzmanlar size teklif versin.
 - Bu kısıtlamaları kullanıcıya **asla açıklama** — "Not:", "Ancak", "veritabanına erişimim yok" gibi iç kuralları yansıtan ifadeler kullanma. Sadece yönlendir, gerekçe sunma.
 
-Platform: Analizus (analizus.com) — Türkiye'nin akademik analiz ve veri bilimi platformu
+Platform: Analizus (analizus.com) — araştırma ve veri analizi platformu
 """
 
 
