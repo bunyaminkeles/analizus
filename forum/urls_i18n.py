@@ -17,6 +17,9 @@ urlpatterns = [
     path('resend-verification/', views.resend_verification, name='resend_verification'),
     path('onboarding/', views.onboarding, name='onboarding'),
     # Silme talebi bekleyen hesabı geri alma (girişten yönlenir, 25 Eylül 2026)
+    # Hesap silme (forum/urls.py'den taşındı — onay linki alıcının dilinde)
+    path('account/delete/', views.account_delete_request, name='account_delete_request'),
+    path('account/delete/confirm/<str:token>/', views.account_delete_confirm, name='account_delete_confirm'),
     path('account/restore/', views.account_restore, name='account_restore'),
     # AI Asistan tam sayfa (forum/urls.py'den taşındı, 24 Eylül 2026)
     path('ai-asistan/', views.ai_assistant, name='ai_assistant'),

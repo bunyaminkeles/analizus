@@ -13,8 +13,6 @@ urlpatterns = [
     path('blog/<slug:slug>/like/', views.blog_like, name='blog_like'),
 
     # Profil
-    path('account/delete/', views.account_delete_request, name='account_delete_request'),
-    path('account/delete/confirm/<str:token>/', views.account_delete_confirm, name='account_delete_confirm'),
     path('profile/edit/', views.profile_edit, name='profile_edit'),
     path('profile/<str:username>/', views.profile_detail, name='profile_detail'),
     

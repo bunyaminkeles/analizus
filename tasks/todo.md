@@ -11,7 +11,7 @@ bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
 **A. Kod işleri (öncelik sırasıyla)**
-- [ ] **Hesap silme cron'u kullanıcı kararlarına uydurulacak** (25 Eylül 2026).
+- [x] **Hesap silme cron'u kullanıcı kararlarına uydurulacak** (25 Eylül 2026) — 3 adım TAMAMLANDI.
   DÜZELTME: 24 Eylül'deki "silen kod yok" bulgusu YANLIŞTI — işlev var:
   `forum/api_views.py` `cron_process_account_deletions`, Hetzner crontab
   `0 3 * * *`, nginx logunda 23-25 Eylül her gün 200 (processed: 0).
@@ -28,13 +28,16 @@ maddelerde.
   - [x] 2. "Geri al" akışı (25 Eylül 2026): custom_login pasif + 30 gün içi +
     şifre doğru → oturuma 10 dk'lık işaret → `/account/restore/` (i18n);
     "Hesabımı geri al" / "Silme işlemi devam etsin". 7 senaryo test edildi.
-  - [ ] 3. Metinler: silme e-postası, flash mesajları ve `account_delete.html`
-    çevrilmedi; ayrıca `account_delete.html`'de 3 YANLIŞ ifade var — "DM
-    mesajlarınız 30 gün içinde silinecektir" (artık silinmiyor), "yalnızca admin
-    aracılığıyla aktifleştirilebilir" (artık girişle geri alınabiliyor),
-    "Silinmiş Kullanıcı" adıyla (gerçekte `deleted_xxxx` görünüyor). Silme
-    e-postası `{site_url}/account/delete/confirm/` — i18n dışı. Gizlilik
-    metnine "30 gün içinde silinir" geri eklenecek.
+  - [x] 3. Metinler (25 Eylül 2026): `account_delete.html` gerçek davranışa göre
+    yeniden yazıldı (3 yanlış ifade düzeltildi) + EN/DE; silme e-postası alıcının
+    dilinde, onay linki `reverse()` ile dil önekli (URL'ler urls_i18n'e taşındı,
+    TR yolları aynı); flash mesajları çevrildi; gizlilik metnine "30 gün" +
+    anonim mali kayıt geri eklendi.
+- [ ] **Silinmiş hesabın görünen adı:** anonim hesaplar açık alanlarda
+  `deleted_a3f9…` görünüyor; şablonlarda "Silinmiş kullanıcı" gösterimi
+  (çok sayıda şablon — ayrı iş, önce kapsam listesi).
+- [ ] **Profil sayfaları tek dilli:** profil/profil düzenleme (ve "Hesabımı Sil"
+  butonu) i18n dışında — EN/DE kullanıcı silme sayfasına TR olarak ulaşır.
 - [ ] **Ana sayfa hero test çipleri** "t-testi · korelasyon · regresyon"
   EN/DE'de Türkçe.
 - [ ] **"Güvenilir Üye" rozet mesajı** (`_check_and_award_trust_badge`,

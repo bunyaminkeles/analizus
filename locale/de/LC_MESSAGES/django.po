@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-25 14:10+0300\n"
+"POT-Creation-Date: 2026-09-25 14:18+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -508,7 +508,7 @@ msgstr "16+ Personen"
 msgid "2 hafta içinde"
 msgstr "Innerhalb von 2 Wochen"
 
-#: forum/services/ai_service.py:253 forum/views.py:2551 forum/views.py:2624
+#: forum/services/ai_service.py:253 forum/views.py:2557 forum/views.py:2630
 msgid "AI servisi şu anda kullanılamıyor."
 msgstr "Der KI-Dienst ist derzeit nicht verfügbar."
 
@@ -566,8 +566,8 @@ msgstr "Viele Grüße,"
 
 #: forum/services/email_service.py:134
 #: forum/templates/forum/emails/support_payment_details.html:112
-#: forum/views.py:2141 forum/views.py:2148 forum/views.py:2309
-#: forum/views.py:2316
+#: forum/views.py:2147 forum/views.py:2154 forum/views.py:2315
+#: forum/views.py:2322
 msgid "Analizus Ekibi"
 msgstr "Ihr Analizus-Team"
 
@@ -906,6 +906,75 @@ msgstr "Analizus wird von Bünyamin Keleş betrieben."
 #: forum/templates/forum/about.html:410
 msgid "Adres:"
 msgstr "Adresse:"
+
+#: forum/templates/forum/account_delete.html:4
+msgid "Hesabı Sil"
+msgstr "Konto löschen"
+
+#: forum/templates/forum/account_delete.html:11
+msgid "Hesabı Kalıcı Olarak Sil"
+msgstr "Konto endgültig löschen"
+
+#: forum/templates/forum/account_delete.html:15
+msgid "Bu işlemi onaylamadan önce aşağıdakileri dikkatle okuyun:"
+msgstr "Bitte lesen Sie Folgendes sorgfältig, bevor Sie bestätigen:"
+
+#: forum/templates/forum/account_delete.html:20
+msgid ""
+"E-posta adresiniz ve kişisel profil bilgileriniz <strong>kalıcı "
+"olarak</strong> silinecektir."
+msgstr ""
+"Ihre E-Mail-Adresse und Ihre persönlichen Profilangaben werden "
+"<strong>endgültig</strong> gelöscht."
+
+#: forum/templates/forum/account_delete.html:21
+msgid ""
+"Forum gönderileriniz, blog yazılarınız ve ilanlarınız silinmez; "
+"<strong>anonim bir kullanıcı adıyla</strong> görünmeye devam eder."
+msgstr ""
+"Ihre Forenbeiträge, Blogartikel und Aufträge werden nicht gelöscht; sie "
+"bleiben <strong>unter einem anonymen Benutzernamen</strong> sichtbar."
+
+#: forum/templates/forum/account_delete.html:22
+msgid ""
+"Gönderdiğiniz özel mesajlar karşı tarafta kalır; gönderen anonim görünür."
+msgstr ""
+"Von Ihnen gesendete private Nachrichten bleiben beim Empfänger erhalten; der"
+" Absender wird anonym angezeigt."
+
+#: forum/templates/forum/account_delete.html:23
+msgid ""
+"Tarama ve analiz sonuçlarınız ile dosyalarınız silinir; sipariş ve bağış "
+"kayıtları mali yükümlülükler nedeniyle anonim olarak saklanır."
+msgstr ""
+"Ihre Recherche- und Analyseergebnisse sowie Ihre Dateien werden gelöscht; "
+"Bestell- und Spendendaten werden aufgrund gesetzlicher "
+"Aufbewahrungspflichten anonymisiert aufbewahrt."
+
+#: forum/templates/forum/account_delete.html:24
+msgid ""
+"Silme <strong>30 gün sonra</strong> gerçekleşir. Bu süre içinde giriş "
+"yaparak hesabınızı geri alabilirsiniz."
+msgstr ""
+"Die Löschung erfolgt <strong>nach 30 Tagen</strong>. In dieser Zeit können "
+"Sie Ihr Konto durch Anmelden wiederherstellen."
+
+#: forum/templates/forum/account_delete.html:30
+#, python-format
+msgid ""
+"Devam ederseniz <strong>%(email)s</strong> adresine onay linki "
+"gönderilecektir. Linke tıkladığınızda hesabınız devre dışı bırakılacaktır."
+msgstr ""
+"Wenn Sie fortfahren, wird ein Bestätigungslink an <strong>%(email)s</strong>"
+" gesendet. Sobald Sie auf den Link klicken, wird Ihr Konto deaktiviert."
+
+#: forum/templates/forum/account_delete.html:39
+msgid "Vazgeç"
+msgstr "Abbrechen"
+
+#: forum/templates/forum/account_delete.html:44
+msgid "Onay e-postası gönder"
+msgstr "Bestätigungs-E-Mail senden"
 
 #: forum/templates/forum/account_restore.html:4
 msgid "Hesabı Geri Al"
@@ -2027,7 +2096,7 @@ msgstr ""
 "Wenn Sie lieber direkt sprechen möchten, statt das Formular auszufüllen:"
 
 #: forum/templates/forum/emails/support_payment_details.html:6
-#: forum/views.py:3378
+#: forum/views.py:3384
 msgid "Analizus Bağış İşlemi"
 msgstr "Analizus – Unterstützungszahlung"
 
@@ -2036,6 +2105,7 @@ msgid "Desteğiniz için teşekkür ederiz!"
 msgstr "Vielen Dank für Ihre Unterstützung!"
 
 #: forum/templates/forum/emails/support_payment_details.html:26
+#: forum/views.py:1854
 #, python-format
 msgid "Merhaba <strong>%(username)s</strong>,"
 msgstr "Hallo <strong>%(username)s</strong>,"
@@ -2528,13 +2598,20 @@ msgstr ""
 
 #: forum/templates/forum/gizlilik_politikasi.html:134
 msgid ""
-"<strong>Saklama süreleri:</strong> hesap verileri hesabınızı silene kadar; "
-"akademik tarama araçlarının ham verileri 7 gün; çerez tercihi 180 gün "
-"saklanır."
+"<strong>Saklama süreleri:</strong> hesap verileri hesabınızı silene kadar "
+"saklanır; hesap silme talebinden sonra 30 gün içinde kişisel verileriniz "
+"silinir veya anonimleştirilir (bu süre içinde giriş yaparak talebinizi geri "
+"alabilirsiniz), sipariş ve bağış kayıtları mali yükümlülükler nedeniyle "
+"anonim olarak saklanır; akademik tarama araçlarının ham verileri 7 gün, "
+"çerez tercihi 180 gün saklanır."
 msgstr ""
-"<strong>Speicherdauer:</strong> Kontodaten bis zur Löschung Ihres Kontos; "
-"Rohdaten der wissenschaftlichen Recherchetools 7 Tage; Ihre Cookie-"
-"Einstellung 180 Tage."
+"<strong>Speicherdauer:</strong> Kontodaten werden bis zur Löschung Ihres "
+"Kontos gespeichert; innerhalb von 30 Tagen nach einem Löschantrag werden "
+"Ihre personenbezogenen Daten gelöscht oder anonymisiert (in dieser Zeit "
+"können Sie den Antrag durch Anmelden zurückziehen), Bestell- und "
+"Spendendaten werden aufgrund gesetzlicher Aufbewahrungspflichten "
+"anonymisiert aufbewahrt; Rohdaten der wissenschaftlichen Recherchetools "
+"werden 7 Tage, Ihre Cookie-Einstellung 180 Tage gespeichert."
 
 #: forum/templates/forum/gizlilik_politikasi.html:135
 msgid ""
@@ -3822,7 +3899,7 @@ msgstr ""
 "Für Gruppenvergleiche können Kreuztabellen (Crosstabs) erstellt werden"
 
 #: forum/templates/forum/hangi_test.html:749
-#: forum/templates/forum/home.html:262 forum/views.py:1954
+#: forum/templates/forum/home.html:262 forum/views.py:1960
 #: istatistik/seo_content.py:73 istatistik/seo_content.py:190
 #: istatistik/seo_content.py:243 istatistik/seo_content.py:349
 #: istatistik/seo_content.py:512 istatistik/seo_content.py:624
@@ -3973,7 +4050,7 @@ msgstr "Scraping-Tools:"
 msgid "YÖK Tez Kazıma"
 msgstr "Thesis-Center-Scraping"
 
-#: forum/templates/forum/home.html:272 forum/views.py:4038
+#: forum/templates/forum/home.html:272 forum/views.py:4044
 #: openalex/templates/openalex/landing.html:155 templates/base.html:223
 #: templates/base.html:439
 msgid "Bibliometrik Analiz"
@@ -4041,7 +4118,7 @@ msgstr "Data Science"
 msgid "Editörlük"
 msgstr "Lektorat"
 
-#: forum/templates/forum/home.html:362 forum/views.py:4035
+#: forum/templates/forum/home.html:362 forum/views.py:4041
 msgid "Danışmanlık"
 msgstr "Beratung"
 
@@ -5346,7 +5423,7 @@ msgstr "Registrierte"
 msgid "Üye"
 msgstr "Mitglieder"
 
-#: forum/templates/forum/proje_talebi.html:120 forum/views.py:1949
+#: forum/templates/forum/proje_talebi.html:120 forum/views.py:1955
 msgid "Ücretsiz"
 msgstr "Kostenlose"
 
@@ -5648,8 +5725,8 @@ msgstr "Datenbereinigung (Duplikate/Fehler entfernen)"
 #: forum/training_catalog.py:133 forum/training_catalog.py:156
 #: forum/training_catalog.py:325 forum/training_catalog.py:346
 #: forum/training_catalog.py:368 forum/training_catalog.py:388
-#: forum/training_catalog.py:417 forum/views.py:1951 forum/views.py:1953
-#: forum/views.py:1954 forum/views.py:1955 forum/views.py:1956
+#: forum/training_catalog.py:417 forum/views.py:1957 forum/views.py:1959
+#: forum/views.py:1960 forum/views.py:1961 forum/views.py:1962
 msgid "Yok"
 msgstr "Keine"
 
@@ -7334,116 +7411,168 @@ msgstr ""
 "Registrierung erfolgreich, aber die Bestätigungs-E-Mail konnte nicht "
 "gesendet werden. Sie können es über Ihre Profilseite erneut versuchen."
 
-#: forum/views.py:1931
+#: forum/views.py:1855
+msgid "Analizus hesabınızı silmek için aşağıdaki butona tıklayın."
+msgstr ""
+"Klicken Sie auf die Schaltfläche unten, um Ihr Analizus-Konto zu löschen."
+
+#: forum/views.py:1856
+msgid "Hesabımı Kalıcı Olarak Sil"
+msgstr "Mein Konto endgültig löschen"
+
+#: forum/views.py:1857
+msgid ""
+"Bu link <strong>24 saat</strong> geçerlidir. Talepte bulunmadıysanız bu "
+"e-postayı görmezden gelin."
+msgstr ""
+"Dieser Link ist <strong>24 Stunden</strong> gültig. Falls Sie diese Anfrage "
+"nicht gestellt haben, ignorieren Sie diese E-Mail bitte."
+
+#: forum/views.py:1861
+msgid "Hesap Silme Onayı — Analizus"
+msgstr "Bestätigung der Kontolöschung — Analizus"
+
+#: forum/views.py:1862
+#, python-format
+msgid "Hesabınızı silmek için şu linke gidin: %(url)s"
+msgstr "Um Ihr Konto zu löschen, öffnen Sie diesen Link: %(url)s"
+
+#: forum/views.py:1869
+msgid ""
+"Onay linki e-posta adresinize gönderildi. 24 saat içinde tıklayarak işlemi "
+"tamamlayın."
+msgstr ""
+"Ein Bestätigungslink wurde an Ihre E-Mail-Adresse gesendet. Klicken Sie "
+"innerhalb von 24 Stunden darauf, um den Vorgang abzuschließen."
+
+#: forum/views.py:1884
+msgid "Geçersiz veya süresi dolmuş link."
+msgstr "Ungültiger oder abgelaufener Link."
+
+#: forum/views.py:1891
+msgid "Bu link süresi dolmuş. Lütfen yeniden talep edin."
+msgstr "Dieser Link ist abgelaufen. Bitte fordern Sie einen neuen an."
+
+#: forum/views.py:1904
+msgid ""
+"Hesabınız devre dışı bırakıldı. Kişisel verileriniz 30 gün içinde kalıcı "
+"olarak silinecektir. Bu süre içinde giriş yaparak hesabınızı geri "
+"alabilirsiniz."
+msgstr ""
+"Ihr Konto wurde deaktiviert. Ihre personenbezogenen Daten werden innerhalb "
+"von 30 Tagen endgültig gelöscht. In dieser Zeit können Sie Ihr Konto durch "
+"Anmelden wiederherstellen."
+
+#: forum/views.py:1937
 msgid "Hesabınız geri alındı. Tekrar hoş geldiniz!"
 msgstr "Ihr Konto wurde wiederhergestellt. Willkommen zurück!"
 
-#: forum/views.py:1949
+#: forum/views.py:1955
 msgid "Ücret"
 msgstr "Preis"
 
-#: forum/views.py:1949
+#: forum/views.py:1955
 msgid "~$1,500/yıl"
 msgstr "~1.500 $/Jahr"
 
-#: forum/views.py:1949
+#: forum/views.py:1955
 msgid "~$900/yıl"
 msgstr "~900 $/Jahr"
 
-#: forum/views.py:1949
+#: forum/views.py:1955
 msgid "Ücretli"
 msgstr "Kostenpflichtig"
 
-#: forum/views.py:1950
+#: forum/views.py:1956
 msgid "Kurulum"
 msgstr "Installation"
 
-#: forum/views.py:1950
+#: forum/views.py:1956
 msgid "Yok (tarayıcı)"
 msgstr "Keine (Browser)"
 
-#: forum/views.py:1950
+#: forum/views.py:1956
 msgid "Gerekli"
 msgstr "Erforderlich"
 
-#: forum/views.py:1951
+#: forum/views.py:1957
 msgid "APA Rapor"
 msgstr "APA-Bericht"
 
-#: forum/views.py:1951
+#: forum/views.py:1957
 msgid "Otomatik"
 msgstr "Automatisch"
 
-#: forum/views.py:1952
+#: forum/views.py:1958
 msgid "PDF Çıktı"
 msgstr "PDF-Ausgabe"
 
-#: forum/views.py:1952
+#: forum/views.py:1958
 msgid "Hazır"
 msgstr "Fertig"
 
-#: forum/views.py:1952
+#: forum/views.py:1958
 msgid "Manuel"
 msgstr "Manuell"
 
-#: forum/views.py:1953 istatistik/views.py:31 istatistik/views.py:93
+#: forum/views.py:1959 istatistik/views.py:31 istatistik/views.py:93
 msgid "Cronbach Alpha"
 msgstr "Cronbachs Alpha"
 
-#: forum/views.py:1953 forum/views.py:1954 forum/views.py:1956
+#: forum/views.py:1959 forum/views.py:1960 forum/views.py:1962
 msgid "Var"
 msgstr "Ja"
 
-#: forum/views.py:1955
+#: forum/views.py:1961
 msgid "Uzman Desteği"
 msgstr "Expertenunterstützung"
 
-#: forum/views.py:1955
+#: forum/views.py:1961
 msgid "Pazar yeri"
 msgstr "Marktplatz"
 
-#: forum/views.py:1956
+#: forum/views.py:1962
 msgid "Akademik Forum"
 msgstr "Akademisches Forum"
 
-#: forum/views.py:1957
+#: forum/views.py:1963
 msgid "Türkçe Arayüz"
 msgstr "Türkische Oberfläche"
 
-#: forum/views.py:1957
+#: forum/views.py:1963
 msgid "Tam Türkçe"
 msgstr "Vollständig Türkisch"
 
-#: forum/views.py:1957
+#: forum/views.py:1963
 msgid "Kısmi"
 msgstr "Teilweise"
 
-#: forum/views.py:1957
+#: forum/views.py:1963
 msgid "İngilizce"
 msgstr "Englisch"
 
-#: forum/views.py:2066
+#: forum/views.py:2072
 msgid "Mesajınız başarıyla gönderildi. En kısa sürede dönüş yapacağız."
 msgstr ""
 "Ihre Nachricht wurde gesendet. Wir melden uns schnellstmöglich bei Ihnen."
 
-#: forum/views.py:2068
+#: forum/views.py:2074
 msgid "Mesaj gönderilirken bir hata oluştu. Lütfen tekrar deneyin."
 msgstr ""
 "Beim Senden Ihrer Nachricht ist ein Fehler aufgetreten. Bitte versuchen Sie "
 "es erneut."
 
-#: forum/views.py:2092 forum/views.py:2249
+#: forum/views.py:2098 forum/views.py:2255
 msgid "Lütfen zorunlu alanları doldurunuz."
 msgstr "Bitte füllen Sie die Pflichtfelder aus."
 
-#: forum/views.py:2135 forum/views.py:2147 forum/views.py:2302
-#: forum/views.py:2315
+#: forum/views.py:2141 forum/views.py:2153 forum/views.py:2308
+#: forum/views.py:2321
 #, python-format
 msgid "Sayın %(name)s,"
 msgstr "Sehr geehrte/r %(name)s,"
 
-#: forum/views.py:2136
+#: forum/views.py:2142
 msgid ""
 "Proje talebiniz başarıyla alındı. En kısa sürede sizinle iletişime "
 "geçeceğiz."
@@ -7451,49 +7580,49 @@ msgstr ""
 "Ihre Projektanfrage ist eingegangen. Wir melden uns schnellstmöglich bei "
 "Ihnen."
 
-#: forum/views.py:2137 forum/views.py:2304
+#: forum/views.py:2143 forum/views.py:2310
 msgid "Talep Özeti:"
 msgstr "Zusammenfassung der Anfrage:"
 
-#: forum/views.py:2138
+#: forum/views.py:2144
 #, python-format
 msgid "Analiz Türü: %(value)s"
 msgstr "Analyseart: %(value)s"
 
-#: forum/views.py:2139
+#: forum/views.py:2145
 #, python-format
 msgid "Veri Boyutu: %(value)s"
 msgstr "Datenumfang: %(value)s"
 
-#: forum/views.py:2140
+#: forum/views.py:2146
 #, python-format
 msgid "Süre Beklentisi: %(value)s"
 msgstr "Gewünschter Zeitrahmen: %(value)s"
 
-#: forum/views.py:2145
+#: forum/views.py:2151
 msgid "Proje talebiniz alındı — Analizus"
 msgstr "Ihre Projektanfrage ist eingegangen — Analizus"
 
-#: forum/views.py:2148
+#: forum/views.py:2154
 msgid "Proje talebiniz alındı. En kısa sürede sizinle iletişime geçeceğiz."
 msgstr ""
 "Ihre Projektanfrage ist eingegangen. Wir melden uns schnellstmöglich bei "
 "Ihnen."
 
-#: forum/views.py:2151
+#: forum/views.py:2157
 msgid "Talebiniz alındı! En kısa sürede size dönüş yapacağız."
 msgstr ""
 "Ihre Anfrage ist eingegangen! Wir melden uns schnellstmöglich bei Ihnen."
 
-#: forum/views.py:2153 forum/views.py:2321
+#: forum/views.py:2159 forum/views.py:2327
 msgid "Bir hata oluştu, lütfen tekrar deneyin."
 msgstr "Ein Fehler ist aufgetreten, bitte versuchen Sie es erneut."
 
-#: forum/views.py:2253
+#: forum/views.py:2259
 msgid "Devam etmek için KVKK Aydınlatma Metni onayı gereklidir."
 msgstr "Um fortzufahren, müssen Sie den KVKK-Datenschutzhinweis akzeptieren."
 
-#: forum/views.py:2303
+#: forum/views.py:2309
 msgid ""
 "Eğitim talebiniz başarıyla alındı. 24 saat içinde sizinle iletişime "
 "geçeceğiz."
@@ -7501,54 +7630,54 @@ msgstr ""
 "Ihre Schulungsanfrage ist eingegangen. Wir melden uns innerhalb von 24 "
 "Stunden bei Ihnen."
 
-#: forum/views.py:2305
+#: forum/views.py:2311
 #, python-format
 msgid "Talep Türü: %(value)s"
 msgstr "Art der Anfrage: %(value)s"
 
-#: forum/views.py:2306
+#: forum/views.py:2312
 #, python-format
 msgid "Konu: %(value)s"
 msgstr "Thema: %(value)s"
 
-#: forum/views.py:2307
+#: forum/views.py:2313
 #, python-format
 msgid "Seviye: %(value)s"
 msgstr "Niveau: %(value)s"
 
-#: forum/views.py:2308
+#: forum/views.py:2314
 #, python-format
 msgid "Format: %(value)s"
 msgstr "Format: %(value)s"
 
-#: forum/views.py:2313
+#: forum/views.py:2319
 msgid "Eğitim talebiniz alındı — Analizus"
 msgstr "Ihre Schulungsanfrage ist eingegangen — Analizus"
 
-#: forum/views.py:2316
+#: forum/views.py:2322
 msgid "Eğitim talebiniz alındı. 24 saat içinde sizinle iletişime geçeceğiz."
 msgstr ""
 "Ihre Schulungsanfrage ist eingegangen. Wir melden uns innerhalb von 24 "
 "Stunden bei Ihnen."
 
-#: forum/views.py:2319
+#: forum/views.py:2325
 msgid "Talebiniz alındı! 24 saat içinde size dönüş yapacağız."
 msgstr ""
 "Ihre Anfrage ist eingegangen! Wir melden uns innerhalb von 24 Stunden bei "
 "Ihnen."
 
-#: forum/views.py:2540
+#: forum/views.py:2546
 msgid "Lütfen bir soru girin."
 msgstr "Bitte geben Sie eine Frage ein."
 
-#: forum/views.py:2545
+#: forum/views.py:2551
 #, python-format
 msgid "Günlük %(limit)s soru limitinizi doldurdunuz. Yarın tekrar deneyin."
 msgstr ""
 "Sie haben Ihr Tageslimit von %(limit)s Fragen erreicht. Bitte versuchen Sie "
 "es morgen erneut."
 
-#: forum/views.py:2547
+#: forum/views.py:2553
 #, python-format
 msgid ""
 "Günlük anonim limit (%(limit)s soru) doldu. Üye olarak 30 soruya kadar "
@@ -7557,128 +7686,128 @@ msgstr ""
 "Das tägliche anonyme Limit (%(limit)s Fragen) ist erreicht. Mit einem Konto "
 "können Sie bis zu 30 Fragen stellen."
 
-#: forum/views.py:2577
+#: forum/views.py:2583
 msgid "Geçersiz istek."
 msgstr "Ungültige Anfrage."
 
-#: forum/views.py:2593
+#: forum/views.py:2599
 msgid "Mesaj boş olamaz."
 msgstr "Die Nachricht darf nicht leer sein."
 
-#: forum/views.py:2596
+#: forum/views.py:2602
 msgid "Mesaj çok uzun (max 2000 karakter)."
 msgstr "Die Nachricht ist zu lang (max. 2000 Zeichen)."
 
-#: forum/views.py:2617
+#: forum/views.py:2623
 #, python-format
 msgid "Günlük %(limit)s soru limitine ulaştınız."
 msgstr "Sie haben Ihr Tageslimit von %(limit)s Fragen erreicht."
 
-#: forum/views.py:2670 forum/views.py:2740
+#: forum/views.py:2676 forum/views.py:2746
 msgid "E-posta adresiniz zaten doğrulanmış."
 msgstr "Ihre E-Mail-Adresse wurde bereits bestätigt."
 
-#: forum/views.py:2683
+#: forum/views.py:2689
 msgid "Geçersiz doğrulama linki."
 msgstr "Ungültiger Bestätigungslink."
 
-#: forum/views.py:2687
+#: forum/views.py:2693
 msgid "Bu doğrulama linki süresi dolmuş veya daha önce kullanılmış."
 msgstr "Dieser Bestätigungslink ist abgelaufen oder wurde bereits verwendet."
 
-#: forum/views.py:2718
+#: forum/views.py:2724
 msgid "E-posta adresiniz başarıyla doğrulandı! Hoş geldiniz."
 msgstr "Ihre E-Mail-Adresse wurde bestätigt. Willkommen!"
 
-#: forum/views.py:2748
+#: forum/views.py:2754
 msgid ""
 "Doğrulama e-postası tekrar gönderildi. Lütfen e-posta kutunuzu kontrol edin."
 msgstr ""
 "Die Bestätigungs-E-Mail wurde erneut gesendet. Bitte prüfen Sie Ihr "
 "Postfach."
 
-#: forum/views.py:2750
+#: forum/views.py:2756
 msgid "E-posta gönderilemedi. Lütfen daha sonra tekrar deneyin."
 msgstr ""
 "Die E-Mail konnte nicht gesendet werden. Bitte versuchen Sie es später "
 "erneut."
 
-#: forum/views.py:4028
+#: forum/views.py:4034
 msgid "Hoş geldiniz!"
 msgstr "Willkommen!"
 
-#: forum/views.py:4033
+#: forum/views.py:4039
 msgid "İstatistik Analizi"
 msgstr "Statistische Analyse"
 
-#: forum/views.py:4033
+#: forum/views.py:4039
 msgid "SPSS, R, Python, AMOS, SmartPLS ile profesyonel istatistik analizleri"
 msgstr ""
 "Professionelle statistische Analysen mit SPSS, R, Python, AMOS und SmartPLS"
 
-#: forum/views.py:4034
+#: forum/views.py:4040
 msgid "Veri Kazıma & Toplama"
 msgstr "Datenextraktion & -erhebung"
 
-#: forum/views.py:4034
+#: forum/views.py:4040
 msgid "Anket, web ve akademik veritabanlarından veri toplama desteği"
 msgstr ""
 "Unterstützung bei der Datenerhebung aus Umfragen, dem Web und "
 "wissenschaftlichen Datenbanken"
 
-#: forum/views.py:4035
+#: forum/views.py:4041
 msgid ""
 "Alanında uzman akademisyen ve danışmanlarla Pazaryeri üzerinden eşleşin"
 msgstr ""
 "Finden Sie über den Marktplatz passende Fachleute aus Wissenschaft und "
 "Beratung"
 
-#: forum/views.py:4036
+#: forum/views.py:4042
 msgid "Proje Desteği"
 msgstr "Projektunterstützung"
 
-#: forum/views.py:4036
+#: forum/views.py:4042
 msgid "Tez, makale ve kurumsal projeleriniz için uçtan uca destek"
 msgstr ""
 "Durchgängige Unterstützung für Abschlussarbeiten, Artikel und "
 "Unternehmensprojekte"
 
-#: forum/views.py:4037
+#: forum/views.py:4043
 msgid "Akademik Destek"
 msgstr "Akademische Unterstützung"
 
-#: forum/views.py:4037
+#: forum/views.py:4043
 msgid "Tez ve makale yazım sürecinde yöntem ve rehberlik desteği"
 msgstr ""
 "Methodische Begleitung beim Verfassen von Abschlussarbeiten und Artikeln"
 
-#: forum/views.py:4038
+#: forum/views.py:4044
 msgid "Atıf ve yayın verileriyle bibliometrik analiz yaptırın"
 msgstr ""
 "Lassen Sie bibliometrische Analysen auf Basis von Zitations- und "
 "Publikationsdaten erstellen"
 
-#: forum/views.py:4039
+#: forum/views.py:4045
 msgid "Literatür / Akademik Tarama"
 msgstr "Literatur- / wissenschaftliche Recherche"
 
-#: forum/views.py:4039
+#: forum/views.py:4045
 msgid "YÖK Tez, TR Dizin ve uluslararası veritabanlarında tarama"
 msgstr "Recherchen in YÖK Tez, TR Dizin und internationalen Datenbanken"
 
-#: forum/views.py:4040
+#: forum/views.py:4046
 msgid "Forumda Soru-Cevap"
 msgstr "Fragen & Antworten im Forum"
 
-#: forum/views.py:4040
+#: forum/views.py:4046
 msgid "Merak ettiklerinizi sorun, bilgi birikiminizi toplulukla paylaşın"
 msgstr "Stellen Sie Ihre Fragen und teilen Sie Ihr Wissen mit der Community"
 
-#: forum/views.py:4042
+#: forum/views.py:4048
 msgid "AI Araçları"
 msgstr "KI-Tools"
 
-#: forum/views.py:4042
+#: forum/views.py:4048
 msgid "Akademik Danışmanlık"
 msgstr "Wissenschaftliche Beratung"
 
@@ -15448,6 +15577,15 @@ msgstr ""
 "Lernen Sie, die <strong "
 "style=\"color:#f1f5f9;\">%(promo_title)s</strong>-Analyse mit Ihren eigenen "
 "Daten im Einzelunterricht durchzuführen."
+
+#~ msgid ""
+#~ "<strong>Saklama süreleri:</strong> hesap verileri hesabınızı silene kadar; "
+#~ "akademik tarama araçlarının ham verileri 7 gün; çerez tercihi 180 gün "
+#~ "saklanır."
+#~ msgstr ""
+#~ "<strong>Speicherdauer:</strong> Kontodaten bis zur Löschung Ihres Kontos; "
+#~ "Rohdaten der wissenschaftlichen Recherchetools 7 Tage; Ihre Cookie-"
+#~ "Einstellung 180 Tage."
 
 #~ msgid ""
 #~ "Akademik araştırma ve istatistik analiz için Türkçe platform. Tezini güvenle"

@@ -1844,23 +1844,29 @@ def account_delete_request(request):
         profile.save(update_fields=['deletion_token', 'deletion_token_expires_at'])
 
         site_url = getattr(settings, 'SITE_URL', 'https://www.analizus.com')
-        confirm_url = f"{site_url}/account/delete/confirm/{token}/"
 
-        html = f"""
-        <p>Merhaba <strong>{user.username}</strong>,</p>
-        <p>Analizus hesabınızı silmek için aşağıdaki butona tıklayın.</p>
-        <p><a href="{confirm_url}" style="background:#dc2626;color:#fff;padding:10px 20px;border-radius:6px;text-decoration:none;">Hesabımı Kalıcı Olarak Sil</a></p>
-        <p>Bu link <strong>24 saat</strong> geçerlidir. Talepte bulunmadıysanız bu emaili görmezden gelin.</p>
+        # Alıcının dilinde (Profile.preferred_language); onay linki de o dilin önekiyle
+        from django.utils.html import escape
+        from .i18n_utils import recipient_language
+        with recipient_language(user):
+            confirm_url = site_url.rstrip('/') + reverse('account_delete_confirm', args=[token])
+            html = f"""
+        <p>{gettext('Merhaba <strong>%(username)s</strong>,') % {'username': escape(user.username)}}</p>
+        <p>{gettext('Analizus hesabınızı silmek için aşağıdaki butona tıklayın.')}</p>
+        <p><a href="{confirm_url}" style="background:#dc2626;color:#fff;padding:10px 20px;border-radius:6px;text-decoration:none;">{gettext('Hesabımı Kalıcı Olarak Sil')}</a></p>
+        <p>{gettext('Bu link <strong>24 saat</strong> geçerlidir. Talepte bulunmadıysanız bu e-postayı görmezden gelin.')}</p>
         <hr>
         <small>Analizus.com — {site_url}</small>
         """
+            subject = gettext('Hesap Silme Onayı — Analizus')
+            plain = gettext('Hesabınızı silmek için şu linke gidin: %(url)s') % {'url': confirm_url}
         send_email_async(
-            subject="Hesap Silme Onayı — Analizus",
-            message=f"Hesabınızı silmek için şu linke gidin: {confirm_url}",
+            subject=subject,
+            message=plain,
             recipient_list=[user.email],
             html_message=html,
         )
-        messages.success(request, "Onay linki email adresinize gönderildi. 24 saat içinde tıklayarak işlemi tamamlayın.")
+        messages.success(request, gettext('Onay linki e-posta adresinize gönderildi. 24 saat içinde tıklayarak işlemi tamamlayın.'))
         return redirect('profile_detail', username=user.username)
 
     return render(request, 'forum/account_delete.html')
@@ -1875,14 +1881,14 @@ def account_delete_confirm(request, token):
     try:
         profile = Profile.objects.select_related('user').get(deletion_token=token)
     except Profile.DoesNotExist:
-        messages.error(request, "Geçersiz veya süresi dolmuş link.")
+        messages.error(request, gettext("Geçersiz veya süresi dolmuş link."))
         return redirect('home')
 
     if not profile.deletion_token_expires_at or timezone.now() > profile.deletion_token_expires_at:
         profile.deletion_token = ''
         profile.deletion_token_expires_at = None
         profile.save(update_fields=['deletion_token', 'deletion_token_expires_at'])
-        messages.error(request, "Bu link süresi dolmuş. Lütfen yeniden talep edin.")
+        messages.error(request, gettext("Bu link süresi dolmuş. Lütfen yeniden talep edin."))
         return redirect('home')
 
     user = profile.user
@@ -1895,7 +1901,7 @@ def account_delete_confirm(request, token):
     user.save(update_fields=['is_active'])
 
     logout(request)
-    messages.info(request, "Hesabınız devre dışı bırakıldı. Kişisel verileriniz 30 gün içinde kalıcı olarak silinecektir.")
+    messages.info(request, gettext("Hesabınız devre dışı bırakıldı. Kişisel verileriniz 30 gün içinde kalıcı olarak silinecektir. Bu süre içinde giriş yaparak hesabınızı geri alabilirsiniz."))
     return redirect('home')
 
 
