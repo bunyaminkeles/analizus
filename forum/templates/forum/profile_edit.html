@@ -261,8 +261,11 @@
             selected.forEach(chip => {
                 const tag = document.createElement('span');
                 tag.className = 'selected-tag';
-                tag.innerHTML = chip.textContent.trim() + ' <span class="rm bi bi-x"></span>';
-                tag.querySelector('.rm').onclick = () => {
+                // Kategori adı kullanıcı girişi olabilir — HTML olarak değil, metin olarak ekle
+                const rm = document.createElement('span');
+                rm.className = 'rm bi bi-x';
+                tag.append(chip.textContent.trim() + ' ', rm);
+                rm.onclick = () => {
                     chip.classList.remove('selected');
                     chip.querySelector('input').checked = false;
                     syncTags();

@@ -149,7 +149,10 @@ maddelerde.
   scripti olmayan `#custom-skill-input` / `#custom-skills-hidden` elemanlarını
   kullanıyor → konsolda TypeError (chip seçimi ve arama etkilenmiyor, hata
   onlardan sonra). Ölü kod silinmeli ya da manuel yetenek alanı eklenmeli — karar.
-- [ ] **GÜVENLİK — yetenek chip'inde innerHTML** (26 Eylül 2026): `profile_edit.html`
+- [x] **GÜVENLİK — yetenek chip'inde innerHTML** — DÜZELTİLDİ (26 Eylül 2026): `append`
+  ile metin olarak ekleniyor. Headless Chrome ile doğrulandı: eski kodda
+  `<img onerror>` adlı kategori JS çalıştırdı (title değişti), yenisinde metin
+  olarak göründü. Eski not: `profile_edit.html`
   `syncTags()` seçili etiketi `tag.innerHTML = chip.textContent + …` ile kuruyor;
   kategori adı kullanıcı girişiyle oluşabildiği için (`JobPostForm`) `<img onerror=…>`
   gibi bir ad seçen kullanıcının kendi sayfasında çalışır. Yeni kategoriler artık
