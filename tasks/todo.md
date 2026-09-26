@@ -143,10 +143,18 @@ maddelerde.
 - [x] (eski not) **Profil düzenleme: geçersiz telefonda çift mesaj** (26 Eylül 2026, önceden
   var olan davranış): hata mesajının yanında "Profiliniz başarıyla güncellendi"
   da çıkıyor (diğer alanlar kaydediliyor). Mesaj akışı düzeltilecek mi — karar.
-- [ ] **Profil düzenleme JS hatası** (26 Eylül 2026, önceden var): `profile_edit.html`
+- [x] **Profil düzenleme JS hatası** — DÜZELTİLDİ (26 Eylül 2026, kullanıcı kararı "ölü kodu
+  sil"): olmayan elemanlara bağlı "Manuel yetenek ekleme" JS bloğu + `.custom-tag` CSS
+  kaldırıldı; `node --check` OK, sayfa 200. Eski not: `profile_edit.html`
   scripti olmayan `#custom-skill-input` / `#custom-skills-hidden` elemanlarını
   kullanıyor → konsolda TypeError (chip seçimi ve arama etkilenmiyor, hata
   onlardan sonra). Ölü kod silinmeli ya da manuel yetenek alanı eklenmeli — karar.
+- [ ] **GÜVENLİK — yetenek chip'inde innerHTML** (26 Eylül 2026): `profile_edit.html`
+  `syncTags()` seçili etiketi `tag.innerHTML = chip.textContent + …` ile kuruyor;
+  kategori adı kullanıcı girişiyle oluşabildiği için (`JobPostForm`) `<img onerror=…>`
+  gibi bir ad seçen kullanıcının kendi sayfasında çalışır. Yeni kategoriler artık
+  admin onayına düştüğü için risk düşük; yine de `textContent` + `append` ile
+  düzeltilmeli (küçük iş). Canlıdaki 43 kategoride HTML karakteri yok (ölçüldü).
 - [ ] **Profil şablonları ax- sistemine aykırı** (26 Eylül 2026, önceden var):
   `profile_edit.html` Bootstrap `card`/`btn`/`nav-tabs` + `data-bs-toggle`,
   hardcode renkler; `profile_detail.html` "Hesabımı Sil" `btn btn-outline-danger`.

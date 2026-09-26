@@ -244,20 +244,6 @@
     }
     .selected-tag .rm { cursor: pointer; opacity: .6; font-size: .7rem; }
     .selected-tag .rm:hover { opacity: 1; }
-    .custom-tag {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        padding: 3px 10px;
-        border-radius: 20px;
-        font-size: .78rem;
-        font-weight: 600;
-        background: rgba(16,185,129,0.15);
-        border: 1px solid rgba(16,185,129,0.35);
-        color: #6ee7b7;
-    }
-    .custom-tag .rm { cursor: pointer; opacity: .6; font-size: .7rem; }
-    .custom-tag .rm:hover { opacity: 1; }
 </style>
 
 <script>
@@ -306,41 +292,6 @@
             chip.classList.toggle('hidden', q && !chip.dataset.name.includes(q));
         });
     });
-
-    // ── Manuel yetenek ekleme ───────────────────────────────────────────────
-    const customInput = document.getElementById('custom-skill-input');
-    const customHidden = document.getElementById('custom-skills-hidden');
-    const customTagsBox = document.getElementById('custom-tags');
-
-    let customSkills = customHidden.value.split(',').map(v => v.trim()).filter(Boolean);
-
-    function renderCustomTags() {
-        customTagsBox.innerHTML = '';
-        customSkills.forEach(val => {
-            const tag = document.createElement('span');
-            tag.className = 'custom-tag';
-            tag.innerHTML = val + ' <span class="rm bi bi-x"></span>';
-            tag.querySelector('.rm').onclick = () => {
-                customSkills = customSkills.filter(v => v !== val);
-                customHidden.value = customSkills.join(', ');
-                renderCustomTags();
-            };
-            customTagsBox.appendChild(tag);
-        });
-    }
-
-    customInput.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            const vals = this.value.split(',').map(v => v.trim()).filter(Boolean);
-            vals.forEach(v => { if (v && !customSkills.includes(v)) customSkills.push(v); });
-            customHidden.value = customSkills.join(', ');
-            this.value = '';
-            renderCustomTags();
-        }
-    });
-
-    renderCustomTags(); // Sayfa yüklenince varsa göster
 })();
 </script>
 {% endblock %}
