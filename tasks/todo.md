@@ -81,6 +81,31 @@ maddelerde.
   (AI Asistan sütunu kalır, alt başlık Arena'sız ayrı msgid), market "Arena'da puan kazan"
   linki + oyunlaştırma bandı, profil "Hemen Çöz" butonu. Veri/puan hesabı DEĞİŞMEDİ
   (EN/DE'de analiz puanı arka planda birikmeye devam eder). TR aynen. 3 dilde doğrulandı.
+- [x] **EN/DE'de Türkçe sayfalara giden bağlantılar kaldırıldı** (26 Eylül 2026, kullanıcı kararı):
+  ölçüm — EN anasayfada 23 bağlantı öneksiz (tüm arayüzü TR'ye çeviren) sayfaya gidiyordu.
+  A (forum, blog + anasayfa blog bölümü, başarı hikayeleri + hakkımızda alıntıları) ve
+  B (YÖK Tez, TR Dizin, OAI-PMH, uzman dizini, "Uzman olarak katıl") EN/DE'de gizlendi;
+  Topluluk menüsü (masaüstü+mobil) ve footer Topluluk sütunu EN/DE'de tamamen yok.
+  C (bibliometrik, Tableau, Akademik Tarama/OpenAlex) EN/DE'de GEÇİCİ gizli. D (gelen
+  kutusu, ödemelerim, davet) kaldı. Sonuç: EN/DE'de öneksiz hedef yalnız D (ölçüldü).
+- [ ] **C grubu sayfaların EN/DE çevirisi** (26 Eylül 2026, kullanıcı: "sonraki projede
+  lazım olacak, bibliometrik analizler gibi"): Bibliometrik Analiz, Tableau Analizleri,
+  Akademik Tarama (/tarama/, OpenAlex, Semantic Scholar) arayüzleri i18n dışı. Çevrilince
+  URL'ler `urls_i18n`'e taşınır ve base.html/home.html'deki `LANGUAGE_CODE == 'tr'`
+  koşulları kaldırılır. İlgili: `BASE_PubMed_Integration_Project.md` (ayrı oturum).
+- [ ] **D grubu hesap sayfaları tek dilli** (26 Eylül 2026): gelen kutusu, ödemelerim,
+  arkadaşını davet et — EN/DE kullanıcısını TR arayüze götürüyor; şimdilik kalsın (kullanıcı).
+- [ ] **YouTube Transcript tamamen kaldırılacak — AŞAMA 2 ONAY BEKLİYOR** (26 Eylül 2026,
+  kullanıcı: "TR'de de ihtiyaç değil"): Aşama 1 YAPILDI — navbar bağlantısı kaldırıldı.
+  Aşama 2 (kod+DB): `transcript/` app (3 migration, TranscriptJob/TranscriptSettings),
+  INSTALLED_APPS, urls.py, `analizdestek/job_queue.py`, hesap silme listesi
+  (`api_views` ~567), `SiteSettings.feature_transcript` + context_processors + admin,
+  `requirements.txt` youtube-transcript-api (→ docker build), `transcript_local.py`,
+  analizus.md. DB tabloları: `migrate transcript zero` (canlı DB) + S3 dosyaları.
+- [ ] **Başarı hikayesi modalı ölü kod** (26 Eylül 2026): `openStoryModal()` hiçbir yerden
+  çağrılmıyor; `#storyModal` her sayfada render ediliyor (profil modalıyla aynı durum).
+- [ ] **EN/DE anasayfa JSON-LD TR URL'leri** (26 Eylül 2026): home.html ~168–196 structured
+  data EN/DE sayfada da YÖK Tez/TR Dizin/OpenAlex/OAI-PMH URL'lerini ve TR açıklamaları veriyor.
 - [ ] **EN/DE'yi proje talebine evriltme** (26 Eylül 2026, kullanıcı hedefi): EN/DE'de
   hâlâ uzman/topluluk odaklı yüzeyler var (Topluluk menüsü → forum/çalışma odaları TR-only,
   market uzman tanıtımı, puan/rütbe/rozet vurgusu profilde). EN/DE navigasyon ve anasayfa

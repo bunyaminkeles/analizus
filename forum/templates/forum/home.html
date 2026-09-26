@@ -262,7 +262,7 @@
                     <a href="{% url 'analiz_console' 'normallik' %}" class="ax-hero__personal-link">{% trans "Normallik Testi" %}</a>
                     <span class="ax-hero__personal-sep">·</span>
                     <a href="{% url 'hangi_test' %}" class="ax-hero__personal-link">{% trans "Hangi Test?" %}</a>
-                    {% elif user_profile.segment == 'academic' %}
+                    {% elif user_profile.segment == 'academic' and LANGUAGE_CODE == 'tr' %}
                     <span class="ax-hero__personal-badge">🏛️ {% trans "Akademisyen" %}</span>
                     <span class="ax-hero__personal-text">{% trans "Kazıma araçları:" %} </span>
                     <a href="{% url 'yoktez:landing' %}" class="ax-hero__personal-link">{% trans "YÖK Tez Kazıma" %}</a>
@@ -371,7 +371,7 @@
                         </div>
                         <div class="ax-market-footer mt-4">
                             <a href="{% url 'post_job' %}" class="ax-btn ax-btn--primary ax-btn--lg ax-block ax-w-full mb-2">{% trans "İlan Açarak Uzman Bul" %}</a>
-                            <a href="{% url 'uzman_dizini' %}" class="ax-btn ax-btn--ghost ax-block ax-w-full">{% trans "Dizindeki Uzmanları İncele" %}</a>
+                            {% if LANGUAGE_CODE == 'tr' %}<a href="{% url 'uzman_dizini' %}" class="ax-btn ax-btn--ghost ax-block ax-w-full">{% trans "Dizindeki Uzmanları İncele" %}</a>{% endif %}
                         </div>
                     </div>
                 </div>
@@ -450,6 +450,7 @@
      ===================================================== -->
 <section class="ax-below-doors">
     <div class="container text-center">
+        {% if LANGUAGE_CODE == 'tr' %}
         <p class="ax-hero__kazima-bar">
             <span>{% trans "Kodsuz veri kazıma:" %}</span>
             <a href="{% url 'yoktez:landing' %}">{% trans "YÖK Tez" %}</a>
@@ -457,6 +458,7 @@
             <a href="{% url 'openalex:landing' %}">OpenAlex</a>
             <a href="{% url 'oaipmh:landing' %}">{% trans "Üniversite Arşivleri" %}</a>
         </p>
+        {% endif %}
         <p class="ax-below-doors__corporate">
             <a href="{% url 'proje_talebi' %}?source=home_corporate">{% trans "Kurumsal veri, otomasyon veya AI projesi mi? → Proje talebi bırakın" %}</a>
         </p>
@@ -617,6 +619,7 @@
         <div class="ax-expert-grid">
             {% include 'forum/partials/_expert_showcase.html' %}
         </div>
+        {% if LANGUAGE_CODE == 'tr' %}
         <div class="text-center mt-5">
             <a href="{% url 'uzman_dizini' %}" class="ax-btn ax-btn--primary me-2">{% trans "Tüm Uzmanlar" %}</a>
             {% if user.is_authenticated %}
@@ -625,6 +628,7 @@
             <a href="{% url 'register' %}" class="ax-btn ax-btn--ghost">{% trans "Uzman Olarak Katıl" %}</a>
             {% endif %}
         </div>
+        {% endif %}
     </div>
 </section>
 {% endif %}
@@ -701,6 +705,7 @@
                     <a href="{% url 'ai_assistant' %}" class="ax-tool-link">{% trans "Kullan →" %}</a>
                 </div>
             </div>
+            {% if LANGUAGE_CODE == 'tr' %}
             <div class="col-12 col-md-6 col-lg-3">
                 <div class="ax-tool-card ax-tool-card--highlight" role="link" tabindex="0" data-card-url="/openalex/">
                     <div class="ax-tool-icon">🔍</div>
@@ -713,6 +718,7 @@
                     </ul>
                 </div>
             </div>
+            {% endif %}
             {% comment %}Çalışma odaları yalnız TR (odalar tek dilli; EN/DE hedefi proje talebi){% endcomment %}
             {% if LANGUAGE_CODE == 'tr' %}
             <div class="col-12 col-md-6 col-lg-3">
@@ -973,7 +979,7 @@ AI Asistan da kapalıysa bölüm hiç çıkmaz (26 Eylül 2026){% endcomment %}
 <!-- =====================================================
      FAZ 5: BİLİM HABERLERİ (Blog)
      ===================================================== -->
-{% if latest_posts %}
+{% if latest_posts and LANGUAGE_CODE == 'tr' %}
 <section class="ax-news-section">
     <div class="container">
         <h2 class="ax-section-title">🔬 {% trans "Güncel Akademik İçerikler" %}</h2>

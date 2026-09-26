@@ -219,33 +219,34 @@
                         {% if features.istatistik %}
                         <a href="{% url 'analiz_home' %}" class="site-nav__dropdown-item" role="menuitem">{% trans "İstatistik Analiz Araçları" %}</a>
                         {% endif %}
+                        {% comment %}Bibliometrik/Tableau/Akademik Tarama arayüzü henüz çevrilmedi → yalnız TR (todo){% endcomment %}
+                        {% if LANGUAGE_CODE == 'tr' %}
                         {% if features.bibliometrics %}
                         <a href="{% url 'bibliometrics:landing' %}" class="site-nav__dropdown-item" role="menuitem">{% trans "Bibliometrik Analiz" %}</a>
                         {% endif %}
                         <a href="{% url 'tableau_dashboard' %}" class="site-nav__dropdown-item" role="menuitem">{% trans "Tableau Analizleri" %}</a>
+                        {% endif %}
                         <div class="site-nav__dropdown-divider"></div>
                         <a href="{% url 'hangi_test' %}" class="site-nav__dropdown-item" role="menuitem">{% trans "Hangi Test?" %}</a>
                         {% if features.ai_assistant %}
                         <a href="{% url 'ai_assistant' %}" class="site-nav__dropdown-item" role="menuitem">{% trans "AI Asistan" %}</a>
                         {% endif %}
-                        {% if features.transcript %}
-                        <a href="{% url 'transcript:form' %}" class="site-nav__dropdown-item" role="menuitem">{% trans "YouTube Transcript İndir" %}</a>
-                        {% endif %}
                     </div>
                 </div>
 
-                <!-- Akademik Tarama -->
-                {% if features.oaipmh or features.yoktez or features.openalex or features.trdizin or features.semanticscholar %}
+                <!-- Akademik Tarama (yalnız TR — arayüz çevrilmedi) -->
+                {% if LANGUAGE_CODE == 'tr' %}{% if features.oaipmh or features.yoktez or features.openalex or features.trdizin or features.semanticscholar %}
                 <a href="/tarama/" class="site-nav__link {% if '/tarama/' in request.path or '/yoktez/' in request.path or '/openalex/' in request.path or '/trdizin/' in request.path or '/oaipmh/' in request.path or '/semantic-scholar/' in request.path %}is-active{% endif %}">
                     {% trans "Akademik Tarama" %}
                 </a>
-                {% endif %}
+                {% endif %}{% endif %}
 
                 {% if features.market %}
                 <a href="{% url 'job_list' %}" class="site-nav__link">{% trans "Pazaryeri" %}</a>
                 {% endif %}
 
-                <!-- Topluluk Dropdown -->
+                <!-- Topluluk Dropdown — yalnız TR: forum/odalar/Arena/blog içeriği Türkçe; EN/DE hedefi proje talebi -->
+                {% if LANGUAGE_CODE == 'tr' %}
                 <div class="site-nav__dropdown-wrap">
                     <button class="site-nav__link site-nav__dropdown-btn {% if '/forum/' in request.path or '/odalar/' in request.path or '/blog/' in request.path %}is-active{% endif %}"
                             aria-expanded="false" aria-haspopup="true"
@@ -257,13 +258,14 @@
                         <a href="{% url 'forum_index' %}" class="site-nav__dropdown-item" role="menuitem">
                             <i class="bi bi-chat-square-text-fill me-1" style="color:#818cf8;"></i> Forum
                         </a>
-                        {% if LANGUAGE_CODE == 'tr' %}<a href="{% url 'studyroom_list' %}" class="site-nav__dropdown-item" role="menuitem">{% trans "Çalışma Odaları" %}</a>{% endif %}
-                        {% if LANGUAGE_CODE == 'tr' %}<a href="{% url 'home' %}#istatistik-arenasi" class="site-nav__dropdown-item" role="menuitem">{% trans "İstatistik Arena" %}</a>{% endif %}
+                        <a href="{% url 'studyroom_list' %}" class="site-nav__dropdown-item" role="menuitem">{% trans "Çalışma Odaları" %}</a>
+                        <a href="{% url 'home' %}#istatistik-arenasi" class="site-nav__dropdown-item" role="menuitem">{% trans "İstatistik Arena" %}</a>
                         {% if features.blog %}
                         <a href="{% url 'blog_list' %}" class="site-nav__dropdown-item" role="menuitem">Blog</a>
                         {% endif %}
                     </div>
                 </div>
+                {% endif %}
 
                 <a href="{% url 'proje_talebi' %}" class="site-nav__link">{% trans "Proje Talebi" %}</a>
 
@@ -437,19 +439,22 @@
                 </button>
                 <div class="nav-drawer__accordion-body" id="mob-analizler">
                     {% if features.istatistik %}<a href="{% url 'analiz_home' %}" class="nav-drawer__link">{% trans "İstatistik Analiz Araçları" %}</a>{% endif %}
+                    {% if LANGUAGE_CODE == 'tr' %}
                     {% if features.bibliometrics %}<a href="{% url 'bibliometrics:landing' %}" class="nav-drawer__link">{% trans "Bibliometrik Analiz" %}</a>{% endif %}
                     <a href="{% url 'tableau_dashboard' %}" class="nav-drawer__link">{% trans "Tableau Analizleri" %}</a>
+                    {% endif %}
                     <a href="{% url 'hangi_test' %}" class="nav-drawer__link">{% trans "Hangi Test?" %}</a>
                     {% if features.ai_assistant %}<a href="{% url 'ai_assistant' %}" class="nav-drawer__link">{% trans "AI Asistan" %}</a>{% endif %}
                 </div>
             </div>
 
-            {% if features.oaipmh or features.yoktez or features.openalex or features.trdizin or features.semanticscholar %}
+            {% if LANGUAGE_CODE == 'tr' %}{% if features.oaipmh or features.yoktez or features.openalex or features.trdizin or features.semanticscholar %}
             <a href="/tarama/" class="nav-drawer__link">{% trans "Akademik Tarama" %}</a>
-            {% endif %}
+            {% endif %}{% endif %}
 
             {% if features.market %}<a href="{% url 'job_list' %}" class="nav-drawer__link">{% trans "Pazaryeri" %}</a>{% endif %}
 
+            {% if LANGUAGE_CODE == 'tr' %}
             <div>
                 <button class="nav-drawer__accordion-btn" aria-expanded="false" data-accordion="mob-topluluk">
                     {% trans "Topluluk" %}
@@ -457,11 +462,12 @@
                 </button>
                 <div class="nav-drawer__accordion-body" id="mob-topluluk">
                     <a href="{% url 'forum_index' %}" class="nav-drawer__link">Forum</a>
-                    {% if LANGUAGE_CODE == 'tr' %}<a href="{% url 'studyroom_list' %}" class="nav-drawer__link">{% trans "Çalışma Odaları" %}</a>{% endif %}
-                    {% if LANGUAGE_CODE == 'tr' %}<a href="{% url 'home' %}#istatistik-arenasi" class="nav-drawer__link">{% trans "İstatistik Arena" %}</a>{% endif %}
+                    <a href="{% url 'studyroom_list' %}" class="nav-drawer__link">{% trans "Çalışma Odaları" %}</a>
+                    <a href="{% url 'home' %}#istatistik-arenasi" class="nav-drawer__link">{% trans "İstatistik Arena" %}</a>
                     {% if features.blog %}<a href="{% url 'blog_list' %}" class="nav-drawer__link">Blog</a>{% endif %}
                 </div>
             </div>
+            {% endif %}
 
             <a href="{% url 'proje_talebi' %}" class="nav-drawer__link">{% trans "Proje Talebi" %}</a>
 
@@ -569,7 +575,7 @@
                 </div>
             </div>
             <div class="ax-modal__footer">
-                <a href="{% url 'success_stories' %}" class="btn btn-outline-warning btn-sm">{% trans "Tüm Hikayeler" %}</a>
+                {% if LANGUAGE_CODE == 'tr' %}<a href="{% url 'success_stories' %}" class="btn btn-outline-warning btn-sm">{% trans "Tüm Hikayeler" %}</a>{% endif %}
                 <button type="button" class="btn btn-secondary btn-sm" data-ax-dismiss="modal">{% trans "Kapat" %}</button>
             </div>
         </div>

@@ -31,16 +31,20 @@
             <a href="{% url 'post_job' %}" class="ax-btn ax-btn--primary ax-btn--lg ax-market-hero__door">
                 <i class="bi bi-plus-lg me-1"></i>{% trans "İlan Aç (Ücretsiz)" %}
             </a>
+            {% if LANGUAGE_CODE == 'tr' %}{% comment %}EN/DE'de uzman kazanımı hedef değil{% endcomment %}
             <a href="{% url 'forum_index' %}" class="ax-btn ax-btn--ghost ax-btn--lg ax-market-hero__door">
                 <i class="bi bi-person-badge me-1"></i>{% trans "Uzman Olarak Katıl" %}
             </a>
+            {% endif %}
             {% else %}
             <a href="{% url 'login' %}?next={% url 'post_job' %}" class="ax-btn ax-btn--primary ax-btn--lg ax-market-hero__door">
                 <i class="bi bi-plus-lg me-1"></i>{% trans "İlan Aç (Ücretsiz)" %}
             </a>
+            {% if LANGUAGE_CODE == 'tr' %}
             <a href="{% url 'register' %}" class="ax-btn ax-btn--ghost ax-btn--lg ax-market-hero__door">
                 <i class="bi bi-person-badge me-1"></i>{% trans "Uzman Olarak Katıl" %}
             </a>
+            {% endif %}
             {% endif %}
         </div>
         {% if user.is_authenticated %}

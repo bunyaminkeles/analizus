@@ -247,7 +247,7 @@
     </div>
 
     <!-- Kullanıcı Deneyimleri -->
-    {% if stories %}
+    {% if stories and LANGUAGE_CODE == 'tr' %}
     <div class="mb-5">
         <h2 class="text-white fw-bold text-center mb-4" style="font-size:1.4rem;">{% trans "Kullanıcı Deneyimleri" %}</h2>
         <div class="row g-3">
