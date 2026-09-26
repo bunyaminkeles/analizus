@@ -134,7 +134,13 @@ maddelerde.
   Bekleyen: (1) ~~canlıdaki kategori listesi~~ ölçüldü,
   (2) karar: rozetlerdeki gibi `title_en/_de` + migration mı; kullanıcı kaynaklı
   kategoriler ne olacak (admin onayı / serbest metin kalır).
-- [ ] **Profil düzenleme: geçersiz telefonda çift mesaj** (26 Eylül 2026, önceden
+- [x] **Profil düzenleme: geçersiz telefonda çift mesaj** — DÜZELTİLDİ (26 Eylül 2026):
+  diğer alanlar kaydedilir, başarı + hata yerine tek uyarı ("Diğer bilgileriniz
+  kaydedildi; ancak telefon numarası … kaydedilmedi") — TR/EN/DE test edildi.
+- [ ] **Profil kaydı hata verse de "başarıyla güncellendi" deniyor** (26 Eylül 2026,
+  önceden var): `profile_edit` `profile.save()` istisnasını loglayıp yutuyor, sonra
+  başarı mesajı gösteriyor (views.py ~1440). Hata mesajı gösterilmeli — karar/iş.
+- [x] (eski not) **Profil düzenleme: geçersiz telefonda çift mesaj** (26 Eylül 2026, önceden
   var olan davranış): hata mesajının yanında "Profiliniz başarıyla güncellendi"
   da çıkıyor (diğer alanlar kaydediliyor). Mesaj akışı düzeltilecek mi — karar.
 - [ ] **Profil düzenleme JS hatası** (26 Eylül 2026, önceden var): `profile_edit.html`

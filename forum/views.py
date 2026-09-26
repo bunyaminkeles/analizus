@@ -1389,7 +1389,9 @@ def profile_edit(request):
         profile.orcid = request.POST.get('orcid', '')
         profile.google_scholar = request.POST.get('google_scholar', '')
 
-        # Telefon Numarası Güncelleme
+        # Telefon Numarası Güncelleme — geçersizse diğer alanlar yine kaydedilir,
+        # sonda başarı yerine tek uyarı gösterilir
+        phone_invalid = False
         new_phone_number = request.POST.get('phone_number')
         if new_phone_number is not None:
             new_phone_number = new_phone_number.strip()
@@ -1401,7 +1403,7 @@ def profile_edit(request):
                         profile.phone_verified = True
                         _check_and_award_trust_badge(request, user)
                     else:
-                        messages.error(request, gettext("Geçersiz telefon numarası. Lütfen '05XX XXX XX XX' veya '+90 5XX XXX XX XX' biçiminde giriniz."))
+                        phone_invalid = True
                 else:
                     profile.phone_number = ""
                     profile.phone_verified = False
@@ -1448,7 +1450,10 @@ def profile_edit(request):
         except Exception as e:
             logger.error(f"Profile save error: {type(e).__name__}: {e}", exc_info=True)
 
-        messages.success(request, gettext("Profiliniz başarıyla güncellendi."))
+        if phone_invalid:
+            messages.warning(request, gettext("Diğer bilgileriniz kaydedildi; ancak telefon numarası geçersiz olduğu için kaydedilmedi. Lütfen '05XX XXX XX XX' veya '+90 5XX XXX XX XX' biçiminde giriniz."))
+        else:
+            messages.success(request, gettext("Profiliniz başarıyla güncellendi."))
         return redirect('profile_detail', username=user.username)
     
     return render(request, 'forum/profile_edit.html', {'user': user, 'profile': profile, 'all_skills': all_skills})

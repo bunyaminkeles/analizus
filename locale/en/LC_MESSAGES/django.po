@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-26 20:40+0300\n"
+"POT-Creation-Date: 2026-09-26 21:06+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -167,91 +167,91 @@ msgstr ""
 "---\n"
 "Analizus - Research and Analysis Platform"
 
-#: forum/forms.py:12 templates/forum/register.html:279
+#: forum/forms.py:13 templates/forum/register.html:279
 msgid "E-Posta Adresi"
 msgstr "Email Address"
 
-#: forum/forms.py:13 templates/forum/register.html:284
+#: forum/forms.py:14 templates/forum/register.html:284
 msgid "Geçerli bir e-posta adresi giriniz."
 msgstr "Enter a valid email address."
 
-#: forum/forms.py:20
+#: forum/forms.py:21
 msgid "Kullanım Şartları"
 msgstr "Terms of Use"
 
-#: forum/forms.py:21
+#: forum/forms.py:22
 msgid "Kayıt olmak için şartları kabul etmelisiniz."
 msgstr "You must accept the terms to sign up."
 
-#: forum/forms.py:41
+#: forum/forms.py:42
 msgid "Geçersiz kayıt."
 msgstr "Invalid registration."
 
-#: forum/forms.py:51 forum/forms.py:59
+#: forum/forms.py:52 forum/forms.py:60
 msgid "Geçerli bir kullanıcı adı seçin."
 msgstr "Please choose a valid username."
 
-#: forum/forms.py:55 forum/forms.py:84
+#: forum/forms.py:56 forum/forms.py:85
 msgid "Geçerli bir kullanıcı adı seçin (örn: ahmet42, bilge_ar)."
 msgstr "Please choose a valid username (e.g. john42, anna_r)."
 
-#: forum/forms.py:92
+#: forum/forms.py:93
 msgid "Bu e-posta adresi sistemde zaten kayıtlı."
 msgstr "This email address is already registered."
 
-#: forum/forms.py:134 forum/templates/forum/profile_detail.html:277
+#: forum/forms.py:135 forum/templates/forum/profile_detail.html:277
 msgid "Kategori"
 msgstr "Category"
 
-#: forum/forms.py:137
+#: forum/forms.py:138
 msgid "Örn: SPSS, Veri Analizi, Makine Öğrenmesi..."
 msgstr "E.g. SPSS, Data Analysis, Machine Learning..."
 
-#: forum/forms.py:147
+#: forum/forms.py:148
 msgid "Örn: SPSS Veri Analizi"
 msgstr "E.g. SPSS data analysis"
 
-#: forum/forms.py:148
+#: forum/forms.py:149
 msgid "İşin detaylarını açıklayın..."
 msgstr "Describe the details of the job..."
 
-#: forum/forms.py:149
+#: forum/forms.py:150
 msgid "Örn: 500"
 msgstr "E.g. 500"
 
-#: forum/forms.py:150 forum/forms.py:182
+#: forum/forms.py:151 forum/forms.py:189
 msgid "Örn: 3 gün"
 msgstr "E.g. 3 days"
 
-#: forum/forms.py:153
+#: forum/forms.py:154
 msgid "İlan Başlığı"
 msgstr "Listing Title"
 
-#: forum/forms.py:154
+#: forum/forms.py:155
 msgid "İş Tanımı"
 msgstr "Job Description"
 
-#: forum/forms.py:155
+#: forum/forms.py:156
 msgid "Bütçe (TL)"
 msgstr "Budget (TRY)"
 
-#: forum/forms.py:156 forum/forms.py:187
+#: forum/forms.py:157 forum/forms.py:194
 msgid "Tahmini Süre"
 msgstr "Estimated Duration"
 
-#: forum/forms.py:181
+#: forum/forms.py:188
 msgid "Teklifiniz (TL)"
 msgstr "Your offer (TRY)"
 
-#: forum/forms.py:183
+#: forum/forms.py:190
 msgid "Neden sizi seçmeliyim?"
 msgstr "Why should I choose you?"
 
-#: forum/forms.py:186
+#: forum/forms.py:193
 msgid "Teklif Tutarı (TL)"
 msgstr "Offer Amount (TRY)"
 
-#: forum/forms.py:188
+#: forum/forms.py:195
 msgid "Ön Yazı"
 msgstr "Cover Letter"
 
@@ -259,300 +259,300 @@ msgstr "Cover Letter"
 msgid "Bu özelliği kullanmak için e-posta adresinizi doğrulamanız gerekiyor."
 msgstr "You need to verify your email address to use this feature."
 
-#: forum/models.py:157 forum/templatetags/forum_extras.py:13
+#: forum/models.py:178 forum/templatetags/forum_extras.py:13
 #: forum/templatetags/forum_extras.py:34 forum/templatetags/forum_extras.py:48
 msgctxt "rütbe"
 msgid "Çaylak"
 msgstr "Newcomer"
 
-#: forum/models.py:158 forum/templatetags/forum_extras.py:14
-#: forum/views.py:2491
+#: forum/models.py:179 forum/templatetags/forum_extras.py:14
+#: forum/views.py:2496
 msgctxt "rütbe"
 msgid "Üye"
 msgstr "Member"
 
-#: forum/models.py:159 forum/templatetags/forum_extras.py:15
+#: forum/models.py:180 forum/templatetags/forum_extras.py:15
 msgctxt "rütbe"
 msgid "Aktif Üye"
 msgstr "Active Member"
 
-#: forum/models.py:160 forum/templatetags/forum_extras.py:16
+#: forum/models.py:181 forum/templatetags/forum_extras.py:16
 msgctxt "rütbe"
 msgid "Katkıcı"
 msgstr "Contributor"
 
-#: forum/models.py:161 forum/templatetags/forum_extras.py:17
+#: forum/models.py:182 forum/templatetags/forum_extras.py:17
 msgctxt "rütbe"
 msgid "Uzman"
 msgstr "Expert"
 
-#: forum/models.py:162 forum/templatetags/forum_extras.py:18
+#: forum/models.py:183 forum/templatetags/forum_extras.py:18
 msgctxt "rütbe"
 msgid "Usta"
 msgstr "Master"
 
-#: forum/models.py:163 forum/templatetags/forum_extras.py:19
+#: forum/models.py:184 forum/templatetags/forum_extras.py:19
 msgctxt "rütbe"
 msgid "Efsane"
 msgstr "Legend"
 
-#: forum/models.py:164 forum/templatetags/forum_extras.py:20
+#: forum/models.py:185 forum/templatetags/forum_extras.py:20
 msgctxt "rütbe"
 msgid "Yönetici"
 msgstr "Administrator"
 
-#: forum/models.py:240 forum/templates/forum/home.html:258
+#: forum/models.py:261 forum/templates/forum/home.html:258
 msgid "Öğrenci"
 msgstr "Student"
 
-#: forum/models.py:241 forum/templates/forum/home.html:266
+#: forum/models.py:262 forum/templates/forum/home.html:266
 msgid "Akademisyen"
 msgstr "Academic"
 
-#: forum/models.py:242 forum/templates/forum/home.html:274
+#: forum/models.py:263 forum/templates/forum/home.html:274
 msgid "Uzman"
 msgstr "Expert"
 
-#: forum/models.py:243
+#: forum/models.py:264
 msgid "Meraklı"
 msgstr "Curious"
 
-#: forum/models.py:371
+#: forum/models.py:392
 msgid "Kayıtlı üye"
 msgstr "Registered member"
 
-#: forum/models.py:390
+#: forum/models.py:411
 msgid "İlan açmak için e-posta doğrulaması gerekli"
 msgstr "Email verification is required to post a listing"
 
-#: forum/models.py:393
+#: forum/models.py:414
 #, python-format
 msgid "Haftalık ilan limitinize (%(limit)s) ulaştınız"
 msgstr "You have reached your weekly listing limit (%(limit)s)"
 
-#: forum/models.py:394
+#: forum/models.py:415
 msgid "İlan açabilirsiniz"
 msgstr "You can post a listing"
 
-#: forum/models.py:414
+#: forum/models.py:435
 msgid "Yönetici yetkisi"
 msgstr "Administrator permission"
 
-#: forum/models.py:418 openalex/templates/openalex/landing.html:31
+#: forum/models.py:439 openalex/templates/openalex/landing.html:31
 msgid "Premium üyelik"
 msgstr "Premium membership"
 
-#: forum/models.py:422
+#: forum/models.py:443
 msgid "EDU mail ayrıcalığı (3 günlük)"
 msgstr "EDU email privilege (3 days)"
 
-#: forum/models.py:427
+#: forum/models.py:448
 #, python-format
 msgid "%(rank)s rütbesi"
 msgstr "%(rank)s rank"
 
-#: forum/models.py:443
+#: forum/models.py:464
 msgid "Teklif vermek için 1000+ puan veya özel rozet gerekli"
 msgstr "1000+ points or a special badge is required to make offers"
 
-#: forum/models.py:833
+#: forum/models.py:868
 msgid "Açık (Teklif Bekliyor)"
 msgstr "Open (Awaiting Offers)"
 
-#: forum/models.py:834 forum/templates/forum/market/my_jobs.html:76
+#: forum/models.py:869 forum/templates/forum/market/my_jobs.html:76
 #: forum/templates/forum/profile_detail.html:341
 #: forum/templates/forum/profile_detail.html:468
 msgid "Devam Ediyor"
 msgstr "In Progress"
 
-#: forum/models.py:835 forum/templates/forum/hangi_test.html:866
+#: forum/models.py:870 forum/templates/forum/hangi_test.html:866
 #: forum/templates/forum/market/my_jobs.html:76
 #: forum/templates/forum/profile_detail.html:341
 #: forum/templates/forum/profile_detail.html:468
 msgid "Tamamlandı"
 msgstr "Completed"
 
-#: forum/models.py:836
+#: forum/models.py:871
 msgid "İptal Edildi"
 msgstr "Cancelled"
 
-#: forum/models.py:943 forum/templates/forum/market/job_detail.html:192
+#: forum/models.py:978 forum/templates/forum/market/job_detail.html:192
 #: forum/templates/forum/market/my_jobs.html:59
 #: forum/templates/forum/profile_detail.html:444
 msgid "Beklemede"
 msgstr "Pending"
 
-#: forum/models.py:944 forum/templates/forum/market/job_detail.html:188
+#: forum/models.py:979 forum/templates/forum/market/job_detail.html:188
 #: forum/templates/forum/market/my_jobs.html:60
 #: forum/templates/forum/profile_detail.html:442
 msgid "Kabul Edildi"
 msgstr "Accepted"
 
-#: forum/models.py:945 forum/templates/forum/market/my_jobs.html:61
+#: forum/models.py:980 forum/templates/forum/market/my_jobs.html:61
 msgid "Reddedildi"
 msgstr "Rejected"
 
-#: forum/models.py:1001
+#: forum/models.py:1036
 msgid "Platin Destekçi"
 msgstr "Platinum Supporter"
 
-#: forum/models.py:1001
+#: forum/models.py:1036
 msgid "Altın Destekçi"
 msgstr "Gold Supporter"
 
-#: forum/models.py:1002
+#: forum/models.py:1037
 msgid "Gümüş Destekçi"
 msgstr "Silver Supporter"
 
-#: forum/models.py:1002
+#: forum/models.py:1037
 msgid "Bronz Destekçi"
 msgstr "Bronze Supporter"
 
-#: forum/models.py:1661 forum/templates/forum/hangi_test.html:749
+#: forum/models.py:1696 forum/templates/forum/hangi_test.html:749
 #: forum/templates/forum/proje_talebi.html:169
 msgid "Veri Görselleştirme"
 msgstr "Data Visualization"
 
-#: forum/models.py:1662 forum/templates/forum/proje_talebi.html:170
+#: forum/models.py:1697 forum/templates/forum/proje_talebi.html:170
 msgid "Makine Öğrenmesi / Yapay Zeka"
 msgstr "Machine Learning / AI"
 
-#: forum/models.py:1663 forum/templates/forum/proje_talebi.html:171
+#: forum/models.py:1698 forum/templates/forum/proje_talebi.html:171
 msgid "İstatistiksel Analiz"
 msgstr "Statistical Analysis"
 
-#: forum/models.py:1664 forum/templates/forum/proje_talebi.html:172
+#: forum/models.py:1699 forum/templates/forum/proje_talebi.html:172
 msgid "Veri Temizleme / Hazırlama"
 msgstr "Data Cleaning / Preparation"
 
-#: forum/models.py:1665 forum/templates/forum/proje_talebi.html:173
+#: forum/models.py:1700 forum/templates/forum/proje_talebi.html:173
 msgid "Zaman Serisi Analizi"
 msgstr "Time Series Analysis"
 
-#: forum/models.py:1666 forum/templates/forum/proje_talebi.html:174
+#: forum/models.py:1701 forum/templates/forum/proje_talebi.html:174
 msgid "Metin / NLP Analizi"
 msgstr "Text / NLP Analysis"
 
-#: forum/models.py:1667 forum/templates/forum/proje_talebi.html:168
+#: forum/models.py:1702 forum/templates/forum/proje_talebi.html:168
 msgid "Tez / Makale Veri İndirme"
 msgstr "Thesis / Article Data Download"
 
-#: forum/models.py:1668 forum/templates/forum/proje_talebi.html:175
+#: forum/models.py:1703 forum/templates/forum/proje_talebi.html:175
 msgid "AI Analiz Doğrulama"
 msgstr "AI Analysis Verification"
 
-#: forum/models.py:1669 forum/templates/forum/proje_talebi.html:176
+#: forum/models.py:1704 forum/templates/forum/proje_talebi.html:176
 msgid "AI Ajan / Otomasyon Projesi"
 msgstr "AI Agent / Automation Project"
 
-#: forum/models.py:1670 forum/templates/forum/proje_talebi.html:177
+#: forum/models.py:1705 forum/templates/forum/proje_talebi.html:177
 msgid "Bibliyometrik Analiz"
 msgstr "Bibliometric Analysis"
 
-#: forum/models.py:1671 forum/templates/forum/contact.html:78
+#: forum/models.py:1706 forum/templates/forum/contact.html:78
 #: forum/templates/forum/proje_talebi.html:178
 msgid "Diğer"
 msgstr "Other"
 
-#: forum/models.py:1674 forum/templates/forum/proje_talebi.html:193
+#: forum/models.py:1709 forum/templates/forum/proje_talebi.html:193
 msgid "1.000 satırdan az"
 msgstr "Under 1,000 rows"
 
-#: forum/models.py:1675 forum/templates/forum/proje_talebi.html:194
+#: forum/models.py:1710 forum/templates/forum/proje_talebi.html:194
 msgid "1.000 – 100.000 satır"
 msgstr "1,000 – 100,000 rows"
 
-#: forum/models.py:1676 forum/templates/forum/proje_talebi.html:195
+#: forum/models.py:1711 forum/templates/forum/proje_talebi.html:195
 msgid "100.000 satır ve üzeri"
 msgstr "Over 100,000 rows"
 
-#: forum/models.py:1677 forum/templates/forum/proje_talebi.html:196
+#: forum/models.py:1712 forum/templates/forum/proje_talebi.html:196
 msgid "Bilmiyorum"
 msgstr "I don't know"
 
-#: forum/models.py:1680 forum/templates/forum/proje_talebi.html:203
+#: forum/models.py:1715 forum/templates/forum/proje_talebi.html:203
 msgid "1 hafta içinde"
 msgstr "Within 1 week"
 
-#: forum/models.py:1681 forum/models.py:1750
+#: forum/models.py:1716 forum/models.py:1785
 #: forum/templates/forum/egitim_talebi.html:138
 #: forum/templates/forum/proje_talebi.html:204
 msgid "1 ay içinde"
 msgstr "Within 1 month"
 
-#: forum/models.py:1682 forum/models.py:1751
+#: forum/models.py:1717 forum/models.py:1786
 #: forum/templates/forum/egitim_talebi.html:139
 #: forum/templates/forum/proje_talebi.html:205
 msgid "Esnek"
 msgstr "Flexible"
 
-#: forum/models.py:1727 forum/templates/forum/egitim_talebi.html:74
+#: forum/models.py:1762 forum/templates/forum/egitim_talebi.html:74
 msgid "Bireysel"
 msgstr "Individual"
 
-#: forum/models.py:1728 forum/templates/forum/egitim.html:103
+#: forum/models.py:1763 forum/templates/forum/egitim.html:103
 #: forum/templates/forum/egitim_talebi.html:75 templates/base.html:279
 #: templates/base.html:473 templates/partials/footer.html:117
 msgid "Kurumsal"
 msgstr "Corporate"
 
-#: forum/models.py:1731 forum/templates/forum/egitim_talebi.html:104
+#: forum/models.py:1766 forum/templates/forum/egitim_talebi.html:104
 #: forum/training_catalog.py:471
 msgid "Başlangıç"
 msgstr "Beginner"
 
-#: forum/models.py:1732 forum/templates/forum/egitim_talebi.html:105
+#: forum/models.py:1767 forum/templates/forum/egitim_talebi.html:105
 #: forum/training_catalog.py:472
 msgid "Orta"
 msgstr "Intermediate"
 
-#: forum/models.py:1733 forum/templates/forum/egitim_talebi.html:106
+#: forum/models.py:1768 forum/templates/forum/egitim_talebi.html:106
 #: forum/training_catalog.py:473
 msgid "İleri"
 msgstr "Advanced"
 
-#: forum/models.py:1734 forum/templates/forum/egitim_talebi.html:107
+#: forum/models.py:1769 forum/templates/forum/egitim_talebi.html:107
 msgid "Emin değilim"
 msgstr "Not sure"
 
-#: forum/models.py:1737 forum/templates/forum/egitim_talebi.html:114
+#: forum/models.py:1772 forum/templates/forum/egitim_talebi.html:114
 msgid "Online canlı"
 msgstr "Live online"
 
-#: forum/models.py:1738 forum/templates/forum/egitim_talebi.html:115
+#: forum/models.py:1773 forum/templates/forum/egitim_talebi.html:115
 msgid "Yerinde"
 msgstr "On-site"
 
-#: forum/models.py:1739 forum/templates/forum/egitim.html:217
+#: forum/models.py:1774 forum/templates/forum/egitim.html:217
 #: forum/templates/forum/egitim_talebi.html:116
 msgid "Hibrit"
 msgstr "Hybrid"
 
-#: forum/models.py:1740 forum/templates/forum/egitim_talebi.html:117
+#: forum/models.py:1775 forum/templates/forum/egitim_talebi.html:117
 msgid "Farketmez"
 msgstr "No preference"
 
-#: forum/models.py:1743 forum/templates/forum/egitim_talebi.html:127
+#: forum/models.py:1778 forum/templates/forum/egitim_talebi.html:127
 msgid "1 kişi"
 msgstr "1 person"
 
-#: forum/models.py:1744 forum/templates/forum/egitim_talebi.html:128
+#: forum/models.py:1779 forum/templates/forum/egitim_talebi.html:128
 msgid "2-5 kişi"
 msgstr "2-5 people"
 
-#: forum/models.py:1745 forum/templates/forum/egitim_talebi.html:129
+#: forum/models.py:1780 forum/templates/forum/egitim_talebi.html:129
 msgid "6-15 kişi"
 msgstr "6-15 people"
 
-#: forum/models.py:1746 forum/templates/forum/egitim_talebi.html:130
+#: forum/models.py:1781 forum/templates/forum/egitim_talebi.html:130
 msgid "16+ kişi"
 msgstr "16+ people"
 
-#: forum/models.py:1749 forum/templates/forum/egitim_talebi.html:137
+#: forum/models.py:1784 forum/templates/forum/egitim_talebi.html:137
 msgid "2 hafta içinde"
 msgstr "Within 2 weeks"
 
-#: forum/services/ai_service.py:264 forum/views.py:2564 forum/views.py:2637
+#: forum/services/ai_service.py:264 forum/views.py:2569 forum/views.py:2642
 msgid "AI servisi şu anda kullanılamıyor."
 msgstr "The AI service is currently unavailable."
 
@@ -606,8 +606,8 @@ msgstr "Best regards,"
 
 #: forum/services/email_service.py:134
 #: forum/templates/forum/emails/support_payment_details.html:112
-#: forum/views.py:2154 forum/views.py:2161 forum/views.py:2322
-#: forum/views.py:2329
+#: forum/views.py:2159 forum/views.py:2166 forum/views.py:2327
+#: forum/views.py:2334
 msgid "Analizus Ekibi"
 msgstr "The Analizus Team"
 
@@ -2119,7 +2119,7 @@ msgid "Merhaba, eğitim talebi hakkında bilgi almak istiyorum."
 msgstr "Hello, I would like to get information about a training request."
 
 #: forum/templates/forum/emails/support_payment_details.html:6
-#: forum/views.py:3391
+#: forum/views.py:3396
 msgid "Analizus Bağış İşlemi"
 msgstr "Analizus Support Payment"
 
@@ -2128,7 +2128,7 @@ msgid "Desteğiniz için teşekkür ederiz!"
 msgstr "Thank you for your support!"
 
 #: forum/templates/forum/emails/support_payment_details.html:26
-#: forum/views.py:1862
+#: forum/views.py:1867
 #, python-format
 msgid "Merhaba <strong>%(username)s</strong>,"
 msgstr "Hello <strong>%(username)s</strong>,"
@@ -3903,7 +3903,7 @@ msgstr ""
 "Cross-tabulations (crosstabs) can be created for between-group comparisons"
 
 #: forum/templates/forum/hangi_test.html:749
-#: forum/templates/forum/home.html:262 forum/views.py:1968
+#: forum/templates/forum/home.html:262 forum/views.py:1973
 #: istatistik/seo_content.py:73 istatistik/seo_content.py:190
 #: istatistik/seo_content.py:243 istatistik/seo_content.py:349
 #: istatistik/seo_content.py:512 istatistik/seo_content.py:624
@@ -4064,7 +4064,7 @@ msgstr "Scraping tools:"
 msgid "YÖK Tez Kazıma"
 msgstr "Thesis Center Scraping"
 
-#: forum/templates/forum/home.html:272 forum/views.py:4051
+#: forum/templates/forum/home.html:272 forum/views.py:4056
 #: openalex/templates/openalex/landing.html:155 templates/base.html:223
 #: templates/base.html:439
 msgid "Bibliometrik Analiz"
@@ -4132,7 +4132,7 @@ msgstr "Data Science"
 msgid "Editörlük"
 msgstr "Editing"
 
-#: forum/templates/forum/home.html:362 forum/views.py:4048
+#: forum/templates/forum/home.html:362 forum/views.py:4053
 msgid "Danışmanlık"
 msgstr "Consulting"
 
@@ -5952,7 +5952,7 @@ msgstr "Registered"
 msgid "Üye"
 msgstr "Members"
 
-#: forum/templates/forum/proje_talebi.html:120 forum/views.py:1963
+#: forum/templates/forum/proje_talebi.html:120 forum/views.py:1968
 msgid "Ücretsiz"
 msgstr "Free"
 
@@ -6257,8 +6257,8 @@ msgstr "Data cleaning (removing duplicates/errors)"
 #: forum/training_catalog.py:133 forum/training_catalog.py:156
 #: forum/training_catalog.py:325 forum/training_catalog.py:346
 #: forum/training_catalog.py:368 forum/training_catalog.py:388
-#: forum/training_catalog.py:417 forum/views.py:1965 forum/views.py:1967
-#: forum/views.py:1968 forum/views.py:1969 forum/views.py:1970
+#: forum/training_catalog.py:417 forum/views.py:1970 forum/views.py:1972
+#: forum/views.py:1973 forum/views.py:1974 forum/views.py:1975
 msgid "Yok"
 msgstr "None"
 
@@ -7933,19 +7933,21 @@ msgstr ""
 "Registration successful, but the verification email could not be sent. You "
 "can try again from your profile page."
 
-#: forum/views.py:1404 forum/views.py:1760
+#: forum/views.py:1454
 msgid ""
-"Geçersiz telefon numarası. Lütfen '05XX XXX XX XX' veya '+90 5XX XXX XX XX' "
-"biçiminde giriniz."
+"Diğer bilgileriniz kaydedildi; ancak telefon numarası geçersiz olduğu için "
+"kaydedilmedi. Lütfen '05XX XXX XX XX' veya '+90 5XX XXX XX XX' biçiminde "
+"giriniz."
 msgstr ""
-"Invalid phone number. Please enter a Turkish mobile number in the format "
+"Your other details have been saved, but the phone number was not saved "
+"because it is invalid. Please enter a Turkish mobile number in the format "
 "'05XX XXX XX XX' or '+90 5XX XXX XX XX'."
 
-#: forum/views.py:1451
+#: forum/views.py:1456
 msgid "Profiliniz başarıyla güncellendi."
 msgstr "Your profile has been updated successfully."
 
-#: forum/views.py:1724
+#: forum/views.py:1729
 msgid ""
 "TEBRİKLER! Tüm doğrulamaları tamamladığınız için \"Güvenilir Üye\" rozeti ve"
 " 50 Puan kazandınız."
@@ -7953,27 +7955,35 @@ msgstr ""
 "CONGRATULATIONS! You have completed all verifications and earned the "
 "\"Trusted Member\" badge and 50 points."
 
-#: forum/views.py:1758
+#: forum/views.py:1763
 msgid "Telefon numaranız başarıyla kaydedildi."
 msgstr "Your phone number has been saved successfully."
 
-#: forum/views.py:1769
+#: forum/views.py:1765
+msgid ""
+"Geçersiz telefon numarası. Lütfen '05XX XXX XX XX' veya '+90 5XX XXX XX XX' "
+"biçiminde giriniz."
+msgstr ""
+"Invalid phone number. Please enter a Turkish mobile number in the format "
+"'05XX XXX XX XX' or '+90 5XX XXX XX XX'."
+
+#: forum/views.py:1774
 msgid "LinkedIn hesabınız başarıyla doğrulandı."
 msgstr "Your LinkedIn account has been verified successfully."
 
-#: forum/views.py:1771
+#: forum/views.py:1776
 msgid "Geçersiz LinkedIn URL."
 msgstr "Invalid LinkedIn URL."
 
-#: forum/views.py:1863
+#: forum/views.py:1868
 msgid "Analizus hesabınızı silmek için aşağıdaki butona tıklayın."
 msgstr "Click the button below to delete your Analizus account."
 
-#: forum/views.py:1864
+#: forum/views.py:1869
 msgid "Hesabımı Kalıcı Olarak Sil"
 msgstr "Delete My Account Permanently"
 
-#: forum/views.py:1865
+#: forum/views.py:1870
 msgid ""
 "Bu link <strong>24 saat</strong> geçerlidir. Talepte bulunmadıysanız bu "
 "e-postayı görmezden gelin."
@@ -7981,16 +7991,16 @@ msgstr ""
 "This link is valid for <strong>24 hours</strong>. If you did not make this "
 "request, please ignore this email."
 
-#: forum/views.py:1869
+#: forum/views.py:1874
 msgid "Hesap Silme Onayı — Analizus"
 msgstr "Account Deletion Confirmation — Analizus"
 
-#: forum/views.py:1870
+#: forum/views.py:1875
 #, python-format
 msgid "Hesabınızı silmek için şu linke gidin: %(url)s"
 msgstr "To delete your account, go to this link: %(url)s"
 
-#: forum/views.py:1877
+#: forum/views.py:1882
 msgid ""
 "Onay linki e-posta adresinize gönderildi. 24 saat içinde tıklayarak işlemi "
 "tamamlayın."
@@ -7998,15 +8008,15 @@ msgstr ""
 "A confirmation link has been sent to your email address. Click it within 24 "
 "hours to complete the process."
 
-#: forum/views.py:1892
+#: forum/views.py:1897
 msgid "Geçersiz veya süresi dolmuş link."
 msgstr "Invalid or expired link."
 
-#: forum/views.py:1899
+#: forum/views.py:1904
 msgid "Bu link süresi dolmuş. Lütfen yeniden talep edin."
 msgstr "This link has expired. Please request a new one."
 
-#: forum/views.py:1912
+#: forum/views.py:1917
 msgid ""
 "Hesabınız devre dışı bırakıldı. Kişisel verileriniz 30 gün içinde kalıcı "
 "olarak silinecektir. Bu süre içinde giriş yaparak hesabınızı geri "
@@ -8016,98 +8026,98 @@ msgstr ""
 "deleted within 30 days. You can restore your account by signing in during "
 "this period."
 
-#: forum/views.py:1945
+#: forum/views.py:1950
 msgid "Hesabınız geri alındı. Tekrar hoş geldiniz!"
 msgstr "Your account has been restored. Welcome back!"
 
-#: forum/views.py:1963
+#: forum/views.py:1968
 msgid "Ücret"
 msgstr "Price"
 
-#: forum/views.py:1963
+#: forum/views.py:1968
 msgid "~$1,500/yıl"
 msgstr "~$1,500/year"
 
-#: forum/views.py:1963
+#: forum/views.py:1968
 msgid "~$900/yıl"
 msgstr "~$900/year"
 
-#: forum/views.py:1963
+#: forum/views.py:1968
 msgid "Ücretli"
 msgstr "Paid"
 
-#: forum/views.py:1964
+#: forum/views.py:1969
 msgid "Kurulum"
 msgstr "Installation"
 
-#: forum/views.py:1964
+#: forum/views.py:1969
 msgid "Yok (tarayıcı)"
 msgstr "None (browser)"
 
-#: forum/views.py:1964
+#: forum/views.py:1969
 msgid "Gerekli"
 msgstr "Required"
 
-#: forum/views.py:1965
+#: forum/views.py:1970
 msgid "APA Rapor"
 msgstr "APA Report"
 
-#: forum/views.py:1965
+#: forum/views.py:1970
 msgid "Otomatik"
 msgstr "Automatic"
 
-#: forum/views.py:1966
+#: forum/views.py:1971
 msgid "PDF Çıktı"
 msgstr "PDF Output"
 
-#: forum/views.py:1966
+#: forum/views.py:1971
 msgid "Hazır"
 msgstr "Ready-made"
 
-#: forum/views.py:1966
+#: forum/views.py:1971
 msgid "Manuel"
 msgstr "Manual"
 
-#: forum/views.py:1967 istatistik/views.py:31 istatistik/views.py:93
+#: forum/views.py:1972 istatistik/views.py:31 istatistik/views.py:93
 msgid "Cronbach Alpha"
 msgstr "Cronbach's Alpha"
 
-#: forum/views.py:1967 forum/views.py:1968 forum/views.py:1970
+#: forum/views.py:1972 forum/views.py:1973 forum/views.py:1975
 msgid "Var"
 msgstr "Yes"
 
-#: forum/views.py:1969
+#: forum/views.py:1974
 msgid "Uzman Desteği"
 msgstr "Expert Support"
 
-#: forum/views.py:1969
+#: forum/views.py:1974
 msgid "Pazar yeri"
 msgstr "Marketplace"
 
-#: forum/views.py:1970
+#: forum/views.py:1975
 msgid "Akademik Forum"
 msgstr "Academic Forum"
 
-#: forum/views.py:2079
+#: forum/views.py:2084
 msgid "Mesajınız başarıyla gönderildi. En kısa sürede dönüş yapacağız."
 msgstr ""
 "Your message has been sent. We will get back to you as soon as possible."
 
-#: forum/views.py:2081
+#: forum/views.py:2086
 msgid "Mesaj gönderilirken bir hata oluştu. Lütfen tekrar deneyin."
 msgstr "An error occurred while sending your message. Please try again."
 
-#: forum/views.py:2105 forum/views.py:2262
+#: forum/views.py:2110 forum/views.py:2267
 msgid "Lütfen zorunlu alanları doldurunuz."
 msgstr "Please fill in the required fields."
 
-#: forum/views.py:2148 forum/views.py:2160 forum/views.py:2315
-#: forum/views.py:2328
+#: forum/views.py:2153 forum/views.py:2165 forum/views.py:2320
+#: forum/views.py:2333
 #, python-format
 msgid "Sayın %(name)s,"
 msgstr "Dear %(name)s,"
 
-#: forum/views.py:2149
+#: forum/views.py:2154
 msgid ""
 "Proje talebiniz başarıyla alındı. En kısa sürede sizinle iletişime "
 "geçeceğiz."
@@ -8115,50 +8125,50 @@ msgstr ""
 "Your project request has been received. We will contact you as soon as "
 "possible."
 
-#: forum/views.py:2150 forum/views.py:2317
+#: forum/views.py:2155 forum/views.py:2322
 msgid "Talep Özeti:"
 msgstr "Request Summary:"
 
-#: forum/views.py:2151
+#: forum/views.py:2156
 #, python-format
 msgid "Analiz Türü: %(value)s"
 msgstr "Analysis type: %(value)s"
 
-#: forum/views.py:2152
+#: forum/views.py:2157
 #, python-format
 msgid "Veri Boyutu: %(value)s"
 msgstr "Data size: %(value)s"
 
-#: forum/views.py:2153
+#: forum/views.py:2158
 #, python-format
 msgid "Süre Beklentisi: %(value)s"
 msgstr "Expected timeline: %(value)s"
 
-#: forum/views.py:2158
+#: forum/views.py:2163
 msgid "Proje talebiniz alındı — Analizus"
 msgstr "Your project request has been received — Analizus"
 
-#: forum/views.py:2161
+#: forum/views.py:2166
 msgid "Proje talebiniz alındı. En kısa sürede sizinle iletişime geçeceğiz."
 msgstr ""
 "Your project request has been received. We will contact you as soon as "
 "possible."
 
-#: forum/views.py:2164
+#: forum/views.py:2169
 msgid "Talebiniz alındı! En kısa sürede size dönüş yapacağız."
 msgstr ""
 "Your request has been received! We will get back to you as soon as possible."
 
-#: forum/views.py:2166 forum/views.py:2334
+#: forum/views.py:2171 forum/views.py:2339
 msgid "Bir hata oluştu, lütfen tekrar deneyin."
 msgstr "An error occurred, please try again."
 
-#: forum/views.py:2266
+#: forum/views.py:2271
 msgid "Devam etmek için KVKK Aydınlatma Metni onayı gereklidir."
 msgstr ""
 "To continue, you must accept the KVKK (personal data protection) notice."
 
-#: forum/views.py:2316
+#: forum/views.py:2321
 msgid ""
 "Eğitim talebiniz başarıyla alındı. 24 saat içinde sizinle iletişime "
 "geçeceğiz."
@@ -8166,53 +8176,53 @@ msgstr ""
 "Your training request has been received. We will contact you within 24 "
 "hours."
 
-#: forum/views.py:2318
+#: forum/views.py:2323
 #, python-format
 msgid "Talep Türü: %(value)s"
 msgstr "Request type: %(value)s"
 
-#: forum/views.py:2319
+#: forum/views.py:2324
 #, python-format
 msgid "Konu: %(value)s"
 msgstr "Topic: %(value)s"
 
-#: forum/views.py:2320
+#: forum/views.py:2325
 #, python-format
 msgid "Seviye: %(value)s"
 msgstr "Level: %(value)s"
 
-#: forum/views.py:2321
+#: forum/views.py:2326
 #, python-format
 msgid "Format: %(value)s"
 msgstr "Format: %(value)s"
 
-#: forum/views.py:2326
+#: forum/views.py:2331
 msgid "Eğitim talebiniz alındı — Analizus"
 msgstr "Your training request has been received — Analizus"
 
-#: forum/views.py:2329
+#: forum/views.py:2334
 msgid "Eğitim talebiniz alındı. 24 saat içinde sizinle iletişime geçeceğiz."
 msgstr ""
 "Your training request has been received. We will contact you within 24 "
 "hours."
 
-#: forum/views.py:2332
+#: forum/views.py:2337
 msgid "Talebiniz alındı! 24 saat içinde size dönüş yapacağız."
 msgstr ""
 "Your request has been received! We will get back to you within 24 hours."
 
-#: forum/views.py:2553
+#: forum/views.py:2558
 msgid "Lütfen bir soru girin."
 msgstr "Please enter a question."
 
-#: forum/views.py:2558
+#: forum/views.py:2563
 #, python-format
 msgid "Günlük %(limit)s soru limitinizi doldurdunuz. Yarın tekrar deneyin."
 msgstr ""
 "You have used up your daily limit of %(limit)s questions. Please try again "
 "tomorrow."
 
-#: forum/views.py:2560
+#: forum/views.py:2565
 #, python-format
 msgid ""
 "Günlük anonim limit (%(limit)s soru) doldu. Üye olarak 30 soruya kadar "
@@ -8221,118 +8231,118 @@ msgstr ""
 "The daily anonymous limit (%(limit)s questions) has been reached. Sign up to"
 " ask up to 30 questions."
 
-#: forum/views.py:2590
+#: forum/views.py:2595
 msgid "Geçersiz istek."
 msgstr "Invalid request."
 
-#: forum/views.py:2606
+#: forum/views.py:2611
 msgid "Mesaj boş olamaz."
 msgstr "The message cannot be empty."
 
-#: forum/views.py:2609
+#: forum/views.py:2614
 msgid "Mesaj çok uzun (max 2000 karakter)."
 msgstr "The message is too long (max. 2000 characters)."
 
-#: forum/views.py:2630
+#: forum/views.py:2635
 #, python-format
 msgid "Günlük %(limit)s soru limitine ulaştınız."
 msgstr "You have reached your daily limit of %(limit)s questions."
 
-#: forum/views.py:2683 forum/views.py:2753
+#: forum/views.py:2688 forum/views.py:2758
 msgid "E-posta adresiniz zaten doğrulanmış."
 msgstr "Your email address has already been verified."
 
-#: forum/views.py:2696
+#: forum/views.py:2701
 msgid "Geçersiz doğrulama linki."
 msgstr "Invalid verification link."
 
-#: forum/views.py:2700
+#: forum/views.py:2705
 msgid "Bu doğrulama linki süresi dolmuş veya daha önce kullanılmış."
 msgstr "This verification link has expired or has already been used."
 
-#: forum/views.py:2731
+#: forum/views.py:2736
 msgid "E-posta adresiniz başarıyla doğrulandı! Hoş geldiniz."
 msgstr "Your email address has been verified. Welcome!"
 
-#: forum/views.py:2761
+#: forum/views.py:2766
 msgid ""
 "Doğrulama e-postası tekrar gönderildi. Lütfen e-posta kutunuzu kontrol edin."
 msgstr "The verification email has been resent. Please check your inbox."
 
-#: forum/views.py:2763
+#: forum/views.py:2768
 msgid "E-posta gönderilemedi. Lütfen daha sonra tekrar deneyin."
 msgstr "The email could not be sent. Please try again later."
 
-#: forum/views.py:4041
+#: forum/views.py:4046
 msgid "Hoş geldiniz!"
 msgstr "Welcome!"
 
-#: forum/views.py:4046
+#: forum/views.py:4051
 msgid "İstatistik Analizi"
 msgstr "Statistical Analysis"
 
-#: forum/views.py:4046
+#: forum/views.py:4051
 msgid "SPSS, R, Python, AMOS, SmartPLS ile profesyonel istatistik analizleri"
 msgstr ""
 "Professional statistical analyses with SPSS, R, Python, AMOS and SmartPLS"
 
-#: forum/views.py:4047
+#: forum/views.py:4052
 msgid "Veri Kazıma & Toplama"
 msgstr "Data Scraping & Collection"
 
-#: forum/views.py:4047
+#: forum/views.py:4052
 msgid "Anket, web ve akademik veritabanlarından veri toplama desteği"
 msgstr ""
 "Support with collecting data from surveys, the web and academic databases"
 
-#: forum/views.py:4048
+#: forum/views.py:4053
 msgid ""
 "Alanında uzman akademisyen ve danışmanlarla Pazaryeri üzerinden eşleşin"
 msgstr ""
 "Get matched with expert academics and consultants through the Marketplace"
 
-#: forum/views.py:4049
+#: forum/views.py:4054
 msgid "Proje Desteği"
 msgstr "Project Support"
 
-#: forum/views.py:4049
+#: forum/views.py:4054
 msgid "Tez, makale ve kurumsal projeleriniz için uçtan uca destek"
 msgstr "End-to-end support for your theses, articles and corporate projects"
 
-#: forum/views.py:4050
+#: forum/views.py:4055
 msgid "Akademik Destek"
 msgstr "Academic Support"
 
-#: forum/views.py:4050
+#: forum/views.py:4055
 msgid "Tez ve makale yazım sürecinde yöntem ve rehberlik desteği"
 msgstr "Methodological guidance while writing theses and articles"
 
-#: forum/views.py:4051
+#: forum/views.py:4056
 msgid "Atıf ve yayın verileriyle bibliometrik analiz yaptırın"
 msgstr ""
 "Have bibliometric analyses carried out on citation and publication data"
 
-#: forum/views.py:4052
+#: forum/views.py:4057
 msgid "Literatür / Akademik Tarama"
 msgstr "Literature / Academic Search"
 
-#: forum/views.py:4052
+#: forum/views.py:4057
 msgid "YÖK Tez, TR Dizin ve uluslararası veritabanlarında tarama"
 msgstr "Searches in YÖK Tez, TR Dizin and international databases"
 
-#: forum/views.py:4053
+#: forum/views.py:4058
 msgid "Forumda Soru-Cevap"
 msgstr "Forum Q&A"
 
-#: forum/views.py:4053
+#: forum/views.py:4058
 msgid "Merak ettiklerinizi sorun, bilgi birikiminizi toplulukla paylaşın"
 msgstr "Ask what you want to know and share your knowledge with the community"
 
-#: forum/views.py:4055
+#: forum/views.py:4060
 msgid "AI Araçları"
 msgstr "AI Tools"
 
-#: forum/views.py:4055
+#: forum/views.py:4060
 msgid "Akademik Danışmanlık"
 msgstr "Academic Consulting"
 
