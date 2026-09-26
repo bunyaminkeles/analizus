@@ -265,7 +265,7 @@
     {% endif %}
 
     <!-- Oyunlaştırma Bandı -->
-    {% if user.is_authenticated and not can_propose %}
+    {% if user.is_authenticated and not can_propose and LANGUAGE_CODE == 'tr' %}
     <div class="ax-market-gamify-band mt-5">
         <div class="ax-market-gamify-band__text">
             <i class="bi bi-trophy" aria-hidden="true"></i>

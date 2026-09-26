@@ -429,9 +429,11 @@
                                 <li><i class="bi bi-check2-circle text-warning"></i> {% trans "Sadece alanınıza uygun projeler" %}</li>
                                 <li><i class="bi bi-check2-circle text-warning"></i> {% trans "Profilini ve itibarını güçlendir" %}</li>
                             </ul>
+                            {% if LANGUAGE_CODE == 'tr' %}
                             <a href="#istatistik-arenasi" class="ax-market-arena-link mt-3">
                                 🎯 {% trans "İstatistik Arenası'nda puan kazan →" %}
                             </a>
+                            {% endif %}
                         </div>
                         <div class="ax-market-footer mt-4">
                             <a href="{% url 'job_list' %}" class="ax-btn ax-btn--warning ax-btn--lg ax-block ax-w-full">{% trans "Freelance Projelere Göz At" %}</a>
@@ -745,12 +747,15 @@ document.addEventListener('DOMContentLoaded', function () {
 <!-- =====================================================
      KENDİNİ TEST ET (AI Asistan soru chip'leri + Arena quiz birleşik)
      ===================================================== -->
+{% comment %}EN/DE: Arena soruları yalnız TR → quiz sütunu gizli, AI Asistan sütunu kalır;
+AI Asistan da kapalıysa bölüm hiç çıkmaz (26 Eylül 2026){% endcomment %}
+{% if LANGUAGE_CODE == 'tr' or features.ai_assistant %}
 <section class="ax-quiz-section" id="istatistik-arenasi">
     <div class="container">
         <div class="row justify-content-center mb-4">
             <div class="col-12 col-lg-8 text-center">
                 <h2 class="ax-section-title mb-2" style="font-size:1.5rem;">{% trans "Hangi testi kullanmalıyım?" %}</h2>
-                <p class="ax-section-subtitle">{% trans "Bir soru seç, AI Asistan hemen cevaplasın — ya da kendini Arena'da test et." %}</p>
+                <p class="ax-section-subtitle">{% if LANGUAGE_CODE == 'tr' %}{% trans "Bir soru seç, AI Asistan hemen cevaplasın — ya da kendini Arena'da test et." %}{% else %}{% trans "Bir soru seç, AI Asistan hemen cevaplasın." %}{% endif %}</p>
             </div>
         </div>
         <div class="row g-4 justify-content-center">
@@ -766,10 +771,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 </div>
                 <a href="#" class="ax-ai-chips-more" onclick="event.preventDefault(); event.stopPropagation(); window.axOpenAiWidget && axOpenAiWidget()">{% trans "Kendi sorunu sor →" %}</a>
             </div>
-            <div class="col-12 col-lg-6">
-            {% else %}
-            <div class="col-12 col-lg-8">
             {% endif %}
+            {% if LANGUAGE_CODE == 'tr' %}
+            <div class="col-12 {% if features.ai_assistant %}col-lg-6{% else %}col-lg-8{% endif %}">
                 <h3 class="ax-quiz-col-heading text-center text-lg-start">{% trans "ya da Arena'da kendini test et" %}</h3>
                 <div class="ax-quiz-card"
                      id="axQuizApp"
@@ -787,9 +791,11 @@ document.addEventListener('DOMContentLoaded', function () {
                     </div>
                 </div>
             </div>
+            {% endif %}
         </div>
     </div>
 </section>
+{% endif %}
 
 <!-- =====================================================
      FAZ 4: AI ÇAĞI BÖLÜMÜ (Doğrulama + Agentic)
@@ -1009,7 +1015,7 @@ document.addEventListener('DOMContentLoaded', function () {
 {% block extra_js %}
 
 {{ block.super }}
-<script src="{% static 'js/quiz.js' %}?v=0102" defer></script>
+{% if LANGUAGE_CODE == 'tr' %}<script src="{% static 'js/quiz.js' %}?v=0102" defer></script>{% endif %}
 <script src="{% static 'js/stats-carousel.js' %}?v=0101" defer></script>
 
 

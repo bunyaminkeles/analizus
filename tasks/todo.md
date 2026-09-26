@@ -75,7 +75,20 @@ maddelerde.
   **Canlıya çıkışta:** migration'lı deploy → önce DB yedeği.
 - [ ] **`create_badges` komutu EN/DE içermiyor** (26 Eylül 2026): boş DB'de komutla
   oluşan rozetler TR'ye düşer (0156 yalnız mevcut kayıtları doldurur).
-- [ ] **Quiz (İstatistik Arena) modülü tamamen tek dilli — KARAR BEKLİYOR** (26 Eylül 2026, ölçüldü):
+- [x] **Arena + ★ EN/DE'de gizlendi** (26 Eylül 2026, kullanıcı kararı: "EN/DE yayında; hedef
+  proje talebi, analist kazanımı değil → en kayıpsız yol"): `LANGUAGE_CODE == 'tr'` koşulu —
+  navbar ★ + Topluluk menüsü/mobil menü/footer Arena linki, anasayfa quiz sütunu + quiz.js
+  (AI Asistan sütunu kalır, alt başlık Arena'sız ayrı msgid), market "Arena'da puan kazan"
+  linki + oyunlaştırma bandı, profil "Hemen Çöz" butonu. Veri/puan hesabı DEĞİŞMEDİ
+  (EN/DE'de analiz puanı arka planda birikmeye devam eder). TR aynen. 3 dilde doğrulandı.
+- [ ] **EN/DE'yi proje talebine evriltme** (26 Eylül 2026, kullanıcı hedefi): EN/DE'de
+  hâlâ uzman/topluluk odaklı yüzeyler var (Topluluk menüsü → forum/çalışma odaları TR-only,
+  market uzman tanıtımı, puan/rütbe/rozet vurgusu profilde). EN/DE navigasyon ve anasayfa
+  akışının "proje talebi" etrafında yeniden düzenlenmesi — ayrı iş, önce öneri + onay.
+- [ ] **Kullanıcının yerel runserver'ında dil değiştirme çalışmıyor** (26 Eylül 2026): Docker
+  yerel + Render'da çalışıyor (CSRF'li testte TR→EN→DE→TR 302 doğru). Şüphe: yerel SQLite'ta
+  0156/0157 uygulanmamış → hedef sayfa 500. Kullanıcıdan runserver konsol çıktısı bekleniyor.
+- [x] (eski) **Quiz (İstatistik Arena) modülü tamamen tek dilli** (26 Eylül 2026, ölçüldü):
   435 soru (yerel; python 130, r 130, spss 125, statistics 50) yalnız TR DB metni;
   `static/js/quiz.js` 16 satır sabit TR (geri bildirim "Doğru! +10 puan kazandın.",
   "Yanlış. Doğru cevap:", "Yeni rozet:", yedek sorular); base.html eski quiz modalı
@@ -95,7 +108,7 @@ maddelerde.
   (`uni-*.de`, `tu-*.de`, `*.uni-*.de`), İngiliz (`.ac.uk`), Avusturya (`.ac.at`) vb.
   akademik adresleri tanımıyor → EN/DE akademisyen rozet/3 gün teklif hakkı alamaz.
   Alan adı listesi iş kararı (hangi ülkeler, sahte alan riski).
-- [ ] **EN/DE kullanıcı puan/yetki ekonomisi — KARAR BEKLİYOR** (26 Eylül 2026, ölçüldü):
+- [x] **EN/DE kullanıcı puan/yetki ekonomisi** — KARAR: EN/DE'de uzman kazanımı hedef değil; puan kuralları aynı, ★ EN/DE'de gizli (26 Eylül 2026). Ölçüm notu:
   Navbar ★ = `reputation`; kaynaklar: analiz tamamlama +5 (EN/DE çevrili), forum konu
   +5 / cevap +2 / beğeni +5 / en iyi cevap +20 (forum TR-only, i18n dışı), Arena doğru
   cevap +10 (EN/DE'de gizlenecek). Puana bağlı işlevler: rütbe (50/200/500/1000/2500/

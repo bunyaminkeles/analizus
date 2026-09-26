@@ -258,7 +258,7 @@
                             <i class="bi bi-chat-square-text-fill me-1" style="color:#818cf8;"></i> Forum
                         </a>
                         <a href="{% url 'studyroom_list' %}" class="site-nav__dropdown-item" role="menuitem">{% trans "Çalışma Odaları" %}</a>
-                        <a href="{% url 'home' %}#istatistik-arenasi" class="site-nav__dropdown-item" role="menuitem">{% trans "İstatistik Arena" %}</a>
+                        {% if LANGUAGE_CODE == 'tr' %}<a href="{% url 'home' %}#istatistik-arenasi" class="site-nav__dropdown-item" role="menuitem">{% trans "İstatistik Arena" %}</a>{% endif %}
                         {% if features.blog %}
                         <a href="{% url 'blog_list' %}" class="site-nav__dropdown-item" role="menuitem">Blog</a>
                         {% endif %}
@@ -357,9 +357,10 @@
                                 <circle cx="12" cy="7" r="4"/>
                             </svg>
                             <span>{{ user.username }}</span>
-                            <span class="site-nav__rep" title="{% trans "Puanını Arena'da artır" %}" role="link" tabindex="0"
+                            {% comment %}★ puanı yalnız TR: Arena EN/DE'de yok; EN/DE hedefi proje talebi (puan arka planda birikmeye devam eder){% endcomment %}
+                            {% if LANGUAGE_CODE == 'tr' %}<span class="site-nav__rep" title="{% trans "Puanını Arena'da artır" %}" role="link" tabindex="0"
                                   onclick="event.stopPropagation(); window.location.href='{% url 'home' %}#istatistik-arenasi';"
-                                  onkeydown="if(event.key==='Enter'){event.stopPropagation(); window.location.href='{% url 'home' %}#istatistik-arenasi';}">★ {{ user_profile.reputation }}</span>
+                                  onkeydown="if(event.key==='Enter'){event.stopPropagation(); window.location.href='{% url 'home' %}#istatistik-arenasi';}">★ {{ user_profile.reputation }}</span>{% endif %}
                         </button>
                         <div class="site-nav__dropdown site-nav__dropdown--end" id="dropdown-user" role="menu">
                             <a href="{% url 'profile_detail' username=user.username %}" class="site-nav__dropdown-item" role="menuitem">{% trans "Profilim" %}</a>
@@ -457,7 +458,7 @@
                 <div class="nav-drawer__accordion-body" id="mob-topluluk">
                     <a href="{% url 'forum_index' %}" class="nav-drawer__link">Forum</a>
                     <a href="{% url 'studyroom_list' %}" class="nav-drawer__link">{% trans "Çalışma Odaları" %}</a>
-                    <a href="{% url 'home' %}#istatistik-arenasi" class="nav-drawer__link">{% trans "İstatistik Arena" %}</a>
+                    {% if LANGUAGE_CODE == 'tr' %}<a href="{% url 'home' %}#istatistik-arenasi" class="nav-drawer__link">{% trans "İstatistik Arena" %}</a>{% endif %}
                     {% if features.blog %}<a href="{% url 'blog_list' %}" class="nav-drawer__link">Blog</a>{% endif %}
                 </div>
             </div>
