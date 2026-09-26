@@ -61,3 +61,11 @@ verdi ve compilemessages TÜM çevirileri derlemedi (sessiz değil ama kolay ka�
 `previous_msgctxt` üçünü birden None yap; compilemessages çıktısında "error"
 kontrolünü her seferinde yap.
 
+## "Bir sonraki maddeye kadar" ile blok değiştirme sessizce içerik siler (26 Eylül 2026)
+**Hata:** todo'da bir maddeyi güncellerken bloğun sonunu `s.index("- [ ]", a+5)`
+(bir sonraki AÇIK madde) ile belirledim; aradaki 5 tamamlanmış [x] madde ve
+"**B.**" başlığı da silindi, bir gün sonra fark edildi (69e8947).
+**Kural:** Blok sonunu "bir sonraki madde başlangıcı" (`\n- [` — açık VEYA kapalı)
+ya da açık bir bitiş işaretiyle belirle; değişiklikten sonra `git diff` ile
+silinen satır sayısını kontrol et — beklenenden fazlaysa commit etme.
+
