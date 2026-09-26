@@ -119,7 +119,7 @@
                     <li><a href="{% url 'about' %}"><i class="bi bi-info-circle"></i>{% trans "Hakkımızda" %}</a></li>
                     <li><a href="{% url 'contact' %}"><i class="bi bi-envelope"></i>{% trans "İletişim" %}</a></li>
                     {% if WHATSAPP_NUMBER %}
-                    <li><a href="https://wa.me/{{ WHATSAPP_NUMBER }}?text=Merhaba%2C%20proje%20hakk%C4%B1nda%20g%C3%B6r%C3%BC%C5%9Fmek%20istiyorum." target="_blank" rel="noopener noreferrer"><i class="bi bi-whatsapp"></i>{% trans "WhatsApp'tan Yaz" %}</a></li>
+                    <li><a href="https://wa.me/{{ WHATSAPP_NUMBER }}?text={% filter urlencode:"" %}{% trans "Merhaba, proje hakkında görüşmek istiyorum." %}{% endfilter %}" target="_blank" rel="noopener noreferrer"><i class="bi bi-whatsapp"></i>{% trans "WhatsApp'tan Yaz" %}</a></li>
                     {% endif %}
                     <li><a href="{% url 'gizlilik_politikasi' %}"><i class="bi bi-shield-check"></i>{% trans "KVKK / Gizlilik" %}</a></li>
                     {% if GOOGLE_ANALYTICS_ID %}

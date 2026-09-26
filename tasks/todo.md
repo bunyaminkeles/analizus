@@ -11,7 +11,7 @@ bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
 **A. Kod işleri (öncelik sırasıyla)**
-- [ ] **WhatsApp hazır mesajları Türkçe** (26 Eylül 2026, footer ekranında görüldü):
+- [x] **WhatsApp hazır mesajları Türkçe** — ÇEVRİLDİ (26 Eylül 2026): 6 şablon, `{% filter urlencode:"" %}{% trans %}`; TR mesajları aynen. Eski not:
   `wa.me/...?text=Merhaba%2C...` URL-kodlu sabit TR metin — footer, iletişim, proje
   talebi, eğitim, eğitim talebi, ilan verme sayfaları (6 yer). EN/DE'de mesaj
   kullanıcının dilinde olmalı (`{% trans %}` + `|urlencode`).

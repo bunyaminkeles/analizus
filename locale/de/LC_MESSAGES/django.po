@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-26 00:00+0300\n"
+"POT-Creation-Date: 2026-09-26 20:27+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -448,7 +448,7 @@ msgstr "Individuell"
 
 #: forum/models.py:1728 forum/templates/forum/egitim.html:103
 #: forum/templates/forum/egitim_talebi.html:75 templates/base.html:279
-#: templates/base.html:473 templates/partials/footer.html:98
+#: templates/base.html:473 templates/partials/footer.html:117
 msgid "Kurumsal"
 msgstr "Unternehmen"
 
@@ -1412,8 +1412,8 @@ msgstr ""
 
 #: forum/templates/forum/contact.html:4
 #: forum/templates/forum/gizlilik_politikasi.html:27 templates/base.html:288
-#: templates/base.html:480 templates/partials/footer.html:101
-#: templates/partials/footer.html:139
+#: templates/base.html:480 templates/partials/footer.html:120
+#: templates/partials/footer.html:158
 msgid "İletişim"
 msgstr "Kontakt"
 
@@ -1451,6 +1451,10 @@ msgstr ""
 #: forum/templates/forum/proje_talebi.html:152
 msgid "E-posta"
 msgstr "E-Mail"
+
+#: forum/templates/forum/contact.html:33
+msgid "Merhaba, Analizus hakkında bilgi almak istiyorum."
+msgstr "Hallo, ich möchte Informationen über Analizus erhalten."
 
 #: forum/templates/forum/contact.html:38
 msgid "Hızlı mesaj gönder"
@@ -1904,9 +1908,13 @@ msgstr ""
 msgid "Eğitim Talebi Oluştur"
 msgstr "Schulungsanfrage erstellen"
 
+#: forum/templates/forum/egitim.html:341
+msgid "Merhaba, eğitim hakkında görüşmek istiyorum."
+msgstr "Hallo, ich möchte über eine Schulung sprechen."
+
 #: forum/templates/forum/egitim.html:342
 #: forum/templates/forum/egitim_talebi.html:166
-#: templates/partials/footer.html:103
+#: templates/partials/footer.html:122
 msgid "WhatsApp'tan Yaz"
 msgstr "Über WhatsApp schreiben"
 
@@ -2097,6 +2105,10 @@ msgid "Form doldurmak yerine doğrudan konuşmayı tercih ediyorsanız:"
 msgstr ""
 "Wenn Sie lieber direkt sprechen möchten, statt das Formular auszufüllen:"
 
+#: forum/templates/forum/egitim_talebi.html:165
+msgid "Merhaba, eğitim talebi hakkında bilgi almak istiyorum."
+msgstr "Hallo, ich möchte Informationen zu einer Schulungsanfrage erhalten."
+
 #: forum/templates/forum/emails/support_payment_details.html:6
 #: forum/views.py:3383
 msgid "Analizus Bağış İşlemi"
@@ -2184,27 +2196,27 @@ msgid "Kazanacağınız Ayrıcalıklar"
 msgstr "Ihre Vorteile"
 
 #: forum/templates/forum/emails/support_payment_details.html:94
-#: templates/partials/footer.html:203
+#: templates/partials/footer.html:222
 msgid "Süresi içinde ilanlara teklif verebilme"
 msgstr "Während der Laufzeit Angebote auf Aufträge abgeben"
 
 #: forum/templates/forum/emails/support_payment_details.html:95
-#: templates/partials/footer.html:207
+#: templates/partials/footer.html:226
 msgid "Haftada <strong>3 ilan</strong> yayınlama hakkı"
 msgstr "Bis zu <strong>3 Aufträge</strong> pro Woche einstellen"
 
 #: forum/templates/forum/emails/support_payment_details.html:95
-#: templates/partials/footer.html:207
+#: templates/partials/footer.html:226
 msgid "Normal: 1"
 msgstr "Standard: 1"
 
 #: forum/templates/forum/emails/support_payment_details.html:96
-#: templates/partials/footer.html:211
+#: templates/partials/footer.html:230
 msgid "Profil üzerinde özel <strong>Destekçi Rozeti</strong>"
 msgstr "Ein besonderes <strong>Unterstützer-Abzeichen</strong> im Profil"
 
 #: forum/templates/forum/emails/support_payment_details.html:97
-#: templates/partials/footer.html:215
+#: templates/partials/footer.html:234
 msgid "<strong>Destekçiler listesinde</strong> yer alma"
 msgstr "Ein Platz in der <strong>Unterstützerliste</strong>"
 
@@ -2273,7 +2285,7 @@ msgstr ""
 
 #: forum/templates/forum/emails/verification_email.html:68
 #: forum/templates/forum/emails/welcome_email.html:129
-#: templates/partials/footer.html:136
+#: templates/partials/footer.html:155
 msgid "Araştırma ve Analiz Platformu"
 msgstr "Plattform für Forschung und Analyse"
 
@@ -3003,8 +3015,8 @@ msgstr "Registrieren &amp; teilen"
 
 #: forum/templates/forum/hangi_test.html:263 templates/base.html:542
 #: templates/base.html:563 templates/base.html:576 templates/base.html:585
-#: templates/base.html:832 templates/partials/footer.html:156
-#: templates/partials/footer.html:220
+#: templates/base.html:832 templates/partials/footer.html:175
+#: templates/partials/footer.html:239
 msgid "Kapat"
 msgstr "Schließen"
 
@@ -5317,6 +5329,10 @@ msgstr "Auftrag veröffentlichen"
 msgid "İlan oluştururken takıldınız mı?"
 msgstr "Probleme beim Erstellen eines Auftrags?"
 
+#: forum/templates/forum/market/post_job.html:61
+msgid "Merhaba, ilan oluşturma konusunda yardım istiyorum."
+msgstr "Hallo, ich brauche Hilfe beim Erstellen eines Auftrags."
+
 #: forum/templates/forum/market/post_job.html:62
 msgid "WhatsApp'tan sorun"
 msgstr "Fragen Sie per WhatsApp"
@@ -5534,6 +5550,10 @@ msgstr ""
 #: forum/templates/forum/proje_talebi.html:270
 msgid "Hızlı Görüşme"
 msgstr "Schnelles Gespräch"
+
+#: forum/templates/forum/proje_talebi.html:274
+msgid "Merhaba, proje talebi hakkında bilgi almak istiyorum."
+msgstr "Hallo, ich möchte Informationen zu einer Projektanfrage erhalten."
 
 #: forum/templates/forum/proje_talebi.html:278
 msgid "WhatsApp ile Yaz"
@@ -16679,7 +16699,7 @@ msgstr "Warten auf Ergebnisse..."
 #: openalex/templates/openalex/landing.html:360
 #: openalex/templates/openalex/landing.html:515
 #: openalex/templates/openalex/landing.html:562
-#: templates/partials/footer.html:260
+#: templates/partials/footer.html:279
 msgid "Hata:"
 msgstr "Fehler:"
 
@@ -16752,7 +16772,7 @@ msgid "Özet yok"
 msgstr "Kein Abstract"
 
 #: openalex/templates/openalex/landing.html:496
-#: templates/partials/footer.html:246
+#: templates/partials/footer.html:265
 msgid "Gönderiliyor..."
 msgstr "Wird gesendet..."
 
@@ -16955,7 +16975,7 @@ msgid "Oturum bilgisi kayboldu, lütfen sayfayı yenileyin."
 msgstr "Sitzungsdaten gingen verloren, bitte laden Sie die Seite neu."
 
 #: semanticscholar/templates/semanticscholar/landing.html:320
-#: templates/partials/footer.html:260
+#: templates/partials/footer.html:279
 msgid "E-posta gönderilemedi."
 msgstr "E-Mail konnte nicht gesendet werden."
 
@@ -17056,7 +17076,7 @@ msgid "AI Çözümler"
 msgstr "KI-Lösungen"
 
 #: templates/base.html:287 templates/base.html:479
-#: templates/partials/footer.html:100 templates/partials/footer.html:138
+#: templates/partials/footer.html:119 templates/partials/footer.html:157
 msgid "Hakkımızda"
 msgstr "Über uns"
 
@@ -17391,19 +17411,23 @@ msgstr "Analyse-Tools"
 msgid "Eğitimler"
 msgstr "Schulungen"
 
-#: templates/partials/footer.html:105
+#: templates/partials/footer.html:122
+msgid "Merhaba, proje hakkında görüşmek istiyorum."
+msgstr "Hallo, ich möchte über ein Projekt sprechen."
+
+#: templates/partials/footer.html:124
 msgid "KVKK / Gizlilik"
 msgstr "Datenschutz"
 
-#: templates/partials/footer.html:107
+#: templates/partials/footer.html:126
 msgid "Çerez ayarları"
 msgstr "Cookie-Einstellungen"
 
-#: templates/partials/footer.html:114
+#: templates/partials/footer.html:133
 msgid "Bize Destek Ol"
 msgstr "Unterstützen Sie uns"
 
-#: templates/partials/footer.html:116
+#: templates/partials/footer.html:135
 msgid ""
 "Analizus'u seviyorsan destekle — Destekçi rozeti, premium üyelik ve daha "
 "fazlası seni bekliyor."
@@ -17411,56 +17435,56 @@ msgstr ""
 "Wenn Ihnen Analizus gefällt, unterstützen Sie uns — Unterstützer-Abzeichen, "
 "Premium-Mitgliedschaft und mehr warten auf Sie."
 
-#: templates/partials/footer.html:119
+#: templates/partials/footer.html:138
 msgid "Destekçi Rozeti"
 msgstr "Unterstützer-Abzeichen"
 
-#: templates/partials/footer.html:120
+#: templates/partials/footer.html:139
 msgid "Premium Üyelik"
 msgstr "Premium-Mitgliedschaft"
 
-#: templates/partials/footer.html:121
+#: templates/partials/footer.html:140
 msgid "Destekçiler Listesi"
 msgstr "Unterstützerliste"
 
-#: templates/partials/footer.html:129 templates/partials/footer.html:154
+#: templates/partials/footer.html:148 templates/partials/footer.html:173
 msgid "Premium Üye Ol"
 msgstr "Premium-Mitglied werden"
 
-#: templates/partials/footer.html:136
+#: templates/partials/footer.html:155
 msgid "ziyaretçi"
 msgstr "Besucher"
 
-#: templates/partials/footer.html:159
+#: templates/partials/footer.html:178
 msgid "Premium üyelik ile tüm avantajlardan yararlan."
 msgstr "Nutzen Sie mit einer Premium-Mitgliedschaft alle Vorteile."
 
-#: templates/partials/footer.html:160
+#: templates/partials/footer.html:179
 msgid "Aynı zamanda platformumuzun gelişimine de katkıda bulunmuş olursunuz."
 msgstr "Gleichzeitig tragen Sie zur Weiterentwicklung unserer Plattform bei."
 
-#: templates/partials/footer.html:163
+#: templates/partials/footer.html:182
 msgid "Destek Paketini Seçiniz"
 msgstr "Wählen Sie Ihr Unterstützungspaket"
 
-#: templates/partials/footer.html:183
+#: templates/partials/footer.html:202
 #, python-format
 msgid "%(days)s gün"
 msgid_plural "%(days)s gün"
 msgstr[0] "%(days)s Tag"
 msgstr[1] "%(days)s Tage"
 
-#: templates/partials/footer.html:193
+#: templates/partials/footer.html:212
 msgid "Paketini seç"
 msgstr "Paket wählen"
 
-#: templates/partials/footer.html:194
+#: templates/partials/footer.html:213
 msgid "\"Ödeme Talimatlarını Al\" butonuna bas — IBAN bilgileri e-postana gelir"
 msgstr ""
 "Klicken Sie auf „Zahlungsanweisungen erhalten“ — die IBAN-Daten kommen per "
 "E-Mail"
 
-#: templates/partials/footer.html:195
+#: templates/partials/footer.html:214
 msgid ""
 "Havaleyi yap → Premium genellikle <strong>24 saat içinde</strong> aktif "
 "edilir"
@@ -17468,20 +17492,20 @@ msgstr ""
 "Überweisung tätigen → Premium wird in der Regel <strong>innerhalb von 24 "
 "Stunden</strong> aktiviert"
 
-#: templates/partials/footer.html:199
+#: templates/partials/footer.html:218
 msgid "Ne Kazanırsınız?"
 msgstr "Was erhalten Sie?"
 
-#: templates/partials/footer.html:222 templates/partials/footer.html:255
-#: templates/partials/footer.html:263
+#: templates/partials/footer.html:241 templates/partials/footer.html:274
+#: templates/partials/footer.html:282
 msgid "Ödeme Talimatlarını Al"
 msgstr "Zahlungsanweisungen erhalten"
 
-#: templates/partials/footer.html:242
+#: templates/partials/footer.html:261
 msgid "Lütfen bir destek paketini seçiniz."
 msgstr "Bitte wählen Sie ein Unterstützungspaket."
 
-#: templates/partials/footer.html:257
+#: templates/partials/footer.html:276
 msgid ""
 "IBAN bilgileri e-postanıza gönderildi! Havale sonrası Premium üyeliğiniz 24 "
 "saat içinde aktif edilecektir."

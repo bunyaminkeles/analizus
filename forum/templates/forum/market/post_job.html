@@ -58,7 +58,7 @@
                     {% if WHATSAPP_NUMBER %}
                     <p class="text-white-50 text-center mt-3 mb-0" style="font-size:.8rem;">
                         {% trans "İlan oluştururken takıldınız mı?" %}
-                        <a href="https://wa.me/{{ WHATSAPP_NUMBER }}?text=Merhaba%2C%20ilan%20olu%C5%9Fturma%20konusunda%20yard%C4%B1m%20istiyorum." target="_blank" rel="noopener noreferrer" class="text-info">
+                        <a href="https://wa.me/{{ WHATSAPP_NUMBER }}?text={% filter urlencode:"" %}{% trans "Merhaba, ilan oluşturma konusunda yardım istiyorum." %}{% endfilter %}" target="_blank" rel="noopener noreferrer" class="text-info">
                             <i class="bi bi-whatsapp me-1"></i>{% trans "WhatsApp'tan sorun" %}
                         </a>
                     </p>

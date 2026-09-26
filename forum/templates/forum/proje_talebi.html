@@ -271,7 +271,7 @@
         </h3>
         <p class="text-white-50 small mb-3">{% trans "Form doldurmak yerine doğrudan konuşmayı tercih ediyorsanız:" %}</p>
         {% if WHATSAPP_NUMBER %}
-        <a href="https://wa.me/{{ WHATSAPP_NUMBER }}?text=Merhaba%2C%20proje%20talebi%20hakk%C4%B1nda%20bilgi%20almak%20istiyorum."
+        <a href="https://wa.me/{{ WHATSAPP_NUMBER }}?text={% filter urlencode:"" %}{% trans "Merhaba, proje talebi hakkında bilgi almak istiyorum." %}{% endfilter %}"
            target="_blank" rel="noopener noreferrer"
            class="ax-btn ax-btn--sm fw-semibold"
            style="background:#25d366;color:#fff;border:none;display:inline-flex;align-items:center;gap:8px;padding:8px 18px;border-radius:8px;">
