@@ -95,7 +95,7 @@ maddelerde.
   koşulları kaldırılır. İlgili: `BASE_PubMed_Integration_Project.md` (ayrı oturum).
 - [ ] **D grubu hesap sayfaları tek dilli** (26 Eylül 2026): gelen kutusu, ödemelerim,
   arkadaşını davet et — EN/DE kullanıcısını TR arayüze götürüyor; şimdilik kalsın (kullanıcı).
-- [ ] **YouTube Transcript tamamen kaldırılacak — AŞAMA 2 ONAY BEKLİYOR** (26 Eylül 2026,
+- [ ] **YouTube Transcript tamamen kaldırılacak — AŞAMA 2 ERTELENDİ (kullanıcı: "todo'ya al", 26 Eylül 2026); bir sonraki merge'den önce ayrı iş olarak** (26 Eylül 2026,
   kullanıcı: "TR'de de ihtiyaç değil"): Aşama 1 YAPILDI — navbar bağlantısı kaldırıldı.
   Aşama 2 (kod+DB): `transcript/` app (3 migration, TranscriptJob/TranscriptSettings),
   INSTALLED_APPS, urls.py, `analizdestek/job_queue.py`, hesap silme listesi
