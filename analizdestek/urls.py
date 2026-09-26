@@ -9,7 +9,7 @@ from django.views.generic import RedirectView
 from django.conf import settings
 from django.conf.urls.static import static
 from forum.sitemaps import StaticViewSitemap, StaticI18nSitemap, TopicSitemap, CategorySitemap, JobSitemap, BlogPostSitemap, IstatistikSitemap, ToolsSitemap, ToolsI18nSitemap, StudyRoomSitemap, TrainingSitemap
-from forum.views import custom_login, tarama_hub
+from forum.views import custom_login, tarama_hub, set_language
 
 sitemaps = {
     'static': StaticViewSitemap,
@@ -60,6 +60,9 @@ urlpatterns = i18n_patterns(
     # seçilmiyor, en seçilebiliyor"). i18n_patterns içine alınca istek
     # /en/i18n/setlang/ gibi kendi prefix'ini taşır, aktif dil doğru kalır,
     # translate_url doğru çözer.
+    # Karşılığı olmayan (TR-only) sayfadan EN/DE seçilince o dilin ana sayfasına git
+    # (forum.views.set_language). Django'nun include'undan ÖNCE — istek bunu yakalar.
+    path('i18n/setlang/', set_language, name='set_language'),
     path('i18n/', include('django.conf.urls.i18n')),
 
     # Şifre sıfırlama — özel template'ler. i18n_patterns İÇİNDE: EN/DE giriş

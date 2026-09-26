@@ -4061,6 +4061,27 @@ def onboarding(request):
     })
 
 
+def set_language(request):
+    """Django set_language + karşılığı olmayan sayfa düzeltmesi.
+
+    TR-only (i18n_patterns dışı) bir sayfadan (/tarama/, /forum/, /blog/…) EN/DE
+    seçilince Django `translate_url` karşılık bulamaz, `next`'i olduğu gibi döner:
+    kullanıcı aynı Türkçe sayfaya geri gelir, "sayfa sadece yenileniyor" görünür
+    (26 Eylül 2026, kullanıcı raporu). Bu durumda seçilen dilin ana sayfasına git.
+    """
+    from django.utils import translation
+    from django.views.i18n import set_language as django_set_language
+
+    response = django_set_language(request)
+    lang = request.POST.get('language')
+    if (response.status_code == 302 and lang and lang != settings.LANGUAGE_CODE
+            and lang in dict(settings.LANGUAGES)
+            and not response['Location'].startswith(f'/{lang}/')):
+        with translation.override(lang):
+            response['Location'] = reverse('home')
+    return response
+
+
 def tarama_hub(request):
     tools = [
         {

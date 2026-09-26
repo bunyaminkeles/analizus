@@ -88,6 +88,10 @@ maddelerde.
   Topluluk menüsü (masaüstü+mobil) ve footer Topluluk sütunu EN/DE'de tamamen yok.
   C (bibliometrik, Tableau, Akademik Tarama/OpenAlex) EN/DE'de GEÇİCİ gizli. D (gelen
   kutusu, ödemelerim, davet) kaldı. Sonuç: EN/DE'de öneksiz hedef yalnız D (ölçüldü).
+- [x] **TR-only sayfadan dil değiştirme "sadece yenileniyordu"** — DÜZELTİLDİ (26 Eylül 2026,
+  kullanıcı raporu: /tarama/'da TR→EN): Django `set_language` karşılık bulamayınca `next`'i
+  aynen döndürüyordu (tarama, forum, blog, YÖK Tez, odalar… hepsi). `forum.views.set_language`
+  sarmalayıcı: seçilen dilde karşılık yoksa o dilin ana sayfasına (/en/, /de/). 10 senaryo test.
 - [ ] **C grubu sayfaların EN/DE çevirisi** (26 Eylül 2026, kullanıcı: "sonraki projede
   lazım olacak, bibliometrik analizler gibi"): Bibliometrik Analiz, Tableau Analizleri,
   Akademik Tarama (/tarama/, OpenAlex, Semantic Scholar). DÜZELTME (26 Eylül 2026, ölçüldü):
