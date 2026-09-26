@@ -759,14 +759,12 @@
         </div>
 
     {% if is_owner %}
-    <div class="mt-4 p-3 rounded-3" style="border:1px solid rgba(239,68,68,0.25); background:rgba(239,68,68,0.04);">
-        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
-            <div>
-                <p class="mb-0 fw-semibold" style="color:#f87171; font-size:.85rem;"><i class="bi bi-exclamation-triangle me-1"></i>{% trans "Hesabı Sil" %}</p>
-                <small style="color:var(--ax-text-muted);">{% trans "Hesabınızı ve kişisel verilerinizi kalıcı olarak silebilirsiniz." %}</small>
-            </div>
-            <a href="{% url 'account_delete_request' %}" class="btn btn-sm btn-outline-danger rounded-pill px-3">{% trans "Hesabımı Sil" %}</a>
+    <div class="ax-profile-danger-zone">
+        <div class="ax-profile-danger-zone__text">
+            <p class="ax-profile-danger-zone__title"><i class="bi bi-exclamation-triangle" aria-hidden="true"></i>{% trans "Hesabı Sil" %}</p>
+            <small class="ax-profile-danger-zone__desc">{% trans "Hesabınızı ve kişisel verilerinizi kalıcı olarak silebilirsiniz." %}</small>
         </div>
+        <a href="{% url 'account_delete_request' %}" class="ax-btn ax-btn--sm ax-profile-danger-zone__btn">{% trans "Hesabımı Sil" %}</a>
     </div>
     {% endif %}
     </div><!-- /col-lg-8 -->

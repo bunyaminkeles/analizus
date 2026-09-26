@@ -1176,3 +1176,56 @@ a.ax-profile-portfolio-card--link:hover {
         grid-template-columns: 1fr;
     }
 }
+
+/* =============================================================
+   HESABI SİL (yalnız profil sahibi) — mobilde alt alta,
+   ≥576px'te yan yana
+   ============================================================= */
+.ax-profile-danger-zone {
+    margin-top: var(--ax-space-6);
+    padding: var(--ax-space-4);
+    border: 1px solid color-mix(in srgb, var(--ax-accent-danger) 25%, transparent);
+    border-radius: var(--ax-radius-lg);
+    background: color-mix(in srgb, var(--ax-accent-danger) 4%, transparent);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--ax-space-3);
+}
+
+.ax-profile-danger-zone__title {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--ax-space-1);
+    color: var(--ax-accent-danger);
+    font-size: var(--ax-text-sm);
+    font-weight: var(--ax-font-semibold);
+}
+
+.ax-profile-danger-zone__desc {
+    color: var(--ax-text-muted);
+    font-size: var(--ax-text-xs);
+}
+
+.ax-profile-danger-zone__btn {
+    background-color: transparent;
+    color: var(--ax-accent-danger);
+    border-color: var(--ax-accent-danger);
+    border-radius: var(--ax-radius-full);
+}
+.ax-profile-danger-zone__btn:hover {
+    background-color: var(--ax-accent-danger);
+    color: var(--ax-text-primary);
+}
+
+@media (min-width: 576px) {
+    .ax-profile-danger-zone {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .ax-profile-danger-zone__btn {
+        flex-shrink: 0;
+    }
+}

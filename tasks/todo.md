@@ -158,7 +158,16 @@ maddelerde.
   gibi bir ad seçen kullanıcının kendi sayfasında çalışır. Yeni kategoriler artık
   admin onayına düştüğü için risk düşük; yine de `textContent` + `append` ile
   düzeltilmeli (küçük iş). Canlıdaki 43 kategoride HTML karakteri yok (ölçüldü).
-- [ ] **Profil şablonları ax- sistemine aykırı** (26 Eylül 2026, önceden var):
+- [x] **Profil detay "Hesabı Sil" bloğu ax- sistemine taşındı** (26 Eylül 2026): Bootstrap
+  util + `btn-outline-danger` + hardcode rgba → `profiles.css` `.ax-profile-danger-zone`
+  (token'lı, mobilde alt alta / ≥576px yan yana); 375px ve 900px ekran görüntüsüyle doğrulandı.
+- [ ] **Profil düzenleme sayfası ax- sistemine taşınacak** (26 Eylül 2026, sıradaki): tamamı
+  Bootstrap (card, form-control, nav-tabs, form-switch) + `data-bs-toggle` sekmeler +
+  hardcode renkler; önce taslak ekran görüntüsü → kullanıcı onayı.
+- [ ] **Yerel SQLite'ta 0156/0157 uygulanmadı** (26 Eylül 2026): kullanıcının yerel
+  runserver'ı (`db.sqlite3`) `no such column: forum_badge.name_en` ile 500 verdi —
+  `python manage.py migrate forum` gerekli (0157 temizliği yerel kopyaya da uygulanır).
+- [ ] (eski not) **Profil şablonları ax- sistemine aykırı** (26 Eylül 2026, önceden var):
   `profile_edit.html` Bootstrap `card`/`btn`/`nav-tabs` + `data-bs-toggle`,
   hardcode renkler; `profile_detail.html` "Hesabımı Sil" `btn btn-outline-danger`.
 - [ ] **Takip API hata metni tek dilli** (düşük öncelik): `api_views.toggle_follow_user`
