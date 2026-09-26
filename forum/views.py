@@ -525,7 +525,7 @@ def post_job(request):
     else:
         form = JobPostForm()
     from .models import JobCategory
-    job_categories = JobCategory.objects.filter(is_active=True).values_list('title', flat=True)
+    job_categories = [c.localized_title for c in JobCategory.objects.filter(is_active=True)]
     return render(request, 'forum/market/post_job.html', {
         'form': form,
         'job_categories': job_categories,
@@ -617,7 +617,7 @@ def edit_job(request, pk):
         form = JobPostForm(instance=job)
 
     from .models import JobCategory
-    job_categories = JobCategory.objects.filter(is_active=True).values_list('title', flat=True)
+    job_categories = [c.localized_title for c in JobCategory.objects.filter(is_active=True)]
     return render(request, 'forum/market/edit_job.html', {'form': form, 'job': job, 'job_categories': job_categories})
 
 

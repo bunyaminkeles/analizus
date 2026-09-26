@@ -89,7 +89,28 @@ maddelerde.
   TEKLİF VEREBİLİR"…) EN/DE profilde TR. Strateji kararı gerekli: slug→çeviri
   sözlüğü (kod) mi, DB'de dil alanları (migration) mı. `can_propose()` rozet
   adını gerekçe olarak döndürüyor — o da etkilenir.
-- [ ] **Yetenek (JobCategory) başlıkları** (26 Eylül 2026): profil düzenleme
+- [x] **Yetenek (JobCategory) başlıkları** — YAPILDI (26 Eylül 2026, kullanıcı kararları:
+  DB dil alanları + yeni kategori admin onayına + onaylı temizlik tablosu).
+  **Migration 0157**: `title_en/_de` + veri adımı — 6 birleştirme (37,41,42→3;
+  39→25; 35→23; 34→6; ilan FK + uzman yetenekleri taşınır, çift bağ oluşmaz),
+  6 ad düzeltme, 5 pasife alma (C++, Java, Javascript, SEO, Web tasarımı),
+  32 aktif kaydın EN/DE çevirisi. Her adım id+başlık eşleşirse çalışır;
+  idempotent; geri alma veri için no-op → **deploy öncesi DB yedeği şart**.
+  Canlı kopyasıyla (43 kayıt + yabancı kayıt) test edildi: 43→37, aktif 32.
+  `JobPostForm`: yazılan metin TR/EN/DE başlıkla (iexact) eşleşir; yoksa
+  `is_active=False` oluşur. Gösterim: profil, düzenleme, uzman dizini,
+  expert showcase, market liste/detay, ilan datalist'i.
+- [ ] **Kategori eşleşmesinde Türkçe İ/i** (26 Eylül 2026): `title__iexact`
+  PostgreSQL'de "YENİ" ile "yeni"yi eşleştirmiyor → ayrı pasif kayıt açılır
+  (admin onayına düştüğü için etkisi düşük). Gerekirse Python tarafında
+  `casefold` + TR i/İ normalizasyonu.
+- [ ] **Yeni pasif kategoriler için admin bildirimi yok** (26 Eylül 2026): ilan
+  formundan açılan kategori admin'de yalnız "Aktif" filtresiyle görülür.
+- [ ] **Kategori sıralaması TR başlığa göre** (26 Eylül 2026): EN/DE listelerde
+  `order_by('order','title')` Türkçe başlığa göre sıralar; `order` alanı hepsi 0.
+- [ ] **İlan e-postasındaki kategori TR** (26 Eylül 2026): `views.py` ~2191
+  `job.category.title` / varsayılan 'Veri Analizi'.
+- [ ] **Yetenek (JobCategory) başlıkları** — eski not (26 Eylül 2026): profil düzenleme
   chip'leri ve profil etiketleri DB `JobCategory.title` — EN/DE'de TR olup
   olmadığı kontrol edilecek (market ile ortak).
   **ÖLÇÜM (26 Eylül 2026):** Evet, tek dilli. Kritik bulgu: kategoriler kullanıcı
@@ -100,7 +121,17 @@ maddelerde.
   uzman dizini, `_expert_showcase`, `_studyroom_founder_card`, market liste/detay,
   post_job/edit_job datalist, ilan e-postası (views ~2191, varsayılan 'Veri Analizi' TR).
   Yerel DB'de 0 kayıt → canlı liste ölçülmeden çeviri verisi yazılamaz.
-  Bekleyen: (1) canlıdaki kategori listesi (sunucu komutu kullanıcıda),
+  **Canlı liste ölçüldü (26 Eylül 2026): 43 kayıt, hepsi aktif, `order` hepsi 0.**
+  - id 2–33 (32 kayıt) seed/küratörlü görünüyor; id 34–44 (11) ilan formundan
+    kullanıcı girişiyle oluşmuş: "SPSS ve içerik analizi", "Maxquda ile 27 kişiye
+    ait verinin çalışılması" (ilan başlığı kategori olmuş), "Nitel Veri Analizi",
+    "Yapay zeka modelleme", "Veri etiketleme", "Python", "Python eğitimi",
+    "Ai modelleme", "Yapay Zeka & ML, Python, Otomasyon", "Makale Desteği",
+    "Tez danışmanlığı".
+  - Yinelenenler: yapay zeka (3, 37, 41, 42), Python (39, 40, 25), nitel (36, 22, 23).
+  - Yazım: "MAXQUDA"→MAXQDA (23, 35), "modlellemesi" (5), "Geçerlik" (29).
+  - 11 kaydın hiç ilanı/uzmanı yok (C++, Java, Javascript, SEO, Web tasarımı…).
+  Bekleyen: (1) ~~canlıdaki kategori listesi~~ ölçüldü,
   (2) karar: rozetlerdeki gibi `title_en/_de` + migration mı; kullanıcı kaynaklı
   kategoriler ne olacak (admin onayı / serbest metin kalır).
 - [ ] **Profil düzenleme: geçersiz telefonda çift mesaj** (26 Eylül 2026, önceden

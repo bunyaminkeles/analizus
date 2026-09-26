@@ -33,7 +33,7 @@
         <select name="cat" class="form-select form-select-sm bg-dark text-white border-secondary" onchange="this.form.submit()">
           <option value="">— Tüm uzmanlık alanları —</option>
           {% for cat in job_categories %}
-          <option value="{{ cat.id }}" {% if cat.id|stringformat:"s" == selected_cat %}selected{% endif %}>{{ cat.title }}</option>
+          <option value="{{ cat.id }}" {% if cat.id|stringformat:"s" == selected_cat %}selected{% endif %}>{{ cat.localized_title }}</option>
           {% endfor %}
         </select>
       </div>
@@ -151,7 +151,7 @@
             {% for skill in profile.skills.all|slice:":5" %}
             <a href="?cat={{ skill.id }}" class="badge text-decoration-none"
                style="background:rgba(99,102,241,0.12);color:#a5b4fc;border:1px solid rgba(99,102,241,0.3);font-size:.68rem;font-weight:400;">
-              {{ skill.title }}
+              {{ skill.localized_title }}
             </a>
             {% endfor %}
             {% if profile.skills.all|length > 5 %}

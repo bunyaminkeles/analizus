@@ -20,7 +20,7 @@
     {% if expert.skills.all %}
     <div class="ax-expert-skills">
         {% for skill in expert.skills.all|slice:":5" %}
-        <span class="ax-badge ax-badge--primary">{{ skill.title }}</span>
+        <span class="ax-badge ax-badge--primary">{{ skill.localized_title }}</span>
         {% endfor %}
     </div>
     {% endif %}

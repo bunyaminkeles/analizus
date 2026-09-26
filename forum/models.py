@@ -836,7 +836,11 @@ class SuccessStory(models.Model):
 
 class JobCategory(models.Model):
     title = models.CharField(max_length=100, verbose_name="Kategori Adı")
+    title_en = models.CharField(max_length=100, blank=True, default="", verbose_name="Kategori Adı (EN)")
+    title_de = models.CharField(max_length=100, blank=True, default="", verbose_name="Kategori Adı (DE)")
     order = models.IntegerField(default=0, verbose_name="Sıralama")
+    # İlan formunda yazılan yeni kategori pasif oluşur; admin açana kadar
+    # yetenek listesine / önerilere girmez (JobPostForm.save)
     is_active = models.BooleanField(default=True, verbose_name="Aktif")
 
     class Meta:
@@ -845,6 +849,16 @@ class JobCategory(models.Model):
         ordering = ['order', 'title']
 
     def __str__(self):
+        return self.title
+
+    @property
+    def localized_title(self):
+        """Etkin dile göre başlık; çeviri boşsa Türkçe asıl alana düşer."""
+        lang = (get_language() or 'tr')[:2]
+        if lang != 'tr':
+            value = getattr(self, f'title_{lang}', '')
+            if value:
+                return value
         return self.title
 
 

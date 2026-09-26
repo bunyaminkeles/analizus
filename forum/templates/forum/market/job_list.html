@@ -97,7 +97,7 @@
     <div class="ax-market-chips mb-3">
         <a href="?{% if current_sort != 'newest' %}sort={{ current_sort }}{% endif %}" class="ax-market-chip ax-tag--category{% if not selected_category %} ax-market-chip--active{% endif %}">{% trans "Tümü" %}</a>
         {% for cat in market_categories %}
-        <a href="?category={{ cat.id }}{% if current_sort != 'newest' %}&sort={{ current_sort }}{% endif %}" class="ax-market-chip ax-tag--category{% if selected_category == cat.id %} ax-market-chip--active{% endif %}">{{ cat.title }}</a>
+        <a href="?category={{ cat.id }}{% if current_sort != 'newest' %}&sort={{ current_sort }}{% endif %}" class="ax-market-chip ax-tag--category{% if selected_category == cat.id %} ax-market-chip--active{% endif %}">{{ cat.localized_title }}</a>
         {% endfor %}
     </div>
     {% endif %}
@@ -133,7 +133,7 @@
                 <div class="card-body p-4 d-flex flex-column">
                     <div class="d-flex justify-content-between align-items-start mb-3">
                         <span class="badge ax-tag--category">
-                            {{ job.category.title|truncatechars:28 }}
+                            {{ job.category.localized_title|truncatechars:28 }}
                         </span>
                         <div class="text-end flex-shrink-0">
                             <small class="text-muted d-block">{% blocktrans with time=job.created_at|timesince %}{{ time }} önce{% endblocktrans %}</small>
@@ -205,7 +205,7 @@
                     <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
                         {% if job.category %}
                         <span class="badge ax-tag--category" style="font-size:0.65rem;">
-                            {{ job.category.title }}
+                            {{ job.category.localized_title }}
                         </span>
                         {% endif %}
                         <span class="text-muted" style="font-size:0.7rem;">{% blocktrans with time=job.updated_at|timesince %}{{ time }} önce{% endblocktrans %}</span>

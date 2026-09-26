@@ -143,11 +143,11 @@
                                 <div id="skill-chips" class="d-flex flex-wrap gap-2">
                                     {% for skill in all_skills %}
                                     <label class="skill-chip {% if skill in profile.skills.all %}selected{% endif %}"
-                                           data-name="{{ skill.title|lower }}">
+                                           data-name="{{ skill.localized_title|lower }}">
                                         <input type="checkbox" name="skills" value="{{ skill.id }}"
                                                {% if skill in profile.skills.all %}checked{% endif %}
                                                style="display:none;">
-                                        {{ skill.title }}
+                                        {{ skill.localized_title }}
                                     </label>
                                     {% endfor %}
                                 </div>
