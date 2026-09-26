@@ -85,7 +85,9 @@ maddelerde.
   hâlâ uzman/topluluk odaklı yüzeyler var (Topluluk menüsü → forum/çalışma odaları TR-only,
   market uzman tanıtımı, puan/rütbe/rozet vurgusu profilde). EN/DE navigasyon ve anasayfa
   akışının "proje talebi" etrafında yeniden düzenlenmesi — ayrı iş, önce öneri + onay.
-- [ ] **Kullanıcının yerel runserver'ında dil değiştirme çalışmıyor** (26 Eylül 2026): Docker
+- [x] **Yerel runserver'da dil değiştirme** — ÇÖZÜLDÜ (26 Eylül 2026): kod sorunu değildi;
+  kullanıcının runserver'ına doğrudan POST → 302 /en/ + `django_language` çerezi doğru.
+  Sunucu yeniden başlatma + tarayıcı yenilemesiyle düzeldi (önbellek). Eski not: Docker
   yerel + Render'da çalışıyor (CSRF'li testte TR→EN→DE→TR 302 doğru). Şüphe: yerel SQLite'ta
   0156/0157 uygulanmamış → hedef sayfa 500. Kullanıcıdan runserver konsol çıktısı bekleniyor.
 - [x] (eski) **Quiz (İstatistik Arena) modülü tamamen tek dilli** (26 Eylül 2026, ölçüldü):
