@@ -13,7 +13,7 @@ from django.db import models
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Count, Sum, Q, Avg, Subquery, OuterRef, Max, Exists
 from django.contrib import messages
-from django.utils.translation import gettext
+from django.utils.translation import gettext, pgettext
 from django.utils import timezone, translation
 from django.utils.html import strip_tags
 from django.http import JsonResponse
@@ -2488,7 +2488,7 @@ def user_search_api(request):
     data = []
     for u in users:
         avatar_url = ''
-        rank = 'Üye'
+        rank = pgettext('rütbe', 'Üye')
         if hasattr(u, 'profile'):
             if u.profile.avatar:
                 avatar_url = u.profile.avatar.url

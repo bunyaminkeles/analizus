@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-26 20:34+0300\n"
+"POT-Creation-Date: 2026-09-26 20:40+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -258,6 +258,48 @@ msgstr "Cover Letter"
 #: forum/middleware.py:199
 msgid "Bu özelliği kullanmak için e-posta adresinizi doğrulamanız gerekiyor."
 msgstr "You need to verify your email address to use this feature."
+
+#: forum/models.py:157 forum/templatetags/forum_extras.py:13
+#: forum/templatetags/forum_extras.py:34 forum/templatetags/forum_extras.py:48
+msgctxt "rütbe"
+msgid "Çaylak"
+msgstr "Newcomer"
+
+#: forum/models.py:158 forum/templatetags/forum_extras.py:14
+#: forum/views.py:2491
+msgctxt "rütbe"
+msgid "Üye"
+msgstr "Member"
+
+#: forum/models.py:159 forum/templatetags/forum_extras.py:15
+msgctxt "rütbe"
+msgid "Aktif Üye"
+msgstr "Active Member"
+
+#: forum/models.py:160 forum/templatetags/forum_extras.py:16
+msgctxt "rütbe"
+msgid "Katkıcı"
+msgstr "Contributor"
+
+#: forum/models.py:161 forum/templatetags/forum_extras.py:17
+msgctxt "rütbe"
+msgid "Uzman"
+msgstr "Expert"
+
+#: forum/models.py:162 forum/templatetags/forum_extras.py:18
+msgctxt "rütbe"
+msgid "Usta"
+msgstr "Master"
+
+#: forum/models.py:163 forum/templatetags/forum_extras.py:19
+msgctxt "rütbe"
+msgid "Efsane"
+msgstr "Legend"
+
+#: forum/models.py:164 forum/templatetags/forum_extras.py:20
+msgctxt "rütbe"
+msgid "Yönetici"
+msgstr "Administrator"
 
 #: forum/models.py:240 forum/templates/forum/home.html:258
 msgid "Öğrenci"
@@ -6173,6 +6215,11 @@ msgstr "Don't have an account?"
 #: forum/templates/registration/login.html:295
 msgid "Hemen Kayıt Ol"
 msgstr "Sign Up Now"
+
+#: forum/templatetags/forum_extras.py:31 forum/templatetags/forum_extras.py:45
+msgctxt "rütbe"
+msgid "Ziyaretçi"
+msgstr "Visitor"
 
 #: forum/training_catalog.py:17
 msgid "Ofis & Veri"

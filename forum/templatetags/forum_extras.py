@@ -1,21 +1,23 @@
 from django import template
 from django.utils.safestring import mark_safe
 from django.utils.html import escape
+from django.utils.translation import pgettext, pgettext_lazy
 from forum.mention_utils import render_mentions_html
 
 register = template.Library()
 
 
 # Rütbe bilgileri: (rütbe_key): (isim, renk, ikon, css_class)
+# İsimler Profile.RANK_CHOICES ile aynı msgid — tek çeviri
 RANK_INFO = {
-    'newbie': ('Çaylak', '#94a3b8', '🌱', 'secondary'),
-    'member': ('Üye', '#64748b', '👤', 'secondary'),
-    'active': ('Aktif Üye', '#3b82f6', '⚡', 'info'),
-    'contributor': ('Katkıcı', '#8b5cf6', '✍️', 'primary'),
-    'expert': ('Uzman', '#f59e0b', '🎯', 'warning'),
-    'master': ('Usta', '#ef4444', '👑', 'danger'),
-    'legend': ('Efsane', '#eab308', '🏆', 'warning'),
-    'admin': ('Yönetici', '#dc2626', '🛡️', 'danger'),
+    'newbie': (pgettext_lazy('rütbe', 'Çaylak'), '#94a3b8', '🌱', 'secondary'),
+    'member': (pgettext_lazy('rütbe', 'Üye'), '#64748b', '👤', 'secondary'),
+    'active': (pgettext_lazy('rütbe', 'Aktif Üye'), '#3b82f6', '⚡', 'info'),
+    'contributor': (pgettext_lazy('rütbe', 'Katkıcı'), '#8b5cf6', '✍️', 'primary'),
+    'expert': (pgettext_lazy('rütbe', 'Uzman'), '#f59e0b', '🎯', 'warning'),
+    'master': (pgettext_lazy('rütbe', 'Usta'), '#ef4444', '👑', 'danger'),
+    'legend': (pgettext_lazy('rütbe', 'Efsane'), '#eab308', '🏆', 'warning'),
+    'admin': (pgettext_lazy('rütbe', 'Yönetici'), '#dc2626', '🛡️', 'danger'),
 }
 
 
@@ -26,10 +28,10 @@ def get_user_rank(user):
     Döndüreceği format: (Rütbe Adı, CSS Class'ı, İkon)
     """
     if not user.is_authenticated:
-        return "Ziyaretçi", "secondary", "bi-person"
+        return pgettext('rütbe', 'Ziyaretçi'), "secondary", "bi-person"
 
     if not hasattr(user, 'profile'):
-        return "Çaylak", "secondary", "🌱"
+        return pgettext('rütbe', 'Çaylak'), "secondary", "🌱"
 
     rank = user.profile.rank
     info = RANK_INFO.get(rank, RANK_INFO['newbie'])
@@ -40,16 +42,16 @@ def get_user_rank(user):
 def get_rank_badge(user):
     """Kullanıcının rütbe badge'ini HTML olarak döndürür"""
     if not user.is_authenticated:
-        return mark_safe('<span class="badge bg-secondary">Ziyaretçi</span>')
+        return mark_safe('<span class="badge bg-secondary">%s</span>' % escape(pgettext('rütbe', 'Ziyaretçi')))
 
     if not hasattr(user, 'profile'):
-        return mark_safe('<span class="badge bg-secondary">🌱 Çaylak</span>')
+        return mark_safe('<span class="badge bg-secondary">🌱 %s</span>' % escape(pgettext('rütbe', 'Çaylak')))
 
     rank = user.profile.rank
     info = RANK_INFO.get(rank, RANK_INFO['newbie'])
     name, color, icon, css = info
 
-    return mark_safe(f'<span class="badge" style="background-color: {color};">{icon} {name}</span>')
+    return mark_safe(f'<span class="badge" style="background-color: {color};">{icon} {escape(name)}</span>')
 
 
 @register.filter

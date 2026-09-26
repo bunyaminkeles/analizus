@@ -58,7 +58,11 @@ maddelerde.
   `_normalize_tr_phone` 05…/5…/+90/90/0090 kabul eder, `05XXXXXXXXX` saklar;
   yurt dışı numara hâlâ reddedilir. 116 msgid EN/DE. Eski not: profil/profil düzenleme (ve "Hesabımı Sil"
   butonu) i18n dışında — EN/DE kullanıcı silme sayfasına TR olarak ulaşır.
-- [ ] **Rütbe adları tek dilli** (26 Eylül 2026, profilde görüldü): `forum/templatetags/forum_extras.py`
+- [x] **Rütbe adları tek dilli** — ÇEVRİLDİ (26 Eylül 2026): `pgettext('rütbe', …)` bağlamı
+  ("Üye"/"Aktif Üye" başka yerde çoğul çevrili olduğu için); RANK_CHOICES + RANK_INFO +
+  "Ziyaretçi"; migration ÇIKMADI (makemigrations "No changes"). Kullanıcının kendi
+  yazdığı Ünvan (`profile.title`, ör. "Platform Yöneticisi") kullanıcı içeriği — çevrilmez.
+  Çalışma odası kartındaki "… seviye üye" odalar tek dilli olduğu için kapsam dışı. Eski not: `forum/templatetags/forum_extras.py`
   `RANK_INFO` ("🌱 Çaylak", "Uzman"…) ve `Profile.RANK_CHOICES` (models.py ~156)
   çeviri dışı — site genelinde (navbar, forum, profil) görünür. `gettext_lazy`
   ile sarılınca `RANK_CHOICES` için **no-op AlterField migration** çıkar.

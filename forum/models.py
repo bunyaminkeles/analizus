@@ -8,7 +8,7 @@ from django.contrib.contenttypes.models import ContentType
 import uuid
 import secrets
 from django.utils import timezone
-from django.utils.translation import gettext, gettext_lazy, gettext_noop
+from django.utils.translation import gettext, gettext_lazy, gettext_noop, pgettext_lazy
 from datetime import timedelta
 from forum.storage import get_storage
 
@@ -154,14 +154,14 @@ class Profile(models.Model):
 
     # Rütbe seviyeleri (puana göre otomatik atanır)
     RANK_CHOICES = (
-        ('newbie', 'Çaylak'),
-        ('member', 'Üye'),
-        ('active', 'Aktif Üye'),
-        ('contributor', 'Katkıcı'),
-        ('expert', 'Uzman'),
-        ('master', 'Usta'),
-        ('legend', 'Efsane'),
-        ('admin', 'Yönetici'),
+        ('newbie', pgettext_lazy('rütbe', 'Çaylak')),
+        ('member', pgettext_lazy('rütbe', 'Üye')),
+        ('active', pgettext_lazy('rütbe', 'Aktif Üye')),
+        ('contributor', pgettext_lazy('rütbe', 'Katkıcı')),
+        ('expert', pgettext_lazy('rütbe', 'Uzman')),
+        ('master', pgettext_lazy('rütbe', 'Usta')),
+        ('legend', pgettext_lazy('rütbe', 'Efsane')),
+        ('admin', pgettext_lazy('rütbe', 'Yönetici')),
     )
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
