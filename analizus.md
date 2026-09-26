@@ -40,9 +40,9 @@
 | Dosya Yükleme | AWS S3 `eu-north-1`, bucket: `analizus-files` |
 | Hosting | Hetzner VPS (`89.167.5.224`) — Docker Compose (web, db, redis) + Nginx |
 | SSL | Let's Encrypt (certbot) |
-| AI/LLM | Groq (aktif), OpenAI, Gemini (env var ile) |
+| AI/LLM | Groq (aktif, `openai/gpt-oss-120b` — 25 Eylül 2026'dan beri; Llama 3.3 Groq'ta kaldırıldı), OpenAI, Gemini (env var ile) |
 | Ödeme | iyzico **kullanım izni yok** — entegrasyon yapılmayacak; ödeme sistemi belirsiz |
-| i18n | Türkçe (`tr`), `locale/` klasöründe çeviri dosyaları |
+| i18n | TR (varsayılan, öneksiz) + EN + DE — `i18n_patterns(prefix_default_language=False)`, `locale/{en,de}/LC_MESSAGES/django.po` (+ `.mo` git'te). EN/DE `feature_multilingual` bayrağıyla açılır (kapalıyken 404). Ayrıntı: **§28** |
 | Rate Limit | `django-ratelimit` — kayıt: 3/saat, login: 10/5dk, istatistik POST: 30/saat |
 | Analytics | `analytics/` Django app — login'li kullanıcı sayfa ziyaretleri (PageView + PageViewSummary), admin grafik (Chart.js, in-place user filtresi), 5 günlük otomatik temizlik |
 
@@ -198,8 +198,16 @@ GROQ_API_KEY=...
 OPENAI_API_KEY=...
 GEMINI_API_KEY=...
 
-# Cron güvenlik
+# Cron güvenlik — boşsa varsayılan anahtar YALNIZCA DEBUG'da geçerli (prod'da red).
+# Anahtar asla loglanmaz; crontab'da ?secret= yerine -H "X-Cron-Secret: ..." tercih et
+# (query param nginx access log'una düz metin düşer).
 CRON_SECRET_KEY=...
+
+# Analitik / arama motoru doğrulama (boşsa ilgili kod/etiket hiç basılmaz)
+GOOGLE_ANALYTICS_ID=           # G-XXXX — tanımlıysa çerez onay banner'ı devreye girer; GA yalnızca "Kabul et" sonrası yüklenir
+GOOGLE_SITE_VERIFICATION=      # <meta name="google-site-verification">
+BING_SITE_VERIFICATION=        # <meta name="msvalidate.01">
+YANDEX_SITE_VERIFICATION=      # yalnız Webmaster doğrulaması; Yandex Metrica 24 Eylül 2026'da kaldırıldı
 
 # WhatsApp float butonu (boşsa buton çıkmaz)
 WHATSAPP_NUMBER=905XXXXXXXXX    # Uluslararası format, başında + yok
@@ -230,6 +238,13 @@ git checkout main && git merge dev && git push origin main && git checkout dev
 ssh root@89.167.5.224
 git pull && docker compose restart web && docker compose restart nginx
 ```
+
+> ℹ️ **Container açılışında `deploy.sh` çalışır** (Dockerfile CMD): `migrate --noinput` + `createcachetable` +
+> `collectstatic --noinput` her `docker compose restart web`'de otomatik uygulanır (25 Eylül 2026 deploy'unda
+> 0153–0155 bu yolla uygulandı). Yine de migration'lı deploy'da önce DB yedeği al:
+> `docker compose exec -T db sh -c 'pg_dump -U "$POSTGRES_USER" "$POSTGRES_DB"' > /root/yedek_$(date +%F).sql`
+> ve sonrasında `showmigrations` ile doğrula. `.mo` dosyaları git'te — sunucuda `compilemessages` gerekmez.
+> Staging (Render, `analizus-dev.onrender.com`) canlı DB'yi KULLANMAZ (25 Eylül 2026 doğrulandı).
 
 > ⚠️ **KRİTİK:** `docker compose restart web` sonrası **mutlaka** `docker compose restart nginx` da çalıştır.
 > Nginx, web container'ın IP'sini başlangıçta çözümler. Container restart'ta yeni IP'yi almak için nginx de yeniden başlatılmalıdır.
@@ -313,7 +328,7 @@ staticfiles/                # collectstatic çıktısı
 media/                      # Yerel geliştirme dosya yükleme alanı
 nginx/                      # Nginx konfigürasyonu
 certbot/                    # Let's Encrypt SSL sertifikaları
-locale/                     # Türkçe çeviriler
+locale/                     # en/ + de/ çevirileri (.po + derlenmiş .mo, git'te) — kaynak dil TR (msgid)
 manage.py
 requirements.txt
 analizus.md                 # Bu dosya — tam sistem dokümantasyonu
@@ -324,9 +339,18 @@ CLAUDE.md                   # AI geliştirme kuralları ve görev listesi
 
 ## 7. URL MİMARİSİ
 
+> **Çok dilli URL'ler (Eylül 2026):** `analizdestek/urls.py` başındaki `i18n_patterns(..., prefix_default_language=False)`
+> bloğundaki her sayfa TR'de öneksiz, EN/DE'de `/en/…`, `/de/…` önekli çalışır. Bu blokta: `forum/urls_i18n.py`
+> (ana sayfa, kayıt, doğrulama/onboarding, hesap silme/geri alma, AI Asistan, gizlilik, hakkımızda, iletişim,
+> Hangi Test, proje talebi, eğitim, market…), `/analiz/` (araç konsolu), OpenAlex, Semantic Scholar, makale
+> analizi, `login/`, `logout/`, `i18n/` (set_language — öneksiz olursa dil değişmez!), `accounts/password_reset*`.
+> Öneksiz kalanlar (tek dilli): forum, blog, DM, profil, `/istatistik/…` (→ `/analiz/` 301), TR'ye özgü tarama
+> araçları (yoktez, trdizin, oaipmh), `/api/…` (API'ler öneksiz; dil gerekiyorsa istek gövdesinde `lang`).
+> Ayrıntı ve kurallar: **§28**.
+
 ```python
 /admin/             → Django admin (Unfold)
-/accounts/          → Django auth (password reset)
+/accounts/          → Django auth (password reset) — i18n_patterns içinde (/en/accounts/… da var)
 /login/             → Özel login view (rate limited)
 /logout/            → Django logout
 /trdizin/           → trdizin.urls  (feature flag: feature_trdizin)
@@ -405,6 +429,9 @@ class Profile:   # User ile OneToOne
     rank: 'newbie' | 'member' | 'active' | 'contributor' | 'expert' | 'master' | 'legend' | 'admin'
     reputation: int          # Akademik puan (forum etkinliğinden otomatik)
     skills: M2M → Skill
+    preferred_language: 'tr' | 'en' | 'de'   # e-postaların dili (migration 0154, varsayılan 'tr');
+                                             # PreferredLanguageMiddleware /en/ /de/ ziyaretinde günceller
+    deletion_requested_at / deletion_token*  # hesap silme akışı — §23 + §28
     # Uzman olmak için rank: expert/master/legend/admin VEYA account_type: Expert
 
 class Skill:     # Uzmanlık alanları
@@ -645,6 +672,7 @@ class JobPayment:        # İlan vitrin ödemeleri
 | `feature_transcript` | **False** | YouTube Transcript İndirici — cloud IP engeli nedeniyle Render'da doğrulanamadı, kapalı (bkz. §26) |
 | `feature_agentic_landing` | **False** | AI Çözümler (Agentic) Sayfası — `/ai-cozumler/` |
 | `feature_training` | **False** | Eğitim Hizmetleri Landing Page — `/egitim/` |
+| `feature_multilingual` | **False** | Çok dilli yayın (EN/DE) — kapalıyken navbar dil seçici gizli, `/en/` `/de/` 404 (`MultilingualFeatureMiddleware`), sitemap yalnız TR. Migration 0153. Avukat kontrolüne kadar kapalı (§28) |
 
 Template kullanımı: `{% if features.openalex %}...{% endif %}`
 Kaynak: `forum/context_processors.py` → `feature_flags()`
@@ -1097,7 +1125,10 @@ Her önemli event'te `bkeles74@gmail.com` adresine bildirim:
 ### AI Asistan (Groq Chat Servisi)
 
 **Dosya:** `forum/services/ai_service.py` (`GroqService` sınıfı, `SYSTEM_PROMPT`)
-**Model:** `llama-3.3-70b-versatile` (Groq ücretsiz tier — ~14.400 istek/gün, 30 istek/dk)
+**Model:** `openai/gpt-oss-120b` (25 Eylül 2026'dan beri — `llama-3.3-70b-versatile` Groq'ta kaldırıldı, 404 veriyordu).
+Seçim ölçüme dayalı: ücretsiz katmanda en yüksek limit (API yanıt başlıkları): **8000 token/dk, 1000 istek/gün — TÜM site için
+ortak**, 131K bağlam. Talimat 25 Eylül 2026'da sıkıştırıldı: istek başı ~1770–1870 token → dakikada ~4–5 soru.
+Trafik artarsa: Groq ücretli katman ya da `reasoning_effort=low` (ölçüldü: +%15 kapasite ama yanıtlar kısalıyor).
 **Feature flag:** `feature_ai_assistant` (SiteSettings) — kapalıysa her iki URL de 404 döner
 
 #### Erişim ve Limitler
@@ -1110,15 +1141,26 @@ Her önemli event'te `bkeles74@gmail.com` adresine bildirim:
 
 #### URL'ler
 - `GET/POST /ai-asistan/` → Tam sayfa chat arayüzü (`forum/views.py:ai_assistant`)
-- `POST /api/ai/chat/` → Floating widget JSON API (`forum/views.py:api_ai_chat`) — body: `{message: str}`, cevap: `{success, response, remaining, daily_limit}`
+- `POST /api/ai/chat/` → Floating widget JSON API (`forum/views.py:api_ai_chat`) — body: `{message: str, lang: 'tr'|'en'|'de'}`, cevap: `{success, response, remaining, daily_limit}`. API öneksiz kalır (doğrulanmamış kullanıcı `/api/` muafiyeti); dil `lang` ile gelir (geçersizse `tr`), hata mesajları da o dilde (`translation.override`)
+- `/ai-asistan/` sayfası `i18n_patterns` içinde (`/en/ai-asistan/`); sayfa dili `translation.get_language()` ile servise geçer
 
 #### System Prompt Mantığı
 `SYSTEM_PROMPT` içinde platformun tüm araçları ve URL'leri kayıtlıdır. Kullanıcı ne yapmak istediğini söyleyince AI önce "**Analizus'ta bunu yapabilirsiniz: → /url/**" bloğunu verir, ardından teorik açıklamayı ekler:
-- İstatistik analizi istiyorsa → `/istatistik/<araç>/` URL'i ile ilgili araca yönlendir
+- İstatistik analizi istiyorsa → `/istatistik/<araç>/` URL'i ile ilgili araca yönlendir (EN/DE'de `_localize_paths` bunu `/<dil>/analiz/<araç>/`'a çevirir)
 - Test seçimi belirsizse → soru sor (bağımlı değişken tipi, grup sayısı, normallik) → `/hangi-test/`
 - Makale/tez araması → `/openalex/`, `/yoktez/`, `/semantic-scholar/`, `/bibliometrics/`
 - Uzman/iş → `/uzmanlar/`, `/market/`, `/market/new/`
 - Forum/topluluk → `/forum/`, `/odalar/`
+
+#### Çok Dilli Yanıt (Eylül 2026)
+- **TR talimatı birebir aynı kalır**; EN/DE'de `_language_prefix(lang)` talimatın BAŞINA, `_language_block(lang)` SONUNA
+  eklenir (yalnız sona eklemek yetmedi — DE testinde başlık Almanca, gövde Türkçe kalmıştı).
+- **Link yerelleştirme** (`_localize_paths`): model hep öneksiz TR path yazar; `translate_url` ile çok dilli sayfalar
+  `/en/…` `/de/…` alır, `/istatistik/<slug>/` → `/<dil>/analiz/<slug>/` (18 slug birebir, doğrulandı), tek dilliler aynen.
+- **Bayrağa göre filtre** (`_PATH_FEATURE_FLAGS`, `_disabled_paths`, `_prompt_without`): özellik bayrağı kapalı sayfanın
+  talimat satırları istek anında çıkarılır ve izinli linklerden düşer (404'e link verilmez). Bayrağa bağlı her URL
+  talimatta KENDİ SATIRINDA olmalı (satır bazlı silme).
+- `/makaleanaliz/` kökünde sayfa yok (404) — izinli listeden çıkarıldı; Makale Analizi tarama sonucundan başlatılır → `/tarama/`.
 
 #### Floating Chat Widget (`base.html`)
 Tüm sayfalarda `{% if features.ai_assistant %}` bloğunda görünen WhatsApp-tarzı sohbet balonu:
@@ -1131,15 +1173,16 @@ Tüm sayfalarda `{% if features.ai_assistant %}` bloğunda görünen WhatsApp-ta
 
 #### Post-processing Filtreleri (`ai_service.py`)
 Groq yanıtı `generate_response()` içinde sırayla iki filtreden geçer:
-1. **`_CJK_RE.sub()`** — Llama'nın ara sıra eklediği Çince/Japonca/Korece karakterleri siler
-2. **`_sanitize_paths()`** — `_ALLOWED_PATHS` frozenset dışındaki her `/path/` URL'yi yanıttan kaldırır; silinen URL'in çevresindeki `→ Ad ()` kalıplarını da temizler
+1. **`_CJK_RE.sub()`** — modelin ara sıra eklediği Çince/Japonca/Korece karakterleri siler (Llama döneminden kalma koruma)
+2. **`_sanitize_paths(text, allowed)`** — izinli liste (`_ALLOWED_PATHS` − bayrağı kapalılar) dışındaki her `/path/` URL'yi yanıttan kaldırır; silinen URL'in çevresindeki `→ Ad ()` kalıplarını da temizler
+3. **`_localize_paths(text, lang)`** — EN/DE'de dil öneki / `/analiz/` eşlemesi (yukarıya bak)
 
 `_ALLOWED_PATHS` güncellenirken `SYSTEM_PROMPT` platform haritası da eş zamanlı güncellenmelidir.
 
 #### Önemli Non-obvious Kurallar
 - `ai_assistant` view ve `api_ai_chat` view aynı cache key pattern'ini kullanır — birinden harcanan kota diğerini de etkiler
 - Anonim cache key: `_anon_ai_cache_key(request)` → `ax_anon_id` cookie'den UUID okur; cookie yoksa yeni oluşturur ve tüm return path'lerde `_set_anon_cookie(response, anon_id)` ile set eder
-- Groq API `max_tokens=1024`, `temperature=0.7` — uzun yanıtlar kesilebilir, bu değerler ayarlanabilir
+- Groq API `max_tokens=1024`, `temperature=0.7` — gpt-oss bir "reasoning" modelidir; düşünme tokenları da `max_tokens`'a sayılır (ölçüm: ~180–200)
 - Widget JS'de URL'ler `target="_blank"` açılır — popup içinde sayfa değişmez
 - Sistem prompt'ta URL'lerin "örnek amaçlı" veya "farklı olabilir" olduğunu söylemek kesinlikle yasak — bu kural KESİN YASAKLAR bölümünde açıkça belirtilmiştir
 
@@ -1209,8 +1252,26 @@ analizus-files/
 ### Middleware
 - `forum.middleware.HoneypotMiddleware` — POST'ta gizli `website` alanı dolu gelirse botu reddeder
 - `forum.middleware.LastSeenMiddleware` — giriş yapmış kullanıcının `Profile.last_seen` alanını 60 saniyelik throttle ile günceller; static/media isteklerini atlar
-- `forum.middleware.EmailVerificationMiddleware` — email doğrulanmamışsa bazı işlemler engellenir
+- `forum.middleware.EmailVerificationMiddleware` — email doğrulanmamışsa bazı işlemler engellenir (`ALLOWED_URLS` url_name ile, `/api/` öneki muaf)
+- `forum.middleware.ForceDefaultLanguageMiddleware` → `MultilingualFeatureMiddleware` → `LocaleMiddleware` → `PreferredLanguageMiddleware` — sırası önemli (§28)
 - CSRF: Tüm formlarda zorunlu
+
+### Gizlilik / Çerez Onayı (24 Eylül 2026)
+- `templates/partials/cookie_consent.html` — Reddet/Kabul et (eşit boyut); `ax_cookie_consent` çerezi (granted/denied, 180 gün).
+  GA yalnızca "Kabul et" sonrası yüklenir (`base.html` `axLoadAnalytics`); onay geri çekilince `_ga*` silinir; eski
+  `_ym_*` (Yandex) çerezleri temizlenir; footer'da "Çerez ayarları". `GOOGLE_ANALYTICS_ID` boşsa banner da hiç basılmaz
+  (canlıda 25 Eylül 2026 itibarıyla boş).
+- **Yandex Metrica (webvisor dahil) kaldırıldı** — yalnız `yandex-verification` meta etiketi duruyor (veri göndermez).
+- **Inter fontu kendi sunucumuzdan** (`static/css/inter.css`, `static/fonts/inter/` + OFL.txt) — Google Fonts IP aktarımı
+  yok (LG München I, 2022). Admin teması da aynı dosyayı kullanır.
+- Gizlilik sayfası (`/gizlilik-politikasi/`, TR/EN/DE): alıcılar adıyla (Hetzner, AWS S3 eu-north-1, Google, Groq),
+  7. bölüm GDPR. Avukat/karar bekleyen maddeler BİLEREK yok (tasks/todo.md). "Son güncelleme" sabit tarih — metin
+  değişince elle güncelle.
+
+### Cron Anahtarı
+- `_verify_cron_secret` (`forum/api_views.py`): `hmac.compare_digest`; anahtar (gelen/beklenen) ASLA loglanmaz
+  (25 Eylül 2026'ya kadar beklenen anahtar her hatalı istekte loga yazılıyordu); `CRON_SECRET_KEY` boşsa varsayılan
+  yalnız DEBUG'da geçerli.
 - `XFrameOptionsMiddleware` — clickjacking önleme
 
 ---
@@ -1290,6 +1351,11 @@ SESSION_COOKIE_SECURE = True       # Prod'da (HTTPS zorunlu)
 SESSION_COOKIE_DOMAIN = '.analizus.com'  # Prod'da
 ```
 
+**Silme bekleyen hesabın geri alınması (25 Eylül 2026):** `custom_login`, pasif + `deletion_requested_at` son 30 gün
+içinde + şifre doğru ise genel "hatalı giriş" yerine oturuma 10 dakikalık `account_restore` işareti yazıp
+`/account/restore/`'a yönlendirir ("Hesabımı geri al" / "Silme işlemi devam etsin"). Anonimleştirilmiş hesapta şifre
+kullanılamaz olduğundan bu yol açılmaz.
+
 ---
 
 ## 23. CRON SİSTEMİ
@@ -1327,7 +1393,12 @@ python manage.py migrate           # Migration'ları uygula
 python manage.py makemigrations istatistik --name="aciklama"  # Yeni migration
 python manage.py collectstatic     # Statik dosyaları topla
 python manage.py shell             # Django shell
-python manage.py test              # Test suite (pytest-django)
+# Testler PYTEST ile — `manage.py test` 0 test bulur (conftest.py + analizdestek/test_settings.py)
+docker compose exec web python -m pytest forum/tests.py -q   # 61 test (25 Eylül 2026: 61/61)
+
+# Çeviri iş akışı (container içinde) — ayrıntı §28
+docker compose exec -T web python manage.py makemessages -l en -l de --ignore=venv --ignore=node_modules
+docker compose exec -T web python manage.py compilemessages -l en -l de   # çıktıda "error" KONTROL ET
 
 # Test kullanıcıları (lokal SQLite'ta mevcut — prod'a gönderilmedi)
 # testuser_a / testuser_b  →  şifre: testpass123  →  DM okundu göstergesi testi için oluşturuldu
@@ -1391,6 +1462,15 @@ with connection.cursor() as c:
 
 | Hata | Çözüm |
 |---|---|
+| EN/DE sayfada Türkçe kalan metin | Yalnız Türkçe-harf araması yetmez ("Metodoloji", "Yorum", "Hesapla" kaçar) — tüm metin sabitlerini listele (scratchpad `list_strs.py` mantığı), gözle ayıkla (§28) |
+| `{% trans "…%(x)s…" %}` Python'daki msgid ile birleşmiyor | Şablon `trans` `%`'yi `%%`'e kaçışlar → Python ile ORTAK msgid için `{x}` süslü yer tutucu + `.format()` / JS `fmt()` kullan; `trans` tek satır olmalı (çok satır → `blocktrans`) |
+| Çok satırlı `{# … #}` yorum sayfada metin olarak görünüyor | `{# #}` tek satırlıktır — çok satır için `{% comment %}…{% endcomment %}` |
+| `compilemessages` "syntax error", çeviriler görünmüyor | polib ile fuzzy temizlerken `previous_msgid`, `previous_msgid_plural`, `previous_msgctxt` üçü birden None; her derlemede çıktıda `error` ara |
+| Analiz sonucu EN/DE'de Türkçe | Analiz işçi thread'inde çalışır, aktif dil thread-local — `run_job` dili yakalar, `_execute_job` `translation.override` eder (`_pending_job_languages`) |
+| Çevrilen değer JS/Python karşılaştırmasını bozar | Görünen adla karşılaştırma yapma (ör. `c.name !== 'Sabit'`) — bayrak kullan (`is_const`) |
+| "Toplam" gibi kısa kelimenin çevirisi yanlış bağlamda ("Total of") | `pgettext('tablo', 'Toplam')` / `{% trans "Toplam" context "tablo" %}` |
+| AI Asistan 404 / "model does not exist" | Groq modeli kaldırılmış olabilir — `GET https://api.groq.com/openai/v1/models` ile mevcut modelleri listele; `ai_service.py` `self.model` |
+| `grep -v "views.py"` ile arama → "kod yok" sanıldı | Alt dizgi `api_views.py`'yi de eler; `--exclude=views.py` kullan, `head` ile kesme; olumsuz iddiadan önce analizus.md'de de ara |
 | E-posta gönderilmiyor | `SMTP_HOST` kullan, `EMAIL_HOST` değil |
 | DB bağlantı hatası (prod) | `DATABASE_URL` içindeki host Docker servis adı olmalı (`db`) — `localhost` container içinden çalışmaz; önce `docker compose up -d db` ile DB servisini başlat |
 | Migration production'da çalışmadı | `docker compose exec web python manage.py migrate` |
@@ -1454,7 +1534,7 @@ with connection.cursor() as c:
 - Ki-Kare + Fisher's Exact Test
 - **Çoklu Doğrusal Regresyon (OLS)** — R², β, VIF, APA raporu
 - **Lojistik Regresyon (Binary)** — Nagelkerke R², OR, sınıflandırma tablosu, APA raporu
-- Tüm analiz PDF'lerine "Tezinde Nasıl Raporlarsın?" APA bölümü eklendi
+- Tüm analiz PDF'lerine APA raporlama bölümü eklendi (başlık 25 Eylül 2026'da "Tezinde Nasıl Raporlarsın?" → "APA Formatında Raporlama"; ekranda da aynı)
 - Analizler menüsü kategorilere ayrıldı (5 kategori)
 - **Korelasyon sütun seçimi** — Cronbach ile aynı iki adımlı akış (preview → sütun seç → run)
 - Admin e-posta bildirim sistemi (tüm event'ler + araç Türkçe isimleri)
@@ -1697,6 +1777,15 @@ with connection.cursor() as c:
   - **`/market/` istatistik bandının local'de görünmemesi** — bug değil, kasıtlı "sıfır kuralı" (`forum/templates/forum/market/job_list.html:65`): local Postgres DB'de hiç gerçek pazar verisi (`FreelanceJob`/`JobProposal`) olmadığından üç sayaç da 0, şerit kasıtlı gizleniyor.
   - **Ana sayfa istatistik bandı "+" kaldırma:** kullanıcı isteğiyle şeridin yapısına/sayı değerlerine dokunulmadan yalnızca görsel `+` eki kaldırıldı — 5 sayaçta (`Aktif Üye`, `Akademik Konu`, `Forum Gönderisi`, `Tamamlanan Proje`, `Tamamlanan Analiz`) `data-suffix="+"`/`0+` → `""`/`0`; "Bu Hafta Yeni Üye" sayacındaki literal `+` öneki kaldırıldı. `static/js/stats-carousel.js`'teki suffix fallback'i (`el.dataset.suffix || '+'` → `?? '+'`) boş string'i de geçerli kabul etsin diye düzeltildi (aksi halde JS varsayılanı boş `data-suffix`'i görmezden gelip her zaman `+` ekliyordu), `?v=0100`→`0101`. **Ders:** bu Docker kurulumunda `daphne` template/statik dosya değişikliklerini `runserver` gibi otomatik yenilemiyor — her düzenlemeden sonra `docker compose restart web` gerektiği ampirik olarak doğrulandı (kök neden netleşmedi, pratik çözüm restart).
   - **Deploy notu:** Migration yok. Static dosya değişti (`stats-carousel.js`) → Hetzner'de `collectstatic` gerekiyor: `git pull origin main` + `docker compose restart web && docker compose restart nginx` + `docker compose exec web python manage.py collectstatic --noinput`. Deploy edilip edilmediği bu oturumdan doğrulanamadı.
+- **Çok dilli yayın (TR/EN/DE) + gizlilik turu** (22–25 Eylül 2026, 25 Eylül'de main'e alındı, 132327f) — ayrıntı §28:
+  i18n altyapısı (i18n_patterns, locale, `feature_multilingual`, dil seçici, hreflang/sitemap), kayıt/giriş/e-posta
+  akışları, AI Asistan (kullanıcının dilinde yanıt, link yerelleştirme), 18 istatistik aracının ekran+PDF+APA
+  çevirisi (Adım 6); çerez onayı, Yandex kaldırma, Inter self-host, gizlilik sayfası + GDPR bölümü; hesap silme
+  kararları (DM'ler kalır, özel veriler silinir, 30 gün içinde girişle geri alma, okunur anonim ad); cron anahtarı
+  loglama düzeltmesi; konumlandırma ("Türkiye/Türkçe/tez" vurgusu kaldırıldı, "Uçtan uca analiz ekosistemi").
+  **Doğruluk düzeltmeleri (önceden var):** eşleştirilmiş t-testinde yön tersti; AFA Bartlett anlamsızken
+  "anlamlı" diyordu + elle faktör sayısında "özdeğer>1" yazıyordu; APA'da "p = < .001" / "p 0.123"; sonuçlarda
+  "p = 0.0000". Migration: 0153–0155.
 
 ### Sıradaki Görevler
 
@@ -1735,3 +1824,75 @@ with connection.cursor() as c:
 **Önceki (temmuz 2026):** Eğitim Hizmetleri Landing Page — ilk kurulum (`feature_training` flag, `TrainingRequest` modeli, `training_catalog.py` 6 kategori/18 kurs, `/egitim/`+`/egitim/<slug>/`+`/egitim-talebi/`, navbar+sitemap+AI asistan+ana sayfa entegrasyonu) ve ardından iki ayrı canlı denetim turu (twitter meta/sıfır kuralı/SSS tutarlılığı/`related_tool_url` düzeltmeleri; ardından başlık/ifade/301-zinciri/araç→kurs bandı düzeltmeleri — ikisinde de en az bir bulgu koda bakılınca **yanlış pozitif** çıktı, detay: yukarıdaki "Tamamlananlar" listesindeki ilgili madde). 3 commit, `dev`'den `main`'e fast-forward merge edildi, `origin`'e push edildi. Hetzner'e deploy edildi (bkz. aşağıdaki en son giriş — sonraki oturumda doğrulandı).
 
 **En son (31 Temmuz 2026):** Hetzner cron altyapısı denetimi + düzeltmesi ve `_session_datasets` bellek sızıntısı düzeltmesi. **Bulgu:** canonical domain bir noktada `www.analizus.com`'a dönmüş ama crontab güncellenmemişti — `cleanup-pageviews` satırı www'suz URL kullandığından 301'e takılıp fiilen hiç çalışmıyordu; `cleanup-s3` ve `cleanup-attachments` ise dokümantasyonda "Aktif" görünmesine rağmen crontab'da hiç yoktu. Üçü de düzeltildi/eklendi (bkz. §23). **Ayrıca:** `istatistik/services/job_runner.py`'deki `_session_datasets` (araçlar arası taşınan yüklenmiş dosya içeriği, RAM'de) hiç otomatik temizlenmiyordu — `SESSION_DATASET_TTL_SECONDS` (2 saat, `SESSION_COOKIE_AGE` ile hizalı) + `cleanup_expired_session_datasets()` eklendi, mevcut `/api/cron/*` desenine uygun yeni `cron_cleanup_session_datasets` endpoint'i açıldı (bu veri DB değil RAM'de olduğu için yalnızca HTTP-tetiklemeli bu desen çalışır, ayrı process olarak koşan bir management command'ın erişemeyeceği doğrulandı). 2 commit, `dev`'den `main`'e fast-forward merge edildi, `origin`'e push edildi, Hetzner'e deploy edilip (`git pull` + `restart web`/`nginx`) canlıda doğrulandı (`curl` ile doğru secret → `{"success": true}`, yanlış secret → `403`); crontab'a 5 satır eklendi/düzeltildi (`cleanup-pageviews` www'li URL, `cleanup-s3` günlük 05:00, `cleanup-attachments` haftalık Pazar 06:00, `cleanup-session-datasets` saatlik), `crontab -l` ile teyit edildi. Migration yok.*
+
+**En son (25–26 Eylül 2026):** Çok dilli yayın + gizlilik turu `main`'e alındı ve Hetzner'e deploy edildi (132327f;
+migration 0153–0155 container açılışında deploy.sh ile uygulandı; DB yedeği alındı; kontroller OK). `feature_multilingual`
+KAPALI — avukat kontrolü bekliyor. Açık işler `tasks/todo.md` başındaki "AÇIK İŞLER — TEK LİSTE"de. Ayrıntı: §28.
+
+---
+
+## 28. ÇOK DİLLİ YAPI (TR/EN/DE) VE GİZLİLİK — Eylül 2026
+
+> Canlıda (25 Eylül 2026, 132327f) ama `feature_multilingual` **KAPALI** — avukat kontrolü (gizlilik GDPR maddeleri +
+> etik protokol) bitince admin'den açılır. Kapalıyken TR hiç etkilenmez; `/en/` `/de/` 404.
+
+### 28.1 Mimari
+- `settings.LANGUAGES` = tr, en, de; `LANGUAGE_CODE='tr'`; `LOCALE_PATHS` → `locale/`.
+- URL: `analizdestek/urls.py` → `i18n_patterns(prefix_default_language=False)` (TR öneksiz). Sayfa listesi §7.
+  `i18n/` (set_language) BU BLOKTA olmalı — öneksiz kalırsa aktif dil zorla `tr` olur, dil değişmez (22 Eylül bug'ı).
+- Middleware sırası: `ForceDefaultLanguageMiddleware` (Accept-Language ile otomatik dil YOK, varsayılan tr) →
+  `MultilingualFeatureMiddleware` (bayrak kapalıyken /en/ /de/ → 404) → `LocaleMiddleware` →
+  `PreferredLanguageMiddleware` (giriş yapmışsa /en/ /de/ ziyareti ya da dil seçimi `Profile.preferred_language`'i
+  günceller; öneksiz sayfalar tercihi `tr`'ye ÇEVİRMEZ).
+- Context processor `hreflang_alternates` → `og:locale`, hreflang alternatifleri (yalnız i18n sayfalar).
+- Sitemap: `MultilingualSitemapMixin` (`i18n`/`alternates` bayrağa bağlı property) — bayrak açılınca aynı
+  `sitemap.xml`'e /en/ /de/ + `xhtml:link` eşleri kendiliğinden girer. robots.txt'te özel sayfaların /en/ /de/
+  karşılıkları disallow.
+- Dil seçici: navbar (`base.html`) + bağımsız giriş/kayıt/şifre sıfırlama sayfaları için
+  `templates/partials/auth_lang_switcher.html` (bayrak kapalıyken gizli).
+- **Kapsam dışı (bilinçli TR):** forum, blog, DM, profil sayfaları (todo), TR'ye özgü tarama araçları (yoktez, trdizin,
+  oaipmh, tezanaliz, bibliometrics) ve e-postaları, DB içerikleri (blog/forum/quiz/ilan metinleri), yasal adres.
+
+### 28.2 E-postalar
+- `forum/i18n_utils.py`: `with recipient_language(user):` — bloktaki gettext / render_to_string / **reverse()** alıcının
+  `preferred_language`'inde çalışır (onay/doğrulama linkleri dil önekiyle üretilir). `admin_language()` — admin
+  bildirimleri her zaman TR (`email_utils.py` `@_in_admin_language`).
+- Mevcut tüm kullanıcılar migration 0154 ile `tr`.
+
+### 28.3 Çeviri kuralları (tuzaklar dahil)
+- msgid = Türkçe kaynak metin. Python: `gettext` (istek anında), modül düzeyinde `gettext_lazy`; kısa/çok anlamlı
+  kelimede bağlam: `pgettext('tablo', 'Toplam')` (bağlamsız çevirisi "Total of").
+- Şablon: `{% trans %}` TEK SATIR (çok satır → `{% blocktrans trimmed %}`); JS metinleri şablonun `T` sözlüğünde:
+  `key: '{% trans "…" as t %}{{ t|escapejs }}'`.
+- **Python + JS ORTAK cümle** (APA vb.): `{ad}` süslü yer tutucu — Python `.format()`, JS `fmt(T.x, {...})`
+  (`const fmt = (s,o) => s.replace(/\{(\w+)\}/g, …)`). `%(ad)s` ortak OLAMAZ: şablon `trans` `%` → `%%` kaçışlar.
+- Yüzde: Python `gettext('%%%(value)s') % {'value': v}` ("%62.3" / "62.3%" / "62.3 %"), JS `T.pct` = `'%{value}'`
+  (msgid `%%{value}`, msgstr'da da `%%`). "%95 GA": `gettext('%%95 GA (fark)') % {}`.
+- **Tam cümle msgid:** parça birleştirme (`'daha yüksek' + 'tir'`, `'anlamlı' / 'anlamlı olmayan'`) çevrilemez —
+  anlamlı/anlamsız, artış/azalış ayrı cümleler.
+- **Görünen metinle karşılaştırma yapma** — çevrilince bozulur (ör. sabit terim `is_const` bayrağıyla tanınır).
+- p gösterimi: tek parça `'p < .001'` / `'p = 0.0412'`; cümlede "p = {p}" değil "{p}".
+- Cümle içi etiket: aralığı at + TR'ye duyarlı küçük harf (`'İyi (…)'.lower()` → "i̇yi"; bkz. `_sentence_level`).
+
+### 28.4 İstatistik araçları (Adım 6)
+- Analiz `job_queue` işçi thread'inde çalışır; aktif dil thread-local → `run_job` dili `_pending_job_languages`'e
+  yazar, `_execute_job` `translation.override(lang)` ile çalıştırır (sonuç metinleri + PDF kullanıcının dilinde).
+- Her araç şablonunda `T` + `fmt` + `pStr` (+ `pc` yüzde) yardımcıları; APA cümleleri servis (PDF) ile aynı msgid.
+- PDF ve ekran başlığı: "APA Formatında Raporlama".
+
+### 28.5 Çeviri iş akışı ve doğrulama
+1. Metni işaretle → `makemessages -l en -l de --ignore=venv --ignore=node_modules` (container içinde).
+2. Çevirileri polib ile uygula; fuzzy temizlerken `previous_msgid`, `previous_msgid_plural`, `previous_msgctxt`
+   üçünü de None yap (yoksa msgfmt "syntax error" → hiçbir çeviri derlenmez).
+3. `compilemessages -l en -l de` — çıktıda `error` ara; `docker compose restart web`.
+4. Doğrula: test Client ile render (`transaction.atomic()` + rollback), inline JS `node --check`, JSON-LD
+   `json.loads`, PDF metni `pdftotext`. Türkçe arama yalnız Türkçe harfe bakarsa "Yorum", "Madde", "Hesapla" gibi
+   metinler kaçar — tüm metin sabitlerini listeleyip gözle ayıkla.
+
+### 28.6 Yayına alma ve arama motorları
+- Bayrak açılmadan önce: avukat kontrolü (gizlilik 7. bölüm eksikleri: ABD aktarım güvencesi SCC/DPF, KVKK md. 9
+  bildirimi, GA saklama süresi, AB temsilcisi md. 27; etik protokol GDPR atfı).
+- Açıldıktan sonra: Google Search Console + Bing Webmaster'a `sitemap.xml` yeniden gönder, /en/ /de/ sayfaları için
+  URL denetimi; hreflang'ı oluşturulan HTML'de doğrula (GSC'de hreflang raporu yok). Bing için IndexNow anahtar
+  dosyası mevcut ve kökte erişilebilir (`https://www.analizus.com/534e22a9f9e4d375119c5bc6d006aad0.txt`, 200 —
+  kaynak `static/`) → yeni/değişen URL'ler Bing'e anında bildirilebilir.
