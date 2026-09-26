@@ -92,6 +92,17 @@ maddelerde.
 - [ ] **Yetenek (JobCategory) başlıkları** (26 Eylül 2026): profil düzenleme
   chip'leri ve profil etiketleri DB `JobCategory.title` — EN/DE'de TR olup
   olmadığı kontrol edilecek (market ile ortak).
+  **ÖLÇÜM (26 Eylül 2026):** Evet, tek dilli. Kritik bulgu: kategoriler kullanıcı
+  girişiyle oluşuyor — `JobPostForm.save()` (forms.py ~168) ilan verirken yazılan
+  metni `JobCategory.objects.get_or_create(title=…)` ile YENİ kategori yapıyor; bu
+  kayıtlar `is_active=True` olduğu için profil düzenlemedeki yetenek listesine ve
+  ilan datalist'ine de düşüyor. Gösterim yerleri: profil (2), profil düzenleme,
+  uzman dizini, `_expert_showcase`, `_studyroom_founder_card`, market liste/detay,
+  post_job/edit_job datalist, ilan e-postası (views ~2191, varsayılan 'Veri Analizi' TR).
+  Yerel DB'de 0 kayıt → canlı liste ölçülmeden çeviri verisi yazılamaz.
+  Bekleyen: (1) canlıdaki kategori listesi (sunucu komutu kullanıcıda),
+  (2) karar: rozetlerdeki gibi `title_en/_de` + migration mı; kullanıcı kaynaklı
+  kategoriler ne olacak (admin onayı / serbest metin kalır).
 - [ ] **Profil düzenleme: geçersiz telefonda çift mesaj** (26 Eylül 2026, önceden
   var olan davranış): hata mesajının yanında "Profiliniz başarıyla güncellendi"
   da çıkıyor (diğer alanlar kaydediliyor). Mesaj akışı düzeltilecek mi — karar.
