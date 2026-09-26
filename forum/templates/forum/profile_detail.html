@@ -97,7 +97,7 @@
             <div class="ax-profile-badges-preview">
                 {% for badge in profile_user.profile.badges.all|slice:":5" %}
                 <div class="ax-profile-badge-circle"
-                     title="{{ badge.name }}: {{ badge.description }}"
+                     title="{{ badge.localized_name }}: {{ badge.localized_description }}"
                      onclick="document.querySelector('[data-tab=badges]').click()">
                     <i class="{{ badge.icon }}" style="color: {{ badge.color }}; font-size: 1.1rem;"></i>
                 </div>
@@ -119,7 +119,7 @@
                 <div class="ax-profile-progress-header">
                     <span>
                         <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
-                        {% trans "Sonraki:" %} <strong style="color: #f59e0b;">{{ next_badge.badge.name }}</strong>
+                        {% trans "Sonraki:" %} <strong style="color: #f59e0b;">{{ next_badge.badge.localized_name }}</strong>
                     </span>
                     <span>{% blocktrans with value=next_badge.progress %}%{{ value }}{% endblocktrans %}</span>
                 </div>
@@ -509,8 +509,8 @@
                                     <i class="{{ badge.icon }}" style="color: {{ badge.color }};"></i>
                                 </div>
                                 <div>
-                                    <div class="ax-profile-badge-name">{{ badge.name }}</div>
-                                    <div class="ax-profile-badge-desc">{{ badge.description }}</div>
+                                    <div class="ax-profile-badge-name">{{ badge.localized_name }}</div>
+                                    <div class="ax-profile-badge-desc">{{ badge.localized_description }}</div>
                                     {% if badge.points_required > 0 %}
                                     <div class="ax-profile-badge-pts">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="#f59e0b"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
@@ -536,8 +536,8 @@
                                 <i class="{{ next_badge.badge.icon }}" style="color: {{ next_badge.badge.color }};"></i>
                             </div>
                             <div class="ax-profile-next-badge__info">
-                                <div class="ax-profile-next-badge__name">{{ next_badge.badge.name }}</div>
-                                <div class="ax-profile-next-badge__desc">{{ next_badge.badge.description }}</div>
+                                <div class="ax-profile-next-badge__name">{{ next_badge.badge.localized_name }}</div>
+                                <div class="ax-profile-next-badge__desc">{{ next_badge.badge.localized_description }}</div>
                                 <div class="ax-profile-progress-bar" style="margin-top: var(--ax-space-2);">
                                     <div class="ax-profile-progress-fill" style="width: {{ next_badge.progress }}%; background: linear-gradient(90deg, {{ next_badge.badge.color }}, {{ next_badge.badge.color }}aa);"></div>
                                 </div>
@@ -580,9 +580,9 @@
                         </div>
                         <span class="ax-profile-badge-row__name"
                               style="color: {% if badge.id in user_badge_ids %}var(--ax-text-primary){% else %}var(--ax-text-muted){% endif %};">
-                            {{ badge.name }}
+                            {{ badge.localized_name }}
                         </span>
-                        <span class="ax-profile-badge-row__desc">{{ badge.description }}</span>
+                        <span class="ax-profile-badge-row__desc">{{ badge.localized_description }}</span>
                         {% if badge.id in user_badge_ids %}
                             <span class="ax-badge-earned-chip">{% trans "Kazanıldı" %}</span>
                         {% else %}

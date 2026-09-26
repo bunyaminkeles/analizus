@@ -8,7 +8,7 @@ from django.contrib.contenttypes.models import ContentType
 import uuid
 import secrets
 from django.utils import timezone
-from django.utils.translation import gettext, gettext_lazy, gettext_noop, pgettext_lazy
+from django.utils.translation import get_language, gettext, gettext_lazy, gettext_noop, pgettext_lazy
 from datetime import timedelta
 from forum.storage import get_storage
 
@@ -109,8 +109,12 @@ class Badge(models.Model):
     )
 
     name = models.CharField(max_length=50, verbose_name="Rozet Adı")
+    name_en = models.CharField(max_length=50, blank=True, default="", verbose_name="Rozet Adı (EN)")
+    name_de = models.CharField(max_length=50, blank=True, default="", verbose_name="Rozet Adı (DE)")
     slug = models.SlugField(unique=True)
     description = models.CharField(max_length=200, verbose_name="Açıklama")
+    description_en = models.CharField(max_length=200, blank=True, default="", verbose_name="Açıklama (EN)")
+    description_de = models.CharField(max_length=200, blank=True, default="", verbose_name="Açıklama (DE)")
     icon = models.CharField(max_length=50, default="bi-award", verbose_name="İkon (Bootstrap Icons)")
     color = models.CharField(max_length=20, default="#6366f1", verbose_name="Renk (Hex)")
     badge_type = models.CharField(max_length=20, choices=BADGE_TYPES, default='achievement')
@@ -126,6 +130,23 @@ class Badge(models.Model):
 
     def __str__(self):
         return self.name
+
+    def _localized(self, field):
+        """Etkin dile göre alan; çeviri boşsa Türkçe asıl alana düşer."""
+        lang = (get_language() or 'tr')[:2]
+        if lang != 'tr':
+            value = getattr(self, f'{field}_{lang}', '')
+            if value:
+                return value
+        return getattr(self, field)
+
+    @property
+    def localized_name(self):
+        return self._localized('name')
+
+    @property
+    def localized_description(self):
+        return self._localized('description')
 
 
 class Skill(models.Model):
@@ -438,7 +459,7 @@ class Profile(models.Model):
         ]
         user_badges = self.badges.filter(slug__in=proposal_badges)
         if user_badges.exists():
-            return True, user_badges.first().name
+            return True, user_badges.first().localized_name
 
         return False, gettext("Teklif vermek için 1000+ puan veya özel rozet gerekli")
 

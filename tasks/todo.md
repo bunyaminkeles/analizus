@@ -66,7 +66,25 @@ maddelerde.
   `RANK_INFO` ("🌱 Çaylak", "Uzman"…) ve `Profile.RANK_CHOICES` (models.py ~156)
   çeviri dışı — site genelinde (navbar, forum, profil) görünür. `gettext_lazy`
   ile sarılınca `RANK_CHOICES` için **no-op AlterField migration** çıkar.
-- [ ] **Rozet adları/açıklamaları tek dilli** (26 Eylül 2026): `Badge.name` /
+- [x] **Rozet adları/açıklamaları** — ÇEVRİLDİ (26 Eylül 2026, kullanıcı kararı "DB'de dil
+  alanları"): `Badge.name_en/_de`, `description_en/_de` + `localized_name` /
+  `localized_description` (boşsa TR'ye düşer). **Migration 0156** (4 AddField + mevcut
+  18 rozeti slug ile dolduran RunPython; yalnız boş alanları doldurur; geri alma
+  test edildi). Admin'de yeni alanlar otomatik görünür. Kullanım yerleri: profil,
+  `render_badge`/`render_user_badges`, `can_propose()` gerekçesi.
+  **Canlıya çıkışta:** migration'lı deploy → önce DB yedeği.
+- [ ] **`create_badges` komutu EN/DE içermiyor** (26 Eylül 2026): boş DB'de komutla
+  oluşan rozetler TR'ye düşer (0156 yalnız mevcut kayıtları doldurur).
+- [ ] **Quiz rozet bildirimi TR sabit** (26 Eylül 2026): `forum/views.py` ~3010
+  `category_badge_map` / `'Quiz Efsanesi'` sabit Türkçe adlar — `Badge.localized_name`
+  ile slug'dan alınmalı (quiz modülü genel olarak tek dilli mi — önce ölç).
+- [ ] **EDU "Doğrulanmış Akademisyen" DM metni TR sabit** (26 Eylül 2026):
+  `forum/views.py` ~1330 — DM DB'ye yazılıyor; alıcının dilinde (`recipient_language`) üretilmeli.
+- [ ] **Profil modal view'ı kırık olabilir** (26 Eylül 2026): `views.py` ~3043
+  `forum/partials/profile_modal_content.html` render ediyor ama bu şablon yok
+  (`forum/profile_modal_content.html` ve `templates/profile_modal_content.html` var,
+  ikisi farklı). URL'nin kullanılıp kullanılmadığı ölçülecek.
+- [ ] **Rozet adları/açıklamaları tek dilli** — eski not (26 Eylül 2026): `Badge.name` /
   `Badge.description` DB içeriği ("Profesör", "2500 akademik puan kazandınız -
   TEKLİF VEREBİLİR"…) EN/DE profilde TR. Strateji kararı gerekli: slug→çeviri
   sözlüğü (kod) mi, DB'de dil alanları (migration) mı. `can_propose()` rozet

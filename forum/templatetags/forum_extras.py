@@ -67,8 +67,8 @@ def render_badge(badge):
     """Rozeti HTML olarak render eder"""
     return mark_safe(
         f'<span class="badge me-1" style="background-color: {badge.color};" '
-        f'title="{badge.description}">'
-        f'<i class="{badge.icon}"></i> {badge.name}</span>'
+        f'title="{escape(badge.localized_description)}">'
+        f'<i class="{badge.icon}"></i> {escape(badge.localized_name)}</span>'
     )
 
 
@@ -86,7 +86,7 @@ def render_user_badges(user, limit=3):
     for badge in badges:
         html_parts.append(
             f'<span class="badge me-1" style="background-color: {badge.color}; font-size: 0.7rem;" '
-            f'title="{badge.description}">'
+            f'title="{escape(badge.localized_description)}">'
             f'<i class="{badge.icon}"></i></span>'
         )
 
