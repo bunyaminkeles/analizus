@@ -11,8 +11,14 @@ bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
 **A. Kod işleri (öncelik sırasıyla)**
-- [ ] **Footer "Akademik Kaynaklar" EN/DE için güncellenecek** (kullanıcı isteği,
-  25 Eylül 2026): `templates/partials/footer.html` ~69-92 — başlık çevrili ama liste
+- [ ] **WhatsApp hazır mesajları Türkçe** (26 Eylül 2026, footer ekranında görüldü):
+  `wa.me/...?text=Merhaba%2C...` URL-kodlu sabit TR metin — footer, iletişim, proje
+  talebi, eğitim, eğitim talebi, ilan verme sayfaları (6 yer). EN/DE'de mesaj
+  kullanıcının dilinde olmalı (`{% trans %}` + `|urlencode`).
+- [x] **Footer "Akademik Kaynaklar" EN/DE** — TAMAMLANDI (26 Eylül 2026, kullanıcı
+  kararı "uluslararası 4'lü"): EN/DE → Google Scholar, Semantic Scholar, OpenAlex,
+  BASE (Bielefeld); TR listesi aynen. `LANGUAGE_CODE` koşulu, yeni ikonlar
+  Bootstrap Icons (dış favicon indirilmedi). Eski not (25 Eylül 2026): `templates/partials/footer.html` ~69-92 — başlık çevrili ama liste
   sabit ve Türkiye'ye özgü: Google Scholar, DergiPark, Semantic Scholar, YÖK Tez
   Merkezi (+ yerel favicon'lar `static/img/favicon-*.ico`). EN/DE'de DergiPark ve
   YÖK yerine uluslararası kaynaklar (ör. PubMed, arXiv, OpenAlex, BASE / DE için
