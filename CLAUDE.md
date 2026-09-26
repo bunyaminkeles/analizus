@@ -1,21 +1,22 @@
 # Analizus.com — Claude Çalışma Kuralları
 
-Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~1590 satır). Tamamını okuma — ihtiyaca göre offset ile ilgili bölümü oku:
+Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~1900 satır; offset'ler 26 Eylül 2026). Tamamını okuma — ihtiyaca göre offset ile ilgili bölümü oku:
 
 | Bölüm | offset | Konu |
 |---|---|---|
 | §1–2 | 8 | Proje amacı, tech stack, paketler |
-| §3–5 | 68 | Sunucu mimarisi, deploy, env vars |
-| §6–7 | 223 | Dizin yapısı, URL mimarisi |
-| §8–9 | 379 | Veri modelleri, feature flag'ler |
-| §10–11 | 607 | CSS/tasarım sistemi, WebSocket |
-| §12 | 686 | İstatistik araçları (akış, PDF, polling) |
-| §13–15 | 826 | DM/oda mesajlaşma, bibliometri, akademik tarama |
-| §16–19 | 955 | E-posta, AnalizBot, S3, güvenlik |
-| §20–23 | 1120 | Admin, pazar iş akışı, session, cron |
-| §24–25 | 1209 | Geliştirme ortamı, değişmez kurallar |
-| §26 | 1288 | Sık yapılan hatalar ve çözümleri |
-| §27 | 1345 | Görev listesi (tamamlanan / sıradaki) |
+| §3–5 | 68 | Sunucu mimarisi, deploy (deploy.sh açılışta migrate+collectstatic), env vars |
+| §6–7 | 255 | Dizin yapısı, URL mimarisi (i18n_patterns: hangi sayfa /en/ /de/) |
+| §8–9 | 423 | Veri modelleri, feature flag'ler |
+| §10–11 | 682 | CSS/tasarım sistemi, WebSocket |
+| §12 | 790 | İstatistik araçları (akış, PDF, polling) |
+| §13–15 | 944 | DM/oda mesajlaşma, bibliometri, akademik tarama |
+| §16–19 | 1073 | E-posta, AnalizBot/AI Asistan, S3, güvenlik (çerez onayı, cron anahtarı) |
+| §20–23 | 1279 | Admin, pazar iş akışı, session (hesap geri alma), cron |
+| §24–25 | 1377 | Geliştirme ortamı (pytest, çeviri komutları), değişmez kurallar |
+| §26 | 1461 | Sık yapılan hatalar ve çözümleri |
+| §27 | 1529 | Görev listesi (tamamlanan / sıradaki) |
+| §28 | 1834 | Çok dilli yapı (TR/EN/DE) ve gizlilik — mimari, çeviri kuralları, iş akışı |
 
 ---
 
@@ -54,6 +55,17 @@ Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~1590 satır). Tamam
 - Docker'da migration: `docker compose exec web python manage.py migrate` — host'ta `db` hostname çözülmez
 - `docker compose restart web` sonrası nginx da restart edilmeli (IP cache sorunu)
 - `docker-compose` değil `docker compose` (Hetzner'de plugin kurulu, eski binary yok)
+- Testler **pytest** ile: `docker compose exec web python -m pytest forum/tests.py` (`manage.py test` 0 test bulur)
+- Container açılışında `deploy.sh` `migrate` + `collectstatic` çalıştırır — migration'lı deploy öncesi DB yedeği al
+
+## Çok Dilli (i18n) Kritik Kurallar — ayrıntı analizus.md §28
+- Yeni kullanıcıya görünen metin **her zaman** çeviriye işaretlenir (msgid = Türkçe); EN/DE `locale/` + `.mo` git'te
+- Python+JS ortak cümlede `{ad}` süslü yer tutucu (`.format()` / JS `fmt`) — şablon `trans` `%`'yi `%%` yapar
+- Parça birleştirme yok: anlamlı/anlamsız, artış/azalış ayrı **tam cümle** msgid
+- Çevrilen görünen metinle `==`/`!==` karşılaştırma yapma (bayrak kullan: ör. `is_const`)
+- Arka plan işi (job_queue thread) dili bilmez — `translation.override` ile taşı; e-posta: `recipient_language(user)`
+- Çeviri sonrası `compilemessages` çıktısında `error` ara; polib'de `previous_*` alanlarının üçünü temizle
+- Türkçe metin taraması yalnız ç/ğ/ş… harflerine bakamaz ("Yorum", "Hesapla" kaçar) — tüm sabitleri listele
 
 ## Git & Deploy
 - Tüm geliştirme `dev` branch'inde — `main`'e kullanıcı "merge et" demeden dokunma
