@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-26 21:29+0300\n"
+"POT-Creation-Date: 2026-09-26 21:32+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -4266,6 +4266,7 @@ msgid "Tamamlanan Proje"
 msgstr "Completed Projects"
 
 #: forum/templates/forum/home.html:542
+#: forum/templates/forum/proje_talebi.html:106
 msgid "Tamamlanan Analiz"
 msgstr "Completed Analyses"
 
@@ -5936,33 +5937,17 @@ msgstr ""
 "Get strategic insights from your company's data. Just submit your request — "
 "we'll match you with expert analysts and offer a free initial assessment."
 
-#: forum/templates/forum/proje_talebi.html:106
-msgid "Tamamlanan"
-msgstr "Completed"
-
-#: forum/templates/forum/proje_talebi.html:106
-msgid "Analiz"
-msgstr "Analyses"
-
 #: forum/templates/forum/proje_talebi.html:114
-msgid "Kayıtlı"
-msgstr "Registered"
-
-#: forum/templates/forum/proje_talebi.html:114
-msgid "Üye"
-msgstr "Members"
+msgid "Kayıtlı Üye"
+msgstr "Registered Members"
 
 #: forum/templates/forum/proje_talebi.html:120 forum/views.py:1975
 msgid "Ücretsiz"
 msgstr "Free"
 
 #: forum/templates/forum/proje_talebi.html:121
-msgid "Ön"
-msgstr "Initial"
-
-#: forum/templates/forum/proje_talebi.html:121
-msgid "Değerlendirme"
-msgstr "Assessment"
+msgid "Ön Değerlendirme"
+msgstr "Initial Assessment"
 
 #: forum/templates/forum/proje_talebi.html:140
 msgid "Talep Formu"
@@ -17987,6 +17972,21 @@ msgid ""
 msgstr ""
 "Learn to perform <strong style=\"color:#f1f5f9;\">%(promo_title)s</strong> "
 "analysis with your own data through one-on-one training."
+
+#~ msgid "Tamamlanan"
+#~ msgstr "Completed"
+
+#~ msgid "Analiz"
+#~ msgstr "Analyses"
+
+#~ msgid "Kayıtlı"
+#~ msgstr "Registered"
+
+#~ msgid "Üye"
+#~ msgstr "Members"
+
+#~ msgid "Ön"
+#~ msgstr "Initial"
 
 #~ msgid "Tezinde Nasıl Raporlarsın?"
 #~ msgstr "How to Report It in Your Thesis?"

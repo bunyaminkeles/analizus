@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-26 21:29+0300\n"
+"POT-Creation-Date: 2026-09-26 21:32+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -4343,6 +4343,7 @@ msgid "Tamamlanan Proje"
 msgstr "Abgeschlossene Projekte"
 
 #: forum/templates/forum/home.html:542
+#: forum/templates/forum/proje_talebi.html:106
 msgid "Tamamlanan Analiz"
 msgstr "Abgeschlossene Analysen"
 
@@ -6042,33 +6043,17 @@ msgstr ""
 "Senden Sie einfach Ihre Anfrage — wir bringen Sie mit Experten zusammen und "
 "bieten eine kostenlose Erstbewertung."
 
-#: forum/templates/forum/proje_talebi.html:106
-msgid "Tamamlanan"
-msgstr "Abgeschlossene"
-
-#: forum/templates/forum/proje_talebi.html:106
-msgid "Analiz"
-msgstr "Analysen"
-
 #: forum/templates/forum/proje_talebi.html:114
-msgid "Kayıtlı"
-msgstr "Registrierte"
-
-#: forum/templates/forum/proje_talebi.html:114
-msgid "Üye"
-msgstr "Mitglieder"
+msgid "Kayıtlı Üye"
+msgstr "Registrierte Mitglieder"
 
 #: forum/templates/forum/proje_talebi.html:120 forum/views.py:1975
 msgid "Ücretsiz"
-msgstr "Kostenlose"
+msgstr "Kostenlos"
 
 #: forum/templates/forum/proje_talebi.html:121
-msgid "Ön"
-msgstr "Erst-"
-
-#: forum/templates/forum/proje_talebi.html:121
-msgid "Değerlendirme"
-msgstr "bewertung"
+msgid "Ön Değerlendirme"
+msgstr "Erstbewertung"
 
 #: forum/templates/forum/proje_talebi.html:140
 msgid "Talep Formu"
@@ -18275,6 +18260,21 @@ msgstr ""
 "Lernen Sie, die <strong "
 "style=\"color:#f1f5f9;\">%(promo_title)s</strong>-Analyse mit Ihren eigenen "
 "Daten im Einzelunterricht durchzuführen."
+
+#~ msgid "Tamamlanan"
+#~ msgstr "Abgeschlossene"
+
+#~ msgid "Analiz"
+#~ msgstr "Analysen"
+
+#~ msgid "Kayıtlı"
+#~ msgstr "Registrierte"
+
+#~ msgid "Üye"
+#~ msgstr "Mitglieder"
+
+#~ msgid "Ön"
+#~ msgstr "Erst-"
 
 #~ msgid "Tezinde Nasıl Raporlarsın?"
 #~ msgstr "Wie berichten Sie es in Ihrer Arbeit?"

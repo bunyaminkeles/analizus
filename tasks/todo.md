@@ -174,7 +174,10 @@ maddelerde.
   gizli yatay kaydırma "Vertrauen"i görünmez yapıyordu → `flex-wrap: wrap`.
 - [x] **Profil "bewertung" (küçük harf) / "Assessment"** (26 Eylül 2026): profildeki
   "Değerlendirme" `context "puan ortalaması"` → Rating / Bewertung.
-- [ ] **proje_talebi "Ön" + "Değerlendirme" parça birleştirme** (26 Eylül 2026):
+- [x] **proje_talebi parça birleştirmeleri** — DÜZELTİLDİ (26 Eylül 2026): aynı blokta 3 çift
+  ("Tamamlanan"+"Analiz", "Kayıtlı"+"Üye", "Ön"+"Değerlendirme") tek msgid oldu; `<br>`
+  kaldırıldı (dar kutu kendisi kırıyor). DE "Ücretsiz" "Kostenlose" → "Kostenlos"
+  (hakkımızda karşılaştırma tablosunda dil bilgisi hatasıydı). 3 dilde 375/900px kontrol. Eski not:
   `proje_talebi.html` ~121 `{% trans "Ön" %}<br>{% trans "Değerlendirme" %}` —
   tam ifade msgid olmalı (DE "bewertung" küçük harf buradan).
 - [ ] **Global legacy CSS `label`/`input` `!important`** (26 Eylül 2026): `bundle.css`
