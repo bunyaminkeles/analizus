@@ -125,7 +125,7 @@ maddelerde.
   dil alanı (435 soru çevirisi), (c) EN/DE için ayrı soru seti. Rozet adı işi buna bağlı.
   Ek bulgu: `badge_awarded` sayaç ==50 / ==1000 olunca rozetin gerçekten verilip
   verilmediğine bakmadan gösteriliyor.
-- [ ] (eski not) **Quiz rozet bildirimi TR sabit** (26 Eylül 2026): `forum/views.py` ~3010
+- [x] (eski not) **Quiz rozet bildirimi TR sabit** (26 Eylül 2026): `forum/views.py` ~3010
   `category_badge_map` / `'Quiz Efsanesi'` sabit Türkçe adlar — `Badge.localized_name`
   ile slug'dan alınmalı (quiz modülü genel olarak tek dilli mi — önce ölç).
 - [x] **EDU "Doğrulanmış Akademisyen" DM** — ÇEVRİLDİ (26 Eylül 2026): tek msgid,
@@ -144,7 +144,7 @@ maddelerde.
   (`STUDYROOM_MIN_POINTS`), puan rozetleri. İlan AÇMA puana bağlı değil (e-posta
   doğrulama + haftalık limit 1/3). EN/DE'de tek kaynak analiz → 1000 puan = 200 analiz.
   Ayrıca ★ tıklanınca `#istatistik-arenasi`'ya gidiyor — Arena gizlenince EN/DE'de hedef değişmeli.
-- [ ] (eski not) **EDU "Doğrulanmış Akademisyen" DM metni TR sabit** (26 Eylül 2026):
+- [x] (eski not) **EDU "Doğrulanmış Akademisyen" DM metni TR sabit** (26 Eylül 2026):
   `forum/views.py` ~1330 — DM DB'ye yazılıyor; alıcının dilinde (`recipient_language`) üretilmeli.
 - [x] **Profil modal — ölü kod silindi** (26 Eylül 2026, kullanıcı onayı): ölçüm — view
   `api_get_profile_summary` hiçbir URL'ye bağlı değildi, `openProfileModal()` hiç
@@ -154,7 +154,7 @@ maddelerde.
   `forum/partials/profile_modal_content.html` render ediyor ama bu şablon yok
   (`forum/profile_modal_content.html` ve `templates/profile_modal_content.html` var,
   ikisi farklı). URL'nin kullanılıp kullanılmadığı ölçülecek.
-- [ ] **Rozet adları/açıklamaları tek dilli** — eski not (26 Eylül 2026): `Badge.name` /
+- [x] **Rozet adları/açıklamaları tek dilli** — eski not (26 Eylül 2026): `Badge.name` /
   `Badge.description` DB içeriği ("Profesör", "2500 akademik puan kazandınız -
   TEKLİF VEREBİLİR"…) EN/DE profilde TR. Strateji kararı gerekli: slug→çeviri
   sözlüğü (kod) mi, DB'de dil alanları (migration) mı. `can_propose()` rozet
@@ -180,7 +180,7 @@ maddelerde.
   `order_by('order','title')` Türkçe başlığa göre sıralar; `order` alanı hepsi 0.
 - [ ] **İlan e-postasındaki kategori TR** (26 Eylül 2026): `views.py` ~2191
   `job.category.title` / varsayılan 'Veri Analizi'.
-- [ ] **Yetenek (JobCategory) başlıkları** — eski not (26 Eylül 2026): profil düzenleme
+- [x] **Yetenek (JobCategory) başlıkları** — eski not (26 Eylül 2026): profil düzenleme
   chip'leri ve profil etiketleri DB `JobCategory.title` — EN/DE'de TR olup
   olmadığı kontrol edilecek (market ile ortak).
   **ÖLÇÜM (26 Eylül 2026):** Evet, tek dilli. Kritik bulgu: kategoriler kullanıcı
@@ -254,15 +254,15 @@ maddelerde.
   (style.css kökenli) tüm `label`'lara neon-mavi renk, tüm `input`'lara padding/border
   `!important` basıyor — `ax-form-*` bileşenlerini eziyor. Site geneli etkiler;
   kaldırılması ayrı iş + tüm formların görsel kontrolü.
-- [ ] **Yerel ekran görüntüsü notu**: container `staticfiles` ayrı Docker volume —
+- [x] **Yerel ekran görüntüsü notu** (bilgi, iş değil): container `staticfiles` ayrı Docker volume —
   hosttaki `staticfiles/` eski; dosyadan render'da `static/` kullan.
-- [ ] (eski not) **Profil düzenleme sayfası ax- sistemine taşınacak** (26 Eylül 2026, sıradaki): tamamı
+- [x] (eski not) **Profil düzenleme sayfası ax- sistemine taşınacak** (26 Eylül 2026, sıradaki): tamamı
   Bootstrap (card, form-control, nav-tabs, form-switch) + `data-bs-toggle` sekmeler +
   hardcode renkler; önce taslak ekran görüntüsü → kullanıcı onayı.
-- [ ] **Yerel SQLite'ta 0156/0157 uygulanmadı** (26 Eylül 2026): kullanıcının yerel
+- [x] **Yerel SQLite'ta 0156/0157** — KAPANDI (26 Eylül 2026, kullanıcı: bekleyen migration yok). Eski not: kullanıcının yerel
   runserver'ı (`db.sqlite3`) `no such column: forum_badge.name_en` ile 500 verdi —
   `python manage.py migrate forum` gerekli (0157 temizliği yerel kopyaya da uygulanır).
-- [ ] (eski not) **Profil şablonları ax- sistemine aykırı** (26 Eylül 2026, önceden var):
+- [x] (eski not) **Profil şablonları ax- sistemine aykırı** (26 Eylül 2026, önceden var):
   `profile_edit.html` Bootstrap `card`/`btn`/`nav-tabs` + `data-bs-toggle`,
   hardcode renkler; `profile_detail.html` "Hesabımı Sil" `btn btn-outline-danger`.
 - [ ] **Takip API hata metni tek dilli** (düşük öncelik): `api_views.toggle_follow_user`
@@ -311,7 +311,7 @@ maddelerde.
   metnine eklenecekler" maddesi.
 - [ ] Etik Protokolü: 4. ve 7. maddeler yalnızca TCK/KVKK'ya atıf (GDPR?),
   başlık "Akademik Etik Protokolü" yeni konumlandırmayla uyumsuz.
-- [ ] Avukat kontrolü — EN/DE canlıya açılmadan önce (gizlilik + etik).
+- [ ] Avukat kontrolü (gizlilik + etik) — NOT: EN/DE 26 Eylül 2026 itibarıyla zaten yayında; kontrol yayın sonrası yapılacak.
 - [x] **"Türkiye/Türkçe" vurgusu genelleştirildi** (25 Eylül 2026, kullanıcı
   onayı): ana sayfa alt başlığı + og/twitter → "Uçtan uca analiz ekosistemi…",
   AI Asistan/blog/forum/Tez Analizi açıklamaları, forum kategori açıklaması,
@@ -421,7 +421,7 @@ TR), 0155 (anonim kullanıcı adları, veri, geri alınabilir).** Başka uygulam
 - [x] 5. web + nginx yeniden başlatıldı
 - [x] 6. Kontroller (curl): tüm sayfalar 200, /en/ 404 (bayrak kapalı), inter.css + font 200, log temiz; canlı HTML: yeni og açıklaması, Yandex yok, Google Fonts yok, GDPR bölümü var. Tarayıcıda AI Asistan testi kullanıcıda. Eski not: ana sayfa/giriş/araç sayfası 200; çerez banner'ı (GA ID varsa);
       AI Asistan bir soru; `showmigrations` hepsi [X]; nginx/web log hata yok.
-- [ ] 7. Admin'de `feature_multilingual` aç — AVUKAT KONTROLÜNDEN SONRA (kapalıyken EN/DE sayfaları 404, TR etkilenmez).
+- [x] 7. `feature_multilingual` — AÇIK, EN/DE YAYINDA (kullanıcı teyidi 26 Eylül 2026). Avukat maddeleri B bölümünde ayrıca açık.
 - [ ] **Canlıda `GOOGLE_ANALYTICS_ID` TANIMLI DEĞİL** (25 Eylül 2026, canlı HTML'de GA script/banner yok; deploy öncesi de yoktu) → sitede hiç analiz aracı çalışmıyor. İstenirse .env'e eklenir, banner otomatik devreye girer. Eski not: Canlıda kontrol: `GOOGLE_ANALYTICS_ID` tanımlı mı (banner ona bağlı);
   canlı `GROQ_API_KEY` ile gpt-oss-120b yanıt veriyor mu.
 - [ ] Yandex Metrica hesabı/sayacı kapatılabilir (kod kaldırıldı).
