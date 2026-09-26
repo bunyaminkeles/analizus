@@ -92,6 +92,13 @@ maddelerde.
   kullanıcı raporu: /tarama/'da TR→EN): Django `set_language` karşılık bulamayınca `next`'i
   aynen döndürüyordu (tarama, forum, blog, YÖK Tez, odalar… hepsi). `forum.views.set_language`
   sarmalayıcı: seçilen dilde karşılık yoksa o dilin ana sayfasına (/en/, /de/). 10 senaryo test.
+- [ ] **OpenAlex + Semantic Scholar tam EN/DE çevirisi** (26 Eylül 2026, kullanıcı: "todo'ya
+  yaz, şimdiden açık kalabilir"): EN/DE navbar'da "Academic Search" açılır menüsüyle AÇIK
+  (masaüstü + mobil; /tarama/ hub'ı yerine doğrudan iki araç). Kalan çeviri: landing'lerde
+  EN render'da görünür metnin ~2/3'ü TR (OpenAlex 27/41, S2 25/41) — kaynağı (view context /
+  `tarama_console_base.html` / msgstr boş) ÖLÇÜLECEK; `order.html`'ler 0 etiket (~60 metin);
+  sonuç/iş durumu JS metinleri ve e-postalar da kontrol edilecek. Anasayfadaki sabit
+  `href="/openalex/"`'ler `{% url %}`'ye çevrilmeli (EN'de TR sayfaya gidiyor).
 - [ ] **C grubu sayfaların EN/DE çevirisi** (26 Eylül 2026, kullanıcı: "sonraki projede
   lazım olacak, bibliometrik analizler gibi"): Bibliometrik Analiz, Tableau Analizleri,
   Akademik Tarama (/tarama/, OpenAlex, Semantic Scholar). DÜZELTME (26 Eylül 2026, ölçüldü):
