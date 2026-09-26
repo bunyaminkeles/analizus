@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load i18n %}
+{% load i18n static %}
 
 {% block main_content_classes %}col-lg-12{% endblock %}
 
@@ -8,246 +8,196 @@
 
 {% block title %}{% trans "Profili Düzenle" %} - Analizus{% endblock %}
 
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/profiles.css' %}">
+{% endblock %}
+
 {% block content %}
 <div class="container py-4">
     <div class="row justify-content-center">
         <div class="col-lg-10">
-            <div class="card border-0 shadow-lg" style="background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(255, 255, 255, 0.1) !important;">
-                <div class="card-header bg-transparent border-bottom border-secondary border-opacity-25 py-3">
-                    <h4 class="text-white mb-0"><i class="bi bi-gear-fill text-info me-2"></i>{% trans "Profili Düzenle" %}</h4>
-                </div>
-                <div class="card-body p-4">
-                    <form method="post" enctype="multipart/form-data">
-                        {% csrf_token %}
+            <div class="ax-profile-edit">
+                <h1 class="ax-profile-edit__title"><i class="bi bi-gear-fill" aria-hidden="true"></i>{% trans "Profili Düzenle" %}</h1>
 
-                        <!-- Sekmeler -->
-                        <ul class="nav nav-tabs border-secondary mb-4" id="editTabs" role="tablist">
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link active" id="general-tab" data-bs-toggle="tab" data-bs-target="#general" type="button">{% trans "Genel Bilgiler" %}</button>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="academic-tab" data-bs-toggle="tab" data-bs-target="#academic" type="button">{% trans "Akademik & Sosyal" %}</button>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="skills-tab" data-bs-toggle="tab" data-bs-target="#skills" type="button">{% trans "Yetenekler" %}</button>
-                            </li>
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="settings-tab" data-bs-toggle="tab" data-bs-target="#settings" type="button">{% trans "Ayarlar" %}</button>
-                            </li>
-                        </ul>
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
 
-                        <div class="tab-content" id="editTabsContent">
-                            
-                            <!-- 1. GENEL BİLGİLER -->
-                            <div class="tab-pane fade show active" id="general" role="tabpanel">
-                                <div class="row mb-3">
-                                    <div class="col-md-6">
-                                        <label class="form-label text-white-50">{% trans "Ad" context "kişi adı" %}</label>
-                                        <input type="text" name="first_name" class="form-control" value="{{ user.first_name }}">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label text-white-50">{% trans "Soyad" %}</label>
-                                        <input type="text" name="last_name" class="form-control" value="{{ user.last_name }}">
-                                    </div>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label text-white-50">{% trans "E-posta" %}</label>
-                                    <input type="email" name="email" class="form-control" value="{{ user.email }}">
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label text-white-50">{% trans "Ünvan (Başlık)" %}</label>
-                                    <input type="text" name="title" class="form-control" value="{{ profile.title }}" placeholder="{% trans "Örn: Veri Bilimci, Doktora Öğrencisi" %}">
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label text-white-50">{% trans "Konum" %}</label>
-                                    <input type="text" name="location" class="form-control" value="{{ profile.location }}">
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label text-white-50">{% trans "Biyografi" %}</label>
-                                    <textarea name="bio" class="form-control" rows="4">{{ profile.bio }}</textarea>
-                                </div>
-                                <div class="mb-3">
-                                    <label class="form-label text-white-50">{% trans "Profil Fotoğrafı" %}</label>
-                                    <input type="file" name="avatar" class="form-control">
-                                </div>
+                    <!-- Sekmeler (profil sayfasıyla aynı bileşen; vanilla JS) -->
+                    <div class="ax-profile-tabs" role="tablist">
+                        <button type="button" class="ax-profile-tab-btn active" data-tab="general" role="tab"><i class="bi bi-person" aria-hidden="true"></i>{% trans "Genel Bilgiler" %}</button>
+                        <button type="button" class="ax-profile-tab-btn" data-tab="academic" role="tab"><i class="bi bi-mortarboard" aria-hidden="true"></i>{% trans "Akademik & Sosyal" %}</button>
+                        <button type="button" class="ax-profile-tab-btn" data-tab="skills" role="tab"><i class="bi bi-lightning" aria-hidden="true"></i>{% trans "Yetenekler" %}</button>
+                        <button type="button" class="ax-profile-tab-btn" data-tab="settings" role="tab"><i class="bi bi-sliders" aria-hidden="true"></i>{% trans "Ayarlar" %}</button>
+                    </div>
+
+                    <!-- 1. GENEL BİLGİLER -->
+                    <div class="ax-profile-tab-panel active" data-panel="general" role="tabpanel">
+                        <div class="ax-profile-edit__grid">
+                            <div class="ax-form-group">
+                                <label class="ax-form-label" for="f-first-name">{% trans "Ad" context "kişi adı" %}</label>
+                                <input type="text" id="f-first-name" name="first_name" class="ax-form-control" value="{{ user.first_name }}">
                             </div>
-
-                            <!-- 2. AKADEMİK & SOSYAL -->
-                            <div class="tab-pane fade" id="academic" role="tabpanel">
-                                <h6 class="text-info mb-3">{% trans "Akademik Bilgiler" %}</h6>
-                                <div class="row mb-3">
-                                    <div class="col-md-6">
-                                        <label class="form-label text-white-50">{% trans "Üniversite" %}</label>
-                                        <input type="text" name="university" class="form-control" value="{{ profile.university }}">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label text-white-50">{% trans "Bölüm" %}</label>
-                                        <input type="text" name="department" class="form-control" value="{{ profile.department }}">
-                                    </div>
-                                </div>
-                                <div class="mb-4">
-                                    <label class="form-label text-white-50">{% trans "Akademik Unvan" %}</label>
-                                    <input type="text" name="academic_title" class="form-control" value="{{ profile.academic_title }}" placeholder="{% trans "Örn: Dr., Doç. Dr." %}">
-                                </div>
-
-                                <h6 class="text-info mb-3">{% trans "Sosyal Medya & Bağlantılar" %}</h6>
-                                <div class="row g-3">
-                                    <div class="col-md-6">
-                                        <label class="form-label text-white-50"><i class="bi bi-phone me-1"></i>{% trans "Telefon Numarası" %}</label>
-                                        <input type="tel" name="phone_number" class="form-control" value="{{ profile.phone_number }}" placeholder="+90 5XX XXX XX XX">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label text-white-50"><i class="bi bi-globe me-1"></i>{% trans "Web Sitesi" %}</label>
-                                        <input type="url" name="website" class="form-control" value="{{ profile.website }}">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label text-white-50"><i class="bi bi-linkedin me-1"></i>LinkedIn (URL)</label>
-                                        <input type="url" name="linkedin" class="form-control" value="{{ profile.linkedin }}">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label text-white-50"><i class="bi bi-twitter me-1"></i>{% trans "Twitter/X (Kullanıcı Adı)" %}</label>
-                                        <input type="text" name="twitter" class="form-control" value="{{ profile.twitter }}">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label text-white-50"><i class="bi bi-github me-1"></i>{% trans "GitHub (Kullanıcı Adı)" %}</label>
-                                        <input type="text" name="github" class="form-control" value="{{ profile.github }}">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label text-white-50">ORCID ID</label>
-                                        <input type="text" name="orcid" class="form-control" value="{{ profile.orcid }}">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label text-white-50">Google Scholar (URL)</label>
-                                        <input type="url" name="google_scholar" class="form-control" value="{{ profile.google_scholar }}">
-                                    </div>
-                                </div>
+                            <div class="ax-form-group">
+                                <label class="ax-form-label" for="f-last-name">{% trans "Soyad" %}</label>
+                                <input type="text" id="f-last-name" name="last_name" class="ax-form-control" value="{{ user.last_name }}">
                             </div>
-
-                            <!-- 3. YETENEKLER (SKILLS) -->
-                            <div class="tab-pane fade" id="skills" role="tabpanel">
-                                <p class="text-muted mb-3">{% trans "Uzmanlık alanlarınızı seçin veya kendinizinkini ekleyin." %}</p>
-
-                                <!-- Seçili yetenekler (tag görünümü) -->
-                                <div id="selected-tags" class="d-flex flex-wrap gap-2 mb-3 p-3 rounded" style="min-height:44px;background:rgba(99,102,241,0.06);border:1px solid rgba(99,102,241,0.18);">
-                                    <span class="text-white-50 small align-self-center" id="no-selection-hint">{% trans "Henüz seçilmedi" %}</span>
-                                </div>
-
-                                <!-- Arama -->
-                                <div class="input-group mb-3">
-                                    <span class="input-group-text bg-dark border-secondary text-white-50"><i class="bi bi-search"></i></span>
-                                    <input type="text" id="skill-search" class="form-control bg-dark text-white border-secondary"
-                                           placeholder="{% trans "Yetenek ara..." %}">
-                                </div>
-
-                                <!-- Chip listesi -->
-                                <div id="skill-chips" class="d-flex flex-wrap gap-2">
-                                    {% for skill in all_skills %}
-                                    <label class="skill-chip {% if skill in profile.skills.all %}selected{% endif %}"
-                                           data-name="{{ skill.localized_title|lower }}">
-                                        <input type="checkbox" name="skills" value="{{ skill.id }}"
-                                               {% if skill in profile.skills.all %}checked{% endif %}
-                                               style="display:none;">
-                                        {{ skill.localized_title }}
-                                    </label>
-                                    {% endfor %}
-                                </div>
+                            <div class="ax-form-group ax-profile-edit__full">
+                                <label class="ax-form-label" for="f-email">{% trans "E-posta" %}</label>
+                                <input type="email" id="f-email" name="email" class="ax-form-control" value="{{ user.email }}">
                             </div>
+                            <div class="ax-form-group ax-profile-edit__full">
+                                <label class="ax-form-label" for="f-title">{% trans "Ünvan (Başlık)" %}</label>
+                                <input type="text" id="f-title" name="title" class="ax-form-control" value="{{ profile.title }}" placeholder="{% trans "Örn: Veri Bilimci, Doktora Öğrencisi" %}">
+                            </div>
+                            <div class="ax-form-group ax-profile-edit__full">
+                                <label class="ax-form-label" for="f-location">{% trans "Konum" %}</label>
+                                <input type="text" id="f-location" name="location" class="ax-form-control" value="{{ profile.location }}">
+                            </div>
+                            <div class="ax-form-group ax-profile-edit__full">
+                                <label class="ax-form-label" for="f-bio">{% trans "Biyografi" %}</label>
+                                <textarea id="f-bio" name="bio" class="ax-form-control" rows="4">{{ profile.bio }}</textarea>
+                            </div>
+                            <div class="ax-form-group ax-profile-edit__full">
+                                <label class="ax-form-label" for="f-avatar">{% trans "Profil Fotoğrafı" %}</label>
+                                <input type="file" id="f-avatar" name="avatar" class="ax-form-control" accept="image/*">
+                            </div>
+                        </div>
+                    </div>
 
-                            <!-- 4. AYARLAR -->
-                            <div class="tab-pane fade" id="settings" role="tabpanel">
-                                <h6 class="text-info mb-3">{% trans "Bildirim Ayarları" %}</h6>
-                                <div class="form-check form-switch mb-3">
-                                    <input class="form-check-input" type="checkbox" name="email_on_reply" id="email_on_reply" {% if profile.email_on_reply %}checked{% endif %}>
-                                    <label class="form-check-label text-white" for="email_on_reply">{% trans "Konularıma cevap geldiğinde e-posta gönder" %}</label>
-                                </div>
-                                <div class="form-check form-switch mb-4">
-                                    <input class="form-check-input" type="checkbox" name="email_on_private_message" id="email_on_private_message" {% if profile.email_on_private_message %}checked{% endif %}>
-                                    <label class="form-check-label text-white" for="email_on_private_message">{% trans "Özel mesaj geldiğinde e-posta gönder" %}</label>
-                                </div>
-
-                                <h6 class="text-info mb-3">{% trans "Gizlilik" %}</h6>
-                                <div class="form-check form-switch mb-3">
-                                    <input class="form-check-input" type="checkbox" name="is_public" id="is_public" {% if profile.is_public %}checked{% endif %}>
-                                    <label class="form-check-label text-white" for="is_public">{% trans "Profilim herkese açık olsun" %}</label>
-                                </div>
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" name="show_email" id="show_email" {% if profile.show_email %}checked{% endif %}>
-                                    <label class="form-check-label text-white" for="show_email">{% trans "E-posta adresimi profilimde göster" %}</label>
-                                </div>
+                    <!-- 2. AKADEMİK & SOSYAL -->
+                    <div class="ax-profile-tab-panel" data-panel="academic" role="tabpanel">
+                        <h2 class="ax-profile-edit__section">{% trans "Akademik Bilgiler" %}</h2>
+                        <div class="ax-profile-edit__grid">
+                            <div class="ax-form-group">
+                                <label class="ax-form-label" for="f-university">{% trans "Üniversite" %}</label>
+                                <input type="text" id="f-university" name="university" class="ax-form-control" value="{{ profile.university }}">
+                            </div>
+                            <div class="ax-form-group">
+                                <label class="ax-form-label" for="f-department">{% trans "Bölüm" %}</label>
+                                <input type="text" id="f-department" name="department" class="ax-form-control" value="{{ profile.department }}">
+                            </div>
+                            <div class="ax-form-group ax-profile-edit__full">
+                                <label class="ax-form-label" for="f-academic-title">{% trans "Akademik Unvan" %}</label>
+                                <input type="text" id="f-academic-title" name="academic_title" class="ax-form-control" value="{{ profile.academic_title }}" placeholder="{% trans "Örn: Dr., Doç. Dr." %}">
                             </div>
                         </div>
 
-                        <div class="d-flex justify-content-end mt-4 pt-3 border-top border-secondary border-opacity-25">
-                            <a href="{% url 'profile_detail' username=user.username %}" class="btn btn-outline-light me-2">{% trans "İptal" %}</a>
-                            <button type="submit" class="btn btn-success px-4 fw-bold"><i class="bi bi-check-lg me-1"></i>{% trans "Kaydet" %}</button>
+                        <h2 class="ax-profile-edit__section">{% trans "Sosyal Medya & Bağlantılar" %}</h2>
+                        <div class="ax-profile-edit__grid">
+                            <div class="ax-form-group">
+                                <label class="ax-form-label" for="f-phone"><i class="bi bi-phone" aria-hidden="true"></i> {% trans "Telefon Numarası" %}</label>
+                                <input type="tel" id="f-phone" name="phone_number" class="ax-form-control" value="{{ profile.phone_number }}" placeholder="+90 5XX XXX XX XX">
+                            </div>
+                            <div class="ax-form-group">
+                                <label class="ax-form-label" for="f-website"><i class="bi bi-globe" aria-hidden="true"></i> {% trans "Web Sitesi" %}</label>
+                                <input type="url" id="f-website" name="website" class="ax-form-control" value="{{ profile.website }}">
+                            </div>
+                            <div class="ax-form-group">
+                                <label class="ax-form-label" for="f-linkedin"><i class="bi bi-linkedin" aria-hidden="true"></i> LinkedIn (URL)</label>
+                                <input type="url" id="f-linkedin" name="linkedin" class="ax-form-control" value="{{ profile.linkedin }}">
+                            </div>
+                            <div class="ax-form-group">
+                                <label class="ax-form-label" for="f-twitter"><i class="bi bi-twitter-x" aria-hidden="true"></i> {% trans "Twitter/X (Kullanıcı Adı)" %}</label>
+                                <input type="text" id="f-twitter" name="twitter" class="ax-form-control" value="{{ profile.twitter }}">
+                            </div>
+                            <div class="ax-form-group">
+                                <label class="ax-form-label" for="f-github"><i class="bi bi-github" aria-hidden="true"></i> {% trans "GitHub (Kullanıcı Adı)" %}</label>
+                                <input type="text" id="f-github" name="github" class="ax-form-control" value="{{ profile.github }}">
+                            </div>
+                            <div class="ax-form-group">
+                                <label class="ax-form-label" for="f-orcid">ORCID ID</label>
+                                <input type="text" id="f-orcid" name="orcid" class="ax-form-control" value="{{ profile.orcid }}">
+                            </div>
+                            <div class="ax-form-group ax-profile-edit__full">
+                                <label class="ax-form-label" for="f-scholar">Google Scholar (URL)</label>
+                                <input type="url" id="f-scholar" name="google_scholar" class="ax-form-control" value="{{ profile.google_scholar }}">
+                            </div>
                         </div>
-                    </form>
-                </div>
+                    </div>
+
+                    <!-- 3. YETENEKLER -->
+                    <div class="ax-profile-tab-panel" data-panel="skills" role="tabpanel">
+                        <p class="ax-form-hint ax-profile-edit__lead">{% trans "Uzmanlık alanlarınızı listeden seçin." %}</p>
+
+                        <!-- Seçili yetenekler -->
+                        <div id="selected-tags" class="ax-profile-edit__selected">
+                            <span class="ax-form-hint" id="no-selection-hint">{% trans "Henüz seçilmedi" %}</span>
+                        </div>
+
+                        <div class="ax-form-group ax-profile-edit__search">
+                            <i class="bi bi-search" aria-hidden="true"></i>
+                            <input type="text" id="skill-search" class="ax-form-control" placeholder="{% trans "Yetenek ara..." %}" aria-label="{% trans "Yetenek ara..." %}">
+                        </div>
+
+                        <!-- Chip listesi — seçili set tek sorguda (with ile önbelleklenir).
+                             <label> değil <span>: bundle.css'teki global label!important
+                             rengi chip'leri boyuyordu; tıklama JS ile yönetiliyor -->
+                        {% with selected_skills=profile.skills.all %}
+                        <div id="skill-chips" class="ax-profile-edit__chips">
+                            {% for skill in all_skills %}
+                            <span class="skill-chip {% if skill in selected_skills %}selected{% endif %}"
+                                  data-name="{{ skill.localized_title|lower }}">
+                                <input type="checkbox" name="skills" value="{{ skill.id }}"
+                                       {% if skill in selected_skills %}checked{% endif %} hidden>
+                                {{ skill.localized_title }}
+                            </span>
+                            {% endfor %}
+                        </div>
+                        {% endwith %}
+                    </div>
+
+                    <!-- 4. AYARLAR -->
+                    <div class="ax-profile-tab-panel" data-panel="settings" role="tabpanel">
+                        <h2 class="ax-profile-edit__section">{% trans "Bildirim Ayarları" %}</h2>
+                        <div class="ax-profile-edit__checks">
+                            <label class="ax-form-check">
+                                <input class="ax-form-check-input" type="checkbox" name="email_on_reply" {% if profile.email_on_reply %}checked{% endif %}>
+                                <span class="ax-form-check-label">{% trans "Konularıma cevap geldiğinde e-posta gönder" %}</span>
+                            </label>
+                            <label class="ax-form-check">
+                                <input class="ax-form-check-input" type="checkbox" name="email_on_private_message" {% if profile.email_on_private_message %}checked{% endif %}>
+                                <span class="ax-form-check-label">{% trans "Özel mesaj geldiğinde e-posta gönder" %}</span>
+                            </label>
+                        </div>
+
+                        <h2 class="ax-profile-edit__section">{% trans "Gizlilik" %}</h2>
+                        <div class="ax-profile-edit__checks">
+                            <label class="ax-form-check">
+                                <input class="ax-form-check-input" type="checkbox" name="is_public" {% if profile.is_public %}checked{% endif %}>
+                                <span class="ax-form-check-label">{% trans "Profilim herkese açık olsun" %}</span>
+                            </label>
+                            <label class="ax-form-check">
+                                <input class="ax-form-check-input" type="checkbox" name="show_email" {% if profile.show_email %}checked{% endif %}>
+                                <span class="ax-form-check-label">{% trans "E-posta adresimi profilimde göster" %}</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="ax-profile-edit__actions">
+                        <a href="{% url 'profile_detail' username=user.username %}" class="ax-btn ax-btn--ghost">{% trans "İptal" %}</a>
+                        <button type="submit" class="ax-btn ax-btn--primary"><i class="bi bi-check-lg" aria-hidden="true"></i>{% trans "Kaydet" %}</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 </div>
 
-<style>
-    .nav-tabs .nav-link {
-        color: #94a3b8;
-        border: 1px solid transparent;
-    }
-    .nav-tabs .nav-link:hover {
-        color: #fff;
-        border-color: rgba(255,255,255,0.1);
-    }
-    .nav-tabs .nav-link.active {
-        background-color: #1e293b !important;
-        color: #0dcaf0 !important;
-        border-color: rgba(255, 255, 255, 0.2) rgba(255, 255, 255, 0.2) transparent !important;
-    }
-    .form-check-input:checked {
-        background-color: #0dcaf0;
-        border-color: #0dcaf0;
-    }
-    .skill-chip {
-        display: inline-flex;
-        align-items: center;
-        padding: 5px 12px;
-        border-radius: 20px;
-        font-size: .8rem;
-        font-weight: 500;
-        cursor: pointer;
-        user-select: none;
-        background: rgba(30,41,59,0.8);
-        border: 1px solid rgba(255,255,255,0.1);
-        color: #94a3b8;
-        transition: all .15s;
-    }
-    .skill-chip:hover {
-        border-color: rgba(99,102,241,0.4);
-        color: #c7d2fe;
-    }
-    .skill-chip.selected {
-        background: rgba(99,102,241,0.2);
-        border-color: rgba(99,102,241,0.5);
-        color: #a5b4fc;
-    }
-    .skill-chip.hidden { display: none; }
-    .selected-tag {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        padding: 3px 10px;
-        border-radius: 20px;
-        font-size: .78rem;
-        font-weight: 600;
-        background: rgba(99,102,241,0.2);
-        border: 1px solid rgba(99,102,241,0.4);
-        color: #a5b4fc;
-    }
-    .selected-tag .rm { cursor: pointer; opacity: .6; font-size: .7rem; }
-    .selected-tag .rm:hover { opacity: 1; }
-</style>
-
 <script>
 (function() {
+    // ── Sekmeler ────────────────────────────────────────────────────────────
+    var tabs = document.querySelectorAll('.ax-profile-edit .ax-profile-tab-btn');
+    var panels = document.querySelectorAll('.ax-profile-edit .ax-profile-tab-panel');
+    tabs.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            tabs.forEach(function (t) { t.classList.remove('active'); });
+            panels.forEach(function (p) { p.classList.remove('active'); });
+            btn.classList.add('active');
+            var panel = document.querySelector('.ax-profile-edit [data-panel="' + btn.dataset.tab + '"]');
+            if (panel) panel.classList.add('active');
+        });
+    });
+
     // ── Chip seçim mantığı ──────────────────────────────────────────────────
     const chips = document.querySelectorAll('.skill-chip');
     const tagsBox = document.getElementById('selected-tags');

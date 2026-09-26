@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-26 21:06+0300\n"
+"POT-Creation-Date: 2026-09-26 21:25+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -957,7 +957,7 @@ msgid "Adres:"
 msgstr "Adresse:"
 
 #: forum/templates/forum/account_delete.html:4
-#: forum/templates/forum/profile_detail.html:765
+#: forum/templates/forum/profile_detail.html:764
 msgid "Hesabı Sil"
 msgstr "Konto löschen"
 
@@ -1497,7 +1497,7 @@ msgstr ""
 
 #: forum/templates/forum/contact.html:28 forum/templates/forum/contact.html:65
 #: forum/templates/forum/egitim_talebi.html:54
-#: forum/templates/forum/profile_edit.html:54
+#: forum/templates/forum/profile_edit.html:45
 #: forum/templates/forum/proje_talebi.html:152
 msgid "E-posta"
 msgstr "E-Mail"
@@ -4807,7 +4807,7 @@ msgstr "Aktualisieren (letzte Änderung)"
 #: forum/templates/forum/market/edit_job.html:63
 #: forum/templates/forum/market/job_detail.html:257
 #: forum/templates/forum/market/post_job.html:54
-#: forum/templates/forum/profile_edit.html:181
+#: forum/templates/forum/profile_edit.html:177
 #: istatistik/templates/istatistik/afa.html:111
 #: istatistik/templates/istatistik/afa.html:143
 #: istatistik/templates/istatistik/betimsel.html:91
@@ -4885,7 +4885,7 @@ msgid "Kaydedildi"
 msgstr "Gespeichert"
 
 #: forum/templates/forum/market/job_detail.html:140
-#: forum/templates/forum/profile_edit.html:182
+#: forum/templates/forum/profile_edit.html:178
 msgid "Kaydet"
 msgstr "Speichern"
 
@@ -5591,9 +5591,9 @@ msgid "Mesajlar"
 msgstr "Beiträge"
 
 #: forum/templates/forum/profile_detail.html:164
-#: forum/templates/forum/proje_talebi.html:121
+msgctxt "puan ortalaması"
 msgid "Değerlendirme"
-msgstr "bewertung"
+msgstr "Bewertung"
 
 #: forum/templates/forum/profile_detail.html:182
 msgid "Uzmanlık Araçları"
@@ -5601,7 +5601,7 @@ msgstr "Fachwerkzeuge"
 
 #: forum/templates/forum/profile_detail.html:204
 #: forum/templates/forum/profile_edit.html:9
-#: forum/templates/forum/profile_edit.html:17 templates/base.html:366
+#: forum/templates/forum/profile_edit.html:20 templates/base.html:366
 #: templates/base.html:504
 msgid "Profili Düzenle"
 msgstr "Profil bearbeiten"
@@ -5631,7 +5631,7 @@ msgid "Rozetler"
 msgstr "Abzeichen"
 
 #: forum/templates/forum/profile_detail.html:254
-#: forum/templates/forum/profile_edit.html:32
+#: forum/templates/forum/profile_edit.html:29
 msgid "Yetenekler"
 msgstr "Kompetenzen"
 
@@ -5845,7 +5845,7 @@ msgid "Onaysız"
 msgstr "Nicht verifiziert"
 
 #: forum/templates/forum/profile_detail.html:706
-#: forum/templates/forum/profile_edit.html:96
+#: forum/templates/forum/profile_edit.html:88
 msgid "Telefon Numarası"
 msgstr "Telefonnummer"
 
@@ -5869,125 +5869,125 @@ msgstr "Nicht verbunden"
 msgid "Bağla"
 msgstr "Verbinden"
 
-#: forum/templates/forum/profile_detail.html:766
+#: forum/templates/forum/profile_detail.html:765
 msgid "Hesabınızı ve kişisel verilerinizi kalıcı olarak silebilirsiniz."
 msgstr ""
 "Sie können Ihr Konto und Ihre personenbezogenen Daten dauerhaft löschen."
 
-#: forum/templates/forum/profile_detail.html:768
+#: forum/templates/forum/profile_detail.html:767
 msgid "Hesabımı Sil"
 msgstr "Mein Konto löschen"
 
-#: forum/templates/forum/profile_edit.html:26
+#: forum/templates/forum/profile_edit.html:27
 msgid "Genel Bilgiler"
 msgstr "Allgemeine Angaben"
 
-#: forum/templates/forum/profile_edit.html:29
+#: forum/templates/forum/profile_edit.html:28
 msgid "Akademik & Sosyal"
 msgstr "Akademisch & Sozial"
 
-#: forum/templates/forum/profile_edit.html:35
+#: forum/templates/forum/profile_edit.html:30
 msgid "Ayarlar"
 msgstr "Einstellungen"
 
-#: forum/templates/forum/profile_edit.html:45
+#: forum/templates/forum/profile_edit.html:37
 msgctxt "kişi adı"
 msgid "Ad"
 msgstr "Vorname"
 
-#: forum/templates/forum/profile_edit.html:49
+#: forum/templates/forum/profile_edit.html:41
 msgid "Soyad"
 msgstr "Nachname"
 
-#: forum/templates/forum/profile_edit.html:58
+#: forum/templates/forum/profile_edit.html:49
 msgid "Ünvan (Başlık)"
 msgstr "Titel (Überschrift)"
 
-#: forum/templates/forum/profile_edit.html:59
+#: forum/templates/forum/profile_edit.html:50
 msgid "Örn: Veri Bilimci, Doktora Öğrencisi"
 msgstr "Z. B. Data Scientist, Doktorand/in"
 
-#: forum/templates/forum/profile_edit.html:62
+#: forum/templates/forum/profile_edit.html:53
 msgid "Konum"
 msgstr "Standort"
 
-#: forum/templates/forum/profile_edit.html:66
+#: forum/templates/forum/profile_edit.html:57
 msgid "Biyografi"
 msgstr "Biografie"
 
-#: forum/templates/forum/profile_edit.html:70
+#: forum/templates/forum/profile_edit.html:61
 msgid "Profil Fotoğrafı"
 msgstr "Profilfoto"
 
-#: forum/templates/forum/profile_edit.html:77
+#: forum/templates/forum/profile_edit.html:69
 msgid "Akademik Bilgiler"
 msgstr "Akademische Angaben"
 
-#: forum/templates/forum/profile_edit.html:80
+#: forum/templates/forum/profile_edit.html:72
 msgid "Üniversite"
 msgstr "Universität"
 
-#: forum/templates/forum/profile_edit.html:84
+#: forum/templates/forum/profile_edit.html:76
 msgid "Bölüm"
 msgstr "Fachbereich"
 
-#: forum/templates/forum/profile_edit.html:89
+#: forum/templates/forum/profile_edit.html:80
 msgid "Akademik Unvan"
 msgstr "Akademischer Titel"
 
-#: forum/templates/forum/profile_edit.html:90
+#: forum/templates/forum/profile_edit.html:81
 msgid "Örn: Dr., Doç. Dr."
 msgstr "Z. B. Dr., PD Dr."
 
-#: forum/templates/forum/profile_edit.html:93
+#: forum/templates/forum/profile_edit.html:85
 msgid "Sosyal Medya & Bağlantılar"
 msgstr "Soziale Medien & Links"
 
-#: forum/templates/forum/profile_edit.html:100
+#: forum/templates/forum/profile_edit.html:92
 msgid "Web Sitesi"
 msgstr "Website"
 
-#: forum/templates/forum/profile_edit.html:108
+#: forum/templates/forum/profile_edit.html:100
 msgid "Twitter/X (Kullanıcı Adı)"
 msgstr "Twitter/X (Benutzername)"
 
-#: forum/templates/forum/profile_edit.html:112
+#: forum/templates/forum/profile_edit.html:104
 msgid "GitHub (Kullanıcı Adı)"
 msgstr "GitHub (Benutzername)"
 
-#: forum/templates/forum/profile_edit.html:128
-msgid "Uzmanlık alanlarınızı seçin veya kendinizinkini ekleyin."
-msgstr "Wählen Sie Ihre Fachgebiete aus oder fügen Sie eigene hinzu."
+#: forum/templates/forum/profile_edit.html:120
+msgid "Uzmanlık alanlarınızı listeden seçin."
+msgstr "Wählen Sie Ihre Fachgebiete aus der Liste aus."
 
-#: forum/templates/forum/profile_edit.html:132
+#: forum/templates/forum/profile_edit.html:124
 msgid "Henüz seçilmedi"
 msgstr "Noch nichts ausgewählt"
 
-#: forum/templates/forum/profile_edit.html:139
+#: forum/templates/forum/profile_edit.html:129
 msgid "Yetenek ara..."
 msgstr "Kompetenzen suchen..."
 
-#: forum/templates/forum/profile_edit.html:158
+#: forum/templates/forum/profile_edit.html:151
 msgid "Bildirim Ayarları"
 msgstr "Benachrichtigungseinstellungen"
 
-#: forum/templates/forum/profile_edit.html:161
+#: forum/templates/forum/profile_edit.html:155
 msgid "Konularıma cevap geldiğinde e-posta gönder"
 msgstr "E-Mail senden, wenn jemand auf meine Themen antwortet"
 
-#: forum/templates/forum/profile_edit.html:165
+#: forum/templates/forum/profile_edit.html:159
 msgid "Özel mesaj geldiğinde e-posta gönder"
 msgstr "E-Mail senden, wenn ich eine private Nachricht erhalte"
 
-#: forum/templates/forum/profile_edit.html:168
+#: forum/templates/forum/profile_edit.html:163
 msgid "Gizlilik"
 msgstr "Privatsphäre"
 
-#: forum/templates/forum/profile_edit.html:171
+#: forum/templates/forum/profile_edit.html:167
 msgid "Profilim herkese açık olsun"
 msgstr "Mein Profil öffentlich machen"
 
-#: forum/templates/forum/profile_edit.html:175
+#: forum/templates/forum/profile_edit.html:171
 msgid "E-posta adresimi profilimde göster"
 msgstr "Meine E-Mail-Adresse im Profil anzeigen"
 
@@ -6065,6 +6065,10 @@ msgstr "Kostenlose"
 #: forum/templates/forum/proje_talebi.html:121
 msgid "Ön"
 msgstr "Erst-"
+
+#: forum/templates/forum/proje_talebi.html:121
+msgid "Değerlendirme"
+msgstr "bewertung"
 
 #: forum/templates/forum/proje_talebi.html:140
 msgid "Talep Formu"

@@ -161,7 +161,24 @@ maddelerde.
 - [x] **Profil detay "Hesabı Sil" bloğu ax- sistemine taşındı** (26 Eylül 2026): Bootstrap
   util + `btn-outline-danger` + hardcode rgba → `profiles.css` `.ax-profile-danger-zone`
   (token'lı, mobilde alt alta / ≥576px yan yana); 375px ve 900px ekran görüntüsüyle doğrulandı.
-- [ ] **Profil düzenleme sayfası ax- sistemine taşınacak** (26 Eylül 2026, sıradaki): tamamı
+- [x] **Profil düzenleme sayfası ax- sistemine taşındı** — KULLANICI ONAYLADI (26 Eylül 2026): `ax-form-*` + profil sekme bileşeni (vanilla JS), token'lı
+  CSS `profiles.css` `.ax-profile-edit*`; mobil tek sütun / ≥768px iki sütun; chip'ler
+  `<span>`; yetenek seçimi N+1 kaldırıldı (`with`); "listeden seçin" metni. POST
+  tüm alanları kaydediyor (test edildi), 61/61.
+- [x] **Profil sekmeleri DE'de sığmıyordu** (26 Eylül 2026, kullanıcı ekran görüntüsü):
+  gizli yatay kaydırma "Vertrauen"i görünmez yapıyordu → `flex-wrap: wrap`.
+- [x] **Profil "bewertung" (küçük harf) / "Assessment"** (26 Eylül 2026): profildeki
+  "Değerlendirme" `context "puan ortalaması"` → Rating / Bewertung.
+- [ ] **proje_talebi "Ön" + "Değerlendirme" parça birleştirme** (26 Eylül 2026):
+  `proje_talebi.html` ~121 `{% trans "Ön" %}<br>{% trans "Değerlendirme" %}` —
+  tam ifade msgid olmalı (DE "bewertung" küçük harf buradan).
+- [ ] **Global legacy CSS `label`/`input` `!important`** (26 Eylül 2026): `bundle.css`
+  (style.css kökenli) tüm `label`'lara neon-mavi renk, tüm `input`'lara padding/border
+  `!important` basıyor — `ax-form-*` bileşenlerini eziyor. Site geneli etkiler;
+  kaldırılması ayrı iş + tüm formların görsel kontrolü.
+- [ ] **Yerel ekran görüntüsü notu**: container `staticfiles` ayrı Docker volume —
+  hosttaki `staticfiles/` eski; dosyadan render'da `static/` kullan.
+- [ ] (eski not) **Profil düzenleme sayfası ax- sistemine taşınacak** (26 Eylül 2026, sıradaki): tamamı
   Bootstrap (card, form-control, nav-tabs, form-switch) + `data-bs-toggle` sekmeler +
   hardcode renkler; önce taslak ekran görüntüsü → kullanıcı onayı.
 - [ ] **Yerel SQLite'ta 0156/0157 uygulanmadı** (26 Eylül 2026): kullanıcının yerel

@@ -366,17 +366,14 @@
 }
 
 /* === SEKMELER (vanilla JS, Bootstrap'siz) === */
+/* Sığmayan sekme alt satıra geçer — gizli yatay kaydırma, uzun DE etiketlerinde
+   son sekmeyi ("Vertrauen") görünmez yapıyordu (26 Eylül 2026) */
 .ax-profile-tabs {
     display: flex;
+    flex-wrap: wrap;
     gap: 0;
     border-bottom: 1px solid var(--ax-border-default);
     margin-bottom: var(--ax-space-4);
-    overflow-x: auto;
-    scrollbar-width: none;
-}
-
-.ax-profile-tabs::-webkit-scrollbar {
-    display: none;
 }
 
 .ax-profile-tab-btn {
@@ -1227,5 +1224,141 @@ a.ax-profile-portfolio-card--link:hover {
     }
     .ax-profile-danger-zone__btn {
         flex-shrink: 0;
+    }
+}
+
+/* =============================================================
+   PROFİL DÜZENLE (profile_edit.html) — mobil önce: tek sütun,
+   butonlar tam genişlik; ≥768px iki sütun, butonlar sağda
+   ============================================================= */
+.ax-profile-edit {
+    background: var(--ax-bg-secondary);
+    border: 1px solid var(--ax-border-default);
+    border-radius: var(--ax-radius-xl);
+    padding: var(--ax-space-4);
+}
+
+.ax-profile-edit__title {
+    display: flex;
+    align-items: center;
+    gap: var(--ax-space-2);
+    margin: 0 0 var(--ax-space-4);
+    font-size: var(--ax-text-xl);
+    font-weight: var(--ax-font-semibold);
+    color: var(--ax-text-primary);
+}
+.ax-profile-edit__title i { color: var(--ax-accent-primary-light); }
+
+.ax-profile-edit__section {
+    margin: var(--ax-space-2) 0 var(--ax-space-3);
+    font-size: var(--ax-text-sm);
+    font-weight: var(--ax-font-semibold);
+    color: var(--ax-accent-primary-light);
+}
+.ax-profile-edit__section:not(:first-child) { margin-top: var(--ax-space-6); }
+
+.ax-profile-edit__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    column-gap: var(--ax-space-4);
+}
+.ax-profile-edit__grid .ax-form-group { min-width: 0; }
+.ax-profile-edit .ax-form-label i { color: var(--ax-text-muted); }
+
+.ax-profile-edit__lead { margin: 0 0 var(--ax-space-3); }
+
+.ax-profile-edit__selected {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--ax-space-2);
+    min-height: 44px;
+    margin-bottom: var(--ax-space-3);
+    padding: var(--ax-space-3);
+    border-radius: var(--ax-radius-md);
+    background: color-mix(in srgb, var(--ax-accent-primary) 6%, transparent);
+    border: 1px solid color-mix(in srgb, var(--ax-accent-primary) 18%, transparent);
+}
+
+/* İkon input'un yanında (içinde değil): bundle.css'teki global
+   input{padding:…!important} sol dolguyu eziyor */
+.ax-profile-edit__search {
+    flex-direction: row;
+    align-items: center;
+}
+.ax-profile-edit__search > i { color: var(--ax-text-muted); flex-shrink: 0; }
+.ax-profile-edit__search .ax-form-control { flex: 1; min-width: 0; }
+
+.ax-profile-edit__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ax-space-2);
+}
+
+.ax-profile-edit .skill-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: var(--ax-space-1) var(--ax-space-3);
+    border-radius: var(--ax-radius-full);
+    font-size: var(--ax-text-xs);
+    font-weight: var(--ax-font-medium);
+    cursor: pointer;
+    user-select: none;
+    background: var(--ax-bg-tertiary);
+    border: 1px solid var(--ax-border-hover);
+    color: var(--ax-text-secondary);
+    transition: border-color var(--ax-transition-fast), color var(--ax-transition-fast),
+                background-color var(--ax-transition-fast);
+}
+.ax-profile-edit .skill-chip:hover {
+    border-color: color-mix(in srgb, var(--ax-accent-primary) 40%, transparent);
+    color: var(--ax-accent-primary-light);
+}
+.ax-profile-edit .skill-chip.selected {
+    background: color-mix(in srgb, var(--ax-accent-primary) 20%, transparent);
+    border-color: color-mix(in srgb, var(--ax-accent-primary) 50%, transparent);
+    color: var(--ax-accent-primary-light);
+}
+.ax-profile-edit .skill-chip.hidden { display: none; }
+
+.ax-profile-edit .selected-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--ax-space-1);
+    padding: 2px var(--ax-space-3);
+    border-radius: var(--ax-radius-full);
+    font-size: var(--ax-text-xs);
+    font-weight: var(--ax-font-semibold);
+    background: color-mix(in srgb, var(--ax-accent-primary) 20%, transparent);
+    border: 1px solid color-mix(in srgb, var(--ax-accent-primary) 40%, transparent);
+    color: var(--ax-accent-primary-light);
+}
+.ax-profile-edit .selected-tag .rm { cursor: pointer; opacity: .6; }
+.ax-profile-edit .selected-tag .rm:hover { opacity: 1; }
+
+.ax-profile-edit__checks {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ax-space-3);
+}
+.ax-profile-edit .ax-form-check { align-items: flex-start; }
+.ax-profile-edit .ax-form-check-input { flex-shrink: 0; margin-top: 3px; }
+
+.ax-profile-edit__actions {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: var(--ax-space-2);
+    margin-top: var(--ax-space-6);
+    padding-top: var(--ax-space-4);
+    border-top: 1px solid var(--ax-border-default);
+}
+
+@media (min-width: 768px) {
+    .ax-profile-edit { padding: var(--ax-space-6); }
+    .ax-profile-edit__grid { grid-template-columns: 1fr 1fr; }
+    .ax-profile-edit__full { grid-column: 1 / -1; }
+    .ax-profile-edit__actions {
+        flex-direction: row;
+        justify-content: flex-end;
     }
 }
