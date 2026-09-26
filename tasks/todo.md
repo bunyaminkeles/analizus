@@ -137,7 +137,12 @@ maddelerde.
 - [x] **Profil düzenleme: geçersiz telefonda çift mesaj** — DÜZELTİLDİ (26 Eylül 2026):
   diğer alanlar kaydedilir, başarı + hata yerine tek uyarı ("Diğer bilgileriniz
   kaydedildi; ancak telefon numarası … kaydedilmedi") — TR/EN/DE test edildi.
-- [ ] **Profil kaydı hata verse de "başarıyla güncellendi" deniyor** (26 Eylül 2026,
+- [x] **Profil kaydı hatasında başarı mesajı** — DÜZELTİLDİ (26 Eylül 2026): `profile.save()`
+  hata verirse hata mesajı + düzenleme sayfasına dönüş; `user.save()` ve yetenekler
+  artık profil kaydı başarılı olunca yazılıyor (yarım kayıt yok). Teşhis logu ayrı
+  try'da (log hatası kaydı başarısız saymaz). Simülasyonla TR/EN/DE test edildi.
+  Kalan: LinkedIn dalı `profile.save()`'i erken çağırıyor (rozet için) — o dalda
+  yarım kayıt hâlâ mümkün (düşük öncelik). Eski not:
   önceden var): `profile_edit` `profile.save()` istisnasını loglayıp yutuyor, sonra
   başarı mesajı gösteriyor (views.py ~1440). Hata mesajı gösterilmeli — karar/iş.
 - [x] (eski not) **Profil düzenleme: geçersiz telefonda çift mesaj** (26 Eylül 2026, önceden

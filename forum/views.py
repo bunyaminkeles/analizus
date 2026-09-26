@@ -1362,7 +1362,7 @@ def profile_edit(request):
         user.first_name = request.POST.get('first_name', user.first_name)
         user.last_name = request.POST.get('last_name', user.last_name)
         user.email = request.POST.get('email', user.email)
-        user.save()
+        # user.save() ve yetenekler profil kaydı başarılı olunca yazılır (aşağıda)
         
         # Profil Bilgileri
         profile.title = request.POST.get('title', '')
@@ -1433,22 +1433,29 @@ def profile_edit(request):
 
         # Uzmanlık alanları (JobCategory)
         selected_skills = request.POST.getlist('skills')
-        profile.skills.set(selected_skills)
 
         try:
             profile.save()
+        except Exception as e:
+            # Kayıt başarısızsa kullanıcıya başarı mesajı gösterme (ör. avatar S3 yüklemesi)
+            logger.error(f"Profile save error: {type(e).__name__}: {e}", exc_info=True)
+            messages.error(request, gettext("Profiliniz kaydedilemedi. Lütfen tekrar deneyin; sorun sürerse bizimle iletişime geçin."))
+            return redirect('profile_edit')
+
+        user.save()
+        profile.skills.set(selected_skills)
+
+        # Yalnız teşhis logu — hata verse de kayıt başarılıdır
+        try:
             logger.debug(f"Profile saved. Avatar URL: {profile.avatar.url if profile.avatar else 'None'}")
             if profile.avatar:
                 logger.debug(f"Avatar name: {profile.avatar.name}")
                 logger.debug(f"Avatar storage: {profile.avatar.storage.__class__.__name__}")
                 # S3'te var mı kontrol et
-                try:
-                    exists = profile.avatar.storage.exists(profile.avatar.name)
-                    logger.debug(f"S3'te dosya var mı: {exists}")
-                except Exception as check_err:
-                    logger.warning(f"S3 kontrol hatası: {check_err}")
-        except Exception as e:
-            logger.error(f"Profile save error: {type(e).__name__}: {e}", exc_info=True)
+                exists = profile.avatar.storage.exists(profile.avatar.name)
+                logger.debug(f"S3'te dosya var mı: {exists}")
+        except Exception as check_err:
+            logger.warning(f"S3 kontrol hatası: {check_err}")
 
         if phone_invalid:
             messages.warning(request, gettext("Diğer bilgileriniz kaydedildi; ancak telefon numarası geçersiz olduğu için kaydedilmedi. Lütfen '05XX XXX XX XX' veya '+90 5XX XXX XX XX' biçiminde giriniz."))
