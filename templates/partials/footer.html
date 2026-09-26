@@ -59,7 +59,7 @@
                 <p class="ax-footer-heading">{% trans "Topluluk" %}</p>
                 <ul class="ax-footer-list">
                     <li><a href="{% url 'forum_index' %}"><i class="bi bi-chat-dots"></i>Forum</a></li>
-                    <li><a href="{% url 'studyroom_list' %}"><i class="bi bi-door-open"></i>{% trans "Çalışma Odaları" %}</a></li>
+                    {% if LANGUAGE_CODE == 'tr' %}<li><a href="{% url 'studyroom_list' %}"><i class="bi bi-door-open"></i>{% trans "Çalışma Odaları" %}</a></li>{% endif %}
                     {% if LANGUAGE_CODE == 'tr' %}<li><a href="{% url 'home' %}#istatistik-arenasi"><i class="bi bi-trophy-fill"></i>{% trans "İstatistik Arena" %}</a></li>{% endif %}
                     <li><a href="{% url 'blog_list' %}"><i class="bi bi-newspaper"></i>Blog</a></li>
                     <li><a href="{% url 'success_stories' %}"><i class="bi bi-trophy"></i>{% trans "Başarı Hikayeleri" %}</a></li>

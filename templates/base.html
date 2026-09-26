@@ -257,7 +257,7 @@
                         <a href="{% url 'forum_index' %}" class="site-nav__dropdown-item" role="menuitem">
                             <i class="bi bi-chat-square-text-fill me-1" style="color:#818cf8;"></i> Forum
                         </a>
-                        <a href="{% url 'studyroom_list' %}" class="site-nav__dropdown-item" role="menuitem">{% trans "Çalışma Odaları" %}</a>
+                        {% if LANGUAGE_CODE == 'tr' %}<a href="{% url 'studyroom_list' %}" class="site-nav__dropdown-item" role="menuitem">{% trans "Çalışma Odaları" %}</a>{% endif %}
                         {% if LANGUAGE_CODE == 'tr' %}<a href="{% url 'home' %}#istatistik-arenasi" class="site-nav__dropdown-item" role="menuitem">{% trans "İstatistik Arena" %}</a>{% endif %}
                         {% if features.blog %}
                         <a href="{% url 'blog_list' %}" class="site-nav__dropdown-item" role="menuitem">Blog</a>
@@ -457,7 +457,7 @@
                 </button>
                 <div class="nav-drawer__accordion-body" id="mob-topluluk">
                     <a href="{% url 'forum_index' %}" class="nav-drawer__link">Forum</a>
-                    <a href="{% url 'studyroom_list' %}" class="nav-drawer__link">{% trans "Çalışma Odaları" %}</a>
+                    {% if LANGUAGE_CODE == 'tr' %}<a href="{% url 'studyroom_list' %}" class="nav-drawer__link">{% trans "Çalışma Odaları" %}</a>{% endif %}
                     {% if LANGUAGE_CODE == 'tr' %}<a href="{% url 'home' %}#istatistik-arenasi" class="nav-drawer__link">{% trans "İstatistik Arena" %}</a>{% endif %}
                     {% if features.blog %}<a href="{% url 'blog_list' %}" class="nav-drawer__link">Blog</a>{% endif %}
                 </div>

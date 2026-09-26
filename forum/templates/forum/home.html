@@ -713,6 +713,8 @@
                     </ul>
                 </div>
             </div>
+            {% comment %}Çalışma odaları yalnız TR (odalar tek dilli; EN/DE hedefi proje talebi){% endcomment %}
+            {% if LANGUAGE_CODE == 'tr' %}
             <div class="col-12 col-md-6 col-lg-3">
                 <div class="ax-tool-card" role="link" tabindex="0" data-card-url="{% url 'studyroom_list' %}">
                     <div class="ax-tool-icon">🏠</div>
@@ -721,6 +723,7 @@
                     <a href="{% url 'studyroom_list' %}" class="ax-tool-link">{% trans "Katıl →" %}</a>
                 </div>
             </div>
+            {% endif %}
         </div>
     </div>
 </section>
