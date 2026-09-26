@@ -80,7 +80,11 @@ maddelerde.
   ile slug'dan alınmalı (quiz modülü genel olarak tek dilli mi — önce ölç).
 - [ ] **EDU "Doğrulanmış Akademisyen" DM metni TR sabit** (26 Eylül 2026):
   `forum/views.py` ~1330 — DM DB'ye yazılıyor; alıcının dilinde (`recipient_language`) üretilmeli.
-- [ ] **Profil modal view'ı kırık olabilir** (26 Eylül 2026): `views.py` ~3043
+- [x] **Profil modal — ölü kod silindi** (26 Eylül 2026, kullanıcı onayı): ölçüm — view
+  `api_get_profile_summary` hiçbir URL'ye bağlı değildi, `openProfileModal()` hiç
+  çağrılmıyordu, iki şablon kopyası kullanılmıyordu. Silinenler: view, base.html
+  `#profileModal` + JS, `forum/profile_modal_content.html`, `templates/profile_modal_content.html`
+  (169 satır). 12 sayfa 200/302, 38 inline script `node --check` temiz, 61/61. Eski not: `views.py` ~3043
   `forum/partials/profile_modal_content.html` render ediyor ama bu şablon yok
   (`forum/profile_modal_content.html` ve `templates/profile_modal_content.html` var,
   ikisi farklı). URL'nin kullanılıp kullanılmadığı ölçülecek.

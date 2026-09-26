@@ -3048,16 +3048,6 @@ def api_submit_quiz_answer(request):
             return JsonResponse({'success': False, 'error': str(e)})
     return JsonResponse({'success': False})
 
-def api_get_profile_summary(request, username):
-    """Kullanıcı profil özetini modal için getirir"""
-    profile_user = get_object_or_404(User, username=username)
-    
-    html = render_to_string('forum/partials/profile_modal_content.html', {
-        'profile_user': profile_user, 
-        'request': request
-    })
-    return JsonResponse({'success': True, 'html': html})
-
 def api_get_featured_story(request):
     """Haftanın başarı hikayesini getirir (Modal için)"""
     story = SuccessStory.objects.filter(is_featured=True, approval_status='approved').first()

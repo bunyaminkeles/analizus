@@ -555,19 +555,6 @@
         </div>
     </div>
 
-    <!-- PROFILE SUMMARY MODAL -->
-    <div class="ax-modal-backdrop" id="profileModal" tabindex="-1" aria-hidden="true">
-        <div class="ax-modal">
-            <div class="ax-modal__header">
-                <h5 class="ax-modal__title"><i class="bi bi-person-lines-fill text-info me-2"></i>{% trans "Kullanıcı Kartı" %}</h5>
-                <button type="button" class="ax-modal__close" data-ax-dismiss="modal" aria-label="{% trans 'Kapat' %}">&times;</button>
-            </div>
-            <div class="ax-modal__body" id="profileModalBody">
-                <div class="text-center py-4"><div class="spinner-border text-info"></div></div>
-            </div>
-        </div>
-    </div>
-
     <!-- SUCCESS STORY MODAL -->
     <div class="ax-modal-backdrop" id="storyModal" tabindex="-1" aria-hidden="true">
         <div class="ax-modal ax-modal--lg">
@@ -718,26 +705,6 @@
                         document.getElementById('quizScoreDisplay').innerText = `{% filter escapejs %}{% trans "Toplam Doğru:" %}{% endfilter %} ${data.total_correct}`;
                     }
                 });
-            }
-
-            // PROFILE MODAL FUNCTIONS
-            const profileModal = document.getElementById('profileModal');
-
-            function openProfileModal(username) {
-                AxModal.open(profileModal);
-                const body = document.getElementById('profileModalBody');
-                body.innerHTML = '<div class="text-center py-4"><div class="spinner-border text-info"></div></div>';
-                
-                // Not: urls.py'da 'api_get_profile_summary' tanımlanmalıdır.
-                fetch(`/api/profile-summary/${username}/`)
-                    .then(response => response.json())
-                    .then(data => {
-                        if(data.success) {
-                            body.innerHTML = data.html;
-                        } else {
-                            body.innerHTML = '<p class="text-center text-danger">{% filter escapejs %}{% trans "Profil yüklenemedi." %}{% endfilter %}</p>';
-                        }
-                    });
             }
 
             // FOLLOW FUNCTION
