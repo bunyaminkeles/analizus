@@ -1322,20 +1322,19 @@ def _handle_edu_user(user):
     profile.edu_proposal_expires = timezone.now() + timedelta(days=3)
     profile.save(update_fields=['edu_proposal_expires'])
 
-    # Admin DM gönder
+    # Admin DM gönder — mesaj DB'ye yazıldığı için alıcının dilinde üretilir
     admin_user = User.objects.filter(is_superuser=True).first()
     if admin_user:
-        PrivateMessage.objects.create(
-            sender=admin_user,
-            receiver=user,
-            message=(
-                f"Merhaba {user.username},\n\n"
+        from .i18n_utils import recipient_language
+        with recipient_language(user):
+            message = gettext(
+                "Merhaba %(username)s,\n\n"
                 "EDU uzantılı mail adresiniz ile giriş yaptığınız için "
                 "\"Doğrulanmış Akademisyen\" rozeti kazandınız! 🎓\n\n"
                 "Ayrıca 3 gün boyunca teklif verme hakkına sahipsiniz.\n\n"
                 "İyi çalışmalar,\nAnalizus Ekibi"
-            )
-        )
+            ) % {'username': user.username}
+        PrivateMessage.objects.create(sender=admin_user, receiver=user, message=message)
 
     # Mail gönder
     EmailService.send_edu_welcome_email(user)

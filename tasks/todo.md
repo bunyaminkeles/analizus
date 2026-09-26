@@ -88,7 +88,23 @@ maddelerde.
 - [ ] (eski not) **Quiz rozet bildirimi TR sabit** (26 Eylül 2026): `forum/views.py` ~3010
   `category_badge_map` / `'Quiz Efsanesi'` sabit Türkçe adlar — `Badge.localized_name`
   ile slug'dan alınmalı (quiz modülü genel olarak tek dilli mi — önce ölç).
-- [ ] **EDU "Doğrulanmış Akademisyen" DM metni TR sabit** (26 Eylül 2026):
+- [x] **EDU "Doğrulanmış Akademisyen" DM** — ÇEVRİLDİ (26 Eylül 2026): tek msgid,
+  `recipient_language(user)` ile alıcının dilinde üretilip DB'ye yazılıyor (istek dili
+  TR olsa da); TR/EN/DE doğrulandı.
+- [ ] **EDU tanıma yalnız `.edu` / `.edu.tr`** (26 Eylül 2026): `_handle_edu_user` Alman
+  (`uni-*.de`, `tu-*.de`, `*.uni-*.de`), İngiliz (`.ac.uk`), Avusturya (`.ac.at`) vb.
+  akademik adresleri tanımıyor → EN/DE akademisyen rozet/3 gün teklif hakkı alamaz.
+  Alan adı listesi iş kararı (hangi ülkeler, sahte alan riski).
+- [ ] **EN/DE kullanıcı puan/yetki ekonomisi — KARAR BEKLİYOR** (26 Eylül 2026, ölçüldü):
+  Navbar ★ = `reputation`; kaynaklar: analiz tamamlama +5 (EN/DE çevrili), forum konu
+  +5 / cevap +2 / beğeni +5 / en iyi cevap +20 (forum TR-only, i18n dışı), Arena doğru
+  cevap +10 (EN/DE'de gizlenecek). Puana bağlı işlevler: rütbe (50/200/500/1000/2500/
+  5000), teklif verme (rütbe ≥ Uzman = 1000 puan, veya Premium/EDU/özel rozet), ilan
+  süresi (<500 → 10 gün, 500+ → 20, 1000+ → 30), çalışma odası açma
+  (`STUDYROOM_MIN_POINTS`), puan rozetleri. İlan AÇMA puana bağlı değil (e-posta
+  doğrulama + haftalık limit 1/3). EN/DE'de tek kaynak analiz → 1000 puan = 200 analiz.
+  Ayrıca ★ tıklanınca `#istatistik-arenasi`'ya gidiyor — Arena gizlenince EN/DE'de hedef değişmeli.
+- [ ] (eski not) **EDU "Doğrulanmış Akademisyen" DM metni TR sabit** (26 Eylül 2026):
   `forum/views.py` ~1330 — DM DB'ye yazılıyor; alıcının dilinde (`recipient_language`) üretilmeli.
 - [x] **Profil modal — ölü kod silindi** (26 Eylül 2026, kullanıcı onayı): ölçüm — view
   `api_get_profile_summary` hiçbir URL'ye bağlı değildi, `openProfileModal()` hiç
