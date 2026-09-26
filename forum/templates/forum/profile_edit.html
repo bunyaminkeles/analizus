@@ -1,11 +1,12 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
 {% block main_content_classes %}col-lg-12{% endblock %}
 
 {% block right_sidebar %}
 {% endblock %}
 
-{% block title %}Profili Düzenle - Analizus{% endblock %}
+{% block title %}{% trans "Profili Düzenle" %} - Analizus{% endblock %}
 
 {% block content %}
 <div class="container py-4">
@@ -13,7 +14,7 @@
         <div class="col-lg-10">
             <div class="card border-0 shadow-lg" style="background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(255, 255, 255, 0.1) !important;">
                 <div class="card-header bg-transparent border-bottom border-secondary border-opacity-25 py-3">
-                    <h4 class="text-white mb-0"><i class="bi bi-gear-fill text-info me-2"></i>Profili Düzenle</h4>
+                    <h4 class="text-white mb-0"><i class="bi bi-gear-fill text-info me-2"></i>{% trans "Profili Düzenle" %}</h4>
                 </div>
                 <div class="card-body p-4">
                     <form method="post" enctype="multipart/form-data">
@@ -22,16 +23,16 @@
                         <!-- Sekmeler -->
                         <ul class="nav nav-tabs border-secondary mb-4" id="editTabs" role="tablist">
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link active" id="general-tab" data-bs-toggle="tab" data-bs-target="#general" type="button">Genel Bilgiler</button>
+                                <button class="nav-link active" id="general-tab" data-bs-toggle="tab" data-bs-target="#general" type="button">{% trans "Genel Bilgiler" %}</button>
                             </li>
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="academic-tab" data-bs-toggle="tab" data-bs-target="#academic" type="button">Akademik & Sosyal</button>
+                                <button class="nav-link" id="academic-tab" data-bs-toggle="tab" data-bs-target="#academic" type="button">{% trans "Akademik & Sosyal" %}</button>
                             </li>
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="skills-tab" data-bs-toggle="tab" data-bs-target="#skills" type="button">Yetenekler</button>
+                                <button class="nav-link" id="skills-tab" data-bs-toggle="tab" data-bs-target="#skills" type="button">{% trans "Yetenekler" %}</button>
                             </li>
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="settings-tab" data-bs-toggle="tab" data-bs-target="#settings" type="button">Ayarlar</button>
+                                <button class="nav-link" id="settings-tab" data-bs-toggle="tab" data-bs-target="#settings" type="button">{% trans "Ayarlar" %}</button>
                             </li>
                         </ul>
 
@@ -41,62 +42,62 @@
                             <div class="tab-pane fade show active" id="general" role="tabpanel">
                                 <div class="row mb-3">
                                     <div class="col-md-6">
-                                        <label class="form-label text-white-50">Ad</label>
+                                        <label class="form-label text-white-50">{% trans "Ad" context "kişi adı" %}</label>
                                         <input type="text" name="first_name" class="form-control" value="{{ user.first_name }}">
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="form-label text-white-50">Soyad</label>
+                                        <label class="form-label text-white-50">{% trans "Soyad" %}</label>
                                         <input type="text" name="last_name" class="form-control" value="{{ user.last_name }}">
                                     </div>
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label text-white-50">E-posta</label>
+                                    <label class="form-label text-white-50">{% trans "E-posta" %}</label>
                                     <input type="email" name="email" class="form-control" value="{{ user.email }}">
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label text-white-50">Ünvan (Başlık)</label>
-                                    <input type="text" name="title" class="form-control" value="{{ profile.title }}" placeholder="Örn: Veri Bilimci, Doktora Öğrencisi">
+                                    <label class="form-label text-white-50">{% trans "Ünvan (Başlık)" %}</label>
+                                    <input type="text" name="title" class="form-control" value="{{ profile.title }}" placeholder="{% trans "Örn: Veri Bilimci, Doktora Öğrencisi" %}">
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label text-white-50">Konum</label>
+                                    <label class="form-label text-white-50">{% trans "Konum" %}</label>
                                     <input type="text" name="location" class="form-control" value="{{ profile.location }}">
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label text-white-50">Biyografi</label>
+                                    <label class="form-label text-white-50">{% trans "Biyografi" %}</label>
                                     <textarea name="bio" class="form-control" rows="4">{{ profile.bio }}</textarea>
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label text-white-50">Profil Fotoğrafı</label>
+                                    <label class="form-label text-white-50">{% trans "Profil Fotoğrafı" %}</label>
                                     <input type="file" name="avatar" class="form-control">
                                 </div>
                             </div>
 
                             <!-- 2. AKADEMİK & SOSYAL -->
                             <div class="tab-pane fade" id="academic" role="tabpanel">
-                                <h6 class="text-info mb-3">Akademik Bilgiler</h6>
+                                <h6 class="text-info mb-3">{% trans "Akademik Bilgiler" %}</h6>
                                 <div class="row mb-3">
                                     <div class="col-md-6">
-                                        <label class="form-label text-white-50">Üniversite</label>
+                                        <label class="form-label text-white-50">{% trans "Üniversite" %}</label>
                                         <input type="text" name="university" class="form-control" value="{{ profile.university }}">
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="form-label text-white-50">Bölüm</label>
+                                        <label class="form-label text-white-50">{% trans "Bölüm" %}</label>
                                         <input type="text" name="department" class="form-control" value="{{ profile.department }}">
                                     </div>
                                 </div>
                                 <div class="mb-4">
-                                    <label class="form-label text-white-50">Akademik Unvan</label>
-                                    <input type="text" name="academic_title" class="form-control" value="{{ profile.academic_title }}" placeholder="Örn: Dr., Doç. Dr.">
+                                    <label class="form-label text-white-50">{% trans "Akademik Unvan" %}</label>
+                                    <input type="text" name="academic_title" class="form-control" value="{{ profile.academic_title }}" placeholder="{% trans "Örn: Dr., Doç. Dr." %}">
                                 </div>
 
-                                <h6 class="text-info mb-3">Sosyal Medya & Bağlantılar</h6>
+                                <h6 class="text-info mb-3">{% trans "Sosyal Medya & Bağlantılar" %}</h6>
                                 <div class="row g-3">
                                     <div class="col-md-6">
-                                        <label class="form-label text-white-50"><i class="bi bi-phone me-1"></i>Telefon Numarası</label>
-                                        <input type="tel" name="phone_number" class="form-control" value="{{ profile.phone_number }}">
+                                        <label class="form-label text-white-50"><i class="bi bi-phone me-1"></i>{% trans "Telefon Numarası" %}</label>
+                                        <input type="tel" name="phone_number" class="form-control" value="{{ profile.phone_number }}" placeholder="+90 5XX XXX XX XX">
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="form-label text-white-50"><i class="bi bi-globe me-1"></i>Web Sitesi</label>
+                                        <label class="form-label text-white-50"><i class="bi bi-globe me-1"></i>{% trans "Web Sitesi" %}</label>
                                         <input type="url" name="website" class="form-control" value="{{ profile.website }}">
                                     </div>
                                     <div class="col-md-6">
@@ -104,11 +105,11 @@
                                         <input type="url" name="linkedin" class="form-control" value="{{ profile.linkedin }}">
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="form-label text-white-50"><i class="bi bi-twitter me-1"></i>Twitter/X (Kullanıcı Adı)</label>
+                                        <label class="form-label text-white-50"><i class="bi bi-twitter me-1"></i>{% trans "Twitter/X (Kullanıcı Adı)" %}</label>
                                         <input type="text" name="twitter" class="form-control" value="{{ profile.twitter }}">
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="form-label text-white-50"><i class="bi bi-github me-1"></i>GitHub (Kullanıcı Adı)</label>
+                                        <label class="form-label text-white-50"><i class="bi bi-github me-1"></i>{% trans "GitHub (Kullanıcı Adı)" %}</label>
                                         <input type="text" name="github" class="form-control" value="{{ profile.github }}">
                                     </div>
                                     <div class="col-md-6">
@@ -124,18 +125,18 @@
 
                             <!-- 3. YETENEKLER (SKILLS) -->
                             <div class="tab-pane fade" id="skills" role="tabpanel">
-                                <p class="text-muted mb-3">Uzmanlık alanlarınızı seçin veya kendinizinkini ekleyin.</p>
+                                <p class="text-muted mb-3">{% trans "Uzmanlık alanlarınızı seçin veya kendinizinkini ekleyin." %}</p>
 
                                 <!-- Seçili yetenekler (tag görünümü) -->
                                 <div id="selected-tags" class="d-flex flex-wrap gap-2 mb-3 p-3 rounded" style="min-height:44px;background:rgba(99,102,241,0.06);border:1px solid rgba(99,102,241,0.18);">
-                                    <span class="text-white-50 small align-self-center" id="no-selection-hint">Henüz seçilmedi</span>
+                                    <span class="text-white-50 small align-self-center" id="no-selection-hint">{% trans "Henüz seçilmedi" %}</span>
                                 </div>
 
                                 <!-- Arama -->
                                 <div class="input-group mb-3">
                                     <span class="input-group-text bg-dark border-secondary text-white-50"><i class="bi bi-search"></i></span>
                                     <input type="text" id="skill-search" class="form-control bg-dark text-white border-secondary"
-                                           placeholder="Yetenek ara...">
+                                           placeholder="{% trans "Yetenek ara..." %}">
                                 </div>
 
                                 <!-- Chip listesi -->
@@ -154,31 +155,31 @@
 
                             <!-- 4. AYARLAR -->
                             <div class="tab-pane fade" id="settings" role="tabpanel">
-                                <h6 class="text-info mb-3">Bildirim Ayarları</h6>
+                                <h6 class="text-info mb-3">{% trans "Bildirim Ayarları" %}</h6>
                                 <div class="form-check form-switch mb-3">
                                     <input class="form-check-input" type="checkbox" name="email_on_reply" id="email_on_reply" {% if profile.email_on_reply %}checked{% endif %}>
-                                    <label class="form-check-label text-white" for="email_on_reply">Konularıma cevap geldiğinde e-posta gönder</label>
+                                    <label class="form-check-label text-white" for="email_on_reply">{% trans "Konularıma cevap geldiğinde e-posta gönder" %}</label>
                                 </div>
                                 <div class="form-check form-switch mb-4">
                                     <input class="form-check-input" type="checkbox" name="email_on_private_message" id="email_on_private_message" {% if profile.email_on_private_message %}checked{% endif %}>
-                                    <label class="form-check-label text-white" for="email_on_private_message">Özel mesaj geldiğinde e-posta gönder</label>
+                                    <label class="form-check-label text-white" for="email_on_private_message">{% trans "Özel mesaj geldiğinde e-posta gönder" %}</label>
                                 </div>
 
-                                <h6 class="text-info mb-3">Gizlilik</h6>
+                                <h6 class="text-info mb-3">{% trans "Gizlilik" %}</h6>
                                 <div class="form-check form-switch mb-3">
                                     <input class="form-check-input" type="checkbox" name="is_public" id="is_public" {% if profile.is_public %}checked{% endif %}>
-                                    <label class="form-check-label text-white" for="is_public">Profilim herkese açık olsun</label>
+                                    <label class="form-check-label text-white" for="is_public">{% trans "Profilim herkese açık olsun" %}</label>
                                 </div>
                                 <div class="form-check form-switch">
                                     <input class="form-check-input" type="checkbox" name="show_email" id="show_email" {% if profile.show_email %}checked{% endif %}>
-                                    <label class="form-check-label text-white" for="show_email">E-posta adresimi profilimde göster</label>
+                                    <label class="form-check-label text-white" for="show_email">{% trans "E-posta adresimi profilimde göster" %}</label>
                                 </div>
                             </div>
                         </div>
 
                         <div class="d-flex justify-content-end mt-4 pt-3 border-top border-secondary border-opacity-25">
-                            <a href="{% url 'profile_detail' username=user.username %}" class="btn btn-outline-light me-2">İptal</a>
-                            <button type="submit" class="btn btn-success px-4 fw-bold"><i class="bi bi-check-lg me-1"></i>Kaydet</button>
+                            <a href="{% url 'profile_detail' username=user.username %}" class="btn btn-outline-light me-2">{% trans "İptal" %}</a>
+                            <button type="submit" class="btn btn-success px-4 fw-bold"><i class="bi bi-check-lg me-1"></i>{% trans "Kaydet" %}</button>
                         </div>
                     </form>
                 </div>

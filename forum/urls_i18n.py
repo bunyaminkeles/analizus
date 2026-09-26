@@ -50,4 +50,8 @@ urlpatterns = [
     path('hakkimizda/', views.about, name='about'),
     path('iletisim/', views.contact, name='contact'),
     path('hangi-test/', views.hangi_test, name='hangi_test'),
+
+    # Profil (26 Eylül 2026)
+    path('profile/edit/', views.profile_edit, name='profile_edit'),
+    path('profile/<str:username>/', views.profile_detail, name='profile_detail'),
 ]

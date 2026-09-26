@@ -52,8 +52,36 @@ maddelerde.
   (yalnızca `@deleted.invalid` e-postalılar; ileri/geri test edildi).
   Dile göre "Silinmiş kullanıcı / Deleted user" gösterimi YAPILMADI (37 şablon,
   83 yer + Python tarafı) — istenirse ayrı iş.
-- [ ] **Profil sayfaları tek dilli:** profil/profil düzenleme (ve "Hesabımı Sil"
+- [x] **Profil sayfaları tek dilli** — ÇEVRİLDİ (26 Eylül 2026): `profile_detail`,
+  `profile_edit`, `profile_private` + 6 view mesajı; URL'ler `urls_i18n.py`'ye
+  taşındı (TR yolları aynı). Telefon (kullanıcı kararı "+90 ekleyebiliriz"):
+  `_normalize_tr_phone` 05…/5…/+90/90/0090 kabul eder, `05XXXXXXXXX` saklar;
+  yurt dışı numara hâlâ reddedilir. 116 msgid EN/DE. Eski not: profil/profil düzenleme (ve "Hesabımı Sil"
   butonu) i18n dışında — EN/DE kullanıcı silme sayfasına TR olarak ulaşır.
+- [ ] **Rütbe adları tek dilli** (26 Eylül 2026, profilde görüldü): `forum/templatetags/forum_extras.py`
+  `RANK_INFO` ("🌱 Çaylak", "Uzman"…) ve `Profile.RANK_CHOICES` (models.py ~156)
+  çeviri dışı — site genelinde (navbar, forum, profil) görünür. `gettext_lazy`
+  ile sarılınca `RANK_CHOICES` için **no-op AlterField migration** çıkar.
+- [ ] **Rozet adları/açıklamaları tek dilli** (26 Eylül 2026): `Badge.name` /
+  `Badge.description` DB içeriği ("Profesör", "2500 akademik puan kazandınız -
+  TEKLİF VEREBİLİR"…) EN/DE profilde TR. Strateji kararı gerekli: slug→çeviri
+  sözlüğü (kod) mi, DB'de dil alanları (migration) mı. `can_propose()` rozet
+  adını gerekçe olarak döndürüyor — o da etkilenir.
+- [ ] **Yetenek (JobCategory) başlıkları** (26 Eylül 2026): profil düzenleme
+  chip'leri ve profil etiketleri DB `JobCategory.title` — EN/DE'de TR olup
+  olmadığı kontrol edilecek (market ile ortak).
+- [ ] **Profil düzenleme: geçersiz telefonda çift mesaj** (26 Eylül 2026, önceden
+  var olan davranış): hata mesajının yanında "Profiliniz başarıyla güncellendi"
+  da çıkıyor (diğer alanlar kaydediliyor). Mesaj akışı düzeltilecek mi — karar.
+- [ ] **Profil düzenleme JS hatası** (26 Eylül 2026, önceden var): `profile_edit.html`
+  scripti olmayan `#custom-skill-input` / `#custom-skills-hidden` elemanlarını
+  kullanıyor → konsolda TypeError (chip seçimi ve arama etkilenmiyor, hata
+  onlardan sonra). Ölü kod silinmeli ya da manuel yetenek alanı eklenmeli — karar.
+- [ ] **Profil şablonları ax- sistemine aykırı** (26 Eylül 2026, önceden var):
+  `profile_edit.html` Bootstrap `card`/`btn`/`nav-tabs` + `data-bs-toggle`,
+  hardcode renkler; `profile_detail.html` "Hesabımı Sil" `btn btn-outline-danger`.
+- [ ] **Takip API hata metni tek dilli** (düşük öncelik): `api_views.toggle_follow_user`
+  "Kendinizi takip edemezsiniz." — arayüzden ulaşılamıyor.
 - [x] **Ana sayfa hero test çipleri** — ÇEVRİLDİ (25 Eylül 2026) "t-testi · korelasyon · regresyon"
   EN/DE'de Türkçe.
 - [x] **"Güvenilir Üye" rozet mesajı** — ÇEVRİLDİ (25 Eylül 2026) (`_check_and_award_trust_badge`,

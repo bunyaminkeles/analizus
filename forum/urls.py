@@ -12,10 +12,8 @@ urlpatterns = [
     path('blog/<slug:slug>/', views.blog_detail, name='blog_detail'),
     path('blog/<slug:slug>/like/', views.blog_like, name='blog_like'),
 
-    # Profil
-    path('profile/edit/', views.profile_edit, name='profile_edit'),
-    path('profile/<str:username>/', views.profile_detail, name='profile_detail'),
-    
+    # Profil → urls_i18n.py (TR/EN/DE)
+
     # Mesajlaşma
     path('inbox/', views.inbox, name='inbox'),
     path('send-message/<str:username>/', views.send_message, name='send_message'),

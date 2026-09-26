@@ -1341,6 +1341,14 @@ def _handle_edu_user(user):
     EmailService.send_edu_welcome_email(user)
 
 
+def _normalize_tr_phone(raw):
+    """TR cep numarasını '05XXXXXXXXX' biçimine indirger; geçersizse None.
+    Kabul: 05…, 5…, +90 5…, 90 5…, 0090 5… (boşluk, tire, parantez serbest)."""
+    digits = re.sub(r'[\s\-()]', '', raw or '')
+    m = re.match(r'^(?:\+90|0090|90|0)?(5\d{9})$', digits)
+    return '0' + m.group(1) if m else None
+
+
 # --- PROFİL DÜZENLE ---
 @login_required
 def profile_edit(request):
@@ -1387,13 +1395,13 @@ def profile_edit(request):
             new_phone_number = new_phone_number.strip()
             if new_phone_number != profile.phone_number:
                 if new_phone_number:
-                    clean_number = new_phone_number.replace(' ', '').replace('-', '').replace('(', '').replace(')', '')
-                    if re.match(r'^05\d{9}$', clean_number):
+                    clean_number = _normalize_tr_phone(new_phone_number)
+                    if clean_number:
                         profile.phone_number = clean_number
                         profile.phone_verified = True
                         _check_and_award_trust_badge(request, user)
                     else:
-                        messages.error(request, "Geçersiz telefon numarası. Lütfen '05XXXXXXXXX' formatında giriniz.")
+                        messages.error(request, gettext("Geçersiz telefon numarası. Lütfen '05XX XXX XX XX' veya '+90 5XX XXX XX XX' biçiminde giriniz."))
                 else:
                     profile.phone_number = ""
                     profile.phone_verified = False
@@ -1440,7 +1448,7 @@ def profile_edit(request):
         except Exception as e:
             logger.error(f"Profile save error: {type(e).__name__}: {e}", exc_info=True)
 
-        messages.success(request, "Profiliniz başarıyla güncellendi.")
+        messages.success(request, gettext("Profiliniz başarıyla güncellendi."))
         return redirect('profile_detail', username=user.username)
     
     return render(request, 'forum/profile_edit.html', {'user': user, 'profile': profile, 'all_skills': all_skills})
@@ -1740,16 +1748,16 @@ def profile_detail(request, username):
         if action == 'verify_phone':
             phone = request.POST.get('phone')
             if phone:
-                clean_number = phone.strip().replace(' ', '').replace('-', '').replace('(', '').replace(')', '')
-                if re.match(r'^05\d{9}$', clean_number):
+                clean_number = _normalize_tr_phone(phone)
+                if clean_number:
                     profile_user.profile.phone_number = clean_number
                     # Simülasyon: Gerçek SMS entegrasyonu olmadığı için direkt onaylıyoruz
                     profile_user.profile.phone_verified = True
                     profile_user.profile.save()
                     _check_and_award_trust_badge(request, profile_user)
-                    messages.success(request, 'Telefon numaranız başarıyla kaydedildi.')
+                    messages.success(request, gettext('Telefon numaranız başarıyla kaydedildi.'))
                 else:
-                    messages.error(request, "Geçersiz telefon numarası. Lütfen '05XXXXXXXXX' formatında giriniz.")
+                    messages.error(request, gettext("Geçersiz telefon numarası. Lütfen '05XX XXX XX XX' veya '+90 5XX XXX XX XX' biçiminde giriniz."))
         elif action == 'verify_linkedin':
             linkedin_url = request.POST.get('linkedin')
             if linkedin_url:
@@ -1758,9 +1766,9 @@ def profile_detail(request, username):
                     profile_user.profile.linkedin_verified = True
                     profile_user.profile.save()
                     _check_and_award_trust_badge(request, profile_user)
-                    messages.success(request, 'LinkedIn hesabınız başarıyla doğrulandı.')
+                    messages.success(request, gettext('LinkedIn hesabınız başarıyla doğrulandı.'))
                 else:
-                    messages.error(request, 'Geçersiz LinkedIn URL.')
+                    messages.error(request, gettext('Geçersiz LinkedIn URL.'))
         return redirect('profile_detail', username=username)
 
     posted_jobs = FreelanceJob.objects.filter(owner=profile_user).annotate(
