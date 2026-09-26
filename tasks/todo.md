@@ -421,6 +421,16 @@ maddelerde.
   yenilerken `X-Cron-Secret` header'ına geçmek de değerlendirilmeli. Yenilenirse
   `.env` + Hetzner crontab'daki TÜM `/api/cron/*` satırları birlikte güncellenmeli.
 
+**C0. İKİNCİ MERGE — 26 Eylül 2026 (kullanıcı: "merge edelim, sorun yoksa")**
+- [x] Ön kontrol: çalışma ağacı temiz, 61/61 pytest, `makemigrations --check` temiz,
+  `check --deploy` (DEBUG=False) yalnız W009 (yerel test anahtarı), main'de dev'de olmayan commit yok.
+- [x] main ← dev fast-forward + push: **c2b3aec** (30 commit). requirements.txt DEĞİŞMEDİ → build yok.
+- [ ] **Hetzner deploy (kullanıcı):** ÖNCE DB yedeği (0157 veri adımı geri alınamaz) →
+  `git pull origin main` → `docker compose restart web && docker compose restart nginx`
+  (deploy.sh açılışta migrate + collectstatic) → `showmigrations forum | tail -3` ile 0156/0157 [X].
+- [ ] Deploy sonrası doğrulama: kategori sayısı 37 / aktif 32; /en/ /de/ 200; /en/tarama/ yok;
+  TR'de /tarama/ → EN seçince /en/'e gider; profil düzenleme sayfası yeni tasarım.
+
 **C. Canlıya alma (yalnızca kullanıcı "merge et" deyince)** — 25 Eylül 2026 ölçümü:
 dev, main'den 78 commit ileride, main'de dev'de olmayan commit yok (fast-forward);
 requirements.txt değişmedi (--build GEREKMEZ); settings.py: 3 middleware +
