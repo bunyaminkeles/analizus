@@ -90,7 +90,13 @@ maddelerde.
   kutusu, ödemelerim, davet) kaldı. Sonuç: EN/DE'de öneksiz hedef yalnız D (ölçüldü).
 - [ ] **C grubu sayfaların EN/DE çevirisi** (26 Eylül 2026, kullanıcı: "sonraki projede
   lazım olacak, bibliometrik analizler gibi"): Bibliometrik Analiz, Tableau Analizleri,
-  Akademik Tarama (/tarama/, OpenAlex, Semantic Scholar) arayüzleri i18n dışı. Çevrilince
+  Akademik Tarama (/tarama/, OpenAlex, Semantic Scholar). DÜZELTME (26 Eylül 2026, ölçüldü):
+  OpenAlex ve Semantic Scholar URL'leri ZATEN i18n_patterns içinde (/en/openalex/ 200) ama
+  içerik yarı çevrili — EN'de görünür metnin ~2/3'ü TR (OpenAlex 27/41, S2 25/41; başlık/
+  özellik kartları Python context veya ortak şablondan TR geliyor olabilir — doğrulanmadı),
+  `order.html`'lerde 0 etiket (~60 metin). `/tarama/` hub'ı i18n dışı (EN'de 404) ve
+  YÖK Tez/TR Dizin'i de listeliyor. Kullanıcı: "sonraki projede yeni veri kazıma
+  modülleri eklenecek" → EN/DE "Academic Search" hub'ı o projede kurulmalı. Çevrilince
   URL'ler `urls_i18n`'e taşınır ve base.html/home.html'deki `LANGUAGE_CODE == 'tr'`
   koşulları kaldırılır. İlgili: `BASE_PubMed_Integration_Project.md` (ayrı oturum).
 - [ ] **D grubu hesap sayfaları tek dilli** (26 Eylül 2026): gelen kutusu, ödemelerim,

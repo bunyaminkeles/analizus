@@ -69,3 +69,12 @@ kontrolünü her seferinde yap.
 ya da açık bir bitiş işaretiyle belirle; değişiklikten sonra `git diff` ile
 silinen satır sayısını kontrol et — beklenenden fazlaysa commit etme.
 
+
+## 26 Eylül 2026 — Bağlantı envanteri: sabit href ≠ TR-only sayfa
+**Hata:** EN/DE bağlantı envanterinde `href="/openalex/"` (sabit yazılmış, `{% url %}` değil)
+öneksiz göründüğü için "TR-only / i18n dışı" sayıldı; oysa `openalex/` ve `semantic-scholar/`
+i18n_patterns içindeydi. Kullanıcıya "arayüzü çevrilmemiş" diye sunuldu, C grubunda gizlendi;
+Semantic Scholar tabloda adıyla hiç geçmedi (hub linki gizlenince dolaylı gizlendi).
+**Kural:** Bir hedefin dil durumunu href'in önekine bakarak değil, (1) URL'in i18n_patterns
+içinde olup olmadığı (`/en/<yol>` 200 mü) ve (2) EN render'ında görünür Türkçe metin oranı
+ölçülerek belirle. Gizleme/kaldırma tablosunda dolaylı etkilenen her aracı ADIYLA yaz.
