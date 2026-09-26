@@ -75,7 +75,17 @@ maddelerde.
   **Canlıya çıkışta:** migration'lı deploy → önce DB yedeği.
 - [ ] **`create_badges` komutu EN/DE içermiyor** (26 Eylül 2026): boş DB'de komutla
   oluşan rozetler TR'ye düşer (0156 yalnız mevcut kayıtları doldurur).
-- [ ] **Quiz rozet bildirimi TR sabit** (26 Eylül 2026): `forum/views.py` ~3010
+- [ ] **Quiz (İstatistik Arena) modülü tamamen tek dilli — KARAR BEKLİYOR** (26 Eylül 2026, ölçüldü):
+  435 soru (yerel; python 130, r 130, spss 125, statistics 50) yalnız TR DB metni;
+  `static/js/quiz.js` 16 satır sabit TR (geri bildirim "Doğru! +10 puan kazandın.",
+  "Yanlış. Doğru cevap:", "Yeni rozet:", yedek sorular); base.html eski quiz modalı
+  (`loadQuizQuestion`) + "TEBRİKLER! İstatistik Ustası" metni; `api_submit_quiz_answer`
+  hata mesajları TR. EN/DE anasayfada Arena bölümü TR sorularla görünüyor.
+  Seçenekler: (a) EN/DE'de Arena'yı gizle, (b) arayüz metinlerini çevir + sorulara
+  dil alanı (435 soru çevirisi), (c) EN/DE için ayrı soru seti. Rozet adı işi buna bağlı.
+  Ek bulgu: `badge_awarded` sayaç ==50 / ==1000 olunca rozetin gerçekten verilip
+  verilmediğine bakmadan gösteriliyor.
+- [ ] (eski not) **Quiz rozet bildirimi TR sabit** (26 Eylül 2026): `forum/views.py` ~3010
   `category_badge_map` / `'Quiz Efsanesi'` sabit Türkçe adlar — `Badge.localized_name`
   ile slug'dan alınmalı (quiz modülü genel olarak tek dilli mi — önce ölç).
 - [ ] **EDU "Doğrulanmış Akademisyen" DM metni TR sabit** (26 Eylül 2026):
