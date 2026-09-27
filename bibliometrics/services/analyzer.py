@@ -5,6 +5,7 @@ Her fonksiyon (title, matplotlib.figure.Figure) tuple döndürür.
 """
 import io
 import logging
+from django.utils.translation import gettext
 from collections import Counter, defaultdict
 
 logger = logging.getLogger(__name__)
@@ -147,23 +148,23 @@ def run_all_analyses(records: list[dict]) -> list[tuple[str, bytes]]:
     """
     import gc as _gc
     analyses = [
-        ('Yıllara Göre Yayın Trendi',              lambda: publication_trend(records)),
-        ('Yıllık Büyüme Oranı',                    lambda: publication_growth_rate(records)),
-        ('En Verimli Yazarlar (Top 15)',            lambda: top_authors(records)),
-        ('Lotka Kanunu — Yazar Üretkenliği',        lambda: lotka_law(records)),
-        ('Anahtar Kelime Bulutu',                   lambda: keyword_cloud(records)),
-        ('Anahtar Kelime Eş-Oluşum Ağı',           lambda: keyword_cooccurrence(records)),
-        ('Anahtar Kelime Zaman Trendi',             lambda: keyword_trend(records)),
-        ('En Çok Atıf Alan Yayınlar (Top 10)',      lambda: top_cited(records)),
-        ('En Çok Yayın Yapılan Dergiler',           lambda: top_journals(records)),
-        ('Kurum / Ülke Dağılımı (Top 10)',          lambda: top_institutions(records)),
-        ('Ülke İşbirliği Ağı',                      lambda: country_collaboration(records)),
-        ('Yazar İşbirliği Ağı',                     lambda: author_collaboration(records)),
-        ('Yayın Türleri Dağılımı',                  lambda: publication_types(records)),
-        ('Atıf Analizi ve H-index',                 lambda: citation_analysis(records)),
-        ('Yıllık Atıf Trendi',                      lambda: annual_citation_trend(records)),
-        ('Araştırma Konusu Kümeleri (Topic Map)',    lambda: topic_map(records)),
-        ('Araştırma Boşluğu Haritası (Research Gap)', lambda: research_gap(records)),
+        (gettext('Yıllara Göre Yayın Trendi'),              lambda: publication_trend(records)),
+        (gettext('Yıllık Büyüme Oranı'),                    lambda: publication_growth_rate(records)),
+        (gettext('En Verimli Yazarlar (Top 15)'),            lambda: top_authors(records)),
+        (gettext('Lotka Kanunu — Yazar Üretkenliği'),        lambda: lotka_law(records)),
+        (gettext('Anahtar Kelime Bulutu'),                   lambda: keyword_cloud(records)),
+        (gettext('Anahtar Kelime Eş-Oluşum Ağı'),           lambda: keyword_cooccurrence(records)),
+        (gettext('Anahtar Kelime Zaman Trendi'),             lambda: keyword_trend(records)),
+        (gettext('En Çok Atıf Alan Yayınlar (Top 10)'),      lambda: top_cited(records)),
+        (gettext('En Çok Yayın Yapılan Dergiler'),           lambda: top_journals(records)),
+        (gettext('Kurum / Ülke Dağılımı (Top 10)'),          lambda: top_institutions(records)),
+        (gettext('Ülke İşbirliği Ağı'),                      lambda: country_collaboration(records)),
+        (gettext('Yazar İşbirliği Ağı'),                     lambda: author_collaboration(records)),
+        (gettext('Yayın Türleri Dağılımı'),                  lambda: publication_types(records)),
+        (gettext('Atıf Analizi ve H-index'),                 lambda: citation_analysis(records)),
+        (gettext('Yıllık Atıf Trendi'),                      lambda: annual_citation_trend(records)),
+        (gettext('Araştırma Konusu Kümeleri (Topic Map)'),    lambda: topic_map(records)),
+        (gettext('Araştırma Boşluğu Haritası (Research Gap)'), lambda: research_gap(records)),
     ]
     results = []
     for title, fn in analyses:
@@ -207,11 +208,11 @@ def publication_trend(records: list[dict]):
     bars = ax.bar(sorted_years, counts, color=bar_colors, width=0.7, zorder=2,
                   edgecolor='white', linewidth=0.5)
     ax.plot(sorted_years, counts, color=TREND_RED, linewidth=2.5,
-            marker='o', markersize=7, zorder=3, label='Yayın Trendi', alpha=0.9)
+            marker='o', markersize=7, zorder=3, label=gettext('Yayın Trendi'), alpha=0.9)
 
-    ax.set_xlabel('Yıl', fontsize=12, labelpad=8)
-    ax.set_ylabel('Yayın Sayısı', fontsize=12, labelpad=8)
-    ax.set_title('Yıllara Göre Yayın Trendi')
+    ax.set_xlabel(gettext('Yıl'), fontsize=12, labelpad=8)
+    ax.set_ylabel(gettext('Yayın Sayısı'), fontsize=12, labelpad=8)
+    ax.set_title(gettext('Yıllara Göre Yayın Trendi'))
     ax.grid(axis='y', zorder=1)
     ax.legend(fontsize=11)
     _add_bar_labels(ax, bars)
@@ -245,8 +246,8 @@ def top_authors(records: list[dict], n: int = 15):
     ax.set_yticks(y_pos)
     ax.set_yticklabels(names, fontsize=10)
     ax.invert_yaxis()
-    ax.set_xlabel('Yayın Sayısı', fontsize=12, labelpad=8)
-    ax.set_title(f'En Verimli Yazarlar (Top {len(names)})')
+    ax.set_xlabel(gettext('Yayın Sayısı'), fontsize=12, labelpad=8)
+    ax.set_title(gettext('En Verimli Yazarlar (Top {n})').format(n=len(names)))
     ax.grid(axis='x', zorder=1)
     _add_hbar_labels(ax, bars)
     fig.tight_layout(pad=2.0)
@@ -287,7 +288,7 @@ def keyword_cloud(records: list[dict]):
     ax.axis('off')
     ax.set_facecolor('white')
     fig.patch.set_facecolor('white')
-    ax.set_title('Anahtar Kelime Bulutu', fontsize=15, fontweight='bold', pad=18)
+    ax.set_title(gettext('Anahtar Kelime Bulutu'), fontsize=15, fontweight='bold', pad=18)
     fig.tight_layout(pad=2.0)
     return fig
 
@@ -311,8 +312,8 @@ def top_cited(records: list[dict], n: int = 10):
     ax.set_yticks(y_pos)
     ax.set_yticklabels(short_titles, fontsize=9)
     ax.invert_yaxis()
-    ax.set_xlabel('Atıf Sayısı', fontsize=12, labelpad=8)
-    ax.set_title(f'En Çok Atıf Alan Yayınlar (Top {len(top)})')
+    ax.set_xlabel(gettext('Atıf Sayısı'), fontsize=12, labelpad=8)
+    ax.set_title(gettext('En Çok Atıf Alan Yayınlar (Top {n})').format(n=len(top)))
     ax.grid(axis='x', zorder=1)
     _add_hbar_labels(ax, bars)
     fig.tight_layout(pad=2.0)
@@ -339,8 +340,8 @@ def top_journals(records: list[dict], n: int = 10):
     ax.set_yticks(y_pos)
     ax.set_yticklabels(short_names, fontsize=10)
     ax.invert_yaxis()
-    ax.set_xlabel('Yayın Sayısı', fontsize=12, labelpad=8)
-    ax.set_title(f'En Çok Yayın Yapılan Dergiler / Kaynaklar (Top {len(top)})')
+    ax.set_xlabel(gettext('Yayın Sayısı'), fontsize=12, labelpad=8)
+    ax.set_title(gettext('En Çok Yayın Yapılan Dergiler / Kaynaklar (Top {n})').format(n=len(top)))
     ax.grid(axis='x', zorder=1)
     _add_hbar_labels(ax, bars)
     fig.tight_layout(pad=2.0)
@@ -362,10 +363,10 @@ def top_institutions(records: list[dict], n: int = 10):
 
     if country_counter:
         top = country_counter.most_common(n)
-        title_str = f'Ülkelere Göre Yayın Dağılımı (Top {min(n, len(top))})'
+        title_str = gettext('Ülkelere Göre Yayın Dağılımı (Top {n})').format(n=min(n, len(top)))
     elif inst_counter:
         top = inst_counter.most_common(n)
-        title_str = f'Kurumlara Göre Yayın Dağılımı (Top {min(n, len(top))})'
+        title_str = gettext('Kurumlara Göre Yayın Dağılımı (Top {n})').format(n=min(n, len(top)))
     else:
         return None
 
@@ -380,7 +381,7 @@ def top_institutions(records: list[dict], n: int = 10):
     ax.set_yticks(y_pos)
     ax.set_yticklabels(short_names, fontsize=10)
     ax.invert_yaxis()
-    ax.set_xlabel('Yayın Sayısı', fontsize=12, labelpad=8)
+    ax.set_xlabel(gettext('Yayın Sayısı'), fontsize=12, labelpad=8)
     ax.set_title(title_str)
     ax.grid(axis='x', zorder=1)
     _add_hbar_labels(ax, bars)
@@ -464,9 +465,9 @@ def author_collaboration(records: list[dict], max_authors: int = 35, min_collab:
                                norm=plt.Normalize(vmin=min_deg, vmax=max_deg))
     sm.set_array([])
     cbar = fig.colorbar(sm, ax=ax, fraction=0.03, pad=0.02)
-    cbar.set_label('Ortak Yazar Sayısı', fontsize=10)
+    cbar.set_label(gettext('Ortak Yazar Sayısı'), fontsize=10)
 
-    ax.set_title('Yazar İşbirliği Ağı')
+    ax.set_title(gettext('Yazar İşbirliği Ağı'))
     ax.axis('off')
     fig.tight_layout(pad=2.0)
     return fig
@@ -480,21 +481,21 @@ def publication_types(records: list[dict]):
         return None
 
     TYPE_TR = {
-        'article':          'Makale',
-        'review':           'Derleme',
-        'inproceedings':    'Konferans Bildirisi',
-        'conference paper': 'Konferans Bildirisi',
-        'book chapter':     'Kitap Bölümü',
-        'book':             'Kitap',
-        'editorial':        'Editoryal',
-        'letter':           'Mektup',
-        'note':             'Not',
-        'short survey':     'Kısa Derleme',
-        'erratum':          'Düzeltme',
-        'preprint':         'Ön Baskı',
-        'dissertation':     'Tez',
-        'dataset':          'Veri Seti',
-        'other':            'Diğer',
+        'article':          gettext('Makale'),
+        'review':           gettext('Derleme'),
+        'inproceedings':    gettext('Konferans Bildirisi'),
+        'conference paper': gettext('Konferans Bildirisi'),
+        'book chapter':     gettext('Kitap Bölümü'),
+        'book':             gettext('Kitap'),
+        'editorial':        gettext('Editoryal'),
+        'letter':           gettext('Mektup'),
+        'note':             gettext('Not'),
+        'short survey':     gettext('Kısa Derleme'),
+        'erratum':          gettext('Düzeltme'),
+        'preprint':         gettext('Ön Baskı'),
+        'dissertation':     gettext('Tez'),
+        'dataset':          gettext('Veri Seti'),
+        'other':            gettext('Diğer'),
     }
     translated = [TYPE_TR.get(t, t.title()) for t in types]
     counter = Counter(translated)
@@ -533,7 +534,7 @@ def publication_types(records: list[dict]):
         framealpha=0.95,
         edgecolor='#cbd5e0',
     )
-    ax.set_title('Yayın Türleri Dağılımı')
+    ax.set_title(gettext('Yayın Türleri Dağılımı'))
     fig.tight_layout(pad=2.5)
     return fig
 
@@ -566,26 +567,26 @@ def citation_analysis(records: list[dict]):
                 alpha=0.7, zorder=3)
     ax1.fill_betweenx([0, h], [0, 0], [h, h],
                       alpha=0.07, color=TREND_RED, zorder=1)
-    ax1.set_xlabel('Yayın Sırası (atıfa göre)', fontsize=11, labelpad=8)
-    ax1.set_ylabel('Atıf Sayısı', fontsize=11, labelpad=8)
-    ax1.set_title('Atıf Dağılımı', fontsize=13, fontweight='bold')
+    ax1.set_xlabel(gettext('Yayın Sırası (atıfa göre)'), fontsize=11, labelpad=8)
+    ax1.set_ylabel(gettext('Atıf Sayısı'), fontsize=11, labelpad=8)
+    ax1.set_title(gettext('Atıf Dağılımı'), fontsize=13, fontweight='bold')
     ax1.legend(fontsize=11)
     ax1.grid(axis='y', zorder=0)
 
     # Sağ: İstatistik özet tablosu
     stats = [
-        ('Toplam Yayın',          f'{len(records):,}'),
-        ('Atıflı Yayın',          f'{len(citations):,}'),
-        ('H-index',               str(h)),
-        ('Toplam Atıf',           f'{total_cit:,}'),
-        ('Ort. Atıf / Yayın',     f'{mean_cit:.1f}'),
-        ('En Çok Atıf',           f'{citations[0]:,}' if citations else '0'),
-        ('Medyan Atıf',           f'{_median(citations):.0f}'),
+        (gettext('Toplam Yayın'),          f'{len(records):,}'),
+        (gettext('Atıflı Yayın'),          f'{len(citations):,}'),
+        (gettext('H-index'),               str(h)),
+        (gettext('Toplam Atıf'),           f'{total_cit:,}'),
+        (gettext('Ort. Atıf / Yayın'),     f'{mean_cit:.1f}'),
+        (gettext('En Çok Atıf'),           f'{citations[0]:,}' if citations else '0'),
+        (gettext('Medyan Atıf'),           f'{_median(citations):.0f}'),
     ]
     ax2.axis('off')
     tbl = ax2.table(
         cellText=[[k, v] for k, v in stats],
-        colLabels=['Metrik', 'Değer'],
+        colLabels=[gettext('Metrik'), gettext('Değer')],
         cellLoc='center',
         loc='center',
         colWidths=[0.62, 0.38],
@@ -604,9 +605,9 @@ def citation_analysis(records: list[dict]):
             cell.set_facecolor('white')
             cell.set_text_props(color='#1e293b')
         cell.set_edgecolor('#cbd5e0')
-    ax2.set_title('Özet İstatistikler', fontsize=13, fontweight='bold', pad=20)
+    ax2.set_title(gettext('Özet İstatistikler'), fontsize=13, fontweight='bold', pad=20)
 
-    fig.suptitle('Atıf Analizi ve H-index', fontsize=15, fontweight='bold', y=1.01)
+    fig.suptitle(gettext('Atıf Analizi ve H-index'), fontsize=15, fontweight='bold', y=1.01)
     fig.tight_layout(pad=2.0)
     return fig
 
@@ -634,21 +635,21 @@ def annual_citation_trend(records: list[dict]):
     ax2 = ax1.twinx()
 
     ax1.bar(sorted_years, total_per_year, color=bar_colors, alpha=0.85,
-            label='Toplam Atıf', width=0.7, zorder=2)
+            label=gettext('Toplam Atıf'), width=0.7, zorder=2)
     ax2.plot(sorted_years, mean_per_year,
              color=TREND_RED, linewidth=2.5,
-             marker='o', markersize=7, label='Ort. Atıf / Yayın', zorder=3)
+             marker='o', markersize=7, label=gettext('Ort. Atıf / Yayın'), zorder=3)
 
-    ax1.set_xlabel('Yıl', fontsize=12, labelpad=8)
-    ax1.set_ylabel('Toplam Atıf Sayısı', fontsize=12, color='#1e3a5f', labelpad=8)
-    ax2.set_ylabel('Ortalama Atıf / Yayın', fontsize=12, color=TREND_RED, labelpad=8)
+    ax1.set_xlabel(gettext('Yıl'), fontsize=12, labelpad=8)
+    ax1.set_ylabel(gettext('Toplam Atıf Sayısı'), fontsize=12, color='#1e3a5f', labelpad=8)
+    ax2.set_ylabel(gettext('Ortalama Atıf / Yayın'), fontsize=12, color=TREND_RED, labelpad=8)
     ax1.tick_params(axis='y', labelcolor='#1e3a5f')
     ax2.tick_params(axis='y', labelcolor=TREND_RED)
 
     lines1, labels1 = ax1.get_legend_handles_labels()
     lines2, labels2 = ax2.get_legend_handles_labels()
     ax1.legend(lines1 + lines2, labels1 + labels2, loc='upper left', fontsize=11)
-    ax1.set_title('Yıllık Atıf Trendi')
+    ax1.set_title(gettext('Yıllık Atıf Trendi'))
     ax1.grid(axis='y', zorder=0)
 
     if len(sorted_years) > 20:
@@ -690,9 +691,9 @@ def publication_growth_rate(records: list[dict]):
     ax.axhline(cagr, color=TREND_RED, linewidth=2.0, linestyle='--',
                zorder=3, label=f'CAGR = {cagr:+.1f}%')
 
-    ax.set_xlabel('Yıl', fontsize=12, labelpad=8)
-    ax.set_ylabel('Yıllık Büyüme Oranı (%)', fontsize=12, labelpad=8)
-    ax.set_title('Yıllık Yayın Büyüme Oranı')
+    ax.set_xlabel(gettext('Yıl'), fontsize=12, labelpad=8)
+    ax.set_ylabel(gettext('Yıllık Büyüme Oranı (%)'), fontsize=12, labelpad=8)
+    ax.set_title(gettext('Yıllık Yayın Büyüme Oranı'))
     ax.legend(fontsize=11)
     ax.grid(axis='y', zorder=0)
 
@@ -732,13 +733,13 @@ def lotka_law(records: list[dict]):
 
     fig, ax = plt.subplots(figsize=(10, 9))
     ax.bar(k_values, observed, color=colors, alpha=0.85,
-           label='Gözlemlenen', zorder=2, edgecolor='white')
+           label=gettext('Gözlemlenen'), zorder=2, edgecolor='white')
     ax.plot(k_values, theoretical, color=TREND_RED, linewidth=2.5,
-            marker='s', markersize=7, label='Lotka Teorisi (1/k²)', zorder=3)
+            marker='s', markersize=7, label=gettext('Lotka Teorisi (1/k²)'), zorder=3)
 
-    ax.set_xlabel('Yayın Sayısı (k)', fontsize=12, labelpad=8)
-    ax.set_ylabel('Yazar Sayısı', fontsize=12, labelpad=8)
-    ax.set_title('Lotka Kanunu — Yazar Üretkenlik Dağılımı')
+    ax.set_xlabel(gettext('Yayın Sayısı (k)'), fontsize=12, labelpad=8)
+    ax.set_ylabel(gettext('Yazar Sayısı'), fontsize=12, labelpad=8)
+    ax.set_title(gettext('Lotka Kanunu — Yazar Üretkenlik Dağılımı'))
     ax.legend(fontsize=11)
     ax.grid(axis='y', zorder=0)
     ax.set_xticks(k_values)
@@ -746,7 +747,7 @@ def lotka_law(records: list[dict]):
     # Tek yayınlı yazar oranı
     single_pct = prod_dist.get(1, 0) / len(author_count) * 100 if author_count else 0
     ax.text(0.98, 0.97,
-            f'Tek yayınlı yazarlar: {single_pct:.1f}%\nToplam yazar: {len(author_count):,}',
+            gettext('Tek yayınlı yazarlar: {pct}\nToplam yazar: {total}').format(pct=f'{single_pct:.1f}%', total=f'{len(author_count):,}'),
             transform=ax.transAxes, fontsize=10, va='top', ha='right',
             bbox=dict(boxstyle='round,pad=0.5', facecolor='#f1f5f9',
                       edgecolor='#cbd5e0', alpha=0.95))
@@ -839,13 +840,13 @@ def keyword_cooccurrence(records: list[dict], max_kw: int = 40, min_cooccur: int
     # Cluster legend
     legend_patches = [
         mpatches.Patch(color=cluster_colors[i % len(cluster_colors)],
-                       label=f'Küme {i + 1}')
+                       label=gettext('Küme {n}').format(n=i + 1))
         for i in range(min(n_clusters, 8))
     ]
     ax.legend(handles=legend_patches, loc='lower right', fontsize=8,
-              framealpha=0.85, title='Araştırma Kümeleri', title_fontsize=9)
+              framealpha=0.85, title=gettext('Araştırma Kümeleri'), title_fontsize=9)
 
-    ax.set_title('Anahtar Kelime Eş-Oluşum Ağı (VOSviewer-style)')
+    ax.set_title(gettext('Anahtar Kelime Eş-Oluşum Ağı (VOSviewer-style)'))
     ax.axis('off')
     fig.tight_layout(pad=2.0)
     return fig
@@ -892,9 +893,9 @@ def keyword_trend(records: list[dict], top_n: int = 8):
         plt.close(fig)
         return None
 
-    ax.set_xlabel('Yıl', fontsize=12, labelpad=8)
-    ax.set_ylabel('Yayın Sayısı', fontsize=12, labelpad=8)
-    ax.set_title(f'Anahtar Kelime Zaman Trendi (Top {plotted})')
+    ax.set_xlabel(gettext('Yıl'), fontsize=12, labelpad=8)
+    ax.set_ylabel(gettext('Yayın Sayısı'), fontsize=12, labelpad=8)
+    ax.set_title(gettext('Anahtar Kelime Zaman Trendi (Top {n})').format(n=plotted))
     ax.legend(bbox_to_anchor=(1.01, 1), loc='upper left', fontsize=9,
               frameon=True, framealpha=0.95, edgecolor='#cbd5e0')
     ax.grid(True, zorder=0)
@@ -971,9 +972,9 @@ def country_collaboration(records: list[dict], min_collab: int = 2, max_countrie
                                norm=plt.Normalize(vmin=min_deg, vmax=max_deg))
     sm.set_array([])
     cbar = fig.colorbar(sm, ax=ax, fraction=0.03, pad=0.02)
-    cbar.set_label('İşbirliği Sayısı', fontsize=10)
+    cbar.set_label(gettext('İşbirliği Sayısı'), fontsize=10)
 
-    ax.set_title('Ülke İşbirliği Ağı')
+    ax.set_title(gettext('Ülke İşbirliği Ağı'))
     ax.axis('off')
     fig.tight_layout(pad=2.0)
     return fig
@@ -1098,21 +1099,21 @@ def research_gap(records: list[dict], top_n: int = 30, recent_years: int = 3):
     ax.text(med_trend + (xlim[1] - med_trend) * 0.5, ylim[1] * 0.97,
             'ALTIN ALAN', ha='center', color='#4E79A7', **kw_args)
     ax.text(med_trend - (med_trend - xlim[0]) * 0.5, med_impact * 0.15,
-            'DÜŞEN ALAN', ha='center', color='#BAB0AC', **kw_args)
+            gettext('DÜŞEN ALAN'), ha='center', color='#BAB0AC', **kw_args)
     ax.text(med_trend + (xlim[1] - med_trend) * 0.5, med_impact * 0.15,
-            'YÜKSELİŞTEKİ ALAN', ha='center', color='#76B7B2', **kw_args)
+            gettext('YÜKSELİŞTEKİ ALAN'), ha='center', color='#76B7B2', **kw_args)
 
     # Legend
     from matplotlib.lines import Line2D
     legend_items = [
         Line2D([0], [0], marker='o', color='w', markerfacecolor='#E15759',
-               markersize=10, label='Research Gap (fırsat)'),
+               markersize=10, label=gettext('Research Gap (fırsat)')),
         Line2D([0], [0], marker='o', color='w', markerfacecolor='#4E79A7',
-               markersize=10, label='Altın Alan (aktif & etkili)'),
+               markersize=10, label=gettext('Altın Alan (aktif & etkili)')),
         Line2D([0], [0], marker='o', color='w', markerfacecolor='#76B7B2',
-               markersize=10, label='Yükselen Alan'),
+               markersize=10, label=gettext('Yükselen Alan')),
         Line2D([0], [0], marker='o', color='w', markerfacecolor='#BAB0AC',
-               markersize=10, label='Düşen Alan'),
+               markersize=10, label=gettext('Düşen Alan')),
     ]
     ax.legend(handles=legend_items, loc='lower right', fontsize=8.5,
               framealpha=0.9, edgecolor='#e2e8f0')
@@ -1120,14 +1121,15 @@ def research_gap(records: list[dict], top_n: int = 30, recent_years: int = 3):
     # Gap keywords listesi (alt açıklama)
     gap_kws = [points[i]['kw'] for i in gap_indices[:6]]
     if gap_kws:
-        gap_text = '🎯 Önerilen Araştırma Boşlukları: ' + ' · '.join(gap_kws)
+        # 🎯 kaldırıldı: DejaVu Sans'ta glif yok, PDF'te boş kutu çıkıyordu
+        gap_text = gettext('Önerilen Araştırma Boşlukları:') + ' ' + ' · '.join(gap_kws)
         fig.text(0.5, 0.01, gap_text, ha='center', fontsize=9,
                  color='#E15759', fontweight='bold',
                  bbox=dict(boxstyle='round,pad=0.4', fc='#fff5f5', ec='#E15759', alpha=0.8))
 
-    ax.set_xlabel('Yayın Trendi  (← Azalıyor  |  Artıyor →)', fontsize=11)
-    ax.set_ylabel('Atıf Etkisi  (↑ Yüksek)', fontsize=11)
-    ax.set_title('Araştırma Boşluğu Haritası (Research Gap)', pad=18)
+    ax.set_xlabel(gettext('Yayın Trendi  (← Azalıyor  |  Artıyor →)'), fontsize=11)
+    ax.set_ylabel(gettext('Atıf Etkisi  (↑ Yüksek)'), fontsize=11)
+    ax.set_title(gettext('Araştırma Boşluğu Haritası (Research Gap)'), pad=18)
     fig.subplots_adjust(bottom=0.12, top=0.93, left=0.09, right=0.97)
     return fig
 
@@ -1214,13 +1216,13 @@ def topic_map(records: list[dict], n_topics: int = 8, top_kw_per_topic: int = 8)
                 zorder=3, multialignment='center',
                 bbox=dict(boxstyle='round,pad=0.1', fc='none', ec='none'))
 
-        ax.text(x, y - 1.1, f'Küme {idx + 1}  ({topic["n_kw"]} kw)',
+        ax.text(x, y - 1.1, gettext('Küme {n}').format(n=idx + 1) + f'  ({topic["n_kw"]} kw)',
                 ha='center', va='top', fontsize=8.5, color='#475569')
 
     ax.set_xlim(0, cols * 3.5 + 0.5)
     ax.set_ylim(0, (rows + 0.5) * 2.5)
     ax.axis('off')
-    ax.set_title('Araştırma Konusu Kümeleri (Topic Map)', pad=18)
+    ax.set_title(gettext('Araştırma Konusu Kümeleri (Topic Map)'), pad=18)
     fig.tight_layout(pad=2.0)
     return fig
 

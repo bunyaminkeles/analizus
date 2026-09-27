@@ -84,13 +84,14 @@ class AlexSearchJob(models.Model):
         return 3
 
     def get_query_summary(self):
+        from django.utils.translation import gettext  # aktif dilde (istek / kullanıcı dili)
         parts = []
         for p in self.query_parts:
             field_labels = {
-                'title': 'Başlık', 'abstract': 'Özet', 'author': 'Yazar',
-                'keyword': 'Anahtar Kelime', 'journal': 'Dergi/Kaynak',
-                'institution': 'Kurum', 'doi': 'DOI', 'year': 'Yıl',
-                'type': 'Yayın Türü',
+                'title': gettext('Başlık'), 'abstract': gettext('Özet'), 'author': gettext('Yazar'),
+                'keyword': gettext('Anahtar Kelime'), 'journal': gettext('Dergi/Kaynak'),
+                'institution': gettext('Kurum'), 'doi': 'DOI', 'year': gettext('Yıl'),
+                'type': gettext('Yayın Türü'),
             }
             label = field_labels.get(p.get('field', ''), p.get('field', ''))
             parts.append(f"{label}: {p.get('value', '')}")

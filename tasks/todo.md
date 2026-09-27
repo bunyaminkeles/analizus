@@ -162,8 +162,17 @@ maddelerde.
       (upload + openalex); 3 e-posta alıcı dilinde (OpenAlex işinde "yüklediğiniz dosya" hatası ve
       Türkçe karaktersiz e-posta düzeltildi); tam rapor EN/DE → proje talebi. Test: DE kullanıcı
       gerçek analiz motoruyla 130 kayıt → completed, e-posta Almanca.
-    - [ ] Aşama 2 PDF rapor (analyzer ~73, pdf_builder ~13) + sorgu özeti alan adları TR
-      (`get_query_summary` "Başlık: …") + analyzer'da 🎯 emoji DejaVu'da yok (PDF'te boş kutu — önceden var).
+    - [x] Aşama 2 PDF rapor (27 Eylül 2026): analyzer (grafik başlık/eksen/lejant/tablo/yayın türü,
+      grafik İÇİ f-string başlıklar dahil) + pdf_builder (kapak, sayfa "Seite x / y", altbilgi) + sorgu
+      özeti alan adları çevrili; ~95 msgid elle (bulanıklar yanlıştı). 🎯 kaldırıldı (glif uyarısı 0).
+      **Doğruluk düzeltmesi:** kapak "TAM RAPOR (10 Analiz)" diyordu, rapor 15 analiz içeriyordu →
+      sayı gerçek grafik sayısından. Test: 160 kayıt, 3 dil PDF; EN/DE metin katmanında TR 0; DE
+      sayfaları görsel kontrol (Lotka, atıf tablosu tamamen Almanca). Ders: tarayıcıda `\w` Türkçe
+      harfleri kapsıyor (lessons.md).
+    - [ ] **Araştırma Boşluğu Haritası PDF'te bozuk (ÖNCEDEN VAR)** (27 Eylül 2026): `research_gap`
+      bbox_inches='tight' ile 744×15562 px üretiyor (grafik dışında bir öğe alanı uzatıyor) → PDF'te
+      ince boş şerit. Orijinal kodla birebir aynı (sentetik 160 kayıt). Ücretli raporda — "analiz
+      sonuçları test edilsin" kapsamında düzeltilecek.
     - [ ] Aşama 3 bibliometri sayfası (landing ~90) EN/DE + menüde aç
     - [ ] Aşama 4 sipariş EN/DE → proje talebi (e-posta tarafı yapıldı; sayfa yönlendirmesi kaldı)
     - [ ] Semantic Scholar → bibliometri bağlantısı + analiz sonuç testleri

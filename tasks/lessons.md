@@ -85,3 +85,10 @@ testle commit+push yapıldı (dev'e; main'e gitmedi, hemen düzeltildi).
 **Kural:** Commit'ten önce testi `&&` ile bağla ya da çıktıyı okuduktan SONRA ayrı adımda commit et.
 Ayrıca: STORAGES/statik değişikliği testleri DEBUG=False nedeniyle manifest'e bağlar →
 test_settings'te düz StaticFilesStorage.
+
+## 27 Eylül 2026 — Metin tarayıcılarında `\w` Türkçe harfleri de kapsar
+**Hata:** "Teknik sabit mi?" filtresi `re.fullmatch(r'[#\w\-\.:/]*', s)` tek kelimelik Türkçe
+metinleri ("Yıl", "Diğer", "Düzeltme") de teknik sabit sayıp atladı (Python `\w` Unicode harfleri
+kapsar). Sonradan "sarılmamış Türkçe sabit" taramasıyla yakalandı.
+**Kural:** Toplu sarmadan SONRA her zaman ters kontrol yap: gettext'e sarılmamış ve ç/ğ/ı/ö/ş/ü
+içeren sabitleri listele; ASCII Türkçe kelimeler için ayrıca elle göz at.

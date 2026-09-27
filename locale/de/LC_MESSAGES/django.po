@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-27 21:27+0300\n"
+"POT-Creation-Date: 2026-09-27 22:18+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,6 +28,369 @@ msgstr "Englisch"
 #: analizdestek/settings.py:210
 msgid "German"
 msgstr "Deutsch"
+
+#: bibliometrics/services/analyzer.py:151
+#: bibliometrics/services/analyzer.py:215
+msgid "Yıllara Göre Yayın Trendi"
+msgstr "Publikationstrend nach Jahr"
+
+#: bibliometrics/services/analyzer.py:152
+msgid "Yıllık Büyüme Oranı"
+msgstr "Jährliche Wachstumsrate"
+
+#: bibliometrics/services/analyzer.py:153
+msgid "En Verimli Yazarlar (Top 15)"
+msgstr "Produktivste Autor/innen (Top 15)"
+
+#: bibliometrics/services/analyzer.py:154
+msgid "Lotka Kanunu — Yazar Üretkenliği"
+msgstr "Lotkasches Gesetz – Produktivität der Autor/innen"
+
+#: bibliometrics/services/analyzer.py:155
+#: bibliometrics/services/analyzer.py:291 bibliometrics/views.py:59
+#: openalex/templates/openalex/landing.html:107
+msgid "Anahtar Kelime Bulutu"
+msgstr "Schlagwort-Wolke"
+
+#: bibliometrics/services/analyzer.py:156
+#: openalex/templates/openalex/landing.html:108
+msgid "Anahtar Kelime Eş-Oluşum Ağı"
+msgstr "Schlagwort-Kookkurrenznetzwerk"
+
+#: bibliometrics/services/analyzer.py:157
+#: bibliometrics/services/job_runner.py:203
+#: openalex/templates/openalex/landing.html:109
+msgid "Anahtar Kelime Zaman Trendi"
+msgstr "Zeitlicher Schlagworttrend"
+
+#: bibliometrics/services/analyzer.py:158
+msgid "En Çok Atıf Alan Yayınlar (Top 10)"
+msgstr "Meistzitierte Publikationen (Top 10)"
+
+#: bibliometrics/services/analyzer.py:159
+#: bibliometrics/services/job_runner.py:205
+#: openalex/templates/openalex/landing.html:111
+msgid "En Çok Yayın Yapılan Dergiler"
+msgstr "Zeitschriften mit den meisten Publikationen"
+
+#: bibliometrics/services/analyzer.py:160
+msgid "Kurum / Ülke Dağılımı (Top 10)"
+msgstr "Verteilung nach Institution / Land (Top 10)"
+
+#: bibliometrics/services/analyzer.py:161
+#: bibliometrics/services/analyzer.py:977
+#: openalex/templates/openalex/landing.html:117
+msgid "Ülke İşbirliği Ağı"
+msgstr "Länder-Kooperationsnetzwerk"
+
+#: bibliometrics/services/analyzer.py:162
+#: bibliometrics/services/analyzer.py:470
+#: bibliometrics/services/job_runner.py:207 bibliometrics/views.py:60
+#: openalex/templates/openalex/landing.html:118
+msgid "Yazar İşbirliği Ağı"
+msgstr "Autor/innen-Kooperationsnetzwerk"
+
+#: bibliometrics/services/analyzer.py:163
+#: bibliometrics/services/analyzer.py:537
+#: openalex/templates/openalex/landing.html:119
+msgid "Yayın Türleri Dağılımı"
+msgstr "Verteilung der Publikationstypen"
+
+#: bibliometrics/services/analyzer.py:164
+#: bibliometrics/services/analyzer.py:610
+msgid "Atıf Analizi ve H-index"
+msgstr "Zitationsanalyse und H-Index"
+
+#: bibliometrics/services/analyzer.py:165
+#: bibliometrics/services/analyzer.py:652
+#: bibliometrics/services/job_runner.py:209
+#: openalex/templates/openalex/landing.html:121
+msgid "Yıllık Atıf Trendi"
+msgstr "Jährlicher Zitationstrend"
+
+#: bibliometrics/services/analyzer.py:166
+#: bibliometrics/services/analyzer.py:1225
+msgid "Araştırma Konusu Kümeleri (Topic Map)"
+msgstr "Forschungsthemen-Cluster (Topic Map)"
+
+#: bibliometrics/services/analyzer.py:167
+#: bibliometrics/services/analyzer.py:1132
+msgid "Araştırma Boşluğu Haritası (Research Gap)"
+msgstr "Karte der Forschungslücken (Research Gap)"
+
+#: bibliometrics/services/analyzer.py:211 bibliometrics/views.py:45
+#: bibliometrics/views.py:58
+msgid "Yayın Trendi"
+msgstr "Publikationstrend"
+
+#: bibliometrics/services/analyzer.py:213
+#: bibliometrics/services/analyzer.py:643
+#: bibliometrics/services/analyzer.py:694
+#: bibliometrics/services/analyzer.py:896
+#: makaleanaliz/templates/makaleanaliz/results.html:137 openalex/models.py:93
+#: openalex/services/job_runner.py:21 openalex/views.py:194
+#: semanticscholar/models.py:88 semanticscholar/services/job_runner.py:21
+#: semanticscholar/views.py:240
+msgid "Yıl"
+msgstr "Jahr"
+
+#: bibliometrics/services/analyzer.py:214
+#: bibliometrics/services/analyzer.py:249
+#: bibliometrics/services/analyzer.py:343
+#: bibliometrics/services/analyzer.py:384
+#: bibliometrics/services/analyzer.py:897
+msgid "Yayın Sayısı"
+msgstr "Anzahl der Publikationen"
+
+#: bibliometrics/services/analyzer.py:250
+#, python-brace-format
+msgid "En Verimli Yazarlar (Top {n})"
+msgstr "Produktivste Autor/innen (Top {n})"
+
+#: bibliometrics/services/analyzer.py:315
+#: bibliometrics/services/analyzer.py:571 openalex/services/job_runner.py:21
+#: openalex/views.py:195 semanticscholar/services/job_runner.py:21
+#: semanticscholar/views.py:241
+msgid "Atıf Sayısı"
+msgstr "Zitationen"
+
+#: bibliometrics/services/analyzer.py:316
+#, python-brace-format
+msgid "En Çok Atıf Alan Yayınlar (Top {n})"
+msgstr "Meistzitierte Publikationen (Top {n})"
+
+#: bibliometrics/services/analyzer.py:344
+#, python-brace-format
+msgid "En Çok Yayın Yapılan Dergiler / Kaynaklar (Top {n})"
+msgstr "Zeitschriften / Quellen mit den meisten Publikationen (Top {n})"
+
+#: bibliometrics/services/analyzer.py:366
+#, python-brace-format
+msgid "Ülkelere Göre Yayın Dağılımı (Top {n})"
+msgstr "Publikationen nach Land (Top {n})"
+
+#: bibliometrics/services/analyzer.py:369
+#, python-brace-format
+msgid "Kurumlara Göre Yayın Dağılımı (Top {n})"
+msgstr "Publikationen nach Institution (Top {n})"
+
+#: bibliometrics/services/analyzer.py:468
+msgid "Ortak Yazar Sayısı"
+msgstr "Anzahl der Koautor/innen"
+
+#: bibliometrics/services/analyzer.py:484
+msgid "Makale"
+msgstr "Artikel"
+
+#: bibliometrics/services/analyzer.py:485
+msgid "Derleme"
+msgstr "Übersichtsarbeit"
+
+#: bibliometrics/services/analyzer.py:486
+#: bibliometrics/services/analyzer.py:487
+msgid "Konferans Bildirisi"
+msgstr "Konferenzbeitrag"
+
+#: bibliometrics/services/analyzer.py:488
+msgid "Kitap Bölümü"
+msgstr "Buchkapitel"
+
+#: bibliometrics/services/analyzer.py:489
+msgid "Kitap"
+msgstr "Buch"
+
+#: bibliometrics/services/analyzer.py:490
+msgid "Editoryal"
+msgstr "Editorial"
+
+#: bibliometrics/services/analyzer.py:491
+msgid "Mektup"
+msgstr "Brief"
+
+#: bibliometrics/services/analyzer.py:492
+msgid "Not"
+msgstr "Notiz"
+
+#: bibliometrics/services/analyzer.py:493
+msgid "Kısa Derleme"
+msgstr "Kurzübersicht"
+
+#: bibliometrics/services/analyzer.py:494
+msgid "Düzeltme"
+msgstr "Erratum"
+
+#: bibliometrics/services/analyzer.py:495
+msgid "Ön Baskı"
+msgstr "Preprint"
+
+#: bibliometrics/services/analyzer.py:496
+msgid "Tez"
+msgstr "Abschlussarbeit"
+
+#: bibliometrics/services/analyzer.py:497
+msgid "Veri Seti"
+msgstr "Datensatz"
+
+#: bibliometrics/services/analyzer.py:498 forum/models.py:1706
+#: forum/templates/forum/contact.html:78
+#: forum/templates/forum/proje_talebi.html:178
+msgid "Diğer"
+msgstr "Sonstiges"
+
+#: bibliometrics/services/analyzer.py:570
+msgid "Yayın Sırası (atıfa göre)"
+msgstr "Rang der Publikation (nach Zitationen)"
+
+#: bibliometrics/services/analyzer.py:572
+msgid "Atıf Dağılımı"
+msgstr "Zitationsverteilung"
+
+#: bibliometrics/services/analyzer.py:578
+msgid "Toplam Yayın"
+msgstr "Publikationen insgesamt"
+
+#: bibliometrics/services/analyzer.py:579
+msgid "Atıflı Yayın"
+msgstr "Zitierte Publikationen"
+
+#: bibliometrics/services/analyzer.py:580
+msgid "H-index"
+msgstr "H-Index"
+
+#: bibliometrics/services/analyzer.py:581
+#: bibliometrics/services/analyzer.py:638
+msgid "Toplam Atıf"
+msgstr "Zitationen insgesamt"
+
+#: bibliometrics/services/analyzer.py:582
+#: bibliometrics/services/analyzer.py:641
+msgid "Ort. Atıf / Yayın"
+msgstr "Ø Zitationen / Publikation"
+
+#: bibliometrics/services/analyzer.py:583
+msgid "En Çok Atıf"
+msgstr "Meiste Zitationen"
+
+#: bibliometrics/services/analyzer.py:584
+msgid "Medyan Atıf"
+msgstr "Median der Zitationen"
+
+#: bibliometrics/services/analyzer.py:589
+msgid "Metrik"
+msgstr "Kennzahl"
+
+#: bibliometrics/services/analyzer.py:589 istatistik/services/betimsel.py:138
+#: istatistik/services/betimsel.py:202 istatistik/services/normallik.py:215
+msgid "Değer"
+msgstr "Wert"
+
+#: bibliometrics/services/analyzer.py:608
+msgid "Özet İstatistikler"
+msgstr "Deskriptive Kennzahlen"
+
+#: bibliometrics/services/analyzer.py:644
+msgid "Toplam Atıf Sayısı"
+msgstr "Zitationen insgesamt"
+
+#: bibliometrics/services/analyzer.py:645
+msgid "Ortalama Atıf / Yayın"
+msgstr "Durchschnittliche Zitationen / Publikation"
+
+#: bibliometrics/services/analyzer.py:695
+msgid "Yıllık Büyüme Oranı (%)"
+msgstr "Jährliche Wachstumsrate (%)"
+
+#: bibliometrics/services/analyzer.py:696
+msgid "Yıllık Yayın Büyüme Oranı"
+msgstr "Jährliche Wachstumsrate der Publikationen"
+
+#: bibliometrics/services/analyzer.py:736
+msgid "Gözlemlenen"
+msgstr "Beobachtet"
+
+#: bibliometrics/services/analyzer.py:738
+msgid "Lotka Teorisi (1/k²)"
+msgstr "Lotka-Theorie (1/k²)"
+
+#: bibliometrics/services/analyzer.py:740
+msgid "Yayın Sayısı (k)"
+msgstr "Anzahl der Publikationen (k)"
+
+#: bibliometrics/services/analyzer.py:741
+msgid "Yazar Sayısı"
+msgstr "Anzahl der Autor/innen"
+
+#: bibliometrics/services/analyzer.py:742
+msgid "Lotka Kanunu — Yazar Üretkenlik Dağılımı"
+msgstr "Lotkasches Gesetz – Verteilung der Produktivität der Autor/innen"
+
+#: bibliometrics/services/analyzer.py:750
+#, python-brace-format
+msgid ""
+"Tek yayınlı yazarlar: {pct}\n"
+"Toplam yazar: {total}"
+msgstr ""
+"Autor/innen mit einer Publikation: {pct}\n"
+"Autor/innen insgesamt: {total}"
+
+#: bibliometrics/services/analyzer.py:843
+#: bibliometrics/services/analyzer.py:1219
+#, python-brace-format
+msgid "Küme {n}"
+msgstr "Cluster {n}"
+
+#: bibliometrics/services/analyzer.py:847
+msgid "Araştırma Kümeleri"
+msgstr "Forschungscluster"
+
+#: bibliometrics/services/analyzer.py:849
+msgid "Anahtar Kelime Eş-Oluşum Ağı (VOSviewer-style)"
+msgstr "Schlagwort-Kookkurrenznetzwerk (VOSviewer-Stil)"
+
+#: bibliometrics/services/analyzer.py:898
+#, python-brace-format
+msgid "Anahtar Kelime Zaman Trendi (Top {n})"
+msgstr "Zeitlicher Schlagworttrend (Top {n})"
+
+#: bibliometrics/services/analyzer.py:975
+msgid "İşbirliği Sayısı"
+msgstr "Anzahl der Kooperationen"
+
+#: bibliometrics/services/analyzer.py:1102
+msgid "DÜŞEN ALAN"
+msgstr "RÜCKLÄUFIGES FELD"
+
+#: bibliometrics/services/analyzer.py:1104
+msgid "YÜKSELİŞTEKİ ALAN"
+msgstr "AUFSTREBENDES FELD"
+
+#: bibliometrics/services/analyzer.py:1110
+msgid "Research Gap (fırsat)"
+msgstr "Forschungslücke (Chance)"
+
+#: bibliometrics/services/analyzer.py:1112
+msgid "Altın Alan (aktif & etkili)"
+msgstr "Goldenes Feld (aktiv & einflussreich)"
+
+#: bibliometrics/services/analyzer.py:1114
+msgid "Yükselen Alan"
+msgstr "Aufstrebendes Feld"
+
+#: bibliometrics/services/analyzer.py:1116
+msgid "Düşen Alan"
+msgstr "Rückläufiges Feld"
+
+#: bibliometrics/services/analyzer.py:1125
+msgid "Önerilen Araştırma Boşlukları:"
+msgstr "Vorgeschlagene Forschungslücken:"
+
+#: bibliometrics/services/analyzer.py:1130
+msgid "Yayın Trendi  (← Azalıyor  |  Artıyor →)"
+msgstr "Publikationstrend  (← abnehmend  |  zunehmend →)"
+
+#: bibliometrics/services/analyzer.py:1131
+msgid "Atıf Etkisi  (↑ Yüksek)"
+msgstr "Zitationswirkung  (↑ hoch)"
 
 #: bibliometrics/services/job_runner.py:57
 msgid "Dosya içeriği bulunamadı. Lütfen dosyayı tekrar yükleyin."
@@ -80,38 +443,18 @@ msgstr "Produktivste Autor/innen + Lotkasches Gesetz"
 msgid "Anahtar Kelime Bulutu + Eş-Oluşum Ağı"
 msgstr "Schlagwortwolke + Kookkurrenznetzwerk"
 
-#: bibliometrics/services/job_runner.py:203
-#: openalex/templates/openalex/landing.html:109
-msgid "Anahtar Kelime Zaman Trendi"
-msgstr "Zeitlicher Schlagworttrend"
-
 #: bibliometrics/services/job_runner.py:204
 #: openalex/templates/openalex/landing.html:110
 msgid "En Çok Atıf Alan Yayınlar"
 msgstr "Meistzitierte Publikationen"
 
-#: bibliometrics/services/job_runner.py:205
-#: openalex/templates/openalex/landing.html:111
-msgid "En Çok Yayın Yapılan Dergiler"
-msgstr "Zeitschriften mit den meisten Publikationen"
-
 #: bibliometrics/services/job_runner.py:206
 msgid "Kurum / Ülke Dağılımı + İşbirliği Ağı"
 msgstr "Institutions-/Länderverteilung + Kooperationsnetzwerk"
 
-#: bibliometrics/services/job_runner.py:207 bibliometrics/views.py:60
-#: openalex/templates/openalex/landing.html:118
-msgid "Yazar İşbirliği Ağı"
-msgstr "Autor/innen-Kooperationsnetzwerk"
-
 #: bibliometrics/services/job_runner.py:208
 msgid "Yayın Türleri + Atıf Analizi + H-index"
 msgstr "Publikationstypen + Zitationsanalyse + H-Index"
-
-#: bibliometrics/services/job_runner.py:209
-#: openalex/templates/openalex/landing.html:121
-msgid "Yıllık Atıf Trendi"
-msgstr "Jährlicher Zitationstrend"
 
 #: bibliometrics/services/job_runner.py:212
 msgid "Sipariş oluşturmak için:"
@@ -222,6 +565,71 @@ msgstr ""
 "Sie können Ihren vollständigen Bericht (PDF mit 15 Analysen) über den "
 "folgenden Link herunterladen:"
 
+#: bibliometrics/services/pdf_builder.py:131
+#, python-brace-format
+msgid "Sayfa {page} / {total}"
+msgstr "Seite {page} / {total}"
+
+#: bibliometrics/services/pdf_builder.py:147
+msgid "Akademik Veri Üssü"
+msgstr "Plattform für akademische Daten"
+
+#: bibliometrics/services/pdf_builder.py:148
+msgid "Bu rapor otomatik olarak oluşturulmuştur."
+msgstr "Dieser Bericht wurde automatisch erstellt."
+
+#: bibliometrics/services/pdf_builder.py:185
+msgid "Akademik Veri Üssü  —  analizus.com"
+msgstr "Plattform für akademische Daten  —  analizus.com"
+
+#: bibliometrics/services/pdf_builder.py:190
+msgid "Bibliometrik Analiz Raporu"
+msgstr "Bericht zur bibliometrischen Analyse"
+
+#: bibliometrics/services/pdf_builder.py:194
+#, python-brace-format
+msgid "DEMO RAPOR  ({n} Analiz)"
+msgstr "DEMO-BERICHT  ({n} Analysen)"
+
+#: bibliometrics/services/pdf_builder.py:194
+#, python-brace-format
+msgid "TAM RAPOR  ({n} Analiz)"
+msgstr "VOLLSTÄNDIGER BERICHT  ({n} Analysen)"
+
+#: bibliometrics/services/pdf_builder.py:241
+msgid "Toplam Kayıt:"
+msgstr "Datensätze insgesamt:"
+
+#: bibliometrics/services/pdf_builder.py:242
+msgid "Dosya:"
+msgstr "Quelle:"
+
+#: bibliometrics/services/pdf_builder.py:243
+msgid "Rapor Tarihi:"
+msgstr "Berichtsdatum:"
+
+#: bibliometrics/services/pdf_builder.py:244
+msgid "Hazırlayan:"
+msgstr "Erstellt von:"
+
+#: bibliometrics/services/pdf_builder.py:244
+msgid "Analizus Otomatik Analiz"
+msgstr "Automatisierte Analyse von Analizus"
+
+#: bibliometrics/services/pdf_builder.py:257
+#, python-brace-format
+msgid "Demo: {n} analiz içermektedir."
+msgstr "Demo: enthält {n} Analysen."
+
+#: bibliometrics/services/pdf_builder.py:261
+msgid "Tam rapor için sipariş oluşturunuz → analizus.com"
+msgstr ""
+"Für den vollständigen Bericht senden Sie eine Projektanfrage → analizus.com"
+
+#: bibliometrics/services/pdf_builder.py:270
+msgid "Bibliometrik Analiz Raporu — Analizus"
+msgstr "Bericht zur bibliometrischen Analyse — Analizus"
+
 #: bibliometrics/views.py:38 forum/templates/forum/home.html:300
 #: forum/views.py:4109 openalex/templates/openalex/landing.html:155
 #: templates/base.html:226 templates/base.html:444
@@ -237,10 +645,6 @@ msgstr ""
 "Laden Sie Ihre WoS-, Scopus- oder BibTeX-Datei hoch und erhalten Sie einen "
 "PDF-Bericht mit 10 Diagrammen zu Publikationstrends über die Jahre, "
 "meistzitierten Autor/innen, Kooperationsnetzwerken und mehr."
-
-#: bibliometrics/views.py:45 bibliometrics/views.py:58
-msgid "Yayın Trendi"
-msgstr "Publikationstrend"
 
 #: bibliometrics/views.py:45
 msgid "Yıllar içinde yayın sayısı ve büyüme oranını grafikle görün."
@@ -309,10 +713,6 @@ msgstr "Das System führt automatisch 10 verschiedene Analysen durch."
 msgid "Demo rapor (3 grafik) ücretsiz emailinize gelir."
 msgstr ""
 "Ein Demo-Bericht (3 Diagramme) wird Ihnen kostenlos per E-Mail zugesandt."
-
-#: bibliometrics/views.py:59 openalex/templates/openalex/landing.html:107
-msgid "Anahtar Kelime Bulutu"
-msgstr "Schlagwort-Wolke"
 
 #: bibliometrics/views.py:61
 msgid "Atıf Analizi & H-index"
@@ -847,11 +1247,6 @@ msgstr "KI-Agenten-/Automatisierungsprojekt"
 #: forum/models.py:1705 forum/templates/forum/proje_talebi.html:177
 msgid "Bibliyometrik Analiz"
 msgstr "Bibliometrische Analyse"
-
-#: forum/models.py:1706 forum/templates/forum/contact.html:78
-#: forum/templates/forum/proje_talebi.html:178
-msgid "Diğer"
-msgstr "Sonstiges"
 
 #: forum/models.py:1709 forum/templates/forum/proje_talebi.html:193
 msgid "1.000 satırdan az"
@@ -11289,11 +11684,6 @@ msgstr "Kategoriale Variablen"
 msgid "%(var)s  (N=%(n)s, %(k)s kategori)"
 msgstr "%(var)s  (N=%(n)s, %(k)s Kategorien)"
 
-#: istatistik/services/betimsel.py:138 istatistik/services/betimsel.py:202
-#: istatistik/services/normallik.py:215
-msgid "Değer"
-msgstr "Wert"
-
 #: istatistik/services/betimsel.py:138 istatistik/services/betimsel.py:225
 #: istatistik/services/normallik.py:216
 msgid "Frekans"
@@ -17484,19 +17874,14 @@ msgid "Top"
 msgstr "Top"
 
 #: makaleanaliz/templates/makaleanaliz/results.html:136 openalex/forms.py:6
-#: openalex/services/job_runner.py:20
+#: openalex/models.py:91 openalex/services/job_runner.py:20
 #: openalex/templates/openalex/landing.html:213 openalex/views.py:194
-#: semanticscholar/forms.py:7 semanticscholar/services/job_runner.py:20
+#: semanticscholar/forms.py:7 semanticscholar/models.py:87
+#: semanticscholar/services/job_runner.py:20
 #: semanticscholar/templates/semanticscholar/landing.html:328
 #: semanticscholar/views.py:240
 msgid "Başlık"
 msgstr "Titel"
-
-#: makaleanaliz/templates/makaleanaliz/results.html:137
-#: openalex/services/job_runner.py:21 openalex/views.py:194
-#: semanticscholar/services/job_runner.py:21 semanticscholar/views.py:240
-msgid "Yıl"
-msgstr "Jahr"
 
 #: makaleanaliz/templates/makaleanaliz/results.html:138
 #: openalex/services/job_runner.py:21 openalex/views.py:194
@@ -17534,20 +17919,24 @@ msgid ". sıradasınız — önceki analizin bitmesi bekleniyor"
 msgstr ""
 ". Platz in der Warteschlange — wartet auf Abschluss der vorherigen Analyse"
 
-#: openalex/forms.py:7 openalex/services/job_runner.py:22
+#: openalex/forms.py:7 openalex/models.py:91
+#: openalex/services/job_runner.py:22
 #: openalex/templates/openalex/landing.html:214 openalex/views.py:195
-#: semanticscholar/services/job_runner.py:22 semanticscholar/views.py:241
+#: semanticscholar/models.py:87 semanticscholar/services/job_runner.py:22
+#: semanticscholar/views.py:241
 msgid "Özet"
 msgstr "Abstract"
 
-#: openalex/forms.py:8 openalex/templates/openalex/landing.html:215
-#: semanticscholar/forms.py:8
+#: openalex/forms.py:8 openalex/models.py:91
+#: openalex/templates/openalex/landing.html:215 semanticscholar/forms.py:8
+#: semanticscholar/models.py:87
 #: semanticscholar/templates/semanticscholar/landing.html:329
 msgid "Yazar"
 msgstr "Autor"
 
-#: openalex/forms.py:9 openalex/templates/openalex/landing.html:216
-#: semanticscholar/forms.py:6
+#: openalex/forms.py:9 openalex/models.py:92
+#: openalex/templates/openalex/landing.html:216 semanticscholar/forms.py:6
+#: semanticscholar/models.py:88
 #: semanticscholar/templates/semanticscholar/landing.html:327
 msgid "Anahtar Kelime"
 msgstr "Schlagwort"
@@ -17585,20 +17974,23 @@ msgstr "Leere Werte sind nicht zulässig."
 msgid "Geçersiz operatör."
 msgstr "Ungültiger Operator."
 
-#: openalex/services/job_runner.py:20 openalex/views.py:194
-#: semanticscholar/services/job_runner.py:20 semanticscholar/views.py:240
-msgid "Yazarlar"
-msgstr "Autor/innen"
-
-#: openalex/services/job_runner.py:20
+#: openalex/models.py:92 openalex/services/job_runner.py:20
 #: semanticscholar/services/job_runner.py:20 semanticscholar/views.py:240
 msgid "Dergi/Kaynak"
 msgstr "Zeitschrift/Quelle"
 
-#: openalex/services/job_runner.py:21 openalex/views.py:195
-#: semanticscholar/services/job_runner.py:21 semanticscholar/views.py:241
-msgid "Atıf Sayısı"
-msgstr "Zitationen"
+#: openalex/models.py:93
+msgid "Kurum"
+msgstr "Institution"
+
+#: openalex/models.py:94 semanticscholar/views.py:241
+msgid "Yayın Türü"
+msgstr "Publikationstyp"
+
+#: openalex/services/job_runner.py:20 openalex/views.py:194
+#: semanticscholar/services/job_runner.py:20 semanticscholar/views.py:240
+msgid "Yazarlar"
+msgstr "Autor/innen"
 
 #: openalex/services/job_runner.py:22 openalex/views.py:195
 #: semanticscholar/services/job_runner.py:22 semanticscholar/views.py:241
@@ -17835,21 +18227,9 @@ msgstr "Ich möchte eine bibliometrische Analyse"
 msgid "Bibliometrik Analiz — 15 Grafik PDF Rapor"
 msgstr "Bibliometrische Analyse — PDF-Bericht mit 15 Diagrammen"
 
-#: openalex/templates/openalex/landing.html:108
-msgid "Anahtar Kelime Eş-Oluşum Ağı"
-msgstr "Schlagwort-Kookkurrenznetzwerk"
-
 #: openalex/templates/openalex/landing.html:116
 msgid "Kurum / Ülke Dağılımı"
 msgstr "Institutions-/Länderverteilung"
-
-#: openalex/templates/openalex/landing.html:117
-msgid "Ülke İşbirliği Ağı"
-msgstr "Länder-Kooperationsnetzwerk"
-
-#: openalex/templates/openalex/landing.html:119
-msgid "Yayın Türleri Dağılımı"
-msgstr "Verteilung der Publikationstypen"
 
 #: openalex/templates/openalex/landing.html:120
 msgid "Atıf Analizi + H-index"
@@ -18197,6 +18577,10 @@ msgstr "Für diese Suche gibt es noch keine Ergebnisse."
 msgid "Araştırma Alanı"
 msgstr "Forschungsgebiet"
 
+#: semanticscholar/models.py:89
+msgid "Alan"
+msgstr "Forschungsgebiet"
+
 #: semanticscholar/services/job_runner.py:22 semanticscholar/views.py:241
 msgid "Araştırma Alanları"
 msgstr "Forschungsgebiete"
@@ -18489,10 +18873,6 @@ msgstr ""
 #: semanticscholar/views.py:238
 msgid "Semantic Scholar Sonuçları"
 msgstr "Semantic-Scholar-Ergebnisse"
-
-#: semanticscholar/views.py:241
-msgid "Yayın Türü"
-msgstr "Publikationstyp"
 
 #: templates/admin/index.html:4
 msgid "Django site admin"
