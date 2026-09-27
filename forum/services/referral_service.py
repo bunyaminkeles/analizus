@@ -98,7 +98,7 @@ def check_and_award_referral(referral_use):
     _award_referral_badge(referrer, total_now)
 
     # 3. Referrer'a bildirim
-    _notify_referral_reward(referrer, referred, days, total_now)
+    _notify_referral_reward(referral_use, days, total_now)
 
     return True
 
@@ -123,8 +123,9 @@ def _award_referral_badge(referrer, total_rewarded):
             break
 
 
-def _notify_referral_reward(referrer, referred, days, total_now):
+def _notify_referral_reward(referral_use, days, total_now):
     """Referrer'a gerçek zamanlı bildirim + Notification kaydı."""
+    referrer, referred = referral_use.referrer, referral_use.referred
     try:
         from forum.models import Notification
         from forum.utils import send_realtime_notification
@@ -135,6 +136,7 @@ def _notify_referral_reward(referrer, referred, days, total_now):
             recipient=referrer,
             sender=referred,
             verb=verb,
+            target=referral_use,
         )
         url = reverse('referral_dashboard')
         send_realtime_notification(referrer.id, verb, url)

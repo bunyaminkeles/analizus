@@ -3496,7 +3496,7 @@ def mark_donation_transferred(request, pk):
             recipient=admin,
             sender=request.user,
             verb=f"'{donation.name or request.user.username}' kullanıcısı {donation.amount}₺ bağış havalesini yaptığını bildirdi.",
-            target=None,
+            target=donation,
         )
 
     messages.success(request, "Bildiriminiz alındı. Havale kontrol edildikten sonra Premium üyeliğiniz aktifleştirilecektir.")
