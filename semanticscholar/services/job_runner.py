@@ -159,8 +159,9 @@ def send_demo_email(job):
             gettext("Sorgu: %(query)s") % {'query': job.get_query_summary()},
             gettext("Toplam Sonuç: %(total)s") % {'total': job.total_results} + "\n",
         ]
-        body_lines.append(gettext("Tüm sonuçlara erişmek için sipariş sayfasını ziyaret edebilirsiniz:"))
-    body_lines.append(f"  {site_url}/semantic-scholar/siparis/{job.id}/\n")
+        # TR: sipariş; EN/DE: proje talebi (openalex job_runner'daki ortak yardımcı)
+        from openalex.services.job_runner import _full_results_lines
+        body_lines.extend(_full_results_lines(site_url, f"{site_url}/semantic-scholar/siparis/{job.id}/"))
     body_lines.append(f"---\nAnalizus - {site_url}")
 
     try:

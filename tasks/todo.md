@@ -146,7 +146,7 @@ maddelerde.
   yeni sınıflar VAR (ölçüldü) → büyük ihtimal tarayıcı önbelleği; kullanıcıdan Ctrl+Shift+R
   sonucu bekleniyor, sürerse incele.
 
-- [ ] **OpenAlex + Semantic Scholar tam çeviri — DEVAM EDİYOR** (kullanıcı: "önerilerine göre devam et"
+- [x] **OpenAlex + Semantic Scholar tam çeviri — TAMAMLANDI (dev, merge bekliyor)** (kullanıcı: "önerilerine göre devam et"
   27 Eylül 2026 → SEO rehberi EN/DE gizli; sipariş EN/DE gizli + proje talebi).
   - [x] Aşama 1 tanıtım sayfası: view promo metinleri gettext (22 msgid EN/DE), SEO rehberi yalnız
     TR, S2 "sipariş oluşturun" adımı EN/DE'de "proje talebi bırakın". EN/DE anonim sayfada TR 0.
@@ -163,7 +163,9 @@ maddelerde.
     ("No" → pgettext 'sıra numarası': TR'de Django'nun "Hayır" çevirisine düşüyordu — yakalandı);
     S2 API hata mesajları çevrili. Test: DE kullanıcı arka plan TXT Almanca, TR Türkçe; S2 limit
     hatası DE; Excel/TXT indirme 3 dilde doğru.
-  - [ ] Aşama 4 sipariş: EN/DE'de sipariş seçeneği gizli → proje talebi
+  - [x] Aşama 4 sipariş (27 Eylül 2026): demo e-postası EN/DE'de sipariş yerine proje talebi linki
+    (alıcı dilinde /en|de/proje-talebi/?source=tool), TR aynı; sipariş sayfası EN/DE'de proje
+    talebine 302, TR 200. Test: TR/DE kullanıcı × 2 araç × 3 dil.
   Ölçüm notu:
   etiketli 148 msgid'in hepsi çevrili; eksik olan ETİKETSİZ metin ~270: promo context (views) +
   service_promo.html ~40 (anonim ziyaretçi), SEO rehberi tarama_seo_content.py ~6.600 kr,

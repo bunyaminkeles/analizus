@@ -57,6 +57,18 @@ def _generate_alex_results_txt(publication_list, job, is_demo=True):
 
     return "\n".join(lines)
 
+def _full_results_lines(site_url, order_url):
+    """Demo e-postasında "tüm sonuçlar" satırları — aktif dil (recipient_language) içinde çağrılır.
+    TR: sipariş sayfası (Türk IBAN / TL havale). EN/DE: sipariş yok → proje talebi (kullanıcı
+    kararı 27 Eylül 2026)."""
+    from django.urls import reverse
+    from django.utils.translation import get_language
+    if (get_language() or 'tr')[:2] == 'tr':
+        return [gettext("Tüm sonuçlara erişmek için sipariş sayfasını ziyaret edebilirsiniz:"), f"  {order_url}\n"]
+    return [gettext("Tam veri seti için proje talebi bırakın, ücretsiz değerlendirelim:"),
+            f"  {site_url}{reverse('proje_talebi')}?source=tool\n"]
+
+
 def _execute_job(job_id):
     """Global kuyruk worker'ı tarafından çağrılır. Worker thread'i dili bilmez → iş, başlatan
     kullanıcının dil tercihiyle (Profile.preferred_language) çalışır: arka planda üretilen TXT
@@ -165,8 +177,7 @@ def send_demo_email(job):
             gettext("OpenAlex arama sonuçlarınız hazırlanmıştır.") + "\n",
             gettext("Sorgu: %(query)s") % {'query': job.get_query_summary()},
             gettext("Toplam Sonuç: %(total)s") % {'total': job.total_results} + "\n",
-            gettext("Tüm sonuçlara erişmek için sipariş sayfasını ziyaret edebilirsiniz:"),
-            f"  {site_url}/openalex/siparis/{job.id}/\n",
+            *_full_results_lines(site_url, f"{site_url}/openalex/siparis/{job.id}/"),
             f"---\nAnalizus - {site_url}",
         ]
 

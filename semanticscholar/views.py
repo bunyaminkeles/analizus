@@ -1,6 +1,7 @@
 import re
 import logging
 from django.utils.translation import get_language, gettext, pgettext
+from django.urls import reverse
 from functools import wraps
 
 from django.contrib.auth.decorators import login_required
@@ -175,6 +176,10 @@ def semantic_send_demo_email(request, job_id):
 @login_required
 def semantic_order_page(request, job_id):
     job = get_object_or_404(SemanticSearchJob, id=job_id, user=request.user)
+    # EN/DE'de sipariş yok (Türk IBAN / TL havale) → proje talebi (kullanıcı kararı 27 Eylül 2026)
+    if (get_language() or 'tr')[:2] != 'tr':
+        from django.shortcuts import redirect
+        return redirect(reverse('proje_talebi') + '?source=tool')
 
     if job.status != 'completed' or job.total_results == 0:
         return render(request, 'semanticscholar/order.html', {

@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from django.utils.translation import get_language, gettext, pgettext
+from django.urls import reverse
 from django.http import JsonResponse, Http404, HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_GET, require_POST
@@ -277,6 +278,10 @@ def openalex_send_demo_email(request, job_id):
 def openalex_order_page(request, job_id):
     """Sipariş sayfası: GET=form göster, POST=sipariş oluştur."""
     job = get_object_or_404(AlexSearchJob, id=job_id, user=request.user)
+    # EN/DE'de sipariş yok (Türk IBAN / TL havale) → proje talebi (kullanıcı kararı 27 Eylül 2026)
+    if (get_language() or 'tr')[:2] != 'tr':
+        from django.shortcuts import redirect
+        return redirect(reverse('proje_talebi') + '?source=tool')
 
     if job.status != 'completed' or job.total_results == 0:
         return render(request, 'openalex/order.html', {
