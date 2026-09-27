@@ -155,7 +155,20 @@ maddelerde.
     (e-posta doğrulama, günlük limit — parça birleştirme 2 tam cümleye bölündü, demo e-posta) çevrili;
     25 msgid (bulanık tahminler yanlıştı, hepsi elle). EN/DE giriş yapmış sayfada TR 0.
     Not: landing JS metinleri zaten etiketliydi (ölçüm aracı yanlış saymıştı).
-  - [ ] **Bibliometrik analize gönder** (OpenAlex sonuçları) `/bibliometrics/`'e gidiyor — o sayfa TR-only
+  - [ ] **BİBLİOMETRİ EN/DE — İNCELENDİ, PLAN ONAY BEKLİYOR** (27 Eylül 2026, kullanıcı: "bibliometri de
+    de/en olmalı; open alex ve scholar işleyişini incele"). Akış: OpenAlex (≥100 sonuç) → buton →
+    i18n DIŞI `/bibliometrics/from-openalex/<id>/` → parse_openalex_json → arka planda 15 analiz →
+    demo PDF (3 grafik) e-posta → tam rapor sipariş (Türk IBAN/TL) + admin onayı. **Semantic
+    Scholar → bibliometri bağlantısı YOK** (buton/adapter/endpoint yok; veri yapısı uygun). Dil:
+    tamamen TR — views ~38, analyzer ~73 (grafik başlık/etiket/yorum → EN/DE'ye TR PDF gidiyor),
+    pdf_builder ~13, e-postalar 3 tür (recipient_language yok), landing ~90, order ~34.
+    Plan: 1 tetikleme+e-posta (i18n URL, arka plan dili) → 2 PDF rapor → 3 bibliometri sayfası
+    EN/DE → 4 sipariş EN/DE → proje talebi. Karar bekleyen: S2 bibliometri bağlantısı (yeni
+    özellik, önerilen: evet, çeviriden sonra); bibliometri sayfası EN/DE'de açılsın mı (önerilen evet).
+  - [ ] **OpenAlex sonuçlarında aynı yayın tekrarı** (27 Eylül 2026, kullanıcı ekran görüntüsü DE:
+    "Design, Fabrication, and Performance Evaluation of a Weeder…" iki kez) — muhtemelen aynı çalışmanın
+    iki OpenAlex kaydı (Zenodo). Liste + bibliometri sonuçlarını etkiler (dedup) — incelenmeli.
+  - [x] (eski) **Bibliometrik analize gönder** (OpenAlex sonuçları) `/bibliometrics/`'e gidiyor — o sayfa TR-only
     ve EN/DE'de gizli; promo'da "Tek Tıkla Bibliometrik Analiz" EN/DE'de vaat ediliyor → Aşama 3'te karar.
   - [x] Aşama 3 sonuç/indirme (27 Eylül 2026): `_execute_job` → işi başlatan kullanıcının dili
     (recipient_language, profil tercihi — restart'ta kaybolmaz) altında `_execute_job_body`; TXT
