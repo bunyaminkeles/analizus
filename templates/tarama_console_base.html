@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load static %}
+{% load static i18n %}
 
 {% block extra_head %}
 <link rel="stylesheet" href="{% static 'css/analiz_console.css' %}">
@@ -11,7 +11,7 @@
 <div class="ax-console-mobile-bar d-lg-none">
   <button class="ax-console-mobile-btn" onclick="axTaramaSidebarToggle()" type="button" aria-expanded="false" aria-controls="ax-tarama-sidebar">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-    Araç Seç
+    {% trans "Araç Seç" %}
     <svg id="ax-tarama-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="margin-left:auto;transition:transform .2s;"><polyline points="6 9 12 15 18 9"/></svg>
   </button>
 </div>
@@ -20,22 +20,22 @@
 <div class="ax-console-layout">
 
   {# ── Sidebar ── #}
-  <aside class="ax-console-sidebar" id="ax-tarama-sidebar" aria-label="Akademik tarama araçları menüsü">
+  <aside class="ax-console-sidebar" id="ax-tarama-sidebar" aria-label="{% trans "Akademik tarama araçları menüsü" %}">
 
     <div class="ax-console-cat">
-      <div class="ax-console-cat-title">Akademik Tarama</div>
+      <div class="ax-console-cat-title">{% trans "Akademik Tarama" %}</div>
       <ul>
-        {% if features.oaipmh %}
+        {% if features.oaipmh and LANGUAGE_CODE == 'tr' %}
         <li>
           <a href="{% url 'oaipmh:landing' %}"
              class="ax-console-tool{% if '/oaipmh/' in request.path %} is-active{% endif %}"
              {% if '/oaipmh/' in request.path %}aria-current="page"{% endif %}>
             <i class="bi bi-building" aria-hidden="true"></i>
-            Üniversite Tez Arşivi
+            {% trans "Üniversite Tez Arşivi" %}
           </a>
         </li>
         {% endif %}
-        {% if features.yoktez %}
+        {% if features.yoktez and LANGUAGE_CODE == 'tr' %}
         <li>
           <a href="{% url 'yoktez:landing' %}"
              class="ax-console-tool{% if '/yoktez/' in request.path %} is-active{% endif %}"
@@ -55,7 +55,7 @@
           </a>
         </li>
         {% endif %}
-        {% if features.trdizin %}
+        {% if features.trdizin and LANGUAGE_CODE == 'tr' %}
         <li>
           <a href="{% url 'trdizin:landing' %}"
              class="ax-console-tool{% if '/trdizin/' in request.path %} is-active{% endif %}"
@@ -92,26 +92,26 @@
 
       <div class="ax-tool-guide-sections">
         <details class="ax-tool-guide-detail">
-          <summary>Ne Zaman Kullanılır?</summary>
+          <summary>{% trans "Ne Zaman Kullanılır?" %}</summary>
           <p>{{ seo_guide.when_to_use }}</p>
         </details>
         <details class="ax-tool-guide-detail">
-          <summary>Kapsam ve Sınırlılıklar</summary>
+          <summary>{% trans "Kapsam ve Sınırlılıklar" %}</summary>
           <p>{{ seo_guide.assumptions }}</p>
         </details>
         <details class="ax-tool-guide-detail">
-          <summary>Sonuçlar Nasıl Değerlendirilir?</summary>
+          <summary>{% trans "Sonuçlar Nasıl Değerlendirilir?" %}</summary>
           <p>{{ seo_guide.how_to_interpret }}</p>
         </details>
         <details class="ax-tool-guide-detail">
-          <summary>Tezde Nasıl Atıf Yapılır?</summary>
+          <summary>{% trans "Tezde Nasıl Atıf Yapılır?" %}</summary>
           <blockquote class="ax-tool-guide-apa">{{ seo_guide.apa_example }}</blockquote>
         </details>
       </div>
 
       {% if seo_guide.faq %}
       <div class="ax-tool-guide-faq">
-        <h2 class="ax-tool-guide-faq-title">Sık Sorulan Sorular</h2>
+        <h2 class="ax-tool-guide-faq-title">{% trans "Sık Sorulan Sorular" %}</h2>
         {% for item in seo_guide.faq %}
         <details class="ax-tool-guide-detail">
           <summary>{{ item.q }}</summary>
@@ -123,7 +123,7 @@
 
       {% if seo_guide.related_tools %}
       <div class="ax-tool-guide-related">
-        <span class="ax-tool-guide-related-label">İlgili Araçlar:</span>
+        <span class="ax-tool-guide-related-label">{% trans "İlgili Araçlar:" %}</span>
         {% for url, name in seo_guide.related_tools %}
         <a href="{{ url }}" class="ax-tool-guide-related-link">{{ name }}</a>
         {% endfor %}

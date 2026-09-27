@@ -81,7 +81,7 @@ def semantic_landing(request):
     if hasattr(user, 'profile') and not user.profile.email_verified:
         from django.contrib import messages
         from django.shortcuts import redirect
-        messages.warning(request, 'Semantic Scholar tarama için e-posta adresinizi doğrulamanız gerekiyor.')
+        messages.warning(request, gettext('Semantic Scholar tarama için e-posta adresinizi doğrulamanız gerekiyor.'))
         return redirect('profile_edit')
 
     daily_limit = SemanticSearchJob.get_daily_limit(user)
@@ -94,11 +94,11 @@ def semantic_landing(request):
             if remaining <= 0:
                 if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
                     return JsonResponse({
-                        'error': f'Günlük demo limitiniz doldu ({daily_limit}/{daily_limit}). Yarın tekrar deneyebilirsiniz.'
+                        'error': gettext('Günlük demo limitiniz doldu ({used}/{limit}). Yarın tekrar deneyebilirsiniz.').format(used=daily_limit, limit=daily_limit)
                     }, status=429)
                 return render(request, 'semanticscholar/landing.html', {
                     'form': form,
-                    'error': 'Günlük demo limitiniz doldu.',
+                    'error': gettext('Günlük demo limitiniz doldu.'),
                     'remaining': 0,
                     'daily_limit': daily_limit,
                 })
@@ -123,7 +123,7 @@ def semantic_landing(request):
             })
         else:
             if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                errors = form.errors.get('query_parts_json', ['Geçersiz sorgu.'])
+                errors = form.errors.get('query_parts_json', [gettext('Geçersiz sorgu.')])
                 return JsonResponse({'error': errors[0]}, status=400)
 
     form = SemanticSearchForm()
@@ -136,7 +136,7 @@ def semantic_landing(request):
         'remaining': remaining,
         'daily_limit': daily_limit,
         'active_job_id': str(active_job.id) if active_job else None,
-        'seo_guide': TARAMA_SEO_CONTENT.get('semanticscholar'),
+        'seo_guide': TARAMA_SEO_CONTENT.get('semanticscholar') if (get_language() or 'tr')[:2] == 'tr' else None,  # yalnız TR
     })
 
 
@@ -164,12 +164,12 @@ def semantic_job_status(request, job_id):
 def semantic_send_demo_email(request, job_id):
     job = get_object_or_404(SemanticSearchJob, id=job_id, user=request.user)
     if job.status != 'completed' or not job.demo_results:
-        return JsonResponse({'error': 'Sonuçlar henüz hazır değil.'}, status=400)
+        return JsonResponse({'error': gettext('Sonuçlar henüz hazır değil.')}, status=400)
     if job.demo_email_sent:
-        return JsonResponse({'error': 'Demo sonuçlar zaten gönderildi.'}, status=400)
+        return JsonResponse({'error': gettext('Demo sonuçlar zaten gönderildi.')}, status=400)
     from .services.job_runner import send_demo_email_async
     send_demo_email_async(job.id)
-    return JsonResponse({'success': True, 'message': f'Demo sonuçların {request.user.email} adresine gönderilmesi başlatıldı.'})
+    return JsonResponse({'success': True, 'message': gettext('Demo sonuçların {email} adresine gönderilmesi başlatıldı.').format(email=request.user.email)})
 
 
 @login_required
@@ -179,7 +179,7 @@ def semantic_order_page(request, job_id):
     if job.status != 'completed' or job.total_results == 0:
         return render(request, 'semanticscholar/order.html', {
             'job': job,
-            'error': 'Bu arama için henüz sonuç yok.',
+            'error': gettext('Bu arama için henüz sonuç yok.'),
         })
 
     existing_order = SemanticOrder.objects.filter(search_job=job, user=request.user).first()
@@ -295,6 +295,6 @@ def semantic_cancel(request, job_id):
     job = get_object_or_404(SemanticSearchJob, id=job_id, user=request.user)
     if job.status in ('pending', 'running'):
         job.status = 'failed'
-        job.error_message = 'Kullanıcı tarafından iptal edildi.'
+        job.error_message = gettext('Kullanıcı tarafından iptal edildi.')
         job.save(update_fields=['status', 'error_message'])
     return JsonResponse({'success': True})

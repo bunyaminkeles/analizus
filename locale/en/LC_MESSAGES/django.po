@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-27 20:40+0300\n"
+"POT-Creation-Date: 2026-09-27 20:45+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1343,7 +1343,7 @@ msgstr "Decision-making in unexpected situations"
 #: forum/templates/forum/egitim_detay.html:159
 #: forum/templates/forum/proje_talebi.html:292
 #: istatistik/templates/istatistik/analiz_console_base.html:177
-#: templates/service_promo.html:164
+#: templates/service_promo.html:164 templates/tarama_console_base.html:114
 msgid "Sık Sorulan Sorular"
 msgstr "Frequently Asked Questions"
 
@@ -4441,6 +4441,7 @@ msgstr ""
 
 #: forum/templates/forum/home.html:761 templates/base.html:453
 #: templates/base.html:455 templates/partials/_nav_tarama_link.html:2
+#: templates/tarama_console_base.html:26
 msgid "Akademik Tarama"
 msgstr "Academic Search"
 
@@ -8529,7 +8530,7 @@ msgstr ""
 "Search more than 200 million academic publications without code. Covers all "
 "major databases, including WoS, Scopus and arXiv."
 
-#: forum/views.py:4188
+#: forum/views.py:4188 templates/tarama_console_base.html:34
 msgid "Üniversite Tez Arşivi"
 msgstr "University Thesis Archive"
 
@@ -13182,6 +13183,7 @@ msgid "Ücretsiz Online Hesaplama"
 msgstr "Free Online Calculator"
 
 #: istatistik/templates/istatistik/analiz_console_base.html:34
+#: templates/tarama_console_base.html:14
 msgid "Araç Seç"
 msgstr "Choose Tool"
 
@@ -13195,7 +13197,7 @@ msgstr "Clear dataset"
 
 #: istatistik/templates/istatistik/analiz_console_base.html:158
 #: istatistik/templates/istatistik/mann_whitney.html:176
-#: templates/service_promo.html:139
+#: templates/service_promo.html:139 templates/tarama_console_base.html:95
 msgid "Ne Zaman Kullanılır?"
 msgstr "When to Use It?"
 
@@ -13218,6 +13220,7 @@ msgid "APA Formatı Örneği"
 msgstr "APA Format Example"
 
 #: istatistik/templates/istatistik/analiz_console_base.html:189
+#: templates/tarama_console_base.html:126
 msgid "İlgili Araçlar:"
 msgstr "Related Tools:"
 
@@ -16845,8 +16848,8 @@ msgstr "Articles Most Similar to Your Search"
 msgid "Top"
 msgstr "Top"
 
-#: makaleanaliz/templates/makaleanaliz/results.html:136
-#: openalex/templates/openalex/landing.html:213
+#: makaleanaliz/templates/makaleanaliz/results.html:136 openalex/forms.py:6
+#: openalex/templates/openalex/landing.html:213 semanticscholar/forms.py:7
 #: semanticscholar/templates/semanticscholar/landing.html:328
 msgid "Başlık"
 msgstr "Title"
@@ -16886,6 +16889,55 @@ msgstr "You're next in line, your analysis will begin shortly"
 #: makaleanaliz/templates/makaleanaliz/results.html:222
 msgid ". sıradasınız — önceki analizin bitmesi bekleniyor"
 msgstr " in queue — waiting for the previous analysis to finish"
+
+#: openalex/forms.py:7 openalex/templates/openalex/landing.html:214
+msgid "Özet"
+msgstr "Abstract"
+
+#: openalex/forms.py:8 openalex/templates/openalex/landing.html:215
+#: semanticscholar/forms.py:8
+#: semanticscholar/templates/semanticscholar/landing.html:329
+msgid "Yazar"
+msgstr "Author"
+
+#: openalex/forms.py:9 openalex/templates/openalex/landing.html:216
+#: semanticscholar/forms.py:6
+#: semanticscholar/templates/semanticscholar/landing.html:327
+msgid "Anahtar Kelime"
+msgstr "Keyword"
+
+#: openalex/forms.py:10 semanticscholar/forms.py:9
+msgid "Yıl Aralığı"
+msgstr "Year Range"
+
+#: openalex/forms.py:32 semanticscholar/forms.py:30
+msgid "Geçersiz sorgu formatı."
+msgstr "Invalid query format."
+
+#: openalex/forms.py:35 semanticscholar/forms.py:33
+msgid "En az bir arama kriteri gereklidir."
+msgstr "At least one search criterion is required."
+
+#: openalex/forms.py:38 semanticscholar/forms.py:36
+msgid "En fazla 10 arama kriteri eklenebilir."
+msgstr "You can add at most 10 search criteria."
+
+#: openalex/forms.py:42 semanticscholar/forms.py:40
+msgid "Geçersiz sorgu parçası."
+msgstr "Invalid query part."
+
+#: openalex/forms.py:44 semanticscholar/forms.py:42
+#, python-brace-format
+msgid "Geçersiz alan: {field}"
+msgstr "Invalid field: {field}"
+
+#: openalex/forms.py:46 semanticscholar/forms.py:44
+msgid "Boş değer girilemez."
+msgstr "Empty values are not allowed."
+
+#: openalex/forms.py:48 semanticscholar/forms.py:46
+msgid "Geçersiz operatör."
+msgstr "Invalid operator."
 
 #: openalex/services/job_runner.py:145 openalex/services/job_runner.py:192
 #, python-format
@@ -17161,20 +17213,6 @@ msgstr ""
 "decoration-none\" style=\"color:#a5b4fc;\">Bibliometric Analysis</a> tool to"
 " build citation and network maps."
 
-#: openalex/templates/openalex/landing.html:214
-msgid "Özet"
-msgstr "Abstract"
-
-#: openalex/templates/openalex/landing.html:215
-#: semanticscholar/templates/semanticscholar/landing.html:329
-msgid "Yazar"
-msgstr "Author"
-
-#: openalex/templates/openalex/landing.html:216
-#: semanticscholar/templates/semanticscholar/landing.html:327
-msgid "Anahtar Kelime"
-msgstr "Keyword"
-
 #: openalex/templates/openalex/landing.html:217
 #: semanticscholar/templates/semanticscholar/landing.html:330
 msgid "Yıl Aralığı (örn: 2020-2023)"
@@ -17393,6 +17431,68 @@ msgstr ""
 #: openalex/views.py:72
 msgid "Excel veya TXT olarak indirin ya da bibliometrik analiz başlatın."
 msgstr "Download as Excel or TXT, or start a bibliometric analysis."
+
+#: openalex/views.py:90
+msgid ""
+"OpenAlex tarama için e-posta doğrulaması gereklidir. Profil sayfanızdan "
+"e-postanızı doğrulayın."
+msgstr ""
+"Email verification is required for OpenAlex searches. Please verify your "
+"email on your profile page."
+
+#: openalex/views.py:94
+msgid "OpenAlex tarama için e-posta doğrulaması gereklidir."
+msgstr "Email verification is required for OpenAlex searches."
+
+#: openalex/views.py:103
+#, python-brace-format
+msgid ""
+"Günlük demo limitiniz doldu ({used}/{limit}). Premium üyelikle 7 aramaya "
+"yükseltebilirsiniz."
+msgstr ""
+"You have reached your daily demo limit ({used}/{limit}). Upgrade to 7 "
+"searches with a Premium membership."
+
+#: openalex/views.py:105 semanticscholar/views.py:97
+#, python-brace-format
+msgid ""
+"Günlük demo limitiniz doldu ({used}/{limit}). Yarın tekrar deneyebilirsiniz."
+msgstr ""
+"You have reached your daily demo limit ({used}/{limit}). You can try again "
+"tomorrow."
+
+#: openalex/views.py:110 semanticscholar/views.py:101
+msgid "Günlük demo limitiniz doldu."
+msgstr "You have reached your daily demo limit."
+
+#: openalex/views.py:139 semanticscholar/views.py:126
+msgid "Geçersiz sorgu."
+msgstr "Invalid query."
+
+#: openalex/views.py:252 semanticscholar/views.py:298
+msgid "Kullanıcı tarafından iptal edildi."
+msgstr "Cancelled by the user."
+
+#: openalex/views.py:264 semanticscholar/views.py:167
+msgid "Sonuçlar henüz hazır değil."
+msgstr "The results are not ready yet."
+
+#: openalex/views.py:267 semanticscholar/views.py:169
+msgid "Demo sonuçlar zaten gönderildi."
+msgstr "The demo results have already been sent."
+
+#: openalex/views.py:272 semanticscholar/views.py:172
+#, python-brace-format
+msgid "Demo sonuçların {email} adresine gönderilmesi başlatıldı."
+msgstr "Sending the demo results to {email} has started."
+
+#: openalex/views.py:283 semanticscholar/views.py:182
+msgid "Bu arama için henüz sonuç yok."
+msgstr "There are no results for this search yet."
+
+#: semanticscholar/forms.py:10
+msgid "Araştırma Alanı"
+msgstr "Field of Study"
 
 #: semanticscholar/services/job_runner.py:137
 #: semanticscholar/services/job_runner.py:180
@@ -17647,6 +17747,12 @@ msgstr "5 demo results are free; place an order for the full set."
 msgid "Demo 5 sonuç ücretsiz; tam veri seti için proje talebi bırakın."
 msgstr ""
 "5 demo results are free; submit a project request for the full dataset."
+
+#: semanticscholar/views.py:84
+msgid ""
+"Semantic Scholar tarama için e-posta adresinizi doğrulamanız gerekiyor."
+msgstr ""
+"You need to verify your email address to use Semantic Scholar searches."
 
 #: templates/admin/index.html:4
 msgid "Django site admin"
@@ -18281,6 +18387,22 @@ msgstr ""
 "Learn to perform <strong style=\"color:#f1f5f9;\">%(promo_title)s</strong> "
 "analysis with your own data through one-on-one training."
 
+#: templates/tarama_console_base.html:23
+msgid "Akademik tarama araçları menüsü"
+msgstr "Academic search tools menu"
+
+#: templates/tarama_console_base.html:99
+msgid "Kapsam ve Sınırlılıklar"
+msgstr "Scope and Limitations"
+
+#: templates/tarama_console_base.html:103
+msgid "Sonuçlar Nasıl Değerlendirilir?"
+msgstr "How to Evaluate the Results?"
+
+#: templates/tarama_console_base.html:107
+msgid "Tezde Nasıl Atıf Yapılır?"
+msgstr "How to Cite in Your Thesis?"
+
 #: templates/tarama_hub.html:5 templates/tarama_hub.html:7
 #: templates/tarama_hub.html:9
 msgid ""
@@ -18338,9 +18460,6 @@ msgstr ""
 
 #~ msgid "Ön"
 #~ msgstr "Initial"
-
-#~ msgid "Tezinde Nasıl Raporlarsın?"
-#~ msgstr "How to Report It in Your Thesis?"
 
 #~ msgid "Akademik Analiz ve Veri Bilimi Forumu"
 #~ msgstr "Academic Analysis and Data Science Forum"

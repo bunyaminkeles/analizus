@@ -150,7 +150,13 @@ maddelerde.
   27 Eylül 2026 → SEO rehberi EN/DE gizli; sipariş EN/DE gizli + proje talebi).
   - [x] Aşama 1 tanıtım sayfası: view promo metinleri gettext (22 msgid EN/DE), SEO rehberi yalnız
     TR, S2 "sipariş oluşturun" adımı EN/DE'de "proje talebi bırakın". EN/DE anonim sayfada TR 0.
-  - [ ] Aşama 2 arama sayfası (landing şablon+JS, tarama_console_base, forms)
+  - [x] Aşama 2 arama sayfası (27 Eylül 2026): tarama_console_base çevrili + EN/DE yan menüde yalnız
+    OpenAlex/S2; giriş yapmış sayfada SEO rehberi yalnız TR; form doğrulama hataları + view mesajları
+    (e-posta doğrulama, günlük limit — parça birleştirme 2 tam cümleye bölündü, demo e-posta) çevrili;
+    25 msgid (bulanık tahminler yanlıştı, hepsi elle). EN/DE giriş yapmış sayfada TR 0.
+    Not: landing JS metinleri zaten etiketliydi (ölçüm aracı yanlış saymıştı).
+  - [ ] **Bibliometrik analize gönder** (OpenAlex sonuçları) `/bibliometrics/`'e gidiyor — o sayfa TR-only
+    ve EN/DE'de gizli; promo'da "Tek Tıkla Bibliometrik Analiz" EN/DE'de vaat ediliyor → Aşama 3'te karar.
   - [ ] Aşama 3 sonuç/indirme (TXT/Excel başlıkları, scraper hataları; arka plan dil taşıma)
   - [ ] Aşama 4 sipariş: EN/DE'de sipariş seçeneği gizli → proje talebi
   Ölçüm notu:

@@ -87,11 +87,11 @@ def openalex_landing(request):
             if not user.profile.email_verified:
                 if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
                     return JsonResponse({
-                        'error': 'OpenAlex tarama için e-posta doğrulaması gereklidir. Profil sayfanızdan e-postanızı doğrulayın.'
+                        'error': gettext('OpenAlex tarama için e-posta doğrulaması gereklidir. Profil sayfanızdan e-postanızı doğrulayın.')
                     }, status=403)
                 return render(request, 'openalex/landing.html', {
                     'form': form,
-                    'error': 'OpenAlex tarama için e-posta doğrulaması gereklidir.',
+                    'error': gettext('OpenAlex tarama için e-posta doğrulaması gereklidir.'),
                     'remaining': remaining,
                     'daily_limit': daily_limit,
                 })
@@ -99,12 +99,15 @@ def openalex_landing(request):
             if remaining <= 0:
                 if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
                     return JsonResponse({
-                        'error': f'Günlük demo limitiniz doldu ({daily_limit}/{daily_limit}). '
-                                 f'{"Premium üyelikle 7 aramaya yükseltebilirsiniz." if not user.profile.is_premium else "Yarın tekrar deneyebilirsiniz."}'
+                        # Tam cümle msgid'ler (parça birleştirme yok)
+                        'error': (gettext('Günlük demo limitiniz doldu ({used}/{limit}). Premium üyelikle 7 aramaya yükseltebilirsiniz.')
+                                  if not user.profile.is_premium else
+                                  gettext('Günlük demo limitiniz doldu ({used}/{limit}). Yarın tekrar deneyebilirsiniz.')
+                                  ).format(used=daily_limit, limit=daily_limit)
                     }, status=429)
                 return render(request, 'openalex/landing.html', {
                     'form': form,
-                    'error': 'Günlük demo limitiniz doldu.',
+                    'error': gettext('Günlük demo limitiniz doldu.'),
                     'remaining': 0,
                     'daily_limit': daily_limit,
                 })
@@ -133,7 +136,7 @@ def openalex_landing(request):
             })
         else:
             if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                errors = form.errors.get('query_parts_json', ['Geçersiz sorgu.'])
+                errors = form.errors.get('query_parts_json', [gettext('Geçersiz sorgu.')])
                 return JsonResponse({'error': errors[0]}, status=400)
 
     active_job = AlexSearchJob.objects.filter(
@@ -146,7 +149,7 @@ def openalex_landing(request):
         'remaining': remaining,
         'daily_limit': daily_limit,
         'active_job_id': str(active_job.id) if active_job else None,
-        'seo_guide': TARAMA_SEO_CONTENT.get('openalex'),
+        'seo_guide': TARAMA_SEO_CONTENT.get('openalex') if (get_language() or 'tr')[:2] == 'tr' else None,  # yalnız TR
     })
 
 
@@ -246,7 +249,7 @@ def openalex_cancel(request, job_id):
     job = get_object_or_404(AlexSearchJob, id=job_id, user=request.user)
     if job.status in ('pending', 'running'):
         job.status = 'failed'
-        job.error_message = 'Kullanıcı tarafından iptal edildi.'
+        job.error_message = gettext('Kullanıcı tarafından iptal edildi.')
         job.save(update_fields=['status', 'error_message'])
     return JsonResponse({'success': True})
 
@@ -258,15 +261,15 @@ def openalex_send_demo_email(request, job_id):
     job = get_object_or_404(AlexSearchJob, id=job_id, user=request.user)
 
     if job.status != 'completed' or not job.demo_results:
-        return JsonResponse({'error': 'Sonuçlar henüz hazır değil.'}, status=400)
+        return JsonResponse({'error': gettext('Sonuçlar henüz hazır değil.')}, status=400)
 
     if job.demo_email_sent:
-        return JsonResponse({'error': 'Demo sonuçlar zaten gönderildi.'}, status=400)
+        return JsonResponse({'error': gettext('Demo sonuçlar zaten gönderildi.')}, status=400)
 
     from .services.job_runner import send_demo_email_async
     send_demo_email_async(job.id)
 
-    return JsonResponse({'success': True, 'message': f'Demo sonuçların {request.user.email} adresine gönderilmesi için işlem başlatıldı.'})
+    return JsonResponse({'success': True, 'message': gettext('Demo sonuçların {email} adresine gönderilmesi başlatıldı.').format(email=request.user.email)})
 
 
 @login_required
@@ -277,7 +280,7 @@ def openalex_order_page(request, job_id):
     if job.status != 'completed' or job.total_results == 0:
         return render(request, 'openalex/order.html', {
             'job': job,
-            'error': 'Bu arama için henüz sonuç yok.',
+            'error': gettext('Bu arama için henüz sonuç yok.'),
         })
 
     existing_order = AlexOrder.objects.filter(search_job=job, user=request.user).first()

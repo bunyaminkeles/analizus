@@ -1,12 +1,13 @@
 import json
 from django import forms
+from django.utils.translation import gettext, gettext_lazy
 
 FIELD_CHOICES = [
-    ('keyword', 'Anahtar Kelime'),
-    ('title', 'Başlık'),
-    ('author', 'Yazar'),
-    ('year', 'Yıl Aralığı'),
-    ('field_of_study', 'Araştırma Alanı'),
+    ('keyword', gettext_lazy('Anahtar Kelime')),
+    ('title', gettext_lazy('Başlık')),
+    ('author', gettext_lazy('Yazar')),
+    ('year', gettext_lazy('Yıl Aralığı')),
+    ('field_of_study', gettext_lazy('Araştırma Alanı')),
     ('doi', 'DOI'),
 ]
 
@@ -26,23 +27,23 @@ class SemanticSearchForm(forms.Form):
         try:
             parts = json.loads(raw)
         except json.JSONDecodeError:
-            raise forms.ValidationError('Geçersiz sorgu formatı.')
+            raise forms.ValidationError(gettext('Geçersiz sorgu formatı.'))
 
         if not isinstance(parts, list) or len(parts) == 0:
-            raise forms.ValidationError('En az bir arama kriteri gereklidir.')
+            raise forms.ValidationError(gettext('En az bir arama kriteri gereklidir.'))
 
         if len(parts) > 10:
-            raise forms.ValidationError('En fazla 10 arama kriteri eklenebilir.')
+            raise forms.ValidationError(gettext('En fazla 10 arama kriteri eklenebilir.'))
 
         for part in parts:
             if not isinstance(part, dict):
-                raise forms.ValidationError('Geçersiz sorgu parçası.')
+                raise forms.ValidationError(gettext('Geçersiz sorgu parçası.'))
             if part.get('field') not in VALID_FIELDS:
-                raise forms.ValidationError(f"Geçersiz alan: {part.get('field')}")
+                raise forms.ValidationError(gettext("Geçersiz alan: {field}").format(field=part.get('field')))
             if not part.get('value', '').strip():
-                raise forms.ValidationError('Boş değer girilemez.')
+                raise forms.ValidationError(gettext('Boş değer girilemez.'))
             if part.get('operator') not in ('AND', 'OR', None, ''):
-                raise forms.ValidationError('Geçersiz operatör.')
+                raise forms.ValidationError(gettext('Geçersiz operatör.'))
 
         return parts
 
