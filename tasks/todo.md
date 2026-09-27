@@ -92,6 +92,20 @@ maddelerde.
   kullanıcı raporu: /tarama/'da TR→EN): Django `set_language` karşılık bulamayınca `next`'i
   aynen döndürüyordu (tarama, forum, blog, YÖK Tez, odalar… hepsi). `forum.views.set_language`
   sarmalayıcı: seçilen dilde karşılık yoksa o dilin ana sayfasına (/en/, /de/). 10 senaryo test.
+**İŞ SIRASI (27 Eylül 2026, kullanıcı):**
+- [ ] **1. Akademik Tarama hub'ı (/tarama/) EN/DE'de** (kullanıcı: "tr'de gelen fotoğraflı
+  landing'i de/en için de aktif et; buraya iki veri kazıma daha eklenecek"): hub i18n'e
+  taşınacak; EN/DE'de yalnız uluslararası araçlar (OpenAlex, Semantic Scholar — YÖK Tez,
+  TR Dizin, OAI-PMH gizli); `tarama_hub` view'daki araç başlık/açıklamaları çeviriye;
+  EN/DE navbar "Academic Search" hub'a bağlanacak; yeni kazıma modülleri (PubMed, BASE)
+  kart eklemeye hazır yapı.
+- [ ] **2. Proje talebi EN/DE'de kalan Türkçe ifadeler** (kullanıcı ekran görüntüsü, DE):
+  (a) "Kürzlich abgeschlossene Analysen" listesinde kategori adları TR — `views.py` ~2202
+  `job.category.title` → `localized_title`, varsayılan 'Veri Analizi' → gettext;
+  (b) süre "abgeschlossen in 4 ayda" — `views.py` ~2196 f"{days} günde/haftada/ayda" TR
+  parça → çoğul destekli tam cümle msgid (ngettext); (c) e-posta placeholder
+  "ayse@sirket.com" (`proje_talebi.html` ~153) → dile göre örnek.
+
 - [ ] **OpenAlex + Semantic Scholar tam EN/DE çevirisi** (26 Eylül 2026, kullanıcı: "todo'ya
   yaz, şimdiden açık kalabilir"): EN/DE navbar'da "Academic Search" açılır menüsüyle AÇIK
   (masaüstü + mobil; /tarama/ hub'ı yerine doğrudan iki araç). Kalan çeviri: landing'lerde
