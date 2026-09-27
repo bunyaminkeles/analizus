@@ -11,6 +11,14 @@ bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
 **A. Kod işleri (öncelik sırasıyla)**
+- [x] **ACİL — "Havaleyi yaptım" bağlantısı 500 veriyor** — DÜZELTİLDİ (28 Eylül 2026, target=donation → admin bağış sayfası). Eski not:
+  `mark_donation_transferred` adminlere `Notification(target=None)` oluşturuyor; model
+  `content_type`/`object_id` NOT NULL → IntegrityError, try/except yok. Donation durumu
+  `pending_confirmation`'a kaydediliyor ama kullanıcı hata sayfası görüyor, admin bildirimi yok.
+- [x] **Davet ödül bildirimi hiç oluşmuyor** — DÜZELTİLDİ (28 Eylül 2026, target=referral_use → /davet/). Eski not: `_notify_referral_reward`
+  aynı nedenle (content_type yok) patlıyor; try/except yuttuğu için ödül (20 gün premium,
+  +50 itibar, Davetçi rozeti) VERİLİYOR, sadece zil bildirimi + anlık bildirim gitmiyor.
+  Davet akışının geri kalanı uçtan uca test edildi, çalışıyor.
 - [x] **WhatsApp hazır mesajları Türkçe** — ÇEVRİLDİ (26 Eylül 2026): 6 şablon, `{% filter urlencode:"" %}{% trans %}`; TR mesajları aynen. Eski not:
   `wa.me/...?text=Merhaba%2C...` URL-kodlu sabit TR metin — footer, iletişim, proje
   talebi, eğitim, eğitim talebi, ilan verme sayfaları (6 yer). EN/DE'de mesaj

@@ -1094,6 +1094,11 @@ class Donation(models.Model):
         donor = self.name or (self.user.username if self.user else "Anonim")
         return f"{donor} - {self.amount}₺"
 
+    def get_absolute_url(self):
+        # Bildirim hedefi: yalnız adminlere gider → admin'deki bağış kaydı
+        from django.urls import reverse
+        return reverse('admin:forum_donation_change', args=[self.pk])
+
     def get_premium_days(self):
         """Bağış miktarına göre premium gün hesapla (DonationTier modelinden)"""
         return DonationTier.get_premium_days_for_amount(float(self.amount))
@@ -1236,6 +1241,10 @@ class ReferralUse(models.Model):
 
     def __str__(self):
         return f"{self.referrer.username} → {self.referred.username}"
+
+    def get_absolute_url(self):
+        from django.urls import reverse
+        return reverse('referral_dashboard')
 
     @property
     def status_display(self):
