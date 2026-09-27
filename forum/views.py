@@ -2168,8 +2168,11 @@ def proje_talebi(request):
 
         try:
             valid_sources = {c[0] for c in ProjectRequest.SOURCE_CHOICES}
+            from django.utils.translation import get_language
+            from django.utils.html import escape, linebreaks
+            lang = (get_language() or settings.LANGUAGE_CODE)[:2]
             req = ProjectRequest.objects.create(
-                name=name, email=email, company=company,
+                name=name, email=email, company=company, language=lang,
                 analysis_type=analysis_type, description=description,
                 data_size=data_size, timeline=timeline,
                 source=source if source in valid_sources else 'direct',
@@ -2182,20 +2185,22 @@ def proje_talebi(request):
             size_label = dict(ProjectRequest.DATA_SIZE_CHOICES).get(data_size, data_size)
             timeline_label = dict(ProjectRequest.TIMELINE_CHOICES).get(timeline, timeline)
             source_label = dict(ProjectRequest.SOURCE_CHOICES).get(req.source, req.source)
+            lang_tag = f" [{lang.upper()}]" if lang != 'tr' else ''
             with admin_language():
               admin_html = (
-                f"<h3>Yeni Proje Talebi #{req.pk}</h3>"
-                f"<p><b>Ad:</b> {name}</p>"
-                f"<p><b>E-posta:</b> {email}</p>"
-                f"<p><b>Kişi/Şirket/Kurum:</b> {company or '—'}</p>"
+                f"<h3>Yeni Proje Talebi #{req.pk}{lang_tag}</h3>"
+                f"<p><b>Ad:</b> {escape(name)}</p>"
+                f"<p><b>E-posta:</b> {escape(email)}</p>"
+                f"<p><b>Kişi/Şirket/Kurum:</b> {escape(company) or '—'}</p>"
+                f"<p><b>Dil:</b> {lang.upper()}{' — müşteriye bu dilde dönüş yapın' if lang != 'tr' else ''}</p>"
                 f"<p><b>Kaynak:</b> {source_label}</p>"
                 f"<p><b>Analiz Türü:</b> {analysis_label}</p>"
                 f"<p><b>Veri Boyutu:</b> {size_label}</p>"
                 f"<p><b>Süre Beklentisi:</b> {timeline_label}</p>"
-                f"<p><b>Açıklama:</b></p><p>{description}</p>"
+                f"<p><b>Açıklama:</b></p>{linebreaks(escape(description))}"
               )
-              admin_subject = f"[Analizus] Yeni Proje Talebi: {name} ({analysis_label})"
-              admin_plain = f"Yeni talep #{req.pk}\nAd: {name}\nEmail: {email}\nŞirket: {company}\nTür: {analysis_label}\n\n{description}"
+              admin_subject = f"[Analizus]{lang_tag} Yeni Proje Talebi: {name} ({analysis_label})"
+              admin_plain = f"Yeni talep #{req.pk}{lang_tag}\nAd: {name}\nEmail: {email}\nŞirket: {company}\nDil: {lang.upper()}\nTür: {analysis_label}\n\n{description}"
             EmailService._send_email(
                 to_email=admin_email,
                 subject=admin_subject,
@@ -2204,7 +2209,6 @@ def proje_talebi(request):
             )
 
             # Kullanıcıya onay — formu gönderdiği sayfanın dilinde
-            from django.utils.html import escape
             user_html = (
                 "<p>" + gettext("Sayın %(name)s,") % {'name': escape(name)} + "</p>"
                 "<p>" + gettext("Proje talebiniz başarıyla alındı. En kısa sürede sizinle iletişime geçeceğiz.") + "</p>"

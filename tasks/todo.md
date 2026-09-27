@@ -179,7 +179,17 @@ maddelerde.
   müşteri desteği veriliyor mu? Veriliyorsa ["Turkish","English","German"] yapılmalı.
 - [x] (eski) **EN/DE anasayfa JSON-LD TR URL'leri** (26 Eylül 2026): home.html ~168–196 structured
   data EN/DE sayfada da YÖK Tez/TR Dizin/OpenAlex/OAI-PMH URL'lerini ve TR açıklamaları veriyor.
-- [ ] **EN/DE'yi proje talebine evriltme — ÖNERİ SUNULDU, ONAY BEKLİYOR** (27 Eylül 2026, ölçüldü):
+- [x] **EN/DE → proje talebi AŞAMA 1** — YAPILDI (27 Eylül 2026): `ProjectRequest.language`
+  (**migration 0158**, yalnız AddField; ileri/geri test), admin Dil sütunu + filtre, ekip
+  e-postasına konu `[EN]`/`[DE]` + "Dil: EN — müşteriye bu dilde dönüş yapın"; admin
+  e-postasında ad/e-posta/şirket/açıklama escape (XSS test: `<img onerror>`/`<script>`
+  kaçışlandı). 3 dilde gönderim test edildi. Eski kayıtlarda dil boş.
+- [ ] **EN/DE → proje talebi AŞAMA 2** (kullanıcı kararları 27 Eylül 2026: pazar yeri EN/DE
+  "(a) kalsın + proje talebi yönlendirmesi"; hero birincil CTA EN/DE'de proje talebi "olsun"):
+  hero birincil CTA, market uzman sütunu → proje talebi kartı, navbar buton, footer link,
+  nasıl çalışır/SSS sonu çağrı, market sayfası üstüne proje talebi yönlendirmesi.
+- [ ] **AŞAMA 3:** 2–4 hafta sonra admin'de dil + kaynak filtresiyle talep ölçümü.
+- [x] (eski) **EN/DE'yi proje talebine evriltme — ÖNERİ** (27 Eylül 2026, ölçüldü):
   EN anasayfa: navbar sade link; hero yalnız ikincil link; market bölümü sağ sütunu UZMAN
   KAZANIMI (EN/DE'de ters); nasıl çalışır/güven/araçlar/SSS'de çağrı yok; footer'da yok;
   18 araç sayfasında var. Form EN/DE hazır (onay e-postası müşteri dilinde). EKSİK: ekibe

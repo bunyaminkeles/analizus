@@ -1745,6 +1745,9 @@ class ProjectRequest(models.Model):
     timeline = models.CharField(max_length=20, choices=TIMELINE_CHOICES, verbose_name="Süre Beklentisi")
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='new', verbose_name="Durum")
     source = models.CharField(max_length=20, choices=SOURCE_CHOICES, default='direct', blank=True, verbose_name="Kaynak")
+    # Formun gönderildiği sayfanın dili (tr/en/de) — ekip hangi dilde dönüş yapacağını bilsin,
+    # EN/DE talepleri ölçülebilsin. Eski kayıtlarda boş (27 Eylül 2026).
+    language = models.CharField(max_length=10, blank=True, default='', verbose_name="Dil")
     admin_notes = models.TextField(blank=True, verbose_name="Admin Notları")
     created_at = models.DateTimeField(auto_now_add=True)
 
