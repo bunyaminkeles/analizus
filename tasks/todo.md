@@ -540,8 +540,7 @@ maddelerde.
 **C00000. ALTINCI MERGE — 27 Eylül 2026 (kullanıcı: "merge et")**
 - [x] Ön kontrol: 61/61, makemigrations temiz, DEBUG=False collectstatic hatasız; migration YOK,
   requirements değişmedi. main ← dev fast-forward (6 commit: OpenAlex/S2 tam çeviri 4 aşama).
-- [ ] Hetzner deploy: `cd /app && git pull origin main && docker compose restart web` (migration yok;
-  deploy.sh açılışta migrate'i zaten çalıştırır, uygulanacak bir şey yok).
+- [x] Hetzner deploy — YAPILDI (27 Eylül 2026, Claude; kullanıcı: "yap"): sunucu e86b17d, web restart, log temiz; canlı ölçüm: /en|de/openalex|semantic-scholar/ 200 ve görünür Türkçe metin 0 (başlıklar EN/DE); TR /openalex/ Türkçe (SEO rehberi dahil).
 
 **C0000. BEŞİNCİ MERGE — 27 Eylül 2026 (kullanıcı: "merge edelim"; DB yedeği: "sen al")**
 - [x] DB yedeği (Claude, SSH root@89.167.5.224, proje klasörü `/app`): `/root/yedek_2026-09-27_1214.sql`
