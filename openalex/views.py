@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404
-from django.utils.translation import get_language, gettext
+from django.utils.translation import get_language, gettext, pgettext
 from django.http import JsonResponse, Http404, HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_GET, require_POST
@@ -188,9 +188,10 @@ def openalex_download_excel(request, job_id):
 
     wb = openpyxl.Workbook()
     ws = wb.active
-    ws.title = 'OpenAlex Sonuçları'
+    ws.title = gettext('OpenAlex Sonuçları')[:31]
 
-    headers = ['No', 'Başlık', 'Yazarlar', 'Dergi', 'Yıl', 'DOI', 'Tür', 'Atıf Sayısı', 'Kurumlar', 'Anahtar Kelimeler', 'Açık Erişim', 'Özet']
+    headers = [pgettext('sıra numarası', 'No'), gettext('Başlık'), gettext('Yazarlar'), gettext('Dergi'), gettext('Yıl'), 'DOI', gettext('Tür'),
+               gettext('Atıf Sayısı'), gettext('Kurumlar'), gettext('Anahtar Kelimeler'), gettext('Açık Erişim'), gettext('Özet')]
     ws.append(headers)
     header_fill = PatternFill(start_color='2D3748', end_color='2D3748', fill_type='solid')
     header_font = Font(color='FFFFFF', bold=True)

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-27 20:45+0300\n"
+"POT-Creation-Date: 2026-09-27 20:53+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17002,10 +17002,10 @@ msgstr "Sie können nur CSV- oder Excel-Dateien (.xlsx/.xls) hochladen."
 msgid "TR Dizin Makale Analizi Tamamlandı — %(query)s"
 msgstr "TR-Dizin-Artikelanalyse abgeschlossen — %(query)s"
 
-#: makaleanaliz/services/job_runner.py:151 openalex/services/job_runner.py:147
-#: openalex/services/job_runner.py:194
-#: semanticscholar/services/job_runner.py:139
-#: semanticscholar/services/job_runner.py:182
+#: makaleanaliz/services/job_runner.py:151 openalex/services/job_runner.py:164
+#: openalex/services/job_runner.py:211
+#: semanticscholar/services/job_runner.py:157
+#: semanticscholar/services/job_runner.py:200
 #, python-format
 msgid "Merhaba %(name)s,"
 msgstr "Hallo %(name)s,"
@@ -17115,20 +17115,27 @@ msgid "Top"
 msgstr "Top"
 
 #: makaleanaliz/templates/makaleanaliz/results.html:136 openalex/forms.py:6
-#: openalex/templates/openalex/landing.html:213 semanticscholar/forms.py:7
+#: openalex/services/job_runner.py:20
+#: openalex/templates/openalex/landing.html:213 openalex/views.py:193
+#: semanticscholar/forms.py:7 semanticscholar/services/job_runner.py:20
 #: semanticscholar/templates/semanticscholar/landing.html:328
+#: semanticscholar/views.py:235
 msgid "Başlık"
 msgstr "Titel"
 
 #: makaleanaliz/templates/makaleanaliz/results.html:137
+#: openalex/services/job_runner.py:21 openalex/views.py:193
+#: semanticscholar/services/job_runner.py:21 semanticscholar/views.py:235
 msgid "Yıl"
 msgstr "Jahr"
 
 #: makaleanaliz/templates/makaleanaliz/results.html:138
+#: openalex/services/job_runner.py:21 openalex/views.py:193
+#: semanticscholar/services/job_runner.py:21
 msgid "Tür"
 msgstr "Typ"
 
-#: makaleanaliz/templates/makaleanaliz/results.html:139
+#: makaleanaliz/templates/makaleanaliz/results.html:139 openalex/views.py:193
 msgid "Dergi"
 msgstr "Zeitschrift"
 
@@ -17158,7 +17165,9 @@ msgid ". sıradasınız — önceki analizin bitmesi bekleniyor"
 msgstr ""
 ". Platz in der Warteschlange — wartet auf Abschluss der vorherigen Analyse"
 
-#: openalex/forms.py:7 openalex/templates/openalex/landing.html:214
+#: openalex/forms.py:7 openalex/services/job_runner.py:22
+#: openalex/templates/openalex/landing.html:214 openalex/views.py:194
+#: semanticscholar/services/job_runner.py:22 semanticscholar/views.py:236
 msgid "Özet"
 msgstr "Abstract"
 
@@ -17207,60 +17216,124 @@ msgstr "Leere Werte sind nicht zulässig."
 msgid "Geçersiz operatör."
 msgstr "Ungültiger Operator."
 
-#: openalex/services/job_runner.py:145 openalex/services/job_runner.py:192
+#: openalex/services/job_runner.py:20 openalex/views.py:193
+#: semanticscholar/services/job_runner.py:20 semanticscholar/views.py:235
+msgid "Yazarlar"
+msgstr "Autor/innen"
+
+#: openalex/services/job_runner.py:20
+#: semanticscholar/services/job_runner.py:20 semanticscholar/views.py:235
+msgid "Dergi/Kaynak"
+msgstr "Zeitschrift/Quelle"
+
+#: openalex/services/job_runner.py:21 openalex/views.py:194
+#: semanticscholar/services/job_runner.py:21 semanticscholar/views.py:236
+msgid "Atıf Sayısı"
+msgstr "Zitationen"
+
+#: openalex/services/job_runner.py:22 openalex/views.py:194
+#: semanticscholar/services/job_runner.py:22 semanticscholar/views.py:236
+msgid "Kurumlar"
+msgstr "Institutionen"
+
+#: openalex/services/job_runner.py:22 openalex/views.py:194
+msgid "Anahtar Kelimeler"
+msgstr "Schlagwörter"
+
+#: openalex/services/job_runner.py:27
+msgid "OpenAlex Yayın Arama Sonuçları"
+msgstr "OpenAlex – Ergebnisse der Publikationssuche"
+
+#: openalex/services/job_runner.py:29
+#: semanticscholar/services/job_runner.py:29
+#, python-brace-format
+msgid "Sorgu: {query}"
+msgstr "Abfrage: {query}"
+
+#: openalex/services/job_runner.py:30
+#: semanticscholar/services/job_runner.py:30
+#, python-brace-format
+msgid "Toplam Bulunan Sonuç: {total}"
+msgstr "Gefundene Ergebnisse insgesamt: {total}"
+
+#: openalex/services/job_runner.py:31
+#: semanticscholar/services/job_runner.py:31
+#, python-brace-format
+msgid "Bu dosyadaki sonuç: {count} yayın"
+msgstr "Ergebnisse in dieser Datei: {count} Publikationen"
+
+#: openalex/services/job_runner.py:36
+#: semanticscholar/services/job_runner.py:36
+#, python-brace-format
+msgid "--- Yayın #{n} ---"
+msgstr "--- Publikation #{n} ---"
+
+#: openalex/services/job_runner.py:53
+#: semanticscholar/services/job_runner.py:56
+#, python-brace-format
+msgid "Toplam {total} yayın bulundu."
+msgstr "Insgesamt {total} Publikationen gefunden."
+
+#: openalex/services/job_runner.py:55
+#: semanticscholar/services/job_runner.py:58
+msgid "Daha fazla sonuç için e-postanızdaki adımları takip ediniz."
+msgstr ""
+"Für weitere Ergebnisse folgen Sie bitte den Schritten in Ihrer E-Mail."
+
+#: openalex/services/job_runner.py:162 openalex/services/job_runner.py:209
 #, python-format
 msgid "OpenAlex Arama Sonuçları: %(query)s"
 msgstr "OpenAlex-Suchergebnisse: %(query)s"
 
-#: openalex/services/job_runner.py:148
+#: openalex/services/job_runner.py:165
 msgid "OpenAlex arama sonuçlarınız hazırlanmıştır."
 msgstr "Ihre OpenAlex-Suchergebnisse sind bereit."
 
-#: openalex/services/job_runner.py:149 openalex/services/job_runner.py:197
-#: semanticscholar/services/job_runner.py:141
-#: semanticscholar/services/job_runner.py:185
+#: openalex/services/job_runner.py:166 openalex/services/job_runner.py:214
+#: semanticscholar/services/job_runner.py:159
+#: semanticscholar/services/job_runner.py:203
 #, python-format
 msgid "Sorgu: %(query)s"
 msgstr "Suchanfrage: %(query)s"
 
-#: openalex/services/job_runner.py:150 openalex/services/job_runner.py:198
-#: semanticscholar/services/job_runner.py:142
-#: semanticscholar/services/job_runner.py:186
+#: openalex/services/job_runner.py:167 openalex/services/job_runner.py:215
+#: semanticscholar/services/job_runner.py:160
+#: semanticscholar/services/job_runner.py:204
 #, python-format
 msgid "Toplam Sonuç: %(total)s"
 msgstr "Ergebnisse insgesamt: %(total)s"
 
-#: openalex/services/job_runner.py:151
-#: semanticscholar/services/job_runner.py:144
+#: openalex/services/job_runner.py:168
+#: semanticscholar/services/job_runner.py:162
 msgid "Tüm sonuçlara erişmek için sipariş sayfasını ziyaret edebilirsiniz:"
 msgstr "Um auf alle Ergebnisse zuzugreifen, besuchen Sie die Bestellseite:"
 
-#: openalex/services/job_runner.py:195
+#: openalex/services/job_runner.py:212
 msgid "Siparişiniz onaylanmış ve OpenAlex yayın sonuçlarınız hazırlanmıştır."
 msgstr ""
 "Ihre Bestellung wurde bestätigt und Ihre OpenAlex-Publikationsergebnisse "
 "sind bereit."
 
-#: openalex/services/job_runner.py:196
-#: semanticscholar/services/job_runner.py:184
+#: openalex/services/job_runner.py:213
+#: semanticscholar/services/job_runner.py:202
 #, python-format
 msgid "Sipariş No: #%(order)s"
 msgstr "Bestellnummer: #%(order)s"
 
-#: openalex/services/job_runner.py:199
-#: semanticscholar/services/job_runner.py:187
+#: openalex/services/job_runner.py:216
+#: semanticscholar/services/job_runner.py:205
 #, python-format
 msgid "Gönderilen Yayın Sayısı: %(count)s"
 msgstr "Anzahl gesendeter Publikationen: %(count)s"
 
-#: openalex/services/job_runner.py:200
-#: semanticscholar/services/job_runner.py:188
+#: openalex/services/job_runner.py:217
+#: semanticscholar/services/job_runner.py:206
 #, python-format
 msgid "Ödenen Tutar: %(amount)s TL"
 msgstr "Bezahlter Betrag: %(amount)s TL"
 
-#: openalex/services/job_runner.py:205
-#: semanticscholar/services/job_runner.py:191
+#: openalex/services/job_runner.py:222
+#: semanticscholar/services/job_runner.py:209
 msgid "Sonuçlarınızı aşağıdaki linkten indirebilirsiniz:"
 msgstr "Sie können Ihre Ergebnisse über den folgenden Link herunterladen:"
 
@@ -17743,24 +17816,37 @@ msgstr "Ihr tägliches Demo-Limit ist erreicht."
 msgid "Geçersiz sorgu."
 msgstr "Ungültige Abfrage."
 
-#: openalex/views.py:252 semanticscholar/views.py:298
+#: openalex/views.py:191
+msgid "OpenAlex Sonuçları"
+msgstr "OpenAlex-Ergebnisse"
+
+#: openalex/views.py:193 semanticscholar/views.py:235
+msgctxt "sıra numarası"
+msgid "No"
+msgstr "Nr."
+
+#: openalex/views.py:194 semanticscholar/views.py:66
+msgid "Açık Erişim"
+msgstr "Open Access"
+
+#: openalex/views.py:253 semanticscholar/views.py:298
 msgid "Kullanıcı tarafından iptal edildi."
 msgstr "Vom Benutzer abgebrochen."
 
-#: openalex/views.py:264 semanticscholar/views.py:167
+#: openalex/views.py:265 semanticscholar/views.py:167
 msgid "Sonuçlar henüz hazır değil."
 msgstr "Die Ergebnisse sind noch nicht fertig."
 
-#: openalex/views.py:267 semanticscholar/views.py:169
+#: openalex/views.py:268 semanticscholar/views.py:169
 msgid "Demo sonuçlar zaten gönderildi."
 msgstr "Die Demo-Ergebnisse wurden bereits gesendet."
 
-#: openalex/views.py:272 semanticscholar/views.py:172
+#: openalex/views.py:273 semanticscholar/views.py:172
 #, python-brace-format
 msgid "Demo sonuçların {email} adresine gönderilmesi başlatıldı."
 msgstr "Der Versand der Demo-Ergebnisse an {email} wurde gestartet."
 
-#: openalex/views.py:283 semanticscholar/views.py:182
+#: openalex/views.py:284 semanticscholar/views.py:182
 msgid "Bu arama için henüz sonuç yok."
 msgstr "Für diese Suche gibt es noch keine Ergebnisse."
 
@@ -17768,23 +17854,48 @@ msgstr "Für diese Suche gibt es noch keine Ergebnisse."
 msgid "Araştırma Alanı"
 msgstr "Forschungsgebiet"
 
-#: semanticscholar/services/job_runner.py:137
-#: semanticscholar/services/job_runner.py:180
+#: semanticscholar/services/job_runner.py:22 semanticscholar/views.py:236
+msgid "Araştırma Alanları"
+msgstr "Forschungsgebiete"
+
+#: semanticscholar/services/job_runner.py:27
+msgid "Semantic Scholar Yayın Arama Sonuçları"
+msgstr "Semantic Scholar – Ergebnisse der Publikationssuche"
+
+#: semanticscholar/services/job_runner.py:155
+#: semanticscholar/services/job_runner.py:198
 #, python-format
 msgid "Semantic Scholar Arama Sonuçları: %(query)s"
 msgstr "Semantic-Scholar-Suchergebnisse: %(query)s"
 
-#: semanticscholar/services/job_runner.py:140
+#: semanticscholar/services/job_runner.py:158
 msgid "Semantic Scholar arama sonuçlarınız hazırlanmıştır."
 msgstr "Ihre Semantic-Scholar-Suchergebnisse sind bereit."
 
-#: semanticscholar/services/job_runner.py:183
+#: semanticscholar/services/job_runner.py:201
 msgid ""
 "Siparişiniz onaylanmış ve Semantic Scholar yayın sonuçlarınız "
 "hazırlanmıştır."
 msgstr ""
 "Ihre Bestellung wurde bestätigt und Ihre Semantic-Scholar-"
 "Publikationsergebnisse sind bereit."
+
+#: semanticscholar/services/scraper.py:96
+msgid ""
+"Semantic Scholar API rate limit aşıldı. Lütfen birkaç dakika bekleyip tekrar"
+" deneyin."
+msgstr ""
+"Das Anfragelimit der Semantic-Scholar-API wurde überschritten. Bitte warten "
+"Sie einige Minuten und versuchen Sie es erneut."
+
+#: semanticscholar/services/scraper.py:101
+msgid ""
+"Semantic Scholar API erişimi reddedildi (403). API anahtarı geçersiz veya "
+"henüz aktif değil. Anahtar onaylandıktan sonra tekrar deneyin."
+msgstr ""
+"Der Zugriff auf die Semantic-Scholar-API wurde verweigert (403). Der API-"
+"Schlüssel ist ungültig oder noch nicht aktiv. Bitte versuchen Sie es erneut,"
+" sobald der Schlüssel freigegeben ist."
 
 #: semanticscholar/templates/semanticscholar/landing.html:5
 msgid "Semantic Scholar Yayın Kazıma — 200M+ Makale Araması"
@@ -18000,10 +18111,6 @@ msgstr ""
 "Themengebiet ergänzt."
 
 #: semanticscholar/views.py:66
-msgid "Açık Erişim"
-msgstr "Open Access"
-
-#: semanticscholar/views.py:66
 msgid "Açık erişimli yayınlar için PDF linki de gösterilir."
 msgstr "Für Open-Access-Publikationen wird zusätzlich ein PDF-Link angezeigt."
 
@@ -18035,6 +18142,14 @@ msgid ""
 "Semantic Scholar tarama için e-posta adresinizi doğrulamanız gerekiyor."
 msgstr ""
 "Für Semantic-Scholar-Suchen müssen Sie Ihre E-Mail-Adresse verifizieren."
+
+#: semanticscholar/views.py:233
+msgid "Semantic Scholar Sonuçları"
+msgstr "Semantic-Scholar-Ergebnisse"
+
+#: semanticscholar/views.py:236
+msgid "Yayın Türü"
+msgstr "Publikationstyp"
 
 #: templates/admin/index.html:4
 msgid "Django site admin"

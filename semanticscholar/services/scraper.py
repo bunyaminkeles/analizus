@@ -1,4 +1,5 @@
 import requests
+from django.utils.translation import gettext
 import logging
 import time
 import random
@@ -92,14 +93,13 @@ class SemanticScholarScraper:
                         time.sleep(retry_after)
                         continue
                     raise requests.HTTPError(
-                        "Semantic Scholar API rate limit aşıldı. Lütfen birkaç dakika bekleyip tekrar deneyin.",
+                        gettext("Semantic Scholar API rate limit aşıldı. Lütfen birkaç dakika bekleyip tekrar deneyin."),
                         response=resp,
                     )
                 if resp.status_code == 403:
                     raise requests.HTTPError(
-                        "Semantic Scholar API erişimi reddedildi (403). "
-                        "API key geçersiz veya henüz aktif değil. "
-                        "Key onaylandıktan sonra tekrar deneyin.",
+                        gettext("Semantic Scholar API erişimi reddedildi (403). API anahtarı geçersiz veya henüz aktif değil. "
+                                "Anahtar onaylandıktan sonra tekrar deneyin."),
                         response=resp,
                     )
                 resp.raise_for_status()

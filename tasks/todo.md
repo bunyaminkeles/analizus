@@ -157,7 +157,12 @@ maddelerde.
     Not: landing JS metinleri zaten etiketliydi (ölçüm aracı yanlış saymıştı).
   - [ ] **Bibliometrik analize gönder** (OpenAlex sonuçları) `/bibliometrics/`'e gidiyor — o sayfa TR-only
     ve EN/DE'de gizli; promo'da "Tek Tıkla Bibliometrik Analiz" EN/DE'de vaat ediliyor → Aşama 3'te karar.
-  - [ ] Aşama 3 sonuç/indirme (TXT/Excel başlıkları, scraper hataları; arka plan dil taşıma)
+  - [x] Aşama 3 sonuç/indirme (27 Eylül 2026): `_execute_job` → işi başlatan kullanıcının dili
+    (recipient_language, profil tercihi — restart'ta kaybolmaz) altında `_execute_job_body`; TXT
+    üreticileri çevrili + hizalama etiket uzunluğuna göre; Excel başlıkları/sayfa adı çevrili
+    ("No" → pgettext 'sıra numarası': TR'de Django'nun "Hayır" çevirisine düşüyordu — yakalandı);
+    S2 API hata mesajları çevrili. Test: DE kullanıcı arka plan TXT Almanca, TR Türkçe; S2 limit
+    hatası DE; Excel/TXT indirme 3 dilde doğru.
   - [ ] Aşama 4 sipariş: EN/DE'de sipariş seçeneği gizli → proje talebi
   Ölçüm notu:
   etiketli 148 msgid'in hepsi çevrili; eksik olan ETİKETSİZ metin ~270: promo context (views) +

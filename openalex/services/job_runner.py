@@ -14,43 +14,60 @@ logger = logging.getLogger(__name__)
 
 
 def _generate_alex_results_txt(publication_list, job, is_demo=True):
-    """OpenAlex yayın sonuçlarını txt formatında oluşturur."""
+    """OpenAlex yayın sonuçlarını TXT olarak üretir — metnin dili aktif dil (indirme isteği ya da
+    arka planda işi başlatan kullanıcının dili). Etiket hizası çevrilen etiket uzunluğuna göre."""
+    L = {
+        'title': gettext('Başlık'), 'authors': gettext('Yazarlar'), 'journal': gettext('Dergi/Kaynak'),
+        'year': gettext('Yıl'), 'doi': 'DOI', 'type': gettext('Tür'), 'cited': gettext('Atıf Sayısı'),
+        'inst': gettext('Kurumlar'), 'keywords': gettext('Anahtar Kelimeler'), 'abstract': gettext('Özet'),
+    }
+    w = max(len(v) for v in L.values())
+    row = lambda key, value: f"{L[key].ljust(w)} : {value}"
     lines = [
-        f"OpenAlex Yayın Arama Sonuçları",
-        f"{'='*60}",
-        f"Sorgu: {job.get_query_summary()}",
-        f"Toplam Bulunan Sonuç: {job.total_results}",
-        f"Bu dosyadaki sonuç: {len(publication_list)} yayın",
-        f"{'='*60}\n",
+        gettext("OpenAlex Yayın Arama Sonuçları"),
+        "=" * 60,
+        gettext("Sorgu: {query}").format(query=job.get_query_summary()),
+        gettext("Toplam Bulunan Sonuç: {total}").format(total=job.total_results),
+        gettext("Bu dosyadaki sonuç: {count} yayın").format(count=len(publication_list)),
+        "=" * 60 + "\n",
     ]
 
     for i, pub in enumerate(publication_list, 1):
-        lines.append(f"--- Yayın #{i} ---")
-        lines.append(f"Başlık       : {pub.get('title', '')}")
-        lines.append(f"Yazarlar     : {pub.get('authors', '')}")
-        lines.append(f"Dergi/Kaynak : {pub.get('journal', '')}")
-        lines.append(f"Yıl          : {pub.get('year', '')}")
-        lines.append(f"DOI          : {pub.get('doi', '')}")
-        lines.append(f"Tür          : {pub.get('type', '')}")
-        lines.append(f"Atıf Sayısı  : {pub.get('cited_by_count', 0)}")
-        lines.append(f"Kurumlar     : {pub.get('institutions', '')}")
+        lines.append(gettext("--- Yayın #{n} ---").format(n=i))
+        lines.append(row('title', pub.get('title', '')))
+        lines.append(row('authors', pub.get('authors', '')))
+        lines.append(row('journal', pub.get('journal', '')))
+        lines.append(row('year', pub.get('year', '')))
+        lines.append(row('doi', pub.get('doi', '')))
+        lines.append(row('type', pub.get('type', '')))
+        lines.append(row('cited', pub.get('cited_by_count', 0)))
+        lines.append(row('inst', pub.get('institutions', '')))
         if pub.get('keywords'):
-            lines.append(f"Anahtar Kel. : {', '.join(pub['keywords'][:10])}")
+            lines.append(row('keywords', ', '.join(pub['keywords'][:10])))
         abstract = pub.get('abstract', '')
         if abstract:
-            lines.append(f"Özet         : {abstract}")
+            lines.append(row('abstract', abstract))
         lines.append("")
 
-    lines.append(f"{'='*60}")
-    lines.append(f"Toplam {job.total_results} yayın bulundu.")
+    lines.append("=" * 60)
+    lines.append(gettext("Toplam {total} yayın bulundu.").format(total=job.total_results))
     if is_demo:
-        lines.append(f"Daha fazla sonuç için epostanızdaki adımları takip ediniz.")
-    lines.append(f"\n---\nAnalizus - www.analizus.com")
+        lines.append(gettext("Daha fazla sonuç için e-postanızdaki adımları takip ediniz."))
+    lines.append("\n---\nAnalizus - www.analizus.com")
 
     return "\n".join(lines)
 
-
 def _execute_job(job_id):
+    """Global kuyruk worker'ı tarafından çağrılır. Worker thread'i dili bilmez → iş, başlatan
+    kullanıcının dil tercihiyle (Profile.preferred_language) çalışır: arka planda üretilen TXT
+    dosyaları ve hata mesajları o dilde olur; sunucu yeniden başlasa da kaybolmaz."""
+    from openalex.models import AlexSearchJob
+    job = AlexSearchJob.objects.select_related('user__profile').filter(id=job_id).first()
+    with recipient_language(getattr(job, 'user', None)):
+        _execute_job_body(job_id)
+
+
+def _execute_job_body(job_id):
     """Global kuyruk worker'ı tarafından çağrılır — senkron çalışır."""
     from openalex.models import AlexSearchJob
     from openalex.services.scraper import OpenAlexScraper

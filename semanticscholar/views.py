@@ -1,6 +1,6 @@
 import re
 import logging
-from django.utils.translation import get_language, gettext
+from django.utils.translation import get_language, gettext, pgettext
 from functools import wraps
 
 from django.contrib.auth.decorators import login_required
@@ -230,10 +230,10 @@ def semantic_download_excel(request, job_id):
 
     wb = openpyxl.Workbook()
     ws = wb.active
-    ws.title = 'Semantic Scholar Sonuçları'
+    ws.title = gettext('Semantic Scholar Sonuçları')[:31]
 
-    headers = ['No', 'Başlık', 'Yazarlar', 'Dergi/Kaynak', 'Yıl', 'DOI', 'Yayın Türü',
-               'Atıf Sayısı', 'Kurumlar', 'Araştırma Alanları', 'OA PDF', 'Özet']
+    headers = [pgettext('sıra numarası', 'No'), gettext('Başlık'), gettext('Yazarlar'), gettext('Dergi/Kaynak'), gettext('Yıl'), 'DOI',
+               gettext('Yayın Türü'), gettext('Atıf Sayısı'), gettext('Kurumlar'), gettext('Araştırma Alanları'), 'OA PDF', gettext('Özet')]
     ws.append(headers)
     header_fill = PatternFill(start_color='1A1A2E', end_color='1A1A2E', fill_type='solid')
     header_font = Font(color='FFFFFF', bold=True)
