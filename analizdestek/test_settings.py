@@ -20,3 +20,10 @@ EMAIL_BACKEND = 'django.core.mail.backends.locmem.EmailBackend'
 # Cron secret
 import os
 os.environ.setdefault('CRON_SECRET_KEY', 'test-cron-secret')
+
+# Statik: testler collectstatic manifest'ine bağımlı olmasın (Django testleri DEBUG=False
+# çalıştırır → manifest storage hash'li ad ister, manifest yoksa her sayfa 500 olur).
+STORAGES = {
+    **STORAGES,
+    'staticfiles': {'BACKEND': 'django.contrib.staticfiles.storage.StaticFilesStorage'},
+}
