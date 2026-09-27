@@ -78,3 +78,10 @@ Semantic Scholar tabloda adıyla hiç geçmedi (hub linki gizlenince dolaylı gi
 **Kural:** Bir hedefin dil durumunu href'in önekine bakarak değil, (1) URL'in i18n_patterns
 içinde olup olmadığı (`/en/<yol>` 200 mü) ve (2) EN render'ında görünür Türkçe metin oranı
 ölçülerek belirle. Gizleme/kaldırma tablosunda dolaylı etkilenen her aracı ADIYLA yaz.
+
+## 27 Eylül 2026 — Test sonucu commit zincirinde durdurucu olmalı
+**Hata:** `pytest ...; ... && git commit` zincirinde pytest `;` ile ayrıldığı için 1 başarısız
+testle commit+push yapıldı (dev'e; main'e gitmedi, hemen düzeltildi).
+**Kural:** Commit'ten önce testi `&&` ile bağla ya da çıktıyı okuduktan SONRA ayrı adımda commit et.
+Ayrıca: STORAGES/statik değişikliği testleri DEBUG=False nedeniyle manifest'e bağlar →
+test_settings'te düz StaticFilesStorage.
