@@ -518,8 +518,7 @@ maddelerde.
 - [x] Hetzner deploy — YAPILDI (27 Eylül 2026; kod çekimi + web restart kullanıcı, doğrulama Claude): sunucu
   dae62f0, 0158/0159 [X], /, /en/, /de/, proje talebi, /de/tarama/, /market/ 200. nginx yeniden başlatılmadı
   (site sorunsuz; restart almanyalirehber'i de etkiler).
-- [ ] **DE hero butonu taşıyordu** (kullanıcı ekran görüntüsü) — dev'de düzeltildi (hero.css: genişlik metne göre,
-  satır kırabilir; ölçüm 451/451), merge + deploy bekliyor.
+- [x] **DE hero butonu taşıyordu** — DÜZELTİLDİ VE CANLIDA (27 Eylül 2026, kullanıcı: "canlıya al"): main 101cb2f, sunucuda git pull + web restart (Claude); canlı hero.72858e6aff95.css yeni kuralı içeriyor; /, /en/, /de/, /de/proje-talebi/ 200.
 
 **C000. DÖRDÜNCÜ MERGE (hotfix) — 27 Eylül 2026 (kullanıcı: "et")**
 - [x] main ← dev fast-forward + push: **9203f3d** — STORAGES ile hash'li statik (kalıcı önbellek
