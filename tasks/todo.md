@@ -115,6 +115,10 @@ maddelerde.
   kapalıyken 404 (yerel); home.html araç kartı + kazıma bandı bayrakla koşullanmalı.
 
 **İŞ SIRASI (27 Eylül 2026, kullanıcı):**
+- [ ] **Impressum (DE)** (27 Eylül 2026, kullanıcı: "de için bir sayfanın ismini impressum'a mı
+  dönüştürsek, hangisi uygun?"): kısa cevap verildi — Impressum yeniden adlandırma değil, ayrı
+  yasal sayfa (Almanya §5 DDG / Avusturya ECG: sağlayıcı adı, adres, iletişim, sicil/vergi no.);
+  footer'dan her sayfada 1 tıkla ulaşılmalı. İçerik (şirket bilgileri) kullanıcı/avukattan.
 - [x] **1. Akademik Tarama hub'ı (/tarama/) EN/DE'de** — YAPILDI (27 Eylül 2026): URL i18n'e taşındı (TR yolu aynı), araçlarda `intl` bayrağı (EN/DE: OpenAlex + Semantic Scholar), tüm metinler EN/DE, navbar her dilde hub'a gider (açılır menü kaldırıldı), `?next` dile göre. Yeni kazıma modülü = listeye bir kayıt. Eski not: (kullanıcı: "tr'de gelen fotoğraflı
   landing'i de/en için de aktif et; buraya iki veri kazıma daha eklenecek"): hub i18n'e
   taşınacak; EN/DE'de yalnız uluslararası araçlar (OpenAlex, Semantic Scholar — YÖK Tez,
@@ -184,7 +188,14 @@ maddelerde.
   e-postasına konu `[EN]`/`[DE]` + "Dil: EN — müşteriye bu dilde dönüş yapın"; admin
   e-postasında ad/e-posta/şirket/açıklama escape (XSS test: `<img onerror>`/`<script>`
   kaçışlandı). 3 dilde gönderim test edildi. Eski kayıtlarda dil boş.
-- [ ] **EN/DE → proje talebi AŞAMA 2** (kullanıcı kararları 27 Eylül 2026: pazar yeri EN/DE
+- [x] **EN/DE → proje talebi AŞAMA 2** — YAPILDI (27 Eylül 2026): EN/DE hero birincil buton
+  "Get your analysis done by an expert" (+ "Free initial assessment · No obligation"), dosya
+  alanı ikincil; market uzman sütunu → proje talebi kartı; navbar çerçeveli CTA (bundle.css
+  kaynaklardan yeniden üretildi — önce birebir aynı olduğu doğrulandı); footer Kurumsal'a link;
+  Nasıl Çalışır + SSS sonuna çağrı; pazar yeri sayfasına yönlendirme. EN anasayfada proje
+  talebi çağrısı 5 → 9. Yeni kaynaklar: nav, footer, home_market, home_steps, home_faq,
+  market_page + eksik olan analiz_triyaj (önceden 'direct' sayılıyordu) → **migration 0159**
+  (yalnız choices, SQL no-op). TR görünümü aynı. Eski not: (kullanıcı kararları 27 Eylül 2026: pazar yeri EN/DE
   "(a) kalsın + proje talebi yönlendirmesi"; hero birincil CTA EN/DE'de proje talebi "olsun"):
   hero birincil CTA, market uzman sütunu → proje talebi kartı, navbar buton, footer link,
   nasıl çalışır/SSS sonu çağrı, market sayfası üstüne proje talebi yönlendirmesi.

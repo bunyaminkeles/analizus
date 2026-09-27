@@ -1538,3 +1538,17 @@ a.ax-stat-pill:hover {
 .ax-ai-chips-more:hover {
     color: var(--ax-text-primary);
 }
+
+/* EN/DE bölüm sonu proje talebi çağrısı (27 Eylül 2026) */
+.ax-section-cta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--ax-space-3);
+    margin-top: var(--ax-space-8);
+    text-align: center;
+}
+.ax-section-cta__text {
+    margin: 0;
+    color: var(--ax-text-secondary);
+}

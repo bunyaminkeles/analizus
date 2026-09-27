@@ -264,7 +264,8 @@
                 </div>
                 {% endif %}
 
-                <a href="{% url 'proje_talebi' %}" class="site-nav__link">{% trans "Proje Talebi" %}</a>
+                {% comment %}EN/DE hedefi proje talebi → öne çıkan buton; TR görünümü aynı{% endcomment %}
+                <a href="{% url 'proje_talebi' %}?source=nav" class="site-nav__link{% if LANGUAGE_CODE != 'tr' %} site-nav__link--cta{% endif %}">{% trans "Proje Talebi" %}</a>
 
                 {% if features.training %}
                 <a href="{% url 'egitim' %}" class="site-nav__link {% if '/egitim' in request.path %}is-active{% endif %}">{% trans "Eğitim" %}</a>
@@ -468,7 +469,7 @@
             </div>
             {% endif %}
 
-            <a href="{% url 'proje_talebi' %}" class="nav-drawer__link">{% trans "Proje Talebi" %}</a>
+            <a href="{% url 'proje_talebi' %}?source=nav" class="nav-drawer__link">{% trans "Proje Talebi" %}</a>
 
             {% if features.training %}
             <a href="{% url 'egitim' %}" class="nav-drawer__link">{% trans "Eğitim" %}</a>

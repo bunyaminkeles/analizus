@@ -252,6 +252,14 @@ atıfları) → yalnız TR. EN/DE'ye dile uygun tek WebSite bloğu (27 Eylül 20
                     {% trans "Uçtan uca analiz ekosistemi — 18 ücretsiz istatistik aracı, AI asistan ve doğrulanmış uzmanlar tek çatıda." %}
                 </p>
 
+                {% if LANGUAGE_CODE != 'tr' %}
+                {% comment %}EN/DE birincil çağrı: proje talebi (kullanıcı kararı 27 Eylül 2026); dosya alanı ikincil{% endcomment %}
+                <div class="ax-hero__primary-cta">
+                    <a href="{% url 'proje_talebi' %}?source=hero" class="ax-btn ax-btn--primary ax-btn--lg">{% trans "Analizinizi uzmanına yaptırın" %}</a>
+                    <p class="ax-hero__primary-cta-note">{% trans "Ücretsiz ön değerlendirme · Yükümlülük yok" %}</p>
+                </div>
+                <p class="ax-hero__or">{% trans "ya da kendiniz analiz edin:" %}</p>
+                {% endif %}
                 <!-- Sürükle-bırak veri alanı -->
                 <div class="ax-hero-dropzone" id="axHeroDropzone">
                     {% csrf_token %}
@@ -264,9 +272,11 @@ atıfları) → yalnız TR. EN/DE'ye dile uygun tek WebSite bloğu (27 Eylül 20
                 <p class="ax-hero-dropzone__trust">{% trans "Yükle → testi seç (bilmiyorsan yol gösteririz) → APA formatında raporunu al · Kayıt gerekmez" %}</p>
                 <p class="ax-hero-dropzone__examples">{% trans "t-testi" %} · ANOVA · {% trans "korelasyon" %} · Cronbach α · {% trans "regresyon" %} · <a href="{% url 'analiz_home' %}">{% trans "18 aracın tümü →" %}</a></p>
 
+                {% if LANGUAGE_CODE == 'tr' %}
                 <p class="ax-hero__secondary-cta">
                     <a href="{% url 'proje_talebi' %}?source=hero">{% trans "Ya da bu işi 24 saatte bir uzmana bırak →" %}</a>
                 </p>
+                {% endif %}
 
                 {% if user.is_authenticated and user_profile.segment and user_profile.segment in "student,academic,expert" %}
                 <div class="ax-hero__personal mt-4">
@@ -436,8 +446,22 @@ atıfları) → yalnız TR. EN/DE'ye dile uygun tek WebSite bloğu (27 Eylül 20
                             <div class="ax-market-icon ax-market-icon--amber">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
                             </div>
-                            <h2 class="ax-market-title">{% trans "Uzman Olarak Katılmak İstiyorum" %}</h2>
+                            <h2 class="ax-market-title">{% if LANGUAGE_CODE == 'tr' %}{% trans "Uzman Olarak Katılmak İstiyorum" %}{% else %}{% trans "Analizinizi Uzmanına Bırakın" %}{% endif %}</h2>
                         </div>
+                        {% if LANGUAGE_CODE != 'tr' %}
+                        {% comment %}EN/DE: uzman kazanımı yerine proje talebi kartı (hedef: talep toplamak){% endcomment %}
+                        <div class="ax-market-body flex-grow-1">
+                            <p class="ax-market-desc">{% trans "Projenizi birkaç dakikada anlatın. Sizi doğrulanmış bir analistle eşleştirip ücretsiz ön değerlendirme gönderelim." %}</p>
+                            <ul class="ax-market-features mt-3">
+                                <li><i class="bi bi-check2-circle text-warning"></i> {% trans "Talebinizi bırakın" %}</li>
+                                <li><i class="bi bi-check2-circle text-warning"></i> {% trans "Ücretsiz ön değerlendirme alın" %}</li>
+                                <li><i class="bi bi-check2-circle text-warning"></i> {% trans "Onaylayın, raporunuzu teslim alın" %}</li>
+                            </ul>
+                        </div>
+                        <div class="ax-market-footer mt-4">
+                            <a href="{% url 'proje_talebi' %}?source=home_market" class="ax-btn ax-btn--warning ax-btn--lg ax-block ax-w-full">{% trans "Ücretsiz Proje Talebi Gönder" %}</a>
+                        </div>
+                        {% else %}
                         <div class="ax-market-body flex-grow-1">
                             <p class="ax-market-desc">{% trans "SPSS, R, Python veya alan uzmanlığınızı gerçek projelere dönüştürün. Komisyonsuz çalışın, itibarınızı büyütün." %}</p>
                             <ul class="ax-market-features mt-3">
@@ -454,6 +478,7 @@ atıfları) → yalnız TR. EN/DE'ye dile uygun tek WebSite bloğu (27 Eylül 20
                         <div class="ax-market-footer mt-4">
                             <a href="{% url 'job_list' %}" class="ax-btn ax-btn--warning ax-btn--lg ax-block ax-w-full">{% trans "Freelance Projelere Göz At" %}</a>
                         </div>
+                        {% endif %}
                     </div>
                 </div>
 
@@ -522,6 +547,11 @@ atıfları) → yalnız TR. EN/DE'ye dile uygun tek WebSite bloğu (27 Eylül 20
                 </div>
             </div>
         </div>
+        {% if LANGUAGE_CODE != 'tr' %}
+        <div class="ax-section-cta">
+            <a href="{% url 'proje_talebi' %}?source=home_steps" class="ax-btn ax-btn--primary ax-btn--lg">{% trans "Ücretsiz Proje Talebi Gönder" %}</a>
+        </div>
+        {% endif %}
     </div>
 </section>
 
@@ -989,6 +1019,12 @@ AI Asistan da kapalıysa bölüm hiç çıkmaz (26 Eylül 2026){% endcomment %}
                 </div>
             </div>
         </div>
+        {% if LANGUAGE_CODE != 'tr' %}
+        <div class="ax-section-cta">
+            <p class="ax-section-cta__text">{% trans "Sorunuz mu kaldı? Projenizi anlatın, ücretsiz değerlendirelim." %}</p>
+            <a href="{% url 'proje_talebi' %}?source=home_faq" class="ax-btn ax-btn--primary">{% trans "Ücretsiz Proje Talebi Gönder" %}</a>
+        </div>
+        {% endif %}
     </div>
 </section>
 

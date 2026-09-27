@@ -47,6 +47,10 @@
             {% endif %}
             {% endif %}
         </div>
+        {% if LANGUAGE_CODE != 'tr' %}
+        {% comment %}EN/DE: pazar yeri kalır (kullanıcı kararı a) + proje talebi yönlendirmesi{% endcomment %}
+        <p class="ax-market-hero__subtitle mt-3 mb-0">{% trans "İlan açmak istemiyor musunuz?" %} <a href="{% url 'proje_talebi' %}?source=market_page">{% trans "Proje talebi bırakın, ücretsiz değerlendirelim →" %}</a></p>
+        {% endif %}
         {% if user.is_authenticated %}
         <div class="ax-market-hero__links">
             <a href="{% url 'my_jobs' %}"><i class="bi bi-person-workspace me-1"></i>{% trans "İlanlarım &amp; Tekliflerim" %}</a>

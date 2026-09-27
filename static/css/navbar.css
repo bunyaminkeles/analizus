@@ -718,3 +718,15 @@ body {
     color: var(--ax-text-primary);
     background: rgba(255,255,255,0.06);
 }
+
+/* EN/DE: Proje Talebi öne çıkan buton (27 Eylül 2026) — Kayıt Ol (dolu mor) ile yarışmasın diye çerçeveli */
+.site-nav__link--cta {
+    border: 1px solid var(--ax-accent-primary);
+    border-radius: var(--ax-radius-full);
+    color: var(--ax-accent-primary-light);
+    padding-inline: var(--ax-space-4);
+}
+.site-nav__link--cta:hover {
+    background: color-mix(in srgb, var(--ax-accent-primary) 15%, transparent);
+    color: var(--ax-text-primary);
+}

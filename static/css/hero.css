@@ -428,3 +428,23 @@
 .ax-below-doors__corporate a:hover {
     color: var(--ax-color-primary);
 }
+
+/* EN/DE birincil çağrı: proje talebi (27 Eylül 2026) */
+.ax-hero__primary-cta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--ax-space-2);
+    margin-bottom: var(--ax-space-5);
+}
+.ax-hero__primary-cta .ax-btn { width: 100%; max-width: 360px; }
+.ax-hero__primary-cta-note {
+    margin: 0;
+    font-size: var(--ax-text-sm);
+    color: var(--ax-text-secondary);
+}
+.ax-hero__or {
+    margin: 0 0 var(--ax-space-3);
+    font-size: var(--ax-text-sm);
+    color: var(--ax-text-muted);
+}

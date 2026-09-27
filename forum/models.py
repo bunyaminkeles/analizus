@@ -1734,6 +1734,14 @@ class ProjectRequest(models.Model):
         ('agentic', 'AI Çözümler Sayfası'),
         ('tableau', 'Tableau Sayfası'),
         ('bibliometrics', 'Bibliometri Sayfası'),
+        ('analiz_triyaj', 'Analiz Araçları Triyaj'),  # hub linki kullanıyordu ama listede yoktu → 'direct' sayılıyordu
+        # EN/DE → proje talebi çağrıları (27 Eylül 2026)
+        ('nav', 'Navbar'),
+        ('footer', 'Footer'),
+        ('home_market', 'Ana Sayfa Pazar Kartı'),
+        ('home_steps', 'Ana Sayfa Nasıl Çalışır'),
+        ('home_faq', 'Ana Sayfa SSS'),
+        ('market_page', 'Pazar Yeri Sayfası'),
     ]
 
     name = models.CharField(max_length=150, verbose_name="Ad Soyad")
