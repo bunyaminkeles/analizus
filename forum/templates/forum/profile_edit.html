@@ -59,7 +59,24 @@
                             </div>
                             <div class="ax-form-group ax-profile-edit__full">
                                 <label class="ax-form-label" for="f-avatar">{% trans "Profil Fotoğrafı" %}</label>
-                                <input type="file" id="f-avatar" name="avatar" class="ax-form-control" accept="image/*">
+                                <div class="ax-profile-edit__avatar">
+                                    <div class="ax-profile-edit__avatar-preview" id="avatarPreview"
+                                         data-initial="{{ user.username|slice:":1"|upper }}">
+                                        {% if profile.avatar %}<img src="{{ profile.avatar.url }}" alt="">{% else %}{{ user.username|slice:":1"|upper }}{% endif %}
+                                    </div>
+                                    <div class="ax-profile-edit__avatar-actions">
+                                        <input type="file" id="f-avatar" name="avatar" class="ax-form-control"
+                                               accept="image/jpeg,image/png,image/webp" aria-describedby="avatarHint">
+                                        <small class="ax-form-hint" id="avatarHint">{% trans "JPEG, PNG veya WebP · en fazla 5 MB · kare olarak kırpılır" %}</small>
+                                        <small class="ax-form-hint ax-form-hint--error" id="avatarError" hidden>{% trans "Dosya 5 MB'tan büyük. Lütfen daha küçük bir resim seçin." %}</small>
+                                        {% if profile.avatar %}
+                                        <span class="ax-form-check">
+                                            <input class="ax-form-check-input" type="checkbox" name="avatar_clear" value="1" id="f-avatar-clear">
+                                            <span class="ax-form-check-label" role="presentation" onclick="document.getElementById('f-avatar-clear').click()">{% trans "Mevcut fotoğrafı kaldır" %}</span>
+                                        </span>
+                                        {% endif %}
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -237,6 +254,44 @@
     });
 
     syncTags(); // Sayfa yüklenince mevcut seçimleri göster
+
+    // ── Profil fotoğrafı: önizleme + 5 MB ön kontrol + kaldır ─────────────
+    // (asıl doğrulama sunucuda: tür, boyut, 512px WebP, EXIF temizliği)
+    const avatarInput = document.getElementById('f-avatar');
+    const avatarPreview = document.getElementById('avatarPreview');
+    const avatarError = document.getElementById('avatarError');
+    const avatarClear = document.getElementById('f-avatar-clear');
+    const avatarTemplate = avatarPreview.cloneNode(true);  // her geri yüklemede yeniden klonlanır
+    function restoreAvatar() { avatarPreview.replaceChildren(...avatarTemplate.cloneNode(true).childNodes); }
+    function showAvatar(src) {
+        avatarPreview.replaceChildren();
+        if (src) {
+            const img = document.createElement('img');
+            img.src = src; img.alt = '';
+            avatarPreview.appendChild(img);
+        } else {
+            avatarPreview.textContent = avatarPreview.dataset.initial;
+        }
+    }
+    avatarInput.addEventListener('change', function () {
+        const file = this.files && this.files[0];
+        avatarError.hidden = true;
+        if (!file) { restoreAvatar(); return; }
+        if (file.size > 5 * 1024 * 1024) {
+            avatarError.hidden = false;
+            this.value = '';
+            restoreAvatar();
+            return;
+        }
+        if (avatarClear) avatarClear.checked = false;
+        showAvatar(URL.createObjectURL(file));
+    });
+    if (avatarClear) {
+        avatarClear.addEventListener('change', function () {
+            if (this.checked) { avatarInput.value = ''; showAvatar(null); }
+            else { restoreAvatar(); }
+        });
+    }
 
     // ── Arama ──────────────────────────────────────────────────────────────
     document.getElementById('skill-search').addEventListener('input', function() {

@@ -1340,6 +1340,49 @@ def _handle_edu_user(user):
     EmailService.send_edu_welcome_email(user)
 
 
+AVATAR_MAX_BYTES = 5 * 1024 * 1024
+AVATAR_SIZE = 512
+AVATAR_MAX_PIXELS = 40_000_000  # sıkıştırma bombası / aşırı büyük görsel koruması
+
+
+def _process_avatar(uploaded, user):
+    """Yüklenen profil fotoğrafını doğrular ve güvenli hâle getirir.
+
+    - Yalnız JPEG/PNG/WebP, en fazla 5 MB; Pillow ile gerçekten açılabilmeli
+      (uzantıya/Content-Type'a güvenilmez).
+    - EXIF yönü uygulanır, sonra görsel yeniden çizildiği için EXIF (GPS dahil) atılır.
+    - Ortadan kare kırpılıp 512×512 WebP'ye çevrilir.
+    - Dosya adı kişisel bilgi içermez: <kullanıcı-id>-<rastgele>.webp
+
+    Hata durumunda ValueError('size' | 'type') fırlatır.
+    """
+    import uuid
+    from io import BytesIO
+    from PIL import Image, ImageOps, UnidentifiedImageError
+    from django.core.files.base import ContentFile
+
+    if uploaded.size > AVATAR_MAX_BYTES:
+        raise ValueError('size')
+    try:
+        probe = Image.open(uploaded)
+        if probe.format not in ('JPEG', 'PNG', 'WEBP'):
+            raise ValueError('type')
+        if probe.width * probe.height > AVATAR_MAX_PIXELS:
+            raise ValueError('size')
+        probe.verify()                      # bozuk/sahte dosyayı yakala
+        uploaded.seek(0)
+        img = ImageOps.exif_transpose(Image.open(uploaded))
+        img = img.convert('RGBA' if 'A' in img.getbands() else 'RGB')
+        img = ImageOps.fit(img, (AVATAR_SIZE, AVATAR_SIZE), Image.LANCZOS)
+        buf = BytesIO()
+        img.save(buf, 'WEBP', quality=85)   # yeni dosya → EXIF taşınmaz
+    except ValueError:
+        raise
+    except (UnidentifiedImageError, OSError, Image.DecompressionBombError, SyntaxError):
+        raise ValueError('type')
+    return ContentFile(buf.getvalue(), name=f'{user.pk}-{uuid.uuid4().hex[:12]}.webp')
+
+
 def _normalize_tr_phone(raw):
     """TR cep numarasını '05XXXXXXXXX' biçimine indirger; geçersizse None.
     Kabul: 05…, 5…, +90 5…, 90 5…, 0090 5… (boşluk, tire, parantez serbest)."""
@@ -1407,23 +1450,19 @@ def profile_edit(request):
                     profile.phone_number = ""
                     profile.phone_verified = False
 
-        # Dosyalar
-        from django.conf import settings as django_settings
-        from django.core.files.storage import default_storage
-        logger.debug(f"DEBUG={django_settings.DEBUG}")
-        logger.debug(f"DEFAULT_FILE_STORAGE={getattr(django_settings, 'DEFAULT_FILE_STORAGE', 'NOT SET')}")
-        logger.debug(f"default_storage class: {default_storage.__class__.__name__}")
-        logger.debug(f"request.FILES: {request.FILES}")
-        logger.debug(f"'avatar' in FILES: {'avatar' in request.FILES}")
+        # Profil fotoğrafı: kaldır / değiştir (doğrulama + 512px WebP + EXIF temizliği).
+        # Eski dosya yalnız profil kaydı başarılı olunca silinir (aşağıda).
+        # cover_image arayüzde yok — doğrulamasız yükleme yolu kapatıldı (27 Eylül 2026).
+        old_avatar = (profile.avatar.storage, profile.avatar.name) if profile.avatar else None
+        avatar_error = None
         if 'avatar' in request.FILES:
-            avatar_file = request.FILES['avatar']
-            logger.debug(f"Avatar dosyası: {avatar_file.name}, boyut: {avatar_file.size}")
-            logger.debug(f"Avatar field storage ÖNCE: {profile.avatar.storage.__class__.__name__ if profile.avatar else 'None'}")
-            profile.avatar = avatar_file
-            logger.debug(f"Avatar field storage SONRA: {profile.avatar.storage.__class__.__name__}")
-        if 'cover_image' in request.FILES:
-            profile.cover_image = request.FILES['cover_image']
-        
+            try:
+                profile.avatar = _process_avatar(request.FILES['avatar'], user)
+            except ValueError as err:
+                avatar_error = str(err)
+        elif request.POST.get('avatar_clear') == '1' and profile.avatar:
+            profile.avatar = None
+
         # Ayarlar
         profile.email_on_reply = request.POST.get('email_on_reply') == 'on'
         profile.email_on_private_message = request.POST.get('email_on_private_message') == 'on'
@@ -1444,6 +1483,13 @@ def profile_edit(request):
         user.save()
         profile.skills.set(selected_skills)
 
+        # Değiştirilen/kaldırılan eski fotoğrafı depodan sil (sahipsiz dosya bırakma)
+        if old_avatar and (not profile.avatar or profile.avatar.name != old_avatar[1]):
+            try:
+                old_avatar[0].delete(old_avatar[1])
+            except Exception as del_err:
+                logger.warning(f"Eski avatar silinemedi ({old_avatar[1]}): {del_err}")
+
         # Yalnız teşhis logu — hata verse de kayıt başarılıdır
         try:
             logger.debug(f"Profile saved. Avatar URL: {profile.avatar.url if profile.avatar else 'None'}")
@@ -1458,7 +1504,11 @@ def profile_edit(request):
 
         if phone_invalid:
             messages.warning(request, gettext("Diğer bilgileriniz kaydedildi; ancak telefon numarası geçersiz olduğu için kaydedilmedi. Lütfen '05XX XXX XX XX' veya '+90 5XX XXX XX XX' biçiminde giriniz."))
-        else:
+        if avatar_error == 'size':
+            messages.warning(request, gettext("Diğer bilgileriniz kaydedildi; ancak profil fotoğrafı çok büyük olduğu için yüklenmedi (en fazla 5 MB)."))
+        elif avatar_error == 'type':
+            messages.warning(request, gettext("Diğer bilgileriniz kaydedildi; ancak profil fotoğrafı yüklenmedi. Yalnızca JPEG, PNG veya WebP resimler yüklenebilir."))
+        if not phone_invalid and not avatar_error:
             messages.success(request, gettext("Profiliniz başarıyla güncellendi."))
         return redirect('profile_detail', username=user.username)
     

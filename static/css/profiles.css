@@ -1362,3 +1362,44 @@ a.ax-profile-portfolio-card--link:hover {
         justify-content: flex-end;
     }
 }
+
+/* Profil fotoğrafı alanı — mobil: alt alta; ≥576px: önizleme solda */
+.ax-profile-edit__avatar {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--ax-space-3);
+}
+.ax-profile-edit__avatar-preview {
+    width: 72px;
+    height: 72px;
+    flex-shrink: 0;
+    border-radius: var(--ax-radius-full);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: color-mix(in srgb, var(--ax-accent-primary) 25%, var(--ax-bg-tertiary));
+    border: 2px solid color-mix(in srgb, var(--ax-accent-primary) 45%, transparent);
+    color: var(--ax-text-primary);
+    font-size: var(--ax-text-2xl);
+    font-weight: var(--ax-font-bold);
+}
+.ax-profile-edit__avatar-preview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.ax-profile-edit__avatar-actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ax-space-2);
+    width: 100%;
+    min-width: 0;
+}
+@media (min-width: 576px) {
+    .ax-profile-edit__avatar {
+        flex-direction: row;
+        align-items: center;
+    }
+}

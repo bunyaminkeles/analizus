@@ -105,7 +105,13 @@ maddelerde.
   (b) süre "abgeschlossen in 4 ayda" — `views.py` ~2196 f"{days} günde/haftada/ayda" TR
   parça → çoğul destekli tam cümle msgid (ngettext); (c) e-posta placeholder
   "ayse@sirket.com" (`proje_talebi.html` ~153) → dile göre örnek.
-- [ ] **3. Profil resmi ekleme / değiştirme / silme** (27 Eylül 2026, kullanıcı: "silme yok; nasıl
+- [x] **3. Profil resmi** — YAPILDI (27 Eylül 2026, kullanıcı onaylı plan): `_process_avatar` —
+  yalnız JPEG/PNG/WebP, ≤5 MB, ≤40 MP, Pillow verify; EXIF yönü uygulanır + EXIF/GPS atılır;
+  512×512 kare WebP (alfa korunur); ad `avatars/<id>-<rastgele>.webp`. Değiştirince/kaldırınca
+  eski dosya depodan silinir (kayıt başarılıysa). "Mevcut fotoğrafı kaldır" seçeneği;
+  önizleme + 5 MB istemci ön kontrolü; TR/EN/DE uyarılar. Güvenlik ek: arayüzde olmayan
+  `cover_image` doğrulamasız yükleme yolu KAPATILDI. 8 sunucu senaryosu + headless JS testi.
+  Mevcut avatarlar değişmedi. Eski not: (kullanıcı: "silme yok; nasıl
   olması gerekirse öyle olmalı"): mevcut akışı incele (yükleme doğrulaması — tür/boyut, eski
   dosyanın S3'ten silinmesi, önizleme, mevcut fotoğrafın gösterilmesi) + "Fotoğrafı kaldır"
   seçeneği ekle. Önce ölçüm + öneri, sonra uygulama.
