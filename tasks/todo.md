@@ -97,8 +97,8 @@ maddelerde.
   (masaüstü + mobil; /tarama/ hub'ı yerine doğrudan iki araç). Kalan çeviri: landing'lerde
   EN render'da görünür metnin ~2/3'ü TR (OpenAlex 27/41, S2 25/41) — kaynağı (view context /
   `tarama_console_base.html` / msgstr boş) ÖLÇÜLECEK; `order.html`'ler 0 etiket (~60 metin);
-  sonuç/iş durumu JS metinleri ve e-postalar da kontrol edilecek. Anasayfadaki sabit
-  `href="/openalex/"`'ler `{% url %}`'ye çevrilmeli (EN'de TR sayfaya gidiyor).
+  sonuç/iş durumu JS metinleri ve e-postalar da kontrol edilecek. (Anasayfadaki sabit
+  `href="/openalex/"`'ler artık yalnız TR'de render ediliyor — EN/DE sorunu kalmadı.)
 - [ ] **C grubu sayfaların EN/DE çevirisi** (26 Eylül 2026, kullanıcı: "sonraki projede
   lazım olacak, bibliometrik analizler gibi"): Bibliometrik Analiz, Tableau Analizleri,
   Akademik Tarama (/tarama/, OpenAlex, Semantic Scholar). DÜZELTME (26 Eylül 2026, ölçüldü):
@@ -425,10 +425,10 @@ maddelerde.
 - [x] Ön kontrol: çalışma ağacı temiz, 61/61 pytest, `makemigrations --check` temiz,
   `check --deploy` (DEBUG=False) yalnız W009 (yerel test anahtarı), main'de dev'de olmayan commit yok.
 - [x] main ← dev fast-forward + push: **c2b3aec** (30 commit). requirements.txt DEĞİŞMEDİ → build yok.
-- [ ] **Hetzner deploy (kullanıcı):** ÖNCE DB yedeği (0157 veri adımı geri alınamaz) →
+- [x] **Hetzner deploy** — YAPILDI (27 Eylül 2026 dışarıdan doğrulandı: EN/DE'de "Academic Search" menüsü var, Topluluk yok; TR'de Topluluk var; transcript linki yok). Eski adım notu: ÖNCE DB yedeği (0157 veri adımı geri alınamaz) →
   `git pull origin main` → `docker compose restart web && docker compose restart nginx`
   (deploy.sh açılışta migrate + collectstatic) → `showmigrations forum | tail -3` ile 0156/0157 [X].
-- [ ] Deploy sonrası doğrulama: kategori sayısı 37 / aktif 32; /en/ /de/ 200; /en/tarama/ yok;
+- [x] Deploy sonrası doğrulama (dışarıdan, 27 Eylül 2026): /, /en/, /de/ 200; market EN/DE kategori çipleri çevrili ("AI Modelling", "Thesis Consulting"…), TR'de 0157 yeniden adlandırma ve birleştirme görünüyor ("Yapay zekâ modelleme"). Sayı kontrolü (37/32) DB erişimi gerektirir — yapılmadı. Plan notu: kategori sayısı 37 / aktif 32; /en/ /de/ 200; /en/tarama/ yok;
   TR'de /tarama/ → EN seçince /en/'e gider; profil düzenleme sayfası yeni tasarım.
 
 **C. Canlıya alma (yalnızca kullanıcı "merge et" deyince)** — 25 Eylül 2026 ölçümü:
