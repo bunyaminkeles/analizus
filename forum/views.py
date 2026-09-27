@@ -13,7 +13,7 @@ from django.db import models
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Count, Sum, Q, Avg, Subquery, OuterRef, Max, Exists
 from django.contrib import messages
-from django.utils.translation import gettext, pgettext
+from django.utils.translation import gettext, ngettext, pgettext
 from django.utils import timezone, translation
 from django.utils.html import strip_tags
 from django.http import JsonResponse
@@ -2192,14 +2192,17 @@ def proje_talebi(request):
     recent_completed = []
     for job in recent_jobs_qs:
         days = max((job.updated_at - job.created_at).days, 1)
+        # Tam cümle + çoğul (parça birleştirme yok): "4 ayda tamamlandı" / "completed in 4 months"
         if days <= 7:
-            duration = f"{days} günde"
+            duration = ngettext('%(n)s günde tamamlandı', '%(n)s günde tamamlandı', days) % {'n': days}
         elif days <= 30:
-            duration = f"{days // 7} haftada"
+            weeks = days // 7
+            duration = ngettext('%(n)s haftada tamamlandı', '%(n)s haftada tamamlandı', weeks) % {'n': weeks}
         else:
-            duration = f"{days // 30} ayda"
+            months = days // 30
+            duration = ngettext('%(n)s ayda tamamlandı', '%(n)s ayda tamamlandı', months) % {'n': months}
         recent_completed.append({
-            'category': job.category.title if job.category else 'Veri Analizi',
+            'category': job.category.localized_title if job.category else gettext('Veri Analizi'),
             'duration': duration,
         })
 

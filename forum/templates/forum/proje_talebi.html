@@ -150,7 +150,7 @@
             </div>
             <div class="col-sm-6">
               <label class="form-label text-white-50 small">{% trans "E-posta" %} <span class="text-danger">*</span></label>
-              <input type="email" name="email" class="form-control" placeholder="ayse@sirket.com" required>
+              <input type="email" name="email" class="form-control" placeholder="{% trans "ayse@sirket.com" context "e-posta örneği" %}" required>
             </div>
           </div>
 
@@ -231,7 +231,7 @@
           {% for item in recent_completed %}
           <div class="d-flex align-items-center justify-content-between p-2 rounded-2" style="background:rgba(255,255,255,.04);">
             <span class="text-white-50 small">{{ item.category }}</span>
-            <span class="badge" style="background:rgba(34,197,94,.15);color:#4ade80;font-size:.72rem;">{% blocktrans with duration=item.duration %}{{ duration }} tamamlandı{% endblocktrans %}</span>
+            <span class="badge" style="background:rgba(34,197,94,.15);color:#4ade80;font-size:.72rem;">{{ item.duration }}</span>
           </div>
           {% endfor %}
         </div>

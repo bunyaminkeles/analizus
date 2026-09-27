@@ -99,7 +99,7 @@ maddelerde.
   TR Dizin, OAI-PMH gizli); `tarama_hub` view'daki araç başlık/açıklamaları çeviriye;
   EN/DE navbar "Academic Search" hub'a bağlanacak; yeni kazıma modülleri (PubMed, BASE)
   kart eklemeye hazır yapı.
-- [ ] **2. Proje talebi EN/DE'de kalan Türkçe ifadeler** (kullanıcı ekran görüntüsü, DE):
+- [x] **2. Proje talebi EN/DE'de kalan Türkçe ifadeler** — YAPILDI (27 Eylül 2026): kategori `localized_title` + 'Veri Analizi' çevirisi ("New Analysis" bulanık hatası düzeltildi → Data Analysis / Datenanalyse); süre tam cümle ngettext ("completed in 4 months" / "in 4 Monaten abgeschlossen"), şablondaki "{{ duration }} tamamlandı" parçası kaldırıldı; e-posta örneği dile göre (jane@company.com / maria@firma.de). 3 dilde 4 senaryo test. Eski not: (kullanıcı ekran görüntüsü, DE):
   (a) "Kürzlich abgeschlossene Analysen" listesinde kategori adları TR — `views.py` ~2202
   `job.category.title` → `localized_title`, varsayılan 'Veri Analizi' → gettext;
   (b) süre "abgeschlossen in 4 ayda" — `views.py` ~2196 f"{days} günde/haftada/ayda" TR

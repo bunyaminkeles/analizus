@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-27 14:02+0300\n"
+"POT-Creation-Date: 2026-09-27 14:05+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -267,7 +267,7 @@ msgid "Çaylak"
 msgstr "Neuling"
 
 #: forum/models.py:179 forum/templatetags/forum_extras.py:14
-#: forum/views.py:2502
+#: forum/views.py:2505
 msgctxt "rütbe"
 msgid "Üye"
 msgstr "Mitglied"
@@ -556,7 +556,7 @@ msgstr "16+ Personen"
 msgid "2 hafta içinde"
 msgstr "Innerhalb von 2 Wochen"
 
-#: forum/services/ai_service.py:264 forum/views.py:2575 forum/views.py:2648
+#: forum/services/ai_service.py:264 forum/views.py:2578 forum/views.py:2651
 msgid "AI servisi şu anda kullanılamıyor."
 msgstr "Der KI-Dienst ist derzeit nicht verfügbar."
 
@@ -614,8 +614,8 @@ msgstr "Viele Grüße,"
 
 #: forum/services/email_service.py:134
 #: forum/templates/forum/emails/support_payment_details.html:112
-#: forum/views.py:2165 forum/views.py:2172 forum/views.py:2333
-#: forum/views.py:2340
+#: forum/views.py:2165 forum/views.py:2172 forum/views.py:2336
+#: forum/views.py:2343
 msgid "Analizus Ekibi"
 msgstr "Ihr Analizus-Team"
 
@@ -2162,7 +2162,7 @@ msgid "Merhaba, eğitim talebi hakkında bilgi almak istiyorum."
 msgstr "Hallo, ich möchte Informationen zu einer Schulungsanfrage erhalten."
 
 #: forum/templates/forum/emails/support_payment_details.html:6
-#: forum/views.py:3392
+#: forum/views.py:3395
 msgid "Analizus Bağış İşlemi"
 msgstr "Analizus – Unterstützungszahlung"
 
@@ -4138,7 +4138,7 @@ msgstr "Scraping-Tools:"
 msgid "YÖK Tez Kazıma"
 msgstr "Thesis-Center-Scraping"
 
-#: forum/templates/forum/home.html:289 forum/views.py:4052
+#: forum/templates/forum/home.html:289 forum/views.py:4055
 #: openalex/templates/openalex/landing.html:155 templates/base.html:226
 #: templates/base.html:442
 msgid "Bibliometrik Analiz"
@@ -4207,7 +4207,7 @@ msgstr "Data Science"
 msgid "Editörlük"
 msgstr "Lektorat"
 
-#: forum/templates/forum/home.html:379 forum/views.py:4049
+#: forum/templates/forum/home.html:379 forum/views.py:4052
 msgid "Danışmanlık"
 msgstr "Beratung"
 
@@ -6068,6 +6068,11 @@ msgstr "Anfrageformular"
 msgid "Örn: Ayşe Kaya"
 msgstr "z. B. Maria Schmidt"
 
+#: forum/templates/forum/proje_talebi.html:153
+msgctxt "e-posta örneği"
+msgid "ayse@sirket.com"
+msgstr "maria@firma.de"
+
 #: forum/templates/forum/proje_talebi.html:160
 msgid "Kişi / Şirket / Kurum"
 msgstr "Person / Unternehmen / Institution"
@@ -6100,11 +6105,6 @@ msgstr ""
 #: forum/templates/forum/proje_talebi.html:228
 msgid "Son Tamamlanan Analizler"
 msgstr "Kürzlich abgeschlossene Analysen"
-
-#: forum/templates/forum/proje_talebi.html:234
-#, python-format
-msgid "%(duration)s tamamlandı"
-msgstr "abgeschlossen in %(duration)s"
 
 #: forum/templates/forum/proje_talebi.html:239
 msgid "Gizlilik gereği müşteri bilgileri gösterilmemektedir."
@@ -8247,12 +8247,12 @@ msgstr ""
 "Beim Senden Ihrer Nachricht ist ein Fehler aufgetreten. Bitte versuchen Sie "
 "es erneut."
 
-#: forum/views.py:2116 forum/views.py:2273
+#: forum/views.py:2116 forum/views.py:2276
 msgid "Lütfen zorunlu alanları doldurunuz."
 msgstr "Bitte füllen Sie die Pflichtfelder aus."
 
-#: forum/views.py:2159 forum/views.py:2171 forum/views.py:2326
-#: forum/views.py:2339
+#: forum/views.py:2159 forum/views.py:2171 forum/views.py:2329
+#: forum/views.py:2342
 #, python-format
 msgid "Sayın %(name)s,"
 msgstr "Sehr geehrte/r %(name)s,"
@@ -8265,7 +8265,7 @@ msgstr ""
 "Ihre Projektanfrage ist eingegangen. Wir melden uns schnellstmöglich bei "
 "Ihnen."
 
-#: forum/views.py:2161 forum/views.py:2328
+#: forum/views.py:2161 forum/views.py:2331
 msgid "Talep Özeti:"
 msgstr "Zusammenfassung der Anfrage:"
 
@@ -8299,15 +8299,40 @@ msgid "Talebiniz alındı! En kısa sürede size dönüş yapacağız."
 msgstr ""
 "Ihre Anfrage ist eingegangen! Wir melden uns schnellstmöglich bei Ihnen."
 
-#: forum/views.py:2177 forum/views.py:2345
+#: forum/views.py:2177 forum/views.py:2348
 msgid "Bir hata oluştu, lütfen tekrar deneyin."
 msgstr "Ein Fehler ist aufgetreten, bitte versuchen Sie es erneut."
 
-#: forum/views.py:2277
+#: forum/views.py:2197
+#, python-format
+msgid "%(n)s günde tamamlandı"
+msgid_plural "%(n)s günde tamamlandı"
+msgstr[0] "in %(n)s Tag abgeschlossen"
+msgstr[1] "in %(n)s Tagen abgeschlossen"
+
+#: forum/views.py:2200
+#, python-format
+msgid "%(n)s haftada tamamlandı"
+msgid_plural "%(n)s haftada tamamlandı"
+msgstr[0] "in %(n)s Woche abgeschlossen"
+msgstr[1] "in %(n)s Wochen abgeschlossen"
+
+#: forum/views.py:2203
+#, python-format
+msgid "%(n)s ayda tamamlandı"
+msgid_plural "%(n)s ayda tamamlandı"
+msgstr[0] "in %(n)s Monat abgeschlossen"
+msgstr[1] "in %(n)s Monaten abgeschlossen"
+
+#: forum/views.py:2205
+msgid "Veri Analizi"
+msgstr "Datenanalyse"
+
+#: forum/views.py:2280
 msgid "Devam etmek için KVKK Aydınlatma Metni onayı gereklidir."
 msgstr "Um fortzufahren, müssen Sie den KVKK-Datenschutzhinweis akzeptieren."
 
-#: forum/views.py:2327
+#: forum/views.py:2330
 msgid ""
 "Eğitim talebiniz başarıyla alındı. 24 saat içinde sizinle iletişime "
 "geçeceğiz."
@@ -8315,54 +8340,54 @@ msgstr ""
 "Ihre Schulungsanfrage ist eingegangen. Wir melden uns innerhalb von 24 "
 "Stunden bei Ihnen."
 
-#: forum/views.py:2329
+#: forum/views.py:2332
 #, python-format
 msgid "Talep Türü: %(value)s"
 msgstr "Art der Anfrage: %(value)s"
 
-#: forum/views.py:2330
+#: forum/views.py:2333
 #, python-format
 msgid "Konu: %(value)s"
 msgstr "Thema: %(value)s"
 
-#: forum/views.py:2331
+#: forum/views.py:2334
 #, python-format
 msgid "Seviye: %(value)s"
 msgstr "Niveau: %(value)s"
 
-#: forum/views.py:2332
+#: forum/views.py:2335
 #, python-format
 msgid "Format: %(value)s"
 msgstr "Format: %(value)s"
 
-#: forum/views.py:2337
+#: forum/views.py:2340
 msgid "Eğitim talebiniz alındı — Analizus"
 msgstr "Ihre Schulungsanfrage ist eingegangen — Analizus"
 
-#: forum/views.py:2340
+#: forum/views.py:2343
 msgid "Eğitim talebiniz alındı. 24 saat içinde sizinle iletişime geçeceğiz."
 msgstr ""
 "Ihre Schulungsanfrage ist eingegangen. Wir melden uns innerhalb von 24 "
 "Stunden bei Ihnen."
 
-#: forum/views.py:2343
+#: forum/views.py:2346
 msgid "Talebiniz alındı! 24 saat içinde size dönüş yapacağız."
 msgstr ""
 "Ihre Anfrage ist eingegangen! Wir melden uns innerhalb von 24 Stunden bei "
 "Ihnen."
 
-#: forum/views.py:2564
+#: forum/views.py:2567
 msgid "Lütfen bir soru girin."
 msgstr "Bitte geben Sie eine Frage ein."
 
-#: forum/views.py:2569
+#: forum/views.py:2572
 #, python-format
 msgid "Günlük %(limit)s soru limitinizi doldurdunuz. Yarın tekrar deneyin."
 msgstr ""
 "Sie haben Ihr Tageslimit von %(limit)s Fragen erreicht. Bitte versuchen Sie "
 "es morgen erneut."
 
-#: forum/views.py:2571
+#: forum/views.py:2574
 #, python-format
 msgid ""
 "Günlük anonim limit (%(limit)s soru) doldu. Üye olarak 30 soruya kadar "
@@ -8371,136 +8396,136 @@ msgstr ""
 "Das tägliche anonyme Limit (%(limit)s Fragen) ist erreicht. Mit einem Konto "
 "können Sie bis zu 30 Fragen stellen."
 
-#: forum/views.py:2601
+#: forum/views.py:2604
 msgid "Geçersiz istek."
 msgstr "Ungültige Anfrage."
 
-#: forum/views.py:2617
+#: forum/views.py:2620
 msgid "Mesaj boş olamaz."
 msgstr "Die Nachricht darf nicht leer sein."
 
-#: forum/views.py:2620
+#: forum/views.py:2623
 msgid "Mesaj çok uzun (max 2000 karakter)."
 msgstr "Die Nachricht ist zu lang (max. 2000 Zeichen)."
 
-#: forum/views.py:2641
+#: forum/views.py:2644
 #, python-format
 msgid "Günlük %(limit)s soru limitine ulaştınız."
 msgstr "Sie haben Ihr Tageslimit von %(limit)s Fragen erreicht."
 
-#: forum/views.py:2694 forum/views.py:2764
+#: forum/views.py:2697 forum/views.py:2767
 msgid "E-posta adresiniz zaten doğrulanmış."
 msgstr "Ihre E-Mail-Adresse wurde bereits bestätigt."
 
-#: forum/views.py:2707
+#: forum/views.py:2710
 msgid "Geçersiz doğrulama linki."
 msgstr "Ungültiger Bestätigungslink."
 
-#: forum/views.py:2711
+#: forum/views.py:2714
 msgid "Bu doğrulama linki süresi dolmuş veya daha önce kullanılmış."
 msgstr "Dieser Bestätigungslink ist abgelaufen oder wurde bereits verwendet."
 
-#: forum/views.py:2742
+#: forum/views.py:2745
 msgid "E-posta adresiniz başarıyla doğrulandı! Hoş geldiniz."
 msgstr "Ihre E-Mail-Adresse wurde bestätigt. Willkommen!"
 
-#: forum/views.py:2772
+#: forum/views.py:2775
 msgid ""
 "Doğrulama e-postası tekrar gönderildi. Lütfen e-posta kutunuzu kontrol edin."
 msgstr ""
 "Die Bestätigungs-E-Mail wurde erneut gesendet. Bitte prüfen Sie Ihr "
 "Postfach."
 
-#: forum/views.py:2774
+#: forum/views.py:2777
 msgid "E-posta gönderilemedi. Lütfen daha sonra tekrar deneyin."
 msgstr ""
 "Die E-Mail konnte nicht gesendet werden. Bitte versuchen Sie es später "
 "erneut."
 
-#: forum/views.py:4042
+#: forum/views.py:4045
 msgid "Hoş geldiniz!"
 msgstr "Willkommen!"
 
-#: forum/views.py:4047
+#: forum/views.py:4050
 msgid "İstatistik Analizi"
 msgstr "Statistische Analyse"
 
-#: forum/views.py:4047
+#: forum/views.py:4050
 msgid "SPSS, R, Python, AMOS, SmartPLS ile profesyonel istatistik analizleri"
 msgstr ""
 "Professionelle statistische Analysen mit SPSS, R, Python, AMOS und SmartPLS"
 
-#: forum/views.py:4048
+#: forum/views.py:4051
 msgid "Veri Kazıma & Toplama"
 msgstr "Datenextraktion & -erhebung"
 
-#: forum/views.py:4048
+#: forum/views.py:4051
 msgid "Anket, web ve akademik veritabanlarından veri toplama desteği"
 msgstr ""
 "Unterstützung bei der Datenerhebung aus Umfragen, dem Web und "
 "wissenschaftlichen Datenbanken"
 
-#: forum/views.py:4049
+#: forum/views.py:4052
 msgid ""
 "Alanında uzman akademisyen ve danışmanlarla Pazaryeri üzerinden eşleşin"
 msgstr ""
 "Finden Sie über den Marktplatz passende Fachleute aus Wissenschaft und "
 "Beratung"
 
-#: forum/views.py:4050
+#: forum/views.py:4053
 msgid "Proje Desteği"
 msgstr "Projektunterstützung"
 
-#: forum/views.py:4050
+#: forum/views.py:4053
 msgid "Tez, makale ve kurumsal projeleriniz için uçtan uca destek"
 msgstr ""
 "Durchgängige Unterstützung für Abschlussarbeiten, Artikel und "
 "Unternehmensprojekte"
 
-#: forum/views.py:4051
+#: forum/views.py:4054
 msgid "Akademik Destek"
 msgstr "Akademische Unterstützung"
 
-#: forum/views.py:4051
+#: forum/views.py:4054
 msgid "Tez ve makale yazım sürecinde yöntem ve rehberlik desteği"
 msgstr ""
 "Methodische Begleitung beim Verfassen von Abschlussarbeiten und Artikeln"
 
-#: forum/views.py:4052
+#: forum/views.py:4055
 msgid "Atıf ve yayın verileriyle bibliometrik analiz yaptırın"
 msgstr ""
 "Lassen Sie bibliometrische Analysen auf Basis von Zitations- und "
 "Publikationsdaten erstellen"
 
-#: forum/views.py:4053
+#: forum/views.py:4056
 msgid "Literatür / Akademik Tarama"
 msgstr "Literatur- / wissenschaftliche Recherche"
 
-#: forum/views.py:4053
+#: forum/views.py:4056
 msgid "YÖK Tez, TR Dizin ve uluslararası veritabanlarında tarama"
 msgstr "Recherchen in YÖK Tez, TR Dizin und internationalen Datenbanken"
 
-#: forum/views.py:4054
+#: forum/views.py:4057
 msgid "Forumda Soru-Cevap"
 msgstr "Fragen & Antworten im Forum"
 
-#: forum/views.py:4054
+#: forum/views.py:4057
 msgid "Merak ettiklerinizi sorun, bilgi birikiminizi toplulukla paylaşın"
 msgstr "Stellen Sie Ihre Fragen und teilen Sie Ihr Wissen mit der Community"
 
-#: forum/views.py:4056
+#: forum/views.py:4059
 msgid "AI Araçları"
 msgstr "KI-Tools"
 
-#: forum/views.py:4056
+#: forum/views.py:4059
 msgid "Akademik Danışmanlık"
 msgstr "Wissenschaftliche Beratung"
 
-#: forum/views.py:4095
+#: forum/views.py:4098
 msgid "YÖK Tez Kazıma ve İndirme Aracı"
 msgstr "YÖK-Thesen: Scraping- und Download-Tool"
 
-#: forum/views.py:4096
+#: forum/views.py:4099
 msgid ""
 "Anahtar kelime, yazar veya danışmanla arama yapın; tez verilerini Excel veya"
 " TXT olarak indirin."
@@ -8508,11 +8533,11 @@ msgstr ""
 "Nach Stichwort, Autor/in oder Betreuer/in suchen und Thesendaten als Excel "
 "oder TXT herunterladen."
 
-#: forum/views.py:4104
+#: forum/views.py:4107
 msgid "OpenAlex Yayın Kazıma"
 msgstr "OpenAlex-Publikations-Scraping"
 
-#: forum/views.py:4105
+#: forum/views.py:4108
 msgid ""
 "240 milyondan fazla akademik yayından kodsuz veri kazıma. Başlık, yazar, "
 "kurum ve atıf bilgileri."
@@ -8520,11 +8545,11 @@ msgstr ""
 "Datenerfassung ohne Code aus über 240 Millionen wissenschaftlichen "
 "Publikationen. Titel, Autor/innen, Institutionen und Zitationsdaten."
 
-#: forum/views.py:4113
+#: forum/views.py:4116
 msgid "TR Dizin Makale Kazıma"
 msgstr "TR-Dizin-Artikel-Scraping"
 
-#: forum/views.py:4114
+#: forum/views.py:4117
 msgid ""
 "TR Dizin'den anahtar kelime ile makale arayın; yazarları, dergileri ve atıf "
 "bilgilerini indirin."
@@ -8532,12 +8557,12 @@ msgstr ""
 "Artikel in TR Dizin per Stichwort suchen und Autor/innen, Zeitschriften und "
 "Zitationsdaten herunterladen."
 
-#: forum/views.py:4122
+#: forum/views.py:4125
 #: semanticscholar/templates/semanticscholar/landing.html:26
 msgid "Semantic Scholar Yayın Kazıma"
 msgstr "Semantic-Scholar-Publikations-Scraping"
 
-#: forum/views.py:4123
+#: forum/views.py:4126
 msgid ""
 "200 milyondan fazla akademik yayın arasında kodsuz arama yapın. WoS, Scopus "
 "ve arXiv dahil tüm büyük veri tabanlarını kapsar."
@@ -8545,11 +8570,11 @@ msgstr ""
 "Durchsuchen Sie über 200 Millionen wissenschaftliche Publikationen ohne "
 "Code. Umfasst alle großen Datenbanken, einschließlich WoS, Scopus und arXiv."
 
-#: forum/views.py:4131
+#: forum/views.py:4134
 msgid "Üniversite Tez Arşivi"
 msgstr "Universitäts-Thesenarchiv"
 
-#: forum/views.py:4132
+#: forum/views.py:4135
 msgid ""
 "19 Türk üniversitesinin açık erişim arşivinde anahtar kelime ile tez ve "
 "makale arayın."
