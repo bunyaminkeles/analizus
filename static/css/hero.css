@@ -437,7 +437,14 @@
     gap: var(--ax-space-2);
     margin-bottom: var(--ax-space-5);
 }
-.ax-hero__primary-cta .ax-btn { width: 100%; max-width: 360px; }
+/* Genişlik metne göre (DE metni uzun: 360px'e sığmıyordu); dar ekranda satır kırabilir */
+.ax-hero__primary-cta .ax-btn {
+    width: auto;
+    min-width: min(100%, 320px);
+    max-width: 100%;
+    white-space: normal;
+    text-align: center;
+}
 .ax-hero__primary-cta-note {
     margin: 0;
     font-size: var(--ax-text-sm);

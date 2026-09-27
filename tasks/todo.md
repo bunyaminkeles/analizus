@@ -515,8 +515,11 @@ maddelerde.
 - [x] Ön kontrol: 61/61, makemigrations temiz, DEBUG=False collectstatic hatasız, requirements değişmedi.
 - [x] main ← dev fast-forward + push (5 commit: proje talebi Aşama 1+2). Migration **0158** (dil alanı)
   + **0159** (choices, SQL no-op).
-- [ ] Hetzner deploy: `cd /app && git pull origin main && docker compose restart web && docker compose restart nginx`
-  → `docker compose exec web python manage.py showmigrations forum | tail -3` (0158/0159 [X]).
+- [x] Hetzner deploy — YAPILDI (27 Eylül 2026; kod çekimi + web restart kullanıcı, doğrulama Claude): sunucu
+  dae62f0, 0158/0159 [X], /, /en/, /de/, proje talebi, /de/tarama/, /market/ 200. nginx yeniden başlatılmadı
+  (site sorunsuz; restart almanyalirehber'i de etkiler).
+- [ ] **DE hero butonu taşıyordu** (kullanıcı ekran görüntüsü) — dev'de düzeltildi (hero.css: genişlik metne göre,
+  satır kırabilir; ölçüm 451/451), merge + deploy bekliyor.
 
 **C000. DÖRDÜNCÜ MERGE (hotfix) — 27 Eylül 2026 (kullanıcı: "et")**
 - [x] main ← dev fast-forward + push: **9203f3d** — STORAGES ile hash'li statik (kalıcı önbellek
