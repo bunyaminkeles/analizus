@@ -9,6 +9,9 @@ import logging
 from django.core.mail import EmailMessage
 from django.conf import settings
 from django.db import close_old_connections
+from django.utils.translation import gettext
+
+from forum.i18n_utils import recipient_language
 
 logger = logging.getLogger(__name__)
 
@@ -16,8 +19,28 @@ logger = logging.getLogger(__name__)
 _pending_file_contents: dict = {}
 
 
+def _in_user_language(job_id: str, body) -> None:
+    """Worker thread'i dili bilmez → iş, başlatan kullanıcının dil tercihiyle
+    (Profile.preferred_language) çalışır: PDF rapor, hata mesajları ve e-postalar o dilde.
+    Sunucu yeniden başlasa da kaybolmaz (dil profilde)."""
+    from bibliometrics.models import BibliometricJob
+    job = BibliometricJob.objects.select_related('user__profile').filter(id=job_id).first()
+    with recipient_language(getattr(job, 'user', None)):
+        body(job_id)
+
+
 def _execute_job(job_id: str) -> None:
-    """Global kuyruk worker'ı tarafından çağrılır — upload tipi analiz, senkron."""
+    """Global kuyruk worker'ı — upload tipi analiz (kullanıcının dilinde)."""
+    _in_user_language(job_id, _execute_job_body)
+
+
+def _execute_job_openalex(job_id: str) -> None:
+    """Global kuyruk worker'ı — OpenAlex tipi analiz (kullanıcının dilinde)."""
+    _in_user_language(job_id, _execute_job_openalex_body)
+
+
+def _execute_job_body(job_id: str) -> None:
+    """Upload tipi analiz, senkron."""
     from bibliometrics.models import BibliometricJob
     from bibliometrics.services.parser import parse_file, _deduplicate_and_filter
     from bibliometrics.services.analyzer import run_all_analyses
@@ -31,7 +54,7 @@ def _execute_job(job_id: str) -> None:
         job = BibliometricJob.objects.get(id=job_id)
 
         if file_content is None:
-            job.mark_failed('Dosya içeriği bulunamadı. Lütfen dosyayı tekrar yükleyin.')
+            job.mark_failed(gettext('Dosya içeriği bulunamadı. Lütfen dosyayı tekrar yükleyin.'))
             return
 
         job.mark_running()
@@ -47,12 +70,12 @@ def _execute_job(job_id: str) -> None:
         records = _deduplicate_and_filter(all_records) if len(contents) > 1 else all_records
 
         if not records:
-            job.mark_failed('Dosyadan kayıt okunamadı. Format desteklenmiyor olabilir.')
+            job.mark_failed(gettext('Dosyadan kayıt okunamadı. Format desteklenmiyor olabilir.'))
             return
 
         figures = run_all_analyses(records)
         if not figures:
-            job.mark_failed('Analizler üretilemedi. Veri yetersiz olabilir.')
+            job.mark_failed(gettext('Analizler üretilemedi. Veri yetersiz olabilir.'))
             return
 
         demo_pdf_bytes = build_demo_pdf(figures[:3], total_records=len(records), filename=job.original_filename)
@@ -87,8 +110,8 @@ def _execute_job(job_id: str) -> None:
             pass
 
 
-def _execute_job_openalex(job_id: str) -> None:
-    """Global kuyruk worker'ı tarafından çağrılır — OpenAlex tipi analiz, senkron."""
+def _execute_job_openalex_body(job_id: str) -> None:
+    """OpenAlex tipi analiz, senkron."""
     close_old_connections()
     from bibliometrics.models import BibliometricJob
     from bibliometrics.services.parser import parse_openalex_json
@@ -102,21 +125,21 @@ def _execute_job_openalex(job_id: str) -> None:
 
         alex_job = job.alex_job
         if not alex_job or not alex_job.all_results:
-            job.mark_failed('OpenAlex verisi bulunamadı veya boş.')
+            job.mark_failed(gettext('OpenAlex verisi bulunamadı veya boş.'))
             return
 
         records = parse_openalex_json(alex_job.all_results)
         if not records:
-            job.mark_failed('OpenAlex verisinden kayıt okunamadı.')
+            job.mark_failed(gettext('OpenAlex verisinden kayıt okunamadı.'))
             return
 
         if len(records) < 100:
-            job.mark_failed(f'Bibliometrik analiz için en az 100 kayıt gereklidir (bulunan: {len(records)}).')
+            job.mark_failed(gettext('Bibliometrik analiz için en az 100 kayıt gereklidir (bulunan: {count}).').format(count=len(records)))
             return
 
         figures = run_all_analyses(records)
         if not figures:
-            job.mark_failed('Analizler üretilemedi. Veri yetersiz olabilir.')
+            job.mark_failed(gettext('Analizler üretilemedi. Veri yetersiz olabilir.'))
             return
 
         demo_pdf_bytes = build_demo_pdf(figures[:3], total_records=len(records), filename=job.original_filename)
@@ -164,6 +187,42 @@ def run_bibliometric_job_from_openalex(job_id: str) -> None:
     enqueue('bibliometrics_openalex', job_id)
 
 
+def _full_report_lines(site_url: str, job) -> list:
+    """E-postalardaki "TAM RAPOR" bölümü — aktif dilde (recipient_language içinde çağrılır).
+    TR: sipariş sayfası (Türk IBAN / TL). EN/DE: sipariş yok → proje talebi (kullanıcı kararı
+    27 Eylül 2026)."""
+    from django.urls import reverse
+    from django.utils.translation import get_language
+    lines = [
+        '─' * 37,
+        gettext('TAM RAPOR (15 Analiz)'),
+        '─' * 37,
+        '  • ' + gettext('Yayın Trendi + Büyüme Oranı'),
+        '  • ' + gettext('En Verimli Yazarlar + Lotka Kanunu'),
+        '  • ' + gettext('Anahtar Kelime Bulutu + Eş-Oluşum Ağı'),
+        '  • ' + gettext('Anahtar Kelime Zaman Trendi'),
+        '  • ' + gettext('En Çok Atıf Alan Yayınlar'),
+        '  • ' + gettext('En Çok Yayın Yapılan Dergiler'),
+        '  • ' + gettext('Kurum / Ülke Dağılımı + İşbirliği Ağı'),
+        '  • ' + gettext('Yazar İşbirliği Ağı'),
+        '  • ' + gettext('Yayın Türleri + Atıf Analizi + H-index'),
+        '  • ' + gettext('Yıllık Atıf Trendi') + '\n',
+    ]
+    if (get_language() or 'tr')[:2] == 'tr':
+        lines += [gettext('Sipariş oluşturmak için:'), f'  {site_url}/bibliometrics/siparis/{job.id}/\n']
+    else:
+        lines += [gettext('Tam rapor için proje talebi bırakın, ücretsiz değerlendirelim:'),
+                  f"  {site_url}{reverse('proje_talebi')}?source=bibliometrics\n"]
+    return lines
+
+
+def _source_sentence(job) -> str:
+    """OpenAlex kaynaklı işte kullanıcı dosya yüklemedi — cümle kaynağa göre."""
+    if getattr(job, 'source', '') == 'openalex':
+        return gettext('"{name}" OpenAlex aramanız başarıyla analiz edildi.').format(name=job.original_filename)
+    return gettext('Yüklediğiniz "{name}" dosyası başarıyla analiz edildi.').format(name=job.original_filename)
+
+
 def send_demo_email_async(job_id: str, demo_pdf_bytes: bytes = None) -> None:
     """Demo PDF emailini arka planda gönder."""
 
@@ -184,32 +243,20 @@ def send_demo_email_async(job_id: str, demo_pdf_bytes: bytes = None) -> None:
                 logger.warning(f'[bibliometrics_email] Demo PDF bytes yok, email gönderilemiyor: {job_id}')
                 return
 
-            subject = f'Bibliometrik Analiz - Demo Rapor'
-            body_lines = [
-                f'Merhaba {user.first_name or user.username},\n',
-                f'Yüklediğiniz "{job.original_filename}" dosyası başarıyla analiz edildi.\n',
-                f'Toplam Kayıt: {job.total_records}',
-                f'Dosya Formatı: {job.get_file_format_display()}\n',
-                f'Demo raporunuz (3 temel analiz) ekte PDF olarak sunulmuştur.\n',
-                f'─────────────────────────────────────',
-                f'TAM RAPOR (15 Analiz)',
-                f'─────────────────────────────────────',
-                f'  • Yayın Trendi + Büyüme Oranı',
-                f'  • En Verimli Yazarlar + Lotka Kanunu',
-                f'  • Anahtar Kelime Bulutu + Eş-Oluşum Ağı',
-                f'  • Anahtar Kelime Zaman Trendi',
-                f'  • En Çok Atıf Alan Yayınlar',
-                f'  • En Çok Yayın Yapılan Dergiler',
-                f'  • Kurum / Ülke Dağılımı + İşbirliği Ağı',
-                f'  • Yazar İşbirliği Ağı',
-                f'  • Yayın Türleri + Atıf Analizi + H-index',
-                f'  • Yıllık Atıf Trendi\n',
-                f'Sipariş oluşturmak için:',
-                f'  {site_url}/bibliometrics/siparis/{job.id}/\n',
-                f'---',
-                f'Bu bir otomatik bildirimdir.',
-                f'Analizus - Akademik Veri Üssü',
-            ]
+            with recipient_language(user):
+                subject = gettext('Bibliometrik Analiz - Demo Rapor')
+                body_lines = [
+                    gettext('Merhaba {name},').format(name=user.first_name or user.username) + '\n',
+                    _source_sentence(job) + '\n',
+                    gettext('Toplam Kayıt: {count}').format(count=job.total_records),
+                    *([gettext('Dosya Formatı: {fmt}').format(fmt=job.get_file_format_display())] if job.source != 'openalex' else []),
+                    '',
+                    gettext('Demo raporunuz (3 temel analiz) ekte PDF olarak sunulmuştur.') + '\n',
+                    *_full_report_lines(site_url, job),
+                    '---',
+                    gettext('Bu bir otomatik bildirimdir.'),
+                    gettext('Analizus - Akademik Veri Üssü'),
+                ]
 
             email = EmailMessage(
                 subject=subject,
@@ -218,7 +265,7 @@ def send_demo_email_async(job_id: str, demo_pdf_bytes: bytes = None) -> None:
                 to=[user.email],
             )
             email.attach(
-                f'bibliometrik_demo_{job.original_filename}.pdf',
+                f'bibliometric_demo_{job.id}.pdf',
                 pdf_bytes,
                 'application/pdf',
             )
@@ -248,44 +295,24 @@ def send_demo_email_via_url(job_id: str) -> None:
             user = job.user
             site_url = getattr(settings, 'SITE_URL', 'https://analizus.com')
 
-            from bibliometrics.models import BibliometricOrder
-            price = BibliometricOrder.calculate_price(job.total_records)
-            order_url = f'{site_url}/bibliometrics/siparis/{job.id}/'
-
-            subject = 'Bibliometrik Analiz - Demo Raporunuz Hazir'
-            body_lines = [
-                f'Merhaba {user.first_name or user.username},',
-                '',
-                f'"{job.original_filename}" dosyaniz basariyla analiz edildi.',
-                '',
-                f'Toplam Kayit : {job.total_records}',
-                f'Format       : {job.get_file_format_display()}',
-                '',
-                'Demo raporunuzu (3 analiz iceren PDF) asagidaki linkten indirebilirsiniz:',
-                job.demo_pdf_url,
-                '',
-                'Not: Indirme linki 3 gun gecerlidir.',
-                '',
-                '===========================================',
-                f'TAM RAPOR (15 Analiz) - {price} TL',
-                '===========================================',
-                '  - Yayin Trendi + Buyume Orani',
-                '  - En Verimli Yazarlar + Lotka Kanunu',
-                '  - Anahtar Kelime Bulutu + Es-Olusum Agi',
-                '  - Anahtar Kelime Zaman Trendi',
-                '  - En Cok Atif Alan Yayinlar',
-                '  - En Cok Yayin Yapilan Dergiler',
-                '  - Kurum/Ulke Dagilimi + Isbirligi Agi',
-                '  - Yazar Isbirligi Agi',
-                '  - Yayin Turleri + Atif Analizi + H-index',
-                '  - Yillik Atif Trendi',
-                '',
-                'Siparis olusturmak icin:',
-                order_url,
-                '',
-                '---',
-                'Analizus - Akademik Veri Ustu | analizus.com',
-            ]
+            with recipient_language(user):
+                subject = gettext('Bibliometrik Analiz - Demo Raporunuz Hazır')
+                body_lines = [
+                    gettext('Merhaba {name},').format(name=user.first_name or user.username),
+                    '',
+                    _source_sentence(job),
+                    '',
+                    gettext('Toplam Kayıt: {count}').format(count=job.total_records),
+                    '',
+                    gettext('Demo raporunuzu (3 analiz içeren PDF) aşağıdaki bağlantıdan indirebilirsiniz:'),
+                    job.demo_pdf_url,
+                    '',
+                    gettext('Not: İndirme bağlantısı 3 gün geçerlidir.'),
+                    '',
+                    *_full_report_lines(site_url, job),
+                    '---',
+                    gettext('Analizus - Akademik Veri Üssü') + ' | analizus.com',
+                ]
 
             email = EmailMessage(
                 subject=subject,
@@ -327,21 +354,22 @@ def send_order_results_email(order_id: str) -> bool:
 
         # S3 URL'si varsa email body'ye yaz, PDF'i attachment olarak ekleyemeyiz (binary büyük olabilir)
         # Bunun yerine S3 URL'si veririz
-        subject = f'Bibliometrik Analiz - Tam Rapor Hazır!'
-        body_lines = [
-            f'Merhaba {user.first_name or user.username},\n',
-            f'Bibliometrik analiz siparişiniz onaylandı ve tam raporunuz hazırlandı.\n',
-            f'Sipariş No: #{str(order.id)[:8]}',
-            f'Dosya: {job.original_filename}',
-            f'Toplam Kayıt: {job.total_records}',
-            f'Ödenen Tutar: {order.total_price} TL\n',
-            f'Tam raporunuzu (15 analiz içeren PDF) aşağıdaki linkten indirebilirsiniz:',
-            f'  {job.full_pdf_url}\n',
-            f'Not: İndirme linki 3 gün geçerlidir.\n',
-            f'---',
-            f'Bu bir otomatik bildirimdir.',
-            f'Analizus - Akademik Veri Üssü',
-        ]
+        with recipient_language(user):
+            subject = gettext('Bibliometrik Analiz - Tam Rapor Hazır!')
+            body_lines = [
+                gettext('Merhaba {name},').format(name=user.first_name or user.username) + '\n',
+                gettext('Bibliometrik analiz siparişiniz onaylandı ve tam raporunuz hazırlandı.') + '\n',
+                gettext('Sipariş No: #{number}').format(number=str(order.id)[:8]),
+                gettext('Kaynak: {name}').format(name=job.original_filename),
+                gettext('Toplam Kayıt: {count}').format(count=job.total_records),
+                gettext('Ödenen Tutar: {amount} TL').format(amount=order.total_price) + '\n',
+                gettext('Tam raporunuzu (15 analiz içeren PDF) aşağıdaki bağlantıdan indirebilirsiniz:'),
+                f'  {job.full_pdf_url}\n',
+                gettext('Not: İndirme bağlantısı 3 gün geçerlidir.') + '\n',
+                '---',
+                gettext('Bu bir otomatik bildirimdir.'),
+                gettext('Analizus - Akademik Veri Üssü'),
+            ]
 
         email_msg = EmailMessage(
             subject=subject,

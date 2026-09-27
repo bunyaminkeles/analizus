@@ -153,7 +153,7 @@
     <div class="col-md-4">
       <div class="p-3 rounded h-100" style="background:rgba(99,102,241,0.07);border:1px solid rgba(99,102,241,0.15);">
         <h3 class="text-white fw-semibold mb-2" style="font-size:.9rem;"><i class="bi bi-bar-chart-line me-2" style="color:#818cf8;"></i>{% trans "Bibliometrik Analiz" %}</h3>
-        <p class="text-secondary mb-0" style="font-size:.8rem;line-height:1.6;">{% blocktrans %}100+ sonuçta <a href="/bibliometrics/" class="text-decoration-none" style="color:#a5b4fc;">Bibliometrik Analiz</a> aracına aktararak atıf ve ağ haritası oluşturun.{% endblocktrans %}</p>
+        <p class="text-secondary mb-0" style="font-size:.8rem;line-height:1.6;">{% url 'bibliometrics:landing' as biblio_url %}{% blocktrans %}100+ sonuçta <a href="{{ biblio_url }}" class="text-decoration-none" style="color:#a5b4fc;">Bibliometrik Analiz</a> aracına aktararak atıf ve ağ haritası oluşturun.{% endblocktrans %}</p>
       </div>
     </div>
   </div>
@@ -528,7 +528,7 @@ document.addEventListener('DOMContentLoaded', function() {
             biblioBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> {% trans "Başlatılıyor..." %}';
             biblioStatus.innerHTML = '';
 
-            fetch(`/bibliometrics/from-openalex/${currentJobId}/`, {
+            fetch("{% url 'bibliometrics:from_openalex' '00000000-0000-0000-0000-000000000000' %}".replace('00000000-0000-0000-0000-000000000000', currentJobId), {
                 method: 'POST',
                 headers: {
                     'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
@@ -542,7 +542,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     biblioStatus.innerHTML = `
                         <div class="alert alert-success mt-2 mb-0 py-2">
                             {% trans "Bibliometrik analiz kuyruğa alındı. Demo rapor (3 grafik PDF) hazır olduğunda e-postanıza gönderilecek." %}
-                            <br><a href="/bibliometrics/" class="alert-link">{% trans "Bibliometrik analizlerim" %} &rarr;</a>
+                            <br><a href="{% url 'bibliometrics:landing' %}" class="alert-link">{% trans "Bibliometrik analizlerim" %} &rarr;</a>
                         </div>`;
                 } else if (data.status === 'exists') {
                     biblioBtn.disabled = false;
@@ -550,7 +550,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     biblioStatus.innerHTML = `
                         <div class="alert alert-info mt-2 mb-0 py-2">
                             {% trans "Bu arama için zaten bir analiz mevcut." %}
-                            <a href="/bibliometrics/" class="alert-link">{% trans "Görüntüle" %} &rarr;</a>
+                            <a href="{% url 'bibliometrics:landing' %}" class="alert-link">{% trans "Görüntüle" %} &rarr;</a>
                         </div>`;
                 } else {
                     throw new Error(data.error || '{% trans "Bilinmeyen hata" %}');

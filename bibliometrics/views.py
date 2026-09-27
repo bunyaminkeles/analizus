@@ -6,6 +6,7 @@ from django.http import JsonResponse, Http404
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.http import require_POST, require_GET
 from django.contrib import messages
+from django.utils.translation import gettext
 from django_ratelimit.decorators import ratelimit
 
 from .forms import BibliometricUploadForm, BibliometricOrderForm
@@ -34,32 +35,32 @@ def feature_required(flag_name):
 def bibliometrics_landing(request):
     if not request.user.is_authenticated:
         return render(request, 'service_promo.html', {
-            'promo_title': 'Bibliometrik Analiz',
+            'promo_title': gettext('Bibliometrik Analiz'),
             'promo_icon': 'bi-bar-chart-line-fill',
             'promo_color': 'info',
             'promo_cta_source': 'bibliometrics',
             'promo_openalex_bridge': True,
-            'promo_description': 'WoS, Scopus veya BibTeX dosyanızı yükleyin — yıllara göre yayın trendi, en çok atıf alan yazarlar, işbirliği ağı ve daha fazlası için 10 grafik içeren PDF rapor alın.',
+            'promo_description': gettext('WoS, Scopus veya BibTeX dosyanızı yükleyin — yıllara göre yayın trendi, en çok atıf alan yazarlar, işbirliği ağı ve daha fazlası için 10 grafik içeren PDF rapor alın.'),
             'promo_features': [
-                {'icon': 'bi-graph-up-arrow', 'title': 'Yayın Trendi', 'desc': 'Yıllar içinde yayın sayısı ve büyüme oranını grafikle görün.'},
-                {'icon': 'bi-people-fill', 'title': 'Yazar Analizi', 'desc': 'En verimli yazarlar, işbirliği ağı ve Lotka kanunu dağılımı.'},
-                {'icon': 'bi-cloud-fill', 'title': 'Kelime Bulutu', 'desc': 'Alanınızdaki öne çıkan anahtar kelimeleri görselleştirin.'},
-                {'icon': 'bi-award-fill', 'title': 'Atıf & H-index', 'desc': 'En çok atıf alan yayınlar, yıllık atıf trendi ve h-index hesabı.'},
-                {'icon': 'bi-building', 'title': 'Kurum & Ülke', 'desc': 'Araştırma üretiminde öne çıkan kurumlar ve ülkeler.'},
-                {'icon': 'bi-filetype-pdf', 'title': 'PDF Rapor', 'desc': 'Tüm analizler tek bir profesyonel PDF raporunda birleştirilir.'},
+                {'icon': 'bi-graph-up-arrow', 'title': gettext('Yayın Trendi'), 'desc': gettext('Yıllar içinde yayın sayısı ve büyüme oranını grafikle görün.')},
+                {'icon': 'bi-people-fill', 'title': gettext('Yazar Analizi'), 'desc': gettext('En verimli yazarlar, işbirliği ağı ve Lotka kanunu dağılımı.')},
+                {'icon': 'bi-cloud-fill', 'title': gettext('Kelime Bulutu'), 'desc': gettext('Alanınızdaki öne çıkan anahtar kelimeleri görselleştirin.')},
+                {'icon': 'bi-award-fill', 'title': gettext('Atıf & H-index'), 'desc': gettext('En çok atıf alan yayınlar, yıllık atıf trendi ve h-index hesabı.')},
+                {'icon': 'bi-building', 'title': gettext('Kurum & Ülke'), 'desc': gettext('Araştırma üretiminde öne çıkan kurumlar ve ülkeler.')},
+                {'icon': 'bi-filetype-pdf', 'title': gettext('PDF Rapor'), 'desc': gettext('Tüm analizler tek bir profesyonel PDF raporunda birleştirilir.')},
             ],
             'promo_steps': [
-                'WoS, Scopus, BibTeX veya OpenAlex dosyanızı yükleyin.',
-                'Sistem otomatik olarak 10 farklı analizi çalıştırır.',
-                'Demo rapor (3 grafik) ücretsiz emailinize gelir.',
+                gettext('WoS, Scopus, BibTeX veya OpenAlex dosyanızı yükleyin.'),
+                gettext('Sistem otomatik olarak 10 farklı analizi çalıştırır.'),
+                gettext('Demo rapor (3 grafik) ücretsiz emailinize gelir.'),
             ],
             'promo_gallery': [
-                {'img': 'img/biblio-ornek-yayin-trendi.webp', 'caption': 'Yayın Trendi', 'width': 717, 'height': 638},
-                {'img': 'img/biblio-ornek-kelime-bulutu.webp', 'caption': 'Anahtar Kelime Bulutu', 'width': 695, 'height': 486},
-                {'img': 'img/biblio-ornek-yazar-agi.webp', 'caption': 'Yazar İşbirliği Ağı', 'width': 695, 'height': 719},
-                {'img': 'img/biblio-ornek-atif-hindex.webp', 'caption': 'Atıf Analizi & H-index', 'width': 695, 'height': 637},
-                {'img': 'img/biblio-ornek-arastirma-boslugu.webp', 'caption': 'Araştırma Boşluğu Haritası', 'width': 999, 'height': 739},
-                {'img': 'img/biblio-ornek-lotka.webp', 'caption': 'Yazar Üretkenlik Dağılımı (Lotka Kanunu)', 'width': 707, 'height': 641},
+                {'img': 'img/biblio-ornek-yayin-trendi.webp', 'caption': gettext('Yayın Trendi'), 'width': 717, 'height': 638},
+                {'img': 'img/biblio-ornek-kelime-bulutu.webp', 'caption': gettext('Anahtar Kelime Bulutu'), 'width': 695, 'height': 486},
+                {'img': 'img/biblio-ornek-yazar-agi.webp', 'caption': gettext('Yazar İşbirliği Ağı'), 'width': 695, 'height': 719},
+                {'img': 'img/biblio-ornek-atif-hindex.webp', 'caption': gettext('Atıf Analizi & H-index'), 'width': 695, 'height': 637},
+                {'img': 'img/biblio-ornek-arastirma-boslugu.webp', 'caption': gettext('Araştırma Boşluğu Haritası'), 'width': 999, 'height': 739},
+                {'img': 'img/biblio-ornek-lotka.webp', 'caption': gettext('Yazar Üretkenlik Dağılımı (Lotka Kanunu)'), 'width': 707, 'height': 641},
             ],
             'seo_guide': TARAMA_SEO_CONTENT.get('bibliometrics'),
         })
@@ -67,7 +68,7 @@ def bibliometrics_landing(request):
 
     # Email doğrulama kontrolü
     if hasattr(user, 'profile') and not user.profile.email_verified:
-        messages.warning(request, 'Bibliometrik analiz kullanmak için e-posta adresinizi doğrulamanız gerekiyor.')
+        messages.warning(request, gettext('Bibliometrik analiz kullanmak için e-posta adresinizi doğrulamanız gerekiyor.'))
         return redirect('profile_edit')
 
     daily_limit = BibliometricJob.get_daily_limit(user)
@@ -78,7 +79,7 @@ def bibliometrics_landing(request):
         if remaining <= 0:
             return JsonResponse({
                 'status': 'error',
-                'error': f'Günlük analiz limitinize ({daily_limit}) ulaştınız. Yarın tekrar deneyiniz.',
+                'error': gettext('Günlük analiz limitinize ({limit}) ulaştınız. Yarın tekrar deneyiniz.').format(limit=daily_limit),
             }, status=429)
 
         form = BibliometricUploadForm(request.POST, request.FILES)
@@ -93,7 +94,7 @@ def bibliometrics_landing(request):
         from .forms import _validate_file
         uploaded_files = request.FILES.getlist('file')
         if not uploaded_files:
-            return JsonResponse({'status': 'error', 'error': 'Dosya seçilmedi.'}, status=400)
+            return JsonResponse({'status': 'error', 'error': gettext('Dosya seçilmedi.')}, status=400)
 
         file_contents = []
         filenames = []
@@ -179,13 +180,13 @@ def bibliometrics_send_demo(request, job_id):
     job = get_object_or_404(BibliometricJob, id=job_id, user=request.user)
 
     if job.status != 'completed':
-        return JsonResponse({'status': 'error', 'error': 'Analiz henüz tamamlanmadı.'}, status=400)
+        return JsonResponse({'status': 'error', 'error': gettext('Analiz henüz tamamlanmadı.')}, status=400)
 
     if job.demo_email_sent:
-        return JsonResponse({'status': 'already_sent', 'message': 'Demo rapor daha önce gönderildi.'})
+        return JsonResponse({'status': 'already_sent', 'message': gettext('Demo rapor daha önce gönderildi.')})
 
     if not request.user.email:
-        return JsonResponse({'status': 'error', 'error': 'Hesabınızda email adresi tanımlı değil.'}, status=400)
+        return JsonResponse({'status': 'error', 'error': gettext('Hesabınızda email adresi tanımlı değil.')}, status=400)
 
     # Demo PDF'i S3'ten değil, tekrar oluştur (küçük dosya)
     try:
@@ -201,13 +202,13 @@ def bibliometrics_send_demo(request, job_id):
             from .services.job_runner import send_demo_email_via_url
             send_demo_email_via_url(str(job.id))
         else:
-            return JsonResponse({'status': 'error', 'error': 'Demo PDF oluşturulamamış.'}, status=500)
+            return JsonResponse({'status': 'error', 'error': gettext('Demo PDF oluşturulamamış.')}, status=500)
 
     except Exception as e:
         logger.error(f'Demo email hatası: {e}')
-        return JsonResponse({'status': 'error', 'error': 'Email gönderilemedi.'}, status=500)
+        return JsonResponse({'status': 'error', 'error': gettext('Email gönderilemedi.')}, status=500)
 
-    return JsonResponse({'status': 'sent', 'message': f'{request.user.email} adresine demo rapor gönderildi.'})
+    return JsonResponse({'status': 'sent', 'message': gettext('{email} adresine demo rapor gönderildi.').format(email=request.user.email)})
 
 
 @login_required
@@ -223,13 +224,13 @@ def bibliometrics_from_openalex(request, alex_job_id):
     user = request.user
 
     if hasattr(user, 'profile') and not user.profile.email_verified:
-        return JsonResponse({'status': 'error', 'error': 'E-posta doğrulaması gereklidir.'}, status=403)
+        return JsonResponse({'status': 'error', 'error': gettext('E-posta doğrulaması gereklidir.')}, status=403)
 
     daily_limit = BibliometricJob.get_daily_limit(user)
     daily_used = BibliometricJob.daily_count_for_user(user)
     if daily_used >= daily_limit:
         return JsonResponse(
-            {'status': 'error', 'error': f'Günlük analiz limitinize ({daily_limit}) ulaştınız.'},
+            {'status': 'error', 'error': gettext('Günlük analiz limitinize ({limit}) ulaştınız.').format(limit=daily_limit)},
             status=429,
         )
 
@@ -237,24 +238,21 @@ def bibliometrics_from_openalex(request, alex_job_id):
 
     if alex_job.status != 'completed':
         return JsonResponse(
-            {'status': 'error', 'error': 'OpenAlex araması henüz tamamlanmadı.'}, status=400
+            {'status': 'error', 'error': gettext('OpenAlex araması henüz tamamlanmadı.')}, status=400
         )
 
     if alex_job.total_results < 100:
         return JsonResponse(
             {
                 'status': 'error',
-                'error': (
-                    f'Bibliometrik analiz için en az 100 sonuç gereklidir '
-                    f'(bulunan: {alex_job.total_results}).'
-                ),
+                'error': gettext('Bibliometrik analiz için en az 100 sonuç gereklidir (bulunan: {count}).').format(count=alex_job.total_results),
             },
             status=400,
         )
 
     if not alex_job.all_results:
         return JsonResponse(
-            {'status': 'error', 'error': 'OpenAlex verisi bulunamadı.'}, status=400
+            {'status': 'error', 'error': gettext('OpenAlex verisi bulunamadı.')}, status=400
         )
 
     # Aynı OpenAlex araması için başarılı/devam eden bir analiz var mı?
@@ -266,7 +264,7 @@ def bibliometrics_from_openalex(request, alex_job_id):
             'status': 'exists',
             'job_id': str(existing.id),
             'job_status': existing.status,
-            'message': 'Bu arama için zaten bir bibliometrik analiz mevcut.',
+            'message': gettext('Bu arama için zaten bir bibliometrik analiz mevcut.'),
         })
 
     query_summary = alex_job.get_query_summary()
@@ -283,7 +281,7 @@ def bibliometrics_from_openalex(request, alex_job_id):
     return JsonResponse({
         'status': 'started',
         'job_id': str(job.id),
-        'message': 'Bibliometrik analiz başlatıldı.',
+        'message': gettext('Bibliometrik analiz başlatıldı.'),
     })
 
 
@@ -293,7 +291,7 @@ def bibliometrics_order_page(request, job_id):
     job = get_object_or_404(BibliometricJob, id=job_id, user=request.user)
 
     if job.status != 'completed':
-        messages.error(request, 'Analiz tamamlanmadan sipariş oluşturamazsınız.')
+        messages.error(request, gettext('Analiz tamamlanmadan sipariş oluşturamazsınız.'))
         return redirect('bibliometrics:landing')
 
     # Mevcut sipariş var mı?
@@ -310,20 +308,20 @@ def bibliometrics_order_page(request, job_id):
                 total_price=price,
                 payment_note=form.cleaned_data.get('payment_note', ''),
             )
-            messages.success(request, 'Siparişiniz alındı! Ödeme onayından sonra tam rapor emailinize gönderilecek.')
+            messages.success(request, gettext('Siparişiniz alındı! Ödeme onayından sonra tam rapor e-postanıza gönderilecek.'))
             return redirect('bibliometrics:order_page', job_id=job_id)
     else:
         form = BibliometricOrderForm()
 
     # Fiyat kırılımı (template için)
     import math
-    price_breakdown = [('İlk 500 kayıt', 500)]
+    price_breakdown = [(gettext('İlk 500 kayıt'), 500)]
     if job.total_records > 500:
         extra = math.ceil((job.total_records - 500) / 500)
         for i in range(1, extra + 1):
             start = 500 * i + 1
             end   = 500 * (i + 1)
-            price_breakdown.append((f'{start:,}–{end:,}. kayıtlar', 400))
+            price_breakdown.append((gettext('{start}–{end}. kayıtlar').format(start=f'{start:,}', end=f'{end:,}'), 400))
 
     return render(request, 'bibliometrics/order.html', {
         'job': job,

@@ -155,7 +155,21 @@ maddelerde.
     (e-posta doğrulama, günlük limit — parça birleştirme 2 tam cümleye bölündü, demo e-posta) çevrili;
     25 msgid (bulanık tahminler yanlıştı, hepsi elle). EN/DE giriş yapmış sayfada TR 0.
     Not: landing JS metinleri zaten etiketliydi (ölçüm aracı yanlış saymıştı).
-  - [ ] **BİBLİOMETRİ EN/DE — İNCELENDİ, PLAN ONAY BEKLİYOR** (27 Eylül 2026, kullanıcı: "bibliometri de
+  - [ ] **BİBLİOMETRİ EN/DE — DEVAM EDİYOR** (kullanıcı kararları 27 Eylül 2026: S2 bağlantısı eklensin +
+    analiz sonuçları test edilsin; bibliometri sayfası EN/DE evet; tekrar kayıt incelensin evet).
+    - [x] Aşama 1 tetikleme+e-posta: bibliometrics URL'leri i18n'e; OpenAlex JS fetch `{% url %}`+sentinel;
+      views mesajları (66 msgid, bulanık tahminler elle düzeltildi); arka plan `_in_user_language`
+      (upload + openalex); 3 e-posta alıcı dilinde (OpenAlex işinde "yüklediğiniz dosya" hatası ve
+      Türkçe karaktersiz e-posta düzeltildi); tam rapor EN/DE → proje talebi. Test: DE kullanıcı
+      gerçek analiz motoruyla 130 kayıt → completed, e-posta Almanca.
+    - [ ] Aşama 2 PDF rapor (analyzer ~73, pdf_builder ~13) + sorgu özeti alan adları TR
+      (`get_query_summary` "Başlık: …") + analyzer'da 🎯 emoji DejaVu'da yok (PDF'te boş kutu — önceden var).
+    - [ ] Aşama 3 bibliometri sayfası (landing ~90) EN/DE + menüde aç
+    - [ ] Aşama 4 sipariş EN/DE → proje talebi (e-posta tarafı yapıldı; sayfa yönlendirmesi kaldı)
+    - [ ] Semantic Scholar → bibliometri bağlantısı + analiz sonuç testleri
+    - [ ] OpenAlex tekrar kayıt (dedup) incelemesi
+    Not: bibliometri promo "10 farklı analiz / 10 grafik" diyor, e-postalar/rapor 15 — içerik tutarsızlığı.
+    İnceleme notu: (kullanıcı: "bibliometri de
     de/en olmalı; open alex ve scholar işleyişini incele"). Akış: OpenAlex (≥100 sonuç) → buton →
     i18n DIŞI `/bibliometrics/from-openalex/<id>/` → parse_openalex_json → arka planda 15 analiz →
     demo PDF (3 grafik) e-posta → tam rapor sipariş (Türk IBAN/TL) + admin onayı. **Semantic

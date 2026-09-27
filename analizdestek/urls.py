@@ -35,6 +35,8 @@ urlpatterns = i18n_patterns(
     path('makaleanaliz/', include('makaleanaliz.urls', namespace='makaleanaliz')),
     path('openalex/', include('openalex.urls')),
     path('semantic-scholar/', include('semanticscholar.urls')),
+    # Bibliometrik analiz — OpenAlex/Semantic Scholar'dan tetiklenir, PDF rapor kullanıcının dilinde (27 Eylül 2026)
+    path('bibliometrics/', include('bibliometrics.urls')),
     # Akademik tarama hub'ı — EN/DE'de yalnız uluslararası araçlar (27 Eylül 2026)
     path('tarama/', tarama_hub, name='tarama_hub'),
 
@@ -105,8 +107,6 @@ urlpatterns += [
     # YÖK Tez Arama — kapsam dışı (Türkiye'ye özgü)
     path('yoktez/', include('yoktez.urls')),
 
-    # Bibliometrik Analiz — kapsam dışı
-    path('bibliometrics/', include('bibliometrics.urls')),
 
     # Tez Analizi (YÖK Tez tabanlı) — kapsam dışı
     path('tezanaliz/', include('tezanaliz.urls', namespace='tezanaliz')),
