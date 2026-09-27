@@ -509,6 +509,15 @@ maddelerde.
   yenilerken `X-Cron-Secret` header'ına geçmek de değerlendirilmeli. Yenilenirse
   `.env` + Hetzner crontab'daki TÜM `/api/cron/*` satırları birlikte güncellenmeli.
 
+**C0000. BEŞİNCİ MERGE — 27 Eylül 2026 (kullanıcı: "merge edelim"; DB yedeği: "sen al")**
+- [x] DB yedeği (Claude, SSH root@89.167.5.224, proje klasörü `/app`): `/root/yedek_2026-09-27_1214.sql`
+  (180 MB, 80 tablo; önceki 25 Eylül yedeğiyle aynı boyut).
+- [x] Ön kontrol: 61/61, makemigrations temiz, DEBUG=False collectstatic hatasız, requirements değişmedi.
+- [x] main ← dev fast-forward + push (5 commit: proje talebi Aşama 1+2). Migration **0158** (dil alanı)
+  + **0159** (choices, SQL no-op).
+- [ ] Hetzner deploy: `cd /app && git pull origin main && docker compose restart web && docker compose restart nginx`
+  → `docker compose exec web python manage.py showmigrations forum | tail -3` (0158/0159 [X]).
+
 **C000. DÖRDÜNCÜ MERGE (hotfix) — 27 Eylül 2026 (kullanıcı: "et")**
 - [x] main ← dev fast-forward + push: **9203f3d** — STORAGES ile hash'li statik (kalıcı önbellek
   çözümü), profiles.css ?v=0200, test_settings düz storage, fotoğraf önizleme yedek baş harf.
