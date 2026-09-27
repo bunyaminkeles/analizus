@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-27 13:59+0300\n"
+"POT-Creation-Date: 2026-09-27 14:02+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -495,8 +495,8 @@ msgid "Bireysel"
 msgstr "Individuell"
 
 #: forum/models.py:1763 forum/templates/forum/egitim.html:103
-#: forum/templates/forum/egitim_talebi.html:75 templates/base.html:298
-#: templates/base.html:509 templates/partials/footer.html:119
+#: forum/templates/forum/egitim_talebi.html:75 templates/base.html:279
+#: templates/base.html:481 templates/partials/footer.html:119
 msgid "Kurumsal"
 msgstr "Unternehmen"
 
@@ -719,8 +719,8 @@ msgstr "Projektbasierte Vermittlung von Experten und Analysedienstleistungen"
 #: forum/templates/forum/about.html:73
 #: forum/templates/forum/ai_assistant.html:4
 #: forum/templates/forum/ai_assistant.html:16 templates/base.html:233
-#: templates/base.html:465 templates/base.html:818 templates/base.html:822
-#: templates/base.html:828 templates/partials/footer.html:48
+#: templates/base.html:446 templates/base.html:790 templates/base.html:794
+#: templates/base.html:800 templates/partials/footer.html:48
 msgid "AI Asistan"
 msgstr "KI-Assistent"
 
@@ -829,7 +829,9 @@ msgstr ""
 "Sie kommen bei der Interpretation nicht weiter? Der KI-Assistent erklärt "
 "Ihre Ergebnisse individuell und verständlich."
 
-#: forum/templates/forum/about.html:184
+#: forum/templates/forum/about.html:184 templates/tarama_hub.html:4
+#: templates/tarama_hub.html:6 templates/tarama_hub.html:8
+#: templates/tarama_hub.html:32
 msgid "Akademik Tarama Araçları"
 msgstr "Akademische Recherche-Werkzeuge"
 
@@ -944,7 +946,7 @@ msgstr "Kostenlos registrieren"
 
 #: forum/templates/forum/about.html:404 forum/templates/forum/home.html:281
 #: forum/templates/forum/home.html:386 templates/base.html:231
-#: templates/base.html:464 templates/partials/footer.html:46
+#: templates/base.html:445 templates/partials/footer.html:46
 msgid "Hangi Test?"
 msgstr "Welcher Test?"
 
@@ -1094,11 +1096,11 @@ msgstr "Registrieren"
 #: forum/templates/registration/login.html:10
 #: forum/templates/registration/login.html:249
 #: forum/templates/registration/login.html:280
-#: istatistik/templates/istatistik/analiz_hub.html:42 templates/base.html:553
+#: istatistik/templates/istatistik/analiz_hub.html:42 templates/base.html:525
 #: templates/forum/register.html:259 templates/forum/register.html:315
 #: templates/registration/password_reset_complete.html:201
 #: templates/registration/password_reset_form.html:262
-#: templates/service_promo.html:37
+#: templates/service_promo.html:37 templates/tarama_hub.html:42
 msgid "Giriş Yap"
 msgstr "Anmelden"
 
@@ -1460,8 +1462,8 @@ msgstr ""
 "einem 15-minütigen Erstgespräch."
 
 #: forum/templates/forum/contact.html:4
-#: forum/templates/forum/gizlilik_politikasi.html:27 templates/base.html:307
-#: templates/base.html:516 templates/partials/footer.html:122
+#: forum/templates/forum/gizlilik_politikasi.html:27 templates/base.html:288
+#: templates/base.html:488 templates/partials/footer.html:122
 #: templates/partials/footer.html:160
 msgid "İletişim"
 msgstr "Kontakt"
@@ -1555,7 +1557,7 @@ msgstr "KVKK-Datenschutzhinweis"
 msgid "okudum, kabul ediyorum."
 msgstr "— gelesen und akzeptiert."
 
-#: forum/templates/forum/contact.html:95 templates/base.html:862
+#: forum/templates/forum/contact.html:95 templates/base.html:834
 msgid "Gönder"
 msgstr "Senden"
 
@@ -1564,8 +1566,8 @@ msgid "Topluluğumuza katılın"
 msgstr "Werden Sie Teil unserer Community"
 
 #: forum/templates/forum/contact.html:107
-#: forum/templates/registration/login.html:250 templates/base.html:411
-#: templates/base.html:554 templates/forum/register.html:8
+#: forum/templates/registration/login.html:250 templates/base.html:392
+#: templates/base.html:526 templates/forum/register.html:8
 #: templates/forum/register.html:260 templates/forum/register.html:312
 msgid "Kayıt Ol"
 msgstr "Registrieren"
@@ -1723,8 +1725,8 @@ msgstr ""
 "Materialien weiter."
 
 #: forum/templates/forum/egitim.html:194
-#: forum/templates/forum/proje_talebi.html:246 templates/base.html:302
-#: templates/base.html:513
+#: forum/templates/forum/proje_talebi.html:246 templates/base.html:283
+#: templates/base.html:485
 msgid "Neden Analizus?"
 msgstr "Warum Analizus?"
 
@@ -1902,8 +1904,8 @@ msgstr ""
 "Was, wenn ich lieber möchte, dass Sie die Analyse übernehmen statt mich zu "
 "schulen?"
 
-#: forum/templates/forum/egitim.html:306 templates/base.html:287
-#: templates/base.html:501
+#: forum/templates/forum/egitim.html:306 templates/base.html:268
+#: templates/base.html:473
 msgid "Proje Talebi"
 msgstr "Projektanfrage"
 
@@ -1970,8 +1972,8 @@ msgstr "Über WhatsApp schreiben"
 
 #: forum/templates/forum/egitim_detay.html:5
 #: forum/templates/forum/egitim_detay.html:7
-#: forum/templates/forum/egitim_detay.html:9 templates/base.html:290
-#: templates/base.html:504
+#: forum/templates/forum/egitim_detay.html:9 templates/base.html:271
+#: templates/base.html:476
 msgid "Eğitim"
 msgstr "Schulung"
 
@@ -3063,8 +3065,8 @@ msgstr "Zum Forum"
 msgid "Kayıt Ol &amp; Paylaş"
 msgstr "Registrieren &amp; teilen"
 
-#: forum/templates/forum/hangi_test.html:263 templates/base.html:578
-#: templates/base.html:599 templates/base.html:608 templates/base.html:835
+#: forum/templates/forum/hangi_test.html:263 templates/base.html:550
+#: templates/base.html:571 templates/base.html:580 templates/base.html:807
 #: templates/partials/footer.html:177 templates/partials/footer.html:241
 msgid "Kapat"
 msgstr "Schließen"
@@ -3074,7 +3076,7 @@ msgid "Analiz Amacı"
 msgstr "Analyseziel"
 
 #: forum/templates/forum/hangi_test.html:287
-#: forum/templates/forum/hangi_test.html:420 templates/base.html:846
+#: forum/templates/forum/hangi_test.html:420 templates/base.html:818
 msgid "Ne yapmak istiyorsunuz?"
 msgstr "Was möchten Sie tun?"
 
@@ -4138,7 +4140,7 @@ msgstr "Thesis-Center-Scraping"
 
 #: forum/templates/forum/home.html:289 forum/views.py:4052
 #: openalex/templates/openalex/landing.html:155 templates/base.html:226
-#: templates/base.html:461
+#: templates/base.html:442
 msgid "Bibliometrik Analiz"
 msgstr "Bibliometrische Analyse"
 
@@ -4151,8 +4153,8 @@ msgstr "Chancen:"
 msgid "Açık İlanlar"
 msgstr "Offene Aufträge"
 
-#: forum/templates/forum/home.html:295 templates/base.html:386
-#: templates/base.html:539
+#: forum/templates/forum/home.html:295 templates/base.html:367
+#: templates/base.html:511
 msgid "Profilim"
 msgstr "Mein Profil"
 
@@ -4473,8 +4475,8 @@ msgstr ""
 "Ihr KI-gestützter Begleiter für die Literaturrecherche und jede Phase Ihrer "
 "Forschung."
 
-#: forum/templates/forum/home.html:729 templates/base.html:241
-#: templates/base.html:251 templates/base.html:470 templates/base.html:474
+#: forum/templates/forum/home.html:729 templates/base.html:451
+#: templates/base.html:453 templates/partials/_nav_tarama_link.html:2
 msgid "Akademik Tarama"
 msgstr "Akademische Recherche"
 
@@ -4494,8 +4496,8 @@ msgstr "OpenAlex-Suche"
 msgid "TR Dizin Tarama"
 msgstr "TR-Dizin-Suche"
 
-#: forum/templates/forum/home.html:745 templates/base.html:278
-#: templates/base.html:494 templates/partials/footer.html:63
+#: forum/templates/forum/home.html:745 templates/base.html:259
+#: templates/base.html:466 templates/partials/footer.html:63
 msgid "Çalışma Odaları"
 msgstr "Lernräume"
 
@@ -4730,7 +4732,7 @@ msgstr "Falsch! Die richtige Antwort:"
 msgid "Yükleniyor..."
 msgstr "Wird geladen..."
 
-#: forum/templates/forum/home.html:1165 templates/base.html:589
+#: forum/templates/forum/home.html:1165 templates/base.html:561
 msgid "Sonraki Soru"
 msgstr "Nächste Frage"
 
@@ -5139,8 +5141,8 @@ msgstr ""
 " — kostenlos inserieren, schnelle Expertenvermittlung, verlässliche "
 "akademische Unterstützung."
 
-#: forum/templates/forum/market/job_list.html:27 templates/base.html:262
-#: templates/base.html:484 templates/partials/footer.html:50
+#: forum/templates/forum/market/job_list.html:27 templates/base.html:243
+#: templates/base.html:456 templates/partials/footer.html:50
 msgid "Pazaryeri"
 msgstr "Marktplatz"
 
@@ -5605,8 +5607,8 @@ msgstr "Fachwerkzeuge"
 
 #: forum/templates/forum/profile_detail.html:204
 #: forum/templates/forum/profile_edit.html:9
-#: forum/templates/forum/profile_edit.html:20 templates/base.html:387
-#: templates/base.html:540
+#: forum/templates/forum/profile_edit.html:20 templates/base.html:368
+#: templates/base.html:512
 msgid "Profili Düzenle"
 msgstr "Profil bearbeiten"
 
@@ -8493,6 +8495,67 @@ msgstr "KI-Tools"
 #: forum/views.py:4056
 msgid "Akademik Danışmanlık"
 msgstr "Wissenschaftliche Beratung"
+
+#: forum/views.py:4095
+msgid "YÖK Tez Kazıma ve İndirme Aracı"
+msgstr "YÖK-Thesen: Scraping- und Download-Tool"
+
+#: forum/views.py:4096
+msgid ""
+"Anahtar kelime, yazar veya danışmanla arama yapın; tez verilerini Excel veya"
+" TXT olarak indirin."
+msgstr ""
+"Nach Stichwort, Autor/in oder Betreuer/in suchen und Thesendaten als Excel "
+"oder TXT herunterladen."
+
+#: forum/views.py:4104
+msgid "OpenAlex Yayın Kazıma"
+msgstr "OpenAlex-Publikations-Scraping"
+
+#: forum/views.py:4105
+msgid ""
+"240 milyondan fazla akademik yayından kodsuz veri kazıma. Başlık, yazar, "
+"kurum ve atıf bilgileri."
+msgstr ""
+"Datenerfassung ohne Code aus über 240 Millionen wissenschaftlichen "
+"Publikationen. Titel, Autor/innen, Institutionen und Zitationsdaten."
+
+#: forum/views.py:4113
+msgid "TR Dizin Makale Kazıma"
+msgstr "TR-Dizin-Artikel-Scraping"
+
+#: forum/views.py:4114
+msgid ""
+"TR Dizin'den anahtar kelime ile makale arayın; yazarları, dergileri ve atıf "
+"bilgilerini indirin."
+msgstr ""
+"Artikel in TR Dizin per Stichwort suchen und Autor/innen, Zeitschriften und "
+"Zitationsdaten herunterladen."
+
+#: forum/views.py:4122
+#: semanticscholar/templates/semanticscholar/landing.html:26
+msgid "Semantic Scholar Yayın Kazıma"
+msgstr "Semantic-Scholar-Publikations-Scraping"
+
+#: forum/views.py:4123
+msgid ""
+"200 milyondan fazla akademik yayın arasında kodsuz arama yapın. WoS, Scopus "
+"ve arXiv dahil tüm büyük veri tabanlarını kapsar."
+msgstr ""
+"Durchsuchen Sie über 200 Millionen wissenschaftliche Publikationen ohne "
+"Code. Umfasst alle großen Datenbanken, einschließlich WoS, Scopus und arXiv."
+
+#: forum/views.py:4131
+msgid "Üniversite Tez Arşivi"
+msgstr "Universitäts-Thesenarchiv"
+
+#: forum/views.py:4132
+msgid ""
+"19 Türk üniversitesinin açık erişim arşivinde anahtar kelime ile tez ve "
+"makale arayın."
+msgstr ""
+"Thesen und Artikel per Stichwort in den Open-Access-Archiven von 19 "
+"türkischen Universitäten suchen."
 
 #: istatistik/seo_content.py:7
 msgid ""
@@ -13267,7 +13330,7 @@ msgstr "Kostenlose Projektanfrage senden"
 #: istatistik/templates/istatistik/analiz_hub.html:6
 #: istatistik/templates/istatistik/analiz_hub.html:8
 #: istatistik/templates/istatistik/analiz_hub.html:32 templates/base.html:220
-#: templates/base.html:459
+#: templates/base.html:440
 msgid "İstatistik Analiz Araçları"
 msgstr "Statistik-Tools"
 
@@ -13293,7 +13356,7 @@ msgstr ""
 "erforderlich."
 
 #: istatistik/templates/istatistik/analiz_hub.html:39
-#: templates/service_promo.html:33
+#: templates/service_promo.html:33 templates/tarama_hub.html:39
 msgid "Ücretsiz Dene"
 msgstr "Kostenlos testen"
 
@@ -13314,12 +13377,13 @@ msgid "Bu işi uzmana bırak"
 msgstr "Einem Experten überlassen"
 
 #: istatistik/templates/istatistik/analiz_hub.html:83
+#: templates/tarama_hub.html:65
 msgid "Ücretsiz hesap açın, tüm araçlara hemen erişin."
 msgstr ""
 "Erstellen Sie ein kostenloses Konto und nutzen Sie sofort alle Werkzeuge."
 
 #: istatistik/templates/istatistik/analiz_hub.html:85
-#: templates/service_promo.html:122
+#: templates/service_promo.html:122 templates/tarama_hub.html:67
 msgid "Başla — Ücretsiz"
 msgstr "Loslegen — Kostenlos"
 
@@ -17470,10 +17534,6 @@ msgstr ""
 "No-Code-Scraping von Publikationen von Semantic Scholar. Laden Sie Daten der"
 " 5 neuesten Publikationen als Excel oder TXT herunter."
 
-#: semanticscholar/templates/semanticscholar/landing.html:26
-msgid "Semantic Scholar Yayın Kazıma"
-msgstr "Semantic-Scholar-Publikations-Scraping"
-
 #: semanticscholar/templates/semanticscholar/landing.html:29
 msgid ""
 "200 milyondan fazla akademik yayın arasında kodsuz arama yapın. Başlık, "
@@ -17512,7 +17572,7 @@ msgstr "Sie müssen Ihre E-Mail-Adresse bestätigen, um dieses Tool zu nutzen."
 #: semanticscholar/templates/semanticscholar/landing.html:216
 #: semanticscholar/templates/semanticscholar/landing.html:223
 #: semanticscholar/templates/semanticscholar/landing.html:249
-#: templates/base.html:317
+#: templates/base.html:298
 msgid "Ara"
 msgstr "Suchen"
 
@@ -17654,7 +17714,7 @@ msgstr "Plattform für akademische Analyse und Data Science"
 msgid "İçeriğe geç"
 msgstr "Zum Inhalt springen"
 
-#: templates/base.html:202 templates/base.html:440
+#: templates/base.html:202 templates/base.html:421
 msgid "Analizus Ana Sayfa"
 msgstr "Analizus Startseite"
 
@@ -17662,106 +17722,106 @@ msgstr "Analizus Startseite"
 msgid "Ana menü"
 msgstr "Hauptmenü"
 
-#: templates/base.html:215 templates/base.html:455
+#: templates/base.html:215 templates/base.html:436
 msgid "Analizler"
 msgstr "Analysen"
 
-#: templates/base.html:228 templates/base.html:462
+#: templates/base.html:228 templates/base.html:443
 msgid "Tableau Analizleri"
 msgstr "Tableau-Analysen"
 
-#: templates/base.html:271 templates/base.html:489
+#: templates/base.html:252 templates/base.html:461
 #: templates/partials/footer.html:60
 msgid "Topluluk"
 msgstr "Community"
 
-#: templates/base.html:279 templates/base.html:495 templates/base.html:577
+#: templates/base.html:260 templates/base.html:467 templates/base.html:549
 #: templates/partials/footer.html:64
 msgid "İstatistik Arena"
 msgstr "Statistik-Arena"
 
-#: templates/base.html:304 templates/base.html:514
+#: templates/base.html:285 templates/base.html:486
 msgid "AI Çözümler"
 msgstr "KI-Lösungen"
 
-#: templates/base.html:306 templates/base.html:515
+#: templates/base.html:287 templates/base.html:487
 #: templates/partials/footer.html:121 templates/partials/footer.html:159
 msgid "Hakkımızda"
 msgstr "Über uns"
 
-#: templates/base.html:330 templates/partials/auth_lang_switcher.html:9
+#: templates/base.html:311 templates/partials/auth_lang_switcher.html:9
 msgid "Dil seç"
 msgstr "Sprache wählen"
 
-#: templates/base.html:358
+#: templates/base.html:339
 msgid "Gelen kutusu"
 msgstr "Posteingang"
 
-#: templates/base.html:381
+#: templates/base.html:362
 msgid "Puanını Arena'da artır"
 msgstr "Punkte in der Arena steigern"
 
-#: templates/base.html:388
+#: templates/base.html:369
 msgid "Ödemelerim"
 msgstr "Meine Zahlungen"
 
-#: templates/base.html:389 templates/base.html:541
+#: templates/base.html:370 templates/base.html:513
 msgid "Arkadaşını Davet Et"
 msgstr "Freund einladen"
 
-#: templates/base.html:391 templates/base.html:542
+#: templates/base.html:372 templates/base.html:514
 msgid "Gelen Kutusu"
 msgstr "Posteingang"
 
-#: templates/base.html:401 templates/base.html:548
+#: templates/base.html:382 templates/base.html:520
 msgid "Çıkış Yap"
 msgstr "Abmelden"
 
-#: templates/base.html:410
+#: templates/base.html:391
 msgid "Giriş"
 msgstr "Anmelden"
 
-#: templates/base.html:418
+#: templates/base.html:399
 msgid "Menüyü aç"
 msgstr "Menü öffnen"
 
-#: templates/base.html:438
+#: templates/base.html:419
 msgid "Mobil menü"
 msgstr "Mobiles Menü"
 
-#: templates/base.html:444
+#: templates/base.html:425
 msgid "Menüyü kapat"
 msgstr "Menü schließen"
 
-#: templates/base.html:523
+#: templates/base.html:495
 msgid "Dil"
 msgstr "Sprache"
 
-#: templates/base.html:565
+#: templates/base.html:537
 msgid "Forum konusu veya kullanıcı ara..."
 msgstr "Forenthemen oder Nutzer suchen..."
 
-#: templates/base.html:584
+#: templates/base.html:556
 msgid "Soru yükleniyor..."
 msgstr "Frage wird geladen..."
 
-#: templates/base.html:598
+#: templates/base.html:570
 msgid "Haftanın Başarı Hikayesi"
 msgstr "Erfolgsgeschichte der Woche"
 
-#: templates/base.html:607
+#: templates/base.html:579
 msgid "Tüm Hikayeler"
 msgstr "Alle Geschichten"
 
-#: templates/base.html:699
+#: templates/base.html:671
 msgid "Soru yüklenemedi."
 msgstr "Die Frage konnte nicht geladen werden."
 
-#: templates/base.html:728
+#: templates/base.html:700
 msgid "Doğru Cevap! (+10 Puan)"
 msgstr "Richtig! (+10 Punkte)"
 
-#: templates/base.html:730
+#: templates/base.html:702
 msgid ""
 "TEBRİKLER! \"İstatistik Ustası\" rozeti kazandınız! Artık ilan "
 "açabilirsiniz."
@@ -17769,31 +17829,31 @@ msgstr ""
 "HERZLICHEN GLÜCKWUNSCH! Sie haben das Abzeichen „Statistik-Meister“ "
 "erhalten! Sie können jetzt Aufträge einstellen."
 
-#: templates/base.html:736
+#: templates/base.html:708
 msgid "Yanlış. Doğru cevap:"
 msgstr "Falsch. Die richtige Antwort:"
 
-#: templates/base.html:741
+#: templates/base.html:713
 msgid "Toplam Doğru:"
 msgstr "Richtige insgesamt:"
 
-#: templates/base.html:783
+#: templates/base.html:755
 msgid "İşlem başarısız."
 msgstr "Die Aktion ist fehlgeschlagen."
 
-#: templates/base.html:801
+#: templates/base.html:773
 msgid "Hikaye bulunamadı."
 msgstr "Geschichte nicht gefunden."
 
-#: templates/base.html:816
+#: templates/base.html:788
 msgid "AI Asistan ile sohbet et"
 msgstr "Mit dem KI-Assistenten chatten"
 
-#: templates/base.html:832
+#: templates/base.html:804
 msgid "Tam sayfa aç"
 msgstr "Als ganze Seite öffnen"
 
-#: templates/base.html:845
+#: templates/base.html:817
 msgid ""
 "Merhaba! İstatistik testi, akademik makale arama ya da veri analizi "
 "konularında yardımcı olabilirim."
@@ -17801,39 +17861,39 @@ msgstr ""
 "Hallo! Ich helfe Ihnen gern bei statistischen Tests, der Suche nach "
 "Fachliteratur oder der Datenanalyse."
 
-#: templates/base.html:856
+#: templates/base.html:828
 msgid "Anonim: 3 soru/gün"
 msgstr "Anonym: 3 Fragen/Tag"
 
-#: templates/base.html:856 templates/base.html:1244
+#: templates/base.html:828 templates/base.html:1216
 msgid "Üye ol"
 msgstr "Registrieren"
 
-#: templates/base.html:856
+#: templates/base.html:828
 msgid "30 soru"
 msgstr "30 Fragen"
 
-#: templates/base.html:861
+#: templates/base.html:833
 msgid "Sorunuzu yazın…"
 msgstr "Geben Sie Ihre Frage ein…"
 
-#: templates/base.html:861
+#: templates/base.html:833
 msgid "Mesaj"
 msgstr "Nachricht"
 
-#: templates/base.html:1209
+#: templates/base.html:1181
 msgid "hak"
 msgstr "übrig"
 
-#: templates/base.html:1244
+#: templates/base.html:1216
 msgid "ile 30 soruya çıkar."
 msgstr "und erhöhen Sie Ihr Limit auf 30 Fragen."
 
-#: templates/base.html:1249
+#: templates/base.html:1221
 msgid "Bir hata oluştu, tekrar deneyin."
 msgstr "Ein Fehler ist aufgetreten, bitte versuchen Sie es erneut."
 
-#: templates/base.html:1253
+#: templates/base.html:1225
 msgid "Bağlantı hatası. İnternet bağlantınızı kontrol edin."
 msgstr "Verbindungsfehler. Bitte prüfen Sie Ihre Internetverbindung."
 
@@ -18276,6 +18336,41 @@ msgstr ""
 "Lernen Sie, die <strong "
 "style=\"color:#f1f5f9;\">%(promo_title)s</strong>-Analyse mit Ihren eigenen "
 "Daten im Einzelunterricht durchzuführen."
+
+#: templates/tarama_hub.html:5 templates/tarama_hub.html:7
+#: templates/tarama_hub.html:9
+msgid ""
+"YÖK Tez, OpenAlex, TR Dizin ve üniversite arşivlerinden kodsuz veri kazıma "
+"araçları. Anahtar kelime ile arama yapın, Excel veya TXT olarak indirin."
+msgstr ""
+"Datenerfassungs-Tools ohne Code für YÖK-Thesen, OpenAlex, TR Dizin und "
+"Universitätsarchive. Per Stichwort suchen und als Excel oder TXT "
+"herunterladen."
+
+#: templates/tarama_hub.html:5 templates/tarama_hub.html:7
+#: templates/tarama_hub.html:9
+msgid ""
+"OpenAlex ve Semantic Scholar'dan kodsuz akademik veri kazıma araçları. "
+"Anahtar kelime ile arama yapın, Excel veya TXT olarak indirin."
+msgstr ""
+"Tools zur Erfassung wissenschaftlicher Daten ohne Code aus OpenAlex und "
+"Semantic Scholar. Per Stichwort suchen und als Excel oder TXT herunterladen."
+
+#: templates/tarama_hub.html:34
+msgid ""
+"YÖK Tez, OpenAlex, TR Dizin ve üniversite arşivlerinden kodsuz veri kazıma. "
+"Python veya Selenium bilgisi gerekmez."
+msgstr ""
+"Datenerfassung ohne Code aus YÖK-Thesen, OpenAlex, TR Dizin und "
+"Universitätsarchiven. Keine Python- oder Selenium-Kenntnisse nötig."
+
+#: templates/tarama_hub.html:34
+msgid ""
+"Uluslararası akademik veri tabanlarından kodsuz veri kazıma. Python veya "
+"Selenium bilgisi gerekmez."
+msgstr ""
+"Datenerfassung ohne Code aus internationalen wissenschaftlichen Datenbanken."
+" Keine Python- oder Selenium-Kenntnisse nötig."
 
 #~ msgid "YouTube Transcript İndir"
 #~ msgstr "YouTube-Transkript herunterladen"

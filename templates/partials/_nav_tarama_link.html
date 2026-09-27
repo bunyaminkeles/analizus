@@ -1,0 +1,3 @@
+{% load i18n %}<a href="{% url 'tarama_hub' %}" class="site-nav__link {% if '/tarama/' in request.path or '/yoktez/' in request.path or '/openalex/' in request.path or '/trdizin/' in request.path or '/oaipmh/' in request.path or '/semantic-scholar/' in request.path %}is-active{% endif %}">
+                    {% trans "Akademik Tarama" %}
+                </a>

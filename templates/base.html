@@ -234,27 +234,9 @@
                     </div>
                 </div>
 
-                <!-- Akademik Tarama (yalnız TR — arayüz çevrilmedi) -->
-                {% if LANGUAGE_CODE == 'tr' %}{% if features.oaipmh or features.yoktez or features.openalex or features.trdizin or features.semanticscholar %}
-                <a href="/tarama/" class="site-nav__link {% if '/tarama/' in request.path or '/yoktez/' in request.path or '/openalex/' in request.path or '/trdizin/' in request.path or '/oaipmh/' in request.path or '/semantic-scholar/' in request.path %}is-active{% endif %}">
-                    {% trans "Akademik Tarama" %}
-                </a>
-                {% endif %}{% else %}
-                {% comment %}EN/DE: /tarama/ hub'ı TR-only (YÖK Tez/TR Dizin) → uluslararası kaynaklar doğrudan.
-                OpenAlex/Semantic Scholar yarı çevrili — tam çeviri todo'da (26 Eylül 2026){% endcomment %}
-                {% if features.openalex or features.semanticscholar %}
-                <div class="site-nav__dropdown-wrap">
-                    <button class="site-nav__link site-nav__dropdown-btn {% if '/openalex/' in request.path or '/semantic-scholar/' in request.path %}is-active{% endif %}"
-                            aria-expanded="false" aria-haspopup="true" data-dropdown="tarama">
-                        {% trans "Akademik Tarama" %}
-                        <svg class="site-nav__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
-                    </button>
-                    <div class="site-nav__dropdown" id="dropdown-tarama" role="menu">
-                        {% if features.openalex %}<a href="{% url 'openalex:landing' %}" class="site-nav__dropdown-item" role="menuitem">OpenAlex</a>{% endif %}
-                        {% if features.semanticscholar %}<a href="{% url 'semanticscholar:landing' %}" class="site-nav__dropdown-item" role="menuitem">Semantic Scholar</a>{% endif %}
-                    </div>
-                </div>
-                {% endif %}{% endif %}
+                <!-- Akademik Tarama hub'ı (TR: 5 araç; EN/DE: yalnız uluslararası araçlar — view filtreler) -->
+                {% if LANGUAGE_CODE == 'tr' %}{% if features.oaipmh or features.yoktez or features.openalex or features.trdizin or features.semanticscholar %}{% include 'partials/_nav_tarama_link.html' %}{% endif %}
+                {% elif features.openalex or features.semanticscholar %}{% include 'partials/_nav_tarama_link.html' %}{% endif %}
 
                 {% if features.market %}
                 <a href="{% url 'job_list' %}" class="site-nav__link">{% trans "Pazaryeri" %}</a>
@@ -464,18 +446,9 @@
             </div>
 
             {% if LANGUAGE_CODE == 'tr' %}{% if features.oaipmh or features.yoktez or features.openalex or features.trdizin or features.semanticscholar %}
-            <a href="/tarama/" class="nav-drawer__link">{% trans "Akademik Tarama" %}</a>
+            <a href="{% url 'tarama_hub' %}" class="nav-drawer__link">{% trans "Akademik Tarama" %}</a>
             {% endif %}{% elif features.openalex or features.semanticscholar %}
-            <div>
-                <button class="nav-drawer__accordion-btn" aria-expanded="false" data-accordion="mob-tarama">
-                    {% trans "Akademik Tarama" %}
-                    <svg class="nav-drawer__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="6 9 12 15 18 9"/></svg>
-                </button>
-                <div class="nav-drawer__accordion-body" id="mob-tarama">
-                    {% if features.openalex %}<a href="{% url 'openalex:landing' %}" class="nav-drawer__link">OpenAlex</a>{% endif %}
-                    {% if features.semanticscholar %}<a href="{% url 'semanticscholar:landing' %}" class="nav-drawer__link">Semantic Scholar</a>{% endif %}
-                </div>
-            </div>
+            <a href="{% url 'tarama_hub' %}" class="nav-drawer__link">{% trans "Akademik Tarama" %}</a>
             {% endif %}
 
             {% if features.market %}<a href="{% url 'job_list' %}" class="nav-drawer__link">{% trans "Pazaryeri" %}</a>{% endif %}

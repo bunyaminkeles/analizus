@@ -93,7 +93,7 @@ maddelerde.
   aynen döndürüyordu (tarama, forum, blog, YÖK Tez, odalar… hepsi). `forum.views.set_language`
   sarmalayıcı: seçilen dilde karşılık yoksa o dilin ana sayfasına (/en/, /de/). 10 senaryo test.
 **İŞ SIRASI (27 Eylül 2026, kullanıcı):**
-- [ ] **1. Akademik Tarama hub'ı (/tarama/) EN/DE'de** (kullanıcı: "tr'de gelen fotoğraflı
+- [x] **1. Akademik Tarama hub'ı (/tarama/) EN/DE'de** — YAPILDI (27 Eylül 2026): URL i18n'e taşındı (TR yolu aynı), araçlarda `intl` bayrağı (EN/DE: OpenAlex + Semantic Scholar), tüm metinler EN/DE, navbar her dilde hub'a gider (açılır menü kaldırıldı), `?next` dile göre. Yeni kazıma modülü = listeye bir kayıt. Eski not: (kullanıcı: "tr'de gelen fotoğraflı
   landing'i de/en için de aktif et; buraya iki veri kazıma daha eklenecek"): hub i18n'e
   taşınacak; EN/DE'de yalnız uluslararası araçlar (OpenAlex, Semantic Scholar — YÖK Tez,
   TR Dizin, OAI-PMH gizli); `tarama_hub` view'daki araç başlık/açıklamaları çeviriye;
@@ -105,6 +105,14 @@ maddelerde.
   (b) süre "abgeschlossen in 4 ayda" — `views.py` ~2196 f"{days} günde/haftada/ayda" TR
   parça → çoğul destekli tam cümle msgid (ngettext); (c) e-posta placeholder
   "ayse@sirket.com" (`proje_talebi.html` ~153) → dile göre örnek.
+- [ ] **3. Profil resmi ekleme / değiştirme / silme** (27 Eylül 2026, kullanıcı: "silme yok; nasıl
+  olması gerekirse öyle olmalı"): mevcut akışı incele (yükleme doğrulaması — tür/boyut, eski
+  dosyanın S3'ten silinmesi, önizleme, mevcut fotoğrafın gösterilmesi) + "Fotoğrafı kaldır"
+  seçeneği ekle. Önce ölçüm + öneri, sonra uygulama.
+- [ ] **Canlı profil düzenleme sayfası stilsiz görünüyor** (27 Eylül 2026, kullanıcı ekran
+  görüntüsü /de/profile/edit/: başlık büyük, kart yok; sekmeler stilli): canlı profiles.css'te
+  yeni sınıflar VAR (ölçüldü) → büyük ihtimal tarayıcı önbelleği; kullanıcıdan Ctrl+Shift+R
+  sonucu bekleniyor, sürerse incele.
 
 - [ ] **OpenAlex + Semantic Scholar tam EN/DE çevirisi** (26 Eylül 2026, kullanıcı: "todo'ya
   yaz, şimdiden açık kalabilir"): EN/DE navbar'da "Academic Search" açılır menüsüyle AÇIK

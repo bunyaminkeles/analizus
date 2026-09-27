@@ -35,6 +35,8 @@ urlpatterns = i18n_patterns(
     path('makaleanaliz/', include('makaleanaliz.urls', namespace='makaleanaliz')),
     path('openalex/', include('openalex.urls')),
     path('semantic-scholar/', include('semanticscholar.urls')),
+    # Akademik tarama hub'ı — EN/DE'de yalnız uluslararası araçlar (27 Eylül 2026)
+    path('tarama/', tarama_hub, name='tarama_hub'),
 
     # Unified Analiz Konsolu — 18 istatistik aracının açıklama/giriş sayfaları
     path('analiz/', include('istatistik.urls_analiz')),
@@ -117,7 +119,6 @@ urlpatterns += [
     path('istatistik/', include('istatistik.urls', namespace='istatistik')),
 
     # Akademik Tarama Unified Console — kapsam dışı (yoktez/trdizin/oaipmh kartları)
-    path('tarama/', tarama_hub, name='tarama_hub'),
 
     # 4. Forum Uygulaması — geri kalanı (forum, blog, DM...) kapsam dışı; market urls_i18n.py'de.
     # En sona koymak çakışmaları önler.

@@ -4083,50 +4083,64 @@ def set_language(request):
 
 
 def tarama_hub(request):
+    """Akademik tarama araçları hub'ı (TR/EN/DE).
+
+    `intl=False` araçlar Türkiye'ye özgü (YÖK Tez, TR Dizin, TR üniversite arşivleri)
+    ve arayüzleri tek dilli → EN/DE'de listelenmez. Yeni kazıma modülü (ör. PubMed,
+    BASE) eklemek için listeye bir kayıt eklemek yeterli.
+    """
+    from django.utils.translation import get_language
     tools = [
         {
-            'title': 'YÖK Tez Kazıma ve İndirme Aracı',
-            'desc': 'Anahtar kelime, yazar veya danışmanla arama yapın; tez verilerini Excel veya TXT olarak indirin.',
+            'title': gettext('YÖK Tez Kazıma ve İndirme Aracı'),
+            'desc': gettext('Anahtar kelime, yazar veya danışmanla arama yapın; tez verilerini Excel veya TXT olarak indirin.'),
             'icon': 'bi-mortarboard-fill',
             'color': 'success',
             'url_name': 'yoktez:landing',
             'feature_key': 'yoktez',
+            'intl': False,
         },
         {
-            'title': 'OpenAlex Yayın Kazıma',
-            'desc': '240 milyondan fazla akademik yayından kodsuz veri kazıma. Başlık, yazar, kurum ve atıf bilgileri.',
+            'title': gettext('OpenAlex Yayın Kazıma'),
+            'desc': gettext('240 milyondan fazla akademik yayından kodsuz veri kazıma. Başlık, yazar, kurum ve atıf bilgileri.'),
             'icon': 'bi-search',
             'color': 'primary',
             'url_name': 'openalex:landing',
             'feature_key': 'openalex',
+            'intl': True,
         },
         {
-            'title': 'TR Dizin Makale Kazıma',
-            'desc': 'TR Dizin\'den anahtar kelime ile makale arayın; yazarları, dergileri ve atıf bilgilerini indirin.',
+            'title': gettext('TR Dizin Makale Kazıma'),
+            'desc': gettext("TR Dizin'den anahtar kelime ile makale arayın; yazarları, dergileri ve atıf bilgilerini indirin."),
             'icon': 'bi-journal-text',
             'color': 'primary',
             'url_name': 'trdizin:landing',
             'feature_key': 'trdizin',
+            'intl': False,
         },
         {
-            'title': 'Semantic Scholar Yayın Kazıma',
-            'desc': '200 milyondan fazla akademik yayın arasında kodsuz arama yapın. WoS, Scopus ve arXiv dahil tüm büyük veri tabanlarını kapsar.',
+            'title': gettext('Semantic Scholar Yayın Kazıma'),
+            'desc': gettext('200 milyondan fazla akademik yayın arasında kodsuz arama yapın. WoS, Scopus ve arXiv dahil tüm büyük veri tabanlarını kapsar.'),
             'icon': 'bi-diagram-3-fill',
             'color': 'info',
             'url_name': 'semanticscholar:landing',
             'feature_key': 'semanticscholar',
+            'intl': True,
         },
         {
-            'title': 'Üniversite Tez Arşivi',
-            'desc': '19 Türk üniversitesinin açık erişim arşivinde anahtar kelime ile tez ve makale arayın.',
+            'title': gettext('Üniversite Tez Arşivi'),
+            'desc': gettext('19 Türk üniversitesinin açık erişim arşivinde anahtar kelime ile tez ve makale arayın.'),
             'icon': 'bi-mortarboard',
             'color': 'warning',
             'url_name': 'oaipmh:landing',
             'feature_key': 'oaipmh',
+            'intl': False,
         },
     ]
     settings = SiteSettings.load()
-    tools = [t for t in tools if getattr(settings, f'feature_{t["feature_key"]}', True)]
+    is_tr = (get_language() or 'tr')[:2] == 'tr'
+    tools = [t for t in tools
+             if getattr(settings, f'feature_{t["feature_key"]}', True) and (is_tr or t['intl'])]
     return render(request, 'tarama_hub.html', {'tools': tools})
 
 
