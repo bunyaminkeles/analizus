@@ -155,6 +155,7 @@ maddelerde.
     (e-posta doğrulama, günlük limit — parça birleştirme 2 tam cümleye bölündü, demo e-posta) çevrili;
     25 msgid (bulanık tahminler yanlıştı, hepsi elle). EN/DE giriş yapmış sayfada TR 0.
     Not: landing JS metinleri zaten etiketliydi (ölçüm aracı yanlış saymıştı).
+  - [ ] **DURAKLATILDI (27 Eylül 2026, kullanıcı: "pause")** — bibliometri Aşama 1–4 dev'de (2e94544, d9af3f5, 0865346), main/canlı e86b17d; MERGE EDİLMEDİ (migration yok, 61/61). Sıradaki öneri: (a) Research Gap grafiği + 15 analizin doğruluk testleri → (b) S2 bağlantısı (migration: BibliometricJob'a S2 FK) → (c) OpenAlex tekrar kayıt.
   - [ ] **BİBLİOMETRİ EN/DE — DEVAM EDİYOR** (kullanıcı kararları 27 Eylül 2026: S2 bağlantısı eklensin +
     analiz sonuçları test edilsin; bibliometri sayfası EN/DE evet; tekrar kayıt incelensin evet).
     - [x] Aşama 1 tetikleme+e-posta: bibliometrics URL'leri i18n'e; OpenAlex JS fetch `{% url %}`+sentinel;
