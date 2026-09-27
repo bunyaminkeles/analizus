@@ -455,6 +455,11 @@ maddelerde.
   yenilerken `X-Cron-Secret` header'ına geçmek de değerlendirilmeli. Yenilenirse
   `.env` + Hetzner crontab'daki TÜM `/api/cron/*` satırları birlikte güncellenmeli.
 
+**C00. ÜÇÜNCÜ MERGE — 27 Eylül 2026 (kullanıcı: "sorun yoksa merge edelim")**
+- [x] Ön kontrol: 61/61, makemigrations temiz, migration YOK, requirements değişmedi, main'de dev'de olmayan commit yok.
+- [x] main ← dev fast-forward + push (8 commit: JSON-LD, tarama hub EN/DE, set_language, proje talebi TR ifadeler, profil fotoğrafı).
+- [ ] Hetzner deploy (kullanıcı): `git pull origin main` → `docker compose restart web && docker compose restart nginx`. Migration yok → DB yedeği zorunlu değil.
+
 **C0. İKİNCİ MERGE — 26 Eylül 2026 (kullanıcı: "merge edelim, sorun yoksa")**
 - [x] Ön kontrol: çalışma ağacı temiz, 61/61 pytest, `makemigrations --check` temiz,
   `check --deploy` (DEBUG=False) yalnız W009 (yerel test anahtarı), main'de dev'de olmayan commit yok.
