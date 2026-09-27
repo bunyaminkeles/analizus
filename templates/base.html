@@ -219,11 +219,11 @@
                         {% if features.istatistik %}
                         <a href="{% url 'analiz_home' %}" class="site-nav__dropdown-item" role="menuitem">{% trans "İstatistik Analiz Araçları" %}</a>
                         {% endif %}
-                        {% comment %}Bibliometrik/Tableau/Akademik Tarama arayüzü henüz çevrilmedi → yalnız TR (todo){% endcomment %}
-                        {% if LANGUAGE_CODE == 'tr' %}
                         {% if features.bibliometrics %}
                         <a href="{% url 'bibliometrics:landing' %}" class="site-nav__dropdown-item" role="menuitem">{% trans "Bibliometrik Analiz" %}</a>
                         {% endif %}
+                        {% comment %}Tableau arayüzü henüz çevrilmedi → yalnız TR (todo). Bibliometri EN/DE'de açık (27 Eylül 2026){% endcomment %}
+                        {% if LANGUAGE_CODE == 'tr' %}
                         <a href="{% url 'tableau_dashboard' %}" class="site-nav__dropdown-item" role="menuitem">{% trans "Tableau Analizleri" %}</a>
                         {% endif %}
                         <div class="site-nav__dropdown-divider"></div>
@@ -437,10 +437,8 @@
                 </button>
                 <div class="nav-drawer__accordion-body" id="mob-analizler">
                     {% if features.istatistik %}<a href="{% url 'analiz_home' %}" class="nav-drawer__link">{% trans "İstatistik Analiz Araçları" %}</a>{% endif %}
-                    {% if LANGUAGE_CODE == 'tr' %}
                     {% if features.bibliometrics %}<a href="{% url 'bibliometrics:landing' %}" class="nav-drawer__link">{% trans "Bibliometrik Analiz" %}</a>{% endif %}
-                    <a href="{% url 'tableau_dashboard' %}" class="nav-drawer__link">{% trans "Tableau Analizleri" %}</a>
-                    {% endif %}
+                    {% if LANGUAGE_CODE == 'tr' %}<a href="{% url 'tableau_dashboard' %}" class="nav-drawer__link">{% trans "Tableau Analizleri" %}</a>{% endif %}
                     <a href="{% url 'hangi_test' %}" class="nav-drawer__link">{% trans "Hangi Test?" %}</a>
                     {% if features.ai_assistant %}<a href="{% url 'ai_assistant' %}" class="nav-drawer__link">{% trans "AI Asistan" %}</a>{% endif %}
                 </div>

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-27 22:18+0300\n"
+"POT-Creation-Date: 2026-09-27 22:26+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,8 +29,38 @@ msgstr "English"
 msgid "German"
 msgstr "German"
 
+#: bibliometrics/forms.py:13
+msgid "Veri Dosyası / Dosyaları"
+msgstr "Data File(s)"
+
+#: bibliometrics/forms.py:15
+msgid ""
+"BibTeX (.bib), WoS TSV, Scopus CSV, OpenAlex TXT veya Excel (.xlsx) "
+"formatları desteklenir. Birden fazla dosya seçebilirsiniz — kayıtlar "
+"birleştirilir. Maks 10 MB/dosya."
+msgstr ""
+"BibTeX (.bib), WoS TSV, Scopus CSV, OpenAlex TXT and Excel (.xlsx) formats "
+"are supported. You can select multiple files — the records are merged. Max. "
+"10 MB per file."
+
+#: bibliometrics/forms.py:42
+#, python-brace-format
+msgid ""
+"Desteklenmeyen dosya formatı: {ext}. Lütfen .bib, .csv, .tsv, .txt veya "
+".xlsx yükleyin."
+msgstr ""
+"Unsupported file format: {ext}. Please upload .bib, .csv, .tsv, .txt or "
+".xlsx."
+
+#: bibliometrics/forms.py:47
+#, python-brace-format
+msgid ""
+"Dosya boyutu çok büyük ({size} MB). Maksimum {max} MB yükleyebilirsiniz."
+msgstr "The file is too large ({size} MB). You can upload up to {max} MB."
+
 #: bibliometrics/services/analyzer.py:151
 #: bibliometrics/services/analyzer.py:215
+#: bibliometrics/templates/bibliometrics/landing.html:195
 msgid "Yıllara Göre Yayın Trendi"
 msgstr "Publication Trend by Year"
 
@@ -39,6 +69,7 @@ msgid "Yıllık Büyüme Oranı"
 msgstr "Annual Growth Rate"
 
 #: bibliometrics/services/analyzer.py:153
+#: bibliometrics/templates/bibliometrics/landing.html:196
 msgid "En Verimli Yazarlar (Top 15)"
 msgstr "Most Productive Authors (Top 15)"
 
@@ -47,8 +78,10 @@ msgid "Lotka Kanunu — Yazar Üretkenliği"
 msgstr "Lotka's Law — Author Productivity"
 
 #: bibliometrics/services/analyzer.py:155
-#: bibliometrics/services/analyzer.py:291 bibliometrics/views.py:59
-#: openalex/templates/openalex/landing.html:107
+#: bibliometrics/services/analyzer.py:291
+#: bibliometrics/templates/bibliometrics/landing.html:197
+#: bibliometrics/templates/bibliometrics/landing.html:293
+#: bibliometrics/views.py:59 openalex/templates/openalex/landing.html:107
 msgid "Anahtar Kelime Bulutu"
 msgstr "Keyword Cloud"
 
@@ -69,6 +102,7 @@ msgstr "Most Cited Publications (Top 10)"
 
 #: bibliometrics/services/analyzer.py:159
 #: bibliometrics/services/job_runner.py:205
+#: bibliometrics/templates/bibliometrics/landing.html:199
 #: openalex/templates/openalex/landing.html:111
 msgid "En Çok Yayın Yapılan Dergiler"
 msgstr "Journals with the Most Publications"
@@ -85,13 +119,16 @@ msgstr "Country Collaboration Network"
 
 #: bibliometrics/services/analyzer.py:162
 #: bibliometrics/services/analyzer.py:470
-#: bibliometrics/services/job_runner.py:207 bibliometrics/views.py:60
-#: openalex/templates/openalex/landing.html:118
+#: bibliometrics/services/job_runner.py:207
+#: bibliometrics/templates/bibliometrics/landing.html:205
+#: bibliometrics/templates/bibliometrics/landing.html:297
+#: bibliometrics/views.py:60 openalex/templates/openalex/landing.html:118
 msgid "Yazar İşbirliği Ağı"
 msgstr "Author Collaboration Network"
 
 #: bibliometrics/services/analyzer.py:163
 #: bibliometrics/services/analyzer.py:537
+#: bibliometrics/templates/bibliometrics/landing.html:206
 #: openalex/templates/openalex/landing.html:119
 msgid "Yayın Türleri Dağılımı"
 msgstr "Publication Type Distribution"
@@ -104,6 +141,7 @@ msgstr "Citation Analysis and H-index"
 #: bibliometrics/services/analyzer.py:165
 #: bibliometrics/services/analyzer.py:652
 #: bibliometrics/services/job_runner.py:209
+#: bibliometrics/templates/bibliometrics/landing.html:208
 #: openalex/templates/openalex/landing.html:121
 msgid "Yıllık Atıf Trendi"
 msgstr "Annual Citation Trend"
@@ -118,8 +156,10 @@ msgstr "Research Topic Clusters (Topic Map)"
 msgid "Araştırma Boşluğu Haritası (Research Gap)"
 msgstr "Research Gap Map"
 
-#: bibliometrics/services/analyzer.py:211 bibliometrics/views.py:45
-#: bibliometrics/views.py:58
+#: bibliometrics/services/analyzer.py:211
+#: bibliometrics/templates/bibliometrics/landing.html:289
+#: bibliometrics/templates/bibliometrics/landing.html:328
+#: bibliometrics/views.py:45 bibliometrics/views.py:58
 msgid "Yayın Trendi"
 msgstr "Publication Trend"
 
@@ -439,6 +479,7 @@ msgid "Anahtar Kelime Bulutu + Eş-Oluşum Ağı"
 msgstr "Keyword Cloud + Co-occurrence Network"
 
 #: bibliometrics/services/job_runner.py:204
+#: bibliometrics/templates/bibliometrics/landing.html:198
 #: openalex/templates/openalex/landing.html:110
 msgid "En Çok Atıf Alan Yayınlar"
 msgstr "Most Cited Publications"
@@ -623,11 +664,440 @@ msgstr "For the full report, submit a project request → analizus.com"
 msgid "Bibliometrik Analiz Raporu — Analizus"
 msgstr "Bibliometric Analysis Report — Analizus"
 
+#: bibliometrics/templates/bibliometrics/landing.html:4
+#: bibliometrics/templates/bibliometrics/landing.html:6
+#: bibliometrics/templates/bibliometrics/landing.html:8
+msgid "Bibliometrik Analiz — WoS, Scopus, BibTeX ile Atıf ve Yayın Analizi"
+msgstr ""
+"Bibliometric Analysis — Citation and Publication Analysis with WoS, Scopus, "
+"BibTeX"
+
+#: bibliometrics/templates/bibliometrics/landing.html:5
+#: bibliometrics/templates/bibliometrics/landing.html:7
+#: bibliometrics/templates/bibliometrics/landing.html:9
+msgid ""
+"WoS, Scopus, BibTeX veya OpenAlex verilerinizle bibliometrik analiz yapın. "
+"Yayın trendi, atıf analizi, H-index, işbirliği ağı, kelime bulutu — PDF "
+"rapor ile. Ücretsiz dene."
+msgstr ""
+"Run a bibliometric analysis with your WoS, Scopus, BibTeX or OpenAlex data. "
+"Publication trends, citation analysis, H-index, collaboration networks, word"
+" clouds — with a PDF report. Try it free."
+
+#: bibliometrics/templates/bibliometrics/landing.html:25
 #: bibliometrics/views.py:38 forum/templates/forum/home.html:300
 #: forum/views.py:4109 openalex/templates/openalex/landing.html:155
-#: templates/base.html:226 templates/base.html:444
+#: templates/base.html:223 templates/base.html:443
 msgid "Bibliometrik Analiz"
 msgstr "Bibliometric Analysis"
+
+#: bibliometrics/templates/bibliometrics/landing.html:26
+msgid ""
+"WoS, Scopus, BibTeX veya OpenAlex verilerinizi yükleyin — 10 analiz, PDF "
+"rapor"
+msgstr ""
+"Upload your WoS, Scopus, BibTeX or OpenAlex data — 10 analyses, PDF report"
+
+#: bibliometrics/templates/bibliometrics/landing.html:35
+msgid "Desteklenen Formatlar"
+msgstr "Supported Formats"
+
+#: bibliometrics/templates/bibliometrics/landing.html:36
+msgid "Çoklu dosya"
+msgstr "Multiple files"
+
+#: bibliometrics/templates/bibliometrics/landing.html:44
+msgid "10 Bibliometrik Analiz"
+msgstr "10 Bibliometric Analyses"
+
+#: bibliometrics/templates/bibliometrics/landing.html:45
+msgid "Trend · Yazarlar · H-index · Ağ · Kelime Bulutu..."
+msgstr "Trend · Authors · H-index · Network · Word Cloud..."
+
+#: bibliometrics/templates/bibliometrics/landing.html:53
+msgid "Email ile Teslim"
+msgstr "Delivered by Email"
+
+#: bibliometrics/templates/bibliometrics/landing.html:54
+msgid "Demo (3 grafik) ücretsiz · Tam rapor kayıt sayısına göre ücretli"
+msgstr "Demo (3 charts) free · Full report priced by number of records"
+
+#: bibliometrics/templates/bibliometrics/landing.html:54
+msgid "Demo (3 grafik) ücretsiz · Tam rapor için proje talebi"
+msgstr "Demo (3 charts) free · Project request for the full report"
+
+#: bibliometrics/templates/bibliometrics/landing.html:64
+msgid "Günlük Limit:"
+msgstr "Daily limit:"
+
+#: bibliometrics/templates/bibliometrics/landing.html:67
+msgid "Günlük limite ulaşıldı"
+msgstr "Daily limit reached"
+
+#: bibliometrics/templates/bibliometrics/landing.html:69
+#, python-format
+msgid "%(remaining)s hakkınız kaldı"
+msgstr "%(remaining)s remaining"
+
+#: bibliometrics/templates/bibliometrics/landing.html:80
+msgid ""
+"OpenAlex'te tarama mı yaptın? İndirdiğin Excel'i buraya doğrudan yükle, "
+"bibliometrik raporun hazır."
+msgstr ""
+"Did you search on OpenAlex? Upload the Excel file you downloaded here and "
+"your bibliometric report is ready."
+
+#: bibliometrics/templates/bibliometrics/landing.html:81
+msgid "OpenAlex Taramasına Git"
+msgstr "Go to OpenAlex Search"
+
+#: bibliometrics/templates/bibliometrics/landing.html:89
+msgid "Veri Dosyası Yükle"
+msgstr "Upload Data File"
+
+#: bibliometrics/templates/bibliometrics/landing.html:95
+msgid "Günlük analiz limitinize ulaştınız. Yarın tekrar deneyiniz."
+msgstr ""
+"You have reached your daily analysis limit. Please try again tomorrow."
+
+#: bibliometrics/templates/bibliometrics/landing.html:110
+#: bibliometrics/templates/bibliometrics/landing.html:378
+#: istatistik/templates/istatistik/afa.html:109
+#: istatistik/templates/istatistik/anova.html:79
+#: istatistik/templates/istatistik/anova.html:229
+#: istatistik/templates/istatistik/betimsel.html:89
+#: istatistik/templates/istatistik/cronbach.html:93
+#: istatistik/templates/istatistik/friedman.html:93
+#: istatistik/templates/istatistik/karar_agaci.html:114
+#: istatistik/templates/istatistik/ki_kare.html:71
+#: istatistik/templates/istatistik/ki_kare.html:226
+#: istatistik/templates/istatistik/korelasyon.html:90
+#: istatistik/templates/istatistik/kruskal_wallis.html:71
+#: istatistik/templates/istatistik/kruskal_wallis.html:223
+#: istatistik/templates/istatistik/lineer_regresyon.html:82
+#: istatistik/templates/istatistik/lojistik_regresyon.html:83
+#: istatistik/templates/istatistik/mann_whitney.html:71
+#: istatistik/templates/istatistik/mann_whitney.html:216
+#: istatistik/templates/istatistik/normallik.html:94
+#: istatistik/templates/istatistik/svm.html:120
+#: istatistik/templates/istatistik/tekrarli_anova.html:93
+#: istatistik/templates/istatistik/ttesti.html:271
+#: istatistik/templates/istatistik/ttesti.html:411
+#: istatistik/templates/istatistik/wilcoxon.html:94
+msgid "Analizi Başlat"
+msgstr "Run Analysis"
+
+#: bibliometrics/templates/bibliometrics/landing.html:119
+msgid "Dosya işleniyor..."
+msgstr "Processing file..."
+
+#: bibliometrics/templates/bibliometrics/landing.html:127
+msgid ""
+"Analiz sunucuda arka planda çalışıyor — sayfayı kapatsanız veya başka "
+"sekmeye geçseniz de durmaz. Tamamlandığında e-posta ile bildirilirsiniz."
+msgstr ""
+"The analysis runs on the server in the background — it keeps running even if"
+" you close the page or switch tabs. You will be notified by email when it is"
+" complete."
+
+#: bibliometrics/templates/bibliometrics/landing.html:143
+#: istatistik/templates/istatistik/afa.html:154
+#: istatistik/templates/istatistik/betimsel.html:130
+#: istatistik/templates/istatistik/cronbach.html:134
+#: istatistik/templates/istatistik/friedman.html:134
+#: istatistik/templates/istatistik/korelasyon.html:153
+#: istatistik/templates/istatistik/normallik.html:133
+#: istatistik/templates/istatistik/tekrarli_anova.html:132
+#: istatistik/templates/istatistik/wilcoxon.html:118
+msgid "Analiz Tamamlandı"
+msgstr "Analysis Complete"
+
+#: bibliometrics/templates/bibliometrics/landing.html:149
+msgid ""
+"Bibliometrik analiziniz tamamlandı. Demo raporu (3 grafik) ücretsiz "
+"alabilirsiniz. Tam rapor (10 analiz) için sipariş oluşturunuz."
+msgstr ""
+"Your bibliometric analysis is complete. You can get the demo report (3 "
+"charts) for free. Place an order for the full report (10 analyses)."
+
+#: bibliometrics/templates/bibliometrics/landing.html:149
+msgid ""
+"Bibliometrik analiziniz tamamlandı. Demo raporu (3 grafik) ücretsiz "
+"alabilirsiniz. Tam rapor için proje talebi bırakın."
+msgstr ""
+"Your bibliometric analysis is complete. You can get the demo report (3 "
+"charts) for free. For the full report, submit a project request."
+
+#: bibliometrics/templates/bibliometrics/landing.html:158
+msgid "Demo Rapor (3 Grafik)"
+msgstr "Demo Report (3 Charts)"
+
+#: bibliometrics/templates/bibliometrics/landing.html:159
+msgid "Yayın Trendi + Yazarlar + Kelime Bulutu"
+msgstr "Publication Trend + Authors + Word Cloud"
+
+#: bibliometrics/templates/bibliometrics/landing.html:160
+msgid "ÜCRETSİZ"
+msgstr "FREE"
+
+#: bibliometrics/templates/bibliometrics/landing.html:162
+#: bibliometrics/templates/bibliometrics/landing.html:395
+msgid "Demo Emaile Gönder"
+msgstr "Email the Demo"
+
+#: bibliometrics/templates/bibliometrics/landing.html:165
+#: bibliometrics/templates/bibliometrics/landing.html:394
+msgid "Email gönderildi!"
+msgstr "Email sent!"
+
+#: bibliometrics/templates/bibliometrics/landing.html:176
+msgid "Tam Rapor (10 Analiz)"
+msgstr "Full Report (10 Analyses)"
+
+#: bibliometrics/templates/bibliometrics/landing.html:178
+msgid "Tüm analizler + istatistikler"
+msgstr "All analyses + statistics"
+
+#: bibliometrics/templates/bibliometrics/landing.html:182
+msgid "Sipariş Oluştur"
+msgstr "Place Order"
+
+#: bibliometrics/templates/bibliometrics/landing.html:182
+msgid "Proje Talebi Gönder"
+msgstr "Submit Project Request"
+
+#: bibliometrics/templates/bibliometrics/landing.html:191
+msgid "Tam Raporda Yer Alan 10 Analiz:"
+msgstr "10 Analyses Included in the Full Report:"
+
+#: bibliometrics/templates/bibliometrics/landing.html:204
+#: openalex/templates/openalex/landing.html:116
+msgid "Kurum / Ülke Dağılımı"
+msgstr "Institution / Country Distribution"
+
+#: bibliometrics/templates/bibliometrics/landing.html:207
+#: openalex/templates/openalex/landing.html:120
+msgid "Atıf Analizi + H-index"
+msgstr "Citation Analysis + H-index"
+
+#: bibliometrics/templates/bibliometrics/landing.html:222
+msgid "Geçmiş Analizlerim"
+msgstr "My Past Analyses"
+
+#: bibliometrics/templates/bibliometrics/landing.html:229
+msgctxt "bibliometri kaynak sütunu"
+msgid "Dosya"
+msgstr "Source"
+
+#: bibliometrics/templates/bibliometrics/landing.html:230
+#: forum/templates/forum/egitim.html:211
+#: forum/templates/forum/egitim_talebi.html:111
+msgid "Format"
+msgstr "Format"
+
+#: bibliometrics/templates/bibliometrics/landing.html:231
+msgid "Kayıt"
+msgstr "Records"
+
+#: bibliometrics/templates/bibliometrics/landing.html:232
+msgid "Durum"
+msgstr "Status"
+
+#: bibliometrics/templates/bibliometrics/landing.html:233
+msgid "Tarih"
+msgstr "Date"
+
+#: bibliometrics/templates/bibliometrics/landing.html:234
+#: forum/templates/forum/market/job_detail.html:238
+msgid "İşlem"
+msgstr "Action"
+
+#: bibliometrics/templates/bibliometrics/landing.html:249 forum/models.py:870
+#: forum/templates/forum/hangi_test.html:866
+#: forum/templates/forum/market/my_jobs.html:76
+#: forum/templates/forum/profile_detail.html:341
+#: forum/templates/forum/profile_detail.html:468
+msgid "Tamamlandı"
+msgstr "Completed"
+
+#: bibliometrics/templates/bibliometrics/landing.html:251
+msgid "Çalışıyor"
+msgstr "Running"
+
+#: bibliometrics/templates/bibliometrics/landing.html:253
+msgid "Başarısız"
+msgstr "Failed"
+
+#: bibliometrics/templates/bibliometrics/landing.html:255
+msgid "Bekliyor"
+msgstr "Pending"
+
+#: bibliometrics/templates/bibliometrics/landing.html:268
+#: forum/templates/forum/egitim.html:306 templates/base.html:270
+#: templates/base.html:473 templates/partials/footer.html:121
+msgid "Proje Talebi"
+msgstr "Project Request"
+
+#: bibliometrics/templates/bibliometrics/landing.html:285
+#: templates/service_promo.html:80
+msgid "Örnek Rapor Çıktıları"
+msgstr "Sample Report Outputs"
+
+#: bibliometrics/templates/bibliometrics/landing.html:301
+#: bibliometrics/views.py:61
+msgid "Atıf Analizi & H-index"
+msgstr "Citation Analysis & H-index"
+
+#: bibliometrics/templates/bibliometrics/landing.html:305
+#: bibliometrics/views.py:62
+msgid "Araştırma Boşluğu Haritası"
+msgstr "Research Gap Map"
+
+#: bibliometrics/templates/bibliometrics/landing.html:309
+#: bibliometrics/views.py:63
+msgid "Yazar Üretkenlik Dağılımı (Lotka Kanunu)"
+msgstr "Author Productivity Distribution (Lotka's Law)"
+
+#: bibliometrics/templates/bibliometrics/landing.html:312
+#: templates/service_promo.html:89
+msgid ""
+"Bu grafikler aracın gerçek çıktısıdır — sizin verinizle aynı kalitede "
+"üretilir."
+msgstr ""
+"These charts are the tool's actual output — the same quality is produced "
+"with your own data."
+
+#: bibliometrics/templates/bibliometrics/landing.html:320
+msgid "Bibliometrik Analiz Nedir?"
+msgstr "What Is Bibliometric Analysis?"
+
+#: bibliometrics/templates/bibliometrics/landing.html:323
+msgid ""
+"Bibliometrik analiz; bilimsel yayınların atıf sayısı, yazar işbirliği ağı, "
+"yayın trendi ve anahtar kelime dağılımı gibi nicel göstergelerini inceleyen "
+"bir araştırma yöntemidir. Tez literatür taraması, sistematik derleme ve "
+"araştırma haritalaması için vazgeçilmez bir araçtır. Analizus Bibliometrik "
+"Analiz aracı; Web of Science (WoS), Scopus, BibTeX ve OpenAlex formatlarını "
+"destekler — tek dosya yükleyerek 10 farklı analizi saniyeler içinde "
+"gerçekleştirebilirsiniz."
+msgstr ""
+"Bibliometric analysis is a research method that examines quantitative "
+"indicators of scientific publications such as citation counts, author "
+"collaboration networks, publication trends and keyword distributions. It is "
+"an indispensable tool for thesis literature reviews, systematic reviews and "
+"research mapping. The Analizus Bibliometric Analysis tool supports Web of "
+"Science (WoS), Scopus, BibTeX and OpenAlex formats — upload a single file "
+"and run 10 different analyses within seconds."
+
+#: bibliometrics/templates/bibliometrics/landing.html:329
+msgid "Yıllara göre yayın sayısı değişimini görselleştirin."
+msgstr "Visualise how the number of publications changes over the years."
+
+#: bibliometrics/templates/bibliometrics/landing.html:334
+#: bibliometrics/views.py:48
+msgid "Atıf & H-index"
+msgstr "Citations & H-index"
+
+#: bibliometrics/templates/bibliometrics/landing.html:335
+msgid "En çok atıf alan makaleleri ve yazar H-index değerlerini hesaplayın."
+msgstr "Identify the most cited articles and calculate author H-index values."
+
+#: bibliometrics/templates/bibliometrics/landing.html:340
+msgid "İşbirliği Ağı"
+msgstr "Collaboration Network"
+
+#: bibliometrics/templates/bibliometrics/landing.html:341
+msgid "Yazar ve kurum ortak çalışma ağlarını görsel harita ile inceleyin."
+msgstr ""
+"Explore author and institution collaboration networks on a visual map."
+
+#: bibliometrics/templates/bibliometrics/landing.html:346
+#: bibliometrics/views.py:47
+msgid "Kelime Bulutu"
+msgstr "Word Cloud"
+
+#: bibliometrics/templates/bibliometrics/landing.html:347
+msgid "Başlık ve özet metinlerinden anahtar kavram frekanslarını çıkarın."
+msgstr "Extract key concept frequencies from titles and abstracts."
+
+#: bibliometrics/templates/bibliometrics/landing.html:379
+#: forum/templates/forum/home.html:1163
+msgid "Yükleniyor..."
+msgstr "Loading..."
+
+#: bibliometrics/templates/bibliometrics/landing.html:380
+msgid "Dosya yükleniyor..."
+msgstr "Uploading file..."
+
+#: bibliometrics/templates/bibliometrics/landing.html:381
+msgid "Analiz başladı, lütfen bekleyin..."
+msgstr "Analysis started, please wait..."
+
+#: bibliometrics/templates/bibliometrics/landing.html:382
+msgid "Analiz arka planda devam ediyor, lütfen bekleyin..."
+msgstr "The analysis is running in the background, please wait..."
+
+#: bibliometrics/templates/bibliometrics/landing.html:383
+msgid "Grafikler ve PDF oluşturuluyor..."
+msgstr "Creating charts and PDF..."
+
+#: bibliometrics/templates/bibliometrics/landing.html:384
+#: istatistik/templates/istatistik/afa.html:280
+#: istatistik/templates/istatistik/betimsel.html:241
+#: istatistik/templates/istatistik/cronbach.html:238
+#: istatistik/templates/istatistik/friedman.html:253
+#: istatistik/templates/istatistik/korelasyon.html:284
+#: istatistik/templates/istatistik/normallik.html:220
+#: istatistik/templates/istatistik/tekrarli_anova.html:251
+#: istatistik/templates/istatistik/wilcoxon.html:238
+msgid "Analiz başarısız oldu."
+msgstr "The analysis failed."
+
+#: bibliometrics/templates/bibliometrics/landing.html:385
+#: semanticscholar/templates/semanticscholar/landing.html:196
+msgid "Bir hata oluştu."
+msgstr "An error occurred."
+
+#: bibliometrics/templates/bibliometrics/landing.html:386
+msgid "Sunucu bağlantı hatası. Lütfen tekrar deneyin."
+msgstr "Server connection error. Please try again."
+
+#: bibliometrics/templates/bibliometrics/landing.html:387
+#, python-brace-format
+msgid "{n} kayıt"
+msgstr "{n} records"
+
+#: bibliometrics/templates/bibliometrics/landing.html:388
+#, python-brace-format
+msgid "{n} dosya seçildi: {names}"
+msgstr "{n} files selected: {names}"
+
+#: bibliometrics/templates/bibliometrics/landing.html:389
+msgid "Admin ile iletişime geçiniz"
+msgstr "Please contact the admin"
+
+#: bibliometrics/templates/bibliometrics/landing.html:390
+msgid "Admin ile İletişim"
+msgstr "Contact Admin"
+
+#: bibliometrics/templates/bibliometrics/landing.html:391
+msgid "Siparişi Görüntüle"
+msgstr "View Order"
+
+#: bibliometrics/templates/bibliometrics/landing.html:392
+#: openalex/templates/openalex/landing.html:496
+#: templates/partials/footer.html:268
+msgid "Gönderiliyor..."
+msgstr "Sending..."
+
+#: bibliometrics/templates/bibliometrics/landing.html:393
+msgid "Gönderildi"
+msgstr "Sent"
+
+#: bibliometrics/templates/bibliometrics/landing.html:396
+#: bibliometrics/views.py:209
+msgid "Email gönderilemedi."
+msgstr "The email could not be sent."
 
 #: bibliometrics/views.py:43
 msgid ""
@@ -655,16 +1125,8 @@ msgstr ""
 "Most productive authors, collaboration network and Lotka's law distribution."
 
 #: bibliometrics/views.py:47
-msgid "Kelime Bulutu"
-msgstr "Word Cloud"
-
-#: bibliometrics/views.py:47
 msgid "Alanınızdaki öne çıkan anahtar kelimeleri görselleştirin."
 msgstr "Visualise the prominent keywords in your field."
-
-#: bibliometrics/views.py:48
-msgid "Atıf & H-index"
-msgstr "Citations & H-index"
 
 #: bibliometrics/views.py:48
 msgid "En çok atıf alan yayınlar, yıllık atıf trendi ve h-index hesabı."
@@ -704,18 +1166,6 @@ msgstr "The system automatically runs 10 different analyses."
 msgid "Demo rapor (3 grafik) ücretsiz emailinize gelir."
 msgstr "A demo report (3 charts) is sent to your email free of charge."
 
-#: bibliometrics/views.py:61
-msgid "Atıf Analizi & H-index"
-msgstr "Citation Analysis & H-index"
-
-#: bibliometrics/views.py:62
-msgid "Araştırma Boşluğu Haritası"
-msgstr "Research Gap Map"
-
-#: bibliometrics/views.py:63
-msgid "Yazar Üretkenlik Dağılımı (Lotka Kanunu)"
-msgstr "Author Productivity Distribution (Lotka's Law)"
-
 #: bibliometrics/views.py:71
 msgid ""
 "Bibliometrik analiz kullanmak için e-posta adresinizi doğrulamanız "
@@ -749,10 +1199,6 @@ msgstr "There is no email address on your account."
 #: bibliometrics/views.py:205
 msgid "Demo PDF oluşturulamamış."
 msgstr "The demo PDF could not be generated."
-
-#: bibliometrics/views.py:209
-msgid "Email gönderilemedi."
-msgstr "The email could not be sent."
 
 #: bibliometrics/views.py:211
 #, python-brace-format
@@ -790,11 +1236,11 @@ msgstr "A bibliometric analysis already exists for this search."
 msgid "Bibliometrik analiz başlatıldı."
 msgstr "The bibliometric analysis has started."
 
-#: bibliometrics/views.py:294
+#: bibliometrics/views.py:300
 msgid "Analiz tamamlanmadan sipariş oluşturamazsınız."
 msgstr "You cannot place an order before the analysis is complete."
 
-#: bibliometrics/views.py:311
+#: bibliometrics/views.py:317
 msgid ""
 "Siparişiniz alındı! Ödeme onayından sonra tam rapor e-postanıza "
 "gönderilecek."
@@ -802,11 +1248,11 @@ msgstr ""
 "Your order has been received! The full report will be sent to your email "
 "once the payment is confirmed."
 
-#: bibliometrics/views.py:318
+#: bibliometrics/views.py:324
 msgid "İlk 500 kayıt"
 msgstr "First 500 records"
 
-#: bibliometrics/views.py:324
+#: bibliometrics/views.py:330
 #, python-brace-format
 msgid "{start}–{end}. kayıtlar"
 msgstr "Records {start}–{end}"
@@ -1147,13 +1593,6 @@ msgstr "Open (Awaiting Offers)"
 msgid "Devam Ediyor"
 msgstr "In Progress"
 
-#: forum/models.py:870 forum/templates/forum/hangi_test.html:866
-#: forum/templates/forum/market/my_jobs.html:76
-#: forum/templates/forum/profile_detail.html:341
-#: forum/templates/forum/profile_detail.html:468
-msgid "Tamamlandı"
-msgstr "Completed"
-
 #: forum/models.py:871
 msgid "İptal Edildi"
 msgstr "Cancelled"
@@ -1269,7 +1708,7 @@ msgstr "Individual"
 
 #: forum/models.py:1774 forum/templates/forum/egitim.html:103
 #: forum/templates/forum/egitim_talebi.html:75 templates/base.html:281
-#: templates/base.html:483 templates/partials/footer.html:119
+#: templates/base.html:481 templates/partials/footer.html:119
 msgid "Kurumsal"
 msgstr "Corporate"
 
@@ -1483,8 +1922,8 @@ msgstr "Project-based matching with experts and analysis services"
 #: forum/templates/forum/about.html:73
 #: forum/templates/forum/ai_assistant.html:4
 #: forum/templates/forum/ai_assistant.html:16 templates/base.html:233
-#: templates/base.html:448 templates/base.html:792 templates/base.html:796
-#: templates/base.html:802 templates/partials/footer.html:48
+#: templates/base.html:446 templates/base.html:790 templates/base.html:794
+#: templates/base.html:800 templates/partials/footer.html:48
 msgid "AI Asistan"
 msgstr "AI Assistant"
 
@@ -1706,7 +2145,7 @@ msgstr "Sign Up for Free"
 
 #: forum/templates/forum/about.html:404 forum/templates/forum/home.html:292
 #: forum/templates/forum/home.html:397 templates/base.html:231
-#: templates/base.html:447 templates/partials/footer.html:46
+#: templates/base.html:445 templates/partials/footer.html:46
 msgid "Hangi Test?"
 msgstr "Which Test?"
 
@@ -1855,7 +2294,7 @@ msgstr "Sign Up"
 #: forum/templates/registration/login.html:10
 #: forum/templates/registration/login.html:249
 #: forum/templates/registration/login.html:280
-#: istatistik/templates/istatistik/analiz_hub.html:42 templates/base.html:527
+#: istatistik/templates/istatistik/analiz_hub.html:42 templates/base.html:525
 #: templates/forum/register.html:259 templates/forum/register.html:315
 #: templates/registration/password_reset_complete.html:201
 #: templates/registration/password_reset_form.html:262
@@ -2216,7 +2655,7 @@ msgstr ""
 
 #: forum/templates/forum/contact.html:4
 #: forum/templates/forum/gizlilik_politikasi.html:27 templates/base.html:290
-#: templates/base.html:490 templates/partials/footer.html:123
+#: templates/base.html:488 templates/partials/footer.html:123
 #: templates/partials/footer.html:161
 msgid "İletişim"
 msgstr "Contact"
@@ -2309,7 +2748,7 @@ msgstr "KVKK Privacy Notice"
 msgid "okudum, kabul ediyorum."
 msgstr "— I have read and accept it."
 
-#: forum/templates/forum/contact.html:95 templates/base.html:836
+#: forum/templates/forum/contact.html:95 templates/base.html:834
 msgid "Gönder"
 msgstr "Send"
 
@@ -2319,7 +2758,7 @@ msgstr "Join our community"
 
 #: forum/templates/forum/contact.html:107
 #: forum/templates/registration/login.html:250 templates/base.html:394
-#: templates/base.html:528 templates/forum/register.html:8
+#: templates/base.html:526 templates/forum/register.html:8
 #: templates/forum/register.html:260 templates/forum/register.html:312
 msgid "Kayıt Ol"
 msgstr "Sign Up"
@@ -2473,7 +2912,7 @@ msgstr "You practice with your own data and continue with lasting materials."
 
 #: forum/templates/forum/egitim.html:194
 #: forum/templates/forum/proje_talebi.html:246 templates/base.html:285
-#: templates/base.html:487
+#: templates/base.html:485
 msgid "Neden Analizus?"
 msgstr "Why Analizus?"
 
@@ -2509,11 +2948,6 @@ msgstr "remain open for practice."
 #: forum/templates/forum/egitim.html:207
 msgid "Formatlar &amp; Süreler"
 msgstr "Formats &amp; Durations"
-
-#: forum/templates/forum/egitim.html:211
-#: forum/templates/forum/egitim_talebi.html:111
-msgid "Format"
-msgstr "Format"
 
 #: forum/templates/forum/egitim.html:211
 #: forum/templates/forum/egitim_detay.html:72
@@ -2645,11 +3079,6 @@ msgstr ""
 msgid "Eğitim yerine analizi sizin yapmanızı istersem?"
 msgstr "What if I'd rather you do the analysis instead of training me?"
 
-#: forum/templates/forum/egitim.html:306 templates/base.html:270
-#: templates/base.html:475 templates/partials/footer.html:121
-msgid "Proje Talebi"
-msgstr "Project Request"
-
 #: forum/templates/forum/egitim.html:306
 msgid ""
 "sayfamızdan bize ulaşabilirsiniz; ekibimiz analizi sizin adınıza yürütür."
@@ -2713,7 +3142,7 @@ msgstr "Message on WhatsApp"
 #: forum/templates/forum/egitim_detay.html:5
 #: forum/templates/forum/egitim_detay.html:7
 #: forum/templates/forum/egitim_detay.html:9 templates/base.html:273
-#: templates/base.html:478
+#: templates/base.html:476
 msgid "Eğitim"
 msgstr "Training"
 
@@ -3780,8 +4209,8 @@ msgstr "Go to the Forum"
 msgid "Kayıt Ol &amp; Paylaş"
 msgstr "Sign Up &amp; Share"
 
-#: forum/templates/forum/hangi_test.html:263 templates/base.html:552
-#: templates/base.html:573 templates/base.html:582 templates/base.html:809
+#: forum/templates/forum/hangi_test.html:263 templates/base.html:550
+#: templates/base.html:571 templates/base.html:580 templates/base.html:807
 #: templates/partials/footer.html:178 templates/partials/footer.html:242
 msgid "Kapat"
 msgstr "Close"
@@ -3791,7 +4220,7 @@ msgid "Analiz Amacı"
 msgstr "Analysis Goal"
 
 #: forum/templates/forum/hangi_test.html:287
-#: forum/templates/forum/hangi_test.html:420 templates/base.html:820
+#: forum/templates/forum/hangi_test.html:420 templates/base.html:818
 msgid "Ne yapmak istiyorsunuz?"
 msgstr "What would you like to do?"
 
@@ -4864,7 +5293,7 @@ msgid "Açık İlanlar"
 msgstr "Open Listings"
 
 #: forum/templates/forum/home.html:306 templates/base.html:369
-#: templates/base.html:513
+#: templates/base.html:511
 msgid "Profilim"
 msgstr "My Profile"
 
@@ -5210,8 +5639,8 @@ msgstr ""
 "Your AI-powered guide for literature review and every stage of your "
 "research."
 
-#: forum/templates/forum/home.html:761 templates/base.html:453
-#: templates/base.html:455 templates/partials/_nav_tarama_link.html:2
+#: forum/templates/forum/home.html:761 templates/base.html:451
+#: templates/base.html:453 templates/partials/_nav_tarama_link.html:2
 #: templates/tarama_console_base.html:26
 msgid "Akademik Tarama"
 msgstr "Academic Search"
@@ -5233,7 +5662,7 @@ msgid "TR Dizin Tarama"
 msgstr "TR Dizin Search"
 
 #: forum/templates/forum/home.html:777 templates/base.html:259
-#: templates/base.html:468 templates/partials/footer.html:63
+#: templates/base.html:466 templates/partials/footer.html:63
 msgid "Çalışma Odaları"
 msgstr "Study Rooms"
 
@@ -5460,11 +5889,7 @@ msgstr "Correct! You earned +10 points"
 msgid "Yanlış! Doğru cevap:"
 msgstr "Wrong! The correct answer:"
 
-#: forum/templates/forum/home.html:1163
-msgid "Yükleniyor..."
-msgstr "Loading..."
-
-#: forum/templates/forum/home.html:1203 templates/base.html:563
+#: forum/templates/forum/home.html:1203 templates/base.html:561
 msgid "Sonraki Soru"
 msgstr "Next Question"
 
@@ -5690,10 +6115,6 @@ msgstr "Manage Offer: %(username)s"
 msgid "Bu işlem geri alınamaz. Kullanıcıya bildirim gönderilecektir."
 msgstr "This action cannot be undone. The user will be notified."
 
-#: forum/templates/forum/market/job_detail.html:238
-msgid "İşlem"
-msgstr "Action"
-
 #: forum/templates/forum/market/job_detail.html:240
 #: templates/partials/cookie_consent.html:18
 msgid "Reddet"
@@ -5868,7 +6289,7 @@ msgstr ""
 "matching, reliable academic support."
 
 #: forum/templates/forum/market/job_list.html:27 templates/base.html:243
-#: templates/base.html:458 templates/partials/footer.html:50
+#: templates/base.html:456 templates/partials/footer.html:50
 msgid "Pazaryeri"
 msgstr "Marketplace"
 
@@ -6334,7 +6755,7 @@ msgstr "Expertise Tools"
 #: forum/templates/forum/profile_detail.html:204
 #: forum/templates/forum/profile_edit.html:9
 #: forum/templates/forum/profile_edit.html:20 templates/base.html:370
-#: templates/base.html:514
+#: templates/base.html:512
 msgid "Profili Düzenle"
 msgstr "Edit Profile"
 
@@ -13538,31 +13959,6 @@ msgstr "Number of Factors"
 msgid "(boş = otomatik)"
 msgstr "(empty = automatic)"
 
-#: istatistik/templates/istatistik/afa.html:109
-#: istatistik/templates/istatistik/anova.html:79
-#: istatistik/templates/istatistik/anova.html:229
-#: istatistik/templates/istatistik/betimsel.html:89
-#: istatistik/templates/istatistik/cronbach.html:93
-#: istatistik/templates/istatistik/friedman.html:93
-#: istatistik/templates/istatistik/karar_agaci.html:114
-#: istatistik/templates/istatistik/ki_kare.html:71
-#: istatistik/templates/istatistik/ki_kare.html:226
-#: istatistik/templates/istatistik/korelasyon.html:90
-#: istatistik/templates/istatistik/kruskal_wallis.html:71
-#: istatistik/templates/istatistik/kruskal_wallis.html:223
-#: istatistik/templates/istatistik/lineer_regresyon.html:82
-#: istatistik/templates/istatistik/lojistik_regresyon.html:83
-#: istatistik/templates/istatistik/mann_whitney.html:71
-#: istatistik/templates/istatistik/mann_whitney.html:216
-#: istatistik/templates/istatistik/normallik.html:94
-#: istatistik/templates/istatistik/svm.html:120
-#: istatistik/templates/istatistik/tekrarli_anova.html:93
-#: istatistik/templates/istatistik/ttesti.html:271
-#: istatistik/templates/istatistik/ttesti.html:411
-#: istatistik/templates/istatistik/wilcoxon.html:94
-msgid "Analizi Başlat"
-msgstr "Run Analysis"
-
 #: istatistik/templates/istatistik/afa.html:117
 msgid "Faktör analizi yapılıyor, lütfen bekleyin…"
 msgstr "Running factor analysis, please wait…"
@@ -13612,17 +14008,6 @@ msgstr "These warnings may affect your data quality. You can still continue."
 #: istatistik/templates/istatistik/tekrarli_anova.html:124
 msgid "Yine de devam et"
 msgstr "Continue anyway"
-
-#: istatistik/templates/istatistik/afa.html:154
-#: istatistik/templates/istatistik/betimsel.html:130
-#: istatistik/templates/istatistik/cronbach.html:134
-#: istatistik/templates/istatistik/friedman.html:134
-#: istatistik/templates/istatistik/korelasyon.html:153
-#: istatistik/templates/istatistik/normallik.html:133
-#: istatistik/templates/istatistik/tekrarli_anova.html:132
-#: istatistik/templates/istatistik/wilcoxon.html:118
-msgid "Analiz Tamamlandı"
-msgstr "Analysis Complete"
 
 #: istatistik/templates/istatistik/afa.html:161
 msgid "KMO Değeri"
@@ -13860,17 +14245,6 @@ msgstr " items selected"
 #: istatistik/templates/istatistik/tekrarli_anova.html:248
 msgid "Tümünü Kaldır"
 msgstr "Deselect All"
-
-#: istatistik/templates/istatistik/afa.html:280
-#: istatistik/templates/istatistik/betimsel.html:241
-#: istatistik/templates/istatistik/cronbach.html:238
-#: istatistik/templates/istatistik/friedman.html:253
-#: istatistik/templates/istatistik/korelasyon.html:284
-#: istatistik/templates/istatistik/normallik.html:220
-#: istatistik/templates/istatistik/tekrarli_anova.html:251
-#: istatistik/templates/istatistik/wilcoxon.html:238
-msgid "Analiz başarısız oldu."
-msgstr "The analysis failed."
 
 #: istatistik/templates/istatistik/afa.html:281
 #: istatistik/templates/istatistik/betimsel.html:242
@@ -17943,14 +18317,6 @@ msgstr "I Want a Bibliometric Analysis"
 msgid "Bibliometrik Analiz — 15 Grafik PDF Rapor"
 msgstr "Bibliometric Analysis — 15-Chart PDF Report"
 
-#: openalex/templates/openalex/landing.html:116
-msgid "Kurum / Ülke Dağılımı"
-msgstr "Institution / Country Distribution"
-
-#: openalex/templates/openalex/landing.html:120
-msgid "Atıf Analizi + H-index"
-msgstr "Citation Analysis + H-index"
-
 #: openalex/templates/openalex/landing.html:126
 msgid ""
 "Demo rapor (3 grafik) ücretsiz emaile gönderilir. Tam rapor (15 analiz) "
@@ -18099,11 +18465,6 @@ msgstr "No Source"
 #: openalex/templates/openalex/landing.html:455
 msgid "Özet yok"
 msgstr "No abstract"
-
-#: openalex/templates/openalex/landing.html:496
-#: templates/partials/footer.html:268
-msgid "Gönderiliyor..."
-msgstr "Sending..."
 
 #: openalex/templates/openalex/landing.html:519
 msgid "Demo Sonuçları E-posta Gönder"
@@ -18440,10 +18801,6 @@ msgstr ""
 "text-decoration-none fw-semibold\">info@analizus.com</a> specifying your "
 "search."
 
-#: semanticscholar/templates/semanticscholar/landing.html:196
-msgid "Bir hata oluştu."
-msgstr "An error occurred."
-
 #: semanticscholar/templates/semanticscholar/landing.html:203
 msgid "Bağlantı hatası:"
 msgstr "Connection error:"
@@ -18613,25 +18970,25 @@ msgstr "Main menu"
 msgid "Analizler"
 msgstr "Analyses"
 
-#: templates/base.html:228 templates/base.html:445
+#: templates/base.html:228 templates/base.html:444
 msgid "Tableau Analizleri"
 msgstr "Tableau Analyses"
 
-#: templates/base.html:252 templates/base.html:463
+#: templates/base.html:252 templates/base.html:461
 #: templates/partials/footer.html:60
 msgid "Topluluk"
 msgstr "Community"
 
-#: templates/base.html:260 templates/base.html:469 templates/base.html:551
+#: templates/base.html:260 templates/base.html:467 templates/base.html:549
 #: templates/partials/footer.html:64
 msgid "İstatistik Arena"
 msgstr "Statistics Arena"
 
-#: templates/base.html:287 templates/base.html:488
+#: templates/base.html:287 templates/base.html:486
 msgid "AI Çözümler"
 msgstr "AI Solutions"
 
-#: templates/base.html:289 templates/base.html:489
+#: templates/base.html:289 templates/base.html:487
 #: templates/partials/footer.html:122 templates/partials/footer.html:160
 msgid "Hakkımızda"
 msgstr "About Us"
@@ -18652,15 +19009,15 @@ msgstr "Boost your score in the Arena"
 msgid "Ödemelerim"
 msgstr "My Payments"
 
-#: templates/base.html:372 templates/base.html:515
+#: templates/base.html:372 templates/base.html:513
 msgid "Arkadaşını Davet Et"
 msgstr "Invite a Friend"
 
-#: templates/base.html:374 templates/base.html:516
+#: templates/base.html:374 templates/base.html:514
 msgid "Gelen Kutusu"
 msgstr "Inbox"
 
-#: templates/base.html:384 templates/base.html:522
+#: templates/base.html:384 templates/base.html:520
 msgid "Çıkış Yap"
 msgstr "Log Out"
 
@@ -18680,35 +19037,35 @@ msgstr "Mobile menu"
 msgid "Menüyü kapat"
 msgstr "Close menu"
 
-#: templates/base.html:497
+#: templates/base.html:495
 msgid "Dil"
 msgstr "Language"
 
-#: templates/base.html:539
+#: templates/base.html:537
 msgid "Forum konusu veya kullanıcı ara..."
 msgstr "Search forum topics or users..."
 
-#: templates/base.html:558
+#: templates/base.html:556
 msgid "Soru yükleniyor..."
 msgstr "Loading question..."
 
-#: templates/base.html:572
+#: templates/base.html:570
 msgid "Haftanın Başarı Hikayesi"
 msgstr "Success Story of the Week"
 
-#: templates/base.html:581
+#: templates/base.html:579
 msgid "Tüm Hikayeler"
 msgstr "All Stories"
 
-#: templates/base.html:673
+#: templates/base.html:671
 msgid "Soru yüklenemedi."
 msgstr "Could not load the question."
 
-#: templates/base.html:702
+#: templates/base.html:700
 msgid "Doğru Cevap! (+10 Puan)"
 msgstr "Correct! (+10 Points)"
 
-#: templates/base.html:704
+#: templates/base.html:702
 msgid ""
 "TEBRİKLER! \"İstatistik Ustası\" rozeti kazandınız! Artık ilan "
 "açabilirsiniz."
@@ -18716,31 +19073,31 @@ msgstr ""
 "CONGRATULATIONS! You earned the \"Statistics Master\" badge! You can now "
 "post listings."
 
-#: templates/base.html:710
+#: templates/base.html:708
 msgid "Yanlış. Doğru cevap:"
 msgstr "Incorrect. The correct answer:"
 
-#: templates/base.html:715
+#: templates/base.html:713
 msgid "Toplam Doğru:"
 msgstr "Total Correct:"
 
-#: templates/base.html:757
+#: templates/base.html:755
 msgid "İşlem başarısız."
 msgstr "The action failed."
 
-#: templates/base.html:775
+#: templates/base.html:773
 msgid "Hikaye bulunamadı."
 msgstr "Story not found."
 
-#: templates/base.html:790
+#: templates/base.html:788
 msgid "AI Asistan ile sohbet et"
 msgstr "Chat with the AI Assistant"
 
-#: templates/base.html:806
+#: templates/base.html:804
 msgid "Tam sayfa aç"
 msgstr "Open full page"
 
-#: templates/base.html:819
+#: templates/base.html:817
 msgid ""
 "Merhaba! İstatistik testi, akademik makale arama ya da veri analizi "
 "konularında yardımcı olabilirim."
@@ -18748,39 +19105,39 @@ msgstr ""
 "Hello! I can help you with statistical tests, academic literature search or "
 "data analysis."
 
-#: templates/base.html:830
+#: templates/base.html:828
 msgid "Anonim: 3 soru/gün"
 msgstr "Anonymous: 3 questions/day"
 
-#: templates/base.html:830 templates/base.html:1218
+#: templates/base.html:828 templates/base.html:1216
 msgid "Üye ol"
 msgstr "Sign up"
 
-#: templates/base.html:830
+#: templates/base.html:828
 msgid "30 soru"
 msgstr "30 questions"
 
-#: templates/base.html:835
+#: templates/base.html:833
 msgid "Sorunuzu yazın…"
 msgstr "Type your question…"
 
-#: templates/base.html:835
+#: templates/base.html:833
 msgid "Mesaj"
 msgstr "Message"
 
-#: templates/base.html:1183
+#: templates/base.html:1181
 msgid "hak"
 msgstr "left"
 
-#: templates/base.html:1218
+#: templates/base.html:1216
 msgid "ile 30 soruya çıkar."
 msgstr "to increase your limit to 30 questions."
 
-#: templates/base.html:1223
+#: templates/base.html:1221
 msgid "Bir hata oluştu, tekrar deneyin."
 msgstr "An error occurred, please try again."
 
-#: templates/base.html:1227
+#: templates/base.html:1225
 msgid "Bağlantı hatası. İnternet bağlantınızı kontrol edin."
 msgstr "Connection error. Please check your internet connection."
 
@@ -19165,18 +19522,6 @@ msgstr ""
 #: templates/service_promo.html:53
 msgid "OpenAlex'e Git"
 msgstr "Go to OpenAlex"
-
-#: templates/service_promo.html:80
-msgid "Örnek Rapor Çıktıları"
-msgstr "Sample Report Outputs"
-
-#: templates/service_promo.html:89
-msgid ""
-"Bu grafikler aracın gerçek çıktısıdır — sizin verinizle aynı kalitede "
-"üretilir."
-msgstr ""
-"These charts are the tool's actual output — the same quality is produced "
-"with your own data."
 
 #: templates/service_promo.html:119
 msgid "Ücretsiz hesap açın, hemen kullanmaya başlayın."

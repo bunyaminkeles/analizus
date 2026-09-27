@@ -173,8 +173,15 @@ maddelerde.
       bbox_inches='tight' ile 744×15562 px üretiyor (grafik dışında bir öğe alanı uzatıyor) → PDF'te
       ince boş şerit. Orijinal kodla birebir aynı (sentetik 160 kayıt). Ücretli raporda — "analiz
       sonuçları test edilsin" kapsamında düzeltilecek.
-    - [ ] Aşama 3 bibliometri sayfası (landing ~90) EN/DE + menüde aç
-    - [ ] Aşama 4 sipariş EN/DE → proje talebi (e-posta tarafı yapıldı; sayfa yönlendirmesi kaldı)
+    - [x] Aşama 3 bibliometri sayfası (27 Eylül 2026): landing (HTML + JS `T` sözlüğü + `fmt`), form etiket/
+      hata mesajları çevrili; sabit `/bibliometrics/...` fetch adresleri `{% url %}`+sentinel; EN/DE
+      navbar'da (masaüstü+mobil) açık. TR görünen metin öncekiyle birebir aynı (otomatik karşılaştırma;
+      "Email"→"E-posta" gibi istemeden yaptığım TR değişiklikleri geri alındı). EN/DE TR kalan 0.
+    - [x] Aşama 4 sipariş (27 Eylül 2026): EN/DE'de sonuç panelinde fiyat gizli + buton proje talebi,
+      geçmiş tablosunda "Sipariş" → proje talebi, sipariş sayfası 302 → /en|de/proje-talebi/.
+    - [ ] Yükleme hata mesajında "file: " alan adı öneki (önceden var) — view form hatalarını ham basıyor.
+    - [ ] **İçerik kararı:** bibliometri sayfası/promo "10 analiz" diyor, rapor 15 analiz içeriyor (kapak
+      artık gerçek sayıyı yazıyor) — pazarlama metni güncellensin mi? (kullanıcı)
     - [ ] Semantic Scholar → bibliometri bağlantısı + analiz sonuç testleri
     - [ ] OpenAlex tekrar kayıt (dedup) incelemesi
     Not: bibliometri promo "10 farklı analiz / 10 grafik" diyor, e-postalar/rapor 15 — içerik tutarsızlığı.

@@ -290,6 +290,12 @@ def bibliometrics_from_openalex(request, alex_job_id):
 def bibliometrics_order_page(request, job_id):
     job = get_object_or_404(BibliometricJob, id=job_id, user=request.user)
 
+    # EN/DE'de sipariş yok (Türk IBAN / TL havale) → proje talebi (kullanıcı kararı 27 Eylül 2026)
+    from django.utils.translation import get_language
+    if (get_language() or 'tr')[:2] != 'tr':
+        from django.urls import reverse
+        return redirect(reverse('proje_talebi') + '?source=bibliometrics')
+
     if job.status != 'completed':
         messages.error(request, gettext('Analiz tamamlanmadan sipariş oluşturamazsınız.'))
         return redirect('bibliometrics:landing')
