@@ -7,7 +7,7 @@
 {% block meta_description %}{% blocktrans with username=profile_user.username %}{{ username }} kullanıcısının Analizus profili.{% endblocktrans %} {{ profile_user.profile.title|default:_("Akademik Araştırmacı") }}{% endblock %}
 
 {% block extra_head %}
-<link rel="stylesheet" href="{% static 'css/profiles.css' %}">
+<link rel="stylesheet" href="{% static 'css/profiles.css' %}?v=0200">
 {% endblock %}
 
 {% block content %}

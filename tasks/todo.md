@@ -92,6 +92,17 @@ maddelerde.
   kullanıcı raporu: /tarama/'da TR→EN): Django `set_language` karşılık bulamayınca `next`'i
   aynen döndürüyordu (tarama, forum, blog, YÖK Tez, odalar… hepsi). `forum.views.set_language`
   sarmalayıcı: seçilen dilde karşılık yoksa o dilin ana sayfasına (/en/, /de/). 10 senaryo test.
+- [ ] **KÖK NEDEN — statik dosyalar hash'siz + 1 yıl immutable önbellek** (27 Eylül 2026, ölçüldü):
+  Django 5.2 `STATICFILES_STORAGE` ayarını OKUMUYOR (5.1'de kaldırıldı; settings.py:139) →
+  `STORAGES['staticfiles']` = düz StaticFilesStorage, URL'ler hash'siz (`/static/css/profiles.css`).
+  nginx `/static/` → `expires 1y` + `Cache-Control: public, immutable`. Sonuç: CSS/JS değişince
+  tarayıcılar 1 yıl eskisini kullanır (profil sayfası 3 kez "önbellek" sorunu; canlıda avatar
+  devasa göründü). Geçici: `profiles.css?v=0200` (hotfix). Kalıcı çözüm KARARI: (a) `STORAGES`
+  ile ManifestStaticFilesStorage'ı gerçekten aç (collectstatic, CSS içindeki eksik url() referanslarında
+  hata verebilir → önce yerelde `collectstatic` denenmeli; ?v= elle sürümleme gereksizleşir),
+  (b) elle ?v= disiplinine devam. Elle ?v= olmayan diğerleri: inter.css, analiz_console.css,
+  sidebar_widgets.js.
+
 **İŞ SIRASI (27 Eylül 2026, kullanıcı):**
 - [x] **1. Akademik Tarama hub'ı (/tarama/) EN/DE'de** — YAPILDI (27 Eylül 2026): URL i18n'e taşındı (TR yolu aynı), araçlarda `intl` bayrağı (EN/DE: OpenAlex + Semantic Scholar), tüm metinler EN/DE, navbar her dilde hub'a gider (açılır menü kaldırıldı), `?next` dile göre. Yeni kazıma modülü = listeye bir kayıt. Eski not: (kullanıcı: "tr'de gelen fotoğraflı
   landing'i de/en için de aktif et; buraya iki veri kazıma daha eklenecek"): hub i18n'e
