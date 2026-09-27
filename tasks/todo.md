@@ -477,6 +477,17 @@ maddelerde.
   yenilerken `X-Cron-Secret` header'ına geçmek de değerlendirilmeli. Yenilenirse
   `.env` + Hetzner crontab'daki TÜM `/api/cron/*` satırları birlikte güncellenmeli.
 
+**C000. DÖRDÜNCÜ MERGE (hotfix) — 27 Eylül 2026 (kullanıcı: "et")**
+- [x] main ← dev fast-forward + push: **9203f3d** — STORAGES ile hash'li statik (kalıcı önbellek
+  çözümü), profiles.css ?v=0200, test_settings düz storage, fotoğraf önizleme yedek baş harf.
+  Migration yok. 61/61.
+- [ ] Hetzner deploy (kullanıcı): `git pull origin main` → `docker compose restart web && docker compose
+  restart nginx` (deploy.sh collectstatic hash'li dosyaları üretir). Sonra: profil düzenleme
+  sayfasında fotoğraf 72px dairede mi; sayfa kaynağında `/static/css/profiles.<hash>.css` var mı.
+- Not (kullanıcı sorusu): canlıdaki devasa fotoğraf eski/yeni fotoğrafla ilgili DEĞİLDİ — eski
+  profiles.css tarayıcı önbelleğinde (1y immutable) kaldığı için önizleme kuralı yoktu. Render'da
+  yeni yükleme sorunsuz (kullanıcı teyidi).
+
 **C00. ÜÇÜNCÜ MERGE — 27 Eylül 2026 (kullanıcı: "sorun yoksa merge edelim")**
 - [x] Ön kontrol: 61/61, makemigrations temiz, migration YOK, requirements değişmedi, main'de dev'de olmayan commit yok.
 - [x] main ← dev fast-forward + push (8 commit: JSON-LD, tarama hub EN/DE, set_language, proje talebi TR ifadeler, profil fotoğrafı).
