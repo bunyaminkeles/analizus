@@ -92,7 +92,12 @@ maddelerde.
   kullanıcı raporu: /tarama/'da TR→EN): Django `set_language` karşılık bulamayınca `next`'i
   aynen döndürüyordu (tarama, forum, blog, YÖK Tez, odalar… hepsi). `forum.views.set_language`
   sarmalayıcı: seçilen dilde karşılık yoksa o dilin ana sayfasına (/en/, /de/). 10 senaryo test.
-- [ ] **KÖK NEDEN — statik dosyalar hash'siz + 1 yıl immutable önbellek** (27 Eylül 2026, ölçüldü):
+- [x] **KÖK NEDEN — statik dosyalar hash'siz + 1 yıl immutable önbellek** — ÇÖZÜLDÜ (27 Eylül 2026,
+  kullanıcı kararı "1"): settings.py `STORAGES` → staticfiles = whitenoise
+  CompressedManifestStaticFilesStorage (hash'li URL: profiles.4d09cb3a1464.css); default =
+  FileSystemStorage (fiili davranış korundu). DEBUG=False yerel doğrulama: collectstatic 639
+  post-processed hatasız; 294 sayfa gezildi, 0 adet 5xx. deploy.sh collectstatic'i sunucudan
+  önce çalıştırıyor. Elle ?v= artık gereksiz (zararsız, kalabilir). Eski not:
   Django 5.2 `STATICFILES_STORAGE` ayarını OKUMUYOR (5.1'de kaldırıldı; settings.py:139) →
   `STORAGES['staticfiles']` = düz StaticFilesStorage, URL'ler hash'siz (`/static/css/profiles.css`).
   nginx `/static/` → `expires 1y` + `Cache-Control: public, immutable`. Sonuç: CSS/JS değişince
@@ -102,6 +107,12 @@ maddelerde.
   hata verebilir → önce yerelde `collectstatic` denenmeli; ?v= elle sürümleme gereksizleşir),
   (b) elle ?v= disiplinine devam. Elle ?v= olmayan diğerleri: inter.css, analiz_console.css,
   sidebar_widgets.js.
+
+- [ ] **`DEFAULT_FILE_STORAGE` da ölü ayar** (27 Eylül 2026): settings.py ~662 Django 5.1+'da
+  okunmuyor; S3 alanları `storage=get_storage` ile çalıştığı için bugün sorun yok, ama
+  `storage=` verilmemiş bir FileField canlıda yerel diske yazar — denetlenmeli.
+- [ ] **Anasayfa TR Dizin kartı bayrağa bakmıyor** (27 Eylül 2026): `/trdizin/` feature_trdizin
+  kapalıyken 404 (yerel); home.html araç kartı + kazıma bandı bayrakla koşullanmalı.
 
 **İŞ SIRASI (27 Eylül 2026, kullanıcı):**
 - [x] **1. Akademik Tarama hub'ı (/tarama/) EN/DE'de** — YAPILDI (27 Eylül 2026): URL i18n'e taşındı (TR yolu aynı), araçlarda `intl` bayrağı (EN/DE: OpenAlex + Semantic Scholar), tüm metinler EN/DE, navbar her dilde hub'a gider (açılır menü kaldırıldı), `?next` dile göre. Yeni kazıma modülü = listeye bir kayıt. Eski not: (kullanıcı: "tr'de gelen fotoğraflı

@@ -136,7 +136,15 @@ DATABASES = {
 # --- STATİK DOSYALAR ---
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+# Django 5.1+ STATICFILES_STORAGE / DEFAULT_FILE_STORAGE ayarlarını OKUMAZ — STORAGES gerekir.
+# Önceki satır sessizce yok sayılıyordu: statik URL'ler hash'siz kalıyor, nginx'in 1 yıllık
+# immutable önbelleği yüzünden CSS/JS değişiklikleri tarayıcıya ulaşmıyordu (27 Eylül 2026).
+# 'default': bugünkü fiili davranış korunur (FileSystemStorage); S3'e giden alanlar
+# storage=get_storage ile kendi backend'ini seçiyor (forum/storage.py).
+STORAGES = {
+    'default': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
+    'staticfiles': {'BACKEND': 'whitenoise.storage.CompressedManifestStaticFilesStorage'},
+}
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
