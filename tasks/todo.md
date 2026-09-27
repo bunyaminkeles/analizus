@@ -115,7 +115,7 @@ maddelerde.
   olması gerekirse öyle olmalı"): mevcut akışı incele (yükleme doğrulaması — tür/boyut, eski
   dosyanın S3'ten silinmesi, önizleme, mevcut fotoğrafın gösterilmesi) + "Fotoğrafı kaldır"
   seçeneği ekle. Önce ölçüm + öneri, sonra uygulama.
-- [ ] **Canlı profil düzenleme sayfası stilsiz görünüyor** (27 Eylül 2026, kullanıcı ekran
+- [x] **Canlı profil düzenleme sayfası stilsiz görünüyor** — ÇÖZÜLDÜ (tarayıcı önbelleği; 27 Eylül 2026 kullanıcı ekran görüntüsünde doğru). Ek: kayıtlı fotoğraf dosyası yüklenemezse (Render'da kalıcı disk yok) önizleme baş harfe düşüyor (headless test). Eski not: (27 Eylül 2026, kullanıcı ekran
   görüntüsü /de/profile/edit/: başlık büyük, kart yok; sekmeler stilli): canlı profiles.css'te
   yeni sınıflar VAR (ölçüldü) → büyük ihtimal tarayıcı önbelleği; kullanıcıdan Ctrl+Shift+R
   sonucu bekleniyor, sürerse incele.

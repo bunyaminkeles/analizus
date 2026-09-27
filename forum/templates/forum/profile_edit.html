@@ -261,6 +261,13 @@
     const avatarPreview = document.getElementById('avatarPreview');
     const avatarError = document.getElementById('avatarError');
     const avatarClear = document.getElementById('f-avatar-clear');
+    // Kayıtlı dosyaya ulaşılamazsa (silinmiş/taşınmış) boş daire yerine baş harf göster
+    const savedImg = avatarPreview.querySelector('img');
+    function useInitial() { avatarPreview.textContent = avatarPreview.dataset.initial; }
+    if (savedImg) {
+        if (savedImg.complete && savedImg.naturalWidth === 0) useInitial();
+        else savedImg.addEventListener('error', useInitial, { once: true });
+    }
     const avatarTemplate = avatarPreview.cloneNode(true);  // her geri yüklemede yeniden klonlanır
     function restoreAvatar() { avatarPreview.replaceChildren(...avatarTemplate.cloneNode(true).childNodes); }
     function showAvatar(src) {
