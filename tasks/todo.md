@@ -121,7 +121,13 @@ maddelerde.
   analizus.md. DB tabloları: `migrate transcript zero` (canlı DB) + S3 dosyaları.
 - [ ] **Başarı hikayesi modalı ölü kod** (26 Eylül 2026): `openStoryModal()` hiçbir yerden
   çağrılmıyor; `#storyModal` her sayfada render ediliyor (profil modalıyla aynı durum).
-- [ ] **EN/DE anasayfa JSON-LD TR URL'leri** (26 Eylül 2026): home.html ~168–196 structured
+- [x] **EN/DE anasayfa JSON-LD** — DÜZELTİLDİ (27 Eylül 2026): 4 TR blok (WebSite tr-TR, FAQ
+  forum atıflı, ItemList + SoftwareApplication YÖK Tez/TR Dizin) yalnız TR; EN/DE'ye dile uygun
+  WebSite bloğu (inLanguage en/de, /en/ URL); base.html Organization açıklaması çevrili
+  (EN "Academic Analysis and Data Science Platform"). 9 sayfada JSON geçerliliği test edildi.
+- [ ] **Organization JSON-LD `availableLanguage: "Turkish"`** (27 Eylül 2026, iş kararı): EN/DE
+  müşteri desteği veriliyor mu? Veriliyorsa ["Turkish","English","German"] yapılmalı.
+- [x] (eski) **EN/DE anasayfa JSON-LD TR URL'leri** (26 Eylül 2026): home.html ~168–196 structured
   data EN/DE sayfada da YÖK Tez/TR Dizin/OpenAlex/OAI-PMH URL'lerini ve TR açıklamaları veriyor.
 - [ ] **EN/DE'yi proje talebine evriltme** (26 Eylül 2026, kullanıcı hedefi): EN/DE'de
   hâlâ uzman/topluluk odaklı yüzeyler var (Topluluk menüsü → forum/çalışma odaları TR-only,

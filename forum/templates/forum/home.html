@@ -82,6 +82,21 @@
 
 {% block content %}
 
+{% comment %}Yapısal veri: aşağıdaki 4 blok Türkçe (inLanguage tr-TR, forum/YÖK Tez/TR Dizin
+atıfları) → yalnız TR. EN/DE'ye dile uygun tek WebSite bloğu (27 Eylül 2026).{% endcomment %}
+{% if LANGUAGE_CODE != 'tr' %}
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Analizus",
+    "url": "https://www.analizus.com{% url 'home' %}",
+    "description": "{% filter escapejs %}{% trans "Dosyanı yükle, istatistik analizi ve veri analizi hızlıca APA formatında hazır — SPSS bilgisi gerekmez. Veri analizi ve araştırma danışmanlığı için uzman bul." %}{% endfilter %}",
+    "inLanguage": "{{ LANGUAGE_CODE }}",
+    "publisher": {"@type": "Organization", "name": "Analizus"}
+}
+</script>
+{% else %}
 <!-- Schema.org WebSite -->
 <script type="application/ld+json">
 {
@@ -218,6 +233,7 @@
     ]
 }
 </script>
+{% endif %}
 
 <!-- =====================================================
      FAZ 2: HERO ALANI
