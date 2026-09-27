@@ -146,7 +146,15 @@ maddelerde.
   yeni sınıflar VAR (ölçüldü) → büyük ihtimal tarayıcı önbelleği; kullanıcıdan Ctrl+Shift+R
   sonucu bekleniyor, sürerse incele.
 
-- [ ] **OpenAlex + Semantic Scholar tam EN/DE çevirisi** (26 Eylül 2026, kullanıcı: "todo'ya
+- [ ] **OpenAlex + Semantic Scholar tam çeviri — ÖLÇÜLDÜ, PLAN ONAY BEKLİYOR** (27 Eylül 2026):
+  etiketli 148 msgid'in hepsi çevrili; eksik olan ETİKETSİZ metin ~270: promo context (views) +
+  service_promo.html ~40 (anonim ziyaretçi), SEO rehberi tarama_seo_content.py ~6.600 kr,
+  landing (şablon+JS) + tarama_console_base.html ~90, forms ~23, order.html ~60, TXT/Excel
+  başlıkları + scraper hata mesajları ~60 (job_runner arka plan → dil taşınmalı). Aşamalar:
+  1 promo → 2 arama sayfası → 3 sonuç/indirme → 4 sipariş. Karar bekleyen: SEO rehberi EN/DE
+  (a gizle önerilen / b ayrı içerik); sipariş sayfası EN/DE — Türk IBAN + TL havale
+  (a çevir / b gizle + proje talebi önerilen / c ödeme kararına kadar beklet).
+- [x] (eski) **OpenAlex + Semantic Scholar tam EN/DE çevirisi** (26 Eylül 2026, kullanıcı: "todo'ya
   yaz, şimdiden açık kalabilir"): EN/DE navbar'da "Academic Search" açılır menüsüyle AÇIK
   (masaüstü + mobil; /tarama/ hub'ı yerine doğrudan iki araç). Kalan çeviri: landing'lerde
   EN render'da görünür metnin ~2/3'ü TR (OpenAlex 27/41, S2 25/41) — kaynağı (view context /
