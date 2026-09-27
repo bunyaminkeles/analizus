@@ -206,24 +206,41 @@ class PreferredLanguageMiddleware:
 
     - /en/ /de/ önekli bir sayfa ziyaret edilirse o dil kaydedilir.
     - Dil seçici (i18n/setlang/ POST) ile seçilen dil (tr dahil) kaydedilir.
-    - Öneksiz sayfalar (forum, blog…) tercihi tr'ye ÇEVİRMEZ — bu sayfalar
+    - Çok dilli bir sayfanın öneksiz (TR) sürümü ziyaret edilirse tr kaydedilir.
+    - Yalnız TR sayfalar (forum, blog…) tercihi tr'ye ÇEVİRMEZ — bu sayfalar
       tek dilli olduğundan kullanıcının seçimini yansıtmaz.
     """
 
     def __init__(self, get_response):
         self.get_response = get_response
 
+    @staticmethod
+    def _is_multilingual_tr_page(path_info):
+        """Öneksiz yolun /en/ karşılığı varsa sayfa i18n_patterns içindedir."""
+        from django.urls import resolve, Resolver404
+        from django.utils import translation
+        with translation.override('en'):
+            try:
+                resolve('/en' + path_info)
+                return True
+            except Resolver404:
+                return False
+
     def __call__(self, request):
         user = getattr(request, 'user', None)
         if user is not None and user.is_authenticated:
             lang = None
+            profile = getattr(user, 'profile', None)
             if request.method == 'POST' and request.path_info.rstrip('/').endswith('/i18n/setlang'):
                 lang = request.POST.get('language')
             else:
                 from django.utils.translation import get_language_from_path
                 lang = get_language_from_path(request.path_info)
+                if (lang is None and request.method == 'GET'
+                        and profile is not None and profile.preferred_language != 'tr'
+                        and self._is_multilingual_tr_page(request.path_info)):
+                    lang = 'tr'
             if lang and lang in {code for code, _ in settings.LANGUAGES}:
-                profile = getattr(user, 'profile', None)
                 if profile is not None and profile.preferred_language != lang:
                     type(profile).objects.filter(pk=profile.pk).update(preferred_language=lang)
                     profile.preferred_language = lang
