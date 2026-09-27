@@ -1,5 +1,6 @@
 import re
 import logging
+from django.utils.translation import get_language, gettext
 from functools import wraps
 
 from django.contrib.auth.decorators import login_required
@@ -54,22 +55,25 @@ IBAN_INFO = {
 def semantic_landing(request):
     if not request.user.is_authenticated:
         return render(request, 'service_promo.html', {
-            'promo_title': 'Semantic Scholar Yayın Kazıma',
+            'promo_title': gettext('Semantic Scholar Yayın Kazıma'),
             'promo_icon': 'bi-diagram-3-fill',
             'promo_color': 'info',
-            'promo_description': '200 milyondan fazla akademik yayın arasında arama yapın. Başlık, yazar, alan ve yıl filtresiyle arama sonuçlarını Excel veya TXT olarak indirin. Python bilgisi gerekmez.',
+            'promo_description': gettext('200 milyondan fazla akademik yayın arasında arama yapın. Başlık, yazar, alan ve yıl filtresiyle arama sonuçlarını Excel veya TXT olarak indirin. Python bilgisi gerekmez.'),
             'promo_features': [
-                {'icon': 'bi-search', 'title': 'Geniş Kapsam', 'desc': '200M+ yayın — WoS ve Scopus dahil tüm büyük veri tabanlarını kapsıyor.'},
-                {'icon': 'bi-download', 'title': 'Excel & TXT İndirme', 'desc': 'Başlık, yazar, dergi, yıl, atıf, özet ve DOI verilerini tek tıkla indirin.'},
-                {'icon': 'bi-link-45deg', 'title': 'CrossRef Zenginleştirme', 'desc': 'DOI\'si olan kayıtlara kurum, yayıncı ve konu bilgisi otomatik eklenir.'},
-                {'icon': 'bi-unlock-fill', 'title': 'Açık Erişim', 'desc': 'Açık erişimli yayınlar için PDF linki de gösterilir.'},
+                {'icon': 'bi-search', 'title': gettext('Geniş Kapsam'), 'desc': gettext('200M+ yayın — WoS ve Scopus dahil tüm büyük veri tabanlarını kapsıyor.')},
+                {'icon': 'bi-download', 'title': gettext('Excel & TXT İndirme'), 'desc': gettext('Başlık, yazar, dergi, yıl, atıf, özet ve DOI verilerini tek tıkla indirin.')},
+                {'icon': 'bi-link-45deg', 'title': gettext('CrossRef Zenginleştirme'), 'desc': gettext('DOI\'si olan kayıtlara kurum, yayıncı ve konu bilgisi otomatik eklenir.')},
+                {'icon': 'bi-unlock-fill', 'title': gettext('Açık Erişim'), 'desc': gettext('Açık erişimli yayınlar için PDF linki de gösterilir.')},
             ],
             'promo_steps': [
-                'Arama kutusuna anahtar kelime, yazar veya araştırma alanı girin.',
-                'Sistem Semantic Scholar\'dan yayınları otomatik çeker.',
-                'Demo 5 sonuç ücretsiz; tamamı için sipariş oluşturun.',
+                gettext('Arama kutusuna anahtar kelime, yazar veya araştırma alanı girin.'),
+                gettext('Sistem Semantic Scholar\'dan yayınları otomatik çeker.'),
+                # EN/DE'de sipariş yok (Türk IBAN/TL havale) → tam veri için proje talebi (kullanıcı kararı)
+                gettext('Demo 5 sonuç ücretsiz; tamamı için sipariş oluşturun.') if (get_language() or 'tr')[:2] == 'tr'
+                else gettext('Demo 5 sonuç ücretsiz; tam veri seti için proje talebi bırakın.'),
             ],
-            'seo_guide': TARAMA_SEO_CONTENT.get('semanticscholar'),
+            # SEO rehberi Türkçe arama sorgularına göre yazıldı → yalnız TR (kullanıcı kararı 27 Eylül 2026)
+            'seo_guide': TARAMA_SEO_CONTENT.get('semanticscholar') if (get_language() or 'tr')[:2] == 'tr' else None,
         })
 
     user = request.user

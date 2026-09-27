@@ -146,7 +146,14 @@ maddelerde.
   yeni sınıflar VAR (ölçüldü) → büyük ihtimal tarayıcı önbelleği; kullanıcıdan Ctrl+Shift+R
   sonucu bekleniyor, sürerse incele.
 
-- [ ] **OpenAlex + Semantic Scholar tam çeviri — ÖLÇÜLDÜ, PLAN ONAY BEKLİYOR** (27 Eylül 2026):
+- [ ] **OpenAlex + Semantic Scholar tam çeviri — DEVAM EDİYOR** (kullanıcı: "önerilerine göre devam et"
+  27 Eylül 2026 → SEO rehberi EN/DE gizli; sipariş EN/DE gizli + proje talebi).
+  - [x] Aşama 1 tanıtım sayfası: view promo metinleri gettext (22 msgid EN/DE), SEO rehberi yalnız
+    TR, S2 "sipariş oluşturun" adımı EN/DE'de "proje talebi bırakın". EN/DE anonim sayfada TR 0.
+  - [ ] Aşama 2 arama sayfası (landing şablon+JS, tarama_console_base, forms)
+  - [ ] Aşama 3 sonuç/indirme (TXT/Excel başlıkları, scraper hataları; arka plan dil taşıma)
+  - [ ] Aşama 4 sipariş: EN/DE'de sipariş seçeneği gizli → proje talebi
+  Ölçüm notu:
   etiketli 148 msgid'in hepsi çevrili; eksik olan ETİKETSİZ metin ~270: promo context (views) +
   service_promo.html ~40 (anonim ziyaretçi), SEO rehberi tarama_seo_content.py ~6.600 kr,
   landing (şablon+JS) + tarama_console_base.html ~90, forms ~23, order.html ~60, TXT/Excel

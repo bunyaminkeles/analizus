@@ -1,4 +1,5 @@
 from django.shortcuts import render, get_object_or_404
+from django.utils.translation import get_language, gettext
 from django.http import JsonResponse, Http404, HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_GET, require_POST
@@ -55,22 +56,23 @@ def openalex_landing(request):
     """Landing page: gelişmiş arama formu + demo arama."""
     if not request.user.is_authenticated:
         return render(request, 'service_promo.html', {
-            'promo_title': 'OpenAlex Yayın Kazıma ve Veri İndirme Aracı',
+            'promo_title': gettext('OpenAlex Yayın Kazıma ve Veri İndirme Aracı'),
             'promo_icon': 'bi-search',
             'promo_color': 'primary',
-            'promo_description': '240 milyondan fazla akademik yayından kodsuz veri kazıma aracı. Başlık, yazar, kurum gibi alanlarda arama yapın; sonuçları Excel veya TXT olarak tek tıkla indirin.',
+            'promo_description': gettext('240 milyondan fazla akademik yayından kodsuz veri kazıma aracı. Başlık, yazar, kurum gibi alanlarda arama yapın; sonuçları Excel veya TXT olarak tek tıkla indirin.'),
             'promo_features': [
-                {'icon': 'bi-download', 'title': 'Excel & TXT İndirme', 'desc': 'Yayın başlığı, yazar, dergi, yıl, DOI ve özet verilerini tek tıkla Excel veya TXT olarak indirin.'},
-                {'icon': 'bi-database-fill', 'title': '240M+ Kaynaktan Veri Çekme', 'desc': 'OpenAlex\'in tüm akademik veri tabanından makale, kitap ve konferans bildirisini kodsuz kazıyın.'},
-                {'icon': 'bi-sliders', 'title': 'Kodsuz Gelişmiş Sorgulama', 'desc': 'Başlık, özet, yazar, dergi, kurum, yıl ve DOI gibi 9 farklı alanda AND/OR sorguları oluşturun.'},
-                {'icon': 'bi-bar-chart-line-fill', 'title': 'Tek Tıkla Bibliometrik Analiz', 'desc': '100+ sonuçta tek tıkla bibliometrik analize gönderin, PDF rapor alın.'},
+                {'icon': 'bi-download', 'title': gettext('Excel & TXT İndirme'), 'desc': gettext('Yayın başlığı, yazar, dergi, yıl, DOI ve özet verilerini tek tıkla Excel veya TXT olarak indirin.')},
+                {'icon': 'bi-database-fill', 'title': gettext('240M+ Kaynaktan Veri Çekme'), 'desc': gettext('OpenAlex\'in tüm akademik veri tabanından makale, kitap ve konferans bildirisini kodsuz kazıyın.')},
+                {'icon': 'bi-sliders', 'title': gettext('Kodsuz Gelişmiş Sorgulama'), 'desc': gettext('Başlık, özet, yazar, dergi, kurum, yıl ve DOI gibi 9 farklı alanda AND/OR sorguları oluşturun.')},
+                {'icon': 'bi-bar-chart-line-fill', 'title': gettext('Tek Tıkla Bibliometrik Analiz'), 'desc': gettext('100+ sonuçta tek tıkla bibliometrik analize gönderin, PDF rapor alın.')},
             ],
             'promo_steps': [
-                'Arama kriterlerinizi seçin: başlık, yazar, kurum, yıl veya DOI.',
-                'Sistem OpenAlex\'ten verileri kazıyarak saniyeler içinde listeler.',
-                'Excel veya TXT olarak indirin ya da bibliometrik analiz başlatın.',
+                gettext('Arama kriterlerinizi seçin: başlık, yazar, kurum, yıl veya DOI.'),
+                gettext('Sistem OpenAlex\'ten verileri kazıyarak saniyeler içinde listeler.'),
+                gettext('Excel veya TXT olarak indirin ya da bibliometrik analiz başlatın.'),
             ],
-            'seo_guide': TARAMA_SEO_CONTENT.get('openalex'),
+            # SEO rehberi Türkçe arama sorgularına göre yazıldı → yalnız TR (kullanıcı kararı 27 Eylül 2026)
+            'seo_guide': TARAMA_SEO_CONTENT.get('openalex') if (get_language() or 'tr')[:2] == 'tr' else None,
         })
     form = AlexSearchForm()
     user = request.user

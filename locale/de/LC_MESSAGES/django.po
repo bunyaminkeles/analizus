@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-27 15:09+0300\n"
+"POT-Creation-Date: 2026-09-27 20:40+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -8643,6 +8643,7 @@ msgstr ""
 
 #: forum/views.py:4179
 #: semanticscholar/templates/semanticscholar/landing.html:26
+#: semanticscholar/views.py:58
 msgid "Semantic Scholar Yayın Kazıma"
 msgstr "Semantic-Scholar-Publikations-Scraping"
 
@@ -17407,7 +17408,8 @@ msgstr ""
 "Durchsuchen Sie 240 Millionen Publikationen nach Thema, Autor, Zeitschrift, "
 "Land und Jahresbereich."
 
-#: openalex/templates/openalex/landing.html:149
+#: openalex/templates/openalex/landing.html:149 openalex/views.py:64
+#: semanticscholar/views.py:64
 msgid "Excel & TXT İndirme"
 msgstr "Excel- & TXT-Download"
 
@@ -17594,6 +17596,78 @@ msgstr "Ihre Suche läuft im Hintergrund weiter, bitte warten..."
 msgid "Önceki arama sonuçları"
 msgstr "Vorherige Suchergebnisse"
 
+#: openalex/views.py:59
+msgid "OpenAlex Yayın Kazıma ve Veri İndirme Aracı"
+msgstr "OpenAlex-Tool zur Publikationserfassung und zum Datendownload"
+
+#: openalex/views.py:62
+msgid ""
+"240 milyondan fazla akademik yayından kodsuz veri kazıma aracı. Başlık, "
+"yazar, kurum gibi alanlarda arama yapın; sonuçları Excel veya TXT olarak tek"
+" tıkla indirin."
+msgstr ""
+"Ein Tool zur Datenerfassung ohne Code für über 240 Millionen "
+"wissenschaftliche Publikationen. Suchen Sie nach Feldern wie Titel, Autor/in"
+" oder Institution und laden Sie die Ergebnisse mit einem Klick als Excel "
+"oder TXT herunter."
+
+#: openalex/views.py:64
+msgid ""
+"Yayın başlığı, yazar, dergi, yıl, DOI ve özet verilerini tek tıkla Excel "
+"veya TXT olarak indirin."
+msgstr ""
+"Laden Sie Titel, Autor/innen, Zeitschriften, Jahre, DOIs und Abstracts mit "
+"einem Klick als Excel oder TXT herunter."
+
+#: openalex/views.py:65
+msgid "240M+ Kaynaktan Veri Çekme"
+msgstr "Daten aus über 240 Mio. Quellen"
+
+#: openalex/views.py:65
+msgid ""
+"OpenAlex'in tüm akademik veri tabanından makale, kitap ve konferans "
+"bildirisini kodsuz kazıyın."
+msgstr ""
+"Erfassen Sie Artikel, Bücher und Konferenzbeiträge aus der gesamten "
+"wissenschaftlichen Datenbank von OpenAlex ohne Code."
+
+#: openalex/views.py:66
+msgid "Kodsuz Gelişmiş Sorgulama"
+msgstr "Erweiterte Suche ohne Code"
+
+#: openalex/views.py:66
+msgid ""
+"Başlık, özet, yazar, dergi, kurum, yıl ve DOI gibi 9 farklı alanda AND/OR "
+"sorguları oluşturun."
+msgstr ""
+"Erstellen Sie UND/ODER-Abfragen über 9 Felder wie Titel, Abstract, Autor/in,"
+" Zeitschrift, Institution, Jahr und DOI."
+
+#: openalex/views.py:67
+msgid "Tek Tıkla Bibliometrik Analiz"
+msgstr "Bibliometrische Analyse mit einem Klick"
+
+#: openalex/views.py:67
+msgid "100+ sonuçta tek tıkla bibliometrik analize gönderin, PDF rapor alın."
+msgstr ""
+"Ab 100 Ergebnissen mit einem Klick an die bibliometrische Analyse senden und"
+" einen PDF-Bericht erhalten."
+
+#: openalex/views.py:70
+msgid "Arama kriterlerinizi seçin: başlık, yazar, kurum, yıl veya DOI."
+msgstr ""
+"Wählen Sie Ihre Suchkriterien: Titel, Autor/in, Institution, Jahr oder DOI."
+
+#: openalex/views.py:71
+msgid "Sistem OpenAlex'ten verileri kazıyarak saniyeler içinde listeler."
+msgstr ""
+"Das System ruft die Daten aus OpenAlex ab und listet sie in Sekunden auf."
+
+#: openalex/views.py:72
+msgid "Excel veya TXT olarak indirin ya da bibliometrik analiz başlatın."
+msgstr ""
+"Als Excel oder TXT herunterladen oder eine bibliometrische Analyse starten."
+
 #: semanticscholar/services/job_runner.py:137
 #: semanticscholar/services/job_runner.py:180
 #, python-format
@@ -17757,6 +17831,7 @@ msgid "Araştırma Alanı (örn: Computer Science)"
 msgstr "Forschungsgebiet (z. B. Computer Science)"
 
 #: semanticscholar/templates/semanticscholar/landing.html:436
+#: semanticscholar/views.py:63
 msgid "Geniş Kapsam"
 msgstr "Breite Abdeckung"
 
@@ -17769,6 +17844,7 @@ msgstr ""
 "auf WoS-Quellen ohne WoS-Abonnement."
 
 #: semanticscholar/templates/semanticscholar/landing.html:442
+#: semanticscholar/views.py:65
 msgid "CrossRef Zenginleştirme"
 msgstr "CrossRef-Anreicherung"
 
@@ -17793,6 +17869,66 @@ msgstr ""
 "Wenn Sie den vollständigen Ergebnissatz benötigen, schreiben Sie an <a "
 "href=\"mailto:info@analizus.com\" class=\"text-decoration-none\" "
 "style=\"color:#67e8f9;\">info@analizus.com</a>."
+
+#: semanticscholar/views.py:61
+msgid ""
+"200 milyondan fazla akademik yayın arasında arama yapın. Başlık, yazar, alan"
+" ve yıl filtresiyle arama sonuçlarını Excel veya TXT olarak indirin. Python "
+"bilgisi gerekmez."
+msgstr ""
+"Durchsuchen Sie über 200 Millionen wissenschaftliche Publikationen. Filtern "
+"Sie nach Titel, Autor/in, Fachgebiet und Jahr und laden Sie die Ergebnisse "
+"als Excel oder TXT herunter. Keine Python-Kenntnisse nötig."
+
+#: semanticscholar/views.py:63
+msgid "200M+ yayın — WoS ve Scopus dahil tüm büyük veri tabanlarını kapsıyor."
+msgstr ""
+"Über 200 Mio. Publikationen – umfasst alle großen Datenbanken, "
+"einschließlich WoS und Scopus."
+
+#: semanticscholar/views.py:64
+msgid ""
+"Başlık, yazar, dergi, yıl, atıf, özet ve DOI verilerini tek tıkla indirin."
+msgstr ""
+"Laden Sie Titel, Autor/innen, Zeitschriften, Jahre, Zitationen, Abstracts "
+"und DOIs mit einem Klick herunter."
+
+#: semanticscholar/views.py:65
+msgid "DOI'si olan kayıtlara kurum, yayıncı ve konu bilgisi otomatik eklenir."
+msgstr ""
+"Datensätze mit DOI werden automatisch um Institution, Verlag und "
+"Themengebiet ergänzt."
+
+#: semanticscholar/views.py:66
+msgid "Açık Erişim"
+msgstr "Open Access"
+
+#: semanticscholar/views.py:66
+msgid "Açık erişimli yayınlar için PDF linki de gösterilir."
+msgstr "Für Open-Access-Publikationen wird zusätzlich ein PDF-Link angezeigt."
+
+#: semanticscholar/views.py:69
+msgid "Arama kutusuna anahtar kelime, yazar veya araştırma alanı girin."
+msgstr ""
+"Geben Sie ein Stichwort, eine Autorin/einen Autor oder ein Forschungsgebiet "
+"in das Suchfeld ein."
+
+#: semanticscholar/views.py:70
+msgid "Sistem Semantic Scholar'dan yayınları otomatik çeker."
+msgstr ""
+"Das System ruft die Publikationen automatisch aus Semantic Scholar ab."
+
+#: semanticscholar/views.py:72
+msgid "Demo 5 sonuç ücretsiz; tamamı için sipariş oluşturun."
+msgstr ""
+"5 Demo-Ergebnisse sind kostenlos; für alle Ergebnisse eine Bestellung "
+"aufgeben."
+
+#: semanticscholar/views.py:73
+msgid "Demo 5 sonuç ücretsiz; tam veri seti için proje talebi bırakın."
+msgstr ""
+"5 Demo-Ergebnisse sind kostenlos; für den vollständigen Datensatz senden Sie"
+" eine Projektanfrage."
 
 #: templates/admin/index.html:4
 msgid "Django site admin"
