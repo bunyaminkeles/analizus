@@ -179,7 +179,18 @@ maddelerde.
   müşteri desteği veriliyor mu? Veriliyorsa ["Turkish","English","German"] yapılmalı.
 - [x] (eski) **EN/DE anasayfa JSON-LD TR URL'leri** (26 Eylül 2026): home.html ~168–196 structured
   data EN/DE sayfada da YÖK Tez/TR Dizin/OpenAlex/OAI-PMH URL'lerini ve TR açıklamaları veriyor.
-- [ ] **EN/DE'yi proje talebine evriltme** (26 Eylül 2026, kullanıcı hedefi): EN/DE'de
+- [ ] **EN/DE'yi proje talebine evriltme — ÖNERİ SUNULDU, ONAY BEKLİYOR** (27 Eylül 2026, ölçüldü):
+  EN anasayfa: navbar sade link; hero yalnız ikincil link; market bölümü sağ sütunu UZMAN
+  KAZANIMI (EN/DE'de ters); nasıl çalışır/güven/araçlar/SSS'de çağrı yok; footer'da yok;
+  18 araç sayfasında var. Form EN/DE hazır (onay e-postası müşteri dilinde). EKSİK: ekibe
+  giden bildirimde müşteri dili yok, ProjectRequest'te dil alanı yok (ölçülemiyor); admin
+  e-postasında ad/açıklama escape edilmiyor (güvenlik).
+  Öneri: Aşama 1 dil alanı (migration) + admin filtre + e-posta [EN]/[DE] + escape;
+  Aşama 2 (EN/DE şablon) hero birincil CTA → proje talebi, market uzman sütunu → proje
+  talebi kartı, navbar buton, footer link, nasıl çalışır/SSS sonu çağrı; Aşama 3 2–4 hafta
+  sonra dil+kaynak ölçümü. Kullanıcı kararı bekleyen: pazar yeri EN/DE (a kalsın+yönlendirme
+  önerilen / b gizle / c aynen), hero birincil CTA değişsin mi.
+- [x] (eski) **EN/DE'yi proje talebine evriltme** (26 Eylül 2026, kullanıcı hedefi): EN/DE'de
   hâlâ uzman/topluluk odaklı yüzeyler var (Topluluk menüsü → forum/çalışma odaları TR-only,
   market uzman tanıtımı, puan/rütbe/rozet vurgusu profilde). EN/DE navigasyon ve anasayfa
   akışının "proje talebi" etrafında yeniden düzenlenmesi — ayrı iş, önce öneri + onay.
