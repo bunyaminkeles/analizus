@@ -481,7 +481,7 @@ maddelerde.
 - [x] main ← dev fast-forward + push: **9203f3d** — STORAGES ile hash'li statik (kalıcı önbellek
   çözümü), profiles.css ?v=0200, test_settings düz storage, fotoğraf önizleme yedek baş harf.
   Migration yok. 61/61.
-- [ ] Hetzner deploy (kullanıcı): `git pull origin main` → `docker compose restart web && docker compose
+- [x] Hetzner deploy — YAPILDI ve doğrulandı (27 Eylül 2026): kullanıcı ekran görüntüsünde fotoğraf 72px dairede; canlı HTML'de CSS'ler hash'li (`bundle.54c75d1e42b0.css` 200), hash'siz CSS referansı yok; /, /en/, /de/tarama/, /market/, /proje-talebi/ 200. Adım notu: `git pull origin main` → `docker compose restart web && docker compose
   restart nginx` (deploy.sh collectstatic hash'li dosyaları üretir). Sonra: profil düzenleme
   sayfasında fotoğraf 72px dairede mi; sayfa kaynağında `/static/css/profiles.<hash>.css` var mı.
 - Not (kullanıcı sorusu): canlıdaki devasa fotoğraf eski/yeni fotoğrafla ilgili DEĞİLDİ — eski
