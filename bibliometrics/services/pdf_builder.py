@@ -332,8 +332,9 @@ def build_demo_pdf(figures: list, total_records: int = 0, filename: str = '') ->
     return buf.read()
 
 
-def build_full_pdf(figures: list, total_records: int = 0, filename: str = '') -> bytes:
-    """figures: [(title, Figure), ...]  — tümü kullanılır"""
+def build_full_pdf(figures: list, total_records: int = 0, filename: str = '', notes: dict = None) -> bytes:
+    """figures: [(title, Figure), ...]  — tümü kullanılır
+    notes: report_notes.build_report_notes() çıktısı — "Veri, Yöntem ve Kısıtlar" bölümü"""
     A4, cm, canvas_mod, _ = _get_reportlab()
     width, height = A4
 

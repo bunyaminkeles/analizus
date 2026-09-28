@@ -24,6 +24,10 @@ maddelerde.
 **A. Kod işleri (öncelik sırasıyla)**
 - [x] **Hetzner deploy — main a5c5984 YAPILDI (28 Eylül 2026, kullanıcı: "sorun çıkmadı"; dışarıdan /, /bibliometrics/, /en|de/bibliometrics/ 200, başlıklar çevrili)**: bibliometri EN/DE + Research Gap + K1–K7 + A/B. requirements.txt
   değişti (Babel) → `docker compose up -d --build web` ŞART; migration yok. Sonra canlıda: OpenAlex araması + bibliometri işi.
+- [ ] **BibTeX yüklemeleri çalışmıyor (28 Eylül 2026, D testinde bulundu)** — `requirements.txt` `bibtexparser` sürümsüz →
+  2.0.1 kurulu; `parser._parse_bibtex` v1 API (`bibtexparser.bparser`) kullanıyor → "No module named 'bibtexparser.bparser'",
+  iş "Dosyadan kayıt okunamadı" ile başarısız. Canlıda da muhtemelen aynı (kontrol edilmedi). Seçenek: `bibtexparser<2` sabitle
+  (build gerekir) veya v2 API'ye geçir.
 - [ ] **Veri temizliği: kontrol karakterleri** — OpenAlex bazı dergi adlarında C1 kontrol karakteri gönderiyor
   ("\x98The \x9cJournal of practical nursing") → grafikte boş kutu (glif uyarısı). `_clean` kontrol karakterlerini atmalı. (28 Eylül 2026)
 - [ ] **OpenAlex hata mesajı** — kullanıcıya ham "503 Server Error… for url: https://api.openalex.org/…" gösteriliyor → çevrili,
@@ -288,7 +292,7 @@ maddelerde.
             Eski plan: alan doluluk tablosu, uygulanan kurallar/eşikler, bilinen kısıtlar, sınır uyarısı
             (OpenAlex: bulunan > çekilen → "en yeni N kayıt, YYYY öncesi kapsam dışı"; çekilen < min(bulunan, sınır) →
             "çekim eksik kaldı").
-      - [ ] D `job_runner.py`: iki akışta (dosya / OpenAlex) `stats` + `skipped` + kaynak bilgisi → `build_full_pdf`.
+      - [x] D (28 Eylül 2026, uçtan uca test: OpenAlex + 2 dosyalı Scopus CSV, rollback) `build_full_pdf(..., notes=)` parametresi eklendi (E'ye kadar kullanılmıyor). Eski plan: `job_runner.py`: iki akışta (dosya / OpenAlex) `stats` + `skipped` + kaynak bilgisi → `build_full_pdf`.
       - [ ] E `pdf_builder.py`: tam raporun sonuna "Veri, Yöntem ve Kısıtlar" sayfası(ları) + kapanış notu (TR sipariş,
             EN/DE proje talebi); sınır aşıldıysa trend grafiklerinin sayfasına kısa uyarı satırı. Demo PDF değişmez.
       - [ ] F `locale/en|de` po+mo (yeni msgid'ler elle).

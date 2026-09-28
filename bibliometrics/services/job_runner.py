@@ -45,6 +45,7 @@ def _execute_job_body(job_id: str) -> None:
     from bibliometrics.services.parser import parse_file, _deduplicate_and_filter
     from bibliometrics.services.analyzer import run_all_analyses
     from bibliometrics.services.pdf_builder import build_demo_pdf, build_full_pdf
+    from bibliometrics.services.report_notes import build_report_notes
     from forum.s3_utils import upload_bytes_to_s3
 
     close_old_connections()
@@ -62,24 +63,32 @@ def _execute_job_body(job_id: str) -> None:
         contents = file_content if isinstance(file_content, list) else [file_content]
         all_records = []
         fmt = 'csv_auto'
+        stats = {}
         for content in contents:
-            recs, detected_fmt = parse_file(content)
+            recs, detected_fmt = parse_file(content, stats=stats)
             all_records.extend(recs)
             fmt = detected_fmt
 
-        records = _deduplicate_and_filter(all_records) if len(contents) > 1 else all_records
+        records = _deduplicate_and_filter(all_records, stats) if len(contents) > 1 else all_records
 
         if not records:
             job.mark_failed(gettext('Dosyadan kayıt okunamadı. Format desteklenmiyor olabilir.'))
             return
 
-        figures = run_all_analyses(records)
+        skipped = []
+        figures = run_all_analyses(records, skipped=skipped)
         if not figures:
             job.mark_failed(gettext('Analizler üretilemedi. Veri yetersiz olabilir.'))
             return
 
+        notes = build_report_notes(records, stats=stats, skipped=skipped, source={
+            'kind': 'file',
+            'format': dict(BibliometricJob.FORMAT_CHOICES).get(fmt, fmt),
+            'files': len(contents),
+        })
         demo_pdf_bytes = build_demo_pdf(figures[:3], total_records=len(records), filename=job.original_filename)
-        full_pdf_bytes = build_full_pdf(figures, total_records=len(records), filename=job.original_filename)
+        full_pdf_bytes = build_full_pdf(figures, total_records=len(records), filename=job.original_filename,
+                                        notes=notes)
 
         n_figures = len(figures)
         del figures
@@ -117,6 +126,8 @@ def _execute_job_openalex_body(job_id: str) -> None:
     from bibliometrics.services.parser import parse_openalex_json
     from bibliometrics.services.analyzer import run_all_analyses
     from bibliometrics.services.pdf_builder import build_demo_pdf, build_full_pdf
+    from bibliometrics.services.report_notes import build_report_notes
+    from forum.models import SiteSettings
     from forum.s3_utils import upload_bytes_to_s3
 
     try:
@@ -128,7 +139,8 @@ def _execute_job_openalex_body(job_id: str) -> None:
             job.mark_failed(gettext('OpenAlex verisi bulunamadı veya boş.'))
             return
 
-        records = parse_openalex_json(alex_job.all_results)
+        stats = {}
+        records = parse_openalex_json(alex_job.all_results, stats=stats)
         if not records:
             job.mark_failed(gettext('OpenAlex verisinden kayıt okunamadı.'))
             return
@@ -137,13 +149,22 @@ def _execute_job_openalex_body(job_id: str) -> None:
             job.mark_failed(gettext('Bibliometrik analiz için en az 100 kayıt gereklidir (bulunan: {count}).').format(count=len(records)))
             return
 
-        figures = run_all_analyses(records)
+        skipped = []
+        figures = run_all_analyses(records, skipped=skipped)
         if not figures:
             job.mark_failed(gettext('Analizler üretilemedi. Veri yetersiz olabilir.'))
             return
 
+        # Sınır çekim anındaki değil şimdiki ayar — admin arada değiştirmediyse aynıdır
+        notes = build_report_notes(records, stats=stats, skipped=skipped, source={
+            'kind': 'openalex',
+            'found': alex_job.total_results,
+            'fetched': len(alex_job.all_results),
+            'max_records': SiteSettings.load().scrap_max_records or 5000,
+        })
         demo_pdf_bytes = build_demo_pdf(figures[:3], total_records=len(records), filename=job.original_filename)
-        full_pdf_bytes = build_full_pdf(figures, total_records=len(records), filename=job.original_filename)
+        full_pdf_bytes = build_full_pdf(figures, total_records=len(records), filename=job.original_filename,
+                                        notes=notes)
 
         n_figures = len(figures)
         del figures
