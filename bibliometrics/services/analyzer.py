@@ -189,10 +189,16 @@ def run_all_analyses(records: list[dict]) -> list[tuple[str, bytes]]:
     return results
 
 
+def _last_complete_year() -> int:
+    """Zaman serilerinin son yılı: içinde bulunulan yıl eksik veri → yapay düşüş gösterir."""
+    from datetime import date
+    return date.today().year - 1
+
+
 # ─────────────────────────── 1. Yayın Trendi ───────────────────────────
 
 def publication_trend(records: list[dict]):
-    years = [r['year'] for r in records if r.get('year') and 1900 < r['year'] < 2100]
+    years = [r['year'] for r in records if r.get('year') and 1900 < r['year'] <= _last_complete_year()]
     if not years:
         return None
 
@@ -647,7 +653,7 @@ def annual_citation_trend(records: list[dict]):
     # Ortalama için o yılın tüm yayınları (0 atıflılar dahil) sayılır
     year_citations = defaultdict(list)
     for r in records:
-        if r.get('year') and 1900 < r['year'] < 2100:
+        if r.get('year') and 1900 < r['year'] <= _last_complete_year():
             year_citations[r['year']].append(r.get('cited_by') or 0)
 
     if not any(sum(v) for v in year_citations.values()):
@@ -692,7 +698,7 @@ def annual_citation_trend(records: list[dict]):
 # ─────────────────────────── 11. Büyüme Oranı ───────────────────────────
 
 def publication_growth_rate(records: list[dict]):
-    years = [r['year'] for r in records if r.get('year') and 1900 < r['year'] < 2100]
+    years = [r['year'] for r in records if r.get('year') and 1900 < r['year'] <= _last_complete_year()]
     if not years:
         return None
 
@@ -897,7 +903,7 @@ def keyword_trend(records: list[dict], top_n: int = 8):
         return None
 
     top_kws = [kw for kw, _ in all_kw.most_common(top_n)]
-    years = sorted({r['year'] for r in records if r.get('year') and 1900 < r['year'] < 2100})
+    years = sorted({r['year'] for r in records if r.get('year') and 1900 < r['year'] <= _last_complete_year()})
 
     if len(years) < 3:
         return None
@@ -906,7 +912,7 @@ def keyword_trend(records: list[dict], top_n: int = 8):
     from collections import defaultdict
     year_kw = defaultdict(lambda: defaultdict(int))
     for r in records:
-        if not r.get('year') or not (1900 < r['year'] < 2100):
+        if not r.get('year') or not (1900 < r['year'] <= _last_complete_year()):
             continue
         for k in normalize_keywords(r.get('keywords', [])):
             if k in top_kws:
@@ -1022,7 +1028,10 @@ def research_gap(records: list[dict], top_n: int = 30, recent_years: int = 3):
     """
     import math
 
-    now_year = max((r.get('year') or 0) for r in records if r.get('year'))
+    # Bitmemiş yıl ve yılı olmayan kayıtlar trend hesabına girmez
+    last_year = _last_complete_year()
+    records = [r for r in records if r.get('year') and 1900 < r['year'] <= last_year]
+    now_year = max((r['year'] for r in records), default=0)
     if not now_year:
         return None
 

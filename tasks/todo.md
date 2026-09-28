@@ -241,8 +241,10 @@ maddelerde.
         (API `authorships[].countries` veriyor). WoS düz metinde de CU etiketi standart değil (ülke C1 adresinde).
       - [x] K5 DÜZELTİLDİ (28 Eylül 2026): yayın trendi, büyüme oranı ve anahtar kelime trendi ardışık takvim yılları (boş
         yıl 0); önceki yılı 0 olan yılın büyümesi tanımsız → çubuk yok. Test: 2018 eski −%50 (2016'ya göre) → boş. Eski not: K5 Boş yıllar: yayın olmayan yıl atlanıyor → büyüme oranı ardışık olmayan yıllar arasında hesaplanıyor.
-      - [ ] K6 İçinde bulunulan (eksik) yıl dahil → son yılda yapay düşüş (büyüme, CAGR, Research Gap trendi). Karar.
-      - [ ] K7 OpenAlex "concepts" (Computer science, Medicine gibi geniş alanlar) anahtar kelimelere katılıyor →
+      - [x] K6 DÜZELTİLDİ (28 Eylül 2026, kullanıcı: "dışarıda bırakılsın"): `_last_complete_year()` = bugün−1; yayın trendi,
+        büyüme/CAGR, kw trendi, yıllık atıf, Research Gap (yılsız kayıtlar da artık "eski" sayılmıyor). Diğer analizler (yazar,
+        dergi, atıf tablosu) tüm kayıtlarla. Eski not: K6 İçinde bulunulan (eksik) yıl dahil → son yılda yapay düşüş (büyüme, CAGR, Research Gap trendi). Karar.
+      - [ ] K7 (öneri sunuldu, karar bekliyor: concepts yalnız keywords boşsa yedek) OpenAlex "concepts" (Computer science, Medicine gibi geniş alanlar) anahtar kelimelere katılıyor →
         kelime bulutu/ağı/trendi/Research Gap'e baskın genel terimler giriyor. Karar.
     - [ ] Yükleme hata mesajında "file: " alan adı öneki (önceden var) — view form hatalarını ham basıyor.
     - [ ] **İçerik kararı:** bibliometri sayfası/promo "10 analiz" diyor, rapor 15 analiz içeriyor (kapak
