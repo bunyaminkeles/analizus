@@ -19859,3 +19859,6 @@ msgstr "Publication years and at least 5 keywords occurring in at least 3 public
 
 msgid "Hesaplama sırasında hata oluştu."
 msgstr "An error occurred during the calculation."
+
+msgid "Ülke ve kurum sayımında bir yayın, yazarlarının bulunduğu her ülke ve kurum için bir kez sayıldı. Kurum grafiği yalnız ülke bilgisi hiç yoksa üretilir."
+msgstr "In the country and institution counts, each publication was counted once for every country and institution of its authors. The institution chart is produced only when no country information is available at all."

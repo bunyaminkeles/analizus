@@ -20185,3 +20185,6 @@ msgstr "Erscheinungsjahre und mindestens 5 Schlagwörter, die in mindestens 3 Pu
 
 msgid "Hesaplama sırasında hata oluştu."
 msgstr "Bei der Berechnung ist ein Fehler aufgetreten."
+
+msgid "Ülke ve kurum sayımında bir yayın, yazarlarının bulunduğu her ülke ve kurum için bir kez sayıldı. Kurum grafiği yalnız ülke bilgisi hiç yoksa üretilir."
+msgstr "Bei der Länder- und Institutionszählung wurde jede Publikation für jedes Land und jede Institution ihrer Autorinnen und Autoren einmal gezählt. Die Institutionsgrafik wird nur erstellt, wenn überhaupt keine Länderangaben vorliegen."

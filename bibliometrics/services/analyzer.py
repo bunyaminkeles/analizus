@@ -408,16 +408,28 @@ def _record_countries(r: dict) -> list[str]:
     return names
 
 
+def _record_institutions(r: dict) -> list[str]:
+    """Kaydın farklı kurumları (tam sayım: her kurum yayın başına bir kez).
+    WoS C1 "[Yazar A; Yazar B] Kurum, …; [Yazar C] Kurum2, …" — köşeli parantezli yazar
+    grupları ';' içerdiği için bölmeden önce atılır."""
+    import re
+    raw = re.sub(r'\[[^\]]*\]\s*', '', r.get('institution') or '')
+    names = []
+    for inst in raw.split(';'):
+        inst = inst.strip()
+        if inst and inst not in names:
+            names.append(inst)
+    return names
+
+
 def top_institutions(records: list[dict], n: int = 10):
     country_counter = Counter()
     inst_counter = Counter()
     for r in records:
         for c in _record_countries(r):
             country_counter[c] += 1
-        if r.get('institution'):
-            inst = r['institution'].split(';')[0].strip()
-            if inst:
-                inst_counter[inst] += 1
+        for inst in _record_institutions(r):
+            inst_counter[inst] += 1
 
     if country_counter:
         top = country_counter.most_common(n)

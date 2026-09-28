@@ -17,7 +17,7 @@ maddelerde.
 > - **SIRADAKİ İŞ: bibliometri "Veri, Yöntem ve Kısıtlar" bölümü — C adımı (`bibliometrics/services/report_notes.py`).**
 >   Plan A–G ve kullanıcı kararları aşağıda "ŞEFFAFLIK" maddesinde (A, B ✅). Kural: her adım ayrı, test + onay.
 > - Açık kullanıcı soruları: (1) "2026 yayınları tarih/DOI varsa alınsın" isteği netleşmedi (şu an 2026 yalnız yıllık
->   grafiklerde yok); (2) Research Gap trend yöntemi (yıllık ortalama önerisi); (3) kurum grafiği ilk kurum / tüm kurumlar;
+>   grafiklerde yok); (2) Research Gap trend yöntemi (yıllık ortalama önerisi); (3) ✅ kurum grafiği TÜM kurumlar (28 Eylül 2026, WoS C1 yazar parantezi hatası da düzeltildi);
 >   (4) "10 analiz" metni; (5) OpenAlex bütçe verimliliği (aramada yalnız ilk sayfa).
 > - Diğer açıklar bu listede `- [ ]`; sistem özeti `analizus.md` §14 (bibliometri kuralları), §15 (OpenAlex), §27.
 

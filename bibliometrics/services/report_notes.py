@@ -130,8 +130,8 @@ def _rules(source, last_year):
         rules.append(gettext('Anahtar kelimesi olmayan OpenAlex kayıtlarında OpenAlex\'in geniş konu '
                              'etiketleri (concepts) anahtar kelime yerine kullanıldı.'))
     rules += [
-        gettext('Ülke sayımında bir yayın, yazarlarının bulunduğu her ülke için bir kez sayıldı. '
-                'Kurum grafiği yalnız ülke bilgisi hiç yoksa üretilir ve her yayının ilk kurumunu sayar.'),
+        gettext('Ülke ve kurum sayımında bir yayın, yazarlarının bulunduğu her ülke ve kurum için bir kez '
+                'sayıldı. Kurum grafiği yalnız ülke bilgisi hiç yoksa üretilir.'),
         gettext('Ağ grafiklerinde en az {n} kez birlikte geçen bağlantılar gösterildi (böyle bağlantı '
                 'yoksa en sık bağlantılar). Gösterilen en fazla düğüm: yazar {a}, anahtar kelime {k}, '
                 'ülke {c}.').format(
