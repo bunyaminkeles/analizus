@@ -6,6 +6,7 @@ PDF Rapor Oluşturucu (reportlab)
 """
 import io
 import os
+from django.utils.translation import gettext
 import logging
 from datetime import date
 
@@ -127,7 +128,7 @@ def _draw_header(c, width, height, title, subtitle='', page_num=None, total_page
     if page_num and total_pages:
         c.setFillColorRGB(*C_MUTED)
         c.setFont(_FONT_NORMAL, 8)
-        c.drawRightString(width - 18, height - 28, f'Sayfa {page_num} / {total_pages}')
+        c.drawRightString(width - 18, height - 28, gettext('Sayfa {page} / {total}').format(page=page_num, total=total_pages))
 
     # Marka (sağ)
     c.setFillColorRGB(*C_ACCENT)
@@ -143,8 +144,8 @@ def _draw_footer(c, width):
     c.setFillColorRGB(*C_MUTED)
     c.setFont(_FONT_NORMAL, 8)
     today = date.today().strftime('%d.%m.%Y')
-    c.drawString(18, 14, f'Analizus — Akademik Veri Üssü  |  analizus.com  |  {today}')
-    c.drawRightString(width - 18, 14, 'Bu rapor otomatik olarak oluşturulmuştur.')
+    c.drawString(18, 14, f"Analizus — {gettext('Akademik Veri Üssü')}  |  analizus.com  |  {today}")
+    c.drawRightString(width - 18, 14, gettext('Bu rapor otomatik olarak oluşturulmuştur.'))
 
 
 def _fit_text(text: str, font_name: str, font_size: float, max_width: float) -> str:
@@ -162,7 +163,7 @@ def _fit_text(text: str, font_name: str, font_size: float, max_width: float) -> 
         return text[:limit] + ('…' if len(text) > limit else '')
 
 
-def _draw_cover(c, width, height, is_demo: bool, total_records: int, filename: str):
+def _draw_cover(c, width, height, is_demo: bool, total_records: int, filename: str, n_analyses: int = 0):
     _draw_page_background(c, width, height)
 
     # ── Üst başlık bandı ──
@@ -181,15 +182,16 @@ def _draw_cover(c, width, height, is_demo: bool, total_records: int, filename: s
 
     c.setFillColorRGB(0.75, 0.87, 1.0)
     c.setFont(_FONT_NORMAL, 10)
-    c.drawCentredString(width / 2, height - 84, 'Akademik Veri Üssü  —  analizus.com')
+    c.drawCentredString(width / 2, height - 84, gettext('Akademik Veri Üssü  —  analizus.com'))
 
     # Rapor başlığı
     c.setFillColorRGB(1.0, 1.0, 1.0)
     c.setFont(_FONT_BOLD, 22)
-    c.drawCentredString(width / 2, height - 128, 'Bibliometrik Analiz Raporu')
+    c.drawCentredString(width / 2, height - 128, gettext('Bibliometrik Analiz Raporu'))
 
     # Rapor türü etiketi
-    label      = 'DEMO RAPOR  (3 Analiz)' if is_demo else 'TAM RAPOR  (10 Analiz)'
+    # Sayı gerçek grafik sayısından (eskiden tam raporda sabit '10' yazıyordu, rapor 15 analiz içeriyordu)
+    label      = (gettext('DEMO RAPOR  ({n} Analiz)') if is_demo else gettext('TAM RAPOR  ({n} Analiz)')).format(n=n_analyses)
     lbl_color  = C_ORANGE if is_demo else C_ACCENT
     c.setFillColorRGB(*lbl_color)
     c.setFont(_FONT_BOLD, 13)
@@ -236,10 +238,10 @@ def _draw_cover(c, width, height, is_demo: bool, total_records: int, filename: s
         c.drawString(VAL_X, row_y, val_str)
         row_y -= 24
 
-    _kv('Toplam Kayıt:',  f'{total_records:,}')
-    _kv('Dosya:',          filename)
-    _kv('Rapor Tarihi:',   date.today().strftime('%d.%m.%Y'))
-    _kv('Hazırlayan:',     'Analizus Otomatik Analiz')
+    _kv(gettext('Toplam Kayıt:'),  f'{total_records:,}')
+    _kv(gettext('Dosya:'),          filename)
+    _kv(gettext('Rapor Tarihi:'),   date.today().strftime('%d.%m.%Y'))
+    _kv(gettext('Hazırlayan:'),     gettext('Analizus Otomatik Analiz'))
 
     # ── Demo uyarı kutusu ──
     if is_demo:
@@ -252,11 +254,11 @@ def _draw_cover(c, width, height, is_demo: bool, total_records: int, filename: s
         c.roundRect(card_x, note_y, card_w, note_h, 7, fill=0, stroke=1)
         c.setFillColorRGB(0.60, 0.35, 0.05)
         c.setFont(_FONT_BOLD, 9)
-        c.drawCentredString(width / 2, note_y + 27, 'Demo: 3 analiz içermektedir.')
+        c.drawCentredString(width / 2, note_y + 27, gettext('Demo: {n} analiz içermektedir.').format(n=n_analyses))
         c.setFont(_FONT_NORMAL, 8)
         c.setFillColorRGB(*C_MUTED)
         c.drawCentredString(width / 2, note_y + 12,
-                            'Tam rapor (10 analiz) için sipariş oluşturunuz → analizus.com')
+                            gettext('Tam rapor için sipariş oluşturunuz → analizus.com'))
 
     _draw_footer(c, width)
 
@@ -265,7 +267,7 @@ def _draw_figure_page(c, width, height, fig, analysis_title: str, page_num: int,
     _draw_page_background(c, width, height)
     _draw_header(c, width, height,
                  title=analysis_title,
-                 subtitle='Bibliometrik Analiz Raporu — Analizus',
+                 subtitle=gettext('Bibliometrik Analiz Raporu — Analizus'),
                  page_num=page_num, total_pages=total_pages)
     _draw_footer(c, width)
 
@@ -314,7 +316,7 @@ def build_demo_pdf(figures: list, total_records: int = 0, filename: str = '') ->
     total_pages = 1 + len(demo_figs)
 
     _draw_cover(c, width, height, is_demo=True,
-                total_records=total_records, filename=filename)
+                total_records=total_records, filename=filename, n_analyses=len(demo_figs))
     c.showPage()
 
     for i, (title, fig) in enumerate(demo_figs, start=1):
@@ -341,7 +343,7 @@ def build_full_pdf(figures: list, total_records: int = 0, filename: str = '') ->
     total_pages = 1 + len(figures)
 
     _draw_cover(c, width, height, is_demo=False,
-                total_records=total_records, filename=filename)
+                total_records=total_records, filename=filename, n_analyses=len(figures))
     c.showPage()
 
     for i, (title, fig) in enumerate(figures, start=1):

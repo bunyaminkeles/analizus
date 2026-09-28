@@ -10,7 +10,42 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
+> **YENİ OTURUM BURADAN BAŞLA (28 Eylül 2026 sonu):**
+> - Canlı (main = Hetzner) güncel ve DEPLOY EDİLDİ: e-posta dil tercihi (bd7f8ea), bağış "havaleyi yaptım" 500 +
+>   davet bildirimi (1fb9fe7), mobil hamburger taşması (cd68fa1). Dışarıdan doğrulandı (yeni bundle.css canlıda).
+> - `dev`'de MERGE EDİLMEMİŞ tek iş: **bibliometri EN/DE Aşama 1–4** (2e94544, d9af3f5, 0865346 + docs 9aed409;
+>   migration yok). Main'e alma cherry-pick ile yapıldı → dev ve main geçmişleri farklı; bir sonraki
+>   `dev`→`main` birleştirmede fast-forward OLMAZ, `git merge dev` (aynı yamalar, çakışma beklenmez) veya
+>   kalan commit'leri cherry-pick.
+> - Sıradaki (kullanıcı kararlarıyla): bibliometri (a) research-gap grafiği (744×15562 px) + 15 analizin
+>   doğruluk testi, (b) S2 → bibliometri bağlantısı (migration gerekir), (c) OpenAlex tekrar kayıt (dedup)
+>   incelemesi; içerik kararı "10 analiz" vs rapor 15. Ayrıntı: aşağıda "DURAKLATILDI" maddesi.
+> - Diğer açıklar bu listede `- [ ]` olarak; sistem özeti `analizus.md` §27 "Sıradaki Görevler".
+> - **MERGE ÖNCESİ DOĞRULAMA (28 Eylül 2026) TAMAM:** pytest 61/61; gerçek OpenAlex ("bibliometric nursing" 2012–2025,
+>   576 bulundu → 1 tekrar → 575) → 17/17 analiz TR+EN PDF; atıf tablosu (ort 5,1 / medyan 0 / h 29), ülke (Çin 139,
+>   Türkiye 88), yıllık trend bağımsız hesapla birebir; EN PDF metninde TR karakter 0; gerçek başlıklı WoS TSV (BOM'lu)
+>   csv_wos algılandı, yazarlar doğru. dev HEAD 52fb1c4. Merge kullanıcı onayı bekliyor.
+
 **A. Kod işleri (öncelik sırasıyla)**
+- [ ] **Veri temizliği: kontrol karakterleri** — OpenAlex bazı dergi adlarında C1 kontrol karakteri gönderiyor
+  ("\x98The \x9cJournal of practical nursing") → grafikte boş kutu (glif uyarısı). `_clean` kontrol karakterlerini atmalı. (28 Eylül 2026)
+- [ ] **OpenAlex hata mesajı** — kullanıcıya ham "503 Server Error… for url: https://api.openalex.org/…" gösteriliyor → çevrili,
+  anlaşılır mesaj; scraper 503'te de beklemeli (şu an yalnız 429). (28 Eylül 2026)
+- [ ] **OpenAlex bütçe verimliliği (öneri, karar bekliyor)** — arama tüm sonuçları (5000'e kadar, 25 istek) baştan çekiyor;
+  yalnız ilk sayfa + tam veri bibliometri/indirme istenince çekilirse arama başı 1 istek (≈1.000 arama/gün). Önce canlıda
+  günlük arama sayısı ölçülebilir (salt okuma, kullanıcı izniyle).
+- [x] **OpenAlex API anahtarı EKLENDİ (28 Eylül 2026, kullanıcı: "canlı ve lokalde ok")** — yerelde doğrulandı: anahtarlı
+  arama 200 (30.159 sonuç), anahtarsız 503. Render env kullanıcıda. KALAN (ayrı madde aşağıda): ham hata mesajı + 503 bekleme.
+  Eski not: **ACİL — OpenAlex aramaları 503 (28 Eylül 2026)**: OpenAlex anonim aramayı yoğunluk nedeniyle durdurdu ("Anonymous
+  search is paused… use a free API key"). Kod `OPENALEX_API_KEY` destekliyor ama yerelde (.env) ve Docker'da TANIMSIZ;
+  Hetzner/Render kontrol edilmedi. Yapılacak: openalex.org'dan ücretsiz anahtar → yerel .env, Render env, Hetzner
+  `/app/.env` + `docker compose up -d web` (restart env'i yeniden okumaz). Ek: (1) kullanıcıya ham hata + API URL'si
+  gösteriliyor ("503 Server Error… for url: https://api.openalex.org/…") → çevrili, anlaşılır mesaj olmalı;
+  (2) scraper 503'te beklemeden 3 kez deniyor (yalnız 429'da bekleme var).
+  **Bütçe (help.openalex.org/access/example-costs, 28 Eylül 2026):** anahtarsız $0,10/gün, ücretsiz anahtar $1/gün; arama
+  $1 / 1.000 istek (liste+filtre $0,10 / 1.000). 5000 kayıtlık arama = 25 istek (per_page=200) → anahtarsız ≈4, anahtarlı
+  ≈40 tam arama/gün. Kod `api_key` parametresini zaten gönderiyor — yalnız env gerekli. Not: doküman per_page max 100
+  diyor, pratikte 200 çalışıyor (anahtarsız denendi) — uygulanırsa `MAX_PER_PAGE=100` (istek sayısı 2 katı).
 - [x] **ACİL — "Havaleyi yaptım" bağlantısı 500 veriyor** — DÜZELTİLDİ (28 Eylül 2026, target=donation → admin bağış sayfası). Eski not:
   `mark_donation_transferred` adminlere `Notification(target=None)` oluşturuyor; model
   `content_type`/`object_id` NOT NULL → IntegrityError, try/except yok. Donation durumu
@@ -131,8 +166,9 @@ maddelerde.
   landing'i de/en için de aktif et; buraya iki veri kazıma daha eklenecek"): hub i18n'e
   taşınacak; EN/DE'de yalnız uluslararası araçlar (OpenAlex, Semantic Scholar — YÖK Tez,
   TR Dizin, OAI-PMH gizli); `tarama_hub` view'daki araç başlık/açıklamaları çeviriye;
-  EN/DE navbar "Academic Search" hub'a bağlanacak; yeni kazıma modülleri (PubMed, BASE)
-  kart eklemeye hazır yapı.
+  EN/DE navbar "Academic Search" hub'a bağlanacak; yeni kazıma modülleri kart eklemeye hazır
+  yapı. **Planlanan modüllerin dil kapsamı (kullanıcı, 28 Eylül 2026): PubMed TR/EN/DE üç dilde;
+  BASE yalnız DE** (hub'da `intl` yerine dil listesi gerekebilir — tek bayrak DE-only'i ifade etmez).
 - [x] **2. Proje talebi EN/DE'de kalan Türkçe ifadeler** — YAPILDI (27 Eylül 2026): kategori `localized_title` + 'Veri Analizi' çevirisi ("New Analysis" bulanık hatası düzeltildi → Data Analysis / Datenanalyse); süre tam cümle ngettext ("completed in 4 months" / "in 4 Monaten abgeschlossen"), şablondaki "{{ duration }} tamamlandı" parçası kaldırıldı; e-posta örneği dile göre (jane@company.com / maria@firma.de). 3 dilde 4 senaryo test. Eski not: (kullanıcı ekran görüntüsü, DE):
   (a) "Kürzlich abgeschlossene Analysen" listesinde kategori adları TR — `views.py` ~2202
   `job.category.title` → `localized_title`, varsayılan 'Veri Analizi' → gettext;
@@ -163,7 +199,121 @@ maddelerde.
     (e-posta doğrulama, günlük limit — parça birleştirme 2 tam cümleye bölündü, demo e-posta) çevrili;
     25 msgid (bulanık tahminler yanlıştı, hepsi elle). EN/DE giriş yapmış sayfada TR 0.
     Not: landing JS metinleri zaten etiketliydi (ölçüm aracı yanlış saymıştı).
-  - [ ] **Bibliometrik analize gönder** (OpenAlex sonuçları) `/bibliometrics/`'e gidiyor — o sayfa TR-only
+  - [ ] **DURAKLATILDI (27 Eylül 2026, kullanıcı: "pause")** — bibliometri Aşama 1–4 dev'de (2e94544, d9af3f5, 0865346), main/canlı cd68fa1 (28 Eylül; araya 3 düzeltme cherry-pick ile girdi); MERGE EDİLMEDİ (migration yok, 61/61). Sıradaki öneri: (a) Research Gap grafiği + 15 analizin doğruluk testleri → (b) S2 bağlantısı (migration: BibliometricJob'a S2 FK) → (c) OpenAlex tekrar kayıt.
+  - [ ] **BİBLİOMETRİ EN/DE — DEVAM EDİYOR** (kullanıcı kararları 27 Eylül 2026: S2 bağlantısı eklensin +
+    analiz sonuçları test edilsin; bibliometri sayfası EN/DE evet; tekrar kayıt incelensin evet).
+    - [x] Aşama 1 tetikleme+e-posta: bibliometrics URL'leri i18n'e; OpenAlex JS fetch `{% url %}`+sentinel;
+      views mesajları (66 msgid, bulanık tahminler elle düzeltildi); arka plan `_in_user_language`
+      (upload + openalex); 3 e-posta alıcı dilinde (OpenAlex işinde "yüklediğiniz dosya" hatası ve
+      Türkçe karaktersiz e-posta düzeltildi); tam rapor EN/DE → proje talebi. Test: DE kullanıcı
+      gerçek analiz motoruyla 130 kayıt → completed, e-posta Almanca.
+    - [x] Aşama 2 PDF rapor (27 Eylül 2026): analyzer (grafik başlık/eksen/lejant/tablo/yayın türü,
+      grafik İÇİ f-string başlıklar dahil) + pdf_builder (kapak, sayfa "Seite x / y", altbilgi) + sorgu
+      özeti alan adları çevrili; ~95 msgid elle (bulanıklar yanlıştı). 🎯 kaldırıldı (glif uyarısı 0).
+      **Doğruluk düzeltmesi:** kapak "TAM RAPOR (10 Analiz)" diyordu, rapor 15 analiz içeriyordu →
+      sayı gerçek grafik sayısından. Test: 160 kayıt, 3 dil PDF; EN/DE metin katmanında TR 0; DE
+      sayfaları görsel kontrol (Lotka, atıf tablosu tamamen Almanca). Ders: tarayıcıda `\w` Türkçe
+      harfleri kapsıyor (lessons.md).
+    - [ ] **Araştırma Boşluğu Haritası PDF'te bozuk (ÖNCEDEN VAR)** (27 Eylül 2026): `research_gap`
+      bbox_inches='tight' ile 744×15562 px üretiyor (grafik dışında bir öğe alanı uzatıyor) → PDF'te
+      ince boş şerit. Orijinal kodla birebir aynı (sentetik 160 kayıt). Ücretli raporda — "analiz
+      sonuçları test edilsin" kapsamında düzeltilecek.
+      → **DÜZELTİLDİ (28 Eylül 2026, commit bekliyor):** kök neden alt kadran etiketleri `y=med_impact*0.15`
+      (veri koordinatı, eksen 0'dan başlar varsayımı); etki değerleri dar aralıkta (0.946–1.003) toplanınca
+      etiket −10180 px'e düşüyordu. Kadran etiketleri artık x=veri / y=eksen oranı. 160 kayıt: 1472×13294 → 1472×1071.
+    - [x] Research Gap (1)–(3) DÜZELTİLDİ (28 Eylül 2026): gölge medyan çizgilerine göre `fill_between`,
+      lejant eksenin üstünde (4 sütun), "RESEARCH GAP"/"ALTIN ALAN" gettext (EN GOLDEN AREA, DE FORSCHUNGSLÜCKE /
+      GOLDENES FELD). DE çıktı kontrol edildi.
+    - [ ] Research Gap (4) yöntem sorusu kullanıcı kararı bekliyor. Tarihçe — kalan sorunlar (28 Eylül 2026):
+      (1) kadran arka plan gölgesi `ymin=0.5` (eksenin yarısı) — medyan çizgisiyle çakışmıyor, x'te de eksenin
+      tamamını kaplamıyor → kadran yanlış gösteriliyor; (2) "YÜKSELİŞTEKİ ALAN" etiketi lejantın altında kalıyor;
+      (3) "ALTIN ALAN" / "★ RESEARCH GAP" etiketleri gettext'e sarılmamış (EN/DE PDF'te TR);
+      (4) yöntem sorusu: trend = (son 3 yıl − önceki tüm yıllar)/toplam — dönem uzunlukları farklı, uzun
+      zaman aralıklı veride tüm anahtar kelimeler negatif ("azalıyor") çıkıyor; kadranlar medyana göre göreli
+      olduğu için sınıflama çalışıyor ama eksen etiketi yanıltıcı. Yıllık ortalamaya normalize etmek önerilir.
+      Bibliometri analizlerinin otomatik testi YOK (forum/tests.py'de yalnız 1 proje-talebi testi).
+    - [x] Aşama 3 bibliometri sayfası (27 Eylül 2026): landing (HTML + JS `T` sözlüğü + `fmt`), form etiket/
+      hata mesajları çevrili; sabit `/bibliometrics/...` fetch adresleri `{% url %}`+sentinel; EN/DE
+      navbar'da (masaüstü+mobil) açık. TR görünen metin öncekiyle birebir aynı (otomatik karşılaştırma;
+      "Email"→"E-posta" gibi istemeden yaptığım TR değişiklikleri geri alındı). EN/DE TR kalan 0.
+    - [x] Aşama 4 sipariş (27 Eylül 2026): EN/DE'de sonuç panelinde fiyat gizli + buton proje talebi,
+      geçmiş tablosunda "Sipariş" → proje talebi, sipariş sayfası 302 → /en|de/proje-talebi/.
+    - [ ] **BİBLİOMETRİ DOĞRULUK DENETİMİ (28 Eylül 2026)** — 17 analiz + parser okundu. Doğru bulunan: h-index,
+      CAGR formülü, yıllık büyüme formülü, Lotka normalizasyonu, top yazar/dergi/atıf sayımları.
+      Hatalı / karar gerektiren (öncelik sırasıyla):
+      - [x] **K1 DÜZELTİLDİ (28 Eylül 2026):** WoS TSV `;` + `_wos_fmt_author` (.txt ile aynı ad biçimi); Scopus/generic
+        `_split_author_list` (`;` varsa o, yoksa `,` + "Soyad, Baş harf" çiftlerini birleştirme); 8 örnek + WoS betiği geçti.
+        Eski not: **K1 Yazar adları virgülden bölünüyor** — `_parse_wos_csv`, `_parse_scopus_csv`, `_parse_generic_csv`
+        `re.split(r'[;,]')`: WoS sekmeli "Smith, J; Doe, JA" → ['Smith','J','Doe','JA']; yeni Scopus
+        "Smith, J.; Doe, J.A." de aynı (eski Scopus "Smith J., Doe J.A." doğru). Örnekle doğrulandı. Etkilenen:
+        En Verimli Yazarlar ("J" üretken yazar görünür), Lotka, Yazar İşbirliği Ağı. WoS düz metin (.txt) doğru.
+      - [x] **K2 DÜZELTİLDİ (28 Eylül 2026):** ortalama/medyan ve yıllık ortalama tüm yayınlar üzerinden; h-index ve sıralı
+        grafik aynı. Bilinen veri (10,5,3,0,0): ort 3.6 / medyan 3 (eski 6.0 / 5). Eski not: **K2 Ortalama/medyan atıf yalnız atıflı yayınlardan** — `citation_analysis` "Ort. Atıf / Yayın" ve
+        "Medyan Atıf" 0 atıflıları dışlıyor (değer şişik); `annual_citation_trend` yıllık ortalama da öyle.
+      - [x] **K3 DÜZELTİLDİ (28 Eylül 2026):** scraper'a `institution_list` (liste) eklendi, `institutions` metni aynen
+        (CSV/TXT dışa aktarım etkilenmez); parser yalnız listeden okur, eski aramalarda kurum boş → grafik üretilmez
+        (kullanıcı kararı "a"). Not: grafik kayıt başına İLK kurumu sayar (ilk yazarın kurumu) — ayrı karar.
+        Eski not: **K3 OpenAlex kurumları tek metin** — scraper `', '.join(institutions[:5])`, analyzer `split(';')[0]` →
+        "Kurumlara Göre Dağılım" 5 kurumluk birleşik metni tek kurum sayıyor (OpenAlex ana kaynak). Kurum adları
+        virgül içerdiği için eski kayıtlar güvenilir bölünemez; yeni aramalar için ayırıcı '; ' olmalı.
+      - [x] K4 DÜZELTİLDİ (28 Eylül 2026, kullanıcı: "önerilerine göre" = Babel + tam sayım): scraper `country_list`
+        (ISO-2, tüm yazarlar), parser `country`='TR; US', analyzer `_country_label` (Babel, etkin dil) +
+        `_record_countries` (ülke dağılımı ve işbirliği ağı ortak; "Turkey; USA" artık 2 ülke). Eski aramalarda ülke yok.
+        ⚠️ **requirements.txt'e Babel eklendi → Hetzner deploy'da `docker compose build` ŞART** (yoksa kod gösterir, çökmez).
+        Eski not: K4 OpenAlex'te ülke yok → Ülke dağılımı / Ülke İşbirliği Ağı OpenAlex işlerinde hiç üretilmiyor
+        (API `authorships[].countries` veriyor). WoS düz metinde de CU etiketi standart değil (ülke C1 adresinde).
+      - [x] K5 DÜZELTİLDİ (28 Eylül 2026): yayın trendi, büyüme oranı ve anahtar kelime trendi ardışık takvim yılları (boş
+        yıl 0); önceki yılı 0 olan yılın büyümesi tanımsız → çubuk yok. Test: 2018 eski −%50 (2016'ya göre) → boş. Eski not: K5 Boş yıllar: yayın olmayan yıl atlanıyor → büyüme oranı ardışık olmayan yıllar arasında hesaplanıyor.
+      - [x] K6 DÜZELTİLDİ (28 Eylül 2026, kullanıcı: "dışarıda bırakılsın"): `_last_complete_year()` = bugün−1; yayın trendi,
+        büyüme/CAGR, kw trendi, yıllık atıf, Research Gap (yılsız kayıtlar da artık "eski" sayılmıyor). Diğer analizler (yazar,
+        dergi, atıf tablosu) tüm kayıtlarla. Eski not: K6 İçinde bulunulan (eksik) yıl dahil → son yılda yapay düşüş (büyüme, CAGR, Research Gap trendi). Karar.
+      - [x] K7 DÜZELTİLDİ (28 Eylül 2026, kullanıcı onayı): `parse_openalex_json` concepts yalnız keyword yoksa yedek;
+        boş keyword elenir. 4 senaryo test edildi. Eski not: OpenAlex "concepts" (Computer science, Medicine gibi geniş alanlar) anahtar kelimelere katılıyor →
+        kelime bulutu/ağı/trendi/Research Gap'e baskın genel terimler giriyor. Karar.
+    - [ ] **ŞEFFAFLIK: "Veri ve Yöntem" bölümü (28 Eylül 2026, kullanıcı sorusu: hangi filtreler, hangi kayıtlar neden
+      dışarıda, kısıtlar nasıl bilinecek?)** — raporda şu an yalnız toplam kayıt + dosya adı var; elemeler sadece log'a.
+      ⚠️ **KRİTİK bulgu:** OpenAlex çekimi `sort=publication_year:desc` + `scrap_max_records` (varsayılan 5000) → sonuç
+      5000'den fazlaysa yalnız EN YENİ 5000 analiz ediliyor; eski yıllar kesiliyor → yayın trendi/CAGR/Research Gap
+      yapay "artış" gösterir, raporda hiç belirtilmiyor. Sayfalama hatasında da sessizce kısmi veriyle devam ediliyor.
+      Öneri (onay bekliyor): PDF'e kapaktan sonra "Veri ve Yöntem" sayfası — (1) veri akışı tablosu (kaynakta bulunan →
+      çekilen → başlıksız çıkarılan → tekrar çıkarılan → analize giren), (2) alan doluluk tablosu (yıl/yazar/kelime/atıf/
+      dergi/ülke/kurum: kaç kayıt, %), (3) uygulanan kurallar/eşikler, (4) üretilemeyen analizler ve nedeni, (5) bilinen
+      kısıtlar; her grafiğin altına "n = X kayıt". Migration yok (tam PDF aynı çalıştırmada üretiliyor).
+      **Kullanıcı kararı (28 Eylül 2026):** analizler "örnek" niteliğinde; kısıtlar raporun SONUNDA verilsin + kapsamlı analiz
+      için uzmanlarla görüşme yönlendirmesi. 5000 sınırı için hesap değişmez (seçenek b), açıkça yazılır.
+      PLAN (dosya listesi onay bekliyor):
+      - [x] A (28 Eylül 2026, test edildi) `parser.py`: `_deduplicate_and_filter(records, stats=None)` başlıksız/tekrar sayılarını `stats`'a yazar;
+            `parse_file` ve `parse_openalex_json` `stats` geçirir (geriye uyumlu, varsayılan None).
+      - [x] B (28 Eylül 2026, test edildi) `analyzer.py`: `run_all_analyses(records, skipped=None)` üretilemeyen analizleri (başlık + neden) toplar.
+      - [ ] C YENİ `report_notes.py`: alan doluluk tablosu, uygulanan kurallar/eşikler, bilinen kısıtlar, sınır uyarısı
+            (OpenAlex: bulunan > çekilen → "en yeni N kayıt, YYYY öncesi kapsam dışı"; çekilen < min(bulunan, sınır) →
+            "çekim eksik kaldı").
+      - [ ] D `job_runner.py`: iki akışta (dosya / OpenAlex) `stats` + `skipped` + kaynak bilgisi → `build_full_pdf`.
+      - [ ] E `pdf_builder.py`: tam raporun sonuna "Veri, Yöntem ve Kısıtlar" sayfası(ları) + kapanış notu (TR sipariş,
+            EN/DE proje talebi); sınır aşıldıysa trend grafiklerinin sayfasına kısa uyarı satırı. Demo PDF değişmez.
+      - [ ] F `locale/en|de` po+mo (yeni msgid'ler elle).
+      - [ ] G Test: dosya + OpenAlex (sınır aşan/aşmayan) sentetik iş, 3 dil PDF, metin katmanında TR kalıntısı kontrolü.
+      Açık soru: kullanıcının "2026 yayınları tarih/DOI varsa alınsın" isteği netleşmedi (şu an 2026 yalnız yıllık grafiklerde yok).
+    - [ ] Yükleme hata mesajında "file: " alan adı öneki (önceden var) — view form hatalarını ham basıyor.
+    - [ ] **İçerik kararı:** bibliometri sayfası/promo "10 analiz" diyor, rapor 15 analiz içeriyor (kapak
+      artık gerçek sayıyı yazıyor) — pazarlama metni güncellensin mi? (kullanıcı)
+    - [ ] Semantic Scholar → bibliometri bağlantısı + analiz sonuç testleri
+    - [ ] OpenAlex tekrar kayıt (dedup) incelemesi
+    Not: bibliometri promo "10 farklı analiz / 10 grafik" diyor, e-postalar/rapor 15 — içerik tutarsızlığı.
+    İnceleme notu: (kullanıcı: "bibliometri de
+    de/en olmalı; open alex ve scholar işleyişini incele"). Akış: OpenAlex (≥100 sonuç) → buton →
+    i18n DIŞI `/bibliometrics/from-openalex/<id>/` → parse_openalex_json → arka planda 15 analiz →
+    demo PDF (3 grafik) e-posta → tam rapor sipariş (Türk IBAN/TL) + admin onayı. **Semantic
+    Scholar → bibliometri bağlantısı YOK** (buton/adapter/endpoint yok; veri yapısı uygun). Dil:
+    tamamen TR — views ~38, analyzer ~73 (grafik başlık/etiket/yorum → EN/DE'ye TR PDF gidiyor),
+    pdf_builder ~13, e-postalar 3 tür (recipient_language yok), landing ~90, order ~34.
+    Plan: 1 tetikleme+e-posta (i18n URL, arka plan dili) → 2 PDF rapor → 3 bibliometri sayfası
+    EN/DE → 4 sipariş EN/DE → proje talebi. Karar bekleyen: S2 bibliometri bağlantısı (yeni
+    özellik, önerilen: evet, çeviriden sonra); bibliometri sayfası EN/DE'de açılsın mı (önerilen evet).
+  - [ ] **OpenAlex sonuçlarında aynı yayın tekrarı** (27 Eylül 2026, kullanıcı ekran görüntüsü DE:
+    "Design, Fabrication, and Performance Evaluation of a Weeder…" iki kez) — muhtemelen aynı çalışmanın
+    iki OpenAlex kaydı (Zenodo). Liste + bibliometri sonuçlarını etkiler (dedup) — incelenmeli.
+  - [x] (eski) **Bibliometrik analize gönder** (OpenAlex sonuçları) `/bibliometrics/`'e gidiyor — o sayfa TR-only
     ve EN/DE'de gizli; promo'da "Tek Tıkla Bibliometrik Analiz" EN/DE'de vaat ediliyor → Aşama 3'te karar.
   - [x] Aşama 3 sonuç/indirme (27 Eylül 2026): `_execute_job` → işi başlatan kullanıcının dili
     (recipient_language, profil tercihi — restart'ta kaybolmaz) altında `_execute_job_body`; TXT
@@ -199,7 +349,8 @@ maddelerde.
   YÖK Tez/TR Dizin'i de listeliyor. Kullanıcı: "sonraki projede yeni veri kazıma
   modülleri eklenecek" → EN/DE "Academic Search" hub'ı o projede kurulmalı. Çevrilince
   URL'ler `urls_i18n`'e taşınır ve base.html/home.html'deki `LANGUAGE_CODE == 'tr'`
-  koşulları kaldırılır. İlgili: `BASE_PubMed_Integration_Project.md` (ayrı oturum).
+  koşulları kaldırılır. İlgili: `BASE_PubMed_Integration_Project.md` (ayrı oturum) — **dil kapsamı:
+  PubMed TR/EN/DE üç dilde, BASE yalnız DE** (kullanıcı, 28 Eylül 2026).
 - [ ] **D grubu hesap sayfaları tek dilli** (26 Eylül 2026): gelen kutusu, ödemelerim,
   arkadaşını davet et — EN/DE kullanıcısını TR arayüze götürüyor; şimdilik kalsın (kullanıcı).
 - [ ] **YouTube Transcript tamamen kaldırılacak — AŞAMA 2 ERTELENDİ (kullanıcı: "todo'ya al", 26 Eylül 2026); bir sonraki merge'den önce ayrı iş olarak** (26 Eylül 2026,
@@ -545,6 +696,11 @@ maddelerde.
   yenilerken `X-Cron-Secret` header'ına geçmek de değerlendirilmeli. Yenilenirse
   `.env` + Hetzner crontab'daki TÜM `/api/cron/*` satırları birlikte güncellenmeli.
 
+**C00000. ALTINCI MERGE — 27 Eylül 2026 (kullanıcı: "merge et")**
+- [x] Ön kontrol: 61/61, makemigrations temiz, DEBUG=False collectstatic hatasız; migration YOK,
+  requirements değişmedi. main ← dev fast-forward (6 commit: OpenAlex/S2 tam çeviri 4 aşama).
+- [x] Hetzner deploy — YAPILDI (27 Eylül 2026, Claude; kullanıcı: "yap"): sunucu e86b17d, web restart, log temiz; canlı ölçüm: /en|de/openalex|semantic-scholar/ 200 ve görünür Türkçe metin 0 (başlıklar EN/DE); TR /openalex/ Türkçe (SEO rehberi dahil).
+
 **C0000. BEŞİNCİ MERGE — 27 Eylül 2026 (kullanıcı: "merge edelim"; DB yedeği: "sen al")**
 - [x] DB yedeği (Claude, SSH root@89.167.5.224, proje klasörü `/app`): `/root/yedek_2026-09-27_1214.sql`
   (180 MB, 80 tablo; önceki 25 Eylül yedeğiyle aynı boyut).
@@ -567,10 +723,21 @@ maddelerde.
   profiles.css tarayıcı önbelleğinde (1y immutable) kaldığı için önizleme kuralı yoktu. Render'da
   yeni yükleme sorunsuz (kullanıcı teyidi).
 
+**C000. 28 EYLÜL 2026 — cherry-pick ile main'e (kullanıcı: "merge et" / "al"; bibliometri bilerek dışarıda)**
+- [x] bd7f8ea e-posta dili: `PreferredLanguageMiddleware` çok dilli sayfanın öneksiz TR sürümünde (GET,
+  `/en`+yol çözülüyorsa) tercihi `tr`'ye döndürür. Bulgu: /de/ ziyaretinden sonra TR sitede istenen bağış
+  e-postası Almanca geliyordu. Yalnız TR sayfalar (forum, blog) tercihi değiştirmez (bilinçli).
+- [x] 1fb9fe7 `Notification` `content_type`/`object_id` NOT NULL: `mark_donation_transferred` (`target=None`
+  → 500) ve `_notify_referral_reward` (hedefsiz → sessizce yutuluyordu) düzeltildi; `Donation.get_absolute_url`
+  (admin bağış sayfası), `ReferralUse.get_absolute_url` (/davet/). Davet akışı uçtan uca test edildi.
+- [x] cd68fa1 navbar: mobilde hamburger ekran dışına taşıyordu (giriş yapınca 430 px gerekiyordu). Logo yazısı
+  <480px 2xl, ≥480px 4xl; dar ekranda gap küçük; <360px yalnız logo görseli. 320–1024 px ölçüldü.
+- [x] Hetzner deploy (kullanıcı yaptı, 28 Eylül 2026); canlı bundle.css'te yeni kural doğrulandı.
+
 **C00. ÜÇÜNCÜ MERGE — 27 Eylül 2026 (kullanıcı: "sorun yoksa merge edelim")**
 - [x] Ön kontrol: 61/61, makemigrations temiz, migration YOK, requirements değişmedi, main'de dev'de olmayan commit yok.
 - [x] main ← dev fast-forward + push (8 commit: JSON-LD, tarama hub EN/DE, set_language, proje talebi TR ifadeler, profil fotoğrafı).
-- [ ] Hetzner deploy (kullanıcı): `git pull origin main` → `docker compose restart web && docker compose restart nginx`. Migration yok → DB yedeği zorunlu değil.
+- [x] Hetzner deploy — YAPILDI (sonraki merge'lerle birlikte canlıda doğrulandı).
 
 **C0. İKİNCİ MERGE — 26 Eylül 2026 (kullanıcı: "merge edelim, sorun yoksa")**
 - [x] Ön kontrol: çalışma ağacı temiz, 61/61 pytest, `makemigrations --check` temiz,

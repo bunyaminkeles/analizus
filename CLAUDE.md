@@ -1,22 +1,22 @@
 # Analizus.com — Claude Çalışma Kuralları
 
-Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~1900 satır; offset'ler 26 Eylül 2026). Tamamını okuma — ihtiyaca göre offset ile ilgili bölümü oku:
+Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~1990 satır; offset'ler 28 Eylül 2026). Tamamını okuma — ihtiyaca göre offset ile ilgili bölümü oku:
 
 | Bölüm | offset | Konu |
 |---|---|---|
 | §1–2 | 8 | Proje amacı, tech stack, paketler |
 | §3–5 | 68 | Sunucu mimarisi, deploy (deploy.sh açılışta migrate+collectstatic), env vars |
 | §6–7 | 255 | Dizin yapısı, URL mimarisi (i18n_patterns: hangi sayfa /en/ /de/) |
-| §8–9 | 423 | Veri modelleri, feature flag'ler |
-| §10–11 | 682 | CSS/tasarım sistemi, WebSocket |
-| §12 | 790 | İstatistik araçları (akış, PDF, polling) |
-| §13–15 | 944 | DM/oda mesajlaşma, bibliometri, akademik tarama |
-| §16–19 | 1073 | E-posta, AnalizBot/AI Asistan, S3, güvenlik (çerez onayı, cron anahtarı) |
-| §20–23 | 1279 | Admin, pazar iş akışı, session (hesap geri alma), cron |
-| §24–25 | 1377 | Geliştirme ortamı (pytest, çeviri komutları), değişmez kurallar |
-| §26 | 1461 | Sık yapılan hatalar ve çözümleri |
-| §27 | 1529 | Görev listesi (tamamlanan / sıradaki) |
-| §28 | 1834 | Çok dilli yapı (TR/EN/DE) ve gizlilik — mimari, çeviri kuralları, iş akışı |
+| §8–9 | 426 | Veri modelleri, feature flag'ler |
+| §10–11 | 691 | CSS/tasarım sistemi, WebSocket |
+| §12 | 811 | İstatistik araçları (akış, PDF, polling) |
+| §13–15 | 965 | DM/oda mesajlaşma, bibliometri, akademik tarama |
+| §16–19 | 1102 | E-posta, AnalizBot/AI Asistan, S3, güvenlik (çerez onayı, cron anahtarı) |
+| §20–23 | 1309 | Admin, pazar iş akışı, session (hesap geri alma), cron |
+| §24–25 | 1408 | Geliştirme ortamı (pytest, çeviri komutları), değişmez kurallar |
+| §26 | 1492 | Sık yapılan hatalar ve çözümleri |
+| §27 | 1564 | Görev listesi (tamamlanan / sıradaki) |
+| §28 | 1903 | Çok dilli yapı (TR/EN/DE) ve gizlilik — mimari, çeviri kuralları, iş akışı, EN/DE ürün kararları (§28.7) |
 
 ---
 

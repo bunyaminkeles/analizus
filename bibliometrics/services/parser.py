@@ -69,9 +69,10 @@ def detect_format(content: str) -> str:
     return 'csv_auto'
 
 
-def parse_file(content: str, fmt: str = None) -> tuple[list[dict], str]:
+def parse_file(content: str, fmt: str = None, stats: dict = None) -> tuple[list[dict], str]:
     """
     Veriyi parse eder ve geçersiz/boş kayıtları temizler.
+    stats: verilirse çıkarılan kayıt sayıları eklenir (bkz. _deduplicate_and_filter).
     Returns: (records_list, detected_format)
     """
     if not fmt or fmt == 'csv_auto':
@@ -86,23 +87,26 @@ def parse_file(content: str, fmt: str = None) -> tuple[list[dict], str]:
     elif fmt == 'csv_scopus':
         records = _parse_scopus_csv(content)
     elif fmt == 'trdizin_txt':
-        records = parse_trdizin_txt(content)
+        records = parse_trdizin_txt(content, stats)
     elif fmt == 'openalex_txt':
-        records = parse_openalex_txt(content)
+        records = parse_openalex_txt(content, stats)
     else:
         records = _parse_generic_csv(content)
         fmt = 'csv_auto'
 
-    records = _deduplicate_and_filter(records)
+    records = _deduplicate_and_filter(records, stats)
     return records, fmt
 
 
-def _deduplicate_and_filter(records: list[dict]) -> list[dict]:
+def _deduplicate_and_filter(records: list[dict], stats: dict = None) -> list[dict]:
     """
     Boş başlıklı satırları atar ve DOI'ye göre tekrarları kaldırır.
     WoS/Scopus dosyalarında "atıf listesi" satırları veya boş separator
     satırları olabilir; bunlar başlıksız geldiği için filtrelenir.
+    stats verilirse 'no_title' / 'duplicate' sayıları ÜZERİNE EKLENİR (art arda
+    çağrılarda birikir; ham kayıt = sonuç + no_title + duplicate) — rapor kısıtları için.
     """
+    no_title = duplicate = 0
     seen_dois = set()
     seen_titles = set()
     result = []
@@ -113,21 +117,28 @@ def _deduplicate_and_filter(records: list[dict]) -> list[dict]:
 
         # Başlıksız kayıtları at (separator/atıf listesi satırları)
         if not title:
+            no_title += 1
             continue
 
         # DOI ile tekrar tespiti
         if doi:
             if doi in seen_dois:
+                duplicate += 1
                 continue
             seen_dois.add(doi)
         else:
             # DOI yoksa başlık ile (case-insensitive, ilk 80 karakter)
             title_key = title.lower()[:80]
             if title_key in seen_titles:
+                duplicate += 1
                 continue
             seen_titles.add(title_key)
 
         result.append(r)
+
+    if stats is not None:
+        stats['no_title'] = stats.get('no_title', 0) + no_title
+        stats['duplicate'] = stats.get('duplicate', 0) + duplicate
 
     removed = len(records) - len(result)
     if removed > 0:
@@ -310,6 +321,25 @@ def _wos_fmt_author(raw: str) -> str:
     return raw
 
 
+def _split_author_list(raw: str) -> list[str]:
+    """
+    CSV yazar alanını böler. ';' varsa ayırıcı odur ("Smith, J.; Doe, J.A." — yeni
+    Scopus); yoksa ',' ("Smith J., Doe J.A." — eski Scopus). Virgülle bölünmüş
+    parçalar "Soyad", "Baş harf" sırasıyla geliyorsa ("Smith, J.") yeniden birleştirilir.
+    """
+    raw = (raw or '').strip()
+    if not raw:
+        return []
+    if ';' in raw:
+        return [a.strip() for a in raw.split(';') if a.strip()]
+    parts = [a.strip() for a in raw.split(',') if a.strip()]
+    initials = re.compile(r'^(?:[A-ZÇĞİÖŞÜ]\.?[\s-]?){1,4}$')
+    if len(parts) >= 2 and len(parts) % 2 == 0 and all(
+            initials.match(parts[i]) for i in range(1, len(parts), 2)):
+        return [f'{parts[i]}, {parts[i + 1]}' for i in range(0, len(parts), 2)]
+    return parts
+
+
 def _wos_pt_label(code: str) -> str:
     labels = {
         'J': 'journal-article', 'B': 'book', 'S': 'book-chapter',
@@ -338,9 +368,9 @@ def _parse_wos_csv(content: str) -> list[dict]:
         rec['country'] = _clean(row.get('CU', '') or row.get('Country/Region', ''))
         rec['institution'] = _clean(row.get('C1', '') or row.get('Affiliations', ''))
 
-        # Yazarlar: noktalı virgülle ayrılmış
+        # Yazarlar: noktalı virgülle ayrılmış ("Smith, J; Doe, JA") — virgül ad içinde
         au_raw = row.get('AU', '') or row.get('Authors', '')
-        rec['authors'] = [a.strip() for a in re.split(r'[;,]', au_raw) if a.strip()]
+        rec['authors'] = [_wos_fmt_author(a) for a in au_raw.split(';') if a.strip()]
 
         # Anahtar kelimeler (Author Keywords: DE, Plus Keywords: ID)
         kw_raw = row.get('DE', '') or row.get('Author Keywords', '')
@@ -374,7 +404,7 @@ def _parse_scopus_csv(content: str) -> list[dict]:
 
         # Yazarlar
         au_raw = row.get('Authors', '')
-        rec['authors'] = [a.strip() for a in re.split(r'[;,]', au_raw) if a.strip()]
+        rec['authors'] = _split_author_list(au_raw)
 
         # Anahtar kelimeler
         kw_raw = row.get('Author Keywords', '') or row.get('Index Keywords', '')
@@ -423,7 +453,7 @@ def _parse_generic_csv(content: str) -> list[dict]:
         rec['doi'] = _clean(find_col(row, COL_MAP['doi']))
         rec['cited_by'] = _safe_int(find_col(row, COL_MAP['cited_by']))
         au_raw = find_col(row, COL_MAP['authors'])
-        rec['authors'] = [a.strip() for a in re.split(r'[;,]', au_raw) if a.strip()]
+        rec['authors'] = _split_author_list(au_raw)
         kw_raw = find_col(row, COL_MAP['keywords'])
         rec['keywords'] = _split_keywords(kw_raw)
         records.append(rec)
@@ -432,7 +462,7 @@ def _parse_generic_csv(content: str) -> list[dict]:
 
 # ─────────────────────────── OpenAlex JSON ───────────────────────────
 
-def parse_openalex_json(records: list) -> list[dict]:
+def parse_openalex_json(records: list, stats: dict = None) -> list[dict]:
     """
     OpenAlex all_results JSON listesini normalize edilmiş bibliometric kayıtlara çevirir.
     AlexSearchJob.all_results alanından doğrudan beslenir.
@@ -449,7 +479,13 @@ def parse_openalex_json(records: list) -> list[dict]:
         rec['doi'] = _clean(pub.get('doi', ''))
         rec['cited_by'] = _safe_int(pub.get('cited_by_count', 0))
         rec['pub_type'] = _clean(pub.get('type', ''))
-        rec['institution'] = _clean(pub.get('institutions', ''))
+        # Kurumlar: yalnız liste alanından. Eski aramalardaki 'institutions' metni
+        # ', ' ile birleşik ve kurum adları virgül içerdiği için bölünemez → boş bırak
+        inst_list = pub.get('institution_list')
+        rec['institution'] = '; '.join(_clean(i) for i in inst_list if i) if isinstance(inst_list, list) else ''
+        # Ülkeler: ISO-2 kodları; ad analyzer'da rapor diline çevrilir
+        cc_list = pub.get('country_list')
+        rec['country'] = '; '.join(c for c in cc_list if c) if isinstance(cc_list, list) else ''
 
         # Authors: scraper'da ', '.join() ile birleştirilmiş string
         authors_raw = pub.get('authors', '')
@@ -458,22 +494,23 @@ def parse_openalex_json(records: list) -> list[dict]:
         elif authors_raw:
             rec['authors'] = [a.strip() for a in str(authors_raw).split(', ') if a.strip()]
 
-        # Keywords + concepts (max 5 concept) birleştir
+        # Keywords; concepts (geniş alan etiketleri: "Computer science") yalnız keyword
+        # yoksa yedek — her kayıtta geçip kelime analizlerine baskın çıkıyorlardı
         keywords = pub.get('keywords', [])
-        rec['keywords'] = [_clean(k) for k in (keywords if isinstance(keywords, list) else [])]
-        for c in (pub.get('concepts', []) or []):
+        rec['keywords'] = [kw for kw in (_clean(k) for k in (keywords if isinstance(keywords, list) else [])) if kw]
+        for c in ([] if rec['keywords'] else (pub.get('concepts', []) or [])):
             cname = _clean(c) if isinstance(c, str) else _clean(c.get('display_name', ''))
             if cname and cname not in rec['keywords']:
                 rec['keywords'].append(cname)
 
         result.append(rec)
 
-    return _deduplicate_and_filter(result)
+    return _deduplicate_and_filter(result, stats)
 
 
 # ─────────────────────────── TR Dizin TXT ───────────────────────────
 
-def parse_trdizin_txt(content: str) -> list[dict]:
+def parse_trdizin_txt(content: str, stats: dict = None) -> list[dict]:
     """
     TR Dizin job_runner tarafından üretilen TXT formatını parse eder.
 
@@ -544,12 +581,12 @@ def parse_trdizin_txt(content: str) -> list[dict]:
     if current is not None:
         records.append(current)
 
-    return _deduplicate_and_filter(records)
+    return _deduplicate_and_filter(records, stats)
 
 
 # ─────────────────────────── OpenAlex TXT ───────────────────────────
 
-def parse_openalex_txt(content: str) -> list[dict]:
+def parse_openalex_txt(content: str, stats: dict = None) -> list[dict]:
     """
     OpenAlex job_runner tarafından üretilen TXT formatını parse eder.
 
@@ -627,7 +664,7 @@ def parse_openalex_txt(content: str) -> list[dict]:
     if current is not None:
         records.append(current)
 
-    return _deduplicate_and_filter(records)
+    return _deduplicate_and_filter(records, stats)
 
 
 # ─────────────────────────── Excel (XLSX) ───────────────────────────

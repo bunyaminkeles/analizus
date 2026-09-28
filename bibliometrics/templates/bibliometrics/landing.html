@@ -1,12 +1,12 @@
 {% extends "base.html" %}
-{% load static %}
+{% load static i18n %}
 
-{% block title %}Bibliometrik Analiz — WoS, Scopus, BibTeX ile Atıf ve Yayın Analizi | Analizus{% endblock %}
-{% block meta_description %}WoS, Scopus, BibTeX veya OpenAlex verilerinizle bibliometrik analiz yapın. Yayın trendi, atıf analizi, H-index, işbirliği ağı, kelime bulutu — PDF rapor ile. Ücretsiz dene.{% endblock %}
-{% block og_title %}Bibliometrik Analiz — WoS, Scopus, BibTeX ile Atıf ve Yayın Analizi | Analizus{% endblock %}
-{% block og_description %}WoS, Scopus, BibTeX veya OpenAlex verilerinizle bibliometrik analiz yapın. Yayın trendi, atıf analizi, H-index, işbirliği ağı, kelime bulutu — PDF rapor ile. Ücretsiz dene.{% endblock %}
-{% block twitter_title %}Bibliometrik Analiz — WoS, Scopus, BibTeX ile Atıf ve Yayın Analizi | Analizus{% endblock %}
-{% block twitter_description %}WoS, Scopus, BibTeX veya OpenAlex verilerinizle bibliometrik analiz yapın. Yayın trendi, atıf analizi, H-index, işbirliği ağı, kelime bulutu — PDF rapor ile. Ücretsiz dene.{% endblock %}
+{% block title %}{% trans "Bibliometrik Analiz — WoS, Scopus, BibTeX ile Atıf ve Yayın Analizi" %} | Analizus{% endblock %}
+{% block meta_description %}{% trans "WoS, Scopus, BibTeX veya OpenAlex verilerinizle bibliometrik analiz yapın. Yayın trendi, atıf analizi, H-index, işbirliği ağı, kelime bulutu — PDF rapor ile. Ücretsiz dene." %}{% endblock %}
+{% block og_title %}{% trans "Bibliometrik Analiz — WoS, Scopus, BibTeX ile Atıf ve Yayın Analizi" %} | Analizus{% endblock %}
+{% block og_description %}{% trans "WoS, Scopus, BibTeX veya OpenAlex verilerinizle bibliometrik analiz yapın. Yayın trendi, atıf analizi, H-index, işbirliği ağı, kelime bulutu — PDF rapor ile. Ücretsiz dene." %}{% endblock %}
+{% block twitter_title %}{% trans "Bibliometrik Analiz — WoS, Scopus, BibTeX ile Atıf ve Yayın Analizi" %} | Analizus{% endblock %}
+{% block twitter_description %}{% trans "WoS, Scopus, BibTeX veya OpenAlex verilerinizle bibliometrik analiz yapın. Yayın trendi, atıf analizi, H-index, işbirliği ağı, kelime bulutu — PDF rapor ile. Ücretsiz dene." %}{% endblock %}
 
 {% block extra_head %}
 <link rel="stylesheet" href="{% static 'css/bibliometrics.css' %}?v=0001">
@@ -22,8 +22,8 @@
         <div class="d-flex align-items-center mb-2">
           <i class="bi bi-bar-chart-line-fill fs-2 text-info me-3"></i>
           <div>
-            <h4 class="text-white mb-1 fw-bold">Bibliometrik Analiz</h4>
-            <p class="text-white-50 mb-0 small">WoS, Scopus, BibTeX veya OpenAlex verilerinizi yükleyin — 10 analiz, PDF rapor</p>
+            <h4 class="text-white mb-1 fw-bold">{% trans "Bibliometrik Analiz" %}</h4>
+            <p class="text-white-50 mb-0 small">{% trans "WoS, Scopus, BibTeX veya OpenAlex verilerinizi yükleyin — 10 analiz, PDF rapor" %}</p>
           </div>
         </div>
 
@@ -32,8 +32,8 @@
             <div class="d-flex align-items-start">
               <i class="bi bi-file-earmark-arrow-up text-info me-2 mt-1"></i>
               <div>
-                <div class="text-white fw-semibold small">Desteklenen Formatlar</div>
-                <div class="text-white-50 x-small">BibTeX (.bib) · WoS Plain Text · WoS TSV · Scopus CSV · OpenAlex TXT · Çoklu dosya</div>
+                <div class="text-white fw-semibold small">{% trans "Desteklenen Formatlar" %}</div>
+                <div class="text-white-50 x-small">BibTeX (.bib) · WoS Plain Text · WoS TSV · Scopus CSV · OpenAlex TXT · {% trans "Çoklu dosya" %}</div>
               </div>
             </div>
           </div>
@@ -41,8 +41,8 @@
             <div class="d-flex align-items-start">
               <i class="bi bi-graph-up-arrow text-success me-2 mt-1"></i>
               <div>
-                <div class="text-white fw-semibold small">10 Bibliometrik Analiz</div>
-                <div class="text-white-50 x-small">Trend · Yazarlar · H-index · Ağ · Kelime Bulutu...</div>
+                <div class="text-white fw-semibold small">{% trans "10 Bibliometrik Analiz" %}</div>
+                <div class="text-white-50 x-small">{% trans "Trend · Yazarlar · H-index · Ağ · Kelime Bulutu..." %}</div>
               </div>
             </div>
           </div>
@@ -50,8 +50,8 @@
             <div class="d-flex align-items-start">
               <i class="bi bi-envelope-paper text-warning me-2 mt-1"></i>
               <div>
-                <div class="text-white fw-semibold small">Email ile Teslim</div>
-                <div class="text-white-50 x-small">Demo (3 grafik) ücretsiz · Tam rapor kayıt sayısına göre ücretli</div>
+                <div class="text-white fw-semibold small">{% trans "Email ile Teslim" %}</div>
+                <div class="text-white-50 x-small">{% if LANGUAGE_CODE == 'tr' %}{% trans "Demo (3 grafik) ücretsiz · Tam rapor kayıt sayısına göre ücretli" %}{% else %}{% trans "Demo (3 grafik) ücretsiz · Tam rapor için proje talebi" %}{% endif %}</div>
               </div>
             </div>
           </div>
@@ -61,12 +61,12 @@
         <div class="d-flex align-items-center gap-3 mt-3">
           <span class="badge bg-dark border border-secondary text-white px-3 py-2">
             <i class="bi bi-calendar3 me-1 text-info"></i>
-            Günlük Limit: <strong>{{ daily_used }} / {{ daily_limit }}</strong>
+            {% trans "Günlük Limit:" %} <strong>{{ daily_used }} / {{ daily_limit }}</strong>
           </span>
           {% if remaining == 0 %}
-          <span class="badge bg-danger px-3 py-2">Günlük limite ulaşıldı</span>
+          <span class="badge bg-danger px-3 py-2">{% trans "Günlük limite ulaşıldı" %}</span>
           {% else %}
-          <span class="badge bg-success px-3 py-2">{{ remaining }} hakkınız kaldı</span>
+          <span class="badge bg-success px-3 py-2">{% blocktrans %}{{ remaining }} hakkınız kaldı{% endblocktrans %}</span>
           {% endif %}
         </div>
       </div>
@@ -77,8 +77,8 @@
   <div class="col-12">
     <div class="ax-biblio-bridge">
       <i class="bi bi-link-45deg ax-biblio-bridge__icon"></i>
-      <span class="ax-biblio-bridge__text">OpenAlex'te tarama mı yaptın? İndirdiğin Excel'i buraya doğrudan yükle, bibliometrik raporun hazır.</span>
-      <a href="{% url 'openalex:landing' %}" class="ax-biblio-bridge__link">OpenAlex Taramasına Git <i class="bi bi-arrow-right"></i></a>
+      <span class="ax-biblio-bridge__text">{% trans "OpenAlex'te tarama mı yaptın? İndirdiğin Excel'i buraya doğrudan yükle, bibliometrik raporun hazır." %}</span>
+      <a href="{% url 'openalex:landing' %}" class="ax-biblio-bridge__link">{% trans "OpenAlex Taramasına Git" %} <i class="bi bi-arrow-right"></i></a>
     </div>
   </div>
 
@@ -86,13 +86,13 @@
   <div class="col-12">
     <div class="card border-secondary" style="background-color: #1a1a2e;">
       <div class="card-header border-secondary">
-        <h6 class="text-white mb-0"><i class="bi bi-upload me-2 text-info"></i>Veri Dosyası Yükle</h6>
+        <h6 class="text-white mb-0"><i class="bi bi-upload me-2 text-info"></i>{% trans "Veri Dosyası Yükle" %}</h6>
       </div>
       <div class="card-body p-4">
         {% if remaining == 0 %}
         <div class="alert alert-warning">
           <i class="bi bi-exclamation-triangle me-2"></i>
-          Günlük analiz limitinize ulaştınız. Yarın tekrar deneyiniz.
+          {% trans "Günlük analiz limitinize ulaştınız. Yarın tekrar deneyiniz." %}
         </div>
         {% else %}
         <form id="uploadForm" enctype="multipart/form-data">
@@ -107,7 +107,7 @@
           </div>
           <button type="submit" class="btn btn-info fw-bold px-4"
                   id="submitBtn" {% if remaining == 0 %}disabled{% endif %}>
-            <i class="bi bi-play-fill me-1"></i> Analizi Başlat
+            <i class="bi bi-play-fill me-1"></i> {% trans "Analizi Başlat" %}
           </button>
         </form>
         {% endif %}
@@ -116,7 +116,7 @@
         <div id="progressArea" class="mt-4 d-none">
           <div class="d-flex align-items-center gap-3 mb-2">
             <div class="spinner-border spinner-border-sm text-info" role="status"></div>
-            <span class="text-white" id="progressText">Dosya işleniyor...</span>
+            <span class="text-white" id="progressText">{% trans "Dosya işleniyor..." %}</span>
           </div>
           <div class="progress" style="height: 6px; background-color: #2d3748;">
             <div class="progress-bar progress-bar-striped progress-bar-animated bg-info"
@@ -124,7 +124,7 @@
           </div>
           <p class="text-muted small mt-2 mb-0">
             <i class="bi bi-shield-check me-1 text-success"></i>
-            Analiz sunucuda arka planda çalışıyor — sayfayı kapatsanız veya başka sekmeye geçseniz de durmaz. Tamamlandığında e-posta ile bildirilirsiniz.
+            {% trans "Analiz sunucuda arka planda çalışıyor — sayfayı kapatsanız veya başka sekmeye geçseniz de durmaz. Tamamlandığında e-posta ile bildirilirsiniz." %}
           </p>
         </div>
 
@@ -140,14 +140,13 @@
   <div class="col-12 d-none" id="resultsPanel">
     <div class="card border-success" style="background-color: #1a1a2e;">
       <div class="card-header border-success d-flex justify-content-between align-items-center">
-        <h6 class="text-success mb-0"><i class="bi bi-check-circle-fill me-2"></i>Analiz Tamamlandı</h6>
+        <h6 class="text-success mb-0"><i class="bi bi-check-circle-fill me-2"></i>{% trans "Analiz Tamamlandı" %}</h6>
         <span class="badge bg-success" id="recordCount"></span>
       </div>
       <div class="card-body p-4">
         <p class="text-white-50 mb-3">
           <span id="formatBadge" class="badge bg-secondary me-2"></span>
-          Bibliometrik analiziniz tamamlandı. Demo raporu (3 grafik) ücretsiz alabilirsiniz.
-          Tam rapor (10 analiz) için sipariş oluşturunuz.
+          {% if LANGUAGE_CODE == 'tr' %}{% trans "Bibliometrik analiziniz tamamlandı. Demo raporu (3 grafik) ücretsiz alabilirsiniz. Tam rapor (10 analiz) için sipariş oluşturunuz." %}{% else %}{% trans "Bibliometrik analiziniz tamamlandı. Demo raporu (3 grafik) ücretsiz alabilirsiniz. Tam rapor için proje talebi bırakın." %}{% endif %}
         </p>
 
         <div class="row g-3">
@@ -156,14 +155,14 @@
             <div class="card h-100 border-info" style="background-color: #16213e;">
               <div class="card-body text-center p-4">
                 <i class="bi bi-file-earmark-pdf-fill fs-2 text-info mb-2 d-block"></i>
-                <h6 class="text-white mb-1">Demo Rapor (3 Grafik)</h6>
-                <p class="text-white-50 small mb-3">Yayın Trendi + Yazarlar + Kelime Bulutu<br>
-                  <strong class="text-info">ÜCRETSİZ</strong></p>
+                <h6 class="text-white mb-1">{% trans "Demo Rapor (3 Grafik)" %}</h6>
+                <p class="text-white-50 small mb-3">{% trans "Yayın Trendi + Yazarlar + Kelime Bulutu" %}<br>
+                  <strong class="text-info">{% trans "ÜCRETSİZ" %}</strong></p>
                 <button class="btn btn-info w-100 fw-bold" id="sendDemoBtn">
-                  <i class="bi bi-envelope-arrow-up me-1"></i> Demo Emaile Gönder
+                  <i class="bi bi-envelope-arrow-up me-1"></i> {% trans "Demo Emaile Gönder" %}
                 </button>
                 <div class="mt-2 d-none" id="demoSentMsg">
-                  <span class="text-success small"><i class="bi bi-check me-1"></i>Email gönderildi!</span>
+                  <span class="text-success small"><i class="bi bi-check me-1"></i>{% trans "Email gönderildi!" %}</span>
                 </div>
               </div>
             </div>
@@ -174,13 +173,13 @@
             <div class="card h-100 border-warning" style="background-color: #16213e;">
               <div class="card-body text-center p-4">
                 <i class="bi bi-file-earmark-richtext fs-2 text-warning mb-2 d-block"></i>
-                <h6 class="text-white mb-1">Tam Rapor (10 Analiz)</h6>
+                <h6 class="text-white mb-1">{% trans "Tam Rapor (10 Analiz)" %}</h6>
                 <p class="text-white-50 small mb-3">
-                  Tüm analizler + istatistikler<br>
+                  {% trans "Tüm analizler + istatistikler" %}<br>
                   <strong class="text-warning" id="priceLabel">—</strong>
                 </p>
                 <a href="#" class="btn btn-warning w-100 fw-bold" id="orderBtn">
-                  <i class="bi bi-cart-fill me-1"></i> Sipariş Oluştur
+                  <i class="bi bi-cart-fill me-1"></i> {% if LANGUAGE_CODE == 'tr' %}{% trans "Sipariş Oluştur" %}{% else %}{% trans "Proje Talebi Gönder" %}{% endif %}
                 </a>
               </div>
             </div>
@@ -189,26 +188,24 @@
 
         {# İçerilen analizler #}
         <div class="mt-4">
-          <h6 class="text-white mb-3">Tam Raporda Yer Alan 10 Analiz:</h6>
+          <h6 class="text-white mb-3">{% trans "Tam Raporda Yer Alan 10 Analiz:" %}</h6>
           <div class="row g-2">
-            {% for item in "1234567890" %}
-            {% endfor %}
             <div class="col-md-6">
               <ul class="list-unstyled text-white-50 small mb-0">
-                <li><i class="bi bi-check text-success me-1"></i>Yıllara Göre Yayın Trendi</li>
-                <li><i class="bi bi-check text-success me-1"></i>En Verimli Yazarlar (Top 15)</li>
-                <li><i class="bi bi-check text-success me-1"></i>Anahtar Kelime Bulutu</li>
-                <li><i class="bi bi-check text-success me-1"></i>En Çok Atıf Alan Yayınlar</li>
-                <li><i class="bi bi-check text-success me-1"></i>En Çok Yayın Yapılan Dergiler</li>
+                <li><i class="bi bi-check text-success me-1"></i>{% trans "Yıllara Göre Yayın Trendi" %}</li>
+                <li><i class="bi bi-check text-success me-1"></i>{% trans "En Verimli Yazarlar (Top 15)" %}</li>
+                <li><i class="bi bi-check text-success me-1"></i>{% trans "Anahtar Kelime Bulutu" %}</li>
+                <li><i class="bi bi-check text-success me-1"></i>{% trans "En Çok Atıf Alan Yayınlar" %}</li>
+                <li><i class="bi bi-check text-success me-1"></i>{% trans "En Çok Yayın Yapılan Dergiler" %}</li>
               </ul>
             </div>
             <div class="col-md-6">
               <ul class="list-unstyled text-white-50 small mb-0">
-                <li><i class="bi bi-check text-success me-1"></i>Kurum / Ülke Dağılımı</li>
-                <li><i class="bi bi-check text-success me-1"></i>Yazar İşbirliği Ağı</li>
-                <li><i class="bi bi-check text-success me-1"></i>Yayın Türleri Dağılımı</li>
-                <li><i class="bi bi-check text-success me-1"></i>Atıf Analizi + H-index</li>
-                <li><i class="bi bi-check text-success me-1"></i>Yıllık Atıf Trendi</li>
+                <li><i class="bi bi-check text-success me-1"></i>{% trans "Kurum / Ülke Dağılımı" %}</li>
+                <li><i class="bi bi-check text-success me-1"></i>{% trans "Yazar İşbirliği Ağı" %}</li>
+                <li><i class="bi bi-check text-success me-1"></i>{% trans "Yayın Türleri Dağılımı" %}</li>
+                <li><i class="bi bi-check text-success me-1"></i>{% trans "Atıf Analizi + H-index" %}</li>
+                <li><i class="bi bi-check text-success me-1"></i>{% trans "Yıllık Atıf Trendi" %}</li>
               </ul>
             </div>
           </div>
@@ -222,19 +219,19 @@
   <div class="col-12">
     <div class="card border-secondary" style="background-color: #1a1a2e;">
       <div class="card-header border-secondary">
-        <h6 class="text-white mb-0"><i class="bi bi-clock-history me-2 text-warning"></i>Geçmiş Analizlerim</h6>
+        <h6 class="text-white mb-0"><i class="bi bi-clock-history me-2 text-warning"></i>{% trans "Geçmiş Analizlerim" %}</h6>
       </div>
       <div class="card-body p-0">
         <div class="table-responsive">
           <table class="table table-dark table-hover mb-0 align-middle">
             <thead>
               <tr class="text-white-50 small">
-                <th class="px-3">Dosya</th>
-                <th>Format</th>
-                <th>Kayıt</th>
-                <th>Durum</th>
-                <th>Tarih</th>
-                <th>İşlem</th>
+                <th class="px-3">{% trans "Dosya" context "bibliometri kaynak sütunu" %}</th>
+                <th>{% trans "Format" %}</th>
+                <th>{% trans "Kayıt" %}</th>
+                <th>{% trans "Durum" %}</th>
+                <th>{% trans "Tarih" %}</th>
+                <th>{% trans "İşlem" %}</th>
               </tr>
             </thead>
             <tbody>
@@ -249,22 +246,28 @@
                 <td class="text-white-50 small">{{ job.total_records }}</td>
                 <td>
                   {% if job.status == 'completed' %}
-                    <span class="badge bg-success">Tamamlandı</span>
+                    <span class="badge bg-success">{% trans "Tamamlandı" %}</span>
                   {% elif job.status == 'running' %}
-                    <span class="badge bg-info">Çalışıyor</span>
+                    <span class="badge bg-info">{% trans "Çalışıyor" %}</span>
                   {% elif job.status == 'failed' %}
-                    <span class="badge bg-danger">Başarısız</span>
+                    <span class="badge bg-danger">{% trans "Başarısız" %}</span>
                   {% else %}
-                    <span class="badge bg-secondary">Bekliyor</span>
+                    <span class="badge bg-secondary">{% trans "Bekliyor" %}</span>
                   {% endif %}
                 </td>
                 <td class="text-white-50 small">{{ job.created_at|date:"d.m.Y H:i" }}</td>
                 <td>
                   {% if job.status == 'completed' %}
+                    {% if LANGUAGE_CODE == 'tr' %}
                     <a href="{% url 'bibliometrics:order_page' job.id %}"
                        class="btn btn-sm btn-outline-warning">
                       <i class="bi bi-cart me-1"></i>Sipariş
                     </a>
+                    {% else %}
+                    <a href="{% url 'proje_talebi' %}?source=bibliometrics" class="btn btn-sm btn-outline-warning">
+                      <i class="bi bi-send me-1"></i>{% trans "Proje Talebi" %}
+                    </a>
+                    {% endif %}
                   {% endif %}
                 </td>
               </tr>
@@ -279,34 +282,34 @@
 
   {# ─── Örnek Rapor Çıktıları ─── #}
   <div class="col-12">
-    <h2 class="ax-biblio-examples__title">Örnek Rapor Çıktıları</h2>
+    <h2 class="ax-biblio-examples__title">{% trans "Örnek Rapor Çıktıları" %}</h2>
     <div class="ax-biblio-examples">
       <figure class="ax-biblio-examples__item">
         <img src="{% static 'img/biblio-ornek-yayin-trendi.webp' %}" alt="" loading="lazy" width="717" height="638">
-        <figcaption>Yayın Trendi</figcaption>
+        <figcaption>{% trans "Yayın Trendi" %}</figcaption>
       </figure>
       <figure class="ax-biblio-examples__item">
         <img src="{% static 'img/biblio-ornek-kelime-bulutu.webp' %}" alt="" loading="lazy" width="695" height="486">
-        <figcaption>Anahtar Kelime Bulutu</figcaption>
+        <figcaption>{% trans "Anahtar Kelime Bulutu" %}</figcaption>
       </figure>
       <figure class="ax-biblio-examples__item">
         <img src="{% static 'img/biblio-ornek-yazar-agi.webp' %}" alt="" loading="lazy" width="695" height="719">
-        <figcaption>Yazar İşbirliği Ağı</figcaption>
+        <figcaption>{% trans "Yazar İşbirliği Ağı" %}</figcaption>
       </figure>
       <figure class="ax-biblio-examples__item">
         <img src="{% static 'img/biblio-ornek-atif-hindex.webp' %}" alt="" loading="lazy" width="695" height="637">
-        <figcaption>Atıf Analizi & H-index</figcaption>
+        <figcaption>{% trans "Atıf Analizi & H-index" %}</figcaption>
       </figure>
       <figure class="ax-biblio-examples__item">
         <img src="{% static 'img/biblio-ornek-arastirma-boslugu.webp' %}" alt="" loading="lazy" width="999" height="739">
-        <figcaption>Araştırma Boşluğu Haritası</figcaption>
+        <figcaption>{% trans "Araştırma Boşluğu Haritası" %}</figcaption>
       </figure>
       <figure class="ax-biblio-examples__item">
         <img src="{% static 'img/biblio-ornek-lotka.webp' %}" alt="" loading="lazy" width="707" height="641">
-        <figcaption>Yazar Üretkenlik Dağılımı (Lotka Kanunu)</figcaption>
+        <figcaption>{% trans "Yazar Üretkenlik Dağılımı (Lotka Kanunu)" %}</figcaption>
       </figure>
     </div>
-    <p class="ax-biblio-examples__note"><em>Bu grafikler aracın gerçek çıktısıdır — sizin verinizle aynı kalitede üretilir.</em></p>
+    <p class="ax-biblio-examples__note"><em>{% trans "Bu grafikler aracın gerçek çıktısıdır — sizin verinizle aynı kalitede üretilir." %}</em></p>
   </div>
 
 <!-- SEO: Bilgi metni -->
@@ -314,34 +317,34 @@
     <div class="row g-4">
         <div class="col-12">
             <h2 class="text-white fw-semibold mb-3" style="font-size:1.1rem;">
-                <i class="bi bi-info-circle me-2" style="color:#818cf8;"></i>Bibliometrik Analiz Nedir?
+                <i class="bi bi-info-circle me-2" style="color:#818cf8;"></i>{% trans "Bibliometrik Analiz Nedir?" %}
             </h2>
             <p class="text-secondary" style="line-height:1.8;font-size:.92rem;">
-                Bibliometrik analiz; bilimsel yayınların atıf sayısı, yazar işbirliği ağı, yayın trendi ve anahtar kelime dağılımı gibi nicel göstergelerini inceleyen bir araştırma yöntemidir. Tez literatür taraması, sistematik derleme ve araştırma haritalaması için vazgeçilmez bir araçtır. Analizus Bibliometrik Analiz aracı; Web of Science (WoS), Scopus, BibTeX ve OpenAlex formatlarını destekler — tek dosya yükleyerek 10 farklı analizi saniyeler içinde gerçekleştirebilirsiniz.
+                {% trans "Bibliometrik analiz; bilimsel yayınların atıf sayısı, yazar işbirliği ağı, yayın trendi ve anahtar kelime dağılımı gibi nicel göstergelerini inceleyen bir araştırma yöntemidir. Tez literatür taraması, sistematik derleme ve araştırma haritalaması için vazgeçilmez bir araçtır. Analizus Bibliometrik Analiz aracı; Web of Science (WoS), Scopus, BibTeX ve OpenAlex formatlarını destekler — tek dosya yükleyerek 10 farklı analizi saniyeler içinde gerçekleştirebilirsiniz." %}
             </p>
         </div>
         <div class="col-md-3">
             <div class="p-3 rounded h-100" style="background:rgba(99,102,241,0.07);border:1px solid rgba(99,102,241,0.15);">
-                <h3 class="text-white fw-semibold mb-2" style="font-size:.9rem;"><i class="bi bi-graph-up me-2" style="color:#818cf8;"></i>Yayın Trendi</h3>
-                <p class="text-secondary mb-0" style="font-size:.8rem;line-height:1.6;">Yıllara göre yayın sayısı değişimini görselleştirin.</p>
+                <h3 class="text-white fw-semibold mb-2" style="font-size:.9rem;"><i class="bi bi-graph-up me-2" style="color:#818cf8;"></i>{% trans "Yayın Trendi" %}</h3>
+                <p class="text-secondary mb-0" style="font-size:.8rem;line-height:1.6;">{% trans "Yıllara göre yayın sayısı değişimini görselleştirin." %}</p>
             </div>
         </div>
         <div class="col-md-3">
             <div class="p-3 rounded h-100" style="background:rgba(99,102,241,0.07);border:1px solid rgba(99,102,241,0.15);">
-                <h3 class="text-white fw-semibold mb-2" style="font-size:.9rem;"><i class="bi bi-award me-2" style="color:#818cf8;"></i>Atıf & H-index</h3>
-                <p class="text-secondary mb-0" style="font-size:.8rem;line-height:1.6;">En çok atıf alan makaleleri ve yazar H-index değerlerini hesaplayın.</p>
+                <h3 class="text-white fw-semibold mb-2" style="font-size:.9rem;"><i class="bi bi-award me-2" style="color:#818cf8;"></i>{% trans "Atıf & H-index" %}</h3>
+                <p class="text-secondary mb-0" style="font-size:.8rem;line-height:1.6;">{% trans "En çok atıf alan makaleleri ve yazar H-index değerlerini hesaplayın." %}</p>
             </div>
         </div>
         <div class="col-md-3">
             <div class="p-3 rounded h-100" style="background:rgba(99,102,241,0.07);border:1px solid rgba(99,102,241,0.15);">
-                <h3 class="text-white fw-semibold mb-2" style="font-size:.9rem;"><i class="bi bi-diagram-3 me-2" style="color:#818cf8;"></i>İşbirliği Ağı</h3>
-                <p class="text-secondary mb-0" style="font-size:.8rem;line-height:1.6;">Yazar ve kurum ortak çalışma ağlarını görsel harita ile inceleyin.</p>
+                <h3 class="text-white fw-semibold mb-2" style="font-size:.9rem;"><i class="bi bi-diagram-3 me-2" style="color:#818cf8;"></i>{% trans "İşbirliği Ağı" %}</h3>
+                <p class="text-secondary mb-0" style="font-size:.8rem;line-height:1.6;">{% trans "Yazar ve kurum ortak çalışma ağlarını görsel harita ile inceleyin." %}</p>
             </div>
         </div>
         <div class="col-md-3">
             <div class="p-3 rounded h-100" style="background:rgba(99,102,241,0.07);border:1px solid rgba(99,102,241,0.15);">
-                <h3 class="text-white fw-semibold mb-2" style="font-size:.9rem;"><i class="bi bi-cloud me-2" style="color:#818cf8;"></i>Kelime Bulutu</h3>
-                <p class="text-secondary mb-0" style="font-size:.8rem;line-height:1.6;">Başlık ve özet metinlerinden anahtar kavram frekanslarını çıkarın.</p>
+                <h3 class="text-white fw-semibold mb-2" style="font-size:.9rem;"><i class="bi bi-cloud me-2" style="color:#818cf8;"></i>{% trans "Kelime Bulutu" %}</h3>
+                <p class="text-secondary mb-0" style="font-size:.8rem;line-height:1.6;">{% trans "Başlık ve özet metinlerinden anahtar kavram frekanslarını çıkarın." %}</p>
             </div>
         </div>
     </div>
@@ -370,6 +373,40 @@
   const fmtBadge   = document.getElementById('formatBadge');
   const priceLabel = document.getElementById('priceLabel');
 
+  // Çevrili metinler (TR/EN/DE) — JS içinde sabit Türkçe yok
+  const T = {
+    start: '{% filter escapejs %}{% trans "Analizi Başlat" %}{% endfilter %}',
+    uploading: '{% filter escapejs %}{% trans "Yükleniyor..." %}{% endfilter %}',
+    fileUploading: '{% filter escapejs %}{% trans "Dosya yükleniyor..." %}{% endfilter %}',
+    started: '{% filter escapejs %}{% trans "Analiz başladı, lütfen bekleyin..." %}{% endfilter %}',
+    resumed: '{% filter escapejs %}{% trans "Analiz arka planda devam ediyor, lütfen bekleyin..." %}{% endfilter %}',
+    building: '{% filter escapejs %}{% trans "Grafikler ve PDF oluşturuluyor..." %}{% endfilter %}',
+    failed: '{% filter escapejs %}{% trans "Analiz başarısız oldu." %}{% endfilter %}',
+    generic: '{% filter escapejs %}{% trans "Bir hata oluştu." %}{% endfilter %}',
+    network: '{% filter escapejs %}{% trans "Sunucu bağlantı hatası. Lütfen tekrar deneyin." %}{% endfilter %}',
+    records: '{% filter escapejs %}{% trans "{n} kayıt" %}{% endfilter %}',
+    filesSelected: '{% filter escapejs %}{% trans "{n} dosya seçildi: {names}" %}{% endfilter %}',
+    contactAdmin: '{% filter escapejs %}{% trans "Admin ile iletişime geçiniz" %}{% endfilter %}',
+    contactAdminBtn: '{% filter escapejs %}{% trans "Admin ile İletişim" %}{% endfilter %}',
+    viewOrder: '{% filter escapejs %}{% trans "Siparişi Görüntüle" %}{% endfilter %}',
+    sending: '{% filter escapejs %}{% trans "Gönderiliyor..." %}{% endfilter %}',
+    sent: '{% filter escapejs %}{% trans "Gönderildi" %}{% endfilter %}',
+    emailSent: '{% filter escapejs %}{% trans "Email gönderildi!" %}{% endfilter %}',
+    sendDemo: '{% filter escapejs %}{% trans "Demo Emaile Gönder" %}{% endfilter %}',
+    emailFailed: '{% filter escapejs %}{% trans "Email gönderilemedi." %}{% endfilter %}',
+  };
+  const fmt = (t, v) => t.replace(/\{(\w+)\}/g, (m, k) => (k in v ? v[k] : m));
+  // Dile göre adresler (sentinel + replace — STATUS_BASE + id çift eğik çizgi tuzağı)
+  const SENT = '00000000-0000-0000-0000-000000000000';
+  const URLS = {
+    upload: "{% url 'bibliometrics:landing' %}",
+    status: "{% url 'bibliometrics:job_status' '00000000-0000-0000-0000-000000000000' %}",
+    sendDemo: "{% url 'bibliometrics:send_demo' '00000000-0000-0000-0000-000000000000' %}",
+    order: "{% url 'bibliometrics:order_page' '00000000-0000-0000-0000-000000000000' %}",
+    projectRequest: "{% url 'proje_talebi' %}?source=bibliometrics",
+  };
+  const IS_TR = {% if LANGUAGE_CODE == 'tr' %}true{% else %}false{% endif %};
+
   let currentJobId = null;
   let pollTimer    = null;
 
@@ -378,7 +415,7 @@
   startPolling('{{ active_job_id }}');
   progress.classList.remove('d-none');
   progBar.style.width = '50%';
-  progText.textContent = 'Analiz arka planda devam ediyor, lütfen bekleyin...';
+  progText.textContent = T.resumed;
   {% endif %}
 
   function showError(msg) {
@@ -386,7 +423,7 @@
     errorMsg.textContent = msg;
     progress.classList.add('d-none');
     submitBtn.disabled = false;
-    submitBtn.innerHTML = '<i class="bi bi-play-fill me-1"></i> Analizi Başlat';
+    submitBtn.innerHTML = '<i class="bi bi-play-fill me-1"></i> ' + T.start;
   }
 
   function startPolling(jobId) {
@@ -395,20 +432,20 @@
   }
 
   function pollStatus(jobId) {
-    fetch(`/bibliometrics/status/${jobId}/`, {
+    fetch(URLS.status.replace(SENT, jobId), {
       headers: { 'X-Requested-With': 'XMLHttpRequest' }
     })
     .then(r => r.json())
     .then(data => {
       if (data.status === 'running') {
         progBar.style.width = '70%';
-        progText.textContent = 'Grafikler ve PDF oluşturuluyor...';
+        progText.textContent = T.building;
       } else if (data.status === 'completed') {
         clearInterval(pollTimer);
         showResults(jobId, data);
       } else if (data.status === 'failed') {
         clearInterval(pollTimer);
-        showError(data.error || 'Analiz başarısız oldu.');
+        showError(data.error || T.failed);
       }
     })
     .catch(() => {});
@@ -417,22 +454,26 @@
   function showResults(jobId, data) {
     progress.classList.add('d-none');
     submitBtn.disabled = false;
-    submitBtn.innerHTML = '<i class="bi bi-play-fill me-1"></i> Analizi Başlat';
+    submitBtn.innerHTML = '<i class="bi bi-play-fill me-1"></i> ' + T.start;
     results.classList.remove('d-none');
 
-    recCount.textContent = `${data.total_records} kayıt`;
+    recCount.textContent = fmt(T.records, {n: data.total_records});
     if (data.file_format) fmtBadge.textContent = data.file_format;
 
-    if (data.contact_admin) {
-      if (priceLabel) priceLabel.innerHTML = '<span class="text-danger">Admin ile iletişime geçiniz</span>';
+    if (!IS_TR) {
+      // EN/DE: sipariş (Türk IBAN / TL) yok → proje talebi (kullanıcı kararı 27 Eylül 2026)
+      if (priceLabel) priceLabel.textContent = '';
+      orderBtn.href = URLS.projectRequest;
+    } else if (data.contact_admin) {
+      if (priceLabel) { priceLabel.innerHTML = '<span class="text-danger"></span>'; priceLabel.firstChild.textContent = T.contactAdmin; }
       orderBtn.href = 'mailto:info@analizus.com?subject=Bibliometrik%20Analiz%20Talebi';
-      orderBtn.innerHTML = '<i class="bi bi-envelope me-1"></i> Admin ile İletişim';
+      orderBtn.innerHTML = '<i class="bi bi-envelope me-1"></i> ' + T.contactAdminBtn;
       orderBtn.classList.replace('btn-warning', 'btn-danger');
     } else {
       if (data.price && priceLabel) priceLabel.textContent = `${data.price.toLocaleString('tr-TR')} TL`;
-      orderBtn.href = `/bibliometrics/siparis/${jobId}/`;
+      orderBtn.href = URLS.order.replace(SENT, jobId);
       if (data.has_order) {
-        orderBtn.textContent = 'Siparişi Görüntüle';
+        orderBtn.textContent = T.viewOrder;
         orderBtn.classList.replace('btn-warning', 'btn-outline-warning');
       }
     }
@@ -452,7 +493,7 @@
     fileInput.addEventListener('change', function () {
       if (this.files && this.files.length > 1) {
         filesInfo.classList.remove('d-none');
-        filesText.textContent = `${this.files.length} dosya seçildi: ${Array.from(this.files).map(f => f.name).join(', ')}`;
+        filesText.textContent = fmt(T.filesSelected, {n: this.files.length, names: Array.from(this.files).map(f => f.name).join(', ')});
       } else {
         filesInfo.classList.add('d-none');
       }
@@ -468,12 +509,12 @@
 
       const fd = new FormData(form);
       submitBtn.disabled = true;
-      submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Yükleniyor...';
+      submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>' + T.uploading;
       progress.classList.remove('d-none');
       progBar.style.width = '30%';
-      progText.textContent = 'Dosya yükleniyor...';
+      progText.textContent = T.fileUploading;
 
-      fetch('/bibliometrics/', {
+      fetch(URLS.upload, {
         method: 'POST',
         headers: { 'X-Requested-With': 'XMLHttpRequest' },
         body: fd,
@@ -482,13 +523,13 @@
       .then(data => {
         if (data.status === 'started') {
           progBar.style.width = '50%';
-          progText.textContent = 'Analiz başladı, lütfen bekleyin...';
+          progText.textContent = T.started;
           startPolling(data.job_id);
         } else {
-          showError(data.error || 'Bir hata oluştu.');
+          showError(data.error || T.generic);
         }
       })
-      .catch(() => showError('Sunucu bağlantı hatası. Lütfen tekrar deneyin.'));
+      .catch(() => showError(T.network));
     });
   }
 
@@ -497,10 +538,10 @@
     sendDemo.addEventListener('click', function () {
       if (!currentJobId) return;
       sendDemo.disabled = true;
-      sendDemo.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Gönderiliyor...';
+      sendDemo.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>' + T.sending;
 
       const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-      fetch(`/bibliometrics/send-demo/${currentJobId}/`, {
+      fetch(URLS.sendDemo.replace(SENT, currentJobId), {
         method: 'POST',
         headers: {
           'X-Requested-With': 'XMLHttpRequest',
@@ -510,18 +551,18 @@
       .then(r => r.json())
       .then(data => {
         if (data.status === 'sent' || data.status === 'already_sent') {
-          sendDemo.innerHTML = '<i class="bi bi-check me-1"></i>Gönderildi';
+          sendDemo.innerHTML = '<i class="bi bi-check me-1"></i>' + T.sent;
           demoSent.classList.remove('d-none');
-          demoSent.querySelector('span').textContent = data.message || 'Email gönderildi!';
+          demoSent.querySelector('span').textContent = data.message || T.emailSent;
         } else {
           sendDemo.disabled = false;
-          sendDemo.innerHTML = '<i class="bi bi-envelope-arrow-up me-1"></i> Demo Emaile Gönder';
-          alert(data.error || 'Email gönderilemedi.');
+          sendDemo.innerHTML = '<i class="bi bi-envelope-arrow-up me-1"></i> ' + T.sendDemo;
+          alert(data.error || T.emailFailed);
         }
       })
       .catch(() => {
         sendDemo.disabled = false;
-        sendDemo.innerHTML = '<i class="bi bi-envelope-arrow-up me-1"></i> Demo Emaile Gönder';
+        sendDemo.innerHTML = '<i class="bi bi-envelope-arrow-up me-1"></i> ' + T.sendDemo;
       });
     });
   }

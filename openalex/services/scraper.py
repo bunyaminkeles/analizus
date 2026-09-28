@@ -155,6 +155,7 @@ class OpenAlexScraper:
         authorships = work.get('authorships') or []
         author_names = []
         institutions = []
+        countries = []
         for auth in authorships:
             author = auth.get('author', {}) or {}
             name = author.get('display_name', '')
@@ -164,6 +165,9 @@ class OpenAlexScraper:
                 inst_name = inst.get('display_name', '')
                 if inst_name and inst_name not in institutions:
                     institutions.append(inst_name)
+            for cc in (auth.get('countries') or []):
+                if cc and cc not in countries:
+                    countries.append(cc)
 
         # Dergi/Kaynak
         primary_location = work.get('primary_location') or {}
@@ -200,6 +204,9 @@ class OpenAlexScraper:
             'keywords': keywords,
             'concepts': concepts[:5],
             'institutions': ', '.join(institutions[:5]),
+            # Bibliometri için ayrı liste — kurum adları virgül içerir, metinden bölünemez
+            'institution_list': institutions[:5],
+            'country_list': countries,   # ISO-2 kodları (US, TR), tüm yazarlar
             'open_access': (work.get('open_access') or {}).get('is_oa', False),
         }
 

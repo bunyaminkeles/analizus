@@ -80,12 +80,13 @@ class SemanticSearchJob(models.Model):
         return 3
 
     def get_query_summary(self):
+        from django.utils.translation import gettext  # aktif dilde (istek / kullanıcı dili)
         parts = []
         for p in self.query_parts:
             field_labels = {
-                'title': 'Başlık', 'abstract': 'Özet', 'author': 'Yazar',
-                'keyword': 'Anahtar Kelime', 'year': 'Yıl',
-                'doi': 'DOI', 'field_of_study': 'Alan',
+                'title': gettext('Başlık'), 'abstract': gettext('Özet'), 'author': gettext('Yazar'),
+                'keyword': gettext('Anahtar Kelime'), 'year': gettext('Yıl'),
+                'doi': 'DOI', 'field_of_study': gettext('Alan'),
             }
             label = field_labels.get(p.get('field', ''), p.get('field', ''))
             parts.append(f"{label}: {p.get('value', '')}")

@@ -1,4 +1,5 @@
 from django import forms
+from django.utils.translation import gettext, gettext_lazy
 
 INPUT_CSS = 'form-control bg-dark text-white border-secondary'
 LABEL_CSS = 'form-label text-light fw-semibold'
@@ -9,8 +10,8 @@ MAX_FILE_SIZE_MB = 10
 
 class BibliometricUploadForm(forms.Form):
     file = forms.FileField(
-        label='Veri Dosyası / Dosyaları',
-        help_text=(
+        label=gettext_lazy('Veri Dosyası / Dosyaları'),
+        help_text=gettext_lazy(
             'BibTeX (.bib), WoS TSV, Scopus CSV, OpenAlex TXT veya Excel (.xlsx) formatları desteklenir. '
             'Birden fazla dosya seçebilirsiniz — kayıtlar birleştirilir. Maks 10 MB/dosya.'
         ),
@@ -38,14 +39,12 @@ def _validate_file(f):
     ext = '.' + name.rsplit('.', 1)[-1] if '.' in name else ''
     if ext not in ALLOWED_EXTENSIONS:
         raise forms.ValidationError(
-            f'Desteklenmeyen dosya formatı: {ext}. '
-            f'Lütfen .bib, .csv, .tsv, .txt veya .xlsx yükleyin.'
+            gettext('Desteklenmeyen dosya formatı: {ext}. Lütfen .bib, .csv, .tsv, .txt veya .xlsx yükleyin.').format(ext=ext)
         )
     size_mb = f.size / (1024 * 1024)
     if size_mb > MAX_FILE_SIZE_MB:
         raise forms.ValidationError(
-            f'Dosya boyutu çok büyük ({size_mb:.1f} MB). '
-            f'Maksimum {MAX_FILE_SIZE_MB} MB yükleyebilirsiniz.'
+            gettext('Dosya boyutu çok büyük ({size} MB). Maksimum {max} MB yükleyebilirsiniz.').format(size=f'{size_mb:.1f}', max=MAX_FILE_SIZE_MB)
         )
 
 
