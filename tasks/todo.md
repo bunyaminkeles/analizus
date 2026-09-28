@@ -256,6 +256,21 @@ maddelerde.
       çekilen → başlıksız çıkarılan → tekrar çıkarılan → analize giren), (2) alan doluluk tablosu (yıl/yazar/kelime/atıf/
       dergi/ülke/kurum: kaç kayıt, %), (3) uygulanan kurallar/eşikler, (4) üretilemeyen analizler ve nedeni, (5) bilinen
       kısıtlar; her grafiğin altına "n = X kayıt". Migration yok (tam PDF aynı çalıştırmada üretiliyor).
+      **Kullanıcı kararı (28 Eylül 2026):** analizler "örnek" niteliğinde; kısıtlar raporun SONUNDA verilsin + kapsamlı analiz
+      için uzmanlarla görüşme yönlendirmesi. 5000 sınırı için hesap değişmez (seçenek b), açıkça yazılır.
+      PLAN (dosya listesi onay bekliyor):
+      - [x] A (28 Eylül 2026, test edildi) `parser.py`: `_deduplicate_and_filter(records, stats=None)` başlıksız/tekrar sayılarını `stats`'a yazar;
+            `parse_file` ve `parse_openalex_json` `stats` geçirir (geriye uyumlu, varsayılan None).
+      - [ ] B `analyzer.py`: `run_all_analyses(records, skipped=None)` üretilemeyen analizleri (başlık + neden) toplar.
+      - [ ] C YENİ `report_notes.py`: alan doluluk tablosu, uygulanan kurallar/eşikler, bilinen kısıtlar, sınır uyarısı
+            (OpenAlex: bulunan > çekilen → "en yeni N kayıt, YYYY öncesi kapsam dışı"; çekilen < min(bulunan, sınır) →
+            "çekim eksik kaldı").
+      - [ ] D `job_runner.py`: iki akışta (dosya / OpenAlex) `stats` + `skipped` + kaynak bilgisi → `build_full_pdf`.
+      - [ ] E `pdf_builder.py`: tam raporun sonuna "Veri, Yöntem ve Kısıtlar" sayfası(ları) + kapanış notu (TR sipariş,
+            EN/DE proje talebi); sınır aşıldıysa trend grafiklerinin sayfasına kısa uyarı satırı. Demo PDF değişmez.
+      - [ ] F `locale/en|de` po+mo (yeni msgid'ler elle).
+      - [ ] G Test: dosya + OpenAlex (sınır aşan/aşmayan) sentetik iş, 3 dil PDF, metin katmanında TR kalıntısı kontrolü.
+      Açık soru: kullanıcının "2026 yayınları tarih/DOI varsa alınsın" isteği netleşmedi (şu an 2026 yalnız yıllık grafiklerde yok).
     - [ ] Yükleme hata mesajında "file: " alan adı öneki (önceden var) — view form hatalarını ham basıyor.
     - [ ] **İçerik kararı:** bibliometri sayfası/promo "10 analiz" diyor, rapor 15 analiz içeriyor (kapak
       artık gerçek sayıyı yazıyor) — pazarlama metni güncellensin mi? (kullanıcı)

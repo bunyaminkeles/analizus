@@ -69,9 +69,10 @@ def detect_format(content: str) -> str:
     return 'csv_auto'
 
 
-def parse_file(content: str, fmt: str = None) -> tuple[list[dict], str]:
+def parse_file(content: str, fmt: str = None, stats: dict = None) -> tuple[list[dict], str]:
     """
     Veriyi parse eder ve geçersiz/boş kayıtları temizler.
+    stats: verilirse çıkarılan kayıt sayıları eklenir (bkz. _deduplicate_and_filter).
     Returns: (records_list, detected_format)
     """
     if not fmt or fmt == 'csv_auto':
@@ -86,23 +87,26 @@ def parse_file(content: str, fmt: str = None) -> tuple[list[dict], str]:
     elif fmt == 'csv_scopus':
         records = _parse_scopus_csv(content)
     elif fmt == 'trdizin_txt':
-        records = parse_trdizin_txt(content)
+        records = parse_trdizin_txt(content, stats)
     elif fmt == 'openalex_txt':
-        records = parse_openalex_txt(content)
+        records = parse_openalex_txt(content, stats)
     else:
         records = _parse_generic_csv(content)
         fmt = 'csv_auto'
 
-    records = _deduplicate_and_filter(records)
+    records = _deduplicate_and_filter(records, stats)
     return records, fmt
 
 
-def _deduplicate_and_filter(records: list[dict]) -> list[dict]:
+def _deduplicate_and_filter(records: list[dict], stats: dict = None) -> list[dict]:
     """
     Boş başlıklı satırları atar ve DOI'ye göre tekrarları kaldırır.
     WoS/Scopus dosyalarında "atıf listesi" satırları veya boş separator
     satırları olabilir; bunlar başlıksız geldiği için filtrelenir.
+    stats verilirse 'no_title' / 'duplicate' sayıları ÜZERİNE EKLENİR (art arda
+    çağrılarda birikir; ham kayıt = sonuç + no_title + duplicate) — rapor kısıtları için.
     """
+    no_title = duplicate = 0
     seen_dois = set()
     seen_titles = set()
     result = []
@@ -113,21 +117,28 @@ def _deduplicate_and_filter(records: list[dict]) -> list[dict]:
 
         # Başlıksız kayıtları at (separator/atıf listesi satırları)
         if not title:
+            no_title += 1
             continue
 
         # DOI ile tekrar tespiti
         if doi:
             if doi in seen_dois:
+                duplicate += 1
                 continue
             seen_dois.add(doi)
         else:
             # DOI yoksa başlık ile (case-insensitive, ilk 80 karakter)
             title_key = title.lower()[:80]
             if title_key in seen_titles:
+                duplicate += 1
                 continue
             seen_titles.add(title_key)
 
         result.append(r)
+
+    if stats is not None:
+        stats['no_title'] = stats.get('no_title', 0) + no_title
+        stats['duplicate'] = stats.get('duplicate', 0) + duplicate
 
     removed = len(records) - len(result)
     if removed > 0:
@@ -451,7 +462,7 @@ def _parse_generic_csv(content: str) -> list[dict]:
 
 # ─────────────────────────── OpenAlex JSON ───────────────────────────
 
-def parse_openalex_json(records: list) -> list[dict]:
+def parse_openalex_json(records: list, stats: dict = None) -> list[dict]:
     """
     OpenAlex all_results JSON listesini normalize edilmiş bibliometric kayıtlara çevirir.
     AlexSearchJob.all_results alanından doğrudan beslenir.
@@ -494,12 +505,12 @@ def parse_openalex_json(records: list) -> list[dict]:
 
         result.append(rec)
 
-    return _deduplicate_and_filter(result)
+    return _deduplicate_and_filter(result, stats)
 
 
 # ─────────────────────────── TR Dizin TXT ───────────────────────────
 
-def parse_trdizin_txt(content: str) -> list[dict]:
+def parse_trdizin_txt(content: str, stats: dict = None) -> list[dict]:
     """
     TR Dizin job_runner tarafından üretilen TXT formatını parse eder.
 
@@ -570,12 +581,12 @@ def parse_trdizin_txt(content: str) -> list[dict]:
     if current is not None:
         records.append(current)
 
-    return _deduplicate_and_filter(records)
+    return _deduplicate_and_filter(records, stats)
 
 
 # ─────────────────────────── OpenAlex TXT ───────────────────────────
 
-def parse_openalex_txt(content: str) -> list[dict]:
+def parse_openalex_txt(content: str, stats: dict = None) -> list[dict]:
     """
     OpenAlex job_runner tarafından üretilen TXT formatını parse eder.
 
@@ -653,7 +664,7 @@ def parse_openalex_txt(content: str) -> list[dict]:
     if current is not None:
         records.append(current)
 
-    return _deduplicate_and_filter(records)
+    return _deduplicate_and_filter(records, stats)
 
 
 # ─────────────────────────── Excel (XLSX) ───────────────────────────
