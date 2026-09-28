@@ -215,6 +215,26 @@ maddelerde.
       "Email"→"E-posta" gibi istemeden yaptığım TR değişiklikleri geri alındı). EN/DE TR kalan 0.
     - [x] Aşama 4 sipariş (27 Eylül 2026): EN/DE'de sonuç panelinde fiyat gizli + buton proje talebi,
       geçmiş tablosunda "Sipariş" → proje talebi, sipariş sayfası 302 → /en|de/proje-talebi/.
+    - [ ] **BİBLİOMETRİ DOĞRULUK DENETİMİ (28 Eylül 2026)** — 17 analiz + parser okundu. Doğru bulunan: h-index,
+      CAGR formülü, yıllık büyüme formülü, Lotka normalizasyonu, top yazar/dergi/atıf sayımları.
+      Hatalı / karar gerektiren (öncelik sırasıyla):
+      - [x] **K1 DÜZELTİLDİ (28 Eylül 2026):** WoS TSV `;` + `_wos_fmt_author` (.txt ile aynı ad biçimi); Scopus/generic
+        `_split_author_list` (`;` varsa o, yoksa `,` + "Soyad, Baş harf" çiftlerini birleştirme); 8 örnek + WoS betiği geçti.
+        Eski not: **K1 Yazar adları virgülden bölünüyor** — `_parse_wos_csv`, `_parse_scopus_csv`, `_parse_generic_csv`
+        `re.split(r'[;,]')`: WoS sekmeli "Smith, J; Doe, JA" → ['Smith','J','Doe','JA']; yeni Scopus
+        "Smith, J.; Doe, J.A." de aynı (eski Scopus "Smith J., Doe J.A." doğru). Örnekle doğrulandı. Etkilenen:
+        En Verimli Yazarlar ("J" üretken yazar görünür), Lotka, Yazar İşbirliği Ağı. WoS düz metin (.txt) doğru.
+      - [ ] **K2 Ortalama/medyan atıf yalnız atıflı yayınlardan** — `citation_analysis` "Ort. Atıf / Yayın" ve
+        "Medyan Atıf" 0 atıflıları dışlıyor (değer şişik); `annual_citation_trend` yıllık ortalama da öyle.
+      - [ ] **K3 OpenAlex kurumları tek metin** — scraper `', '.join(institutions[:5])`, analyzer `split(';')[0]` →
+        "Kurumlara Göre Dağılım" 5 kurumluk birleşik metni tek kurum sayıyor (OpenAlex ana kaynak). Kurum adları
+        virgül içerdiği için eski kayıtlar güvenilir bölünemez; yeni aramalar için ayırıcı '; ' olmalı.
+      - [ ] K4 OpenAlex'te ülke yok → Ülke dağılımı / Ülke İşbirliği Ağı OpenAlex işlerinde hiç üretilmiyor
+        (API `authorships[].countries` veriyor). WoS düz metinde de CU etiketi standart değil (ülke C1 adresinde).
+      - [ ] K5 Boş yıllar: yayın olmayan yıl atlanıyor → büyüme oranı ardışık olmayan yıllar arasında hesaplanıyor.
+      - [ ] K6 İçinde bulunulan (eksik) yıl dahil → son yılda yapay düşüş (büyüme, CAGR, Research Gap trendi). Karar.
+      - [ ] K7 OpenAlex "concepts" (Computer science, Medicine gibi geniş alanlar) anahtar kelimelere katılıyor →
+        kelime bulutu/ağı/trendi/Research Gap'e baskın genel terimler giriyor. Karar.
     - [ ] Yükleme hata mesajında "file: " alan adı öneki (önceden var) — view form hatalarını ham basıyor.
     - [ ] **İçerik kararı:** bibliometri sayfası/promo "10 analiz" diyor, rapor 15 analiz içeriyor (kapak
       artık gerçek sayıyı yazıyor) — pazarlama metni güncellensin mi? (kullanıcı)

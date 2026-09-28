@@ -310,6 +310,25 @@ def _wos_fmt_author(raw: str) -> str:
     return raw
 
 
+def _split_author_list(raw: str) -> list[str]:
+    """
+    CSV yazar alanını böler. ';' varsa ayırıcı odur ("Smith, J.; Doe, J.A." — yeni
+    Scopus); yoksa ',' ("Smith J., Doe J.A." — eski Scopus). Virgülle bölünmüş
+    parçalar "Soyad", "Baş harf" sırasıyla geliyorsa ("Smith, J.") yeniden birleştirilir.
+    """
+    raw = (raw or '').strip()
+    if not raw:
+        return []
+    if ';' in raw:
+        return [a.strip() for a in raw.split(';') if a.strip()]
+    parts = [a.strip() for a in raw.split(',') if a.strip()]
+    initials = re.compile(r'^(?:[A-ZÇĞİÖŞÜ]\.?[\s-]?){1,4}$')
+    if len(parts) >= 2 and len(parts) % 2 == 0 and all(
+            initials.match(parts[i]) for i in range(1, len(parts), 2)):
+        return [f'{parts[i]}, {parts[i + 1]}' for i in range(0, len(parts), 2)]
+    return parts
+
+
 def _wos_pt_label(code: str) -> str:
     labels = {
         'J': 'journal-article', 'B': 'book', 'S': 'book-chapter',
@@ -338,9 +357,9 @@ def _parse_wos_csv(content: str) -> list[dict]:
         rec['country'] = _clean(row.get('CU', '') or row.get('Country/Region', ''))
         rec['institution'] = _clean(row.get('C1', '') or row.get('Affiliations', ''))
 
-        # Yazarlar: noktalı virgülle ayrılmış
+        # Yazarlar: noktalı virgülle ayrılmış ("Smith, J; Doe, JA") — virgül ad içinde
         au_raw = row.get('AU', '') or row.get('Authors', '')
-        rec['authors'] = [a.strip() for a in re.split(r'[;,]', au_raw) if a.strip()]
+        rec['authors'] = [_wos_fmt_author(a) for a in au_raw.split(';') if a.strip()]
 
         # Anahtar kelimeler (Author Keywords: DE, Plus Keywords: ID)
         kw_raw = row.get('DE', '') or row.get('Author Keywords', '')
@@ -374,7 +393,7 @@ def _parse_scopus_csv(content: str) -> list[dict]:
 
         # Yazarlar
         au_raw = row.get('Authors', '')
-        rec['authors'] = [a.strip() for a in re.split(r'[;,]', au_raw) if a.strip()]
+        rec['authors'] = _split_author_list(au_raw)
 
         # Anahtar kelimeler
         kw_raw = row.get('Author Keywords', '') or row.get('Index Keywords', '')
@@ -423,7 +442,7 @@ def _parse_generic_csv(content: str) -> list[dict]:
         rec['doi'] = _clean(find_col(row, COL_MAP['doi']))
         rec['cited_by'] = _safe_int(find_col(row, COL_MAP['cited_by']))
         au_raw = find_col(row, COL_MAP['authors'])
-        rec['authors'] = [a.strip() for a in re.split(r'[;,]', au_raw) if a.strip()]
+        rec['authors'] = _split_author_list(au_raw)
         kw_raw = find_col(row, COL_MAP['keywords'])
         rec['keywords'] = _split_keywords(kw_raw)
         records.append(rec)
