@@ -244,8 +244,18 @@ maddelerde.
       - [x] K6 DÜZELTİLDİ (28 Eylül 2026, kullanıcı: "dışarıda bırakılsın"): `_last_complete_year()` = bugün−1; yayın trendi,
         büyüme/CAGR, kw trendi, yıllık atıf, Research Gap (yılsız kayıtlar da artık "eski" sayılmıyor). Diğer analizler (yazar,
         dergi, atıf tablosu) tüm kayıtlarla. Eski not: K6 İçinde bulunulan (eksik) yıl dahil → son yılda yapay düşüş (büyüme, CAGR, Research Gap trendi). Karar.
-      - [ ] K7 (öneri sunuldu, karar bekliyor: concepts yalnız keywords boşsa yedek) OpenAlex "concepts" (Computer science, Medicine gibi geniş alanlar) anahtar kelimelere katılıyor →
+      - [x] K7 DÜZELTİLDİ (28 Eylül 2026, kullanıcı onayı): `parse_openalex_json` concepts yalnız keyword yoksa yedek;
+        boş keyword elenir. 4 senaryo test edildi. Eski not: OpenAlex "concepts" (Computer science, Medicine gibi geniş alanlar) anahtar kelimelere katılıyor →
         kelime bulutu/ağı/trendi/Research Gap'e baskın genel terimler giriyor. Karar.
+    - [ ] **ŞEFFAFLIK: "Veri ve Yöntem" bölümü (28 Eylül 2026, kullanıcı sorusu: hangi filtreler, hangi kayıtlar neden
+      dışarıda, kısıtlar nasıl bilinecek?)** — raporda şu an yalnız toplam kayıt + dosya adı var; elemeler sadece log'a.
+      ⚠️ **KRİTİK bulgu:** OpenAlex çekimi `sort=publication_year:desc` + `scrap_max_records` (varsayılan 5000) → sonuç
+      5000'den fazlaysa yalnız EN YENİ 5000 analiz ediliyor; eski yıllar kesiliyor → yayın trendi/CAGR/Research Gap
+      yapay "artış" gösterir, raporda hiç belirtilmiyor. Sayfalama hatasında da sessizce kısmi veriyle devam ediliyor.
+      Öneri (onay bekliyor): PDF'e kapaktan sonra "Veri ve Yöntem" sayfası — (1) veri akışı tablosu (kaynakta bulunan →
+      çekilen → başlıksız çıkarılan → tekrar çıkarılan → analize giren), (2) alan doluluk tablosu (yıl/yazar/kelime/atıf/
+      dergi/ülke/kurum: kaç kayıt, %), (3) uygulanan kurallar/eşikler, (4) üretilemeyen analizler ve nedeni, (5) bilinen
+      kısıtlar; her grafiğin altına "n = X kayıt". Migration yok (tam PDF aynı çalıştırmada üretiliyor).
     - [ ] Yükleme hata mesajında "file: " alan adı öneki (önceden var) — view form hatalarını ham basıyor.
     - [ ] **İçerik kararı:** bibliometri sayfası/promo "10 analiz" diyor, rapor 15 analiz içeriyor (kapak
       artık gerçek sayıyı yazıyor) — pazarlama metni güncellensin mi? (kullanıcı)

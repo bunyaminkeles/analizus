@@ -483,10 +483,11 @@ def parse_openalex_json(records: list) -> list[dict]:
         elif authors_raw:
             rec['authors'] = [a.strip() for a in str(authors_raw).split(', ') if a.strip()]
 
-        # Keywords + concepts (max 5 concept) birleştir
+        # Keywords; concepts (geniş alan etiketleri: "Computer science") yalnız keyword
+        # yoksa yedek — her kayıtta geçip kelime analizlerine baskın çıkıyorlardı
         keywords = pub.get('keywords', [])
-        rec['keywords'] = [_clean(k) for k in (keywords if isinstance(keywords, list) else [])]
-        for c in (pub.get('concepts', []) or []):
+        rec['keywords'] = [kw for kw in (_clean(k) for k in (keywords if isinstance(keywords, list) else [])) if kw]
+        for c in ([] if rec['keywords'] else (pub.get('concepts', []) or [])):
             cname = _clean(c) if isinstance(c, str) else _clean(c.get('display_name', ''))
             if cname and cname not in rec['keywords']:
                 rec['keywords'].append(cname)
