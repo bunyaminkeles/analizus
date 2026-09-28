@@ -92,3 +92,10 @@ metinleri ("Yıl", "Diğer", "Düzeltme") de teknik sabit sayıp atladı (Python
 kapsar). Sonradan "sarılmamış Türkçe sabit" taramasıyla yakalandı.
 **Kural:** Toplu sarmadan SONRA her zaman ters kontrol yap: gettext'e sarılmamış ve ç/ğ/ı/ö/ş/ü
 içeren sabitleri listele; ASCII Türkçe kelimeler için ayrıca elle göz at.
+
+## 28 Eylül 2026 — polib `save()` tüm .po dosyasını yeniden sarar
+**Hata:** İki msgid eklemek için `polib.pofile(...).save()` kullandım; dosyanın tamamı yeniden sarıldı, EN/DE
+po'larda ~5800 satırlık gereksiz diff oluştu (commit'ten önce `git diff --stat` ile fark edilip geri alındı).
+**Kural:** Birkaç yeni giriş için po dosyasına düz metin olarak ekle (append) + `compilemessages`; polib yalnız
+toplu düzenlemede ve orijinal wrapwidth ile. Her çeviri değişikliğinden sonra `git diff --stat` — beklenenden
+büyükse commit etme.

@@ -54,7 +54,7 @@ whitenoise, boto3, django-storages
 django-unfold, crispy-bootstrap5
 Pillow, pandas, numpy, scipy, statsmodels
 matplotlib, wordcloud, networkx, reportlab
-bibtexparser, scikit-learn, nltk, zeyrek
+bibtexparser, scikit-learn, nltk, zeyrek, Babel   # Babel: OpenAlex ülke kodu → rapor dilinde ülke adı (28 Eylül 2026)
 openai, google-generativeai, groq
 django-ratelimit, requests, httpx
 beautifulsoup4, sickle
@@ -214,6 +214,9 @@ WHATSAPP_NUMBER=905XXXXXXXXX    # Uluslararası format, başında + yok
 
 # OpenAlex polite pool
 OPENALEX_EMAIL=info@analizus.com
+# OpenAlex API anahtarı (ücretsiz, openalex.org/settings/api) — 28 Eylül 2026'dan beri canlı+yerelde TANIMLI.
+# Anahtarsız bütçe $0,10/gün (≈100 arama isteği) — yoğunlukta anonim arama 503 ile durduruluyor. Anahtarla $1/gün.
+OPENALEX_API_KEY=...
 
 # Semantic Scholar API (saniyede 1 istek; key'siz çalışır ama rate limit yüksek)
 SEMANTIC_SCHOLAR_API_KEY=...
@@ -345,7 +348,7 @@ CLAUDE.md                   # AI geliştirme kuralları ve görev listesi
 > Hangi Test, proje talebi, eğitim, market…), `/analiz/` (araç konsolu), OpenAlex, Semantic Scholar, makale
 > analizi, `tarama/` (Akademik Tarama hub'ı, 27 Eylül 2026), `login/`, `logout/`, `i18n/` (özel
 > `forum.views.set_language` — öneksiz olursa dil değişmez!), `accounts/password_reset*`.
-> `bibliometrics/` yalnız `dev`'de i18n'e taşındı (28 Eylül 2026 itibarıyla main'e alınmadı; §27).
+> `bibliometrics/` da i18n'de (28 Eylül 2026'dan beri canlıda, main a5c5984).
 > Öneksiz kalanlar (tek dilli): forum, blog, DM, profil, `/istatistik/…` (→ `/analiz/` 301), TR'ye özgü tarama
 > araçları (yoktez, trdizin, oaipmh), `/api/…` (API'ler öneksiz; dil gerekiyorsa istek gövdesinde `lang`).
 > EN/DE menülerinde TR-only sayfalara bağlantı verilmez (`LANGUAGE_CODE == 'tr'` koşulu) — liste §28.7.
@@ -1023,19 +1026,30 @@ def _broadcast_chat(uid1, uid2, event):
 
 ## 14. BİBLİOMETRİK ANALİZ
 
-- Desteklenen formatlar: BibTeX (.bib), WoS TSV, Scopus CSV, OpenAlex TXT (otomatik algılama)
-- Çoklu dosya birleştirme
-- 10 Analiz türü: Yayın trendi, top yazarlar, kelime bulutu, top atıf, top dergi, kurum/ülke, işbirliği ağı, yayın türleri, h-index, yıllık atıf
-- İş modeli: Demo (3 grafik, ücretsiz) / Tam (10 grafik, ücretli)
+- Desteklenen formatlar: BibTeX (.bib), WoS düz metin (.txt) ve TSV, Scopus CSV, TR Dizin TXT, OpenAlex TXT (otomatik algılama)
+- Çoklu dosya birleştirme (dosyalar arası tekrar da elenir)
+- **17 analiz tanımlı** (`analyzer.run_all_analyses`); veri yetersizse bazıları üretilmez — pratikte ~15. İş modeli: Demo
+  (3 grafik, ücretsiz) / Tam (tümü, ücretli; EN/DE'de sipariş yerine proje talebi).
 - S3 paths: `bibliometrics/demo/`, `bibliometrics/full/`
-- **Tutarsızlık (karar bekliyor):** sayfa/promo "10 analiz / 10 grafik" diyor; gerçek rapor ve e-postalar **15 analiz**
-  içeriyor (PDF kapağı gerçek sayıyı yazıyor — dev'de, Aşama 2).
-- **Akış:** dosya yükleme veya OpenAlex köprüsü (`/bibliometrics/from-openalex/<id>/` → `parse_openalex_json`) →
-  `job_queue` arka plan işi → analyzer (15 analiz) → `pdf_builder` → e-posta. Semantic Scholar köprüsü YOK (planlı, §27).
-- **Bilinen hata:** Research Gap grafiği 744×15562 px çiziliyor → PDF'te bozuk sayfa (eski kodda da var, düzeltilecek).
-- **EN/DE:** main'de TR-only ve EN/DE menüde gizli. `dev`'de Aşama 1–4 hazır, merge edilmedi: URL'ler i18n'e,
-  arka plan işi kullanıcı dilinde (`_in_user_language`), PDF rapor EN/DE, sayfa (JS `T` sözlüğü + URL sentinel),
-  EN/DE'de sipariş → proje talebi (`order_page` yönlendirir).
+- **Tutarsızlık (içerik kararı bekliyor):** sayfa/promo "10 analiz / 10 grafik" diyor; PDF kapağı gerçek sayıyı yazıyor.
+- **Akış:** dosya yükleme veya OpenAlex köprüsü (`/bibliometrics/from-openalex/<id>/` → `parse_openalex_json`, en az 100
+  kayıt) → `job_queue` arka plan işi (kullanıcı dilinde) → analyzer → `pdf_builder` (demo + tam PDF AYNI çalıştırmada
+  üretilir) → e-posta. Semantic Scholar köprüsü YOK (planlı, migration gerekir; §27).
+- **Hesap kuralları (28 Eylül 2026 doğruluk denetimi sonrası):**
+  - Yazar ayırma: WoS TSV `;` (+ `_wos_fmt_author` → "J Smith", .txt ile aynı); Scopus/genel CSV `_split_author_list`
+    (`;` varsa o, yoksa `,` + "Soyad, Baş harf" çiftleri birleştirilir). Yazar adı birleştirme (aynı kişinin farklı yazılışı) YOK.
+  - Ortalama/medyan atıf TÜM yayınlar üzerinden (0 atıflılar dahil); h-index atıflı yayınlardan.
+  - Zaman serileri (yayın trendi, büyüme/CAGR, kelime trendi, yıllık atıf, Research Gap) `_last_complete_year()` =
+    bugün−1 ile biter (bitmemiş yıl yapay düşüş gösterir); yayın olmayan yıllar 0, önceki yılı 0 olan yılın büyümesi boş.
+  - Ülke: tam sayım (`_record_countries`; yayın başına her ülke bir kez; ISO-2 kodu Babel ile rapor dilinde ada çevrilir).
+    Kurum grafiği yayın başına İLK kurumu sayar; ülke verisi varsa kurum yerine ülke grafiği çizilir.
+  - OpenAlex: kurum/ülke yalnız `institution_list` / `country_list` alanlarından (28 Eylül 2026 öncesi aramalarda yok →
+    kurum/ülke grafikleri üretilmez); "concepts" (geniş alan etiketleri) yalnız yayının anahtar kelimesi yoksa eklenir.
+  - Research Gap: kadran etiketleri eksen oranında (veri koordinatı PDF görselini 15000 px'e uzatıyordu), gölge medyana göre.
+- **Kısıtlar bölümü (yapım aşamasında, §27):** parser `stats` (başlıksız/tekrar sayıları) ve `run_all_analyses(skipped=)`
+  (üretilemeyen analiz + neden) HAZIR ama raporda henüz gösterilmiyor; sıradaki `report_notes.py` + PDF sonu sayfası.
+- **EN/DE:** canlıda (28 Eylül 2026): URL'ler i18n, arka plan işi kullanıcı dilinde (`_in_user_language`), PDF EN/DE, sayfa
+  (JS `T` sözlüğü + URL sentinel), EN/DE'de sipariş → proje talebi (`order_page` yönlendirir).
 
 ---
 
@@ -1056,8 +1070,13 @@ def _broadcast_chat(uid1, uid2, event):
 
 ### OpenAlex (`openalex/`)
 - 240M+ akademik kayıt, ücretsiz API
-- Cursor-based pagination, max 5000 sonuç
-- `OPENALEX_EMAIL` env var (polite pool, 10 req/s)
+- Cursor-based pagination, `per_page=200` (doküman max 100 diyor, pratikte 200 çalışıyor), en fazla
+  `SiteSettings.scrap_max_records` (varsayılan 5000) sonuç — **`sort=publication_year:desc` → sınır aşılırsa yalnız EN YENİ
+  N kayıt çekilir** (eski yıllar kesilir; bibliometri raporunda bu kısıt yazılacak, §14). Sayfalama hatasında kısmi veriyle devam eder.
+- `OPENALEX_EMAIL` (polite pool) + **`OPENALEX_API_KEY`** (28 Eylül 2026'dan beri tanımlı). Maliyet: arama $1 / 1.000 istek,
+  liste+filtre $0,10 / 1.000; ücretsiz anahtar $1/gün. 5000 kayıtlık arama = 25 istek → ≈40 tam arama/gün.
+- 503'te bekleme YOK (yalnız 429'da); kullanıcıya ham hata + API URL'si gösteriliyor (todo).
+- Sonuç kaydı (`_parse_work`): `institutions` (', ' birleşik metin, dışa aktarım için) + `institution_list` / `country_list` (bibliometri için)
 - S3 paths: `openalex/demo/`, `openalex/full/`, `openalex/orders/`
 
 ### YÖK Tez (`yoktez/` vs `tezanaliz/` — KARIŞTIRILMAMALI)
@@ -1493,6 +1512,10 @@ with connection.cursor() as c:
 
 | Hata | Çözüm |
 |---|---|
+| OpenAlex araması "503 Service Unavailable" / 429 | Anahtarsız (anonim) bütçe tükendi veya OpenAlex yoğunlukta anonim aramayı durdurdu — `OPENALEX_API_KEY` tanımlı mı? `.env` değişince `docker compose up -d web` (`restart` env'i yeniden OKUMAZ) |
+| Hetzner'de `curl http://localhost/` 301 | Normal: nginx HTTPS'e yönlendirir — `curl -sL https://www.analizus.com/` ile 200 kontrol et |
+| `requirements.txt`'e paket eklendi, container'da `ModuleNotFoundError` | Yerelde ve Hetzner'de `docker compose up -d --build web`; container'a elle `pip install` geçicidir, yeniden oluşturulunca silinir |
+| Bibliometri raporunda yazar listesinde "J", "A" gibi baş harfler | Yazar alanı virgülden bölünmüş — `_split_author_list` / WoS TSV `;` (28 Eylül 2026'da düzeltildi) |
 | EN/DE sayfada Türkçe kalan metin | Yalnız Türkçe-harf araması yetmez ("Metodoloji", "Yorum", "Hesapla" kaçar) — tüm metin sabitlerini listele (scratchpad `list_strs.py` mantığı), gözle ayıkla (§28) |
 | `{% trans "…%(x)s…" %}` Python'daki msgid ile birleşmiyor | Şablon `trans` `%`'yi `%%`'e kaçışlar → Python ile ORTAK msgid için `{x}` süslü yer tutucu + `.format()` / JS `fmt()` kullan; `trans` tek satır olmalı (çok satır → `blocktrans`) |
 | Çok satırlı `{# … #}` yorum sayfada metin olarak görünüyor | `{# #}` tek satırlıktır — çok satır için `{% comment %}…{% endcomment %}` |
@@ -1832,6 +1855,10 @@ with connection.cursor() as c:
   doğrula, EXIF döndür, 512 px WebP, silme seçeneği) + telefon +90 normalizasyonu; statik dosyalar hash'li
   (`STORAGES`, §10). 28 Eylül: e-posta dil tercihi düzeltmesi, bağış 500 + davet bildirimi (§26), mobil
   hamburger (§10). Migration: 0156–0159.
+- **Bibliometri EN/DE + doğruluk denetimi — canlıda (28 Eylül 2026, main a5c5984, Babel build edildi):** EN/DE Aşama 1–4;
+  Research Gap görsel/kadran düzeltmeleri; K1 yazar ayırma, K2 ortalama/medyan atıf, K3 OpenAlex kurumları, K4 OpenAlex
+  ülke verisi + Babel + tam sayım, K5 boş yıllar, K6 bitmemiş yıl, K7 concepts yedek; parser `stats` + `skipped` (kısıtlar
+  bölümü için). Doğrulama: pytest 61/61, gerçek OpenAlex verisi (575 kayıt) bağımsız hesapla birebir. OpenAlex API anahtarı eklendi.
 
 ### Sıradaki Görevler
 
@@ -1846,13 +1873,16 @@ with connection.cursor() as c:
 - **Referanslar sayfası** — `/referanslar/` + ana sayfa güven sayaçları (`SuccessStory` modeli mevcut)
 
 #### Çok Dilli (EN/DE) ve Bibliometri — 28 Eylül 2026 durumu (tam liste: `tasks/todo.md` "AÇIK İŞLER — TEK LİSTE")
-- **`dev`'de bekleyen, merge edilmemiş:** bibliometri EN/DE Aşama 1–4 (tetikleme+e-posta, PDF rapor, sayfa, EN/DE
-  sipariş → proje talebi; migration yok). main'e son düzeltmeler cherry-pick ile alındığından `dev`→`main`
-  artık fast-forward değil (`git merge dev` gerekir).
-- **Bibliometri sıradakiler (kullanıcı kararları):** (a) Research Gap grafiği 744×15562 px çiziliyor (PDF'te bozuk
-  sayfa; eski kodda da var) + 15 analizin doğruluk testi; (b) S2 → bibliometri (yukarıda); (c) OpenAlex tekrar kayıt
-  (aynı eser iki kayıt, ör. Zenodo) → dedup incelemesi. İçerik kararı: sayfa/promo "10 analiz", rapor 15.
-  Yükleme hata mesajında "file: " öneki.
+- **Bibliometri sıradaki — "Veri, Yöntem ve Kısıtlar" bölümü (kullanıcı kararı 28 Eylül 2026):** analizler "örnek"
+  niteliğinde; kısıtlar tam raporun SONUNDA (veri akışı, alan doluluğu, kurallar/eşikler, üretilemeyen analizler,
+  5000 sınırı "en yeni N kayıt" uyarısı) + "kapsamlı analiz için uzmanlarla görüşün" (TR sipariş, EN/DE proje talebi).
+  Plan A–G `tasks/todo.md` "ŞEFFAFLIK" maddesinde; A, B bitti → **C `report_notes.py`'den devam.**
+- **Bibliometri diğer:** Research Gap trend yöntemi (dönem uzunlukları farklı → yıllık ortalama önerisi, karar); kurum
+  grafiği ilk kurum mu tüm kurumlar mı (karar); "10 analiz" metni (karar); yükleme hatasında "file: " öneki; S2 →
+  bibliometri (migration); OpenAlex dedup incelemesi; OpenAlex dergi adlarında kontrol karakteri (`_clean`); 2026
+  sorusu (kullanıcının "tarih/DOI varsa alınsın" isteği netleşmedi).
+- **OpenAlex:** ham hata mesajı → çevrili mesaj + 503 bekleme; bütçe verimliliği önerisi (aramada yalnız ilk sayfa, tam
+  veri bibliometri/indirme istenince — karar, önce canlıda günlük arama sayısı ölçülebilir).
 - **Planlanan kazıma modülleri** (`BASE_PubMed_Integration_Project.md`, ayrı oturum): **PubMed TR/EN/DE üç dilde,
   BASE yalnız DE.** `/tarama/` hub'ına kart olarak eklenir (hub'daki `intl` bayrağı DE-only'i ifade etmez — dil listesi gerekebilir).
 - **EN/DE açıkları:** Impressum (DE yasal sayfa — şirket bilgisi kullanıcı/avukattan); C grubu çevirisi (Tableau;
@@ -1926,7 +1956,7 @@ bekliyor. Yeni oturum: `tasks/todo.md` başındaki "YENİ OTURUM BURADAN BAŞLA"
   `templates/partials/auth_lang_switcher.html` (bayrak kapalıyken gizli).
 - **Kapsam dışı (bilinçli TR):** forum, blog, DM, profil sayfaları, TR'ye özgü tarama araçları (yoktez, trdizin,
   oaipmh, tezanaliz) ve e-postaları, DB içerikleri (blog/forum/quiz/ilan metinleri; istisna: Badge ve JobCategory
-  `*_en/_de` alanları), yasal adres. Bibliometri: main'de TR-only, `dev`'de EN/DE hazır (merge bekliyor).
+  `*_en/_de` alanları), yasal adres. Bibliometri: EN/DE canlıda (28 Eylül 2026).
 
 ### 28.2 E-postalar
 - `forum/i18n_utils.py`: `with recipient_language(user):` — bloktaki gettext / render_to_string / **reverse()** alıcının
@@ -1979,7 +2009,7 @@ bekliyor. Yeni oturum: `tasks/todo.md` başındaki "YENİ OTURUM BURADAN BAŞLA"
 ### 28.7 EN/DE ürün kararları (26–28 Eylül 2026, kullanıcı)
 - **Gizli (EN/DE'de bağlantı yok, `LANGUAGE_CODE == 'tr'`):** A — forum, blog (+ anasayfa blog bölümü), başarı
   hikayeleri; B — YÖK Tez, TR Dizin, OAI-PMH, uzman dizini, "Uzman olarak katıl"; Topluluk menüsü ve footer sütunu;
-  İstatistik Arena + navbar ★ (puan hesabı arka planda sürer); C (geçici) — Tableau, bibliometri (dev'de açıldı).
+  İstatistik Arena + navbar ★ (puan hesabı arka planda sürer); C (geçici) — Tableau (bibliometri 28 Eylül 2026'da EN/DE açıldı).
   D — gelen kutusu, ödemelerim, davet: EN/DE'de de görünür, arayüz TR (şimdilik kalsın).
 - **Açık:** `/tarama/` hub'ı (EN/DE'de yalnız `intl=True` araçlar: OpenAlex, Semantic Scholar), OpenAlex ve S2 (tam
   çeviri; SEO rehberi ve sipariş sayfası EN/DE'de gizli → proje talebi), pazar yeri (+ proje talebi yönlendirmesi),

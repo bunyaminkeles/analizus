@@ -1,22 +1,22 @@
 # Analizus.com — Claude Çalışma Kuralları
 
-Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~1990 satır; offset'ler 28 Eylül 2026). Tamamını okuma — ihtiyaca göre offset ile ilgili bölümü oku:
+Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~2020 satır; offset'ler 28 Eylül 2026 akşam). Tamamını okuma — ihtiyaca göre offset ile ilgili bölümü oku:
 
 | Bölüm | offset | Konu |
 |---|---|---|
 | §1–2 | 8 | Proje amacı, tech stack, paketler |
 | §3–5 | 68 | Sunucu mimarisi, deploy (deploy.sh açılışta migrate+collectstatic), env vars |
-| §6–7 | 255 | Dizin yapısı, URL mimarisi (i18n_patterns: hangi sayfa /en/ /de/) |
-| §8–9 | 426 | Veri modelleri, feature flag'ler |
-| §10–11 | 691 | CSS/tasarım sistemi, WebSocket |
-| §12 | 811 | İstatistik araçları (akış, PDF, polling) |
-| §13–15 | 965 | DM/oda mesajlaşma, bibliometri, akademik tarama |
-| §16–19 | 1102 | E-posta, AnalizBot/AI Asistan, S3, güvenlik (çerez onayı, cron anahtarı) |
-| §20–23 | 1309 | Admin, pazar iş akışı, session (hesap geri alma), cron |
-| §24–25 | 1408 | Geliştirme ortamı (pytest, çeviri komutları), değişmez kurallar |
-| §26 | 1492 | Sık yapılan hatalar ve çözümleri |
-| §27 | 1564 | Görev listesi (tamamlanan / sıradaki) |
-| §28 | 1903 | Çok dilli yapı (TR/EN/DE) ve gizlilik — mimari, çeviri kuralları, iş akışı, EN/DE ürün kararları (§28.7) |
+| §6–7 | 258 | Dizin yapısı, URL mimarisi (i18n_patterns: hangi sayfa /en/ /de/) |
+| §8–9 | 429 | Veri modelleri, feature flag'ler |
+| §10–11 | 694 | CSS/tasarım sistemi, WebSocket |
+| §12 | 814 | İstatistik araçları (akış, PDF, polling) |
+| §13–15 | 968 | DM/oda mesajlaşma, bibliometri, akademik tarama |
+| §16–19 | 1121 | E-posta, AnalizBot/AI Asistan, S3, güvenlik (çerez onayı, cron anahtarı) |
+| §20–23 | 1328 | Admin, pazar iş akışı, session (hesap geri alma), cron |
+| §24–25 | 1427 | Geliştirme ortamı (pytest, çeviri komutları), değişmez kurallar |
+| §26 | 1511 | Sık yapılan hatalar ve çözümleri |
+| §27 | 1587 | Görev listesi (tamamlanan / sıradaki) |
+| §28 | 1933 | Çok dilli yapı (TR/EN/DE) ve gizlilik — mimari, çeviri kuralları, iş akışı, EN/DE ürün kararları (§28.7) |
 
 ---
 

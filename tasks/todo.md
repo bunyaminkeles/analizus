@@ -10,23 +10,16 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
-> **YENİ OTURUM BURADAN BAŞLA (28 Eylül 2026 sonu):**
-> - Canlı (main = Hetzner) güncel ve DEPLOY EDİLDİ: e-posta dil tercihi (bd7f8ea), bağış "havaleyi yaptım" 500 +
->   davet bildirimi (1fb9fe7), mobil hamburger taşması (cd68fa1). Dışarıdan doğrulandı (yeni bundle.css canlıda).
-> - `dev`'de MERGE EDİLMEMİŞ tek iş: **bibliometri EN/DE Aşama 1–4** (2e94544, d9af3f5, 0865346 + docs 9aed409;
->   migration yok). Main'e alma cherry-pick ile yapıldı → dev ve main geçmişleri farklı; bir sonraki
->   `dev`→`main` birleştirmede fast-forward OLMAZ, `git merge dev` (aynı yamalar, çakışma beklenmez) veya
->   kalan commit'leri cherry-pick.
-> - Sıradaki (kullanıcı kararlarıyla): bibliometri (a) research-gap grafiği (744×15562 px) + 15 analizin
->   doğruluk testi, (b) S2 → bibliometri bağlantısı (migration gerekir), (c) OpenAlex tekrar kayıt (dedup)
->   incelemesi; içerik kararı "10 analiz" vs rapor 15. Ayrıntı: aşağıda "DURAKLATILDI" maddesi.
-> - Diğer açıklar bu listede `- [ ]` olarak; sistem özeti `analizus.md` §27 "Sıradaki Görevler".
-> - **28 Eylül 2026 sonu: main a5c5984 CANLIDA** (bibliometri EN/DE + K1–K7 + A/B; Babel build edildi). Sıradaki: kısıtlar
->   bölümü C adımı (`report_notes.py`) — plan aşağıda "ŞEFFAFLIK" maddesinde. dev ve main artık aynı geçmişte (cherry-pick ayrışması bitti).
-> - **MERGE ÖNCESİ DOĞRULAMA (28 Eylül 2026) TAMAM:** pytest 61/61; gerçek OpenAlex ("bibliometric nursing" 2012–2025,
->   576 bulundu → 1 tekrar → 575) → 17/17 analiz TR+EN PDF; atıf tablosu (ort 5,1 / medyan 0 / h 29), ülke (Çin 139,
->   Türkiye 88), yıllık trend bağımsız hesapla birebir; EN PDF metninde TR karakter 0; gerçek başlıklı WoS TSV (BOM'lu)
->   csv_wos algılandı, yazarlar doğru. dev HEAD 52fb1c4. Merge kullanıcı onayı bekliyor.
+> **YENİ OTURUM BURADAN BAŞLA (28 Eylül 2026 akşam):**
+> - **Canlı = main a5c5984 = dev** (aynı geçmiş; cherry-pick ayrışması bitti → merge'ler yine fast-forward olabilir).
+>   Canlıda: bibliometri EN/DE (Aşama 1–4), Research Gap düzeltmeleri, doğruluk düzeltmeleri K1–K7, parser `stats` +
+>   `run_all_analyses(skipped=)`. Babel build edildi, `OPENALEX_API_KEY` canlı+yerelde tanımlı. Dışarıdan doğrulandı.
+> - **SIRADAKİ İŞ: bibliometri "Veri, Yöntem ve Kısıtlar" bölümü — C adımı (`bibliometrics/services/report_notes.py`).**
+>   Plan A–G ve kullanıcı kararları aşağıda "ŞEFFAFLIK" maddesinde (A, B ✅). Kural: her adım ayrı, test + onay.
+> - Açık kullanıcı soruları: (1) "2026 yayınları tarih/DOI varsa alınsın" isteği netleşmedi (şu an 2026 yalnız yıllık
+>   grafiklerde yok); (2) Research Gap trend yöntemi (yıllık ortalama önerisi); (3) kurum grafiği ilk kurum / tüm kurumlar;
+>   (4) "10 analiz" metni; (5) OpenAlex bütçe verimliliği (aramada yalnız ilk sayfa).
+> - Diğer açıklar bu listede `- [ ]`; sistem özeti `analizus.md` §14 (bibliometri kuralları), §15 (OpenAlex), §27.
 
 **A. Kod işleri (öncelik sırasıyla)**
 - [x] **Hetzner deploy — main a5c5984 YAPILDI (28 Eylül 2026, kullanıcı: "sorun çıkmadı"; dışarıdan /, /bibliometrics/, /en|de/bibliometrics/ 200, başlıklar çevrili)**: bibliometri EN/DE + Research Gap + K1–K7 + A/B. requirements.txt
