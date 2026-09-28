@@ -22,7 +22,7 @@ maddelerde.
 > - Diğer açıklar bu listede `- [ ]`; sistem özeti `analizus.md` §14 (bibliometri kuralları), §15 (OpenAlex), §27.
 
 **A. Kod işleri (öncelik sırasıyla)**
-- [ ] **Hetzner deploy — main ab57dcd (28 Eylül 2026 gece, merge edildi, kullanıcı deploy edecek)**: bibliometri "Veri, Yöntem ve
+- [x] **Hetzner deploy — main ab57dcd YAPILDI (28 Eylül 2026 gece; doğrulandı: bibtexparser 1.4.4, import ok, web log hata 0, /, /bibliometrics/ TR/EN/DE 200)**: bibliometri "Veri, Yöntem ve
   Kısıtlar" (A–G) + BibTeX (bibtexparser==1.4.4) + virgüllü anahtar kelime. requirements.txt değişti → `--build` ŞART; migration yok.
   Canlıda kontrol: `pip show bibtexparser` → 1.4.4; OpenAlex bibliometri işi → tam PDF sonunda bölüm.
 - [x] **Hetzner deploy — main a5c5984 YAPILDI (28 Eylül 2026, kullanıcı: "sorun çıkmadı"; dışarıdan /, /bibliometrics/, /en|de/bibliometrics/ 200, başlıklar çevrili)**: bibliometri EN/DE + Research Gap + K1–K7 + A/B. requirements.txt
