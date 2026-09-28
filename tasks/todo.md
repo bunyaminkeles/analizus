@@ -10,6 +10,18 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
+> **YENİ OTURUM BURADAN BAŞLA (28 Eylül 2026 sonu):**
+> - Canlı (main = Hetzner) güncel ve DEPLOY EDİLDİ: e-posta dil tercihi (bd7f8ea), bağış "havaleyi yaptım" 500 +
+>   davet bildirimi (1fb9fe7), mobil hamburger taşması (cd68fa1). Dışarıdan doğrulandı (yeni bundle.css canlıda).
+> - `dev`'de MERGE EDİLMEMİŞ tek iş: **bibliometri EN/DE Aşama 1–4** (2e94544, d9af3f5, 0865346 + docs 9aed409;
+>   migration yok). Main'e alma cherry-pick ile yapıldı → dev ve main geçmişleri farklı; bir sonraki
+>   `dev`→`main` birleştirmede fast-forward OLMAZ, `git merge dev` (aynı yamalar, çakışma beklenmez) veya
+>   kalan commit'leri cherry-pick.
+> - Sıradaki (kullanıcı kararlarıyla): bibliometri (a) research-gap grafiği (744×15562 px) + 15 analizin
+>   doğruluk testi, (b) S2 → bibliometri bağlantısı (migration gerekir), (c) OpenAlex tekrar kayıt (dedup)
+>   incelemesi; içerik kararı "10 analiz" vs rapor 15. Ayrıntı: aşağıda "DURAKLATILDI" maddesi.
+> - Diğer açıklar bu listede `- [ ]` olarak; sistem özeti `analizus.md` §27 "Sıradaki Görevler".
+
 **A. Kod işleri (öncelik sırasıyla)**
 - [x] **ACİL — "Havaleyi yaptım" bağlantısı 500 veriyor** — DÜZELTİLDİ (28 Eylül 2026, target=donation → admin bağış sayfası). Eski not:
   `mark_donation_transferred` adminlere `Notification(target=None)` oluşturuyor; model
@@ -131,8 +143,9 @@ maddelerde.
   landing'i de/en için de aktif et; buraya iki veri kazıma daha eklenecek"): hub i18n'e
   taşınacak; EN/DE'de yalnız uluslararası araçlar (OpenAlex, Semantic Scholar — YÖK Tez,
   TR Dizin, OAI-PMH gizli); `tarama_hub` view'daki araç başlık/açıklamaları çeviriye;
-  EN/DE navbar "Academic Search" hub'a bağlanacak; yeni kazıma modülleri (PubMed, BASE)
-  kart eklemeye hazır yapı.
+  EN/DE navbar "Academic Search" hub'a bağlanacak; yeni kazıma modülleri kart eklemeye hazır
+  yapı. **Planlanan modüllerin dil kapsamı (kullanıcı, 28 Eylül 2026): PubMed TR/EN/DE üç dilde;
+  BASE yalnız DE** (hub'da `intl` yerine dil listesi gerekebilir — tek bayrak DE-only'i ifade etmez).
 - [x] **2. Proje talebi EN/DE'de kalan Türkçe ifadeler** — YAPILDI (27 Eylül 2026): kategori `localized_title` + 'Veri Analizi' çevirisi ("New Analysis" bulanık hatası düzeltildi → Data Analysis / Datenanalyse); süre tam cümle ngettext ("completed in 4 months" / "in 4 Monaten abgeschlossen"), şablondaki "{{ duration }} tamamlandı" parçası kaldırıldı; e-posta örneği dile göre (jane@company.com / maria@firma.de). 3 dilde 4 senaryo test. Eski not: (kullanıcı ekran görüntüsü, DE):
   (a) "Kürzlich abgeschlossene Analysen" listesinde kategori adları TR — `views.py` ~2202
   `job.category.title` → `localized_title`, varsayılan 'Veri Analizi' → gettext;
@@ -163,7 +176,7 @@ maddelerde.
     (e-posta doğrulama, günlük limit — parça birleştirme 2 tam cümleye bölündü, demo e-posta) çevrili;
     25 msgid (bulanık tahminler yanlıştı, hepsi elle). EN/DE giriş yapmış sayfada TR 0.
     Not: landing JS metinleri zaten etiketliydi (ölçüm aracı yanlış saymıştı).
-  - [ ] **DURAKLATILDI (27 Eylül 2026, kullanıcı: "pause")** — bibliometri Aşama 1–4 dev'de (2e94544, d9af3f5, 0865346), main/canlı e86b17d; MERGE EDİLMEDİ (migration yok, 61/61). Sıradaki öneri: (a) Research Gap grafiği + 15 analizin doğruluk testleri → (b) S2 bağlantısı (migration: BibliometricJob'a S2 FK) → (c) OpenAlex tekrar kayıt.
+  - [ ] **DURAKLATILDI (27 Eylül 2026, kullanıcı: "pause")** — bibliometri Aşama 1–4 dev'de (2e94544, d9af3f5, 0865346), main/canlı cd68fa1 (28 Eylül; araya 3 düzeltme cherry-pick ile girdi); MERGE EDİLMEDİ (migration yok, 61/61). Sıradaki öneri: (a) Research Gap grafiği + 15 analizin doğruluk testleri → (b) S2 bağlantısı (migration: BibliometricJob'a S2 FK) → (c) OpenAlex tekrar kayıt.
   - [ ] **BİBLİOMETRİ EN/DE — DEVAM EDİYOR** (kullanıcı kararları 27 Eylül 2026: S2 bağlantısı eklensin +
     analiz sonuçları test edilsin; bibliometri sayfası EN/DE evet; tekrar kayıt incelensin evet).
     - [x] Aşama 1 tetikleme+e-posta: bibliometrics URL'leri i18n'e; OpenAlex JS fetch `{% url %}`+sentinel;
@@ -243,7 +256,8 @@ maddelerde.
   YÖK Tez/TR Dizin'i de listeliyor. Kullanıcı: "sonraki projede yeni veri kazıma
   modülleri eklenecek" → EN/DE "Academic Search" hub'ı o projede kurulmalı. Çevrilince
   URL'ler `urls_i18n`'e taşınır ve base.html/home.html'deki `LANGUAGE_CODE == 'tr'`
-  koşulları kaldırılır. İlgili: `BASE_PubMed_Integration_Project.md` (ayrı oturum).
+  koşulları kaldırılır. İlgili: `BASE_PubMed_Integration_Project.md` (ayrı oturum) — **dil kapsamı:
+  PubMed TR/EN/DE üç dilde, BASE yalnız DE** (kullanıcı, 28 Eylül 2026).
 - [ ] **D grubu hesap sayfaları tek dilli** (26 Eylül 2026): gelen kutusu, ödemelerim,
   arkadaşını davet et — EN/DE kullanıcısını TR arayüze götürüyor; şimdilik kalsın (kullanıcı).
 - [ ] **YouTube Transcript tamamen kaldırılacak — AŞAMA 2 ERTELENDİ (kullanıcı: "todo'ya al", 26 Eylül 2026); bir sonraki merge'den önce ayrı iş olarak** (26 Eylül 2026,
@@ -616,10 +630,21 @@ maddelerde.
   profiles.css tarayıcı önbelleğinde (1y immutable) kaldığı için önizleme kuralı yoktu. Render'da
   yeni yükleme sorunsuz (kullanıcı teyidi).
 
+**C000. 28 EYLÜL 2026 — cherry-pick ile main'e (kullanıcı: "merge et" / "al"; bibliometri bilerek dışarıda)**
+- [x] bd7f8ea e-posta dili: `PreferredLanguageMiddleware` çok dilli sayfanın öneksiz TR sürümünde (GET,
+  `/en`+yol çözülüyorsa) tercihi `tr`'ye döndürür. Bulgu: /de/ ziyaretinden sonra TR sitede istenen bağış
+  e-postası Almanca geliyordu. Yalnız TR sayfalar (forum, blog) tercihi değiştirmez (bilinçli).
+- [x] 1fb9fe7 `Notification` `content_type`/`object_id` NOT NULL: `mark_donation_transferred` (`target=None`
+  → 500) ve `_notify_referral_reward` (hedefsiz → sessizce yutuluyordu) düzeltildi; `Donation.get_absolute_url`
+  (admin bağış sayfası), `ReferralUse.get_absolute_url` (/davet/). Davet akışı uçtan uca test edildi.
+- [x] cd68fa1 navbar: mobilde hamburger ekran dışına taşıyordu (giriş yapınca 430 px gerekiyordu). Logo yazısı
+  <480px 2xl, ≥480px 4xl; dar ekranda gap küçük; <360px yalnız logo görseli. 320–1024 px ölçüldü.
+- [x] Hetzner deploy (kullanıcı yaptı, 28 Eylül 2026); canlı bundle.css'te yeni kural doğrulandı.
+
 **C00. ÜÇÜNCÜ MERGE — 27 Eylül 2026 (kullanıcı: "sorun yoksa merge edelim")**
 - [x] Ön kontrol: 61/61, makemigrations temiz, migration YOK, requirements değişmedi, main'de dev'de olmayan commit yok.
 - [x] main ← dev fast-forward + push (8 commit: JSON-LD, tarama hub EN/DE, set_language, proje talebi TR ifadeler, profil fotoğrafı).
-- [ ] Hetzner deploy (kullanıcı): `git pull origin main` → `docker compose restart web && docker compose restart nginx`. Migration yok → DB yedeği zorunlu değil.
+- [x] Hetzner deploy — YAPILDI (sonraki merge'lerle birlikte canlıda doğrulandı).
 
 **C0. İKİNCİ MERGE — 26 Eylül 2026 (kullanıcı: "merge edelim, sorun yoksa")**
 - [x] Ön kontrol: çalışma ağacı temiz, 61/61 pytest, `makemigrations --check` temiz,

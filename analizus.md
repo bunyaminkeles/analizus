@@ -343,9 +343,12 @@ CLAUDE.md                   # AI geliştirme kuralları ve görev listesi
 > bloğundaki her sayfa TR'de öneksiz, EN/DE'de `/en/…`, `/de/…` önekli çalışır. Bu blokta: `forum/urls_i18n.py`
 > (ana sayfa, kayıt, doğrulama/onboarding, hesap silme/geri alma, AI Asistan, gizlilik, hakkımızda, iletişim,
 > Hangi Test, proje talebi, eğitim, market…), `/analiz/` (araç konsolu), OpenAlex, Semantic Scholar, makale
-> analizi, `login/`, `logout/`, `i18n/` (set_language — öneksiz olursa dil değişmez!), `accounts/password_reset*`.
+> analizi, `tarama/` (Akademik Tarama hub'ı, 27 Eylül 2026), `login/`, `logout/`, `i18n/` (özel
+> `forum.views.set_language` — öneksiz olursa dil değişmez!), `accounts/password_reset*`.
+> `bibliometrics/` yalnız `dev`'de i18n'e taşındı (28 Eylül 2026 itibarıyla main'e alınmadı; §27).
 > Öneksiz kalanlar (tek dilli): forum, blog, DM, profil, `/istatistik/…` (→ `/analiz/` 301), TR'ye özgü tarama
 > araçları (yoktez, trdizin, oaipmh), `/api/…` (API'ler öneksiz; dil gerekiyorsa istek gövdesinde `lang`).
+> EN/DE menülerinde TR-only sayfalara bağlantı verilmez (`LANGUAGE_CODE == 'tr'` koşulu) — liste §28.7.
 > Ayrıntı ve kurallar: **§28**.
 
 ```python
@@ -430,7 +433,7 @@ class Profile:   # User ile OneToOne
     reputation: int          # Akademik puan (forum etkinliğinden otomatik)
     skills: M2M → Skill
     preferred_language: 'tr' | 'en' | 'de'   # e-postaların dili (migration 0154, varsayılan 'tr');
-                                             # PreferredLanguageMiddleware /en/ /de/ ziyaretinde günceller
+                                             # PreferredLanguageMiddleware günceller (kurallar §28.1)
     deletion_requested_at / deletion_token*  # hesap silme akışı — §23 + §28
     # Uzman olmak için rank: expert/master/legend/admin VEYA account_type: Expert
 
@@ -458,8 +461,11 @@ class Post:      # Yanıt (Topic'e bağlı)
 ```python
 class JobCategory:   # Forum Category'den BAĞIMSIZ — yalnızca iş ilanı kategorileri
     title: str
+    title_en / title_de: str  # çeviri DB alanı (0157); localized_title → aktif dile göre, boşsa TR
     order: int
     is_active: bool
+    # JobPostForm serbest metni title/title_en/title_de iexact eşler; yoksa is_active=False yeni kategori
+    # (admin onayı). 0157 veri adımı: tekrar kategoriler birleştirildi, 5 pasif, 32 çeviri.
     # Admin → Forum & İçerik → İş Kategorileri
 
 class FreelanceJob:
@@ -523,6 +529,7 @@ class ReferralUse:           # Davet bağlantısıyla kayıt olan her kullanıc�
 **Ödül (azalan getiri):** 1–5. davet → 20 gün premium, 6–10. → 10 gün, 11+ → 5 gün; her davette +50 rep
 **Rozet kademeleri:** 1. davet → "Davetçi", 5. → "Topluluk Elçisi", 10. → "Büyükelçi"
 **Tetikleyici:** `user_logged_in` signal + `verify_email` view → `check_and_award_referral()` (forum/services/referral_service.py)
+**Bildirim:** ödülde referrer'a `Notification(target=referral_use)` + anlık bildirim; `ReferralUse.get_absolute_url()` → `/davet/`. 28 Eylül 2026'ya kadar hedefsiz oluşturulduğu için hiç kaydedilmiyordu (§26). Akış uçtan uca test edildi (landing → kayıt → doğrulama → 48 sa + quiz → giriş → ödül).
 **Admin:** Ekosistem → Davet Kodları / Davet Kullanımları; `rewarded` + `flagged` filtreleri
 
 ### İstatistik İşi
@@ -553,7 +560,8 @@ class ProjectRequest:
     data_size: choice          # small | medium | large | unknown
     timeline: choice           # urgent | short | flexible
     status: choice             # new | in_review | contacted | closed  (admin'den yönetilir)
-    source: choice              # direct | yoktez | trdizin | tool | hero | home_corporate | verification | agentic | tableau | bibliometrics (default: direct)
+    source: choice              # direct | yoktez | trdizin | tool | hero | home_corporate | verification | agentic | tableau | bibliometrics | analiz_triyaj | nav | footer | home_market | home_steps | home_faq | market_page (default: direct; 0159)
+    language: 'tr'|'en'|'de'   # talebin gönderildiği dil (0158) — admin sütun+filtre, admin e-postasında [EN]/[DE] etiketi
     admin_notes: TextField
     # Gönderimde: admine ADMIN_NOTIFICATION_EMAIL'e + kullanıcıya onay e-postası gider
     # Admin paneli: renk kodlu durum, list_editable status, fieldset
@@ -635,13 +643,14 @@ class StudyRoomPost:     # Oda mesajları (file: FileField → S3)
     #   != 'active' ise 403 döner — önceden yalnızca yazar kontrolü vardı, arşivlenmiş odada eski
     #   mesajlar sonsuza kadar düzenlenebiliyordu
 class QuizQuestion / QuizScore:  # İstatistik Arena — 432 soru (hedef: 1000)
-class Badge:             # Rozetler
+class Badge:             # Rozetler — name_en/_de, description_en/_de (0156); localized_name/localized_description
 class SuccessStory:      # Başarı hikayeleri
 class DonationTier:      # Destek paketi (name, min_amount, premium_days, is_active)
 class Donation:          # Bağış kaydı
     # STATUS: pending → pending_confirmation → completed | failed
     # pending_confirmation: kullanıcı "Havaleyi Yaptım" butonuna bastı, admin onayı bekliyor
     # grant_premium() / grant_supporter_badge() — completed olunca çağrılır
+    # get_absolute_url() → admin bağış sayfası (adminlere giden "havale yapıldı" bildiriminin hedefi)
 class JobPayment:        # İlan vitrin ödemeleri
     # STATUS: pending → pending_confirmation → success | failed
     # ⚠️ status alanı admin'de readonly — değişiklik yalnızca list action ile yapılır
@@ -753,10 +762,22 @@ open('static/css/bundle.css','w', encoding='utf-8').write(rcssmin.cssmin(combine
 Ardından `templates/base.html`'deki `bundle.css?v=XXXX` sürümünü artırmayı unutma.
 
 ### CSS Dosya Versiyonlama (Cache Busting)
-`<link href="{% static 'css/foo.css' %}?v=XXXX">` — dosya içeriği değiştiğinde `v=` sayısını artır.
-- **Neden:** nginx (production) `Cache-Control: max-age` ile CSS'i önbelleğe alır. `v=` değişmezse tarayıcı eski dosyayı sunar.
-- **Lokal tuzak:** Django dev server nginx'ten geçmez → lokalde güncel görünür, production'da eski stil kalır.
-- Bir CSS dosyasını her düzenleyişte o dosyanın `?v=` stringini güncelle.
+**27 Eylül 2026'dan beri dosya adı hash'li:** `settings.STORAGES['staticfiles']` =
+`whitenoise.storage.CompressedManifestStaticFilesStorage` → `{% static %}` `bundle.1a27….css` gibi içerik hash'li ad
+üretir (collectstatic container açılışında `deploy.sh` ile). nginx `/static/`'i 1 yıl `immutable` sunar; içerik
+değişince ad değiştiği için eski önbellek sorun olmaz. `?v=XXXX` artık zorunlu değil (zararsız, eski şablonlarda duruyor).
+- **Tuzak:** Django 5.1+ `STATICFILES_STORAGE`/`DEFAULT_FILE_STORAGE` ayarlarını YOK SAYAR — yalnız `STORAGES` dict'i
+  çalışır (eskiden hash hiç üretilmiyordu, 1 yıl immutable önbellek eski CSS'i kilitliyordu).
+- `analizdestek/test_settings.py` düz `StaticFilesStorage` kullanır (manifest olmadan testler patlamasın).
+- `bundle.css` hâlâ elle üretilir (5 kaynak dosya, rcssmin — aşağıda/§26); üretmeden önce mevcut bundle'ın
+  kaynaklarla aynı olduğunu doğrula.
+
+### Mobil Navbar Genişlik Bütçesi (28 Eylül 2026)
+Üst çubuk (<1024px): logo görseli 40 + yazı + ara/dil/zarf ikonları (36'şar) + hamburger 44 + boşluklar.
+Logo yazısı 4xl iken giriş yapılmış kullanıcıda 430 px gerekiyordu → 360–414 px telefonlarda hamburger
+ekran dışındaydı. Şimdi mobil önce: yazı 2xl, `min-width:480px`'te 4xl; dar ekranda gap küçük; `<360px`
+yalnız logo görseli. Navbar'a yeni ikon/metin eklerken 360 px'te giriş yapılmış hâlde ölç (Playwright +
+session çerezi; bkz. §26).
 
 ### Geliştirici Kuralı
 Yeni bileşen yazarken:
@@ -764,7 +785,7 @@ Yeni bileşen yazarken:
 2. UI: İçeriği `ax-` sınıflarıyla tasarla
 3. JS: `data-bs-toggle` yerine vanilla event listener kullan
 4. Asla hardcode renk/pixel yazma — `var(--ax-primary)` kullan
-5. CSS dosyası değiştiğinde `?v=XXXX` string'ini güncelle (cache busting)
+5. CSS dosyası değiştiğinde yeniden deploy yeter (hash'li ad, yukarı bkz.); `bundle.css` kaynağıysa bundle'ı yeniden üret
 
 ---
 
@@ -1007,6 +1028,14 @@ def _broadcast_chat(uid1, uid2, event):
 - 10 Analiz türü: Yayın trendi, top yazarlar, kelime bulutu, top atıf, top dergi, kurum/ülke, işbirliği ağı, yayın türleri, h-index, yıllık atıf
 - İş modeli: Demo (3 grafik, ücretsiz) / Tam (10 grafik, ücretli)
 - S3 paths: `bibliometrics/demo/`, `bibliometrics/full/`
+- **Tutarsızlık (karar bekliyor):** sayfa/promo "10 analiz / 10 grafik" diyor; gerçek rapor ve e-postalar **15 analiz**
+  içeriyor (PDF kapağı gerçek sayıyı yazıyor — dev'de, Aşama 2).
+- **Akış:** dosya yükleme veya OpenAlex köprüsü (`/bibliometrics/from-openalex/<id>/` → `parse_openalex_json`) →
+  `job_queue` arka plan işi → analyzer (15 analiz) → `pdf_builder` → e-posta. Semantic Scholar köprüsü YOK (planlı, §27).
+- **Bilinen hata:** Research Gap grafiği 744×15562 px çiziliyor → PDF'te bozuk sayfa (eski kodda da var, düzeltilecek).
+- **EN/DE:** main'de TR-only ve EN/DE menüde gizli. `dev`'de Aşama 1–4 hazır, merge edilmedi: URL'ler i18n'e,
+  arka plan işi kullanıcı dilinde (`_in_user_language`), PDF rapor EN/DE, sayfa (JS `T` sözlüğü + URL sentinel),
+  EN/DE'de sipariş → proje talebi (`order_page` yönlendirir).
 
 ---
 
@@ -1087,6 +1116,7 @@ Her önemli event'te `bkeles74@gmail.com` adresine bildirim:
 - Kullanıcı footer modalından tier seçer → buton e-posta gönderir
 - Şablon: `forum/templates/forum/emails/support_payment_details.html` (HTML, koyu tema)
 - İçerik: IBAN (TR73 0003 2000 0000 0079 1034 65), seçilen paket, premium gün, adımlar
+- Dil: `recipient_language(user)` → `Profile.preferred_language` (istek sayfasının dili DEĞİL; tercih kuralları §28.1)
 - `donation_context` context processor → `DonationTier.objects.filter(is_active=True)` → her sayfada `donation_tiers` değişkeni
 
 ### `notify_admin_analysis_completed` Detayı
@@ -1312,7 +1342,8 @@ analizus-files/
 ```
 Kullanıcı paket seçer → send_support_email → Donation(status=pending) oluşur + IBAN e-postası gönderilir
     ↓ E-postadaki "Havaleyi Yaptım" butonu
-mark_donation_transferred view → status=pending_confirmation + admin bildirimi
+mark_donation_transferred view → status=pending_confirmation + admin bildirimi (Notification target=donation;
+    28 Eylül 2026'ya kadar target=None idi → IntegrityError → bu adım 500 veriyordu, §26)
     ↓ Admin dashboard "BAĞIŞ" satırı → dashboard_approve_donation
 Donation.grant_premium() + grant_supporter_badge()
 ```
@@ -1523,6 +1554,10 @@ with connection.cursor() as c:
 | robots.txt'teki `Disallow` kuralı hiç eşleşmiyor (crawler engellenmiyor) | URL prefix'i değiştiğinde (`/studyroom/`→`/odalar/` gibi) `templates/robots.txt`'teki eski path'ler otomatik güncellenmez — sessizce ölü kural olarak kalır, hata vermez. Yeni bir URL prefix taşıması yapılırken `templates/robots.txt`'i de grep'le kontrol et. |
 | Seed/yönetim komutu bir ortamda çalışıp diğerinde sessizce eksik veri üretiyor (local ≠ Render ≠ Hetzner) | Kategori slug'ı, kullanıcı adı gibi "sabit" referanslar ortamdan ortama farklı olabilir — aynı DB şeması, tamamen farklı içerik geçmişi (ör. `spss` lokalde, `spss-amos` production'da; 7 kategoriden 5'i böyle ayrıştı, bkz. Faz 12). `Category.objects.get(slug=X)` / `User.objects.get(username=Y)` gibi sabit lookup'lar `DoesNotExist` ile **sessizce** atlanır, komut "başarılı" çıktısı verir ama içerik eksik kalır. **Çözüm deseni:** `reseed_forum_topics.py`'deki `CATEGORY_KEYWORD_FALLBACK` (tam slug yoksa title+description'da anahtar kelime arar, o da yoksa atlar — yeni kategori icat etmez) + `get_user()`'ın eksik kullanıcıyı `PERSONA_META` ile otomatik oluşturması. Sonucu asla varsayma — `curl -G --data-urlencode "q=..." /search/` ile canlıda doğrula. |
 | Render'da shell erişimi yokken içerik/veri komutu çalıştırma ihtiyacı | `deploy.sh`'e (Render'ın build/deploy komutu) geçici satır ekleyip push etmek işe yarar, ama Render'ın bir push için deploy.sh'i tam olarak kaç kez çalıştırdığı buradan gözlemlenemez (art arda push'lar birden fazla deploy tetikleyebilir, beklenenden fazla iş yapılabilir — temmuz 2026'da yaşandı). **Kural:** eklenen komut idempotent olmalı (subject/count bazlı skip) ve yüksek bir `--count`/limit değeriyle çağrılmalı ("kaç kez çalışırsa çalışsın aynı nihai duruma yakınsar" tasarımı) — asla "tam N kez çalışacak" varsayımıyla düşük bir limit kullanma. İş bitince geçici satırlar mutlaka ayrı bir commit'le kaldırılmalı, yoksa her gelecek deploy'da tekrar çalışır. |
+| `Notification.objects.create(...)` → `IntegrityError: null value in column "object_id"` | `Notification.content_type`/`object_id` NOT NULL (GenericForeignKey). Hedefsiz (`target=None` ya da hiç verilmeden) bildirim oluşturulamaz. try/except'siz yerde 500 (bağış "havaleyi yaptım"), try/except'li yerde sessizce hiç oluşmaz (davet ödül bildirimi) — ikisi 28 Eylül 2026'da düzeltildi. **Kural:** her bildirime anlamlı bir `target` ver; tıklanınca gidilecek adres `target.get_absolute_url()` (yoksa ana sayfa). Test ortamında `transaction.atomic()` içinde bu hata sonraki sorguları da kilitler. |
+| E-posta kullanıcıya yanlış dilde gidiyor (TR sitede işlem, e-posta Almanca) | E-postalar `recipient_language(user)` → `Profile.preferred_language` ile gider, isteğin dili ile değil. Tercih `/en/` `/de/` ziyaretinde yazılır; 28 Eylül 2026'ya kadar öneksiz TR sayfalar tercihi hiç `tr`'ye döndürmüyordu. Artık çok dilli sayfanın TR sürümü (GET, `/en`+yol çözülüyorsa) `tr` yazar; yalnız TR sayfalar (forum/blog) yazmaz — bilinçli. `/api/…` istekleri öneksiz olduğundan istek dili güvenilir değildir; tercih kullanılmalı. |
+| Mobilde navbar hamburgeri görünmüyor (yalnız giriş yapınca / dar telefonda) | Öğeler `flex-shrink:0`, taşan kısım sağdan ekran dışına kayar; `scrollWidth` viewport'a eşit göründüğü için yatay kaydırma da çıkmaz. Ölçüm: Playwright + kayıtlı session çerezi (`SessionStore` ile oluştur), 320/360/390/414 px'te `#navHamburger` `getBoundingClientRect().right <= innerWidth`. Kısa pencerede (≈70 px) sağ alttaki AI asistan düğmesi hamburgerin üstüne biner — ölçüm hatası, pencereyi ≥600 px yap. Bütçe: §10. |
+| `STATICFILES_STORAGE` ayarlı ama dosya adları hash'siz; CSS değişikliği tarayıcıda 1 yıl görünmüyor | Django 5.1+ `STATICFILES_STORAGE`/`DEFAULT_FILE_STORAGE`'ı okumaz; yalnız `STORAGES` dict'i. 27 Eylül 2026'da `STORAGES['staticfiles']` whitenoise manifest yapıldı (§10). `DEFAULT_FILE_STORAGE` hâlâ ölü ayar — `storage=` verilmemiş FileField yerel diske yazar (todo'da açık). |
 
 ---
 
@@ -1786,6 +1821,17 @@ with connection.cursor() as c:
   **Doğruluk düzeltmeleri (önceden var):** eşleştirilmiş t-testinde yön tersti; AFA Bartlett anlamsızken
   "anlamlı" diyordu + elle faktör sayısında "özdeğer>1" yazıyordu; APA'da "p = < .001" / "p 0.123"; sonuçlarda
   "p = 0.0000". Migration: 0153–0155.
+- **EN/DE yayın sonrası tur** (26–28 Eylül 2026; main'e birkaç merge + cherry-pick, hepsi Hetzner'de) — ayrıntı §28.7
+  ve `tasks/todo.md`: EN/DE yayında, hedef **proje talebi** (uzman kazanımı değil); TR-only sayfalar EN/DE menüden
+  gizlendi (forum, blog, başarı hikayeleri, YÖK/TR Dizin/OAI, uzman dizini, Arena/★; Tableau + bibliometri geçici);
+  YouTube Transcript menüden kaldırıldı (kod/DB silme = aşama 2, todo); `/tarama/` hub EN/DE; OpenAlex + Semantic
+  Scholar tam çeviri (sayfa, sonuç, TXT/Excel, e-posta; EN/DE'de sipariş → proje talebi); proje talebi CTA'ları
+  (hero birincil buton, navbar, footer, market, SSS) + `ProjectRequest.language` (0158) + yeni kaynaklar (0159);
+  Badge/JobCategory çeviri alanları + kategori temizliği (0156/0157); özel `set_language` (karşılığı olmayan
+  sayfadan dil değişince o dilin ana sayfası); profil düzenleme ax- yeniden tasarım + avatar işleme (Pillow:
+  doğrula, EXIF döndür, 512 px WebP, silme seçeneği) + telefon +90 normalizasyonu; statik dosyalar hash'li
+  (`STORAGES`, §10). 28 Eylül: e-posta dil tercihi düzeltmesi, bağış 500 + davet bildirimi (§26), mobil
+  hamburger (§10). Migration: 0156–0159.
 
 ### Sıradaki Görevler
 
@@ -1799,6 +1845,25 @@ with connection.cursor() as c:
 - **Verified uzman vitrini** — `uzman-dizini`'ne `tier=verified` filtresi + onay mekanizması
 - **Referanslar sayfası** — `/referanslar/` + ana sayfa güven sayaçları (`SuccessStory` modeli mevcut)
 
+#### Çok Dilli (EN/DE) ve Bibliometri — 28 Eylül 2026 durumu (tam liste: `tasks/todo.md` "AÇIK İŞLER — TEK LİSTE")
+- **`dev`'de bekleyen, merge edilmemiş:** bibliometri EN/DE Aşama 1–4 (tetikleme+e-posta, PDF rapor, sayfa, EN/DE
+  sipariş → proje talebi; migration yok). main'e son düzeltmeler cherry-pick ile alındığından `dev`→`main`
+  artık fast-forward değil (`git merge dev` gerekir).
+- **Bibliometri sıradakiler (kullanıcı kararları):** (a) Research Gap grafiği 744×15562 px çiziliyor (PDF'te bozuk
+  sayfa; eski kodda da var) + 15 analizin doğruluk testi; (b) S2 → bibliometri (yukarıda); (c) OpenAlex tekrar kayıt
+  (aynı eser iki kayıt, ör. Zenodo) → dedup incelemesi. İçerik kararı: sayfa/promo "10 analiz", rapor 15.
+  Yükleme hata mesajında "file: " öneki.
+- **Planlanan kazıma modülleri** (`BASE_PubMed_Integration_Project.md`, ayrı oturum): **PubMed TR/EN/DE üç dilde,
+  BASE yalnız DE.** `/tarama/` hub'ına kart olarak eklenir (hub'daki `intl` bayrağı DE-only'i ifade etmez — dil listesi gerekebilir).
+- **EN/DE açıkları:** Impressum (DE yasal sayfa — şirket bilgisi kullanıcı/avukattan); C grubu çevirisi (Tableau;
+  bibliometri dev'de); D grubu hesap sayfaları (gelen kutusu, ödemelerim, davet) tek dilli — şimdilik kalsın;
+  `create_badges` EN/DE yok; kategori İ/i eşleşmesi, yeni pasif kategori için admin bildirimi, kategori sıralaması,
+  ilan e-postasında kategori TR; EDU alan listesi (.edu/.edu.tr dışı — karar); Organization JSON-LD
+  `availableLanguage` (karar); proje talebi ölçümü (Aşama 3, ekim 2026 ortası: admin'de dil+kaynak filtresi).
+- **Diğer:** YouTube Transcript aşama 2 (app + DB + paket silme); ölü başarı hikayesi modalı; ana sayfa TR Dizin
+  kartı bayrağa bakmıyor; `DEFAULT_FILE_STORAGE` ölü ayar; global legacy CSS `!important`; avukat kontrolü
+  (gizlilik GDPR maddeleri, etik protokol); `CRON_SECRET_KEY` yenileme; canlıda `GOOGLE_ANALYTICS_ID` yok; GSC/Bing.
+
 #### Teknik Borç / Özellikler
 - **Hizmetler Pazarı dosya otomatik silme mekanizması eksik** — `home.html` FAQ'i "proje teslim sonrası 30 gün saklanır, sonra silinir" diyor ama kodda bu sürece özel hiçbir cron/silme fonksiyonu yok (`grep "def cleanup"` yalnızca trdizin/openalex/oaipmh döndürüyor); dosyalar muhtemelen DM ekleri üzerinden gidiyorsa `cleanup-attachments` cronu (90 gün, genel DM/oda ekleri) devreye giriyor ama FreelanceJob'a özel değil ve süre de uyuşmuyor. Karar bekliyor: gerçek bir 30 günlük mekanizma mı eklensin, yoksa metin mi düzeltilsin.
 - **Admin dashboard ProjectRequest bildirimi** — `dashboard_service.py`'e `status='new'` olan talepleri ekle; `ProjectRequest` şu an bildirim panelinde görünmüyor
@@ -1808,7 +1873,7 @@ with connection.cursor() as c:
 - Analiz araçlarında akıllı hata yönetimi — `data_validator.py` mevcut ama yalnızca Cronbach'ta aktif; araç bazlı ön kontrol + Türkçe hata mesajları eksik; **pasif bekliyor**
 - Blog içerik altyapısı iyileştirmeleri
 - Admin analytics dashboard — navigasyon takibi tamamlandı; gelişmiş kullanıcı segmentasyonu/funnel analizi eklenebilir
-- **Semantic Scholar → Bibliometrik Analiz entegrasyonu** — Semantic Scholar'dan BibTeX export ekle; sonuçları doğrudan `/bibliometrics/` aracına aktar; iki taraf değişiklik gerektirir (`semanticscholar/` export + `bibliometrics/` parser)
+- **Semantic Scholar → Bibliometrik Analiz entegrasyonu** — kullanıcı kararı (27 Eylül 2026): eklenecek. OpenAlex köprüsü (`/bibliometrics/from-openalex/<id>/` → `parse_openalex_json`) örnek alınır; S2 veri yapısı uygun; `BibliometricJob`'a S2 FK → **migration gerekir**. Bibliometri EN/DE işinin (b) adımı.
 - ~~Gamification genişletmesi~~ → Referral sistemi tamamlandı (temmuz 2026)
 - **Bootstrap CDN kaldırma** (temmuz 2026 — devam ediyor, kademeli migration) — Lighthouse'ta "kullanılmayan CSS" (111 KiB) + "kullanılmayan JS" (164 KiB) bulgusunun kaynağı. **Faz 1** (tamamlandı): eksik `ax-` bileşenleri (`.ax-alert`, `.ax-modal`, `.ax-dropdown`, `.ax-form-control`/`select`/`check`) `base.css`'e eklendi. **Faz 2** (tamamlandı): `static/js/ax-modal.js` + `ax-dropdown.js` vanilla controller'ları eklendi; `base.html` (4 modal: search/quiz/profile/story) + `success_stories.html` (1 modal) `.ax-modal` yapısına taşındı, `bootstrap.Modal` JS çağrıları kaldırıldı. **Faz 3** (başladı, dosya dosya): `account_delete.html`, `donation_success.html` migrate edildi (btn/card class'ları). **Bulgu:** component class'lardan (btn/card/badge/modal) bağımsız olarak Bootstrap **utility** class'ları (`d-flex`, `text-*`, `fw-*`, `mb-*`/`py-*`/`px-*`, `gap-*`, `rounded-*`, `shadow-*`, `bg-*`, `border-*`) hâlâ neredeyse her template'te yaygın — bunlar CLAUDE.md'nin "yalnızca grid" kuralına da aykırı ve Faz 4'te (CDN kaldırma) ayrıca migrate edilmeleri gerekiyor, henüz envanteri çıkarılmadı. Detaylı dosya bazlı ilerleme ve bulgular: `tasks/todo.md`.
 - **Erişilebilirlik bulguları** (Lighthouse skoru 91, düşük öncelik) — `nav-drawer` düzeltildi (temmuz 2026, `inert` eklendi); `aria-hidden="true"` taşıyan modal'lar (`searchModal` vb.) hâlâ kapalıyken içlerinde odaklanabilir `<a>`/`<button>` var, aynı `inert` çözümü uygulanabilir; bazı metin/arkaplan kontrast oranları yetersiz; başlık (`h1`-`h6`) sırası bazı sayfalarda azalan düzende değil; **pasif bekliyor**
@@ -1825,16 +1890,22 @@ with connection.cursor() as c:
 
 **En son (31 Temmuz 2026):** Hetzner cron altyapısı denetimi + düzeltmesi ve `_session_datasets` bellek sızıntısı düzeltmesi. **Bulgu:** canonical domain bir noktada `www.analizus.com`'a dönmüş ama crontab güncellenmemişti — `cleanup-pageviews` satırı www'suz URL kullandığından 301'e takılıp fiilen hiç çalışmıyordu; `cleanup-s3` ve `cleanup-attachments` ise dokümantasyonda "Aktif" görünmesine rağmen crontab'da hiç yoktu. Üçü de düzeltildi/eklendi (bkz. §23). **Ayrıca:** `istatistik/services/job_runner.py`'deki `_session_datasets` (araçlar arası taşınan yüklenmiş dosya içeriği, RAM'de) hiç otomatik temizlenmiyordu — `SESSION_DATASET_TTL_SECONDS` (2 saat, `SESSION_COOKIE_AGE` ile hizalı) + `cleanup_expired_session_datasets()` eklendi, mevcut `/api/cron/*` desenine uygun yeni `cron_cleanup_session_datasets` endpoint'i açıldı (bu veri DB değil RAM'de olduğu için yalnızca HTTP-tetiklemeli bu desen çalışır, ayrı process olarak koşan bir management command'ın erişemeyeceği doğrulandı). 2 commit, `dev`'den `main`'e fast-forward merge edildi, `origin`'e push edildi, Hetzner'e deploy edilip (`git pull` + `restart web`/`nginx`) canlıda doğrulandı (`curl` ile doğru secret → `{"success": true}`, yanlış secret → `403`); crontab'a 5 satır eklendi/düzeltildi (`cleanup-pageviews` www'li URL, `cleanup-s3` günlük 05:00, `cleanup-attachments` haftalık Pazar 06:00, `cleanup-session-datasets` saatlik), `crontab -l` ile teyit edildi. Migration yok.*
 
-**En son (25–26 Eylül 2026):** Çok dilli yayın + gizlilik turu `main`'e alındı ve Hetzner'e deploy edildi (132327f;
-migration 0153–0155 container açılışında deploy.sh ile uygulandı; DB yedeği alındı; kontroller OK). `feature_multilingual`
-KAPALI — avukat kontrolü bekliyor. Açık işler `tasks/todo.md` başındaki "AÇIK İŞLER — TEK LİSTE"de. Ayrıntı: §28.
+**Önceki (25–26 Eylül 2026):** Çok dilli yayın + gizlilik turu `main`'e alındı ve Hetzner'e deploy edildi (132327f;
+migration 0153–0155 container açılışında deploy.sh ile uygulandı; DB yedeği alındı; kontroller OK).
+
+**En son (28 Eylül 2026):** EN/DE **yayında** (26 Eylül'den beri); yayın sonrası tur main'de ve Hetzner'de (son commit
+cd68fa1, kullanıcı deploy etti, canlıda doğrulandı; migration 0156–0159 uygulandı). `dev`'de yalnız bibliometri EN/DE
+bekliyor. Yeni oturum: `tasks/todo.md` başındaki "YENİ OTURUM BURADAN BAŞLA" notu + "AÇIK İŞLER — TEK LİSTE";
+özet yukarıda "Çok Dilli (EN/DE) ve Bibliometri". Ayrıntı: §28.
 
 ---
 
 ## 28. ÇOK DİLLİ YAPI (TR/EN/DE) VE GİZLİLİK — Eylül 2026
 
-> Canlıda (25 Eylül 2026, 132327f) ama `feature_multilingual` **KAPALI** — avukat kontrolü (gizlilik GDPR maddeleri +
-> etik protokol) bitince admin'den açılır. Kapalıyken TR hiç etkilenmez; `/en/` `/de/` 404.
+> **EN/DE YAYINDA** (`feature_multilingual` 26 Eylül 2026'da açıldı). Avukat kontrolü (gizlilik GDPR maddeleri + etik
+> protokol) yayın sonrası yapılacak. Bayrak kapatılırsa `/en/` `/de/` 404, TR etkilenmez.
+> **İş hedefi (kullanıcı):** EN/DE ziyaretçisinden beklenti **proje talebi**; EN/DE'de analist/uzman kazanımı hedeflenmiyor
+> → EN/DE'de TR-only ve topluluk/oyunlaştırma yüzeyleri gizli, çağrılar proje talebine (§28.7).
 
 ### 28.1 Mimari
 - `settings.LANGUAGES` = tr, en, de; `LANGUAGE_CODE='tr'`; `LOCALE_PATHS` → `locale/`.
@@ -1842,22 +1913,30 @@ KAPALI — avukat kontrolü bekliyor. Açık işler `tasks/todo.md` başındaki 
   `i18n/` (set_language) BU BLOKTA olmalı — öneksiz kalırsa aktif dil zorla `tr` olur, dil değişmez (22 Eylül bug'ı).
 - Middleware sırası: `ForceDefaultLanguageMiddleware` (Accept-Language ile otomatik dil YOK, varsayılan tr) →
   `MultilingualFeatureMiddleware` (bayrak kapalıyken /en/ /de/ → 404) → `LocaleMiddleware` →
-  `PreferredLanguageMiddleware` (giriş yapmışsa /en/ /de/ ziyareti ya da dil seçimi `Profile.preferred_language`'i
-  günceller; öneksiz sayfalar tercihi `tr`'ye ÇEVİRMEZ).
+  `PreferredLanguageMiddleware` (giriş yapmışsa `Profile.preferred_language`'i günceller: /en/ /de/ ziyareti → o dil;
+  dil seçici POST → seçilen dil; **çok dilli sayfanın öneksiz TR sürümü** (GET, `resolve('/en'+yol)` başarılı) → `tr`
+  (28 Eylül 2026'dan beri); yalnız TR sayfalar (forum, blog, DM…) tercihi DEĞİŞTİRMEZ).
+- Dil seçici `forum.views.set_language` sarmalayıcı: hedef sayfanın seçilen dilde karşılığı yoksa (TR-only sayfa)
+  o dilin ana sayfasına gider (Django'nunki sayfayı sadece yeniliyordu).
 - Context processor `hreflang_alternates` → `og:locale`, hreflang alternatifleri (yalnız i18n sayfalar).
 - Sitemap: `MultilingualSitemapMixin` (`i18n`/`alternates` bayrağa bağlı property) — bayrak açılınca aynı
   `sitemap.xml`'e /en/ /de/ + `xhtml:link` eşleri kendiliğinden girer. robots.txt'te özel sayfaların /en/ /de/
   karşılıkları disallow.
 - Dil seçici: navbar (`base.html`) + bağımsız giriş/kayıt/şifre sıfırlama sayfaları için
   `templates/partials/auth_lang_switcher.html` (bayrak kapalıyken gizli).
-- **Kapsam dışı (bilinçli TR):** forum, blog, DM, profil sayfaları (todo), TR'ye özgü tarama araçları (yoktez, trdizin,
-  oaipmh, tezanaliz, bibliometrics) ve e-postaları, DB içerikleri (blog/forum/quiz/ilan metinleri), yasal adres.
+- **Kapsam dışı (bilinçli TR):** forum, blog, DM, profil sayfaları, TR'ye özgü tarama araçları (yoktez, trdizin,
+  oaipmh, tezanaliz) ve e-postaları, DB içerikleri (blog/forum/quiz/ilan metinleri; istisna: Badge ve JobCategory
+  `*_en/_de` alanları), yasal adres. Bibliometri: main'de TR-only, `dev`'de EN/DE hazır (merge bekliyor).
 
 ### 28.2 E-postalar
 - `forum/i18n_utils.py`: `with recipient_language(user):` — bloktaki gettext / render_to_string / **reverse()** alıcının
   `preferred_language`'inde çalışır (onay/doğrulama linkleri dil önekiyle üretilir). `admin_language()` — admin
   bildirimleri her zaman TR (`email_utils.py` `@_in_admin_language`).
 - Mevcut tüm kullanıcılar migration 0154 ile `tr`.
+- Kayıtta tercih = kayıt olunan sayfanın dili. İstek anında gönderilen e-postalar da (ör. bağış) isteğin değil
+  tercihin dilindedir (`/api/…` öneksiz → istek dili hep `tr` görünür, güvenilmez).
+- Arka plan işleri (OpenAlex, S2, bibliometri `job_queue`): dil thread'e taşınmaz → `_execute_job` sarmalayıcısı
+  gövdeyi `recipient_language(job.user)` içinde çalıştırır (sonuç metni, TXT/Excel/PDF, e-posta kullanıcı dilinde).
 
 ### 28.3 Çeviri kuralları (tuzaklar dahil)
 - msgid = Türkçe kaynak metin. Python: `gettext` (istek anında), modül düzeyinde `gettext_lazy`; kısa/çok anlamlı
@@ -1890,9 +1969,23 @@ KAPALI — avukat kontrolü bekliyor. Açık işler `tasks/todo.md` başındaki 
    metinler kaçar — tüm metin sabitlerini listeleyip gözle ayıkla.
 
 ### 28.6 Yayına alma ve arama motorları
-- Bayrak açılmadan önce: avukat kontrolü (gizlilik 7. bölüm eksikleri: ABD aktarım güvencesi SCC/DPF, KVKK md. 9
+- (Bayrak 26 Eylül 2026'da açıldı; aşağıdakiler hâlâ yapılmadı.) Avukat kontrolü (gizlilik 7. bölüm eksikleri: ABD aktarım güvencesi SCC/DPF, KVKK md. 9
   bildirimi, GA saklama süresi, AB temsilcisi md. 27; etik protokol GDPR atfı).
 - Açıldıktan sonra: Google Search Console + Bing Webmaster'a `sitemap.xml` yeniden gönder, /en/ /de/ sayfaları için
   URL denetimi; hreflang'ı oluşturulan HTML'de doğrula (GSC'de hreflang raporu yok). Bing için IndexNow anahtar
   dosyası mevcut ve kökte erişilebilir (`https://www.analizus.com/534e22a9f9e4d375119c5bc6d006aad0.txt`, 200 —
   kaynak `static/`) → yeni/değişen URL'ler Bing'e anında bildirilebilir.
+
+### 28.7 EN/DE ürün kararları (26–28 Eylül 2026, kullanıcı)
+- **Gizli (EN/DE'de bağlantı yok, `LANGUAGE_CODE == 'tr'`):** A — forum, blog (+ anasayfa blog bölümü), başarı
+  hikayeleri; B — YÖK Tez, TR Dizin, OAI-PMH, uzman dizini, "Uzman olarak katıl"; Topluluk menüsü ve footer sütunu;
+  İstatistik Arena + navbar ★ (puan hesabı arka planda sürer); C (geçici) — Tableau, bibliometri (dev'de açıldı).
+  D — gelen kutusu, ödemelerim, davet: EN/DE'de de görünür, arayüz TR (şimdilik kalsın).
+- **Açık:** `/tarama/` hub'ı (EN/DE'de yalnız `intl=True` araçlar: OpenAlex, Semantic Scholar), OpenAlex ve S2 (tam
+  çeviri; SEO rehberi ve sipariş sayfası EN/DE'de gizli → proje talebi), pazar yeri (+ proje talebi yönlendirmesi),
+  18 analiz aracı, eğitim, AI asistan.
+- **Proje talebi çağrıları (EN/DE):** hero birincil buton, navbar çerçeveli CTA, footer Kurumsal, market kartı,
+  Nasıl Çalışır + SSS sonu, pazar yeri sayfası. Her çağrının `?source=` değeri ayrı (ölçüm için; §8 ProjectRequest).
+- **Footer Akademik Kaynaklar (EN/DE):** Google Scholar, Semantic Scholar, OpenAlex, BASE (Bielefeld).
+- **Planlanan kazıma modülleri:** PubMed TR/EN/DE, BASE yalnız DE (`BASE_PubMed_Integration_Project.md`).
+- YouTube Transcript: TR dahil kaldırılıyor (menü kaldırıldı; kod/DB aşama 2 todo'da).
