@@ -239,7 +239,8 @@ maddelerde.
         ⚠️ **requirements.txt'e Babel eklendi → Hetzner deploy'da `docker compose build` ŞART** (yoksa kod gösterir, çökmez).
         Eski not: K4 OpenAlex'te ülke yok → Ülke dağılımı / Ülke İşbirliği Ağı OpenAlex işlerinde hiç üretilmiyor
         (API `authorships[].countries` veriyor). WoS düz metinde de CU etiketi standart değil (ülke C1 adresinde).
-      - [ ] K5 Boş yıllar: yayın olmayan yıl atlanıyor → büyüme oranı ardışık olmayan yıllar arasında hesaplanıyor.
+      - [x] K5 DÜZELTİLDİ (28 Eylül 2026): yayın trendi, büyüme oranı ve anahtar kelime trendi ardışık takvim yılları (boş
+        yıl 0); önceki yılı 0 olan yılın büyümesi tanımsız → çubuk yok. Test: 2018 eski −%50 (2016'ya göre) → boş. Eski not: K5 Boş yıllar: yayın olmayan yıl atlanıyor → büyüme oranı ardışık olmayan yıllar arasında hesaplanıyor.
       - [ ] K6 İçinde bulunulan (eksik) yıl dahil → son yılda yapay düşüş (büyüme, CAGR, Research Gap trendi). Karar.
       - [ ] K7 OpenAlex "concepts" (Computer science, Medicine gibi geniş alanlar) anahtar kelimelere katılıyor →
         kelime bulutu/ağı/trendi/Research Gap'e baskın genel terimler giriyor. Karar.

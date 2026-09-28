@@ -197,8 +197,9 @@ def publication_trend(records: list[dict]):
         return None
 
     counter = Counter(years)
-    sorted_years = sorted(counter.keys())
-    counts = [counter[y] for y in sorted_years]
+    # Yayın olmayan yıllar 0 olarak gösterilir (atlanırsa çizgi boşluğu gizler)
+    sorted_years = list(range(min(counter), max(counter) + 1))
+    counts = [counter.get(y, 0) for y in sorted_years]
 
     # Çubuk rengi: değer yoğunluğuna göre mavi gradyan
     max_c = max(counts) or 1
@@ -700,12 +701,15 @@ def publication_growth_rate(records: list[dict]):
     if len(sorted_years) < 3:
         return None
 
-    counts = [counter[y] for y in sorted_years]
+    # Ardışık takvim yılları: yayın olmayan yıl 0; önceki yılı 0 olan yılın oranı
+    # tanımsız → çubuk çizilmez (eskiden ardışık olmayan yıllar karşılaştırılıyordu)
+    sorted_years = list(range(sorted_years[0], sorted_years[-1] + 1))
+    counts = [counter.get(y, 0) for y in sorted_years]
 
     growth_years = sorted_years[1:]
     growth_rates = []
     for i in range(1, len(counts)):
-        rate = (counts[i] - counts[i - 1]) / counts[i - 1] * 100 if counts[i - 1] else 0
+        rate = (counts[i] - counts[i - 1]) / counts[i - 1] * 100 if counts[i - 1] else float('nan')
         growth_rates.append(rate)
 
     n = sorted_years[-1] - sorted_years[0]
@@ -897,6 +901,7 @@ def keyword_trend(records: list[dict], top_n: int = 8):
 
     if len(years) < 3:
         return None
+    years = list(range(years[0], years[-1] + 1))   # yayın olmayan yıllar 0
 
     from collections import defaultdict
     year_kw = defaultdict(lambda: defaultdict(int))
