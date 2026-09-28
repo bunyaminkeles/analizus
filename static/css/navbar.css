@@ -46,7 +46,10 @@ body {
     align-items: center;
     justify-content: space-between;
     height: 100%;
-    gap: var(--ax-space-4);
+    gap: var(--ax-space-2);
+}
+@media (min-width: 480px) {
+    .site-nav__inner { gap: var(--ax-space-4); }
 }
 
 /* -------------------------------------------------------------
@@ -66,9 +69,16 @@ body {
 .site-nav__logo-icon  { color: var(--ax-accent-primary); flex-shrink: 0; }
 .site-nav__logo-img   { height: 40px; width: auto; flex-shrink: 0; border-radius: 50%; }
 .site-nav__logo-text  {
-    font-size: var(--ax-text-4xl);
+    font-size: var(--ax-text-2xl);
     font-weight: var(--ax-font-bold);
     letter-spacing: -0.01em;
+}
+/* Dar telefonda büyük yazı hamburgeri ekran dışına itiyordu */
+@media (min-width: 480px) {
+    .site-nav__logo-text { font-size: var(--ax-text-4xl); }
+}
+@media (max-width: 359px) {
+    .site-nav__inner > .site-nav__logo .site-nav__logo-text { display: none; }
 }
 .nav-drawer__header .site-nav__logo-text { font-size: var(--ax-text-2xl); }
 
@@ -247,8 +257,11 @@ body {
 .site-nav__actions {
     display: flex;
     align-items: center;
-    gap: var(--ax-space-2);
+    gap: var(--ax-space-1);
     flex-shrink: 0;
+}
+@media (min-width: 480px) {
+    .site-nav__actions { gap: var(--ax-space-2); }
 }
 
 /* Icon Button */
