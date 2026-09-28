@@ -23,6 +23,23 @@ maddelerde.
 > - Diğer açıklar bu listede `- [ ]` olarak; sistem özeti `analizus.md` §27 "Sıradaki Görevler".
 
 **A. Kod işleri (öncelik sırasıyla)**
+- [ ] **OpenAlex hata mesajı** — kullanıcıya ham "503 Server Error… for url: https://api.openalex.org/…" gösteriliyor → çevrili,
+  anlaşılır mesaj; scraper 503'te de beklemeli (şu an yalnız 429). (28 Eylül 2026)
+- [ ] **OpenAlex bütçe verimliliği (öneri, karar bekliyor)** — arama tüm sonuçları (5000'e kadar, 25 istek) baştan çekiyor;
+  yalnız ilk sayfa + tam veri bibliometri/indirme istenince çekilirse arama başı 1 istek (≈1.000 arama/gün). Önce canlıda
+  günlük arama sayısı ölçülebilir (salt okuma, kullanıcı izniyle).
+- [x] **OpenAlex API anahtarı EKLENDİ (28 Eylül 2026, kullanıcı: "canlı ve lokalde ok")** — yerelde doğrulandı: anahtarlı
+  arama 200 (30.159 sonuç), anahtarsız 503. Render env kullanıcıda. KALAN (ayrı madde aşağıda): ham hata mesajı + 503 bekleme.
+  Eski not: **ACİL — OpenAlex aramaları 503 (28 Eylül 2026)**: OpenAlex anonim aramayı yoğunluk nedeniyle durdurdu ("Anonymous
+  search is paused… use a free API key"). Kod `OPENALEX_API_KEY` destekliyor ama yerelde (.env) ve Docker'da TANIMSIZ;
+  Hetzner/Render kontrol edilmedi. Yapılacak: openalex.org'dan ücretsiz anahtar → yerel .env, Render env, Hetzner
+  `/app/.env` + `docker compose up -d web` (restart env'i yeniden okumaz). Ek: (1) kullanıcıya ham hata + API URL'si
+  gösteriliyor ("503 Server Error… for url: https://api.openalex.org/…") → çevrili, anlaşılır mesaj olmalı;
+  (2) scraper 503'te beklemeden 3 kez deniyor (yalnız 429'da bekleme var).
+  **Bütçe (help.openalex.org/access/example-costs, 28 Eylül 2026):** anahtarsız $0,10/gün, ücretsiz anahtar $1/gün; arama
+  $1 / 1.000 istek (liste+filtre $0,10 / 1.000). 5000 kayıtlık arama = 25 istek (per_page=200) → anahtarsız ≈4, anahtarlı
+  ≈40 tam arama/gün. Kod `api_key` parametresini zaten gönderiyor — yalnız env gerekli. Not: doküman per_page max 100
+  diyor, pratikte 200 çalışıyor (anahtarsız denendi) — uygulanırsa `MAX_PER_PAGE=100` (istek sayısı 2 katı).
 - [x] **ACİL — "Havaleyi yaptım" bağlantısı 500 veriyor** — DÜZELTİLDİ (28 Eylül 2026, target=donation → admin bağış sayfası). Eski not:
   `mark_donation_transferred` adminlere `Notification(target=None)` oluşturuyor; model
   `content_type`/`object_id` NOT NULL → IntegrityError, try/except yok. Donation durumu
@@ -261,7 +278,7 @@ maddelerde.
       PLAN (dosya listesi onay bekliyor):
       - [x] A (28 Eylül 2026, test edildi) `parser.py`: `_deduplicate_and_filter(records, stats=None)` başlıksız/tekrar sayılarını `stats`'a yazar;
             `parse_file` ve `parse_openalex_json` `stats` geçirir (geriye uyumlu, varsayılan None).
-      - [ ] B `analyzer.py`: `run_all_analyses(records, skipped=None)` üretilemeyen analizleri (başlık + neden) toplar.
+      - [x] B (28 Eylül 2026, test edildi) `analyzer.py`: `run_all_analyses(records, skipped=None)` üretilemeyen analizleri (başlık + neden) toplar.
       - [ ] C YENİ `report_notes.py`: alan doluluk tablosu, uygulanan kurallar/eşikler, bilinen kısıtlar, sınır uyarısı
             (OpenAlex: bulunan > çekilen → "en yeni N kayıt, YYYY öncesi kapsam dışı"; çekilen < min(bulunan, sınır) →
             "çekim eksik kaldı").
