@@ -551,7 +551,10 @@ def citation_analysis(records: list[dict]):
 
     h = sum(c >= (i + 1) for i, c in enumerate(citations))
     total_cit = sum(citations)
-    mean_cit = total_cit / len(citations) if citations else 0
+    # Ortalama/medyan tüm yayınlar üzerinden — 0 atıflıları dışlamak değeri şişirir
+    all_cit = [r.get('cited_by') or 0 for r in records]
+    mean_cit = total_cit / len(all_cit)
+    median_cit = _median(all_cit)
 
     max_c = max(citations) or 1
     bar_colors = [plt.cm.Blues(0.3 + 0.6 * c / max_c) for c in citations]
@@ -581,7 +584,7 @@ def citation_analysis(records: list[dict]):
         (gettext('Toplam Atıf'),           f'{total_cit:,}'),
         (gettext('Ort. Atıf / Yayın'),     f'{mean_cit:.1f}'),
         (gettext('En Çok Atıf'),           f'{citations[0]:,}' if citations else '0'),
-        (gettext('Medyan Atıf'),           f'{_median(citations):.0f}'),
+        (gettext('Medyan Atıf'),           f'{median_cit:.1f}' if median_cit % 1 else f'{median_cit:.0f}'),
     ]
     ax2.axis('off')
     tbl = ax2.table(
@@ -615,12 +618,13 @@ def citation_analysis(records: list[dict]):
 # ─────────────────────────── 10. Yıllık Atıf Trendi ───────────────────────────
 
 def annual_citation_trend(records: list[dict]):
+    # Ortalama için o yılın tüm yayınları (0 atıflılar dahil) sayılır
     year_citations = defaultdict(list)
     for r in records:
-        if r.get('year') and 1900 < r['year'] < 2100 and r.get('cited_by', 0) > 0:
-            year_citations[r['year']].append(r['cited_by'])
+        if r.get('year') and 1900 < r['year'] < 2100:
+            year_citations[r['year']].append(r.get('cited_by') or 0)
 
-    if not year_citations:
+    if not any(sum(v) for v in year_citations.values()):
         return None
 
     sorted_years = sorted(year_citations.keys())

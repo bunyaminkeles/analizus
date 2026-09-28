@@ -224,7 +224,8 @@ maddelerde.
         `re.split(r'[;,]')`: WoS sekmeli "Smith, J; Doe, JA" → ['Smith','J','Doe','JA']; yeni Scopus
         "Smith, J.; Doe, J.A." de aynı (eski Scopus "Smith J., Doe J.A." doğru). Örnekle doğrulandı. Etkilenen:
         En Verimli Yazarlar ("J" üretken yazar görünür), Lotka, Yazar İşbirliği Ağı. WoS düz metin (.txt) doğru.
-      - [ ] **K2 Ortalama/medyan atıf yalnız atıflı yayınlardan** — `citation_analysis` "Ort. Atıf / Yayın" ve
+      - [x] **K2 DÜZELTİLDİ (28 Eylül 2026):** ortalama/medyan ve yıllık ortalama tüm yayınlar üzerinden; h-index ve sıralı
+        grafik aynı. Bilinen veri (10,5,3,0,0): ort 3.6 / medyan 3 (eski 6.0 / 5). Eski not: **K2 Ortalama/medyan atıf yalnız atıflı yayınlardan** — `citation_analysis` "Ort. Atıf / Yayın" ve
         "Medyan Atıf" 0 atıflıları dışlıyor (değer şişik); `annual_citation_trend` yıllık ortalama da öyle.
       - [ ] **K3 OpenAlex kurumları tek metin** — scraper `', '.join(institutions[:5])`, analyzer `split(';')[0]` →
         "Kurumlara Göre Dağılım" 5 kurumluk birleşik metni tek kurum sayıyor (OpenAlex ana kaynak). Kurum adları
