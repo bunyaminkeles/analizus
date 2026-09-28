@@ -195,6 +195,17 @@ maddelerde.
       bbox_inches='tight' ile 744×15562 px üretiyor (grafik dışında bir öğe alanı uzatıyor) → PDF'te
       ince boş şerit. Orijinal kodla birebir aynı (sentetik 160 kayıt). Ücretli raporda — "analiz
       sonuçları test edilsin" kapsamında düzeltilecek.
+      → **DÜZELTİLDİ (28 Eylül 2026, commit bekliyor):** kök neden alt kadran etiketleri `y=med_impact*0.15`
+      (veri koordinatı, eksen 0'dan başlar varsayımı); etki değerleri dar aralıkta (0.946–1.003) toplanınca
+      etiket −10180 px'e düşüyordu. Kadran etiketleri artık x=veri / y=eksen oranı. 160 kayıt: 1472×13294 → 1472×1071.
+    - [ ] Research Gap grafiğinde kalan sorunlar (28 Eylül 2026, düzeltme onay bekliyor):
+      (1) kadran arka plan gölgesi `ymin=0.5` (eksenin yarısı) — medyan çizgisiyle çakışmıyor, x'te de eksenin
+      tamamını kaplamıyor → kadran yanlış gösteriliyor; (2) "YÜKSELİŞTEKİ ALAN" etiketi lejantın altında kalıyor;
+      (3) "ALTIN ALAN" / "★ RESEARCH GAP" etiketleri gettext'e sarılmamış (EN/DE PDF'te TR);
+      (4) yöntem sorusu: trend = (son 3 yıl − önceki tüm yıllar)/toplam — dönem uzunlukları farklı, uzun
+      zaman aralıklı veride tüm anahtar kelimeler negatif ("azalıyor") çıkıyor; kadranlar medyana göre göreli
+      olduğu için sınıflama çalışıyor ama eksen etiketi yanıltıcı. Yıllık ortalamaya normalize etmek önerilir.
+      Bibliometri analizlerinin otomatik testi YOK (forum/tests.py'de yalnız 1 proje-talebi testi).
     - [x] Aşama 3 bibliometri sayfası (27 Eylül 2026): landing (HTML + JS `T` sözlüğü + `fmt`), form etiket/
       hata mesajları çevrili; sabit `/bibliometrics/...` fetch adresleri `{% url %}`+sentinel; EN/DE
       navbar'da (masaüstü+mobil) açık. TR görünen metin öncekiyle birebir aynı (otomatik karşılaştırma;

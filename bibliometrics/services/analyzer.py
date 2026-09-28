@@ -1090,18 +1090,20 @@ def research_gap(records: list[dict], top_n: int = 30, recent_years: int = 3):
                         color='#1e293b', fontweight='bold')
             labeled.add(p['kw'])
 
-    # Kadrant başlıkları
+    # Kadrant başlıkları — x veri, y eksen oranı: y ekseni 0'dan başlamayabilir,
+    # veri koordinatlı y eksen dışına düşüp bbox_inches='tight' ile resmi uzatıyordu
+    from matplotlib.transforms import blended_transform_factory
     xlim = ax.get_xlim()
-    ylim = ax.get_ylim()
-    kw_args = dict(fontsize=9, alpha=0.55, fontstyle='italic')
-    ax.text(med_trend - (med_trend - xlim[0]) * 0.5, ylim[1] * 0.97,
-            '★ RESEARCH GAP', ha='center', color='#E15759', **kw_args)
-    ax.text(med_trend + (xlim[1] - med_trend) * 0.5, ylim[1] * 0.97,
-            'ALTIN ALAN', ha='center', color='#4E79A7', **kw_args)
-    ax.text(med_trend - (med_trend - xlim[0]) * 0.5, med_impact * 0.15,
-            gettext('DÜŞEN ALAN'), ha='center', color='#BAB0AC', **kw_args)
-    ax.text(med_trend + (xlim[1] - med_trend) * 0.5, med_impact * 0.15,
-            gettext('YÜKSELİŞTEKİ ALAN'), ha='center', color='#76B7B2', **kw_args)
+    kw_args = dict(fontsize=9, alpha=0.55, fontstyle='italic',
+                   transform=blended_transform_factory(ax.transData, ax.transAxes))
+    ax.text(med_trend - (med_trend - xlim[0]) * 0.5, 0.97,
+            '★ RESEARCH GAP', ha='center', va='top', color='#E15759', **kw_args)
+    ax.text(med_trend + (xlim[1] - med_trend) * 0.5, 0.97,
+            'ALTIN ALAN', ha='center', va='top', color='#4E79A7', **kw_args)
+    ax.text(med_trend - (med_trend - xlim[0]) * 0.5, 0.03,
+            gettext('DÜŞEN ALAN'), ha='center', va='bottom', color='#BAB0AC', **kw_args)
+    ax.text(med_trend + (xlim[1] - med_trend) * 0.5, 0.03,
+            gettext('YÜKSELİŞTEKİ ALAN'), ha='center', va='bottom', color='#76B7B2', **kw_args)
 
     # Legend
     from matplotlib.lines import Line2D
