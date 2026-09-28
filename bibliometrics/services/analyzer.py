@@ -350,12 +350,37 @@ def top_journals(records: list[dict], n: int = 10):
 
 # ─────────────────────────── 6. Kurum / Ülke Dağılımı ───────────────────────────
 
+def _country_label(c: str) -> str:
+    """ISO-2 kodu (OpenAlex: US, TR) → etkin dilde ülke adı; ad gelirse (WoS/Scopus) aynen."""
+    if len(c) != 2 or not c.isalpha() or not c.isupper():
+        return c
+    try:
+        from babel import Locale
+        from django.utils.translation import get_language
+        lang = (get_language() or 'tr').split('-')[0]
+        return Locale.parse(lang).territories.get(c, c)
+    except Exception:
+        return c
+
+
+def _record_countries(r: dict) -> list[str]:
+    """Kaydın farklı ülkeleri (tam sayım: her ülke yayın başına bir kez)."""
+    names = []
+    for c in (r.get('country') or '').replace(';', ',').split(','):
+        c = c.strip()
+        if c:
+            label = _country_label(c)
+            if label not in names:
+                names.append(label)
+    return names
+
+
 def top_institutions(records: list[dict], n: int = 10):
     country_counter = Counter()
     inst_counter = Counter()
     for r in records:
-        if r.get('country'):
-            country_counter[r['country'].strip()] += 1
+        for c in _record_countries(r):
+            country_counter[c] += 1
         if r.get('institution'):
             inst = r['institution'].split(';')[0].strip()
             if inst:
@@ -921,10 +946,7 @@ def country_collaboration(records: list[dict], min_collab: int = 2, max_countrie
 
     coauth = Counter()
     for r in records:
-        raw = r.get('country', '')
-        if not raw:
-            continue
-        countries = list({c.strip() for c in raw.replace(';', ',').split(',') if c.strip()})
+        countries = _record_countries(r)
         if len(countries) < 2:
             continue
         for i in range(len(countries)):

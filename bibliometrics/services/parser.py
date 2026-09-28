@@ -472,6 +472,9 @@ def parse_openalex_json(records: list) -> list[dict]:
         # ', ' ile birleşik ve kurum adları virgül içerdiği için bölünemez → boş bırak
         inst_list = pub.get('institution_list')
         rec['institution'] = '; '.join(_clean(i) for i in inst_list if i) if isinstance(inst_list, list) else ''
+        # Ülkeler: ISO-2 kodları; ad analyzer'da rapor diline çevrilir
+        cc_list = pub.get('country_list')
+        rec['country'] = '; '.join(c for c in cc_list if c) if isinstance(cc_list, list) else ''
 
         # Authors: scraper'da ', '.join() ile birleştirilmiş string
         authors_raw = pub.get('authors', '')

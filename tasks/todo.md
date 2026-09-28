@@ -233,7 +233,11 @@ maddelerde.
         Eski not: **K3 OpenAlex kurumları tek metin** — scraper `', '.join(institutions[:5])`, analyzer `split(';')[0]` →
         "Kurumlara Göre Dağılım" 5 kurumluk birleşik metni tek kurum sayıyor (OpenAlex ana kaynak). Kurum adları
         virgül içerdiği için eski kayıtlar güvenilir bölünemez; yeni aramalar için ayırıcı '; ' olmalı.
-      - [ ] K4 OpenAlex'te ülke yok → Ülke dağılımı / Ülke İşbirliği Ağı OpenAlex işlerinde hiç üretilmiyor
+      - [x] K4 DÜZELTİLDİ (28 Eylül 2026, kullanıcı: "önerilerine göre" = Babel + tam sayım): scraper `country_list`
+        (ISO-2, tüm yazarlar), parser `country`='TR; US', analyzer `_country_label` (Babel, etkin dil) +
+        `_record_countries` (ülke dağılımı ve işbirliği ağı ortak; "Turkey; USA" artık 2 ülke). Eski aramalarda ülke yok.
+        ⚠️ **requirements.txt'e Babel eklendi → Hetzner deploy'da `docker compose build` ŞART** (yoksa kod gösterir, çökmez).
+        Eski not: K4 OpenAlex'te ülke yok → Ülke dağılımı / Ülke İşbirliği Ağı OpenAlex işlerinde hiç üretilmiyor
         (API `authorships[].countries` veriyor). WoS düz metinde de CU etiketi standart değil (ülke C1 adresinde).
       - [ ] K5 Boş yıllar: yayın olmayan yıl atlanıyor → büyüme oranı ardışık olmayan yıllar arasında hesaplanıyor.
       - [ ] K6 İçinde bulunulan (eksik) yıl dahil → son yılda yapay düşüş (büyüme, CAGR, Research Gap trendi). Karar.
