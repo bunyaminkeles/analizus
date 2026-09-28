@@ -21,8 +21,14 @@ maddelerde.
 >   doğruluk testi, (b) S2 → bibliometri bağlantısı (migration gerekir), (c) OpenAlex tekrar kayıt (dedup)
 >   incelemesi; içerik kararı "10 analiz" vs rapor 15. Ayrıntı: aşağıda "DURAKLATILDI" maddesi.
 > - Diğer açıklar bu listede `- [ ]` olarak; sistem özeti `analizus.md` §27 "Sıradaki Görevler".
+> - **MERGE ÖNCESİ DOĞRULAMA (28 Eylül 2026) TAMAM:** pytest 61/61; gerçek OpenAlex ("bibliometric nursing" 2012–2025,
+>   576 bulundu → 1 tekrar → 575) → 17/17 analiz TR+EN PDF; atıf tablosu (ort 5,1 / medyan 0 / h 29), ülke (Çin 139,
+>   Türkiye 88), yıllık trend bağımsız hesapla birebir; EN PDF metninde TR karakter 0; gerçek başlıklı WoS TSV (BOM'lu)
+>   csv_wos algılandı, yazarlar doğru. dev HEAD 52fb1c4. Merge kullanıcı onayı bekliyor.
 
 **A. Kod işleri (öncelik sırasıyla)**
+- [ ] **Veri temizliği: kontrol karakterleri** — OpenAlex bazı dergi adlarında C1 kontrol karakteri gönderiyor
+  ("\x98The \x9cJournal of practical nursing") → grafikte boş kutu (glif uyarısı). `_clean` kontrol karakterlerini atmalı. (28 Eylül 2026)
 - [ ] **OpenAlex hata mesajı** — kullanıcıya ham "503 Server Error… for url: https://api.openalex.org/…" gösteriliyor → çevrili,
   anlaşılır mesaj; scraper 503'te de beklemeli (şu an yalnız 429). (28 Eylül 2026)
 - [ ] **OpenAlex bütçe verimliliği (öneri, karar bekliyor)** — arama tüm sonuçları (5000'e kadar, 25 istek) baştan çekiyor;
