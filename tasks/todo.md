@@ -282,7 +282,10 @@ maddelerde.
       - [x] A (28 Eylül 2026, test edildi) `parser.py`: `_deduplicate_and_filter(records, stats=None)` başlıksız/tekrar sayılarını `stats`'a yazar;
             `parse_file` ve `parse_openalex_json` `stats` geçirir (geriye uyumlu, varsayılan None).
       - [x] B (28 Eylül 2026, test edildi) `analyzer.py`: `run_all_analyses(records, skipped=None)` üretilemeyen analizleri (başlık + neden) toplar.
-      - [ ] C YENİ `report_notes.py`: alan doluluk tablosu, uygulanan kurallar/eşikler, bilinen kısıtlar, sınır uyarısı
+      - [x] C (28 Eylül 2026, sentetik test: sınır aşan/eksik/tam/dosya) YENİ `report_notes.py` → `build_report_notes(records, stats, skipped, source)`
+            dict döner (flow, coverage, rules, skipped, limitations, source_warnings, partial_year); eşikler analyzer varsayılanlarından (inspect).
+            Not F: "%{pct}" içeren msgid — makemessages python-format işaretlerse kontrol et.
+            Eski plan: alan doluluk tablosu, uygulanan kurallar/eşikler, bilinen kısıtlar, sınır uyarısı
             (OpenAlex: bulunan > çekilen → "en yeni N kayıt, YYYY öncesi kapsam dışı"; çekilen < min(bulunan, sınır) →
             "çekim eksik kaldı").
       - [ ] D `job_runner.py`: iki akışta (dosya / OpenAlex) `stats` + `skipped` + kaynak bilgisi → `build_full_pdf`.
