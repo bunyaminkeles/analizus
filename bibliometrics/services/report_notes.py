@@ -10,9 +10,15 @@ build_report_notes() girdileri:
             {'kind': 'openalex', 'found': 12000, 'fetched': 5000, 'max_records': 5000}
 """
 import inspect
+from django.utils.formats import number_format
 from django.utils.translation import gettext
 
 from bibliometrics.services import analyzer
+
+def _num(n):
+    """Metin içindeki sayı — tablolardaki gibi dile göre binlik ayırıcılı (25.000 / 25,000)."""
+    return number_format(n, force_grouping=True)
+
 
 # Alan doluluğu bu oranın altındaysa ilgili analizler için ayrıca kısıt yazılır
 LOW_COVERAGE_PCT = 50
@@ -92,18 +98,18 @@ def _source_warnings(records, source):
                 'alındı. {year} yılı kısmen, daha eski yıllar hiç kapsanmadı. Bu nedenle yayın trendi, '
                 'büyüme oranı, anahtar kelime trendi ve Araştırma Boşluğu Haritası eski dönemi eksik gösterir; '
                 'yıllar arası artış olduğundan yüksek görünebilir.'
-            ).format(found=found, fetched=fetched, year=partial_year))
+            ).format(found=_num(found), fetched=_num(fetched), year=partial_year))
         else:
             warnings.append(gettext(
                 'OpenAlex\'te {found} kayıt bulundu; çekim sınırı nedeniyle yalnız en yeni {fetched} kayıt alındı.'
-            ).format(found=found, fetched=fetched))
+            ).format(found=_num(found), fetched=_num(fetched)))
     elif fetched < min(found, max_records or found):
         partial_year = oldest_year
         warnings.append(gettext(
             'OpenAlex\'ten veri çekimi tamamlanamadı: {found} kaydın yalnız {fetched} tanesi alınabildi. '
             'Eksik kısım en eski yıllara aittir; zaman içindeki değişimi gösteren analizler bu nedenle '
             'eksik olabilir.'
-        ).format(found=found, fetched=fetched))
+        ).format(found=_num(found), fetched=_num(fetched)))
     return warnings, partial_year
 
 
@@ -154,7 +160,7 @@ def _limitations(coverage, current_year_count, last_year):
     if current_year_count:
         limitations.append(gettext(
             '{n} kayıt içinde bulunulan yıla ({year}) ait; bu kayıtlar zaman serilerinde yer almaz, '
-            'diğer analizlere dahildir.').format(n=current_year_count, year=last_year + 1))
+            'diğer analizlere dahildir.').format(n=_num(current_year_count), year=last_year + 1))
     for label, n, pct, is_limitation in coverage:
         if not is_limitation:
             continue
@@ -165,7 +171,7 @@ def _limitations(coverage, current_year_count, last_year):
         elif pct < LOW_COVERAGE_PCT:
             limitations.append(gettext(
                 '"{field}" bilgisi kayıtların yalnız %{pct} kadarında ({n} kayıt) var; bu bilgiye dayanan '
-                'analizler yalnız bu kayıtları yansıtır.').format(field=label, pct=round(pct), n=n))
+                'analizler yalnız bu kayıtları yansıtır.').format(field=label, pct=round(pct), n=_num(n)))
     return limitations
 
 

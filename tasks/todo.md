@@ -303,8 +303,11 @@ maddelerde.
             bayrağı `run_all_analyses(time_series=)` (başlık karşılaştırma yok). Kesinti uyarısı eksik çekimde de çıkar
             (`partial_year`). Atıf 0 ve DOI doluluk kısıtı sayılmaz. DejaVu `<b>` eşlemesi eklendi. Eski plan: `pdf_builder.py`: tam raporun sonuna "Veri, Yöntem ve Kısıtlar" sayfası(ları) + kapanış notu (TR sipariş,
             EN/DE proje talebi); sınır aşıldıysa trend grafiklerinin sayfasına kısa uyarı satırı. Demo PDF değişmez.
-      - [ ] F `locale/en|de` po+mo (yeni msgid'ler elle).
-      - [ ] G Test: dosya + OpenAlex (sınır aşan/aşmayan) sentetik iş, 3 dil PDF, metin katmanında TR kalıntısı kontrolü.
+      - [x] F (28 Eylül 2026) 62 msgid EN/DE (C/E metinleri + B'nin 16 "üretilemeyen analiz" nedeni — onlar da çevrilmemişti);
+            po sonuna düz metin eklendi, host `msgfmt -c` exit 0 (container'da msgfmt yok; polib container'a geçici kuruldu). Eski plan: `locale/en|de` po+mo (yeni msgid'ler elle).
+      - [x] G (28 Eylül 2026) 3 senaryo (sınır aşan / eksik çekim / dosya+üretilemeyen) × TR/EN/DE × tam+demo: EN/DE metin katmanında
+            Türkçe kalıntı yok (özel harf + ö/ü'lü TR kelime + ASCII TR kelime taraması), sayfa görüntüleri kontrol; metin içi sayılar
+            dile göre binlik ayırıcılı yapıldı. Eski plan: Test: dosya + OpenAlex (sınır aşan/aşmayan) sentetik iş, 3 dil PDF, metin katmanında TR kalıntısı kontrolü.
       Açık soru: kullanıcının "2026 yayınları tarih/DOI varsa alınsın" isteği netleşmedi (şu an 2026 yalnız yıllık grafiklerde yok).
     - [ ] Yükleme hata mesajında "file: " alan adı öneki (önceden var) — view form hatalarını ham basıyor.
     - [ ] **İçerik kararı:** bibliometri sayfası/promo "10 analiz" diyor, rapor 15 analiz içeriyor (kapak

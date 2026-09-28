@@ -19667,3 +19667,195 @@ msgstr "RESEARCH GAP"
 #: bibliometrics/services/analyzer.py
 msgid "ALTIN ALAN"
 msgstr "GOLDEN AREA"
+
+# Bibliometri raporu: Veri, Yöntem ve Kısıtlar (28 Eylül 2026)
+
+msgid "Başlığı olmayan kayıtlar çıkarıldı. Tekrar eden kayıtlar DOI'ye göre, DOI yoksa başlığın ilk 80 karakterine göre (büyük/küçük harf ayrımı yapılmadan) çıkarıldı."
+msgstr "Records without a title were removed. Duplicate records were removed by DOI or, where no DOI was available, by the first 80 characters of the title (case-insensitive)."
+
+msgid "Anahtar kelimeler küçük harfe çevrildi ve anlamsız sözcükler çıkarıldı; tek sözcüklü Türkçe kelimeler kök biçimine indirildi, çok sözcüklü ifadeler olduğu gibi kullanıldı. Kelime bulutunda özetlerdeki en az 4 harfli sözcükler de kullanıldı."
+msgstr "Keywords were converted to lower case and stop words were removed; single-word Turkish keywords were reduced to their root form, multi-word phrases were used as they are. The word cloud also uses words of at least 4 letters from the abstracts."
+
+msgid "Ülke sayımında bir yayın, yazarlarının bulunduğu her ülke için bir kez sayıldı. Kurum grafiği yalnız ülke bilgisi hiç yoksa üretilir ve her yayının ilk kurumunu sayar."
+msgstr "In the country count, each publication was counted once for every country of its authors. The institution chart is produced only when no country information is available at all, and it counts the first institution of each publication."
+
+msgid "Sonuçlar yalnız bu veri kaynağındaki kayıtları yansıtır; kaynağın taramadığı dergi, dil ve yayın türleri kapsam dışıdır."
+msgstr "The results reflect only the records in this data source; journals, languages and publication types not covered by the source are excluded."
+
+msgid "Yazar, kurum ve dergi adları otomatik olarak birleştirilmedi: aynı yazar farklı yazımlarla ayrı kişi, aynı adlı farklı yazarlar tek kişi olarak sayılmış olabilir."
+msgstr "Author, institution and journal names were not merged automatically: the same author may have been counted as different people because of spelling variants, and different authors with the same name as one person."
+
+msgid "Atıf sayıları verinin alındığı andaki değerlerdir ve kaynaktan kaynağa değişir; yeni yayınlar atıf toplamak için daha az zaman bulduğundan dezavantajlıdır."
+msgstr "Citation counts are the values at the time the data were retrieved and differ between sources; recent publications are at a disadvantage because they have had less time to accumulate citations."
+
+msgid "Yayın yılı"
+msgstr "Publication year"
+
+msgid "Anahtar kelime"
+msgstr "Keyword"
+
+msgid "Atıf (en az 1)"
+msgstr "Citations (at least 1)"
+
+msgid "Dergi / kaynak"
+msgstr "Journal / source"
+
+msgid "Ülke"
+msgstr "Country"
+
+msgid "Yayın türü"
+msgstr "Publication type"
+
+msgid "DOI"
+msgstr "DOI"
+
+msgid "Başlığı olmadığı için çıkarılan"
+msgstr "Removed (no title)"
+
+msgid "Tekrar olduğu için çıkarılan"
+msgstr "Removed (duplicate)"
+
+msgid "Analize giren kayıt"
+msgstr "Records analysed"
+
+msgid "Anahtar kelimesi olmayan OpenAlex kayıtlarında OpenAlex'in geniş konu etiketleri (concepts) anahtar kelime yerine kullanıldı."
+msgstr "For OpenAlex records without keywords, OpenAlex's broad topic labels (concepts) were used instead of keywords."
+
+msgid "OpenAlex'te bulunan kayıt"
+msgstr "Records found in OpenAlex"
+
+msgid "Çekilen kayıt"
+msgstr "Records retrieved"
+
+msgid "Dosyadan okunan kayıt"
+msgstr "Records read from the file"
+
+msgid "Zaman serileri (yayın trendi, büyüme oranı, anahtar kelime trendi, yıllık atıf trendi, Araştırma Boşluğu Haritası) yalnız tamamlanmış yılları ({year} ve öncesi) kullanır; içinde bulunulan yıl eksik olduğundan dahil edilmedi. Yayın olmayan yıllar 0 sayıldı."
+msgstr "Time series (publication trend, growth rate, keyword trend, annual citation trend, Research Gap Map) use only completed years ({year} and earlier); the current year was excluded because it is incomplete. Years without publications were counted as 0."
+
+msgid "Ağ grafiklerinde en az {n} kez birlikte geçen bağlantılar gösterildi (böyle bağlantı yoksa en sık bağlantılar). Gösterilen en fazla düğüm: yazar {a}, anahtar kelime {k}, ülke {c}."
+msgstr "Network charts show links that occur together at least {n} times (or the most frequent links if there are none). Maximum number of nodes shown: authors {a}, keywords {k}, countries {c}."
+
+msgid "Araştırma Boşluğu Haritası en az 3 yayında geçen en sık {n} anahtar kelimeyi kullanır. Trend, son {y} tamamlanmış yıldaki yayınlarla önceki yayınların farkının toplam yayına oranıdır; atıf etkisi, kelimenin geçtiği yayınların ortalama atıfıdır."
+msgstr "The Research Gap Map uses the {n} most frequent keywords that occur in at least 3 publications. The trend is the difference between publications in the last {y} completed years and earlier publications, divided by the total number of publications; citation impact is the average number of citations of the publications in which the keyword occurs."
+
+msgid "{n} kayıt içinde bulunulan yıla ({year}) ait; bu kayıtlar zaman serilerinde yer almaz, diğer analizlere dahildir."
+msgstr "{n} records belong to the current year ({year}); they are not included in the time series but are included in the other analyses."
+
+msgid "OpenAlex'te {found} kayıt bulundu; çekim sınırı nedeniyle yalnız en yeni {fetched} kayıt alındı. {year} yılı kısmen, daha eski yıllar hiç kapsanmadı. Bu nedenle yayın trendi, büyüme oranı, anahtar kelime trendi ve Araştırma Boşluğu Haritası eski dönemi eksik gösterir; yıllar arası artış olduğundan yüksek görünebilir."
+msgstr "{found} records were found in OpenAlex; because of the retrieval limit, only the {fetched} most recent records were retrieved. The year {year} is only partly covered and earlier years are not covered at all. The publication trend, growth rate, keyword trend and Research Gap Map therefore show the earlier period incompletely; growth over the years may appear larger than it is."
+
+msgid "OpenAlex'te {found} kayıt bulundu; çekim sınırı nedeniyle yalnız en yeni {fetched} kayıt alındı."
+msgstr "{found} records were found in OpenAlex; because of the retrieval limit, only the {fetched} most recent records were retrieved."
+
+msgid "OpenAlex'ten veri çekimi tamamlanamadı: {found} kaydın yalnız {fetched} tanesi alınabildi. Eksik kısım en eski yıllara aittir; zaman içindeki değişimi gösteren analizler bu nedenle eksik olabilir."
+msgstr "Data retrieval from OpenAlex was not completed: only {fetched} of {found} records could be retrieved. The missing part belongs to the oldest years; analyses showing change over time may therefore be incomplete."
+
+msgid "\"{field}\" bilgisi hiçbir kayıtta yok; bu bilgi analizlerde kullanılamadı."
+msgstr "\"{field}\" is not available in any record; this information could not be used in the analyses."
+
+msgid "\"{field}\" bilgisi kayıtların yalnız %{pct} kadarında ({n} kayıt) var; bu bilgiye dayanan analizler yalnız bu kayıtları yansıtır."
+msgstr "\"{field}\" is available in only {pct}% of the records ({n} records); analyses based on it reflect only these records."
+
+msgid "Veri Akışı"
+msgstr "Data Flow"
+
+msgid "Alan Doluluğu"
+msgstr "Field Completeness"
+
+msgid "Uygulanan Kurallar ve Eşikler"
+msgstr "Rules and Thresholds Applied"
+
+msgid "Bilinen Kısıtlar"
+msgstr "Known Limitations"
+
+msgid "Veri kesintisi: yalnız en yeni kayıtlar alındı; {year} yılı kısmen, daha eski yıllar hiç kapsanmadı. Eski dönem eksik görünür. Ayrıntı raporun sonundaki \"Veri, Yöntem ve Kısıtlar\" bölümündedir."
+msgstr "Truncated data: only the most recent records were retrieved; the year {year} is only partly covered and earlier years are not covered at all. The earlier period appears incomplete. See the \"Data, Methods and Limitations\" section at the end of the report for details."
+
+msgid "Veri kesintisi: yalnız en yeni kayıtlar alındı; {year} yılı kısmen, daha eski yıllar hiç kapsanmadı. Eski dönem eksik görünür."
+msgstr "Truncated data: only the most recent records were retrieved; the year {year} is only partly covered and earlier years are not covered at all. The earlier period appears incomplete."
+
+msgid "Üretilemeyen Analizler"
+msgstr "Analyses Not Produced"
+
+msgid "Veri, Yöntem ve Kısıtlar"
+msgstr "Data, Methods and Limitations"
+
+msgctxt "bibliometri tablo"
+msgid "Adım"
+msgstr "Step"
+
+msgctxt "bibliometri tablo"
+msgid "Kayıt"
+msgstr "Records"
+
+msgid "Her analiz yalnız ilgili bilgisi dolu olan kayıtları kullanır."
+msgstr "Each analysis uses only the records in which the relevant information is available."
+
+msgid "Bu bölüm, analizlerin hangi veriyle ve hangi kurallarla üretildiğini ve sonuçları yorumlarken dikkate alınması gereken kısıtları özetler."
+msgstr "This section summarises the data and rules used to produce the analyses and the limitations to consider when interpreting the results."
+
+msgctxt "bibliometri tablo"
+msgid "Alan"
+msgstr "Field"
+
+msgctxt "bibliometri tablo"
+msgid "Oran"
+msgstr "Share"
+
+msgid "Bu rapordaki analizler otomatik olarak üretilmiştir ve örnek niteliğindedir. Veri temizliği, yazar ve kurum adlarının birleştirilmesi, birden fazla veri kaynağının birlikte kullanılması ve bulguların yorumlanmasını içeren kapsamlı bir bibliometrik çalışma için uzmanlarımızla görüşebilirsiniz:"
+msgstr "The analyses in this report were generated automatically and are illustrative. For a comprehensive bibliometric study, including data cleaning, merging of author and institution names, combining several data sources and interpreting the findings, you can consult our experts:"
+
+msgid "Önemli:"
+msgstr "Important:"
+
+msgid "%{value}"
+msgstr "{value}%"
+
+msgid "Tamamlanmış yıllara ait yayın yılı bilgisi yok."
+msgstr "No publication years available for completed years."
+
+msgid "Yazar bilgisi yok."
+msgstr "No author information."
+
+msgid "Atıf almış yayın yok."
+msgstr "No cited publications."
+
+msgid "En az 3 farklı yayın yılı gerekir."
+msgstr "At least 3 different publication years are required."
+
+msgid "Anahtar kelime veya özet bilgisi yok."
+msgstr "No keywords or abstracts available."
+
+msgid "Aynı yayında birlikte geçen anahtar kelime yok."
+msgstr "No keywords occur together in the same publication."
+
+msgid "Anahtar kelime bilgisi ve en az 3 farklı yayın yılı gerekir."
+msgstr "Keywords and at least 3 different publication years are required."
+
+msgid "Dergi / kaynak bilgisi yok."
+msgstr "No journal / source information."
+
+msgid "Ülke veya kurum bilgisi yok."
+msgstr "No country or institution information."
+
+msgid "Birden fazla ülkeden yazarı olan yayın yok."
+msgstr "No publications with authors from more than one country."
+
+msgid "Birden fazla yazarlı yayın yok."
+msgstr "No publications with more than one author."
+
+msgid "Yayın türü bilgisi yok."
+msgstr "No publication type information."
+
+msgid "Yayın yılı bilinen ve atıf almış yayın yok."
+msgstr "No cited publications with a known publication year."
+
+msgid "Birlikte geçen en az 4 anahtar kelimeden oluşan küme bulunamadı."
+msgstr "No cluster of at least 4 co-occurring keywords was found."
+
+msgid "Yayın yılı bilgisi ve en az 3 yayında geçen en az 5 anahtar kelime gerekir."
+msgstr "Publication years and at least 5 keywords occurring in at least 3 publications are required."
+
+msgid "Hesaplama sırasında hata oluştu."
+msgstr "An error occurred during the calculation."
