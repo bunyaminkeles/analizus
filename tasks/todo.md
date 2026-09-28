@@ -198,7 +198,10 @@ maddelerde.
       → **DÜZELTİLDİ (28 Eylül 2026, commit bekliyor):** kök neden alt kadran etiketleri `y=med_impact*0.15`
       (veri koordinatı, eksen 0'dan başlar varsayımı); etki değerleri dar aralıkta (0.946–1.003) toplanınca
       etiket −10180 px'e düşüyordu. Kadran etiketleri artık x=veri / y=eksen oranı. 160 kayıt: 1472×13294 → 1472×1071.
-    - [ ] Research Gap grafiğinde kalan sorunlar (28 Eylül 2026, düzeltme onay bekliyor):
+    - [x] Research Gap (1)–(3) DÜZELTİLDİ (28 Eylül 2026): gölge medyan çizgilerine göre `fill_between`,
+      lejant eksenin üstünde (4 sütun), "RESEARCH GAP"/"ALTIN ALAN" gettext (EN GOLDEN AREA, DE FORSCHUNGSLÜCKE /
+      GOLDENES FELD). DE çıktı kontrol edildi.
+    - [ ] Research Gap (4) yöntem sorusu kullanıcı kararı bekliyor. Tarihçe — kalan sorunlar (28 Eylül 2026):
       (1) kadran arka plan gölgesi `ymin=0.5` (eksenin yarısı) — medyan çizgisiyle çakışmıyor, x'te de eksenin
       tamamını kaplamıyor → kadran yanlış gösteriliyor; (2) "YÜKSELİŞTEKİ ALAN" etiketi lejantın altında kalıyor;
       (3) "ALTIN ALAN" / "★ RESEARCH GAP" etiketleri gettext'e sarılmamış (EN/DE PDF'te TR);

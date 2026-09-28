@@ -1066,12 +1066,6 @@ def research_gap(records: list[dict], top_n: int = 30, recent_years: int = 3):
     ax.set_facecolor('#f8fafc')
     fig.patch.set_facecolor('white')
 
-    # Kadrant arkaplan renkleri
-    ax.axvspan(min(trends) - 0.05, med_trend, ymin=0.5, ymax=1.0,
-               alpha=0.06, color='#E15759')   # Research Gap bölgesi
-    ax.axvspan(med_trend, max(trends) + 0.05, ymin=0.5, ymax=1.0,
-               alpha=0.06, color='#4E79A7')   # Altın bölge
-
     # Medyan çizgileri
     ax.axvline(med_trend,  color='#94a3b8', linestyle='--', linewidth=1.2, alpha=0.7)
     ax.axhline(med_impact, color='#94a3b8', linestyle='--', linewidth=1.2, alpha=0.7)
@@ -1079,6 +1073,16 @@ def research_gap(records: list[dict], top_n: int = 30, recent_years: int = 3):
     # Scatter
     sc = ax.scatter(trends, impacts, s=sizes, c=colors, alpha=0.82,
                     edgecolors='white', linewidths=1.0, zorder=3)
+
+    # Kadrant arkaplan renkleri — medyan çizgilerine göre (eksen yarısına göre değil)
+    x0, x1 = min(trends) - 0.05, max(trends) + 0.05
+    ax.set_xlim(x0, x1)
+    y0, y1 = ax.get_ylim()
+    ax.fill_between([x0, med_trend], med_impact, y1, color='#E15759',
+                    alpha=0.06, linewidth=0, zorder=0)   # Research Gap bölgesi
+    ax.fill_between([med_trend, x1], med_impact, y1, color='#4E79A7',
+                    alpha=0.06, linewidth=0, zorder=0)   # Altın bölge
+    ax.set_ylim(y0, y1)
 
     # Etiketler — sadece gap + altın alan (okunabilirlik)
     labeled = set()
@@ -1097,9 +1101,9 @@ def research_gap(records: list[dict], top_n: int = 30, recent_years: int = 3):
     kw_args = dict(fontsize=9, alpha=0.55, fontstyle='italic',
                    transform=blended_transform_factory(ax.transData, ax.transAxes))
     ax.text(med_trend - (med_trend - xlim[0]) * 0.5, 0.97,
-            '★ RESEARCH GAP', ha='center', va='top', color='#E15759', **kw_args)
+            '★ ' + gettext('RESEARCH GAP'), ha='center', va='top', color='#E15759', **kw_args)
     ax.text(med_trend + (xlim[1] - med_trend) * 0.5, 0.97,
-            'ALTIN ALAN', ha='center', va='top', color='#4E79A7', **kw_args)
+            gettext('ALTIN ALAN'), ha='center', va='top', color='#4E79A7', **kw_args)
     ax.text(med_trend - (med_trend - xlim[0]) * 0.5, 0.03,
             gettext('DÜŞEN ALAN'), ha='center', va='bottom', color='#BAB0AC', **kw_args)
     ax.text(med_trend + (xlim[1] - med_trend) * 0.5, 0.03,
@@ -1117,8 +1121,9 @@ def research_gap(records: list[dict], top_n: int = 30, recent_years: int = 3):
         Line2D([0], [0], marker='o', color='w', markerfacecolor='#BAB0AC',
                markersize=10, label=gettext('Düşen Alan')),
     ]
-    ax.legend(handles=legend_items, loc='lower right', fontsize=8.5,
-              framealpha=0.9, edgecolor='#e2e8f0')
+    # Lejant eksenin üstünde: sağ-alt köşede kadran etiketinin üstüne biniyordu
+    ax.legend(handles=legend_items, loc='lower center', bbox_to_anchor=(0.5, 1.0),
+              ncol=4, fontsize=8.5, frameon=False)
 
     # Gap keywords listesi (alt açıklama)
     gap_kws = [points[i]['kw'] for i in gap_indices[:6]]
@@ -1131,7 +1136,7 @@ def research_gap(records: list[dict], top_n: int = 30, recent_years: int = 3):
 
     ax.set_xlabel(gettext('Yayın Trendi  (← Azalıyor  |  Artıyor →)'), fontsize=11)
     ax.set_ylabel(gettext('Atıf Etkisi  (↑ Yüksek)'), fontsize=11)
-    ax.set_title(gettext('Araştırma Boşluğu Haritası (Research Gap)'), pad=18)
+    ax.set_title(gettext('Araştırma Boşluğu Haritası (Research Gap)'), pad=32)
     fig.subplots_adjust(bottom=0.12, top=0.93, left=0.09, right=0.97)
     return fig
 

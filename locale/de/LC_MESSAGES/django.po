@@ -19985,3 +19985,11 @@ msgstr ""
 #~ msgstr ""
 #~ "Plattform für akademische Forschung und statistische Analyse. Schreiben Sie "
 #~ "Ihre Abschlussarbeit mit Zuversicht, analysieren Sie Ihre Daten korrekt."
+
+#: bibliometrics/services/analyzer.py
+msgid "RESEARCH GAP"
+msgstr "FORSCHUNGSLÜCKE"
+
+#: bibliometrics/services/analyzer.py
+msgid "ALTIN ALAN"
+msgstr "GOLDENES FELD"

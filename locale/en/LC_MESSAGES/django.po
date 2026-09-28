@@ -19659,3 +19659,11 @@ msgstr ""
 #~ msgstr ""
 #~ "A platform for academic research and statistical analysis. Write your thesis"
 #~ " with confidence, analyze your data correctly."
+
+#: bibliometrics/services/analyzer.py
+msgid "RESEARCH GAP"
+msgstr "RESEARCH GAP"
+
+#: bibliometrics/services/analyzer.py
+msgid "ALTIN ALAN"
+msgstr "GOLDEN AREA"
