@@ -24,7 +24,12 @@ maddelerde.
 **A. Kod işleri (öncelik sırasıyla)**
 - [x] **Hetzner deploy — main a5c5984 YAPILDI (28 Eylül 2026, kullanıcı: "sorun çıkmadı"; dışarıdan /, /bibliometrics/, /en|de/bibliometrics/ 200, başlıklar çevrili)**: bibliometri EN/DE + Research Gap + K1–K7 + A/B. requirements.txt
   değişti (Babel) → `docker compose up -d --build web` ŞART; migration yok. Sonra canlıda: OpenAlex araması + bibliometri işi.
-- [ ] **BibTeX yüklemeleri çalışmıyor (28 Eylül 2026, D testinde bulundu)** — `requirements.txt` `bibtexparser` sürümsüz →
+- [ ] **BibTeX virgüllü anahtar kelimeler bölünmüyor (28 Eylül 2026)** — `parser._split_keywords` yalnız `;`/`|` ile ayırıyor;
+  Zotero/Mendeley/Google Scholar .bib `keywords = {a, b}` → tek kelime "a, b" → kelime analizleri bozuk. Scopus .bib `;` (sorun yok).
+  Öneri: yalnız BibTeX'te `;` yoksa `,` ile böl (fonksiyon WoS/Scopus'ta da kullanılıyor — onlara dokunma).
+- [x] **BibTeX düzeltildi YERELDE (28 Eylül 2026): `bibtexparser==1.4.4` sabitlendi, build + uçtan uca iş testi OK
+  (LaTeX→Türkçe, yazar sırası, note'tan atıf). CANLIDA HÂLÂ BOZUK (2.0.1 doğrulandı; şimdiye dek .bib işi yok) → deploy'da
+  `docker compose up -d --build web` ŞART.** Eski not: — `requirements.txt` `bibtexparser` sürümsüz →
   2.0.1 kurulu; `parser._parse_bibtex` v1 API (`bibtexparser.bparser`) kullanıyor → "No module named 'bibtexparser.bparser'",
   iş "Dosyadan kayıt okunamadı" ile başarısız. Canlıda da muhtemelen aynı (kontrol edilmedi). Seçenek: `bibtexparser<2` sabitle
   (build gerekir) veya v2 API'ye geçir.

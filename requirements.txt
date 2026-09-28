@@ -29,7 +29,7 @@ matplotlib
 wordcloud
 networkx
 reportlab
-bibtexparser
+bibtexparser==1.4.4  # parser v1 API (bparser) kullanıyor — 2.x uyumsuz
 scikit-learn
 statsmodels
 nltk
