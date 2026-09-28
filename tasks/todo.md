@@ -227,7 +227,10 @@ maddelerde.
       - [x] **K2 DÜZELTİLDİ (28 Eylül 2026):** ortalama/medyan ve yıllık ortalama tüm yayınlar üzerinden; h-index ve sıralı
         grafik aynı. Bilinen veri (10,5,3,0,0): ort 3.6 / medyan 3 (eski 6.0 / 5). Eski not: **K2 Ortalama/medyan atıf yalnız atıflı yayınlardan** — `citation_analysis` "Ort. Atıf / Yayın" ve
         "Medyan Atıf" 0 atıflıları dışlıyor (değer şişik); `annual_citation_trend` yıllık ortalama da öyle.
-      - [ ] **K3 OpenAlex kurumları tek metin** — scraper `', '.join(institutions[:5])`, analyzer `split(';')[0]` →
+      - [x] **K3 DÜZELTİLDİ (28 Eylül 2026):** scraper'a `institution_list` (liste) eklendi, `institutions` metni aynen
+        (CSV/TXT dışa aktarım etkilenmez); parser yalnız listeden okur, eski aramalarda kurum boş → grafik üretilmez
+        (kullanıcı kararı "a"). Not: grafik kayıt başına İLK kurumu sayar (ilk yazarın kurumu) — ayrı karar.
+        Eski not: **K3 OpenAlex kurumları tek metin** — scraper `', '.join(institutions[:5])`, analyzer `split(';')[0]` →
         "Kurumlara Göre Dağılım" 5 kurumluk birleşik metni tek kurum sayıyor (OpenAlex ana kaynak). Kurum adları
         virgül içerdiği için eski kayıtlar güvenilir bölünemez; yeni aramalar için ayırıcı '; ' olmalı.
       - [ ] K4 OpenAlex'te ülke yok → Ülke dağılımı / Ülke İşbirliği Ağı OpenAlex işlerinde hiç üretilmiyor

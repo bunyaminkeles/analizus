@@ -200,6 +200,8 @@ class OpenAlexScraper:
             'keywords': keywords,
             'concepts': concepts[:5],
             'institutions': ', '.join(institutions[:5]),
+            # Bibliometri için ayrı liste — kurum adları virgül içerir, metinden bölünemez
+            'institution_list': institutions[:5],
             'open_access': (work.get('open_access') or {}).get('is_oa', False),
         }
 

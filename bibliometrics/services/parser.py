@@ -468,7 +468,10 @@ def parse_openalex_json(records: list) -> list[dict]:
         rec['doi'] = _clean(pub.get('doi', ''))
         rec['cited_by'] = _safe_int(pub.get('cited_by_count', 0))
         rec['pub_type'] = _clean(pub.get('type', ''))
-        rec['institution'] = _clean(pub.get('institutions', ''))
+        # Kurumlar: yalnız liste alanından. Eski aramalardaki 'institutions' metni
+        # ', ' ile birleşik ve kurum adları virgül içerdiği için bölünemez → boş bırak
+        inst_list = pub.get('institution_list')
+        rec['institution'] = '; '.join(_clean(i) for i in inst_list if i) if isinstance(inst_list, list) else ''
 
         # Authors: scraper'da ', '.join() ile birleştirilmiş string
         authors_raw = pub.get('authors', '')
