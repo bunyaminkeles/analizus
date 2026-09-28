@@ -18,7 +18,7 @@ maddelerde.
 >   Plan A–G ve kullanıcı kararları aşağıda "ŞEFFAFLIK" maddesinde (A, B ✅). Kural: her adım ayrı, test + onay.
 > - Açık kullanıcı soruları: (1) "2026 yayınları tarih/DOI varsa alınsın" isteği netleşmedi (şu an 2026 yalnız yıllık
 >   grafiklerde yok); (2) Research Gap trend yöntemi (yıllık ortalama önerisi); (3) ✅ kurum grafiği TÜM kurumlar (28 Eylül 2026, WoS C1 yazar parantezi hatası da düzeltildi);
->   (4) "10 analiz" metni; (5) OpenAlex bütçe verimliliği (aramada yalnız ilk sayfa).
+>   (4) ✅ "17 analize kadar" metni + 17'lik listeler (28 Eylül 2026); (5) OpenAlex bütçe verimliliği (aramada yalnız ilk sayfa).
 > - Diğer açıklar bu listede `- [ ]`; sistem özeti `analizus.md` §14 (bibliometri kuralları), §15 (OpenAlex), §27.
 
 **A. Kod işleri (öncelik sırasıyla)**
@@ -36,6 +36,11 @@ maddelerde.
   2.0.1 kurulu; `parser._parse_bibtex` v1 API (`bibtexparser.bparser`) kullanıyor → "No module named 'bibtexparser.bparser'",
   iş "Dosyadan kayıt okunamadı" ile başarısız. Canlıda da muhtemelen aynı (kontrol edilmedi). Seçenek: `bibtexparser<2` sabitle
   (build gerekir) veya v2 API'ye geçir.
+- [ ] **Bibliometri SSS/SEO bölümü EN/DE'de Türkçe (ÖNCEDEN VAR, 28 Eylül 2026)** — anonim `/en|de/bibliometrics/` sayfası
+  `tarama_seo_content.py` (TR-only düz metin) SSS'ini gösteriyor. Ya çevrilmeli ya EN/DE'de gizlenmeli (openalex/trdizin de aynı modülü kullanıyor — kontrol).
+- [ ] **Bibliometri metin tutarsızlıkları (28 Eylül 2026)** — (1) `tarama_seo_content.py` ~346 "Bradford kanunu dağılımı" yorum
+  rehberi — raporda Bradford analizi yok; (2) landing demo kartı "Yayın Trendi + Yazarlar + Kelime Bulutu" — demo = ilk 3 grafik
+  (trend, büyüme oranı, yazarlar; veri eksikse kayar).
 - [ ] **Veri temizliği: kontrol karakterleri** — OpenAlex bazı dergi adlarında C1 kontrol karakteri gönderiyor
   ("\x98The \x9cJournal of practical nursing") → grafikte boş kutu (glif uyarısı). `_clean` kontrol karakterlerini atmalı. (28 Eylül 2026)
 - [ ] **OpenAlex hata mesajı** — kullanıcıya ham "503 Server Error… for url: https://api.openalex.org/…" gösteriliyor → çevrili,

@@ -19862,3 +19862,44 @@ msgstr "An error occurred during the calculation."
 
 msgid "Ülke ve kurum sayımında bir yayın, yazarlarının bulunduğu her ülke ve kurum için bir kez sayıldı. Kurum grafiği yalnız ülke bilgisi hiç yoksa üretilir."
 msgstr "In the country and institution counts, each publication was counted once for every country and institution of its authors. The institution chart is produced only when no country information is available at all."
+
+# Bibliometri "17 analize kadar" metinleri (28 Eylül 2026)
+
+msgid "WoS, Scopus, BibTeX veya OpenAlex verilerinizi yükleyin — 17 analize kadar, PDF rapor"
+msgstr "Upload your WoS, Scopus, BibTeX or OpenAlex data — up to 17 analyses, PDF report"
+
+msgid "17 Analize Kadar Bibliometri"
+msgstr "Up to 17 Bibliometric Analyses"
+
+msgid "Bibliometrik analiziniz tamamlandı. Demo raporu (3 grafik) ücretsiz alabilirsiniz. Tam rapor (17 analize kadar) için sipariş oluşturunuz."
+msgstr "Your bibliometric analysis is complete. You can get the demo report (3 charts) for free. Place an order for the full report (up to 17 analyses)."
+
+msgid "Tam Rapor (17 Analize Kadar)"
+msgstr "Full Report (Up to 17 Analyses)"
+
+msgid "Tam Raporda Yer Alabilecek 17 Analiz:"
+msgstr "Up to 17 Analyses in the Full Report:"
+
+msgid "Hangi analizlerin üretileceği verideki bilgilere (yıl, atıf, ülke vb.) bağlıdır."
+msgstr "Which analyses are produced depends on the information in your data (year, citations, country, etc.)."
+
+msgid "Bibliometrik analiz; bilimsel yayınların atıf sayısı, yazar işbirliği ağı, yayın trendi ve anahtar kelime dağılımı gibi nicel göstergelerini inceleyen bir araştırma yöntemidir. Tez literatür taraması, sistematik derleme ve araştırma haritalaması için vazgeçilmez bir araçtır. Analizus Bibliometrik Analiz aracı; Web of Science (WoS), Scopus, BibTeX ve OpenAlex formatlarını destekler — tek dosya yükleyerek 17'ye kadar farklı analizi saniyeler içinde gerçekleştirebilirsiniz."
+msgstr "Bibliometric analysis is a research method that examines quantitative indicators of scientific publications such as citation counts, author collaboration networks, publication trends and keyword distributions. It is an indispensable tool for thesis literature reviews, systematic reviews and research mapping. The Analizus Bibliometric Analysis tool supports Web of Science (WoS), Scopus, BibTeX and OpenAlex formats — upload a single file and run up to 17 different analyses within seconds."
+
+msgid "WoS, Scopus veya BibTeX dosyanızı yükleyin — yıllara göre yayın trendi, en çok atıf alan yazarlar, işbirliği ağı ve daha fazlası için 17'ye kadar grafik içeren PDF rapor alın."
+msgstr "Upload your WoS, Scopus or BibTeX file and get a PDF report with up to 17 charts covering publication trends over the years, the most cited authors, collaboration networks and more."
+
+msgid "Sistem otomatik olarak 17'ye kadar farklı analiz çalıştırır."
+msgstr "The system automatically runs up to 17 different analyses."
+
+msgid "TAM RAPOR (17 Analize Kadar)"
+msgstr "FULL REPORT (Up to 17 Analyses)"
+
+msgid "Tam raporunuzu (PDF) aşağıdaki bağlantıdan indirebilirsiniz:"
+msgstr "You can download your full report (PDF) from the link below:"
+
+msgid "Bibliometrik Analiz — 17 Grafiğe Kadar PDF Rapor"
+msgstr "Bibliometric Analysis — PDF Report with up to 17 Charts"
+
+msgid "Demo rapor (3 grafik) ücretsiz emaile gönderilir. Tam rapor (17 analize kadar) kayıt sayısına göre ücretlidir."
+msgstr "A demo report (3 charts) is sent free to your email. The full report (up to 17 analyses) is priced based on record count."

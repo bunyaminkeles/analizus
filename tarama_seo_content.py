@@ -319,7 +319,7 @@ TARAMA_SEO_CONTENT = {
             'bir yöntemdir. Yayın sayısı, atıf örüntüleri, yazar üretkenliği, dergi dağılımı ve '
             'kurumsal işbirliği gibi göstergeler aracılığıyla alana ilişkin bütünsel bir tablo '
             'çizilir. Analizus Bibliometrik Analiz aracı, Web of Science, Scopus veya BibTeX '
-            'formatında dışa aktarılan veri dosyalarından otomatik olarak 10 farklı analiz üretir '
+            'formatında dışa aktarılan veri dosyalarından otomatik olarak 17\'ye kadar farklı analiz üretir '
             've sonuçları tek bir PDF raporda sunar.'
         ),
         'when_to_use': (
@@ -366,7 +366,7 @@ TARAMA_SEO_CONTENT = {
             {
                 'q': 'Kaç kayıtla analiz yapabilirim?',
                 'a': (
-                    'Demo modda ilk 3 grafiği ücretsiz alırsınız; tam rapor (10 grafik) '
+                    'Demo modda ilk 3 grafiği ücretsiz alırsınız; tam rapor (17 grafiğe kadar) '
                     'için sipariş oluşturabilirsiniz. Veri seti büyüklüğü konusunda bir '
                     'üst sınır yoktur; ancak çok büyük dosyalar (10.000+ kayıt) işlem '
                     'süresini uzatabilir.'
@@ -385,10 +385,13 @@ TARAMA_SEO_CONTENT = {
             {
                 'q': 'Hangi analizler raporlara dahil?',
                 'a': (
-                    'Yayın trendi, en üretken yazarlar, en çok yayın yapan dergiler, '
-                    'ülke/kurum dağılımı, anahtar kelime bulutu, ortak yazarlık ağı, '
-                    'Lotka kanunu, Bradford kanunu, h-index dağılımı ve yıllık atıf '
-                    'trendi olmak üzere 10 farklı analiz tek PDF\'de sunulur.'
+                    'Yayın trendi ve büyüme oranı, en üretken yazarlar ve Lotka kanunu, '
+                    'anahtar kelime bulutu, eş-oluşum ağı ve zaman trendi, en çok atıf alan '
+                    'yayınlar, en çok yayın yapan dergiler, ülke/kurum dağılımı, ülke ve yazar '
+                    'işbirliği ağları, yayın türleri, atıf analizi ve h-index, yıllık atıf trendi, '
+                    'araştırma konusu kümeleri ve araştırma boşluğu haritası olmak üzere 17\'ye '
+                    'kadar analiz tek PDF\'de sunulur. Hangi analizlerin üretileceği verideki '
+                    'bilgilere bağlıdır.'
                 ),
             },
         ],

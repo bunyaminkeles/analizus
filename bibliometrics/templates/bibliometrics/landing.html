@@ -23,7 +23,7 @@
           <i class="bi bi-bar-chart-line-fill fs-2 text-info me-3"></i>
           <div>
             <h4 class="text-white mb-1 fw-bold">{% trans "Bibliometrik Analiz" %}</h4>
-            <p class="text-white-50 mb-0 small">{% trans "WoS, Scopus, BibTeX veya OpenAlex verilerinizi yükleyin — 10 analiz, PDF rapor" %}</p>
+            <p class="text-white-50 mb-0 small">{% trans "WoS, Scopus, BibTeX veya OpenAlex verilerinizi yükleyin — 17 analize kadar, PDF rapor" %}</p>
           </div>
         </div>
 
@@ -41,7 +41,7 @@
             <div class="d-flex align-items-start">
               <i class="bi bi-graph-up-arrow text-success me-2 mt-1"></i>
               <div>
-                <div class="text-white fw-semibold small">{% trans "10 Bibliometrik Analiz" %}</div>
+                <div class="text-white fw-semibold small">{% trans "17 Analize Kadar Bibliometri" %}</div>
                 <div class="text-white-50 x-small">{% trans "Trend · Yazarlar · H-index · Ağ · Kelime Bulutu..." %}</div>
               </div>
             </div>
@@ -146,7 +146,7 @@
       <div class="card-body p-4">
         <p class="text-white-50 mb-3">
           <span id="formatBadge" class="badge bg-secondary me-2"></span>
-          {% if LANGUAGE_CODE == 'tr' %}{% trans "Bibliometrik analiziniz tamamlandı. Demo raporu (3 grafik) ücretsiz alabilirsiniz. Tam rapor (10 analiz) için sipariş oluşturunuz." %}{% else %}{% trans "Bibliometrik analiziniz tamamlandı. Demo raporu (3 grafik) ücretsiz alabilirsiniz. Tam rapor için proje talebi bırakın." %}{% endif %}
+          {% if LANGUAGE_CODE == 'tr' %}{% trans "Bibliometrik analiziniz tamamlandı. Demo raporu (3 grafik) ücretsiz alabilirsiniz. Tam rapor (17 analize kadar) için sipariş oluşturunuz." %}{% else %}{% trans "Bibliometrik analiziniz tamamlandı. Demo raporu (3 grafik) ücretsiz alabilirsiniz. Tam rapor için proje talebi bırakın." %}{% endif %}
         </p>
 
         <div class="row g-3">
@@ -173,7 +173,7 @@
             <div class="card h-100 border-warning" style="background-color: #16213e;">
               <div class="card-body text-center p-4">
                 <i class="bi bi-file-earmark-richtext fs-2 text-warning mb-2 d-block"></i>
-                <h6 class="text-white mb-1">{% trans "Tam Rapor (10 Analiz)" %}</h6>
+                <h6 class="text-white mb-1">{% trans "Tam Rapor (17 Analize Kadar)" %}</h6>
                 <p class="text-white-50 small mb-3">
                   {% trans "Tüm analizler + istatistikler" %}<br>
                   <strong class="text-warning" id="priceLabel">—</strong>
@@ -188,13 +188,18 @@
 
         {# İçerilen analizler #}
         <div class="mt-4">
-          <h6 class="text-white mb-3">{% trans "Tam Raporda Yer Alan 10 Analiz:" %}</h6>
+          <h6 class="text-white mb-1">{% trans "Tam Raporda Yer Alabilecek 17 Analiz:" %}</h6>
+          <p class="text-white-50 x-small mb-3">{% trans "Hangi analizlerin üretileceği verideki bilgilere (yıl, atıf, ülke vb.) bağlıdır." %}</p>
           <div class="row g-2">
             <div class="col-md-6">
               <ul class="list-unstyled text-white-50 small mb-0">
                 <li><i class="bi bi-check text-success me-1"></i>{% trans "Yıllara Göre Yayın Trendi" %}</li>
+                <li><i class="bi bi-check text-success me-1"></i>{% trans "Yıllık Büyüme Oranı" %}</li>
                 <li><i class="bi bi-check text-success me-1"></i>{% trans "En Verimli Yazarlar (Top 15)" %}</li>
+                <li><i class="bi bi-check text-success me-1"></i>{% trans "Lotka Kanunu — Yazar Üretkenliği" %}</li>
                 <li><i class="bi bi-check text-success me-1"></i>{% trans "Anahtar Kelime Bulutu" %}</li>
+                <li><i class="bi bi-check text-success me-1"></i>{% trans "Anahtar Kelime Eş-Oluşum Ağı" %}</li>
+                <li><i class="bi bi-check text-success me-1"></i>{% trans "Anahtar Kelime Zaman Trendi" %}</li>
                 <li><i class="bi bi-check text-success me-1"></i>{% trans "En Çok Atıf Alan Yayınlar" %}</li>
                 <li><i class="bi bi-check text-success me-1"></i>{% trans "En Çok Yayın Yapılan Dergiler" %}</li>
               </ul>
@@ -202,10 +207,13 @@
             <div class="col-md-6">
               <ul class="list-unstyled text-white-50 small mb-0">
                 <li><i class="bi bi-check text-success me-1"></i>{% trans "Kurum / Ülke Dağılımı" %}</li>
+                <li><i class="bi bi-check text-success me-1"></i>{% trans "Ülke İşbirliği Ağı" %}</li>
                 <li><i class="bi bi-check text-success me-1"></i>{% trans "Yazar İşbirliği Ağı" %}</li>
                 <li><i class="bi bi-check text-success me-1"></i>{% trans "Yayın Türleri Dağılımı" %}</li>
                 <li><i class="bi bi-check text-success me-1"></i>{% trans "Atıf Analizi + H-index" %}</li>
                 <li><i class="bi bi-check text-success me-1"></i>{% trans "Yıllık Atıf Trendi" %}</li>
+                <li><i class="bi bi-check text-success me-1"></i>{% trans "Araştırma Konusu Kümeleri (Topic Map)" %}</li>
+                <li><i class="bi bi-check text-success me-1"></i>{% trans "Araştırma Boşluğu Haritası (Research Gap)" %}</li>
               </ul>
             </div>
           </div>
@@ -320,7 +328,7 @@
                 <i class="bi bi-info-circle me-2" style="color:#818cf8;"></i>{% trans "Bibliometrik Analiz Nedir?" %}
             </h2>
             <p class="text-secondary" style="line-height:1.8;font-size:.92rem;">
-                {% trans "Bibliometrik analiz; bilimsel yayınların atıf sayısı, yazar işbirliği ağı, yayın trendi ve anahtar kelime dağılımı gibi nicel göstergelerini inceleyen bir araştırma yöntemidir. Tez literatür taraması, sistematik derleme ve araştırma haritalaması için vazgeçilmez bir araçtır. Analizus Bibliometrik Analiz aracı; Web of Science (WoS), Scopus, BibTeX ve OpenAlex formatlarını destekler — tek dosya yükleyerek 10 farklı analizi saniyeler içinde gerçekleştirebilirsiniz." %}
+                {% trans "Bibliometrik analiz; bilimsel yayınların atıf sayısı, yazar işbirliği ağı, yayın trendi ve anahtar kelime dağılımı gibi nicel göstergelerini inceleyen bir araştırma yöntemidir. Tez literatür taraması, sistematik derleme ve araştırma haritalaması için vazgeçilmez bir araçtır. Analizus Bibliometrik Analiz aracı; Web of Science (WoS), Scopus, BibTeX ve OpenAlex formatlarını destekler — tek dosya yükleyerek 17'ye kadar farklı analizi saniyeler içinde gerçekleştirebilirsiniz." %}
             </p>
         </div>
         <div class="col-md-3">

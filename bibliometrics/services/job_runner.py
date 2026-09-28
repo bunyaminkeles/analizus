@@ -220,7 +220,7 @@ def _full_report_lines(site_url: str, job) -> list:
     from django.utils.translation import get_language
     lines = [
         '─' * 37,
-        gettext('TAM RAPOR (15 Analiz)'),
+        gettext('TAM RAPOR (17 Analize Kadar)'),
         '─' * 37,
         '  • ' + gettext('Yayın Trendi + Büyüme Oranı'),
         '  • ' + gettext('En Verimli Yazarlar + Lotka Kanunu'),
@@ -231,7 +231,9 @@ def _full_report_lines(site_url: str, job) -> list:
         '  • ' + gettext('Kurum / Ülke Dağılımı + İşbirliği Ağı'),
         '  • ' + gettext('Yazar İşbirliği Ağı'),
         '  • ' + gettext('Yayın Türleri + Atıf Analizi + H-index'),
-        '  • ' + gettext('Yıllık Atıf Trendi') + '\n',
+        '  • ' + gettext('Yıllık Atıf Trendi'),
+        '  • ' + gettext('Araştırma Konusu Kümeleri (Topic Map)'),
+        '  • ' + gettext('Araştırma Boşluğu Haritası (Research Gap)') + '\n',
     ]
     if (get_language() or 'tr')[:2] == 'tr':
         lines += [gettext('Sipariş oluşturmak için:'), f'  {site_url}/bibliometrics/siparis/{job.id}/\n']
@@ -388,7 +390,7 @@ def send_order_results_email(order_id: str) -> bool:
                 gettext('Kaynak: {name}').format(name=job.original_filename),
                 gettext('Toplam Kayıt: {count}').format(count=job.total_records),
                 gettext('Ödenen Tutar: {amount} TL').format(amount=order.total_price) + '\n',
-                gettext('Tam raporunuzu (15 analiz içeren PDF) aşağıdaki bağlantıdan indirebilirsiniz:'),
+                gettext('Tam raporunuzu (PDF) aşağıdaki bağlantıdan indirebilirsiniz:'),
                 f'  {job.full_pdf_url}\n',
                 gettext('Not: İndirme bağlantısı 3 gün geçerlidir.') + '\n',
                 '---',
