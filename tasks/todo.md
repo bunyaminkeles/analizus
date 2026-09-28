@@ -27,6 +27,8 @@ maddelerde.
 >   csv_wos algılandı, yazarlar doğru. dev HEAD 52fb1c4. Merge kullanıcı onayı bekliyor.
 
 **A. Kod işleri (öncelik sırasıyla)**
+- [ ] **Hetzner deploy — main a5c5984 (28 Eylül 2026 merge)**: bibliometri EN/DE + Research Gap + K1–K7 + A/B. requirements.txt
+  değişti (Babel) → `docker compose up -d --build web` ŞART; migration yok. Sonra canlıda: OpenAlex araması + bibliometri işi.
 - [ ] **Veri temizliği: kontrol karakterleri** — OpenAlex bazı dergi adlarında C1 kontrol karakteri gönderiyor
   ("\x98The \x9cJournal of practical nursing") → grafikte boş kutu (glif uyarısı). `_clean` kontrol karakterlerini atmalı. (28 Eylül 2026)
 - [ ] **OpenAlex hata mesajı** — kullanıcıya ham "503 Server Error… for url: https://api.openalex.org/…" gösteriliyor → çevrili,
