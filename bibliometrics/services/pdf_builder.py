@@ -67,6 +67,14 @@ def _register_turkish_fonts():
             _FONT_BOLD = 'DejaVuSans-Bold'
             logger.debug(f'DejaVuSans-Bold kaydedildi: {bold_path}')
 
+        # Paragraph içindeki <b> etiketi aile eşlemesiyle kalın fonta geçer
+        if _FONT_NORMAL == 'DejaVuSans':
+            from reportlab.lib.fonts import addMapping
+            addMapping('DejaVuSans', 0, 0, 'DejaVuSans')
+            addMapping('DejaVuSans', 0, 1, 'DejaVuSans')
+            addMapping('DejaVuSans', 1, 0, _FONT_BOLD)
+            addMapping('DejaVuSans', 1, 1, _FONT_BOLD)
+
     except Exception as e:
         logger.warning(f'DejaVu font kaydedilemedi, Helvetica kullanılıyor: {e}')
 
@@ -263,7 +271,8 @@ def _draw_cover(c, width, height, is_demo: bool, total_records: int, filename: s
     _draw_footer(c, width)
 
 
-def _draw_figure_page(c, width, height, fig, analysis_title: str, page_num: int, total_pages: int):
+def _draw_figure_page(c, width, height, fig, analysis_title: str, page_num: int, total_pages: int,
+                      warning: str = ''):
     _draw_page_background(c, width, height)
     _draw_header(c, width, height,
                  title=analysis_title,
@@ -278,6 +287,13 @@ def _draw_figure_page(c, width, height, fig, analysis_title: str, page_num: int,
     margin       = 0.8 * cm
     content_top  = height - 62 - margin
     content_bot  = 35 + margin
+
+    # Veri kesintisi uyarısı: footer'ın üstünde turuncu kutu, grafik alanı o kadar daralır
+    if warning:
+        box = _box(warning, width - 2 * margin, C_ORANGE, (1.0, 0.97, 0.91), font_size=8.5)
+        _, box_h = box.wrap(width - 2 * margin, height)
+        box.drawOn(c, margin, content_bot)
+        content_bot += box_h + 8
     content_w    = width - 2 * margin
     content_h    = content_top - content_bot
 
@@ -302,10 +318,165 @@ def _draw_figure_page(c, width, height, fig, analysis_title: str, page_num: int,
     c.roundRect(x, y, draw_w, draw_h, 8, fill=0, stroke=1)
 
 
+# ── Veri, Yöntem ve Kısıtlar bölümü (report_notes çıktısı) ───────
+
+def _rgb(rgb):
+    from reportlab.lib import colors
+    return colors.Color(*rgb)
+
+
+def _styles():
+    from reportlab.lib.styles import ParagraphStyle
+    body = ParagraphStyle('ax_body', fontName=_FONT_NORMAL, fontSize=9, leading=12.5, textColor=_rgb(C_DARK))
+    return {
+        'body':   body,
+        'head':   ParagraphStyle('ax_head', parent=body, fontName=_FONT_BOLD, fontSize=11.5, leading=15,
+                                 textColor=_rgb(C_NAVY)),
+        'bullet': ParagraphStyle('ax_bullet', parent=body, leftIndent=12, bulletIndent=2),
+        'muted':  ParagraphStyle('ax_muted', parent=body, fontSize=8, leading=11, textColor=_rgb(C_MUTED)),
+    }
+
+
+def _box(html: str, box_w: float, border_rgb, fill_rgb, font_size: float = 9):
+    """Tek hücreli renkli kutu (Table) — html: escape edilmiş Paragraph metni."""
+    from reportlab.platypus import Paragraph, Table, TableStyle
+    from reportlab.lib.styles import ParagraphStyle
+    st = ParagraphStyle('ax_box', fontName=_FONT_NORMAL, fontSize=font_size, leading=font_size * 1.35,
+                        textColor=_rgb(C_DARK))
+    t = Table([[Paragraph(html, st)]], colWidths=[box_w])
+    t.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, -1), _rgb(fill_rgb)),
+        ('BOX', (0, 0), (-1, -1), 1, _rgb(border_rgb)),
+        ('LEFTPADDING', (0, 0), (-1, -1), 8), ('RIGHTPADDING', (0, 0), (-1, -1), 8),
+        ('TOPPADDING', (0, 0), (-1, -1), 5), ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+    ]))
+    return t
+
+
+def _data_table(header: list, rows: list, col_widths: list, bold_last: bool = False):
+    from reportlab.platypus import Table, TableStyle
+    t = Table([header] + rows, colWidths=col_widths, hAlign='LEFT')
+    style = [
+        ('FONTNAME', (0, 0), (-1, -1), _FONT_NORMAL), ('FONTSIZE', (0, 0), (-1, -1), 9),
+        ('FONTNAME', (0, 0), (-1, 0), _FONT_BOLD), ('BACKGROUND', (0, 0), (-1, 0), _rgb(C_LIGHT)),
+        ('TEXTCOLOR', (0, 0), (-1, -1), _rgb(C_DARK)), ('ALIGN', (1, 0), (-1, -1), 'RIGHT'),
+        ('LINEBELOW', (0, 0), (-1, -1), 0.4, _rgb(C_BORDER)),
+        ('TOPPADDING', (0, 0), (-1, -1), 3), ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
+    ]
+    if bold_last:
+        style.append(('FONTNAME', (0, -1), (-1, -1), _FONT_BOLD))
+    t.setStyle(TableStyle(style))
+    return t
+
+
+def _notes_groups(notes: dict, avail_w: float) -> list:
+    """Bölümün içeriği: sayfa bölünmesinde birlikte kalması gereken flowable grupları."""
+    from xml.sax.saxutils import escape
+    from django.conf import settings
+    from django.urls import reverse
+    from django.utils.formats import number_format
+    from django.utils.translation import pgettext
+    from reportlab.platypus import Paragraph
+
+    st = _styles()
+    num = lambda n: number_format(n, force_grouping=True)
+    groups = [[Paragraph(escape(gettext(
+        'Bu bölüm, analizlerin hangi veriyle ve hangi kurallarla üretildiğini ve sonuçları yorumlarken '
+        'dikkate alınması gereken kısıtları özetler.')), st['body'])]]
+
+    for w in notes.get('source_warnings') or []:
+        groups.append([_box('<b>%s</b> %s' % (escape(gettext('Önemli:')), escape(w)),
+                            avail_w, C_ORANGE, (1.0, 0.97, 0.91))])
+
+    def section(title, first):
+        groups.append([Paragraph(escape(title), st['head']), first])
+
+    def bullets(title, texts):
+        paras = [Paragraph(t, st['bullet'], bulletText='•') for t in texts]
+        section(title, paras[0])
+        groups.extend([p] for p in paras[1:])
+
+    flow = notes.get('flow') or []
+    section(gettext('Veri Akışı'), _data_table(
+        [pgettext('bibliometri tablo', 'Adım'), pgettext('bibliometri tablo', 'Kayıt')],
+        [[label, num(n)] for label, n in flow], [avail_w * 0.7, avail_w * 0.3], bold_last=True))
+
+    coverage = notes.get('coverage') or []
+    section(gettext('Alan Doluluğu'), Paragraph(escape(gettext(
+        'Her analiz yalnız ilgili bilgisi dolu olan kayıtları kullanır.')), st['muted']))
+    groups.append([_data_table(
+        [pgettext('bibliometri tablo', 'Alan'), pgettext('bibliometri tablo', 'Kayıt'),
+         pgettext('bibliometri tablo', 'Oran')],
+        [[label, num(n), gettext('%{value}').format(value=number_format(pct, 1))] for label, n, pct, _ in coverage],
+        [avail_w * 0.5, avail_w * 0.25, avail_w * 0.25])])
+
+    bullets(gettext('Uygulanan Kurallar ve Eşikler'), [escape(r) for r in notes.get('rules') or []])
+    if notes.get('skipped'):
+        bullets(gettext('Üretilemeyen Analizler'),
+                ['<b>%s</b>: %s' % (escape(t), escape(r)) for t, r in notes['skipped']])
+    bullets(gettext('Bilinen Kısıtlar'), [escape(x) for x in notes.get('limitations') or []])
+
+    url = getattr(settings, 'SITE_URL', 'https://analizus.com') + reverse('proje_talebi') + '?source=bibliometrics'
+    groups.append([_box('%s<br/><link href="%s" color="#4E79A7">%s</link>' % (
+        escape(gettext('Bu rapordaki analizler otomatik olarak üretilmiştir ve örnek niteliğindedir. Veri '
+                       'temizliği, yazar ve kurum adlarının birleştirilmesi, birden fazla veri kaynağının '
+                       'birlikte kullanılması ve bulguların yorumlanmasını içeren kapsamlı bir bibliometrik '
+                       'çalışma için uzmanlarımızla görüşebilirsiniz:')),
+        escape(url), escape(url)), avail_w, C_ACCENT, C_LIGHT)])
+    return groups
+
+
+def _paginate(groups: list, avail_w: float, avail_h: float, gap: float = 7) -> list:
+    """Grupları sayfalara böler: [[(flowable, yükseklik), ...], ...] — grup sayfalar arasında bölünmez."""
+    pages = [[]]
+    remaining = avail_h
+    for group in groups:
+        sized = [(f, f.wrap(avail_w, avail_h)[1]) for f in group]
+        need = sum(h for _, h in sized) + gap * len(sized)
+        if need > remaining and pages[-1]:
+            pages.append([])
+            remaining = avail_h
+        pages[-1].extend(sized)
+        remaining -= need
+    return pages
+
+
+def _draw_notes_page(c, width, height, items: list, page_num: int, total_pages: int, margin: float,
+                     gap: float = 7):
+    _draw_page_background(c, width, height)
+    _draw_header(c, width, height, title=gettext('Veri, Yöntem ve Kısıtlar'),
+                 subtitle=gettext('Bibliometrik Analiz Raporu — Analizus'),
+                 page_num=page_num, total_pages=total_pages)
+    _draw_footer(c, width)
+    y = height - 62 - margin
+    for f, h in items:
+        y -= h
+        f.drawOn(c, margin, y)
+        y -= gap
+
+
+def _trend_warning(notes: dict, in_full_report: bool) -> str:
+    """Veri eski yıllardan kesildiyse zaman serisi sayfalarına yazılacak kısa uyarı (escape edilmiş)."""
+    from xml.sax.saxutils import escape
+    year = (notes or {}).get('partial_year')
+    if not year:
+        return ''
+    if in_full_report:
+        text = gettext('Veri kesintisi: yalnız en yeni kayıtlar alındı; {year} yılı kısmen, daha eski yıllar '
+                       'hiç kapsanmadı. Eski dönem eksik görünür. Ayrıntı raporun sonundaki "Veri, Yöntem ve '
+                       'Kısıtlar" bölümündedir.')
+    else:
+        text = gettext('Veri kesintisi: yalnız en yeni kayıtlar alındı; {year} yılı kısmen, daha eski yıllar '
+                       'hiç kapsanmadı. Eski dönem eksik görünür.')
+    return escape(text.format(year=year))
+
+
 # ── Public API ───────────────────────────────────────────────────
 
-def build_demo_pdf(figures: list, total_records: int = 0, filename: str = '') -> bytes:
-    """figures: [(title, Figure), ...]  — ilk 3 tanesi kullanılır"""
+def build_demo_pdf(figures: list, total_records: int = 0, filename: str = '', notes: dict = None,
+                   time_series: list = None) -> bytes:
+    """figures: [(title, Figure), ...]  — ilk 3 tanesi kullanılır
+    notes/time_series: verilirse veri kesildiğinde zaman serisi sayfalarına uyarı satırı (bölüm yok)"""
     A4, cm, canvas_mod, _ = _get_reportlab()
     width, height = A4
 
@@ -314,6 +485,8 @@ def build_demo_pdf(figures: list, total_records: int = 0, filename: str = '') ->
 
     demo_figs   = figures[:3]
     total_pages = 1 + len(demo_figs)
+    warning     = _trend_warning(notes, in_full_report=False)
+    series      = set(time_series or [])
 
     _draw_cover(c, width, height, is_demo=True,
                 total_records=total_records, filename=filename, n_analyses=len(demo_figs))
@@ -322,7 +495,8 @@ def build_demo_pdf(figures: list, total_records: int = 0, filename: str = '') ->
     for i, (title, fig) in enumerate(demo_figs, start=1):
         try:
             _draw_figure_page(c, width, height, fig, title,
-                              page_num=i + 1, total_pages=total_pages)
+                              page_num=i + 1, total_pages=total_pages,
+                              warning=warning if i - 1 in series else '')
         except Exception as e:
             logger.warning(f'PDF grafik sayfası [{title}]: {e}')
         c.showPage()
@@ -332,16 +506,26 @@ def build_demo_pdf(figures: list, total_records: int = 0, filename: str = '') ->
     return buf.read()
 
 
-def build_full_pdf(figures: list, total_records: int = 0, filename: str = '', notes: dict = None) -> bytes:
+def build_full_pdf(figures: list, total_records: int = 0, filename: str = '', notes: dict = None,
+                   time_series: list = None) -> bytes:
     """figures: [(title, Figure), ...]  — tümü kullanılır
-    notes: report_notes.build_report_notes() çıktısı — "Veri, Yöntem ve Kısıtlar" bölümü"""
+    notes: report_notes.build_report_notes() çıktısı — raporun sonuna "Veri, Yöntem ve Kısıtlar" bölümü
+    time_series: zaman serisi grafiklerinin figures içindeki sırası (veri kesintisi uyarısı için)"""
     A4, cm, canvas_mod, _ = _get_reportlab()
     width, height = A4
 
     buf = io.BytesIO()
     c = canvas_mod.Canvas(buf, pagesize=A4)
 
-    total_pages = 1 + len(figures)
+    margin     = 0.8 * cm
+    note_pages = []
+    if notes:
+        avail_w = width - 2 * margin
+        note_pages = _paginate(_notes_groups(notes, avail_w), avail_w, (height - 62 - margin) - (35 + margin))
+    warning = _trend_warning(notes, in_full_report=True)
+    series  = set(time_series or [])
+
+    total_pages = 1 + len(figures) + len(note_pages)
 
     _draw_cover(c, width, height, is_demo=False,
                 total_records=total_records, filename=filename, n_analyses=len(figures))
@@ -350,9 +534,14 @@ def build_full_pdf(figures: list, total_records: int = 0, filename: str = '', no
     for i, (title, fig) in enumerate(figures, start=1):
         try:
             _draw_figure_page(c, width, height, fig, title,
-                              page_num=i + 1, total_pages=total_pages)
+                              page_num=i + 1, total_pages=total_pages,
+                              warning=warning if i - 1 in series else '')
         except Exception as e:
             logger.warning(f'PDF grafik sayfası [{title}]: {e}')
+        c.showPage()
+
+    for j, items in enumerate(note_pages, start=1 + len(figures) + 1):
+        _draw_notes_page(c, width, height, items, page_num=j, total_pages=total_pages, margin=margin)
         c.showPage()
 
     c.save()

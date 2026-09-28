@@ -139,23 +139,25 @@ TREND_RED   = '#DC2626'
 TREND_AMBER = '#D97706'
 
 
-def run_all_analyses(records: list[dict], skipped: list = None) -> list[tuple[str, bytes]]:
+def run_all_analyses(records: list[dict], skipped: list = None, time_series: list = None) -> list[tuple[str, bytes]]:
     """
     Tüm analizleri çalıştırır.
     Her figür üretilir üretilmez PNG bytes'a çevrilip kapatılır —
     tüm Figure nesnelerini aynı anda bellekte tutmak yerine sadece
     hafif PNG bytes listesi saklanır.
     skipped: verilirse üretilemeyen analizler (başlık, neden) olarak eklenir — rapor kısıtları için.
+    time_series: verilirse zaman serisi grafiklerinin sonuç listesindeki sırası eklenir — PDF'te
+    veri kesildiğinde (OpenAlex sınırı) bu sayfalara uyarı yazmak için.
     """
     import gc as _gc
     no_year     = gettext('Tamamlanmış yıllara ait yayın yılı bilgisi yok.')
     no_author   = gettext('Yazar bilgisi yok.')
     no_citation = gettext('Atıf almış yayın yok.')
-    # (başlık, fonksiyon, üretilemezse neden) — neden fonksiyonun None döndürdüğü koşulu anlatır
+    # (başlık, fonksiyon, üretilemezse neden[, True = zaman serisi]) — neden fonksiyonun None döndürdüğü koşulu anlatır
     analyses = [
-        (gettext('Yıllara Göre Yayın Trendi'),              lambda: publication_trend(records), no_year),
+        (gettext('Yıllara Göre Yayın Trendi'),              lambda: publication_trend(records), no_year, True),
         (gettext('Yıllık Büyüme Oranı'),                    lambda: publication_growth_rate(records),
-         gettext('En az 3 farklı yayın yılı gerekir.')),
+         gettext('En az 3 farklı yayın yılı gerekir.'), True),
         (gettext('En Verimli Yazarlar (Top 15)'),            lambda: top_authors(records), no_author),
         (gettext('Lotka Kanunu — Yazar Üretkenliği'),        lambda: lotka_law(records), no_author),
         (gettext('Anahtar Kelime Bulutu'),                   lambda: keyword_cloud(records),
@@ -163,7 +165,7 @@ def run_all_analyses(records: list[dict], skipped: list = None) -> list[tuple[st
         (gettext('Anahtar Kelime Eş-Oluşum Ağı'),           lambda: keyword_cooccurrence(records),
          gettext('Aynı yayında birlikte geçen anahtar kelime yok.')),
         (gettext('Anahtar Kelime Zaman Trendi'),             lambda: keyword_trend(records),
-         gettext('Anahtar kelime bilgisi ve en az 3 farklı yayın yılı gerekir.')),
+         gettext('Anahtar kelime bilgisi ve en az 3 farklı yayın yılı gerekir.'), True),
         (gettext('En Çok Atıf Alan Yayınlar (Top 10)'),      lambda: top_cited(records), no_citation),
         (gettext('En Çok Yayın Yapılan Dergiler'),           lambda: top_journals(records),
          gettext('Dergi / kaynak bilgisi yok.')),
@@ -177,14 +179,14 @@ def run_all_analyses(records: list[dict], skipped: list = None) -> list[tuple[st
          gettext('Yayın türü bilgisi yok.')),
         (gettext('Atıf Analizi ve H-index'),                 lambda: citation_analysis(records), no_citation),
         (gettext('Yıllık Atıf Trendi'),                      lambda: annual_citation_trend(records),
-         gettext('Yayın yılı bilinen ve atıf almış yayın yok.')),
+         gettext('Yayın yılı bilinen ve atıf almış yayın yok.'), True),
         (gettext('Araştırma Konusu Kümeleri (Topic Map)'),    lambda: topic_map(records),
          gettext('Birlikte geçen en az 4 anahtar kelimeden oluşan küme bulunamadı.')),
         (gettext('Araştırma Boşluğu Haritası (Research Gap)'), lambda: research_gap(records),
-         gettext('Yayın yılı bilgisi ve en az 3 yayında geçen en az 5 anahtar kelime gerekir.')),
+         gettext('Yayın yılı bilgisi ve en az 3 yayında geçen en az 5 anahtar kelime gerekir.'), True),
     ]
     results = []
-    for title, fn, reason in analyses:
+    for title, fn, reason, *is_series in analyses:
         try:
             fig = fn()
             if fig is None:
@@ -199,6 +201,8 @@ def run_all_analyses(records: list[dict], skipped: list = None) -> list[tuple[st
                 plt.close(fig)
                 del fig
                 _gc.collect()
+                if is_series and time_series is not None:
+                    time_series.append(len(results))
                 results.append((title, png_bytes))
         except Exception as e:
             logger.warning(f'Analiz başarısız [{title}]: {e}')

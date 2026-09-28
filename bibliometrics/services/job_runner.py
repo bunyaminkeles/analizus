@@ -76,7 +76,8 @@ def _execute_job_body(job_id: str) -> None:
             return
 
         skipped = []
-        figures = run_all_analyses(records, skipped=skipped)
+        time_series = []
+        figures = run_all_analyses(records, skipped=skipped, time_series=time_series)
         if not figures:
             job.mark_failed(gettext('Analizler üretilemedi. Veri yetersiz olabilir.'))
             return
@@ -86,9 +87,10 @@ def _execute_job_body(job_id: str) -> None:
             'format': dict(BibliometricJob.FORMAT_CHOICES).get(fmt, fmt),
             'files': len(contents),
         })
-        demo_pdf_bytes = build_demo_pdf(figures[:3], total_records=len(records), filename=job.original_filename)
+        demo_pdf_bytes = build_demo_pdf(figures[:3], total_records=len(records), filename=job.original_filename,
+                                        notes=notes, time_series=time_series)
         full_pdf_bytes = build_full_pdf(figures, total_records=len(records), filename=job.original_filename,
-                                        notes=notes)
+                                        notes=notes, time_series=time_series)
 
         n_figures = len(figures)
         del figures
@@ -150,7 +152,8 @@ def _execute_job_openalex_body(job_id: str) -> None:
             return
 
         skipped = []
-        figures = run_all_analyses(records, skipped=skipped)
+        time_series = []
+        figures = run_all_analyses(records, skipped=skipped, time_series=time_series)
         if not figures:
             job.mark_failed(gettext('Analizler üretilemedi. Veri yetersiz olabilir.'))
             return
@@ -162,9 +165,10 @@ def _execute_job_openalex_body(job_id: str) -> None:
             'fetched': len(alex_job.all_results),
             'max_records': SiteSettings.load().scrap_max_records or 5000,
         })
-        demo_pdf_bytes = build_demo_pdf(figures[:3], total_records=len(records), filename=job.original_filename)
+        demo_pdf_bytes = build_demo_pdf(figures[:3], total_records=len(records), filename=job.original_filename,
+                                        notes=notes, time_series=time_series)
         full_pdf_bytes = build_full_pdf(figures, total_records=len(records), filename=job.original_filename,
-                                        notes=notes)
+                                        notes=notes, time_series=time_series)
 
         n_figures = len(figures)
         del figures

@@ -29,24 +29,25 @@ def _has_year(r, last_year):
 
 
 def _field_coverage(records, last_year):
-    """[(alan adı, dolu kayıt sayısı, yüzde)] — analizlerin kullandığı alanlar."""
+    """[(alan adı, dolu kayıt sayısı, yüzde, eksikliği kısıt mı)] — analizlerin kullandığı alanlar.
+    Atıf 0 eksik veri değil gerçek değerdir; DOI yalnız tekrar tespitinde kullanılır — ikisi kısıt sayılmaz."""
     checks = [
         (gettext('Yayın yılı'),        lambda r: _has_year(r, last_year)),
         (gettext('Yazar'),             lambda r: any(a.strip() for a in r.get('authors') or [])),
         (gettext('Anahtar kelime'),    lambda r: any(k.strip() for k in r.get('keywords') or [])),
         (gettext('Özet'),              lambda r: bool((r.get('abstract') or '').strip())),
-        (gettext('Atıf (en az 1)'),    lambda r: (r.get('cited_by') or 0) > 0),
+        (gettext('Atıf (en az 1)'),    lambda r: (r.get('cited_by') or 0) > 0, False),
         (gettext('Dergi / kaynak'),    lambda r: bool((r.get('journal') or '').strip())),
         (gettext('Ülke'),              lambda r: bool((r.get('country') or '').strip())),
         (gettext('Kurum'),             lambda r: bool((r.get('institution') or '').strip())),
         (gettext('Yayın türü'),        lambda r: bool((r.get('pub_type') or '').strip())),
-        (gettext('DOI'),               lambda r: bool((r.get('doi') or '').strip())),
+        (gettext('DOI'),               lambda r: bool((r.get('doi') or '').strip()), False),
     ]
     total = len(records) or 1
     rows = []
-    for label, has in checks:
+    for label, has, *flag in checks:
         n = sum(1 for r in records if has(r))
-        rows.append((label, n, round(100 * n / total, 1)))
+        rows.append((label, n, round(100 * n / total, 1), flag[0] if flag else True))
     return rows
 
 
@@ -79,11 +80,12 @@ def _source_warnings(records, source):
     fetched = source.get('fetched', 0)
     max_records = source.get('max_records') or 0
     warnings = []
+    years = [r['year'] for r in records if r.get('year') and r['year'] > 1900]
+    oldest_year = min(years) if years else None
     partial_year = None
 
     if found > fetched and max_records and fetched >= max_records:
-        years = [r['year'] for r in records if r.get('year') and r['year'] > 1900]
-        partial_year = min(years) if years else None
+        partial_year = oldest_year
         if partial_year:
             warnings.append(gettext(
                 'OpenAlex\'te {found} kayıt bulundu; çekim sınırı nedeniyle yalnız en yeni {fetched} kayıt '
@@ -96,6 +98,7 @@ def _source_warnings(records, source):
                 'OpenAlex\'te {found} kayıt bulundu; çekim sınırı nedeniyle yalnız en yeni {fetched} kayıt alındı.'
             ).format(found=found, fetched=fetched))
     elif fetched < min(found, max_records or found):
+        partial_year = oldest_year
         warnings.append(gettext(
             'OpenAlex\'ten veri çekimi tamamlanamadı: {found} kaydın yalnız {fetched} tanesi alınabildi. '
             'Eksik kısım en eski yıllara aittir; zaman içindeki değişimi gösteren analizler bu nedenle '
@@ -152,8 +155,9 @@ def _limitations(coverage, current_year_count, last_year):
         limitations.append(gettext(
             '{n} kayıt içinde bulunulan yıla ({year}) ait; bu kayıtlar zaman serilerinde yer almaz, '
             'diğer analizlere dahildir.').format(n=current_year_count, year=last_year + 1))
-    # DOI hiçbir analizde kullanılmaz (yalnız tekrar tespiti) — son satır, kısıt sayılmaz
-    for label, n, pct in coverage[:-1]:
+    for label, n, pct, is_limitation in coverage:
+        if not is_limitation:
+            continue
         if n == 0:
             limitations.append(gettext(
                 '"{field}" bilgisi hiçbir kayıtta yok; bu bilgi analizlerde kullanılamadı.'

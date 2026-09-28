@@ -298,7 +298,10 @@ maddelerde.
             (OpenAlex: bulunan > çekilen → "en yeni N kayıt, YYYY öncesi kapsam dışı"; çekilen < min(bulunan, sınır) →
             "çekim eksik kaldı").
       - [x] D (28 Eylül 2026, uçtan uca test: OpenAlex + 2 dosyalı Scopus CSV, rollback) `build_full_pdf(..., notes=)` parametresi eklendi (E'ye kadar kullanılmıyor). Eski plan: `job_runner.py`: iki akışta (dosya / OpenAlex) `stats` + `skipped` + kaynak bilgisi → `build_full_pdf`.
-      - [ ] E `pdf_builder.py`: tam raporun sonuna "Veri, Yöntem ve Kısıtlar" sayfası(ları) + kapanış notu (TR sipariş,
+      - [x] E (28 Eylül 2026, test: sınır aşan/eksik çekim/dosya+üretilemeyen analiz, job_runner uçtan uca, sayfa görüntüleri kontrol)
+            Kullanıcı kararları: kapanış notu HER DİLDE proje talebi; demo'ya yalnız uyarı satırı (bölüm yok); zaman serisi
+            bayrağı `run_all_analyses(time_series=)` (başlık karşılaştırma yok). Kesinti uyarısı eksik çekimde de çıkar
+            (`partial_year`). Atıf 0 ve DOI doluluk kısıtı sayılmaz. DejaVu `<b>` eşlemesi eklendi. Eski plan: `pdf_builder.py`: tam raporun sonuna "Veri, Yöntem ve Kısıtlar" sayfası(ları) + kapanış notu (TR sipariş,
             EN/DE proje talebi); sınır aşıldıysa trend grafiklerinin sayfasına kısa uyarı satırı. Demo PDF değişmez.
       - [ ] F `locale/en|de` po+mo (yeni msgid'ler elle).
       - [ ] G Test: dosya + OpenAlex (sınır aşan/aşmayan) sentetik iş, 3 dil PDF, metin katmanında TR kalıntısı kontrolü.
