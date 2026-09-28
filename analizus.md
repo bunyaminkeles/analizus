@@ -1031,7 +1031,11 @@ def _broadcast_chat(uid1, uid2, event):
 - **17 analiz tanımlı** (`analyzer.run_all_analyses`); veri yetersizse bazıları üretilmez — pratikte ~15. İş modeli: Demo
   (3 grafik, ücretsiz) / Tam (tümü, ücretli; EN/DE'de sipariş yerine proje talebi).
 - S3 paths: `bibliometrics/demo/`, `bibliometrics/full/`
-- **Tutarsızlık (içerik kararı bekliyor):** sayfa/promo "10 analiz / 10 grafik" diyor; PDF kapağı gerçek sayıyı yazıyor.
+- **Metinler "17 analize kadar"** (28 Eylül 2026, kullanıcı kararı): landing/sipariş/promo/e-posta/OpenAlex sayfası +
+  17 başlıklı listeler + "hangi analizlerin üretileceği veriye bağlıdır" notu. Açık: SSS/SEO (`tarama_seo_content.py`)
+  TR-only düz metin ve EN/DE anonim sayfada Türkçe görünüyor; "Bradford" yorum cümlesi + demo kartı içeriği (todo).
+- **BibTeX:** `bibtexparser==1.4.4` SABİT (kod v1 API `bibtexparser.bparser`; sürümsüzken 2.x kurulup tüm .bib yüklemeleri
+  "Dosyadan kayıt okunamadı" ile düşüyordu — 28 Eylül 2026). Anahtar kelime: `;`/`|` yoksa `,` ile bölünür (Zotero/Mendeley/Scholar).
 - **Akış:** dosya yükleme veya OpenAlex köprüsü (`/bibliometrics/from-openalex/<id>/` → `parse_openalex_json`, en az 100
   kayıt) → `job_queue` arka plan işi (kullanıcı dilinde) → analyzer → `pdf_builder` (demo + tam PDF AYNI çalıştırmada
   üretilir) → e-posta. Semantic Scholar köprüsü YOK (planlı, migration gerekir; §27).
@@ -1042,12 +1046,19 @@ def _broadcast_chat(uid1, uid2, event):
   - Zaman serileri (yayın trendi, büyüme/CAGR, kelime trendi, yıllık atıf, Research Gap) `_last_complete_year()` =
     bugün−1 ile biter (bitmemiş yıl yapay düşüş gösterir); yayın olmayan yıllar 0, önceki yılı 0 olan yılın büyümesi boş.
   - Ülke: tam sayım (`_record_countries`; yayın başına her ülke bir kez; ISO-2 kodu Babel ile rapor dilinde ada çevrilir).
-    Kurum grafiği yayın başına İLK kurumu sayar; ülke verisi varsa kurum yerine ülke grafiği çizilir.
+    Kurum de tam sayım (`_record_institutions`; WoS C1 `[Yazar; Yazar] Kurum` köşeli parantezleri atılıp `;` ile bölünür;
+    kurum adları standartlaştırılmaz — bölüm/şehir farkı ayrı kurum). Ülke verisi varsa kurum yerine ülke grafiği çizilir.
   - OpenAlex: kurum/ülke yalnız `institution_list` / `country_list` alanlarından (28 Eylül 2026 öncesi aramalarda yok →
     kurum/ülke grafikleri üretilmez); "concepts" (geniş alan etiketleri) yalnız yayının anahtar kelimesi yoksa eklenir.
   - Research Gap: kadran etiketleri eksen oranında (veri koordinatı PDF görselini 15000 px'e uzatıyordu), gölge medyana göre.
-- **Kısıtlar bölümü (yapım aşamasında, §27):** parser `stats` (başlıksız/tekrar sayıları) ve `run_all_analyses(skipped=)`
-  (üretilemeyen analiz + neden) HAZIR ama raporda henüz gösterilmiyor; sıradaki `report_notes.py` + PDF sonu sayfası.
+- **"Veri, Yöntem ve Kısıtlar" bölümü (28 Eylül 2026, canlıda):** parser `stats` + `run_all_analyses(skipped=, time_series=)`
+  → `report_notes.build_report_notes(records, stats, skipped, source)` (PDF'ten bağımsız dict: flow, coverage, rules,
+  skipped, limitations, source_warnings, partial_year; eşik sayıları analyzer varsayılanlarından `inspect` ile) →
+  `pdf_builder.build_full_pdf(..., notes=, time_series=)` tam raporun SONUNA sayfa(lar) (platypus Paragraph/Table, grup
+  bazlı sayfalama) + kapanış notu (HER DİLDE proje talebi linki). OpenAlex'te bulunan > çekilen (sınır) veya eksik çekimde
+  zaman serisi sayfalarına turuncu "Veri kesintisi" kutusu — demo PDF'te de (demo'da bölüm yok). Atıf 0 ve DOI doluluk
+  kısıtı sayılmaz. `source` job_runner'da: dosya `{'kind':'file'}`, OpenAlex `{found, fetched, max_records}` (sınır şimdiki
+  `SiteSettings` değeri). DejaVu `<b>` için `addMapping` gerekli (yoksa kalın görünmez).
 - **EN/DE:** canlıda (28 Eylül 2026): URL'ler i18n, arka plan işi kullanıcı dilinde (`_in_user_language`), PDF EN/DE, sayfa
   (JS `T` sözlüğü + URL sentinel), EN/DE'de sipariş → proje talebi (`order_page` yönlendirir).
 
@@ -1072,9 +1083,13 @@ def _broadcast_chat(uid1, uid2, event):
 - 240M+ akademik kayıt, ücretsiz API
 - Cursor-based pagination, `per_page=200` (doküman max 100 diyor, pratikte 200 çalışıyor), en fazla
   `SiteSettings.scrap_max_records` (varsayılan 5000) sonuç — **`sort=publication_year:desc` → sınır aşılırsa yalnız EN YENİ
-  N kayıt çekilir** (eski yıllar kesilir; bibliometri raporunda bu kısıt yazılacak, §14). Sayfalama hatasında kısmi veriyle devam eder.
+  N kayıt çekilir** (eski yıllar kesilir; bibliometri raporu bunu yazıyor, §14). Sayfalama hatasında kısmi veriyle devam eder.
 - `OPENALEX_EMAIL` (polite pool) + **`OPENALEX_API_KEY`** (28 Eylül 2026'dan beri tanımlı). Maliyet: arama $1 / 1.000 istek,
   liste+filtre $0,10 / 1.000; ücretsiz anahtar $1/gün. 5000 kayıtlık arama = 25 istek → ≈40 tam arama/gün.
+  **Karar (28 Eylül 2026): aramada yalnız ilk sayfa, devamı ihtiyaçta** (bibliometri işi / TR sipariş onayı) — plan §27, henüz uygulanmadı.
+- Tam veri (`all_results`, S3 `openalex/full/`) yalnız bibliometri + TR sipariş e-postasında kullanılır; sonuç sayfası,
+  Excel/TXT indirme ve demo e-postası `demo_results` (ilk 5). S3 dosyaları 7 günde temizlenir → 7 günden eski siparişi
+  onaylayınca e-postada link YOK (önceden var; yeni akışta onay anında üretilecek).
 - 503'te bekleme YOK (yalnız 429'da); kullanıcıya ham hata + API URL'si gösteriliyor (todo).
 - Sonuç kaydı (`_parse_work`): `institutions` (', ' birleşik metin, dışa aktarım için) + `institution_list` / `country_list` (bibliometri için)
 - S3 paths: `openalex/demo/`, `openalex/full/`, `openalex/orders/`
@@ -1581,6 +1596,9 @@ with connection.cursor() as c:
 | E-posta kullanıcıya yanlış dilde gidiyor (TR sitede işlem, e-posta Almanca) | E-postalar `recipient_language(user)` → `Profile.preferred_language` ile gider, isteğin dili ile değil. Tercih `/en/` `/de/` ziyaretinde yazılır; 28 Eylül 2026'ya kadar öneksiz TR sayfalar tercihi hiç `tr`'ye döndürmüyordu. Artık çok dilli sayfanın TR sürümü (GET, `/en`+yol çözülüyorsa) `tr` yazar; yalnız TR sayfalar (forum/blog) yazmaz — bilinçli. `/api/…` istekleri öneksiz olduğundan istek dili güvenilir değildir; tercih kullanılmalı. |
 | Mobilde navbar hamburgeri görünmüyor (yalnız giriş yapınca / dar telefonda) | Öğeler `flex-shrink:0`, taşan kısım sağdan ekran dışına kayar; `scrollWidth` viewport'a eşit göründüğü için yatay kaydırma da çıkmaz. Ölçüm: Playwright + kayıtlı session çerezi (`SessionStore` ile oluştur), 320/360/390/414 px'te `#navHamburger` `getBoundingClientRect().right <= innerWidth`. Kısa pencerede (≈70 px) sağ alttaki AI asistan düğmesi hamburgerin üstüne biner — ölçüm hatası, pencereyi ≥600 px yap. Bütçe: §10. |
 | `STATICFILES_STORAGE` ayarlı ama dosya adları hash'siz; CSS değişikliği tarayıcıda 1 yıl görünmüyor | Django 5.1+ `STATICFILES_STORAGE`/`DEFAULT_FILE_STORAGE`'ı okumaz; yalnız `STORAGES` dict'i. 27 Eylül 2026'da `STORAGES['staticfiles']` whitenoise manifest yapıldı (§10). `DEFAULT_FILE_STORAGE` hâlâ ölü ayar — `storage=` verilmemiş FileField yerel diske yazar (todo'da açık). |
+| BibTeX yüklemesi "Dosyadan kayıt okunamadı"; log'da `No module named 'bibtexparser.bparser'` | `requirements.txt`'te sürümsüz paket → build'de major sürüm (2.x) geldi, API değişti. `bibtexparser==1.4.4` sabitlendi (28 Eylül 2026). **Kural:** API'sine doğrudan bağlı olunan paketlere üst sınır/sabit sürüm ver; imaj yeniden build edilince etkilenen akışı uçtan uca dene. |
+| `compilemessages` → "Can't find msgfmt" / `import polib` yok (container) | Dockerfile'da gettext/polib yok; önceki elle kurulum imaj yeniden build'de (28 Eylül 2026) kayboldu. Derleme host'ta: `msgfmt -c -o locale/<dil>/LC_MESSAGES/django.mo locale/<dil>/LC_MESSAGES/django.po` (çıkış kodu 0 olmalı; başlık uyarıları önceden var). polib gerekirse `docker compose exec web pip install polib` (geçici). |
+| Tüm sayfalar birden 500 / URL modülü import hatası (dev) | Python kaynağında tek tırnaklı string içine Türkçe kesme işareti ("17'ye") kaçırılmadan yazıldı → SyntaxError, `urls` import edilemedi. **Kural:** Türkçe metin düzenledikten sonra `python -c "import ast; ast.parse(open(f).read())"`; tek tırnaklı string'de `\'`. |
 
 ---
 
@@ -1859,6 +1877,11 @@ with connection.cursor() as c:
   Research Gap görsel/kadran düzeltmeleri; K1 yazar ayırma, K2 ortalama/medyan atıf, K3 OpenAlex kurumları, K4 OpenAlex
   ülke verisi + Babel + tam sayım, K5 boş yıllar, K6 bitmemiş yıl, K7 concepts yedek; parser `stats` + `skipped` (kısıtlar
   bölümü için). Doğrulama: pytest 61/61, gerçek OpenAlex verisi (575 kayıt) bağımsız hesapla birebir. OpenAlex API anahtarı eklendi.
+- **Bibliometri "Veri, Yöntem ve Kısıtlar" + BibTeX — canlıda (28 Eylül 2026 gece, main ab57dcd, `--build`):** plan A–G
+  (§14), 62 msgid EN/DE; BibTeX sürüm sabitleme + virgüllü anahtar kelime. Doğrulama: 3 senaryo × 3 dil × tam/demo PDF,
+  metin katmanında TR kalıntı taraması, job_runner uçtan uca (S3/e-posta mock, rollback); canlıda bibtexparser 1.4.4 + import.
+- **Sonrası (28 Eylül 2026 gece, dev'de, main'e alınmadı):** kurum grafiği tüm kurumlar (050f1a1), "17 analize kadar"
+  metinleri + 17'lik listeler (a4d7438).
 
 ### Sıradaki Görevler
 
@@ -1873,16 +1896,19 @@ with connection.cursor() as c:
 - **Referanslar sayfası** — `/referanslar/` + ana sayfa güven sayaçları (`SuccessStory` modeli mevcut)
 
 #### Çok Dilli (EN/DE) ve Bibliometri — 28 Eylül 2026 durumu (tam liste: `tasks/todo.md` "AÇIK İŞLER — TEK LİSTE")
-- **Bibliometri sıradaki — "Veri, Yöntem ve Kısıtlar" bölümü (kullanıcı kararı 28 Eylül 2026):** analizler "örnek"
-  niteliğinde; kısıtlar tam raporun SONUNDA (veri akışı, alan doluluğu, kurallar/eşikler, üretilemeyen analizler,
-  5000 sınırı "en yeni N kayıt" uyarısı) + "kapsamlı analiz için uzmanlarla görüşün" (TR sipariş, EN/DE proje talebi).
-  Plan A–G `tasks/todo.md` "ŞEFFAFLIK" maddesinde; A, B bitti → **C `report_notes.py`'den devam.**
-- **Bibliometri diğer:** Research Gap trend yöntemi (dönem uzunlukları farklı → yıllık ortalama önerisi, karar); kurum
-  grafiği ilk kurum mu tüm kurumlar mı (karar); "10 analiz" metni (karar); yükleme hatasında "file: " öneki; S2 →
+- **SIRADAKİ — OpenAlex aramada yalnız ilk sayfa (kullanıcı kararı 28 Eylül 2026; plan onay bekliyor):** arama 1 istek
+  (per_page 200; ≤200 sonuç tek istekte tam). Devamı: bibliometri işi analizden önce `ensure_full_results(job)`; TR sipariş
+  onayında tam veri çek + TXT + S3 + e-posta — admin isteği yerine arka plan kuyruğu (yeni iş türü; ~30–60 sn). "Tam mı?"
+  = `len(all_results) >= min(total_results, max_records)` (migration yok). Dosyalar: `openalex/services/scraper.py`,
+  `openalex/services/job_runner.py`, `bibliometrics/services/job_runner.py`, `openalex/admin.py`, `analizdestek/job_queue.py`.
+  Açık kararlar: (a) sipariş TXT'si `abstract_count` ile sınırlansın mı (öneri evet; şu an tüm sonuçlar); (b) bütçe dolunca
+  "talep bırakın" yedeği şimdi mi sonra mı (öneri sonra, önce istek sayısı ölç). Kullanıcı "devamı için talep formu?" diye
+  sordu → cevap: gerek yok, otomatik akış korunur; form yalnız bütçe yedeği.
+- **Bibliometri diğer:** Research Gap trend yöntemi (dönem uzunlukları farklı → yıllık ortalama önerisi, karar);
+  SSS/SEO EN/DE'de Türkçe + "Bradford"/demo kartı metinleri; yükleme hatasında "file: " öneki; S2 →
   bibliometri (migration); OpenAlex dedup incelemesi; OpenAlex dergi adlarında kontrol karakteri (`_clean`); 2026
   sorusu (kullanıcının "tarih/DOI varsa alınsın" isteği netleşmedi).
-- **OpenAlex:** ham hata mesajı → çevrili mesaj + 503 bekleme; bütçe verimliliği önerisi (aramada yalnız ilk sayfa, tam
-  veri bibliometri/indirme istenince — karar, önce canlıda günlük arama sayısı ölçülebilir).
+- **OpenAlex:** ham hata mesajı → çevrili mesaj + 503 bekleme; dergi adlarında kontrol karakteri.
 - **Planlanan kazıma modülleri** (`BASE_PubMed_Integration_Project.md`, ayrı oturum): **PubMed TR/EN/DE üç dilde,
   BASE yalnız DE.** `/tarama/` hub'ına kart olarak eklenir (hub'daki `intl` bayrağı DE-only'i ifade etmez — dil listesi gerekebilir).
 - **EN/DE açıkları:** Impressum (DE yasal sayfa — şirket bilgisi kullanıcı/avukattan); C grubu çevirisi (Tableau;
@@ -1923,9 +1949,9 @@ with connection.cursor() as c:
 **Önceki (25–26 Eylül 2026):** Çok dilli yayın + gizlilik turu `main`'e alındı ve Hetzner'e deploy edildi (132327f;
 migration 0153–0155 container açılışında deploy.sh ile uygulandı; DB yedeği alındı; kontroller OK).
 
-**En son (28 Eylül 2026):** EN/DE **yayında** (26 Eylül'den beri); yayın sonrası tur main'de ve Hetzner'de (son commit
-cd68fa1, kullanıcı deploy etti, canlıda doğrulandı; migration 0156–0159 uygulandı). `dev`'de yalnız bibliometri EN/DE
-bekliyor. Yeni oturum: `tasks/todo.md` başındaki "YENİ OTURUM BURADAN BAŞLA" notu + "AÇIK İŞLER — TEK LİSTE";
+**En son (28 Eylül 2026 gece):** canlı = main **ab57dcd** (bibliometri kısıtlar bölümü + BibTeX; kullanıcı deploy etti,
+doğrulandı). `dev`'de main'e alınmamış: 050f1a1 (tüm kurumlar), a4d7438 ("17 analize kadar") + todo commit'leri — ikisi
+de migration'sız, `requirements.txt` değişmedi (restart yeter). Sıradaki: OpenAlex yalnız ilk sayfa (§27 "SIRADAKİ"). Yeni oturum: `tasks/todo.md` başındaki "YENİ OTURUM BURADAN BAŞLA" notu + "AÇIK İŞLER — TEK LİSTE";
 özet yukarıda "Çok Dilli (EN/DE) ve Bibliometri". Ayrıntı: §28.
 
 ---
@@ -1993,7 +2019,9 @@ bekliyor. Yeni oturum: `tasks/todo.md` başındaki "YENİ OTURUM BURADAN BAŞLA"
 1. Metni işaretle → `makemessages -l en -l de --ignore=venv --ignore=node_modules` (container içinde).
 2. Çevirileri polib ile uygula; fuzzy temizlerken `previous_msgid`, `previous_msgid_plural`, `previous_msgctxt`
    üçünü de None yap (yoksa msgfmt "syntax error" → hiçbir çeviri derlenmez).
-3. `compilemessages -l en -l de` — çıktıda `error` ara; `docker compose restart web`.
+3. `compilemessages -l en -l de` — çıktıda `error` ara; `docker compose restart web`. **Container'da msgfmt yoksa**
+   (imaj yeniden build edildiyse — §26) host'ta `msgfmt -c -o …/django.mo …/django.po`. Birkaç yeni giriş için po sonuna
+   düz metin ekle (polib `save()` tüm dosyayı yeniden sarar); `git diff --stat` beklenenden büyükse commit etme.
 4. Doğrula: test Client ile render (`transaction.atomic()` + rollback), inline JS `node --check`, JSON-LD
    `json.loads`, PDF metni `pdftotext`. Türkçe arama yalnız Türkçe harfe bakarsa "Yorum", "Madde", "Hesapla" gibi
    metinler kaçar — tüm metin sabitlerini listeleyip gözle ayıkla.

@@ -10,16 +10,21 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
-> **YENİ OTURUM BURADAN BAŞLA (28 Eylül 2026 akşam):**
-> - **Canlı = main a5c5984 = dev** (aynı geçmiş; cherry-pick ayrışması bitti → merge'ler yine fast-forward olabilir).
->   Canlıda: bibliometri EN/DE (Aşama 1–4), Research Gap düzeltmeleri, doğruluk düzeltmeleri K1–K7, parser `stats` +
->   `run_all_analyses(skipped=)`. Babel build edildi, `OPENALEX_API_KEY` canlı+yerelde tanımlı. Dışarıdan doğrulandı.
-> - **SIRADAKİ İŞ: bibliometri "Veri, Yöntem ve Kısıtlar" bölümü — C adımı (`bibliometrics/services/report_notes.py`).**
->   Plan A–G ve kullanıcı kararları aşağıda "ŞEFFAFLIK" maddesinde (A, B ✅). Kural: her adım ayrı, test + onay.
-> - Açık kullanıcı soruları: (1) "2026 yayınları tarih/DOI varsa alınsın" isteği netleşmedi (şu an 2026 yalnız yıllık
->   grafiklerde yok); (2) Research Gap trend yöntemi (yıllık ortalama önerisi); (3) ✅ kurum grafiği TÜM kurumlar (28 Eylül 2026, WoS C1 yazar parantezi hatası da düzeltildi);
->   (4) ✅ "17 analize kadar" metni + 17'lik listeler (28 Eylül 2026); (5) OpenAlex bütçe verimliliği (aramada yalnız ilk sayfa).
-> - Diğer açıklar bu listede `- [ ]`; sistem özeti `analizus.md` §14 (bibliometri kuralları), §15 (OpenAlex), §27.
+> **YENİ OTURUM BURADAN BAŞLA (28 Eylül 2026 gece):**
+> - **Canlı = main ab57dcd** (bibliometri "Veri, Yöntem ve Kısıtlar" A–G + BibTeX `bibtexparser==1.4.4`; `--build` ile
+>   deploy edildi, doğrulandı). **dev main'den ileride:** 050f1a1 (kurum grafiği tüm kurumlar + WoS C1 düzeltmesi),
+>   a4d7438 ("17 analize kadar" metinleri + 17'lik listeler, EN/DE) + todo/doküman commit'leri — migration yok,
+>   requirements değişmedi. Henüz merge edilmedi (kullanıcı "merge et" demeli).
+> - **SIRADAKİ İŞ: OpenAlex aramada yalnız ilk sayfa, devamı ihtiyaçta** (kullanıcı kararı; PLAN ONAY BEKLİYOR) — plan ve
+>   dosya listesi `analizus.md` §27 "SIRADAKİ". Önce kullanıcıya iki karar sor: (a) sipariş TXT'si `abstract_count` ile
+>   sınırlansın mı (öneri evet), (b) bütçe dolunca "talep bırakın" yedeği şimdi mi (öneri sonra). Onaydan sonra uygula.
+> - Sonra: BASE/PubMed (kullanıcı sordu; `BASE_PubMed_Integration_Project.md` — git'te değil, başka kaynaktan tasarım
+>   taslağı). Başlamadan netleştir: (1) mimari — taslaktaki ortak `base_pubmed` app + `HarvestedRecord` tablosu yerine
+>   mevcut OpenAlex kalıbı (app başına `*SearchJob.all_results` + parser köprüsü) önerildi; (2) BASE erişimi kayıt + IP
+>   onayı ve ticari kullanım kısıtı olabilir — DOĞRULANMADI, önce kontrol. Karar: PubMed TR/EN/DE, BASE yalnız DE.
+> - Açık kullanıcı soruları: (1) "2026 yayınları tarih/DOI varsa alınsın" netleşmedi; (2) Research Gap trend yöntemi
+>   (yıllık ortalama önerisi). Kapananlar: kurum grafiği ✅, "17 analize kadar" ✅, OpenAlex ilk sayfa → karar verildi (plan).
+> - Diğer açıklar bu listede `- [ ]`; sistem özeti `analizus.md` §14 (bibliometri), §15 (OpenAlex), §26, §27.
 
 **A. Kod işleri (öncelik sırasıyla)**
 - [x] **Hetzner deploy — main ab57dcd YAPILDI (28 Eylül 2026 gece; doğrulandı: bibtexparser 1.4.4, import ok, web log hata 0, /, /bibliometrics/ TR/EN/DE 200)**: bibliometri "Veri, Yöntem ve
@@ -228,7 +233,7 @@ maddelerde.
       sayı gerçek grafik sayısından. Test: 160 kayıt, 3 dil PDF; EN/DE metin katmanında TR 0; DE
       sayfaları görsel kontrol (Lotka, atıf tablosu tamamen Almanca). Ders: tarayıcıda `\w` Türkçe
       harfleri kapsıyor (lessons.md).
-    - [ ] **Araştırma Boşluğu Haritası PDF'te bozuk (ÖNCEDEN VAR)** (27 Eylül 2026): `research_gap`
+    - [x] **Araştırma Boşluğu Haritası PDF'te bozuk (ÖNCEDEN VAR)** — kapatıldı (düzeltme 28 Eylül'de canlıya gitti; E testlerinde PDF'te düzgün) (27 Eylül 2026): `research_gap`
       bbox_inches='tight' ile 744×15562 px üretiyor (grafik dışında bir öğe alanı uzatıyor) → PDF'te
       ince boş şerit. Orijinal kodla birebir aynı (sentetik 160 kayıt). Ücretli raporda — "analiz
       sonuçları test edilsin" kapsamında düzeltilecek.

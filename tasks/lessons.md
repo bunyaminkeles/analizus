@@ -99,3 +99,21 @@ po'larda ~5800 satırlık gereksiz diff oluştu (commit'ten önce `git diff --st
 **Kural:** Birkaç yeni giriş için po dosyasına düz metin olarak ekle (append) + `compilemessages`; polib yalnız
 toplu düzenlemede ve orijinal wrapwidth ile. Her çeviri değişikliğinden sonra `git diff --stat` — beklenenden
 büyükse commit etme.
+
+## 28 Eylül 2026 — Doğrulamadan "zaten çevrili" deme
+**Hata:** F adımını anlatırken "üretilemeyen analiz nedenleri (B adımı) zaten çevrili" dedim; msgid taraması 16'sının
+çevrilmemiş olduğunu gösterdi (düzeltip kullanıcıya bildirdim).
+**Kural:** Bir metnin çevrili/var/yok olduğunu söylemeden önce po'da ara (polib ile `(msgctxt, msgid)` kümesi). Kapsam
+listesi verirken sayıyı taramadan çıkar, tahminden değil.
+
+## 28 Eylül 2026 — Türkçe kesme işareti tek tırnaklı Python string'ini kırar
+**Hata:** `gettext('... 17'ye kadar ...')` — kaçırılmamış `'` SyntaxError → `urls` import edilemedi, dev'de tüm sayfalar
+500 (render testinde yakalandı). Toplu metin değişikliğini Python replace betiğiyle yaparken oldu.
+**Kural:** Türkçe metin içeren .py düzenlemesinden sonra `python3 -c "import ast; ast.parse(open(f).read())"` çalıştır;
+tek tırnaklı string'e "'ye/'de/'nin" yazarken `\'`.
+
+## 28 Eylül 2026 — İmaj yeniden build edilince elle kurulan araçlar gider
+**Olay:** `bibtexparser` sabitlemesi için `--build` sonrası container'da `msgfmt` (gettext) ve `polib` yoktu — daha önce
+elle kurulmuşlardı. Ayrıca sürümsüz `bibtexparser` build'de 2.x gelip BibTeX'i kırmıştı.
+**Kural:** API'sine bağlı paketlere sürüm sabitle; build sonrası etkilenen akışı uçtan uca dene. Çeviri derlemesi
+host'ta `msgfmt -c` (analizus.md §26/§28.5).

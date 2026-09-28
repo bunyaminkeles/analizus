@@ -1,6 +1,6 @@
 # Analizus.com — Claude Çalışma Kuralları
 
-Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~2020 satır; offset'ler 28 Eylül 2026 akşam). Tamamını okuma — ihtiyaca göre offset ile ilgili bölümü oku:
+Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~2050 satır; offset'ler 28 Eylül 2026 gece). Tamamını okuma — ihtiyaca göre offset ile ilgili bölümü oku:
 
 | Bölüm | offset | Konu |
 |---|---|---|
@@ -11,12 +11,12 @@ Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~2020 satır; offset
 | §10–11 | 694 | CSS/tasarım sistemi, WebSocket |
 | §12 | 814 | İstatistik araçları (akış, PDF, polling) |
 | §13–15 | 968 | DM/oda mesajlaşma, bibliometri, akademik tarama |
-| §16–19 | 1121 | E-posta, AnalizBot/AI Asistan, S3, güvenlik (çerez onayı, cron anahtarı) |
-| §20–23 | 1328 | Admin, pazar iş akışı, session (hesap geri alma), cron |
-| §24–25 | 1427 | Geliştirme ortamı (pytest, çeviri komutları), değişmez kurallar |
-| §26 | 1511 | Sık yapılan hatalar ve çözümleri |
-| §27 | 1587 | Görev listesi (tamamlanan / sıradaki) |
-| §28 | 1933 | Çok dilli yapı (TR/EN/DE) ve gizlilik — mimari, çeviri kuralları, iş akışı, EN/DE ürün kararları (§28.7) |
+| §16–19 | 1136 | E-posta, AnalizBot/AI Asistan, S3, güvenlik (çerez onayı, cron anahtarı) |
+| §20–23 | 1343 | Admin, pazar iş akışı, session (hesap geri alma), cron |
+| §24–25 | 1442 | Geliştirme ortamı (pytest, çeviri komutları), değişmez kurallar |
+| §26 | 1526 | Sık yapılan hatalar ve çözümleri |
+| §27 | 1605 | Görev listesi (tamamlanan / sıradaki) |
+| §28 | 1959 | Çok dilli yapı (TR/EN/DE) ve gizlilik — mimari, çeviri kuralları, iş akışı, EN/DE ürün kararları (§28.7) |
 
 ---
 
@@ -64,7 +64,8 @@ Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~2020 satır; offset
 - Parça birleştirme yok: anlamlı/anlamsız, artış/azalış ayrı **tam cümle** msgid
 - Çevrilen görünen metinle `==`/`!==` karşılaştırma yapma (bayrak kullan: ör. `is_const`)
 - Arka plan işi (job_queue thread) dili bilmez — `translation.override` ile taşı; e-posta: `recipient_language(user)`
-- Çeviri sonrası `compilemessages` çıktısında `error` ara; polib'de `previous_*` alanlarının üçünü temizle
+- Çeviri sonrası `compilemessages` çıktısında `error` ara; polib'de `previous_*` alanlarının üçünü temizle. Container'da msgfmt yoksa (imaj build sonrası) host'ta `msgfmt -c -o …mo …po`
+- API'sine doğrudan bağlı paketlere `requirements.txt`'te sürüm sabitle (sürümsüz `bibtexparser` 2.x gelip BibTeX'i kırdı)
 - Türkçe metin taraması yalnız ç/ğ/ş… harflerine bakamaz ("Yorum", "Hesapla" kaçar) — tüm sabitleri listele
 
 ## Git & Deploy
