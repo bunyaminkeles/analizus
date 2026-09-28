@@ -24,7 +24,7 @@ maddelerde.
 **A. Kod işleri (öncelik sırasıyla)**
 - [x] **Hetzner deploy — main a5c5984 YAPILDI (28 Eylül 2026, kullanıcı: "sorun çıkmadı"; dışarıdan /, /bibliometrics/, /en|de/bibliometrics/ 200, başlıklar çevrili)**: bibliometri EN/DE + Research Gap + K1–K7 + A/B. requirements.txt
   değişti (Babel) → `docker compose up -d --build web` ŞART; migration yok. Sonra canlıda: OpenAlex araması + bibliometri işi.
-- [ ] **BibTeX virgüllü anahtar kelimeler bölünmüyor (28 Eylül 2026)** — `parser._split_keywords` yalnız `;`/`|` ile ayırıyor;
+- [x] **BibTeX virgüllü anahtar kelimeler — DÜZELTİLDİ (28 Eylül 2026, `_parse_bibtex`: `;`/`|` yoksa `,` ile böl; 5 durum test edildi)** Eski not: — `parser._split_keywords` yalnız `;`/`|` ile ayırıyor;
   Zotero/Mendeley/Google Scholar .bib `keywords = {a, b}` → tek kelime "a, b" → kelime analizleri bozuk. Scopus .bib `;` (sorun yok).
   Öneri: yalnız BibTeX'te `;` yoksa `,` ile böl (fonksiyon WoS/Scopus'ta da kullanılıyor — onlara dokunma).
 - [x] **BibTeX düzeltildi YERELDE (28 Eylül 2026): `bibtexparser==1.4.4` sabitlendi, build + uçtan uca iş testi OK

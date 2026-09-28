@@ -176,7 +176,10 @@ def _parse_bibtex(content: str) -> list[dict]:
             rec['authors'] = _split_bibtex_authors(author_str)
 
             # Anahtar kelimeler
+            # Scopus ';' kullanır; Zotero/Mendeley/Google Scholar ',' — ';' yoksa virgülden böl
             kw_raw = entry.get('keywords', '') or entry.get('keyword', '')
+            if ';' not in kw_raw and '|' not in kw_raw:
+                kw_raw = kw_raw.replace(',', ';')
             rec['keywords'] = _split_keywords(kw_raw)
 
             # Kurum (affiliation)
