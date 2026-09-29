@@ -13,7 +13,9 @@ maddelerde.
 > **29 Eylül 2026 gece — CANLI = main = dev = 8393eec** (doğrulandı: siteler 200, log temiz): OpenAlex 5xx bekleme + çevrili
 > hata + anahtar gizleme; PubMed anahtar gizleme; DM WebSocket `@.+-` adlar; 500 hata e-postası (ADMIN_NOTIFICATION_EMAIL,
 > sel koruması). Hetzner: NCBI_API_KEY eklendi, Docker log sınırı (daemon.json 20m×5, tüm container'lar), disk temizliği
-> %65→%45. **`feature_pubmed` canlıda AÇIK.** Açık karar: sunucu dışı yedek (Hetzner Backup önerildi). Render: NCBI_API_KEY?
+> %65→%45. **`feature_pubmed` canlıda AÇIK.** Sunucu dışı yedek YAPILDI (kullanıcı: ek maliyet yok → yerel): `scripts/yedek_indir.sh` + kullanıcı crontab saatlik :15 →
+> `~/yedekler/analizus/` (gzip ~55 MB, son 14; doğrulama gzip + "dump complete"; geçici PG'ye geri yükleme testi OK: 80 tablo,
+> 125 kullanıcı). Log `~/yedekler/analizus/yedek.log`. Render NCBI_API_KEY tanımlı; hata e-postası canlıda sınandı (geldi).
 >
 > **ÖNCEKİ NOT (29 Eylül 2026 akşam):**
 > - **Canlı = main = dev = c02093f** (Hetzner, 29 Eylül akşam doğrulandı: /openalex/ 200, log temiz). İçerik: OpenAlex ilk
