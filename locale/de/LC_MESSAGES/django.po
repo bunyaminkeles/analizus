@@ -20368,3 +20368,7 @@ msgstr "Bei PubMed-Datensätzen ohne Autorenschlagwörter wurden MeSH-Begriffe a
 
 msgid "Ülke ve kurum bilgisi tahminidir: PubMed bu bilgileri ayrı alan olarak vermez; yazar adres metninden otomatik çıkarıldı. Adresinde ülke adı geçmeyen yazarlar ülke sayımına, kurum adı tanınamayan adresler kurum sayımına girmedi."
 msgstr "Länder- und Institutionsangaben sind Schätzungen: PubMed liefert sie nicht als eigene Felder; sie wurden automatisch aus dem Affiliationstext der Autoren extrahiert. Autoren, deren Affiliation kein Land nennt, wurden bei der Länderzählung nicht berücksichtigt, Affiliationen ohne erkennbaren Institutionsnamen nicht bei der Institutionszählung."
+
+#: openalex/services/job_runner.py
+msgid "OpenAlex şu an yoğun; lütfen birkaç dakika sonra tekrar deneyin."
+msgstr "OpenAlex ist derzeit überlastet; bitte versuchen Sie es in einigen Minuten erneut."

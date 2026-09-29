@@ -1,5 +1,6 @@
 import logging
 import threading
+import requests
 from datetime import timedelta
 from django.utils import timezone
 from django.conf import settings
@@ -119,11 +120,18 @@ def _execute_job_body(job_id):
         logger.info(f"OpenAlex Scraping job {job_id} tamamlandı: {total_count} sonuç")
 
     except Exception as e:
-        logger.error(f"OpenAlex Scraping job {job_id} başarısız: {e}")
+        from openalex.services.scraper import RETRY_STATUSES, redact_api_key
+        logger.error(f"OpenAlex Scraping job {job_id} başarısız: {redact_api_key(e)}")
+        # Kullanıcıya ham hata (API URL'si + anahtar) gösterilmez — çevrili sabit mesaj
+        status = getattr(getattr(e, 'response', None), 'status_code', None)
+        if status in RETRY_STATUSES or isinstance(e, (requests.Timeout, requests.ConnectionError)):
+            user_msg = gettext('OpenAlex şu an yoğun; lütfen birkaç dakika sonra tekrar deneyin.')
+        else:
+            user_msg = gettext('Bir hata oluştu, lütfen tekrar deneyin.')
         try:
             close_old_connections()
             job = AlexSearchJob.objects.get(id=job_id)
-            job.mark_failed(str(e))
+            job.mark_failed(user_msg)
         except Exception:
             pass
 

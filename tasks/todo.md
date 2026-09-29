@@ -85,7 +85,7 @@ maddelerde.
   (trend, büyüme oranı, yazarlar; veri eksikse kayar).
 - [ ] **Veri temizliği: kontrol karakterleri** — OpenAlex bazı dergi adlarında C1 kontrol karakteri gönderiyor
   ("\x98The \x9cJournal of practical nursing") → grafikte boş kutu (glif uyarısı). `_clean` kontrol karakterlerini atmalı. (28 Eylül 2026)
-- [ ] **OpenAlex hata mesajı** — kullanıcıya ham "503 Server Error… for url: https://api.openalex.org/…" gösteriliyor → çevrili,
+- [x] **OpenAlex hata mesajı — DÜZELTİLDİ YERELDE (29 Eylül 2026, commit yok): 429/502/503/504 bekle+yeniden dene (Retry-After, üst sınır 60 sn); kullanıcıya çevrili sabit mesaj (TR/EN/DE); log/hata metninde `api_key=***`. BULGU: ham mesaj URL'deki API ANAHTARINI kullanıcıya gösteriyordu → canlı DB'de eski `error_message` kayıtları kontrol edilmeli, varsa anahtar yenilenmeli.** Eski not: — kullanıcıya ham "503 Server Error… for url: https://api.openalex.org/…" gösteriliyor → çevrili,
   anlaşılır mesaj; scraper 503'te de beklemeli (şu an yalnız 429). (28 Eylül 2026)
 - [ ] **OpenAlex bütçe verimliliği (öneri, karar bekliyor)** — arama tüm sonuçları (5000'e kadar, 25 istek) baştan çekiyor;
   yalnız ilk sayfa + tam veri bibliometri/indirme istenince çekilirse arama başı 1 istek (≈1.000 arama/gün). Önce canlıda

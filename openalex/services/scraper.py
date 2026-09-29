@@ -4,6 +4,7 @@ import time
 import random
 import threading
 import os
+import re
 
 logger = logging.getLogger(__name__)
 
@@ -12,6 +13,14 @@ MAX_PER_PAGE = 200
 
 # Polite pool limiti: 10 req/s. Eş zamanlı 4 job ile güvende kalırız.
 _openalex_semaphore = threading.Semaphore(4)
+
+# Geçici yoğunluk yanıtları — beklenip yeniden denenir (OpenAlex anonim/yoğun dönemde 503 veriyor)
+RETRY_STATUSES = {429, 502, 503, 504}
+
+
+def redact_api_key(text):
+    """Hata metnindeki (istek URL'si) api_key değerini gizler — log ve kullanıcı mesajına anahtar sızmasın."""
+    return re.sub(r'(api_key=)[^&\s]+', r'\1***', str(text))
 
 
 class OpenAlexScraper:
@@ -107,7 +116,7 @@ class OpenAlexScraper:
         return ' & '.join(parts) if parts else '*'
 
     def _fetch_page(self, params, cursor=None):
-        """OpenAlex API'den tek sayfa sonuç çeker. 429'da Retry-After başlığına uyar."""
+        """OpenAlex API'den tek sayfa sonuç çeker. 429/5xx yoğunlukta Retry-After başlığına uyar."""
         req_params = dict(params)
         req_params['cursor'] = cursor if cursor else '*'
 
@@ -116,16 +125,20 @@ class OpenAlexScraper:
                 response = self.session.get(
                     API_BASE, params=req_params, timeout=self.timeout
                 )
-                if response.status_code == 429 and attempt < self.max_retries - 1:
-                    retry_after = int(response.headers.get('Retry-After', 0))
-                    wait = max(retry_after, random.uniform(10.0, 20.0))
-                    logger.warning(f"OpenAlex rate limit 429, {wait:.1f}s bekleniyor...")
+                if response.status_code in RETRY_STATUSES and attempt < self.max_retries - 1:
+                    try:
+                        retry_after = int(response.headers.get('Retry-After', 0))
+                    except ValueError:
+                        retry_after = 0
+                    # üst sınır 60 sn — kuyruk worker'ı ve kullanıcının polling'i uzun süre kilitlenmesin
+                    wait = max(min(retry_after, 60), random.uniform(10.0, 20.0))
+                    logger.warning(f"OpenAlex {response.status_code}, {wait:.1f}s bekleniyor...")
                     time.sleep(wait)
                     continue
                 response.raise_for_status()
                 return response.json()
             except requests.RequestException as e:
-                logger.warning(f"OpenAlex API attempt {attempt+1} failed: {e}")
+                logger.warning(f"OpenAlex API attempt {attempt+1} failed: {redact_api_key(e)}")
                 if attempt < self.max_retries - 1:
                     time.sleep(2 ** attempt + random.uniform(0.5, 1.5))
                 else:

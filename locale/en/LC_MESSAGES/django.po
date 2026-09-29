@@ -20042,3 +20042,7 @@ msgstr "For PubMed records without author keywords, MeSH terms were used as keyw
 
 msgid "Ülke ve kurum bilgisi tahminidir: PubMed bu bilgileri ayrı alan olarak vermez; yazar adres metninden otomatik çıkarıldı. Adresinde ülke adı geçmeyen yazarlar ülke sayımına, kurum adı tanınamayan adresler kurum sayımına girmedi."
 msgstr "Country and institution data are estimates: PubMed does not provide them as separate fields, so they were extracted automatically from the author affiliation text. Authors whose affiliation does not name a country were not included in the country count, and affiliations with no recognisable institution name were not included in the institution count."
+
+#: openalex/services/job_runner.py
+msgid "OpenAlex şu an yoğun; lütfen birkaç dakika sonra tekrar deneyin."
+msgstr "OpenAlex is currently busy; please try again in a few minutes."
