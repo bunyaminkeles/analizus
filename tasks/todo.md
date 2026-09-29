@@ -29,6 +29,12 @@ maddelerde.
 > - **CANLI = main e716e46 (29 Eylül 2026, Hetzner deploy YAPILDI; yedek /root 174 MB; 4 migration [X], web log hata 0, /, /openalex/, /bibliometrics/ 200).** Kalan: canlıda OpenAlex araması + sipariş onayı denemesi; PubMed flag'i açılmadı (NCBI_API_KEY kullanıcıda). Uygulananlar: pubmed/0001, forum/0160 (feature_pubmed, varsayılan
 >   KAPALI), bibliometrics/0005, forum/0161 (fiyat alanları). Deploy öncesi DB yedeği; requirements değişmedi (restart yeter,
 >   container açılışı migrate eder). Canlıda: NCBI_API_KEY (opsiyonel) → admin'den PubMed flag'ini aç.
+> - **BASE — ERİŞİM BEKLENİYOR (29 Eylül 2026):** erişim IP + User-Agent ile (anahtar gönderilmiyor); onay ilk başvurunun
+>   e-postasına geldi ama 89.167.5.224 ve yerel IP "Access denied" (UA `AnalizusBot/1.0 (mailto:info@analizus.com)`).
+>   info@ başvurusunun yanıtı bekleniyor; gelince Hetzner'de tek curl testi → gerçek yanıtla modül. Gelmezse/yine
+>   reddedilirse: taslak e-posta (IP/UA güncelleme + "non-commercial" teyidi) sohbette hazırlandı. Kararlar: DE + EN,
+>   bibliometri YOK, ilk 100 kayıt ücretsiz + fazlası proje talebi, 1 istek/sn ortak sınır, flag kapalı başlar.
+>   API (rbace kaynağından, PDF'ten doğrulanmadı — Anubis engelli): hits ≤100, offset ≤1000 (sorgu başı ~1.100 kayıt), format=json.
 > - **BASE/PubMed kararları (29 Eylül 2026):** önce **PubMed** (OpenAlex kalıbı: yeni `pubmed` app, `PubMedSearchJob.all_results`
 >   + bibliometri köprüsü; migration gerekir). **BASE BEKLİYOR:** API başvuru formu + IP beyaz liste; BASE API'yi "yalnız
 >   ticari olmayan amaçla" veriyor (api.base-search.net, about_develop) → kullanıcı başvuruda kullanım amacını (ücretli rapor
