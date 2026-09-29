@@ -181,6 +181,8 @@
 </div>
 
 <script>
+// Dış kaynak verisi (başlık, yazar, özet…) HTML olarak basılmaz — XSS
+const _esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
 let currentJobId = null;
 let pollInterval = null;
 
@@ -313,13 +315,13 @@ function showResults(data) {
     (data.demo_results || []).forEach((r, i) => {
         list.innerHTML += `
         <div class="border-bottom border-secondary pb-3 mb-3">
-            <h6 class="mb-1">${i+1}. ${r.title || '(Başlık yok)'}</h6>
-            ${r.title_tr ? `<div class="text-muted small fst-italic mb-1">${r.title_tr}</div>` : ''}
+            <h6 class="mb-1">${i+1}. ${_esc(r.title || '(Başlık yok)')}</h6>
+            ${r.title_tr ? `<div class="text-muted small fst-italic mb-1">${_esc(r.title_tr)}</div>` : ''}
             <small class="text-muted d-block">
-                ${r.author || ''} ${r.year ? '· ' + r.year : ''} · ${r.university || ''}
-                ${r.thesis_type ? ' · ' + r.thesis_type : ''}
+                ${_esc(r.author || '')} ${r.year ? '· ' + _esc(r.year) : ''} · ${_esc(r.university || '')}
+                ${r.thesis_type ? ' · ' + _esc(r.thesis_type) : ''}
             </small>
-            ${r.abstract_tr ? `<div class="text-light small mt-2">${r.abstract_tr}</div>` : ''}
+            ${r.abstract_tr ? `<div class="text-light small mt-2">${_esc(r.abstract_tr)}</div>` : ''}
         </div>`;
     });
 

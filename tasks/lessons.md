@@ -125,3 +125,9 @@ ile durdu. Diğer app'lerde klasör kullanıcıya ait olduğu için sorun çıkm
 **Kural:** Yeni app'in `migrations/` klasörünü host'ta oluştur (`mkdir -p app/migrations && touch .../__init__.py`)
 ya da container'da oluşturduktan sonra `docker compose exec -T web chown -R 1000:1000 /app/<app>` yap. Commit
 öncesi `stat -c '%U' <yeni dosyalar>` ile sahibi kontrol et.
+
+## 29 Eylül 2026 — Şablon değişikliği restart olmadan görünmez (cached loader)
+**Olay:** XSS testinde düzeltme öncesi şablonu geri koyup testi çalıştırdım; sonuç "güvenli" çıktı — sunucu önceki
+şablonu önbellekten veriyordu. Restart sonrası eski sürümde yük 7 kez çalıştı.
+**Kural:** Şablon değiştirip tarayıcı/test client ile doğrulamadan önce `docker compose restart web` (+ nginx). Bir
+testin açığı gerçekten yakaladığını, düzeltme öncesi sürümde BAŞARISIZ olduğunu görerek kanıtla.

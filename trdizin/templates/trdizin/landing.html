@@ -130,6 +130,8 @@
 </div>
 
 <script>
+// Dış kaynak verisi (başlık, yazar, özet…) HTML olarak basılmaz — XSS
+const _esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
 let currentJobId = null;
 let pollInterval = null;
 
@@ -272,13 +274,13 @@ function showResults(data) {
         const kw = (r.keywords_tr || []).slice(0, 5).join(', ');
         list.innerHTML += `
         <div class="border-bottom border-secondary pb-3 mb-3">
-            <h6 class="mb-1">${i+1}. ${r.title || '(Başlık yok)'}</h6>
+            <h6 class="mb-1">${i+1}. ${_esc(r.title || '(Başlık yok)')}</h6>
             <small class="text-muted d-block">
-                ${r.authors || ''} ${r.year ? '· ' + r.year : ''} ${r.journal ? '· <em>' + r.journal + '</em>' : ''}
-                ${r.doi ? '· <a href="https://doi.org/' + r.doi + '" target="_blank" class="text-info text-decoration-none">DOI</a>' : ''}
+                ${_esc(r.authors || '')} ${r.year ? '· ' + _esc(r.year) : ''} ${r.journal ? '· <em>' + _esc(r.journal) + '</em>' : ''}
+                ${r.doi ? '· <a href="https://doi.org/' + _esc(encodeURI(r.doi)) + '" target="_blank" rel="noopener" class="text-info text-decoration-none">DOI</a>' : ''}
             </small>
-            ${kw ? `<small class="text-muted d-block mt-1"><i class="bi bi-tag me-1"></i>${kw}</small>` : ''}
-            ${r.abstract_tr ? `<div class="text-secondary small mt-2" style="line-height:1.5;max-height:80px;overflow:hidden;">${r.abstract_tr.substring(0,300)}...</div>` : ''}
+            ${kw ? `<small class="text-muted d-block mt-1"><i class="bi bi-tag me-1"></i>${_esc(kw)}</small>` : ''}
+            ${r.abstract_tr ? `<div class="text-secondary small mt-2" style="line-height:1.5;max-height:80px;overflow:hidden;">${_esc(r.abstract_tr.substring(0,300))}...</div>` : ''}
         </div>`;
     });
 

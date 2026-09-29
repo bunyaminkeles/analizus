@@ -131,6 +131,9 @@
 </div>
 
 <script>
+// Dış API verisi (başlık, yazar, özet, link…) HTML olarak basılmaz — XSS; link yalnız http(s)
+const _esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
+const _safeUrl = (u) => /^https?:\/\//i.test(String(u || '')) ? _esc(u) : '';
 let currentJobId = null;
 let pollInterval = null;
 
@@ -268,20 +271,21 @@ function showResults(data) {
     list.innerHTML = '';
     demo.forEach((r, i) => {
         const fos = (r.fields_of_study || []).slice(0, 3).join(', ');
-        const oa = r.open_access_pdf ? `<a href="${r.open_access_pdf}" target="_blank" class="badge ms-1" style="background:rgba(34,197,94,0.15);color:#4ade80;text-decoration:none;font-size:.65rem;">OA PDF</a>` : '';
-        const doi = r.doi ? `· <a href="https://doi.org/${r.doi}" target="_blank" class="text-info text-decoration-none">DOI</a>` : '';
-        const institutions = r.institutions ? `<small class="text-muted d-block mt-1"><i class="bi bi-building me-1"></i>${r.institutions.substring(0,120)}</small>` : '';
-        const abstract = r.abstract ? `<div class="text-secondary small mt-2" style="line-height:1.5;max-height:80px;overflow:hidden;">${r.abstract.substring(0,300)}...</div>` : '';
+        const pdfUrl = _safeUrl(r.open_access_pdf);
+        const oa = pdfUrl ? `<a href="${pdfUrl}" target="_blank" rel="noopener" class="badge ms-1" style="background:rgba(34,197,94,0.15);color:#4ade80;text-decoration:none;font-size:.65rem;">OA PDF</a>` : '';
+        const doi = r.doi ? `· <a href="https://doi.org/${_esc(encodeURI(r.doi))}" target="_blank" rel="noopener" class="text-info text-decoration-none">DOI</a>` : '';
+        const institutions = r.institutions ? `<small class="text-muted d-block mt-1"><i class="bi bi-building me-1"></i>${_esc(r.institutions.substring(0,120))}</small>` : '';
+        const abstract = r.abstract ? `<div class="text-secondary small mt-2" style="line-height:1.5;max-height:80px;overflow:hidden;">${_esc(r.abstract.substring(0,300))}...</div>` : '';
 
         list.innerHTML += `
         <div class="border-bottom border-secondary pb-3 mb-3">
-            <h6 class="mb-1">${i+1}. ${r.title || '({% trans "Başlık yok" %})'}${oa}</h6>
+            <h6 class="mb-1">${i+1}. ${_esc(r.title || '({% trans "Başlık yok" %})')}${oa}</h6>
             <small class="text-muted d-block">
-                ${r.authors || ''} ${r.year ? '· ' + r.year : ''} ${r.journal ? '· <em>' + r.journal + '</em>' : ''}
+                ${_esc(r.authors || '')} ${r.year ? '· ' + _esc(r.year) : ''} ${r.journal ? '· <em>' + _esc(r.journal) + '</em>' : ''}
                 ${doi}
-                ${r.cited_by_count ? `· <span class="text-secondary"><i class="bi bi-quote me-1"></i>${r.cited_by_count} {% trans "atıf" %}</span>` : ''}
+                ${r.cited_by_count ? `· <span class="text-secondary"><i class="bi bi-quote me-1"></i>${_esc(r.cited_by_count)} {% trans "atıf" %}</span>` : ''}
             </small>
-            ${fos ? `<small class="text-muted d-block mt-1"><i class="bi bi-tag me-1"></i>${fos}</small>` : ''}
+            ${fos ? `<small class="text-muted d-block mt-1"><i class="bi bi-tag me-1"></i>${_esc(fos)}</small>` : ''}
             ${institutions}
             ${abstract}
         </div>`;

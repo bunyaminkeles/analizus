@@ -102,6 +102,8 @@
 </div>
 
 <script>
+// Dış kaynak verisi (başlık, yazar, özet…) HTML olarak basılmaz — XSS
+const _esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
 let currentJobId = null;
 let pollInterval = null;
 
@@ -167,9 +169,9 @@ function showResults(data) {
     (data.demo_results || []).forEach((rec, i) => {
         list.innerHTML += `
         <div class="border-bottom border-secondary pb-3 mb-3">
-            <h6 class="mb-1">${i+1}. ${rec.title || '(Başlık yok)'}</h6>
-            <small class="text-muted d-block">${rec.authors || ''} ${rec.year ? '· ' + rec.year : ''} · ${rec.university || ''}</small>
-            ${rec.abstract ? `<p class="small text-muted mt-1 mb-0">${rec.abstract.substring(0, 200)}${rec.abstract.length > 200 ? '...' : ''}</p>` : ''}
+            <h6 class="mb-1">${i+1}. ${_esc(rec.title || '(Başlık yok)')}</h6>
+            <small class="text-muted d-block">${_esc(rec.authors || '')} ${rec.year ? '· ' + _esc(rec.year) : ''} · ${_esc(rec.university || '')}</small>
+            ${rec.abstract ? `<p class="small text-muted mt-1 mb-0">${_esc(rec.abstract.substring(0, 200))}${rec.abstract.length > 200 ? '...' : ''}</p>` : ''}
         </div>`;
     });
 

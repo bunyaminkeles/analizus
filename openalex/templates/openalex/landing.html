@@ -189,6 +189,8 @@
 }
 </style>
 <script>
+// Dış API verisi (başlık, yazar, özet…) HTML olarak basılmaz — XSS
+const _esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
 document.addEventListener('DOMContentLoaded', function() {
     const builder = document.getElementById('query-builder');
     const addRuleBtn = document.getElementById('add-rule-btn');
@@ -445,16 +447,16 @@ document.addEventListener('DOMContentLoaded', function() {
             let html = '<ul class="list-group list-group-flush">';
             data.demo_results.forEach(item => {
                 const badges = [];
-                if (item.cited_by_count) badges.push(`<span class="badge bg-info">${item.cited_by_count} {% trans "atıf" %}</span>`);
+                if (item.cited_by_count) badges.push(`<span class="badge bg-info">${_esc(item.cited_by_count)} {% trans "atıf" %}</span>`);
                 if (item.open_access) badges.push('<span class="badge bg-success">Open Access</span>');
-                if (item.type) badges.push(`<span class="badge bg-secondary">${item.type}</span>`);
+                if (item.type) badges.push(`<span class="badge bg-secondary">${_esc(item.type)}</span>`);
 
                 html += `
                     <li class="list-group-item bg-dark text-white">
-                        <h6 class="mb-1">${item.title || '{% trans "Başlık Yok" %}'}</h6>
-                        <small class="text-muted">${item.authors || '{% trans "Yazar Yok" %}'} (${item.year || '{% trans "Yıl Yok" %}'}) - <em>${item.journal || '{% trans "Kaynak Yok" %}'}</em></small>
+                        <h6 class="mb-1">${_esc(item.title || '{% trans "Başlık Yok" %}')}</h6>
+                        <small class="text-muted">${_esc(item.authors || '{% trans "Yazar Yok" %}')} (${_esc(item.year || '{% trans "Yıl Yok" %}')}) - <em>${_esc(item.journal || '{% trans "Kaynak Yok" %}')}</em></small>
                         <div class="mt-1">${badges.join(' ')}</div>
-                        <p class="mt-2 mb-1">${(item.abstract || '{% trans "Özet yok" %}').substring(0, 200)}...</p>
+                        <p class="mt-2 mb-1">${_esc((item.abstract || '{% trans "Özet yok" %}').substring(0, 200))}...</p>
                     </li>
                 `;
             });
