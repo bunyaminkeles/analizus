@@ -77,9 +77,11 @@ class PubMedSearchJob(models.Model):
 
     @staticmethod
     def get_daily_limit(user):
-        """OpenAlex ile aynı (kullanıcı kararı 29 Eylül 2026): admin sınırsız, diğerleri 3."""
+        """OpenAlex ile aynı (kullanıcı kararı 29 Eylül 2026): admin sınırsız, Premium 7, diğerleri 3."""
         if user.is_staff or user.is_superuser:
             return 9999
+        if hasattr(user, 'profile') and user.profile.is_premium:
+            return 7
         return 3
 
     def get_query_summary(self):

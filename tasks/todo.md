@@ -79,7 +79,9 @@ maddelerde.
   2026; CANLIDA main 08472b2, Hetzner restart, /openalex/ 200): 6 tarama sayfası (OpenAlex, S2, TR Dizin, OAI-PMH, YÖK Tez, Tez Analizi) dış veriyi `_esc()` ile basıyor, S2 PDF
   linki yalnız http(s), DOI `encodeURI`; Playwright: eski sürümde yük 7 kez çalıştı, yenide 6 sayfada 0. Kalan düşük risk:
   istatistik araçlarında yüklenen dosyanın sütun adları kaçışsız (karar_agaci, korelasyon, lineer/lojistik regresyon, svm —
-  yalnız kullanıcının kendi dosyası, self-XSS). (2) `extra_js`
+  yalnız kullanıcının kendi dosyası, self-XSS). (2) ~~`extra_js` block.super~~ DÜZELTİLDİ YERELDE (29 Eylül 2026: bildirim/
+  widget script'leri artık yükleniyor, JS hatası yok). (3) ~~Premium 7~~ DÜZELTİLDİ YERELDE (kullanıcı: "7 arama"): OpenAlex,
+  TR Dizin, YÖK Tez, PubMed'de Premium 7 / normal 3 (S2 3'te; vaat etmiyor); PubMed limit mesajı premium önerisi. Eski not: (2) `extra_js`
   bloğu `block.super` çağırmıyor → bildirim/widget script'leri bu sayfada yüklenmiyor; (3) "Premium üyelikle 7 aramaya"
   metni var ama `get_daily_limit` premium'a da 3 veriyor.
 

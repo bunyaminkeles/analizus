@@ -67,6 +67,9 @@ class YokTezSearchJob(models.Model):
 
     @staticmethod
     def get_daily_limit(user):
+        """Admin: sınırsız, Premium: 7, diğerleri: 3 (limit mesajı 7 vaat ediyor; kullanıcı kararı 29 Eylül 2026)"""
         if user.is_staff or user.is_superuser:
             return 9999
+        if hasattr(user, 'profile') and user.profile.is_premium:
+            return 7
         return 3
