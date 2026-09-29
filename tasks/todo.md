@@ -1,6 +1,6 @@
-# Çok Dilli Yayın (EN/DE) — DEVAM EDİYOR
+# Çok Dilli Yayın (EN/DE) — YAYINDA
 
-**Durum:** 23 Eylül 2026 — devam ediyor. Aşağıdaki "DEVAM NOKTASI"
+**Durum:** 29 Eylül 2026 gece — EN/DE canlıda. Aşağıdaki "DEVAM NOKTASI"
 bölümünden başla.
 
 ## DEVAM NOKTASI (bir sonraki oturum buradan başlasın)
@@ -37,12 +37,12 @@ maddelerde.
 >   (yıllık ortalama önerisi).
 > - Diğer açıklar bu listede `- [ ]`; ayrıntı `analizus.md` §14 (bibliometri), §15 (tarama), §26, §27.
 
-- [x] **DÜZELTİLDİ YERELDE (29 Eylül 2026, commit yok): regex `[\w.@+-]+` + `encodeURIComponent`; test: @/.+- adlar eski ROUTE YOK → yeni bağlandı, düz ad ve yok kullanıcı aynı; forum 61/61.** Canlı log: DM WebSocket "No route found for path 'ws/chat/240401005@/'" (29 Eylül 2026, d39af06 deploy sonrası
+- [x] **CANLIDA (ba9560b, main 8393eec; 29 Eylül 2026): regex `[\w.@+-]+` + `encodeURIComponent`; test: @/.+- adlar eski ROUTE YOK → yeni bağlandı, düz ad ve yok kullanıcı aynı; forum 61/61.** Canlı log: DM WebSocket "No route found for path 'ws/chat/240401005@/'" (29 Eylül 2026, d39af06 deploy sonrası
   görüldü; ÖNCEDEN VAR, Ocak 2026)** — `forum/routing.py:12` `(?P<username>\w+)` Django kullanıcı adlarındaki `@ . + -`
   karakterlerini kabul etmiyor → bu kullanıcılarla DM'de canlı mesaj (WebSocket) bağlanmıyor. Öneri: regex `[\w.@+-]+` +
   `send_message.html:369` `encodeURIComponent`; consumer'da kullanıcı adı çözümü kontrol. Karar/onay bekliyor.
 
-- [~] **KISMEN YAPILDI (29 Eylül 2026, kullanıcı): daemon.json yazıldı, docker restart, db log boşaltıldı (248 MB → 4 KB), siteler 200. KALAN: mevcut container'lar eski ayarla (LogConfig boş) — sınır ancak yeniden oluşturulunca geçer → bir sonraki deploy'da `docker compose up -d --force-recreate` (db dahil; veri external volume'da). nginx log'u 48 MB.** Hetzner Docker log rotasyonu YOK (29 Eylül 2026, salt okuma)** — `/etc/docker/daemon.json` yok, `docker-compose.yml`'de
+- [x] **YAPILDI (29 Eylül 2026): daemon.json + `up -d --force-recreate` ile tüm container'lara uygulandı (analizus.md §3). Eski not: daemon.json yazıldı, docker restart, db log boşaltıldı (248 MB → 4 KB), siteler 200. KALAN: mevcut container'lar eski ayarla (LogConfig boş) — sınır ancak yeniden oluşturulunca geçer → bir sonraki deploy'da `docker compose up -d --force-recreate` (db dahil; veri external volume'da). nginx log'u 48 MB.** Hetzner Docker log rotasyonu YOK (29 Eylül 2026, salt okuma)** — `/etc/docker/daemon.json` yok, `docker-compose.yml`'de
   `logging:` yok → container logları sınırsız büyüyor (`/var/lib/docker/containers` 295 MB; disk ~%76). Öneri: compose'a
   `logging: {driver: json-file, options: {max-size: "20m", max-file: "5"}}` (container yeniden oluşturulunca geçerli). Onay bekliyor.
   **Güncelleme (29 Eylül 2026):** compose'a EKLENMEZ — Hetzner `docker-compose.yml`'de commit'lenmemiş `rlprehber` servisi var →
@@ -53,7 +53,7 @@ maddelerde.
   (WebSocket hatası tesadüfen görüldü). Seçenekler: (a) Django `ADMINS` + `mail_admins` (mevcut SMTP, 3. taraf yok) —
   önerilen; (b) Sentry ücretsiz katman (veri 3. tarafa gider → `send_default_pii=False`, gizlilik metni).
 
-- [x] **TEMİZLİK YAPILDI (29 Eylül 2026, kullanıcı): image/builder prune + journald 500M → disk %65 → %45 (20 GB boş); iki site 200. KALAN: sunucu dışı yedek kararı.** Hetzner kapasite (29 Eylül 2026, salt okuma) — CPU 2 çekirdek yük 0,16; RAM 3,7 GB (kullanılabilir 2,9 GB, OOM yok);
+- [x] **TEMİZLİK YAPILDI (29 Eylül 2026, kullanıcı): image/builder prune + journald 500M → disk %65 → %45 (20 GB boş); iki site 200. Sunucu dışı yedek de YAPILDI (95c35d0, yerel saatlik indirme).** Hetzner kapasite (29 Eylül 2026, salt okuma) — CPU 2 çekirdek yük 0,16; RAM 3,7 GB (kullanılabilir 2,9 GB, OOM yok);
   disk 38 GB'ın 24 GB'ı dolu (13 GB boş). Acil sorun YOK. Geri kazanılabilir: eski Docker imajları ~10 GB
   (`docker image prune -a`), build cache ~3 GB (`docker builder prune`), journald 3,7 GB (`journalctl --vacuum-size=500M`),
   elle alınmış `yedek_*.sql` 4 dosya ~0,7 GB. Günlük `backup_analizus_*` 7 gün rotasyonlu (OK). RİSK: tüm DB yedekleri aynı
@@ -128,11 +128,15 @@ girdi; kod `NCBI_API_KEY` okuyor → şu an anahtar KULLANILMIYOR (3 istek/sn).
 - [ ] **Bibliometri metin tutarsızlıkları (28 Eylül 2026)** — (1) `tarama_seo_content.py` ~346 "Bradford kanunu dağılımı" yorum
   rehberi — raporda Bradford analizi yok; (2) landing demo kartı "Yayın Trendi + Yazarlar + Kelime Bulutu" — demo = ilk 3 grafik
   (trend, büyüme oranı, yazarlar; veri eksikse kayar).
+- [ ] **GÜVENLİK — canlı DB'de eski OpenAlex `error_message` kayıtlarında API anahtarı (29 Eylül 2026 bulgusu, takipsiz kalmıştı)** —
+  d39af06 öncesi ham hata mesajı URL'deki `api_key=` değerini kullanıcıya gösterip DB'ye yazıyordu. Hetzner'de salt okuma:
+  `error_message LIKE '%api_key=%'` (OpenAlex arama/sipariş/bibliometri işleri) → varsa kayıtları temizle + OpenAlex
+  anahtarını yenile (yerel/Render/Hetzner `.env`). Kullanıcı izniyle.
 - [ ] **Veri temizliği: kontrol karakterleri** — OpenAlex bazı dergi adlarında C1 kontrol karakteri gönderiyor
   ("\x98The \x9cJournal of practical nursing") → grafikte boş kutu (glif uyarısı). `_clean` kontrol karakterlerini atmalı. (28 Eylül 2026)
-- [x] **OpenAlex hata mesajı — DÜZELTİLDİ YERELDE (29 Eylül 2026, commit yok): 429/502/503/504 bekle+yeniden dene (Retry-After, üst sınır 60 sn); kullanıcıya çevrili sabit mesaj (TR/EN/DE); log/hata metninde `api_key=***`. BULGU: ham mesaj URL'deki API ANAHTARINI kullanıcıya gösteriyordu → canlı DB'de eski `error_message` kayıtları kontrol edilmeli, varsa anahtar yenilenmeli.** Eski not: — kullanıcıya ham "503 Server Error… for url: https://api.openalex.org/…" gösteriliyor → çevrili,
+- [x] **OpenAlex hata mesajı — CANLIDA (d39af06 + 9f50d0b, main 8393eec; 29 Eylül 2026): 429/502/503/504 bekle+yeniden dene (Retry-After, üst sınır 60 sn); kullanıcıya çevrili sabit mesaj (TR/EN/DE); log/hata metninde `api_key=***`. BULGU: ham mesaj URL'deki API ANAHTARINI kullanıcıya gösteriyordu → canlı DB'de eski `error_message` kayıtları kontrol edilmeli, varsa anahtar yenilenmeli.** Eski not: — kullanıcıya ham "503 Server Error… for url: https://api.openalex.org/…" gösteriliyor → çevrili,
   anlaşılır mesaj; scraper 503'te de beklemeli (şu an yalnız 429). (28 Eylül 2026)
-- [ ] **OpenAlex bütçe verimliliği (öneri, karar bekliyor)** — arama tüm sonuçları (5000'e kadar, 25 istek) baştan çekiyor;
+- [x] **OpenAlex bütçe verimliliği — YAPILDI (e8e39bb, canlıda: arama yalnız ilk sayfa, tam veri bibliometri/sipariş istenince).** Eski not: — arama tüm sonuçları (5000'e kadar, 25 istek) baştan çekiyor;
   yalnız ilk sayfa + tam veri bibliometri/indirme istenince çekilirse arama başı 1 istek (≈1.000 arama/gün). Önce canlıda
   günlük arama sayısı ölçülebilir (salt okuma, kullanıcı izniyle).
 - [x] **OpenAlex API anahtarı EKLENDİ (28 Eylül 2026, kullanıcı: "canlı ve lokalde ok")** — yerelde doğrulandı: anahtarlı
