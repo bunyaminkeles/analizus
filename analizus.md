@@ -80,7 +80,7 @@ PostgreSQL (host) + Redis (host)
 **VPS IP:** `89.167.5.224`
 **Uygulama dizini (host + container içi):** `/app`
 **Servis yönetimi:** `docker compose`
-**Container adları:** `app-web-1`, `app-db-1`, `app-redis-1`
+**Container adları:** `app-web-1`, `app-db-1`, `app-redis-1`, `app-nginx-1`, `app-rlprehber-1` (almanyalirehber)
 **Compose servis adları:** `web`, `db`, `redis`
 
 > Not: `DATABASE_URL` içinde servis adı kullanılır (`db`) — `localhost` container içinden host'a ulaşamaz.
@@ -101,6 +101,23 @@ PostgreSQL (host) + Redis (host)
 > almanyalirehber.com detayları için o projenin kendi repo'sundaki `SUNUCU.md`'ye bak.
 > Eski sunucu (204.168.195.246) silinmedi — kullanıcı isteğiyle ileride başka bir proje
 > için saklı tutuluyor, artık trafik almıyor.
+
+> ⚠️ **Hetzner `docker-compose.yml` git'tekinden FARKLI (29 Eylül 2026):** sunucudaki dosyada commit'lenmemiş `rlprehber`
+> servisi + volume'u var (`git status` → `M docker-compose.yml`). Bu dosyayı git'te değiştirme — `git pull` "local changes
+> would be overwritten" ile durur. Sunucu geneli ayarlar compose yerine host'ta yapılır (ör. log sınırı aşağıda).
+
+**Sunucu bakımı (29 Eylül 2026):**
+- **Docker log sınırı:** `/etc/docker/daemon.json` → `{"log-driver":"json-file","log-opts":{"max-size":"20m","max-file":"5"}}`
+  (container başına ≤100 MB). Yalnız **yeniden oluşturulan** container'a uygulanır (`up -d --force-recreate`); 29 Eylül'de
+  tümüne uygulandı — kontrol: `docker inspect -f '{{.HostConfig.LogConfig.Config}}' app-web-1`. Öncesinde db log'u 248 MB'tı.
+- **Kapasite:** 2 vCPU (yük ~0,1), 3,7 GB RAM (kullanılabilir ~2,9 GB), disk 38 GB (%45 dolu, temizlik sonrası). Büyüme
+  kaynağı: her `--build` 1–2 GB imaj bırakır → ara sıra `docker image prune -a -f` + `docker builder prune -f` (tüm
+  container'lar `Up` iken) + `journalctl --vacuum-size=500M`.
+- **DB yedekleri:** host crontab `0 2 * * *` → `/root/backup_analizus_YYYYMMDD.sql` (~175 MB, 7 günden eskisi silinir).
+  Elle alınan `/root/yedek_*.sql` rotasyonsuz — ara sıra temizle. **Sunucu dışı kopya:** kullanıcının bilgisayarında
+  `scripts/yedek_indir.sh` (kullanıcı crontab'ı saatlik `:15`) en yeni gecelik yedeği gzip'leyip `~/yedekler/analizus/`'a
+  indirir (~55 MB, son 14 tutulur, doğrulama: `gzip -t` + "dump complete"; log `yedek.log`). Hetzner Backup kullanılmıyor
+  (kullanıcı: ek maliyet yok).
 
 ### Bağlantı
 ```bash
@@ -191,7 +208,7 @@ SMTP_PORT=587                            # 587=TLS, 465=SSL (otomatik algılanı
 SMTP_USER=info@analizus.com
 SMTP_PASS=...
 DEFAULT_FROM_EMAIL=Analizus <info@analizus.com>
-ADMIN_NOTIFICATION_EMAIL=bkeles74@gmail.com
+ADMIN_NOTIFICATION_EMAIL=bkeles74@gmail.com   # admin bildirimleri + 500 hata e-postaları (ADMINS, §16)
 
 # AI / LLM
 GROQ_API_KEY=...
@@ -224,6 +241,7 @@ SEMANTIC_SCHOLAR_API_KEY=...
 # PubMed / NCBI E-utilities (29 Eylül 2026) — anahtar opsiyonel ve ücretsiz (NCBI hesabı → Account Settings →
 # API Key Management). Anahtarsız 3 istek/sn, anahtarla 10 istek/sn. NCBI_EMAIL yoksa OPENALEX_EMAIL kullanılır.
 # Değişiklikten sonra `docker compose up -d web` (restart .env'i yeniden okumaz).
+# 29 Eylül 2026'dan beri yerel + Hetzner + Render'da TANIMLI. Ad tam olarak NCBI_API_KEY (PUBMED_API_KEY OKUNMAZ).
 NCBI_API_KEY=...
 NCBI_EMAIL=info@analizus.com
 ```
@@ -257,6 +275,8 @@ git pull && docker compose restart web && docker compose restart nginx
 
 > ⚠️ **KRİTİK:** `docker compose restart web` sonrası **mutlaka** `docker compose restart nginx` da çalıştır.
 > Nginx, web container'ın IP'sini başlangıçta çözümler. Container restart'ta yeni IP'yi almak için nginx de yeniden başlatılmalıdır.
+> `docker compose up -d --force-recreate` tüm container'ları (nginx dahil) yeniden oluşturur → ayrı nginx restart gerekmez;
+> iki site birkaç saniye kesilir. Log sınırı gibi host ayarları da ancak bununla geçer.
 > Aktif scraping/analiz job'u varken restart yapma — önce `docker compose exec web python manage.py shell -c "from yoktez.models import YokTezSearchJob; print(YokTezSearchJob.objects.filter(status='running').count())"` ile kontrol et.
 
 ---
@@ -683,7 +703,7 @@ class JobPayment:        # İlan vitrin ödemeleri
 | `feature_trdizin` | **False** | TR Dizin (gizli, özel kullanıcılara açılabilir) |
 | `feature_semanticscholar` | True | Semantic Scholar Yayın Kazıma |
 | `feature_openalex` | True | OpenAlex |
-| `feature_pubmed` | **False** | PubMed Yayın Tarama (29 Eylül 2026, migration forum/0160) — kapalıyken `/pubmed/` ve `/bibliometrics/from-pubmed/` 404, hub/konsol/navbar/sitemap'te yok. NCBI_API_KEY eklenip canlıda denenince açılacak |
+| `feature_pubmed` | **False** (canlıda AÇIK, 29 Eylül 2026) | PubMed Yayın Tarama (29 Eylül 2026, migration forum/0160) — kapalıyken `/pubmed/` ve `/bibliometrics/from-pubmed/` 404, hub/konsol/navbar/sitemap'te yok. NCBI_API_KEY tanımlı |
 | `feature_oaipmh` | True | OAI-PMH Üniversite Arşivi |
 | `feature_quiz` | True | İstatistik Arena |
 | `feature_messaging` | True | Özel Mesajlaşma |
@@ -818,6 +838,11 @@ CHANNEL_LAYERS = {"default": {
 ```
 
 WebSocket path: `/ws/` — Nginx'te ayrı `proxy_pass` bloğu (proxy_http_version 1.1, Upgrade header)
+
+Route'lar `forum/routing.py`: `ws/notifications/`, `ws/chat/(?P<username>[\w.@+-]+)/` — kullanıcı adı deseni Django
+kullanıcı adı karakterlerinin tamamı (29 Eylül 2026'ya kadar `\w+` idi → `240401005@` gibi adlarla DM canlı bağlantısı
+"No route found" ile düşüyordu). İstemci (`send_message.html`) adı `encodeURIComponent` ile yazar; HTTP polling
+(`/api/chat/<str:username>/poll/`) zaten her karakteri kabul ediyordu.
 
 ---
 
@@ -1118,7 +1143,12 @@ def _broadcast_chat(uid1, uid2, event):
   → sipariş `approved`'a döner, hata **Admin Notu**'na yazılır; aksiyon tekrar çalıştırılabilir. `processing` siparişler
   tekrar seçilince atlanır (çift gönderim yok) ve restart'ta `job_queue._recover` ile yeniden kuyruğa alınır.
 - Sonuç sayfası, Excel/TXT indirme ve demo e-postası `demo_results` (ilk 5). S3 dosyaları 7 günde temizlenir.
-- 503'te bekleme YOK (yalnız 429'da); kullanıcıya ham hata + API URL'si gösteriliyor (todo).
+- **Hata yönetimi (29 Eylül 2026, d39af06 + 9f50d0b):** 429/502/503/504'te `Retry-After` (üst sınır 60 sn) ya da 10–20 sn
+  bekleyip yeniden dener (`RETRY_STATUSES`). İş başarısız olursa kullanıcıya çevrili sabit mesaj (yoğunluk/zaman aşımı:
+  "OpenAlex şu an yoğun…", diğer: genel hata). **API anahtarı URL'de (`api_key=`) gittiği için `requests` hata metni
+  anahtarı içerir** — eskiden kullanıcıya gösteriliyordu. Artık `redact_api_key()` ile `api_key=***`; son denemede istisna
+  aynı türde temizlenmiş mesajla yeniden fırlatılır (`response` korunur) → bibliometri/sipariş traceback'leri de temiz.
+  Canlı DB'de sızmış kayıt olmadığı doğrulandı.
 - Sonuç kaydı (`_parse_work`): `institutions` (', ' birleşik metin, dışa aktarım için) + `institution_list` / `country_list` (bibliometri için)
 - S3 paths: `openalex/demo/`, `openalex/orders/` (`openalex/full/` artık yazılmıyor; eski dosyalar 7 günde temizlendi)
 - **XSS düzeltmesi (29 Eylül 2026, canlıda 08472b2):** OpenAlex, Semantic Scholar, TR Dizin, OAI-PMH, YÖK Tez ve Tez
@@ -1131,10 +1161,12 @@ def _broadcast_chat(uid1, uid2, event):
   (bildirim/widget script'leri yükleniyor).
 
 ### PubMed (`pubmed/`) — 29 Eylül 2026
-- `feature_pubmed` **varsayılan KAPALI** (canlıda kod var, flag açılmadı). TR/EN/DE (i18n `/pubmed/`), `intl` araç.
+- `feature_pubmed` varsayılan kapalı; **canlıda AÇIK (29 Eylül 2026 gece)**. TR/EN/DE (i18n `/pubmed/`), `intl` araç.
 - NCBI E-utilities: `esearch` (`usehistory=y`, `sort=pub_date`, JSON → count + WebEnv) + `efetch` XML 200'lük sayfa
   (WebEnv'den en fazla 10.000 kayıt). `NCBI_API_KEY` opsiyonel (3 → 10 istek/sn; tüm thread'ler için ortak `_throttle`),
   `tool=analizus` + `email`. 429/5xx'te bekleyip yeniden dener; kullanıcıya ham hata değil çevrili genel mesaj.
+  Anahtar log/traceback'te `api_key=***` (`_redact_api_key`, OpenAlex ile aynı kalıp; d8d310d). Anahtarla gerçek
+  arama ~3,5 sn (3.839 sonuç, 2 istek).
 - OpenAlex kalıbı: `PubMedSearchJob.all_results` + arama yalnız ilk sayfa (esearch + 1 efetch = 2 istek) +
   `pubmed.services.job_runner.ensure_full_results`. Sipariş YOK (kullanıcı kararı): tam veri → her dilde proje talebi;
   100+ sonuçta bibliometri butonu (§14).
@@ -1197,6 +1229,16 @@ def _broadcast_chat(uid1, uid2, event):
 **SMTP:** `mail.analizus.com` (587 TLS veya 465 SSL — settings.py otomatik algılar)
 **Gönderici:** `Analizus <info@analizus.com>`
 **Async:** `forum/email_utils.py` içindeki tüm fonksiyonlar threading ile çalışır — blocking değil
+
+### 500 Hata E-postaları (29 Eylül 2026, 8393eec)
+- `ADMINS = [('Analizus', ADMIN_NOTIFICATION_EMAIL)]`, `SERVER_EMAIL = DEFAULT_FROM_EMAIL`, konu öneki `[Analizus hata] `.
+- `LOGGING`: `django.request` → `mail_admins` (`AdminEmailHandler`), yalnız `DEBUG=False` + ERROR (5xx; 404 gelmez).
+  Yerel geliştirme (DEBUG=True) e-posta üretmez; Render'da DEBUG=False ise orada da gelir.
+- Sel koruması `analizdestek/log_filters.py` `ThrottleAdminEmails`: aynı hata (istisna türü + mesaj) 15 dk'da 1, saatte
+  en çok 20 — sayaç süreç belleğinde (DB'ye bağlı değil; hata DB kaynaklı olabilir), gunicorn worker başına.
+- Rapor gövdesinde şifre/anahtar yok (Django `SafeExceptionReporterFilter`), oturum çerezi gizli — doğrulandı.
+- Arka plan işi (job_queue) hataları kapsam dışı — yalnız log'da.
+- Canlı SMTP testi: `docker compose exec -T web python manage.py sendtestemail --admins` (29 Eylül'de geldi).
 
 ### Admin Bildirim Fonksiyonları (`email_utils.py`)
 Her önemli event'te `bkeles74@gmail.com` adresine bildirim:
@@ -1503,6 +1545,8 @@ kullanılamaz olduğundan bu yol açılmaz.
 - **Aktif:** `/api/cron/cleanup-pageviews/` — 5 günden eski sayfa ziyaret loglarını PageViewSummary'e toplar ve siler; Hetzner crontab'ında `0 4 * * * curl -s "https://www.analizus.com/api/cron/cleanup-pageviews/?secret=..." >> /var/log/cron_pageviews.log 2>&1` ile çalışır (31 Temmuz 2026'da www'siz→www'li URL'e düzeltildi, önceki satır redirect yüzünden fiilen hiç çalışmıyordu)
 - **Aktif:** `/api/cron/process-account-deletions/` — `deletion_requested_at` üzerinden 30 gün geçmiş hesapları anonimleştirir (`_anonymize_deleted_account`, 25 Eylül 2026 kullanıcı kararları): açık içerik + DM'ler kalır (yazar anonim), bağış/sipariş kalır (bağış ad/e-posta/mesaj silinir; siparişli iş silinmez, dosyaları silinir), tarama/analiz işleri + S3 dosyaları, bildirim, PageView, quiz skoru, oda üyeliği, takip listesi silinir, açık ilanlar iptal; kullanıcı başına tek transaction; Hetzner crontab'ında `0 3 * * *` ile çalışıyor (www'li, doğru)
 - **Kod hazır, crontab satırı eklenmedi:** `/api/cron/cleanup-session-datasets/` — `istatistik/services/job_runner.py`'deki `_session_datasets` (RAM'de tutulan, kullanıcının araçlar arası taşıdığı yüklenmiş CSV/Excel içeriği) 2 saatten (`SESSION_DATASET_TTL_SECONDS`, `SESSION_COOKIE_AGE` ile hizalı) eski girdileri temizler. **Neden ayrı bir mekanizma:** bu veri DB'de değil, çalışan web sürecinin RAM'inde — ayrı bir process olarak çalışan bir `manage.py` komutu bu dict'e erişemez, yalnızca çalışan sürece HTTP isteğiyle vuran bir `/api/cron/*` endpoint'i temizleyebilir (31 Temmuz 2026). Hetzner crontab'ına saatlik (`0 * * * * curl -s "https://www.analizus.com/api/cron/cleanup-session-datasets/?secret=..." >> /var/log/cron_cleanup_session_datasets.log 2>&1`) eklenmesi gerekiyor — henüz eklenmedi.
+- **Host (HTTP değil):** `0 2 * * *` gecelik `pg_dump` → `/root/backup_analizus_YYYYMMDD.sql` (7 gün rotasyon). Kullanıcının
+  bilgisayarında saatlik `scripts/yedek_indir.sh` bunu yerele indirir (§3 "Sunucu bakımı").
 - **Kaldırılacak** (artık gereksiz): `/api/cron/daily-quiz/`, `/api/cron/update-badges/`
 - **Not (Celery değil):** `forum/tasks.py`'deki `@shared_task check_featured_jobs_expiration` Celery deseninde yazılmış ama proje Celery kullanmıyor (`requirements.txt`'te yok, `CELERY_BEAT_SCHEDULE`/`celery.py` app config yok) — bağlı olmayan/ölü kod, gerçek periyodik iş mekanizması yukarıdaki `/api/cron/*` + Hetzner sistem crontab'ı.
 
@@ -1672,6 +1716,12 @@ with connection.cursor() as c:
 | Eksik çeviri taraması eski (zaten çevrili) metinleri "eksik" gösteriyor | Regex `gettext('…')` birden çok satıra bölünmüş (bitişik) string'lerin yalnız ilk parçasını yakalar. `.py` için `ast` ile tara (`ast.Call` → `args[0].value` birleşik gelir), şablonlar için regex (29 Eylül 2026). |
 | Test client ile giriş yapmış kullanıcıya view 302 → `/verification-pending/` | E-posta doğrulama middleware'i: test kullanıcısında `Profile` yoksa oluştur + `email_verified=True`. Başkasının işine erişim testinde 404 yerine 302 görmek bu yüzdendir (erişim yine yok). |
 | Şablonu değiştirdim ama tarayıcı/test eski sürümü görüyor ("düzeltme öncesi" test de geçiyor) | Şablonlar önbellekte (cached loader, DEBUG=False): dosya değişikliği `docker compose restart web` (+ nginx) olmadan yüklenmez. Güvenlik testinde, testin düzeltme ÖNCESİ sürümde başarısız olduğunu restart sonrası kanıtla (29 Eylül 2026). |
+| Kullanıcıya/log'a `… for url: https://api…?api_key=XXXX` yazılıyor | API anahtarı query parametresi olarak gidiyorsa `requests` HTTPError/ConnectionError metni tam URL'yi (anahtar dahil) taşır; `str(e)` → `mark_failed`, `logger.error(… {e})` ve `exc_info=True` traceback'i anahtarı yazar. **Kural:** kullanıcıya sabit çevrili mesaj; scraper'da son denemede `raise type(e)(redact(e), response=e.response, request=e.request) from None` (OpenAlex `redact_api_key`, PubMed `_redact_api_key`; 29 Eylül 2026). Yeni API istemcisinde de aynı kalıp. |
+| DM'de canlı mesaj bazı kullanıcılarla çalışmıyor; log'da `No route found for path 'ws/chat/xxx@/'` | Channels route'u `\w+` idi — Django kullanıcı adındaki `@ . + -` eşleşmez. `[\w.@+-]+` + istemcide `encodeURIComponent` (29 Eylül 2026, §11). Yeni kullanıcı adı içeren route'larda `<str:>`/aynı desen kullan. |
+| `.env`'ye anahtar eklendi ama kod görmüyor | (1) Ad farkı: kod `NCBI_API_KEY` okurken `PUBMED_API_KEY` yazıldı (29 Eylül 2026). (2) `restart` `.env`'yi okumaz → `docker compose up -d web`. Doğrula: container'da `bool(os.environ.get('AD'))` — değeri yazdırma. |
+| Yedek doğrulaması sağlam dump'ı "eksik" sanıyor | Yeni pg_dump (16.x güncel) dosya sonuna `\unrestrict <token>` + boş satırlar ekler; "PostgreSQL database dump complete" artık son satır değil → son ~10 satıra bak (`scripts/yedek_indir.sh`). Asıl kanıt: geçici `postgres:16-alpine` container'ına geri yükle (29 Eylül: 80 tablo, 125 kullanıcı). |
+| Docker log dosyası yüzlerce MB (db 248 MB) / log ayarı değişti ama container'da `LogConfig` boş | Varsayılan json-file sınırsız. `/etc/docker/daemon.json` + `systemctl restart docker` yalnız YENİ container'lara uygulanır → `docker compose up -d --force-recreate`. Şişmiş log'u boşalt: `truncate -s 0 $(docker inspect -f '{{.LogPath}}' <c>)` (§3). |
+| Hetzner'de `git pull` "local changes would be overwritten: docker-compose.yml" | Sunucudaki compose'ta commit'lenmemiş `rlprehber` servisi var (§3). Compose'u git'te değiştirme; host ayarı kullan. |
 
 ---
 
@@ -1961,6 +2011,12 @@ with connection.cursor() as c:
   - PubMed modülü (Faz 1–3: 630a069, 289784b, d046c07) — `pubmed` app, arama sayfası TR/EN/DE, bibliometri köprüsü
     (13 analize kadar, atıf yok, ülke/kurum tahmini); `feature_pubmed` KAPALI başlar. §14, §15.
   - Tarama siparişi (4 araç ortak) + ilan vitrini fiyatları Site Ayarları → Fiyatlandırma'dan (e716e46). §20.
+- **29 Eylül 2026 gece — canlıda (main 8393eec; migration yok; restart/force-recreate):**
+  - OpenAlex: 429/5xx bekle+yeniden dene, çevrili hata mesajı, API anahtarı kullanıcı/log/traceback'te gizli (d39af06, 9f50d0b). §15.
+  - PubMed: NCBI anahtarı log/traceback'te gizli (d8d310d); `NCBI_API_KEY` yerel+Hetzner+Render; `feature_pubmed` AÇIK. §15.
+  - DM WebSocket: `@ . + -` içeren kullanıcı adları (ba9560b). §11.
+  - 500 hata e-postası + sel koruması (8393eec). §16.
+  - Sunucu: Docker log sınırı (daemon.json), disk temizliği (%65→%45), yerel yedek indirme betiği + cron (95c35d0). §3.
 
 ### Sıradaki Görevler
 
@@ -1978,15 +2034,14 @@ with connection.cursor() as c:
 - ~~OpenAlex aramada yalnız ilk sayfa~~ → YAPILDI, canlıda (29 Eylül 2026; kararlar: sipariş TXT'si ödenen sayı kadar,
   bütçe dolunca "talep bırakın" yedeği SONRA — önce günlük istek sayısı ölçülecek).
 - ~~OpenAlex XSS / block.super / Premium 7~~ → YAPILDI (29 Eylül 2026; XSS canlıda 08472b2, limit + block.super e1038c7).
-- **SIRADAKİ adaylar:** OpenAlex ham hata mesajı → çevrili mesaj + 503'te bekleme; OpenAlex dergi adlarında kontrol
-  karakteri (`_clean`); PubMed'i canlıda açma (kullanıcı: NCBI_API_KEY + flag); **BASE — e-posta gönderildi, yanıt
+- **SIRADAKİ adaylar:** OpenAlex dergi adlarında kontrol karakteri (`_clean`); **BASE — e-posta gönderildi, yanıt
   bekleniyor** (IP 89.167.5.224 + UA beyaz liste + "non-commercial" teyidi; §15); istatistik sütun adı self-XSS.
 - **Bibliometri diğer:** Research Gap trend yöntemi (dönem uzunlukları farklı → yıllık ortalama önerisi, karar);
   SSS/SEO EN/DE'de Türkçe + "Bradford"/demo kartı metinleri; yükleme hatasında "file: " öneki; S2 →
   bibliometri (migration); OpenAlex dedup incelemesi; OpenAlex dergi adlarında kontrol karakteri (`_clean`); 2026
   sorusu (kullanıcının "tarih/DOI varsa alınsın" isteği netleşmedi).
-- **OpenAlex:** ham hata mesajı → çevrili mesaj + 503 bekleme; dergi adlarında kontrol karakteri.
-- **Kazıma modülleri:** PubMed TR/EN/DE — YAPILDI (flag kapalı). **BASE yalnız DE — bekliyor:** API "yalnız ticari
+- **OpenAlex:** dergi adlarında kontrol karakteri (ham hata + 503 → YAPILDI 29 Eylül gece).
+- **Kazıma modülleri:** PubMed TR/EN/DE — YAPILDI, canlıda flag AÇIK (29 Eylül gece). **BASE yalnız DE — bekliyor:** API "yalnız ticari
   olmayan kullanım"; hub'daki `intl` bayrağı DE-only'i ifade etmez (dil listesi gerekebilir).
 - **EN/DE açıkları:** Impressum (DE yasal sayfa — şirket bilgisi kullanıcı/avukattan); C grubu çevirisi (Tableau;
   bibliometri dev'de); D grubu hesap sayfaları (gelen kutusu, ödemelerim, davet) tek dilli — şimdilik kalsın;
@@ -2028,7 +2083,11 @@ migration 0153–0155 container açılışında deploy.sh ile uygulandı; DB yed
 
 **Önceki (28 Eylül 2026 gece):** canlı = main ab57dcd (bibliometri kısıtlar bölümü + BibTeX).
 
-**En son (29 Eylül 2026 akşam):** canlı = main = dev = **c02093f** (Hetzner restart; `/openalex/` 200, log temiz).
+**En son (29 Eylül 2026 gece):** canlı = main = dev = **8393eec** (+ yalnız docs/betik commit'leri dev'de) — OpenAlex/PubMed
+anahtar gizleme + OpenAlex 503 bekleme, DM WebSocket, 500 hata e-postası; sunucu log sınırı + disk temizliği + yerel yedek.
+`feature_pubmed` AÇIK. Ayrıntı: §27 Tamamlananlar "29 Eylül 2026 gece".
+
+**Önceki (29 Eylül 2026 akşam):** canlı = main = dev = **c02093f** (Hetzner restart; `/openalex/` 200, log temiz).
 İçerik: e716e46 (OpenAlex ilk sayfa + sipariş arka plan işi, PubMed modülü flag kapalı, admin'den fiyatlar; migration'lar
 pubmed/0001, forum/0160–0161, bibliometrics/0005, yedek alındı) + 08472b2 (XSS) + e1038c7 (Premium 7 + OpenAlex block.super). Sıradaki: §27 "SIRADAKİ adaylar". Yeni oturum: `tasks/todo.md` başındaki "YENİ OTURUM BURADAN BAŞLA" notu + "AÇIK İŞLER — TEK LİSTE";
 özet yukarıda "Çok Dilli (EN/DE) ve Bibliometri". Ayrıntı: §28.
@@ -2124,7 +2183,7 @@ pubmed/0001, forum/0160–0161, bibliometrics/0005, yedek alındı) + 08472b2 (X
 - **Proje talebi çağrıları (EN/DE):** hero birincil buton, navbar çerçeveli CTA, footer Kurumsal, market kartı,
   Nasıl Çalışır + SSS sonu, pazar yeri sayfası. Her çağrının `?source=` değeri ayrı (ölçüm için; §8 ProjectRequest).
 - **Footer Akademik Kaynaklar (EN/DE):** Google Scholar, Semantic Scholar, OpenAlex, BASE (Bielefeld).
-- **Kazıma modülleri (29 Eylül 2026):** PubMed TR/EN/DE — kod canlıda, `feature_pubmed` kapalı; sipariş YOK, tam veri →
+- **Kazıma modülleri (29 Eylül 2026):** PubMed TR/EN/DE — canlıda, `feature_pubmed` AÇIK (29 Eylül gece); sipariş YOK, tam veri →
   proje talebi (her dilde); bibliometride atıf analizleri yok, ülke/kurum tahmini (Kısıtlar'da yazar). BASE yalnız DE —
   API koşulu "non-commercial"; kullanım modeli kararı bekliyor. Tarama sipariş + vitrin fiyatları admin'den (hard-code yok).
 - YouTube Transcript: TR dahil kaldırılıyor (menü kaldırıldı; kod/DB aşama 2 todo'da).

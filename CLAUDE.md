@@ -1,22 +1,22 @@
 # Analizus.com — Claude Çalışma Kuralları
 
-Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~2130 satır; offset'ler 29 Eylül 2026 akşam). Tamamını okuma — ihtiyaca göre offset ile ilgili bölümü oku:
+Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~2190 satır; offset'ler 29 Eylül 2026 gece). Tamamını okuma — ihtiyaca göre offset ile ilgili bölümü oku:
 
 | Bölüm | offset | Konu |
 |---|---|---|
 | §1–2 | 8 | Proje amacı, tech stack, paketler |
-| §3–5 | 68 | Sunucu mimarisi, deploy (deploy.sh açılışta migrate+collectstatic), env vars (NCBI_API_KEY dahil) |
-| §6–7 | 264 | Dizin yapısı, URL mimarisi (i18n_patterns: hangi sayfa /en/ /de/) |
-| §8–9 | 437 | Veri modelleri, feature flag'ler (`feature_pubmed` varsayılan kapalı) |
-| §10–11 | 704 | CSS/tasarım sistemi, WebSocket |
-| §12 | 824 | İstatistik araçları (akış, PDF, polling) |
-| §13–15 | 978 | DM/oda mesajlaşma, bibliometri (OpenAlex/PubMed köprüsü), akademik tarama (OpenAlex ilk sayfa, PubMed, BASE) |
-| §16–19 | 1195 | E-posta, AnalizBot/AI Asistan, S3, güvenlik (çerez onayı, cron anahtarı) |
-| §20–23 | 1404 | Admin (sipariş akışı, **Fiyatlandırma** ayarları), pazar iş akışı, session, cron |
-| §24–25 | 1511 | Geliştirme ortamı (pytest, çeviri komutları), değişmez kurallar |
-| §26 | 1595 | Sık yapılan hatalar ve çözümleri |
-| §27 | 1678 | Görev listesi (tamamlanan / sıradaki) |
-| §28 | 2039 | Çok dilli yapı (TR/EN/DE) ve gizlilik — mimari, çeviri kuralları, iş akışı, EN/DE ürün kararları (§28.7) |
+| §3–5 | 68 | Sunucu mimarisi + bakım (log sınırı, disk, yedek → yerel), deploy (deploy.sh açılışta migrate+collectstatic), env vars (NCBI_API_KEY dahil) |
+| §6–7 | 284 | Dizin yapısı, URL mimarisi (i18n_patterns: hangi sayfa /en/ /de/) |
+| §8–9 | 457 | Veri modelleri, feature flag'ler (`feature_pubmed` canlıda açık) |
+| §10–11 | 724 | CSS/tasarım sistemi, WebSocket (route'lar) |
+| §12 | 849 | İstatistik araçları (akış, PDF, polling) |
+| §13–15 | 1003 | DM/oda mesajlaşma, bibliometri (OpenAlex/PubMed köprüsü), akademik tarama (OpenAlex ilk sayfa, PubMed, BASE) |
+| §16–19 | 1227 | E-posta (500 hata e-postası), AnalizBot/AI Asistan, S3, güvenlik (çerez onayı, cron anahtarı) |
+| §20–23 | 1446 | Admin (sipariş akışı, **Fiyatlandırma** ayarları), pazar iş akışı, session, cron |
+| §24–25 | 1555 | Geliştirme ortamı (pytest, çeviri komutları), değişmez kurallar |
+| §26 | 1639 | Sık yapılan hatalar ve çözümleri |
+| §27 | 1728 | Görev listesi (tamamlanan / sıradaki) |
+| §28 | 2097 | Çok dilli yapı (TR/EN/DE) ve gizlilik — mimari, çeviri kuralları, iş akışı, EN/DE ürün kararları (§28.7) |
 
 ---
 
@@ -61,6 +61,10 @@ Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~2130 satır; offset
 - Fiyat/ücret kodda sabit YAZILMAZ — `SiteSettings` alanı + admin (tarama siparişi, vitrin, bibliometri; §20)
 - Dış kaynaktan (API/kazıma) gelen veri JS'te `innerHTML`'e kaçışsız yazılmaz — `_esc()`; link yalnız http(s) (§15)
 - Şablon değişikliğini doğrulamadan önce `docker compose restart web` (cached loader) — yoksa eski sürüm test edilir
+- API anahtarı URL'de giden istemcilerde `requests` hata metni anahtarı taşır → kullanıcıya sabit mesaj, istisnayı `api_key=***` ile yeniden fırlat (§26)
+- `.env` değişikliği `restart` ile okunmaz → `docker compose up -d web`; env adını koddakiyle birebir kontrol et (`NCBI_API_KEY`)
+- Hetzner `docker-compose.yml`'de commit'lenmemiş `rlprehber` var — compose'u git'te değiştirme; host ayarı `daemon.json` (§3)
+- Sunucuda yalnız kullanıcı isteyince işlem; `main`/push/deploy kullanıcıda (push izni otomatik reddediliyor)
 
 ## Çok Dilli (i18n) Kritik Kurallar — ayrıntı analizus.md §28
 - Yeni kullanıcıya görünen metin **her zaman** çeviriye işaretlenir (msgid = Türkçe); EN/DE `locale/` + `.mo` git'te

@@ -131,3 +131,15 @@ ya da container'da oluşturduktan sonra `docker compose exec -T web chown -R 100
 şablonu önbellekten veriyordu. Restart sonrası eski sürümde yük 7 kez çalıştı.
 **Kural:** Şablon değiştirip tarayıcı/test client ile doğrulamadan önce `docker compose restart web` (+ nginx). Bir
 testin açığı gerçekten yakaladığını, düzeltme öncesi sürümde BAŞARISIZ olduğunu görerek kanıtla.
+
+## 29 Eylül 2026 — Doğrulama betiği sağlam veriyi "bozuk" saydı (varsayılan dosya formatı)
+**Hata:** Yedek betiğinde "dump complete" satırını son 3 satırda aradım; yeni pg_dump sonuna `\unrestrict` ekliyor →
+sağlam yedek "eksik" diye reddedildi. Formatı görmeden varsaydım.
+**Kural:** Bir dosya formatına dayanan doğrulama yazmadan önce gerçek örneğin sonunu/başını oku (`tail -c 300`); asıl
+kanıt olarak yedeği geçici container'a geri yükle.
+
+## 29 Eylül 2026 — API anahtarı hata metninden sızar
+**Olay:** OpenAlex anahtarı URL parametresi → `requests` hata metni → `mark_failed(str(e))` ile kullanıcıya gösteriliyordu;
+PubMed/OpenAlex traceback'leri log'a yazıyordu.
+**Kural:** Dış API hatasını kullanıcıya asla `str(e)` ile gösterme; anahtar URL'deyse istisnayı kaynağında temizleyip
+yeniden fırlat. Testte eski kodda sızıntının GÖRÜLDÜĞÜNÜ de kanıtla.
