@@ -10,43 +10,21 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
-> **YENİ OTURUM BURADAN BAŞLA (28 Eylül 2026 gece):**
-> - **Canlı = main ab57dcd** (bibliometri "Veri, Yöntem ve Kısıtlar" A–G + BibTeX `bibtexparser==1.4.4`; `--build` ile
->   deploy edildi, doğrulandı). **dev main'den ileride:** 050f1a1 (kurum grafiği tüm kurumlar + WoS C1 düzeltmesi),
->   a4d7438 ("17 analize kadar" metinleri + 17'lik listeler, EN/DE) + todo/doküman commit'leri — migration yok,
->   requirements değişmedi. Henüz merge edilmedi (kullanıcı "merge et" demeli).
-> - **OpenAlex aramada yalnız ilk sayfa — UYGULANDI YERELDE (29 Eylül 2026, commit bekliyor)**: arama 1 istek (≤200 kayıt
->   saklanır, aramada tam TXT üretilmez); bibliometri analizden önce `ensure_full_results`; sipariş admin onayı → kuyruk
->   (`openalex_order`) → ödenen sayı kadar veri → `openalex/orders/<id>.txt` → e-posta; hata → 'approved' + Admin Notu.
->   Uçtan uca gerçek API ile doğrulandı (586 sonuçlu sorgu: arama 1 istek, 300'lük sipariş 2 istek/300 kayıt, bibliometri
->   3 istek/584 kayıt, tekrar 0 istek) + forum testleri 61/61. Migration yok, requirements aynı → restart yeter.
->   Not: admin `scrap_max_records`'ı sipariş sayısının altına indirirse sipariş "Veri eksik" ile düşer (form üst sınırı 5000).
->   Kapanan açık: arama durum JSON'u `all_results_file_url` (tam TXT S3 linki) döndürüyordu → ödemesiz tam veri; artık
->   aramada tam dosya üretilmediği için alan boş. Eski not: 29 Eylül 2026: PLAN + 5 DOSYA ONAYLANDI. Kararlar: (a) sipariş TXT'si ödenen yayın sayısı (`abstract_count`) kadar, tam veri de o kadar çekilir;
->   (b) bütçe dolunca "talep bırakın" yedeği SONRA (önce istek sayısı ölçülecek). Eski not: — plan ve
->   dosya listesi `analizus.md` §27 "SIRADAKİ". Önce kullanıcıya iki karar sor: (a) sipariş TXT'si `abstract_count` ile
->   sınırlansın mı (öneri evet), (b) bütçe dolunca "talep bırakın" yedeği şimdi mi (öneri sonra). Onaydan sonra uygula.
-> - **CANLI = main e716e46 (29 Eylül 2026, Hetzner deploy YAPILDI; yedek /root 174 MB; 4 migration [X], web log hata 0, /, /openalex/, /bibliometrics/ 200).** Kalan: canlıda OpenAlex araması + sipariş onayı denemesi; PubMed flag'i açılmadı (NCBI_API_KEY kullanıcıda). Uygulananlar: pubmed/0001, forum/0160 (feature_pubmed, varsayılan
->   KAPALI), bibliometrics/0005, forum/0161 (fiyat alanları). Deploy öncesi DB yedeği; requirements değişmedi (restart yeter,
->   container açılışı migrate eder). Canlıda: NCBI_API_KEY (opsiyonel) → admin'den PubMed flag'ini aç.
-> - **BASE — ERİŞİM BEKLENİYOR (29 Eylül 2026):** erişim IP + User-Agent ile (anahtar gönderilmiyor); onay ilk başvurunun
->   e-postasına geldi ama 89.167.5.224 ve yerel IP "Access denied" (UA `AnalizusBot/1.0 (mailto:info@analizus.com)`).
->   BASE'e başvuru YALNIZ Gmail'den (info@ başvurusu yok — o OpenAlex içindi) → **29 Eylül 2026 GÖNDERİLDİ** (Gmail, onay
->   e-postasına yanıt): IP 89.167.5.224 + bu UA'yı beyaz listeye alma + "non-commercial" teyidi (ilk 100 ücretsiz, veri
->   satılmaz, ücretli raporlarda kullanılmaz, yalnız metadata + kayda link, 1 istek/sn, BASE logosu). YANIT BEKLENİYOR. Yanıt gelince
->   Hetzner'de tek curl testi → gerçek yanıtla modül. Kararlar: DE + EN,
->   bibliometri YOK, ilk 100 kayıt ücretsiz + fazlası proje talebi, 1 istek/sn ortak sınır, flag kapalı başlar.
->   API (rbace kaynağından, PDF'ten doğrulanmadı — Anubis engelli): hits ≤100, offset ≤1000 (sorgu başı ~1.100 kayıt), format=json.
-> - **BASE/PubMed kararları (29 Eylül 2026):** önce **PubMed** (OpenAlex kalıbı: yeni `pubmed` app, `PubMedSearchJob.all_results`
->   + bibliometri köprüsü; migration gerekir). **BASE BEKLİYOR:** API başvuru formu + IP beyaz liste; BASE API'yi "yalnız
->   ticari olmayan amaçla" veriyor (api.base-search.net, about_develop) → kullanıcı başvuruda kullanım amacını (ücretli rapor
->   dahil) yazıp onay bekleyecek; onay gelirse ayrı iş. Eski not: BASE/PubMed (kullanıcı sordu; `BASE_PubMed_Integration_Project.md` — git'te değil, başka kaynaktan tasarım
->   taslağı). Başlamadan netleştir: (1) mimari — taslaktaki ortak `base_pubmed` app + `HarvestedRecord` tablosu yerine
->   mevcut OpenAlex kalıbı (app başına `*SearchJob.all_results` + parser köprüsü) önerildi; (2) BASE erişimi kayıt + IP
->   onayı ve ticari kullanım kısıtı olabilir — DOĞRULANMADI, önce kontrol. Karar: PubMed TR/EN/DE, BASE yalnız DE.
+> **YENİ OTURUM BURADAN BAŞLA (29 Eylül 2026 akşam):**
+> - **Canlı = main 08472b2** (OpenAlex ilk sayfa + sipariş arka plan işi, PubMed modülü `feature_pubmed` KAPALI, admin'den
+>   fiyatlar, 6 tarama sayfasında XSS düzeltmesi). main'e merge edilen ama Hetzner'e ALINMAMIŞ: e1038c7 (Premium günlük 7
+>   arama — OpenAlex/TR Dizin/YÖK Tez/PubMed + OpenAlex `block.super`) + doküman commit'leri → `git pull` + restart yeter.
+> - **BASE:** kullanıcı Gmail'den e-posta gönderdi (IP 89.167.5.224 + UA `AnalizusBot/1.0 (mailto:info@analizus.com)`
+>   beyaz liste + "non-commercial" teyidi). Yanıt gelince Hetzner'de tek curl testi → gerçek yanıtla modül planı.
+>   Kararlar: DE + EN, bibliometri YOK, ilk 100 ücretsiz + fazlası proje talebi, 1 istek/sn, flag kapalı başlar.
+> - **PubMed'i açmak kullanıcıda:** `/app/.env` NCBI_API_KEY (opsiyonel) + `docker compose up -d web` → admin flag.
+> - **Sıradaki adaylar:** OpenAlex ham hata + 503 bekleme; dergi adlarında kontrol karakteri; istatistik sütun adı self-XSS;
+>   Research Gap trend yöntemi (karar); SSS/SEO EN/DE. Sistem özeti `analizus.md` §14, §15, §20, §27 "SIRADAKİ adaylar".
+> - BASE API (rbace kaynağından; resmi PDF Anubis engelli, doğrulanmadı): `func=PerformSearch`, `hits` ≤100, `offset` ≤1000
+>   (sorgu başı ~1.100 kayıt), `format=json`, erişim IP + User-Agent (anahtar parametresi yok).
 > - Açık kullanıcı soruları: (1) "2026 yayınları tarih/DOI varsa alınsın" netleşmedi; (2) Research Gap trend yöntemi
->   (yıllık ortalama önerisi). Kapananlar: kurum grafiği ✅, "17 analize kadar" ✅, OpenAlex ilk sayfa → karar verildi (plan).
-> - Diğer açıklar bu listede `- [ ]`; sistem özeti `analizus.md` §14 (bibliometri), §15 (OpenAlex), §26, §27.
+>   (yıllık ortalama önerisi).
+> - Diğer açıklar bu listede `- [ ]`; ayrıntı `analizus.md` §14 (bibliometri), §15 (tarama), §26, §27.
 
 **PUBMED MODÜLÜ — PLAN (29 Eylül 2026, ONAY BEKLİYOR)** — OpenAlex kalıbı, TR/EN/DE; ilk sayfa + ihtiyaçta tam veri.
 - [x] Faz 1 — YAPILDI YERELDE (29 Eylül 2026; gerçek API: 250 sonuçlu sorgu arama 2 istek/3,6 sn, tam veri 3 istek; sıfır sonuç + hata yolu OK; forum 61/61; affiliation'dan yazar e-postası temizleniyor). Faz 2'ye kalan: S3 temizlik cron'u + hesap silme listesi (`forum/api_views.py`). `pubmed` app çekirdeği: `PubMedSearchJob` (+ migration pubmed/0001), `services/scraper.py` (esearch

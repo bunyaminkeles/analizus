@@ -1121,8 +1121,14 @@ def _broadcast_chat(uid1, uid2, event):
 - 503'te bekleme YOK (yalnız 429'da); kullanıcıya ham hata + API URL'si gösteriliyor (todo).
 - Sonuç kaydı (`_parse_work`): `institutions` (', ' birleşik metin, dışa aktarım için) + `institution_list` / `country_list` (bibliometri için)
 - S3 paths: `openalex/demo/`, `openalex/orders/` (`openalex/full/` artık yazılmıyor; eski dosyalar 7 günde temizlendi)
-- Bilinen açıklar (todo): sonuç listesi API verisini `innerHTML` ile kaçışsız basıyor (XSS); `extra_js` `block.super`
-  çağırmıyor; "Premium ile 7 arama" metni var ama `get_daily_limit` herkese 3.
+- **XSS düzeltmesi (29 Eylül 2026, canlıda 08472b2):** OpenAlex, Semantic Scholar, TR Dizin, OAI-PMH, YÖK Tez ve Tez
+  Analizi sonuç listeleri dış veriyi `_esc()` ile basar (S2 PDF linki yalnız http(s) `_safeUrl`, DOI `encodeURI`). Kural:
+  dış kaynaktan gelen HİÇBİR alan `innerHTML`'e kaçışsız yazılmaz. Kalan düşük risk: istatistik araçlarında yüklenen
+  dosyanın sütun adları (self-XSS, todo).
+- **Günlük arama limiti (29 Eylül 2026, e1038c7):** admin sınırsız, **Premium 7**, normal 3 — OpenAlex, TR Dizin, YÖK Tez,
+  PubMed (sayfalar/limit mesajları 7 vaat ediyordu, kod 3 veriyordu). Semantic Scholar herkese 3 (vaat yok); OAI-PMH
+  Premium 7 / normal 1; bibliometri Premium 5 / normal 2. OpenAlex `extra_js` artık `{{ block.super }}` çağırır
+  (bildirim/widget script'leri yükleniyor).
 
 ### PubMed (`pubmed/`) — 29 Eylül 2026
 - `feature_pubmed` **varsayılan KAPALI** (canlıda kod var, flag açılmadı). TR/EN/DE (i18n `/pubmed/`), `intl` araç.
@@ -1139,7 +1145,7 @@ def _broadcast_chat(uid1, uid2, event):
   e-postası "Electronic address: …" ve `x@y` temizlenir → kişisel veri dosyaya girmez, aynı kurum tekrarlanmaz),
   language. `cited_by_count` YOK.
 - Sayfa `pubmed/templates/pubmed/landing.html`: ax- sınıfları, mobil önce, JS metinleri view'dan `json_script`
-  (`js_config`), API verisi `esc()` ile, URL'ler sentinel ile. Günlük limit OpenAlex ile aynı (3; staff sınırsız).
+  (`js_config`), API verisi `esc()` ile, URL'ler sentinel ile. Günlük limit OpenAlex ile aynı (Premium 7, normal 3, staff sınırsız).
 - S3: `pubmed/demo/` (7 gün, `cleanup-s3` cron'u). Hesap silmede `_ACCOUNT_DELETION_JOB_MODELS`'te; admin çalışan işler panelinde.
 
 ### BASE (Bielefeld) — BEKLİYOR
@@ -1665,6 +1671,7 @@ with connection.cursor() as c:
 | `git checkout main` / `merge --ff-only dev` → "untracked working tree files would be overwritten" (`<yeni_app>/migrations/…`) | Yeni app'in `migrations/` klasörü container'da `makemigrations` ile oluştu → root sahipli; dal değişirken git silemedi (29 Eylül 2026, `pubmed`). Kalan dosyalar dev'dekiyle aynıysa `docker compose exec -T web rm -rf /app/<app>` sonra merge. Önlem: klasörü host'ta aç ya da `chown -R 1000:1000`; commit öncesi `stat -c '%U'`. |
 | Eksik çeviri taraması eski (zaten çevrili) metinleri "eksik" gösteriyor | Regex `gettext('…')` birden çok satıra bölünmüş (bitişik) string'lerin yalnız ilk parçasını yakalar. `.py` için `ast` ile tara (`ast.Call` → `args[0].value` birleşik gelir), şablonlar için regex (29 Eylül 2026). |
 | Test client ile giriş yapmış kullanıcıya view 302 → `/verification-pending/` | E-posta doğrulama middleware'i: test kullanıcısında `Profile` yoksa oluştur + `email_verified=True`. Başkasının işine erişim testinde 404 yerine 302 görmek bu yüzdendir (erişim yine yok). |
+| Şablonu değiştirdim ama tarayıcı/test eski sürümü görüyor ("düzeltme öncesi" test de geçiyor) | Şablonlar önbellekte (cached loader, DEBUG=False): dosya değişikliği `docker compose restart web` (+ nginx) olmadan yüklenmez. Güvenlik testinde, testin düzeltme ÖNCESİ sürümde başarısız olduğunu restart sonrası kanıtla (29 Eylül 2026). |
 
 ---
 
@@ -1970,9 +1977,10 @@ with connection.cursor() as c:
 #### Çok Dilli (EN/DE) ve Bibliometri — 28 Eylül 2026 durumu (tam liste: `tasks/todo.md` "AÇIK İŞLER — TEK LİSTE")
 - ~~OpenAlex aramada yalnız ilk sayfa~~ → YAPILDI, canlıda (29 Eylül 2026; kararlar: sipariş TXT'si ödenen sayı kadar,
   bütçe dolunca "talep bırakın" yedeği SONRA — önce günlük istek sayısı ölçülecek).
-- **SIRADAKİ adaylar (29 Eylül 2026):** OpenAlex sayfası XSS (API verisi `innerHTML` kaçışsız — S2/TR Dizin de kontrol),
-  `extra_js` `block.super` eksikliği, "Premium 7 arama" metni ↔ kod 3; OpenAlex ham hata + 503 bekleme; PubMed'i canlıda
-  açma (kullanıcı: NCBI_API_KEY + flag); BASE (kullanıcı API anahtarını aldı — kullanım koşulu kararı, §15/§28.7).
+- ~~OpenAlex XSS / block.super / Premium 7~~ → YAPILDI (29 Eylül 2026; XSS canlıda 08472b2, limit + block.super e1038c7).
+- **SIRADAKİ adaylar:** OpenAlex ham hata mesajı → çevrili mesaj + 503'te bekleme; OpenAlex dergi adlarında kontrol
+  karakteri (`_clean`); PubMed'i canlıda açma (kullanıcı: NCBI_API_KEY + flag); **BASE — e-posta gönderildi, yanıt
+  bekleniyor** (IP 89.167.5.224 + UA beyaz liste + "non-commercial" teyidi; §15); istatistik sütun adı self-XSS.
 - **Bibliometri diğer:** Research Gap trend yöntemi (dönem uzunlukları farklı → yıllık ortalama önerisi, karar);
   SSS/SEO EN/DE'de Türkçe + "Bradford"/demo kartı metinleri; yükleme hatasında "file: " öneki; S2 →
   bibliometri (migration); OpenAlex dedup incelemesi; OpenAlex dergi adlarında kontrol karakteri (`_clean`); 2026
@@ -2020,9 +2028,10 @@ migration 0153–0155 container açılışında deploy.sh ile uygulandı; DB yed
 
 **Önceki (28 Eylül 2026 gece):** canlı = main ab57dcd (bibliometri kısıtlar bölümü + BibTeX).
 
-**En son (29 Eylül 2026):** canlı = main **e716e46** (OpenAlex ilk sayfa + sipariş arka plan işi, PubMed modülü flag kapalı,
-admin'den fiyatlar). Migration'lar pubmed/0001, forum/0160–0161, bibliometrics/0005 restart'ta deploy.sh ile uygulandı;
-yedek alındı; `/`, `/openalex/`, `/bibliometrics/` 200, log temiz. Sıradaki: §27 "SIRADAKİ adaylar". Yeni oturum: `tasks/todo.md` başındaki "YENİ OTURUM BURADAN BAŞLA" notu + "AÇIK İŞLER — TEK LİSTE";
+**En son (29 Eylül 2026 akşam):** canlı = main **08472b2** (e716e46 + XSS düzeltmesi; Hetzner restart, `/openalex/` 200).
+e716e46: OpenAlex ilk sayfa + sipariş arka plan işi, PubMed modülü flag kapalı, admin'den fiyatlar; migration'lar
+pubmed/0001, forum/0160–0161, bibliometrics/0005 (yedek alındı). main'e merge edildi, Hetzner deploy BEKLİYOR: e1038c7
+(Premium 7 + OpenAlex block.super) + doküman commit'leri — migration yok, restart yeter. Sıradaki: §27 "SIRADAKİ adaylar". Yeni oturum: `tasks/todo.md` başındaki "YENİ OTURUM BURADAN BAŞLA" notu + "AÇIK İŞLER — TEK LİSTE";
 özet yukarıda "Çok Dilli (EN/DE) ve Bibliometri". Ayrıntı: §28.
 
 ---

@@ -1,6 +1,6 @@
 # Analizus.com — Claude Çalışma Kuralları
 
-Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~2120 satır; offset'ler 29 Eylül 2026). Tamamını okuma — ihtiyaca göre offset ile ilgili bölümü oku:
+Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~2130 satır; offset'ler 29 Eylül 2026 akşam). Tamamını okuma — ihtiyaca göre offset ile ilgili bölümü oku:
 
 | Bölüm | offset | Konu |
 |---|---|---|
@@ -11,12 +11,12 @@ Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~2120 satır; offset
 | §10–11 | 704 | CSS/tasarım sistemi, WebSocket |
 | §12 | 824 | İstatistik araçları (akış, PDF, polling) |
 | §13–15 | 978 | DM/oda mesajlaşma, bibliometri (OpenAlex/PubMed köprüsü), akademik tarama (OpenAlex ilk sayfa, PubMed, BASE) |
-| §16–19 | 1189 | E-posta, AnalizBot/AI Asistan, S3, güvenlik (çerez onayı, cron anahtarı) |
-| §20–23 | 1398 | Admin (sipariş akışı, **Fiyatlandırma** ayarları), pazar iş akışı, session, cron |
-| §24–25 | 1505 | Geliştirme ortamı (pytest, çeviri komutları), değişmez kurallar |
-| §26 | 1589 | Sık yapılan hatalar ve çözümleri |
-| §27 | 1671 | Görev listesi (tamamlanan / sıradaki) |
-| §28 | 2030 | Çok dilli yapı (TR/EN/DE) ve gizlilik — mimari, çeviri kuralları, iş akışı, EN/DE ürün kararları (§28.7) |
+| §16–19 | 1195 | E-posta, AnalizBot/AI Asistan, S3, güvenlik (çerez onayı, cron anahtarı) |
+| §20–23 | 1404 | Admin (sipariş akışı, **Fiyatlandırma** ayarları), pazar iş akışı, session, cron |
+| §24–25 | 1511 | Geliştirme ortamı (pytest, çeviri komutları), değişmez kurallar |
+| §26 | 1595 | Sık yapılan hatalar ve çözümleri |
+| §27 | 1678 | Görev listesi (tamamlanan / sıradaki) |
+| §28 | 2039 | Çok dilli yapı (TR/EN/DE) ve gizlilik — mimari, çeviri kuralları, iş akışı, EN/DE ürün kararları (§28.7) |
 
 ---
 
@@ -59,6 +59,8 @@ Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~2120 satır; offset
 - Container açılışında `deploy.sh` `migrate` + `collectstatic` çalıştırır — migration'lı deploy öncesi DB yedeği al
 - Yeni app'te `makemigrations`'ı container'da çalıştırırsan `migrations/` klasörü root sahipli olur → git dal değiştiremez; klasörü host'ta aç ya da `chown -R 1000:1000` (§26)
 - Fiyat/ücret kodda sabit YAZILMAZ — `SiteSettings` alanı + admin (tarama siparişi, vitrin, bibliometri; §20)
+- Dış kaynaktan (API/kazıma) gelen veri JS'te `innerHTML`'e kaçışsız yazılmaz — `_esc()`; link yalnız http(s) (§15)
+- Şablon değişikliğini doğrulamadan önce `docker compose restart web` (cached loader) — yoksa eski sürüm test edilir
 
 ## Çok Dilli (i18n) Kritik Kurallar — ayrıntı analizus.md §28
 - Yeni kullanıcıya görünen metin **her zaman** çeviriye işaretlenir (msgid = Türkçe); EN/DE `locale/` + `.mo` git'te
