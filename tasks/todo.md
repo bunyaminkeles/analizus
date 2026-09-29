@@ -26,7 +26,7 @@ maddelerde.
 >   (b) bütçe dolunca "talep bırakın" yedeği SONRA (önce istek sayısı ölçülecek). Eski not: — plan ve
 >   dosya listesi `analizus.md` §27 "SIRADAKİ". Önce kullanıcıya iki karar sor: (a) sipariş TXT'si `abstract_count` ile
 >   sınırlansın mı (öneri evet), (b) bütçe dolunca "talep bırakın" yedeği şimdi mi (öneri sonra). Onaydan sonra uygula.
-> - **29 Eylül 2026 sonu — dev'de canlıya alınmamış MIGRATION'lar:** pubmed/0001, forum/0160 (feature_pubmed, varsayılan
+> - **main e716e46'ya MERGE EDİLDİ (29 Eylül 2026, push edildi) — Hetzner deploy KULLANICIDA (bekliyor).** Birikenler: pubmed/0001, forum/0160 (feature_pubmed, varsayılan
 >   KAPALI), bibliometrics/0005, forum/0161 (fiyat alanları). Deploy öncesi DB yedeği; requirements değişmedi (restart yeter,
 >   container açılışı migrate eder). Canlıda: NCBI_API_KEY (opsiyonel) → admin'den PubMed flag'ini aç.
 > - **BASE/PubMed kararları (29 Eylül 2026):** önce **PubMed** (OpenAlex kalıbı: yeni `pubmed` app, `PubMedSearchJob.all_results`

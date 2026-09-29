@@ -117,3 +117,11 @@ tek tırnaklı string'e "'ye/'de/'nin" yazarken `\'`.
 elle kurulmuşlardı. Ayrıca sürümsüz `bibtexparser` build'de 2.x gelip BibTeX'i kırmıştı.
 **Kural:** API'sine bağlı paketlere sürüm sabitle; build sonrası etkilenen akışı uçtan uca dene. Çeviri derlemesi
 host'ta `msgfmt -c` (analizus.md §26/§28.5).
+
+## 29 Eylül 2026 — Container'da `makemigrations` yeni app klasörünü root sahipli yaratır
+**Olay:** Yeni `pubmed` app'inde `migrations/` klasörü container içinde (root) oluştu. main'e geçişte git bu
+root sahipli dosyaları silemedi → `merge --ff-only dev` ve `checkout dev` "untracked files would be overwritten"
+ile durdu. Diğer app'lerde klasör kullanıcıya ait olduğu için sorun çıkmadı.
+**Kural:** Yeni app'in `migrations/` klasörünü host'ta oluştur (`mkdir -p app/migrations && touch .../__init__.py`)
+ya da container'da oluşturduktan sonra `docker compose exec -T web chown -R 1000:1000 /app/<app>` yap. Commit
+öncesi `stat -c '%U' <yeni dosyalar>` ile sahibi kontrol et.
