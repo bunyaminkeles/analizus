@@ -220,6 +220,12 @@ OPENALEX_API_KEY=...
 
 # Semantic Scholar API (saniyede 1 istek; key'siz çalışır ama rate limit yüksek)
 SEMANTIC_SCHOLAR_API_KEY=...
+
+# PubMed / NCBI E-utilities (29 Eylül 2026) — anahtar opsiyonel ve ücretsiz (NCBI hesabı → Account Settings →
+# API Key Management). Anahtarsız 3 istek/sn, anahtarla 10 istek/sn. NCBI_EMAIL yoksa OPENALEX_EMAIL kullanılır.
+# Değişiklikten sonra `docker compose up -d web` (restart .env'i yeniden okumaz).
+NCBI_API_KEY=...
+NCBI_EMAIL=info@analizus.com
 ```
 
 ---
@@ -310,12 +316,13 @@ istatistik/                 # İstatistik analiz araçları
 ├── templates/istatistik/   # Her araç için ayrı HTML şablonu
 bibliometrics/
 ├── services/
-│   ├── parser.py           # BibTeX/WoS/Scopus/OpenAlex format ayrıştırıcı
+│   ├── parser.py           # BibTeX/WoS/Scopus/OpenAlex/PubMed format ayrıştırıcı
 │   ├── analyzer.py         # 10 analiz türü
 │   ├── pdf_builder.py
 │   └── job_runner.py
 tezanaliz/, makaleanaliz/   # AI destekli tez/makale analizi
 openalex/                   # OpenAlex akademik yayın tarama
+pubmed/                     # PubMed (NCBI E-utilities) biyomedikal yayın tarama — `feature_pubmed` (varsayılan KAPALI), 29 Eylül 2026
 yoktez/                     # YÖK tez arama (HTTP tabanlı)
 trdizin/                    # TR Dizin (feature flag ile gizli)
 semanticscholar/            # Semantic Scholar + CrossRef yayın kazıma
@@ -345,7 +352,7 @@ CLAUDE.md                   # AI geliştirme kuralları ve görev listesi
 > **Çok dilli URL'ler (Eylül 2026):** `analizdestek/urls.py` başındaki `i18n_patterns(..., prefix_default_language=False)`
 > bloğundaki her sayfa TR'de öneksiz, EN/DE'de `/en/…`, `/de/…` önekli çalışır. Bu blokta: `forum/urls_i18n.py`
 > (ana sayfa, kayıt, doğrulama/onboarding, hesap silme/geri alma, AI Asistan, gizlilik, hakkımızda, iletişim,
-> Hangi Test, proje talebi, eğitim, market…), `/analiz/` (araç konsolu), OpenAlex, Semantic Scholar, makale
+> Hangi Test, proje talebi, eğitim, market…), `/analiz/` (araç konsolu), OpenAlex, Semantic Scholar, PubMed, makale
 > analizi, `tarama/` (Akademik Tarama hub'ı, 27 Eylül 2026), `login/`, `logout/`, `i18n/` (özel
 > `forum.views.set_language` — öneksiz olursa dil değişmez!), `accounts/password_reset*`.
 > `bibliometrics/` da i18n'de (28 Eylül 2026'dan beri canlıda, main a5c5984).
@@ -362,6 +369,7 @@ CLAUDE.md                   # AI geliştirme kuralları ve görev listesi
 /trdizin/           → trdizin.urls  (feature flag: feature_trdizin)
 /semantic-scholar/  → semanticscholar.urls  (feature flag: feature_semanticscholar)
 /openalex/          → openalex.urls
+/pubmed/            → pubmed.urls  (i18n; feature flag: feature_pubmed, varsayılan KAPALI → 404 + hub/sitemap'te yok)
 /oaipmh/            → oaipmh.urls
 /yoktez/            → yoktez.urls
 /bibliometrics/     → bibliometrics.urls
@@ -376,7 +384,7 @@ CLAUDE.md                   # AI geliştirme kuralları ve görev listesi
                       /analiz/ → analiz_hub view (tüm araçları kategorili listeler; guest + login)
                       /analiz/hero-upload/ → hero_upload view (POST) — ana sayfa hero dropzone dosyasını
                       session veri setine kaydeder (save_session_dataset), araç sayfasına geçince otomatik yüklü gelir
-/tarama/            → tarama_hub view (yoktez, openalex, trdizin, oaipmh kartları; guest + login)
+/tarama/            → tarama_hub view (yoktez, openalex, trdizin, semanticscholar, pubmed, oaipmh kartları; EN/DE'de yalnız `intl` araçlar; guest + login)
 /proje-talebi/      → proje_talebi view (kurumsal talep formu — ProjectRequest modeli, FAQPage schema)
 /ai-cozumler/       → ai_cozumler view (AI ajan/otomasyon landing page — feature flag: feature_agentic_landing, default False)
 /egitim/            → egitim view (eğitim hizmetleri landing page, kurs kataloğu — feature flag: feature_training, default False)
@@ -675,6 +683,7 @@ class JobPayment:        # İlan vitrin ödemeleri
 | `feature_trdizin` | **False** | TR Dizin (gizli, özel kullanıcılara açılabilir) |
 | `feature_semanticscholar` | True | Semantic Scholar Yayın Kazıma |
 | `feature_openalex` | True | OpenAlex |
+| `feature_pubmed` | **False** | PubMed Yayın Tarama (29 Eylül 2026, migration forum/0160) — kapalıyken `/pubmed/` ve `/bibliometrics/from-pubmed/` 404, hub/konsol/navbar/sitemap'te yok. NCBI_API_KEY eklenip canlıda denenince açılacak |
 | `feature_oaipmh` | True | OAI-PMH Üniversite Arşivi |
 | `feature_quiz` | True | İstatistik Arena |
 | `feature_messaging` | True | Özel Mesajlaşma |
@@ -687,7 +696,8 @@ class JobPayment:        # İlan vitrin ödemeleri
 | `feature_multilingual` | **False** | Çok dilli yayın (EN/DE) — kapalıyken navbar dil seçici gizli, `/en/` `/de/` 404 (`MultilingualFeatureMiddleware`), sitemap yalnız TR. Migration 0153. Avukat kontrolüne kadar kapalı (§28) |
 
 Template kullanımı: `{% if features.openalex %}...{% endif %}`
-Kaynak: `forum/context_processors.py` → `feature_flags()`
+Kaynak: `forum/context_processors.py` → `feature_flags()` — aynı processor `pricing` sözlüğünü de verir
+(`pricing.scrape_first_100`, `pricing.scrape_per_100`; tarama sipariş şablonları, bkz. §20).
 
 ---
 
@@ -1036,9 +1046,20 @@ def _broadcast_chat(uid1, uid2, event):
   TR-only düz metin ve EN/DE anonim sayfada Türkçe görünüyor; "Bradford" yorum cümlesi + demo kartı içeriği (todo).
 - **BibTeX:** `bibtexparser==1.4.4` SABİT (kod v1 API `bibtexparser.bparser`; sürümsüzken 2.x kurulup tüm .bib yüklemeleri
   "Dosyadan kayıt okunamadı" ile düşüyordu — 28 Eylül 2026). Anahtar kelime: `;`/`|` yoksa `,` ile bölünür (Zotero/Mendeley/Scholar).
-- **Akış:** dosya yükleme veya OpenAlex köprüsü (`/bibliometrics/from-openalex/<id>/` → `parse_openalex_json`, en az 100
-  kayıt) → `job_queue` arka plan işi (kullanıcı dilinde) → analyzer → `pdf_builder` (demo + tam PDF AYNI çalıştırmada
-  üretilir) → e-posta. Semantic Scholar köprüsü YOK (planlı, migration gerekir; §27).
+- **Akış:** dosya yükleme, OpenAlex köprüsü (`/bibliometrics/from-openalex/<id>/` → `parse_openalex_json`) veya PubMed
+  köprüsü (`/bibliometrics/from-pubmed/<id>/` → `parse_pubmed_json`, 29 Eylül 2026; `feature_pubmed` gerekir) — en az 100
+  kayıt → `job_queue` arka plan işi (kullanıcı dilinde; `bibliometrics_openalex`/`bibliometrics_pubmed` aynı fonksiyona
+  gider, kaynak `BibliometricJob.source`'tan) → analizden ÖNCE `ensure_full_results(arama_işi)` (arama yalnız ilk sayfayı
+  saklar, §15) → analyzer → `pdf_builder` (demo + tam PDF AYNI çalıştırmada üretilir) → e-posta. Semantic Scholar köprüsü
+  YOK (planlı, migration gerekir; §27).
+- **PubMed kaynağı (29 Eylül 2026, kullanıcı kararları):** `BibliometricJob.pubmed_job` FK (migration bibliometrics/0005),
+  `file_format='pubmed_json'`. PubMed atıf sayısı VERMEZ → `run_all_analyses(has_citations=False)` atıfa dayanan 4 analizi
+  (en çok atıf alanlar, atıf analizi + H-index, yıllık atıf trendi, **Research Gap** — dikey ekseni ortalama atıf) "Veri
+  kaynağı (PubMed) atıf sayısı sağlamıyor." nedeniyle atlar → en fazla 13 analiz. Ülke/kurum yazar adres metninden
+  TAHMİN: `_pubmed_country` (son 3 parça, babel İngilizce ülke adları + `_PUBMED_COUNTRY_ALIASES`: USA/UK/P.R. China/Turkey…,
+  ABD "MA 02115" → US), `_pubmed_institution` (üniversite geçen parça, yoksa hastane/enstitü…); gerçek veriyle ülke
+  ~%91, kurum ~%98 doluluk. Yazar anahtar kelimesi yoksa MeSH terimleri. Rapor: veri akışı "PubMed'de bulunan kayıt",
+  çekim uyarıları PubMed cümleleriyle, Kısıtlar'da "atıf yok" + "ülke/kurum tahminidir".
 - **Hesap kuralları (28 Eylül 2026 doğruluk denetimi sonrası):**
   - Yazar ayırma: WoS TSV `;` (+ `_wos_fmt_author` → "J Smith", .txt ile aynı); Scopus/genel CSV `_split_author_list`
     (`;` varsa o, yoksa `,` + "Soyad, Baş harf" çiftleri birleştirilir). Yazar adı birleştirme (aynı kişinin farklı yazılışı) YOK.
@@ -1057,7 +1078,7 @@ def _broadcast_chat(uid1, uid2, event):
   `pdf_builder.build_full_pdf(..., notes=, time_series=)` tam raporun SONUNA sayfa(lar) (platypus Paragraph/Table, grup
   bazlı sayfalama) + kapanış notu (HER DİLDE proje talebi linki). OpenAlex'te bulunan > çekilen (sınır) veya eksik çekimde
   zaman serisi sayfalarına turuncu "Veri kesintisi" kutusu — demo PDF'te de (demo'da bölüm yok). Atıf 0 ve DOI doluluk
-  kısıtı sayılmaz. `source` job_runner'da: dosya `{'kind':'file'}`, OpenAlex `{found, fetched, max_records}` (sınır şimdiki
+  kısıtı sayılmaz. `source` job_runner'da: dosya `{'kind':'file'}`, OpenAlex/PubMed `{'kind', found, fetched, max_records}` (sınır şimdiki
   `SiteSettings` değeri). DejaVu `<b>` için `addMapping` gerekli (yoksa kalın görünmez).
 - **EN/DE:** canlıda (28 Eylül 2026): URL'ler i18n, arka plan işi kullanıcı dilinde (`_in_user_language`), PDF EN/DE, sayfa
   (JS `T` sözlüğü + URL sentinel), EN/DE'de sipariş → proje talebi (`order_page` yönlendirir).
@@ -1085,14 +1106,46 @@ def _broadcast_chat(uid1, uid2, event):
   `SiteSettings.scrap_max_records` (varsayılan 5000) sonuç — **`sort=publication_year:desc` → sınır aşılırsa yalnız EN YENİ
   N kayıt çekilir** (eski yıllar kesilir; bibliometri raporu bunu yazıyor, §14). Sayfalama hatasında kısmi veriyle devam eder.
 - `OPENALEX_EMAIL` (polite pool) + **`OPENALEX_API_KEY`** (28 Eylül 2026'dan beri tanımlı). Maliyet: arama $1 / 1.000 istek,
-  liste+filtre $0,10 / 1.000; ücretsiz anahtar $1/gün. 5000 kayıtlık arama = 25 istek → ≈40 tam arama/gün.
-  **Karar (28 Eylül 2026): aramada yalnız ilk sayfa, devamı ihtiyaçta** (bibliometri işi / TR sipariş onayı) — plan §27, henüz uygulanmadı.
-- Tam veri (`all_results`, S3 `openalex/full/`) yalnız bibliometri + TR sipariş e-postasında kullanılır; sonuç sayfası,
-  Excel/TXT indirme ve demo e-postası `demo_results` (ilk 5). S3 dosyaları 7 günde temizlenir → 7 günden eski siparişi
-  onaylayınca e-postada link YOK (önceden var; yeni akışta onay anında üretilecek).
+  liste+filtre $0,10 / 1.000; ücretsiz anahtar $1/gün.
+- **Arama yalnız ilk sayfa (29 Eylül 2026'dan beri canlıda, e716e46):** `scraper.search(max_results=MAX_PER_PAGE)` → 1 istek,
+  en fazla 200 kayıt `all_results`'ta; aramada tam TXT ÜRETİLMEZ (eskiden durum JSON'u `all_results_file_url` ile tam dosya
+  linkini veriyordu → ödemesiz tam veri açığı; kapandı). Devamı `openalex.services.job_runner.ensure_full_results(job,
+  limit=None)` ile: hedef = min(toplam, limit, `scrap_max_records`); veri yeterliyse istek atmaz; sayfalama hatasında kısmi
+  veriyi kaydeder. Çağıranlar: bibliometri işi (§14) ve TR sipariş işi.
+- **TR sipariş akışı (29 Eylül 2026):** admin "Onayla ve Tam Rapor Emailini Gönder" → sipariş `processing` + kuyruk işi
+  `openalex_order` (`_execute_order`): ödenen sayı (`AlexOrder.abstract_count` = "İstenen Yayın Sayısı", alan adı yanıltıcı;
+  her kayıtta tüm alanlar) kadar veri → `openalex/orders/<id>.txt` → e-posta → `completed`. Hata (veri eksik / S3 / e-posta)
+  → sipariş `approved`'a döner, hata **Admin Notu**'na yazılır; aksiyon tekrar çalıştırılabilir. `processing` siparişler
+  tekrar seçilince atlanır (çift gönderim yok) ve restart'ta `job_queue._recover` ile yeniden kuyruğa alınır.
+- Sonuç sayfası, Excel/TXT indirme ve demo e-postası `demo_results` (ilk 5). S3 dosyaları 7 günde temizlenir.
 - 503'te bekleme YOK (yalnız 429'da); kullanıcıya ham hata + API URL'si gösteriliyor (todo).
 - Sonuç kaydı (`_parse_work`): `institutions` (', ' birleşik metin, dışa aktarım için) + `institution_list` / `country_list` (bibliometri için)
-- S3 paths: `openalex/demo/`, `openalex/full/`, `openalex/orders/`
+- S3 paths: `openalex/demo/`, `openalex/orders/` (`openalex/full/` artık yazılmıyor; eski dosyalar 7 günde temizlendi)
+- Bilinen açıklar (todo): sonuç listesi API verisini `innerHTML` ile kaçışsız basıyor (XSS); `extra_js` `block.super`
+  çağırmıyor; "Premium ile 7 arama" metni var ama `get_daily_limit` herkese 3.
+
+### PubMed (`pubmed/`) — 29 Eylül 2026
+- `feature_pubmed` **varsayılan KAPALI** (canlıda kod var, flag açılmadı). TR/EN/DE (i18n `/pubmed/`), `intl` araç.
+- NCBI E-utilities: `esearch` (`usehistory=y`, `sort=pub_date`, JSON → count + WebEnv) + `efetch` XML 200'lük sayfa
+  (WebEnv'den en fazla 10.000 kayıt). `NCBI_API_KEY` opsiyonel (3 → 10 istek/sn; tüm thread'ler için ortak `_throttle`),
+  `tool=analizus` + `email`. 429/5xx'te bekleyip yeniden dener; kullanıcıya ham hata değil çevrili genel mesaj.
+- OpenAlex kalıbı: `PubMedSearchJob.all_results` + arama yalnız ilk sayfa (esearch + 1 efetch = 2 istek) +
+  `pubmed.services.job_runner.ensure_full_results`. Sipariş YOK (kullanıcı kararı): tam veri → her dilde proje talebi;
+  100+ sonuçta bibliometri butonu (§14).
+- Arama alanları (`pubmed/forms.py`): title `[ti]`, tiab `[tiab]` (Başlık/Özet), author `[au]`, keyword (etiketsiz),
+  mesh `[mh]`, journal `[ta]`, affiliation `[ad]`, year `2020:2024[dp]` (+ scraper'da doi `[aid]`, type `[pt]`); tümü AND.
+- Kayıt (`_parse_article`): pmid, title, authors/author_list ("Ad Soyad"), year, journal, doi (https://doi.org/…), type +
+  publication_types, abstract (bölümlü özetlerde "ETİKET: metin"), keywords, mesh_terms, affiliation_list (yazar
+  e-postası "Electronic address: …" ve `x@y` temizlenir → kişisel veri dosyaya girmez, aynı kurum tekrarlanmaz),
+  language. `cited_by_count` YOK.
+- Sayfa `pubmed/templates/pubmed/landing.html`: ax- sınıfları, mobil önce, JS metinleri view'dan `json_script`
+  (`js_config`), API verisi `esc()` ile, URL'ler sentinel ile. Günlük limit OpenAlex ile aynı (3; staff sınırsız).
+- S3: `pubmed/demo/` (7 gün, `cleanup-s3` cron'u). Hesap silmede `_ACCOUNT_DELETION_JOB_MODELS`'te; admin çalışan işler panelinde.
+
+### BASE (Bielefeld) — BEKLİYOR
+- Kullanıcı kararı: BASE yalnız DE. API başvuru formu + IP beyaz liste gerekir ve BASE API'yi **yalnız ticari olmayan
+  amaçla** veriyor (api.base-search.net, about_develop) → kullanıcı başvuruda kullanım amacını (ücretli rapor dahil)
+  yazıp onay bekleyecek; onay gelirse ayrı iş (PubMed kalıbıyla).
 
 ### YÖK Tez (`yoktez/` vs `tezanaliz/` — KARIŞTIRILMAMALI)
 - `/yoktez/` = **Tarama**: arama formu → TXT/Excel indir (ham veri)
@@ -1125,10 +1178,10 @@ def _broadcast_chat(uid1, uid2, event):
 - Uludağ + BEUN: DSpace 7'ye geçmiş → `/server/oai/request` path (migration `0008_fix_university_urls`)
 
 ### Akademik Tarama Unified Console
-- 4 tarama aracı tek sidebar'lı konsolda: `/tarama/` → `tarama_hub` view (hub sayfası; eski redirect kaldırıldı), her araç kendi URL'inde çalışır
+- Tarama araçları tek sidebar'lı konsolda (YÖK Tez, OpenAlex, TR Dizin, Semantic Scholar, PubMed, OAI-PMH): `/tarama/` → `tarama_hub` view (hub sayfası; eski redirect kaldırıldı), her araç kendi URL'inde çalışır
 - `templates/tarama_console_base.html` — `analiz_console.css`'i yeniden kullanır (`.ax-console-*` sınıfları)
 - Sidebar aktif araç tespiti: `request.path` ile (context processor gerekmez)
-- Feature flag kontrollü: `features.oaipmh`, `features.yoktez`, `features.openalex`, `features.trdizin`
+- Feature flag kontrollü: `features.oaipmh`, `features.yoktez`, `features.openalex`, `features.trdizin`, `features.semanticscholar`, `features.pubmed`
 - Landing template'leri `base.html` yerine `tarama_console_base.html`'i extend eder; `{% block content %}` → `{% block tool_area %}`
 
 ---
@@ -1279,8 +1332,10 @@ analizus-files/
 │   └── full/
 ├── openalex/
 │   ├── demo/
-│   ├── full/
-│   └── orders/
+│   ├── full/               # 29 Eylül 2026'dan beri yazılmıyor (arama yalnız ilk sayfa)
+│   └── orders/             # sipariş TXT'si, onay anında üretilir
+├── pubmed/
+│   └── demo/               # 29 Eylül 2026
 ├── trdizin/
 │   ├── demo/
 │   ├── full/
@@ -1354,7 +1409,15 @@ analizus-files/
 - `SiteSettingsAdmin` — feature flag yönetimi
 - `JobPaymentAdmin` — vitrin ödemeleri; `status` readonly; dashboard "VİTRİN" satırındaki **"Onayla →"** butonuyla tek tıkla onaylanır (`/admin/forum/jobpayment/<pk>/quick-approve/` — `quick_approve_view`); onay öncesi detay confirm dialogu çıkar; list view action ("Seçili ilanları vitrine ekle") da hâlâ çalışır
 - `BibliometricOrderProxyAdmin` (`tezanaliz/admin.py`) — `status` readonly; **"Onayla ve Tam Rapor Emailini Gönder"** action ile onaylanır; e-posta + `status=completed` otomatik set edilir
-- `AlexOrderAdmin` (`openalex/admin.py`) — OpenAlex siparişleri; `status` readonly; aynı action akışı
+- `AlexOrderAdmin` (`openalex/admin.py`) — OpenAlex siparişleri; `status` readonly; action siparişi `processing` yapıp
+  arka plan işine (`openalex_order`) verir — e-posta 30–60 sn içinde gider; hata olursa sipariş `approved`'a döner ve
+  hata **Admin Notu**'na yazılır (§15)
+- `PubMedSearchJobAdmin` (`pubmed/admin.py`) — PubMed aramaları (salt okuma alanları)
+- **Fiyatlandırma (Site Ayarları → Fiyatlandırma, 29 Eylül 2026):** bibliometri `biblio_price_*` + tarama siparişi
+  `scrape_price_first_100` (250) / `scrape_price_per_100` (100) — OpenAlex, Semantic Scholar, TR Dizin, OAI-PMH ORTAK —
+  + ilan vitrini `promote_price_3_days` (250) / `promote_price_7_days` (400). Migration forum/0161. Tutar sipariş
+  anında hesaplanıp kaydedilir → değişiklik yalnız yeni siparişlere. Kodda sabit fiyat YAZMA (kullanıcı: "hard coded olmaz"):
+  `SiteSettings.scrape_order_price(n)`, vitrin `forum.views._promote_packages()`, şablonda `pricing.*`.
 
 ### Davranış Analizi (`analytics/admin.py`)
 - `PageViewAdmin` — ham ziyaret logları (son 5 gün tutulur); kullanıcı adına tıklamak `/admin/analytics/pageview/grafik/` adresine yönlendirir (7 günlük bar+çizgi+kullanıcı grafikleri)
@@ -1368,7 +1431,7 @@ analizus-files/
 | Bağış (Premium) | `Donation` | Dashboard "BAĞIŞ" → detail → action yok, `dashboard_approve_donation` view |
 | İlan Vitrini | `JobPayment` | Dashboard "VİTRİN" → **"Onayla →"** (tek tıkla, confirm dialog) veya Job Payments list → "Seçili ilanları vitrine ekle" action |
 | Bibliometrik Analiz | `BibliometricOrder` | Bibliometrik Siparişler list → "Onayla ve Tam Rapor Emailini Gönder" action |
-| OpenAlex Sipariş | `AlexOrder` | OpenAlex Siparişleri list → "Onayla ve Tam Rapor Emailini Gönder" action |
+| OpenAlex Sipariş | `AlexOrder` | OpenAlex Siparişleri list → "Onayla ve Tam Rapor Emailini Gönder" action (arka planda; hata → Admin Notu) |
 
 > ⚠️ **KRİTİK:** Ödeme/sipariş `status` alanlarını admin detail sayfasından **elle değiştirme** — e-posta gönderilmez, job alanları güncellenmez. Her zaman **list view → action** kullan.
 
@@ -1429,7 +1492,7 @@ kullanılamaz olduğundan bu yol açılmaz.
 - Env: `CRON_SECRET_KEY`
 **⚠️ Canonical domain `www.analizus.com`'dur** (31 Temmuz 2026'da doğrulandı — `analizus.com` www'suz istek attığında 301 ile `www.analizus.com`'a yönlendiriyor, `curl -L` olmadan bu redirect takip edilmez). Önceki not bunun tersini söylüyordu (o zaman www'suz canonical'mış) — site bir noktada www'ye geçmiş, crontab güncellenmemişti. **Kural: yeni eklenen her cron satırı `www.analizus.com` kullanmalı.**
 
-- **Aktif:** `/api/cron/cleanup-s3/` — trdizin + openalex + oaipmh S3 temizliği (7 gün); Hetzner crontab'ında `0 5 * * *` ile günlük çalışır (31 Temmuz 2026'da eklendi — önceden dokümante "Aktif" ama crontab'da hiç yoktu, hiç otomatik çalışmıyordu)
+- **Aktif:** `/api/cron/cleanup-s3/` — trdizin + openalex + oaipmh + pubmed (29 Eylül 2026) S3 temizliği (7 gün); Hetzner crontab'ında `0 5 * * *` ile günlük çalışır (31 Temmuz 2026'da eklendi — önceden dokümante "Aktif" ama crontab'da hiç yoktu, hiç otomatik çalışmıyordu)
 - **Aktif:** `/api/cron/cleanup-attachments/` — 90 günden eski DM + oda mesajı dosyaları S3'ten silinir, mesaj/post kaydı korunur; Hetzner crontab'ında `0 6 * * 0` ile haftalık (Pazar) çalışır (31 Temmuz 2026'da eklendi — önceden dokümante "Aktif" ama crontab'da hiç yoktu)
 - **Aktif:** `/api/cron/cleanup-pageviews/` — 5 günden eski sayfa ziyaret loglarını PageViewSummary'e toplar ve siler; Hetzner crontab'ında `0 4 * * * curl -s "https://www.analizus.com/api/cron/cleanup-pageviews/?secret=..." >> /var/log/cron_pageviews.log 2>&1` ile çalışır (31 Temmuz 2026'da www'siz→www'li URL'e düzeltildi, önceki satır redirect yüzünden fiilen hiç çalışmıyordu)
 - **Aktif:** `/api/cron/process-account-deletions/` — `deletion_requested_at` üzerinden 30 gün geçmiş hesapları anonimleştirir (`_anonymize_deleted_account`, 25 Eylül 2026 kullanıcı kararları): açık içerik + DM'ler kalır (yazar anonim), bağış/sipariş kalır (bağış ad/e-posta/mesaj silinir; siparişli iş silinmez, dosyaları silinir), tarama/analiz işleri + S3 dosyaları, bildirim, PageView, quiz skoru, oda üyeliği, takip listesi silinir, açık ilanlar iptal; kullanıcı başına tek transaction; Hetzner crontab'ında `0 3 * * *` ile çalışıyor (www'li, doğru)
@@ -1599,6 +1662,9 @@ with connection.cursor() as c:
 | BibTeX yüklemesi "Dosyadan kayıt okunamadı"; log'da `No module named 'bibtexparser.bparser'` | `requirements.txt`'te sürümsüz paket → build'de major sürüm (2.x) geldi, API değişti. `bibtexparser==1.4.4` sabitlendi (28 Eylül 2026). **Kural:** API'sine doğrudan bağlı olunan paketlere üst sınır/sabit sürüm ver; imaj yeniden build edilince etkilenen akışı uçtan uca dene. |
 | `compilemessages` → "Can't find msgfmt" / `import polib` yok (container) | Dockerfile'da gettext/polib yok; önceki elle kurulum imaj yeniden build'de (28 Eylül 2026) kayboldu. Derleme host'ta: `msgfmt -c -o locale/<dil>/LC_MESSAGES/django.mo locale/<dil>/LC_MESSAGES/django.po` (çıkış kodu 0 olmalı; başlık uyarıları önceden var). polib gerekirse `docker compose exec web pip install polib` (geçici). |
 | Tüm sayfalar birden 500 / URL modülü import hatası (dev) | Python kaynağında tek tırnaklı string içine Türkçe kesme işareti ("17'ye") kaçırılmadan yazıldı → SyntaxError, `urls` import edilemedi. **Kural:** Türkçe metin düzenledikten sonra `python -c "import ast; ast.parse(open(f).read())"`; tek tırnaklı string'de `\'`. |
+| `git checkout main` / `merge --ff-only dev` → "untracked working tree files would be overwritten" (`<yeni_app>/migrations/…`) | Yeni app'in `migrations/` klasörü container'da `makemigrations` ile oluştu → root sahipli; dal değişirken git silemedi (29 Eylül 2026, `pubmed`). Kalan dosyalar dev'dekiyle aynıysa `docker compose exec -T web rm -rf /app/<app>` sonra merge. Önlem: klasörü host'ta aç ya da `chown -R 1000:1000`; commit öncesi `stat -c '%U'`. |
+| Eksik çeviri taraması eski (zaten çevrili) metinleri "eksik" gösteriyor | Regex `gettext('…')` birden çok satıra bölünmüş (bitişik) string'lerin yalnız ilk parçasını yakalar. `.py` için `ast` ile tara (`ast.Call` → `args[0].value` birleşik gelir), şablonlar için regex (29 Eylül 2026). |
+| Test client ile giriş yapmış kullanıcıya view 302 → `/verification-pending/` | E-posta doğrulama middleware'i: test kullanıcısında `Profile` yoksa oluştur + `email_verified=True`. Başkasının işine erişim testinde 404 yerine 302 görmek bu yüzdendir (erişim yine yok). |
 
 ---
 
@@ -1880,8 +1946,14 @@ with connection.cursor() as c:
 - **Bibliometri "Veri, Yöntem ve Kısıtlar" + BibTeX — canlıda (28 Eylül 2026 gece, main ab57dcd, `--build`):** plan A–G
   (§14), 62 msgid EN/DE; BibTeX sürüm sabitleme + virgüllü anahtar kelime. Doğrulama: 3 senaryo × 3 dil × tam/demo PDF,
   metin katmanında TR kalıntı taraması, job_runner uçtan uca (S3/e-posta mock, rollback); canlıda bibtexparser 1.4.4 + import.
-- **Sonrası (28 Eylül 2026 gece, dev'de, main'e alınmadı):** kurum grafiği tüm kurumlar (050f1a1), "17 analize kadar"
-  metinleri + 17'lik listeler (a4d7438).
+- **Sonrası (28 Eylül 2026 gece):** kurum grafiği tüm kurumlar (050f1a1), "17 analize kadar" metinleri + 17'lik listeler
+  (a4d7438) — 29 Eylül'de canlıya alındı.
+- **29 Eylül 2026 — canlıda (main e716e46, Hetzner restart; yedek /root 174 MB; 4 migration):**
+  - OpenAlex aramada yalnız ilk sayfa + `ensure_full_results` + sipariş onayı arka plan işi (`openalex_order`; ödenen sayı
+    kadar kayıt; hata → Admin Notu). Aramadaki ödemesiz tam veri linki açığı kapandı (e8e39bb). §15.
+  - PubMed modülü (Faz 1–3: 630a069, 289784b, d046c07) — `pubmed` app, arama sayfası TR/EN/DE, bibliometri köprüsü
+    (13 analize kadar, atıf yok, ülke/kurum tahmini); `feature_pubmed` KAPALI başlar. §14, §15.
+  - Tarama siparişi (4 araç ortak) + ilan vitrini fiyatları Site Ayarları → Fiyatlandırma'dan (e716e46). §20.
 
 ### Sıradaki Görevler
 
@@ -1896,21 +1968,18 @@ with connection.cursor() as c:
 - **Referanslar sayfası** — `/referanslar/` + ana sayfa güven sayaçları (`SuccessStory` modeli mevcut)
 
 #### Çok Dilli (EN/DE) ve Bibliometri — 28 Eylül 2026 durumu (tam liste: `tasks/todo.md` "AÇIK İŞLER — TEK LİSTE")
-- **SIRADAKİ — OpenAlex aramada yalnız ilk sayfa (kullanıcı kararı 28 Eylül 2026; plan onay bekliyor):** arama 1 istek
-  (per_page 200; ≤200 sonuç tek istekte tam). Devamı: bibliometri işi analizden önce `ensure_full_results(job)`; TR sipariş
-  onayında tam veri çek + TXT + S3 + e-posta — admin isteği yerine arka plan kuyruğu (yeni iş türü; ~30–60 sn). "Tam mı?"
-  = `len(all_results) >= min(total_results, max_records)` (migration yok). Dosyalar: `openalex/services/scraper.py`,
-  `openalex/services/job_runner.py`, `bibliometrics/services/job_runner.py`, `openalex/admin.py`, `analizdestek/job_queue.py`.
-  Açık kararlar: (a) sipariş TXT'si `abstract_count` ile sınırlansın mı (öneri evet; şu an tüm sonuçlar); (b) bütçe dolunca
-  "talep bırakın" yedeği şimdi mi sonra mı (öneri sonra, önce istek sayısı ölç). Kullanıcı "devamı için talep formu?" diye
-  sordu → cevap: gerek yok, otomatik akış korunur; form yalnız bütçe yedeği.
+- ~~OpenAlex aramada yalnız ilk sayfa~~ → YAPILDI, canlıda (29 Eylül 2026; kararlar: sipariş TXT'si ödenen sayı kadar,
+  bütçe dolunca "talep bırakın" yedeği SONRA — önce günlük istek sayısı ölçülecek).
+- **SIRADAKİ adaylar (29 Eylül 2026):** OpenAlex sayfası XSS (API verisi `innerHTML` kaçışsız — S2/TR Dizin de kontrol),
+  `extra_js` `block.super` eksikliği, "Premium 7 arama" metni ↔ kod 3; OpenAlex ham hata + 503 bekleme; PubMed'i canlıda
+  açma (kullanıcı: NCBI_API_KEY + flag); BASE (kullanıcı API anahtarını aldı — kullanım koşulu kararı, §15/§28.7).
 - **Bibliometri diğer:** Research Gap trend yöntemi (dönem uzunlukları farklı → yıllık ortalama önerisi, karar);
   SSS/SEO EN/DE'de Türkçe + "Bradford"/demo kartı metinleri; yükleme hatasında "file: " öneki; S2 →
   bibliometri (migration); OpenAlex dedup incelemesi; OpenAlex dergi adlarında kontrol karakteri (`_clean`); 2026
   sorusu (kullanıcının "tarih/DOI varsa alınsın" isteği netleşmedi).
 - **OpenAlex:** ham hata mesajı → çevrili mesaj + 503 bekleme; dergi adlarında kontrol karakteri.
-- **Planlanan kazıma modülleri** (`BASE_PubMed_Integration_Project.md`, ayrı oturum): **PubMed TR/EN/DE üç dilde,
-  BASE yalnız DE.** `/tarama/` hub'ına kart olarak eklenir (hub'daki `intl` bayrağı DE-only'i ifade etmez — dil listesi gerekebilir).
+- **Kazıma modülleri:** PubMed TR/EN/DE — YAPILDI (flag kapalı). **BASE yalnız DE — bekliyor:** API "yalnız ticari
+  olmayan kullanım"; hub'daki `intl` bayrağı DE-only'i ifade etmez (dil listesi gerekebilir).
 - **EN/DE açıkları:** Impressum (DE yasal sayfa — şirket bilgisi kullanıcı/avukattan); C grubu çevirisi (Tableau;
   bibliometri dev'de); D grubu hesap sayfaları (gelen kutusu, ödemelerim, davet) tek dilli — şimdilik kalsın;
   `create_badges` EN/DE yok; kategori İ/i eşleşmesi, yeni pasif kategori için admin bildirimi, kategori sıralaması,
@@ -1949,9 +2018,11 @@ with connection.cursor() as c:
 **Önceki (25–26 Eylül 2026):** Çok dilli yayın + gizlilik turu `main`'e alındı ve Hetzner'e deploy edildi (132327f;
 migration 0153–0155 container açılışında deploy.sh ile uygulandı; DB yedeği alındı; kontroller OK).
 
-**En son (28 Eylül 2026 gece):** canlı = main **ab57dcd** (bibliometri kısıtlar bölümü + BibTeX; kullanıcı deploy etti,
-doğrulandı). `dev`'de main'e alınmamış: 050f1a1 (tüm kurumlar), a4d7438 ("17 analize kadar") + todo commit'leri — ikisi
-de migration'sız, `requirements.txt` değişmedi (restart yeter). Sıradaki: OpenAlex yalnız ilk sayfa (§27 "SIRADAKİ"). Yeni oturum: `tasks/todo.md` başındaki "YENİ OTURUM BURADAN BAŞLA" notu + "AÇIK İŞLER — TEK LİSTE";
+**Önceki (28 Eylül 2026 gece):** canlı = main ab57dcd (bibliometri kısıtlar bölümü + BibTeX).
+
+**En son (29 Eylül 2026):** canlı = main **e716e46** (OpenAlex ilk sayfa + sipariş arka plan işi, PubMed modülü flag kapalı,
+admin'den fiyatlar). Migration'lar pubmed/0001, forum/0160–0161, bibliometrics/0005 restart'ta deploy.sh ile uygulandı;
+yedek alındı; `/`, `/openalex/`, `/bibliometrics/` 200, log temiz. Sıradaki: §27 "SIRADAKİ adaylar". Yeni oturum: `tasks/todo.md` başındaki "YENİ OTURUM BURADAN BAŞLA" notu + "AÇIK İŞLER — TEK LİSTE";
 özet yukarıda "Çok Dilli (EN/DE) ve Bibliometri". Ayrıntı: §28.
 
 ---
@@ -2039,11 +2110,13 @@ de migration'sız, `requirements.txt` değişmedi (restart yeter). Sıradaki: Op
   hikayeleri; B — YÖK Tez, TR Dizin, OAI-PMH, uzman dizini, "Uzman olarak katıl"; Topluluk menüsü ve footer sütunu;
   İstatistik Arena + navbar ★ (puan hesabı arka planda sürer); C (geçici) — Tableau (bibliometri 28 Eylül 2026'da EN/DE açıldı).
   D — gelen kutusu, ödemelerim, davet: EN/DE'de de görünür, arayüz TR (şimdilik kalsın).
-- **Açık:** `/tarama/` hub'ı (EN/DE'de yalnız `intl=True` araçlar: OpenAlex, Semantic Scholar), OpenAlex ve S2 (tam
+- **Açık:** `/tarama/` hub'ı (EN/DE'de yalnız `intl=True` araçlar: OpenAlex, Semantic Scholar, PubMed [flag açıksa]), OpenAlex ve S2 (tam
   çeviri; SEO rehberi ve sipariş sayfası EN/DE'de gizli → proje talebi), pazar yeri (+ proje talebi yönlendirmesi),
   18 analiz aracı, eğitim, AI asistan.
 - **Proje talebi çağrıları (EN/DE):** hero birincil buton, navbar çerçeveli CTA, footer Kurumsal, market kartı,
   Nasıl Çalışır + SSS sonu, pazar yeri sayfası. Her çağrının `?source=` değeri ayrı (ölçüm için; §8 ProjectRequest).
 - **Footer Akademik Kaynaklar (EN/DE):** Google Scholar, Semantic Scholar, OpenAlex, BASE (Bielefeld).
-- **Planlanan kazıma modülleri:** PubMed TR/EN/DE, BASE yalnız DE (`BASE_PubMed_Integration_Project.md`).
+- **Kazıma modülleri (29 Eylül 2026):** PubMed TR/EN/DE — kod canlıda, `feature_pubmed` kapalı; sipariş YOK, tam veri →
+  proje talebi (her dilde); bibliometride atıf analizleri yok, ülke/kurum tahmini (Kısıtlar'da yazar). BASE yalnız DE —
+  API koşulu "non-commercial"; kullanım modeli kararı bekliyor. Tarama sipariş + vitrin fiyatları admin'den (hard-code yok).
 - YouTube Transcript: TR dahil kaldırılıyor (menü kaldırıldı; kod/DB aşama 2 todo'da).

@@ -1,22 +1,22 @@
 # Analizus.com — Claude Çalışma Kuralları
 
-Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~2050 satır; offset'ler 28 Eylül 2026 gece). Tamamını okuma — ihtiyaca göre offset ile ilgili bölümü oku:
+Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~2120 satır; offset'ler 29 Eylül 2026). Tamamını okuma — ihtiyaca göre offset ile ilgili bölümü oku:
 
 | Bölüm | offset | Konu |
 |---|---|---|
 | §1–2 | 8 | Proje amacı, tech stack, paketler |
-| §3–5 | 68 | Sunucu mimarisi, deploy (deploy.sh açılışta migrate+collectstatic), env vars |
-| §6–7 | 258 | Dizin yapısı, URL mimarisi (i18n_patterns: hangi sayfa /en/ /de/) |
-| §8–9 | 429 | Veri modelleri, feature flag'ler |
-| §10–11 | 694 | CSS/tasarım sistemi, WebSocket |
-| §12 | 814 | İstatistik araçları (akış, PDF, polling) |
-| §13–15 | 968 | DM/oda mesajlaşma, bibliometri, akademik tarama |
-| §16–19 | 1136 | E-posta, AnalizBot/AI Asistan, S3, güvenlik (çerez onayı, cron anahtarı) |
-| §20–23 | 1343 | Admin, pazar iş akışı, session (hesap geri alma), cron |
-| §24–25 | 1442 | Geliştirme ortamı (pytest, çeviri komutları), değişmez kurallar |
-| §26 | 1526 | Sık yapılan hatalar ve çözümleri |
-| §27 | 1605 | Görev listesi (tamamlanan / sıradaki) |
-| §28 | 1959 | Çok dilli yapı (TR/EN/DE) ve gizlilik — mimari, çeviri kuralları, iş akışı, EN/DE ürün kararları (§28.7) |
+| §3–5 | 68 | Sunucu mimarisi, deploy (deploy.sh açılışta migrate+collectstatic), env vars (NCBI_API_KEY dahil) |
+| §6–7 | 264 | Dizin yapısı, URL mimarisi (i18n_patterns: hangi sayfa /en/ /de/) |
+| §8–9 | 437 | Veri modelleri, feature flag'ler (`feature_pubmed` varsayılan kapalı) |
+| §10–11 | 704 | CSS/tasarım sistemi, WebSocket |
+| §12 | 824 | İstatistik araçları (akış, PDF, polling) |
+| §13–15 | 978 | DM/oda mesajlaşma, bibliometri (OpenAlex/PubMed köprüsü), akademik tarama (OpenAlex ilk sayfa, PubMed, BASE) |
+| §16–19 | 1189 | E-posta, AnalizBot/AI Asistan, S3, güvenlik (çerez onayı, cron anahtarı) |
+| §20–23 | 1398 | Admin (sipariş akışı, **Fiyatlandırma** ayarları), pazar iş akışı, session, cron |
+| §24–25 | 1505 | Geliştirme ortamı (pytest, çeviri komutları), değişmez kurallar |
+| §26 | 1589 | Sık yapılan hatalar ve çözümleri |
+| §27 | 1671 | Görev listesi (tamamlanan / sıradaki) |
+| §28 | 2030 | Çok dilli yapı (TR/EN/DE) ve gizlilik — mimari, çeviri kuralları, iş akışı, EN/DE ürün kararları (§28.7) |
 
 ---
 
@@ -57,6 +57,8 @@ Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~2050 satır; offset
 - `docker-compose` değil `docker compose` (Hetzner'de plugin kurulu, eski binary yok)
 - Testler **pytest** ile: `docker compose exec web python -m pytest forum/tests.py` (`manage.py test` 0 test bulur)
 - Container açılışında `deploy.sh` `migrate` + `collectstatic` çalıştırır — migration'lı deploy öncesi DB yedeği al
+- Yeni app'te `makemigrations`'ı container'da çalıştırırsan `migrations/` klasörü root sahipli olur → git dal değiştiremez; klasörü host'ta aç ya da `chown -R 1000:1000` (§26)
+- Fiyat/ücret kodda sabit YAZILMAZ — `SiteSettings` alanı + admin (tarama siparişi, vitrin, bibliometri; §20)
 
 ## Çok Dilli (i18n) Kritik Kurallar — ayrıntı analizus.md §28
 - Yeni kullanıcıya görünen metin **her zaman** çeviriye işaretlenir (msgid = Türkçe); EN/DE `locale/` + `.mo` git'te
@@ -67,6 +69,7 @@ Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~2050 satır; offset
 - Çeviri sonrası `compilemessages` çıktısında `error` ara; polib'de `previous_*` alanlarının üçünü temizle. Container'da msgfmt yoksa (imaj build sonrası) host'ta `msgfmt -c -o …mo …po`
 - API'sine doğrudan bağlı paketlere `requirements.txt`'te sürüm sabitle (sürümsüz `bibtexparser` 2.x gelip BibTeX'i kırdı)
 - Türkçe metin taraması yalnız ç/ğ/ş… harflerine bakamaz ("Yorum", "Hesapla" kaçar) — tüm sabitleri listele
+- Eksik çeviri taramasında `.py` dosyalarını `ast` ile oku — regex çok satırlı (bitişik) string'lerin yalnız ilk parçasını yakalar
 
 ## Git & Deploy
 - Tüm geliştirme `dev` branch'inde — `main`'e kullanıcı "merge et" demeden dokunma
