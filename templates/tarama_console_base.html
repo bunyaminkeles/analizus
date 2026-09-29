@@ -75,6 +75,16 @@
           </a>
         </li>
         {% endif %}
+        {% if features.pubmed %}
+        <li>
+          <a href="{% url 'pubmed:landing' %}"
+             class="ax-console-tool{% if '/pubmed/' in request.path %} is-active{% endif %}"
+             {% if '/pubmed/' in request.path %}aria-current="page"{% endif %}>
+            <i class="bi bi-heart-pulse" aria-hidden="true"></i>
+            PubMed
+          </a>
+        </li>
+        {% endif %}
       </ul>
     </div>
 

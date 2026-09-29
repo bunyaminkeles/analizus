@@ -4185,6 +4185,15 @@ def tarama_hub(request):
             'intl': True,
         },
         {
+            'title': gettext('PubMed Yayın Kazıma'),
+            'desc': gettext('40 milyondan fazla biyomedikal yayında başlık, özet, yazar ve MeSH terimiyle kodsuz arama yapın.'),
+            'icon': 'bi-heart-pulse',
+            'color': 'danger',
+            'url_name': 'pubmed:landing',
+            'feature_key': 'pubmed',
+            'intl': True,
+        },
+        {
             'title': gettext('Üniversite Tez Arşivi'),
             'desc': gettext('19 Türk üniversitesinin açık erişim arşivinde anahtar kelime ile tez ve makale arayın.'),
             'icon': 'bi-mortarboard',

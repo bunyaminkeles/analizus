@@ -235,8 +235,8 @@
                 </div>
 
                 <!-- Akademik Tarama hub'ı (TR: 5 araç; EN/DE: yalnız uluslararası araçlar — view filtreler) -->
-                {% if LANGUAGE_CODE == 'tr' %}{% if features.oaipmh or features.yoktez or features.openalex or features.trdizin or features.semanticscholar %}{% include 'partials/_nav_tarama_link.html' %}{% endif %}
-                {% elif features.openalex or features.semanticscholar %}{% include 'partials/_nav_tarama_link.html' %}{% endif %}
+                {% if LANGUAGE_CODE == 'tr' %}{% if features.oaipmh or features.yoktez or features.openalex or features.trdizin or features.semanticscholar or features.pubmed %}{% include 'partials/_nav_tarama_link.html' %}{% endif %}
+                {% elif features.openalex or features.semanticscholar or features.pubmed %}{% include 'partials/_nav_tarama_link.html' %}{% endif %}
 
                 {% if features.market %}
                 <a href="{% url 'job_list' %}" class="site-nav__link">{% trans "Pazaryeri" %}</a>
@@ -444,9 +444,9 @@
                 </div>
             </div>
 
-            {% if LANGUAGE_CODE == 'tr' %}{% if features.oaipmh or features.yoktez or features.openalex or features.trdizin or features.semanticscholar %}
+            {% if LANGUAGE_CODE == 'tr' %}{% if features.oaipmh or features.yoktez or features.openalex or features.trdizin or features.semanticscholar or features.pubmed %}
             <a href="{% url 'tarama_hub' %}" class="nav-drawer__link">{% trans "Akademik Tarama" %}</a>
-            {% endif %}{% elif features.openalex or features.semanticscholar %}
+            {% endif %}{% elif features.openalex or features.semanticscholar or features.pubmed %}
             <a href="{% url 'tarama_hub' %}" class="nav-drawer__link">{% trans "Akademik Tarama" %}</a>
             {% endif %}
 

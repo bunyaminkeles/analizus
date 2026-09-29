@@ -1283,6 +1283,11 @@ class SiteSettings(models.Model):
     feature_trdizin = models.BooleanField(default=False, verbose_name="TR Dizin Tarama")
     feature_openalex = models.BooleanField(default=True, verbose_name="OpenAlex Yayın Tarama")
     feature_semanticscholar = models.BooleanField(default=True, verbose_name="Semantic Scholar Tarama")
+    feature_pubmed = models.BooleanField(
+        default=False,
+        verbose_name="PubMed Yayın Tarama",
+        help_text="Varsayılan kapalı — NCBI_API_KEY eklenip canlıda denendikten sonra açın (anahtarsız da çalışır, 3 istek/sn).",
+    )
     feature_oaipmh = models.BooleanField(default=True, verbose_name="Üniversite Tez Arşivi (OAI-PMH)")
     feature_quiz = models.BooleanField(default=True, verbose_name="İstatistik Arena (Quiz)")
     feature_messaging = models.BooleanField(default=True, verbose_name="Özel Mesajlaşma")

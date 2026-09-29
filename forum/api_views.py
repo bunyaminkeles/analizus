@@ -141,10 +141,12 @@ def cron_cleanup_s3_files(request):
         from trdizin.services.job_runner import cleanup_expired_trdizin_s3_files as cleanup_trdizin
         from openalex.services.job_runner import cleanup_expired_openalex_s3_files as cleanup_openalex
         from oaipmh.services.job_runner import cleanup_expired_oaipmh_s3_files as cleanup_oaipmh
+        from pubmed.services.job_runner import cleanup_expired_pubmed_s3_files as cleanup_pubmed
 
         trdizin_deleted = cleanup_trdizin(days=7)
         openalex_deleted = cleanup_openalex(days=7)
         oaipmh_deleted = cleanup_oaipmh(days=7)
+        pubmed_deleted = cleanup_pubmed(days=7)
 
         return JsonResponse({
             'success': True,
@@ -152,6 +154,7 @@ def cron_cleanup_s3_files(request):
                 'trdizin': trdizin_deleted,
                 'openalex': openalex_deleted,
                 'oaipmh': oaipmh_deleted,
+                'pubmed': pubmed_deleted,
             },
         })
     except Exception as e:
@@ -303,12 +306,14 @@ def admin_queue_status(request):
         from openalex.models import AlexSearchJob
         from trdizin.models import DizinSearchJob
         from bibliometrics.models import BibliometricJob
+        from pubmed.models import PubMedSearchJob
 
         sections = [
             ('Tez Analizi', TezAnaliz),
             ('Makale Analizi', MakaleAnaliz),
             ('YÖK Tez', YokTezSearchJob),
             ('OpenAlex', AlexSearchJob),
+            ('PubMed', PubMedSearchJob),
             ('TR Dizin', DizinSearchJob),
             ('Bibliometrik', BibliometricJob),
         ]
@@ -559,6 +564,7 @@ _ACCOUNT_DELETION_JOB_MODELS = [
     ('trdizin.DizinSearchJob', 'trdizin.DizinOrder', 'search_job'),
     ('openalex.AlexSearchJob', 'openalex.AlexOrder', 'search_job'),
     ('semanticscholar.SemanticSearchJob', 'semanticscholar.SemanticOrder', 'search_job'),
+    ('pubmed.PubMedSearchJob', None, None),
     ('oaipmh.OAIPMHSearchJob', 'oaipmh.OAIPMHOrder', 'search_job'),
     ('bibliometrics.BibliometricJob', 'bibliometrics.BibliometricOrder', 'job'),
     ('yoktez.YokTezSearchJob', None, None),

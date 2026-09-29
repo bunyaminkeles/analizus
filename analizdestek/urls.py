@@ -35,6 +35,7 @@ urlpatterns = i18n_patterns(
     path('makaleanaliz/', include('makaleanaliz.urls', namespace='makaleanaliz')),
     path('openalex/', include('openalex.urls')),
     path('semantic-scholar/', include('semanticscholar.urls')),
+    path('pubmed/', include('pubmed.urls')),
     # Bibliometrik analiz — OpenAlex/Semantic Scholar'dan tetiklenir, PDF rapor kullanıcının dilinde (27 Eylül 2026)
     path('bibliometrics/', include('bibliometrics.urls')),
     # Akademik tarama hub'ı — EN/DE'de yalnız uluslararası araçlar (27 Eylül 2026)

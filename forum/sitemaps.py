@@ -203,7 +203,12 @@ class ToolsI18nSitemap(MultilingualSitemapMixin, Sitemap):
     priority = 0.9
 
     def items(self):
-        return [('openalex', 'landing'), ('semanticscholar', 'landing')]
+        items = [('openalex', 'landing'), ('semanticscholar', 'landing')]
+        # PubMed flag'i kapalıyken sayfa 404 → site haritasına girmesin
+        from forum.models import SiteSettings
+        if SiteSettings.load().feature_pubmed:
+            items.append(('pubmed', 'landing'))
+        return items
 
     def location(self, item):
         namespace, name = item

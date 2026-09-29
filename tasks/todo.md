@@ -42,7 +42,10 @@ maddelerde.
   `usehistory=y` → WebEnv; efetch XML 200'lük sayfa; `tool`/`email` + ops. `NCBI_API_KEY`; 3 req/s, anahtarla 10),
   `services/job_runner.py` (arama 1–2 istek, demo TXT, `ensure_full_results`), `job_queue.py` (tür + kurtarma + sıra),
   `INSTALLED_APPS`, admin. Doğrulama: gerçek API ile uçtan uca betik.
-- [ ] Faz 2 — Arayüz: `forms.py`, `views.py`, `urls.py` (i18n_patterns, `/pubmed/`), `templates/pubmed/landing.html`
+- [x] Faz 2 — YAPILDI YERELDE (29 Eylül 2026): `/pubmed/` (ax- sınıfları, mobil önce, API verisi escape), TR/EN/DE 200,
+  flag kapalıyken 404 + hub/sitemap'te yok; tam akış (POST → polling → TXT/Excel) OK; 32 msgid EN/DE; migration forum/0160
+  (`feature_pubmed`, **varsayılan KAPALI** → canlıda admin'den açılacak); S3 temizlik cron'u + hesap silme + çalışan işler
+  paneli bağlandı. Arayüz: `forms.py`, `views.py`, `urls.py` (i18n_patterns, `/pubmed/`), `templates/pubmed/landing.html`
   (OpenAlex landing kalıbı, ax- sınıfları), Excel (demo), günlük limit; `feature_pubmed` flag (forum migration),
   context_processors, tarama hub kartı (`forum/views.py`), konsol + navbar aktif link, sitemap. EN/DE çeviri.
 - [ ] Faz 3 — Bibliometri köprüsü: `BibliometricJob.pubmed_job` FK (bibliometrics migration), `parse_pubmed_json`,
@@ -57,6 +60,11 @@ maddelerde.
   Adminden düzenlenebilen yalnız bibliometri rapor fiyatları (`biblio_price_*`). SiteSettings alanı (migration) + şablonlardaki sabit fiyat metinleri.
 - [ ] Faz 4 — (ertelendi) TR sipariş akışı (`PubMedOrder`, OpenAlex sipariş kopyası) + hesap silme/S3 temizlik
   listeleri (`forum/api_views.py`), analizus.md §15 benzeri bölüm.
+
+- [ ] **OpenAlex sayfası bulguları (PubMed yazılırken görüldü, 29 Eylül 2026)** — (1) sonuç listesi API verisini (başlık,
+  yazar, özet) `innerHTML` ile kaçışsız basıyor → XSS riski (Semantic Scholar/TR Dizin de kontrol edilmeli); (2) `extra_js`
+  bloğu `block.super` çağırmıyor → bildirim/widget script'leri bu sayfada yüklenmiyor; (3) "Premium üyelikle 7 aramaya"
+  metni var ama `get_daily_limit` premium'a da 3 veriyor.
 
 **A. Kod işleri (öncelik sırasıyla)**
 - [x] **Hetzner deploy — main ab57dcd YAPILDI (28 Eylül 2026 gece; doğrulandı: bibtexparser 1.4.4, import ok, web log hata 0, /, /bibliometrics/ TR/EN/DE 200)**: bibliometri "Veri, Yöntem ve

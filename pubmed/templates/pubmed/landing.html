@@ -1,0 +1,288 @@
+{% extends "tarama_console_base.html" %}
+{% load static i18n %}
+
+{% block title %}{% trans "PubMed Yayın Kazıma ve İndirme Aracı — 40M+ Biyomedikal Kayıt" %} | Analizus{% endblock %}
+{% block meta_description %}{% trans "PubMed'den kodsuz biyomedikal yayın kazıma aracı. 40 milyondan fazla kayıt arasında başlık, özet, yazar ve MeSH terimiyle arama yapın; sonuçları Excel veya TXT olarak indirin." %}{% endblock %}
+{% block canonical %}{{ request.path }}{% endblock %}
+{% block og_title %}{% trans "PubMed Yayın Kazıma ve Veri İndirme" %} | Analizus{% endblock %}
+{% block og_description %}{% trans "PubMed'den kodsuz biyomedikal yayın kazıma. 40M+ kayıt arasında arama yapın, Excel veya TXT indirin." %}{% endblock %}
+
+{% block extra_head %}
+{{ block.super }}
+<style>
+/* Mobil önce: kriter satırı alt alta; ≥768px yan yana */
+.pm-wrap { max-width: 860px; margin: 0 auto; padding: var(--ax-space-4); display: flex; flex-direction: column; gap: var(--ax-space-4); }
+.pm-card { padding: var(--ax-space-4); }
+.pm-title { font-size: var(--ax-text-2xl); font-weight: var(--ax-font-bold); color: var(--ax-text-primary); margin: 0 0 var(--ax-space-2); }
+.pm-lead { color: var(--ax-text-secondary); font-size: var(--ax-text-sm); line-height: var(--ax-leading-relaxed); margin: 0 0 var(--ax-space-2); }
+.pm-section-title { font-size: var(--ax-text-base); font-weight: var(--ax-font-semibold); color: var(--ax-text-primary); margin: 0 0 var(--ax-space-3); }
+.pm-rule { display: flex; flex-direction: column; gap: var(--ax-space-2); padding: var(--ax-space-3); border: 1px solid var(--ax-border-default); border-radius: var(--ax-radius-md); margin-bottom: var(--ax-space-2); }
+.pm-rule__row { display: flex; gap: var(--ax-space-2); align-items: center; }
+.pm-rule__row .ax-form-control { flex: 1; min-width: 0; }
+.pm-actions { display: flex; flex-wrap: wrap; gap: var(--ax-space-2); margin-top: var(--ax-space-3); }
+.pm-actions .ax-btn { flex: 1 1 auto; justify-content: center; }
+.pm-hint { color: var(--ax-text-muted); font-size: var(--ax-text-xs); margin: var(--ax-space-2) 0 0; }
+.pm-results { display: flex; flex-direction: column; gap: var(--ax-space-3); }
+.pm-result { padding: var(--ax-space-3) 0; border-bottom: 1px solid var(--ax-border-default); }
+.pm-result:last-child { border-bottom: 0; }
+.pm-result__title { font-size: var(--ax-text-sm); font-weight: var(--ax-font-semibold); color: var(--ax-text-primary); margin: 0 0 var(--ax-space-1); line-height: var(--ax-leading-tight); }
+.pm-result__meta { font-size: var(--ax-text-xs); color: var(--ax-text-muted); margin: 0 0 var(--ax-space-1); }
+.pm-result__abstract { font-size: var(--ax-text-xs); color: var(--ax-text-secondary); margin: var(--ax-space-1) 0 0; line-height: var(--ax-leading-relaxed); }
+.pm-status { color: var(--ax-text-secondary); font-size: var(--ax-text-sm); margin: 0; }
+.pm-hidden { display: none !important; }
+@media (min-width: 768px) {
+  .pm-wrap { padding: var(--ax-space-6) var(--ax-space-4); }
+  .pm-card { padding: var(--ax-space-6); }
+  .pm-rule { flex-direction: row; align-items: center; }
+  .pm-rule .ax-form-select { flex: 0 0 200px; }
+  .pm-rule__row { flex: 1; }
+  .pm-actions .ax-btn { flex: 0 0 auto; }
+}
+</style>
+{% endblock %}
+
+{% block tool_area %}
+<div class="pm-wrap">
+
+  <section class="ax-card pm-card">
+    <h1 class="pm-title">{% trans "PubMed Yayın Kazıma ve Veri İndirme" %}</h1>
+    <p class="pm-lead">{% trans "PubMed'deki 40 milyondan fazla biyomedikal yayından kodsuz veri çekin. Başlık, özet, yazar, MeSH terimi, dergi ve kurum alanlarında arama yapın; sonuçları Excel veya TXT olarak indirin." %}</p>
+    <p class="pm-lead">{% blocktrans %}Günlük <strong>{{ daily_limit }}</strong> arama hakkınız bulunmaktadır. Kalan: <strong>{{ remaining }}</strong>.{% endblocktrans %}</p>
+  </section>
+
+  <section class="ax-card pm-card" aria-labelledby="pm-criteria-title">
+    <h2 class="pm-section-title" id="pm-criteria-title">{% trans "Arama Kriterleri" %}</h2>
+    <form id="pm-search-form" method="post" action="{% url 'pubmed:landing' %}">
+      {% csrf_token %}
+      {{ form.query_parts_json }}
+      <div id="pm-builder"></div>
+      <div class="pm-actions">
+        <button type="button" id="pm-add-rule" class="ax-btn ax-btn--ghost"><i class="bi bi-plus-lg" aria-hidden="true"></i> {% trans "Kriter Ekle" %}</button>
+        <button type="submit" id="pm-submit" class="ax-btn ax-btn--primary"><i class="bi bi-search" aria-hidden="true"></i> <span>{% trans "Arama Yap" %}</span></button>
+      </div>
+      <p class="pm-hint">{% trans "Tüm kriterler birlikte aranır (AND). Yıl aralığı örneği: 2020-2024." %}</p>
+    </form>
+  </section>
+
+  <section id="pm-results-card" class="ax-card pm-card pm-hidden" aria-live="polite">
+    <div class="pm-rule__row">
+      <h2 class="pm-section-title" style="margin:0;flex:1;">{% trans "Arama Sonuçları" %}</h2>
+      <button type="button" id="pm-cancel" class="ax-btn ax-btn--danger ax-btn--sm pm-hidden"><i class="bi bi-x-circle" aria-hidden="true"></i> {% trans "İptal Et" %}</button>
+    </div>
+    <p id="pm-status" class="pm-status"></p>
+    <div id="pm-results" class="pm-results"></div>
+    <div id="pm-result-actions" class="pm-actions pm-hidden">
+      <button type="button" id="pm-send-email" class="ax-btn ax-btn--primary"><i class="bi bi-envelope" aria-hidden="true"></i> <span>{% trans "Demo Sonuçları E-posta Gönder" %}</span></button>
+      <a id="pm-download-txt" href="#" class="ax-btn ax-btn--ghost"><i class="bi bi-file-earmark-text" aria-hidden="true"></i> {% trans "TXT İndir" %}</a>
+      <a id="pm-download-xlsx" href="#" class="ax-btn ax-btn--ghost"><i class="bi bi-file-earmark-excel" aria-hidden="true"></i> {% trans "Excel İndir" %}</a>
+    </div>
+    <div id="pm-email-status"></div>
+    <p id="pm-full-data" class="pm-hint pm-hidden">
+      {% trans "Tam veri seti için proje talebi bırakın, ücretsiz değerlendirelim:" %}
+      <a href="{% url 'proje_talebi' %}?source=tool">{% trans "Proje Talebi Bırak" %}</a>
+    </p>
+  </section>
+
+</div>
+
+{{ js_config|json_script:"pm-config" }}
+{% endblock %}
+
+{% block extra_js %}
+{{ block.super }}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const cfg = JSON.parse(document.getElementById('pm-config').textContent);
+  const T = cfg.texts;
+  const fmt = (s, vals) => s.replace(/\{(\w+)\}/g, (m, k) => (k in vals ? vals[k] : m));
+  // API verisi (başlık, yazar, özet) HTML olarak basılmaz
+  const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
+
+  const SENTINEL = '00000000-0000-0000-0000-000000000000';
+  const URLS = {
+    status: "{% url 'pubmed:job_status' '00000000-0000-0000-0000-000000000000' %}",
+    cancel: "{% url 'pubmed:cancel' '00000000-0000-0000-0000-000000000000' %}",
+    email: "{% url 'pubmed:send_demo_email' '00000000-0000-0000-0000-000000000000' %}",
+    txt: "{% url 'pubmed:download_txt' '00000000-0000-0000-0000-000000000000' %}",
+    xlsx: "{% url 'pubmed:download_excel' '00000000-0000-0000-0000-000000000000' %}",
+  };
+  const url = (key, id) => URLS[key].replace(SENTINEL, id);
+  const STORAGE_KEY = 'pubmed_last_job';
+
+  const $ = (id) => document.getElementById(id);
+  const builder = $('pm-builder'), form = $('pm-search-form'), submitBtn = $('pm-submit');
+  const resultsCard = $('pm-results-card'), statusEl = $('pm-status'), resultsEl = $('pm-results');
+  const actionsEl = $('pm-result-actions'), cancelBtn = $('pm-cancel'), emailBtn = $('pm-send-email');
+  const emailStatus = $('pm-email-status'), fullData = $('pm-full-data');
+  const csrf = () => document.querySelector('[name=csrfmiddlewaretoken]').value;
+  const submitLabel = submitBtn.querySelector('span').textContent;
+  const emailLabel = emailBtn.querySelector('span').textContent;
+  let currentJobId = null, pollTimer = null;
+
+  function createRule(isFirst) {
+    const rule = document.createElement('div');
+    rule.className = 'pm-rule';
+    const select = document.createElement('select');
+    select.className = 'ax-form-select pm-field';
+    cfg.fields.forEach(([value, label]) => select.add(new Option(label, value)));
+    const row = document.createElement('div');
+    row.className = 'pm-rule__row';
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'ax-form-control pm-value';
+    input.maxLength = 300;
+    input.placeholder = T.value_placeholder;
+    select.addEventListener('change', () => { input.placeholder = select.value === 'year' ? '2020-2024' : T.value_placeholder; });
+    row.appendChild(input);
+    if (!isFirst) {
+      const remove = document.createElement('button');
+      remove.type = 'button';
+      remove.className = 'ax-btn ax-btn--ghost ax-btn--sm';
+      remove.setAttribute('aria-label', T.remove_rule);
+      remove.innerHTML = '<i class="bi bi-x-lg" aria-hidden="true"></i>';
+      remove.addEventListener('click', () => rule.remove());
+      row.appendChild(remove);
+    }
+    rule.appendChild(select);
+    rule.appendChild(row);
+    builder.appendChild(rule);
+  }
+
+  function collectParts() {
+    return Array.from(builder.querySelectorAll('.pm-rule'))
+      .map(r => ({field: r.querySelector('.pm-field').value, value: r.querySelector('.pm-value').value.trim(), operator: 'AND'}))
+      .filter(p => p.value);
+  }
+
+  function setBusy(busy) {
+    submitBtn.disabled = busy;
+    submitBtn.querySelector('span').textContent = busy ? T.searching : submitLabel;
+    cancelBtn.classList.toggle('pm-hidden', !busy);
+  }
+
+  function showStatus(text, isError) {
+    statusEl.textContent = text;
+    statusEl.classList.toggle('ax-text-danger', !!isError);
+  }
+
+  function resetResults() {
+    resultsCard.classList.remove('pm-hidden');
+    resultsEl.innerHTML = '';
+    actionsEl.classList.add('pm-hidden');
+    fullData.classList.add('pm-hidden');
+    emailStatus.innerHTML = '';
+  }
+
+  function displayResults(data, isPrevious) {
+    const items = data.demo_results || [];
+    let summary = data.total_results
+      ? fmt(T.summary, {total: data.total_results.toLocaleString(), shown: items.length})
+      : T.no_results;
+    showStatus((isPrevious ? T.previous + ' — ' : '') + summary, false);
+    resultsEl.innerHTML = items.map(item => `
+      <article class="pm-result">
+        <h3 class="pm-result__title">${esc(item.title || T.no_title)}</h3>
+        <p class="pm-result__meta">${esc(item.authors || T.no_author)} (${esc(item.year || '—')}) — <em>${esc(item.journal || T.no_source)}</em>
+          ${item.type ? `<span class="ax-badge">${esc(item.type)}</span>` : ''}
+          ${item.pmid ? `<a href="https://pubmed.ncbi.nlm.nih.gov/${encodeURIComponent(item.pmid)}/" target="_blank" rel="noopener">PMID ${esc(item.pmid)}</a>` : ''}</p>
+        <p class="pm-result__abstract">${esc((item.abstract || T.no_abstract).substring(0, 240))}${(item.abstract || '').length > 240 ? '…' : ''}</p>
+      </article>`).join('');
+    if (data.has_demo) {
+      $('pm-download-txt').href = url('txt', currentJobId);
+      $('pm-download-xlsx').href = url('xlsx', currentJobId);
+      actionsEl.classList.remove('pm-hidden');
+      fullData.classList.remove('pm-hidden');
+    }
+    if (!isPrevious) {
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify({job_id: currentJobId, results: data, ts: Date.now()})); } catch (e) {}
+    }
+  }
+
+  function pollStatus() {
+    clearInterval(pollTimer);
+    setBusy(true);
+    pollTimer = setInterval(() => {
+      fetch(url('status', currentJobId), {headers: {'X-Requested-With': 'XMLHttpRequest'}})
+        .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+        .then(data => {
+          if (data.status === 'completed') {
+            clearInterval(pollTimer); setBusy(false); displayResults(data, false);
+          } else if (data.status === 'failed') {
+            clearInterval(pollTimer); setBusy(false);
+            showStatus(T.failed + ' ' + (data.error || T.unknown), true);
+          } else if (data.status === 'pending') {
+            showStatus(data.queue_position > 1 ? fmt(T.queue, {pos: data.queue_position}) : T.starting);
+          } else {
+            showStatus(T.running);
+          }
+        })
+        .catch(err => console.warn('PubMed durum kontrolü (tekrar denenecek):', err.message));
+    }, 3000);
+  }
+
+  $('pm-add-rule').addEventListener('click', () => createRule(false));
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    const parts = collectParts();
+    if (!parts.length) { resetResults(); showStatus(T.need_criteria, true); return; }
+    form.querySelector('[name=query_parts_json]').value = JSON.stringify(parts);
+    resetResults();
+    setBusy(true);
+    showStatus(T.starting);
+    fetch(form.action, {method: 'POST', body: new FormData(form), headers: {'X-Requested-With': 'XMLHttpRequest'}})
+      .then(r => r.json())
+      .then(data => {
+        if (data.error) throw new Error(data.error);
+        currentJobId = data.job_id;
+        pollStatus();
+      })
+      .catch(err => { setBusy(false); showStatus(T.error + ' ' + err.message, true); });
+  });
+
+  cancelBtn.addEventListener('click', function () {
+    if (!currentJobId) return;
+    cancelBtn.disabled = true;
+    cancelBtn.textContent = T.cancelling;
+    fetch(url('cancel', currentJobId), {method: 'POST', headers: {'X-CSRFToken': csrf()}})
+      .finally(() => location.reload());
+  });
+
+  emailBtn.addEventListener('click', function () {
+    emailBtn.disabled = true;
+    emailBtn.querySelector('span').textContent = T.sending;
+    emailStatus.innerHTML = '';
+    fetch(url('email', currentJobId), {method: 'POST', headers: {'X-CSRFToken': csrf(), 'X-Requested-With': 'XMLHttpRequest'}})
+      .then(r => r.json())
+      .then(data => {
+        if (!data.success) throw new Error(data.error || T.unknown);
+        emailStatus.innerHTML = `<div class="ax-alert ax-alert--success" role="status"><div class="ax-alert__body">${esc(data.message)}</div></div>`;
+      })
+      .catch(err => {
+        emailBtn.disabled = false;
+        emailStatus.innerHTML = `<div class="ax-alert ax-alert--danger" role="alert"><div class="ax-alert__body">${esc(T.error + ' ' + err.message)}</div></div>`;
+      })
+      .finally(() => { emailBtn.querySelector('span').textContent = emailLabel; });
+  });
+
+  createRule(true);
+
+  {% if active_job_id %}
+  currentJobId = '{{ active_job_id }}';
+  resetResults();
+  showStatus(T.resumed);
+  pollStatus();
+  {% else %}
+  // Son tamamlanan arama (24 saat) — sayfa yenilenince kaybolmasın
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+    if (saved && saved.job_id && saved.results && (Date.now() - saved.ts) < 24 * 60 * 60 * 1000) {
+      currentJobId = saved.job_id;
+      resetResults();
+      displayResults(saved.results, true);
+    }
+  } catch (e) {}
+  {% endif %}
+});
+</script>
+{% endblock %}

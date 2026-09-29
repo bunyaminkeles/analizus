@@ -19903,3 +19903,102 @@ msgstr "Bibliometric Analysis — PDF Report with up to 17 Charts"
 
 msgid "Demo rapor (3 grafik) ücretsiz emaile gönderilir. Tam rapor (17 analize kadar) kayıt sayısına göre ücretlidir."
 msgstr "A demo report (3 charts) is sent free to your email. The full report (up to 17 analyses) is priced based on record count."
+
+# PubMed modülü — Faz 2 (29 Eylül 2026)
+msgid "40 milyondan fazla biyomedikal yayında başlık, özet, yazar ve MeSH terimiyle kodsuz arama yapın."
+msgstr "Search more than 40 million biomedical publications by title, abstract, author and MeSH term — no coding required."
+
+msgid "40 milyondan fazla biyomedikal yayından kodsuz veri kazıma aracı. Başlık, özet, yazar, MeSH terimi ve kurum alanlarında arama yapın; sonuçları Excel veya TXT olarak indirin."
+msgstr "A no-code data extraction tool for more than 40 million biomedical publications. Search by title, abstract, author, MeSH term and affiliation; download the results as Excel or TXT."
+
+msgid "40M+ Biyomedikal Kayıt"
+msgstr "40M+ Biomedical Records"
+
+msgid "Arama kriterlerinizi seçin: başlık, MeSH terimi, yazar veya yıl."
+msgstr "Choose your search criteria: title, MeSH term, author or year."
+
+msgid "Başlık, yazar, dergi, yıl, DOI, PMID, MeSH terimleri ve özet verilerini Excel veya TXT olarak indirin."
+msgstr "Download titles, authors, journals, years, DOIs, PMIDs, MeSH terms and abstracts as Excel or TXT."
+
+msgid "Başlık, özet, yazar, MeSH terimi, dergi, kurum ve yıl alanlarını birleştirerek arama yapın."
+msgstr "Combine title, abstract, author, MeSH term, journal, affiliation and year fields in one search."
+
+msgid "Başlık/Özet"
+msgstr "Title/Abstract"
+
+msgid "Bu arama için sonuç bulunamadı. Kriterleri genişletmeyi deneyin."
+msgstr "No results were found for this search. Try broadening your criteria."
+
+#, python-format
+msgid "Günlük <strong>%(daily_limit)s</strong> arama hakkınız bulunmaktadır. Kalan: <strong>%(remaining)s</strong>."
+msgstr "You have <strong>%(daily_limit)s</strong> searches per day. Remaining: <strong>%(remaining)s</strong>."
+
+msgid "Kriteri kaldır"
+msgstr "Remove criterion"
+
+msgid "MeSH Terimi"
+msgstr "MeSH Term"
+
+msgid "MeSH Terimleri"
+msgstr "MeSH Terms"
+
+msgid "Proje Talebi Bırak"
+msgstr "Submit a Project Request"
+
+#, python-format
+msgid "PubMed Arama Sonuçları: %(query)s"
+msgstr "PubMed Search Results: %(query)s"
+
+msgid "PubMed Sonuçları"
+msgstr "PubMed Results"
+
+msgid "PubMed Yayın Arama Sonuçları"
+msgstr "PubMed Publication Search Results"
+
+msgid "PubMed Yayın Kazıma"
+msgstr "PubMed Publication Scraping"
+
+msgid "PubMed Yayın Kazıma ve Veri İndirme"
+msgstr "PubMed Publication Scraping and Data Download"
+
+msgid "PubMed Yayın Kazıma ve Veri İndirme Aracı"
+msgstr "PubMed Publication Scraping and Data Download Tool"
+
+msgid "PubMed Yayın Kazıma ve İndirme Aracı — 40M+ Biyomedikal Kayıt"
+msgstr "PubMed Publication Scraping and Download Tool — 40M+ Biomedical Records"
+
+msgid "PubMed arama sonuçlarınız hazırlanmıştır."
+msgstr "Your PubMed search results are ready."
+
+msgid "PubMed tarama için e-posta doğrulaması gereklidir. Profil sayfanızdan e-postanızı doğrulayın."
+msgstr "Email verification is required for PubMed searches. Please verify your email address on your profile page."
+
+msgid "PubMed'deki 40 milyondan fazla biyomedikal yayından kodsuz veri çekin. Başlık, özet, yazar, MeSH terimi, dergi ve kurum alanlarında arama yapın; sonuçları Excel veya TXT olarak indirin."
+msgstr "Extract data from more than 40 million biomedical publications in PubMed without coding. Search by title, abstract, author, MeSH term, journal and affiliation; download the results as Excel or TXT."
+
+msgid "PubMed'den kodsuz biyomedikal yayın kazıma aracı. 40 milyondan fazla kayıt arasında başlık, özet, yazar ve MeSH terimiyle arama yapın; sonuçları Excel veya TXT olarak indirin."
+msgstr "A no-code tool for extracting biomedical publications from PubMed. Search more than 40 million records by title, abstract, author and MeSH term; download the results as Excel or TXT."
+
+msgid "PubMed'den kodsuz biyomedikal yayın kazıma. 40M+ kayıt arasında arama yapın, Excel veya TXT indirin."
+msgstr "No-code biomedical publication extraction from PubMed. Search 40M+ records and download Excel or TXT."
+
+msgid "PubMed'den veriler çekiliyor, lütfen bekleyin..."
+msgstr "Fetching data from PubMed, please wait..."
+
+msgid "PubMed'in tıp, hemşirelik, sağlık ve yaşam bilimleri veri tabanında kodsuz arama yapın."
+msgstr "Search PubMed's medicine, nursing, health and life sciences database without coding."
+
+msgid "Sistem PubMed'den verileri kazıyarak saniyeler içinde listeler."
+msgstr "The system retrieves the data from PubMed and lists it within seconds."
+
+msgid "Sonuçları Excel veya TXT olarak indirin ya da e-postanıza gönderin."
+msgstr "Download the results as Excel or TXT, or send them to your email."
+
+msgid "Sırada bekliyorsunuz — tahmini sıra: {pos}."
+msgstr "You are in the queue — estimated position: {pos}."
+
+msgid "Toplam {total} sonuç bulundu. İlk {shown} kayıt aşağıda gösteriliyor."
+msgstr "{total} results found in total. The first {shown} records are shown below."
+
+msgid "Tüm kriterler birlikte aranır (AND). Yıl aralığı örneği: 2020-2024."
+msgstr "All criteria are searched together (AND). Year range example: 2020-2024."
