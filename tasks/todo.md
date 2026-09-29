@@ -10,7 +10,12 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
-> **YENİ OTURUM BURADAN BAŞLA (29 Eylül 2026 akşam):**
+> **29 Eylül 2026 gece — CANLI = main = dev = 8393eec** (doğrulandı: siteler 200, log temiz): OpenAlex 5xx bekleme + çevrili
+> hata + anahtar gizleme; PubMed anahtar gizleme; DM WebSocket `@.+-` adlar; 500 hata e-postası (ADMIN_NOTIFICATION_EMAIL,
+> sel koruması). Hetzner: NCBI_API_KEY eklendi, Docker log sınırı (daemon.json 20m×5, tüm container'lar), disk temizliği
+> %65→%45. **`feature_pubmed` canlıda AÇIK.** Açık karar: sunucu dışı yedek (Hetzner Backup önerildi). Render: NCBI_API_KEY?
+>
+> **ÖNCEKİ NOT (29 Eylül 2026 akşam):**
 > - **Canlı = main = dev = c02093f** (Hetzner, 29 Eylül akşam doğrulandı: /openalex/ 200, log temiz). İçerik: OpenAlex ilk
 >   sayfa + sipariş arka plan işi, PubMed modülü `feature_pubmed` KAPALI, admin'den fiyatlar, 6 tarama sayfasında XSS
 >   düzeltmesi, Premium günlük 7 arama (OpenAlex/TR Dizin/YÖK Tez/PubMed), OpenAlex `block.super`.
