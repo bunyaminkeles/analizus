@@ -26,13 +26,37 @@ maddelerde.
 >   (b) bütçe dolunca "talep bırakın" yedeği SONRA (önce istek sayısı ölçülecek). Eski not: — plan ve
 >   dosya listesi `analizus.md` §27 "SIRADAKİ". Önce kullanıcıya iki karar sor: (a) sipariş TXT'si `abstract_count` ile
 >   sınırlansın mı (öneri evet), (b) bütçe dolunca "talep bırakın" yedeği şimdi mi (öneri sonra). Onaydan sonra uygula.
-> - Sonra: BASE/PubMed (kullanıcı sordu; `BASE_PubMed_Integration_Project.md` — git'te değil, başka kaynaktan tasarım
+> - **BASE/PubMed kararları (29 Eylül 2026):** önce **PubMed** (OpenAlex kalıbı: yeni `pubmed` app, `PubMedSearchJob.all_results`
+>   + bibliometri köprüsü; migration gerekir). **BASE BEKLİYOR:** API başvuru formu + IP beyaz liste; BASE API'yi "yalnız
+>   ticari olmayan amaçla" veriyor (api.base-search.net, about_develop) → kullanıcı başvuruda kullanım amacını (ücretli rapor
+>   dahil) yazıp onay bekleyecek; onay gelirse ayrı iş. Eski not: BASE/PubMed (kullanıcı sordu; `BASE_PubMed_Integration_Project.md` — git'te değil, başka kaynaktan tasarım
 >   taslağı). Başlamadan netleştir: (1) mimari — taslaktaki ortak `base_pubmed` app + `HarvestedRecord` tablosu yerine
 >   mevcut OpenAlex kalıbı (app başına `*SearchJob.all_results` + parser köprüsü) önerildi; (2) BASE erişimi kayıt + IP
 >   onayı ve ticari kullanım kısıtı olabilir — DOĞRULANMADI, önce kontrol. Karar: PubMed TR/EN/DE, BASE yalnız DE.
 > - Açık kullanıcı soruları: (1) "2026 yayınları tarih/DOI varsa alınsın" netleşmedi; (2) Research Gap trend yöntemi
 >   (yıllık ortalama önerisi). Kapananlar: kurum grafiği ✅, "17 analize kadar" ✅, OpenAlex ilk sayfa → karar verildi (plan).
 > - Diğer açıklar bu listede `- [ ]`; sistem özeti `analizus.md` §14 (bibliometri), §15 (OpenAlex), §26, §27.
+
+**PUBMED MODÜLÜ — PLAN (29 Eylül 2026, ONAY BEKLİYOR)** — OpenAlex kalıbı, TR/EN/DE; ilk sayfa + ihtiyaçta tam veri.
+- [x] Faz 1 — YAPILDI YERELDE (29 Eylül 2026; gerçek API: 250 sonuçlu sorgu arama 2 istek/3,6 sn, tam veri 3 istek; sıfır sonuç + hata yolu OK; forum 61/61; affiliation'dan yazar e-postası temizleniyor). Faz 2'ye kalan: S3 temizlik cron'u + hesap silme listesi (`forum/api_views.py`). `pubmed` app çekirdeği: `PubMedSearchJob` (+ migration pubmed/0001), `services/scraper.py` (esearch
+  `usehistory=y` → WebEnv; efetch XML 200'lük sayfa; `tool`/`email` + ops. `NCBI_API_KEY`; 3 req/s, anahtarla 10),
+  `services/job_runner.py` (arama 1–2 istek, demo TXT, `ensure_full_results`), `job_queue.py` (tür + kurtarma + sıra),
+  `INSTALLED_APPS`, admin. Doğrulama: gerçek API ile uçtan uca betik.
+- [ ] Faz 2 — Arayüz: `forms.py`, `views.py`, `urls.py` (i18n_patterns, `/pubmed/`), `templates/pubmed/landing.html`
+  (OpenAlex landing kalıbı, ax- sınıfları), Excel (demo), günlük limit; `feature_pubmed` flag (forum migration),
+  context_processors, tarama hub kartı (`forum/views.py`), konsol + navbar aktif link, sitemap. EN/DE çeviri.
+- [ ] Faz 3 — Bibliometri köprüsü: `BibliometricJob.pubmed_job` FK (bibliometrics migration), `parse_pubmed_json`,
+  `/bibliometrics/from-pubmed/<id>/`, runner (`source='pubmed'`), rapor notları kaynak metni. PubMed'de atıf sayısı yok →
+  atıf analizleri "üretilemedi" nedenine düşer; ülke yalnız affiliation metninden (sezgisel) — karar.
+  **Kararlar (29 Eylül 2026):** sipariş ŞİMDİLİK YOK (tam veri → proje talebi, EN/DE gibi; Faz 4 ileride); atıf analizleri
+  yok, ülke affiliation metninden tahmin + Kısıtlar bölümünde "tahmini" notu; NCBI anahtarını kullanıcı alacak
+  (`NCBI_API_KEY`, yoksa 3 req/s); günlük limit OpenAlex ile aynı.
+- [ ] **ZORUNLU — Tarama sipariş fiyatları adminden düzenlenebilir olmalı** (kullanıcı: "hard coded olmaz", 29 Eylül 2026;
+  PubMed Faz 1'den sonra ayrı iş, plan+onay): OpenAlex,
+  TR Dizin, OAI-PMH, Semantic Scholar `calculate_price` = 250 TL/ilk 100 + 100 TL/her 100 — SiteSettings'te alan yok.
+  Adminden düzenlenebilen yalnız bibliometri rapor fiyatları (`biblio_price_*`). SiteSettings alanı (migration) + şablonlardaki sabit fiyat metinleri.
+- [ ] Faz 4 — (ertelendi) TR sipariş akışı (`PubMedOrder`, OpenAlex sipariş kopyası) + hesap silme/S3 temizlik
+  listeleri (`forum/api_views.py`), analizus.md §15 benzeri bölüm.
 
 **A. Kod işleri (öncelik sırasıyla)**
 - [x] **Hetzner deploy — main ab57dcd YAPILDI (28 Eylül 2026 gece; doğrulandı: bibtexparser 1.4.4, import ok, web log hata 0, /, /bibliometrics/ TR/EN/DE 200)**: bibliometri "Veri, Yöntem ve

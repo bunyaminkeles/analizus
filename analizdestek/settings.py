@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     'trdizin',
     'openalex',
     'semanticscholar',
+    'pubmed',
     'oaipmh',
     'yoktez',
     'bibliometrics',
