@@ -17,7 +17,7 @@ maddelerde.
 > `~/yedekler/analizus/` (gzip ~55 MB, son 14; doğrulama gzip + "dump complete"; geçici PG'ye geri yükleme testi OK: 80 tablo,
 > 125 kullanıcı). Log `~/yedekler/analizus/yedek.log`. Render NCBI_API_KEY tanımlı; hata e-postası canlıda sınandı (geldi).
 >
-> **Sıradaki adaylar:** OpenAlex dergi adlarında kontrol karakteri (`_clean`); istatistik sütun adı self-XSS; Research Gap
+> **ÖNCELİK (30 Eylül 2026): BÜYÜK SEO DÖNÜŞÜMÜ — aşağıdaki başlık, Faz 1'den başla.** Diğer adaylar: OpenAlex dergi adlarında kontrol karakteri (`_clean`); istatistik sütun adı self-XSS; Research Gap
 > trend yöntemi (karar); SSS/SEO EN/DE; BASE (e-posta yanıtı bekleniyor). Doküman: `analizus.md` §3 (sunucu bakımı), §16
 > (500 e-postası), §26 (yeni satırlar), §27 "29 Eylül 2026 gece".
 >
@@ -36,6 +36,80 @@ maddelerde.
 > - Açık kullanıcı soruları: (1) "2026 yayınları tarih/DOI varsa alınsın" netleşmedi; (2) Research Gap trend yöntemi
 >   (yıllık ortalama önerisi).
 > - Diğer açıklar bu listede `- [ ]`; ayrıntı `analizus.md` §14 (bibliometri), §15 (tarama), §26, §27.
+
+### BÜYÜK SEO DÖNÜŞÜMÜ — PLAN (30 Eylül 2026; ÖNCELİK — faz faz, her faz önce onay)
+**Hedef:** portal = analiz/danışmanlık ihtiyacı olanlar ↔ analistler (tez merkezleri, AI mühendisleri, istatistikçiler,
+eğitmenler). Kapsam: akademik danışmanlık, etik kurul, tez önerisi, metin editörlüğü, makale danışmanlığı, metodoloji ve
+analiz (Excel, EViews, SPSS, SmartPLS, Power BI, Tableau, Python, ML/DL/NLP, AI agentic, MAXQDA, NVivo, konu analizi,
+geçerlilik-güvenirlik, içerik analizi, fark/regresyon/korelasyon), proje danışmanlığı.
+
+**Başlangıç ölçümü (GSC son 3 ay, 30 Eylül 2026):** 459 tık, 34,3 bin gösterim, CTR %1,3, ort. sıra 7,7. Gösterim Ağustos
+sonundan beri ~4× (günde ~250 → ~1.000), tık yerinde sayıyor. Tık dağılımı: blog 258 (%56), tarama 78, forum 58, araçlar 27,
+eğitim 7, EN/DE 0. %94 Türkiye, ~%70 masaüstü. Hizmet niyetli sorgu (danışmanlık/yaptırma/ücret/SmartPLS/NVivo/etik kurul) = 0.
+İndeksleme: 262 indeksli / 377 değil — çoğu bilinçli (robots 192, alternatif canonical 97, yönlendirme 32, noindex 31); gerçek
+sorun ~25 sayfa (Faz 2). Yapılandırılmış veri hatası 0 (Temmuz'da 1 sayfa, geçti). Ham GSC zip'i proje kökünde — commit'lenmez.
+
+**Verilen kararlar (30 Eylül 2026):** navbar DEĞİŞMEZ (Pazaryeri düz link kalır); 15 değil **5 küme hizmet sayfası**; alt hizmet
+ayrı sayfaya ancak GSC talep gösterince; "tez yazdırma / ödev yaptırma" niyeti hedeflenmez; şehir × hizmet programatik sayfa
+yok; ilanlara JobPosting şeması yok (Google yalnız istihdam için); `/analiz/` = "kendin yap, ücretsiz", `/hizmetler/nicel-analiz/`
+= "uzmana yaptır" (title/H1 ayrı — yamyamlık önlemi). **ERTELENDİ (kullanıcı: "profil hariç şimdilik"):** uzman profillerinin
+anonime açılması — `profile_detail` `@login_required` → Google profilleri göremiyor (login'e yönleniyor → robots engeli).
+
+**Faz 1 — CTR hızlı kazanç (yalnız title/meta, migration yok)**
+- [ ] Tarama sayfaları: `/yoktez/` (8.748 gösterim, CTR %0,4, sıra 7,5), `/trdizin/`, `/oaipmh/` (~1.500'er, CTR ~%1),
+  `/openalex/` — resmî siteden farkı söyleyen title + meta (toplu tarama, Excel'e aktarma, filtre)
+- [ ] En çok gösterim alan blog yazıları: AFA/DFA (3.091), Cronbach ×2 (2.150 + 1.384), örneklem (2.096), t tablosu (1.062),
+  normallik ×2 (900 + 706), VIF (655) — 0 tık alan sorgulara uygun title ("afa nedir" 230, "dfa" 225, "cronbach alfa nedir",
+  "t tablosu" 408 gösterim/1 tık)
+- [ ] 4 hafta sonra aynı sayfalarda CTR karşılaştırması (GSC dışa aktarımı)
+
+**Faz 2 — İndeksleme temizliği**
+- [ ] (kullanıcı) GSC "Redirect error" → Validate fix: `analizus.com/egitim/`, `/proje-talebi/` artık tek 301 → 200 (canlı doğrulandı)
+- [ ] `/uzmanlar/?cat=N` — "Google chose different canonical" (5 sayfa): kendini canonical gösteriyor ama title/içerik
+  `/uzmanlar/` ile aynı → kategoriye özgü title/H1/2 cümle giriş; <2 uzman → `noindex` + canonical `/uzmanlar/` (Faz 4 ile)
+- [ ] `/section/<pk>/` — title ana sayfayla aynı, ~330 kelime ("Crawled – not indexed") → kendi title/meta ya da `noindex` (karar)
+- [ ] Boş forum kategorileri (`/forum/panel-veri-analizi/`, `/zaman-serisi-analizi/`, `/veri-temizleme/`, `/bibliometrik-analizler/`
+  ~220 kelime) → konu sayısı eşiğin altında `noindex` (eşik kararı)
+- [ ] `/blog/nitel-arastirma-yontemleri/` slug ↔ başlık uyumsuz ("Kısa Mülakatlarda Başarının Anahtarı…") — editoryal karar
+- Dokunulmayacak (normal): robots engelli `/login/?next=`, `/forum/*/new/`, `/market/job/*/bookmark/`; `/market/?category=`
+  canonical `/market/`; `/istatistik/*` 301 → `/analiz/*`
+
+**Faz 3 — Blog → hizmet köprüsü (trafiğin %56'sı blogda)**
+- [ ] Blog yazısı sonunda kategoriye göre tek "Bu konuda uzman desteği" kartı (15 `BlogCategory` → hizmet eşlemesi); Faz 4
+  bitene kadar hedef `/proje-talebi/` veya `/market/`
+
+**Faz 4 — 5 hizmet sayfası + Pazaryeri şeridi**
+- [ ] KARAR: içerik yeri — Python sabiti (deploy ile değişir) / admin modeli + migration (öneri: model); dil — öneri yalnız TR,
+  öneksiz `/hizmetler/…` (forum/blog gibi)
+- [ ] `/hizmetler/` + `akademik-danismanlik`, `nicel-analiz`, `nitel-analiz`, `veri-ve-yapay-zeka`, `proje-danismanligi`.
+  Sayfa: vaat → alt hizmet bölümleri (`#anchor`; tanım, ne zaman, teslimat) → uzman kartları (≥2 yoksa bölüm gizli +
+  "Bu alanda uzmansanız katılın") → süreç → etik sınırlar → SSS → CTA (İlan Aç kategori ön seçili + Uzman Olarak Katıl).
+  Service + FAQPage + BreadcrumbList JSON-LD; sitemap; feature flag; AI asistan `_ALLOWED_PATHS`; ax- sınıfları, mobil önce
+- [ ] Nicel Analiz bölümleri `/analiz/` sınıflandırmasıyla aynı (Ön Analizler, Geçerlilik & Güvenirlik, İlişki, Fark,
+  Regresyon, ML) + SEM/SmartPLS, EViews, ileri modeller; her bölümde ilgili ücretsiz araç linkleri
+- [ ] `/market/`: sayaçlar ile kategori çipleri arasına "Hizmet Alanları" 5 kart şeridi (mobilde yatay kaydırma); hizmet
+  sayfalarında navbar "Pazaryeri" aktif + breadcrumb "Pazaryeri › …"
+- [ ] Pilot: önce Nicel Analiz, onay sonrası diğer 4
+
+**Faz 5 — İç linkleme**
+- [ ] `/analiz/` kategori başlıklarına "Uzmana yaptır →" (`#bölüm`) + sayfa sonu tek bant
+- [ ] Araç sayfalarına "Bu analizi uzmana yaptırın" bandı (mevcut "öğrenmek ister misiniz" bandının yanında)
+- [ ] Footer "Hizmetler" sütunu; `/uzmanlar/?cat=` girişinden ilgili hizmet sayfasına link
+
+**Faz 6 — İçerik takvimi (öneri ayda 6–8 yazı, `blog_yazisi_create.md` tonu)**
+- [ ] Önce talebi görünen: "spss öğrenci ücretsiz" (47), "spss benzeri programlar" (40, sıra 27), "kaplan meier analizi" (35),
+  "spss güvenirlik analizi" (33), "iç tutarlılık katsayısı nasıl hesaplanır" (46)
+- [ ] Boş kümeler (her biri 4–6 yazı → hizmet sayfasına link): nitel (NVivo/MAXQDA, içerik analizi, konu analizi), SEM/SmartPLS,
+  EViews/zaman serisi, Power BI/Tableau, Python/ML/NLP, etik kurul, tez önerisi, akademik editörlük
+
+**Faz 7 — Araç sayfalarını 1. sayfaya (uzun vade)**
+- [ ] 2. sayfadakiler: anova 13,8, mann-whitney 14,7, tekrarlı anova 14,4, orneklem 23,2, hangi-test 16,0, cronbach 11,2 —
+  içerik derinliği + blog/hizmet sayfalarından iç link
+
+**Faz 8 — Dış otorite (kullanıcı, kod yok)**
+- [ ] Google Business Profile, akademik topluluklar / üniversite kulüpleri, LinkedIn, eğitmenlerle misafir yazar imzası (E-E-A-T)
+
+**Ölçüm:** aylık GSC dışa aktarımı. KPI: tık, CTR, hizmet niyetli sorgu gösterimi, `/hizmetler/` → proje talebi / ilan dönüşümü.
 
 - [x] **CANLIDA (ba9560b, main 8393eec; 29 Eylül 2026): regex `[\w.@+-]+` + `encodeURIComponent`; test: @/.+- adlar eski ROUTE YOK → yeni bağlandı, düz ad ve yok kullanıcı aynı; forum 61/61.** Canlı log: DM WebSocket "No route found for path 'ws/chat/240401005@/'" (29 Eylül 2026, d39af06 deploy sonrası
   görüldü; ÖNCEDEN VAR, Ocak 2026)** — `forum/routing.py:12` `(?P<username>\w+)` Django kullanıcı adlarındaki `@ . + -`
