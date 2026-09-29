@@ -158,13 +158,9 @@ class OAIPMHOrder(models.Model):
 
     @staticmethod
     def calculate_price(abstract_count):
-        if abstract_count <= 0:
-            return 0
-        price = 250
-        if abstract_count > 100:
-            extra = ((abstract_count - 1) // 100)
-            price += extra * 100
-        return price
+        """Tarama siparişi tutarı — fiyatlar admin'den (SiteSettings: ilk 100 kayıt + sonraki her 100 kayıt)."""
+        from forum.models import SiteSettings
+        return SiteSettings.load().scrape_order_price(abstract_count)
 
 
 from yoktez.models import YokTezSearchJob  # noqa: E402

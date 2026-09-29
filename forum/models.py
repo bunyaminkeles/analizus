@@ -1344,6 +1344,24 @@ class SiteSettings(models.Model):
     biblio_price_4000 = models.PositiveIntegerField(default=1700, verbose_name="3001-4000 kayıt fiyatı (TL)")
     biblio_price_5000 = models.PositiveIntegerField(default=2100, verbose_name="4001-5000 kayıt fiyatı (TL)")
 
+    # Tarama siparişi fiyatları (TL) — OpenAlex, Semantic Scholar, TR Dizin, OAI-PMH ortak (kullanıcı kararı 29 Eylül 2026)
+    scrape_price_first_100 = models.PositiveIntegerField(
+        default=250, verbose_name="Tarama siparişi: ilk 100 kayıt (TL)",
+        help_text="OpenAlex, Semantic Scholar, TR Dizin ve OAI-PMH siparişleri. Yeni siparişlere uygulanır; mevcut siparişlerin tutarı değişmez.")
+    scrape_price_per_100 = models.PositiveIntegerField(
+        default=100, verbose_name="Tarama siparişi: sonraki her 100 kayıt (TL)")
+
+    # İlan vitrini (öne çıkarma) paketleri (TL)
+    promote_price_3_days = models.PositiveIntegerField(default=250, verbose_name="İlan vitrini: 3 gün (TL)")
+    promote_price_7_days = models.PositiveIntegerField(default=400, verbose_name="İlan vitrini: 7 gün (TL)")
+
+    def scrape_order_price(self, count):
+        """Tarama siparişi tutarı: ilk 100 kayıt sabit, sonraki her (başlamış) 100 kayıt ek ücret."""
+        if count <= 0:
+            return 0
+        extra_blocks = (max(count - 100, 0) + 99) // 100
+        return self.scrape_price_first_100 + extra_blocks * self.scrape_price_per_100
+
     class Meta:
         verbose_name = "Site Ayarı"
         verbose_name_plural = "Site Ayarları"

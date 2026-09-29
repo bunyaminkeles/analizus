@@ -76,7 +76,12 @@ def feature_flags(request):
             'agentic_landing': site.feature_agentic_landing,
             'training': site.feature_training,
             'multilingual': site.feature_multilingual,
-        }
+        },
+        # Sipariş sayfalarındaki fiyat tablosu + JS tahmini (sunucu tutarı modelde aynı ayardan hesaplar)
+        'pricing': {
+            'scrape_first_100': site.scrape_price_first_100,
+            'scrape_per_100': site.scrape_price_per_100,
+        },
     }
 
 # og:locale değerleri (LANGUAGES kodu → Open Graph biçimi)

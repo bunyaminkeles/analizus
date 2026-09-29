@@ -764,10 +764,15 @@ class SiteSettingsAdmin(ModelAdmin):
             'classes': ('collapse',),
         }),
         ('Fiyatlandırma', {
-            'description': "5000'den fazla kayıt için kullanıcılara 'admin ile iletişime geçin' mesajı gösterilir.",
+            'description': "Bibliometrik rapor (kayıt aralığına göre), tarama siparişi (OpenAlex, Semantic Scholar, TR Dizin, "
+                           "OAI-PMH — ilk 100 kayıt + sonraki her 100 kayıt) ve ilan vitrini paketleri. Değişiklik yeni "
+                           "siparişlere uygulanır. Bibliometride 5000'den fazla kayıt için 'admin ile iletişime geçin' "
+                           "mesajı gösterilir.",
             'fields': (
                 'biblio_price_500', 'biblio_price_2000', 'biblio_price_3000',
                 'biblio_price_4000', 'biblio_price_5000',
+                'scrape_price_first_100', 'scrape_price_per_100',
+                'promote_price_3_days', 'promote_price_7_days',
             ),
             'classes': ('collapse',),
         }),

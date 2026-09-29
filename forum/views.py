@@ -1025,16 +1025,22 @@ def promote_job(request, pk):
         return redirect('job_detail', pk=pk)
 
     # Vitrin Paketleri
-    packages = [
-        {'days': 3, 'price': 250},
-        {'days': 7, 'price': 400},
-    ]
+    packages = list(_promote_packages().values())
 
     # IBAN sayfasına yönlendir
     return render(request, 'forum/market/promote_job_iban.html', {
         'job': job,
         'packages': packages,
     })
+
+def _promote_packages():
+    """İlan vitrini paketleri — fiyatlar admin'den (SiteSettings.promote_price_*)."""
+    site = SiteSettings.load()
+    return {
+        '3': {'days': 3, 'price': site.promote_price_3_days},
+        '7': {'days': 7, 'price': site.promote_price_7_days},
+    }
+
 
 @login_required
 @require_POST
@@ -1044,7 +1050,7 @@ def mark_payment_transferred(request, pk):
 
     # Paket bilgisi al
     package = request.POST.get('package', '3')
-    packages = {'3': {'days': 3, 'price': 250}, '7': {'days': 7, 'price': 400}}
+    packages = _promote_packages()
     selected = packages.get(package, packages['3'])
 
     # Ödeme kaydı kontrol et

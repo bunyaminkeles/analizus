@@ -26,6 +26,9 @@ maddelerde.
 >   (b) bütçe dolunca "talep bırakın" yedeği SONRA (önce istek sayısı ölçülecek). Eski not: — plan ve
 >   dosya listesi `analizus.md` §27 "SIRADAKİ". Önce kullanıcıya iki karar sor: (a) sipariş TXT'si `abstract_count` ile
 >   sınırlansın mı (öneri evet), (b) bütçe dolunca "talep bırakın" yedeği şimdi mi (öneri sonra). Onaydan sonra uygula.
+> - **29 Eylül 2026 sonu — dev'de canlıya alınmamış MIGRATION'lar:** pubmed/0001, forum/0160 (feature_pubmed, varsayılan
+>   KAPALI), bibliometrics/0005, forum/0161 (fiyat alanları). Deploy öncesi DB yedeği; requirements değişmedi (restart yeter,
+>   container açılışı migrate eder). Canlıda: NCBI_API_KEY (opsiyonel) → admin'den PubMed flag'ini aç.
 > - **BASE/PubMed kararları (29 Eylül 2026):** önce **PubMed** (OpenAlex kalıbı: yeni `pubmed` app, `PubMedSearchJob.all_results`
 >   + bibliometri köprüsü; migration gerekir). **BASE BEKLİYOR:** API başvuru formu + IP beyaz liste; BASE API'yi "yalnız
 >   ticari olmayan amaçla" veriyor (api.base-search.net, about_develop) → kullanıcı başvuruda kullanım amacını (ücretli rapor
@@ -57,7 +60,7 @@ maddelerde.
   **Kararlar (29 Eylül 2026):** sipariş ŞİMDİLİK YOK (tam veri → proje talebi, EN/DE gibi; Faz 4 ileride); atıf analizleri
   yok, ülke affiliation metninden tahmin + Kısıtlar bölümünde "tahmini" notu; NCBI anahtarını kullanıcı alacak
   (`NCBI_API_KEY`, yoksa 3 req/s); günlük limit OpenAlex ile aynı.
-- [ ] **ZORUNLU — Tarama sipariş fiyatları adminden düzenlenebilir olmalı** (kullanıcı: "hard coded olmaz", 29 Eylül 2026;
+- [x] **ZORUNLU — Tarama sipariş fiyatları adminden düzenlenebilir olmalı** — YAPILDI YERELDE (29 Eylül 2026): Site Ayarları → Fiyatlandırma'ya 4 alan (migration forum/0161, varsayılanlar eski fiyatlar; 0–6000 kayıtta eski formülle birebir aynı tutar doğrulandı); 4 model `calculate_price` + 4 sipariş şablonu (tablo + JS) + vitrin paketleri ayardan okur; fiyat değiştirilince sipariş tutarı/sayfa/vitrin güncellendi (test). Kararlar: 4 araç ortak tek fiyat (ilk 100 + sonraki her 100); ilan vitrini paketleri (3/7 gün) de dahil. SiteSettings alanları + migration; model/view/sipariş şablonu (tablo + JS) SiteSettings'ten okur. (kullanıcı: "hard coded olmaz", 29 Eylül 2026;
   PubMed Faz 1'den sonra ayrı iş, plan+onay): OpenAlex,
   TR Dizin, OAI-PMH, Semantic Scholar `calculate_price` = 250 TL/ilk 100 + 100 TL/her 100 — SiteSettings'te alan yok.
   Adminden düzenlenebilen yalnız bibliometri rapor fiyatları (`biblio_price_*`). SiteSettings alanı (migration) + şablonlardaki sabit fiyat metinleri.

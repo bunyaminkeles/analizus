@@ -140,14 +140,9 @@ class DizinOrder(models.Model):
 
     @staticmethod
     def calculate_price(abstract_count):
-        """İlk 100 yayın = 250 TL, sonraki her 100 = 100 TL"""
-        if abstract_count <= 0:
-            return 0
-        if abstract_count <= 100:
-            return 250
-        extra = abstract_count - 100
-        extra_blocks = (extra + 99) // 100
-        return 250 + (extra_blocks * 100)
+        """Tarama siparişi tutarı — fiyatlar admin'den (SiteSettings: ilk 100 kayıt + sonraki her 100 kayıt)."""
+        from forum.models import SiteSettings
+        return SiteSettings.load().scrape_order_price(abstract_count)
 
     @property
     def is_overdue(self):
