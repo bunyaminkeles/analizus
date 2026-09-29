@@ -9,5 +9,6 @@ websocket_urlpatterns = [
     re_path(r'ws/notifications/$', NotificationConsumer.as_asgi()),
 
     # Anlık mesajlaşma için WebSocket
-    re_path(r'ws/chat/(?P<username>\w+)/$', ChatConsumer.as_asgi()),
+    # Django kullanıcı adı karakterleri: harf/rakam ve @ . + - _ (\w tek başına @'li adları reddediyordu)
+    re_path(r'ws/chat/(?P<username>[\w.@+-]+)/$', ChatConsumer.as_asgi()),
 ]

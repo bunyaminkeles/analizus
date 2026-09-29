@@ -366,7 +366,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let chatSocket = null;
 
     function connectWebSocket() {
-        chatSocket = new WebSocket(wsProtocol + '//' + window.location.host + '/ws/chat/' + receiverUsername + '/');
+        chatSocket = new WebSocket(wsProtocol + '//' + window.location.host + '/ws/chat/' + encodeURIComponent(receiverUsername) + '/');
 
         chatSocket.onopen = function(e) {
             console.log('Chat WebSocket bağlantısı kuruldu');

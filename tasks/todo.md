@@ -26,6 +26,23 @@ maddelerde.
 >   (yıllık ortalama önerisi).
 > - Diğer açıklar bu listede `- [ ]`; ayrıntı `analizus.md` §14 (bibliometri), §15 (tarama), §26, §27.
 
+- [x] **DÜZELTİLDİ YERELDE (29 Eylül 2026, commit yok): regex `[\w.@+-]+` + `encodeURIComponent`; test: @/.+- adlar eski ROUTE YOK → yeni bağlandı, düz ad ve yok kullanıcı aynı; forum 61/61.** Canlı log: DM WebSocket "No route found for path 'ws/chat/240401005@/'" (29 Eylül 2026, d39af06 deploy sonrası
+  görüldü; ÖNCEDEN VAR, Ocak 2026)** — `forum/routing.py:12` `(?P<username>\w+)` Django kullanıcı adlarındaki `@ . + -`
+  karakterlerini kabul etmiyor → bu kullanıcılarla DM'de canlı mesaj (WebSocket) bağlanmıyor. Öneri: regex `[\w.@+-]+` +
+  `send_message.html:369` `encodeURIComponent`; consumer'da kullanıcı adı çözümü kontrol. Karar/onay bekliyor.
+
+**PUBMED NCBI ANAHTARI — PLAN (29 Eylül 2026, ONAY BEKLİYOR)** — kullanıcı yerel `.env`'ye anahtarı `PUBMED_API_KEY` adıyla
+girdi; kod `NCBI_API_KEY` okuyor → şu an anahtar KULLANILMIYOR (3 istek/sn).
+- [x] 1. (kullanıcı yaptı, 29 Eylül; doğrulandı) Ad uyumu: yerel `.env`'de `PUBMED_API_KEY` → `NCBI_API_KEY` (önerilen; kod/doküman/help_text zaten bu ad)
+- [ ] 2. Log'da anahtar gizleme: `pubmed/services/scraper.py` hata log'ları (`_get`, sayfalama) + `job_runner.py` log'u
+  URL'yi `api_key=` ile yazıyor (kullanıcı mesajı zaten sabit — kullanıcıya sızma yok). OpenAlex'teki `redact_api_key` kalıbı.
+- [x] 3. (yerel + Hetzner doğrulandı: anahtar görünüyor, min_interval 0.11, esearch 200) Yerel doğrulama: `docker compose up -d web` (restart env okumaz) → container'da anahtar var mı, `min_interval=0.11`,
+  gerçek esearch 200 (geçersiz anahtarda NCBI 400 "API key invalid" döner)
+- [ ] 4. Render env: `NCBI_API_KEY` (kullanıcı, panelden)
+- [x] 5. (kullanıcı yaptı, doğrulandı) Hetzner (29 Eylül: `/app/.env`'de NCBI/PUBMED değişkeni YOK — salt okuma kontrol): `/app/.env`'ye `NCBI_API_KEY` → `docker compose up -d web` + `restart nginx` → container'da doğrula + tek gerçek sorgu
+- [ ] 6. `feature_pubmed` admin'den aç (kullanıcı kararı; önce Render'da uçtan uca dene)
+- [ ] 7. Doküman: `analizus.md` §5/§9 + bu liste
+
 **PUBMED MODÜLÜ — PLAN (29 Eylül 2026, ONAY BEKLİYOR)** — OpenAlex kalıbı, TR/EN/DE; ilk sayfa + ihtiyaçta tam veri.
 - [x] Faz 1 — YAPILDI YERELDE (29 Eylül 2026; gerçek API: 250 sonuçlu sorgu arama 2 istek/3,6 sn, tam veri 3 istek; sıfır sonuç + hata yolu OK; forum 61/61; affiliation'dan yazar e-postası temizleniyor). Faz 2'ye kalan: S3 temizlik cron'u + hesap silme listesi (`forum/api_views.py`). `pubmed` app çekirdeği: `PubMedSearchJob` (+ migration pubmed/0001), `services/scraper.py` (esearch
   `usehistory=y` → WebEnv; efetch XML 200'lük sayfa; `tool`/`email` + ops. `NCBI_API_KEY`; 3 req/s, anahtarla 10),
