@@ -59,17 +59,17 @@ maddelerde.
   elle alınmış `yedek_*.sql` 4 dosya ~0,7 GB. Günlük `backup_analizus_*` 7 gün rotasyonlu (OK). RİSK: tüm DB yedekleri aynı
   diskte — sunucu kaybında yedek de gider → sunucu dışı yedek (Hetzner Backup / S3) kararı. Her `--build` ~1–2 GB imaj bırakır.
 
-**PUBMED NCBI ANAHTARI — PLAN (29 Eylül 2026, ONAY BEKLİYOR)** — kullanıcı yerel `.env`'ye anahtarı `PUBMED_API_KEY` adıyla
+**PUBMED NCBI ANAHTARI — TAMAMLANDI (29 Eylül 2026)** — kullanıcı yerel `.env`'ye anahtarı `PUBMED_API_KEY` adıyla
 girdi; kod `NCBI_API_KEY` okuyor → şu an anahtar KULLANILMIYOR (3 istek/sn).
 - [x] 1. (kullanıcı yaptı, 29 Eylül; doğrulandı) Ad uyumu: yerel `.env`'de `PUBMED_API_KEY` → `NCBI_API_KEY` (önerilen; kod/doküman/help_text zaten bu ad)
 - [x] 2. YAPILDI (29 Eylül 2026): `_get` son denemede istisnayı `api_key=***` mesajıyla aynı türde yeniden fırlatır → job_runner/bibliometri traceback'leri de temiz; test eski kodda sızıntıyı yakaladı, yenide yok; gerçek arama 3.839 sonuç/3,5 sn. KALAN (YAPILDI 29 Eylül 2026 — OpenAlex `_fetch_page` aynı kalıp; test eski kodda sızıntı yakaladı, yenide yok): OpenAlex scraper istisnayı ham fırlatıyor → `bibliometrics/services/job_runner.py` `exc_info` traceback'inde ve `openalex` `ensure_full_results`/sipariş log'unda OpenAlex anahtarı log'a düşebilir (kullanıcıya değil) — aynı kalıp önerilir, onay bekliyor. Eski: Log'da anahtar gizleme: `pubmed/services/scraper.py` hata log'ları (`_get`, sayfalama) + `job_runner.py` log'u
   URL'yi `api_key=` ile yazıyor (kullanıcı mesajı zaten sabit — kullanıcıya sızma yok). OpenAlex'teki `redact_api_key` kalıbı.
 - [x] 3. (yerel + Hetzner doğrulandı: anahtar görünüyor, min_interval 0.11, esearch 200) Yerel doğrulama: `docker compose up -d web` (restart env okumaz) → container'da anahtar var mı, `min_interval=0.11`,
   gerçek esearch 200 (geçersiz anahtarda NCBI 400 "API key invalid" döner)
-- [ ] 4. Render env: `NCBI_API_KEY` (kullanıcı, panelden)
+- [x] 4. (kullanıcı: tanımlı) Render env: `NCBI_API_KEY` (kullanıcı, panelden)
 - [x] 5. (kullanıcı yaptı, doğrulandı) Hetzner (29 Eylül: `/app/.env`'de NCBI/PUBMED değişkeni YOK — salt okuma kontrol): `/app/.env`'ye `NCBI_API_KEY` → `docker compose up -d web` + `restart nginx` → container'da doğrula + tek gerçek sorgu
-- [ ] 6. `feature_pubmed` admin'den aç (kullanıcı kararı; önce Render'da uçtan uca dene)
-- [ ] 7. Doküman: `analizus.md` §5/§9 + bu liste
+- [x] 6. (canlıda AÇIK, DB'den doğrulandı) `feature_pubmed` admin'den aç (kullanıcı kararı; önce Render'da uçtan uca dene)
+- [x] 7. (5594229) Doküman: `analizus.md` §5/§9 + bu liste
 
 **PUBMED MODÜLÜ — PLAN (29 Eylül 2026, ONAY BEKLİYOR)** — OpenAlex kalıbı, TR/EN/DE; ilk sayfa + ihtiyaçta tam veri.
 - [x] Faz 1 — YAPILDI YERELDE (29 Eylül 2026; gerçek API: 250 sonuçlu sorgu arama 2 istek/3,6 sn, tam veri 3 istek; sıfır sonuç + hata yolu OK; forum 61/61; affiliation'dan yazar e-postası temizleniyor). Faz 2'ye kalan: S3 temizlik cron'u + hesap silme listesi (`forum/api_views.py`). `pubmed` app çekirdeği: `PubMedSearchJob` (+ migration pubmed/0001), `services/scraper.py` (esearch
