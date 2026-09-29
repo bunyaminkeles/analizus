@@ -138,11 +138,14 @@ class OpenAlexScraper:
                 response.raise_for_status()
                 return response.json()
             except requests.RequestException as e:
-                logger.warning(f"OpenAlex API attempt {attempt+1} failed: {redact_api_key(e)}")
+                safe_msg = redact_api_key(e)
+                logger.warning(f"OpenAlex API attempt {attempt+1} failed: {safe_msg}")
                 if attempt < self.max_retries - 1:
                     time.sleep(2 ** attempt + random.uniform(0.5, 1.5))
                 else:
-                    raise
+                    # Hata metni istek URL'sini (api_key dahil) taşır — yukarıdaki tüm log/traceback'ler
+                    # (bibliometri, sipariş) anahtarsız görsün diye aynı türde, temizlenmiş mesajla yeniden fırlatılır
+                    raise type(e)(safe_msg, response=e.response, request=e.request) from None
 
     @staticmethod
     def _reconstruct_abstract(inverted_index):

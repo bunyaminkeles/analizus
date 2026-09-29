@@ -31,10 +31,21 @@ maddelerde.
   karakterlerini kabul etmiyor → bu kullanıcılarla DM'de canlı mesaj (WebSocket) bağlanmıyor. Öneri: regex `[\w.@+-]+` +
   `send_message.html:369` `encodeURIComponent`; consumer'da kullanıcı adı çözümü kontrol. Karar/onay bekliyor.
 
+- [ ] **Hetzner Docker log rotasyonu YOK (29 Eylül 2026, salt okuma)** — `/etc/docker/daemon.json` yok, `docker-compose.yml`'de
+  `logging:` yok → container logları sınırsız büyüyor (`/var/lib/docker/containers` 295 MB; disk ~%76). Öneri: compose'a
+  `logging: {driver: json-file, options: {max-size: "20m", max-file: "5"}}` (container yeniden oluşturulunca geçerli). Onay bekliyor.
+  **Güncelleme (29 Eylül 2026):** compose'a EKLENMEZ — Hetzner `docker-compose.yml`'de commit'lenmemiş `rlprehber` servisi var →
+  git'te dosya değişirse `git pull` durur. Doğru yer `/etc/docker/daemon.json` (tüm container'lar, rlprehber dahil).
+  Boyutlar: db 248 MB (Haziran'dan beri), nginx 48 MB, web 8 KB; disk %66. Plan: daemon.json → `systemctl restart docker`
+  (iki site ~30 sn kesinti) → db log'u bir kez `truncate -s 0` → yeni ayar container yeniden oluşturulunca geçerli.
+- [ ] **Hata bildirimi yok (29 Eylül 2026, karar bekliyor)** — 500/istisnalar yalnız Docker log'unda; kimse haberdar olmuyor
+  (WebSocket hatası tesadüfen görüldü). Seçenekler: (a) Django `ADMINS` + `mail_admins` (mevcut SMTP, 3. taraf yok) —
+  önerilen; (b) Sentry ücretsiz katman (veri 3. tarafa gider → `send_default_pii=False`, gizlilik metni).
+
 **PUBMED NCBI ANAHTARI — PLAN (29 Eylül 2026, ONAY BEKLİYOR)** — kullanıcı yerel `.env`'ye anahtarı `PUBMED_API_KEY` adıyla
 girdi; kod `NCBI_API_KEY` okuyor → şu an anahtar KULLANILMIYOR (3 istek/sn).
 - [x] 1. (kullanıcı yaptı, 29 Eylül; doğrulandı) Ad uyumu: yerel `.env`'de `PUBMED_API_KEY` → `NCBI_API_KEY` (önerilen; kod/doküman/help_text zaten bu ad)
-- [x] 2. YAPILDI (29 Eylül 2026): `_get` son denemede istisnayı `api_key=***` mesajıyla aynı türde yeniden fırlatır → job_runner/bibliometri traceback'leri de temiz; test eski kodda sızıntıyı yakaladı, yenide yok; gerçek arama 3.839 sonuç/3,5 sn. KALAN: OpenAlex scraper istisnayı ham fırlatıyor → `bibliometrics/services/job_runner.py` `exc_info` traceback'inde ve `openalex` `ensure_full_results`/sipariş log'unda OpenAlex anahtarı log'a düşebilir (kullanıcıya değil) — aynı kalıp önerilir, onay bekliyor. Eski: Log'da anahtar gizleme: `pubmed/services/scraper.py` hata log'ları (`_get`, sayfalama) + `job_runner.py` log'u
+- [x] 2. YAPILDI (29 Eylül 2026): `_get` son denemede istisnayı `api_key=***` mesajıyla aynı türde yeniden fırlatır → job_runner/bibliometri traceback'leri de temiz; test eski kodda sızıntıyı yakaladı, yenide yok; gerçek arama 3.839 sonuç/3,5 sn. KALAN (YAPILDI 29 Eylül 2026 — OpenAlex `_fetch_page` aynı kalıp; test eski kodda sızıntı yakaladı, yenide yok): OpenAlex scraper istisnayı ham fırlatıyor → `bibliometrics/services/job_runner.py` `exc_info` traceback'inde ve `openalex` `ensure_full_results`/sipariş log'unda OpenAlex anahtarı log'a düşebilir (kullanıcıya değil) — aynı kalıp önerilir, onay bekliyor. Eski: Log'da anahtar gizleme: `pubmed/services/scraper.py` hata log'ları (`_get`, sayfalama) + `job_runner.py` log'u
   URL'yi `api_key=` ile yazıyor (kullanıcı mesajı zaten sabit — kullanıcıya sızma yok). OpenAlex'teki `redact_api_key` kalıbı.
 - [x] 3. (yerel + Hetzner doğrulandı: anahtar görünüyor, min_interval 0.11, esearch 200) Yerel doğrulama: `docker compose up -d web` (restart env okumaz) → container'da anahtar var mı, `min_interval=0.11`,
   gerçek esearch 200 (geçersiz anahtarda NCBI 400 "API key invalid" döner)
