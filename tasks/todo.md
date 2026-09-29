@@ -15,7 +15,15 @@ maddelerde.
 >   deploy edildi, doğrulandı). **dev main'den ileride:** 050f1a1 (kurum grafiği tüm kurumlar + WoS C1 düzeltmesi),
 >   a4d7438 ("17 analize kadar" metinleri + 17'lik listeler, EN/DE) + todo/doküman commit'leri — migration yok,
 >   requirements değişmedi. Henüz merge edilmedi (kullanıcı "merge et" demeli).
-> - **SIRADAKİ İŞ: OpenAlex aramada yalnız ilk sayfa, devamı ihtiyaçta** (kullanıcı kararı; PLAN ONAY BEKLİYOR) — plan ve
+> - **OpenAlex aramada yalnız ilk sayfa — UYGULANDI YERELDE (29 Eylül 2026, commit bekliyor)**: arama 1 istek (≤200 kayıt
+>   saklanır, aramada tam TXT üretilmez); bibliometri analizden önce `ensure_full_results`; sipariş admin onayı → kuyruk
+>   (`openalex_order`) → ödenen sayı kadar veri → `openalex/orders/<id>.txt` → e-posta; hata → 'approved' + Admin Notu.
+>   Uçtan uca gerçek API ile doğrulandı (586 sonuçlu sorgu: arama 1 istek, 300'lük sipariş 2 istek/300 kayıt, bibliometri
+>   3 istek/584 kayıt, tekrar 0 istek) + forum testleri 61/61. Migration yok, requirements aynı → restart yeter.
+>   Not: admin `scrap_max_records`'ı sipariş sayısının altına indirirse sipariş "Veri eksik" ile düşer (form üst sınırı 5000).
+>   Kapanan açık: arama durum JSON'u `all_results_file_url` (tam TXT S3 linki) döndürüyordu → ödemesiz tam veri; artık
+>   aramada tam dosya üretilmediği için alan boş. Eski not: 29 Eylül 2026: PLAN + 5 DOSYA ONAYLANDI. Kararlar: (a) sipariş TXT'si ödenen yayın sayısı (`abstract_count`) kadar, tam veri de o kadar çekilir;
+>   (b) bütçe dolunca "talep bırakın" yedeği SONRA (önce istek sayısı ölçülecek). Eski not: — plan ve
 >   dosya listesi `analizus.md` §27 "SIRADAKİ". Önce kullanıcıya iki karar sor: (a) sipariş TXT'si `abstract_count` ile
 >   sınırlansın mı (öneri evet), (b) bütçe dolunca "talep bırakın" yedeği şimdi mi (öneri sonra). Onaydan sonra uygula.
 > - Sonra: BASE/PubMed (kullanıcı sordu; `BASE_PubMed_Integration_Project.md` — git'te değil, başka kaynaktan tasarım

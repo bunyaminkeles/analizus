@@ -89,10 +89,14 @@ def _execute_job_body(job_id):
         job = AlexSearchJob.objects.get(id=job_id)
         job.mark_running()
 
+        # Yalnız ilk sayfa (1 istek) — tam veri bibliometri/sipariş istenince ensure_full_results ile
+        # çekilir (OpenAlex günlük bütçesi; kullanıcı kararı 28 Eylül 2026)
+        from openalex.services.scraper import MAX_PER_PAGE
         scraper = OpenAlexScraper()
         total_count, demo_results, all_results, api_query = scraper.search(
             query_parts=job.query_parts,
             demo_limit=5,
+            max_results=MAX_PER_PAGE,
         )
 
         close_old_connections()
@@ -106,19 +110,9 @@ def _execute_job_body(job_id):
         try:
             demo_txt = _generate_alex_results_txt(demo_results, job, is_demo=True)
             demo_s3_url = upload_to_s3(demo_txt, f"openalex/demo/{job.id}.txt")
-
-            all_txt = _generate_alex_results_txt(all_results, job, is_demo=False)
-            all_s3_url = upload_to_s3(all_txt, f"openalex/full/{job.id}.txt")
-
-            update_fields = []
             if demo_s3_url:
                 job.demo_file_url = demo_s3_url
-                update_fields.append('demo_file_url')
-            if all_s3_url:
-                job.all_results_file_url = all_s3_url
-                update_fields.append('all_results_file_url')
-            if update_fields:
-                job.save(update_fields=update_fields)
+                job.save(update_fields=['demo_file_url'])
         except Exception as e:
             logger.error(f"OpenAlex S3 yükleme hatası: {e}")
 
@@ -137,6 +131,67 @@ def _execute_job_body(job_id):
 def run_scraping_job(job_id):
     from analizdestek.job_queue import enqueue
     enqueue('openalex', str(job_id))
+
+
+def ensure_full_results(job, limit=None):
+    """Arama yalnız ilk sayfayı saklar; bibliometri/sipariş öncesi eksik kısmı OpenAlex'ten çeker.
+    Hedef = min(toplam sonuç, limit, admin ayarı scrap_max_records). Veri zaten yeterliyse istek
+    atılmaz. Sayfalama hatasında kısmi veri kaydedilir (sonraki çağrı yeniden dener); ilk istekte
+    hata olursa istisna yükselir. Returns: hedefe ulaşıldı mı (bool)."""
+    from forum.models import SiteSettings
+    from openalex.services.scraper import OpenAlexScraper
+
+    max_records = SiteSettings.load().scrap_max_records or 5000
+    target = min(job.total_results, limit or max_records, max_records)
+    if len(job.all_results or []) >= target:
+        return True
+
+    _total, _demo, results, _q = OpenAlexScraper().search(
+        query_parts=job.query_parts, demo_limit=0, max_results=target,
+    )
+    close_old_connections()
+    if len(results) > len(job.all_results or []):
+        job.all_results = results
+        job.save(update_fields=['all_results'])
+    logger.info(f"OpenAlex tam veri: job {job.id} — {len(job.all_results)}/{target} kayıt")
+    return len(job.all_results) >= target
+
+
+def run_order_job(order_id):
+    """Admin onayından sonra sipariş verisini arka planda hazırlat (tam veri çekimi ~30–60 sn)."""
+    from analizdestek.job_queue import enqueue
+    enqueue('openalex_order', str(order_id))
+
+
+def _execute_order(order_id):
+    """Onaylı sipariş: ödenen yayın sayısı (abstract_count) kadar veri çek → TXT → S3 → e-posta.
+    Veri eksik kalırsa e-posta gönderilmez; sipariş 'approved'a döner ve hata admin notuna yazılır
+    (admin aksiyonu tekrar çalıştırılabilir)."""
+    from openalex.models import AlexOrder
+    close_old_connections()
+    order = AlexOrder.objects.select_related('user__profile', 'search_job').filter(id=order_id).first()
+    if not order or order.status != 'processing':
+        return
+    job = order.search_job
+    try:
+        ensure_full_results(job, limit=order.abstract_count)
+        records = (job.all_results or [])[:order.abstract_count]
+        if len(records) < order.abstract_count:
+            raise RuntimeError(f"Veri eksik: {len(records)}/{order.abstract_count} kayıt alınabildi")
+        with recipient_language(order.user):
+            txt = _generate_alex_results_txt(records, job, is_demo=False)
+        download_url = upload_to_s3(txt, f"openalex/orders/{order.id}.txt")
+        if not download_url:
+            raise RuntimeError("S3 yüklemesi başarısız")
+        if not send_order_results_email(order, download_url):
+            raise RuntimeError("E-posta gönderilemedi")
+    except Exception as e:
+        logger.error(f"OpenAlex sipariş {order_id} hazırlanamadı: {e}", exc_info=True)
+        close_old_connections()
+        order.status = 'approved'
+        order.admin_note = (order.admin_note + "\n" if order.admin_note else "") + \
+            f"[{timezone.now():%d.%m.%Y %H:%M}] Otomatik gönderim başarısız: {e}"
+        order.save(update_fields=['status', 'admin_note'])
 
 
 def send_demo_email_async(job_id):
@@ -206,8 +261,8 @@ def send_demo_email(job):
         return False
 
 
-def send_order_results_email(order):
-    """Onaylanan siparişin sonuçlarını S3 linki ile kullanıcıya gönder."""
+def send_order_results_email(order, download_url):
+    """Onaylanan siparişin sonuçlarını (sipariş TXT'si, S3 linki) kullanıcıya gönder."""
     user = order.user
     job = order.search_job
     to_email = user.email
@@ -228,7 +283,6 @@ def send_order_results_email(order):
             gettext("Ödenen Tutar: %(amount)s TL") % {'amount': order.total_price} + "\n",
         ]
 
-        download_url = job.all_results_file_url
         if download_url:
             lines.append(gettext("Sonuçlarınızı aşağıdaki linkten indirebilirsiniz:"))
             lines.append(f"  {download_url}\n")

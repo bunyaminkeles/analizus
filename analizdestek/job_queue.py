@@ -94,6 +94,12 @@ def _recover():
             _job_queue.put(('bibliometrics_openalex', str(job.id)))
             logger.info(f'[job_queue] Recovery: bibliometrics_openalex/{job.id} kuyruğa eklendi')
 
+        # OpenAlex siparişleri — 'processing' = admin onayladı, veri/e-posta hazırlanıyordu → yeniden kuyruğa
+        from openalex.models import AlexOrder
+        for order in AlexOrder.objects.filter(status='processing').order_by('approved_at'):
+            _job_queue.put(('openalex_order', str(order.id)))
+            logger.info(f'[job_queue] Recovery: openalex_order/{order.id} kuyruğa eklendi')
+
     except Exception as e:
         logger.warning(f'[job_queue] Recovery atlandı (normal ilk çalıştırmada): {e}')
 
@@ -114,6 +120,9 @@ def _run_job(job_type: str, job_id: str):
         elif job_type == 'openalex':
             from openalex.services.job_runner import _execute_job
             _execute_job(job_id)
+        elif job_type == 'openalex_order':
+            from openalex.services.job_runner import _execute_order
+            _execute_order(job_id)
         elif job_type == 'trdizin':
             from trdizin.services.job_runner import _execute_job
             _execute_job(job_id)

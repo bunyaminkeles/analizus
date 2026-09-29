@@ -141,6 +141,17 @@ def _execute_job_openalex_body(job_id: str) -> None:
             job.mark_failed(gettext('OpenAlex verisi bulunamadı veya boş.'))
             return
 
+        # Arama yalnız ilk sayfayı saklar — analizden önce kalan kayıtları çek (scrap_max_records'a kadar).
+        # Kısmi veri kalırsa rapor notları "found / fetched" farkını zaten belirtir.
+        from openalex.services.job_runner import ensure_full_results
+        try:
+            ensure_full_results(alex_job)
+        except Exception as e:
+            logger.error(f'[bibliometrics] OpenAlex tam veri çekilemedi [{job_id}]: {e}', exc_info=True)
+            job.mark_failed(gettext('Bir hata oluştu, lütfen tekrar deneyin.'))
+            return
+        close_old_connections()
+
         stats = {}
         records = parse_openalex_json(alex_job.all_results, stats=stats)
         if not records:

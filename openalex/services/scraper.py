@@ -210,16 +210,18 @@ class OpenAlexScraper:
             'open_access': (work.get('open_access') or {}).get('is_oa', False),
         }
 
-    def search(self, query_parts, demo_limit=5):
+    def search(self, query_parts, demo_limit=5, max_results=None):
         """
-        Ana arama metodu.
+        Ana arama metodu. max_results: en fazla çekilecek kayıt (None → admin ayarı
+        scrap_max_records). Arama yalnız ilk sayfayı çeker (max_results=MAX_PER_PAGE);
+        tam veri bibliometri/sipariş istenince job_runner.ensure_full_results ile çekilir.
 
         Returns: (total_count, demo_results, all_results, api_query_desc)
         """
         with _openalex_semaphore:
-            return self._search_impl(query_parts, demo_limit)
+            return self._search_impl(query_parts, demo_limit, max_results)
 
-    def _search_impl(self, query_parts, demo_limit=5):
+    def _search_impl(self, query_parts, demo_limit=5, max_results=None):
         params = self.build_api_params(query_parts)
         api_query_desc = self._build_query_description(params)
         logger.info(f"OpenAlex arama: {api_query_desc}")
@@ -233,6 +235,12 @@ class OpenAlexScraper:
         if total_count == 0:
             return 0, [], [], api_query_desc
 
+        if max_results is None:
+            # Maksimum sonuç limiti (admin panelinden ayarlanabilir)
+            from forum.models import SiteSettings
+            max_results = SiteSettings.load().scrap_max_records or 5000
+        target = min(total_count, max_results)
+
         # Tüm sonuçları topla
         all_results = [self._parse_work(w) for w in results]
         demo_results = all_results[:demo_limit]
@@ -240,7 +248,7 @@ class OpenAlexScraper:
         # Pagination (cursor-based)
         next_cursor = data.get('meta', {}).get('next_cursor')
 
-        while next_cursor and len(all_results) < total_count:
+        while next_cursor and len(all_results) < target:
             try:
                 data = self._fetch_page(params, cursor=next_cursor)
                 page_results = data.get('results') or []
@@ -253,12 +261,6 @@ class OpenAlexScraper:
                 logger.error(f"OpenAlex pagination hatası: {e}")
                 break
 
-            # Maksimum sonuç limiti (admin panelinden ayarlanabilir)
-            from forum.models import SiteSettings
-            max_records = SiteSettings.load().scrap_max_records or 5000
-            if len(all_results) >= max_records:
-                logger.info(f"Maksimum sonuç limitine ulaşıldı: {len(all_results)}")
-                break
-
+        all_results = all_results[:target]
         logger.info(f"OpenAlex arama tamamlandı: {total_count} toplam, {len(all_results)} çekildi")
         return total_count, demo_results, all_results, api_query_desc

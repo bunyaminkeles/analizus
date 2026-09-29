@@ -23,15 +23,18 @@ class AlexOrderAdmin(ModelAdmin):
 
     @admin.action(description='Onayla ve Tam Rapor Emailini Gönder')
     def approve_and_send_email(self, request, queryset):
-        from openalex.services.job_runner import send_order_results_email
-        sent_count = 0
+        # Tam veri çekimi (~30–60 sn) istek içinde değil arka plan kuyruğunda: veri → TXT → S3 → e-posta.
+        # 'processing' = kuyrukta/çalışıyor → tekrar seçilirse çift gönderim olmasın diye atlanır.
+        # Hata olursa iş siparişi 'approved'a döndürür ve admin notuna yazar (yeniden çalıştırılabilir).
+        from openalex.services.job_runner import run_order_job
+        queued = 0
         for order in queryset.filter(
-            status__in=['pending_payment', 'payment_review', 'approved', 'processing']
+            status__in=['pending_payment', 'payment_review', 'approved']
         ):
-            order.status = 'approved'
+            order.status = 'processing'
             order.approved_at = timezone.now()
             order.save(update_fields=['status', 'approved_at'])
-            success = send_order_results_email(order)
-            if success:
-                sent_count += 1
-        self.message_user(request, f'{sent_count} siparişe tam rapor emaili gönderildi.')
+            run_order_job(order.id)
+            queued += 1
+        self.message_user(request, f'{queued} sipariş kuyruğa alındı; veri hazırlanınca tam rapor emaili '
+                                   f'otomatik gönderilecek (hata olursa sipariş "Onaylandı"ya döner, Admin Notu\'na bakın).')
