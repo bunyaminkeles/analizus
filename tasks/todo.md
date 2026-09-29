@@ -34,7 +34,7 @@ maddelerde.
 **PUBMED NCBI ANAHTARI — PLAN (29 Eylül 2026, ONAY BEKLİYOR)** — kullanıcı yerel `.env`'ye anahtarı `PUBMED_API_KEY` adıyla
 girdi; kod `NCBI_API_KEY` okuyor → şu an anahtar KULLANILMIYOR (3 istek/sn).
 - [x] 1. (kullanıcı yaptı, 29 Eylül; doğrulandı) Ad uyumu: yerel `.env`'de `PUBMED_API_KEY` → `NCBI_API_KEY` (önerilen; kod/doküman/help_text zaten bu ad)
-- [ ] 2. Log'da anahtar gizleme: `pubmed/services/scraper.py` hata log'ları (`_get`, sayfalama) + `job_runner.py` log'u
+- [x] 2. YAPILDI (29 Eylül 2026): `_get` son denemede istisnayı `api_key=***` mesajıyla aynı türde yeniden fırlatır → job_runner/bibliometri traceback'leri de temiz; test eski kodda sızıntıyı yakaladı, yenide yok; gerçek arama 3.839 sonuç/3,5 sn. KALAN: OpenAlex scraper istisnayı ham fırlatıyor → `bibliometrics/services/job_runner.py` `exc_info` traceback'inde ve `openalex` `ensure_full_results`/sipariş log'unda OpenAlex anahtarı log'a düşebilir (kullanıcıya değil) — aynı kalıp önerilir, onay bekliyor. Eski: Log'da anahtar gizleme: `pubmed/services/scraper.py` hata log'ları (`_get`, sayfalama) + `job_runner.py` log'u
   URL'yi `api_key=` ile yazıyor (kullanıcı mesajı zaten sabit — kullanıcıya sızma yok). OpenAlex'teki `redact_api_key` kalıbı.
 - [x] 3. (yerel + Hetzner doğrulandı: anahtar görünüyor, min_interval 0.11, esearch 200) Yerel doğrulama: `docker compose up -d web` (restart env okumaz) → container'da anahtar var mı, `min_interval=0.11`,
   gerçek esearch 200 (geçersiz anahtarda NCBI 400 "API key invalid" döner)

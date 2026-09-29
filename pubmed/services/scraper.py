@@ -37,6 +37,11 @@ _EMAIL_TAIL_RE = re.compile(r'\s*Electronic address:.*$', re.IGNORECASE)
 _EMAIL_RE = re.compile(r'\S+@\S+')
 
 
+def _redact_api_key(text):
+    """Hata metnindeki api_key değerini gizler (log'a NCBI anahtarı yazılmasın)."""
+    return re.sub(r'(api_key=)[^&\s]+', r'\1***', str(text))
+
+
 class PubMedScraper:
     """NCBI E-utilities client (esearch + efetch)."""
 
@@ -113,11 +118,14 @@ class PubMedScraper:
                 response.raise_for_status()
                 return response
             except requests.RequestException as e:
-                logger.warning(f"PubMed {endpoint} deneme {attempt + 1} başarısız: {e}")
+                safe_msg = _redact_api_key(e)
+                logger.warning(f"PubMed {endpoint} deneme {attempt + 1} başarısız: {safe_msg}")
                 if attempt < self.max_retries - 1:
                     time.sleep(2 ** attempt + random.uniform(0.5, 1.5))
                 else:
-                    raise
+                    # Hata metni istek URL'sini (api_key dahil) taşır — yukarıdaki tüm log/traceback'ler
+                    # anahtarsız görsün diye aynı türde, temizlenmiş mesajla yeniden fırlatılır
+                    raise type(e)(safe_msg, response=e.response, request=e.request) from None
 
     def _esearch(self, term):
         """Returns: (count, webenv, query_key, query_translation)"""
