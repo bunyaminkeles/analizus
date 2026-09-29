@@ -533,6 +533,10 @@ else:
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'info@analizus.com')
 # Admin bildirim e-postası — .env'de ADMIN_NOTIFICATION_EMAIL=bkeles74@gmail.com gibi ayarla
 ADMIN_NOTIFICATION_EMAIL = os.getenv('ADMIN_NOTIFICATION_EMAIL', DEFAULT_FROM_EMAIL)
+# 500 hata e-postaları (mail_admins) — alıcı admin bildirim adresi; gönderen SMTP'nin kabul ettiği adres
+ADMINS = [('Analizus', ADMIN_NOTIFICATION_EMAIL)]
+SERVER_EMAIL = DEFAULT_FROM_EMAIL
+EMAIL_SUBJECT_PREFIX = '[Analizus hata] '
 
 
 # --- İŞ KUYRUĞU AYARLARI ---
@@ -634,9 +638,19 @@ AWS_S3_MAX_MEMORY_SIZE = 5 * 1024 * 1024
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'filters': {
+        'require_debug_false': {'()': 'django.utils.log.RequireDebugFalse'},
+        'throttle_admin_emails': {'()': 'analizdestek.log_filters.ThrottleAdminEmails'},
+    },
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
+        },
+        # Yalnız production (DEBUG=False): 500 hataları ADMINS'e e-posta; aynı hata 15 dk'da 1, saatte en çok 20
+        'mail_admins': {
+            'level': 'ERROR',
+            'class': 'django.utils.log.AdminEmailHandler',
+            'filters': ['require_debug_false', 'throttle_admin_emails'],
         },
     },
     'loggers': {
@@ -645,7 +659,7 @@ LOGGING = {
             'level': 'ERROR',
         },
         'django.request': {
-            'handlers': ['console'],
+            'handlers': ['console', 'mail_admins'],
             'level': 'ERROR',
             'propagate': False,
         },

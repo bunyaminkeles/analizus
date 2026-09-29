@@ -31,16 +31,22 @@ maddelerde.
   karakterlerini kabul etmiyor → bu kullanıcılarla DM'de canlı mesaj (WebSocket) bağlanmıyor. Öneri: regex `[\w.@+-]+` +
   `send_message.html:369` `encodeURIComponent`; consumer'da kullanıcı adı çözümü kontrol. Karar/onay bekliyor.
 
-- [ ] **Hetzner Docker log rotasyonu YOK (29 Eylül 2026, salt okuma)** — `/etc/docker/daemon.json` yok, `docker-compose.yml`'de
+- [~] **KISMEN YAPILDI (29 Eylül 2026, kullanıcı): daemon.json yazıldı, docker restart, db log boşaltıldı (248 MB → 4 KB), siteler 200. KALAN: mevcut container'lar eski ayarla (LogConfig boş) — sınır ancak yeniden oluşturulunca geçer → bir sonraki deploy'da `docker compose up -d --force-recreate` (db dahil; veri external volume'da). nginx log'u 48 MB.** Hetzner Docker log rotasyonu YOK (29 Eylül 2026, salt okuma)** — `/etc/docker/daemon.json` yok, `docker-compose.yml`'de
   `logging:` yok → container logları sınırsız büyüyor (`/var/lib/docker/containers` 295 MB; disk ~%76). Öneri: compose'a
   `logging: {driver: json-file, options: {max-size: "20m", max-file: "5"}}` (container yeniden oluşturulunca geçerli). Onay bekliyor.
   **Güncelleme (29 Eylül 2026):** compose'a EKLENMEZ — Hetzner `docker-compose.yml`'de commit'lenmemiş `rlprehber` servisi var →
   git'te dosya değişirse `git pull` durur. Doğru yer `/etc/docker/daemon.json` (tüm container'lar, rlprehber dahil).
   Boyutlar: db 248 MB (Haziran'dan beri), nginx 48 MB, web 8 KB; disk %66. Plan: daemon.json → `systemctl restart docker`
   (iki site ~30 sn kesinti) → db log'u bir kez `truncate -s 0` → yeni ayar container yeniden oluşturulunca geçerli.
-- [ ] **Hata bildirimi yok (29 Eylül 2026, karar bekliyor)** — 500/istisnalar yalnız Docker log'unda; kimse haberdar olmuyor
+- [x] **YAPILDI (29 Eylül 2026): `mail_admins` → ADMIN_NOTIFICATION_EMAIL, yalnız DEBUG=False + 500 (404 yok); `analizdestek/log_filters.py` aynı hata 15 dk'da 1, saatte ≤20 (worker başına); test: locmem e-posta, gövdede gizli env değeri yok, oturum çerezi gizli. Arka plan işi hataları kapsam dışı.** Hata bildirimi yok (29 Eylül 2026, karar bekliyor) — 500/istisnalar yalnız Docker log'unda; kimse haberdar olmuyor
   (WebSocket hatası tesadüfen görüldü). Seçenekler: (a) Django `ADMINS` + `mail_admins` (mevcut SMTP, 3. taraf yok) —
   önerilen; (b) Sentry ücretsiz katman (veri 3. tarafa gider → `send_default_pii=False`, gizlilik metni).
+
+- [x] **TEMİZLİK YAPILDI (29 Eylül 2026, kullanıcı): image/builder prune + journald 500M → disk %65 → %45 (20 GB boş); iki site 200. KALAN: sunucu dışı yedek kararı.** Hetzner kapasite (29 Eylül 2026, salt okuma) — CPU 2 çekirdek yük 0,16; RAM 3,7 GB (kullanılabilir 2,9 GB, OOM yok);
+  disk 38 GB'ın 24 GB'ı dolu (13 GB boş). Acil sorun YOK. Geri kazanılabilir: eski Docker imajları ~10 GB
+  (`docker image prune -a`), build cache ~3 GB (`docker builder prune`), journald 3,7 GB (`journalctl --vacuum-size=500M`),
+  elle alınmış `yedek_*.sql` 4 dosya ~0,7 GB. Günlük `backup_analizus_*` 7 gün rotasyonlu (OK). RİSK: tüm DB yedekleri aynı
+  diskte — sunucu kaybında yedek de gider → sunucu dışı yedek (Hetzner Backup / S3) kararı. Her `--build` ~1–2 GB imaj bırakır.
 
 **PUBMED NCBI ANAHTARI — PLAN (29 Eylül 2026, ONAY BEKLİYOR)** — kullanıcı yerel `.env`'ye anahtarı `PUBMED_API_KEY` adıyla
 girdi; kod `NCBI_API_KEY` okuyor → şu an anahtar KULLANILMIYOR (3 istek/sn).
