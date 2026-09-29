@@ -76,7 +76,7 @@ maddelerde.
   listeleri (`forum/api_views.py`), analizus.md §15 benzeri bölüm.
 
 - [ ] **OpenAlex sayfası bulguları (PubMed yazılırken görüldü, 29 Eylül 2026)** — (1) ~~XSS~~ DÜZELTİLDİ YERELDE (29 Eylül
-  2026): 6 tarama sayfası (OpenAlex, S2, TR Dizin, OAI-PMH, YÖK Tez, Tez Analizi) dış veriyi `_esc()` ile basıyor, S2 PDF
+  2026; CANLIDA main 08472b2, Hetzner restart, /openalex/ 200): 6 tarama sayfası (OpenAlex, S2, TR Dizin, OAI-PMH, YÖK Tez, Tez Analizi) dış veriyi `_esc()` ile basıyor, S2 PDF
   linki yalnız http(s), DOI `encodeURI`; Playwright: eski sürümde yük 7 kez çalıştı, yenide 6 sayfada 0. Kalan düşük risk:
   istatistik araçlarında yüklenen dosyanın sütun adları kaçışsız (karar_agaci, korelasyon, lineer/lojistik regresyon, svm —
   yalnız kullanıcının kendi dosyası, self-XSS). (2) `extra_js`
