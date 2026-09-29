@@ -31,8 +31,9 @@ maddelerde.
 >   container açılışı migrate eder). Canlıda: NCBI_API_KEY (opsiyonel) → admin'den PubMed flag'ini aç.
 > - **BASE — ERİŞİM BEKLENİYOR (29 Eylül 2026):** erişim IP + User-Agent ile (anahtar gönderilmiyor); onay ilk başvurunun
 >   e-postasına geldi ama 89.167.5.224 ve yerel IP "Access denied" (UA `AnalizusBot/1.0 (mailto:info@analizus.com)`).
->   BASE'e başvuru YALNIZ Gmail'den (info@ başvurusu yok — o OpenAlex içindi) → kullanıcı onay e-postasına yanıt olarak
->   taslağı gönderecek (IP 89.167.5.224 + bu UA'yı beyaz listeye alma + "non-commercial" teyidi). Yanıt gelince
+>   BASE'e başvuru YALNIZ Gmail'den (info@ başvurusu yok — o OpenAlex içindi) → **29 Eylül 2026 GÖNDERİLDİ** (Gmail, onay
+>   e-postasına yanıt): IP 89.167.5.224 + bu UA'yı beyaz listeye alma + "non-commercial" teyidi (ilk 100 ücretsiz, veri
+>   satılmaz, ücretli raporlarda kullanılmaz, yalnız metadata + kayda link, 1 istek/sn, BASE logosu). YANIT BEKLENİYOR. Yanıt gelince
 >   Hetzner'de tek curl testi → gerçek yanıtla modül. Kararlar: DE + EN,
 >   bibliometri YOK, ilk 100 kayıt ücretsiz + fazlası proje talebi, 1 istek/sn ortak sınır, flag kapalı başlar.
 >   API (rbace kaynağından, PDF'ten doğrulanmadı — Anubis engelli): hits ≤100, offset ≤1000 (sorgu başı ~1.100 kayıt), format=json.
