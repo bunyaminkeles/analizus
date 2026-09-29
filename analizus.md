@@ -2028,10 +2028,9 @@ migration 0153–0155 container açılışında deploy.sh ile uygulandı; DB yed
 
 **Önceki (28 Eylül 2026 gece):** canlı = main ab57dcd (bibliometri kısıtlar bölümü + BibTeX).
 
-**En son (29 Eylül 2026 akşam):** canlı = main **08472b2** (e716e46 + XSS düzeltmesi; Hetzner restart, `/openalex/` 200).
-e716e46: OpenAlex ilk sayfa + sipariş arka plan işi, PubMed modülü flag kapalı, admin'den fiyatlar; migration'lar
-pubmed/0001, forum/0160–0161, bibliometrics/0005 (yedek alındı). main'e merge edildi, Hetzner deploy BEKLİYOR: e1038c7
-(Premium 7 + OpenAlex block.super) + doküman commit'leri — migration yok, restart yeter. Sıradaki: §27 "SIRADAKİ adaylar". Yeni oturum: `tasks/todo.md` başındaki "YENİ OTURUM BURADAN BAŞLA" notu + "AÇIK İŞLER — TEK LİSTE";
+**En son (29 Eylül 2026 akşam):** canlı = main = dev = **c02093f** (Hetzner restart; `/openalex/` 200, log temiz).
+İçerik: e716e46 (OpenAlex ilk sayfa + sipariş arka plan işi, PubMed modülü flag kapalı, admin'den fiyatlar; migration'lar
+pubmed/0001, forum/0160–0161, bibliometrics/0005, yedek alındı) + 08472b2 (XSS) + e1038c7 (Premium 7 + OpenAlex block.super). Sıradaki: §27 "SIRADAKİ adaylar". Yeni oturum: `tasks/todo.md` başındaki "YENİ OTURUM BURADAN BAŞLA" notu + "AÇIK İŞLER — TEK LİSTE";
 özet yukarıda "Çok Dilli (EN/DE) ve Bibliometri". Ayrıntı: §28.
 
 ---

@@ -11,9 +11,9 @@ bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
 > **YENİ OTURUM BURADAN BAŞLA (29 Eylül 2026 akşam):**
-> - **Canlı = main 08472b2** (OpenAlex ilk sayfa + sipariş arka plan işi, PubMed modülü `feature_pubmed` KAPALI, admin'den
->   fiyatlar, 6 tarama sayfasında XSS düzeltmesi). main'e merge edilen ama Hetzner'e ALINMAMIŞ: e1038c7 (Premium günlük 7
->   arama — OpenAlex/TR Dizin/YÖK Tez/PubMed + OpenAlex `block.super`) + doküman commit'leri → `git pull` + restart yeter.
+> - **Canlı = main = dev = c02093f** (Hetzner, 29 Eylül akşam doğrulandı: /openalex/ 200, log temiz). İçerik: OpenAlex ilk
+>   sayfa + sipariş arka plan işi, PubMed modülü `feature_pubmed` KAPALI, admin'den fiyatlar, 6 tarama sayfasında XSS
+>   düzeltmesi, Premium günlük 7 arama (OpenAlex/TR Dizin/YÖK Tez/PubMed), OpenAlex `block.super`.
 > - **BASE:** kullanıcı Gmail'den e-posta gönderdi (IP 89.167.5.224 + UA `AnalizusBot/1.0 (mailto:info@analizus.com)`
 >   beyaz liste + "non-commercial" teyidi). Yanıt gelince Hetzner'de tek curl testi → gerçek yanıtla modül planı.
 >   Kararlar: DE + EN, bibliometri YOK, ilk 100 ücretsiz + fazlası proje talebi, 1 istek/sn, flag kapalı başlar.
