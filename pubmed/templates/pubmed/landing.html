@@ -75,8 +75,15 @@
       <button type="button" id="pm-send-email" class="ax-btn ax-btn--primary"><i class="bi bi-envelope" aria-hidden="true"></i> <span>{% trans "Demo Sonuçları E-posta Gönder" %}</span></button>
       <a id="pm-download-txt" href="#" class="ax-btn ax-btn--ghost"><i class="bi bi-file-earmark-text" aria-hidden="true"></i> {% trans "TXT İndir" %}</a>
       <a id="pm-download-xlsx" href="#" class="ax-btn ax-btn--ghost"><i class="bi bi-file-earmark-excel" aria-hidden="true"></i> {% trans "Excel İndir" %}</a>
+      {% if features.bibliometrics %}
+      <button type="button" id="pm-biblio" class="ax-btn ax-btn--outline-primary pm-hidden"><i class="bi bi-bar-chart-line" aria-hidden="true"></i> <span>{% trans "Bibliometrik Analiz İstiyorum" %}</span></button>
+      {% endif %}
     </div>
     <div id="pm-email-status"></div>
+    {% if features.bibliometrics %}
+    <p id="pm-biblio-info" class="pm-hint pm-hidden">{% trans "PubMed verisiyle 13 analize kadar PDF rapor üretilir; PubMed atıf sayısı vermediği için atıf analizleri ve Araştırma Boşluğu Haritası yer almaz. Demo rapor (3 grafik) ücretsiz e-postanıza gönderilir." %}</p>
+    <div id="pm-biblio-status"></div>
+    {% endif %}
     <p id="pm-full-data" class="pm-hint pm-hidden">
       {% trans "Tam veri seti için proje talebi bırakın, ücretsiz değerlendirelim:" %}
       <a href="{% url 'proje_talebi' %}?source=tool">{% trans "Proje Talebi Bırak" %}</a>
@@ -105,6 +112,8 @@ document.addEventListener('DOMContentLoaded', function () {
     email: "{% url 'pubmed:send_demo_email' '00000000-0000-0000-0000-000000000000' %}",
     txt: "{% url 'pubmed:download_txt' '00000000-0000-0000-0000-000000000000' %}",
     xlsx: "{% url 'pubmed:download_excel' '00000000-0000-0000-0000-000000000000' %}",
+    biblio: "{% url 'bibliometrics:from_pubmed' '00000000-0000-0000-0000-000000000000' %}",
+    biblioList: "{% url 'bibliometrics:landing' %}",
   };
   const url = (key, id) => URLS[key].replace(SENTINEL, id);
   const STORAGE_KEY = 'pubmed_last_job';
@@ -193,6 +202,12 @@ document.addEventListener('DOMContentLoaded', function () {
       actionsEl.classList.remove('pm-hidden');
       fullData.classList.remove('pm-hidden');
     }
+    // Bibliometrik analiz: en az 100 sonuç (sunucu da kontrol eder)
+    const biblioBtn = $('pm-biblio');
+    if (biblioBtn && data.total_results >= 100) {
+      biblioBtn.classList.remove('pm-hidden');
+      $('pm-biblio-info').classList.remove('pm-hidden');
+    }
     if (!isPrevious) {
       try { localStorage.setItem(STORAGE_KEY, JSON.stringify({job_id: currentJobId, results: data, ts: Date.now()})); } catch (e) {}
     }
@@ -264,6 +279,37 @@ document.addEventListener('DOMContentLoaded', function () {
       })
       .finally(() => { emailBtn.querySelector('span').textContent = emailLabel; });
   });
+
+  const biblioBtn = $('pm-biblio');
+  if (biblioBtn) {
+    const biblioLabel = biblioBtn.querySelector('span').textContent;
+    const biblioStatus = $('pm-biblio-status');
+    const biblioAlert = (kind, text) =>
+      `<div class="ax-alert ax-alert--${kind}" role="status"><div class="ax-alert__body">${esc(text)} <a href="${URLS.biblioList}">${esc(T.biblio_link)} &rarr;</a></div></div>`;
+    biblioBtn.addEventListener('click', function () {
+      if (!currentJobId) return;
+      biblioBtn.disabled = true;
+      biblioBtn.querySelector('span').textContent = T.biblio_starting;
+      biblioStatus.innerHTML = '';
+      fetch(url('biblio', currentJobId), {method: 'POST', headers: {'X-CSRFToken': csrf(), 'X-Requested-With': 'XMLHttpRequest'}})
+        .then(r => r.json())
+        .then(data => {
+          if (data.status === 'started') {
+            biblioStatus.innerHTML = biblioAlert('success', T.biblio_started);
+          } else if (data.status === 'exists') {
+            biblioBtn.disabled = false;
+            biblioStatus.innerHTML = biblioAlert('info', T.biblio_exists);
+          } else {
+            throw new Error(data.error || T.unknown);
+          }
+        })
+        .catch(err => {
+          biblioBtn.disabled = false;
+          biblioStatus.innerHTML = `<div class="ax-alert ax-alert--danger" role="alert"><div class="ax-alert__body">${esc(T.error + ' ' + err.message)}</div></div>`;
+        })
+        .finally(() => { biblioBtn.querySelector('span').textContent = biblioLabel; });
+    });
+  }
 
   createRule(true);
 

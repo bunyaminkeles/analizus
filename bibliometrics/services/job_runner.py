@@ -35,7 +35,8 @@ def _execute_job(job_id: str) -> None:
 
 
 def _execute_job_openalex(job_id: str) -> None:
-    """Global kuyruk worker'ı — OpenAlex tipi analiz (kullanıcının dilinde)."""
+    """Global kuyruk worker'ı — OpenAlex/PubMed tipi analiz (kullanıcının dilinde). Kaynak
+    BibliometricJob.source'tan okunur; iki kuyruk türü (bibliometrics_openalex/_pubmed) buraya gelir."""
     _in_user_language(job_id, _execute_job_openalex_body)
 
 
@@ -122,10 +123,10 @@ def _execute_job_body(job_id: str) -> None:
 
 
 def _execute_job_openalex_body(job_id: str) -> None:
-    """OpenAlex tipi analiz, senkron."""
+    """Tarama kaynaklı (OpenAlex / PubMed) analiz, senkron."""
     close_old_connections()
     from bibliometrics.models import BibliometricJob
-    from bibliometrics.services.parser import parse_openalex_json
+    from bibliometrics.services.parser import parse_openalex_json, parse_pubmed_json
     from bibliometrics.services.analyzer import run_all_analyses
     from bibliometrics.services.pdf_builder import build_demo_pdf, build_full_pdf
     from bibliometrics.services.report_notes import build_report_notes
@@ -133,29 +134,39 @@ def _execute_job_openalex_body(job_id: str) -> None:
     from forum.s3_utils import upload_bytes_to_s3
 
     try:
-        job = BibliometricJob.objects.select_related('alex_job').get(id=job_id)
+        job = BibliometricJob.objects.select_related('alex_job', 'pubmed_job').get(id=job_id)
         job.mark_running()
 
-        alex_job = job.alex_job
-        if not alex_job or not alex_job.all_results:
-            job.mark_failed(gettext('OpenAlex verisi bulunamadı veya boş.'))
+        is_pubmed = job.source == 'pubmed'
+        if is_pubmed:
+            from pubmed.services.job_runner import ensure_full_results
+            search_job, parse, fmt = job.pubmed_job, parse_pubmed_json, 'pubmed_json'
+            msg_empty = gettext('PubMed verisi bulunamadı veya boş.')
+            msg_unreadable = gettext('PubMed verisinden kayıt okunamadı.')
+        else:
+            from openalex.services.job_runner import ensure_full_results
+            search_job, parse, fmt = job.alex_job, parse_openalex_json, 'openalex_json'
+            msg_empty = gettext('OpenAlex verisi bulunamadı veya boş.')
+            msg_unreadable = gettext('OpenAlex verisinden kayıt okunamadı.')
+
+        if not search_job or not search_job.all_results:
+            job.mark_failed(msg_empty)
             return
 
         # Arama yalnız ilk sayfayı saklar — analizden önce kalan kayıtları çek (scrap_max_records'a kadar).
         # Kısmi veri kalırsa rapor notları "found / fetched" farkını zaten belirtir.
-        from openalex.services.job_runner import ensure_full_results
         try:
-            ensure_full_results(alex_job)
+            ensure_full_results(search_job)
         except Exception as e:
-            logger.error(f'[bibliometrics] OpenAlex tam veri çekilemedi [{job_id}]: {e}', exc_info=True)
+            logger.error(f'[bibliometrics] {job.source} tam veri çekilemedi [{job_id}]: {e}', exc_info=True)
             job.mark_failed(gettext('Bir hata oluştu, lütfen tekrar deneyin.'))
             return
         close_old_connections()
 
         stats = {}
-        records = parse_openalex_json(alex_job.all_results, stats=stats)
+        records = parse(search_job.all_results, stats=stats)
         if not records:
-            job.mark_failed(gettext('OpenAlex verisinden kayıt okunamadı.'))
+            job.mark_failed(msg_unreadable)
             return
 
         if len(records) < 100:
@@ -164,16 +175,17 @@ def _execute_job_openalex_body(job_id: str) -> None:
 
         skipped = []
         time_series = []
-        figures = run_all_analyses(records, skipped=skipped, time_series=time_series)
+        # PubMed atıf sayısı vermez → atıfa dayanan analizler atlanır (kaynak nedeniyle)
+        figures = run_all_analyses(records, skipped=skipped, time_series=time_series, has_citations=not is_pubmed)
         if not figures:
             job.mark_failed(gettext('Analizler üretilemedi. Veri yetersiz olabilir.'))
             return
 
         # Sınır çekim anındaki değil şimdiki ayar — admin arada değiştirmediyse aynıdır
         notes = build_report_notes(records, stats=stats, skipped=skipped, source={
-            'kind': 'openalex',
-            'found': alex_job.total_results,
-            'fetched': len(alex_job.all_results),
+            'kind': 'pubmed' if is_pubmed else 'openalex',
+            'found': search_job.total_results,
+            'fetched': len(search_job.all_results),
             'max_records': SiteSettings.load().scrap_max_records or 5000,
         })
         demo_pdf_bytes = build_demo_pdf(figures[:3], total_records=len(records), filename=job.original_filename,
@@ -191,12 +203,12 @@ def _execute_job_openalex_body(job_id: str) -> None:
         close_old_connections()
         job.mark_completed(
             total_records=len(records),
-            file_format='openalex_json',
+            file_format=fmt,
             demo_pdf_url=demo_url or '',
             full_pdf_url=full_url or '',
         )
 
-        logger.info(f'[bibliometrics] OpenAlex job {job_id} tamamlandı. {len(records)} kayıt, {n_figures} analiz.')
+        logger.info(f'[bibliometrics] {job.source} job {job_id} tamamlandı. {len(records)} kayıt, {n_figures} analiz.')
         send_demo_email_async(str(job.id), demo_pdf_bytes)
 
     except BibliometricJob.DoesNotExist:
@@ -221,6 +233,12 @@ def run_bibliometric_job_from_openalex(job_id: str) -> None:
     """Global kuyruğa OpenAlex tipi bibliometrik analiz ekler."""
     from analizdestek.job_queue import enqueue
     enqueue('bibliometrics_openalex', job_id)
+
+
+def run_bibliometric_job_from_pubmed(job_id: str) -> None:
+    """Global kuyruğa PubMed tipi bibliometrik analiz ekler."""
+    from analizdestek.job_queue import enqueue
+    enqueue('bibliometrics_pubmed', job_id)
 
 
 def _full_report_lines(site_url: str, job) -> list:

@@ -21,6 +21,7 @@ class BibliometricJob(models.Model):
         ('csv_auto', 'CSV (Otomatik)'),
         ('openalex_json', 'OpenAlex (Otomatik)'),
         ('openalex_txt', 'OpenAlex TXT'),
+        ('pubmed_json', 'PubMed (Otomatik)'),
     )
 
     SOURCE_UPLOAD = 'upload'
@@ -31,9 +32,15 @@ class BibliometricJob(models.Model):
 
     original_filename = models.CharField(max_length=255, blank=True)
     file_format = models.CharField(max_length=20, choices=FORMAT_CHOICES, blank=True)
-    source = models.CharField(max_length=20, default='upload')  # 'upload' | 'openalex'
+    source = models.CharField(max_length=20, default='upload')  # 'upload' | 'openalex' | 'pubmed'
     alex_job = models.ForeignKey(
         'openalex.AlexSearchJob',
+        null=True, blank=True,
+        on_delete=models.SET_NULL,
+        related_name='biblio_jobs',
+    )
+    pubmed_job = models.ForeignKey(
+        'pubmed.PubMedSearchJob',
         null=True, blank=True,
         on_delete=models.SET_NULL,
         related_name='biblio_jobs',

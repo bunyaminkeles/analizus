@@ -139,7 +139,8 @@ TREND_RED   = '#DC2626'
 TREND_AMBER = '#D97706'
 
 
-def run_all_analyses(records: list[dict], skipped: list = None, time_series: list = None) -> list[tuple[str, bytes]]:
+def run_all_analyses(records: list[dict], skipped: list = None, time_series: list = None,
+                     has_citations: bool = True) -> list[tuple[str, bytes]]:
     """
     Tüm analizleri çalıştırır.
     Her figür üretilir üretilmez PNG bytes'a çevrilip kapatılır —
@@ -148,6 +149,8 @@ def run_all_analyses(records: list[dict], skipped: list = None, time_series: lis
     skipped: verilirse üretilemeyen analizler (başlık, neden) olarak eklenir — rapor kısıtları için.
     time_series: verilirse zaman serisi grafiklerinin sonuç listesindeki sırası eklenir — PDF'te
     veri kesildiğinde (OpenAlex sınırı) bu sayfalara uyarı yazmak için.
+    has_citations: False → kaynak atıf sayısı vermiyor (PubMed); atıfa dayanan analizler (Araştırma
+    Boşluğu'nun dikey ekseni de ortalama atıf) çalıştırılmaz, nedeni kaynağa göre yazılır.
     """
     import gc as _gc
     no_year     = gettext('Tamamlanmış yıllara ait yayın yılı bilgisi yok.')
@@ -185,8 +188,16 @@ def run_all_analyses(records: list[dict], skipped: list = None, time_series: lis
         (gettext('Araştırma Boşluğu Haritası (Research Gap)'), lambda: research_gap(records),
          gettext('Yayın yılı bilgisi ve en az 3 yayında geçen en az 5 anahtar kelime gerekir.'), True),
     ]
+    citation_based = {
+        gettext('En Çok Atıf Alan Yayınlar (Top 10)'), gettext('Atıf Analizi ve H-index'),
+        gettext('Yıllık Atıf Trendi'), gettext('Araştırma Boşluğu Haritası (Research Gap)'),
+    }
     results = []
     for title, fn, reason, *is_series in analyses:
+        if not has_citations and title in citation_based:
+            if skipped is not None:
+                skipped.append((title, gettext('Veri kaynağı (PubMed) atıf sayısı sağlamıyor.')))
+            continue
         try:
             fig = fn()
             if fig is None:

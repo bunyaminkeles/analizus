@@ -53,6 +53,7 @@ def pubmed_landing(request):
                 {'icon': 'bi-download', 'title': gettext('Excel & TXT İndirme'), 'desc': gettext('Başlık, yazar, dergi, yıl, DOI, PMID, MeSH terimleri ve özet verilerini Excel veya TXT olarak indirin.')},
                 {'icon': 'bi-database-fill', 'title': gettext('40M+ Biyomedikal Kayıt'), 'desc': gettext("PubMed'in tıp, hemşirelik, sağlık ve yaşam bilimleri veri tabanında kodsuz arama yapın.")},
                 {'icon': 'bi-sliders', 'title': gettext('Kodsuz Gelişmiş Sorgulama'), 'desc': gettext('Başlık, özet, yazar, MeSH terimi, dergi, kurum ve yıl alanlarını birleştirerek arama yapın.')},
+                {'icon': 'bi-bar-chart-line-fill', 'title': gettext('Tek Tıkla Bibliometrik Analiz'), 'desc': gettext('100+ sonuçta tek tıkla bibliometrik analize gönderin, PDF rapor alın.')},
             ],
             'promo_steps': [
                 gettext('Arama kriterlerinizi seçin: başlık, MeSH terimi, yazar veya yıl.'),
@@ -112,6 +113,10 @@ def pubmed_landing(request):
                 'previous': gettext('Önceki arama sonuçları'),
                 'value_placeholder': gettext('Değer girin...'),
                 'remove_rule': gettext('Kriteri kaldır'),
+                'biblio_starting': gettext('Başlatılıyor...'),
+                'biblio_started': gettext('Bibliometrik analiz kuyruğa alındı. Demo rapor (3 grafik PDF) hazır olduğunda e-postanıza gönderilecek.'),
+                'biblio_exists': gettext('Bu arama için zaten bir analiz mevcut.'),
+                'biblio_link': gettext('Bibliometrik analizlerim'),
             },
         },
     })

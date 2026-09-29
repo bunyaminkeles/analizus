@@ -87,14 +87,14 @@ def _recover():
             job.save(update_fields=['status', 'error_message'])
             logger.info(f'[job_queue] Recovery: bibliometrics/{job.id} failed (upload, dosya yok)')
 
-        # Bibliometrics openalex — DB'den okunabilir, kurtarılabilir
-        for job in BibliometricJob.objects.filter(status='running', source='openalex'):
+        # Bibliometrics openalex/pubmed — DB'den okunabilir, kurtarılabilir
+        for job in BibliometricJob.objects.filter(status='running', source__in=['openalex', 'pubmed']):
             job.status = 'pending'
             job.save(update_fields=['status'])
-            logger.info(f'[job_queue] Recovery: bibliometrics_openalex/{job.id} running→pending')
-        for job in BibliometricJob.objects.filter(status='pending', source='openalex').order_by('created_at'):
-            _job_queue.put(('bibliometrics_openalex', str(job.id)))
-            logger.info(f'[job_queue] Recovery: bibliometrics_openalex/{job.id} kuyruğa eklendi')
+            logger.info(f'[job_queue] Recovery: bibliometrics_{job.source}/{job.id} running→pending')
+        for job in BibliometricJob.objects.filter(status='pending', source__in=['openalex', 'pubmed']).order_by('created_at'):
+            _job_queue.put((f'bibliometrics_{job.source}', str(job.id)))
+            logger.info(f'[job_queue] Recovery: bibliometrics_{job.source}/{job.id} kuyruğa eklendi')
 
         # OpenAlex siparişleri — 'processing' = admin onayladı, veri/e-posta hazırlanıyordu → yeniden kuyruğa
         from openalex.models import AlexOrder
@@ -140,7 +140,8 @@ def _run_job(job_type: str, job_id: str):
         elif job_type == 'bibliometrics':
             from bibliometrics.services.job_runner import _execute_job
             _execute_job(job_id)
-        elif job_type == 'bibliometrics_openalex':
+        elif job_type in ('bibliometrics_openalex', 'bibliometrics_pubmed'):
+            # Kaynak (OpenAlex/PubMed) BibliometricJob.source'tan okunur
             from bibliometrics.services.job_runner import _execute_job_openalex
             _execute_job_openalex(job_id)
         elif job_type in ('cronbach', 'normallik', 'betimsel', 'korelasyon', 'ttesti', 'anova', 'mann_whitney', 'kruskal_wallis', 'ki_kare', 'lineer_regresyon', 'lojistik_regresyon', 'afa', 'wilcoxon', 'friedman', 'tekrarli_anova', 'karar_agaci'):
@@ -227,6 +228,7 @@ def get_queue_position(job_type: str, job_id: str) -> int:
             'pubmed': PubMedSearchJob,
             'bibliometrics': BibliometricJob,
             'bibliometrics_openalex': BibliometricJob,
+            'bibliometrics_pubmed': BibliometricJob,
             'cronbach': IstatistikJob,
             'normallik': IstatistikJob,
             'betimsel': IstatistikJob,

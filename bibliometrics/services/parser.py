@@ -511,6 +511,113 @@ def parse_openalex_json(records: list, stats: dict = None) -> list[dict]:
     return _deduplicate_and_filter(result, stats)
 
 
+# ─────────────────────────── PubMed JSON ───────────────────────────
+
+# Adres metnindeki yaygın ülke yazımları → ISO-2 (babel'in İngilizce adlarına ek)
+_PUBMED_COUNTRY_ALIASES = {
+    'usa': 'US', 'u.s.a': 'US', 'u.s': 'US', 'united states of america': 'US',
+    'uk': 'GB', 'u.k': 'GB', 'england': 'GB', 'scotland': 'GB', 'wales': 'GB', 'northern ireland': 'GB',
+    'great britain': 'GB',
+    'korea': 'KR', 'republic of korea': 'KR', 'korea (south)': 'KR',
+    'pr china': 'CN', 'p.r. china': 'CN', 'p. r. china': 'CN', "people's republic of china": 'CN', 'prc': 'CN',
+    'turkey': 'TR', 'turkiye': 'TR',
+    'islamic republic of iran': 'IR', 'russian federation': 'RU', 'viet nam': 'VN',
+    'hong kong': 'HK', 'hong kong sar': 'HK', 'macau': 'MO', 'macao': 'MO',
+    'the netherlands': 'NL', 'czech republic': 'CZ', 'uae': 'AE', 'ivory coast': 'CI', 'palestine': 'PS',
+    'brasil': 'BR', 'méxico': 'MX', 'deutschland': 'DE', 'italia': 'IT', 'españa': 'ES',
+}
+_PUBMED_INST_PRIMARY = re.compile(r'univ|üniversite', re.IGNORECASE)
+_PUBMED_INST_OTHER = re.compile(
+    r'hospital|institut|college|centre|center|clinic|klinik|hochschule|academy|akademi|foundation|'
+    r'laborator|ministry|council|agency|school of', re.IGNORECASE)
+_country_lookup_cache = {}
+
+
+def _pubmed_country_lookup() -> dict:
+    """Küçük harfli ülke adı → ISO-2 (babel İngilizce bölge adları + yaygın yazımlar)."""
+    if not _country_lookup_cache:
+        from babel import Locale
+        for code, name in Locale('en').territories.items():
+            if len(code) == 2 and code.isalpha() and code not in ('EU', 'EZ', 'UN', 'QO', 'ZZ', 'XA', 'XB'):
+                _country_lookup_cache[name.lower()] = code
+        _country_lookup_cache.update(_PUBMED_COUNTRY_ALIASES)
+    return _country_lookup_cache
+
+
+def _pubmed_country(affiliation: str) -> str:
+    """Adres metninin son parçalarından ülke (ISO-2) tahmini; bulunamazsa ''.
+    "..., Jinan, Shandong, China" → CN; "..., Boston, MA 02115, USA" → US; "..., MA 02115" → US."""
+    lookup = _pubmed_country_lookup()
+    segments = [s.strip(' .') for s in re.split(r'[,;]', affiliation or '') if s.strip(' .')]
+    for seg in reversed(segments[-3:]):
+        words = seg.split()
+        for k in (4, 3, 2, 1):  # "Shanghai 200000 China", "Seoul Republic of Korea"
+            if len(words) >= k:
+                code = lookup.get(' '.join(words[-k:]).lower())
+                if code:
+                    return code
+        if re.fullmatch(r'[A-Z]{2}\s*\d{5}(-\d{4})?', seg):  # ABD eyalet + posta kodu
+            return 'US'
+    return ''
+
+
+def _pubmed_institution(affiliation: str) -> str:
+    """Adres metninden kurum adı tahmini: üniversite geçen parça, yoksa hastane/enstitü vb., yoksa ''."""
+    segments = [s.strip(' .') for s in (affiliation or '').split(',') if s.strip(' .')]
+    for pattern in (_PUBMED_INST_PRIMARY, _PUBMED_INST_OTHER):
+        for seg in segments:
+            if pattern.search(seg):
+                return seg
+    return ''
+
+
+def parse_pubmed_json(records: list, stats: dict = None) -> list[dict]:
+    """
+    PubMed all_results JSON listesini normalize edilmiş bibliometric kayıtlara çevirir
+    (PubMedSearchJob.all_results). PubMed atıf sayısı vermez → cited_by 0 (analizler
+    run_all_analyses(has_citations=False) ile atıfa dayananları atlar). Ülke ve kurum
+    yazar adres metninden tahmin edilir (kullanıcı kararı 29 Eylül 2026).
+    """
+    result = []
+    for pub in records:
+        rec = {k: (v.copy() if isinstance(v, list) else v) for k, v in EMPTY_RECORD.items()}
+
+        rec['title'] = _clean(pub.get('title', ''))
+        year_raw = pub.get('year', '')
+        rec['year'] = _safe_int(year_raw) if year_raw else None
+        rec['journal'] = _clean(pub.get('journal', ''))
+        rec['abstract'] = _clean(pub.get('abstract', ''))
+        rec['doi'] = _clean(pub.get('doi', ''))
+        rec['pub_type'] = _clean(pub.get('type', ''))
+
+        authors = pub.get('author_list')
+        if isinstance(authors, list):
+            rec['authors'] = [_clean(a) for a in authors if a]
+        elif pub.get('authors'):
+            rec['authors'] = [a.strip() for a in str(pub['authors']).split(', ') if a.strip()]
+
+        countries, institutions = [], []
+        for aff in pub.get('affiliation_list') or []:
+            code = _pubmed_country(aff)
+            if code and code not in countries:
+                countries.append(code)
+            inst = _clean(_pubmed_institution(aff))
+            if inst and inst not in institutions:
+                institutions.append(inst)
+        rec['country'] = '; '.join(countries)
+        rec['institution'] = '; '.join(institutions)
+
+        # Yazar anahtar kelimeleri; yoksa MeSH terimleri (OpenAlex'teki concepts yedeğine benzer)
+        keywords = [kw for kw in (_clean(k) for k in (pub.get('keywords') or [])) if kw]
+        if not keywords:
+            keywords = [kw for kw in (_clean(m) for m in (pub.get('mesh_terms') or [])) if kw]
+        rec['keywords'] = keywords
+
+        result.append(rec)
+
+    return _deduplicate_and_filter(result, stats)
+
+
 # ─────────────────────────── TR Dizin TXT ───────────────────────────
 
 def parse_trdizin_txt(content: str, stats: dict = None) -> list[dict]:

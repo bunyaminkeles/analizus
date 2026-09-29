@@ -287,6 +287,66 @@ def bibliometrics_from_openalex(request, alex_job_id):
 
 @login_required
 @feature_required('bibliometrics')
+@feature_required('pubmed')
+@require_POST
+def bibliometrics_from_pubmed(request, pubmed_job_id):
+    """PubMed arama sonuçlarından bibliometrik analiz başlat (en az 100 sonuç). OpenAlex köprüsünün eşi."""
+    from pubmed.models import PubMedSearchJob
+
+    user = request.user
+
+    if hasattr(user, 'profile') and not user.profile.email_verified:
+        return JsonResponse({'status': 'error', 'error': gettext('E-posta doğrulaması gereklidir.')}, status=403)
+
+    daily_limit = BibliometricJob.get_daily_limit(user)
+    if BibliometricJob.daily_count_for_user(user) >= daily_limit:
+        return JsonResponse(
+            {'status': 'error', 'error': gettext('Günlük analiz limitinize ({limit}) ulaştınız.').format(limit=daily_limit)},
+            status=429,
+        )
+
+    pubmed_job = get_object_or_404(PubMedSearchJob, id=pubmed_job_id, user=user)
+
+    if pubmed_job.status != 'completed':
+        return JsonResponse({'status': 'error', 'error': gettext('PubMed araması henüz tamamlanmadı.')}, status=400)
+
+    if pubmed_job.total_results < 100:
+        return JsonResponse({
+            'status': 'error',
+            'error': gettext('Bibliometrik analiz için en az 100 sonuç gereklidir (bulunan: {count}).').format(count=pubmed_job.total_results),
+        }, status=400)
+
+    if not pubmed_job.all_results:
+        return JsonResponse({'status': 'error', 'error': gettext('PubMed verisi bulunamadı.')}, status=400)
+
+    existing = BibliometricJob.objects.filter(pubmed_job=pubmed_job, user=user).exclude(status='failed').first()
+    if existing:
+        return JsonResponse({
+            'status': 'exists',
+            'job_id': str(existing.id),
+            'job_status': existing.status,
+            'message': gettext('Bu arama için zaten bir bibliometrik analiz mevcut.'),
+        })
+
+    job = BibliometricJob.objects.create(
+        user=user,
+        original_filename=f'PubMed: {pubmed_job.get_query_summary()}'[:255],
+        source='pubmed',
+        pubmed_job=pubmed_job,
+    )
+
+    from .services.job_runner import run_bibliometric_job_from_pubmed
+    run_bibliometric_job_from_pubmed(str(job.id))
+
+    return JsonResponse({
+        'status': 'started',
+        'job_id': str(job.id),
+        'message': gettext('Bibliometrik analiz başlatıldı.'),
+    })
+
+
+@login_required
+@feature_required('bibliometrics')
 def bibliometrics_order_page(request, job_id):
     job = get_object_or_404(BibliometricJob, id=job_id, user=request.user)
 

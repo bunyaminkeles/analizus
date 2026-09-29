@@ -48,7 +48,10 @@ maddelerde.
   paneli bağlandı. Arayüz: `forms.py`, `views.py`, `urls.py` (i18n_patterns, `/pubmed/`), `templates/pubmed/landing.html`
   (OpenAlex landing kalıbı, ax- sınıfları), Excel (demo), günlük limit; `feature_pubmed` flag (forum migration),
   context_processors, tarama hub kartı (`forum/views.py`), konsol + navbar aktif link, sitemap. EN/DE çeviri.
-- [ ] Faz 3 — Bibliometri köprüsü: `BibliometricJob.pubmed_job` FK (bibliometrics migration), `parse_pubmed_json`,
+- [x] Faz 3 — YAPILDI YERELDE (29 Eylül 2026): gerçek veriyle 265 kayıt → 13 analiz; atıfa dayanan 4 analiz (en çok atıf,
+  H-index, yıllık atıf trendi, Research Gap — dikey ekseni atıf) "kaynak atıf vermiyor" nedeniyle atlanır; ülke %91, kurum
+  %98 (adres metninden tahmin, Kısıtlar'da yazıyor); anahtar kelime yoksa MeSH. OpenAlex regresyonu değişmedi (17 analiz).
+  Migration bibliometrics/0005 (pubmed_job FK, nullable). 13 msgid EN/DE. Bibliometri köprüsü: `BibliometricJob.pubmed_job` FK (bibliometrics migration), `parse_pubmed_json`,
   `/bibliometrics/from-pubmed/<id>/`, runner (`source='pubmed'`), rapor notları kaynak metni. PubMed'de atıf sayısı yok →
   atıf analizleri "üretilemedi" nedenine düşer; ülke yalnız affiliation metninden (sezgisel) — karar.
   **Kararlar (29 Eylül 2026):** sipariş ŞİMDİLİK YOK (tam veri → proje talebi, EN/DE gibi; Faz 4 ileride); atıf analizleri

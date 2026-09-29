@@ -20328,3 +20328,43 @@ msgstr "Insgesamt {total} Ergebnisse gefunden. Die ersten {shown} Datensätze we
 
 msgid "Tüm kriterler birlikte aranır (AND). Yıl aralığı örneği: 2020-2024."
 msgstr "Alle Kriterien werden gemeinsam gesucht (AND). Beispiel für einen Jahresbereich: 2020-2024."
+
+# PubMed modülü — Faz 3 bibliometri (29 Eylül 2026)
+msgid "PubMed araması henüz tamamlanmadı."
+msgstr "Die PubMed-Suche ist noch nicht abgeschlossen."
+
+msgid "PubMed atıf sayısı sağlamadığından atıfa dayanan analizler (en çok atıf alan yayınlar, H-index, yıllık atıf trendi, Araştırma Boşluğu Haritası) üretilmedi."
+msgstr "Da PubMed keine Zitationszahlen bereitstellt, wurden zitationsbasierte Analysen (meistzitierte Publikationen, H-Index, jährlicher Zitationstrend, Forschungslücken-Karte) nicht erstellt."
+
+msgid "PubMed verisi bulunamadı veya boş."
+msgstr "PubMed-Daten nicht gefunden oder leer."
+
+msgid "PubMed verisi bulunamadı."
+msgstr "PubMed-Daten nicht gefunden."
+
+msgid "PubMed verisinden kayıt okunamadı."
+msgstr "Aus den PubMed-Daten konnten keine Datensätze gelesen werden."
+
+msgid "PubMed verisiyle 13 analize kadar PDF rapor üretilir; PubMed atıf sayısı vermediği için atıf analizleri ve Araştırma Boşluğu Haritası yer almaz. Demo rapor (3 grafik) ücretsiz e-postanıza gönderilir."
+msgstr "Mit PubMed-Daten wird ein PDF-Bericht mit bis zu 13 Analysen erstellt; da PubMed keine Zitationszahlen liefert, sind Zitationsanalysen und die Forschungslücken-Karte nicht enthalten. Ein Demo-Bericht (3 Grafiken) wird Ihnen kostenlos per E-Mail zugesandt."
+
+msgid "PubMed'de bulunan kayıt"
+msgstr "In PubMed gefundene Datensätze"
+
+msgid "PubMed'de {found} kayıt bulundu; çekim sınırı nedeniyle yalnız en yeni {fetched} kayıt alındı."
+msgstr "In PubMed wurden {found} Datensätze gefunden; wegen des Abruflimits wurden nur die neuesten {fetched} Datensätze abgerufen."
+
+msgid "PubMed'de {found} kayıt bulundu; çekim sınırı nedeniyle yalnız en yeni {fetched} kayıt alındı. {year} yılı kısmen, daha eski yıllar hiç kapsanmadı. Bu nedenle yayın trendi, büyüme oranı ve anahtar kelime trendi eski dönemi eksik gösterir; yıllar arası artış olduğundan yüksek görünebilir."
+msgstr "In PubMed wurden {found} Datensätze gefunden; wegen des Abruflimits wurden nur die neuesten {fetched} Datensätze abgerufen. Das Jahr {year} ist nur teilweise, frühere Jahre sind gar nicht abgedeckt. Publikationstrend, Wachstumsrate und Schlagworttrend bilden den früheren Zeitraum daher unvollständig ab; das Wachstum zwischen den Jahren kann höher erscheinen, als es ist."
+
+msgid "PubMed'den veri çekimi tamamlanamadı: {found} kaydın yalnız {fetched} tanesi alınabildi. Eksik kısım en eski yıllara aittir; zaman içindeki değişimi gösteren analizler bu nedenle eksik olabilir."
+msgstr "Der Datenabruf aus PubMed konnte nicht abgeschlossen werden: Nur {fetched} von {found} Datensätzen konnten abgerufen werden. Der fehlende Teil betrifft die frühesten Jahre; Analysen zur zeitlichen Entwicklung können daher unvollständig sein."
+
+msgid "Veri kaynağı (PubMed) atıf sayısı sağlamıyor."
+msgstr "Die Datenquelle (PubMed) liefert keine Zitationszahlen."
+
+msgid "Yazar anahtar kelimesi olmayan PubMed kayıtlarında MeSH terimleri anahtar kelime yerine kullanıldı."
+msgstr "Bei PubMed-Datensätzen ohne Autorenschlagwörter wurden MeSH-Begriffe als Schlagwörter verwendet."
+
+msgid "Ülke ve kurum bilgisi tahminidir: PubMed bu bilgileri ayrı alan olarak vermez; yazar adres metninden otomatik çıkarıldı. Adresinde ülke adı geçmeyen yazarlar ülke sayımına, kurum adı tanınamayan adresler kurum sayımına girmedi."
+msgstr "Länder- und Institutionsangaben sind Schätzungen: PubMed liefert sie nicht als eigene Felder; sie wurden automatisch aus dem Affiliationstext der Autoren extrahiert. Autoren, deren Affiliation kein Land nennt, wurden bei der Länderzählung nicht berücksichtigt, Affiliationen ohne erkennbaren Institutionsnamen nicht bei der Institutionszählung."

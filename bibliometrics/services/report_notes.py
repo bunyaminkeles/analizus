@@ -8,6 +8,7 @@ build_report_notes() girdileri:
   skipped : run_all_analyses'in üretemediği analizler [(başlık, neden)]
   source  : {'kind': 'file', 'format': 'Scopus CSV', 'files': 1}
             {'kind': 'openalex', 'found': 12000, 'fetched': 5000, 'max_records': 5000}
+            {'kind': 'pubmed', ...} — openalex ile aynı anahtarlar
 """
 import inspect
 from django.utils.formats import number_format
@@ -66,6 +67,9 @@ def _data_flow(records, stats, source):
     if source.get('kind') == 'openalex':
         rows.append((gettext('OpenAlex\'te bulunan kayıt'), source.get('found', 0)))
         rows.append((gettext('Çekilen kayıt'), source.get('fetched', 0)))
+    elif source.get('kind') == 'pubmed':
+        rows.append((gettext('PubMed\'de bulunan kayıt'), source.get('found', 0)))
+        rows.append((gettext('Çekilen kayıt'), source.get('fetched', 0)))
     else:
         rows.append((gettext('Dosyadan okunan kayıt'), len(records) + no_title + duplicate))
     rows.append((gettext('Başlığı olmadığı için çıkarılan'), no_title))
@@ -76,12 +80,38 @@ def _data_flow(records, stats, source):
 
 def _source_warnings(records, source):
     """
-    OpenAlex çekim sınırı uyarıları. Çekim yayın yılına göre yeniden eskiye sıralı
+    OpenAlex/PubMed çekim sınırı uyarıları. Çekim yayın yılına göre yeniden eskiye sıralı
     olduğundan sınır aşılınca kesilen kısım hep en eski yıllardır.
     Döner: (uyarı metinleri, kapsamı kısmi olan en eski yıl veya None)
     """
-    if source.get('kind') != 'openalex':
+    kind = source.get('kind')
+    if kind not in ('openalex', 'pubmed'):
         return [], None
+    # Kaynak adı ekle birlikte değiştiği için ("OpenAlex'te" / "PubMed'de") her kaynağa tam cümle msgid
+    if kind == 'openalex':
+        msg_cut_year = gettext(
+            'OpenAlex\'te {found} kayıt bulundu; çekim sınırı nedeniyle yalnız en yeni {fetched} kayıt '
+            'alındı. {year} yılı kısmen, daha eski yıllar hiç kapsanmadı. Bu nedenle yayın trendi, '
+            'büyüme oranı, anahtar kelime trendi ve Araştırma Boşluğu Haritası eski dönemi eksik gösterir; '
+            'yıllar arası artış olduğundan yüksek görünebilir.')
+        msg_cut = gettext(
+            'OpenAlex\'te {found} kayıt bulundu; çekim sınırı nedeniyle yalnız en yeni {fetched} kayıt alındı.')
+        msg_incomplete = gettext(
+            'OpenAlex\'ten veri çekimi tamamlanamadı: {found} kaydın yalnız {fetched} tanesi alınabildi. '
+            'Eksik kısım en eski yıllara aittir; zaman içindeki değişimi gösteren analizler bu nedenle '
+            'eksik olabilir.')
+    else:
+        msg_cut_year = gettext(
+            'PubMed\'de {found} kayıt bulundu; çekim sınırı nedeniyle yalnız en yeni {fetched} kayıt '
+            'alındı. {year} yılı kısmen, daha eski yıllar hiç kapsanmadı. Bu nedenle yayın trendi, '
+            'büyüme oranı ve anahtar kelime trendi eski dönemi eksik gösterir; yıllar arası artış '
+            'olduğundan yüksek görünebilir.')
+        msg_cut = gettext(
+            'PubMed\'de {found} kayıt bulundu; çekim sınırı nedeniyle yalnız en yeni {fetched} kayıt alındı.')
+        msg_incomplete = gettext(
+            'PubMed\'den veri çekimi tamamlanamadı: {found} kaydın yalnız {fetched} tanesi alınabildi. '
+            'Eksik kısım en eski yıllara aittir; zaman içindeki değişimi gösteren analizler bu nedenle '
+            'eksik olabilir.')
     found = source.get('found', 0)
     fetched = source.get('fetched', 0)
     max_records = source.get('max_records') or 0
@@ -93,23 +123,12 @@ def _source_warnings(records, source):
     if found > fetched and max_records and fetched >= max_records:
         partial_year = oldest_year
         if partial_year:
-            warnings.append(gettext(
-                'OpenAlex\'te {found} kayıt bulundu; çekim sınırı nedeniyle yalnız en yeni {fetched} kayıt '
-                'alındı. {year} yılı kısmen, daha eski yıllar hiç kapsanmadı. Bu nedenle yayın trendi, '
-                'büyüme oranı, anahtar kelime trendi ve Araştırma Boşluğu Haritası eski dönemi eksik gösterir; '
-                'yıllar arası artış olduğundan yüksek görünebilir.'
-            ).format(found=_num(found), fetched=_num(fetched), year=partial_year))
+            warnings.append(msg_cut_year.format(found=_num(found), fetched=_num(fetched), year=partial_year))
         else:
-            warnings.append(gettext(
-                'OpenAlex\'te {found} kayıt bulundu; çekim sınırı nedeniyle yalnız en yeni {fetched} kayıt alındı.'
-            ).format(found=_num(found), fetched=_num(fetched)))
+            warnings.append(msg_cut.format(found=_num(found), fetched=_num(fetched)))
     elif fetched < min(found, max_records or found):
         partial_year = oldest_year
-        warnings.append(gettext(
-            'OpenAlex\'ten veri çekimi tamamlanamadı: {found} kaydın yalnız {fetched} tanesi alınabildi. '
-            'Eksik kısım en eski yıllara aittir; zaman içindeki değişimi gösteren analizler bu nedenle '
-            'eksik olabilir.'
-        ).format(found=_num(found), fetched=_num(fetched)))
+        warnings.append(msg_incomplete.format(found=_num(found), fetched=_num(fetched)))
     return warnings, partial_year
 
 
@@ -129,6 +148,9 @@ def _rules(source, last_year):
     if source.get('kind') == 'openalex':
         rules.append(gettext('Anahtar kelimesi olmayan OpenAlex kayıtlarında OpenAlex\'in geniş konu '
                              'etiketleri (concepts) anahtar kelime yerine kullanıldı.'))
+    elif source.get('kind') == 'pubmed':
+        rules.append(gettext('Yazar anahtar kelimesi olmayan PubMed kayıtlarında MeSH terimleri anahtar '
+                             'kelime yerine kullanıldı.'))
     rules += [
         gettext('Ülke ve kurum sayımında bir yayın, yazarlarının bulunduğu her ülke ve kurum için bir kez '
                 'sayıldı. Kurum grafiği yalnız ülke bilgisi hiç yoksa üretilir.'),
@@ -148,15 +170,26 @@ def _rules(source, last_year):
     return rules
 
 
-def _limitations(coverage, current_year_count, last_year):
+def _limitations(coverage, current_year_count, last_year, source=None):
+    is_pubmed = (source or {}).get('kind') == 'pubmed'
     limitations = [
         gettext('Sonuçlar yalnız bu veri kaynağındaki kayıtları yansıtır; kaynağın taramadığı dergi, '
                 'dil ve yayın türleri kapsam dışıdır.'),
         gettext('Yazar, kurum ve dergi adları otomatik olarak birleştirilmedi: aynı yazar farklı '
                 'yazımlarla ayrı kişi, aynı adlı farklı yazarlar tek kişi olarak sayılmış olabilir.'),
-        gettext('Atıf sayıları verinin alındığı andaki değerlerdir ve kaynaktan kaynağa değişir; yeni '
-                'yayınlar atıf toplamak için daha az zaman bulduğundan dezavantajlıdır.'),
     ]
+    if is_pubmed:
+        limitations += [
+            gettext('PubMed atıf sayısı sağlamadığından atıfa dayanan analizler (en çok atıf alan yayınlar, '
+                    'H-index, yıllık atıf trendi, Araştırma Boşluğu Haritası) üretilmedi.'),
+            gettext('Ülke ve kurum bilgisi tahminidir: PubMed bu bilgileri ayrı alan olarak vermez; yazar '
+                    'adres metninden otomatik çıkarıldı. Adresinde ülke adı geçmeyen yazarlar ülke '
+                    'sayımına, kurum adı tanınamayan adresler kurum sayımına girmedi.'),
+        ]
+    else:
+        limitations.append(gettext(
+            'Atıf sayıları verinin alındığı andaki değerlerdir ve kaynaktan kaynağa değişir; yeni '
+            'yayınlar atıf toplamak için daha az zaman bulduğundan dezavantajlıdır.'))
     if current_year_count:
         limitations.append(gettext(
             '{n} kayıt içinde bulunulan yıla ({year}) ait; bu kayıtlar zaman serilerinde yer almaz, '
@@ -186,7 +219,7 @@ def build_report_notes(records, stats=None, skipped=None, source=None) -> dict:
         'coverage': coverage,
         'rules': _rules(source, last_year),
         'skipped': list(skipped or []),
-        'limitations': _limitations(coverage, current_year_count, last_year),
+        'limitations': _limitations(coverage, current_year_count, last_year, source),
         'source_warnings': warnings,
         'partial_year': partial_year,
     }
