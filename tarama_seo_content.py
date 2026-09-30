@@ -116,6 +116,16 @@ TARAMA_SEO_CONTENT = {
         ),
         'faq': [
             {
+                'q': 'OpenAlex nedir?',
+                'a': (
+                    'OpenAlex, kâr amacı gütmeyen OurResearch kuruluşunun 2022\'de kullanıma açtığı '
+                    'açık ve ücretsiz bir akademik veri tabanıdır; Microsoft Academic Graph\'ın devamı '
+                    'niteliğindedir. 240 milyondan fazla yayının yanı sıra yazar, kurum, dergi ve konu '
+                    'bilgilerini içerir; veriler CC0 lisansıyla herkese açıktır. Analizus bu veriyi '
+                    'kod yazmadan aramanızı ve sonuçları Excel\'e aktarmanızı sağlar.'
+                ),
+            },
+            {
                 'q': 'OpenAlex ile Google Scholar arasındaki fark nedir?',
                 'a': (
                     'Google Scholar tam metin web taraması yapar ve sonuçlara erişimde API kısıtlaması '

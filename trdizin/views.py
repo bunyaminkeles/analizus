@@ -53,10 +53,10 @@ def trdizin_landing(request):
     """Landing page: gelişmiş arama formu + demo arama."""
     if not request.user.is_authenticated:
         return render(request, 'service_promo.html', {
-            'promo_title': 'TR Dizin Makale Kazıma ve İndirme Aracı',
+            'promo_title': 'TR Dizin Makale Arama ve Tarama — Excel\'e Aktar',
             'promo_icon': 'bi-journal-text',
             'promo_color': 'primary',
-            'promo_description': 'TR Dizin\'den kodsuz makale veri kazıma aracı. Anahtar kelime, yazar ve dergi bazında gelişmiş arama yapın; sonuçları Excel veya TXT olarak indirin. Python bilgisi gerekmez.',
+            'promo_description': 'TR Dizin makalelerinde başlık, özet, yazar ve anahtar kelimeye göre gelişmiş arama yapın; toplam sonucu görün, en yeni 5 makaleyi Excel veya TXT indirin.',
             'promo_features': [
                 {'icon': 'bi-download', 'title': 'Excel & TXT İndirme', 'desc': 'Makale başlığı, yazar, dergi, yıl ve özet verilerini tek tıkla Excel veya TXT olarak indirin.'},
                 {'icon': 'bi-search', 'title': 'Kodsuz Veri Kazıma', 'desc': 'Başlık, yazar, dergi, anahtar kelime ve özet alanlarını birleştirerek binlerce makaleden veri çekin.'},

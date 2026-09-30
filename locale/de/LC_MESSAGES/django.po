@@ -18492,33 +18492,14 @@ msgid "Sonuçlarınızı aşağıdaki linkten indirebilirsiniz:"
 msgstr "Sie können Ihre Ergebnisse über den folgenden Link herunterladen:"
 
 #: openalex/templates/openalex/landing.html:5
-msgid "OpenAlex Yayın Kazıma ve İndirme Aracı — 240M+ Akademik Veri"
-msgstr ""
-"OpenAlex-Publikations-Scraping- und Download-Tool — 240M+ akademische "
-"Datensätze"
+#: openalex/templates/openalex/landing.html:9 openalex/views.py:60
+msgid "OpenAlex ile Yayın Arama — 240M+ Kayıt, Excel'e Aktar"
+msgstr "Publikationssuche mit OpenAlex — 240M+ Datensätze, Excel-Export"
 
 #: openalex/templates/openalex/landing.html:6
-msgid ""
-"OpenAlex'ten kodsuz akademik yayın kazıma aracı. 240 milyondan fazla yayın "
-"arasında arama yapın, sonuçları Excel veya TXT olarak indirin. Atıf verisi, "
-"yazar ve dergi bazında toplu veri çekme."
-msgstr ""
-"No-Code-Tool zum Scrapen akademischer Publikationen von OpenAlex. "
-"Durchsuchen Sie über 240 Millionen Publikationen und laden Sie die "
-"Ergebnisse als Excel oder TXT herunter. Massendaten-Extraktion nach "
-"Zitationsdaten, Autor und Zeitschrift."
-
-#: openalex/templates/openalex/landing.html:9
-msgid "OpenAlex Yayın Kazıma ve Veri İndirme — 240M+"
-msgstr "OpenAlex-Publikations-Scraping und Datendownload — 240M+"
-
-#: openalex/templates/openalex/landing.html:10
-msgid ""
-"OpenAlex'ten kodsuz akademik yayın kazıma. 240M+ kayıt arasında arama yapın,"
-" Excel veya TXT indirin."
-msgstr ""
-"No-Code-Scraping akademischer Publikationen von OpenAlex. Durchsuchen Sie "
-"240M+ Datensätze und laden Sie als Excel oder TXT herunter."
+#: openalex/templates/openalex/landing.html:10 openalex/views.py:64
+msgid "OpenAlex, 240 milyondan fazla yayını kapsayan açık akademik veri tabanıdır. Başlık, yazar, dergi ve kuruma göre arayın; sonuçları Excel veya TXT indirin."
+msgstr "OpenAlex ist eine offene akademische Datenbank mit mehr als 240 Millionen Publikationen. Suchen Sie nach Titel, Autor, Zeitschrift und Institution; laden Sie die Ergebnisse als Excel oder TXT herunter."
 
 #: openalex/templates/openalex/landing.html:25
 msgid "OpenAlex Yayın Kazıma ve Veri İndirme"
@@ -18804,21 +18785,6 @@ msgstr "Ihre Suche läuft im Hintergrund weiter, bitte warten..."
 #: openalex/templates/openalex/landing.html:584
 msgid "Önceki arama sonuçları"
 msgstr "Vorherige Suchergebnisse"
-
-#: openalex/views.py:60
-msgid "OpenAlex Yayın Kazıma ve Veri İndirme Aracı"
-msgstr "OpenAlex-Tool zur Publikationserfassung und zum Datendownload"
-
-#: openalex/views.py:63
-msgid ""
-"240 milyondan fazla akademik yayından kodsuz veri kazıma aracı. Başlık, "
-"yazar, kurum gibi alanlarda arama yapın; sonuçları Excel veya TXT olarak tek"
-" tıkla indirin."
-msgstr ""
-"Ein Tool zur Datenerfassung ohne Code für über 240 Millionen "
-"wissenschaftliche Publikationen. Suchen Sie nach Feldern wie Titel, Autor/in"
-" oder Institution und laden Sie die Ergebnisse mit einem Klick als Excel "
-"oder TXT herunter."
 
 #: openalex/views.py:65
 msgid ""

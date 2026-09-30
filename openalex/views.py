@@ -57,10 +57,10 @@ def openalex_landing(request):
     """Landing page: gelişmiş arama formu + demo arama."""
     if not request.user.is_authenticated:
         return render(request, 'service_promo.html', {
-            'promo_title': gettext('OpenAlex Yayın Kazıma ve Veri İndirme Aracı'),
+            'promo_title': gettext("OpenAlex ile Yayın Arama — 240M+ Kayıt, Excel'e Aktar"),
             'promo_icon': 'bi-search',
             'promo_color': 'primary',
-            'promo_description': gettext('240 milyondan fazla akademik yayından kodsuz veri kazıma aracı. Başlık, yazar, kurum gibi alanlarda arama yapın; sonuçları Excel veya TXT olarak tek tıkla indirin.'),
+            'promo_description': gettext('OpenAlex, 240 milyondan fazla yayını kapsayan açık akademik veri tabanıdır. Başlık, yazar, dergi ve kuruma göre arayın; sonuçları Excel veya TXT indirin.'),
             'promo_features': [
                 {'icon': 'bi-download', 'title': gettext('Excel & TXT İndirme'), 'desc': gettext('Yayın başlığı, yazar, dergi, yıl, DOI ve özet verilerini tek tıkla Excel veya TXT olarak indirin.')},
                 {'icon': 'bi-database-fill', 'title': gettext('240M+ Kaynaktan Veri Çekme'), 'desc': gettext('OpenAlex\'in tüm akademik veri tabanından makale, kitap ve konferans bildirisini kodsuz kazıyın.')},

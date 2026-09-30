@@ -41,10 +41,10 @@ def oaipmh_landing(request):
 
     if not request.user.is_authenticated:
         return render(request, 'service_promo.html', {
-            'promo_title': 'Üniversite Tez Arşivi',
+            'promo_title': 'Üniversite Tez Arşivi Tarama — 19 Üniversite, Excel Listesi',
             'promo_icon': 'bi-mortarboard',
             'promo_color': 'warning',
-            'promo_description': '19 Türk üniversitesinin açık erişim arşivinde anahtar kelimeyle arama yapın veya bir üniversitenin tüm tezlerini tarayın. ODTÜ, İTÜ, Sabancı dahil 19 üniversite.',
+            'promo_description': '19 Türk üniversitesinin açık erişim tez arşivinde anahtar kelimeyle tez arayın ya da bir üniversitenin tüm tezlerini listeleyin; Excel veya TXT indirin.',
             'promo_features': [
                 {'icon': 'bi-building-fill', 'color': 'warning', 'title': '19 Üniversite', 'desc': 'ODTÜ, İTÜ, Sabancı, Dokuz Eylül, Akdeniz ve daha fazlası.'},
                 {'icon': 'bi-unlock-fill', 'color': 'success', 'title': 'Açık Erişim', 'desc': 'OAI-PMH protokolü ile üniversitelerin kendi açık arşivlerinden doğrudan veri.'},

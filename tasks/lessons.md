@@ -143,3 +143,11 @@ kanıt olarak yedeği geçici container'a geri yükle.
 PubMed/OpenAlex traceback'leri log'a yazıyordu.
 **Kural:** Dış API hatasını kullanıcıya asla `str(e)` ile gösterme; anahtar URL'deyse istisnayı kaynağında temizleyip
 yeniden fırlat. Testte eski kodda sızıntının GÖRÜLDÜĞÜNÜ de kanıtla.
+
+## 30 Eylül 2026 — Google'ın gördüğü şablon, düzenlenen şablon değildi
+**Olay:** SEO başlık/açıklama değişikliğini tarama sayfalarının `landing.html`'ine yaptım; anonim ziyaretçi (Googlebot
+dahil) `service_promo.html` görüyor ve başlığı view'daki `promo_title`/`promo_description`'dan alıyor. Haziran'daki
+"landing keyword" turu da aynı dosyaları düzenlemişti — büyük olasılıkla Google'a hiç ulaşmadı.
+**Kural:** SEO değişikliğinden önce sayfayı **oturumsuz** `curl` ile çek, `<title>`/description'ın hangi şablon/context'ten
+geldiğini bul; doğrulamayı da oturumsuz yap. Çeviri dosyasında toplu polib `save()` tüm dosyayı yeniden sarar (yüzlerce
+satır fark) — tek girdi değişikliğini metin olarak yap, `git diff --stat` ile kontrol et.
