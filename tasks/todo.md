@@ -81,7 +81,11 @@ anonime açılması — `profile_detail` `@login_required` → Google profilleri
 - [ ] `/uzmanlar/?cat=N` — "Google chose different canonical" (5 sayfa): kendini canonical gösteriyor ama title/içerik
   `/uzmanlar/` ile aynı → kategoriye özgü title/H1/2 cümle giriş; <2 uzman → `noindex` + canonical `/uzmanlar/` (Faz 4 ile)
 - [x] **YAPILDI YERELDE (1 Ekim 2026, commit yok):** `section_detail` → 301 `/forum/#section-<pk>` (forum ana sayfası bölümleri zaten listeliyor; yok olan pk 404; test: geçici bölümle 301 + çapa var, forum 61/61). Şablon `section_detail.html` artık kullanılmıyor (silinmedi). Eski not: `/section/<pk>/` — title ana sayfayla aynı, ~330 kelime ("Crawled – not indexed") → kendi title/meta ya da `noindex` (karar)
-- [ ] Boş forum kategorileri (`/forum/panel-veri-analizi/`, `/zaman-serisi-analizi/`, `/veri-temizleme/`, `/bibliometrik-analizler/`
+- [ ] **ÖNCEDEN VAR (1 Ekim 2026, görüldü):** `category_topics` N+1 — şablon `topic.starter.username` basıyor, view
+  `select_related('starter')` yok → konu başına ek sorgu (3 konuda 16, 1 konuda 12 sorgu). Düzeltme tek satır; ayrı iş, onay bekliyor.
+- [x] **YAPILDI YERELDE (1 Ekim 2026, commit yok):** `Category.INDEX_MIN_TOPICS = 3` — altındaki kategori sayfası `noindex, follow`
+  + `CategorySitemap` dışı; konu eklenince kendiliğinden açılır. Ek sorgu yok (len() queryset önbelleği). Test: 1 konulu noindex,
+  3 konulu index, sitemap yalnız 3 konulu; forum 61/61. Eski not: Boş forum kategorileri (`/forum/panel-veri-analizi/`, `/zaman-serisi-analizi/`, `/veri-temizleme/`, `/bibliometrik-analizler/`
   ~220 kelime) → konu sayısı eşiğin altında `noindex` (eşik kararı)
 - [ ] `/blog/nitel-arastirma-yontemleri/` slug ↔ başlık uyumsuz ("Kısa Mülakatlarda Başarının Anahtarı…") — editoryal karar
 - Dokunulmayacak (normal): robots engelli `/login/?next=`, `/forum/*/new/`, `/market/job/*/bookmark/`; `/market/?category=`

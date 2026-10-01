@@ -30,6 +30,10 @@ class Category(models.Model):
     icon_class = models.CharField(max_length=50, default="bi-chat-square-text")
     created_at = models.DateTimeField(auto_now_add=True)
 
+    # Bu sayıdan az konusu olan kategori sayfası noindex + sitemap dışı (boş/zayıf sayfa — GSC
+    # "taranmış, indekslenmemiş"); konu eklendikçe kendiliğinden indekse açılır.
+    INDEX_MIN_TOPICS = 3
+
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.title.replace('ı', 'i'))

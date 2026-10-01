@@ -1112,6 +1112,8 @@ def category_topics(request, slug):
         'category': category,
         'topics': topics,
         'active_rooms': active_rooms,
+        # len() queryset'i değerlendirir; şablondaki döngü aynı önbelleği kullanır (ek sorgu yok)
+        'noindex': len(topics) < Category.INDEX_MIN_TOPICS,
     })
 
 # --- KONU DETAY VE CEVAP YAZMA ---

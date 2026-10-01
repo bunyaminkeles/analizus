@@ -1,6 +1,6 @@
 from django.contrib.sitemaps import Sitemap
 from django.urls import reverse
-from django.db.models import Q
+from django.db.models import Count, Q
 from .models import Topic, Category, FreelanceJob, BlogPost, StudyRoom
 
 
@@ -94,7 +94,9 @@ class CategorySitemap(Sitemap):
     priority = 0.7
 
     def items(self):
-        return Category.objects.all()
+        # Az konulu kategori sayfası noindex (bkz. Category.INDEX_MIN_TOPICS) — sitemap'e girmez
+        return (Category.objects.annotate(topic_count=Count('topics'))
+                .filter(topic_count__gte=Category.INDEX_MIN_TOPICS))
 
     def location(self, obj):
         return reverse('category_topics', args=[obj.slug])
