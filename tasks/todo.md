@@ -61,6 +61,15 @@ anonime açılması — `profile_detail` `@login_required` → Google profilleri
 - [x] **YAPILDI YERELDE (1 Ekim 2026, commit yok):** veri migration `forum/0162_blog_seo_meta_ctr` — 6 yazıya `meta_title`/`meta_description` (alan doluysa dokunmaz; geri alma yalnız kendi değerini siler); sayfadaki başlık/içerik/slug aynı. Yerel ileri-geri-ileri OK, anonim `<title>` doğrulandı. Örneklem (CTR %3,7) ve ANOVA (%6,7) bilinçli dokunulmadı. **Deploy: migration'lı → önce DB yedeği.** KALAN: "t tablosu" (408 gösterim, niyet = kritik değer tablosu) → t-testi yazısına t dağılım tablosu bölümü (öneri, onay bekliyor). Eski not: En çok gösterim alan blog yazıları: AFA/DFA (3.091), Cronbach ×2 (2.150 + 1.384), örneklem (2.096), t tablosu (1.062),
   normallik ×2 (900 + 706), VIF (655) — 0 tık alan sorgulara uygun title ("afa nedir" 230, "dfa" 225, "cronbach alfa nedir",
   "t tablosu" 408 gösterim/1 tık)
+- [x] **YAPILDI YERELDE (1 Ekim 2026, commit yok): veri migration `forum/0163_blog_seo_icerik_duzeltme`** — korumalı (beklenen eski
+  metin yoksa dokunmaz): (1) 6 yazıya SEO başlık/açıklama (t-testi, SPSS alternatifi, survival, Shapiro 0.049, veri kazıma, nitel);
+  (2) veri kazıma yazısı yeniden yazıldı — "Neden Veri Kazımıyor?" çelişkisi ve gerçek dışı "ULAKBİM kurumsal protokolü" iddiası
+  çıktı; kullanıcı: "veri kazıyoruz ama kısıtlı; künye/özetlerden içerik ve konu analizi" → "Sınırlı ve Amaca Yönelik Kazıma" +
+  "Metinsel Analizler" (Tez Analizi: TF-IDF, LDA, benzer tezler; tam metin için proje talebi); abartılı vaatler (binlerce tez,
+  .csv, 250M) düzeltildi; arXiv numarası 2205.01833; (3) nitel yazısı: yapay zekâ sohbet artığı cümle, tekrarlı H2, kod bloğuna
+  dönüşmüş liste düzeltildi, kaynaksız "makale kanıtlıyor" çıktı (~400 kelime — hâlâ kısa); (4) t-testi yazısına t dağılımı
+  kritik değer tablosu (scipy, df 1–120 + ∞). Yerel: uygula + rollback'te nitel testi + idempotent ikinci çalıştırma OK; anonim
+  render doğrulandı. **AÇIK:** canlıda `feature_tezanaliz` açık mı (yazı Tez Analizi'ni anlatıyor) — kullanıcıya soruldu.
 - [ ] 4 hafta sonra aynı sayfalarda CTR karşılaştırması (GSC dışa aktarımı)
 
 **Faz 2 — İndeksleme temizliği**
