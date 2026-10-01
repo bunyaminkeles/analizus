@@ -55,19 +55,12 @@ TOOL_CATEGORIES = [
 ]
 
 
-# Kendi "… Nedir?" kartı olmayan araçlar — konsolda rehberin giriş paragrafı ve 4 bölümü (ne zaman, varsayımlar,
-# yorum, APA) yalnız bunlarda gösterilir; diğerlerinde üstteki "Nedir?" ve Metodoloji kartlarını tekrarlıyordu.
-# Anonim tanıtım sayfası (Google) etkilenmez — orada rehber eksiksiz.
-TOOLS_WITHOUT_INTRO_CARD = {'orneklem', 'friedman', 'tekrarli_anova'}
-
-
 def _console_ctx(active_tool, request=None):
     ctx = {
         'active_tool': active_tool,
         'tool_categories': TOOL_CATEGORIES,
         'max_upload_mb': django_settings.MAX_UPLOAD_SIZE // (1024 * 1024),
         'seo_guide': SEO_CONTENT.get(active_tool),
-        'show_full_guide': active_tool in TOOLS_WITHOUT_INTRO_CARD,
     }
     if request:
         ctx['session_dataset_name'] = request.session.get('_ax_dataset_name', '')
@@ -753,6 +746,7 @@ def wilcoxon_landing(request):
     return render(request, 'istatistik/wilcoxon.html', {
         'active_job_id': str(active_job.id) if active_job else None,
         'daily_remaining': _daily_remaining(request.user),
+        'tool_title': gettext('Wilcoxon İşaret Testi'),
         **_console_ctx('wilcoxon', request),
     })
 
@@ -781,6 +775,7 @@ def friedman_landing(request):
     return render(request, 'istatistik/friedman.html', {
         'active_job_id': str(active_job.id) if active_job else None,
         'daily_remaining': _daily_remaining(request.user),
+        'tool_title': gettext('Friedman Testi'),
         **_console_ctx('friedman', request),
     })
 
@@ -809,6 +804,7 @@ def tekrarli_anova_landing(request):
     return render(request, 'istatistik/tekrarli_anova.html', {
         'active_job_id': str(active_job.id) if active_job else None,
         'daily_remaining': _daily_remaining(request.user),
+        'tool_title': gettext('Tekrarlayan Ölçümler ANOVA'),
         **_console_ctx('tekrarli_anova', request),
     })
 

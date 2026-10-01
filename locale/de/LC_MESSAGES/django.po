@@ -20343,3 +20343,15 @@ msgstr "OpenAlex ist derzeit überlastet; bitte versuchen Sie es in einigen Minu
 #: templates/service_promo.html templates/tarama_console_base.html
 msgid "Kullanım Rehberi"
 msgstr "Anleitung"
+
+#: istatistik/templates/istatistik/
+msgid "Friedman Testi Nedir?"
+msgstr "Was ist der Friedman-Test?"
+
+#: istatistik/templates/istatistik/
+msgid "Tekrarlayan Ölçümler ANOVA Nedir?"
+msgstr "Was ist eine ANOVA mit Messwiederholung?"
+
+#: istatistik/templates/istatistik/
+msgid "Örneklem Büyüklüğü Nedir?"
+msgstr "Was ist der Stichprobenumfang?"

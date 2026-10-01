@@ -151,3 +151,15 @@ dahil) `service_promo.html` görüyor ve başlığı view'daki `promo_title`/`pr
 **Kural:** SEO değişikliğinden önce sayfayı **oturumsuz** `curl` ile çek, `<title>`/description'ın hangi şablon/context'ten
 geldiğini bul; doğrulamayı da oturumsuz yap. Çeviri dosyasında toplu polib `save()` tüm dosyayı yeniden sarar (yüzlerce
 satır fark) — tek girdi değişikliğini metin olarak yap, `git diff --stat` ile kontrol et.
+
+## 1 Ekim 2026 — Django `{# #}` yorumu tek satırlıktır
+**Hata:** İki satıra yayılan `{# … #}` yorumu sayfaya düz metin olarak basıldı (görünmez değil — SSS üstünde 45 px boşluk).
+**Kural:** Şablonda çok satırlı yorum için `{% comment %}…{% endcomment %}`; değişiklik sonrası `innerText` içinde `{#`/`{%`
+sızıntısı ara.
+
+## 1 Ekim 2026 — Arayüz düzeltmesinde "çalışıyor" ölçütü kullanıcının gözü
+**Olay:** Konsol rehberi düzeltmesi üç turda bitti: ilkinde hiza 12 px kaydı, ikincisinde araçlar arasında farklı düzen
+(istisna listesi) kullanıcıyı karıştırdı. Ölçümlerim "hizalı" diyordu ama tutarlılığa bakmıyordu.
+**Kural:** Ortak şablon değişikliğinde tüm sayfaları aynı ölçütle karşılaştır: sıra, boşluk (kartlar arası = bölümler arası),
+hiza, boş değişken (ör. `tool_title`); istisna üretmek yerine eksik parçayı tamamlayıp tek düzen kur; ekran görüntüsünü önce
+kendin incele.

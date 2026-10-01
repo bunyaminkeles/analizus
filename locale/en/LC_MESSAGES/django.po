@@ -20020,3 +20020,15 @@ msgstr "OpenAlex is currently busy; please try again in a few minutes."
 #: templates/service_promo.html templates/tarama_console_base.html
 msgid "Kullanım Rehberi"
 msgstr "Usage Guide"
+
+#: istatistik/templates/istatistik/
+msgid "Friedman Testi Nedir?"
+msgstr "What Is the Friedman Test?"
+
+#: istatistik/templates/istatistik/
+msgid "Tekrarlayan Ölçümler ANOVA Nedir?"
+msgstr "What Is Repeated Measures ANOVA?"
+
+#: istatistik/templates/istatistik/
+msgid "Örneklem Büyüklüğü Nedir?"
+msgstr "What Is Sample Size?"

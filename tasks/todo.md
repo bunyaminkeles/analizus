@@ -122,6 +122,12 @@ anonime açılması — `profile_detail` `@login_required` → Google profilleri
   Kartlarla örtüşen 4 bölüm (ne zaman/varsayımlar/yorum/APA) konsolda yalnız kartı olmayan 3 araçta; ilk gruba "Kullanım
   Rehberi" başlığı (konsol, tanıtım sayfası, tarama konsolu; EN/DE çevirili) → SSS başlığı ortada sahipsiz kalmıyor; SSS
   başlığı 0.88→1rem. Tarama rehberinde 4 px iç kayma ÖNCEDEN VAR (dokunulmadı).
+- [x] **TEK DÜZEN (1 Ekim 2026, kullanıcı: Friedman ile Wilcoxon farklı görünüyor):** 18 aracın hepsi Metodoloji → "Nedir?"
+  kartı → SSS → İlgili Araçlar → uzmana bırak. Kartı olmayan Friedman / Tekrarlayan Ölçümler ANOVA / Örneklem'e Wilcoxon tarzı
+  kart (metin seo_content: giriş + ne zaman + yorum; EN/DE başlık çevirili); konsolda "Kullanım Rehberi" + 4 akordeon hiç yok
+  (istisna listesi kaldırıldı). Kart→SSS boşluğu kartlar arasıyla eşit (24 px). Hata: iki satırlı `{# #}` yorum sayfaya metin
+  olarak basılıyordu → tek satır. ÖNCEDEN VAR düzeltildi: Wilcoxon/Friedman/Tekrarlı ANOVA view'ı `tool_title` göndermiyordu →
+  CTA'da araç adı ve gizli H1 boştu. Playwright TR+EN 18/18, forum 61/61.
 - NOT: "araç sayfasına uzmana yaptırın bandı" ZATEN VAR (konsol + tanıtım sayfası, hedef `/proje-talebi/?source=tool`).
 - [ ] `/analiz/` kategori başlıklarına "Uzmana yaptır →" (`#bölüm`) + sayfa sonu tek bant
 - [ ] Araç sayfalarına "Bu analizi uzmana yaptırın" bandı (mevcut "öğrenmek ister misiniz" bandının yanında)

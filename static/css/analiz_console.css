@@ -212,6 +212,11 @@
   padding: 1.25rem 1rem;
 }
 
+/* Konsolda rehber SSS ile başlar; boşluk kartlar arasıyla aynı kalsın (konteynerin alt boşluğu yeterli) */
+.ax-console-content > .container .ax-tool-guide-faq-title {
+  margin-top: 0;
+}
+
 .ax-tool-guide-intro {
   margin-bottom: 1.25rem;
   color: var(--ax-text-primary);
