@@ -117,6 +117,11 @@ anonime açılması — `profile_detail` `@login_required` → Google profilleri
   `.ax-console-layout` dışında basılıyordu (sidebar boyu kadar boşluk, hizasız blok) → içerik sütununa taşındı; rehber giriş
   paragrafı kendi "… Nedir?" kartı olan 15 araçta gizlendi (tekrar), kartı olmayan orneklem/friedman/tekrarli_anova'da kalır
   (`TOOLS_WITHOUT_INTRO_CARD`). Anonim tanıtım sayfası (Google) değişmedi. Playwright 18/18 kontrol.
+- [x] **DÜZELTME (1 Ekim 2026, kullanıcı: "hepsinde bozukluk"):** önceki adım rehberi 12 px içeriden başlatıyordu (konteyner
+  iç boşluğu) → rehber + CTA `row/col-12` içinde, kartlarla aynı hiza (Playwright 18/18 masaüstü + mobil, yatay taşma yok).
+  Kartlarla örtüşen 4 bölüm (ne zaman/varsayımlar/yorum/APA) konsolda yalnız kartı olmayan 3 araçta; ilk gruba "Kullanım
+  Rehberi" başlığı (konsol, tanıtım sayfası, tarama konsolu; EN/DE çevirili) → SSS başlığı ortada sahipsiz kalmıyor; SSS
+  başlığı 0.88→1rem. Tarama rehberinde 4 px iç kayma ÖNCEDEN VAR (dokunulmadı).
 - NOT: "araç sayfasına uzmana yaptırın bandı" ZATEN VAR (konsol + tanıtım sayfası, hedef `/proje-talebi/?source=tool`).
 - [ ] `/analiz/` kategori başlıklarına "Uzmana yaptır →" (`#bölüm`) + sayfa sonu tek bant
 - [ ] Araç sayfalarına "Bu analizi uzmana yaptırın" bandı (mevcut "öğrenmek ister misiniz" bandının yanında)

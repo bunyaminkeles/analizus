@@ -77,15 +77,15 @@
     {% block tool_area %}{% endblock %}
 
     {# Rehber + CTA içerik sütununda: layout dışında basılınca sidebar boyu kadar boşluk ve hizasız blok oluşuyordu #}
-    <div class="container">
+    <div class="container"><div class="row"><div class="col-12">
 {% if seo_guide %}
 <div class="ax-tool-guide">
-  {% if show_guide_intro %}
+  {# Kartlarla örtüşen giriş + 4 bölüm yalnız kendi "Nedir?" kartı olmayan araçlarda (show_full_guide) #}
+  {% if show_full_guide %}
+  <h2 class="ax-tool-guide-faq-title">{% trans "Kullanım Rehberi" %}</h2>
   <div class="ax-tool-guide-intro">
     <p>{{ seo_guide.intro }}</p>
   </div>
-  {% endif %}
-
   <div class="ax-tool-guide-sections">
     <details class="ax-tool-guide-detail">
       <summary>{% trans "Ne Zaman Kullanılır?" %}</summary>
@@ -104,6 +104,7 @@
       <blockquote class="ax-tool-guide-apa">{{ seo_guide.apa_example }}</blockquote>
     </details>
   </div>
+  {% endif %}
 
   {% if seo_guide.faq %}
   <div class="ax-tool-guide-faq">
@@ -129,7 +130,7 @@
 {% endif %}
 
 {# ── Proje Talebi CTA ── #}
-<div class="ax-tool-guide" style="margin-top:0;background:linear-gradient(135deg,rgba(99,102,241,.1),rgba(34,197,94,.06));border:1px solid rgba(99,102,241,.2);">
+<div class="ax-tool-guide ax-tool-guide--cta" style="margin-top:0;background:linear-gradient(135deg,rgba(99,102,241,.1),rgba(34,197,94,.06));border:1px solid rgba(99,102,241,.2);">
   <div class="ax-tool-guide-intro" style="text-align:center;">
     <p style="font-size:1.05rem;font-weight:600;color:#f1f5f9;margin-bottom:.5rem;">
       {% trans "Bu analizi kendiniz yapmak yerine uzmanına bırakmak ister misiniz?" %}
@@ -142,7 +143,7 @@
     </a>
   </div>
 </div>
-    </div>
+    </div></div></div>
   </div>
 
 </div>

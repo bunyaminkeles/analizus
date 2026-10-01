@@ -201,10 +201,15 @@
   line-height: 1.7;
 }
 
-/* İçerik sütununda: araç kartlarıyla aynı genişlik ve hizada */
-.ax-console-content .ax-tool-guide {
+/* İçerik sütununda: araç kartlarıyla aynı genişlik ve hizada (iç boşluk yalnız çerçeveli CTA kutusunda) */
+.ax-console-content > .container .ax-tool-guide {
   max-width: none;
   margin: 0 0 1.5rem;
+  padding: 0;
+}
+
+.ax-console-content > .container .ax-tool-guide--cta {
+  padding: 1.25rem 1rem;
 }
 
 .ax-tool-guide-intro {
@@ -269,10 +274,10 @@
 }
 
 .ax-tool-guide-faq-title {
-  font-size: 0.88rem;
+  font-size: 1rem;
   font-weight: 600;
   color: var(--ax-text-primary);
-  margin-bottom: 0.75rem;
+  margin: 1.5rem 0 0.75rem;
 }
 
 .ax-tool-guide-related {

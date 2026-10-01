@@ -20015,3 +20015,8 @@ msgstr "Country and institution data are estimates: PubMed does not provide them
 #: openalex/services/job_runner.py
 msgid "OpenAlex şu an yoğun; lütfen birkaç dakika sonra tekrar deneyin."
 msgstr "OpenAlex is currently busy; please try again in a few minutes."
+
+#: istatistik/templates/istatistik/analiz_console_base.html
+#: templates/service_promo.html templates/tarama_console_base.html
+msgid "Kullanım Rehberi"
+msgstr "Usage Guide"

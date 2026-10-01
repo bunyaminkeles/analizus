@@ -20338,3 +20338,8 @@ msgstr "Länder- und Institutionsangaben sind Schätzungen: PubMed liefert sie n
 #: openalex/services/job_runner.py
 msgid "OpenAlex şu an yoğun; lütfen birkaç dakika sonra tekrar deneyin."
 msgstr "OpenAlex ist derzeit überlastet; bitte versuchen Sie es in einigen Minuten erneut."
+
+#: istatistik/templates/istatistik/analiz_console_base.html
+#: templates/service_promo.html templates/tarama_console_base.html
+msgid "Kullanım Rehberi"
+msgstr "Anleitung"
