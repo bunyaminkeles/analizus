@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}Uzman Bul — Analizus Uzman Dizini{% endblock %}
-{% block meta_description %}SPSS, R ve Python uzmanları ile analistleri keşfedin. Araştırmanız veya projeniz için destek veren uzmanın profilini inceleyin, uzmanlık alanlarını karşılaştırın, doğrudan iletişime geçin.{% endblock %}
+{% block title %}{% if selected_category %}Uzman Bul: {{ selected_category.title }} | Analizus{% else %}Uzman Bul — Analizus Uzman Dizini{% endif %}{% endblock %}
+{% block meta_description %}{% if selected_category.intro %}{{ selected_category.intro|truncatechars:155 }}{% else %}SPSS, R ve Python uzmanları ile analistleri keşfedin. Araştırmanız veya projeniz için destek veren uzmanın profilini inceleyin, uzmanlık alanlarını karşılaştırın, doğrudan iletişime geçin.{% endif %}{% endblock %}
 {% block canonical %}{% if selected_cat %}{% url 'uzman_dizini' %}?cat={{ selected_cat }}{% else %}{% url 'uzman_dizini' %}{% endif %}{% endblock %}
-{% block robots_content %}{% if request.GET.skill or sort_by != 'puan' %}noindex, follow{% else %}index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1{% endif %}{% endblock %}
+{% block robots_content %}{% if request.GET.skill or sort_by != 'puan' or cat_noindex %}noindex, follow{% else %}index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1{% endif %}{% endblock %}
 
 {% block content %}
 <div class="container py-4">
@@ -13,9 +13,13 @@
   <div class="row align-items-center mb-4">
     <div class="col">
       <h1 class="fw-bold text-white mb-1" style="font-size:1.6rem;">
-        <i class="bi bi-people-fill text-primary me-2"></i>Uzman Dizini
+        <i class="bi bi-people-fill text-primary me-2"></i>Uzman Dizini{% if selected_category %}: {{ selected_category.title }}{% endif %}
       </h1>
+      {% if selected_category.intro %}
+      <p class="text-white-50 mb-0">{{ selected_category.intro }}</p>
+      {% else %}
       <p class="text-white-50 mb-0 small">Puanı yüksek, aktif kullanıcılar ve tamamlanmış iş deneyimi olan analistler.</p>
+      {% endif %}
     </div>
     <div class="col-auto">
       <a href="{% url 'post_job' %}" class="btn btn-primary btn-sm fw-semibold">

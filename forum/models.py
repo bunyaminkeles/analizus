@@ -846,6 +846,11 @@ class JobCategory(models.Model):
     # İlan formunda yazılan yeni kategori pasif oluşur; admin açana kadar
     # yetenek listesine / önerilere girmez (JobPostForm.save)
     is_active = models.BooleanField(default=True, verbose_name="Aktif")
+    # /uzmanlar/?cat=<id> sayfasının giriş metni ve meta açıklaması; boşsa sayfa noindex
+    intro = models.TextField(
+        blank=True, default="", verbose_name="Tanıtım metni",
+        help_text="Uzman Dizini'nde bu kategori seçildiğinde başlığın altında görünür (2 cümle önerilir).",
+    )
 
     class Meta:
         verbose_name = "İş Kategorisi"

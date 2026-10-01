@@ -497,10 +497,15 @@ class QuizQuestionAdmin(ModelAdmin):
 
 @admin.register(JobCategory)
 class JobCategoryAdmin(ModelAdmin):
-    list_display = ('title', 'order', 'is_active')
-    list_display_links = None
+    list_display = ('title', 'order', 'is_active', 'tanitim')
+    list_display_links = ('tanitim',)
     list_editable = ('title', 'order', 'is_active')
     search_fields = ('title',)
+    fields = ('title', 'title_en', 'title_de', 'order', 'is_active', 'intro')
+
+    @admin.display(description='Tanıtım metni')
+    def tanitim(self, obj):
+        return 'Düzenle ✓' if obj.intro else 'Ekle'
 
 
 @admin.register(FreelanceJob)

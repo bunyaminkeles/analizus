@@ -3528,6 +3528,14 @@ def uzman_dizini(request):
             return redirect(f"{reverse('uzman_dizini')}?sort={sort_by}")
         return redirect('uzman_dizini')
 
+    # Sayı olmayan / olmayan ya da pasif kategori → dizin (sayı olmayan değer filtrede 500 veriyordu)
+    selected_category = None
+    if cat_id:
+        if cat_id.isdigit():
+            selected_category = JobCategory.objects.filter(pk=cat_id, is_active=True).first()
+        if selected_category is None:
+            return redirect('uzman_dizini', permanent=True)
+
     # Son forum yanıtı (subquery) — Post.created_by FK'sı, Topic.subject
     last_post_subq = Post.objects.filter(
         created_by=OuterRef('user'),
@@ -3566,8 +3574,8 @@ def uzman_dizini(request):
         )
     )
 
-    if cat_id:
-        profiles = profiles.filter(skills__id=cat_id)
+    if selected_category:
+        profiles = profiles.filter(skills__id=selected_category.pk)
 
     if sort_by == 'is':
         profiles = profiles.order_by('-completed_jobs', '-reputation')
@@ -3578,10 +3586,16 @@ def uzman_dizini(request):
 
     job_categories = JobCategory.objects.filter(is_active=True).order_by('order', 'title')
 
+    # Kategori sayfası yalnız kendi tanıtım metni ve en az 2 uzmanı varsa indekslenir (aksi hâlde
+    # /uzmanlar/'ın zayıf kopyası). len() queryset'i değerlendirir; şablon aynı önbelleği kullanır.
+    cat_noindex = bool(selected_category) and (not selected_category.intro or len(profiles) < 2)
+
     return render(request, 'forum/uzman_dizini.html', {
         'profiles': profiles,
         'job_categories': job_categories,
         'selected_cat': cat_id,
+        'selected_category': selected_category,
+        'cat_noindex': cat_noindex,
         'sort_by': sort_by,
     })
 

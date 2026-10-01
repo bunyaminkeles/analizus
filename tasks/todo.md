@@ -78,7 +78,11 @@ anonime açılması — `profile_detail` `@login_required` → Google profilleri
 
 **Faz 2 — İndeksleme temizliği**
 - [ ] (kullanıcı) GSC "Redirect error" → Validate fix: `analizus.com/egitim/`, `/proje-talebi/` artık tek 301 → 200 (canlı doğrulandı)
-- [ ] `/uzmanlar/?cat=N` — "Google chose different canonical" (5 sayfa): kendini canonical gösteriyor ama title/içerik
+- [x] **YAPILDI YERELDE (1 Ekim 2026, commit yok): migration `forum/0164_jobcategory_intro`** (şema + veri) — `JobCategory.intro`
+  (admin'den düzenlenir), 20 kategoriye başlığa göre tanıtım metni (alan doluysa dokunmaz). `?cat=N`: title "Uzman Bul: {kategori}",
+  H1 + tanıtım metni, meta açıklama metinden; **index yalnız metin dolu ve ≥2 uzman** varsa, yoksa noindex. **Canlı 500 düzeltildi:**
+  `?cat=abc` (sayı olmayan) filtrede çöküyordu → olmayan/pasif/geçersiz kimlik 301 `/uzmanlar/`. Test: geçici kayıtlarla 8 senaryo,
+  admin liste/form 200, forum 61/61. Eski not: `/uzmanlar/?cat=N` — "Google chose different canonical" (5 sayfa): kendini canonical gösteriyor ama title/içerik
   `/uzmanlar/` ile aynı → kategoriye özgü title/H1/2 cümle giriş; <2 uzman → `noindex` + canonical `/uzmanlar/` (Faz 4 ile)
 - [x] **YAPILDI YERELDE (1 Ekim 2026, commit yok):** `section_detail` → 301 `/forum/#section-<pk>` (forum ana sayfası bölümleri zaten listeliyor; yok olan pk 404; test: geçici bölümle 301 + çapa var, forum 61/61). Şablon `section_detail.html` artık kullanılmıyor (silinmedi). Eski not: `/section/<pk>/` — title ana sayfayla aynı, ~330 kelime ("Crawled – not indexed") → kendi title/meta ya da `noindex` (karar)
 - [ ] **ÖNCEDEN VAR (1 Ekim 2026, görüldü):** `category_topics` N+1 — şablon `topic.starter.username` basıyor, view
