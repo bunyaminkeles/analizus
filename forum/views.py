@@ -1095,9 +1095,10 @@ def mark_payment_transferred(request, pk):
 
 # --- BÖLÜM DETAY ---
 def section_detail(request, pk):
+    # Forum ana sayfası bölümleri #section-<pk> çapasıyla zaten listeliyor; ayrı sayfa
+    # ana sayfa başlıklı zayıf bir kopyaydı (GSC "taranmış, indekslenmemiş") → kalıcı yönlendirme
     section = get_object_or_404(Section, pk=pk)
-    categories = section.categories.all()
-    return render(request, 'forum/section_detail.html', {'section': section, 'categories': categories})
+    return redirect(f"{reverse('forum_index')}#section-{section.pk}", permanent=True)
 
 # --- KATEGORİ VE KONULAR ---
 def category_topics(request, slug):

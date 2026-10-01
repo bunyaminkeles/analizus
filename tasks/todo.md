@@ -56,6 +56,10 @@ yok; ilanlara JobPosting şeması yok (Google yalnız istihdam için); `/analiz/
 anonime açılması — `profile_detail` `@login_required` → Google profilleri göremiyor (login'e yönleniyor → robots engeli).
 
 **Faz 1 — CTR hızlı kazanç (yalnız title/meta, migration yok)**
+- **CANLIDA (1 Ekim 2026, main = 37e2720; 0162 + 0163 uygulandı):** dışarıdan doğrulandı — 4 tarama sayfası + EN OpenAlex yeni
+  başlık, blog SEO başlıkları, t tablosu, veri kazıma ve nitel içerikleri yeni. **KALAN:** nitel yazısında canlıda `meta_title`/
+  `meta_description` zaten doluydu (eski başlıkla) → migration bilerek yazmadı; admin'den elle güncellenecek (taslak: "Kısa Nitel
+  Mülakat: 30 Dakikada Etkili Görüşme Rehberi"). Ölçüm başlangıcı: 1 Ekim 2026 → 29 Ekim'de GSC karşılaştırması.
 - [x] **YAPILDI YERELDE (30 Eylül 2026, commit yok):** anonim (Googlebot) `service_promo.html` görür → başlık/açıklama/H1 view'daki `promo_title`/`promo_description`'dan; 4 view + landing.html (girişli) + OpenAlex EN/DE po + SSS "OpenAlex nedir?"; anonim doğrulandı (TR/EN/DE), forum 61/61. Eski not: Tarama sayfaları: `/yoktez/` (8.748 gösterim, CTR %0,4, sıra 7,5), `/trdizin/`, `/oaipmh/` (~1.500'er, CTR ~%1),
   `/openalex/` — resmî siteden farkı söyleyen title + meta (toplu tarama, Excel'e aktarma, filtre)
 - [x] **YAPILDI YERELDE (1 Ekim 2026, commit yok):** veri migration `forum/0162_blog_seo_meta_ctr` — 6 yazıya `meta_title`/`meta_description` (alan doluysa dokunmaz; geri alma yalnız kendi değerini siler); sayfadaki başlık/içerik/slug aynı. Yerel ileri-geri-ileri OK, anonim `<title>` doğrulandı. Örneklem (CTR %3,7) ve ANOVA (%6,7) bilinçli dokunulmadı. **Deploy: migration'lı → önce DB yedeği.** KALAN: "t tablosu" (408 gösterim, niyet = kritik değer tablosu) → t-testi yazısına t dağılım tablosu bölümü (öneri, onay bekliyor). Eski not: En çok gösterim alan blog yazıları: AFA/DFA (3.091), Cronbach ×2 (2.150 + 1.384), örneklem (2.096), t tablosu (1.062),
@@ -76,7 +80,7 @@ anonime açılması — `profile_detail` `@login_required` → Google profilleri
 - [ ] (kullanıcı) GSC "Redirect error" → Validate fix: `analizus.com/egitim/`, `/proje-talebi/` artık tek 301 → 200 (canlı doğrulandı)
 - [ ] `/uzmanlar/?cat=N` — "Google chose different canonical" (5 sayfa): kendini canonical gösteriyor ama title/içerik
   `/uzmanlar/` ile aynı → kategoriye özgü title/H1/2 cümle giriş; <2 uzman → `noindex` + canonical `/uzmanlar/` (Faz 4 ile)
-- [ ] `/section/<pk>/` — title ana sayfayla aynı, ~330 kelime ("Crawled – not indexed") → kendi title/meta ya da `noindex` (karar)
+- [x] **YAPILDI YERELDE (1 Ekim 2026, commit yok):** `section_detail` → 301 `/forum/#section-<pk>` (forum ana sayfası bölümleri zaten listeliyor; yok olan pk 404; test: geçici bölümle 301 + çapa var, forum 61/61). Şablon `section_detail.html` artık kullanılmıyor (silinmedi). Eski not: `/section/<pk>/` — title ana sayfayla aynı, ~330 kelime ("Crawled – not indexed") → kendi title/meta ya da `noindex` (karar)
 - [ ] Boş forum kategorileri (`/forum/panel-veri-analizi/`, `/zaman-serisi-analizi/`, `/veri-temizleme/`, `/bibliometrik-analizler/`
   ~220 kelime) → konu sayısı eşiğin altında `noindex` (eşik kararı)
 - [ ] `/blog/nitel-arastirma-yontemleri/` slug ↔ başlık uyumsuz ("Kısa Mülakatlarda Başarının Anahtarı…") — editoryal karar
