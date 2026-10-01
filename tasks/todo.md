@@ -10,7 +10,18 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
-> **YENİ OTURUM BURADAN BAŞLA (29 Eylül 2026 gece) — CANLI = main = 8393eec; dev = + docs/betik commit'leri** (doğrulandı: siteler 200, log temiz): OpenAlex 5xx bekleme + çevrili
+> **YENİ OTURUM BURADAN BAŞLA (1 Ekim 2026) — CANLI = main = bb85064** (dev = + docs commit'leri). Bu oturum: **BÜYÜK SEO
+> DÖNÜŞÜMÜ Faz 1–2 bitti ve canlıda** (aşağıdaki başlık): 4 tarama sayfası Google başlıkları, 12 blog yazısına SEO alanları,
+> veri kazıma / nitel yazıları düzeltildi, t tablosu, `/section/` 301, az konulu forum kategorisi noindex, Uzman Dizini
+> `?cat=` tanıtım metinleri (+ ?cat=abc 500 düzeltmesi), analiz konsolu 18 araç tek düzen. Migration forum/0162–0164 canlıda.
+> Kullanıcı GSC adımlarını yaptı (validate fix, request indexing, sitemap).
+> **Sıradaki (kullanıcı önceliği: yeni sayfa açmadan metin/blog):** Faz 3 blog → uzman desteği kartı; araç SSS'lerini
+> zenginleştirme (Friedman/Wilcoxon 1 soru); Faz 6 blog yazıları ("spss öğrenci ücretsiz", "spss benzeri programlar",
+> "kaplan meier"). Sonra Faz 4 (5 hizmet sayfası — içerik admin modeli mi, yalnız TR mi kararları). **~29 Ekim:** GSC
+> dışa aktarımı → CTR karşılaştırması. Diğer açıklar: canlı DB eski OpenAlex `error_message` anahtar kontrolü (izin
+> bekliyor), `category_topics` N+1, BASE e-posta yanıtı.
+>
+> **ÖNCEKİ NOT (29 Eylül 2026 gece) — CANLI = main = 8393eec; dev = + docs/betik commit'leri** (doğrulandı: siteler 200, log temiz): OpenAlex 5xx bekleme + çevrili
 > hata + anahtar gizleme; PubMed anahtar gizleme; DM WebSocket `@.+-` adlar; 500 hata e-postası (ADMIN_NOTIFICATION_EMAIL,
 > sel koruması). Hetzner: NCBI_API_KEY eklendi, Docker log sınırı (daemon.json 20m×5, tüm container'lar), disk temizliği
 > %65→%45. **`feature_pubmed` canlıda AÇIK.** Sunucu dışı yedek YAPILDI (kullanıcı: ek maliyet yok → yerel): `scripts/yedek_indir.sh` + kullanıcı crontab saatlik :15 →

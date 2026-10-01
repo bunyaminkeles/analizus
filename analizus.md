@@ -411,6 +411,10 @@ CLAUDE.md                   # AI geliştirme kuralları ve görev listesi
                       /egitim/<slug>/ → egitim_detay view (kurs detay sayfası; slug training_catalog.py'de, yoksa 404)
 /egitim-talebi/     → egitim_talebi view (TrainingRequest formu — GET ?tur=/?kurs=/?source= ile alanlar ön-seçili, POST ile kayıt)
 /sitemap.xml        → Django sitemaps (StaticView, Topic, Category, Job, BlogPost, Istatistik, Tools)
+                      CategorySitemap yalnız ≥ Category.INDEX_MIN_TOPICS (3) konulu forum kategorileri (1 Ekim 2026)
+/section/<pk>/      → 301 /forum/#section-<pk> (1 Ekim 2026 — ana sayfa başlıklı kopya sayfaydı; olmayan pk 404)
+/uzmanlar/?cat=<id> → kategori sayfası: title "Uzman Bul: {kategori}", H1 + JobCategory.intro; index yalnız intro dolu VE
+                      ≥2 uzman, yoksa noindex; sayı olmayan/olmayan/pasif id → 301 /uzmanlar/ (önceden ?cat=abc 500 veriyordu)
 /robots.txt         → TemplateView
 /534e22a9f9e4d375119c5bc6d006aad0.txt → IndexNow key (Bing doğrulama)
 /                   → forum.urls  (en sona — çakışma önlemi)
@@ -476,6 +480,7 @@ class Skill:     # Uzmanlık alanları
 ```python
 class Category:  # Forum kategorisi
     title, slug, description, order
+    INDEX_MIN_TOPICS = 3  # altındaki kategori sayfası noindex + sitemap dışı; konu gelince kendiliğinden açılır (1 Ekim 2026)
 
 class Topic:     # Konu başlığı
     category, author, title, body
@@ -498,6 +503,8 @@ class JobCategory:   # Forum Category'den BAĞIMSIZ — yalnızca iş ilanı kat
     # JobPostForm serbest metni title/title_en/title_de iexact eşler; yoksa is_active=False yeni kategori
     # (admin onayı). 0157 veri adımı: tekrar kategoriler birleştirildi, 5 pasif, 32 çeviri.
     # Admin → Forum & İçerik → İş Kategorileri
+    intro: TextField  # /uzmanlar/?cat=<id> tanıtım metni + meta açıklama (0164, 20 kategori başlığa göre dolduruldu;
+                      # admin listesinde "Ekle / Düzenle ✓" sütunu forma götürür). Boşsa kategori sayfası noindex.
 
 class FreelanceJob:
     owner: FK → User
@@ -648,6 +655,8 @@ class PrivateMessage:    # Kullanıcılar arası DM (attachment: FileField → S
     # edited_at: DateTimeField (null=True) — düzenleme zamanı
     # is_deleted: BooleanField (default=False) — yumuşak silme; mesaj='' olur, kayıt kalır
 class BlogPost / BlogCategory
+    # meta_title (70) / meta_description (160): doluysa <title>/meta description bunlardan; sayfadaki H1/slug değişmez.
+    # Admin → Blog Yazıları → yazı → en alttaki katlanmış "SEO" bölümü. Admin araması başlıkta (meta_title'da değil).
 class StudyRoom:         # Çalışma odaları (temmuz 2026'da 8 fazlı dönüşüm — bkz. §27)
     # title, slug (SlugField, unique) — save()'de boşsa turkish_slugify() ile üretilir (§26)
     # description, goal (TextField), creator_bio (opsiyonel kısa tanıtım)
@@ -997,6 +1006,12 @@ Mobil drawer: Her üst gruba accordion (yeni `mob-topluluk` dahil). Analizler al
 - `/analiz/` URL'i `istatistik/urls_analiz.py` üzerinden dahil edildi; `analiz_hub` view tüm araçları listeler
 - `analiz_console` view içindeki `_SLUG_MAP` tüm 18 aracı içerir (svm dahil — eksikti, 404 üretiyordu)
 - Mobilde sidebar gizli, "Araç Seç" toggle butonu ile açılır
+- **Konsol düzeni (1 Ekim 2026, 18 araç aynı):** Metodoloji → "… Nedir?" kartı (her araç şablonunda; Friedman / Tekrarlayan
+  Ölçümler ANOVA / Örneklem'de metin `seo_content` intro+ne zaman+yorum) → SSS → İlgili Araçlar → "uzmanına bırak" CTA.
+  Rehber + CTA `.ax-console-content` içinde `container > row > col-12` (layout dışında basılınca sidebar boyu kadar boşluk
+  oluşuyordu). Konsolda rehberin giriş + 4 bölümü (ne zaman/varsayımlar/yorum/APA) YOK — kartlarla tekrar; anonim tanıtım
+  sayfasında (`service_promo.html`, Google'ın gördüğü) rehber eksiksiz + "Kullanım Rehberi" başlığı.
+- Her araç view'ı `tool_title` vermeli — CTA'daki araç adı ve gizli H1 ondan (Wilcoxon/Friedman/Tekrarlı ANOVA eksikti, 1 Ekim).
 
 ---
 
@@ -1221,6 +1236,12 @@ def _broadcast_chat(uid1, uid2, event):
 - Sidebar aktif araç tespiti: `request.path` ile (context processor gerekmez)
 - Feature flag kontrollü: `features.oaipmh`, `features.yoktez`, `features.openalex`, `features.trdizin`, `features.semanticscholar`, `features.pubmed`
 - Landing template'leri `base.html` yerine `tarama_console_base.html`'i extend eder; `{% block content %}` → `{% block tool_area %}`
+- **SEO — Google'ın gördüğü başlık:** anonim ziyaretçi (Googlebot) tarama ve analiz araçlarında `service_promo.html` görür;
+  `<title>`/description/H1 view'daki `promo_title`/`promo_description`'dan gelir — `landing.html` blokları yalnız giriş
+  yapmışa. 30 Eylül 2026 başlıkları (GSC sorgularına göre): "YÖK Tez Arama ve Toplu Tez Tarama — Excel'e Aktar", "TR Dizin
+  Makale Arama ve Tarama — Excel'e Aktar", "Üniversite Tez Arşivi Tarama — 19 Üniversite, Excel Listesi", "OpenAlex ile Yayın
+  Arama — 240M+ Kayıt, Excel'e Aktar" (EN/DE çevirili). Resmî site izlenimi verilmez ("Bağımsız araç"); ücretsiz kısım
+  abartılmaz (toplam sonuç + en yeni 5).
 
 ---
 
@@ -1450,7 +1471,9 @@ analizus-files/
 - **Dashboard:** `forum/dashboard.py` → `dashboard_callback`
 
 ### Önemli Admin Sınıfları (`forum/admin.py`)
-- `JobCategoryAdmin` — iş kategorisi yönetimi (forum Category'den bağımsız)
+- `JobCategoryAdmin` — iş kategorisi yönetimi (forum Category'den bağımsız); "Tanıtım metni" sütunu (Ekle / Düzenle ✓) →
+  form (`intro`, Uzman Dizini kategori sayfası)
+- `BlogPostAdmin` — en altta katlanmış **SEO** bölümü: SEO Başlık (≤70) / SEO Açıklama (≤160)
 - `FreelanceJobAdmin` — ilan yönetimi
 - `JobProposalAdmin` — teklif (İlan Sahibi + Teklif Veren kolonları)
 - `ProfileAdmin` — kullanıcı profil
@@ -1722,6 +1745,12 @@ with connection.cursor() as c:
 | Yedek doğrulaması sağlam dump'ı "eksik" sanıyor | Yeni pg_dump (16.x güncel) dosya sonuna `\unrestrict <token>` + boş satırlar ekler; "PostgreSQL database dump complete" artık son satır değil → son ~10 satıra bak (`scripts/yedek_indir.sh`). Asıl kanıt: geçici `postgres:16-alpine` container'ına geri yükle (29 Eylül: 80 tablo, 125 kullanıcı). |
 | Docker log dosyası yüzlerce MB (db 248 MB) / log ayarı değişti ama container'da `LogConfig` boş | Varsayılan json-file sınırsız. `/etc/docker/daemon.json` + `systemctl restart docker` yalnız YENİ container'lara uygulanır → `docker compose up -d --force-recreate`. Şişmiş log'u boşalt: `truncate -s 0 $(docker inspect -f '{{.LogPath}}' <c>)` (§3). |
 | Hetzner'de `git pull` "local changes would be overwritten: docker-compose.yml" | Sunucudaki compose'ta commit'lenmemiş `rlprehber` servisi var (§3). Compose'u git'te değiştirme; host ayarı kullan. |
+| SEO başlığını şablonda değiştirdim, Google eskisini gösteriyor / `curl` eski başlık | Anonim ziyaretçi (Googlebot) tarama ve analiz araçlarında `service_promo.html` görür; başlık view'daki `promo_title`/`promo_description`. Önce **oturumsuz** `curl` ile hangi şablonun render edildiğini bul, doğrulamayı da oturumsuz yap (30 Eylül 2026). |
+| Sayfada beklenmedik boşluk / şablon notu metin olarak görünüyor | Django `{# … #}` yorumu **tek satırlıktır**; iki satıra yayılınca düz metin basılır. Çok satır için `{% comment %}…{% endcomment %}`; kontrol: `innerText` içinde `{#`/`{%` ara (1 Ekim 2026). |
+| `.po`'da tek girdi değiştirdim, `git diff` yüzlerce satır | polib `save()` tüm dosyayı yeniden sarar. Tek girdi değişikliğini metin olarak yap, `git diff --stat` ile kontrol et; sonra host'ta `msgfmt -c`. |
+| Veri migration'ı içeriğin başına `\` ekledi | Python `r"""\` + satır sonu: raw string'de ters eğik çizgi kalır (satır devamı olmaz). İçerik sabitini `"""\` (raw değil) ile başlat; migration'ı yerelde uygula + render'da `\` ara. |
+| Blog / içerik düzeltmesi canlıda admin'den elle yapılmış metni ezer mi? | Veri migration'ı korumalı yazılır: SEO alanı doluysa dokunma; içerik yalnız beklenen eski metin (marker) hâlâ varsa değişir — 0162/0163/0164 kalıbı. Canlı içerik yerelden farklı olabilir (ör. nitel yazısı yerelde yok) → canlı HTML'den kontrol. |
+| Ortak şablon değişikliği bir araçta doğru, diğerlerinde bozuk / kullanıcı "hepsinde bozukluk" | Tüm sayfaları aynı ölçütle karşılaştır (Playwright: sıra, kartlar arası = bölümler arası boşluk, sol/sağ hiza, boş değişken ör. `tool_title`, mobil taşma). İstisna listesi yerine eksik parçayı tamamla, tek düzen kur (1 Ekim 2026). |
 
 ---
 
@@ -2017,8 +2046,29 @@ with connection.cursor() as c:
   - DM WebSocket: `@ . + -` içeren kullanıcı adları (ba9560b). §11.
   - 500 hata e-postası + sel koruması (8393eec). §16.
   - Sunucu: Docker log sınırı (daemon.json), disk temizliği (%65→%45), yerel yedek indirme betiği + cron (95c35d0). §3.
+- **30 Eylül – 1 Ekim 2026 — BÜYÜK SEO DÖNÜŞÜMÜ Faz 1–2 (canlıda; main bb85064; migration forum/0162–0164, yedekli):**
+  plan + GSC başlangıç ölçümü `tasks/todo.md` "BÜYÜK SEO DÖNÜŞÜMÜ" (3 ay: 459 tık, 34,3 bin gösterim, CTR %1,3, sıra 7,7;
+  tıkların %56'sı blog; hizmet niyetli sorgu 0). Kararlar: navbar değişmez, 15 değil 5 küme hizmet sayfası (Faz 4),
+  "tez yazdırma" hedeflenmez, abartılı vaat yok, uzman profillerinin anonime açılması ERTELENDİ.
+  - 4 tarama sayfası Google başlık/açıklama/H1 (view `promo_*`, b60d7bf) + "OpenAlex nedir?" SSS. §15.
+  - Blog: 12 yazıya SEO başlık/açıklama (0162, 0163; nitel yazısınınki admin'den); veri kazıma yazısı yeniden yazıldı
+    (çelişkili "Neden Veri Kazımıyor?" ve gerçek dışı ULAKBİM protokolü iddiası çıktı; "sınırlı ve amaca yönelik kazıma"
+    + Tez Analizi metinsel analizleri); nitel yazısında yapay zekâ sohbet artığı/tekrarlı başlık; t-testi yazısına t dağılımı
+    kritik değer tablosu ("t tablosu" sorgusu). §8.
+  - İndeksleme: `/section/<pk>/` 301; az konulu forum kategorisi noindex + sitemap dışı; Uzman Dizini `?cat=` tanıtım
+    metinleri + kural + ?cat=abc 500 düzeltmesi (0164). §7, §8.
+  - Analiz konsolu (giriş yapmış, 18 araç) düzeni tekleştirildi (rehber içerik sütununda, tekrar yok, eksik "Nedir?" kartları,
+    boş `tool_title`). §12.
+  - Kullanıcı: GSC Validate fix (3 satır) + 9 URL Request indexing + sitemap yeniden gönderildi; `feature_tezanaliz` kontrol.
 
 ### Sıradaki Görevler
+
+#### SEO dönüşümü (öncelik — ayrıntı `tasks/todo.md` "BÜYÜK SEO DÖNÜŞÜMÜ")
+- Faz 3: blog yazısı sonuna kategoriye göre "uzman desteği" kartı (→ `/uzmanlar/?cat=` + proje talebi)
+- SSS zenginleştirme (Friedman/Wilcoxon 1, çoğu araç 2 soru) — metin işi
+- Faz 6 içerik takvimi: önce "spss öğrenci ücretsiz", "spss benzeri programlar", "kaplan meier analizi"
+- Faz 4: 5 küme hizmet sayfası + Pazaryeri "Hizmet Alanları" şeridi (aşağıdaki Danışmanlık "Hizmet kataloğu" ile aynı iş)
+- ~29 Ekim 2026: GSC dışa aktarımıyla CTR karşılaştırması (başlangıç 1 Ekim)
 
 #### Danışmanlık Dönüşümü (feature flag'lerle, detay: `danismanlik_roadmap.md`)
 - **Ödeme sistemi kararı** — Stripe / Papara / IBAN+fatura (iyzico yasak) — **blokaj**
@@ -2083,7 +2133,10 @@ migration 0153–0155 container açılışında deploy.sh ile uygulandı; DB yed
 
 **Önceki (28 Eylül 2026 gece):** canlı = main ab57dcd (bibliometri kısıtlar bölümü + BibTeX).
 
-**En son (29 Eylül 2026 gece):** canlı = main = dev = **8393eec** (+ yalnız docs/betik commit'leri dev'de) — OpenAlex/PubMed
+**En son (1 Ekim 2026):** canlı = main = **bb85064** (dev'de yalnız docs commit'leri) — SEO dönüşümü Faz 1–2 + analiz
+konsolu düzeni; migration forum/0162–0164 uygulandı. Ayrıntı: §27 Tamamlananlar "30 Eylül – 1 Ekim 2026".
+
+**Önceki (29 Eylül 2026 gece):** canlı = main = dev = **8393eec** (+ yalnız docs/betik commit'leri dev'de) — OpenAlex/PubMed
 anahtar gizleme + OpenAlex 503 bekleme, DM WebSocket, 500 hata e-postası; sunucu log sınırı + disk temizliği + yerel yedek.
 `feature_pubmed` AÇIK. Ayrıntı: §27 Tamamlananlar "29 Eylül 2026 gece".
 
