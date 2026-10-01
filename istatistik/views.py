@@ -55,12 +55,18 @@ TOOL_CATEGORIES = [
 ]
 
 
+# Kendi "… Nedir?" kartı olmayan araçlar — konsolda rehberin giriş paragrafı yalnız bunlarda gösterilir
+# (diğerlerinde kartla aynı tanımı tekrarlıyordu). Anonim tanıtım sayfası (Google) etkilenmez.
+TOOLS_WITHOUT_INTRO_CARD = {'orneklem', 'friedman', 'tekrarli_anova'}
+
+
 def _console_ctx(active_tool, request=None):
     ctx = {
         'active_tool': active_tool,
         'tool_categories': TOOL_CATEGORIES,
         'max_upload_mb': django_settings.MAX_UPLOAD_SIZE // (1024 * 1024),
         'seo_guide': SEO_CONTENT.get(active_tool),
+        'show_guide_intro': active_tool in TOOLS_WITHOUT_INTRO_CARD,
     }
     if request:
         ctx['session_dataset_name'] = request.session.get('_ax_dataset_name', '')

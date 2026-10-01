@@ -75,6 +75,74 @@
   {# ── Araç alanı: her araç kendi içeriğini buraya yazar ── #}
   <div class="ax-console-content">
     {% block tool_area %}{% endblock %}
+
+    {# Rehber + CTA içerik sütununda: layout dışında basılınca sidebar boyu kadar boşluk ve hizasız blok oluşuyordu #}
+    <div class="container">
+{% if seo_guide %}
+<div class="ax-tool-guide">
+  {% if show_guide_intro %}
+  <div class="ax-tool-guide-intro">
+    <p>{{ seo_guide.intro }}</p>
+  </div>
+  {% endif %}
+
+  <div class="ax-tool-guide-sections">
+    <details class="ax-tool-guide-detail">
+      <summary>{% trans "Ne Zaman Kullanılır?" %}</summary>
+      <p>{{ seo_guide.when_to_use }}</p>
+    </details>
+    <details class="ax-tool-guide-detail">
+      <summary>{% trans "Varsayımlar" %}</summary>
+      <p>{{ seo_guide.assumptions }}</p>
+    </details>
+    <details class="ax-tool-guide-detail">
+      <summary>{% trans "Sonuçlar Nasıl Yorumlanır?" %}</summary>
+      <p>{{ seo_guide.how_to_interpret }}</p>
+    </details>
+    <details class="ax-tool-guide-detail">
+      <summary>{% trans "APA Formatı Örneği" %}</summary>
+      <blockquote class="ax-tool-guide-apa">{{ seo_guide.apa_example }}</blockquote>
+    </details>
+  </div>
+
+  {% if seo_guide.faq %}
+  <div class="ax-tool-guide-faq">
+    <h2 class="ax-tool-guide-faq-title">{% trans "Sık Sorulan Sorular" %}</h2>
+    {% for item in seo_guide.faq %}
+    <details class="ax-tool-guide-detail">
+      <summary>{{ item.q }}</summary>
+      <p>{{ item.a }}</p>
+    </details>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if seo_guide.related_tools %}
+  <div class="ax-tool-guide-related">
+    <span class="ax-tool-guide-related-label">{% trans "İlgili Araçlar:" %}</span>
+    {% for slug, name in seo_guide.related_tools %}
+    <a href="{% url 'analiz_console' tool_slug=slug %}" class="ax-tool-guide-related-link">{{ name }}</a>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+{% endif %}
+
+{# ── Proje Talebi CTA ── #}
+<div class="ax-tool-guide" style="margin-top:0;background:linear-gradient(135deg,rgba(99,102,241,.1),rgba(34,197,94,.06));border:1px solid rgba(99,102,241,.2);">
+  <div class="ax-tool-guide-intro" style="text-align:center;">
+    <p style="font-size:1.05rem;font-weight:600;color:#f1f5f9;margin-bottom:.5rem;">
+      {% trans "Bu analizi kendiniz yapmak yerine uzmanına bırakmak ister misiniz?" %}
+    </p>
+    <p style="margin-bottom:1.25rem;">
+      {% blocktrans %}Verilerinizi gönderin, uzman analistlerimiz <strong style="color:#f1f5f9;">{{ tool_title }}</strong> analizini sizin adınıza gerçekleştirip raporlasın. Ücretsiz ön değerlendirme ile başlayın.{% endblocktrans %}
+    </p>
+    <a href="{% url 'proje_talebi' %}?source=tool" class="ax-btn ax-btn--primary fw-semibold px-4 py-2">
+      <i class="bi bi-send me-2"></i>{% trans "Ücretsiz Proje Talebi Gönder" %}
+    </a>
+  </div>
+</div>
+    </div>
   </div>
 
 </div>
@@ -146,68 +214,5 @@ function axClearSession() {
   }).then(() => window.location.reload());
 }
 </script>
-
-{% if seo_guide %}
-<div class="ax-tool-guide">
-  <div class="ax-tool-guide-intro">
-    <p>{{ seo_guide.intro }}</p>
-  </div>
-
-  <div class="ax-tool-guide-sections">
-    <details class="ax-tool-guide-detail">
-      <summary>{% trans "Ne Zaman Kullanılır?" %}</summary>
-      <p>{{ seo_guide.when_to_use }}</p>
-    </details>
-    <details class="ax-tool-guide-detail">
-      <summary>{% trans "Varsayımlar" %}</summary>
-      <p>{{ seo_guide.assumptions }}</p>
-    </details>
-    <details class="ax-tool-guide-detail">
-      <summary>{% trans "Sonuçlar Nasıl Yorumlanır?" %}</summary>
-      <p>{{ seo_guide.how_to_interpret }}</p>
-    </details>
-    <details class="ax-tool-guide-detail">
-      <summary>{% trans "APA Formatı Örneği" %}</summary>
-      <blockquote class="ax-tool-guide-apa">{{ seo_guide.apa_example }}</blockquote>
-    </details>
-  </div>
-
-  {% if seo_guide.faq %}
-  <div class="ax-tool-guide-faq">
-    <h2 class="ax-tool-guide-faq-title">{% trans "Sık Sorulan Sorular" %}</h2>
-    {% for item in seo_guide.faq %}
-    <details class="ax-tool-guide-detail">
-      <summary>{{ item.q }}</summary>
-      <p>{{ item.a }}</p>
-    </details>
-    {% endfor %}
-  </div>
-  {% endif %}
-
-  {% if seo_guide.related_tools %}
-  <div class="ax-tool-guide-related">
-    <span class="ax-tool-guide-related-label">{% trans "İlgili Araçlar:" %}</span>
-    {% for slug, name in seo_guide.related_tools %}
-    <a href="{% url 'analiz_console' tool_slug=slug %}" class="ax-tool-guide-related-link">{{ name }}</a>
-    {% endfor %}
-  </div>
-  {% endif %}
-</div>
-{% endif %}
-
-{# ── Proje Talebi CTA ── #}
-<div class="ax-tool-guide" style="margin-top:0;background:linear-gradient(135deg,rgba(99,102,241,.1),rgba(34,197,94,.06));border:1px solid rgba(99,102,241,.2);">
-  <div class="ax-tool-guide-intro" style="text-align:center;">
-    <p style="font-size:1.05rem;font-weight:600;color:#f1f5f9;margin-bottom:.5rem;">
-      {% trans "Bu analizi kendiniz yapmak yerine uzmanına bırakmak ister misiniz?" %}
-    </p>
-    <p style="margin-bottom:1.25rem;">
-      {% blocktrans %}Verilerinizi gönderin, uzman analistlerimiz <strong style="color:#f1f5f9;">{{ tool_title }}</strong> analizini sizin adınıza gerçekleştirip raporlasın. Ücretsiz ön değerlendirme ile başlayın.{% endblocktrans %}
-    </p>
-    <a href="{% url 'proje_talebi' %}?source=tool" class="ax-btn ax-btn--primary fw-semibold px-4 py-2">
-      <i class="bi bi-send me-2"></i>{% trans "Ücretsiz Proje Talebi Gönder" %}
-    </a>
-  </div>
-</div>
 
 {% endblock %}

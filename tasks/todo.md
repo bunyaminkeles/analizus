@@ -113,6 +113,11 @@ anonime açılması — `profile_detail` `@login_required` → Google profilleri
 - [ ] Pilot: önce Nicel Analiz, onay sonrası diğer 4
 
 **Faz 5 — İç linkleme**
+- [x] **YAPILDI (1 Ekim 2026):** analiz konsolu (giriş yapmış görünüm, 18 araç) — SEO rehberi + "uzmana bırak" bandı
+  `.ax-console-layout` dışında basılıyordu (sidebar boyu kadar boşluk, hizasız blok) → içerik sütununa taşındı; rehber giriş
+  paragrafı kendi "… Nedir?" kartı olan 15 araçta gizlendi (tekrar), kartı olmayan orneklem/friedman/tekrarli_anova'da kalır
+  (`TOOLS_WITHOUT_INTRO_CARD`). Anonim tanıtım sayfası (Google) değişmedi. Playwright 18/18 kontrol.
+- NOT: "araç sayfasına uzmana yaptırın bandı" ZATEN VAR (konsol + tanıtım sayfası, hedef `/proje-talebi/?source=tool`).
 - [ ] `/analiz/` kategori başlıklarına "Uzmana yaptır →" (`#bölüm`) + sayfa sonu tek bant
 - [ ] Araç sayfalarına "Bu analizi uzmana yaptırın" bandı (mevcut "öğrenmek ister misiniz" bandının yanında)
 - [ ] Footer "Hizmetler" sütunu; `/uzmanlar/?cat=` girişinden ilgili hizmet sayfasına link

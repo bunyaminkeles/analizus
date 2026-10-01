@@ -201,6 +201,12 @@
   line-height: 1.7;
 }
 
+/* İçerik sütununda: araç kartlarıyla aynı genişlik ve hizada */
+.ax-console-content .ax-tool-guide {
+  max-width: none;
+  margin: 0 0 1.5rem;
+}
+
 .ax-tool-guide-intro {
   margin-bottom: 1.25rem;
   color: var(--ax-text-primary);
