@@ -1437,7 +1437,7 @@ def profile_edit(request):
         
         # Profil Bilgileri
         profile.title = request.POST.get('title', '')
-        profile.bio = request.POST.get('bio', '')
+        profile.bio = request.POST.get('bio', '').strip()[:500]  # model sınırı (TextField max_length DB'de uygulanmaz)
         profile.location = request.POST.get('location', '')
         
         # Akademik

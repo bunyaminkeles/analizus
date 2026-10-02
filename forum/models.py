@@ -352,6 +352,36 @@ class Profile(models.Model):
             quiz_points = quiz_score.total_points
         return self.reputation + quiz_points
 
+    def public_links(self):
+        """Profil 'Hakkında' kartındaki dış bağlantılar: (anahtar, etiket, url).
+
+        Profil formu alanları doğrulamadan kaydediyor → yalnız http(s) adresler ve biçimi geçerli
+        ORCID / X / GitHub kimlikleri döner (javascript: vb. şemalar asla bağlantı olmaz).
+        """
+        import re
+
+        def _http(url):
+            url = (url or '').strip()
+            return url if re.match(r'^https?://[^\s]+$', url, re.I) else ''
+
+        links = []
+        if _http(self.website):
+            links.append(('website', gettext('Web Sitesi'), _http(self.website)))
+        orcid = re.search(r'\d{4}-\d{4}-\d{4}-\d{3}[\dX]', self.orcid or '')
+        if orcid:
+            links.append(('orcid', 'ORCID', f'https://orcid.org/{orcid.group(0)}'))
+        if _http(self.google_scholar):
+            links.append(('scholar', 'Google Scholar', _http(self.google_scholar)))
+        if _http(self.linkedin):
+            links.append(('linkedin', 'LinkedIn', _http(self.linkedin)))
+        handle = (self.twitter or '').strip().lstrip('@')
+        if re.fullmatch(r'[A-Za-z0-9_]{1,15}', handle):
+            links.append(('x', f'@{handle}', f'https://x.com/{handle}'))
+        github = (self.github or '').strip()
+        if re.fullmatch(r'[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})', github):
+            links.append(('github', github, f'https://github.com/{github}'))
+        return links
+
     @property
     def is_premium(self):
         """Premium üyelik aktif mi kontrol et"""

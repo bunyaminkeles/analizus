@@ -1123,3 +1123,45 @@ def test_profile_shows_premium_end_date_to_owner_only(client, job_owner, user):
     other = Client()
     other.force_login(user)
     assert date not in other.get(f'/profile/{job_owner.username}/').content.decode()
+
+
+# ─── Profil "Hakkında" kartı ──────────────────────────────────────────────────
+
+@pytest.mark.django_db
+def test_profile_public_links_only_safe_urls(job_owner):
+    """Yalnız http(s) ve geçerli kimlikler bağlantı olur; javascript: şeması asla."""
+    p = job_owner.profile
+    p.website = 'javascript:alert(1)'
+    p.linkedin = 'https://www.linkedin.com/in/ornek'
+    p.orcid = 'https://orcid.org/0000-0002-1825-0097'
+    p.twitter = '@ornek_hesap'
+    p.github = 'kötü/yol'
+    p.google_scholar = ''
+    urls = {k: u for k, _, u in p.public_links()}
+    assert 'website' not in urls and 'github' not in urls
+    assert urls['linkedin'] == 'https://www.linkedin.com/in/ornek'
+    assert urls['orcid'] == 'https://orcid.org/0000-0002-1825-0097'
+    assert urls['x'] == 'https://x.com/ornek_hesap'
+
+
+@pytest.mark.django_db
+def test_profile_about_card_visible_and_escaped(client, job_owner, user):
+    """Biyografi + akademik bilgi giriş yapmış diğer üyelere görünür; HTML kaçışlı."""
+    p = job_owner.profile
+    p.bio = 'SPSS ve AMOS ile analiz.\n<script>alert(1)</script>'
+    p.university = 'Örnek Üniversitesi'
+    p.department = 'İstatistik'
+    p.save()
+    client.force_login(user)
+    html = client.get(f'/profile/{job_owner.username}/').content.decode()
+    assert 'SPSS ve AMOS ile analiz.' in html and 'Örnek Üniversitesi · İstatistik' in html
+    assert '<script>alert(1)</script>' not in html and '&lt;script&gt;' in html
+
+
+@pytest.mark.django_db
+def test_profile_edit_bio_capped_at_500(client, job_owner):
+    client.force_login(job_owner)
+    client.post('/profile/edit/', {'bio': 'a' * 800, 'email': job_owner.email,
+                                   'first_name': '', 'last_name': ''})
+    job_owner.profile.refresh_from_db()
+    assert len(job_owner.profile.bio) == 500

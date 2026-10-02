@@ -67,7 +67,7 @@ maddelerde.
   (`forum/views.py` ~502) ilanı anında yayınlıyor. Gerekli: onay bekleyen durum (liste/detay/sitemap/arama'da gizli),
   admin onay/ret aksiyonu, onay ve ret e-postası (`recipient_language(user)` + çeviri), "ilanınız onaya gönderildi"
   mesajı; `expires_at` ve ilk ilan 3 gün öne çıkarma onay anından mı başlasın (karar). Mevcut açık ilanlar onaylı sayılır. Migration.
-- [ ] **Profilde herkese açık biyografi** — `Profile.bio` alanı (TextField, 500) zaten var, `profile_edit`'te düzenleniyor;
+- [x] **YAPILDI (2 Ekim 2026): profilde 'Hakkında' kartı (sağ sütun, sekmelerin üstü) — biyografi + unvan/üniversite/bölüm/konum + bağlantılar (Profile.public_links: yalnız http(s), geçerli ORCID/X/GitHub); giriş yapmış herkese (anonim erişim kararı ertelendi); boşsa yalnız sahibine 'Profili Düzenle' daveti; bio kayıtta 500 karakter; testler 78/78. NOT: profilde girilen hiçbir alan (bio, akademik, bağlantılar) önceden gösterilmiyordu.** Eski not: Profilde herkese açık biyografi — `Profile.bio` alanı (TextField, 500) zaten var, `profile_edit`'te düzenleniyor;
   profil sayfasında görünürlüğü kontrol edilecek. "Herkes görebilsin" → `profile_detail` şu an `@login_required` (SEO
   planında "profil hariç şimdilik" diye ERTELENDİ) — anonim erişim mi, yalnız giriş yapmış herkese mi? karar. Kaçışlı çıktı (`linebreaks`/escape).
 - [ ] **İlan açıklamasına karakter sınırı** — `JobPostForm` açıklama alanı (form + model + sayaç). Sınır değeri karar

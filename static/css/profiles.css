@@ -425,6 +425,54 @@
     padding: var(--ax-space-6);
 }
 
+/* === HAKKINDA KARTI (sekmelerin üstünde) === */
+.ax-profile-about {
+    margin-bottom: var(--ax-space-6);
+}
+.ax-profile-about .ax-profile-skills-title {
+    margin-top: 0;
+}
+.ax-profile-about__bio {
+    color: var(--ax-text-secondary);
+    font-size: var(--ax-text-sm);
+    line-height: 1.7;
+    margin: 0 0 var(--ax-space-4);
+    overflow-wrap: anywhere;
+}
+.ax-profile-about__meta {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 var(--ax-space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ax-space-2);
+    font-size: var(--ax-text-sm);
+    color: var(--ax-text-secondary);
+}
+.ax-profile-about__meta li {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--ax-space-2);
+    overflow-wrap: anywhere;
+}
+.ax-profile-about__meta i {
+    color: var(--ax-text-muted);
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+.ax-profile-about__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ax-space-2);
+}
+.ax-profile-about__links .ax-profile-skill-tag,
+.ax-profile-about--empty .ax-profile-skill-tag {
+    text-decoration: none;
+}
+.ax-profile-about--empty .ax-profile-about__bio {
+    color: var(--ax-text-muted);
+}
+
 /* === STATS PANEL === */
 .ax-profile-score-grid {
     display: grid;

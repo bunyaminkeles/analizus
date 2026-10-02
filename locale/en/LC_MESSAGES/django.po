@@ -20211,3 +20211,13 @@ msgstr "Your donation is confirmed — your Premium membership is active"
 #, python-format
 msgid "Premium üyeliğiniz %(date)s tarihine kadar aktif."
 msgstr "Your Premium membership is active until %(date)s."
+
+msgid "Hakkında"
+msgstr "About"
+
+msgid ""
+"Profilinizde henüz tanıtım yok. Biyografi, akademik bilgi ve "
+"bağlantılarınızı ekleyerek diğer üyelerin sizi tanımasını sağlayın."
+msgstr ""
+"Your profile has no introduction yet. Add your bio, academic details and "
+"links so other members can get to know you."

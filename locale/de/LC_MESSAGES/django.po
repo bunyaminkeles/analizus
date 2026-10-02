@@ -20535,3 +20535,14 @@ msgstr "Ihre Spende ist bestätigt – Ihre Premium-Mitgliedschaft ist aktiv"
 #, python-format
 msgid "Premium üyeliğiniz %(date)s tarihine kadar aktif."
 msgstr "Ihre Premium-Mitgliedschaft ist bis %(date)s aktiv."
+
+msgid "Hakkında"
+msgstr "Über mich"
+
+msgid ""
+"Profilinizde henüz tanıtım yok. Biyografi, akademik bilgi ve "
+"bağlantılarınızı ekleyerek diğer üyelerin sizi tanımasını sağlayın."
+msgstr ""
+"Ihr Profil enthält noch keine Vorstellung. Ergänzen Sie Biografie, "
+"akademische Angaben und Links, damit andere Mitglieder Sie kennenlernen "
+"können."
