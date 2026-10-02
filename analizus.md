@@ -114,7 +114,9 @@ PostgreSQL (host) + Redis (host)
   kaynağı: her `--build` 1–2 GB imaj bırakır → ara sıra `docker image prune -a -f` + `docker builder prune -f` (tüm
   container'lar `Up` iken) + `journalctl --vacuum-size=500M`.
 - **DB yedekleri:** host crontab `0 2 * * *` → `/root/backup_analizus_YYYYMMDD.sql` (~175 MB, 7 günden eskisi silinir).
-  Elle alınan `/root/yedek_*.sql` rotasyonsuz — ara sıra temizle. **Sunucu dışı kopya:** kullanıcının bilgisayarında
+  **Deploy öncesi anlık yedek (2 Ekim 2026'dan beri):** kullanıcının bilgisayarında `scripts/yedek_indir.sh --simdi` —
+  pg_dump çıktısı sunucuya yazılmadan gzip'lenip `~/yedekler/analizus/yedek_YYYY-MM-DD_HHMM.sql.gz`'ye akar (~16 sn, aynı
+  doğrulama, son 14 tutulur) → sunucuda `/root/yedek_*.sql` artık oluşmaz. Eskiden elle alınanlar 2 Ekim'de temizlendi (son 2 kaldı). **Sunucu dışı kopya:** kullanıcının bilgisayarında
   `scripts/yedek_indir.sh` (kullanıcı crontab'ı saatlik `:15`) en yeni gecelik yedeği gzip'leyip `~/yedekler/analizus/`'a
   indirir (~55 MB, son 14 tutulur, doğrulama: `gzip -t` + "dump complete"; log `yedek.log`). Hetzner Backup kullanılmıyor
   (kullanıcı: ek maliyet yok).
@@ -270,7 +272,8 @@ git pull && docker compose restart web && docker compose restart nginx
 > `collectstatic --noinput` her `docker compose restart web`'de otomatik uygulanır (25 Eylül 2026 deploy'unda
 > 0153–0155 bu yolla uygulandı). Yine de migration'lı deploy'da önce DB yedeği al:
 > `docker compose exec -T db sh -c 'pg_dump -U "$POSTGRES_USER" "$POSTGRES_DB"' > /root/yedek_$(date +%F).sql`
-> ve sonrasında `showmigrations` ile doğrula. `.mo` dosyaları git'te — sunucuda `compilemessages` gerekmez.
+> ve sonrasında `showmigrations` ile doğrula. **Tercih edilen (2 Ekim 2026):** sunucuda dump yerine kullanıcının bilgisayarında
+> `scripts/yedek_indir.sh --simdi` (yedek doğrudan yerele iner, sunucuda birikmez). `.mo` dosyaları git'te — sunucuda `compilemessages` gerekmez.
 > Staging (Render, `analizus-dev.onrender.com`) canlı DB'yi KULLANMAZ (25 Eylül 2026 doğrulandı).
 
 > ⚠️ **KRİTİK:** `docker compose restart web` sonrası **mutlaka** `docker compose restart nginx` da çalıştır.
