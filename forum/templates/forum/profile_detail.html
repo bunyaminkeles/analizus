@@ -410,6 +410,8 @@
                                     {% if job.status == 'open' %}ax-status-chip--open
                                     {% elif job.status == 'in_progress' %}ax-status-chip--in-progress
                                     {% elif job.status == 'completed' %}ax-status-chip--completed
+                                    {% elif job.status == 'pending' %}ax-status-chip--pending
+                                    {% elif job.status == 'rejected' %}ax-status-chip--rejected
                                     {% else %}ax-status-chip--cancelled{% endif %}">
                                     {{ job.get_status_display }}
                                 </span>

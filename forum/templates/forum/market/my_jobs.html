@@ -27,7 +27,7 @@
                 <a href="{% url 'job_detail' pk=job.pk %}" class="list-group-item list-group-item-action bg-dark text-white border-secondary d-flex justify-content-between align-items-center p-3">
                     <div>
                         <h6 class="mb-1 fw-bold">{{ job.title }}</h6>
-                        <small class="text-muted"><i class="bi bi-hash"></i> {{ job.reference_number }} · {{ job.created_at|date:"d M Y" }} · <span class="text-{{ job.status|yesno:'success,secondary' }}">{{ job.get_status_display }}</span></small>
+                        <small class="text-muted"><i class="bi bi-hash"></i> {{ job.reference_number }} · {{ job.created_at|date:"d M Y" }} · <span class="text-{% if job.status == 'pending' %}warning{% elif job.status == 'rejected' %}danger{% else %}{{ job.status|yesno:'success,secondary' }}{% endif %}">{{ job.get_status_display }}</span></small>
                         {% if job.status == 'open' and job.expires_at %}
                         <br>
                         {% with days=job.days_remaining %}

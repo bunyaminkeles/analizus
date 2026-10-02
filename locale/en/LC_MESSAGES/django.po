@@ -20034,3 +20034,132 @@ msgstr "What Is Repeated Measures ANOVA?"
 #: istatistik/templates/istatistik/
 msgid "Örneklem Büyüklüğü Nedir?"
 msgstr "What Is Sample Size?"
+
+#, python-format
+msgid "İlanınız yayında: %(title)s"
+msgstr "Your listing is live: %(title)s"
+
+#, python-format
+msgid ""
+"Merhaba %(owner)s,\n"
+"\n"
+"\"%(title)s\" ilanınız incelendi ve yayına alındı. Uzmanlar artık teklif verebilir.\n"
+"\n"
+"İlan bitiş tarihi: %(expires)s\n"
+"\n"
+"İlanınızı görmek için:\n"
+"%(url)s\n"
+"\n"
+"---\n"
+"Bu bir otomatik bildirimdir.\n"
+"Analizus - Araştırma ve Analiz Platformu"
+msgstr ""
+"Hello %(owner)s,\n"
+"\n"
+"Your listing \"%(title)s\" has been reviewed and published. Experts can now submit proposals.\n"
+"\n"
+"Listing end date: %(expires)s\n"
+"\n"
+"View your listing:\n"
+"%(url)s\n"
+"\n"
+"---\n"
+"This is an automated notification.\n"
+"Analizus - Research and Analysis Platform"
+
+#, python-format
+msgid "İlanınız yayınlanmadı: %(title)s"
+msgstr "Your listing was not published: %(title)s"
+
+#, python-format
+msgid ""
+"Merhaba %(owner)s,\n"
+"\n"
+"\"%(title)s\" ilanınız incelendi ve yayınlanmadı.\n"
+"\n"
+"Gerekçe: %(reason)s\n"
+msgstr ""
+"Hello %(owner)s,\n"
+"\n"
+"Your listing \"%(title)s\" has been reviewed and was not published.\n"
+"\n"
+"Reason: %(reason)s\n"
+
+#, python-format
+msgid "Açıklama: %(note)s\n"
+msgstr "Note: %(note)s\n"
+
+#, python-format
+msgid ""
+"Uygun bir iş talebiyle yeni ilan açabilirsiniz:\n"
+"%(url)s\n"
+"\n"
+"---\n"
+"Bu bir otomatik bildirimdir.\n"
+"Analizus - Araştırma ve Analiz Platformu"
+msgstr ""
+"You can post a new listing with a suitable job request:\n"
+"%(url)s\n"
+"\n"
+"---\n"
+"This is an automated notification.\n"
+"Analizus - Research and Analysis Platform"
+
+#, python-format
+msgid ""
+"Pazaryeri ilanları, yaptırmak istediğiniz bir iş için açılır. Sunduğunuz hizmetleri profilinizde tanıtabilirsiniz:\n"
+"%(url)s\n"
+msgstr ""
+"Marketplace listings are for work you want to have done. You can present the services you offer on your profile:\n"
+"%(url)s\n"
+
+msgid "Onay bekleyen ilanınız geri çekildi."
+msgstr "Your pending listing has been withdrawn."
+
+msgid ""
+"İlanınız alındı ve admin onayına gönderildi. Onaylandığında e-posta ile "
+"bilgilendirileceksiniz; ilan süresi onay anından başlar."
+msgstr ""
+"Your listing has been received and submitted for admin review. You will be "
+"notified by email once it is approved; the listing period starts at "
+"approval."
+
+msgid ""
+"İlanınız güncellendi ve yeniden admin onayına gönderildi. (Düzenleme "
+"hakkınız kullanıldı.)"
+msgstr ""
+"Your listing has been updated and resubmitted for admin review. (Your edit "
+"has been used.)"
+
+msgid "Onay Bekliyor"
+msgstr "Pending Approval"
+
+msgid "Hizmet tanıtımı — iş talebi değil"
+msgstr "Service advertisement — not a job request"
+
+msgid "Eksik veya anlaşılmaz içerik"
+msgstr "Incomplete or unclear content"
+
+msgid "Platform kurallarına aykırı"
+msgstr "Violates platform rules"
+
+msgid ""
+"İlanınız admin onayından sonra yayınlanır; süre onay anından başlar. Sonuç "
+"e-posta ile bildirilir."
+msgstr ""
+"Your listing is published after admin approval; the period starts at "
+"approval. You will be notified of the result by email."
+
+msgid ""
+"Bu ilan admin onayı bekliyor ve henüz yayında değil. Onaylandığında e-posta "
+"ile bilgilendirileceksiniz; ilan süresi onay anından başlar."
+msgstr ""
+"This listing is awaiting admin approval and is not live yet. You will be "
+"notified by email once it is approved; the listing period starts at "
+"approval."
+
+msgid "Bu ilan admin incelemesinden sonra yayınlanmadı."
+msgstr "This listing was not published after admin review."
+
+msgid "Gerekçe:"
+msgstr "Reason:"

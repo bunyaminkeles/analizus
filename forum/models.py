@@ -875,10 +875,18 @@ class JobCategory(models.Model):
 class FreelanceJob(models.Model):
     """Kullanıcıların verdiği iş ilanları (Freelance Market)"""
     STATUS_CHOICES = (
+        ('pending', gettext_lazy('Onay Bekliyor')),
         ('open', gettext_lazy('Açık (Teklif Bekliyor)')),
         ('in_progress', gettext_lazy('Devam Ediyor')),
         ('completed', gettext_lazy('Tamamlandı')),
         ('cancelled', gettext_lazy('İptal Edildi')),
+        ('rejected', gettext_lazy('Reddedildi')),
+    )
+    # Admin ret gerekçeleri — ilan sahibine e-postada ve ilan sayfasında gösterilir
+    REJECTION_REASON_CHOICES = (
+        ('service_ad', gettext_lazy('Hizmet tanıtımı — iş talebi değil')),
+        ('incomplete', gettext_lazy('Eksik veya anlaşılmaz içerik')),
+        ('rules', gettext_lazy('Platform kurallarına aykırı')),
     )
 
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posted_jobs', verbose_name="İlan Sahibi")
@@ -905,6 +913,10 @@ class FreelanceJob(models.Model):
     )
     feature_status = models.CharField(max_length=20, choices=FEATURE_STATUS_CHOICES, default='none', verbose_name="Vitrin Durumu")
     expires_at = models.DateTimeField(null=True, blank=True, verbose_name="Bitiş Tarihi")
+    approved_at = models.DateTimeField(null=True, blank=True, verbose_name="Yayına Alınma Tarihi")
+    rejection_reason = models.CharField(max_length=20, choices=REJECTION_REASON_CHOICES, blank=True, verbose_name="Ret Gerekçesi")
+    rejection_note = models.TextField(blank=True, verbose_name="Ret Notu",
+                                      help_text="İsteğe bağlı; ilan sahibine e-postada gönderilir.")
     is_edited = models.BooleanField(default=False, verbose_name="Düzenlendi")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -937,10 +949,18 @@ class FreelanceJob(models.Model):
 
             self.reference_number = f"{current_year}/{new_seq:04d}"
 
-        # İlan iptal veya tamamlandıysa bekleyen teklifleri reddet
-        if self.pk and self.status in ('cancelled', 'completed'):
+        # İlk kez yayına giriyorsa (onayla ya da onay kapalıyken doğrudan): süre ve ilk ilan hediyesi bu andan başlar
+        if self.status == 'open' and self.approved_at is None:
+            self._apply_publish()
+            update_fields = kwargs.get('update_fields')
+            if update_fields is not None:
+                kwargs['update_fields'] = set(update_fields) | {
+                    'approved_at', 'expires_at', 'is_featured', 'featured_until'}
+
+        # İlan iptal, tamamlandı veya reddedildiyse bekleyen teklifleri reddet
+        if self.pk and self.status in ('cancelled', 'completed', 'rejected'):
             old = FreelanceJob.objects.filter(pk=self.pk).values_list('status', flat=True).first()
-            if old not in ('cancelled', 'completed'):
+            if old not in ('cancelled', 'completed', 'rejected'):
                 super().save(*args, **kwargs)
                 self.proposals.filter(status='pending').update(status='rejected')
                 return
@@ -950,6 +970,18 @@ class FreelanceJob(models.Model):
     @property
     def total_likes(self):
         return self.likes.count()
+
+    def _apply_publish(self):
+        """Yayına alma: approved_at, süre (puana göre) ve ilk yayınlanan ilansa 3 gün öne çıkarma hediyesi."""
+        from datetime import timedelta
+        now = timezone.now()
+        self.approved_at = now
+        self.expires_at = now + timedelta(days=self.owner.profile.get_job_duration_days())
+        first = not FreelanceJob.objects.filter(owner=self.owner, approved_at__isnull=False).exclude(pk=self.pk).exists()
+        self.first_job_gift = first
+        if first:
+            self.is_featured = True
+            self.featured_until = now + timedelta(days=3)  # 3 gün hediye
 
     @property
     def is_expired(self):
@@ -1346,6 +1378,11 @@ class SiteSettings(models.Model):
         verbose_name="Scraping Maks. Kayıt Sayısı",
         help_text="TR Dizin, OpenAlex ve OAI-PMH scraperlarının çekebileceği maksimum kayıt sayısı. (default: 5000)",
     )
+
+    # Pazar: yeni ilan admin onayından sonra yayınlanır (kapalıysa anında yayın)
+    job_approval_required = models.BooleanField(
+        default=True, verbose_name="İlan yayını admin onayına bağlı",
+        help_text="Açıkken yeni ilan 'Onay Bekliyor' durumunda açılır; admin onaylayınca yayınlanır ve sahibine e-posta gider.")
 
     # Pazar: haftalık ilan hakkı (son 7 gün; referans bonusu ayrıca eklenir — Profile.get_weekly_job_limit)
     job_weekly_limit_free = models.PositiveIntegerField(

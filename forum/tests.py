@@ -892,3 +892,124 @@ def test_footer_shows_admin_job_limits(client):
     content = client.get('/').content.decode()
     assert '<strong>7 ilan</strong>' in content
     assert 'Normal: 3' in content
+
+
+# ─── İlan admin onayı ─────────────────────────────────────────────────────────
+
+@pytest.fixture
+def job_owner(db):
+    from forum.models import Profile
+    u = User.objects.create_user(username='ilansahibi', password='testpass123', email='owner@example.com')
+    p, _ = Profile.objects.get_or_create(user=u)
+    p.email_verified = True
+    p.save()
+    return u
+
+
+@pytest.fixture
+def sent_job_emails(monkeypatch):
+    """Onay/ret e-postalarını thread'e düşmeden yakala."""
+    sent = []
+    monkeypatch.setattr('forum.email_utils.send_email_async',
+                        lambda subject, message, recipients, html_message=None: sent.append((subject, message, recipients)))
+    return sent
+
+
+def _post_job(client, owner):
+    client.force_login(owner)
+    client.post('/market/new/', {'title': 'Anket verisi analizi', 'description': 'SPSS ile t-testi',
+                                 'budget_max': '1000', 'expected_duration': '1 hafta'})
+    from forum.models import FreelanceJob
+    return FreelanceJob.objects.get(owner=owner)
+
+
+@pytest.mark.django_db
+def test_new_job_pending_and_hidden(client, job_owner, user):
+    """Onay açıkken yeni ilan bekler: listede/sitemap'te yok, başkası 404, sahibi görür."""
+    job = _post_job(client, job_owner)
+    assert job.status == 'pending'
+    assert job.approved_at is None
+    assert client.get(f'/market/job/{job.pk}/').status_code == 200  # sahibi
+    other = Client()
+    assert 'Anket verisi analizi' not in other.get('/market/').content.decode()
+    assert f'/market/job/{job.pk}/' not in other.get('/sitemap.xml').content.decode()
+    assert other.get(f'/market/job/{job.pk}/').status_code == 404
+    other.force_login(user)
+    assert other.get(f'/market/job/{job.pk}/').status_code == 404
+
+
+@pytest.mark.django_db
+def test_admin_approve_publishes_and_emails(client, job_owner, staff_user, sent_job_emails):
+    """Admin onayı: yayına alır, süre ve ilk ilan hediyesi onay anından başlar, sahibine e-posta."""
+    from django.contrib.admin.sites import site
+    from forum.models import FreelanceJob
+    job = _post_job(client, job_owner)
+    admin_obj = site._registry[FreelanceJob]
+    admin_obj.message_user = lambda *a, **k: None
+    admin_obj.approve_jobs(None, FreelanceJob.objects.filter(pk=job.pk))
+    job.refresh_from_db()
+    assert job.status == 'open'
+    assert job.approved_at is not None and job.expires_at > job.approved_at
+    assert job.is_featured  # ilk ilan hediyesi
+    owner_mails = [m for m in sent_job_emails if m[2] == ['owner@example.com']]  # admin bildirimi hariç
+    assert len(owner_mails) == 1
+    assert 'hediye' in owner_mails[0][1]
+    assert Client().get(f'/market/job/{job.pk}/').status_code == 200
+
+
+@pytest.mark.django_db
+def test_admin_reject_service_ad_emails_reason(client, job_owner, sent_job_emails):
+    """Ret: gerekçe + profil yönlendirmesi e-postada; ilan herkese 404."""
+    from django.contrib.admin.sites import site
+    from forum.models import FreelanceJob
+    job = _post_job(client, job_owner)
+    admin_obj = site._registry[FreelanceJob]
+    admin_obj.message_user = lambda *a, **k: None
+    admin_obj.reject_service_ad(None, FreelanceJob.objects.filter(pk=job.pk))
+    job.refresh_from_db()
+    assert job.status == 'rejected' and job.rejection_reason == 'service_ad'
+    owner_mails = [m for m in sent_job_emails if m[2] == ['owner@example.com']]  # admin bildirimi hariç
+    assert len(owner_mails) == 1
+    body = owner_mails[0][1]
+    assert 'Hizmet tanıtımı' in body and '/profile/edit/' in body
+    assert Client().get(f'/market/job/{job.pk}/').status_code == 404
+
+
+@pytest.mark.django_db
+def test_job_approval_off_publishes_immediately(client, job_owner):
+    """Admin'den onay kapatılırsa ilan eskisi gibi anında yayınlanır."""
+    from forum.models import SiteSettings
+    s = SiteSettings.load()
+    s.job_approval_required = False
+    s.save()
+    job = _post_job(client, job_owner)
+    assert job.status == 'open' and job.approved_at is not None and job.expires_at is not None
+
+
+@pytest.mark.django_db
+def test_existing_open_job_not_republished_on_save(job_owner):
+    """approved_at dolu açık ilan kaydedilince süre/hediye sıfırlanmaz (migration 0166 veri adımı varsayımı)."""
+    from django.utils import timezone
+    from datetime import timedelta
+    from forum.models import FreelanceJob
+    old = timezone.now() - timedelta(days=5)
+    job = FreelanceJob.objects.create(owner=job_owner, title='Eski', description='x', budget_max=10,
+                                      status='open', approved_at=old, expires_at=old + timedelta(days=10))
+    expires = job.expires_at
+    job.views += 1
+    job.save()
+    job.refresh_from_db()
+    assert job.expires_at == expires and not job.is_featured
+
+
+@pytest.mark.django_db
+def test_edit_open_job_goes_back_to_pending(client, job_owner, sent_job_emails):
+    """Onay açıkken yayındaki ilan düzenlenirse yeniden onaya düşer (onay sonrası içerik değiştirme engeli)."""
+    from forum.models import FreelanceJob
+    job = _post_job(client, job_owner)
+    job.status = 'open'
+    job.save()
+    client.post(f'/market/job/{job.pk}/edit/', {'title': 'Değişti', 'description': 'yeni',
+                                               'budget_max': '1000', 'expected_duration': '1 hafta'})
+    job.refresh_from_db()
+    assert job.title == 'Değişti' and job.status == 'pending'

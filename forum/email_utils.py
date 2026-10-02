@@ -69,6 +69,66 @@ def send_proposal_notification(proposal):
     send_email_async(subject, message, [owner.email])
 
 
+def send_job_approved_notification(job):
+    """İlan admin tarafından onaylanıp yayına alındığında sahibine e-posta (sahibin dilinde)"""
+    owner = job.owner
+    if not owner.email:
+        return
+    site = getattr(settings, 'SITE_URL', 'https://www.analizus.com').rstrip('/')
+    with recipient_language(owner):
+        subject = gettext("İlanınız yayında: %(title)s") % {'title': job.title}
+        message = gettext(
+            "Merhaba %(owner)s,\n\n"
+            "\"%(title)s\" ilanınız incelendi ve yayına alındı. Uzmanlar artık teklif verebilir.\n\n"
+            "İlan bitiş tarihi: %(expires)s\n\n"
+            "İlanınızı görmek için:\n"
+            "%(url)s\n\n"
+            "---\n"
+            "Bu bir otomatik bildirimdir.\n"
+            "Analizus - Araştırma ve Analiz Platformu"
+        ) % {
+            'owner': owner.username, 'title': job.title,
+            'expires': tz.localtime(job.expires_at).strftime('%d.%m.%Y') if job.expires_at else '—',
+            'url': site + reverse('job_detail', args=[job.pk]),
+        }
+        if getattr(job, 'first_job_gift', False):  # FreelanceJob._apply_publish bu kayıtta hediyeyi verdiyse
+            message = gettext("İlk ilanınız olduğu için 3 gün öne çıkarma hediyesi kazandınız!") + "\n\n" + message
+
+    send_email_async(subject, message, [owner.email])
+
+
+def send_job_rejected_notification(job):
+    """İlan admin tarafından reddedildiğinde sahibine gerekçeli e-posta (sahibin dilinde)"""
+    owner = job.owner
+    if not owner.email:
+        return
+    site = getattr(settings, 'SITE_URL', 'https://www.analizus.com').rstrip('/')
+    with recipient_language(owner):
+        subject = gettext("İlanınız yayınlanmadı: %(title)s") % {'title': job.title}
+        reason = str(job.get_rejection_reason_display()) if job.rejection_reason else '—'
+        message = gettext(
+            "Merhaba %(owner)s,\n\n"
+            "\"%(title)s\" ilanınız incelendi ve yayınlanmadı.\n\n"
+            "Gerekçe: %(reason)s\n"
+        ) % {'owner': owner.username, 'title': job.title, 'reason': reason}
+        if job.rejection_note:
+            message += gettext("Açıklama: %(note)s\n") % {'note': job.rejection_note}
+        if job.rejection_reason == 'service_ad':
+            message += "\n" + gettext(
+                "Pazaryeri ilanları, yaptırmak istediğiniz bir iş için açılır. Sunduğunuz hizmetleri "
+                "profilinizde tanıtabilirsiniz:\n%(url)s\n"
+            ) % {'url': site + reverse('profile_edit')}
+        message += "\n" + gettext(
+            "Uygun bir iş talebiyle yeni ilan açabilirsiniz:\n"
+            "%(url)s\n\n"
+            "---\n"
+            "Bu bir otomatik bildirimdir.\n"
+            "Analizus - Araştırma ve Analiz Platformu"
+        ) % {'url': site + reverse('post_job')}
+
+    send_email_async(subject, message, [owner.email])
+
+
 def send_topic_reply_notification(post, topic):
     """Bir konuya cevap yazıldığında konu sahibine email gönderir (alıcının dilinde)"""
     if post.created_by == topic.starter:
@@ -326,15 +386,16 @@ def notify_admin_new_job(job):
             ('Referans', job.reference_number or '—'),
             ('Tarih', job.created_at.strftime('%d.%m.%Y %H:%M')),
         ]
-        html = _build_admin_html(
-            '🟠 Yeni İş İlanı', color,
-            job.title,
-            rows,
-            f"{site}/market/job/{job.pk}/",
-            'İlana Git'
-        )
-        plain = f"Yeni ilan: '{job.title}' — {job.owner.username} (Maks. {job.budget_max} TL)"
-        _send_admin(f"[Analizus] Yeni İlan: {job.title[:60]}", html, plain)
+        if job.status == 'pending':
+            # Onay bekliyor → admin değişiklik sayfasına yönlendir (onay/ret oradan)
+            url = f"{site.rstrip('/')}{reverse('admin:forum_freelancejob_change', args=[job.pk])}"
+            label, button = '🟠 Yeni İş İlanı — ONAY BEKLİYOR', 'İncele ve Onayla'
+        else:
+            url, label, button = f"{site}/market/job/{job.pk}/", '🟠 Yeni İş İlanı', 'İlana Git'
+        html = _build_admin_html(label, color, job.title, rows, url, button)
+        pending = ' (onay bekliyor)' if job.status == 'pending' else ''
+        plain = f"Yeni ilan{pending}: '{job.title}' — {job.owner.username} (Maks. {job.budget_max} TL) {url}"
+        _send_admin(f"[Analizus] Yeni İlan{pending}: {job.title[:60]}", html, plain)
     except Exception as e:
         logger.error(f"Admin yeni ilan bildirimi gönderilemedi: {e}")
 

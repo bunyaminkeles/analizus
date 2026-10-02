@@ -517,6 +517,41 @@ class FreelanceJobAdmin(ModelAdmin):
     search_fields = ('title', 'description', 'owner__username')
     date_hierarchy = 'created_at'
     filter_horizontal = ('likes', 'saved_by')
+    readonly_fields = ('approved_at',)
+    actions = ('approve_jobs', 'reject_service_ad', 'reject_incomplete', 'reject_rules')
+
+    # Onay / ret: kayıt kayıt save() — FreelanceJob.save süreyi + ilk ilan hediyesini uygular,
+    # signals.notify_owner_on_job_review sahibine e-posta gönderir. Notlu ret için ilanı açıp
+    # Durum = Reddedildi + Ret Gerekçesi + Ret Notu girip kaydedin.
+    @admin.action(description='✅ Seçili ilanları onayla ve yayınla')
+    def approve_jobs(self, request, queryset):
+        count = 0
+        for job in queryset.filter(status='pending').select_related('owner__profile'):
+            job.status = 'open'
+            job.save()
+            count += 1
+        self.message_user(request, f'{count} ilan onaylandı ve yayına alındı (yalnız onay bekleyenler).')
+
+    def _reject(self, request, queryset, reason):
+        count = 0
+        for job in queryset.filter(status__in=('pending', 'open')).select_related('owner'):
+            job.status = 'rejected'
+            job.rejection_reason = reason
+            job.save()
+            count += 1
+        self.message_user(request, f'{count} ilan reddedildi (yalnız onay bekleyen / açık ilanlar), sahiplerine e-posta gönderildi.')
+
+    @admin.action(description='⛔ Reddet: hizmet tanıtımı — iş talebi değil')
+    def reject_service_ad(self, request, queryset):
+        self._reject(request, queryset, 'service_ad')
+
+    @admin.action(description='⛔ Reddet: eksik veya anlaşılmaz içerik')
+    def reject_incomplete(self, request, queryset):
+        self._reject(request, queryset, 'incomplete')
+
+    @admin.action(description='⛔ Reddet: platform kurallarına aykırı')
+    def reject_rules(self, request, queryset):
+        self._reject(request, queryset, 'rules')
 
     @admin.display(description='Teklif Sayısı')
     def teklif_sayisi(self, obj):
@@ -559,10 +594,12 @@ class JobProposalAdmin(ModelAdmin):
     @admin.display(description='İlan Durumu')
     def ilan_durumu(self, obj):
         colors = {
+            'pending': '#a78bfa',
             'open': '#38bdf8',
             'in_progress': '#fbbf24',
             'completed': '#22c55e',
             'cancelled': '#ef4444',
+            'rejected': '#ef4444',
         }
         color = colors.get(obj.job.status, '#64748b')
         return format_html(
@@ -764,8 +801,9 @@ class SiteSettingsAdmin(ModelAdmin):
             'classes': ('collapse',),
         }),
         ('Limitler', {
-            'description': 'Scraping: TR Dizin, OpenAlex, OAI-PMH scraperlarının çekebileceği maks. kayıt (default 5000). Analiz: Tez & Makale Analizi için işlenecek maks. kayıt (Render için 500, Hetzner için 2000–5000 önerilir). Haftalık ilan hakkı: son 7 günde açılabilecek ilan sayısı; her 5 geçerli referans +1 (en fazla +2) ayrıca eklenir.',
-            'fields': ('scrap_max_records', 'analiz_max_records', 'job_weekly_limit_free', 'job_weekly_limit_premium'),
+            'description': 'Scraping: TR Dizin, OpenAlex, OAI-PMH scraperlarının çekebileceği maks. kayıt (default 5000). Analiz: Tez & Makale Analizi için işlenecek maks. kayıt (Render için 500, Hetzner için 2000–5000 önerilir). Haftalık ilan hakkı: son 7 günde açılabilecek ilan sayısı; her 5 geçerli referans +1 (en fazla +2) ayrıca eklenir. İlan onayı: açıkken yeni ilan admin onayından sonra yayınlanır (İş İlanları → Onayla/Reddet).',
+            'fields': ('scrap_max_records', 'analiz_max_records', 'job_weekly_limit_free', 'job_weekly_limit_premium',
+                       'job_approval_required'),
             'classes': ('collapse',),
         }),
         ('Fiyatlandırma', {

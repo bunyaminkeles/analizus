@@ -684,7 +684,7 @@ def _anonymize_deleted_account(profile):
         PageViewSummary.objects.filter(user=user).update(user=None)
 
         # Silinmiş kullanıcının açık ilanına teklif verilemesin
-        FreelanceJob.objects.filter(owner=user, status='open').update(status='cancelled')
+        FreelanceJob.objects.filter(owner=user, status__in=('open', 'pending')).update(status='cancelled')
 
         # Mali kayıt kalır, kişiyle bağı kopar
         Donation.objects.filter(user=user).update(name='', email='', message='')

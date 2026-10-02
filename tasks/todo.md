@@ -52,7 +52,7 @@ maddelerde.
 - [x] **YAPILDI YERELDE (2 Ekim 2026, commit yok): Normal 2 / Premium 5 haftalık, admin → Site Ayarları → Limitler; migration forum/0165; footer + bağış e-postası dinamik (TR/EN/DE doğrulandı), forum testleri 64/64.** Eski not: İlan hakkı normal kullanıcı için 2 — şu an `Profile.get_weekly_job_limit()` (`forum/models.py` ~398): Free=1,
   Premium=3 (haftalık, son 7 gün) + referans bonusu (her 5 → +1, maks +2); sabit kodda. Netleştir: haftalık mı kalacak?
   Premium 3 kalıyor mu? Kural gereği limit `SiteSettings` alanına + admin'e taşınmalı (migration).
-- [ ] **İlan yayını admin onayına bağlı + kullanıcıya e-posta** — `FreelanceJob.status` varsayılanı `'open'`, `post_job`
+- [x] **YAPILDI YERELDE (2 Ekim 2026): admin onayı + onay/ret e-postası (TR/EN/DE), Site Ayarları → Limitler'den aç/kapa, 3 hazır ret gerekçesi + not, süre/ilk ilan hediyesi onay anından, reddedilen hak düşer; migration forum/0166 (veri adımı: mevcut ilanlar approved_at=created_at); forum testleri 70/70; Playwright masaüstü/mobil OK. Canlıda 189 nolu ilan için admin kararı bekliyor.** Eski not: İlan yayını admin onayına bağlı + kullanıcıya e-posta — `FreelanceJob.status` varsayılanı `'open'`, `post_job`
   (`forum/views.py` ~502) ilanı anında yayınlıyor. Gerekli: onay bekleyen durum (liste/detay/sitemap/arama'da gizli),
   admin onay/ret aksiyonu, onay ve ret e-postası (`recipient_language(user)` + çeviri), "ilanınız onaya gönderildi"
   mesajı; `expires_at` ve ilk ilan 3 gün öne çıkarma onay anından mı başlasın (karar). Mevcut açık ilanlar onaylı sayılır. Migration.

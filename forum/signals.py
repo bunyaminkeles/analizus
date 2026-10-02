@@ -597,6 +597,22 @@ def notify_admin_on_new_job(sender, instance, created, **kwargs):
 
 
 @receiver(post_save, sender=FreelanceJob)
+def notify_owner_on_job_review(sender, instance, created, **kwargs):
+    """Admin onayı/reddi: onay bekleyen ilan yayına alınınca veya ilan reddedilince sahibine e-posta.
+
+    Admin aksiyonu da, değişiklik formunda durumu elle değiştirmek de buradan geçer.
+    """
+    if created:
+        return
+    old_status = getattr(instance, '_old_status', None)
+    from .email_utils import send_job_approved_notification, send_job_rejected_notification
+    if old_status == 'pending' and instance.status == 'open':
+        send_job_approved_notification(instance)
+    elif old_status != 'rejected' and instance.status == 'rejected':
+        send_job_rejected_notification(instance)
+
+
+@receiver(post_save, sender=FreelanceJob)
 def notify_admin_on_job_completed(sender, instance, created, **kwargs):
     """İş tamamlandığında admin'e e-posta gönder (send_success_story_invitation'dan bağımsız)"""
     if created:
