@@ -18,7 +18,7 @@ maddelerde.
 > deploy öncesi yedek `scripts/yedek_indir.sh --simdi`. Migration forum/0165–0169 canlıda. Forum testleri 82/82.
 > **Kullanıcıda bekleyen (canlı admin):** hizmet tanıtımı ilanları (189 vb.) → "Reddet: hizmet tanıtımı"; Bağışlar'da
 > Tamamlandı + Verilen Premium Gün = 0 kayıt var mı (varsa Premium elle / ayrı düzeltme); eski pasif iş kategorileri;
-> sunucuda kalan 2 eski `/root/yedek_*.sql` silinebilir. **Küçük açıklar:** ilan formundaki mavi bilgi kutusunun ilk satırı
+> sunucuda kalan 2 eski `/root/yedek_*.sql` SİLİNDİ (kullanıcı, 2 Ekim). **Küçük açıklar:** ilan formundaki mavi bilgi kutusunun ilk satırı
 > koyu zeminde okunmuyor; `.ax-form-select` `background-size` eksik (pubmed landing); Render'da profil fotoğrafı yüklenmiyor
 > (kalıcı disk yok?); uzman profillerinin anonime açılması hâlâ ertelendi.
 > Sonraki büyük iş yine **BÜYÜK SEO DÖNÜŞÜMÜ** (aşağıda): Faz 3 blog → uzman desteği kartı, araç SSS'leri, Faz 6 blog yazıları.
@@ -62,11 +62,11 @@ maddelerde.
 > - Diğer açıklar bu listede `- [ ]`; ayrıntı `analizus.md` §14 (bibliometri), §15 (tarama), §26, §27.
 
 **2 Ekim 2026 sonrası açık kalanlar:**
-- [ ] Canlıda hizmet tanıtımı ilanları (189 vb.) — admin "Reddet: hizmet tanıtımı" (kullanıcı kararı)
-- [ ] Canlı Bağışlar: Tamamlandı + Verilen Premium Gün = 0 kayıt var mı → varsa Premium elle ya da ayrı düzeltme (kullanıcı)
+- [x] **YAPILDI (2 Ekim 2026, kullanıcı)** Canlıda hizmet tanıtımı ilanları (189 vb.) — admin "Reddet: hizmet tanıtımı" (kullanıcı kararı)
+- [x] **YAPILDI (2 Ekim 2026, kullanıcı)** Canlı Bağışlar: Tamamlandı + Verilen Premium Gün = 0 kayıt var mı → varsa Premium elle ya da ayrı düzeltme (kullanıcı)
 - [ ] Eski kullanıcı yazımı pasif `JobCategory` kayıtları — sil / aktifleştir (kullanıcı, admin)
-- [ ] İlan formu (post_job.html) mavi bilgi kutusunun ilk satırı ("…X gün aktif kalacaktır") koyu zeminde okunmuyor
-- [ ] `.ax-form-select` (base.css) `background-size` yok → ok simgesi kutuyu kaplıyor (pubmed landing kullanıyor)
+- [x] **DÜZELTİLDİ (2 Ekim 2026: kutuya `color: var(--ax-text-primary)`)** İlan formu (post_job.html) mavi bilgi kutusunun ilk satırı ("…X gün aktif kalacaktır") koyu zeminde okunmuyor
+- [x] **DÜZELTİLDİ (2 Ekim 2026: `background-size: var(--ax-space-3) var(--ax-space-2)`, bundle yeniden üretildi, v=0008)** `.ax-form-select` (base.css) `background-size` yok → ok simgesi kutuyu kaplıyor (pubmed landing kullanıyor)
 - [ ] Render'da profil fotoğrafı yüklenmiyor (alt metin görünüyor) — kalıcı disk/medya; canlıda da var mı kontrol
 
 **BAĞIŞ → PREMIUM AKIŞI KIRIK (2 Ekim 2026 bulgusu, kullanıcı "verilen süre doğru mu" sorusundan) — onay bekliyor:**
@@ -98,6 +98,130 @@ maddelerde.
   hizmet tanıtımı yeri profil/biyografi + Uzman Dizini. Önlemler: ilan formunda açık kural metni ("ilan = yaptırmak
   istediğiniz iş; hizmet tanıtımı profilinize"), admin onayında ret gerekçesi ("hizmet tanıtımı") + e-postada yönlendirme;
   mevcut bu türden ilanlar için admin kararı (189 dahil). Admin onayı maddesine bağlı.
+
+**Ödeme talepleri (kullanıcı, 2 Ekim 2026):**
+- [ ] **GÜVENLİ ÖDEME (emanet) + DAVET KAZANCI (%5)** — taslak hemen aşağıda ("GÜVENLİ ÖDEME — TASLAK"); kod yok,
+  önce §F kararları + mali müşavir görüşü (§B1). `feature_secure_payment` kapalı başlar.
+- [ ] **GELİR MODELİ — AÇIK KONU (kullanıcı, 2 Ekim 2026): "platform paraya hiç dokunmasın"** (pazaryeri/ödeme kuruluşu
+  yolu elendi — iyzico reddi). Gelir yalnız platformun kendi sattığı hizmetlerden. Mevcut: ilan vitrini (250/400 TL),
+  tarama siparişleri, bibliometri, Premium (bağış karşılığı — satış sayılabilir, müşavire sor), danışmanlık/eğitim.
+  Seçenekler: (1) uzman Premium'u (öneri — teklif hakkı zaten Premium/rütbe/EDU ile; üstte görünme, rozet, aylık teklif
+  sayısı), (2) teklif kredisi (aylık ücretsiz + satın alma), (3) ilan sahibine "acil" etiketi / uzmana doğrudan davet,
+  (4) pazardan "Analizus ekibi yapsın" ile kendi hizmetlere yönlendirme. Davet: %5 nakit yerine davetlinin satın
+  alımından Premium gün/kredi. Önce canlıdan son 3 ay ilan/teklif sayıları (pazar küçükse uzmandan ücret arzı kurutur).
+  Karar yok, kod yok.
+
+### GÜVENLİ ÖDEME (EMANET) + DAVET KAZANCI — TASLAK (2 Ekim 2026; BEKLEMEDE — kullanıcı: "olgunlaşmayı beklesin"; kullanıcı açmadan başlanmaz)
+
+**Kullanıcının planı:** (1) Ödeme yöntemine "Güvenli Ödeme" seçeneği. (2) İlanda güvenli ödeme olduğu görünür; teklif
+veren uzmana da bildirilir. (3) Ödeme bağıştaki IBAN'a, açıklamaya ilan kodu yazılarak yapılır. (4) Teklif kabul →
+kullanıcı havale → admin ödemeyi onaylar → uzmana otomatik e-posta (süreç nasıl yürür). (5) Uzmana %10 kesintiyle ödenir.
+(6) İki taraf yorum + yıldız verip iş kapandıktan sonra uzmana ödeme yapılır.
+**Davet kazancı:** (1) Davet koduyla gelen kullanıcının güvenli ödemesinden davet edene %5 alacak yazılır. (2) Biriken
+tutar ay sonu bildirilir, IBAN istenip ödenir. (3) Tüm adımlar ilgili kişinin onayına sunulur.
+
+#### A. Mevcut durum (koddan, 2 Ekim 2026)
+- `accept_proposal` (`forum/views.py` ~636): kabul anında ilan `in_progress`, diğer teklifler `rejected`, uzmana DM.
+  Ödeme adımı yok.
+- Kapanış: `JobReview.save()` (`forum/models.py` ~1100) — **iki onaylı (admin `is_approved`) yorum** olunca ilan
+  `completed`. "Teslim ettim" adımı ve süre aşımı yok → taraflardan biri yorum yapmazsa iş hiç kapanmaz.
+- `JobPayment` modeli = vitrin ödemesi (iyzico dönemi alanları); emanet için kullanılmaz.
+- Havale deseni hazır: bağış akışı (`Donation` pending → pending_confirmation → completed, "Havaleyi yaptım" linki
+  `mark_donation_transferred`, admin onayı, sinyalle ödül). Aynı desen tekrar kullanılabilir.
+- IBAN `TR73 0003 2000 0000 0079 1034 65` **6 yerde sabit**: openalex/trdizin/semanticscholar/oaipmh views,
+  oaipmh job_runner, `promote_job_iban.html`, `emails/support_payment_details.html`.
+- Davet: `ReferralUse(referrer, referred, flagged, rewarded)`; ödül şu an Premium gün + itibar (`referral_service.py`).
+- Ana sayfa (`forum/templates/forum/home.html`) uzman kartı: **"Komisyonsuz çalışın"** — %10 ile çelişir.
+
+#### B. Görüşüm — önce netleşmesi gereken riskler
+1. **Hukuki/mali (en kritik):** Başkası adına para toplayıp üçüncü kişiye aktarmak 6493 sayılı Kanun kapsamında
+   "ödeme hizmeti" sayılabilir (lisans gerektirir). İki güvenli yol: (a) **Platform hizmetin satıcısı** olur — müşteriye
+   tam tutar faturalanır, uzmandan hizmet alınır (serbest meslek makbuzu / gider pusulası + stopaj); "emanet" değil
+   alt yüklenici modeli. (b) Lisanslı ödeme kuruluşunun pazaryeri (alt üye işyeri) ürünü (iyzico izni yok — başka
+   kuruluş). **Mali müşavir/avukat görüşü olmadan canlıya alınmamalı.** Davet kazancı ödemesi de belge gerektirir.
+   **Kullanıcı kararı (2 Ekim 2026): (b) pazaryeri yolu ELENDİ** — "daha önce reddedildik (iyzico), yine benzeri olur".
+   Kalan: (a) platform hizmet satıcısı modeli ya da paraya hiç dokunmayan güvence (para taraflar arasında).
+2. **Hesap:** Bağış ile emanet parası aynı hesapta karışır; şahıs hesabına çok sayıda üçüncü kişi havalesi banka/MASAK
+   sorgusu tetikleyebilir. Ayrı hesap (tercihen şirket) + sistemde "emanette tutulan toplam" raporu.
+3. **Rehin riski:** Ödeme yalnız "iki yorum + admin onayı" ile serbest kalırsa müşteri yorum yapmayarak parayı
+   kilitleyebilir, uzman da teslim etmeden bekleyebilir. Şart: **teslim adımı + süre aşımı + itiraz** (§C).
+4. **Değer sabitleme:** Komisyon oranı ve tutarlar talep (kabul) anında kayda yazılmalı (bağış `premium_days_promised`
+   dersi) — oran sonradan admin'de değişse de söz verilen geçerli.
+5. **Kötüye kullanım:** Davet eden kişi, davet ettiği müşterinin işini uzman olarak alırsa %5 almamalı (kendi kendine
+   komisyon). `flagged` davetler kazanç üretmez. Davet kazancı ödeme onayında değil **iş kapanınca** yazılmalı (iade riski).
+6. **Akademik etik:** Platform ödemeden pay alınca ilan içeriğinden sorumluluğu artar — güvenli ödemeli ilanlarda
+   "tez/ödev yazdırma" ret kuralı sıkı uygulanmalı (ilan onayı zaten var).
+7. **Çok dil:** TL + TR IBAN; EN/DE kullanıcısına ilk sürümde gösterilmesin mi? (karar)
+
+#### C. Önerilen akış
+**İlan:** İlan formunda "Güvenli Ödeme ile ödeyeceğim" seçeneği + Güvenli Ödeme Koşulları onay kutusu →
+`FreelanceJob.secure_payment` (+ `secure_terms_accepted_at`). Liste/detayda "Güvenli Ödeme" rozeti.
+**Teklif:** Güvenli ödemeli ilanda teklif formunda canlı hesap: "Teklif 1.000 TL → %10 hizmet bedeli 100 TL → size
+ödenecek 900 TL" + onay kutusu (`JobProposal.secure_terms_accepted_at`).
+**Durum makinesi — yeni `SecurePayment` modeli (ilan başına bir kayıt):**
+
+| Durum | Ne olur | Kim |
+|---|---|---|
+| `awaiting_payment` | Kabul anında oluşur; tutar/oran/net sabitlenir; müşteriye IBAN + tutar + açıklama kodu (ör. `ANZ-2026-0042`, `reference_number`'dan) ekranda + e-postada; uzmana "kabul edildi, ödeme onayını bekleyin — işe başlamayın" | sistem |
+| `payment_reported` | Müşteri "Havaleyi yaptım" → admin bildirimi | müşteri |
+| `funded` | Admin havaleyi görür, onaylar → **sinyal**: uzmana "ödeme güvencede, süreç" e-postası, müşteriye "ödemeniz alındı"; ilan `in_progress` | admin |
+| `delivered` | Uzman "İşi teslim ettim" → müşteriye e-posta: X gün içinde yorum ya da itiraz | uzman |
+| `completed` | İki yorum (veya süre aşımında itiraz yoksa otomatik) → ödeme serbest | sistem |
+| `payout_ready` → `paid_out` | Uzman ödeme bilgisini (ad soyad + IBAN) onaylar → admin havale eder, "ödendi" işaretler → uzmana döküm e-postası (brüt / %10 / net) | uzman + admin |
+| `expired` | X gün içinde ödeme yoksa kabul düşer, ilan yeniden açılır (karar) | cron |
+| `disputed` → `refunded` / `paid_out` | Taraflardan biri itiraz eder → admin karar verir (tam/kısmi iade) | admin |
+
+- Uzmana giden "süreç" e-postası içeriği (madde 4): ödeme güvencede/işe başla; iletişim platform mesajlarında;
+  teslim "İşi teslim ettim" butonuyla; müşteri onayı + karşılıklı yorum; süre aşımı kuralı; %10 kesinti ve net tutar;
+  ödeme zamanı ve IBAN istenmesi; itiraz yolu.
+- Kural uyumu: durum geçişleri sinyalde, admin aksiyonu kayıt kayıt `save()`; e-postalar `recipient_language(user)`
+  + TR/EN/DE çeviri; tutarlar `Decimal` + kuruşa `ROUND_HALF_UP`.
+- **Ayarlar (`SiteSettings`, sabit kod yok):** `secure_payment_commission_rate` (10), `payment_iban`,
+  `payment_account_holder`, `secure_payment_deadline_days`, `delivery_review_days`, `referral_commission_rate` (5),
+  `referral_min_payout`. IBAN'ın 6 kopyası bu alana taşınır (ayrı küçük görev).
+- **Admin:** `SecurePayment` admin + panelde "Güvenli Ödeme" sekmesi (onay bekleyen havaleler / ödenecek uzmanlar /
+  itirazlar / emanette tutulan toplam / ay komisyonu).
+- **IBAN verisi (KVKK):** Profilde kalıcı tutulmaz; yalnız ödeme kaydında, TR IBAN mod-97 doğrulaması; gizlilik
+  politikasına ek.
+
+#### D. Davet kazancı
+- Yeni `ReferralEarning`: referrer, `ReferralUse`, `SecurePayment` (tekil), taban tutar, oran (sabitlenmiş), tutar,
+  durum `accrued` → `payout_requested` → `paid` / `cancelled`.
+- Tetik: güvenli ödeme `completed` olunca; koşul: ödeyen (`job.owner`) davetli, davet `flagged` değil, referrer ≠ uzman.
+- Ay sonu: cron uç noktası (mevcut cron anahtar deseni) → bakiyesi olan her referrer'a e-posta; eşik altı devreder.
+  E-postadaki link → `referral_dashboard`'da "Kazançlarım" tablosu + "Ödeme talep et" (ad soyad + IBAN + onay) →
+  admin listesine düşer → havale + "ödendi" → e-posta.
+
+#### E. Onaylar (madde 3) — her adımda ilgili kişinin açık onayı, zaman damgasıyla
+- İlan sahibi: ilan açarken koşullar; teklif kabulünde özet ekranı (tutar, IBAN, ödeme süresi) "Onaylıyorum".
+- Uzman: teklif verirken komisyon + net tutar; ödeme aşamasında IBAN beyanı.
+- Davet eden: ödeme yalnız kendi talebiyle (IBAN beyanı) — otomatik havale yok.
+- Yeni sayfa: **"Güvenli Ödeme Koşulları"** (hukuki metin — kullanıcı/hukukçu yazar; abartılı vaat yok).
+
+#### F. Açık kararlar (kullanıcı)
+1. Hukuki/mali model (§B1) ve hangi hesap (bağışla aynı mı, şirket mi)?
+2. Ödeme süresi (öneri 3 gün) dolunca: kabul düşer + ilan yeniden açılır mı?
+3. Diğer teklifler kabul anında mı, ödeme onayında mı reddedilsin? (Öneri: ödeme onayında — müşteri ödemezse başka
+   teklife geçebilir.)
+4. Teslim sonrası yorum süresi (öneri 7 gün) ve süre aşımında otomatik kapanış — onay?
+5. İade/itiraz politikası: uzman teslim etmezse tam iade; kısmi iade olacak mı; iadede %10 kesilir mi?
+6. Yorumların admin onayı ödemeyi geciktirir — güvenli ödemede yorum onayı beklenmeden mi kapansın?
+7. Davet %5: **brüt tutarın %5'i mi** (komisyonun yarısı) **yoksa komisyonun %5'i mi**? Yalnız davetli müşteri mi, davetli
+   uzmanın kazancı da sayılır mı? Süresiz mi (ör. ilk 12 ay)?
+8. Asgari ödeme eşiği (davet kazancı)?
+9. Mevcut davet Premium gün ödülü kalıyor mu (ek) yoksa kalkıyor mu?
+10. EN/DE'de güvenli ödeme gösterilsin mi?
+11. "Komisyonsuz çalışın" metni → "Doğrudan anlaşmada komisyon yok; Güvenli Ödeme'de %10 hizmet bedeli" gibi?
+
+#### G. Uygulama fazları (her faz ayrı onay; migration'lı fazlar canlı DB'yi etkiler)
+- [ ] Faz 0 — Kararlar (§F) + müşavir görüşü + Koşullar metni; `SiteSettings` alanları + IBAN taşıma (migration)
+- [ ] Faz 1 — Modeller: `FreelanceJob.secure_payment`, ilan durumu `awaiting_payment`, `SecurePayment` + admin (migration)
+- [ ] Faz 2 — İlan formu seçeneği + rozet; teklif formu net hesap + onay kutuları
+- [ ] Faz 3 — Kabul → ödeme talimatı (ekran + e-posta) → "Havaleyi yaptım" → admin onayı → sinyal e-postaları
+- [ ] Faz 4 — Teslim / yorum / süre aşımı cron'u / itiraz
+- [ ] Faz 5 — Uzman ödeme bilgisi + "ödendi" + döküm e-postası; panel "Güvenli Ödeme" sekmesi
+- [ ] Faz 6 — Davet kazancı + aylık cron + talep formu + dashboard tablosu
+- [ ] Faz 7 — Testler (durum geçişleri, yetki, tutar yuvarlama, kötüye kullanım), TR/EN/DE çeviri, `analizus.md`
 
 ### BÜYÜK SEO DÖNÜŞÜMÜ — PLAN (30 Eylül 2026; ÖNCELİK — faz faz, her faz önce onay)
 **Hedef:** portal = analiz/danışmanlık ihtiyacı olanlar ↔ analistler (tez merkezleri, AI mühendisleri, istatistikçiler,
