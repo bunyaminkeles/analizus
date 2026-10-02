@@ -70,9 +70,9 @@ maddelerde.
 - [x] **YAPILDI (2 Ekim 2026): profilde 'Hakkında' kartı (sağ sütun, sekmelerin üstü) — biyografi + unvan/üniversite/bölüm/konum + bağlantılar (Profile.public_links: yalnız http(s), geçerli ORCID/X/GitHub); giriş yapmış herkese (anonim erişim kararı ertelendi); boşsa yalnız sahibine 'Profili Düzenle' daveti; bio kayıtta 500 karakter; testler 78/78. NOT: profilde girilen hiçbir alan (bio, akademik, bağlantılar) önceden gösterilmiyordu.** Eski not: Profilde herkese açık biyografi — `Profile.bio` alanı (TextField, 500) zaten var, `profile_edit`'te düzenleniyor;
   profil sayfasında görünürlüğü kontrol edilecek. "Herkes görebilsin" → `profile_detail` şu an `@login_required` (SEO
   planında "profil hariç şimdilik" diye ERTELENDİ) — anonim erişim mi, yalnız giriş yapmış herkese mi? karar. Kaçışlı çıktı (`linebreaks`/escape).
-- [ ] **İlan açıklamasına karakter sınırı** — `JobPostForm` açıklama alanı (form + model + sayaç). Sınır değeri karar
+- [x] **YAPILDI (2 Ekim 2026): SiteSettings.job_description_max_chars (varsayılan 1500, Limitler; migration forum/0168), form doğrulaması (CRLF tek sayılır) + canlı sayaç; ilan açma formu artık hata gösteriyor.** Eski not: İlan açıklamasına karakter sınırı — `JobPostForm` açıklama alanı (form + model + sayaç). Sınır değeri karar
   (admin'den mi, sabit mi); mevcut uzun ilanlar etkilenmemeli (yalnız yeni/düzenlenen ilanlarda doğrulama).
-- [ ] **İlan alanı "hizmet/yetenek tanıtımı"na dönüşmemeli** — örnek: canlı `/market/job/189/` ("Profesyonel SPSS Veri
+- [x] **YAPILDI (2 Ekim 2026): ilan açma/düzenleme formunda kural kutusu (profil 'Hakkında'ya yönlendirme), açıklama placeholder'ı iş talebine yönlendiriyor, admin ret gerekçesi 'hizmet tanıtımı' + e-postada profil linki (3945e85). KALAN: canlıdaki 189 vb. mevcut ilanlar için admin kararı.** Eski not: İlan alanı "hizmet/yetenek tanıtımı"na dönüşmemeli — örnek: canlı `/market/job/189/` ("Profesyonel SPSS Veri
   Analizi & Akademik Raporlama Danışmanlığı" — kullanıcı ilan vermiyor, kendi hizmetini anlatıyor). Pazar = iş talebi;
   hizmet tanıtımı yeri profil/biyografi + Uzman Dizini. Önlemler: ilan formunda açık kural metni ("ilan = yaptırmak
   istediğiniz iş; hizmet tanıtımı profilinize"), admin onayında ret gerekçesi ("hizmet tanıtımı") + e-postada yönlendirme;

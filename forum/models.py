@@ -1423,6 +1423,11 @@ class SiteSettings(models.Model):
         default=True, verbose_name="İlan yayını admin onayına bağlı",
         help_text="Açıkken yeni ilan 'Onay Bekliyor' durumunda açılır; admin onaylayınca yayınlanır ve sahibine e-posta gider.")
 
+    # Pazar: ilan açıklaması (İş Tanımı) üst sınırı — yeni ve düzenlenen ilanlarda uygulanır
+    job_description_max_chars = models.PositiveIntegerField(
+        default=1500, verbose_name="İlan açıklaması: en fazla karakter",
+        help_text="Yeni ilan ve ilan düzenlemede uygulanır; mevcut ilanlar değişmez.")
+
     # Pazar: haftalık ilan hakkı (son 7 gün; referans bonusu ayrıca eklenir — Profile.get_weekly_job_limit)
     job_weekly_limit_free = models.PositiveIntegerField(
         default=2, verbose_name="Haftalık ilan hakkı: normal kullanıcı")

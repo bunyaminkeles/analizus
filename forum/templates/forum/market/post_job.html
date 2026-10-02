@@ -12,8 +12,15 @@
                     <h4 class="text-white mb-0"><i class="bi bi-plus-circle text-info me-2"></i>{% trans "Yeni İş İlanı Oluştur" %}</h4>
                 </div>
                 <div class="card-body p-4">
+                    {% include 'forum/market/_job_rules.html' %}
                     <form method="post">
                         {% csrf_token %}
+                        {% if form.errors %}
+                        <div class="ax-alert ax-alert--danger mb-3">
+                            <i class="bi bi-exclamation-triangle me-2" aria-hidden="true"></i>
+                            <div>{% for field in form %}{% for error in field.errors %}<div>{{ error }}</div>{% endfor %}{% endfor %}{% for error in form.non_field_errors %}<div>{{ error }}</div>{% endfor %}</div>
+                        </div>
+                        {% endif %}
                         
                         <div class="mb-3">
                             <label class="form-label text-white-50">{{ form.title.label }}</label>
@@ -42,6 +49,7 @@
                         <div class="mb-4">
                             <label class="form-label text-white-50">{{ form.description.label }}</label>
                             {{ form.description }}
+                            {% include 'forum/market/_job_description_counter.html' %}
                             <div class="form-text text-muted">{% trans "İşin kapsamını, beklenen teslim tarihini ve özel gereksinimleri detaylıca yazın." %}</div>
                         </div>
 

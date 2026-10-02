@@ -146,7 +146,7 @@ class JobPostForm(forms.ModelForm):
         fields = ['title', 'description', 'budget_max', 'expected_duration']
         widgets = {
             'title': forms.TextInput(attrs={'class': 'form-control bg-dark text-light border-secondary', 'placeholder': gettext_lazy('Örn: SPSS Veri Analizi')}),
-            'description': forms.Textarea(attrs={'class': 'form-control bg-dark text-light border-secondary', 'rows': 5, 'placeholder': gettext_lazy('İşin detaylarını açıklayın...')}),
+            'description': forms.Textarea(attrs={'class': 'form-control bg-dark text-light border-secondary', 'rows': 5, 'placeholder': gettext_lazy('Yaptırmak istediğiniz işi anlatın: veri, yöntem, beklenen çıktı, teslim tarihi...')}),
             'budget_max': forms.NumberInput(attrs={'class': 'form-control bg-dark text-light border-secondary', 'placeholder': gettext_lazy('Örn: 500')}),
             'expected_duration': forms.TextInput(attrs={'class': 'form-control bg-dark text-light border-secondary', 'placeholder': gettext_lazy('Örn: 3 gün')}),
         }
@@ -161,6 +161,20 @@ class JobPostForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         if self.instance and self.instance.pk and self.instance.category:
             self.fields['category_input'].initial = self.instance.category.localized_title
+        from .models import SiteSettings
+        # Açıklama üst sınırı admin'den (SiteSettings); tarayıcı sayacı data-maxchars'ı okur
+        self.description_max = SiteSettings.load().job_description_max_chars
+        self.fields['description'].widget.attrs.update({
+            'maxlength': self.description_max, 'data-maxchars': self.description_max})
+
+    def clean_description(self):
+        # Tarayıcı satır sonunu 1 sayar, gönderimde \r\n gelir → normalleştir ki sayaç ile sunucu aynı saysın
+        text = self.cleaned_data.get('description', '').replace('\r\n', '\n').strip()
+        if len(text) > self.description_max:
+            raise forms.ValidationError(
+                gettext('İş tanımı en fazla {max} karakter olabilir (şu an {count}).').format(
+                    max=self.description_max, count=len(text)))
+        return text
 
     def save(self, commit=True):
         job = super().save(commit=False)

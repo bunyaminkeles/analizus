@@ -1,0 +1,15 @@
+<div class="form-text text-muted" aria-live="polite"><span data-desc-count>{{ form.description.value|default:""|length }}</span> / {{ form.description_max }}</div>
+<script>
+(function () {
+    var area = document.querySelector('textarea[data-maxchars]');
+    var out = document.querySelector('[data-desc-count]');
+    if (!area || !out) return;
+    var max = parseInt(area.getAttribute('data-maxchars'), 10);
+    function update() {
+        out.textContent = area.value.length;
+        out.style.color = area.value.length >= max * 0.9 ? 'var(--ax-accent-warning)' : '';
+    }
+    area.addEventListener('input', update);
+    update();
+})();
+</script>

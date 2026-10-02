@@ -1,0 +1,8 @@
+{% load i18n %}{# İlan formu kuralı: ilan = yaptırılacak iş; hizmet tanıtımı profile (admin onayında "hizmet tanıtımı" gerekçesiyle reddedilir) #}
+<div class="ax-alert ax-alert--warn mb-4">
+    <i class="bi bi-info-circle me-2" aria-hidden="true"></i>
+    <div>
+        {% trans "Pazaryeri ilanları, yaptırmak istediğiniz bir iş içindir. Kendi hizmetlerinizi tanıtmak için profilinizdeki “Hakkında” bölümünü kullanın; hizmet tanıtımı içeren ilanlar yayınlanmaz." %}
+        <a href="{% url 'profile_edit' %}" class="d-inline-block mt-1">{% trans "Profilimi düzenle" %} →</a>
+    </div>
+</div>

@@ -1165,3 +1165,29 @@ def test_profile_edit_bio_capped_at_500(client, job_owner):
                                    'first_name': '', 'last_name': ''})
     job_owner.profile.refresh_from_db()
     assert len(job_owner.profile.bio) == 500
+
+
+# ─── İlan açıklaması sınırı + kural metni ─────────────────────────────────────
+
+@pytest.mark.django_db
+def test_job_description_limit_from_admin(client, job_owner):
+    """Admin sınırını aşan açıklama reddedilir (hata gösterilir); sınırdaki kabul edilir, CRLF tek sayılır."""
+    from forum.models import FreelanceJob, SiteSettings
+    s = SiteSettings.load()
+    s.job_description_max_chars = 100
+    s.save()
+    client.force_login(job_owner)
+    data = {'title': 'Uzun ilan', 'budget_max': '100', 'expected_duration': '1 gün'}
+    r = client.post('/market/new/', {**data, 'description': 'a' * 101})
+    assert r.status_code == 200 and not FreelanceJob.objects.exists()
+    assert 'en fazla 100 karakter' in r.content.decode()
+    client.post('/market/new/', {**data, 'description': 'a' * 49 + '\r\n' + 'b' * 50})  # 100 karakter
+    assert FreelanceJob.objects.filter(owner=job_owner).count() == 1
+
+
+@pytest.mark.django_db
+def test_job_form_shows_service_ad_rule(client, job_owner):
+    client.force_login(job_owner)
+    html = client.get('/market/new/').content.decode()
+    assert 'hizmet tanıtımı içeren ilanlar yayınlanmaz' in html
+    assert 'data-maxchars="1500"' in html

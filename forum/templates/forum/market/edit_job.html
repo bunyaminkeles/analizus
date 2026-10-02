@@ -18,6 +18,7 @@
                     </p>
                 </div>
                 <div class="card-body p-4">
+                    {% include 'forum/market/_job_rules.html' %}
                     <form method="post">
                         {% csrf_token %}
 
@@ -29,6 +30,7 @@
                         <div class="mb-3">
                             <label class="form-label text-white-50">{{ form.description.label }}</label>
                             {{ form.description }}
+                            {% include 'forum/market/_job_description_counter.html' %}
                         </div>
 
                         <div class="row mb-3">
