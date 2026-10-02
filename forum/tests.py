@@ -1219,3 +1219,17 @@ def test_job_category_is_list_with_other(client, job_owner):
     jobs = {j.title: j.category for j in FreelanceJob.objects.filter(owner=job_owner)}
     assert jobs == {'A': spss, 'B': None}
     assert JobCategory.objects.count() == 2
+
+
+@pytest.mark.django_db
+def test_job_title_limit_default_80(client, job_owner):
+    """Başlık varsayılan 80 karakter (admin'den değişir); aşan başlık reddedilir, sayaç alanı bağlı."""
+    from forum.models import FreelanceJob
+    client.force_login(job_owner)
+    html = client.get('/market/new/').content.decode()
+    assert 'maxlength="80"' in html and 'data-count-for="id_title"' in html and 'data-count-for="id_description"' in html
+    base = {'description': 'x', 'budget_max': '100', 'expected_duration': '1 gün', 'category_choice': 'other'}
+    r = client.post('/market/new/', {**base, 'title': 'a' * 81})
+    assert r.status_code == 200 and 'en fazla 80 karakter' in r.content.decode()
+    client.post('/market/new/', {**base, 'title': 'a' * 80})
+    assert FreelanceJob.objects.filter(owner=job_owner).count() == 1

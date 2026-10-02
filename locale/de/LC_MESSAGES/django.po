@@ -20576,3 +20576,7 @@ msgstr "Kategorie wählen…"
 
 msgid "Listede uygun alan yoksa “Diğer”i seçin."
 msgstr "Wenn kein passender Bereich aufgeführt ist, wählen Sie „Sonstiges“."
+
+msgid "İlan başlığı en fazla {max} karakter olabilir (şu an {count})."
+msgstr ""
+"Der Auftragstitel darf höchstens {max} Zeichen lang sein (derzeit {count})."

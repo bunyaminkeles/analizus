@@ -25,6 +25,7 @@
                         <div class="mb-3">
                             <label class="form-label text-white-50">{{ form.title.label }}</label>
                             {{ form.title }}
+                            {% include 'forum/market/_char_counter.html' with field=form.title max=form.title_max %}
                         </div>
 
                         <div class="mb-3">
@@ -47,7 +48,7 @@
                         <div class="mb-4">
                             <label class="form-label text-white-50">{{ form.description.label }}</label>
                             {{ form.description }}
-                            {% include 'forum/market/_job_description_counter.html' %}
+                            {% include 'forum/market/_char_counter.html' with field=form.description max=form.description_max %}
                             <div class="form-text text-muted">{% trans "İşin kapsamını, beklenen teslim tarihini ve özel gereksinimleri detaylıca yazın." %}</div>
                         </div>
 

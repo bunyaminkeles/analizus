@@ -169,10 +169,21 @@ class JobPostForm(forms.ModelForm):
             elif str(cat.pk) in self._categories:
                 self.fields['category_choice'].initial = str(cat.pk)
         from .models import SiteSettings
-        # Açıklama üst sınırı admin'den (SiteSettings); tarayıcı sayacı data-maxchars'ı okur
-        self.description_max = SiteSettings.load().job_description_max_chars
+        # Başlık ve açıklama üst sınırı admin'den (SiteSettings); tarayıcı sayacı data-maxchars'ı okur
+        site = SiteSettings.load()
+        self.title_max = min(site.job_title_max_chars, 200)  # model alanı 200
+        self.description_max = site.job_description_max_chars
+        self.fields['title'].widget.attrs.update({'maxlength': self.title_max, 'data-maxchars': self.title_max})
         self.fields['description'].widget.attrs.update({
             'maxlength': self.description_max, 'data-maxchars': self.description_max})
+
+    def clean_title(self):
+        text = self.cleaned_data.get('title', '').strip()
+        if len(text) > self.title_max:
+            raise forms.ValidationError(
+                gettext('İlan başlığı en fazla {max} karakter olabilir (şu an {count}).').format(
+                    max=self.title_max, count=len(text)))
+        return text
 
     def clean_description(self):
         # Tarayıcı satır sonunu 1 sayar, gönderimde \r\n gelir → normalleştir ki sayaç ile sunucu aynı saysın

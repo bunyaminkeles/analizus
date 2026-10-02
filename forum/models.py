@@ -1423,6 +1423,11 @@ class SiteSettings(models.Model):
         default=True, verbose_name="İlan yayını admin onayına bağlı",
         help_text="Açıkken yeni ilan 'Onay Bekliyor' durumunda açılır; admin onaylayınca yayınlanır ve sahibine e-posta gider.")
 
+    # Pazar: ilan başlığı üst sınırı (model alanı 200; form daha kısa tutar) — yeni ve düzenlenen ilanlarda
+    job_title_max_chars = models.PositiveIntegerField(
+        default=80, verbose_name="İlan başlığı: en fazla karakter",
+        help_text="Yeni ilan ve ilan düzenlemede uygulanır (en fazla 200); mevcut ilanlar değişmez.")
+
     # Pazar: ilan açıklaması (İş Tanımı) üst sınırı — yeni ve düzenlenen ilanlarda uygulanır
     job_description_max_chars = models.PositiveIntegerField(
         default=1500, verbose_name="İlan açıklaması: en fazla karakter",
