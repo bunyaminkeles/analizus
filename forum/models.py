@@ -414,6 +414,9 @@ class Profile(models.Model):
         """Kullanıcı şu an ilan açabilir mi? (limit + e-posta kontrolü)"""
         if not self.email_verified:
             return False, gettext("İlan açmak için e-posta doğrulaması gerekli")
+        # Admin/Staff haftalık limitten muaf (can_propose ile aynı kural; admin onayı yine uygulanır)
+        if self.user.is_superuser or self.user.is_staff:
+            return True, gettext("İlan açabilirsiniz")
         if self.get_weekly_job_count() >= self.get_weekly_job_limit():
             limit = self.get_weekly_job_limit()
             return False, gettext("Haftalık ilan limitinize (%(limit)s) ulaştınız") % {'limit': limit}

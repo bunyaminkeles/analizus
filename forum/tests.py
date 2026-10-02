@@ -1013,3 +1013,16 @@ def test_edit_open_job_goes_back_to_pending(client, job_owner, sent_job_emails):
                                                'budget_max': '1000', 'expected_duration': '1 hafta'})
     job.refresh_from_db()
     assert job.title == 'Değişti' and job.status == 'pending'
+
+
+@pytest.mark.django_db
+def test_staff_exempt_from_weekly_job_limit(job_owner):
+    """Admin/staff haftalık ilan limitinden muaf; normal kullanıcı limitte durur."""
+    from forum.models import FreelanceJob
+    for i in range(2):
+        FreelanceJob.objects.create(owner=job_owner, title=f'İlan {i}', description='x', budget_max=10, status='pending')
+    profile = job_owner.profile
+    assert profile.can_post_job_now()[0] is False
+    job_owner.is_staff = True
+    job_owner.save()
+    assert profile.can_post_job_now()[0] is True
