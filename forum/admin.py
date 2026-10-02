@@ -629,8 +629,9 @@ class JobReviewAdmin(ModelAdmin):
 class DonationTierAdmin(ModelAdmin):
     warn_unsaved_changes = True
     compressed_fields = True
-    list_display = ('name', 'min_amount_display', 'premium_days_display', 'is_active')
-    list_editable = ('is_active',)
+    # Tutar ve gün listeden doğrudan düzenlenir (list_editable gerçek alan ister — renkli *_display sütunları yerine)
+    list_display = ('name', 'min_amount', 'premium_days', 'is_active')
+    list_editable = ('min_amount', 'premium_days', 'is_active')
     ordering = ('-min_amount',)
 
     def min_amount_display(self, obj):
