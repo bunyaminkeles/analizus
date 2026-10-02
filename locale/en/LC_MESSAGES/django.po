@@ -20243,3 +20243,9 @@ msgstr ""
 
 msgid "Profilimi düzenle"
 msgstr "Edit my profile"
+
+msgid "Kategori seçin…"
+msgstr "Select a category…"
+
+msgid "Listede uygun alan yoksa “Diğer”i seçin."
+msgstr "If no suitable area is listed, choose “Other”."

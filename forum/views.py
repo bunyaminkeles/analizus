@@ -527,11 +527,8 @@ def post_job(request):
             return redirect('job_detail', pk=job.pk)
     else:
         form = JobPostForm()
-    from .models import JobCategory
-    job_categories = [c.localized_title for c in JobCategory.objects.filter(is_active=True)]
     return render(request, 'forum/market/post_job.html', {
         'form': form,
-        'job_categories': job_categories,
         'job_duration_days': profile.get_job_duration_days(),
         'job_approval_required': SiteSettings.load().job_approval_required,
     })
@@ -631,9 +628,7 @@ def edit_job(request, pk):
     else:
         form = JobPostForm(instance=job)
 
-    from .models import JobCategory
-    job_categories = [c.localized_title for c in JobCategory.objects.filter(is_active=True)]
-    return render(request, 'forum/market/edit_job.html', {'form': form, 'job': job, 'job_categories': job_categories})
+    return render(request, 'forum/market/edit_job.html', {'form': form, 'job': job})
 
 
 @login_required

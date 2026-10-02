@@ -141,7 +141,7 @@
                 <div class="card-body p-4 d-flex flex-column">
                     <div class="d-flex justify-content-between align-items-start mb-3">
                         <span class="badge ax-tag--category">
-                            {{ job.category.localized_title|truncatechars:28 }}
+                            {% if job.category %}{{ job.category.localized_title|truncatechars:28 }}{% else %}{% trans "Diğer" %}{% endif %}
                         </span>
                         <div class="text-end flex-shrink-0">
                             <small class="text-muted d-block">{% blocktrans with time=job.created_at|timesince %}{{ time }} önce{% endblocktrans %}</small>

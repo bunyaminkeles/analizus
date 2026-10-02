@@ -918,7 +918,7 @@ def sent_job_emails(monkeypatch):
 def _post_job(client, owner):
     client.force_login(owner)
     client.post('/market/new/', {'title': 'Anket verisi analizi', 'description': 'SPSS ile t-testi',
-                                 'budget_max': '1000', 'expected_duration': '1 hafta'})
+                                 'budget_max': '1000', 'expected_duration': '1 hafta', 'category_choice': 'other'})
     from forum.models import FreelanceJob
     return FreelanceJob.objects.get(owner=owner)
 
@@ -1010,7 +1010,8 @@ def test_edit_open_job_goes_back_to_pending(client, job_owner, sent_job_emails):
     job.status = 'open'
     job.save()
     client.post(f'/market/job/{job.pk}/edit/', {'title': 'Değişti', 'description': 'yeni',
-                                               'budget_max': '1000', 'expected_duration': '1 hafta'})
+                                               'budget_max': '1000', 'expected_duration': '1 hafta',
+                                               'category_choice': 'other'})
     job.refresh_from_db()
     assert job.title == 'Değişti' and job.status == 'pending'
 
@@ -1177,7 +1178,7 @@ def test_job_description_limit_from_admin(client, job_owner):
     s.job_description_max_chars = 100
     s.save()
     client.force_login(job_owner)
-    data = {'title': 'Uzun ilan', 'budget_max': '100', 'expected_duration': '1 gün'}
+    data = {'title': 'Uzun ilan', 'budget_max': '100', 'expected_duration': '1 gün', 'category_choice': 'other'}
     r = client.post('/market/new/', {**data, 'description': 'a' * 101})
     assert r.status_code == 200 and not FreelanceJob.objects.exists()
     assert 'en fazla 100 karakter' in r.content.decode()
@@ -1191,3 +1192,30 @@ def test_job_form_shows_service_ad_rule(client, job_owner):
     html = client.get('/market/new/').content.decode()
     assert 'hizmet tanıtımı içeren ilanlar yayınlanmaz' in html
     assert 'data-maxchars="1500"' in html
+
+
+# ─── İlan kategorisi: liste + Diğer ───────────────────────────────────────────
+
+@pytest.mark.django_db
+def test_job_category_is_list_with_other(client, job_owner):
+    """Kategori aktif yetenek listesinden seçilir; 'Diğer' → kategorisiz; serbest değer reddedilir, yeni kategori oluşmaz."""
+    from forum.models import FreelanceJob, JobCategory, SiteSettings
+    site = SiteSettings.load()
+    site.job_weekly_limit_free = 10  # 4 gönderim haftalık hakka takılmasın
+    site.save()
+    spss = JobCategory.objects.create(title='SPSS ile veri analizi', is_active=True)
+    JobCategory.objects.create(title='Onaysız kategori', is_active=False)
+    client.force_login(job_owner)
+    html = client.get('/market/new/').content.decode()
+    assert f'<option value="{spss.pk}">SPSS ile veri analizi</option>' in html
+    assert '<option value="other">Diğer</option>' in html and 'Onaysız kategori' not in html
+    base = {'description': 'x', 'budget_max': '100', 'expected_duration': '1 gün'}
+    client.post('/market/new/', {**base, 'title': 'A', 'category_choice': str(spss.pk)})
+    client.post('/market/new/', {**base, 'title': 'B', 'category_choice': 'other'})
+    r = client.post('/market/new/', {**base, 'title': 'C', 'category_choice': 'Benim kategorim'})
+    assert r.status_code == 200  # geçersiz seçim → form hatası
+    r = client.post('/market/new/', {**base, 'title': 'D'})
+    assert r.status_code == 200  # kategori zorunlu
+    jobs = {j.title: j.category for j in FreelanceJob.objects.filter(owner=job_owner)}
+    assert jobs == {'A': spss, 'B': None}
+    assert JobCategory.objects.count() == 2

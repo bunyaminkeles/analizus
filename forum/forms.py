@@ -1,5 +1,4 @@
 from django import forms
-from django.db.models import Q
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from .models import Topic, Post, FreelanceJob, JobCategory, JobProposal, TopicTag
@@ -130,15 +129,12 @@ class PostForm(forms.ModelForm):
 
 # --- 4. İŞ İLANI FORMU ---
 class JobPostForm(forms.ModelForm):
-    category_input = forms.CharField(
-        required=False,
+    # Kategori = profil yetenek listesiyle aynı tablo (aktif JobCategory) + 'Diğer' (category=None).
+    # Serbest yazım yok — eskiden her farklı yazım yeni (onaysız) kategori oluşturuyordu.
+    OTHER = 'other'
+    category_choice = forms.ChoiceField(
         label=gettext_lazy('Kategori'),
-        widget=forms.TextInput(attrs={
-            'class': 'form-control bg-dark text-light border-secondary',
-            'placeholder': gettext_lazy('Örn: SPSS, Veri Analizi, Makine Öğrenmesi...'),
-            'list': 'job-category-list',
-            'autocomplete': 'off',
-        })
+        widget=forms.Select(attrs={'class': 'form-select bg-dark text-light border-secondary'}),  # formdaki diğer alanlarla aynı aile
     )
 
     class Meta:
@@ -159,8 +155,19 @@ class JobPostForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if self.instance and self.instance.pk and self.instance.category:
-            self.fields['category_input'].initial = self.instance.category.localized_title
+        self._categories = {str(c.pk): c for c in JobCategory.objects.filter(is_active=True).order_by('order', 'title')}
+        self.fields['category_choice'].choices = (
+            [('', gettext('Kategori seçin…'))]
+            + [(pk, c.localized_title) for pk, c in self._categories.items()]
+            + [(self.OTHER, gettext('Diğer'))]
+        )
+        if self.instance and self.instance.pk:
+            cat = self.instance.category
+            # Mevcut ilan: aktif kategorisi seçili; kategorisiz ilan 'Diğer'; pasif kategoride yeniden seçim istenir
+            if cat is None:
+                self.fields['category_choice'].initial = self.OTHER
+            elif str(cat.pk) in self._categories:
+                self.fields['category_choice'].initial = str(cat.pk)
         from .models import SiteSettings
         # Açıklama üst sınırı admin'den (SiteSettings); tarayıcı sayacı data-maxchars'ı okur
         self.description_max = SiteSettings.load().job_description_max_chars
@@ -178,18 +185,8 @@ class JobPostForm(forms.ModelForm):
 
     def save(self, commit=True):
         job = super().save(commit=False)
-        cat_name = self.cleaned_data.get('category_input', '').strip()
-        if cat_name:
-            # Önerilerde başlık kullanıcının dilinde — üç dilde de eşleştir
-            cat = JobCategory.objects.filter(
-                Q(title__iexact=cat_name) | Q(title_en__iexact=cat_name) | Q(title_de__iexact=cat_name)
-            ).order_by('-is_active', 'id').first()
-            if cat is None:
-                # Yeni kategori admin onayına düşer (is_active=False)
-                cat = JobCategory.objects.create(title=cat_name, is_active=False)
-            job.category = cat
-        else:
-            job.category = None
+        choice = self.cleaned_data.get('category_choice')
+        job.category = None if choice == self.OTHER else self._categories.get(choice)
         if commit:
             job.save()
         return job
