@@ -10,7 +10,20 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
-> **YENİ OTURUM BURADAN BAŞLA (1 Ekim 2026) — CANLI = main = bb85064** (dev = + docs commit'leri). Bu oturum: **BÜYÜK SEO
+> **YENİ OTURUM BURADAN BAŞLA (2 Ekim 2026) — CANLI = main = 2416b69** (dev = 10b2cb1 + yerelde push'suz 9c8d10a
+> betik/doküman commit'leri). Bu oturum (ayrıntı `analizus.md` §27 "2 Ekim 2026"): **pazar** — ilan admin onayı (onay/ret
+> e-postası, panel "İlan Onayı" sekmesi), haftalık ilan hakkı normal 2 / Premium 5 (admin muaf), kategori yetenek listesi +
+> "Diğer", başlık 80 / açıklama 1500 karakter + sayaç, "hizmet tanıtımı değil" kuralı; **bağış → Premium akışı düzeltildi**
+> (önceden onayda Premium verilmiyordu; söz verilen gün sabit, bitiş tarihi kullanıcıya); **profil "Hakkında" kartı**;
+> deploy öncesi yedek `scripts/yedek_indir.sh --simdi`. Migration forum/0165–0169 canlıda. Forum testleri 82/82.
+> **Kullanıcıda bekleyen (canlı admin):** hizmet tanıtımı ilanları (189 vb.) → "Reddet: hizmet tanıtımı"; Bağışlar'da
+> Tamamlandı + Verilen Premium Gün = 0 kayıt var mı (varsa Premium elle / ayrı düzeltme); eski pasif iş kategorileri;
+> sunucuda kalan 2 eski `/root/yedek_*.sql` silinebilir. **Küçük açıklar:** ilan formundaki mavi bilgi kutusunun ilk satırı
+> koyu zeminde okunmuyor; `.ax-form-select` `background-size` eksik (pubmed landing); Render'da profil fotoğrafı yüklenmiyor
+> (kalıcı disk yok?); uzman profillerinin anonime açılması hâlâ ertelendi.
+> Sonraki büyük iş yine **BÜYÜK SEO DÖNÜŞÜMÜ** (aşağıda): Faz 3 blog → uzman desteği kartı, araç SSS'leri, Faz 6 blog yazıları.
+>
+> **ÖNCEKİ NOT (1 Ekim 2026) — CANLI = main = bb85064** (dev = + docs commit'leri). Bu oturum: **BÜYÜK SEO
 > DÖNÜŞÜMÜ Faz 1–2 bitti ve canlıda** (aşağıdaki başlık): 4 tarama sayfası Google başlıkları, 12 blog yazısına SEO alanları,
 > veri kazıma / nitel yazıları düzeltildi, t tablosu, `/section/` 301, az konulu forum kategorisi noindex, Uzman Dizini
 > `?cat=` tanıtım metinleri (+ ?cat=abc 500 düzeltmesi), analiz konsolu 18 araç tek düzen. Migration forum/0162–0164 canlıda.
@@ -47,6 +60,14 @@ maddelerde.
 > - Açık kullanıcı soruları: (1) "2026 yayınları tarih/DOI varsa alınsın" netleşmedi; (2) Research Gap trend yöntemi
 >   (yıllık ortalama önerisi).
 > - Diğer açıklar bu listede `- [ ]`; ayrıntı `analizus.md` §14 (bibliometri), §15 (tarama), §26, §27.
+
+**2 Ekim 2026 sonrası açık kalanlar:**
+- [ ] Canlıda hizmet tanıtımı ilanları (189 vb.) — admin "Reddet: hizmet tanıtımı" (kullanıcı kararı)
+- [ ] Canlı Bağışlar: Tamamlandı + Verilen Premium Gün = 0 kayıt var mı → varsa Premium elle ya da ayrı düzeltme (kullanıcı)
+- [ ] Eski kullanıcı yazımı pasif `JobCategory` kayıtları — sil / aktifleştir (kullanıcı, admin)
+- [ ] İlan formu (post_job.html) mavi bilgi kutusunun ilk satırı ("…X gün aktif kalacaktır") koyu zeminde okunmuyor
+- [ ] `.ax-form-select` (base.css) `background-size` yok → ok simgesi kutuyu kaplıyor (pubmed landing kullanıyor)
+- [ ] Render'da profil fotoğrafı yüklenmiyor (alt metin görünüyor) — kalıcı disk/medya; canlıda da var mı kontrol
 
 **BAĞIŞ → PREMIUM AKIŞI KIRIK (2 Ekim 2026 bulgusu, kullanıcı "verilen süre doğru mu" sorusundan) — onay bekliyor:**
 - [x] **DÜZELTİLDİ (2 Ekim 2026, migration forum/0167; testler 75/75)** **Admin bağışı onaylayınca Premium VERİLMİYOR** — `Donation.grant_premium()` yalnız `dashboard_approve_donation`

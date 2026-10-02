@@ -515,11 +515,13 @@ class FreelanceJob:
     description: TextField
     budget_min: Decimal (null=True, blank=True)  # Formda gösterilmez — geriye dönük uyumluluk
     budget_max: Decimal                           # Kullanıcının girdiği tek bütçe alanı
-    category: FK → JobCategory (null=True, blank=True)
-    status: 'open' | 'in_progress' | 'completed' | 'cancelled'
-    is_edited: bool        # 1 kez düzenleme hakkı (teklif yokken, open iken)
+    category: FK → JobCategory (null=True, blank=True)   # None = formda "Diğer"
+    status: 'pending' | 'open' | 'in_progress' | 'completed' | 'cancelled' | 'rejected'   # pending/rejected: admin onayı (0166)
+    approved_at: datetime  # yayına alınma; boşken status='open' kaydedilirse save() yayına alır (süre + ilk ilan hediyesi)
+    rejection_reason: 'service_ad' | 'incomplete' | 'rules' (blank) ; rejection_note: TextField
+    is_edited: bool        # 1 kez düzenleme hakkı (teklif yokken, open/pending iken)
     reference_number: str  # Örn: 2026/0013 (otomatik)
-    expires_at: datetime   # Son geçerlilik
+    expires_at: datetime   # Son geçerlilik (onay anından başlar)
     is_featured: bool
     views: int
     likes: M2M → User
@@ -541,8 +543,10 @@ class JobProposal:
 - `quiz-efsanesi` rozeti: 1000 doğru cevap → teklif hakkı (alternatif yol)
 
 ### İlan Kuralları (Pazaryeri)
-- **Düzenleme:** `status=open` AND `proposals.exists()=False` AND `is_edited=False` → 1 kez düzenlenebilir
-- **İptal:** `close_job` view → `status=cancelled` → bekleyen teklif verenlere AnalizBot DM
+- **Yayın:** `job_approval_required` açıkken yeni ilan `pending` → admin onayı → `open` (bkz. aşağıdaki "İlan admin onayı")
+- **Düzenleme:** `status` open/pending AND `proposals.exists()=False` AND `is_edited=False` → 1 kez düzenlenebilir; onay açıkken düzenlenen ilan yeniden `pending`
+- **İptal:** `close_job` view → `status=cancelled` → bekleyen teklif verenlere AnalizBot DM (pending ilan sessizce geri çekilir)
+- **Form:** başlık ≤ `job_title_max_chars` (80), açıklama ≤ `job_description_max_chars` (1500), kategori listeden + "Diğer" (zorunlu)
 - **Teklif fiyat gizliliği:** `feature_proposal_price_privacy=True` → fiyatlar gizli, sadece taraflar görür
 - **İlan süresi:** `Profile.get_job_duration_days()` puana göre: &lt;500p → 10 gün, 500–1000p → 20 gün, 1000+p → 30 gün; yayınlama ekranında kullanıcıya gösterilir; "İlanlarım" sayfasında kalan gün + bitiş tarihi görünür
 - **İlan kategorisi = liste (2 Ekim 2026):** `JobPostForm.category_choice` — aktif `JobCategory` (profil 'Yetenekler' ile aynı tablo, `order`/`title` sırası) + 'Diğer' (`category=None`); zorunlu. Serbest yazım ve kullanıcıdan yeni (pasif) kategori oluşturma KALDIRILDI. Kategorisiz ilan listede/detayda 'Diğer' görünür. Yeni seçenek = admin'de JobCategory ekle/aktifleştir.
@@ -658,6 +662,8 @@ class TrainingRequest:
 ### Diğer Önemli Modeller
 ```python
 class SiteSettings:      # Singleton (tek kayıt) — feature flag'ler admin'den yönetilir
+    # Limitler (2 Ekim 2026): job_weekly_limit_free (2) / job_weekly_limit_premium (5), job_approval_required (True),
+    #   job_title_max_chars (80, ≤200), job_description_max_chars (1500) — migration forum/0165, 0166, 0168, 0169
 class PrivateMessage:    # Kullanıcılar arası DM (attachment: FileField → S3)
     # edited_at: DateTimeField (null=True) — düzenleme zamanı
     # is_deleted: BooleanField (default=False) — yumuşak silme; mesaj='' olur, kayıt kalır
@@ -1483,10 +1489,18 @@ analizus-files/
 - `JobCategoryAdmin` — iş kategorisi yönetimi (forum Category'den bağımsız); "Tanıtım metni" sütunu (Ekle / Düzenle ✓) →
   form (`intro`, Uzman Dizini kategori sayfası)
 - `BlogPostAdmin` — en altta katlanmış **SEO** bölümü: SEO Başlık (≤70) / SEO Açıklama (≤160)
-- `FreelanceJobAdmin` — ilan yönetimi
+- `FreelanceJobAdmin` — ilan yönetimi; aksiyonlar **"✅ Seçili ilanları onayla ve yayınla"** (yalnız pending) ve
+  **"⛔ Reddet: hizmet tanıtımı / eksik içerik / kurallara aykırı"** (pending/open) — kayıt kayıt `save()` (sinyal e-postası
+  + `_apply_publish` için; `queryset.update` KULLANMA). Notlu ret: ilanı aç → Durum=Reddedildi + Ret Gerekçesi + Ret Notu.
+- **Admin ana sayfa → Bildirimler → "📋 İlan Onayı" sekmesi** (`templates/admin/index.html`, `dashboard_service.pending_jobs`):
+  bekleyen ilan varsa kırmızı + varsayılan açık; "Gör" / "Onayla / Reddet →". "X bekliyor" toplamına dahil.
+- `DonationAdmin` — aksiyon **"✅ Seçili bağışları onayla (Premium ver)"**; detayda Durum=Tamamlandı da aynı sonucu verir
+  (sinyal). "Söz Verilen Premium Gün" / "Verilen Premium Gün" salt okunur.
+- `DonationTierAdmin` — tutar, Premium gün, aktif listeden düzenlenir (`list_editable`).
 - `JobProposalAdmin` — teklif (İlan Sahibi + Teklif Veren kolonları)
 - `ProfileAdmin` — kullanıcı profil
-- `SiteSettingsAdmin` — feature flag yönetimi
+- `SiteSettingsAdmin` — feature flag yönetimi; **Limitler** bölümü (katlanmış): tarama/analiz kayıt sınırı + pazar ayarları
+  (haftalık ilan hakkı normal/Premium, ilan onayı aç/kapa, başlık/açıklama karakter sınırı)
 - `JobPaymentAdmin` — vitrin ödemeleri; `status` readonly; dashboard "VİTRİN" satırındaki **"Onayla →"** butonuyla tek tıkla onaylanır (`/admin/forum/jobpayment/<pk>/quick-approve/` — `quick_approve_view`); onay öncesi detay confirm dialogu çıkar; list view action ("Seçili ilanları vitrine ekle") da hâlâ çalışır
 - `BibliometricOrderProxyAdmin` (`tezanaliz/admin.py`) — `status` readonly; **"Onayla ve Tam Rapor Emailini Gönder"** action ile onaylanır; e-posta + `status=completed` otomatik set edilir
 - `AlexOrderAdmin` (`openalex/admin.py`) — OpenAlex siparişleri; `status` readonly; action siparişi `processing` yapıp
@@ -1533,7 +1547,10 @@ Yeniden talep (bekleyen bağış varken): kayıt yeni seçilen katmanın tutar +
 ## 21. HIZMETLER PAZARI İŞ AKIŞLARI
 
 ```
-İlan Aç (status=open)
+İlan Aç (status=pending — job_approval_required açıkken; kapalıysa doğrudan open)
+    → Admin'e e-posta ("ONAY BEKLİYOR", admin değişiklik sayfası linki) + panel "İlan Onayı" sekmesi
+    ↓ Admin onayı (aksiyon veya Durum=Açık) → status=open, approved_at, süre + ilk ilan hediyesi → sahibine e-posta
+      (Ret → status=rejected + gerekçe → sahibine e-posta; ilan herkese 404, sahibi + staff görür)
     ↓
 Uzman Teklif Verir (proposal status=pending)
     → İlan sahibine e-posta
@@ -1607,7 +1624,10 @@ python manage.py makemigrations istatistik --name="aciklama"  # Yeni migration
 python manage.py collectstatic     # Statik dosyaları topla
 python manage.py shell             # Django shell
 # Testler PYTEST ile — `manage.py test` 0 test bulur (conftest.py + analizdestek/test_settings.py)
-docker compose exec web python -m pytest forum/tests.py -q   # 61 test (25 Eylül 2026: 61/61)
+docker compose exec web python -m pytest forum/tests.py -q   # 82 test (2 Ekim 2026: 82/82)
+# Test notları: thread'li e-posta → monkeypatch `forum.email_utils.send_email_async`; Client ile doğrudan view denerken
+# `Client(HTTP_HOST='localhost')` + `secure=True` (testserver ALLOWED_HOSTS'ta değil → 400); Profile otomatik oluşmaz →
+# `Profile.objects.get_or_create(user=…)`; ilan testinde haftalık hak (2) dolabilir → SiteSettings limitini yükselt.
 
 # Çeviri iş akışı (container içinde) — ayrıntı §28
 docker compose exec -T web python manage.py makemessages -l en -l de --ignore=venv --ignore=node_modules
@@ -1763,6 +1783,14 @@ with connection.cursor() as c:
 | Veri migration'ı içeriğin başına `\` ekledi | Python `r"""\` + satır sonu: raw string'de ters eğik çizgi kalır (satır devamı olmaz). İçerik sabitini `"""\` (raw değil) ile başlat; migration'ı yerelde uygula + render'da `\` ara. |
 | Blog / içerik düzeltmesi canlıda admin'den elle yapılmış metni ezer mi? | Veri migration'ı korumalı yazılır: SEO alanı doluysa dokunma; içerik yalnız beklenen eski metin (marker) hâlâ varsa değişir — 0162/0163/0164 kalıbı. Canlı içerik yerelden farklı olabilir (ör. nitel yazısı yerelde yok) → canlı HTML'den kontrol. |
 | Ortak şablon değişikliği bir araçta doğru, diğerlerinde bozuk / kullanıcı "hepsinde bozukluk" | Tüm sayfaları aynı ölçütle karşılaştır (Playwright: sıra, kartlar arası = bölümler arası boşluk, sol/sağ hiza, boş değişken ör. `tool_title`, mobil taşma). İstisna listesi yerine eksik parçayı tamamla, tek düzen kur (1 Ekim 2026). |
+| Admin bağışı "Tamamlandı" yaptı ama kullanıcı Premium olmadı | 2 Ekim 2026'ya kadar `grant_premium()` yalnız hiçbir yerden bağlanmayan `dashboard_approve_donation`'da çağrılıyordu. Artık `signals.reward_on_donation_completed` (status → completed, her yol). Ödül/e-posta tetikleyen durum geçişlerini sinyale koy; admin aksiyonunda kayıt kayıt `save()` (queryset.update sinyal tetiklemez). |
+| Katman değişti, bekleyen bağışa 0 / farklı gün verildi | Gün onay anında güncel katmandan tutara göre bulunuyordu. Talep anında `Donation.premium_days_promised` yazılır (0167). Söz verilen değeri (fiyat, süre) talep anında kayda yaz. |
+| Yeni `FreelanceJob` alanı/sorgusu bekleyen ilanı sızdırdı mı? | Herkese açık listeler `status='open'` filtrelemeli; doğrudan pk ile erişen view'lar pending/rejected'ı yalnız sahibi + staff'a göstermeli (`job_detail` kalıbı). Açık ilanı `approved_at` boşken kaydetmek yeniden yayınlar — seed/test'te `approved_at` ver. |
+| Şablon toplamı yanlış (`{{ a|add:b|add:liste|length }}`) | Filtreler soldan sağa: önce toplama, sonra `length` → yanlış/boş. Uzunluğu ayrı `{% with n=liste|length %}` ile al. |
+| `.ax-form-select` ok simgesi kutuyu kaplıyor | `base.css`'te `background-size` yok. Bootstrap form sınıflı formlarda komşu alanlarla aynı aileyi kullan (`form-select bg-dark …`); `ax-form-select`'i ayrı görevde düzelt (pubmed landing de kullanıyor). |
+| Sınırdaki metin "çok uzun" hatası alıyor | Tarayıcı `maxlength` satır sonunu 1 sayar, gönderimde `\r\n` (2) gelir → `clean_*`'da `replace('\r\n','\n')` sonra say. |
+| Profil formundaki URL `javascript:` olabilir | `profile_edit` alanları form doğrulamasız kaydeder; şablonda link basarken yalnız `Profile.public_links()` (http(s) + regex'li ORCID/X/GitHub). |
+| Deploy öncesi yedekler `/root`'ta birikiyor | Elle `pg_dump` rotasyonsuzdu (2 Ekim'de 11 dosya / 1,9 GB). Artık kullanıcının bilgisayarında `scripts/yedek_indir.sh --simdi` (sunucuya yazılmaz). |
 
 ---
 
@@ -2072,6 +2100,21 @@ with connection.cursor() as c:
   - Analiz konsolu (giriş yapmış, 18 araç) düzeni tekleştirildi (rehber içerik sütununda, tekrar yok, eksik "Nedir?" kartları,
     boş `tool_title`). §12.
   - Kullanıcı: GSC Validate fix (3 satır) + 9 URL Request indexing + sitemap yeniden gönderildi; `feature_tezanaliz` kontrol.
+- **2 Ekim 2026 — Pazar / bağış / profil turu (canlıda; main 2416b69; migration forum/0165–0169, yedekli):**
+  - Haftalık ilan hakkı admin'den: normal 2, Premium 5; admin/staff muaf; footer + bağış e-postası dinamik (6708464, 2fd4358). §8.
+  - İlan yayını admin onayına bağlı (`pending`/`rejected`, 3 hazır ret gerekçesi + not, onay/ret e-postası TR/EN/DE, süre ve
+    ilk ilan hediyesi onay anından, Limitler'den aç/kapa) + admin panel "İlan Onayı" sekmesi (3945e85, ee80b84). §8, §20, §21.
+  - Bağış → Premium akışı KIRIKTI (onayda Premium verilmiyordu): sinyal + "Seçili bağışları onayla" aksiyonu, söz verilen gün
+    talep anında (`premium_days_promised`), teşekkür e-postası bitiş tarihli, profilde bitiş tarihi (0dd1ef0); bağış katmanları
+    listeden düzenlenir (d59c0a3). §8, §20.
+  - Profil "Hakkında" kartı — formda girilen hiçbir alan (bio, akademik, bağlantılar) önceden gösterilmiyordu (f317d4e). §8.
+  - İlan formu: açıklama 1500 + başlık 80 karakter (admin'den, canlı sayaç), "hizmet tanıtımı değil" kural kutusu, kategori
+    serbest metin yerine yetenek listesi + "Diğer" (e4b0889, 7a08daa, 10b2cb1). §8.
+  - Yedek: deploy öncesi `scripts/yedek_indir.sh --simdi` (yerele akar, sunucuda birikmez); `/root`'taki 9 eski elle yedek
+    silindi (9c8d10a — dev'de yerel, push edilmedi; kullanıcı: gereksiz). §3.
+  - Açık kalanlar `tasks/todo.md` başında: canlıdaki hizmet tanıtımı ilanları (189 vb.) için admin kararı; eskiden "Tamamlandı"
+    yapılıp Premium verilmemiş bağış var mı (admin → Bağışlar: Tamamlandı + Verilen Premium Gün = 0); eski pasif (kullanıcı
+    yazımı) iş kategorileri; ilan formundaki mavi kutunun ilk satırı koyu zeminde okunmuyor; Render'da profil fotoğrafı yüklenmiyor.
 
 ### Sıradaki Görevler
 
@@ -2145,7 +2188,11 @@ migration 0153–0155 container açılışında deploy.sh ile uygulandı; DB yed
 
 **Önceki (28 Eylül 2026 gece):** canlı = main ab57dcd (bibliometri kısıtlar bölümü + BibTeX).
 
-**En son (1 Ekim 2026):** canlı = main = **bb85064** (dev'de yalnız docs commit'leri) — SEO dönüşümü Faz 1–2 + analiz
+**En son (2 Ekim 2026):** canlı = main = **2416b69** (dev = 10b2cb1 + yerelde push'suz 9c8d10a betik/doküman) — pazar
+(ilan onayı, haftalık hak 2/5, kategori listesi, başlık/açıklama sınırı), bağış → Premium düzeltmesi, profil "Hakkında";
+migration forum/0165–0169 uygulandı. Ayrıntı: §27 Tamamlananlar "2 Ekim 2026".
+
+**Önceki (1 Ekim 2026):** canlı = main = **bb85064** (dev'de yalnız docs commit'leri) — SEO dönüşümü Faz 1–2 + analiz
 konsolu düzeni; migration forum/0162–0164 uygulandı. Ayrıntı: §27 Tamamlananlar "30 Eylül – 1 Ekim 2026".
 
 **Önceki (29 Eylül 2026 gece):** canlı = main = dev = **8393eec** (+ yalnız docs/betik commit'leri dev'de) — OpenAlex/PubMed
