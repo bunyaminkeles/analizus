@@ -764,8 +764,8 @@ class SiteSettingsAdmin(ModelAdmin):
             'classes': ('collapse',),
         }),
         ('Limitler', {
-            'description': 'Scraping: TR Dizin, OpenAlex, OAI-PMH scraperlarının çekebileceği maks. kayıt (default 5000). Analiz: Tez & Makale Analizi için işlenecek maks. kayıt (Render için 500, Hetzner için 2000–5000 önerilir).',
-            'fields': ('scrap_max_records', 'analiz_max_records'),
+            'description': 'Scraping: TR Dizin, OpenAlex, OAI-PMH scraperlarının çekebileceği maks. kayıt (default 5000). Analiz: Tez & Makale Analizi için işlenecek maks. kayıt (Render için 500, Hetzner için 2000–5000 önerilir). Haftalık ilan hakkı: son 7 günde açılabilecek ilan sayısı; her 5 geçerli referans +1 (en fazla +2) ayrıca eklenir.',
+            'fields': ('scrap_max_records', 'analiz_max_records', 'job_weekly_limit_free', 'job_weekly_limit_premium'),
             'classes': ('collapse',),
         }),
         ('Fiyatlandırma', {

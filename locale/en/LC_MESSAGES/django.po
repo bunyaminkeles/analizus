@@ -3416,13 +3416,15 @@ msgstr "Make offers on listings during your membership"
 
 #: forum/templates/forum/emails/support_payment_details.html:95
 #: templates/partials/footer.html:229
-msgid "Haftada <strong>3 ilan</strong> yayınlama hakkı"
-msgstr "Post up to <strong>3 listings</strong> per week"
+#, python-format
+msgid "Haftada <strong>%(premium)s ilan</strong> yayınlama hakkı"
+msgstr "Post up to <strong>%(premium)s listings</strong> per week"
 
 #: forum/templates/forum/emails/support_payment_details.html:95
 #: templates/partials/footer.html:229
-msgid "Normal: 1"
-msgstr "Standard: 1"
+#, python-format
+msgid "Normal: %(free)s"
+msgstr "Standard: %(free)s"
 
 #: forum/templates/forum/emails/support_payment_details.html:96
 #: templates/partials/footer.html:233

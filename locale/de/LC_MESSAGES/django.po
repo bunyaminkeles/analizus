@@ -3487,13 +3487,15 @@ msgstr "Während der Laufzeit Angebote auf Aufträge abgeben"
 
 #: forum/templates/forum/emails/support_payment_details.html:95
 #: templates/partials/footer.html:229
-msgid "Haftada <strong>3 ilan</strong> yayınlama hakkı"
-msgstr "Bis zu <strong>3 Aufträge</strong> pro Woche einstellen"
+#, python-format
+msgid "Haftada <strong>%(premium)s ilan</strong> yayınlama hakkı"
+msgstr "Bis zu <strong>%(premium)s Aufträge</strong> pro Woche einstellen"
 
 #: forum/templates/forum/emails/support_payment_details.html:95
 #: templates/partials/footer.html:229
-msgid "Normal: 1"
-msgstr "Standard: 1"
+#, python-format
+msgid "Normal: %(free)s"
+msgstr "Standard: %(free)s"
 
 #: forum/templates/forum/emails/support_payment_details.html:96
 #: templates/partials/footer.html:233

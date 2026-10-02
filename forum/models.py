@@ -396,8 +396,9 @@ class Profile(models.Model):
         return True, gettext("Kayıtlı üye")
 
     def get_weekly_job_limit(self):
-        """Haftalık ilan limiti: Premium=3, Free=1; her 5 geçerli referans +1 (maks +2)"""
-        base = 3 if self.account_type == 'Premium' else 1
+        """Haftalık ilan limiti: admin'deki SiteSettings değeri (Premium / normal); her 5 geçerli referans +1 (maks +2)"""
+        site = SiteSettings.load()
+        base = site.job_weekly_limit_premium if self.account_type == 'Premium' else site.job_weekly_limit_free
         ref_count = ReferralUse.objects.filter(referrer=self.user, rewarded=True).count()
         bonus = min(ref_count // 5, 2)
         return base + bonus
@@ -1345,6 +1346,12 @@ class SiteSettings(models.Model):
         verbose_name="Scraping Maks. Kayıt Sayısı",
         help_text="TR Dizin, OpenAlex ve OAI-PMH scraperlarının çekebileceği maksimum kayıt sayısı. (default: 5000)",
     )
+
+    # Pazar: haftalık ilan hakkı (son 7 gün; referans bonusu ayrıca eklenir — Profile.get_weekly_job_limit)
+    job_weekly_limit_free = models.PositiveIntegerField(
+        default=2, verbose_name="Haftalık ilan hakkı: normal kullanıcı")
+    job_weekly_limit_premium = models.PositiveIntegerField(
+        default=5, verbose_name="Haftalık ilan hakkı: Premium")
 
     # Bibliometrik Analiz Fiyatlandırma (TL)
     biblio_price_500 = models.PositiveIntegerField(default=500, verbose_name="0-500 kayıt fiyatı (TL)")

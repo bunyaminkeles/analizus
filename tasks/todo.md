@@ -48,6 +48,25 @@ maddelerde.
 >   (yıllık ortalama önerisi).
 > - Diğer açıklar bu listede `- [ ]`; ayrıntı `analizus.md` §14 (bibliometri), §15 (tarama), §26, §27.
 
+**Pazar / profil talepleri (kullanıcı, 2 Ekim 2026) — her biri ayrı görev, önce onay:**
+- [x] **YAPILDI YERELDE (2 Ekim 2026, commit yok): Normal 2 / Premium 5 haftalık, admin → Site Ayarları → Limitler; migration forum/0165; footer + bağış e-postası dinamik (TR/EN/DE doğrulandı), forum testleri 64/64.** Eski not: İlan hakkı normal kullanıcı için 2 — şu an `Profile.get_weekly_job_limit()` (`forum/models.py` ~398): Free=1,
+  Premium=3 (haftalık, son 7 gün) + referans bonusu (her 5 → +1, maks +2); sabit kodda. Netleştir: haftalık mı kalacak?
+  Premium 3 kalıyor mu? Kural gereği limit `SiteSettings` alanına + admin'e taşınmalı (migration).
+- [ ] **İlan yayını admin onayına bağlı + kullanıcıya e-posta** — `FreelanceJob.status` varsayılanı `'open'`, `post_job`
+  (`forum/views.py` ~502) ilanı anında yayınlıyor. Gerekli: onay bekleyen durum (liste/detay/sitemap/arama'da gizli),
+  admin onay/ret aksiyonu, onay ve ret e-postası (`recipient_language(user)` + çeviri), "ilanınız onaya gönderildi"
+  mesajı; `expires_at` ve ilk ilan 3 gün öne çıkarma onay anından mı başlasın (karar). Mevcut açık ilanlar onaylı sayılır. Migration.
+- [ ] **Profilde herkese açık biyografi** — `Profile.bio` alanı (TextField, 500) zaten var, `profile_edit`'te düzenleniyor;
+  profil sayfasında görünürlüğü kontrol edilecek. "Herkes görebilsin" → `profile_detail` şu an `@login_required` (SEO
+  planında "profil hariç şimdilik" diye ERTELENDİ) — anonim erişim mi, yalnız giriş yapmış herkese mi? karar. Kaçışlı çıktı (`linebreaks`/escape).
+- [ ] **İlan açıklamasına karakter sınırı** — `JobPostForm` açıklama alanı (form + model + sayaç). Sınır değeri karar
+  (admin'den mi, sabit mi); mevcut uzun ilanlar etkilenmemeli (yalnız yeni/düzenlenen ilanlarda doğrulama).
+- [ ] **İlan alanı "hizmet/yetenek tanıtımı"na dönüşmemeli** — örnek: canlı `/market/job/189/` ("Profesyonel SPSS Veri
+  Analizi & Akademik Raporlama Danışmanlığı" — kullanıcı ilan vermiyor, kendi hizmetini anlatıyor). Pazar = iş talebi;
+  hizmet tanıtımı yeri profil/biyografi + Uzman Dizini. Önlemler: ilan formunda açık kural metni ("ilan = yaptırmak
+  istediğiniz iş; hizmet tanıtımı profilinize"), admin onayında ret gerekçesi ("hizmet tanıtımı") + e-postada yönlendirme;
+  mevcut bu türden ilanlar için admin kararı (189 dahil). Admin onayı maddesine bağlı.
+
 ### BÜYÜK SEO DÖNÜŞÜMÜ — PLAN (30 Eylül 2026; ÖNCELİK — faz faz, her faz önce onay)
 **Hedef:** portal = analiz/danışmanlık ihtiyacı olanlar ↔ analistler (tez merkezleri, AI mühendisleri, istatistikçiler,
 eğitmenler). Kapsam: akademik danışmanlık, etik kurul, tez önerisi, metin editörlüğü, makale danışmanlığı, metodoloji ve

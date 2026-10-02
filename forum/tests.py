@@ -853,3 +853,42 @@ def test_egitim_talebi_prefill_from_query_params(client, training_enabled):
     content = response.content.decode()
     assert 'value="corporate" selected' in content
     assert 'value="agentic-ai" selected' in content
+
+
+# ─── Haftalık ilan hakkı (SiteSettings) ──────────────────────────────────────
+
+@pytest.mark.django_db
+def test_weekly_job_limit_defaults(user):
+    """Varsayılan: normal 2, Premium 5."""
+    from forum.models import Profile
+    profile, _ = Profile.objects.get_or_create(user=user)
+    assert profile.get_weekly_job_limit() == 2
+    profile.account_type = 'Premium'
+    assert profile.get_weekly_job_limit() == 5
+
+
+@pytest.mark.django_db
+def test_weekly_job_limit_from_admin_and_referral_bonus(user):
+    """Admin değeri okunur; her 5 ödüllü referans +1 (maks +2) korunur."""
+    from forum.models import SiteSettings, ReferralUse, Profile
+    profile, _ = Profile.objects.get_or_create(user=user)
+    site = SiteSettings.load()
+    site.job_weekly_limit_free = 4
+    site.save()
+    for i in range(12):
+        referred = User.objects.create_user(username=f'ref{i}', password='x')
+        ReferralUse.objects.create(referrer=user, referred=referred, ip_address='127.0.0.1', rewarded=True)
+    assert profile.get_weekly_job_limit() == 4 + 2
+
+
+@pytest.mark.django_db
+def test_footer_shows_admin_job_limits(client):
+    """Footer'daki Premium tanıtımı admin değerlerini gösterir."""
+    from forum.models import SiteSettings
+    site = SiteSettings.load()
+    site.job_weekly_limit_free = 3
+    site.job_weekly_limit_premium = 7
+    site.save()
+    content = client.get('/').content.decode()
+    assert '<strong>7 ilan</strong>' in content
+    assert 'Normal: 3' in content

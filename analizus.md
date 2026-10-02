@@ -542,7 +542,7 @@ class JobProposal:
 - **İptal:** `close_job` view → `status=cancelled` → bekleyen teklif verenlere AnalizBot DM
 - **Teklif fiyat gizliliği:** `feature_proposal_price_privacy=True` → fiyatlar gizli, sadece taraflar görür
 - **İlan süresi:** `Profile.get_job_duration_days()` puana göre: &lt;500p → 10 gün, 500–1000p → 20 gün, 1000+p → 30 gün; yayınlama ekranında kullanıcıya gösterilir; "İlanlarım" sayfasında kalan gün + bitiş tarihi görünür
-- **Haftalık ilan limiti:** Free=1, Premium=3; her 5 geçerli referans için +1 bonus (maks +2) — `get_weekly_job_limit()` DB'den referral sayısını çeker
+- **Haftalık ilan limiti:** admin → Site Ayarları → Limitler: `job_weekly_limit_free` (varsayılan 2) / `job_weekly_limit_premium` (varsayılan 5), son 7 gün; her 5 geçerli referans için +1 bonus (maks +2) — `get_weekly_job_limit()`. Footer + bağış e-postası değeri `job_limits`'ten gösterir (2 Ekim 2026, migration forum/0165)
 
 ### Referral (Davet) Sistemi
 ```python

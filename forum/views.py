@@ -3443,12 +3443,17 @@ def send_support_email(request):
             reverse('mark_donation_transferred', args=[donation.pk])
         )
 
+        site_settings = SiteSettings.load()
         context = {
             'username': user.username,
             'tier_amount': tier_amount,
             'tier_name': tier_name,
             'premium_days': tier.premium_days,
             'confirm_url': confirm_url,
+            'job_limits': {
+                'free': site_settings.job_weekly_limit_free,
+                'premium': site_settings.job_weekly_limit_premium,
+            },
         }
 
         # Alıcının kayıtlı dilinde (Profile.preferred_language)
