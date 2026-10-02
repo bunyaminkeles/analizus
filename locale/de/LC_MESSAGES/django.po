@@ -20570,3 +20570,9 @@ msgstr ""
 
 msgid "Profilimi düzenle"
 msgstr "Mein Profil bearbeiten"
+
+msgid "Kategori seçin…"
+msgstr "Kategorie wählen…"
+
+msgid "Listede uygun alan yoksa “Diğer”i seçin."
+msgstr "Wenn kein passender Bereich aufgeführt ist, wählen Sie „Sonstiges“."

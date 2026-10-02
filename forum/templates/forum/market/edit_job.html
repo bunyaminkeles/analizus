@@ -45,11 +45,9 @@
                         </div>
 
                         <div class="mb-4">
-                            <label class="form-label text-white-50">{{ form.category_input.label }}</label>
-                            {{ form.category_input }}
-                            <datalist id="job-category-list">
-                                {% for cat in job_categories %}<option value="{{ cat }}">{% endfor %}
-                            </datalist>
+                            <label class="form-label text-white-50" for="{{ form.category_choice.id_for_label }}">{{ form.category_choice.label }}</label>
+                            {{ form.category_choice }}
+                            <div class="form-text text-muted">{% trans "Listede uygun alan yoksa “Diğer”i seçin." %}</div>
                         </div>
 
                         {% if form.errors %}
