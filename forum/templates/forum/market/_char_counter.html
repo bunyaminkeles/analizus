@@ -1,0 +1,21 @@
+{# Karakter sayacı: include ... with field=form.X max=form.X_max — alanda data-maxchars olmalı; betik sayfada bir kez bağlanır #}
+<div class="form-text text-muted" aria-live="polite"><span data-count-for="{{ field.id_for_label }}">{{ field.value|default:""|length }}</span> / {{ max }}</div>
+<script>
+(function () {
+    if (window.axCharCounterInit) return;
+    window.axCharCounterInit = true;
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('[data-count-for]').forEach(function (out) {
+            var el = document.getElementById(out.getAttribute('data-count-for'));
+            if (!el) return;
+            var max = parseInt(el.getAttribute('data-maxchars'), 10);
+            function update() {
+                out.textContent = el.value.length;
+                out.style.color = el.value.length >= max * 0.9 ? 'var(--ax-accent-warning)' : '';
+            }
+            el.addEventListener('input', update);
+            update();
+        });
+    });
+})();
+</script>

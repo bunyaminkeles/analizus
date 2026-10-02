@@ -20249,3 +20249,7 @@ msgstr "Select a category…"
 
 msgid "Listede uygun alan yoksa “Diğer”i seçin."
 msgstr "If no suitable area is listed, choose “Other”."
+
+msgid "İlan başlığı en fazla {max} karakter olabilir (şu an {count})."
+msgstr ""
+"The listing title can be at most {max} characters (currently {count})."
