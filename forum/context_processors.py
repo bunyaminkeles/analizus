@@ -82,6 +82,11 @@ def feature_flags(request):
             'scrape_first_100': site.scrape_price_first_100,
             'scrape_per_100': site.scrape_price_per_100,
         },
+        # Footer/Premium tanıtımındaki haftalık ilan hakkı
+        'job_limits': {
+            'free': site.job_weekly_limit_free,
+            'premium': site.job_weekly_limit_premium,
+        },
     }
 
 # og:locale değerleri (LANGUAGES kodu → Open Graph biçimi)

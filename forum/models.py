@@ -352,6 +352,36 @@ class Profile(models.Model):
             quiz_points = quiz_score.total_points
         return self.reputation + quiz_points
 
+    def public_links(self):
+        """Profil 'Hakkında' kartındaki dış bağlantılar: (anahtar, etiket, url).
+
+        Profil formu alanları doğrulamadan kaydediyor → yalnız http(s) adresler ve biçimi geçerli
+        ORCID / X / GitHub kimlikleri döner (javascript: vb. şemalar asla bağlantı olmaz).
+        """
+        import re
+
+        def _http(url):
+            url = (url or '').strip()
+            return url if re.match(r'^https?://[^\s]+$', url, re.I) else ''
+
+        links = []
+        if _http(self.website):
+            links.append(('website', gettext('Web Sitesi'), _http(self.website)))
+        orcid = re.search(r'\d{4}-\d{4}-\d{4}-\d{3}[\dX]', self.orcid or '')
+        if orcid:
+            links.append(('orcid', 'ORCID', f'https://orcid.org/{orcid.group(0)}'))
+        if _http(self.google_scholar):
+            links.append(('scholar', 'Google Scholar', _http(self.google_scholar)))
+        if _http(self.linkedin):
+            links.append(('linkedin', 'LinkedIn', _http(self.linkedin)))
+        handle = (self.twitter or '').strip().lstrip('@')
+        if re.fullmatch(r'[A-Za-z0-9_]{1,15}', handle):
+            links.append(('x', f'@{handle}', f'https://x.com/{handle}'))
+        github = (self.github or '').strip()
+        if re.fullmatch(r'[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})', github):
+            links.append(('github', github, f'https://github.com/{github}'))
+        return links
+
     @property
     def is_premium(self):
         """Premium üyelik aktif mi kontrol et"""
@@ -396,8 +426,9 @@ class Profile(models.Model):
         return True, gettext("Kayıtlı üye")
 
     def get_weekly_job_limit(self):
-        """Haftalık ilan limiti: Premium=3, Free=1; her 5 geçerli referans +1 (maks +2)"""
-        base = 3 if self.account_type == 'Premium' else 1
+        """Haftalık ilan limiti: admin'deki SiteSettings değeri (Premium / normal); her 5 geçerli referans +1 (maks +2)"""
+        site = SiteSettings.load()
+        base = site.job_weekly_limit_premium if self.account_type == 'Premium' else site.job_weekly_limit_free
         ref_count = ReferralUse.objects.filter(referrer=self.user, rewarded=True).count()
         bonus = min(ref_count // 5, 2)
         return base + bonus
@@ -413,6 +444,9 @@ class Profile(models.Model):
         """Kullanıcı şu an ilan açabilir mi? (limit + e-posta kontrolü)"""
         if not self.email_verified:
             return False, gettext("İlan açmak için e-posta doğrulaması gerekli")
+        # Admin/Staff haftalık limitten muaf (can_propose ile aynı kural; admin onayı yine uygulanır)
+        if self.user.is_superuser or self.user.is_staff:
+            return True, gettext("İlan açabilirsiniz")
         if self.get_weekly_job_count() >= self.get_weekly_job_limit():
             limit = self.get_weekly_job_limit()
             return False, gettext("Haftalık ilan limitinize (%(limit)s) ulaştınız") % {'limit': limit}
@@ -874,10 +908,18 @@ class JobCategory(models.Model):
 class FreelanceJob(models.Model):
     """Kullanıcıların verdiği iş ilanları (Freelance Market)"""
     STATUS_CHOICES = (
+        ('pending', gettext_lazy('Onay Bekliyor')),
         ('open', gettext_lazy('Açık (Teklif Bekliyor)')),
         ('in_progress', gettext_lazy('Devam Ediyor')),
         ('completed', gettext_lazy('Tamamlandı')),
         ('cancelled', gettext_lazy('İptal Edildi')),
+        ('rejected', gettext_lazy('Reddedildi')),
+    )
+    # Admin ret gerekçeleri — ilan sahibine e-postada ve ilan sayfasında gösterilir
+    REJECTION_REASON_CHOICES = (
+        ('service_ad', gettext_lazy('Hizmet tanıtımı — iş talebi değil')),
+        ('incomplete', gettext_lazy('Eksik veya anlaşılmaz içerik')),
+        ('rules', gettext_lazy('Platform kurallarına aykırı')),
     )
 
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posted_jobs', verbose_name="İlan Sahibi")
@@ -904,6 +946,10 @@ class FreelanceJob(models.Model):
     )
     feature_status = models.CharField(max_length=20, choices=FEATURE_STATUS_CHOICES, default='none', verbose_name="Vitrin Durumu")
     expires_at = models.DateTimeField(null=True, blank=True, verbose_name="Bitiş Tarihi")
+    approved_at = models.DateTimeField(null=True, blank=True, verbose_name="Yayına Alınma Tarihi")
+    rejection_reason = models.CharField(max_length=20, choices=REJECTION_REASON_CHOICES, blank=True, verbose_name="Ret Gerekçesi")
+    rejection_note = models.TextField(blank=True, verbose_name="Ret Notu",
+                                      help_text="İsteğe bağlı; ilan sahibine e-postada gönderilir.")
     is_edited = models.BooleanField(default=False, verbose_name="Düzenlendi")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -936,10 +982,18 @@ class FreelanceJob(models.Model):
 
             self.reference_number = f"{current_year}/{new_seq:04d}"
 
-        # İlan iptal veya tamamlandıysa bekleyen teklifleri reddet
-        if self.pk and self.status in ('cancelled', 'completed'):
+        # İlk kez yayına giriyorsa (onayla ya da onay kapalıyken doğrudan): süre ve ilk ilan hediyesi bu andan başlar
+        if self.status == 'open' and self.approved_at is None:
+            self._apply_publish()
+            update_fields = kwargs.get('update_fields')
+            if update_fields is not None:
+                kwargs['update_fields'] = set(update_fields) | {
+                    'approved_at', 'expires_at', 'is_featured', 'featured_until'}
+
+        # İlan iptal, tamamlandı veya reddedildiyse bekleyen teklifleri reddet
+        if self.pk and self.status in ('cancelled', 'completed', 'rejected'):
             old = FreelanceJob.objects.filter(pk=self.pk).values_list('status', flat=True).first()
-            if old not in ('cancelled', 'completed'):
+            if old not in ('cancelled', 'completed', 'rejected'):
                 super().save(*args, **kwargs)
                 self.proposals.filter(status='pending').update(status='rejected')
                 return
@@ -949,6 +1003,18 @@ class FreelanceJob(models.Model):
     @property
     def total_likes(self):
         return self.likes.count()
+
+    def _apply_publish(self):
+        """Yayına alma: approved_at, süre (puana göre) ve ilk yayınlanan ilansa 3 gün öne çıkarma hediyesi."""
+        from datetime import timedelta
+        now = timezone.now()
+        self.approved_at = now
+        self.expires_at = now + timedelta(days=self.owner.profile.get_job_duration_days())
+        first = not FreelanceJob.objects.filter(owner=self.owner, approved_at__isnull=False).exclude(pk=self.pk).exists()
+        self.first_job_gift = first
+        if first:
+            self.is_featured = True
+            self.featured_until = now + timedelta(days=3)  # 3 gün hediye
 
     @property
     def is_expired(self):
@@ -1089,6 +1155,10 @@ class Donation(models.Model):
     conversation_id = models.CharField(max_length=100, blank=True, verbose_name="Konuşma ID")
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending', verbose_name="Durum")
     premium_days_granted = models.IntegerField(default=0, verbose_name="Verilen Premium Gün")
+    # Talep anındaki katmanın günü — katman sonradan değişse de e-postada söz verilen gün verilir
+    premium_days_promised = models.IntegerField(
+        default=0, verbose_name="Söz Verilen Premium Gün",
+        help_text="Bağış talep edildiğinde seçilen katmanın gün sayısı; onayda bu süre verilir.")
     message = models.TextField(blank=True, verbose_name="Mesaj")
     is_anonymous = models.BooleanField(default=False, verbose_name="Anonim")
     created_at = models.DateTimeField(auto_now_add=True)
@@ -1109,12 +1179,14 @@ class Donation(models.Model):
         return reverse('admin:forum_donation_change', args=[self.pk])
 
     def get_premium_days(self):
-        """Bağış miktarına göre premium gün hesapla (DonationTier modelinden)"""
+        """Verilecek premium gün: talep anında söz verilen gün; yoksa (eski kayıt) tutara göre güncel katman"""
+        if self.premium_days_promised:
+            return self.premium_days_promised
         return DonationTier.get_premium_days_for_amount(float(self.amount))
 
     def grant_premium(self):
-        """Kullanıcıya premium üyelik ver"""
-        if not self.user:
+        """Kullanıcıya premium üyelik ver (bir bağış için yalnız bir kez)"""
+        if not self.user or self.premium_days_granted:
             return False
 
         days = self.get_premium_days()
@@ -1345,6 +1417,22 @@ class SiteSettings(models.Model):
         verbose_name="Scraping Maks. Kayıt Sayısı",
         help_text="TR Dizin, OpenAlex ve OAI-PMH scraperlarının çekebileceği maksimum kayıt sayısı. (default: 5000)",
     )
+
+    # Pazar: yeni ilan admin onayından sonra yayınlanır (kapalıysa anında yayın)
+    job_approval_required = models.BooleanField(
+        default=True, verbose_name="İlan yayını admin onayına bağlı",
+        help_text="Açıkken yeni ilan 'Onay Bekliyor' durumunda açılır; admin onaylayınca yayınlanır ve sahibine e-posta gider.")
+
+    # Pazar: ilan açıklaması (İş Tanımı) üst sınırı — yeni ve düzenlenen ilanlarda uygulanır
+    job_description_max_chars = models.PositiveIntegerField(
+        default=1500, verbose_name="İlan açıklaması: en fazla karakter",
+        help_text="Yeni ilan ve ilan düzenlemede uygulanır; mevcut ilanlar değişmez.")
+
+    # Pazar: haftalık ilan hakkı (son 7 gün; referans bonusu ayrıca eklenir — Profile.get_weekly_job_limit)
+    job_weekly_limit_free = models.PositiveIntegerField(
+        default=2, verbose_name="Haftalık ilan hakkı: normal kullanıcı")
+    job_weekly_limit_premium = models.PositiveIntegerField(
+        default=5, verbose_name="Haftalık ilan hakkı: Premium")
 
     # Bibliometrik Analiz Fiyatlandırma (TL)
     biblio_price_500 = models.PositiveIntegerField(default=500, verbose_name="0-500 kayıt fiyatı (TL)")

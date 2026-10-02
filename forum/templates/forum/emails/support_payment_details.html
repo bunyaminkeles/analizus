@@ -92,7 +92,7 @@
           <p style="margin:0 0 12px;font-size:12px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.08em;">🎁 {% trans "Kazanacağınız Ayrıcalıklar" %}</p>
           <table width="100%" cellpadding="4" cellspacing="0" style="margin-bottom:28px;">
             <tr><td style="font-size:13px;color:#cbd5e1;">💬 &nbsp;{% trans "Süresi içinde ilanlara teklif verebilme" %}</td></tr>
-            <tr><td style="font-size:13px;color:#cbd5e1;">📋 &nbsp;{% blocktrans %}Haftada <strong>3 ilan</strong> yayınlama hakkı{% endblocktrans %} <span style="color:#64748b;">({% trans "Normal: 1" %})</span></td></tr>
+            <tr><td style="font-size:13px;color:#cbd5e1;">📋 &nbsp;{% blocktrans with premium=job_limits.premium %}Haftada <strong>{{ premium }} ilan</strong> yayınlama hakkı{% endblocktrans %} <span style="color:#64748b;">({% blocktrans with free=job_limits.free %}Normal: {{ free }}{% endblocktrans %})</span></td></tr>
             <tr><td style="font-size:13px;color:#cbd5e1;">❤️ &nbsp;{% blocktrans %}Profil üzerinde özel <strong>Destekçi Rozeti</strong>{% endblocktrans %}</td></tr>
             <tr><td style="font-size:13px;color:#cbd5e1;">👥 &nbsp;{% blocktrans %}<strong>Destekçiler listesinde</strong> yer alma{% endblocktrans %}</td></tr>
           </table>

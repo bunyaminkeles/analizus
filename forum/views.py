@@ -16,7 +16,7 @@ from django.contrib import messages
 from django.utils.translation import gettext, ngettext, pgettext
 from django.utils import timezone, translation
 from django.utils.html import strip_tags
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 from django.views.decorators.http import require_GET, require_POST
 from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
 from datetime import timedelta
@@ -514,12 +514,15 @@ def post_job(request):
         if form.is_valid():
             job = form.save(commit=False)
             job.owner = request.user
-            job.expires_at = timezone.now() + timedelta(days=profile.get_job_duration_days())
-            if profile.is_first_job():
-                job.is_featured = True
-                job.featured_until = timezone.now() + timedelta(days=3)  # 3 gün hediye
+            if SiteSettings.load().job_approval_required:
+                # Admin onayından sonra yayınlanır; süre ve ilk ilan hediyesi onay anından başlar (FreelanceJob.save)
+                job.status = 'pending'
+                job.save()
+                messages.success(request, gettext('İlanınız alındı ve admin onayına gönderildi. Onaylandığında e-posta ile bilgilendirileceksiniz; ilan süresi onay anından başlar.'))
+                return redirect('job_detail', pk=job.pk)
+            job.save()  # status='open' → FreelanceJob.save süreyi ve ilk ilan hediyesini uygular
+            if getattr(job, 'first_job_gift', False):
                 messages.info(request, gettext('İlk ilanınız olduğu için 3 gün öne çıkarma hediyesi kazandınız!'))
-            job.save()
             messages.success(request, gettext('İş ilanı başarıyla oluşturuldu. (%(days)s gün aktif kalacak)') % {'days': profile.get_job_duration_days()})
             return redirect('job_detail', pk=job.pk)
     else:
@@ -530,6 +533,7 @@ def post_job(request):
         'form': form,
         'job_categories': job_categories,
         'job_duration_days': profile.get_job_duration_days(),
+        'job_approval_required': SiteSettings.load().job_approval_required,
     })
 
 @login_required
@@ -559,7 +563,12 @@ def toggle_job_bookmark(request, pk):
 def close_job(request, pk):
     job = get_object_or_404(FreelanceJob, pk=pk, owner=request.user)
 
-    if job.status == 'open':
+    if job.status == 'pending':
+        # Onay bekleyen ilan geri çekilir (teklif alamadığı için bildirim yok)
+        job.status = 'cancelled'
+        job.save()
+        messages.success(request, gettext('Onay bekleyen ilanınız geri çekildi.'))
+    elif job.status == 'open':
         # Bekleyen teklif sahiplerine DM gönder
         pending_proposals = job.proposals.filter(status='pending').select_related('expert')
         try:
@@ -592,7 +601,7 @@ def close_job(request, pk):
 def edit_job(request, pk):
     job = get_object_or_404(FreelanceJob, pk=pk, owner=request.user)
 
-    if job.status != 'open':
+    if job.status not in ('open', 'pending'):
         messages.error(request, gettext('Yalnızca açık ilanlar düzenlenebilir.'))
         return redirect('job_detail', pk=pk)
 
@@ -610,8 +619,14 @@ def edit_job(request, pk):
         if form.is_valid():
             updated = form.save(commit=False)
             updated.is_edited = True
+            # Onay açıkken düzenlenen ilan yeniden onaya gider (onaydan sonra içerik değiştirilerek kural aşılmasın)
+            if SiteSettings.load().job_approval_required:
+                updated.status = 'pending'
             updated.save()
-            messages.success(request, gettext('İlanınız güncellendi. (Düzenleme hakkınız kullanıldı.)'))
+            if updated.status == 'pending':
+                messages.success(request, gettext('İlanınız güncellendi ve yeniden admin onayına gönderildi. (Düzenleme hakkınız kullanıldı.)'))
+            else:
+                messages.success(request, gettext('İlanınız güncellendi. (Düzenleme hakkınız kullanıldı.)'))
             return redirect('job_detail', pk=pk)
     else:
         form = JobPostForm(instance=job)
@@ -772,6 +787,11 @@ def admin_manage_proposal(request, job_pk, proposal_id):
 @feature_required('market')
 def job_detail(request, pk):
     job = get_object_or_404(FreelanceJob, pk=pk)
+
+    # Onay bekleyen / reddedilen ilanı yalnız sahibi ve admin görür
+    if job.status in ('pending', 'rejected') and not (
+            request.user == job.owner or request.user.is_staff or request.user.is_superuser):
+        raise Http404
 
     # Süresi geçmişse otomatik kapat
     job.expire_if_needed()
@@ -1417,7 +1437,7 @@ def profile_edit(request):
         
         # Profil Bilgileri
         profile.title = request.POST.get('title', '')
-        profile.bio = request.POST.get('bio', '')
+        profile.bio = request.POST.get('bio', '').strip()[:500]  # model sınırı (TextField max_length DB'de uygulanmaz)
         profile.location = request.POST.get('location', '')
         
         # Akademik
@@ -1841,7 +1861,10 @@ def profile_detail(request, username):
                     messages.error(request, gettext('Geçersiz LinkedIn URL.'))
         return redirect('profile_detail', username=username)
 
-    posted_jobs = FreelanceJob.objects.filter(owner=profile_user).annotate(
+    posted_jobs = FreelanceJob.objects.filter(owner=profile_user)
+    if not is_owner:
+        posted_jobs = posted_jobs.exclude(status__in=('pending', 'rejected'))
+    posted_jobs = posted_jobs.annotate(
         p_count=Count('proposals', distinct=True)
     ).order_by('-created_at')[:5]
     given_proposals = (
@@ -3436,19 +3459,31 @@ def send_support_email(request):
                 amount=tier.min_amount,
                 payment_id=f"IBAN-{uuid.uuid4().hex[:12].upper()}",
                 conversation_id=f"TIER-{tier.pk}",
+                premium_days_promised=tier.premium_days,
                 status='pending',
             )
+        else:
+            # Yeniden talep: kayıt bu e-postada bildirilen katmana (tutar + gün) güncellenir
+            donation.amount = tier.min_amount
+            donation.conversation_id = f"TIER-{tier.pk}"
+            donation.premium_days_promised = tier.premium_days
+            donation.save(update_fields=['amount', 'conversation_id', 'premium_days_promised'])
 
         confirm_url = request.build_absolute_uri(
             reverse('mark_donation_transferred', args=[donation.pk])
         )
 
+        site_settings = SiteSettings.load()
         context = {
             'username': user.username,
             'tier_amount': tier_amount,
             'tier_name': tier_name,
             'premium_days': tier.premium_days,
             'confirm_url': confirm_url,
+            'job_limits': {
+                'free': site_settings.job_weekly_limit_free,
+                'premium': site_settings.job_weekly_limit_premium,
+            },
         }
 
         # Alıcının kayıtlı dilinde (Profile.preferred_language)

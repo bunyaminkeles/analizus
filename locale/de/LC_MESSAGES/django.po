@@ -3487,13 +3487,15 @@ msgstr "Während der Laufzeit Angebote auf Aufträge abgeben"
 
 #: forum/templates/forum/emails/support_payment_details.html:95
 #: templates/partials/footer.html:229
-msgid "Haftada <strong>3 ilan</strong> yayınlama hakkı"
-msgstr "Bis zu <strong>3 Aufträge</strong> pro Woche einstellen"
+#, python-format
+msgid "Haftada <strong>%(premium)s ilan</strong> yayınlama hakkı"
+msgstr "Bis zu <strong>%(premium)s Aufträge</strong> pro Woche einstellen"
 
 #: forum/templates/forum/emails/support_payment_details.html:95
 #: templates/partials/footer.html:229
-msgid "Normal: 1"
-msgstr "Standard: 1"
+#, python-format
+msgid "Normal: %(free)s"
+msgstr "Standard: %(free)s"
 
 #: forum/templates/forum/emails/support_payment_details.html:96
 #: templates/partials/footer.html:233
@@ -20355,3 +20357,216 @@ msgstr "Was ist eine ANOVA mit Messwiederholung?"
 #: istatistik/templates/istatistik/
 msgid "Örneklem Büyüklüğü Nedir?"
 msgstr "Was ist der Stichprobenumfang?"
+
+#, python-format
+msgid "İlanınız yayında: %(title)s"
+msgstr "Ihr Auftrag ist online: %(title)s"
+
+#, python-format
+msgid ""
+"Merhaba %(owner)s,\n"
+"\n"
+"\"%(title)s\" ilanınız incelendi ve yayına alındı. Uzmanlar artık teklif verebilir.\n"
+"\n"
+"İlan bitiş tarihi: %(expires)s\n"
+"\n"
+"İlanınızı görmek için:\n"
+"%(url)s\n"
+"\n"
+"---\n"
+"Bu bir otomatik bildirimdir.\n"
+"Analizus - Araştırma ve Analiz Platformu"
+msgstr ""
+"Hallo %(owner)s,\n"
+"\n"
+"Ihr Auftrag „%(title)s“ wurde geprüft und veröffentlicht. Expertinnen und Experten können jetzt Angebote abgeben.\n"
+"\n"
+"Enddatum des Auftrags: %(expires)s\n"
+"\n"
+"Ihren Auftrag ansehen:\n"
+"%(url)s\n"
+"\n"
+"---\n"
+"Dies ist eine automatische Benachrichtigung.\n"
+"Analizus - Plattform für Forschung und Analyse"
+
+#, python-format
+msgid "İlanınız yayınlanmadı: %(title)s"
+msgstr "Ihr Auftrag wurde nicht veröffentlicht: %(title)s"
+
+#, python-format
+msgid ""
+"Merhaba %(owner)s,\n"
+"\n"
+"\"%(title)s\" ilanınız incelendi ve yayınlanmadı.\n"
+"\n"
+"Gerekçe: %(reason)s\n"
+msgstr ""
+"Hallo %(owner)s,\n"
+"\n"
+"Ihr Auftrag „%(title)s“ wurde geprüft und nicht veröffentlicht.\n"
+"\n"
+"Grund: %(reason)s\n"
+
+#, python-format
+msgid "Açıklama: %(note)s\n"
+msgstr "Hinweis: %(note)s\n"
+
+#, python-format
+msgid ""
+"Uygun bir iş talebiyle yeni ilan açabilirsiniz:\n"
+"%(url)s\n"
+"\n"
+"---\n"
+"Bu bir otomatik bildirimdir.\n"
+"Analizus - Araştırma ve Analiz Platformu"
+msgstr ""
+"Sie können mit einer passenden Auftragsanfrage einen neuen Auftrag einstellen:\n"
+"%(url)s\n"
+"\n"
+"---\n"
+"Dies ist eine automatische Benachrichtigung.\n"
+"Analizus - Plattform für Forschung und Analyse"
+
+#, python-format
+msgid ""
+"Pazaryeri ilanları, yaptırmak istediğiniz bir iş için açılır. Sunduğunuz hizmetleri profilinizde tanıtabilirsiniz:\n"
+"%(url)s\n"
+msgstr ""
+"Aufträge auf dem Marktplatz sind für Arbeiten gedacht, die Sie vergeben möchten. Ihre eigenen Leistungen können Sie in Ihrem Profil vorstellen:\n"
+"%(url)s\n"
+
+msgid "Onay bekleyen ilanınız geri çekildi."
+msgstr "Ihr noch nicht freigegebener Auftrag wurde zurückgezogen."
+
+msgid ""
+"İlanınız alındı ve admin onayına gönderildi. Onaylandığında e-posta ile "
+"bilgilendirileceksiniz; ilan süresi onay anından başlar."
+msgstr ""
+"Ihr Auftrag ist eingegangen und wird vom Admin geprüft. Nach der Freigabe "
+"werden Sie per E-Mail benachrichtigt; die Laufzeit beginnt mit der Freigabe."
+
+msgid ""
+"İlanınız güncellendi ve yeniden admin onayına gönderildi. (Düzenleme "
+"hakkınız kullanıldı.)"
+msgstr ""
+"Ihr Auftrag wurde aktualisiert und erneut zur Prüfung eingereicht. (Ihre "
+"Bearbeitung wurde verbraucht.)"
+
+msgid "Onay Bekliyor"
+msgstr "Wartet auf Freigabe"
+
+msgid "Hizmet tanıtımı — iş talebi değil"
+msgstr "Leistungswerbung – keine Auftragsanfrage"
+
+msgid "Eksik veya anlaşılmaz içerik"
+msgstr "Unvollständiger oder unklarer Inhalt"
+
+msgid "Platform kurallarına aykırı"
+msgstr "Verstößt gegen die Plattformregeln"
+
+msgid ""
+"İlanınız admin onayından sonra yayınlanır; süre onay anından başlar. Sonuç "
+"e-posta ile bildirilir."
+msgstr ""
+"Ihr Auftrag wird nach der Freigabe durch den Admin veröffentlicht; die "
+"Laufzeit beginnt mit der Freigabe. Über das Ergebnis werden Sie per E-Mail "
+"informiert."
+
+msgid ""
+"Bu ilan admin onayı bekliyor ve henüz yayında değil. Onaylandığında e-posta "
+"ile bilgilendirileceksiniz; ilan süresi onay anından başlar."
+msgstr ""
+"Dieser Auftrag wartet auf die Freigabe durch den Admin und ist noch nicht "
+"online. Nach der Freigabe werden Sie per E-Mail benachrichtigt; die Laufzeit"
+" beginnt mit der Freigabe."
+
+msgid "Bu ilan admin incelemesinden sonra yayınlanmadı."
+msgstr ""
+"Dieser Auftrag wurde nach der Prüfung durch den Admin nicht veröffentlicht."
+
+msgid "Gerekçe:"
+msgstr "Grund:"
+
+msgid "Teşekkür Ederiz!"
+msgstr "Vielen Dank!"
+
+#, python-format
+msgid "Merhaba <strong>%(donor_name)s</strong>,"
+msgstr "Hallo <strong>%(donor_name)s</strong>,"
+
+msgid "bağışınız onaylandı!"
+msgstr "Ihre Spende wurde bestätigt!"
+
+msgid "Kazandığınız Ödüller"
+msgstr "Ihre Belohnungen"
+
+#, python-format
+msgid "%(premium_days)s Gün Premium Üyelik"
+msgstr "%(premium_days)s Tage Premium-Mitgliedschaft"
+
+#, python-format
+msgid ""
+"Premium üyeliğiniz <strong style=\"color: "
+"#fbbf24;\">%(premium_until)s</strong> tarihine kadar aktif."
+msgstr ""
+"Ihre Premium-Mitgliedschaft ist bis <strong style=\"color: "
+"#fbbf24;\">%(premium_until)s</strong> aktiv."
+
+msgid ""
+"Premium üyeliğiniz hesabınıza tanımlandı. Artık tüm premium özelliklerden "
+"faydalanabilirsiniz!"
+msgstr ""
+"Die Premium-Mitgliedschaft wurde Ihrem Konto hinzugefügt. Sie können jetzt "
+"alle Premium-Funktionen nutzen!"
+
+msgid "Analizus'a Git"
+msgstr "Zu Analizus"
+
+msgid "Sevgilerle, Analizus Ekibi"
+msgstr "Herzliche Grüße, Ihr Analizus-Team"
+
+msgid "Bu e-posta otomatik olarak gönderilmiştir."
+msgstr "Diese E-Mail wurde automatisch versendet."
+
+msgid "Bağışınız onaylandı — Premium üyeliğiniz aktif"
+msgstr "Ihre Spende ist bestätigt – Ihre Premium-Mitgliedschaft ist aktiv"
+
+#, python-format
+msgid "Premium üyeliğiniz %(date)s tarihine kadar aktif."
+msgstr "Ihre Premium-Mitgliedschaft ist bis %(date)s aktiv."
+
+msgid "Hakkında"
+msgstr "Über mich"
+
+msgid ""
+"Profilinizde henüz tanıtım yok. Biyografi, akademik bilgi ve "
+"bağlantılarınızı ekleyerek diğer üyelerin sizi tanımasını sağlayın."
+msgstr ""
+"Ihr Profil enthält noch keine Vorstellung. Ergänzen Sie Biografie, "
+"akademische Angaben und Links, damit andere Mitglieder Sie kennenlernen "
+"können."
+
+msgid ""
+"Yaptırmak istediğiniz işi anlatın: veri, yöntem, beklenen çıktı, teslim "
+"tarihi..."
+msgstr ""
+"Beschreiben Sie die gewünschte Arbeit: Daten, Methode, erwartetes Ergebnis, "
+"Termin..."
+
+msgid "İş tanımı en fazla {max} karakter olabilir (şu an {count})."
+msgstr ""
+"Die Auftragsbeschreibung darf höchstens {max} Zeichen lang sein (derzeit "
+"{count})."
+
+msgid ""
+"Pazaryeri ilanları, yaptırmak istediğiniz bir iş içindir. Kendi "
+"hizmetlerinizi tanıtmak için profilinizdeki “Hakkında” bölümünü kullanın; "
+"hizmet tanıtımı içeren ilanlar yayınlanmaz."
+msgstr ""
+"Aufträge auf dem Marktplatz sind für Arbeiten gedacht, die Sie vergeben "
+"möchten. Ihre eigenen Leistungen stellen Sie im Abschnitt „Über mich“ Ihres "
+"Profils vor; Aufträge mit Leistungswerbung werden nicht veröffentlicht."
+
+msgid "Profilimi düzenle"
+msgstr "Mein Profil bearbeiten"

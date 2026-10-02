@@ -853,3 +853,341 @@ def test_egitim_talebi_prefill_from_query_params(client, training_enabled):
     content = response.content.decode()
     assert 'value="corporate" selected' in content
     assert 'value="agentic-ai" selected' in content
+
+
+# ─── Haftalık ilan hakkı (SiteSettings) ──────────────────────────────────────
+
+@pytest.mark.django_db
+def test_weekly_job_limit_defaults(user):
+    """Varsayılan: normal 2, Premium 5."""
+    from forum.models import Profile
+    profile, _ = Profile.objects.get_or_create(user=user)
+    assert profile.get_weekly_job_limit() == 2
+    profile.account_type = 'Premium'
+    assert profile.get_weekly_job_limit() == 5
+
+
+@pytest.mark.django_db
+def test_weekly_job_limit_from_admin_and_referral_bonus(user):
+    """Admin değeri okunur; her 5 ödüllü referans +1 (maks +2) korunur."""
+    from forum.models import SiteSettings, ReferralUse, Profile
+    profile, _ = Profile.objects.get_or_create(user=user)
+    site = SiteSettings.load()
+    site.job_weekly_limit_free = 4
+    site.save()
+    for i in range(12):
+        referred = User.objects.create_user(username=f'ref{i}', password='x')
+        ReferralUse.objects.create(referrer=user, referred=referred, ip_address='127.0.0.1', rewarded=True)
+    assert profile.get_weekly_job_limit() == 4 + 2
+
+
+@pytest.mark.django_db
+def test_footer_shows_admin_job_limits(client):
+    """Footer'daki Premium tanıtımı admin değerlerini gösterir."""
+    from forum.models import SiteSettings
+    site = SiteSettings.load()
+    site.job_weekly_limit_free = 3
+    site.job_weekly_limit_premium = 7
+    site.save()
+    content = client.get('/').content.decode()
+    assert '<strong>7 ilan</strong>' in content
+    assert 'Normal: 3' in content
+
+
+# ─── İlan admin onayı ─────────────────────────────────────────────────────────
+
+@pytest.fixture
+def job_owner(db):
+    from forum.models import Profile
+    u = User.objects.create_user(username='ilansahibi', password='testpass123', email='owner@example.com')
+    p, _ = Profile.objects.get_or_create(user=u)
+    p.email_verified = True
+    p.save()
+    return u
+
+
+@pytest.fixture
+def sent_job_emails(monkeypatch):
+    """Onay/ret e-postalarını thread'e düşmeden yakala."""
+    sent = []
+    monkeypatch.setattr('forum.email_utils.send_email_async',
+                        lambda subject, message, recipients, html_message=None: sent.append((subject, message, recipients)))
+    return sent
+
+
+def _post_job(client, owner):
+    client.force_login(owner)
+    client.post('/market/new/', {'title': 'Anket verisi analizi', 'description': 'SPSS ile t-testi',
+                                 'budget_max': '1000', 'expected_duration': '1 hafta'})
+    from forum.models import FreelanceJob
+    return FreelanceJob.objects.get(owner=owner)
+
+
+@pytest.mark.django_db
+def test_new_job_pending_and_hidden(client, job_owner, user):
+    """Onay açıkken yeni ilan bekler: listede/sitemap'te yok, başkası 404, sahibi görür."""
+    job = _post_job(client, job_owner)
+    assert job.status == 'pending'
+    assert job.approved_at is None
+    assert client.get(f'/market/job/{job.pk}/').status_code == 200  # sahibi
+    other = Client()
+    assert 'Anket verisi analizi' not in other.get('/market/').content.decode()
+    assert f'/market/job/{job.pk}/' not in other.get('/sitemap.xml').content.decode()
+    assert other.get(f'/market/job/{job.pk}/').status_code == 404
+    other.force_login(user)
+    assert other.get(f'/market/job/{job.pk}/').status_code == 404
+
+
+@pytest.mark.django_db
+def test_admin_approve_publishes_and_emails(client, job_owner, staff_user, sent_job_emails):
+    """Admin onayı: yayına alır, süre ve ilk ilan hediyesi onay anından başlar, sahibine e-posta."""
+    from django.contrib.admin.sites import site
+    from forum.models import FreelanceJob
+    job = _post_job(client, job_owner)
+    admin_obj = site._registry[FreelanceJob]
+    admin_obj.message_user = lambda *a, **k: None
+    admin_obj.approve_jobs(None, FreelanceJob.objects.filter(pk=job.pk))
+    job.refresh_from_db()
+    assert job.status == 'open'
+    assert job.approved_at is not None and job.expires_at > job.approved_at
+    assert job.is_featured  # ilk ilan hediyesi
+    owner_mails = [m for m in sent_job_emails if m[2] == ['owner@example.com']]  # admin bildirimi hariç
+    assert len(owner_mails) == 1
+    assert 'hediye' in owner_mails[0][1]
+    assert Client().get(f'/market/job/{job.pk}/').status_code == 200
+
+
+@pytest.mark.django_db
+def test_admin_reject_service_ad_emails_reason(client, job_owner, sent_job_emails):
+    """Ret: gerekçe + profil yönlendirmesi e-postada; ilan herkese 404."""
+    from django.contrib.admin.sites import site
+    from forum.models import FreelanceJob
+    job = _post_job(client, job_owner)
+    admin_obj = site._registry[FreelanceJob]
+    admin_obj.message_user = lambda *a, **k: None
+    admin_obj.reject_service_ad(None, FreelanceJob.objects.filter(pk=job.pk))
+    job.refresh_from_db()
+    assert job.status == 'rejected' and job.rejection_reason == 'service_ad'
+    owner_mails = [m for m in sent_job_emails if m[2] == ['owner@example.com']]  # admin bildirimi hariç
+    assert len(owner_mails) == 1
+    body = owner_mails[0][1]
+    assert 'Hizmet tanıtımı' in body and '/profile/edit/' in body
+    assert Client().get(f'/market/job/{job.pk}/').status_code == 404
+
+
+@pytest.mark.django_db
+def test_job_approval_off_publishes_immediately(client, job_owner):
+    """Admin'den onay kapatılırsa ilan eskisi gibi anında yayınlanır."""
+    from forum.models import SiteSettings
+    s = SiteSettings.load()
+    s.job_approval_required = False
+    s.save()
+    job = _post_job(client, job_owner)
+    assert job.status == 'open' and job.approved_at is not None and job.expires_at is not None
+
+
+@pytest.mark.django_db
+def test_existing_open_job_not_republished_on_save(job_owner):
+    """approved_at dolu açık ilan kaydedilince süre/hediye sıfırlanmaz (migration 0166 veri adımı varsayımı)."""
+    from django.utils import timezone
+    from datetime import timedelta
+    from forum.models import FreelanceJob
+    old = timezone.now() - timedelta(days=5)
+    job = FreelanceJob.objects.create(owner=job_owner, title='Eski', description='x', budget_max=10,
+                                      status='open', approved_at=old, expires_at=old + timedelta(days=10))
+    expires = job.expires_at
+    job.views += 1
+    job.save()
+    job.refresh_from_db()
+    assert job.expires_at == expires and not job.is_featured
+
+
+@pytest.mark.django_db
+def test_edit_open_job_goes_back_to_pending(client, job_owner, sent_job_emails):
+    """Onay açıkken yayındaki ilan düzenlenirse yeniden onaya düşer (onay sonrası içerik değiştirme engeli)."""
+    from forum.models import FreelanceJob
+    job = _post_job(client, job_owner)
+    job.status = 'open'
+    job.save()
+    client.post(f'/market/job/{job.pk}/edit/', {'title': 'Değişti', 'description': 'yeni',
+                                               'budget_max': '1000', 'expected_duration': '1 hafta'})
+    job.refresh_from_db()
+    assert job.title == 'Değişti' and job.status == 'pending'
+
+
+@pytest.mark.django_db
+def test_staff_exempt_from_weekly_job_limit(job_owner):
+    """Admin/staff haftalık ilan limitinden muaf; normal kullanıcı limitte durur."""
+    from forum.models import FreelanceJob
+    for i in range(2):
+        FreelanceJob.objects.create(owner=job_owner, title=f'İlan {i}', description='x', budget_max=10, status='pending')
+    profile = job_owner.profile
+    assert profile.can_post_job_now()[0] is False
+    job_owner.is_staff = True
+    job_owner.save()
+    assert profile.can_post_job_now()[0] is True
+
+
+# ─── Bağış → Premium ──────────────────────────────────────────────────────────
+
+@pytest.fixture
+def bronze_tier(db):
+    from forum.models import DonationTier
+    return DonationTier.objects.create(name='Bronz Destekçi', min_amount=50, premium_days=7)
+
+
+def _support_request(client, owner, tier, monkeypatch):
+    """Bağış talebi (IBAN e-postası gönderimi taklit edilir)."""
+    import json
+    from forum.services.email_service import EmailService
+    monkeypatch.setattr(EmailService, '_send_email', staticmethod(lambda **kw: True))
+    client.force_login(owner)
+    client.post('/api/send-support-email/', json.dumps(
+        {'tier_id': tier.pk, 'tier_name': tier.name, 'tier_amount': str(tier.min_amount)}),
+        content_type='application/json')
+    from forum.models import Donation
+    return Donation.objects.get(user=owner)
+
+
+@pytest.mark.django_db
+def test_donation_promised_days_survive_tier_change(client, job_owner, bronze_tier, sent_job_emails, monkeypatch):
+    """Talepten sonra katman değişse de söz verilen gün verilir; bitiş tarihi = onay + gün."""
+    from datetime import timedelta
+    from django.utils import timezone
+    donation = _support_request(client, job_owner, bronze_tier, monkeypatch)
+    assert donation.premium_days_promised == 7
+    bronze_tier.min_amount = 500   # admin katmanı değiştirdi → 50 TL'ye uyan katman kalmadı
+    bronze_tier.premium_days = 30
+    bronze_tier.save()
+    before = timezone.now()
+    donation.status = 'completed'
+    donation.save()
+    donation.refresh_from_db()
+    profile = job_owner.profile
+    profile.refresh_from_db()
+    assert donation.premium_days_granted == 7
+    assert profile.account_type == 'Premium' and profile.is_premium
+    assert before + timedelta(days=7) <= profile.premium_expires_at <= timezone.now() + timedelta(days=7)
+    assert job_owner.profile.badges.filter(slug='destekci').exists()
+    mails = [m for m in sent_job_emails if m[2] == ['owner@example.com']]
+    assert len(mails) == 1
+    assert profile.premium_expires_at.astimezone(timezone.get_current_timezone()).strftime('%d.%m.%Y') in mails[0][1]
+
+
+@pytest.mark.django_db
+def test_donation_extends_existing_premium_and_not_twice(job_owner, bronze_tier, sent_job_emails):
+    """Mevcut Premium'un üzerine eklenir; aynı bağış tekrar kaydedilince gün iki kez verilmez."""
+    from datetime import timedelta
+    from django.utils import timezone
+    from forum.models import Donation
+    profile = job_owner.profile
+    current_end = timezone.now() + timedelta(days=10)
+    profile.account_type = 'Premium'
+    profile.premium_expires_at = current_end
+    profile.save()
+    d = Donation.objects.create(user=job_owner, email='owner@example.com', amount=50, payment_id='T-1',
+                                premium_days_promised=7, status='pending_confirmation')
+    d.status = 'completed'
+    d.save()
+    d.save()  # ikinci kayıt (ör. admin tekrar kaydetti)
+    profile.refresh_from_db()
+    assert profile.premium_expires_at == current_end + timedelta(days=7)
+    assert len([m for m in sent_job_emails if m[2] == ['owner@example.com']]) == 1
+
+
+@pytest.mark.django_db
+def test_admin_confirm_donation_action_grants_premium(job_owner, bronze_tier, sent_job_emails):
+    """Admin 'Seçili bağışları onayla' aksiyonu Premium verir."""
+    from django.contrib.admin.sites import site
+    from forum.models import Donation
+    d = Donation.objects.create(user=job_owner, email='owner@example.com', amount=50, payment_id='T-2',
+                                premium_days_promised=7, status='pending_confirmation')
+    admin_obj = site._registry[Donation]
+    admin_obj.message_user = lambda *a, **k: None
+    admin_obj.confirm_donations(None, Donation.objects.filter(pk=d.pk))
+    d.refresh_from_db()
+    assert d.status == 'completed' and d.premium_days_granted == 7 and d.completed_at is not None
+
+
+@pytest.mark.django_db
+def test_profile_shows_premium_end_date_to_owner_only(client, job_owner, user):
+    from datetime import timedelta
+    from django.utils import timezone
+    profile = job_owner.profile
+    profile.account_type = 'Premium'
+    profile.premium_expires_at = timezone.now() + timedelta(days=30)
+    profile.save()
+    date = profile.premium_expires_at.astimezone(timezone.get_current_timezone()).strftime('%d.%m.%Y')
+    client.force_login(job_owner)
+    assert f'Premium üyeliğiniz {date} tarihine kadar aktif.' in client.get(f'/profile/{job_owner.username}/').content.decode()
+    other = Client()
+    other.force_login(user)
+    assert date not in other.get(f'/profile/{job_owner.username}/').content.decode()
+
+
+# ─── Profil "Hakkında" kartı ──────────────────────────────────────────────────
+
+@pytest.mark.django_db
+def test_profile_public_links_only_safe_urls(job_owner):
+    """Yalnız http(s) ve geçerli kimlikler bağlantı olur; javascript: şeması asla."""
+    p = job_owner.profile
+    p.website = 'javascript:alert(1)'
+    p.linkedin = 'https://www.linkedin.com/in/ornek'
+    p.orcid = 'https://orcid.org/0000-0002-1825-0097'
+    p.twitter = '@ornek_hesap'
+    p.github = 'kötü/yol'
+    p.google_scholar = ''
+    urls = {k: u for k, _, u in p.public_links()}
+    assert 'website' not in urls and 'github' not in urls
+    assert urls['linkedin'] == 'https://www.linkedin.com/in/ornek'
+    assert urls['orcid'] == 'https://orcid.org/0000-0002-1825-0097'
+    assert urls['x'] == 'https://x.com/ornek_hesap'
+
+
+@pytest.mark.django_db
+def test_profile_about_card_visible_and_escaped(client, job_owner, user):
+    """Biyografi + akademik bilgi giriş yapmış diğer üyelere görünür; HTML kaçışlı."""
+    p = job_owner.profile
+    p.bio = 'SPSS ve AMOS ile analiz.\n<script>alert(1)</script>'
+    p.university = 'Örnek Üniversitesi'
+    p.department = 'İstatistik'
+    p.save()
+    client.force_login(user)
+    html = client.get(f'/profile/{job_owner.username}/').content.decode()
+    assert 'SPSS ve AMOS ile analiz.' in html and 'Örnek Üniversitesi · İstatistik' in html
+    assert '<script>alert(1)</script>' not in html and '&lt;script&gt;' in html
+
+
+@pytest.mark.django_db
+def test_profile_edit_bio_capped_at_500(client, job_owner):
+    client.force_login(job_owner)
+    client.post('/profile/edit/', {'bio': 'a' * 800, 'email': job_owner.email,
+                                   'first_name': '', 'last_name': ''})
+    job_owner.profile.refresh_from_db()
+    assert len(job_owner.profile.bio) == 500
+
+
+# ─── İlan açıklaması sınırı + kural metni ─────────────────────────────────────
+
+@pytest.mark.django_db
+def test_job_description_limit_from_admin(client, job_owner):
+    """Admin sınırını aşan açıklama reddedilir (hata gösterilir); sınırdaki kabul edilir, CRLF tek sayılır."""
+    from forum.models import FreelanceJob, SiteSettings
+    s = SiteSettings.load()
+    s.job_description_max_chars = 100
+    s.save()
+    client.force_login(job_owner)
+    data = {'title': 'Uzun ilan', 'budget_max': '100', 'expected_duration': '1 gün'}
+    r = client.post('/market/new/', {**data, 'description': 'a' * 101})
+    assert r.status_code == 200 and not FreelanceJob.objects.exists()
+    assert 'en fazla 100 karakter' in r.content.decode()
+    client.post('/market/new/', {**data, 'description': 'a' * 49 + '\r\n' + 'b' * 50})  # 100 karakter
+    assert FreelanceJob.objects.filter(owner=job_owner).count() == 1
+
+
+@pytest.mark.django_db
+def test_job_form_shows_service_ad_rule(client, job_owner):
+    client.force_login(job_owner)
+    html = client.get('/market/new/').content.decode()
+    assert 'hizmet tanıtımı içeren ilanlar yayınlanmaz' in html
+    assert 'data-maxchars="1500"' in html

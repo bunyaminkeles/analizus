@@ -273,6 +273,8 @@ def get_dashboard_context():
     pending_reviews  = JobReview.objects.filter(is_approved=False).select_related('reviewer', 'reviewed_user', 'job')
     unread_contacts  = ContactMessage.objects.filter(is_read=False).order_by('-created_at')[:20]
     pending_donations = Donation.objects.filter(status='pending_confirmation').select_related('user').order_by('-created_at')
+    # Admin onayı bekleyen ilanlar (SiteSettings.job_approval_required) — en eski önce
+    pending_jobs = list(FreelanceJob.objects.filter(status='pending').select_related('owner').order_by('created_at'))
 
     # === BEKLEYEN ÖDEME SİPARİŞLERİ ===
     try:
@@ -311,7 +313,7 @@ def get_dashboard_context():
     pending_total        = (pending_stories.count() + pending_reviews.count() +
                             unread_contacts.count() + pending_donations.count() +
                             len(pending_biblio_orders) + len(pending_openalex_orders) +
-                            len(pending_job_payments))
+                            len(pending_job_payments) + len(pending_jobs))
     queue_health_score   = max(0, 20 - pending_total)
     health_score         = user_growth_score + content_growth_score + queue_health_score
 
@@ -410,6 +412,7 @@ def get_dashboard_context():
         'pending_biblio_orders': pending_biblio_orders,
         'pending_openalex_orders': pending_openalex_orders,
         'pending_job_payments': pending_job_payments,
+        'pending_jobs': pending_jobs,
         # Son aktiviteler
         'recent_users': recent_users,
         'recent_topics_list': recent_topics_list,

@@ -517,6 +517,41 @@ class FreelanceJobAdmin(ModelAdmin):
     search_fields = ('title', 'description', 'owner__username')
     date_hierarchy = 'created_at'
     filter_horizontal = ('likes', 'saved_by')
+    readonly_fields = ('approved_at',)
+    actions = ('approve_jobs', 'reject_service_ad', 'reject_incomplete', 'reject_rules')
+
+    # Onay / ret: kayıt kayıt save() — FreelanceJob.save süreyi + ilk ilan hediyesini uygular,
+    # signals.notify_owner_on_job_review sahibine e-posta gönderir. Notlu ret için ilanı açıp
+    # Durum = Reddedildi + Ret Gerekçesi + Ret Notu girip kaydedin.
+    @admin.action(description='✅ Seçili ilanları onayla ve yayınla')
+    def approve_jobs(self, request, queryset):
+        count = 0
+        for job in queryset.filter(status='pending').select_related('owner__profile'):
+            job.status = 'open'
+            job.save()
+            count += 1
+        self.message_user(request, f'{count} ilan onaylandı ve yayına alındı (yalnız onay bekleyenler).')
+
+    def _reject(self, request, queryset, reason):
+        count = 0
+        for job in queryset.filter(status__in=('pending', 'open')).select_related('owner'):
+            job.status = 'rejected'
+            job.rejection_reason = reason
+            job.save()
+            count += 1
+        self.message_user(request, f'{count} ilan reddedildi (yalnız onay bekleyen / açık ilanlar), sahiplerine e-posta gönderildi.')
+
+    @admin.action(description='⛔ Reddet: hizmet tanıtımı — iş talebi değil')
+    def reject_service_ad(self, request, queryset):
+        self._reject(request, queryset, 'service_ad')
+
+    @admin.action(description='⛔ Reddet: eksik veya anlaşılmaz içerik')
+    def reject_incomplete(self, request, queryset):
+        self._reject(request, queryset, 'incomplete')
+
+    @admin.action(description='⛔ Reddet: platform kurallarına aykırı')
+    def reject_rules(self, request, queryset):
+        self._reject(request, queryset, 'rules')
 
     @admin.display(description='Teklif Sayısı')
     def teklif_sayisi(self, obj):
@@ -559,10 +594,12 @@ class JobProposalAdmin(ModelAdmin):
     @admin.display(description='İlan Durumu')
     def ilan_durumu(self, obj):
         colors = {
+            'pending': '#a78bfa',
             'open': '#38bdf8',
             'in_progress': '#fbbf24',
             'completed': '#22c55e',
             'cancelled': '#ef4444',
+            'rejected': '#ef4444',
         }
         color = colors.get(obj.job.status, '#64748b')
         return format_html(
@@ -592,8 +629,9 @@ class JobReviewAdmin(ModelAdmin):
 class DonationTierAdmin(ModelAdmin):
     warn_unsaved_changes = True
     compressed_fields = True
-    list_display = ('name', 'min_amount_display', 'premium_days_display', 'is_active')
-    list_editable = ('is_active',)
+    # Tutar ve gün listeden doğrudan düzenlenir (list_editable gerçek alan ister — renkli *_display sütunları yerine)
+    list_display = ('name', 'min_amount', 'premium_days', 'is_active')
+    list_editable = ('min_amount', 'premium_days', 'is_active')
     ordering = ('-min_amount',)
 
     def min_amount_display(self, obj):
@@ -610,12 +648,24 @@ class DonationTierAdmin(ModelAdmin):
 class DonationAdmin(ModelAdmin):
     warn_unsaved_changes = True
     compressed_fields = True
-    list_display = ('donor_display', 'amount_display', 'status_display', 'premium_days_granted', 'created_at', 'completed_at')
+    list_display = ('donor_display', 'amount_display', 'status_display', 'premium_days_promised', 'premium_days_granted', 'created_at', 'completed_at')
     list_filter = ('status', 'is_anonymous', 'created_at')
     search_fields = ('name', 'email', 'user__username', 'payment_id')
     date_hierarchy = 'created_at'
-    readonly_fields = ('payment_id', 'conversation_id', 'created_at', 'completed_at')
+    readonly_fields = ('payment_id', 'conversation_id', 'premium_days_promised', 'premium_days_granted', 'created_at', 'completed_at')
     ordering = ('-created_at',)
+    actions = ('confirm_donations',)
+
+    # Durum = Tamamlandı (bu aksiyon ya da değişiklik sayfası) → signals.reward_on_donation_completed:
+    # söz verilen gün kadar Premium (mevcut sürenin üzerine) + Destekçi rozeti + teşekkür e-postası. Bir kez verilir.
+    @admin.action(description='✅ Seçili bağışları onayla (Premium ver)')
+    def confirm_donations(self, request, queryset):
+        count = 0
+        for d in queryset.exclude(status='completed').select_related('user__profile'):
+            d.status = 'completed'
+            d.save()
+            count += 1
+        self.message_user(request, f'{count} bağış onaylandı; Premium ve teşekkür e-postası gönderildi.')
 
     fieldsets = (
         ('Bağışçı Bilgileri', {
@@ -625,7 +675,9 @@ class DonationAdmin(ModelAdmin):
             'fields': ('amount', 'status', 'payment_id', 'conversation_id')
         }),
         ('Ödüller', {
-            'fields': ('premium_days_granted', 'message')
+            'description': "Durumu 'Tamamlandı' yapıp kaydedince söz verilen gün kadar Premium verilir "
+                           "(mevcut Premium'un üzerine eklenir), rozet ve teşekkür e-postası gider.",
+            'fields': ('premium_days_promised', 'premium_days_granted', 'message')
         }),
         ('Tarihler', {
             'fields': ('created_at', 'completed_at'),
@@ -764,8 +816,9 @@ class SiteSettingsAdmin(ModelAdmin):
             'classes': ('collapse',),
         }),
         ('Limitler', {
-            'description': 'Scraping: TR Dizin, OpenAlex, OAI-PMH scraperlarının çekebileceği maks. kayıt (default 5000). Analiz: Tez & Makale Analizi için işlenecek maks. kayıt (Render için 500, Hetzner için 2000–5000 önerilir).',
-            'fields': ('scrap_max_records', 'analiz_max_records'),
+            'description': 'Scraping: TR Dizin, OpenAlex, OAI-PMH scraperlarının çekebileceği maks. kayıt (default 5000). Analiz: Tez & Makale Analizi için işlenecek maks. kayıt (Render için 500, Hetzner için 2000–5000 önerilir). Haftalık ilan hakkı: son 7 günde açılabilecek ilan sayısı; her 5 geçerli referans +1 (en fazla +2) ayrıca eklenir. İlan onayı: açıkken yeni ilan admin onayından sonra yayınlanır (İş İlanları → Onayla/Reddet).',
+            'fields': ('scrap_max_records', 'analiz_max_records', 'job_weekly_limit_free', 'job_weekly_limit_premium',
+                       'job_approval_required', 'job_description_max_chars'),
             'classes': ('collapse',),
         }),
         ('Fiyatlandırma', {

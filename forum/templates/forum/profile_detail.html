@@ -7,7 +7,7 @@
 {% block meta_description %}{% blocktrans with username=profile_user.username %}{{ username }} kullanıcısının Analizus profili.{% endblocktrans %} {{ profile_user.profile.title|default:_("Akademik Araştırmacı") }}{% endblock %}
 
 {% block extra_head %}
-<link rel="stylesheet" href="{% static 'css/profiles.css' %}?v=0200">
+<link rel="stylesheet" href="{% static 'css/profiles.css' %}?v=0201">
 {% endblock %}
 
 {% block content %}
@@ -134,6 +134,11 @@
 
             <!-- Üye tipi -->
             <div class="ax-profile-member-chip">{% blocktrans with type=profile_user.profile.account_type|upper %}{{ type }} ÜYE{% endblocktrans %}</div>
+            {% if is_owner and profile_user.profile.is_premium %}
+            <small style="display: block; font-size: var(--ax-text-xs); color: var(--ax-text-muted); margin-top: calc(-1 * var(--ax-space-2)); margin-bottom: var(--ax-space-4);">
+                {% blocktrans with date=profile_user.profile.premium_expires_at|date:"d.m.Y" %}Premium üyeliğiniz {{ date }} tarihine kadar aktif.{% endblocktrans %}
+            </small>
+            {% endif %}
 
             <!-- Hızlı istatistikler -->
             <div class="ax-profile-quick-stats">
@@ -230,6 +235,42 @@
 
     <!-- ===================== SAĞ: SEKMELER ===================== -->
     <div class="col-lg-8">
+
+        <!-- ===== HAKKINDA (biyografi + akademik bilgi + bağlantılar; boşsa yalnız sahibine davet) ===== -->
+        {% with p=profile_user.profile %}{% with links=p.public_links %}
+        {% if p.bio or p.academic_title or p.university or p.department or p.location or links %}
+        <section class="ax-profile-panel ax-profile-about" aria-labelledby="profile-about-title">
+            <h2 class="ax-profile-skills-title" id="profile-about-title">
+                <i class="bi bi-person-lines-fill" aria-hidden="true"></i> {% trans "Hakkında" %}
+            </h2>
+            {% if p.bio %}<p class="ax-profile-about__bio">{{ p.bio|truncatechars:500|linebreaksbr }}</p>{% endif %}
+            {% if p.academic_title or p.university or p.department or p.location %}
+            <ul class="ax-profile-about__meta">
+                {% if p.academic_title or p.university or p.department %}
+                <li><i class="bi bi-mortarboard" aria-hidden="true"></i>
+                    <span>{% if p.academic_title %}{{ p.academic_title }}{% endif %}{% if p.academic_title and p.university %} · {% endif %}{% if p.university %}{{ p.university }}{% endif %}{% if p.department %}{% if p.academic_title or p.university %} · {% endif %}{{ p.department }}{% endif %}</span></li>
+                {% endif %}
+                {% if p.location %}<li><i class="bi bi-geo-alt" aria-hidden="true"></i><span>{{ p.location }}</span></li>{% endif %}
+            </ul>
+            {% endif %}
+            {% if links %}
+            <div class="ax-profile-about__links">
+                {% for key, label, url in links %}
+                <a href="{{ url }}" class="ax-profile-skill-tag" target="_blank" rel="nofollow noopener ugc">
+                    <i class="bi {% if key == 'website' %}bi-globe{% elif key == 'orcid' %}bi-person-badge{% elif key == 'scholar' %}bi-mortarboard{% elif key == 'linkedin' %}bi-linkedin{% elif key == 'x' %}bi-twitter-x{% else %}bi-github{% endif %}" aria-hidden="true"></i>
+                    {{ label }}
+                </a>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </section>
+        {% elif is_owner %}
+        <section class="ax-profile-panel ax-profile-about ax-profile-about--empty">
+            <p class="ax-profile-about__bio">{% trans "Profilinizde henüz tanıtım yok. Biyografi, akademik bilgi ve bağlantılarınızı ekleyerek diğer üyelerin sizi tanımasını sağlayın." %}</p>
+            <a href="{% url 'profile_edit' %}" class="ax-profile-skill-tag"><i class="bi bi-pencil" aria-hidden="true"></i> {% trans "Profili Düzenle" %}</a>
+        </section>
+        {% endif %}
+        {% endwith %}{% endwith %}
 
         <!-- Sekme Başlıkları -->
         <div class="ax-profile-tabs" id="profileTabs">
@@ -410,6 +451,8 @@
                                     {% if job.status == 'open' %}ax-status-chip--open
                                     {% elif job.status == 'in_progress' %}ax-status-chip--in-progress
                                     {% elif job.status == 'completed' %}ax-status-chip--completed
+                                    {% elif job.status == 'pending' %}ax-status-chip--pending
+                                    {% elif job.status == 'rejected' %}ax-status-chip--rejected
                                     {% else %}ax-status-chip--cancelled{% endif %}">
                                     {{ job.get_status_display }}
                                 </span>

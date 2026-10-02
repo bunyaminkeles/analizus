@@ -10,7 +10,18 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
-> **YENİ OTURUM BURADAN BAŞLA (29 Eylül 2026 gece) — CANLI = main = 8393eec; dev = + docs/betik commit'leri** (doğrulandı: siteler 200, log temiz): OpenAlex 5xx bekleme + çevrili
+> **YENİ OTURUM BURADAN BAŞLA (1 Ekim 2026) — CANLI = main = bb85064** (dev = + docs commit'leri). Bu oturum: **BÜYÜK SEO
+> DÖNÜŞÜMÜ Faz 1–2 bitti ve canlıda** (aşağıdaki başlık): 4 tarama sayfası Google başlıkları, 12 blog yazısına SEO alanları,
+> veri kazıma / nitel yazıları düzeltildi, t tablosu, `/section/` 301, az konulu forum kategorisi noindex, Uzman Dizini
+> `?cat=` tanıtım metinleri (+ ?cat=abc 500 düzeltmesi), analiz konsolu 18 araç tek düzen. Migration forum/0162–0164 canlıda.
+> Kullanıcı GSC adımlarını yaptı (validate fix, request indexing, sitemap).
+> **Sıradaki (kullanıcı önceliği: yeni sayfa açmadan metin/blog):** Faz 3 blog → uzman desteği kartı; araç SSS'lerini
+> zenginleştirme (Friedman/Wilcoxon 1 soru); Faz 6 blog yazıları ("spss öğrenci ücretsiz", "spss benzeri programlar",
+> "kaplan meier"). Sonra Faz 4 (5 hizmet sayfası — içerik admin modeli mi, yalnız TR mi kararları). **~29 Ekim:** GSC
+> dışa aktarımı → CTR karşılaştırması. Diğer açıklar: canlı DB eski OpenAlex `error_message` anahtar kontrolü (izin
+> bekliyor), `category_topics` N+1, BASE e-posta yanıtı.
+>
+> **ÖNCEKİ NOT (29 Eylül 2026 gece) — CANLI = main = 8393eec; dev = + docs/betik commit'leri** (doğrulandı: siteler 200, log temiz): OpenAlex 5xx bekleme + çevrili
 > hata + anahtar gizleme; PubMed anahtar gizleme; DM WebSocket `@.+-` adlar; 500 hata e-postası (ADMIN_NOTIFICATION_EMAIL,
 > sel koruması). Hetzner: NCBI_API_KEY eklendi, Docker log sınırı (daemon.json 20m×5, tüm container'lar), disk temizliği
 > %65→%45. **`feature_pubmed` canlıda AÇIK.** Sunucu dışı yedek YAPILDI (kullanıcı: ek maliyet yok → yerel): `scripts/yedek_indir.sh` + kullanıcı crontab saatlik :15 →
@@ -37,6 +48,36 @@ maddelerde.
 >   (yıllık ortalama önerisi).
 > - Diğer açıklar bu listede `- [ ]`; ayrıntı `analizus.md` §14 (bibliometri), §15 (tarama), §26, §27.
 
+**BAĞIŞ → PREMIUM AKIŞI KIRIK (2 Ekim 2026 bulgusu, kullanıcı "verilen süre doğru mu" sorusundan) — onay bekliyor:**
+- [x] **DÜZELTİLDİ (2 Ekim 2026, migration forum/0167; testler 75/75)** **Admin bağışı onaylayınca Premium VERİLMİYOR** — `Donation.grant_premium()` yalnız `dashboard_approve_donation`
+  (forum/views.py ~2925) çağırıyor; bu view hiçbir şablonda bağlı değil. Panel "Bağışlar/Ödemeler" → admin değişiklik
+  sayfası; orada Durum=Tamamlandı yapınca sinyal/save_model yok → Premium, `premium_days_granted`, rozet, teşekkür e-postası
+  hiçbiri yok. `grant_supporter_badge()` ve `emails/donation_thank_you.html` hiç çağrılmıyor (ölü kod). Canlıda tamamlanmış
+  bağış + `premium_days_granted=0` kayıt var mı → Hetzner salt okuma kontrolü (kullanıcı izniyle).
+- [x] **DÜZELTİLDİ (2 Ekim 2026, migration forum/0167; testler 75/75)** **Katman değişince bekleyen bağışın günü yanlış hesaplanır** — bağış talebinde `amount = tier.min_amount` (o anki),
+  gün onay anında GÜNCEL katmandan `amount`'a göre bulunur. Örn. Bronz 50 TL/7 gün iken talep → katman 500 TL'ye çekildi →
+  onayda 50 TL'ye uyan katman yok → 0 gün. E-postada söz verilen gün ≠ verilen gün. Çözüm: talep anında gün sayısını bağışa yaz.
+- [x] **DÜZELTİLDİ (2 Ekim 2026, migration forum/0167; testler 75/75)** **Kullanıcı Premium bitiş tarihini hiçbir yerde görmüyor** — `premium_expires_at` hiçbir şablonda yok.
+
+**Pazar / profil talepleri (kullanıcı, 2 Ekim 2026) — her biri ayrı görev, önce onay:**
+- [x] **YAPILDI YERELDE (2 Ekim 2026, commit yok): Normal 2 / Premium 5 haftalık, admin → Site Ayarları → Limitler; migration forum/0165; footer + bağış e-postası dinamik (TR/EN/DE doğrulandı), forum testleri 64/64.** Eski not: İlan hakkı normal kullanıcı için 2 — şu an `Profile.get_weekly_job_limit()` (`forum/models.py` ~398): Free=1,
+  Premium=3 (haftalık, son 7 gün) + referans bonusu (her 5 → +1, maks +2); sabit kodda. Netleştir: haftalık mı kalacak?
+  Premium 3 kalıyor mu? Kural gereği limit `SiteSettings` alanına + admin'e taşınmalı (migration).
+- [x] **YAPILDI YERELDE (2 Ekim 2026): admin onayı + onay/ret e-postası (TR/EN/DE), Site Ayarları → Limitler'den aç/kapa, 3 hazır ret gerekçesi + not, süre/ilk ilan hediyesi onay anından, reddedilen hak düşer; migration forum/0166 (veri adımı: mevcut ilanlar approved_at=created_at); forum testleri 70/70; Playwright masaüstü/mobil OK. Canlıda 189 nolu ilan için admin kararı bekliyor.** Eski not: İlan yayını admin onayına bağlı + kullanıcıya e-posta — `FreelanceJob.status` varsayılanı `'open'`, `post_job`
+  (`forum/views.py` ~502) ilanı anında yayınlıyor. Gerekli: onay bekleyen durum (liste/detay/sitemap/arama'da gizli),
+  admin onay/ret aksiyonu, onay ve ret e-postası (`recipient_language(user)` + çeviri), "ilanınız onaya gönderildi"
+  mesajı; `expires_at` ve ilk ilan 3 gün öne çıkarma onay anından mı başlasın (karar). Mevcut açık ilanlar onaylı sayılır. Migration.
+- [x] **YAPILDI (2 Ekim 2026): profilde 'Hakkında' kartı (sağ sütun, sekmelerin üstü) — biyografi + unvan/üniversite/bölüm/konum + bağlantılar (Profile.public_links: yalnız http(s), geçerli ORCID/X/GitHub); giriş yapmış herkese (anonim erişim kararı ertelendi); boşsa yalnız sahibine 'Profili Düzenle' daveti; bio kayıtta 500 karakter; testler 78/78. NOT: profilde girilen hiçbir alan (bio, akademik, bağlantılar) önceden gösterilmiyordu.** Eski not: Profilde herkese açık biyografi — `Profile.bio` alanı (TextField, 500) zaten var, `profile_edit`'te düzenleniyor;
+  profil sayfasında görünürlüğü kontrol edilecek. "Herkes görebilsin" → `profile_detail` şu an `@login_required` (SEO
+  planında "profil hariç şimdilik" diye ERTELENDİ) — anonim erişim mi, yalnız giriş yapmış herkese mi? karar. Kaçışlı çıktı (`linebreaks`/escape).
+- [x] **YAPILDI (2 Ekim 2026): SiteSettings.job_description_max_chars (varsayılan 1500, Limitler; migration forum/0168), form doğrulaması (CRLF tek sayılır) + canlı sayaç; ilan açma formu artık hata gösteriyor.** Eski not: İlan açıklamasına karakter sınırı — `JobPostForm` açıklama alanı (form + model + sayaç). Sınır değeri karar
+  (admin'den mi, sabit mi); mevcut uzun ilanlar etkilenmemeli (yalnız yeni/düzenlenen ilanlarda doğrulama).
+- [x] **YAPILDI (2 Ekim 2026): ilan açma/düzenleme formunda kural kutusu (profil 'Hakkında'ya yönlendirme), açıklama placeholder'ı iş talebine yönlendiriyor, admin ret gerekçesi 'hizmet tanıtımı' + e-postada profil linki (3945e85). KALAN: canlıdaki 189 vb. mevcut ilanlar için admin kararı.** Eski not: İlan alanı "hizmet/yetenek tanıtımı"na dönüşmemeli — örnek: canlı `/market/job/189/` ("Profesyonel SPSS Veri
+  Analizi & Akademik Raporlama Danışmanlığı" — kullanıcı ilan vermiyor, kendi hizmetini anlatıyor). Pazar = iş talebi;
+  hizmet tanıtımı yeri profil/biyografi + Uzman Dizini. Önlemler: ilan formunda açık kural metni ("ilan = yaptırmak
+  istediğiniz iş; hizmet tanıtımı profilinize"), admin onayında ret gerekçesi ("hizmet tanıtımı") + e-postada yönlendirme;
+  mevcut bu türden ilanlar için admin kararı (189 dahil). Admin onayı maddesine bağlı.
+
 ### BÜYÜK SEO DÖNÜŞÜMÜ — PLAN (30 Eylül 2026; ÖNCELİK — faz faz, her faz önce onay)
 **Hedef:** portal = analiz/danışmanlık ihtiyacı olanlar ↔ analistler (tez merkezleri, AI mühendisleri, istatistikçiler,
 eğitmenler). Kapsam: akademik danışmanlık, etik kurul, tez önerisi, metin editörlüğü, makale danışmanlığı, metodoloji ve
@@ -57,9 +98,9 @@ anonime açılması — `profile_detail` `@login_required` → Google profilleri
 
 **Faz 1 — CTR hızlı kazanç (yalnız title/meta, migration yok)**
 - **CANLIDA (1 Ekim 2026, main = 37e2720; 0162 + 0163 uygulandı):** dışarıdan doğrulandı — 4 tarama sayfası + EN OpenAlex yeni
-  başlık, blog SEO başlıkları, t tablosu, veri kazıma ve nitel içerikleri yeni. **KALAN:** nitel yazısında canlıda `meta_title`/
-  `meta_description` zaten doluydu (eski başlıkla) → migration bilerek yazmadı; admin'den elle güncellenecek (taslak: "Kısa Nitel
-  Mülakat: 30 Dakikada Etkili Görüşme Rehberi"). Ölçüm başlangıcı: 1 Ekim 2026 → 29 Ekim'de GSC karşılaştırması.
+  başlık, blog SEO başlıkları, t tablosu, veri kazıma ve nitel içerikleri yeni. Nitel yazısı SEO alanları kullanıcı tarafından admin'den girildi (canlıda doğrulandı, 1 Ekim). **Kullanıcı (1 Ekim):**
+  GSC Validate fix (redirect error, Google farklı canonical, taranmış-indekslenmemiş), 9 URL Request indexing, sitemap yeniden
+  gönderildi; `feature_tezanaliz` kontrol edildi. Ölçüm başlangıcı: 1 Ekim 2026 → 29 Ekim'de GSC karşılaştırması.
 - [x] **YAPILDI YERELDE (30 Eylül 2026, commit yok):** anonim (Googlebot) `service_promo.html` görür → başlık/açıklama/H1 view'daki `promo_title`/`promo_description`'dan; 4 view + landing.html (girişli) + OpenAlex EN/DE po + SSS "OpenAlex nedir?"; anonim doğrulandı (TR/EN/DE), forum 61/61. Eski not: Tarama sayfaları: `/yoktez/` (8.748 gösterim, CTR %0,4, sıra 7,5), `/trdizin/`, `/oaipmh/` (~1.500'er, CTR ~%1),
   `/openalex/` — resmî siteden farkı söyleyen title + meta (toplu tarama, Excel'e aktarma, filtre)
 - [x] **YAPILDI YERELDE (1 Ekim 2026, commit yok):** veri migration `forum/0162_blog_seo_meta_ctr` — 6 yazıya `meta_title`/`meta_description` (alan doluysa dokunmaz; geri alma yalnız kendi değerini siler); sayfadaki başlık/içerik/slug aynı. Yerel ileri-geri-ileri OK, anonim `<title>` doğrulandı. Örneklem (CTR %3,7) ve ANOVA (%6,7) bilinçli dokunulmadı. **Deploy: migration'lı → önce DB yedeği.** KALAN: "t tablosu" (408 gösterim, niyet = kritik değer tablosu) → t-testi yazısına t dağılım tablosu bölümü (öneri, onay bekliyor). Eski not: En çok gösterim alan blog yazıları: AFA/DFA (3.091), Cronbach ×2 (2.150 + 1.384), örneklem (2.096), t tablosu (1.062),

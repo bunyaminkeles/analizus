@@ -1,22 +1,22 @@
 # Analizus.com — Claude Çalışma Kuralları
 
-Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~2190 satır; offset'ler 29 Eylül 2026 gece). Tamamını okuma — ihtiyaca göre offset ile ilgili bölümü oku:
+Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~2240 satır; offset'ler 1 Ekim 2026). Tamamını okuma — ihtiyaca göre offset ile ilgili bölümü oku:
 
 | Bölüm | offset | Konu |
 |---|---|---|
 | §1–2 | 8 | Proje amacı, tech stack, paketler |
 | §3–5 | 68 | Sunucu mimarisi + bakım (log sınırı, disk, yedek → yerel), deploy (deploy.sh açılışta migrate+collectstatic), env vars (NCBI_API_KEY dahil) |
-| §6–7 | 284 | Dizin yapısı, URL mimarisi (i18n_patterns: hangi sayfa /en/ /de/) |
-| §8–9 | 457 | Veri modelleri, feature flag'ler (`feature_pubmed` canlıda açık) |
-| §10–11 | 724 | CSS/tasarım sistemi, WebSocket (route'lar) |
-| §12 | 849 | İstatistik araçları (akış, PDF, polling) |
-| §13–15 | 1003 | DM/oda mesajlaşma, bibliometri (OpenAlex/PubMed köprüsü), akademik tarama (OpenAlex ilk sayfa, PubMed, BASE) |
-| §16–19 | 1227 | E-posta (500 hata e-postası), AnalizBot/AI Asistan, S3, güvenlik (çerez onayı, cron anahtarı) |
-| §20–23 | 1446 | Admin (sipariş akışı, **Fiyatlandırma** ayarları), pazar iş akışı, session, cron |
-| §24–25 | 1555 | Geliştirme ortamı (pytest, çeviri komutları), değişmez kurallar |
-| §26 | 1639 | Sık yapılan hatalar ve çözümleri |
-| §27 | 1728 | Görev listesi (tamamlanan / sıradaki) |
-| §28 | 2097 | Çok dilli yapı (TR/EN/DE) ve gizlilik — mimari, çeviri kuralları, iş akışı, EN/DE ürün kararları (§28.7) |
+| §6–7 | 284 | Dizin yapısı, URL mimarisi (i18n_patterns; `/section/` 301, `/uzmanlar/?cat=` kuralı) |
+| §8–9 | 461 | Veri modelleri (`JobCategory.intro`, `Category.INDEX_MIN_TOPICS`, BlogPost SEO alanları), feature flag'ler |
+| §10–11 | 733 | CSS/tasarım sistemi, WebSocket (route'lar) |
+| §12 | 858 | İstatistik araçları (akış, PDF, polling, **konsol düzeni**: Nedir kartı → SSS → CTA, `tool_title`) |
+| §13–15 | 1018 | DM/oda mesajlaşma, bibliometri, akademik tarama (**Google'ın gördüğü başlık = view `promo_title`**) |
+| §16–19 | 1248 | E-posta (500 hata e-postası), AnalizBot/AI Asistan, S3, güvenlik (çerez onayı, cron anahtarı) |
+| §20–23 | 1467 | Admin (sipariş akışı, Fiyatlandırma, İş Kategorisi tanıtım metni, blog SEO bölümü), pazar, session, cron |
+| §24–25 | 1578 | Geliştirme ortamı (pytest, çeviri komutları), değişmez kurallar |
+| §26 | 1662 | Sık yapılan hatalar ve çözümleri |
+| §27 | 1757 | Görev listesi (tamamlanan / sıradaki — **SEO dönüşümü** önceliği) |
+| §28 | 2150 | Çok dilli yapı (TR/EN/DE) ve gizlilik — mimari, çeviri kuralları, iş akışı, EN/DE ürün kararları (§28.7) |
 
 ---
 
@@ -65,6 +65,14 @@ Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~2190 satır; offset
 - `.env` değişikliği `restart` ile okunmaz → `docker compose up -d web`; env adını koddakiyle birebir kontrol et (`NCBI_API_KEY`)
 - Hetzner `docker-compose.yml`'de commit'lenmemiş `rlprehber` var — compose'u git'te değiştirme; host ayarı `daemon.json` (§3)
 - Sunucuda yalnız kullanıcı isteyince işlem; `main`/push/deploy kullanıcıda (push izni otomatik reddediliyor)
+
+## SEO Kritik Kurallar — ayrıntı analizus.md §12, §15, §26, `tasks/todo.md` "BÜYÜK SEO DÖNÜŞÜMÜ"
+- Google (anonim) araç/tarama sayfalarında `service_promo.html` görür → başlık/açıklama/H1 view'daki `promo_title`/`promo_description`; `landing.html` blokları yalnız giriş yapmışa. Doğrulama **oturumsuz** `curl` ile
+- Blog SEO: `BlogPost.meta_title`/`meta_description` (admin → yazı → en alttaki SEO); sayfadaki H1/slug'a dokunma (sıralama kaybı)
+- İçerik/SEO veri migration'ı korumalı: alan doluysa yazma, içerik yalnız beklenen eski metin varsa değişir; canlı içerik yerelden farklı olabilir → canlı HTML'den oku
+- İçerikte abartılı vaat yok (kullanıcı kararı): ücretsiz kısım = toplam sonuç + en yeni 5; resmî kurum izlenimi/ilişki iddiası yok; "tez yazdırma" niyeti hedeflenmez
+- Ortak şablon (analiz/tarama konsolu) değişince 18 aracın hepsini Playwright ile aynı ölçütle kontrol et (sıra, boşluk, hiza, boş `tool_title`, mobil taşma) — kullanıcı tek tek bakmamalı
+- Django `{# #}` tek satır; çok satır için `{% comment %}`
 
 ## Çok Dilli (i18n) Kritik Kurallar — ayrıntı analizus.md §28
 - Yeni kullanıcıya görünen metin **her zaman** çeviriye işaretlenir (msgid = Türkçe); EN/DE `locale/` + `.mo` git'te
