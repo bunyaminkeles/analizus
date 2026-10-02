@@ -61,7 +61,7 @@ def send_chat_message(message_instance):
         logger.error(f"Chat WebSocket mesajı gönderilemedi: {e}")
 
 from .models import Post, PrivateMessage, Notification, PostLike, Topic, Badge, FreelanceJob
-from .models import Profile, JobProposal, BlogPost, StudyRoom, StudyRoomPost
+from .models import Profile, JobProposal, BlogPost, StudyRoom, StudyRoomPost, Donation
 from django.contrib.auth.models import User
 
 
@@ -594,6 +594,32 @@ def notify_admin_on_new_job(sender, instance, created, **kwargs):
         return
     from .email_utils import notify_admin_new_job
     notify_admin_new_job(instance)
+
+
+@receiver(pre_save, sender=Donation)
+def capture_old_donation_status(sender, instance, **kwargs):
+    """Bağışın önceki durumunu yakala; tamamlanırken completed_at boşsa doldur."""
+    instance._old_status = (
+        Donation.objects.filter(pk=instance.pk).values_list('status', flat=True).first() if instance.pk else None
+    )
+    if instance.status == 'completed' and not instance.completed_at:
+        instance.completed_at = tz.now()
+
+
+@receiver(post_save, sender=Donation)
+def reward_on_donation_completed(sender, instance, created, **kwargs):
+    """Bağış 'Tamamlandı' olunca (admin kaydı, aksiyon veya panel): Premium + Destekçi rozeti + teşekkür e-postası.
+
+    grant_premium bir bağış için yalnız bir kez gün verir (premium_days_granted doluysa atlar).
+    """
+    if instance.status != 'completed' or getattr(instance, '_old_status', None) == 'completed':
+        return
+    if not instance.user:
+        return
+    if instance.grant_premium():
+        instance.grant_supporter_badge()
+        from .email_utils import send_donation_confirmed_email
+        send_donation_confirmed_email(instance)
 
 
 @receiver(post_save, sender=FreelanceJob)

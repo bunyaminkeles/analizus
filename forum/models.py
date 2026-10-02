@@ -1125,6 +1125,10 @@ class Donation(models.Model):
     conversation_id = models.CharField(max_length=100, blank=True, verbose_name="Konuşma ID")
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending', verbose_name="Durum")
     premium_days_granted = models.IntegerField(default=0, verbose_name="Verilen Premium Gün")
+    # Talep anındaki katmanın günü — katman sonradan değişse de e-postada söz verilen gün verilir
+    premium_days_promised = models.IntegerField(
+        default=0, verbose_name="Söz Verilen Premium Gün",
+        help_text="Bağış talep edildiğinde seçilen katmanın gün sayısı; onayda bu süre verilir.")
     message = models.TextField(blank=True, verbose_name="Mesaj")
     is_anonymous = models.BooleanField(default=False, verbose_name="Anonim")
     created_at = models.DateTimeField(auto_now_add=True)
@@ -1145,12 +1149,14 @@ class Donation(models.Model):
         return reverse('admin:forum_donation_change', args=[self.pk])
 
     def get_premium_days(self):
-        """Bağış miktarına göre premium gün hesapla (DonationTier modelinden)"""
+        """Verilecek premium gün: talep anında söz verilen gün; yoksa (eski kayıt) tutara göre güncel katman"""
+        if self.premium_days_promised:
+            return self.premium_days_promised
         return DonationTier.get_premium_days_for_amount(float(self.amount))
 
     def grant_premium(self):
-        """Kullanıcıya premium üyelik ver"""
-        if not self.user:
+        """Kullanıcıya premium üyelik ver (bir bağış için yalnız bir kez)"""
+        if not self.user or self.premium_days_granted:
             return False
 
         days = self.get_premium_days()

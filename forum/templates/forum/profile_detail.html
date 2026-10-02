@@ -134,6 +134,11 @@
 
             <!-- Üye tipi -->
             <div class="ax-profile-member-chip">{% blocktrans with type=profile_user.profile.account_type|upper %}{{ type }} ÜYE{% endblocktrans %}</div>
+            {% if is_owner and profile_user.profile.is_premium %}
+            <small style="display: block; font-size: var(--ax-text-xs); color: var(--ax-text-muted); margin-top: calc(-1 * var(--ax-space-2)); margin-bottom: var(--ax-space-4);">
+                {% blocktrans with date=profile_user.profile.premium_expires_at|date:"d.m.Y" %}Premium üyeliğiniz {{ date }} tarihine kadar aktif.{% endblocktrans %}
+            </small>
+            {% endif %}
 
             <!-- Hızlı istatistikler -->
             <div class="ax-profile-quick-stats">

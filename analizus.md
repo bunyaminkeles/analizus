@@ -690,7 +690,9 @@ class DonationTier:      # Destek paketi (name, min_amount, premium_days, is_act
 class Donation:          # Bağış kaydı
     # STATUS: pending → pending_confirmation → completed | failed
     # pending_confirmation: kullanıcı "Havaleyi Yaptım" butonuna bastı, admin onayı bekliyor
-    # grant_premium() / grant_supporter_badge() — completed olunca çağrılır
+    # premium_days_promised (0167): talep anındaki katman günü — katman sonradan değişse de bu süre verilir
+    # status → completed (admin kaydı, "Seçili bağışları onayla" aksiyonu, panel) → signals.reward_on_donation_completed:
+    #   grant_premium() (bir kez; mevcut Premium'un üzerine ekler) + grant_supporter_badge() + teşekkür e-postası (bitiş tarihli, alıcı dilinde)
     # get_absolute_url() → admin bağış sayfası (adminlere giden "havale yapıldı" bildiriminin hedefi)
 class JobPayment:        # İlan vitrin ödemeleri
     # STATUS: pending → pending_confirmation → success | failed
@@ -1500,7 +1502,7 @@ analizus-files/
 ### Gelir Kaynakları ve Ödeme Akışları
 | Gelir | Model | Admin Onay Yolu |
 |---|---|---|
-| Bağış (Premium) | `Donation` | Dashboard "BAĞIŞ" → detail → action yok, `dashboard_approve_donation` view |
+| Bağış (Premium) | `Donation` | Bağışlar list → "✅ Seçili bağışları onayla (Premium ver)" action **veya** detail'de Durum=Tamamlandı (sinyal ödülü verir; 2 Ekim 2026 öncesi hiçbir yol Premium vermiyordu) |
 | İlan Vitrini | `JobPayment` | Dashboard "VİTRİN" → **"Onayla →"** (tek tıkla, confirm dialog) veya Job Payments list → "Seçili ilanları vitrine ekle" action |
 | Bibliometrik Analiz | `BibliometricOrder` | Bibliometrik Siparişler list → "Onayla ve Tam Rapor Emailini Gönder" action |
 | OpenAlex Sipariş | `AlexOrder` | OpenAlex Siparişleri list → "Onayla ve Tam Rapor Emailini Gönder" action (arka planda; hata → Admin Notu) |
@@ -1513,9 +1515,12 @@ Kullanıcı paket seçer → send_support_email → Donation(status=pending) olu
     ↓ E-postadaki "Havaleyi Yaptım" butonu
 mark_donation_transferred view → status=pending_confirmation + admin bildirimi (Notification target=donation;
     28 Eylül 2026'ya kadar target=None idi → IntegrityError → bu adım 500 veriyordu, §26)
-    ↓ Admin dashboard "BAĞIŞ" satırı → dashboard_approve_donation
-Donation.grant_premium() + grant_supporter_badge()
+    ↓ Admin: Bağışlar → "Seçili bağışları onayla" (veya detail'de Durum=Tamamlandı)
+signals.reward_on_donation_completed → grant_premium() (premium_days_promised gün) + grant_supporter_badge()
+    + emails/donation_thank_you.html ("Premium üyeliğiniz GG.AA.YYYY tarihine kadar aktif")
+Kullanıcı bitiş tarihini profilinde (yalnız kendisi) görür.
 ```
+Yeniden talep (bekleyen bağış varken): kayıt yeni seçilen katmanın tutar + gününe güncellenir.
 
 ---
 

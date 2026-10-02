@@ -20487,3 +20487,51 @@ msgstr ""
 
 msgid "Gerekçe:"
 msgstr "Grund:"
+
+msgid "Teşekkür Ederiz!"
+msgstr "Vielen Dank!"
+
+#, python-format
+msgid "Merhaba <strong>%(donor_name)s</strong>,"
+msgstr "Hallo <strong>%(donor_name)s</strong>,"
+
+msgid "bağışınız onaylandı!"
+msgstr "Ihre Spende wurde bestätigt!"
+
+msgid "Kazandığınız Ödüller"
+msgstr "Ihre Belohnungen"
+
+#, python-format
+msgid "%(premium_days)s Gün Premium Üyelik"
+msgstr "%(premium_days)s Tage Premium-Mitgliedschaft"
+
+#, python-format
+msgid ""
+"Premium üyeliğiniz <strong style=\"color: "
+"#fbbf24;\">%(premium_until)s</strong> tarihine kadar aktif."
+msgstr ""
+"Ihre Premium-Mitgliedschaft ist bis <strong style=\"color: "
+"#fbbf24;\">%(premium_until)s</strong> aktiv."
+
+msgid ""
+"Premium üyeliğiniz hesabınıza tanımlandı. Artık tüm premium özelliklerden "
+"faydalanabilirsiniz!"
+msgstr ""
+"Die Premium-Mitgliedschaft wurde Ihrem Konto hinzugefügt. Sie können jetzt "
+"alle Premium-Funktionen nutzen!"
+
+msgid "Analizus'a Git"
+msgstr "Zu Analizus"
+
+msgid "Sevgilerle, Analizus Ekibi"
+msgstr "Herzliche Grüße, Ihr Analizus-Team"
+
+msgid "Bu e-posta otomatik olarak gönderilmiştir."
+msgstr "Diese E-Mail wurde automatisch versendet."
+
+msgid "Bağışınız onaylandı — Premium üyeliğiniz aktif"
+msgstr "Ihre Spende ist bestätigt – Ihre Premium-Mitgliedschaft ist aktiv"
+
+#, python-format
+msgid "Premium üyeliğiniz %(date)s tarihine kadar aktif."
+msgstr "Ihre Premium-Mitgliedschaft ist bis %(date)s aktiv."

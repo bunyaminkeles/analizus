@@ -20163,3 +20163,51 @@ msgstr "This listing was not published after admin review."
 
 msgid "Gerekçe:"
 msgstr "Reason:"
+
+msgid "Teşekkür Ederiz!"
+msgstr "Thank You!"
+
+#, python-format
+msgid "Merhaba <strong>%(donor_name)s</strong>,"
+msgstr "Hello <strong>%(donor_name)s</strong>,"
+
+msgid "bağışınız onaylandı!"
+msgstr "your donation has been confirmed!"
+
+msgid "Kazandığınız Ödüller"
+msgstr "Your Rewards"
+
+#, python-format
+msgid "%(premium_days)s Gün Premium Üyelik"
+msgstr "%(premium_days)s Days of Premium Membership"
+
+#, python-format
+msgid ""
+"Premium üyeliğiniz <strong style=\"color: "
+"#fbbf24;\">%(premium_until)s</strong> tarihine kadar aktif."
+msgstr ""
+"Your Premium membership is active until <strong style=\"color: "
+"#fbbf24;\">%(premium_until)s</strong>."
+
+msgid ""
+"Premium üyeliğiniz hesabınıza tanımlandı. Artık tüm premium özelliklerden "
+"faydalanabilirsiniz!"
+msgstr ""
+"Premium membership has been added to your account. You can now use all "
+"premium features!"
+
+msgid "Analizus'a Git"
+msgstr "Go to Analizus"
+
+msgid "Sevgilerle, Analizus Ekibi"
+msgstr "Best regards, the Analizus Team"
+
+msgid "Bu e-posta otomatik olarak gönderilmiştir."
+msgstr "This email was sent automatically."
+
+msgid "Bağışınız onaylandı — Premium üyeliğiniz aktif"
+msgstr "Your donation is confirmed — your Premium membership is active"
+
+#, python-format
+msgid "Premium üyeliğiniz %(date)s tarihine kadar aktif."
+msgstr "Your Premium membership is active until %(date)s."

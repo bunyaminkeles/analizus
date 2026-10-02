@@ -648,12 +648,24 @@ class DonationTierAdmin(ModelAdmin):
 class DonationAdmin(ModelAdmin):
     warn_unsaved_changes = True
     compressed_fields = True
-    list_display = ('donor_display', 'amount_display', 'status_display', 'premium_days_granted', 'created_at', 'completed_at')
+    list_display = ('donor_display', 'amount_display', 'status_display', 'premium_days_promised', 'premium_days_granted', 'created_at', 'completed_at')
     list_filter = ('status', 'is_anonymous', 'created_at')
     search_fields = ('name', 'email', 'user__username', 'payment_id')
     date_hierarchy = 'created_at'
-    readonly_fields = ('payment_id', 'conversation_id', 'created_at', 'completed_at')
+    readonly_fields = ('payment_id', 'conversation_id', 'premium_days_promised', 'premium_days_granted', 'created_at', 'completed_at')
     ordering = ('-created_at',)
+    actions = ('confirm_donations',)
+
+    # Durum = Tamamlandı (bu aksiyon ya da değişiklik sayfası) → signals.reward_on_donation_completed:
+    # söz verilen gün kadar Premium (mevcut sürenin üzerine) + Destekçi rozeti + teşekkür e-postası. Bir kez verilir.
+    @admin.action(description='✅ Seçili bağışları onayla (Premium ver)')
+    def confirm_donations(self, request, queryset):
+        count = 0
+        for d in queryset.exclude(status='completed').select_related('user__profile'):
+            d.status = 'completed'
+            d.save()
+            count += 1
+        self.message_user(request, f'{count} bağış onaylandı; Premium ve teşekkür e-postası gönderildi.')
 
     fieldsets = (
         ('Bağışçı Bilgileri', {
@@ -663,7 +675,9 @@ class DonationAdmin(ModelAdmin):
             'fields': ('amount', 'status', 'payment_id', 'conversation_id')
         }),
         ('Ödüller', {
-            'fields': ('premium_days_granted', 'message')
+            'description': "Durumu 'Tamamlandı' yapıp kaydedince söz verilen gün kadar Premium verilir "
+                           "(mevcut Premium'un üzerine eklenir), rozet ve teşekkür e-postası gider.",
+            'fields': ('premium_days_promised', 'premium_days_granted', 'message')
         }),
         ('Tarihler', {
             'fields': ('created_at', 'completed_at'),

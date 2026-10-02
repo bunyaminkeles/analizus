@@ -1026,3 +1026,100 @@ def test_staff_exempt_from_weekly_job_limit(job_owner):
     job_owner.is_staff = True
     job_owner.save()
     assert profile.can_post_job_now()[0] is True
+
+
+# ─── Bağış → Premium ──────────────────────────────────────────────────────────
+
+@pytest.fixture
+def bronze_tier(db):
+    from forum.models import DonationTier
+    return DonationTier.objects.create(name='Bronz Destekçi', min_amount=50, premium_days=7)
+
+
+def _support_request(client, owner, tier, monkeypatch):
+    """Bağış talebi (IBAN e-postası gönderimi taklit edilir)."""
+    import json
+    from forum.services.email_service import EmailService
+    monkeypatch.setattr(EmailService, '_send_email', staticmethod(lambda **kw: True))
+    client.force_login(owner)
+    client.post('/api/send-support-email/', json.dumps(
+        {'tier_id': tier.pk, 'tier_name': tier.name, 'tier_amount': str(tier.min_amount)}),
+        content_type='application/json')
+    from forum.models import Donation
+    return Donation.objects.get(user=owner)
+
+
+@pytest.mark.django_db
+def test_donation_promised_days_survive_tier_change(client, job_owner, bronze_tier, sent_job_emails, monkeypatch):
+    """Talepten sonra katman değişse de söz verilen gün verilir; bitiş tarihi = onay + gün."""
+    from datetime import timedelta
+    from django.utils import timezone
+    donation = _support_request(client, job_owner, bronze_tier, monkeypatch)
+    assert donation.premium_days_promised == 7
+    bronze_tier.min_amount = 500   # admin katmanı değiştirdi → 50 TL'ye uyan katman kalmadı
+    bronze_tier.premium_days = 30
+    bronze_tier.save()
+    before = timezone.now()
+    donation.status = 'completed'
+    donation.save()
+    donation.refresh_from_db()
+    profile = job_owner.profile
+    profile.refresh_from_db()
+    assert donation.premium_days_granted == 7
+    assert profile.account_type == 'Premium' and profile.is_premium
+    assert before + timedelta(days=7) <= profile.premium_expires_at <= timezone.now() + timedelta(days=7)
+    assert job_owner.profile.badges.filter(slug='destekci').exists()
+    mails = [m for m in sent_job_emails if m[2] == ['owner@example.com']]
+    assert len(mails) == 1
+    assert profile.premium_expires_at.astimezone(timezone.get_current_timezone()).strftime('%d.%m.%Y') in mails[0][1]
+
+
+@pytest.mark.django_db
+def test_donation_extends_existing_premium_and_not_twice(job_owner, bronze_tier, sent_job_emails):
+    """Mevcut Premium'un üzerine eklenir; aynı bağış tekrar kaydedilince gün iki kez verilmez."""
+    from datetime import timedelta
+    from django.utils import timezone
+    from forum.models import Donation
+    profile = job_owner.profile
+    current_end = timezone.now() + timedelta(days=10)
+    profile.account_type = 'Premium'
+    profile.premium_expires_at = current_end
+    profile.save()
+    d = Donation.objects.create(user=job_owner, email='owner@example.com', amount=50, payment_id='T-1',
+                                premium_days_promised=7, status='pending_confirmation')
+    d.status = 'completed'
+    d.save()
+    d.save()  # ikinci kayıt (ör. admin tekrar kaydetti)
+    profile.refresh_from_db()
+    assert profile.premium_expires_at == current_end + timedelta(days=7)
+    assert len([m for m in sent_job_emails if m[2] == ['owner@example.com']]) == 1
+
+
+@pytest.mark.django_db
+def test_admin_confirm_donation_action_grants_premium(job_owner, bronze_tier, sent_job_emails):
+    """Admin 'Seçili bağışları onayla' aksiyonu Premium verir."""
+    from django.contrib.admin.sites import site
+    from forum.models import Donation
+    d = Donation.objects.create(user=job_owner, email='owner@example.com', amount=50, payment_id='T-2',
+                                premium_days_promised=7, status='pending_confirmation')
+    admin_obj = site._registry[Donation]
+    admin_obj.message_user = lambda *a, **k: None
+    admin_obj.confirm_donations(None, Donation.objects.filter(pk=d.pk))
+    d.refresh_from_db()
+    assert d.status == 'completed' and d.premium_days_granted == 7 and d.completed_at is not None
+
+
+@pytest.mark.django_db
+def test_profile_shows_premium_end_date_to_owner_only(client, job_owner, user):
+    from datetime import timedelta
+    from django.utils import timezone
+    profile = job_owner.profile
+    profile.account_type = 'Premium'
+    profile.premium_expires_at = timezone.now() + timedelta(days=30)
+    profile.save()
+    date = profile.premium_expires_at.astimezone(timezone.get_current_timezone()).strftime('%d.%m.%Y')
+    client.force_login(job_owner)
+    assert f'Premium üyeliğiniz {date} tarihine kadar aktif.' in client.get(f'/profile/{job_owner.username}/').content.decode()
+    other = Client()
+    other.force_login(user)
+    assert date not in other.get(f'/profile/{job_owner.username}/').content.decode()

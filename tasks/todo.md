@@ -48,6 +48,17 @@ maddelerde.
 >   (yıllık ortalama önerisi).
 > - Diğer açıklar bu listede `- [ ]`; ayrıntı `analizus.md` §14 (bibliometri), §15 (tarama), §26, §27.
 
+**BAĞIŞ → PREMIUM AKIŞI KIRIK (2 Ekim 2026 bulgusu, kullanıcı "verilen süre doğru mu" sorusundan) — onay bekliyor:**
+- [x] **DÜZELTİLDİ (2 Ekim 2026, migration forum/0167; testler 75/75)** **Admin bağışı onaylayınca Premium VERİLMİYOR** — `Donation.grant_premium()` yalnız `dashboard_approve_donation`
+  (forum/views.py ~2925) çağırıyor; bu view hiçbir şablonda bağlı değil. Panel "Bağışlar/Ödemeler" → admin değişiklik
+  sayfası; orada Durum=Tamamlandı yapınca sinyal/save_model yok → Premium, `premium_days_granted`, rozet, teşekkür e-postası
+  hiçbiri yok. `grant_supporter_badge()` ve `emails/donation_thank_you.html` hiç çağrılmıyor (ölü kod). Canlıda tamamlanmış
+  bağış + `premium_days_granted=0` kayıt var mı → Hetzner salt okuma kontrolü (kullanıcı izniyle).
+- [x] **DÜZELTİLDİ (2 Ekim 2026, migration forum/0167; testler 75/75)** **Katman değişince bekleyen bağışın günü yanlış hesaplanır** — bağış talebinde `amount = tier.min_amount` (o anki),
+  gün onay anında GÜNCEL katmandan `amount`'a göre bulunur. Örn. Bronz 50 TL/7 gün iken talep → katman 500 TL'ye çekildi →
+  onayda 50 TL'ye uyan katman yok → 0 gün. E-postada söz verilen gün ≠ verilen gün. Çözüm: talep anında gün sayısını bağışa yaz.
+- [x] **DÜZELTİLDİ (2 Ekim 2026, migration forum/0167; testler 75/75)** **Kullanıcı Premium bitiş tarihini hiçbir yerde görmüyor** — `premium_expires_at` hiçbir şablonda yok.
+
 **Pazar / profil talepleri (kullanıcı, 2 Ekim 2026) — her biri ayrı görev, önce onay:**
 - [x] **YAPILDI YERELDE (2 Ekim 2026, commit yok): Normal 2 / Premium 5 haftalık, admin → Site Ayarları → Limitler; migration forum/0165; footer + bağış e-postası dinamik (TR/EN/DE doğrulandı), forum testleri 64/64.** Eski not: İlan hakkı normal kullanıcı için 2 — şu an `Profile.get_weekly_job_limit()` (`forum/models.py` ~398): Free=1,
   Premium=3 (haftalık, son 7 gün) + referans bonusu (her 5 → +1, maks +2); sabit kodda. Netleştir: haftalık mı kalacak?

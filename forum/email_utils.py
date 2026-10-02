@@ -129,6 +129,29 @@ def send_job_rejected_notification(job):
     send_email_async(subject, message, [owner.email])
 
 
+def send_donation_confirmed_email(donation):
+    """Bağış onaylanınca teşekkür + Premium süresi ve bitiş tarihi (bağışçının dilinde)"""
+    from django.template.loader import render_to_string
+    from django.utils.html import strip_tags
+    user = donation.user
+    to = (user.email if user else '') or donation.email
+    if not to:
+        return
+    site = getattr(settings, 'SITE_URL', 'https://www.analizus.com').rstrip('/')
+    expires = user.profile.premium_expires_at if user else None
+    with recipient_language(user):
+        html = render_to_string('forum/emails/donation_thank_you.html', {
+            'donor_name': donation.name or (user.username if user else ''),
+            'amount': donation.amount,
+            'premium_days': donation.premium_days_granted,
+            'premium_until': tz.localtime(expires).strftime('%d.%m.%Y') if expires else '',
+            'site_url': site,
+        })
+        subject = gettext("Bağışınız onaylandı — Premium üyeliğiniz aktif")
+    import html as html_lib
+    send_email_async(subject, html_lib.unescape(strip_tags(html)), [to], html_message=html)
+
+
 def send_topic_reply_notification(post, topic):
     """Bir konuya cevap yazıldığında konu sahibine email gönderir (alıcının dilinde)"""
     if post.created_by == topic.starter:
