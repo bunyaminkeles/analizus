@@ -245,14 +245,18 @@
       </div>
       {% with total_pending=pending_stories.count|add:pending_reviews.count|add:unread_contacts.count|add:pending_donations.count %}
       {% with payment_pending=pending_biblio_orders|length|add:pending_openalex_orders|length|add:pending_job_payments|length %}
-      {% with grand_total=total_pending|add:payment_pending %}
+      {% with job_pending=pending_jobs|length %}
+      {% with grand_total=total_pending|add:payment_pending|add:job_pending %}
       {% if grand_total > 0 %}<span style="background:#ef4444;color:#fff;font-size:.7rem;font-weight:700;padding:.2rem .5rem;border-radius:9999px;">{{ grand_total }} bekliyor</span>{% endif %}
-      {% endwith %}{% endwith %}{% endwith %}
+      {% endwith %}{% endwith %}{% endwith %}{% endwith %}
     </div>
     <!-- Tabs -->
     <div style="display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap;">
+      <button onclick="showTab('tab-jobs',this)" style="padding:.3rem .75rem;border-radius:.375rem;border:1px solid {% if pending_jobs %}#ef4444;background:#ef4444;color:#fff{% else %}rgba(255,255,255,.15);background:transparent;color:#94a3b8{% endif %};font-size:.75rem;cursor:pointer;">
+        📋 İlan Onayı {% if pending_jobs %}<span style="background:rgba(255,255,255,.3);border-radius:9999px;padding:0 .4rem;">{{ pending_jobs|length }}</span>{% endif %}
+      </button>
       {% with pay_count=pending_biblio_orders|length|add:pending_openalex_orders|length|add:pending_job_payments|length %}
-      <button onclick="showTab('tab-payments',this)" style="padding:.3rem .75rem;border-radius:.375rem;border:1px solid {% if pay_count > 0 %}#ef4444;background:#ef4444;color:#fff{% else %}rgba(255,255,255,.15);background:transparent;color:#94a3b8{% endif %};font-size:.75rem;cursor:pointer;">
+      <button onclick="showTab('tab-payments',this)" style="padding:.3rem .75rem;border-radius:.375rem;border:1px solid {% if pay_count > 0 and not pending_jobs %}#ef4444;background:#ef4444;color:#fff{% else %}rgba(255,255,255,.15);background:transparent;color:#94a3b8{% endif %};font-size:.75rem;cursor:pointer;">
         💳 Ödemeler {% if pay_count > 0 %}<span style="background:rgba(255,255,255,.3);border-radius:9999px;padding:0 .4rem;">{{ pay_count }}</span>{% endif %}
       </button>
       {% endwith %}
@@ -270,8 +274,28 @@
       </button>
     </div>
     <!-- Tab içerikleri -->
+    <!-- İLAN ONAYI -->
+    <div id="tab-jobs" style="min-height:80px;{% if not pending_jobs %}display:none;{% endif %}">
+      {% if pending_jobs %}
+        {% for j in pending_jobs %}
+        <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:.25rem .75rem;padding:.4rem .5rem;border-radius:.375rem;margin-bottom:.25rem;background:rgba(239,68,68,.06);border-left:3px solid #ef4444;">
+          <span style="font-size:.8125rem;color:#cbd5e1;flex:1 1 14rem;min-width:0;">
+            <span style="color:#fbbf24;font-size:.7rem;font-weight:600;">İLAN</span>
+            <em>{{ j.title|truncatechars:40 }}</em> — {{ j.owner.username }}
+            <span style="color:#6b7280;font-size:.75rem;">· {{ j.created_at|timesince }} önce</span>
+          </span>
+          <span style="display:flex;gap:.75rem;flex-shrink:0;">
+            <a href="{% url 'job_detail' pk=j.pk %}" target="_blank" rel="noopener" style="font-size:.75rem;color:#94a3b8;text-decoration:none;">Gör</a>
+            <a href="{% url 'admin:forum_freelancejob_change' j.pk %}" style="font-size:.75rem;color:#818cf8;text-decoration:none;">Onayla / Reddet →</a>
+          </span>
+        </div>
+        {% endfor %}
+      {% else %}
+        <div style="text-align:center;color:#6b7280;font-size:.8rem;padding:1rem;">Bekleyen ilan yok ✓</div>
+      {% endif %}
+    </div>
     <!-- ÖDEMELER -->
-    <div id="tab-payments" style="min-height:80px;">
+    <div id="tab-payments" style="min-height:80px;{% if pending_jobs %}display:none;{% endif %}">
       {% if pending_biblio_orders or pending_openalex_orders or pending_job_payments or pending_donations %}
         {% for o in pending_biblio_orders %}
         <div style="display:flex;justify-content:space-between;align-items:center;padding:.4rem .5rem;border-radius:.375rem;margin-bottom:.25rem;background:rgba(239,68,68,.06);border-left:3px solid #ef4444;">
@@ -489,15 +513,15 @@ function switchChart(range, btn) {
   activeChart.update();
 }
 function showTab(id, btn) {
-  ['tab-payments','tab-stories','tab-reviews','tab-contacts','tab-donations'].forEach(function(t) {
+  ['tab-jobs','tab-payments','tab-stories','tab-reviews','tab-contacts','tab-donations'].forEach(function(t) {
     var el = document.getElementById(t); if (el) el.style.display = 'none';
   });
   document.getElementById(id).style.display = 'block';
   btn.parentElement.querySelectorAll('button').forEach(function(b) {
     b.style.background='transparent'; b.style.borderColor='rgba(255,255,255,.15)'; b.style.color='#94a3b8';
   });
-  // Ödeme tab'ı kırmızı, diğerleri mor
-  var isPayments = (id === 'tab-payments');
+  // Ödeme ve ilan onayı tab'ı kırmızı, diğerleri mor
+  var isPayments = (id === 'tab-payments' || id === 'tab-jobs');
   btn.style.background = isPayments ? '#ef4444' : '#818cf8';
   btn.style.borderColor = isPayments ? '#ef4444' : '#818cf8';
   btn.style.color = '#fff';
