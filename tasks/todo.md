@@ -372,13 +372,28 @@ anonime açılması — `profile_detail` `@login_required` → Google profilleri
 > - Eşlenmeyen `JobCategory`'lerdeki ilanlar kaybolmaz — `/market/` ana listede ve çiplerde normal görünmeye devam
 >   eder; hizmet sayfası yalnız ekstra bir SEO giriş kapısı, tek görünürlük kanalı değil.
 > - Mockup: `claude.ai/artifact/ADTZ9xDK4ieSHt7GxDWGgN` (navbar + /market/ + örnek hizmet sayfası akışı).
+> - **İç link kararı (4 Ekim 2026, kullanıcı: "diğer hizmetler gelince footer uzar mı?"):** footer'daki "Araçlar"
+>   sütununa her hizmet sayfası için ayrı satır eklemek yerine tek bir **`/hizmetler/` indeks sayfası** +
+>   footer'da tek "Hizmetler" linki — kaç hizmet sayfası olursa olsun footer sabit kalır, indeks otomatik listeler
+>   (`ServicePage.objects.filter(is_active=True)`).
 
-- [ ] `/hizmetler/` + `akademik-danismanlik`, `nicel-analiz`, `nitel-analiz`, `veri-ve-yapay-zeka`.
-  Sayfa: vaat → alt hizmet bölümleri (`#anchor`; tanım, ne zaman, teslimat) → uzman kartları (≥2 yoksa bölüm gizli +
-  "Bu alanda uzmansanız katılın") → süreç → etik sınırlar → SSS → CTA (İlan Aç kategori ön seçili + Uzman Olarak Katıl).
-  Service + FAQPage + BreadcrumbList JSON-LD; sitemap; feature flag; AI asistan `_ALLOWED_PATHS`; ax- sınıfları, mobil önce
+- [x] **YAPILDI YERELDE (4 Ekim 2026, commit `e5aee67`, dev — push edilmedi): pilot `/hizmetler/nicel-analiz/` +
+  `/hizmetler/` indeksi.** `ServicePage`/`ServicePageSection`/`ServicePageFAQ` modelleri (`forum/models.py`,
+  migration forum/0170 şema + forum/0171 veri — Nicel Analiz 7 bölüm + 2 SSS, `is_active=False` varsayılan),
+  admin (`JobCategory.intro` pattern'i, inline bölüm/SSS), `SiteSettings.feature_hizmet_sayfalari` flag
+  (varsayılan kapalı). `post_job` artık `?category=<id>` ile ön-seçim destekliyor. Service + BreadcrumbList +
+  FAQPage JSON-LD, sitemap (`ServicePageSitemap` + indeks `StaticViewSitemap`'e flag'li eklendi), AI asistan
+  `_ALLOWED_PATHS`'e `/hizmetler/` eklendi. **Düzeltilen hata:** ilk uygulamada `JobCategory.localized_title`
+  property'si yanlışlıkla `ServicePageFAQ`'ya kaymıştı (model ekleme sırası hatası) — fark edilip düzeltildi,
+  forum testleri 82/82'ye geri döndü. Lokalde `JobCategory` verisi olmadığından (yalnız canlıda var) bölümlerdeki
+  uzman kartları lokalde boş görünür — normal. **KALAN:** flag + Nicel Analiz `is_active` hâlâ yerelde AÇIK test
+  amaçlı bırakıldı — canlıya almadan önce kapatma/açma kararı kullanıcıda; diğer 3 sayfanın (`akademik-danismanlik`,
+  `nitel-analiz`, `veri-ve-yapay-zeka`) içeriği henüz girilmedi (SEO metin taslağı yukarıda hazır); mobil/Playwright
+  doğrulaması yapılmadı; 15 blog kategorisinden kaç tanesi 4 hizmet sayfasına eşlenecek netleşmedi (Faz 3'teki
+  blog→JobCategory eşlemesinden farklı, ayrı bir iş).
 - [ ] Nicel Analiz bölümleri `/analiz/` sınıflandırmasıyla aynı (Ön Analizler, Geçerlilik & Güvenirlik, İlişki, Fark,
-  Regresyon, ML) + SEM/SmartPLS, EViews, ileri modeller; her bölümde ilgili ücretsiz araç linkleri
+  Regresyon, ML) + SEM/SmartPLS, EViews, ileri modeller; her bölümde ilgili ücretsiz araç linkleri — pilot içerik
+  7 bölümle YAPILDI (yukarı bak), bu madde ileri modellerle zenginleştirme için açık kalsın
 - [ ] Pilot: önce Nicel Analiz, onay sonrası diğer 3
 
 **Faz 4 — SEO metin taslağı (4 Ekim 2026, WebSearch ile Armut.com'un hedeflediği terimler referans alındı —
