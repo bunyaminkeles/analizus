@@ -20298,3 +20298,11 @@ msgstr "No service pages are published yet."
 
 msgid "Akademik danışmanlık, nicel ve nitel analiz, veri bilimi ve yapay zeka alanlarında uzmanlarla çalışın."
 msgstr "Work with experts in academic consulting, quantitative and qualitative analysis, data science and AI."
+
+#, python-format
+msgid ""
+"Taahhütlü bir hizmete mi ihtiyacınız var? <a "
+"href=\"%(service_url)s\">Hizmetlerimize göz atın →</a>"
+msgstr ""
+"Need a committed service? <a href=\"%(service_url)s\">Browse our "
+"services →</a>"

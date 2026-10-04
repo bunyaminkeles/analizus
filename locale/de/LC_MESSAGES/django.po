@@ -20625,3 +20625,11 @@ msgstr "Derzeit sind keine Dienstleistungsseiten veröffentlicht."
 
 msgid "Akademik danışmanlık, nicel ve nitel analiz, veri bilimi ve yapay zeka alanlarında uzmanlarla çalışın."
 msgstr "Arbeiten Sie mit Experten für akademische Beratung, quantitative und qualitative Analyse, Data Science und KI."
+
+#, python-format
+msgid ""
+"Taahhütlü bir hizmete mi ihtiyacınız var? <a "
+"href=\"%(service_url)s\">Hizmetlerimize göz atın →</a>"
+msgstr ""
+"Benötigen Sie einen verbindlichen Service? <a "
+"href=\"%(service_url)s\">Unsere Dienstleistungen ansehen →</a>"
