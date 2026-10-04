@@ -20580,3 +20580,18 @@ msgstr "Wenn kein passender Bereich aufgeführt ist, wählen Sie „Sonstiges“
 msgid "İlan başlığı en fazla {max} karakter olabilir (şu an {count})."
 msgstr ""
 "Der Auftragstitel darf höchstens {max} Zeichen lang sein (derzeit {count})."
+
+msgid "Bu konuda uzman desteği almak ister misiniz?"
+msgstr "Möchten Sie zu diesem Thema fachkundige Unterstützung?"
+
+#, python-format
+msgid ""
+"Analizus'taki uzmanlar arasında <strong "
+"style=\"color:#f1f5f9;\">%(category)s</strong> alanında çalışan "
+"analistleri inceleyebilirsiniz."
+msgstr ""
+"Sie können auf Analizus Analysten durchsuchen, die im Bereich <strong "
+"style=\"color:#f1f5f9;\">%(category)s</strong> arbeiten."
+
+msgid "Uzmanları Gör"
+msgstr "Experten ansehen"

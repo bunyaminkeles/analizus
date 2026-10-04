@@ -64,7 +64,11 @@ maddelerde.
 **2 Ekim 2026 sonrası açık kalanlar:**
 - [x] **YAPILDI (2 Ekim 2026, kullanıcı)** Canlıda hizmet tanıtımı ilanları (189 vb.) — admin "Reddet: hizmet tanıtımı" (kullanıcı kararı)
 - [x] **YAPILDI (2 Ekim 2026, kullanıcı)** Canlı Bağışlar: Tamamlandı + Verilen Premium Gün = 0 kayıt var mı → varsa Premium elle ya da ayrı düzeltme (kullanıcı)
-- [ ] Eski kullanıcı yazımı pasif `JobCategory` kayıtları — sil / aktifleştir (kullanıcı, admin)
+- [x] **YAPILDI (2 Ekim 2026, kullanıcı): 6 pasiften 5'i silindi (189'un virgüllü adı, C++, Java, Javascript, Google SEO hizmetleri); "Web sayfası tasarımı" pasif bırakıldı (kullanıcı kararı)** Eski kullanıcı yazımı pasif `JobCategory` kayıtları — sil / aktifleştir (kullanıcı, admin)
+- [ ] Aktif iş kategorilerinin çoğunda tanıtım metni (`intro`) boş → Uzman Dizini `?cat=` sayfaları noindex (ör. Faktör analizi, R ile veri analizi, Tez danışmanlığı, Yapay zekâ modelleme, Zaman serisi). SEO Faz 3 ile birlikte metin hazırlanabilir (canlı admin; abartısız)
+- [x] **YAPILDI YERELDE (2 Ekim 2026, commit yok): Davranış Analizi** — Sayfa Ziyaretleri / Ziyaret Özetleri listesinde kullanıcı adı → Navigasyon Grafiği `?user=` kişi analizi (özet kartları, bölüm + günlük grafik, son 5 gün navigasyon akışı / oturumlar, sık geçişler; ilk 20'de olmayan da açılır); "Ziyaret Özetleri" menüden kalktı; görünmeyen kart başlıkları + yanlış "Son 7 Gün" etiketi düzeltildi; testler analytics 4 + forum 82 = 86/86; Playwright masaüstü/mobil (test verisiyle) OK
+- [ ] Ölü kod: `PageViewSummaryAdmin.summary_chart_view` + `templates/admin/analytics/summary_chart.html` artık linklenmiyor — silinebilir (karar)
+- [ ] Navigasyon Grafiği mobilde "En Çok Ziyaret" yatay grafiğinde bazı bölüm etiketleri atlanıyor (Chart.js autoSkip; önceden de vardı; admin mobil, düşük öncelik)
 - [x] **DÜZELTİLDİ (2 Ekim 2026: kutuya `color: var(--ax-text-primary)`)** İlan formu (post_job.html) mavi bilgi kutusunun ilk satırı ("…X gün aktif kalacaktır") koyu zeminde okunmuyor
 - [x] **DÜZELTİLDİ (2 Ekim 2026: `background-size: var(--ax-space-3) var(--ax-space-2)`, bundle yeniden üretildi, v=0008)** `.ax-form-select` (base.css) `background-size` yok → ok simgesi kutuyu kaplıyor (pubmed landing kullanıyor)
 - [ ] Render'da profil fotoğrafı yüklenmiyor (alt metin görünüyor) — kalıcı disk/medya; canlıda da var mı kontrol
@@ -223,6 +227,56 @@ tutar ay sonu bildirilir, IBAN istenip ödenir. (3) Tüm adımlar ilgili kişini
 - [ ] Faz 6 — Davet kazancı + aylık cron + talep formu + dashboard tablosu
 - [ ] Faz 7 — Testler (durum geçişleri, yetki, tutar yuvarlama, kötüye kullanım), TR/EN/DE çeviri, `analizus.md`
 
+### AI AJAN İLE SİTE YÖNETİMİ — TASLAK (2 Ekim 2026; BEKLEMEDE — §E kararları netleşmeden kod yok)
+
+**Kullanıcının isteği:** analizus.com ekosistemini bir AI ajan yönetsin — gerektiğinde admin gibi davransın, istisnai
+durumlarda e-posta / DM ile kullanıcıya danışsın, SEO girdisi yapsın, konsolu kontrol etsin, kod üretsin.
+**Görüş:** mümkün; ama "tam yetkili otonom admin" değil — **katmanlı yetki + onay kuyruğu + her adım denetim kaydında**.
+
+#### A. Mimari (beyin / eller / ağız)
+- **Beyin (Claude):** DB'ye ve sunucu shell'ine doğrudan dokunmaz; yalnız anahtarla korunan, beyaz listeli uçları çağırır.
+  - Seçenek A (öneri, başlangıç): **Claude Code routine'leri** (bulutta zamanlanmış ajan; repo erişimi var, sunucu gerekmez).
+  - Seçenek B (sonra, gerekirse): Hetzner'de **Claude Agent SDK** container'ı — 7/24, olay güdümlü (yeni ilan anında);
+    bakım + API token ücreti. Routine'lerin ücretlendirmesi, dış ağ ve sır (anahtar) yönetimi kurulumda doğrulanacak.
+- **Eller (Django):** "Ajan API'si" — salt okunur uçlar (günlük özet: 500 hatalar, bekleyen ilan/bağış, job_queue
+  hataları, AI kotası, disk/yedek) + `AgentAction` modeli (ne, neden, önce/sonra, durum: önerildi/onaylandı/uygulandı/
+  reddedildi/geri alındı). Onaylanan eylemi **Django uygular** (ajan değil) — mevcut `save()` / sinyal akışıyla
+  (ilan pending→open, bağış→completed; `queryset.update` değil). Anahtar `hmac.compare_digest` (cron anahtarı gibi).
+- **Ağız (iletişim):** e-postada imzalı, tek kullanımlık, 48 saat geçerli onay linki → staff girişli **onay sayfası +
+  POST düğmesi** (GET doğrudan uygulamaz — Gmail/güvenlik tarayıcıları linki önceden açabilir) + aynı istek AnalizBot'tan
+  kullanıcıya site DM'i.
+- **Acil fren:** `feature_ai_agent` flag'i (SiteSettings); günlük otomatik eylem sınırı admin → Limitler (kodda sabit yok).
+
+#### B. Yetki seviyeleri
+- **Serbest (okuma + taslak):** günlük durum raporu, GSC analizi, `meta_title`/`meta_description` önerisi, blog taslağı
+  (`draft`), todo'ya madde.
+- **Yap + bildir:** `agent/*` dalında kod + PR açma, spam şüphesi işaretleme.
+- **Önce sor:** ilan onay/ret, bağış onayı, kullanıcıya e-posta, yayındaki blog/SEO alanını değiştirme, fiyat/limit,
+  PR'ı dev'e alma.
+- **Asla:** main'e merge, Hetzner deploy, canlıda migration, kullanıcı silme, `.env`, sunucu shell'i.
+- Bir iş haftalarca doğru karar verirse bir üst seviyeye taşınabilir (ör. ilan onayı "önce sor"dan başlar).
+
+#### C. Riskler / kurallar
+- **Prompt injection:** ajan kullanıcı içeriği (forum, ilan, DM) okur → içerikteki "talimat"a göre eylem yok; kullanıcı
+  içeriğini okuduğu her işte eylem yetkisi dar.
+- Para / güven / analiz sonuçları geri dönüşü zor → insan onayı. "Hızlı değil, doğru."
+- SEO/blog metinlerinde **abartılı vaat yok** kuralı ajan talimatına yazılır; her iddia koddan doğrulanır.
+- Ajan Django superuser değil — ayrı hesap / dar yetkili token.
+
+#### D. Fazlar (her faz ayrı onay)
+- [ ] Faz 1 — Gözlemci (1–2 hafta): Ajan API'si salt okunur uçlar + her sabah durum e-postası; eylem yok
+- [ ] Faz 2 — Önerici: `AgentAction` + onay linki/sayfası + AnalizBot DM + `feature_ai_agent` (migration — canlı DB)
+- [ ] Faz 3 — SEO: GSC API (şu an elle zip) → haftalık analiz, meta önerileri, taslak blog
+- [ ] Faz 4 — Kodlayıcı: todo'daki küçük işler / hata e-postaları → `agent/*` dalı + test + PR
+- [ ] Faz 5 — Sınırlı otonomi: kendini kanıtlamış işler "yap + bildir"e
+- [ ] Her fazda testler + `analizus.md` güncellemesi
+
+#### E. Açık kararlar (kullanıcı)
+1. Beyin: Seçenek A (routine) ile başlansın mı?
+2. Onay kanalı: e-posta, site DM'i, ikisi birden?
+3. "Asla" listesine eklenecek / çıkarılacak iş var mı?
+4. Aylık bütçe?
+
 ### BÜYÜK SEO DÖNÜŞÜMÜ — PLAN (30 Eylül 2026; ÖNCELİK — faz faz, her faz önce onay)
 **Hedef:** portal = analiz/danışmanlık ihtiyacı olanlar ↔ analistler (tez merkezleri, AI mühendisleri, istatistikçiler,
 eğitmenler). Kapsam: akademik danışmanlık, etik kurul, tez önerisi, metin editörlüğü, makale danışmanlığı, metodoloji ve
@@ -282,8 +336,23 @@ anonime açılması — `profile_detail` `@login_required` → Google profilleri
   canonical `/market/`; `/istatistik/*` 301 → `/analiz/*`
 
 **Faz 3 — Blog → hizmet köprüsü (trafiğin %56'sı blogda)**
-- [ ] Blog yazısı sonunda kategoriye göre tek "Bu konuda uzman desteği" kartı (15 `BlogCategory` → hizmet eşlemesi); Faz 4
-  bitene kadar hedef `/proje-talebi/` veya `/market/`
+- [x] **YAPILDI YERELDE (4 Ekim 2026, commit yok): blog yazısı sonunda "Bu konuda uzman desteği" kartı** —
+  hedef `/uzmanlar/?cat=` (ilan açma değil, doğrudan uzman dizini; gerekçe: `/market/` kategori ön-seçimini
+  desteklemiyor, `/proje-talebi/` sabit hizmet türü listesiyle blog konularına uymuyor, dizin zaten ≥2 uzman
+  kontrolüne sahip). `BlogPost.EXPERT_CATEGORY_BY_BLOG_CATEGORY` (forum/models.py) — 15 kategoriden 10'u
+  JobCategory'e eşlendi (SPSS rehberleri→SPSS ile veri analizi, Tez süreci→Tez danışmanlığı, Ekonometri→EViews,
+  Açık Bilim/Veri Güvenliği-Araştırma Etiği/Akademik Etik&AI→Etik kurul desteği, Sağlık İstatistiği→SPSS,
+  İstatistik(-101)→Akademik danışmanlık, Veri Kazıma→Python ile veri analizi); 5'i (Bilim Felsefesi&Metodoloji,
+  Akademik Kariyer&Etik, Bibliometri&Türkiye'de Bilim, Veri Güvenliği&Etik, Sağlık Verisi&Bilim Politikası) net
+  karşılığı olmadığı için eşlenmedi → kart basılmaz (kullanıcı onayladı). `forum/views.py` `blog_detail`:
+  eşleşen JobCategory `is_active` + ≥2 herkese açık uzman (skill) şartı (uzman_dizini'ndeki aynı eşik) —
+  sağlanmazsa kart yok. Kart `ax-tool-guide`/`ax-btn` (service_promo.html'deki "uzmana bırak" bandıyla aynı
+  desen), `{% trans %}`/`{% blocktrans %}` ile EN/DE locale'e eklendi (blog `forum.urls` i18n_patterns dışında
+  olduğu için şu an yalnız TR'de görünür — ileride i18n'e alınırsa hazır). Doğrulama: forum 82/82, oturumsuz
+  `curl` ile eşleşen kategoride kart+doğru link (`/uzmanlar/?cat=<id>`), eşleşmeyen kategoride kart yok, <2
+  uzmanda kart yok (yerel geçici veriyle test edilip temizlendi — canlıda JobCategory verisi farklı, admin
+  panelinden alınan güncel liste kullanıldı). Faz 4 hizmet sayfaları açılınca kart hedefi `/hizmetler/<slug>`'a
+  taşınabilir.
 
 **Faz 4 — 5 hizmet sayfası + Pazaryeri şeridi**
 - [ ] KARAR: içerik yeri — Python sabiti (deploy ile değişir) / admin modeli + migration (öneri: model); dil — öneri yalnız TR,

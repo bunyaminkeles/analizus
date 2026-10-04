@@ -1547,6 +1547,21 @@ class BlogPost(models.Model):
         'tez-sureci': 'studio-sonrasi',
     }
 
+    # Blog kategorisi slug → pazar iş kategorisi başlığı (JobCategory.title). SEO Faz 3:
+    # yazı sonunda "Bu konuda uzman desteği" kartı için. Eşleşmeyen kategoride kart basılmaz.
+    EXPERT_CATEGORY_BY_BLOG_CATEGORY = {
+        'spss-rehberleri': 'SPSS ile veri analizi',
+        'tez-sureci': 'Tez danışmanlığı',
+        'ekonometri-veri-politikasi': 'EViews analizleri',
+        'acik-bilim-arastirma-etigi': 'Etik kurul desteği',
+        'veri-guvenligi-arastirma-etigi': 'Etik kurul desteği',
+        'akademik-etik-ai': 'Etik kurul desteği',
+        'saglik-istatistigi': 'SPSS ile veri analizi',
+        'istatistik-101': 'Akademik danışmanlık',
+        'istatistik': 'Akademik danışmanlık',
+        'veri-kazima-ve-arastirma': 'Python ile veri analizi',
+    }
+
     title = models.CharField(max_length=200, verbose_name="Başlık")
     slug = models.SlugField(unique=True, max_length=250)
     excerpt = models.TextField(max_length=300, verbose_name="Özet", help_text="Kısa açıklama (liste görünümünde gösterilir)")

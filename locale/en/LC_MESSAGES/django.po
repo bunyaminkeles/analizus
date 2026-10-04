@@ -20253,3 +20253,18 @@ msgstr "If no suitable area is listed, choose “Other”."
 msgid "İlan başlığı en fazla {max} karakter olabilir (şu an {count})."
 msgstr ""
 "The listing title can be at most {max} characters (currently {count})."
+
+msgid "Bu konuda uzman desteği almak ister misiniz?"
+msgstr "Would you like expert support on this topic?"
+
+#, python-format
+msgid ""
+"Analizus'taki uzmanlar arasında <strong "
+"style=\"color:#f1f5f9;\">%(category)s</strong> alanında çalışan "
+"analistleri inceleyebilirsiniz."
+msgstr ""
+"You can browse analysts on Analizus who work in <strong "
+"style=\"color:#f1f5f9;\">%(category)s</strong>."
+
+msgid "Uzmanları Gör"
+msgstr "See Experts"

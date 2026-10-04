@@ -3342,6 +3342,18 @@ def blog_detail(request, slug):
         post_count=Count('posts', filter=Q(posts__status='published'))
     ).filter(post_count__gt=0)
 
+    # "Bu konuda uzman desteği" kartı (SEO Faz 3) — eşleşen pazar kategorisinde en az
+    # 2 herkese açık uzman yoksa kart basılmaz (uzman_dizini'ndeki aynı eşik).
+    expert_category = None
+    job_category_title = (
+        BlogPost.EXPERT_CATEGORY_BY_BLOG_CATEGORY.get(post.category.slug)
+        if post.category else None
+    )
+    if job_category_title:
+        candidate = JobCategory.objects.filter(title=job_category_title, is_active=True).first()
+        if candidate and Profile.objects.filter(is_public=True, skills=candidate).distinct().count() >= 2:
+            expert_category = candidate
+
     context = {
         'post': post,
         'is_liked': is_liked,
@@ -3349,6 +3361,7 @@ def blog_detail(request, slug):
         'category_posts': category_posts,
         'popular_posts': popular_posts,
         'categories': categories,
+        'expert_category': expert_category,
     }
     return render(request, 'forum/blog/blog_detail.html', context)
 
