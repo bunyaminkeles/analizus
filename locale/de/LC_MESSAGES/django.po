@@ -20633,3 +20633,27 @@ msgid ""
 msgstr ""
 "Benötigen Sie einen verbindlichen Service? <a "
 "href=\"%(service_url)s\">Unsere Dienstleistungen ansehen →</a>"
+
+msgid "Profil fotoğrafı"
+msgstr "Profilbild"
+
+msgid "Ünvan"
+msgstr "Titel"
+
+msgid "En az bir uzmanlık alanı"
+msgstr "Mindestens ein Fachgebiet"
+
+msgid "En az bir bağlantı (web, LinkedIn, ORCID…)"
+msgstr "Mindestens ein Link (Website, LinkedIn, ORCID…)"
+
+msgid "Akademik unvan"
+msgstr "Akademischer Titel"
+
+msgid "Profil Doluluğu"
+msgstr "Profilvollständigkeit"
+
+msgid "Tamamlamak için:"
+msgstr "Zum Vervollständigen:"
+
+msgid "Profiliniz eksiksiz — uzman dizininde ve hizmet sayfalarında en iyi şekilde görünüyorsunuz."
+msgstr "Ihr Profil ist vollständig — Sie werden im Expertenverzeichnis und auf den Dienstleistungsseiten optimal dargestellt."

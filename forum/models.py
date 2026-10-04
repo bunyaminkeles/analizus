@@ -382,6 +382,27 @@ class Profile(models.Model):
             links.append(('github', github, f'https://github.com/{github}'))
         return links
 
+    def completion_status(self):
+        """Profil doluluk yüzdesi + eksik alan listesi (ağırlıklı). Yalnız profil sahibine gösterilir
+        (profile_edit.html) — kendi kendine teşvik, kamuya açık bir puan değil."""
+        checks = [
+            ('avatar', gettext('Profil fotoğrafı'), 10, bool(self.avatar)),
+            ('bio', gettext('Biyografi'), 15, bool(self.bio.strip())),
+            ('title', gettext('Ünvan'), 10, bool(self.title.strip())),
+            ('university', gettext('Üniversite'), 10, bool(self.university.strip())),
+            ('department', gettext('Bölüm'), 5, bool(self.department.strip())),
+            ('location', gettext('Konum'), 5, bool(self.location.strip())),
+            ('skills', gettext('En az bir uzmanlık alanı'), 20, self.skills.exists()),
+            ('links', gettext('En az bir bağlantı (web, LinkedIn, ORCID…)'), 15, bool(self.public_links())),
+            ('academic_title', gettext('Akademik unvan'), 10, bool(self.academic_title.strip())),
+        ]
+        percentage = sum(weight for _key, _label, weight, done in checks if done)
+        missing = [
+            {'label': label, 'weight': weight}
+            for _key, label, weight, done in checks if not done
+        ]
+        return {'percentage': percentage, 'missing': missing}
+
     @property
     def is_premium(self):
         """Premium üyelik aktif mi kontrol et"""

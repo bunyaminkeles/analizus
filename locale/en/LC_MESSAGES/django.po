@@ -20306,3 +20306,27 @@ msgid ""
 msgstr ""
 "Need a committed service? <a href=\"%(service_url)s\">Browse our "
 "services →</a>"
+
+msgid "Profil fotoğrafı"
+msgstr "Profile photo"
+
+msgid "Ünvan"
+msgstr "Title"
+
+msgid "En az bir uzmanlık alanı"
+msgstr "At least one area of expertise"
+
+msgid "En az bir bağlantı (web, LinkedIn, ORCID…)"
+msgstr "At least one link (website, LinkedIn, ORCID…)"
+
+msgid "Akademik unvan"
+msgstr "Academic title"
+
+msgid "Profil Doluluğu"
+msgstr "Profile Completeness"
+
+msgid "Tamamlamak için:"
+msgstr "To complete:"
+
+msgid "Profiliniz eksiksiz — uzman dizininde ve hizmet sayfalarında en iyi şekilde görünüyorsunuz."
+msgstr "Your profile is complete — you'll show up at your best in the expert directory and service pages."
