@@ -376,9 +376,14 @@ anonime açılması — `profile_detail` `@login_required` → Google profilleri
 >   sütununa her hizmet sayfası için ayrı satır eklemek yerine tek bir **`/hizmetler/` indeks sayfası** +
 >   footer'da tek "Hizmetler" linki — kaç hizmet sayfası olursa olsun footer sabit kalır, indeks otomatik listeler
 >   (`ServicePage.objects.filter(is_active=True)`).
+> - **CANLIDA (4 Ekim 2026, main merge 2617896, Hetzner deploy edildi):** kullanıcı 4 sayfayı da (`is_active=True`)
+>   ve `feature_hizmet_sayfalari` flag'ini production'da elle açtı — `/hizmetler/` + 4 alt sayfa şu an gerçek
+>   kullanıcılara görünür durumda. **GSC'ye gönderildi (4 Ekim 2026):** sitemap yeniden gönderildi + 5 URL
+>   (`/hizmetler/` + 4 alt sayfa) tek tek Request Indexing. Ölçüm: ~2-4 hafta sonra Performance raporunda hizmet
+>   niyetli sorgularda gösterim çıkıp çıkmadığına bak (Faz 1 analizinde bu sorgular 0 gösterimdi).
 
-- [x] **YAPILDI YERELDE (4 Ekim 2026, commit `e5aee67`, dev — push edilmedi): pilot `/hizmetler/nicel-analiz/` +
-  `/hizmetler/` indeksi.** `ServicePage`/`ServicePageSection`/`ServicePageFAQ` modelleri (`forum/models.py`,
+- [x] **YAPILDI (4 Ekim 2026, commit `e5aee67` + sonrası, main'e merge edildi + Hetzner'e deploy edildi): pilot
+  `/hizmetler/nicel-analiz/` + `/hizmetler/` indeksi — canlıda.** `ServicePage`/`ServicePageSection`/`ServicePageFAQ` modelleri (`forum/models.py`,
   migration forum/0170 şema + forum/0171 veri — Nicel Analiz 7 bölüm + 2 SSS, `is_active=False` varsayılan),
   admin (`JobCategory.intro` pattern'i, inline bölüm/SSS), `SiteSettings.feature_hizmet_sayfalari` flag
   (varsayılan kapalı). `post_job` artık `?category=<id>` ile ön-seçim destekliyor. Service + BreadcrumbList +
