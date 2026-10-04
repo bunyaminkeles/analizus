@@ -337,6 +337,22 @@ def check_and_award_trust_badge(profile):
         return False
 
 
+def check_and_award_profile_complete_badge(profile):
+    """Profil %100 doluysa 'Profili Tamamladı' rozetini ver — yalnız ilk kez verilince True
+    döner (badges.add() kendi başına idempotent ama tekrar tekrar puan hediye edilmesin diye
+    önce zaten var mı kontrol ediyoruz — trust rozetindeki tekrar ödül riskini burada tekrarlamıyoruz)."""
+    try:
+        if profile.completion_status()['percentage'] >= 100:
+            badge = Badge.objects.filter(slug='profili-tamamladi').first()
+            if badge and not profile.badges.filter(pk=badge.pk).exists():
+                profile.badges.add(badge)
+                return True
+        return False
+    except Exception as e:
+        logger.error(f"Profil tamamlama rozeti kontrolünde hata: {e}")
+        return False
+
+
 # Signal: Yeni konu açıldığında rozet kontrolü
 @receiver(post_save, sender=Topic)
 def check_topic_badges(sender, instance, created, **kwargs):

@@ -1510,6 +1510,7 @@ def profile_edit(request):
 
         user.save()
         profile.skills.set(selected_skills)
+        _check_and_award_profile_complete_badge(request, profile)
 
         # Değiştirilen/kaldırılan eski fotoğrafı depodan sil (sahipsiz dosya bırakma)
         if old_avatar and (not profile.avatar or profile.avatar.name != old_avatar[1]):
@@ -1811,6 +1812,18 @@ def _check_and_award_trust_badge(request, user):
         score.total_points += 50
         score.save()
         messages.success(request, gettext('TEBRİKLER! Tüm doğrulamaları tamamladığınız için "Güvenilir Üye" rozeti ve 50 Puan kazandınız.'))
+
+
+def _check_and_award_profile_complete_badge(request, profile):
+    """Profil %100 doluysa 'Profili Tamamladı' rozeti ve 50 puan hediye eder (yalnız ilk kez).
+    user.profile DEĞİL, çağıranın elindeki taze profile nesnesi alınır — request başında
+    (middleware/context processor) önbelleklenmiş user.profile, bu istekteki save()'i yansıtmaz."""
+    from .signals import check_and_award_profile_complete_badge
+    if check_and_award_profile_complete_badge(profile):
+        score, _ = QuizScore.objects.get_or_create(user=profile.user)
+        score.total_points += 50
+        score.save()
+        messages.success(request, gettext('TEBRİKLER! Profilinizi %100 tamamladığınız için "Profili Tamamladı" rozeti ve 50 Puan kazandınız.'))
 
 # --- PROFİL DETAY ---
 @login_required

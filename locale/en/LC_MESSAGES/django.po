@@ -20330,3 +20330,9 @@ msgstr "To complete:"
 
 msgid "Profiliniz eksiksiz — uzman dizininde ve hizmet sayfalarında en iyi şekilde görünüyorsunuz."
 msgstr "Your profile is complete — you'll show up at your best in the expert directory and service pages."
+
+msgid "Uzman olmak için: sorulara cevap ver, puan topla — Uzman Dizini'nde görünürsün."
+msgstr "To become an expert: answer questions, earn points — you'll show up in the Expert Directory."
+
+msgid "TEBRİKLER! Profilinizi %100 tamamladığınız için \"Profili Tamamladı\" rozeti ve 50 Puan kazandınız."
+msgstr "CONGRATULATIONS! You earned the \"Profile Complete\" badge and 50 Points for completing your profile 100%."

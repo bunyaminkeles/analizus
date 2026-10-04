@@ -20657,3 +20657,9 @@ msgstr "Zum Vervollständigen:"
 
 msgid "Profiliniz eksiksiz — uzman dizininde ve hizmet sayfalarında en iyi şekilde görünüyorsunuz."
 msgstr "Ihr Profil ist vollständig — Sie werden im Expertenverzeichnis und auf den Dienstleistungsseiten optimal dargestellt."
+
+msgid "Uzman olmak için: sorulara cevap ver, puan topla — Uzman Dizini'nde görünürsün."
+msgstr "Um Experte zu werden: Fragen beantworten, Punkte sammeln — Sie erscheinen im Expertenverzeichnis."
+
+msgid "TEBRİKLER! Profilinizi %100 tamamladığınız için \"Profili Tamamladı\" rozeti ve 50 Puan kazandınız."
+msgstr "GLÜCKWUNSCH! Sie haben das Abzeichen „Profil vervollständigt“ und 50 Punkte für die 100%ige Vervollständigung Ihres Profils erhalten."

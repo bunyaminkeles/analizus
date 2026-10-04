@@ -169,6 +169,15 @@ class Command(BaseCommand):
                 'points_required': 0,
             },
             {
+                'name': 'Profili Tamamladı',
+                'slug': 'profili-tamamladi',
+                'description': 'Profilini %100 doldurdu',
+                'icon': 'bi-person-check-fill',
+                'color': '#10b981',
+                'badge_type': 'achievement',
+                'points_required': 0,
+            },
+            {
                 'name': 'Moderatör',
                 'slug': 'moderator',
                 'description': 'Forum moderatörü - TÜM YETKİLER',
