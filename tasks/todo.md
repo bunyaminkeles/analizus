@@ -354,18 +354,60 @@ anonime açılması — `profile_detail` `@login_required` → Google profilleri
   panelinden alınan güncel liste kullanıldı). Faz 4 hizmet sayfaları açılınca kart hedefi `/hizmetler/<slug>`'a
   taşınabilir.
 
-**Faz 4 — 5 hizmet sayfası + Pazaryeri şeridi**
-- [ ] KARAR: içerik yeri — Python sabiti (deploy ile değişir) / admin modeli + migration (öneri: model); dil — öneri yalnız TR,
-  öneksiz `/hizmetler/…` (forum/blog gibi)
-- [ ] `/hizmetler/` + `akademik-danismanlik`, `nicel-analiz`, `nitel-analiz`, `veri-ve-yapay-zeka`, `proje-danismanligi`.
+**Faz 4 — 4 hizmet sayfası (4 Ekim 2026'da gözden geçirildi, kullanıcıyla mockup üzerinden netleşti)**
+> **KARARLAR (4 Ekim 2026):**
+> - **5 değil 4 hizmet sayfası** — `proje-danismanligi` ÇIKARILDI: navbardaki mevcut "Proje Talebi" linkiyle
+>   (`ProjectRequest` formu, `forum/views.py` `proje_talebi`) isim/niyet çakışıyordu, iki rakip akış YALIN ilkesine
+>   aykırıydı. Kalan 4: `akademik-danismanlik`, `nicel-analiz`, `nitel-analiz`, `veri-ve-yapay-zeka`.
+> - **İçerik yeri: admin modeli + migration** (onaylandı) — `JobCategory.intro` deseni (`forum/models.py` ~875,
+>   admin `forum/admin.py` ~498).
+> - **`/market/`'e YENİ ŞERİT EKLENMİYOR** — ilk taslakta önerilen "Hizmet Alanları" 5 kart şeridi iptal edildi:
+>   `/market/`'teki kategori çipleri zaten aynı işi (filtreleme) sıfır ekstra tıkla yapıyor, şerit gereksiz dolambaçtı.
+> - **Navbara yeni madde EKLENMİYOR.** Hizmet sayfaları yalnız **dış trafik** (Google aramasından iniş) için;
+>   platform içi gezinmeye (`/market/`, uzman dizini, blog kartı) hiç dokunmuyor. Hizmet sayfasında yalnız navbar
+>   "Pazaryeri" linki aktif/vurgulu + breadcrumb "Pazaryeri › …" (konum göstergesi, yeni link değil).
+> - **YALIN ilkesi (kullanıcı):** Google sonucundan hizmet sayfasına iniş → "İlan Aç" (kategori ön-seçili, 1 tık)
+>   veya "Tüm Uzmanları Gör" (`/uzmanlar/?cat=`, 1 tık) — ara sayfa yok. Uzman tarafı zaten mevcut `/market/` +
+>   çiplerle karşılanıyor, hizmet sayfası onlara dokunmuyor.
+> - Eşlenmeyen `JobCategory`'lerdeki ilanlar kaybolmaz — `/market/` ana listede ve çiplerde normal görünmeye devam
+>   eder; hizmet sayfası yalnız ekstra bir SEO giriş kapısı, tek görünürlük kanalı değil.
+> - Mockup: `claude.ai/artifact/ADTZ9xDK4ieSHt7GxDWGgN` (navbar + /market/ + örnek hizmet sayfası akışı).
+
+- [ ] `/hizmetler/` + `akademik-danismanlik`, `nicel-analiz`, `nitel-analiz`, `veri-ve-yapay-zeka`.
   Sayfa: vaat → alt hizmet bölümleri (`#anchor`; tanım, ne zaman, teslimat) → uzman kartları (≥2 yoksa bölüm gizli +
   "Bu alanda uzmansanız katılın") → süreç → etik sınırlar → SSS → CTA (İlan Aç kategori ön seçili + Uzman Olarak Katıl).
   Service + FAQPage + BreadcrumbList JSON-LD; sitemap; feature flag; AI asistan `_ALLOWED_PATHS`; ax- sınıfları, mobil önce
 - [ ] Nicel Analiz bölümleri `/analiz/` sınıflandırmasıyla aynı (Ön Analizler, Geçerlilik & Güvenirlik, İlişki, Fark,
   Regresyon, ML) + SEM/SmartPLS, EViews, ileri modeller; her bölümde ilgili ücretsiz araç linkleri
-- [ ] `/market/`: sayaçlar ile kategori çipleri arasına "Hizmet Alanları" 5 kart şeridi (mobilde yatay kaydırma); hizmet
-  sayfalarında navbar "Pazaryeri" aktif + breadcrumb "Pazaryeri › …"
-- [ ] Pilot: önce Nicel Analiz, onay sonrası diğer 4
+- [ ] Pilot: önce Nicel Analiz, onay sonrası diğer 3
+
+**Faz 4 — SEO metin taslağı (4 Ekim 2026, WebSearch ile Armut.com'un hedeflediği terimler referans alındı —
+Armut rakip örneği, amaç ona rakip olmak; kesin arama hacmi yok, rakibin onlarca şehir sayfası açmış olması talep
+sinyali). Henüz hiçbir yere yazılmadı — `ServicePage` modeli kurulunca admin'e girilecek:**
+- **`/hizmetler/nicel-analiz/`** — meta_title: "Nicel Analiz Desteği: SPSS, R, EViews ile İstatistik Analizi |
+  Analizus"; meta_description: "Tezinizin veya araştırmanızın istatistiksel analizini SPSS, R, EViews, SmartPLS'e
+  hakim uzman analistlere bırakın. Teklif alın, karşılaştırın, siz seçin."; H1: "İstatistiksel Analiz ve Nicel Veri
+  Analizi Desteği"; giriş: "SPSS, R, EViews, SmartPLS ve ileri istatistiksel yöntemlerle — verinizi gönderin,
+  alanında uzman analistler sizin adınıza analiz edip raporlasın. Analizus'ta uzmanlar teklif verir, siz
+  karşılaştırıp seçersiniz."
+- **`/hizmetler/veri-ve-yapay-zeka/`** — meta_title: "Veri Bilimi ve Yapay Zeka Desteği: Python, Makine Öğrenmesi |
+  Analizus"; meta_description: "Python, makine öğrenmesi, NLP ve büyük veri projelerinizde uzman veri
+  bilimcilerle çalışın. Akademik ve kurumsal projeler için teklif alın."; H1: "Python, Makine Öğrenmesi ve Veri
+  Bilimi Desteği"; giriş: "Veri setinizi modellemek, tahmin kurmak ya da NLP/metin analizi yapmak için Python ve
+  makine öğrenmesi konusunda deneyimli uzmanlarla eşleşin."
+- **`/hizmetler/akademik-danismanlik/`** — meta_title: "Tez ve Akademik Danışmanlık Desteği: Yöntem, Etik Kurul,
+  Makale | Analizus"; meta_description: "Tez sürecinizde yöntem seçimi, etik kurul başvurusu ve makale
+  hazırlığında deneyimli akademisyenlerden danışmanlık desteği alın. Teklif alın, karşılaştırın."; H1: "Tez ve
+  Akademik Süreçlerinizde Danışmanlık Desteği"; giriş: "Tez önerisinden etik kurul başvurusuna, yöntem seçiminden
+  makale hazırlığına kadar sürecinizin her adımında deneyimli akademisyenlerden danışmanlık alın. Analizus bir
+  yazım hizmeti değildir — sürecinize rehberlik eden uzmanlarla sizi buluşturur." ⚠️ Armut'ta komşu kategori
+  "proje yazma" — bizim kaçındığımız "tez yazdırma" sınırına yakın; bilerek "yazım hizmeti değiliz" cümlesi
+  girişe eklendi, kural + rakipten ayrışma.
+- **`/hizmetler/nitel-analiz/`** — meta_title: "Nitel Analiz Desteği: MAXQDA, NVivo, İçerik Analizi | Analizus";
+  meta_description: "Görüşme, odak grup ve doküman verilerinizin nitel analizini MAXQDA ve NVivo'ya hakim
+  uzmanlarla yapın. İçerik ve konu analizinde teklif alın."; H1: "Nitel Araştırma ve İçerik Analizi Desteği";
+  giriş: "Görüşme kayıtları, odak grup verileri ya da doküman setlerinizin kodlanması ve analizinde MAXQDA, NVivo
+  deneyimine sahip uzmanlardan destek alın."
 
 **Faz 5 — İç linkleme**
 - [x] **YAPILDI (1 Ekim 2026):** analiz konsolu (giriş yapmış görünüm, 18 araç) — SEO rehberi + "uzmana bırak" bandı
