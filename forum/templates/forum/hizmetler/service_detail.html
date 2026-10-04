@@ -86,8 +86,10 @@
     </div>
 
     <!-- Bölümler -->
+    <div class="row g-3 mb-4">
     {% for item in section_data %}
-    <div class="ax-card mb-4" id="{{ item.section.anchor }}">
+    <div class="col-md-6">
+    <div class="ax-card h-100" id="{{ item.section.anchor }}">
         <h2 class="text-white fw-semibold mb-2" style="font-size: 1.25rem;">{{ item.section.title }}</h2>
         {% if item.section.body %}
         <p class="text-secondary mb-3" style="line-height: 1.7;">{{ item.section.body }}</p>
@@ -115,7 +117,9 @@
         </a>
         {% endif %}
     </div>
+    </div>
     {% endfor %}
+    </div>
 
     <!-- Süreç -->
     {% if page.process_text %}
