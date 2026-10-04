@@ -829,6 +829,7 @@ class SiteSettingsAdmin(ModelAdmin):
                 'feature_donation', 'feature_success_stories', 'feature_bibliometrics', 'feature_yoktez',
                 'feature_semanticscholar', 'feature_pubmed', 'feature_istatistik', 'feature_transcript',
                 'feature_agentic_landing', 'feature_training', 'feature_multilingual',
+                'feature_hizmet_sayfalari',
             ),
             'classes': ('collapse',),
         }),
