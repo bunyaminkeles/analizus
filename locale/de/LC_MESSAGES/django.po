@@ -20595,3 +20595,33 @@ msgstr ""
 
 msgid "Uzmanları Gör"
 msgstr "Experten ansehen"
+
+msgid "Nicel Analiz Desteği"
+msgstr "Unterstützung bei quantitativer Analyse"
+
+msgid "Pazaryerine Git"
+msgstr "Zum Marktplatz"
+
+msgid "Bu alanda çalışan uzmanlar"
+msgstr "Experten in diesem Bereich"
+
+msgid "Bu kategoride ilan aç"
+msgstr "Auftrag in dieser Kategorie erstellen"
+
+msgid "Nasıl Çalışır"
+msgstr "So funktioniert es"
+
+msgid "Sınırlarımız"
+msgstr "Unsere Grenzen"
+
+msgid "Yaptırmak istediğiniz işi anlatın, uzmanlar teklif versin"
+msgstr "Beschreiben Sie die gewünschte Arbeit, Experten senden Ihnen Angebote"
+
+msgid "Hizmetler"
+msgstr "Dienstleistungen"
+
+msgid "Şu an yayında hizmet sayfası yok."
+msgstr "Derzeit sind keine Dienstleistungsseiten veröffentlicht."
+
+msgid "Akademik danışmanlık, nicel ve nitel analiz, veri bilimi ve yapay zeka alanlarında uzmanlarla çalışın."
+msgstr "Arbeiten Sie mit Experten für akademische Beratung, quantitative und qualitative Analyse, Data Science und KI."

@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.utils.html import format_html
 from unfold.admin import ModelAdmin, TabularInline, StackedInline
-from .models import Section, Category, Topic, Post, Profile, ContactMessage, PrivateMessage, Badge, Skill, DailyTip, QuizQuestion, QuizScore, FreelanceJob, JobCategory, JobProposal, JobReview, UserQuizAttempt, DonationTier, Donation, JobPayment, TopicTag, SiteSettings, BlogCategory, BlogPost, BlogTag, SuccessStory, StudyRoom, ProjectRequest, ReferralCode, ReferralUse, TrainingRequest
+from .models import Section, Category, Topic, Post, Profile, ContactMessage, PrivateMessage, Badge, Skill, DailyTip, QuizQuestion, QuizScore, FreelanceJob, JobCategory, JobProposal, JobReview, UserQuizAttempt, DonationTier, Donation, JobPayment, TopicTag, SiteSettings, BlogCategory, BlogPost, BlogTag, SuccessStory, StudyRoom, ProjectRequest, ReferralCode, ReferralUse, TrainingRequest, ServicePage, ServicePageSection, ServicePageFAQ
 from .models import TeamMember
 
 
@@ -506,6 +506,28 @@ class JobCategoryAdmin(ModelAdmin):
     @admin.display(description='Tanıtım metni')
     def tanitim(self, obj):
         return 'Düzenle ✓' if obj.intro else 'Ekle'
+
+
+class ServicePageSectionInline(TabularInline):
+    model = ServicePageSection
+    extra = 0
+    fields = ('order', 'anchor', 'title', 'body', 'related_job_categories')
+    filter_horizontal = ('related_job_categories',)
+
+
+class ServicePageFAQInline(TabularInline):
+    model = ServicePageFAQ
+    extra = 0
+    fields = ('order', 'question', 'answer')
+
+
+@admin.register(ServicePage)
+class ServicePageAdmin(ModelAdmin):
+    list_display = ('title', 'slug', 'is_active', 'order')
+    list_editable = ('is_active', 'order')
+    prepopulated_fields = {'slug': ('title',)}
+    fields = ('title', 'slug', 'meta_title', 'meta_description', 'intro', 'process_text', 'ethics_text', 'is_active', 'order')
+    inlines = [ServicePageSectionInline, ServicePageFAQInline]
 
 
 @admin.register(FreelanceJob)

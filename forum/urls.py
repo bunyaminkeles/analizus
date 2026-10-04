@@ -12,6 +12,10 @@ urlpatterns = [
     path('blog/<slug:slug>/', views.blog_detail, name='blog_detail'),
     path('blog/<slug:slug>/like/', views.blog_like, name='blog_like'),
 
+    # Hizmet Sayfaları (SEO Faz 4) — yalnız TR (blog ile aynı karar)
+    path('hizmetler/', views.service_page_list, name='service_page_list'),
+    path('hizmetler/<slug:slug>/', views.service_page_detail, name='service_page_detail'),
+
     # Profil → urls_i18n.py (TR/EN/DE)
 
     # Mesajlaşma

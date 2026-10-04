@@ -76,6 +76,7 @@ def feature_flags(request):
             'agentic_landing': site.feature_agentic_landing,
             'training': site.feature_training,
             'multilingual': site.feature_multilingual,
+            'hizmet_sayfalari': site.feature_hizmet_sayfalari,
         },
         # Sipariş sayfalarındaki fiyat tablosu + JS tahmini (sunucu tutarı modelde aynı ayardan hesaplar)
         'pricing': {

@@ -23,7 +23,7 @@ from datetime import timedelta
 import uuid
 from django_ratelimit.decorators import ratelimit
 from django_ratelimit.exceptions import Ratelimited
-from .models import Section, Category, Topic, Post, Profile, PrivateMessage, PostLike, Notification, EmailVerification, DailyTip, QuizQuestion, QuizScore, SuccessStory, FreelanceJob, JobCategory, JobProposal, JobReview, Skill, Badge, UserQuizAttempt, JobPayment, SiteSettings, BlogCategory, BlogPost, BlogTag, DonationTier, StudyRoom, StudyRoomMembership, StudyRoomPost, StudyRoomWaitlist, STUDYROOM_TERMS, ReferralCode, ReferralUse
+from .models import Section, Category, Topic, Post, Profile, PrivateMessage, PostLike, Notification, EmailVerification, DailyTip, QuizQuestion, QuizScore, SuccessStory, FreelanceJob, JobCategory, JobProposal, JobReview, Skill, Badge, UserQuizAttempt, JobPayment, SiteSettings, BlogCategory, BlogPost, BlogTag, DonationTier, StudyRoom, StudyRoomMembership, StudyRoomPost, StudyRoomWaitlist, STUDYROOM_TERMS, ReferralCode, ReferralUse, ServicePage
 from .forms import RegisterForm, NewTopicForm, PostForm, JobPostForm, ProposalForm
 from .email_utils import send_topic_reply_notification, send_private_message_notification
 from django.template.loader import render_to_string
@@ -526,7 +526,11 @@ def post_job(request):
             messages.success(request, gettext('İş ilanı başarıyla oluşturuldu. (%(days)s gün aktif kalacak)') % {'days': profile.get_job_duration_days()})
             return redirect('job_detail', pk=job.pk)
     else:
-        form = JobPostForm()
+        initial = {}
+        cat_id = request.GET.get('category', '').strip()
+        if cat_id.isdigit() and JobCategory.objects.filter(pk=cat_id, is_active=True).exists():
+            initial['category_choice'] = cat_id
+        form = JobPostForm(initial=initial)
     return render(request, 'forum/market/post_job.html', {
         'form': form,
         'job_duration_days': profile.get_job_duration_days(),
@@ -3364,6 +3368,45 @@ def blog_detail(request, slug):
         'expert_category': expert_category,
     }
     return render(request, 'forum/blog/blog_detail.html', context)
+
+
+@feature_required('hizmet_sayfalari')
+def service_page_list(request):
+    """SEO Faz 4: /hizmetler/ indeksi — footer tek bu linke işaret eder, sayfa sayısı büyüse de footer büyümez."""
+    pages = ServicePage.objects.filter(is_active=True).order_by('order', 'title')
+    return render(request, 'forum/hizmetler/service_list.html', {'pages': pages})
+
+
+@feature_required('hizmet_sayfalari')
+def service_page_detail(request, slug):
+    """SEO Faz 4: /hizmetler/<slug>/ — dış (Google) trafiği için iniş sayfası.
+    Platform içi gezinmeye (/market/, /uzmanlar/) dokunmaz, yalnız oralara tek tık uzaklıkta CTA verir."""
+    page = get_object_or_404(ServicePage, slug=slug, is_active=True)
+    sections = page.sections.prefetch_related('related_job_categories').order_by('order')
+
+    section_data = []
+    for section in sections:
+        cats = list(section.related_job_categories.all())
+        experts = []
+        single_category = cats[0] if len(cats) == 1 else None
+        if cats:
+            experts = list(
+                Profile.objects.select_related('user')
+                .filter(is_public=True, skills__in=cats)
+                .distinct()[:3]
+            )
+        section_data.append({
+            'section': section,
+            'experts': experts if len(experts) >= 2 else [],
+            'single_category': single_category,
+        })
+
+    context = {
+        'page': page,
+        'section_data': section_data,
+        'faqs': page.faqs.order_by('order'),
+    }
+    return render(request, 'forum/hizmetler/service_detail.html', context)
 
 
 @feature_required('blog')

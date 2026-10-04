@@ -48,6 +48,7 @@
                     <li><a href="{% url 'ai_assistant' %}"><i class="bi bi-robot"></i>{% trans "AI Asistan" %}</a></li>
                     {% if LANGUAGE_CODE == 'tr' %}<li><a href="{% url 'uzman_dizini' %}"><i class="bi bi-people"></i>{% trans "Uzman Bul" %}</a></li>{% endif %}
                     <li><a href="{% url 'job_list' %}"><i class="bi bi-briefcase"></i>{% trans "Pazaryeri" %}</a></li>
+                    {% if LANGUAGE_CODE == 'tr' and features.hizmet_sayfalari %}<li><a href="{% url 'service_page_list' %}"><i class="bi bi-graph-up"></i>{% trans "Hizmetler" %}</a></li>{% endif %}
                     {% if features.training %}
                     <li><a href="{% url 'egitim' %}"><i class="bi bi-mortarboard"></i>{% trans "Eğitimler" %}</a></li>
                     {% endif %}

@@ -32,7 +32,7 @@ _ALLOWED_PATHS = frozenset({
     '/hangi-test/', '/analiz/',
     '/openalex/', '/semantic-scholar/', '/yoktez/', '/tezanaliz/',
     '/oaipmh/', '/bibliometrics/', '/tarama/',
-    '/uzmanlar/', '/market/', '/market/new/', '/proje-talebi/', '/ai-cozumler/',
+    '/uzmanlar/', '/market/', '/market/new/', '/proje-talebi/', '/ai-cozumler/', '/hizmetler/',
     '/forum/', '/odalar/', '/blog/', '/ai-asistan/',
     '/egitim/', '/egitim-talebi/',
 })
@@ -58,6 +58,7 @@ _PATH_FEATURE_FLAGS = {
     '/bibliometrics/': 'feature_bibliometrics',
     '/yoktez/': 'feature_yoktez',
     '/tezanaliz/': 'feature_tezanaliz',
+    '/hizmetler/': 'feature_hizmet_sayfalari',
 }
 
 

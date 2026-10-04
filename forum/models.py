@@ -905,6 +905,60 @@ class JobCategory(models.Model):
         return self.title
 
 
+class ServicePage(models.Model):
+    """SEO Faz 4: /hizmetler/<slug>/ hizmet sayfaları. Yalnız TR (blog ile aynı karar — kapsam dışı)."""
+    slug = models.SlugField(unique=True, verbose_name="Slug")
+    title = models.CharField(max_length=150, verbose_name="Başlık (H1)")
+    meta_title = models.CharField(max_length=70, blank=True, default="", verbose_name="SEO Başlığı")
+    meta_description = models.CharField(max_length=160, blank=True, default="", verbose_name="SEO Açıklaması")
+    intro = models.TextField(verbose_name="Giriş (vaat)")
+    process_text = models.TextField(blank=True, default="", verbose_name="Süreç")
+    ethics_text = models.TextField(blank=True, default="", verbose_name="Etik sınırlar")
+    is_active = models.BooleanField(default=False, verbose_name="Yayında")
+    order = models.PositiveIntegerField(default=0, verbose_name="Sıra")
+
+    class Meta:
+        verbose_name = "Hizmet Sayfası"
+        verbose_name_plural = "Hizmet Sayfaları"
+        ordering = ['order', 'title']
+
+    def __str__(self):
+        return self.title
+
+
+class ServicePageSection(models.Model):
+    """Hizmet sayfası alt bölümü — ilgili iş kategorileri varsa bölümde uzman kartları gösterilir (≥2 şartı)."""
+    service_page = models.ForeignKey(ServicePage, on_delete=models.CASCADE, related_name='sections')
+    anchor = models.SlugField(verbose_name="Çapa (#anchor)")
+    title = models.CharField(max_length=120, verbose_name="Başlık")
+    body = models.TextField(blank=True, default="", verbose_name="Açıklama")
+    related_job_categories = models.ManyToManyField(JobCategory, blank=True, verbose_name="İlgili iş kategorileri")
+    order = models.PositiveIntegerField(default=0, verbose_name="Sıra")
+
+    class Meta:
+        verbose_name = "Hizmet Sayfası Bölümü"
+        verbose_name_plural = "Hizmet Sayfası Bölümleri"
+        ordering = ['order']
+
+    def __str__(self):
+        return f"{self.service_page.title} — {self.title}"
+
+
+class ServicePageFAQ(models.Model):
+    service_page = models.ForeignKey(ServicePage, on_delete=models.CASCADE, related_name='faqs')
+    question = models.CharField(max_length=200, verbose_name="Soru")
+    answer = models.TextField(verbose_name="Cevap")
+    order = models.PositiveIntegerField(default=0, verbose_name="Sıra")
+
+    class Meta:
+        verbose_name = "Hizmet Sayfası SSS"
+        verbose_name_plural = "Hizmet Sayfası SSS"
+        ordering = ['order']
+
+    def __str__(self):
+        return self.question
+
+
 class FreelanceJob(models.Model):
     """Kullanıcıların verdiği iş ilanları (Freelance Market)"""
     STATUS_CHOICES = (
@@ -1389,6 +1443,11 @@ class SiteSettings(models.Model):
     )
     feature_training = models.BooleanField(
         default=False, verbose_name="Eğitim Hizmetleri Sayfası"
+    )
+    feature_hizmet_sayfalari = models.BooleanField(
+        default=False,
+        verbose_name="Hizmet Sayfaları (/hizmetler/)",
+        help_text="Kapalıyken /hizmetler/ 404 döner. Pilot: önce yalnız Nicel Analiz sayfasını ServicePage.is_active ile açın.",
     )
     feature_multilingual = models.BooleanField(
         default=False,
