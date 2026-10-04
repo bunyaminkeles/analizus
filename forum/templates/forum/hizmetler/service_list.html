@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Hizmetler" %} | Analizus{% endblock %}
+{% block meta_description %}{% trans "Akademik danışmanlık, nicel ve nitel analiz, veri bilimi ve yapay zeka alanlarında uzmanlarla çalışın." %}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb" style="--bs-breadcrumb-divider: '›'; font-size: 0.875rem;">
+            <li class="breadcrumb-item"><a href="{% url 'job_list' %}" class="text-decoration-none">{% trans "Pazaryeri" %}</a></li>
+            <li class="breadcrumb-item active text-muted" aria-current="page">{% trans "Hizmetler" %}</li>
+        </ol>
+    </nav>
+
+    <h1 class="text-white fw-bold mb-3">{% trans "Hizmetler" %}</h1>
+    <p class="text-secondary mb-4" style="max-width: 680px;">{% trans "Akademik danışmanlık, nicel ve nitel analiz, veri bilimi ve yapay zeka alanlarında uzmanlarla çalışın." %}</p>
+
+    <div class="row g-3">
+        {% for page in pages %}
+        <div class="col-md-6">
+            <a href="{% url 'service_page_detail' page.slug %}" class="text-decoration-none">
+                <div class="ax-card h-100">
+                    <h2 class="text-white fw-semibold mb-2" style="font-size: 1.1rem;">{{ page.title }}</h2>
+                    <p class="text-secondary small mb-0">{{ page.intro|truncatewords:28 }}</p>
+                </div>
+            </a>
+        </div>
+        {% empty %}
+        <p class="text-secondary">{% trans "Şu an yayında hizmet sayfası yok." %}</p>
+        {% endfor %}
+    </div>
+
+</div>
+{% endblock %}

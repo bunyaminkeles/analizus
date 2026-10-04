@@ -20580,3 +20580,86 @@ msgstr "Wenn kein passender Bereich aufgeführt ist, wählen Sie „Sonstiges“
 msgid "İlan başlığı en fazla {max} karakter olabilir (şu an {count})."
 msgstr ""
 "Der Auftragstitel darf höchstens {max} Zeichen lang sein (derzeit {count})."
+
+msgid "Bu konuda uzman desteği almak ister misiniz?"
+msgstr "Möchten Sie zu diesem Thema fachkundige Unterstützung?"
+
+#, python-format
+msgid ""
+"Analizus'taki uzmanlar arasında <strong "
+"style=\"color:#f1f5f9;\">%(category)s</strong> alanında çalışan "
+"analistleri inceleyebilirsiniz."
+msgstr ""
+"Sie können auf Analizus Analysten durchsuchen, die im Bereich <strong "
+"style=\"color:#f1f5f9;\">%(category)s</strong> arbeiten."
+
+msgid "Uzmanları Gör"
+msgstr "Experten ansehen"
+
+msgid "Nicel Analiz Desteği"
+msgstr "Unterstützung bei quantitativer Analyse"
+
+msgid "Pazaryerine Git"
+msgstr "Zum Marktplatz"
+
+msgid "Bu alanda çalışan uzmanlar"
+msgstr "Experten in diesem Bereich"
+
+msgid "Bu kategoride ilan aç"
+msgstr "Auftrag in dieser Kategorie erstellen"
+
+msgid "Nasıl Çalışır"
+msgstr "So funktioniert es"
+
+msgid "Sınırlarımız"
+msgstr "Unsere Grenzen"
+
+msgid "Yaptırmak istediğiniz işi anlatın, uzmanlar teklif versin"
+msgstr "Beschreiben Sie die gewünschte Arbeit, Experten senden Ihnen Angebote"
+
+msgid "Hizmetler"
+msgstr "Dienstleistungen"
+
+msgid "Şu an yayında hizmet sayfası yok."
+msgstr "Derzeit sind keine Dienstleistungsseiten veröffentlicht."
+
+msgid "Akademik danışmanlık, nicel ve nitel analiz, veri bilimi ve yapay zeka alanlarında uzmanlarla çalışın."
+msgstr "Arbeiten Sie mit Experten für akademische Beratung, quantitative und qualitative Analyse, Data Science und KI."
+
+#, python-format
+msgid ""
+"Taahhütlü bir hizmete mi ihtiyacınız var? <a "
+"href=\"%(service_url)s\">Hizmetlerimize göz atın →</a>"
+msgstr ""
+"Benötigen Sie einen verbindlichen Service? <a "
+"href=\"%(service_url)s\">Unsere Dienstleistungen ansehen →</a>"
+
+msgid "Profil fotoğrafı"
+msgstr "Profilbild"
+
+msgid "Ünvan"
+msgstr "Titel"
+
+msgid "En az bir uzmanlık alanı"
+msgstr "Mindestens ein Fachgebiet"
+
+msgid "En az bir bağlantı (web, LinkedIn, ORCID…)"
+msgstr "Mindestens ein Link (Website, LinkedIn, ORCID…)"
+
+msgid "Akademik unvan"
+msgstr "Akademischer Titel"
+
+msgid "Profil Doluluğu"
+msgstr "Profilvollständigkeit"
+
+msgid "Tamamlamak için:"
+msgstr "Zum Vervollständigen:"
+
+msgid "Profiliniz eksiksiz — uzman dizininde ve hizmet sayfalarında en iyi şekilde görünüyorsunuz."
+msgstr "Ihr Profil ist vollständig — Sie werden im Expertenverzeichnis und auf den Dienstleistungsseiten optimal dargestellt."
+
+msgid "Uzman olmak için: sorulara cevap ver, puan topla — Uzman Dizini'nde görünürsün."
+msgstr "Um Experte zu werden: Fragen beantworten, Punkte sammeln — Sie erscheinen im Expertenverzeichnis."
+
+msgid "TEBRİKLER! Profilinizi %100 tamamladığınız için \"Profili Tamamladı\" rozeti ve 50 Puan kazandınız."
+msgstr "GLÜCKWUNSCH! Sie haben das Abzeichen „Profil vervollständigt“ und 50 Punkte für die 100%ige Vervollständigung Ihres Profils erhalten."

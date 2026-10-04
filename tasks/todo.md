@@ -10,7 +10,20 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
-> **YENİ OTURUM BURADAN BAŞLA (1 Ekim 2026) — CANLI = main = bb85064** (dev = + docs commit'leri). Bu oturum: **BÜYÜK SEO
+> **YENİ OTURUM BURADAN BAŞLA (2 Ekim 2026) — CANLI = main = 2416b69** (dev = 10b2cb1 + yerelde push'suz 9c8d10a
+> betik/doküman commit'leri). Bu oturum (ayrıntı `analizus.md` §27 "2 Ekim 2026"): **pazar** — ilan admin onayı (onay/ret
+> e-postası, panel "İlan Onayı" sekmesi), haftalık ilan hakkı normal 2 / Premium 5 (admin muaf), kategori yetenek listesi +
+> "Diğer", başlık 80 / açıklama 1500 karakter + sayaç, "hizmet tanıtımı değil" kuralı; **bağış → Premium akışı düzeltildi**
+> (önceden onayda Premium verilmiyordu; söz verilen gün sabit, bitiş tarihi kullanıcıya); **profil "Hakkında" kartı**;
+> deploy öncesi yedek `scripts/yedek_indir.sh --simdi`. Migration forum/0165–0169 canlıda. Forum testleri 82/82.
+> **Kullanıcıda bekleyen (canlı admin):** hizmet tanıtımı ilanları (189 vb.) → "Reddet: hizmet tanıtımı"; Bağışlar'da
+> Tamamlandı + Verilen Premium Gün = 0 kayıt var mı (varsa Premium elle / ayrı düzeltme); eski pasif iş kategorileri;
+> sunucuda kalan 2 eski `/root/yedek_*.sql` SİLİNDİ (kullanıcı, 2 Ekim). **Küçük açıklar:** ilan formundaki mavi bilgi kutusunun ilk satırı
+> koyu zeminde okunmuyor; `.ax-form-select` `background-size` eksik (pubmed landing); Render'da profil fotoğrafı yüklenmiyor
+> (kalıcı disk yok?); uzman profillerinin anonime açılması hâlâ ertelendi.
+> Sonraki büyük iş yine **BÜYÜK SEO DÖNÜŞÜMÜ** (aşağıda): Faz 3 blog → uzman desteği kartı, araç SSS'leri, Faz 6 blog yazıları.
+>
+> **ÖNCEKİ NOT (1 Ekim 2026) — CANLI = main = bb85064** (dev = + docs commit'leri). Bu oturum: **BÜYÜK SEO
 > DÖNÜŞÜMÜ Faz 1–2 bitti ve canlıda** (aşağıdaki başlık): 4 tarama sayfası Google başlıkları, 12 blog yazısına SEO alanları,
 > veri kazıma / nitel yazıları düzeltildi, t tablosu, `/section/` 301, az konulu forum kategorisi noindex, Uzman Dizini
 > `?cat=` tanıtım metinleri (+ ?cat=abc 500 düzeltmesi), analiz konsolu 18 araç tek düzen. Migration forum/0162–0164 canlıda.
@@ -48,6 +61,18 @@ maddelerde.
 >   (yıllık ortalama önerisi).
 > - Diğer açıklar bu listede `- [ ]`; ayrıntı `analizus.md` §14 (bibliometri), §15 (tarama), §26, §27.
 
+**2 Ekim 2026 sonrası açık kalanlar:**
+- [x] **YAPILDI (2 Ekim 2026, kullanıcı)** Canlıda hizmet tanıtımı ilanları (189 vb.) — admin "Reddet: hizmet tanıtımı" (kullanıcı kararı)
+- [x] **YAPILDI (2 Ekim 2026, kullanıcı)** Canlı Bağışlar: Tamamlandı + Verilen Premium Gün = 0 kayıt var mı → varsa Premium elle ya da ayrı düzeltme (kullanıcı)
+- [x] **YAPILDI (2 Ekim 2026, kullanıcı): 6 pasiften 5'i silindi (189'un virgüllü adı, C++, Java, Javascript, Google SEO hizmetleri); "Web sayfası tasarımı" pasif bırakıldı (kullanıcı kararı)** Eski kullanıcı yazımı pasif `JobCategory` kayıtları — sil / aktifleştir (kullanıcı, admin)
+- [ ] Aktif iş kategorilerinin çoğunda tanıtım metni (`intro`) boş → Uzman Dizini `?cat=` sayfaları noindex (ör. Faktör analizi, R ile veri analizi, Tez danışmanlığı, Yapay zekâ modelleme, Zaman serisi). SEO Faz 3 ile birlikte metin hazırlanabilir (canlı admin; abartısız)
+- [x] **YAPILDI YERELDE (2 Ekim 2026, commit yok): Davranış Analizi** — Sayfa Ziyaretleri / Ziyaret Özetleri listesinde kullanıcı adı → Navigasyon Grafiği `?user=` kişi analizi (özet kartları, bölüm + günlük grafik, son 5 gün navigasyon akışı / oturumlar, sık geçişler; ilk 20'de olmayan da açılır); "Ziyaret Özetleri" menüden kalktı; görünmeyen kart başlıkları + yanlış "Son 7 Gün" etiketi düzeltildi; testler analytics 4 + forum 82 = 86/86; Playwright masaüstü/mobil (test verisiyle) OK
+- [ ] Ölü kod: `PageViewSummaryAdmin.summary_chart_view` + `templates/admin/analytics/summary_chart.html` artık linklenmiyor — silinebilir (karar)
+- [ ] Navigasyon Grafiği mobilde "En Çok Ziyaret" yatay grafiğinde bazı bölüm etiketleri atlanıyor (Chart.js autoSkip; önceden de vardı; admin mobil, düşük öncelik)
+- [x] **DÜZELTİLDİ (2 Ekim 2026: kutuya `color: var(--ax-text-primary)`)** İlan formu (post_job.html) mavi bilgi kutusunun ilk satırı ("…X gün aktif kalacaktır") koyu zeminde okunmuyor
+- [x] **DÜZELTİLDİ (2 Ekim 2026: `background-size: var(--ax-space-3) var(--ax-space-2)`, bundle yeniden üretildi, v=0008)** `.ax-form-select` (base.css) `background-size` yok → ok simgesi kutuyu kaplıyor (pubmed landing kullanıyor)
+- [ ] Render'da profil fotoğrafı yüklenmiyor (alt metin görünüyor) — kalıcı disk/medya; canlıda da var mı kontrol
+
 **BAĞIŞ → PREMIUM AKIŞI KIRIK (2 Ekim 2026 bulgusu, kullanıcı "verilen süre doğru mu" sorusundan) — onay bekliyor:**
 - [x] **DÜZELTİLDİ (2 Ekim 2026, migration forum/0167; testler 75/75)** **Admin bağışı onaylayınca Premium VERİLMİYOR** — `Donation.grant_premium()` yalnız `dashboard_approve_donation`
   (forum/views.py ~2925) çağırıyor; bu view hiçbir şablonda bağlı değil. Panel "Bağışlar/Ödemeler" → admin değişiklik
@@ -77,6 +102,180 @@ maddelerde.
   hizmet tanıtımı yeri profil/biyografi + Uzman Dizini. Önlemler: ilan formunda açık kural metni ("ilan = yaptırmak
   istediğiniz iş; hizmet tanıtımı profilinize"), admin onayında ret gerekçesi ("hizmet tanıtımı") + e-postada yönlendirme;
   mevcut bu türden ilanlar için admin kararı (189 dahil). Admin onayı maddesine bağlı.
+
+**Ödeme talepleri (kullanıcı, 2 Ekim 2026):**
+- [ ] **GÜVENLİ ÖDEME (emanet) + DAVET KAZANCI (%5)** — taslak hemen aşağıda ("GÜVENLİ ÖDEME — TASLAK"); kod yok,
+  önce §F kararları + mali müşavir görüşü (§B1). `feature_secure_payment` kapalı başlar.
+- [ ] **GELİR MODELİ — AÇIK KONU (kullanıcı, 2 Ekim 2026): "platform paraya hiç dokunmasın"** (pazaryeri/ödeme kuruluşu
+  yolu elendi — iyzico reddi). Gelir yalnız platformun kendi sattığı hizmetlerden. Mevcut: ilan vitrini (250/400 TL),
+  tarama siparişleri, bibliometri, Premium (bağış karşılığı — satış sayılabilir, müşavire sor), danışmanlık/eğitim.
+  Seçenekler: (1) uzman Premium'u (öneri — teklif hakkı zaten Premium/rütbe/EDU ile; üstte görünme, rozet, aylık teklif
+  sayısı), (2) teklif kredisi (aylık ücretsiz + satın alma), (3) ilan sahibine "acil" etiketi / uzmana doğrudan davet,
+  (4) pazardan "Analizus ekibi yapsın" ile kendi hizmetlere yönlendirme. Davet: %5 nakit yerine davetlinin satın
+  alımından Premium gün/kredi. Önce canlıdan son 3 ay ilan/teklif sayıları (pazar küçükse uzmandan ücret arzı kurutur).
+  Karar yok, kod yok.
+
+### GÜVENLİ ÖDEME (EMANET) + DAVET KAZANCI — TASLAK (2 Ekim 2026; BEKLEMEDE — kullanıcı: "olgunlaşmayı beklesin"; kullanıcı açmadan başlanmaz)
+
+**Kullanıcının planı:** (1) Ödeme yöntemine "Güvenli Ödeme" seçeneği. (2) İlanda güvenli ödeme olduğu görünür; teklif
+veren uzmana da bildirilir. (3) Ödeme bağıştaki IBAN'a, açıklamaya ilan kodu yazılarak yapılır. (4) Teklif kabul →
+kullanıcı havale → admin ödemeyi onaylar → uzmana otomatik e-posta (süreç nasıl yürür). (5) Uzmana %10 kesintiyle ödenir.
+(6) İki taraf yorum + yıldız verip iş kapandıktan sonra uzmana ödeme yapılır.
+**Davet kazancı:** (1) Davet koduyla gelen kullanıcının güvenli ödemesinden davet edene %5 alacak yazılır. (2) Biriken
+tutar ay sonu bildirilir, IBAN istenip ödenir. (3) Tüm adımlar ilgili kişinin onayına sunulur.
+
+#### A. Mevcut durum (koddan, 2 Ekim 2026)
+- `accept_proposal` (`forum/views.py` ~636): kabul anında ilan `in_progress`, diğer teklifler `rejected`, uzmana DM.
+  Ödeme adımı yok.
+- Kapanış: `JobReview.save()` (`forum/models.py` ~1100) — **iki onaylı (admin `is_approved`) yorum** olunca ilan
+  `completed`. "Teslim ettim" adımı ve süre aşımı yok → taraflardan biri yorum yapmazsa iş hiç kapanmaz.
+- `JobPayment` modeli = vitrin ödemesi (iyzico dönemi alanları); emanet için kullanılmaz.
+- Havale deseni hazır: bağış akışı (`Donation` pending → pending_confirmation → completed, "Havaleyi yaptım" linki
+  `mark_donation_transferred`, admin onayı, sinyalle ödül). Aynı desen tekrar kullanılabilir.
+- IBAN `TR73 0003 2000 0000 0079 1034 65` **6 yerde sabit**: openalex/trdizin/semanticscholar/oaipmh views,
+  oaipmh job_runner, `promote_job_iban.html`, `emails/support_payment_details.html`.
+- Davet: `ReferralUse(referrer, referred, flagged, rewarded)`; ödül şu an Premium gün + itibar (`referral_service.py`).
+- Ana sayfa (`forum/templates/forum/home.html`) uzman kartı: **"Komisyonsuz çalışın"** — %10 ile çelişir.
+
+#### B. Görüşüm — önce netleşmesi gereken riskler
+1. **Hukuki/mali (en kritik):** Başkası adına para toplayıp üçüncü kişiye aktarmak 6493 sayılı Kanun kapsamında
+   "ödeme hizmeti" sayılabilir (lisans gerektirir). İki güvenli yol: (a) **Platform hizmetin satıcısı** olur — müşteriye
+   tam tutar faturalanır, uzmandan hizmet alınır (serbest meslek makbuzu / gider pusulası + stopaj); "emanet" değil
+   alt yüklenici modeli. (b) Lisanslı ödeme kuruluşunun pazaryeri (alt üye işyeri) ürünü (iyzico izni yok — başka
+   kuruluş). **Mali müşavir/avukat görüşü olmadan canlıya alınmamalı.** Davet kazancı ödemesi de belge gerektirir.
+   **Kullanıcı kararı (2 Ekim 2026): (b) pazaryeri yolu ELENDİ** — "daha önce reddedildik (iyzico), yine benzeri olur".
+   Kalan: (a) platform hizmet satıcısı modeli ya da paraya hiç dokunmayan güvence (para taraflar arasında).
+2. **Hesap:** Bağış ile emanet parası aynı hesapta karışır; şahıs hesabına çok sayıda üçüncü kişi havalesi banka/MASAK
+   sorgusu tetikleyebilir. Ayrı hesap (tercihen şirket) + sistemde "emanette tutulan toplam" raporu.
+3. **Rehin riski:** Ödeme yalnız "iki yorum + admin onayı" ile serbest kalırsa müşteri yorum yapmayarak parayı
+   kilitleyebilir, uzman da teslim etmeden bekleyebilir. Şart: **teslim adımı + süre aşımı + itiraz** (§C).
+4. **Değer sabitleme:** Komisyon oranı ve tutarlar talep (kabul) anında kayda yazılmalı (bağış `premium_days_promised`
+   dersi) — oran sonradan admin'de değişse de söz verilen geçerli.
+5. **Kötüye kullanım:** Davet eden kişi, davet ettiği müşterinin işini uzman olarak alırsa %5 almamalı (kendi kendine
+   komisyon). `flagged` davetler kazanç üretmez. Davet kazancı ödeme onayında değil **iş kapanınca** yazılmalı (iade riski).
+6. **Akademik etik:** Platform ödemeden pay alınca ilan içeriğinden sorumluluğu artar — güvenli ödemeli ilanlarda
+   "tez/ödev yazdırma" ret kuralı sıkı uygulanmalı (ilan onayı zaten var).
+7. **Çok dil:** TL + TR IBAN; EN/DE kullanıcısına ilk sürümde gösterilmesin mi? (karar)
+
+#### C. Önerilen akış
+**İlan:** İlan formunda "Güvenli Ödeme ile ödeyeceğim" seçeneği + Güvenli Ödeme Koşulları onay kutusu →
+`FreelanceJob.secure_payment` (+ `secure_terms_accepted_at`). Liste/detayda "Güvenli Ödeme" rozeti.
+**Teklif:** Güvenli ödemeli ilanda teklif formunda canlı hesap: "Teklif 1.000 TL → %10 hizmet bedeli 100 TL → size
+ödenecek 900 TL" + onay kutusu (`JobProposal.secure_terms_accepted_at`).
+**Durum makinesi — yeni `SecurePayment` modeli (ilan başına bir kayıt):**
+
+| Durum | Ne olur | Kim |
+|---|---|---|
+| `awaiting_payment` | Kabul anında oluşur; tutar/oran/net sabitlenir; müşteriye IBAN + tutar + açıklama kodu (ör. `ANZ-2026-0042`, `reference_number`'dan) ekranda + e-postada; uzmana "kabul edildi, ödeme onayını bekleyin — işe başlamayın" | sistem |
+| `payment_reported` | Müşteri "Havaleyi yaptım" → admin bildirimi | müşteri |
+| `funded` | Admin havaleyi görür, onaylar → **sinyal**: uzmana "ödeme güvencede, süreç" e-postası, müşteriye "ödemeniz alındı"; ilan `in_progress` | admin |
+| `delivered` | Uzman "İşi teslim ettim" → müşteriye e-posta: X gün içinde yorum ya da itiraz | uzman |
+| `completed` | İki yorum (veya süre aşımında itiraz yoksa otomatik) → ödeme serbest | sistem |
+| `payout_ready` → `paid_out` | Uzman ödeme bilgisini (ad soyad + IBAN) onaylar → admin havale eder, "ödendi" işaretler → uzmana döküm e-postası (brüt / %10 / net) | uzman + admin |
+| `expired` | X gün içinde ödeme yoksa kabul düşer, ilan yeniden açılır (karar) | cron |
+| `disputed` → `refunded` / `paid_out` | Taraflardan biri itiraz eder → admin karar verir (tam/kısmi iade) | admin |
+
+- Uzmana giden "süreç" e-postası içeriği (madde 4): ödeme güvencede/işe başla; iletişim platform mesajlarında;
+  teslim "İşi teslim ettim" butonuyla; müşteri onayı + karşılıklı yorum; süre aşımı kuralı; %10 kesinti ve net tutar;
+  ödeme zamanı ve IBAN istenmesi; itiraz yolu.
+- Kural uyumu: durum geçişleri sinyalde, admin aksiyonu kayıt kayıt `save()`; e-postalar `recipient_language(user)`
+  + TR/EN/DE çeviri; tutarlar `Decimal` + kuruşa `ROUND_HALF_UP`.
+- **Ayarlar (`SiteSettings`, sabit kod yok):** `secure_payment_commission_rate` (10), `payment_iban`,
+  `payment_account_holder`, `secure_payment_deadline_days`, `delivery_review_days`, `referral_commission_rate` (5),
+  `referral_min_payout`. IBAN'ın 6 kopyası bu alana taşınır (ayrı küçük görev).
+- **Admin:** `SecurePayment` admin + panelde "Güvenli Ödeme" sekmesi (onay bekleyen havaleler / ödenecek uzmanlar /
+  itirazlar / emanette tutulan toplam / ay komisyonu).
+- **IBAN verisi (KVKK):** Profilde kalıcı tutulmaz; yalnız ödeme kaydında, TR IBAN mod-97 doğrulaması; gizlilik
+  politikasına ek.
+
+#### D. Davet kazancı
+- Yeni `ReferralEarning`: referrer, `ReferralUse`, `SecurePayment` (tekil), taban tutar, oran (sabitlenmiş), tutar,
+  durum `accrued` → `payout_requested` → `paid` / `cancelled`.
+- Tetik: güvenli ödeme `completed` olunca; koşul: ödeyen (`job.owner`) davetli, davet `flagged` değil, referrer ≠ uzman.
+- Ay sonu: cron uç noktası (mevcut cron anahtar deseni) → bakiyesi olan her referrer'a e-posta; eşik altı devreder.
+  E-postadaki link → `referral_dashboard`'da "Kazançlarım" tablosu + "Ödeme talep et" (ad soyad + IBAN + onay) →
+  admin listesine düşer → havale + "ödendi" → e-posta.
+
+#### E. Onaylar (madde 3) — her adımda ilgili kişinin açık onayı, zaman damgasıyla
+- İlan sahibi: ilan açarken koşullar; teklif kabulünde özet ekranı (tutar, IBAN, ödeme süresi) "Onaylıyorum".
+- Uzman: teklif verirken komisyon + net tutar; ödeme aşamasında IBAN beyanı.
+- Davet eden: ödeme yalnız kendi talebiyle (IBAN beyanı) — otomatik havale yok.
+- Yeni sayfa: **"Güvenli Ödeme Koşulları"** (hukuki metin — kullanıcı/hukukçu yazar; abartılı vaat yok).
+
+#### F. Açık kararlar (kullanıcı)
+1. Hukuki/mali model (§B1) ve hangi hesap (bağışla aynı mı, şirket mi)?
+2. Ödeme süresi (öneri 3 gün) dolunca: kabul düşer + ilan yeniden açılır mı?
+3. Diğer teklifler kabul anında mı, ödeme onayında mı reddedilsin? (Öneri: ödeme onayında — müşteri ödemezse başka
+   teklife geçebilir.)
+4. Teslim sonrası yorum süresi (öneri 7 gün) ve süre aşımında otomatik kapanış — onay?
+5. İade/itiraz politikası: uzman teslim etmezse tam iade; kısmi iade olacak mı; iadede %10 kesilir mi?
+6. Yorumların admin onayı ödemeyi geciktirir — güvenli ödemede yorum onayı beklenmeden mi kapansın?
+7. Davet %5: **brüt tutarın %5'i mi** (komisyonun yarısı) **yoksa komisyonun %5'i mi**? Yalnız davetli müşteri mi, davetli
+   uzmanın kazancı da sayılır mı? Süresiz mi (ör. ilk 12 ay)?
+8. Asgari ödeme eşiği (davet kazancı)?
+9. Mevcut davet Premium gün ödülü kalıyor mu (ek) yoksa kalkıyor mu?
+10. EN/DE'de güvenli ödeme gösterilsin mi?
+11. "Komisyonsuz çalışın" metni → "Doğrudan anlaşmada komisyon yok; Güvenli Ödeme'de %10 hizmet bedeli" gibi?
+
+#### G. Uygulama fazları (her faz ayrı onay; migration'lı fazlar canlı DB'yi etkiler)
+- [ ] Faz 0 — Kararlar (§F) + müşavir görüşü + Koşullar metni; `SiteSettings` alanları + IBAN taşıma (migration)
+- [ ] Faz 1 — Modeller: `FreelanceJob.secure_payment`, ilan durumu `awaiting_payment`, `SecurePayment` + admin (migration)
+- [ ] Faz 2 — İlan formu seçeneği + rozet; teklif formu net hesap + onay kutuları
+- [ ] Faz 3 — Kabul → ödeme talimatı (ekran + e-posta) → "Havaleyi yaptım" → admin onayı → sinyal e-postaları
+- [ ] Faz 4 — Teslim / yorum / süre aşımı cron'u / itiraz
+- [ ] Faz 5 — Uzman ödeme bilgisi + "ödendi" + döküm e-postası; panel "Güvenli Ödeme" sekmesi
+- [ ] Faz 6 — Davet kazancı + aylık cron + talep formu + dashboard tablosu
+- [ ] Faz 7 — Testler (durum geçişleri, yetki, tutar yuvarlama, kötüye kullanım), TR/EN/DE çeviri, `analizus.md`
+
+### AI AJAN İLE SİTE YÖNETİMİ — TASLAK (2 Ekim 2026; BEKLEMEDE — §E kararları netleşmeden kod yok)
+
+**Kullanıcının isteği:** analizus.com ekosistemini bir AI ajan yönetsin — gerektiğinde admin gibi davransın, istisnai
+durumlarda e-posta / DM ile kullanıcıya danışsın, SEO girdisi yapsın, konsolu kontrol etsin, kod üretsin.
+**Görüş:** mümkün; ama "tam yetkili otonom admin" değil — **katmanlı yetki + onay kuyruğu + her adım denetim kaydında**.
+
+#### A. Mimari (beyin / eller / ağız)
+- **Beyin (Claude):** DB'ye ve sunucu shell'ine doğrudan dokunmaz; yalnız anahtarla korunan, beyaz listeli uçları çağırır.
+  - Seçenek A (öneri, başlangıç): **Claude Code routine'leri** (bulutta zamanlanmış ajan; repo erişimi var, sunucu gerekmez).
+  - Seçenek B (sonra, gerekirse): Hetzner'de **Claude Agent SDK** container'ı — 7/24, olay güdümlü (yeni ilan anında);
+    bakım + API token ücreti. Routine'lerin ücretlendirmesi, dış ağ ve sır (anahtar) yönetimi kurulumda doğrulanacak.
+- **Eller (Django):** "Ajan API'si" — salt okunur uçlar (günlük özet: 500 hatalar, bekleyen ilan/bağış, job_queue
+  hataları, AI kotası, disk/yedek) + `AgentAction` modeli (ne, neden, önce/sonra, durum: önerildi/onaylandı/uygulandı/
+  reddedildi/geri alındı). Onaylanan eylemi **Django uygular** (ajan değil) — mevcut `save()` / sinyal akışıyla
+  (ilan pending→open, bağış→completed; `queryset.update` değil). Anahtar `hmac.compare_digest` (cron anahtarı gibi).
+- **Ağız (iletişim):** e-postada imzalı, tek kullanımlık, 48 saat geçerli onay linki → staff girişli **onay sayfası +
+  POST düğmesi** (GET doğrudan uygulamaz — Gmail/güvenlik tarayıcıları linki önceden açabilir) + aynı istek AnalizBot'tan
+  kullanıcıya site DM'i.
+- **Acil fren:** `feature_ai_agent` flag'i (SiteSettings); günlük otomatik eylem sınırı admin → Limitler (kodda sabit yok).
+
+#### B. Yetki seviyeleri
+- **Serbest (okuma + taslak):** günlük durum raporu, GSC analizi, `meta_title`/`meta_description` önerisi, blog taslağı
+  (`draft`), todo'ya madde.
+- **Yap + bildir:** `agent/*` dalında kod + PR açma, spam şüphesi işaretleme.
+- **Önce sor:** ilan onay/ret, bağış onayı, kullanıcıya e-posta, yayındaki blog/SEO alanını değiştirme, fiyat/limit,
+  PR'ı dev'e alma.
+- **Asla:** main'e merge, Hetzner deploy, canlıda migration, kullanıcı silme, `.env`, sunucu shell'i.
+- Bir iş haftalarca doğru karar verirse bir üst seviyeye taşınabilir (ör. ilan onayı "önce sor"dan başlar).
+
+#### C. Riskler / kurallar
+- **Prompt injection:** ajan kullanıcı içeriği (forum, ilan, DM) okur → içerikteki "talimat"a göre eylem yok; kullanıcı
+  içeriğini okuduğu her işte eylem yetkisi dar.
+- Para / güven / analiz sonuçları geri dönüşü zor → insan onayı. "Hızlı değil, doğru."
+- SEO/blog metinlerinde **abartılı vaat yok** kuralı ajan talimatına yazılır; her iddia koddan doğrulanır.
+- Ajan Django superuser değil — ayrı hesap / dar yetkili token.
+
+#### D. Fazlar (her faz ayrı onay)
+- [ ] Faz 1 — Gözlemci (1–2 hafta): Ajan API'si salt okunur uçlar + her sabah durum e-postası; eylem yok
+- [ ] Faz 2 — Önerici: `AgentAction` + onay linki/sayfası + AnalizBot DM + `feature_ai_agent` (migration — canlı DB)
+- [ ] Faz 3 — SEO: GSC API (şu an elle zip) → haftalık analiz, meta önerileri, taslak blog
+- [ ] Faz 4 — Kodlayıcı: todo'daki küçük işler / hata e-postaları → `agent/*` dalı + test + PR
+- [ ] Faz 5 — Sınırlı otonomi: kendini kanıtlamış işler "yap + bildir"e
+- [ ] Her fazda testler + `analizus.md` güncellemesi
+
+#### E. Açık kararlar (kullanıcı)
+1. Beyin: Seçenek A (routine) ile başlansın mı?
+2. Onay kanalı: e-posta, site DM'i, ikisi birden?
+3. "Asla" listesine eklenecek / çıkarılacak iş var mı?
+4. Aylık bütçe?
 
 ### BÜYÜK SEO DÖNÜŞÜMÜ — PLAN (30 Eylül 2026; ÖNCELİK — faz faz, her faz önce onay)
 **Hedef:** portal = analiz/danışmanlık ihtiyacı olanlar ↔ analistler (tez merkezleri, AI mühendisleri, istatistikçiler,
@@ -137,21 +336,93 @@ anonime açılması — `profile_detail` `@login_required` → Google profilleri
   canonical `/market/`; `/istatistik/*` 301 → `/analiz/*`
 
 **Faz 3 — Blog → hizmet köprüsü (trafiğin %56'sı blogda)**
-- [ ] Blog yazısı sonunda kategoriye göre tek "Bu konuda uzman desteği" kartı (15 `BlogCategory` → hizmet eşlemesi); Faz 4
-  bitene kadar hedef `/proje-talebi/` veya `/market/`
+- [x] **YAPILDI YERELDE (4 Ekim 2026, commit yok): blog yazısı sonunda "Bu konuda uzman desteği" kartı** —
+  hedef `/uzmanlar/?cat=` (ilan açma değil, doğrudan uzman dizini; gerekçe: `/market/` kategori ön-seçimini
+  desteklemiyor, `/proje-talebi/` sabit hizmet türü listesiyle blog konularına uymuyor, dizin zaten ≥2 uzman
+  kontrolüne sahip). `BlogPost.EXPERT_CATEGORY_BY_BLOG_CATEGORY` (forum/models.py) — 15 kategoriden 10'u
+  JobCategory'e eşlendi (SPSS rehberleri→SPSS ile veri analizi, Tez süreci→Tez danışmanlığı, Ekonometri→EViews,
+  Açık Bilim/Veri Güvenliği-Araştırma Etiği/Akademik Etik&AI→Etik kurul desteği, Sağlık İstatistiği→SPSS,
+  İstatistik(-101)→Akademik danışmanlık, Veri Kazıma→Python ile veri analizi); 5'i (Bilim Felsefesi&Metodoloji,
+  Akademik Kariyer&Etik, Bibliometri&Türkiye'de Bilim, Veri Güvenliği&Etik, Sağlık Verisi&Bilim Politikası) net
+  karşılığı olmadığı için eşlenmedi → kart basılmaz (kullanıcı onayladı). `forum/views.py` `blog_detail`:
+  eşleşen JobCategory `is_active` + ≥2 herkese açık uzman (skill) şartı (uzman_dizini'ndeki aynı eşik) —
+  sağlanmazsa kart yok. Kart `ax-tool-guide`/`ax-btn` (service_promo.html'deki "uzmana bırak" bandıyla aynı
+  desen), `{% trans %}`/`{% blocktrans %}` ile EN/DE locale'e eklendi (blog `forum.urls` i18n_patterns dışında
+  olduğu için şu an yalnız TR'de görünür — ileride i18n'e alınırsa hazır). Doğrulama: forum 82/82, oturumsuz
+  `curl` ile eşleşen kategoride kart+doğru link (`/uzmanlar/?cat=<id>`), eşleşmeyen kategoride kart yok, <2
+  uzmanda kart yok (yerel geçici veriyle test edilip temizlendi — canlıda JobCategory verisi farklı, admin
+  panelinden alınan güncel liste kullanıldı). Faz 4 hizmet sayfaları açılınca kart hedefi `/hizmetler/<slug>`'a
+  taşınabilir.
 
-**Faz 4 — 5 hizmet sayfası + Pazaryeri şeridi**
-- [ ] KARAR: içerik yeri — Python sabiti (deploy ile değişir) / admin modeli + migration (öneri: model); dil — öneri yalnız TR,
-  öneksiz `/hizmetler/…` (forum/blog gibi)
-- [ ] `/hizmetler/` + `akademik-danismanlik`, `nicel-analiz`, `nitel-analiz`, `veri-ve-yapay-zeka`, `proje-danismanligi`.
-  Sayfa: vaat → alt hizmet bölümleri (`#anchor`; tanım, ne zaman, teslimat) → uzman kartları (≥2 yoksa bölüm gizli +
-  "Bu alanda uzmansanız katılın") → süreç → etik sınırlar → SSS → CTA (İlan Aç kategori ön seçili + Uzman Olarak Katıl).
-  Service + FAQPage + BreadcrumbList JSON-LD; sitemap; feature flag; AI asistan `_ALLOWED_PATHS`; ax- sınıfları, mobil önce
+**Faz 4 — 4 hizmet sayfası (4 Ekim 2026'da gözden geçirildi, kullanıcıyla mockup üzerinden netleşti)**
+> **KARARLAR (4 Ekim 2026):**
+> - **5 değil 4 hizmet sayfası** — `proje-danismanligi` ÇIKARILDI: navbardaki mevcut "Proje Talebi" linkiyle
+>   (`ProjectRequest` formu, `forum/views.py` `proje_talebi`) isim/niyet çakışıyordu, iki rakip akış YALIN ilkesine
+>   aykırıydı. Kalan 4: `akademik-danismanlik`, `nicel-analiz`, `nitel-analiz`, `veri-ve-yapay-zeka`.
+> - **İçerik yeri: admin modeli + migration** (onaylandı) — `JobCategory.intro` deseni (`forum/models.py` ~875,
+>   admin `forum/admin.py` ~498).
+> - **`/market/`'e YENİ ŞERİT EKLENMİYOR** — ilk taslakta önerilen "Hizmet Alanları" 5 kart şeridi iptal edildi:
+>   `/market/`'teki kategori çipleri zaten aynı işi (filtreleme) sıfır ekstra tıkla yapıyor, şerit gereksiz dolambaçtı.
+> - **Navbara yeni madde EKLENMİYOR.** Hizmet sayfaları yalnız **dış trafik** (Google aramasından iniş) için;
+>   platform içi gezinmeye (`/market/`, uzman dizini, blog kartı) hiç dokunmuyor. Hizmet sayfasında yalnız navbar
+>   "Pazaryeri" linki aktif/vurgulu + breadcrumb "Pazaryeri › …" (konum göstergesi, yeni link değil).
+> - **YALIN ilkesi (kullanıcı):** Google sonucundan hizmet sayfasına iniş → "İlan Aç" (kategori ön-seçili, 1 tık)
+>   veya "Tüm Uzmanları Gör" (`/uzmanlar/?cat=`, 1 tık) — ara sayfa yok. Uzman tarafı zaten mevcut `/market/` +
+>   çiplerle karşılanıyor, hizmet sayfası onlara dokunmuyor.
+> - Eşlenmeyen `JobCategory`'lerdeki ilanlar kaybolmaz — `/market/` ana listede ve çiplerde normal görünmeye devam
+>   eder; hizmet sayfası yalnız ekstra bir SEO giriş kapısı, tek görünürlük kanalı değil.
+> - Mockup: `claude.ai/artifact/ADTZ9xDK4ieSHt7GxDWGgN` (navbar + /market/ + örnek hizmet sayfası akışı).
+> - **İç link kararı (4 Ekim 2026, kullanıcı: "diğer hizmetler gelince footer uzar mı?"):** footer'daki "Araçlar"
+>   sütununa her hizmet sayfası için ayrı satır eklemek yerine tek bir **`/hizmetler/` indeks sayfası** +
+>   footer'da tek "Hizmetler" linki — kaç hizmet sayfası olursa olsun footer sabit kalır, indeks otomatik listeler
+>   (`ServicePage.objects.filter(is_active=True)`).
+
+- [x] **YAPILDI YERELDE (4 Ekim 2026, commit `e5aee67`, dev — push edilmedi): pilot `/hizmetler/nicel-analiz/` +
+  `/hizmetler/` indeksi.** `ServicePage`/`ServicePageSection`/`ServicePageFAQ` modelleri (`forum/models.py`,
+  migration forum/0170 şema + forum/0171 veri — Nicel Analiz 7 bölüm + 2 SSS, `is_active=False` varsayılan),
+  admin (`JobCategory.intro` pattern'i, inline bölüm/SSS), `SiteSettings.feature_hizmet_sayfalari` flag
+  (varsayılan kapalı). `post_job` artık `?category=<id>` ile ön-seçim destekliyor. Service + BreadcrumbList +
+  FAQPage JSON-LD, sitemap (`ServicePageSitemap` + indeks `StaticViewSitemap`'e flag'li eklendi), AI asistan
+  `_ALLOWED_PATHS`'e `/hizmetler/` eklendi. **Düzeltilen hata:** ilk uygulamada `JobCategory.localized_title`
+  property'si yanlışlıkla `ServicePageFAQ`'ya kaymıştı (model ekleme sırası hatası) — fark edilip düzeltildi,
+  forum testleri 82/82'ye geri döndü. Lokalde `JobCategory` verisi olmadığından (yalnız canlıda var) bölümlerdeki
+  uzman kartları lokalde boş görünür — normal. **KALAN:** flag + Nicel Analiz `is_active` hâlâ yerelde AÇIK test
+  amaçlı bırakıldı — canlıya almadan önce kapatma/açma kararı kullanıcıda; diğer 3 sayfanın (`akademik-danismanlik`,
+  `nitel-analiz`, `veri-ve-yapay-zeka`) içeriği henüz girilmedi (SEO metin taslağı yukarıda hazır); mobil/Playwright
+  doğrulaması yapılmadı; 15 blog kategorisinden kaç tanesi 4 hizmet sayfasına eşlenecek netleşmedi (Faz 3'teki
+  blog→JobCategory eşlemesinden farklı, ayrı bir iş).
 - [ ] Nicel Analiz bölümleri `/analiz/` sınıflandırmasıyla aynı (Ön Analizler, Geçerlilik & Güvenirlik, İlişki, Fark,
-  Regresyon, ML) + SEM/SmartPLS, EViews, ileri modeller; her bölümde ilgili ücretsiz araç linkleri
-- [ ] `/market/`: sayaçlar ile kategori çipleri arasına "Hizmet Alanları" 5 kart şeridi (mobilde yatay kaydırma); hizmet
-  sayfalarında navbar "Pazaryeri" aktif + breadcrumb "Pazaryeri › …"
-- [ ] Pilot: önce Nicel Analiz, onay sonrası diğer 4
+  Regresyon, ML) + SEM/SmartPLS, EViews, ileri modeller; her bölümde ilgili ücretsiz araç linkleri — pilot içerik
+  7 bölümle YAPILDI (yukarı bak), bu madde ileri modellerle zenginleştirme için açık kalsın
+- [ ] Pilot: önce Nicel Analiz, onay sonrası diğer 3
+
+**Faz 4 — SEO metin taslağı (4 Ekim 2026, WebSearch ile Armut.com'un hedeflediği terimler referans alındı —
+Armut rakip örneği, amaç ona rakip olmak; kesin arama hacmi yok, rakibin onlarca şehir sayfası açmış olması talep
+sinyali). Henüz hiçbir yere yazılmadı — `ServicePage` modeli kurulunca admin'e girilecek:**
+- **`/hizmetler/nicel-analiz/`** — meta_title: "Nicel Analiz Desteği: SPSS, R, EViews ile İstatistik Analizi |
+  Analizus"; meta_description: "Tezinizin veya araştırmanızın istatistiksel analizini SPSS, R, EViews, SmartPLS'e
+  hakim uzman analistlere bırakın. Teklif alın, karşılaştırın, siz seçin."; H1: "İstatistiksel Analiz ve Nicel Veri
+  Analizi Desteği"; giriş: "SPSS, R, EViews, SmartPLS ve ileri istatistiksel yöntemlerle — verinizi gönderin,
+  alanında uzman analistler sizin adınıza analiz edip raporlasın. Analizus'ta uzmanlar teklif verir, siz
+  karşılaştırıp seçersiniz."
+- **`/hizmetler/veri-ve-yapay-zeka/`** — meta_title: "Veri Bilimi ve Yapay Zeka Desteği: Python, Makine Öğrenmesi |
+  Analizus"; meta_description: "Python, makine öğrenmesi, NLP ve büyük veri projelerinizde uzman veri
+  bilimcilerle çalışın. Akademik ve kurumsal projeler için teklif alın."; H1: "Python, Makine Öğrenmesi ve Veri
+  Bilimi Desteği"; giriş: "Veri setinizi modellemek, tahmin kurmak ya da NLP/metin analizi yapmak için Python ve
+  makine öğrenmesi konusunda deneyimli uzmanlarla eşleşin."
+- **`/hizmetler/akademik-danismanlik/`** — meta_title: "Tez ve Akademik Danışmanlık Desteği: Yöntem, Etik Kurul,
+  Makale | Analizus"; meta_description: "Tez sürecinizde yöntem seçimi, etik kurul başvurusu ve makale
+  hazırlığında deneyimli akademisyenlerden danışmanlık desteği alın. Teklif alın, karşılaştırın."; H1: "Tez ve
+  Akademik Süreçlerinizde Danışmanlık Desteği"; giriş: "Tez önerisinden etik kurul başvurusuna, yöntem seçiminden
+  makale hazırlığına kadar sürecinizin her adımında deneyimli akademisyenlerden danışmanlık alın. Analizus bir
+  yazım hizmeti değildir — sürecinize rehberlik eden uzmanlarla sizi buluşturur." ⚠️ Armut'ta komşu kategori
+  "proje yazma" — bizim kaçındığımız "tez yazdırma" sınırına yakın; bilerek "yazım hizmeti değiliz" cümlesi
+  girişe eklendi, kural + rakipten ayrışma.
+- **`/hizmetler/nitel-analiz/`** — meta_title: "Nitel Analiz Desteği: MAXQDA, NVivo, İçerik Analizi | Analizus";
+  meta_description: "Görüşme, odak grup ve doküman verilerinizin nitel analizini MAXQDA ve NVivo'ya hakim
+  uzmanlarla yapın. İçerik ve konu analizinde teklif alın."; H1: "Nitel Araştırma ve İçerik Analizi Desteği";
+  giriş: "Görüşme kayıtları, odak grup verileri ya da doküman setlerinizin kodlanması ve analizinde MAXQDA, NVivo
+  deneyimine sahip uzmanlardan destek alın."
 
 **Faz 5 — İç linkleme**
 - [x] **YAPILDI (1 Ekim 2026):** analiz konsolu (giriş yapmış görünüm, 18 araç) — SEO rehberi + "uzmana bırak" bandı

@@ -100,6 +100,13 @@
     </div>
     {% endif %}
 
+    {% if LANGUAGE_CODE == 'tr' and features.hizmet_sayfalari %}
+    {% url 'service_page_list' as service_url %}
+    <p class="text-secondary small mb-3">
+        {% blocktrans %}Taahhütlü bir hizmete mi ihtiyacınız var? <a href="{{ service_url }}">Hizmetlerimize göz atın →</a>{% endblocktrans %}
+    </p>
+    {% endif %}
+
     <!-- Kategori Gezinmesi -->
     {% if market_categories %}
     <div class="ax-market-chips mb-3">

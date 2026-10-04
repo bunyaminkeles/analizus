@@ -20253,3 +20253,86 @@ msgstr "If no suitable area is listed, choose “Other”."
 msgid "İlan başlığı en fazla {max} karakter olabilir (şu an {count})."
 msgstr ""
 "The listing title can be at most {max} characters (currently {count})."
+
+msgid "Bu konuda uzman desteği almak ister misiniz?"
+msgstr "Would you like expert support on this topic?"
+
+#, python-format
+msgid ""
+"Analizus'taki uzmanlar arasında <strong "
+"style=\"color:#f1f5f9;\">%(category)s</strong> alanında çalışan "
+"analistleri inceleyebilirsiniz."
+msgstr ""
+"You can browse analysts on Analizus who work in <strong "
+"style=\"color:#f1f5f9;\">%(category)s</strong>."
+
+msgid "Uzmanları Gör"
+msgstr "See Experts"
+
+msgid "Nicel Analiz Desteği"
+msgstr "Quantitative Analysis Support"
+
+msgid "Pazaryerine Git"
+msgstr "Go to Marketplace"
+
+msgid "Bu alanda çalışan uzmanlar"
+msgstr "Experts working in this area"
+
+msgid "Bu kategoride ilan aç"
+msgstr "Post a listing in this category"
+
+msgid "Nasıl Çalışır"
+msgstr "How It Works"
+
+msgid "Sınırlarımız"
+msgstr "Our Boundaries"
+
+msgid "Yaptırmak istediğiniz işi anlatın, uzmanlar teklif versin"
+msgstr "Describe the work you need done, and experts will send proposals"
+
+msgid "Hizmetler"
+msgstr "Services"
+
+msgid "Şu an yayında hizmet sayfası yok."
+msgstr "No service pages are published yet."
+
+msgid "Akademik danışmanlık, nicel ve nitel analiz, veri bilimi ve yapay zeka alanlarında uzmanlarla çalışın."
+msgstr "Work with experts in academic consulting, quantitative and qualitative analysis, data science and AI."
+
+#, python-format
+msgid ""
+"Taahhütlü bir hizmete mi ihtiyacınız var? <a "
+"href=\"%(service_url)s\">Hizmetlerimize göz atın →</a>"
+msgstr ""
+"Need a committed service? <a href=\"%(service_url)s\">Browse our "
+"services →</a>"
+
+msgid "Profil fotoğrafı"
+msgstr "Profile photo"
+
+msgid "Ünvan"
+msgstr "Title"
+
+msgid "En az bir uzmanlık alanı"
+msgstr "At least one area of expertise"
+
+msgid "En az bir bağlantı (web, LinkedIn, ORCID…)"
+msgstr "At least one link (website, LinkedIn, ORCID…)"
+
+msgid "Akademik unvan"
+msgstr "Academic title"
+
+msgid "Profil Doluluğu"
+msgstr "Profile Completeness"
+
+msgid "Tamamlamak için:"
+msgstr "To complete:"
+
+msgid "Profiliniz eksiksiz — uzman dizininde ve hizmet sayfalarında en iyi şekilde görünüyorsunuz."
+msgstr "Your profile is complete — you'll show up at your best in the expert directory and service pages."
+
+msgid "Uzman olmak için: sorulara cevap ver, puan topla — Uzman Dizini'nde görünürsün."
+msgstr "To become an expert: answer questions, earn points — you'll show up in the Expert Directory."
+
+msgid "TEBRİKLER! Profilinizi %100 tamamladığınız için \"Profili Tamamladı\" rozeti ve 50 Puan kazandınız."
+msgstr "CONGRATULATIONS! You earned the \"Profile Complete\" badge and 50 Points for completing your profile 100%."

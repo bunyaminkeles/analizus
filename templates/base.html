@@ -104,7 +104,7 @@
     <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"></noscript>
 
 <!-- Modern Katman: Analizus Design System (base+navbar+footer+style+sidebar_widgets birleştirilmiş) -->
-    <link rel="stylesheet" href="{% static 'css/bundle.css' %}?v=0007">
+    <link rel="stylesheet" href="{% static 'css/bundle.css' %}?v=0008">
 
     {% block extra_head %}{% endblock %}
 
@@ -360,7 +360,7 @@
                             {% comment %}★ puanı yalnız TR: Arena EN/DE'de yok; EN/DE hedefi proje talebi (puan arka planda birikmeye devam eder){% endcomment %}
                             {% if LANGUAGE_CODE == 'tr' %}<span class="site-nav__rep" title="{% trans "Puanını Arena'da artır" %}" role="link" tabindex="0"
                                   onclick="event.stopPropagation(); window.location.href='{% url 'home' %}#istatistik-arenasi';"
-                                  onkeydown="if(event.key==='Enter'){event.stopPropagation(); window.location.href='{% url 'home' %}#istatistik-arenasi';}">★ {{ user_profile.reputation }}</span>{% endif %}
+                                  onkeydown="if(event.key==='Enter'){event.stopPropagation(); window.location.href='{% url 'home' %}#istatistik-arenasi';}">★ {{ user_profile.total_score }}</span>{% endif %}
                         </button>
                         <div class="site-nav__dropdown site-nav__dropdown--end" id="dropdown-user" role="menu">
                             <a href="{% url 'profile_detail' username=user.username %}" class="site-nav__dropdown-item" role="menuitem">{% trans "Profilim" %}</a>

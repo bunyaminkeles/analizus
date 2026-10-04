@@ -382,6 +382,27 @@ class Profile(models.Model):
             links.append(('github', github, f'https://github.com/{github}'))
         return links
 
+    def completion_status(self):
+        """Profil doluluk yüzdesi + eksik alan listesi (ağırlıklı). Yalnız profil sahibine gösterilir
+        (profile_edit.html) — kendi kendine teşvik, kamuya açık bir puan değil."""
+        checks = [
+            ('avatar', gettext('Profil fotoğrafı'), 10, bool(self.avatar)),
+            ('bio', gettext('Biyografi'), 15, bool(self.bio.strip())),
+            ('title', gettext('Ünvan'), 10, bool(self.title.strip())),
+            ('university', gettext('Üniversite'), 10, bool(self.university.strip())),
+            ('department', gettext('Bölüm'), 5, bool(self.department.strip())),
+            ('location', gettext('Konum'), 5, bool(self.location.strip())),
+            ('skills', gettext('En az bir uzmanlık alanı'), 20, self.skills.exists()),
+            ('links', gettext('En az bir bağlantı (web, LinkedIn, ORCID…)'), 15, bool(self.public_links())),
+            ('academic_title', gettext('Akademik unvan'), 10, bool(self.academic_title.strip())),
+        ]
+        percentage = sum(weight for _key, _label, weight, done in checks if done)
+        missing = [
+            {'label': label, 'weight': weight}
+            for _key, label, weight, done in checks if not done
+        ]
+        return {'percentage': percentage, 'missing': missing}
+
     @property
     def is_premium(self):
         """Premium üyelik aktif mi kontrol et"""
@@ -905,6 +926,60 @@ class JobCategory(models.Model):
         return self.title
 
 
+class ServicePage(models.Model):
+    """SEO Faz 4: /hizmetler/<slug>/ hizmet sayfaları. Yalnız TR (blog ile aynı karar — kapsam dışı)."""
+    slug = models.SlugField(unique=True, verbose_name="Slug")
+    title = models.CharField(max_length=150, verbose_name="Başlık (H1)")
+    meta_title = models.CharField(max_length=70, blank=True, default="", verbose_name="SEO Başlığı")
+    meta_description = models.CharField(max_length=160, blank=True, default="", verbose_name="SEO Açıklaması")
+    intro = models.TextField(verbose_name="Giriş (vaat)")
+    process_text = models.TextField(blank=True, default="", verbose_name="Süreç")
+    ethics_text = models.TextField(blank=True, default="", verbose_name="Etik sınırlar")
+    is_active = models.BooleanField(default=False, verbose_name="Yayında")
+    order = models.PositiveIntegerField(default=0, verbose_name="Sıra")
+
+    class Meta:
+        verbose_name = "Hizmet Sayfası"
+        verbose_name_plural = "Hizmet Sayfaları"
+        ordering = ['order', 'title']
+
+    def __str__(self):
+        return self.title
+
+
+class ServicePageSection(models.Model):
+    """Hizmet sayfası alt bölümü — ilgili iş kategorileri varsa bölümde uzman kartları gösterilir (≥2 şartı)."""
+    service_page = models.ForeignKey(ServicePage, on_delete=models.CASCADE, related_name='sections')
+    anchor = models.SlugField(verbose_name="Çapa (#anchor)")
+    title = models.CharField(max_length=120, verbose_name="Başlık")
+    body = models.TextField(blank=True, default="", verbose_name="Açıklama")
+    related_job_categories = models.ManyToManyField(JobCategory, blank=True, verbose_name="İlgili iş kategorileri")
+    order = models.PositiveIntegerField(default=0, verbose_name="Sıra")
+
+    class Meta:
+        verbose_name = "Hizmet Sayfası Bölümü"
+        verbose_name_plural = "Hizmet Sayfası Bölümleri"
+        ordering = ['order']
+
+    def __str__(self):
+        return f"{self.service_page.title} — {self.title}"
+
+
+class ServicePageFAQ(models.Model):
+    service_page = models.ForeignKey(ServicePage, on_delete=models.CASCADE, related_name='faqs')
+    question = models.CharField(max_length=200, verbose_name="Soru")
+    answer = models.TextField(verbose_name="Cevap")
+    order = models.PositiveIntegerField(default=0, verbose_name="Sıra")
+
+    class Meta:
+        verbose_name = "Hizmet Sayfası SSS"
+        verbose_name_plural = "Hizmet Sayfası SSS"
+        ordering = ['order']
+
+    def __str__(self):
+        return self.question
+
+
 class FreelanceJob(models.Model):
     """Kullanıcıların verdiği iş ilanları (Freelance Market)"""
     STATUS_CHOICES = (
@@ -1390,6 +1465,11 @@ class SiteSettings(models.Model):
     feature_training = models.BooleanField(
         default=False, verbose_name="Eğitim Hizmetleri Sayfası"
     )
+    feature_hizmet_sayfalari = models.BooleanField(
+        default=False,
+        verbose_name="Hizmet Sayfaları (/hizmetler/)",
+        help_text="Kapalıyken /hizmetler/ 404 döner. Pilot: önce yalnız Nicel Analiz sayfasını ServicePage.is_active ile açın.",
+    )
     feature_multilingual = models.BooleanField(
         default=False,
         verbose_name="Çok Dilli Yayın (EN/DE)",
@@ -1545,6 +1625,21 @@ class BlogPost(models.Model):
         'veri-guvenligi-arastirma-etigi': 'agentic-hero',
         'bibliometri-turkiyede-bilim': 'agentic-hero',
         'tez-sureci': 'studio-sonrasi',
+    }
+
+    # Blog kategorisi slug → pazar iş kategorisi başlığı (JobCategory.title). SEO Faz 3:
+    # yazı sonunda "Bu konuda uzman desteği" kartı için. Eşleşmeyen kategoride kart basılmaz.
+    EXPERT_CATEGORY_BY_BLOG_CATEGORY = {
+        'spss-rehberleri': 'SPSS ile veri analizi',
+        'tez-sureci': 'Tez danışmanlığı',
+        'ekonometri-veri-politikasi': 'EViews analizleri',
+        'acik-bilim-arastirma-etigi': 'Etik kurul desteği',
+        'veri-guvenligi-arastirma-etigi': 'Etik kurul desteği',
+        'akademik-etik-ai': 'Etik kurul desteği',
+        'saglik-istatistigi': 'SPSS ile veri analizi',
+        'istatistik-101': 'Akademik danışmanlık',
+        'istatistik': 'Akademik danışmanlık',
+        'veri-kazima-ve-arastirma': 'Python ile veri analizi',
     }
 
     title = models.CharField(max_length=200, verbose_name="Başlık")

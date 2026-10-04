@@ -1,7 +1,7 @@
 from django.contrib.sitemaps import Sitemap
 from django.urls import reverse
 from django.db.models import Count, Q
-from .models import Topic, Category, FreelanceJob, BlogPost, StudyRoom
+from .models import Topic, Category, FreelanceJob, BlogPost, StudyRoom, ServicePage
 
 
 class MultilingualSitemapMixin:
@@ -26,7 +26,11 @@ class StaticViewSitemap(Sitemap):
     changefreq = 'daily'
 
     def items(self):
-        return ['forum_index', 'uzman_dizini', 'blog_list']
+        pages = ['forum_index', 'uzman_dizini', 'blog_list']
+        from .models import SiteSettings
+        if SiteSettings.load().feature_hizmet_sayfalari:
+            pages.append('service_page_list')
+        return pages
 
     def location(self, item):
         return reverse(item)
@@ -133,6 +137,21 @@ class BlogPostSitemap(Sitemap):
 
     def location(self, obj):
         return reverse('blog_detail', kwargs={'slug': obj.slug})
+
+
+class ServicePageSitemap(Sitemap):
+    """Hizmet sayfaları (SEO Faz 4) — yalnız feature_hizmet_sayfalari açıkken ve yayındaki sayfalar."""
+    changefreq = 'monthly'
+    priority = 0.9
+
+    def items(self):
+        from .models import SiteSettings
+        if not SiteSettings.load().feature_hizmet_sayfalari:
+            return ServicePage.objects.none()
+        return ServicePage.objects.filter(is_active=True)
+
+    def location(self, obj):
+        return reverse('service_page_detail', kwargs={'slug': obj.slug})
 
 
 class IstatistikSitemap(MultilingualSitemapMixin, Sitemap):

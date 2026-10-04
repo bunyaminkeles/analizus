@@ -1,22 +1,22 @@
 # Analizus.com — Claude Çalışma Kuralları
 
-Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~2240 satır; offset'ler 1 Ekim 2026). Tamamını okuma — ihtiyaca göre offset ile ilgili bölümü oku:
+Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~2300 satır; offset'ler 2 Ekim 2026). Tamamını okuma — ihtiyaca göre offset ile ilgili bölümü oku:
 
 | Bölüm | offset | Konu |
 |---|---|---|
 | §1–2 | 8 | Proje amacı, tech stack, paketler |
-| §3–5 | 68 | Sunucu mimarisi + bakım (log sınırı, disk, yedek → yerel), deploy (deploy.sh açılışta migrate+collectstatic), env vars (NCBI_API_KEY dahil) |
+| §3–5 | 68 | Sunucu mimarisi + bakım (log sınırı, disk, yedek → yerel, **deploy öncesi `yedek_indir.sh --simdi`**), deploy (deploy.sh açılışta migrate+collectstatic), env vars (NCBI_API_KEY dahil) |
 | §6–7 | 284 | Dizin yapısı, URL mimarisi (i18n_patterns; `/section/` 301, `/uzmanlar/?cat=` kuralı) |
-| §8–9 | 461 | Veri modelleri (`JobCategory.intro`, `Category.INDEX_MIN_TOPICS`, BlogPost SEO alanları), feature flag'ler |
-| §10–11 | 733 | CSS/tasarım sistemi, WebSocket (route'lar) |
-| §12 | 858 | İstatistik araçları (akış, PDF, polling, **konsol düzeni**: Nedir kartı → SSS → CTA, `tool_title`) |
-| §13–15 | 1018 | DM/oda mesajlaşma, bibliometri, akademik tarama (**Google'ın gördüğü başlık = view `promo_title`**) |
-| §16–19 | 1248 | E-posta (500 hata e-postası), AnalizBot/AI Asistan, S3, güvenlik (çerez onayı, cron anahtarı) |
-| §20–23 | 1467 | Admin (sipariş akışı, Fiyatlandırma, İş Kategorisi tanıtım metni, blog SEO bölümü), pazar, session, cron |
-| §24–25 | 1578 | Geliştirme ortamı (pytest, çeviri komutları), değişmez kurallar |
-| §26 | 1662 | Sık yapılan hatalar ve çözümleri |
-| §27 | 1757 | Görev listesi (tamamlanan / sıradaki — **SEO dönüşümü** önceliği) |
-| §28 | 2150 | Çok dilli yapı (TR/EN/DE) ve gizlilik — mimari, çeviri kuralları, iş akışı, EN/DE ürün kararları (§28.7) |
+| §8–9 | 464 | Veri modelleri (`JobCategory.intro`, `Category.INDEX_MIN_TOPICS`, BlogPost SEO alanları, **pazar: ilan onayı / haftalık hak / form sınırları, profil "Hakkında", bağış `premium_days_promised`** ~552), feature flag'ler |
+| §10–11 | 748 | CSS/tasarım sistemi, WebSocket (route'lar) |
+| §12 | 873 | İstatistik araçları (akış, PDF, polling, **konsol düzeni**: Nedir kartı → SSS → CTA, `tool_title`) |
+| §13–15 | 1033 | DM/oda mesajlaşma, bibliometri, akademik tarama (**Google'ın gördüğü başlık = view `promo_title`**) |
+| §16–19 | 1263 | E-posta (500 hata e-postası), AnalizBot/AI Asistan, S3, güvenlik (çerez onayı, cron anahtarı) |
+| §20–23 | 1482 | Admin (sipariş akışı, Fiyatlandırma, **Limitler, İlan onayı/ret aksiyonları + panel "İlan Onayı", bağış onayı aksiyonu**, İş Kategorisi tanıtım metni, blog SEO), pazar akışı (pending → open), session, cron |
+| §24–25 | 1607 | Geliştirme ortamı (pytest 82 test + test notları, çeviri komutları), değişmez kurallar |
+| §26 | 1694 | Sık yapılan hatalar ve çözümleri |
+| §27 | 1797 | Görev listesi (tamamlanan / sıradaki; **en son: "2 Ekim 2026" pazar/bağış/profil turu**) |
+| §28 | 2209 | Çok dilli yapı (TR/EN/DE) ve gizlilik — mimari, çeviri kuralları, iş akışı, EN/DE ürün kararları (§28.7) |
 
 ---
 
@@ -56,15 +56,18 @@ Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~2240 satır; offset
 - `docker compose restart web` sonrası nginx da restart edilmeli (IP cache sorunu)
 - `docker-compose` değil `docker compose` (Hetzner'de plugin kurulu, eski binary yok)
 - Testler **pytest** ile: `docker compose exec web python -m pytest forum/tests.py` (`manage.py test` 0 test bulur)
-- Container açılışında `deploy.sh` `migrate` + `collectstatic` çalıştırır — migration'lı deploy öncesi DB yedeği al
+- Container açılışında `deploy.sh` `migrate` + `collectstatic` çalıştırır — migration'lı deploy öncesi DB yedeği al: kullanıcının bilgisayarında `scripts/yedek_indir.sh --simdi` (yerele akar; sunucuda `pg_dump > /root/…` artık yapma — birikiyordu)
 - Yeni app'te `makemigrations`'ı container'da çalıştırırsan `migrations/` klasörü root sahipli olur → git dal değiştiremez; klasörü host'ta aç ya da `chown -R 1000:1000` (§26)
-- Fiyat/ücret kodda sabit YAZILMAZ — `SiteSettings` alanı + admin (tarama siparişi, vitrin, bibliometri; §20)
+- Fiyat/ücret **ve limit** kodda sabit YAZILMAZ — `SiteSettings` alanı + admin (tarama siparişi, vitrin, bibliometri; haftalık ilan hakkı, ilan başlık/açıklama sınırı → Limitler; §20)
+- Pazar: herkese açık listeler yalnız `status='open'`; pk ile erişen view pending/rejected ilanı yalnız sahibi + staff'a gösterir. Açık ilan `approved_at` boşken kaydedilirse `FreelanceJob.save()` yeniden yayınlar (süre + hediye) — seed/test'te `approved_at` ver (§8)
+- Ödül/e-posta tetikleyen durum geçişleri sinyalde (ilan pending→open/rejected, bağış →completed) — admin aksiyonunda `queryset.update` değil kayıt kayıt `save()`; söz verilen değeri (gün, fiyat) talep anında kayda yaz (§26)
+- Profil formu alanları doğrulamasız kaydedilir — şablonda kullanıcı URL'si yalnız `Profile.public_links()` üzerinden (http(s) + regex)
 - Dış kaynaktan (API/kazıma) gelen veri JS'te `innerHTML`'e kaçışsız yazılmaz — `_esc()`; link yalnız http(s) (§15)
 - Şablon değişikliğini doğrulamadan önce `docker compose restart web` (cached loader) — yoksa eski sürüm test edilir
 - API anahtarı URL'de giden istemcilerde `requests` hata metni anahtarı taşır → kullanıcıya sabit mesaj, istisnayı `api_key=***` ile yeniden fırlat (§26)
 - `.env` değişikliği `restart` ile okunmaz → `docker compose up -d web`; env adını koddakiyle birebir kontrol et (`NCBI_API_KEY`)
 - Hetzner `docker-compose.yml`'de commit'lenmemiş `rlprehber` var — compose'u git'te değiştirme; host ayarı `daemon.json` (§3)
-- Sunucuda yalnız kullanıcı isteyince işlem; `main`/push/deploy kullanıcıda (push izni otomatik reddediliyor)
+- Sunucuda yalnız kullanıcı isteyince işlem; Hetzner deploy kullanıcıda. Push/merge yalnız kullanıcı açıkça isteyince ("push et", "merge et") — 2 Ekim 2026'da çalıştı; yalnız doküman/betik commit'ini push etmek gereksiz (kullanıcı)
 
 ## SEO Kritik Kurallar — ayrıntı analizus.md §12, §15, §26, `tasks/todo.md` "BÜYÜK SEO DÖNÜŞÜMÜ"
 - Google (anonim) araç/tarama sayfalarında `service_promo.html` görür → başlık/açıklama/H1 view'daki `promo_title`/`promo_description`; `landing.html` blokları yalnız giriş yapmışa. Doğrulama **oturumsuz** `curl` ile
@@ -88,7 +91,7 @@ Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~2240 satır; offset
 ## Git & Deploy
 - Tüm geliştirme `dev` branch'inde — `main`'e kullanıcı "merge et" demeden dokunma
 - `dev` → **Render** (push'ta otomatik deploy — staging/preview)
-- `main` → **Hetzner** (manuel deploy — production)
+- `main` → **Hetzner** (manuel deploy — production); merge: `git merge --no-ff dev` ("Merge branch 'dev': …"), sonra `dev`'e dön
 - Commit mesajları: `feat:`, `fix:`, `refactor:` prefix (Türkçe veya İngilizce)
 - `.env` değerlerini commit'e dahil etme
 

@@ -23,7 +23,7 @@ from datetime import timedelta
 import uuid
 from django_ratelimit.decorators import ratelimit
 from django_ratelimit.exceptions import Ratelimited
-from .models import Section, Category, Topic, Post, Profile, PrivateMessage, PostLike, Notification, EmailVerification, DailyTip, QuizQuestion, QuizScore, SuccessStory, FreelanceJob, JobCategory, JobProposal, JobReview, Skill, Badge, UserQuizAttempt, JobPayment, SiteSettings, BlogCategory, BlogPost, BlogTag, DonationTier, StudyRoom, StudyRoomMembership, StudyRoomPost, StudyRoomWaitlist, STUDYROOM_TERMS, ReferralCode, ReferralUse
+from .models import Section, Category, Topic, Post, Profile, PrivateMessage, PostLike, Notification, EmailVerification, DailyTip, QuizQuestion, QuizScore, SuccessStory, FreelanceJob, JobCategory, JobProposal, JobReview, Skill, Badge, UserQuizAttempt, JobPayment, SiteSettings, BlogCategory, BlogPost, BlogTag, DonationTier, StudyRoom, StudyRoomMembership, StudyRoomPost, StudyRoomWaitlist, STUDYROOM_TERMS, ReferralCode, ReferralUse, ServicePage
 from .forms import RegisterForm, NewTopicForm, PostForm, JobPostForm, ProposalForm
 from .email_utils import send_topic_reply_notification, send_private_message_notification
 from django.template.loader import render_to_string
@@ -526,7 +526,11 @@ def post_job(request):
             messages.success(request, gettext('İş ilanı başarıyla oluşturuldu. (%(days)s gün aktif kalacak)') % {'days': profile.get_job_duration_days()})
             return redirect('job_detail', pk=job.pk)
     else:
-        form = JobPostForm()
+        initial = {}
+        cat_id = request.GET.get('category', '').strip()
+        if cat_id.isdigit() and JobCategory.objects.filter(pk=cat_id, is_active=True).exists():
+            initial['category_choice'] = cat_id
+        form = JobPostForm(initial=initial)
     return render(request, 'forum/market/post_job.html', {
         'form': form,
         'job_duration_days': profile.get_job_duration_days(),
@@ -1506,6 +1510,7 @@ def profile_edit(request):
 
         user.save()
         profile.skills.set(selected_skills)
+        _check_and_award_profile_complete_badge(request, profile)
 
         # Değiştirilen/kaldırılan eski fotoğrafı depodan sil (sahipsiz dosya bırakma)
         if old_avatar and (not profile.avatar or profile.avatar.name != old_avatar[1]):
@@ -1807,6 +1812,18 @@ def _check_and_award_trust_badge(request, user):
         score.total_points += 50
         score.save()
         messages.success(request, gettext('TEBRİKLER! Tüm doğrulamaları tamamladığınız için "Güvenilir Üye" rozeti ve 50 Puan kazandınız.'))
+
+
+def _check_and_award_profile_complete_badge(request, profile):
+    """Profil %100 doluysa 'Profili Tamamladı' rozeti ve 50 puan hediye eder (yalnız ilk kez).
+    user.profile DEĞİL, çağıranın elindeki taze profile nesnesi alınır — request başında
+    (middleware/context processor) önbelleklenmiş user.profile, bu istekteki save()'i yansıtmaz."""
+    from .signals import check_and_award_profile_complete_badge
+    if check_and_award_profile_complete_badge(profile):
+        score, _ = QuizScore.objects.get_or_create(user=profile.user)
+        score.total_points += 50
+        score.save()
+        messages.success(request, gettext('TEBRİKLER! Profilinizi %100 tamamladığınız için "Profili Tamamladı" rozeti ve 50 Puan kazandınız.'))
 
 # --- PROFİL DETAY ---
 @login_required
@@ -3342,6 +3359,18 @@ def blog_detail(request, slug):
         post_count=Count('posts', filter=Q(posts__status='published'))
     ).filter(post_count__gt=0)
 
+    # "Bu konuda uzman desteği" kartı (SEO Faz 3) — eşleşen pazar kategorisinde en az
+    # 2 herkese açık uzman yoksa kart basılmaz (uzman_dizini'ndeki aynı eşik).
+    expert_category = None
+    job_category_title = (
+        BlogPost.EXPERT_CATEGORY_BY_BLOG_CATEGORY.get(post.category.slug)
+        if post.category else None
+    )
+    if job_category_title:
+        candidate = JobCategory.objects.filter(title=job_category_title, is_active=True).first()
+        if candidate and Profile.objects.filter(is_public=True, skills=candidate).distinct().count() >= 2:
+            expert_category = candidate
+
     context = {
         'post': post,
         'is_liked': is_liked,
@@ -3349,8 +3378,48 @@ def blog_detail(request, slug):
         'category_posts': category_posts,
         'popular_posts': popular_posts,
         'categories': categories,
+        'expert_category': expert_category,
     }
     return render(request, 'forum/blog/blog_detail.html', context)
+
+
+@feature_required('hizmet_sayfalari')
+def service_page_list(request):
+    """SEO Faz 4: /hizmetler/ indeksi — footer tek bu linke işaret eder, sayfa sayısı büyüse de footer büyümez."""
+    pages = ServicePage.objects.filter(is_active=True).order_by('order', 'title')
+    return render(request, 'forum/hizmetler/service_list.html', {'pages': pages})
+
+
+@feature_required('hizmet_sayfalari')
+def service_page_detail(request, slug):
+    """SEO Faz 4: /hizmetler/<slug>/ — dış (Google) trafiği için iniş sayfası.
+    Platform içi gezinmeye (/market/, /uzmanlar/) dokunmaz, yalnız oralara tek tık uzaklıkta CTA verir."""
+    page = get_object_or_404(ServicePage, slug=slug, is_active=True)
+    sections = page.sections.prefetch_related('related_job_categories').order_by('order')
+
+    section_data = []
+    for section in sections:
+        cats = list(section.related_job_categories.all())
+        experts = []
+        single_category = cats[0] if len(cats) == 1 else None
+        if cats:
+            experts = list(
+                Profile.objects.select_related('user')
+                .filter(is_public=True, skills__in=cats)
+                .distinct()[:3]
+            )
+        section_data.append({
+            'section': section,
+            'experts': experts if len(experts) >= 2 else [],
+            'single_category': single_category,
+        })
+
+    context = {
+        'page': page,
+        'section_data': section_data,
+        'faqs': page.faqs.order_by('order'),
+    }
+    return render(request, 'forum/hizmetler/service_detail.html', context)
 
 
 @feature_required('blog')
