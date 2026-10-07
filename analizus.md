@@ -224,7 +224,7 @@ GEMINI_API_KEY=...
 CRON_SECRET_KEY=...
 
 # Analitik / arama motoru doğrulama (boşsa ilgili kod/etiket hiç basılmaz)
-GOOGLE_ANALYTICS_ID=           # G-XXXX — tanımlıysa çerez onay banner'ı devreye girer; GA yalnızca "Kabul et" sonrası yüklenir
+GOOGLE_ANALYTICS_ID=G-HQRKFXP2ZR  # 7 Ekim 2026'dan beri Hetzner'de TANIMLI (yerel/Render'da henüz yok); tanımlıysa çerez onay banner'ı devreye girer; GA yalnızca "Kabul et" sonrası yüklenir — Realtime'da doğrulandı
 GOOGLE_SITE_VERIFICATION=      # <meta name="google-site-verification">
 BING_SITE_VERIFICATION=        # <meta name="msvalidate.01">
 YANDEX_SITE_VERIFICATION=      # yalnız Webmaster doğrulaması; Yandex Metrica 24 Eylül 2026'da kaldırıldı
@@ -2257,7 +2257,28 @@ migration 0153–0155 container açılışında deploy.sh ile uygulandı; DB yed
 
 **Önceki (28 Eylül 2026 gece):** canlı = main ab57dcd (bibliometri kısıtlar bölümü + BibTeX).
 
-**En son (7 Ekim 2026):** canlı = main = **d68820e** (Hetzner'e deploy edildi, dev aynı) — admin analytics + yeni `broadcast` app turu.
+**En son (7 Ekim 2026, ikinci tur):** `main` = **(forum arama kutusu fix commit'i, dev'den merge)**; kullanıcı
+Hetzner'e `git pull` + `docker compose restart web`+`nginx` ile deploy etti (session içinde doğrulanmadı — sonraki
+oturumda `git log` ile teyit edilmeli). İki ayrı iş: **(1) Forum arama kutusu ikon/placeholder çakışması** —
+kullanıcı ekran görüntüsünde `/forum/` arama kutusunun placeholder'ındaki "K" harfinin bozuk/Kiril gibi göründüğünü
+fark etti (önceki oturumun "doğrulanmadı" notu buydu). Kök neden Playwright ile canlı sayfada computed style
+karşılaştırılarak bulundu: `static/css/style.css:30`'daki global "KESİN KONTRAST FİX" kuralı
+(`input,select,textarea{padding:10px 15px !important}`, eski bir login/register okunabilirlik yaması) `.forum-search-input`'un
+ikon için ayırdığı sol padding'i (`!important` içermediği için) eziyordu — gerçek padding-left 15px'e düşüyor,
+büyüteç ikonu harfin üstüne biniyordu. Ayrıca `forum_index.html` içinde aynı sınıflar için 4 Ekim'de eklenen
+`trend_topics.css` tanımıyla çakışan, önceden var olan ikinci bir inline `<style>` tanımı daha vardı (iki tanım da
+`!important` içermiyordu, hangisinin kazandığı DOM sırasına kalıyordu — kırılgan). Düzeltme: `trend_topics.css`'teki
+`.forum-search-input/-icon` kurallarına `!important` eklendi (padding-left 2.5rem'e çıkarıldı), şablondaki tekrarlı
+inline blok silindi (tek kaynak), cache `?v=0003→0004`. Hem canlıda (önce, Playwright ile kanıt) hem lokalde (sonra,
+görsel doğrulama) test edildi, forum testleri 82/82. **(2) Google Analytics (GA4) kuruldu** — `G-HQRKFXP2ZR`. Google'ın
+verdiği ham `gtag.js` snippet'i şablona **yapıştırılmadı** — sitede zaten `templates/base.html:73-91`'de aynı işi yapan,
+çerez onayına bağlı (`GOOGLE_ANALYTICS_ID` env var + `ax_cookie_consent` çerezi) bir mekanizma kuruluydu (kod
+değişikliği yok). Kullanıcı Hetzner `.env`'e `GOOGLE_ANALYTICS_ID=G-HQRKFXP2ZR` ekleyip `docker compose up -d web`
+çalıştırdı; GA panelinde "Gerçek zamanlı" raporunda aktif kullanıcı görülerek doğrulandı. **Öğrenilen:** GA4'te
+"Gerçek Zamanlı" sol menüde değil, Raporlar içinde; "Ana sayfa" kartı veriyi geç gösterebiliyor, anlık doğrulama
+için Gerçek Zamanlı raporuna bakılmalı.
+
+**Önceki (7 Ekim 2026, ilk tur):** canlı = main = **d68820e** (Hetzner'e deploy edildi, dev aynı) — admin analytics + yeni `broadcast` app turu.
 Navigasyon Grafiği'nde kullanıcı adına tıklama artık o kişiye filtrelenmiş grafiği açıyor (`?user=`); okunmaz başlık
 renkleri düzeltildi (Unfold'un derlenmiş CSS'i Tailwind `dark:` sınıflarını içermiyor, bkz. §26); `?start=&end=` tarih
 aralığı filtresi eklendi; "Ziyaret Özetleri" sidebar'dan kaldırıldı (arşiv, admine katkısı yok). **Yeni "Şu An Aktif"**
