@@ -148,7 +148,9 @@
     white-space: nowrap;
 }
 
-/* Forum başlığı mini arama kutusu — ikon + input hiç stillenmemişti (üst üste biniyordu) */
+/* Forum başlığı mini arama kutusu — style.css'teki global "input{padding...!important}"
+   kuralı ikon için ayrılan sol boşluğu eziyordu (ikon harfin üstüne biniyordu, 7 Ekim 2026
+   kullanıcı bulgusu); bu yüzden kendi değerlerimiz de !important olmalı */
 .forum-search-wrap {
     position: relative;
     display: inline-flex;
@@ -157,22 +159,22 @@
 .forum-search-icon {
     position: absolute;
     left: var(--ax-space-3);
-    color: var(--ax-text-muted);
+    color: var(--ax-text-muted) !important;
     font-size: 0.85rem;
     pointer-events: none;
 }
 .forum-search-input {
-    background: var(--ax-bg-secondary);
-    border: 1px solid var(--ax-border-default);
-    border-radius: var(--ax-radius-md);
-    color: var(--ax-text-primary);
-    padding: 0.5rem 0.75rem 0.5rem 2.25rem;
+    background: var(--ax-bg-secondary) !important;
+    border: 1px solid var(--ax-border-default) !important;
+    border-radius: var(--ax-radius-md) !important;
+    color: var(--ax-text-primary) !important;
+    padding: 0.5rem 0.75rem 0.5rem 2.5rem !important;
     font-size: 0.875rem;
     min-width: 260px;
 }
 .forum-search-input:focus {
     outline: none;
-    border-color: var(--ax-accent-primary);
+    border-color: var(--ax-accent-primary) !important;
 }
 .forum-search-input::placeholder {
     color: var(--ax-text-muted);

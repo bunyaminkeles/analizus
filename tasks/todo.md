@@ -10,12 +10,13 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
-- [ ] **(7 Ekim 2026, kullanıcı ekran görüntüsü)** `/forum/` arama kutusunda placeholder metninin baş harfi bozuk/karışık
-  görünüyor ("Kategori" yerine Latin olmayan bir "K" gibi algılanıyor — ekran görüntüsünde Kiril К'ya benziyor).
-  Kaynak kontrol edildi: `forum/templates/forum/forum_index.html:21`'deki metin **doğru** ("Kategori ara... (ör: SPSS,
-  regresyon, tez)", sade ASCII K) — yani kaynak kodda bir karakter karmaşası YOK. Olası neden: font render/zoom
-  artefaktı, tarayıcı uzantısı ya da ekran görüntüsü sıkıştırması; henüz doğrulanmadı. **Yapılacak:** başka
-  tarayıcı/zoom seviyesinde tekrar kontrol, varsa gerçek kaynak (CSS font-family, bir JS overlay) bul.
+- [x] **(7 Ekim 2026 → düzeltildi)** `/forum/` arama kutusunda büyüteç ikonu "K" harfiyle çakışıyordu ("Kiril K" gibi
+  görünmesinin sebebi buydu). Kök neden: `static/css/style.css:30`'daki global "KESİN KONTRAST FİX" kuralı
+  (`input,select,textarea{padding:10px 15px !important}`) `.forum-search-input`'un ikon için ayırdığı sol padding'i
+  (`!important` içermediği için) eziyordu. Ayrıca `forum_index.html` içinde aynı sınıflar için ikinci, çakışan bir
+  inline `<style>` tanımı daha vardı. Düzeltme: `trend_topics.css`'teki `.forum-search-input/-icon` kurallarına
+  `!important` eklendi (padding-left 2.5rem'e çıkarıldı), şablondaki tekrarlı inline blok silindi, cache v=0003→0004.
+  Playwright ile hem canlıda (önce) hem lokalde (sonra) doğrulandı, forum testleri 82/82 geçti.
 
 > **YENİ OTURUM BURADAN BAŞLA (2 Ekim 2026) — CANLI = main = 2416b69** (dev = 10b2cb1 + yerelde push'suz 9c8d10a
 > betik/doküman commit'leri). Bu oturum (ayrıntı `analizus.md` §27 "2 Ekim 2026"): **pazar** — ilan admin onayı (onay/ret
