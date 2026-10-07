@@ -10,6 +10,17 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
+- [ ] **YENİ ÖNCELİK (7 Ekim 2026, kullanıcı): YÖK Tez tarama (`/yoktez/`) — sitenin en çok trafik ve kullanıcı
+  tıklaması alan alanı; buna yönelik kapsamlı bir çalışma yapılmalı.** Bilinenler: Faz 1'de (30 Eylül 2026)
+  anonim/Google görünümü title+meta düzeltildi (`yoktez/views.py:49` `promo_title`), o zamanki GSC ölçümü 8.748
+  gösterim / CTR %0,4 / sıra 7,5 idi — ölçüm tekrarlanmadı, bu fix sonrası CTR değişti mi bilinmiyor. Araştırılacak
+  açılar (sıradaki oturum): (1) GA4 (7 Ekim'de kuruldu, `G-HQRKFXP2ZR`) ile gerçek kullanıcı hunisi — arama formu →
+  sonuç → indirme adımlarında nerede terk ediliyor; (2) `/yoktez/` içerik derinliği — SSS yeterli mi, resmî YÖK Tez
+  sitesinden farkı (toplu tarama, Excel'e aktarma, filtre) yeterince öne çıkıyor mu; (3) iç linkleme — ilgili blog
+  yazıları (`veri-kazima-ve-arastirma` kategorisi) ve yeni hizmet sayfalarından (`/hizmetler/`) `/yoktez/`'e link
+  var mı, olmalı mı; (4) özellik/limit — sonuç sayısı sınırı, premium'a geçiş teşviki, indirme formatları rakiplere
+  göre yeterli mi; (5) `SiteSettings` üzerinden fiyat/limit kontrolü güncel mi. Bu madde bir sonraki oturumun
+  önceliği — detaylı plan/karar bu oturumda çıkarılmadı, yalnız kapsam not edildi.
 - [x] **(7 Ekim 2026 → düzeltildi)** `/forum/` arama kutusunda büyüteç ikonu "K" harfiyle çakışıyordu ("Kiril K" gibi
   görünmesinin sebebi buydu). Kök neden: `static/css/style.css:30`'daki global "KESİN KONTRAST FİX" kuralı
   (`input,select,textarea{padding:10px 15px !important}`) `.forum-search-input`'un ikon için ayırdığı sol padding'i
@@ -18,7 +29,19 @@ maddelerde.
   `!important` eklendi (padding-left 2.5rem'e çıkarıldı), şablondaki tekrarlı inline blok silindi, cache v=0003→0004.
   Playwright ile hem canlıda (önce) hem lokalde (sonra) doğrulandı, forum testleri 82/82 geçti.
 
-> **YENİ OTURUM BURADAN BAŞLA (2 Ekim 2026) — CANLI = main = 2416b69** (dev = 10b2cb1 + yerelde push'suz 9c8d10a
+> **YENİ OTURUM BURADAN BAŞLA (7 Ekim 2026, üçüncü tur).** Bu oturum: **BÜYÜK SEO DÖNÜŞÜMÜ Faz 2 ve Faz 4
+> tamamen kapandı** (ayrıntı aşağıdaki başlıkta). Faz 2: GSC redirect fix doğrulandı (canlı curl), `category_topics`
+> N+1 sorgusu düzeltildi (`select_related('starter')`), blog slug/H1 uyumsuzluğu incelendi → kullanıcı kararıyla
+> dokunulmadı (H1 kuralı). Faz 4: diğer 3 hizmet sayfasının içeriğinin zaten 4 Ekim'de girilip canlıya alındığı
+> doğrulandı (önceden todo'da "yapılmadı" yazıyordu — stale'di), Playwright ile 4 sayfa × masaüstü/mobil taşma
+> kontrolü yapıldı (hepsi OK), **15 blog kategorisi → 4 hizmet sayfası eşlemesi yeni eklendi**
+> (`BlogPost.SERVICE_PAGE_BY_BLOG_CATEGORY`, `forum/models.py`) — blog yazısı sonundaki "uzman desteği" kartı artık
+> eşleşen hizmet sayfasına gidiyor ve kart görünürlüğü genişletildi (önceden kart hiç göstermeyen 5 kategoride de
+> artık çıkıyor). Forum testleri 82/82. **YENİ ÖNCELİK (yukarıda "AÇIK İŞLER" listesinin başında):** YÖK Tez tarama
+> (`/yoktez/`) — en çok trafik/tıklama alan alan, kapsamlı iyileştirme çalışması sıradaki oturumun işi.
+> **Dev → main merge edildi (kullanıcı: "sorun yoksa merge et"), Hetzner deploy kullanıcıda.**
+>
+> **ÖNCEKİ (2 Ekim 2026) — CANLI = main = 2416b69** (dev = 10b2cb1 + yerelde push'suz 9c8d10a
 > betik/doküman commit'leri). Bu oturum (ayrıntı `analizus.md` §27 "2 Ekim 2026"): **pazar** — ilan admin onayı (onay/ret
 > e-postası, panel "İlan Onayı" sekmesi), haftalık ilan hakkı normal 2 / Premium 5 (admin muaf), kategori yetenek listesi +
 > "Diğer", başlık 80 / açıklama 1500 karakter + sayaç, "hizmet tanıtımı değil" kuralı; **bağış → Premium akışı düzeltildi**
@@ -325,7 +348,7 @@ anonime açılması — `profile_detail` `@login_required` → Google profilleri
 - [ ] 4 hafta sonra aynı sayfalarda CTR karşılaştırması (GSC dışa aktarımı)
 
 **Faz 2 — İndeksleme temizliği**
-- [ ] (kullanıcı) GSC "Redirect error" → Validate fix: `analizus.com/egitim/`, `/proje-talebi/` artık tek 301 → 200 (canlı doğrulandı)
+- [x] **DOĞRULANDI (7 Ekim 2026, canlı curl ile):** GSC "Redirect error" → `analizus.com/egitim/`, `/proje-talebi/` tek 301 → 200 (REDIRECTS: 1, HTTP_CODE: 200).
 - [x] **YAPILDI YERELDE (1 Ekim 2026, commit yok): migration `forum/0164_jobcategory_intro`** (şema + veri) — `JobCategory.intro`
   (admin'den düzenlenir), 20 kategoriye başlığa göre tanıtım metni (alan doluysa dokunmaz). `?cat=N`: title "Uzman Bul: {kategori}",
   H1 + tanıtım metni, meta açıklama metinden; **index yalnız metin dolu ve ≥2 uzman** varsa, yoksa noindex. **Canlı 500 düzeltildi:**
@@ -333,13 +356,16 @@ anonime açılması — `profile_detail` `@login_required` → Google profilleri
   admin liste/form 200, forum 61/61. Eski not: `/uzmanlar/?cat=N` — "Google chose different canonical" (5 sayfa): kendini canonical gösteriyor ama title/içerik
   `/uzmanlar/` ile aynı → kategoriye özgü title/H1/2 cümle giriş; <2 uzman → `noindex` + canonical `/uzmanlar/` (Faz 4 ile)
 - [x] **YAPILDI YERELDE (1 Ekim 2026, commit yok):** `section_detail` → 301 `/forum/#section-<pk>` (forum ana sayfası bölümleri zaten listeliyor; yok olan pk 404; test: geçici bölümle 301 + çapa var, forum 61/61). Şablon `section_detail.html` artık kullanılmıyor (silinmedi). Eski not: `/section/<pk>/` — title ana sayfayla aynı, ~330 kelime ("Crawled – not indexed") → kendi title/meta ya da `noindex` (karar)
-- [ ] **ÖNCEDEN VAR (1 Ekim 2026, görüldü):** `category_topics` N+1 — şablon `topic.starter.username` basıyor, view
-  `select_related('starter')` yok → konu başına ek sorgu (3 konuda 16, 1 konuda 12 sorgu). Düzeltme tek satır; ayrı iş, onay bekliyor.
+- [x] **YAPILDI (7 Ekim 2026, commit yok):** `category_topics` N+1 düzeltildi — `forum/views.py` `select_related('starter')`
+  eklendi (`.prefetch_related('tags')` yanına). Tek satır. Forum testleri 82/82.
 - [x] **YAPILDI YERELDE (1 Ekim 2026, commit yok):** `Category.INDEX_MIN_TOPICS = 3` — altındaki kategori sayfası `noindex, follow`
   + `CategorySitemap` dışı; konu eklenince kendiliğinden açılır. Ek sorgu yok (len() queryset önbelleği). Test: 1 konulu noindex,
   3 konulu index, sitemap yalnız 3 konulu; forum 61/61. Eski not: Boş forum kategorileri (`/forum/panel-veri-analizi/`, `/zaman-serisi-analizi/`, `/veri-temizleme/`, `/bibliometrik-analizler/`
   ~220 kelime) → konu sayısı eşiğin altında `noindex` (eşik kararı)
-- [ ] `/blog/nitel-arastirma-yontemleri/` slug ↔ başlık uyumsuz ("Kısa Mülakatlarda Başarının Anahtarı…") — editoryal karar
+- [x] **KARAR (7 Ekim 2026, kullanıcı: "hiçbir şeye dokunma"):** `/blog/nitel-arastirma-yontemleri/` incelendi — H1
+  "Nitel Araştırma Yöntemleri" genel/placeholder kalmış ama gövde tamamen "30 dakikalık kısa nitel mülakat" konusunda;
+  canlı `meta_title`/`meta_description` ("Kısa Nitel Mülakat: 30 Dakikada Etkili Görüşme Rehberi…") zaten içerikle uyumlu
+  — asıl uyumsuz olan H1. CLAUDE.md kuralı H1/slug'a dokunmayı yasaklıyor (sıralama kaybı) → bilinçli dokunulmadı, madde kapandı.
 - Dokunulmayacak (normal): robots engelli `/login/?next=`, `/forum/*/new/`, `/market/job/*/bookmark/`; `/market/?category=`
   canonical `/market/`; `/istatistik/*` 301 → `/analiz/*`
 
@@ -399,15 +425,27 @@ anonime açılması — `profile_detail` `@login_required` → Google profilleri
   `_ALLOWED_PATHS`'e `/hizmetler/` eklendi. **Düzeltilen hata:** ilk uygulamada `JobCategory.localized_title`
   property'si yanlışlıkla `ServicePageFAQ`'ya kaymıştı (model ekleme sırası hatası) — fark edilip düzeltildi,
   forum testleri 82/82'ye geri döndü. Lokalde `JobCategory` verisi olmadığından (yalnız canlıda var) bölümlerdeki
-  uzman kartları lokalde boş görünür — normal. **KALAN:** flag + Nicel Analiz `is_active` hâlâ yerelde AÇIK test
-  amaçlı bırakıldı — canlıya almadan önce kapatma/açma kararı kullanıcıda; diğer 3 sayfanın (`akademik-danismanlik`,
-  `nitel-analiz`, `veri-ve-yapay-zeka`) içeriği henüz girilmedi (SEO metin taslağı yukarıda hazır); mobil/Playwright
-  doğrulaması yapılmadı; 15 blog kategorisinden kaç tanesi 4 hizmet sayfasına eşlenecek netleşmedi (Faz 3'teki
-  blog→JobCategory eşlemesinden farklı, ayrı bir iş).
-- [ ] Nicel Analiz bölümleri `/analiz/` sınıflandırmasıyla aynı (Ön Analizler, Geçerlilik & Güvenirlik, İlişki, Fark,
-  Regresyon, ML) + SEM/SmartPLS, EViews, ileri modeller; her bölümde ilgili ücretsiz araç linkleri — pilot içerik
-  7 bölümle YAPILDI (yukarı bak), bu madde ileri modellerle zenginleştirme için açık kalsın
-- [ ] Pilot: önce Nicel Analiz, onay sonrası diğer 3
+  uzman kartları lokalde boş görünür — normal.
+- [x] **YAPILDI (4 Ekim 2026, commit `c7a4f9e` + `3e296e2`, main'e merge edildi, canlıda):** diğer 3 sayfanın
+  (`akademik-danismanlik`, `nitel-analiz`, `veri-ve-yapay-zeka`) içeriği migration `forum/0172` ile girildi (her
+  sayfa kendi bölümleri + JobCategory eşlemesiyle); migration `forum/0173` ile 23 bölümün hepsi (4 sayfa) "ne zaman
+  ihtiyaç duyulur" + "teslimat" cümleleriyle genişletildi. Nicel Analiz bölümleri zaten SmartPLS/AMOS (SEM) ve
+  EViews'i kapsıyordu (bu maddenin "ileri modellerle zenginleştirme" kısmı da fiilen karşılanmış). Hero'ya
+  "Uzmanları Gör" butonu eklendi. **7 Ekim 2026'da doğrulandı:** canlıda 4 sayfa da `is_active=True` +
+  `feature_hizmet_sayfalari` AÇIK, 200 dönüyor, doğru title'lar görünüyor; bu oturumda ayrıca Playwright ile
+  masaüstü+mobil (4 sayfa × 2 görünüm) taşma/hiza kontrolü yapıldı — hepsi OK, ekran görüntüsüyle de teyit edildi.
+- [x] **YAPILDI (7 Ekim 2026, commit yok):** 15 blog kategorisinin 4 hizmet sayfasına eşlenmesi — `forum/models.py`
+  `BlogPost.SERVICE_PAGE_BY_BLOG_CATEGORY` sözlüğü (15/15 kategori → `nicel-analiz`/`akademik-danismanlik`/
+  `veri-ve-yapay-zeka`; `nitel-analiz`'e hiç blog kategorisi düşmedi — gerçek durum, yapay eşleme yapılmadı,
+  kullanıcı onayı). `blog_detail` view artık eşleşen aktif `ServicePage`'i context'e ekliyor; `blog_detail.html`
+  kartı (kullanıcı kararı: "genişlet") artık yalnız `expert_category` (≥2 uzman şartlı JobCategory) değil, hizmet
+  sayfası eşleşmesi tek başına da kartı gösteriyor — önceden hiç kart görmeyen 5 kategoride (etik kurul/akademik
+  kariyer/bibliometri/bilim felsefesi/veri güvenliği-etik) artık kart çıkıyor, hedefi `/hizmetler/<slug>/`. İkisi
+  de eşleşirse hizmet sayfası önceliklidir. Yeni msgid'ler (`Hizmet Sayfasına Git` + blocktrans) EN/DE'ye elle
+  eklendi (host'ta `msgfmt`, container'da gettext yok), `makemessages --no-location` denendi ama 10 günlük kod
+  kayması yüzünden ilgisiz ~8800 satırlık diff çıkardı → geri alındı, elle ekleme yapıldı. Doğrulama: 3 gerçek blog
+  yazısıyla (bibliometri/tez-süreci/spss) canlı hedef linkleri curl ile kontrol edildi, Playwright taşma=0, forum
+  82/82.
 
 **Faz 4 — SEO metin taslağı (4 Ekim 2026, WebSearch ile Armut.com'un hedeflediği terimler referans alındı —
 Armut rakip örneği, amaç ona rakip olmak; kesin arama hacmi yok, rakibin onlarca şehir sayfası açmış olması talep

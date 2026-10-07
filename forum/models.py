@@ -1642,6 +1642,27 @@ class BlogPost(models.Model):
         'veri-kazima-ve-arastirma': 'Python ile veri analizi',
     }
 
+    # Blog kategorisi slug → hizmet sayfası slug (ServicePage.slug). SEO Faz 4: yazı
+    # sonundaki "Bu konuda uzman desteği" kartının hedefi. `nitel-analiz`'e eşleşen blog
+    # kategorisi yok (gerçek durum — yapay eşleme yapılmadı, kullanıcı kararı 7 Ekim 2026).
+    SERVICE_PAGE_BY_BLOG_CATEGORY = {
+        'istatistik-101': 'nicel-analiz',
+        'spss-rehberleri': 'nicel-analiz',
+        'saglik-istatistigi': 'nicel-analiz',
+        'saglik-verisi-bilim-politikasi': 'nicel-analiz',
+        'ekonometri-veri-politikasi': 'nicel-analiz',
+        'istatistik': 'nicel-analiz',
+        'tez-sureci': 'akademik-danismanlik',
+        'akademik-etik-ai': 'akademik-danismanlik',
+        'bilim-felsefesi-metodoloji': 'akademik-danismanlik',
+        'akademik-kariyer-etik': 'akademik-danismanlik',
+        'bibliometri-turkiyede-bilim': 'akademik-danismanlik',
+        'acik-bilim-arastirma-etigi': 'akademik-danismanlik',
+        'veri-guvenligi-arastirma-etigi': 'akademik-danismanlik',
+        'veri-guvenligi-etik': 'akademik-danismanlik',
+        'veri-kazima-ve-arastirma': 'veri-ve-yapay-zeka',
+    }
+
     title = models.CharField(max_length=200, verbose_name="Başlık")
     slug = models.SlugField(unique=True, max_length=250)
     excerpt = models.TextField(max_length=300, verbose_name="Özet", help_text="Kısa açıklama (liste görünümünde gösterilir)")

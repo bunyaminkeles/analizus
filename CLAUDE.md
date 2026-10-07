@@ -15,8 +15,8 @@ Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~2400 satır; offset
 | §20–23 | 1520 | Admin (sipariş akışı, Fiyatlandırma, Limitler, İlan onayı/ret aksiyonları + panel "İlan Onayı", bağış onayı aksiyonu, İş Kategorisi tanıtım metni, blog SEO, **yeni: `UserAdmin` toplu e-posta aksiyonları, Navigasyon Grafiği tarih filtresi + "Şu An Aktif"**), pazar akışı (pending → open), session, cron |
 | §24–25 | 1668 | Geliştirme ortamı (pytest 82 test + test notları, çeviri komutları), değişmez kurallar |
 | §26 | 1755 | Sık yapılan hatalar ve çözümleri (**yeni: Unfold admin dark: sınıfı sorunu, lokalde bağımsız `runserver` karışıklığı, Django admin aksiyonu seçimsiz çalıştırma kısıtı, `last_seen` vs `PageView` sinyal farkı**) |
-| §27 | 1866 | Görev listesi (tamamlanan / sıradaki; **en son: "7 Ekim 2026" admin analytics + `broadcast` app turu**) |
-| §28 | 2311 | Çok dilli yapı (TR/EN/DE) ve gizlilik — mimari, çeviri kuralları, iş akışı, EN/DE ürün kararları (§28.7) |
+| §27 | 1866 | Görev listesi (tamamlanan / sıradaki; **en son: "7 Ekim 2026" forum arama kutusu ikon çakışması fix + GA4 kurulumu**) |
+| §28 | 2335 | Çok dilli yapı (TR/EN/DE) ve gizlilik — mimari, çeviri kuralları, iş akışı, EN/DE ürün kararları (§28.7) |
 
 ---
 

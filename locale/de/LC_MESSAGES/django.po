@@ -20596,6 +20596,17 @@ msgstr ""
 msgid "Uzmanları Gör"
 msgstr "Experten ansehen"
 
+#, python-format
+msgid ""
+"Analizus'ta <strong style=\"color:#f1f5f9;\">%(title)s</strong> "
+"hizmetimize göz atabilir, uzmanlardan teklif alabilirsiniz."
+msgstr ""
+"Sie können unseren Service <strong style=\"color:#f1f5f9;\">%(title)s</strong> "
+"bei Analizus ansehen und Angebote von Experten erhalten."
+
+msgid "Hizmet Sayfasına Git"
+msgstr "Zur Service-Seite"
+
 msgid "Nicel Analiz Desteği"
 msgstr "Unterstützung bei quantitativer Analyse"
 
