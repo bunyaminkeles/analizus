@@ -1,0 +1,45 @@
+{% extends "unfold/layouts/base_simple.html" %}
+{% load i18n %}
+
+{% block content %}
+<meta http-equiv="refresh" content="20">
+<style>
+  .an-card { border-radius:.75rem; border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.03); padding:1.25rem; }
+  .an-muted { font-size:.8125rem; color:#6b7280; }
+  .an-link { font-size:.875rem; color:#818cf8; }
+  .an-link:hover { text-decoration:underline; }
+  .an-row { display:flex; flex-wrap:wrap; align-items:center; gap:.5rem 1rem; padding:.6rem 0; border-top:1px solid rgba(255,255,255,.06); font-size:.875rem; color:#e2e8f0; }
+  .an-row:first-child { border-top:0; }
+  .an-dot { width:.5rem; height:.5rem; border-radius:9999px; background:#34d399; box-shadow:0 0 0 3px rgba(52,211,153,.18); flex-shrink:0; }
+  .an-user { font-weight:600; color:#f1f5f9; min-width:9rem; }
+  .an-page { color:#a5b4fc; }
+  .an-path { color:#6b7280; font-family:monospace; font-size:.75rem; }
+  .an-ago { margin-left:auto; color:#94a3b8; font-variant-numeric:tabular-nums; }
+</style>
+
+<div class="max-w-3xl mx-auto py-6 px-2">
+  <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.75rem;margin-bottom:1.5rem;">
+    <div>
+      <h1 class="text-2xl font-semibold text-gray-100" style="margin-bottom:.25rem;">{{ title }}</h1>
+      <p class="an-muted">Son {{ active_minutes }} dakika içinde istek atan kullanıcılar · {{ now|date:"H:i:s" }} itibarıyla</p>
+    </div>
+    <a href="{% url 'admin:analytics_grafik' %}" class="an-link">Navigasyon Grafiği →</a>
+  </div>
+
+  <div class="an-card">
+    {% for row in active_users %}
+      <div class="an-row">
+        <span class="an-dot"></span>
+        <a href="{% url 'admin:analytics_grafik' %}?user={{ row.user__username }}" class="an-link an-user">{{ row.user__username }}</a>
+        <span class="an-page">{{ row.tab_name }}</span>
+        {% if row.path != row.tab_name %}<span class="an-path">{{ row.path }}</span>{% endif %}
+        <span class="an-ago">{{ row.timestamp|timesince }} önce</span>
+      </div>
+    {% empty %}
+      <p class="an-muted">Şu anda aktif kullanıcı yok.</p>
+    {% endfor %}
+  </div>
+
+  <p class="an-muted" style="margin-top:1rem;">Sayfa 20 saniyede bir kendiliğinden yenilenir.</p>
+</div>
+{% endblock %}

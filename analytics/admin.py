@@ -8,6 +8,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import Count, Sum, Min, Max
 from django.shortcuts import render
 from django.urls import path
+from django.utils import timezone
 from django.utils.html import format_html
 from django.utils.http import urlencode
 from django.urls import reverse
@@ -19,6 +20,8 @@ from .models import PageView, PageViewSummary
 SESSION_GAP_MINUTES = 30
 # Akışta gösterilen en fazla ham kayıt (en yeniler)
 FLOW_LIMIT = 300
+# "Şu An Aktif" penceresi — Profile.is_online ile aynı eşik (forum/models.py)
+ACTIVE_NOW_MINUTES = 5
 
 
 def user_analysis_link(user):
@@ -76,8 +79,35 @@ class PageViewAdmin(ModelAdmin):
         urls = super().get_urls()
         extra = [
             path('grafik/', self.admin_site.admin_view(self.chart_view), name='analytics_grafik'),
+            path('aktif/', self.admin_site.admin_view(self.active_now_view), name='analytics_aktif'),
         ]
         return extra + urls
+
+    def active_now_view(self, request):
+        """Son ACTIVE_NOW_MINUTES dakikada istek atmış kullanıcılar, en son sayfalarıyla."""
+        cutoff = timezone.now() - timedelta(minutes=ACTIVE_NOW_MINUTES)
+        recent = (
+            PageView.objects.filter(timestamp__gte=cutoff)
+            .select_related('user')
+            .order_by('user_id', '-timestamp')
+            .values('user__username', 'tab_name', 'path', 'timestamp')
+        )
+
+        latest_per_user = {}
+        for row in recent:
+            uname = row['user__username']
+            if uname not in latest_per_user:
+                latest_per_user[uname] = row
+        active_users = sorted(latest_per_user.values(), key=lambda r: r['timestamp'], reverse=True)
+
+        context = {
+            **self.admin_site.each_context(request),
+            'title': 'Şu An Aktif',
+            'active_users': active_users,
+            'active_minutes': ACTIVE_NOW_MINUTES,
+            'now': timezone.now(),
+        }
+        return render(request, 'admin/analytics/active_now.html', context)
 
     def chart_view(self, request):
         """
