@@ -5,7 +5,7 @@
 {% block meta_description %}Akademik analiz forumu. SPSS, R, Python, istatistik testleri, araştırma yöntemleri ve veri bilimi hakkında soru sorun, uzmanlardan yanıt alın. Ücretsiz.{% endblock %}
 
 {% block extra_head %}
-<link rel="stylesheet" href="{% static 'css/trend_topics.css' %}?v=0003">
+<link rel="stylesheet" href="{% static 'css/trend_topics.css' %}?v=0004">
 {% endblock %}
 
 {% block content %}
@@ -157,32 +157,6 @@
 
 {% block extra_js %}
 <style>
-/* ─── Search ─── */
-.forum-search-wrap {
-  position: relative;
-}
-.forum-search-icon {
-  position: absolute;
-  left: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #64748b;
-  font-size: .85rem;
-}
-.forum-search-input {
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 8px;
-  color: #e2e8f0;
-  padding: 8px 14px 8px 34px;
-  font-size: .85rem;
-  width: 280px;
-  outline: none;
-  transition: border-color .15s;
-}
-.forum-search-input:focus { border-color: rgba(0,210,255,0.4); }
-.forum-search-input::placeholder { color: #475569; }
-
 /* ─── Anchors ─── */
 .forum-anchors {
   display: flex;
