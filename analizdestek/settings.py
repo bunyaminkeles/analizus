@@ -480,6 +480,11 @@ UNFOLD = {
             "collapsible": False,
             "items": [
                 {
+                    "title": "Şu An Aktif",
+                    "icon": "sensors",
+                    "link": "/admin/analytics/pageview/aktif/",
+                },
+                {
                     "title": "Sayfa Ziyaretleri",
                     "icon": "visibility",
                     "link": reverse_lazy("admin:analytics_pageview_changelist"),
