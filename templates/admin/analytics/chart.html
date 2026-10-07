@@ -38,12 +38,15 @@ kartlar dashboard (admin/index.html) ile aynı koyu tema stilinde, aşağıdaki 
       <p class="nav-muted" style="margin-top:.25rem;font-size:.875rem;">{{ date_range }}</p>
     </div>
     <div style="display:flex;flex-wrap:wrap;align-items:center;gap:.75rem;">
-      <form method="get" style="display:flex;gap:.5rem;">
-        <input type="text" name="user" value="{{ requested_user }}" placeholder="Kullanıcı adı" aria-label="Kullanıcı adı" class="nav-input">
+      <form method="get" style="display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;">
+        <input type="text" name="user" value="{{ requested_user }}" placeholder="Kullanıcı adı" aria-label="Kullanıcı adı" class="nav-input" style="width:9rem;">
+        <input type="date" name="start" value="{{ requested_start }}" max="{{ today_iso }}" aria-label="Başlangıç tarihi" class="nav-input" style="width:9.5rem;">
+        <span class="nav-muted">—</span>
+        <input type="date" name="end" value="{{ requested_end }}" max="{{ today_iso }}" aria-label="Bitiş tarihi" class="nav-input" style="width:9.5rem;">
         <button type="submit" class="nav-btn">Göster</button>
       </form>
-      {% if selected_user %}
-        <a href="{% url 'admin:analytics_grafik' %}" class="nav-link" title="Filtreyi Kaldır">× Tüm kullanıcılar</a>
+      {% if selected_user or range_active %}
+        <a href="{% url 'admin:analytics_grafik' %}" class="nav-link" title="Filtreyi Kaldır">× Filtreyi Kaldır</a>
       {% endif %}
       <a href="{% url 'admin:analytics_pageview_changelist' %}" class="nav-link">← Ziyaret Listesi</a>
     </div>

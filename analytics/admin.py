@@ -85,12 +85,35 @@ class PageViewAdmin(ModelAdmin):
         PageViewSummary'e taşınıp silindiği için, tüm geçmişi göstermek adına
         burada iki kaynak da birleştiriliyor: son ~6 gün ham'dan, öncesi
         özet'ten okunuyor. Aksi halde grafik yalnızca son birkaç günü gösterir.
+
+        ?start=&end= (YYYY-MM-DD) üstteki 3 grafiği (top sayfalar, günlük
+        trend, en aktif kullanıcılar) seçilen aralığa daraltır. Navigasyon
+        akışı (oturum detayı) ham verinin fiziksel saklama penceresiyle
+        (son 6 gün) sınırlı olduğu için bu filtreden etkilenmez.
         """
         today = date.today()
         cutoff = today - timedelta(days=6)
 
-        recent_qs = PageView.objects.filter(timestamp__date__gte=cutoff)
-        summary_qs = PageViewSummary.objects.all()
+        flow_qs = PageView.objects.filter(timestamp__date__gte=cutoff)
+
+        earliest = PageViewSummary.objects.aggregate(m=Min('date'))['m']
+        range_start_default = earliest if earliest and earliest < cutoff else cutoff
+
+        def parse_date(value):
+            try:
+                return date.fromisoformat(value) if value else None
+            except ValueError:
+                return None
+
+        start_param = request.GET.get('start', '').strip()
+        end_param = request.GET.get('end', '').strip()
+        range_start = parse_date(start_param) or range_start_default
+        range_end = parse_date(end_param) or today
+        if range_start > range_end:
+            range_start, range_end = range_end, range_start
+
+        recent_qs = PageView.objects.filter(timestamp__date__gte=range_start, timestamp__date__lte=range_end)
+        summary_qs = PageViewSummary.objects.filter(date__gte=range_start, date__lte=range_end)
 
         def top_n(field, n, extra_filter=None):
             totals = defaultdict(int)
@@ -126,7 +149,7 @@ class PageViewAdmin(ModelAdmin):
         user_detail = None
         if selected_user:
             views = list(
-                recent_qs.filter(user=selected_user)
+                flow_qs.filter(user=selected_user)
                 .order_by('-timestamp')
                 .values('timestamp', 'tab_name', 'path')[:FLOW_LIMIT]
             )
@@ -143,21 +166,22 @@ class PageViewAdmin(ModelAdmin):
                 'flow_capped': len(views) == FLOW_LIMIT,
             }
 
-        earliest = summary_qs.aggregate(m=Min('date'))['m']
-        range_start = earliest if earliest and earliest < cutoff else cutoff
-
         context = {
             **self.admin_site.each_context(request),
             'title': 'Kullanıcı Navigasyon Analizi',
             'top_pages_json': json.dumps(top_pages, cls=DjangoJSONEncoder),
             'daily_json': json.dumps(daily, cls=DjangoJSONEncoder),
             'top_users_json': json.dumps(top_users, cls=DjangoJSONEncoder),
-            'date_range': f'{range_start} — {today}',
+            'date_range': f'{range_start} — {range_end}',
             'requested_user': requested_user,
             'selected_user': selected_user,
             'user_detail': user_detail,
             'session_gap_minutes': SESSION_GAP_MINUTES,
             'flow_limit': FLOW_LIMIT,
+            'requested_start': start_param,
+            'requested_end': end_param,
+            'range_active': bool(start_param or end_param),
+            'today_iso': today.isoformat(),
         }
         return render(request, 'admin/analytics/chart.html', context)
 
