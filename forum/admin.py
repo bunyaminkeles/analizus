@@ -31,10 +31,22 @@ admin.site.unregister(User)
 @admin.register(User)
 class UserAdmin(BaseUserAdmin, ModelAdmin):
     inlines = (ProfileInline,)
-    actions = list(BaseUserAdmin.actions or []) + ['send_email_to_selected']
+    actions = list(BaseUserAdmin.actions or []) + [
+        'send_email_to_selected', 'send_email_to_all', 'send_email_to_verified',
+    ]
 
-    @admin.action(description='Seçilenlere e-posta gönder')
-    def send_email_to_selected(self, request, queryset):
+    # "Herkese" / "Doğrulanmış" aksiyonları satır seçimine bağlı değil — Django admin
+    # seçim yoksa aksiyonu hiç çağırmadığı için bu iki aksiyonu burada yakalayıp
+    # kendi queryset'leriyle doğrudan çalıştırıyoruz.
+    def response_action(self, request, queryset):
+        action_name = request.POST.get('action')
+        if action_name == 'send_email_to_all':
+            return self.send_email_to_all(request, User.objects.all())
+        if action_name == 'send_email_to_verified':
+            return self.send_email_to_verified(request, User.objects.filter(profile__email_verified=True))
+        return super().response_action(request, queryset)
+
+    def _compose_and_send(self, request, queryset, title, show_recipient_list, action_name):
         if request.POST.get('confirm') == 'yes':
             subject = request.POST.get('subject', '').strip()
             body = request.POST.get('body', '').strip()
@@ -69,10 +81,34 @@ class UserAdmin(BaseUserAdmin, ModelAdmin):
 
         return render(request, 'admin/broadcast/send_email.html', {
             **self.admin_site.each_context(request),
-            'title': 'Seçilenlere E-posta Gönder',
+            'title': title,
             'users': queryset,
+            'recipient_count': queryset.count(),
+            'show_recipient_list': show_recipient_list,
             'action_checkbox_name': ACTION_CHECKBOX_NAME,
+            'action_name': action_name,
         })
+
+    @admin.action(description='Seçilenlere e-posta gönder')
+    def send_email_to_selected(self, request, queryset):
+        return self._compose_and_send(
+            request, queryset, 'Seçilenlere E-posta Gönder',
+            show_recipient_list=True, action_name='send_email_to_selected',
+        )
+
+    @admin.action(description='Herkese e-posta gönder')
+    def send_email_to_all(self, request, queryset):
+        return self._compose_and_send(
+            request, queryset, 'Tüm Kullanıcılara E-posta Gönder',
+            show_recipient_list=False, action_name='send_email_to_all',
+        )
+
+    @admin.action(description='Doğrulanmış kullanıcılara e-posta gönder')
+    def send_email_to_verified(self, request, queryset):
+        return self._compose_and_send(
+            request, queryset, 'Doğrulanmış Kullanıcılara E-posta Gönder',
+            show_recipient_list=False, action_name='send_email_to_verified',
+        )
 
 # 1. Kategori Yönetimi (Inline)
 class CategoryInline(TabularInline):

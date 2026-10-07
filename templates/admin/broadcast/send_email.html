@@ -19,14 +19,16 @@
 
 <div class="max-w-3xl mx-auto py-6 px-2">
   <h1 class="text-2xl font-semibold text-gray-100" style="margin-bottom:.25rem;">{{ title }}</h1>
-  <p class="be-muted" style="margin-bottom:1.5rem;">{{ users|length }} kullanıcı seçildi.</p>
+  <p class="be-muted" style="margin-bottom:1.5rem;">{{ recipient_count }} kullanıcıya gönderilecek.</p>
 
   <form method="post">
     {% csrf_token %}
-    {% for user in users %}
-      <input type="hidden" name="{{ action_checkbox_name }}" value="{{ user.pk }}">
-    {% endfor %}
-    <input type="hidden" name="action" value="send_email_to_selected">
+    {% if show_recipient_list %}
+      {% for user in users %}
+        <input type="hidden" name="{{ action_checkbox_name }}" value="{{ user.pk }}">
+      {% endfor %}
+    {% endif %}
+    <input type="hidden" name="action" value="{{ action_name }}">
     <input type="hidden" name="confirm" value="yes">
 
     <div class="be-card" style="margin-bottom:1rem;">
@@ -41,14 +43,19 @@
     </div>
 
     <div class="be-card" style="margin-bottom:1.5rem;">
-      <span class="be-label" style="margin-bottom:.25rem;">Alıcılar ({{ users|length }})</span>
-      <ul class="be-recipients">
-        {% for user in users %}
-          <li{% if not user.email %} class="be-skip"{% endif %}>
-            {{ user.username }}{% if user.email %} — {{ user.email }}{% else %} — e-posta yok, atlanacak{% endif %}
-          </li>
-        {% endfor %}
-      </ul>
+      {% if show_recipient_list %}
+        <span class="be-label" style="margin-bottom:.25rem;">Alıcılar ({{ recipient_count }})</span>
+        <ul class="be-recipients">
+          {% for user in users %}
+            <li{% if not user.email %} class="be-skip"{% endif %}>
+              {{ user.username }}{% if user.email %} — {{ user.email }}{% else %} — e-posta yok, atlanacak{% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <span class="be-label" style="margin-bottom:0;">Alıcılar</span>
+        <p class="be-muted">{{ recipient_count }} kullanıcı — e-postası olmayanlar otomatik atlanır.</p>
+      {% endif %}
     </div>
 
     <div style="display:flex;align-items:center;gap:1rem;">
