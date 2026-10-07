@@ -1122,7 +1122,7 @@ def section_detail(request, pk):
 # --- KATEGORİ VE KONULAR ---
 def category_topics(request, slug):
     category = get_object_or_404(Category, slug=slug)
-    topics = category.topics.prefetch_related('tags').annotate(replies_count=Count('posts')).order_by('-is_pinned', '-created_at')
+    topics = category.topics.select_related('starter').prefetch_related('tags').annotate(replies_count=Count('posts')).order_by('-is_pinned', '-created_at')
     # Bu kategoriye bağlı aktif çalışma odaları
     active_rooms = StudyRoom.objects.filter(
         category=category, status='active'
@@ -3371,6 +3371,17 @@ def blog_detail(request, slug):
         if candidate and Profile.objects.filter(is_public=True, skills=candidate).distinct().count() >= 2:
             expert_category = candidate
 
+    # SEO Faz 4 — eşleşen hizmet sayfası varsa kart hedefi buraya taşınır; statik sayfa
+    # olduğu için uzman sayısı şartı yok, kart görünürlüğünü tek başına sağlayabilir
+    # (kullanıcı kararı 7 Ekim 2026: genişlet).
+    service_page = None
+    service_page_slug = (
+        BlogPost.SERVICE_PAGE_BY_BLOG_CATEGORY.get(post.category.slug)
+        if post.category else None
+    )
+    if service_page_slug:
+        service_page = ServicePage.objects.filter(slug=service_page_slug, is_active=True).first()
+
     context = {
         'post': post,
         'is_liked': is_liked,
@@ -3379,6 +3390,7 @@ def blog_detail(request, slug):
         'popular_posts': popular_posts,
         'categories': categories,
         'expert_category': expert_category,
+        'service_page': service_page,
     }
     return render(request, 'forum/blog/blog_detail.html', context)
 
