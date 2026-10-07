@@ -2,57 +2,154 @@
 {% load i18n %}
 
 {% block content %}
+{% comment %}
+Unfold'un derlenmiş CSS'i yalnız kendi kullandığı Tailwind sınıflarını içerir (dark:bg-gray-800 vb. yok) —
+kartlar dashboard (admin/index.html) ile aynı koyu tema stilinde, aşağıdaki sınıflarla.
+{% endcomment %}
+<style>
+  .nav-card { border-radius:.75rem; border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.03); padding:1.25rem; }
+  .nav-title { font-size:.75rem; font-weight:600; color:#94a3b8; text-transform:uppercase; letter-spacing:.05em; margin-bottom:1rem; }
+  .nav-muted { font-size:.75rem; color:#6b7280; }
+  .nav-link { font-size:.875rem; color:#818cf8; }
+  .nav-link:hover { text-decoration:underline; }
+  .nav-input { background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.12); border-radius:.5rem; padding:.375rem .75rem; font-size:.875rem; color:#f1f5f9; width:11rem; }
+  .nav-btn { background:#6366f1; color:#fff; border-radius:.5rem; padding:.375rem .875rem; font-size:.875rem; font-weight:600; }
+  .nav-stats { display:grid; grid-template-columns:repeat(auto-fit, minmax(150px, 1fr)); gap:1rem; margin-bottom:1.5rem; }
+  .nav-stat-value { font-size:1.375rem; font-weight:700; color:#f1f5f9; }
+  .nav-stat-label { font-size:.75rem; color:#94a3b8; text-transform:uppercase; letter-spacing:.05em; margin-top:.25rem; }
+  .nav-stat-date { font-size:1.0625rem; line-height:1.9rem; }
+  .nav-stat-date span { white-space:nowrap; }
+  .nav-transitions { display:flex; flex-wrap:wrap; gap:.5rem; list-style:none; margin:0 0 1rem; padding:0; }
+  .nav-transitions li { font-size:.8125rem; color:#e2e8f0; background:rgba(99,102,241,.12); border-radius:9999px; padding:.25rem .75rem; }
+  .nav-count { color:#a5b4fc; font-weight:700; margin-left:.25rem; }
+  .nav-session { border-top:1px solid rgba(255,255,255,.08); padding:.75rem 0; }
+  .nav-session summary { cursor:pointer; font-size:.875rem; font-weight:600; color:#cbd5e1; }
+  .nav-steps { list-style:none; margin:.5rem 0 0; padding:0; }
+  .nav-steps li { display:flex; flex-wrap:wrap; gap:.25rem .75rem; align-items:baseline; padding:.2rem 0; font-size:.8125rem; color:#e2e8f0; }
+  .nav-time { color:#94a3b8; font-variant-numeric:tabular-nums; min-width:2.75rem; }
+  .nav-path { color:#6b7280; font-family:monospace; font-size:.75rem; overflow-wrap:anywhere; }
+</style>
+
 <div class="max-w-6xl mx-auto py-6 px-2">
 
-  <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
+  <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.75rem;margin-bottom:1.5rem;">
     <div>
       <h1 class="text-2xl font-semibold text-gray-900 dark:text-gray-100">{{ title }}</h1>
-      <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">{{ date_range }}</p>
+      <p class="nav-muted" style="margin-top:.25rem;font-size:.875rem;">{{ date_range }}</p>
     </div>
-    <div class="flex items-center gap-3">
-      <span id="active-user-badge" class="hidden items-center gap-2 px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 dark:bg-indigo-900/40 text-indigo-800 dark:text-indigo-200">
-        <span id="active-user-name"></span>
-        <button id="reset-filter" title="Filtreyi Kaldır" class="text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-100 font-bold leading-none">×</button>
-      </span>
-      <a href="{% url 'admin:analytics_pageview_changelist' %}"
-         class="text-sm text-indigo-600 dark:text-indigo-400 hover:underline">
-        ← Ziyaret Listesi
-      </a>
+    <div style="display:flex;flex-wrap:wrap;align-items:center;gap:.75rem;">
+      <form method="get" style="display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;">
+        <input type="text" name="user" value="{{ requested_user }}" placeholder="Kullanıcı adı" aria-label="Kullanıcı adı" class="nav-input" style="width:9rem;">
+        <input type="date" name="start" value="{{ requested_start }}" max="{{ today_iso }}" aria-label="Başlangıç tarihi" class="nav-input" style="width:9.5rem;">
+        <span class="nav-muted">—</span>
+        <input type="date" name="end" value="{{ requested_end }}" max="{{ today_iso }}" aria-label="Bitiş tarihi" class="nav-input" style="width:9.5rem;">
+        <button type="submit" class="nav-btn">Göster</button>
+      </form>
+      {% if selected_user or range_active %}
+        <a href="{% url 'admin:analytics_grafik' %}" class="nav-link" title="Filtreyi Kaldır">× Filtreyi Kaldır</a>
+      {% endif %}
+      <a href="{% url 'admin:analytics_pageview_changelist' %}" class="nav-link">← Ziyaret Listesi</a>
     </div>
   </div>
 
-  <!-- Aktif kullanıcı başlığı -->
-  <div id="user-section-header" class="hidden mb-3 flex items-center gap-2">
-    <span class="text-xs font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500">Gösterilen kullanıcı</span>
-    <span id="user-section-name" class="text-base font-bold text-indigo-600 dark:text-indigo-400"></span>
+  {% if requested_user and not selected_user %}
+  <div class="nav-card" style="margin-bottom:1.5rem;font-size:.875rem;color:#fbbf24;">
+    “{{ requested_user }}” adlı kullanıcı bulunamadı — tüm kullanıcılar gösteriliyor.
   </div>
+  {% endif %}
+
+  {% if selected_user %}
+  <!-- Seçili kullanıcı -->
+  <div style="display:flex;flex-wrap:wrap;align-items:baseline;gap:.5rem 1rem;margin-bottom:1rem;">
+    <span class="nav-title" style="margin:0;">Gösterilen kullanıcı</span>
+    <span style="font-size:1.125rem;font-weight:700;color:#818cf8;">{{ selected_user.username }}</span>
+    <span class="nav-muted">Üyelik {{ selected_user.date_joined|date:"Y-m-d" }} · Son giriş {{ selected_user.last_login|date:"Y-m-d H:i"|default:"—" }}</span>
+    <a href="{% url 'admin:auth_user_change' selected_user.pk %}" class="nav-link">Kullanıcı kaydı</a>
+    <a href="{% url 'profile_detail' selected_user.username %}" target="_blank" rel="noopener" class="nav-link">Site profili ↗</a>
+  </div>
+
+  <div class="nav-stats">
+    <div class="nav-card">
+      <div class="nav-stat-value">{{ user_detail.total }}</div>
+      <div class="nav-stat-label">Toplam ziyaret</div>
+    </div>
+    <div class="nav-card">
+      <div class="nav-stat-value">{{ user_detail.active_days }}</div>
+      <div class="nav-stat-label">Aktif gün</div>
+    </div>
+    <div class="nav-card">
+      <div class="nav-stat-value nav-stat-date"><span>{{ user_detail.first_day|default:"—" }}</span></div>
+      <div class="nav-stat-label">İlk ziyaret</div>
+    </div>
+    <div class="nav-card">
+      <div class="nav-stat-value nav-stat-date">{% if user_detail.last_visit %}<span>{{ user_detail.last_visit|date:"Y-m-d" }}</span> <span>{{ user_detail.last_visit|date:"H:i" }}</span>{% else %}<span>{{ user_detail.last_day|default:"—" }}</span>{% endif %}</div>
+      <div class="nav-stat-label">Son ziyaret</div>
+    </div>
+  </div>
+  {% endif %}
 
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
 
     <!-- En Çok Ziyaret Edilen Sayfalar -->
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 shadow-sm">
-      <h2 id="top-pages-title" class="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide mb-4">
-        En Çok Ziyaret Edilen Sayfalar
+    <div class="nav-card">
+      <h2 class="nav-title">
+        {% if selected_user %}En Çok Ziyaret — {{ selected_user.username }}{% else %}En Çok Ziyaret Edilen Sayfalar{% endif %}
       </h2>
       <canvas id="topPagesChart"></canvas>
     </div>
 
     <!-- Günlük Trend -->
-    <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 shadow-sm">
-      <h2 id="daily-title" class="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide mb-4">
-        Günlük Ziyaret Trendi
+    <div class="nav-card">
+      <h2 class="nav-title">
+        {% if selected_user %}Günlük Trend — {{ selected_user.username }}{% else %}Günlük Ziyaret Trendi{% endif %}
       </h2>
       <canvas id="dailyChart"></canvas>
     </div>
 
   </div>
 
+  {% if selected_user %}
+  <!-- Navigasyon akışı (ham kayıtlar) -->
+  <div class="nav-card" style="margin-bottom:1.5rem;">
+    <h2 class="nav-title" style="margin-bottom:.25rem;">Navigasyon Akışı — Son 5 Gün</h2>
+    <p class="nav-muted" style="margin-bottom:1rem;">
+      Ham kayıtlar 5 gün saklanır; daha eski günler yalnız günlük toplam olarak üstteki grafiklerde.
+      Aralarında {{ session_gap_minutes }} dakikadan uzun boşluk olan ziyaretler ayrı oturum sayılır.
+      {% if user_detail.flow_capped %}Son {{ flow_limit }} sayfa gösteriliyor.{% endif %}
+    </p>
+
+    {% if user_detail.transitions %}
+    <div class="nav-title" style="margin-bottom:.5rem;">Sık geçişler</div>
+    <ul class="nav-transitions">
+      {% for t in user_detail.transitions %}
+      <li>{{ t.source }} → {{ t.target }}<span class="nav-count">{{ t.count }}</span></li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+
+    {% for s in user_detail.sessions %}
+    <details class="nav-session"{% if forloop.counter <= 3 %} open{% endif %}>
+      <summary>{{ s.start|date:"Y-m-d" }} · {{ s.start|date:"H:i" }}–{{ s.end|date:"H:i" }} · {{ s.steps|length }} sayfa</summary>
+      <ol class="nav-steps">
+        {% for v in s.steps %}
+        <li>
+          <span class="nav-time">{{ v.timestamp|date:"H:i" }}</span>
+          <span>{{ v.tab_name }}</span>
+          {% if v.path != v.tab_name %}<span class="nav-path">{{ v.path }}</span>{% endif %}
+        </li>
+        {% endfor %}
+      </ol>
+    </details>
+    {% empty %}
+    <p class="nav-muted" style="font-size:.875rem;">Son 5 günde kayıt yok.</p>
+    {% endfor %}
+  </div>
+  {% endif %}
+
   <!-- En Aktif Kullanıcılar -->
-  <div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-5 shadow-sm mb-6">
-    <h2 class="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide mb-1">
-      En Aktif Kullanıcılar (Son 7 Gün)
-    </h2>
-    <p class="text-xs text-gray-400 dark:text-gray-500 mb-4">Bir kullanıcıya tıklayarak üstteki grafikleri filtreleyin</p>
+  <div class="nav-card" style="margin-bottom:1.5rem;">
+    <h2 class="nav-title" style="margin-bottom:.25rem;">En Aktif Kullanıcılar (Tüm Dönem)</h2>
+    <p class="nav-muted" style="margin-bottom:1rem;">Bir kullanıcıya tıklayarak davranış analizini açın</p>
     <canvas id="topUsersChart"></canvas>
   </div>
 
@@ -64,106 +161,75 @@
   const topPagesRaw  = JSON.parse('{{ top_pages_json|escapejs }}');
   const dailyRaw     = JSON.parse('{{ daily_json|escapejs }}');
   const topUsersRaw  = JSON.parse('{{ top_users_json|escapejs }}');
-  const perUserData  = JSON.parse('{{ per_user_data_json|escapejs }}');
+  const selectedUser = '{{ selected_user.username|default:""|escapejs }}';
+  const chartUrl     = '{% url "admin:analytics_grafik" %}';
 
   const indigo       = 'rgba(99,102,241,0.75)';
   const indigoBorder = 'rgb(99,102,241)';
-  const violet       = 'rgba(139,92,246,0.75)';
   const violetBorder = 'rgb(139,92,246)';
   const emerald      = 'rgba(16,185,129,0.75)';
   const emeraldBorder= 'rgb(16,185,129)';
   const emeraldSel   = 'rgba(16,185,129,1)';
 
-  const isDark    = document.documentElement.classList.contains('dark');
-  const textColor = isDark ? '#d1d5db' : '#374151';
-  const gridColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)';
-
+  // Koyu kart zemini — dashboard ile aynı eksen renkleri
   const scaleOpts = {
-    ticks: { color: textColor, font: { size: 12 } },
-    grid:  { color: gridColor },
+    ticks: { color: '#94a3b8', font: { size: 12 } },
+    grid:  { color: 'rgba(99,102,241,.08)' },
   };
 
+  function emptyNote(canvasId) {
+    const canvas = document.getElementById(canvasId);
+    canvas.insertAdjacentHTML('afterend', '<p class="nav-muted" style="font-size:.875rem;">Kayıt yok.</p>');
+    canvas.remove();
+  }
+
   // --- Top Sayfalar (yatay bar) ---
-  const topPagesChart = topPagesRaw.length ? new Chart(document.getElementById('topPagesChart'), {
-    type: 'bar',
-    data: {
-      labels: topPagesRaw.map(d => d.tab_name),
-      datasets: [{ label: 'Ziyaret', data: topPagesRaw.map(d => d.total),
-        backgroundColor: indigo, borderColor: indigoBorder, borderWidth: 1 }],
-    },
-    options: {
-      indexAxis: 'y',
-      plugins: { legend: { display: false } },
-      scales: { x: scaleOpts, y: { ...scaleOpts, ticks: { ...scaleOpts.ticks, font: { size: 11 } } } },
-    },
-  }) : null;
+  if (topPagesRaw.length) {
+    new Chart(document.getElementById('topPagesChart'), {
+      type: 'bar',
+      data: {
+        labels: topPagesRaw.map(d => d.tab_name),
+        datasets: [{ label: 'Ziyaret', data: topPagesRaw.map(d => d.total),
+          backgroundColor: indigo, borderColor: indigoBorder, borderWidth: 1 }],
+      },
+      options: {
+        indexAxis: 'y',
+        plugins: { legend: { display: false } },
+        scales: { x: scaleOpts, y: { ...scaleOpts, ticks: { ...scaleOpts.ticks, font: { size: 11 } } } },
+      },
+    });
+  } else {
+    emptyNote('topPagesChart');
+  }
 
   // --- Günlük Trend (çizgi) ---
-  const dailyChart = dailyRaw.length ? new Chart(document.getElementById('dailyChart'), {
-    type: 'line',
-    data: {
-      labels: dailyRaw.map(d => d.timestamp__date),
-      datasets: [{ label: 'Ziyaret', data: dailyRaw.map(d => d.total),
-        borderColor: violetBorder, backgroundColor: 'rgba(139,92,246,0.12)',
-        tension: 0.4, fill: true, pointRadius: 4 }],
-    },
-    options: {
-      plugins: { legend: { display: false } },
-      scales: { x: scaleOpts, y: { ...scaleOpts, beginAtZero: true } },
-    },
-  }) : null;
-
-  // --- Grafikleri güncelle ---
-  function updateTopCharts(pages, daily, label) {
-    if (topPagesChart) {
-      topPagesChart.data.labels   = pages.map(d => d.tab_name);
-      topPagesChart.data.datasets[0].data = pages.map(d => d.total);
-      topPagesChart.update();
-    }
-    if (dailyChart) {
-      dailyChart.data.labels   = daily.map(d => d.timestamp__date);
-      dailyChart.data.datasets[0].data = daily.map(d => d.total);
-      dailyChart.update();
-    }
-    document.getElementById('top-pages-title').textContent =
-      label ? `En Çok Ziyaret — ${label}` : 'En Çok Ziyaret Edilen Sayfalar';
-    document.getElementById('daily-title').textContent =
-      label ? `Günlük Trend — ${label}` : 'Günlük Ziyaret Trendi';
+  if (dailyRaw.length) {
+    new Chart(document.getElementById('dailyChart'), {
+      type: 'line',
+      data: {
+        labels: dailyRaw.map(d => d.timestamp__date),
+        datasets: [{ label: 'Ziyaret', data: dailyRaw.map(d => d.total),
+          borderColor: violetBorder, backgroundColor: 'rgba(139,92,246,0.12)',
+          tension: 0.4, fill: true, pointRadius: 4 }],
+      },
+      options: {
+        plugins: { legend: { display: false } },
+        scales: { x: scaleOpts, y: { ...scaleOpts, beginAtZero: true } },
+      },
+    });
+  } else {
+    emptyNote('dailyChart');
   }
 
-  function setActiveBadge(username) {
-    const badge = document.getElementById('active-user-badge');
-    const header = document.getElementById('user-section-header');
-    const headerName = document.getElementById('user-section-name');
-    if (username) {
-      document.getElementById('active-user-name').textContent = username;
-      badge.classList.remove('hidden');
-      badge.classList.add('flex');
-      headerName.textContent = username;
-      header.classList.remove('hidden');
-      header.classList.add('flex');
-    } else {
-      badge.classList.add('hidden');
-      badge.classList.remove('flex');
-      header.classList.add('hidden');
-      header.classList.remove('flex');
-    }
-  }
-
-  // --- En Aktif Kullanıcılar ---
-  let selectedUser = null;
-  const topUsersCanvas = document.getElementById('topUsersChart');
-  if (topUsersCanvas && topUsersRaw.length) {
-    const bgColors = () => topUsersRaw.map((_, i) =>
-      selectedUser === topUsersRaw[i].user__username ? emeraldSel : emerald
-    );
-
-    const topUsersChart = new Chart(topUsersCanvas, {
+  // --- En Aktif Kullanıcılar: tıklama o kişinin analizini açar, seçiliye tekrar tıklama filtreyi kaldırır ---
+  if (topUsersRaw.length) {
+    new Chart(document.getElementById('topUsersChart'), {
       type: 'bar',
       data: {
         labels: topUsersRaw.map(d => d.user__username),
         datasets: [{ label: 'Sayfa Ziyareti', data: topUsersRaw.map(d => d.total),
-          backgroundColor: bgColors(), borderColor: emeraldBorder, borderWidth: 1 }],
+          backgroundColor: topUsersRaw.map(d => d.user__username === selectedUser ? emeraldSel : emerald),
+          borderColor: emeraldBorder, borderWidth: 1 }],
       },
       options: {
         plugins: { legend: { display: false } },
@@ -171,33 +237,17 @@
         onClick: (evt, elements) => {
           if (!elements.length) return;
           const uname = topUsersRaw[elements[0].index].user__username;
-          if (selectedUser === uname) {
-            // ikinci tıklama → filtreyi kaldır
-            selectedUser = null;
-            updateTopCharts(topPagesRaw, dailyRaw, null);
-            setActiveBadge(null);
-          } else {
-            selectedUser = uname;
-            const ud = perUserData[uname];
-            if (ud) updateTopCharts(ud.pages, ud.daily, uname);
-            setActiveBadge(uname);
-          }
-          topUsersChart.data.datasets[0].backgroundColor = bgColors();
-          topUsersChart.update();
+          window.location.href = uname === selectedUser
+            ? chartUrl
+            : chartUrl + '?user=' + encodeURIComponent(uname);
         },
         onHover: (evt, elements) => {
           evt.native.target.style.cursor = elements.length ? 'pointer' : 'default';
         },
       },
     });
-
-    document.getElementById('reset-filter').addEventListener('click', () => {
-      selectedUser = null;
-      updateTopCharts(topPagesRaw, dailyRaw, null);
-      setActiveBadge(null);
-      topUsersChart.data.datasets[0].backgroundColor = bgColors();
-      topUsersChart.update();
-    });
+  } else {
+    emptyNote('topUsersChart');
   }
 })();
 </script>

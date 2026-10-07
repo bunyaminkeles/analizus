@@ -1,22 +1,22 @@
 # Analizus.com — Claude Çalışma Kuralları
 
-Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~2300 satır; offset'ler 2 Ekim 2026). Tamamını okuma — ihtiyaca göre offset ile ilgili bölümü oku:
+Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~2300 satır; offset'ler 4 Ekim 2026). Tamamını okuma — ihtiyaca göre offset ile ilgili bölümü oku:
 
 | Bölüm | offset | Konu |
 |---|---|---|
 | §1–2 | 8 | Proje amacı, tech stack, paketler |
-| §3–5 | 68 | Sunucu mimarisi + bakım (log sınırı, disk, yedek → yerel, **deploy öncesi `yedek_indir.sh --simdi`**), deploy (deploy.sh açılışta migrate+collectstatic), env vars (NCBI_API_KEY dahil) |
-| §6–7 | 284 | Dizin yapısı, URL mimarisi (i18n_patterns; `/section/` 301, `/uzmanlar/?cat=` kuralı) |
-| §8–9 | 464 | Veri modelleri (`JobCategory.intro`, `Category.INDEX_MIN_TOPICS`, BlogPost SEO alanları, **pazar: ilan onayı / haftalık hak / form sınırları, profil "Hakkında", bağış `premium_days_promised`** ~552), feature flag'ler |
-| §10–11 | 748 | CSS/tasarım sistemi, WebSocket (route'lar) |
-| §12 | 873 | İstatistik araçları (akış, PDF, polling, **konsol düzeni**: Nedir kartı → SSS → CTA, `tool_title`) |
-| §13–15 | 1033 | DM/oda mesajlaşma, bibliometri, akademik tarama (**Google'ın gördüğü başlık = view `promo_title`**) |
-| §16–19 | 1263 | E-posta (500 hata e-postası), AnalizBot/AI Asistan, S3, güvenlik (çerez onayı, cron anahtarı) |
-| §20–23 | 1482 | Admin (sipariş akışı, Fiyatlandırma, **Limitler, İlan onayı/ret aksiyonları + panel "İlan Onayı", bağış onayı aksiyonu**, İş Kategorisi tanıtım metni, blog SEO), pazar akışı (pending → open), session, cron |
-| §24–25 | 1607 | Geliştirme ortamı (pytest 82 test + test notları, çeviri komutları), değişmez kurallar |
-| §26 | 1694 | Sık yapılan hatalar ve çözümleri |
-| §27 | 1797 | Görev listesi (tamamlanan / sıradaki; **en son: "2 Ekim 2026" pazar/bağış/profil turu**) |
-| §28 | 2209 | Çok dilli yapı (TR/EN/DE) ve gizlilik — mimari, çeviri kuralları, iş akışı, EN/DE ürün kararları (§28.7) |
+| §3–5 | 68 | Sunucu mimarisi + bakım (log sınırı, disk, yedek → yerel, **deploy öncesi `yedek_indir.sh --simdi` — SADECE lokalde çalıştır, Hetzner SSH oturumu İÇİNDEN değil**), deploy (deploy.sh açılışta migrate+collectstatic; `setup_all`/`create_badges` yalnız DB boşsa — yeni seed verisi migration'a yazılmalı), env vars (NCBI_API_KEY dahil) |
+| §6–7 | 284 | Dizin yapısı, URL mimarisi (i18n_patterns; `/section/` 301, `/uzmanlar/?cat=` kuralı, **`/hizmetler/` + `/hizmetler/<slug>/`** ~420) |
+| §8–9 | 469 | Veri modelleri (`JobCategory.intro`, `Category.INDEX_MIN_TOPICS`, BlogPost SEO alanları, **pazar: ilan onayı / haftalık hak / form sınırları**, **`ServicePage`/`ServicePageSection`/`ServicePageFAQ`**, **`Profile.completion_status()`/`total_score`**, profil "Hakkında", bağış `premium_days_promised`), feature flag'ler (**`feature_hizmet_sayfalari`**) |
+| §10–11 | 785 | CSS/tasarım sistemi, WebSocket (route'lar) |
+| §12 | 910 | İstatistik araçları (akış, PDF, polling, **konsol düzeni**: Nedir kartı → SSS → CTA, `tool_title`) |
+| §13–15 | 1070 | DM/oda mesajlaşma, bibliometri, akademik tarama (**Google'ın gördüğü başlık = view `promo_title`**) |
+| §16–19 | 1300 | E-posta (500 hata e-postası), AnalizBot/AI Asistan, S3, güvenlik (çerez onayı, cron anahtarı) |
+| §20–23 | 1519 | Admin (sipariş akışı, Fiyatlandırma, **Limitler, İlan onayı/ret aksiyonları + panel "İlan Onayı", bağış onayı aksiyonu**, İş Kategorisi tanıtım metni, blog SEO), pazar akışı (pending → open), session, cron |
+| §24–25 | 1650 | Geliştirme ortamı (pytest 82 test + test notları, çeviri komutları), değişmez kurallar |
+| §26 | 1737 | Sık yapılan hatalar ve çözümleri (**yeni: Unfold sidebar elle listelenir, `user.profile` stale cache, yedek script'i Hetzner içinden çalıştırmama**) |
+| §27 | 1844 | Görev listesi (tamamlanan / sıradaki; **en son: "4 Ekim 2026" SEO Faz 3/4 + profil doluluk/rozet turu**) |
+| §28 | 2270 | Çok dilli yapı (TR/EN/DE) ve gizlilik — mimari, çeviri kuralları, iş akışı, EN/DE ürün kararları (§28.7) |
 
 ---
 
@@ -68,6 +68,11 @@ Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~2300 satır; offset
 - `.env` değişikliği `restart` ile okunmaz → `docker compose up -d web`; env adını koddakiyle birebir kontrol et (`NCBI_API_KEY`)
 - Hetzner `docker-compose.yml`'de commit'lenmemiş `rlprehber` var — compose'u git'te değiştirme; host ayarı `daemon.json` (§3)
 - Sunucuda yalnız kullanıcı isteyince işlem; Hetzner deploy kullanıcıda. Push/merge yalnız kullanıcı açıkça isteyince ("push et", "merge et") — 2 Ekim 2026'da çalıştı; yalnız doküman/betik commit'ini push etmek gereksiz (kullanıcı)
+- `scripts/yedek_indir.sh --simdi` **yalnız kullanıcının kendi bilgisayarında** çalıştırılır — Hetzner'e SSH ile bağlanıp sunucunun İÇİNDEN çalıştırırsa sunucu kendi IP'sine SSH atar, host key karmaşası çıkar (4 Ekim 2026)
+- Yeni `SiteSettings` feature flag **üç yerde birlikte**: model alanı + `feature_flags()` context processor + `SiteSettingsAdmin.fieldsets` (sonuncusu unutulursa alan DB'de var ama admin formunda hiç görünmez, §26)
+- Yeni model admin'e `@admin.register` ile kaydetmek Unfold sol menüsünde göstermez — `analizdestek/settings.py`'deki `UNFOLD["SIDEBAR"]["navigation"]`'a da elle girdi eklenmeli (§26)
+- `deploy.sh`'deki `setup_all`/`create_badges` yalnız DB boşsa (`Category.count()==0`) çalışır — dolu canlı DB'de her deploy'da atlanır; yeni sabit/seed veri (rozet vb.) management komutuna değil **migration**'a yaz (§26)
+- `user.profile` ile aynı istekte az önce `save()` edilmiş profili tekrar okuma — istek başında önbelleklenmiş eski nesneyi döner; elindeki taze `profile` nesnesini doğrudan geç (§26, 4 Ekim 2026)
 
 ## SEO Kritik Kurallar — ayrıntı analizus.md §12, §15, §26, `tasks/todo.md` "BÜYÜK SEO DÖNÜŞÜMÜ"
 - Google (anonim) araç/tarama sayfalarında `service_promo.html` görür → başlık/açıklama/H1 view'daki `promo_title`/`promo_description`; `landing.html` blokları yalnız giriş yapmışa. Doğrulama **oturumsuz** `curl` ile
@@ -76,6 +81,7 @@ Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~2300 satır; offset
 - İçerikte abartılı vaat yok (kullanıcı kararı): ücretsiz kısım = toplam sonuç + en yeni 5; resmî kurum izlenimi/ilişki iddiası yok; "tez yazdırma" niyeti hedeflenmez
 - Ortak şablon (analiz/tarama konsolu) değişince 18 aracın hepsini Playwright ile aynı ölçütle kontrol et (sıra, boşluk, hiza, boş `tool_title`, mobil taşma) — kullanıcı tek tek bakmamalı
 - Django `{# #}` tek satır; çok satır için `{% comment %}`
+- `/hizmetler/` sayfaları yalnız **dış (Google) trafiği** için — `/market/`'e yeni şerit/kart EKLENMEZ (kategori çipleri zaten yeterli, YALIN ilkesi); footer'da tek "Hizmetler" linki → `/hizmetler/` indeksi (sayfa sayısı artsa da footer büyümez), kullanıcı kararı 4 Ekim 2026
 
 ## Çok Dilli (i18n) Kritik Kurallar — ayrıntı analizus.md §28
 - Yeni kullanıcıya görünen metin **her zaman** çeviriye işaretlenir (msgid = Türkçe); EN/DE `locale/` + `.mo` git'te

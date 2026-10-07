@@ -418,6 +418,11 @@ CLAUDE.md                   # AI geliştirme kuralları ve görev listesi
 /section/<pk>/      → 301 /forum/#section-<pk> (1 Ekim 2026 — ana sayfa başlıklı kopya sayfaydı; olmayan pk 404)
 /uzmanlar/?cat=<id> → kategori sayfası: title "Uzman Bul: {kategori}", H1 + JobCategory.intro; index yalnız intro dolu VE
                       ≥2 uzman, yoksa noindex; sayı olmayan/olmayan/pasif id → 301 /uzmanlar/ (önceden ?cat=abc 500 veriyordu)
+/hizmetler/         → service_page_list (SEO Faz 4, 4 Ekim 2026) — yayındaki (is_active=True) ServicePage'leri listeler;
+                      feature flag: feature_hizmet_sayfalari (varsayılan False → 404); yalnız TR (blog ile aynı karar)
+/hizmetler/<slug>/  → service_page_detail — vaat + bölümler (≥2 uzman varsa mini kart, tek kategoriyse "ilan aç" linki)
+                      + süreç + etik sınırlar + SSS; Service+BreadcrumbList+FAQPage JSON-LD; /market/'e dokunmaz,
+                      yalnız dış (Google) trafiği için — kararlar: `tasks/todo.md` "Faz 4"
 /robots.txt         → TemplateView
 /534e22a9f9e4d375119c5bc6d006aad0.txt → IndexNow key (Bing doğrulama)
 /                   → forum.urls  (en sona — çakışma önlemi)
@@ -474,6 +479,13 @@ class Profile:   # User ile OneToOne
                                              # PreferredLanguageMiddleware günceller (kurallar §28.1)
     deletion_requested_at / deletion_token*  # hesap silme akışı — §23 + §28
     # Uzman olmak için rank: expert/master/legend/admin VEYA account_type: Expert
+    total_score: property   # reputation + QuizScore.total_points — navbar ★ ve rütbe bu değere göre (4 Ekim 2026
+                             # düzeltmesi: navbar önceden yalnız reputation gösteriyordu, quiz puanı dahil değildi)
+    completion_status(): dict  # {percentage, missing:[{label,weight}]} — 9 alan ağırlıklı (foto 10, bio 15, ünvan 10,
+                                # üniversite 10, bölüm 5, konum 5, yetenek 20, bağlantı 15, akademik unvan 10 = %100;
+                                # yalnız profil sahibine `profile_edit.html`'de gösterilir (4 Ekim 2026). %100 olunca
+                                # `check_and_award_profile_complete_badge` (signals.py) "Profili Tamamladı" rozeti +
+                                # 50 puan verir (idempotent, `profile_edit` view'ında save sonrası çağrılır)
 
 class Skill:     # Uzmanlık alanları
     name, slug
@@ -536,6 +548,30 @@ class JobProposal:
     message: TextField
     # Kabul edilince: job.status → 'in_progress'
 ```
+
+### Hizmet Sayfaları (SEO Faz 4 — 4 Ekim 2026, migration forum/0170–0173)
+```python
+class ServicePage:          # /hizmetler/<slug>/ — yalnız TR
+    slug, title              # title = H1
+    meta_title, meta_description
+    intro: TextField          # vaat
+    process_text, ethics_text: TextField  # "Nasıl Çalışır" / "Sınırlarımız"
+    is_active: bool = False   # admin elle açar (pilot: önce Nicel Analiz)
+    order: int
+
+class ServicePageSection:    # alt bölüm, #anchor
+    service_page: FK
+    anchor, title, body
+    related_job_categories: M2M → JobCategory  # boş=genel bölüm; 1=tek "ilan aç" linki; ≥2=yalnız uzman kartı (link yok)
+    order: int
+
+class ServicePageFAQ:
+    service_page: FK
+    question, answer, order
+```
+Bölüm görünümünde uzman mini kartı: `related_job_categories`'deki herhangi birine sahip, `is_public=True`
+en az **2** profil varsa (`Profile.objects.filter(is_public=True, skills__in=cats).distinct()`), yoksa gizli
+(aynı eşik `/uzmanlar/?cat=` ile — §26 "cat_noindex").
 
 ### Quiz Puan Sistemi
 - Her doğru cevap: **10 puan** (`QuizScore.total_points += 10`)
@@ -738,6 +774,7 @@ class JobPayment:        # İlan vitrin ödemeleri
 | `feature_agentic_landing` | **False** | AI Çözümler (Agentic) Sayfası — `/ai-cozumler/` |
 | `feature_training` | **False** | Eğitim Hizmetleri Landing Page — `/egitim/` |
 | `feature_multilingual` | **False** | Çok dilli yayın (EN/DE) — kapalıyken navbar dil seçici gizli, `/en/` `/de/` 404 (`MultilingualFeatureMiddleware`), sitemap yalnız TR. Migration 0153. Avukat kontrolüne kadar kapalı (§28) |
+| `feature_hizmet_sayfalari` | **False** | Hizmet Sayfaları (`/hizmetler/`, SEO Faz 4, 4 Ekim 2026) — kapalıyken 404; migration forum/0170. Admin'de ayrıca her `ServicePage.is_active` tek tek açılmalı (pilot: önce Nicel Analiz) |
 
 Template kullanımı: `{% if features.openalex %}...{% endif %}`
 Kaynak: `forum/context_processors.py` → `feature_flags()` — aynı processor `pricing` sözlüğünü de verir
@@ -1514,8 +1551,14 @@ analizus-files/
   `SiteSettings.scrape_order_price(n)`, vitrin `forum.views._promote_packages()`, şablonda `pricing.*`.
 
 ### Davranış Analizi (`analytics/admin.py`)
-- `PageViewAdmin` — ham ziyaret logları (son 5 gün tutulur); kullanıcı adına tıklamak `/admin/analytics/pageview/grafik/` adresine yönlendirir (7 günlük bar+çizgi+kullanıcı grafikleri)
-- `PageViewSummaryAdmin` — özetler (sonsuza kadar tutulur); kullanıcı adına tıklamak `/admin/analytics/pageviewsummary/grafik/` adresine yönlendirir (tüm geçmiş: stat box'ları + bar + çizgi + kullanıcı grafikleri)
+- `PageViewAdmin` — ham ziyaret logları (son 5 gün tutulur). `PageViewSummaryAdmin` — 5 günden eski kayıtların günlük özeti
+  (sonsuza kadar; menüde YOK — 2 Ekim 2026, Navigasyon Grafiği zaten birleştiriyor; liste `/admin/analytics/pageviewsummary/`).
+- İki listede de kullanıcı adı → **Navigasyon Grafiği `?user=<ad>`** (`/admin/analytics/pageview/grafik/`, ham + özet
+  birleşik): kişi özeti (toplam ziyaret, aktif gün, ilk/son ziyaret, üyelik/son giriş, kullanıcı kaydı + site profili),
+  bölüm + günlük grafik, **navigasyon akışı** (son 5 gün ham kayıt; 30 dk'dan uzun boşluk = yeni oturum, en fazla 300
+  kayıt) + sık bölüm geçişleri. En aktif 20'de olmayan kişi de açılır (sayfadaki arama kutusu). "En Aktif Kullanıcılar"
+  çubuğuna tıklama sayfayı o kişiyle yeniden yükler (eski istemci tarafı 20 kişilik ön hesap — 80 sorgu — kaldırıldı).
+  `pageviewsummary/grafik/` (`summary_chart_view`) artık hiçbir yerden linklenmiyor (ölü; silinebilir — todo). Testler `analytics/tests.py`.
 - Ham loglar `cleanup_pageviews` yönetim komutu / `/api/cron/cleanup-pageviews/` endpoint'i ile özetlenir ve silinir
 - Admin grafik template'leri dark mode'da Tailwind `dark:` prefix sınıfları yerine inline style kullanır (Unfold PurgeCSS uyumu)
 
@@ -1624,7 +1667,7 @@ python manage.py makemigrations istatistik --name="aciklama"  # Yeni migration
 python manage.py collectstatic     # Statik dosyaları topla
 python manage.py shell             # Django shell
 # Testler PYTEST ile — `manage.py test` 0 test bulur (conftest.py + analizdestek/test_settings.py)
-docker compose exec web python -m pytest forum/tests.py -q   # 82 test (2 Ekim 2026: 82/82)
+docker compose exec web python -m pytest forum/tests.py -q   # 82 test (2 Ekim 2026: 82/82); analytics/tests.py 4 test
 # Test notları: thread'li e-posta → monkeypatch `forum.email_utils.send_email_async`; Client ile doğrudan view denerken
 # `Client(HTTP_HOST='localhost')` + `secure=True` (testserver ALLOWED_HOSTS'ta değil → 400); Profile otomatik oluşmaz →
 # `Profile.objects.get_or_create(user=…)`; ilan testinde haftalık hak (2) dolabilir → SiteSettings limitini yükselt.
@@ -1791,6 +1834,10 @@ with connection.cursor() as c:
 | Sınırdaki metin "çok uzun" hatası alıyor | Tarayıcı `maxlength` satır sonunu 1 sayar, gönderimde `\r\n` (2) gelir → `clean_*`'da `replace('\r\n','\n')` sonra say. |
 | Profil formundaki URL `javascript:` olabilir | `profile_edit` alanları form doğrulamasız kaydeder; şablonda link basarken yalnız `Profile.public_links()` (http(s) + regex'li ORCID/X/GitHub). |
 | Deploy öncesi yedekler `/root`'ta birikiyor | Elle `pg_dump` rotasyonsuzdu (2 Ekim'de 11 dosya / 1,9 GB). Artık kullanıcının bilgisayarında `scripts/yedek_indir.sh --simdi` (sunucuya yazılmaz). |
+| `scripts/yedek_indir.sh --simdi` → "Host key verification failed" / `/root/.ssh/known_hosts:1` | Script **lokalde** (kullanıcının kendi bilgisayarında) çalıştırılmak üzere yazılmış — Hetzner'e kendi içinde SSH ile bağlanıp yedeği yerele çeker. Hetzner'e SSH ile bağlanıp script'i sunucunun İÇİNDEN çalıştırmak, sunucunun kendi IP'sine (89.167.5.224) kendi kendine SSH atmasına yol açar → host key karmaşası (4 Ekim 2026). **Kural:** script'i `exit` ile Hetzner oturumundan çıkıp yerel terminalde çalıştır. Host key gerçekten değiştiyse (OS reset vb.) önce Hetzner Cloud Console'dan (tarayıcı, SSH'siz) `ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub` ile fingerprint'i doğrula, körü körüne `ssh-keygen -R` yapma. |
+| Yeni bir `Badge`/`Category`/vb. seed kaydı admin'de hiç görünmüyor, komutu da çalıştıramıyorum (Render shell yok) | `deploy.sh`'deki `setup_all` (→ `create_badges` dahil) yalnız `Category.objects.count() == 0` ise çalışır — dolu bir canlı DB'de her deploy'da "zaten var, atlanıyor" diye sessizce atlanır (4 Ekim 2026, `profili-tamamladi` rozeti). Render'da shell yetkisi yoksa `python manage.py create_badges` da çalıştırılamaz. **Çözüm:** yeni sabit/seed veriyi management komutuna değil, küçük bir veri migration'ına yaz (`Badge.objects.update_or_create(...)` içinde `RunPython`) — migration her deploy'da koşulsuz çalışır (`migrate --noinput`), shell gerekmez. |
+| Yeni model admin'e kayıtlı (`@admin.register`) ama sol menüde (sidebar) hiç görünmüyor | Bu projede Unfold sidebar navigasyonu `analizdestek/settings.py`'deki `UNFOLD` dict'inde **elle** listeleniyor (app bazlı otomatik değil) — yeni modeli admin'e `@admin.register` ile kaydetmek yetmez, `UNFOLD["SIDEBAR"]["navigation"]`'daki ilgili gruba `{"title": ..., "icon": ..., "link": reverse_lazy("admin:<app>_<model>_changelist")}` girdisi de eklenmeli (4 Ekim 2026, `ServicePage`/"Hizmet Sayfaları"). |
+| `user.profile` ile az önce aynı istekte `save()` edilen bir profili tekrar okumak eski (stale) veriyi döndürüyor | `request.user`, istek başında (middleware/context processor) `user.profile`'a ilk erişildiğinde Django'nun ters-OneToOne önbelleğine o anki hâli yazar; view içinde farklı bir `Profile` nesnesi üstünde `profile.save()` çağırsan bile, daha sonra AYNI istekte `user.profile` ile tekrar erişmek önbellekteki (eski) nesneyi döner (4 Ekim 2026, profil doluluk rozeti — puan hiç verilmiyordu). **Kural:** view içinde zaten elindeki taze `profile` nesnesini sonraki yardımcı fonksiyonlara doğrudan geç, `user.profile` ile tekrar çekme. |
 
 ---
 
@@ -2188,7 +2235,21 @@ migration 0153–0155 container açılışında deploy.sh ile uygulandı; DB yed
 
 **Önceki (28 Eylül 2026 gece):** canlı = main ab57dcd (bibliometri kısıtlar bölümü + BibTeX).
 
-**En son (2 Ekim 2026):** canlı = main = **2416b69** (dev = 10b2cb1 + yerelde push'suz 9c8d10a betik/doküman) — pazar
+**En son (4 Ekim 2026):** canlı = main = **2617896** (merge commit; dev = 4fd6799) — Faz 3 (blog yazısı sonuna
+"Bu konuda uzman desteği" kartı, `/uzmanlar/?cat=`; 15 kategoriden 10'u `JobCategory`'e eşlendi), Faz 4 pilot (4 hizmet
+sayfası — Akademik Danışmanlık, Nicel Analiz, Nitel Analiz, Veri & Yapay Zeka; `ServicePage`/`ServicePageSection`/
+`ServicePageFAQ` modelleri + admin; `/hizmetler/` indeksi + `/hizmetler/<slug>/`; her sayfa `is_active=False` ve
+`feature_hizmet_sayfalari` flag'i `False` varsayılan — canlıda admin'den elle açılmalı; bölümler "tanım → ne zaman →
+teslimat" üçlüsüyle genişletildi, 2 sütunlu kart düzeni), **profil doluluk yüzdesi** (`Profile.completion_status()`,
+yalnız profil sahibine `profile_edit.html`'de görünür) + **%100 olunca "Profili Tamamladı" rozeti + 50 puan**
+(idempotent — yalnız ilk kez), navbar ★ puanı artık `total_score` (forum+quiz, önceden yalnız `reputation`
+gösteriyordu), Forum sayfasına "uzman olma" açıklaması + arama kutusu stil düzeltmesi. Migration forum/0170–0174.
+**Gerçek hatalar bulunup düzeltildi (bkz. §26):** yeni `SiteSettings` flag'i admin fieldsets'e eklenmemişti; yeni
+model Unfold sidebar'a eklenmemişti; `user.profile` aynı istekte stale (önbelleklenmiş) veri döndürüyordu; yeni Badge
+tanımı `create_badges` yalnız boş DB'de çalıştığı için canlıya hiç gelmedi → migration'a taşındı. Ayrıntı: `tasks/todo.md`
+"Faz 4" notları + mockup `claude.ai/artifact/ADTZ9xDK4ieSHt7GxDWGgN`.
+
+**Önceki (2 Ekim 2026):** canlı = main = **2416b69** (dev = 10b2cb1 + yerelde push'suz 9c8d10a betik/doküman) — pazar
 (ilan onayı, haftalık hak 2/5, kategori listesi, başlık/açıklama sınırı), bağış → Premium düzeltmesi, profil "Hakkında";
 migration forum/0165–0169 uygulandı. Ayrıntı: §27 Tamamlananlar "2 Ekim 2026".
 

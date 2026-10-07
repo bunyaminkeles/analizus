@@ -1,17 +1,54 @@
 import json
-from collections import defaultdict
+from collections import Counter, defaultdict
 from datetime import date, timedelta
 
 from django.contrib import admin
+from django.contrib.auth.models import User
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import Count, Sum, Min, Max
 from django.shortcuts import render
 from django.urls import path
 from django.utils.html import format_html
+from django.utils.http import urlencode
 from django.urls import reverse
 from unfold.admin import ModelAdmin
 
 from .models import PageView, PageViewSummary
+
+# Navigasyon akışı: ardışık iki ziyaret arası bu süreyi aşarsa yeni oturum sayılır
+SESSION_GAP_MINUTES = 30
+# Akışta gösterilen en fazla ham kayıt (en yeniler)
+FLOW_LIMIT = 300
+
+
+def user_analysis_link(user):
+    """Listelerdeki kullanıcı adı → o kişinin davranış analizi (Navigasyon Grafiği ?user=)."""
+    url = reverse('admin:analytics_grafik') + '?' + urlencode({'user': user.username})
+    return format_html('<a href="{}" title="Davranış analizini aç">{}</a>', url, user.username)
+
+
+def build_sessions(views):
+    """Kronolojik ziyaretleri oturumlara böler; en yeni oturum başta."""
+    gap = timedelta(minutes=SESSION_GAP_MINUTES)
+    sessions = []
+    for v in views:
+        if not sessions or v['timestamp'] - sessions[-1]['end'] > gap:
+            sessions.append({'start': v['timestamp'], 'steps': []})
+        sessions[-1]['steps'].append(v)
+        sessions[-1]['end'] = v['timestamp']
+    sessions.reverse()
+    return sessions
+
+
+def top_transitions(sessions, n=8):
+    """Oturum içi bölümler arası geçişler (aynı bölüm içinde gezinme sayılmaz), en sık n tanesi."""
+    counter = Counter()
+    for s in sessions:
+        steps = s['steps']
+        for a, b in zip(steps, steps[1:]):
+            if a['tab_name'] != b['tab_name']:
+                counter[(a['tab_name'], b['tab_name'])] += 1
+    return [{'source': a, 'target': b, 'count': c} for (a, b), c in counter.most_common(n)]
 
 
 @admin.register(PageView)
@@ -25,8 +62,7 @@ class PageViewAdmin(ModelAdmin):
     list_select_related = True
 
     def get_username(self, obj):
-        chart_url = reverse('admin:analytics_grafik')
-        return format_html('<a href="{}" title="Grafiği Gör">{}</a>', chart_url, obj.user.username)
+        return user_analysis_link(obj.user)
     get_username.short_description = 'Kullanıcı'
     get_username.admin_order_field = 'user__username'
 
@@ -49,12 +85,35 @@ class PageViewAdmin(ModelAdmin):
         PageViewSummary'e taşınıp silindiği için, tüm geçmişi göstermek adına
         burada iki kaynak da birleştiriliyor: son ~6 gün ham'dan, öncesi
         özet'ten okunuyor. Aksi halde grafik yalnızca son birkaç günü gösterir.
+
+        ?start=&end= (YYYY-MM-DD) üstteki 3 grafiği (top sayfalar, günlük
+        trend, en aktif kullanıcılar) seçilen aralığa daraltır. Navigasyon
+        akışı (oturum detayı) ham verinin fiziksel saklama penceresiyle
+        (son 6 gün) sınırlı olduğu için bu filtreden etkilenmez.
         """
         today = date.today()
         cutoff = today - timedelta(days=6)
 
-        recent_qs = PageView.objects.filter(timestamp__date__gte=cutoff)
-        summary_qs = PageViewSummary.objects.all()
+        flow_qs = PageView.objects.filter(timestamp__date__gte=cutoff)
+
+        earliest = PageViewSummary.objects.aggregate(m=Min('date'))['m']
+        range_start_default = earliest if earliest and earliest < cutoff else cutoff
+
+        def parse_date(value):
+            try:
+                return date.fromisoformat(value) if value else None
+            except ValueError:
+                return None
+
+        start_param = request.GET.get('start', '').strip()
+        end_param = request.GET.get('end', '').strip()
+        range_start = parse_date(start_param) or range_start_default
+        range_end = parse_date(end_param) or today
+        if range_start > range_end:
+            range_start, range_end = range_end, range_start
+
+        recent_qs = PageView.objects.filter(timestamp__date__gte=range_start, timestamp__date__lte=range_end)
+        summary_qs = PageViewSummary.objects.filter(date__gte=range_start, date__lte=range_end)
 
         def top_n(field, n, extra_filter=None):
             totals = defaultdict(int)
@@ -78,21 +137,34 @@ class PageViewAdmin(ModelAdmin):
                 totals[row['date']] += row['total'] or 0
             return [{'timestamp__date': str(d), 'total': t} for d, t in sorted(totals.items())]
 
-        top_pages = top_n('tab_name', 10)
-        daily = daily_series()
+        # ?user=<kullanıcı adı> → o kişinin davranış analizi (en aktif 20'de olmasa da)
+        requested_user = request.GET.get('user', '').strip()
+        selected_user = User.objects.filter(username=requested_user).first() if requested_user else None
+        flt = {'user': selected_user} if selected_user else None
+
+        top_pages = top_n('tab_name', 10, extra_filter=flt)
+        daily = daily_series(extra_filter=flt)
         top_users = top_n('user__username', 20)
 
-        per_user_data = {}
-        for u in top_users:
-            uname = u['user__username']
-            flt = {'user__username': uname}
-            per_user_data[uname] = {
-                'pages': top_n('tab_name', 10, extra_filter=flt),
-                'daily': daily_series(extra_filter=flt),
+        user_detail = None
+        if selected_user:
+            views = list(
+                flow_qs.filter(user=selected_user)
+                .order_by('-timestamp')
+                .values('timestamp', 'tab_name', 'path')[:FLOW_LIMIT]
+            )
+            views.reverse()  # kronolojik
+            sessions = build_sessions(views)
+            user_detail = {
+                'total': sum(d['total'] for d in daily),
+                'active_days': len(daily),
+                'first_day': daily[0]['timestamp__date'] if daily else None,
+                'last_day': daily[-1]['timestamp__date'] if daily else None,
+                'last_visit': views[-1]['timestamp'] if views else None,
+                'sessions': sessions,
+                'transitions': top_transitions(sessions),
+                'flow_capped': len(views) == FLOW_LIMIT,
             }
-
-        earliest = summary_qs.aggregate(m=Min('date'))['m']
-        range_start = earliest if earliest and earliest < cutoff else cutoff
 
         context = {
             **self.admin_site.each_context(request),
@@ -100,8 +172,16 @@ class PageViewAdmin(ModelAdmin):
             'top_pages_json': json.dumps(top_pages, cls=DjangoJSONEncoder),
             'daily_json': json.dumps(daily, cls=DjangoJSONEncoder),
             'top_users_json': json.dumps(top_users, cls=DjangoJSONEncoder),
-            'per_user_data_json': json.dumps(per_user_data, cls=DjangoJSONEncoder),
-            'date_range': f'{range_start} — {today}',
+            'date_range': f'{range_start} — {range_end}',
+            'requested_user': requested_user,
+            'selected_user': selected_user,
+            'user_detail': user_detail,
+            'session_gap_minutes': SESSION_GAP_MINUTES,
+            'flow_limit': FLOW_LIMIT,
+            'requested_start': start_param,
+            'requested_end': end_param,
+            'range_active': bool(start_param or end_param),
+            'today_iso': today.isoformat(),
         }
         return render(request, 'admin/analytics/chart.html', context)
 
@@ -118,8 +198,7 @@ class PageViewSummaryAdmin(ModelAdmin):
 
     def get_username(self, obj):
         if obj.user:
-            chart_url = reverse('admin:analytics_summary_grafik') + f'?user={obj.user.username}'
-            return format_html('<a href="{}" title="Grafiği Gör">{}</a>', chart_url, obj.user.username)
+            return user_analysis_link(obj.user)
         return '—'
     get_username.short_description = 'Kullanıcı'
     get_username.admin_order_field = 'user__username'
