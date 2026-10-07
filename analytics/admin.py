@@ -84,21 +84,44 @@ class PageViewAdmin(ModelAdmin):
         return extra + urls
 
     def active_now_view(self, request):
-        """Son ACTIVE_NOW_MINUTES dakikada istek atmış kullanıcılar, en son sayfalarıyla."""
+        """
+        Son ACTIVE_NOW_MINUTES dakikada aktif kullanıcılar — Profile.last_seen üzerinden (profil kartındaki
+        yeşil "çevrimiçi" noktasıyla aynı sinyal). last_seen HER girişli istekte güncellenir (API/WebSocket/
+        polling dahil, LastSeenMiddleware); PageView ise yalnız gerçek sayfa navigasyonunda yazılır
+        (PageViewMiddleware, /api/ /ws/ /admin/ vb. hariç) — bu yüzden yalnız PageView kullanmak, bir sayfada
+        durup arka planda polling/WebSocket ile açık kalan kullanıcıları (yeşil nokta yanıyor ama yeni sayfa
+        açmıyor) listeden düşürüyordu. Sayfa bilgisi varsa (son pencerede bir PageView kaydı varsa) eklenir,
+        yoksa "—" gösterilir.
+        """
+        from forum.models import Profile
+
         cutoff = timezone.now() - timedelta(minutes=ACTIVE_NOW_MINUTES)
-        recent = (
+
+        recent_views = (
             PageView.objects.filter(timestamp__gte=cutoff)
-            .select_related('user')
             .order_by('user_id', '-timestamp')
-            .values('user__username', 'tab_name', 'path', 'timestamp')
+            .values('user_id', 'tab_name', 'path')
+        )
+        latest_page_by_user = {}
+        for row in recent_views:
+            if row['user_id'] not in latest_page_by_user:
+                latest_page_by_user[row['user_id']] = row
+
+        active_profiles = (
+            Profile.objects.filter(last_seen__gte=cutoff)
+            .select_related('user')
+            .order_by('-last_seen')
         )
 
-        latest_per_user = {}
-        for row in recent:
-            uname = row['user__username']
-            if uname not in latest_per_user:
-                latest_per_user[uname] = row
-        active_users = sorted(latest_per_user.values(), key=lambda r: r['timestamp'], reverse=True)
+        active_users = []
+        for profile in active_profiles:
+            page = latest_page_by_user.get(profile.user_id)
+            active_users.append({
+                'user__username': profile.user.username,
+                'tab_name': page['tab_name'] if page else None,
+                'path': page['path'] if page else None,
+                'timestamp': profile.last_seen,
+            })
 
         context = {
             **self.admin_site.each_context(request),

@@ -31,8 +31,8 @@
       <div class="an-row">
         <span class="an-dot"></span>
         <a href="{% url 'admin:analytics_grafik' %}?user={{ row.user__username }}" class="an-link an-user">{{ row.user__username }}</a>
-        <span class="an-page">{{ row.tab_name }}</span>
-        {% if row.path != row.tab_name %}<span class="an-path">{{ row.path }}</span>{% endif %}
+        <span class="an-page">{{ row.tab_name|default:"— (API/WebSocket, sayfa bilinmiyor)" }}</span>
+        {% if row.path and row.path != row.tab_name %}<span class="an-path">{{ row.path }}</span>{% endif %}
         <span class="an-ago">{{ row.timestamp|timesince }} önce</span>
       </div>
     {% empty %}
