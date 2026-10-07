@@ -483,11 +483,8 @@ UNFOLD = {
                     "icon": "bar_chart",
                     "link": "/admin/analytics/pageview/grafik/",
                 },
-                {
-                    "title": "Ziyaret Özetleri",
-                    "icon": "summarize",
-                    "link": reverse_lazy("admin:analytics_pageviewsummary_changelist"),
-                },
+                # "Ziyaret Özetleri" menüde yok: 5 günden eski kayıtların arşivi, Navigasyon Grafiği zaten
+                # birleştirip gösteriyor; liste /admin/analytics/pageviewsummary/ adresinde duruyor
             ],
         },
         # ─── 5. SİSTEM ───────────────────────────────────────────────
