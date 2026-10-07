@@ -1,22 +1,22 @@
 # Analizus.com — Claude Çalışma Kuralları
 
-Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~2300 satır; offset'ler 4 Ekim 2026). Tamamını okuma — ihtiyaca göre offset ile ilgili bölümü oku:
+Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~2400 satır; offset'ler 7 Ekim 2026). Tamamını okuma — ihtiyaca göre offset ile ilgili bölümü oku:
 
 | Bölüm | offset | Konu |
 |---|---|---|
-| §1–2 | 8 | Proje amacı, tech stack, paketler |
-| §3–5 | 68 | Sunucu mimarisi + bakım (log sınırı, disk, yedek → yerel, **deploy öncesi `yedek_indir.sh --simdi` — SADECE lokalde çalıştır, Hetzner SSH oturumu İÇİNDEN değil**), deploy (deploy.sh açılışta migrate+collectstatic; `setup_all`/`create_badges` yalnız DB boşsa — yeni seed verisi migration'a yazılmalı), env vars (NCBI_API_KEY dahil) |
-| §6–7 | 284 | Dizin yapısı, URL mimarisi (i18n_patterns; `/section/` 301, `/uzmanlar/?cat=` kuralı, **`/hizmetler/` + `/hizmetler/<slug>/`** ~420) |
-| §8–9 | 469 | Veri modelleri (`JobCategory.intro`, `Category.INDEX_MIN_TOPICS`, BlogPost SEO alanları, **pazar: ilan onayı / haftalık hak / form sınırları**, **`ServicePage`/`ServicePageSection`/`ServicePageFAQ`**, **`Profile.completion_status()`/`total_score`**, profil "Hakkında", bağış `premium_days_promised`), feature flag'ler (**`feature_hizmet_sayfalari`**) |
-| §10–11 | 785 | CSS/tasarım sistemi, WebSocket (route'lar) |
-| §12 | 910 | İstatistik araçları (akış, PDF, polling, **konsol düzeni**: Nedir kartı → SSS → CTA, `tool_title`) |
-| §13–15 | 1070 | DM/oda mesajlaşma, bibliometri, akademik tarama (**Google'ın gördüğü başlık = view `promo_title`**) |
-| §16–19 | 1300 | E-posta (500 hata e-postası), AnalizBot/AI Asistan, S3, güvenlik (çerez onayı, cron anahtarı) |
-| §20–23 | 1519 | Admin (sipariş akışı, Fiyatlandırma, **Limitler, İlan onayı/ret aksiyonları + panel "İlan Onayı", bağış onayı aksiyonu**, İş Kategorisi tanıtım metni, blog SEO), pazar akışı (pending → open), session, cron |
-| §24–25 | 1650 | Geliştirme ortamı (pytest 82 test + test notları, çeviri komutları), değişmez kurallar |
-| §26 | 1737 | Sık yapılan hatalar ve çözümleri (**yeni: Unfold sidebar elle listelenir, `user.profile` stale cache, yedek script'i Hetzner içinden çalıştırmama**) |
-| §27 | 1844 | Görev listesi (tamamlanan / sıradaki; **en son: "4 Ekim 2026" SEO Faz 3/4 + profil doluluk/rozet turu**) |
-| §28 | 2270 | Çok dilli yapı (TR/EN/DE) ve gizlilik — mimari, çeviri kuralları, iş akışı, EN/DE ürün kararları (§28.7) |
+| §1–2 | 8 | Proje amacı, tech stack, paketler (**yeni: `broadcast/` app — admin toplu e-posta**) |
+| §3–5 | 69 | Sunucu mimarisi + bakım (log sınırı, disk, yedek → yerel, **deploy öncesi `yedek_indir.sh --simdi` — SADECE lokalde çalıştır, Hetzner SSH oturumu İÇİNDEN değil**), deploy (deploy.sh açılışta migrate+collectstatic; `setup_all`/`create_badges` yalnız DB boşsa — yeni seed verisi migration'a yazılmalı), env vars (NCBI_API_KEY dahil) |
+| §6–7 | 288 | Dizin yapısı, URL mimarisi (i18n_patterns; `/section/` 301, `/uzmanlar/?cat=` kuralı, `/hizmetler/` + `/hizmetler/<slug>/`) |
+| §8–9 | 470 | Veri modelleri (`JobCategory.intro`, `Category.INDEX_MIN_TOPICS`, BlogPost SEO alanları, pazar: ilan onayı / haftalık hak / form sınırları, `ServicePage`/`ServicePageSection`/`ServicePageFAQ`, `Profile.completion_status()`/`total_score`, profil "Hakkında", bağış `premium_days_promised`), feature flag'ler (`feature_hizmet_sayfalari`) |
+| §10–11 | 786 | CSS/tasarım sistemi, WebSocket (route'lar) |
+| §12 | 911 | İstatistik araçları (akış, PDF, polling, konsol düzeni: Nedir kartı → SSS → CTA, `tool_title`) |
+| §13–15 | 1071 | DM/oda mesajlaşma, bibliometri, akademik tarama (Google'ın gördüğü başlık = view `promo_title`) |
+| §16–19 | 1301 | E-posta (500 hata e-postası), AnalizBot/AI Asistan, S3, güvenlik (çerez onayı, cron anahtarı) |
+| §20–23 | 1520 | Admin (sipariş akışı, Fiyatlandırma, Limitler, İlan onayı/ret aksiyonları + panel "İlan Onayı", bağış onayı aksiyonu, İş Kategorisi tanıtım metni, blog SEO, **yeni: `UserAdmin` toplu e-posta aksiyonları, Navigasyon Grafiği tarih filtresi + "Şu An Aktif"**), pazar akışı (pending → open), session, cron |
+| §24–25 | 1668 | Geliştirme ortamı (pytest 82 test + test notları, çeviri komutları), değişmez kurallar |
+| §26 | 1755 | Sık yapılan hatalar ve çözümleri (**yeni: Unfold admin dark: sınıfı sorunu, lokalde bağımsız `runserver` karışıklığı, Django admin aksiyonu seçimsiz çalıştırma kısıtı, `last_seen` vs `PageView` sinyal farkı**) |
+| §27 | 1866 | Görev listesi (tamamlanan / sıradaki; **en son: "7 Ekim 2026" admin analytics + `broadcast` app turu**) |
+| §28 | 2311 | Çok dilli yapı (TR/EN/DE) ve gizlilik — mimari, çeviri kuralları, iş akışı, EN/DE ürün kararları (§28.7) |
 
 ---
 
@@ -73,6 +73,10 @@ Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~2300 satır; offset
 - Yeni model admin'e `@admin.register` ile kaydetmek Unfold sol menüsünde göstermez — `analizdestek/settings.py`'deki `UNFOLD["SIDEBAR"]["navigation"]`'a da elle girdi eklenmeli (§26)
 - `deploy.sh`'deki `setup_all`/`create_badges` yalnız DB boşsa (`Category.count()==0`) çalışır — dolu canlı DB'de her deploy'da atlanır; yeni sabit/seed veri (rozet vb.) management komutuna değil **migration**'a yaz (§26)
 - `user.profile` ile aynı istekte az önce `save()` edilmiş profili tekrar okuma — istek başında önbelleklenmiş eski nesneyi döner; elindeki taze `profile` nesnesini doğrudan geç (§26, 4 Ekim 2026)
+- Özel admin template'inde (Unfold, `unfold/layouts/base_simple.html` extend) Tailwind `dark:` sınıfı KULLANMA — derlenmiş CSS'te yok, sessizce stilsiz kalır; açık hex renk yaz (§26, 7 Ekim 2026)
+- Django admin aksiyonunu (seçimden bağımsız "herkese" tipi) çalıştırmak için de listede en az 1 satır işaretli olmalı — `response_action` override bu ön-şartı atlatmaz, yalnız queryset'i değiştirir; `ACTION_CHECKBOX_NAME` → `django.contrib.admin.helpers` (§26, 7 Ekim 2026)
+- "Kim şu an aktif/online" göstergesi `Profile.last_seen`'e dayanmalı (profildeki yeşil nokta aynı alan, her istekte güncellenir) — `PageView` yalnız gerçek sayfa navigasyonunda yazılır, AJAX/WebSocket'te duran kullanıcıyı kaçırır; `PageView` yalnız ek "hangi sayfada" bilgisi için kullan (§26, 7 Ekim 2026)
+- Lokalde şüpheli/tutarsız sonuç alırsan `ss -ltnp \| grep 8000` + `docker compose ps` ile hangi sürecin (Docker mu, bağımsız bir `manage.py runserver` mı) hangi veritabanını kullandığını doğrula — ikisi aynı anda farklı portlarda/DB'lerle çalışabilir (§26, 7 Ekim 2026)
 
 ## SEO Kritik Kurallar — ayrıntı analizus.md §12, §15, §26, `tasks/todo.md` "BÜYÜK SEO DÖNÜŞÜMÜ"
 - Google (anonim) araç/tarama sayfalarında `service_promo.html` görür → başlık/açıklama/H1 view'daki `promo_title`/`promo_description`; `landing.html` blokları yalnız giriş yapmışa. Doğrulama **oturumsuz** `curl` ile

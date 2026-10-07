@@ -44,7 +44,8 @@
 | Ödeme | iyzico **kullanım izni yok** — entegrasyon yapılmayacak; ödeme sistemi belirsiz |
 | i18n | TR (varsayılan, öneksiz) + EN + DE — `i18n_patterns(prefix_default_language=False)`, `locale/{en,de}/LC_MESSAGES/django.po` (+ `.mo` git'te). EN/DE `feature_multilingual` bayrağıyla açılır (kapalıyken 404). Ayrıntı: **§28** |
 | Rate Limit | `django-ratelimit` — kayıt: 3/saat, login: 10/5dk, istatistik POST: 30/saat |
-| Analytics | `analytics/` Django app — login'li kullanıcı sayfa ziyaretleri (PageView + PageViewSummary), admin grafik (Chart.js, in-place user filtresi), 5 günlük otomatik temizlik |
+| Analytics | `analytics/` Django app — login'li kullanıcı sayfa ziyaretleri (PageView + PageViewSummary), admin grafik (Chart.js, kullanıcı + `?start=&end=` tarih aralığı filtresi), "Şu An Aktif" anlık kullanıcı sayfası (20 sn yenileme, 7 Ekim 2026), 5 günlük otomatik temizlik |
+| Toplu E-posta | `broadcast/` Django app (7 Ekim 2026) — admin'den Kullanıcılar listesi aksiyon menüsünden seçili/herkese/doğrulanmış kullanıcılara düz metin e-posta; `EmailBroadcast` ile gönderim geçmişi (salt okunur) |
 
 ### Temel Paketler (requirements.txt)
 ```
@@ -1536,6 +1537,13 @@ analizus-files/
 - `DonationTierAdmin` — tutar, Premium gün, aktif listeden düzenlenir (`list_editable`).
 - `JobProposalAdmin` — teklif (İlan Sahibi + Teklif Veren kolonları)
 - `ProfileAdmin` — kullanıcı profil
+- `UserAdmin` (7 Ekim 2026) — Kullanıcılar listesi aksiyon menüsünde **"Seçilenlere e-posta gönder"** /
+  **"Herkese e-posta gönder"** / **"Doğrulanmış kullanıcılara e-posta gönder"** (düz metin, konu/mesaj ara onay formu →
+  senkron `send_mail`, e-postası boş kullanıcı atlanır). "Herkese"/"Doğrulanmış" `response_action` override ile
+  seçimden bağımsız kendi queryset'ini (`User.objects.all()` / `filter(profile__email_verified=True)`) kullanır — yine
+  de Django admin gereği listede en az 1 satır işaretli olmalı (hangisi fark etmez, bkz. §26). Gönderim
+  `broadcast.EmailBroadcast`'e loglanır (gönderen, alıcılar, başarı/hata sayısı) — salt okunur geçmiş, sidebar
+  "Gönderilen E-postalar" (`broadcast/admin.py`).
 - `SiteSettingsAdmin` — feature flag yönetimi; **Limitler** bölümü (katlanmış): tarama/analiz kayıt sınırı + pazar ayarları
   (haftalık ilan hakkı normal/Premium, ilan onayı aç/kapa, başlık/açıklama karakter sınırı)
 - `JobPaymentAdmin` — vitrin ödemeleri; `status` readonly; dashboard "VİTRİN" satırındaki **"Onayla →"** butonuyla tek tıkla onaylanır (`/admin/forum/jobpayment/<pk>/quick-approve/` — `quick_approve_view`); onay öncesi detay confirm dialogu çıkar; list view action ("Seçili ilanları vitrine ekle") da hâlâ çalışır
@@ -1559,6 +1567,16 @@ analizus-files/
   kayıt) + sık bölüm geçişleri. En aktif 20'de olmayan kişi de açılır (sayfadaki arama kutusu). "En Aktif Kullanıcılar"
   çubuğuna tıklama sayfayı o kişiyle yeniden yükler (eski istemci tarafı 20 kişilik ön hesap — 80 sorgu — kaldırıldı).
   `pageviewsummary/grafik/` (`summary_chart_view`) artık hiçbir yerden linklenmiyor (ölü; silinebilir — todo). Testler `analytics/tests.py`.
+- **Tarih aralığı filtresi (7 Ekim 2026):** Navigasyon Grafiği `?start=&end=` (YYYY-MM-DD) üstteki 3 grafiği (top sayfa,
+  günlük trend, en aktif kullanıcılar) seçilen aralığa daraltır; navigasyon akışı (oturum detayı) ham verinin 6 günlük
+  saklama penceresiyle sınırlı olduğundan bu filtreden etkilenmez.
+- **Şu An Aktif (7 Ekim 2026):** `/admin/analytics/pageview/aktif/` — son 5 dakikada aktif kullanıcıları (kaç dakika
+  önce, varsa hangi sayfada) listeler, 20 sn'de kendiliğinden yenilenir (`<meta http-equiv="refresh">`). `Profile.last_seen`
+  (`LastSeenMiddleware`, forum/middleware.py) üzerinden kurulu — profildeki yeşil "çevrimiçi" noktasıyla (`Profile.is_online`)
+  birebir aynı sinyal, çünkü `last_seen` API/WebSocket/polling dahil HER girişli istekte güncellenir. `PageView`
+  (PageViewMiddleware, yalnız gerçek sayfa navigasyonunda yazılır) varsa sayfa bilgisini eklemek için ayrıca eşlenir;
+  yoksa "sayfa bilinmiyor". **İlk sürüm yalnız `PageView`'a bakıyordu** — bir sayfada durup arka planda polling/WebSocket
+  ile açık kalan (yeşil nokta yanan ama yeni sayfa açmayan) kullanıcıları kaçırıyordu, aynı gün düzeltildi (bkz. §26).
 - Ham loglar `cleanup_pageviews` yönetim komutu / `/api/cron/cleanup-pageviews/` endpoint'i ile özetlenir ve silinir
 - Admin grafik template'leri dark mode'da Tailwind `dark:` prefix sınıfları yerine inline style kullanır (Unfold PurgeCSS uyumu)
 
@@ -1838,6 +1856,10 @@ with connection.cursor() as c:
 | Yeni bir `Badge`/`Category`/vb. seed kaydı admin'de hiç görünmüyor, komutu da çalıştıramıyorum (Render shell yok) | `deploy.sh`'deki `setup_all` (→ `create_badges` dahil) yalnız `Category.objects.count() == 0` ise çalışır — dolu bir canlı DB'de her deploy'da "zaten var, atlanıyor" diye sessizce atlanır (4 Ekim 2026, `profili-tamamladi` rozeti). Render'da shell yetkisi yoksa `python manage.py create_badges` da çalıştırılamaz. **Çözüm:** yeni sabit/seed veriyi management komutuna değil, küçük bir veri migration'ına yaz (`Badge.objects.update_or_create(...)` içinde `RunPython`) — migration her deploy'da koşulsuz çalışır (`migrate --noinput`), shell gerekmez. |
 | Yeni model admin'e kayıtlı (`@admin.register`) ama sol menüde (sidebar) hiç görünmüyor | Bu projede Unfold sidebar navigasyonu `analizdestek/settings.py`'deki `UNFOLD` dict'inde **elle** listeleniyor (app bazlı otomatik değil) — yeni modeli admin'e `@admin.register` ile kaydetmek yetmez, `UNFOLD["SIDEBAR"]["navigation"]`'daki ilgili gruba `{"title": ..., "icon": ..., "link": reverse_lazy("admin:<app>_<model>_changelist")}` girdisi de eklenmeli (4 Ekim 2026, `ServicePage`/"Hizmet Sayfaları"). |
 | `user.profile` ile az önce aynı istekte `save()` edilen bir profili tekrar okumak eski (stale) veriyi döndürüyor | `request.user`, istek başında (middleware/context processor) `user.profile`'a ilk erişildiğinde Django'nun ters-OneToOne önbelleğine o anki hâli yazar; view içinde farklı bir `Profile` nesnesi üstünde `profile.save()` çağırsan bile, daha sonra AYNI istekte `user.profile` ile tekrar erişmek önbellekteki (eski) nesneyi döner (4 Ekim 2026, profil doluluk rozeti — puan hiç verilmiyordu). **Kural:** view içinde zaten elindeki taze `profile` nesnesini sonraki yardımcı fonksiyonlara doğrudan geç, `user.profile` ile tekrar çekme. |
+| Admin özel sayfasında (koyu tema) kart başlığı/metni neredeyse görünmeyecek kadar soluk | Özel admin template'i (`unfold/layouts/base_simple.html`'i extend eden, ör. `chart.html`) Tailwind `dark:bg-gray-800`/`dark:text-gray-300` gibi sınıflar kullanıyordu — Unfold'un derlenmiş CSS'i (PurgeCSS) yalnız paketin kendi kullandığı sınıfları içerir, bu `dark:` varyantları içeride yok, sessizce stilsiz kalır (kart beyaz zemin bekler, gerçekte koyu sayfa zemininde soluk gri metin kalır). **Kural:** özel admin template'lerinde `dark:` Tailwind sınıfı yerine açık hex renk kullan (`style="color:#94a3b8"` vb., `chart.html`/`send_email.html`/`active_now.html`'daki `.nav-card`/`.an-card` deseni, 7 Ekim 2026). |
+| Lokalde admin'den gönderilen test e-postası/veri, Docker'da doğrulananla uyuşmuyor | `127.0.0.1:8000`'de Docker dışında, host'ta ayrıca çalışan bağımsız bir `python manage.py runserver` süreci vardı (`ss -ltnp \| grep 8000` ile tespit edildi, `/proc/<pid>/cwd` + açık dosya tanımlayıcıları proje kökündeki eski `db.sqlite3`'ü gösterdi) — Docker Compose'daki (nginx:80/443 → web → Postgres) güncel veriden tamamen bağımsız, farklı bir veritabanı. Tarayıcı `127.0.0.1:8000`'e gidince bu eski sürece bağlanıyordu, nginx'e (80) değil. **Kural:** lokal doğrulama şüpheli sonuç verirse `ss -ltnp` + `docker compose ps` ile hangi sürecin hangi portta olduğunu teyit et; nginx (80/443) = Docker Compose, ayrıca `127.0.0.1:8000`'de bağımsız bir `runserver` çıkıyorsa hangisini test ettiğini bilerek ilerle ya da kapat (7 Ekim 2026). |
+| Admin aksiyon menüsüne "tüm kayıtlara/filtrelenmiş kayıtlara uygula" (satır seçiminden bağımsız) bir seçenek eklendi, hiç seçim yapmadan "Git" hiçbir şey yapmıyor | Django admin, `response_action()`'ı ÇAĞIRMADAN ÖNCE `changelist_view` içinde `_selected_action` (checkbox) boşsa "Öğe seçilmedi" diyip kesiyor (iki ayrı blok — "confirmation'sız" ve "confirmation'lı" aksiyon — ikisi de `if selected:` şartlı); `response_action`'ı override edip queryset'i içeride değiştirmek bu ÖN kontrolü atlatmaz, çünkü override'a hiç ulaşılmıyor. **Çözüm:** yine de listede en az 1 satır işaretli olmalı (admin başlık checkbox'ıyla "sayfadakilerin hepsini seç" kullanılabilir, admin hangi satırın işaretli olduğuna bakmaz); `response_action` override edilip `action` adına göre queryset **değiştirilebilir** (ör. `User.objects.all()`) — seçilenler yok sayılır ama "en az 1 seçili olma" şartı kalkmaz. Ayrıca `ACTION_CHECKBOX_NAME` sabiti `django.contrib.admin`'de değil `django.contrib.admin.helpers`'tadır (7 Ekim 2026, `forum/admin.py` toplu e-posta aksiyonları). |
+| Profilinde yeşil "çevrimiçi" noktası yanan bir kullanıcı admin'deki "aktif kullanıcılar" sayfasında görünmüyor | İki ayrı middleware farklı genişlikte sinyal üretiyor: `LastSeenMiddleware` (forum/middleware.py) `profile.last_seen`'i `/static/`/`/media/` HARİÇ her girişli istekte günceller (API, WebSocket, polling dahil) — `Profile.is_online` (yeşil nokta) buna bakar. `PageViewMiddleware` (analytics/middleware.py) ise `PageView` satırını yalnız GERÇEK sayfa navigasyonunda yazar (GET + 200 + `/admin/` `/api/` `/ws/` `/accounts/` `/sitemap` vb. ve polling-status URL'leri hariç). Bir kullanıcı bir sayfada durup arka planda yalnız AJAX/WebSocket trafiği üretiyorsa `last_seen` tazelenir (yeşil nokta yanar) ama yeni bir `PageView` satırı oluşmaz. **Kural:** "kim şu an aktif/online" göstergesi `PageView`'a değil `Profile.last_seen`'e dayanmalı (profildeki yeşil noktayla tutarlı olması için); `PageView` yalnızca EK bilgi olarak ("hangi sayfadaydı") kullanılabilir, varsa gösterilir, yoksa "bilinmiyor" (7 Ekim 2026, `analytics/admin.py` "Şu An Aktif"). |
 
 ---
 
@@ -2235,7 +2257,26 @@ migration 0153–0155 container açılışında deploy.sh ile uygulandı; DB yed
 
 **Önceki (28 Eylül 2026 gece):** canlı = main ab57dcd (bibliometri kısıtlar bölümü + BibTeX).
 
-**En son (4 Ekim 2026):** canlı = main = **2617896** (merge commit; dev = 4fd6799) — Faz 3 (blog yazısı sonuna
+**En son (7 Ekim 2026):** canlı = main = **98f3878** (dev aynı) — admin analytics + yeni `broadcast` app turu.
+Navigasyon Grafiği'nde kullanıcı adına tıklama artık o kişiye filtrelenmiş grafiği açıyor (`?user=`); okunmaz başlık
+renkleri düzeltildi (Unfold'un derlenmiş CSS'i Tailwind `dark:` sınıflarını içermiyor, bkz. §26); `?start=&end=` tarih
+aralığı filtresi eklendi; "Ziyaret Özetleri" sidebar'dan kaldırıldı (arşiv, admine katkısı yok). **Yeni "Şu An Aktif"**
+sayfası (`/admin/analytics/pageview/aktif/`) — son 5 dk'da aktif kullanıcıları 20 sn'de kendiliğinden yenilenerek
+listeler; `Profile.last_seen` üzerinden kurulu (profildeki yeşil "çevrimiçi" noktasıyla aynı sinyal — ilk sürüm
+yalnız `PageView`'a bakıyordu, API/WebSocket/polling'le açık kalıp yeni sayfa navigasyonu yapmayan kullanıcıları
+kaçırdığı kullanıcı tarafından fark edilip aynı gün düzeltildi), sayfa bilgisi varsa (son pencerede `PageView` kaydı
+varsa) ayrıca gösterilir, yoksa "sayfa bilinmiyor" yazar; yeni model yok. **Yeni `broadcast` app** — Kullanıcılar
+listesi aksiyon menüsünden "Seçilenlere" / "Herkese" / "Doğrulanmış kullanıcılara e-posta gönder" (düz metin, senkron
+`send_mail`, e-postası boş kullanıcı atlanır), `EmailBroadcast` ile gönderim geçmişi (salt okunur, sidebar "Gönderilen
+E-postalar"). Migration: `broadcast/0001_initial` (boş tablo, risksiz). **Gerçek hatalar/araştırma bulguları (bkz.
+§26):** Unfold admin dark temasında Tailwind `dark:` sınıfları derlenmiş CSS'te yok (açık hex renge çevrildi); lokalde
+Docker dışı bağımsız bir `manage.py runserver` eski `db.sqlite3` ile test karmaşasına yol açtı; Django admin aksiyonu
+seçimden bağımsız çalıştırmak `response_action` override gerektiriyor ama yine de en az 1 satır seçili olma şartı
+kalkmıyor (framework kısıtı); `last_seen` (her istek) ile `PageView` (yalnız sayfa navigasyonu) farklı genişlikte
+sinyaller — "aktiflik" göstergeleri hangisine dayandığını bilinçli seçmeli. Testler/doğrulama: her adım mock'lu
+`send_mail` + Django test client ile uçtan uca denendi, gerçek kullanıcıya e-posta gitmedi.
+
+**Önceki (4 Ekim 2026):** canlı = main = **2617896** (merge commit; dev = 4fd6799) — Faz 3 (blog yazısı sonuna
 "Bu konuda uzman desteği" kartı, `/uzmanlar/?cat=`; 15 kategoriden 10'u `JobCategory`'e eşlendi), Faz 4 pilot (4 hizmet
 sayfası — Akademik Danışmanlık, Nicel Analiz, Nitel Analiz, Veri & Yapay Zeka; `ServicePage`/`ServicePageSection`/
 `ServicePageFAQ` modelleri + admin; `/hizmetler/` indeksi + `/hizmetler/<slug>/`; her sayfa `is_active=False` ve
