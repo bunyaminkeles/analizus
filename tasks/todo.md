@@ -10,6 +10,13 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
+- [ ] **(7 Ekim 2026, kullanıcı ekran görüntüsü)** `/forum/` arama kutusunda placeholder metninin baş harfi bozuk/karışık
+  görünüyor ("Kategori" yerine Latin olmayan bir "K" gibi algılanıyor — ekran görüntüsünde Kiril К'ya benziyor).
+  Kaynak kontrol edildi: `forum/templates/forum/forum_index.html:21`'deki metin **doğru** ("Kategori ara... (ör: SPSS,
+  regresyon, tez)", sade ASCII K) — yani kaynak kodda bir karakter karmaşası YOK. Olası neden: font render/zoom
+  artefaktı, tarayıcı uzantısı ya da ekran görüntüsü sıkıştırması; henüz doğrulanmadı. **Yapılacak:** başka
+  tarayıcı/zoom seviyesinde tekrar kontrol, varsa gerçek kaynak (CSS font-family, bir JS overlay) bul.
+
 > **YENİ OTURUM BURADAN BAŞLA (2 Ekim 2026) — CANLI = main = 2416b69** (dev = 10b2cb1 + yerelde push'suz 9c8d10a
 > betik/doküman commit'leri). Bu oturum (ayrıntı `analizus.md` §27 "2 Ekim 2026"): **pazar** — ilan admin onayı (onay/ret
 > e-postası, panel "İlan Onayı" sekmesi), haftalık ilan hakkı normal 2 / Premium 5 (admin muaf), kategori yetenek listesi +
