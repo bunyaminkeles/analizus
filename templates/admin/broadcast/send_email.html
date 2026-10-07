@@ -1,0 +1,67 @@
+{% extends "unfold/layouts/base_simple.html" %}
+{% load i18n %}
+
+{% block content %}
+<style>
+  .be-card { border-radius:.75rem; border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.03); padding:1.25rem; }
+  .be-label { font-size:.75rem; font-weight:600; color:#94a3b8; text-transform:uppercase; letter-spacing:.05em; margin-bottom:.5rem; display:block; }
+  .be-muted { font-size:.8125rem; color:#6b7280; }
+  .be-input, .be-textarea { background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.12); border-radius:.5rem; padding:.5rem .75rem; font-size:.875rem; color:#f1f5f9; width:100%; font-family:inherit; }
+  .be-textarea { min-height:12rem; resize:vertical; }
+  .be-btn { background:#6366f1; color:#fff; border-radius:.5rem; padding:.5rem 1.25rem; font-size:.875rem; font-weight:600; border:0; cursor:pointer; }
+  .be-link { font-size:.875rem; color:#818cf8; }
+  .be-link:hover { text-decoration:underline; }
+  .be-recipients { list-style:none; margin:.5rem 0 0; padding:0; max-height:10rem; overflow-y:auto; }
+  .be-recipients li { font-size:.8125rem; color:#e2e8f0; padding:.15rem 0; }
+  .be-recipients li.be-skip { color:#f87171; }
+  .be-warn { font-size:.8125rem; color:#fbbf24; margin-top:.5rem; }
+</style>
+
+<div class="max-w-3xl mx-auto py-6 px-2">
+  <h1 class="text-2xl font-semibold text-gray-100" style="margin-bottom:.25rem;">{{ title }}</h1>
+  <p class="be-muted" style="margin-bottom:1.5rem;">{{ recipient_count }} kullanıcıya gönderilecek.</p>
+
+  <form method="post">
+    {% csrf_token %}
+    {% if show_recipient_list %}
+      {% for user in users %}
+        <input type="hidden" name="{{ action_checkbox_name }}" value="{{ user.pk }}">
+      {% endfor %}
+    {% endif %}
+    <input type="hidden" name="action" value="{{ action_name }}">
+    <input type="hidden" name="confirm" value="yes">
+
+    <div class="be-card" style="margin-bottom:1rem;">
+      <label class="be-label" for="id_subject">Konu</label>
+      <input type="text" name="subject" id="id_subject" class="be-input" required maxlength="200">
+    </div>
+
+    <div class="be-card" style="margin-bottom:1rem;">
+      <label class="be-label" for="id_body">Mesaj</label>
+      <textarea name="body" id="id_body" class="be-textarea" required></textarea>
+      <p class="be-muted" style="margin-top:.5rem;">Düz metin olarak gönderilir, biçimlendirme desteklenmez.</p>
+    </div>
+
+    <div class="be-card" style="margin-bottom:1.5rem;">
+      {% if show_recipient_list %}
+        <span class="be-label" style="margin-bottom:.25rem;">Alıcılar ({{ recipient_count }})</span>
+        <ul class="be-recipients">
+          {% for user in users %}
+            <li{% if not user.email %} class="be-skip"{% endif %}>
+              {{ user.username }}{% if user.email %} — {{ user.email }}{% else %} — e-posta yok, atlanacak{% endif %}
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <span class="be-label" style="margin-bottom:0;">Alıcılar</span>
+        <p class="be-muted">{{ recipient_count }} kullanıcı — e-postası olmayanlar otomatik atlanır.</p>
+      {% endif %}
+    </div>
+
+    <div style="display:flex;align-items:center;gap:1rem;">
+      <button type="submit" class="be-btn">Gönder</button>
+      <a href="{% url 'admin:auth_user_changelist' %}" class="be-link">İptal</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

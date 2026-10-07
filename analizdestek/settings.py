@@ -70,6 +70,7 @@ INSTALLED_APPS = [
     'makaleanaliz',
     'istatistik',
     'analytics',
+    'broadcast',
     'transcript',
     'crispy_forms',
     'crispy_bootstrap5',
@@ -283,6 +284,11 @@ UNFOLD = {
                     "title": "Kullanıcılar",
                     "icon": "person",
                     "link": reverse_lazy("admin:auth_user_changelist"),
+                },
+                {
+                    "title": "Gönderilen E-postalar",
+                    "icon": "mail",
+                    "link": reverse_lazy("admin:broadcast_emailbroadcast_changelist"),
                 },
                 {
                     "title": "Profiller",
