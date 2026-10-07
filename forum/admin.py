@@ -1,8 +1,13 @@
-from django.contrib import admin
+from django.conf import settings
+from django.contrib import admin, messages
+from django.contrib.admin.helpers import ACTION_CHECKBOX_NAME
 from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.core.mail import send_mail
+from django.shortcuts import render
 from django.utils.html import format_html
 from unfold.admin import ModelAdmin, TabularInline, StackedInline
+from broadcast.models import EmailBroadcast
 from .models import Section, Category, Topic, Post, Profile, ContactMessage, PrivateMessage, Badge, Skill, DailyTip, QuizQuestion, QuizScore, FreelanceJob, JobCategory, JobProposal, JobReview, UserQuizAttempt, DonationTier, Donation, JobPayment, TopicTag, SiteSettings, BlogCategory, BlogPost, BlogTag, SuccessStory, StudyRoom, ProjectRequest, ReferralCode, ReferralUse, TrainingRequest, ServicePage, ServicePageSection, ServicePageFAQ
 from .models import TeamMember
 
@@ -26,6 +31,48 @@ admin.site.unregister(User)
 @admin.register(User)
 class UserAdmin(BaseUserAdmin, ModelAdmin):
     inlines = (ProfileInline,)
+    actions = list(BaseUserAdmin.actions or []) + ['send_email_to_selected']
+
+    @admin.action(description='Seçilenlere e-posta gönder')
+    def send_email_to_selected(self, request, queryset):
+        if request.POST.get('confirm') == 'yes':
+            subject = request.POST.get('subject', '').strip()
+            body = request.POST.get('body', '').strip()
+            if not subject or not body:
+                self.message_user(request, 'Konu ve mesaj alanları boş olamaz.', level=messages.ERROR)
+                return None
+
+            users = list(queryset.exclude(email=''))
+            sent = failed = 0
+            for user in users:
+                try:
+                    send_mail(subject, body, settings.DEFAULT_FROM_EMAIL, [user.email], fail_silently=False)
+                    sent += 1
+                except Exception:
+                    failed += 1
+
+            broadcast = EmailBroadcast.objects.create(
+                sent_by=request.user,
+                subject=subject,
+                body=body,
+                recipient_count=len(users),
+                sent_count=sent,
+                failed_count=failed,
+            )
+            broadcast.recipients.set(users)
+
+            msg = f'{sent} kullanıcıya e-posta gönderildi.'
+            if failed:
+                msg += f' {failed} gönderim başarısız oldu.'
+            self.message_user(request, msg, level=messages.WARNING if failed else messages.SUCCESS)
+            return None
+
+        return render(request, 'admin/broadcast/send_email.html', {
+            **self.admin_site.each_context(request),
+            'title': 'Seçilenlere E-posta Gönder',
+            'users': queryset,
+            'action_checkbox_name': ACTION_CHECKBOX_NAME,
+        })
 
 # 1. Kategori Yönetimi (Inline)
 class CategoryInline(TabularInline):
