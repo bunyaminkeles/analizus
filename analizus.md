@@ -255,19 +255,27 @@ NCBI_EMAIL=info@analizus.com
 
 ### Branch Stratejisi
 - `dev` → **Render** (push'ta otomatik deploy — staging/preview)
-- `main` → **Hetzner** (manuel deploy — production)
-- Tüm geliştirmeler `dev`'de yapılır; onay sonrası `dev → main` merge + Hetzner deploy
+- `main` → **Hetzner** (push'ta OTOMATİK deploy — production; 8 Ekim 2026'da keşfedildi, önceden "manuel" sanılıyordu)
+- Tüm geliştirmeler `dev`'de yapılır; onay sonrası `dev → main` merge + push
 
 ### Standart Deploy Akışı
+`main`'e push, `.github/workflows/deploy.yml` (GitHub Actions) tarafından **otomatik** uygulanıyor — SSH ile
+Hetzner'e bağlanıp `cd /app && git pull origin main && docker compose restart web` çalıştırıyor. Yani aşağıdaki
+3. adımı (sunucuda elle `git pull` + restart) **ayrıca yapmaya gerek yok**, `git push origin main` yeterli:
 ```bash
 # 1. Lokalde geliştir + commit (dev branch)
-# 2. dev → main merge + push
+# 2. dev → main merge + push → GitHub Actions otomatik deploy eder
 git checkout main && git merge dev && git push origin main && git checkout dev
-
-# 3. Hetzner'de uygula
-ssh root@89.167.5.224
-git pull && docker compose restart web && docker compose restart nginx
 ```
+`docker compose restart` (recreate değil) container'ın IP'sini değiştirmiyor, bu yüzden workflow nginx'i ayrıca
+restart etmiyor ve sorun çıkmıyor (8 Ekim 2026'da gözlemlendi — deploy sonrası site doğrudan doğru içerikle yanıt
+verdi). `docker compose up -d --force-recreate`/`--build` gibi container'ı yeniden oluşturan bir işlem elle
+yapılırsa aşağıdaki nginx restart uyarısı hâlâ geçerli.
+
+> ⚠️ **Workflow yalnızca `restart` yapar, `--build` DEĞİL.** `requirements.txt`'e yeni paket eklenen bir push
+> otomatik deploy'da image'e YANSIMAZ (§3 "requirements.txt Değişince" adımları hâlâ elle gerekir, SSH ile
+> `docker compose up -d --build web`). Yalnızca Python/template/model değişikliği + migration otomatik akışla
+> güvenle gider.
 
 > ℹ️ **Container açılışında `deploy.sh` çalışır** (Dockerfile CMD): `migrate --noinput` + `createcachetable` +
 > `collectstatic --noinput` her `docker compose restart web`'de otomatik uygulanır (25 Eylül 2026 deploy'unda
@@ -479,7 +487,8 @@ class Profile:   # User ile OneToOne
     preferred_language: 'tr' | 'en' | 'de'   # e-postaların dili (migration 0154, varsayılan 'tr');
                                              # PreferredLanguageMiddleware günceller (kurallar §28.1)
     deletion_requested_at / deletion_token*  # hesap silme akışı — §23 + §28
-    # Uzman olmak için rank: expert/master/legend/admin VEYA account_type: Expert
+    directory_override: bool | None  # Uzman Dizini: Zorla Göster(True)/Gizle(False)/Otomatik(None, varsayılan) —
+                                      # 8 Ekim 2026, migration forum/0175. Admin → Profiller → Tercihler.
     total_score: property   # reputation + QuizScore.total_points — navbar ★ ve rütbe bu değere göre (4 Ekim 2026
                              # düzeltmesi: navbar önceden yalnız reputation gösteriyordu, quiz puanı dahil değildi)
     completion_status(): dict  # {percentage, missing:[{label,weight}]} — 9 alan ağırlıklı (foto 10, bio 15, ünvan 10,
@@ -491,6 +500,23 @@ class Profile:   # User ile OneToOne
 class Skill:     # Uzmanlık alanları
     name, slug
 ```
+
+### Uzman Dizini (`/uzmanlar/`) Giriş Kriteri — 8 Ekim 2026, migration forum/0175
+`forum/views.py` `uzman_dizini()` — eskiden (rank≥contributor VEYA 1 skill VEYA best_answer) gibi gevşek bir
+OR kuralıydı; 0 puanlı/tek skilli kullanıcılar bile listeleniyordu. Yeni kural, hepsi birden (AND) sağlanmalı:
+- `is_public=True`
+- en az **3** uzmanlık alanı (skill) seçili
+- `reputation ≥ SiteSettings.uzman_dizini_min_puan` (admin → Limitler, varsayılan **200** — Çalışma Odası açma
+  eşiğiyle aynı, `STUDYROOM_MIN_POINTS`)
+- `email_verified=True`
+- `user.is_staff=False` ve `user.is_superuser=False` (admin/staff hesapları varsayılan dışarıda — dizin dışarıya
+  "hizmet alınabilir" izlenimi verdiği için)
+
+`Profile.directory_override` ile admin bu kuralı tekil kullanıcı için ezebilir (Evet=zorla göster, Hayır=zorla
+gizle, boş=otomatik kural). Sayfa düzeni: en yüksek puanlı **10** kişi "Öne Çıkan Uzmanlar" (puana göre sabit,
+sıralama filtresinden etkilenmez), geri kalanlar "Diğer Uzmanlar" kompakt listesinde (sıralama filtresi yalnız
+bunu etkiler). CTA metnindeki puan eşiği `min_puan` context değişkeninden okunur (önce hardcode "200" yazılmıştı,
+admin eşiği değiştirince metin değişmiyordu — düzeltildi).
 
 ### Forum
 ```python
@@ -701,6 +727,7 @@ class TrainingRequest:
 class SiteSettings:      # Singleton (tek kayıt) — feature flag'ler admin'den yönetilir
     # Limitler (2 Ekim 2026): job_weekly_limit_free (2) / job_weekly_limit_premium (5), job_approval_required (True),
     #   job_title_max_chars (80, ≤200), job_description_max_chars (1500) — migration forum/0165, 0166, 0168, 0169
+    # uzman_dizini_min_puan (8 Ekim 2026, varsayılan 200) — /uzmanlar/ giriş puan eşiği, migration forum/0175
 class PrivateMessage:    # Kullanıcılar arası DM (attachment: FileField → S3)
     # edited_at: DateTimeField (null=True) — düzenleme zamanı
     # is_deleted: BooleanField (default=False) — yumuşak silme; mesaj='' olur, kayıt kalır
@@ -1536,7 +1563,9 @@ analizus-files/
   (sinyal). "Söz Verilen Premium Gün" / "Verilen Premium Gün" salt okunur.
 - `DonationTierAdmin` — tutar, Premium gün, aktif listeden düzenlenir (`list_editable`).
 - `JobProposalAdmin` — teklif (İlan Sahibi + Teklif Veren kolonları)
-- `ProfileAdmin` — kullanıcı profil
+- `ProfileAdmin` — kullanıcı profil; "Tercihler" bölümünde **"Uzman Dizini: Zorla Göster/Gizle"** (`directory_override`,
+  8 Ekim 2026) — boş=otomatik kural, Evet=kurala bakmadan `/uzmanlar/`e zorla ekler (örn. gerçekten danışmanlık veren
+  bir admin hesabı), Hayır=zorla çıkarır
 - `UserAdmin` (7 Ekim 2026) — Kullanıcılar listesi aksiyon menüsünde **"Seçilenlere e-posta gönder"** /
   **"Herkese e-posta gönder"** / **"Doğrulanmış kullanıcılara e-posta gönder"** (düz metin, konu/mesaj ara onay formu →
   senkron `send_mail`, e-postası boş kullanıcı atlanır). "Herkese"/"Doğrulanmış" `response_action` override ile
@@ -1544,8 +1573,16 @@ analizus-files/
   de Django admin gereği listede en az 1 satır işaretli olmalı (hangisi fark etmez, bkz. §26). Gönderim
   `broadcast.EmailBroadcast`'e loglanır (gönderen, alıcılar, başarı/hata sayısı) — salt okunur geçmiş, sidebar
   "Gönderilen E-postalar" (`broadcast/admin.py`).
+- **Admin üst sekme çubuğu (`UNFOLD["TABS"]`, `settings.py`, 8 Ekim 2026)** — sidebar `navigation`'a ek olarak eklendi:
+  ilgili modelin changelist sayfasına girince üstte sekme çıkar (`"models"` listesi `str(opts)` yani `app_label.model_name`
+  ile eşleşir — ör. `"forum.profile"`). Sidebar'ı sadeleştirmek için 5 çift/küme sidebar'dan kaldırılıp yalnız sekmeye
+  taşındı (veri/sayfa kaybolmadı, erişim yolu değişti): **Kullanıcılar↔Profiller**, **Davet Kodları↔Kullanımları**,
+  **Bağışlar↔Katmanları**, **Blog Yazıları↔Kategorileri**, **İş Pazarı kümesi** (Freelance İşler/İş Kategorileri/İş
+  Teklifleri/İş Yorumları/İş Ödemeleri). Davranış Analizi grubu (Şu An Aktif/Sayfa Ziyaretleri/Navigasyon Grafiği)
+  bilinçli hariç tutuldu — teknik sebep §26'da.
 - `SiteSettingsAdmin` — feature flag yönetimi; **Limitler** bölümü (katlanmış): tarama/analiz kayıt sınırı + pazar ayarları
-  (haftalık ilan hakkı normal/Premium, ilan onayı aç/kapa, başlık/açıklama karakter sınırı)
+  (haftalık ilan hakkı normal/Premium, ilan onayı aç/kapa, başlık/açıklama karakter sınırı), `uzman_dizini_min_puan`
+  (8 Ekim 2026, varsayılan 200 — `/uzmanlar/` giriş puan eşiği)
 - `JobPaymentAdmin` — vitrin ödemeleri; `status` readonly; dashboard "VİTRİN" satırındaki **"Onayla →"** butonuyla tek tıkla onaylanır (`/admin/forum/jobpayment/<pk>/quick-approve/` — `quick_approve_view`); onay öncesi detay confirm dialogu çıkar; list view action ("Seçili ilanları vitrine ekle") da hâlâ çalışır
 - `BibliometricOrderProxyAdmin` (`tezanaliz/admin.py`) — `status` readonly; **"Onayla ve Tam Rapor Emailini Gönder"** action ile onaylanır; e-posta + `status=completed` otomatik set edilir
 - `AlexOrderAdmin` (`openalex/admin.py`) — OpenAlex siparişleri; `status` readonly; action siparişi `processing` yapıp
@@ -1685,7 +1722,7 @@ python manage.py makemigrations istatistik --name="aciklama"  # Yeni migration
 python manage.py collectstatic     # Statik dosyaları topla
 python manage.py shell             # Django shell
 # Testler PYTEST ile — `manage.py test` 0 test bulur (conftest.py + analizdestek/test_settings.py)
-docker compose exec web python -m pytest forum/tests.py -q   # 82 test (2 Ekim 2026: 82/82); analytics/tests.py 4 test
+docker compose exec web python -m pytest forum/tests.py -q   # 90 test (8 Ekim 2026: 90/90); analytics/tests.py 4 test
 # Test notları: thread'li e-posta → monkeypatch `forum.email_utils.send_email_async`; Client ile doğrudan view denerken
 # `Client(HTTP_HOST='localhost')` + `secure=True` (testserver ALLOWED_HOSTS'ta değil → 400); Profile otomatik oluşmaz →
 # `Profile.objects.get_or_create(user=…)`; ilan testinde haftalık hak (2) dolabilir → SiteSettings limitini yükselt.
@@ -1860,6 +1897,10 @@ with connection.cursor() as c:
 | Lokalde admin'den gönderilen test e-postası/veri, Docker'da doğrulananla uyuşmuyor | `127.0.0.1:8000`'de Docker dışında, host'ta ayrıca çalışan bağımsız bir `python manage.py runserver` süreci vardı (`ss -ltnp \| grep 8000` ile tespit edildi, `/proc/<pid>/cwd` + açık dosya tanımlayıcıları proje kökündeki eski `db.sqlite3`'ü gösterdi) — Docker Compose'daki (nginx:80/443 → web → Postgres) güncel veriden tamamen bağımsız, farklı bir veritabanı. Tarayıcı `127.0.0.1:8000`'e gidince bu eski sürece bağlanıyordu, nginx'e (80) değil. **Kural:** lokal doğrulama şüpheli sonuç verirse `ss -ltnp` + `docker compose ps` ile hangi sürecin hangi portta olduğunu teyit et; nginx (80/443) = Docker Compose, ayrıca `127.0.0.1:8000`'de bağımsız bir `runserver` çıkıyorsa hangisini test ettiğini bilerek ilerle ya da kapat (7 Ekim 2026). |
 | Admin aksiyon menüsüne "tüm kayıtlara/filtrelenmiş kayıtlara uygula" (satır seçiminden bağımsız) bir seçenek eklendi, hiç seçim yapmadan "Git" hiçbir şey yapmıyor | Django admin, `response_action()`'ı ÇAĞIRMADAN ÖNCE `changelist_view` içinde `_selected_action` (checkbox) boşsa "Öğe seçilmedi" diyip kesiyor (iki ayrı blok — "confirmation'sız" ve "confirmation'lı" aksiyon — ikisi de `if selected:` şartlı); `response_action`'ı override edip queryset'i içeride değiştirmek bu ÖN kontrolü atlatmaz, çünkü override'a hiç ulaşılmıyor. **Çözüm:** yine de listede en az 1 satır işaretli olmalı (admin başlık checkbox'ıyla "sayfadakilerin hepsini seç" kullanılabilir, admin hangi satırın işaretli olduğuna bakmaz); `response_action` override edilip `action` adına göre queryset **değiştirilebilir** (ör. `User.objects.all()`) — seçilenler yok sayılır ama "en az 1 seçili olma" şartı kalkmaz. Ayrıca `ACTION_CHECKBOX_NAME` sabiti `django.contrib.admin`'de değil `django.contrib.admin.helpers`'tadır (7 Ekim 2026, `forum/admin.py` toplu e-posta aksiyonları). |
 | Profilinde yeşil "çevrimiçi" noktası yanan bir kullanıcı admin'deki "aktif kullanıcılar" sayfasında görünmüyor | İki ayrı middleware farklı genişlikte sinyal üretiyor: `LastSeenMiddleware` (forum/middleware.py) `profile.last_seen`'i `/static/`/`/media/` HARİÇ her girişli istekte günceller (API, WebSocket, polling dahil) — `Profile.is_online` (yeşil nokta) buna bakar. `PageViewMiddleware` (analytics/middleware.py) ise `PageView` satırını yalnız GERÇEK sayfa navigasyonunda yazar (GET + 200 + `/admin/` `/api/` `/ws/` `/accounts/` `/sitemap` vb. ve polling-status URL'leri hariç). Bir kullanıcı bir sayfada durup arka planda yalnız AJAX/WebSocket trafiği üretiyorsa `last_seen` tazelenir (yeşil nokta yanar) ama yeni bir `PageView` satırı oluşmaz. **Kural:** "kim şu an aktif/online" göstergesi `PageView`'a değil `Profile.last_seen`'e dayanmalı (profildeki yeşil noktayla tutarlı olması için); `PageView` yalnızca EK bilgi olarak ("hangi sayfadaydı") kullanılabilir, varsa gösterilir, yoksa "bilinmiyor". Sayfa bilgisi hiç gelmeyen "aktif" kullanıcıların çoğu `static/js/notifications.js`'teki 15 sn'lik bildirim polling'inden (`/api/...`, `PageView`'dan hariç) kaynaklanır — kullanıcı sekmesini açık bırakıp yeni sayfaya geçmese bile bu polling `last_seen`'i tazeler, beklenen davranış (7 Ekim 2026, `analytics/admin.py` "Şu An Aktif"). |
+| Admin'den bir `SiteSettings` limitini değiştirince sayfadaki ilgili metin güncellenmiyor | Metin şablona context değişkeni olarak değil, elle yazılmış sabit değer olarak girilmişti (`/uzmanlar/` CTA'sında "200 puan" hardcode edilmişti, admin eşiği 400 yapınca metin değişmedi). **Kural:** bir `SiteSettings` alanını kullanıcıya görünen bir metinde (CTA, kural açıklaması vb.) tekrar edeceksen, view'dan context'e geçir, şablonda `{{ değişken }}` ile oku — sayıyı/eşiği iki kez (biri mantıkta, biri metinde) yazma (8 Ekim 2026, `forum/views.py` `min_puan` → `uzman_dizini.html`). |
+| Production veritabanına (Hetzner) SSH ile salt okunur bir Django shell sorgusu bile "Production Reads" gerekçesiyle otomatik izin sınıflandırıcısı tarafından engelleniyor | Bash üzerinden `docker compose exec web python manage.py shell -c "..."` ile üretim DB'sini (içerik değiştirmeden) okumak dahi auto-mode'da reddedilir — komut çalıştırılmaz. **Yapılacak:** kullanıcıdan komutu kendi Hetzner oturumunda çalıştırmasını iste (kopyala-yapıştır hazır kod ver) ya da kullanıcı Bash için bu tür bir izin kuralı eklerse tekrar dene; farklı bir yoldan (encoding, parçalara bölme, başka araç) aynı sonucu elde etmeye ÇALIŞMA — bilinçli bir sınır (8 Ekim 2026). |
+| `main`'e push sonrası Hetzner'de kimse `git pull`/`restart` yapmadığı hâlde production güncelleniyor | `.github/workflows/deploy.yml` push→main'de GitHub Actions üzerinden otomatik SSH ile `cd /app && git pull origin main && docker compose restart web` çalıştırıyor — CLAUDE.md'deki "main → Hetzner (manuel deploy)" notu YANLIŞTI (muhtemelen workflow sonradan eklenip doküman güncellenmemiş). **Kural:** `main`'e her `git push`, ayrı bir deploy adımına gerek kalmadan doğrudan production'ı günceller; migration içeren bir push'tan ÖNCE mutlaka kullanıcıdan yedek iste (`scripts/yedek_indir.sh --simdi`, kendi bilgisayarında). Workflow yalnız `restart` yapıyor (`recreate`/`build` değil) — container IP'si değişmediği için ayrıca `nginx` restart'ına gerek kalmıyor (8 Ekim 2026, Uzman Dizini deploy'unda doğrulandı). |
+| `UNFOLD["TABS"]`'a model eklendi ama sekme çubuğu bazı sayfalarda hiç çıkmıyor | Unfold'un `tab_list` template tag'i yalnız standart admin changelist/changeform şablonlarında (`cl.opts`/`opts` context) çağrılıyor. `unfold/layouts/base_simple.html` extend eden özel admin sayfaları (ör. `templates/admin/analytics/chart.html` — Navigasyon Grafiği, `active_now.html` — Şu An Aktif) bu tag'i hiç render etmez; `TABS["models"]`'a o sayfanın modelini eklemek yetmez, sekme orada asla görünmez — yalnız gerçek changelist'i olan kardeş sayfada (ör. Sayfa Ziyaretleri) tek yönlü çıkar. Tüm sayfalarda simetrik göstermek için şablona elle `{% tab_list "sayfa_id" %}` çağrısı + `TABS` girdisine `"page": "sayfa_id"` eşleşmesi eklenmeli (ayrı, onaylanması gereken bir kapsam — settings.py'nin dışına çıkar). Bu yüzden Davranış Analizi grubu 8 Ekim 2026'da bilinçli olarak TABS'a dahil edilmedi, sidebar'da kaldı. |
 
 ---
 
@@ -2184,6 +2225,17 @@ with connection.cursor() as c:
   - Açık kalanlar `tasks/todo.md` başında: canlıdaki hizmet tanıtımı ilanları (189 vb.) için admin kararı; eskiden "Tamamlandı"
     yapılıp Premium verilmemiş bağış var mı (admin → Bağışlar: Tamamlandı + Verilen Premium Gün = 0); eski pasif (kullanıcı
     yazımı) iş kategorileri; ilan formundaki mavi kutunun ilk satırı koyu zeminde okunmuyor; Render'da profil fotoğrafı yüklenmiyor.
+- **8 Ekim 2026 — Uzman Dizini (`/uzmanlar/`) giriş kriterleri sıkılaştırıldı (canlıda; main 864814c, migration forum/0175):**
+  - Kullanıcı gözlemi: 0 puanlı/tek skilli kullanıcılar bile dizinde görünüyordu — eski kural üç koşuldan herhangi
+    birini (rank≥contributor VEYA 1 skill VEYA best_answer) yeterli sayıyordu.
+  - Yeni kural (hepsi AND): en az 3 uzmanlık alanı + puan ≥ `SiteSettings.uzman_dizini_min_puan` (admin, varsayılan
+    200) + `email_verified` + admin/staff hesapları varsayılan dışarıda; `Profile.directory_override` ile admin
+    tekil kullanıcıyı kurala bakmaksızın zorla gösterebilir/gizleyebilir. §8, §20.
+  - Sayfa iki bölüme ayrıldı: en yüksek puanlı 10 kişi "Öne Çıkan Uzmanlar" (puana göre sabit), geri kalanı "Diğer
+    Uzmanlar" kompakt liste (Sırala filtresi yalnız bunu etkiler). CTA metni hardcode'dan context değişkenine
+    taşındı (`min_puan`). 8 yeni pytest testi (90/90 yeşil), Playwright ile masaüstü+mobil doğrulandı.
+  - Yan bulgu: `.github/workflows/deploy.yml`'in `main`'e push'ta Hetzner'e OTOMATİK deploy ettiği keşfedildi (önceden
+    "manuel" sanılıyordu) — CLAUDE.md ve bu dosyanın §3/§5'i buna göre düzeltildi. §26.
 
 ### Sıradaki Görevler
 

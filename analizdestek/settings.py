@@ -291,34 +291,14 @@ UNFOLD = {
                     "link": reverse_lazy("admin:broadcast_emailbroadcast_changelist"),
                 },
                 {
-                    "title": "Profiller",
-                    "icon": "badge",
-                    "link": reverse_lazy("admin:forum_profile_changelist"),
-                },
-                {
                     "title": "Bağışlar",
                     "icon": "volunteer_activism",
                     "link": reverse_lazy("admin:forum_donation_changelist"),
                 },
                 {
-                    "title": "Bağış Katmanları",
-                    "icon": "layers",
-                    "link": reverse_lazy("admin:forum_donationtier_changelist"),
-                },
-                {
-                    "title": "İş Ödemeleri",
-                    "icon": "payments",
-                    "link": reverse_lazy("admin:forum_jobpayment_changelist"),
-                },
-                {
                     "title": "Davet Kodları",
                     "icon": "card_giftcard",
                     "link": reverse_lazy("admin:forum_referralcode_changelist"),
-                },
-                {
-                    "title": "Davet Kullanımları",
-                    "icon": "group_add",
-                    "link": reverse_lazy("admin:forum_referraluse_changelist"),
                 },
             ],
         },
@@ -349,11 +329,6 @@ UNFOLD = {
                     "link": reverse_lazy("admin:forum_blogpost_changelist"),
                 },
                 {
-                    "title": "Blog Kategorileri",
-                    "icon": "folder",
-                    "link": reverse_lazy("admin:forum_blogcategory_changelist"),
-                },
-                {
                     "title": "Başarı Hikayeleri",
                     "icon": "emoji_events",
                     "link": reverse_lazy("admin:forum_successstory_changelist"),
@@ -369,24 +344,9 @@ UNFOLD = {
                     "link": reverse_lazy("admin:forum_freelancejob_changelist"),
                 },
                 {
-                    "title": "İş Kategorileri",
-                    "icon": "category",
-                    "link": reverse_lazy("admin:forum_jobcategory_changelist"),
-                },
-                {
                     "title": "Hizmet Sayfaları",
                     "icon": "design_services",
                     "link": reverse_lazy("admin:forum_servicepage_changelist"),
-                },
-                {
-                    "title": "İş Teklifleri",
-                    "icon": "handshake",
-                    "link": reverse_lazy("admin:forum_jobproposal_changelist"),
-                },
-                {
-                    "title": "İş Yorumları",
-                    "icon": "star_rate",
-                    "link": reverse_lazy("admin:forum_jobreview_changelist"),
                 },
                 {
                     "title": "Günlük İpuçları",
@@ -528,6 +488,103 @@ UNFOLD = {
         },
         ],  # /navigation
     },  # /SIDEBAR
+    # Üst sekme çubuğu — aynı konunun farklı yüzleri arasında geçiş (ilgili model
+    # listeleme sayfasına girince otomatik görünür; "models" str(opts) ile eşleşir)
+    "TABS": [
+        {
+            "models": ["auth.user", "forum.profile"],
+            "items": [
+                {
+                    "title": "Kullanıcılar",
+                    "icon": "person",
+                    "link": reverse_lazy("admin:auth_user_changelist"),
+                },
+                {
+                    "title": "Profiller",
+                    "icon": "badge",
+                    "link": reverse_lazy("admin:forum_profile_changelist"),
+                },
+            ],
+        },
+        {
+            "models": ["forum.referralcode", "forum.referraluse"],
+            "items": [
+                {
+                    "title": "Davet Kodları",
+                    "icon": "card_giftcard",
+                    "link": reverse_lazy("admin:forum_referralcode_changelist"),
+                },
+                {
+                    "title": "Davet Kullanımları",
+                    "icon": "group_add",
+                    "link": reverse_lazy("admin:forum_referraluse_changelist"),
+                },
+            ],
+        },
+        {
+            "models": ["forum.donation", "forum.donationtier"],
+            "items": [
+                {
+                    "title": "Bağışlar",
+                    "icon": "volunteer_activism",
+                    "link": reverse_lazy("admin:forum_donation_changelist"),
+                },
+                {
+                    "title": "Bağış Katmanları",
+                    "icon": "layers",
+                    "link": reverse_lazy("admin:forum_donationtier_changelist"),
+                },
+            ],
+        },
+        {
+            "models": ["forum.blogpost", "forum.blogcategory"],
+            "items": [
+                {
+                    "title": "Blog Yazıları",
+                    "icon": "article",
+                    "link": reverse_lazy("admin:forum_blogpost_changelist"),
+                },
+                {
+                    "title": "Blog Kategorileri",
+                    "icon": "folder",
+                    "link": reverse_lazy("admin:forum_blogcategory_changelist"),
+                },
+            ],
+        },
+        {
+            "models": [
+                "forum.freelancejob", "forum.jobcategory", "forum.jobproposal",
+                "forum.jobreview", "forum.jobpayment",
+            ],
+            "items": [
+                {
+                    "title": "Freelance İşler",
+                    "icon": "work",
+                    "link": reverse_lazy("admin:forum_freelancejob_changelist"),
+                },
+                {
+                    "title": "İş Kategorileri",
+                    "icon": "category",
+                    "link": reverse_lazy("admin:forum_jobcategory_changelist"),
+                },
+                {
+                    "title": "İş Teklifleri",
+                    "icon": "handshake",
+                    "link": reverse_lazy("admin:forum_jobproposal_changelist"),
+                },
+                {
+                    "title": "İş Yorumları",
+                    "icon": "star_rate",
+                    "link": reverse_lazy("admin:forum_jobreview_changelist"),
+                },
+                {
+                    "title": "İş Ödemeleri",
+                    "icon": "payments",
+                    "link": reverse_lazy("admin:forum_jobpayment_changelist"),
+                },
+            ],
+        },
+    ],
 }
 
 # --- E-POSTA AYARLARI ---
