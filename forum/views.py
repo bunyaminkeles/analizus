@@ -3730,6 +3730,7 @@ def uzman_dizini(request):
     return render(request, 'forum/uzman_dizini.html', {
         'featured_profiles': featured_profiles,
         'other_profiles': other_profiles,
+        'min_puan': min_puan,
         'job_categories': job_categories,
         'selected_cat': cat_id,
         'selected_category': selected_category,
