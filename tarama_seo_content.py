@@ -4,15 +4,15 @@ TARAMA_SEO_CONTENT = {
         'intro': (
             'YÖK Ulusal Tez Merkezi, Türkiye\'deki üniversitelerde kabul edilmiş yüz binlerce '
             'lisansüstü tezi barındıran resmi akademik veritabanıdır. Yüksek lisans, doktora ve '
-            'tıpta uzmanlık tezlerini konu, üniversite, yıl ve tez türüne göre filtreleyerek '
+            'tıpta uzmanlık tezlerini anahtar kelime, yıl aralığı ve tez türüne göre filtreleyerek '
             'saniyeler içinde tarayabilirsiniz. Analizus YÖK Tez aracı, bu veritabanına filtrelenmiş '
             'erişim sağlar; arama sonuçlarını Excel veya TXT olarak indirmenize, e-posta ile '
             'almanıza ya da bibliometrik analize aktarmanıza olanak tanır.'
         ),
         'when_to_use': (
             'Tez konusu belirleme aşamasında benzer çalışmaları keşfetmek ve araştırma '
-            'boşluklarını tespit etmek için kullanın. Belirli bir üniversite ya da danışmanın '
-            'denetimindeki tezleri taramak, tez metodolojilerini karşılaştırmak ve Türkiye '
+            'boşluklarını tespit etmek için kullanın. Anahtar kelimeyle ilgili tezleri tarayıp '
+            'tez metodolojilerini karşılaştırmak ve Türkiye '
             'merkezli akademik yazını sistematik biçimde taramak istediğinizde en uygun araçtır. '
             'Yabancı kaynaklı literatür için OpenAlex; Türk hakemli dergi makaleleri için '
             'TR Dizin tarama araçlarını tercih edin.'

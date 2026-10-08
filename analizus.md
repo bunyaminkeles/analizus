@@ -1285,6 +1285,14 @@ def _broadcast_chat(uid1, uid2, event):
 - `/tezanaliz/` = **Analiz**: aynı arama + 7 grafiksel analiz (LDA, TF-IDF, trend, wordcloud) + PDF
 - `tezanaliz` scraper için `yoktez.services.scraper`'ı import eder — rate limiting her ikisine de uygulanır
 - HTTP tabanlı (requests + BeautifulSoup) — Selenium yok
+- Arama alanları (`YokTezSearchForm`): tez adı/anahtar kelime, özet/metin, tür, yıl aralığı, **üniversite**
+  (8 Ekim 2026'da eklendi — dropdown, `yoktez/services/yok_universities.py`'deki 67 üniversitelik ID→isim
+  haritasından; YÖK'ün yeni arayüzünün opak `kod` değeri DEĞİL, eski/sayısal ID bekliyor, `get_universite_id()` ile
+  çözülüyor). Danışman/yazar alanı forma YOK — backend (`scraper.py` `NEVI_DANISMAN`/`NEVI_YAZAR`) ikisini de
+  destekliyor ama danışman kullanıcı kararıyla eklenmedi, yazar YÖK tarafında bozuk olduğu için eklenmedi.
+- Arama tamamlanınca/başarısız olunca otomatik e-posta + in-app `Notification` gönderilir (8 Ekim 2026); sonuç
+  3 gün boyunca `/yoktez/`'de otomatik gösterilir (önceden 24 saat); `yoktez/demo/` S3 dosyaları 3 gün sonra
+  otomatik silinir (`cleanup_expired_yoktez_s3_files`, günlük `cleanup-s3` cron'una bağlı).
 
 ### Semantic Scholar (`semanticscholar/`)
 - `feature_semanticscholar = True`
@@ -1901,6 +1909,8 @@ with connection.cursor() as c:
 | Production veritabanına (Hetzner) SSH ile salt okunur bir Django shell sorgusu bile "Production Reads" gerekçesiyle otomatik izin sınıflandırıcısı tarafından engelleniyor | Bash üzerinden `docker compose exec web python manage.py shell -c "..."` ile üretim DB'sini (içerik değiştirmeden) okumak dahi auto-mode'da reddedilir — komut çalıştırılmaz. **Yapılacak:** kullanıcıdan komutu kendi Hetzner oturumunda çalıştırmasını iste (kopyala-yapıştır hazır kod ver) ya da kullanıcı Bash için bu tür bir izin kuralı eklerse tekrar dene; farklı bir yoldan (encoding, parçalara bölme, başka araç) aynı sonucu elde etmeye ÇALIŞMA — bilinçli bir sınır (8 Ekim 2026). |
 | `main`'e push sonrası Hetzner'de kimse `git pull`/`restart` yapmadığı hâlde production güncelleniyor | `.github/workflows/deploy.yml` push→main'de GitHub Actions üzerinden otomatik SSH ile `cd /app && git pull origin main && docker compose restart web` çalıştırıyor — CLAUDE.md'deki "main → Hetzner (manuel deploy)" notu YANLIŞTI (muhtemelen workflow sonradan eklenip doküman güncellenmemiş). **Kural:** `main`'e her `git push`, ayrı bir deploy adımına gerek kalmadan doğrudan production'ı günceller; migration içeren bir push'tan ÖNCE mutlaka kullanıcıdan yedek iste (`scripts/yedek_indir.sh --simdi`, kendi bilgisayarında). Workflow yalnız `restart` yapıyor (`recreate`/`build` değil) — container IP'si değişmediği için ayrıca `nginx` restart'ına gerek kalmıyor (8 Ekim 2026, Uzman Dizini deploy'unda doğrulandı). |
 | `UNFOLD["TABS"]`'a model eklendi ama sekme çubuğu bazı sayfalarda hiç çıkmıyor | Unfold'un `tab_list` template tag'i yalnız standart admin changelist/changeform şablonlarında (`cl.opts`/`opts` context) çağrılıyor. `unfold/layouts/base_simple.html` extend eden özel admin sayfaları (ör. `templates/admin/analytics/chart.html` — Navigasyon Grafiği, `active_now.html` — Şu An Aktif) bu tag'i hiç render etmez; `TABS["models"]`'a o sayfanın modelini eklemek yetmez, sekme orada asla görünmez — yalnız gerçek changelist'i olan kardeş sayfada (ör. Sayfa Ziyaretleri) tek yönlü çıkar. Tüm sayfalarda simetrik göstermek için şablona elle `{% tab_list "sayfa_id" %}` çağrısı + `TABS` girdisine `"page": "sayfa_id"` eşleşmesi eklenmeli (ayrı, onaylanması gereken bir kapsam — settings.py'nin dışına çıkar). Bu yüzden Davranış Analizi grubu 8 Ekim 2026'da bilinçli olarak TABS'a dahil edilmedi, sidebar'da kaldı. |
+| `Notification.objects.create(..., target=<uuid_pk'li_nesne>)` sessizce "integer out of range" hatası veriyor, bildirim hiç oluşmuyor | `forum.models.Notification.object_id` bir `PositiveIntegerField` — `GenericForeignKey` hedefi integer PK bekler. `YokTezSearchJob.id` gibi `UUIDField(primary_key=True)` kullanan bir modeli `target=` ile vermek dener ama DB seviyesinde patlar (try/except içine alınmışsa sessizce loglanır, kullanıcı bildirimi hiç görmez). **Çözüm:** hiçbir şablon zaten `notification.target`'ı render etmiyorsa (kontrol et: `grep -rn "notification.target\|notif.target" forum/templates/`), hedefi gerçek (UUID'li) nesne yerine semantik olarak ilişkili, integer PK'li bir nesneye bağla (ör. `job.user`) — mesaj metni (`verb`) zaten okunabilir açıklamayı taşıyor, `send_realtime_notification`'a geçilen `url` de ayrı bir parametre, ikisi de `target`'tan bağımsız çalışıyor (8 Ekim 2026, YÖK Tez tamamlanma bildirimi). |
+| Lokalde "sadece test ediyorum" diye S3'e yazan/silen bir fonksiyonu `docker compose exec` ile çalıştırmak üretim verisini gerçekten değiştiriyor | Lokal dev ve production **aynı AWS S3 bucket'ını** (`analizus-files`, `.env`'deki `AWS_*` değişkenleri ikisinde de aynı) paylaşıyor — yalnızca PostgreSQL ayrı (lokal `docker compose`'daki `db` servisi, production'dan bağımsız). Yani DB tarafında "lokalde deneyeyim" güvenli bir sandbox iken, **boto3 ile S3'e dokunan herhangi bir kod (upload/delete) lokalden çalıştırılsa bile gerçek, paylaşılan production dosyalarını etkiler.** 8 Ekim 2026'da `cleanup_expired_yoktez_s3_files()`'in "çökmediğini doğrulamak" için lokalde çalıştırılması, aslında Mart 2026'dan beri birikmiş 97 gerçek dosyayı silmiş (bu örnekte kullanıcının zaten verdiği kararla örtüştüğü için zararsız çıktı, ama kasıtsızdı). **Kural:** S3'e yazan/silen (`upload_to_s3`, `delete_from_s3`, `boto3.client('s3')...delete_object`/`put_object` içeren) herhangi bir kodu "yalnızca test amaçlı" çalıştırmadan önce bunun DB gibi izole olmadığını, gerçek bir işlem olacağını varsay. |
 
 ---
 
@@ -2309,7 +2319,38 @@ migration 0153–0155 container açılışında deploy.sh ile uygulandı; DB yed
 
 **Önceki (28 Eylül 2026 gece):** canlı = main ab57dcd (bibliometri kısıtlar bölümü + BibTeX).
 
-**En son (7 Ekim 2026, üçüncü tur):** `main` = **e812465** (dev'den merge, push edildi; Hetzner deploy kullanıcıda —
+**En son (8 Ekim 2026):** `dev` = **6f8fbc9** (push edildi `origin/dev`'e — Render'a otomatik deploy olur; `main`'e
+henüz push edilmedi, Hetzner'e dokunulmadı). **YÖK Tez (`/yoktez/`) kapsamlı çalışması** (`tasks/todo.md`'deki "YENİ
+ÖNCELİK" maddesi kapatıldı) — önce etraflı bir araştırma turu (GA4 huni ölçülemiyor çünkü hiç event yok; PageView +
+YokTezSearchJob zaman aralıkları örtüşmüyor; "9538 bulundu" ama 5 gösteriliyor sorunu; promo metninin vadettiği
+"yazar/danışmana göre arama" form'da hiç yoktu), sonra kullanıcı onayıyla uygulama: **(1) Üniversite filtresi** —
+canlı YÖK sitesi incelenip "Detaylı Arama"nın yeni arayüzün opak `kod`/`yoksisId` değerleriyle ÇALIŞMADIĞI, eski/
+sıralı bir sayısal ID beklediği keşfedildi (A/B testle kanıtlandı: aynı sorgu + `Universite=<opak kod>` → hata
+sayfası, `Universite=<küçük int>` → doğru filtrelenmiş sonuç); 67 üniversitelik ID→isim haritası (`yoktez/services/
+yok_universities.py`, ID 1-80 tarandı, 81-260 YÖK bağlantıyı kestiği için yarım kaldı) + form/scraper entegrasyonu.
+Ayrıca "Danışman" adlı arama alanı (`NEVI_DANISMAN`) backend'de zaten çalışır durumda bulundu ama kullanıcı "gerek
+yok" dedi, forma eklenmedi; "Yazar" alanı (`NEVI_YAZAR`) ise YÖK'ün kendi tarafında bozuk olduğu canlı testle
+doğrulandı, eklenmedi. **(2) Otomatik bildirim** — arama tamamlanınca/başarısız olunca artık otomatik e-posta +
+in-app `Notification` (önceden tamamen manuel "E-posta gönder" butonuna bağlıydı, buton tekrar-gönder işlevi olarak
+kaldı). **Gerçek bug bulunup düzeltildi:** `Notification.object_id` `PositiveIntegerField`, `YokTezSearchJob.id`
+UUID — ilk denemede "integer out of range" ile bildirim hiç oluşmuyordu; hedef UUID'li job yerine (hiçbir şablon
+zaten `target`'ı render etmiyor) `job.user`'a bağlanarak çözüldü (bkz. §26). **(3) 3 günlük pencere** — sonuç
+otomatik gösterim penceresi 24 saatten 3 güne çıkarıldı, kullanıcıya UI + e-postada bildiriliyor. **(4) S3
+temizliği** — `cleanup_expired_yoktez_s3_files(days=3)` eklendi, günlük `cleanup-s3` cron'una bağlandı; test
+sırasında **lokal dev ortamının gerçek/üretim S3 bucket'ını paylaştığı ortaya çıktı** (bkz. §26) — "test" amaçlı
+çalıştırma aslında gerçekleşti, Mart 2026'dan beri birikmiş 97 eski dosya gerçekten silindi (kullanıcı kararıyla
+uyumluydu: "geçmiş birikim de silinsin"). KVKK sayfasındaki yanlış beyan ("YÖK Tez 7 günde silinir" — hiç
+olmuyordu) düzeltildi, eksik olan PubMed eklendi, YÖK Tez doğru şekilde 3 gün yazıldı. 90/90 test yeşil, her adım
+gerçek YÖK sorgusuyla uçtan uca canlı test edildi. **Yan bulgu, ayrı görev olarak `tasks/todo.md`'ye not edildi (henüz
+uygulanmadı):** kullanıcı AWS S3 konsolünden bucket'ı incelerken `trdizin/full/`+`trdizin/orders/`'da 8 aylık eski
+dosyalar (cleanup kodu var ama muhtemelen bir prefix'te sessizce hata verip döngüyü kesiyor) ve
+`bibliometrics`/`makaleanaliz`/`semanticscholar`/`tezanaliz`'de HİÇ S3 temizliği olmadığı (dört aracın da S3'e
+yazdığı doğrulandı) keşfetti — tek merkezi `cleanup_s3_prefix()` + `RETENTION_RULES` tasarımı önerildi, onay
+bekliyor. **Diğer ikincil düzeltmeler:** `forum/api_views.py`'deki cron secret'ın production crontab'da (kullanıcı
+paylaştı) doğru olduğu `curl` ile teyit edildi; crontab satırları (`cleanup-s3` günlük 05:00 dahil tümü) kullanıcı
+tarafından doğrulandı.
+
+**Önceki (7 Ekim 2026, üçüncü tur):** `main` = **e812465** (dev'den merge, push edildi; Hetzner deploy kullanıcıda —
 sonraki oturumda `git log` ile teyit edilmeli). **BÜYÜK SEO DÖNÜŞÜMÜ Faz 2 ve Faz 4 tamamen kapandı** (ayrıntı
 `tasks/todo.md`). **Faz 2:** GSC "Redirect error" fix canlı `curl` ile teyit edildi (`/egitim/`, `/proje-talebi/` tek
 301→200); `category_topics` (`forum/views.py`) N+1 sorgusu düzeltildi — `select_related('starter')` eklendi (şablon

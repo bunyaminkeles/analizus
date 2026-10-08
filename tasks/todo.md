@@ -10,17 +10,44 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
-- [ ] **YENİ ÖNCELİK (7 Ekim 2026, kullanıcı): YÖK Tez tarama (`/yoktez/`) — sitenin en çok trafik ve kullanıcı
-  tıklaması alan alanı; buna yönelik kapsamlı bir çalışma yapılmalı.** Bilinenler: Faz 1'de (30 Eylül 2026)
-  anonim/Google görünümü title+meta düzeltildi (`yoktez/views.py:49` `promo_title`), o zamanki GSC ölçümü 8.748
-  gösterim / CTR %0,4 / sıra 7,5 idi — ölçüm tekrarlanmadı, bu fix sonrası CTR değişti mi bilinmiyor. Araştırılacak
-  açılar (sıradaki oturum): (1) GA4 (7 Ekim'de kuruldu, `G-HQRKFXP2ZR`) ile gerçek kullanıcı hunisi — arama formu →
-  sonuç → indirme adımlarında nerede terk ediliyor; (2) `/yoktez/` içerik derinliği — SSS yeterli mi, resmî YÖK Tez
-  sitesinden farkı (toplu tarama, Excel'e aktarma, filtre) yeterince öne çıkıyor mu; (3) iç linkleme — ilgili blog
-  yazıları (`veri-kazima-ve-arastirma` kategorisi) ve yeni hizmet sayfalarından (`/hizmetler/`) `/yoktez/`'e link
-  var mı, olmalı mı; (4) özellik/limit — sonuç sayısı sınırı, premium'a geçiş teşviki, indirme formatları rakiplere
-  göre yeterli mi; (5) `SiteSettings` üzerinden fiyat/limit kontrolü güncel mi. Bu madde bir sonraki oturumun
-  önceliği — detaylı plan/karar bu oturumda çıkarılmadı, yalnız kapsam not edildi.
+- [x] **(8 Ekim 2026 → büyük ölçüde tamamlandı, commit `f320e14` dev'de, PUSH EDİLMEDİ) YÖK Tez tarama
+  (`/yoktez/`) kapsamlı çalışması.** Yapılanlar: canlı YÖK sitesi incelenip "Detaylı Arama"nın (üniversite/enstitü/
+  anabilim dalı) yeni arayüzün opak `kod` değeriyle çalışmadığı, eski/sayısal bir ID beklediği keşfedildi (canlı
+  testle doğrulandı) — 67 üniversitelik ID haritası (`yoktez/services/yok_universities.py`) çıkarılıp forma/scraper'a
+  eklendi (ID 81-260 arası taranamadı, YÖK art arda istekte bağlantıyı kesti — ileride daha yavaş bir devam taraması
+  gerekebilir). Arama tamamlanınca/başarısız olunca artık otomatik e-posta + in-app `Notification` gönderiliyor
+  (önceden tamamen manuel "E-posta gönder" butonuna bağlıydı — bu buton tekrar-gönder işlevi olarak duruyor).
+  Sonuç gösterim penceresi 24 saatten 3 güne çıkarıldı, kullanıcıya UI'da ve e-postada bildiriliyor. `yoktez/demo/`
+  S3 dosyaları için 3 günlük otomatik temizlik eklendi, günlük `cleanup-s3` cron'una bağlandı; ilk çalıştırmada
+  (test sırasında, lokal/prod S3 bucket'ı paylaşıldığı ortaya çıktığı için gerçekten) Mart 2026'dan beri birikmiş
+  97 eski dosya da silindi. KVKK sayfasındaki yanlış beyan ("YÖK Tez 7 günde silinir" — hiç olmuyordu) düzeltildi,
+  eksik olan PubMed eklendi, YÖK Tez 3 gün olarak doğru yazıldı. Promo metnindeki "yazar/danışmana göre arama"
+  iddiası (form'da hiç yoktu) gerçek kapsamla uyumlu hale getirildi. 90/90 test yeşil.
+  **Kalan/ertelenen:** (1) GA4 huni analizi hâlâ yapılmadı (event tracking yok); (2) içerik derinliği/SSS/iç
+  linkleme maddeleri bu oturumda ele alınmadı; (3) "Danışman" alanı forma eklenmedi (backend destekliyor ama
+  kullanıcı "gerek yok" dedi); (4) yarım kalan 81-260 ID taraması; (5) deploy — kullanıcı "push et" demeden main'e
+  gitmeyecek.
+- [ ] **YENİ ÖNCELİK (8 Ekim 2026, kullanıcı: "not et ve önceliklendir"): S3 saklama süresi — tüm araçlarda
+  tutarlı, tek merkezi temizlik.** YÖK Tez çalışması sırasında AWS konsolünden canlı bucket (`analizus-files`)
+  incelenirken iki ayrı sorun bulundu: **(1) `trdizin/full/` ve `trdizin/orders/`** içinde 16.02.2026 tarihli
+  (8 aylık) dosyalar duruyor — oysa `cleanup_expired_trdizin_s3_files` (7 gün, günlük cron'da çalışıyor, doğrulandı)
+  bu klasörleri de taramalı; muhtemelen tek `try/except` içindeki üç prefix'ten (`demo/`,`full/`,`orders/`) birinde
+  oluşan bir hata döngüyü sessizce kesiyor, hata yalnız sunucu log'una yazılıyor (`/var/log/cron_cleanup_s3.log`,
+  henüz okunmadı — production dosyası, kullanıcı tarafından kontrol edilmeli). **(2) Dört araçta
+  (`bibliometrics`, `makaleanaliz`, `semanticscholar`, `tezanaliz`) S3'e dosya yükleniyor ama hiçbir temizlik
+  fonksiyonu yok** — bucket'ta gerçek, aylarca eski veri birikiyor (ör. `makaleanaliz/pdf/` içinde Mart-Mayıs 2026
+  tarihli PDF'ler görüldü). **Önerilen tasarım (kullanıcıya sunuldu, henüz onaylanmadı):** `forum/s3_utils.py`'a
+  tek bir `cleanup_s3_prefix(prefix, days)` yardımcı fonksiyonu (her prefix kendi try/except'inde — trdizin
+  bug'ını yapısal olarak çözer) + `forum/api_views.py`'de tek bir `RETENTION_RULES` listesiyle (openalex/trdizin/
+  oaipmh — 7 gün × 3 alt klasör; pubmed — 7 gün; yoktez — 3 gün; bibliometrics/semanticscholar — 7 gün × 2 alt
+  klasör; makaleanaliz/tezanaliz — 7 gün × 1 alt klasör) tüm araçların döngüyle temizlenmesi; DB referans
+  temizliği (alan adları farklı olduğu için) her aracın kendi `job_runner.py`'sinde küçük, S3'süz bir fonksiyon
+  olarak kalır. **Kasıtlı kapsam dışı:** `avatars/`, `team/` (kalıcı içerik — kullanıcı onayladı), `chat_attachments/`
+  (zaten ayrı haftalık `cleanup-attachments` cron'u var), `istatistik/` (farklı/bellek-içi mekanizma), `test/`
+  (ne olduğu belirsiz, dokunulmadı). **Değişecek dosyalar (10):** `forum/s3_utils.py`, `forum/api_views.py`,
+  `openalex|trdizin|oaipmh|pubmed|yoktez|bibliometrics|makaleanaliz|semanticscholar|tezanaliz/services/job_runner.py`.
+  **Önce:** kullanıcı Hetzner'de `tail -100 /var/log/cron_cleanup_s3.log` ile trdizin hatasının kök nedenini
+  doğrulamalı; sonra bu tasarım onaylanıp uygulanmalı.
 - [x] **(7-8 Ekim 2026 → tamamlandı)** Uzman Dizini (`/uzmanlar/`) giriş kriterleri sıkılaştırıldı — kullanıcı
   gözlemi: "bu listeye herkes girmemeli", ekran görüntüsünde 0 puanlı/Çaylak rütbeli bir kullanıcının listede
   göründüğü görülmüştü. Eski kural üç koşuldan herhangi birini yeterli sayıyordu (rank ∈ contributor+ YA DA 1 skill

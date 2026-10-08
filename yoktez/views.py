@@ -49,7 +49,7 @@ def yoktez_landing(request):
             'promo_title': 'YÖK Tez Arama ve Toplu Tez Tarama — Excel\'e Aktar',
             'promo_icon': 'bi-mortarboard-fill',
             'promo_color': 'success',
-            'promo_description': 'YÖK Ulusal Tez Merkezi arşivinde anahtar kelime, yazar veya danışmana göre tez arayın; toplam sonucu görün, en yeni 5 tezi Excel\'e aktarın. Bağımsız araç.',
+            'promo_description': 'YÖK Ulusal Tez Merkezi arşivinde başlık veya özet metninde anahtar kelimeyle tez arayın; sonuçlarda yazar, danışman, üniversite ve yıl bilgisini görün, en yeni 5 tezi Excel\'e aktarın. Bağımsız araç.',
             'promo_features': [
                 {'icon': 'bi-download', 'title': 'Excel & TXT İndirme', 'desc': 'Tez No, Başlık, Yazar, Danışman, Üniversite, Yıl ve Özet verilerini tek tıkla Excel veya TXT olarak indirin.'},
                 {'icon': 'bi-search', 'title': 'Kodsuz Veri Kazıma', 'desc': 'Python veya Selenium bilgisi gerekmeden, anahtar kelime ile binlerce tez verisini saniyeler içinde çekin.'},
@@ -57,7 +57,7 @@ def yoktez_landing(request):
                 {'icon': 'bi-graph-up-arrow', 'color': 'warning', 'title': 'Tek Tıkla Bibliometrik Analiz', 'desc': '10+ sonuçta Analiz Yap butonu ile trend ve dağılım grafiklerini PDF olarak alın.'},
             ],
             'promo_steps': [
-                'Arama kutusuna anahtar kelime, konu veya yazar adı girin.',
+                'Arama kutusuna tez başlığında veya özetinde geçecek anahtar kelimeyi girin.',
                 'YÖK Tez Merkezi\'nden veriler saniyeler içinde kazınır ve listelenir.',
                 'Excel veya TXT olarak indirin ya da Analiz Yap ile bibliometrik rapor alın.',
             ],
@@ -96,6 +96,7 @@ def yoktez_landing(request):
                 tez_ad=cd.get('tez_ad', ''),
                 yazar=cd.get('yazar', ''),
                 danisman=cd.get('danisman', ''),
+                universite=cd.get('universite', ''),
                 tur=cd.get('tur', '0'),
                 yil_baslangic=cd.get('yil_baslangic'),
                 yil_bitis=cd.get('yil_bitis'),
@@ -125,10 +126,11 @@ def yoktez_landing(request):
     ).order_by('-created_at').first()
 
     # Tamamlanmış son job — kullanıcı sayfadan ayrılıp dönünce sonuçları göster
+    # (3 günlük pencere — 8 Ekim 2026'da 24 saatten çıkarıldı, kullanıcıya sonuç ekranında gösteriliyor)
     completed_job = None
     if not active_job and request.method == 'GET':
         from django.utils import timezone
-        cutoff = timezone.now() - timezone.timedelta(hours=24)
+        cutoff = timezone.now() - timezone.timedelta(days=3)
         completed_job = YokTezSearchJob.objects.filter(
             user=user,
             status='completed',
@@ -143,6 +145,7 @@ def yoktez_landing(request):
             'yil_baslangic': restore_job.yil_baslangic,
             'yil_bitis': restore_job.yil_bitis,
             'metin': restore_job.metin or '',
+            'universite': restore_job.universite or '',
         })
 
     from tezanaliz.models import TezAnaliz

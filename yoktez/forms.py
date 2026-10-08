@@ -1,5 +1,7 @@
 from django import forms
 
+from .services.yok_universities import universite_choices
+
 
 TUR_CHOICES = [
     ('0', 'Hepsi'),
@@ -31,6 +33,12 @@ class YokTezSearchForm(forms.Form):
         required=False,
         label='Tez Türü',
         choices=TUR_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-select bg-dark text-white border-secondary'}),
+    )
+    universite = forms.ChoiceField(
+        required=False,
+        label='Üniversite',
+        choices=universite_choices,
         widget=forms.Select(attrs={'class': 'form-select bg-dark text-white border-secondary'}),
     )
     yil_baslangic = forms.IntegerField(

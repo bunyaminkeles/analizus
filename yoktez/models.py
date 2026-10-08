@@ -56,6 +56,8 @@ class YokTezSearchJob(models.Model):
             parts.append(f'Yazar: "{self.yazar}"')
         if self.metin:
             parts.append(f'Özet: "{self.metin}"')
+        if self.universite:
+            parts.append(f'Üniversite: "{self.universite}"')
         if self.yil_baslangic or self.yil_bitis:
             parts.append(f'({self.yil_baslangic or "?"}-{self.yil_bitis or "?"})')
         return ' | '.join(parts) if parts else 'Genel Tarama'
