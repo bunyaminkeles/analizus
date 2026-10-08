@@ -4,6 +4,7 @@ from django.http import JsonResponse, HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_GET, require_POST
 from django.http import Http404
+from django.core.exceptions import ValidationError
 from django_ratelimit.decorators import ratelimit
 from functools import wraps
 
@@ -128,14 +129,38 @@ def yoktez_landing(request):
     # Tamamlanmış son job — kullanıcı sayfadan ayrılıp dönünce sonuçları göster
     # (3 günlük pencere — 8 Ekim 2026'da 24 saatten çıkarıldı, kullanıcıya sonuç ekranında gösteriliyor)
     completed_job = None
-    if not active_job and request.method == 'GET':
+    recent_jobs = []
+    if request.method == 'GET':
         from django.utils import timezone
         cutoff = timezone.now() - timezone.timedelta(days=3)
-        completed_job = YokTezSearchJob.objects.filter(
-            user=user,
-            status='completed',
-            completed_at__gte=cutoff,
-        ).order_by('-completed_at').first()
+        recent_jobs = list(YokTezSearchJob.objects.filter(
+            user=user, status='completed', completed_at__gte=cutoff,
+        ).order_by('-completed_at')[:8])
+        if not active_job and recent_jobs:
+            completed_job = recent_jobs[0]
+
+    # Belirli bir aramaya ait link (e-posta/bildirim) tıklanmışsa TAM O ARAMAYI göster —
+    # aksi halde "en son tamamlanan arama" mantığı kullanıcıya başka bir sorgunun sonucunu
+    # gösterir (8 Ekim 2026 bulgusu: birden fazla arama yapılınca eski mail linki yanlış
+    # sonuca gidiyordu).
+    job_expired = False
+    requested_job_id = request.GET.get('job') if request.method == 'GET' else None
+    if requested_job_id:
+        try:
+            specific_job = YokTezSearchJob.objects.filter(
+                id=requested_job_id, user=user, status='completed',
+            ).first()
+        except (ValueError, ValidationError):
+            specific_job = None
+        if specific_job:
+            from django.utils import timezone
+            cutoff = timezone.now() - timezone.timedelta(days=3)
+            if specific_job.completed_at and specific_job.completed_at >= cutoff:
+                completed_job = specific_job
+                active_job = None
+            else:
+                job_expired = True
+                completed_job = None
 
     restore_job = active_job or completed_job
     if restore_job and request.method == 'GET':
@@ -157,6 +182,9 @@ def yoktez_landing(request):
         'daily_limit': daily_limit,
         'active_job_id': str(active_job.id) if active_job else None,
         'completed_job_id': str(completed_job.id) if completed_job else None,
+        'job_expired': job_expired,
+        'recent_jobs': recent_jobs,
+        'current_job_id': str(completed_job.id) if completed_job else None,
         'past_analiz_jobs': past_analiz_jobs,
         'seo_guide': TARAMA_SEO_CONTENT.get('yoktez'),
     })
@@ -273,9 +301,9 @@ def yoktez_send_demo_email(request, job_id):
         return JsonResponse({'error': 'Sonuçlar henüz hazır değil.'}, status=400)
     if job.total_results == 0:
         return JsonResponse({'error': 'Arama sonucu bulunamadı, gönderilecek bir şey yok.'}, status=400)
-    if job.demo_email_sent:
-        return JsonResponse({'error': 'Demo sonuçlar zaten gönderildi.'}, status=400)
 
+    # demo_email_sent kontrolü kasıtlı yok: iş tamamlanınca zaten otomatik e-posta gidiyor
+    # (job_runner._notify_job_completed), bu buton artık "tekrar gönder" işlevi görüyor (8 Ekim 2026).
     from .services.job_runner import send_demo_email_async
     send_demo_email_async(str(job.id))
     return JsonResponse({'success': True, 'message': f'Sonuçlar {request.user.email} adresine gönderildi.'})

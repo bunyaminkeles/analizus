@@ -114,7 +114,7 @@ def _notify_job_completed(job_id: str) -> None:
             verb=message,
             target=job.user,
         )
-        send_realtime_notification(job.user.id, message, '/yoktez/')
+        send_realtime_notification(job.user.id, message, f'/yoktez/?job={job.id}')
     except Exception as e:
         logger.error(f'YÖK Tez tamamlanma bildirimi oluşturulamadı [{job_id}]: {e}')
 

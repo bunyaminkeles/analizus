@@ -33,6 +33,14 @@
             <div class="alert alert-danger">{{ error }}</div>
             {% endif %}
 
+            {% if job_expired %}
+            <div class="alert alert-warning">
+                <i class="bi bi-clock-history me-2"></i>
+                Bu e-posta/bildirimdeki arama sonucuna artık erişilemiyor — 3 günlük erişim süresi doldu ve sonuçlar
+                otomatik olarak silindi. Aşağıdan yeni bir arama yapabilirsiniz.
+            </div>
+            {% endif %}
+
             {% if not request.user.profile.email_verified %}
             <div class="alert alert-warning">
                 <i class="bi bi-envelope-exclamation me-2"></i>
@@ -83,6 +91,21 @@
                 </div>
             </div>
 
+            {% if recent_jobs %}
+            <div class="card bg-dark border-secondary text-white mb-3">
+                <div class="card-header">Son Aramalarım <span class="text-muted small">(3 gün içinde erişilebilir)</span></div>
+                <div class="list-group list-group-flush">
+                    {% for rj in recent_jobs %}
+                    <a href="{% url 'yoktez:landing' %}?job={{ rj.id }}"
+                       class="list-group-item list-group-item-action bg-dark text-white border-secondary d-flex justify-content-between align-items-center{% if rj.id|stringformat:'s' == current_job_id %} border-start border-warning border-3{% endif %}">
+                        <span class="small">{{ rj.get_query_summary }}</span>
+                        <span class="text-muted small ms-2 text-nowrap">{{ rj.completed_at|date:"d.m.Y H:i" }}</span>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
             <!-- Devam eden tarama banner -->
             <div id="resume-banner" style="display:none;" class="alert alert-info mb-3">
                 <i class="bi bi-arrow-repeat me-2"></i>
@@ -108,9 +131,6 @@
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <span id="results-summary">Sonuçlar</span>
                         <div class="d-flex gap-2 flex-wrap">
-                            <button id="send-email-btn" class="btn btn-sm btn-outline-warning" style="display:none;">
-                                <i class="bi bi-envelope me-1"></i>E-posta Gönder
-                            </button>
                             <a id="download-btn" href="#" class="btn btn-sm btn-outline-primary" style="display:none;">
                                 <i class="bi bi-filetype-txt me-1"></i>TXT İndir
                             </a>
@@ -125,9 +145,6 @@
                                 <i class="bi bi-clock-history text-info mt-1"></i>
                                 <div class="text-white small">Bu sonuçlara bu sayfadan <strong>3 gün boyunca</strong> tekrar erişebilirsiniz; bu sürenin sonunda otomatik olarak silinir.</div>
                             </div>
-                        </div>
-                        <div id="email-sent-alert" class="alert alert-success" style="display:none;">
-                            <i class="bi bi-check-circle me-2"></i>Sonuçlar e-posta adresinize gönderildi.
                         </div>
                         <div id="results-list"></div>
 
@@ -316,9 +333,6 @@ function showResults(data) {
     });
 
     if (data.total_results > 0) {
-        if (!data.demo_email_sent) {
-            document.getElementById('send-email-btn').style.display = 'inline-block';
-        }
         const dlBtn = document.getElementById('download-btn');
         dlBtn.href = `/yoktez/download/${currentJobId}/`;
         dlBtn.style.display = 'inline-block';
@@ -329,31 +343,8 @@ function showResults(data) {
 
         document.getElementById('full-data-box').style.display = 'block';
     }
-
-    document.getElementById('send-email-btn').dataset.jobId = currentJobId;
 }
 
-document.getElementById('send-email-btn').addEventListener('click', function() {
-    const btn = this;
-    const jobId = btn.dataset.jobId || currentJobId;
-    if (!jobId) { alert('Oturum bilgisi kayboldu, lütfen sayfayı yenileyin.'); return; }
-    btn.disabled = true;
-    const csrf = document.querySelector('[name=csrfmiddlewaretoken]').value;
-    fetch(`/yoktez/send-demo/${jobId}/`, {
-        method: 'POST',
-        headers: {'X-CSRFToken': csrf, 'X-Requested-With': 'XMLHttpRequest'},
-    })
-    .then(r => r.json())
-    .then(data => {
-        if (data.success) {
-            btn.style.display = 'none';
-            document.getElementById('email-sent-alert').style.display = 'block';
-        } else {
-            btn.disabled = false;
-            alert(data.error || 'E-posta gönderilemedi.');
-        }
-    });
-});
 </script>
 
 <div class="container mt-4 mb-2" style="max-width:860px;">
