@@ -27,6 +27,27 @@ maddelerde.
   linkleme maddeleri bu oturumda ele alınmadı; (3) "Danışman" alanı forma eklenmedi (backend destekliyor ama
   kullanıcı "gerek yok" dedi); (4) yarım kalan 81-260 ID taraması; (5) deploy — kullanıcı "push et" demeden main'e
   gitmeyecek.
+- [ ] **YENİ ÖNCELİK (8 Ekim 2026, kullanıcı: "not et ve önceliklendir"): S3 saklama süresi — tüm araçlarda
+  tutarlı, tek merkezi temizlik.** YÖK Tez çalışması sırasında AWS konsolünden canlı bucket (`analizus-files`)
+  incelenirken iki ayrı sorun bulundu: **(1) `trdizin/full/` ve `trdizin/orders/`** içinde 16.02.2026 tarihli
+  (8 aylık) dosyalar duruyor — oysa `cleanup_expired_trdizin_s3_files` (7 gün, günlük cron'da çalışıyor, doğrulandı)
+  bu klasörleri de taramalı; muhtemelen tek `try/except` içindeki üç prefix'ten (`demo/`,`full/`,`orders/`) birinde
+  oluşan bir hata döngüyü sessizce kesiyor, hata yalnız sunucu log'una yazılıyor (`/var/log/cron_cleanup_s3.log`,
+  henüz okunmadı — production dosyası, kullanıcı tarafından kontrol edilmeli). **(2) Dört araçta
+  (`bibliometrics`, `makaleanaliz`, `semanticscholar`, `tezanaliz`) S3'e dosya yükleniyor ama hiçbir temizlik
+  fonksiyonu yok** — bucket'ta gerçek, aylarca eski veri birikiyor (ör. `makaleanaliz/pdf/` içinde Mart-Mayıs 2026
+  tarihli PDF'ler görüldü). **Önerilen tasarım (kullanıcıya sunuldu, henüz onaylanmadı):** `forum/s3_utils.py`'a
+  tek bir `cleanup_s3_prefix(prefix, days)` yardımcı fonksiyonu (her prefix kendi try/except'inde — trdizin
+  bug'ını yapısal olarak çözer) + `forum/api_views.py`'de tek bir `RETENTION_RULES` listesiyle (openalex/trdizin/
+  oaipmh — 7 gün × 3 alt klasör; pubmed — 7 gün; yoktez — 3 gün; bibliometrics/semanticscholar — 7 gün × 2 alt
+  klasör; makaleanaliz/tezanaliz — 7 gün × 1 alt klasör) tüm araçların döngüyle temizlenmesi; DB referans
+  temizliği (alan adları farklı olduğu için) her aracın kendi `job_runner.py`'sinde küçük, S3'süz bir fonksiyon
+  olarak kalır. **Kasıtlı kapsam dışı:** `avatars/`, `team/` (kalıcı içerik — kullanıcı onayladı), `chat_attachments/`
+  (zaten ayrı haftalık `cleanup-attachments` cron'u var), `istatistik/` (farklı/bellek-içi mekanizma), `test/`
+  (ne olduğu belirsiz, dokunulmadı). **Değişecek dosyalar (10):** `forum/s3_utils.py`, `forum/api_views.py`,
+  `openalex|trdizin|oaipmh|pubmed|yoktez|bibliometrics|makaleanaliz|semanticscholar|tezanaliz/services/job_runner.py`.
+  **Önce:** kullanıcı Hetzner'de `tail -100 /var/log/cron_cleanup_s3.log` ile trdizin hatasının kök nedenini
+  doğrulamalı; sonra bu tasarım onaylanıp uygulanmalı.
 - [x] **(7-8 Ekim 2026 → tamamlandı)** Uzman Dizini (`/uzmanlar/`) giriş kriterleri sıkılaştırıldı — kullanıcı
   gözlemi: "bu listeye herkes girmemeli", ekran görüntüsünde 0 puanlı/Çaylak rütbeli bir kullanıcının listede
   göründüğü görülmüştü. Eski kural üç koşuldan herhangi birini yeterli sayıyordu (rank ∈ contributor+ YA DA 1 skill
