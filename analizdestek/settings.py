@@ -309,19 +309,9 @@ UNFOLD = {
             "collapsible": True,
             "items": [
                 {
-                    "title": "Bölümler",
-                    "icon": "grid_view",
-                    "link": reverse_lazy("admin:forum_section_changelist"),
-                },
-                {
                     "title": "Konular",
                     "icon": "forum",
                     "link": reverse_lazy("admin:forum_topic_changelist"),
-                },
-                {
-                    "title": "Gönderiler",
-                    "icon": "chat_bubble",
-                    "link": reverse_lazy("admin:forum_post_changelist"),
                 },
                 {
                     "title": "Blog Yazıları",
@@ -344,11 +334,6 @@ UNFOLD = {
                     "link": reverse_lazy("admin:forum_freelancejob_changelist"),
                 },
                 {
-                    "title": "Hizmet Sayfaları",
-                    "icon": "design_services",
-                    "link": reverse_lazy("admin:forum_servicepage_changelist"),
-                },
-                {
                     "title": "Günlük İpuçları",
                     "icon": "lightbulb",
                     "link": reverse_lazy("admin:forum_dailytip_changelist"),
@@ -362,16 +347,6 @@ UNFOLD = {
                     "title": "Rozetler",
                     "icon": "military_tech",
                     "link": reverse_lazy("admin:forum_badge_changelist"),
-                },
-                {
-                    "title": "Yetenekler",
-                    "icon": "psychology",
-                    "link": reverse_lazy("admin:forum_skill_changelist"),
-                },
-                {
-                    "title": "Konu Etiketleri",
-                    "icon": "label",
-                    "link": reverse_lazy("admin:forum_topictag_changelist"),
                 },
                 {
                     "title": "Ekip Üyeleri",
@@ -554,7 +529,7 @@ UNFOLD = {
         {
             "models": [
                 "forum.freelancejob", "forum.jobcategory", "forum.jobproposal",
-                "forum.jobreview", "forum.jobpayment",
+                "forum.jobreview", "forum.jobpayment", "forum.servicepage",
             ],
             "items": [
                 {
@@ -581,6 +556,51 @@ UNFOLD = {
                     "title": "İş Ödemeleri",
                     "icon": "payments",
                     "link": reverse_lazy("admin:forum_jobpayment_changelist"),
+                },
+                {
+                    "title": "Hizmet Sayfaları",
+                    "icon": "design_services",
+                    "link": reverse_lazy("admin:forum_servicepage_changelist"),
+                },
+            ],
+        },
+        {
+            "models": ["forum.section", "forum.topic", "forum.post", "forum.topictag"],
+            "items": [
+                {
+                    "title": "Bölümler",
+                    "icon": "grid_view",
+                    "link": reverse_lazy("admin:forum_section_changelist"),
+                },
+                {
+                    "title": "Konular",
+                    "icon": "forum",
+                    "link": reverse_lazy("admin:forum_topic_changelist"),
+                },
+                {
+                    "title": "Gönderiler",
+                    "icon": "chat_bubble",
+                    "link": reverse_lazy("admin:forum_post_changelist"),
+                },
+                {
+                    "title": "Konu Etiketleri",
+                    "icon": "label",
+                    "link": reverse_lazy("admin:forum_topictag_changelist"),
+                },
+            ],
+        },
+        {
+            "models": ["forum.badge", "forum.skill"],
+            "items": [
+                {
+                    "title": "Rozetler",
+                    "icon": "military_tech",
+                    "link": reverse_lazy("admin:forum_badge_changelist"),
+                },
+                {
+                    "title": "Yetenekler",
+                    "icon": "psychology",
+                    "link": reverse_lazy("admin:forum_skill_changelist"),
                 },
             ],
         },
