@@ -10,6 +10,12 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
+- [ ] **YENİ (8 Ekim 2026, kullanıcı): `/hakkimizda/` sayfası sadeleştirilecek — iki ayrı kaldırma.**
+  (1) "Platformdaki Uzmanlardan Örnekler" bölümü kalkacak, yerine yalnız metin girdisi + `/uzmanlar/` (Uzman
+  Dizini) sayfasına link verilecek. (2) "**Ekip Üyeleri**" bölümü de kalkacak (admin'de `forum.TeamMember` modeli —
+  `/admin/forum/teammember/`, şu an 5 kayıt: Bünyamin, Esat, Ben, Joseph, open). İkisi de henüz
+  incelenmedi/uygulanmadı — hangi template/view olduğu, `TeamMember` modelinin başka yerde kullanılıp
+  kullanılmadığı (silinirse mi kaldırılsın yoksa yalnız sayfadan mı gizlensin) sıradaki oturumda netleştirilmeli.
 - [x] **(8 Ekim 2026 → büyük ölçüde tamamlandı, commit `f320e14` dev'de, PUSH EDİLMEDİ) YÖK Tez tarama
   (`/yoktez/`) kapsamlı çalışması.** Yapılanlar: canlı YÖK sitesi incelenip "Detaylı Arama"nın (üniversite/enstitü/
   anabilim dalı) yeni arayüzün opak `kod` değeriyle çalışmadığı, eski/sayısal bir ID beklediği keşfedildi (canlı

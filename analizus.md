@@ -1290,9 +1290,16 @@ def _broadcast_chat(uid1, uid2, event):
   haritasından; YÖK'ün yeni arayüzünün opak `kod` değeri DEĞİL, eski/sayısal ID bekliyor, `get_universite_id()` ile
   çözülüyor). Danışman/yazar alanı forma YOK — backend (`scraper.py` `NEVI_DANISMAN`/`NEVI_YAZAR`) ikisini de
   destekliyor ama danışman kullanıcı kararıyla eklenmedi, yazar YÖK tarafında bozuk olduğu için eklenmedi.
-- Arama tamamlanınca/başarısız olunca otomatik e-posta + in-app `Notification` gönderilir (8 Ekim 2026); sonuç
-  3 gün boyunca `/yoktez/`'de otomatik gösterilir (önceden 24 saat); `yoktez/demo/` S3 dosyaları 3 gün sonra
-  otomatik silinir (`cleanup_expired_yoktez_s3_files`, günlük `cleanup-s3` cron'una bağlı).
+- Arama tamamlanınca/başarısız olunca otomatik e-posta (yalnız `/yoktez/?job=<uuid>` linki — içerik tekrar üretmez,
+  manuel "E-posta Gönder" butonu kaldırıldı) + in-app `Notification` gönderilir (8 Ekim 2026); sonuç 3 gün boyunca
+  `/yoktez/?job=<uuid>`'de (ya da parametresiz `/yoktez/`'de "en son tamamlanan" olarak) otomatik gösterilir
+  (önceden 24 saat, önceden de yalnız "en son arama" — birden fazla arama yapılınca eski mail linki yanlış sonuç
+  gösteriyordu, `?job=` ile düzeltildi, bkz. §26); süresi dolmuş/geçersiz bir `?job=` net bir uyarı verir, başka bir
+  sonuca sessizce düşmez. "**Son Aramalarım**" listesi (son 8 tamamlanmış arama, 3 gün içinde) sayfaya eklendi.
+  Ekrandaki sonuç kartları yalnız TR başlık + EN başlık + yazar/yıl/üniversite/tür satırını gösterir (danışman ve
+  özet metni ekrandan kaldırıldı, TXT/Excel indirmelerinde eksiksiz kalır). `yoktez/demo/` S3 dosyaları 3 gün sonra
+  otomatik silinir (`cleanup_expired_yoktez_s3_files`, günlük `cleanup-s3` cron'una bağlı) — S3 nesneleri tek tek
+  bilinen URL ile kimlik doğrulamasız okunabilir ama bucket listelemesi kapalı (düşük risk, canlı testle doğrulandı).
 
 ### Semantic Scholar (`semanticscholar/`)
 - `feature_semanticscholar = True`
@@ -1913,6 +1920,8 @@ with connection.cursor() as c:
 | `UNFOLD["TABS"]`'a model eklendi ama sekme çubuğu bazı sayfalarda hiç çıkmıyor | Unfold'un `tab_list` template tag'i yalnız standart admin changelist/changeform şablonlarında (`cl.opts`/`opts` context) çağrılıyor. `unfold/layouts/base_simple.html` extend eden özel admin sayfaları (ör. `templates/admin/analytics/chart.html` — Navigasyon Grafiği, `active_now.html` — Şu An Aktif) bu tag'i hiç render etmez; `TABS["models"]`'a o sayfanın modelini eklemek yetmez, sekme orada asla görünmez — yalnız gerçek changelist'i olan kardeş sayfada (ör. Sayfa Ziyaretleri) tek yönlü çıkar. Tüm sayfalarda simetrik göstermek için şablona elle `{% tab_list "sayfa_id" %}` çağrısı + `TABS` girdisine `"page": "sayfa_id"` eşleşmesi eklenmeli (ayrı, onaylanması gereken bir kapsam — settings.py'nin dışına çıkar). Bu yüzden Davranış Analizi grubu 8 Ekim 2026'da bilinçli olarak TABS'a dahil edilmedi, sidebar'da kaldı. |
 | `Notification.objects.create(..., target=<uuid_pk'li_nesne>)` sessizce "integer out of range" hatası veriyor, bildirim hiç oluşmuyor | `forum.models.Notification.object_id` bir `PositiveIntegerField` — `GenericForeignKey` hedefi integer PK bekler. `YokTezSearchJob.id` gibi `UUIDField(primary_key=True)` kullanan bir modeli `target=` ile vermek dener ama DB seviyesinde patlar (try/except içine alınmışsa sessizce loglanır, kullanıcı bildirimi hiç görmez). **Çözüm:** hiçbir şablon zaten `notification.target`'ı render etmiyorsa (kontrol et: `grep -rn "notification.target\|notif.target" forum/templates/`), hedefi gerçek (UUID'li) nesne yerine semantik olarak ilişkili, integer PK'li bir nesneye bağla (ör. `job.user`) — mesaj metni (`verb`) zaten okunabilir açıklamayı taşıyor, `send_realtime_notification`'a geçilen `url` de ayrı bir parametre, ikisi de `target`'tan bağımsız çalışıyor (8 Ekim 2026, YÖK Tez tamamlanma bildirimi). |
 | Lokalde "sadece test ediyorum" diye S3'e yazan/silen bir fonksiyonu `docker compose exec` ile çalıştırmak üretim verisini gerçekten değiştiriyor | Lokal dev ve production **aynı AWS S3 bucket'ını** (`analizus-files`, `.env`'deki `AWS_*` değişkenleri ikisinde de aynı) paylaşıyor — yalnızca PostgreSQL ayrı (lokal `docker compose`'daki `db` servisi, production'dan bağımsız). Yani DB tarafında "lokalde deneyeyim" güvenli bir sandbox iken, **boto3 ile S3'e dokunan herhangi bir kod (upload/delete) lokalden çalıştırılsa bile gerçek, paylaşılan production dosyalarını etkiler.** 8 Ekim 2026'da `cleanup_expired_yoktez_s3_files()`'in "çökmediğini doğrulamak" için lokalde çalıştırılması, aslında Mart 2026'dan beri birikmiş 97 gerçek dosyayı silmiş (bu örnekte kullanıcının zaten verdiği kararla örtüştüğü için zararsız çıktı, ama kasıtsızdı). **Kural:** S3'e yazan/silen (`upload_to_s3`, `delete_from_s3`, `boto3.client('s3')...delete_object`/`put_object` içeren) herhangi bir kodu "yalnızca test amaçlı" çalıştırmadan önce bunun DB gibi izole olmadığını, gerçek bir işlem olacağını varsay. |
+| Aynı veriyi (ör. tez başlığı) iki ayrı yerde (TXT indirme + e-posta gövdesi) formatlayan kod, birinde düzeltilen bir hatayı (TR/EN başlık karışıklığı) diğerine hiç almıyor | `yoktez/services/scraper.py`'deki `generate_results_txt` doğru sırayla (`title_tr or title`) çalışırken, `job_runner.py`'deki e-posta gövdesi kendi ayrı döngüsünde yalnız `title` (İngilizce) kullanıyordu — kopya, senkronize olmayan implementasyon (8 Ekim 2026, otomatik e-posta eklenince kullanıcı ilk kez dikkatlice okuyunca fark edildi). **Kural:** aynı kaydı farklı çıktı formatlarında (TXT/Excel/e-posta/ekran) göstermek gerekiyorsa, mümkünse TEK bir formatlama fonksiyonunu çağır; ayrı bir kopya yazmak zorundaysan, birini düzeltirken diğerini de kontrol et. |
+| Kullanıcıya gönderilen bir link (e-posta, bildirim) "en son X" mantığıyla hedefleniyorsa, kullanıcı ikinci bir X yaptığında eski link YANLIŞ (yeni) sonucu gösterir | `yoktez_landing` view'ı `/yoktez/`'e her gelişte "kullanıcının en son tamamladığı arama"yı gösteriyordu — bir e-postanın hangi spesifik aramaya ait olduğunu hiç bilmiyordu. Kullanıcı iki arama yapıp eski e-postaya tıklayınca yeni aramanın sonucunu gördü (8 Ekim 2026). **Kural:** durumsal/geçmişe dönük bir kaynağa (arama sonucu, rapor, iş kaydı) e-posta/bildirim ile link verirken MUTLAKA o kaydın ID'sini taşıyan bir URL kullan (`?job=<uuid>` gibi); "en son olanı göster" mantığı yalnızca parametresiz, genel bir sayfa ziyareti için güvenlidir, asla geçmişe dönük bir referansın yerine geçemez. İş'e özel ID süresi dolmuşsa/geçersizse sessizce başka bir kayda düşme — açık bir "artık mevcut değil" mesajı ver. |
 
 ---
 
@@ -2334,8 +2343,52 @@ migration 0153–0155 container açılışında deploy.sh ile uygulandı; DB yed
 
 **Önceki (28 Eylül 2026 gece):** canlı = main ab57dcd (bibliometri kısıtlar bölümü + BibTeX).
 
-**En son (8 Ekim 2026):** `dev` = **6f8fbc9** (push edildi `origin/dev`'e — Render'a otomatik deploy olur; `main`'e
-henüz push edilmedi, Hetzner'e dokunulmadı). **YÖK Tez (`/yoktez/`) kapsamlı çalışması** (`tasks/todo.md`'deki "YENİ
+**En son (8 Ekim 2026, ikinci tur):** `main` = `dev` = **2c09b22** (her değişiklik ayrı merge+push ile Hetzner'e
+deploy edildi, GitHub Actions ile izlendi, her seferinde canlı `curl` ile doğrulandı). Bir önceki turun devamı —
+canlıya alındıktan sonra kullanıcının gerçek kullanımda bulduğu 4 ayrı, birbirini tetikleyen sorun düzeltildi:
+
+**(1) Başlık dil hatası (önceden fark edilmemiş, gerçek bug):** Otomatik e-posta eklenince kullanıcı ilk kez gelen
+maili dikkatlice inceledi ve tez başlıklarının **İngilizce** geldiğini fark etti. Kök neden: `job_runner.py`'deki
+e-posta gövdesi oluşturma kodu `r.get("title", ...)` kullanıyordu — scraper'da `'title'` anahtarı **İngilizce**
+başlığı taşıyor (`title_tr` Türkçesi), oysa TXT indirmedeki `generate_results_txt` zaten doğru şekilde
+`title_tr or title` sırasıyla çalışıyordu; e-posta kodu ayrı, kopya bir implementasyon olduğu için bu düzeltmeyi hiç
+almamıştı. Kullanıcı sorguladı: "S3 linki vermek güvenlik riski mi?" — canlı test edildi: bucket'ın tamamını
+**listelemek engelli** (403 AccessDenied, anonim), ama **bilinen bir URL'i doğrudan okumak kimlik doğrulamasız
+çalışıyor** (200 OK) — düşük risk (UUID tahmin edilemez + arayüz ham linki hiç göstermiyor) ama "varsayılan herkese
+açık" iyi pratik değil. Kullanıcı kararı: e-posta içeriği tekrar üretmesin, siteye (giriş arkasında) link versin —
+döngü tamamen kaldırıldı, e-posta artık kısa bir özet + `/yoktez/` linki.
+
+**(2) Manuel "E-posta Gönder" butonu önce bozuldu, sonra anlamsızlaştı:** Otomatik gönderim `demo_email_sent=True`
+yaptığı için `yoktez_send_demo_email` view'ındaki eski "zaten gönderildi" kontrolü butonu hemen kilitliyordu — önce
+bu kontrol kaldırıldı ("tekrar gönder" işlevi görsün diye). Ama e-posta artık veri değil link taşıdığı için
+kullanıcı "tekrar göndermenin anlamı yok" dedi — buton tamamen kaldırıldı (`yoktez/templates/yoktez/landing.html`).
+Backend endpoint'i (`yoktez/views.py` `yoktez_send_demo_email`, `yoktez/urls.py` `send-demo/`) **silinmedi** —
+`tezanaliz/templates/tezanaliz/landing.html` kendi "E-posta Gönder" butonu için aynı `/yoktez/send-demo/` uç
+noktasını kullanıyor (çapraz-app bağımlılık, silinmeden önce `grep` ile bulundu).
+
+**(3) En büyük bug — eski mail linki yanlış aramayı gösteriyordu:** Kullanıcı birden fazla arama yaptıktan sonra
+ESKİ bir e-postadaki `/yoktez/` linkine tıklayınca, o e-postanın ait olduğu aramayı değil **en son tamamlanan**
+aramayı görüyordu — çünkü `yoktez_landing` view'ı her zaman "kullanıcının en son tamamladığı iş"i gösteriyordu,
+linkin hangi işe ait olduğuna hiç bakmıyordu. Düzeltme: `/yoktez/?job=<uuid>` query param desteği eklendi — verilen
+job kullanıcıya ait, `completed` ve 3 gün içindeyse TAM O SONUCU gösterir; süresi dolmuşsa (veya geçersiz/başkasına
+aitse) sessizce başka bir sonuca düşmez, açık bir "3 günlük erişim süresi doldu" uyarısı verir. E-posta ve in-app
+bildirim linkleri artık `?job=` ile iş-spesifik. **Ardından ortaya çıkan ikinci boşluk:** iş-spesifik link olmadan
+kullanıcının 3 gün içindeki DİĞER aramalarına ulaşacağı hiçbir yer yoktu (`past_analiz_jobs` context'e geçiriliyor
+ama hiçbir zaman template'te render edilmiyormuş — fark edildi) — **"Son Aramalarım"** listesi eklendi (son 8
+tamamlanmış arama, her biri `?job=` linkiyle).
+
+**(4) Sonuç listesi görünümü:** Özet metni kaba `max-height:80px;overflow:hidden` ile cümle ortasında kesiliyor ve
+liste aşağı doğru uzuyordu — önce `-webkit-line-clamp:2` ile temiz 2 satıra çekildi, kullanıcı ekran görüntüsüyle
+("2. foto senden beklediğim") asıl istediğinin bu bile olmadığını gösterdi: Danışman satırı ve özet metni ekrandan
+**tamamen kaldırıldı**, yalnız TR başlık + EN başlık + yazar/yıl/üniversite/tür satırı kaldı. Her adımda TXT/Excel
+indirmelerinde tam verinin (1574 karakterlik gerçek özet dahil) hâlâ eksiksiz geldiği canlı testle doğrulandı —
+yalnız ekran görünümü değişti. 90/90 test her commit'te yeşil kaldı. **Not:** bu tur sırasında `main`'e, bu oturumla
+ilgisiz, paralel bir oturumdan admin sidebar sekme genişletmesi de geldi (`b9496e3`, `7915edf` — kullanıcı
+tarafından ayrıca yapıldı, kendi değişikliğini §20 civarında zaten belgeledi, burada tekrar edilmedi).
+
+**Önceki (8 Ekim 2026, ilk tur):** `dev` = **6f8fbc9** (push edildi `origin/dev`'e — Render'a otomatik deploy olur;
+`main`'e henüz push edilmedi, Hetzner'e dokunulmadı — **not: aynı gün ikinci turda merge edilip deploy edildi**).
+**YÖK Tez (`/yoktez/`) kapsamlı çalışması** (`tasks/todo.md`'deki "YENİ
 ÖNCELİK" maddesi kapatıldı) — önce etraflı bir araştırma turu (GA4 huni ölçülemiyor çünkü hiç event yok; PageView +
 YokTezSearchJob zaman aralıkları örtüşmüyor; "9538 bulundu" ama 5 gösteriliyor sorunu; promo metninin vadettiği
 "yazar/danışmana göre arama" form'da hiç yoktu), sonra kullanıcı onayıyla uygulama: **(1) Üniversite filtresi** —
