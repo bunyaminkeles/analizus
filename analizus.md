@@ -2248,6 +2248,19 @@ with connection.cursor() as c:
     taşındı (`min_puan`). 8 yeni pytest testi (90/90 yeşil), Playwright ile masaüstü+mobil doğrulandı.
   - Yan bulgu: `.github/workflows/deploy.yml`'in `main`'e push'ta Hetzner'e OTOMATİK deploy ettiği keşfedildi (önceden
     "manuel" sanılıyordu) — CLAUDE.md ve bu dosyanın §3/§5'i buna göre düzeltildi. §26.
+- **8 Ekim 2026 — Admin sidebar sadeleştirme: üst sekme çubuğu (canlıda; main — iki merge, migration yok):**
+  - Kullanıcı gözlemi: sidebar'da "Kullanıcılar" ve "Profiller" gibi birbiriyle doğrudan ilişkili kayıtlar ayrı
+    girişler olarak duruyordu, kalabalıktı.
+  - `UNFOLD["TABS"]` (`settings.py`) eklendi — ilgili modelin changelist sayfasına girince üstte sekme çıkıyor
+    (`"models"` listesi `str(opts)` ile eşleşir). 7 çift/küme sidebar'dan kaldırılıp yalnız sekmeye taşındı (veri/
+    sayfa kaybolmadı, yalnız erişim yolu değişti): Kullanıcılar↔Profiller, Davet Kodları↔Kullanımları, Bağışlar↔
+    Katmanları, Blog Yazıları↔Kategorileri, İş Pazarı kümesi (Freelance İşler/Kategoriler/Teklifler/Yorumlar/
+    Ödemeler/Hizmet Sayfaları — 6'lı), Forum çekirdeği (Bölümler/Konular/Gönderiler/Konu Etiketleri — sidebar'da
+    yalnız "Konular" kaldı), Kullanıcı Nişanları (Rozetler/Yetenekler — sidebar'da yalnız "Rozetler" kaldı). §20.
+  - Davranış Analizi grubuna (Şu An Aktif/Sayfa Ziyaretleri/Navigasyon Grafiği) bilinçli dokunulmadı: 2/3 sayfası
+    `unfold/layouts/base_simple.html` kullanıyor, Unfold'un `tab_list` tag'i bu şablonda hiç render edilmiyor —
+    sekmeyi orada da göstermek `settings.py` dışında 2 template dosyasına elle müdahale gerektirir (teknik kısıt
+    detayı §26'da). Kullanıcı bu kapsam genişlemesini onaylamadı, şimdilik sidebar'da bırakıldı.
 
 ### Sıradaki Görevler
 
