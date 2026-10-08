@@ -174,33 +174,27 @@ def send_demo_email_async(job_id: str) -> None:
         try:
             job = YokTezSearchJob.objects.get(id=job_id)
 
+            # Tam, doğru biçimlendirilmiş sonuçlar zaten /yoktez/ sayfasında (TR başlık + danışman dahil)
+            # gösteriliyor — e-posta içeriği tekrarlamaz, yalnız oraya yönlendirir (8 Ekim 2026,
+            # önceki sürümdeki yinelenen döngü yalnız İngilizce başlık gösteriyordu, danışman hiç yoktu).
             body_lines = [
                 f'YÖK Tez aramanızın örnek sonuçları hazır.',
                 f'',
                 f'Sorgu: {job.get_query_summary()}',
                 f'Toplam bulunan: {job.total_results} tez',
-                f'Aşağıda en yeni 5 tezin bilgileri yer almaktadır.',
                 f'',
+                f'En yeni 5 tezin başlık, yazar, danışman, üniversite ve özet bilgilerini görmek,',
+                f'TXT/Excel olarak indirmek için:',
+                f'  https://www.analizus.com/yoktez/',
+                f'',
+                f'Bu sonuçlara bu sayfadan 3 gün boyunca erişebilirsiniz; bu sürenin sonunda otomatik',
+                f'olarak silinir.',
+                f'',
+                f'─' * 40,
+                f'Tüm veriye ihtiyacınız varsa:',
+                f'  https://www.analizus.com/proje-talebi/?source=yoktez',
+                f'  adresinden talep oluşturabilirsiniz.',
             ]
-            for i, r in enumerate(job.demo_results, 1):
-                body_lines.append(f'{i}. {r.get("title", "(Başlık yok)")}')
-                body_lines.append(f'   Yazar: {r.get("author", "-")} | Yıl: {r.get("year", "-")}')
-                body_lines.append(f'   Üniversite: {r.get("university", "-")}')
-                abstract = r.get('abstract_tr') or r.get('abstract_en', '')
-                if abstract:
-                    trimmed = abstract[:500].rstrip()
-                    if len(abstract) > 500:
-                        trimmed += '…'
-                    body_lines.append(f'   Özet: {trimmed}')
-                body_lines.append('')
-
-            body_lines.append('─' * 40)
-            body_lines.append('Bu sonuçlara 3 gün boyunca https://www.analizus.com/yoktez/ adresinden')
-            body_lines.append('tekrar erişebilirsiniz; bu sürenin sonunda otomatik olarak silinir.')
-            body_lines.append('')
-            body_lines.append('Tüm veriye ihtiyacınız varsa:')
-            body_lines.append('  https://www.analizus.com/proje-talebi/?source=yoktez')
-            body_lines.append('  adresinden talep oluşturabilirsiniz.')
 
             email = EmailMessage(
                 subject=f'YÖK Tez Arama Sonuçları — {job.get_query_summary()[:50]}',
