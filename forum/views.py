@@ -3656,17 +3656,40 @@ def uzman_dizini(request):
         created_by=OuterRef('user'),
     ).order_by('-created_at').values('topic__pk')[:1]
 
+    # Dizine girme kriteri: en az 3 uzmanlık alanı + minimum puan (SiteSettings'ten admin ayarlar) +
+    # e-posta doğrulaması; admin/staff hesapları varsayılan dışarıda. `directory_override` ile admin
+    # tekil kullanıcıyı kurala bakmaksızın zorla gösterebilir/gizleyebilir. Ayrı, hafif bir sorguda
+    # hesaplanıyor ki aşağıdaki completed_jobs/avg_rating agregasyonlarıyla (farklı ilişkiler
+    # üzerinden Count/Avg) aynı annotate() çağrısında çakışıp yanlış sayı üretmesin.
+    min_puan = SiteSettings.load().uzman_dizini_min_puan
+
+    eligible_qs = (
+        Profile.objects
+        .filter(is_public=True)
+        .annotate(skill_count=Count('skills', distinct=True))
+        .filter(
+            Q(directory_override=True)
+            | Q(
+                directory_override__isnull=True,
+                skill_count__gte=3,
+                reputation__gte=min_puan,
+                email_verified=True,
+                user__is_staff=False,
+                user__is_superuser=False,
+            )
+        )
+    )
+    if selected_category:
+        eligible_qs = eligible_qs.filter(skills__id=selected_category.pk)
+
+    eligible_ids = list(eligible_qs.values_list('pk', flat=True).distinct())
+    total_count = len(eligible_ids)
+
     profiles = (
         Profile.objects
         .select_related('user')
         .prefetch_related('skills', 'badges')
-        .filter(is_public=True)
-        .filter(
-            Q(rank__in=['contributor', 'expert', 'master', 'legend', 'admin'])
-            | Q(skills__isnull=False)
-            | Q(best_answers_count__gt=0)
-        )
-        .distinct()
+        .filter(pk__in=eligible_ids)
         .annotate(
             completed_jobs=Count(
                 'user__proposals',
@@ -3685,24 +3708,28 @@ def uzman_dizini(request):
         )
     )
 
-    if selected_category:
-        profiles = profiles.filter(skills__id=selected_category.pk)
+    # Öne çıkan 10: her zaman puana göre sabit (Sırala filtresi bunu etkilemez). Geri kalanlar
+    # "diğer uzmanlar" listesinde, seçili sıralamaya göre gösterilir.
+    featured_profiles = list(profiles.order_by('-reputation', '-completed_jobs')[:10])
+    featured_ids = {p.id for p in featured_profiles}
+    other_profiles = profiles.exclude(id__in=featured_ids)
 
     if sort_by == 'is':
-        profiles = profiles.order_by('-completed_jobs', '-reputation')
+        other_profiles = other_profiles.order_by('-completed_jobs', '-reputation')
     elif sort_by == 'aktif':
-        profiles = profiles.order_by('-last_seen', '-reputation')
+        other_profiles = other_profiles.order_by('-last_seen', '-reputation')
     else:
-        profiles = profiles.order_by('-reputation', '-completed_jobs')
+        other_profiles = other_profiles.order_by('-reputation', '-completed_jobs')
 
     job_categories = JobCategory.objects.filter(is_active=True).order_by('order', 'title')
 
     # Kategori sayfası yalnız kendi tanıtım metni ve en az 2 uzmanı varsa indekslenir (aksi hâlde
-    # /uzmanlar/'ın zayıf kopyası). len() queryset'i değerlendirir; şablon aynı önbelleği kullanır.
-    cat_noindex = bool(selected_category) and (not selected_category.intro or len(profiles) < 2)
+    # /uzmanlar/'ın zayıf kopyası).
+    cat_noindex = bool(selected_category) and (not selected_category.intro or total_count < 2)
 
     return render(request, 'forum/uzman_dizini.html', {
-        'profiles': profiles,
+        'featured_profiles': featured_profiles,
+        'other_profiles': other_profiles,
         'job_categories': job_categories,
         'selected_cat': cat_id,
         'selected_category': selected_category,

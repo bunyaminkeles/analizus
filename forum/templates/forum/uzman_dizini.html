@@ -61,10 +61,15 @@
     </form>
   </div>
 
-  <!-- Kart grid -->
-  {% if profiles %}
-  <div class="row g-3">
-    {% for profile in profiles %}
+  {% if featured_profiles or other_profiles %}
+
+  <!-- Öne çıkan 10 -->
+  {% if featured_profiles %}
+  <h2 class="text-white fw-bold mb-3" style="font-size:1.1rem;">
+    <i class="bi bi-star-fill text-warning me-1"></i>Öne Çıkan Uzmanlar
+  </h2>
+  <div class="row g-3 mb-4">
+    {% for profile in featured_profiles %}
     {% with user=profile.user %}
     <div class="col-md-6 col-xl-4">
       <div class="card h-100 border-secondary expert-card" style="background:#16213e;transition:border-color .15s;">
@@ -187,6 +192,73 @@
     {% endwith %}
     {% endfor %}
   </div>
+  {% endif %}
+
+  <!-- Diğer uzmanlar: kompakt liste -->
+  {% if other_profiles %}
+  <h2 class="text-white fw-bold mb-3" style="font-size:1.1rem;">
+    <i class="bi bi-people text-primary me-1"></i>Diğer Uzmanlar
+  </h2>
+  <div class="d-flex flex-column gap-2 mb-4">
+    {% for profile in other_profiles %}
+    {% with user=profile.user %}
+    <div class="d-flex align-items-center gap-3 p-2 rounded flex-wrap" style="background:#16213e;border:1px solid rgba(255,255,255,0.08);">
+      <a href="{% url 'profile_detail' user.username %}" class="flex-shrink-0">
+        {% if profile.avatar %}
+        <img src="{{ profile.avatar.url }}" class="rounded-circle" width="36" height="36" style="object-fit:cover;" alt="{{ user.username }}">
+        {% else %}
+        <div class="rounded-circle d-flex align-items-center justify-content-center" style="width:36px;height:36px;background:linear-gradient(135deg,#1e3a5f,#0d6efd33);">
+          <span class="fw-bold text-primary" style="font-size:.85rem;">{{ user.username|first|upper }}</span>
+        </div>
+        {% endif %}
+      </a>
+
+      <div class="flex-grow-1 min-w-0" style="min-width:160px;">
+        <div class="d-flex align-items-center gap-2 flex-wrap">
+          <a href="{% url 'profile_detail' user.username %}" class="text-white fw-semibold text-decoration-none" style="font-size:.85rem;">
+            {{ user.get_full_name|default:user.username }}
+          </a>
+          {% with rank_info=profile.get_rank_display_with_icon %}
+          <span class="badge rounded-pill" style="background:{{ rank_info.color }}22;color:{{ rank_info.color }};border:1px solid {{ rank_info.color }}44;font-size:.65rem;font-weight:500;">
+            {{ rank_info.icon }} {{ rank_info.name }}
+          </span>
+          {% endwith %}
+          <span class="text-warning fw-bold" style="font-size:.78rem;">{{ profile.reputation }} puan</span>
+        </div>
+        {% if profile.skills.all %}
+        <div class="d-flex flex-wrap gap-1 mt-1">
+          {% for skill in profile.skills.all|slice:":3" %}
+          <a href="?cat={{ skill.id }}" class="badge text-decoration-none"
+             style="background:rgba(99,102,241,0.12);color:#a5b4fc;border:1px solid rgba(99,102,241,0.3);font-size:.65rem;font-weight:400;">
+            {{ skill.localized_title }}
+          </a>
+          {% endfor %}
+          {% if profile.skills.all|length > 3 %}
+          <span class="badge bg-secondary bg-opacity-25 text-white-50" style="font-size:.65rem;">+{{ profile.skills.all|length|add:"-3" }}</span>
+          {% endif %}
+        </div>
+        {% endif %}
+      </div>
+
+      <div class="d-flex gap-2 flex-shrink-0 ms-auto">
+        <a href="{% url 'profile_detail' user.username %}" class="btn btn-outline-secondary btn-sm py-1" style="font-size:.75rem;">
+          <i class="bi bi-person me-1"></i>Profil
+        </a>
+        {% if request.user.is_authenticated and request.user != user %}
+        <a href="{% url 'send_message' user.username %}" class="btn btn-outline-primary btn-sm py-1" style="font-size:.75rem;">
+          <i class="bi bi-chat-dots me-1"></i>Mesaj
+        </a>
+        {% elif not request.user.is_authenticated %}
+        <a href="{% url 'login' %}?next={% url 'uzman_dizini' %}" class="btn btn-outline-primary btn-sm py-1" style="font-size:.75rem;">
+          <i class="bi bi-chat-dots me-1"></i>Mesaj
+        </a>
+        {% endif %}
+      </div>
+    </div>
+    {% endwith %}
+    {% endfor %}
+  </div>
+  {% endif %}
 
   {% else %}
   <!-- Boş durum -->
@@ -208,7 +280,8 @@
     <h5 class="text-white fw-bold mb-2">Sen de Uzman Dizinine Gir</h5>
     <p class="text-white-50 small mb-3">
       Forum'da aktif ol, sorulara cevap ver, puan kazan.<br>
-      <strong class="text-white">500 puan</strong> → Uzman Rozeti &amp; dizinde görünme &nbsp;·&nbsp;
+      <strong class="text-white">200 puan</strong> + <strong class="text-white">en az 3 uzmanlık alanı</strong> +
+      doğrulanmış e-posta → dizinde görünme &nbsp;·&nbsp;
       <strong class="text-white">1000 puan</strong> → Doğrulanmış Uzman &amp; teklif verme hakkı
     </p>
     {% if not request.user.is_authenticated %}

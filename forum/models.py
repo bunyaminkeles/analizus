@@ -242,6 +242,13 @@ class Profile(models.Model):
     # Profil görünürlüğü
     is_public = models.BooleanField(default=True, verbose_name="Profil Herkese Açık")
     show_email = models.BooleanField(default=False, verbose_name="Email Adresini Göster")
+    directory_override = models.BooleanField(
+        null=True, blank=True, default=None,
+        verbose_name="Uzman Dizini: Zorla Göster/Gizle",
+        help_text="Boş = otomatik kural (puan + en az 3 uzmanlık alanı + e-posta doğrulama; admin/staff hesapları "
+                  "otomatik dışarıda kalır). İşaretli (Evet) = kurala bakılmaksızın dizine girer. İşaretli değil "
+                  "(Hayır) = kurala bakılmaksızın dizinde hiç görünmez.",
+    )
 
     # E-posta doğrulama durumu
     email_verified = models.BooleanField(default=False, verbose_name="E-posta Doğrulandı")
@@ -1496,6 +1503,13 @@ class SiteSettings(models.Model):
         default=5000,
         verbose_name="Scraping Maks. Kayıt Sayısı",
         help_text="TR Dizin, OpenAlex ve OAI-PMH scraperlarının çekebileceği maksimum kayıt sayısı. (default: 5000)",
+    )
+    uzman_dizini_min_puan = models.PositiveIntegerField(
+        default=200,
+        verbose_name="Uzman Dizini: minimum puan",
+        help_text="Dizine girmek için gereken en az akademik puan (reputation). Ayrıca en az 3 uzmanlık alanı "
+                  "seçili ve e-posta doğrulanmış olmalı; admin/staff hesapları varsayılan dışarıda kalır "
+                  "(Profile.directory_override ile tekil istisna yapılabilir).",
     )
 
     # Pazar: yeni ilan admin onayından sonra yayınlanır (kapalıysa anında yayın)

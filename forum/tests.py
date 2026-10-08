@@ -1233,3 +1233,102 @@ def test_job_title_limit_default_80(client, job_owner):
     assert r.status_code == 200 and 'en fazla 80 karakter' in r.content.decode()
     client.post('/market/new/', {**base, 'title': 'a' * 80})
     assert FreelanceJob.objects.filter(owner=job_owner).count() == 1
+
+
+# ─── Uzman Dizini: giriş kriterleri ────────────────────────────────────────────
+
+def _make_expert_candidate(username, *, skill_count=3, reputation=200, email_verified=True,
+                            is_staff=False, override=None):
+    """Uzman Dizini testleri için hızlı aday profil oluşturucu (varsayılanlar eşiği tam karşılar)."""
+    from forum.models import JobCategory, Profile
+    u = User.objects.create_user(username=username, password='testpass123', is_staff=is_staff)
+    profile, _ = Profile.objects.get_or_create(user=u)
+    profile.reputation = reputation
+    profile.email_verified = email_verified
+    profile.directory_override = override
+    profile.save()
+    for i in range(skill_count):
+        cat = JobCategory.objects.create(title=f'{username}-skill-{i}', is_active=True)
+        profile.skills.add(cat)
+    return u, profile
+
+
+def _listed_usernames(response):
+    """Context'teki featured_profiles + other_profiles'tan kullanıcı adlarını çıkarır.
+
+    Kategori filtre dropdown'ı da JobCategory başlığı olarak kullanıcı adını içerebildiği için
+    (ör. 'az_skill-skill-0') ham HTML'de substring arama yanlış pozitif verir — context güvenilir.
+    """
+    ctx = response.context
+    names = {p.user.username for p in ctx['featured_profiles']}
+    names |= {p.user.username for p in ctx['other_profiles']}
+    return names
+
+
+@pytest.mark.django_db
+def test_uzman_dizini_requires_three_skills(client):
+    """2 uzmanlık alanı yeterli değil, 3. eklenince listede görünür."""
+    from forum.models import JobCategory
+    user, profile = _make_expert_candidate('az_skill', skill_count=2)
+    assert 'az_skill' not in _listed_usernames(client.get(reverse('uzman_dizini')))
+    profile.skills.add(JobCategory.objects.create(title='az_skill-skill-ekstra', is_active=True))
+    assert 'az_skill' in _listed_usernames(client.get(reverse('uzman_dizini')))
+
+
+@pytest.mark.django_db
+def test_uzman_dizini_requires_min_puan(client):
+    """Puan SiteSettings eşiğinin altındaysa listede görünmez."""
+    from forum.models import SiteSettings
+    site = SiteSettings.load()
+    site.uzman_dizini_min_puan = 200
+    site.save()
+    _make_expert_candidate('dusuk_puan', reputation=50)
+    assert 'dusuk_puan' not in _listed_usernames(client.get(reverse('uzman_dizini')))
+
+
+@pytest.mark.django_db
+def test_uzman_dizini_requires_email_verified(client):
+    _make_expert_candidate('dogrulanmamis', email_verified=False)
+    assert 'dogrulanmamis' not in _listed_usernames(client.get(reverse('uzman_dizini')))
+
+
+@pytest.mark.django_db
+def test_uzman_dizini_qualifying_profile_listed(client):
+    """Puan + 3 uzmanlık alanı + doğrulanmış e-posta şartlarının hepsi sağlanınca listede görünür."""
+    _make_expert_candidate('nitelikli')
+    assert 'nitelikli' in _listed_usernames(client.get(reverse('uzman_dizini')))
+
+
+@pytest.mark.django_db
+def test_uzman_dizini_excludes_staff_by_default(client):
+    """Diğer şartlar sağlansa da staff hesabı override olmadan dizine girmez."""
+    _make_expert_candidate('yonetici', is_staff=True)
+    assert 'yonetici' not in _listed_usernames(client.get(reverse('uzman_dizini')))
+
+
+@pytest.mark.django_db
+def test_uzman_dizini_override_true_bypasses_rule(client):
+    """Puan/skill/e-posta şartı sağlanmasa, hatta staff olsa bile override=True ile listede görünür."""
+    _make_expert_candidate('ozel_eklenen', skill_count=0, reputation=0, email_verified=False,
+                            is_staff=True, override=True)
+    assert 'ozel_eklenen' in _listed_usernames(client.get(reverse('uzman_dizini')))
+
+
+@pytest.mark.django_db
+def test_uzman_dizini_override_false_always_excludes(client):
+    """Tüm otomatik şartlar sağlansa bile override=False ile listede hiç görünmez."""
+    _make_expert_candidate('gizlenen', override=False)
+    assert 'gizlenen' not in _listed_usernames(client.get(reverse('uzman_dizini')))
+
+
+@pytest.mark.django_db
+def test_uzman_dizini_top_10_split(client):
+    """11 uygun profilden en yüksek puanlı 10'u 'Öne Çıkan', en düşüğü 'Diğer Uzmanlar' bölümünde."""
+    for i in range(11):
+        _make_expert_candidate(f'sirali{i:02d}', reputation=1000 - i)
+    response = client.get(reverse('uzman_dizini'))
+    featured_usernames = [p.user.username for p in response.context['featured_profiles']]
+    other_usernames = [p.user.username for p in response.context['other_profiles']]
+    assert len(featured_usernames) == 10
+    assert 'sirali10' not in featured_usernames  # en düşük puanlı (990)
+    assert 'sirali10' in other_usernames
