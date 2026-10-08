@@ -1583,11 +1583,13 @@ analizus-files/
   "Gönderilen E-postalar" (`broadcast/admin.py`).
 - **Admin üst sekme çubuğu (`UNFOLD["TABS"]`, `settings.py`, 8 Ekim 2026)** — sidebar `navigation`'a ek olarak eklendi:
   ilgili modelin changelist sayfasına girince üstte sekme çıkar (`"models"` listesi `str(opts)` yani `app_label.model_name`
-  ile eşleşir — ör. `"forum.profile"`). Sidebar'ı sadeleştirmek için 5 çift/küme sidebar'dan kaldırılıp yalnız sekmeye
+  ile eşleşir — ör. `"forum.profile"`). Sidebar'ı sadeleştirmek için 7 çift/küme sidebar'dan kaldırılıp yalnız sekmeye
   taşındı (veri/sayfa kaybolmadı, erişim yolu değişti): **Kullanıcılar↔Profiller**, **Davet Kodları↔Kullanımları**,
   **Bağışlar↔Katmanları**, **Blog Yazıları↔Kategorileri**, **İş Pazarı kümesi** (Freelance İşler/İş Kategorileri/İş
-  Teklifleri/İş Yorumları/İş Ödemeleri). Davranış Analizi grubu (Şu An Aktif/Sayfa Ziyaretleri/Navigasyon Grafiği)
-  bilinçli hariç tutuldu — teknik sebep §26'da.
+  Teklifleri/İş Yorumları/İş Ödemeleri/**Hizmet Sayfaları**), **Forum çekirdeği** (Bölümler/Konular/Gönderiler/Konu
+  Etiketleri — sidebar'da yalnız "Konular" kaldı), **Kullanıcı Nişanları** (Rozetler/Yetenekler — sidebar'da yalnız
+  "Rozetler" kaldı). Davranış Analizi grubu (Şu An Aktif/Sayfa Ziyaretleri/Navigasyon Grafiği) bilinçli hariç tutuldu —
+  teknik sebep §26'da.
 - `SiteSettingsAdmin` — feature flag yönetimi; **Limitler** bölümü (katlanmış): tarama/analiz kayıt sınırı + pazar ayarları
   (haftalık ilan hakkı normal/Premium, ilan onayı aç/kapa, başlık/açıklama karakter sınırı), `uzman_dizini_min_puan`
   (8 Ekim 2026, varsayılan 200 — `/uzmanlar/` giriş puan eşiği)
