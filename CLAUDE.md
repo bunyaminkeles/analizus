@@ -1,6 +1,6 @@
 # Analizus.com — Claude Çalışma Kuralları
 
-Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~2470 satır; offset'ler 8 Ekim 2026). Tamamını okuma — ihtiyaca göre offset ile ilgili bölümü oku:
+Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~2540 satır; offset'ler 8 Ekim 2026 akşam). Tamamını okuma — ihtiyaca göre offset ile ilgili bölümü oku:
 
 | Bölüm | offset | Konu |
 |---|---|---|
@@ -10,13 +10,13 @@ Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~2470 satır; offset
 | §8–9 | 478 | Veri modelleri (`JobCategory.intro`, `Category.INDEX_MIN_TOPICS`, BlogPost SEO alanları, pazar: ilan onayı / haftalık hak / form sınırları, `ServicePage`/`ServicePageSection`/`ServicePageFAQ`, `Profile.completion_status()`/`total_score`, profil "Hakkında", bağış `premium_days_promised`, **yeni: Uzman Dizini giriş kriteri — `Profile.directory_override`, `SiteSettings.uzman_dizini_min_puan`**), feature flag'ler (`feature_hizmet_sayfalari`) |
 | §10–11 | 813 | CSS/tasarım sistemi, WebSocket (route'lar) |
 | §12 | 938 | İstatistik araçları (akış, PDF, polling, konsol düzeni: Nedir kartı → SSS → CTA, `tool_title`) |
-| §13–15 | 1098 | DM/oda mesajlaşma, bibliometri, akademik tarama (Google'ın gördüğü başlık = view `promo_title`) |
-| §16–19 | 1328 | E-posta (500 hata e-postası), AnalizBot/AI Asistan, S3, güvenlik (çerez onayı, cron anahtarı) |
-| §20–23 | 1547 | Admin (sipariş akışı, Fiyatlandırma, Limitler, İlan onayı/ret aksiyonları + panel "İlan Onayı", bağış onayı aksiyonu, İş Kategorisi tanıtım metni, blog SEO, `UserAdmin` toplu e-posta aksiyonları, Navigasyon Grafiği tarih filtresi + "Şu An Aktif", **yeni: `ProfileAdmin` "Uzman Dizini: Zorla Göster/Gizle"**), pazar akışı (pending → open), session, cron |
-| §24–25 | 1698 | Geliştirme ortamı (pytest 90 test + test notları, çeviri komutları), değişmez kurallar |
-| §26 | 1785 | Sık yapılan hatalar ve çözümleri (Unfold admin dark: sınıfı sorunu, lokalde bağımsız `runserver` karışıklığı, Django admin aksiyonu seçimsiz çalıştırma kısıtı, `last_seen` vs `PageView` sinyal farkı, **yeni: SiteSettings değeri metinde hardcode edilmemeli, production'a Bash ile salt okunur sorgu bile otomatik izinle engellenir, `main`'e push = otomatik deploy**) |
-| §27 | 1899 | Görev listesi (tamamlanan / sıradaki; **en son: "8 Ekim 2026" Uzman Dizini giriş kriterleri sıkılaştırıldı; sıradaki öncelik YÖK Tez tarama**) |
-| §28 | 2403 | Çok dilli yapı (TR/EN/DE) ve gizlilik — mimari, çeviri kuralları, iş akışı, EN/DE ürün kararları (§28.7) |
+| §13–15 | 1098 | DM/oda mesajlaşma, bibliometri, akademik tarama (Google'ın gördüğü başlık = view `promo_title`; **yeni: YÖK Tez üniversite filtresi — `yok_universities.py`, YÖK'ün eski/sayısal ID'si, opak `kod` değil**) |
+| §16–19 | 1336 | E-posta (500 hata e-postası), AnalizBot/AI Asistan, S3, güvenlik (çerez onayı, cron anahtarı) |
+| §20–23 | 1555 | Admin (sipariş akışı, Fiyatlandırma, Limitler, İlan onayı/ret aksiyonları + panel "İlan Onayı", bağış onayı aksiyonu, İş Kategorisi tanıtım metni, blog SEO, `UserAdmin` toplu e-posta aksiyonları, Navigasyon Grafiği tarih filtresi + "Şu An Aktif", **yeni: `ProfileAdmin` "Uzman Dizini: Zorla Göster/Gizle"**), pazar akışı (pending → open), session, cron |
+| §24–25 | 1713 | Geliştirme ortamı (pytest 90 test + test notları, çeviri komutları), değişmez kurallar |
+| §26 | 1800 | Sık yapılan hatalar ve çözümleri (Unfold admin dark: sınıfı sorunu, lokalde bağımsız `runserver` karışıklığı, Django admin aksiyonu seçimsiz çalıştırma kısıtı, `last_seen` vs `PageView` sinyal farkı, SiteSettings değeri metinde hardcode edilmemeli, production'a Bash ile salt okunur sorgu bile otomatik izinle engellenir, `main`'e push = otomatik deploy, **yeni: `Notification.object_id` UUID PK'yi kabul etmez, lokal+production AYNI S3 bucket'ını paylaşıyor (DB ayrı, S3 ortak — lokalde "test" bile gerçek silme olabilir)**) |
+| §27 | 1917 | Görev listesi (tamamlanan / sıradaki; **en son: "8 Ekim 2026" YÖK Tez kapsamlı çalışması (üniversite filtresi, otomatik bildirim, 3 gün erişim, S3 temizliği — `dev`'e push edildi, `main`'e henüz değil); sıradaki öncelik: S3 saklama süresi birleştirme (trdizin full/orders sessiz hata + 4 araçta hiç temizlik yok)**) |
+| §28 | 2452 | Çok dilli yapı (TR/EN/DE) ve gizlilik — mimari, çeviri kuralları, iş akışı, EN/DE ürün kararları (§28.7) |
 
 ---
 
@@ -77,6 +77,9 @@ Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~2470 satır; offset
 - Django admin aksiyonunu (seçimden bağımsız "herkese" tipi) çalıştırmak için de listede en az 1 satır işaretli olmalı — `response_action` override bu ön-şartı atlatmaz, yalnız queryset'i değiştirir; `ACTION_CHECKBOX_NAME` → `django.contrib.admin.helpers` (§26, 7 Ekim 2026)
 - "Kim şu an aktif/online" göstergesi `Profile.last_seen`'e dayanmalı (profildeki yeşil nokta aynı alan, her istekte güncellenir) — `PageView` yalnız gerçek sayfa navigasyonunda yazılır, AJAX/WebSocket'te duran kullanıcıyı kaçırır; `PageView` yalnız ek "hangi sayfada" bilgisi için kullan (§26, 7 Ekim 2026)
 - Lokalde şüpheli/tutarsız sonuç alırsan `ss -ltnp \| grep 8000` + `docker compose ps` ile hangi sürecin (Docker mu, bağımsız bir `manage.py runserver` mı) hangi veritabanını kullandığını doğrula — ikisi aynı anda farklı portlarda/DB'lerle çalışabilir (§26, 7 Ekim 2026)
+- `info@analizus.com` Claude Startups programına doğrulandı (8 Ekim 2026) — bu **otomatik Anthropic API kredisi vermez** (Console Credits paneli $0 kalır), yalnız üçüncü taraf ortak teklifleri (Firecrawl vb.) + Applied AI office hours açar; kullanıcının ayrı 21€/ay claude.ai Pro aboneliği farklı bir ürün, bununla ikame edilmez. Projedeki 6 tarama aracından 5'i (`openalex`, `trdizin`, `semanticscholar`, `pubmed`, `oaipmh`) zaten resmî API kullanıyor — Firecrawl'ı yalnız `yoktez` scraper'ı somut bir engelleme sorunu (Cloudflare/CAPTCHA/IP ban) yaşarsa değerlendir
+- `forum.models.Notification.object_id` bir `PositiveIntegerField` — UUID PK'li bir modele (ör. `YokTezSearchJob`) `target=`/`object_id=` ile bildirim bağlama sessizce "integer out of range" ile patlar; hiçbir şablon zaten `notification.target`'ı render etmiyor, hedefi integer PK'li ilişkili bir nesneye (ör. `job.user`) bağla (§26, 8 Ekim 2026)
+- **Lokal dev ve production AYNI S3 bucket'ını paylaşıyor** (`analizus-files`, `.env`'deki `AWS_*` ikisinde de aynı) — yalnız PostgreSQL ayrı. S3'e yazan/silen (`upload_to_s3`, `boto3...delete_object`) bir kodu lokalde "sadece test ediyorum" diye çalıştırmak GERÇEK production dosyalarını siler/değiştirir; DB gibi izole bir sandbox değil (§26, 8 Ekim 2026)
 
 ## SEO Kritik Kurallar — ayrıntı analizus.md §12, §15, §26, `tasks/todo.md` "BÜYÜK SEO DÖNÜŞÜMÜ"
 - Google (anonim) araç/tarama sayfalarında `service_promo.html` görür → başlık/açıklama/H1 view'daki `promo_title`/`promo_description`; `landing.html` blokları yalnız giriş yapmışa. Doğrulama **oturumsuz** `curl` ile
