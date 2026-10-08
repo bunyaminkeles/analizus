@@ -101,8 +101,12 @@ def _determine_query(tez_ad='', yazar='', danisman='', metin=''):
 
 
 def _build_form(keyword='', nevi=NEVI_TUMU, tip='2',
-                yil_baslangic=None, yil_bitis=None, tur='0'):
-    """GForm2 (islem=4) POST verisi."""
+                yil_baslangic=None, yil_bitis=None, tur='0', universite_id='0'):
+    """GForm2 (islem=4) POST verisi.
+
+    Universite: YÖK'ün yeni arayüzdeki opak 'kod' değerini değil, eski/sayısal
+    üniversite ID'sini bekliyor (canlı test: 8 Ekim 2026) — bkz. yok_universities.py.
+    """
     return {
         'keyword':    keyword,
         'keyword1':   '',
@@ -115,6 +119,7 @@ def _build_form(keyword='', nevi=NEVI_TUMU, tip='2',
         'yil1':       str(yil_baslangic) if yil_baslangic else '0',
         'yil2':       str(yil_bitis) if yil_bitis else '0',
         'Tur':        tur if tur and tur != '0' else '0',
+        'Universite': str(universite_id) if universite_id else '0',
     }
 
 
@@ -369,7 +374,7 @@ def _type_ok(record: dict, tur: str) -> bool:
 
 def search(tez_ad='', yazar='', danisman='',
            tur='0', yil_baslangic=None, yil_bitis=None, metin='',
-           demo_limit=5) -> tuple[int, list[dict]]:
+           universite_id='0', demo_limit=5) -> tuple[int, list[dict]]:
     """
     YÖK Tez araması yapar (yeni arayüz: islem=4).
     Returns: (total_count, demo_records)
@@ -377,12 +382,12 @@ def search(tez_ad='', yazar='', danisman='',
     with _yoktez_semaphore:
         return _search_impl(tez_ad=tez_ad, yazar=yazar, danisman=danisman,
                             tur=tur, yil_baslangic=yil_baslangic, yil_bitis=yil_bitis,
-                            metin=metin, demo_limit=demo_limit)
+                            metin=metin, universite_id=universite_id, demo_limit=demo_limit)
 
 
 def _search_impl(tez_ad='', yazar='', danisman='',
                  tur='0', yil_baslangic=None, yil_bitis=None, metin='',
-                 demo_limit=5) -> tuple[int, list[dict]]:
+                 universite_id='0', demo_limit=5) -> tuple[int, list[dict]]:
     session = _make_session()
 
     # Session çerezi al
@@ -400,7 +405,8 @@ def _search_impl(tez_ad='', yazar='', danisman='',
     logger.info(f'YÖK Tez arama: keyword="{keyword}" nevi={nevi}')
 
     form_data = _build_form(keyword=keyword, nevi=nevi,
-                            yil_baslangic=yil_baslangic, yil_bitis=yil_bitis, tur=tur)
+                            yil_baslangic=yil_baslangic, yil_bitis=yil_bitis, tur=tur,
+                            universite_id=universite_id)
 
     try:
         response = session.post(SEARCH_URL, data=form_data, timeout=45, allow_redirects=True)

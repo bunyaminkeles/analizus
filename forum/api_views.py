@@ -128,7 +128,8 @@ def _verify_cron_secret(request):
 @require_GET
 def cron_cleanup_s3_files(request):
     """
-    7 günden eski TR Dizin, OpenAlex ve OAI-PMH dosyalarını S3'den siler.
+    7 günden eski TR Dizin, OpenAlex, OAI-PMH, PubMed ve 3 günden eski YÖK Tez
+    dosyalarını S3'den siler.
 
     Kullanım:
     - GET /api/cron/cleanup-s3/?secret=YOUR_SECRET
@@ -142,11 +143,13 @@ def cron_cleanup_s3_files(request):
         from openalex.services.job_runner import cleanup_expired_openalex_s3_files as cleanup_openalex
         from oaipmh.services.job_runner import cleanup_expired_oaipmh_s3_files as cleanup_oaipmh
         from pubmed.services.job_runner import cleanup_expired_pubmed_s3_files as cleanup_pubmed
+        from yoktez.services.job_runner import cleanup_expired_yoktez_s3_files as cleanup_yoktez
 
         trdizin_deleted = cleanup_trdizin(days=7)
         openalex_deleted = cleanup_openalex(days=7)
         oaipmh_deleted = cleanup_oaipmh(days=7)
         pubmed_deleted = cleanup_pubmed(days=7)
+        yoktez_deleted = cleanup_yoktez(days=3)
 
         return JsonResponse({
             'success': True,
@@ -155,6 +158,7 @@ def cron_cleanup_s3_files(request):
                 'openalex': openalex_deleted,
                 'oaipmh': oaipmh_deleted,
                 'pubmed': pubmed_deleted,
+                'yoktez': yoktez_deleted,
             },
         })
     except Exception as e:
