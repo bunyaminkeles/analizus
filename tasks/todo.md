@@ -21,7 +21,23 @@ maddelerde.
   var mı, olmalı mı; (4) özellik/limit — sonuç sayısı sınırı, premium'a geçiş teşviki, indirme formatları rakiplere
   göre yeterli mi; (5) `SiteSettings` üzerinden fiyat/limit kontrolü güncel mi. Bu madde bir sonraki oturumun
   önceliği — detaylı plan/karar bu oturumda çıkarılmadı, yalnız kapsam not edildi.
-- [x] **(7 Ekim 2026 → düzeltildi)** `/forum/` arama kutusunda büyüteç ikonu "K" harfiyle çakışıyordu ("Kiril K" gibi
+- [x] **(7-8 Ekim 2026 → tamamlandı)** Uzman Dizini (`/uzmanlar/`) giriş kriterleri sıkılaştırıldı — kullanıcı
+  gözlemi: "bu listeye herkes girmemeli", ekran görüntüsünde 0 puanlı/Çaylak rütbeli bir kullanıcının listede
+  göründüğü görülmüştü. Eski kural üç koşuldan herhangi birini yeterli sayıyordu (rank ∈ contributor+ YA DA 1 skill
+  YA DA best_answers>0) — skill şartı tek başına çok gevşekti. Yeni kural (`forum/views.py` `uzman_dizini`):
+  `is_public=True` + **en az 3 uzmanlık alanı** + **puan ≥ `SiteSettings.uzman_dizini_min_puan`** (admin panelinden
+  ayarlanır, varsayılan 200 — Çalışma Odası eşiğiyle aynı) + `email_verified=True` + admin/staff hesapları
+  varsayılan dışarıda. `Profile.directory_override` (boş/Evet/Hayır) ile admin tekil kullanıcıyı kurala bakmaksızın
+  zorla gösterebilir/gizleyebilir (admin → Profil → Tercihler). Sayfa düzeni de değişti: en yüksek puanlı 10 kişi
+  üstte mevcut kart tasarımıyla ("Öne Çıkan Uzmanlar", puana göre sabit), geri kalanlar altta kompakt liste
+  ("Diğer Uzmanlar", "Sırala" filtresi yalnız bu listeyi etkiler). CTA'daki yanlış "500 puan → dizinde görünme"
+  metni gerçek kurala göre düzeltildi. Migration `forum/0175` (iki yeni alan: `Profile.directory_override`,
+  `SiteSettings.uzman_dizini_min_puan`) lokalde uygulandı, henüz deploy edilmedi. 8 yeni pytest testi + mevcut 82 →
+  90/90 yeşil. Playwright ile masaüstü + mobil (390px) görsel doğrulama yapıldı (taşma/hizalama yok). **Not:**
+  Bu değişiklikle production'daki "Bünyamin Keles" ve "admin" hesapları da (Yönetici rütbesi) dizinden kalkacak —
+  gerçekten danışmanlık veren bir admin kalsın istenirse o profilde `directory_override=True` elle işaretlenmeli.
+  **Deploy öncesi:** kullanıcı kendi bilgisayarında `scripts/yedek_indir.sh --simdi` (migration production DB'yi
+  etkiler), sonra "push et"/"deploy et" denince uygulanacak.
   görünmesinin sebebi buydu). Kök neden: `static/css/style.css:30`'daki global "KESİN KONTRAST FİX" kuralı
   (`input,select,textarea{padding:10px 15px !important}`) `.forum-search-input`'un ikon için ayırdığı sol padding'i
   (`!important` içermediği için) eziyordu. Ayrıca `forum_index.html` içinde aynı sınıflar için ikinci, çakışan bir
