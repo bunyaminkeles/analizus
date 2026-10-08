@@ -1,6 +1,6 @@
 # Analizus.com — Claude Çalışma Kuralları
 
-Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~2540 satır; offset'ler 8 Ekim 2026 akşam). Tamamını okuma — ihtiyaca göre offset ile ilgili bölümü oku:
+Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~2610 satır; offset'ler 8 Ekim 2026 gece). Tamamını okuma — ihtiyaca göre offset ile ilgili bölümü oku:
 
 | Bölüm | offset | Konu |
 |---|---|---|
@@ -10,13 +10,13 @@ Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~2540 satır; offset
 | §8–9 | 478 | Veri modelleri (`JobCategory.intro`, `Category.INDEX_MIN_TOPICS`, BlogPost SEO alanları, pazar: ilan onayı / haftalık hak / form sınırları, `ServicePage`/`ServicePageSection`/`ServicePageFAQ`, `Profile.completion_status()`/`total_score`, profil "Hakkında", bağış `premium_days_promised`, **yeni: Uzman Dizini giriş kriteri — `Profile.directory_override`, `SiteSettings.uzman_dizini_min_puan`**), feature flag'ler (`feature_hizmet_sayfalari`) |
 | §10–11 | 813 | CSS/tasarım sistemi, WebSocket (route'lar) |
 | §12 | 938 | İstatistik araçları (akış, PDF, polling, konsol düzeni: Nedir kartı → SSS → CTA, `tool_title`) |
-| §13–15 | 1098 | DM/oda mesajlaşma, bibliometri, akademik tarama (Google'ın gördüğü başlık = view `promo_title`; **yeni: YÖK Tez üniversite filtresi — `yok_universities.py`, YÖK'ün eski/sayısal ID'si, opak `kod` değil**) |
-| §16–19 | 1336 | E-posta (500 hata e-postası), AnalizBot/AI Asistan, S3, güvenlik (çerez onayı, cron anahtarı) |
-| §20–23 | 1555 | Admin (sipariş akışı, Fiyatlandırma, Limitler, İlan onayı/ret aksiyonları + panel "İlan Onayı", bağış onayı aksiyonu, İş Kategorisi tanıtım metni, blog SEO, `UserAdmin` toplu e-posta aksiyonları, Navigasyon Grafiği tarih filtresi + "Şu An Aktif", **yeni: `ProfileAdmin` "Uzman Dizini: Zorla Göster/Gizle"**), pazar akışı (pending → open), session, cron |
-| §24–25 | 1713 | Geliştirme ortamı (pytest 90 test + test notları, çeviri komutları), değişmez kurallar |
-| §26 | 1800 | Sık yapılan hatalar ve çözümleri (Unfold admin dark: sınıfı sorunu, lokalde bağımsız `runserver` karışıklığı, Django admin aksiyonu seçimsiz çalıştırma kısıtı, `last_seen` vs `PageView` sinyal farkı, SiteSettings değeri metinde hardcode edilmemeli, production'a Bash ile salt okunur sorgu bile otomatik izinle engellenir, `main`'e push = otomatik deploy, **yeni: `Notification.object_id` UUID PK'yi kabul etmez, lokal+production AYNI S3 bucket'ını paylaşıyor (DB ayrı, S3 ortak — lokalde "test" bile gerçek silme olabilir)**) |
-| §27 | 1917 | Görev listesi (tamamlanan / sıradaki; **en son: "8 Ekim 2026" YÖK Tez kapsamlı çalışması (üniversite filtresi, otomatik bildirim, 3 gün erişim, S3 temizliği — `dev`'e push edildi, `main`'e henüz değil); sıradaki öncelik: S3 saklama süresi birleştirme (trdizin full/orders sessiz hata + 4 araçta hiç temizlik yok)**) |
-| §28 | 2452 | Çok dilli yapı (TR/EN/DE) ve gizlilik — mimari, çeviri kuralları, iş akışı, EN/DE ürün kararları (§28.7) |
+| §13–15 | 1098 | DM/oda mesajlaşma, bibliometri, akademik tarama (Google'ın gördüğü başlık = view `promo_title`; **yeni: YÖK Tez üniversite filtresi (`yok_universities.py`), iş-spesifik `?job=<uuid>` link, "Son Aramalarım", ekran kartları sade (TR+EN başlık + bilgi satırı, danışman/özet TXT/Excel'de kalır)**) |
+| §16–19 | 1343 | E-posta (500 hata e-postası), AnalizBot/AI Asistan, S3, güvenlik (çerez onayı, cron anahtarı) |
+| §20–23 | 1562 | Admin (sipariş akışı, Fiyatlandırma, Limitler, İlan onayı/ret aksiyonları + panel "İlan Onayı", bağış onayı aksiyonu, İş Kategorisi tanıtım metni, blog SEO, `UserAdmin` toplu e-posta aksiyonları, Navigasyon Grafiği tarih filtresi + "Şu An Aktif", `ProfileAdmin` "Uzman Dizini: Zorla Göster/Gizle", **yeni: sidebar sekme genişletmesi — Forum çekirdeği/Rozetler-Yetenekler/Hizmet Sayfaları**), pazar akışı (pending → open), session, cron |
+| §24–25 | 1722 | Geliştirme ortamı (pytest 90 test + test notları, çeviri komutları), değişmez kurallar |
+| §26 | 1809 | Sık yapılan hatalar ve çözümleri (Unfold admin dark: sınıfı sorunu, lokalde bağımsız `runserver` karışıklığı, Django admin aksiyonu seçimsiz çalıştırma kısıtı, `last_seen` vs `PageView` sinyal farkı, SiteSettings değeri metinde hardcode edilmemeli, production'a Bash ile salt okunur sorgu bile otomatik izinle engellenir, `main`'e push = otomatik deploy, `Notification.object_id` UUID PK'yi kabul etmez, lokal+production AYNI S3 bucket'ını paylaşıyor, **yeni: aynı veriyi iki yerde (TXT+e-posta) formatlayan kopya kod birbirinden bağımsız bozulur/düzelir, "en son X" mantığıyla kurulan link geçmişe dönük referans için güvenli değil (`?job=<uuid>` gibi somut ID gerekir)**) |
+| §27 | 1928 | Görev listesi (tamamlanan / sıradaki; **en son: "8 Ekim 2026, 2. tur" YÖK Tez canlı kullanım sonrası 4 düzeltme (başlık dil hatası, anlamsızlaşan e-posta butonu kaldırıldı, iş-spesifik mail linki, ekran sadeleştirme) — `main`+`dev` senkron, canlıda doğrulandı; sıradaki öncelik: S3 saklama süresi birleştirme (trdizin full/orders sessiz hata + 4 araçta hiç temizlik yok)**) |
+| §28 | 2520 | Çok dilli yapı (TR/EN/DE) ve gizlilik — mimari, çeviri kuralları, iş akışı, EN/DE ürün kararları (§28.7) |
 
 ---
 
