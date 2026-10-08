@@ -1,22 +1,22 @@
 # Analizus.com — Claude Çalışma Kuralları
 
-Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~2400 satır; offset'ler 7 Ekim 2026). Tamamını okuma — ihtiyaca göre offset ile ilgili bölümü oku:
+Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~2470 satır; offset'ler 8 Ekim 2026). Tamamını okuma — ihtiyaca göre offset ile ilgili bölümü oku:
 
 | Bölüm | offset | Konu |
 |---|---|---|
 | §1–2 | 8 | Proje amacı, tech stack, paketler (**yeni: `broadcast/` app — admin toplu e-posta**) |
-| §3–5 | 69 | Sunucu mimarisi + bakım (log sınırı, disk, yedek → yerel, **deploy öncesi `yedek_indir.sh --simdi` — SADECE lokalde çalıştır, Hetzner SSH oturumu İÇİNDEN değil**), deploy (deploy.sh açılışta migrate+collectstatic; `setup_all`/`create_badges` yalnız DB boşsa — yeni seed verisi migration'a yazılmalı), env vars (NCBI_API_KEY dahil) |
-| §6–7 | 288 | Dizin yapısı, URL mimarisi (i18n_patterns; `/section/` 301, `/uzmanlar/?cat=` kuralı, `/hizmetler/` + `/hizmetler/<slug>/`) |
-| §8–9 | 470 | Veri modelleri (`JobCategory.intro`, `Category.INDEX_MIN_TOPICS`, BlogPost SEO alanları, pazar: ilan onayı / haftalık hak / form sınırları, `ServicePage`/`ServicePageSection`/`ServicePageFAQ`, `Profile.completion_status()`/`total_score`, profil "Hakkında", bağış `premium_days_promised`), feature flag'ler (`feature_hizmet_sayfalari`) |
-| §10–11 | 786 | CSS/tasarım sistemi, WebSocket (route'lar) |
-| §12 | 911 | İstatistik araçları (akış, PDF, polling, konsol düzeni: Nedir kartı → SSS → CTA, `tool_title`) |
-| §13–15 | 1071 | DM/oda mesajlaşma, bibliometri, akademik tarama (Google'ın gördüğü başlık = view `promo_title`) |
-| §16–19 | 1301 | E-posta (500 hata e-postası), AnalizBot/AI Asistan, S3, güvenlik (çerez onayı, cron anahtarı) |
-| §20–23 | 1520 | Admin (sipariş akışı, Fiyatlandırma, Limitler, İlan onayı/ret aksiyonları + panel "İlan Onayı", bağış onayı aksiyonu, İş Kategorisi tanıtım metni, blog SEO, **yeni: `UserAdmin` toplu e-posta aksiyonları, Navigasyon Grafiği tarih filtresi + "Şu An Aktif"**), pazar akışı (pending → open), session, cron |
-| §24–25 | 1668 | Geliştirme ortamı (pytest 82 test + test notları, çeviri komutları), değişmez kurallar |
-| §26 | 1755 | Sık yapılan hatalar ve çözümleri (**yeni: Unfold admin dark: sınıfı sorunu, lokalde bağımsız `runserver` karışıklığı, Django admin aksiyonu seçimsiz çalıştırma kısıtı, `last_seen` vs `PageView` sinyal farkı**) |
-| §27 | 1866 | Görev listesi (tamamlanan / sıradaki; **en son: "7 Ekim 2026" SEO Faz 2+4 tamamlandı + blog→hizmet sayfası eşlemesi; sıradaki öncelik YÖK Tez tarama**) |
-| §28 | 2359 | Çok dilli yapı (TR/EN/DE) ve gizlilik — mimari, çeviri kuralları, iş akışı, EN/DE ürün kararları (§28.7) |
+| §3–5 | 69 | Sunucu mimarisi + bakım (log sınırı, disk, yedek → yerel, **deploy öncesi `yedek_indir.sh --simdi` — SADECE lokalde çalıştır, Hetzner SSH oturumu İÇİNDEN değil**), deploy (**`main`'e push artık GitHub Actions ile OTOMATİK Hetzner deploy eder — `.github/workflows/deploy.yml`, 8 Ekim 2026'da keşfedildi, eski "manuel" notu yanlıştı; `requirements.txt` değişikliği otomatik akışa yansımaz, elle `--build` gerekir**; deploy.sh açılışta migrate+collectstatic; `setup_all`/`create_badges` yalnız DB boşsa — yeni seed verisi migration'a yazılmalı), env vars (NCBI_API_KEY dahil) |
+| §6–7 | 296 | Dizin yapısı, URL mimarisi (i18n_patterns; `/section/` 301, `/uzmanlar/?cat=` kuralı, `/hizmetler/` + `/hizmetler/<slug>/`) |
+| §8–9 | 478 | Veri modelleri (`JobCategory.intro`, `Category.INDEX_MIN_TOPICS`, BlogPost SEO alanları, pazar: ilan onayı / haftalık hak / form sınırları, `ServicePage`/`ServicePageSection`/`ServicePageFAQ`, `Profile.completion_status()`/`total_score`, profil "Hakkında", bağış `premium_days_promised`, **yeni: Uzman Dizini giriş kriteri — `Profile.directory_override`, `SiteSettings.uzman_dizini_min_puan`**), feature flag'ler (`feature_hizmet_sayfalari`) |
+| §10–11 | 813 | CSS/tasarım sistemi, WebSocket (route'lar) |
+| §12 | 938 | İstatistik araçları (akış, PDF, polling, konsol düzeni: Nedir kartı → SSS → CTA, `tool_title`) |
+| §13–15 | 1098 | DM/oda mesajlaşma, bibliometri, akademik tarama (Google'ın gördüğü başlık = view `promo_title`) |
+| §16–19 | 1328 | E-posta (500 hata e-postası), AnalizBot/AI Asistan, S3, güvenlik (çerez onayı, cron anahtarı) |
+| §20–23 | 1547 | Admin (sipariş akışı, Fiyatlandırma, Limitler, İlan onayı/ret aksiyonları + panel "İlan Onayı", bağış onayı aksiyonu, İş Kategorisi tanıtım metni, blog SEO, `UserAdmin` toplu e-posta aksiyonları, Navigasyon Grafiği tarih filtresi + "Şu An Aktif", **yeni: `ProfileAdmin` "Uzman Dizini: Zorla Göster/Gizle"**), pazar akışı (pending → open), session, cron |
+| §24–25 | 1698 | Geliştirme ortamı (pytest 90 test + test notları, çeviri komutları), değişmez kurallar |
+| §26 | 1785 | Sık yapılan hatalar ve çözümleri (Unfold admin dark: sınıfı sorunu, lokalde bağımsız `runserver` karışıklığı, Django admin aksiyonu seçimsiz çalıştırma kısıtı, `last_seen` vs `PageView` sinyal farkı, **yeni: SiteSettings değeri metinde hardcode edilmemeli, production'a Bash ile salt okunur sorgu bile otomatik izinle engellenir, `main`'e push = otomatik deploy**) |
+| §27 | 1899 | Görev listesi (tamamlanan / sıradaki; **en son: "8 Ekim 2026" Uzman Dizini giriş kriterleri sıkılaştırıldı; sıradaki öncelik YÖK Tez tarama**) |
+| §28 | 2403 | Çok dilli yapı (TR/EN/DE) ve gizlilik — mimari, çeviri kuralları, iş akışı, EN/DE ürün kararları (§28.7) |
 
 ---
 
