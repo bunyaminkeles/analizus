@@ -340,7 +340,7 @@ class ProfileAdmin(ModelAdmin):
     list_display = ('user', 'avatar_preview', 'rank_display', 'reputation', 'account_type', 'email_status', 'university_info', 'stats_display')
     list_editable = ('account_type',)
     search_fields = ('user__username', 'title', 'university', 'department')
-    list_filter = ('account_type', 'rank', 'is_public', 'email_verified')
+    list_filter = ('account_type', 'rank', 'is_public', 'email_verified', 'directory_override')
     filter_horizontal = ('badges', 'skills')
     actions = ['update_all_ranks', 'update_all_stats', 'verify_emails']
 
@@ -364,7 +364,8 @@ class ProfileAdmin(ModelAdmin):
             'classes': ('collapse',)
         }),
         ('Tercihler', {
-            'fields': ('email_on_reply', 'email_on_private_message', 'is_public', 'show_email', 'email_verified'),
+            'fields': ('email_on_reply', 'email_on_private_message', 'is_public', 'show_email', 'email_verified',
+                       'directory_override'),
             'classes': ('collapse',)
         }),
     )
@@ -922,9 +923,10 @@ class SiteSettingsAdmin(ModelAdmin):
             'classes': ('collapse',),
         }),
         ('Limitler', {
-            'description': 'Scraping: TR Dizin, OpenAlex, OAI-PMH scraperlarının çekebileceği maks. kayıt (default 5000). Analiz: Tez & Makale Analizi için işlenecek maks. kayıt (Render için 500, Hetzner için 2000–5000 önerilir). Haftalık ilan hakkı: son 7 günde açılabilecek ilan sayısı; her 5 geçerli referans +1 (en fazla +2) ayrıca eklenir. İlan onayı: açıkken yeni ilan admin onayından sonra yayınlanır (İş İlanları → Onayla/Reddet).',
+            'description': 'Scraping: TR Dizin, OpenAlex, OAI-PMH scraperlarının çekebileceği maks. kayıt (default 5000). Analiz: Tez & Makale Analizi için işlenecek maks. kayıt (Render için 500, Hetzner için 2000–5000 önerilir). Haftalık ilan hakkı: son 7 günde açılabilecek ilan sayısı; her 5 geçerli referans +1 (en fazla +2) ayrıca eklenir. İlan onayı: açıkken yeni ilan admin onayından sonra yayınlanır (İş İlanları → Onayla/Reddet). Uzman Dizini: /uzmanlar/ sayfasına girmek için gereken en az puan (ayrıca en az 3 uzmanlık alanı + e-posta doğrulaması şart, admin/staff hesapları otomatik dışarıda — tekil istisna Profil → Uzman Dizini: Zorla Göster/Gizle alanından).',
             'fields': ('scrap_max_records', 'analiz_max_records', 'job_weekly_limit_free', 'job_weekly_limit_premium',
-                       'job_approval_required', 'job_title_max_chars', 'job_description_max_chars'),
+                       'job_approval_required', 'job_title_max_chars', 'job_description_max_chars',
+                       'uzman_dizini_min_puan'),
             'classes': ('collapse',),
         }),
         ('Fiyatlandırma', {

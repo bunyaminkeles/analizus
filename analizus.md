@@ -2257,7 +2257,31 @@ migration 0153–0155 container açılışında deploy.sh ile uygulandı; DB yed
 
 **Önceki (28 Eylül 2026 gece):** canlı = main ab57dcd (bibliometri kısıtlar bölümü + BibTeX).
 
-**En son (7 Ekim 2026, ikinci tur):** `main` = **(forum arama kutusu fix commit'i, dev'den merge)**; kullanıcı
+**En son (7 Ekim 2026, üçüncü tur):** `main` = **e812465** (dev'den merge, push edildi; Hetzner deploy kullanıcıda —
+sonraki oturumda `git log` ile teyit edilmeli). **BÜYÜK SEO DÖNÜŞÜMÜ Faz 2 ve Faz 4 tamamen kapandı** (ayrıntı
+`tasks/todo.md`). **Faz 2:** GSC "Redirect error" fix canlı `curl` ile teyit edildi (`/egitim/`, `/proje-talebi/` tek
+301→200); `category_topics` (`forum/views.py`) N+1 sorgusu düzeltildi — `select_related('starter')` eklendi (şablon
+`topic.starter.username` basıyordu, konu başına ek sorgu vardı); `/blog/nitel-arastirma-yontemleri/` slug/H1
+uyumsuzluğu incelendi — gövde içeriği zaten meta_title ile uyumlu (kısa nitel mülakat teması), asıl uyumsuz olan H1
+("Nitel Araştırma Yöntemleri") ama H1/slug'a dokunmama kuralı (§25) nedeniyle kullanıcı kararıyla dokunulmadı. **Faz
+4:** önceki oturumda "içeriği girilmedi" notu **stale** çıktı — diğer 3 hizmet sayfasının (`akademik-danismanlik`,
+`nitel-analiz`, `veri-ve-yapay-zeka`) içeriği aslında 4 Ekim'de migration `forum/0172`+`0173` ile girilip canlıya
+alınmıştı (commit `c7a4f9e`+`3e296e2`, zaten `main`'deydi); bu oturumda canlıda 4 sayfanın da `is_active=True` +
+200 döndüğü ve Nicel Analiz bölümlerinin SmartPLS/AMOS+EViews'i zaten kapsadığı doğrulandı, Playwright ile 4 sayfa ×
+masaüstü/mobil (8 kontrol) taşma/hiza testi yapıldı — hepsi OK. **Yeni:** `BlogPost.SERVICE_PAGE_BY_BLOG_CATEGORY`
+(`forum/models.py`) — 15 blog kategorisinin tamamı 3 hizmet sayfasına eşlendi (`nicel-analiz`, `akademik-danismanlik`,
+`veri-ve-yapay-zeka`; `nitel-analiz`'e eşleşen blog kategorisi yok — gerçek durum, yapay eşleme yapılmadı, kullanıcı
+onayı). `blog_detail` view'ı artık eşleşen aktif `ServicePage`'i context'e ekliyor; yazı sonundaki "Bu konuda uzman
+desteği" kartı (kullanıcı kararı: "genişlet") artık yalnız `expert_category` (≥2 uzmanlı JobCategory) değil, hizmet
+sayfası eşleşmesi tek başına da kartı tetikliyor — önceden hiç kart görmeyen 5 kategoride (etik kurul/akademik
+kariyer/bibliometri/bilim felsefesi/veri güvenliği-etik) artık kart çıkıyor; ikisi de eşleşirse hedef `/hizmetler/<slug>/`
+önceliklidir. Yeni msgid'ler (`Hizmet Sayfasına Git` + blocktrans) EN/DE'ye host'ta `msgfmt` ile elle eklendi
+(`makemessages --no-location` denendi, 10 günlük kod kaymasından ~8800 satırlık ilgisiz diff çıkardı → geri alındı).
+Migration yok. Forum testleri 82/82. **Yeni öncelik (`tasks/todo.md` başında):** YÖK Tez tarama (`/yoktez/`) —
+kullanıcıya göre sitenin en çok trafik/tıklama alan alanı, kapsamlı iyileştirme çalışması sıradaki oturumun işi
+(GA4 huni analizi, içerik derinliği, blog/hizmet sayfası iç linkleme, özellik/limit gözden geçirmesi).
+
+**Önceki (7 Ekim 2026, ikinci tur):** `main` = **(forum arama kutusu fix commit'i, dev'den merge)**; kullanıcı
 Hetzner'e `git pull` + `docker compose restart web`+`nginx` ile deploy etti (session içinde doğrulanmadı — sonraki
 oturumda `git log` ile teyit edilmeli). İki ayrı iş: **(1) Forum arama kutusu ikon/placeholder çakışması** —
 kullanıcı ekran görüntüsünde `/forum/` arama kutusunun placeholder'ındaki "K" harfinin bozuk/Kiril gibi göründüğünü
