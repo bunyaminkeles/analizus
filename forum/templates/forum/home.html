@@ -751,16 +751,19 @@ atıfları) → yalnız TR. EN/DE'ye dile uygun tek WebSite bloğu (27 Eylül 20
                     <a href="{% url 'ai_assistant' %}" class="ax-tool-link">{% trans "Kullan →" %}</a>
                 </div>
             </div>
-            {% if LANGUAGE_CODE == 'tr' %}
             <div class="col-12 col-md-6 col-lg-3">
                 <div class="ax-tool-card ax-tool-card--highlight" role="link" tabindex="0" data-card-url="/openalex/">
                     <div class="ax-tool-icon">🔍</div>
                     <h3 class="ax-tool-title">{% trans "Akademik Tarama" %}</h3>
                     <ul class="ax-tarama-list">
+                        {% if LANGUAGE_CODE == 'tr' %}
                         <li><a href="/oaipmh/">{% trans "Üniversite Tezleri" %}</a></li>
                         <li><a href="/yoktez/">{% trans "YÖK Tez Tarama" %}</a></li>
+                        {% endif %}
                         <li><a href="/openalex/">{% trans "OpenAlex Tarama" %}</a></li>
+                        {% if LANGUAGE_CODE == 'tr' %}
                         <li><a href="/trdizin/">{% trans "TR Dizin Tarama" %}</a></li>
+                        {% endif %}
                         {% if features.semanticscholar %}
                         <li><a href="{% url 'semanticscholar:landing' %}">{% trans "Semantic Scholar Tarama" %}</a></li>
                         {% endif %}
@@ -770,7 +773,6 @@ atıfları) → yalnız TR. EN/DE'ye dile uygun tek WebSite bloğu (27 Eylül 20
                     </ul>
                 </div>
             </div>
-            {% endif %}
             {% comment %}Çalışma odaları yalnız TR (odalar tek dilli; EN/DE hedefi proje talebi){% endcomment %}
             {% if LANGUAGE_CODE == 'tr' %}
             <div class="col-12 col-md-6 col-lg-3">
