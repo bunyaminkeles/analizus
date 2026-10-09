@@ -128,8 +128,8 @@ def _verify_cron_secret(request):
 @require_GET
 def cron_cleanup_s3_files(request):
     """
-    7 günden eski TR Dizin, OpenAlex, OAI-PMH, PubMed ve 3 günden eski YÖK Tez
-    dosyalarını S3'den siler.
+    7 günden eski TR Dizin, OpenAlex, OAI-PMH, PubMed, Bibliometri, Semantic Scholar,
+    Makale Analizi, Tez Analizi ve 3 günden eski YÖK Tez dosyalarını S3'den siler.
 
     Kullanım:
     - GET /api/cron/cleanup-s3/?secret=YOUR_SECRET
@@ -138,34 +138,40 @@ def cron_cleanup_s3_files(request):
     if not _verify_cron_secret(request):
         return JsonResponse({'success': False, 'error': 'Unauthorized'}, status=403)
 
-    try:
-        from trdizin.services.job_runner import cleanup_expired_trdizin_s3_files as cleanup_trdizin
-        from openalex.services.job_runner import cleanup_expired_openalex_s3_files as cleanup_openalex
-        from oaipmh.services.job_runner import cleanup_expired_oaipmh_s3_files as cleanup_oaipmh
-        from pubmed.services.job_runner import cleanup_expired_pubmed_s3_files as cleanup_pubmed
-        from yoktez.services.job_runner import cleanup_expired_yoktez_s3_files as cleanup_yoktez
+    from trdizin.services.job_runner import cleanup_expired_trdizin_s3_files as cleanup_trdizin
+    from openalex.services.job_runner import cleanup_expired_openalex_s3_files as cleanup_openalex
+    from oaipmh.services.job_runner import cleanup_expired_oaipmh_s3_files as cleanup_oaipmh
+    from pubmed.services.job_runner import cleanup_expired_pubmed_s3_files as cleanup_pubmed
+    from yoktez.services.job_runner import cleanup_expired_yoktez_s3_files as cleanup_yoktez
+    from bibliometrics.services.job_runner import cleanup_expired_bibliometrics_s3_files as cleanup_bibliometrics
+    from semanticscholar.services.job_runner import cleanup_expired_semanticscholar_s3_files as cleanup_semanticscholar
+    from makaleanaliz.services.job_runner import cleanup_expired_makaleanaliz_s3_files as cleanup_makaleanaliz
+    from tezanaliz.services.job_runner import cleanup_expired_tezanaliz_s3_files as cleanup_tezanaliz
 
-        trdizin_deleted = cleanup_trdizin(days=7)
-        openalex_deleted = cleanup_openalex(days=7)
-        oaipmh_deleted = cleanup_oaipmh(days=7)
-        pubmed_deleted = cleanup_pubmed(days=7)
-        yoktez_deleted = cleanup_yoktez(days=3)
+    # Her araç kendi try/except'inde — biri patlarsa diğerleri yine de çalışır
+    cleanups = [
+        ('trdizin', cleanup_trdizin, 7),
+        ('openalex', cleanup_openalex, 7),
+        ('oaipmh', cleanup_oaipmh, 7),
+        ('pubmed', cleanup_pubmed, 7),
+        ('yoktez', cleanup_yoktez, 3),
+        ('bibliometrics', cleanup_bibliometrics, 7),
+        ('semanticscholar', cleanup_semanticscholar, 7),
+        ('makaleanaliz', cleanup_makaleanaliz, 7),
+        ('tezanaliz', cleanup_tezanaliz, 7),
+    ]
+    deleted_files = {}
+    for tool_name, cleanup_func, days in cleanups:
+        try:
+            deleted_files[tool_name] = cleanup_func(days=days)
+        except Exception as e:
+            logger.error(f"S3 temizlik hatası ({tool_name}): {e}")
+            deleted_files[tool_name] = None
 
-        return JsonResponse({
-            'success': True,
-            'deleted_files': {
-                'trdizin': trdizin_deleted,
-                'openalex': openalex_deleted,
-                'oaipmh': oaipmh_deleted,
-                'pubmed': pubmed_deleted,
-                'yoktez': yoktez_deleted,
-            },
-        })
-    except Exception as e:
-        return JsonResponse({
-            'success': False,
-            'error': str(e)
-        }, status=500)
+    return JsonResponse({
+        'success': True,
+        'deleted_files': deleted_files,
+    })
 
 
 @require_GET

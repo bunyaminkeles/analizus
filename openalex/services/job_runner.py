@@ -322,30 +322,13 @@ def send_order_results_email(order, download_url):
 
 def cleanup_expired_openalex_s3_files(days=7):
     """7 günden eski openalex/ altındaki tüm dosyaları S3'den siler."""
-    import boto3
-    deleted_count = 0
+    from forum.s3_utils import cleanup_s3_prefix
+
     cutoff = timezone.now() - timedelta(days=days)
-
-    try:
-        s3 = boto3.client(
-            's3',
-            aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
-            aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
-            region_name=settings.AWS_S3_REGION_NAME,
-        )
-        bucket = settings.AWS_STORAGE_BUCKET_NAME
-
-        for prefix in ['openalex/demo/', 'openalex/full/', 'openalex/orders/']:
-            paginator = s3.get_paginator('list_objects_v2')
-            for page in paginator.paginate(Bucket=bucket, Prefix=prefix):
-                for obj in page.get('Contents', []):
-                    last_modified = obj['LastModified']
-                    if last_modified < cutoff:
-                        s3.delete_object(Bucket=bucket, Key=obj['Key'])
-                        logger.info(f"S3 temizlik: silindi {obj['Key']}")
-                        deleted_count += 1
-    except Exception as e:
-        logger.error(f"S3 temizlik hatası (openalex): {e}")
+    deleted_count = sum(
+        cleanup_s3_prefix(prefix, days)
+        for prefix in ['openalex/demo/', 'openalex/full/', 'openalex/orders/']
+    )
 
     # DB'deki URL referanslarını da temizle
     try:
