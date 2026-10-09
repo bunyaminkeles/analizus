@@ -59,13 +59,19 @@
   </div>
   {% endif %}
 
-  {% for cat_name, tools in tool_categories %}
-  <h6 class="text-uppercase fw-semibold mb-3 mt-4 pb-2"
+  {% for group in tool_category_groups %}
+  <h6 class="text-uppercase fw-semibold mb-3 mt-4 pb-2 d-flex align-items-center justify-content-between"
       style="color:rgba(255,255,255,.45); border-bottom:1px solid rgba(255,255,255,.08); letter-spacing:.06em">
-    {{ cat_name }}
+    <span>{{ group.cat_name }}</span>
+    {% if group.service_slug and features.hizmet_sayfalari %}
+    <a href="{% url 'service_page_detail' group.service_slug %}" class="text-decoration-none fw-semibold"
+       style="color:var(--ax-accent-primary); text-transform:none; letter-spacing:normal; font-size:.8rem">
+      {% trans "Uzmana yaptır" %} →
+    </a>
+    {% endif %}
   </h6>
   <div class="row g-2 mb-1">
-    {% for slug, name, icon, color, url_name in tools %}
+    {% for slug, name, icon, color, url_name in group.tools %}
     <div class="col-sm-6 col-lg-4">
       <a href="{% url 'analiz_console' url_name %}" class="text-decoration-none d-flex align-items-center gap-3 p-3 rounded h-100"
          style="background:#1a1a2e; border:1px solid rgba(255,255,255,.07)">
@@ -86,6 +92,21 @@
     </a>
   </div>
   {% endif %}
+
+  {# ── Proje Talebi CTA (her iki kullanıcı tipine de görünür) ── #}
+  <div class="ax-tool-guide ax-tool-guide--cta mt-5" style="background:linear-gradient(135deg,rgba(99,102,241,.1),rgba(34,197,94,.06));border:1px solid rgba(99,102,241,.2);">
+    <div class="ax-tool-guide-intro" style="text-align:center;">
+      <p style="font-size:1.05rem;font-weight:600;color:#f1f5f9;margin-bottom:.5rem;">
+        {% trans "Bu analizleri kendiniz yapmak yerine uzmanına bırakmak ister misiniz?" %}
+      </p>
+      <p style="margin-bottom:1.25rem;">
+        {% trans "Verilerinizi gönderin, uzman analistlerimiz sizin adınıza analizi gerçekleştirip raporlasın. Ücretsiz ön değerlendirme ile başlayın." %}
+      </p>
+      <a href="{% url 'proje_talebi' %}?source=analiz_hub" class="ax-btn ax-btn--primary fw-semibold px-4 py-2">
+        <i class="bi bi-send me-2"></i>{% trans "Ücretsiz Proje Talebi Gönder" %}
+      </a>
+    </div>
+  </div>
 
 </div>
 {% endblock %}

@@ -876,8 +876,18 @@ def hero_upload(request):
 
 
 def analiz_hub(request):
+    tool_category_groups = [
+        {
+            'cat_name': cat_name,
+            'tools': tools,
+            'service_slug': slug,
+            'service_title': _SERVICE_PAGE_TITLES.get(slug),
+        }
+        for slug, (cat_name, tools) in zip(_TOOL_GROUP_SERVICE_SLUGS, TOOL_CATEGORIES)
+    ]
     return render(request, 'istatistik/analiz_hub.html', {
         'tool_categories': TOOL_CATEGORIES,
+        'tool_category_groups': tool_category_groups,
         'from_hero': request.GET.get('from') == 'hero',
     })
 
