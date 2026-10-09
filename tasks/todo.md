@@ -551,9 +551,22 @@ sinyali). Henüz hiçbir yere yazılmadı — `ServicePage` modeli kurulunca adm
   olarak basılıyordu → tek satır. ÖNCEDEN VAR düzeltildi: Wilcoxon/Friedman/Tekrarlı ANOVA view'ı `tool_title` göndermiyordu →
   CTA'da araç adı ve gizli H1 boştu. Playwright TR+EN 18/18, forum 61/61.
 - NOT: "araç sayfasına uzmana yaptırın bandı" ZATEN VAR (konsol + tanıtım sayfası, hedef `/proje-talebi/?source=tool`).
-- [ ] `/analiz/` kategori başlıklarına "Uzmana yaptır →" (`#bölüm`) + sayfa sonu tek bant
-- [ ] Araç sayfalarına "Bu analizi uzmana yaptırın" bandı (mevcut "öğrenmek ister misiniz" bandının yanında)
-- [ ] Footer "Hizmetler" sütunu; `/uzmanlar/?cat=` girişinden ilgili hizmet sayfasına link
+- [x] **YAPILDI (9 Ekim 2026, commit `a8acf35`):** araç sayfaları → ilgili hizmet sayfasına link. Kontrol edilince
+  footer "Hizmetler" linkinin ve "uzmana yaptırın" bandının zaten var olduğu, gerçek boşluğun bu bandın hizmet
+  sayfasına hiç link vermemesi olduğu görüldü. `TOOL_CATEGORIES`'teki 6 grup `/hizmetler/<slug>/`'a eşlendi (5 grup
+  → `nicel-analiz`, "Makine Öğrenmesi" → `veri-ve-yapay-zeka`), `SEO_CONTENT` üzerinden hem konsol hem anonim
+  tanıtım bandına ikinci satır link eklendi (18 araç fonksiyonunun hiçbirine dokunmadan — mevcut `seo_guide`
+  mekanizması üzerinden). Migration yok, 90/90 forum testi yeşil, anonim+girişli curl ile doğrulandı.
+- [x] **YAPILDI (9 Ekim 2026, commit `c022225`):** `/analiz/` hub — 6 kategori başlığının yanına "Uzmana yaptır →"
+  linki (aynı grup→slug eşlemesi); sayfa sonu proje talebi bandı artık yalnız anonime değil girişli kullanıcıya da
+  görünüyor (`/proje-talebi/?source=analiz_hub`). Migration yok, 90/90 forum testi yeşil, Playwright masaüstü+mobil
+  taşma kontrolü (0px).
+- [x] **YAPILDI (9 Ekim 2026, commit yok, `tasks/todo.md` ile birlikte commit'lenecek):** `/uzmanlar/?cat=<id>` →
+  ilgili hizmet sayfası linki. Footer "Hizmetler" linki zaten vardı (değişiklik gerekmedi); gerçek boşluk
+  `JobCategory`→`ServicePage` bağlantısıydı — yeni alan/migration yerine var olan
+  `ServicePageSection.related_job_categories` M2M'i üzerinden ters sorgu kuruldu (`forum/views.py` `uzman_dizini`).
+  Eşleşme varsa kategori başlığının altına link. Geçici (rollback'li) veriyle hem eşleşen hem eşleşmeyen senaryo
+  test edildi, 90/90 forum testi yeşil.
 
 **Faz 6 — İçerik takvimi (öneri ayda 6–8 yazı, `blog_yazisi_create.md` tonu)**
 - [ ] Önce talebi görünen: "spss öğrenci ücretsiz" (47), "spss benzeri programlar" (40, sıra 27), "kaplan meier analizi" (35),
