@@ -10,12 +10,13 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
-- [ ] **YENİ (8 Ekim 2026, kullanıcı): `/hakkimizda/` sayfası sadeleştirilecek — iki ayrı kaldırma.**
-  (1) "Platformdaki Uzmanlardan Örnekler" bölümü kalkacak, yerine yalnız metin girdisi + `/uzmanlar/` (Uzman
-  Dizini) sayfasına link verilecek. (2) "**Ekip Üyeleri**" bölümü de kalkacak (admin'de `forum.TeamMember` modeli —
-  `/admin/forum/teammember/`, şu an 5 kayıt: Bünyamin, Esat, Ben, Joseph, open). İkisi de henüz
-  incelenmedi/uygulanmadı — hangi template/view olduğu, `TeamMember` modelinin başka yerde kullanılıp
-  kullanılmadığı (silinirse mi kaldırılsın yoksa yalnız sayfadan mı gizlensin) sıradaki oturumda netleştirilmeli.
+- [x] **(9 Ekim 2026 → tamamlandı, main'de canlı) `/hakkimizda/` sayfası sadeleştirildi.** Tek blok olduğu
+  ortaya çıktı (başlık "Platformdaki Uzmanlardan Örnekler" + TeamMember kartları, admin adı "Ekip Üyeleri" aynı
+  şeydi) — `forum/templates/forum/about.html` satır 276-392 kaldırıldı, yerine kısa metin + "Uzman Dizinini
+  İncele" butonu (`/uzmanlar/`) eklendi. Kullanıcı kararı: `TeamMember` modeli/admin/5 kayıt **silinmedi**, yalnız
+  sayfadan kaldırıldı (başka yerde kullanılmıyordu zaten, ileride lazım olursa durur). "yüzlerce uzman" ibaresi
+  abartılı vaat olduğu için kullanıcı talebiyle kaldırıldı. Migration yok. Commit `be80061` (dev) → main merge
+  commit `080308e`, origin/main'e push edildi (9 Ekim 2026), Hetzner GitHub Actions ile otomatik deploy tetiklendi.
 - [x] **(8 Ekim 2026 → büyük ölçüde tamamlandı, commit `f320e14` dev'de, PUSH EDİLMEDİ) YÖK Tez tarama
   (`/yoktez/`) kapsamlı çalışması.** Yapılanlar: canlı YÖK sitesi incelenip "Detaylı Arama"nın (üniversite/enstitü/
   anabilim dalı) yeni arayüzün opak `kod` değeriyle çalışmadığı, eski/sayısal bir ID beklediği keşfedildi (canlı
@@ -33,27 +34,24 @@ maddelerde.
   linkleme maddeleri bu oturumda ele alınmadı; (3) "Danışman" alanı forma eklenmedi (backend destekliyor ama
   kullanıcı "gerek yok" dedi); (4) yarım kalan 81-260 ID taraması; (5) deploy — kullanıcı "push et" demeden main'e
   gitmeyecek.
-- [ ] **YENİ ÖNCELİK (8 Ekim 2026, kullanıcı: "not et ve önceliklendir"): S3 saklama süresi — tüm araçlarda
-  tutarlı, tek merkezi temizlik.** YÖK Tez çalışması sırasında AWS konsolünden canlı bucket (`analizus-files`)
-  incelenirken iki ayrı sorun bulundu: **(1) `trdizin/full/` ve `trdizin/orders/`** içinde 16.02.2026 tarihli
-  (8 aylık) dosyalar duruyor — oysa `cleanup_expired_trdizin_s3_files` (7 gün, günlük cron'da çalışıyor, doğrulandı)
-  bu klasörleri de taramalı; muhtemelen tek `try/except` içindeki üç prefix'ten (`demo/`,`full/`,`orders/`) birinde
-  oluşan bir hata döngüyü sessizce kesiyor, hata yalnız sunucu log'una yazılıyor (`/var/log/cron_cleanup_s3.log`,
-  henüz okunmadı — production dosyası, kullanıcı tarafından kontrol edilmeli). **(2) Dört araçta
-  (`bibliometrics`, `makaleanaliz`, `semanticscholar`, `tezanaliz`) S3'e dosya yükleniyor ama hiçbir temizlik
-  fonksiyonu yok** — bucket'ta gerçek, aylarca eski veri birikiyor (ör. `makaleanaliz/pdf/` içinde Mart-Mayıs 2026
-  tarihli PDF'ler görüldü). **Önerilen tasarım (kullanıcıya sunuldu, henüz onaylanmadı):** `forum/s3_utils.py`'a
-  tek bir `cleanup_s3_prefix(prefix, days)` yardımcı fonksiyonu (her prefix kendi try/except'inde — trdizin
-  bug'ını yapısal olarak çözer) + `forum/api_views.py`'de tek bir `RETENTION_RULES` listesiyle (openalex/trdizin/
-  oaipmh — 7 gün × 3 alt klasör; pubmed — 7 gün; yoktez — 3 gün; bibliometrics/semanticscholar — 7 gün × 2 alt
-  klasör; makaleanaliz/tezanaliz — 7 gün × 1 alt klasör) tüm araçların döngüyle temizlenmesi; DB referans
-  temizliği (alan adları farklı olduğu için) her aracın kendi `job_runner.py`'sinde küçük, S3'süz bir fonksiyon
-  olarak kalır. **Kasıtlı kapsam dışı:** `avatars/`, `team/` (kalıcı içerik — kullanıcı onayladı), `chat_attachments/`
-  (zaten ayrı haftalık `cleanup-attachments` cron'u var), `istatistik/` (farklı/bellek-içi mekanizma), `test/`
-  (ne olduğu belirsiz, dokunulmadı). **Değişecek dosyalar (10):** `forum/s3_utils.py`, `forum/api_views.py`,
-  `openalex|trdizin|oaipmh|pubmed|yoktez|bibliometrics|makaleanaliz|semanticscholar|tezanaliz/services/job_runner.py`.
-  **Önce:** kullanıcı Hetzner'de `tail -100 /var/log/cron_cleanup_s3.log` ile trdizin hatasının kök nedenini
-  doğrulamalı; sonra bu tasarım onaylanıp uygulanmalı.
+- [x] **(9 Ekim 2026 → tamamlandı, main'de canlı) S3 saklama süresi — tüm araçlarda tutarlı, tek merkezi
+  temizlik.** Kök neden teşhisi değişti: Hetzner log'u (`/var/log/cron_cleanup_s3.log` + `docker compose logs`)
+  okunduğunda trdizin'de hiç hata izi yoktu — gerçek sebep `settings.py` `LOGGING['root']['level']='WARNING'`
+  idi; `trdizin`/`openalex`/`pubmed`/`bibliometrics`/`semanticscholar`/`makaleanaliz`/`tezanaliz` loggerları
+  kayıtlı olmadığı için INFO logları (hem başarı hem potansiyel hata-altı bilgi) hiçbir yere yazılmıyordu.
+  S3 konsolünden ölçüldü: `trdizin/full`+`orders` şu an zaten boş (muhtemelen daha önce elle temizlenmiş, 8 aylık
+  dosya yoktu artık), gerçek birikim `bibliometrics` (53.5 MB, 222 gün), `tezanaliz` (13.9 MB), `makaleanaliz`
+  (5.5 MB), `semanticscholar` (1.4 MB) — toplam ~74 MB. Değer çerçevesi maliyet değil **KVKK/veri saklama
+  tutarlılığı** (kullanıcı: "KVKK tutarlılığı da maliyet de önemli"). **Yapılan:** `forum/s3_utils.py`'a
+  `cleanup_s3_prefix(prefix, days)` (her prefix kendi try/except'inde — eski "bir prefix patlayınca kalanlar
+  atlanıyor" bug'ı düzeldi, mock testle doğrulandı); 5 mevcut aracın (`openalex/trdizin/oaipmh/pubmed/yoktez`)
+  cleanup fonksiyonları bu ortak yardımcıyı kullanacak şekilde sadeleştirildi (isim/imza aynı kaldı — dış çağıranlar,
+  ör. `openalex/management/commands/cleanup_openalex_files.py`, bozulmadı); eksik 4 araca
+  (`bibliometrics/semanticscholar/makaleanaliz/tezanaliz`) aynı desenle yeni cleanup fonksiyonu eklendi;
+  `forum/api_views.cron_cleanup_s3_files` artık 9 aracın hepsini her biri kendi try/except'inde çağırıyor;
+  `settings.py` LOGGING'e 7 eksik logger INFO ile eklendi. Mevcut crontab (`0 5 * * *`, Hetzner, zaten var — yeni
+  cron kurulmadı) otomatik olarak yeni 4 aracı da kapsıyor. Migration yok. 12 dosya, 90/90 test yeşil. Commit
+  `570be72` (dev) → main merge `080308e`, origin/main'e push edildi (9 Ekim 2026).
 - [x] **(7-8 Ekim 2026 → tamamlandı)** Uzman Dizini (`/uzmanlar/`) giriş kriterleri sıkılaştırıldı — kullanıcı
   gözlemi: "bu listeye herkes girmemeli", ekran görüntüsünde 0 puanlı/Çaylak rütbeli bir kullanıcının listede
   göründüğü görülmüştü. Eski kural üç koşuldan herhangi birini yeterli sayıyordu (rank ∈ contributor+ YA DA 1 skill
@@ -78,7 +76,19 @@ maddelerde.
   `!important` eklendi (padding-left 2.5rem'e çıkarıldı), şablondaki tekrarlı inline blok silindi, cache v=0003→0004.
   Playwright ile hem canlıda (önce) hem lokalde (sonra) doğrulandı, forum testleri 82/82 geçti.
 
-> **YENİ OTURUM BURADAN BAŞLA (7 Ekim 2026, üçüncü tur).** Bu oturum: **BÜYÜK SEO DÖNÜŞÜMÜ Faz 2 ve Faz 4
+> **YENİ OTURUM BURADAN BAŞLA (9 Ekim 2026, dördüncü tur).** Bu oturum: **"AÇIK İŞLER" listesindeki 1. ve 2.
+> madde tamamen kapandı, main'de canlı.** (1) `/hakkimizda/` sadeleştirme — TeamMember kart bölümü kaldırıldı,
+> `/uzmanlar/` linkine yönlendirildi (model/veri silinmedi, kullanıcı kararı). (2) S3 saklama süresi merkezi
+> temizlik — 9 aracın hepsi `cleanup_s3_prefix()` ortak yardımcısını kullanıyor, eksik 4 araca (bibliometrics/
+> semanticscholar/makaleanaliz/tezanaliz) cleanup eklendi, 7 eksik logger INFO ile kaydedildi (gerçek kök neden:
+> `root` logger WARNING seviyesindeydi, INFO loglar hiç görünmüyordu). Mevcut crontab (`0 5 * * *`) değişmeden
+> yeni araçları da kapsıyor. Migration yok, 90/90 test yeşil. **main'e merge + push edildi (kullanıcı "merge et" →
+> "push et"), Hetzner GitHub Actions ile otomatik deploy oldu** (`.github/workflows/deploy.yml` teyit edildi:
+> push→main → SSH → `git pull && docker compose restart web`). **Sıradaki öncelik (AÇIK İŞLER listesinde en üstte
+> yeni madde yok şu an):** aşağıdaki "2 Ekim 2026 sonrası açık kalanlar" ve "GELİR MODELİ" / "GÜVENLİ ÖDEME" /
+> "AI AJAN" taslaklarından kullanıcı hangisini önceliklendirirse ondan devam.
+>
+> **ÖNCEKİ (7 Ekim 2026, üçüncü tur).** Bu oturum: **BÜYÜK SEO DÖNÜŞÜMÜ Faz 2 ve Faz 4
 > tamamen kapandı** (ayrıntı aşağıdaki başlıkta). Faz 2: GSC redirect fix doğrulandı (canlı curl), `category_topics`
 > N+1 sorgusu düzeltildi (`select_related('starter')`), blog slug/H1 uyumsuzluğu incelendi → kullanıcı kararıyla
 > dokunulmadı (H1 kuralı). Faz 4: diğer 3 hizmet sayfasının içeriğinin zaten 4 Ekim'de girilip canlıya alındığı

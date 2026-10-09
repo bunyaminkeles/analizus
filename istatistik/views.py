@@ -54,6 +54,22 @@ TOOL_CATEGORIES = [
     ]),
 ]
 
+# Faz 5 (SEO iç linkleme): her kategori grubu ilgili /hizmetler/<slug>/ sayfasına eşlenir —
+# nitel-analiz/akademik-danismanlik'e eşleşen araç yok (Faz 3'teki blog eşlemesiyle aynı durum).
+_TOOL_GROUP_SERVICE_SLUGS = [
+    'nicel-analiz', 'nicel-analiz', 'nicel-analiz', 'nicel-analiz', 'nicel-analiz', 'veri-ve-yapay-zeka',
+]
+_SERVICE_PAGE_TITLES = {
+    'nicel-analiz': gettext_lazy('Nicel Analiz'),
+    'veri-ve-yapay-zeka': gettext_lazy('Veri Bilimi ve Yapay Zeka'),
+}
+for _slug, (_group_label, _tools) in zip(_TOOL_GROUP_SERVICE_SLUGS, TOOL_CATEGORIES):
+    for _tool in _tools:
+        SEO_CONTENT.setdefault(_tool[0], {})['related_service'] = {
+            'slug': _slug,
+            'title': _SERVICE_PAGE_TITLES[_slug],
+        }
+
 
 def _console_ctx(active_tool, request=None):
     ctx = {
@@ -860,8 +876,18 @@ def hero_upload(request):
 
 
 def analiz_hub(request):
+    tool_category_groups = [
+        {
+            'cat_name': cat_name,
+            'tools': tools,
+            'service_slug': slug,
+            'service_title': _SERVICE_PAGE_TITLES.get(slug),
+        }
+        for slug, (cat_name, tools) in zip(_TOOL_GROUP_SERVICE_SLUGS, TOOL_CATEGORIES)
+    ]
     return render(request, 'istatistik/analiz_hub.html', {
         'tool_categories': TOOL_CATEGORIES,
+        'tool_category_groups': tool_category_groups,
         'from_hero': request.GET.get('from') == 'hero',
     })
 
