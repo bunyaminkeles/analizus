@@ -985,13 +985,19 @@ Kullanıcı dosya yükler (CSV/Excel, max 10MB)
 
 ### Araç Kategorileri (`TOOL_CATEGORIES` — `istatistik/views.py`)
 ```python
-('Güvenirlik', ['cronbach'])
-('Tanımlayıcı', ['normallik', 'betimsel', 'korelasyon', 'orneklem'])
-('Karşılaştırma', ['ttesti', 'anova', 'mann_whitney', 'kruskal_wallis', 'ki_kare', 'friedman', 'tekrarli_anova'])
-('Regresyon', ['lineer_regresyon', 'lojistik_regresyon'])
+('Ön Analizler', ['betimsel', 'normallik', 'orneklem'])
+('Geçerlik & Güvenirlik', ['cronbach', 'afa'])
+('İlişki Analizleri', ['korelasyon', 'ki_kare'])
+('Fark Analizleri', ['ttesti', 'anova', 'mann_whitney', 'kruskal_wallis', 'wilcoxon', 'friedman', 'tekrarli_anova'])
+('Regresyon Analizleri', ['lineer_regresyon', 'lojistik_regresyon'])
 ('Makine Öğrenmesi', ['karar_agaci', 'svm'])
 ```
-Her kategori `analiz_console_base.html` sidebar'ında accordion olarak gösterilir.
+(9 Ekim 2026 ile güncellendi — önceki 5 grup listesi `afa`/`wilcoxon`'u hiç içermiyordu, koddan kopmuştu.)
+Her kategori `analiz_console_base.html` sidebar'ında accordion olarak gösterilir; `/analiz/` hub'da (`analiz_hub.html`)
+aynı 6 grup başlık olarak listelenir. **Faz 5 (9 Ekim 2026, SEO iç linkleme):** her grup `/hizmetler/<slug>/`'a
+eşlendi (5 grup → `nicel-analiz`, "Makine Öğrenmesi" → `veri-ve-yapay-zeka`) — `_TOOL_GROUP_SERVICE_SLUGS` listesi
++ `SEO_CONTENT`'e enjekte edilen `related_service` alanı (`istatistik/views.py`, `TOOL_CATEGORIES` tanımının hemen
+altı); konsol + anonim tanıtım bandında ve `/analiz/` hub kategori başlıklarında kullanılır.
 
 ### Makine Öğrenmesi Araçları (Detay)
 
@@ -2194,6 +2200,22 @@ with connection.cursor() as c:
   - Analiz konsolu (giriş yapmış, 18 araç) düzeni tekleştirildi (rehber içerik sütununda, tekrar yok, eksik "Nedir?" kartları,
     boş `tool_title`). §12.
   - Kullanıcı: GSC Validate fix (3 satır) + 9 URL Request indexing + sitemap yeniden gönderildi; `feature_tezanaliz` kontrol.
+- **9 Ekim 2026 — BÜYÜK SEO DÖNÜŞÜMÜ Faz 5 (İç linkleme) tamamlandı (main, commit `a8acf35`+`c022225`+`b0a86c5`):**
+  plandaki 3 madde kontrol edilince 2'sinin (footer "Hizmetler" linki, araç sayfalarındaki "uzmana yaptır" bandının
+  kendisi) **zaten var olduğu** görüldü — gerçek boşluk bu bandın `/hizmetler/<slug>/`'a hiç link vermemesiydi.
+  `istatistik/views.py`: `TOOL_CATEGORIES`'teki 6 grup `/hizmetler/<slug>/`'a eşlendi (5 grup → `nicel-analiz`,
+  "Makine Öğrenmesi" → `veri-ve-yapay-zeka`), eşleme `SEO_CONTENT` sözlüğüne enjekte edilerek hem konsol
+  (`analiz_console_base.html`) hem anonim tanıtım (`service_promo.html`) bandına 18 aracın hiçbirinin view
+  fonksiyonuna dokunmadan ikinci satır link eklendi (mevcut `seo_guide` context mekanizması üzerinden). `/analiz/`
+  hub (`analiz_hub.html`): 6 kategori başlığının yanına "Uzmana yaptır →" linki, sayfa sonu proje talebi bandı
+  artık girişli kullanıcıya da görünüyor. `forum/views.py` `uzman_dizini`: `JobCategory`→`ServicePage` için yeni
+  alan/migration yerine var olan `ServicePageSection.related_job_categories` M2M'i üzerinden ters sorgu (`forum/
+  templates/forum/uzman_dizini.html`'de link). Migration yok, 90/90 forum testi yeşil, Playwright masaüstü+mobil
+  taşma kontrolü (0px), geçici (rollback'li) veriyle hem eşleşen hem eşleşmeyen senaryo test edildi. Ardından GSC
+  anahtar kelime/içerik önceliklendirmesi yapıldı (gerçek arama hacmine — Keyword Planner/Ahrefs — doğrudan erişim
+  yok; GSC gösterim verisi + Armut.com rakip sinyali + akademik kurum içerik yoğunluğu birleştirildi), Faz 6'ya
+  5 maddelik somut sıra eklendi (SPSS alternatifi, Kaplan-Meier, NVivo/MAXQDA, SmartPLS/SEM, etik kurul) —
+  ayrıntı `tasks/todo.md` "Faz 6".
 
 #### Admin / Analytics
 
@@ -2560,12 +2582,17 @@ with connection.cursor() as c:
   dosyası mevcut ve kökte erişilebilir (`https://www.analizus.com/534e22a9f9e4d375119c5bc6d006aad0.txt`, 200 —
   kaynak `static/`) → yeni/değişen URL'ler Bing'e anında bildirilebilir.
 
-### 28.7 EN/DE ürün kararları (26–28 Eylül 2026, kullanıcı)
+### 28.7 EN/DE ürün kararları (26–28 Eylül 2026, kullanıcı; 9 Ekim 2026'da güncellendi)
 - **Gizli (EN/DE'de bağlantı yok, `LANGUAGE_CODE == 'tr'`):** A — forum, blog (+ anasayfa blog bölümü), başarı
   hikayeleri; B — YÖK Tez, TR Dizin, OAI-PMH, uzman dizini, "Uzman olarak katıl"; Topluluk menüsü ve footer sütunu;
   İstatistik Arena + navbar ★ (puan hesabı arka planda sürer); C (geçici) — Tableau (bibliometri 28 Eylül 2026'da EN/DE açıldı).
   D — gelen kutusu, ödemelerim, davet: EN/DE'de de görünür, arayüz TR (şimdilik kalsın).
-- **Açık:** `/tarama/` hub'ı (EN/DE'de yalnız `intl=True` araçlar: OpenAlex, Semantic Scholar, PubMed [flag açıksa]), OpenAlex ve S2 (tam
+- **Açık:** `/tarama/` hub'ı **ve ana sayfa "Araştırma Konsolu" kutusu** (ikisi de EN/DE'de yalnız `intl=True` araçları
+  listeler: OpenAlex, Semantic Scholar, PubMed [flag açıksa] — YÖK Tez/TR Dizin/Üniversite Tezleri yalnız TR'de kalır).
+  Ana sayfa kutusu 9 Ekim 2026'ya kadar `{% if LANGUAGE_CODE == 'tr' %}` ile EN/DE'de **tamamen** gizliydi — 26 Eylül
+  2026'dan kalma "araçlar henüz çevrili değil" kararının bu kutuda güncellenmemiş hali; hub sayfasıyla tutarsızdı
+  (hub zaten `intl` bayrağıyla 3 aracı EN/DE'de gösteriyordu). Düzeltildi, `forum/templates/forum/home.html`.
+  OpenAlex ve S2 (tam
   çeviri; SEO rehberi ve sipariş sayfası EN/DE'de gizli → proje talebi), pazar yeri (+ proje talebi yönlendirmesi),
   18 analiz aracı, eğitim, AI asistan.
 - **Proje talebi çağrıları (EN/DE):** hero birincil buton, navbar çerçeveli CTA, footer Kurumsal, market kartı,
