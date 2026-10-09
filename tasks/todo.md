@@ -569,10 +569,31 @@ sinyali). Henüz hiçbir yere yazılmadı — `ServicePage` modeli kurulunca adm
   test edildi, 90/90 forum testi yeşil.
 
 **Faz 6 — İçerik takvimi (öneri ayda 6–8 yazı, `blog_yazisi_create.md` tonu)**
-- [ ] Önce talebi görünen: "spss öğrenci ücretsiz" (47), "spss benzeri programlar" (40, sıra 27), "kaplan meier analizi" (35),
-  "spss güvenirlik analizi" (33), "iç tutarlılık katsayısı nasıl hesaplanır" (46)
-- [ ] Boş kümeler (her biri 4–6 yazı → hizmet sayfasına link): nitel (NVivo/MAXQDA, içerik analizi, konu analizi), SEM/SmartPLS,
-  EViews/zaman serisi, Power BI/Tableau, Python/ML/NLP, etik kurul, tez önerisi, akademik editörlük
+> **ÖNCELİK SIRASI (9 Ekim 2026, GSC + dış araştırma ile netleşti — `tasks/todo.md` dışına yazılmayan WebSearch
+> bulguları):** Gerçek Google arama hacmine (Keyword Planner/Ahrefs) doğrudan erişim yok (login/abonelik gerektiriyor);
+> sıralama GSC'nin kendi gösterim verisi + rakip (Armut.com) kategori/talep sinyali + akademik kurum içerik
+> yoğunluğu birleştirilerek yapıldı. Yarın buradan devam.
+1. **"SPSS'e benzer/alternatif ücretsiz programlar"** — 40 gösterim, sıra 27, içerik yok → net rakip/karşılaştırma
+   yazısı, hızlı kazanılabilir.
+2. **"Kaplan-Meier analizi nedir"** — 35 gösterim, içerik yok, araç da yok (araç fırsatı ayrıca değerlendirilebilir).
+3. **NVivo/MAXQDA ile nitel veri analizi serisi (4–6 yazı)** — `/hizmetler/nitel-analiz/`'e hiç blog kategorisi
+   bağlı değil (Faz 3 notu), en büyük yapısal boşluk; MAXQDA'nın tam Türkçe desteği var, gerçek "nasıl yapılır" talebi
+   doğrulandı (üniversite ders içerikleri/eğitim videoları).
+4. **SmartPLS / Yapısal Eşitlik Modellemesi (SEM) serisi** — Başkent Üniv. (BEDAM, 90 saat ücretli eğitim) ve Erzurum
+   Teknik Üniv. ayrı eğitim düzenlemiş; akademik çevrede ücret ödenen somut talep var. `/hizmetler/nicel-analiz/`'e
+   bağlanır.
+5. **"Tez etik kurul onayı ne zaman gerekir"** — net/somut soru; bulgu: onay yalnız anket/gözlem/mülakat/deney içeren
+   tezlerde zorunlu, literatür taraması/ikincil veride gerekmiyor — bu ayrım yazının ekseni olabilir.
+   `/hizmetler/akademik-danismanlik/`'a link.
+- [ ] Önce talebi görünen (mevcut GSC, sıra 1-2 ile aynı): "spss öğrenci ücretsiz" (47), "spss benzeri programlar"
+  (40, sıra 27), "kaplan meier analizi" (35), "spss güvenirlik analizi" (33), "iç tutarlılık katsayısı nasıl
+  hesaplanır" (46)
+- [ ] Boş kümeler (her biri 4–6 yazı → hizmet sayfasına link, sıra 3-5 ile aynı): nitel (NVivo/MAXQDA, içerik analizi,
+  konu analizi), SEM/SmartPLS, EViews/zaman serisi, Power BI/Tableau, Python/ML/NLP, etik kurul, tez önerisi,
+  akademik editörlük
+- Rakip sinyali (Armut.com, 9 Ekim araştırması): "istatistik-veri-analizi" kategorisinde 1.169 analist, 2.889
+  onaylı değerlendirme, fiyat aralığı 1.000-8.000 TL — pazarın gerçek boyutuna işaret ediyor. Şehir×hizmet sayfa
+  modelini (Armut'un yaptığı) daha önce bilinçli reddettik (4 Ekim kararı, Faz 4 notu) — duruyor, değişmedi.
 
 **Faz 7 — Araç sayfalarını 1. sayfaya (uzun vade)**
 - [ ] 2. sayfadakiler: anova 13,8, mann-whitney 14,7, tekrarlı anova 14,4, orneklem 23,2, hangi-test 16,0, cronbach 11,2 —
