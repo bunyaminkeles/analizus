@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-09 21:24+0300\n"
+"POT-Creation-Date: 2026-10-09 21:39+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1200,7 +1200,7 @@ msgstr ""
 
 #: bibliometrics/templates/bibliometrics/landing.html:25
 #: bibliometrics/views.py:38 forum/templates/forum/home.html:300
-#: forum/views.py:4271 openalex/templates/openalex/landing.html:157
+#: forum/views.py:4281 openalex/templates/openalex/landing.html:157
 #: templates/base.html:223 templates/base.html:443
 msgid "Bibliometrik Analiz"
 msgstr "Bibliometric Analysis"
@@ -1543,7 +1543,7 @@ msgid "Başlık ve özet metinlerinden anahtar kavram frekanslarını çıkarın
 msgstr "Extract key concept frequencies from titles and abstracts."
 
 #: bibliometrics/templates/bibliometrics/landing.html:387
-#: forum/templates/forum/home.html:1163
+#: forum/templates/forum/home.html:1169
 msgid "Yükleniyor..."
 msgstr "Loading..."
 
@@ -3084,7 +3084,7 @@ msgstr ""
 "an expert. Automation projects for organizations and research groups."
 
 #: forum/templates/forum/ai_cozumler.html:79
-#: forum/templates/forum/home.html:899
+#: forum/templates/forum/home.html:905
 msgid "Analizleriniz siz uyurken çalışsın."
 msgstr "Let your analyses run while you sleep."
 
@@ -3494,7 +3494,7 @@ msgstr ""
 "From SPSS to Python, scale development to machine learning — one-on-one "
 "training for academic researchers and corporate teams."
 
-#: forum/templates/forum/egitim.html:75 forum/templates/forum/home.html:912
+#: forum/templates/forum/egitim.html:75 forum/templates/forum/home.html:918
 msgid "Aracı öğren, analizini kendin yap."
 msgstr "Learn the tool, do your own analysis."
 
@@ -4711,7 +4711,7 @@ msgstr ""
 "sample is small, non-parametric alternatives (Mann-Whitney U, Kruskal-"
 "Wallis, Wilcoxon) give more reliable results."
 
-#: forum/templates/forum/hangi_test.html:32 forum/templates/forum/home.html:829
+#: forum/templates/forum/hangi_test.html:32 forum/templates/forum/home.html:835
 msgid "Hangi korelasyon testini kullanmalıyım?"
 msgstr "Which correlation test should I use?"
 
@@ -6068,8 +6068,8 @@ msgstr "Free initial assessment · No obligation"
 msgid "ya da kendiniz analiz edin:"
 msgstr "or analyse it yourself:"
 
-#: forum/templates/forum/home.html:270 forum/templates/forum/home.html:1266
-#: forum/templates/forum/home.html:1272
+#: forum/templates/forum/home.html:270 forum/templates/forum/home.html:1272
+#: forum/templates/forum/home.html:1278
 msgid "CSV veya Excel dosyanı buraya bırak"
 msgstr "Drop your CSV or Excel file here"
 
@@ -6183,7 +6183,7 @@ msgstr "Data Science"
 msgid "Editörlük"
 msgstr "Editing"
 
-#: forum/templates/forum/home.html:390 forum/views.py:4268
+#: forum/templates/forum/home.html:390 forum/views.py:4278
 msgid "Danışmanlık"
 msgstr "Consulting"
 
@@ -6236,7 +6236,7 @@ msgid "Onaylayın, raporunuzu teslim alın"
 msgstr "Approve and receive your report"
 
 #: forum/templates/forum/home.html:465 forum/templates/forum/home.html:555
-#: forum/templates/forum/home.html:1030
+#: forum/templates/forum/home.html:1036
 #: istatistik/templates/istatistik/analiz_console_base.html:117
 #: istatistik/templates/istatistik/analiz_hub.html:106
 #: templates/service_promo.html:192
@@ -6494,80 +6494,88 @@ msgstr "OpenAlex Search"
 msgid "TR Dizin Tarama"
 msgstr "TR Dizin Search"
 
-#: forum/templates/forum/home.html:777 templates/base.html:259
+#: forum/templates/forum/home.html:768
+msgid "Semantic Scholar Tarama"
+msgstr "Semantic Scholar Search"
+
+#: forum/templates/forum/home.html:771
+msgid "PubMed Tarama"
+msgstr "PubMed Search"
+
+#: forum/templates/forum/home.html:783 templates/base.html:259
 #: templates/base.html:466 templates/partials/footer.html:64
 msgid "Çalışma Odaları"
 msgstr "Study Rooms"
 
-#: forum/templates/forum/home.html:778
+#: forum/templates/forum/home.html:784
 msgid "Odaklanma süreleri ve diğer araştırmacılarla ortak çalışma imkanı."
 msgstr "Focus sessions and the chance to work alongside other researchers."
 
-#: forum/templates/forum/home.html:779
+#: forum/templates/forum/home.html:785
 msgid "Katıl →"
 msgstr "Join →"
 
-#: forum/templates/forum/home.html:817
+#: forum/templates/forum/home.html:823
 msgid "Hangi testi kullanmalıyım?"
 msgstr "Which test should I use?"
 
-#: forum/templates/forum/home.html:818
+#: forum/templates/forum/home.html:824
 msgid ""
 "Bir soru seç, AI Asistan hemen cevaplasın — ya da kendini Arena'da test et."
 msgstr ""
 "Pick a question and let the AI Assistant answer instantly — or test yourself "
 "in the Arena."
 
-#: forum/templates/forum/home.html:818
+#: forum/templates/forum/home.html:824
 msgid "Bir soru seç, AI Asistan hemen cevaplasın."
 msgstr "Pick a question and the AI Assistant will answer right away."
 
-#: forum/templates/forum/home.html:824
+#: forum/templates/forum/home.html:830
 #: istatistik/templates/istatistik/analiz_hub.html:56
 msgid "AI Asistan'a sor"
 msgstr "Ask the AI Assistant"
 
-#: forum/templates/forum/home.html:826
+#: forum/templates/forum/home.html:832
 msgid "Ölçeğimin güvenirliğini nasıl ölçerim?"
 msgstr "How do I measure my scale's reliability?"
 
-#: forum/templates/forum/home.html:827
+#: forum/templates/forum/home.html:833
 msgid "İki grup ortalamasını karşılaştırmak istiyorum"
 msgstr "I want to compare the means of two groups"
 
-#: forum/templates/forum/home.html:828
+#: forum/templates/forum/home.html:834
 msgid "Verim normal dağılmıyor, ne yapmalıyım?"
 msgstr "My data isn't normally distributed — what should I do?"
 
-#: forum/templates/forum/home.html:830
+#: forum/templates/forum/home.html:836
 msgid "Örneklem büyüklüğümü nasıl hesaplarım?"
 msgstr "How do I calculate my sample size?"
 
-#: forum/templates/forum/home.html:832
+#: forum/templates/forum/home.html:838
 msgid "Kendi sorunu sor →"
 msgstr "Ask your own question →"
 
-#: forum/templates/forum/home.html:837
+#: forum/templates/forum/home.html:843
 msgid "ya da Arena'da kendini test et"
 msgstr "or test yourself in the Arena"
 
-#: forum/templates/forum/home.html:843
+#: forum/templates/forum/home.html:849
 msgid "Kendini Test Et"
 msgstr "Test Yourself"
 
-#: forum/templates/forum/home.html:850
+#: forum/templates/forum/home.html:856
 msgid "Soru yükleniyor…"
 msgstr "Loading question…"
 
-#: forum/templates/forum/home.html:865
+#: forum/templates/forum/home.html:871
 msgid "AI çağında size uygun yolu seçin"
 msgstr "Choose the right path for you in the AI era"
 
-#: forum/templates/forum/home.html:879
+#: forum/templates/forum/home.html:885
 msgid "Analizini AI'a mı yaptırdın?"
 msgstr "Did AI do your analysis?"
 
-#: forum/templates/forum/home.html:880
+#: forum/templates/forum/home.html:886
 msgid ""
 "ChatGPT hızlıdır ama jüri karşısında güvence vermez. Uzmanımız 24 saatte "
 "kontrol etsin, doğrulama raporu versin."
@@ -6575,11 +6583,11 @@ msgstr ""
 "ChatGPT is fast, but it offers no assurance in front of a jury. Let our "
 "expert review it within 24 hours and issue a verification report."
 
-#: forum/templates/forum/home.html:882
+#: forum/templates/forum/home.html:888
 msgid "Doğrulama Talep Et"
 msgstr "Request Verification"
 
-#: forum/templates/forum/home.html:900
+#: forum/templates/forum/home.html:906
 msgid ""
 "Veri toplayan, analiz eden, raporlayan AI sistemleri — uzman gözetiminde "
 "kuruyoruz."
@@ -6587,11 +6595,11 @@ msgstr ""
 "AI systems that collect, analyze, and report data — we build them under "
 "expert supervision."
 
-#: forum/templates/forum/home.html:902
+#: forum/templates/forum/home.html:908
 msgid "AI Çözümlerini Keşfet"
 msgstr "Explore AI Solutions"
 
-#: forum/templates/forum/home.html:913
+#: forum/templates/forum/home.html:919
 msgid ""
 "SPSS'ten Python'a, ölçek geliştirmeden makine öğrenmesine — birebir eğitimle "
 "kendi verinizle çalışın."
@@ -6599,30 +6607,30 @@ msgstr ""
 "From SPSS to Python, scale development to machine learning — work with your "
 "own data in one-on-one training."
 
-#: forum/templates/forum/home.html:915 templates/service_promo.html:214
+#: forum/templates/forum/home.html:921 templates/service_promo.html:214
 msgid "Eğitimleri Keşfet"
 msgstr "Explore Trainings"
 
-#: forum/templates/forum/home.html:945
+#: forum/templates/forum/home.html:951
 msgid "Soru İşaretlerini Giderin"
 msgstr "Get Your Questions Answered"
 
-#: forum/templates/forum/home.html:946
+#: forum/templates/forum/home.html:952
 msgid "Sıkça Sorulan Sorular"
 msgstr "Frequently Asked Questions"
 
-#: forum/templates/forum/home.html:947
+#: forum/templates/forum/home.html:953
 msgid ""
 "Veri gizliliği, fiyatlandırma ve süreçlerimiz hakkında merak ettiğiniz her "
 "şey."
 msgstr ""
 "Everything you want to know about data privacy, pricing, and our processes."
 
-#: forum/templates/forum/home.html:958
+#: forum/templates/forum/home.html:964
 msgid "Analiz verilerim güvende mi? Başkalarıyla paylaşılır mı?"
 msgstr "Is my analysis data safe? Is it shared with others?"
 
-#: forum/templates/forum/home.html:963
+#: forum/templates/forum/home.html:969
 msgid ""
 "Verileriniz KVKK'ya uygun şekilde şifreli sunucularda saklanır. Dosyalarınız "
 "yalnızca eşleştiğiniz uzmanla, ilgili iş kapsamında paylaşılır; bunun "
@@ -6633,11 +6641,11 @@ msgstr ""
 "specific job; beyond that, they are never shared with third parties or "
 "unrelated individuals."
 
-#: forum/templates/forum/home.html:972
+#: forum/templates/forum/home.html:978
 msgid "Fiyatlandırma politikanız nasıl? Gizli veya ek ücret çıkar mı?"
 msgstr "What's your pricing policy? Are there hidden or extra fees?"
 
-#: forum/templates/forum/home.html:977
+#: forum/templates/forum/home.html:983
 msgid ""
 "Platformdaki uzmanlar, projenizin kapsamını değerlendirdikten sonra size "
 "kendi fiyat tekliflerini sunar; anlaştığınız tutarın dışında platform "
@@ -6650,11 +6658,11 @@ msgstr ""
 "added through the platform. The price of the self-service statistics tools "
 "is shown clearly on each tool's page."
 
-#: forum/templates/forum/home.html:986
+#: forum/templates/forum/home.html:992
 msgid "Danışman hocam veya jüri revizyon (düzeltme) isterse ne olacak?"
 msgstr "What if my advisor or jury requests revisions?"
 
-#: forum/templates/forum/home.html:991
+#: forum/templates/forum/home.html:997
 msgid ""
 "Revizyon koşulları, çalışmaya başlamadan önce uzmanınızla aranızda "
 "netleştirdiğiniz kapsamın bir parçasıdır. Çoğu uzman, danışman veya jüriden "
@@ -6667,11 +6675,11 @@ msgstr ""
 "agreed scope, for methodological feedback from an advisor or jury — we "
 "recommend confirming this with your expert before the work starts."
 
-#: forum/templates/forum/home.html:1000
+#: forum/templates/forum/home.html:1006
 msgid "Analiz sonuçlarım ne kadar sürede teslim edilir?"
 msgstr "How long until my analysis results are delivered?"
 
-#: forum/templates/forum/home.html:1005
+#: forum/templates/forum/home.html:1011
 msgid ""
 "Kendi başınıza kullandığınız istatistik araçlarında sonuçlar saniyeler "
 "içinde hesaplanır. Bir uzmanla birlikte yürüttüğünüz projelerde ise teslim "
@@ -6679,15 +6687,15 @@ msgid ""
 "başlamadan önce uzmanınızla birlikte belirlersiniz."
 msgstr ""
 "With the self-service statistics tools, results are calculated within "
-"seconds. For projects you run together with an expert, delivery time "
-"varies with the complexity and scope of your data; you agree on the exact "
-"timeline with your expert before the work starts."
+"seconds. For projects you run together with an expert, delivery time varies "
+"with the complexity and scope of your data; you agree on the exact timeline "
+"with your expert before the work starts."
 
-#: forum/templates/forum/home.html:1014
+#: forum/templates/forum/home.html:1020
 msgid "Süreç bittikten sonra verilerime ve dosyalarıma ne oluyor?"
 msgstr "What happens to my data and files after the process ends?"
 
-#: forum/templates/forum/home.html:1019
+#: forum/templates/forum/home.html:1025
 msgid ""
 "Verileriniz ve sonuç raporlarınız, olası revizyon talepleriniz için "
 "hesabınızda saklanır. KVKK kapsamındaki haklarınız gereği dosyalarınızın "
@@ -6699,45 +6707,45 @@ msgstr ""
 "files at any time; once requested, the relevant data is removed from our "
 "systems."
 
-#: forum/templates/forum/home.html:1029
+#: forum/templates/forum/home.html:1035
 msgid "Sorunuz mu kaldı? Projenizi anlatın, ücretsiz değerlendirelim."
 msgstr ""
 "Still have questions? Tell us about your project and we will assess it for "
 "free."
 
-#: forum/templates/forum/home.html:1042
+#: forum/templates/forum/home.html:1048
 msgid "Güncel Akademik İçerikler"
 msgstr "Latest Academic Content"
 
-#: forum/templates/forum/home.html:1062
+#: forum/templates/forum/home.html:1068
 msgid "Devamını Oku →"
 msgstr "Read More →"
 
-#: forum/templates/forum/home.html:1070
+#: forum/templates/forum/home.html:1076
 msgid "Tüm Blog Yazıları"
 msgstr "All Blog Posts"
 
-#: forum/templates/forum/home.html:1140
+#: forum/templates/forum/home.html:1146
 msgid "Doğru! +10 puan kazandın"
 msgstr "Correct! You earned +10 points"
 
-#: forum/templates/forum/home.html:1145
+#: forum/templates/forum/home.html:1151
 msgid "Yanlış! Doğru cevap:"
 msgstr "Wrong! The correct answer:"
 
-#: forum/templates/forum/home.html:1203 templates/base.html:561
+#: forum/templates/forum/home.html:1209 templates/base.html:561
 msgid "Sonraki Soru"
 msgstr "Next Question"
 
-#: forum/templates/forum/home.html:1248
+#: forum/templates/forum/home.html:1254
 msgid "Yükleniyor:"
 msgstr "Uploading:"
 
-#: forum/templates/forum/home.html:1265
+#: forum/templates/forum/home.html:1271
 msgid "Dosya yüklenemedi. Lütfen tekrar deneyin."
 msgstr "File upload failed. Please try again."
 
-#: forum/templates/forum/home.html:1271
+#: forum/templates/forum/home.html:1277
 #: istatistik/templates/istatistik/afa.html:276
 #: istatistik/templates/istatistik/betimsel.html:237
 #: istatistik/templates/istatistik/cronbach.html:234
@@ -10467,83 +10475,83 @@ msgstr "The verification email has been resent. Please check your inbox."
 msgid "E-posta gönderilemedi. Lütfen daha sonra tekrar deneyin."
 msgstr "The email could not be sent. Please try again later."
 
-#: forum/views.py:4261
+#: forum/views.py:4271
 msgid "Hoş geldiniz!"
 msgstr "Welcome!"
 
-#: forum/views.py:4266
+#: forum/views.py:4276
 msgid "İstatistik Analizi"
 msgstr "Statistical Analysis"
 
-#: forum/views.py:4266
+#: forum/views.py:4276
 msgid "SPSS, R, Python, AMOS, SmartPLS ile profesyonel istatistik analizleri"
 msgstr ""
 "Professional statistical analyses with SPSS, R, Python, AMOS and SmartPLS"
 
-#: forum/views.py:4267
+#: forum/views.py:4277
 msgid "Veri Kazıma & Toplama"
 msgstr "Data Scraping & Collection"
 
-#: forum/views.py:4267
+#: forum/views.py:4277
 msgid "Anket, web ve akademik veritabanlarından veri toplama desteği"
 msgstr ""
 "Support with collecting data from surveys, the web and academic databases"
 
-#: forum/views.py:4268
+#: forum/views.py:4278
 msgid "Alanında uzman akademisyen ve danışmanlarla Pazaryeri üzerinden eşleşin"
 msgstr ""
 "Get matched with expert academics and consultants through the Marketplace"
 
-#: forum/views.py:4269
+#: forum/views.py:4279
 msgid "Proje Desteği"
 msgstr "Project Support"
 
-#: forum/views.py:4269
+#: forum/views.py:4279
 msgid "Tez, makale ve kurumsal projeleriniz için uçtan uca destek"
 msgstr "End-to-end support for your theses, articles and corporate projects"
 
-#: forum/views.py:4270
+#: forum/views.py:4280
 msgid "Akademik Destek"
 msgstr "Academic Support"
 
-#: forum/views.py:4270
+#: forum/views.py:4280
 msgid "Tez ve makale yazım sürecinde yöntem ve rehberlik desteği"
 msgstr "Methodological guidance while writing theses and articles"
 
-#: forum/views.py:4271
+#: forum/views.py:4281
 msgid "Atıf ve yayın verileriyle bibliometrik analiz yaptırın"
 msgstr ""
 "Have bibliometric analyses carried out on citation and publication data"
 
-#: forum/views.py:4272
+#: forum/views.py:4282
 msgid "Literatür / Akademik Tarama"
 msgstr "Literature / Academic Search"
 
-#: forum/views.py:4272
+#: forum/views.py:4282
 msgid "YÖK Tez, TR Dizin ve uluslararası veritabanlarında tarama"
 msgstr "Searches in YÖK Tez, TR Dizin and international databases"
 
-#: forum/views.py:4273
+#: forum/views.py:4283
 msgid "Forumda Soru-Cevap"
 msgstr "Forum Q&A"
 
-#: forum/views.py:4273
+#: forum/views.py:4283
 msgid "Merak ettiklerinizi sorun, bilgi birikiminizi toplulukla paylaşın"
 msgstr "Ask what you want to know and share your knowledge with the community"
 
-#: forum/views.py:4275
+#: forum/views.py:4285
 msgid "AI Araçları"
 msgstr "AI Tools"
 
-#: forum/views.py:4275
+#: forum/views.py:4285
 msgid "Akademik Danışmanlık"
 msgstr "Academic Consulting"
 
-#: forum/views.py:4314
+#: forum/views.py:4324
 msgid "YÖK Tez Kazıma ve İndirme Aracı"
 msgstr "YÖK Thesis Scraping and Download Tool"
 
-#: forum/views.py:4315
+#: forum/views.py:4325
 msgid ""
 "Anahtar kelime, yazar veya danışmanla arama yapın; tez verilerini Excel veya "
 "TXT olarak indirin."
@@ -10551,11 +10559,11 @@ msgstr ""
 "Search by keyword, author or supervisor and download thesis data as Excel or "
 "TXT."
 
-#: forum/views.py:4323
+#: forum/views.py:4333
 msgid "OpenAlex Yayın Kazıma"
 msgstr "OpenAlex Publication Scraping"
 
-#: forum/views.py:4324
+#: forum/views.py:4334
 msgid ""
 "240 milyondan fazla akademik yayından kodsuz veri kazıma. Başlık, yazar, "
 "kurum ve atıf bilgileri."
@@ -10563,11 +10571,11 @@ msgstr ""
 "No-code data scraping from more than 240 million academic publications. "
 "Titles, authors, institutions and citation data."
 
-#: forum/views.py:4332
+#: forum/views.py:4342
 msgid "TR Dizin Makale Kazıma"
 msgstr "TR Dizin Article Scraping"
 
-#: forum/views.py:4333
+#: forum/views.py:4343
 msgid ""
 "TR Dizin'den anahtar kelime ile makale arayın; yazarları, dergileri ve atıf "
 "bilgilerini indirin."
@@ -10575,13 +10583,13 @@ msgstr ""
 "Search TR Dizin articles by keyword and download authors, journals and "
 "citation data."
 
-#: forum/views.py:4341
+#: forum/views.py:4351
 #: semanticscholar/templates/semanticscholar/landing.html:26
 #: semanticscholar/views.py:59
 msgid "Semantic Scholar Yayın Kazıma"
 msgstr "Semantic Scholar Publication Scraping"
 
-#: forum/views.py:4342
+#: forum/views.py:4352
 msgid ""
 "200 milyondan fazla akademik yayın arasında kodsuz arama yapın. WoS, Scopus "
 "ve arXiv dahil tüm büyük veri tabanlarını kapsar."
@@ -10589,12 +10597,12 @@ msgstr ""
 "Search more than 200 million academic publications without code. Covers all "
 "major databases, including WoS, Scopus and arXiv."
 
-#: forum/views.py:4350
+#: forum/views.py:4360
 msgid "PubMed Yayın Kazıma"
 msgstr "PubMed Publication Scraping"
 
 # PubMed modülü — Faz 2 (29 Eylül 2026)
-#: forum/views.py:4351
+#: forum/views.py:4361
 msgid ""
 "40 milyondan fazla biyomedikal yayında başlık, özet, yazar ve MeSH terimiyle "
 "kodsuz arama yapın."
@@ -10602,11 +10610,11 @@ msgstr ""
 "Search more than 40 million biomedical publications by title, abstract, "
 "author and MeSH term — no coding required."
 
-#: forum/views.py:4359 templates/tarama_console_base.html:34
+#: forum/views.py:4369 templates/tarama_console_base.html:34
 msgid "Üniversite Tez Arşivi"
 msgstr "University Thesis Archive"
 
-#: forum/views.py:4360
+#: forum/views.py:4370
 msgid ""
 "19 Türk üniversitesinin açık erişim arşivinde anahtar kelime ile tez ve "
 "makale arayın."
