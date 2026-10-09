@@ -200,26 +200,10 @@ def send_demo_email(job):
 
 def cleanup_expired_pubmed_s3_files(days=7):
     """7 günden eski pubmed/ altındaki dosyaları S3'den siler (cron bağlantısı Faz 2: forum/api_views)."""
-    import boto3
-    deleted_count = 0
-    cutoff = timezone.now() - timedelta(days=days)
+    from forum.s3_utils import cleanup_s3_prefix
 
-    try:
-        s3 = boto3.client(
-            's3',
-            aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
-            aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
-            region_name=settings.AWS_S3_REGION_NAME,
-        )
-        bucket = settings.AWS_STORAGE_BUCKET_NAME
-        paginator = s3.get_paginator('list_objects_v2')
-        for page in paginator.paginate(Bucket=bucket, Prefix='pubmed/'):
-            for obj in page.get('Contents', []):
-                if obj['LastModified'] < cutoff:
-                    s3.delete_object(Bucket=bucket, Key=obj['Key'])
-                    deleted_count += 1
-    except Exception as e:
-        logger.error(f"S3 temizlik hatası (pubmed): {e}")
+    cutoff = timezone.now() - timedelta(days=days)
+    deleted_count = cleanup_s3_prefix('pubmed/', days)
 
     try:
         PubMedSearchJob.objects.filter(created_at__lt=cutoff).exclude(demo_file_url='').update(demo_file_url='')

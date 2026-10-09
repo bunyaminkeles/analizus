@@ -243,28 +243,13 @@ def send_order_results_email(order):
 
 def cleanup_expired_oaipmh_s3_files(days=7):
     """7 günden eski oaipmh/ S3 dosyalarını siler."""
-    import boto3
-    from botocore.exceptions import ClientError
-    deleted_count = 0
-    cutoff = timezone.now() - timedelta(days=days)
+    from forum.s3_utils import cleanup_s3_prefix
 
-    try:
-        s3 = boto3.client(
-            's3',
-            aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
-            aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
-            region_name=settings.AWS_S3_REGION_NAME,
-        )
-        bucket = settings.AWS_STORAGE_BUCKET_NAME
-        for prefix in ['oaipmh/demo/', 'oaipmh/full/', 'oaipmh/orders/']:
-            paginator = s3.get_paginator('list_objects_v2')
-            for page in paginator.paginate(Bucket=bucket, Prefix=prefix):
-                for obj in page.get('Contents', []):
-                    if obj['LastModified'] < cutoff:
-                        s3.delete_object(Bucket=bucket, Key=obj['Key'])
-                        deleted_count += 1
-    except Exception as e:
-        logger.error(f"S3 temizlik hatası (oaipmh): {e}")
+    cutoff = timezone.now() - timedelta(days=days)
+    deleted_count = sum(
+        cleanup_s3_prefix(prefix, days)
+        for prefix in ['oaipmh/demo/', 'oaipmh/full/', 'oaipmh/orders/']
+    )
 
     try:
         from oaipmh.models import OAIPMHSearchJob

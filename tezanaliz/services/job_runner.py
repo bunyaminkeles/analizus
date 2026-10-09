@@ -195,3 +195,26 @@ def send_completion_email_async(job_id: str, pdf_url: str = '') -> None:
 
     thread = threading.Thread(target=_run, daemon=True)
     thread.start()
+
+
+def cleanup_expired_tezanaliz_s3_files(days=7):
+    """7 günden eski tezanaliz/ altındaki tüm dosyaları S3'den siler.
+    DB'ye değil, S3'deki dosya tarihine bakar."""
+    from django.utils import timezone
+    from datetime import timedelta
+    from tezanaliz.models import TezAnaliz
+    from forum.s3_utils import cleanup_s3_prefix
+
+    cutoff = timezone.now() - timedelta(days=days)
+    deleted_count = cleanup_s3_prefix('tezanaliz/pdf/', days)
+
+    # DB'deki URL referansını da temizle
+    try:
+        TezAnaliz.objects.filter(
+            created_at__lt=cutoff,
+        ).exclude(pdf_url='').update(pdf_url='')
+    except Exception as e:
+        logger.error(f"DB temizlik hatası (tezanaliz): {e}")
+
+    logger.info(f"S3 temizlik (tezanaliz): {deleted_count} dosya silindi")
+    return deleted_count

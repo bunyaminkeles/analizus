@@ -449,3 +449,31 @@ def send_order_results_email(order_id: str) -> bool:
     except Exception as e:
         logger.error(f'[bibliometrics_order_email] Hata [{order_id}]: {e}', exc_info=True)
         return False
+
+
+def cleanup_expired_bibliometrics_s3_files(days=7):
+    """7 günden eski bibliometrics/ altındaki tüm dosyaları S3'den siler.
+    DB'ye değil, S3'deki dosya tarihine bakar."""
+    from django.utils import timezone
+    from datetime import timedelta
+    from bibliometrics.models import BibliometricJob
+    from forum.s3_utils import cleanup_s3_prefix
+
+    cutoff = timezone.now() - timedelta(days=days)
+    deleted_count = sum(
+        cleanup_s3_prefix(prefix, days)
+        for prefix in ['bibliometrics/demo/', 'bibliometrics/full/']
+    )
+
+    # DB'deki URL referanslarını da temizle
+    try:
+        BibliometricJob.objects.filter(
+            created_at__lt=cutoff,
+        ).exclude(
+            demo_pdf_url='', full_pdf_url=''
+        ).update(demo_pdf_url='', full_pdf_url='')
+    except Exception as e:
+        logger.error(f"DB temizlik hatası (bibliometrics): {e}")
+
+    logger.info(f"S3 temizlik (bibliometrics): {deleted_count} dosya silindi")
+    return deleted_count

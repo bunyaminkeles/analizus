@@ -64,3 +64,28 @@ def delete_from_s3(s3_key):
     except ClientError as e:
         logger.error(f"S3 silme hatası: {e}")
         return False
+
+
+def cleanup_s3_prefix(prefix, days):
+    """Verilen S3 prefix'i altında `days` günden eski dosyaları siler.
+    Her prefix kendi try/except'inde çalışır — bir prefix'teki hata diğerlerini etkilemez
+    (önceden tüm prefix'ler tek try/except içindeydi, biri patlayınca kalanlar o çalıştırmada atlanıyordu)."""
+    from datetime import timedelta
+    from django.utils import timezone
+
+    deleted_count = 0
+    cutoff = timezone.now() - timedelta(days=days)
+    try:
+        s3 = _get_s3_client()
+        bucket = settings.AWS_STORAGE_BUCKET_NAME
+        paginator = s3.get_paginator('list_objects_v2')
+        for page in paginator.paginate(Bucket=bucket, Prefix=prefix):
+            for obj in page.get('Contents', []):
+                if obj['LastModified'] < cutoff:
+                    s3.delete_object(Bucket=bucket, Key=obj['Key'])
+                    deleted_count += 1
+    except Exception as e:
+        logger.error(f"S3 temizlik hatası ({prefix}): {e}")
+
+    logger.info(f"S3 temizlik ({prefix}): {deleted_count} dosya silindi")
+    return deleted_count

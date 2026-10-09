@@ -218,33 +218,13 @@ def send_demo_email_async(job_id: str) -> None:
 def cleanup_expired_yoktez_s3_files(days=3):
     """3 günden eski yoktez/demo/ altındaki tüm dosyaları S3'den siler.
     DB'ye değil, S3'deki dosya tarihine bakar (trdizin/openalex/oaipmh/pubmed ile aynı kalıp)."""
-    import boto3
     from django.utils import timezone
     from datetime import timedelta
     from yoktez.models import YokTezSearchJob
+    from forum.s3_utils import cleanup_s3_prefix
 
-    deleted_count = 0
     cutoff = timezone.now() - timedelta(days=days)
-
-    try:
-        s3 = boto3.client(
-            's3',
-            aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
-            aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
-            region_name=settings.AWS_S3_REGION_NAME,
-        )
-        bucket = settings.AWS_STORAGE_BUCKET_NAME
-
-        paginator = s3.get_paginator('list_objects_v2')
-        for page in paginator.paginate(Bucket=bucket, Prefix='yoktez/demo/'):
-            for obj in page.get('Contents', []):
-                last_modified = obj['LastModified']
-                if last_modified < cutoff:
-                    s3.delete_object(Bucket=bucket, Key=obj['Key'])
-                    logger.info(f"S3 temizlik: silindi {obj['Key']}")
-                    deleted_count += 1
-    except Exception as e:
-        logger.error(f"S3 temizlik hatası (yoktez): {e}")
+    deleted_count = cleanup_s3_prefix('yoktez/demo/', days)
 
     # DB'deki URL referansını da temizle
     try:
