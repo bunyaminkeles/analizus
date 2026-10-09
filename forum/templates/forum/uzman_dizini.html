@@ -20,6 +20,13 @@
       {% else %}
       <p class="text-white-50 mb-0 small">Puanı yüksek, aktif kullanıcılar ve tamamlanmış iş deneyimi olan analistler.</p>
       {% endif %}
+      {% if related_service_page %}
+      <p class="mb-0 mt-1 small">
+        <a href="{% url 'service_page_detail' related_service_page.slug %}" class="text-decoration-none">
+          {{ related_service_page.title }} hizmet sayfamıza da bakabilirsiniz →
+        </a>
+      </p>
+      {% endif %}
     </div>
     <div class="col-auto">
       <a href="{% url 'post_job' %}" class="btn btn-primary btn-sm fw-semibold">
