@@ -3661,7 +3661,8 @@ def uzman_dizini(request):
     # tekil kullanıcıyı kurala bakmaksızın zorla gösterebilir/gizleyebilir. Ayrı, hafif bir sorguda
     # hesaplanıyor ki aşağıdaki completed_jobs/avg_rating agregasyonlarıyla (farklı ilişkiler
     # üzerinden Count/Avg) aynı annotate() çağrısında çakışıp yanlış sayı üretmesin.
-    min_puan = SiteSettings.load().uzman_dizini_min_puan
+    site = SiteSettings.load()
+    min_puan = site.uzman_dizini_min_puan
 
     eligible_qs = (
         Profile.objects
@@ -3727,6 +3728,14 @@ def uzman_dizini(request):
     # /uzmanlar/'ın zayıf kopyası).
     cat_noindex = bool(selected_category) and (not selected_category.intro or total_count < 2)
 
+    # Faz 5 (SEO iç linkleme): kategoriye bağlı hizmet sayfası varsa (ServicePageSection
+    # üzerinden ilişkilendirilmiş), uzman dizini kategorisinden o sayfaya link verilir.
+    related_service_page = None
+    if selected_category and site.feature_hizmet_sayfalari:
+        related_service_page = ServicePage.objects.filter(
+            sections__related_job_categories=selected_category, is_active=True
+        ).distinct().first()
+
     return render(request, 'forum/uzman_dizini.html', {
         'featured_profiles': featured_profiles,
         'other_profiles': other_profiles,
@@ -3736,6 +3745,7 @@ def uzman_dizini(request):
         'selected_category': selected_category,
         'cat_noindex': cat_noindex,
         'sort_by': sort_by,
+        'related_service_page': related_service_page,
     })
 
 
