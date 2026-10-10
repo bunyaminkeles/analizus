@@ -76,16 +76,19 @@ maddelerde.
   `!important` eklendi (padding-left 2.5rem'e çıkarıldı), şablondaki tekrarlı inline blok silindi, cache v=0003→0004.
   Playwright ile hem canlıda (önce) hem lokalde (sonra) doğrulandı, forum testleri 82/82 geçti.
 
-> **YENİ OTURUM BURADAN BAŞLA (9 Ekim 2026, dördüncü tur).** Bu oturum: **"AÇIK İŞLER" listesindeki 1. ve 2.
-> madde tamamen kapandı, main'de canlı.** (1) `/hakkimizda/` sadeleştirme — TeamMember kart bölümü kaldırıldı,
-> `/uzmanlar/` linkine yönlendirildi (model/veri silinmedi, kullanıcı kararı). (2) S3 saklama süresi merkezi
-> temizlik — 9 aracın hepsi `cleanup_s3_prefix()` ortak yardımcısını kullanıyor, eksik 4 araca (bibliometrics/
-> semanticscholar/makaleanaliz/tezanaliz) cleanup eklendi, 7 eksik logger INFO ile kaydedildi (gerçek kök neden:
-> `root` logger WARNING seviyesindeydi, INFO loglar hiç görünmüyordu). Mevcut crontab (`0 5 * * *`) değişmeden
-> yeni araçları da kapsıyor. Migration yok, 90/90 test yeşil. **main'e merge + push edildi (kullanıcı "merge et" →
-> "push et"), Hetzner GitHub Actions ile otomatik deploy oldu** (`.github/workflows/deploy.yml` teyit edildi:
-> push→main → SSH → `git pull && docker compose restart web`). **Sıradaki öncelik (AÇIK İŞLER listesinde en üstte
-> yeni madde yok şu an):** aşağıdaki "2 Ekim 2026 sonrası açık kalanlar" ve "GELİR MODELİ" / "GÜVENLİ ÖDEME" /
+> **YENİ OTURUM BURADAN BAŞLA (10 Ekim 2026, beşinci tur).** Önceki oturum (9 Ekim akşamı): **BÜYÜK SEO DÖNÜŞÜMÜ
+> Faz 5 — İç linkleme tamamen kapandı, main'de canlı** (commit `a8acf35`+`c022225`+`b0a86c5`, ayrıntı aşağıdaki
+> "BÜYÜK SEO DÖNÜŞÜMÜ" başlığı Faz 5). Plandaki 3 maddeden 2'sinin (footer "Hizmetler" linki, araç sayfalarındaki
+> "uzmana yaptır" bandının kendisi) zaten var olduğu görüldü — gerçek iş bu bandın `/hizmetler/<slug>/`'a hiç link
+> vermemesiydi. Araç sayfaları + `/analiz/` hub kategori başlıkları + sayfa sonu bant + `/uzmanlar/?cat=` artık
+> ilgili hizmet sayfasına link veriyor; migration yok, 90/90 test yeşil. Ardından GSC+rakip araştırmasıyla **Faz 6
+> içerik takvimine 5 maddelik somut öncelik sırası eklendi** (SPSS alternatifi, Kaplan-Meier, NVivo/MAXQDA,
+> SmartPLS/SEM, etik kurul — ayrıntı aşağıda "Faz 6"). `analizus.md` §12 + §27 "#### SEO" güncellendi (commit
+> `ee7f606`, yalnız doküman olduğu için `dev`'de push edilmeden bekliyor — kullanıcı istemeden push gereksiz).
+> Paralel bir oturumdan da main'e 2 ayrı düzeltme geldi (ana sayfa "Akademik Tarama" kutusu: EN/DE'de tamamen
+> gizliydi + eksik Semantic Scholar/PubMed linkleri — `5f7e868`, `acf06af`), bu oturumla ilgisiz, kendi başına
+> belgelenmiş. **Sıradaki öncelik:** Faz 6'nın 5 maddelik sırasından ilk ikisi (SPSS alternatifi + Kaplan-Meier,
+> hazır içerik yok) hızlı kazanç; yoksa "2 Ekim 2026 sonrası açık kalanlar" / "GELİR MODELİ" / "GÜVENLİ ÖDEME" /
 > "AI AJAN" taslaklarından kullanıcı hangisini önceliklendirirse ondan devam.
 >
 > **ÖNCEKİ (7 Ekim 2026, üçüncü tur).** Bu oturum: **BÜYÜK SEO DÖNÜŞÜMÜ Faz 2 ve Faz 4
