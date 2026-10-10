@@ -76,16 +76,19 @@ maddelerde.
   `!important` eklendi (padding-left 2.5rem'e çıkarıldı), şablondaki tekrarlı inline blok silindi, cache v=0003→0004.
   Playwright ile hem canlıda (önce) hem lokalde (sonra) doğrulandı, forum testleri 82/82 geçti.
 
-> **YENİ OTURUM BURADAN BAŞLA (9 Ekim 2026, dördüncü tur).** Bu oturum: **"AÇIK İŞLER" listesindeki 1. ve 2.
-> madde tamamen kapandı, main'de canlı.** (1) `/hakkimizda/` sadeleştirme — TeamMember kart bölümü kaldırıldı,
-> `/uzmanlar/` linkine yönlendirildi (model/veri silinmedi, kullanıcı kararı). (2) S3 saklama süresi merkezi
-> temizlik — 9 aracın hepsi `cleanup_s3_prefix()` ortak yardımcısını kullanıyor, eksik 4 araca (bibliometrics/
-> semanticscholar/makaleanaliz/tezanaliz) cleanup eklendi, 7 eksik logger INFO ile kaydedildi (gerçek kök neden:
-> `root` logger WARNING seviyesindeydi, INFO loglar hiç görünmüyordu). Mevcut crontab (`0 5 * * *`) değişmeden
-> yeni araçları da kapsıyor. Migration yok, 90/90 test yeşil. **main'e merge + push edildi (kullanıcı "merge et" →
-> "push et"), Hetzner GitHub Actions ile otomatik deploy oldu** (`.github/workflows/deploy.yml` teyit edildi:
-> push→main → SSH → `git pull && docker compose restart web`). **Sıradaki öncelik (AÇIK İŞLER listesinde en üstte
-> yeni madde yok şu an):** aşağıdaki "2 Ekim 2026 sonrası açık kalanlar" ve "GELİR MODELİ" / "GÜVENLİ ÖDEME" /
+> **YENİ OTURUM BURADAN BAŞLA (10 Ekim 2026, beşinci tur).** Önceki oturum (9 Ekim akşamı): **BÜYÜK SEO DÖNÜŞÜMÜ
+> Faz 5 — İç linkleme tamamen kapandı, main'de canlı** (commit `a8acf35`+`c022225`+`b0a86c5`, ayrıntı aşağıdaki
+> "BÜYÜK SEO DÖNÜŞÜMÜ" başlığı Faz 5). Plandaki 3 maddeden 2'sinin (footer "Hizmetler" linki, araç sayfalarındaki
+> "uzmana yaptır" bandının kendisi) zaten var olduğu görüldü — gerçek iş bu bandın `/hizmetler/<slug>/`'a hiç link
+> vermemesiydi. Araç sayfaları + `/analiz/` hub kategori başlıkları + sayfa sonu bant + `/uzmanlar/?cat=` artık
+> ilgili hizmet sayfasına link veriyor; migration yok, 90/90 test yeşil. Ardından GSC+rakip araştırmasıyla **Faz 6
+> içerik takvimine 5 maddelik somut öncelik sırası eklendi** (SPSS alternatifi, Kaplan-Meier, NVivo/MAXQDA,
+> SmartPLS/SEM, etik kurul — ayrıntı aşağıda "Faz 6"). `analizus.md` §12 + §27 "#### SEO" güncellendi (commit
+> `ee7f606`, yalnız doküman olduğu için `dev`'de push edilmeden bekliyor — kullanıcı istemeden push gereksiz).
+> Paralel bir oturumdan da main'e 2 ayrı düzeltme geldi (ana sayfa "Akademik Tarama" kutusu: EN/DE'de tamamen
+> gizliydi + eksik Semantic Scholar/PubMed linkleri — `5f7e868`, `acf06af`), bu oturumla ilgisiz, kendi başına
+> belgelenmiş. **Sıradaki öncelik:** Faz 6'nın 5 maddelik sırasından ilk ikisi (SPSS alternatifi + Kaplan-Meier,
+> hazır içerik yok) hızlı kazanç; yoksa "2 Ekim 2026 sonrası açık kalanlar" / "GELİR MODELİ" / "GÜVENLİ ÖDEME" /
 > "AI AJAN" taslaklarından kullanıcı hangisini önceliklendirirse ondan devam.
 >
 > **ÖNCEKİ (7 Ekim 2026, üçüncü tur).** Bu oturum: **BÜYÜK SEO DÖNÜŞÜMÜ Faz 2 ve Faz 4
@@ -573,9 +576,18 @@ sinyali). Henüz hiçbir yere yazılmadı — `ServicePage` modeli kurulunca adm
 > bulguları):** Gerçek Google arama hacmine (Keyword Planner/Ahrefs) doğrudan erişim yok (login/abonelik gerektiriyor);
 > sıralama GSC'nin kendi gösterim verisi + rakip (Armut.com) kategori/talep sinyali + akademik kurum içerik
 > yoğunluğu birleştirilerek yapıldı. Yarın buradan devam.
-1. **"SPSS'e benzer/alternatif ücretsiz programlar"** — 40 gösterim, sıra 27, içerik yok → net rakip/karşılaştırma
-   yazısı, hızlı kazanılabilir.
-2. **"Kaplan-Meier analizi nedir"** — 35 gösterim, içerik yok, araç da yok (araç fırsatı ayrıca değerlendirilebilir).
+1. **[x] YAPILDI (10 Ekim 2026, migration `forum/0176`, commit edilecek) — "SPSS'e benzer/alternatif ücretsiz
+   programlar" (40 gösterim, sıra 27).** Dünkü "içerik yok" varsayımı **yanlıştı** — kontrol edilince konuyla ilgili
+   **3 yayınlanmış yazı** bulundu: `ucretsiz-spss-alternatifi-var-mi-...` zaten tam SEO alanlarına sahipti (852
+   kelime) → yeni yazı cannibalization yaratırdı, yazılmadı. Bunun yerine gerçek boşluk bulundu: `spss-mi-r-mi-
+   tez-icin-hangisi-daha-kolay` ve `spsste-t-testi-adim-adim-...` yayında ama `meta_title`/`meta_description`
+   **tamamen boştu** (0/0 karakter) — ikisine de dolduruldu (korumalı migration, Faz 1 0162 deseni). İleri-geri-ileri
+   + 90/90 test yeşil.
+2. **KARAR (10 Ekim 2026): "Kaplan-Meier analizi nedir" (35 gösterim) için yeni içerik GEREKMİYOR.** Kontrol edilince
+   `survival-analizi-101-kaplan-meier-cox-regresyon-...` adında zaten iyi optimize edilmiş bir yazı bulundu (857
+   kelime, meta_title 55kr, meta_description 157kr, `saglik-istatistigi` kategorisi). Düşük gösterim içerik/meta
+   eksikliğinden değil — muhtemelen iç link zayıflığı, niş konu veya zaman meselesi; "içerik yaz" burada yanlış
+   çözüm olurdu. Ayrı bir teşhis gerekirse ileride ele alınabilir, şimdilik kapatıldı.
 3. **NVivo/MAXQDA ile nitel veri analizi serisi (4–6 yazı)** — `/hizmetler/nitel-analiz/`'e hiç blog kategorisi
    bağlı değil (Faz 3 notu), en büyük yapısal boşluk; MAXQDA'nın tam Türkçe desteği var, gerçek "nasıl yapılır" talebi
    doğrulandı (üniversite ders içerikleri/eğitim videoları).

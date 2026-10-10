@@ -40,6 +40,16 @@ TARAMA_SEO_CONTENT = {
         ),
         'faq': [
             {
+                'q': 'YÖK Tez arşivinden toplu tez indirebilir miyim?',
+                'a': (
+                    'Analizus, YÖK Tez Merkezi arşivinde arama yapıp sonuçları (başlık, yazar, '
+                    'danışman, üniversite, yıl, özet) Excel veya TXT formatında toplu olarak '
+                    'indirmenizi sağlar — bu bir künye/bibliyografik veri indirmesidir, tezlerin '
+                    'PDF dosyalarını içermez. Bir tezin tam metnine ulaşmak için YÖK Tez '
+                    'Merkezi\'nin kendi sitesinden (kısıtlanmamışsa) PDF indirebilirsiniz.'
+                ),
+            },
+            {
                 'q': 'Tam metin teze nasıl ulaşabilirim?',
                 'a': (
                     'Analizus yalnızca künye bilgilerini (başlık, yazar, yıl, özet, danışman) '
