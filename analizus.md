@@ -2447,13 +2447,16 @@ with connection.cursor() as c:
 - Faz 3: blog yazısı sonuna kategoriye göre "uzman desteği" kartı (→ `/uzmanlar/?cat=` + proje talebi)
 - SSS zenginleştirme (Friedman/Wilcoxon 1, çoğu araç 2 soru) — metin işi
 - Faz 6 içerik takvimi: önce "spss öğrenci ücretsiz", "spss benzeri programlar", "kaplan meier analizi"
-- Faz 4: 5 küme hizmet sayfası + Pazaryeri "Hizmet Alanları" şeridi (aşağıdaki Danışmanlık "Hizmet kataloğu" ile aynı iş)
+- Faz 4 hizmet sayfaları (4 küme: akademik-danismanlik, nicel-analiz, nitel-analiz, veri-ve-yapay-zeka) **canlıda** —
+  `feature_hizmet_sayfalari` açık, `/hizmetler/` 200 dönüyor (11 Ekim 2026 doğrulandı). Kalan: Pazaryeri'ne "Hizmet
+  Alanları" şeridi eklenmedi.
 - ~29 Ekim 2026: GSC dışa aktarımıyla CTR karşılaştırması (başlangıç 1 Ekim)
 
 #### Danışmanlık Dönüşümü (feature flag'lerle, detay: `danismanlik_roadmap.md`)
 - **Ödeme sistemi kararı** — Stripe / Papara / IBAN+fatura (iyzico yasak) — **blokaj**
 - **SiteSettings'e 6 flag** — `feature_consultancy_catalog`, `feature_consultancy_pricing`, `feature_client_portal`, `feature_project_pipeline`, `feature_verified_experts`, `feature_trust_stats` (hepsi `default=False`)
-- **Hizmet kataloğu** — `/hizmetler/` + 5 alt sayfa (tez-analiz, literatur-tarama, kurumsal-veri, gorsellestirme, ml-yapay-zeka)
+- ~~Hizmet kataloğu~~ → YAPILDI, canlıda: `/hizmetler/` + 4 alt sayfa (akademik-danismanlik, nicel-analiz, nitel-analiz,
+  veri-ve-yapay-zeka) — bkz. SEO dönüşümü Faz 4, §27 Tamamlananlar
 - **Müşteri portalı** — `/hesabim/talepler/` + `/<id>/` (login zorunlu, `feature_client_portal`)
 - **Navbar güncellemesi** — Hizmetler dropdown + Uzmanlar linki + Taleplerim koşullu
 - **Proje pipeline** — `ProjectRequest` → `Project` modeli, milestone, durum e-postaları
