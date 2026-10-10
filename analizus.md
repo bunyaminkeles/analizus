@@ -1310,6 +1310,19 @@ def _broadcast_chat(uid1, uid2, event):
   özet metni ekrandan kaldırıldı, TXT/Excel indirmelerinde eksiksiz kalır). `yoktez/demo/` S3 dosyaları 3 gün sonra
   otomatik silinir (`cleanup_expired_yoktez_s3_files`, günlük `cleanup-s3` cron'una bağlı) — S3 nesneleri tek tek
   bilinen URL ile kimlik doğrulamasız okunabilir ama bucket listelemesi kapalı (düşük risk, canlı testle doğrulandı).
+- **SEO — "indirme" arama niyeti (10 Ekim 2026):** kullanıcı gözlemi — "veri kazıma" aramalarında çıkıyoruz ama "tez
+  indirme/tez arşivi indirme/toplu tez indirme" aramalarında çıkmıyoruz. Araç gerçek tez PDF'i indirmiyor (yalnız
+  künye/bibliyografik veri — başlık, yazar, danışman, üniversite, yıl, özet); bu yüzden bu ifadeleri doğrudan
+  kullanmak abartılı vaat olurdu. Çözüm: `tarama_seo_content.py`'deki `yoktez.faq`'a dürüstçe açıklayan yeni bir
+  soru eklendi ("YÖK Tez arşivinden toplu tez indirebilir miyim?" → "bu bir künye/bibliyografik veri indirmesidir,
+  PDF içermez..."); ayrıca `yoktez/views.py`'deki `promo_title`/`promo_description` ve `landing.html`'deki
+  `{% block title %}`/`meta_description`'da "Excel'e Aktar" → "Excel'e İndir" (anlam değişmeden, arama niyetine
+  daha yakın kelime). **Kritik:** Google (anonim) bu aracı `landing.html` değil `service_promo.html` üzerinden
+  görür — ilk denemede yalnız `landing.html` (girişli kullanıcı görünümü) düzeltildi, asıl SEO-etkili metnin
+  `yoktez/views.py`'deki `promo_title`/`promo_description` olduğu sonradan fark edildi (iki yerde kopya metin,
+  bkz. §26 "aynı veriyi iki yerde formatlayan kopya kod" tuzağı). Oturumsuz `curl` ile Google'ın gördüğü
+  `<title>`/`<meta description>` doğrulandı. Not: Bu yalnızca bulunma ihtimalini artırır, sıralama garantisi değil
+  — rekabet (YÖK'ün kendi sitesi dahil) var, Google'ın yeniden taraması zaman alır.
 
 ### Semantic Scholar (`semanticscholar/`)
 - `feature_semanticscholar = True`
@@ -2216,6 +2229,15 @@ with connection.cursor() as c:
   yok; GSC gösterim verisi + Armut.com rakip sinyali + akademik kurum içerik yoğunluğu birleştirildi), Faz 6'ya
   5 maddelik somut sıra eklendi (SPSS alternatifi, Kaplan-Meier, NVivo/MAXQDA, SmartPLS/SEM, etik kurul) —
   ayrıntı `tasks/todo.md` "Faz 6".
+- **10 Ekim 2026 — Faz 6 ilk iki madde: "yeni yazı" varsayımı yanlış çıktı, gerçek boşluk bulundu (main, migration
+  `forum/0176`):** "SPSS benzeri programlar" (40 gösterim, sıra 27) için yeni yazı yazılmadan önce kontrol edilince
+  konuyla ilgili **3 yayınlanmış yazı** bulundu — `ucretsiz-spss-alternatifi-var-mi-...` zaten tam SEO'luydu (yeni
+  yazı cannibalization yaratırdı); gerçek boşluk `spss-mi-r-mi-tez-icin-hangisi-daha-kolay` ve `spsste-t-testi-
+  adim-adim-...`'in `meta_title`/`meta_description`'ının tamamen boş olmasıydı (0162 korumalı-migration deseniyle
+  dolduruldu). "Kaplan-Meier analizi nedir" (35 gösterim) için de zaten iyi optimize edilmiş bir yazı
+  (`survival-analizi-101-...`, 857 kelime, dolu meta) bulundu — yeni içerik yazılmadı, aksiyon kapatıldı. **Ders:**
+  GSC gösterim/sıra verisi "içerik yok" anlamına gelmez — her zaman önce mevcut yazı var mı diye kontrol et.
+  YÖK Tez "indirme" niyeti düzeltmesi için bkz. §15 "YÖK Tez" alt başlığı.
 
 #### Admin / Analytics
 
