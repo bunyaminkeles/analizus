@@ -576,9 +576,18 @@ sinyali). Henüz hiçbir yere yazılmadı — `ServicePage` modeli kurulunca adm
 > bulguları):** Gerçek Google arama hacmine (Keyword Planner/Ahrefs) doğrudan erişim yok (login/abonelik gerektiriyor);
 > sıralama GSC'nin kendi gösterim verisi + rakip (Armut.com) kategori/talep sinyali + akademik kurum içerik
 > yoğunluğu birleştirilerek yapıldı. Yarın buradan devam.
-1. **"SPSS'e benzer/alternatif ücretsiz programlar"** — 40 gösterim, sıra 27, içerik yok → net rakip/karşılaştırma
-   yazısı, hızlı kazanılabilir.
-2. **"Kaplan-Meier analizi nedir"** — 35 gösterim, içerik yok, araç da yok (araç fırsatı ayrıca değerlendirilebilir).
+1. **[x] YAPILDI (10 Ekim 2026, migration `forum/0176`, commit edilecek) — "SPSS'e benzer/alternatif ücretsiz
+   programlar" (40 gösterim, sıra 27).** Dünkü "içerik yok" varsayımı **yanlıştı** — kontrol edilince konuyla ilgili
+   **3 yayınlanmış yazı** bulundu: `ucretsiz-spss-alternatifi-var-mi-...` zaten tam SEO alanlarına sahipti (852
+   kelime) → yeni yazı cannibalization yaratırdı, yazılmadı. Bunun yerine gerçek boşluk bulundu: `spss-mi-r-mi-
+   tez-icin-hangisi-daha-kolay` ve `spsste-t-testi-adim-adim-...` yayında ama `meta_title`/`meta_description`
+   **tamamen boştu** (0/0 karakter) — ikisine de dolduruldu (korumalı migration, Faz 1 0162 deseni). İleri-geri-ileri
+   + 90/90 test yeşil.
+2. **KARAR (10 Ekim 2026): "Kaplan-Meier analizi nedir" (35 gösterim) için yeni içerik GEREKMİYOR.** Kontrol edilince
+   `survival-analizi-101-kaplan-meier-cox-regresyon-...` adında zaten iyi optimize edilmiş bir yazı bulundu (857
+   kelime, meta_title 55kr, meta_description 157kr, `saglik-istatistigi` kategorisi). Düşük gösterim içerik/meta
+   eksikliğinden değil — muhtemelen iç link zayıflığı, niş konu veya zaman meselesi; "içerik yaz" burada yanlış
+   çözüm olurdu. Ayrı bir teşhis gerekirse ileride ele alınabilir, şimdilik kapatıldı.
 3. **NVivo/MAXQDA ile nitel veri analizi serisi (4–6 yazı)** — `/hizmetler/nitel-analiz/`'e hiç blog kategorisi
    bağlı değil (Faz 3 notu), en büyük yapısal boşluk; MAXQDA'nın tam Türkçe desteği var, gerçek "nasıl yapılır" talebi
    doğrulandı (üniversite ders içerikleri/eğitim videoları).
