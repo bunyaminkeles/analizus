@@ -47,10 +47,10 @@ def feature_required(flag_name):
 def yoktez_landing(request):
     if not request.user.is_authenticated:
         return render(request, 'service_promo.html', {
-            'promo_title': 'YÖK Tez Arama ve Toplu Tez Tarama — Excel\'e Aktar',
+            'promo_title': 'YÖK Tez Arama ve Toplu Tez Tarama — Excel\'e İndir',
             'promo_icon': 'bi-mortarboard-fill',
             'promo_color': 'success',
-            'promo_description': 'YÖK Ulusal Tez Merkezi arşivinde başlık veya özet metninde anahtar kelimeyle tez arayın; sonuçlarda yazar, danışman, üniversite ve yıl bilgisini görün, en yeni 5 tezi Excel\'e aktarın. Bağımsız araç.',
+            'promo_description': 'YÖK Ulusal Tez Merkezi arşivinde başlık veya özet metninde anahtar kelimeyle tez arayın; sonuçlarda yazar, danışman, üniversite ve yıl bilgisini görün, en yeni 5 tezi Excel\'e indirin. Bağımsız araç.',
             'promo_features': [
                 {'icon': 'bi-download', 'title': 'Excel & TXT İndirme', 'desc': 'Tez No, Başlık, Yazar, Danışman, Üniversite, Yıl ve Özet verilerini tek tıkla Excel veya TXT olarak indirin.'},
                 {'icon': 'bi-search', 'title': 'Kodsuz Veri Kazıma', 'desc': 'Python veya Selenium bilgisi gerekmeden, anahtar kelime ile binlerce tez verisini saniyeler içinde çekin.'},
