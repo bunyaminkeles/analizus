@@ -78,7 +78,7 @@
               {% if forloop.counter == 1 %}🥇{% elif forloop.counter == 2 %}🥈{% elif forloop.counter == 3 %}🥉{% else %}{{ forloop.counter }}{% endif %}
             </span>
             <a href="/profil/{{ profile.user.username }}/" class="ax-ldr-list__name">{{ profile.user.username }}</a>
-            <span class="ax-ldr-list__score">{{ profile.reputation }} puan</span>
+            <span class="ax-ldr-list__score">{{ profile.total_score }} puan</span>
           </li>
           {% empty %}
           <div class="ax-ldr-empty">Henüz kullanıcı yok.</div>

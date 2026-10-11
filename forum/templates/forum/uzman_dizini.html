@@ -123,7 +123,7 @@
           <!-- Kanıt sinyalleri -->
           <div class="d-flex gap-3 mb-3 flex-wrap">
             <div class="text-center">
-              <div class="text-warning fw-bold" style="font-size:1rem;">{{ profile.reputation }}</div>
+              <div class="text-warning fw-bold" style="font-size:1rem;">{{ profile.total_score }}</div>
               <div class="text-white-50" style="font-size:.68rem;">puan</div>
             </div>
             <div class="text-center">
@@ -230,7 +230,7 @@
             {{ rank_info.icon }} {{ rank_info.name }}
           </span>
           {% endwith %}
-          <span class="text-warning fw-bold" style="font-size:.78rem;">{{ profile.reputation }} puan</span>
+          <span class="text-warning fw-bold" style="font-size:.78rem;">{{ profile.total_score }} puan</span>
         </div>
         {% if profile.skills.all %}
         <div class="d-flex flex-wrap gap-1 mt-1">
