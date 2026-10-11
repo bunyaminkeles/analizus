@@ -640,6 +640,24 @@
     font-size: var(--ax-text-xs);
 }
 
+.ax-profile-more-btn {
+    display: block;
+    width: 100%;
+    margin-top: var(--ax-space-2);
+    padding: var(--ax-space-3);
+    background: none;
+    border: 1px solid var(--ax-border);
+    border-radius: var(--ax-radius-md, 8px);
+    color: var(--ax-text-muted);
+    font-size: var(--ax-text-xs);
+    cursor: pointer;
+    transition: background .15s, color .15s;
+}
+.ax-profile-more-btn:hover {
+    background: rgba(99, 102, 241, 0.08);
+    color: #a5b4fc;
+}
+
 /* === PORTFÖY GRID === */
 .ax-profile-portfolio-grid {
     display: grid;

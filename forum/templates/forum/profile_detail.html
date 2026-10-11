@@ -468,12 +468,34 @@
                 </div>
                 {% endif %}
 
+                <p class="ax-profile-section-title" style="margin-bottom: var(--ax-space-3); margin-top: var(--ax-space-5);">{% trans "Tamamlanan ve Devam Eden Projeler" %}</p>
+                {% if completed_projects %}
+                <div class="ax-profile-job-list">
+                    {% for proposal in completed_projects|slice:":5" %}
+                    <div class="ax-profile-job-item">
+                        <div>
+                            <div class="ax-profile-job-item__title">{{ proposal.job.title }}</div>
+                            <div class="ax-profile-job-item__meta">
+                                {{ proposal.created_at|date:"d M Y" }}
+                                {% if proposal.job.status == 'completed' %}<span class="ax-status-chip ax-status-chip--completed">{% trans "Tamamlandı" %}</span>{% else %}<span class="ax-status-chip ax-status-chip--in-progress">{% trans "Devam Ediyor" %}</span>{% endif %}
+                            </div>
+                        </div>
+                        {% for review in proposal.job.reviews.all %}{% if review.reviewed_user == profile_user and review.is_approved %}<div class="ax-profile-job-stars">{% for i in "12345" %}{% if forloop.counter <= review.rating %}<i class="bi bi-star-fill" style="color:#fbbf24;font-size:.75rem;"></i>{% else %}<i class="bi bi-star" style="color:#475569;font-size:.75rem;"></i>{% endif %}{% endfor %}</div>{% endif %}{% endfor %}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="ax-profile-empty" style="padding: var(--ax-space-6) 0;">
+                    <p class="ax-profile-empty__text">{% trans "Devam eden veya tamamlanmış proje bulunmuyor." %}</p>
+                </div>
+                {% endif %}
+
                 {% if is_owner %}
                 <p class="ax-profile-section-title ax-profile-section-title--warning" style="margin-bottom: var(--ax-space-3); margin-top: var(--ax-space-5);">{% trans "Verdiğim Teklifler" %}</p>
                 {% if given_proposals %}
                 <div class="ax-profile-job-list">
                     {% for proposal in given_proposals %}
-                    <a href="{% url 'job_detail' pk=proposal.job.pk %}" class="ax-profile-job-item">
+                    <a href="{% url 'job_detail' pk=proposal.job.pk %}" class="ax-profile-job-item{% if forloop.counter > 5 %} ax-profile-proposal-extra d-none{% endif %}">
                         <div>
                             <div class="ax-profile-job-item__title">{{ proposal.job.title }}</div>
                             <div class="ax-profile-job-item__meta">
@@ -492,29 +514,16 @@
                     </a>
                     {% endfor %}
                 </div>
+                {% if given_proposals|length > 5 %}
+                <button type="button" id="profile-proposals-show-more" class="ax-profile-more-btn">
+                    <i class="bi bi-chevron-down me-1"></i>{% blocktrans with count=given_proposals|length|add:"-5" %}Diğer {{ count }} teklifi göster{% endblocktrans %}
+                </button>
+                {% endif %}
                 {% else %}
                 <div class="ax-profile-empty" style="padding: var(--ax-space-6) 0;">
                     <p class="ax-profile-empty__text">{% trans "Henüz teklif vermediniz." %}</p>
                 </div>
                 {% endif %}
-                {% endif %}
-
-                {% if completed_projects %}
-                <p class="ax-profile-section-title" style="margin-bottom: var(--ax-space-3); margin-top: var(--ax-space-5);">{% trans "Tamamlanan ve Devam Eden Projeler" %}</p>
-                <div class="ax-profile-job-list">
-                    {% for proposal in completed_projects|slice:":5" %}
-                    <div class="ax-profile-job-item">
-                        <div>
-                            <div class="ax-profile-job-item__title">{{ proposal.job.title }}</div>
-                            <div class="ax-profile-job-item__meta">
-                                {{ proposal.created_at|date:"d M Y" }}
-                                {% if proposal.job.status == 'completed' %}<span class="ax-status-chip ax-status-chip--completed">{% trans "Tamamlandı" %}</span>{% else %}<span class="ax-status-chip ax-status-chip--in-progress">{% trans "Devam Ediyor" %}</span>{% endif %}
-                            </div>
-                        </div>
-                        {% for review in proposal.job.reviews.all %}{% if review.reviewed_user == profile_user and review.is_approved %}<div class="ax-profile-job-stars">{% for i in "12345" %}{% if forloop.counter <= review.rating %}<i class="bi bi-star-fill" style="color:#fbbf24;font-size:.75rem;"></i>{% else %}<i class="bi bi-star" style="color:#475569;font-size:.75rem;"></i>{% endif %}{% endfor %}</div>{% endif %}{% endfor %}
-                    </div>
-                    {% endfor %}
-                </div>
                 {% endif %}
 
             </div>
@@ -827,6 +836,16 @@
             if (panel) panel.classList.add('active');
         });
     });
+
+    var moreBtn = document.getElementById('profile-proposals-show-more');
+    if (moreBtn) {
+        moreBtn.addEventListener('click', function () {
+            document.querySelectorAll('.ax-profile-proposal-extra').forEach(function (el) {
+                el.classList.remove('d-none');
+            });
+            moreBtn.remove();
+        });
+    }
 })();
 </script>
 {% endblock %}
