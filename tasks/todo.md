@@ -2470,6 +2470,15 @@ kök neden dosyası bulunmadı. Ayrı bir görev olarak ele alınacak.
     görüntüsüyle kontrol edildi — her iki hub'ın marka rengi kimliği
     (yeşil / camgöbeği) birebir korundu. 90 test yeşil.
 
+**11 Ekim 2026 oturumu kapandı — `main`'e alındı:** Yukarıdaki 7 commit
+(`87c8e26`..`58f52d7`) `dev`'den `main`'e `--no-ff` merge edildi (merge
+commit `1e54739`), `origin/main`'e push edildi — GitHub Actions otomatik
+Hetzner deploy'u tetikleyecek (migration yok, yalnız template/CSS/docs,
+yedek gerekmedi). `dev` kendi uç noktasında (`58f52d7`) bırakıldı, merge
+commit'i dev'e fast-forward etmekten kaçınıldı (gereksiz). Bu oturumun
+özeti `analizus.md`'nin "Geçmiş Turlar (Kronoloji)" bölümüne de işlendi
+(§27), offset tablosu (`CLAUDE.md`) +47 satır kayması için güncellendi.
+
 **Not (temmuz 2026, DÜZELTİLDİ 11 Ekim 2026) — yeni sayfalar envanteri
 büyütmedi:** Bu oturumda oluşturulan `forum/templates/forum/contact.html`
 (İletişim landing page) ve `forum/templates/forum/gizlilik_politikasi.html`
