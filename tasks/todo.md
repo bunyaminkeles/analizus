@@ -52,7 +52,42 @@ maddelerde.
     Tamamlanan ve Devam Eden Projeler) render ediliyor; başka kullanıcı
     görünümünde yalnız "Tamamlanan ve Devam Eden Projeler" görünüyor,
     "Verdiğim Teklifler" hiç yok (reddedilen teklif sızıntısı yok, eskisiyle
-    aynı). **Henüz `dev`'e commit/push edilmedi — kullanıcı onayı bekliyor.**
+    aynı). `dev`'de commit edildi (1f689e7), kullanıcı isteğiyle `main`'e
+    merge + push edildi (ece4ffd) — Hetzner'de otomatik deploy oldu, sunucuda
+    `git log` ile doğrulandı.
+  - **Round 2 (11 Ekim 2026, aynı gün) — kullanıcı canlıda test edince yeni
+    sorun bildirdi:** "Tamamlanan ve Devam Eden Projeler" bloğu sahip için
+    eklendi ama "Verdiğim Teklifler" listesinin ALTINA düştü; bu liste zaman
+    içinde (her teklif kabul/ret) uzadıkça yeni blok ekranın iyice altında
+    kalıp görünmez hale geliyor. Kullanıcı net talep etti: devam eden/
+    tamamlanan projeler EN ÜSTTE ayrı bir kutuda (boşsa "yok" yazsın),
+    "Verdiğim Teklifler" ise yalnız son 5 kayıt + altında "Diğerlerini gör"
+    açılır buton.
+    - `forum/templates/forum/profile_detail.html` İlanlar sekmesi yeniden
+      sıralandı: "Tamamlanan ve Devam Eden Projeler" artık ilk blok (herkese,
+      boşsa "Devam eden veya tamamlanmış proje bulunmuyor." mesajı), ardından
+      sahibe özel "Verdiğim Teklifler". "Verdiğim Teklifler" listesinde
+      5'ten sonraki satırlara `ax-profile-proposal-extra d-none` class'ı
+      eklendi, `given_proposals|length > 5` ise altına "Diğer N teklifi
+      göster" butonu ekleniyor.
+    - JS: mevcut sayfa-altı `<script>` IIFE'sine (tab switching ile aynı
+      blok) vanilla `addEventListener` ile buton tıklamasında `.ax-profile-
+      proposal-extra` elemanlarından `d-none` kaldırılıyor + buton kendini
+      siliyor — `forum/templates/forum/inbox.html`'deki mevcut "Diğer N
+      konuşmayı göster" deseniyle birebir aynı yaklaşım (tutarlılık için),
+      `data-bs-toggle` kullanılmadı.
+    - CSS: `static/css/profiles.css`'e `.ax-profile-more-btn` eklendi
+      (`.ax-inbox-more-btn` ile aynı görünüm, `var(--ax-*)` token'ları
+      kullanıyor, hardcode renk/pixel yok).
+    - Doğrulama: Docker'da `transaction.atomic()` içinde 7 geçici teklif
+      (test verisi) oluşturup Django test client ile owner görünümü render
+      edildi, sonra `raise` ile rollback edilip **hiçbir veri kalıcı
+      yazılmadı**. Sonuç: İlanlar sekmesinde "Tamamlanan ve Devam Eden
+      Projeler" artık "Verdiğim Teklifler"den ÖNCE geliyor (pozisyon
+      doğrulandı), 7 teklifin ilk 5'i görünür + "Diğer 2 teklifi göster"
+      butonu doğru sayıyla render edildi, boş durumda yeni mesaj metni
+      çalışıyor. `docker compose restart web` + `nginx` sonrası test edildi.
+    - **Henüz commit edilmedi — kullanıcı onayı bekliyor.**
 - [ ] **(11 Ekim 2026 → BAŞLANMADI, fikir aşamasında) PWA (Progressive Web App).**
   Kullanıcı mobil app ihtiyacını sordu — native (React Native/Flutter) için
   önce Django'nun üstüne ince bir JSON API katmanı (DRF) + ayrı bir app
