@@ -10,6 +10,30 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
+- [ ] **(11 Ekim 2026 → BAŞLANMADI, fikir aşamasında) PWA (Progressive Web App).**
+  Kullanıcı mobil app ihtiyacını sordu — native (React Native/Flutter) için
+  önce Django'nun üstüne ince bir JSON API katmanı (DRF) + ayrı bir app
+  kod tabanı gerekir; bu aşamada önerilmedi (ürün masaüstü/tablet tarzı
+  işler — dosya yükleme, uzun PDF rapor, uzun metin yazma — mobil "hızlı
+  bakış" senaryosuna uymuyor, zaten mobil-öncelikli responsive web çalışması
+  sürüyor). Bunun yerine **önce PWA** önerildi, kullanıcı onayladı:
+  - Kapsam: `static/manifest.json` (app adı/ikon/renk) + `static/js/
+    service-worker.js` (asset önbellekleme + web push) + `templates/
+    base.html`'e `<link rel="manifest">` + service worker register script.
+    Backend/model/view değişikliği YOK — mevcut Django template'lerinin
+    üstüne ekleniyor, ayrı kod tabanı değil.
+  - Android (Chrome): gerçek "Ana ekrana ekle/Yükle" istemi çıkar, tam ekran
+    açılır; Play Store'da listelenmek istenirse "Trusted Web Activity" ile
+    sarmalanabilir (ayrı, opsiyonel adım).
+  - iOS (Safari): manuel "Paylaş → Ana Ekrana Ekle" gerekir, push bildirim
+    iOS 16.4+'ta destekleniyor ama Android kadar sorunsuz değil; App
+    Store'a pure PWA koymak Apple tarafından önerilmiyor/sınırlı.
+  - **Henüz yapılmadı:** ikon seti (farklı boyutlarda PNG/maskable icon),
+    manifest içeriği, service worker'ın hangi static asset'leri/sayfaları
+    önbellekleyeceği, web push altyapısı (VAPID anahtarları vb.) — hiçbiri
+    tasarlanmadı, sıradaki oturumda ele alınabilir. Gerçek App Store/Play
+    Store varlığı (native) ancak PWA sonrası, somut talep görülürse
+    değerlendirilecek.
 - [x] **(9 Ekim 2026 → tamamlandı, main'de canlı) `/hakkimizda/` sayfası sadeleştirildi.** Tek blok olduğu
   ortaya çıktı (başlık "Platformdaki Uzmanlardan Örnekler" + TeamMember kartları, admin adı "Ekip Üyeleri" aynı
   şeydi) — `forum/templates/forum/about.html` satır 276-392 kaldırıldı, yerine kısa metin + "Uzman Dizinini
@@ -2165,7 +2189,9 @@ Yok — sertifika üretimi de (bkz. yukarı "nginx düzeltmesi" bölümü, 23 Te
 
 # Bootstrap Kaldırma — Kademeli Migration Planı
 
-**Durum:** Envanter çıkarıldı, uygulama henüz başlamadı. (Temmuz 2026)
+**Durum (11 Ekim 2026):** Faz 1-2 TAMAMLANDI. Faz 3 sürüyor — 10 dosya
+migre edildi, **56 dosyada hâlâ gerçek Bootstrap component class'ı var**
+(bkz. "Güncel envanter" altı). Faz 4-5 henüz başlamadı.
 
 ## Neden gerekli
 CLAUDE.md kuralı "Bootstrap yalnızca grid için" diyor ama gerçek kod bunu ihlal
@@ -2185,6 +2211,56 @@ bizim kontrolümüzde değil (Lighthouse "verimli önbellek" bulgusu, 177 KiB).
 - En ağır kullanan dosyalar: `hangi_test.html` (144), `base.html` (127),
   `studyroom_detail.html` (117), `tezanaliz/landing.html` (97),
   `istatistik/korelasyon.html` (93), `market/job_detail.html` (93)
+
+**Not (11 Ekim 2026):** Yukarıdaki temmuz sayıları güvenilmez çıktı —
+naif `\bbadge\b` gibi regex'ler `ax-badge` içindeki "badge" alt-dizesini de
+sayıyordu (iş. `account_delete.html`/`job_list.html` gibi dosyalarda
+"3 component" tahmini gerçekte 8-23 çıktı). Aşağıdaki "Güncel envanter"
+`class="..."` içindeki TAM token eşleşmesiyle (ax- öneki hariç tutularak)
+yeniden çıkarıldı, güvenilir kaynak odur.
+
+## Güncel envanter (11 Ekim 2026 taraması — tam token eşleşmesi)
+Faz 3'te migre edilen 10 dosya ve kapsam dışı bırakılan 6 standalone auth
+sayfası + 2 yetim dosya hariç, proje genelinde **56 template dosyasında
+toplam 764 gerçek Bootstrap component class eşleşmesi** (`btn`, `card`,
+`card-body`, `card-title`, `card-text`, `badge`, `dropdown`, `dropdown-toggle`,
+`dropdown-menu`, `dropdown-item`, `modal`, `alert`, `form-control`,
+`form-select`) kaldı. Yoğunluğa göre (düşükten yükseğe, Faz 3'ün kendi
+önceliklendirme kuralına uygun):
+
+**Düşük (4-10 class, ~25 dosya) — sıradaki adaylar:**
+`about.html`, `blog_list.html`, `forum_index.html`, `footer.html` (partials),
+`edit_job.html`, `post_job.html`, `search_results.html`,
+`verification_pending.html`, `my_payments.html`, `section_detail.html`,
+`bibliometrics/order.html`, `my_jobs.html`, `new_topic.html`,
+`studyroom_edit.html`, `category_topics.html`, `_review_section.html`,
+`promote_job_iban.html`, `success_stories.html` (modal JS Faz 2'de taşındı,
+component class'ları kaldı), `oaipmh/order.html`, `semanticscholar/order.html`,
+`service_promo.html`, `trdizin/order.html`, `how_it_works.html`,
+`onboarding.html`, `openalex/order.html`
+
+**Orta (10-20):** `_studyroom_card.html`, `proje_talebi.html`,
+`studyroom_list.html`, `templates/base.html` (11 — ayrı, dikkatli ele
+alınmalı), `blog_detail.html`, `studyroom_create.html`,
+`referral_dashboard.html`, `ai_assistant.html`, çoğu istatistik aracı
+(`lineer_regresyon`, `lojistik_regresyon`, `kruskal_wallis`,
+`mann_whitney`, `karar_agaci`, `ki_kare`, `svm`, `orneklem`),
+`tableau_dashboard.html`, `oaipmh/landing.html`, `trdizin/landing.html`,
+`yoktez/landing.html`
+
+**Ağır (20-48) — en sona bırakılacak:** `semanticscholar/landing.html` (21),
+`makaleanaliz/results.html` (22), `tezanaliz/results.html` (22),
+`tezanaliz/landing.html` (24), `send_message.html` (26),
+`uzman_dizini.html` (26), `openalex/landing.html` (27),
+`bibliometrics/landing.html` (29), `studyroom_detail.html` (36),
+**`market/job_detail.html` (48 — en ağır dosya)**
+
+**Ayrı, hiç envanteri çıkarılmamış bir alt görev:** Bootstrap **utility**
+class'ları (`d-flex`, `text-white`/`text-muted`, `fw-bold`, `mb-*`/`py-*`/
+`px-*`, `gap-*`, `rounded-*`, `shadow-*`, `bg-*`, `border-*`) — migre edilmiş
+10 dosyada bile hâlâ kasıtlı olarak bırakıldı (Faz 3 kararı, bkz. yukarı).
+Faz 4 (CDN kaldırma) güvenli olmadan önce bunların da envanterinin
+çıkarılıp ayrı bir turda ele alınması gerekiyor — bu iş hiç başlamadı.
 
 ## Mevcut ax- sistem durumu (static/css/)
 Var olan: `.ax-btn` (base.css), `.ax-card` (cards.css), `.ax-badge` (8 tanım,
@@ -2519,11 +2595,17 @@ Kullanılmayan geçiş dönemi shim'leri varsa kaldır.
 - 100+ dosyalık migration tek PR'da değil, birden fazla oturuma yayılmalı
 
 ## Sıradaki adım
-Faz 1 ve 2 TAMAMLANDI. Faz 3 sürüyor — `account_delete.html`,
-`donation_success.html`, `forum/templates/forum/market/job_list.html`
-migre edildi. Bir sonraki dosya için önce gerçek Bootstrap class sayımı
-yapılmalı (todo'daki "3 component" gibi tahminler güncel olmayabilir),
-sonra onaya sunulmalı.
+Faz 1 ve 2 TAMAMLANDI. Faz 3 sürüyor — 10 dosya migre edildi (yukarı bkz.
+"Dosya bazlı ilerleme"). **Güncel envanter yukarıda** ("Güncel envanter —
+11 Ekim 2026 taraması") — 56 dosya, 764 eşleşme kaldı. Sıradaki adaylar
+düşük yoğunluklu grup (`about.html`, `forum_index.html`, `footer.html`
+partial'ı vb., 4-10 class). Her dosya için: gerçek Bootstrap class'larını
+oku → ax- karşılığı yoksa (yeni renk/varyant vb.) kullanıcıya sor → uygula
+→ `bundle.css` gerekiyorsa yeniden üret + versiyon artır → Playwright ile
+mobil+masaüstü görsel doğrula → pytest çalıştır → `todo.md` güncelle →
+commit. Faz 4 (CDN kaldırma) için önce (1) bu 56 dosya bitmeli, (2) hiç
+başlanmamış Bootstrap **utility class** envanteri çıkarılıp ayrı ele
+alınmalı.
 
 **Deploy notu:** Bu migration'ın tüm adımları yalnızca `dev` branch'ine push
 edilecek. `main`'e (Hetzner/prod) kullanıcı açıkça "merge et" demeden
