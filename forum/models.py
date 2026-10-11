@@ -1515,9 +1515,9 @@ class SiteSettings(models.Model):
     uzman_dizini_min_puan = models.PositiveIntegerField(
         default=200,
         verbose_name="Uzman Dizini: minimum puan",
-        help_text="Dizine girmek için gereken en az akademik puan (reputation). Ayrıca en az 3 uzmanlık alanı "
-                  "seçili ve e-posta doğrulanmış olmalı; admin/staff hesapları varsayılan dışarıda kalır "
-                  "(Profile.directory_override ile tekil istisna yapılabilir).",
+        help_text="Dizine girmek için gereken en az toplam puan (Profile.total_score: forum + quiz). Ayrıca "
+                  "en az 3 uzmanlık alanı seçili ve e-posta doğrulanmış olmalı; admin/staff hesapları "
+                  "varsayılan dışarıda kalır (Profile.directory_override ile tekil istisna yapılabilir).",
     )
 
     # Pazar: yeni ilan admin onayından sonra yayınlanır (kapalıysa anında yayın)
@@ -1571,6 +1571,17 @@ class SiteSettings(models.Model):
             return 0
         extra_blocks = (max(count - 100, 0) + 99) // 100
         return self.scrape_price_first_100 + extra_blocks * self.scrape_price_per_100
+
+    # Navigasyon Grafiği (admin/analytics) — bu gruba üye kullanıcılar, staff hesaplarla aynı
+    # mantıkla istatistiklerden hariç tutulur (bkz. analytics/admin.py top_n/daily_series)
+    navigasyon_haric_grup = models.ForeignKey(
+        'auth.Group', null=True, blank=True, on_delete=models.SET_NULL,
+        related_name='+',
+        verbose_name="Navigasyon Grafiği: hariç tutulacak grup",
+        help_text="Bu gruba üye kullanıcılar (ör. iç ekip), admin/staff hesaplarla aynı mantıkla "
+                  "Navigasyon Grafiği istatistiklerinden (en aktif kullanıcılar, günlük trend, top "
+                  "sayfalar) hariç tutulur. Boş bırakılırsa hiçbir grup hariç tutulmaz.",
+    )
 
     class Meta:
         verbose_name = "Site Ayarı"

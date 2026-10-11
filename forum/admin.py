@@ -930,6 +930,12 @@ class SiteSettingsAdmin(ModelAdmin):
                        'uzman_dizini_min_puan', 'ai_summary_daily_limit_free', 'ai_summary_daily_limit_premium'),
             'classes': ('collapse',),
         }),
+        ('Navigasyon Analizi', {
+            'description': 'Navigasyon Grafiği (admin/analytics) istatistiklerinden (en aktif kullanıcılar, '
+                           'günlük trend, top sayfalar) hariç tutulacak grup — iç ekip/çalışanlar için.',
+            'fields': ('navigasyon_haric_grup',),
+            'classes': ('collapse',),
+        }),
         ('Fiyatlandırma', {
             'description': "Bibliometrik rapor (kayıt aralığına göre), tarama siparişi (OpenAlex, Semantic Scholar, TR Dizin, "
                            "OAI-PMH — ilk 100 kayıt + sonraki her 100 kayıt) ve ilan vitrini paketleri. Değişiklik yeni "
