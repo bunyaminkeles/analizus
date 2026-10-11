@@ -198,11 +198,17 @@
     <h6 class="ax-text-secondary fw-semibold mb-2">{% trans "APA Formatında Raporlama" %}</h6>
     <div id="cronbach-apa-box" class="d-none ax-rounded-md p-3 mb-3" style="background: rgba(99,102,241,0.08); border: 1px solid rgba(99,102,241,0.2);">
       <p class="ax-text-primary ax-text-sm mb-2" id="cronbach-apa-display" style="font-style:italic;"></p>
+
+      <div id="ai-yorum-box" class="d-none" style="border-top:1px solid var(--ax-border-default); margin:.5rem 0; padding-top:.5rem;">
+        <p class="ax-text-primary ax-text-sm mb-0" id="ai-yorum-text"></p>
+      </div>
+
       <button class="ax-btn ax-btn-outline-secondary ax-btn-sm" onclick="copyApa(this, 'cronbach-report-text')">
         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" class="me-1" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>{% trans "Kopyala" %}
       </button>
       <span id="cronbach-report-text" class="d-none"></span>
     </div>
+
     <div id="cronbach-apa-placeholder" class="ax-rounded-md p-3" style="background: rgba(99,102,241,0.05); border: 1px dashed rgba(99,102,241,0.2);">
       <p class="ax-text-muted ax-text-sm mb-0">
         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" class="me-1" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
@@ -367,7 +373,18 @@ function onCompleted(data) {
     document.getElementById('n-cases').textContent = r.n_cases + T.s8;
     const apaText = fmt(T.apa, {k: r.n_items, alpha: alpha, n: r.n_cases, level: (r.interpretation || '').split(' (')[0].toLocaleLowerCase(document.documentElement.lang || 'tr')});
     document.getElementById('cronbach-apa-display').textContent = apaText;
-    document.getElementById('cronbach-report-text').textContent = apaText;
+
+    const aiBox = document.getElementById('ai-yorum-box');
+    let reportText = apaText;
+    if (r.ai_comment) {
+      document.getElementById('ai-yorum-text').textContent = r.ai_comment;
+      aiBox.classList.remove('d-none');
+      reportText += '\n\n' + r.ai_comment;
+    } else {
+      aiBox.classList.add('d-none');
+    }
+    document.getElementById('cronbach-report-text').textContent = reportText;
+
     document.getElementById('cronbach-apa-box').classList.remove('d-none');
     document.getElementById('cronbach-apa-placeholder').classList.add('d-none');
   }

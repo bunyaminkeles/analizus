@@ -217,11 +217,15 @@
             <div class="rounded-3 p-3 mb-2" style="background:rgba(45,212,191,0.08);border:1px solid rgba(45,212,191,0.2);">
               <p class="text-white-50 small fw-semibold mb-2">{% trans "APA Formatında Raporlama" %}</p>
               <p class="text-white small mb-2" id="res-apa" style="font-style:italic;"></p>
+
+              <div id="ai-yorum-box" class="d-none" style="border-top:1px solid var(--ax-border-default); margin:.5rem 0; padding-top:.5rem;">
+                <p class="text-white small mb-0" id="ai-yorum-text"></p>
+              </div>
+
               <button class="btn btn-sm btn-outline-secondary" onclick="copyApa()">
                 <i class="bi bi-clipboard me-1"></i>{% trans "Kopyala" %}
               </button>
             </div>
-
           </div><!-- panel-done -->
         </div>
       </div>
@@ -458,11 +462,25 @@ function showResults(data) {
   }
   document.getElementById('res-apa').textContent = apa;
   document.getElementById('pdf-btn').href = data.pdf_url;
+
+  const aiBox = document.getElementById('ai-yorum-box');
+  if (r.ai_comment) {
+    document.getElementById('ai-yorum-text').textContent = r.ai_comment;
+    aiBox.classList.remove('d-none');
+  } else {
+    aiBox.classList.add('d-none');
+  }
+
   showPanel('done');
 }
 
 function copyApa() {
-  navigator.clipboard.writeText(document.getElementById('res-apa').textContent).then(() => {
+  let copyText = document.getElementById('res-apa').textContent;
+  const aiBox = document.getElementById('ai-yorum-box');
+  if (aiBox && !aiBox.classList.contains('d-none')) {
+    copyText += '\n\n' + document.getElementById('ai-yorum-text').textContent;
+  }
+  navigator.clipboard.writeText(copyText).then(() => {
     const btn = event.target.closest('button');
     btn.innerHTML = '<i class="bi bi-check-lg me-1"></i>' + T.s9;
     setTimeout(() => { btn.innerHTML = '<i class="bi bi-clipboard me-1"></i>Kopyala'; }, 2000);
