@@ -19,6 +19,7 @@ django-storages
 # --- AI & ANALİZ ---
 openai
 google-generativeai
+anthropic==1.13.0
 numpy
 pandas
 # sqlparse Django ile gelir ama biz yine de ekleyelim

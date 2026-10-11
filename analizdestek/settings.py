@@ -191,6 +191,7 @@ LOGIN_URL = 'login'
 OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
 GROQ_API_KEY = os.getenv('GROQ_API_KEY')
+ANTHROPIC_API_KEY = os.getenv('ANTHROPIC_API_KEY')
 
 # Scraper (Selenium)
 CHROME_BINARY_PATH = os.getenv('CHROME_BINARY_PATH', None)
@@ -443,6 +444,11 @@ UNFOLD = {
                     "title": "Site Ayarları",
                     "icon": "settings",
                     "link": reverse_lazy("admin:forum_sitesettings_changelist"),
+                },
+                {
+                    "title": "AI Yorumu Kullanımı",
+                    "icon": "smart_toy",
+                    "link": reverse_lazy("admin:forum_aiusagelog_changelist"),
                 },
                 {
                     "title": "İletişim Mesajları",

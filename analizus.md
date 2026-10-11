@@ -904,6 +904,52 @@ ekran dışındaydı. Şimdi mobil önce: yazı 2xl, `min-width:480px`'te 4xl; d
 yalnız logo görseli. Navbar'a yeni ikon/metin eklerken 360 px'te giriş yapılmış hâlde ölç (Playwright +
 session çerezi; bkz. §26).
 
+### Bootstrap Kaldırma Migrasyonu (Faz 3 sürüyor — 11 Ekim 2026)
+Kademeli plan: Faz 1 (eksik `ax-*` CSS bileşenlerini inşa et) ve Faz 2
+(vanilla JS modal/dropdown controller — `ax-modal.js`/`ax-dropdown.js`)
+TAMAMLANDI. Faz 3 (template template Bootstrap component class'larını
+`ax-*`'e taşıma) sürüyor — ilerleme ve dosya bazlı detay `tasks/todo.md`
+içinde "Bootstrap Kaldırma — Kademeli Migration Planı" başlığı altında.
+
+**11 Ekim 2026 turunda eklenen yeni `ax-*` bileşenleri:**
+```
+.ax-dropdown-wrap/.ax-dropdown  → job_list.html'de ilk gerçek kullanım
+                                   (sıralama menüsü); mobilde taşmaması için
+                                   --end varyantı tercih edilir (trigger sağda
+                                   olduğunda varsayılan sol hizalı dropdown
+                                   viewport dışına taşabilir — Bootstrap'ın
+                                   Popper tabanlı otomatik düzeltmesi yok)
+.ax-dropdown-item--active        → aktif/seçili sıralama seçeneğini vurgular
+.ax-badge--neutral                → nötr/gri "etiket" rozeti (--ax-bg-tertiary)
+.ax-badge--warning-solid          → dolgulu sarı + koyu metin ("VİTRİN" gibi
+                                   dikkat çekici rozetler; normal
+                                   ax-badge--warning yarı saydam, yetersiz kalır)
+.ax-btn--success                  → --ax-accent-secondary (emerald) kullanır
+.ax-btn--info + --ax-accent-info  → yeni 5. accent rengi (#06b6d4, camgöbeği)
+```
+`.ax-btn--success`/`.ax-btn--info` de `.ax-btn--warning` ile aynı WCAG
+formülünü izler: beyaz metin bu iki renk zemininde de AA kontrastını (4.5:1)
+geçemiyor (hesaplandı: ~2.5-2.8:1), koyu `#1e293b` metin kullanılır.
+
+**Migrasyon sırasında ortaya çıkan gerçek tuzaklar:**
+- `.ax-alert` `display:flex` — ikon dışındaki içerik (düz metin + `<strong>`
+  gibi inline elemanlar) `.ax-alert__body` ile sarmalanmazsa, her inline
+  eleman ayrı bir flex item'a dönüşüp dikey kayar. Her zaman
+  `<i class="... ax-alert__icon"></i><span class="ax-alert__body">...</span>`
+  şablonunu kullan (detay `tasks/lessons.md`).
+- Bootstrap'ın `.border-{renk}` utility'leri (`border-secondary` vb.) yalnızca
+  `border-color` set eder — `border-width`/`style` sağlayan `.card` gibi bir
+  component class kaldırılırsa kenarlık tamamen görünmez olur, inline
+  `border-width:1px;border-style:solid` eklenmesi gerekir.
+- Faz 1'den kalma, kapsamsız bir `.ax-form-control { min-height: 96px; }`
+  kuralı var (`base.css` sonlarında, "10. FORM CONTROLS" bloğundan ayrı) —
+  tek satırlık (`rows="1"`) metin kutularını `form-control` → `ax-form-control`
+  geçişinde aniden büyütebilir; gerekirse inline `min-height` ile override et.
+- `register.html`, `login.html`, 4 `password_reset_*.html` sayfası
+  `base.html`'i extend etmiyor — kendi `<!DOCTYPE html>`'i ve kendi Bootstrap
+  CDN'ini yüklüyorlar. Faz 4 yalnızca `base.html`'deki CDN'i kaldıracağı için
+  bu 6 sayfa migrasyon kapsamı dışında tutuluyor (kullanıcı kararı).
+
 ### Geliştirici Kuralı
 Yeni bileşen yazarken:
 1. HTML: Bootstrap grid (`row`, `col`) ile iskelet kur
@@ -2504,6 +2550,7 @@ with connection.cursor() as c:
 
 > Önceki düz-yazı günlük biçiminden madde listesine dönüştürülmüştür; cümleler değişmeden taşınmıştır.
 
+- **En son (11 Ekim 2026):** `dev`'den `main`'e `--no-ff` merge edildi, `origin`'e push edildi (GitHub Actions Hetzner'e otomatik deploy edecek — migration yok, yalnız template/CSS, yedek gerekmedi). **Bootstrap Kaldırma — Faz 3** kapsamında 7 commit, 10 template dosyası migre edildi: `job_list.html` (ilk gerçek `ax-dropdown` kullanımı — mobilde taşmaması için `--end` varyantı), `contact.html`+`gizlilik_politikasi.html` (tek buton), `_studyroom_founder_card.html`+`story_modal_content.html` (kart/rozet, yeni `.ax-badge--neutral`), `topic_detail.html` (form+buton, global `.ax-form-control{min-height:96px}` tuzağı önlendi), `home.html` (yeni `.ax-badge--warning-solid` — "VİTRİN" rozetinin dikkat çekiciliği korunarak), `order_payment.html` (**gerçek bug bulundu:** `.ax-alert`'in `display:flex` olması düz metin+`<strong>` karışımını ayrı flex item'a bölüp kaydırıyordu, `.ax-alert__body` sarmalayıcısıyla düzeltildi — ders `tasks/lessons.md`'ye eklendi), `analiz_hub.html`+`tarama_hub.html` (kullanıcı kararıyla kalıcı `--ax-accent-info` token + `.ax-btn--success`/`.ax-btn--info` eklendi — ikisi de `ax-btn--warning`'in koyu-metin WCAG formülünü izliyor). Her adımda gerçek Bootstrap class sayımı yapılıp eski "(3 component)" gibi tahminlerin çoğu yanlış çıktığı görüldü; `register.html`/`login.html`/4 `password_reset_*.html` sayfasının `base.html`'i hiç extend etmediği (kendi Bootstrap CDN'ini yükleyen bağımsız sayfalar) keşfedilip kapsam dışı bırakıldı. Görsel doğrulama DB'de seed verisi olmayan modellerde (`FreelanceJob`, `StudyRoom`) geçici test kaydı oluşturup Playwright ile 375px/1280px ekran görüntüsü alma + hemen silme yöntemiyle yapıldı; `bundle.css` her `base.css` değişikliğinde `rcssmin` ile yeniden üretilip versiyon artırıldı. 90/90 test yeşil. Detay: `tasks/todo.md` "Bootstrap Kaldırma — Kademeli Migration Planı" / Faz 3.
 - *Son güncelleme: Temmuz 2026 — Merge öncesi son süpürme turu TAMAMLANDI (11/11 madde, kaynak: `analizus_son_supurme_prompt.md`), `main`'e merge edildi. Aynı gün, merge sonrası canlıda gelen 3 hata raporuna yanıt olarak iki yeni tur yapıldı ve bunlar da `main`'e merge edildi: **Tableau facade dayanıklılık turu** (script yüklenemezse hata geri bildirimi; 15sn timeout + tek-canlı-iframe disiplini + sekme başına nesil sayacı; embed yüklenirken dönen spinner katmanı — üç ayrı canlı hata raporunun her biri kod incelemesi + Playwright doğrulamasıyla kapatıldı, ikisi gerçek kod bug'ı çıktı, biri Tableau Public'in kendi geçici kesintisi olduğu doğrulandı); **Marka görseli kenar yumuşatma turu** (3 iterasyon — box-shadow vinyet iki kez denenip koyu-tema fotoğraflarda görünmediği için terk edildi, `mask-image: radial-gradient` ile görselin şeklini gerçekten söndüren üçüncü deneme başarılı oldu; ana sayfanın sağ kartının ayrı bir component olduğu ve ilk düzeltmeyi almadığı kullanıcı tarafından fark edilip ayrıca düzeltildi). Son süpürme turunun kendi içeriği: huni parametreleri (Tableau CTA metni + bibliometrik `ANALYSIS_CHOICES`/`?type=` ön-seçimi, migration `0147`); site geneli Sıfır Kuralı (ana sayfa 5 sayaç + `has_any_stats`, uzman kartı satırı, Akademik Haberler + Gündemdeki Tartışmalar layout bütünlüğü, /hakkimizda/ Ekip bölümü); 8 sayfaya özgün og/twitter meta; bibliometri OpenAlex köprü bandı; blog kapaksız yazılara kategoriye göre varsayılan görsel; hero'daki eski üçlü CTA satırı kaldırıldı; login/register görsel panellerine iç vinyet; 39 smoke test (Madde 2'den 9, Madde 10'a); deploy notu + Hetzner sırası; ana sayfa sağ karta agentic-hero görseli. `feature_agentic_landing` flag'i o tur sonrası elle açıldı (doğrulandı, `/ai-cozumler/` artık görünür). Önceki turlar (İçerik & Topluluk Güçlendirme, Merge öncesi kapanış turu, `/market/` zenginleştirme, `/ai-cozumler/` landing, vb.) için yukarıdaki "Tamamlananlar" listesine bakın.
 - **Önceki (temmuz 2026):** Çalışma Odaları (StudyRoom) 8 fazlı dönüşümü tamamlandı, `dev`'den `main`'e merge edildi (yukarıdaki "Tamamlananlar" listesine bakın). Hetzner production'a bu merge deploy edildiyse §27'deki not artık geçerli değildir; edilmediyse aşağıdaki anasayfa turuyla birlikte tek seferde deploy edilebilir (migration'lar birikimli çalışır, sıra önemli değil).
 - **Önceki (temmuz 2026):** Ana Sayfa & Navbar İyileştirme Turu tamamlandı — 11 faz, 11 ayrı commit (detay: yukarıdaki "Tamamlananlar" listesi). `dev`'den `main`'e fast-forward merge edildi, hem `dev` hem `main` `origin`'e push edildi. Migration `0150_sitesettings_stat_min_display`.
@@ -2511,7 +2558,7 @@ with connection.cursor() as c:
 - **En son (31 Temmuz 2026):** Hetzner cron altyapısı denetimi + düzeltmesi ve `_session_datasets` bellek sızıntısı düzeltmesi. **Bulgu:** canonical domain bir noktada `www.analizus.com`'a dönmüş ama crontab güncellenmemişti — `cleanup-pageviews` satırı www'suz URL kullandığından 301'e takılıp fiilen hiç çalışmıyordu; `cleanup-s3` ve `cleanup-attachments` ise dokümantasyonda "Aktif" görünmesine rağmen crontab'da hiç yoktu. Üçü de düzeltildi/eklendi (bkz. §23). **Ayrıca:** `istatistik/services/job_runner.py`'deki `_session_datasets` (araçlar arası taşınan yüklenmiş dosya içeriği, RAM'de) hiç otomatik temizlenmiyordu — `SESSION_DATASET_TTL_SECONDS` (2 saat, `SESSION_COOKIE_AGE` ile hizalı) + `cleanup_expired_session_datasets()` eklendi, mevcut `/api/cron/*` desenine uygun yeni `cron_cleanup_session_datasets` endpoint'i açıldı (bu veri DB değil RAM'de olduğu için yalnızca HTTP-tetiklemeli bu desen çalışır, ayrı process olarak koşan bir management command'ın erişemeyeceği doğrulandı). 2 commit, `dev`'den `main`'e fast-forward merge edildi, `origin`'e push edildi, Hetzner'e deploy edilip (`git pull` + `restart web`/`nginx`) canlıda doğrulandı (`curl` ile doğru secret → `{"success": true}`, yanlış secret → `403`); crontab'a 5 satır eklendi/düzeltildi (`cleanup-pageviews` www'li URL, `cleanup-s3` günlük 05:00, `cleanup-attachments` haftalık Pazar 06:00, `cleanup-session-datasets` saatlik), `crontab -l` ile teyit edildi. Migration yok.*
 - **Önceki (25–26 Eylül 2026):** Çok dilli yayın + gizlilik turu `main`'e alındı ve Hetzner'e deploy edildi (132327f; migration 0153–0155 container açılışında deploy.sh ile uygulandı; DB yedeği alındı; kontroller OK).
 - **Önceki (28 Eylül 2026 gece):** canlı = main ab57dcd (bibliometri kısıtlar bölümü + BibTeX).
-- **En son (8 Ekim 2026, ikinci tur):** `main` = `dev` = **2c09b22** (her değişiklik ayrı merge+push ile Hetzner'e deploy edildi, GitHub Actions ile izlendi, her seferinde canlı `curl` ile doğrulandı). Bir önceki turun devamı — canlıya alındıktan sonra kullanıcının gerçek kullanımda bulduğu 4 ayrı, birbirini tetikleyen sorun düzeltildi:
+- **Önceki (8 Ekim 2026, ikinci tur):** `main` = `dev` = **2c09b22** (her değişiklik ayrı merge+push ile Hetzner'e deploy edildi, GitHub Actions ile izlendi, her seferinde canlı `curl` ile doğrulandı). Bir önceki turun devamı — canlıya alındıktan sonra kullanıcının gerçek kullanımda bulduğu 4 ayrı, birbirini tetikleyen sorun düzeltildi:
   - **(1) Başlık dil hatası (önceden fark edilmemiş, gerçek bug):** Otomatik e-posta eklenince kullanıcı ilk kez gelen maili dikkatlice inceledi ve tez başlıklarının **İngilizce** geldiğini fark etti. Kök neden: `job_runner.py`'deki e-posta gövdesi oluşturma kodu `r.get("title", ...)` kullanıyordu — scraper'da `'title'` anahtarı **İngilizce** başlığı taşıyor (`title_tr` Türkçesi), oysa TXT indirmedeki `generate_results_txt` zaten doğru şekilde `title_tr or title` sırasıyla çalışıyordu; e-posta kodu ayrı, kopya bir implementasyon olduğu için bu düzeltmeyi hiç almamıştı. Kullanıcı sorguladı: "S3 linki vermek güvenlik riski mi?" — canlı test edildi: bucket'ın tamamını **listelemek engelli** (403 AccessDenied, anonim), ama **bilinen bir URL'i doğrudan okumak kimlik doğrulamasız çalışıyor** (200 OK) — düşük risk (UUID tahmin edilemez + arayüz ham linki hiç göstermiyor) ama "varsayılan herkese açık" iyi pratik değil. Kullanıcı kararı: e-posta içeriği tekrar üretmesin, siteye (giriş arkasında) link versin — döngü tamamen kaldırıldı, e-posta artık kısa bir özet + `/yoktez/` linki.
   - **(2) Manuel "E-posta Gönder" butonu önce bozuldu, sonra anlamsızlaştı:** Otomatik gönderim `demo_email_sent=True` yaptığı için `yoktez_send_demo_email` view'ındaki eski "zaten gönderildi" kontrolü butonu hemen kilitliyordu — önce bu kontrol kaldırıldı ("tekrar gönder" işlevi görsün diye). Ama e-posta artık veri değil link taşıdığı için kullanıcı "tekrar göndermenin anlamı yok" dedi — buton tamamen kaldırıldı (`yoktez/templates/yoktez/landing.html`). Backend endpoint'i (`yoktez/views.py` `yoktez_send_demo_email`, `yoktez/urls.py` `send-demo/`) **silinmedi** — `tezanaliz/templates/tezanaliz/landing.html` kendi "E-posta Gönder" butonu için aynı `/yoktez/send-demo/` uç noktasını kullanıyor (çapraz-app bağımlılık, silinmeden önce `grep` ile bulundu).
   - **(3) En büyük bug — eski mail linki yanlış aramayı gösteriyordu:** Kullanıcı birden fazla arama yaptıktan sonra ESKİ bir e-postadaki `/yoktez/` linkine tıklayınca, o e-postanın ait olduğu aramayı değil **en son tamamlanan** aramayı görüyordu — çünkü `yoktez_landing` view'ı her zaman "kullanıcının en son tamamladığı iş"i gösteriyordu, linkin hangi işe ait olduğuna hiç bakmıyordu. Düzeltme: `/yoktez/?job=<uuid>` query param desteği eklendi — verilen job kullanıcıya ait, `completed` ve 3 gün içindeyse TAM O SONUCU gösterir; süresi dolmuşsa (veya geçersiz/başkasına aitse) sessizce başka bir sonuca düşmez, açık bir "3 günlük erişim süresi doldu" uyarısı verir. E-posta ve in-app bildirim linkleri artık `?job=` ile iş-spesifik. **Ardından ortaya çıkan ikinci boşluk:** iş-spesifik link olmadan kullanıcının 3 gün içindeki DİĞER aramalarına ulaşacağı hiçbir yer yoktu (`past_analiz_jobs` context'e geçiriliyor ama hiçbir zaman template'te render edilmiyormuş — fark edildi) — **"Son Aramalarım"** listesi eklendi (son 8 tamamlanmış arama, her biri `?job=` linkiyle).
