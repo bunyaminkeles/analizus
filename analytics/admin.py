@@ -168,10 +168,12 @@ class PageViewAdmin(ModelAdmin):
         recent_qs = PageView.objects.filter(timestamp__date__gte=range_start, timestamp__date__lte=range_end)
         summary_qs = PageViewSummary.objects.filter(date__gte=range_start, date__lte=range_end)
 
-        def top_n(field, n, extra_filter=None):
+        def top_n(field, n, extra_filter=None, exclude_staff=False):
             totals = defaultdict(int)
-            rqs = recent_qs.filter(**extra_filter) if extra_filter else recent_qs
-            sqs = summary_qs.filter(**extra_filter) if extra_filter else summary_qs
+            rqs = recent_qs.exclude(user__is_staff=True) if exclude_staff else recent_qs
+            sqs = summary_qs.exclude(user__is_staff=True) if exclude_staff else summary_qs
+            rqs = rqs.filter(**extra_filter) if extra_filter else rqs
+            sqs = sqs.filter(**extra_filter) if extra_filter else sqs
             for row in rqs.values(field).annotate(total=Count('id')):
                 if row[field]:
                     totals[row[field]] += row['total']
@@ -180,24 +182,28 @@ class PageViewAdmin(ModelAdmin):
                     totals[row[field]] += row['total'] or 0
             return [{field: k, 'total': v} for k, v in sorted(totals.items(), key=lambda x: -x[1])[:n]]
 
-        def daily_series(extra_filter=None):
+        def daily_series(extra_filter=None, exclude_staff=False):
             totals = defaultdict(int)
-            rqs = recent_qs.filter(**extra_filter) if extra_filter else recent_qs
-            sqs = summary_qs.filter(**extra_filter) if extra_filter else summary_qs
+            rqs = recent_qs.exclude(user__is_staff=True) if exclude_staff else recent_qs
+            sqs = summary_qs.exclude(user__is_staff=True) if exclude_staff else summary_qs
+            rqs = rqs.filter(**extra_filter) if extra_filter else rqs
+            sqs = sqs.filter(**extra_filter) if extra_filter else sqs
             for row in rqs.values('timestamp__date').annotate(total=Count('id')):
                 totals[row['timestamp__date']] += row['total']
             for row in sqs.values('date').annotate(total=Sum('visit_count')):
                 totals[row['date']] += row['total'] or 0
             return [{'timestamp__date': str(d), 'total': t} for d, t in sorted(totals.items())]
 
-        # ?user=<kullanıcı adı> → o kişinin davranış analizi (en aktif 20'de olmasa da)
+        # ?user=<kullanıcı adı> → o kişinin davranış analizi (en aktif 20'de olmasa da, staff dahil)
         requested_user = request.GET.get('user', '').strip()
         selected_user = User.objects.filter(username=requested_user).first() if requested_user else None
         flt = {'user': selected_user} if selected_user else None
 
-        top_pages = top_n('tab_name', 10, extra_filter=flt)
-        daily = daily_series(extra_filter=flt)
-        top_users = top_n('user__username', 20)
+        # Genel görünümde (belirli kullanıcı seçilmemişken) staff hesapların test/geliştirme
+        # trafiği gerçek kullanıcı davranışını gizliyor — bu yüzden yalnız o durumda hariç tutulur.
+        top_pages = top_n('tab_name', 10, extra_filter=flt, exclude_staff=(flt is None))
+        daily = daily_series(extra_filter=flt, exclude_staff=(flt is None))
+        top_users = top_n('user__username', 20, exclude_staff=True)
 
         user_detail = None
         if selected_user:

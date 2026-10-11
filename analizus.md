@@ -1310,6 +1310,19 @@ def _broadcast_chat(uid1, uid2, event):
   özet metni ekrandan kaldırıldı, TXT/Excel indirmelerinde eksiksiz kalır). `yoktez/demo/` S3 dosyaları 3 gün sonra
   otomatik silinir (`cleanup_expired_yoktez_s3_files`, günlük `cleanup-s3` cron'una bağlı) — S3 nesneleri tek tek
   bilinen URL ile kimlik doğrulamasız okunabilir ama bucket listelemesi kapalı (düşük risk, canlı testle doğrulandı).
+- **SEO — "indirme" arama niyeti (10 Ekim 2026):** kullanıcı gözlemi — "veri kazıma" aramalarında çıkıyoruz ama "tez
+  indirme/tez arşivi indirme/toplu tez indirme" aramalarında çıkmıyoruz. Araç gerçek tez PDF'i indirmiyor (yalnız
+  künye/bibliyografik veri — başlık, yazar, danışman, üniversite, yıl, özet); bu yüzden bu ifadeleri doğrudan
+  kullanmak abartılı vaat olurdu. Çözüm: `tarama_seo_content.py`'deki `yoktez.faq`'a dürüstçe açıklayan yeni bir
+  soru eklendi ("YÖK Tez arşivinden toplu tez indirebilir miyim?" → "bu bir künye/bibliyografik veri indirmesidir,
+  PDF içermez..."); ayrıca `yoktez/views.py`'deki `promo_title`/`promo_description` ve `landing.html`'deki
+  `{% block title %}`/`meta_description`'da "Excel'e Aktar" → "Excel'e İndir" (anlam değişmeden, arama niyetine
+  daha yakın kelime). **Kritik:** Google (anonim) bu aracı `landing.html` değil `service_promo.html` üzerinden
+  görür — ilk denemede yalnız `landing.html` (girişli kullanıcı görünümü) düzeltildi, asıl SEO-etkili metnin
+  `yoktez/views.py`'deki `promo_title`/`promo_description` olduğu sonradan fark edildi (iki yerde kopya metin,
+  bkz. §26 "aynı veriyi iki yerde formatlayan kopya kod" tuzağı). Oturumsuz `curl` ile Google'ın gördüğü
+  `<title>`/`<meta description>` doğrulandı. Not: Bu yalnızca bulunma ihtimalini artırır, sıralama garantisi değil
+  — rekabet (YÖK'ün kendi sitesi dahil) var, Google'ın yeniden taraması zaman alır.
 
 ### Semantic Scholar (`semanticscholar/`)
 - `feature_semanticscholar = True`
@@ -2216,6 +2229,15 @@ with connection.cursor() as c:
   yok; GSC gösterim verisi + Armut.com rakip sinyali + akademik kurum içerik yoğunluğu birleştirildi), Faz 6'ya
   5 maddelik somut sıra eklendi (SPSS alternatifi, Kaplan-Meier, NVivo/MAXQDA, SmartPLS/SEM, etik kurul) —
   ayrıntı `tasks/todo.md` "Faz 6".
+- **10 Ekim 2026 — Faz 6 ilk iki madde: "yeni yazı" varsayımı yanlış çıktı, gerçek boşluk bulundu (main, migration
+  `forum/0176`):** "SPSS benzeri programlar" (40 gösterim, sıra 27) için yeni yazı yazılmadan önce kontrol edilince
+  konuyla ilgili **3 yayınlanmış yazı** bulundu — `ucretsiz-spss-alternatifi-var-mi-...` zaten tam SEO'luydu (yeni
+  yazı cannibalization yaratırdı); gerçek boşluk `spss-mi-r-mi-tez-icin-hangisi-daha-kolay` ve `spsste-t-testi-
+  adim-adim-...`'in `meta_title`/`meta_description`'ının tamamen boş olmasıydı (0162 korumalı-migration deseniyle
+  dolduruldu). "Kaplan-Meier analizi nedir" (35 gösterim) için de zaten iyi optimize edilmiş bir yazı
+  (`survival-analizi-101-...`, 857 kelime, dolu meta) bulundu — yeni içerik yazılmadı, aksiyon kapatıldı. **Ders:**
+  GSC gösterim/sıra verisi "içerik yok" anlamına gelmez — her zaman önce mevcut yazı var mı diye kontrol et.
+  YÖK Tez "indirme" niyeti düzeltmesi için bkz. §15 "YÖK Tez" alt başlığı.
 
 #### Admin / Analytics
 
@@ -2425,13 +2447,16 @@ with connection.cursor() as c:
 - Faz 3: blog yazısı sonuna kategoriye göre "uzman desteği" kartı (→ `/uzmanlar/?cat=` + proje talebi)
 - SSS zenginleştirme (Friedman/Wilcoxon 1, çoğu araç 2 soru) — metin işi
 - Faz 6 içerik takvimi: önce "spss öğrenci ücretsiz", "spss benzeri programlar", "kaplan meier analizi"
-- Faz 4: 5 küme hizmet sayfası + Pazaryeri "Hizmet Alanları" şeridi (aşağıdaki Danışmanlık "Hizmet kataloğu" ile aynı iş)
+- Faz 4 hizmet sayfaları (4 küme: akademik-danismanlik, nicel-analiz, nitel-analiz, veri-ve-yapay-zeka) **canlıda** —
+  `feature_hizmet_sayfalari` açık, `/hizmetler/` 200 dönüyor (11 Ekim 2026 doğrulandı). Kalan: Pazaryeri'ne "Hizmet
+  Alanları" şeridi eklenmedi.
 - ~29 Ekim 2026: GSC dışa aktarımıyla CTR karşılaştırması (başlangıç 1 Ekim)
 
 #### Danışmanlık Dönüşümü (feature flag'lerle, detay: `danismanlik_roadmap.md`)
 - **Ödeme sistemi kararı** — Stripe / Papara / IBAN+fatura (iyzico yasak) — **blokaj**
 - **SiteSettings'e 6 flag** — `feature_consultancy_catalog`, `feature_consultancy_pricing`, `feature_client_portal`, `feature_project_pipeline`, `feature_verified_experts`, `feature_trust_stats` (hepsi `default=False`)
-- **Hizmet kataloğu** — `/hizmetler/` + 5 alt sayfa (tez-analiz, literatur-tarama, kurumsal-veri, gorsellestirme, ml-yapay-zeka)
+- ~~Hizmet kataloğu~~ → YAPILDI, canlıda: `/hizmetler/` + 4 alt sayfa (akademik-danismanlik, nicel-analiz, nitel-analiz,
+  veri-ve-yapay-zeka) — bkz. SEO dönüşümü Faz 4, §27 Tamamlananlar
 - **Müşteri portalı** — `/hesabim/talepler/` + `/<id>/` (login zorunlu, `feature_client_portal`)
 - **Navbar güncellemesi** — Hizmetler dropdown + Uzmanlar linki + Taleplerim koşullu
 - **Proje pipeline** — `ProjectRequest` → `Project` modeli, milestone, durum e-postaları
