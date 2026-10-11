@@ -168,10 +168,21 @@ class PageViewAdmin(ModelAdmin):
         recent_qs = PageView.objects.filter(timestamp__date__gte=range_start, timestamp__date__lte=range_end)
         summary_qs = PageViewSummary.objects.filter(date__gte=range_start, date__lte=range_end)
 
+        # Navigasyon Grafiği'nden admin'de seçilen grup (iç ekip vb.) de staff ile aynı mantıkla
+        # hariç tutulur — bkz. SiteSettings.navigasyon_haric_grup
+        from forum.models import SiteSettings
+        haric_grup = SiteSettings.load().navigasyon_haric_grup
+
+        def _exclude_internal(qs):
+            qs = qs.exclude(user__is_staff=True)
+            if haric_grup:
+                qs = qs.exclude(user__groups=haric_grup)
+            return qs
+
         def top_n(field, n, extra_filter=None, exclude_staff=False):
             totals = defaultdict(int)
-            rqs = recent_qs.exclude(user__is_staff=True) if exclude_staff else recent_qs
-            sqs = summary_qs.exclude(user__is_staff=True) if exclude_staff else summary_qs
+            rqs = _exclude_internal(recent_qs) if exclude_staff else recent_qs
+            sqs = _exclude_internal(summary_qs) if exclude_staff else summary_qs
             rqs = rqs.filter(**extra_filter) if extra_filter else rqs
             sqs = sqs.filter(**extra_filter) if extra_filter else sqs
             for row in rqs.values(field).annotate(total=Count('id')):
@@ -184,8 +195,8 @@ class PageViewAdmin(ModelAdmin):
 
         def daily_series(extra_filter=None, exclude_staff=False):
             totals = defaultdict(int)
-            rqs = recent_qs.exclude(user__is_staff=True) if exclude_staff else recent_qs
-            sqs = summary_qs.exclude(user__is_staff=True) if exclude_staff else summary_qs
+            rqs = _exclude_internal(recent_qs) if exclude_staff else recent_qs
+            sqs = _exclude_internal(summary_qs) if exclude_staff else summary_qs
             rqs = rqs.filter(**extra_filter) if extra_filter else rqs
             sqs = sqs.filter(**extra_filter) if extra_filter else sqs
             for row in rqs.values('timestamp__date').annotate(total=Count('id')):
