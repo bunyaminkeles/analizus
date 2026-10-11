@@ -11,7 +11,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.db import models
 from django.contrib.contenttypes.models import ContentType
-from django.db.models import Count, Sum, Q, Avg, Subquery, OuterRef, Max, Exists
+from django.db.models import Count, Sum, Q, Avg, Subquery, OuterRef, Max, Exists, F, Value
+from django.db.models.functions import Coalesce
 from django.contrib import messages
 from django.utils.translation import gettext, ngettext, pgettext
 from django.utils import timezone, translation
@@ -2105,12 +2106,20 @@ def liderboard(request):
         .order_by('-weekly_correct')[:10]
     )
 
-    # Tüm zamanlı reputation liderboard
+    # Tüm zamanlı liderboard — toplam puan (Forum + Quiz), Profile.total_score ile aynı tanım
+    # (rütbe de total_score'a göre hesaplanıyor, bkz. Profile.update_rank).
+    quiz_points_subq = QuizScore.objects.filter(
+        user=OuterRef('user'),
+    ).order_by('pk').values('total_points')[:1]
+    total_score_annotation = Coalesce(Subquery(quiz_points_subq), Value(0)) + F('reputation')
+
     alltime = (
         Profile.objects
         .select_related('user')
+        .prefetch_related('user__quiz_scores')
         .filter(user__is_active=True)
-        .order_by('-reputation')[:10]
+        .annotate(total_score_val=total_score_annotation)
+        .order_by('-total_score_val')[:10]
     )
 
     # Mevcut kullanıcının sıraları
@@ -2128,8 +2137,10 @@ def liderboard(request):
             .filter(cnt__gt=weekly_correct)
             .count() + 1
         )
-        user_reputation = getattr(getattr(request.user, 'profile', None), 'reputation', 0)
-        user_alltime_rank = Profile.objects.filter(reputation__gt=user_reputation).count() + 1
+        user_total_score = getattr(getattr(request.user, 'profile', None), 'total_score', 0)
+        user_alltime_rank = Profile.objects.annotate(
+            total_score_val=total_score_annotation
+        ).filter(total_score_val__gt=user_total_score).count() + 1
 
     return render(request, 'forum/liderboard.html', {
         'weekly': weekly,
@@ -3664,16 +3675,27 @@ def uzman_dizini(request):
     site = SiteSettings.load()
     min_puan = site.uzman_dizini_min_puan
 
+    # Toplam puan (Forum + Quiz) — Profile.total_score property'siyle aynı tanım, ama DB
+    # seviyesinde filtre/sıralama yapabilmek için ayrı annotate ismiyle (rütbe de total_score'a
+    # göre hesaplanıyor, bkz. Profile.update_rank — dizin eşiği ve gösterilen puan tutarlı olsun).
+    quiz_points_subq = QuizScore.objects.filter(
+        user=OuterRef('user'),
+    ).order_by('pk').values('total_points')[:1]
+    total_score_annotation = Coalesce(Subquery(quiz_points_subq), Value(0)) + F('reputation')
+
     eligible_qs = (
         Profile.objects
         .filter(is_public=True)
-        .annotate(skill_count=Count('skills', distinct=True))
+        .annotate(
+            skill_count=Count('skills', distinct=True),
+            total_score_val=total_score_annotation,
+        )
         .filter(
             Q(directory_override=True)
             | Q(
                 directory_override__isnull=True,
                 skill_count__gte=3,
-                reputation__gte=min_puan,
+                total_score_val__gte=min_puan,
                 email_verified=True,
                 user__is_staff=False,
                 user__is_superuser=False,
@@ -3689,9 +3711,10 @@ def uzman_dizini(request):
     profiles = (
         Profile.objects
         .select_related('user')
-        .prefetch_related('skills', 'badges')
+        .prefetch_related('skills', 'badges', 'user__quiz_scores')
         .filter(pk__in=eligible_ids)
         .annotate(
+            total_score_val=total_score_annotation,
             completed_jobs=Count(
                 'user__proposals',
                 filter=Q(
@@ -3711,16 +3734,16 @@ def uzman_dizini(request):
 
     # Öne çıkan 10: her zaman puana göre sabit (Sırala filtresi bunu etkilemez). Geri kalanlar
     # "diğer uzmanlar" listesinde, seçili sıralamaya göre gösterilir.
-    featured_profiles = list(profiles.order_by('-reputation', '-completed_jobs')[:10])
+    featured_profiles = list(profiles.order_by('-total_score_val', '-completed_jobs')[:10])
     featured_ids = {p.id for p in featured_profiles}
     other_profiles = profiles.exclude(id__in=featured_ids)
 
     if sort_by == 'is':
-        other_profiles = other_profiles.order_by('-completed_jobs', '-reputation')
+        other_profiles = other_profiles.order_by('-completed_jobs', '-total_score_val')
     elif sort_by == 'aktif':
-        other_profiles = other_profiles.order_by('-last_seen', '-reputation')
+        other_profiles = other_profiles.order_by('-last_seen', '-total_score_val')
     else:
-        other_profiles = other_profiles.order_by('-reputation', '-completed_jobs')
+        other_profiles = other_profiles.order_by('-total_score_val', '-completed_jobs')
 
     job_categories = JobCategory.objects.filter(is_active=True).order_by('order', 'title')
 
