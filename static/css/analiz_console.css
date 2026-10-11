@@ -278,6 +278,16 @@
   margin-bottom: 1.5rem;
 }
 
+.ax-ai-comment-box {
+  border-left: 3px solid var(--ax-accent-info);
+  background: var(--ax-bg-secondary);
+}
+
+.ax-ai-comment-box-label {
+  color: var(--ax-accent-info);
+  font-weight: 600;
+}
+
 .ax-tool-guide-faq-title {
   font-size: 1rem;
   font-weight: 600;

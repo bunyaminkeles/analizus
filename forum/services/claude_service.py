@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 _LANGUAGE_NAMES = {'tr': 'Türkçe', 'en': 'English', 'de': 'Deutsch'}
 
 MODEL = "claude-haiku-5-5"
-MAX_TOKENS = 512
+MAX_TOKENS = 1024
 
 
 class ClaudeSummaryService:

@@ -163,6 +163,11 @@
             <div class="ax-rounded-md p-3" style="background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.2);">
               <p class="ax-text-muted ax-text-sm fw-semibold mb-2">{% trans "APA Formatında Raporlama" %}</p>
               <p class="ax-text-primary ax-text-sm mb-2" id="res-apa" style="font-style:italic;"></p>
+
+              <div id="ai-yorum-box" class="d-none" style="border-top:1px solid var(--ax-border-default); margin:.5rem 0; padding-top:.5rem;">
+                <p class="ax-text-primary ax-text-sm mb-0" id="ai-yorum-text"></p>
+              </div>
+
               <div class="d-flex gap-2">
                 <a id="pdf-btn" href="#" target="_blank" class="ax-btn ax-btn--sm ax-btn--danger fw-semibold">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="me-1"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg> {% trans "PDF İndir" %}
@@ -352,6 +357,15 @@ function onCompleted(data) {
   const apa = fmt(r.significant ? T.apaSig : T.apaNs, {group: r.group_col, dep: r.dep_col, df1: r.df_between, df2: r.df_within, f: r.f_stat.toFixed(3), p: pStr(r.p_value), eta: r.eta_sq.toFixed(3), effect: r.effect_interpretation});
   document.getElementById('res-apa').textContent = apa;
   document.getElementById('pdf-btn').href = data.pdf_url;
+
+  const aiBox = document.getElementById('ai-yorum-box');
+  if (r.ai_comment) {
+    document.getElementById('ai-yorum-text').textContent = r.ai_comment;
+    aiBox.classList.remove('d-none');
+  } else {
+    aiBox.classList.add('d-none');
+  }
+
   showPanel('done');
 }
 
@@ -370,7 +384,12 @@ function resetToUpload() {
   showPanel('idle');
 }
 function copyApa(btn) {
-  navigator.clipboard.writeText(document.getElementById('res-apa').textContent).then(() => {
+  let copyText = document.getElementById('res-apa').textContent;
+  const aiBox = document.getElementById('ai-yorum-box');
+  if (aiBox && !aiBox.classList.contains('d-none')) {
+    copyText += '\n\n' + document.getElementById('ai-yorum-text').textContent;
+  }
+  navigator.clipboard.writeText(copyText).then(() => {
     const orig = btn.innerHTML;
     btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="me-1"><polyline points="20 6 9 17 4 12"/></svg> ' + T.s8;
     btn.classList.add('ax-btn--success');

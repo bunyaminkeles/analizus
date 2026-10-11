@@ -157,6 +157,11 @@
             <div class="rounded-3 p-3" style="background:rgba(34,211,238,0.06); border:1px solid rgba(34,211,238,0.2);">
               <p class="text-white-50 small fw-semibold mb-2">{% trans "APA Formatında Raporlama" %}</p>
               <p class="text-white small mb-2" id="res-apa" style="font-style:italic;"></p>
+
+              <div id="ai-yorum-box" class="d-none" style="border-top:1px solid var(--ax-border-default); margin:.5rem 0; padding-top:.5rem;">
+                <p class="text-white small mb-0" id="ai-yorum-text"></p>
+              </div>
+
               <div class="d-flex gap-2">
                 <a id="pdf-btn" href="#" target="_blank" class="btn btn-sm btn-info fw-semibold text-dark">
                   <i class="bi bi-file-earmark-pdf-fill me-1"></i>{% trans "PDF İndir" %}
@@ -341,6 +346,15 @@ function onCompleted(data) {
   const apa = fmt(r.significant ? T.apaSig : T.apaNs, {group: r.group_col, dep: r.dep_col, df: r.df, h: r.h_stat.toFixed(3), p: pStr(r.p_value), eta: r.eta_sq.toFixed(3), effect: r.effect_interpretation});
   document.getElementById('res-apa').textContent = apa;
   document.getElementById('pdf-btn').href = data.pdf_url;
+
+  const aiBox = document.getElementById('ai-yorum-box');
+  if (r.ai_comment) {
+    document.getElementById('ai-yorum-text').textContent = r.ai_comment;
+    aiBox.classList.remove('d-none');
+  } else {
+    aiBox.classList.add('d-none');
+  }
+
   showPanel('done');
 }
 
@@ -360,7 +374,12 @@ function resetToUpload() {
   showPanel('idle');
 }
 function copyApa(btn) {
-  navigator.clipboard.writeText(document.getElementById('res-apa').textContent).then(() => {
+  let copyText = document.getElementById('res-apa').textContent;
+  const aiBox = document.getElementById('ai-yorum-box');
+  if (aiBox && !aiBox.classList.contains('d-none')) {
+    copyText += '\n\n' + document.getElementById('ai-yorum-text').textContent;
+  }
+  navigator.clipboard.writeText(copyText).then(() => {
     const orig = btn.innerHTML; btn.innerHTML = '<i class="bi bi-check me-1"></i>' + T.s8; btn.classList.add('btn-success');
     setTimeout(() => { btn.innerHTML = orig; btn.classList.remove('btn-success'); }, 2000);
   });

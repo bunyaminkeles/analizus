@@ -87,7 +87,7 @@ maddelerde.
       doğrulandı), 7 teklifin ilk 5'i görünür + "Diğer 2 teklifi göster"
       butonu doğru sayıyla render edildi, boş durumda yeni mesaj metni
       çalışıyor. `docker compose restart web` + `nginx` sonrası test edildi.
-    - **Henüz commit edilmedi — kullanıcı onayı bekliyor.**
+    - **TAMAMLANDI — kullanıcı onayladı, `dev`'de commit edildi (66e8e3e).**
 - [ ] **(11 Ekim 2026 → BAŞLANMADI, fikir aşamasında) PWA (Progressive Web App).**
   Kullanıcı mobil app ihtiyacını sordu — native (React Native/Flutter) için
   önce Django'nun üstüne ince bir JSON API katmanı (DRF) + ayrı bir app
@@ -123,9 +123,33 @@ maddelerde.
   (`feature_ai_summary` kapalı, `ai_summary_daily_limit_free/premium` 5/15), yeni `AIUsageLog` modeli
   (kota + token/maliyet takibi, admin'de salt-okunur liste + sidebar girdisi), migration `forum/migrations/
   0177_...`. Lokal `.env`'e anahtar eklendi, image `--build` ile yeniden oluşturuldu, 90/90 test yeşil.
-  **Sırada — Faz B:** İstatistik `job_runner.py` entegrasyonu (`result_data['ai_comment']`, migration
-  gerekmiyor) + 18 template'e ortak "AI Yorumu" partial/JS. Sonra Faz C (OpenAlex+PubMed, migration gerekli)
-  ve Faz D (Bibliometrics, migration + `analyzer.py` ham veri yakalama — en karmaşık faz).
+  **Faz B (tamamlandı, uçtan uca gerçek API çağrısıyla test edildi — henüz commit edilmedi):**
+  `istatistik/services/job_runner.py`'a `_ai_comment_for_job`/`_build_ai_prompt` eklendi — `mark_completed`'dan
+  önce, flag+kota kontrolünden geçerse tek genel (tool-spesifik olmayan) prompt'la Claude çağrılıyor,
+  `result_data['ai_comment']`'e yazılıyor; hata `try/except` ile job'u düşürmüyor (migration yok, `result_data`
+  zaten serbest JSONField). 17 test aracının template'ine (cronbach…svm — `TOOL_CHOICES`'taki hepsi) aynı
+  "AI Yorumu" kutusu (`static/css/analiz_console.css`'e eklenen 2 ortak kural, `ax-rounded-md p-3
+  ax-ai-comment-box`) + aynı JS toggle deseni eklendi. **Kapsam dışı bırakıldı:** `orneklem.html` — tamamen
+  senkron akış, `IstatistikJob`/`result_data`'ya hiç girmiyor, ayrı tasarım ister. EN/DE çevirisi girildi
+  (`locale/en,de/LC_MESSAGES/django.po` + `.mo`); bu arada `makemessages` önceki (henüz main'e push edilmemiş)
+  profil "İlanlar" turundan kalma 2 çevrilmemiş/fuzzy string'i de yakaladı (`"Devam eden veya tamamlanmış
+  proje bulunmuyor."`, `"Diğer %(count)s teklifi göster"`) — bunlar da bu arada EN/DE'ye çevrildi (ayrı konu
+  ama aynı dosyalarda surfaced oldu). Gerçek dosyayla uçtan uca doğrulandı (ttesti, bağımsız örneklem
+  t-testi): doğru akademik TR yorum üretildi, `AIUsageLog` kaydı oluştu, test verisi/kullanıcı temizlendi.
+  90/90 pytest yeşil. `feature_ai_summary` lokalde de **kapalı bırakıldı** (yalnız test sırasında geçici açılıp
+  kapatıldı). **Revizyon (aynı gün):** kullanıcı gerçek ekran görüntüsüyle AI Yorumu'nun APA kutusundan kopuk
+  durduğunu bildirdi, `MAX_TOKENS=1024`'e çıkarıldı (önceki 512 cümle ortasında kesiyordu) — ardından kullanıcı
+  AI yorumunun APA kutusuyla **tek kutuda birleşmesini** istedi (ayrı ikon/renk/uyarı metni olmadan, APA
+  cümlesinin altına ince bir ayraçla eklensin). 17 dosyanın hepsinde uygulandı: ayrı `.ax-ai-comment-box` kartı
+  kaldırıldı, `ai-yorum-box`/`ai-yorum-text` artık APA kutusunun (`res-apa`/`<tool>-apa-display`) içinde, tek
+  "Kopyala" butonu artık APA cümlesi + AI yorumunu birlikte panoya kopyalıyor (`copyApa` fonksiyonları
+  güncellendi). 90/90 test + `manage.py check` tekrar doğrulandı.
+  **Bulgu (karar bekliyor):** Test çıktısında AI yorumu 608 karakterde cümle ortasında kesildi —
+  `forum/services/claude_service.py` `MAX_TOKENS=512` (Faz A), sistem promptu "en fazla 120 kelime" diyor ama
+  model bunu aşıp donanım limitine takılıyor. Düzeltme (MAX_TOKENS'ı örn. 768-1024'e çıkarmak) Faz A dosyasında
+  — Faz B kapsamı dışında, kullanıcı onayı bekliyor.
+  **Sırada — Faz C:** OpenAlex+PubMed (migration gerekli, `ai_summary` alanı) + job_runner entegrasyonu +
+  template/JS. Sonra Faz D (Bibliometrics, migration + `analyzer.py` ham veri yakalama — en karmaşık faz).
 - [x] **(9 Ekim 2026 → tamamlandı, main'de canlı) `/hakkimizda/` sayfası sadeleştirildi.** Tek blok olduğu
   ortaya çıktı (başlık "Platformdaki Uzmanlardan Örnekler" + TeamMember kartları, admin adı "Ekip Üyeleri" aynı
   şeydi) — `forum/templates/forum/about.html` satır 276-392 kaldırıldı, yerine kısa metin + "Uzman Dizinini

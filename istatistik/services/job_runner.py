@@ -219,6 +219,11 @@ def _execute_job_in_language(job_id: str):
             job.mark_failed(gettext('Bilinmeyen araç: %(tool)s') % {'tool': job.tool})
             return
 
+        try:
+            _ai_comment_for_job(job, result_data)
+        except Exception as e:
+            logger.warning(f'[istatistik] AI Yorumu üretilemedi {job.tool}/{job_id}: {e}')
+
         pdf_bytes = build_pdf(result_data, job.original_filename, df)
         pdf_url = _upload_pdf(pdf_bytes, job)
         job.mark_completed(result_data=result_data, pdf_url=pdf_url)
@@ -264,3 +269,39 @@ def _upload_pdf(pdf_bytes: bytes, job) -> str:
     s3_key = f'istatistik/{job.tool}/{job.id}.pdf'
     url = upload_bytes_to_s3(pdf_bytes, s3_key, 'application/pdf')
     return url or ''
+
+
+_AI_PROMPT_EXCLUDE_KEYS = {
+    'tree_text',     # karar_agaci: uzun ASCII ağaç çıktısı, yorum için gereksiz
+    'heatmap_b64',   # korelasyon: base64 PNG, metin yoruma hiç katkı sağlamıyor
+}
+
+
+def _ai_comment_for_job(job, result_data: dict):
+    """Claude ile kısa akademik yorum üretir, result_data['ai_comment']'e yazar.
+    Hata/kota/flag durumunda sessizce atlar — iş sonucu AI yorumu olmadan tamamlanır."""
+    from django.utils import translation
+    from forum.models import SiteSettings, AIUsageLog
+    from forum.services.claude_service import claude_summary_service
+
+    if not SiteSettings.load().feature_ai_summary:
+        return
+    if not job.user or not AIUsageLog.can_use(job.user):
+        return
+
+    prompt = _build_ai_prompt(job.get_tool_display(), result_data)
+    resp = claude_summary_service.generate_summary('istatistik', prompt, lang=translation.get_language())
+    if resp['success'] and resp['text']:
+        result_data['ai_comment'] = resp['text']
+        AIUsageLog.record(job.user, 'istatistik', resp['input_tokens'], resp['output_tokens'])
+
+
+def _build_ai_prompt(tool_label: str, result_data: dict) -> str:
+    import json
+    safe = {k: v for k, v in result_data.items() if k not in _AI_PROMPT_EXCLUDE_KEYS}
+    data_json = json.dumps(safe, ensure_ascii=False, default=str)[:4000]
+    return (
+        f"Araç: {tool_label}\n\n"
+        f"Analiz sonuç verileri (JSON):\n{data_json}\n\n"
+        "Bu istatistiksel analiz sonucunu kullanıcıya akademik dilde yorumla."
+    )
