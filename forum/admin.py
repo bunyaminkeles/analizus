@@ -10,6 +10,7 @@ from unfold.admin import ModelAdmin, TabularInline, StackedInline
 from broadcast.models import EmailBroadcast
 from .models import Section, Category, Topic, Post, Profile, ContactMessage, PrivateMessage, Badge, Skill, DailyTip, QuizQuestion, QuizScore, FreelanceJob, JobCategory, JobProposal, JobReview, UserQuizAttempt, DonationTier, Donation, JobPayment, TopicTag, SiteSettings, BlogCategory, BlogPost, BlogTag, SuccessStory, StudyRoom, ProjectRequest, ReferralCode, ReferralUse, TrainingRequest, ServicePage, ServicePageSection, ServicePageFAQ
 from .models import TeamMember
+from .models import AIUsageLog
 
 
 class ProfileInline(StackedInline):
@@ -913,7 +914,7 @@ class SiteSettingsAdmin(ModelAdmin):
                 'feature_donation', 'feature_success_stories', 'feature_bibliometrics', 'feature_yoktez',
                 'feature_semanticscholar', 'feature_pubmed', 'feature_istatistik', 'feature_transcript',
                 'feature_agentic_landing', 'feature_training', 'feature_multilingual',
-                'feature_hizmet_sayfalari',
+                'feature_hizmet_sayfalari', 'feature_ai_summary',
             ),
             'classes': ('collapse',),
         }),
@@ -926,7 +927,7 @@ class SiteSettingsAdmin(ModelAdmin):
             'description': 'Scraping: TR Dizin, OpenAlex, OAI-PMH scraperlarının çekebileceği maks. kayıt (default 5000). Analiz: Tez & Makale Analizi için işlenecek maks. kayıt (Render için 500, Hetzner için 2000–5000 önerilir). Haftalık ilan hakkı: son 7 günde açılabilecek ilan sayısı; her 5 geçerli referans +1 (en fazla +2) ayrıca eklenir. İlan onayı: açıkken yeni ilan admin onayından sonra yayınlanır (İş İlanları → Onayla/Reddet). Uzman Dizini: /uzmanlar/ sayfasına girmek için gereken en az puan (ayrıca en az 3 uzmanlık alanı + e-posta doğrulaması şart, admin/staff hesapları otomatik dışarıda — tekil istisna Profil → Uzman Dizini: Zorla Göster/Gizle alanından).',
             'fields': ('scrap_max_records', 'analiz_max_records', 'job_weekly_limit_free', 'job_weekly_limit_premium',
                        'job_approval_required', 'job_title_max_chars', 'job_description_max_chars',
-                       'uzman_dizini_min_puan'),
+                       'uzman_dizini_min_puan', 'ai_summary_daily_limit_free', 'ai_summary_daily_limit_premium'),
             'classes': ('collapse',),
         }),
         ('Fiyatlandırma', {
@@ -951,6 +952,21 @@ class SiteSettingsAdmin(ModelAdmin):
 
     def has_add_permission(self, request):
         return not SiteSettings.objects.exists()
+
+
+# --- AI YORUMU KULLANIM KAYDI (salt okunur — kota/maliyet izleme) ---
+@admin.register(AIUsageLog)
+class AIUsageLogAdmin(ModelAdmin):
+    list_display = ('user', 'tool', 'input_tokens', 'output_tokens', 'created_at')
+    list_filter = ('tool', 'created_at')
+    search_fields = ('user__username', 'user__email')
+    date_hierarchy = 'created_at'
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
 
     def has_delete_permission(self, request, obj=None):
         return False

@@ -1477,6 +1477,14 @@ class SiteSettings(models.Model):
         verbose_name="Hizmet Sayfaları (/hizmetler/)",
         help_text="Kapalıyken /hizmetler/ 404 döner. Pilot: önce yalnız Nicel Analiz sayfasını ServicePage.is_active ile açın.",
     )
+    feature_ai_summary = models.BooleanField(
+        default=False,
+        verbose_name="AI Yorumu (tarama/analiz sonuçları)",
+        help_text="Kapalıyken istatistik/OpenAlex/PubMed/Bibliometrik Analiz sonuçlarına Claude ile "
+                  "üretilen AI yorumu eklenmez. Yalnız giriş yapmış kullanıcılara, günlük sınırlı "
+                  "(bkz. Limitler: AI Yorumu günlük hakkı). Canlıda denenip kalite/maliyet görüldükten "
+                  "sonra açın (ANTHROPIC_API_KEY env var şart).",
+    )
     feature_multilingual = models.BooleanField(
         default=False,
         verbose_name="Çok Dilli Yayın (EN/DE)",
@@ -1532,6 +1540,12 @@ class SiteSettings(models.Model):
         default=2, verbose_name="Haftalık ilan hakkı: normal kullanıcı")
     job_weekly_limit_premium = models.PositiveIntegerField(
         default=5, verbose_name="Haftalık ilan hakkı: Premium")
+
+    # AI Yorumu (Claude) günlük hakkı — yalnız giriş yapmış kullanıcılar
+    ai_summary_daily_limit_free = models.PositiveIntegerField(
+        default=5, verbose_name="AI Yorumu günlük hakkı: normal kullanıcı")
+    ai_summary_daily_limit_premium = models.PositiveIntegerField(
+        default=15, verbose_name="AI Yorumu günlük hakkı: Premium")
 
     # Bibliometrik Analiz Fiyatlandırma (TL)
     biblio_price_500 = models.PositiveIntegerField(default=500, verbose_name="0-500 kayıt fiyatı (TL)")
@@ -2122,3 +2136,48 @@ class SiteVisit(models.Model):
             return cls.objects.get(pk=1).total_visits
         except cls.DoesNotExist:
             return 0
+
+
+class AIUsageLog(models.Model):
+    """Claude AI Yorumu kullanım kaydı — günlük kota kontrolü + maliyet görünürlüğü
+    (sabit $ bütçeli Claude Startups kredisi için admin izlenebilirliği amacıyla)."""
+    TOOL_CHOICES = [
+        ('istatistik', 'İstatistik Analizi'),
+        ('openalex', 'OpenAlex Tarama'),
+        ('pubmed', 'PubMed Tarama'),
+        ('bibliometrics', 'Bibliometrik Analiz'),
+    ]
+    user = models.ForeignKey(User, related_name='ai_usage_logs', on_delete=models.CASCADE)
+    tool = models.CharField(max_length=20, choices=TOOL_CHOICES)
+    input_tokens = models.PositiveIntegerField(default=0)
+    output_tokens = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = "AI Yorumu Kullanımı"
+        verbose_name_plural = "AI Yorumu Kullanımları"
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"{self.user} — {self.get_tool_display()} ({self.created_at.strftime('%d.%m.%Y %H:%M')})"
+
+    @classmethod
+    def daily_limit_for_user(cls, user):
+        site = SiteSettings.load()
+        profile = getattr(user, 'profile', None)
+        if profile and profile.is_premium:
+            return site.ai_summary_daily_limit_premium
+        return site.ai_summary_daily_limit_free
+
+    @classmethod
+    def can_use(cls, user):
+        """Giriş yapmamış kullanıcıya AI Yorumu hiç gösterilmez."""
+        if not user or not user.is_authenticated:
+            return False
+        today = timezone.now().date()
+        used = cls.objects.filter(user=user, created_at__date=today).count()
+        return used < cls.daily_limit_for_user(user)
+
+    @classmethod
+    def record(cls, user, tool, input_tokens=0, output_tokens=0):
+        cls.objects.create(user=user, tool=tool, input_tokens=input_tokens, output_tokens=output_tokens)
