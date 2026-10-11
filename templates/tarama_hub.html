@@ -35,10 +35,10 @@
     </p>
     {% if not request.user.is_authenticated %}
     <div class="d-flex gap-3 justify-content-center flex-wrap mt-4">
-      <a href="{% url 'register' %}?next={{ request.path|urlencode }}" class="btn btn-info btn-lg fw-bold px-5 text-white">
+      <a href="{% url 'register' %}?next={{ request.path|urlencode }}" class="ax-btn ax-btn--info ax-btn--lg fw-bold">
         <i class="bi bi-person-plus-fill me-2"></i>{% trans "Ücretsiz Dene" %}
       </a>
-      <a href="{% url 'login' %}?next={{ request.path|urlencode }}" class="btn btn-outline-light btn-lg px-4">
+      <a href="{% url 'login' %}?next={{ request.path|urlencode }}" class="ax-btn ax-btn--ghost ax-btn--lg">
         <i class="bi bi-box-arrow-in-right me-2"></i>{% trans "Giriş Yap" %}
       </a>
     </div>
@@ -63,7 +63,7 @@
   {% if not request.user.is_authenticated %}
   <div class="text-center mt-5 pt-3">
     <p class="text-white-50 small mb-3">{% trans "Ücretsiz hesap açın, tüm araçlara hemen erişin." %}</p>
-    <a href="{% url 'register' %}?next={{ request.path|urlencode }}" class="btn btn-info fw-bold px-5 text-white">
+    <a href="{% url 'register' %}?next={{ request.path|urlencode }}" class="ax-btn ax-btn--info fw-bold">
       <i class="bi bi-rocket-takeoff-fill me-2"></i>{% trans "Başla — Ücretsiz" %}
     </a>
   </div>

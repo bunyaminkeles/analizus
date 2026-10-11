@@ -25,6 +25,8 @@
     --ax-accent-secondary-hover:#34d399;
     --ax-accent-warning:        #f59e0b;
     --ax-accent-danger:         #ef4444;
+    --ax-accent-info:           #06b6d4;
+    --ax-accent-info-hover:     #22d3ee;
 
     --ax-border-default:    #1e293b;
     --ax-border-hover:      #334155;
@@ -313,6 +315,34 @@
 .ax-btn--warning:hover {
     background-color: #fbbf24;
     border-color: #fbbf24;
+    transform: scale(1.02);
+    color: #1e293b;
+}
+
+.ax-btn--success {
+    /* Emerald zemin üzerinde beyaz metin WCAG AA'yı geçemiyor — warning ile aynı
+       koyu-metin formülü kullanılır. */
+    background-color: var(--ax-accent-secondary);
+    color: #1e293b;
+    border-color: var(--ax-accent-secondary);
+}
+.ax-btn--success:hover {
+    background-color: var(--ax-accent-secondary-hover);
+    border-color: var(--ax-accent-secondary-hover);
+    transform: scale(1.02);
+    color: #1e293b;
+}
+
+.ax-btn--info {
+    /* Camgöbeği zemin üzerinde beyaz metin WCAG AA'yı geçemiyor — warning ile aynı
+       koyu-metin formülü kullanılır. */
+    background-color: var(--ax-accent-info);
+    color: #1e293b;
+    border-color: var(--ax-accent-info);
+}
+.ax-btn--info:hover {
+    background-color: var(--ax-accent-info-hover);
+    border-color: var(--ax-accent-info-hover);
     transform: scale(1.02);
     color: #1e293b;
 }

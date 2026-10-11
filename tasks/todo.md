@@ -2447,10 +2447,28 @@ kök neden dosyası bulunmadı. Ayrı bir görev olarak ele alınacak.
   tamamlanmış arama job'ı gerektirdiğinden, parça bağımsız bir önizleme
   sayfasında `bundle.css` ile 375px/500px ekran görüntüsüyle kontrol edildi
   (DB'ye dokunulmadı). 90 test yeşil.
-- [ ] Sıradaki aday: `istatistik/templates/istatistik/analiz_hub.html` ve
-  `templates/tarama_hub.html` neredeyse aynı CTA kalıbını paylaşıyor
-  (`btn-success`/`btn-info` + `btn-outline-light`, ikisinde de ax karşılığı
-  olmayan renkler var — önce onay gerekecek).
+- [x] `istatistik/templates/istatistik/analiz_hub.html` (3) +
+  `templates/tarama_hub.html` (3) — iki hub sayfası kasıtlı olarak farklı
+  marka rengi kullanıyor (analiz=yeşil/success, tarama=camgöbeği/info),
+  ikisi de tasarım sisteminde yoktu.
+  - **Kullanıcı kararıyla kalıcı eklendi:** `--ax-accent-info` (#06b6d4) +
+    `--ax-accent-info-hover` token'ları, `.ax-btn--success` (mevcut
+    `--ax-accent-secondary` emerald token'ını yeniden kullanır) ve
+    `.ax-btn--info` — ikisi de `ax-btn--warning`'deki solid-zemin +
+    koyu-metin WCAG AA formülünü izliyor (hesaplandı: beyaz metin hem
+    emerald hem camgöbeği zeminde ~2.5-2.8:1 kontrastla AA'yı geçemiyor,
+    koyu `#1e293b` metin ikisinde de >5.7:1 ile rahatça geçiyor — primary'nin
+    "zemini koyult, beyaz metin kullan" formülü bu iki renk için yetersiz
+    kalıyordu). Artık bu "info/success rengi yok" sorusu tekrar çıkmayacak.
+  - `btn-outline-light` → `ax-btn--ghost` (yeni karar gerekmedi, kurulu
+    örüntü). **Dikkat:** `tarama_hub.html`'de butonlara eklenmiş `text-white`
+    utility'si bilerek kaldırıldı — Bootstrap'ın `text-white` kuralı
+    `!important` taşıyor, `ax-btn--info`'nun WCAG için zorunlu koyu metnini
+    ezip tekrar beyaza çevirip kontrastı bozacaktı.
+  - Görsel doğrulama: `/analiz/` ve `/tarama/` sayfaları oturumsuz, gerçek
+    içerikle (seed'li araç listeleri) 375px/1280px Playwright ekran
+    görüntüsüyle kontrol edildi — her iki hub'ın marka rengi kimliği
+    (yeşil / camgöbeği) birebir korundu. 90 test yeşil.
 
 **Not (temmuz 2026, DÜZELTİLDİ 11 Ekim 2026) — yeni sayfalar envanteri
 büyütmedi:** Bu oturumda oluşturulan `forum/templates/forum/contact.html`
