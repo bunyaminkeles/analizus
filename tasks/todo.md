@@ -2406,10 +2406,25 @@ kök neden dosyası bulunmadı. Ayrı bir görev olarak ele alınacak.
   `bundle.css` bağlanarak Playwright ile 375px/1280px kontrol edildi —
   textarea tek satır yüksekliğinde kaldı, gönder butonu hizalı. 90 testin
   tamamı (`forum/tests.py`) yeşil.
-- [ ] Sıradaki aday: envanterdeki bir sonraki dosya (`forum/templates/forum/
-  job_list.html` — yetim, atla; `forum/templates/forum/home.html` (3),
-  `istatistik/templates/istatistik/analiz_hub.html` (3) gibi) seçilip aynı
-  şekilde gerçek Bootstrap class sayımı yapılarak onaya sunulmalı.
+- [x] `forum/templates/forum/home.html` (3 gerçek eşleşme) —
+  - 2× "VİTRİN" rozeti (`badge bg-warning text-dark`, öne çıkan ilan
+    etiketi) → **kullanıcı kararıyla** yeni `.ax-badge--warning-solid`
+    eklendi (`ax-btn--warning`'deki aynı solid amber + koyu metin WCAG
+    formülü) — mevcut yarı-saydam `ax-badge--warning` kullanılsaydı rozet
+    belirgin ölçüde soluklaşıp "öne çıkan" vurgusunu kaybederdi.
+  - "Tüm Blog Yazıları" CTA'sı (`btn btn-outline-secondary rounded-pill px-4`)
+    → `ax-btn ax-btn--ghost` (job_list.html'deki sıralama butonuyla aynı,
+    zaten kurulu outline-secondary↔ghost eşleşmesi, yeni karar gerekmedi).
+  - Görsel doğrulama: blog butonu gerçek içerikle (seed'li blog yazıları var)
+    doğrudan ekran görüntüsüyle kontrol edildi; VİTRİN rozeti için geçici
+    `is_featured=True` bir test ilanı oluşturulup ana sayfada solid
+    sarı/koyu-metin görünümü doğrulandı, sonra silindi. 90 test yeşil.
+- [ ] Sıradaki aday: envanterdeki bir sonraki dosya — `istatistik/templates/
+  istatistik/analiz_hub.html` ve `templates/tarama_hub.html` neredeyse aynı
+  CTA kalıbını paylaşıyor (`btn-success`/`btn-info` + `btn-outline-light`,
+  ikisinde de ax karşılığı olmayan renkler var — önce onay gerekecek);
+  `templates/forum/register.html`'de ayrıca gerçek bir Bootstrap `modal fade`
+  var (Faz 2'nin ax-modal'a taşımadığı, Faz 3 kapsamına yeni giren bir dosya).
 
 **Not (temmuz 2026, DÜZELTİLDİ 11 Ekim 2026) — yeni sayfalar envanteri
 büyütmedi:** Bu oturumda oluşturulan `forum/templates/forum/contact.html`

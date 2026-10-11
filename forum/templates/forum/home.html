@@ -693,7 +693,7 @@ atıfları) → yalnız TR. EN/DE'ye dile uygun tek WebSite bloğu (27 Eylül 20
                 {% with job=showcase_jobs.0 %}
                 <div class="p-3 border border-warning border-opacity-25 rounded-3 position-relative bg-dark bg-opacity-25 job-card-hover d-flex align-items-center justify-content-between flex-wrap gap-2">
                     <div class="d-flex align-items-center gap-2" style="min-width:0;">
-                        {% if job.is_featured %}<span class="badge bg-warning text-dark" style="font-size: 0.65rem;">{% trans "VİTRİN" %}</span>{% endif %}
+                        {% if job.is_featured %}<span class="ax-badge ax-badge--warning-solid" style="font-size: 0.65rem;">{% trans "VİTRİN" %}</span>{% endif %}
                         <a href="{% url 'job_detail' pk=job.pk %}" class="text-white text-decoration-none fw-semibold text-truncate stretched-link">{{ job.title }}</a>
                     </div>
                     <div class="d-flex align-items-center gap-3 small flex-shrink-0">
@@ -712,7 +712,7 @@ atıfları) → yalnız TR. EN/DE'ye dile uygun tek WebSite bloğu (27 Eylül 20
                                 <h6 class="mb-0 text-white text-truncate" style="max-width: 80%;">
                                     <a href="{% url 'job_detail' pk=job.pk %}" class="text-white text-decoration-none stretched-link">{{ job.title }}</a>
                                 </h6>
-                                {% if job.is_featured %}<span class="badge bg-warning text-dark" style="font-size: 0.65rem;">{% trans "VİTRİN" %}</span>{% endif %}
+                                {% if job.is_featured %}<span class="ax-badge ax-badge--warning-solid" style="font-size: 0.65rem;">{% trans "VİTRİN" %}</span>{% endif %}
                             </div>
                             <p class="small text-muted mb-3">{{ job.description|truncatechars:90 }}</p>
                             <div class="d-flex justify-content-between align-items-center small">
@@ -1069,7 +1069,7 @@ AI Asistan da kapalıysa bölüm hiç çıkmaz (26 Eylül 2026){% endcomment %}
             {% endfor %}
         </div>
         <div class="text-center mt-4">
-            <a href="{% url 'blog_list' %}" class="btn btn-outline-secondary rounded-pill px-4">
+            <a href="{% url 'blog_list' %}" class="ax-btn ax-btn--ghost">
                 <i class="bi bi-journal-richtext me-2"></i>{% trans "Tüm Blog Yazıları" %}
             </a>
         </div>

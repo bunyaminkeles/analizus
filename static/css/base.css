@@ -371,6 +371,11 @@
     color: var(--ax-text-secondary);
     border: 1px solid var(--ax-border-default);
 }
+.ax-badge--warning-solid {
+    /* ax-btn--warning ile aynı WCAG AA formülü — solid amber zemin, koyu metin */
+    background-color: var(--ax-accent-warning);
+    color: #1e293b;
+}
 
 /* -------------------------------------------------------------
    6. SKIP LINK — Erişilebilirlik
