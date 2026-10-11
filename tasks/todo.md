@@ -10,6 +10,49 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
+- [x] **(11 Ekim 2026 → TAMAMLANDI, henüz push edilmedi) Profil "İlanlar" sekmesi: sahip kendi "Devam Eden Projeler"ini göremiyor.**
+  Kullanıcı ekran görüntüsüyle bildirdi: `joseph` kendi profiline (`/profile/joseph/`)
+  bakınca "İlanlar" sekmesinde sadece "Verdiğim Teklifler" (Kabul Edildi/Kabul
+  Edilmedi) görüyor; aynı sekmede başka bir kullanıcı (örn. `bunyamin`) joseph'in
+  profiline baktığında "Tamamlanan ve Devam Eden Projeler" (Devam Ediyor/
+  Tamamlandı + yıldız) grubunu görüyor — sahip kendi "Devam Ediyor" durumundaki
+  projelerini bu sekmede hiç göremiyor.
+  - Kök neden (doğrulandı, `forum/views.py:1830` `profile_detail` +
+    `forum/templates/forum/profile_detail.html` "İLANLAR SEKMESİ" bloğu):
+    satır 471 `{% if is_owner %}` → `given_proposals` render ediliyor, satır
+    501 `{% else %}` → `completed_projects` render ediliyor. Bu bir if/else —
+    sahip olduğunda `completed_projects` (Devam Eden Projeler) hiç gösterilmiyor.
+    `completed_projects` zaten view'de `is_owner` koşulu olmadan (satır
+    1887-1889, `status='accepted'` filtresiyle) herkes için hesaplanıyor ve
+    context'e konuyor (satır 1928) — veri hazır, sadece template'te sahibe
+    gösterilmiyor. (Not: aynı veri "Portföy" sekmesinde sahibe dahil zaten
+    gösteriliyor — satır 363-400 civarı, `is_owner` koşulsuz.)
+  - **Düzeltme:** "İlanlar" sekmesinde sahip için `completed_projects`
+    (Devam Eden Projeler) bloğunu da göster — ya `given_proposals`'ın yanına
+    ek blok olarak ekle, ya da if/else'i kaldırıp ikisini birden sahibe göster.
+    Kapsam tek şablon dosyası (`profile_detail.html`) + gerekirse context
+    sırası; KIRMIZI ÇİZGİ kuralı gereği başka hiçbir bloğa dokunma.
+  - **İkinci şikayet — reddedilen tekliflerin 3. şahıslara görünmesi —
+    kodda ARAŞTIRILDI, sızıntı YOK:** `completed_projects` sorgusu
+    `status='accepted'` filtresi taşıyor (`views.py:1888`) — reddedilen/
+    bekleyen bir `JobProposal` bu queryset'e hiç giremiyor. `given_proposals`
+    (reddedilenleri içeren tek değişken) yalnızca `is_owner=True` iken DB'den
+    çekiliyor (`views.py:1884`), değilse `None` — template'e hiç ulaşmıyor.
+    Ayrı bir API/AJAX endpoint bu veriyi tekrar expose etmiyor (grep ile
+    doğrulandı). Bu bilinçli bir tasarım kararı (analizus.md'de Haziran 2026
+    kaydı: 3. şahıslara fiyat+red durumu gizlenir, anonim "son tamamlanan
+    proje" gösterilir). **Aksiyon gerekmedi**, sadece kayıt amaçlı not.
+  - **Uygulanan değişiklik:** `forum/templates/forum/profile_detail.html`
+    "İlanlar" sekmesindeki if/else kaldırıldı — `{% if is_owner %}...{% endif %}`
+    (Verdiğim Teklifler) artık bağımsız bir blok, hemen ardından `{% if
+    completed_projects %}...{% endif %}` (Tamamlanan ve Devam Eden Projeler)
+    herkese (sahip dahil) gösteriliyor. Başka hiçbir dosya/blok değişmedi.
+    `docker compose restart web` + `nginx` sonrası Django test client ile
+    doğrulandı: owner görünümünde her iki başlık da (Verdiğim Teklifler +
+    Tamamlanan ve Devam Eden Projeler) render ediliyor; başka kullanıcı
+    görünümünde yalnız "Tamamlanan ve Devam Eden Projeler" görünüyor,
+    "Verdiğim Teklifler" hiç yok (reddedilen teklif sızıntısı yok, eskisiyle
+    aynı). **Henüz `dev`'e commit/push edilmedi — kullanıcı onayı bekliyor.**
 - [ ] **(11 Ekim 2026 → BAŞLANMADI, fikir aşamasında) PWA (Progressive Web App).**
   Kullanıcı mobil app ihtiyacını sordu — native (React Native/Flutter) için
   önce Django'nun üstüne ince bir JSON API katmanı (DRF) + ayrı bir app
@@ -34,6 +77,20 @@ maddelerde.
     tasarlanmadı, sıradaki oturumda ele alınabilir. Gerçek App Store/Play
     Store varlığı (native) ancak PWA sonrası, somut talep görülürse
     değerlendirilecek.
+- [ ] **(11 Ekim 2026 → Faz A tamamlandı, dev'de commit `6dd984b`, PUSH EDİLMEDİ) Claude AI Yorumu —
+  tarama/analiz sonuçlarına ücretsiz AI özeti.** Amaç: Claude Startups $1000 API kredisini yeni müşteri
+  kazanma + mevcut analist/kullanıcı elde tutma için aktif kullanmak. Plan: `~/.claude/plans/
+  modular-bouncing-pebble.md`. Pilot kapsam: İstatistik araçları (17 test + örneklem), Bibliometrik Analiz,
+  OpenAlex, PubMed. Model: Haiku 5.5. Kota: yalnız kayıtlı kullanıcı, günlük sınırlı (admin'den ayarlanır).
+  **Faz A (tamamlandı, uçtan uca test edildi — gerçek API çağrısı başarılı):** `anthropic==1.13.0`
+  (`requirements.txt`), `ANTHROPIC_API_KEY` env var, `forum/services/claude_service.py`
+  (`ClaudeSummaryService`, hata durumunda job'u düşürmez), `SiteSettings` yeni alanlar
+  (`feature_ai_summary` kapalı, `ai_summary_daily_limit_free/premium` 5/15), yeni `AIUsageLog` modeli
+  (kota + token/maliyet takibi, admin'de salt-okunur liste + sidebar girdisi), migration `forum/migrations/
+  0177_...`. Lokal `.env`'e anahtar eklendi, image `--build` ile yeniden oluşturuldu, 90/90 test yeşil.
+  **Sırada — Faz B:** İstatistik `job_runner.py` entegrasyonu (`result_data['ai_comment']`, migration
+  gerekmiyor) + 18 template'e ortak "AI Yorumu" partial/JS. Sonra Faz C (OpenAlex+PubMed, migration gerekli)
+  ve Faz D (Bibliometrics, migration + `analyzer.py` ham veri yakalama — en karmaşık faz).
 - [x] **(9 Ekim 2026 → tamamlandı, main'de canlı) `/hakkimizda/` sayfası sadeleştirildi.** Tek blok olduğu
   ortaya çıktı (başlık "Platformdaki Uzmanlardan Örnekler" + TeamMember kartları, admin adı "Ekip Üyeleri" aynı
   şeydi) — `forum/templates/forum/about.html` satır 276-392 kaldırıldı, yerine kısa metin + "Uzman Dizinini

@@ -497,8 +497,8 @@
                     <p class="ax-profile-empty__text">{% trans "Henüz teklif vermediniz." %}</p>
                 </div>
                 {% endif %}
+                {% endif %}
 
-                {% else %}
                 {% if completed_projects %}
                 <p class="ax-profile-section-title" style="margin-bottom: var(--ax-space-3); margin-top: var(--ax-space-5);">{% trans "Tamamlanan ve Devam Eden Projeler" %}</p>
                 <div class="ax-profile-job-list">
@@ -515,7 +515,6 @@
                     </div>
                     {% endfor %}
                 </div>
-                {% endif %}
                 {% endif %}
 
             </div>
