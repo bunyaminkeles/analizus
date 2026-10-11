@@ -2419,12 +2419,38 @@ kök neden dosyası bulunmadı. Ayrı bir görev olarak ele alınacak.
     doğrudan ekran görüntüsüyle kontrol edildi; VİTRİN rozeti için geçici
     `is_featured=True` bir test ilanı oluşturulup ana sayfada solid
     sarı/koyu-metin görünümü doğrulandı, sonra silindi. 90 test yeşil.
-- [ ] Sıradaki aday: envanterdeki bir sonraki dosya — `istatistik/templates/
-  istatistik/analiz_hub.html` ve `templates/tarama_hub.html` neredeyse aynı
-  CTA kalıbını paylaşıyor (`btn-success`/`btn-info` + `btn-outline-light`,
-  ikisinde de ax karşılığı olmayan renkler var — önce onay gerekecek);
-  `templates/forum/register.html`'de ayrıca gerçek bir Bootstrap `modal fade`
-  var (Faz 2'nin ax-modal'a taşımadığı, Faz 3 kapsamına yeni giren bir dosya).
+- [x] **Kapsam dışı bırakıldı (kullanıcı kararı) — standalone auth sayfaları:**
+  `templates/forum/register.html` incelenirken fark edildi — bu sayfa
+  `base.html`'i hiç extend etmiyor, kendi `<!DOCTYPE html>`'i ve kendi
+  Bootstrap CDN linkini (+ kendi `bootstrap.bundle.min.js`'ini) yüklüyor.
+  Faz 4'ün hedefi yalnızca `base.html`'deki CDN'i kaldırmak — bu sayfa zaten
+  ayrı olduğu için Faz 4'ten etkilenmeyecek; modal'ı ax-modal'a taşımak
+  `bundle.css`+`ax-modal.js`'i bu sayfaya YENİ bir bağımlılık olarak eklemek
+  anlamına gelirdi. Aynı kalıp doğrulandı: `forum/templates/registration/
+  login.html` (gerçek Bootstrap component borcu yok, önceki "1" eşleşme
+  yanlış pozitifti), `templates/registration/password_reset_{complete,done,
+  form,confirm}.html` (hepsi aynı standalone doctype). **Bu 6 dosyaya
+  dokunulmadı, migrasyon kapsamı dışında tutulacak** (base.html'e taşınmaları
+  ayrı ve çok daha büyük bir karar — sorulmadı).
+- [x] `templates/partials/order_payment.html` (3 gerçek eşleşme, 5 farklı
+  tarama aracının sipariş sayfasında ortak include) —
+  `form-control bg-dark text-white border-secondary` → `ax-form-control`;
+  `alert alert-secondary` + elle eklenmiş `text-info` ikon → `ax-alert
+  ax-alert--info` (zaten semantik olarak "bilgi" kutusuydu, yeni varyant
+  gerekmedi); `btn btn-lg w-100` → `ax-btn ax-btn--lg w-100` (özel gradient
+  inline stil korundu). **Gerçek bug bulundu ve düzeltildi:** `.ax-alert`
+  `display:flex` olduğu için düz metin + `<strong>{{ email }}</strong>`
+  karışımını doğrudan içine koymak, `<strong>`'ı ayrı bir flex item'a
+  dönüştürüp dikey kaydırıyordu (Playwright ekran görüntüsünde yakalandı) —
+  içerik `.ax-alert__body` ile sarmalanarak düzeltildi, ders `tasks/
+  lessons.md`'ye eklendi. Görsel doğrulama: gerçek sipariş sayfası login +
+  tamamlanmış arama job'ı gerektirdiğinden, parça bağımsız bir önizleme
+  sayfasında `bundle.css` ile 375px/500px ekran görüntüsüyle kontrol edildi
+  (DB'ye dokunulmadı). 90 test yeşil.
+- [ ] Sıradaki aday: `istatistik/templates/istatistik/analiz_hub.html` ve
+  `templates/tarama_hub.html` neredeyse aynı CTA kalıbını paylaşıyor
+  (`btn-success`/`btn-info` + `btn-outline-light`, ikisinde de ax karşılığı
+  olmayan renkler var — önce onay gerekecek).
 
 **Not (temmuz 2026, DÜZELTİLDİ 11 Ekim 2026) — yeni sayfalar envanteri
 büyütmedi:** Bu oturumda oluşturulan `forum/templates/forum/contact.html`
