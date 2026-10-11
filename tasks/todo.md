@@ -2353,19 +2353,60 @@ kök neden dosyası bulunmadı. Ayrı bir görev olarak ele alınacak.
     test ilanı oluşturulup kart görünümü (yuvarlak köşe, rozetler, "1 gün
     kaldı" amber uyarı) ekran görüntüsüyle kontrol edildi, sonra silindi.
     `forum/tests.py -k market` (3 test) yeşil.
-- [ ] Sıradaki aday: component yoğunluğu sıralamasında bir sonraki dosya
-  (bkz. yukarıdaki envanter — `profile_detail.html` gibi) seçilip aynı şekilde
-  gerçek Bootstrap class sayımı yapılarak onaya sunulmalı.
+- [x] **Gerçek envanter yeniden çıkarıldı (11 Ekim 2026):** Eski "(3)" gibi
+  tahminler çoğu dosyada yanlıştı (büyük ölçek farkı) — `class="..."` içindeki
+  tam token eşleşmesiyle (ör. "ax-badge" içindeki "badge" alt-dizesini yanlış
+  sayan naif `\bword\b` grep'inden farklı olarak) proje genelinde yeniden
+  sayıldı. En düşük yoğunluklu 4 dosya bulunup migre edildi:
+  - `forum/templates/forum/contact.html` ve `forum/templates/forum/
+    gizlilik_politikasi.html` — ikisi de aynı tek buton:
+    `btn btn-outline-primary rounded-pill px-4` → `ax-btn ax-btn--outline-primary`
+    (birebir var olan karşılık, yeni CSS gerekmedi). **Not:** bu iki dosya
+    daha önce "sıfırdan ax-* ile yazıldı, Bootstrap borcu yok" diye not
+    düşülmüştü (aşağıdaki temmuz 2026 notu) — bu kısmen yanlışmış, birer
+    buton kaçmış; not aşağıda düzeltildi.
+  - `forum/templates/forum/partials/_studyroom_founder_card.html` — tek kart
+    (`card border-secondary mb-3 p-3`) düz div'e indirildi. **Bulgu:**
+    Bootstrap'ın `.border-secondary` utility'si yalnızca `border-color` set
+    eder, `.card`'ın sağladığı `border-width/style`'a bağımlıdır — `.card`
+    kaldırılınca kenarlık tamamen kaybolacaktı, inline
+    `border-width:1px;border-style:solid` eklenerek önlendi. Radius için
+    Bootstrap'ın gerçek varsayılanına (`--bs-border-radius` ≈ 6px) daha sadık
+    kalmak üzere `--ax-radius-sm` kullanıldı (job_list.html'deki kartta
+    kullanılan `--ax-radius-lg` yerine — oradaki 12px halen ekranda sorunsuz
+    görünüyor, geriye dönük düzeltilmedi, kapsam dışı).
+  - `templates/forum/partials/story_modal_content.html` — tek rozet
+    (`badge bg-secondary bg-opacity-25 text-secondary border ...`, nötr
+    "kaynak" etiketi) için tasarım sisteminde karşılık yoktu, kullanıcı
+    onayıyla `base.css`'e yeni `.ax-badge--neutral` varyantı eklendi
+    (`--ax-bg-tertiary`/`--ax-text-secondary`/`--ax-border-default` token'ları).
+  - **Yetim dosya bulgusu:** `templates/story_modal_content.html` (templates/
+    kökünde, partials/ altında değil) hiçbir view/include tarafından
+    kullanılmıyor — `forum/views.py:3158` yalnızca `forum/partials/
+    story_modal_content.html`'i render ediyor. Dokunulmadı, ayrı not.
+  - `base.css`→`bundle.css` yeniden üretildi (`.ax-badge--neutral` için),
+    `bundle.css?v=0009`→`?v=0010`. Görsel doğrulama: iki buton sayfası
+    Playwright ile 375px/1280px ekran görüntüsüyle kontrol edildi; founder
+    card + story badge, DB'de test verisi olmadığından `render_to_string` ile
+    üretilip `bundle.css` bağlanarak ayrı bir önizleme sayfasında kontrol
+    edildi (DB'ye dokunulmadı). `forum/tests.py -k "story or studyroom"`
+    (21 test) yeşil.
+- [ ] Sıradaki aday: envanterdeki bir sonraki dosya (`forum/templates/forum/
+  job_list.html` — yetim, atla; `forum/templates/forum/topic_detail.html` (2),
+  `forum/templates/forum/home.html` (3) gibi) seçilip aynı şekilde gerçek
+  Bootstrap class sayımı yapılarak onaya sunulmalı.
 
-**Not (temmuz 2026) — yeni sayfalar envanteri büyütmedi:** Bu oturumda
-oluşturulan `forum/templates/forum/contact.html` (İletişim landing page) ve
-`forum/templates/forum/gizlilik_politikasi.html` (KVKK sayfası) sıfırdan
-`ax-*` sistemiyle yazıldı — migrasyon kapsamına eklenecek yeni Bootstrap
-component borcu yok. Tek istisna: KVKK sayfasındaki tablo ilk halde
-`table table-dark table-borderless` ile yazılmıştı, aynı oturumda fark edilip
-(`table-dark`'ın `--bs-table-bg`/`--bs-table-color` değişkenleri inline
-satır renkleriyle çakışıp okunaksız görünüyordu) `.ax-kvkk-table`'a
-taşındı — yani net etki: envantere yeni satır eklenmedi.
+**Not (temmuz 2026, DÜZELTİLDİ 11 Ekim 2026) — yeni sayfalar envanteri
+büyütmedi:** Bu oturumda oluşturulan `forum/templates/forum/contact.html`
+(İletişim landing page) ve `forum/templates/forum/gizlilik_politikasi.html`
+(KVKK sayfası) sıfırdan `ax-*` sistemiyle yazıldı — migrasyon kapsamına
+eklenecek yeni Bootstrap component borcu yok ~~**(yanlış çıktı — her ikisinde
+de birer `btn btn-outline-primary rounded-pill px-4` kaçmıştı, 11 Ekim 2026'da
+Faz 3 kapsamında migre edildi, yukarı bkz.)**~~. Tek istisna: KVKK sayfasındaki
+tablo ilk halde `table table-dark table-borderless` ile yazılmıştı, aynı
+oturumda fark edilip (`table-dark`'ın `--bs-table-bg`/`--bs-table-color`
+değişkenleri inline satır renkleriyle çakışıp okunaksız görünüyordu)
+`.ax-kvkk-table`'a taşındı.
 
 **Not (temmuz 2026) — cache-busting dersi tekrar uygulandı:** Navbar logosuna
 eklenen "Analizus" yazısının puntosu `navbar.css`'te iki kez büyütüldü, ama

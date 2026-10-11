@@ -1,5 +1,5 @@
 {% load static %}
-<div class="card border-secondary mb-3 p-3" style="background:#16213e;">
+<div class="border-secondary mb-3 p-3" style="background:#16213e;border-radius:var(--ax-radius-sm);border-width:1px;border-style:solid;">
   <div class="d-flex align-items-center gap-2">
     {% if user.is_authenticated and room.creator.profile.avatar %}
     <img src="{{ room.creator.profile.avatar.url }}" class="ax-expert-avatar" width="48" height="48" style="width:48px;height:48px;flex-shrink:0;">

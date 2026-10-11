@@ -366,6 +366,11 @@
 .ax-badge--success { background-color: rgba(16,185,129,0.2); color: var(--ax-accent-secondary); }
 .ax-badge--warning { background-color: rgba(245,158,11,0.2); color: var(--ax-accent-warning); }
 .ax-badge--danger  { background-color: rgba(239,68,68,0.2);  color: var(--ax-accent-danger); }
+.ax-badge--neutral {
+    background-color: var(--ax-bg-tertiary);
+    color: var(--ax-text-secondary);
+    border: 1px solid var(--ax-border-default);
+}
 
 /* -------------------------------------------------------------
    6. SKIP LINK — Erişilebilirlik
