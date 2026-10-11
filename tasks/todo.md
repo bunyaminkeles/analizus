@@ -2391,10 +2391,25 @@ kök neden dosyası bulunmadı. Ayrı bir görev olarak ele alınacak.
     üretilip `bundle.css` bağlanarak ayrı bir önizleme sayfasında kontrol
     edildi (DB'ye dokunulmadı). `forum/tests.py -k "story or studyroom"`
     (21 test) yeşil.
+- [x] `forum/templates/forum/topic_detail.html` (2 gerçek eşleşme) — cevap
+  formu: `form-control text-white` → `ax-form-control text-white`,
+  `btn px-3` (gönder butonu, tamamen özel gradient inline stille) →
+  `ax-btn` + `padding-left/right:0.75rem` (eski `px-3`'ün karşılığı, `ax-btn`
+  kendi dolgusu farklı olduğu için elle korundu). **Bulgu:** `base.css`'te
+  (Faz 1'den, "10. FORM CONTROLS" bölümünden bağımsız, dosyanın sonlarında)
+  genel/scope'suz bir `.ax-form-control { min-height: 96px; resize: vertical; }`
+  kuralı var — bu tek satırlık (`rows="1"`) cevap kutusunu class değişince
+  aniden 96px'e büyütecekti; textarea'nın inline stiline `min-height:38px`
+  eklenerek (gönder butonuyla aynı yükseklik) önlendi. Görsel doğrulama:
+  local DB'de forum kategorisi/konusu olmadığından (boş seed) tam sayfa
+  render edilemedi, form parçası bağımsız bir önizleme sayfasında
+  `bundle.css` bağlanarak Playwright ile 375px/1280px kontrol edildi —
+  textarea tek satır yüksekliğinde kaldı, gönder butonu hizalı. 90 testin
+  tamamı (`forum/tests.py`) yeşil.
 - [ ] Sıradaki aday: envanterdeki bir sonraki dosya (`forum/templates/forum/
-  job_list.html` — yetim, atla; `forum/templates/forum/topic_detail.html` (2),
-  `forum/templates/forum/home.html` (3) gibi) seçilip aynı şekilde gerçek
-  Bootstrap class sayımı yapılarak onaya sunulmalı.
+  job_list.html` — yetim, atla; `forum/templates/forum/home.html` (3),
+  `istatistik/templates/istatistik/analiz_hub.html` (3) gibi) seçilip aynı
+  şekilde gerçek Bootstrap class sayımı yapılarak onaya sunulmalı.
 
 **Not (temmuz 2026, DÜZELTİLDİ 11 Ekim 2026) — yeni sayfalar envanteri
 büyütmedi:** Bu oturumda oluşturulan `forum/templates/forum/contact.html`
