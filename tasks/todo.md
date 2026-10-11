@@ -2310,7 +2310,52 @@ kök neden dosyası bulunmadı. Ayrı bir görev olarak ele alınacak.
   stili korundu). Utility class'lara dokunulmadı. **Görsel doğrulama
   TAMAMLANDI** — `/donation/success/` sayfasında kullanıcı ekran
   görüntüsüyle onayladı, kart/padding/buton hiç bozulmamış.
-- [ ] Sıradaki aday: `job_list.html` (3 component)
+- [x] `forum/templates/forum/market/job_list.html` — gerçek envanter todo'daki
+  "(3)" tahmininin çok üzerindeydi (23 btn, 8 dropdown, 5 card, 7 badge);
+  ikinci bir `forum/templates/forum/job_list.html` daha var ama hiçbir view/
+  include onu kullanmıyor (yetim dosya, dokunulmadı, ayrı not). Yapılanlar:
+  - Sıralama dropdown'ı (130-141. satır) **Faz 3'ün ilk gerçek Bootstrap JS
+    (modal dışı) migrasyonu** — `.ax-dropdown-wrap > [data-ax-dropdown] +
+    .ax-dropdown--end` yapısına taşındı; mobilde sağ kenardan taşmaması için
+    `--end` varyantı seçildi (varsayılan sol hizalı `.ax-dropdown` trigger
+    sağda olduğu için dar ekranda viewport dışına taşardı — Bootstrap'ın
+    Popper tabanlı otomatik çakışma düzeltmesinin karşılığı yok, kasıtlı
+    seçim). Aktif seçeneği vurgulamak için `base.css`'e yeni
+    `.ax-dropdown-item--active` kuralı eklendi.
+  - İlan kartı (146-183. satır): `card`/`card-body`/`card-title`/`card-text`
+    kaldırıldı, düz `div`/`h5`/`p`'ye indirildi (kullanıcı kararı — `.ax-card`
+    kullanılsaydı kendi gradient arka plan/gölge/hover efekti mevcut özel
+    inline stille çakışıp görünümü değiştirirdi). `.card`'ın sağladığı
+    border-radius inline stile elle eklendi (`border-radius:var(--ax-radius-lg)`),
+    yoksa köşeler kare kalırdı.
+  - `badge ax-tag--category` → `ax-badge ax-tag--category` (`market.css`'teki
+    `.badge.ax-tag--category` seçicisi `.ax-badge.ax-tag--category`'e
+    güncellendi — proje genelinde başka hiçbir dosya bu seçiciyi kullanmıyordu).
+  - `badge bg-danger/warning bg-opacity-25 text-danger/warning` →
+    `ax-badge ax-badge--danger`/`ax-badge--warning` (zaten renk olarak birebir
+    eşleşiyor, tasarım sapması yok).
+  - Boş-ilan CTA'sı (191-193. satır): `btn btn-info btn-sm rounded-pill` →
+    `ax-btn ax-btn--primary ax-btn--sm` (kullanıcı kararı — tasarım sisteminde
+    "info" camgöbeği karşılığı yok; renk indigo'ya değişti, pill şekli
+    kayboldu, kabul edilen küçük görsel sapma).
+  - **Kritik altyapı adımı:** `base.css` canlıda hiç yüklenmiyor — yalnızca
+    `static/css/bundle.css` (5 kaynak dosyanın `rcssmin` ile birleştirilmiş
+    hâli) yükleniyor (bkz. §26, analizus.md §26). `base.css`'teki yeni
+    `.ax-dropdown-item--active` kuralının etkili olması için `bundle.css`
+    container içinde yeniden üretildi, `templates/base.html`'deki
+    `bundle.css?v=0008` → `?v=0009`'a, `job_list.html`'deki
+    `market.css?v=0009` → `?v=0010`'a çekildi. `docker compose exec web
+    python manage.py collectstatic --noinput` + `restart web` + `restart
+    nginx` çalıştırıldı.
+  - **Görsel doğrulama TAMAMLANDI** (mobil öncelik gözetilerek, Playwright ile
+    375px + 1280px): dropdown açılıyor, mobilde viewport dışına taşmıyor
+    (sağ taşma −24px, yani içeride), aktif seçenek vurgulanıyor; geçici bir
+    test ilanı oluşturulup kart görünümü (yuvarlak köşe, rozetler, "1 gün
+    kaldı" amber uyarı) ekran görüntüsüyle kontrol edildi, sonra silindi.
+    `forum/tests.py -k market` (3 test) yeşil.
+- [ ] Sıradaki aday: component yoğunluğu sıralamasında bir sonraki dosya
+  (bkz. yukarıdaki envanter — `profile_detail.html` gibi) seçilip aynı şekilde
+  gerçek Bootstrap class sayımı yapılarak onaya sunulmalı.
 
 **Not (temmuz 2026) — yeni sayfalar envanteri büyütmedi:** Bu oturumda
 oluşturulan `forum/templates/forum/contact.html` (İletişim landing page) ve
@@ -2350,8 +2395,11 @@ Kullanılmayan geçiş dönemi shim'leri varsa kaldır.
 - 100+ dosyalık migration tek PR'da değil, birden fazla oturuma yayılmalı
 
 ## Sıradaki adım
-Faz 1'i başlatmak için onay bekleniyor — hiçbir mevcut template değişmeyeceği
-için düşük riskli, istenildiğinde başlanabilir.
+Faz 1 ve 2 TAMAMLANDI. Faz 3 sürüyor — `account_delete.html`,
+`donation_success.html`, `forum/templates/forum/market/job_list.html`
+migre edildi. Bir sonraki dosya için önce gerçek Bootstrap class sayımı
+yapılmalı (todo'daki "3 component" gibi tahminler güncel olmayabilir),
+sonra onaya sunulmalı.
 
 **Deploy notu:** Bu migration'ın tüm adımları yalnızca `dev` branch'ine push
 edilecek. `main`'e (Hetzner/prod) kullanıcı açıkça "merge et" demeden
