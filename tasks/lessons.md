@@ -19,6 +19,29 @@ o dosyayı `{% static %}` ile çağıran tüm template'lerde `?v=` değerini kon
 et ve bir artır (örn. `0100` → `0101`). Değişikliği "tamamlandı" olarak
 raporlamadan önce bu adımı unutma.
 
+## ax-alert içine düz metin + inline eleman karışımı direkt koyma (11 Ekim 2026)
+
+**Ne oldu:** Bootstrap migrasyonu sırasında `order_payment.html`'deki
+`alert alert-secondary` → `ax-alert ax-alert--info`'ya taşınırken, orijinal
+markup'taki düz metin + `<strong>{{ email }}</strong>` karışımı doğrudan
+`.ax-alert` div'inin içine (ikonla birlikte) bırakıldı. `.ax-alert` flex
+container olduğu için (`display:flex`), çıplak metin düğümü ve `<strong>`
+elemanı AYRI flex item'lar olarak davrandı — Playwright ekran görüntüsünde
+`<strong>` içeriği satırın ortasında ayrı bir dikey şeride kaymış göründü.
+
+**Kural:** `.ax-alert` kullanırken ikon dışındaki TÜM içerik (düz metin +
+içindeki her inline eleman) tek bir `.ax-alert__body` sarmalayıcısına
+alınmalı (CSS'te zaten tanımlı, `flex:1`). İkona `me-2` yerine
+`.ax-alert__icon` kullan — boşluk `.ax-alert`'in kendi `gap`'inden gelir,
+`me-2` eklemek çift boşluk yaratır. `yoktez/results.html`'deki ilk
+kullanım bu hatayı yapmıyor çünkü mesaj kısa/tek parça; uzun veya
+`<strong>`/link içeren mesajlarda hata hemen görünür hale gelir.
+
+**Nasıl uygulanır:** Yeni bir `ax-alert` eklerken/migre ederken markup'ı
+her zaman `<div class="ax-alert ax-alert--X"><i class="... ax-alert__icon">
+</i><span class="ax-alert__body">...</span></div>` şablonuna göre yaz,
+asla ikon + ham metni aynı seviyede bırakma.
+
 ## i18n: "kalan Türkçe" taramasını özel harfe (ç/ğ/ı/ş) göre yapma (23 Eylül 2026)
 
 İstatistik araçlarını çevirirken hem işaretleyici hem doğrulama taraması

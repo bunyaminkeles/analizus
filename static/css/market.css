@@ -146,12 +146,12 @@
 /* Kategori kimliği — filtre çipi ve ilan kartındaki etiket aynı METİN rengini
    paylaşır (Madde 2), ama iki bağlam görsel olarak birbirine karışmasın diye
    sunum farklı: çip kenarlıklı/dolgusuz kalır (.ax-market-chip), kart etiketi
-   dolgulu/kenarlıksız olur (.badge.ax-tag--category). */
+   dolgulu/kenarlıksız olur (.ax-badge.ax-tag--category). */
 .ax-tag--category {
     color: var(--ax-text-secondary);
 }
 
-.badge.ax-tag--category {
+.ax-badge.ax-tag--category {
     background-color: var(--ax-bg-tertiary);
 }
 

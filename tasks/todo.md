@@ -2310,17 +2310,177 @@ kök neden dosyası bulunmadı. Ayrı bir görev olarak ele alınacak.
   stili korundu). Utility class'lara dokunulmadı. **Görsel doğrulama
   TAMAMLANDI** — `/donation/success/` sayfasında kullanıcı ekran
   görüntüsüyle onayladı, kart/padding/buton hiç bozulmamış.
-- [ ] Sıradaki aday: `job_list.html` (3 component)
+- [x] `forum/templates/forum/market/job_list.html` — gerçek envanter todo'daki
+  "(3)" tahmininin çok üzerindeydi (23 btn, 8 dropdown, 5 card, 7 badge);
+  ikinci bir `forum/templates/forum/job_list.html` daha var ama hiçbir view/
+  include onu kullanmıyor (yetim dosya, dokunulmadı, ayrı not). Yapılanlar:
+  - Sıralama dropdown'ı (130-141. satır) **Faz 3'ün ilk gerçek Bootstrap JS
+    (modal dışı) migrasyonu** — `.ax-dropdown-wrap > [data-ax-dropdown] +
+    .ax-dropdown--end` yapısına taşındı; mobilde sağ kenardan taşmaması için
+    `--end` varyantı seçildi (varsayılan sol hizalı `.ax-dropdown` trigger
+    sağda olduğu için dar ekranda viewport dışına taşardı — Bootstrap'ın
+    Popper tabanlı otomatik çakışma düzeltmesinin karşılığı yok, kasıtlı
+    seçim). Aktif seçeneği vurgulamak için `base.css`'e yeni
+    `.ax-dropdown-item--active` kuralı eklendi.
+  - İlan kartı (146-183. satır): `card`/`card-body`/`card-title`/`card-text`
+    kaldırıldı, düz `div`/`h5`/`p`'ye indirildi (kullanıcı kararı — `.ax-card`
+    kullanılsaydı kendi gradient arka plan/gölge/hover efekti mevcut özel
+    inline stille çakışıp görünümü değiştirirdi). `.card`'ın sağladığı
+    border-radius inline stile elle eklendi (`border-radius:var(--ax-radius-lg)`),
+    yoksa köşeler kare kalırdı.
+  - `badge ax-tag--category` → `ax-badge ax-tag--category` (`market.css`'teki
+    `.badge.ax-tag--category` seçicisi `.ax-badge.ax-tag--category`'e
+    güncellendi — proje genelinde başka hiçbir dosya bu seçiciyi kullanmıyordu).
+  - `badge bg-danger/warning bg-opacity-25 text-danger/warning` →
+    `ax-badge ax-badge--danger`/`ax-badge--warning` (zaten renk olarak birebir
+    eşleşiyor, tasarım sapması yok).
+  - Boş-ilan CTA'sı (191-193. satır): `btn btn-info btn-sm rounded-pill` →
+    `ax-btn ax-btn--primary ax-btn--sm` (kullanıcı kararı — tasarım sisteminde
+    "info" camgöbeği karşılığı yok; renk indigo'ya değişti, pill şekli
+    kayboldu, kabul edilen küçük görsel sapma).
+  - **Kritik altyapı adımı:** `base.css` canlıda hiç yüklenmiyor — yalnızca
+    `static/css/bundle.css` (5 kaynak dosyanın `rcssmin` ile birleştirilmiş
+    hâli) yükleniyor (bkz. §26, analizus.md §26). `base.css`'teki yeni
+    `.ax-dropdown-item--active` kuralının etkili olması için `bundle.css`
+    container içinde yeniden üretildi, `templates/base.html`'deki
+    `bundle.css?v=0008` → `?v=0009`'a, `job_list.html`'deki
+    `market.css?v=0009` → `?v=0010`'a çekildi. `docker compose exec web
+    python manage.py collectstatic --noinput` + `restart web` + `restart
+    nginx` çalıştırıldı.
+  - **Görsel doğrulama TAMAMLANDI** (mobil öncelik gözetilerek, Playwright ile
+    375px + 1280px): dropdown açılıyor, mobilde viewport dışına taşmıyor
+    (sağ taşma −24px, yani içeride), aktif seçenek vurgulanıyor; geçici bir
+    test ilanı oluşturulup kart görünümü (yuvarlak köşe, rozetler, "1 gün
+    kaldı" amber uyarı) ekran görüntüsüyle kontrol edildi, sonra silindi.
+    `forum/tests.py -k market` (3 test) yeşil.
+- [x] **Gerçek envanter yeniden çıkarıldı (11 Ekim 2026):** Eski "(3)" gibi
+  tahminler çoğu dosyada yanlıştı (büyük ölçek farkı) — `class="..."` içindeki
+  tam token eşleşmesiyle (ör. "ax-badge" içindeki "badge" alt-dizesini yanlış
+  sayan naif `\bword\b` grep'inden farklı olarak) proje genelinde yeniden
+  sayıldı. En düşük yoğunluklu 4 dosya bulunup migre edildi:
+  - `forum/templates/forum/contact.html` ve `forum/templates/forum/
+    gizlilik_politikasi.html` — ikisi de aynı tek buton:
+    `btn btn-outline-primary rounded-pill px-4` → `ax-btn ax-btn--outline-primary`
+    (birebir var olan karşılık, yeni CSS gerekmedi). **Not:** bu iki dosya
+    daha önce "sıfırdan ax-* ile yazıldı, Bootstrap borcu yok" diye not
+    düşülmüştü (aşağıdaki temmuz 2026 notu) — bu kısmen yanlışmış, birer
+    buton kaçmış; not aşağıda düzeltildi.
+  - `forum/templates/forum/partials/_studyroom_founder_card.html` — tek kart
+    (`card border-secondary mb-3 p-3`) düz div'e indirildi. **Bulgu:**
+    Bootstrap'ın `.border-secondary` utility'si yalnızca `border-color` set
+    eder, `.card`'ın sağladığı `border-width/style`'a bağımlıdır — `.card`
+    kaldırılınca kenarlık tamamen kaybolacaktı, inline
+    `border-width:1px;border-style:solid` eklenerek önlendi. Radius için
+    Bootstrap'ın gerçek varsayılanına (`--bs-border-radius` ≈ 6px) daha sadık
+    kalmak üzere `--ax-radius-sm` kullanıldı (job_list.html'deki kartta
+    kullanılan `--ax-radius-lg` yerine — oradaki 12px halen ekranda sorunsuz
+    görünüyor, geriye dönük düzeltilmedi, kapsam dışı).
+  - `templates/forum/partials/story_modal_content.html` — tek rozet
+    (`badge bg-secondary bg-opacity-25 text-secondary border ...`, nötr
+    "kaynak" etiketi) için tasarım sisteminde karşılık yoktu, kullanıcı
+    onayıyla `base.css`'e yeni `.ax-badge--neutral` varyantı eklendi
+    (`--ax-bg-tertiary`/`--ax-text-secondary`/`--ax-border-default` token'ları).
+  - **Yetim dosya bulgusu:** `templates/story_modal_content.html` (templates/
+    kökünde, partials/ altında değil) hiçbir view/include tarafından
+    kullanılmıyor — `forum/views.py:3158` yalnızca `forum/partials/
+    story_modal_content.html`'i render ediyor. Dokunulmadı, ayrı not.
+  - `base.css`→`bundle.css` yeniden üretildi (`.ax-badge--neutral` için),
+    `bundle.css?v=0009`→`?v=0010`. Görsel doğrulama: iki buton sayfası
+    Playwright ile 375px/1280px ekran görüntüsüyle kontrol edildi; founder
+    card + story badge, DB'de test verisi olmadığından `render_to_string` ile
+    üretilip `bundle.css` bağlanarak ayrı bir önizleme sayfasında kontrol
+    edildi (DB'ye dokunulmadı). `forum/tests.py -k "story or studyroom"`
+    (21 test) yeşil.
+- [x] `forum/templates/forum/topic_detail.html` (2 gerçek eşleşme) — cevap
+  formu: `form-control text-white` → `ax-form-control text-white`,
+  `btn px-3` (gönder butonu, tamamen özel gradient inline stille) →
+  `ax-btn` + `padding-left/right:0.75rem` (eski `px-3`'ün karşılığı, `ax-btn`
+  kendi dolgusu farklı olduğu için elle korundu). **Bulgu:** `base.css`'te
+  (Faz 1'den, "10. FORM CONTROLS" bölümünden bağımsız, dosyanın sonlarında)
+  genel/scope'suz bir `.ax-form-control { min-height: 96px; resize: vertical; }`
+  kuralı var — bu tek satırlık (`rows="1"`) cevap kutusunu class değişince
+  aniden 96px'e büyütecekti; textarea'nın inline stiline `min-height:38px`
+  eklenerek (gönder butonuyla aynı yükseklik) önlendi. Görsel doğrulama:
+  local DB'de forum kategorisi/konusu olmadığından (boş seed) tam sayfa
+  render edilemedi, form parçası bağımsız bir önizleme sayfasında
+  `bundle.css` bağlanarak Playwright ile 375px/1280px kontrol edildi —
+  textarea tek satır yüksekliğinde kaldı, gönder butonu hizalı. 90 testin
+  tamamı (`forum/tests.py`) yeşil.
+- [x] `forum/templates/forum/home.html` (3 gerçek eşleşme) —
+  - 2× "VİTRİN" rozeti (`badge bg-warning text-dark`, öne çıkan ilan
+    etiketi) → **kullanıcı kararıyla** yeni `.ax-badge--warning-solid`
+    eklendi (`ax-btn--warning`'deki aynı solid amber + koyu metin WCAG
+    formülü) — mevcut yarı-saydam `ax-badge--warning` kullanılsaydı rozet
+    belirgin ölçüde soluklaşıp "öne çıkan" vurgusunu kaybederdi.
+  - "Tüm Blog Yazıları" CTA'sı (`btn btn-outline-secondary rounded-pill px-4`)
+    → `ax-btn ax-btn--ghost` (job_list.html'deki sıralama butonuyla aynı,
+    zaten kurulu outline-secondary↔ghost eşleşmesi, yeni karar gerekmedi).
+  - Görsel doğrulama: blog butonu gerçek içerikle (seed'li blog yazıları var)
+    doğrudan ekran görüntüsüyle kontrol edildi; VİTRİN rozeti için geçici
+    `is_featured=True` bir test ilanı oluşturulup ana sayfada solid
+    sarı/koyu-metin görünümü doğrulandı, sonra silindi. 90 test yeşil.
+- [x] **Kapsam dışı bırakıldı (kullanıcı kararı) — standalone auth sayfaları:**
+  `templates/forum/register.html` incelenirken fark edildi — bu sayfa
+  `base.html`'i hiç extend etmiyor, kendi `<!DOCTYPE html>`'i ve kendi
+  Bootstrap CDN linkini (+ kendi `bootstrap.bundle.min.js`'ini) yüklüyor.
+  Faz 4'ün hedefi yalnızca `base.html`'deki CDN'i kaldırmak — bu sayfa zaten
+  ayrı olduğu için Faz 4'ten etkilenmeyecek; modal'ı ax-modal'a taşımak
+  `bundle.css`+`ax-modal.js`'i bu sayfaya YENİ bir bağımlılık olarak eklemek
+  anlamına gelirdi. Aynı kalıp doğrulandı: `forum/templates/registration/
+  login.html` (gerçek Bootstrap component borcu yok, önceki "1" eşleşme
+  yanlış pozitifti), `templates/registration/password_reset_{complete,done,
+  form,confirm}.html` (hepsi aynı standalone doctype). **Bu 6 dosyaya
+  dokunulmadı, migrasyon kapsamı dışında tutulacak** (base.html'e taşınmaları
+  ayrı ve çok daha büyük bir karar — sorulmadı).
+- [x] `templates/partials/order_payment.html` (3 gerçek eşleşme, 5 farklı
+  tarama aracının sipariş sayfasında ortak include) —
+  `form-control bg-dark text-white border-secondary` → `ax-form-control`;
+  `alert alert-secondary` + elle eklenmiş `text-info` ikon → `ax-alert
+  ax-alert--info` (zaten semantik olarak "bilgi" kutusuydu, yeni varyant
+  gerekmedi); `btn btn-lg w-100` → `ax-btn ax-btn--lg w-100` (özel gradient
+  inline stil korundu). **Gerçek bug bulundu ve düzeltildi:** `.ax-alert`
+  `display:flex` olduğu için düz metin + `<strong>{{ email }}</strong>`
+  karışımını doğrudan içine koymak, `<strong>`'ı ayrı bir flex item'a
+  dönüştürüp dikey kaydırıyordu (Playwright ekran görüntüsünde yakalandı) —
+  içerik `.ax-alert__body` ile sarmalanarak düzeltildi, ders `tasks/
+  lessons.md`'ye eklendi. Görsel doğrulama: gerçek sipariş sayfası login +
+  tamamlanmış arama job'ı gerektirdiğinden, parça bağımsız bir önizleme
+  sayfasında `bundle.css` ile 375px/500px ekran görüntüsüyle kontrol edildi
+  (DB'ye dokunulmadı). 90 test yeşil.
+- [x] `istatistik/templates/istatistik/analiz_hub.html` (3) +
+  `templates/tarama_hub.html` (3) — iki hub sayfası kasıtlı olarak farklı
+  marka rengi kullanıyor (analiz=yeşil/success, tarama=camgöbeği/info),
+  ikisi de tasarım sisteminde yoktu.
+  - **Kullanıcı kararıyla kalıcı eklendi:** `--ax-accent-info` (#06b6d4) +
+    `--ax-accent-info-hover` token'ları, `.ax-btn--success` (mevcut
+    `--ax-accent-secondary` emerald token'ını yeniden kullanır) ve
+    `.ax-btn--info` — ikisi de `ax-btn--warning`'deki solid-zemin +
+    koyu-metin WCAG AA formülünü izliyor (hesaplandı: beyaz metin hem
+    emerald hem camgöbeği zeminde ~2.5-2.8:1 kontrastla AA'yı geçemiyor,
+    koyu `#1e293b` metin ikisinde de >5.7:1 ile rahatça geçiyor — primary'nin
+    "zemini koyult, beyaz metin kullan" formülü bu iki renk için yetersiz
+    kalıyordu). Artık bu "info/success rengi yok" sorusu tekrar çıkmayacak.
+  - `btn-outline-light` → `ax-btn--ghost` (yeni karar gerekmedi, kurulu
+    örüntü). **Dikkat:** `tarama_hub.html`'de butonlara eklenmiş `text-white`
+    utility'si bilerek kaldırıldı — Bootstrap'ın `text-white` kuralı
+    `!important` taşıyor, `ax-btn--info`'nun WCAG için zorunlu koyu metnini
+    ezip tekrar beyaza çevirip kontrastı bozacaktı.
+  - Görsel doğrulama: `/analiz/` ve `/tarama/` sayfaları oturumsuz, gerçek
+    içerikle (seed'li araç listeleri) 375px/1280px Playwright ekran
+    görüntüsüyle kontrol edildi — her iki hub'ın marka rengi kimliği
+    (yeşil / camgöbeği) birebir korundu. 90 test yeşil.
 
-**Not (temmuz 2026) — yeni sayfalar envanteri büyütmedi:** Bu oturumda
-oluşturulan `forum/templates/forum/contact.html` (İletişim landing page) ve
-`forum/templates/forum/gizlilik_politikasi.html` (KVKK sayfası) sıfırdan
-`ax-*` sistemiyle yazıldı — migrasyon kapsamına eklenecek yeni Bootstrap
-component borcu yok. Tek istisna: KVKK sayfasındaki tablo ilk halde
-`table table-dark table-borderless` ile yazılmıştı, aynı oturumda fark edilip
-(`table-dark`'ın `--bs-table-bg`/`--bs-table-color` değişkenleri inline
-satır renkleriyle çakışıp okunaksız görünüyordu) `.ax-kvkk-table`'a
-taşındı — yani net etki: envantere yeni satır eklenmedi.
+**Not (temmuz 2026, DÜZELTİLDİ 11 Ekim 2026) — yeni sayfalar envanteri
+büyütmedi:** Bu oturumda oluşturulan `forum/templates/forum/contact.html`
+(İletişim landing page) ve `forum/templates/forum/gizlilik_politikasi.html`
+(KVKK sayfası) sıfırdan `ax-*` sistemiyle yazıldı — migrasyon kapsamına
+eklenecek yeni Bootstrap component borcu yok ~~**(yanlış çıktı — her ikisinde
+de birer `btn btn-outline-primary rounded-pill px-4` kaçmıştı, 11 Ekim 2026'da
+Faz 3 kapsamında migre edildi, yukarı bkz.)**~~. Tek istisna: KVKK sayfasındaki
+tablo ilk halde `table table-dark table-borderless` ile yazılmıştı, aynı
+oturumda fark edilip (`table-dark`'ın `--bs-table-bg`/`--bs-table-color`
+değişkenleri inline satır renkleriyle çakışıp okunaksız görünüyordu)
+`.ax-kvkk-table`'a taşındı.
 
 **Not (temmuz 2026) — cache-busting dersi tekrar uygulandı:** Navbar logosuna
 eklenen "Analizus" yazısının puntosu `navbar.css`'te iki kez büyütüldü, ama
@@ -2350,8 +2510,11 @@ Kullanılmayan geçiş dönemi shim'leri varsa kaldır.
 - 100+ dosyalık migration tek PR'da değil, birden fazla oturuma yayılmalı
 
 ## Sıradaki adım
-Faz 1'i başlatmak için onay bekleniyor — hiçbir mevcut template değişmeyeceği
-için düşük riskli, istenildiğinde başlanabilir.
+Faz 1 ve 2 TAMAMLANDI. Faz 3 sürüyor — `account_delete.html`,
+`donation_success.html`, `forum/templates/forum/market/job_list.html`
+migre edildi. Bir sonraki dosya için önce gerçek Bootstrap class sayımı
+yapılmalı (todo'daki "3 component" gibi tahminler güncel olmayabilir),
+sonra onaya sunulmalı.
 
 **Deploy notu:** Bu migration'ın tüm adımları yalnızca `dev` branch'ine push
 edilecek. `main`'e (Hetzner/prod) kullanıcı açıkça "merge et" demeden

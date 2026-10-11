@@ -100,8 +100,7 @@ PostgreSQL (host) + Redis (host)
 > (`/app/nginx/conf.d/almanyalirehber.conf`). `docker compose restart nginx` veya
 > `docker compose up -d nginx` çalıştırırken **her iki site de** kısa süreli etkilenir.
 > almanyalirehber.com detayları için o projenin kendi repo'sundaki `SUNUCU.md`'ye bak.
-> Eski sunucu (204.168.195.246) silinmedi — kullanıcı isteğiyle ileride başka bir proje
-> için saklı tutuluyor, artık trafik almıyor.
+> Eski sunucu (204.168.195.246) 11 Ekim 2026'da silindi — Hetzner'de artık yok.
 
 > ⚠️ **Hetzner `docker-compose.yml` git'tekinden FARKLI (29 Eylül 2026):** sunucudaki dosyada commit'lenmemiş `rlprehber`
 > servisi + volume'u var (`git status` → `M docker-compose.yml`). Bu dosyayı git'te değiştirme — `git pull` "local changes

@@ -11,7 +11,7 @@
 
 {% block extra_head %}
 <link rel="stylesheet" href="{% static 'css/expert_card.css' %}?v=0003">
-<link rel="stylesheet" href="{% static 'css/market.css' %}?v=0009">
+<link rel="stylesheet" href="{% static 'css/market.css' %}?v=0010">
 {% endblock %}
 
 {% block content %}
@@ -126,28 +126,28 @@
             <span class="ax-status-badge ms-2">{{ market_stats.open_count }}</span>
             {% endif %}
         </h5>
-        <div class="dropdown">
-            <button class="btn btn-outline-secondary dropdown-toggle text-white btn-sm" type="button" data-bs-toggle="dropdown">
+        <div class="ax-dropdown-wrap">
+            <button class="ax-btn ax-btn--ghost ax-btn--sm" type="button" data-ax-dropdown aria-haspopup="true" aria-expanded="false">
                 <i class="bi bi-sort-down me-1"></i>
                 {% if current_sort == 'views' %}{% trans "En Çok Görüntülenen" %}
                 {% elif current_sort == 'proposals' %}{% trans "En Çok Teklif Alan" %}
                 {% else %}{% trans "En Yeni" %}{% endif %}
             </button>
-            <ul class="dropdown-menu dropdown-menu-dark shadow">
-                <li><a class="dropdown-item {% if current_sort == 'newest' %}active{% endif %}" href="?sort=newest{% if selected_category %}&category={{ selected_category }}{% endif %}">{% trans "En Yeni" %}</a></li>
-                <li><a class="dropdown-item {% if current_sort == 'views' %}active{% endif %}" href="?sort=views{% if selected_category %}&category={{ selected_category }}{% endif %}">{% trans "En Çok Görüntülenen" %}</a></li>
-                <li><a class="dropdown-item {% if current_sort == 'proposals' %}active{% endif %}" href="?sort=proposals{% if selected_category %}&category={{ selected_category }}{% endif %}">{% trans "En Çok Teklif Alan" %}</a></li>
-            </ul>
+            <div class="ax-dropdown ax-dropdown--end">
+                <a class="ax-dropdown-item{% if current_sort == 'newest' %} ax-dropdown-item--active{% endif %}" href="?sort=newest{% if selected_category %}&category={{ selected_category }}{% endif %}">{% trans "En Yeni" %}</a>
+                <a class="ax-dropdown-item{% if current_sort == 'views' %} ax-dropdown-item--active{% endif %}" href="?sort=views{% if selected_category %}&category={{ selected_category }}{% endif %}">{% trans "En Çok Görüntülenen" %}</a>
+                <a class="ax-dropdown-item{% if current_sort == 'proposals' %} ax-dropdown-item--active{% endif %}" href="?sort=proposals{% if selected_category %}&category={{ selected_category }}{% endif %}">{% trans "En Çok Teklif Alan" %}</a>
+            </div>
         </div>
     </div>
 
     <div class="row g-4 mb-5">
         {% for job in jobs %}
         <div class="col-md-6 col-lg-4">
-            <div class="card h-100 border-0 shadow-sm" style="background:rgba(30,41,59,0.6);border:1px solid rgba(255,255,255,0.08)!important;">
-                <div class="card-body p-4 d-flex flex-column">
+            <div class="h-100" style="background:rgba(30,41,59,0.6);border:1px solid rgba(255,255,255,0.08)!important;border-radius:var(--ax-radius-lg);">
+                <div class="h-100 p-4 d-flex flex-column">
                     <div class="d-flex justify-content-between align-items-start mb-3">
-                        <span class="badge ax-tag--category">
+                        <span class="ax-badge ax-tag--category">
                             {% if job.category %}{{ job.category.localized_title|truncatechars:28 }}{% else %}{% trans "Diğer" %}{% endif %}
                         </span>
                         <div class="text-end flex-shrink-0">
@@ -155,9 +155,9 @@
                             {% if job.expires_at %}
                                 {% with days=job.days_remaining %}
                                 {% if days == 0 %}
-                                <span class="badge bg-danger bg-opacity-25 text-danger" style="font-size:0.7rem;">{% trans "Son gün!" %}</span>
+                                <span class="ax-badge ax-badge--danger" style="font-size:0.7rem;">{% trans "Son gün!" %}</span>
                                 {% elif days <= 3 %}
-                                <span class="badge bg-warning bg-opacity-25 text-warning" style="font-size:0.7rem;">{% blocktrans count days=days %}{{ days }} gün kaldı{% plural %}{{ days }} gün kaldı{% endblocktrans %}</span>
+                                <span class="ax-badge ax-badge--warning" style="font-size:0.7rem;">{% blocktrans count days=days %}{{ days }} gün kaldı{% plural %}{{ days }} gün kaldı{% endblocktrans %}</span>
                                 {% else %}
                                 <span class="text-muted" style="font-size:0.7rem;">{% blocktrans count days=days %}{{ days }} gün kaldı{% plural %}{{ days }} gün kaldı{% endblocktrans %}</span>
                                 {% endif %}
@@ -165,13 +165,13 @@
                             {% endif %}
                         </div>
                     </div>
-                    <h5 class="card-title text-white fw-bold mb-2">
+                    <h5 class="text-white fw-bold mb-2">
                         <a href="{% url 'job_detail' pk=job.pk %}" class="text-decoration-none text-white">
                             {{ job.title }}
                         </a>
                     </h5>
                     <small class="text-muted d-block mb-2"><i class="bi bi-hash"></i>{{ job.reference_number }}</small>
-                    <p class="card-text text-white-50 small mb-4 flex-grow-1">{{ job.description|truncatechars:100 }}</p>
+                    <p class="text-white-50 small mb-4 flex-grow-1">{{ job.description|truncatechars:100 }}</p>
                     <div class="d-flex justify-content-between align-items-center pt-3 border-top border-secondary border-opacity-25">
                         <div class="text-white fw-bold">{% blocktrans with amount=job.budget_max|floatformat:0 %}₺{{ amount }}'ye kadar{% endblocktrans %}</div>
                         <div class="text-muted small">
@@ -188,7 +188,7 @@
                 <i class="bi bi-briefcase text-muted" style="font-size:2.5rem;opacity:0.4;"></i>
                 <p class="text-muted mt-3 mb-2">{% trans "Şu anda açık ilan bulunmuyor." %}</p>
                 {% if user.is_authenticated %}
-                <a href="{% url 'post_job' %}" class="btn btn-info btn-sm rounded-pill mt-1">
+                <a href="{% url 'post_job' %}" class="ax-btn ax-btn--primary ax-btn--sm mt-1">
                     <i class="bi bi-plus-lg me-1"></i>{% trans "İlk İlanı Sen Ver" %}
                 </a>
                 {% endif %}
@@ -219,7 +219,7 @@
                 <div class="flex-grow-1 min-w-0">
                     <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
                         {% if job.category %}
-                        <span class="badge ax-tag--category" style="font-size:0.65rem;">
+                        <span class="ax-badge ax-tag--category" style="font-size:0.65rem;">
                             {{ job.category.localized_title }}
                         </span>
                         {% endif %}

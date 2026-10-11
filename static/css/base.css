@@ -25,6 +25,8 @@
     --ax-accent-secondary-hover:#34d399;
     --ax-accent-warning:        #f59e0b;
     --ax-accent-danger:         #ef4444;
+    --ax-accent-info:           #06b6d4;
+    --ax-accent-info-hover:     #22d3ee;
 
     --ax-border-default:    #1e293b;
     --ax-border-hover:      #334155;
@@ -317,6 +319,34 @@
     color: #1e293b;
 }
 
+.ax-btn--success {
+    /* Emerald zemin üzerinde beyaz metin WCAG AA'yı geçemiyor — warning ile aynı
+       koyu-metin formülü kullanılır. */
+    background-color: var(--ax-accent-secondary);
+    color: #1e293b;
+    border-color: var(--ax-accent-secondary);
+}
+.ax-btn--success:hover {
+    background-color: var(--ax-accent-secondary-hover);
+    border-color: var(--ax-accent-secondary-hover);
+    transform: scale(1.02);
+    color: #1e293b;
+}
+
+.ax-btn--info {
+    /* Camgöbeği zemin üzerinde beyaz metin WCAG AA'yı geçemiyor — warning ile aynı
+       koyu-metin formülü kullanılır. */
+    background-color: var(--ax-accent-info);
+    color: #1e293b;
+    border-color: var(--ax-accent-info);
+}
+.ax-btn--info:hover {
+    background-color: var(--ax-accent-info-hover);
+    border-color: var(--ax-accent-info-hover);
+    transform: scale(1.02);
+    color: #1e293b;
+}
+
 .ax-btn--sm {
     padding: var(--ax-space-1) var(--ax-space-3);
     font-size: var(--ax-text-xs);
@@ -366,6 +396,16 @@
 .ax-badge--success { background-color: rgba(16,185,129,0.2); color: var(--ax-accent-secondary); }
 .ax-badge--warning { background-color: rgba(245,158,11,0.2); color: var(--ax-accent-warning); }
 .ax-badge--danger  { background-color: rgba(239,68,68,0.2);  color: var(--ax-accent-danger); }
+.ax-badge--neutral {
+    background-color: var(--ax-bg-tertiary);
+    color: var(--ax-text-secondary);
+    border: 1px solid var(--ax-border-default);
+}
+.ax-badge--warning-solid {
+    /* ax-btn--warning ile aynı WCAG AA formülü — solid amber zemin, koyu metin */
+    background-color: var(--ax-accent-warning);
+    color: #1e293b;
+}
 
 /* -------------------------------------------------------------
    6. SKIP LINK — Erişilebilirlik
@@ -607,6 +647,10 @@
 .ax-dropdown-item--danger:hover {
     background-color: rgba(239, 68, 68, 0.1);
     color: var(--ax-accent-danger);
+}
+.ax-dropdown-item--active {
+    color: var(--ax-text-primary);
+    background-color: var(--ax-bg-tertiary);
 }
 
 .ax-dropdown-divider {
