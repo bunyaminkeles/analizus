@@ -18,7 +18,8 @@ maddelerde.
   (`send_message.html` `#chat-history`) kalıpla aynı hale getirildi:
   `min-height:300px; max-height:450px; overflow-y:auto` — artık sabit boyutlu,
   kendi içinde kaydırılıyor. Lokalde template cache temizlenip (`docker
-  compose restart web`) doğrulandı.
+  compose restart web`) doğrulandı. `dev`'den `main`'e merge edilip push
+  edildi, Hetzner'e otomatik deploy tetiklendi (12 Ekim 2026).
 
 - [ ] **AÇIK (12 Ekim 2026, kullanıcı bulgusu) — Çalışma odası admin onayı
   bildirim olarak hiçbir yerde görünmüyor.** Kullanıcı yeni oda açtığında
