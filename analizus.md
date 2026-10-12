@@ -825,10 +825,11 @@ Kaynak: `forum/context_processors.py` → `feature_flags()` — aynı processor 
 **Dikkat — bu bloğun önceki hâli (kısa isimler: `--ax-primary`/`--ax-surface`/
 `--ax-border`/`--ax-text`/`--ax-muted`) gerçek `base.css`'te hiç var olmayan,
 terk edilmiş/hiç uygulanmamış bir isim şemasıydı.** `forum/templates/forum/
-blog/blog_list.html`'in inline `<style>` bloğu muhtemelen bu eski dokümana
-bakılarak yazılmış — sonuç: `var(--ax-surface)` vb. hiçbir şeye çözülmüyor,
-kart/sidebar arka planları canlıda şeffaf render oluyor (12 Ekim 2026'da
-Playwright ile doğrulanan bug, düzeltme `tasks/todo.md`'de bekliyor).
+blog/blog_list.html`'in inline `<style>` bloğu bu eski dokümana bakılarak
+yazılmıştı — sonuç `var(--ax-surface)` vb. hiçbir şeye çözülmüyordu, kart/
+sidebar arka planları canlıda şeffaf render oluyordu (12 Ekim 2026'da
+Playwright ile doğrulanan bug). **Düzeltildi (12 Ekim 2026):** dosyadaki 33
+kullanım aşağıdaki eşlemeyle gerçek token'lara taşındı.
 ```css
 :root {
   --ax-bg-primary:      #0b0f19;   /* Sayfa arka planı */

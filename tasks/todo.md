@@ -10,45 +10,35 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
-- [ ] **BUG (12 Ekim 2026, kullanıcı canlı ekran görüntüsüyle sordu — "/bibliometrics/"
-  sayfasındaki OpenAlex köprü bandı) `bibliometrics/services/parser.py` `detect_format()`
-  PubMed TXT'sini OpenAlex TXT sanıyor.** PubMed'in indirilen TXT'si (`pubmed/services/
+- [x] **DÜZELTİLDİ (12 Ekim 2026) BUG — `bibliometrics/services/parser.py` `detect_format()`
+  PubMed TXT'sini OpenAlex TXT sanıyordu.** PubMed'in indirilen TXT'si (`pubmed/services/
   job_runner.py` `_generate_pubmed_results_txt`) OpenAlex'inkiyle (`_generate_alex_results_txt`)
-  BİREBİR AYNI "--- Yayın #" başlık formatını kullanıyor; `detect_format()`'taki kontrol
-  (`'--- Yayın #' in stripped or 'Başlık       :' in stripped: return 'openalex_txt'`) ikisini
-  ayırt edemiyor → biri PubMed TXT'sini bibliometri yükleme formuna (manuel re-upload) verirse
-  `parse_openalex_txt` OpenAlex'in alan eşlemesiyle parse eder: PMID/MeSH Terimleri kaybolur,
-  olmayan "Atıf Sayısı" alanı aranır — hata vermez, sessizce eksik/yanlış veri üretir. **Ayrıca
-  sorulan soru (kullanıcı kararı bekliyor):** bibliometri sayfasındaki "OpenAlex'te tarama mı
+  BİREBİR AYNI "--- Yayın #" başlığını ve aynı dolgu genişliğini (w=17, ikisinde de en uzun
+  etiket "Anahtar Kelimeler") kullanıyordu — "Başlık" satırları birebir aynı çıkıyordu, eski
+  kontrol ikisini ayıramıyordu. **Düzeltme:** `detect_format()`'a OpenAlex kontrolünden ÖNCE,
+  gettext'siz/dilden bağımsız sabit "PMID" satırına bakan bir `pubmed_txt` dalı eklendi; yeni
+  `parse_pubmed_txt()` fonksiyonu (OpenAlex'inkine benzer ama PMID'i atlayan, anahtar kelime
+  boşsa MeSH Terimleri'ne düşen) `parse_file()`'a bağlandı. Docker içinde gerçek
+  `_generate_pubmed_results_txt`/`_generate_alex_results_txt` çıktısıyla uçtan uca doğrulandı:
+  `detect_format` artık ikisini doğru ayırıyor, alanlar (başlık/yazar/yıl/DOI/tür/kurum/anahtar
+  kelime/MeSH yedeği/özet) doğru parse ediliyor; `test_wos_parser.py` regresyonsuz geçti.
+  Migration yok (yalnız `bibliometrics/services/parser.py`). **Ayrıca sorulan soru (hâlâ kullanıcı
+  kararı bekliyor, kapsam dışı bırakıldı):** bibliometri sayfasındaki "OpenAlex'te tarama mı
   yaptın? ... OpenAlex Taramasına Git" köprü bandına PubMed de eklensin mi? PubMed'in zaten
-  kendi sonuç sayfasında (100+ sonuç) doğrudan köprü API'sine (`/bibliometrics/from-pubmed/
-  <id>/`) giden "Bibliometrik Analiz İstiyorum" butonu var — bu banner yalnız "önceden
-  indirilmiş dosyayı manuel tekrar yükleme" senaryosu için, PubMed'de gerçek talep henüz
-  ölçülmedi (PubMed Faz 4 kararıyla tutarlı, bkz. §15/`analizus.md`). Öneri: önce format-karışması
-  bug'ı düzeltilsin (PubMed TXT'yi ayrı bir `detect_format` dalıyla — örn. "PMID" satırı veya
-  "PubMed Yayın Arama Sonuçları" başlığıyla — tanıyıp doğru parse etsin), banner'a PubMed eklemek
-  ayrı/ertelenebilir bir karar.
-- [ ] **BUG (12 Ekim 2026, Bootstrap Kaldırma Faz 3 sırasında bulundu, Playwright ile
-  doğrulandı) `forum/templates/forum/blog/blog_list.html` — kart/sidebar arka
-  planları tamamen şeffaf.** İnline `<style>` bloğu (`.ax-blog-card`,
-  `.ax-featured-card`, `.ax-sidebar-widget` vb.) `var(--ax-surface)`,
-  `var(--ax-border)`, `var(--ax-text)`, `var(--ax-muted)`, `var(--ax-primary)`
-  kullanıyor — bu kısa isimli değişkenler `static/css/base.css`'in `:root`'unda
-  **hiç tanımlı değil** (gerçek token isimleri `--ax-bg-tertiary`,
-  `--ax-border-default`/`--ax-border-hover`, `--ax-text-primary`/`--ax-text-secondary`,
-  `--ax-accent-primary` — farklı, daha uzun isimler), fallback değeri de yok.
-  Canlıda `/blog/` sayfasında doğrulandı: `.ax-blog-card`/`.ax-sidebar-widget`
-  `background-color: rgba(0,0,0,0)` — kartlar şeffaf, sayfa zeminiyle kaynaşmış.
-  **Kök neden:** `analizus.md` §10'daki CSS dokümantasyonu bu kısa isim şemasını
-  (`--ax-primary`/`--ax-surface`/`--ax-border`/`--ax-text`/`--ax-muted`) hâlâ
-  gösteriyor — gerçekte hiç uygulanmamış/terk edilmiş eski bir token tasarımı;
-  bu dosya muhtemelen o eski dokümana bakılarak yazılmış. Düzeltme: style
-  bloğundaki 5 değişkeni gerçek `base.css` token'larına eşle (`--ax-surface`→
-  `--ax-bg-tertiary`, `--ax-border`→`--ax-border-default`, `--ax-text`→
-  `--ax-text-primary`, `--ax-muted`→`--ax-text-secondary`, `--ax-primary`→
-  `--ax-accent-primary`) + `analizus.md` §10'u güncel token isimleriyle düzelt
-  (başka dosyalarda aynı eski isimler kullanılmış mı diye kontrol gerekir —
-  taranmadı).
+  kendi sonuç sayfasında doğrudan köprü API'sine (`/bibliometrics/from-pubmed/<id>/`) giden
+  "Bibliometrik Analiz İstiyorum" butonu var — bu banner yalnız "önceden indirilmiş dosyayı
+  manuel tekrar yükleme" senaryosu için, PubMed'de gerçek talep henüz ölçülmedi.
+- [x] **DÜZELTİLDİ (12 Ekim 2026) BUG — `forum/templates/forum/blog/blog_list.html` kart/sidebar
+  arka planları tamamen şeffaftı.** İnline `<style>` bloğu + arama butonunun inline `style=`
+  attribute'u (satır 30) `var(--ax-surface)`, `var(--ax-border)`, `var(--ax-text)`,
+  `var(--ax-muted)`, `var(--ax-primary)` kullanıyordu — `static/css/base.css`'te hiç tanımlı
+  olmayan terk edilmiş bir isim şeması. **Düzeltme:** dosyadaki toplam 33 kullanım gerçek
+  token'lara eşlendi (`--ax-surface`→`--ax-bg-tertiary`, `--ax-border`→`--ax-border-default`,
+  `--ax-text`→`--ax-text-primary`, `--ax-muted`→`--ax-text-secondary`, `--ax-primary`→
+  `--ax-accent-primary`) — yalnız bu dosya, başka hiçbir blok değişmedi. `analizus.md` §10'daki
+  ilgili not da "düzeltme bekliyor" durumundan "düzeltildi"ye güncellendi. Migration yok.
+  **Not — taranmadı:** başka dosyalarda aynı eski kısa isimler kullanılmış mı kontrol edilmedi,
+  istenirse ayrı görev.
 
 - [x] **(11 Ekim 2026 → TAMAMLANDI, henüz push edilmedi) Profil "İlanlar" sekmesi: sahip kendi "Devam Eden Projeler"ini göremiyor.**
   Kullanıcı ekran görüntüsüyle bildirdi: `joseph` kendi profiline (`/profile/joseph/`)
