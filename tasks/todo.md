@@ -10,6 +10,35 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
+- [x] **DÜZELTİLDİ (12 Ekim 2026) — Hero doğrulama turu (`hero_dogrulama_prompt.md`)
+  bulguları uygulandı, `dev`'e push edildi (Render staging deploy bekliyor).**
+  (1) "Kayıt gerekmez" → "Yüklemek için kayıt gerekmez" (TR/EN/DE) — 17/18 araç
+  hâlâ `service_promo.html` giriş duvarına çarpıyor, yalnız yükleme adımı
+  serbest; metin gerçeğe uyduruldu (araçları açmak yerine). (2) "24 saatte
+  uzmana bırak" → "bir uzmana bırak" (TR/EN/DE) — `proje_talebi` view'ının
+  kendi mesajı "en kısa sürede" diyordu, garanti edilmeyen rakam kaldırıldı.
+  (3) `register()`/`custom_login()` sonrası Django `cycle_key()` session_key'i
+  değiştirdiğinden RAM'deki hero-upload dosyası yetim kalıyordu —
+  `move_session_dataset()` eklendi, **lokalde doğrulandı** (giriş sonrası
+  dosya artık kayboluyor). (4) `tasks/todo.md` Faz 13'teki yanlış "misafir
+  analiz çalıştırabiliyor" notu düzeltildi.
+  **Kalan:** Render staging'de (`analizus-dev.onrender.com`) ve production'da
+  henüz doğrulanmadı — kullanıcı test edecek.
+- [ ] **DÜŞÜK ÖNCELİK (12 Ekim 2026, hero turu) — `analizus.md`'de hero
+  template'i "home.html" diye anılıyor, gerçek yol
+  `forum/templates/forum/home.html`.** Küçük dokümantasyon netliği, işlevsel
+  etkisi yok.
+- [ ] **DÜŞÜK ÖNCELİK (12 Ekim 2026, hero turu) — hero alt başlığındaki "18
+  ücretsiz istatistik aracı" sayısı hardcoded**, `TOOL_CATEGORIES`'ten
+  hesaplanmıyor (şu an doğru: 18). Araç eklenir/çıkarılırsa elle senkronize
+  edilmeli; dinamik hesaplamaya çevirmek kozmetik bir sağlamlaştırma.
+- [ ] **AÇIK SORU (12 Ekim 2026, hero turu) — "24 saat" ifadesi hero dışında
+  da geçiyor** (AI Doğrulama bandı: "uzmanımız 24 saat içinde incelesin";
+  bağış/Premium aktivasyonu: "24 saat içinde aktif edilir"). Bunlar hero'dan
+  bağımsız farklı süreçler, kod bunların gerçekten tutturulduğunu garanti
+  etmiyor — operasyonel olarak bu sürelerin fiilen karşılandığının
+  doğrulanması kullanıcı/iş kararı, kod değişikliği değil.
+
 - [ ] **BULGU (12 Ekim 2026, "Render-blocking bundle.css" düzeltmesi sırasında
   Lighthouse'ta görüldü) — `#ax-cookie` çerez onay banner'ı CLS'e sebep
   oluyor** (Lighthouse `layout-shifts` audit'inde en büyük katkı, skor
