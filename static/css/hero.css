@@ -175,7 +175,7 @@
 .ax-hero-dropzone__examples {
     margin: 0 0 var(--ax-space-3);
     text-align: center;
-    color: var(--ax-text-muted);
+    color: var(--ax-text-secondary);
     font-size: var(--ax-text-xs);
 }
 
@@ -206,14 +206,14 @@
 }
 
 .ax-hero__secondary-cta a {
-    color: var(--ax-text-muted);
+    color: var(--ax-text-secondary);
     font-size: var(--ax-text-sm);
     text-decoration: none;
     transition: color var(--ax-transition-fast);
 }
 
 .ax-hero__secondary-cta a:hover {
-    color: var(--ax-text-secondary);
+    color: var(--ax-accent-primary);
 }
 
 /* -------------------------------------------------------------

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-11 23:55+0300\n"
+"POT-Creation-Date: 2026-10-12 20:19+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -362,7 +362,7 @@ msgstr "Dataset"
 #: forum/models.py:1995 forum/templates/forum/contact.html:78
 #: forum/templates/forum/market/job_detail.html:111
 #: forum/templates/forum/market/job_list.html:153
-#: forum/templates/forum/proje_talebi.html:178
+#: forum/templates/forum/proje_talebi.html:183
 msgid "Diğer"
 msgstr "Other"
 
@@ -559,8 +559,8 @@ msgstr "OpenAlex data not found or empty."
 msgid "OpenAlex verisinden kayıt okunamadı."
 msgstr "No records could be read from the OpenAlex data."
 
-#: bibliometrics/services/job_runner.py:162 forum/views.py:2286
-#: forum/views.py:2457 openalex/services/job_runner.py:130
+#: bibliometrics/services/job_runner.py:162 forum/views.py:2292
+#: forum/views.py:2463 openalex/services/job_runner.py:130
 #: pubmed/services/job_runner.py:107
 msgid "Bir hata oluştu, lütfen tekrar deneyin."
 msgstr "An error occurred, please try again."
@@ -1200,8 +1200,8 @@ msgstr ""
 
 #: bibliometrics/templates/bibliometrics/landing.html:25
 #: bibliometrics/views.py:38 forum/templates/forum/home.html:300
-#: forum/views.py:4304 openalex/templates/openalex/landing.html:157
-#: templates/base.html:223 templates/base.html:443
+#: forum/views.py:4310 openalex/templates/openalex/landing.html:157
+#: templates/base.html:450 templates/base.html:670
 msgid "Bibliometrik Analiz"
 msgstr "Bibliometric Analysis"
 
@@ -1279,25 +1279,25 @@ msgstr "You have reached your daily analysis limit. Please try again tomorrow."
 #: bibliometrics/templates/bibliometrics/landing.html:386
 #: istatistik/templates/istatistik/afa.html:109
 #: istatistik/templates/istatistik/anova.html:79
-#: istatistik/templates/istatistik/anova.html:237
+#: istatistik/templates/istatistik/anova.html:234
 #: istatistik/templates/istatistik/betimsel.html:89
 #: istatistik/templates/istatistik/cronbach.html:93
 #: istatistik/templates/istatistik/friedman.html:93
 #: istatistik/templates/istatistik/karar_agaci.html:114
 #: istatistik/templates/istatistik/ki_kare.html:71
-#: istatistik/templates/istatistik/ki_kare.html:234
+#: istatistik/templates/istatistik/ki_kare.html:231
 #: istatistik/templates/istatistik/korelasyon.html:90
 #: istatistik/templates/istatistik/kruskal_wallis.html:71
-#: istatistik/templates/istatistik/kruskal_wallis.html:231
+#: istatistik/templates/istatistik/kruskal_wallis.html:228
 #: istatistik/templates/istatistik/lineer_regresyon.html:82
 #: istatistik/templates/istatistik/lojistik_regresyon.html:83
 #: istatistik/templates/istatistik/mann_whitney.html:71
-#: istatistik/templates/istatistik/mann_whitney.html:224
+#: istatistik/templates/istatistik/mann_whitney.html:221
 #: istatistik/templates/istatistik/normallik.html:94
 #: istatistik/templates/istatistik/svm.html:120
 #: istatistik/templates/istatistik/tekrarli_anova.html:93
 #: istatistik/templates/istatistik/ttesti.html:271
-#: istatistik/templates/istatistik/ttesti.html:419
+#: istatistik/templates/istatistik/ttesti.html:416
 #: istatistik/templates/istatistik/wilcoxon.html:94
 msgid "Analizi Başlat"
 msgstr "Run Analysis"
@@ -1456,8 +1456,8 @@ msgid "Bekliyor"
 msgstr "Pending"
 
 #: bibliometrics/templates/bibliometrics/landing.html:276
-#: forum/templates/forum/egitim.html:306 templates/base.html:270
-#: templates/base.html:473 templates/partials/footer.html:122
+#: forum/templates/forum/egitim.html:306 templates/base.html:497
+#: templates/base.html:700 templates/partials/footer.html:122
 msgid "Proje Talebi"
 msgstr "Project Request"
 
@@ -1543,7 +1543,7 @@ msgid "Başlık ve özet metinlerinden anahtar kavram frekanslarını çıkarın
 msgstr "Extract key concept frequencies from titles and abstracts."
 
 #: bibliometrics/templates/bibliometrics/landing.html:387
-#: forum/templates/forum/home.html:1171
+#: forum/templates/forum/home.html:1172
 msgid "Yükleniyor..."
 msgstr "Loading..."
 
@@ -1564,14 +1564,14 @@ msgid "Grafikler ve PDF oluşturuluyor..."
 msgstr "Creating charts and PDF..."
 
 #: bibliometrics/templates/bibliometrics/landing.html:392
-#: istatistik/templates/istatistik/afa.html:288
-#: istatistik/templates/istatistik/betimsel.html:249
-#: istatistik/templates/istatistik/cronbach.html:246
-#: istatistik/templates/istatistik/friedman.html:269
-#: istatistik/templates/istatistik/korelasyon.html:292
-#: istatistik/templates/istatistik/normallik.html:228
-#: istatistik/templates/istatistik/tekrarli_anova.html:267
-#: istatistik/templates/istatistik/wilcoxon.html:246
+#: istatistik/templates/istatistik/afa.html:285
+#: istatistik/templates/istatistik/betimsel.html:246
+#: istatistik/templates/istatistik/cronbach.html:244
+#: istatistik/templates/istatistik/friedman.html:266
+#: istatistik/templates/istatistik/korelasyon.html:289
+#: istatistik/templates/istatistik/normallik.html:225
+#: istatistik/templates/istatistik/tekrarli_anova.html:264
+#: istatistik/templates/istatistik/wilcoxon.html:243
 msgid "Analiz başarısız oldu."
 msgstr "The analysis failed."
 
@@ -2134,7 +2134,7 @@ msgid "Çaylak"
 msgstr "Newcomer"
 
 #: forum/models.py:183 forum/templatetags/forum_extras.py:14
-#: forum/views.py:2614
+#: forum/views.py:2620
 msgctxt "rütbe"
 msgid "Üye"
 msgstr "Member"
@@ -2327,75 +2327,75 @@ msgid "Bronz Destekçi"
 msgstr "Bronze Supporter"
 
 #: forum/models.py:1985 forum/templates/forum/hangi_test.html:749
-#: forum/templates/forum/proje_talebi.html:169
+#: forum/templates/forum/proje_talebi.html:174
 msgid "Veri Görselleştirme"
 msgstr "Data Visualization"
 
-#: forum/models.py:1986 forum/templates/forum/proje_talebi.html:170
+#: forum/models.py:1986 forum/templates/forum/proje_talebi.html:175
 msgid "Makine Öğrenmesi / Yapay Zeka"
 msgstr "Machine Learning / AI"
 
-#: forum/models.py:1987 forum/templates/forum/proje_talebi.html:171
+#: forum/models.py:1987 forum/templates/forum/proje_talebi.html:176
 msgid "İstatistiksel Analiz"
 msgstr "Statistical Analysis"
 
-#: forum/models.py:1988 forum/templates/forum/proje_talebi.html:172
+#: forum/models.py:1988 forum/templates/forum/proje_talebi.html:177
 msgid "Veri Temizleme / Hazırlama"
 msgstr "Data Cleaning / Preparation"
 
-#: forum/models.py:1989 forum/templates/forum/proje_talebi.html:173
+#: forum/models.py:1989 forum/templates/forum/proje_talebi.html:178
 msgid "Zaman Serisi Analizi"
 msgstr "Time Series Analysis"
 
-#: forum/models.py:1990 forum/templates/forum/proje_talebi.html:174
+#: forum/models.py:1990 forum/templates/forum/proje_talebi.html:179
 msgid "Metin / NLP Analizi"
 msgstr "Text / NLP Analysis"
 
-#: forum/models.py:1991 forum/templates/forum/proje_talebi.html:168
+#: forum/models.py:1991 forum/templates/forum/proje_talebi.html:173
 msgid "Tez / Makale Veri İndirme"
 msgstr "Thesis / Article Data Download"
 
-#: forum/models.py:1992 forum/templates/forum/proje_talebi.html:175
+#: forum/models.py:1992 forum/templates/forum/proje_talebi.html:180
 msgid "AI Analiz Doğrulama"
 msgstr "AI Analysis Verification"
 
-#: forum/models.py:1993 forum/templates/forum/proje_talebi.html:176
+#: forum/models.py:1993 forum/templates/forum/proje_talebi.html:181
 msgid "AI Ajan / Otomasyon Projesi"
 msgstr "AI Agent / Automation Project"
 
-#: forum/models.py:1994 forum/templates/forum/proje_talebi.html:177
+#: forum/models.py:1994 forum/templates/forum/proje_talebi.html:182
 msgid "Bibliyometrik Analiz"
 msgstr "Bibliometric Analysis"
 
-#: forum/models.py:1998 forum/templates/forum/proje_talebi.html:193
+#: forum/models.py:1998 forum/templates/forum/proje_talebi.html:198
 msgid "1.000 satırdan az"
 msgstr "Under 1,000 rows"
 
-#: forum/models.py:1999 forum/templates/forum/proje_talebi.html:194
+#: forum/models.py:1999 forum/templates/forum/proje_talebi.html:199
 msgid "1.000 – 100.000 satır"
 msgstr "1,000 – 100,000 rows"
 
-#: forum/models.py:2000 forum/templates/forum/proje_talebi.html:195
+#: forum/models.py:2000 forum/templates/forum/proje_talebi.html:200
 msgid "100.000 satır ve üzeri"
 msgstr "Over 100,000 rows"
 
-#: forum/models.py:2001 forum/templates/forum/proje_talebi.html:196
+#: forum/models.py:2001 forum/templates/forum/proje_talebi.html:201
 msgid "Bilmiyorum"
 msgstr "I don't know"
 
-#: forum/models.py:2004 forum/templates/forum/proje_talebi.html:203
+#: forum/models.py:2004 forum/templates/forum/proje_talebi.html:208
 msgid "1 hafta içinde"
 msgstr "Within 1 week"
 
 #: forum/models.py:2005 forum/models.py:2085
 #: forum/templates/forum/egitim_talebi.html:138
-#: forum/templates/forum/proje_talebi.html:204
+#: forum/templates/forum/proje_talebi.html:209
 msgid "1 ay içinde"
 msgstr "Within 1 month"
 
 #: forum/models.py:2006 forum/models.py:2086
 #: forum/templates/forum/egitim_talebi.html:139
-#: forum/templates/forum/proje_talebi.html:205
+#: forum/templates/forum/proje_talebi.html:210
 msgid "Esnek"
 msgstr "Flexible"
 
@@ -2404,8 +2404,8 @@ msgid "Bireysel"
 msgstr "Individual"
 
 #: forum/models.py:2063 forum/templates/forum/egitim.html:103
-#: forum/templates/forum/egitim_talebi.html:75 templates/base.html:281
-#: templates/base.html:481 templates/partials/footer.html:120
+#: forum/templates/forum/egitim_talebi.html:75 templates/base.html:508
+#: templates/base.html:708 templates/partials/footer.html:120
 msgid "Kurumsal"
 msgstr "Corporate"
 
@@ -2465,7 +2465,7 @@ msgstr "16+ people"
 msgid "2 hafta içinde"
 msgstr "Within 2 weeks"
 
-#: forum/services/ai_service.py:265 forum/views.py:2687 forum/views.py:2760
+#: forum/services/ai_service.py:265 forum/views.py:2693 forum/views.py:2766
 msgid "AI servisi şu anda kullanılamıyor."
 msgstr "The AI service is currently unavailable."
 
@@ -2589,9 +2589,9 @@ msgstr "Project-based matching with experts and analysis services"
 
 #: forum/templates/forum/about.html:72
 #: forum/templates/forum/ai_assistant.html:4
-#: forum/templates/forum/ai_assistant.html:16 templates/base.html:233
-#: templates/base.html:446 templates/base.html:790 templates/base.html:794
-#: templates/base.html:800 templates/partials/footer.html:48
+#: forum/templates/forum/ai_assistant.html:16 templates/base.html:460
+#: templates/base.html:673 templates/base.html:1018 templates/base.html:1022
+#: templates/base.html:1028 templates/partials/footer.html:48
 msgid "AI Asistan"
 msgstr "AI Assistant"
 
@@ -2824,8 +2824,8 @@ msgid "Ücretsiz Kayıt Ol"
 msgstr "Sign Up for Free"
 
 #: forum/templates/forum/about.html:295 forum/templates/forum/home.html:292
-#: forum/templates/forum/home.html:397 templates/base.html:231
-#: templates/base.html:445 templates/partials/footer.html:46
+#: forum/templates/forum/home.html:397 templates/base.html:458
+#: templates/base.html:672 templates/partials/footer.html:46
 msgid "Hangi Test?"
 msgstr "Which Test?"
 
@@ -2973,7 +2973,7 @@ msgstr "Sign Up"
 #: forum/templates/registration/login.html:10
 #: forum/templates/registration/login.html:249
 #: forum/templates/registration/login.html:280
-#: istatistik/templates/istatistik/analiz_hub.html:42 templates/base.html:525
+#: istatistik/templates/istatistik/analiz_hub.html:42 templates/base.html:752
 #: templates/forum/register.html:259 templates/forum/register.html:315
 #: templates/registration/password_reset_complete.html:201
 #: templates/registration/password_reset_form.html:262
@@ -3235,7 +3235,7 @@ msgstr "Decision-making in unexpected situations"
 #: forum/templates/forum/egitim.html:238
 #: forum/templates/forum/egitim_detay.html:159
 #: forum/templates/forum/hizmetler/service_detail.html:143
-#: forum/templates/forum/proje_talebi.html:292
+#: forum/templates/forum/proje_talebi.html:297
 #: istatistik/templates/istatistik/analiz_console_base.html:86
 #: templates/service_promo.html:165 templates/tarama_console_base.html:125
 msgid "Sık Sorulan Sorular"
@@ -3362,8 +3362,8 @@ msgid "Uzmanları Gör"
 msgstr "See Experts"
 
 #: forum/templates/forum/contact.html:4
-#: forum/templates/forum/gizlilik_politikasi.html:27 templates/base.html:290
-#: templates/base.html:488 templates/partials/footer.html:124
+#: forum/templates/forum/gizlilik_politikasi.html:27 templates/base.html:517
+#: templates/base.html:715 templates/partials/footer.html:124
 #: templates/partials/footer.html:162
 msgid "İletişim"
 msgstr "Contact"
@@ -3399,7 +3399,7 @@ msgstr ""
 #: forum/templates/forum/contact.html:28 forum/templates/forum/contact.html:65
 #: forum/templates/forum/egitim_talebi.html:54
 #: forum/templates/forum/profile_edit.html:65
-#: forum/templates/forum/proje_talebi.html:152
+#: forum/templates/forum/proje_talebi.html:157
 msgid "E-posta"
 msgstr "Email"
 
@@ -3456,7 +3456,7 @@ msgstr "KVKK Privacy Notice"
 msgid "okudum, kabul ediyorum."
 msgstr "— I have read and accept it."
 
-#: forum/templates/forum/contact.html:95 templates/base.html:834
+#: forum/templates/forum/contact.html:95 templates/base.html:1062
 msgid "Gönder"
 msgstr "Send"
 
@@ -3465,8 +3465,8 @@ msgid "Topluluğumuza katılın"
 msgstr "Join our community"
 
 #: forum/templates/forum/contact.html:107
-#: forum/templates/registration/login.html:250 templates/base.html:394
-#: templates/base.html:526 templates/forum/register.html:8
+#: forum/templates/registration/login.html:250 templates/base.html:621
+#: templates/base.html:753 templates/forum/register.html:8
 #: templates/forum/register.html:260 templates/forum/register.html:312
 msgid "Kayıt Ol"
 msgstr "Sign Up"
@@ -3619,8 +3619,8 @@ msgid "Kendi verinizle uygulama yapar, kalıcı materyalle devam edersiniz."
 msgstr "You practice with your own data and continue with lasting materials."
 
 #: forum/templates/forum/egitim.html:194
-#: forum/templates/forum/proje_talebi.html:246 templates/base.html:285
-#: templates/base.html:485
+#: forum/templates/forum/proje_talebi.html:251 templates/base.html:512
+#: templates/base.html:712
 msgid "Neden Analizus?"
 msgstr "Why Analizus?"
 
@@ -3848,8 +3848,8 @@ msgstr "Message on WhatsApp"
 
 #: forum/templates/forum/egitim_detay.html:5
 #: forum/templates/forum/egitim_detay.html:7
-#: forum/templates/forum/egitim_detay.html:9 templates/base.html:273
-#: templates/base.html:476
+#: forum/templates/forum/egitim_detay.html:9 templates/base.html:500
+#: templates/base.html:703
 msgid "Eğitim"
 msgstr "Training"
 
@@ -3940,7 +3940,7 @@ msgid "Web sitesi"
 msgstr "Website"
 
 #: forum/templates/forum/egitim_talebi.html:50
-#: forum/templates/forum/proje_talebi.html:148
+#: forum/templates/forum/proje_talebi.html:153
 msgid "Ad Soyad"
 msgstr "Full Name"
 
@@ -3962,9 +3962,9 @@ msgstr "Request Type"
 #: forum/templates/forum/egitim_talebi.html:113
 #: forum/templates/forum/egitim_talebi.html:126
 #: forum/templates/forum/egitim_talebi.html:136
-#: forum/templates/forum/proje_talebi.html:167
-#: forum/templates/forum/proje_talebi.html:192
-#: forum/templates/forum/proje_talebi.html:202
+#: forum/templates/forum/proje_talebi.html:172
+#: forum/templates/forum/proje_talebi.html:197
+#: forum/templates/forum/proje_talebi.html:207
 msgid "Seçiniz…"
 msgstr "Select…"
 
@@ -3994,7 +3994,7 @@ msgid "Katılımcı Sayısı"
 msgstr "Number of Participants"
 
 #: forum/templates/forum/egitim_talebi.html:134
-#: forum/templates/forum/proje_talebi.html:200
+#: forum/templates/forum/proje_talebi.html:205
 msgid "Süre Beklentisi"
 msgstr "Expected Timeline"
 
@@ -4020,12 +4020,12 @@ msgstr ""
 "rel=\"noopener\">Privacy Notice</a>."
 
 #: forum/templates/forum/egitim_talebi.html:157
-#: forum/templates/forum/proje_talebi.html:211
+#: forum/templates/forum/proje_talebi.html:216
 msgid "Talebi Gönder"
 msgstr "Send Request"
 
 #: forum/templates/forum/egitim_talebi.html:164
-#: forum/templates/forum/proje_talebi.html:272
+#: forum/templates/forum/proje_talebi.html:277
 msgid "Form doldurmak yerine doğrudan konuşmayı tercih ediyorsanız:"
 msgstr "If you'd rather talk directly instead of filling out the form:"
 
@@ -4090,7 +4090,7 @@ msgid "Bu e-posta otomatik olarak gönderilmiştir."
 msgstr "This email was sent automatically."
 
 #: forum/templates/forum/emails/support_payment_details.html:6
-#: forum/views.py:3580
+#: forum/views.py:3586
 msgid "Analizus Bağış İşlemi"
 msgstr "Analizus Support Payment"
 
@@ -4212,8 +4212,8 @@ msgid "İyi günler,"
 msgstr "Best regards,"
 
 #: forum/templates/forum/emails/support_payment_details.html:112
-#: forum/views.py:2274 forum/views.py:2281 forum/views.py:2445
-#: forum/views.py:2452
+#: forum/views.py:2280 forum/views.py:2287 forum/views.py:2451
+#: forum/views.py:2458
 msgid "Analizus Ekibi"
 msgstr "The Analizus Team"
 
@@ -4991,8 +4991,8 @@ msgstr "Go to the Forum"
 msgid "Kayıt Ol &amp; Paylaş"
 msgstr "Sign Up &amp; Share"
 
-#: forum/templates/forum/hangi_test.html:263 templates/base.html:550
-#: templates/base.html:571 templates/base.html:580 templates/base.html:807
+#: forum/templates/forum/hangi_test.html:263 templates/base.html:777
+#: templates/base.html:798 templates/base.html:807 templates/base.html:1035
 #: templates/partials/footer.html:179 templates/partials/footer.html:243
 msgid "Kapat"
 msgstr "Close"
@@ -5002,7 +5002,7 @@ msgid "Analiz Amacı"
 msgstr "Analysis Goal"
 
 #: forum/templates/forum/hangi_test.html:287
-#: forum/templates/forum/hangi_test.html:420 templates/base.html:818
+#: forum/templates/forum/hangi_test.html:420 templates/base.html:1046
 msgid "Ne yapmak istiyorsunuz?"
 msgstr "What would you like to do?"
 
@@ -5224,7 +5224,7 @@ msgid "Teorik bir modeli doğrulamak istiyorum (CFA)"
 msgstr "I want to confirm a theoretical model (CFA)"
 
 #: forum/templates/forum/hangi_test.html:419
-#: forum/templates/forum/proje_talebi.html:165
+#: forum/templates/forum/proje_talebi.html:170
 #: makaleanaliz/templates/makaleanaliz/results.html:90
 msgid "Analiz Türü"
 msgstr "Analysis Type"
@@ -5889,7 +5889,7 @@ msgstr ""
 "Cross-tabulations (crosstabs) can be created for between-group comparisons"
 
 #: forum/templates/forum/hangi_test.html:749
-#: forum/templates/forum/home.html:290 forum/views.py:2074
+#: forum/templates/forum/home.html:290 forum/views.py:2080
 #: istatistik/seo_content.py:73 istatistik/seo_content.py:190
 #: istatistik/seo_content.py:243 istatistik/seo_content.py:349
 #: istatistik/seo_content.py:512 istatistik/seo_content.py:624
@@ -5966,8 +5966,8 @@ msgstr ""
 
 #: forum/templates/forum/hizmetler/service_detail.html:64
 #: forum/templates/forum/hizmetler/service_list.html:12
-#: forum/templates/forum/market/job_list.html:27 templates/base.html:243
-#: templates/base.html:456 templates/partials/footer.html:50
+#: forum/templates/forum/market/job_list.html:27 templates/base.html:470
+#: templates/base.html:683 templates/partials/footer.html:50
 msgid "Pazaryeri"
 msgstr "Marketplace"
 
@@ -6068,8 +6068,8 @@ msgstr "Free initial assessment · No obligation"
 msgid "ya da kendiniz analiz edin:"
 msgstr "or analyse it yourself:"
 
-#: forum/templates/forum/home.html:270 forum/templates/forum/home.html:1274
-#: forum/templates/forum/home.html:1280
+#: forum/templates/forum/home.html:270 forum/templates/forum/home.html:1275
+#: forum/templates/forum/home.html:1281
 msgid "CSV veya Excel dosyanı buraya bırak"
 msgstr "Drop your CSV or Excel file here"
 
@@ -6130,8 +6130,8 @@ msgstr "Opportunities:"
 msgid "Açık İlanlar"
 msgstr "Open Listings"
 
-#: forum/templates/forum/home.html:306 templates/base.html:369
-#: templates/base.html:511
+#: forum/templates/forum/home.html:306 templates/base.html:596
+#: templates/base.html:738
 msgid "Profilim"
 msgstr "My Profile"
 
@@ -6183,7 +6183,7 @@ msgstr "Data Science"
 msgid "Editörlük"
 msgstr "Editing"
 
-#: forum/templates/forum/home.html:390 forum/views.py:4301
+#: forum/templates/forum/home.html:390 forum/views.py:4307
 msgid "Danışmanlık"
 msgstr "Consulting"
 
@@ -6236,7 +6236,7 @@ msgid "Onaylayın, raporunuzu teslim alın"
 msgstr "Approve and receive your report"
 
 #: forum/templates/forum/home.html:465 forum/templates/forum/home.html:555
-#: forum/templates/forum/home.html:1038
+#: forum/templates/forum/home.html:1039
 #: istatistik/templates/istatistik/analiz_console_base.html:117
 #: istatistik/templates/istatistik/analiz_hub.html:106
 #: templates/service_promo.html:192
@@ -6344,7 +6344,7 @@ msgid "Tamamlanan Proje"
 msgstr "Completed Projects"
 
 #: forum/templates/forum/home.html:595
-#: forum/templates/forum/proje_talebi.html:106
+#: forum/templates/forum/proje_talebi.html:111
 msgid "Tamamlanan Analiz"
 msgstr "Completed Analyses"
 
@@ -6472,8 +6472,8 @@ msgid ""
 msgstr ""
 "Your AI-powered guide for literature review and every stage of your research."
 
-#: forum/templates/forum/home.html:760 templates/base.html:451
-#: templates/base.html:453 templates/partials/_nav_tarama_link.html:2
+#: forum/templates/forum/home.html:760 templates/base.html:678
+#: templates/base.html:680 templates/partials/_nav_tarama_link.html:2
 #: templates/tarama_console_base.html:26
 msgid "Akademik Tarama"
 msgstr "Academic Search"
@@ -6502,8 +6502,8 @@ msgstr "Semantic Scholar Search"
 msgid "PubMed Tarama"
 msgstr "PubMed Search"
 
-#: forum/templates/forum/home.html:785 templates/base.html:259
-#: templates/base.html:466 templates/partials/footer.html:64
+#: forum/templates/forum/home.html:785 templates/base.html:486
+#: templates/base.html:693 templates/partials/footer.html:64
 msgid "Çalışma Odaları"
 msgstr "Study Rooms"
 
@@ -6658,11 +6658,22 @@ msgstr ""
 "added through the platform. The price of the self-service statistics tools "
 "is shown clearly on each tool's page."
 
-#: forum/templates/forum/home.html:994
+#: forum/templates/forum/home.html:986
+msgid ""
+"Uzmanlar tarafında da platform tamamlanan işlerden komisyon almaz; gelirimiz "
+"yalnızca uzmanların isteğe bağlı tercih ettiği öne çıkarma (vitrin) "
+"paketlerinden ve bağış/Premium üyelikten oluşur."
+msgstr ""
+"The platform does not take a commission from completed work on the expert "
+"side either; our revenue comes only from the optional promotion "
+"(showcase) packages experts choose and from donations/Premium "
+"membership."
+
+#: forum/templates/forum/home.html:995
 msgid "Danışman hocam veya jüri revizyon (düzeltme) isterse ne olacak?"
 msgstr "What if my advisor or jury requests revisions?"
 
-#: forum/templates/forum/home.html:999
+#: forum/templates/forum/home.html:1000
 msgid ""
 "Revizyon koşulları, çalışmaya başlamadan önce uzmanınızla aranızda "
 "netleştirdiğiniz kapsamın bir parçasıdır. Çoğu uzman, danışman veya jüriden "
@@ -6675,11 +6686,11 @@ msgstr ""
 "agreed scope, for methodological feedback from an advisor or jury — we "
 "recommend confirming this with your expert before the work starts."
 
-#: forum/templates/forum/home.html:1008
+#: forum/templates/forum/home.html:1009
 msgid "Analiz sonuçlarım ne kadar sürede teslim edilir?"
 msgstr "How long until my analysis results are delivered?"
 
-#: forum/templates/forum/home.html:1013
+#: forum/templates/forum/home.html:1014
 msgid ""
 "Kendi başınıza kullandığınız istatistik araçlarında sonuçlar saniyeler "
 "içinde hesaplanır. Bir uzmanla birlikte yürüttüğünüz projelerde ise teslim "
@@ -6691,11 +6702,11 @@ msgstr ""
 "with the complexity and scope of your data; you agree on the exact timeline "
 "with your expert before the work starts."
 
-#: forum/templates/forum/home.html:1022
+#: forum/templates/forum/home.html:1023
 msgid "Süreç bittikten sonra verilerime ve dosyalarıma ne oluyor?"
 msgstr "What happens to my data and files after the process ends?"
 
-#: forum/templates/forum/home.html:1027
+#: forum/templates/forum/home.html:1028
 msgid ""
 "Verileriniz ve sonuç raporlarınız, olası revizyon talepleriniz için "
 "hesabınızda saklanır. KVKK kapsamındaki haklarınız gereği dosyalarınızın "
@@ -6707,54 +6718,54 @@ msgstr ""
 "files at any time; once requested, the relevant data is removed from our "
 "systems."
 
-#: forum/templates/forum/home.html:1037
+#: forum/templates/forum/home.html:1038
 msgid "Sorunuz mu kaldı? Projenizi anlatın, ücretsiz değerlendirelim."
 msgstr ""
 "Still have questions? Tell us about your project and we will assess it for "
 "free."
 
-#: forum/templates/forum/home.html:1050
+#: forum/templates/forum/home.html:1051
 msgid "Güncel Akademik İçerikler"
 msgstr "Latest Academic Content"
 
-#: forum/templates/forum/home.html:1070
+#: forum/templates/forum/home.html:1071
 msgid "Devamını Oku →"
 msgstr "Read More →"
 
-#: forum/templates/forum/home.html:1078
+#: forum/templates/forum/home.html:1079
 msgid "Tüm Blog Yazıları"
 msgstr "All Blog Posts"
 
-#: forum/templates/forum/home.html:1148
+#: forum/templates/forum/home.html:1149
 msgid "Doğru! +10 puan kazandın"
 msgstr "Correct! You earned +10 points"
 
-#: forum/templates/forum/home.html:1153
+#: forum/templates/forum/home.html:1154
 msgid "Yanlış! Doğru cevap:"
 msgstr "Wrong! The correct answer:"
 
-#: forum/templates/forum/home.html:1211 templates/base.html:561
+#: forum/templates/forum/home.html:1212 templates/base.html:788
 msgid "Sonraki Soru"
 msgstr "Next Question"
 
-#: forum/templates/forum/home.html:1256
+#: forum/templates/forum/home.html:1257
 msgid "Yükleniyor:"
 msgstr "Uploading:"
 
-#: forum/templates/forum/home.html:1273
+#: forum/templates/forum/home.html:1274
 msgid "Dosya yüklenemedi. Lütfen tekrar deneyin."
 msgstr "File upload failed. Please try again."
 
-#: forum/templates/forum/home.html:1279
-#: istatistik/templates/istatistik/afa.html:284
-#: istatistik/templates/istatistik/betimsel.html:245
-#: istatistik/templates/istatistik/cronbach.html:242
-#: istatistik/templates/istatistik/friedman.html:264
-#: istatistik/templates/istatistik/korelasyon.html:288
-#: istatistik/templates/istatistik/normallik.html:224
+#: forum/templates/forum/home.html:1280
+#: istatistik/templates/istatistik/afa.html:281
+#: istatistik/templates/istatistik/betimsel.html:242
+#: istatistik/templates/istatistik/cronbach.html:240
+#: istatistik/templates/istatistik/friedman.html:261
+#: istatistik/templates/istatistik/korelasyon.html:285
+#: istatistik/templates/istatistik/normallik.html:221
 #: istatistik/templates/istatistik/orneklem.html:225
-#: istatistik/templates/istatistik/tekrarli_anova.html:262
-#: istatistik/templates/istatistik/wilcoxon.html:244
+#: istatistik/templates/istatistik/tekrarli_anova.html:259
+#: istatistik/templates/istatistik/wilcoxon.html:241
 msgid "Bağlantı hatası. Lütfen tekrar deneyin."
 msgstr "Connection error. Please try again."
 
@@ -7649,8 +7660,8 @@ msgstr "Expertise Tools"
 #: forum/templates/forum/profile_detail.html:209
 #: forum/templates/forum/profile_detail.html:270
 #: forum/templates/forum/profile_edit.html:9
-#: forum/templates/forum/profile_edit.html:20 templates/base.html:370
-#: templates/base.html:512
+#: forum/templates/forum/profile_edit.html:20 templates/base.html:597
+#: templates/base.html:739
 msgid "Profili Düzenle"
 msgstr "Edit Profile"
 
@@ -7716,20 +7727,20 @@ msgid "R Programlama"
 msgstr "R Programming"
 
 #: forum/templates/forum/profile_detail.html:338
-#: istatistik/templates/istatistik/afa.html:221
-#: istatistik/templates/istatistik/anova.html:194
-#: istatistik/templates/istatistik/betimsel.html:180
-#: istatistik/templates/istatistik/cronbach.html:181
-#: istatistik/templates/istatistik/friedman.html:206
-#: istatistik/templates/istatistik/ki_kare.html:191
-#: istatistik/templates/istatistik/korelasyon.html:218
-#: istatistik/templates/istatistik/kruskal_wallis.html:188
-#: istatistik/templates/istatistik/mann_whitney.html:181
-#: istatistik/templates/istatistik/normallik.html:171
+#: istatistik/templates/istatistik/afa.html:213
+#: istatistik/templates/istatistik/anova.html:191
+#: istatistik/templates/istatistik/betimsel.html:172
+#: istatistik/templates/istatistik/cronbach.html:173
+#: istatistik/templates/istatistik/friedman.html:198
+#: istatistik/templates/istatistik/ki_kare.html:188
+#: istatistik/templates/istatistik/korelasyon.html:210
+#: istatistik/templates/istatistik/kruskal_wallis.html:185
+#: istatistik/templates/istatistik/mann_whitney.html:178
+#: istatistik/templates/istatistik/normallik.html:163
 #: istatistik/templates/istatistik/orneklem.html:182
-#: istatistik/templates/istatistik/tekrarli_anova.html:204
-#: istatistik/templates/istatistik/ttesti.html:381
-#: istatistik/templates/istatistik/wilcoxon.html:184
+#: istatistik/templates/istatistik/tekrarli_anova.html:196
+#: istatistik/templates/istatistik/ttesti.html:378
+#: istatistik/templates/istatistik/wilcoxon.html:176
 msgid "Metodoloji"
 msgstr "Methodology"
 
@@ -8115,102 +8126,110 @@ msgstr ""
 "Get strategic insights from your company's data. Just submit your request — "
 "we'll match you with expert analysts and offer a free initial assessment."
 
-#: forum/templates/forum/proje_talebi.html:114
+#: forum/templates/forum/proje_talebi.html:100
+msgid "Teklif toplayıp kendiniz mi seçmek istiyorsunuz?"
+msgstr "Want to collect offers and choose yourself?"
+
+#: forum/templates/forum/proje_talebi.html:100
+msgid "Pazaryerinde ilan açın →"
+msgstr "Post a listing on the Marketplace →"
+
+#: forum/templates/forum/proje_talebi.html:119
 msgid "Kayıtlı Üye"
 msgstr "Registered Members"
 
-#: forum/templates/forum/proje_talebi.html:120
+#: forum/templates/forum/proje_talebi.html:125
 msgid "Ücretsiz"
 msgstr "Free"
 
-#: forum/templates/forum/proje_talebi.html:121
+#: forum/templates/forum/proje_talebi.html:126
 msgid "Ön Değerlendirme"
 msgstr "Initial Assessment"
 
-#: forum/templates/forum/proje_talebi.html:140
+#: forum/templates/forum/proje_talebi.html:145
 msgid "Talep Formu"
 msgstr "Request Form"
 
-#: forum/templates/forum/proje_talebi.html:149
+#: forum/templates/forum/proje_talebi.html:154
 msgid "Örn: Ayşe Kaya"
 msgstr "e.g. Jane Doe"
 
-#: forum/templates/forum/proje_talebi.html:153
+#: forum/templates/forum/proje_talebi.html:158
 msgctxt "e-posta örneği"
 msgid "ayse@sirket.com"
 msgstr "jane@company.com"
 
-#: forum/templates/forum/proje_talebi.html:160
+#: forum/templates/forum/proje_talebi.html:165
 msgid "Kişi / Şirket / Kurum"
 msgstr "Person / Company / Institution"
 
-#: forum/templates/forum/proje_talebi.html:161
+#: forum/templates/forum/proje_talebi.html:166
 msgid "Adınız, şirket veya kurum adı (isteğe bağlı)"
 msgstr "Your name, company, or institution name (optional)"
 
-#: forum/templates/forum/proje_talebi.html:183
+#: forum/templates/forum/proje_talebi.html:188
 msgid "Proje Açıklaması"
 msgstr "Project Description"
 
-#: forum/templates/forum/proje_talebi.html:185
+#: forum/templates/forum/proje_talebi.html:190
 msgid ""
 "Hedeflerinizi, elinizde bulunan veriyi ve beklentilerinizi kısaca anlatın."
 msgstr "Briefly describe your goals, the data you have, and your expectations."
 
-#: forum/templates/forum/proje_talebi.html:190
+#: forum/templates/forum/proje_talebi.html:195
 msgid "Veri Boyutu"
 msgstr "Data Size"
 
-#: forum/templates/forum/proje_talebi.html:215
+#: forum/templates/forum/proje_talebi.html:220
 msgid ""
 "Bilgileriniz gizli tutulur. Talep sonrası ücretsiz ön değerlendirme yapılır."
 msgstr ""
 "Your information is kept confidential. A free initial assessment follows "
 "your request."
 
-#: forum/templates/forum/proje_talebi.html:228
+#: forum/templates/forum/proje_talebi.html:233
 msgid "Son Tamamlanan Analizler"
 msgstr "Recently Completed Analyses"
 
-#: forum/templates/forum/proje_talebi.html:239
+#: forum/templates/forum/proje_talebi.html:244
 msgid "Gizlilik gereği müşteri bilgileri gösterilmemektedir."
 msgstr "Client information is not shown for confidentiality."
 
-#: forum/templates/forum/proje_talebi.html:250
+#: forum/templates/forum/proje_talebi.html:255
 msgid "Python, R, SQL, Tableau uzmanlarından oluşan doğrulanmış analist ağı"
 msgstr "A verified network of analysts skilled in Python, R, SQL, and Tableau"
 
-#: forum/templates/forum/proje_talebi.html:254
+#: forum/templates/forum/proje_talebi.html:259
 msgid "Ücretsiz ön değerlendirme — taahhüt olmadan net fiyat teklifi"
 msgstr "Free initial assessment — a clear quote with no commitment"
 
-#: forum/templates/forum/proje_talebi.html:258
+#: forum/templates/forum/proje_talebi.html:263
 msgid "KVKK uyumlu veri işleme, analiz sonrası imha"
 msgstr "Data-protection-compliant processing, deleted after analysis"
 
-#: forum/templates/forum/proje_talebi.html:262
+#: forum/templates/forum/proje_talebi.html:267
 msgid ""
 "Finans, perakende, sağlık ve üretim sektörlerinde kanıtlanmış proje deneyimi"
 msgstr ""
 "Proven project experience in finance, retail, healthcare, and manufacturing"
 
-#: forum/templates/forum/proje_talebi.html:270
+#: forum/templates/forum/proje_talebi.html:275
 msgid "Hızlı Görüşme"
 msgstr "Quick Chat"
 
-#: forum/templates/forum/proje_talebi.html:274
+#: forum/templates/forum/proje_talebi.html:279
 msgid "Merhaba, proje talebi hakkında bilgi almak istiyorum."
 msgstr "Hello, I would like to get information about a project request."
 
-#: forum/templates/forum/proje_talebi.html:278
+#: forum/templates/forum/proje_talebi.html:283
 msgid "WhatsApp ile Yaz"
 msgstr "Message on WhatsApp"
 
-#: forum/templates/forum/proje_talebi.html:304
+#: forum/templates/forum/proje_talebi.html:309
 msgid "Hangi sektörlerden şirketlerle çalışıyorsunuz?"
 msgstr "Which industries do you work with?"
 
-#: forum/templates/forum/proje_talebi.html:309
+#: forum/templates/forum/proje_talebi.html:314
 msgid ""
 "Finans, perakende, sağlık, üretim, e-ticaret ve kamu sektörü başta olmak "
 "üzere veri üreten her sektörden şirketle çalışıyoruz. Sektörünüz ne olursa "
@@ -8221,11 +8240,11 @@ msgstr ""
 "sector. Whatever your industry, we can extract meaningful insights from your "
 "data."
 
-#: forum/templates/forum/proje_talebi.html:318
+#: forum/templates/forum/proje_talebi.html:323
 msgid "Veri gizliliğim nasıl korunuyor?"
 msgstr "How is my data privacy protected?"
 
-#: forum/templates/forum/proje_talebi.html:323
+#: forum/templates/forum/proje_talebi.html:328
 msgid ""
 "Tüm veriler şifreli aktarım kanallarıyla iletilir, yalnızca proje kapsamında "
 "kullanılır ve analiz tamamlandıktan sonra imha edilir. KVKK uyumluluğu temel "
@@ -8235,11 +8254,11 @@ msgstr ""
 "project scope, and deleted once the analysis is complete. Data-protection "
 "compliance is a core principle for us."
 
-#: forum/templates/forum/proje_talebi.html:332
+#: forum/templates/forum/proje_talebi.html:337
 msgid "Proje tamamlanma süresi ne kadar?"
 msgstr "How long does a project take to complete?"
 
-#: forum/templates/forum/proje_talebi.html:337
+#: forum/templates/forum/proje_talebi.html:342
 msgid ""
 "Basit görselleştirme ve betimsel analiz çalışmaları genellikle 1–3 iş günü; "
 "makine öğrenmesi modelleme projeleri ise 2–6 hafta arasında tamamlanmaktadır."
@@ -8247,11 +8266,11 @@ msgstr ""
 "Simple visualization and descriptive analysis work is usually completed in 1–"
 "3 business days; machine learning modeling projects take 2–6 weeks."
 
-#: forum/templates/forum/proje_talebi.html:346
+#: forum/templates/forum/proje_talebi.html:351
 msgid "Hangi araç ve teknolojileri kullanıyorsunuz?"
 msgstr "Which tools and technologies do you use?"
 
-#: forum/templates/forum/proje_talebi.html:351
+#: forum/templates/forum/proje_talebi.html:356
 msgid ""
 "Python (pandas, scikit-learn, TensorFlow), R, SQL, Tableau, Power BI, Excel "
 "ve SPSS dahil geniş bir araç setiyle çalışıyoruz. Projenin niteliğine göre "
@@ -8261,11 +8280,11 @@ msgstr ""
 "TensorFlow), R, SQL, Tableau, Power BI, Excel, and SPSS. The most suitable "
 "tool is chosen based on the nature of the project."
 
-#: forum/templates/forum/proje_talebi.html:360
+#: forum/templates/forum/proje_talebi.html:365
 msgid "Ücretlendirme nasıl yapılıyor?"
 msgstr "How is pricing determined?"
 
-#: forum/templates/forum/proje_talebi.html:365
+#: forum/templates/forum/proje_talebi.html:370
 msgid ""
 "Fiyatlandırma proje kapsamına, veri boyutuna ve süresine göre belirlenir. "
 "Talebi aldıktan sonra ücretsiz bir ön değerlendirme yapılır ve size net "
@@ -8275,11 +8294,11 @@ msgstr ""
 "your request, we conduct a free initial assessment and present you with a "
 "clear price quote."
 
-#: forum/templates/forum/proje_talebi.html:374
+#: forum/templates/forum/proje_talebi.html:379
 msgid "Projeye başlamak için ne sağlamam gerekiyor?"
 msgstr "What do I need to provide to get started?"
 
-#: forum/templates/forum/proje_talebi.html:379
+#: forum/templates/forum/proje_talebi.html:384
 msgid ""
 "Proje hedeflerinizi ve mevcut verinizi (CSV, Excel, veri tabanı erişimi vb.) "
 "paylaşmanız yeterlidir. İhtiyaç duyulursa uzmanımız sizi yönlendirir ve "
@@ -10111,7 +10130,7 @@ msgstr ""
 "Registration successful, but the verification email could not be sent. You "
 "can try again from your profile page."
 
-#: forum/views.py:1360
+#: forum/views.py:1366
 #, python-format
 msgid ""
 "Merhaba %(username)s,\n"
@@ -10134,7 +10153,7 @@ msgstr ""
 "Best regards,\n"
 "The Analizus Team"
 
-#: forum/views.py:1509
+#: forum/views.py:1515
 msgid ""
 "Profiliniz kaydedilemedi. Lütfen tekrar deneyin; sorun sürerse bizimle "
 "iletişime geçin."
@@ -10142,7 +10161,7 @@ msgstr ""
 "Your profile could not be saved. Please try again; if the problem persists, "
 "please contact us."
 
-#: forum/views.py:1536
+#: forum/views.py:1542
 msgid ""
 "Diğer bilgileriniz kaydedildi; ancak telefon numarası geçersiz olduğu için "
 "kaydedilmedi. Lütfen '05XX XXX XX XX' veya '+90 5XX XXX XX XX' biçiminde "
@@ -10152,7 +10171,7 @@ msgstr ""
 "because it is invalid. Please enter a Turkish mobile number in the format "
 "'05XX XXX XX XX' or '+90 5XX XXX XX XX'."
 
-#: forum/views.py:1538
+#: forum/views.py:1544
 msgid ""
 "Diğer bilgileriniz kaydedildi; ancak profil fotoğrafı çok büyük olduğu için "
 "yüklenmedi (en fazla 5 MB)."
@@ -10160,7 +10179,7 @@ msgstr ""
 "Your other details have been saved, but the profile photo was not uploaded "
 "because it is too large (max. 5 MB)."
 
-#: forum/views.py:1540
+#: forum/views.py:1546
 msgid ""
 "Diğer bilgileriniz kaydedildi; ancak profil fotoğrafı yüklenmedi. Yalnızca "
 "JPEG, PNG veya WebP resimler yüklenebilir."
@@ -10168,11 +10187,11 @@ msgstr ""
 "Your other details have been saved, but the profile photo was not uploaded. "
 "Only JPEG, PNG or WebP images are allowed."
 
-#: forum/views.py:1542
+#: forum/views.py:1548
 msgid "Profiliniz başarıyla güncellendi."
 msgstr "Your profile has been updated successfully."
 
-#: forum/views.py:1815
+#: forum/views.py:1821
 msgid ""
 "TEBRİKLER! Tüm doğrulamaları tamamladığınız için \"Güvenilir Üye\" rozeti ve "
 "50 Puan kazandınız."
@@ -10180,7 +10199,7 @@ msgstr ""
 "CONGRATULATIONS! You have completed all verifications and earned the "
 "\"Trusted Member\" badge and 50 points."
 
-#: forum/views.py:1827
+#: forum/views.py:1833
 msgid ""
 "TEBRİKLER! Profilinizi %100 tamamladığınız için \"Profili Tamamladı\" rozeti "
 "ve 50 Puan kazandınız."
@@ -10188,11 +10207,11 @@ msgstr ""
 "CONGRATULATIONS! You earned the \"Profile Complete\" badge and 50 Points for "
 "completing your profile 100%."
 
-#: forum/views.py:1861
+#: forum/views.py:1867
 msgid "Telefon numaranız başarıyla kaydedildi."
 msgstr "Your phone number has been saved successfully."
 
-#: forum/views.py:1863
+#: forum/views.py:1869
 msgid ""
 "Geçersiz telefon numarası. Lütfen '05XX XXX XX XX' veya '+90 5XX XXX XX XX' "
 "biçiminde giriniz."
@@ -10200,24 +10219,24 @@ msgstr ""
 "Invalid phone number. Please enter a Turkish mobile number in the format "
 "'05XX XXX XX XX' or '+90 5XX XXX XX XX'."
 
-#: forum/views.py:1872
+#: forum/views.py:1878
 msgid "LinkedIn hesabınız başarıyla doğrulandı."
 msgstr "Your LinkedIn account has been verified successfully."
 
-#: forum/views.py:1874
+#: forum/views.py:1880
 msgid "Geçersiz LinkedIn URL."
 msgstr "Invalid LinkedIn URL."
 
-#: forum/views.py:1975
+#: forum/views.py:1981
 msgid "Hesap Silme Onayı — Analizus"
 msgstr "Account Deletion Confirmation — Analizus"
 
-#: forum/views.py:1976
+#: forum/views.py:1982
 #, python-format
 msgid "Hesabınızı silmek için şu linke gidin: %(url)s"
 msgstr "To delete your account, go to this link: %(url)s"
 
-#: forum/views.py:1983
+#: forum/views.py:1989
 msgid ""
 "Onay linki e-posta adresinize gönderildi. 24 saat içinde tıklayarak işlemi "
 "tamamlayın."
@@ -10225,15 +10244,15 @@ msgstr ""
 "A confirmation link has been sent to your email address. Click it within 24 "
 "hours to complete the process."
 
-#: forum/views.py:1998
+#: forum/views.py:2004
 msgid "Geçersiz veya süresi dolmuş link."
 msgstr "Invalid or expired link."
 
-#: forum/views.py:2005
+#: forum/views.py:2011
 msgid "Bu link süresi dolmuş. Lütfen yeniden talep edin."
 msgstr "This link has expired. Please request a new one."
 
-#: forum/views.py:2018
+#: forum/views.py:2024
 msgid ""
 "Hesabınız devre dışı bırakıldı. Kişisel verileriniz 30 gün içinde kalıcı "
 "olarak silinecektir. Bu süre içinde giriş yaparak hesabınızı geri "
@@ -10243,197 +10262,197 @@ msgstr ""
 "deleted within 30 days. You can restore your account by signing in during "
 "this period."
 
-#: forum/views.py:2051
+#: forum/views.py:2057
 msgid "Hesabınız geri alındı. Tekrar hoş geldiniz!"
 msgstr "Your account has been restored. Welcome back!"
 
-#: forum/views.py:2069
+#: forum/views.py:2075
 msgid "Ücret"
 msgstr "Price"
 
-#: forum/views.py:2069
+#: forum/views.py:2075
 msgid "~$1,500/yıl"
 msgstr "~$1,500/year"
 
-#: forum/views.py:2069
+#: forum/views.py:2075
 msgid "~$900/yıl"
 msgstr "~$900/year"
 
-#: forum/views.py:2069
+#: forum/views.py:2075
 msgid "Ücretli"
 msgstr "Paid"
 
-#: forum/views.py:2070
+#: forum/views.py:2076
 msgid "Kurulum"
 msgstr "Installation"
 
-#: forum/views.py:2070
+#: forum/views.py:2076
 msgid "Gerekli"
 msgstr "Required"
 
-#: forum/views.py:2071
+#: forum/views.py:2077
 msgid "APA Rapor"
 msgstr "APA Report"
 
-#: forum/views.py:2072
+#: forum/views.py:2078
 msgid "PDF Çıktı"
 msgstr "PDF Output"
 
-#: forum/views.py:2073 istatistik/views.py:31 istatistik/views.py:109
+#: forum/views.py:2079 istatistik/views.py:31 istatistik/views.py:109
 msgid "Cronbach Alpha"
 msgstr "Cronbach's Alpha"
 
-#: forum/views.py:2075
+#: forum/views.py:2081
 msgid "Uzman Desteği"
 msgstr "Expert Support"
 
-#: forum/views.py:2076
+#: forum/views.py:2082
 msgid "Akademik Forum"
 msgstr "Academic Forum"
 
-#: forum/views.py:2195
+#: forum/views.py:2201
 msgid "Mesajınız başarıyla gönderildi. En kısa sürede dönüş yapacağız."
 msgstr ""
 "Your message has been sent. We will get back to you as soon as possible."
 
-#: forum/views.py:2197
+#: forum/views.py:2203
 msgid "Mesaj gönderilirken bir hata oluştu. Lütfen tekrar deneyin."
 msgstr "An error occurred while sending your message. Please try again."
 
-#: forum/views.py:2221 forum/views.py:2385
+#: forum/views.py:2227 forum/views.py:2391
 msgid "Lütfen zorunlu alanları doldurunuz."
 msgstr "Please fill in the required fields."
 
-#: forum/views.py:2268 forum/views.py:2280 forum/views.py:2438
-#: forum/views.py:2451
+#: forum/views.py:2274 forum/views.py:2286 forum/views.py:2444
+#: forum/views.py:2457
 #, python-format
 msgid "Sayın %(name)s,"
 msgstr "Dear %(name)s,"
 
-#: forum/views.py:2269
+#: forum/views.py:2275
 msgid ""
 "Proje talebiniz başarıyla alındı. En kısa sürede sizinle iletişime geçeceğiz."
 msgstr ""
 "Your project request has been received. We will contact you as soon as "
 "possible."
 
-#: forum/views.py:2270 forum/views.py:2440
+#: forum/views.py:2276 forum/views.py:2446
 msgid "Talep Özeti:"
 msgstr "Request Summary:"
 
-#: forum/views.py:2271
+#: forum/views.py:2277
 #, python-format
 msgid "Analiz Türü: %(value)s"
 msgstr "Analysis type: %(value)s"
 
-#: forum/views.py:2272
+#: forum/views.py:2278
 #, python-format
 msgid "Veri Boyutu: %(value)s"
 msgstr "Data size: %(value)s"
 
-#: forum/views.py:2273
+#: forum/views.py:2279
 #, python-format
 msgid "Süre Beklentisi: %(value)s"
 msgstr "Expected timeline: %(value)s"
 
-#: forum/views.py:2278
+#: forum/views.py:2284
 msgid "Proje talebiniz alındı — Analizus"
 msgstr "Your project request has been received — Analizus"
 
-#: forum/views.py:2281
+#: forum/views.py:2287
 msgid "Proje talebiniz alındı. En kısa sürede sizinle iletişime geçeceğiz."
 msgstr ""
 "Your project request has been received. We will contact you as soon as "
 "possible."
 
-#: forum/views.py:2284
+#: forum/views.py:2290
 msgid "Talebiniz alındı! En kısa sürede size dönüş yapacağız."
 msgstr ""
 "Your request has been received! We will get back to you as soon as possible."
 
-#: forum/views.py:2306
+#: forum/views.py:2312
 #, python-format
 msgid "%(n)s günde tamamlandı"
 msgid_plural "%(n)s günde tamamlandı"
 msgstr[0] "completed in %(n)s day"
 msgstr[1] "completed in %(n)s days"
 
-#: forum/views.py:2309
+#: forum/views.py:2315
 #, python-format
 msgid "%(n)s haftada tamamlandı"
 msgid_plural "%(n)s haftada tamamlandı"
 msgstr[0] "completed in %(n)s week"
 msgstr[1] "completed in %(n)s weeks"
 
-#: forum/views.py:2312
+#: forum/views.py:2318
 #, python-format
 msgid "%(n)s ayda tamamlandı"
 msgid_plural "%(n)s ayda tamamlandı"
 msgstr[0] "completed in %(n)s month"
 msgstr[1] "completed in %(n)s months"
 
-#: forum/views.py:2314
+#: forum/views.py:2320
 msgid "Veri Analizi"
 msgstr "Data Analysis"
 
-#: forum/views.py:2389
+#: forum/views.py:2395
 msgid "Devam etmek için KVKK Aydınlatma Metni onayı gereklidir."
 msgstr ""
 "To continue, you must accept the KVKK (personal data protection) notice."
 
-#: forum/views.py:2439
+#: forum/views.py:2445
 msgid ""
 "Eğitim talebiniz başarıyla alındı. 24 saat içinde sizinle iletişime "
 "geçeceğiz."
 msgstr ""
 "Your training request has been received. We will contact you within 24 hours."
 
-#: forum/views.py:2441
+#: forum/views.py:2447
 #, python-format
 msgid "Talep Türü: %(value)s"
 msgstr "Request type: %(value)s"
 
-#: forum/views.py:2442
+#: forum/views.py:2448
 #, python-format
 msgid "Konu: %(value)s"
 msgstr "Topic: %(value)s"
 
-#: forum/views.py:2443
+#: forum/views.py:2449
 #, python-format
 msgid "Seviye: %(value)s"
 msgstr "Level: %(value)s"
 
-#: forum/views.py:2444
+#: forum/views.py:2450
 #, python-format
 msgid "Format: %(value)s"
 msgstr "Format: %(value)s"
 
-#: forum/views.py:2449
+#: forum/views.py:2455
 msgid "Eğitim talebiniz alındı — Analizus"
 msgstr "Your training request has been received — Analizus"
 
-#: forum/views.py:2452
+#: forum/views.py:2458
 msgid "Eğitim talebiniz alındı. 24 saat içinde sizinle iletişime geçeceğiz."
 msgstr ""
 "Your training request has been received. We will contact you within 24 hours."
 
-#: forum/views.py:2455
+#: forum/views.py:2461
 msgid "Talebiniz alındı! 24 saat içinde size dönüş yapacağız."
 msgstr ""
 "Your request has been received! We will get back to you within 24 hours."
 
-#: forum/views.py:2676
+#: forum/views.py:2682
 msgid "Lütfen bir soru girin."
 msgstr "Please enter a question."
 
-#: forum/views.py:2681
+#: forum/views.py:2687
 #, python-format
 msgid "Günlük %(limit)s soru limitinizi doldurdunuz. Yarın tekrar deneyin."
 msgstr ""
 "You have used up your daily limit of %(limit)s questions. Please try again "
 "tomorrow."
 
-#: forum/views.py:2683
+#: forum/views.py:2689
 #, python-format
 msgid ""
 "Günlük anonim limit (%(limit)s soru) doldu. Üye olarak 30 soruya kadar "
@@ -10442,125 +10461,125 @@ msgstr ""
 "The daily anonymous limit (%(limit)s questions) has been reached. Sign up to "
 "ask up to 30 questions."
 
-#: forum/views.py:2713
+#: forum/views.py:2719
 msgid "Geçersiz istek."
 msgstr "Invalid request."
 
-#: forum/views.py:2729
+#: forum/views.py:2735
 msgid "Mesaj boş olamaz."
 msgstr "The message cannot be empty."
 
-#: forum/views.py:2732
+#: forum/views.py:2738
 msgid "Mesaj çok uzun (max 2000 karakter)."
 msgstr "The message is too long (max. 2000 characters)."
 
-#: forum/views.py:2753
+#: forum/views.py:2759
 #, python-format
 msgid "Günlük %(limit)s soru limitine ulaştınız."
 msgstr "You have reached your daily limit of %(limit)s questions."
 
-#: forum/views.py:2806 forum/views.py:2876
+#: forum/views.py:2812 forum/views.py:2882
 msgid "E-posta adresiniz zaten doğrulanmış."
 msgstr "Your email address has already been verified."
 
-#: forum/views.py:2819
+#: forum/views.py:2825
 msgid "Geçersiz doğrulama linki."
 msgstr "Invalid verification link."
 
-#: forum/views.py:2823
+#: forum/views.py:2829
 msgid "Bu doğrulama linki süresi dolmuş veya daha önce kullanılmış."
 msgstr "This verification link has expired or has already been used."
 
-#: forum/views.py:2854
+#: forum/views.py:2860
 msgid "E-posta adresiniz başarıyla doğrulandı! Hoş geldiniz."
 msgstr "Your email address has been verified. Welcome!"
 
-#: forum/views.py:2884
+#: forum/views.py:2890
 msgid ""
 "Doğrulama e-postası tekrar gönderildi. Lütfen e-posta kutunuzu kontrol edin."
 msgstr "The verification email has been resent. Please check your inbox."
 
-#: forum/views.py:2886
+#: forum/views.py:2892
 msgid "E-posta gönderilemedi. Lütfen daha sonra tekrar deneyin."
 msgstr "The email could not be sent. Please try again later."
 
-#: forum/views.py:4294
+#: forum/views.py:4300
 msgid "Hoş geldiniz!"
 msgstr "Welcome!"
 
-#: forum/views.py:4299
+#: forum/views.py:4305
 msgid "İstatistik Analizi"
 msgstr "Statistical Analysis"
 
-#: forum/views.py:4299
+#: forum/views.py:4305
 msgid "SPSS, R, Python, AMOS, SmartPLS ile profesyonel istatistik analizleri"
 msgstr ""
 "Professional statistical analyses with SPSS, R, Python, AMOS and SmartPLS"
 
-#: forum/views.py:4300
+#: forum/views.py:4306
 msgid "Veri Kazıma & Toplama"
 msgstr "Data Scraping & Collection"
 
-#: forum/views.py:4300
+#: forum/views.py:4306
 msgid "Anket, web ve akademik veritabanlarından veri toplama desteği"
 msgstr ""
 "Support with collecting data from surveys, the web and academic databases"
 
-#: forum/views.py:4301
+#: forum/views.py:4307
 msgid "Alanında uzman akademisyen ve danışmanlarla Pazaryeri üzerinden eşleşin"
 msgstr ""
 "Get matched with expert academics and consultants through the Marketplace"
 
-#: forum/views.py:4302
+#: forum/views.py:4308
 msgid "Proje Desteği"
 msgstr "Project Support"
 
-#: forum/views.py:4302
+#: forum/views.py:4308
 msgid "Tez, makale ve kurumsal projeleriniz için uçtan uca destek"
 msgstr "End-to-end support for your theses, articles and corporate projects"
 
-#: forum/views.py:4303
+#: forum/views.py:4309
 msgid "Akademik Destek"
 msgstr "Academic Support"
 
-#: forum/views.py:4303
+#: forum/views.py:4309
 msgid "Tez ve makale yazım sürecinde yöntem ve rehberlik desteği"
 msgstr "Methodological guidance while writing theses and articles"
 
-#: forum/views.py:4304
+#: forum/views.py:4310
 msgid "Atıf ve yayın verileriyle bibliometrik analiz yaptırın"
 msgstr ""
 "Have bibliometric analyses carried out on citation and publication data"
 
-#: forum/views.py:4305
+#: forum/views.py:4311
 msgid "Literatür / Akademik Tarama"
 msgstr "Literature / Academic Search"
 
-#: forum/views.py:4305
+#: forum/views.py:4311
 msgid "YÖK Tez, TR Dizin ve uluslararası veritabanlarında tarama"
 msgstr "Searches in YÖK Tez, TR Dizin and international databases"
 
-#: forum/views.py:4306
+#: forum/views.py:4312
 msgid "Forumda Soru-Cevap"
 msgstr "Forum Q&A"
 
-#: forum/views.py:4306
+#: forum/views.py:4312
 msgid "Merak ettiklerinizi sorun, bilgi birikiminizi toplulukla paylaşın"
 msgstr "Ask what you want to know and share your knowledge with the community"
 
-#: forum/views.py:4308
+#: forum/views.py:4314
 msgid "AI Araçları"
 msgstr "AI Tools"
 
-#: forum/views.py:4308
+#: forum/views.py:4314
 msgid "Akademik Danışmanlık"
 msgstr "Academic Consulting"
 
-#: forum/views.py:4347
+#: forum/views.py:4353
 msgid "YÖK Tez Kazıma ve İndirme Aracı"
 msgstr "YÖK Thesis Scraping and Download Tool"
 
-#: forum/views.py:4348
+#: forum/views.py:4354
 msgid ""
 "Anahtar kelime, yazar veya danışmanla arama yapın; tez verilerini Excel veya "
 "TXT olarak indirin."
@@ -10568,11 +10587,11 @@ msgstr ""
 "Search by keyword, author or supervisor and download thesis data as Excel or "
 "TXT."
 
-#: forum/views.py:4356
+#: forum/views.py:4362
 msgid "OpenAlex Yayın Kazıma"
 msgstr "OpenAlex Publication Scraping"
 
-#: forum/views.py:4357
+#: forum/views.py:4363
 msgid ""
 "240 milyondan fazla akademik yayından kodsuz veri kazıma. Başlık, yazar, "
 "kurum ve atıf bilgileri."
@@ -10580,11 +10599,11 @@ msgstr ""
 "No-code data scraping from more than 240 million academic publications. "
 "Titles, authors, institutions and citation data."
 
-#: forum/views.py:4365
+#: forum/views.py:4371
 msgid "TR Dizin Makale Kazıma"
 msgstr "TR Dizin Article Scraping"
 
-#: forum/views.py:4366
+#: forum/views.py:4372
 msgid ""
 "TR Dizin'den anahtar kelime ile makale arayın; yazarları, dergileri ve atıf "
 "bilgilerini indirin."
@@ -10592,13 +10611,13 @@ msgstr ""
 "Search TR Dizin articles by keyword and download authors, journals and "
 "citation data."
 
-#: forum/views.py:4374
+#: forum/views.py:4380
 #: semanticscholar/templates/semanticscholar/landing.html:26
 #: semanticscholar/views.py:59
 msgid "Semantic Scholar Yayın Kazıma"
 msgstr "Semantic Scholar Publication Scraping"
 
-#: forum/views.py:4375
+#: forum/views.py:4381
 msgid ""
 "200 milyondan fazla akademik yayın arasında kodsuz arama yapın. WoS, Scopus "
 "ve arXiv dahil tüm büyük veri tabanlarını kapsar."
@@ -10606,12 +10625,12 @@ msgstr ""
 "Search more than 200 million academic publications without code. Covers all "
 "major databases, including WoS, Scopus and arXiv."
 
-#: forum/views.py:4383
+#: forum/views.py:4389
 msgid "PubMed Yayın Kazıma"
 msgstr "PubMed Publication Scraping"
 
 # PubMed modülü — Faz 2 (29 Eylül 2026)
-#: forum/views.py:4384
+#: forum/views.py:4390
 msgid ""
 "40 milyondan fazla biyomedikal yayında başlık, özet, yazar ve MeSH terimiyle "
 "kodsuz arama yapın."
@@ -10619,11 +10638,11 @@ msgstr ""
 "Search more than 40 million biomedical publications by title, abstract, "
 "author and MeSH term — no coding required."
 
-#: forum/views.py:4392 templates/tarama_console_base.html:34
+#: forum/views.py:4398 templates/tarama_console_base.html:34
 msgid "Üniversite Tez Arşivi"
 msgstr "University Thesis Archive"
 
-#: forum/views.py:4393
+#: forum/views.py:4399
 msgid ""
 "19 Türk üniversitesinin açık erişim arşivinde anahtar kelime ile tez ve "
 "makale arayın."
@@ -12321,7 +12340,7 @@ msgstr "Miserable (0.50–0.60)"
 msgid "Kabul Edilemez (< 0.50)"
 msgstr "Unacceptable (< 0.50)"
 
-#: istatistik/services/afa.py:175 istatistik/templates/istatistik/afa.html:296
+#: istatistik/services/afa.py:175 istatistik/templates/istatistik/afa.html:293
 #, python-brace-format
 msgid ""
 "{k} maddeden oluşan ölçeğin faktör yapısını belirlemek amacıyla {rotation} "
@@ -12330,7 +12349,7 @@ msgstr ""
 "To determine the factor structure of the {k}-item scale, an exploratory "
 "factor analysis (EFA) with {rotation} rotation was conducted (n = {n})."
 
-#: istatistik/services/afa.py:182 istatistik/templates/istatistik/afa.html:297
+#: istatistik/services/afa.py:182 istatistik/templates/istatistik/afa.html:294
 #, python-brace-format
 msgid ""
 "KMO örneklem yeterlilik katsayısı {kmo} ({level}) olarak hesaplanmış, "
@@ -12339,7 +12358,7 @@ msgstr ""
 "The Kaiser-Meyer-Olkin measure of sampling adequacy was {kmo} ({level}), and "
 "Bartlett's test of sphericity was significant (χ² = {chi2}, {p})."
 
-#: istatistik/services/afa.py:185 istatistik/templates/istatistik/afa.html:298
+#: istatistik/services/afa.py:185 istatistik/templates/istatistik/afa.html:295
 #, python-brace-format
 msgid ""
 "KMO örneklem yeterlilik katsayısı {kmo} ({level}) olarak hesaplanmış, "
@@ -12350,7 +12369,7 @@ msgstr ""
 "Bartlett's test of sphericity was not significant (χ² = {chi2}, {p}); the "
 "data may not be suitable for factor analysis."
 
-#: istatistik/services/afa.py:189 istatistik/templates/istatistik/afa.html:299
+#: istatistik/services/afa.py:189 istatistik/templates/istatistik/afa.html:296
 #, python-brace-format
 msgid ""
 "Özdeğer > 1 kriterine göre {nf} faktörlü yapı elde edilmiş ve bu yapı toplam "
@@ -12359,7 +12378,7 @@ msgstr ""
 "Based on the eigenvalue > 1 criterion, a {nf}-factor structure was obtained, "
 "explaining {pct} of the total variance."
 
-#: istatistik/services/afa.py:192 istatistik/templates/istatistik/afa.html:300
+#: istatistik/services/afa.py:192 istatistik/templates/istatistik/afa.html:297
 #, python-brace-format
 msgid ""
 "Araştırmacı tarafından belirlenen {nf} faktörlü yapı toplam varyansın {pct} "
@@ -12402,7 +12421,7 @@ msgstr "Rotation"
 msgid "KMO Örneklem Yeterliliği"
 msgstr "KMO Sampling Adequacy"
 
-#: istatistik/services/afa.py:232 istatistik/templates/istatistik/afa.html:275
+#: istatistik/services/afa.py:232 istatistik/templates/istatistik/afa.html:272
 msgid "Bartlett Küresellik Testi"
 msgstr "Bartlett's Test of Sphericity"
 
@@ -12453,24 +12472,24 @@ msgstr "Cumulative %"
 #: istatistik/services/mann_whitney.py:178 istatistik/services/normallik.py:172
 #: istatistik/services/svm.py:225 istatistik/services/tekrarli_anova.py:251
 #: istatistik/services/ttesti.py:272 istatistik/services/wilcoxon.py:191
-#: istatistik/templates/istatistik/afa.html:248
+#: istatistik/templates/istatistik/afa.html:240
 #: istatistik/templates/istatistik/anova.html:164
-#: istatistik/templates/istatistik/betimsel.html:209
-#: istatistik/templates/istatistik/cronbach.html:206
-#: istatistik/templates/istatistik/friedman.html:229
+#: istatistik/templates/istatistik/betimsel.html:201
+#: istatistik/templates/istatistik/cronbach.html:198
+#: istatistik/templates/istatistik/friedman.html:221
 #: istatistik/templates/istatistik/karar_agaci.html:212
 #: istatistik/templates/istatistik/ki_kare.html:161
-#: istatistik/templates/istatistik/korelasyon.html:248
+#: istatistik/templates/istatistik/korelasyon.html:240
 #: istatistik/templates/istatistik/kruskal_wallis.html:158
 #: istatistik/templates/istatistik/lineer_regresyon.html:173
 #: istatistik/templates/istatistik/lojistik_regresyon.html:182
 #: istatistik/templates/istatistik/mann_whitney.html:151
-#: istatistik/templates/istatistik/normallik.html:188
+#: istatistik/templates/istatistik/normallik.html:180
 #: istatistik/templates/istatistik/orneklem.html:167
 #: istatistik/templates/istatistik/svm.html:218
-#: istatistik/templates/istatistik/tekrarli_anova.html:227
+#: istatistik/templates/istatistik/tekrarli_anova.html:219
 #: istatistik/templates/istatistik/ttesti.html:346
-#: istatistik/templates/istatistik/wilcoxon.html:208
+#: istatistik/templates/istatistik/wilcoxon.html:200
 msgid "APA Formatında Raporlama"
 msgstr "Reporting in APA Format"
 
@@ -12560,9 +12579,9 @@ msgstr "Group Statistics"
 
 #: istatistik/services/anova.py:143 istatistik/services/kruskal_wallis.py:143
 #: istatistik/services/mann_whitney.py:128
-#: istatistik/templates/istatistik/anova.html:243
-#: istatistik/templates/istatistik/kruskal_wallis.html:333
-#: istatistik/templates/istatistik/mann_whitney.html:326
+#: istatistik/templates/istatistik/anova.html:240
+#: istatistik/templates/istatistik/kruskal_wallis.html:330
+#: istatistik/templates/istatistik/mann_whitney.html:323
 msgid "Grup"
 msgstr "Group"
 
@@ -12571,9 +12590,9 @@ msgstr "Group"
 #: istatistik/services/kruskal_wallis.py:143
 #: istatistik/services/mann_whitney.py:128 istatistik/services/normallik.py:122
 #: istatistik/services/tekrarli_anova.py:154
-#: istatistik/templates/istatistik/anova.html:244
-#: istatistik/templates/istatistik/kruskal_wallis.html:333
-#: istatistik/templates/istatistik/mann_whitney.html:326
+#: istatistik/templates/istatistik/anova.html:241
+#: istatistik/templates/istatistik/kruskal_wallis.html:330
+#: istatistik/templates/istatistik/mann_whitney.html:323
 msgid "Ort."
 msgstr "Mean"
 
@@ -12585,7 +12604,7 @@ msgstr "Min"
 #: istatistik/services/anova.py:143 istatistik/services/betimsel.py:105
 #: istatistik/services/betimsel.py:198 istatistik/services/friedman.py:124
 #: istatistik/services/tekrarli_anova.py:154
-#: istatistik/templates/istatistik/anova.html:246
+#: istatistik/templates/istatistik/anova.html:243
 msgid "Maks"
 msgstr "Max"
 
@@ -12683,19 +12702,19 @@ msgid "Post-Hoc Testler (%(posthoc_method)s)"
 msgstr "Post-Hoc Tests (%(posthoc_method)s)"
 
 #: istatistik/services/anova.py:195 istatistik/services/kruskal_wallis.py:193
-#: istatistik/templates/istatistik/anova.html:354
-#: istatistik/templates/istatistik/kruskal_wallis.html:341
+#: istatistik/templates/istatistik/anova.html:351
+#: istatistik/templates/istatistik/kruskal_wallis.html:338
 msgid "Grup 1"
 msgstr "Group 1"
 
 #: istatistik/services/anova.py:195 istatistik/services/kruskal_wallis.py:193
-#: istatistik/templates/istatistik/anova.html:354
-#: istatistik/templates/istatistik/kruskal_wallis.html:341
+#: istatistik/templates/istatistik/anova.html:351
+#: istatistik/templates/istatistik/kruskal_wallis.html:338
 msgid "Grup 2"
 msgstr "Group 2"
 
 #: istatistik/services/anova.py:195
-#: istatistik/templates/istatistik/anova.html:354
+#: istatistik/templates/istatistik/anova.html:351
 msgid "Ort. Fark"
 msgstr "Mean Diff."
 
@@ -12704,16 +12723,16 @@ msgid "p (düzeltilmiş)"
 msgstr "p (adjusted)"
 
 #: istatistik/services/anova.py:195 istatistik/services/kruskal_wallis.py:193
-#: istatistik/templates/istatistik/anova.html:354
-#: istatistik/templates/istatistik/kruskal_wallis.html:341
+#: istatistik/templates/istatistik/anova.html:351
+#: istatistik/templates/istatistik/kruskal_wallis.html:338
 msgid "Anlamlı"
 msgstr "Significant"
 
 #: istatistik/services/anova.py:198 istatistik/services/ki_kare.py:184
 #: istatistik/services/kruskal_wallis.py:196
 #: istatistik/services/normallik.py:134
-#: istatistik/templates/istatistik/friedman.html:447
-#: istatistik/templates/istatistik/tekrarli_anova.html:445
+#: istatistik/templates/istatistik/friedman.html:444
+#: istatistik/templates/istatistik/tekrarli_anova.html:442
 msgid "Evet"
 msgstr "Yes"
 
@@ -12721,9 +12740,9 @@ msgstr "Yes"
 #: istatistik/services/ki_kare.py:184 istatistik/services/kruskal_wallis.py:196
 #: istatistik/services/normallik.py:134
 #: istatistik/services/tekrarli_anova.py:229
-#: istatistik/templates/istatistik/friedman.html:447
-#: istatistik/templates/istatistik/ki_kare.html:238
-#: istatistik/templates/istatistik/tekrarli_anova.html:445
+#: istatistik/templates/istatistik/friedman.html:444
+#: istatistik/templates/istatistik/ki_kare.html:235
+#: istatistik/templates/istatistik/tekrarli_anova.html:442
 msgid "Hayır"
 msgstr "No"
 
@@ -12739,7 +12758,7 @@ msgid "Yorum"
 msgstr "Interpretation"
 
 #: istatistik/services/anova.py:231
-#: istatistik/templates/istatistik/anova.html:248
+#: istatistik/templates/istatistik/anova.html:245
 #, python-brace-format
 msgid ""
 "Tek yönlü ANOVA sonucunda {group} grupları arasında {dep} açısından anlamlı "
@@ -12749,7 +12768,7 @@ msgstr ""
 "{group} groups, F({df1}, {df2}) = {f}, {p}, η² = {eta} ({effect})."
 
 #: istatistik/services/anova.py:234
-#: istatistik/templates/istatistik/anova.html:249
+#: istatistik/templates/istatistik/anova.html:246
 #, python-brace-format
 msgid ""
 "Tek yönlü ANOVA sonucunda {group} grupları arasında {dep} açısından anlamlı "
@@ -12782,24 +12801,24 @@ msgstr "Continuous Variables"
 #: istatistik/services/lojistik_regresyon.py:197
 #: istatistik/services/normallik.py:122
 #: istatistik/templates/istatistik/korelasyon.html:161
-#: istatistik/templates/istatistik/lineer_regresyon.html:215
-#: istatistik/templates/istatistik/lojistik_regresyon.html:223
+#: istatistik/templates/istatistik/lineer_regresyon.html:212
+#: istatistik/templates/istatistik/lojistik_regresyon.html:220
 msgid "Değişken"
 msgstr "Variable"
 
 #: istatistik/services/betimsel.py:105 istatistik/services/cronbach.py:155
 #: istatistik/services/normallik.py:122
-#: istatistik/templates/istatistik/anova.html:245
-#: istatistik/templates/istatistik/kruskal_wallis.html:333
-#: istatistik/templates/istatistik/mann_whitney.html:326
+#: istatistik/templates/istatistik/anova.html:242
+#: istatistik/templates/istatistik/kruskal_wallis.html:330
+#: istatistik/templates/istatistik/mann_whitney.html:323
 msgid "SS"
 msgstr "SD"
 
 #: istatistik/services/betimsel.py:105 istatistik/services/betimsel.py:198
 #: istatistik/services/kruskal_wallis.py:143
 #: istatistik/services/mann_whitney.py:128 istatistik/services/wilcoxon.py:123
-#: istatistik/templates/istatistik/kruskal_wallis.html:333
-#: istatistik/templates/istatistik/mann_whitney.html:326
+#: istatistik/templates/istatistik/kruskal_wallis.html:330
+#: istatistik/templates/istatistik/mann_whitney.html:323
 msgid "Medyan"
 msgstr "Median"
 
@@ -12822,13 +12841,13 @@ msgid "Yüzde (%)"
 msgstr "Percent (%)"
 
 #: istatistik/services/betimsel.py:156
-#: istatistik/templates/istatistik/betimsel.html:254
+#: istatistik/templates/istatistik/betimsel.html:251
 #, python-brace-format
 msgid "{var} değişkeni için ortalama = {mean} (SS = {sd})"
 msgstr "the mean for {var} was {mean} (SD = {sd})"
 
 #: istatistik/services/betimsel.py:159
-#: istatistik/templates/istatistik/betimsel.html:255
+#: istatistik/templates/istatistik/betimsel.html:252
 #, python-brace-format
 msgid ""
 "Araştırmaya katılan {n} kişinin puanlarına ilişkin betimleyici istatistikler "
@@ -12909,7 +12928,7 @@ msgid "Silinince α"
 msgstr "α if Deleted"
 
 #: istatistik/services/cronbach.py:184
-#: istatistik/templates/istatistik/cronbach.html:253
+#: istatistik/templates/istatistik/cronbach.html:251
 #, python-brace-format
 msgid ""
 "{k} maddeden oluşan ölçeğin iç tutarlılık katsayısı Cronbach Alpha değeri α "
@@ -13084,7 +13103,7 @@ msgstr "Pair"
 
 #: istatistik/services/friedman.py:175
 #: istatistik/services/tekrarli_anova.py:226
-#: istatistik/templates/istatistik/anova.html:354
+#: istatistik/templates/istatistik/anova.html:351
 #: istatistik/templates/istatistik/friedman.html:174
 #: istatistik/templates/istatistik/tekrarli_anova.html:172
 msgid "p (düz.)"
@@ -13100,7 +13119,7 @@ msgid "Evet *"
 msgstr "Yes *"
 
 #: istatistik/services/friedman.py:207
-#: istatistik/templates/istatistik/friedman.html:275
+#: istatistik/templates/istatistik/friedman.html:272
 #, python-brace-format
 msgid ""
 "Friedman testi sonucuna göre {cols} ölçümleri arasındaki fark istatistiksel "
@@ -13111,7 +13130,7 @@ msgstr ""
 "measurements {cols}, χ²({df}, N = {n}) = {chi2}, {p}, W = {w} ({effect})."
 
 #: istatistik/services/friedman.py:210
-#: istatistik/templates/istatistik/friedman.html:276
+#: istatistik/templates/istatistik/friedman.html:273
 #, python-brace-format
 msgid ""
 "Friedman testi sonucuna göre {cols} ölçümleri arasındaki fark istatistiksel "
@@ -13121,29 +13140,29 @@ msgstr ""
 "A Friedman test revealed no statistically significant difference between the "
 "measurements {cols}, χ²({df}, N = {n}) = {chi2}, {p}, W = {w} ({effect})."
 
-#: istatistik/services/job_runner.py:77
+#: istatistik/services/job_runner.py:87
 msgid "Dosya içeriği bulunamadı. Lütfen tekrar yükleyin."
 msgstr "File content not found. Please upload the file again."
 
-#: istatistik/services/job_runner.py:219
+#: istatistik/services/job_runner.py:229
 #, python-format
 msgid "Bilinmeyen araç: %(tool)s"
 msgstr "Unknown tool: %(tool)s"
 
-#: istatistik/services/job_runner.py:242
+#: istatistik/services/job_runner.py:252
 #, python-format
 msgid "Analiz sırasında hata oluştu: %(error)s"
 msgstr "An error occurred during the analysis: %(error)s"
 
-#: istatistik/services/job_runner.py:257
+#: istatistik/services/job_runner.py:267
 msgid "Desteklenmeyen dosya formatı. CSV veya Excel yükleyin."
 msgstr "Unsupported file format. Please upload a CSV or Excel file."
 
-#: istatistik/services/job_runner.py:260
+#: istatistik/services/job_runner.py:270
 msgid "Dosya boş veya okunamadı."
 msgstr "The file is empty or could not be read."
 
-#: istatistik/services/job_runner.py:262
+#: istatistik/services/job_runner.py:272
 #, python-format
 msgid "En az 5 satır (katılımcı/gözlem) gereklidir, %(count)s satır bulundu."
 msgstr ""
@@ -13296,17 +13315,17 @@ msgid "Ağaç Yapısı (ilk 5 seviye)"
 msgstr "Tree Structure (first 5 levels)"
 
 #: istatistik/services/karar_agaci.py:228
-#: istatistik/templates/istatistik/karar_agaci.html:258
+#: istatistik/templates/istatistik/karar_agaci.html:255
 msgid "Gini safsızlığı"
 msgstr "Gini impurity"
 
 #: istatistik/services/karar_agaci.py:228
-#: istatistik/templates/istatistik/karar_agaci.html:259
+#: istatistik/templates/istatistik/karar_agaci.html:256
 msgid "Bilgi kazancı (entropy)"
 msgstr "Information gain (entropy)"
 
 #: istatistik/services/karar_agaci.py:229
-#: istatistik/templates/istatistik/karar_agaci.html:260
+#: istatistik/templates/istatistik/karar_agaci.html:257
 #, python-brace-format
 msgid ""
 "Karar ağacı sınıflandırma analizi ({criterion} kriteri, maksimum derinlik = "
@@ -13320,7 +13339,7 @@ msgstr ""
 "{prec}, recall = {rec}, F1 = {f1}."
 
 #: istatistik/services/karar_agaci.py:237
-#: istatistik/templates/istatistik/karar_agaci.html:261
+#: istatistik/templates/istatistik/karar_agaci.html:258
 #, python-brace-format
 msgid ""
 "En önemli yordayıcı değişken '{name}' (önem skoru = {score}) olarak "
@@ -13341,7 +13360,7 @@ msgid "\"%(col2)s\" sütunu bulunamadı."
 msgstr "Column \"%(col2)s\" was not found."
 
 #: istatistik/services/ki_kare.py:19
-#: istatistik/templates/istatistik/wilcoxon.html:245
+#: istatistik/templates/istatistik/wilcoxon.html:242
 msgid "İki farklı sütun seçmelisiniz."
 msgstr "You must select two different columns."
 
@@ -13359,9 +13378,9 @@ msgid "Çok küçük etki"
 msgstr "Very small effect"
 
 #: istatistik/services/ki_kare.py:53
-#: istatistik/templates/istatistik/friedman.html:219
-#: istatistik/templates/istatistik/tekrarli_anova.html:217
-#: istatistik/templates/istatistik/wilcoxon.html:198
+#: istatistik/templates/istatistik/friedman.html:211
+#: istatistik/templates/istatistik/tekrarli_anova.html:209
+#: istatistik/templates/istatistik/wilcoxon.html:190
 msgid "Küçük etki"
 msgstr "Small effect"
 
@@ -13370,9 +13389,9 @@ msgid "Orta etki"
 msgstr "Medium effect"
 
 #: istatistik/services/ki_kare.py:59
-#: istatistik/templates/istatistik/friedman.html:221
-#: istatistik/templates/istatistik/tekrarli_anova.html:219
-#: istatistik/templates/istatistik/wilcoxon.html:200
+#: istatistik/templates/istatistik/friedman.html:213
+#: istatistik/templates/istatistik/tekrarli_anova.html:211
+#: istatistik/templates/istatistik/wilcoxon.html:192
 msgid "Büyük etki"
 msgstr "Large effect"
 
@@ -13462,13 +13481,13 @@ msgid "Sütunlar: %(col2)s"
 msgstr "Columns: %(col2)s"
 
 #: istatistik/services/ki_kare.py:207 istatistik/services/ki_kare.py:212
-#: istatistik/templates/istatistik/ki_kare.html:241
+#: istatistik/templates/istatistik/ki_kare.html:238
 msgctxt "tablo"
 msgid "Toplam"
 msgstr "Total"
 
 #: istatistik/services/ki_kare.py:240
-#: istatistik/templates/istatistik/ki_kare.html:242
+#: istatistik/templates/istatistik/ki_kare.html:239
 #, python-brace-format
 msgid ""
 "Ki-kare bağımsızlık testi sonucunda {c1} ile {c2} arasında istatistiksel "
@@ -13480,7 +13499,7 @@ msgstr ""
 "({effect})."
 
 #: istatistik/services/ki_kare.py:243
-#: istatistik/templates/istatistik/ki_kare.html:243
+#: istatistik/templates/istatistik/ki_kare.html:240
 #, python-brace-format
 msgid ""
 "Ki-kare bağımsızlık testi sonucunda {c1} ile {c2} arasında anlamlı bir "
@@ -13508,7 +13527,7 @@ msgstr "Correlation Matrix Report"
 
 #: istatistik/services/korelasyon.py:159
 #: istatistik/templates/istatistik/korelasyon.html:173
-#: istatistik/templates/istatistik/korelasyon.html:225
+#: istatistik/templates/istatistik/korelasyon.html:217
 msgid "Yöntem"
 msgstr "Method"
 
@@ -13541,7 +13560,7 @@ msgid ""
 msgstr "Note: Green cells indicate p &lt; 0.05 (statistically significant)."
 
 #: istatistik/services/korelasyon.py:251
-#: istatistik/templates/istatistik/korelasyon.html:297
+#: istatistik/templates/istatistik/korelasyon.html:294
 #, python-brace-format
 msgid ""
 "Değişkenler arasındaki ilişkiler {method} korelasyon analizi ile "
@@ -13574,8 +13593,8 @@ msgstr "Kruskal-Wallis H Test Report"
 
 #: istatistik/services/kruskal_wallis.py:143
 #: istatistik/services/mann_whitney.py:128
-#: istatistik/templates/istatistik/kruskal_wallis.html:333
-#: istatistik/templates/istatistik/mann_whitney.html:326
+#: istatistik/templates/istatistik/kruskal_wallis.html:330
+#: istatistik/templates/istatistik/mann_whitney.html:323
 msgid "Ort. Sıra"
 msgstr "Mean Rank"
 
@@ -13589,17 +13608,17 @@ msgid "Serbestlik Derecesi (df)"
 msgstr "Degrees of Freedom (df)"
 
 #: istatistik/services/kruskal_wallis.py:193
-#: istatistik/templates/istatistik/kruskal_wallis.html:341
+#: istatistik/templates/istatistik/kruskal_wallis.html:338
 msgid "Med. Fark"
 msgstr "Median Diff."
 
 #: istatistik/services/kruskal_wallis.py:193
-#: istatistik/templates/istatistik/kruskal_wallis.html:341
+#: istatistik/templates/istatistik/kruskal_wallis.html:338
 msgid "p (Bonf.)"
 msgstr "p (Bonf.)"
 
 #: istatistik/services/kruskal_wallis.py:228
-#: istatistik/templates/istatistik/kruskal_wallis.html:237
+#: istatistik/templates/istatistik/kruskal_wallis.html:234
 #, python-brace-format
 msgid ""
 "Kruskal-Wallis H testi sonucunda {group} grupları arasında {dep} açısından "
@@ -13610,7 +13629,7 @@ msgstr ""
 "{dep} between the {group} groups, H({df}) = {h}, {p}, η² = {eta} ({effect})."
 
 #: istatistik/services/kruskal_wallis.py:231
-#: istatistik/templates/istatistik/kruskal_wallis.html:238
+#: istatistik/templates/istatistik/kruskal_wallis.html:235
 #, python-brace-format
 msgid ""
 "Kruskal-Wallis H testi sonucunda {group} grupları arasında {dep} açısından "
@@ -13683,14 +13702,14 @@ msgstr "Coefficients"
 
 #: istatistik/services/lineer_regresyon.py:183
 #: istatistik/services/lojistik_regresyon.py:197
-#: istatistik/templates/istatistik/lineer_regresyon.html:395
+#: istatistik/templates/istatistik/lineer_regresyon.html:392
 #, python-format
 msgid "%%95 GA Alt"
 msgstr "95%% CI Lower"
 
 #: istatistik/services/lineer_regresyon.py:183
 #: istatistik/services/lojistik_regresyon.py:197
-#: istatistik/templates/istatistik/lineer_regresyon.html:216
+#: istatistik/templates/istatistik/lineer_regresyon.html:213
 #, python-format
 msgid "%%95 GA Üst"
 msgstr "95%% CI Upper"
@@ -13705,7 +13724,7 @@ msgstr ""
 "coefficient (used to compare effect sizes between predictors)."
 
 #: istatistik/services/lineer_regresyon.py:232
-#: istatistik/templates/istatistik/lineer_regresyon.html:220
+#: istatistik/templates/istatistik/lineer_regresyon.html:217
 #, python-brace-format
 msgid ""
 "Çoklu doğrusal regresyon analizi sonucunda, {dep} değişkenini yordamak "
@@ -13719,7 +13738,7 @@ msgstr ""
 "adjusted R² = {adj})."
 
 #: istatistik/services/lineer_regresyon.py:236
-#: istatistik/templates/istatistik/lineer_regresyon.html:221
+#: istatistik/templates/istatistik/lineer_regresyon.html:218
 #, python-brace-format
 msgid ""
 "Çoklu doğrusal regresyon analizi sonucunda, {dep} değişkenini yordamak "
@@ -13733,7 +13752,7 @@ msgstr ""
 "adjusted R² = {adj})."
 
 #: istatistik/services/lineer_regresyon.py:245
-#: istatistik/templates/istatistik/lineer_regresyon.html:222
+#: istatistik/templates/istatistik/lineer_regresyon.html:219
 #, python-brace-format
 msgid ""
 "Bağımsız değişkenler arasında istatistiksel açıdan anlamlı yordayıcılar "
@@ -13743,7 +13762,7 @@ msgstr ""
 "{list}."
 
 #: istatistik/services/lineer_regresyon.py:248
-#: istatistik/templates/istatistik/lineer_regresyon.html:223
+#: istatistik/templates/istatistik/lineer_regresyon.html:220
 msgid ""
 "Hiçbir bağımsız değişken bağımlı değişkeni anlamlı düzeyde yordamamıştır."
 msgstr ""
@@ -13785,7 +13804,7 @@ msgstr "p-value (model)"
 #: istatistik/services/lojistik_regresyon.py:240
 #: istatistik/templates/istatistik/karar_agaci.html:167
 #: istatistik/templates/istatistik/lojistik_regresyon.html:159
-#: istatistik/templates/istatistik/lojistik_regresyon.html:419
+#: istatistik/templates/istatistik/lojistik_regresyon.html:416
 #: istatistik/templates/istatistik/svm.html:173
 msgid "Doğruluk"
 msgstr "Accuracy"
@@ -13820,12 +13839,12 @@ msgid "Gerçek: %(cat)s"
 msgstr "Actual: %(cat)s"
 
 #: istatistik/services/lojistik_regresyon.py:245
-#: istatistik/templates/istatistik/lojistik_regresyon.html:434
+#: istatistik/templates/istatistik/lojistik_regresyon.html:431
 msgid "Genel Doğruluk"
 msgstr "Overall Accuracy"
 
 #: istatistik/services/lojistik_regresyon.py:274
-#: istatistik/templates/istatistik/lojistik_regresyon.html:228
+#: istatistik/templates/istatistik/lojistik_regresyon.html:225
 #, python-brace-format
 msgid ""
 "Lojistik regresyon analizi sonucunda kurulan model istatistiksel açıdan "
@@ -13837,7 +13856,7 @@ msgstr ""
 "correctly classified {pct} of the observations."
 
 #: istatistik/services/lojistik_regresyon.py:278
-#: istatistik/templates/istatistik/lojistik_regresyon.html:229
+#: istatistik/templates/istatistik/lojistik_regresyon.html:226
 #, python-brace-format
 msgid ""
 "Lojistik regresyon analizi sonucunda kurulan model istatistiksel açıdan "
@@ -13849,7 +13868,7 @@ msgstr ""
 "correctly classified {pct} of the observations."
 
 #: istatistik/services/lojistik_regresyon.py:282
-#: istatistik/templates/istatistik/lojistik_regresyon.html:230
+#: istatistik/templates/istatistik/lojistik_regresyon.html:227
 #, python-brace-format
 msgid "Anlamlı yordayıcılar: {list}."
 msgstr "Significant predictors: {list}."
@@ -13924,13 +13943,13 @@ msgid "U istatistiği"
 msgstr "U statistic"
 
 #: istatistik/services/mann_whitney.py:155 istatistik/services/wilcoxon.py:168
-#: istatistik/templates/istatistik/mann_whitney.html:193
-#: istatistik/templates/istatistik/wilcoxon.html:194
+#: istatistik/templates/istatistik/mann_whitney.html:190
+#: istatistik/templates/istatistik/wilcoxon.html:186
 msgid "Etki Büyüklüğü (r)"
 msgstr "Effect Size (r)"
 
 #: istatistik/services/mann_whitney.py:185
-#: istatistik/templates/istatistik/mann_whitney.html:230
+#: istatistik/templates/istatistik/mann_whitney.html:227
 #, python-brace-format
 msgid ""
 "Mann-Whitney U testi sonucunda {group} grupları ({g1} ve {g2}) arasında "
@@ -13942,7 +13961,7 @@ msgstr ""
 "({effect})."
 
 #: istatistik/services/mann_whitney.py:188
-#: istatistik/templates/istatistik/mann_whitney.html:231
+#: istatistik/templates/istatistik/mann_whitney.html:228
 #, python-brace-format
 msgid ""
 "Mann-Whitney U testi sonucunda {group} grupları ({g1} ve {g2}) arasında "
@@ -14016,21 +14035,21 @@ msgid "Q-Q Grafikleri"
 msgstr "Q-Q Plots"
 
 #: istatistik/services/normallik.py:180
-#: istatistik/templates/istatistik/normallik.html:234
+#: istatistik/templates/istatistik/normallik.html:231
 #, python-brace-format
 msgid ""
 "{var} değişkeninin normal dağılım gösterdiği belirlenmiştir (W = {w}, {p})."
 msgstr "{var} was found to be normally distributed (W = {w}, {p})."
 
 #: istatistik/services/normallik.py:182
-#: istatistik/templates/istatistik/normallik.html:235
+#: istatistik/templates/istatistik/normallik.html:232
 #, python-brace-format
 msgid ""
 "{var} değişkeninin normal dağılım göstermediği belirlenmiştir (W = {w}, {p})."
 msgstr "{var} was found not to be normally distributed (W = {w}, {p})."
 
 #: istatistik/services/normallik.py:184
-#: istatistik/templates/istatistik/normallik.html:233
+#: istatistik/templates/istatistik/normallik.html:230
 msgid ""
 "Verilerin normal dağılım gösterip göstermediği Shapiro-Wilk testi ile "
 "incelenmiştir."
@@ -14166,16 +14185,16 @@ msgid "Destek Vektör Makinesi (SVM) Sınıflandırma Raporu"
 msgstr "Support Vector Machine (SVM) Classification Report"
 
 #: istatistik/services/svm.py:150 istatistik/templates/istatistik/svm.html:87
-#: istatistik/templates/istatistik/svm.html:264
+#: istatistik/templates/istatistik/svm.html:261
 msgid "Doğrusal (Linear)"
 msgstr "Linear"
 
-#: istatistik/services/svm.py:150 istatistik/templates/istatistik/svm.html:265
+#: istatistik/services/svm.py:150 istatistik/templates/istatistik/svm.html:262
 msgid "RBF (Radyal Tabanlı)"
 msgstr "RBF (Radial Basis Function)"
 
 #: istatistik/services/svm.py:150 istatistik/templates/istatistik/svm.html:88
-#: istatistik/templates/istatistik/svm.html:263
+#: istatistik/templates/istatistik/svm.html:260
 msgid "Polinom"
 msgstr "Polynomial"
 
@@ -14195,7 +14214,7 @@ msgstr "Number of Support Vectors"
 msgid "Değişken Önem Sıralaması (Permutation Importance)"
 msgstr "Variable Importance Ranking (Permutation Importance)"
 
-#: istatistik/services/svm.py:229 istatistik/templates/istatistik/svm.html:266
+#: istatistik/services/svm.py:229 istatistik/templates/istatistik/svm.html:263
 #, python-brace-format
 msgid ""
 "Destek vektör makinesi (SVM) sınıflandırma analizi ({kernel} kernel, C = "
@@ -14209,7 +14228,7 @@ msgstr ""
 "test set (n_train = {ntrain}, n_test = {ntest}). Precision = {prec}, recall "
 "= {rec}, F1 = {f1}. The model used a total of {nsv} support vectors."
 
-#: istatistik/services/svm.py:238 istatistik/templates/istatistik/svm.html:267
+#: istatistik/services/svm.py:238 istatistik/templates/istatistik/svm.html:264
 #, python-brace-format
 msgid ""
 "Permütasyon önem analizi sonucunda en etkili değişken '{name}' (önem skoru = "
@@ -14291,7 +14310,7 @@ msgid "Cohen's d"
 msgstr "Cohen's d"
 
 #: istatistik/services/tekrarli_anova.py:257
-#: istatistik/templates/istatistik/tekrarli_anova.html:272
+#: istatistik/templates/istatistik/tekrarli_anova.html:269
 #, python-brace-format
 msgid ""
 "Tekrarlayan ölçümler ANOVA sonuçlarına göre {cols} koşulları arasındaki fark "
@@ -14303,7 +14322,7 @@ msgstr ""
 "({effect})."
 
 #: istatistik/services/tekrarli_anova.py:260
-#: istatistik/templates/istatistik/tekrarli_anova.html:273
+#: istatistik/templates/istatistik/tekrarli_anova.html:270
 #, python-brace-format
 msgid ""
 "Tekrarlayan ölçümler ANOVA sonuçlarına göre {cols} koşulları arasındaki fark "
@@ -14337,8 +14356,8 @@ msgid "En az 5 çift gözlem gereklidir."
 msgstr "At least 5 paired observations are required."
 
 #: istatistik/services/ttesti.py:154
-#: istatistik/templates/istatistik/friedman.html:218
-#: istatistik/templates/istatistik/tekrarli_anova.html:216
+#: istatistik/templates/istatistik/friedman.html:210
+#: istatistik/templates/istatistik/tekrarli_anova.html:208
 msgid "İhmal edilebilir etki"
 msgstr "Negligible effect"
 
@@ -14422,7 +14441,7 @@ msgid "%%95 GA (fark)"
 msgstr "95%% CI (difference)"
 
 #: istatistik/services/ttesti.py:276
-#: istatistik/templates/istatistik/ttesti.html:428
+#: istatistik/templates/istatistik/ttesti.html:425
 #, python-brace-format
 msgid ""
 "{group} grupları ({g1} ve {g2}) arasındaki {dep} farkı {test} ile test "
@@ -14434,7 +14453,7 @@ msgstr ""
 "{s1}; {g2}: M = {m2}, SD = {s2})."
 
 #: istatistik/services/ttesti.py:283
-#: istatistik/templates/istatistik/ttesti.html:429
+#: istatistik/templates/istatistik/ttesti.html:426
 #, python-brace-format
 msgid ""
 "{c1} ve {c2} arasındaki fark {test} ile test edilmiştir: t({df}) = {t}, {p}, "
@@ -14522,7 +14541,7 @@ msgid "W istatistiği"
 msgstr "W statistic"
 
 #: istatistik/services/wilcoxon.py:197
-#: istatistik/templates/istatistik/wilcoxon.html:254
+#: istatistik/templates/istatistik/wilcoxon.html:251
 #, python-brace-format
 msgid ""
 "Wilcoxon işaret testi sonucunda {c1} ve {c2} ölçümleri arasındaki fark "
@@ -14534,7 +14553,7 @@ msgstr ""
 "= {n})."
 
 #: istatistik/services/wilcoxon.py:200
-#: istatistik/templates/istatistik/wilcoxon.html:255
+#: istatistik/templates/istatistik/wilcoxon.html:252
 #, python-brace-format
 msgid ""
 "Wilcoxon işaret testi sonucunda {c1} ve {c2} ölçümleri arasındaki fark "
@@ -14677,63 +14696,63 @@ msgid "Dosyayı buraya sürükleyin veya tıklayın"
 msgstr "Drag your file here or click"
 
 #: istatistik/templates/istatistik/afa.html:48
-#: istatistik/templates/istatistik/afa.html:281
+#: istatistik/templates/istatistik/afa.html:278
 #: istatistik/templates/istatistik/anova.html:39
-#: istatistik/templates/istatistik/anova.html:230
+#: istatistik/templates/istatistik/anova.html:227
 #: istatistik/templates/istatistik/betimsel.html:48
-#: istatistik/templates/istatistik/betimsel.html:242
+#: istatistik/templates/istatistik/betimsel.html:239
 #: istatistik/templates/istatistik/cronbach.html:48
-#: istatistik/templates/istatistik/cronbach.html:239
+#: istatistik/templates/istatistik/cronbach.html:237
 #: istatistik/templates/istatistik/friedman.html:48
-#: istatistik/templates/istatistik/friedman.html:261
+#: istatistik/templates/istatistik/friedman.html:258
 #: istatistik/templates/istatistik/karar_agaci.html:42
-#: istatistik/templates/istatistik/karar_agaci.html:243
+#: istatistik/templates/istatistik/karar_agaci.html:240
 #: istatistik/templates/istatistik/ki_kare.html:40
-#: istatistik/templates/istatistik/ki_kare.html:227
+#: istatistik/templates/istatistik/ki_kare.html:224
 #: istatistik/templates/istatistik/korelasyon.html:50
-#: istatistik/templates/istatistik/korelasyon.html:282
+#: istatistik/templates/istatistik/korelasyon.html:279
 #: istatistik/templates/istatistik/kruskal_wallis.html:40
-#: istatistik/templates/istatistik/kruskal_wallis.html:224
+#: istatistik/templates/istatistik/kruskal_wallis.html:221
 #: istatistik/templates/istatistik/lineer_regresyon.html:42
-#: istatistik/templates/istatistik/lineer_regresyon.html:204
+#: istatistik/templates/istatistik/lineer_regresyon.html:201
 #: istatistik/templates/istatistik/lojistik_regresyon.html:42
-#: istatistik/templates/istatistik/lojistik_regresyon.html:213
+#: istatistik/templates/istatistik/lojistik_regresyon.html:210
 #: istatistik/templates/istatistik/mann_whitney.html:40
-#: istatistik/templates/istatistik/mann_whitney.html:217
+#: istatistik/templates/istatistik/mann_whitney.html:214
 #: istatistik/templates/istatistik/normallik.html:48
-#: istatistik/templates/istatistik/normallik.html:221
+#: istatistik/templates/istatistik/normallik.html:218
 #: istatistik/templates/istatistik/svm.html:42
-#: istatistik/templates/istatistik/svm.html:249
+#: istatistik/templates/istatistik/svm.html:246
 #: istatistik/templates/istatistik/tekrarli_anova.html:48
-#: istatistik/templates/istatistik/tekrarli_anova.html:259
+#: istatistik/templates/istatistik/tekrarli_anova.html:256
 #: istatistik/templates/istatistik/ttesti.html:211
-#: istatistik/templates/istatistik/ttesti.html:414
+#: istatistik/templates/istatistik/ttesti.html:411
 #: istatistik/templates/istatistik/wilcoxon.html:48
-#: istatistik/templates/istatistik/wilcoxon.html:241
+#: istatistik/templates/istatistik/wilcoxon.html:238
 #, python-format
 msgid "CSV, XLSX, XLS — Maks. %(mb)s MB"
 msgstr "CSV, XLSX, XLS — Max. %(mb)s MB"
 
 #: istatistik/templates/istatistik/afa.html:54
 #: istatistik/templates/istatistik/anova.html:43
-#: istatistik/templates/istatistik/anova.html:235
+#: istatistik/templates/istatistik/anova.html:232
 #: istatistik/templates/istatistik/betimsel.html:54
 #: istatistik/templates/istatistik/cronbach.html:54
 #: istatistik/templates/istatistik/friedman.html:54
 #: istatistik/templates/istatistik/karar_agaci.html:46
 #: istatistik/templates/istatistik/ki_kare.html:45
-#: istatistik/templates/istatistik/ki_kare.html:232
+#: istatistik/templates/istatistik/ki_kare.html:229
 #: istatistik/templates/istatistik/kruskal_wallis.html:44
-#: istatistik/templates/istatistik/kruskal_wallis.html:229
+#: istatistik/templates/istatistik/kruskal_wallis.html:226
 #: istatistik/templates/istatistik/lineer_regresyon.html:46
 #: istatistik/templates/istatistik/lojistik_regresyon.html:46
 #: istatistik/templates/istatistik/mann_whitney.html:44
-#: istatistik/templates/istatistik/mann_whitney.html:222
+#: istatistik/templates/istatistik/mann_whitney.html:219
 #: istatistik/templates/istatistik/normallik.html:54
 #: istatistik/templates/istatistik/svm.html:46
 #: istatistik/templates/istatistik/tekrarli_anova.html:54
 #: istatistik/templates/istatistik/ttesti.html:217
-#: istatistik/templates/istatistik/ttesti.html:417
+#: istatistik/templates/istatistik/ttesti.html:414
 #: istatistik/templates/istatistik/wilcoxon.html:54
 msgid "Sütunları Getir"
 msgstr "Load Columns"
@@ -14799,19 +14818,19 @@ msgid "0 madde seçili"
 msgstr "0 items selected"
 
 #: istatistik/templates/istatistik/afa.html:84
-#: istatistik/templates/istatistik/afa.html:287
+#: istatistik/templates/istatistik/afa.html:284
 #: istatistik/templates/istatistik/betimsel.html:83
-#: istatistik/templates/istatistik/betimsel.html:248
+#: istatistik/templates/istatistik/betimsel.html:245
 #: istatistik/templates/istatistik/cronbach.html:84
-#: istatistik/templates/istatistik/cronbach.html:245
+#: istatistik/templates/istatistik/cronbach.html:243
 #: istatistik/templates/istatistik/friedman.html:84
-#: istatistik/templates/istatistik/friedman.html:267
+#: istatistik/templates/istatistik/friedman.html:264
 #: istatistik/templates/istatistik/korelasyon.html:81
-#: istatistik/templates/istatistik/korelasyon.html:291
+#: istatistik/templates/istatistik/korelasyon.html:288
 #: istatistik/templates/istatistik/normallik.html:84
-#: istatistik/templates/istatistik/normallik.html:227
+#: istatistik/templates/istatistik/normallik.html:224
 #: istatistik/templates/istatistik/tekrarli_anova.html:84
-#: istatistik/templates/istatistik/tekrarli_anova.html:265
+#: istatistik/templates/istatistik/tekrarli_anova.html:262
 msgid "Tümünü Seç"
 msgstr "Select All"
 
@@ -14894,7 +14913,7 @@ msgid "KMO Değeri"
 msgstr "KMO Value"
 
 #: istatistik/templates/istatistik/afa.html:167
-#: istatistik/templates/istatistik/afa.html:232
+#: istatistik/templates/istatistik/afa.html:224
 msgid "KMO Yorumu"
 msgstr "KMO Interpretation"
 
@@ -14911,21 +14930,21 @@ msgid "katılımcı"
 msgstr "participants"
 
 #: istatistik/templates/istatistik/afa.html:197
-#: istatistik/templates/istatistik/anova.html:168
+#: istatistik/templates/istatistik/anova.html:173
 #: istatistik/templates/istatistik/betimsel.html:156
 #: istatistik/templates/istatistik/cronbach.html:157
 #: istatistik/templates/istatistik/friedman.html:182
 #: istatistik/templates/istatistik/karar_agaci.html:158
-#: istatistik/templates/istatistik/ki_kare.html:165
+#: istatistik/templates/istatistik/ki_kare.html:170
 #: istatistik/templates/istatistik/korelasyon.html:194
-#: istatistik/templates/istatistik/kruskal_wallis.html:162
+#: istatistik/templates/istatistik/kruskal_wallis.html:167
 #: istatistik/templates/istatistik/lineer_regresyon.html:126
 #: istatistik/templates/istatistik/lojistik_regresyon.html:127
-#: istatistik/templates/istatistik/mann_whitney.html:155
+#: istatistik/templates/istatistik/mann_whitney.html:160
 #: istatistik/templates/istatistik/normallik.html:147
 #: istatistik/templates/istatistik/svm.html:164
 #: istatistik/templates/istatistik/tekrarli_anova.html:180
-#: istatistik/templates/istatistik/ttesti.html:351
+#: istatistik/templates/istatistik/ttesti.html:356
 #: istatistik/templates/istatistik/wilcoxon.html:160
 #: makaleanaliz/templates/makaleanaliz/results.html:70
 msgid "PDF İndir"
@@ -14942,58 +14961,15 @@ msgstr "Download PDF"
 msgid "Yeni Analiz"
 msgstr "New Analysis"
 
-#: istatistik/templates/istatistik/afa.html:206
-#: istatistik/templates/istatistik/anova.html:181
-#: istatistik/templates/istatistik/betimsel.html:165
-#: istatistik/templates/istatistik/cronbach.html:166
-#: istatistik/templates/istatistik/friedman.html:191
-#: istatistik/templates/istatistik/karar_agaci.html:221
-#: istatistik/templates/istatistik/ki_kare.html:178
-#: istatistik/templates/istatistik/korelasyon.html:203
-#: istatistik/templates/istatistik/kruskal_wallis.html:175
-#: istatistik/templates/istatistik/lineer_regresyon.html:182
-#: istatistik/templates/istatistik/lojistik_regresyon.html:191
-#: istatistik/templates/istatistik/mann_whitney.html:168
-#: istatistik/templates/istatistik/normallik.html:156
-#: istatistik/templates/istatistik/svm.html:227
-#: istatistik/templates/istatistik/tekrarli_anova.html:189
-#: istatistik/templates/istatistik/ttesti.html:366
-#: istatistik/templates/istatistik/wilcoxon.html:169
-msgid "AI Yorumu (Claude)"
-msgstr "AI Comment (Claude)"
-
-#: istatistik/templates/istatistik/afa.html:209
-#: istatistik/templates/istatistik/anova.html:184
-#: istatistik/templates/istatistik/betimsel.html:168
-#: istatistik/templates/istatistik/cronbach.html:169
-#: istatistik/templates/istatistik/friedman.html:194
-#: istatistik/templates/istatistik/karar_agaci.html:224
-#: istatistik/templates/istatistik/ki_kare.html:181
-#: istatistik/templates/istatistik/korelasyon.html:206
-#: istatistik/templates/istatistik/kruskal_wallis.html:178
-#: istatistik/templates/istatistik/lineer_regresyon.html:185
-#: istatistik/templates/istatistik/lojistik_regresyon.html:194
-#: istatistik/templates/istatistik/mann_whitney.html:171
-#: istatistik/templates/istatistik/normallik.html:159
-#: istatistik/templates/istatistik/svm.html:230
-#: istatistik/templates/istatistik/tekrarli_anova.html:192
-#: istatistik/templates/istatistik/ttesti.html:369
-#: istatistik/templates/istatistik/wilcoxon.html:172
-msgid ""
-"Bu yorum yapay zekâ tarafından otomatik üretilmiştir, sonucun yerini tutmaz."
-msgstr ""
-"This comment was generated automatically by AI and does not replace the "
-"result."
-
-#: istatistik/templates/istatistik/afa.html:226
-#: istatistik/templates/istatistik/cronbach.html:186
-#: istatistik/templates/istatistik/friedman.html:210
-#: istatistik/templates/istatistik/tekrarli_anova.html:208
-#: istatistik/templates/istatistik/wilcoxon.html:189
+#: istatistik/templates/istatistik/afa.html:218
+#: istatistik/templates/istatistik/cronbach.html:178
+#: istatistik/templates/istatistik/friedman.html:202
+#: istatistik/templates/istatistik/tekrarli_anova.html:200
+#: istatistik/templates/istatistik/wilcoxon.html:181
 msgid "Yöntem &amp; Varsayımlar"
 msgstr "Method &amp; Assumptions"
 
-#: istatistik/templates/istatistik/afa.html:227
+#: istatistik/templates/istatistik/afa.html:219
 msgid ""
 "Açıklayıcı Faktör Analizi (AFA/EFA), çok sayıda gözlenen değişkenin az "
 "sayıda gizli faktörle açıklanıp açıklanamayacağını sınar. Ölçek geliştirme "
@@ -15003,22 +14979,22 @@ msgstr ""
 "variables can be explained by a small number of latent factors. It is used "
 "for scale development and validity evidence."
 
-#: istatistik/templates/istatistik/afa.html:228
+#: istatistik/templates/istatistik/afa.html:220
 msgid "KMO Testi:"
 msgstr "KMO Test:"
 
-#: istatistik/templates/istatistik/afa.html:228
+#: istatistik/templates/istatistik/afa.html:220
 msgid ""
 "Örneklem yeterliliğini ölçer. KMO ≥ .60 analiz için yeterli kabul edilir."
 msgstr ""
 "Measures sampling adequacy. KMO ≥ .60 is considered sufficient for the "
 "analysis."
 
-#: istatistik/templates/istatistik/afa.html:229
+#: istatistik/templates/istatistik/afa.html:221
 msgid "Bartlett Testi:"
 msgstr "Bartlett's Test:"
 
-#: istatistik/templates/istatistik/afa.html:229
+#: istatistik/templates/istatistik/afa.html:221
 msgid ""
 "Korelasyon matrisinin birim matristen farklı olup olmadığını sınar (p "
 "&lt; .05 gereklidir)."
@@ -15026,66 +15002,66 @@ msgstr ""
 "Tests whether the correlation matrix differs from an identity matrix (p "
 "&lt; .05 required)."
 
-#: istatistik/templates/istatistik/afa.html:235
-#: istatistik/templates/istatistik/cronbach.html:194
+#: istatistik/templates/istatistik/afa.html:227
+#: istatistik/templates/istatistik/cronbach.html:186
 msgid "Kabul edilemez"
 msgstr "Unacceptable"
 
-#: istatistik/templates/istatistik/afa.html:236
+#: istatistik/templates/istatistik/afa.html:228
 msgid "Zayıf"
 msgstr "Poor"
 
-#: istatistik/templates/istatistik/afa.html:237
-#: istatistik/templates/istatistik/anova.html:211
-#: istatistik/templates/istatistik/ki_kare.html:208
-#: istatistik/templates/istatistik/kruskal_wallis.html:205
-#: istatistik/templates/istatistik/mann_whitney.html:198
+#: istatistik/templates/istatistik/afa.html:229
+#: istatistik/templates/istatistik/anova.html:208
+#: istatistik/templates/istatistik/ki_kare.html:205
+#: istatistik/templates/istatistik/kruskal_wallis.html:202
+#: istatistik/templates/istatistik/mann_whitney.html:195
 #: istatistik/templates/istatistik/orneklem.html:58
 msgctxt "etki büyüklüğü"
 msgid "Orta"
 msgstr "Medium"
 
-#: istatistik/templates/istatistik/afa.html:238
+#: istatistik/templates/istatistik/afa.html:230
 msgid "İyi"
 msgstr "Good"
 
-#: istatistik/templates/istatistik/afa.html:239
+#: istatistik/templates/istatistik/afa.html:231
 msgid "Çok İyi"
 msgstr "Very Good"
 
-#: istatistik/templates/istatistik/afa.html:240
+#: istatistik/templates/istatistik/afa.html:232
 msgid "Mükemmel"
 msgstr "Excellent"
 
-#: istatistik/templates/istatistik/afa.html:252
-#: istatistik/templates/istatistik/anova.html:171
-#: istatistik/templates/istatistik/betimsel.html:213
-#: istatistik/templates/istatistik/cronbach.html:210
-#: istatistik/templates/istatistik/friedman.html:233
-#: istatistik/templates/istatistik/karar_agaci.html:215
-#: istatistik/templates/istatistik/ki_kare.html:168
-#: istatistik/templates/istatistik/korelasyon.html:252
-#: istatistik/templates/istatistik/kruskal_wallis.html:165
-#: istatistik/templates/istatistik/lineer_regresyon.html:176
-#: istatistik/templates/istatistik/lojistik_regresyon.html:185
-#: istatistik/templates/istatistik/mann_whitney.html:158
-#: istatistik/templates/istatistik/normallik.html:192
+#: istatistik/templates/istatistik/afa.html:249
+#: istatistik/templates/istatistik/anova.html:176
+#: istatistik/templates/istatistik/betimsel.html:210
+#: istatistik/templates/istatistik/cronbach.html:207
+#: istatistik/templates/istatistik/friedman.html:230
+#: istatistik/templates/istatistik/karar_agaci.html:220
+#: istatistik/templates/istatistik/ki_kare.html:173
+#: istatistik/templates/istatistik/korelasyon.html:249
+#: istatistik/templates/istatistik/kruskal_wallis.html:170
+#: istatistik/templates/istatistik/lineer_regresyon.html:181
+#: istatistik/templates/istatistik/lojistik_regresyon.html:190
+#: istatistik/templates/istatistik/mann_whitney.html:163
+#: istatistik/templates/istatistik/normallik.html:189
 #: istatistik/templates/istatistik/orneklem.html:170
-#: istatistik/templates/istatistik/svm.html:221
-#: istatistik/templates/istatistik/tekrarli_anova.html:231
-#: istatistik/templates/istatistik/ttesti.html:355
-#: istatistik/templates/istatistik/wilcoxon.html:212
+#: istatistik/templates/istatistik/svm.html:226
+#: istatistik/templates/istatistik/tekrarli_anova.html:228
+#: istatistik/templates/istatistik/ttesti.html:360
+#: istatistik/templates/istatistik/wilcoxon.html:209
 msgid "Kopyala"
 msgstr "Copy"
 
-#: istatistik/templates/istatistik/afa.html:259
-#: istatistik/templates/istatistik/betimsel.html:220
-#: istatistik/templates/istatistik/cronbach.html:217
-#: istatistik/templates/istatistik/friedman.html:240
-#: istatistik/templates/istatistik/korelasyon.html:259
-#: istatistik/templates/istatistik/normallik.html:199
-#: istatistik/templates/istatistik/tekrarli_anova.html:238
-#: istatistik/templates/istatistik/wilcoxon.html:219
+#: istatistik/templates/istatistik/afa.html:256
+#: istatistik/templates/istatistik/betimsel.html:217
+#: istatistik/templates/istatistik/cronbach.html:215
+#: istatistik/templates/istatistik/friedman.html:237
+#: istatistik/templates/istatistik/korelasyon.html:256
+#: istatistik/templates/istatistik/normallik.html:196
+#: istatistik/templates/istatistik/tekrarli_anova.html:235
+#: istatistik/templates/istatistik/wilcoxon.html:216
 msgid ""
 "Analizi tamamladıktan sonra APA formatında rapor cümlesi burada otomatik "
 "oluşacak."
@@ -15093,23 +15069,23 @@ msgstr ""
 "After you complete the analysis, an APA-style report sentence will be "
 "generated here automatically."
 
-#: istatistik/templates/istatistik/afa.html:265
-#: istatistik/templates/istatistik/betimsel.html:226
-#: istatistik/templates/istatistik/cronbach.html:223
-#: istatistik/templates/istatistik/friedman.html:245
-#: istatistik/templates/istatistik/korelasyon.html:265
-#: istatistik/templates/istatistik/normallik.html:205
-#: istatistik/templates/istatistik/tekrarli_anova.html:243
-#: istatistik/templates/istatistik/wilcoxon.html:225
+#: istatistik/templates/istatistik/afa.html:262
+#: istatistik/templates/istatistik/betimsel.html:223
+#: istatistik/templates/istatistik/cronbach.html:221
+#: istatistik/templates/istatistik/friedman.html:242
+#: istatistik/templates/istatistik/korelasyon.html:262
+#: istatistik/templates/istatistik/normallik.html:202
+#: istatistik/templates/istatistik/tekrarli_anova.html:240
+#: istatistik/templates/istatistik/wilcoxon.html:222
 #: templates/partials/footer.html:74
 msgid "Akademik Kaynaklar"
 msgstr "Academic References"
 
-#: istatistik/templates/istatistik/afa.html:272
+#: istatistik/templates/istatistik/afa.html:269
 msgid "Açıklayıcı Faktör Analizi Nedir?"
 msgstr "What Is Exploratory Factor Analysis?"
 
-#: istatistik/templates/istatistik/afa.html:273
+#: istatistik/templates/istatistik/afa.html:270
 msgid ""
 "Açıklayıcı Faktör Analizi (AFA), büyük bir değişken setinin ardında yatan "
 "gizli yapıları (faktörleri) ortaya koymaya yarayan bir istatistiksel "
@@ -15121,7 +15097,7 @@ msgstr ""
 "widely used in the social sciences for scale development and to provide "
 "validity evidence."
 
-#: istatistik/templates/istatistik/afa.html:274
+#: istatistik/templates/istatistik/afa.html:271
 msgid ""
 "AFA'da her sütun bir ölçek maddesi (örneğin \"M1, M2…\"), her satır ise bir "
 "katılımcıyı temsil etmelidir. Analiz, hangi maddelerin birlikte yüksek "
@@ -15133,19 +15109,19 @@ msgstr ""
 "each other and groups them under common factors. The factors represent the "
 "measured construct (e.g. anxiety, motivation, attitude)."
 
-#: istatistik/templates/istatistik/afa.html:275
+#: istatistik/templates/istatistik/afa.html:272
 msgid "Analize başlamadan önce iki ön koşul sınanır:"
 msgstr "Two prerequisites are tested before the analysis starts:"
 
-#: istatistik/templates/istatistik/afa.html:275
+#: istatistik/templates/istatistik/afa.html:272
 msgid "KMO testi"
 msgstr "The KMO test"
 
-#: istatistik/templates/istatistik/afa.html:275
+#: istatistik/templates/istatistik/afa.html:272
 msgid "örneklem yeterliliğini ölçer (≥ .60 önerilir) ve"
 msgstr "measures sampling adequacy (≥ .60 recommended) and"
 
-#: istatistik/templates/istatistik/afa.html:275
+#: istatistik/templates/istatistik/afa.html:272
 msgid ""
 "değişkenler arasında yeterli korelasyon bulunduğunu doğrular (p &lt; .05). "
 "Her iki koşul sağlandığında faktör analizi anlamlı sonuçlar üretebilir."
@@ -15154,81 +15130,81 @@ msgstr ""
 "&lt; .05). When both conditions are met, the factor analysis can produce "
 "meaningful results."
 
-#: istatistik/templates/istatistik/afa.html:285
-#: istatistik/templates/istatistik/cronbach.html:243
+#: istatistik/templates/istatistik/afa.html:282
+#: istatistik/templates/istatistik/cronbach.html:241
 msgid " madde seçili"
 msgstr " items selected"
 
-#: istatistik/templates/istatistik/afa.html:286
-#: istatistik/templates/istatistik/betimsel.html:247
-#: istatistik/templates/istatistik/cronbach.html:244
-#: istatistik/templates/istatistik/friedman.html:266
-#: istatistik/templates/istatistik/korelasyon.html:290
-#: istatistik/templates/istatistik/normallik.html:226
-#: istatistik/templates/istatistik/tekrarli_anova.html:264
+#: istatistik/templates/istatistik/afa.html:283
+#: istatistik/templates/istatistik/betimsel.html:244
+#: istatistik/templates/istatistik/cronbach.html:242
+#: istatistik/templates/istatistik/friedman.html:263
+#: istatistik/templates/istatistik/korelasyon.html:287
+#: istatistik/templates/istatistik/normallik.html:223
+#: istatistik/templates/istatistik/tekrarli_anova.html:261
 msgid "Tümünü Kaldır"
 msgstr "Deselect All"
 
-#: istatistik/templates/istatistik/afa.html:289
-#: istatistik/templates/istatistik/betimsel.html:250
-#: istatistik/templates/istatistik/cronbach.html:247
-#: istatistik/templates/istatistik/friedman.html:270
-#: istatistik/templates/istatistik/korelasyon.html:293
-#: istatistik/templates/istatistik/normallik.html:229
-#: istatistik/templates/istatistik/tekrarli_anova.html:268
-#: istatistik/templates/istatistik/wilcoxon.html:247
+#: istatistik/templates/istatistik/afa.html:286
+#: istatistik/templates/istatistik/betimsel.html:247
+#: istatistik/templates/istatistik/cronbach.html:245
+#: istatistik/templates/istatistik/friedman.html:267
+#: istatistik/templates/istatistik/korelasyon.html:290
+#: istatistik/templates/istatistik/normallik.html:226
+#: istatistik/templates/istatistik/tekrarli_anova.html:265
+#: istatistik/templates/istatistik/wilcoxon.html:244
 msgid "Günlük: "
 msgstr "Daily: "
 
-#: istatistik/templates/istatistik/afa.html:290
-#: istatistik/templates/istatistik/betimsel.html:251
-#: istatistik/templates/istatistik/cronbach.html:248
-#: istatistik/templates/istatistik/friedman.html:271
-#: istatistik/templates/istatistik/korelasyon.html:294
-#: istatistik/templates/istatistik/normallik.html:230
-#: istatistik/templates/istatistik/tekrarli_anova.html:269
-#: istatistik/templates/istatistik/wilcoxon.html:248
+#: istatistik/templates/istatistik/afa.html:287
+#: istatistik/templates/istatistik/betimsel.html:248
+#: istatistik/templates/istatistik/cronbach.html:246
+#: istatistik/templates/istatistik/friedman.html:268
+#: istatistik/templates/istatistik/korelasyon.html:291
+#: istatistik/templates/istatistik/normallik.html:227
+#: istatistik/templates/istatistik/tekrarli_anova.html:266
+#: istatistik/templates/istatistik/wilcoxon.html:245
 msgid " analiz hakkı"
 msgstr " analyses left"
 
-#: istatistik/templates/istatistik/afa.html:291
-#: istatistik/templates/istatistik/cronbach.html:249
-#: istatistik/templates/istatistik/friedman.html:272
+#: istatistik/templates/istatistik/afa.html:288
+#: istatistik/templates/istatistik/cronbach.html:247
+#: istatistik/templates/istatistik/friedman.html:269
 msgid " katılımcı"
 msgstr " participants"
 
-#: istatistik/templates/istatistik/afa.html:292
-#: istatistik/templates/istatistik/anova.html:241
-#: istatistik/templates/istatistik/betimsel.html:252
-#: istatistik/templates/istatistik/cronbach.html:250
-#: istatistik/templates/istatistik/friedman.html:273
-#: istatistik/templates/istatistik/karar_agaci.html:253
-#: istatistik/templates/istatistik/ki_kare.html:239
-#: istatistik/templates/istatistik/korelasyon.html:295
-#: istatistik/templates/istatistik/kruskal_wallis.html:235
-#: istatistik/templates/istatistik/lineer_regresyon.html:217
-#: istatistik/templates/istatistik/lojistik_regresyon.html:225
-#: istatistik/templates/istatistik/mann_whitney.html:228
-#: istatistik/templates/istatistik/normallik.html:231
+#: istatistik/templates/istatistik/afa.html:289
+#: istatistik/templates/istatistik/anova.html:238
+#: istatistik/templates/istatistik/betimsel.html:249
+#: istatistik/templates/istatistik/cronbach.html:248
+#: istatistik/templates/istatistik/friedman.html:270
+#: istatistik/templates/istatistik/karar_agaci.html:250
+#: istatistik/templates/istatistik/ki_kare.html:236
+#: istatistik/templates/istatistik/korelasyon.html:292
+#: istatistik/templates/istatistik/kruskal_wallis.html:232
+#: istatistik/templates/istatistik/lineer_regresyon.html:214
+#: istatistik/templates/istatistik/lojistik_regresyon.html:222
+#: istatistik/templates/istatistik/mann_whitney.html:225
+#: istatistik/templates/istatistik/normallik.html:228
 #: istatistik/templates/istatistik/orneklem.html:226
-#: istatistik/templates/istatistik/svm.html:260
-#: istatistik/templates/istatistik/tekrarli_anova.html:270
-#: istatistik/templates/istatistik/ttesti.html:425
-#: istatistik/templates/istatistik/wilcoxon.html:251
+#: istatistik/templates/istatistik/svm.html:257
+#: istatistik/templates/istatistik/tekrarli_anova.html:267
+#: istatistik/templates/istatistik/ttesti.html:422
+#: istatistik/templates/istatistik/wilcoxon.html:248
 msgid "Kopyalandı"
 msgstr "Copied"
 
-#: istatistik/templates/istatistik/afa.html:294
-#: istatistik/templates/istatistik/cronbach.html:252
+#: istatistik/templates/istatistik/afa.html:291
+#: istatistik/templates/istatistik/cronbach.html:250
 #, python-brace-format
 msgid "{n} madde"
 msgstr "{n} items"
 
-#: istatistik/templates/istatistik/afa.html:295
-#: istatistik/templates/istatistik/karar_agaci.html:255
-#: istatistik/templates/istatistik/lineer_regresyon.html:219
-#: istatistik/templates/istatistik/lojistik_regresyon.html:227
-#: istatistik/templates/istatistik/svm.html:262
+#: istatistik/templates/istatistik/afa.html:292
+#: istatistik/templates/istatistik/karar_agaci.html:252
+#: istatistik/templates/istatistik/lineer_regresyon.html:216
+#: istatistik/templates/istatistik/lojistik_regresyon.html:224
+#: istatistik/templates/istatistik/svm.html:259
 #, python-format, python-brace-format
 msgid "%%{value}"
 msgstr "{value}%%"
@@ -15290,8 +15266,8 @@ msgstr ""
 #: istatistik/templates/istatistik/analiz_hub.html:4
 #: istatistik/templates/istatistik/analiz_hub.html:6
 #: istatistik/templates/istatistik/analiz_hub.html:8
-#: istatistik/templates/istatistik/analiz_hub.html:32 templates/base.html:220
-#: templates/base.html:442
+#: istatistik/templates/istatistik/analiz_hub.html:32 templates/base.html:447
+#: templates/base.html:669
 msgid "İstatistik Analiz Araçları"
 msgstr "Statistics Tools"
 
@@ -15454,71 +15430,71 @@ msgstr "Running analysis…"
 msgid "Post-Hoc Testler"
 msgstr "Post-Hoc Tests"
 
-#: istatistik/templates/istatistik/anova.html:174
-#: istatistik/templates/istatistik/ki_kare.html:171
-#: istatistik/templates/istatistik/kruskal_wallis.html:168
-#: istatistik/templates/istatistik/mann_whitney.html:161
-#: istatistik/templates/istatistik/ttesti.html:359
+#: istatistik/templates/istatistik/anova.html:179
+#: istatistik/templates/istatistik/ki_kare.html:176
+#: istatistik/templates/istatistik/kruskal_wallis.html:173
+#: istatistik/templates/istatistik/mann_whitney.html:166
+#: istatistik/templates/istatistik/ttesti.html:364
 msgid "Yeni"
 msgstr "New"
 
-#: istatistik/templates/istatistik/anova.html:198
-#: istatistik/templates/istatistik/ki_kare.html:194
-#: istatistik/templates/istatistik/kruskal_wallis.html:191
-#: istatistik/templates/istatistik/ttesti.html:385
+#: istatistik/templates/istatistik/anova.html:195
+#: istatistik/templates/istatistik/ki_kare.html:191
+#: istatistik/templates/istatistik/kruskal_wallis.html:188
+#: istatistik/templates/istatistik/ttesti.html:382
 msgid "Varsayımlar"
 msgstr "Assumptions"
 
-#: istatistik/templates/istatistik/anova.html:200
-#: istatistik/templates/istatistik/kruskal_wallis.html:193
-#: istatistik/templates/istatistik/ttesti.html:387
+#: istatistik/templates/istatistik/anova.html:197
+#: istatistik/templates/istatistik/kruskal_wallis.html:190
+#: istatistik/templates/istatistik/ttesti.html:384
 msgid "Bağımsız gözlemler"
 msgstr "Independent observations"
 
-#: istatistik/templates/istatistik/anova.html:201
+#: istatistik/templates/istatistik/anova.html:198
 msgid "Her grupta yaklaşık normal dağılım"
 msgstr "Approximately normal distribution in each group"
 
-#: istatistik/templates/istatistik/anova.html:202
+#: istatistik/templates/istatistik/anova.html:199
 msgid "Varyans homojenliği (Levene testi ile raporlanır)"
 msgstr "Homogeneity of variance (reported with Levene's test)"
 
-#: istatistik/templates/istatistik/anova.html:206
-#: istatistik/templates/istatistik/kruskal_wallis.html:200
+#: istatistik/templates/istatistik/anova.html:203
+#: istatistik/templates/istatistik/kruskal_wallis.html:197
 #: istatistik/views.py:812
 msgid "Etki Büyüklüğü (η²)"
 msgstr "Effect Size (η²)"
 
-#: istatistik/templates/istatistik/anova.html:209
-#: istatistik/templates/istatistik/kruskal_wallis.html:203
-#: istatistik/templates/istatistik/mann_whitney.html:196
-#: istatistik/templates/istatistik/wilcoxon.html:197
+#: istatistik/templates/istatistik/anova.html:206
+#: istatistik/templates/istatistik/kruskal_wallis.html:200
+#: istatistik/templates/istatistik/mann_whitney.html:193
+#: istatistik/templates/istatistik/wilcoxon.html:189
 msgid "İhmal edilebilir"
 msgstr "Negligible"
 
-#: istatistik/templates/istatistik/anova.html:210
-#: istatistik/templates/istatistik/ki_kare.html:207
-#: istatistik/templates/istatistik/kruskal_wallis.html:204
-#: istatistik/templates/istatistik/mann_whitney.html:197
+#: istatistik/templates/istatistik/anova.html:207
+#: istatistik/templates/istatistik/ki_kare.html:204
+#: istatistik/templates/istatistik/kruskal_wallis.html:201
+#: istatistik/templates/istatistik/mann_whitney.html:194
 #: istatistik/templates/istatistik/orneklem.html:57
 #: istatistik/templates/istatistik/orneklem.html:222
 msgid "Küçük"
 msgstr "Small"
 
-#: istatistik/templates/istatistik/anova.html:212
-#: istatistik/templates/istatistik/ki_kare.html:209
-#: istatistik/templates/istatistik/kruskal_wallis.html:206
-#: istatistik/templates/istatistik/mann_whitney.html:199
+#: istatistik/templates/istatistik/anova.html:209
+#: istatistik/templates/istatistik/ki_kare.html:206
+#: istatistik/templates/istatistik/kruskal_wallis.html:203
+#: istatistik/templates/istatistik/mann_whitney.html:196
 #: istatistik/templates/istatistik/orneklem.html:59
 #: istatistik/templates/istatistik/orneklem.html:223
 msgid "Büyük"
 msgstr "Large"
 
-#: istatistik/templates/istatistik/anova.html:221
+#: istatistik/templates/istatistik/anova.html:218
 msgid "Tek Yönlü ANOVA Nedir?"
 msgstr "What Is One-Way ANOVA?"
 
-#: istatistik/templates/istatistik/anova.html:222
+#: istatistik/templates/istatistik/anova.html:219
 msgid ""
 "Tek Yönlü ANOVA (Analysis of Variance), üç veya daha fazla bağımsız grubun "
 "ortalamalarını eş zamanlı olarak karşılaştıran parametrik bir testtir. "
@@ -15530,7 +15506,7 @@ msgstr ""
 "multiple t-tests inflates the Type I error risk, it allows multiple groups "
 "to be compared with a single test."
 
-#: istatistik/templates/istatistik/anova.html:223
+#: istatistik/templates/istatistik/anova.html:220
 msgid ""
 "ANOVA anlamlı bir sonuç verdiğinde hangi grupların birbirinden farklı "
 "olduğunu bulmak için post-hoc testlerine ihtiyaç duyulur."
@@ -15538,19 +15514,19 @@ msgstr ""
 "When ANOVA yields a significant result, post-hoc tests are needed to find "
 "out which groups differ from each other."
 
-#: istatistik/templates/istatistik/anova.html:223
+#: istatistik/templates/istatistik/anova.html:220
 msgid "en yaygın kullanılan post-hoc testidir;"
 msgstr "is the most widely used post-hoc test;"
 
-#: istatistik/templates/istatistik/anova.html:223
+#: istatistik/templates/istatistik/anova.html:220
 msgid "daha muhafazakâr,"
 msgstr "is more conservative,"
 
-#: istatistik/templates/istatistik/anova.html:223
+#: istatistik/templates/istatistik/anova.html:220
 msgid "ise varyansların homojen olmadığı durumlarda tercih edilir."
 msgstr "is preferred when variances are not homogeneous."
 
-#: istatistik/templates/istatistik/anova.html:224
+#: istatistik/templates/istatistik/anova.html:221
 msgid ""
 "Normallik ve varyans homojenliği (Levene testi) varsayımları "
 "karşılanmadığında Kruskal-Wallis H Testi'ne geçilmesi önerilir. Etki "
@@ -15560,55 +15536,55 @@ msgstr ""
 "test) are not met, switching to the Kruskal-Wallis H test is recommended. "
 "For effect size, η² (eta squared) should be calculated and reported."
 
-#: istatistik/templates/istatistik/anova.html:233
-#: istatistik/templates/istatistik/ki_kare.html:230
-#: istatistik/templates/istatistik/kruskal_wallis.html:227
-#: istatistik/templates/istatistik/mann_whitney.html:220
-#: istatistik/templates/istatistik/ttesti.html:422
+#: istatistik/templates/istatistik/anova.html:230
+#: istatistik/templates/istatistik/ki_kare.html:227
+#: istatistik/templates/istatistik/kruskal_wallis.html:224
+#: istatistik/templates/istatistik/mann_whitney.html:217
+#: istatistik/templates/istatistik/ttesti.html:419
 #, python-brace-format
 msgid "{rows} satır, {cols} sütun"
 msgstr "{rows} rows, {cols} columns"
 
-#: istatistik/templates/istatistik/anova.html:234
-#: istatistik/templates/istatistik/ki_kare.html:231
-#: istatistik/templates/istatistik/kruskal_wallis.html:228
-#: istatistik/templates/istatistik/mann_whitney.html:221
-#: istatistik/templates/istatistik/ttesti.html:416
+#: istatistik/templates/istatistik/anova.html:231
+#: istatistik/templates/istatistik/ki_kare.html:228
+#: istatistik/templates/istatistik/kruskal_wallis.html:225
+#: istatistik/templates/istatistik/mann_whitney.html:218
+#: istatistik/templates/istatistik/ttesti.html:413
 msgid "Yükleniyor…"
 msgstr "Loading…"
 
-#: istatistik/templates/istatistik/anova.html:236
-#: istatistik/templates/istatistik/ki_kare.html:233
-#: istatistik/templates/istatistik/kruskal_wallis.html:230
-#: istatistik/templates/istatistik/mann_whitney.html:223
+#: istatistik/templates/istatistik/anova.html:233
+#: istatistik/templates/istatistik/ki_kare.html:230
+#: istatistik/templates/istatistik/kruskal_wallis.html:227
+#: istatistik/templates/istatistik/mann_whitney.html:220
 msgid "Başlatılıyor…"
 msgstr "Starting…"
 
-#: istatistik/templates/istatistik/anova.html:238
-#: istatistik/templates/istatistik/karar_agaci.html:251
-#: istatistik/templates/istatistik/ki_kare.html:235
-#: istatistik/templates/istatistik/kruskal_wallis.html:232
-#: istatistik/templates/istatistik/lineer_regresyon.html:212
-#: istatistik/templates/istatistik/lojistik_regresyon.html:221
-#: istatistik/templates/istatistik/mann_whitney.html:225
-#: istatistik/templates/istatistik/svm.html:257
-#: istatistik/templates/istatistik/ttesti.html:421
+#: istatistik/templates/istatistik/anova.html:235
+#: istatistik/templates/istatistik/karar_agaci.html:248
+#: istatistik/templates/istatistik/ki_kare.html:232
+#: istatistik/templates/istatistik/kruskal_wallis.html:229
+#: istatistik/templates/istatistik/lineer_regresyon.html:209
+#: istatistik/templates/istatistik/lojistik_regresyon.html:218
+#: istatistik/templates/istatistik/mann_whitney.html:222
+#: istatistik/templates/istatistik/svm.html:254
+#: istatistik/templates/istatistik/ttesti.html:418
 msgid "Analiz başarısız."
 msgstr "Analysis failed."
 
-#: istatistik/templates/istatistik/anova.html:239
-#: istatistik/templates/istatistik/kruskal_wallis.html:233
-#: istatistik/templates/istatistik/mann_whitney.html:226
+#: istatistik/templates/istatistik/anova.html:236
+#: istatistik/templates/istatistik/kruskal_wallis.html:230
+#: istatistik/templates/istatistik/mann_whitney.html:223
 msgid "✓ Gruplar arasında anlamlı fark var (p < .05)"
 msgstr "✓ There is a significant difference between groups (p < .05)"
 
-#: istatistik/templates/istatistik/anova.html:240
-#: istatistik/templates/istatistik/kruskal_wallis.html:234
-#: istatistik/templates/istatistik/mann_whitney.html:227
+#: istatistik/templates/istatistik/anova.html:237
+#: istatistik/templates/istatistik/kruskal_wallis.html:231
+#: istatistik/templates/istatistik/mann_whitney.html:224
 msgid "✗ Gruplar arasında anlamlı fark yok (p ≥ .05)"
 msgstr "✗ There is no significant difference between groups (p ≥ .05)"
 
-#: istatistik/templates/istatistik/anova.html:247
+#: istatistik/templates/istatistik/anova.html:244
 #, python-brace-format
 msgid "Post-Hoc Testler ({method})"
 msgstr "Post-Hoc Tests ({method})"
@@ -15693,11 +15669,11 @@ msgstr "Continuous"
 msgid "Kategorik"
 msgstr "Categorical"
 
-#: istatistik/templates/istatistik/betimsel.html:185
+#: istatistik/templates/istatistik/betimsel.html:177
 msgid "Hesaplanan İstatistikler"
 msgstr "Calculated Statistics"
 
-#: istatistik/templates/istatistik/betimsel.html:186
+#: istatistik/templates/istatistik/betimsel.html:178
 msgid ""
 "Betimleyici istatistikler veri setini özetleyen temel ölçüleri içerir. "
 "Sürekli değişkenler için merkezi eğilim ve yayılım; kategorik değişkenler "
@@ -15707,60 +15683,60 @@ msgstr ""
 "Central tendency and dispersion are calculated for continuous variables; "
 "frequency and percentage distributions for categorical variables."
 
-#: istatistik/templates/istatistik/betimsel.html:188
+#: istatistik/templates/istatistik/betimsel.html:180
 msgid "Ortalama, Ortanca, Mod"
 msgstr "Mean, Median, Mode"
 
-#: istatistik/templates/istatistik/betimsel.html:189
+#: istatistik/templates/istatistik/betimsel.html:181
 msgid "Standart Sapma, Varyans, Min–Maks"
 msgstr "Standard Deviation, Variance, Min–Max"
 
-#: istatistik/templates/istatistik/betimsel.html:190
+#: istatistik/templates/istatistik/betimsel.html:182
 msgid "Çarpıklık (Skewness), Basıklık (Kurtosis)"
 msgstr "Skewness, Kurtosis"
 
-#: istatistik/templates/istatistik/betimsel.html:191
+#: istatistik/templates/istatistik/betimsel.html:183
 msgid "Frekans ve yüzde dağılımı (kategorik)"
 msgstr "Frequency and percentage distribution (categorical)"
 
-#: istatistik/templates/istatistik/betimsel.html:195
+#: istatistik/templates/istatistik/betimsel.html:187
 msgid "Çarpıklık &amp; Basıklık Yorumu"
 msgstr "Interpreting Skewness &amp; Kurtosis"
 
-#: istatistik/templates/istatistik/betimsel.html:198
+#: istatistik/templates/istatistik/betimsel.html:190
 msgid "−1 ile +1 arası çarpıklık"
 msgstr "Skewness between −1 and +1"
 
-#: istatistik/templates/istatistik/betimsel.html:198
-#: istatistik/templates/istatistik/betimsel.html:201
+#: istatistik/templates/istatistik/betimsel.html:190
+#: istatistik/templates/istatistik/betimsel.html:193
 msgid "Normal kabul edilir"
 msgstr "Considered normal"
 
-#: istatistik/templates/istatistik/betimsel.html:199
+#: istatistik/templates/istatistik/betimsel.html:191
 msgid "±1 – ±2 arası çarpıklık"
 msgstr "Skewness between ±1 and ±2"
 
-#: istatistik/templates/istatistik/betimsel.html:199
+#: istatistik/templates/istatistik/betimsel.html:191
 msgid "Hafif çarpık"
 msgstr "Slightly skewed"
 
-#: istatistik/templates/istatistik/betimsel.html:200
+#: istatistik/templates/istatistik/betimsel.html:192
 msgid "±2 üzeri çarpıklık"
 msgstr "Skewness beyond ±2"
 
-#: istatistik/templates/istatistik/betimsel.html:200
+#: istatistik/templates/istatistik/betimsel.html:192
 msgid "Belirgin çarpıklık"
 msgstr "Marked skewness"
 
-#: istatistik/templates/istatistik/betimsel.html:201
+#: istatistik/templates/istatistik/betimsel.html:193
 msgid "Basıklık −2 ile +2"
 msgstr "Kurtosis between −2 and +2"
 
-#: istatistik/templates/istatistik/betimsel.html:233
+#: istatistik/templates/istatistik/betimsel.html:230
 msgid "Betimleyici İstatistik Nedir?"
 msgstr "What Are Descriptive Statistics?"
 
-#: istatistik/templates/istatistik/betimsel.html:234
+#: istatistik/templates/istatistik/betimsel.html:231
 msgid ""
 "Betimleyici (tanımlayıcı) istatistik, bir veri setinin temel özelliklerini "
 "özetlemek için kullanılan yöntemlerin bütünüdür. Ortalama, medyan, standart "
@@ -15772,7 +15748,7 @@ msgstr ""
 "deviation, minimum, maximum and skewness help you understand the overall "
 "structure of the data."
 
-#: istatistik/templates/istatistik/betimsel.html:235
+#: istatistik/templates/istatistik/betimsel.html:232
 msgid ""
 "Herhangi bir istatistiksel analizden önce betimleyici istatistik yapılması "
 "önerilir. Verinin dağılımını, aykırı değerleri ve eksik gözlemleri anlamak, "
@@ -15784,7 +15760,7 @@ msgstr ""
 "observations improves the accuracy of subsequent analyses. They are also "
 "used to describe the participant profile in theses and research reports."
 
-#: istatistik/templates/istatistik/betimsel.html:236
+#: istatistik/templates/istatistik/betimsel.html:233
 msgid ""
 "Her sütun bir değişkeni, her satır ise bir gözlem birimini (katılımcı, ürün, "
 "gün vb.) temsil etmelidir. CSV veya Excel formatındaki verilerinizi "
@@ -15794,8 +15770,8 @@ msgstr ""
 "(participant, product, day, etc.). Upload your data in CSV or Excel format "
 "to get instant summary statistics for all numeric columns."
 
-#: istatistik/templates/istatistik/betimsel.html:246
-#: istatistik/templates/istatistik/normallik.html:225
+#: istatistik/templates/istatistik/betimsel.html:243
+#: istatistik/templates/istatistik/normallik.html:222
 msgid " değişken seçili"
 msgstr " variables selected"
 
@@ -15840,7 +15816,7 @@ msgstr ""
 msgid "Cronbach Alpha (α)"
 msgstr "Cronbach's Alpha (α)"
 
-#: istatistik/templates/istatistik/cronbach.html:187
+#: istatistik/templates/istatistik/cronbach.html:179
 msgid ""
 "Cronbach Alpha, bir ölçeğin iç tutarlılığını ölçen katsayıdır. Her maddenin "
 "toplam puanla korelasyonuna dayalı olarak hesaplanır. Ölçek maddelerinin "
@@ -15850,47 +15826,47 @@ msgstr ""
 "a scale. It is calculated based on the correlation of each item with the "
 "total score. The scale items are assumed to measure the same construct."
 
-#: istatistik/templates/istatistik/cronbach.html:188
+#: istatistik/templates/istatistik/cronbach.html:180
 msgid "Formül:"
 msgstr "Formula:"
 
-#: istatistik/templates/istatistik/cronbach.html:188
+#: istatistik/templates/istatistik/cronbach.html:180
 msgid "= madde sayısı,"
 msgstr "= number of items,"
 
-#: istatistik/templates/istatistik/cronbach.html:188
+#: istatistik/templates/istatistik/cronbach.html:180
 msgid "= madde varyansı,"
 msgstr "= item variance,"
 
-#: istatistik/templates/istatistik/cronbach.html:188
+#: istatistik/templates/istatistik/cronbach.html:180
 msgid "= toplam puan varyansı"
 msgstr "= total score variance"
 
-#: istatistik/templates/istatistik/cronbach.html:191
+#: istatistik/templates/istatistik/cronbach.html:183
 msgid "Yorum Eşikleri"
 msgstr "Interpretation Thresholds"
 
-#: istatistik/templates/istatistik/cronbach.html:195
+#: istatistik/templates/istatistik/cronbach.html:187
 msgid "Düşük güvenilirlik"
 msgstr "Low reliability"
 
-#: istatistik/templates/istatistik/cronbach.html:196
+#: istatistik/templates/istatistik/cronbach.html:188
 msgid "Yeterli güvenilirlik"
 msgstr "Acceptable reliability"
 
-#: istatistik/templates/istatistik/cronbach.html:197
+#: istatistik/templates/istatistik/cronbach.html:189
 msgid "Yüksek güvenilirlik"
 msgstr "High reliability"
 
-#: istatistik/templates/istatistik/cronbach.html:198
+#: istatistik/templates/istatistik/cronbach.html:190
 msgid "Çok yüksek güvenilirlik"
 msgstr "Very high reliability"
 
-#: istatistik/templates/istatistik/cronbach.html:230
+#: istatistik/templates/istatistik/cronbach.html:228
 msgid "Cronbach Alpha Güvenilirlik Analizi Nedir?"
 msgstr "What Is Cronbach's Alpha Reliability Analysis?"
 
-#: istatistik/templates/istatistik/cronbach.html:231
+#: istatistik/templates/istatistik/cronbach.html:229
 msgid ""
 "Cronbach Alpha (α), bir ölçeğin veya anketin iç tutarlılığını ölçen en "
 "yaygın güvenilirlik katsayısıdır. Birden fazla maddenin aynı yapıyı ölçüp "
@@ -15903,7 +15879,7 @@ msgstr ""
 "in scale development in the social sciences, educational research and "
 "psychology."
 
-#: istatistik/templates/istatistik/cronbach.html:232
+#: istatistik/templates/istatistik/cronbach.html:230
 msgid ""
 "Her sütunun bir ölçek maddesi (soru), her satırın ise bir katılımcıyı temsil "
 "etmesi gerekir. Tüm maddelerin aynı Likert ölçeğinde olması ve aynı yönde "
@@ -15914,7 +15890,7 @@ msgstr ""
 "items should use the same Likert scale and be scored in the same direction. "
 "The resulting α value indicates the reliability level of the scale."
 
-#: istatistik/templates/istatistik/cronbach.html:233
+#: istatistik/templates/istatistik/cronbach.html:231
 msgid ""
 "Genel kabul gören eşiğe göre α ≥ .70 yeterli güvenilirlik, α ≥ .80 ise "
 "yüksek güvenilirlik olarak değerlendirilir. Madde-toplam korelasyonu düşük "
@@ -15987,7 +15963,7 @@ msgstr "measurements &nbsp;·&nbsp;"
 msgid "Post-Hoc Karşılaştırmalar (Bonferroni)"
 msgstr "Post-Hoc Comparisons (Bonferroni)"
 
-#: istatistik/templates/istatistik/friedman.html:211
+#: istatistik/templates/istatistik/friedman.html:203
 msgid ""
 "Friedman testi, aynı bireylerin 3 veya daha fazla koşulda ölçüldüğü "
 "tasarımlarda kullanılan non-parametrik bir testtir. Normallik varsayımı "
@@ -15997,12 +15973,12 @@ msgstr ""
 "individuals are measured under 3 or more conditions. It does not require the "
 "normality assumption and can be applied to ordinal or continuous data."
 
-#: istatistik/templates/istatistik/friedman.html:212
-#: istatistik/templates/istatistik/wilcoxon.html:191
+#: istatistik/templates/istatistik/friedman.html:204
+#: istatistik/templates/istatistik/wilcoxon.html:183
 msgid "Ne zaman kullanılır?"
 msgstr "When is it used?"
 
-#: istatistik/templates/istatistik/friedman.html:212
+#: istatistik/templates/istatistik/friedman.html:204
 msgid ""
 "Ön test – son test – takip ölçümü gibi tekrarlayan tasarımlarda; normallik "
 "sağlanamadığında ya da Likert ölçeğiyle elde edilen verilerde."
@@ -16010,38 +15986,38 @@ msgstr ""
 "In repeated designs such as pre-test – post-test – follow-up; when normality "
 "cannot be assumed or with data obtained from Likert scales."
 
-#: istatistik/templates/istatistik/friedman.html:215
+#: istatistik/templates/istatistik/friedman.html:207
 msgid "Kendall's W Yorumu"
 msgstr "Interpreting Kendall's W"
 
-#: istatistik/templates/istatistik/friedman.html:220
-#: istatistik/templates/istatistik/tekrarli_anova.html:218
-#: istatistik/templates/istatistik/wilcoxon.html:199
+#: istatistik/templates/istatistik/friedman.html:212
+#: istatistik/templates/istatistik/tekrarli_anova.html:210
+#: istatistik/templates/istatistik/wilcoxon.html:191
 msgid "Orta düzey etki"
 msgstr "Medium effect"
 
-#: istatistik/templates/istatistik/friedman.html:253
+#: istatistik/templates/istatistik/friedman.html:250
 msgid "Friedman Testi Nedir?"
 msgstr "What Is the Friedman Test?"
 
-#: istatistik/templates/istatistik/friedman.html:265
-#: istatistik/templates/istatistik/tekrarli_anova.html:263
+#: istatistik/templates/istatistik/friedman.html:262
+#: istatistik/templates/istatistik/tekrarli_anova.html:260
 msgid " ölçüm seçili"
 msgstr " measurements selected"
 
-#: istatistik/templates/istatistik/friedman.html:268
-#: istatistik/templates/istatistik/tekrarli_anova.html:266
-#: istatistik/templates/istatistik/ttesti.html:420
+#: istatistik/templates/istatistik/friedman.html:265
+#: istatistik/templates/istatistik/tekrarli_anova.html:263
+#: istatistik/templates/istatistik/ttesti.html:417
 msgid "Bağlantı hatası."
 msgstr "Connection error."
 
-#: istatistik/templates/istatistik/friedman.html:434
-#: istatistik/templates/istatistik/tekrarli_anova.html:431
+#: istatistik/templates/istatistik/friedman.html:431
+#: istatistik/templates/istatistik/tekrarli_anova.html:428
 msgid "✓ İstatistiksel olarak anlamlı (p < .05)"
 msgstr "✓ Statistically significant (p < .05)"
 
-#: istatistik/templates/istatistik/friedman.html:436
-#: istatistik/templates/istatistik/tekrarli_anova.html:433
+#: istatistik/templates/istatistik/friedman.html:433
+#: istatistik/templates/istatistik/tekrarli_anova.html:430
 msgid "✗ İstatistiksel olarak anlamlı değil (p ≥ .05)"
 msgstr "✗ Not statistically significant (p ≥ .05)"
 
@@ -16099,9 +16075,9 @@ msgid "Tümünü Seç/Kaldır"
 msgstr "Select/Deselect All"
 
 #: istatistik/templates/istatistik/karar_agaci.html:77
-#: istatistik/templates/istatistik/karar_agaci.html:324
+#: istatistik/templates/istatistik/karar_agaci.html:321
 #: istatistik/templates/istatistik/svm.html:77
-#: istatistik/templates/istatistik/svm.html:338
+#: istatistik/templates/istatistik/svm.html:335
 msgid "Önce hedef değişkeni seçin."
 msgstr "Select the target variable first."
 
@@ -16191,11 +16167,11 @@ msgstr "Recall"
 msgid "Değişken Önem Sıralaması"
 msgstr "Variable Importance Ranking"
 
-#: istatistik/templates/istatistik/karar_agaci.html:235
+#: istatistik/templates/istatistik/karar_agaci.html:232
 msgid "Karar Ağacı Sınıflandırması Nedir?"
 msgstr "What Is Decision Tree Classification?"
 
-#: istatistik/templates/istatistik/karar_agaci.html:236
+#: istatistik/templates/istatistik/karar_agaci.html:233
 msgid ""
 "Karar ağacı, bir hedef değişkeni sınıflandırmak için veriyi özellik "
 "değerlerine göre bölen hiyerarşik bir makine öğrenmesi algoritmasıdır. Her "
@@ -16207,7 +16183,7 @@ msgstr ""
 "tests a feature, each branch represents a test outcome and each leaf "
 "represents a class label."
 
-#: istatistik/templates/istatistik/karar_agaci.html:237
+#: istatistik/templates/istatistik/karar_agaci.html:234
 msgid ""
 "Gini safsızlığı ve Entropy, ağacı inşa ederken bölme noktasını seçmek için "
 "kullanılan kriterlerdir. Maksimum derinlik (max_depth) aşırı öğrenmeyi "
@@ -16219,7 +16195,7 @@ msgstr ""
 "for preventing overfitting. The model splits the data into training and test "
 "sets; metrics are calculated on the test set."
 
-#: istatistik/templates/istatistik/karar_agaci.html:238
+#: istatistik/templates/istatistik/karar_agaci.html:235
 msgid ""
 "Feature importance (özellik önemi), her değişkenin sınıflandırma kararına "
 "katkısını 0–1 arası bir puanla ifade eder. Tez çalışmalarında hangi "
@@ -16230,93 +16206,93 @@ msgstr ""
 "classification decision as a score between 0 and 1. In theses, this table "
 "can be reported to show which variables explain the target variable."
 
-#: istatistik/templates/istatistik/karar_agaci.html:246
-#: istatistik/templates/istatistik/lineer_regresyon.html:207
-#: istatistik/templates/istatistik/lojistik_regresyon.html:216
-#: istatistik/templates/istatistik/svm.html:252
+#: istatistik/templates/istatistik/karar_agaci.html:243
+#: istatistik/templates/istatistik/lineer_regresyon.html:204
+#: istatistik/templates/istatistik/lojistik_regresyon.html:213
+#: istatistik/templates/istatistik/svm.html:249
 msgid " satır, "
 msgstr " rows, "
 
-#: istatistik/templates/istatistik/karar_agaci.html:247
-#: istatistik/templates/istatistik/lineer_regresyon.html:208
-#: istatistik/templates/istatistik/lojistik_regresyon.html:217
-#: istatistik/templates/istatistik/svm.html:253
+#: istatistik/templates/istatistik/karar_agaci.html:244
+#: istatistik/templates/istatistik/lineer_regresyon.html:205
+#: istatistik/templates/istatistik/lojistik_regresyon.html:214
+#: istatistik/templates/istatistik/svm.html:250
 msgid " sütun"
 msgstr " columns"
 
-#: istatistik/templates/istatistik/karar_agaci.html:248
-#: istatistik/templates/istatistik/lineer_regresyon.html:209
-#: istatistik/templates/istatistik/lojistik_regresyon.html:218
-#: istatistik/templates/istatistik/svm.html:254
+#: istatistik/templates/istatistik/karar_agaci.html:245
+#: istatistik/templates/istatistik/lineer_regresyon.html:206
+#: istatistik/templates/istatistik/lojistik_regresyon.html:215
+#: istatistik/templates/istatistik/svm.html:251
 msgid "Sunucu hatası."
 msgstr "Server error."
 
-#: istatistik/templates/istatistik/karar_agaci.html:249
-#: istatistik/templates/istatistik/svm.html:255
+#: istatistik/templates/istatistik/karar_agaci.html:246
+#: istatistik/templates/istatistik/svm.html:252
 msgid "Hedef değişken seçilmedi."
 msgstr "No target variable selected."
 
-#: istatistik/templates/istatistik/karar_agaci.html:250
-#: istatistik/templates/istatistik/svm.html:256
+#: istatistik/templates/istatistik/karar_agaci.html:247
+#: istatistik/templates/istatistik/svm.html:253
 msgid "En az 1 özellik değişkeni seçin."
 msgstr "Select at least 1 feature variable."
 
-#: istatistik/templates/istatistik/karar_agaci.html:252
-#: istatistik/templates/istatistik/lineer_regresyon.html:213
-#: istatistik/templates/istatistik/lojistik_regresyon.html:222
-#: istatistik/templates/istatistik/svm.html:258
+#: istatistik/templates/istatistik/karar_agaci.html:249
+#: istatistik/templates/istatistik/lineer_regresyon.html:210
+#: istatistik/templates/istatistik/lojistik_regresyon.html:219
+#: istatistik/templates/istatistik/svm.html:255
 msgid "Durum sorgulanamadı: "
 msgstr "Could not check status: "
 
-#: istatistik/templates/istatistik/karar_agaci.html:256
+#: istatistik/templates/istatistik/karar_agaci.html:253
 msgid "Kriter:"
 msgstr "Criterion:"
 
-#: istatistik/templates/istatistik/karar_agaci.html:257
+#: istatistik/templates/istatistik/karar_agaci.html:254
 msgid "Yaprak:"
 msgstr "Leaves:"
 
-#: istatistik/templates/istatistik/karar_agaci.html:278
-#: istatistik/templates/istatistik/lineer_regresyon.html:240
-#: istatistik/templates/istatistik/lojistik_regresyon.html:247
-#: istatistik/templates/istatistik/svm.html:292
+#: istatistik/templates/istatistik/karar_agaci.html:275
+#: istatistik/templates/istatistik/lineer_regresyon.html:237
+#: istatistik/templates/istatistik/lojistik_regresyon.html:244
+#: istatistik/templates/istatistik/svm.html:289
 #, python-format
 msgid "Dosya boyutu %(mb)s MB sınırını aşıyor."
 msgstr "The file exceeds the %(mb)s MB size limit."
 
-#: istatistik/templates/istatistik/karar_agaci.html:315
-#: istatistik/templates/istatistik/lineer_regresyon.html:277
-#: istatistik/templates/istatistik/lojistik_regresyon.html:285
-#: istatistik/templates/istatistik/svm.html:329
+#: istatistik/templates/istatistik/karar_agaci.html:312
+#: istatistik/templates/istatistik/lineer_regresyon.html:274
+#: istatistik/templates/istatistik/lojistik_regresyon.html:282
+#: istatistik/templates/istatistik/svm.html:326
 msgid "Seçiniz"
 msgstr "Select"
 
-#: istatistik/templates/istatistik/karar_agaci.html:330
-#: istatistik/templates/istatistik/lojistik_regresyon.html:300
-#: istatistik/templates/istatistik/svm.html:344
+#: istatistik/templates/istatistik/karar_agaci.html:327
+#: istatistik/templates/istatistik/lojistik_regresyon.html:297
+#: istatistik/templates/istatistik/svm.html:341
 msgid "Başka sütun yok."
 msgstr "No other columns."
 
-#: istatistik/templates/istatistik/karar_agaci.html:421
+#: istatistik/templates/istatistik/karar_agaci.html:418
 msgid "Maks. derinlik:"
 msgstr "Max. depth:"
 
-#: istatistik/templates/istatistik/karar_agaci.html:421
+#: istatistik/templates/istatistik/karar_agaci.html:418
 msgid "gerçek:"
 msgstr "actual:"
 
-#: istatistik/templates/istatistik/karar_agaci.html:423
-#: istatistik/templates/istatistik/svm.html:440
+#: istatistik/templates/istatistik/karar_agaci.html:420
+#: istatistik/templates/istatistik/svm.html:437
 msgid "Sınıflar:"
 msgstr "Classes:"
 
-#: istatistik/templates/istatistik/karar_agaci.html:424
-#: istatistik/templates/istatistik/svm.html:441
+#: istatistik/templates/istatistik/karar_agaci.html:421
+#: istatistik/templates/istatistik/svm.html:438
 msgid "Eğitim:"
 msgstr "Training:"
 
-#: istatistik/templates/istatistik/karar_agaci.html:424
-#: istatistik/templates/istatistik/svm.html:441
+#: istatistik/templates/istatistik/karar_agaci.html:421
+#: istatistik/templates/istatistik/svm.html:438
 msgid "Test:"
 msgstr "Test:"
 
@@ -16371,35 +16347,35 @@ msgstr "H₀: There is no relationship between the two variables."
 msgid "Anlamlı:"
 msgstr "Significant:"
 
-#: istatistik/templates/istatistik/ki_kare.html:196
+#: istatistik/templates/istatistik/ki_kare.html:193
 msgid "Gözlemler birbirinden bağımsız olmalıdır"
 msgstr "Observations must be independent of each other"
 
-#: istatistik/templates/istatistik/ki_kare.html:197
+#: istatistik/templates/istatistik/ki_kare.html:194
 msgid "Her hücredeki beklenen frekans ≥ 5 olmalıdır"
 msgstr "The expected frequency in each cell must be ≥ 5"
 
-#: istatistik/templates/istatistik/ki_kare.html:198
+#: istatistik/templates/istatistik/ki_kare.html:195
 msgid "İki kategorik değişken gereklidir"
 msgstr "Two categorical variables are required"
 
-#: istatistik/templates/istatistik/ki_kare.html:199
+#: istatistik/templates/istatistik/ki_kare.html:196
 msgid "Beklenen frekans düşükse Fisher'ın Tam Testi önerilir"
 msgstr "If expected frequencies are low, Fisher's exact test is recommended"
 
-#: istatistik/templates/istatistik/ki_kare.html:203
+#: istatistik/templates/istatistik/ki_kare.html:200
 msgid "Etki Büyüklüğü (Cramér's V)"
 msgstr "Effect Size (Cramér's V)"
 
-#: istatistik/templates/istatistik/ki_kare.html:206
+#: istatistik/templates/istatistik/ki_kare.html:203
 msgid "Çok küçük"
 msgstr "Very small"
 
-#: istatistik/templates/istatistik/ki_kare.html:218
+#: istatistik/templates/istatistik/ki_kare.html:215
 msgid "Ki-Kare Testi Nedir?"
 msgstr "What Is the Chi-Square Test?"
 
-#: istatistik/templates/istatistik/ki_kare.html:219
+#: istatistik/templates/istatistik/ki_kare.html:216
 msgid ""
 "Ki-Kare (χ²) Bağımsızlık Testi, iki kategorik değişken arasında "
 "istatistiksel bir ilişki olup olmadığını sınar. Cinsiyet ile tercih, eğitim "
@@ -16412,7 +16388,7 @@ msgstr ""
 "level and attitude. It is a non-parametric test and does not require "
 "normally distributed data."
 
-#: istatistik/templates/istatistik/ki_kare.html:220
+#: istatistik/templates/istatistik/ki_kare.html:217
 msgid ""
 "Testin temel koşulları şunlardır: her hücredeki beklenen frekansın 5'ten "
 "büyük olması ve gözlemlerin birbirinden bağımsız olması. Beklenen frekanslar "
@@ -16422,7 +16398,7 @@ msgstr ""
 "in each cell and independent observations. If expected frequencies are "
 "small, Fisher's exact test should be used instead."
 
-#: istatistik/templates/istatistik/ki_kare.html:221
+#: istatistik/templates/istatistik/ki_kare.html:218
 msgid ""
 "İlişkinin gücünü raporlamak için Cramér's V etki büyüklüğü hesaplanmalıdır. "
 "V &gt; .30 orta, V &gt; .50 ise büyük etki büyüklüğü olarak yorumlanır. "
@@ -16434,24 +16410,24 @@ msgstr ""
 "effect. Also assess whether the result has meaningful practical "
 "significance, not just what the contingency table indicates."
 
-#: istatistik/templates/istatistik/ki_kare.html:236
+#: istatistik/templates/istatistik/ki_kare.html:233
 msgid "✓ İki değişken arasında anlamlı ilişki var (p < .05) — "
 msgstr ""
 "✓ There is a significant relationship between the two variables (p < .05) — "
 
-#: istatistik/templates/istatistik/ki_kare.html:237
+#: istatistik/templates/istatistik/ki_kare.html:234
 msgid "✗ İki değişken arasında anlamlı ilişki yok (p ≥ .05)"
 msgstr ""
 "✗ There is no significant relationship between the two variables (p ≥ .05)"
 
-#: istatistik/templates/istatistik/ki_kare.html:339
+#: istatistik/templates/istatistik/ki_kare.html:336
 msgid ""
 "hücrede beklenen frekans 5'in altında. Ki-kare güvenilirliği azalabilir."
 msgstr ""
 "cells have an expected frequency below 5. The reliability of the chi-square "
 "test may be reduced."
 
-#: istatistik/templates/istatistik/ki_kare.html:357
+#: istatistik/templates/istatistik/ki_kare.html:354
 msgid "Sütunlar:"
 msgstr "Columns:"
 
@@ -16485,7 +16461,7 @@ msgid "Korelasyon Yöntemi"
 msgstr "Correlation Method"
 
 #: istatistik/templates/istatistik/korelasyon.html:64
-#: istatistik/templates/istatistik/korelasyon.html:285
+#: istatistik/templates/istatistik/korelasyon.html:282
 msgid "Parametrik — normal dağılımlı sürekli değişkenler için önerilir."
 msgstr ""
 "Parametric — recommended for normally distributed continuous variables."
@@ -16514,51 +16490,51 @@ msgstr "Strong correlations (|r| ≥ .30, p &lt; .05) are shown in green."
 msgid "Gözlem"
 msgstr "Observations"
 
-#: istatistik/templates/istatistik/korelasyon.html:223
+#: istatistik/templates/istatistik/korelasyon.html:215
 msgid "Yöntem Seçim Rehberi"
 msgstr "Method Selection Guide"
 
-#: istatistik/templates/istatistik/korelasyon.html:225
+#: istatistik/templates/istatistik/korelasyon.html:217
 msgid "Kullanım Durumu"
 msgstr "Use Case"
 
-#: istatistik/templates/istatistik/korelasyon.html:227
+#: istatistik/templates/istatistik/korelasyon.html:219
 msgid "Normal dağılımlı sürekli veriler"
 msgstr "Normally distributed continuous data"
 
-#: istatistik/templates/istatistik/korelasyon.html:228
+#: istatistik/templates/istatistik/korelasyon.html:220
 msgid "Sıralı veri, normallik sağlanmıyor"
 msgstr "Ordinal data, normality not met"
 
-#: istatistik/templates/istatistik/korelasyon.html:229
+#: istatistik/templates/istatistik/korelasyon.html:221
 msgid "Küçük örneklem, çok sayıda eşik"
 msgstr "Small sample, many ties"
 
-#: istatistik/templates/istatistik/korelasyon.html:234
+#: istatistik/templates/istatistik/korelasyon.html:226
 msgid "Katsayı Yorum Eşikleri"
 msgstr "Coefficient Interpretation Thresholds"
 
-#: istatistik/templates/istatistik/korelasyon.html:237
+#: istatistik/templates/istatistik/korelasyon.html:229
 msgid "İhmal edilebilir ilişki"
 msgstr "Negligible relationship"
 
-#: istatistik/templates/istatistik/korelasyon.html:238
+#: istatistik/templates/istatistik/korelasyon.html:230
 msgid "Zayıf ilişki"
 msgstr "Weak relationship"
 
-#: istatistik/templates/istatistik/korelasyon.html:239
+#: istatistik/templates/istatistik/korelasyon.html:231
 msgid "Orta düzey ilişki"
 msgstr "Moderate relationship"
 
-#: istatistik/templates/istatistik/korelasyon.html:240
+#: istatistik/templates/istatistik/korelasyon.html:232
 msgid "Güçlü ilişki"
 msgstr "Strong relationship"
 
-#: istatistik/templates/istatistik/korelasyon.html:273
+#: istatistik/templates/istatistik/korelasyon.html:270
 msgid "Korelasyon Analizi Nedir?"
 msgstr "What Is Correlation Analysis?"
 
-#: istatistik/templates/istatistik/korelasyon.html:274
+#: istatistik/templates/istatistik/korelasyon.html:271
 msgid ""
 "Korelasyon analizi, iki veya daha fazla sayısal değişken arasındaki "
 "ilişkinin yönünü ve gücünü ölçer. Katsayı −1 ile +1 arasında değer alır: +1 "
@@ -16569,7 +16545,7 @@ msgstr ""
 "+1 means a perfect positive, −1 a perfect negative relationship and 0 no "
 "relationship."
 
-#: istatistik/templates/istatistik/korelasyon.html:275
+#: istatistik/templates/istatistik/korelasyon.html:272
 msgid ""
 "Her iki değişkenin de normal dağılım gösterdiği ve sürekli ölçekte olduğu "
 "durumlarda kullanılır."
@@ -16577,7 +16553,7 @@ msgstr ""
 "Used when both variables are normally distributed and measured on a "
 "continuous scale."
 
-#: istatistik/templates/istatistik/korelasyon.html:275
+#: istatistik/templates/istatistik/korelasyon.html:272
 msgid ""
 "Sıralı (Likert) veriler veya normallik varsayımının karşılanamadığı "
 "durumlarda tercih edilir."
@@ -16585,11 +16561,11 @@ msgstr ""
 "Preferred for ordinal (Likert) data or when the normality assumption is not "
 "met."
 
-#: istatistik/templates/istatistik/korelasyon.html:275
+#: istatistik/templates/istatistik/korelasyon.html:272
 msgid "Küçük örneklemlerde daha sağlam sonuçlar verir."
 msgstr "Gives more robust results with small samples."
 
-#: istatistik/templates/istatistik/korelasyon.html:276
+#: istatistik/templates/istatistik/korelasyon.html:273
 msgid ""
 "Korelasyon nedensellik kanıtlamaz; yalnızca birlikte değişim örüntüsünü "
 "ortaya koyar. İki değişken arasında güçlü bir korelasyon bulunsa da bu, "
@@ -16599,20 +16575,20 @@ msgstr ""
 "variation. Even a strong correlation between two variables does not mean "
 "that one causes the other."
 
-#: istatistik/templates/istatistik/korelasyon.html:286
+#: istatistik/templates/istatistik/korelasyon.html:283
 msgid ""
 "Non-parametrik — sıralı veri veya normallik varsayımı sağlanmıyorsa kullanın."
 msgstr ""
 "Non-parametric — use for ordinal data or when the normality assumption is "
 "not met."
 
-#: istatistik/templates/istatistik/korelasyon.html:287
+#: istatistik/templates/istatistik/korelasyon.html:284
 msgid ""
 "Non-parametrik — küçük örneklem veya çok sayıda bağlı sıra olduğunda tercih "
 "edilir."
 msgstr "Non-parametric — preferred for small samples or many tied ranks."
 
-#: istatistik/templates/istatistik/korelasyon.html:289
+#: istatistik/templates/istatistik/korelasyon.html:286
 msgid " sütun seçili"
 msgstr " columns selected"
 
@@ -16669,27 +16645,27 @@ msgstr "Normality is not required; suitable for ordinal and continuous data."
 msgid "Post-Hoc Testler (Mann-Whitney U + Bonferroni)"
 msgstr "Post-Hoc Tests (Mann-Whitney U + Bonferroni)"
 
-#: istatistik/templates/istatistik/kruskal_wallis.html:194
+#: istatistik/templates/istatistik/kruskal_wallis.html:191
 msgid "Ordinal veya sürekli bağımlı değişken"
 msgstr "Ordinal or continuous dependent variable"
 
-#: istatistik/templates/istatistik/kruskal_wallis.html:195
+#: istatistik/templates/istatistik/kruskal_wallis.html:192
 msgid "Normallik varsayımı"
 msgstr "Normality assumption"
 
-#: istatistik/templates/istatistik/kruskal_wallis.html:195
+#: istatistik/templates/istatistik/kruskal_wallis.html:192
 msgid "gerekmez"
 msgstr "not required"
 
-#: istatistik/templates/istatistik/kruskal_wallis.html:196
+#: istatistik/templates/istatistik/kruskal_wallis.html:193
 msgid "Her grupta en az 3 gözlem önerilir"
 msgstr "At least 3 observations per group are recommended"
 
-#: istatistik/templates/istatistik/kruskal_wallis.html:215
+#: istatistik/templates/istatistik/kruskal_wallis.html:212
 msgid "Kruskal-Wallis H Testi Nedir?"
 msgstr "What Is the Kruskal-Wallis H Test?"
 
-#: istatistik/templates/istatistik/kruskal_wallis.html:216
+#: istatistik/templates/istatistik/kruskal_wallis.html:213
 msgid ""
 "Kruskal-Wallis H testi, üç veya daha fazla bağımsız grubu karşılaştıran non-"
 "parametrik bir testtir. Tek Yönlü ANOVA'nın normallik varsayımı "
@@ -16700,7 +16676,7 @@ msgstr ""
 "more independent groups. It is the alternative to one-way ANOVA when the "
 "normality assumption is not met, and works with ordinal or continuous data."
 
-#: istatistik/templates/istatistik/kruskal_wallis.html:217
+#: istatistik/templates/istatistik/kruskal_wallis.html:214
 msgid ""
 "Test anlamlı bir sonuç verdiğinde hangi grupların birbirinden farklı "
 "olduğunu belirlemek için post-hoc testlerine ihtiyaç duyulur. Dunn testi "
@@ -16710,7 +16686,7 @@ msgstr ""
 "determine which groups differ. Dunn's test (with Bonferroni correction) is "
 "the most widely used post-hoc method."
 
-#: istatistik/templates/istatistik/kruskal_wallis.html:218
+#: istatistik/templates/istatistik/kruskal_wallis.html:215
 msgid ""
 "Etki büyüklüğü için η² (eta kare) veya ε² (epsilon kare) hesaplanmalıdır. "
 "İki gruplu karşılaştırmalarda Mann-Whitney U tercih edilmelidir; Kruskal-"
@@ -16752,9 +16728,9 @@ msgid "Bağımsız Değişkenler (X — en az 1)"
 msgstr "Independent Variables (X — at least 1)"
 
 #: istatistik/templates/istatistik/lineer_regresyon.html:76
-#: istatistik/templates/istatistik/lineer_regresyon.html:286
+#: istatistik/templates/istatistik/lineer_regresyon.html:283
 #: istatistik/templates/istatistik/lojistik_regresyon.html:77
-#: istatistik/templates/istatistik/lojistik_regresyon.html:294
+#: istatistik/templates/istatistik/lojistik_regresyon.html:291
 msgid "Önce bağımlı değişkeni seçin."
 msgstr "Select the dependent variable first."
 
@@ -16791,11 +16767,11 @@ msgstr ""
 "* Green cell p &lt; .05 | β = standardized coefficient | VIF &gt; 10 "
 "multicollinearity risk"
 
-#: istatistik/templates/istatistik/lineer_regresyon.html:196
+#: istatistik/templates/istatistik/lineer_regresyon.html:193
 msgid "Çoklu Doğrusal Regresyon Nedir?"
 msgstr "What Is Multiple Linear Regression?"
 
-#: istatistik/templates/istatistik/lineer_regresyon.html:197
+#: istatistik/templates/istatistik/lineer_regresyon.html:194
 msgid ""
 "Çoklu doğrusal regresyon, bir bağımlı (sonuç) değişkeni iki veya daha fazla "
 "bağımsız (açıklayıcı) değişkenle tahmin etmek için kullanılan parametrik bir "
@@ -16807,7 +16783,7 @@ msgstr ""
 "variables. It estimates the effect of each independent variable on the "
 "dependent variable while holding the others constant."
 
-#: istatistik/templates/istatistik/lineer_regresyon.html:198
+#: istatistik/templates/istatistik/lineer_regresyon.html:195
 msgid ""
 "Modelin açıklayıcı gücü R² değeri ile raporlanır. Bağımsız değişkenler "
 "arasında yüksek korelasyon (çoklu bağlantı / multicollinearity) varsa VIF "
@@ -16819,7 +16795,7 @@ msgstr ""
 "be examined; variables with VIF &gt; 10 may need to be removed from the "
 "model or require dimensionality reduction."
 
-#: istatistik/templates/istatistik/lineer_regresyon.html:199
+#: istatistik/templates/istatistik/lineer_regresyon.html:196
 msgid ""
 "Artıkların (residuals) normal dağılması, varyansın sabit olması "
 "(homoscedasticity) ve gözlemlerin bağımsız olması temel varsayımlardır. "
@@ -16829,31 +16805,31 @@ msgstr ""
 "(homoscedasticity) and independent observations. If the dependent variable "
 "is categorical, logistic regression should be used."
 
-#: istatistik/templates/istatistik/lineer_regresyon.html:210
-#: istatistik/templates/istatistik/lojistik_regresyon.html:219
+#: istatistik/templates/istatistik/lineer_regresyon.html:207
+#: istatistik/templates/istatistik/lojistik_regresyon.html:216
 msgid "Bağımlı değişken seçilmedi."
 msgstr "No dependent variable selected."
 
-#: istatistik/templates/istatistik/lineer_regresyon.html:211
-#: istatistik/templates/istatistik/lojistik_regresyon.html:220
+#: istatistik/templates/istatistik/lineer_regresyon.html:208
+#: istatistik/templates/istatistik/lojistik_regresyon.html:217
 msgid "En az 1 bağımsız değişken seçin."
 msgstr "Select at least 1 independent variable."
 
-#: istatistik/templates/istatistik/lineer_regresyon.html:214
+#: istatistik/templates/istatistik/lineer_regresyon.html:211
 msgid "Sonuç gösterilirken hata: "
 msgstr "Error while displaying results: "
 
-#: istatistik/templates/istatistik/lineer_regresyon.html:292
+#: istatistik/templates/istatistik/lineer_regresyon.html:289
 msgid "Başka sayısal sütun yok."
 msgstr "No other numeric columns."
 
-#: istatistik/templates/istatistik/lineer_regresyon.html:381
-#: istatistik/templates/istatistik/lojistik_regresyon.html:383
+#: istatistik/templates/istatistik/lineer_regresyon.html:378
+#: istatistik/templates/istatistik/lojistik_regresyon.html:380
 msgid "✓ Model istatistiksel olarak anlamlı (p < .05)"
 msgstr "✓ The model is statistically significant (p < .05)"
 
-#: istatistik/templates/istatistik/lineer_regresyon.html:384
-#: istatistik/templates/istatistik/lojistik_regresyon.html:386
+#: istatistik/templates/istatistik/lineer_regresyon.html:381
+#: istatistik/templates/istatistik/lojistik_regresyon.html:383
 msgid "✗ Model istatistiksel olarak anlamlı değil (p ≥ .05)"
 msgstr "✗ The model is not statistically significant (p ≥ .05)"
 
@@ -16921,11 +16897,11 @@ msgstr "χ² (Model)"
 msgid "* Yeşil hücre p &lt; .05 | Exp(B) = Odds Ratio"
 msgstr "* Green cell p &lt; .05 | Exp(B) = odds ratio"
 
-#: istatistik/templates/istatistik/lojistik_regresyon.html:205
+#: istatistik/templates/istatistik/lojistik_regresyon.html:202
 msgid "Lojistik Regresyon Nedir?"
 msgstr "What Is Logistic Regression?"
 
-#: istatistik/templates/istatistik/lojistik_regresyon.html:206
+#: istatistik/templates/istatistik/lojistik_regresyon.html:203
 msgid ""
 "Lojistik regresyon, ikili (0/1, evet/hayır, başarılı/başarısız) bir bağımlı "
 "değişkeni tahmin etmek için kullanılır. Bir olayın gerçekleşme olasılığını "
@@ -16937,7 +16913,7 @@ msgstr ""
 "the independent variables. Unlike linear regression, its output is a "
 "probability between 0 and 1."
 
-#: istatistik/templates/istatistik/lojistik_regresyon.html:207
+#: istatistik/templates/istatistik/lojistik_regresyon.html:204
 msgid ""
 "Her bağımsız değişken için odds oranı (OR) hesaplanır. OR &gt; 1 olası "
 "etkiyi artırdığını, OR &lt; 1 ise azalttığını gösterir. Hosmer-Lemeshow "
@@ -16949,7 +16925,7 @@ msgstr ""
 "Hosmer-Lemeshow test assesses the goodness of fit, while the ROC curve and "
 "AUC measure classification performance."
 
-#: istatistik/templates/istatistik/lojistik_regresyon.html:208
+#: istatistik/templates/istatistik/lojistik_regresyon.html:205
 msgid ""
 "Bağımlı değişkeninizin üç veya daha fazla kategorisi varsa Multinomial "
 "Lojistik Regresyon, sıralı kategoriler söz konusu ise Ordinal Lojistik "
@@ -16959,22 +16935,22 @@ msgstr ""
 "logistic regression should be used; for ordered categories, ordinal logistic "
 "regression."
 
-#: istatistik/templates/istatistik/lojistik_regresyon.html:224
+#: istatistik/templates/istatistik/lojistik_regresyon.html:221
 #, python-format
 msgid "%%95 GA Üst OR"
 msgstr "95%% CI Upper OR"
 
-#: istatistik/templates/istatistik/lojistik_regresyon.html:397
+#: istatistik/templates/istatistik/lojistik_regresyon.html:394
 #, python-format
 msgid "%%95 GA Alt OR"
 msgstr "95%% CI Lower OR"
 
-#: istatistik/templates/istatistik/lojistik_regresyon.html:419
+#: istatistik/templates/istatistik/lojistik_regresyon.html:416
 msgid "Tahmin:"
 msgstr "Predicted:"
 
-#: istatistik/templates/istatistik/lojistik_regresyon.html:422
-#: istatistik/templates/istatistik/lojistik_regresyon.html:428
+#: istatistik/templates/istatistik/lojistik_regresyon.html:419
+#: istatistik/templates/istatistik/lojistik_regresyon.html:425
 msgid "Gerçek:"
 msgstr "Actual:"
 
@@ -17023,32 +16999,32 @@ msgstr "Suitable for ordinal and continuous data."
 msgid "r (etki)"
 msgstr "r (effect)"
 
-#: istatistik/templates/istatistik/mann_whitney.html:184
+#: istatistik/templates/istatistik/mann_whitney.html:181
 #: templates/service_promo.html:140 templates/tarama_console_base.html:106
 msgid "Ne Zaman Kullanılır?"
 msgstr "When to Use It?"
 
-#: istatistik/templates/istatistik/mann_whitney.html:186
+#: istatistik/templates/istatistik/mann_whitney.html:183
 msgid "Veriler normal dağılım göstermiyorsa"
 msgstr "When the data are not normally distributed"
 
-#: istatistik/templates/istatistik/mann_whitney.html:187
+#: istatistik/templates/istatistik/mann_whitney.html:184
 msgid "Ordinal (sıralı) ölçek verilerinde"
 msgstr "With ordinal scale data"
 
-#: istatistik/templates/istatistik/mann_whitney.html:188
+#: istatistik/templates/istatistik/mann_whitney.html:185
 msgid "Küçük örneklem boyutlarında"
 msgstr "With small sample sizes"
 
-#: istatistik/templates/istatistik/mann_whitney.html:189
+#: istatistik/templates/istatistik/mann_whitney.html:186
 msgid "Aykırı değerlerin etkisini azaltmak için"
 msgstr "To reduce the influence of outliers"
 
-#: istatistik/templates/istatistik/mann_whitney.html:208
+#: istatistik/templates/istatistik/mann_whitney.html:205
 msgid "Mann-Whitney U Testi Nedir?"
 msgstr "What Is the Mann-Whitney U Test?"
 
-#: istatistik/templates/istatistik/mann_whitney.html:209
+#: istatistik/templates/istatistik/mann_whitney.html:206
 msgid ""
 "Mann-Whitney U testi, iki bağımsız grubun merkezi eğilimini (medyan) "
 "karşılaştıran non-parametrik bir testtir. Bağımsız örneklem t-testinin "
@@ -17060,7 +17036,7 @@ msgstr ""
 "the normality assumption of the independent-samples t-test is not met, and "
 "works with ordinal or continuous data."
 
-#: istatistik/templates/istatistik/mann_whitney.html:210
+#: istatistik/templates/istatistik/mann_whitney.html:207
 msgid ""
 "Test, gözlemleri sıralayarak çalışır; bu nedenle aykırı değerlerden daha az "
 "etkilenir. Gruplar aynı dağılım şekline sahip olduğunda test medyanlar "
@@ -17072,7 +17048,7 @@ msgstr ""
 "compares the difference between medians; with different shapes, it compares "
 "stochastic dominance."
 
-#: istatistik/templates/istatistik/mann_whitney.html:211
+#: istatistik/templates/istatistik/mann_whitney.html:208
 msgid ""
 "Etki büyüklüğü için rank-biserial korelasyon (r) hesaplanır. Üç veya daha "
 "fazla bağımsız grubu karşılaştırmak için Kruskal-Wallis H Testi, "
@@ -17135,11 +17111,11 @@ msgstr "You can still continue."
 msgid "Genel Öneri"
 msgstr "General Recommendation"
 
-#: istatistik/templates/istatistik/normallik.html:176 istatistik/views.py:148
+#: istatistik/templates/istatistik/normallik.html:168 istatistik/views.py:148
 msgid "Shapiro-Wilk Testi"
 msgstr "Shapiro-Wilk Test"
 
-#: istatistik/templates/istatistik/normallik.html:177
+#: istatistik/templates/istatistik/normallik.html:169
 msgid ""
 "Shapiro-Wilk testi, bir veri setinin normal dağılıma uyup uymadığını sınar. "
 "Küçük ve orta örneklem boyutlarında (n &lt; 2000) tercih edilir. H₀: Veri "
@@ -17149,24 +17125,24 @@ msgstr ""
 "distribution. It is preferred for small and medium sample sizes (n &lt; "
 "2000). H₀: The data are normally distributed."
 
-#: istatistik/templates/istatistik/normallik.html:178
+#: istatistik/templates/istatistik/normallik.html:170
 msgid "Karar:"
 msgstr "Decision:"
 
-#: istatistik/templates/istatistik/normallik.html:178
+#: istatistik/templates/istatistik/normallik.html:170
 msgid "p &gt; .05 → Normal dağılım kabul edilir."
 msgstr "p &gt; .05 → Normality is assumed."
 
-#: istatistik/templates/istatistik/normallik.html:178
+#: istatistik/templates/istatistik/normallik.html:170
 msgid ""
 "p ≤ .05 → Normal dağılım reddedilir; parametrik olmayan testler önerilir."
 msgstr "p ≤ .05 → Normality is rejected; non-parametric tests are recommended."
 
-#: istatistik/templates/istatistik/normallik.html:181
+#: istatistik/templates/istatistik/normallik.html:173
 msgid "Kolmogorov-Smirnov Testi"
 msgstr "Kolmogorov-Smirnov Test"
 
-#: istatistik/templates/istatistik/normallik.html:182
+#: istatistik/templates/istatistik/normallik.html:174
 msgid ""
 "Büyük örneklemlerde (n ≥ 2000) Kolmogorov-Smirnov testi kullanılır. Ancak bu "
 "test büyük örneklemlerde aşırı duyarlı olabilir; histogram ve Q-Q grafiği "
@@ -17176,11 +17152,11 @@ msgstr ""
 "this test can be overly sensitive with large samples; it is recommended to "
 "evaluate it together with a histogram and a Q-Q plot."
 
-#: istatistik/templates/istatistik/normallik.html:212
+#: istatistik/templates/istatistik/normallik.html:209
 msgid "Normallik Testi Nedir?"
 msgstr "What Is a Normality Test?"
 
-#: istatistik/templates/istatistik/normallik.html:213
+#: istatistik/templates/istatistik/normallik.html:210
 msgid ""
 "Normallik testi, bir veri setinin normal (Gaussian) dağılıma uyup uymadığını "
 "istatistiksel olarak sınar. t-Testi, ANOVA, Pearson korelasyon ve doğrusal "
@@ -17192,19 +17168,19 @@ msgstr ""
 "correlation and linear regression assume approximately normally distributed "
 "data."
 
-#: istatistik/templates/istatistik/normallik.html:214
+#: istatistik/templates/istatistik/normallik.html:211
 msgid "Shapiro-Wilk testi"
 msgstr "The Shapiro-Wilk test"
 
-#: istatistik/templates/istatistik/normallik.html:214
+#: istatistik/templates/istatistik/normallik.html:211
 msgid "küçük ve orta örneklemler için (n &lt; 50) güçlü bir seçimdir."
 msgstr "is a strong choice for small and medium samples (n &lt; 50)."
 
-#: istatistik/templates/istatistik/normallik.html:214
+#: istatistik/templates/istatistik/normallik.html:211
 msgid "Kolmogorov-Smirnov testi"
 msgstr "The Kolmogorov-Smirnov test"
 
-#: istatistik/templates/istatistik/normallik.html:214
+#: istatistik/templates/istatistik/normallik.html:211
 msgid ""
 "büyük örneklemlerde kullanılır. Her iki testte p &gt; .05 ise normallik "
 "varsayımının reddedilmediği kabul edilir."
@@ -17212,7 +17188,7 @@ msgstr ""
 "is used for large samples. In both tests, p &gt; .05 means the normality "
 "assumption is not rejected."
 
-#: istatistik/templates/istatistik/normallik.html:215
+#: istatistik/templates/istatistik/normallik.html:212
 msgid ""
 "Normallik varsayımı karşılanmıyorsa Mann-Whitney U (2 grup), Kruskal-Wallis "
 "(3+ grup) veya Wilcoxon (eşleştirilmiş grup) gibi non-parametrik "
@@ -17342,7 +17318,7 @@ msgstr ""
 "real effects (Type II error)."
 
 #: istatistik/templates/istatistik/orneklem.html:191
-#: istatistik/templates/istatistik/ttesti.html:393
+#: istatistik/templates/istatistik/ttesti.html:390
 msgid "Akademik Kaynak"
 msgstr "Academic Reference"
 
@@ -17489,11 +17465,11 @@ msgstr "Training SVM model…"
 msgid "Değişken Önem Sıralaması (Permutation)"
 msgstr "Variable Importance Ranking (Permutation)"
 
-#: istatistik/templates/istatistik/svm.html:241
+#: istatistik/templates/istatistik/svm.html:238
 msgid "Destek Vektör Makinesi (SVM) Nedir?"
 msgstr "What Is a Support Vector Machine (SVM)?"
 
-#: istatistik/templates/istatistik/svm.html:242
+#: istatistik/templates/istatistik/svm.html:239
 msgid ""
 "Destek Vektör Makinesi (Support Vector Machine — SVM), sınıflar arasındaki "
 "marjini en büyüklemeye çalışarak optimum bir karar sınırı (hiperplan) bulan "
@@ -17505,7 +17481,7 @@ msgstr ""
 "between classes. The training examples closest to the boundary between two "
 "classes are called \"support vectors\"."
 
-#: istatistik/templates/istatistik/svm.html:243
+#: istatistik/templates/istatistik/svm.html:240
 msgid ""
 "Kernel fonksiyonu, veriyi daha yüksek boyutlu bir uzaya taşıyarak doğrusal "
 "olmayan sınıflandırma problemlerini çözmeye olanak tanır. RBF (Radyal "
@@ -17518,7 +17494,7 @@ msgstr ""
 "Function) kernel is the most widely used option. The C parameter controls "
 "the penalty for misclassifications and therefore the model complexity."
 
-#: istatistik/templates/istatistik/svm.html:244
+#: istatistik/templates/istatistik/svm.html:241
 msgid ""
 "SVM, küçük ve orta büyüklükteki veri setlerinde, özellikle yüksek boyutlu "
 "verilerde çok etkilidir. Permutation importance yöntemi, her değişkenin "
@@ -17530,11 +17506,11 @@ msgstr ""
 "contribution to the model through random permutation and makes "
 "interpretation easier."
 
-#: istatistik/templates/istatistik/svm.html:259
+#: istatistik/templates/istatistik/svm.html:256
 msgid "Doğrusal"
 msgstr "Linear"
 
-#: istatistik/templates/istatistik/svm.html:439
+#: istatistik/templates/istatistik/svm.html:436
 msgid "Destek Vektörü:"
 msgstr "Support Vectors:"
 
@@ -17583,7 +17559,7 @@ msgstr "Select at least 3 numeric columns to analyze."
 msgid "F İstatistiği"
 msgstr "F Statistic"
 
-#: istatistik/templates/istatistik/tekrarli_anova.html:209
+#: istatistik/templates/istatistik/tekrarli_anova.html:201
 msgid ""
 "Tekrarlayan ölçümler ANOVA, aynı bireylerin 3+ farklı koşulda (zaman, tedavi "
 "vb.) ölçüldüğü tasarımlara uygulanır. Bağımlı değişkendeki farklılığın "
@@ -17594,11 +17570,11 @@ msgstr ""
 "controlling for between-subject variance, it gives more precise results for "
 "differences in the dependent variable."
 
-#: istatistik/templates/istatistik/tekrarli_anova.html:210
+#: istatistik/templates/istatistik/tekrarli_anova.html:202
 msgid "Küresellik varsayımı:"
 msgstr "Sphericity assumption:"
 
-#: istatistik/templates/istatistik/tekrarli_anova.html:210
+#: istatistik/templates/istatistik/tekrarli_anova.html:202
 msgid ""
 "Ölçümler arası farkların varyansının eşit olması beklenir (Mauchly testi). "
 "İhlal durumunda Greenhouse-Geisser düzeltmesi kullanılabilir."
@@ -17607,11 +17583,11 @@ msgstr ""
 "equal (Mauchly's test). If violated, the Greenhouse-Geisser correction can "
 "be used."
 
-#: istatistik/templates/istatistik/tekrarli_anova.html:213
+#: istatistik/templates/istatistik/tekrarli_anova.html:205
 msgid "Partial η² Yorumu (Cohen, 1988)"
 msgstr "Interpreting Partial η² (Cohen, 1988)"
 
-#: istatistik/templates/istatistik/tekrarli_anova.html:251
+#: istatistik/templates/istatistik/tekrarli_anova.html:248
 msgid "Tekrarlayan Ölçümler ANOVA Nedir?"
 msgstr "What Is Repeated Measures ANOVA?"
 
@@ -17700,7 +17676,7 @@ msgstr "95%% Confidence Interval"
 msgid "Serbestlik Derecesi"
 msgstr "Degrees of Freedom"
 
-#: istatistik/templates/istatistik/ttesti.html:388
+#: istatistik/templates/istatistik/ttesti.html:385
 msgid ""
 "Normal dağılım (küçük örneklemlerde önemli; n > 30'da Merkezi Limit Teoremi "
 "ile gevşetilebilir)"
@@ -17708,7 +17684,7 @@ msgstr ""
 "Normal distribution (important for small samples; can be relaxed for n > 30 "
 "via the Central Limit Theorem)"
 
-#: istatistik/templates/istatistik/ttesti.html:389
+#: istatistik/templates/istatistik/ttesti.html:386
 msgid ""
 "Bağımsız t-testi: varyans homojenliği (Levene testi ile otomatik kontrol "
 "edilir)"
@@ -17716,11 +17692,11 @@ msgstr ""
 "Independent t-test: homogeneity of variance (checked automatically with "
 "Levene's test)"
 
-#: istatistik/templates/istatistik/ttesti.html:405
+#: istatistik/templates/istatistik/ttesti.html:402
 msgid "t-Testi Nedir?"
 msgstr "What Is a t-Test?"
 
-#: istatistik/templates/istatistik/ttesti.html:406
+#: istatistik/templates/istatistik/ttesti.html:403
 msgid ""
 "t-Testi, iki grup ortalaması arasında istatistiksel olarak anlamlı bir fark "
 "olup olmadığını sınamak için kullanılan parametrik bir testtir. Normal "
@@ -17730,11 +17706,11 @@ msgstr ""
 "statistically significant difference between two group means. It is one of "
 "the most fundamental comparison tests and assumes a normal distribution."
 
-#: istatistik/templates/istatistik/ttesti.html:407
+#: istatistik/templates/istatistik/ttesti.html:404
 msgid "Bağımsız Örneklem t-Testi:"
 msgstr "Independent-Samples t-Test:"
 
-#: istatistik/templates/istatistik/ttesti.html:407
+#: istatistik/templates/istatistik/ttesti.html:404
 msgid ""
 "İki farklı gruptan (örn. deney ve kontrol) elde edilen ölçümleri "
 "karşılaştırır."
@@ -17742,27 +17718,27 @@ msgstr ""
 "Compares measurements obtained from two different groups (e.g. experimental "
 "and control)."
 
-#: istatistik/templates/istatistik/ttesti.html:407
+#: istatistik/templates/istatistik/ttesti.html:404
 msgid "Bağımlı (Eşleştirilmiş) t-Testi:"
 msgstr "Paired (Dependent) t-Test:"
 
-#: istatistik/templates/istatistik/ttesti.html:407
+#: istatistik/templates/istatistik/ttesti.html:404
 msgid "Aynı kişilere ait iki ölçüm zamanı (ön test–son test) karşılaştırılır."
 msgstr ""
 "Compares two measurement times (pre-test–post-test) from the same "
 "participants."
 
-#: istatistik/templates/istatistik/ttesti.html:407
+#: istatistik/templates/istatistik/ttesti.html:404
 msgid "Tek Örneklem t-Testi:"
 msgstr "One-Sample t-Test:"
 
-#: istatistik/templates/istatistik/ttesti.html:407
+#: istatistik/templates/istatistik/ttesti.html:404
 msgid ""
 "Bir grubun ortalamasının belirli bir teorik değerden farklı olup olmadığını "
 "test eder."
 msgstr "Tests whether a group mean differs from a specific theoretical value."
 
-#: istatistik/templates/istatistik/ttesti.html:408
+#: istatistik/templates/istatistik/ttesti.html:405
 msgid ""
 "Normallik varsayımı karşılanmadığında bağımsız gruplar için Mann-Whitney U, "
 "eşleştirilmiş gruplar için ise Wilcoxon İşaret Testi tercih edilmelidir. "
@@ -17773,15 +17749,15 @@ msgstr ""
 "groups. The practical significance of the results should also be reported "
 "with Cohen's d effect size."
 
-#: istatistik/templates/istatistik/ttesti.html:418
+#: istatistik/templates/istatistik/ttesti.html:415
 msgid "Analiz başlatılıyor…"
 msgstr "Starting analysis…"
 
-#: istatistik/templates/istatistik/ttesti.html:423
+#: istatistik/templates/istatistik/ttesti.html:420
 msgid "✓ İstatistiksel olarak anlamlı fark var (p < .05)"
 msgstr "✓ There is a statistically significant difference (p < .05)"
 
-#: istatistik/templates/istatistik/ttesti.html:424
+#: istatistik/templates/istatistik/ttesti.html:421
 msgid "✗ İstatistiksel olarak anlamlı fark yok (p ≥ .05)"
 msgstr "✗ There is no statistically significant difference (p ≥ .05)"
 
@@ -17842,7 +17818,7 @@ msgstr "Measurement 1 Median"
 msgid "2. Ölçüm Medyan"
 msgstr "Measurement 2 Median"
 
-#: istatistik/templates/istatistik/wilcoxon.html:190
+#: istatistik/templates/istatistik/wilcoxon.html:182
 msgid ""
 "Wilcoxon işaret testi, eşleştirilmiş iki ölçüm arasındaki farkın sıfırdan "
 "anlamlı biçimde farklı olup olmadığını sınar. Verilerin normal dağılım "
@@ -17852,7 +17828,7 @@ msgstr ""
 "paired measurements differs significantly from zero. It is used instead of "
 "the paired t-test when the data are not normally distributed."
 
-#: istatistik/templates/istatistik/wilcoxon.html:191
+#: istatistik/templates/istatistik/wilcoxon.html:183
 msgid ""
 "Ön test–son test karşılaştırması, eşleştirilmiş grup fark analizi ve "
 "tekrarlı ölçüm tasarımlarında tercih edilir."
@@ -17860,11 +17836,11 @@ msgstr ""
 "Preferred for pre-test–post-test comparisons, paired group difference "
 "analyses and repeated measures designs."
 
-#: istatistik/templates/istatistik/wilcoxon.html:232
+#: istatistik/templates/istatistik/wilcoxon.html:229
 msgid "Wilcoxon İşaret Testi Nedir?"
 msgstr "What Is the Wilcoxon Signed-Rank Test?"
 
-#: istatistik/templates/istatistik/wilcoxon.html:233
+#: istatistik/templates/istatistik/wilcoxon.html:230
 msgid ""
 "Wilcoxon işaret testi, iki bağımlı (eşleştirilmiş) ölçüm arasındaki farkın "
 "istatistiksel olarak anlamlı olup olmadığını sınamak için kullanılan non-"
@@ -17876,7 +17852,7 @@ msgstr ""
 "statistically significant. It is a strong alternative when the assumptions "
 "of the paired t-test (such as normality) are not met."
 
-#: istatistik/templates/istatistik/wilcoxon.html:234
+#: istatistik/templates/istatistik/wilcoxon.html:231
 msgid ""
 "Tipik kullanım senaryoları arasında ön test – son test karşılaştırması "
 "(örneğin bir eğitimin etkisini değerlendirmek), iki yöntemin aynı "
@@ -17890,7 +17866,7 @@ msgstr ""
 "participants and repeated measures studies. The test uses only the signs and "
 "ranks of the differences, which makes it more robust to outliers."
 
-#: istatistik/templates/istatistik/wilcoxon.html:235
+#: istatistik/templates/istatistik/wilcoxon.html:232
 msgid ""
 "Sonuçlar W istatistiği ve p-değeri ile raporlanır. Etki büyüklüğü için rank-"
 "biserial korelasyon (r) hesaplanır. p &lt; .05 olduğunda iki ölçüm arasında "
@@ -17900,27 +17876,27 @@ msgstr ""
 "correlation (r) is calculated as the effect size. When p &lt; .05, the "
 "difference between the two measurements is considered significant."
 
-#: istatistik/templates/istatistik/wilcoxon.html:249
+#: istatistik/templates/istatistik/wilcoxon.html:246
 msgid "Anlamlı fark bulundu (p < .05)"
 msgstr "Significant difference found (p < .05)"
 
-#: istatistik/templates/istatistik/wilcoxon.html:250
+#: istatistik/templates/istatistik/wilcoxon.html:247
 msgid "Anlamlı fark yok (p ≥ .05)"
 msgstr "No significant difference (p ≥ .05)"
 
-#: istatistik/templates/istatistik/wilcoxon.html:253
+#: istatistik/templates/istatistik/wilcoxon.html:250
 msgid "(Medyan)"
 msgstr "(Median)"
 
-#: istatistik/templates/istatistik/wilcoxon.html:364
+#: istatistik/templates/istatistik/wilcoxon.html:361
 msgid "Pozitif fark:"
 msgstr "Positive differences:"
 
-#: istatistik/templates/istatistik/wilcoxon.html:364
+#: istatistik/templates/istatistik/wilcoxon.html:361
 msgid "Negatif fark:"
 msgstr "Negative differences:"
 
-#: istatistik/templates/istatistik/wilcoxon.html:364
+#: istatistik/templates/istatistik/wilcoxon.html:361
 msgid "Eşit:"
 msgstr "Ties:"
 
@@ -19866,7 +19842,7 @@ msgstr "You need to verify your email address to use this tool."
 #: semanticscholar/templates/semanticscholar/landing.html:219
 #: semanticscholar/templates/semanticscholar/landing.html:226
 #: semanticscholar/templates/semanticscholar/landing.html:252
-#: templates/base.html:300
+#: templates/base.html:527
 msgid "Ara"
 msgstr "Search"
 
@@ -20042,11 +20018,11 @@ msgstr "Semantic Scholar Results"
 msgid "Django site admin"
 msgstr "Django site admin"
 
-#: templates/base.html:31
+#: templates/base.html:257
 msgid "Analizus - Akademik Analiz ve Veri Bilimi Topluluğu"
 msgstr "Analizus - Academic Analysis and Data Science Community"
 
-#: templates/base.html:32
+#: templates/base.html:258
 msgid ""
 "SPSS, Python, R Studio, Nitel analizler ve AI ile istatistik analizi, veri "
 "analizi ve araştırma desteği."
@@ -20054,153 +20030,153 @@ msgstr ""
 "Statistical analysis, data analysis and research support with SPSS, Python, "
 "R Studio, qualitative analysis and AI."
 
-#: templates/base.html:161
+#: templates/base.html:388
 msgid "Akademik Analiz ve Veri Bilimi Topluluğu"
 msgstr "Academic Analysis and Data Science Platform"
 
-#: templates/base.html:188
+#: templates/base.html:415
 msgid "İçeriğe geç"
 msgstr "Skip to content"
 
-#: templates/base.html:202 templates/base.html:423
+#: templates/base.html:429 templates/base.html:650
 msgid "Analizus Ana Sayfa"
 msgstr "Analizus Home"
 
-#: templates/base.html:208
+#: templates/base.html:435
 msgid "Ana menü"
 msgstr "Main menu"
 
-#: templates/base.html:215 templates/base.html:438
+#: templates/base.html:442 templates/base.html:665
 msgid "Analizler"
 msgstr "Analyses"
 
-#: templates/base.html:228 templates/base.html:444
+#: templates/base.html:455 templates/base.html:671
 msgid "Tableau Analizleri"
 msgstr "Tableau Analyses"
 
-#: templates/base.html:252 templates/base.html:461
+#: templates/base.html:479 templates/base.html:688
 #: templates/partials/footer.html:61
 msgid "Topluluk"
 msgstr "Community"
 
-#: templates/base.html:260 templates/base.html:467 templates/base.html:549
+#: templates/base.html:487 templates/base.html:694 templates/base.html:776
 #: templates/partials/footer.html:65
 msgid "İstatistik Arena"
 msgstr "Statistics Arena"
 
-#: templates/base.html:287 templates/base.html:486
+#: templates/base.html:514 templates/base.html:713
 msgid "AI Çözümler"
 msgstr "AI Solutions"
 
-#: templates/base.html:289 templates/base.html:487
+#: templates/base.html:516 templates/base.html:714
 #: templates/partials/footer.html:123 templates/partials/footer.html:161
 msgid "Hakkımızda"
 msgstr "About Us"
 
-#: templates/base.html:313 templates/partials/auth_lang_switcher.html:9
+#: templates/base.html:540 templates/partials/auth_lang_switcher.html:9
 msgid "Dil seç"
 msgstr "Select language"
 
-#: templates/base.html:341
+#: templates/base.html:568
 msgid "Gelen kutusu"
 msgstr "Inbox"
 
-#: templates/base.html:364
+#: templates/base.html:591
 msgid "Puanını Arena'da artır"
 msgstr "Boost your score in the Arena"
 
-#: templates/base.html:371
+#: templates/base.html:598
 msgid "Ödemelerim"
 msgstr "My Payments"
 
-#: templates/base.html:372 templates/base.html:513
+#: templates/base.html:599 templates/base.html:740
 msgid "Arkadaşını Davet Et"
 msgstr "Invite a Friend"
 
-#: templates/base.html:374 templates/base.html:514
+#: templates/base.html:601 templates/base.html:741
 msgid "Gelen Kutusu"
 msgstr "Inbox"
 
-#: templates/base.html:384 templates/base.html:520
+#: templates/base.html:611 templates/base.html:747
 msgid "Çıkış Yap"
 msgstr "Log Out"
 
-#: templates/base.html:393
+#: templates/base.html:620
 msgid "Giriş"
 msgstr "Log In"
 
-#: templates/base.html:401
+#: templates/base.html:628
 msgid "Menüyü aç"
 msgstr "Open menu"
 
-#: templates/base.html:421
+#: templates/base.html:648
 msgid "Mobil menü"
 msgstr "Mobile menu"
 
-#: templates/base.html:427
+#: templates/base.html:654
 msgid "Menüyü kapat"
 msgstr "Close menu"
 
-#: templates/base.html:495
+#: templates/base.html:722
 msgid "Dil"
 msgstr "Language"
 
-#: templates/base.html:537
+#: templates/base.html:764
 msgid "Forum konusu veya kullanıcı ara..."
 msgstr "Search forum topics or users..."
 
-#: templates/base.html:556
+#: templates/base.html:783
 msgid "Soru yükleniyor..."
 msgstr "Loading question..."
 
-#: templates/base.html:570
+#: templates/base.html:797
 msgid "Haftanın Başarı Hikayesi"
 msgstr "Success Story of the Week"
 
-#: templates/base.html:579
+#: templates/base.html:806
 msgid "Tüm Hikayeler"
 msgstr "All Stories"
 
-#: templates/base.html:671
+#: templates/base.html:899
 msgid "Soru yüklenemedi."
 msgstr "Could not load the question."
 
-#: templates/base.html:700
+#: templates/base.html:928
 msgid "Doğru Cevap! (+10 Puan)"
 msgstr "Correct! (+10 Points)"
 
-#: templates/base.html:702
+#: templates/base.html:930
 msgid ""
 "TEBRİKLER! \"İstatistik Ustası\" rozeti kazandınız! Artık ilan açabilirsiniz."
 msgstr ""
 "CONGRATULATIONS! You earned the \"Statistics Master\" badge! You can now "
 "post listings."
 
-#: templates/base.html:708
+#: templates/base.html:936
 msgid "Yanlış. Doğru cevap:"
 msgstr "Incorrect. The correct answer:"
 
-#: templates/base.html:713
+#: templates/base.html:941
 msgid "Toplam Doğru:"
 msgstr "Total Correct:"
 
-#: templates/base.html:755
+#: templates/base.html:983
 msgid "İşlem başarısız."
 msgstr "The action failed."
 
-#: templates/base.html:773
+#: templates/base.html:1001
 msgid "Hikaye bulunamadı."
 msgstr "Story not found."
 
-#: templates/base.html:788
+#: templates/base.html:1016
 msgid "AI Asistan ile sohbet et"
 msgstr "Chat with the AI Assistant"
 
-#: templates/base.html:804
+#: templates/base.html:1032
 msgid "Tam sayfa aç"
 msgstr "Open full page"
 
-#: templates/base.html:817
+#: templates/base.html:1045
 msgid ""
 "Merhaba! İstatistik testi, akademik makale arama ya da veri analizi "
 "konularında yardımcı olabilirim."
@@ -20208,39 +20184,39 @@ msgstr ""
 "Hello! I can help you with statistical tests, academic literature search or "
 "data analysis."
 
-#: templates/base.html:828
+#: templates/base.html:1056
 msgid "Anonim: 3 soru/gün"
 msgstr "Anonymous: 3 questions/day"
 
-#: templates/base.html:828 templates/base.html:1216
+#: templates/base.html:1056 templates/base.html:1444
 msgid "Üye ol"
 msgstr "Sign up"
 
-#: templates/base.html:828
+#: templates/base.html:1056
 msgid "30 soru"
 msgstr "30 questions"
 
-#: templates/base.html:833
+#: templates/base.html:1061
 msgid "Sorunuzu yazın…"
 msgstr "Type your question…"
 
-#: templates/base.html:833
+#: templates/base.html:1061
 msgid "Mesaj"
 msgstr "Message"
 
-#: templates/base.html:1181
+#: templates/base.html:1409
 msgid "hak"
 msgstr "left"
 
-#: templates/base.html:1216
+#: templates/base.html:1444
 msgid "ile 30 soruya çıkar."
 msgstr "to increase your limit to 30 questions."
 
-#: templates/base.html:1221
+#: templates/base.html:1449
 msgid "Bir hata oluştu, tekrar deneyin."
 msgstr "An error occurred, please try again."
 
-#: templates/base.html:1225
+#: templates/base.html:1453
 msgid "Bağlantı hatası. İnternet bağlantınızı kontrol edin."
 msgstr "Connection error. Please check your internet connection."
 
@@ -20716,255 +20692,3 @@ msgid ""
 msgstr ""
 "No-code data scraping from international academic databases. No Python or "
 "Selenium skills needed."
-
-#~ msgid "TAM RAPOR (15 Analiz)"
-#~ msgstr "FULL REPORT (15 Analyses)"
-
-#~ msgid ""
-#~ "Tam raporunuzu (15 analiz içeren PDF) aşağıdaki bağlantıdan "
-#~ "indirebilirsiniz:"
-#~ msgstr ""
-#~ "You can download your full report (PDF with 15 analyses) from the link "
-#~ "below:"
-
-#~ msgid "Akademik Veri Üssü"
-#~ msgstr "Academic Data Hub"
-
-#~ msgid ""
-#~ "WoS, Scopus, BibTeX veya OpenAlex verilerinizi yükleyin — 10 analiz, PDF "
-#~ "rapor"
-#~ msgstr ""
-#~ "Upload your WoS, Scopus, BibTeX or OpenAlex data — 10 analyses, PDF report"
-
-#~ msgid "10 Bibliometrik Analiz"
-#~ msgstr "10 Bibliometric Analyses"
-
-#~ msgid ""
-#~ "Bibliometrik analiziniz tamamlandı. Demo raporu (3 grafik) ücretsiz "
-#~ "alabilirsiniz. Tam rapor (10 analiz) için sipariş oluşturunuz."
-#~ msgstr ""
-#~ "Your bibliometric analysis is complete. You can get the demo report (3 "
-#~ "charts) for free. Place an order for the full report (10 analyses)."
-
-#~ msgid "Tam Rapor (10 Analiz)"
-#~ msgstr "Full Report (10 Analyses)"
-
-#~ msgid "Tam Raporda Yer Alan 10 Analiz:"
-#~ msgstr "10 Analyses Included in the Full Report:"
-
-#~ msgid ""
-#~ "Bibliometrik analiz; bilimsel yayınların atıf sayısı, yazar işbirliği "
-#~ "ağı, yayın trendi ve anahtar kelime dağılımı gibi nicel göstergelerini "
-#~ "inceleyen bir araştırma yöntemidir. Tez literatür taraması, sistematik "
-#~ "derleme ve araştırma haritalaması için vazgeçilmez bir araçtır. Analizus "
-#~ "Bibliometrik Analiz aracı; Web of Science (WoS), Scopus, BibTeX ve "
-#~ "OpenAlex formatlarını destekler — tek dosya yükleyerek 10 farklı analizi "
-#~ "saniyeler içinde gerçekleştirebilirsiniz."
-#~ msgstr ""
-#~ "Bibliometric analysis is a research method that examines quantitative "
-#~ "indicators of scientific publications such as citation counts, author "
-#~ "collaboration networks, publication trends and keyword distributions. It "
-#~ "is an indispensable tool for thesis literature reviews, systematic "
-#~ "reviews and research mapping. The Analizus Bibliometric Analysis tool "
-#~ "supports Web of Science (WoS), Scopus, BibTeX and OpenAlex formats — "
-#~ "upload a single file and run 10 different analyses within seconds."
-
-#~ msgid ""
-#~ "WoS, Scopus veya BibTeX dosyanızı yükleyin — yıllara göre yayın trendi, "
-#~ "en çok atıf alan yazarlar, işbirliği ağı ve daha fazlası için 10 grafik "
-#~ "içeren PDF rapor alın."
-#~ msgstr ""
-#~ "Upload your WoS, Scopus or BibTeX file and get a PDF report with 10 "
-#~ "charts covering publication trends over the years, the most cited "
-#~ "authors, collaboration networks and more."
-
-#~ msgid "Sistem otomatik olarak 10 farklı analizi çalıştırır."
-#~ msgstr "The system automatically runs 10 different analyses."
-
-#~ msgid "Örn: SPSS, Veri Analizi, Makine Öğrenmesi..."
-#~ msgstr "E.g. SPSS, Data Analysis, Machine Learning..."
-
-#~ msgid "İşin detaylarını açıklayın..."
-#~ msgstr "Describe the details of the job..."
-
-#, python-format
-#~ msgid "Tebrikler %(username)s!"
-#~ msgstr "Congratulations, %(username)s!"
-
-#~ msgid ""
-#~ "EDU uzantılı mail adresiniz ile giriş yaptığınız için <strong>Doğrulanmış "
-#~ "Akademisyen</strong> rozeti kazandınız!"
-#~ msgstr ""
-#~ "Because you signed in with an EDU email address, you have earned the "
-#~ "<strong>Verified Academic</strong> badge!"
-
-#~ msgid ""
-#~ "Ayrıca <strong>3 gün boyunca teklif verme hakkına</strong> sahipsiniz."
-#~ msgstr "You also have <strong>the right to make offers for 3 days</strong>."
-
-#~ msgid "İyi çalışmalar,"
-#~ msgstr "Best regards,"
-
-#~ msgid "Platformdaki Uzmanlardan Örnekler"
-#~ msgstr "Some of the Experts on Our Platform"
-
-#, python-format
-#~ msgid ""
-#~ "Kesinlikle hayır. Verileriniz %%100 KVKK ve akademik etik standartlarına "
-#~ "uygun olarak şifreli sunucularda işlenir. Analiz dosyalarınız veya "
-#~ "araştırma detaylarınız 3. şahıslarla, kurumlarla veya diğer uzmanlarla "
-#~ "asla paylaşılmaz."
-#~ msgstr ""
-#~ "Absolutely not. Your data is processed on encrypted servers, fully "
-#~ "compliant with data-protection law and academic ethics standards. Your "
-#~ "analysis files or research details are never shared with third parties, "
-#~ "institutions, or other experts."
-
-#~ msgid ""
-#~ "Ücretsiz ön inceleme sonrası size net bir fiyat ve metodoloji teklifi "
-#~ "sunarız. Belirlenen analiz kapsamı dışına çıkılmadığı sürece süreç "
-#~ "boyunca hiçbir gizli ücret, lisans bedeli veya ek maliyet yansıtılmaz."
-#~ msgstr ""
-#~ "After a free initial review, we give you a clear price and methodology "
-#~ "quote. As long as the agreed analysis scope isn't exceeded, no hidden "
-#~ "fees, license costs, or extra charges apply throughout the process."
-
-#~ msgid ""
-#~ "Teslim ettiğimiz raporun sonuna kadar arkasındayız. Araştırma komitesi, "
-#~ "danışman hoca veya dergi hakemlerinden gelen metodolojik geri bildirimler "
-#~ "doğrultusunda, ilk anlaşılan kapsam dahilinde ücretsiz revizyon desteği "
-#~ "sağlıyoruz."
-#~ msgstr ""
-#~ "We stand behind the report we deliver, all the way. Based on "
-#~ "methodological feedback from your research committee, advisor, or journal "
-#~ "reviewers, we provide free revision support within the originally agreed "
-#~ "scope."
-
-#~ msgid ""
-#~ "Teslimat süresi verinizin karmaşıklığına (veri temizliği gereksinimi vb.) "
-#~ "ve istenen testlerin sayısına göre değişmekle birlikte, genellikle 3 ila "
-#~ "7 iş günü içerisinde APA formatında raporlanmış olarak teslim edilir. "
-#~ "Zaman kısıtlaması olan projeler için \"Acil Teslimat\" seçeneğimiz "
-#~ "bulunmaktadır."
-#~ msgstr ""
-#~ "Delivery time varies with your data's complexity (e.g. cleaning needs) "
-#~ "and the number of tests requested, but it's typically delivered as an APA-"
-#~ "formatted report within 3 to 7 business days. For time-constrained "
-#~ "projects, we offer an \"Express Delivery\" option."
-
-#~ msgid ""
-#~ "Proje teslim edilip tarafınızdan onay alındıktan sonra, verileriniz ve "
-#~ "sonuç raporlarınız olası revizyon taleplerine karşın sistemlerimizde 30 "
-#~ "gün boyunca güvenle muhafaza edilir. 30 günün sonunda tüm dosyalar "
-#~ "sunucularımızdan kalıcı olarak ve geri döndürülemez şekilde silinir."
-#~ msgstr ""
-#~ "Once the project is delivered and approved by you, your data and result "
-#~ "reports are securely kept on our systems for 30 days in case revisions "
-#~ "are needed. After 30 days, all files are permanently and irreversibly "
-#~ "deleted from our servers."
-
-#~ msgid "Analizus hesabınızı silmek için aşağıdaki butona tıklayın."
-#~ msgstr "Click the button below to delete your Analizus account."
-
-#~ msgid "Hesabımı Kalıcı Olarak Sil"
-#~ msgstr "Delete My Account Permanently"
-
-#~ msgid ""
-#~ "Bu link <strong>24 saat</strong> geçerlidir. Talepte bulunmadıysanız bu e-"
-#~ "postayı görmezden gelin."
-#~ msgstr ""
-#~ "This link is valid for <strong>24 hours</strong>. If you did not make "
-#~ "this request, please ignore this email."
-
-#~ msgid "Yok (tarayıcı)"
-#~ msgstr "None (browser)"
-
-#~ msgid "Otomatik"
-#~ msgstr "Automatic"
-
-#~ msgid "Hazır"
-#~ msgstr "Ready-made"
-
-#~ msgid "Manuel"
-#~ msgstr "Manual"
-
-#~ msgid "Var"
-#~ msgstr "Yes"
-
-#~ msgid "Pazar yeri"
-#~ msgstr "Marketplace"
-
-#~ msgid "Bibliometrik Analiz — 15 Grafik PDF Rapor"
-#~ msgstr "Bibliometric Analysis — 15-Chart PDF Report"
-
-#~ msgid ""
-#~ "Demo rapor (3 grafik) ücretsiz emaile gönderilir. Tam rapor (15 analiz) "
-#~ "kayıt sayısına göre ücretlidir."
-#~ msgstr ""
-#~ "A demo report (3 charts) is sent free to your email. The full report (15 "
-#~ "analyses) is priced based on record count."
-
-#~ msgid "YouTube Transcript İndir"
-#~ msgstr "Download YouTube Transcript"
-
-#~ msgid "Kullanıcı Kartı"
-#~ msgstr "User Card"
-
-#~ msgid "Profil yüklenemedi."
-#~ msgstr "Could not load the profile."
-
-#~ msgid "Tamamlanan"
-#~ msgstr "Completed"
-
-#~ msgid "Analiz"
-#~ msgstr "Analyses"
-
-#~ msgid "Kayıtlı"
-#~ msgstr "Registered"
-
-#~ msgid "Üye"
-#~ msgstr "Members"
-
-#~ msgid "Ön"
-#~ msgstr "Initial"
-
-#~ msgid "Akademik Analiz ve Veri Bilimi Forumu"
-#~ msgstr "Academic Analysis and Data Science Forum"
-
-#~ msgid "Türkçe Arayüz"
-#~ msgstr "Turkish Interface"
-
-#~ msgid "Tam Türkçe"
-#~ msgstr "Fully Turkish"
-
-#~ msgid "Kısmi"
-#~ msgstr "Partial"
-
-#~ msgid "İngilizce"
-#~ msgstr "English"
-
-#~ msgid ""
-#~ "<strong>Saklama süreleri:</strong> hesap verileri hesabınızı silene "
-#~ "kadar; akademik tarama araçlarının ham verileri 7 gün; çerez tercihi 180 "
-#~ "gün saklanır."
-#~ msgstr ""
-#~ "<strong>Retention periods:</strong> account data until you delete your "
-#~ "account; raw data from the academic search tools for 7 days; your cookie "
-#~ "preference for 180 days."
-
-#~ msgid ""
-#~ "Akademik araştırma ve istatistik analiz için Türkçe platform. Tezini "
-#~ "güvenle yaz, verini doğru analiz et."
-#~ msgstr ""
-#~ "A platform for academic research and statistical analysis. Write your "
-#~ "thesis with confidence, analyze your data correctly."
-
-#~ msgid ""
-#~ "Ülke sayımında bir yayın, yazarlarının bulunduğu her ülke için bir kez "
-#~ "sayıldı. Kurum grafiği yalnız ülke bilgisi hiç yoksa üretilir ve her "
-#~ "yayının ilk kurumunu sayar."
-#~ msgstr ""
-#~ "In the country count, each publication was counted once for every country "
-#~ "of its authors. The institution chart is produced only when no country "
-#~ "information is available at all, and it counts the first institution of "
-#~ "each publication."

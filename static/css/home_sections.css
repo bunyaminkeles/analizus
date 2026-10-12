@@ -230,11 +230,16 @@
     opacity: 1;
     color: #f59e0b;
 }
+.ax-market-header {
+    position: relative;
+    z-index: 1;
+}
 .ax-market-title {
     font-size: 1.5rem;
     font-weight: 800;
     color: #f8fafc;
     margin: 0;
+    padding-right: 72px;
 }
 .ax-market-desc {
     font-size: 1rem;

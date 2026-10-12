@@ -39,6 +39,52 @@ maddelerde.
   etmiyor — operasyonel olarak bu sürelerin fiilen karşılandığının
   doğrulanması kullanıcı/iş kararı, kod değişikliği değil.
 
+- [x] **DÜZELTİLDİ (12 Ekim 2026, anasayfa_ux_kontrol_prompt.md turu) — Ana
+  sayfa UX kontrolü bulguları (U2, U3, U4, U5, U6) uygulandı, local'de
+  canlı doğrulandı (ikon, SSS metni, TR çapraz link, EN'de görünmediği,
+  kontrast token'ı, kart z-index'i); henüz commit/push edilmedi, kullanıcı
+  onayı bekliyor. U1b (24 saat vaadi, kapsam dışı) ve U2c (ProjectRequest
+  veri sorgusu) hâlâ açık — ayrıntı aşağıda.
+  **Ek bulgu (uygulama sırasında fark edildi):** `.ax-hero__personal-badge`
+  ve `.ax-hero__personal-link:hover` (`home.html` satır 45,48) tanımsız
+  `--ax-color-primary` token'ını kullanıyor (yalnız `hangi_test.html`'de
+  sayfa-özel tanımlı, ana sayfada yok) — muhtemelen rengi görünmüyor/miras
+  rengine düşüyor. Bu tur kapsamında DEĞİŞTİRİLMEDİ (U3 kapsamı dışı),
+  ayrı görev olarak not edildi.
+  Aşağıdaki orijinal bulgu metni (geçmiş referans için):
+  (1) **U4, yüksek öncelik** — kapı kartlarında görsel çakışma CANLIDA
+  DOĞRULANDI: `.ax-market-visual` absolute konumlu ama kart başlığı
+  (`.ax-market-header`/`.ax-market-title`) hiç `position`/`z-index` almamış,
+  bu yüzden 1024/1280/1632px'de dekoratif ikon başlığın üstüne biniyor; sol
+  kartta illüstrasyon da kenar kesiliyor (`static/css/home_sections.css`
+  satır 71-79, 233-238, 1323-1339). <768px'de görsel zaten gizli, sorun yok.
+  Tek dosya değişir, deploy: yalnız `collectstatic`.
+  (2) **U2, yüksek öncelik** — pazaryeri ↔ proje talebi çapraz yönlendirme
+  tek yönlü: `job_list.html:52` proje talebine link veriyor, `proje_talebi.html`
+  pazaryerine hiç geri link vermiyor. Ayrıca `ProjectRequest.source` dağılımı
+  ve son 90 günün `FreelanceJob` sayısı kullanıcı tarafından shell'den
+  kontrol edilip (komut hazır, ajan raporunda) ayrım metni/kapı sayısı kararı
+  buna göre verilmeli.
+  (3) **U3, orta öncelik** — hero altı 3 mikro-metinden 2'si (`--ax-text-muted`
+  token; "t-testi·ANOVA" satırı VE gelir getiren "bir uzmana bırak" linki
+  dahil) ölçülen kontrast ~3.4-4.0:1 — WCAG AA (4.5:1) FAIL. Kural iki yerde
+  kopya halinde duruyor (`home.html` inline kritik CSS + `hero.css`), ikisi
+  birlikte senkron değişmeli yoksa biri unutulur.
+  (4) **U5, orta öncelik** — "Sıfır komisyon" iddiası doğru (yalnız isteğe
+  bağlı vitrin ücreti var) ama ana sayfadaki SSS yalnız müşteri tarafını
+  açıklıyor, uzman tarafına ("siz nasıl kazanıyorsunuz") hiç değinmiyor; SSS'e
+  1-2 cümle eklenmesi gerekiyor (çeviri + `compilemessages` gerektirir).
+  (5) **U6, düşük öncelik** — "Analiz Yaptırmak İstiyorum" kartındaki büyüteç
+  SVG ikonu "ara" anlamında, "yaptır" değil; sitenin geri kalanı Bootstrap
+  Icons (`bi-*`) kullanıyor — `bi-send`/`bi-clipboard-check` ile
+  değiştirilmesi önerildi.
+  (6) **Kapsam dışı not** — SSS akordeonu hâlâ `data-bs-toggle="collapse"`
+  (Bootstrap JS) kullanıyor, CLAUDE.md kuralı ve devam eden Bootstrap
+  Kaldırma Faz 3 ile çelişiyor; ayrı görev olarak işaretlendi.
+  Ekran görüntüleri `tmp/ux_kontrol/` altında (14 dosya, `.gitignore`'da
+  DEĞİL — commit edilmemesine dikkat). Önerilen uygulama sırası: U4 → U2 →
+  U3 → U5 → U6, her biri ayrı onayla.
+
 - [ ] **BULGU (12 Ekim 2026, "Render-blocking bundle.css" düzeltmesi sırasında
   Lighthouse'ta görüldü) — `#ax-cookie` çerez onay banner'ı CLS'e sebep
   oluyor** (Lighthouse `layout-shifts` audit'inde en büyük katkı, skor
