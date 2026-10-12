@@ -10,6 +10,28 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
+- [ ] **BUG (12 Ekim 2026, Bootstrap Kaldırma Faz 3 sırasında bulundu, Playwright ile
+  doğrulandı) `forum/templates/forum/blog/blog_list.html` — kart/sidebar arka
+  planları tamamen şeffaf.** İnline `<style>` bloğu (`.ax-blog-card`,
+  `.ax-featured-card`, `.ax-sidebar-widget` vb.) `var(--ax-surface)`,
+  `var(--ax-border)`, `var(--ax-text)`, `var(--ax-muted)`, `var(--ax-primary)`
+  kullanıyor — bu kısa isimli değişkenler `static/css/base.css`'in `:root`'unda
+  **hiç tanımlı değil** (gerçek token isimleri `--ax-bg-tertiary`,
+  `--ax-border-default`/`--ax-border-hover`, `--ax-text-primary`/`--ax-text-secondary`,
+  `--ax-accent-primary` — farklı, daha uzun isimler), fallback değeri de yok.
+  Canlıda `/blog/` sayfasında doğrulandı: `.ax-blog-card`/`.ax-sidebar-widget`
+  `background-color: rgba(0,0,0,0)` — kartlar şeffaf, sayfa zeminiyle kaynaşmış.
+  **Kök neden:** `analizus.md` §10'daki CSS dokümantasyonu bu kısa isim şemasını
+  (`--ax-primary`/`--ax-surface`/`--ax-border`/`--ax-text`/`--ax-muted`) hâlâ
+  gösteriyor — gerçekte hiç uygulanmamış/terk edilmiş eski bir token tasarımı;
+  bu dosya muhtemelen o eski dokümana bakılarak yazılmış. Düzeltme: style
+  bloğundaki 5 değişkeni gerçek `base.css` token'larına eşle (`--ax-surface`→
+  `--ax-bg-tertiary`, `--ax-border`→`--ax-border-default`, `--ax-text`→
+  `--ax-text-primary`, `--ax-muted`→`--ax-text-secondary`, `--ax-primary`→
+  `--ax-accent-primary`) + `analizus.md` §10'u güncel token isimleriyle düzelt
+  (başka dosyalarda aynı eski isimler kullanılmış mı diye kontrol gerekir —
+  taranmadı).
+
 - [x] **(11 Ekim 2026 → TAMAMLANDI, henüz push edilmedi) Profil "İlanlar" sekmesi: sahip kendi "Devam Eden Projeler"ini göremiyor.**
   Kullanıcı ekran görüntüsüyle bildirdi: `joseph` kendi profiline (`/profile/joseph/`)
   bakınca "İlanlar" sekmesinde sadece "Verdiğim Teklifler" (Kabul Edildi/Kabul
@@ -827,8 +849,21 @@ girdi; kod `NCBI_API_KEY` okuyor → şu an anahtar KULLANILMIYOR (3 istek/sn).
   PubMed Faz 1'den sonra ayrı iş, plan+onay): OpenAlex,
   TR Dizin, OAI-PMH, Semantic Scholar `calculate_price` = 250 TL/ilk 100 + 100 TL/her 100 — SiteSettings'te alan yok.
   Adminden düzenlenebilen yalnız bibliometri rapor fiyatları (`biblio_price_*`). SiteSettings alanı (migration) + şablonlardaki sabit fiyat metinleri.
-- [ ] Faz 4 — (ertelendi) TR sipariş akışı (`PubMedOrder`, OpenAlex sipariş kopyası) + hesap silme/S3 temizlik
-  listeleri (`forum/api_views.py`), analizus.md §15 benzeri bölüm.
+- [x] **KARAR (12 Ekim 2026) — Faz 4 ŞİMDİLİK YAPILMAYACAK.** TR sipariş akışı
+  (`PubMedOrder`, OpenAlex sipariş kopyası — model/form/view/admin/template/
+  job_runner/job_queue/hesap silme, toplam ~10 dosya) için tam plan çıkarıldı
+  (OpenAlex'in `AlexOrder` akışı birebir incelendi) ama **kullanıcı kararıyla
+  uygulanmadı** — gerekçe: PubMed yeni bir araç, gerçek talep (kaç kullanıcı
+  tam veri istiyor) henüz ölçülmedi; manuel IBAN+admin-onay akışı admin'e
+  sürekli iş yükü bindiriyor, kanıtlanmamış talep için bu maliyete değmiyor
+  (OpenAlex'te de sipariş özelliği eklenmeden önce aynı temkinli yol
+  izlenmişti). **Mevcut davranış korunuyor, değişiklik yapılmadı:**
+  `pubmed/services/job_runner.py` `send_demo_email()` zaten TR dahil tüm
+  dillerde kullanıcıyı `proje_talebi` sayfasına yönlendiriyor (kod zaten bu
+  haldeydi, hiçbir dosya değişmedi). **Yeniden değerlendirme sinyali:**
+  `proje_talebi?source=tool` üzerinden gelen taleplerde PubMed payı somut
+  şekilde artarsa (admin/analytics'ten izlenebilir), bu plan (yukarıdaki
+  10 dosyalık liste) hazır — tekrar çıkarmaya gerek yok.
 
 - [ ] **OpenAlex sayfası bulguları (PubMed yazılırken görüldü, 29 Eylül 2026)** — (1) ~~XSS~~ DÜZELTİLDİ YERELDE (29 Eylül
   2026; CANLIDA main 08472b2, Hetzner restart, /openalex/ 200): 6 tarama sayfası (OpenAlex, S2, TR Dizin, OAI-PMH, YÖK Tez, Tez Analizi) dış veriyi `_esc()` ile basıyor, S2 PDF
