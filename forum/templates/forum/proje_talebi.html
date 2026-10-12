@@ -95,6 +95,11 @@
     <p class="text-white-50 mx-auto" style="max-width:560px;font-size:1rem;line-height:1.7;">
       {% trans "Şirketinizin verisinden stratejik içgörüler elde edin. Talebinizi iletmeniz yeterli — uzman analistlerle eşleştirip ücretsiz ön değerlendirme sunuyoruz." %}
     </p>
+    {% if LANGUAGE_CODE == 'tr' %}
+    <p class="text-white-50 mx-auto mt-3 mb-0" style="max-width:560px;font-size:.9rem;">
+      {% trans "Teklif toplayıp kendiniz mi seçmek istiyorsunuz?" %} <a href="{% url 'job_list' %}">{% trans "Pazaryerinde ilan açın →" %}</a>
+    </p>
+    {% endif %}
   </div>
 
   <!-- Platform Güven Sinyalleri (sıfır kuralı: 0 olan kutu gizli) -->
