@@ -19,6 +19,230 @@
     <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
     <link rel="dns-prefetch" href="https://www.googletagmanager.com">
 
+    <!-- Kritik iskelet CSS — bundle.css async yüklendiği için (aşağıda) ilk
+         boyamada navbar'ın stilsiz görünmesini / sonradan fixed+arka planlı
+         hâle sıçramasını (CLS) önler. base.css (:root, .ax-container) ve
+         navbar.css (body padding-top, .site-nav ailesi) içindeki kuralların
+         BİREBİR kopyası — o dosyalardaki ilgili seçiciler değişirse burası
+         da güncellenmeli. -->
+    <style>
+        :root {
+            --ax-bg-primary:        #0b0f19;
+            --ax-bg-secondary:      #111827;
+            --ax-bg-tertiary:       #1f2937;
+            --ax-bg-elevated:       #374151;
+            --ax-text-primary:      #f1f5f9;
+            --ax-text-secondary:    #94a3b8;
+            --ax-text-muted:        #64748b;
+            --ax-accent-primary:        #6366f1;
+            --ax-accent-primary-hover:  #818cf8;
+            --ax-accent-primary-light:  #a5b4fc;
+            --ax-accent-secondary:      #10b981;
+            --ax-accent-secondary-hover:#34d399;
+            --ax-accent-warning:        #f59e0b;
+            --ax-accent-danger:         #ef4444;
+            --ax-accent-info:           #06b6d4;
+            --ax-accent-info-hover:     #22d3ee;
+            --ax-border-default:    #1e293b;
+            --ax-border-hover:      #334155;
+            --ax-font-family:       'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            --ax-text-xs:   0.75rem;
+            --ax-text-sm:   0.875rem;
+            --ax-text-base: 1rem;
+            --ax-text-lg:   1.125rem;
+            --ax-text-xl:   1.25rem;
+            --ax-text-2xl:  1.5rem;
+            --ax-text-3xl:  1.875rem;
+            --ax-text-4xl:  2.25rem;
+            --ax-text-5xl:  3rem;
+            --ax-font-normal:   400;
+            --ax-font-medium:   500;
+            --ax-font-semibold: 600;
+            --ax-font-bold:     700;
+            --ax-leading-tight:   1.25;
+            --ax-leading-normal:  1.5;
+            --ax-leading-relaxed: 1.75;
+            --ax-space-1:  0.25rem;
+            --ax-space-2:  0.5rem;
+            --ax-space-3:  0.75rem;
+            --ax-space-4:  1rem;
+            --ax-space-5:  1.25rem;
+            --ax-space-6:  1.5rem;
+            --ax-space-8:  2rem;
+            --ax-space-10: 2.5rem;
+            --ax-space-12: 3rem;
+            --ax-space-16: 4rem;
+            --ax-space-20: 5rem;
+            --ax-space-24: 6rem;
+            --ax-radius-sm:   6px;
+            --ax-radius-md:   8px;
+            --ax-radius-lg:   12px;
+            --ax-radius-xl:   16px;
+            --ax-radius-full: 9999px;
+            --ax-shadow-sm:  0 1px 3px rgba(0,0,0,0.4), 0 1px 2px rgba(0,0,0,0.3);
+            --ax-shadow-md:  0 4px 6px rgba(0,0,0,0.4), 0 2px 4px rgba(0,0,0,0.3);
+            --ax-shadow-lg:  0 10px 15px rgba(0,0,0,0.5), 0 4px 6px rgba(0,0,0,0.3);
+            --ax-shadow-xl:  0 20px 25px rgba(0,0,0,0.6), 0 8px 10px rgba(0,0,0,0.4);
+            --ax-container-max:     1280px;
+            --ax-container-padding: 1rem;
+            --ax-transition-fast:   150ms ease;
+            --ax-transition-normal: 300ms ease;
+            --ax-transition-slow:   500ms ease;
+            --ax-z-dropdown: 100;
+            --ax-z-sticky:   200;
+            --ax-z-modal:    300;
+            --ax-z-toast:    400;
+        }
+        .ax-container {
+            width: 100%;
+            max-width: var(--ax-container-max);
+            margin-inline: auto;
+            padding-inline: var(--ax-container-padding);
+        }
+        body { padding-top: 64px; }
+        @media (max-width: 1023px) { body { padding-top: 56px; } }
+        .site-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 64px;
+            z-index: var(--ax-z-sticky);
+            background-color: rgba(11, 15, 25, 0.92);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--ax-border-default);
+            transition: background-color var(--ax-transition-normal),
+                        box-shadow var(--ax-transition-normal);
+        }
+        .site-nav--scrolled {
+            background-color: rgba(11, 15, 25, 0.98);
+            box-shadow: var(--ax-shadow-lg);
+        }
+        @media (max-width: 1023px) { .site-nav { height: 56px; } }
+        .site-nav__inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 100%;
+            gap: var(--ax-space-2);
+        }
+        @media (min-width: 480px) { .site-nav__inner { gap: var(--ax-space-4); } }
+        .site-nav__logo {
+            display: flex;
+            align-items: center;
+            gap: var(--ax-space-2);
+            text-decoration: none;
+            color: var(--ax-text-primary);
+            flex-shrink: 0;
+            transition: opacity var(--ax-transition-fast);
+            line-height: 1;
+        }
+        .site-nav__logo:hover { opacity: 0.85; color: var(--ax-text-primary); }
+        .site-nav__logo-icon  { color: var(--ax-accent-primary); flex-shrink: 0; }
+        .site-nav__logo-img   { height: 40px; width: auto; flex-shrink: 0; border-radius: 50%; }
+        .site-nav__logo-text  {
+            font-size: var(--ax-text-2xl);
+            font-weight: var(--ax-font-bold);
+            letter-spacing: -0.01em;
+        }
+        @media (min-width: 480px) { .site-nav__logo-text { font-size: var(--ax-text-4xl); } }
+        @media (max-width: 359px) { .site-nav__inner > .site-nav__logo .site-nav__logo-text { display: none; } }
+        .site-nav__menu {
+            display: none;
+            align-items: center;
+            gap: var(--ax-space-1);
+            flex: 1;
+            padding-left: var(--ax-space-4);
+        }
+        @media (min-width: 1024px) { .site-nav__menu { display: flex; } }
+        .site-nav__link {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--ax-space-1);
+            padding: var(--ax-space-2) var(--ax-space-3);
+            font-size: var(--ax-text-sm);
+            font-weight: var(--ax-font-medium);
+            font-family: var(--ax-font-family);
+            color: var(--ax-text-secondary);
+            text-decoration: none;
+            border-radius: var(--ax-radius-md);
+            border: none;
+            background: none;
+            cursor: pointer;
+            position: relative;
+            white-space: nowrap;
+            transition: color var(--ax-transition-fast),
+                        background-color var(--ax-transition-fast);
+        }
+        .site-nav__link:hover {
+            color: var(--ax-text-primary);
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+        .site-nav__link.is-active { color: var(--ax-accent-primary); }
+        .site-nav__link.is-active::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: var(--ax-space-3);
+            right: var(--ax-space-3);
+            height: 2px;
+            background-color: var(--ax-accent-primary);
+            border-radius: var(--ax-radius-full);
+        }
+        .site-nav__link:focus-visible {
+            outline: 2px solid var(--ax-accent-primary);
+            outline-offset: 2px;
+        }
+        .site-nav__hamburger {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            background: none;
+            border: none;
+            border-radius: var(--ax-radius-md);
+            color: var(--ax-text-secondary);
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: color var(--ax-transition-fast),
+                        background-color var(--ax-transition-fast);
+        }
+        .site-nav__hamburger:hover {
+            color: var(--ax-text-primary);
+            background-color: rgba(255, 255, 255, 0.06);
+        }
+        .site-nav__hamburger:focus-visible {
+            outline: 2px solid var(--ax-accent-primary);
+            outline-offset: 2px;
+        }
+        @media (min-width: 1024px) { .site-nav__hamburger { display: none; } }
+        /* Bu dört seçici "gizli" durumunu opacity/visibility/transform ile
+           sağlıyor (display:none DEĞİL) — kritik blokta yoksa bundle.css
+           gelene kadar dropdown/mobil çekmece/skip-link içeriği normal
+           akışta GÖRÜNÜR render olup sayfayı aşağı itiyor (test edilip
+           görüldü). */
+        .site-nav__dropdown { position: absolute; opacity: 0; visibility: hidden; }
+        .nav-drawer {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 300px;
+            max-width: 85vw;
+            height: 100vh;
+            height: 100dvh;
+            transform: translateX(100%);
+        }
+        .nav-overlay { position: fixed; inset: 0; opacity: 0; visibility: hidden; }
+        .ax-skip-link { position: absolute; top: -100%; left: var(--ax-space-4); z-index: var(--ax-z-toast); }
+        /* base.html içinde doğrudan kullanılan genel bileşenler (arama/
+           quiz/hikaye modal'ları) — aynı gizli-durum tuzağı. Sayfaya özel
+           .ax-dropdown kullanan şablonlar için de aynı güvenlik ağı. */
+        .ax-modal-backdrop { position: fixed; inset: 0; opacity: 0; visibility: hidden; pointer-events: none; }
+        .ax-dropdown { position: absolute; opacity: 0; visibility: hidden; }
+    </style>
+
     <!-- Theme & PWA Meta -->
     <meta name="theme-color" content="#0f172a">
     <meta name="color-scheme" content="dark">
@@ -106,7 +330,8 @@
     <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"></noscript>
 
 <!-- Modern Katman: Analizus Design System (base+navbar+footer+style+sidebar_widgets birleştirilmiş) -->
-    <link rel="stylesheet" href="{% static 'css/bundle.css' %}?v=0013">
+    <link rel="stylesheet" href="{% static 'css/bundle.css' %}?v=0013" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="{% static 'css/bundle.css' %}?v=0013"></noscript>
 
     {% block extra_head %}{% endblock %}
 
