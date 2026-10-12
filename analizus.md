@@ -857,6 +857,16 @@ listeden karşılığını kullan (`--ax-surface`→`--ax-bg-tertiary`, `--ax-bo
 `--ax-border-default`, `--ax-text`→`--ax-text-primary`, `--ax-muted`→
 `--ax-text-secondary`, `--ax-primary`→`--ax-accent-primary`).
 
+**Yeni bulunan, henüz DÜZELTİLMEMİŞ bir örnek daha (12 Ekim 2026, anasayfa UX
+kontrol turu):** `--ax-color-primary` de global olarak tanımlı değil (yalnız
+`hangi_test.html` kendi sayfa-içi `:root`'unda tanımlıyor, ana sayfada yok).
+`forum/templates/forum/home.html:45,48` (`.ax-hero__personal-badge`,
+`.ax-hero__personal-link:hover`) bunu kullanıyor — geçersiz `var()` referansı
+inherited metin rengine düşüyor, muhtemelen görsel olarak fark edilmiyor ama
+kasıtlı renk uygulanmıyor. Bu tur kapsamında DOKUNULMADI (ayrı görevdeki
+`.ax-hero__secondary-cta a:hover` için aynı hataya düşülmeden doğru token
+`--ax-accent-primary` kullanıldı); düzeltme: `tasks/todo.md`'de açık madde.
+
 ### Bootstrap'te Eksik Renk Utility Class'ları (`style.css`)
 Bootstrap `text-teal` / `text-purple` / `btn-teal` / `btn-purple` sınıflarını tanımlamaz.
 `istatistik/views.py`'de bazı araçlar `promo_color='teal'` veya `promo_color='purple'` kullanır;
@@ -2221,6 +2231,7 @@ with connection.cursor() as c:
 | Aynı veriyi (ör. tez başlığı) iki ayrı yerde (TXT indirme + e-posta gövdesi) formatlayan kod, birinde düzeltilen bir hatayı (TR/EN başlık karışıklığı) diğerine hiç almıyor | `yoktez/services/scraper.py`'deki `generate_results_txt` doğru sırayla (`title_tr or title`) çalışırken, `job_runner.py`'deki e-posta gövdesi kendi ayrı döngüsünde yalnız `title` (İngilizce) kullanıyordu — kopya, senkronize olmayan implementasyon (8 Ekim 2026, otomatik e-posta eklenince kullanıcı ilk kez dikkatlice okuyunca fark edildi). **Kural:** aynı kaydı farklı çıktı formatlarında (TXT/Excel/e-posta/ekran) göstermek gerekiyorsa, mümkünse TEK bir formatlama fonksiyonunu çağır; ayrı bir kopya yazmak zorundaysan, birini düzeltirken diğerini de kontrol et. |
 | Kullanıcıya gönderilen bir link (e-posta, bildirim) "en son X" mantığıyla hedefleniyorsa, kullanıcı ikinci bir X yaptığında eski link YANLIŞ (yeni) sonucu gösterir | `yoktez_landing` view'ı `/yoktez/`'e her gelişte "kullanıcının en son tamamladığı arama"yı gösteriyordu — bir e-postanın hangi spesifik aramaya ait olduğunu hiç bilmiyordu. Kullanıcı iki arama yapıp eski e-postaya tıklayınca yeni aramanın sonucunu gördü (8 Ekim 2026). **Kural:** durumsal/geçmişe dönük bir kaynağa (arama sonucu, rapor, iş kaydı) e-posta/bildirim ile link verirken MUTLAKA o kaydın ID'sini taşıyan bir URL kullan (`?job=<uuid>` gibi); "en son olanı göster" mantığı yalnızca parametresiz, genel bir sayfa ziyareti için güvenlidir, asla geçmişe dönük bir referansın yerine geçemez. İş'e özel ID süresi dolmuşsa/geçersizse sessizce başka bir kayda düşme — açık bir "artık mevcut değil" mesajı ver. |
 | Bir aracın `logger.info`/`logger.error` çıktısı ne `docker compose logs`'ta ne hiçbir log dosyasında görünüyor, ortada hata da yok gibi duruyor | `settings.py` `LOGGING['loggers']` dict'inde yalnız bazı app'ler (ör. `yoktez`, `oaipmh`) açıkça kayıtlı. Kayıtsız bir modülün logger'ı (`logging.getLogger(__name__)`, ör. `trdizin.services.job_runner`) nokta-hiyerarşisiyle üst paket adı (`trdizin`) üzerinden `root`'a düşer — `root['level']='WARNING'` olduğu için INFO seviyesindeki satırlar (hem başarı hem "neredeyse hata" bilgisi) SESSİZCE kaybolur; yalnız ERROR seviyesi görünür kaldığı için "log'da hata yok" sonucu yanıltıcı olabilir (gerçekte hiç log üretilmemiş olabilir). **Kontrol:** `grep "'loggers'" -A40 settings.py` ile üst paket adının kayıtlı olup olmadığına bak; yeni bir app/araç eklerken (hele arka planda/cron'da çalışan bir job_runner'sa) LOGGING'e de ekle — yoksa production'da sessizce "görünmez" çalışır (9 Ekim 2026, 7 aracın S3 temizlik logları). |
+| Anonim kullanıcı session'a (RAM) kaydedilen bir veriyi (ör. hero-upload dosyası) yükledikten sonra giriş/kayıt olunca veri "kayboluyor", "Oturum verisi bulunamadı" hatası çıkıyor | Django'nun `login()`/`auth_login()` fonksiyonu, session fixation saldırılarına karşı güvenlik önlemi olarak `request.session.cycle_key()` çağırıp **session_key'i değiştirir**. `istatistik/services/job_runner.py`'deki `_session_datasets` dict'i session_key'e göre anahtarlanmış RAM deposuysa, login sonrası yeni key ile arama yapıldığında eski key'deki veri bulunamaz (12 Ekim 2026, hero doğrulama turu). **Kural:** session_key'e bağlı RAM/cache verisi tutan bir mekanizma varsa, `login()`/`auth_login()` çağrılarından **önce** `old_key = request.session.session_key`'i yakala, çağrıdan **sonra** veriyi yeni `request.session.session_key`'e taşı (`move_session_dataset()` deseni, `forum/views.py` `register()`+`custom_login()`). |
 
 ---
 
@@ -2701,7 +2712,71 @@ with connection.cursor() as c:
 
 > Önceki düz-yazı günlük biçiminden madde listesine dönüştürülmüştür; cümleler değişmeden taşınmıştır.
 
-- **En son (12 Ekim 2026):** İki ayrı tur, ikisi de `dev`'den `main`'e `--no-ff`
+- **En son (12 Ekim 2026, dördüncü tur):** Ana sayfa UX kontrolü turu
+  (`anasayfa_ux_kontrol_prompt.md` — salt okunur tespit, ardından onaylı
+  düzeltme; bir önceki hero turuyla birlikte değerlendirildi), `dev`'den
+  `main`'e `--no-ff` merge edilip push edildi (migration yok, Render +
+  Hetzner otomatik deploy). **Uygulanan 5 bulgu:** (1) **U4** — kapı
+  kartlarında (`/` ana sayfa "Analiz Yaptırmak İstiyorum" / "Uzman Olarak
+  Katılmak İstiyorum") dekoratif arka plan görseli (`.ax-market-visual`,
+  `position:absolute`) kart başlığının (`.ax-market-header`) üstüne
+  biniyordu — başlık hiç `position`/`z-index` almadığı için CSS boyama
+  sırası gereği statik içerik positioned elemanın altında kalıyordu;
+  `static/css/home_sections.css`'e `.ax-market-header{position:relative;
+  z-index:1}` + başlığa `padding-right` eklendi, 1024/1280/1632px'de
+  canlı doğrulandı. (2) **U2** — pazaryeri ↔ proje talebi çapraz
+  yönlendirme tek yönlüydü (`job_list.html` EN/DE'de proje talebine link
+  veriyor, ama kasıtlı olarak yalnız EN/DE'de — §28 "EN/DE hedefi proje
+  talebi" kararı); simetrik olarak `proje_talebi.html`'e TR'ye özel
+  (`{% if LANGUAGE_CODE == 'tr' %}`) pazaryerine geri link eklendi, EN/DE
+  akışı bozulmadı. (3) **U3** — hero altındaki iki satır
+  (`.ax-hero-dropzone__examples`, `.ax-hero__secondary-cta a` — ikincisi
+  gelir getiren "bir uzmana bırak" linki) `--ax-text-muted` kullanıyordu,
+  ölçülen WCAG kontrastı ~3.4-4.0:1 (AA eşiği 4.5:1'in altında); ikisi de
+  `--ax-text-secondary`'ye çevrildi (6.4:1, AA geçiyor) — kural iki
+  kopya halinde durduğundan (`home.html` inline kritik CSS + `hero.css`)
+  ikisi birlikte değiştirildi. **Bu sırada fark edilen ayrı bug:** linkin
+  hover rengi tanımsız `--ax-color-primary` token'ını kullanıyordu (bkz.
+  yukarıdaki "CSS Değişkenleri" notu) — doğru token `--ax-accent-primary`
+  ile değiştirildi. (4) **U6** — aynı karttaki büyüteç/arama anlamına
+  gelen inline SVG ikonu, sitenin geri kalanıyla tutarlı `bi-send`
+  (Bootstrap Icons) ile değiştirildi. (5) **U5** — ana sayfa SSS'indeki
+  "Fiyatlandırma politikanız nasıl?" cevabına, uzman tarafının da
+  komisyon ödemediğini (yalnız isteğe bağlı vitrin paketi) açıklayan bir
+  cümle eklendi; EN/DE çevirisi yapılıp `compilemessages` çalıştırıldı.
+  Her adım local'de nginx+HTTPS üzerinden canlı doğrulandı. **Kapsam dışı
+  bırakılan, `tasks/todo.md`'de açık kalan maddeler:** U1b (24 saat
+  vaadinin sitede başka yerlerde de geçmesi — operasyonel/iş kararı),
+  U2c (`ProjectRequest.source` dağılımının kullanıcı tarafından shell'den
+  kontrol edilmesi gereken veri sorusu), ve yukarıdaki `--ax-color-primary`
+  bulgusunun diğer iki kullanımı (`.ax-hero__personal-badge`,
+  `.ax-hero__personal-link:hover`).
+- **Önceki (12 Ekim 2026, üçüncü tur):** Hero doğrulama turu (`hero_dogrulama_prompt.md`
+  — salt okunur tespit + ayrı onaylı düzeltme turu), `dev`'den `main`'e `--no-ff` merge
+  edilip push edildi (migration yok). **Bulgu:** hero mikrometni "Kayıt gerekmez"
+  diyordu ama `orneklem` hariç 17/18 araç view'ı `is_authenticated` kontrolünü en
+  başta yapıp anonime `service_promo.html` (giriş/kayıt duvarı) döndürüyordu — vaat
+  yalnız "dosya yükleme" adımı için doğruydu. **Düzeltme (araçları açmak yerine metni
+  gerçeğe uydurma yönünde, kullanıcı kararı):** "Kayıt gerekmez" → "Yüklemek için
+  kayıt gerekmez" (TR/EN/DE); "24 saatte bir uzmana bırak" → "bir uzmana bırak"
+  (`proje_talebi` view'ının kendi mesajı zaten "en kısa sürede" diyordu, garanti
+  edilmeyen rakam kaldırıldı). **Ayrıca gerçek bug bulunup düzeltildi:** Django'nun
+  `login()`/`auth_login()` çağırdığı `cycle_key()` session_key'i değiştirdiğinden,
+  hero'dan yüklenip RAM'de (`_session_datasets`) tutulan dosya kayıt/giriş sonrası
+  eski anahtarda yetim kalıyordu — yeni `move_session_dataset()`
+  (`istatistik/services/job_runner.py`) `register()`/`custom_login()`'e
+  (`forum/views.py`) eklendi, **lokalde doğrulandı**. `tasks/todo.md` Faz 13'teki
+  "misafir analiz çalıştırabiliyor" yanlış notu da düzeltildi. **Yan bulgu (gerçek
+  hata değil çıktı):** "AI Asistan'a sor" linkinin tıklanmadığı raporlandı, DevTools
+  konsolu açıkken kısalan görünür alanda sabit-konumlu AI widget butonunun
+  tesadüfen linkin üstüne denk gelmesiymiş — DevTools kapalı normal pencerede
+  sorunsuz çalıştığı kullanıcı tarafından doğrulandı, kod değişikliği yapılmadı.
+  Render staging ve production'da kullanıcı tarafından doğrulandı. **Kalan
+  (`tasks/todo.md`'de "AÇIK İŞLER" listesinde, düşük öncelik):** "18 araç" sayısının
+  hardcoded olması, "24 saat" ifadesinin AI Doğrulama bandı + bağış aktivasyonunda
+  hâlâ geçmesi (ayrı süreçler,
+  operasyonel açık soru).
+- **Önceki (12 Ekim 2026, ilk iki tur):** İki ayrı tur, ikisi de `dev`'den `main`'e `--no-ff`
   merge edilip push edildi (migration yok). **Tur 1 — 2 bug düzeltmesi:**
   `bibliometrics/services/parser.py` `detect_format()` PubMed TXT'sini
   OpenAlex TXT sanıyordu (ikisi aynı "--- Yayın #" başlığını ve dolgu

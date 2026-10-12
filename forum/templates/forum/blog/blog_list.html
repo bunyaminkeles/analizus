@@ -26,15 +26,15 @@
             <form method="get" action="{% url 'blog_list' %}">
                 <div class="input-group">
                     <input type="text" name="q" value="{{ search_query }}"
-                           class="form-control text-white border-end-0"
+                           class="ax-form-control text-white border-end-0"
                            placeholder="ANOVA, t-Testi, örneklem..."
                            style="background: rgba(15,23,42,0.8); border-color: rgba(99,102,241,0.3);">
-                    <button class="btn px-4" type="submit"
+                    <button class="ax-btn px-4" type="submit"
                             style="background: var(--ax-accent-primary); border: none; color: white;">
                         <i class="bi bi-search"></i>
                     </button>
                     {% if search_query %}
-                    <a href="{% url 'blog_list' %}" class="btn btn-outline-secondary" title="Temizle">
+                    <a href="{% url 'blog_list' %}" class="ax-btn ax-btn--ghost" title="Temizle">
                         <i class="bi bi-x-lg"></i>
                     </a>
                     {% endif %}
@@ -108,7 +108,7 @@
 
             <!-- Mobil Kategori Seçici -->
             <div class="d-lg-none mb-3">
-                <select class="form-select bg-dark text-white border-secondary" onchange="window.location.href=this.value">
+                <select class="ax-form-select bg-dark text-white border-secondary" onchange="window.location.href=this.value">
                     <option value="{% url 'blog_list' %}">Tüm Kategoriler</option>
                     {% for cat in categories %}
                     <option value="{% url 'blog_list' %}?category={{ cat.slug }}" {% if current_category == cat.slug %}selected{% endif %}>
@@ -290,6 +290,15 @@
 </div>
 
 <style>
+/* Arama kutusu: .input-group artık Bootstrap'ın form-control/btn'e bağlı flex
+   kuralından yararlanmıyor (class'lar ax-* oldu) — ax-form-control'ün kendi
+   width:100% kuralı input'u tek başına satıra yayıp butonu alta düşürüyordu. */
+.input-group > .ax-form-control {
+    flex: 1 1 auto;
+    width: 1%;
+    min-width: 0;
+}
+
 /* Blog Kartı */
 .ax-blog-card {
     background: var(--ax-bg-tertiary);
