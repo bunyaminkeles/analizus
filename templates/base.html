@@ -27,6 +27,8 @@
     <meta name="apple-mobile-web-app-title" content="Analizus">
     <meta name="application-name" content="Analizus">
     <meta name="msapplication-TileColor" content="#0f172a">
+    <link rel="manifest" href="{% static 'manifest.json' %}?v=0001">
+    <link rel="apple-touch-icon" href="{% static 'img/icons/apple-touch-icon.png' %}">
 
     <title>{% block title %}{% trans "Analizus - Akademik Analiz ve Veri Bilimi Topluluğu" %}{% endblock %}</title>
     <meta name="description" content="{% block meta_description %}{% trans "SPSS, Python, R Studio, Nitel analizler ve AI ile istatistik analizi, veri analizi ve araştırma desteği." %}{% endblock %}">
@@ -615,6 +617,7 @@
     <script src="{% static 'js/main.js' %}?v=0100" defer></script>
     <script src="{% static 'js/ax-modal.js' %}?v=0100" defer></script>
     <script src="{% static 'js/ax-dropdown.js' %}?v=0100" defer></script>
+    <script src="{% static 'js/pwa-register.js' %}?v=0001" defer></script>
 
     {% block extra_js %}
         {% if user.is_authenticated %}

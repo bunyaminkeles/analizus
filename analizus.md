@@ -985,6 +985,33 @@ Yeni bileşen yazarken:
 4. Asla hardcode renk/pixel yazma — `var(--ax-primary)` kullan
 5. CSS dosyası değiştiğinde yeniden deploy yeter (hash'li ad, yukarı bkz.); `bundle.css` kaynağıysa bundle'ı yeniden üret
 
+### PWA (manifest / service worker) — 12 Ekim 2026
+Site yüklenebilir (Android "Ana Ekrana Ekle") hale getirildi, backend/model
+değişikliği yok, yalnız statik dosya + `base.html`:
+- `static/manifest.json` — ikonlar `static/img/icons/` altında (192/512/
+  512-maskable/apple-touch-icon), kaynak `analizus-logo-001.png` (repo kökü,
+  1024×1024 RGBA) — tek seferlik Pillow script'iyle üretildi, kalıcı koda
+  eklenmedi. `theme_color`/`background_color` mevcut `<meta name="theme-color">`
+  (`#0f172a`) ile aynı tutuldu.
+- `static/js/service-worker.js` — **yalnız `/static/` altındaki GET
+  isteklerini** stale-while-revalidate ile önbellekler; sayfa/API/WebSocket'e
+  dokunmaz (dinamik/kimlik doğrulamalı sayfaları önbelleklemek oturum/CSRF
+  riski taşır, kasıtlı dışarıda bırakıldı). `static/js/pwa-register.js`
+  register eder.
+- **Kritik:** service worker `{% static %}` (whitenoise hash'li ad) ile DEĞİL,
+  sabit `/static/js/service-worker.js` path'iyle register edilir — SW spec'i
+  güncelleme kontrolünü aynı URL'de byte-byte yapar, hash'li ad her deploy'da
+  "yeni" bir SW kaydı gibi görünür. Bu yüzden `nginx/conf.d/default.conf`'a
+  (`location /static/`'in 1 yıllık `immutable` cache'inden ÖNCE) yalnız bu
+  dosya için `location = /static/js/service-worker.js { add_header
+  Cache-Control "no-cache"; }` eklendi — yoksa SW güncellemeleri 1 yıllık
+  önbellek yüzünden gecikir. `nginx/conf.d.local/local.conf`'a dokunulmadı
+  (orada zaten immutable cache yok).
+- **Kapsam dışı bırakıldı (ayrı iş):** Web Push (VAPID) — yeni model/
+  migration/`pywebpush` kütüphanesi gerektirir, mevcut bildirim WebSocket
+  (Channels, bkz. §11) üzerinden zaten çalışıyor ama yalnız sekme açıkken;
+  push bu boşluğu dolduracak tamamlayıcı bir sonraki faz.
+
 ---
 
 ## 11. GERÇEK ZAMANLI (DJANGO CHANNELS)
