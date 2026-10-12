@@ -11,7 +11,8 @@ bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
 - [x] **DÜZELTİLDİ (12 Ekim 2026) — Hero doğrulama turu (`hero_dogrulama_prompt.md`)
-  bulguları uygulandı, `dev`'e push edildi (Render staging deploy bekliyor).**
+  bulguları uygulandı, `dev`'den `main`'e merge + push edildi, Hetzner'e otomatik
+  deploy oldu.**
   (1) "Kayıt gerekmez" → "Yüklemek için kayıt gerekmez" (TR/EN/DE) — 17/18 araç
   hâlâ `service_promo.html` giriş duvarına çarpıyor, yalnız yükleme adımı
   serbest; metin gerçeğe uyduruldu (araçları açmak yerine). (2) "24 saatte
@@ -22,8 +23,8 @@ maddelerde.
   `move_session_dataset()` eklendi, **lokalde doğrulandı** (giriş sonrası
   dosya artık kayboluyor). (4) `tasks/todo.md` Faz 13'teki yanlış "misafir
   analiz çalıştırabiliyor" notu düzeltildi.
-  **Kalan:** Render staging'de (`analizus-dev.onrender.com`) ve production'da
-  henüz doğrulanmadı — kullanıcı test edecek.
+  **Render staging ve production'da kullanıcı tarafından doğrulandı (12 Ekim
+  2026).**
 - [ ] **DÜŞÜK ÖNCELİK (12 Ekim 2026, hero turu) — `analizus.md`'de hero
   template'i "home.html" diye anılıyor, gerçek yol
   `forum/templates/forum/home.html`.** Küçük dokümantasyon netliği, işlevsel
