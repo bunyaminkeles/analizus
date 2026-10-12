@@ -10,6 +10,24 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
+- [ ] **BUG (12 Ekim 2026, kullanıcı canlı ekran görüntüsüyle sordu — "/bibliometrics/"
+  sayfasındaki OpenAlex köprü bandı) `bibliometrics/services/parser.py` `detect_format()`
+  PubMed TXT'sini OpenAlex TXT sanıyor.** PubMed'in indirilen TXT'si (`pubmed/services/
+  job_runner.py` `_generate_pubmed_results_txt`) OpenAlex'inkiyle (`_generate_alex_results_txt`)
+  BİREBİR AYNI "--- Yayın #" başlık formatını kullanıyor; `detect_format()`'taki kontrol
+  (`'--- Yayın #' in stripped or 'Başlık       :' in stripped: return 'openalex_txt'`) ikisini
+  ayırt edemiyor → biri PubMed TXT'sini bibliometri yükleme formuna (manuel re-upload) verirse
+  `parse_openalex_txt` OpenAlex'in alan eşlemesiyle parse eder: PMID/MeSH Terimleri kaybolur,
+  olmayan "Atıf Sayısı" alanı aranır — hata vermez, sessizce eksik/yanlış veri üretir. **Ayrıca
+  sorulan soru (kullanıcı kararı bekliyor):** bibliometri sayfasındaki "OpenAlex'te tarama mı
+  yaptın? ... OpenAlex Taramasına Git" köprü bandına PubMed de eklensin mi? PubMed'in zaten
+  kendi sonuç sayfasında (100+ sonuç) doğrudan köprü API'sine (`/bibliometrics/from-pubmed/
+  <id>/`) giden "Bibliometrik Analiz İstiyorum" butonu var — bu banner yalnız "önceden
+  indirilmiş dosyayı manuel tekrar yükleme" senaryosu için, PubMed'de gerçek talep henüz
+  ölçülmedi (PubMed Faz 4 kararıyla tutarlı, bkz. §15/`analizus.md`). Öneri: önce format-karışması
+  bug'ı düzeltilsin (PubMed TXT'yi ayrı bir `detect_format` dalıyla — örn. "PMID" satırı veya
+  "PubMed Yayın Arama Sonuçları" başlığıyla — tanıyıp doğru parse etsin), banner'a PubMed eklemek
+  ayrı/ertelenebilir bir karar.
 - [ ] **BUG (12 Ekim 2026, Bootstrap Kaldırma Faz 3 sırasında bulundu, Playwright ile
   doğrulandı) `forum/templates/forum/blog/blog_list.html` — kart/sidebar arka
   planları tamamen şeffaf.** İnline `<style>` bloğu (`.ax-blog-card`,

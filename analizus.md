@@ -821,18 +821,40 @@ Kaynak: `forum/context_processors.py` → `feature_flags()` — aynı processor 
 - **UI Elementleri:** `ax-` prefix'li özel sınıflar — `btn`, `card`, `badge` Bootstrap'ten **değil**
 - **CSS Değişkenleri:** Tüm renkler ve spacing `static/css/base.css` içindeki `:root`'tan
 
-### CSS Değişkenleri (`base.css`)
+### CSS Değişkenleri (`base.css`) — 12 Ekim 2026'da koddaki gerçek isimlerle düzeltildi
+**Dikkat — bu bloğun önceki hâli (kısa isimler: `--ax-primary`/`--ax-surface`/
+`--ax-border`/`--ax-text`/`--ax-muted`) gerçek `base.css`'te hiç var olmayan,
+terk edilmiş/hiç uygulanmamış bir isim şemasıydı.** `forum/templates/forum/
+blog/blog_list.html`'in inline `<style>` bloğu muhtemelen bu eski dokümana
+bakılarak yazılmış — sonuç: `var(--ax-surface)` vb. hiçbir şeye çözülmüyor,
+kart/sidebar arka planları canlıda şeffaf render oluyor (12 Ekim 2026'da
+Playwright ile doğrulanan bug, düzeltme `tasks/todo.md`'de bekliyor).
 ```css
 :root {
-  --ax-primary:    #6366f1;   /* Indigo — primary aksiyonlar */
-  --ax-accent:     #8b5cf6;   /* Violet — vurgu */
-  --ax-bg:         #0f172a;   /* Koyu sayfa arka planı */
-  --ax-surface:    #1e293b;   /* Kart/panel arka planı */
-  --ax-border:     rgba(255,255,255,0.08); /* Kart kenarlığı */
-  --ax-text:       #f1f5f9;   /* Ana metin */
-  --ax-muted:      #94a3b8;   /* Soluk metin */
+  --ax-bg-primary:      #0b0f19;   /* Sayfa arka planı */
+  --ax-bg-secondary:    #111827;
+  --ax-bg-tertiary:     #1f2937;   /* Kart/panel arka planı */
+  --ax-bg-elevated:     #374151;
+
+  --ax-text-primary:    #f1f5f9;   /* Ana metin */
+  --ax-text-secondary:  #94a3b8;   /* Soluk metin */
+  --ax-text-muted:      #64748b;
+
+  --ax-accent-primary:  #6366f1;   /* Indigo — primary aksiyonlar (+ -hover/-light) */
+  --ax-accent-secondary:#10b981;   /* Emerald (+ -hover) */
+  --ax-accent-warning:  #f59e0b;
+  --ax-accent-danger:   #ef4444;
+  --ax-accent-info:     #06b6d4;   /* + -hover */
+
+  --ax-border-default:  #1e293b;   /* Kart kenarlığı */
+  --ax-border-hover:    #334155;
 }
 ```
+Yeni bir dosyada `--ax-surface`/`--ax-border`/`--ax-text`/`--ax-muted`/
+`--ax-primary` gibi kısa isimler görürsen bunlar GERÇEK değildir — yukarıdaki
+listeden karşılığını kullan (`--ax-surface`→`--ax-bg-tertiary`, `--ax-border`→
+`--ax-border-default`, `--ax-text`→`--ax-text-primary`, `--ax-muted`→
+`--ax-text-secondary`, `--ax-primary`→`--ax-accent-primary`).
 
 ### Bootstrap'te Eksik Renk Utility Class'ları (`style.css`)
 Bootstrap `text-teal` / `text-purple` / `btn-teal` / `btn-purple` sınıflarını tanımlamaz.
@@ -857,11 +879,6 @@ Yeni araç eklerken `teal` / `purple` dışında bir renk kullanılıyorsa önce
 .ax-noise-overlay       → Site geneli subtle grain texture (base.html body hemen altında; SVG feTurbulence, opacity 0.025, position:fixed, pointer-events:none)
 .ax-market-visual       → Market kartlarına dekoratif SVG arka planı (home_sections.css; parent kart position:relative + overflow:hidden gerektirir; mobile hidden)
 ```
-
-**Not:** `base.css`'teki gerçek accent değişken adları `--ax-primary`/`--ax-accent` değil,
-`--ax-accent-primary` / `--ax-accent-secondary` / `--ax-accent-warning` / `--ax-accent-danger`
-(+ `-hover`/`-light` varyantları) — yukarıdaki `:root` örneği basitleştirilmiş, koddaki gerçek
-isimlerle birebir eşleşmiyor.
 
 ### İki-Vurgu Renk Kuralı (temmuz 2026, anasayfa turu Faz 11)
 Ana sayfa + navbar + footer kapsamında uygulanan semantik kural: **mor
@@ -905,12 +922,20 @@ ekran dışındaydı. Şimdi mobil önce: yazı 2xl, `min-width:480px`'te 4xl; d
 yalnız logo görseli. Navbar'a yeni ikon/metin eklerken 360 px'te giriş yapılmış hâlde ölç (Playwright +
 session çerezi; bkz. §26).
 
-### Bootstrap Kaldırma Migrasyonu (Faz 3 sürüyor — 11 Ekim 2026)
+### Bootstrap Kaldırma Migrasyonu (Faz 3 sürüyor — 12 Ekim 2026)
 Kademeli plan: Faz 1 (eksik `ax-*` CSS bileşenlerini inşa et) ve Faz 2
 (vanilla JS modal/dropdown controller — `ax-modal.js`/`ax-dropdown.js`)
 TAMAMLANDI. Faz 3 (template template Bootstrap component class'larını
-`ax-*`'e taşıma) sürüyor — ilerleme ve dosya bazlı detay `tasks/todo.md`
-içinde "Bootstrap Kaldırma — Kademeli Migration Planı" başlığı altında.
+`ax-*`'e taşıma) sürüyor — 11 dosya migre edildi, ilerleme ve dosya bazlı
+detay `tasks/todo.md` içinde "Bootstrap Kaldırma — Kademeli Migration Planı"
+başlığı altında.
+
+**12 Ekim 2026 turunda eklenen:** `.ax-btn--outline-light` (`about.html`'in
+11. dosya olarak migrasyonunda eklendi — Bootstrap'ın `btn-outline-light`'ı
+projede 12 dosyada daha kullanılıyor, bu yüzden tek seferlik kabul edilebilir
+sapma yerine `.ax-btn--outline-primary` deseniyle birebir yeni bir varyant
+inşa edildi: şeffaf + açık kenarlık/metin → hover'da dolu açık zemin + koyu
+metin).
 
 **11 Ekim 2026 turunda eklenen yeni `ax-*` bileşenleri:**
 ```
@@ -1267,8 +1292,15 @@ def _broadcast_chat(uid1, uid2, event):
   (3 grafik, ücretsiz) / Tam (tümü, ücretli; EN/DE'de sipariş yerine proje talebi).
 - S3 paths: `bibliometrics/demo/`, `bibliometrics/full/`
 - **Metinler "17 analize kadar"** (28 Eylül 2026, kullanıcı kararı): landing/sipariş/promo/e-posta/OpenAlex sayfası +
-  17 başlıklı listeler + "hangi analizlerin üretileceği veriye bağlıdır" notu. Açık: SSS/SEO (`tarama_seo_content.py`)
-  TR-only düz metin ve EN/DE anonim sayfada Türkçe görünüyor; "Bradford" yorum cümlesi + demo kartı içeriği (todo).
+  17 başlıklı listeler + "hangi analizlerin üretileceği veriye bağlıdır" notu.
+- **SSS/SEO içeriği (`tarama_seo_content.py`) yalnız TR'de (12 Ekim 2026'da düzeltildi):** bu modül (6 araç: yoktez,
+  openalex, trdizin, oaipmh, bibliometrics, semanticscholar) hiçbir string'i `gettext()` ile işaretlemiyor — düz Türkçe
+  metin. `templates/service_promo.html`'deki `{% if seo_guide %}` → `{% if seo_guide and LANGUAGE_CODE == 'tr' %}`
+  yapıldı; EN/DE anonim sayfalarda bu blok artık hiç gösterilmiyor (tam çeviri ayrı, daha büyük bir iş olarak ertelendi).
+  Ayrıca iki metin tutarsızlığı giderildi: `how_to_interpret`'teki yanlış "Bradford kanunu" referansı (raporda böyle bir
+  analiz yok) Lotka kanunu açıklamasıyla değiştirildi; `bibliometrics/landing.html`'deki demo kartı metni ("Yayın Trendi +
+  Yazarlar + Kelime Bulutu") gerçek ilk-3-analiz sırasıyla ("Yayın Trendi + Büyüme Oranı + Yazarlar" — `analyzer.py`'deki
+  `analyses` listesinin ilk 3 elemanı, `job_runner.py` `figures[:3]`) uyumlu hale getirildi.
 - **BibTeX:** `bibtexparser==1.4.4` SABİT (kod v1 API `bibtexparser.bparser`; sürümsüzken 2.x kurulup tüm .bib yüklemeleri
   "Dosyadan kayıt okunamadı" ile düşüyordu — 28 Eylül 2026). Anahtar kelime: `;`/`|` yoksa `,` ile bölünür (Zotero/Mendeley/Scholar).
 - **Akış:** dosya yükleme, OpenAlex köprüsü (`/bibliometrics/from-openalex/<id>/` → `parse_openalex_json`) veya PubMed
@@ -1369,7 +1401,11 @@ def _broadcast_chat(uid1, uid2, event):
   arama ~3,5 sn (3.839 sonuç, 2 istek).
 - OpenAlex kalıbı: `PubMedSearchJob.all_results` + arama yalnız ilk sayfa (esearch + 1 efetch = 2 istek) +
   `pubmed.services.job_runner.ensure_full_results`. Sipariş YOK (kullanıcı kararı): tam veri → her dilde proje talebi;
-  100+ sonuçta bibliometri butonu (§14).
+  100+ sonuçta bibliometri butonu (§14). **Karar yeniden teyit edildi (12 Ekim 2026):** OpenAlex'in `AlexOrder` sipariş
+  akışının (model/form/view/admin/template/job_runner/job_queue/hesap silme, ~10 dosya) PubMed'e birebir taşınması için
+  tam plan çıkarıldı ama uygulanmadı — PubMed yeni bir araç, gerçek talep henüz ölçülmedi, manuel IBAN+admin-onay
+  akışının getireceği işçilik yükü kanıtlanmamış talep için şimdilik gerekçelendirilemedi. Talep sinyali (`proje_talebi?
+  source=tool` üzerinden PubMed payı) artarsa plan hazır, `tasks/todo.md`'de duruyor.
 - Arama alanları (`pubmed/forms.py`): title `[ti]`, tiab `[tiab]` (Başlık/Özet), author `[au]`, keyword (etiketsiz),
   mesh `[mh]`, journal `[ta]`, affiliation `[ad]`, year `2020:2024[dp]` (+ scraper'da doi `[aid]`, type `[pt]`); tümü AND.
 - Kayıt (`_parse_article`): pmid, title, authors/author_list ("Ad Soyad"), year, journal, doi (https://doi.org/…), type +
