@@ -36,6 +36,16 @@ def get_session_dataset(session_key: str) -> tuple[bytes, str] | None:
     return content, filename
 
 
+def move_session_dataset(old_key: str | None, new_key: str | None) -> None:
+    """Login/register sırasında Django session_key'i cycle_key() ile değişiyor —
+    RAM'deki veri setini eski anahtarda yetim bırakmamak için yeni anahtara taşır."""
+    if not old_key or not new_key or old_key == new_key:
+        return
+    stored = _session_datasets.pop(old_key, None)
+    if stored is not None:
+        _session_datasets[new_key] = stored
+
+
 def cleanup_expired_session_datasets(ttl_seconds: int = SESSION_DATASET_TTL_SECONDS) -> int:
     """TTL'i geçmiş session veri setlerini RAM'den siler. Cron endpoint'inden çağrılır."""
     cutoff = time.time() - ttl_seconds
