@@ -299,6 +299,16 @@
     border-color: var(--ax-accent-primary-hover);
 }
 
+.ax-btn--outline-light {
+    background-color: transparent;
+    color: var(--ax-text-primary);
+    border-color: var(--ax-text-primary);
+}
+.ax-btn--outline-light:hover {
+    background-color: var(--ax-text-primary);
+    color: var(--ax-bg-primary);
+}
+
 .ax-btn--danger {
     background-color: var(--ax-accent-danger);
     color: #ffffff;
