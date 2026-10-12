@@ -3318,8 +3318,13 @@ uzmana bırak `?source=analiz_triyaj`) eklendi
 - Hero'dan yüklenen dosya gerçekten sunucuya gidiyor, session'da RAM'de
   tutuluyor (`istatistik/services/job_runner.py` — `_session_datasets`,
   `_pending_file_contents`); disk/DB'ye yazılmıyor.
-- Login zorunlu değil — misafir hem yükleyip hem analiz çalıştırabiliyor
-  (`is_demo=not request.user.is_authenticated` deseni).
+- Login yalnızca **dosya yükleme** adımında zorunlu değil — misafir dosyayı
+  session'a yükleyebiliyor, ama `orneklem` hariç 17 araç view'ı
+  `is_authenticated` kontrolünü GET/POST ayrımı yapmadan en başta yapıp
+  anonime `service_promo.html` (kayıt/giriş duvarı) döndürüyor; misafir gerçek
+  analizi çalıştıramıyor. `is_demo=not request.user.is_authenticated` deseni
+  yalnızca zaten giriş yapmış kullanıcıya ulaşan koda ait
+  (11 Ekim 2026 hero doğrulama turunda düzeltildi — önceki not yanlıştı).
 - Production tek process/tek container (Hetzner: `docker-compose.yml` tek
   `web` servisi, `Dockerfile` CMD'si tek `daphne` process, nginx tek
   `web:8000` upstream'ine proxy; Render/`Procfile` de aynı). **Modül seviyesi

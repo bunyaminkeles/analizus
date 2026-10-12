@@ -1229,7 +1229,10 @@ def register(request):
             if ref_code:
                 _handle_referral_registration(request, user, ref_code)
 
+            old_session_key = request.session.session_key
             login(request, user)
+            from istatistik.services.job_runner import move_session_dataset
+            move_session_dataset(old_session_key, request.session.session_key)
 
             next_url = request.GET.get('next')
             if next_url:
@@ -1293,7 +1296,10 @@ def custom_login(request):
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
             user = form.get_user()
+            old_session_key = request.session.session_key
             auth_login(request, user)
+            from istatistik.services.job_runner import move_session_dataset
+            move_session_dataset(old_session_key, request.session.session_key)
 
             # EDU mail kontrolü
             _handle_edu_user(user)

@@ -6080,10 +6080,10 @@ msgstr "Choose File"
 #: forum/templates/forum/home.html:274
 msgid ""
 "Yükle → testi seç (bilmiyorsan yol gösteririz) → APA formatında raporunu al "
-"· Kayıt gerekmez"
+"· Yüklemek için kayıt gerekmez"
 msgstr ""
 "Upload → choose the test (we'll guide you if you're not sure) → get your "
-"report in APA format · No signup required"
+"report in APA format · No signup required to upload"
 
 #: forum/templates/forum/home.html:275 forum/training_catalog.py:138
 msgid "t-testi"
@@ -6102,8 +6102,8 @@ msgid "18 aracın tümü →"
 msgstr "All 18 tools →"
 
 #: forum/templates/forum/home.html:279
-msgid "Ya da bu işi 24 saatte bir uzmana bırak →"
-msgstr "Or hand it to an expert within 24 hours →"
+msgid "Ya da bu işi bir uzmana bırak →"
+msgstr "Or hand it to an expert →"
 
 #: forum/templates/forum/home.html:287
 msgid "Tezin için:"

@@ -269,12 +269,12 @@ atıfları) → yalnız TR. EN/DE'ye dile uygun tek WebSite bloğu (27 Eylül 20
                     <button type="button" class="ax-hero-dropzone__btn" id="axHeroFileBtn">{% trans "Dosya Seç" %}</button>
                 </div>
                 <p class="ax-hero-dropzone__error" id="axHeroDropzoneError" hidden></p>
-                <p class="ax-hero-dropzone__trust">{% trans "Yükle → testi seç (bilmiyorsan yol gösteririz) → APA formatında raporunu al · Kayıt gerekmez" %}</p>
+                <p class="ax-hero-dropzone__trust">{% trans "Yükle → testi seç (bilmiyorsan yol gösteririz) → APA formatında raporunu al · Yüklemek için kayıt gerekmez" %}</p>
                 <p class="ax-hero-dropzone__examples">{% trans "t-testi" %} · ANOVA · {% trans "korelasyon" %} · Cronbach α · {% trans "regresyon" %} · <a href="{% url 'analiz_home' %}">{% trans "18 aracın tümü →" %}</a></p>
 
                 {% if LANGUAGE_CODE == 'tr' %}
                 <p class="ax-hero__secondary-cta">
-                    <a href="{% url 'proje_talebi' %}?source=hero">{% trans "Ya da bu işi 24 saatte bir uzmana bırak →" %}</a>
+                    <a href="{% url 'proje_talebi' %}?source=hero">{% trans "Ya da bu işi bir uzmana bırak →" %}</a>
                 </p>
                 {% endif %}
 
