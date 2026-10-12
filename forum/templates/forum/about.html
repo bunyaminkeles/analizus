@@ -274,10 +274,10 @@
 
     <!-- Uzman Ağı -->
     <div class="mb-5 pt-5 border-top border-secondary border-opacity-25 text-center">
-        <span class="badge fw-semibold px-3 py-2 mb-3" style="font-size:.85rem;background:rgba(99,102,241,0.1);color:#818cf8;border:1px solid rgba(99,102,241,0.2);">{% trans "Geniş Uzman Ağı" %}</span>
+        <span class="ax-badge fw-semibold px-3 py-2 mb-3" style="font-size:.85rem;background:rgba(99,102,241,0.1);color:#818cf8;border:1px solid rgba(99,102,241,0.2);">{% trans "Geniş Uzman Ağı" %}</span>
         <h2 class="fw-bold text-white mb-2">{% trans "Doğrulanmış Uzman Ağımız" %}</h2>
         <p class="text-secondary mb-4" style="max-width:640px;margin-left:auto;margin-right:auto;">{% trans "Farklı disiplinlerden, akademik ve teknik yeterliliği doğrulanmış uzmanlar Analizus'ta size destek olmak için bekliyor." %}</p>
-        <a href="{% url 'uzman_dizini' %}" class="btn btn-outline-light fw-semibold px-4">
+        <a href="{% url 'uzman_dizini' %}" class="ax-btn ax-btn--outline-light fw-semibold px-4">
             <i class="bi bi-people-fill me-2"></i>{% trans "Uzman Dizinini İncele" %}
         </a>
     </div>
@@ -287,11 +287,11 @@
         <h3 class="text-white fw-bold mb-2">{% trans "Analizini bekletme" %}</h3>
         <p class="text-white-50 mb-4">{% trans "Ücretsiz başla — kredi kartı gerekmez, kurulum yok." %}</p>
         {% if not user.is_authenticated %}
-        <a href="{% url 'register' %}" class="btn btn-primary fw-semibold px-5 me-2">
+        <a href="{% url 'register' %}" class="ax-btn ax-btn--primary fw-semibold px-5 me-2">
             <i class="bi bi-person-plus-fill me-2"></i>{% trans "Ücretsiz Kayıt Ol" %}
         </a>
         {% endif %}
-        <a href="{% url 'hangi_test' %}" class="btn btn-{% if user.is_authenticated %}primary{% else %}outline-light{% endif %} fw-semibold px-5">
+        <a href="{% url 'hangi_test' %}" class="ax-btn ax-btn--{% if user.is_authenticated %}primary{% else %}outline-light{% endif %} fw-semibold px-5">
             <i class="bi bi-diagram-3 me-2"></i>{% trans "Hangi Test?" %}
         </a>
     </div>

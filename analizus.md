@@ -40,7 +40,7 @@
 | Dosya Yükleme | AWS S3 `eu-north-1`, bucket: `analizus-files` |
 | Hosting | Hetzner VPS (`89.167.5.224`) — Docker Compose (web, db, redis) + Nginx |
 | SSL | Let's Encrypt (certbot) |
-| AI/LLM | Groq (aktif, `openai/gpt-oss-120b` — 25 Eylül 2026'dan beri; Llama 3.3 Groq'ta kaldırıldı), OpenAI, Gemini (env var ile) |
+| AI/LLM | Groq (aktif, `openai/gpt-oss-120b` — 25 Eylül 2026'dan beri; Llama 3.3 Groq'ta kaldırıldı), OpenAI, Gemini (env var ile); **Anthropic Claude** (`claude-haiku-5-5`, 11 Ekim 2026'dan beri — "AI Yorumu" özelliği, bkz. §12/§17) |
 | Ödeme | iyzico **kullanım izni yok** — entegrasyon yapılmayacak; ödeme sistemi belirsiz |
 | i18n | TR (varsayılan, öneksiz) + EN + DE — `i18n_patterns(prefix_default_language=False)`, `locale/{en,de}/LC_MESSAGES/django.po` (+ `.mo` git'te). EN/DE `feature_multilingual` bayrağıyla açılır (kapalıyken 404). Ayrıntı: **§28** |
 | Rate Limit | `django-ratelimit` — kayıt: 3/saat, login: 10/5dk, istatistik POST: 30/saat |
@@ -56,7 +56,7 @@ django-unfold, crispy-bootstrap5
 Pillow, pandas, numpy, scipy, statsmodels
 matplotlib, wordcloud, networkx, reportlab
 bibtexparser, scikit-learn, nltk, zeyrek, Babel   # Babel: OpenAlex ülke kodu → rapor dilinde ülke adı (28 Eylül 2026)
-openai, google-generativeai, groq
+openai, google-generativeai, groq, anthropic==1.13.0   # anthropic: AI Yorumu özelliği, sürüm sabitlendi (11 Ekim 2026)
 django-ratelimit, requests, httpx
 beautifulsoup4, sickle
 pytest, pytest-django, model-bakery
@@ -806,6 +806,7 @@ class JobPayment:        # İlan vitrin ödemeleri
 | `feature_training` | **False** | Eğitim Hizmetleri Landing Page — `/egitim/` |
 | `feature_multilingual` | **False** | Çok dilli yayın (EN/DE) — kapalıyken navbar dil seçici gizli, `/en/` `/de/` 404 (`MultilingualFeatureMiddleware`), sitemap yalnız TR. Migration 0153. Avukat kontrolüne kadar kapalı (§28) |
 | `feature_hizmet_sayfalari` | **False** | Hizmet Sayfaları (`/hizmetler/`, SEO Faz 4, 4 Ekim 2026) — kapalıyken 404; migration forum/0170. Admin'de ayrıca her `ServicePage.is_active` tek tek açılmalı (pilot: önce Nicel Analiz) |
+| `feature_ai_summary` | **False** → production'da **True** (11 Ekim 2026) | Claude AI Yorumu (tarama/analiz sonuçlarına ücretsiz AI özeti) — kapalıyken `result_data['ai_comment']` hiç üretilmez. Pilot: 17 istatistik aracı (Faz B). `ANTHROPIC_API_KEY` env var + günlük kota (`ai_summary_daily_limit_free/premium`, `AIUsageLog`) şart. **Render (dev/staging)'de henüz açılmadı** — ayrı ortam/DB, ayrıca yapılmalı. Ayrıntı: §12, §17, §26 |
 
 Template kullanımı: `{% if features.openalex %}...{% endif %}`
 Kaynak: `forum/context_processors.py` → `feature_flags()` — aynı processor `pricing` sözlüğünü de verir
@@ -1147,6 +1148,55 @@ Mobil drawer: Her üst gruba accordion (yeni `mob-topluluk` dahil). Analizler al
   oluşuyordu). Konsolda rehberin giriş + 4 bölümü (ne zaman/varsayımlar/yorum/APA) YOK — kartlarla tekrar; anonim tanıtım
   sayfasında (`service_promo.html`, Google'ın gördüğü) rehber eksiksiz + "Kullanım Rehberi" başlığı.
 - Her araç view'ı `tool_title` vermeli — CTA'daki araç adı ve gizli H1 ondan (Wilcoxon/Friedman/Tekrarlı ANOVA eksikti, 1 Ekim).
+
+### Claude AI Yorumu (AI Comment) — Faz A+B (11 Ekim 2026)
+
+Tarama/analiz sonuçlarına Claude ile üretilen ücretsiz, kısa akademik yorum. Amaç: Claude Startups $1000 API
+kredisini (bkz. §2) yeni müşteri kazanma + mevcut kullanıcı elde tutma için aktif kullanmak. Groq tabanlı
+**AI Asistan** (§17) ile karıştırılmamalı — ayrı sağlayıcı, ayrı dosya, ayrı amaç (genel sohbet değil, tek
+seferlik sonuç yorumu).
+
+**Mimari:**
+- `forum/services/claude_service.py` — `ClaudeSummaryService.generate_summary(tool, prompt, lang)`; model
+  `claude-haiku-5-5`, `MAX_TOKENS=1024` (başta 512'ydi — Türkçe metinde ~600 karakterde cümle ortasında
+  kesiyordu, 1024'e çıkarıldı). Hata/anahtar eksikse exception fırlatmaz, `{'success': False, ...}` döner —
+  çağıran taraf job'u bu yüzden düşürmez.
+- `forum/models.py` → `AIUsageLog` (kullanıcı+araç+token/maliyet, günlük kota kontrolü: `can_use()`/`record()`)
+  + `SiteSettings.feature_ai_summary` (flag) + `ai_summary_daily_limit_free/premium` (varsayılan 5/15).
+- `istatistik/services/job_runner.py` → `_ai_comment_for_job(job, result_data)` + `_build_ai_prompt(tool_label,
+  result_data)`: `mark_completed()`'dan hemen önce çağrılır; flag kapalıysa ya da `job.user` yok/kotası
+  dolmuşsa sessizce atlar. **Tek genel prompt** kullanılıyor — 17 aracın `result_data`'sı JSON'a dökülüp
+  (`_AI_PROMPT_EXCLUDE_KEYS = {'tree_text', 'heatmap_b64'}` — karar ağacının ham ASCII ağacı ve korelasyonun
+  base64 PNG'si hariç tutulur, 4000 karakterde kırpılır) Claude'a "bunu akademik dilde yorumla" diye gönderiliyor;
+  17 ayrı özel prompt yazmak pilot faz için aşırı mühendislik sayıldı.
+- Dil: `translation.get_language()` — `_execute_job_in_language` zaten `translation.override(lang)` içinde
+  çalıştığı için doğru dili (TR/EN/DE) döndürür.
+
+**Kapsam:** `IstatistikJob.TOOL_CHOICES`'taki 17 araç (cronbach…svm). **`orneklem.html` kapsam dışı** — tamamen
+senkron bir form (`IstatistikJob`/`result_data` akışına hiç girmiyor), ayrı tasarım gerektirir.
+
+**UI (11 Ekim 2026, kullanıcı isteğiyle revize edildi — ilk sürüm ayrı renkli kutuydu):** AI yorumu, APA
+Formatında Raporlama kutusunun İÇİNE, APA cümlesinin altına ince bir `border-top` ayraçla yerleştirildi (ayrı
+kart/ikon/robot/"bu yorum yapay zekâ tarafından..." uyarı metni YOK — tek görsel dil). CSS: `static/css/
+analiz_console.css`'e eklenen 2 kural (`.ax-ai-comment-box`, `.ax-ai-comment-box-label`, `var(--ax-accent-info)`
+token'ı) + mevcut global `.ax-rounded-md` utility (`base.css`) — 17 şablonun hiçbirinin inline `<style>` bloğuna
+dokunulmadı. "Kopyala" butonu artık APA cümlesi + AI yorumunu birlikte panoya kopyalıyor (`copyApa()`
+fonksiyonları güncellendi — iki farklı varyant: canlı DOM'dan okuyan `ax-apa-box` ailesi (9 araç) ve hazır bir
+gizli `<span>`'e yazan `cronbach-report-text` tarzı aile (8 araç), her ikisinde de aynı birleştirme mantığı).
+
+**PDF'e dahil DEĞİL** (bilinçli bir hariç tutma değil, kapsam dışı kaldı) — her aracın kendi
+`istatistik/services/<tool>.py` `build_pdf()` fonksiyonu `result_data['ai_comment']`'i hiç yazdırmıyor;
+istenirse ayrı bir görev (`tasks/todo.md`'de açık madde).
+
+**Production deploy tuzağı (11 Ekim 2026) — bkz. §26:** Faz A `requirements.txt`'e `anthropic` ekledi ve
+main'e merge edildi, ama GitHub Actions deploy'u yalnız `git pull + restart` yaptığı için Hetzner container'ında
+paket hiç kurulmadı (`docker compose up -d --build web` gerekti); ayrıca `ANTHROPIC_API_KEY` production
+`.env`'de hiç yoktu, elle eklendi. **Render (dev/staging) ayrı bir ortam** — `.env` dosyası okumuyor, env
+var'lar Render dashboard'undan girilmeli; muhtemelen ayrı bir Postgres de olduğundan `feature_ai_summary`
+flag'i orada ayrıca açılmalı.
+
+**Sıradaki fazlar:** Faz C (OpenAlex+PubMed, migration gerekli) ve Faz D (Bibliometrics, en karmaşık —
+`analyzer.py` ham veri yakalama gerektiriyor) henüz yapılmadı.
 
 ---
 
@@ -1534,6 +1584,14 @@ Groq yanıtı `generate_response()` içinde sırayla iki filtreden geçer:
 - Groq API `max_tokens=1024`, `temperature=0.7` — gpt-oss bir "reasoning" modelidir; düşünme tokenları da `max_tokens`'a sayılır (ölçüm: ~180–200)
 - Widget JS'de URL'ler `target="_blank"` açılır — popup içinde sayfa değişmez
 - Sistem prompt'ta URL'lerin "örnek amaçlı" veya "farklı olabilir" olduğunu söylemek kesinlikle yasak — bu kural KESİN YASAKLAR bölümünde açıkça belirtilmiştir
+
+### Claude AI Yorumu — AI Asistan'dan Farkı
+
+Yukarıdaki AI Asistan (Groq, genel sohbet) ile **karıştırılmamalı**: "AI Yorumu" ayrı bir özellik, ayrı
+sağlayıcı (Anthropic Claude, `claude-haiku-5-5`), ayrı dosya (`forum/services/claude_service.py`), ayrı amaç
+(kullanıcı soru sormuyor — bir analiz tamamlanınca sonuca otomatik, tek seferlik kısa akademik yorum ekleniyor).
+Şu an yalnız istatistik araçlarında (17 test, Faz B) aktif; ayrıntılı mimari, UI tasarımı, kota, deploy tuzakları
+için bkz. **§12**.
 
 ---
 
@@ -1931,6 +1989,8 @@ with connection.cursor() as c:
 | `scripts/yedek_indir.sh --simdi` → "Host key verification failed" / `/root/.ssh/known_hosts:1` | Script **lokalde** (kullanıcının kendi bilgisayarında) çalıştırılmak üzere yazılmış — Hetzner'e kendi içinde SSH ile bağlanıp yedeği yerele çeker. Hetzner'e SSH ile bağlanıp script'i sunucunun İÇİNDEN çalıştırmak, sunucunun kendi IP'sine (89.167.5.224) kendi kendine SSH atmasına yol açar → host key karmaşası (4 Ekim 2026). **Kural:** script'i `exit` ile Hetzner oturumundan çıkıp yerel terminalde çalıştır. Host key gerçekten değiştiyse (OS reset vb.) önce Hetzner Cloud Console'dan (tarayıcı, SSH'siz) `ssh-keygen -lf /etc/ssh/ssh_host_ed25519_key.pub` ile fingerprint'i doğrula, körü körüne `ssh-keygen -R` yapma. |
 | Lokalde admin'den gönderilen test e-postası/veri, Docker'da doğrulananla uyuşmuyor | `127.0.0.1:8000`'de Docker dışında, host'ta ayrıca çalışan bağımsız bir `python manage.py runserver` süreci vardı (`ss -ltnp \| grep 8000` ile tespit edildi, `/proc/<pid>/cwd` + açık dosya tanımlayıcıları proje kökündeki eski `db.sqlite3`'ü gösterdi) — Docker Compose'daki (nginx:80/443 → web → Postgres) güncel veriden tamamen bağımsız, farklı bir veritabanı. Tarayıcı `127.0.0.1:8000`'e gidince bu eski sürece bağlanıyordu, nginx'e (80) değil. **Kural:** lokal doğrulama şüpheli sonuç verirse `ss -ltnp` + `docker compose ps` ile hangi sürecin hangi portta olduğunu teyit et; nginx (80/443) = Docker Compose, ayrıca `127.0.0.1:8000`'de bağımsız bir `runserver` çıkıyorsa hangisini test ettiğini bilerek ilerle ya da kapat (7 Ekim 2026). |
 | `main`'e push sonrası Hetzner'de kimse `git pull`/`restart` yapmadığı hâlde production güncelleniyor | `.github/workflows/deploy.yml` push→main'de GitHub Actions üzerinden otomatik SSH ile `cd /app && git pull origin main && docker compose restart web` çalıştırıyor — CLAUDE.md'deki "main → Hetzner (manuel deploy)" notu YANLIŞTI (muhtemelen workflow sonradan eklenip doküman güncellenmemiş). **Kural:** `main`'e her `git push`, ayrı bir deploy adımına gerek kalmadan doğrudan production'ı günceller; migration içeren bir push'tan ÖNCE mutlaka kullanıcıdan yedek iste (`scripts/yedek_indir.sh --simdi`, kendi bilgisayarında). Workflow yalnız `restart` yapıyor (`recreate`/`build` değil) — container IP'si değişmediği için ayrıca `nginx` restart'ına gerek kalmıyor (8 Ekim 2026, Uzman Dizini deploy'unda doğrulandı). |
+| Yeni bir `ANTHROPIC_API_KEY`/`anthropic` paketi + `feature_ai_summary` flag'i main'e deploy edildi ama canlıda özellik hâlâ çalışmıyor (hatasız, sessizce) | Üç ayrı eksik aynı anda çıktı (11 Ekim 2026): (1) `requirements.txt`'e `anthropic` eklenip merge edildi ama GitHub Actions `restart` yaptığı için image hiç rebuild olmadı → `ModuleNotFoundError: No module named 'anthropic'` (ama `claude_service.py` bunu `except Exception` ile yutuyor, kullanıcıya hata göstermiyor — sadece AI kutusu hiç çıkmıyor); çözüm `docker compose up -d --build web`. (2) `ANTHROPIC_API_KEY` production `.env`'de hiç yoktu (kod `.env`'e yeni bir satır eklenmesini bekliyordu, kimse eklememişti) → `echo 'ANTHROPIC_API_KEY=...' >> /app/.env` + yine `--build`. (3) `feature_ai_summary` flag'i admin'den açılmadan sessizce kapalı kalıyor. **Kural:** yeni bir AI/API sağlayıcı entegrasyonu deploy edilince üçünü de (env var + image rebuild + flag) tek tek SSH'dan doğrula — `docker compose exec web python -c "import X"` + `grep KEY .env` + admin shell'den flag kontrolü. |
+| `dev`'de (Render) AI özelliği çalışıyor ama `main`'de (Hetzner) çalışmıyor, ya da tam tersi | Render ve Hetzner **tamamen bağımsız ortamlar** — Render `.env` dosyasını hiç okumaz, env var'lar Render'ın kendi web dashboard'undan ("Environment" sekmesi) ayrıca girilmeli; muhtemelen ayrı bir Postgres de kullandıklarından `SiteSettings` flag'leri (ör. `feature_ai_summary`) de her ortamda AYRI AYRI admin panelinden açılmalı — biri açıldı diye diğeri otomatik açılmaz (11 Ekim 2026). |
 
 ### Veritabanı / Migration
 
@@ -2102,6 +2162,12 @@ with connection.cursor() as c:
 - **İstatistik Rehberi eksik linkler** — `hangi_test.html`'de `r_tekrarli_anova` ve `r_friedman` düğümlerine `tool_url` eklendi
 - **Karar Ağacı (ML)** (mayıs 2026) — Unified konsolda "Makine Öğrenmesi" kategorisi altında; `karar_agaci.py`; sklearn DecisionTreeClassifier; feature_importances_ ile önem sıralaması; PDF çıktısı
 - **Destek Vektör Makinesi (SVM)** (mayıs 2026) — `svm.py`; SVC + StandardScaler; RBF/Linear/Poly kernel; C parametresi 0.1–10; permutation_importance (model-agnostik); büyük dataset otomatik örnekleme (5000 satır); PDF çıktısı
+- **Claude AI Yorumu — Faz A+B** (11 Ekim 2026, main'de canlı, Hetzner'de gerçek API çağrısıyla doğrulandı) —
+  17 istatistik aracına (`orneklem` hariç) Claude ile üretilen ücretsiz akademik yorum eklendi; APA Formatında
+  Raporlama kutusunun içine, APA cümlesinin altına yerleştirildi (ayrı kutu değil — kullanıcı isteğiyle revize
+  edildi). Detay: §12, §17. Deploy'da 3 eksik (API key, image rebuild, flag) tek tek giderildi — §26. Render
+  (dev/staging) henüz ayrıca yapılandırılmadı. Faz C (OpenAlex+PubMed) ve Faz D (Bibliometrics) sırada; PDF'e
+  dahil etme ayrı açık görev (`tasks/todo.md`).
 
 #### Pazaryeri / Freelance / Bağış
 

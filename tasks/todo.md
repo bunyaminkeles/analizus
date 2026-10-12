@@ -145,9 +145,22 @@ maddelerde.
   "Kopyala" butonu artık APA cümlesi + AI yorumunu birlikte panoya kopyalıyor (`copyApa` fonksiyonları
   güncellendi). 90/90 test + `manage.py check` tekrar doğrulandı.
   **Bulgu (karar bekliyor):** Test çıktısında AI yorumu 608 karakterde cümle ortasında kesildi —
-  `forum/services/claude_service.py` `MAX_TOKENS=512` (Faz A), sistem promptu "en fazla 120 kelime" diyor ama
-  model bunu aşıp donanım limitine takılıyor. Düzeltme (MAX_TOKENS'ı örn. 768-1024'e çıkarmak) Faz A dosyasında
-  — Faz B kapsamı dışında, kullanıcı onayı bekliyor.
+  `forum/services/claude_service.py` `MAX_TOKENS=512` (Faz A) — **düzeltildi, 1024'e çıkarıldı** (kullanıcı
+  onayladı), artık cümle ortasında kesilmiyor.
+  **UI revizyonu (11 Ekim 2026, kullanıcı isteği):** AI Yorumu ayrı/renkli bir kutu olmaktan çıkarıldı — 17
+  dosyanın hepsinde APA Formatında Raporlama kutusunun İÇİNE, APA cümlesinin altına ince bir ayraçla
+  yerleştirildi; tek "Kopyala" butonu artık APA cümlesi + AI yorumunu birlikte panoya kopyalıyor.
+  **Production deploy (11 Ekim 2026) — main'e merge+push edildi, Hetzner'de 3 eksik tek tek giderildi ve
+  gerçek API çağrısıyla doğrulandı:** (1) `ANTHROPIC_API_KEY` production `.env`'de hiç yoktu → eklendi; (2)
+  `anthropic` paketi container'da kurulu değildi (GitHub Actions deploy'u yalnız `git pull+restart` yapıyor,
+  image rebuild etmiyor) → `docker compose up -d --build web` ile giderildi; (3) `feature_ai_summary` production
+  admin'den açıldı. **Render (dev/staging) henüz yapılmadı** — tamamen ayrı bir ortam, `.env` dosyası okumuyor,
+  `ANTHROPIC_API_KEY` Render dashboard'undan ayrıca girilmeli + orada da (muhtemelen ayrı DB) flag açılmalı;
+  kullanıcı isterse ayrı görev.
+  - [ ] **(11 Ekim 2026, kullanıcı: "todo'ya yaz") AI Yorumu PDF raporuna eklenmedi** — yalnız web ekranında
+    görünüyor, `build_pdf()` fonksiyonlarına dokunulmadı (kapsam dışı kaldı, bilinçli bir hariç tutma değildi).
+    İstenirse 17 `istatistik/services/<tool>.py`'deki `build_pdf()`'in her birine, APA bölümünün altına benzer
+    bir "AI Yorumu" paragrafı eklenecek (`result_data['ai_comment']` zaten mevcut, sadece PDF'e yazdırılmıyor).
   **Sırada — Faz C:** OpenAlex+PubMed (migration gerekli, `ai_summary` alanı) + job_runner entegrasyonu +
   template/JS. Sonra Faz D (Bibliometrics, migration + `analyzer.py` ham veri yakalama — en karmaşık faz).
 - [x] **(9 Ekim 2026 → tamamlandı, main'de canlı) `/hakkimizda/` sayfası sadeleştirildi.** Tek blok olduğu
@@ -842,15 +855,13 @@ girdi; kod `NCBI_API_KEY` okuyor → şu an anahtar KULLANILMIYOR (3 istek/sn).
   2.0.1 kurulu; `parser._parse_bibtex` v1 API (`bibtexparser.bparser`) kullanıyor → "No module named 'bibtexparser.bparser'",
   iş "Dosyadan kayıt okunamadı" ile başarısız. Canlıda da muhtemelen aynı (kontrol edilmedi). Seçenek: `bibtexparser<2` sabitle
   (build gerekir) veya v2 API'ye geçir.
-- [ ] **Bibliometri SSS/SEO bölümü EN/DE'de Türkçe (ÖNCEDEN VAR, 28 Eylül 2026)** — anonim `/en|de/bibliometrics/` sayfası
-  `tarama_seo_content.py` (TR-only düz metin) SSS'ini gösteriyor. Ya çevrilmeli ya EN/DE'de gizlenmeli (openalex/trdizin de aynı modülü kullanıyor — kontrol).
-- [ ] **Bibliometri metin tutarsızlıkları (28 Eylül 2026)** — (1) `tarama_seo_content.py` ~346 "Bradford kanunu dağılımı" yorum
-  rehberi — raporda Bradford analizi yok; (2) landing demo kartı "Yayın Trendi + Yazarlar + Kelime Bulutu" — demo = ilk 3 grafik
-  (trend, büyüme oranı, yazarlar; veri eksikse kayar).
-- [ ] **GÜVENLİK — canlı DB'de eski OpenAlex `error_message` kayıtlarında API anahtarı (29 Eylül 2026 bulgusu, takipsiz kalmıştı)** —
-  d39af06 öncesi ham hata mesajı URL'deki `api_key=` değerini kullanıcıya gösterip DB'ye yazıyordu. Hetzner'de salt okuma:
-  `error_message LIKE '%api_key=%'` (OpenAlex arama/sipariş/bibliometri işleri) → varsa kayıtları temizle + OpenAlex
-  anahtarını yenile (yerel/Render/Hetzner `.env`). Kullanıcı izniyle.
+- [x] **DÜZELTİLDİ (12 Ekim 2026, kullanıcı kararı: EN/DE'de gizle)** Bibliometri SSS/SEO bölümü EN/DE'de Türkçe (ÖNCEDEN VAR, 28 Eylül 2026) — anonim `/en|de/bibliometrics/` sayfası
+  `tarama_seo_content.py` (TR-only düz metin) SSS'ini gösteriyordu. `templates/service_promo.html` `{% if seo_guide %}` → `{% if seo_guide and LANGUAGE_CODE == 'tr' %}` yapıldı (6 aracın hepsini tek yerden kapsıyor: yoktez, openalex, trdizin, oaipmh, bibliometrics, semanticscholar). Tam EN/DE çevirisi ayrı, daha büyük bir iş olarak ertelendi (kullanıcı kararı).
+- [x] **DÜZELTİLDİ (12 Ekim 2026)** Bibliometri metin tutarsızlıkları (28 Eylül 2026) — (1) `tarama_seo_content.py` ~366 "Bradford kanunu dağılımı" cümlesi kaldırıldı, yerine gerçek raporda olan Lotka kanunu açıklaması kondu (raporda Bradford analizi hiç yok); (2) `bibliometrics/templates/bibliometrics/landing.html:159` demo kartı "Yayın Trendi + Yazarlar + Kelime Bulutu" → "Yayın Trendi + Büyüme Oranı + Yazarlar" (gerçek demo = `analyzer.py` ilk 3 analiz: Trend, Büyüme Oranı, Yazarlar — `job_runner.py` `figures[:3]`); EN/DE `.po` çevirisi + host'ta `msgfmt` ile `.mo` derleme yapıldı, `manage.py check` ve template yükleme testiyle doğrulandı.
+- [x] **KONTROL EDİLDİ — sızıntı YOK (12 Ekim 2026)** GÜVENLİK — canlı DB'de eski OpenAlex `error_message` kayıtlarında API anahtarı (29 Eylül 2026 bulgusu, takipsiz kalmıştı) —
+  d39af06 öncesi ham hata mesajı URL'deki `api_key=` değerini kullanıcıya gösterip DB'ye yazıyordu. Hetzner'de salt okuma ile
+  `AlexSearchJob.error_message` ve `BibliometricJob.error_message` (`icontains='api_key='`) kontrol edildi (`AlexOrder`'da bu alan hiç yok) —
+  0/0 sonuç, temizlenecek kayıt yok, anahtar yenileme gerekmedi.
 - [ ] **Veri temizliği: kontrol karakterleri** — OpenAlex bazı dergi adlarında C1 kontrol karakteri gönderiyor
   ("\x98The \x9cJournal of practical nursing") → grafikte boş kutu (glif uyarısı). `_clean` kontrol karakterlerini atmalı. (28 Eylül 2026)
 - [x] **OpenAlex hata mesajı — CANLIDA (d39af06 + 9f50d0b, main 8393eec; 29 Eylül 2026): 429/502/503/504 bekle+yeniden dene (Retry-After, üst sınır 60 sn); kullanıcıya çevrili sabit mesaj (TR/EN/DE); log/hata metninde `api_key=***`. BULGU: ham mesaj URL'deki API ANAHTARINI kullanıcıya gösteriyordu → canlı DB'de eski `error_message` kayıtları kontrol edilmeli, varsa anahtar yenilenmeli.** Eski not: — kullanıcıya ham "503 Server Error… for url: https://api.openalex.org/…" gösteriliyor → çevrili,
@@ -2305,8 +2316,8 @@ Yok — sertifika üretimi de (bkz. yukarı "nginx düzeltmesi" bölümü, 23 Te
 
 # Bootstrap Kaldırma — Kademeli Migration Planı
 
-**Durum (11 Ekim 2026):** Faz 1-2 TAMAMLANDI. Faz 3 sürüyor — 10 dosya
-migre edildi, **56 dosyada hâlâ gerçek Bootstrap component class'ı var**
+**Durum (12 Ekim 2026):** Faz 1-2 TAMAMLANDI. Faz 3 sürüyor — 11 dosya
+migre edildi, **55 dosyada hâlâ gerçek Bootstrap component class'ı var**
 (bkz. "Güncel envanter" altı). Faz 4-5 henüz başlamadı.
 
 ## Neden gerekli
@@ -2336,16 +2347,16 @@ sayıyordu (iş. `account_delete.html`/`job_list.html` gibi dosyalarda
 yeniden çıkarıldı, güvenilir kaynak odur.
 
 ## Güncel envanter (11 Ekim 2026 taraması — tam token eşleşmesi)
-Faz 3'te migre edilen 10 dosya ve kapsam dışı bırakılan 6 standalone auth
-sayfası + 2 yetim dosya hariç, proje genelinde **56 template dosyasında
-toplam 764 gerçek Bootstrap component class eşleşmesi** (`btn`, `card`,
+Faz 3'te migre edilen 11 dosya ve kapsam dışı bırakılan 6 standalone auth
+sayfası + 2 yetim dosya hariç, proje genelinde **55 template dosyasında
+toplam ~760 gerçek Bootstrap component class eşleşmesi** (`btn`, `card`,
 `card-body`, `card-title`, `card-text`, `badge`, `dropdown`, `dropdown-toggle`,
 `dropdown-menu`, `dropdown-item`, `modal`, `alert`, `form-control`,
 `form-select`) kaldı. Yoğunluğa göre (düşükten yükseğe, Faz 3'ün kendi
 önceliklendirme kuralına uygun):
 
-**Düşük (4-10 class, ~25 dosya) — sıradaki adaylar:**
-`about.html`, `blog_list.html`, `forum_index.html`, `footer.html` (partials),
+**Düşük (4-10 class, ~24 dosya) — sıradaki adaylar:**
+`blog_list.html`, `forum_index.html`, `footer.html` (partials),
 `edit_job.html`, `post_job.html`, `search_results.html`,
 `verification_pending.html`, `my_payments.html`, `section_detail.html`,
 `bibliometrics/order.html`, `my_jobs.html`, `new_topic.html`,
@@ -2661,6 +2672,28 @@ kök neden dosyası bulunmadı. Ayrı bir görev olarak ele alınacak.
     içerikle (seed'li araç listeleri) 375px/1280px Playwright ekran
     görüntüsüyle kontrol edildi — her iki hub'ın marka rengi kimliği
     (yeşil / camgöbeği) birebir korundu. 90 test yeşil.
+- [x] `forum/templates/forum/about.html` (11. dosya, 12 Ekim 2026) — gerçek
+  envanter: 1 `badge` + 3 `btn` (277, 280, 290, 294. satır).
+  - 277: `badge` → `ax-badge` (renk zaten inline style'dan geliyordu,
+    etkilenmedi; kabul edilen küçük sapma: köşe yuvarlaklığı Bootstrap'ın
+    hafif yuvarlağından `.ax-badge`'in tam pil şekline döndü).
+  - 290: `btn btn-primary` → `ax-btn ax-btn--primary` (birebir karşılık).
+  - 280 + 294 (koşullu): `btn btn-outline-light` → `ax-btn ax-btn--outline-light`
+    — bu class proje genelinde 12 dosyada daha var (`how_it_works.html`,
+    `my_payments.html`, `post_job.html`, `promote_job_iban.html`,
+    `service_promo.html`, `uzman_dizini.html`, `job_detail.html`,
+    `base.html` dahil), bu yüzden önceki `tarama_hub.html`'de kullanılan
+    kabul-edilebilir-sapma `ax-btn--ghost` yerine `base.css`'e yeni, birebir
+    Bootstrap `outline-light` davranışını taklit eden `.ax-btn--outline-light`
+    varyantı eklendi (şeffaf + açık kenarlık/metin → hover'da dolu açık
+    zemin + koyu metin). **Not:** `tarama_hub.html`'deki eski `ax-btn--ghost`
+    kullanımı geriye dönük değiştirilmedi (kapsam dışı) — ileride aynı
+    dosyaya dönülürse tutarlılık için `ax-btn--outline-light`'a taşınabilir.
+  - `bundle.css` `rcssmin` ile yeniden üretildi, `collectstatic` çalıştırıldı,
+    `base.html`'deki `bundle.css?v=0012` → `?v=0013`'e çekildi, `web` restart
+    edildi. Görsel doğrulama Playwright ile 375px/1280px'te yapıldı (rozet +
+    3 buton, computed style dahil) — sorun yok, konsol/ağ hatası yok, yatay
+    taşma yok. 90/90 test (`forum/tests.py`) yeşil.
 
 **11 Ekim 2026 oturumu kapandı — `main`'e alındı:** Yukarıdaki 7 commit
 (`87c8e26`..`58f52d7`) `dev`'den `main`'e `--no-ff` merge edildi (merge

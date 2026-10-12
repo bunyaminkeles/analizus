@@ -1348,8 +1348,8 @@ msgid "Demo Rapor (3 Grafik)"
 msgstr "Demo Report (3 Charts)"
 
 #: bibliometrics/templates/bibliometrics/landing.html:159
-msgid "Yayın Trendi + Yazarlar + Kelime Bulutu"
-msgstr "Publication Trend + Authors + Word Cloud"
+msgid "Yayın Trendi + Büyüme Oranı + Yazarlar"
+msgstr "Publication Trend + Growth Rate + Authors"
 
 #: bibliometrics/templates/bibliometrics/landing.html:160
 msgid "ÜCRETSİZ"

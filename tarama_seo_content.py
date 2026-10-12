@@ -363,10 +363,10 @@ TARAMA_SEO_CONTENT = {
         'how_to_interpret': (
             'Yayın trendi grafiği alanın büyüme hızını gösterir; ani artışlar yeni araştırma '
             'ilgi odaklarına işaret edebilir. H-index, en az h atıf almış h yayına sahip olmayı '
-            'ifade eder; bireysel yazarlar için etkiyi ölçer. Bradford kanunu dağılımında çekirdek '
-            'dergilere odaklanmak literatür takibini kolaylaştırır. Ortak yazarlık ağında merkezi '
-            'konumdaki yazarlar alandaki köprü araştırmacıları temsil eder. Ülke/kurum '
-            'dağılımı araştırmanın coğrafi yoğunlaşmasını gösterir.'
+            'ifade eder; bireysel yazarlar için etkiyi ölçer. Lotka kanunu dağılımında az sayıda '
+            'üretken yazarın çoğu yayını üretmesi alandaki uzmanlaşmayı gösterir. Ortak yazarlık '
+            'ağında merkezi konumdaki yazarlar alandaki köprü araştırmacıları temsil eder. '
+            'Ülke/kurum dağılımı araştırmanın coğrafi yoğunlaşmasını gösterir.'
         ),
         'apa_example': (
             'Araştırmacı, A. A., & Ortak, B. B. (2023). Eğitim bilimleri alanında '
