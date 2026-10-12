@@ -2473,8 +2473,8 @@ Yok — sertifika üretimi de (bkz. yukarı "nginx düzeltmesi" bölümü, 23 Te
 
 # Bootstrap Kaldırma — Kademeli Migration Planı
 
-**Durum (12 Ekim 2026):** Faz 1-2 TAMAMLANDI. Faz 3 sürüyor — 11 dosya
-migre edildi, **55 dosyada hâlâ gerçek Bootstrap component class'ı var**
+**Durum (12 Ekim 2026):** Faz 1-2 TAMAMLANDI. Faz 3 sürüyor — 12 dosya
+migre edildi, **54 dosyada hâlâ gerçek Bootstrap component class'ı var**
 (bkz. "Güncel envanter" altı). Faz 4-5 henüz başlamadı.
 
 ## Neden gerekli
@@ -2512,8 +2512,8 @@ toplam ~760 gerçek Bootstrap component class eşleşmesi** (`btn`, `card`,
 `form-select`) kaldı. Yoğunluğa göre (düşükten yükseğe, Faz 3'ün kendi
 önceliklendirme kuralına uygun):
 
-**Düşük (4-10 class, ~24 dosya) — sıradaki adaylar:**
-`blog_list.html`, `forum_index.html`, `footer.html` (partials),
+**Düşük (4-10 class, ~23 dosya) — sıradaki adaylar:**
+`forum_index.html`, `footer.html` (partials),
 `edit_job.html`, `post_job.html`, `search_results.html`,
 `verification_pending.html`, `my_payments.html`, `section_detail.html`,
 `bibliometrics/order.html`, `my_jobs.html`, `new_topic.html`,
@@ -2852,6 +2852,35 @@ kök neden dosyası bulunmadı. Ayrı bir görev olarak ele alınacak.
     3 buton, computed style dahil) — sorun yok, konsol/ağ hatası yok, yatay
     taşma yok. 90/90 test (`forum/tests.py`) yeşil.
 
+- [x] `forum/templates/forum/blog/blog_list.html` (12. dosya, 12 Ekim 2026) —
+  gerçek envanter: 4 (`form-control`, `form-select`, 2× `btn`), hepsi arama
+  kutusu/kategori seçici alanında.
+  - 29: `form-control text-white border-end-0` → `ax-form-control ...`
+  - 32: `btn px-4` (tamamen inline gradient stille boyanmış gönder butonu) →
+    `ax-btn px-4` (inline stil korundu).
+  - 37: `btn btn-outline-secondary` → `ax-btn ax-btn--ghost` (`home.html`'de
+    kurulmuş outline-secondary↔ghost eşleşmesi tekrar kullanıldı).
+  - 111: `form-select bg-dark text-white border-secondary` →
+    `ax-form-select ...`.
+  - **Gerçek bug bulundu ve düzeltildi:** arama kutusu bir Bootstrap
+    `.input-group` içinde — Bootstrap'ın `.input-group>.form-control{flex:1 1
+    auto;width:1%;min-width:0}` kuralı yalnız `.form-control` class'ına bağlı;
+    class `ax-form-control` olunca bu kural düşüyor, `.ax-form-control`'ün
+    kendi `width:100%` kuralı input'u tek başına satıra yayıp butonu +
+    "Temizle" linkini alt satıra düşürüyordu (hem 375px hem 1280px'te
+    Playwright ile ölçülüp doğrulandı). Dosyanın kendi `<style>` bloğuna
+    scoped bir düzeltme eklendi: `.input-group > .ax-form-control{flex:1 1
+    auto;width:1%;min-width:0}`. Köşe yuvarlaklığı (`.input-group`'un yapısal
+    `:not(:first-child)`/`:not(:last-child)` kuralları, class'tan bağımsız)
+    etkilenmedi, görsel olarak sorunsuz (ekran görüntüsüyle doğrulandı).
+  - Yeni CSS/`bundle.css` değişikliği gerekmedi (kullanılan tüm ax- class'lar
+    zaten vardı) — yalnız dosyanın kendi `<style>` bloğuna 1 kural eklendi,
+    `docker compose restart web` yeterliydi.
+  - Görsel doğrulama Playwright ile 375px/1280px tam sayfa + arama kutusu
+    close-up (filtre uygulanmış durum dahil) — sorun yok, konsol hatası yok
+    (yalnızca ilgisiz PWA service-worker scope uyarısı, bu dosyadan bağımsız).
+    `forum/tests.py` 90/90 yeşil.
+
 **11 Ekim 2026 oturumu kapandı — `main`'e alındı:** Yukarıdaki 7 commit
 (`87c8e26`..`58f52d7`) `dev`'den `main`'e `--no-ff` merge edildi (merge
 commit `1e54739`), `origin/main`'e push edildi — GitHub Actions otomatik
@@ -2901,11 +2930,12 @@ Kullanılmayan geçiş dönemi shim'leri varsa kaldır.
 - 100+ dosyalık migration tek PR'da değil, birden fazla oturuma yayılmalı
 
 ## Sıradaki adım
-Faz 1 ve 2 TAMAMLANDI. Faz 3 sürüyor — 10 dosya migre edildi (yukarı bkz.
+Faz 1 ve 2 TAMAMLANDI. Faz 3 sürüyor — 12 dosya migre edildi (yukarı bkz.
 "Dosya bazlı ilerleme"). **Güncel envanter yukarıda** ("Güncel envanter —
-11 Ekim 2026 taraması") — 56 dosya, 764 eşleşme kaldı. Sıradaki adaylar
-düşük yoğunluklu grup (`about.html`, `forum_index.html`, `footer.html`
-partial'ı vb., 4-10 class). Her dosya için: gerçek Bootstrap class'larını
+11 Ekim 2026 taraması") — 54 dosya, ~756 eşleşme kaldı. Sıradaki adaylar
+düşük yoğunluklu grup (`forum_index.html`, `footer.html` partial'ı,
+`edit_job.html`/`post_job.html` vb., 4-10 class). Her dosya için: gerçek
+Bootstrap class'larını
 oku → ax- karşılığı yoksa (yeni renk/varyant vb.) kullanıcıya sor → uygula
 → `bundle.css` gerekiyorsa yeniden üret + versiyon artır → Playwright ile
 mobil+masaüstü görsel doğrula → pytest çalıştır → `todo.md` güncelle →
