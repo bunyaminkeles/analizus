@@ -1,0 +1,16 @@
+{
+  "name": "Analizus - Akademik Analiz ve Veri Bilimi Topluluğu",
+  "short_name": "Analizus",
+  "description": "İstatistik, veri analizi ve akademik araştırma desteği",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "lang": "tr",
+  "icons": [
+    {"src": "/static/img/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "/static/img/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+    {"src": "/static/img/icons/icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ]
+}

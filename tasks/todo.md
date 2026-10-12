@@ -118,30 +118,60 @@ maddelerde.
       butonu doğru sayıyla render edildi, boş durumda yeni mesaj metni
       çalışıyor. `docker compose restart web` + `nginx` sonrası test edildi.
     - **TAMAMLANDI — kullanıcı onayladı, `dev`'de commit edildi (66e8e3e).**
-- [ ] **(11 Ekim 2026 → BAŞLANMADI, fikir aşamasında) PWA (Progressive Web App).**
+- [x] **DÜZELTİLDİ/EKLENDİ (12 Ekim 2026, henüz push edilmedi) PWA (Progressive Web App) — temel kurulum.**
   Kullanıcı mobil app ihtiyacını sordu — native (React Native/Flutter) için
   önce Django'nun üstüne ince bir JSON API katmanı (DRF) + ayrı bir app
-  kod tabanı gerekir; bu aşamada önerilmedi (ürün masaüstü/tablet tarzı
-  işler — dosya yükleme, uzun PDF rapor, uzun metin yazma — mobil "hızlı
-  bakış" senaryosuna uymuyor, zaten mobil-öncelikli responsive web çalışması
-  sürüyor). Bunun yerine **önce PWA** önerildi, kullanıcı onayladı:
-  - Kapsam: `static/manifest.json` (app adı/ikon/renk) + `static/js/
-    service-worker.js` (asset önbellekleme + web push) + `templates/
-    base.html`'e `<link rel="manifest">` + service worker register script.
-    Backend/model/view değişikliği YOK — mevcut Django template'lerinin
-    üstüne ekleniyor, ayrı kod tabanı değil.
-  - Android (Chrome): gerçek "Ana ekrana ekle/Yükle" istemi çıkar, tam ekran
-    açılır; Play Store'da listelenmek istenirse "Trusted Web Activity" ile
-    sarmalanabilir (ayrı, opsiyonel adım).
-  - iOS (Safari): manuel "Paylaş → Ana Ekrana Ekle" gerekir, push bildirim
-    iOS 16.4+'ta destekleniyor ama Android kadar sorunsuz değil; App
-    Store'a pure PWA koymak Apple tarafından önerilmiyor/sınırlı.
-  - **Henüz yapılmadı:** ikon seti (farklı boyutlarda PNG/maskable icon),
-    manifest içeriği, service worker'ın hangi static asset'leri/sayfaları
-    önbellekleyeceği, web push altyapısı (VAPID anahtarları vb.) — hiçbiri
-    tasarlanmadı, sıradaki oturumda ele alınabilir. Gerçek App Store/Play
-    Store varlığı (native) ancak PWA sonrası, somut talep görülürse
-    değerlendirilecek.
+  kod tabanı gerekir; bu aşamada önerilmedi. Bunun yerine **önce PWA**
+  önerildi, kullanıcı onayladı ve plan modunda (`~/.claude/plans/
+  keen-strolling-kernighan.md`) detaylandırılıp uygulandı:
+  - `static/manifest.json` + `static/img/icons/` (icon-192/512/512-maskable/
+    apple-touch-icon — kaynak repo kökündeki `analizus-logo-001.png`
+    1024×1024, tek seferlik Pillow script'iyle üretildi, kalıcı koda
+    eklenmedi) + `static/js/service-worker.js` (yalnız `/static/` altını
+    stale-while-revalidate ile önbellekler, sayfa/API/WebSocket'e dokunmaz)
+    + `static/js/pwa-register.js` (register) + `templates/base.html`'e
+    `<link rel="manifest">`/`apple-touch-icon` + register script tag.
+  - `nginx/conf.d/default.conf`'a yalnız `/static/js/service-worker.js`
+    için `no-cache` override eklendi (genel `/static/` 1 yıllık immutable
+    cache'in SW güncellemelerini geciktirmemesi için — ayrıntı/gerekçe
+    `analizus.md` §10 "PWA" alt notunda).
+  - Docker'da uçtan uca doğrulandı: `/`, `/en/`, `/de/` üçünde de manifest
+    linki + register script render ediliyor, manifest.json ve 3 ikon 200
+    dönüyor, SW dosyası erişilebilir; `nginx -t` (ayrı test container'ında)
+    yalnız eksik gerçek SSL sertifikasında hata verdi — syntax sorunsuz.
+    `docker compose exec web python -m pytest forum/tests.py -q` → 90/90
+    yeşil (regresyon yok).
+  - Android (Chrome): gerçek "Ana ekrana ekle/Yükle" istemi çıkar; Play
+    Store listelemesi istenirse "Trusted Web Activity" ayrı/opsiyonel adım.
+  - iOS (Safari): manuel "Paylaş → Ana Ekrana Ekle" gerekir.
+  - **Kapsam dışı bırakıldı (bilinçli, ayrı iş):** Web Push (VAPID) — yeni
+    model/migration/`pywebpush` kütüphanesi gerektirir; offline sayfa/
+    navigasyon önbellekleme (dinamik/kimlik doğrulamalı site için riskli);
+    Play Store/App Store native paketleme (somut talep görülürse).
+  - **Deploy:** migration yok, kullanıcı "push et"/"merge et" demeden
+    `main`'e gitmeyecek (nginx config değişikliği olduğu için `main`'e
+    alınınca Hetzner'de `docker compose restart nginx` da gerekecek —
+    GitHub Actions akışı yalnız `web`'i restart ediyor, ayrıca elle
+    yapılmalı, bkz. not aşağıda).
+  - [ ] **YENİ BULGU (12 Ekim 2026, PWA doğrulaması sırasında, karar
+    gerektirmiyor ama araştırılmalı):** Lokal Docker'da (`DEBUG=True`)
+    `django.contrib.staticfiles.storage.staticfiles_storage.url(...)`
+    TÜM dosyalar için (yalnız yeni eklenenler değil, mevcut `css/bundle.css`
+    dahil) hash'siz plain path döndürüyor — `{% static 'css/bundle.css' %}`
+    render'da `/static/css/bundle.css` çıkıyor, oysa container içindeki
+    gerçek `/app/staticfiles/staticfiles.json` manifest dosyası doğru
+    hash'li adları içeriyor (`css/bundle.95b4f3ddbf19.css`). Yani whitenoise
+    `CompressedManifestStaticFilesStorage`'ın hash'leme/manifest-okuma
+    kısmı collectstatic'te çalışıyor ama `{% static %}` tag'i bunu
+    kullanmıyor — sebep araştırılmadı (DEBUG=True'da farklı bir storage
+    code path'i mi devreye giriyor, `ConfiguredStorage` lazy-wrapper'ında
+    bir sorun mu var?). **Pratik etki şu an sınırlı** çünkü proje zaten her
+    CSS/JS linkine elle `?v=XXXX` ekliyor (bu yüzden fark edilmemiş) — ama
+    settings.py'deki 27 Eylül 2026 "whitenoise manifest-hash artık doğru
+    çalışıyor" notu en azından DEBUG=True'da **yanlış/eksik** olabilir;
+    production'da (DEBUG=False) farklı davranıp davranmadığı
+    doğrulanmadı. PWA'nın manifest.json linkine de bu yüzden ayrıca
+    `?v=0001` eklendi (hash'e güvenmek yerine).
 - [ ] **(11 Ekim 2026 → Faz A tamamlandı, dev'de commit `6dd984b`, PUSH EDİLMEDİ) Claude AI Yorumu —
   tarama/analiz sonuçlarına ücretsiz AI özeti.** Amaç: Claude Startups $1000 API kredisini yeni müşteri
   kazanma + mevcut analist/kullanıcı elde tutma için aktif kullanmak. Plan: `~/.claude/plans/
