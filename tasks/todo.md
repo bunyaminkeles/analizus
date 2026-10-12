@@ -10,6 +10,30 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
+- [x] **DÜZELTİLDİ (12 Ekim 2026) — Çalışma odası "Tartışma" bloğu yüksekliği
+  sınırsızdı, sayfa aşağı doğru çok uzuyordu.**
+  `forum/templates/forum/studyroom_detail.html` `#posts-container` viewport'a
+  göre `calc(100vh - 420px)` ile sabitlenmişti; üstteki bilgi kartı 420px'den
+  uzun olunca kutu aşırı büyüyüp sayfayı uzatıyordu. DM/mesajlaşma ekranındaki
+  (`send_message.html` `#chat-history`) kalıpla aynı hale getirildi:
+  `min-height:300px; max-height:450px; overflow-y:auto` — artık sabit boyutlu,
+  kendi içinde kaydırılıyor. Lokalde template cache temizlenip (`docker
+  compose restart web`) doğrulandı.
+
+- [ ] **AÇIK (12 Ekim 2026, kullanıcı bulgusu) — Çalışma odası admin onayı
+  bildirim olarak hiçbir yerde görünmüyor.** Kullanıcı yeni oda açtığında
+  "Admin onayı bekleniyor" mesajı gösteriliyor ama admin tarafında (navbar
+  bildirim zili / dashboard "BİLDİRİMLER" paneli — İlan Onayı, Ödemeler,
+  Hikayeler, Değerlendirmeler, Mesajlar, Bağışlar sekmeleri) bekleyen oda
+  onayı için hiç sekme/sayım yok, admin fark etmiyor. İstenen: (1) admin
+  onayı bekleyen her türlü aksiyon (oda onayı dahil) dashboard'daki bu
+  bildirim panelinde görünmeli; (2) ayrıca admin kullanıcılarına site-içi DM
+  (oda/mesajlaşma sistemi — bkz. `analizus.md` §13-15) ile anlık bildirim
+  gitmeli. Kapsam: hangi admin onay akışlarının (yalnız oda onayı mı, yoksa
+  ileride başka bekleyen aksiyonlar mı) bu panele dahil edileceği ve DM
+  gönderiminin tüm admin kullanıcılarına mı yoksa belirli bir role mi
+  gideceği kullanıcı kararı gerektirir — uygulamaya başlamadan önce sorulmalı.
+
 - [x] **DÜZELTİLDİ (12 Ekim 2026) — Hero doğrulama turu (`hero_dogrulama_prompt.md`)
   bulguları uygulandı, `dev`'den `main`'e merge + push edildi, Hetzner'e otomatik
   deploy oldu.**
