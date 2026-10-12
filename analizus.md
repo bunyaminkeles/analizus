@@ -1011,6 +1011,27 @@ değişikliği yok, yalnız statik dosya + `base.html`:
   migration/`pywebpush` kütüphanesi gerektirir, mevcut bildirim WebSocket
   (Channels, bkz. §11) üzerinden zaten çalışıyor ama yalnız sekme açıkken;
   push bu boşluğu dolduracak tamamlayıcı bir sonraki faz.
+- **Canlıda (12 Ekim 2026):** `dev`'de commit, `main`'e merge + push edildi
+  (GitHub Actions ile Hetzner'de `web` otomatik restart oldu) — **ancak
+  nginx config değişikliği GitHub Actions akışına dahil değil** (akış yalnız
+  `docker compose restart web` çalıştırıyor, §5), bu yüzden kullanıcı
+  Hetzner'de elle `docker compose restart nginx` çalıştırdı. Deploy sonrası
+  `curl -sI https://www.analizus.com/static/js/service-worker.js` ile
+  `Cache-Control: no-cache` döndüğü doğrulandı. **Genel kural:** bundan
+  sonraki bir nginx config değişikliği içeren her push'ta aynı elle restart
+  adımı hatırlatılmalı (otomatik deploy akışı bunu kapsamıyor).
+- **Bilinmesi gereken (kapsam dışı, ayrı araştırma gerekir):** Doğrulama
+  sırasında, lokal Docker'da (`DEBUG=True`) `{% static %}` tag'inin TÜM
+  statik dosyalar için (yalnız PWA dosyaları değil, ör. mevcut
+  `css/bundle.css` dahil) hash'siz/plain path döndürdüğü görüldü — oysa
+  container içindeki `/app/staticfiles/staticfiles.json` manifest dosyası
+  doğru hash'li adları içeriyor. Yani whitenoise'un collectstatic hash'leme
+  adımı çalışıyor ama `{% static %}` render'ı bunu kullanmıyor; sebep
+  araştırılmadı, production'da (`DEBUG=False`) farklı davranıp davranmadığı
+  da doğrulanmadı. Pratik etkisi şu an sınırlı (proje zaten her CSS/JS'e
+  elle `?v=XXXX` ekliyor) ama 27 Eylül 2026 tarihli "whitenoise manifest-hash
+  artık doğru çalışıyor" notu en azından DEBUG=True'da eksik/yanlış olabilir
+  — ayrıntı `tasks/todo.md`'de yeni bulgu olarak not edildi.
 
 ---
 
@@ -2680,7 +2701,24 @@ with connection.cursor() as c:
 
 > Önceki düz-yazı günlük biçiminden madde listesine dönüştürülmüştür; cümleler değişmeden taşınmıştır.
 
-- **En son (11 Ekim 2026):** `dev`'den `main`'e `--no-ff` merge edildi, `origin`'e push edildi (GitHub Actions Hetzner'e otomatik deploy edecek — migration yok, yalnız template/CSS, yedek gerekmedi). **Bootstrap Kaldırma — Faz 3** kapsamında 7 commit, 10 template dosyası migre edildi: `job_list.html` (ilk gerçek `ax-dropdown` kullanımı — mobilde taşmaması için `--end` varyantı), `contact.html`+`gizlilik_politikasi.html` (tek buton), `_studyroom_founder_card.html`+`story_modal_content.html` (kart/rozet, yeni `.ax-badge--neutral`), `topic_detail.html` (form+buton, global `.ax-form-control{min-height:96px}` tuzağı önlendi), `home.html` (yeni `.ax-badge--warning-solid` — "VİTRİN" rozetinin dikkat çekiciliği korunarak), `order_payment.html` (**gerçek bug bulundu:** `.ax-alert`'in `display:flex` olması düz metin+`<strong>` karışımını ayrı flex item'a bölüp kaydırıyordu, `.ax-alert__body` sarmalayıcısıyla düzeltildi — ders `tasks/lessons.md`'ye eklendi), `analiz_hub.html`+`tarama_hub.html` (kullanıcı kararıyla kalıcı `--ax-accent-info` token + `.ax-btn--success`/`.ax-btn--info` eklendi — ikisi de `ax-btn--warning`'in koyu-metin WCAG formülünü izliyor). Her adımda gerçek Bootstrap class sayımı yapılıp eski "(3 component)" gibi tahminlerin çoğu yanlış çıktığı görüldü; `register.html`/`login.html`/4 `password_reset_*.html` sayfasının `base.html`'i hiç extend etmediği (kendi Bootstrap CDN'ini yükleyen bağımsız sayfalar) keşfedilip kapsam dışı bırakıldı. Görsel doğrulama DB'de seed verisi olmayan modellerde (`FreelanceJob`, `StudyRoom`) geçici test kaydı oluşturup Playwright ile 375px/1280px ekran görüntüsü alma + hemen silme yöntemiyle yapıldı; `bundle.css` her `base.css` değişikliğinde `rcssmin` ile yeniden üretilip versiyon artırıldı. 90/90 test yeşil. Detay: `tasks/todo.md` "Bootstrap Kaldırma — Kademeli Migration Planı" / Faz 3.
+- **En son (12 Ekim 2026):** İki ayrı tur, ikisi de `dev`'den `main`'e `--no-ff`
+  merge edilip push edildi (migration yok). **Tur 1 — 2 bug düzeltmesi:**
+  `bibliometrics/services/parser.py` `detect_format()` PubMed TXT'sini
+  OpenAlex TXT sanıyordu (ikisi aynı "--- Yayın #" başlığını ve dolgu
+  genişliğini paylaşıyordu) — gettext'siz sabit "PMID" satırıyla ayırt eden
+  yeni `pubmed_txt` dalı + `parse_pubmed_txt()` eklendi; ayrıca
+  `forum/templates/forum/blog/blog_list.html`'deki kart/sidebar arka
+  planlarının şeffaf render olmasına yol açan, `base.css`'te hiç tanımlı
+  olmayan eski kısa token isimleri (`--ax-surface`/`--ax-border`/`--ax-text`/
+  `--ax-muted`/`--ax-primary`, 33 kullanım) gerçek token'lara eşlendi (detay
+  §10 CSS Değişkenleri notu). **Tur 2 — PWA temel kurulumu** (detay yukarıda
+  §10 "PWA" alt başlığı): `static/manifest.json` + ikon seti + service
+  worker + register script eklendi, `nginx/conf.d/default.conf`'a SW için
+  `no-cache` override eklendi; deploy sonrası kullanıcı Hetzner'de elle
+  `docker compose restart nginx` çalıştırdı (GitHub Actions akışı nginx'i
+  kapsamıyor), canlı `curl` ile `Cache-Control: no-cache` doğrulandı. Her
+  iki turda da `forum/tests.py` 90/90 yeşil.
+- **Önceki (11 Ekim 2026):** `dev`'den `main`'e `--no-ff` merge edildi, `origin`'e push edildi (GitHub Actions Hetzner'e otomatik deploy edecek — migration yok, yalnız template/CSS, yedek gerekmedi). **Bootstrap Kaldırma — Faz 3** kapsamında 7 commit, 10 template dosyası migre edildi: `job_list.html` (ilk gerçek `ax-dropdown` kullanımı — mobilde taşmaması için `--end` varyantı), `contact.html`+`gizlilik_politikasi.html` (tek buton), `_studyroom_founder_card.html`+`story_modal_content.html` (kart/rozet, yeni `.ax-badge--neutral`), `topic_detail.html` (form+buton, global `.ax-form-control{min-height:96px}` tuzağı önlendi), `home.html` (yeni `.ax-badge--warning-solid` — "VİTRİN" rozetinin dikkat çekiciliği korunarak), `order_payment.html` (**gerçek bug bulundu:** `.ax-alert`'in `display:flex` olması düz metin+`<strong>` karışımını ayrı flex item'a bölüp kaydırıyordu, `.ax-alert__body` sarmalayıcısıyla düzeltildi — ders `tasks/lessons.md`'ye eklendi), `analiz_hub.html`+`tarama_hub.html` (kullanıcı kararıyla kalıcı `--ax-accent-info` token + `.ax-btn--success`/`.ax-btn--info` eklendi — ikisi de `ax-btn--warning`'in koyu-metin WCAG formülünü izliyor). Her adımda gerçek Bootstrap class sayımı yapılıp eski "(3 component)" gibi tahminlerin çoğu yanlış çıktığı görüldü; `register.html`/`login.html`/4 `password_reset_*.html` sayfasının `base.html`'i hiç extend etmediği (kendi Bootstrap CDN'ini yükleyen bağımsız sayfalar) keşfedilip kapsam dışı bırakıldı. Görsel doğrulama DB'de seed verisi olmayan modellerde (`FreelanceJob`, `StudyRoom`) geçici test kaydı oluşturup Playwright ile 375px/1280px ekran görüntüsü alma + hemen silme yöntemiyle yapıldı; `bundle.css` her `base.css` değişikliğinde `rcssmin` ile yeniden üretilip versiyon artırıldı. 90/90 test yeşil. Detay: `tasks/todo.md` "Bootstrap Kaldırma — Kademeli Migration Planı" / Faz 3.
 - *Son güncelleme: Temmuz 2026 — Merge öncesi son süpürme turu TAMAMLANDI (11/11 madde, kaynak: `analizus_son_supurme_prompt.md`), `main`'e merge edildi. Aynı gün, merge sonrası canlıda gelen 3 hata raporuna yanıt olarak iki yeni tur yapıldı ve bunlar da `main`'e merge edildi: **Tableau facade dayanıklılık turu** (script yüklenemezse hata geri bildirimi; 15sn timeout + tek-canlı-iframe disiplini + sekme başına nesil sayacı; embed yüklenirken dönen spinner katmanı — üç ayrı canlı hata raporunun her biri kod incelemesi + Playwright doğrulamasıyla kapatıldı, ikisi gerçek kod bug'ı çıktı, biri Tableau Public'in kendi geçici kesintisi olduğu doğrulandı); **Marka görseli kenar yumuşatma turu** (3 iterasyon — box-shadow vinyet iki kez denenip koyu-tema fotoğraflarda görünmediği için terk edildi, `mask-image: radial-gradient` ile görselin şeklini gerçekten söndüren üçüncü deneme başarılı oldu; ana sayfanın sağ kartının ayrı bir component olduğu ve ilk düzeltmeyi almadığı kullanıcı tarafından fark edilip ayrıca düzeltildi). Son süpürme turunun kendi içeriği: huni parametreleri (Tableau CTA metni + bibliometrik `ANALYSIS_CHOICES`/`?type=` ön-seçimi, migration `0147`); site geneli Sıfır Kuralı (ana sayfa 5 sayaç + `has_any_stats`, uzman kartı satırı, Akademik Haberler + Gündemdeki Tartışmalar layout bütünlüğü, /hakkimizda/ Ekip bölümü); 8 sayfaya özgün og/twitter meta; bibliometri OpenAlex köprü bandı; blog kapaksız yazılara kategoriye göre varsayılan görsel; hero'daki eski üçlü CTA satırı kaldırıldı; login/register görsel panellerine iç vinyet; 39 smoke test (Madde 2'den 9, Madde 10'a); deploy notu + Hetzner sırası; ana sayfa sağ karta agentic-hero görseli. `feature_agentic_landing` flag'i o tur sonrası elle açıldı (doğrulandı, `/ai-cozumler/` artık görünür). Önceki turlar (İçerik & Topluluk Güçlendirme, Merge öncesi kapanış turu, `/market/` zenginleştirme, `/ai-cozumler/` landing, vb.) için yukarıdaki "Tamamlananlar" listesine bakın.
 - **Önceki (temmuz 2026):** Çalışma Odaları (StudyRoom) 8 fazlı dönüşümü tamamlandı, `dev`'den `main`'e merge edildi (yukarıdaki "Tamamlananlar" listesine bakın). Hetzner production'a bu merge deploy edildiyse §27'deki not artık geçerli değildir; edilmediyse aşağıdaki anasayfa turuyla birlikte tek seferde deploy edilebilir (migration'lar birikimli çalışır, sıra önemli değil).
 - **Önceki (temmuz 2026):** Ana Sayfa & Navbar İyileştirme Turu tamamlandı — 11 faz, 11 ayrı commit (detay: yukarıdaki "Tamamlananlar" listesi). `dev`'den `main`'e fast-forward merge edildi, hem `dev` hem `main` `origin`'e push edildi. Migration `0150_sitesettings_stat_min_display`.

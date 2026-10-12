@@ -10,6 +10,14 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
+- [ ] **BULGU (12 Ekim 2026, "Render-blocking bundle.css" düzeltmesi sırasında
+  Lighthouse'ta görüldü) — `#ax-cookie` çerez onay banner'ı CLS'e sebep
+  oluyor** (Lighthouse `layout-shifts` audit'inde en büyük katkı, skor
+  ~0.17/0.215). Bu PR'dan bağımsız, önceden var olan ayrı bir sorun —
+  banner'ın sayfaya giriş animasyonu/konumlanması muhtemelen `position`
+  geçişi veya geç render nedeniyle layout shift üretiyor. Kapsam dışı
+  bırakıldı (ayrı görev); detay: bu dosyanın "PageSpeed" bölümündeki
+  "Render-blocking bundle.css" maddesi.
 - [x] **DÜZELTİLDİ (12 Ekim 2026) BUG — `bibliometrics/services/parser.py` `detect_format()`
   PubMed TXT'sini OpenAlex TXT sanıyordu.** PubMed'in indirilen TXT'si (`pubmed/services/
   job_runner.py` `_generate_pubmed_results_txt`) OpenAlex'inkiyle (`_generate_alex_results_txt`)
@@ -3357,10 +3365,42 @@ işler:
 - [ ] **Kullanılmayan CSS (Bootstrap, 43 KiB)** — ayrı görev olarak zaten
   planlı, bkz. bu dosyanın başındaki "Bootstrap Kaldırma — Kademeli
   Migration Planı"
-- [ ] **Render-blocking `bundle.css`** (188-190ms) + **Ağ bağımlılık ağacı**
-  (kritik yol ~588ms) — aynı kök neden: `bundle.css` above-the-fold
-  navbar/layout stilini içeriyor, deferred yapmak FOUC riski taşır; kritik
-  CSS ayıklama (inline critical CSS + async geri kalan) gerektirir
+- [x] **DÜZELTİLDİ (12 Ekim 2026, henüz push edilmedi) Render-blocking `bundle.css`**
+  (188-190ms) + **Ağ bağımlılık ağacı** (kritik yol ~588ms). Plan:
+  `~/.claude/plans/synthetic-prancing-engelbart.md`. Tek dosya:
+  `templates/base.html`. `bundle.css`'in kendisi/`rcssmin` süreci değişmedi.
+  **Yapılan:** (1) `<head>`'in en üstüne, `base.css`/`navbar.css`'ten
+  birebir kopyalanan küçük bir "kritik iskelet" `<style>` bloğu eklendi
+  (`:root` token'ları, `.ax-container`, `body` padding-top, `.site-nav`
+  ailesi — logo/menü/hamburger — navbar'ın ilk boyamada da fixed+arka
+  planlı görünmesi, `body{padding-top}` ile CLS'e yol açmaması için).
+  (2) `bundle.css` linki Inter/Bootstrap/bootstrap-icons'takiyle BİREBİR
+  aynı `media="print" onload="this.media='all'"` + `<noscript>` desenine
+  taşındı. **Test sırasında bulunan ek sorun:** `.site-nav__dropdown`,
+  `.nav-drawer`, `.nav-overlay`, `.ax-skip-link`, `.ax-modal-backdrop`,
+  `.ax-dropdown` — hepsi "gizli" durumunu `display:none` değil
+  opacity/visibility/transform ile sağlıyor; kritik blokta olmayınca
+  bundle.css gelene kadar İÇERİKLERİ (dropdown menüler, mobil çekmece,
+  3 modal — arama/quiz/hikaye) normal akışta GÖRÜNÜR render olup sayfayı
+  aşağı itiyordu (Playwright ile route-delay testinde görüldü, ekran
+  görüntüsüyle doğrulandı) — bu 6 seçici için de minimal "gizli durum"
+  kuralı (yalnızca position/opacity/visibility, tam kutu stili değil)
+  kritik bloğa eklendi, ikinci testte sorun kalmadı.
+  **Doğrulama:** Docker'da `restart web`; Playwright ile 4 sayfa tipi
+  (`/`, forum, market, bibliometrics) × 2 viewport (1280/375px),
+  `page.route` ile `bundle.css` 3sn geciktirilip erken/geç anlarda
+  `.site-nav` computed style (`position/height/background/body padding-top`)
+  karşılaştırıldı — birebir aynı, sıçrama yok; ekran görüntüleriyle de
+  teyit edildi. JS kapalıyken `<noscript>` fallback'i tam stilli render
+  ediyor. `docker compose exec web python -m pytest forum/tests.py -q`
+  → 90/90 yeşil. Lokal Lighthouse (`npx lighthouse`) öncesi/sonrası
+  kıyası: `render-blocking-resources` skoru 0 (bundle.css ~630ms,
+  "Est savings 450ms") → **1** (temiz); CLS her ikisinde de **birebir aynı**
+  (0.215, kaynağı `#ax-cookie` banner'ı — bu PR'dan bağımsız, önceden var
+  olan ayrı bir sorun, kapsam dışı bırakıldı, istenirse ayrı todo maddesi).
+  `main`'de kayıtlı "CLS 0.009" rakamı muhtemelen farklı ölçüm koşulları
+  (üretim/PageSpeed Insights vs. yerel Lighthouse + bu çerez banner'ı) —
+  bu PR o rakamı etkilemedi, yalnızca doğruladı.
 - [ ] **Yandex Metrica** — verimli önbellek (71 KiB) + kullanılmayan JS
   (43 KiB) + olası uzun görevler; üçüncü parti, init'i `requestIdleCallback`
   ile ertelemek TBT'yi düşürür ama webvisor/bounce-tracking doğruluğunu
