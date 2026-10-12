@@ -30,7 +30,7 @@
                            placeholder="ANOVA, t-Testi, örneklem..."
                            style="background: rgba(15,23,42,0.8); border-color: rgba(99,102,241,0.3);">
                     <button class="btn px-4" type="submit"
-                            style="background: var(--ax-primary); border: none; color: white;">
+                            style="background: var(--ax-accent-primary); border: none; color: white;">
                         <i class="bi bi-search"></i>
                     </button>
                     {% if search_query %}
@@ -292,8 +292,8 @@
 <style>
 /* Blog Kartı */
 .ax-blog-card {
-    background: var(--ax-surface);
-    border: 1px solid var(--ax-border);
+    background: var(--ax-bg-tertiary);
+    border: 1px solid var(--ax-border-default);
     border-radius: 12px;
     transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
     overflow: hidden;
@@ -311,7 +311,7 @@
 }
 .ax-blog-card__body { padding: 1rem 1rem 0.5rem; }
 .ax-blog-card__title {
-    color: var(--ax-text);
+    color: var(--ax-text-primary);
     font-weight: 600;
     font-size: 0.9rem;
     line-height: 1.4;
@@ -321,9 +321,9 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
-.ax-blog-card:hover .ax-blog-card__title { color: var(--ax-primary); }
+.ax-blog-card:hover .ax-blog-card__title { color: var(--ax-accent-primary); }
 .ax-blog-card__excerpt {
-    color: var(--ax-muted);
+    color: var(--ax-text-secondary);
     font-size: 0.8rem;
     line-height: 1.5;
     margin-bottom: 0;
@@ -337,7 +337,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 0.6rem 1rem;
-    border-top: 1px solid var(--ax-border);
+    border-top: 1px solid var(--ax-border-default);
     margin-top: 0.75rem;
 }
 
@@ -354,8 +354,8 @@
 /* Öne çıkan kart */
 .ax-featured-card {
     position: relative;
-    background: var(--ax-surface);
-    border: 1px solid var(--ax-border);
+    background: var(--ax-bg-tertiary);
+    border: 1px solid var(--ax-border-default);
     border-radius: 12px;
     overflow: hidden;
     transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
@@ -367,7 +367,7 @@
 }
 .ax-featured-card__accent {
     height: 3px;
-    background: var(--cat-color, var(--ax-primary));
+    background: var(--cat-color, var(--ax-accent-primary));
     opacity: 0.8;
 }
 .ax-featured-card__cover {
@@ -382,15 +382,15 @@
     flex-direction: column;
 }
 .ax-featured-card__title {
-    color: var(--ax-text);
+    color: var(--ax-text-primary);
     font-size: 0.92rem;
     font-weight: 700;
     line-height: 1.45;
     margin-bottom: 0.5rem;
 }
-.ax-featured-card:hover .ax-featured-card__title { color: var(--cat-color, var(--ax-primary)); }
+.ax-featured-card:hover .ax-featured-card__title { color: var(--cat-color, var(--ax-accent-primary)); }
 .ax-featured-card__excerpt {
-    color: var(--ax-muted);
+    color: var(--ax-text-secondary);
     font-size: 0.8rem;
     line-height: 1.55;
     margin-bottom: 0.75rem;
@@ -403,8 +403,8 @@
 /* Sidebar widget */
 .ax-blog-sidebar { position: sticky; top: 80px; }
 .ax-sidebar-widget {
-    background: var(--ax-surface);
-    border: 1px solid var(--ax-border);
+    background: var(--ax-bg-tertiary);
+    border: 1px solid var(--ax-border-default);
     border-radius: 12px;
     overflow: hidden;
 }
@@ -412,8 +412,8 @@
     padding: 0.6rem 1rem;
     font-size: 0.82rem;
     font-weight: 600;
-    color: var(--ax-text);
-    border-bottom: 1px solid var(--ax-border);
+    color: var(--ax-text-primary);
+    border-bottom: 1px solid var(--ax-border-default);
 }
 .ax-sidebar-widget__body { padding: 0.75rem 1rem; }
 
@@ -423,18 +423,18 @@
     justify-content: space-between;
     align-items: center;
     padding: 0.5rem 1rem;
-    color: var(--ax-text);
+    color: var(--ax-text-primary);
     text-decoration: none;
     font-size: 0.83rem;
-    border-bottom: 1px solid var(--ax-border);
+    border-bottom: 1px solid var(--ax-border-default);
     transition: background 0.15s;
 }
 .ax-cat-item:last-child { border-bottom: none; }
-.ax-cat-item:hover { background: rgba(99,102,241,0.08); color: var(--ax-text); }
-.ax-cat-item--active { border-left: 3px solid var(--ax-primary); background: rgba(99,102,241,0.07); }
+.ax-cat-item:hover { background: rgba(99,102,241,0.08); color: var(--ax-text-primary); }
+.ax-cat-item--active { border-left: 3px solid var(--ax-accent-primary); background: rgba(99,102,241,0.07); }
 .ax-cat-count {
     background: rgba(148,163,184,0.15);
-    color: var(--ax-muted);
+    color: var(--ax-text-secondary);
     font-size: 0.7rem;
     padding: 1px 7px;
     border-radius: 10px;
@@ -446,7 +446,7 @@
     align-items: flex-start;
     gap: 0.75rem;
     padding: 0.6rem 1rem;
-    border-bottom: 1px solid var(--ax-border);
+    border-bottom: 1px solid var(--ax-border-default);
     transition: background 0.15s;
 }
 .ax-popular-item:last-child { border-bottom: none; }
@@ -454,11 +454,11 @@
 .ax-popular-num {
     font-size: 0.75rem;
     font-weight: 700;
-    color: var(--ax-primary);
+    color: var(--ax-accent-primary);
     min-width: 18px;
     padding-top: 2px;
 }
-.ax-popular-title { color: var(--ax-text); font-size: 0.8rem; line-height: 1.4; margin-bottom: 2px; }
+.ax-popular-title { color: var(--ax-text-primary); font-size: 0.8rem; line-height: 1.4; margin-bottom: 2px; }
 
 /* Etiket */
 .ax-tag {
@@ -505,7 +505,7 @@
 .ax-read-more {
     font-size: 0.75rem;
     font-weight: 600;
-    color: var(--ax-primary);
+    color: var(--ax-accent-primary);
     opacity: 0.8;
     transition: opacity 0.2s;
 }
@@ -516,11 +516,11 @@
     display: inline-flex; align-items: center; justify-content: center;
     min-width: 36px; height: 36px; padding: 0 10px;
     border-radius: 8px;
-    background: var(--ax-surface); border: 1px solid var(--ax-border);
-    color: var(--ax-muted); font-size: 0.85rem;
+    background: var(--ax-bg-tertiary); border: 1px solid var(--ax-border-default);
+    color: var(--ax-text-secondary); font-size: 0.85rem;
     text-decoration: none; transition: all 0.2s;
 }
-.ax-page-btn:hover { border-color: var(--ax-primary); color: var(--ax-primary); }
-.ax-page-btn--active { background: var(--ax-primary); border-color: var(--ax-primary); color: white; font-weight: 600; }
+.ax-page-btn:hover { border-color: var(--ax-accent-primary); color: var(--ax-accent-primary); }
+.ax-page-btn--active { background: var(--ax-accent-primary); border-color: var(--ax-accent-primary); color: white; font-weight: 600; }
 </style>
 {% endblock %}

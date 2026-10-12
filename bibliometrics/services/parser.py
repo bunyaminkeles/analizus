@@ -47,6 +47,14 @@ def detect_format(content: str) -> str:
     if 'TR Dizin Yayın Arama Sonuçları' in stripped or 'Başlık    :' in stripped:
         return 'trdizin_txt'
 
+    # PubMed TXT: OpenAlex ile aynı "--- Yayın #" başlığını ve aynı dolgu
+    # genişliğini paylaşıyor (ikisinde de en uzun etiket "Anahtar Kelimeler"
+    # olduğu için w=17 çıkıyor, "Başlık" satırları birebir aynı) — OpenAlex
+    # kontrolünden ÖNCE PMID satırıyla ayırt et (PMID etiketi gettext'siz,
+    # dilden bağımsız sabit).
+    if re.search(r'^PMID\s*:', stripped, re.MULTILINE):
+        return 'pubmed_txt'
+
     # OpenAlex TXT: "Başlık       :" (7 boşluk)
     if '--- Yayın #' in stripped or 'Başlık       :' in stripped:
         return 'openalex_txt'
@@ -90,6 +98,8 @@ def parse_file(content: str, fmt: str = None, stats: dict = None) -> tuple[list[
         records = parse_trdizin_txt(content, stats)
     elif fmt == 'openalex_txt':
         records = parse_openalex_txt(content, stats)
+    elif fmt == 'pubmed_txt':
+        records = parse_pubmed_txt(content, stats)
     else:
         records = _parse_generic_csv(content)
         fmt = 'csv_auto'
@@ -771,6 +781,104 @@ def parse_openalex_txt(content: str, stats: dict = None) -> list[dict]:
             current['abstract'] = _clean(v)
             continue
 
+    if current is not None:
+        records.append(current)
+
+    return _deduplicate_and_filter(records, stats)
+
+
+# ─────────────────────────── PubMed TXT ───────────────────────────
+
+def parse_pubmed_txt(content: str, stats: dict = None) -> list[dict]:
+    """
+    PubMed job_runner tarafından üretilen TXT formatını parse eder (kullanıcının
+    önceden indirdiği dosyayı bibliometri sayfasına manuel yeniden yüklemesi
+    senaryosu — doğrudan köprü, ör. `/bibliometrics/from-pubmed/<id>/`, bunun
+    yerine `parse_pubmed_json`'u JSON üzerinden kullanır).
+
+    Format (OpenAlex TXT ile aynı "--- Yayın #" başlığını paylaşır; PMID
+    satırıyla ayırt edilir, bkz. detect_format):
+        --- Yayın #N ---
+        Başlık            : ...
+        Yazarlar          : ...
+        Dergi/Kaynak      : ...
+        Yıl               : ...
+        DOI               : ...
+        PMID               : ... (bibliometrik şemada karşılığı yok, atlanır)
+        Tür               : ...
+        Kurumlar          : ...
+        Anahtar Kelimeler : ...
+        MeSH Terimleri    : ... (anahtar kelime yoksa yedek olarak kullanılır)
+        Özet              : ...
+    """
+    records = []
+    current: dict | None = None
+    mesh_terms: list[str] = []
+
+    def _finalize(rec):
+        if rec is not None and not rec['keywords'] and mesh_terms:
+            rec['keywords'] = mesh_terms.copy()
+
+    for line in content.splitlines():
+        line = line.strip()
+        if line.startswith('--- Yayın #'):
+            _finalize(current)
+            if current is not None:
+                records.append(current)
+            current = {k: (v.copy() if isinstance(v, list) else v) for k, v in EMPTY_RECORD.items()}
+            mesh_terms = []
+            continue
+
+        if current is None:
+            continue
+
+        def _val(prefix):
+            return line[len(prefix):].strip() if line.startswith(prefix) else None
+
+        v = _val('Başlık            :')
+        if v is not None:
+            current['title'] = _clean(v)
+            continue
+        v = _val('Yazarlar          :')
+        if v is not None:
+            current['authors'] = [a.strip() for a in v.split(', ') if a.strip()]
+            continue
+        v = _val('Dergi/Kaynak      :')
+        if v is not None:
+            current['journal'] = _clean(v)
+            continue
+        v = _val('Yıl               :')
+        if v is not None:
+            current['year'] = _safe_int(v) or None
+            continue
+        v = _val('DOI               :')
+        if v is not None:
+            current['doi'] = _clean(v)
+            continue
+        v = _val('Tür               :')
+        if v is not None:
+            current['pub_type'] = _clean(v)
+            continue
+        v = _val('Kurumlar          :')
+        if v is not None:
+            current['institution'] = _clean(v)
+            continue
+        v = _val('Anahtar Kelimeler :')
+        if v is not None:
+            # job_runner ', '.join ile üretiyor — ';'/'|' ayıran _split_keywords uygun değil
+            current['keywords'] = [kw.strip() for kw in v.split(',') if kw.strip()]
+            continue
+        v = _val('MeSH Terimleri    :')
+        if v is not None:
+            mesh_terms = [kw.strip() for kw in v.split(',') if kw.strip()]
+            continue
+        v = _val('Özet              :')
+        if v is not None:
+            current['abstract'] = _clean(v)
+            continue
+        # PMID satırı kasıtlı atlanıyor — bibliometrik şemada karşılığı yok
+
+    _finalize(current)
     if current is not None:
         records.append(current)
 
