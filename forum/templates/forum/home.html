@@ -463,20 +463,35 @@ atıfları) → yalnız TR. EN/DE'ye dile uygun tek WebSite bloğu (27 Eylül 20
                         </div>
                         {% else %}
                         <div class="ax-market-body flex-grow-1">
-                            <p class="ax-market-desc">{% trans "SPSS, R, Python veya alan uzmanlığınızı gerçek projelere dönüştürün. Komisyonsuz çalışın, itibarınızı büyütün." %}</p>
+                            <p class="ax-market-desc">{% trans "SPSS, R, Python veya alan uzmanlığınızı gerçek projelere dönüştürün. Platform proje ücretine hiç dokunmaz — kazancınızın tamamı size kalır." %}</p>
                             <ul class="ax-market-features mt-3">
-                                <li><i class="bi bi-check2-circle text-warning"></i> {% trans "Sıfır komisyon ile hemen başla" %}</li>
-                                <li><i class="bi bi-check2-circle text-warning"></i> {% trans "Sadece alanınıza uygun projeler" %}</li>
-                                <li><i class="bi bi-check2-circle text-warning"></i> {% trans "Profilini ve itibarını güçlendir" %}</li>
+                                <li><i class="bi bi-check2-circle text-warning"></i> {% trans "Sıfır komisyon — kazancınızın tamamı size kalır" %}</li>
+                                <li><i class="bi bi-check2-circle text-warning"></i> {% trans "Sadece alanınıza uygun projelere teklif verin" %}</li>
+                                <li><i class="bi bi-check2-circle text-warning"></i> {% trans "Tamamlanan işler ve yıldızlı değerlendirmeyle itibarınızı kanıtlayın" %}</li>
+                                <li><i class="bi bi-check2-circle text-warning"></i> {% trans '1000 puan → "Doğrulanmış Uzman" rozeti ve teklif verme hakkı' %}</li>
                             </ul>
+                            <div class="ax-market-cats mt-3">
+                                <a href="{% url 'job_list' %}" class="ax-market-cat">{% trans "İstatistik" %}</a>
+                                <a href="{% url 'job_list' %}" class="ax-market-cat">{% trans "Yapay Zeka & ML" %}</a>
+                                <a href="{% url 'job_list' %}" class="ax-market-cat">{% trans "Ekonometri" %}</a>
+                                <a href="{% url 'job_list' %}" class="ax-market-cat">{% trans "Veri Bilimi" %}</a>
+                                <a href="{% url 'job_list' %}" class="ax-market-cat">{% trans "Editörlük" %}</a>
+                                <a href="{% url 'job_list' %}" class="ax-market-cat">{% trans "Danışmanlık" %}</a>
+                            </div>
+                            {% if open_jobs_count >= stat_min_display %}
+                            <div class="ax-market-diy mt-3">
+                                <span class="ax-market-diy__label">🔥 {% blocktrans %}{{ open_jobs_count }} açık proje şu an teklif bekliyor{% endblocktrans %}</span>
+                            </div>
+                            {% endif %}
                             {% if LANGUAGE_CODE == 'tr' %}
                             <a href="#istatistik-arenasi" class="ax-market-arena-link mt-3">
-                                🎯 {% trans "İstatistik Arenası'nda puan kazan →" %}
+                                🎯 {% trans "İstatistik Arenası'nda puan kazan, teklif verme hakkını erken aç →" %}
                             </a>
                             {% endif %}
                         </div>
                         <div class="ax-market-footer mt-4">
-                            <a href="{% url 'job_list' %}" class="ax-btn ax-btn--warning ax-btn--lg ax-block ax-w-full">{% trans "Freelance Projelere Göz At" %}</a>
+                            <a href="{% url 'job_list' %}" class="ax-btn ax-btn--warning ax-btn--lg ax-block ax-w-full mb-2">{% trans "Freelance Projelere Göz At" %}</a>
+                            <a href="{% url 'uzman_dizini' %}" class="ax-btn ax-btn--ghost ax-block ax-w-full">{% trans "Nasıl Uzman Olunur?" %}</a>
                         </div>
                         {% endif %}
                     </div>
