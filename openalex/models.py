@@ -32,6 +32,8 @@ class AlexSearchJob(models.Model):
     demo_file_url = models.URLField(max_length=500, blank=True, default='', verbose_name="Demo Dosya URL (S3)")
     all_results_file_url = models.URLField(max_length=500, blank=True, default='', verbose_name="Tüm Sonuçlar Dosya URL (S3)")
 
+    ai_comment = models.TextField(blank=True, default='', verbose_name="AI Yorumu")
+
     created_at = models.DateTimeField(auto_now_add=True)
     completed_at = models.DateTimeField(null=True, blank=True)
     demo_email_sent = models.BooleanField(default=False)
@@ -53,14 +55,15 @@ class AlexSearchJob(models.Model):
         self.status = 'running'
         self.save(update_fields=['status'])
 
-    def mark_completed(self, demo_results, all_results, total_count, api_query):
+    def mark_completed(self, demo_results, all_results, total_count, api_query, ai_comment=''):
         self.status = 'completed'
         self.demo_results = demo_results
         self.all_results = all_results
         self.total_results = total_count
         self.api_query = api_query
+        self.ai_comment = ai_comment
         self.completed_at = timezone.now()
-        self.save(update_fields=['status', 'demo_results', 'all_results', 'total_results', 'api_query', 'completed_at'])
+        self.save(update_fields=['status', 'demo_results', 'all_results', 'total_results', 'api_query', 'ai_comment', 'completed_at'])
 
     def mark_failed(self, error_msg):
         self.status = 'failed'

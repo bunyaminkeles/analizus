@@ -70,6 +70,48 @@ def _full_results_lines(site_url, order_url):
             f"  {site_url}{reverse('proje_talebi')}?source=tool\n"]
 
 
+def _build_ai_prompt(job, demo_results):
+    import json
+    sample = [
+        {
+            'title': pub.get('title', ''),
+            'year': pub.get('year', ''),
+            'journal': pub.get('journal', ''),
+            'type': pub.get('type', ''),
+            'cited_by_count': pub.get('cited_by_count', 0),
+        }
+        for pub in (demo_results or [])[:5]
+    ]
+    sample_json = json.dumps(sample, ensure_ascii=False, default=str)[:3000]
+    return (
+        f"Sorgu: {job.get_query_summary()}\n"
+        f"Toplam bulunan sonuç: {job.total_results}\n\n"
+        f"İlk birkaç yayın (örnek):\n{sample_json}\n\n"
+        "Bu literatür tarama sonucunu kullanıcıya akademik dilde kısaca yorumla "
+        "(yayın sayısı, öne çıkan yıl/dergi gibi gözlemler)."
+    )
+
+
+def _ai_comment_for_job(job, demo_results):
+    """Claude ile kısa akademik yorum üretir. Hata/kota/flag durumunda sessizce boş döner —
+    iş sonucu AI yorumu olmadan tamamlanır."""
+    from django.utils import translation
+    from forum.models import SiteSettings, AIUsageLog
+    from forum.services.claude_service import claude_summary_service
+
+    if not SiteSettings.load().feature_ai_summary:
+        return ''
+    if not job.user or not AIUsageLog.can_use(job.user):
+        return ''
+
+    prompt = _build_ai_prompt(job, demo_results)
+    resp = claude_summary_service.generate_summary('openalex', prompt, lang=translation.get_language())
+    if resp['success'] and resp['text']:
+        AIUsageLog.record(job.user, 'openalex', resp['input_tokens'], resp['output_tokens'])
+        return resp['text']
+    return ''
+
+
 def _execute_job(job_id):
     """Global kuyruk worker'ı tarafından çağrılır. Worker thread'i dili bilmez → iş, başlatan
     kullanıcının dil tercihiyle (Profile.preferred_language) çalışır: arka planda üretilen TXT
@@ -100,12 +142,19 @@ def _execute_job_body(job_id):
             max_results=MAX_PER_PAGE,
         )
 
+        try:
+            ai_comment = _ai_comment_for_job(job, demo_results)
+        except Exception as e:
+            logger.warning(f"OpenAlex AI Yorumu üretilemedi {job_id}: {e}")
+            ai_comment = ''
+
         close_old_connections()
         job.mark_completed(
             demo_results=demo_results,
             all_results=all_results,
             total_count=total_count,
             api_query=api_query,
+            ai_comment=ai_comment,
         )
 
         try:

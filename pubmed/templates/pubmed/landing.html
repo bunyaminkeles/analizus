@@ -29,6 +29,8 @@
 .pm-result__meta { font-size: var(--ax-text-xs); color: var(--ax-text-muted); margin: 0 0 var(--ax-space-1); }
 .pm-result__abstract { font-size: var(--ax-text-xs); color: var(--ax-text-secondary); margin: var(--ax-space-1) 0 0; line-height: var(--ax-leading-relaxed); }
 .pm-status { color: var(--ax-text-secondary); font-size: var(--ax-text-sm); margin: 0; }
+.pm-ai-box { border-top: 1px solid var(--ax-border-default); padding-top: var(--ax-space-2); margin: 0 0 var(--ax-space-2); }
+.pm-ai-text { font-size: var(--ax-text-sm); color: var(--ax-text-primary); margin: 0; }
 .pm-hidden { display: none !important; }
 @media (min-width: 768px) {
   .pm-wrap { padding: var(--ax-space-6) var(--ax-space-4); }
@@ -70,6 +72,7 @@
       <button type="button" id="pm-cancel" class="ax-btn ax-btn--danger ax-btn--sm pm-hidden"><i class="bi bi-x-circle" aria-hidden="true"></i> {% trans "İptal Et" %}</button>
     </div>
     <p id="pm-status" class="pm-status"></p>
+    <div id="pm-ai-box" class="pm-ai-box pm-hidden"><p id="pm-ai-text" class="pm-ai-text"></p></div>
     <div id="pm-results" class="pm-results"></div>
     <div id="pm-result-actions" class="pm-actions pm-hidden">
       <button type="button" id="pm-send-email" class="ax-btn ax-btn--primary"><i class="bi bi-envelope" aria-hidden="true"></i> <span>{% trans "Demo Sonuçları E-posta Gönder" %}</span></button>
@@ -188,6 +191,13 @@ document.addEventListener('DOMContentLoaded', function () {
       ? fmt(T.summary, {total: data.total_results.toLocaleString(), shown: items.length})
       : T.no_results;
     showStatus((isPrevious ? T.previous + ' — ' : '') + summary, false);
+    const aiBox = $('pm-ai-box');
+    if (data.ai_comment) {
+      $('pm-ai-text').textContent = data.ai_comment;
+      aiBox.classList.remove('pm-hidden');
+    } else {
+      aiBox.classList.add('pm-hidden');
+    }
     resultsEl.innerHTML = items.map(item => `
       <article class="pm-result">
         <h3 class="pm-result__title">${esc(item.title || T.no_title)}</h3>
