@@ -140,6 +140,7 @@ def pubmed_job_status(request, job_id):
             for r in (job.demo_results or [])[:3]
         ]
         response['has_demo'] = bool(job.demo_results)
+        response['ai_comment'] = job.ai_comment
     elif job.status == 'failed':
         response['error'] = job.error_message
     return JsonResponse(response)

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-12 20:19+0300\n"
+"POT-Creation-Date: 2026-10-13 12:40+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -46,11 +46,11 @@ msgstr ""
 #: bibliometrics/forms.py:42
 #, python-brace-format
 msgid ""
-"Desteklenmeyen dosya formatı: {ext}. Lütfen .bib, .csv, .tsv, .txt veya ."
-"xlsx yükleyin."
+"Desteklenmeyen dosya formatı: {ext}. Lütfen .bib, .csv, .tsv, .txt "
+"veya .xlsx yükleyin."
 msgstr ""
-"Nicht unterstütztes Dateiformat: {ext}. Bitte laden Sie .bib, .csv, .tsv, ."
-"txt oder .xlsx hoch."
+"Nicht unterstütztes Dateiformat: {ext}. Bitte laden "
+"Sie .bib, .csv, .tsv, .txt oder .xlsx hoch."
 
 #: bibliometrics/forms.py:47
 #, python-brace-format
@@ -100,7 +100,7 @@ msgstr "Lotkasches Gesetz – Produktivität der Autor/innen"
 #: bibliometrics/services/analyzer.py:335
 #: bibliometrics/templates/bibliometrics/landing.html:200
 #: bibliometrics/templates/bibliometrics/landing.html:301
-#: bibliometrics/views.py:59 openalex/templates/openalex/landing.html:107
+#: bibliometrics/views.py:59 openalex/templates/openalex/landing.html:110
 msgid "Anahtar Kelime Bulutu"
 msgstr "Schlagwort-Wolke"
 
@@ -110,7 +110,7 @@ msgstr "Keine Schlagwörter oder Abstracts vorhanden."
 
 #: bibliometrics/services/analyzer.py:168
 #: bibliometrics/templates/bibliometrics/landing.html:201
-#: openalex/templates/openalex/landing.html:108
+#: openalex/templates/openalex/landing.html:111
 msgid "Anahtar Kelime Eş-Oluşum Ağı"
 msgstr "Schlagwort-Kookkurrenznetzwerk"
 
@@ -121,7 +121,7 @@ msgstr "Keine Schlagwörter, die gemeinsam in derselben Publikation vorkommen."
 #: bibliometrics/services/analyzer.py:170
 #: bibliometrics/services/job_runner.py:257
 #: bibliometrics/templates/bibliometrics/landing.html:202
-#: openalex/templates/openalex/landing.html:109
+#: openalex/templates/openalex/landing.html:112
 msgid "Anahtar Kelime Zaman Trendi"
 msgstr "Zeitlicher Schlagworttrend"
 
@@ -138,7 +138,7 @@ msgstr "Meistzitierte Publikationen (Top 10)"
 #: bibliometrics/services/analyzer.py:173
 #: bibliometrics/services/job_runner.py:259
 #: bibliometrics/templates/bibliometrics/landing.html:204
-#: openalex/templates/openalex/landing.html:111
+#: openalex/templates/openalex/landing.html:114
 msgid "En Çok Yayın Yapılan Dergiler"
 msgstr "Zeitschriften mit den meisten Publikationen"
 
@@ -157,7 +157,7 @@ msgstr "Keine Länder- oder Institutionsangaben."
 #: bibliometrics/services/analyzer.py:177
 #: bibliometrics/services/analyzer.py:1063
 #: bibliometrics/templates/bibliometrics/landing.html:210
-#: openalex/templates/openalex/landing.html:117
+#: openalex/templates/openalex/landing.html:120
 msgid "Ülke İşbirliği Ağı"
 msgstr "Länder-Kooperationsnetzwerk"
 
@@ -171,7 +171,7 @@ msgstr ""
 #: bibliometrics/services/job_runner.py:261
 #: bibliometrics/templates/bibliometrics/landing.html:211
 #: bibliometrics/templates/bibliometrics/landing.html:305
-#: bibliometrics/views.py:60 openalex/templates/openalex/landing.html:118
+#: bibliometrics/views.py:60 openalex/templates/openalex/landing.html:121
 msgid "Yazar İşbirliği Ağı"
 msgstr "Autor/innen-Kooperationsnetzwerk"
 
@@ -182,7 +182,7 @@ msgstr "Keine Publikationen mit mehr als einer Autorin oder einem Autor."
 #: bibliometrics/services/analyzer.py:181
 #: bibliometrics/services/analyzer.py:618
 #: bibliometrics/templates/bibliometrics/landing.html:212
-#: openalex/templates/openalex/landing.html:119
+#: openalex/templates/openalex/landing.html:122
 msgid "Yayın Türleri Dağılımı"
 msgstr "Verteilung der Publikationstypen"
 
@@ -201,7 +201,7 @@ msgstr "Zitationsanalyse und H-Index"
 #: bibliometrics/services/analyzer.py:737
 #: bibliometrics/services/job_runner.py:263
 #: bibliometrics/templates/bibliometrics/landing.html:214
-#: openalex/templates/openalex/landing.html:121
+#: openalex/templates/openalex/landing.html:124
 msgid "Yıllık Atıf Trendi"
 msgstr "Jährlicher Zitationstrend"
 
@@ -213,7 +213,7 @@ msgstr "Keine zitierten Publikationen mit bekanntem Erscheinungsjahr."
 #: bibliometrics/services/analyzer.py:1321
 #: bibliometrics/services/job_runner.py:264
 #: bibliometrics/templates/bibliometrics/landing.html:215
-#: openalex/templates/openalex/landing.html:122
+#: openalex/templates/openalex/landing.html:125
 msgid "Araştırma Konusu Kümeleri (Topic Map)"
 msgstr "Forschungsthemen-Cluster (Topic Map)"
 
@@ -228,7 +228,7 @@ msgstr ""
 #: bibliometrics/services/analyzer.py:1228
 #: bibliometrics/services/job_runner.py:265
 #: bibliometrics/templates/bibliometrics/landing.html:216
-#: openalex/templates/openalex/landing.html:123
+#: openalex/templates/openalex/landing.html:126
 msgid "Araştırma Boşluğu Haritası (Research Gap)"
 msgstr "Karte der Forschungslücken (Research Gap)"
 
@@ -258,9 +258,9 @@ msgstr "Publikationstrend"
 #: bibliometrics/services/analyzer.py:728
 #: bibliometrics/services/analyzer.py:782
 #: bibliometrics/services/analyzer.py:985
-#: makaleanaliz/templates/makaleanaliz/results.html:137 openalex/models.py:95
-#: openalex/services/job_runner.py:22 openalex/views.py:194 pubmed/models.py:93
-#: pubmed/services/job_runner.py:20 pubmed/views.py:162
+#: makaleanaliz/templates/makaleanaliz/results.html:137 openalex/models.py:98
+#: openalex/services/job_runner.py:22 openalex/views.py:195 pubmed/models.py:96
+#: pubmed/services/job_runner.py:20 pubmed/views.py:163
 #: semanticscholar/models.py:88 semanticscholar/services/job_runner.py:21
 #: semanticscholar/views.py:240
 msgid "Yıl"
@@ -281,7 +281,7 @@ msgstr "Produktivste Autor/innen (Top {n})"
 
 #: bibliometrics/services/analyzer.py:359
 #: bibliometrics/services/analyzer.py:655 openalex/services/job_runner.py:22
-#: openalex/views.py:195 semanticscholar/services/job_runner.py:21
+#: openalex/views.py:196 semanticscholar/services/job_runner.py:21
 #: semanticscholar/views.py:241
 msgid "Atıf Sayısı"
 msgstr "Zitationen"
@@ -568,8 +568,8 @@ msgid "OpenAlex verisinden kayıt okunamadı."
 msgstr "Aus den OpenAlex-Daten konnten keine Datensätze gelesen werden."
 
 #: bibliometrics/services/job_runner.py:162 forum/views.py:2292
-#: forum/views.py:2463 openalex/services/job_runner.py:130
-#: pubmed/services/job_runner.py:107
+#: forum/views.py:2463 openalex/services/job_runner.py:179
+#: pubmed/services/job_runner.py:156
 msgid "Bir hata oluştu, lütfen tekrar deneyin."
 msgstr "Ein Fehler ist aufgetreten, bitte versuchen Sie es erneut."
 
@@ -585,12 +585,12 @@ msgid "TAM RAPOR (17 Analize Kadar)"
 msgstr "VOLLSTÄNDIGER BERICHT (bis zu 17 Analysen)"
 
 #: bibliometrics/services/job_runner.py:254
-#: openalex/templates/openalex/landing.html:105
+#: openalex/templates/openalex/landing.html:108
 msgid "Yayın Trendi + Büyüme Oranı"
 msgstr "Publikationstrend + Wachstumsrate"
 
 #: bibliometrics/services/job_runner.py:255
-#: openalex/templates/openalex/landing.html:106
+#: openalex/templates/openalex/landing.html:109
 msgid "En Verimli Yazarlar + Lotka Kanunu"
 msgstr "Produktivste Autor/innen + Lotkasches Gesetz"
 
@@ -600,7 +600,7 @@ msgstr "Schlagwortwolke + Kookkurrenznetzwerk"
 
 #: bibliometrics/services/job_runner.py:258
 #: bibliometrics/templates/bibliometrics/landing.html:203
-#: openalex/templates/openalex/landing.html:110
+#: openalex/templates/openalex/landing.html:113
 msgid "En Çok Atıf Alan Yayınlar"
 msgstr "Meistzitierte Publikationen"
 
@@ -722,6 +722,12 @@ msgstr ""
 #, python-brace-format
 msgid "Sayfa {page} / {total}"
 msgstr "Seite {page} / {total}"
+
+#: bibliometrics/services/pdf_builder.py:155
+#, fuzzy
+#| msgid "Analizus - Akademik Veri Üssü"
+msgid "Akademik Veri Üssü"
+msgstr "Analizus – Plattform für akademische Daten"
 
 #: bibliometrics/services/pdf_builder.py:156
 msgid "Bu rapor otomatik olarak oluşturulmuştur."
@@ -889,8 +895,8 @@ msgid "Yayın yılı"
 msgstr "Erscheinungsjahr"
 
 #: bibliometrics/services/report_notes.py:43 openalex/forms.py:8
-#: openalex/models.py:93 openalex/templates/openalex/landing.html:220
-#: pubmed/forms.py:9 pubmed/models.py:90 semanticscholar/forms.py:8
+#: openalex/models.py:96 openalex/templates/openalex/landing.html:223
+#: pubmed/forms.py:9 pubmed/models.py:93 semanticscholar/forms.py:8
 #: semanticscholar/models.py:87
 #: semanticscholar/templates/semanticscholar/landing.html:333
 msgid "Yazar"
@@ -901,9 +907,9 @@ msgid "Anahtar kelime"
 msgstr "Schlagwort"
 
 #: bibliometrics/services/report_notes.py:45 openalex/forms.py:7
-#: openalex/models.py:93 openalex/services/job_runner.py:23
-#: openalex/templates/openalex/landing.html:219 openalex/views.py:195
-#: pubmed/services/job_runner.py:22 pubmed/views.py:164
+#: openalex/models.py:96 openalex/services/job_runner.py:23
+#: openalex/templates/openalex/landing.html:222 openalex/views.py:196
+#: pubmed/services/job_runner.py:22 pubmed/views.py:165
 #: semanticscholar/models.py:87 semanticscholar/services/job_runner.py:22
 #: semanticscholar/views.py:241
 msgid "Özet"
@@ -921,8 +927,8 @@ msgstr "Zeitschrift / Quelle"
 msgid "Ülke"
 msgstr "Land"
 
-#: bibliometrics/services/report_notes.py:49 openalex/models.py:95
-#: pubmed/forms.py:13 pubmed/models.py:92
+#: bibliometrics/services/report_notes.py:49 openalex/models.py:98
+#: pubmed/forms.py:13 pubmed/models.py:95
 msgid "Kurum"
 msgstr "Institution"
 
@@ -1225,7 +1231,7 @@ msgstr ""
 
 #: bibliometrics/templates/bibliometrics/landing.html:25
 #: bibliometrics/views.py:38 forum/templates/forum/home.html:300
-#: forum/views.py:4310 openalex/templates/openalex/landing.html:157
+#: forum/views.py:4310 openalex/templates/openalex/landing.html:160
 #: templates/base.html:450 templates/base.html:670
 msgid "Bibliometrik Analiz"
 msgstr "Bibliometrische Analyse"
@@ -1424,12 +1430,12 @@ msgstr ""
 "(Jahr, Zitationen, Land usw.)."
 
 #: bibliometrics/templates/bibliometrics/landing.html:209
-#: openalex/templates/openalex/landing.html:116
+#: openalex/templates/openalex/landing.html:119
 msgid "Kurum / Ülke Dağılımı"
 msgstr "Institutions-/Länderverteilung"
 
 #: bibliometrics/templates/bibliometrics/landing.html:213
-#: openalex/templates/openalex/landing.html:120
+#: openalex/templates/openalex/landing.html:123
 msgid "Atıf Analizi + H-index"
 msgstr "Zitationsanalyse + H-Index"
 
@@ -1581,7 +1587,7 @@ msgstr ""
 "Ermitteln Sie die Häufigkeit zentraler Begriffe aus Titeln und Abstracts."
 
 #: bibliometrics/templates/bibliometrics/landing.html:387
-#: forum/templates/forum/home.html:1172
+#: forum/templates/forum/home.html:1187
 msgid "Yükleniyor..."
 msgstr "Wird geladen..."
 
@@ -1645,7 +1651,7 @@ msgid "Siparişi Görüntüle"
 msgstr "Bestellung ansehen"
 
 #: bibliometrics/templates/bibliometrics/landing.html:400
-#: openalex/templates/openalex/landing.html:501 pubmed/views.py:114
+#: openalex/templates/openalex/landing.html:512 pubmed/views.py:114
 #: templates/partials/footer.html:269
 msgid "Gönderiliyor..."
 msgstr "Wird gesendet..."
@@ -2550,6 +2556,43 @@ msgstr ""
 "Analizus - Sie haben das Abzeichen „Verifizierte Akademikerin/Verifizierter "
 "Akademiker“ erhalten!"
 
+#: forum/services/email_service.py:131
+#, fuzzy, python-format
+#| msgid "Teklifi Yönet: %(username)s"
+msgid "Tebrikler %(username)s!"
+msgstr "Angebot verwalten: %(username)s"
+
+#: forum/services/email_service.py:132
+#, fuzzy
+#| msgid ""
+#| "Tebrikler %(username)s! EDU mail ile giriş yaptığınız için Doğrulanmış "
+#| "Akademisyen rozeti kazandınız. 3 gün teklif verme hakkınız var."
+msgid ""
+"EDU uzantılı mail adresiniz ile giriş yaptığınız için <strong>Doğrulanmış "
+"Akademisyen</strong> rozeti kazandınız!"
+msgstr ""
+"Herzlichen Glückwunsch, %(username)s! Da Sie sich mit einer EDU-E-Mail-"
+"Adresse angemeldet haben, erhalten Sie das Abzeichen „Verifizierte "
+"Akademikerin/Verifizierter Akademiker“. Sie können 3 Tage lang Angebote "
+"abgeben."
+
+#: forum/services/email_service.py:133
+msgid "Ayrıca <strong>3 gün boyunca teklif verme hakkına</strong> sahipsiniz."
+msgstr ""
+
+#: forum/services/email_service.py:134
+#, fuzzy
+#| msgid "Çalışma Odaları"
+msgid "İyi çalışmalar,"
+msgstr "Lernräume"
+
+#: forum/services/email_service.py:134
+#: forum/templates/forum/emails/support_payment_details.html:112
+#: forum/views.py:2280 forum/views.py:2287 forum/views.py:2451
+#: forum/views.py:2458
+msgid "Analizus Ekibi"
+msgstr "Ihr Analizus-Team"
+
 #: forum/services/email_service.py:137
 #, python-format
 msgid ""
@@ -3150,7 +3193,7 @@ msgstr ""
 "Forschungsgruppen."
 
 #: forum/templates/forum/ai_cozumler.html:79
-#: forum/templates/forum/home.html:907
+#: forum/templates/forum/home.html:922
 msgid "Analizleriniz siz uyurken çalışsın."
 msgstr "Lassen Sie Ihre Analysen laufen, während Sie schlafen."
 
@@ -3423,8 +3466,9 @@ msgstr "Zur Service-Seite"
 #: forum/templates/forum/blog/blog_detail.html:179
 #, python-format
 msgid ""
-"Analizus'taki uzmanlar arasında <strong style=\"color:#f1f5f9;"
-"\">%(category)s</strong> alanında çalışan analistleri inceleyebilirsiniz."
+"Analizus'taki uzmanlar arasında <strong "
+"style=\"color:#f1f5f9;\">%(category)s</strong> alanında çalışan analistleri "
+"inceleyebilirsiniz."
 msgstr ""
 "Sie können auf Analizus Analysten durchsuchen, die im Bereich <strong "
 "style=\"color:#f1f5f9;\">%(category)s</strong> arbeiten."
@@ -3568,7 +3612,7 @@ msgstr ""
 "Von SPSS bis Python, von Skalenentwicklung bis maschinellem Lernen — "
 "Einzelunterricht für Forschende und Unternehmensteams."
 
-#: forum/templates/forum/egitim.html:75 forum/templates/forum/home.html:920
+#: forum/templates/forum/egitim.html:75 forum/templates/forum/home.html:935
 msgid "Aracı öğren, analizini kendin yap."
 msgstr "Lernen Sie das Werkzeug, führen Sie Ihre Analyse selbst durch."
 
@@ -4156,8 +4200,8 @@ msgid ""
 "Premium üyeliğiniz <strong style=\"color: #fbbf24;\">%(premium_until)s</"
 "strong> tarihine kadar aktif."
 msgstr ""
-"Ihre Premium-Mitgliedschaft ist bis <strong style=\"color: #fbbf24;"
-"\">%(premium_until)s</strong> aktiv."
+"Ihre Premium-Mitgliedschaft ist bis <strong style=\"color: "
+"#fbbf24;\">%(premium_until)s</strong> aktiv."
 
 #: forum/templates/forum/emails/donation_thank_you.html:26
 msgid ""
@@ -4189,6 +4233,7 @@ msgid "Desteğiniz için teşekkür ederiz!"
 msgstr "Vielen Dank für Ihre Unterstützung!"
 
 #: forum/templates/forum/emails/support_payment_details.html:26
+#: forum/views.py:1974
 #, python-format
 msgid "Merhaba <strong>%(username)s</strong>,"
 msgstr "Hallo <strong>%(username)s</strong>,"
@@ -4292,8 +4337,8 @@ msgstr "Ein Platz in der <strong>Unterstützerliste</strong>"
 
 #: forum/templates/forum/emails/support_payment_details.html:101
 msgid ""
-"Herhangi bir sorunuz için <a href=\"mailto:info@analizus.com\" style=\"color:"
-"#a855f7;text-decoration:none;\">info@analizus.com</a> adresine "
+"Herhangi bir sorunuz için <a href=\"mailto:info@analizus.com\" "
+"style=\"color:#a855f7;text-decoration:none;\">info@analizus.com</a> adresine "
 "yazabilirsiniz."
 msgstr ""
 "Bei Fragen schreiben Sie uns an <a href=\"mailto:info@analizus.com\" "
@@ -4302,12 +4347,6 @@ msgstr ""
 #: forum/templates/forum/emails/support_payment_details.html:111
 msgid "İyi günler,"
 msgstr "Viele Grüße,"
-
-#: forum/templates/forum/emails/support_payment_details.html:112
-#: forum/views.py:2280 forum/views.py:2287 forum/views.py:2451
-#: forum/views.py:2458
-msgid "Analizus Ekibi"
-msgstr "Ihr Analizus-Team"
 
 #: forum/templates/forum/emails/verification_email.html:6
 #: forum/templates/forum/verification_pending.html:4
@@ -4816,7 +4855,7 @@ msgstr ""
 "nichtparametrische Alternativen (Mann-Whitney-U, Kruskal-Wallis, Wilcoxon) "
 "zuverlässigere Ergebnisse."
 
-#: forum/templates/forum/hangi_test.html:32 forum/templates/forum/home.html:837
+#: forum/templates/forum/hangi_test.html:32 forum/templates/forum/home.html:852
 msgid "Hangi korelasyon testini kullanmalıyım?"
 msgstr "Welchen Korrelationstest sollte ich verwenden?"
 
@@ -6092,7 +6131,7 @@ msgstr "Marktplatz"
 
 #: forum/templates/forum/hizmetler/service_detail.html:76
 #: forum/templates/forum/hizmetler/service_detail.html:160
-#: forum/templates/forum/home.html:524
+#: forum/templates/forum/home.html:539
 msgid "İlan Aç"
 msgstr "Auftrag einstellen"
 
@@ -6189,8 +6228,8 @@ msgstr "Kostenlose Erstbewertung · Unverbindlich"
 msgid "ya da kendiniz analiz edin:"
 msgstr "oder analysieren Sie selbst:"
 
-#: forum/templates/forum/home.html:270 forum/templates/forum/home.html:1275
-#: forum/templates/forum/home.html:1281
+#: forum/templates/forum/home.html:270 forum/templates/forum/home.html:1290
+#: forum/templates/forum/home.html:1296
 msgid "CSV veya Excel dosyanı buraya bırak"
 msgstr "Ziehen Sie Ihre CSV- oder Excel-Datei hierher"
 
@@ -6284,28 +6323,29 @@ msgstr "In ihrem Fachgebiet verifizierte Experten"
 msgid "Şeffaf ve sürprizsiz fiyatlandırma"
 msgstr "Transparente Preisgestaltung ohne Überraschungen"
 
-#: forum/templates/forum/home.html:385
+#: forum/templates/forum/home.html:385 forum/templates/forum/home.html:477
 #: forum/templates/forum/profile_detail.html:337
 msgid "İstatistik"
 msgstr "Statistik"
 
-#: forum/templates/forum/home.html:386
+#: forum/templates/forum/home.html:386 forum/templates/forum/home.html:478
 msgid "Yapay Zeka & ML"
 msgstr "KI & ML"
 
-#: forum/templates/forum/home.html:387
+#: forum/templates/forum/home.html:387 forum/templates/forum/home.html:479
 msgid "Ekonometri"
 msgstr "Ökonometrie"
 
-#: forum/templates/forum/home.html:388
+#: forum/templates/forum/home.html:388 forum/templates/forum/home.html:480
 msgid "Veri Bilimi"
 msgstr "Data Science"
 
-#: forum/templates/forum/home.html:389
+#: forum/templates/forum/home.html:389 forum/templates/forum/home.html:481
 msgid "Editörlük"
 msgstr "Lektorat"
 
-#: forum/templates/forum/home.html:390 forum/views.py:4307
+#: forum/templates/forum/home.html:390 forum/templates/forum/home.html:482
+#: forum/views.py:4307
 msgid "Danışmanlık"
 msgstr "Beratung"
 
@@ -6358,8 +6398,8 @@ msgstr "Kostenlose Erstbewertung erhalten"
 msgid "Onaylayın, raporunuzu teslim alın"
 msgstr "Freigeben und Bericht erhalten"
 
-#: forum/templates/forum/home.html:465 forum/templates/forum/home.html:555
-#: forum/templates/forum/home.html:1039
+#: forum/templates/forum/home.html:465 forum/templates/forum/home.html:570
+#: forum/templates/forum/home.html:1054
 #: istatistik/templates/istatistik/analiz_console_base.html:117
 #: istatistik/templates/istatistik/analiz_hub.html:106
 #: templates/service_promo.html:192
@@ -6367,130 +6407,151 @@ msgid "Ücretsiz Proje Talebi Gönder"
 msgstr "Kostenlose Projektanfrage senden"
 
 #: forum/templates/forum/home.html:469
+#, fuzzy
+#| msgid ""
+#| "SPSS, R, Python veya alan uzmanlığınızı gerçek projelere dönüştürün. "
+#| "Komisyonsuz çalışın, itibarınızı büyütün."
 msgid ""
 "SPSS, R, Python veya alan uzmanlığınızı gerçek projelere dönüştürün. "
-"Komisyonsuz çalışın, itibarınızı büyütün."
+"Platform proje ücretine hiç dokunmaz — kazancınızın tamamı size kalır."
 msgstr ""
 "Verwandeln Sie Ihre SPSS-, R-, Python- oder Fachkenntnisse in echte "
 "Projekte. Arbeiten Sie provisionsfrei und stärken Sie Ihren Ruf."
 
 #: forum/templates/forum/home.html:471
-msgid "Sıfır komisyon ile hemen başla"
-msgstr "Sofort starten, ohne jede Provision"
+msgid "Sıfır komisyon — kazancınızın tamamı size kalır"
+msgstr ""
 
 #: forum/templates/forum/home.html:472
-msgid "Sadece alanınıza uygun projeler"
+#, fuzzy
+#| msgid "Sadece alanınıza uygun projeler"
+msgid "Sadece alanınıza uygun projelere teklif verin"
 msgstr "Nur Projekte aus Ihrem Fachgebiet"
 
 #: forum/templates/forum/home.html:473
-msgid "Profilini ve itibarını güçlendir"
-msgstr "Stärken Sie Ihr Profil und Ansehen"
+msgid "Tamamlanan işler ve yıldızlı değerlendirmeyle itibarınızı kanıtlayın"
+msgstr ""
 
-#: forum/templates/forum/home.html:477
-msgid "İstatistik Arenası'nda puan kazan →"
+#: forum/templates/forum/home.html:474
+msgid "1000 puan → \"Doğrulanmış Uzman\" rozeti ve teklif verme hakkı"
+msgstr ""
+
+#: forum/templates/forum/home.html:486
+#, python-format
+msgid "%(open_jobs_count)s açık proje şu an teklif bekliyor"
+msgstr ""
+
+#: forum/templates/forum/home.html:491
+#, fuzzy
+#| msgid "İstatistik Arenası'nda puan kazan →"
+msgid "İstatistik Arenası'nda puan kazan, teklif verme hakkını erken aç →"
 msgstr "Punkte sammeln in der Statistik-Arena →"
 
-#: forum/templates/forum/home.html:482
+#: forum/templates/forum/home.html:496
 msgid "Freelance Projelere Göz At"
 msgstr "Freelance-Projekte durchsuchen"
 
-#: forum/templates/forum/home.html:499
+#: forum/templates/forum/home.html:497
+msgid "Nasıl Uzman Olunur?"
+msgstr ""
+
+#: forum/templates/forum/home.html:514
 msgid "Kodsuz veri kazıma:"
 msgstr "Datenextraktion ohne Code:"
 
-#: forum/templates/forum/home.html:500
+#: forum/templates/forum/home.html:515
 msgid "YÖK Tez"
 msgstr "Thesis Center"
 
-#: forum/templates/forum/home.html:503
+#: forum/templates/forum/home.html:518
 msgid "Üniversite Arşivleri"
 msgstr "Universitätsarchive"
 
-#: forum/templates/forum/home.html:507
+#: forum/templates/forum/home.html:522
 msgid "Kurumsal veri, otomasyon veya AI projesi mi? → Proje talebi bırakın"
 msgstr ""
 "Unternehmensdaten-, Automatisierungs- oder KI-Projekt? → Projektanfrage "
 "senden"
 
-#: forum/templates/forum/home.html:517
+#: forum/templates/forum/home.html:532
 msgid "Nasıl Çalışıyoruz?"
 msgstr "So arbeiten wir"
 
-#: forum/templates/forum/home.html:518
+#: forum/templates/forum/home.html:533
 msgid "Dört adımda ilan açmaktan raporu teslim almaya."
 msgstr "In vier Schritten vom Auftrag bis zum fertigen Bericht."
 
-#: forum/templates/forum/home.html:525
+#: forum/templates/forum/home.html:540
 msgid "Projenizi ve ihtiyacınızı ücretsiz olarak yayınlayın."
 msgstr "Veröffentlichen Sie Ihr Projekt und Ihren Bedarf kostenlos."
 
-#: forum/templates/forum/home.html:532
+#: forum/templates/forum/home.html:547
 msgid "Teklif Al"
 msgstr "Angebote erhalten"
 
-#: forum/templates/forum/home.html:533
+#: forum/templates/forum/home.html:548
 msgid "Doğrulamadan geçmiş analistler metodoloji ve fiyat teklifi sunar."
 msgstr "Verifizierte Analysten unterbreiten Methodik- und Preisangebote."
 
-#: forum/templates/forum/home.html:540
+#: forum/templates/forum/home.html:555
 msgid "Analiz & Raporlama"
 msgstr "Analyse & Berichterstellung"
 
-#: forum/templates/forum/home.html:541
+#: forum/templates/forum/home.html:556
 msgid "Seçtiğiniz uzman analizi yapar, APA 7 formatında raporlar."
 msgstr ""
 "Ihr gewählter Experte führt die Analyse durch und erstellt den Bericht im "
 "APA-7-Format."
 
-#: forum/templates/forum/home.html:548
+#: forum/templates/forum/home.html:563
 msgid "Teslim & Revizyon"
 msgstr "Lieferung & Revisionen"
 
-#: forum/templates/forum/home.html:549
+#: forum/templates/forum/home.html:564
 msgid ""
 "Raporu teslim alırsınız. Danışman/hakem dönüşleri için revizyon hakkınız var."
 msgstr ""
 "Sie erhalten den Bericht. Für Rückmeldungen von Betreuern/Gutachtern haben "
 "Sie Anspruch auf Revisionen."
 
-#: forum/templates/forum/home.html:571
+#: forum/templates/forum/home.html:586
 msgid "Aktif Üye"
 msgstr "Aktive Mitglieder"
 
-#: forum/templates/forum/home.html:577
+#: forum/templates/forum/home.html:592
 msgid "Akademik Konu"
 msgstr "Akademische Themen"
 
-#: forum/templates/forum/home.html:583
+#: forum/templates/forum/home.html:598
 msgid "Forum Gönderisi"
 msgstr "Forenbeiträge"
 
-#: forum/templates/forum/home.html:589
+#: forum/templates/forum/home.html:604
 msgid "Tamamlanan Proje"
 msgstr "Abgeschlossene Projekte"
 
-#: forum/templates/forum/home.html:595
+#: forum/templates/forum/home.html:610
 #: forum/templates/forum/proje_talebi.html:111
 msgid "Tamamlanan Analiz"
 msgstr "Abgeschlossene Analysen"
 
-#: forum/templates/forum/home.html:602
+#: forum/templates/forum/home.html:617
 msgid "Açık İlan"
 msgstr "Offene Aufträge"
 
-#: forum/templates/forum/home.html:609
+#: forum/templates/forum/home.html:624
 msgid "Bu Hafta Yeni Üye"
 msgstr "Neue Mitglieder diese Woche"
 
-#: forum/templates/forum/home.html:615
+#: forum/templates/forum/home.html:630
 msgid "Şu An Çevrimiçi Uzman"
 msgstr "Experten gerade online"
 
-#: forum/templates/forum/home.html:633
+#: forum/templates/forum/home.html:648
 msgid "Platform Güvencesi"
 msgstr "Plattform-Garantie"
 
-#: forum/templates/forum/home.html:634
+#: forum/templates/forum/home.html:649
 msgid ""
 "Güvenli ödeme ve KVKK uyumlu veri gizliliği. Verileriniz 3. şahıslara "
 "aktarılmaz."
@@ -6498,61 +6559,61 @@ msgstr ""
 "Sichere Zahlung und datenschutzkonforme Vertraulichkeit. Ihre Daten werden "
 "nicht an Dritte weitergegeben."
 
-#: forum/templates/forum/home.html:642
+#: forum/templates/forum/home.html:657
 msgid "Uzman Doğrulama"
 msgstr "Expertenverifizierung"
 
-#: forum/templates/forum/home.html:643
+#: forum/templates/forum/home.html:658
 msgid "Platformdaki analistler akademik ve yetkinlik doğrulamasından geçer."
 msgstr ""
 "Analysten auf der Plattform durchlaufen eine akademische und fachliche "
 "Prüfung."
 
-#: forum/templates/forum/home.html:651
+#: forum/templates/forum/home.html:666
 msgid "Şeffaf Değerlendirme"
 msgstr "Transparente Bewertungen"
 
-#: forum/templates/forum/home.html:652
+#: forum/templates/forum/home.html:667
 msgid ""
 "Sadece projeyi tamamlayanların yapabildiği 5 yıldızlı dürüst yorum sistemi."
 msgstr ""
 "Ein ehrliches 5-Sterne-Bewertungssystem, das nur nach Projektabschluss "
 "genutzt werden kann."
 
-#: forum/templates/forum/home.html:666
+#: forum/templates/forum/home.html:681
 #: forum/templates/forum/market/job_list.html:257
 msgid "Uzmanlarla Tanış"
 msgstr "Lernen Sie unsere Experten kennen"
 
-#: forum/templates/forum/home.html:667
+#: forum/templates/forum/home.html:682
 #: forum/templates/forum/market/job_list.html:258
 msgid "Alanında doğrulanmış uzmanlarımızdan birkaçı."
 msgstr "Einige unserer fachlich verifizierten Experten."
 
-#: forum/templates/forum/home.html:673
+#: forum/templates/forum/home.html:688
 #: forum/templates/forum/market/job_list.html:263
 msgid "Tüm Uzmanlar"
 msgstr "Alle Experten"
 
-#: forum/templates/forum/home.html:675 forum/templates/forum/home.html:677
+#: forum/templates/forum/home.html:690 forum/templates/forum/home.html:692
 #: forum/templates/forum/market/job_list.html:37
 #: forum/templates/forum/market/job_list.html:46
 msgid "Uzman Olarak Katıl"
 msgstr "Als Experte beitreten"
 
-#: forum/templates/forum/home.html:691
+#: forum/templates/forum/home.html:706
 msgid "Uzman Arayan Projeler"
 msgstr "Projekte, die einen Experten suchen"
 
-#: forum/templates/forum/home.html:692
+#: forum/templates/forum/home.html:707
 msgid "Tümünü Gör →"
 msgstr "Alle anzeigen →"
 
-#: forum/templates/forum/home.html:699 forum/templates/forum/home.html:718
+#: forum/templates/forum/home.html:714 forum/templates/forum/home.html:733
 msgid "VİTRİN"
 msgstr "FEATURED"
 
-#: forum/templates/forum/home.html:703 forum/templates/forum/home.html:722
+#: forum/templates/forum/home.html:718 forum/templates/forum/home.html:737
 #: forum/templates/forum/market/job_detail.html:209
 #: forum/templates/forum/market/job_detail.html:306
 #: forum/templates/forum/market/job_list.html:156
@@ -6562,37 +6623,37 @@ msgstr "FEATURED"
 msgid "%(time)s önce"
 msgstr "vor %(time)s"
 
-#: forum/templates/forum/home.html:704 forum/templates/forum/home.html:723
+#: forum/templates/forum/home.html:719 forum/templates/forum/home.html:738
 #, python-format
 msgid "%(amount)s ₺'ye kadar"
 msgstr "bis zu ₺%(amount)s"
 
-#: forum/templates/forum/home.html:705 forum/templates/forum/home.html:724
+#: forum/templates/forum/home.html:720 forum/templates/forum/home.html:739
 #, python-format
 msgid "%(count)s Teklif"
 msgstr "%(count)s Angebote"
 
-#: forum/templates/forum/home.html:739
+#: forum/templates/forum/home.html:754
 msgid "Araştırma Konsolu"
 msgstr "Forschungskonsole"
 
-#: forum/templates/forum/home.html:744
+#: forum/templates/forum/home.html:759
 msgid "İstatistik Rehberi"
 msgstr "Statistik-Leitfaden"
 
-#: forum/templates/forum/home.html:745
+#: forum/templates/forum/home.html:760
 msgid "Veri tipinize göre en uygun istatistiksel testi anında seçin."
 msgstr "Wählen Sie sofort den passenden statistischen Test für Ihren Datentyp."
 
-#: forum/templates/forum/home.html:746 forum/templates/forum/home.html:754
+#: forum/templates/forum/home.html:761 forum/templates/forum/home.html:769
 msgid "Kullan →"
 msgstr "Nutzen →"
 
-#: forum/templates/forum/home.html:752
+#: forum/templates/forum/home.html:767
 msgid "Asistan"
 msgstr "Assistent"
 
-#: forum/templates/forum/home.html:753
+#: forum/templates/forum/home.html:768
 msgid ""
 "Literatür taramada ve araştırmanın her aşamasında yapay zeka destekli "
 "rehberiniz."
@@ -6600,112 +6661,112 @@ msgstr ""
 "Ihr KI-gestützter Begleiter für die Literaturrecherche und jede Phase Ihrer "
 "Forschung."
 
-#: forum/templates/forum/home.html:760 templates/base.html:678
+#: forum/templates/forum/home.html:775 templates/base.html:678
 #: templates/base.html:680 templates/partials/_nav_tarama_link.html:2
 #: templates/tarama_console_base.html:26
 msgid "Akademik Tarama"
 msgstr "Akademische Recherche"
 
-#: forum/templates/forum/home.html:763
+#: forum/templates/forum/home.html:778
 msgid "Üniversite Tezleri"
 msgstr "Universitätsabschlussarbeiten"
 
-#: forum/templates/forum/home.html:764
+#: forum/templates/forum/home.html:779
 msgid "YÖK Tez Tarama"
 msgstr "Thesis-Center-Suche"
 
-#: forum/templates/forum/home.html:766
+#: forum/templates/forum/home.html:781
 msgid "OpenAlex Tarama"
 msgstr "OpenAlex-Suche"
 
-#: forum/templates/forum/home.html:768
+#: forum/templates/forum/home.html:783
 msgid "TR Dizin Tarama"
 msgstr "TR-Dizin-Suche"
 
-#: forum/templates/forum/home.html:771
+#: forum/templates/forum/home.html:786
 msgid "Semantic Scholar Tarama"
 msgstr "Semantic-Scholar-Suche"
 
-#: forum/templates/forum/home.html:774
+#: forum/templates/forum/home.html:789
 msgid "PubMed Tarama"
 msgstr "PubMed-Suche"
 
-#: forum/templates/forum/home.html:785 templates/base.html:486
+#: forum/templates/forum/home.html:800 templates/base.html:486
 #: templates/base.html:693 templates/partials/footer.html:64
 msgid "Çalışma Odaları"
 msgstr "Lernräume"
 
-#: forum/templates/forum/home.html:786
+#: forum/templates/forum/home.html:801
 msgid "Odaklanma süreleri ve diğer araştırmacılarla ortak çalışma imkanı."
 msgstr ""
 "Fokuszeiten und die Möglichkeit, gemeinsam mit anderen Forschenden zu "
 "arbeiten."
 
-#: forum/templates/forum/home.html:787
+#: forum/templates/forum/home.html:802
 msgid "Katıl →"
 msgstr "Beitreten →"
 
-#: forum/templates/forum/home.html:825
+#: forum/templates/forum/home.html:840
 msgid "Hangi testi kullanmalıyım?"
 msgstr "Welchen Test sollte ich verwenden?"
 
-#: forum/templates/forum/home.html:826
+#: forum/templates/forum/home.html:841
 msgid ""
 "Bir soru seç, AI Asistan hemen cevaplasın — ya da kendini Arena'da test et."
 msgstr ""
 "Wählen Sie eine Frage, der KI-Assistent antwortet sofort — oder testen Sie "
 "sich in der Arena."
 
-#: forum/templates/forum/home.html:826
+#: forum/templates/forum/home.html:841
 msgid "Bir soru seç, AI Asistan hemen cevaplasın."
 msgstr "Wählen Sie eine Frage – der KI-Assistent antwortet sofort."
 
-#: forum/templates/forum/home.html:832
+#: forum/templates/forum/home.html:847
 #: istatistik/templates/istatistik/analiz_hub.html:56
 msgid "AI Asistan'a sor"
 msgstr "KI-Assistenten fragen"
 
-#: forum/templates/forum/home.html:834
+#: forum/templates/forum/home.html:849
 msgid "Ölçeğimin güvenirliğini nasıl ölçerim?"
 msgstr "Wie messe ich die Reliabilität meiner Skala?"
 
-#: forum/templates/forum/home.html:835
+#: forum/templates/forum/home.html:850
 msgid "İki grup ortalamasını karşılaştırmak istiyorum"
 msgstr "Ich möchte die Mittelwerte zweier Gruppen vergleichen"
 
-#: forum/templates/forum/home.html:836
+#: forum/templates/forum/home.html:851
 msgid "Verim normal dağılmıyor, ne yapmalıyım?"
 msgstr "Meine Daten sind nicht normalverteilt — was soll ich tun?"
 
-#: forum/templates/forum/home.html:838
+#: forum/templates/forum/home.html:853
 msgid "Örneklem büyüklüğümü nasıl hesaplarım?"
 msgstr "Wie berechne ich meine Stichprobengröße?"
 
-#: forum/templates/forum/home.html:840
+#: forum/templates/forum/home.html:855
 msgid "Kendi sorunu sor →"
 msgstr "Eigene Frage stellen →"
 
-#: forum/templates/forum/home.html:845
+#: forum/templates/forum/home.html:860
 msgid "ya da Arena'da kendini test et"
 msgstr "oder testen Sie sich in der Arena"
 
-#: forum/templates/forum/home.html:851
+#: forum/templates/forum/home.html:866
 msgid "Kendini Test Et"
 msgstr "Testen Sie sich selbst"
 
-#: forum/templates/forum/home.html:858
+#: forum/templates/forum/home.html:873
 msgid "Soru yükleniyor…"
 msgstr "Frage wird geladen…"
 
-#: forum/templates/forum/home.html:873
+#: forum/templates/forum/home.html:888
 msgid "AI çağında size uygun yolu seçin"
 msgstr "Wählen Sie im KI-Zeitalter den richtigen Weg für sich"
 
-#: forum/templates/forum/home.html:887
+#: forum/templates/forum/home.html:902
 msgid "Analizini AI'a mı yaptırdın?"
 msgstr "Hat die KI Ihre Analyse erstellt?"
 
-#: forum/templates/forum/home.html:888
+#: forum/templates/forum/home.html:903
 msgid ""
 "ChatGPT hızlıdır ama jüri karşısında güvence vermez. Uzmanımız 24 saatte "
 "kontrol etsin, doğrulama raporu versin."
@@ -6714,11 +6775,11 @@ msgstr ""
 "Sicherheit. Lassen Sie unseren Experten es innerhalb von 24 Stunden prüfen "
 "und einen Verifizierungsbericht erstellen."
 
-#: forum/templates/forum/home.html:890
+#: forum/templates/forum/home.html:905
 msgid "Doğrulama Talep Et"
 msgstr "Verifizierung anfragen"
 
-#: forum/templates/forum/home.html:908
+#: forum/templates/forum/home.html:923
 msgid ""
 "Veri toplayan, analiz eden, raporlayan AI sistemleri — uzman gözetiminde "
 "kuruyoruz."
@@ -6726,11 +6787,11 @@ msgstr ""
 "KI-Systeme, die Daten sammeln, analysieren und berichten — wir bauen sie "
 "unter Expertenaufsicht."
 
-#: forum/templates/forum/home.html:910
+#: forum/templates/forum/home.html:925
 msgid "AI Çözümlerini Keşfet"
 msgstr "KI-Lösungen entdecken"
 
-#: forum/templates/forum/home.html:921
+#: forum/templates/forum/home.html:936
 msgid ""
 "SPSS'ten Python'a, ölçek geliştirmeden makine öğrenmesine — birebir eğitimle "
 "kendi verinizle çalışın."
@@ -6738,19 +6799,19 @@ msgstr ""
 "Von SPSS bis Python, von Skalenentwicklung bis maschinellem Lernen — "
 "arbeiten Sie im Einzelunterricht mit Ihren eigenen Daten."
 
-#: forum/templates/forum/home.html:923 templates/service_promo.html:214
+#: forum/templates/forum/home.html:938 templates/service_promo.html:214
 msgid "Eğitimleri Keşfet"
 msgstr "Schulungen entdecken"
 
-#: forum/templates/forum/home.html:953
+#: forum/templates/forum/home.html:968
 msgid "Soru İşaretlerini Giderin"
 msgstr "Klären Sie Ihre offenen Fragen"
 
-#: forum/templates/forum/home.html:954
+#: forum/templates/forum/home.html:969
 msgid "Sıkça Sorulan Sorular"
 msgstr "Häufig gestellte Fragen"
 
-#: forum/templates/forum/home.html:955
+#: forum/templates/forum/home.html:970
 msgid ""
 "Veri gizliliği, fiyatlandırma ve süreçlerimiz hakkında merak ettiğiniz her "
 "şey."
@@ -6758,11 +6819,11 @@ msgstr ""
 "Alles, was Sie über Datenschutz, Preisgestaltung und unsere Abläufe wissen "
 "möchten."
 
-#: forum/templates/forum/home.html:966
+#: forum/templates/forum/home.html:981
 msgid "Analiz verilerim güvende mi? Başkalarıyla paylaşılır mı?"
 msgstr "Sind meine Analysedaten sicher? Werden sie mit anderen geteilt?"
 
-#: forum/templates/forum/home.html:971
+#: forum/templates/forum/home.html:986
 msgid ""
 "Verileriniz KVKK'ya uygun şekilde şifreli sunucularda saklanır. Dosyalarınız "
 "yalnızca eşleştiğiniz uzmanla, ilgili iş kapsamında paylaşılır; bunun "
@@ -6773,12 +6834,12 @@ msgstr ""
 "Rahmen des jeweiligen Auftrags geteilt; darüber hinaus werden sie niemals an "
 "Dritte oder unbeteiligte Personen weitergegeben."
 
-#: forum/templates/forum/home.html:980
+#: forum/templates/forum/home.html:995
 msgid "Fiyatlandırma politikanız nasıl? Gizli veya ek ücret çıkar mı?"
 msgstr ""
 "Wie sieht Ihre Preispolitik aus? Gibt es versteckte oder zusätzliche Kosten?"
 
-#: forum/templates/forum/home.html:985
+#: forum/templates/forum/home.html:1000
 msgid ""
 "Platformdaki uzmanlar, projenizin kapsamını değerlendirdikten sonra size "
 "kendi fiyat tekliflerini sunar; anlaştığınız tutarın dışında platform "
@@ -6792,7 +6853,7 @@ msgstr ""
 "der eigenständig nutzbaren Statistik-Tools wird jeweils klar auf der "
 "betreffenden Tool-Seite angegeben."
 
-#: forum/templates/forum/home.html:986
+#: forum/templates/forum/home.html:1001
 msgid ""
 "Uzmanlar tarafında da platform tamamlanan işlerden komisyon almaz; gelirimiz "
 "yalnızca uzmanların isteğe bağlı tercih ettiği öne çıkarma (vitrin) "
@@ -6800,16 +6861,16 @@ msgid ""
 msgstr ""
 "Auch auf Expertenseite erhebt die Plattform keine Provision auf "
 "abgeschlossene Aufträge; unsere Einnahmen stammen ausschließlich aus den "
-"optionalen Hervorhebungspaketen (Vitrine), die Experten wählen können, "
-"sowie aus Spenden/Premium-Mitgliedschaften."
+"optionalen Hervorhebungspaketen (Vitrine), die Experten wählen können, sowie "
+"aus Spenden/Premium-Mitgliedschaften."
 
-#: forum/templates/forum/home.html:995
+#: forum/templates/forum/home.html:1010
 msgid "Danışman hocam veya jüri revizyon (düzeltme) isterse ne olacak?"
 msgstr ""
 "Was passiert, wenn mein Betreuer oder die Prüfungskommission Revisionen "
 "verlangt?"
 
-#: forum/templates/forum/home.html:1000
+#: forum/templates/forum/home.html:1015
 msgid ""
 "Revizyon koşulları, çalışmaya başlamadan önce uzmanınızla aranızda "
 "netleştirdiğiniz kapsamın bir parçasıdır. Çoğu uzman, danışman veya jüriden "
@@ -6823,11 +6884,11 @@ msgstr ""
 "methodischer Rückmeldungen von Betreuern oder Prüfungskommissionen an — wir "
 "empfehlen, dies vor Arbeitsbeginn mit Ihrem Experten zu bestätigen."
 
-#: forum/templates/forum/home.html:1009
+#: forum/templates/forum/home.html:1024
 msgid "Analiz sonuçlarım ne kadar sürede teslim edilir?"
 msgstr "Wie lange dauert es, bis meine Analyseergebnisse geliefert werden?"
 
-#: forum/templates/forum/home.html:1014
+#: forum/templates/forum/home.html:1029
 msgid ""
 "Kendi başınıza kullandığınız istatistik araçlarında sonuçlar saniyeler "
 "içinde hesaplanır. Bir uzmanla birlikte yürüttüğünüz projelerde ise teslim "
@@ -6840,12 +6901,12 @@ msgstr ""
 "Umfang Ihrer Daten ab; den genauen Zeitrahmen legen Sie vor Arbeitsbeginn "
 "gemeinsam mit Ihrem Experten fest."
 
-#: forum/templates/forum/home.html:1023
+#: forum/templates/forum/home.html:1038
 msgid "Süreç bittikten sonra verilerime ve dosyalarıma ne oluyor?"
 msgstr ""
 "Was passiert nach Abschluss des Prozesses mit meinen Daten und Dateien?"
 
-#: forum/templates/forum/home.html:1028
+#: forum/templates/forum/home.html:1043
 msgid ""
 "Verileriniz ve sonuç raporlarınız, olası revizyon talepleriniz için "
 "hesabınızda saklanır. KVKK kapsamındaki haklarınız gereği dosyalarınızın "
@@ -6857,43 +6918,43 @@ msgstr ""
 "jederzeit die Löschung Ihrer Dateien verlangen; auf Ihre Anfrage hin werden "
 "die betreffenden Daten aus unseren Systemen entfernt."
 
-#: forum/templates/forum/home.html:1038
+#: forum/templates/forum/home.html:1053
 msgid "Sorunuz mu kaldı? Projenizi anlatın, ücretsiz değerlendirelim."
 msgstr "Noch Fragen? Beschreiben Sie Ihr Projekt – wir bewerten es kostenlos."
 
-#: forum/templates/forum/home.html:1051
+#: forum/templates/forum/home.html:1066
 msgid "Güncel Akademik İçerikler"
 msgstr "Aktuelle akademische Inhalte"
 
-#: forum/templates/forum/home.html:1071
+#: forum/templates/forum/home.html:1086
 msgid "Devamını Oku →"
 msgstr "Weiterlesen →"
 
-#: forum/templates/forum/home.html:1079
+#: forum/templates/forum/home.html:1094
 msgid "Tüm Blog Yazıları"
 msgstr "Alle Blogbeiträge"
 
-#: forum/templates/forum/home.html:1149
+#: forum/templates/forum/home.html:1164
 msgid "Doğru! +10 puan kazandın"
 msgstr "Richtig! Du hast +10 Punkte erhalten"
 
-#: forum/templates/forum/home.html:1154
+#: forum/templates/forum/home.html:1169
 msgid "Yanlış! Doğru cevap:"
 msgstr "Falsch! Die richtige Antwort:"
 
-#: forum/templates/forum/home.html:1212 templates/base.html:788
+#: forum/templates/forum/home.html:1227 templates/base.html:788
 msgid "Sonraki Soru"
 msgstr "Nächste Frage"
 
-#: forum/templates/forum/home.html:1257
+#: forum/templates/forum/home.html:1272
 msgid "Yükleniyor:"
 msgstr "Wird hochgeladen:"
 
-#: forum/templates/forum/home.html:1274
+#: forum/templates/forum/home.html:1289
 msgid "Dosya yüklenemedi. Lütfen tekrar deneyin."
 msgstr "Datei konnte nicht hochgeladen werden. Bitte versuchen Sie es erneut."
 
-#: forum/templates/forum/home.html:1280
+#: forum/templates/forum/home.html:1295
 #: istatistik/templates/istatistik/afa.html:281
 #: istatistik/templates/istatistik/betimsel.html:242
 #: istatistik/templates/istatistik/cronbach.html:240
@@ -8295,7 +8356,7 @@ msgstr "Anzeige im Marktplatz aufgeben →"
 msgid "Kayıtlı Üye"
 msgstr "Registrierte Mitglieder"
 
-#: forum/templates/forum/proje_talebi.html:125
+#: forum/templates/forum/proje_talebi.html:125 forum/views.py:2075
 msgid "Ücretsiz"
 msgstr "Kostenlos"
 
@@ -8601,7 +8662,8 @@ msgstr "Datenbereinigung (Duplikate/Fehler entfernen)"
 #: forum/training_catalog.py:133 forum/training_catalog.py:156
 #: forum/training_catalog.py:325 forum/training_catalog.py:346
 #: forum/training_catalog.py:368 forum/training_catalog.py:388
-#: forum/training_catalog.py:417
+#: forum/training_catalog.py:417 forum/views.py:2077 forum/views.py:2079
+#: forum/views.py:2080 forum/views.py:2081 forum/views.py:2082
 msgid "Yok"
 msgstr "Keine"
 
@@ -10389,6 +10451,22 @@ msgstr "Ihr LinkedIn-Konto wurde erfolgreich verifiziert."
 msgid "Geçersiz LinkedIn URL."
 msgstr "Ungültige LinkedIn-URL."
 
+#: forum/views.py:1975
+msgid "Analizus hesabınızı silmek için aşağıdaki butona tıklayın."
+msgstr ""
+
+#: forum/views.py:1976
+#, fuzzy
+#| msgid "Hesabı Kalıcı Olarak Sil"
+msgid "Hesabımı Kalıcı Olarak Sil"
+msgstr "Konto endgültig löschen"
+
+#: forum/views.py:1977
+msgid ""
+"Bu link <strong>24 saat</strong> geçerlidir. Talepte bulunmadıysanız bu e-"
+"postayı görmezden gelin."
+msgstr ""
+
 #: forum/views.py:1981
 msgid "Hesap Silme Onayı — Analizus"
 msgstr "Bestätigung der Kontolöschung — Analizus"
@@ -10449,6 +10527,10 @@ msgid "Kurulum"
 msgstr "Installation"
 
 #: forum/views.py:2076
+msgid "Yok (tarayıcı)"
+msgstr ""
+
+#: forum/views.py:2076
 msgid "Gerekli"
 msgstr "Erforderlich"
 
@@ -10456,17 +10538,43 @@ msgstr "Erforderlich"
 msgid "APA Rapor"
 msgstr "APA-Bericht"
 
+#: forum/views.py:2077
+#, fuzzy
+#| msgid "Otomatik Öneri"
+msgid "Otomatik"
+msgstr "Automatische Empfehlung"
+
 #: forum/views.py:2078
 msgid "PDF Çıktı"
 msgstr "PDF-Ausgabe"
+
+#: forum/views.py:2078
+#, fuzzy
+#| msgid "Hazırlayan:"
+msgid "Hazır"
+msgstr "Erstellt von:"
+
+#: forum/views.py:2078
+msgid "Manuel"
+msgstr ""
 
 #: forum/views.py:2079 istatistik/views.py:31 istatistik/views.py:109
 msgid "Cronbach Alpha"
 msgstr "Cronbachs Alpha"
 
+#: forum/views.py:2079 forum/views.py:2080 forum/views.py:2082
+msgid "Var"
+msgstr ""
+
 #: forum/views.py:2081
 msgid "Uzman Desteği"
 msgstr "Expertenunterstützung"
+
+#: forum/views.py:2081
+#, fuzzy
+#| msgid "Pazaryeri"
+msgid "Pazar yeri"
+msgstr "Marktplatz"
 
 #: forum/views.py:2082
 msgid "Akademik Forum"
@@ -12107,8 +12215,8 @@ msgstr ""
 
 #: istatistik/seo_content.py:760
 msgid ""
-"Ölçüm zamanı ana etkisi anlamlı bulunmuştur, F(1.74, 52.2) = 18.43, p "
-"< .001, ηp² = .38 (Greenhouse-Geisser düzeltmesi uygulanmıştır)."
+"Ölçüm zamanı ana etkisi anlamlı bulunmuştur, F(1.74, 52.2) = 18.43, p < "
+".001, ηp² = .38 (Greenhouse-Geisser düzeltmesi uygulanmıştır)."
 msgstr ""
 "Der Haupteffekt des Messzeitpunkts war signifikant, F(1.74, 52.2) = 18.43, p "
 "< .001, ηp² = .38 (Greenhouse-Geisser-Korrektur angewendet)."
@@ -12198,8 +12306,8 @@ msgid ""
 "etmiştir. En önemli yordayıcı değişken X1 olarak belirlenmiştir (önem = .41)."
 msgstr ""
 "Das Entscheidungsbaummodell (max_depth = 4) erreichte auf dem Testdatensatz "
-"82 % Genauigkeit und AUC = .88. Wichtigster Prädiktor war X1 (Wichtigkeit "
-"= .41)."
+"82 % Genauigkeit und AUC = .88. Wichtigster Prädiktor war X1 (Wichtigkeit = "
+".41)."
 
 #: istatistik/seo_content.py:821
 msgid "Karar ağacı mı, lojistik regresyon mu seçmeliyim?"
@@ -12489,8 +12597,8 @@ msgid ""
 "Sontest puanları öntest puanlarından anlamlı düzeyde yüksektir, Z = −3.42, p "
 "= .001, r = .48."
 msgstr ""
-"Die Posttest-Werte lagen signifikant über den Prätest-Werten, Z = −3.42, p "
-"= .001, r = .48."
+"Die Posttest-Werte lagen signifikant über den Prätest-Werten, Z = −3.42, p = "
+".001, r = .48."
 
 #: istatistik/seo_content.py:993
 msgid "Wilcoxon mu, bağımlı t-testi mi seçmeliyim?"
@@ -15230,8 +15338,8 @@ msgstr "Bartlett-Test:"
 
 #: istatistik/templates/istatistik/afa.html:221
 msgid ""
-"Korelasyon matrisinin birim matristen farklı olup olmadığını sınar (p "
-"&lt; .05 gereklidir)."
+"Korelasyon matrisinin birim matristen farklı olup olmadığını sınar (p &lt; "
+".05 gereklidir)."
 msgstr ""
 "Prüft, ob sich die Korrelationsmatrix von der Einheitsmatrix unterscheidet "
 "(p &lt; .05 erforderlich)."
@@ -15484,9 +15592,9 @@ msgstr ""
 #: istatistik/templates/istatistik/analiz_console_base.html:114
 #, python-format
 msgid ""
-"Verilerinizi gönderin, uzman analistlerimiz <strong style=\"color:#f1f5f9;"
-"\">%(tool_title)s</strong> analizini sizin adınıza gerçekleştirip "
-"raporlasın. Ücretsiz ön değerlendirme ile başlayın."
+"Verilerinizi gönderin, uzman analistlerimiz <strong "
+"style=\"color:#f1f5f9;\">%(tool_title)s</strong> analizini sizin adınıza "
+"gerçekleştirip raporlasın. Ücretsiz ön değerlendirme ile başlayın."
 msgstr ""
 "Senden Sie uns Ihre Daten, und unsere Expertenanalysten führen die <strong "
 "style=\"color:#f1f5f9;\">%(tool_title)s</strong>-Analyse in Ihrem Namen "
@@ -15577,9 +15685,9 @@ msgstr ""
 #: istatistik/templates/istatistik/analiz_hub.html:103
 #, fuzzy
 #| msgid ""
-#| "Verilerinizi gönderin, uzman analistlerimiz <strong style=\"color:#f1f5f9;"
-#| "\">%(tool_title)s</strong> analizini sizin adınıza gerçekleştirip "
-#| "raporlasın. Ücretsiz ön değerlendirme ile başlayın."
+#| "Verilerinizi gönderin, uzman analistlerimiz <strong "
+#| "style=\"color:#f1f5f9;\">%(tool_title)s</strong> analizini sizin adınıza "
+#| "gerçekleştirip raporlasın. Ücretsiz ön değerlendirme ile başlayın."
 msgid ""
 "Verilerinizi gönderin, uzman analistlerimiz sizin adınıza analizi "
 "gerçekleştirip raporlasın. Ücretsiz ön değerlendirme ile başlayın."
@@ -16141,8 +16249,8 @@ msgid ""
 "yüksek güvenilirlik olarak değerlendirilir. Madde-toplam korelasyonu düşük "
 "olan maddeler (r &lt; .30) ölçekten çıkarılması için değerlendirilmelidir."
 msgstr ""
-"Nach allgemein anerkannter Schwelle gilt α ≥ .70 als ausreichende und α "
-"≥ .80 als hohe Reliabilität. Items mit niedriger Item-Skala-Korrelation (r "
+"Nach allgemein anerkannter Schwelle gilt α ≥ .70 als ausreichende und α ≥ "
+".80 als hohe Reliabilität. Items mit niedriger Item-Skala-Korrelation (r "
 "&lt; .30) sollten für eine Entfernung aus der Skala geprüft werden."
 
 #: istatistik/templates/istatistik/friedman.html:6
@@ -19102,8 +19210,8 @@ msgstr "Sie können nur CSV- oder Excel-Dateien (.xlsx/.xls) hochladen."
 msgid "TR Dizin Makale Analizi Tamamlandı — %(query)s"
 msgstr "TR-Dizin-Artikelanalyse abgeschlossen — %(query)s"
 
-#: makaleanaliz/services/job_runner.py:151 openalex/services/job_runner.py:239
-#: openalex/services/job_runner.py:285 pubmed/services/job_runner.py:172
+#: makaleanaliz/services/job_runner.py:151 openalex/services/job_runner.py:288
+#: openalex/services/job_runner.py:334 pubmed/services/job_runner.py:221
 #: semanticscholar/services/job_runner.py:157
 #: semanticscholar/services/job_runner.py:201
 #, python-format
@@ -19210,10 +19318,10 @@ msgid "Top"
 msgstr "Top"
 
 #: makaleanaliz/templates/makaleanaliz/results.html:136 openalex/forms.py:6
-#: openalex/models.py:93 openalex/services/job_runner.py:21
-#: openalex/templates/openalex/landing.html:218 openalex/views.py:194
-#: pubmed/forms.py:7 pubmed/models.py:90 pubmed/services/job_runner.py:19
-#: pubmed/views.py:162 semanticscholar/forms.py:7 semanticscholar/models.py:87
+#: openalex/models.py:96 openalex/services/job_runner.py:21
+#: openalex/templates/openalex/landing.html:221 openalex/views.py:195
+#: pubmed/forms.py:7 pubmed/models.py:93 pubmed/services/job_runner.py:19
+#: pubmed/views.py:163 semanticscholar/forms.py:7 semanticscholar/models.py:87
 #: semanticscholar/services/job_runner.py:20
 #: semanticscholar/templates/semanticscholar/landing.html:332
 #: semanticscholar/views.py:240
@@ -19221,14 +19329,14 @@ msgid "Başlık"
 msgstr "Titel"
 
 #: makaleanaliz/templates/makaleanaliz/results.html:138
-#: openalex/services/job_runner.py:22 openalex/views.py:194
-#: pubmed/services/job_runner.py:20 pubmed/views.py:163
+#: openalex/services/job_runner.py:22 openalex/views.py:195
+#: pubmed/services/job_runner.py:20 pubmed/views.py:164
 #: semanticscholar/services/job_runner.py:21
 msgid "Tür"
 msgstr "Typ"
 
-#: makaleanaliz/templates/makaleanaliz/results.html:139 openalex/views.py:194
-#: pubmed/views.py:162
+#: makaleanaliz/templates/makaleanaliz/results.html:139 openalex/views.py:195
+#: pubmed/views.py:163
 msgid "Dergi"
 msgstr "Zeitschrift"
 
@@ -19243,8 +19351,8 @@ msgstr ""
 "Bitte versuchen Sie es erneut."
 
 #: makaleanaliz/templates/makaleanaliz/results.html:214
-#: openalex/templates/openalex/landing.html:400
-#: openalex/templates/openalex/landing.html:561 pubmed/views.py:107
+#: openalex/templates/openalex/landing.html:403
+#: openalex/templates/openalex/landing.html:572 pubmed/views.py:107
 #: semanticscholar/templates/semanticscholar/landing.html:227
 msgid "Bilinmeyen hata"
 msgstr "Unbekannter Fehler"
@@ -19258,9 +19366,9 @@ msgid ". sıradasınız — önceki analizin bitmesi bekleniyor"
 msgstr ""
 ". Platz in der Warteschlange — wartet auf Abschluss der vorherigen Analyse"
 
-#: openalex/forms.py:9 openalex/models.py:94
-#: openalex/templates/openalex/landing.html:221 pubmed/forms.py:10
-#: pubmed/models.py:91 semanticscholar/forms.py:6 semanticscholar/models.py:88
+#: openalex/forms.py:9 openalex/models.py:97
+#: openalex/templates/openalex/landing.html:224 pubmed/forms.py:10
+#: pubmed/models.py:94 semanticscholar/forms.py:6 semanticscholar/models.py:88
 #: semanticscholar/templates/semanticscholar/landing.html:331
 msgid "Anahtar Kelime"
 msgstr "Schlagwort"
@@ -19298,30 +19406,30 @@ msgstr "Leere Werte sind nicht zulässig."
 msgid "Geçersiz operatör."
 msgstr "Ungültiger Operator."
 
-#: openalex/models.py:94 openalex/services/job_runner.py:21 pubmed/forms.py:12
-#: pubmed/models.py:92 pubmed/services/job_runner.py:19
+#: openalex/models.py:97 openalex/services/job_runner.py:21 pubmed/forms.py:12
+#: pubmed/models.py:95 pubmed/services/job_runner.py:19
 #: semanticscholar/services/job_runner.py:20 semanticscholar/views.py:240
 msgid "Dergi/Kaynak"
 msgstr "Zeitschrift/Quelle"
 
-#: openalex/models.py:96 pubmed/models.py:93 semanticscholar/views.py:241
+#: openalex/models.py:99 pubmed/models.py:96 semanticscholar/views.py:241
 msgid "Yayın Türü"
 msgstr "Publikationstyp"
 
-#: openalex/services/job_runner.py:21 openalex/views.py:194
-#: pubmed/services/job_runner.py:19 pubmed/views.py:162
+#: openalex/services/job_runner.py:21 openalex/views.py:195
+#: pubmed/services/job_runner.py:19 pubmed/views.py:163
 #: semanticscholar/services/job_runner.py:20 semanticscholar/views.py:240
 msgid "Yazarlar"
 msgstr "Autor/innen"
 
-#: openalex/services/job_runner.py:23 openalex/views.py:195
-#: pubmed/services/job_runner.py:21 pubmed/views.py:163
+#: openalex/services/job_runner.py:23 openalex/views.py:196
+#: pubmed/services/job_runner.py:21 pubmed/views.py:164
 #: semanticscholar/services/job_runner.py:22 semanticscholar/views.py:241
 msgid "Kurumlar"
 msgstr "Institutionen"
 
-#: openalex/services/job_runner.py:23 openalex/views.py:195
-#: pubmed/services/job_runner.py:21 pubmed/views.py:163
+#: openalex/services/job_runner.py:23 openalex/views.py:196
+#: pubmed/services/job_runner.py:21 pubmed/views.py:164
 msgid "Anahtar Kelimeler"
 msgstr "Schlagwörter"
 
@@ -19367,67 +19475,67 @@ msgstr "Für weitere Ergebnisse folgen Sie bitte den Schritten in Ihrer E-Mail."
 msgid "Tüm sonuçlara erişmek için sipariş sayfasını ziyaret edebilirsiniz:"
 msgstr "Um auf alle Ergebnisse zuzugreifen, besuchen Sie die Bestellseite:"
 
-#: openalex/services/job_runner.py:69 pubmed/services/job_runner.py:176
-#: pubmed/templates/pubmed/landing.html:88
+#: openalex/services/job_runner.py:69 pubmed/services/job_runner.py:225
+#: pubmed/templates/pubmed/landing.html:91
 msgid "Tam veri seti için proje talebi bırakın, ücretsiz değerlendirelim:"
 msgstr ""
 "Senden Sie für den vollständigen Datensatz eine Projektanfrage – wir "
 "bewerten sie kostenlos:"
 
-#: openalex/services/job_runner.py:128
+#: openalex/services/job_runner.py:177
 msgid "OpenAlex şu an yoğun; lütfen birkaç dakika sonra tekrar deneyin."
 msgstr ""
 "OpenAlex ist derzeit überlastet; bitte versuchen Sie es in einigen Minuten "
 "erneut."
 
-#: openalex/services/job_runner.py:237 openalex/services/job_runner.py:283
+#: openalex/services/job_runner.py:286 openalex/services/job_runner.py:332
 #, python-format
 msgid "OpenAlex Arama Sonuçları: %(query)s"
 msgstr "OpenAlex-Suchergebnisse: %(query)s"
 
-#: openalex/services/job_runner.py:240
+#: openalex/services/job_runner.py:289
 msgid "OpenAlex arama sonuçlarınız hazırlanmıştır."
 msgstr "Ihre OpenAlex-Suchergebnisse sind bereit."
 
-#: openalex/services/job_runner.py:241 openalex/services/job_runner.py:288
-#: pubmed/services/job_runner.py:174 semanticscholar/services/job_runner.py:159
+#: openalex/services/job_runner.py:290 openalex/services/job_runner.py:337
+#: pubmed/services/job_runner.py:223 semanticscholar/services/job_runner.py:159
 #: semanticscholar/services/job_runner.py:204
 #, python-format
 msgid "Sorgu: %(query)s"
 msgstr "Suchanfrage: %(query)s"
 
-#: openalex/services/job_runner.py:242 openalex/services/job_runner.py:289
-#: pubmed/services/job_runner.py:175 semanticscholar/services/job_runner.py:160
+#: openalex/services/job_runner.py:291 openalex/services/job_runner.py:338
+#: pubmed/services/job_runner.py:224 semanticscholar/services/job_runner.py:160
 #: semanticscholar/services/job_runner.py:205
 #, python-format
 msgid "Toplam Sonuç: %(total)s"
 msgstr "Ergebnisse insgesamt: %(total)s"
 
-#: openalex/services/job_runner.py:286
+#: openalex/services/job_runner.py:335
 msgid "Siparişiniz onaylanmış ve OpenAlex yayın sonuçlarınız hazırlanmıştır."
 msgstr ""
 "Ihre Bestellung wurde bestätigt und Ihre OpenAlex-Publikationsergebnisse "
 "sind bereit."
 
-#: openalex/services/job_runner.py:287
+#: openalex/services/job_runner.py:336
 #: semanticscholar/services/job_runner.py:203
 #, python-format
 msgid "Sipariş No: #%(order)s"
 msgstr "Bestellnummer: #%(order)s"
 
-#: openalex/services/job_runner.py:290
+#: openalex/services/job_runner.py:339
 #: semanticscholar/services/job_runner.py:206
 #, python-format
 msgid "Gönderilen Yayın Sayısı: %(count)s"
 msgstr "Anzahl gesendeter Publikationen: %(count)s"
 
-#: openalex/services/job_runner.py:291
+#: openalex/services/job_runner.py:340
 #: semanticscholar/services/job_runner.py:207
 #, python-format
 msgid "Ödenen Tutar: %(amount)s TL"
 msgstr "Bezahlter Betrag: %(amount)s TL"
 
-#: openalex/services/job_runner.py:295
+#: openalex/services/job_runner.py:344
 #: semanticscholar/services/job_runner.py:210
 msgid "Sonuçlarınızı aşağıdaki linkten indirebilirsiniz:"
 msgstr "Sie können Ihre Ergebnisse über den folgenden Link herunterladen:"
@@ -19494,63 +19602,63 @@ msgstr ""
 "warten. Job-ID: %(job_id)s"
 
 #: openalex/templates/openalex/landing.html:47
-#: pubmed/templates/pubmed/landing.html:54
+#: pubmed/templates/pubmed/landing.html:56
 #: semanticscholar/templates/semanticscholar/landing.html:50
 msgid "Arama Kriterleri"
 msgstr "Suchkriterien"
 
 #: openalex/templates/openalex/landing.html:55
-#: pubmed/templates/pubmed/landing.html:60
+#: pubmed/templates/pubmed/landing.html:62
 #: semanticscholar/templates/semanticscholar/landing.html:66
 msgid "Kriter Ekle"
 msgstr "Kriterium hinzufügen"
 
 #: openalex/templates/openalex/landing.html:56
-#: openalex/templates/openalex/landing.html:368
-#: openalex/templates/openalex/landing.html:390
-#: openalex/templates/openalex/landing.html:398
-#: pubmed/templates/pubmed/landing.html:61
+#: openalex/templates/openalex/landing.html:371
+#: openalex/templates/openalex/landing.html:393
+#: openalex/templates/openalex/landing.html:401
+#: pubmed/templates/pubmed/landing.html:63
 msgid "Arama Yap"
 msgstr "Suchen"
 
 #: openalex/templates/openalex/landing.html:74
-#: pubmed/templates/pubmed/landing.html:69
+#: pubmed/templates/pubmed/landing.html:71
 msgid "Arama Sonuçları"
 msgstr "Suchergebnisse"
 
 #: openalex/templates/openalex/landing.html:80
-#: openalex/templates/openalex/landing.html:438
-#: pubmed/templates/pubmed/landing.html:70
+#: openalex/templates/openalex/landing.html:441
+#: pubmed/templates/pubmed/landing.html:72
 msgid "İptal Et"
 msgstr "Abbrechen"
 
-#: openalex/templates/openalex/landing.html:91
+#: openalex/templates/openalex/landing.html:94
 msgid "Sonuçları E-posta Gönder"
 msgstr "Ergebnisse per E-Mail senden"
 
-#: openalex/templates/openalex/landing.html:92
-#: pubmed/templates/pubmed/landing.html:76
+#: openalex/templates/openalex/landing.html:95
+#: pubmed/templates/pubmed/landing.html:79
 msgid "TXT İndir"
 msgstr "TXT herunterladen"
 
-#: openalex/templates/openalex/landing.html:93
-#: pubmed/templates/pubmed/landing.html:77
+#: openalex/templates/openalex/landing.html:96
+#: pubmed/templates/pubmed/landing.html:80
 #: semanticscholar/templates/semanticscholar/landing.html:105
 msgid "Excel İndir"
 msgstr "Excel herunterladen"
 
-#: openalex/templates/openalex/landing.html:94
-#: openalex/templates/openalex/landing.html:554
-#: openalex/templates/openalex/landing.html:566
-#: pubmed/templates/pubmed/landing.html:79
+#: openalex/templates/openalex/landing.html:97
+#: openalex/templates/openalex/landing.html:565
+#: openalex/templates/openalex/landing.html:577
+#: pubmed/templates/pubmed/landing.html:82
 msgid "Bibliometrik Analiz İstiyorum"
 msgstr "Ich möchte eine bibliometrische Analyse"
 
-#: openalex/templates/openalex/landing.html:101
+#: openalex/templates/openalex/landing.html:104
 msgid "Bibliometrik Analiz — 17 Grafiğe Kadar PDF Rapor"
 msgstr "Bibliometrische Analyse — PDF-Bericht mit bis zu 17 Diagrammen"
 
-#: openalex/templates/openalex/landing.html:128
+#: openalex/templates/openalex/landing.html:131
 msgid ""
 "Demo rapor (3 grafik) ücretsiz emaile gönderilir. Tam rapor (17 analize "
 "kadar) kayıt sayısına göre ücretlidir."
@@ -19558,11 +19666,11 @@ msgstr ""
 "Ein Demobericht (3 Diagramme) wird kostenlos per E-Mail gesendet. Der "
 "Vollbericht (bis zu 17 Analysen) wird nach Datensatzanzahl berechnet."
 
-#: openalex/templates/openalex/landing.html:145
+#: openalex/templates/openalex/landing.html:148
 msgid "Çok Boyutlu Filtreleme"
 msgstr "Mehrdimensionale Filterung"
 
-#: openalex/templates/openalex/landing.html:146
+#: openalex/templates/openalex/landing.html:149
 msgid ""
 "Konu, yazar, dergi, ülke ve yıl aralığına göre 240 milyon yayın arasında "
 "arama yapın."
@@ -19570,12 +19678,12 @@ msgstr ""
 "Durchsuchen Sie 240 Millionen Publikationen nach Thema, Autor, Zeitschrift, "
 "Land und Jahresbereich."
 
-#: openalex/templates/openalex/landing.html:151 openalex/views.py:65
+#: openalex/templates/openalex/landing.html:154 openalex/views.py:65
 #: pubmed/views.py:53 semanticscholar/views.py:65
 msgid "Excel & TXT İndirme"
 msgstr "Excel- & TXT-Download"
 
-#: openalex/templates/openalex/landing.html:152
+#: openalex/templates/openalex/landing.html:155
 msgid ""
 "Arama sonuçlarını Excel veya TXT formatında indirin, bibliometrik analize "
 "aktarın."
@@ -19583,7 +19691,7 @@ msgstr ""
 "Laden Sie Suchergebnisse als Excel oder TXT herunter und importieren Sie sie "
 "in die bibliometrische Analyse."
 
-#: openalex/templates/openalex/landing.html:158
+#: openalex/templates/openalex/landing.html:161
 #, python-format
 msgid ""
 "100+ sonuçta <a href=\"%(biblio_url)s\" class=\"text-decoration-none\" "
@@ -19594,125 +19702,125 @@ msgstr ""
 "class=\"text-decoration-none\" style=\"color:#a5b4fc;\">Bibliometrische "
 "Analyse</a> übergeben und Zitations- sowie Netzwerkkarten erstellen."
 
-#: openalex/templates/openalex/landing.html:222
+#: openalex/templates/openalex/landing.html:225
 #: semanticscholar/templates/semanticscholar/landing.html:334
 msgid "Yıl Aralığı (örn: 2020-2023)"
 msgstr "Jahresbereich (z. B. 2020-2023)"
 
-#: openalex/templates/openalex/landing.html:287 pubmed/views.py:117
+#: openalex/templates/openalex/landing.html:290 pubmed/views.py:117
 #: semanticscholar/templates/semanticscholar/landing.html:385
 msgid "Değer girin..."
 msgstr "Wert eingeben..."
 
-#: openalex/templates/openalex/landing.html:335 pubmed/views.py:99
+#: openalex/templates/openalex/landing.html:338 pubmed/views.py:99
 #: semanticscholar/templates/semanticscholar/landing.html:175
 msgid "Lütfen en az bir arama kriteri girin."
 msgstr "Bitte geben Sie mindestens ein Suchkriterium ein."
 
-#: openalex/templates/openalex/landing.html:341 pubmed/views.py:100
+#: openalex/templates/openalex/landing.html:344 pubmed/views.py:100
 #: semanticscholar/templates/semanticscholar/landing.html:145
 #: semanticscholar/templates/semanticscholar/landing.html:161
 #: semanticscholar/templates/semanticscholar/landing.html:180
 msgid "Aranıyor..."
 msgstr "Wird gesucht..."
 
-#: openalex/templates/openalex/landing.html:361
+#: openalex/templates/openalex/landing.html:364
 msgid "Arama görevi başlatıldı"
 msgstr "Suchaufgabe gestartet"
 
-#: openalex/templates/openalex/landing.html:361
+#: openalex/templates/openalex/landing.html:364
 msgid "Sonuçlar bekleniyor..."
 msgstr "Warten auf Ergebnisse..."
 
-#: openalex/templates/openalex/landing.html:365
-#: openalex/templates/openalex/landing.html:520
-#: openalex/templates/openalex/landing.html:567 pubmed/views.py:106
+#: openalex/templates/openalex/landing.html:368
+#: openalex/templates/openalex/landing.html:531
+#: openalex/templates/openalex/landing.html:578 pubmed/views.py:106
 #: templates/partials/footer.html:283
 msgid "Hata:"
 msgstr "Fehler:"
 
-#: openalex/templates/openalex/landing.html:400 pubmed/views.py:105
+#: openalex/templates/openalex/landing.html:403 pubmed/views.py:105
 msgid "Arama başarısız oldu:"
 msgstr "Suche fehlgeschlagen:"
 
-#: openalex/templates/openalex/landing.html:405
+#: openalex/templates/openalex/landing.html:408
 #: semanticscholar/templates/semanticscholar/landing.html:231
 msgid "Sırada bekliyorsunuz — tahmini sıra:"
 msgstr "Sie warten in der Warteschlange — geschätzte Position:"
 
-#: openalex/templates/openalex/landing.html:405
+#: openalex/templates/openalex/landing.html:408
 #: semanticscholar/templates/semanticscholar/landing.html:231
 msgid "Lütfen bekleyin..."
 msgstr "Bitte warten..."
 
-#: openalex/templates/openalex/landing.html:406 pubmed/views.py:102
+#: openalex/templates/openalex/landing.html:409 pubmed/views.py:102
 #: semanticscholar/templates/semanticscholar/landing.html:232
 msgid "Sıradaki tarama başlıyor..."
 msgstr "Nächster Scan beginnt..."
 
-#: openalex/templates/openalex/landing.html:411
+#: openalex/templates/openalex/landing.html:414
 msgid "OpenAlex'ten veriler çekiliyor, lütfen bekleyin..."
 msgstr "Daten werden von OpenAlex abgerufen, bitte warten..."
 
-#: openalex/templates/openalex/landing.html:426 pubmed/views.py:115
+#: openalex/templates/openalex/landing.html:429 pubmed/views.py:115
 msgid "İptal ediliyor..."
 msgstr "Wird abgebrochen..."
 
-#: openalex/templates/openalex/landing.html:443
+#: openalex/templates/openalex/landing.html:446
 msgid "Toplam"
 msgstr "Insgesamt"
 
-#: openalex/templates/openalex/landing.html:443
+#: openalex/templates/openalex/landing.html:446
 msgid "sonuç bulundu. Örnek"
 msgstr "Ergebnisse gefunden. Eine Auswahl von"
 
-#: openalex/templates/openalex/landing.html:443
+#: openalex/templates/openalex/landing.html:446
 msgid "kayıt aşağıda gösterilmektedir."
 msgstr "Datensätzen wird unten angezeigt."
 
-#: openalex/templates/openalex/landing.html:446
+#: openalex/templates/openalex/landing.html:457
 msgid "Gösterilecek demo sonuç bulunamadı."
 msgstr "Keine Demoergebnisse zum Anzeigen gefunden."
 
-#: openalex/templates/openalex/landing.html:451
+#: openalex/templates/openalex/landing.html:462
 #: semanticscholar/templates/semanticscholar/landing.html:286
 msgid "atıf"
 msgstr "Zitate"
 
-#: openalex/templates/openalex/landing.html:457 pubmed/views.py:110
+#: openalex/templates/openalex/landing.html:468 pubmed/views.py:110
 msgid "Başlık Yok"
 msgstr "Kein Titel"
 
-#: openalex/templates/openalex/landing.html:458 pubmed/views.py:111
+#: openalex/templates/openalex/landing.html:469 pubmed/views.py:111
 msgid "Yazar Yok"
 msgstr "Kein Autor"
 
-#: openalex/templates/openalex/landing.html:458
+#: openalex/templates/openalex/landing.html:469
 msgid "Yıl Yok"
 msgstr "Kein Jahr"
 
-#: openalex/templates/openalex/landing.html:458 pubmed/views.py:112
+#: openalex/templates/openalex/landing.html:469 pubmed/views.py:112
 msgid "Kaynak Yok"
 msgstr "Keine Quelle"
 
-#: openalex/templates/openalex/landing.html:460 pubmed/views.py:113
+#: openalex/templates/openalex/landing.html:471 pubmed/views.py:113
 msgid "Özet yok"
 msgstr "Kein Abstract"
 
-#: openalex/templates/openalex/landing.html:524
-#: pubmed/templates/pubmed/landing.html:75
+#: openalex/templates/openalex/landing.html:535
+#: pubmed/templates/pubmed/landing.html:78
 msgid "Demo Sonuçları E-posta Gönder"
 msgstr "Demoergebnisse per E-Mail senden"
 
-#: openalex/templates/openalex/landing.html:533 pubmed/views.py:119
+#: openalex/templates/openalex/landing.html:544 pubmed/views.py:119
 msgid "Başlatılıyor..."
 msgstr "Wird gestartet..."
 
-#: openalex/templates/openalex/landing.html:546
+#: openalex/templates/openalex/landing.html:557
 msgid "Analiz Başlatıldı"
 msgstr "Analyse gestartet"
 
-#: openalex/templates/openalex/landing.html:549 pubmed/views.py:120
+#: openalex/templates/openalex/landing.html:560 pubmed/views.py:120
 msgid ""
 "Bibliometrik analiz kuyruğa alındı. Demo rapor (3 grafik PDF) hazır "
 "olduğunda e-postanıza gönderilecek."
@@ -19721,23 +19829,23 @@ msgstr ""
 "Demobericht (PDF mit 3 Diagrammen) wird an Ihre E-Mail gesendet, sobald er "
 "fertig ist."
 
-#: openalex/templates/openalex/landing.html:550 pubmed/views.py:122
+#: openalex/templates/openalex/landing.html:561 pubmed/views.py:122
 msgid "Bibliometrik analizlerim"
 msgstr "Meine bibliometrischen Analysen"
 
-#: openalex/templates/openalex/landing.html:557 pubmed/views.py:121
+#: openalex/templates/openalex/landing.html:568 pubmed/views.py:121
 msgid "Bu arama için zaten bir analiz mevcut."
 msgstr "Für diese Suche existiert bereits eine Analyse."
 
-#: openalex/templates/openalex/landing.html:558
+#: openalex/templates/openalex/landing.html:569
 msgid "Görüntüle"
 msgstr "Anzeigen"
 
-#: openalex/templates/openalex/landing.html:577 pubmed/views.py:104
+#: openalex/templates/openalex/landing.html:588 pubmed/views.py:104
 msgid "Aramanız arka planda devam ediyor, lütfen bekleyin..."
 msgstr "Ihre Suche läuft im Hintergrund weiter, bitte warten..."
 
-#: openalex/templates/openalex/landing.html:589 pubmed/views.py:116
+#: openalex/templates/openalex/landing.html:600 pubmed/views.py:116
 msgid "Önceki arama sonuçları"
 msgstr "Vorherige Suchergebnisse"
 
@@ -19835,49 +19943,49 @@ msgstr "Ihr tägliches Demo-Limit ist erreicht."
 msgid "Geçersiz sorgu."
 msgstr "Ungültige Abfrage."
 
-#: openalex/views.py:192
+#: openalex/views.py:193
 msgid "OpenAlex Sonuçları"
 msgstr "OpenAlex-Ergebnisse"
 
-#: openalex/views.py:194 pubmed/views.py:162 semanticscholar/views.py:240
+#: openalex/views.py:195 pubmed/views.py:163 semanticscholar/views.py:240
 msgctxt "sıra numarası"
 msgid "No"
 msgstr "Nr."
 
-#: openalex/views.py:195 semanticscholar/views.py:67
+#: openalex/views.py:196 semanticscholar/views.py:67
 msgid "Açık Erişim"
 msgstr "Open Access"
 
-#: openalex/views.py:254 pubmed/views.py:209 semanticscholar/views.py:303
+#: openalex/views.py:255 pubmed/views.py:210 semanticscholar/views.py:303
 msgid "Kullanıcı tarafından iptal edildi."
 msgstr "Vom Benutzer abgebrochen."
 
-#: openalex/views.py:266 pubmed/views.py:220 semanticscholar/views.py:168
+#: openalex/views.py:267 pubmed/views.py:221 semanticscholar/views.py:168
 msgid "Sonuçlar henüz hazır değil."
 msgstr "Die Ergebnisse sind noch nicht fertig."
 
-#: openalex/views.py:269 pubmed/views.py:222 semanticscholar/views.py:170
+#: openalex/views.py:270 pubmed/views.py:223 semanticscholar/views.py:170
 msgid "Demo sonuçlar zaten gönderildi."
 msgstr "Die Demo-Ergebnisse wurden bereits gesendet."
 
-#: openalex/views.py:274 pubmed/views.py:226 semanticscholar/views.py:173
+#: openalex/views.py:275 pubmed/views.py:227 semanticscholar/views.py:173
 #, python-brace-format
 msgid "Demo sonuçların {email} adresine gönderilmesi başlatıldı."
 msgstr "Der Versand der Demo-Ergebnisse an {email} wurde gestartet."
 
-#: openalex/views.py:289 semanticscholar/views.py:187
+#: openalex/views.py:290 semanticscholar/views.py:187
 msgid "Bu arama için henüz sonuç yok."
 msgstr "Für diese Suche gibt es noch keine Ergebnisse."
 
-#: pubmed/forms.py:8 pubmed/models.py:90
+#: pubmed/forms.py:8 pubmed/models.py:93
 msgid "Başlık/Özet"
 msgstr "Titel/Abstract"
 
-#: pubmed/forms.py:11 pubmed/models.py:91
+#: pubmed/forms.py:11 pubmed/models.py:94
 msgid "MeSH Terimi"
 msgstr "MeSH-Begriff"
 
-#: pubmed/services/job_runner.py:21 pubmed/views.py:164
+#: pubmed/services/job_runner.py:21 pubmed/views.py:165
 msgid "MeSH Terimleri"
 msgstr "MeSH-Begriffe"
 
@@ -19885,12 +19993,12 @@ msgstr "MeSH-Begriffe"
 msgid "PubMed Yayın Arama Sonuçları"
 msgstr "PubMed-Publikationssuchergebnisse"
 
-#: pubmed/services/job_runner.py:170
+#: pubmed/services/job_runner.py:219
 #, python-format
 msgid "PubMed Arama Sonuçları: %(query)s"
 msgstr "PubMed-Suchergebnisse: %(query)s"
 
-#: pubmed/services/job_runner.py:173
+#: pubmed/services/job_runner.py:222
 msgid "PubMed arama sonuçlarınız hazırlanmıştır."
 msgstr "Ihre PubMed-Suchergebnisse sind fertig."
 
@@ -19912,7 +20020,7 @@ msgstr ""
 "herunter."
 
 #: pubmed/templates/pubmed/landing.html:7
-#: pubmed/templates/pubmed/landing.html:48
+#: pubmed/templates/pubmed/landing.html:50
 msgid "PubMed Yayın Kazıma ve Veri İndirme"
 msgstr "PubMed-Publikationsextraktion und Datendownload"
 
@@ -19924,7 +20032,7 @@ msgstr ""
 "Biomedizinische Publikationen aus PubMed ohne Programmierung extrahieren. "
 "Über 40 Mio. Datensätze durchsuchen, Excel oder TXT herunterladen."
 
-#: pubmed/templates/pubmed/landing.html:49
+#: pubmed/templates/pubmed/landing.html:51
 msgid ""
 "PubMed'deki 40 milyondan fazla biyomedikal yayından kodsuz veri çekin. "
 "Başlık, özet, yazar, MeSH terimi, dergi ve kurum alanlarında arama yapın; "
@@ -19935,7 +20043,7 @@ msgstr ""
 "Autor, MeSH-Begriff, Zeitschrift und Institution; laden Sie die Ergebnisse "
 "als Excel- oder TXT-Datei herunter."
 
-#: pubmed/templates/pubmed/landing.html:50
+#: pubmed/templates/pubmed/landing.html:52
 #, python-format
 msgid ""
 "Günlük <strong>%(daily_limit)s</strong> arama hakkınız bulunmaktadır. Kalan: "
@@ -19944,13 +20052,13 @@ msgstr ""
 "Sie haben <strong>%(daily_limit)s</strong> Suchen pro Tag. Verbleibend: "
 "<strong>%(remaining)s</strong>."
 
-#: pubmed/templates/pubmed/landing.html:63
+#: pubmed/templates/pubmed/landing.html:65
 msgid "Tüm kriterler birlikte aranır (AND). Yıl aralığı örneği: 2020-2024."
 msgstr ""
 "Alle Kriterien werden gemeinsam gesucht (AND). Beispiel für einen "
 "Jahresbereich: 2020-2024."
 
-#: pubmed/templates/pubmed/landing.html:84
+#: pubmed/templates/pubmed/landing.html:87
 msgid ""
 "PubMed verisiyle 13 analize kadar PDF rapor üretilir; PubMed atıf sayısı "
 "vermediği için atıf analizleri ve Araştırma Boşluğu Haritası yer almaz. Demo "
@@ -19961,7 +20069,7 @@ msgstr ""
 "Forschungslücken-Karte nicht enthalten. Ein Demo-Bericht (3 Grafiken) wird "
 "Ihnen kostenlos per E-Mail zugesandt."
 
-#: pubmed/templates/pubmed/landing.html:89
+#: pubmed/templates/pubmed/landing.html:92
 msgid "Proje Talebi Bırak"
 msgstr "Projektanfrage stellen"
 
@@ -20058,7 +20166,7 @@ msgstr ""
 msgid "Kriteri kaldır"
 msgstr "Kriterium entfernen"
 
-#: pubmed/views.py:161
+#: pubmed/views.py:162
 msgid "PubMed Sonuçları"
 msgstr "PubMed-Ergebnisse"
 
@@ -20215,9 +20323,9 @@ msgid ""
 "yazabilirsiniz."
 msgstr ""
 "Die obige Auswahl umfasst die 5 neuesten Publikationen. Um auf alle "
-"Ergebnisse zuzugreifen, schreiben Sie an <a href=\"mailto:info@analizus."
-"com\" class=\"text-warning text-decoration-none fw-semibold\">info@analizus."
-"com</a> und geben Sie Ihre Suche an."
+"Ergebnisse zuzugreifen, schreiben Sie an <a "
+"href=\"mailto:info@analizus.com\" class=\"text-warning text-decoration-none "
+"fw-semibold\">info@analizus.com</a> und geben Sie Ihre Suche an."
 
 #: semanticscholar/templates/semanticscholar/landing.html:206
 msgid "Bağlantı hatası:"
@@ -20975,9 +21083,9 @@ msgstr "APA-Format-Beispiel"
 #: templates/service_promo.html:189
 #, python-format
 msgid ""
-"Verilerinizi gönderin, uzman analistlerimiz <strong style=\"color:#f1f5f9;"
-"\">%(promo_title)s</strong> analizini sizin adınıza gerçekleştirip "
-"raporlasın. Ücretsiz ön değerlendirme ile başlayın."
+"Verilerinizi gönderin, uzman analistlerimiz <strong "
+"style=\"color:#f1f5f9;\">%(promo_title)s</strong> analizini sizin adınıza "
+"gerçekleştirip raporlasın. Ücretsiz ön değerlendirme ile başlayın."
 msgstr ""
 "Senden Sie uns Ihre Daten, und unsere Expertenanalysten führen die <strong "
 "style=\"color:#f1f5f9;\">%(promo_title)s</strong>-Analyse in Ihrem Namen "
@@ -21047,3 +21155,9 @@ msgid ""
 msgstr ""
 "Datenerfassung ohne Code aus internationalen wissenschaftlichen Datenbanken. "
 "Keine Python- oder Selenium-Kenntnisse nötig."
+
+#~ msgid "Sıfır komisyon ile hemen başla"
+#~ msgstr "Sofort starten, ohne jede Provision"
+
+#~ msgid "Profilini ve itibarını güçlendir"
+#~ msgstr "Stärken Sie Ihr Profil und Ansehen"

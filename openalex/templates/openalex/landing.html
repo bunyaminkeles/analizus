@@ -85,6 +85,9 @@
                     <div class="card-body">
                         <p id="status-msg" class="text-center text-secondary mb-2" style="display:none;"></p>
                         <div id="results-summary" class="mb-3"></div>
+                        <div id="ai-yorum-box" class="d-none mb-3" style="border-top:1px solid rgba(255,255,255,0.1); padding-top:.5rem;">
+                            <p class="text-white small mb-0" id="ai-yorum-text"></p>
+                        </div>
                         <div id="results-list"></div>
                         <div id="results-actions" class="mt-3" style="display: none;">
                             <div class="d-flex flex-wrap gap-2 align-items-start">
@@ -441,6 +444,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function displayResults(data) {
         resultsSummary.innerHTML = `{% trans "Toplam" %} <strong>${data.total_results}</strong> {% trans "sonuç bulundu. Örnek" %} <strong>${data.demo_results.length}</strong> {% trans "kayıt aşağıda gösterilmektedir." %}`;
+
+        const aiBox = document.getElementById('ai-yorum-box');
+        if (data.ai_comment) {
+            document.getElementById('ai-yorum-text').textContent = data.ai_comment;
+            aiBox.classList.remove('d-none');
+        } else {
+            aiBox.classList.add('d-none');
+        }
 
         if (data.demo_results.length === 0) {
             resultsList.innerHTML = '<p>{% trans "Gösterilecek demo sonuç bulunamadı." %}</p>';
