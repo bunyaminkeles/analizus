@@ -224,6 +224,10 @@ UNFOLD = {
     "SITE_TITLE": "Analizus | Komuta Merkezi",
     "SITE_HEADER": "Analizus Admin",
     "SITE_URL": "/",
+    # Tema sabit koyu: özel admin şablonları (analytics/chart.html, active_now.html vb.)
+    # yalnız koyu tema renkleri kullanıyor; "auto" modda cihaza özel localStorage açık
+    # temaya düşerse bu sayfalarda metin görünmez hale geliyordu (§26).
+    "THEME": "dark",
     "SITE_ICON": None,
     "SITE_SYMBOL": "analytics",
     "SHOW_HISTORY": True,

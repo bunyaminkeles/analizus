@@ -186,3 +186,16 @@ sızıntısı ara.
 **Kural:** Ortak şablon değişikliğinde tüm sayfaları aynı ölçütle karşılaştır: sıra, boşluk (kartlar arası = bölümler arası),
 hiza, boş değişken (ör. `tool_title`); istisna üretmek yerine eksik parçayı tamamlayıp tek düzen kur; ekran görüntüsünü önce
 kendin incele.
+
+## 13 Ekim 2026 — Root sahipli migration dosyası: host `sudo chown` yerine sil+yeniden yaz
+**Olay:** `openalex`/`pubmed`'e yeni alan eklerken `docker compose exec web python manage.py makemigrations` ile
+üretilen migration dosyaları (mevcut app'lerde bile, yeni app olmasa da) yine root sahipli çıktı. Bu oturumun
+sandbox'ında host'tan `sudo chown 1000:1000 ...` **şifre istediği için** (interaktif olmayan shell'de) çalışmadı.
+**Çözüm (işe yaradı):** `migrations/` klasörünün kendisi host kullanıcısına ait olduğundan (yalnız dosya root'a ait),
+Unix silme izni dizin sahipliğine bakar — `rm dosya.py` host kullanıcısı olarak sorunsuz çalıştı. Sonra aynı
+migration içeriğini `Write` ile (Django'nun üreteceği formatla, `dependencies`/`operations` elle yazılarak) host
+sahipli olarak yeniden oluşturdum; `makemigrations --check --dry-run` ile Django'nun başka eksik görmediği teyit
+edildi.
+**Kural:** Bu durumda önce container içinden chown dene (`docker compose exec -T web chown -R 1000:1000 /app/<app>`
+— satır 149'daki mevcut kural, muhtemelen çalışır); o da başarısız olursa (izin/sandbox kısıtı) host'ta `sudo`
+yerine dosyayı sil + içeriğini elle yeniden yaz, asla salt-okunur/root sahipli dosyayı commit'e sokma.

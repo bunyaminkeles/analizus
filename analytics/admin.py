@@ -22,6 +22,12 @@ SESSION_GAP_MINUTES = 30
 FLOW_LIMIT = 300
 # "Şu An Aktif" penceresi — Profile.is_online ile aynı eşik (forum/models.py)
 ACTIVE_NOW_MINUTES = 5
+# Zorunlu yönlendirme/huni adımları — organik "ilgi" değil (EmailVerificationMiddleware
+# doğrulanmamış kullanıcıyı her tıklamada verification-pending'e atıyor; Onboarding her yeni
+# üyenin e-posta doğrulaması sonrası tek seferlik zorunlu geçişi) — "En Çok Ziyaret Edilen
+# Sayfalar"da gürültü yaratıyor, o yüzden yalnız oradan hariç tutuluyor (ham log ve kullanıcı
+# bazlı Navigasyon Akışı etkilenmez, destek/debug amaçlı orada görünmeye devam eder)
+_TRANSIT_TAB_NAMES = ('Onboarding', '/verification-pending/')
 
 
 def user_analysis_link(user):
@@ -179,12 +185,15 @@ class PageViewAdmin(ModelAdmin):
                 qs = qs.exclude(user__groups=haric_grup)
             return qs
 
-        def top_n(field, n, extra_filter=None, exclude_staff=False):
+        def top_n(field, n, extra_filter=None, exclude_staff=False, extra_exclude=None):
             totals = defaultdict(int)
             rqs = _exclude_internal(recent_qs) if exclude_staff else recent_qs
             sqs = _exclude_internal(summary_qs) if exclude_staff else summary_qs
             rqs = rqs.filter(**extra_filter) if extra_filter else rqs
             sqs = sqs.filter(**extra_filter) if extra_filter else sqs
+            if extra_exclude:
+                rqs = rqs.exclude(**extra_exclude)
+                sqs = sqs.exclude(**extra_exclude)
             for row in rqs.values(field).annotate(total=Count('id')):
                 if row[field]:
                     totals[row[field]] += row['total']
@@ -212,7 +221,8 @@ class PageViewAdmin(ModelAdmin):
 
         # Genel görünümde (belirli kullanıcı seçilmemişken) staff hesapların test/geliştirme
         # trafiği gerçek kullanıcı davranışını gizliyor — bu yüzden yalnız o durumda hariç tutulur.
-        top_pages = top_n('tab_name', 10, extra_filter=flt, exclude_staff=(flt is None))
+        top_pages = top_n('tab_name', 10, extra_filter=flt, exclude_staff=(flt is None),
+                           extra_exclude={'tab_name__in': _TRANSIT_TAB_NAMES})
         daily = daily_series(extra_filter=flt, exclude_staff=(flt is None))
         top_users = top_n('user__username', 20, exclude_staff=True)
 

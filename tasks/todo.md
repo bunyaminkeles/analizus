@@ -10,6 +10,58 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
+- [x] **TAMAMLANDI (13 Ekim 2026) — Claude AI Yorumu Faz C: OpenAlex ve PubMed
+  tarama sonuçlarına AI yorumu eklendi, `main`'de canlı.** Faz A/B (istatistik
+  araçları) ile aynı desen: `AlexSearchJob`/`PubMedSearchJob`'a `ai_comment`
+  TextField eklendi (migration `openalex/0004`, `pubmed/0002` — somut alanlı
+  modeller olduğu için JSONField'a gömülemedi, Faz B'den farklı olarak gerçek
+  migration gerekti). `job_runner.py`'lerde `mark_completed`'dan önce
+  `_ai_comment_for_job`/`_build_ai_prompt` çağrılıyor (flag+kota kontrolünden
+  geçerse); prompt'a tam `abstract` gönderilmiyor, yalnız başlık/yıl/dergi/tür
+  + OpenAlex'te atıf sayısı, PubMed'de MeSH terimleri (token/maliyet kontrolü).
+  `job_status` uçları ve template'ler (openalex: mevcut Bootstrap deseniyle
+  tutarlı; pubmed: zaten geçmiş olduğu `ax-`/`pm-` sistemiyle tutarlı) AI
+  kutusunu gösteriyor. Dil: her iki job_runner da zaten `recipient_language
+  (user)` içinde çalıştığından ekstra mekanizma gerekmedi (istatistik'teki
+  `_pending_job_languages` deseninden farklı, ama fonksiyonel olarak yeterli).
+  `feature_ai_summary`/`feature_pubmed` geçici açılıp gerçek Claude API
+  çağrısıyla her iki araç için de doğru yorum üretildiği, `AIUsageLog`'a
+  kaydedildiği, sayfaların yeni kutuyu render ettiği doğrulandı — tüm test
+  verisi `transaction.atomic()` + rollback ile temizlendi, flag'ler eski
+  haline (kapalı) döndü. Migration dosyaları container'da `makemigrations`
+  ile üretilip root sahipliğinden host kullanıcısına geçirildi (bilinen
+  kısıt, §26). 90/90 pytest yeşil. `dev`'de commit edilip (ece-benzeri hash)
+  kullanıcı isteğiyle `main`'e merge + push edildi, Hetzner'e otomatik deploy
+  tetiklendi. **Sırada Faz D:** Bibliometrics (migration + `analyzer.py` ham
+  veri yakalama — en karmaşık faz, ayrıca bkz. aşağıdaki "Claude AI Yorumu"
+  maddesi).
+
+- [x] **TAMAMLANDI (13 Ekim 2026) — Ana sayfa "Uzman Olarak Katılmak
+  İstiyorum" kartı zenginleştirildi, `main`'de canlı.** Kullanıcı bulgusu:
+  talep tarafındaki kart ("Analiz Yaptırmak İstiyorum") zaten kategori
+  rozetleri + 2. buton + "veya kendin yap" satırı içerirken arz tarafı
+  yalnızca 1 paragraf + 3 madde + 1 buton — dengesizdi. Önce bir Explore
+  turuyla uzman tarafına gerçekten sunulan özellikler koddan doğrulandı
+  (abartı yasağı): "sıfır komisyon" gerçek (platform proje ücretine hiç
+  dokunmuyor, `JobPayment` yalnız ilan vitrin ücreti), "1000 puan →
+  Doğrulanmış Uzman & teklif verme hakkı" gerçek (`Profile.can_propose()`),
+  "güvenli ödeme" / "Premium ile dizinde öne çık" gibi asılsız iddialar
+  plana hiç alınmadı. İki somut tasarım seçeneği bir Canvas'ta (Design
+  artifact) görsel olarak mockup'landı, kullanıcı inceleyip **Seçenek B
+  (Zengin — talep kartıyla simetrik)**'i seçti. `forum/templates/forum/
+  home.html` satır 464-481 (yalnız TR dalı) değiştirildi: 4. madde eklendi,
+  kategori rozetleri (`ax-market-cats`, demand kartıyla birebir aynı
+  desen/davranış — filtresiz `job_list` linki), canlı açık-proje sayacı
+  (`ax-market-diy`, mevcut `open_jobs_count >= stat_min_display` korumalı
+  context değişkenleri — view değişikliği gerekmedi), güçlendirilmiş arena
+  linki, 2. buton ("Nasıl Uzman Olunur?" → `/uzmanlar/`). Hiç yeni CSS
+  yazılmadı. `makemessages`/`compilemessages` çalıştırıldı (container'a
+  geçici `gettext` kurulup iş bitince kaldırıldı); EN/DE msgstr boş
+  bırakıldı (bu kart zaten yalnız TR'de render ediliyor). Eşik korumalı
+  sayaç satırı hem normal (gizli, lokalde 0 açık ilan/25 eşik) hem geçici
+  eşik düşürülmüş (görünür) durumda doğrulandı, 90/90 pytest yeşil. `dev`'de
+  commit edilip kullanıcı isteğiyle `main`'e merge + push edildi.
+
 - [x] **DÜZELTİLDİ (12 Ekim 2026) — Çalışma odası "Tartışma" bloğu yüksekliği
   sınırsızdı, sayfa aşağı doğru çok uzuyordu.**
   `forum/templates/forum/studyroom_detail.html` `#posts-container` viewport'a
@@ -330,8 +382,8 @@ maddelerde.
     görünüyor, `build_pdf()` fonksiyonlarına dokunulmadı (kapsam dışı kaldı, bilinçli bir hariç tutma değildi).
     İstenirse 17 `istatistik/services/<tool>.py`'deki `build_pdf()`'in her birine, APA bölümünün altına benzer
     bir "AI Yorumu" paragrafı eklenecek (`result_data['ai_comment']` zaten mevcut, sadece PDF'e yazdırılmıyor).
-  **Sırada — Faz C:** OpenAlex+PubMed (migration gerekli, `ai_summary` alanı) + job_runner entegrasyonu +
-  template/JS. Sonra Faz D (Bibliometrics, migration + `analyzer.py` ham veri yakalama — en karmaşık faz).
+  **Faz C tamamlandı (13 Ekim 2026) — yukarıdaki "AÇIK İŞLER" listesinin başında ayrıntılı kayıt var,
+  `main`'de canlı. Sırada Faz D:** Bibliometrics (migration + `analyzer.py` ham veri yakalama — en karmaşık faz).
 - [x] **(9 Ekim 2026 → tamamlandı, main'de canlı) `/hakkimizda/` sayfası sadeleştirildi.** Tek blok olduğu
   ortaya çıktı (başlık "Platformdaki Uzmanlardan Örnekler" + TeamMember kartları, admin adı "Ekip Üyeleri" aynı
   şeydi) — `forum/templates/forum/about.html` satır 276-392 kaldırıldı, yerine kısa metin + "Uzman Dizinini
