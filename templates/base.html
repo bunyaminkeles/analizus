@@ -1092,6 +1092,10 @@
 .ax-ai-fab__label { white-space: nowrap; }
 .ax-ai-fab.ax-ai-fab--open { background: linear-gradient(135deg, #4f46e5, #7c3aed); }
 
+/* Mobil menü (drawer) açıkken widget'ı gizle — ikisi de sağ-alt köşeye sabit, z-index'i
+   düşük olan drawer'ın üstüne biniyordu */
+body.ax-no-scroll #ax-ai-widget { display: none; }
+
 /* Popup ortak */
 .ax-ai-popup {
   position: fixed;
