@@ -933,6 +933,12 @@ ekran dışındaydı. Şimdi mobil önce: yazı 2xl, `min-width:480px`'te 4xl; d
 yalnız logo görseli. Navbar'a yeni ikon/metin eklerken 360 px'te giriş yapılmış hâlde ölç (Playwright +
 session çerezi; bkz. §26).
 
+**Masaüstü ucu (13-15 Ekim 2026):** aynı bütçenin üst tarafı da taşıyordu — `.site-nav__menu`/`.site-nav__auth`/
+`.site-nav__user-btn`/`.site-nav__hamburger` kırılımı 1024px'ti, ama Playwright ölçümü oturumsuz navbar'ın en az
+1140px, oturum açıkken en az 1180px gerektirdiğini gösterdi; 1024-1279px arası (iPad yatay, küçük laptop/Safari
+tam ekran olmayan pencere) masaüstü menüsü erken açılıp Giriş/Kayıt/kullanıcı adı ekranın sağından taşıyordu.
+Kırılım tasarım sisteminin kendi `--ax-container-max`/`ax-xl` sınırı olan 1280px'e çekildi (detay §27 CSS/Frontend).
+
 ### Bootstrap Kaldırma Migrasyonu (Faz 3 sürüyor — 12 Ekim 2026)
 Kademeli plan: Faz 1 (eksik `ax-*` CSS bileşenlerini inşa et) ve Faz 2
 (vanilla JS modal/dropdown controller — `ax-modal.js`/`ax-dropdown.js`)
@@ -2465,6 +2471,17 @@ with connection.cursor() as c:
     `unfold/layouts/base_simple.html` kullanıyor, Unfold'un `tab_list` tag'i bu şablonda hiç render edilmiyor —
     sekmeyi orada da göstermek `settings.py` dışında 2 template dosyasına elle müdahale gerektirir (teknik kısıt
     detayı §26'da). Kullanıcı bu kapsam genişlemesini onaylamadı, şimdilik sidebar'da bırakıldı.
+- **13-15 Ekim 2026 — Mobil admin + navigasyon grafiği turu (canlıda; main; migration yok):**
+  - Unfold admin'de `UNFOLD["THEME"]` hiç tanımlı değildi (varsayılan "auto") — admin'in özel şablonları
+    (`chart.html`, `active_now.html`) yalnızca koyu tema renkleri (`#f1f5f9` vb.) kullanıyor; cihaza özel
+    `localStorage` (Alpine `$persist`) mobilde açık temaya düşünce istatistik sayıları/kullanıcı adları beyaz
+    zeminde görünmez oluyordu. `settings.py`'ye `"THEME": "dark"` eklenerek admin tüm cihazlarda sabit koyu
+    temaya alındı (tema değiştirme butonu kasıtlı olarak kayboldu).
+  - Navigasyon Grafiği "En Çok Ziyaret Edilen Sayfalar"ından `Onboarding` ve `/verification-pending/` artık
+    hariç (`analytics/admin.py` `_TRANSIT_TAB_NAMES`, `top_n()`'e `extra_exclude` parametresi eklendi) — ikisi
+    de zorunlu yönlendirme (`EmailVerificationMiddleware` / e-posta doğrulaması sonrası tek seferlik onboarding),
+    organik ziyaret değil; ham `PageView` kaydı ve kullanıcı bazlı Navigasyon Akışı etkilenmedi (destek/debug
+    amaçlı orada görünmeye devam ediyor). Sentetik kayıt + `transaction.atomic()` rollback ile doğrulandı.
 
 #### AI Asistan
 
@@ -2646,6 +2663,21 @@ with connection.cursor() as c:
   - **Vitrin sorgusu:** `forum/views.py`'deki `home()`/`forum_index()` artık ortak `_trending_topics()` yardımcısını kullanıyor — sıralama `-views` yerine `Exists()` ile "uzman cevaplı öncelik, dolmazsa son aktif" (N+1 yok). `_gundem_tartismalar.html`'e "Uzman cevapladı" rozeti (`ax-badge--primary`) + cevap sayısı eklendi; `trend_topics.css`'te mobil taşma için `flex-wrap` düzeltmesi (`?v=0002`).
   - **Render dev'deki bilinen boşluk:** 2 konu (`danismanlik` kategorisi — KVKK anonimleştirme, kapsam kayması) Render'da yayınlanamadı çünkü o ortamın taksonomisinde danışmanlık/serbest-çalışma temalı **hiçbir kategori yok** (kod hatası değil, gerçek eksiklik) — production'da aynı konular `tez-danismanligi` kategorisine düştü ve sorunsuz yayınlandı.
   - **Deploy notu:** Hetzner'de migration gerekmedi (sadece veri + 2 yeni management komutu). Render dev senkronu `deploy.sh`'e geçici satır ekleyip push edilerek yapıldı, doğrulandıktan sonra kaldırıldı (§26'daki "Render'da shell erişimi yok" dersine bkz.).
+
+- **13-15 Ekim 2026 — Mobil görüntüleme turu (canlıda; main; migration yok):**
+  - AI Asistan yüzen butonu (`z-index:9991`) mobil menü/modal açıkken (`body.ax-no-scroll` — drawer ve
+    `ax-modal.js` ortak kullanıyor) Giriş Yap/Kayıt Ol butonlarının üzerine biniyordu (ikisi de sağ-alt köşeye
+    sabit, drawer'ın z-index'i çok düşüktü) — `templates/base.html`'e `body.ax-no-scroll #ax-ai-widget{display:
+    none}` eklendi.
+  - **Masaüstü navbar 1024-1279px arası taşma:** Playwright ölçümü — oturumsuz navbar en az 1140px, oturum
+    açıkken en az 1180px genişlik istiyor; `.site-nav__menu`/`.site-nav__auth`/`.site-nav__user-btn`/
+    `.site-nav__hamburger` kırılımı 1024px'ti, bu aralıkta (iPad yatay, küçük laptop/Safari tam ekran olmayan
+    pencere) masaüstü menüsü erken açılıp Giriş/Kayıt/kullanıcı adı ekranın sağından taşıp görünmez oluyordu.
+    Kırılım tasarım sisteminin kendi `--ax-container-max`/`ax-xl` sınırı olan **1280px**'e çekildi
+    (`static/css/navbar.css`, 4 yer) — bkz. "Mobil Navbar Genişlik Bütçesi" notu (§10), bu aynı bütçenin
+    masaüstü ucu. **Tuzak hatırlatması doğrulandı:** `navbar.css` "ölü dosya" (bkz. §26) — `rcssmin` ile
+    `bundle.css` yeniden üretilmeden değişiklik sitede görünmüyor; bu turda doğru şekilde yeniden üretildi
+    (`?v=0013`→`?v=0014`).
 
 
 ### Sıradaki Görevler
