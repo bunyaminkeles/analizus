@@ -1,0 +1,67 @@
+{% extends "unfold/layouts/base_simple.html" %}
+{% load i18n %}
+
+{% block content %}
+<style>
+  .nav-card { border-radius:.75rem; border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.03); padding:1.25rem; }
+  .nav-muted { font-size:.75rem; color:#6b7280; }
+</style>
+
+<div class="max-w-6xl mx-auto py-6 px-2">
+
+  <div style="margin-bottom:1.5rem;">
+    <h1 style="font-size:1.5rem;font-weight:600;color:#f1f5f9;margin:0;">{{ title }}</h1>
+    <p class="nav-muted" style="margin-top:.25rem;">Son 30 gün, adminler hariç</p>
+  </div>
+
+  <div class="nav-card" style="margin-bottom:1.5rem;">
+    <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:.75rem;text-align:center;">
+      <a href="/admin/oaipmh/alexsearchjobproxy/?status__exact=completed&total_results__exact=0" style="text-decoration:none;">
+      <div style="padding:.75rem;border-radius:.5rem;background:rgba(248,113,113,.08);">
+        <div style="font-size:1.5rem;font-weight:700;color:#f87171;">{{ zero_result_summary.openalex }}</div>
+        <div class="nav-muted" style="margin-top:.25rem;">OpenAlex</div>
+      </div></a>
+      <a href="/admin/oaipmh/dizinsearchjobproxy/?status__exact=completed&total_results__exact=0" style="text-decoration:none;">
+      <div style="padding:.75rem;border-radius:.5rem;background:rgba(248,113,113,.08);">
+        <div style="font-size:1.5rem;font-weight:700;color:#f87171;">{{ zero_result_summary.trdizin }}</div>
+        <div class="nav-muted" style="margin-top:.25rem;">TR Dizin</div>
+      </div></a>
+      <a href="/admin/semanticscholar/semanticsearchjob/?status__exact=completed&total_results__exact=0" style="text-decoration:none;">
+      <div style="padding:.75rem;border-radius:.5rem;background:rgba(248,113,113,.08);">
+        <div style="font-size:1.5rem;font-weight:700;color:#f87171;">{{ zero_result_summary.semanticscholar }}</div>
+        <div class="nav-muted" style="margin-top:.25rem;">Semantic Scholar</div>
+      </div></a>
+      <a href="/admin/pubmed/pubmedsearchjob/?status__exact=completed&total_results__exact=0" style="text-decoration:none;">
+      <div style="padding:.75rem;border-radius:.5rem;background:rgba(248,113,113,.08);">
+        <div style="font-size:1.5rem;font-weight:700;color:#f87171;">{{ zero_result_summary.pubmed }}</div>
+        <div class="nav-muted" style="margin-top:.25rem;">PubMed</div>
+      </div></a>
+      <a href="/admin/oaipmh/yoktezsearchjobproxy/?status__exact=completed&total_results__exact=0" style="text-decoration:none;">
+      <div style="padding:.75rem;border-radius:.5rem;background:rgba(248,113,113,.08);">
+        <div style="font-size:1.5rem;font-weight:700;color:#f87171;">{{ zero_result_summary.yoktez }}</div>
+        <div class="nav-muted" style="margin-top:.25rem;">YÖK Tez</div>
+      </div></a>
+      <a href="/admin/oaipmh/oaipmhsearchjob/?status__exact=completed&total_results__exact=0" style="text-decoration:none;">
+      <div style="padding:.75rem;border-radius:.5rem;background:rgba(248,113,113,.08);">
+        <div style="font-size:1.5rem;font-weight:700;color:#f87171;">{{ zero_result_summary.oaipmh }}</div>
+        <div class="nav-muted" style="margin-top:.25rem;">OAI-PMH</div>
+      </div></a>
+    </div>
+  </div>
+
+  {% if yoktez_flagged_universities %}
+  <div class="nav-card">
+    <div style="font-size:.875rem;font-weight:600;color:#fbbf24;margin-bottom:.75rem;">⚠ YÖK Tez: incelenmesi gereken üniversiteler (canlı test 0 sonuç döndü)</div>
+    <ul style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.5rem;">
+      {% for uni in yoktez_flagged_universities %}
+      <li style="font-size:.85rem;color:#e2e8f0;">
+        <a href="/admin/yoktez/yoktezuniversite/{{ uni.pk }}/change/" style="color:#818cf8;text-decoration:none;">{{ uni.name }}</a>
+        <span class="nav-muted">— son test: {{ uni.last_checked_at|date:"d.m.Y H:i" }}, sonuç: {{ uni.last_result_count }}</span>
+      </li>
+      {% endfor %}
+    </ul>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

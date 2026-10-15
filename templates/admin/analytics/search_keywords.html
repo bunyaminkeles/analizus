@@ -1,0 +1,48 @@
+{% extends "unfold/layouts/base_simple.html" %}
+{% load i18n %}
+
+{% block content %}
+<style>
+  .nav-card { border-radius:.75rem; border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.03); padding:1.25rem; }
+  .nav-muted { font-size:.75rem; color:#6b7280; }
+</style>
+
+<div class="max-w-6xl mx-auto py-6 px-2">
+
+  <div style="margin-bottom:1.5rem;">
+    <h1 style="font-size:1.5rem;font-weight:600;color:#f1f5f9;margin:0;">{{ title }}</h1>
+    <p class="nav-muted" style="margin-top:.25rem;">6 tarama aracı (OpenAlex, TR Dizin, Semantic Scholar, PubMed, YÖK Tez, OAI-PMH) — adminler hariç</p>
+  </div>
+
+  <div class="nav-card">
+    <div style="height:560px;"><canvas id="keywordsChart"></canvas></div>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+var keywordLabels = {{ keyword_labels_json|safe }};
+var keywordCounts = {{ keyword_counts_json|safe }};
+document.addEventListener('DOMContentLoaded', function() {
+  if (keywordLabels.length > 0) {
+    new Chart(document.getElementById('keywordsChart').getContext('2d'), {
+      type: 'bar',
+      data: {
+        labels: keywordLabels,
+        datasets: [{ label: 'Arama Sayısı', data: keywordCounts, backgroundColor: 'rgba(52,211,153,.6)', borderColor: '#34d399', borderWidth: 1 }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid:{ color:'rgba(99,102,241,.08)' }, ticks:{ color:'#94a3b8' }, beginAtZero:true },
+          y: { grid:{ color:'rgba(99,102,241,.08)' }, ticks:{ color:'#94a3b8' } }
+        }
+      }
+    });
+  }
+});
+</script>
+{% endblock %}

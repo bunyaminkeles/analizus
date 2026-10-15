@@ -441,6 +441,16 @@ UNFOLD = {
                 },
                 # "Ziyaret Özetleri" menüde yok: 5 günden eski kayıtların arşivi, Navigasyon Grafiği zaten
                 # birleştirip gösteriyor; liste /admin/analytics/pageviewsummary/ adresinde duruyor
+                {
+                    "title": "0 Sonuç Aramalar",
+                    "icon": "search_off",
+                    "link": "/admin/analytics/pageview/sifir-sonuc/",
+                },
+                {
+                    "title": "Arama Kelimeleri",
+                    "icon": "travel_explore",
+                    "link": "/admin/analytics/pageview/arama-kelimeleri/",
+                },
             ],
         },
         # ─── 5. SİSTEM ───────────────────────────────────────────────

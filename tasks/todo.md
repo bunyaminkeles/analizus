@@ -10,6 +10,18 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
+- [ ] **(15 Ekim 2026, 2. planda — ertelendi)** Render `dev` ortamında
+  (`/admin/analytics/pageview/grafik/` — "Kullanıcı Navigasyon Analizi")
+  3 widget de "Kayıt yok" gösteriyor. Teşhis: `chart_view()` varsayılan
+  görünümde `is_staff=True` kullanıcıları hariç tutuyor
+  (`analytics/admin.py:182-186, 224-227`); dev'e girenler ya staff/test
+  hesabıyla geziniyor (filtrelerle eleniyor) ya da hiç login olmadan bakıyor
+  (`PageViewMiddleware` `is_authenticated` şartına takılıp hiç yazmıyor,
+  `analytics/middleware.py:22`). Ayrıca middleware hatayı sessizce yutuyor
+  (`except Exception: pass`, satır 35-36) — migration eksikse bile görünmez.
+  Kesinleştirmek için `/admin/analytics/pageview/` ham listesine bakılmalı
+  (o tarih aralığında satır var mı, varsa kullanıcılar staff mı). Kod
+  değişikliği YAPILMADI — kullanıcı isteyince ele alınacak.
 - [ ] **(15 Ekim 2026, admin dashboard kelime grafiği sırasında bulundu)**
   `forum/services/dashboard_service.py:160` → `from oaipmh.models import
   OAISearchJob` yanlış import, gerçek model adı `OAIPMHSearchJob`. `except

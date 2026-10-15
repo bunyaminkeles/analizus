@@ -339,18 +339,6 @@ def get_dashboard_context():
     labels30, u30, t30, p30 = build_daily_trend(30)
     labels90, u90, t90, p90 = build_weekly_trend(13)  # 13 hafta ≈ 90 gün
 
-    # === VERİ KAZIMA KELİME GRAFİĞİ ===
-    keyword_labels_json, keyword_counts_json = get_search_keywords_chart_data()
-
-    # === 0 SONUÇ ÖZETİ (son 30 gün) ===
-    zero_result_summary = get_zero_result_summary(30)
-
-    try:
-        from yoktez.models import YokTezUniversite
-        yoktez_flagged_universities = YokTezUniversite.objects.filter(flagged_for_review=True).count()
-    except Exception:
-        yoktez_flagged_universities = 0
-
     # === KATEGORİ ANALİZİ ===
     category_stats = Category.objects.annotate(
         topic_count=Count('topics'),
@@ -495,10 +483,6 @@ def get_dashboard_context():
         'user_trend_90_json':   json.dumps(u90),
         'topic_trend_90_json':  json.dumps(t90),
         'post_trend_90_json':   json.dumps(p90),
-        'keyword_labels_json':  keyword_labels_json,
-        'keyword_counts_json':  keyword_counts_json,
-        'zero_result_summary':  zero_result_summary,
-        'yoktez_flagged_universities': yoktez_flagged_universities,
         # Kullanıcı analizi
         'verified_users': verified_users,
         'unverified_users': unverified_users,

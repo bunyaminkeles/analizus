@@ -86,8 +86,40 @@ class PageViewAdmin(ModelAdmin):
         extra = [
             path('grafik/', self.admin_site.admin_view(self.chart_view), name='analytics_grafik'),
             path('aktif/', self.admin_site.admin_view(self.active_now_view), name='analytics_aktif'),
+            path('arama-kelimeleri/', self.admin_site.admin_view(self.search_keywords_view), name='analytics_search_keywords'),
+            path('sifir-sonuc/', self.admin_site.admin_view(self.zero_results_view), name='analytics_zero_results'),
         ]
         return extra + urls
+
+    def search_keywords_view(self, request):
+        from forum.services.dashboard_service import get_search_keywords_chart_data
+
+        labels_json, counts_json = get_search_keywords_chart_data()
+        context = {
+            **self.admin_site.each_context(request),
+            'title': 'En Çok Aranan Kelimeler',
+            'keyword_labels_json': labels_json,
+            'keyword_counts_json': counts_json,
+        }
+        return render(request, 'admin/analytics/search_keywords.html', context)
+
+    def zero_results_view(self, request):
+        from forum.services.dashboard_service import get_zero_result_summary
+
+        summary = get_zero_result_summary(30)
+        try:
+            from yoktez.models import YokTezUniversite
+            flagged_universities = YokTezUniversite.objects.filter(flagged_for_review=True).order_by('name')
+        except Exception:
+            flagged_universities = []
+
+        context = {
+            **self.admin_site.each_context(request),
+            'title': '0 Sonuç Dönen Aramalar',
+            'zero_result_summary': summary,
+            'yoktez_flagged_universities': flagged_universities,
+        }
+        return render(request, 'admin/analytics/zero_results.html', context)
 
     def active_now_view(self, request):
         """
