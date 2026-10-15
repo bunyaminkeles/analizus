@@ -66,6 +66,66 @@ def get_search_keywords_chart_data(top_n=25):
     return json.dumps(labels), json.dumps(data)
 
 
+def get_jobs_for_keyword(keyword, limit=50):
+    """Belirli bir kelimeyi içeren arama işlerini (araç, kullanıcı, tarih) döner — kelime grafiği drill-down'u için."""
+    keyword = (keyword or '').strip().lower()
+    if not keyword:
+        return []
+
+    def exclude_admins(qs):
+        return qs.exclude(user__is_staff=True).exclude(user__is_superuser=True)
+
+    def word_match(text):
+        if not text:
+            return False
+        words = re.findall(r"[a-zA-ZğüşıöçĞÜŞİÖÇ]+", str(text).lower())
+        return keyword in words
+
+    results = []
+
+    try:
+        from openalex.models import AlexSearchJob
+        from trdizin.models import DizinSearchJob
+        from semanticscholar.models import SemanticSearchJob
+        from pubmed.models import PubMedSearchJob
+        tool_names = {
+            AlexSearchJob: 'OpenAlex',
+            DizinSearchJob: 'TR Dizin',
+            SemanticSearchJob: 'Semantic Scholar',
+            PubMedSearchJob: 'PubMed',
+        }
+        for Model, tool_name in tool_names.items():
+            qs = exclude_admins(Model.objects.all()).select_related('user').only('id', 'user', 'query_parts', 'created_at')
+            for job in qs:
+                for part in (job.query_parts or []):
+                    if part.get('field') in ('title', 'abstract', 'keyword') and word_match(part.get('value')):
+                        results.append({'tool': tool_name, 'user': job.user.username, 'created_at': job.created_at, 'job_id': str(job.id)})
+                        break
+    except Exception:
+        pass
+
+    try:
+        from yoktez.models import YokTezSearchJob
+        qs = exclude_admins(YokTezSearchJob.objects.all()).select_related('user').only('id', 'user', 'tez_ad', 'metin', 'created_at')
+        for job in qs:
+            if word_match(job.tez_ad) or word_match(job.metin):
+                results.append({'tool': 'YÖK Tez', 'user': job.user.username, 'created_at': job.created_at, 'job_id': str(job.id)})
+    except Exception:
+        pass
+
+    try:
+        from oaipmh.models import OAIPMHSearchJob
+        qs = exclude_admins(OAIPMHSearchJob.objects.all()).select_related('user').only('id', 'user', 'keyword', 'abstract_query', 'created_at')
+        for job in qs:
+            if word_match(job.keyword) or word_match(job.abstract_query):
+                results.append({'tool': 'OAI-PMH', 'user': job.user.username, 'created_at': job.created_at, 'job_id': str(job.id)})
+    except Exception:
+        pass
+
+    results.sort(key=lambda r: r['created_at'], reverse=True)
+    return results[:limit]
+
+
 def get_zero_result_summary(days=30):
     """6 tarama aracında son N günde 0 sonuçla tamamlanan arama sayısı (admin/staff hariç)."""
     start = timezone.now() - timedelta(days=days)

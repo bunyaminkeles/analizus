@@ -15,7 +15,16 @@
   </div>
 
   <div class="nav-card">
+    <div class="nav-muted" style="margin-bottom:.5rem;">Bir çubuğa tıklayarak hangi araç/kullanıcıdan geldiğini görün</div>
     <div style="height:560px;"><canvas id="keywordsChart"></canvas></div>
+  </div>
+
+  <div id="keyword-detail" class="nav-card" style="display:none;margin-top:1.5rem;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;">
+      <span style="font-size:.875rem;font-weight:600;color:#e2e8f0;" id="keyword-detail-title"></span>
+      <button type="button" onclick="document.getElementById('keyword-detail').style.display='none';" style="background:none;border:none;color:#6b7280;cursor:pointer;font-size:.8rem;">✕ Kapat</button>
+    </div>
+    <div id="keyword-detail-body" class="nav-muted">Yükleniyor...</div>
   </div>
 
 </div>
@@ -24,6 +33,33 @@
 <script>
 var keywordLabels = {{ keyword_labels_json|safe }};
 var keywordCounts = {{ keyword_counts_json|safe }};
+var detailUrl = "{% url 'admin:analytics_search_keywords_detail' %}";
+
+function loadKeywordDetail(keyword) {
+  var panel = document.getElementById('keyword-detail');
+  var body = document.getElementById('keyword-detail-body');
+  document.getElementById('keyword-detail-title').textContent = '"' + keyword + '" kelimesini içeren aramalar';
+  panel.style.display = 'block';
+  body.textContent = 'Yükleniyor...';
+
+  fetch(detailUrl + '?keyword=' + encodeURIComponent(keyword))
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (!data.results.length) {
+        body.textContent = 'Kayıt bulunamadı.';
+        return;
+      }
+      var rows = data.results.map(function(r) {
+        var toolUser = r.tool + ' — ' + r.user + ' — ' + r.created_at;
+        return r.admin_url
+          ? '<li style="padding:.3rem 0;border-bottom:1px solid rgba(255,255,255,.06);"><a href="' + r.admin_url + '" style="color:#818cf8;text-decoration:none;" target="_blank" rel="noopener">' + toolUser + '</a></li>'
+          : '<li style="padding:.3rem 0;border-bottom:1px solid rgba(255,255,255,.06);color:#e2e8f0;">' + toolUser + '</li>';
+      });
+      body.innerHTML = '<ul style="list-style:none;margin:0;padding:0;font-size:.8125rem;">' + rows.join('') + '</ul>';
+    })
+    .catch(function() { body.textContent = 'Yüklenemedi, lütfen tekrar deneyin.'; });
+}
+
 document.addEventListener('DOMContentLoaded', function() {
   if (keywordLabels.length > 0) {
     new Chart(document.getElementById('keywordsChart').getContext('2d'), {
@@ -35,6 +71,14 @@ document.addEventListener('DOMContentLoaded', function() {
       options: {
         indexAxis: 'y',
         responsive: true, maintainAspectRatio: false,
+        onClick: function(evt, elements) {
+          if (elements.length) {
+            loadKeywordDetail(keywordLabels[elements[0].index]);
+          }
+        },
+        onHover: function(evt, elements) {
+          evt.native.target.style.cursor = elements.length ? 'pointer' : 'default';
+        },
         plugins: { legend: { display: false } },
         scales: {
           x: { grid:{ color:'rgba(99,102,241,.08)' }, ticks:{ color:'#94a3b8' }, beginAtZero:true },

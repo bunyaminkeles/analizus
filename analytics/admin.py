@@ -6,6 +6,7 @@ from django.contrib import admin
 from django.contrib.auth.models import User
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import Count, Sum, Min, Max
+from django.http import JsonResponse
 from django.shortcuts import render
 from django.urls import path
 from django.utils import timezone
@@ -87,6 +88,7 @@ class PageViewAdmin(ModelAdmin):
             path('grafik/', self.admin_site.admin_view(self.chart_view), name='analytics_grafik'),
             path('aktif/', self.admin_site.admin_view(self.active_now_view), name='analytics_aktif'),
             path('arama-kelimeleri/', self.admin_site.admin_view(self.search_keywords_view), name='analytics_search_keywords'),
+            path('arama-kelimeleri/detay/', self.admin_site.admin_view(self.search_keywords_detail_view), name='analytics_search_keywords_detail'),
             path('sifir-sonuc/', self.admin_site.admin_view(self.zero_results_view), name='analytics_zero_results'),
         ]
         return extra + urls
@@ -102,6 +104,36 @@ class PageViewAdmin(ModelAdmin):
             'keyword_counts_json': counts_json,
         }
         return render(request, 'admin/analytics/search_keywords.html', context)
+
+    # Kelime grafiğinde bir bara tıklayınca hangi araç/kullanıcıdan geldiğini gösterir
+    _KEYWORD_TOOL_ADMIN_URL_NAME = {
+        'OpenAlex': 'admin:oaipmh_alexsearchjobproxy_change',
+        'TR Dizin': 'admin:oaipmh_dizinsearchjobproxy_change',
+        'Semantic Scholar': 'admin:semanticscholar_semanticsearchjob_change',
+        'PubMed': 'admin:pubmed_pubmedsearchjob_change',
+        'YÖK Tez': 'admin:oaipmh_yoktezsearchjobproxy_change',
+        'OAI-PMH': 'admin:oaipmh_oaipmhsearchjob_change',
+    }
+
+    def search_keywords_detail_view(self, request):
+        from forum.services.dashboard_service import get_jobs_for_keyword
+
+        keyword = request.GET.get('keyword', '').strip()
+        jobs = get_jobs_for_keyword(keyword) if keyword else []
+        results = []
+        for j in jobs:
+            url_name = self._KEYWORD_TOOL_ADMIN_URL_NAME.get(j['tool'])
+            try:
+                admin_url = reverse(url_name, args=[j['job_id']]) if url_name else None
+            except Exception:
+                admin_url = None
+            results.append({
+                'tool': j['tool'],
+                'user': j['user'],
+                'created_at': j['created_at'].strftime('%d.%m.%Y %H:%M'),
+                'admin_url': admin_url,
+            })
+        return JsonResponse({'keyword': keyword, 'results': results})
 
     def zero_results_view(self, request):
         from forum.services.dashboard_service import get_zero_result_summary
