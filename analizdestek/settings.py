@@ -219,6 +219,7 @@ LOCALE_PATHS = [
 
 # --- ADMIN PANELİ AYARLARI (UNFOLD) ---
 from django.urls import reverse_lazy
+from django.templatetags.static import static
 
 UNFOLD = {
     "SITE_TITLE": "Analizus | Komuta Merkezi",
@@ -234,6 +235,12 @@ UNFOLD = {
     "SHOW_VIEW_ON_SITE": True,
     "SHOW_BACK_BUTTON": True,
     "DASHBOARD_CALLBACK": "forum.dashboard.dashboard_callback",
+    # Üst başlık çubuğunu (sidebar aç/kapa ikonu + sayfa başlığı) scroll'da sabit tutar —
+    # tüm admin sayfalarında (dashboard, changelist, özel analytics view'ları) ortak kök
+    # şablon (unfold/layouts/skeleton.html) üzerinden yüklenir, vendor şablon değişmeden.
+    "STYLES": [
+        lambda request: static("css/admin_sticky_header.css"),
+    ],
     "COLORS": {
         "font": {
             "subtle-light": "107 114 128",   # gray-500

@@ -1,0 +1,7 @@
+/* Üst başlık çubuğu (sidebar aç/kapa ikonu + sayfa başlığı) scroll'da sabit kalsın.
+   Bu div, unfold/helpers/header.html'in kökü — tüm admin sayfalarında (dashboard,
+   changelist, özel analytics view'ları) #main'in ilk çocuğu olarak render edilir. */
+#main > div:first-child {
+    position: sticky;
+    top: 0;
+}
