@@ -432,32 +432,20 @@ UNFOLD = {
             "collapsible": False,
             "items": [
                 {
-                    "title": "Şu An Aktif",
-                    "icon": "sensors",
-                    "link": "/admin/analytics/pageview/aktif/",
+                    "title": "Davranış Analizi",
+                    "icon": "bar_chart",
+                    "link": "/admin/analytics/pageview/davranis-analizi/",
                 },
                 {
                     "title": "Sayfa Ziyaretleri",
                     "icon": "visibility",
                     "link": reverse_lazy("admin:analytics_pageview_changelist"),
                 },
-                {
-                    "title": "Navigasyon Grafiği",
-                    "icon": "bar_chart",
-                    "link": "/admin/analytics/pageview/grafik/",
-                },
-                # "Ziyaret Özetleri" menüde yok: 5 günden eski kayıtların arşivi, Navigasyon Grafiği zaten
-                # birleştirip gösteriyor; liste /admin/analytics/pageviewsummary/ adresinde duruyor
-                {
-                    "title": "0 Sonuç Aramalar",
-                    "icon": "search_off",
-                    "link": "/admin/analytics/pageview/sifir-sonuc/",
-                },
-                {
-                    "title": "Arama Kelimeleri",
-                    "icon": "travel_explore",
-                    "link": "/admin/analytics/pageview/arama-kelimeleri/",
-                },
+                # Şu An Aktif / Navigasyon Grafiği / 0 Sonuç Aramalar / Arama Kelimeleri artık
+                # "Davranış Analizi" sayfasında sekme — standalone URL'leri hâlâ var (derin
+                # linkler için, bkz. user_analysis_link()) ama sidebar'da ayrı yer kaplamıyor.
+                # "Ziyaret Özetleri" de menüde yok: 5 günden eski kayıtların arşivi, Navigasyon
+                # Grafiği zaten birleştirip gösteriyor; liste /admin/analytics/pageviewsummary/ adresinde duruyor
             ],
         },
         # ─── 5. SİSTEM ───────────────────────────────────────────────
