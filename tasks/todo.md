@@ -51,6 +51,12 @@ maddelerde.
   farklı olarak Unfold değil düz Django `ModelAdmin` kullanıyor, ayrıca
   `get_query_summary` sütunu yok (sadece ham `status/total_results/created_at`
   görünüyor) — görsel/işlevsel tutarsızlık, ayrı görev olarak ele alınmalı.
+- [x] **TAMAMLANDI (15 Ekim 2026) — Admin dashboard analitik turu: arama kelime
+  grafiği + 0-sonuç ikazı + YÖK Tez/OAI-PMH üniversite canlı tespiti, `main`'de
+  canlı (production'da uçtan uca doğrulandı — İTÜ + Dokuz Eylül Ü. gerçekten
+  flagged oldu, admin e-postası geldi).** Detaylı anlatım: `analizus.md` §27
+  "Geçmiş Turlar" en üstteki madde. Yukarıdaki 4 açık madde bu turda bulundu,
+  henüz çözülmedi.
 - [x] **TAMAMLANDI (13 Ekim 2026) — Claude AI Yorumu Faz C: OpenAlex ve PubMed
   tarama sonuçlarına AI yorumu eklendi, `main`'de canlı.** Faz A/B (istatistik
   araçları) ile aynı desen: `AlexSearchJob`/`PubMedSearchJob`'a `ai_comment`

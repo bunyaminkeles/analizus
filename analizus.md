@@ -2744,7 +2744,47 @@ with connection.cursor() as c:
 
 > Önceki düz-yazı günlük biçiminden madde listesine dönüştürülmüştür; cümleler değişmeden taşınmıştır.
 
-- **En son (12 Ekim 2026, dördüncü tur):** Ana sayfa UX kontrolü turu
+- **En son (15 Ekim 2026):** Admin dashboard analitik turu — **iki ayrı `dev`→`main` `--no-ff`
+  merge** (ikisi de migration içerdi, her ikisinde de push öncesi kullanıcıdan
+  `scripts/yedek_indir.sh --simdi` istendi). **1) Kelime grafiği + 0-sonuç ikazı:**
+  `forum/services/dashboard_service.py`'e `get_search_keywords_chart_data()` (6 tarama
+  aracı — OpenAlex/TrDizin/SemanticScholar/PubMed/YÖK Tez/OAI-PMH — sorgu kelimelerini
+  admin/staff hariç sayar) ve `get_zero_result_summary()` eklendi; TrDizin/YÖK
+  Tez/SemanticScholar/OAI-PMH'nin portal sayfalarına (4'ünde eksikti) PubMed'deki
+  mevcut "sonuç bulunamadı" çeviri metni eklendi (yeni çeviri gerekmedi). **2) Davranış
+  Analizi konsolidasyonu** (kullanıcı isteği — sidebar az yer kaplasın): Şu An Aktif /
+  Navigasyon Grafiği / 0 Sonuç Aramalar / Arama Kelimeleri, ortak context-oluşturma
+  metodları (`_active_now_context` vb., `analytics/admin.py`) paylaşılarak tek
+  `behavior_analysis.html` sayfasında sekme (tab) oldu; "Sayfa Ziyaretleri" (tam
+  Django changelist olduğu için) ayrı kaldı; standalone URL'ler (`grafik/`, `aktif/`
+  vb.) `user_analysis_link()` derin linkleri için korundu. Kelime grafiğine
+  drill-down eklendi (bara tıklayınca `get_jobs_for_keyword()` ile hangi araç/
+  kullanıcıdan geldiği gösteriliyor). Admin üst başlık çubuğu (`unfold/helpers/
+  header.html`) `UNFOLD["STYLES"]` mekanizmasıyla (vendor şablona dokunmadan, yeni
+  `static/css/admin_sticky_header.css`) scroll'da sabitlendi — tüm admin sayfalarında
+  doğrulandı. **3) Üniversite canlı tespiti — YANLIŞ HEDEFTEN DÜZELTME:** Kullanıcının
+  "Üni tezlerinden 0 dönenler tekrar tespit edilsin" isteği önce YÖK Tez'in sabit
+  üniversite ID dict'i sanılıp `YokTezUniversite` DB modeline taşındı (migration,
+  admin, canlı test komutu, cron endpoint `/api/cron/check-yoktez-universities/`) —
+  kullanıcı sonradan asıl kastının **OAI-PMH**'nin "Üniversitenin Tüm Tezleri"
+  (browse) özelliği olduğunu netleştirdi (ör. ODTÜ seçip 0 sonuç alan kullanıcı);
+  YokTez'deki iş zararsız olduğu için olduğu gibi bırakıldı (kullanıcı kararı), asıl
+  istenen `oaipmh.University` modeline aynı desenle (`last_checked_at`/
+  `last_result_count`/`flagged_for_review`, migration 0009) + gerçek
+  `OAIPMHScraper.browse_university()` ile canlı test + `/api/cron/
+  check-oaipmh-universities/` + **yeni işaretlenen üniversiteler için admin'e
+  e-posta bildirimi** (`forum/email_utils.py:notify_admin_oaipmh_flagged_universities`,
+  mevcut "ADMİN BİLDİRİM SİSTEMİ" deseniyle) eklendi. **Production'da uçtan uca canlı
+  doğrulandı:** kullanıcı Hetzner crontab'ına satırı ekledi, `curl` ile tetiklendi,
+  İTÜ ve Dokuz Eylül Üniversitesi gerçekten 0 sonuçla işaretlendi, admin e-postası
+  doğru içerikle ulaştı. **Ayrıca bulunup todo'ya eklenen (kod değişikliği
+  yapılmadı):** YÖK Tez'in "Başlık"/"Özet" alanı virgülle ayrılmış kelimeleri OR
+  olarak değil tam ifade olarak arıyor (`yoktez/services/scraper.py:_determine_query`)
+  — muhtemelen birçok 0-sonuç aramanın kök nedeni, ürün kararı bekliyor; Render
+  `dev` ortamında Navigasyon Grafiği'nin "Kayıt yok" göstermesi teşhis edildi
+  (`is_staff` filtresi + anonim trafik hiç `PageView` yazmıyor) ama 2. planda,
+  düzeltilmedi. Her adımda `forum/tests.py` 90/90 yeşil.
+- **Önceki (12 Ekim 2026, dördüncü tur):** Ana sayfa UX kontrolü turu
   (`anasayfa_ux_kontrol_prompt.md` — salt okunur tespit, ardından onaylı
   düzeltme; bir önceki hero turuyla birlikte değerlendirildi), `dev`'den
   `main`'e `--no-ff` merge edilip push edildi (migration yok, Render +
