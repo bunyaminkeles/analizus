@@ -6,6 +6,7 @@ from django.contrib import admin
 from django.contrib.auth.models import User
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import Count, Sum, Min, Max
+from django.http import JsonResponse
 from django.shortcuts import render
 from django.urls import path
 from django.utils import timezone
@@ -84,12 +85,111 @@ class PageViewAdmin(ModelAdmin):
     def get_urls(self):
         urls = super().get_urls()
         extra = [
+            path('davranis-analizi/', self.admin_site.admin_view(self.behavior_analysis_view), name='analytics_behavior_analysis'),
             path('grafik/', self.admin_site.admin_view(self.chart_view), name='analytics_grafik'),
             path('aktif/', self.admin_site.admin_view(self.active_now_view), name='analytics_aktif'),
+            path('arama-kelimeleri/', self.admin_site.admin_view(self.search_keywords_view), name='analytics_search_keywords'),
+            path('arama-kelimeleri/detay/', self.admin_site.admin_view(self.search_keywords_detail_view), name='analytics_search_keywords_detail'),
+            path('sifir-sonuc/', self.admin_site.admin_view(self.zero_results_view), name='analytics_zero_results'),
         ]
         return extra + urls
 
+    def behavior_analysis_view(self, request):
+        """
+        Şu An Aktif / Navigasyon Grafiği / 0 Sonuç Aramalar / Arama Kelimeleri'ni tek sayfada
+        sekme olarak birleştirir (sidebar'da az yer kaplasın diye) — her sekme, standalone
+        sayfasıyla aynı context-oluşturma metodunu kullanır (_active_now_context vb.),
+        böylece mantık tekrarlanmıyor. Standalone sayfalar (grafik/, aktif/ vb.) kaldırılmadı:
+        user_analysis_link() ve active_now.html'deki "?user=" derin linkleri hâlâ o sayfalara
+        gidiyor — kendi başına tam bir sayfa, filtre durumu daha net.
+        """
+        requested_user = request.GET.get('user', '').strip()
+        default_tab = 'grafik' if requested_user else 'aktif'
+
+        context = {
+            **self.admin_site.each_context(request),
+            'title': 'Davranış Analizi',
+            'default_tab': default_tab,
+            **self._active_now_context(request),
+            **self._chart_context(request),
+            **self._search_keywords_context(),
+            **self._zero_results_context(),
+        }
+        return render(request, 'admin/analytics/behavior_analysis.html', context)
+
+    def search_keywords_view(self, request):
+        context = {
+            **self.admin_site.each_context(request),
+            'title': 'En Çok Aranan Kelimeler',
+            **self._search_keywords_context(),
+        }
+        return render(request, 'admin/analytics/search_keywords.html', context)
+
+    def _search_keywords_context(self):
+        from forum.services.dashboard_service import get_search_keywords_chart_data
+
+        labels_json, counts_json = get_search_keywords_chart_data()
+        return {'keyword_labels_json': labels_json, 'keyword_counts_json': counts_json}
+
+    # Kelime grafiğinde bir bara tıklayınca hangi araç/kullanıcıdan geldiğini gösterir
+    _KEYWORD_TOOL_ADMIN_URL_NAME = {
+        'OpenAlex': 'admin:oaipmh_alexsearchjobproxy_change',
+        'TR Dizin': 'admin:oaipmh_dizinsearchjobproxy_change',
+        'Semantic Scholar': 'admin:semanticscholar_semanticsearchjob_change',
+        'PubMed': 'admin:pubmed_pubmedsearchjob_change',
+        'YÖK Tez': 'admin:oaipmh_yoktezsearchjobproxy_change',
+        'OAI-PMH': 'admin:oaipmh_oaipmhsearchjob_change',
+    }
+
+    def search_keywords_detail_view(self, request):
+        from forum.services.dashboard_service import get_jobs_for_keyword
+
+        keyword = request.GET.get('keyword', '').strip()
+        jobs = get_jobs_for_keyword(keyword) if keyword else []
+        results = []
+        for j in jobs:
+            url_name = self._KEYWORD_TOOL_ADMIN_URL_NAME.get(j['tool'])
+            try:
+                admin_url = reverse(url_name, args=[j['job_id']]) if url_name else None
+            except Exception:
+                admin_url = None
+            results.append({
+                'tool': j['tool'],
+                'user': j['user'],
+                'created_at': j['created_at'].strftime('%d.%m.%Y %H:%M'),
+                'admin_url': admin_url,
+            })
+        return JsonResponse({'keyword': keyword, 'results': results})
+
+    def zero_results_view(self, request):
+        context = {
+            **self.admin_site.each_context(request),
+            'title': '0 Sonuç Dönen Aramalar',
+            **self._zero_results_context(),
+        }
+        return render(request, 'admin/analytics/zero_results.html', context)
+
+    def _zero_results_context(self):
+        from forum.services.dashboard_service import get_zero_result_summary
+
+        summary = get_zero_result_summary(30)
+        try:
+            from yoktez.models import YokTezUniversite
+            flagged_universities = YokTezUniversite.objects.filter(flagged_for_review=True).order_by('name')
+        except Exception:
+            flagged_universities = []
+
+        return {'zero_result_summary': summary, 'yoktez_flagged_universities': flagged_universities}
+
     def active_now_view(self, request):
+        context = {
+            **self.admin_site.each_context(request),
+            'title': 'Şu An Aktif',
+            **self._active_now_context(request),
+        }
+        return render(request, 'admin/analytics/active_now.html', context)
+
+    def _active_now_context(self, request):
         """
         Son ACTIVE_NOW_MINUTES dakikada aktif kullanıcılar — Profile.last_seen üzerinden (profil kartındaki
         yeşil "çevrimiçi" noktasıyla aynı sinyal). last_seen HER girişli istekte güncellenir (API/WebSocket/
@@ -129,16 +229,21 @@ class PageViewAdmin(ModelAdmin):
                 'timestamp': profile.last_seen,
             })
 
-        context = {
-            **self.admin_site.each_context(request),
-            'title': 'Şu An Aktif',
+        return {
             'active_users': active_users,
             'active_minutes': ACTIVE_NOW_MINUTES,
             'now': timezone.now(),
         }
-        return render(request, 'admin/analytics/active_now.html', context)
 
     def chart_view(self, request):
+        context = {
+            **self.admin_site.each_context(request),
+            'title': 'Kullanıcı Navigasyon Analizi',
+            **self._chart_context(request),
+        }
+        return render(request, 'admin/analytics/chart.html', context)
+
+    def _chart_context(self, request):
         """
         Ham loglar (PageView) 5 günden eskisi cleanup_pageviews tarafından
         PageViewSummary'e taşınıp silindiği için, tüm geçmişi göstermek adına
@@ -246,9 +351,7 @@ class PageViewAdmin(ModelAdmin):
                 'flow_capped': len(views) == FLOW_LIMIT,
             }
 
-        context = {
-            **self.admin_site.each_context(request),
-            'title': 'Kullanıcı Navigasyon Analizi',
+        return {
             'top_pages_json': json.dumps(top_pages, cls=DjangoJSONEncoder),
             'daily_json': json.dumps(daily, cls=DjangoJSONEncoder),
             'top_users_json': json.dumps(top_users, cls=DjangoJSONEncoder),
@@ -263,7 +366,6 @@ class PageViewAdmin(ModelAdmin):
             'range_active': bool(start_param or end_param),
             'today_iso': today.isoformat(),
         }
-        return render(request, 'admin/analytics/chart.html', context)
 
 
 @admin.register(PageViewSummary)

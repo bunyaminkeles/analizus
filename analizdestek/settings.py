@@ -219,6 +219,7 @@ LOCALE_PATHS = [
 
 # --- ADMIN PANELİ AYARLARI (UNFOLD) ---
 from django.urls import reverse_lazy
+from django.templatetags.static import static
 
 UNFOLD = {
     "SITE_TITLE": "Analizus | Komuta Merkezi",
@@ -234,6 +235,12 @@ UNFOLD = {
     "SHOW_VIEW_ON_SITE": True,
     "SHOW_BACK_BUTTON": True,
     "DASHBOARD_CALLBACK": "forum.dashboard.dashboard_callback",
+    # Üst başlık çubuğunu (sidebar aç/kapa ikonu + sayfa başlığı) scroll'da sabit tutar —
+    # tüm admin sayfalarında (dashboard, changelist, özel analytics view'ları) ortak kök
+    # şablon (unfold/layouts/skeleton.html) üzerinden yüklenir, vendor şablon değişmeden.
+    "STYLES": [
+        lambda request: static("css/admin_sticky_header.css"),
+    ],
     "COLORS": {
         "font": {
             "subtle-light": "107 114 128",   # gray-500
@@ -392,6 +399,11 @@ UNFOLD = {
                     "link": reverse_lazy("admin:oaipmh_university_changelist"),
                 },
                 {
+                    "title": "YÖK Tez Üniversiteleri",
+                    "icon": "domain",
+                    "link": reverse_lazy("admin:yoktez_yoktezuniversite_changelist"),
+                },
+                {
                     "title": "Tez Analizleri",
                     "icon": "biotech",
                     "link": reverse_lazy("admin:tezanaliz_tezanaliz_changelist"),
@@ -420,22 +432,20 @@ UNFOLD = {
             "collapsible": False,
             "items": [
                 {
-                    "title": "Şu An Aktif",
-                    "icon": "sensors",
-                    "link": "/admin/analytics/pageview/aktif/",
+                    "title": "Davranış Analizi",
+                    "icon": "bar_chart",
+                    "link": "/admin/analytics/pageview/davranis-analizi/",
                 },
                 {
                     "title": "Sayfa Ziyaretleri",
                     "icon": "visibility",
                     "link": reverse_lazy("admin:analytics_pageview_changelist"),
                 },
-                {
-                    "title": "Navigasyon Grafiği",
-                    "icon": "bar_chart",
-                    "link": "/admin/analytics/pageview/grafik/",
-                },
-                # "Ziyaret Özetleri" menüde yok: 5 günden eski kayıtların arşivi, Navigasyon Grafiği zaten
-                # birleştirip gösteriyor; liste /admin/analytics/pageviewsummary/ adresinde duruyor
+                # Şu An Aktif / Navigasyon Grafiği / 0 Sonuç Aramalar / Arama Kelimeleri artık
+                # "Davranış Analizi" sayfasında sekme — standalone URL'leri hâlâ var (derin
+                # linkler için, bkz. user_analysis_link()) ama sidebar'da ayrı yer kaplamıyor.
+                # "Ziyaret Özetleri" de menüde yok: 5 günden eski kayıtların arşivi, Navigasyon
+                # Grafiği zaten birleştirip gösteriyor; liste /admin/analytics/pageviewsummary/ adresinde duruyor
             ],
         },
         # ─── 5. SİSTEM ───────────────────────────────────────────────

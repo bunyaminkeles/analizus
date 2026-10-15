@@ -1,0 +1,92 @@
+{% extends "unfold/layouts/base_simple.html" %}
+{% load i18n %}
+
+{% block content %}
+<style>
+  .nav-card { border-radius:.75rem; border:1px solid rgba(255,255,255,.08); background:rgba(255,255,255,.03); padding:1.25rem; }
+  .nav-muted { font-size:.75rem; color:#6b7280; }
+</style>
+
+<div class="max-w-6xl mx-auto py-6 px-2">
+
+  <div style="margin-bottom:1.5rem;">
+    <h1 style="font-size:1.5rem;font-weight:600;color:#f1f5f9;margin:0;">{{ title }}</h1>
+    <p class="nav-muted" style="margin-top:.25rem;">6 tarama aracı (OpenAlex, TR Dizin, Semantic Scholar, PubMed, YÖK Tez, OAI-PMH) — adminler hariç</p>
+  </div>
+
+  <div class="nav-card">
+    <div class="nav-muted" style="margin-bottom:.5rem;">Bir çubuğa tıklayarak hangi araç/kullanıcıdan geldiğini görün</div>
+    <div style="height:560px;"><canvas id="keywordsChart"></canvas></div>
+  </div>
+
+  <div id="keyword-detail" class="nav-card" style="display:none;margin-top:1.5rem;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;">
+      <span style="font-size:.875rem;font-weight:600;color:#e2e8f0;" id="keyword-detail-title"></span>
+      <button type="button" onclick="document.getElementById('keyword-detail').style.display='none';" style="background:none;border:none;color:#6b7280;cursor:pointer;font-size:.8rem;">✕ Kapat</button>
+    </div>
+    <div id="keyword-detail-body" class="nav-muted">Yükleniyor...</div>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+var keywordLabels = {{ keyword_labels_json|safe }};
+var keywordCounts = {{ keyword_counts_json|safe }};
+var detailUrl = "{% url 'admin:analytics_search_keywords_detail' %}";
+
+function loadKeywordDetail(keyword) {
+  var panel = document.getElementById('keyword-detail');
+  var body = document.getElementById('keyword-detail-body');
+  document.getElementById('keyword-detail-title').textContent = '"' + keyword + '" kelimesini içeren aramalar';
+  panel.style.display = 'block';
+  body.textContent = 'Yükleniyor...';
+
+  fetch(detailUrl + '?keyword=' + encodeURIComponent(keyword))
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      if (!data.results.length) {
+        body.textContent = 'Kayıt bulunamadı.';
+        return;
+      }
+      var rows = data.results.map(function(r) {
+        var toolUser = r.tool + ' — ' + r.user + ' — ' + r.created_at;
+        return r.admin_url
+          ? '<li style="padding:.3rem 0;border-bottom:1px solid rgba(255,255,255,.06);"><a href="' + r.admin_url + '" style="color:#818cf8;text-decoration:none;" target="_blank" rel="noopener">' + toolUser + '</a></li>'
+          : '<li style="padding:.3rem 0;border-bottom:1px solid rgba(255,255,255,.06);color:#e2e8f0;">' + toolUser + '</li>';
+      });
+      body.innerHTML = '<ul style="list-style:none;margin:0;padding:0;font-size:.8125rem;">' + rows.join('') + '</ul>';
+    })
+    .catch(function() { body.textContent = 'Yüklenemedi, lütfen tekrar deneyin.'; });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  if (keywordLabels.length > 0) {
+    new Chart(document.getElementById('keywordsChart').getContext('2d'), {
+      type: 'bar',
+      data: {
+        labels: keywordLabels,
+        datasets: [{ label: 'Arama Sayısı', data: keywordCounts, backgroundColor: 'rgba(52,211,153,.6)', borderColor: '#34d399', borderWidth: 1 }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true, maintainAspectRatio: false,
+        onClick: function(evt, elements) {
+          if (elements.length) {
+            loadKeywordDetail(keywordLabels[elements[0].index]);
+          }
+        },
+        onHover: function(evt, elements) {
+          evt.native.target.style.cursor = elements.length ? 'pointer' : 'default';
+        },
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid:{ color:'rgba(99,102,241,.08)' }, ticks:{ color:'#94a3b8' }, beginAtZero:true },
+          y: { grid:{ color:'rgba(99,102,241,.08)' }, ticks:{ color:'#94a3b8' } }
+        }
+      }
+    });
+  }
+});
+</script>
+{% endblock %}

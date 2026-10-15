@@ -1,5 +1,6 @@
 {% extends "tarama_console_base.html" %}
 {% load static %}
+{% load i18n %}
 
 {% block title %}YÖK Tez Arama ve Toplu Tez Tarama — Excel'e İndir | Analizus{% endblock %}
 {% block meta_description %}YÖK Ulusal Tez Merkezi arşivinde anahtar kelime, yazar veya danışmana göre tez arayın; toplam sonucu görün, en yeni 5 tezi Excel'e indirin. Bağımsız araç.{% endblock %}
@@ -313,8 +314,9 @@ function showResults(data) {
     document.getElementById('results-area').style.display = 'block';
 
     const demo = data.demo_results || [];
-    document.getElementById('results-summary').textContent =
-        `${data.total_results} tez bulundu — En yeni ${demo.length} örnek aşağıda`;
+    document.getElementById('results-summary').textContent = data.total_results
+        ? `${data.total_results} tez bulundu — En yeni ${demo.length} örnek aşağıda`
+        : `{% trans "Bu arama için sonuç bulunamadı. Kriterleri genişletmeyi deneyin." %}`;
 
     const list = document.getElementById('results-list');
     list.innerHTML = '';

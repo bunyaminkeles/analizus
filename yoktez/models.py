@@ -75,3 +75,21 @@ class YokTezSearchJob(models.Model):
         if hasattr(user, 'profile') and user.profile.is_premium:
             return 7
         return 3
+
+
+class YokTezUniversite(models.Model):
+    """YÖK Tez arama formundaki üniversite filtresi (eski DB sabit dict'ten taşındı)."""
+    name = models.CharField(max_length=200, unique=True, verbose_name='Üniversite Adı')
+    yok_id = models.CharField(max_length=10, verbose_name="YÖK ID")
+    is_active = models.BooleanField(default=True, verbose_name='Aktif')
+    last_checked_at = models.DateTimeField(null=True, blank=True, verbose_name='Son Kontrol')
+    last_result_count = models.IntegerField(null=True, blank=True, verbose_name='Son Test Sonuç Sayısı')
+    flagged_for_review = models.BooleanField(default=False, verbose_name='İncelenmesi Gerekiyor')
+
+    class Meta:
+        verbose_name = 'YÖK Tez Üniversitesi'
+        verbose_name_plural = 'YÖK Tez Üniversiteleri'
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name

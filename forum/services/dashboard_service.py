@@ -1,9 +1,159 @@
 import json
+import re
+from collections import Counter
 from datetime import timedelta
 
 from django.contrib.auth.models import User
 from django.db.models import Count, Sum, Q
 from django.utils import timezone
+
+
+_KEYWORD_STOPWORDS = {
+    've', 'ile', 'bir', 'bu', 'şu', 'da', 'de', 'için', 'gibi', 'çok', 'daha',
+    'en', 'ki', 'mi', 'mu', 'mü', 'mı', 'ya', 'ne', 'ama', 'veya', 'olan', 'olarak',
+    'the', 'and', 'of', 'in', 'a', 'to', 'for', 'on', 'with',
+}
+
+
+def get_search_keywords_chart_data(top_n=25):
+    """6 tarama aracındaki sorgu kelimelerinin frekans grafiği (admin/staff hariç)."""
+    counter = Counter()
+
+    def add_text(text):
+        if not text:
+            return
+        words = re.findall(r"[a-zA-ZğüşıöçĞÜŞİÖÇ]+", str(text).lower())
+        for w in words:
+            if len(w) < 3 or w in _KEYWORD_STOPWORDS:
+                continue
+            counter[w] += 1
+
+    def exclude_admins(qs):
+        return qs.exclude(user__is_staff=True).exclude(user__is_superuser=True)
+
+    try:
+        from openalex.models import AlexSearchJob
+        from trdizin.models import DizinSearchJob
+        from semanticscholar.models import SemanticSearchJob
+        from pubmed.models import PubMedSearchJob
+        for Model in (AlexSearchJob, DizinSearchJob, SemanticSearchJob, PubMedSearchJob):
+            for parts in exclude_admins(Model.objects.all()).values_list('query_parts', flat=True):
+                for part in (parts or []):
+                    if part.get('field') in ('title', 'abstract', 'keyword'):
+                        add_text(part.get('value'))
+    except Exception:
+        pass
+
+    try:
+        from yoktez.models import YokTezSearchJob
+        for tez_ad, metin in exclude_admins(YokTezSearchJob.objects.all()).values_list('tez_ad', 'metin'):
+            add_text(tez_ad)
+            add_text(metin)
+    except Exception:
+        pass
+
+    try:
+        from oaipmh.models import OAIPMHSearchJob
+        for keyword, abstract_query in exclude_admins(OAIPMHSearchJob.objects.all()).values_list('keyword', 'abstract_query'):
+            add_text(keyword)
+            add_text(abstract_query)
+    except Exception:
+        pass
+
+    top = counter.most_common(top_n)
+    labels = [w for w, _ in top]
+    data = [c for _, c in top]
+    return json.dumps(labels), json.dumps(data)
+
+
+def get_jobs_for_keyword(keyword, limit=50):
+    """Belirli bir kelimeyi içeren arama işlerini (araç, kullanıcı, tarih) döner — kelime grafiği drill-down'u için."""
+    keyword = (keyword or '').strip().lower()
+    if not keyword:
+        return []
+
+    def exclude_admins(qs):
+        return qs.exclude(user__is_staff=True).exclude(user__is_superuser=True)
+
+    def word_match(text):
+        if not text:
+            return False
+        words = re.findall(r"[a-zA-ZğüşıöçĞÜŞİÖÇ]+", str(text).lower())
+        return keyword in words
+
+    results = []
+
+    try:
+        from openalex.models import AlexSearchJob
+        from trdizin.models import DizinSearchJob
+        from semanticscholar.models import SemanticSearchJob
+        from pubmed.models import PubMedSearchJob
+        tool_names = {
+            AlexSearchJob: 'OpenAlex',
+            DizinSearchJob: 'TR Dizin',
+            SemanticSearchJob: 'Semantic Scholar',
+            PubMedSearchJob: 'PubMed',
+        }
+        for Model, tool_name in tool_names.items():
+            qs = exclude_admins(Model.objects.all()).select_related('user').only('id', 'user', 'query_parts', 'created_at')
+            for job in qs:
+                for part in (job.query_parts or []):
+                    if part.get('field') in ('title', 'abstract', 'keyword') and word_match(part.get('value')):
+                        results.append({'tool': tool_name, 'user': job.user.username, 'created_at': job.created_at, 'job_id': str(job.id)})
+                        break
+    except Exception:
+        pass
+
+    try:
+        from yoktez.models import YokTezSearchJob
+        qs = exclude_admins(YokTezSearchJob.objects.all()).select_related('user').only('id', 'user', 'tez_ad', 'metin', 'created_at')
+        for job in qs:
+            if word_match(job.tez_ad) or word_match(job.metin):
+                results.append({'tool': 'YÖK Tez', 'user': job.user.username, 'created_at': job.created_at, 'job_id': str(job.id)})
+    except Exception:
+        pass
+
+    try:
+        from oaipmh.models import OAIPMHSearchJob
+        qs = exclude_admins(OAIPMHSearchJob.objects.all()).select_related('user').only('id', 'user', 'keyword', 'abstract_query', 'created_at')
+        for job in qs:
+            if word_match(job.keyword) or word_match(job.abstract_query):
+                results.append({'tool': 'OAI-PMH', 'user': job.user.username, 'created_at': job.created_at, 'job_id': str(job.id)})
+    except Exception:
+        pass
+
+    results.sort(key=lambda r: r['created_at'], reverse=True)
+    return results[:limit]
+
+
+def get_zero_result_summary(days=30):
+    """6 tarama aracında son N günde 0 sonuçla tamamlanan arama sayısı (admin/staff hariç)."""
+    start = timezone.now() - timedelta(days=days)
+
+    def count_zero(Model):
+        return Model.objects.filter(
+            status='completed', total_results=0, created_at__gte=start
+        ).exclude(user__is_staff=True).exclude(user__is_superuser=True).count()
+
+    tools = [
+        ('openalex', 'openalex.models', 'AlexSearchJob'),
+        ('trdizin', 'trdizin.models', 'DizinSearchJob'),
+        ('semanticscholar', 'semanticscholar.models', 'SemanticSearchJob'),
+        ('pubmed', 'pubmed.models', 'PubMedSearchJob'),
+        ('yoktez', 'yoktez.models', 'YokTezSearchJob'),
+        ('oaipmh', 'oaipmh.models', 'OAIPMHSearchJob'),
+    ]
+    result = {}
+    for key, module_path, model_name in tools:
+        try:
+            module = __import__(module_path, fromlist=[model_name])
+            Model = getattr(module, model_name)
+            result[key] = count_zero(Model)
+        except Exception:
+            result[key] = 0
+
+    result['total'] = sum(result.values())
+    return result
 
 
 def get_dashboard_context():
