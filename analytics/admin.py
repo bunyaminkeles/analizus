@@ -179,7 +179,17 @@ class PageViewAdmin(ModelAdmin):
         except Exception:
             flagged_universities = []
 
-        return {'zero_result_summary': summary, 'yoktez_flagged_universities': flagged_universities}
+        try:
+            from oaipmh.models import University
+            flagged_oaipmh_universities = University.objects.filter(flagged_for_review=True).order_by('name')
+        except Exception:
+            flagged_oaipmh_universities = []
+
+        return {
+            'zero_result_summary': summary,
+            'yoktez_flagged_universities': flagged_universities,
+            'flagged_oaipmh_universities': flagged_oaipmh_universities,
+        }
 
     def active_now_view(self, request):
         context = {

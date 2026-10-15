@@ -12,6 +12,9 @@ class University(models.Model):
     oai_url = models.URLField(verbose_name="OAI-PMH URL")
     repo_name = models.CharField(max_length=200, blank=True, verbose_name="Repo Adı")
     is_active = models.BooleanField(default=True, verbose_name="Aktif")
+    last_checked_at = models.DateTimeField(null=True, blank=True, verbose_name="Son Kontrol")
+    last_result_count = models.IntegerField(null=True, blank=True, verbose_name="Son Test Sonuç Sayısı")
+    flagged_for_review = models.BooleanField(default=False, verbose_name="İncelenmesi Gerekiyor")
 
     class Meta:
         verbose_name = "Üniversite"

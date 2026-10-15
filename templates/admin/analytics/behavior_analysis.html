@@ -214,6 +214,20 @@
       </div>
     </div>
 
+    {% if flagged_oaipmh_universities %}
+    <div class="nav-card" style="margin-bottom:1.5rem;">
+      <div style="font-size:.875rem;font-weight:600;color:#fbbf24;margin-bottom:.75rem;">⚠ OAI-PMH: incelenmesi gereken üniversiteler (canlı test 0 sonuç döndü)</div>
+      <ul style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:.5rem;">
+        {% for uni in flagged_oaipmh_universities %}
+        <li style="font-size:.85rem;color:#e2e8f0;">
+          <a href="/admin/oaipmh/university/{{ uni.pk }}/change/" style="color:#818cf8;text-decoration:none;">{{ uni.name }}</a>
+          <span class="nav-muted">— son test: {{ uni.last_checked_at|date:"d.m.Y H:i" }}, sonuç: {{ uni.last_result_count }}</span>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+
     {% if yoktez_flagged_universities %}
     <div class="nav-card">
       <div style="font-size:.875rem;font-weight:600;color:#fbbf24;margin-bottom:.75rem;">⚠ YÖK Tez: incelenmesi gereken üniversiteler (canlı test 0 sonuç döndü)</div>

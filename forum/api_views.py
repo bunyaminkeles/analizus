@@ -303,6 +303,75 @@ def cron_cleanup_session_datasets(request):
 
 
 @require_GET
+def cron_check_yoktez_universities(request):
+    """
+    YÖK Tez üniversite listesindeki ID'lerin hâlâ geçerli olup olmadığını canlı
+    test eder — her çalıştırmada en eski test edilenden başlayarak küçük bir grup
+    (round-robin), 0 dönenler flagged_for_review=True olur (admin panelden
+    incelenip kapatılır, otomatik silme yok). Canlı scraping + insan-benzeri
+    gecikmeler içerdiği için tek istekte sınırlı sayıda üniversite test edilir ki
+    cron/HTTP zaman aşımına takılmasın.
+
+    Kullanım:
+    - GET /api/cron/check-yoktez-universities/?secret=YOUR_SECRET&limit=5
+    - Günlük (ya da birkaç günde bir) cron job olarak çalıştırılmalıdır.
+    """
+    if not _verify_cron_secret(request):
+        return JsonResponse({'success': False, 'error': 'Unauthorized'}, status=403)
+
+    try:
+        from yoktez.services.university_check import check_universities
+
+        limit = int(request.GET.get('limit', 5))
+        results = check_universities(limit=limit)
+        errors = [r for r in results if 'error' in r]
+        flagged = sum(1 for r in results if r.get('flagged'))
+
+        return JsonResponse({
+            'success': True,
+            'tested': len(results) - len(errors),
+            'flagged': flagged,
+            'errors': len(errors),
+        })
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
+
+
+@require_GET
+def cron_check_oaipmh_universities(request):
+    """
+    OAI-PMH üniversite listesindeki endpoint'lerin hâlâ çalışıp çalışmadığını
+    canlı test eder (browse_university) — her çalıştırmada en eski test
+    edilenden başlayarak küçük bir grup (round-robin). 0 sonuç dönenler
+    flagged_for_review=True olur (admin panelden incelenip kapatılır, otomatik
+    silme yok) ve yeni işaretlenenler için admin'e e-posta gönderilir.
+
+    Kullanım:
+    - GET /api/cron/check-oaipmh-universities/?secret=YOUR_SECRET&limit=5
+    - Günlük (ya da birkaç günde bir) cron job olarak çalıştırılmalıdır.
+    """
+    if not _verify_cron_secret(request):
+        return JsonResponse({'success': False, 'error': 'Unauthorized'}, status=403)
+
+    try:
+        from oaipmh.services.university_check import check_universities
+
+        limit = int(request.GET.get('limit', 5))
+        results = check_universities(limit=limit)
+        errors = [r for r in results if 'error' in r]
+        flagged = sum(1 for r in results if r.get('flagged'))
+
+        return JsonResponse({
+            'success': True,
+            'tested': len(results) - len(errors),
+            'flagged': flagged,
+            'errors': len(errors),
+        })
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
+
+
+@require_GET
 def admin_queue_status(request):
     """Admin dashboard için kuyruk durumu JSON endpoint'i (sadece staff)."""
     if not request.user.is_authenticated or not request.user.is_staff:

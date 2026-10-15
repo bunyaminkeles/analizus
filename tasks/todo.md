@@ -10,6 +10,25 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
+- [ ] **(15 Ekim 2026, ÜRÜN KARARI BEKLİYOR)** YÖK Tez'de (muhtemelen diğer tarama
+  araçlarında da) kullanıcılar "Başlık"/"Özet" alanına virgülle ayrılmış birden
+  fazla kelime giriyor (ör. "islam, tefsir, hadis, tasavvuf, Kur'an, fıkıh,
+  sünnet"), OR aranacağını bekleyerek — ama kod bunu desteklemiyor.
+  `yoktez/services/scraper.py:86-100` (`_determine_query`) `tez_ad` değerini
+  OLDUĞU GİBİ (virgülleri ayırmadan) YÖK'ün arama formuna tek "keyword" olarak
+  gönderiyor → YÖK bunu muhtemelen tam ifade/alt-metin olarak arıyor, gerçek tez
+  başlıkları bu kadar uzun virgüllü bir ifadeyi içermediği için 0 sonuç dönüyor.
+  Admin dashboard'da görülen "79firuze" kullanıcısının 2 başarısız araması bu
+  örüntüyle örtüşüyor — muhtemelen 0-sonuç aramaların önemli bir kısmının kök
+  nedeni. İki seçenek, karar kullanıcıda: **(A)** düşük efor — form'a/placeholder'a
+  "bu alan tam ifade arar, virgülle ayrılmış kelimeleri OR olarak aramaz" tarzı
+  netleştirici metin eklemek; **(B)** daha değerli ama daha büyük iş — virgülle
+  ayrılmış terimleri gerçekten OR mantığıyla aramak (her terim için ayrı YÖK
+  isteği + sonuçları birleştirme/tekilleştirme — mevcut rate-limit/insan-gecikmesi
+  mimarisiyle dikkatli entegre edilmeli). Diğer 5 aracın (OpenAlex/TrDizin/
+  SemanticScholar/PubMed/OAI-PMH) `query_parts` tabanlı title/abstract alanlarının
+  aynı sorunu yaşayıp yaşamadığı ayrıca kontrol edilmeli — onlar gerçek API'lere
+  gittiği için YÖK'ten farklı davranabilirler, doğrulanmadı.
 - [ ] **(15 Ekim 2026, 2. planda — ertelendi)** Render `dev` ortamında
   (`/admin/analytics/pageview/grafik/` — "Kullanıcı Navigasyon Analizi")
   3 widget de "Kayıt yok" gösteriyor. Teşhis: `chart_view()` varsayılan

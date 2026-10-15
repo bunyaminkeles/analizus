@@ -116,6 +116,8 @@ urlpatterns = [
     path('api/cron/cleanup-session-datasets/', api_views.cron_cleanup_session_datasets, name='cron_cleanup_session_datasets'),
     path('api/cron/health/', api_views.cron_health_check, name='cron_health'),
     path('api/cron/process-account-deletions/', api_views.cron_process_account_deletions, name='cron_process_account_deletions'),
+    path('api/cron/check-yoktez-universities/', api_views.cron_check_yoktez_universities, name='cron_check_yoktez_universities'),
+    path('api/cron/check-oaipmh-universities/', api_views.cron_check_oaipmh_universities, name='cron_check_oaipmh_universities'),
     path('api/admin/queue-status/', api_views.admin_queue_status, name='admin_queue_status'),
 
     # Admin setup (kullandıktan sonra kaldırın!)

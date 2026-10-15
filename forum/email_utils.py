@@ -247,6 +247,7 @@ _COLORS = {
     'completed': '#6366f1',   # indigo — iş tamamlandı
     'blog':      '#06b6d4',   # cyan   — blog yazısı
     'analysis':  '#a855f7',   # viyole — analiz
+    'alert':     '#ef4444',   # kırmızı — sistem uyarısı
 }
 
 
@@ -573,6 +574,30 @@ def notify_admin_analysis_completed(job):
         _send_admin(f"[Analizus] 📊 Analiz: {tool_label} ({job.user.username})", html, plain)
     except Exception as e:
         logger.error(f"Admin analiz bildirimi gönderilemedi: {e}")
+
+
+@_in_admin_language
+def notify_admin_oaipmh_flagged_universities(universities):
+    """OAI-PMH üniversite canlı testi (check_oaipmh_universities) 0 sonuç dönen
+    (yeni işaretlenen) üniversiteleri bulduğunda admin'e e-posta gönderir."""
+    try:
+        if not universities:
+            return
+        site = getattr(settings, 'SITE_URL', 'https://www.analizus.com')
+        color = _COLORS['alert']
+        rows = [(u.name, u.oai_url) for u in universities]
+        html = _build_admin_html(
+            '⚠ OAI-PMH Üniversite Uyarısı', color,
+            f"{len(universities)} üniversite 0 sonuç döndü — incelenmesi gerekiyor",
+            rows,
+            f"{site}/admin/oaipmh/university/?flagged_for_review__exact=1",
+            'Admin Panelde İncele'
+        )
+        names = ', '.join(u.name for u in universities)
+        plain = f"OAI-PMH canlı testinde 0 sonuç dönen üniversiteler: {names}"
+        _send_admin(f"[Analizus] ⚠ OAI-PMH: {len(universities)} üniversite incelenmeli", html, plain)
+    except Exception as e:
+        logger.error(f"Admin OAI-PMH üniversite uyarısı gönderilemedi: {e}")
 
 
 def notify_room_mention(sender, recipient, room, message_content):
