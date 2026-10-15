@@ -232,6 +232,65 @@
 </div>
 
 <!-- ══════════════════════════════════════════════════
+     ROW 3.5 — VERİ KAZIMA KELİME GRAFİĞİ
+══════════════════════════════════════════════════ -->
+<div style="border-radius:.75rem;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);padding:1.25rem;">
+  <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:1rem;padding-bottom:.75rem;border-bottom:1px solid rgba(255,255,255,.08);">
+    <span class="material-symbols-outlined" style="font-size:1.25rem;color:#34d399;">travel_explore</span>
+    <span style="font-size:.875rem;font-weight:600;color:#e2e8f0;text-transform:uppercase;letter-spacing:.05em;">En Çok Aranan Kelimeler <span style="font-weight:400;color:#6b7280;">(6 tarama aracı, adminler hariç)</span></span>
+  </div>
+  <div style="height:420px;"><canvas id="keywordsChart"></canvas></div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
+     ROW 3.6 — 0 SONUÇ ÖZETİ (son 30 gün)
+══════════════════════════════════════════════════ -->
+<div style="border-radius:.75rem;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03);padding:1.25rem;">
+  <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:1rem;padding-bottom:.75rem;border-bottom:1px solid rgba(255,255,255,.08);">
+    <span class="material-symbols-outlined" style="font-size:1.25rem;color:#f87171;">search_off</span>
+    <span style="font-size:.875rem;font-weight:600;color:#e2e8f0;text-transform:uppercase;letter-spacing:.05em;">0 Sonuç Dönen Aramalar <span style="font-weight:400;color:#6b7280;">(son 30 gün, adminler hariç)</span></span>
+    {% if zero_result_summary.total > 0 %}<span style="background:#f87171;color:#fff;font-size:.7rem;font-weight:700;padding:.2rem .5rem;border-radius:9999px;">{{ zero_result_summary.total }}</span>{% endif %}
+  </div>
+  {% if yoktez_flagged_universities > 0 %}
+  <a href="/admin/yoktez/yoktezuniversite/?flagged_for_review__exact=1" style="text-decoration:none;display:block;margin-bottom:.75rem;padding:.6rem .9rem;border-radius:.5rem;background:rgba(251,191,36,.1);border:1px solid rgba(251,191,36,.3);">
+    <span style="font-size:.8rem;color:#fbbf24;font-weight:600;">⚠ YÖK Tez: incelenmesi gereken {{ yoktez_flagged_universities }} üniversite (canlı test 0 sonuç döndü)</span>
+  </a>
+  {% endif %}
+  <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:.75rem;text-align:center;">
+    <a href="/admin/oaipmh/alexsearchjobproxy/?status__exact=completed&total_results__exact=0" style="text-decoration:none;">
+    <div style="padding:.75rem;border-radius:.5rem;background:rgba(248,113,113,.08);">
+      <div style="font-size:1.25rem;font-weight:700;color:#f87171;">{{ zero_result_summary.openalex }}</div>
+      <div style="font-size:.7rem;color:#6b7280;margin-top:.25rem;">OpenAlex</div>
+    </div></a>
+    <a href="/admin/oaipmh/dizinsearchjobproxy/?status__exact=completed&total_results__exact=0" style="text-decoration:none;">
+    <div style="padding:.75rem;border-radius:.5rem;background:rgba(248,113,113,.08);">
+      <div style="font-size:1.25rem;font-weight:700;color:#f87171;">{{ zero_result_summary.trdizin }}</div>
+      <div style="font-size:.7rem;color:#6b7280;margin-top:.25rem;">TR Dizin</div>
+    </div></a>
+    <a href="/admin/semanticscholar/semanticsearchjob/?status__exact=completed&total_results__exact=0" style="text-decoration:none;">
+    <div style="padding:.75rem;border-radius:.5rem;background:rgba(248,113,113,.08);">
+      <div style="font-size:1.25rem;font-weight:700;color:#f87171;">{{ zero_result_summary.semanticscholar }}</div>
+      <div style="font-size:.7rem;color:#6b7280;margin-top:.25rem;">Semantic Scholar</div>
+    </div></a>
+    <a href="/admin/pubmed/pubmedsearchjob/?status__exact=completed&total_results__exact=0" style="text-decoration:none;">
+    <div style="padding:.75rem;border-radius:.5rem;background:rgba(248,113,113,.08);">
+      <div style="font-size:1.25rem;font-weight:700;color:#f87171;">{{ zero_result_summary.pubmed }}</div>
+      <div style="font-size:.7rem;color:#6b7280;margin-top:.25rem;">PubMed</div>
+    </div></a>
+    <a href="/admin/oaipmh/yoktezsearchjobproxy/?status__exact=completed&total_results__exact=0" style="text-decoration:none;">
+    <div style="padding:.75rem;border-radius:.5rem;background:rgba(248,113,113,.08);">
+      <div style="font-size:1.25rem;font-weight:700;color:#f87171;">{{ zero_result_summary.yoktez }}</div>
+      <div style="font-size:.7rem;color:#6b7280;margin-top:.25rem;">YÖK Tez</div>
+    </div></a>
+    <a href="/admin/oaipmh/oaipmhsearchjob/?status__exact=completed&total_results__exact=0" style="text-decoration:none;">
+    <div style="padding:.75rem;border-radius:.5rem;background:rgba(248,113,113,.08);">
+      <div style="font-size:1.25rem;font-weight:700;color:#f87171;">{{ zero_result_summary.oaipmh }}</div>
+      <div style="font-size:.7rem;color:#6b7280;margin-top:.25rem;">OAI-PMH</div>
+    </div></a>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════
      ROW 4 — ONAY MERKEZİ + KUYRUK DURUMU
 ══════════════════════════════════════════════════ -->
 <div style="display:grid;grid-template-columns:2fr 1fr;gap:1rem;">
@@ -499,6 +558,28 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     }
   });
+});
+var keywordLabels = {{ keyword_labels_json|safe }};
+var keywordCounts = {{ keyword_counts_json|safe }};
+document.addEventListener('DOMContentLoaded', function() {
+  if (keywordLabels.length > 0) {
+    new Chart(document.getElementById('keywordsChart').getContext('2d'), {
+      type: 'bar',
+      data: {
+        labels: keywordLabels,
+        datasets: [{ label: 'Arama Sayısı', data: keywordCounts, backgroundColor: 'rgba(52,211,153,.6)', borderColor: '#34d399', borderWidth: 1 }]
+      },
+      options: {
+        indexAxis: 'y',
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { grid:{ color:'rgba(99,102,241,.08)' }, ticks:{ color:'#94a3b8' }, beginAtZero:true },
+          y: { grid:{ color:'rgba(99,102,241,.08)' }, ticks:{ color:'#94a3b8' } }
+        }
+      }
+    });
+  }
 });
 function switchChart(range, btn) {
   document.querySelectorAll('.chart-toggle-group button').forEach(function(b) {

@@ -392,6 +392,11 @@ UNFOLD = {
                     "link": reverse_lazy("admin:oaipmh_university_changelist"),
                 },
                 {
+                    "title": "YÖK Tez Üniversiteleri",
+                    "icon": "domain",
+                    "link": reverse_lazy("admin:yoktez_yoktezuniversite_changelist"),
+                },
+                {
                     "title": "Tez Analizleri",
                     "icon": "biotech",
                     "link": reverse_lazy("admin:tezanaliz_tezanaliz_changelist"),

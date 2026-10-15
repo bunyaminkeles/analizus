@@ -1,9 +1,99 @@
 import json
+import re
+from collections import Counter
 from datetime import timedelta
 
 from django.contrib.auth.models import User
 from django.db.models import Count, Sum, Q
 from django.utils import timezone
+
+
+_KEYWORD_STOPWORDS = {
+    've', 'ile', 'bir', 'bu', 'şu', 'da', 'de', 'için', 'gibi', 'çok', 'daha',
+    'en', 'ki', 'mi', 'mu', 'mü', 'mı', 'ya', 'ne', 'ama', 'veya', 'olan', 'olarak',
+    'the', 'and', 'of', 'in', 'a', 'to', 'for', 'on', 'with',
+}
+
+
+def get_search_keywords_chart_data(top_n=25):
+    """6 tarama aracındaki sorgu kelimelerinin frekans grafiği (admin/staff hariç)."""
+    counter = Counter()
+
+    def add_text(text):
+        if not text:
+            return
+        words = re.findall(r"[a-zA-ZğüşıöçĞÜŞİÖÇ]+", str(text).lower())
+        for w in words:
+            if len(w) < 3 or w in _KEYWORD_STOPWORDS:
+                continue
+            counter[w] += 1
+
+    def exclude_admins(qs):
+        return qs.exclude(user__is_staff=True).exclude(user__is_superuser=True)
+
+    try:
+        from openalex.models import AlexSearchJob
+        from trdizin.models import DizinSearchJob
+        from semanticscholar.models import SemanticSearchJob
+        from pubmed.models import PubMedSearchJob
+        for Model in (AlexSearchJob, DizinSearchJob, SemanticSearchJob, PubMedSearchJob):
+            for parts in exclude_admins(Model.objects.all()).values_list('query_parts', flat=True):
+                for part in (parts or []):
+                    if part.get('field') in ('title', 'abstract', 'keyword'):
+                        add_text(part.get('value'))
+    except Exception:
+        pass
+
+    try:
+        from yoktez.models import YokTezSearchJob
+        for tez_ad, metin in exclude_admins(YokTezSearchJob.objects.all()).values_list('tez_ad', 'metin'):
+            add_text(tez_ad)
+            add_text(metin)
+    except Exception:
+        pass
+
+    try:
+        from oaipmh.models import OAIPMHSearchJob
+        for keyword, abstract_query in exclude_admins(OAIPMHSearchJob.objects.all()).values_list('keyword', 'abstract_query'):
+            add_text(keyword)
+            add_text(abstract_query)
+    except Exception:
+        pass
+
+    top = counter.most_common(top_n)
+    labels = [w for w, _ in top]
+    data = [c for _, c in top]
+    return json.dumps(labels), json.dumps(data)
+
+
+def get_zero_result_summary(days=30):
+    """6 tarama aracında son N günde 0 sonuçla tamamlanan arama sayısı (admin/staff hariç)."""
+    start = timezone.now() - timedelta(days=days)
+
+    def count_zero(Model):
+        return Model.objects.filter(
+            status='completed', total_results=0, created_at__gte=start
+        ).exclude(user__is_staff=True).exclude(user__is_superuser=True).count()
+
+    tools = [
+        ('openalex', 'openalex.models', 'AlexSearchJob'),
+        ('trdizin', 'trdizin.models', 'DizinSearchJob'),
+        ('semanticscholar', 'semanticscholar.models', 'SemanticSearchJob'),
+        ('pubmed', 'pubmed.models', 'PubMedSearchJob'),
+        ('yoktez', 'yoktez.models', 'YokTezSearchJob'),
+        ('oaipmh', 'oaipmh.models', 'OAIPMHSearchJob'),
+    ]
+    result = {}
+    for key, module_path, model_name in tools:
+        try:
+            module = __import__(module_path, fromlist=[model_name])
+            Model = getattr(module, model_name)
+            result[key] = count_zero(Model)
+        except Exception:
+            result[key] = 0
+
+    result['total'] = sum(result.values())
+    return result
 
 
 def get_dashboard_context():
@@ -249,6 +339,18 @@ def get_dashboard_context():
     labels30, u30, t30, p30 = build_daily_trend(30)
     labels90, u90, t90, p90 = build_weekly_trend(13)  # 13 hafta ≈ 90 gün
 
+    # === VERİ KAZIMA KELİME GRAFİĞİ ===
+    keyword_labels_json, keyword_counts_json = get_search_keywords_chart_data()
+
+    # === 0 SONUÇ ÖZETİ (son 30 gün) ===
+    zero_result_summary = get_zero_result_summary(30)
+
+    try:
+        from yoktez.models import YokTezUniversite
+        yoktez_flagged_universities = YokTezUniversite.objects.filter(flagged_for_review=True).count()
+    except Exception:
+        yoktez_flagged_universities = 0
+
     # === KATEGORİ ANALİZİ ===
     category_stats = Category.objects.annotate(
         topic_count=Count('topics'),
@@ -393,6 +495,10 @@ def get_dashboard_context():
         'user_trend_90_json':   json.dumps(u90),
         'topic_trend_90_json':  json.dumps(t90),
         'post_trend_90_json':   json.dumps(p90),
+        'keyword_labels_json':  keyword_labels_json,
+        'keyword_counts_json':  keyword_counts_json,
+        'zero_result_summary':  zero_result_summary,
+        'yoktez_flagged_universities': yoktez_flagged_universities,
         # Kullanıcı analizi
         'verified_users': verified_users,
         'unverified_users': unverified_users,

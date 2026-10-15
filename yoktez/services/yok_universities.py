@@ -83,15 +83,24 @@ UNIVERSITE_ID_BY_NAME = {
 
 _NAME_BY_ID = {v: k for k, v in UNIVERSITE_ID_BY_NAME.items()}
 
+# NOT (15 Ekim 2026): Üniversite listesi DB'ye taşındı (bkz. YokTezUniversite modeli,
+# migration 0005). UNIVERSITE_ID_BY_NAME yukarıda yalnızca o migration'ın seed
+# kaynağı olarak kalıyor — runtime'da get_universite_id()/universite_choices()
+# artık DB'den okuyor, admin'den is_active=False yapılan üniversiteler
+# dropdown'dan ve aramadan düşüyor.
+
 
 def get_universite_id(name: str) -> str:
     """Üniversite adından YÖK'ün eski sayısal ID'sini döner; eşleşme yoksa '0' (tümü)."""
     if not name:
         return '0'
-    return UNIVERSITE_ID_BY_NAME.get(name.strip(), '0')
+    from yoktez.models import YokTezUniversite
+    obj = YokTezUniversite.objects.filter(name=name.strip(), is_active=True).first()
+    return obj.yok_id if obj else '0'
 
 
 def universite_choices():
     """Form <select> için (value, label) listesi — alfabetik, 'Tümü' en başta."""
-    names = sorted(UNIVERSITE_ID_BY_NAME.keys())
+    from yoktez.models import YokTezUniversite
+    names = YokTezUniversite.objects.filter(is_active=True).order_by('name').values_list('name', flat=True)
     return [('', 'Tümü')] + [(name, name) for name in names]

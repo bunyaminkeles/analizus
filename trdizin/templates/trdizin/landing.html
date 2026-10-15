@@ -1,5 +1,6 @@
 {% extends "tarama_console_base.html" %}
 {% load static %}
+{% load i18n %}
 
 {% block title %}TR Dizin Makale Arama ve Tarama — Excel'e Aktar | Analizus{% endblock %}
 {% block meta_description %}TR Dizin makalelerinde başlık, özet, yazar ve anahtar kelimeye göre gelişmiş arama yapın; toplam sonucu görün, en yeni 5 makaleyi Excel veya TXT indirin.{% endblock %}
@@ -265,8 +266,9 @@ function showResults(data) {
     document.getElementById('results-area').style.display = 'block';
 
     const demo = data.demo_results || [];
-    document.getElementById('results-summary').textContent =
-        `${data.total_results} yayın bulundu — En yeni ${demo.length} örnek aşağıda`;
+    document.getElementById('results-summary').textContent = data.total_results
+        ? `${data.total_results} yayın bulundu — En yeni ${demo.length} örnek aşağıda`
+        : `{% trans "Bu arama için sonuç bulunamadı. Kriterleri genişletmeyi deneyin." %}`;
 
     const list = document.getElementById('results-list');
     list.innerHTML = '';
