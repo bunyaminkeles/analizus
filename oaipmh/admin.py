@@ -9,8 +9,8 @@ from trdizin.models import DizinSearchJobProxy
 class UniversityAdmin(ModelAdmin):
     warn_unsaved_changes = True
     compressed_fields = True
-    list_display = ['name', 'domain', 'oai_url', 'is_active']
-    list_filter = ['is_active']
+    list_display = ['name', 'domain', 'oai_url', 'is_active', 'last_checked_at', 'last_result_count', 'flagged_for_review']
+    list_filter = ['is_active', 'flagged_for_review']
     search_fields = ['name', 'domain']
     list_editable = ['is_active']
 
