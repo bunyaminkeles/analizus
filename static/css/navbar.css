@@ -92,7 +92,10 @@ body {
     flex: 1;
     padding-left: var(--ax-space-4);
 }
-@media (min-width: 1024px) {
+/* 1280px — var(--ax-container-max) ile aynı sınır: altında (tablet dahil) içerik
+   tek satıra sığmıyor (bkz. ölçüm notu), o yüzden masaüstü menüsü yalnız bu genişlikten
+   itibaren açılıyor — 1024-1279px arası artık güvenli mobil hamburger kullanıyor. */
+@media (min-width: 1280px) {
     .site-nav__menu { display: flex; }
 }
 
@@ -333,7 +336,7 @@ body {
     font-size: var(--ax-text-xs);
     color: var(--ax-accent-warning);
 }
-@media (min-width: 1024px) {
+@media (min-width: 1280px) {
     .site-nav__user-btn { display: flex; }
 }
 
@@ -343,7 +346,7 @@ body {
     align-items: center;
     gap: var(--ax-space-2);
 }
-@media (min-width: 1024px) {
+@media (min-width: 1280px) {
     .site-nav__auth { display: flex; }
 }
 
@@ -377,7 +380,7 @@ body {
     outline: 2px solid var(--ax-accent-primary);
     outline-offset: 2px;
 }
-@media (min-width: 1024px) {
+@media (min-width: 1280px) {
     .site-nav__hamburger { display: none; }
 }
 
