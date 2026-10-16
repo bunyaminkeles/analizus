@@ -372,9 +372,8 @@ UNFOLD = {
         # başlık grubun ilk sayfasına link verir, sayfalar arası geçiş o sayfanın
         # üstündeki sekme çubuğuyla yapılır (bkz. analizdestek/admin_nav.py).
         {
-            "title": "Arama & Analiz",
             "separator": True,
-            "collapsible": True,
+            "collapsible": False,
             "items": [
                 {
                     "title": "Arama Servisleri",

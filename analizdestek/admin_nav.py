@@ -11,9 +11,9 @@ GROUP1_TABS = [
     ("OpenAlex İşleri", "admin:oaipmh_alexsearchjobproxy_changelist"),
     ("TR Dizin İşleri", "admin:oaipmh_dizinsearchjobproxy_changelist"),
     ("YÖK Tez İşleri", "admin:oaipmh_yoktezsearchjobproxy_changelist"),
+    ("YÖK Tez Üniversiteleri", "admin:yoktez_yoktezuniversite_changelist"),
     ("OAI-PMH İşleri", "admin:oaipmh_oaipmhsearchjob_changelist"),
     ("Üniversiteler", "admin:oaipmh_university_changelist"),
-    ("YÖK Tez Üniversiteleri", "admin:yoktez_yoktezuniversite_changelist"),
 ]
 
 GROUP2_TABS = [
