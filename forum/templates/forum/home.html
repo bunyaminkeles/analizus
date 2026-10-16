@@ -296,7 +296,7 @@ atıfları) → yalnız TR. EN/DE'ye dile uygun tek WebSite bloğu (27 Eylül 20
                     <a href="{% url 'trdizin:landing' %}" class="ax-hero__personal-link">TR Dizin</a>
                     <span class="ax-hero__personal-sep">·</span>
                     <a href="{% url 'bibliometrics:landing' %}" class="ax-hero__personal-link">{% trans "Bibliometrik Analiz" %}</a>
-                    {% elif user_profile.segment == 'expert' %}
+                    {% elif user_profile.segment == 'expert' and LANGUAGE_CODE == 'tr' %}
                     <span class="ax-hero__personal-badge">💼 {% trans "Uzman" %}</span>
                     <span class="ax-hero__personal-text">{% trans "Fırsatlar:" %} </span>
                     <a href="{% url 'job_list' %}" class="ax-hero__personal-link">{% trans "Açık İlanlar" %}</a>
@@ -585,19 +585,19 @@ atıfları) → yalnız TR. EN/DE'ye dile uygun tek WebSite bloğu (27 Eylül 20
 <section class="ax-stats-section">
     <div class="container">
         <div class="row text-center justify-content-center">
-            {% if total_users >= stat_min_display %}
+            {% if total_users >= stat_min_display and LANGUAGE_CODE == 'tr' %}
             <div class="col-6 col-md-2 mb-4 mb-md-0">
                 <div class="ax-stat-item" data-target="{{ total_users }}" data-suffix="">0</div>
                 <div class="ax-stat-label">{% trans "Aktif Üye" %}</div>
             </div>
             {% endif %}
-            {% if total_topics >= stat_min_display %}
+            {% if total_topics >= stat_min_display and LANGUAGE_CODE == 'tr' %}
             <div class="col-6 col-md-2 mb-4 mb-md-0">
                 <div class="ax-stat-item" data-target="{{ total_topics }}" data-suffix="">0</div>
                 <div class="ax-stat-label">{% trans "Akademik Konu" %}</div>
             </div>
             {% endif %}
-            {% if total_posts >= stat_min_display %}
+            {% if total_posts >= stat_min_display and LANGUAGE_CODE == 'tr' %}
             <div class="col-6 col-md-2 mb-4 mb-md-0">
                 <div class="ax-stat-item" data-target="{{ total_posts }}" data-suffix="">0</div>
                 <div class="ax-stat-label">{% trans "Forum Gönderisi" %}</div>
@@ -615,7 +615,7 @@ atıfları) → yalnız TR. EN/DE'ye dile uygun tek WebSite bloğu (27 Eylül 20
                 <div class="ax-stat-label">{% trans "Tamamlanan Analiz" %}</div>
             </div>
             {% endif %}
-            {% if open_jobs_count >= stat_min_display %}
+            {% if open_jobs_count >= stat_min_display and LANGUAGE_CODE == 'tr' %}
             <div class="col-6 col-md-2 mb-4 mb-md-0">
                 <a href="{% url 'job_list' %}" style="text-decoration:none;">
                     <div class="ax-stat-item">{{ open_jobs_count }}</div>
@@ -623,13 +623,13 @@ atıfları) → yalnız TR. EN/DE'ye dile uygun tek WebSite bloğu (27 Eylül 20
                 </a>
             </div>
             {% endif %}
-            {% if weekly_new_users >= stat_min_display %}
+            {% if weekly_new_users >= stat_min_display and LANGUAGE_CODE == 'tr' %}
             <div class="col-6 col-md-2 mb-4 mb-md-0">
                 <div class="ax-stat-item">{{ weekly_new_users }}</div>
                 <div class="ax-stat-label">{% trans "Bu Hafta Yeni Üye" %}</div>
             </div>
             {% endif %}
-            {% if online_experts >= 2 %}
+            {% if online_experts >= 2 and LANGUAGE_CODE == 'tr' %}
             <div class="col-6 col-md-2">
                 <div class="ax-stat-item" style="color:var(--ax-accent-secondary);">{{ online_experts }}</div>
                 <div class="ax-stat-label">{% trans "Şu An Çevrimiçi Uzman" %}</div>
@@ -702,7 +702,7 @@ atıfları) → yalnız TR. EN/DE'ye dile uygun tek WebSite bloğu (27 Eylül 20
 </section>
 {% endif %}
 
-{% if showcase_jobs %}
+{% if showcase_jobs and LANGUAGE_CODE == 'tr' %}
 <section style="padding-bottom: var(--ax-space-8, 32px);">
     <div class="container">
         <div class="ax-section-card">
@@ -949,7 +949,7 @@ AI Asistan da kapalıysa bölüm hiç çıkmaz (26 Eylül 2026){% endcomment %}
 <!-- =====================================================
      GÜNDEMDEKİ TARTIŞMALAR
      ===================================================== -->
-{% if popular_topics %}
+{% if popular_topics and LANGUAGE_CODE == 'tr' %}
 <section class="ax-wide-section">
     <div class="container">
         <div class="row g-4">

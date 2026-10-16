@@ -10,6 +10,109 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
+- [ ] **(16 Ekim 2026) EN/DE Ana Sayfa — Danışmanlık Dönüşümü: 11 adımlı plan
+  hazır, henüz hiçbir adıma başlanmadı.** Kaynak: proje kökündeki
+  `en_de_danismanlik_donusumu_prompt.md` (ayrı bir dosya, tasks/todo.md'de
+  değil — buraya yalnız özet + doğrulama notu). Plan: Adım 1 pazaryeri/forum
+  sızıntılarını (`forum/home.html` "Uzman Vitrini" + "Gündemdeki Tartışmalar"
+  + sayaç şeridi kalemleri) EN/DE'de gizle (karar zaten §28.7'de var, onay
+  gerekmiyor) → Adım 2 geçici msgstr düzeltmeleri (yanlış vaatler: "dakikalar
+  içinde", "%100 gizlilik", "doğrulanmış uzman" vb.) → Adım 3 renk/kontrast
+  (TR'yi de etkiler) → Adım 4 SEO title/description + SSS H2→H3 → Adım 5
+  Premium/bağış bloğunu EN/DE'de gizleme kararı (K8) → **Adım 6 (asıl iş,
+  migration'lı): yeni `home_intl.html` + `feature_intl_consulting_home`
+  flag'i ile danışmanlık odaklı EN/DE ana sayfası** → Adım 7 EN/DE navigasyon
+  → Adım 8 Impressum (DE) → Adım 9 EN/DE hizmet sayfaları (yalnız tasarım
+  dokümanı, kod yok) → Adım 10 proje talebi formuna ön görüşme alanları
+  (migration) → Adım 11 ölçüm sorgusu. Adım 6 öncesi 9 açık kullanıcı kararı
+  var (K1–K9, plan dosyası §3): kim/hangi dilde danışmanlık verecek, Impressum
+  bilgileri, fiyat modeli, yanıt süresi taahhüdü, veri işleme/KVKK, eğitimler,
+  dropzone'un kalkıp kalkmayacağı, Premium'un gizlenip gizlenmeyeceği, sayaç
+  kalemlerinden hangisinin kalacağı.
+  **Doğrulama turu (16 Ekim) sonucu — plan teknik olarak sağlam, tek gerçek
+  eksiklik bulundu:** S3 (sayaç şeridi) tablosu yalnız 5 kalemden bahsediyor
+  (Aktif Üye, Akademik Konu, Forum Mesajı, Tamamlanan Proje, Tamamlanan
+  Analiz); ama `forum/home.html:581-636`'daki şerit aslında **8 kalemli** —
+  eksik 3 kalem: **"Açık İlan"** (`open_jobs_count`, linkli — pazaryerine
+  gidiyor olabilir), **"Bu Hafta Yeni Üye"**, **"Şu An Çevrimiçi Uzman"**.
+  K9 kararı yalnız "Tamamlanan proje/analiz" için soruluyor; bu üç kalem
+  hiç karara bağlanmamış — özellikle "Açık İlan" EN/DE'de pazaryeri kapalı
+  kararıyla doğrudan çelişebilir. Adım 1'in genel sızıntı tarama maddesi
+  (madde 4) bunu muhtemelen yakalar ama plan metninde açık kör nokta,
+  Adım 1'e başlarken ayrıca kontrol edilmeli. Diğer doğrulanan noktalar:
+  `--ax-color-primary` gerçekten tanımsız token (`home.html:45,48`, `base.css`
+  karşılığı `--ax-accent-primary-light` = `#a5b4fc`); `ProjectRequest.
+  SOURCE_CHOICES`'da `home_market`/`home_steps`/`home_faq`/`nav` zaten mevcut
+  (plan zaten "önce kontrol et" diyor, sorun değil); feature flag üç-yer
+  deseni örnekle doğrulandı.
+
+  **K1–K9 KARARLARI NETLEŞTİ (16 Ekim 2026, kullanıcı):**
+  - K1: Analizus admin TR/EN/DE danışmanlığın tamamını verecek.
+  - K2: Impressum sayfası (DE) + Legal Notice (EN) hazırlanır ama şirket/kişi
+    bilgileri (adres, vergi no vb.) netleşene kadar **footer/nav'a
+    linklenmez** — boş/placeholder bilgiyle yayına alınmaz (Almanya'da
+    yasal risk).
+  - K3: Fiyat sitede/SSS'de gösterilmez; proje talebi sonrası verilecek
+    cevapta belirtilir. SSS "Was kostet eine Analyse?" cevabı buna göre
+    yazılmalı (sabit rakam yok).
+  - K4: Yanıt süresi taahhüdü VAR — "proje büyüklüğüne göre 5-7 gün içinde"
+    (gerçek, yazılabilir). Adım 2'deki sahte "24 Stunden" ifadelerinin
+    yerine bu geçecek (Premium'un kendi "24 saat" vaadi hariç, o ayrı konu).
+  - K5: S3 bucket `eu-north-1` (Stockholm/AB) — koddan doğrulandı
+    (`.env: AWS_S3_REGION_NAME=eu-north-1`). Yazılabilir: "Daten werden in
+    der EU verarbeitet" / "processed within the EU". **"in Deutschland"
+    YAZILAMAZ** — yanlış olur. Hetzner sunucusunun datacenter konumu ayrıca
+    doğrulanmadı, "Deutschland" iddiası için bu da teyit gerektirir.
+  - K6: Eğitimler yalnız **EN**'de veriliyor, DE'de yok — Adım 7 navigasyonda
+    "Training" linki yalnız EN menüsünde, DE menüsünde olmayacak.
+  - K7: Hero dropzone (dosya yükle, hemen analiz et) EN/DE'de **kalır**,
+    kaldırılmayacak.
+  - K8: Premium/bağış bloğu EN/DE'de **gizlenmeyecek** (S7 tespitinin aksine
+    kaldırılmıyor); fiyatlar TL yerine **EUR'a çevrilir**, ödeme için
+    **ayrı bir EUR IBAN** eklenir. Mevcut TL/IBAN akışının neresinde dil
+    bazlı ayrım yapılacağı (muhtemelen `templates/base.html` premium modalı)
+    Adım 5'te araştırılmalı; bu artık "gizleme" değil "yerelleştirme" görevi.
+  - K9: Sayaç şeridinden **"Açık İlan"**, **"Bu Hafta Yeni Üye"**,
+    **"Şu An Çevrimiçi Uzman"** kalemleri EN/DE'de **tamamen kaldırılır**;
+    yalnız "Tamamlanan Proje" ve "Tamamlanan Analiz" kalır (`total_users`,
+    `total_topics`, `total_posts` zaten S3/Adım 1 kapsamında kaldırılıyordu).
+
+  Not: K8 kararı plan dosyasındaki Adım 5'in varsayımını ("Premium gizlensin
+  mi?") değiştiriyor — Adım 5 artık "EUR fiyat + ayrı IBAN" görevine
+  dönüşüyor, plan dosyası bu haliyle güncel değil, uygulama sırasında bu
+  fark gözetilmeli.
+
+  **ADIM 1 TAMAMLANDI (16 Ekim 2026) — forum/forum/home.html'de EN/DE
+  pazaryeri/forum sızıntıları kapatıldı, henüz push edilmedi (dev'de commit
+  yok, yalnız working tree'de).** Tek dosya değişti:
+  `forum/templates/forum/home.html`, 9 nokta (5 ayrı değişiklik bloğu):
+  (1) hero kişiselleştirme "uzman" segment dalına `and LANGUAGE_CODE == 'tr'`
+  eklendi (akademisyen dalıyla tutarlı); (2) "Uzman Arayan Projeler" (gerçek
+  S1 kaynağı — plan dosyasının işaret ettiği "FAZ 3: UZMAN VİTRİNİ" DEĞİL,
+  ondan ayrı, ₺ fiyatlı ilan kartları gösteren bölüm) `and LANGUAGE_CODE ==
+  'tr'` ile sarıldı; (3) "Gündemdeki Tartışmalar" (S2) aynı şekilde; (4)
+  sayaç şeridinde (S3) 6 kalem (`total_users`, `total_topics`, `total_posts`,
+  `open_jobs_count`, `weekly_new_users`, `online_experts`) `and
+  LANGUAGE_CODE == 'tr'` ile sarıldı, `completed_jobs`/`completed_analyses`
+  dokunulmadan kaldı (K9). "FAZ 3: UZMAN VİTRİNİ" (uzman profil kartları,
+  fiyat/ilan içermiyor) ve zaten 16 Ekim akşam düzeltilmiş `home_market`
+  kartları kullanıcı kararıyla **değiştirilmedi** (EN/DE'de görünmeye devam
+  ediyor).
+  **Doğrulama:** `transaction.atomic()` içinde açık bir `FreelanceJob`
+  (status='open', approved_at dolu — yeniden yayın tetiklemeden) + bir forum
+  `Topic`/`Post` oluşturulup Test Client ile `/`, `/en/`, `/de/` render
+  edildi, rollback yapıldı (nesneler DB'de kalmadı, doğrulandı). Sonuç: TR'de
+  beklenen içerik (pazaryeri/forum linkleri, "Gündemdeki", "Uzman Arayan
+  Projeler") aynen duruyor; **EN ve DE'de sıfır sızıntı** (`/market/`,
+  `/forum/`, `/topic/`, "Gündemdeki", "Uzman Arayan Projeler" aramalarının
+  hepsi 0). `docker compose exec web python -m pytest forum/tests.py` →
+  **90/90 yeşil**, regresyon yok.
+  **Deploy etkisi:** migration yok, collectstatic gerekmez, `--build` yok;
+  yalnız `docker compose restart web` (zaten yapıldı, lokalde doğrulandı).
+  **Sıradaki:** kullanıcı onayı ile commit + `dev`'e push (henüz yapılmadı);
+  sonra Adım 2 (EN/DE msgstr düzeltmeleri — K4'teki "5-7 gün" taahhüdü ve
+  K5'teki "EU'da işleniyor, Almanya'da değil" düzeltmesi dahil).
+
 - [x] **(16 Ekim 2026, kullanıcı bulgusu → aynı gün düzeltildi) EDU doğrulama
   DM'i admin'in kişisel hesabından gönderiliyordu, sistem/bot hesabından değil.**
   `forum/views.py:1361` (`_handle_edu_user`) artık diğer otomatik DM'lerle aynı
