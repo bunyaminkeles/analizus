@@ -532,9 +532,9 @@ atıfları) → yalnız TR. EN/DE'ye dile uygun tek WebSite bloğu (27 Eylül 20
 <!-- =====================================================
      NASIL ÇALIŞIYORUZ? (Büyütülmüş adım kartları)
      ===================================================== -->
+{% if LANGUAGE_CODE == 'tr' %}
 <section class="ax-steps-section py-5">
     <div class="container">
-        {% if LANGUAGE_CODE == 'tr' %}
         <h2 class="ax-section-title text-center mb-2">{% trans "Nasıl Çalışıyoruz?" %}</h2>
         <p class="ax-section-subtitle text-center mb-5">{% trans "Dört adımda ilan açmaktan raporu teslim almaya." %}</p>
         <div class="row g-4 ax-steps-row position-relative">
@@ -571,14 +571,9 @@ atıfları) → yalnız TR. EN/DE'ye dile uygun tek WebSite bloğu (27 Eylül 20
                 </div>
             </div>
         </div>
-        {% endif %}
-        {% if LANGUAGE_CODE != 'tr' %}
-        <div class="ax-section-cta">
-            <a href="{% url 'proje_talebi' %}?source=home_steps" class="ax-btn ax-btn--primary ax-btn--lg">{% trans "Ücretsiz Proje Talebi Gönder" %}</a>
-        </div>
-        {% endif %}
     </div>
 </section>
+{% endif %}
 
 <!-- =====================================================
      PLATFORM İSTATİSTİKLERİ BANDI

@@ -315,8 +315,33 @@ maddelerde.
   (kendi bilgisayarında) istenmeli. Flag canlıda **kapalı** gelecek;
   kullanıcı admin'den `SiteSettings` → Feature Flags → "EN/DE Danışmanlık
   Ana Sayfası" ile açacak.
-  **Sıradaki:** kullanıcı onayı ile commit + push (dev); Adım 5 (Premium/
-  bağış EUR+IBAN) hâlâ bekliyor; sonra Adım 7-11.
+  **ADIM 6 commit + push edildi** (`8d3284e`, `dev`'e gitti).
+
+  **CANLI BUG BULUNDU VE DÜZELTİLDİ (16 Ekim 2026, kullanıcı Render dev
+  ortamında ekran görüntüsüyle bildirdi):** `home.html`'de "Nasıl
+  Çalışıyoruz?" bölümünü (Adım 6 doğrulama turunda) TR'ye özel yaparken,
+  altındaki `{% if LANGUAGE_CODE != 'tr' %}` CTA'sını ("Ücretsiz Proje
+  Talebi Gönder") bilerek dokunmadan bırakmıştım (FAQ'daki desenle aynı).
+  Ama bu CTA'nın hiç bağlamı yoktu (FAQ'daki "Hâlâ sorunuz mu var?" gibi
+  açıklayıcı metni yok) — EN/DE'de "I Want an Analysis Done" kartının
+  hemen altında, boşlukta duran İKİNCİ bir "Send a Free Project Request"
+  butonu olarak görünüyordu, görsel olarak bozuk/tekrarlı duruyordu.
+  **Düzeltme:** Tüm `ax-steps-section` (başlık+4 kart+yetim CTA dahil
+  `<section>` etiketiyle birlikte) `{% if LANGUAGE_CODE == 'tr' %}` ile
+  sarıldı, yetim CTA tamamen kaldırıldı (FAQ'daki gibi bağlamlı bir CTA
+  değil, saf tekrar olduğu için silinmesi doğru karardı).
+  **Ders:** Bir bölümü gizlerken altındaki "kalsın" denen CTA'nın GERÇEKTEN
+  bağlamsız kalıp kalmadığını kontrol et — FAQ'da CTA'nın kendi açıklayıcı
+  metni vardı (çalıştı), Steps'te yoktu (bozdu). Sadece kod tarafı
+  doğrulaması (curl/pytest) bunu yakalamadı, kullanıcının gerçek tarayıcı
+  ekran görüntüsü yakaladı — **büyük sızıntı kapatma turlarından sonra
+  kullanıcıya da canlı/dev ortamı gözden geçirmesi hatırlatılmalı.**
+  **Doğrulama:** Playwright ile EN sayfası tam ekran görüntüsü — tek CTA
+  kart içinde, ikincisi yalnız sayfa sonundaki FAQ'da (bağlamlı). `pytest
+  forum/tests.py` → **90/90 yeşil**. Commit + push bekliyor.
+
+  **Sıradaki:** Adım 5 (Premium/bağış EUR+IBAN) hâlâ bekliyor; kullanıcı
+  sırayı **10 → 7 → 9 → 8 → 11** olarak belirledi (16 Ekim 2026).
 
 - [x] **(16 Ekim 2026, kullanıcı bulgusu → aynı gün düzeltildi) EDU doğrulama
   DM'i admin'in kişisel hesabından gönderiliyordu, sistem/bot hesabından değil.**
