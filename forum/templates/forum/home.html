@@ -322,7 +322,7 @@ atıfları) → yalnız TR. EN/DE'ye dile uygun tek WebSite bloğu (27 Eylül 20
         <div class="row g-4 justify-content-center">
 
                 <!-- Talep Tarafı (Müşteri/Araştırmacı) -->
-                <div class="col-lg-6">
+                <div class="{% if LANGUAGE_CODE == 'tr' %}col-lg-6{% else %}col-lg-7 mx-auto{% endif %}">
                     <div class="ax-market-card ax-market-card--demand h-100 d-flex flex-column">
 
                         <!-- Dekoratif arka plan görseli — çoklu monitor / analiz ortamı -->
@@ -379,6 +379,7 @@ atıfları) → yalnız TR. EN/DE'ye dile uygun tek WebSite bloğu (27 Eylül 20
                                 <li><i class="bi bi-check2-circle" style="color: #818cf8;"></i> {% trans "Alanında doğrulanmış uzmanlar" %}</li>
                                 <li><i class="bi bi-check2-circle" style="color: #818cf8;"></i> {% trans "Şeffaf ve sürprizsiz fiyatlandırma" %}</li>
                             </ul>
+                            {% if LANGUAGE_CODE == 'tr' %}
                             <div class="ax-market-cats mt-3">
                                 <a href="{% url 'job_list' %}" class="ax-market-cat">{% trans "İstatistik" %}</a>
                                 <a href="{% url 'job_list' %}" class="ax-market-cat">{% trans "Yapay Zeka & ML" %}</a>
@@ -387,6 +388,7 @@ atıfları) → yalnız TR. EN/DE'ye dile uygun tek WebSite bloğu (27 Eylül 20
                                 <a href="{% url 'job_list' %}" class="ax-market-cat">{% trans "Editörlük" %}</a>
                                 <a href="{% url 'job_list' %}" class="ax-market-cat">{% trans "Danışmanlık" %}</a>
                             </div>
+                            {% endif %}
                             <div class="ax-market-diy mt-3">
                                 <span class="ax-market-diy__label">{% trans "veya kendin yap →" %}</span>
                                 <a href="{% url 'analiz_console' 'cronbach' %}" class="ax-market-diy__link">Cronbach</a>
@@ -400,13 +402,13 @@ atıfları) → yalnız TR. EN/DE'ye dile uygun tek WebSite bloğu (27 Eylül 20
                             <a href="{% url 'post_job' %}" class="ax-btn ax-btn--primary ax-btn--lg ax-block ax-w-full mb-2">{% trans "İlan Açarak Uzman Bul" %}</a>
                             <a href="{% url 'uzman_dizini' %}" class="ax-btn ax-btn--ghost ax-block ax-w-full">{% trans "Dizindeki Uzmanları İncele" %}</a>
                             {% else %}
-                            <a href="{% url 'proje_talebi' %}?source=home_market" class="ax-btn ax-btn--primary ax-btn--lg ax-block ax-w-full mb-2">{% trans "Ücretsiz Proje Talebi Gönder" %}</a>
-                            <a href="{% url 'post_job' %}" class="ax-btn ax-btn--ghost ax-block ax-w-full">{% trans "İlan Açarak Uzman Bul" %}</a>
+                            <a href="{% url 'proje_talebi' %}?source=home_market" class="ax-btn ax-btn--primary ax-btn--lg ax-block ax-w-full">{% trans "Ücretsiz Proje Talebi Gönder" %}</a>
                             {% endif %}
                         </div>
                     </div>
                 </div>
 
+                {% if LANGUAGE_CODE == 'tr' %}
                 <!-- Arz Tarafı (Uzman/Analist) -->
                 <div class="col-lg-6">
                     <div class="ax-market-card ax-market-card--supply h-100 d-flex flex-column">
@@ -501,6 +503,7 @@ atıfları) → yalnız TR. EN/DE'ye dile uygun tek WebSite bloğu (27 Eylül 20
                         {% endif %}
                     </div>
                 </div>
+                {% endif %}
 
         </div>
     </div>
