@@ -109,9 +109,53 @@ maddelerde.
   **90/90 yeşil**, regresyon yok.
   **Deploy etkisi:** migration yok, collectstatic gerekmez, `--build` yok;
   yalnız `docker compose restart web` (zaten yapıldı, lokalde doğrulandı).
-  **Sıradaki:** kullanıcı onayı ile commit + `dev`'e push (henüz yapılmadı);
-  sonra Adım 2 (EN/DE msgstr düzeltmeleri — K4'teki "5-7 gün" taahhüdü ve
-  K5'teki "EU'da işleniyor, Almanya'da değil" düzeltmesi dahil).
+  **ADIM 1 commit + push edildi** (`70e363d`, `dev`'e gitti, Render'a
+  otomatik deploy tetiklendi).
+
+  **ADIM 2 TAMAMLANDI (16 Ekim 2026) — EN/DE yanlış vaat ifadeleri msgstr
+  düzeyinde düzeltildi, henüz commit edilmedi.** İki dosya:
+  `locale/de/LC_MESSAGES/django.po`, `locale/en/LC_MESSAGES/django.po`
+  (+derlenmiş `.mo`'lar), ayrıca `forum/templates/forum/home.html`'de
+  1 ek satır (plan dışı, doğrulama sırasında bulunan gerçek bug). TR hiçbir
+  msgid'de değişmedi (yalnız msgstr). 10 msgid düzeltildi: hero H1 ("du"
+  → "Sie", "jemanden der es tut" → "von Fachleuten erledigen"), aynı ifadenin
+  og/twitter paylaşım başlığı (ek bulgu, plan tablosunda yoktu), hero CTA
+  butonu, hero açıklama cümlesi ("in Minuten/verifizierten Experten" →
+  "wir finden die passende Fachperson", "100% Vertraulichkeit" → "Vertraulicher
+  Umgang... kostenlose Erstbewertung"), "Alanında doğrulanmış uzmanlar" →
+  "Fachleute mit Erfahrung", "Şeffaf fiyatlandırma" → "Unverbindliches
+  Angebot vor Arbeitsbeginn", AI doğrulama bandındaki "24 Stunden/hours"
+  kaldırıldı, hero alt başlığı + footer tagline'daki "verifizierte
+  Experten/verified experts" → "Fachleute/specialists".
+  **Doğrulama sırasında bulunan gerçek bug:** `home.html:772`'de
+  `AI {% trans "Asistan" %}` — "AI" kelimesi şablonda SABİT yazılmış,
+  yalnız "Asistan" çevriliyordu → DE'de "AI Assistent" (karışık dil)
+  çıkıyordu. `{% trans "AI Asistan" %}` olarak düzeltildi (zaten doğru
+  çevrilen mevcut msgid'i kullanıyor, TR'de görünüm value'su aynı kaldı).
+  **Dokunulmadan bırakılan (plan kapsamı dışı, Adım 6'ya ait):**
+  "So arbeiten wir" (Nasıl Çalışıyoruz) adımlarındaki "Verifizierte
+  Analysten unterbreiten Methodik- und Preisangebote" (S4) — bu bölüm
+  Adım 6'da baştan yazılacak süreç adımlarıyla değişecek.
+  **Doğrulama:** `docker compose exec web python manage.py compilemessages`
+  container'da msgfmt bulunamadığı için host'ta `msgfmt -c -o ...` ile
+  derlendi (hata yok, yalnız bilinen header uyarıları). `docker compose
+  restart web` sonrası canlı (lokal) `/`, `/en/`, `/de/` curl ile kontrol
+  edildi: DE/EN'de hedeflenen ifadelerin (in Minuten/in minutes,
+  verifizierte Experten/verified experts, Expert/innen, findest du,
+  AI Assistent) **hepsi 0**; "24 Stunden"/"24 hours" **tam olarak 2**
+  (yalnız Premium, beklenen); TR'de "Analizini yap.", "Yapamıyorsan, yapan
+  burada.", "24 saatte", "AI Asistan" **hiç değişmedi**. `pytest
+  forum/tests.py` → **90/90 yeşil** (home.html'e ikinci dokunuştan sonra
+  tekrar çalıştırıldı).
+  **Deploy etkisi:** migration yok, collectstatic gerekmez. `docker-compose.
+  yml`'de `.:/app` bind-mount var (`Dockerfile` yalnız build anında `COPY . .`
+  yapıyor) — yani `git pull` + `restart web` host dosyalarını (dolayısıyla
+  `.mo`'ları) doğrudan container'a yansıtır, tıpkı şablon değişikliğinde
+  olduğu gibi; `--build` gerekmiyor. GitHub Actions zaten `main`'e push'ta
+  bu akışı otomatik çalıştırıyor.
+  **Sıradaki:** kullanıcı onayı ile commit + push; sonra Adım 3 (renk/
+  kontrast, TR'yi de etkiler) veya Adım 4 (SEO title/description) — plan
+  sırasına göre Adım 3.
 
 - [x] **(16 Ekim 2026, kullanıcı bulgusu → aynı gün düzeltildi) EDU doğrulama
   DM'i admin'in kişisel hesabından gönderiliyordu, sistem/bot hesabından değil.**

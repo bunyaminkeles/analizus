@@ -6084,7 +6084,7 @@ msgid ""
 "doğrulanmış uzmanlar tek çatıda."
 msgstr ""
 "An end-to-end analysis ecosystem — 18 free statistics tools, an AI "
-"assistant, and verified experts under one roof."
+"assistant, and specialists under one roof."
 
 #: forum/templates/forum/home.html:248
 msgid "Analizini yap."
@@ -6189,16 +6189,16 @@ msgid ""
 "sürprizsiz fiyat."
 msgstr ""
 "From statistical analysis to data science, from research projects to "
-"corporate reports — get matched with a verified expert in your field within "
-"minutes. 100%% privacy, no surprise pricing."
+"corporate reports — we find the right specialist for your project. "
+"Confidential handling of your data, free initial assessment."
 
 #: forum/templates/forum/home.html:381
 msgid "Alanında doğrulanmış uzmanlar"
-msgstr "Experts verified in their field"
+msgstr "Specialists experienced in your field"
 
 #: forum/templates/forum/home.html:382
 msgid "Şeffaf ve sürprizsiz fiyatlandırma"
-msgstr "Transparent, no-surprise pricing"
+msgstr "Non-binding quote before work starts"
 
 #: forum/templates/forum/home.html:385 forum/templates/forum/home.html:477
 #: forum/templates/forum/profile_detail.html:337
@@ -6641,7 +6641,7 @@ msgid ""
 "kontrol etsin, doğrulama raporu versin."
 msgstr ""
 "ChatGPT is fast, but it offers no assurance in front of a jury. Let our "
-"expert review it within 24 hours and issue a verification report."
+"expert review it and issue a verification report."
 
 #: forum/templates/forum/home.html:905
 msgid "Doğrulama Talep Et"
@@ -20476,8 +20476,8 @@ msgid ""
 "Veriden karara: istatistik araçları, AI asistan ve doğrulanmış uzmanlar tek "
 "platformda."
 msgstr ""
-"From data to decisions: statistical tools, an AI assistant and verified "
-"experts on one platform."
+"From data to decisions: statistical tools, an AI assistant and specialists "
+"on one platform."
 
 #: templates/partials/footer.html:44
 msgid "Araçlar"

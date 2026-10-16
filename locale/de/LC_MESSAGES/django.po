@@ -6196,7 +6196,7 @@ msgstr ""
 #: forum/templates/forum/home.html:8 forum/templates/forum/home.html:10
 msgid "Analizini Yap. Yapamıyorsan, Yapan Burada. | Analizus"
 msgstr ""
-"Analysiere selbst. Wenn nicht, findest du hier jemanden, der es tut. | "
+"Analysieren Sie selbst. Oder lassen Sie es von Fachleuten erledigen. | "
 "Analizus"
 
 #: forum/templates/forum/home.html:9 forum/templates/forum/home.html:11
@@ -6206,19 +6206,19 @@ msgid ""
 "doğrulanmış uzmanlar tek çatıda."
 msgstr ""
 "Ein durchgängiges Analyse-Ökosystem — 18 kostenlose Statistik-Tools, ein KI-"
-"Assistent und verifizierte Experten unter einem Dach."
+"Assistent und Fachleute unter einem Dach."
 
 #: forum/templates/forum/home.html:248
 msgid "Analizini yap."
-msgstr "Analysiere selbst."
+msgstr "Analysieren Sie selbst."
 
 #: forum/templates/forum/home.html:249
 msgid "Yapamıyorsan, yapan burada."
-msgstr "Wenn nicht, findest du hier jemanden, der es tut."
+msgstr "Oder lassen Sie es von Fachleuten erledigen."
 
 #: forum/templates/forum/home.html:260
 msgid "Analizinizi uzmanına yaptırın"
-msgstr "Lassen Sie Ihre Analyse von Expert/innen erstellen"
+msgstr "Analyse von Fachleuten erstellen lassen"
 
 #: forum/templates/forum/home.html:261
 msgid "Ücretsiz ön değerlendirme · Yükümlülük yok"
@@ -6311,17 +6311,16 @@ msgid ""
 "sürprizsiz fiyat."
 msgstr ""
 "Von statistischer Analyse bis Data Science, vom Forschungsprojekt bis zum "
-"Unternehmensbericht — werden Sie in Minuten mit einem verifizierten Experten "
-"Ihres Fachgebiets zusammengebracht. 100 %% Vertraulichkeit, keine "
-"versteckten Kosten."
+"Unternehmensbericht — wir finden die passende Fachperson für Ihr Projekt. "
+"Vertraulicher Umgang mit Ihren Daten, kostenlose Erstbewertung."
 
 #: forum/templates/forum/home.html:381
 msgid "Alanında doğrulanmış uzmanlar"
-msgstr "In ihrem Fachgebiet verifizierte Experten"
+msgstr "Fachleute mit Erfahrung in Ihrem Gebiet"
 
 #: forum/templates/forum/home.html:382
 msgid "Şeffaf ve sürprizsiz fiyatlandırma"
-msgstr "Transparente Preisgestaltung ohne Überraschungen"
+msgstr "Unverbindliches Angebot vor Arbeitsbeginn"
 
 #: forum/templates/forum/home.html:385 forum/templates/forum/home.html:477
 #: forum/templates/forum/profile_detail.html:337
@@ -6772,8 +6771,8 @@ msgid ""
 "kontrol etsin, doğrulama raporu versin."
 msgstr ""
 "ChatGPT ist schnell, bietet aber vor einer Prüfungskommission keine "
-"Sicherheit. Lassen Sie unseren Experten es innerhalb von 24 Stunden prüfen "
-"und einen Verifizierungsbericht erstellen."
+"Sicherheit. Lassen Sie unseren Experten es prüfen und einen "
+"Verifizierungsbericht erstellen."
 
 #: forum/templates/forum/home.html:905
 msgid "Doğrulama Talep Et"
@@ -20826,8 +20825,8 @@ msgid ""
 "Veriden karara: istatistik araçları, AI asistan ve doğrulanmış uzmanlar tek "
 "platformda."
 msgstr ""
-"Von Daten zu Entscheidungen: Statistik-Tools, KI-Assistent und verifizierte "
-"Experten auf einer Plattform."
+"Von Daten zu Entscheidungen: Statistik-Tools, KI-Assistent und Fachleute "
+"auf einer Plattform."
 
 #: templates/partials/footer.html:44
 msgid "Araçlar"
