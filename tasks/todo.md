@@ -199,8 +199,51 @@ maddelerde.
   `home_sections.css`) değişti — `collectstatic` ileride hash'li adla
   yeniden üretecek ama bind-mount sayesinde `restart web` yeterli (Adım
   2'deki gibi), `--build` gerekmiyor.
-  **Sıradaki:** kullanıcı onayı ile commit + push; sonra Adım 4 (SEO
-  title/description + SSS H2→H3).
+  **ADIM 3 commit + push edildi** (`4519fa4`, `dev`'e gitti).
+
+  **ADIM 4 TAMAMLANDI (16 Ekim 2026) — SEO title/description + SSS H2→H3
+  + KRİTİK EK BULGU düzeltmesi, henüz commit edilmedi.**
+  (1) `home.html`'in `{% block title %}`/`{% block meta_description %}`
+  msgid'leri bulundu (tek kullanım, satır 6-7). Planın önerdiği DE/EN
+  metinleri kendi belirlediği sınırı (title ≤60-65, desc ≤155-160) aşıyordu
+  (73-75/182-189 karakter) — kısaltılıp kullanıcıya gösterildi, onaylandı:
+  DE title "Statistikberatung für Forschung & Unternehmen \| Analizus" (56),
+  EN title "Statistics Consulting for Research & Business \| Analizus" (56),
+  DE/EN description sırasıyla 135/148 karakter. TR değişmedi.
+  (2) SSS'deki 5 soru `<h2 class="accordion-header">` → `<h3>` (satır
+  982-1044 aralığı, yalnız bu 5 çift, bölüm başlığı "Sıkça Sorulan Sorular"
+  H2 olarak kaldı) — TR dahil tüm diller etkilendi, JSON-LD FAQPage ayrı
+  script bloğu olduğu için etkilenmedi.
+  (3) **KRİTİK EK BULGU (doğrulama sırasında bulundu, plan dosyasında
+  YOKTU):** SSS bölümünün tamamı (5 soru + JSON-LD FAQPage) hiç dil
+  koşuluna bağlı değildi — DE/EN'de TR pazaryeri içeriğiyle birebir
+  render ediliyordu. Örnek, canlıda DE: "Die Experten auf der Plattform
+  prüfen den Umfang Ihres Projekts und machen Ihnen ihr eigenes
+  Preisangebot" (platformdaki uzmanlar teklif verir) — K3 kararıyla
+  (fiyat sitede gösterilmez) ve "pazaryeri kapalı" pozisyonuyla doğrudan
+  çelişiyordu. Adım 1'in URL/link bazlı sızıntı taraması bunu yakalamamıştı
+  (düz metin, link içermiyor). Kullanıcı onayıyla hemen düzeltildi: SSS
+  başlığı+alt başlığı+5 soru (`home.html:969-1055`)
+  `{% if LANGUAGE_CODE == 'tr' %}` ile sarıldı; altındaki mevcut
+  `{% if LANGUAGE_CODE != 'tr' %}` CTA'sı ("Noch Fragen? Beschreiben Sie
+  Ihr Projekt…", zaten `source=home_faq` ile vardı) dokunulmadan kaldı —
+  EN/DE artık SSS yerine doğrudan bu CTA'yı görüyor. Adım 6'da gerçek
+  danışmanlık SSS'si gelince bu geçici gizleme kaldırılacak.
+  **Ders (lessons.md'ye de eklenebilir):** EN/DE sızıntı taraması yalnız
+  URL/link pattern'i değil, düz metin açıklamalarını da (özellikle
+  "uzman teklif verir/eşleşme" gibi pazaryeri mekaniği anlatan cümleleri)
+  kapsamalı.
+  **Doğrulama:** `docker compose restart web`; curl ile DE/EN/TR `<title>`,
+  meta description, SSS h2/h3 sayımı, FAQPage JSON-LD varlığı (TR'de var,
+  DE/EN'de artık hiç yok — beklenen) kontrol edildi; DE'de CTA metninin
+  ("Noch Fragen?...") gerçekten göründüğü doğrulandı. `pytest
+  forum/tests.py` → **90/90 yeşil**.
+  **Deploy etkisi:** migration yok; `.po`/`.mo` + `home.html` değişti,
+  bind-mount sayesinde `restart web` yeterli.
+  **Sıradaki:** kullanıcı onayı ile commit + push; sonra Adım 5 (Premium/
+  bağış — K8 kararıyla artık "gizleme" değil "EUR fiyat + ayrı IBAN"
+  görevi) veya Adım 6 (yeni EN/DE ana sayfası, migration'lı, K1-K9
+  kararları zaten hazır).
 
 - [x] **(16 Ekim 2026, kullanıcı bulgusu → aynı gün düzeltildi) EDU doğrulama
   DM'i admin'in kişisel hesabından gönderiliyordu, sistem/bot hesabından değil.**

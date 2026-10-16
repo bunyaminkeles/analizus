@@ -6061,7 +6061,7 @@ msgstr "No service pages are published yet."
 
 #: forum/templates/forum/home.html:6
 msgid "Analizus — Ücretsiz İstatistik Analizi ve Veri Analizi Platformu"
-msgstr "Analizus — Free Statistical Analysis and Data Analysis Platform"
+msgstr "Statistics Consulting for Research & Business | Analizus"
 
 #: forum/templates/forum/home.html:7 forum/templates/forum/home.html:95
 msgid ""
@@ -6069,9 +6069,9 @@ msgid ""
 "hazır — SPSS bilgisi gerekmez. Veri analizi ve araştırma danışmanlığı için "
 "uzman bul."
 msgstr ""
-"Upload your file, get statistical and data analysis ready in APA format — no "
-"SPSS knowledge required. Find an expert for data analysis and research "
-"consulting."
+"Statistical consulting for PhD candidates, researchers and companies — "
+"methodologically sound, with an APA-style report and free initial "
+"assessment."
 
 #: forum/templates/forum/home.html:8 forum/templates/forum/home.html:10
 msgid "Analizini Yap. Yapamıyorsan, Yapan Burada. | Analizus"

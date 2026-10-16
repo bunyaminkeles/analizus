@@ -6181,7 +6181,7 @@ msgstr "Derzeit sind keine Dienstleistungsseiten veröffentlicht."
 
 #: forum/templates/forum/home.html:6
 msgid "Analizus — Ücretsiz İstatistik Analizi ve Veri Analizi Platformu"
-msgstr "Analizus — Kostenlose Plattform für Statistik- und Datenanalyse"
+msgstr "Statistikberatung für Forschung & Unternehmen | Analizus"
 
 #: forum/templates/forum/home.html:7 forum/templates/forum/home.html:95
 msgid ""
@@ -6189,9 +6189,8 @@ msgid ""
 "hazır — SPSS bilgisi gerekmez. Veri analizi ve araştırma danışmanlığı için "
 "uzman bul."
 msgstr ""
-"Laden Sie Ihre Datei hoch und erhalten Sie Statistik- und Datenanalysen im "
-"APA-Format — keine SPSS-Kenntnisse nötig. Finden Sie Expertinnen und "
-"Experten für Datenanalyse und Forschungsberatung."
+"Statistische Beratung für Promovierende, Forschende und Unternehmen – "
+"methodisch sauber, mit APA-Bericht und kostenloser Erstbewertung."
 
 #: forum/templates/forum/home.html:8 forum/templates/forum/home.html:10
 msgid "Analizini Yap. Yapamıyorsan, Yapan Burada. | Analizus"

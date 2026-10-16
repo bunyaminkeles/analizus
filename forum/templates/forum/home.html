@@ -966,6 +966,7 @@ AI Asistan da kapalıysa bölüm hiç çıkmaz (26 Eylül 2026){% endcomment %}
      ===================================================== -->
 <section class="ax-faq-section py-5">
     <div class="container">
+        {% if LANGUAGE_CODE == 'tr' %}
         <div class="row justify-content-center mb-5">
             <div class="col-lg-8 text-center">
                 <span class="ax-badge-outline mb-3">{% trans "Soru İşaretlerini Giderin" %}</span>
@@ -979,11 +980,11 @@ AI Asistan da kapalıysa bölüm hiç çıkmaz (26 Eylül 2026){% endcomment %}
 
                     <!-- Soru 1 -->
                     <div class="accordion-item">
-                        <h2 class="accordion-header" id="faqOne">
+                        <h3 class="accordion-header" id="faqOne">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
                                 {% trans "Analiz verilerim güvende mi? Başkalarıyla paylaşılır mı?" %}
                             </button>
-                        </h2>
+                        </h3>
                         <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="faqOne" data-bs-parent="#faqAccordion">
                             <div class="accordion-body">
                                 {% trans "Verileriniz KVKK'ya uygun şekilde şifreli sunucularda saklanır. Dosyalarınız yalnızca eşleştiğiniz uzmanla, ilgili iş kapsamında paylaşılır; bunun dışında üçüncü taraflarla veya ilgisiz kişilerle asla paylaşılmaz." %}
@@ -993,11 +994,11 @@ AI Asistan da kapalıysa bölüm hiç çıkmaz (26 Eylül 2026){% endcomment %}
 
                     <!-- Soru 2 -->
                     <div class="accordion-item">
-                        <h2 class="accordion-header" id="faqTwo">
+                        <h3 class="accordion-header" id="faqTwo">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
                                 {% trans "Fiyatlandırma politikanız nasıl? Gizli veya ek ücret çıkar mı?" %}
                             </button>
-                        </h2>
+                        </h3>
                         <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="faqTwo" data-bs-parent="#faqAccordion">
                             <div class="accordion-body">
                                 {% trans "Platformdaki uzmanlar, projenizin kapsamını değerlendirdikten sonra size kendi fiyat tekliflerini sunar; anlaştığınız tutarın dışında platform üzerinden gizli bir ücret veya komisyon yansıtılmaz. Kendi başınıza kullandığınız istatistik araçlarının fiyatı ise ilgili araç sayfasında açıkça belirtilir." %}
@@ -1008,11 +1009,11 @@ AI Asistan da kapalıysa bölüm hiç çıkmaz (26 Eylül 2026){% endcomment %}
 
                     <!-- Soru 3 -->
                     <div class="accordion-item">
-                        <h2 class="accordion-header" id="faqThree">
+                        <h3 class="accordion-header" id="faqThree">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
                                 {% trans "Danışman hocam veya jüri revizyon (düzeltme) isterse ne olacak?" %}
                             </button>
-                        </h2>
+                        </h3>
                         <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="faqThree" data-bs-parent="#faqAccordion">
                             <div class="accordion-body">
                                 {% trans "Revizyon koşulları, çalışmaya başlamadan önce uzmanınızla aranızda netleştirdiğiniz kapsamın bir parçasıdır. Çoğu uzman, danışman veya jüriden gelen metodolojik geri bildirimler doğrultusunda ilk anlaşılan kapsam dahilinde revizyon desteği sunar — bu detayı iş başlamadan önce uzmanınızla teyit etmenizi öneririz." %}
@@ -1022,11 +1023,11 @@ AI Asistan da kapalıysa bölüm hiç çıkmaz (26 Eylül 2026){% endcomment %}
 
                     <!-- Soru 4 -->
                     <div class="accordion-item">
-                        <h2 class="accordion-header" id="faqFour">
+                        <h3 class="accordion-header" id="faqFour">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
                                 {% trans "Analiz sonuçlarım ne kadar sürede teslim edilir?" %}
                             </button>
-                        </h2>
+                        </h3>
                         <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="faqFour" data-bs-parent="#faqAccordion">
                             <div class="accordion-body">
                                 {% trans "Kendi başınıza kullandığınız istatistik araçlarında sonuçlar saniyeler içinde hesaplanır. Bir uzmanla birlikte yürüttüğünüz projelerde ise teslim süresi, verinin karmaşıklığına ve kapsama göre değişir; net süreyi iş başlamadan önce uzmanınızla birlikte belirlersiniz." %}
@@ -1036,11 +1037,11 @@ AI Asistan da kapalıysa bölüm hiç çıkmaz (26 Eylül 2026){% endcomment %}
 
                     <!-- Soru 5 -->
                     <div class="accordion-item">
-                        <h2 class="accordion-header" id="faqFive">
+                        <h3 class="accordion-header" id="faqFive">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
                                 {% trans "Süreç bittikten sonra verilerime ve dosyalarıma ne oluyor?" %}
                             </button>
-                        </h2>
+                        </h3>
                         <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="faqFive" data-bs-parent="#faqAccordion">
                             <div class="accordion-body">
                                 {% trans "Verileriniz ve sonuç raporlarınız, olası revizyon talepleriniz için hesabınızda saklanır. KVKK kapsamındaki haklarınız gereği dosyalarınızın silinmesini her zaman talep edebilirsiniz; talebiniz üzerine ilgili veriler sistemlerimizden kaldırılır." %}
@@ -1051,6 +1052,7 @@ AI Asistan da kapalıysa bölüm hiç çıkmaz (26 Eylül 2026){% endcomment %}
                 </div>
             </div>
         </div>
+        {% endif %}
         {% if LANGUAGE_CODE != 'tr' %}
         <div class="ax-section-cta">
             <p class="ax-section-cta__text">{% trans "Sorunuz mu kaldı? Projenizi anlatın, ücretsiz değerlendirelim." %}</p>
