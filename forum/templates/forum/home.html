@@ -396,8 +396,13 @@ atıfları) → yalnız TR. EN/DE'ye dile uygun tek WebSite bloğu (27 Eylül 20
                             </div>
                         </div>
                         <div class="ax-market-footer mt-4">
+                            {% if LANGUAGE_CODE == 'tr' %}
                             <a href="{% url 'post_job' %}" class="ax-btn ax-btn--primary ax-btn--lg ax-block ax-w-full mb-2">{% trans "İlan Açarak Uzman Bul" %}</a>
-                            {% if LANGUAGE_CODE == 'tr' %}<a href="{% url 'uzman_dizini' %}" class="ax-btn ax-btn--ghost ax-block ax-w-full">{% trans "Dizindeki Uzmanları İncele" %}</a>{% endif %}
+                            <a href="{% url 'uzman_dizini' %}" class="ax-btn ax-btn--ghost ax-block ax-w-full">{% trans "Dizindeki Uzmanları İncele" %}</a>
+                            {% else %}
+                            <a href="{% url 'proje_talebi' %}?source=home_market" class="ax-btn ax-btn--primary ax-btn--lg ax-block ax-w-full mb-2">{% trans "Ücretsiz Proje Talebi Gönder" %}</a>
+                            <a href="{% url 'post_job' %}" class="ax-btn ax-btn--ghost ax-block ax-w-full">{% trans "İlan Açarak Uzman Bul" %}</a>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
