@@ -80,6 +80,7 @@ def feature_flags(request):
             'ai_summary': site.feature_ai_summary,
             'intl_consulting_home': site.feature_intl_consulting_home,
         },
+        'meeting_booking_url': site.meeting_booking_url,
         # Sipariş sayfalarındaki fiyat tablosu + JS tahmini (sunucu tutarı modelde aynı ayardan hesaplar)
         'pricing': {
             'scrape_first_100': site.scrape_price_first_100,

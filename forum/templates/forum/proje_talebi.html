@@ -212,6 +212,23 @@
             </div>
           </div>
 
+          <div class="row g-3 mb-4">
+            <div class="col-sm-6">
+              <label class="form-label text-white-50 small">{% trans "Projenizin Aşaması" %} <span class="text-danger">*</span></label>
+              <select name="stage" class="form-select" required>
+                <option value="">{% trans "Seçiniz…" %}</option>
+                <option value="planning">{% trans "Planlama aşamasındayım" %}</option>
+                <option value="data_collected">{% trans "Verim toplandı, analiz bekliyor" %}</option>
+                <option value="analysis_done">{% trans "Analiz bitti, rapor/yorumlama lazım" %}</option>
+                <option value="reviewer_feedback">{% trans "Hakem/danışman geri bildirimi aldım" %}</option>
+              </select>
+            </div>
+            <div class="col-sm-6">
+              <label class="form-label text-white-50 small">{% trans "Hedef Teslim Tarihi" %} <span class="text-white-50" style="font-weight:400;">({% trans "isteğe bağlı" %})</span></label>
+              <input type="date" name="deadline" class="form-control">
+            </div>
+          </div>
+
           <button type="submit" class="ax-btn ax-btn--primary w-100 py-3 fw-semibold" style="font-size:1rem;">
             <i class="bi bi-send me-2"></i>{% trans "Talebi Gönder" %}
           </button>
@@ -285,6 +302,13 @@
         {% else %}
         <a href="mailto:info@analizus.com" class="ax-btn ax-btn--sm" style="display:inline-flex;align-items:center;gap:8px;">
           <i class="bi bi-envelope"></i> info@analizus.com
+        </a>
+        {% endif %}
+        {% if meeting_booking_url %}
+        <a href="{{ meeting_booking_url }}" target="_blank" rel="noopener noreferrer"
+           class="ax-btn ax-btn--sm fw-semibold ms-2"
+           style="background:transparent;color:#4ade80;border:1px solid rgba(74,222,128,.4);display:inline-flex;align-items:center;gap:8px;padding:8px 18px;border-radius:8px;">
+          <i class="bi bi-calendar-check"></i> {% trans "Randevu Planla" %}
         </a>
         {% endif %}
       </div>

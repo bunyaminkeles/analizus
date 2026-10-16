@@ -338,10 +338,58 @@ maddelerde.
   kullanıcıya da canlı/dev ortamı gözden geçirmesi hatırlatılmalı.**
   **Doğrulama:** Playwright ile EN sayfası tam ekran görüntüsü — tek CTA
   kart içinde, ikincisi yalnız sayfa sonundaki FAQ'da (bağlamlı). `pytest
-  forum/tests.py` → **90/90 yeşil**. Commit + push bekliyor.
+  forum/tests.py` → **90/90 yeşil**. **Commit + push edildi** (`7b155da`,
+  `dev`'e gitti).
 
-  **Sıradaki:** Adım 5 (Premium/bağış EUR+IBAN) hâlâ bekliyor; kullanıcı
-  sırayı **10 → 7 → 9 → 8 → 11** olarak belirledi (16 Ekim 2026).
+  **Sıradaki adım sırası — kullanıcı kararı (16 Ekim 2026):** Adım 5
+  (Premium/bağış EUR+IBAN) hâlâ bekliyor (atlandı); kalan adımlar için
+  sıra **10 → 7 → 9 → 8 → 11** olarak belirlendi.
+
+  **ADIM 10 TAMAMLANDI (16 Ekim 2026) — proje talebi formuna "aşama" +
+  "hedef teslim tarihi" + isteğe bağlı randevu linki eklendi, henüz
+  commit edilmedi. MIGRATION VAR (0180).**
+  **Mimari (7 dosya):** `forum/models.py` (+`ProjectRequest.STAGE_CHOICES`
+  ve `stage`/`deadline` alanları; +`SiteSettings.meeting_booking_url`),
+  `forum/migrations/0180_...py`, `forum/admin.py` (ikisi de fieldsets/
+  list_display/list_filter'a eklendi), `forum/views.py` (`proje_talebi()`
+  — `stage` zorunlu doğrulamaya eklendi, `deadline` isteğe bağlı parse
+  edilir, admin bildirim e-postasına ikisi de eklendi), `forum/templates/
+  forum/proje_talebi.html` (yeni form satırı: Aşama [zorunlu select] +
+  Hedef Teslim Tarihi [isteğe bağlı date input]; "Randevu Planla" linki
+  yalnız `meeting_booking_url` doluysa görünür), 2× `.po`+`.mo`.
+  **Kullanıcı kararları:** bütçe aralığı alanı EKLENMEDİ (fiyat/para
+  birimi belirsizliği nedeniyle); aşama zorunlu, tarih isteğe bağlı;
+  randevu linki şimdilik boş (admin daha sonra dolduracak, kod değişikliği
+  gerekmeyecek).
+  **Ek bulgu — kullanıcı onayıyla hemen düzeltildi:** proje_talebi
+  sayfasındaki "Neden Analizus?" kutusunda "Python, R, SQL, Tableau
+  uzmanlarından oluşan doğrulanmış analist ağı" ifadesi K1 kararıyla
+  (admin kendisi/ekibi TR/EN/DE danışmanlık veriyor, ağ/pazaryeri modeli
+  değil) çelişiyordu — yalnız bu msgid'in DE/EN msgstr'ı "Direkte
+  Betreuung durch unser Team..."/"Direct support from our team..." olarak
+  değiştirildi (tek kullanım yeri, başka sayfayı etkilemedi).
+  **AÇIK BULGU — kullanıcı karar vermeden oturum kapandı, bir sonraki
+  oturumda sorulmalı:** Aynı sayfanın H1/alt başlığı da aynı sorunu
+  taşıyor: "Tell Us About Your Project, We'll Find the Right Expert" /
+  "...we'll match you with expert analysts and offer a free initial
+  assessment." — "uzman bulma/eşleştirme" vaadi K1 ile çelişiyor ama
+  kapsamı daha geniş (H1 + alt başlık + muhtemelen "Finans, perakende,
+  sağlık ve üretim sektörlerinde kanıtlanmış proje deneyimi" gibi
+  doğrulanmamış iddialar da var) — **dokunulmadı, ayrı onay gerekir.**
+  **Doğrulama:** `transaction.atomic()` içinde TR/EN/DE × GET (form
+  alanları render) + POST (stage+deadline ile başarılı kayıt, stage boşken
+  reddedilme) test edildi, rollback temiz. Playwright ile EN form ekran
+  görüntüsü — yeni alanlar doğru yerleşmiş, "Randevu Planla" linki doğru
+  şekilde gizli (link boş olduğu için). `pytest forum/tests.py` →
+  **90/90 yeşil**.
+  **Deploy etkisi:** **MIGRATION VAR** (`0180_...py`, no-data — iki yeni
+  alan, mevcut satırlar etkilenmez) → `main`'e push öncesi
+  `scripts/yedek_indir.sh --simdi` (kullanıcının kendi bilgisayarında)
+  gerekiyor.
+  **Sıradaki:** Adım 7 (EN/DE navigasyon), sonra 9 (hizmet sayfaları
+  tasarım dokümanı), 8 (Impressum), 11 (ölçüm) — bu oturumda başlanmadı,
+  bir sonraki oturumda devam edilecek. Yukarıdaki açık bulgu (proje_talebi
+  H1/alt başlık) da bir sonraki oturumun başında kullanıcıya sorulmalı.
 
 - [x] **(16 Ekim 2026, kullanıcı bulgusu → aynı gün düzeltildi) EDU doğrulama
   DM'i admin'in kişisel hesabından gönderiliyordu, sistem/bot hesabından değil.**

@@ -448,15 +448,15 @@ class ContactMessageAdmin(ModelAdmin):
 class ProjectRequestAdmin(ModelAdmin):
     warn_unsaved_changes = True
     compressed_fields = True
-    list_display = ('name', 'company', 'email', 'analysis_type_display', 'language', 'source', 'data_size', 'timeline', 'status', 'status_badge', 'created_at_formatted')
-    list_filter = ('status', 'language', 'source', 'analysis_type', 'timeline', 'data_size', 'created_at')
+    list_display = ('name', 'company', 'email', 'analysis_type_display', 'language', 'source', 'data_size', 'timeline', 'stage', 'status', 'status_badge', 'created_at_formatted')
+    list_filter = ('status', 'language', 'source', 'analysis_type', 'timeline', 'stage', 'data_size', 'created_at')
     search_fields = ('name', 'email', 'company', 'description')
     list_editable = ('status',)
     readonly_fields = ('created_at',)
     ordering = ('-created_at',)
     fieldsets = (
         ('Talep Eden', {'fields': ('name', 'email', 'company', 'language', 'source')}),
-        ('Proje Detayları', {'fields': ('analysis_type', 'description', 'data_size', 'timeline')}),
+        ('Proje Detayları', {'fields': ('analysis_type', 'description', 'data_size', 'timeline', 'stage', 'deadline')}),
         ('Yönetim', {'fields': ('status', 'admin_notes', 'created_at')}),
     )
 
@@ -921,6 +921,11 @@ class SiteSettingsAdmin(ModelAdmin):
         ('Ana Sayfa', {
             'description': 'Ana sayfa istatistik şeridi görünürlük eşiği.',
             'fields': ('stat_min_display',),
+            'classes': ('collapse',),
+        }),
+        ('Proje Talebi', {
+            'description': 'Doluysa proje talebi sayfasında bir randevu bağlantısı gösterilir.',
+            'fields': ('meeting_booking_url',),
             'classes': ('collapse',),
         }),
         ('Limitler', {
