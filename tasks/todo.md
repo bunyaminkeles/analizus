@@ -16,6 +16,23 @@ maddelerde.
   deseni kullanıyor: önce `User.objects.get(username='AnalizBot')`, `AnalizBot`
   yoksa (ör. dev DB'de seed edilmemişse) fallback olarak ilk superuser.
 
+- [ ] **(16 Ekim 2026, kullanıcı bulgusu — kullanıcı tarafında yapılacak, Render
+  dashboard erişimi gerektiriyor) Render (`analizus-dev`) saatlik "memory limit
+  exceeded" ile restart oluyordu.** Kök neden: `istatistik/services/job_runner.py`
+  `_session_datasets` dict'i (istatistik araçlarına yüklenen dosya içeriğini
+  RAM'de session_key'e göre tutuyor) yalnızca saatlik harici cron
+  (`api/cron/cleanup-session-datasets/?secret=...`) ile temizleniyor; Hetzner
+  crontab'ı salt-okunur incelendi (kullanıcı onayıyla) — bu cron yalnızca
+  `https://www.analizus.com`'u hedefliyor, Render'a (`analizus-dev.onrender.com`)
+  hiç gitmiyor. Dict sınırsız birikip OOM'a yol açıyordu. **Kod tarafı aynı gün
+  düzeltildi:** `save_session_dataset()` artık her yeni kayıtta süresi geçmiş
+  girdileri de fırsatçı temizliyor (`job_runner.py:27-30`, `dev`'e push edildi) —
+  bu tek başına da yeterli bir güvence. **Kullanıcının yapması gereken (opsiyonel
+  ek güvence):** Render dashboard'da `CRON_SECRET_KEY` tanımlı olduğunu
+  doğrulayıp, saatlik `GET https://analizus-dev.onrender.com/api/cron/cleanup-session-datasets/?secret=<Render'daki CRON_SECRET_KEY>`
+  çağrısı yapan bir cron (Render Cron Job veya cron-job.org) kurmak — Hetzner'in
+  production secret'ı Render için kullanılmamalı, ayrı ortam.
+
 - [ ] **(15 Ekim 2026, ÜRÜN KARARI BEKLİYOR)** YÖK Tez'de (muhtemelen diğer tarama
   araçlarında da) kullanıcılar "Başlık"/"Özet" alanına virgülle ayrılmış birden
   fazla kelime giriyor (ör. "islam, tefsir, hadis, tasavvuf, Kur'an, fıkıh,
