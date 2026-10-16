@@ -63,6 +63,18 @@ maddelerde.
   farklı olarak Unfold değil düz Django `ModelAdmin` kullanıyor, ayrıca
   `get_query_summary` sütunu yok (sadece ham `status/total_results/created_at`
   görünüyor) — görsel/işlevsel tutarsızlık, ayrı görev olarak ele alınmalı.
+- [x] **TAMAMLANDI (16 Ekim 2026) — OAI-PMH "0 sonuç" yanlış sınıflandırma düzeltmesi +
+  44 yeni üniversite + admin sidebar sadeleştirmesi, `main`'de canlı (3 ayrı merge).**
+  `oaipmh/services/scraper.py`'deki `browse_university()` bağlantı/sunucu hatalarını
+  (connection refused, SSL, HTTP 5xx) gerçek "0 sonuç" (`noRecordsMatch`) ile aynı şekilde
+  yutup sessizce işaretliyordu — artık `last_result_count=-1` ("🔌 Bağlantı Hatası") ile ayrı
+  gösteriliyor (admin e-postası + admin panel listesi). hipo-labs TR üniversite domain
+  listesi + kalıp taramasıyla 44 yeni çalışan OAI-PMH endpoint'i bulunup eklendi (migration
+  0010), hepsi gerçek canlı testten geçirildi — 4'ü (Marmara/Erzurum Teknik/Osmaniye/Rumeli)
+  + eski 19'dan 3'ü (Çukurova/Uşak/Uludağ) flagged, admin kararı bekliyor. Admin sidebar'daki
+  "Arama & Analiz" bölümü 10 satırdan 2'ye indi (Unfold `list_before_template` hook'u ile
+  paylaşımlı sekme çubuğu, `analizdestek/admin_nav.py`), üst başlık kaldırıldı. Detaylı
+  anlatım: `analizus.md` §27 "Geçmiş Turlar" en üstteki madde.
 - [x] **TAMAMLANDI (15 Ekim 2026) — Admin dashboard analitik turu: arama kelime
   grafiği + 0-sonuç ikazı + YÖK Tez/OAI-PMH üniversite canlı tespiti, `main`'de
   canlı (production'da uçtan uca doğrulandı — İTÜ + Dokuz Eylül Ü. gerçekten
