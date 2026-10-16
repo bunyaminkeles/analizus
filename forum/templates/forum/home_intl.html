@@ -1,0 +1,567 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load i18n %}
+
+{% block title %}{% trans "Analizus — İstatistik Danışmanlığı ve Veri Analizi" %}{% endblock %}
+{% block meta_description %}{% trans "Doktora öğrencileri, araştırmacılar ve kurumlar için istatistik danışmanlığı ve veri analizi — yöntemsel olarak sağlam, APA raporuyla. Ücretsiz ön değerlendirme." %}{% endblock %}
+{% block og_title %}{% trans "Analizus — İstatistik Danışmanlığı ve Veri Analizi" %}{% endblock %}
+{% block og_description %}{% trans "Doktora öğrencileri, araştırmacılar ve kurumlar için istatistik danışmanlığı ve veri analizi — yöntemsel olarak sağlam, APA raporuyla. Ücretsiz ön değerlendirme." %}{% endblock %}
+{% block twitter_title %}{% trans "Analizus — İstatistik Danışmanlığı ve Veri Analizi" %}{% endblock %}
+{% block twitter_description %}{% trans "Doktora öğrencileri, araştırmacılar ve kurumlar için istatistik danışmanlığı ve veri analizi — yöntemsel olarak sağlam, APA raporuyla. Ücretsiz ön değerlendirme." %}{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{% static 'css/hero.css' %}?v=0108">
+<link rel="stylesheet" href="{% static 'css/cards.css' %}?v=0100">
+<link rel="stylesheet" href="{% static 'css/home_sections.css' %}?v=0117">
+<link rel="stylesheet" href="{% static 'css/trend_topics.css' %}?v=0004">
+<link rel="stylesheet" href="{% static 'css/brand_visuals.css' %}?v=0103">
+
+<!-- Schema.org FAQPage - danışmanlık modeli SSS -->
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+        {
+            "@type": "Question",
+            "name": "{% filter escapejs %}{% trans "İşbirliği süreci nasıl işliyor?" %}{% endfilter %}",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "{% filter escapejs %}{% trans "Önce projenizi ve verinizi anlatırsınız, ücretsiz bir görüşmeyle kapsamı ve teklifi netleştiririz, analiz sürecinde her adımı belgeleriz ve sonunda rapor, tablolar ve kodla teslim ederiz." %}{% endfilter %}"
+            }
+        },
+        {
+            "@type": "Question",
+            "name": "{% filter escapejs %}{% trans "Bir analizin maliyeti nedir?" %}{% endfilter %}",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "{% filter escapejs %}{% trans "Fiyat, projenizin kapsamına göre değişir ve talebinize vereceğimiz ücretsiz teklifte belirtilir." %}{% endfilter %}"
+            }
+        },
+        {
+            "@type": "Question",
+            "name": "{% filter escapejs %}{% trans "Sonuçları ne kadar sürede alırım?" %}{% endfilter %}",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "{% filter escapejs %}{% trans "Proje büyüklüğüne göre genellikle 5-7 gün içinde." %}{% endfilter %}"
+            }
+        },
+        {
+            "@type": "Question",
+            "name": "{% filter escapejs %}{% trans "Verilerimle nasıl ilgileniyorsunuz?" %}{% endfilter %}",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "{% filter escapejs %}{% trans "Verileriniz Avrupa Birliği sınırları içinde, gizlilik içinde işlenir." %}{% endfilter %}"
+            }
+        },
+        {
+            "@type": "Question",
+            "name": "{% filter escapejs %}{% trans "Hangi dillerde çalışıyorsunuz?" %}{% endfilter %}",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "{% filter escapejs %}{% trans "Türkçe, İngilizce ve Almanca danışmanlık veriyoruz." %}{% endfilter %}"
+            }
+        },
+        {
+            "@type": "Question",
+            "name": "{% filter escapejs %}{% trans "Tezimi siz mi yazıyorsunuz?" %}{% endfilter %}",
+            "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "{% filter escapejs %}{% trans "Hayır. Yönteme danışmanlık yapar, analizi şeffaf biçimde yürütürüz — bilimsel çalışma sizin kalır." %}{% endfilter %}"
+            }
+        }
+    ]
+}
+</script>
+{% endblock %}
+
+{% block main_container %}container-fluid px-2 px-lg-3{% endblock %}
+{% block main_content_classes %}col-12{% endblock %}
+{% block right_sidebar %}{% endblock %}
+
+{% block content %}
+
+<!-- =====================================================
+     HERO
+     ===================================================== -->
+<section class="ax-hero">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-lg-8 text-center">
+
+                <h1 class="ax-hero__title" style="font-size: 2.75rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1.2;">
+                    {% trans "İstatistik danışmanlığı ve veri analizi — yöntemsel olarak sağlam, izlenebilir biçimde raporlanmış." %}
+                </h1>
+
+                <p class="ax-hero__subtitle" style="max-width: 600px; margin: 0 auto 24px; line-height: 1.6;">
+                    {% trans "Doktora öğrencileri, araştırmacılar ve kurumlar için: analizinizi planlıyor, yürütüyor ve açıklıyoruz — APA raporu ve yeniden üretilebilir kodla." %}
+                </p>
+
+                <div class="ax-hero__primary-cta">
+                    <a href="{% url 'proje_talebi' %}?source=hero" class="ax-btn ax-btn--primary ax-btn--lg">{% trans "Ücretsiz ön görüşme talep et" %}</a>
+                    <p class="ax-hero__primary-cta-note">{% trans "Ücretsiz ön değerlendirme · Yükümlülük yok" %}</p>
+                </div>
+                <p class="ax-hero__or">{% trans "ya da kendiniz analiz edin:" %}</p>
+
+                <!-- Sürükle-bırak veri alanı (K7: dropzone kalıyor) -->
+                <div class="ax-hero-dropzone" id="axHeroDropzone">
+                    {% csrf_token %}
+                    <input type="file" id="axHeroFileInput" accept=".csv,.xlsx,.xls" hidden>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" class="ax-hero-dropzone__icon"><path d="M12 3v12"/><path d="m7 8 5-5 5 5"/><path d="M5 21h14a2 2 0 0 0 2-2v-5a2 2 0 0 0-2-2h-1"/><path d="M5 21a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h1"/></svg>
+                    <span class="ax-hero-dropzone__text" id="axHeroDropzoneText">{% trans "CSV veya Excel dosyanı buraya bırak" %}</span>
+                    <button type="button" class="ax-hero-dropzone__btn" id="axHeroFileBtn">{% trans "Dosya Seç" %}</button>
+                </div>
+                <p class="ax-hero-dropzone__error" id="axHeroDropzoneError" hidden></p>
+                <p class="ax-hero-dropzone__trust">{% trans "Yükle → testi seç (bilmiyorsan yol gösteririz) → APA formatında raporunu al · Yüklemek için kayıt gerekmez" %}</p>
+                <p class="ax-hero-dropzone__examples">{% trans "t-testi" %} · ANOVA · {% trans "korelasyon" %} · Cronbach α · {% trans "regresyon" %} · <a href="{% url 'analiz_home' %}">{% trans "18 aracın tümü →" %}</a></p>
+
+                <p style="text-align:center;color:var(--ax-text-secondary);font-size:var(--ax-text-sm);margin-top:var(--ax-space-3);">
+                    {% trans "Yapay zeka hızlıdır. Doğru olduğundan biz emin oluruz." %}
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- =====================================================
+     GÜVEN ŞERİDİ (yalnız doğrulanmış gerçekler — K1, K5)
+     ===================================================== -->
+<section class="py-4">
+    <div class="container">
+        <div class="row text-center justify-content-center g-4">
+            <div class="col-md-6 col-lg-5">
+                <div class="d-flex align-items-center justify-content-center gap-3">
+                    <i class="bi bi-shield-lock text-info" style="font-size: 2rem;"></i>
+                    <span class="text-start" style="color:var(--ax-text-secondary);">{% trans "Verileriniz Avrupa Birliği sınırları içinde işlenir." %}</span>
+                </div>
+            </div>
+            <div class="col-md-6 col-lg-5">
+                <div class="d-flex align-items-center justify-content-center gap-3">
+                    <i class="bi bi-translate text-info" style="font-size: 2rem;"></i>
+                    <span class="text-start" style="color:var(--ax-text-secondary);">{% trans "Türkçe, İngilizce ve Almanca danışmanlık alabilirsiniz." %}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- =====================================================
+     İKİ İŞ KOLU: AKADEMİK / KURUMSAL
+     ===================================================== -->
+<section class="py-5">
+    <div class="container">
+        <div class="row g-4 justify-content-center">
+            <div class="col-lg-6">
+                <div class="ax-market-card h-100 d-flex flex-column">
+                    <div class="ax-market-header mb-3">
+                        <div class="ax-market-icon">
+                            <i class="bi bi-mortarboard" style="font-size:28px;"></i>
+                        </div>
+                        <h2 class="ax-market-title">{% trans "Akademik Danışmanlık" %}</h2>
+                    </div>
+                    <div class="ax-market-body flex-grow-1">
+                        <p class="ax-market-desc">{% trans "Doktora ve yüksek lisans tezleri, makaleler ve araştırma projeleri için istatistiksel analiz ve metodoloji danışmanlığı." %}</p>
+                    </div>
+                    <div class="ax-market-footer mt-4">
+                        <a href="{% url 'proje_talebi' %}?source=home_academic" class="ax-btn ax-btn--primary ax-btn--lg ax-block ax-w-full">{% trans "Ücretsiz Proje Talebi Gönder" %}</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="ax-market-card ax-market-card--supply h-100 d-flex flex-column">
+                    <div class="ax-market-header mb-3">
+                        <div class="ax-market-icon ax-market-icon--amber">
+                            <i class="bi bi-building" style="font-size:28px;"></i>
+                        </div>
+                        <h2 class="ax-market-title">{% trans "Kurumsal Analiz & Raporlama" %}</h2>
+                    </div>
+                    <div class="ax-market-body flex-grow-1">
+                        <p class="ax-market-desc">{% trans "İş verilerinizden karar destek raporları, gösterge panelleri ve otomasyon çözümleri üretiyoruz." %}</p>
+                    </div>
+                    <div class="ax-market-footer mt-4">
+                        <a href="{% url 'proje_talebi' %}?source=home_corporate" class="ax-btn ax-btn--warning ax-btn--lg ax-block ax-w-full mb-2">{% trans "Ücretsiz Proje Talebi Gönder" %}</a>
+                        <a href="{% url 'ai_cozumler' %}" class="ax-btn ax-btn--ghost ax-block ax-w-full">{% trans "AI Çözümlerini Keşfet" %}</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- =====================================================
+     TESLİMATLAR
+     ===================================================== -->
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="ax-section-card">
+                    <div class="ax-section-card__header">
+                        <i class="bi bi-clipboard-check"></i>
+                        <span>{% trans "Neler Teslim Ediyoruz?" %}</span>
+                    </div>
+                    <div class="ax-section-card__body">
+                        <ul class="ax-market-features">
+                            <li><i class="bi bi-check2-circle text-warning"></i> {% trans "Analiz planı" %}</li>
+                            <li><i class="bi bi-check2-circle text-warning"></i> {% trans "APA formatında sonuç tabloları" %}</li>
+                            <li><i class="bi bi-check2-circle text-warning"></i> {% trans "Yöntem ve bulgular bölümü taslağı" %}</li>
+                            <li><i class="bi bi-check2-circle text-warning"></i> {% trans "SPSS, R veya Python kodu" %}</li>
+                            <li><i class="bi bi-check2-circle text-warning"></i> {% trans "Bir revizyon turu dahil" %}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- =====================================================
+     NASIL ÇALIŞIYORUZ? (4 adım)
+     ===================================================== -->
+<section class="ax-steps-section py-5">
+    <div class="container">
+        <h2 class="ax-section-title text-center mb-2">{% trans "Nasıl Çalışıyoruz?" %}</h2>
+        <p class="ax-section-subtitle text-center mb-5">{% trans "Talepten rapora dört adımda." %}</p>
+        <div class="row g-4 ax-steps-row position-relative">
+            <div class="col-12 col-md-6 col-lg-3 ax-step-col">
+                <div class="ax-step-card h-100">
+                    <div class="ax-step-number">1</div>
+                    <div class="ax-step-icon"><i class="bi bi-send"></i></div>
+                    <h3 class="ax-step-title">{% trans "Talep" %}</h3>
+                    <p class="ax-step-text">{% trans "Projenizi ve verinizi anlatın. Ücretsiz ve yükümlülüksüz." %}</p>
+                </div>
+            </div>
+            <div class="col-12 col-md-6 col-lg-3 ax-step-col">
+                <div class="ax-step-card h-100">
+                    <div class="ax-step-number">2</div>
+                    <div class="ax-step-icon"><i class="bi bi-chat-dots"></i></div>
+                    <h3 class="ax-step-title">{% trans "Görüşme & Teklif" %}</h3>
+                    <p class="ax-step-text">{% trans "Soruyu, yöntemi ve kapsamı netleştirip size bir teklif sunarız." %}</p>
+                </div>
+            </div>
+            <div class="col-12 col-md-6 col-lg-3 ax-step-col">
+                <div class="ax-step-card h-100">
+                    <div class="ax-step-number">3</div>
+                    <div class="ax-step-icon"><i class="bi bi-graph-up-arrow"></i></div>
+                    <h3 class="ax-step-title">{% trans "Analiz" %}</h3>
+                    <p class="ax-step-text">{% trans "Analizi yürütür, her adımı belgeleriz." %}</p>
+                </div>
+            </div>
+            <div class="col-12 col-md-6 col-lg-3 ax-step-col">
+                <div class="ax-step-card h-100">
+                    <div class="ax-step-number">4</div>
+                    <div class="ax-step-icon"><i class="bi bi-patch-check"></i></div>
+                    <h3 class="ax-step-title">{% trans "Rapor & Geri Bildirim" %}</h3>
+                    <p class="ax-step-text">{% trans "Rapor, tablolar ve kodu teslim alırsınız. Danışman veya jüri geri bildirimlerini anlaşılan kapsamda yanıtlarız." %}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- =====================================================
+     SINIRLARIMIZ
+     ===================================================== -->
+<section class="py-4">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <h2 class="ax-section-title mb-3">{% trans "Sınırlarımız" %}</h2>
+                <p class="ax-section-subtitle">{% trans "Tez yazmıyoruz. Yönteme danışmanlık yapar, analizleri izlenebilir biçimde yürütürüz — bilimsel çalışma sizin kalır." %}</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- =====================================================
+     AI ANALİZ DOĞRULAMA BANDI (mevcut msgid'ler, "24 saat" olmadan — Adım 2)
+     ===================================================== -->
+<section class="ax-verify-band">
+    <div class="container">
+        <div class="ax-ai-era-grid ax-ai-era-grid--single">
+            <div class="ax-brand-visual">
+                <picture>
+                    <source media="(min-width: 768px)" srcset="{% static 'img/ai-dogrulama.webp' %}">
+                    <img src="{% static 'img/ai-dogrulama-mobile.webp' %}"
+                         alt="" width="800" height="446"
+                         loading="lazy" decoding="async"
+                         class="ax-brand-visual__img">
+                </picture>
+                <div class="ax-brand-visual__overlay">
+                    <div class="ax-verify-band__inner">
+                        <i class="bi bi-patch-question-fill ax-verify-band__icon" aria-hidden="true"></i>
+                        <div class="ax-verify-band__content">
+                            <h3 class="ax-verify-band__title">{% trans "Analizini AI'a mı yaptırdın?" %}</h3>
+                            <p class="ax-verify-band__text">{% trans "ChatGPT hızlıdır ama jüri karşısında güvence vermez. Uzmanımız 24 saatte kontrol etsin, doğrulama raporu versin." %}</p>
+                        </div>
+                        <a href="{% url 'proje_talebi' %}?source=verification" class="ax-btn ax-btn--primary ax-verify-band__cta">{% trans "Doğrulama Talep Et" %}</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% if features.training and LANGUAGE_CODE == 'en' %}
+<!-- K6: Eğitimler yalnız EN'de veriliyor -->
+<section class="py-5">
+    <div class="container">
+        <div class="ax-training-band-card">
+            <div class="ax-verify-band__inner">
+                <i class="bi bi-mortarboard-fill ax-verify-band__icon" aria-hidden="true"></i>
+                <div class="ax-verify-band__content">
+                    <h3 class="ax-verify-band__title">{% trans "Aracı öğren, analizini kendin yap." %}</h3>
+                    <p class="ax-verify-band__text">{% trans "SPSS'ten Python'a, ölçek geliştirmeden makine öğrenmesine — birebir eğitimle kendi verinizle çalışın." %}</p>
+                </div>
+                <a href="{% url 'egitim' %}" class="ax-btn ax-btn--primary ax-verify-band__cta">{% trans "Eğitimleri Keşfet" %}</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- =====================================================
+     ÜCRETSİZ ARAÇLAR (mevcut Araştırma Konsolu, birebir — zaten EN/DE filtreli)
+     ===================================================== -->
+<section class="ax-tools-section" id="arastirma-konsolu">
+    <div class="container">
+        <h2 class="ax-section-title text-center mb-5">🛠️ {% trans "Araştırma Konsolu" %}</h2>
+        <div class="row g-4 justify-content-center">
+            <div class="col-12 col-md-6 col-lg-3">
+                <div class="ax-tool-card" role="link" tabindex="0" data-card-url="{% url 'hangi_test' %}">
+                    <div class="ax-tool-icon">🧪</div>
+                    <h3 class="ax-tool-title">{% trans "İstatistik Rehberi" %}</h3>
+                    <p class="ax-tool-desc">{% trans "Veri tipinize göre en uygun istatistiksel testi anında seçin." %}</p>
+                    <a href="{% url 'hangi_test' %}" class="ax-tool-link">{% trans "Kullan →" %}</a>
+                </div>
+            </div>
+            <div class="col-12 col-md-6 col-lg-3">
+                <div class="ax-tool-card" role="link" tabindex="0" data-card-url="{% url 'ai_assistant' %}">
+                    <div class="ax-tool-icon">🤖</div>
+                    <h3 class="ax-tool-title">{% trans "AI Asistan" %}</h3>
+                    <p class="ax-tool-desc">{% trans "Literatür taramada ve araştırmanın her aşamasında yapay zeka destekli rehberiniz." %}</p>
+                    <a href="{% url 'ai_assistant' %}" class="ax-tool-link">{% trans "Kullan →" %}</a>
+                </div>
+            </div>
+            <div class="col-12 col-md-6 col-lg-3">
+                <div class="ax-tool-card ax-tool-card--highlight" role="link" tabindex="0" data-card-url="/openalex/">
+                    <div class="ax-tool-icon">🔍</div>
+                    <h3 class="ax-tool-title">{% trans "Akademik Tarama" %}</h3>
+                    <ul class="ax-tarama-list">
+                        <li><a href="/openalex/">{% trans "OpenAlex Tarama" %}</a></li>
+                        {% if features.semanticscholar %}
+                        <li><a href="{% url 'semanticscholar:landing' %}">{% trans "Semantic Scholar Tarama" %}</a></li>
+                        {% endif %}
+                        {% if features.pubmed %}
+                        <li><a href="{% url 'pubmed:landing' %}">{% trans "PubMed Tarama" %}</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.ax-tool-card[data-card-url]').forEach(function (card) {
+        card.addEventListener('click', function (event) {
+            if (event.target.closest('a')) {
+                return;
+            }
+            window.location.href = card.dataset.cardUrl;
+        });
+        card.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                window.location.href = card.dataset.cardUrl;
+            }
+        });
+    });
+});
+</script>
+
+<!-- =====================================================
+     SIKÇA SORULAN SORULAR
+     ===================================================== -->
+<section class="ax-faq-section py-5">
+    <div class="container">
+        <div class="row justify-content-center mb-5">
+            <div class="col-lg-8 text-center">
+                <span class="ax-badge-outline mb-3">{% trans "Soru İşaretlerini Giderin" %}</span>
+                <h2 class="ax-section-title mb-3">{% trans "Sıkça Sorulan Sorular" %}</h2>
+                <p class="ax-section-subtitle">{% trans "Danışmanlık sürecimiz hakkında merak ettikleriniz." %}</p>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="accordion ax-accordion" id="faqAccordionIntl">
+
+                    <div class="accordion-item">
+                        <h3 class="accordion-header" id="faqIntlOne">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseIntlOne" aria-expanded="false" aria-controls="collapseIntlOne">
+                                {% trans "İşbirliği süreci nasıl işliyor?" %}
+                            </button>
+                        </h3>
+                        <div id="collapseIntlOne" class="accordion-collapse collapse" aria-labelledby="faqIntlOne" data-bs-parent="#faqAccordionIntl">
+                            <div class="accordion-body">
+                                {% trans "Önce projenizi ve verinizi anlatırsınız, ücretsiz bir görüşmeyle kapsamı ve teklifi netleştiririz, analiz sürecinde her adımı belgeleriz ve sonunda rapor, tablolar ve kodla teslim ederiz." %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h3 class="accordion-header" id="faqIntlTwo">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseIntlTwo" aria-expanded="false" aria-controls="collapseIntlTwo">
+                                {% trans "Bir analizin maliyeti nedir?" %}
+                            </button>
+                        </h3>
+                        <div id="collapseIntlTwo" class="accordion-collapse collapse" aria-labelledby="faqIntlTwo" data-bs-parent="#faqAccordionIntl">
+                            <div class="accordion-body">
+                                {% trans "Fiyat, projenizin kapsamına göre değişir ve talebinize vereceğimiz ücretsiz teklifte belirtilir." %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h3 class="accordion-header" id="faqIntlThree">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseIntlThree" aria-expanded="false" aria-controls="collapseIntlThree">
+                                {% trans "Sonuçları ne kadar sürede alırım?" %}
+                            </button>
+                        </h3>
+                        <div id="collapseIntlThree" class="accordion-collapse collapse" aria-labelledby="faqIntlThree" data-bs-parent="#faqAccordionIntl">
+                            <div class="accordion-body">
+                                {% trans "Proje büyüklüğüne göre genellikle 5-7 gün içinde." %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h3 class="accordion-header" id="faqIntlFour">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseIntlFour" aria-expanded="false" aria-controls="collapseIntlFour">
+                                {% trans "Verilerimle nasıl ilgileniyorsunuz?" %}
+                            </button>
+                        </h3>
+                        <div id="collapseIntlFour" class="accordion-collapse collapse" aria-labelledby="faqIntlFour" data-bs-parent="#faqAccordionIntl">
+                            <div class="accordion-body">
+                                {% trans "Verileriniz Avrupa Birliği sınırları içinde, gizlilik içinde işlenir." %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h3 class="accordion-header" id="faqIntlFive">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseIntlFive" aria-expanded="false" aria-controls="collapseIntlFive">
+                                {% trans "Hangi dillerde çalışıyorsunuz?" %}
+                            </button>
+                        </h3>
+                        <div id="collapseIntlFive" class="accordion-collapse collapse" aria-labelledby="faqIntlFive" data-bs-parent="#faqAccordionIntl">
+                            <div class="accordion-body">
+                                {% trans "Türkçe, İngilizce ve Almanca danışmanlık veriyoruz." %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h3 class="accordion-header" id="faqIntlSix">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseIntlSix" aria-expanded="false" aria-controls="collapseIntlSix">
+                                {% trans "Tezimi siz mi yazıyorsunuz?" %}
+                            </button>
+                        </h3>
+                        <div id="collapseIntlSix" class="accordion-collapse collapse" aria-labelledby="faqIntlSix" data-bs-parent="#faqAccordionIntl">
+                            <div class="accordion-body">
+                                {% trans "Hayır. Yönteme danışmanlık yapar, analizi şeffaf biçimde yürütürüz — bilimsel çalışma sizin kalır." %}
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="ax-section-cta">
+            <p class="ax-section-cta__text">{% trans "Sorunuz mu kaldı? Projenizi anlatın, ücretsiz değerlendirelim." %}</p>
+            <a href="{% url 'proje_talebi' %}?source=home_faq" class="ax-btn ax-btn--primary">{% trans "Ücretsiz Proje Talebi Gönder" %}</a>
+        </div>
+    </div>
+</section>
+
+<!-- Hero dropzone: dosyayı gerçekten yükler (session veri seti), sonra /analiz/?from=hero yönlendirir -->
+<script>
+(function () {
+    var dropzone = document.getElementById('axHeroDropzone');
+    var fileInput = document.getElementById('axHeroFileInput');
+    var fileBtn = document.getElementById('axHeroFileBtn');
+    var dropzoneText = document.getElementById('axHeroDropzoneText');
+    var errorEl = document.getElementById('axHeroDropzoneError');
+    if (!dropzone || !fileInput || !fileBtn) return;
+
+    function showError(msg) {
+        if (!errorEl) return;
+        errorEl.textContent = msg;
+        errorEl.hidden = false;
+    }
+
+    function clearError() {
+        if (!errorEl) return;
+        errorEl.hidden = true;
+        errorEl.textContent = '';
+    }
+
+    function uploadFile(file) {
+        if (!file) return;
+        clearError();
+        dropzoneText.textContent = '{% trans "Yükleniyor:" %} ' + file.name + '…';
+        fileBtn.disabled = true;
+
+        var csrfInput = dropzone.querySelector('[name=csrfmiddlewaretoken]');
+        var formData = new FormData();
+        formData.append('file', file);
+
+        fetch('/analiz/hero-upload/', {
+            method: 'POST',
+            headers: { 'X-CSRFToken': csrfInput ? csrfInput.value : '' },
+            body: formData,
+        })
+        .then(function (r) { return r.json().then(function (data) { return { ok: r.ok, data: data }; }); })
+        .then(function (result) {
+            if (result.ok && result.data.success) {
+                window.location.href = '/analiz/?from=hero';
+            } else {
+                showError(result.data.error || '{% trans "Dosya yüklenemedi. Lütfen tekrar deneyin." %}');
+                dropzoneText.textContent = '{% trans "CSV veya Excel dosyanı buraya bırak" %}';
+                fileBtn.disabled = false;
+            }
+        })
+        .catch(function () {
+            showError('{% trans "Bağlantı hatası. Lütfen tekrar deneyin." %}');
+            dropzoneText.textContent = '{% trans "CSV veya Excel dosyanı buraya bırak" %}';
+            fileBtn.disabled = false;
+        });
+    }
+
+    fileBtn.addEventListener('click', function () {
+        fileInput.click();
+    });
+
+    fileInput.addEventListener('change', function () {
+        uploadFile(fileInput.files[0]);
+    });
+
+    dropzone.addEventListener('dragover', function (e) {
+        e.preventDefault();
+        dropzone.classList.add('ax-hero-dropzone--drag');
+    });
+    dropzone.addEventListener('dragleave', function () {
+        dropzone.classList.remove('ax-hero-dropzone--drag');
+    });
+    dropzone.addEventListener('drop', function (e) {
+        e.preventDefault();
+        dropzone.classList.remove('ax-hero-dropzone--drag');
+        if (e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0]) {
+            uploadFile(e.dataTransfer.files[0]);
+        }
+    });
+})();
+</script>
+
+{% endblock %}

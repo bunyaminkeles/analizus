@@ -78,6 +78,7 @@ def feature_flags(request):
             'multilingual': site.feature_multilingual,
             'hizmet_sayfalari': site.feature_hizmet_sayfalari,
             'ai_summary': site.feature_ai_summary,
+            'intl_consulting_home': site.feature_intl_consulting_home,
         },
         # Sipariş sayfalarındaki fiyat tablosu + JS tahmini (sunucu tutarı modelde aynı ayardan hesaplar)
         'pricing': {

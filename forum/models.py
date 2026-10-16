@@ -1485,6 +1485,13 @@ class SiteSettings(models.Model):
                   "(bkz. Limitler: AI Yorumu günlük hakkı). Canlıda denenip kalite/maliyet görüldükten "
                   "sonra açın (ANTHROPIC_API_KEY env var şart).",
     )
+    feature_intl_consulting_home = models.BooleanField(
+        default=False,
+        verbose_name="EN/DE Danışmanlık Ana Sayfası",
+        help_text="Açıkken EN/DE ziyaretçileri mevcut home.html yerine danışmanlık odaklı "
+                  "home_intl.html'i görür (TR her zaman home.html). Kapalıyken EN/DE de "
+                  "home.html'i görmeye devam eder.",
+    )
     feature_multilingual = models.BooleanField(
         default=False,
         verbose_name="Çok Dilli Yayın (EN/DE)",
@@ -2019,6 +2026,7 @@ class ProjectRequest(models.Model):
         ('tool', 'Analiz Aracı'),
         ('hero', 'Ana Sayfa Hero'),
         ('home_corporate', 'Ana Sayfa Kurumsal'),
+        ('home_academic', 'Ana Sayfa Akademik (EN/DE)'),
         ('verification', 'AI Doğrulama Bandı'),
         ('agentic', 'AI Çözümler Sayfası'),
         ('tableau', 'Tableau Sayfası'),

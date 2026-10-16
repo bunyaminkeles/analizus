@@ -240,10 +240,83 @@ maddelerde.
   forum/tests.py` → **90/90 yeşil**.
   **Deploy etkisi:** migration yok; `.po`/`.mo` + `home.html` değişti,
   bind-mount sayesinde `restart web` yeterli.
-  **Sıradaki:** kullanıcı onayı ile commit + push; sonra Adım 5 (Premium/
-  bağış — K8 kararıyla artık "gizleme" değil "EUR fiyat + ayrı IBAN"
-  görevi) veya Adım 6 (yeni EN/DE ana sayfası, migration'lı, K1-K9
-  kararları zaten hazır).
+  **ADIM 4 commit + push edildi** (`4e4e8b1`, `dev`'e gitti).
+
+  **ADIM 6 TAMAMLANDI (16 Ekim 2026) — yeni danışmanlık odaklı EN/DE ana
+  sayfası (`home_intl.html`) + flag, henüz commit edilmedi. Kullanıcı
+  "6'yı yap" diyerek Adım 5'i atlayıp doğrudan Adım 6'ya geçti — Adım 5
+  (Premium/bağış EUR+IBAN) hâlâ açık, sırada.**
+
+  **Mimari (9 dosya):** `forum/models.py` (+`feature_intl_consulting_home`
+  alanı + `ProjectRequest.SOURCE_CHOICES`'a `home_academic`),
+  `forum/migrations/0179_...py` (migration, root sahipli — chown izni yok
+  ama git/okuma sorunsuz çalışıyor, bilinen kısıt), `forum/
+  context_processors.py` (+`intl_consulting_home` flag'i), `forum/admin.py`
+  (fieldsets'e eklendi), `forum/views.py` (`home()` sonunda flag+dil
+  kontrolüyle şablon seçimi, `SiteSettings.load()` tek sorguya indirildi),
+  **yeni** `forum/templates/forum/home_intl.html` (~300 satır), 2× `.po`
+  + `.mo`.
+
+  **İçerik:** Hero (tek CTA + K7 dropzone aynen) → Güven şeridi (yalnız AB
+  içi veri + TR/EN/DE dil, K1/K5) → Akademik/Kurumsal kart (ikincisi
+  `ai_cozumler`'e de link) → Teslimatlar (bir revizyon turu dahil, onaylı)
+  → 4 adım süreç ("teklif" dendi, "sabit fiyat" DENMEDİ — K3 netleşmemişti)
+  → Sınırlarımız → AI doğrulama bandı (Adım 2'den temiz, agentic/training
+  kartları çıkarıldı — kurumsal kartla çakışmasın diye, training zaten
+  `LANGUAGE_CODE == 'en'` ile sınırlı olurdu K6 gereği) → Araştırma
+  Konsolu (mevcut, birebir, zaten EN/DE filtreli) → 6 soruluk SSS (H3,
+  kendi FAQPage JSON-LD'si, K3/K4/K5/K1 kararlarına dayalı cevaplar).
+
+  **Doğrulama turunda 2 EK SIZINTI bulundu ve kapatıldı (planın kendi S4/S5
+  bulguları, hiç uygulanmamıştı):**
+  1. "Nasıl Çalışıyoruz?" 4 adımlı bölüm (`home.html:535`) — "İlan Aç",
+     "Teklif Al (doğrulamadan geçmiş analistler...)" pazaryeri adımları
+     dil koşulsuzdu → başlık+4 kart `{% if LANGUAGE_CODE == 'tr' %}` ile
+     sarıldı, altındaki mevcut `home_steps` CTA'sı dokunulmadı.
+  2. "GEMINI GÖREV 6: GÜVEN UNSURLARI (Platform Güvencesi)" bölümü
+     (`home.html:648`) — "Güvenli Ödeme", "Uzman Doğrulama" (analistler
+     doğrulamadan geçer), "Şeffaf Değerlendirme" (5 yıldız) — hiçbiri
+     EN/DE için gerçek değildi (ödeme kararı blokajda, doğrulanmış uzman
+     ağı yok), hiç dil koşulu yoktu → tüm bölüm TR'ye özel yapıldı.
+  **Ders:** Bu oturumda toplam 5 kez (Adım1: S1/S3, Adım4: FAQ, Adım6: S4/S5)
+  aynı kalıp tekrarladı — plan dosyası S1-S5'i tanımlamış ama yalnız S1-S3'ü
+  gerçekten kapatmıştı. `analizus.md`/`tasks/lessons.md`'ye not: **EN/DE
+  sızıntı denetimi yalnız URL/link grep'i değil, "ilan", "teklif",
+  "doğrulanmış uzman", "güvenli ödeme" gibi pazaryeri sözcüklerini de
+  taramalı; bir plan dosyasının "bulundu" demesi "düzeltildi" anlamına
+  gelmez, uygulanmadan önce kodda fiilen kontrol et.**
+
+  **Çeviri süreci notu (gelecek oturumlar için önemli):** `makemessages`
+  sonrası yeni msgid'lerin bir kısmı (11/76) metince BENZER eski
+  msgid'lere `#, fuzzy` olarak otomatik eşleşti ve YANLIŞ/eski çeviriyi
+  miras aldı — boş `msgstr ""` taraması bunları YAKALAMAZ (zaten dolu
+  görünürler). Fark edilmesi `node`/curl değil **Playwright ekran
+  görüntüsü** sayesinde oldu (hero CTA'sı ve kurumsal kart başlığı hâlâ
+  Türkçe çıkıyordu). Düzeltme: şablondaki tüm `{% trans %}` msgid'lerini
+  programatik çıkarıp her birini po'da `fuzzy`/`boş`/`eksik` olarak
+  tarayan bir script yazıldı (76/76 temiz çıktı). **Kural:** yeni şablon +
+  toplu çeviri turlarında, "boş msgstr" taraması YETMEZ — fuzzy taraması
+  da şart, en güvenilir doğrulama görsel (Playwright) kontrolüdür.
+
+  **Doğrulama:** `transaction.atomic()` içinde flag açılıp TR/EN/DE
+  render edildi, rollback yapıldı — TR değişmedi (sayı bile aynı), EN/DE
+  `home_intl.html`'i kullandı, sıfır pazaryeri/forum sızıntısı, FAQPage
+  JSON-LD (`json.loads`) geçerli. Flag kapalıyken EN/DE'nin hâlâ
+  `home.html`'i kullandığı ayrıca doğrulandı. Playwright ile EN/DE ×
+  375/1280px tam sayfa ekran görüntüsü — ilk turda 2 metin hâlâ Türkçe
+  çıktı (yukarıdaki fuzzy sorunu), düzeltilip tekrar çekildi, temiz.
+  İki inline JS bloğu `node --check` ile sözdizimi doğrulandı. `pytest
+  forum/tests.py` → **90/90 yeşil** (üç ayrı turda tekrar tekrar
+  çalıştırıldı, hepsi yeşil).
+
+  **Deploy etkisi:** **MIGRATION VAR** (`0179_...py`, no-data — yalnız
+  yeni `BooleanField` + `choices` değişikliği, mevcut satırları etkilemez)
+  → `main`'e push öncesi kullanıcıdan `scripts/yedek_indir.sh --simdi`
+  (kendi bilgisayarında) istenmeli. Flag canlıda **kapalı** gelecek;
+  kullanıcı admin'den `SiteSettings` → Feature Flags → "EN/DE Danışmanlık
+  Ana Sayfası" ile açacak.
+  **Sıradaki:** kullanıcı onayı ile commit + push (dev); Adım 5 (Premium/
+  bağış EUR+IBAN) hâlâ bekliyor; sonra Adım 7-11.
 
 - [x] **(16 Ekim 2026, kullanıcı bulgusu → aynı gün düzeltildi) EDU doğrulama
   DM'i admin'in kişisel hesabından gönderiliyordu, sistem/bot hesabından değil.**

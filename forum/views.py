@@ -226,7 +226,8 @@ def home(request):
     completed_analyses = home_stats['completed_analyses']
     online_experts = home_stats['online_experts']
 
-    stat_min_display = SiteSettings.load().stat_min_display
+    site_settings = SiteSettings.load()
+    stat_min_display = site_settings.stat_min_display
     # online_experts genel stat_min_display eşiğinden (varsayılan 25) muaf —
     # "şu an çevrimiçi uzman" küçük ölçekli anlık bir metrik, 25 eşiği bu sayaç
     # için gerçekçi değil (neredeyse hiç görünmezdi). Kendi eşiği: en az 2.
@@ -331,7 +332,10 @@ def home(request):
         'recent_reviews': recent_reviews,
         'showcase_jobs': showcase_jobs,
     }
-    return render(request, 'forum/home.html', context)
+    template_name = 'forum/home.html'
+    if site_settings.feature_intl_consulting_home and request.LANGUAGE_CODE != 'tr':
+        template_name = 'forum/home_intl.html'
+    return render(request, template_name, context)
 
 # --- BAŞARI HİKAYELERİ ---
 class SuccessStoryForm(forms.ModelForm):
