@@ -368,60 +368,23 @@ UNFOLD = {
             ],
         },
         # ─── 3. ARAMA & ANALİZ SERVİSLERİ ──────────────────────────
+        # 16 Ekim 2026: önceki 10 ayrı sidebar satırı 2 başlığa indirildi — her
+        # başlık grubun ilk sayfasına link verir, sayfalar arası geçiş o sayfanın
+        # üstündeki sekme çubuğuyla yapılır (bkz. analizdestek/admin_nav.py).
         {
             "title": "Arama & Analiz",
             "separator": True,
             "collapsible": True,
             "items": [
                 {
-                    "title": "OpenAlex İşleri",
+                    "title": "Arama Servisleri",
                     "icon": "travel_explore",
                     "link": reverse_lazy("admin:oaipmh_alexsearchjobproxy_changelist"),
                 },
                 {
-                    "title": "TR Dizin İşleri",
-                    "icon": "search",
-                    "link": reverse_lazy("admin:oaipmh_dizinsearchjobproxy_changelist"),
-                },
-                {
-                    "title": "YÖK Tez İşleri",
-                    "icon": "school",
-                    "link": reverse_lazy("admin:oaipmh_yoktezsearchjobproxy_changelist"),
-                },
-                {
-                    "title": "OAI-PMH İşleri",
-                    "icon": "hub",
-                    "link": reverse_lazy("admin:oaipmh_oaipmhsearchjob_changelist"),
-                },
-                {
-                    "title": "Üniversiteler",
-                    "icon": "account_balance",
-                    "link": reverse_lazy("admin:oaipmh_university_changelist"),
-                },
-                {
-                    "title": "YÖK Tez Üniversiteleri",
-                    "icon": "domain",
-                    "link": reverse_lazy("admin:yoktez_yoktezuniversite_changelist"),
-                },
-                {
-                    "title": "Tez Analizleri",
+                    "title": "Analiz Servisleri",
                     "icon": "biotech",
                     "link": reverse_lazy("admin:tezanaliz_tezanaliz_changelist"),
-                },
-                {
-                    "title": "Makale Analizleri",
-                    "icon": "description",
-                    "link": reverse_lazy("admin:tezanaliz_makaleanalizproxy_changelist"),
-                },
-                {
-                    "title": "Bibliometrik İşler",
-                    "icon": "bar_chart",
-                    "link": reverse_lazy("admin:tezanaliz_bibliometricjobproxy_changelist"),
-                },
-                {
-                    "title": "Bibliometrik Siparişler",
-                    "icon": "receipt_long",
-                    "link": reverse_lazy("admin:tezanaliz_bibliometricorderproxy_changelist"),
                 },
             ],
         },
