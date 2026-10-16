@@ -3,10 +3,12 @@ from django.utils.html import format_html
 from unfold.admin import ModelAdmin
 
 from .models import TezAnaliz, MakaleAnalizProxy, BibliometricJobProxy, BibliometricOrderProxy
+from analizdestek.admin_nav import GroupTabsMixin, GROUP2_TABS
 
 
 @admin.register(TezAnaliz)
-class TezAnalizAdmin(ModelAdmin):
+class TezAnalizAdmin(GroupTabsMixin, ModelAdmin):
+    group_tabs_list = GROUP2_TABS
     warn_unsaved_changes = True
     compressed_fields = True
     list_display = ['id', 'user', 'get_query_summary', 'status', 'total_records', 'created_at']
@@ -16,7 +18,8 @@ class TezAnalizAdmin(ModelAdmin):
 
 
 @admin.register(MakaleAnalizProxy)
-class MakaleAnalizProxyAdmin(ModelAdmin):
+class MakaleAnalizProxyAdmin(GroupTabsMixin, ModelAdmin):
+    group_tabs_list = GROUP2_TABS
     warn_unsaved_changes = True
     compressed_fields = True
     list_display = ['id', 'user', 'get_query_summary', 'status', 'total_records', 'created_at']
@@ -26,7 +29,8 @@ class MakaleAnalizProxyAdmin(ModelAdmin):
 
 
 @admin.register(BibliometricJobProxy)
-class BibliometricJobProxyAdmin(ModelAdmin):
+class BibliometricJobProxyAdmin(GroupTabsMixin, ModelAdmin):
+    group_tabs_list = GROUP2_TABS
     warn_unsaved_changes = True
     compressed_fields = True
     list_display = ('id_short', 'user', 'original_filename', 'file_format',
@@ -54,7 +58,8 @@ class BibliometricJobProxyAdmin(ModelAdmin):
 
 
 @admin.register(BibliometricOrderProxy)
-class BibliometricOrderProxyAdmin(ModelAdmin):
+class BibliometricOrderProxyAdmin(GroupTabsMixin, ModelAdmin):
+    group_tabs_list = GROUP2_TABS
     warn_unsaved_changes = True
     compressed_fields = True
     list_display = ('id_short', 'user', 'job_filename', 'total_price',

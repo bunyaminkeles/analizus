@@ -3,10 +3,12 @@ from unfold.admin import ModelAdmin
 from .models import University, OAIPMHSearchJob, YokTezSearchJobProxy
 from openalex.models import AlexSearchJobProxy
 from trdizin.models import DizinSearchJobProxy
+from analizdestek.admin_nav import GroupTabsMixin, GROUP1_TABS
 
 
 @admin.register(University)
-class UniversityAdmin(ModelAdmin):
+class UniversityAdmin(GroupTabsMixin, ModelAdmin):
+    group_tabs_list = GROUP1_TABS
     warn_unsaved_changes = True
     compressed_fields = True
     list_display = ['name', 'domain', 'oai_url', 'is_active', 'last_checked_at', 'last_result_display', 'flagged_for_review']
@@ -24,7 +26,8 @@ class UniversityAdmin(ModelAdmin):
 
 
 @admin.register(OAIPMHSearchJob)
-class OAIPMHSearchJobAdmin(ModelAdmin):
+class OAIPMHSearchJobAdmin(GroupTabsMixin, ModelAdmin):
+    group_tabs_list = GROUP1_TABS
     warn_unsaved_changes = True
     compressed_fields = True
     list_display = ['id', 'user', 'search_type', 'get_query_summary', 'status', 'total_results', 'created_at']
@@ -39,7 +42,8 @@ class OAIPMHSearchJobAdmin(ModelAdmin):
 
 
 @admin.register(AlexSearchJobProxy)
-class AlexSearchJobProxyAdmin(ModelAdmin):
+class AlexSearchJobProxyAdmin(GroupTabsMixin, ModelAdmin):
+    group_tabs_list = GROUP1_TABS
     warn_unsaved_changes = True
     compressed_fields = True
     list_display = ('id', 'user', 'get_query_summary', 'status', 'total_results', 'created_at')
@@ -53,7 +57,8 @@ class AlexSearchJobProxyAdmin(ModelAdmin):
 
 
 @admin.register(DizinSearchJobProxy)
-class DizinSearchJobProxyAdmin(ModelAdmin):
+class DizinSearchJobProxyAdmin(GroupTabsMixin, ModelAdmin):
+    group_tabs_list = GROUP1_TABS
     warn_unsaved_changes = True
     compressed_fields = True
     list_display = ('id', 'user', 'get_query_summary', 'status', 'total_results', 'created_at')
@@ -67,7 +72,8 @@ class DizinSearchJobProxyAdmin(ModelAdmin):
 
 
 @admin.register(YokTezSearchJobProxy)
-class YokTezSearchJobProxyAdmin(ModelAdmin):
+class YokTezSearchJobProxyAdmin(GroupTabsMixin, ModelAdmin):
+    group_tabs_list = GROUP1_TABS
     warn_unsaved_changes = True
     compressed_fields = True
     list_display = ('id', 'user', 'get_query_summary', 'status', 'total_results', 'created_at')
