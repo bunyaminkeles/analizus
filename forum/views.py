@@ -1357,8 +1357,11 @@ def _handle_edu_user(user):
     profile.edu_proposal_expires = timezone.now() + timedelta(days=3)
     profile.save(update_fields=['edu_proposal_expires'])
 
-    # Admin DM gönder — mesaj DB'ye yazıldığı için alıcının dilinde üretilir
-    admin_user = User.objects.filter(is_superuser=True).first()
+    # Sistem DM gönder — mesaj DB'ye yazıldığı için alıcının dilinde üretilir
+    try:
+        admin_user = User.objects.get(username='AnalizBot')
+    except User.DoesNotExist:
+        admin_user = User.objects.filter(is_superuser=True).first()
     if admin_user:
         from .i18n_utils import recipient_language
         with recipient_language(user):

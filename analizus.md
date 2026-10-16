@@ -2744,7 +2744,76 @@ with connection.cursor() as c:
 
 > Önceki düz-yazı günlük biçiminden madde listesine dönüştürülmüştür; cümleler değişmeden taşınmıştır.
 
-- **En son (15 Ekim 2026):** Admin dashboard analitik turu — **iki ayrı `dev`→`main` `--no-ff`
+- **En son (16 Ekim 2026):** OAI-PMH "0 sonuç" yanlış sınıflandırma düzeltmesi + 44 yeni
+  üniversite keşfi + admin sidebar sadeleştirmesi — **üç ayrı `dev`→`main` `--no-ff` merge**
+  (ilk ikisinde migration vardı, kullanıcı her ikisinde de önceden "yedek ok" demişti; üçüncüsü
+  saf admin UI, migration yok). **0) Render deploy teşhisi (kod değişikliği yok):** `analizus-dev`
+  (Render free tier) commit 7530fda (yalnız `analizus.md`/`tasks/todo.md` değişikliği) için
+  "Failed" gösterdi; log incelemesinde build/migrate/collectstatic/seed adımları sorunsuz
+  bitmiş, "Already has 365 quiz questions" satırından sonra 14 dakika hiç çıktı olmadan Render
+  port-scan timeout'una uğramış. `deploy.sh`'deki sıradaki adımlar (`populate_success_stories`,
+  `job_queue.start_worker()` — tüm `manage.py` çağrılarında tetiklenir, `forum/signals.py:594
+  notify_admin_on_new_user`) incelendi, hepsi daemon thread/async, ana süreci bloklayacak bir şey
+  bulunamadı (kod aynı, bir önceki commit `e43d682` sorunsuz deploy olmuştu) → **Render free-tier
+  geçici altyapı sorunu** sonucuna varıldı; "Manual Deploy" ile yeniden tetiklenince düzeldi.
+  **1) OAI-PMH "0 sonuç" bug'ı:** Kullanıcıya gelen admin e-postasındaki 5 üniversite
+  (Kafkas/Ordu/Isparta Uyg. Bilimler/İTÜ/Dokuz Eylül) tek tek `curl` ile canlı incelendi —
+  yalnız **Kafkas** gerçekten `noRecordsMatch` (sunucu çalışıyor, `ListSets` dönüyor ama
+  `setSpec` değerleri bozuk görünüyor: `com__`/`col__` gibi eksik ID, muhtemelen DSpace OAI-PMH
+  yapılandırma hatası); **Ordu** tam bağlantı reddi (443/80 "Connection refused"); **Isparta**
+  `Identify` çalışıyor ama `ListRecords`'ta HTTP 500 (sunucu hatası); **İTÜ** sertifikası
+  `polen.itu.edu.tr`'ye ait (yanlış eşleşme) + sertifikasız bağlanınca 502 Bad Gateway; **Dokuz
+  Eylül** o anda normal çalışıyordu (15 Ekim'deki işaret geçiciydi). Kök neden:
+  `oaipmh/services/scraper.py:188-216` `browse_university()` TÜM exception'ları (bağlantı reddi,
+  SSL, HTTP 5xx) `NoRecordsMatch` ile aynı şekilde yutup sessizce `(0, [], [])` döndürüyordu —
+  "repository boş" ile "sunucuya hiç ulaşılamadı" admin bildiriminde ayırt edilemiyordu. Düzeltme:
+  yalnız gerçek `NoRecordsMatch` 0 sayılıyor, diğer exception'lar yukarı fırlatılıyor;
+  `oaipmh/services/university_check.py`'e `CONNECTION_ERROR_SENTINEL = -1` eklendi
+  (`last_result_count=-1` = bağlantı hatası, ayrı `newly_flagged_error` listesi);
+  `forum/email_utils.py:notify_admin_oaipmh_flagged_universities` artık iki liste alıp
+  e-postada `🔌 Bağlantı Hatası` / `📭 0 Sonuç` olarak ayrı gösteriyor; `oaipmh/admin.py`'de
+  `last_result_display()` ile liste görünümünde `-1` yerine "🔌 Bağlantı Hatası" yazıyor.
+  Docker'da canlı test edildi (Ordu artık gerçekten exception fırlatıyor, Kafkas hâlâ sessiz 0).
+  **2) 44 yeni OAI-PMH üniversitesi:** hipo-labs/tripbuddy `world_universities_and_domains.json`
+  listesinden 173 TR domain'i (mevcut 19 hariç) `acikerisim`/`dspace`/`earsiv`/`acikarsiv`/
+  `openaccess` alt alan adı × `/oai/request` + `/server/oai/request` kalıp kombinasyonlarıyla
+  (`ThreadPoolExecutor`, 40 worker, ~1900 URL) tarandı, `Identify` + `ListRecords` ile gerçek
+  veri dönenler doğrulandı. **44 çalışan üniversite** `oaipmh/migrations/
+  0010_add_discovered_universities.py` ile eklendi (9 aday — Ankara/Başkent/Bingöl/Çankırı
+  Karatekin/Nevşehir Hacı Bektaş Veli/Sağlık Bilimleri/Kırklareli/THK/Antalya Bilim — Kafkas'la
+  aynı "sunucu çalışıyor ama veri boş" durumunda olduğu için eklenmedi). Migration sonrası gerçek
+  `check_oaipmh_universities` komutuyla tüm 44'ü (+ sırası gelen eski üniversiteler) canlı test
+  edildi: 40'ı sağlıklı (2-50 arası gerçek tez/makale kaydı), 4'ü (**Marmara** 503, **Erzurum
+  Teknik**/**Osmaniye Korkut Ata**/**İstanbul Rumeli** 403 Forbidden — muhtemelen art arda
+  istekten kaynaklı geçici bot/rate-limit engeli) doğru şekilde `-1` ile işaretlendi, "0 sonuç"
+  diye yanlış etiketlenmedi. Bu arada eski 19'da da önceden bilinmeyen 3 ek sorun ortaya çıktı:
+  **Çukurova** (read timeout), **Uşak** (connect timeout), **Uludağ** (403 Forbidden) — hepsi
+  `flagged_for_review=True`, otomatik kapatma/silme YAPILMADI, admin panelden karar bekliyor.
+  **3) Admin sidebar sadeleştirmesi** (kullanıcı isteği — Davranış Analizi'ndeki gibi "Arama &
+  Analiz" bölümündeki 10 ayrı satır çok yer kaplıyordu, ama CRUD+filtre+aksiyon içeren tam
+  `ModelAdmin`'ler oldukları için Davranış Analizi'ndeki "context birleştir + `display:none`"
+  deseni doğrudan taşınamadı — her biri kendi changelist/filtre/arama/aksiyon state'ini ister).
+  Bunun yerine Unfold'un hazır `list_before_template` hook'u kullanıldı (`change_list.html`
+  forklanmadı): yeni `analizdestek/admin_nav.py` (`GroupTabsMixin`, `GROUP1_TABS`/`GROUP2_TABS`)
+  + `templates/admin/includes/group_tabs.html` paylaşımlı sekme çubuğu; 10 `ModelAdmin`'e
+  (`oaipmh/admin.py` 5, `yoktez/admin.py` 1, `tezanaliz/admin.py` 4) mixin eklendi — her sayfanın
+  kendi filtre/arama/aksiyon/pagination'ı aynen duruyor, yalnız başlığın üstüne gerçek linklerden
+  oluşan bir sekme çubuğu ekleniyor. Sidebar'da "Arama & Analiz" altındaki 10 satır, kullanıcının
+  belirlediği gruplamayla 2 satıra indi: **Arama Servisleri** (OpenAlex/TR Dizin/YÖK Tez/OAI-PMH
+  İşleri + YÖK Tez Üniversiteleri + Üniversiteler — kullanıcı isteğiyle YÖK Tez Üniversiteleri,
+  YÖK Tez İşleri'nden hemen sonraya alındı) ve **Analiz Servisleri** (Tez/Makale Analizleri +
+  Bibliometrik İşler/Siparişler). Kullanıcı isteğiyle "Arama & Analiz" üst sidebar başlığı da
+  kaldırıldı (grup artık `"title"` almıyor → Unfold'un `app_list.html`'i başlıksız grupta `<h2>`
+  render etmiyor; `collapsible: False` yapıldı çünkü aç/kapa kontrolü `<h2>`'nin içinde, başlıksız
+  grupta tıklanacak bir şey kalmıyordu — unutulsaydı öğeler `x-show="navigationOpen"` ile varsayılan
+  kapalı/görünmez kalırdı). Local'de Playwright (Python, admin şifresi değiştirilmeden — doğrudan
+  Django session oluşturup cookie olarak enjekte edildi) ile 10 sayfanın tamamı görsel+fonksiyonel
+  doğrulandı, test session'ı sonra silindi. **4) Ayrıca bulunup todo'ya eklenen (kod değişikliği
+  yapılmadı):** EDU mail ile giriş yapan kullanıcıya gönderilen "Doğrulanmış Akademisyen" rozeti
+  DM'i `forum/views.py:1361` (`_handle_edu_user`) `User.objects.filter(is_superuser=True).first()`
+  kullanıyor — dev DB'de bu kişisel admin hesabını döndürüyor, diğer tüm otomatik DM'lerin
+  (`forum/views.py:577,668,952,2936`) kullandığı `AnalizBot` deseniyle tutarsız.
+- **Önceki (15 Ekim 2026):** Admin dashboard analitik turu — **iki ayrı `dev`→`main` `--no-ff`
   merge** (ikisi de migration içerdi, her ikisinde de push öncesi kullanıcıdan
   `scripts/yedek_indir.sh --simdi` istendi). **1) Kelime grafiği + 0-sonuç ikazı:**
   `forum/services/dashboard_service.py`'e `get_search_keywords_chart_data()` (6 tarama
