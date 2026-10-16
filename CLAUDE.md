@@ -1,6 +1,6 @@
 # Analizus.com — Claude Çalışma Kuralları
 
-Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~2918 satır; offset'ler 12 Ekim 2026'da doğrulandı). Tamamını okuma — ihtiyaca göre offset ile ilgili bölümü oku:
+Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~3129 satır; offset'ler 16 Ekim 2026'da doğrulandı). Tamamını okuma — ihtiyaca göre offset ile ilgili bölümü oku:
 
 | Bölüm | offset | Konu |
 |---|---|---|
@@ -15,8 +15,8 @@ Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~2918 satır; offset
 | §20–23 | 1813 | Admin (sipariş akışı, Fiyatlandırma, Limitler, İlan onayı/ret aksiyonları, bağış onayı aksiyonu, İş Kategorisi tanıtım metni, blog SEO, `UserAdmin` toplu e-posta aksiyonları, Navigasyon Grafiği, `ProfileAdmin` "Uzman Dizini: Zorla Göster/Gizle"), pazar akışı (pending → open), session, cron |
 | §24–25 | 2017 | Geliştirme ortamı (pytest 90 test + test notları, çeviri komutları), değişmez kurallar |
 | §26 | 2060 | Sık yapılan hatalar ve çözümleri — konuya göre 11 alt başlığa gruplandı (Sunucu/Docker/Deploy, Veritabanı/Migration, S3/Depolama, E-posta, Çeviri, CSS/Frontend/JS, AI Asistan, Admin Paneli, Tarama/Analiz Araçları, Güvenlik/Bot, Genel Süreç) |
-| §27 | 2238 | Görev listesi — "Tamamlananlar" + "Sıradaki Görevler" + "Geçmiş Turlar (Kronoloji)" (**en son: 12 Ekim 2026, Ana Sayfa UX Kontrolü turu — kart çakışması/çapraz link/kontrast/ikon/SSS düzeltmeleri, `main`'e merge edilip push edildi**) |
-| §28 | 2821 | Çok dilli yapı (TR/EN/DE) ve gizlilik — mimari, çeviri kuralları, iş akışı, EN/DE ürün kararları (§28.7) |
+| §27 | 2238 | Görev listesi — "Tamamlananlar" + "Sıradaki Görevler" + "Geçmiş Turlar (Kronoloji)" (**en son: 16 Ekim 2026 akşam, EN/DE ana sayfa pazar kartı + navigasyon turu — pazaryeri EN/DE'de kart+navbar+footer'dan kaldırıldı, iki `dev`→`main` merge ile push edildi**) |
+| §28 | 3032 | Çok dilli yapı (TR/EN/DE) ve gizlilik — mimari, çeviri kuralları, iş akışı, EN/DE ürün kararları (§28.7) |
 
 ---
 
@@ -80,6 +80,7 @@ Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~2918 satır; offset
 - `info@analizus.com` Claude Startups programına doğrulandı (8 Ekim 2026) — bu **otomatik Anthropic API kredisi vermez** (Console Credits paneli $0 kalır), yalnız üçüncü taraf ortak teklifleri (Firecrawl vb.) + Applied AI office hours açar; kullanıcının ayrı 21€/ay claude.ai Pro aboneliği farklı bir ürün, bununla ikame edilmez. Projedeki 6 tarama aracından 5'i (`openalex`, `trdizin`, `semanticscholar`, `pubmed`, `oaipmh`) zaten resmî API kullanıyor — Firecrawl'ı yalnız `yoktez` scraper'ı somut bir engelleme sorunu (Cloudflare/CAPTCHA/IP ban) yaşarsa değerlendir
 - `forum.models.Notification.object_id` bir `PositiveIntegerField` — UUID PK'li bir modele (ör. `YokTezSearchJob`) `target=`/`object_id=` ile bildirim bağlama sessizce "integer out of range" ile patlar; hiçbir şablon zaten `notification.target`'ı render etmiyor, hedefi integer PK'li ilişkili bir nesneye (ör. `job.user`) bağla (§26, 8 Ekim 2026)
 - **Lokal dev ve production AYNI S3 bucket'ını paylaşıyor** (`analizus-files`, `.env`'deki `AWS_*` ikisinde de aynı) — yalnız PostgreSQL ayrı. S3'e yazan/silen (`upload_to_s3`, `boto3...delete_object`) bir kodu lokalde "sadece test ediyorum" diye çalıştırmak GERÇEK production dosyalarını siler/değiştirir; DB gibi izole bir sandbox değil (§26, 8 Ekim 2026)
+- Bir özelliği (ör. pazaryeri) EN/DE'de kapatma kararı `features.market` gibi bir flag koşuluna `LANGUAGE_CODE == 'tr'` eklemekle bitmiyor — aynı özelliğe açılan TÜM kapılar (navbar + mobil menü + footer + ana sayfa kart CTA'sı + kart içi ikincil linkler/kategori çipleri) ayrı ayrı taranmalı; flag tek başına dile göre filtrelemez (§27/§28.7, 16 Ekim 2026)
 
 ## SEO Kritik Kurallar — ayrıntı analizus.md §12, §15, §26, `tasks/todo.md` "BÜYÜK SEO DÖNÜŞÜMÜ"
 - Google (anonim) araç/tarama sayfalarında `service_promo.html` görür → başlık/açıklama/H1 view'daki `promo_title`/`promo_description`; `landing.html` blokları yalnız giriş yapmışa. Doğrulama **oturumsuz** `curl` ile

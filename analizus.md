@@ -2816,7 +2816,7 @@ with connection.cursor() as c:
   (`forum/views.py:577,668,952,2936`) kullandığı `AnalizBot` deseniyle tutarsız. (Aynı gün
   ilerleyen saatlerde düzeltildi — bkz. aşağıdaki "En son" tur.)
 
-- **En son (16 Ekim 2026, devam):** Üç bağımsız küçük iş — EDU DM düzeltmesi, Render OOM kök
+- **16 Ekim 2026 (öğleden sonra):** Üç bağımsız küçük iş — EDU DM düzeltmesi, Render OOM kök
   neden analizi + düzeltme, yedekleme sistemi netleştirmesi (kod değişikliği yok).
   **1) EDU doğrulama DM'i düzeltmesi:** yukarıdaki bulgu giderildi — `_handle_edu_user`
   (`forum/views.py:1360-1365`) artık önce `User.objects.get(username='AnalizBot')` deniyor,
@@ -2854,6 +2854,35 @@ with connection.cursor() as c:
   `backup_analizus_*.sql` dosyası + syslog'da her gece tam 02:00'de `pg_dump`'ın çalıştığı
   teyit edildi. Kullanıcı kararıyla Hetzner'in native Backups'ı **açılmadı**, mevcut mekanizma
   (`pg_dump` + lokal indirme) olduğu gibi bırakıldı.
+- **En son (16 Ekim 2026, akşam):** EN/DE ana sayfa pazar kartı + navigasyon düzeltmesi —
+  **iki ayrı `dev`→`main` `--no-ff` merge** (migration yok, her ikisinde de doğrudan push).
+  Kullanıcı önceki bir AI analizinin ekran görüntüsünü paylaştı: EN/DE ana sayfadaki iki kart
+  (sol "Analiz Yaptırmak İstiyorum" / sağ "Uzman Olarak Katıl"→EN/DE'de "Analizinizi Uzmanına
+  Bırak") aynı müşteri kitlesine iki farklı birincil CTA sunuyordu — sol kart pazaryeri ilanına
+  (`post_job`), sağ kart proje talebine (`proje_talebi`) yönlendiriyordu. `forum/templates/
+  forum/home.html` okunarak doğrulandı: sol kartın birincil butonu hiçbir `LANGUAGE_CODE`
+  koşuluna bağlı değildi; §28.7'de bu ikiliğin ("pazar yeri + proje talebi yönlendirmesi")
+  bilinçli bir karar olarak not edildiği de teyit edildi — yani kod hatası değil, konumlandırma
+  sorunu. **1. adım:** sol kartın EN/DE birincil CTA'sı `proje_talebi`'ne çevrildi, `post_job`
+  ikincil (ghost) butona indirildi; Render'da (dev/staging) görsel olarak doğrulandı. **Yan
+  etki:** iki kart artık aynı birincil mesajı ("Send a Free Project Request") tekrar eder hale
+  geldi — kullanıcı ekran görüntüsüyle bunu fark etti. **2. adım (kullanıcı kararı — "soldaki
+  yeterli"):** sağ kart EN/DE'de tamamen gizlendi (`{% if LANGUAGE_CODE == 'tr' %}` ile
+  sarmalandı), sol kart tek kart olarak kaldı (`col-lg-7 mx-auto`); sol karttaki `job_list`'e
+  giden kategori çipleri de EN/DE'de gizlendi (kullanıcı: "marketplace'i görmesine de gerek
+  yok"). **3. adım (kullanıcı kararı — navbar/footer'da da gerek yok):** `templates/base.html`
+  (masaüstü nav satır ~468 + mobil drawer satır ~680) ve `templates/partials/footer.html`
+  (satır ~50) içindeki `job_list` linkleri `features.market` flag'ine ek olarak
+  `LANGUAGE_CODE == 'tr'` koşuluna da bağlandı. Docker local'de EN/DE/TR sayfalarında `curl`
+  ile (container içinden `urllib`, `Host: analizus.com` + `X-Forwarded-Proto: https` header'ı
+  ile) `/market/` link sayısı ve buton metinleri karşılaştırılarak doğrulandı (EN/DE: 0 link,
+  TR: değişmedi — 17 link, 4 "Pazaryeri" metni). **Not:** aynı push sonrası Render'da bu turla
+  ilgisiz bir önceki commit'in (7baff79) deploy'u 10 dakikada bitmeyince kullanıcı tarafından
+  iptal edildi — kök nedeni netleşmedi, muhtemelen yukarıdaki "gündüz" turundaki "0) Render
+  deploy teşhisi" ile aynı geçici platform sorunu (kod ilişkisi kurulamadı). **Genel ders:**
+  EN/DE'de bir akışı (ör. pazaryeri) kapatma kararı alınınca TEK bir CTA metnini değiştirmek
+  yetmiyor — o akışa açılan tüm kapılar (kart CTA'sı + kart içi ikincil linkler/kategori
+  çipleri + navbar + mobil menü + footer) tek tek taranmalı.
 - **Önceki (15 Ekim 2026):** Admin dashboard analitik turu — **iki ayrı `dev`→`main` `--no-ff`
   merge** (ikisi de migration içerdi, her ikisinde de push öncesi kullanıcıdan
   `scripts/yedek_indir.sh --simdi` istendi). **1) Kelime grafiği + 0-sonuç ikazı:**
@@ -3083,16 +3112,22 @@ with connection.cursor() as c:
   hikayeleri; B — YÖK Tez, TR Dizin, OAI-PMH, uzman dizini, "Uzman olarak katıl"; Topluluk menüsü ve footer sütunu;
   İstatistik Arena + navbar ★ (puan hesabı arka planda sürer); C (geçici) — Tableau (bibliometri 28 Eylül 2026'da EN/DE açıldı).
   D — gelen kutusu, ödemelerim, davet: EN/DE'de de görünür, arayüz TR (şimdilik kalsın).
+  E (16 Ekim 2026'da eklendi) — **pazaryeri** (`job_list`/`/market/`): ana sayfa kartı (sağ "uzman ol" kartı
+  tamamen, sol karttaki kategori çipleri), navbar, mobil menü, footer "Araçlar" linki — hepsi `LANGUAGE_CODE == 'tr'`
+  koşuluna bağlandı; sayfanın kendisi (`/en/market/`, `/de/market/`) silinmedi, yalnız hiçbir yerden link verilmiyor.
 - **Açık:** `/tarama/` hub'ı **ve ana sayfa "Araştırma Konsolu" kutusu** (ikisi de EN/DE'de yalnız `intl=True` araçları
   listeler: OpenAlex, Semantic Scholar, PubMed [flag açıksa] — YÖK Tez/TR Dizin/Üniversite Tezleri yalnız TR'de kalır).
   Ana sayfa kutusu 9 Ekim 2026'ya kadar `{% if LANGUAGE_CODE == 'tr' %}` ile EN/DE'de **tamamen** gizliydi — 26 Eylül
   2026'dan kalma "araçlar henüz çevrili değil" kararının bu kutuda güncellenmemiş hali; hub sayfasıyla tutarsızdı
   (hub zaten `intl` bayrağıyla 3 aracı EN/DE'de gösteriyordu). Düzeltildi, `forum/templates/forum/home.html`.
   OpenAlex ve S2 (tam
-  çeviri; SEO rehberi ve sipariş sayfası EN/DE'de gizli → proje talebi), pazar yeri (+ proje talebi yönlendirmesi),
-  18 analiz aracı, eğitim, AI asistan.
-- **Proje talebi çağrıları (EN/DE):** hero birincil buton, navbar çerçeveli CTA, footer Kurumsal, market kartı,
-  Nasıl Çalışır + SSS sonu, pazar yeri sayfası. Her çağrının `?source=` değeri ayrı (ölçüm için; §8 ProjectRequest).
+  çeviri; SEO rehberi ve sipariş sayfası EN/DE'de gizli → proje talebi),
+  18 analiz aracı, eğitim, AI asistan. (Pazar yeri artık EN/DE'de kapalı — yukarıdaki "Gizli" E maddesine taşındı,
+  16 Ekim 2026; önceki karar "pazar yeri + proje talebi yönlendirmesi" birlikte açıktı, iki kart aynı CTA'ya
+  akınca görsel/mesaj tekrarı oluştu, kullanıcı pazar yerini tamamen kapatmayı tercih etti.)
+- **Proje talebi çağrıları (EN/DE):** hero birincil buton, navbar çerçeveli CTA, footer Kurumsal, ana sayfa pazar
+  kartı (artık tek kart, 16 Ekim 2026), Nasıl Çalışır + SSS sonu. Her çağrının `?source=` değeri ayrı (ölçüm için;
+  §8 ProjectRequest).
 - **Footer Akademik Kaynaklar (EN/DE):** Google Scholar, Semantic Scholar, OpenAlex, BASE (Bielefeld).
 - **Kazıma modülleri (29 Eylül 2026):** PubMed TR/EN/DE — canlıda, `feature_pubmed` AÇIK (29 Eylül gece); sipariş YOK, tam veri →
   proje talebi (her dilde); bibliometride atıf analizleri yok, ülke/kurum tahmini (Kısıtlar'da yazar). BASE yalnız DE —
