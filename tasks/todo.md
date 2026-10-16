@@ -10,17 +10,11 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
-- [ ] **(16 Ekim 2026, kullanıcı bulgusu) EDU doğrulama DM'i admin'in kişisel
-  hesabından gönderiliyor, sistem/bot hesabından değil.** `forum/views.py:1361`
-  (`_handle_edu_user`) `admin_user = User.objects.filter(is_superuser=True).first()`
-  kullanıyor — bu da dev DB'de ilk superuser olan gerçek kişisel hesabı
-  (`bunyamin`) döndürüyor. Kullanıcı ekran görüntüsünde "Doğrulanmış Akademisyen"
-  rozeti/3 günlük teklif hakkı DM'inin gönderen alanında kişisel admin adının
-  göründüğünü fark etti; göndermesi gereken admin değil, sistem olmalı. Projede
-  zaten bu amaç için kurulmuş bir desen var: diğer tüm otomatik DM'ler (ör.
-  `forum/views.py:577,668,952,2936`) `User.objects.get(username='AnalizBot')`
-  kullanıyor. Düzeltme: `_handle_edu_user` içindeki `admin_user` sorgusunu da
-  `AnalizBot` kullanıcısına çevirmek (yoksa fallback olarak superuser).
+- [x] **(16 Ekim 2026, kullanıcı bulgusu → aynı gün düzeltildi) EDU doğrulama
+  DM'i admin'in kişisel hesabından gönderiliyordu, sistem/bot hesabından değil.**
+  `forum/views.py:1361` (`_handle_edu_user`) artık diğer otomatik DM'lerle aynı
+  deseni kullanıyor: önce `User.objects.get(username='AnalizBot')`, `AnalizBot`
+  yoksa (ör. dev DB'de seed edilmemişse) fallback olarak ilk superuser.
 
 - [ ] **(15 Ekim 2026, ÜRÜN KARARI BEKLİYOR)** YÖK Tez'de (muhtemelen diğer tarama
   araçlarında da) kullanıcılar "Başlık"/"Özet" alanına virgülle ayrılmış birden
