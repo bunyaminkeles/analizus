@@ -10,6 +10,387 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
+- [ ] **(16 Ekim 2026) EN/DE Ana Sayfa — Danışmanlık Dönüşümü: 11 adımlı plan
+  hazır, henüz hiçbir adıma başlanmadı.** Kaynak: proje kökündeki
+  `en_de_danismanlik_donusumu_prompt.md` (ayrı bir dosya, tasks/todo.md'de
+  değil — buraya yalnız özet + doğrulama notu). Plan: Adım 1 pazaryeri/forum
+  sızıntılarını (`forum/home.html` "Uzman Vitrini" + "Gündemdeki Tartışmalar"
+  + sayaç şeridi kalemleri) EN/DE'de gizle (karar zaten §28.7'de var, onay
+  gerekmiyor) → Adım 2 geçici msgstr düzeltmeleri (yanlış vaatler: "dakikalar
+  içinde", "%100 gizlilik", "doğrulanmış uzman" vb.) → Adım 3 renk/kontrast
+  (TR'yi de etkiler) → Adım 4 SEO title/description + SSS H2→H3 → Adım 5
+  Premium/bağış bloğunu EN/DE'de gizleme kararı (K8) → **Adım 6 (asıl iş,
+  migration'lı): yeni `home_intl.html` + `feature_intl_consulting_home`
+  flag'i ile danışmanlık odaklı EN/DE ana sayfası** → Adım 7 EN/DE navigasyon
+  → Adım 8 Impressum (DE) → Adım 9 EN/DE hizmet sayfaları (yalnız tasarım
+  dokümanı, kod yok) → Adım 10 proje talebi formuna ön görüşme alanları
+  (migration) → Adım 11 ölçüm sorgusu. Adım 6 öncesi 9 açık kullanıcı kararı
+  var (K1–K9, plan dosyası §3): kim/hangi dilde danışmanlık verecek, Impressum
+  bilgileri, fiyat modeli, yanıt süresi taahhüdü, veri işleme/KVKK, eğitimler,
+  dropzone'un kalkıp kalkmayacağı, Premium'un gizlenip gizlenmeyeceği, sayaç
+  kalemlerinden hangisinin kalacağı.
+  **Doğrulama turu (16 Ekim) sonucu — plan teknik olarak sağlam, tek gerçek
+  eksiklik bulundu:** S3 (sayaç şeridi) tablosu yalnız 5 kalemden bahsediyor
+  (Aktif Üye, Akademik Konu, Forum Mesajı, Tamamlanan Proje, Tamamlanan
+  Analiz); ama `forum/home.html:581-636`'daki şerit aslında **8 kalemli** —
+  eksik 3 kalem: **"Açık İlan"** (`open_jobs_count`, linkli — pazaryerine
+  gidiyor olabilir), **"Bu Hafta Yeni Üye"**, **"Şu An Çevrimiçi Uzman"**.
+  K9 kararı yalnız "Tamamlanan proje/analiz" için soruluyor; bu üç kalem
+  hiç karara bağlanmamış — özellikle "Açık İlan" EN/DE'de pazaryeri kapalı
+  kararıyla doğrudan çelişebilir. Adım 1'in genel sızıntı tarama maddesi
+  (madde 4) bunu muhtemelen yakalar ama plan metninde açık kör nokta,
+  Adım 1'e başlarken ayrıca kontrol edilmeli. Diğer doğrulanan noktalar:
+  `--ax-color-primary` gerçekten tanımsız token (`home.html:45,48`, `base.css`
+  karşılığı `--ax-accent-primary-light` = `#a5b4fc`); `ProjectRequest.
+  SOURCE_CHOICES`'da `home_market`/`home_steps`/`home_faq`/`nav` zaten mevcut
+  (plan zaten "önce kontrol et" diyor, sorun değil); feature flag üç-yer
+  deseni örnekle doğrulandı.
+
+  **K1–K9 KARARLARI NETLEŞTİ (16 Ekim 2026, kullanıcı):**
+  - K1: Analizus admin TR/EN/DE danışmanlığın tamamını verecek.
+  - K2: Impressum sayfası (DE) + Legal Notice (EN) hazırlanır ama şirket/kişi
+    bilgileri (adres, vergi no vb.) netleşene kadar **footer/nav'a
+    linklenmez** — boş/placeholder bilgiyle yayına alınmaz (Almanya'da
+    yasal risk).
+  - K3: Fiyat sitede/SSS'de gösterilmez; proje talebi sonrası verilecek
+    cevapta belirtilir. SSS "Was kostet eine Analyse?" cevabı buna göre
+    yazılmalı (sabit rakam yok).
+  - K4: Yanıt süresi taahhüdü VAR — "proje büyüklüğüne göre 5-7 gün içinde"
+    (gerçek, yazılabilir). Adım 2'deki sahte "24 Stunden" ifadelerinin
+    yerine bu geçecek (Premium'un kendi "24 saat" vaadi hariç, o ayrı konu).
+  - K5: S3 bucket `eu-north-1` (Stockholm/AB) — koddan doğrulandı
+    (`.env: AWS_S3_REGION_NAME=eu-north-1`). Yazılabilir: "Daten werden in
+    der EU verarbeitet" / "processed within the EU". **"in Deutschland"
+    YAZILAMAZ** — yanlış olur. Hetzner sunucusunun datacenter konumu ayrıca
+    doğrulanmadı, "Deutschland" iddiası için bu da teyit gerektirir.
+  - K6: Eğitimler yalnız **EN**'de veriliyor, DE'de yok — Adım 7 navigasyonda
+    "Training" linki yalnız EN menüsünde, DE menüsünde olmayacak.
+  - K7: Hero dropzone (dosya yükle, hemen analiz et) EN/DE'de **kalır**,
+    kaldırılmayacak.
+  - K8: Premium/bağış bloğu EN/DE'de **gizlenmeyecek** (S7 tespitinin aksine
+    kaldırılmıyor); fiyatlar TL yerine **EUR'a çevrilir**, ödeme için
+    **ayrı bir EUR IBAN** eklenir. Mevcut TL/IBAN akışının neresinde dil
+    bazlı ayrım yapılacağı (muhtemelen `templates/base.html` premium modalı)
+    Adım 5'te araştırılmalı; bu artık "gizleme" değil "yerelleştirme" görevi.
+  - K9: Sayaç şeridinden **"Açık İlan"**, **"Bu Hafta Yeni Üye"**,
+    **"Şu An Çevrimiçi Uzman"** kalemleri EN/DE'de **tamamen kaldırılır**;
+    yalnız "Tamamlanan Proje" ve "Tamamlanan Analiz" kalır (`total_users`,
+    `total_topics`, `total_posts` zaten S3/Adım 1 kapsamında kaldırılıyordu).
+
+  Not: K8 kararı plan dosyasındaki Adım 5'in varsayımını ("Premium gizlensin
+  mi?") değiştiriyor — Adım 5 artık "EUR fiyat + ayrı IBAN" görevine
+  dönüşüyor, plan dosyası bu haliyle güncel değil, uygulama sırasında bu
+  fark gözetilmeli.
+
+  **ADIM 1 TAMAMLANDI (16 Ekim 2026) — forum/forum/home.html'de EN/DE
+  pazaryeri/forum sızıntıları kapatıldı, henüz push edilmedi (dev'de commit
+  yok, yalnız working tree'de).** Tek dosya değişti:
+  `forum/templates/forum/home.html`, 9 nokta (5 ayrı değişiklik bloğu):
+  (1) hero kişiselleştirme "uzman" segment dalına `and LANGUAGE_CODE == 'tr'`
+  eklendi (akademisyen dalıyla tutarlı); (2) "Uzman Arayan Projeler" (gerçek
+  S1 kaynağı — plan dosyasının işaret ettiği "FAZ 3: UZMAN VİTRİNİ" DEĞİL,
+  ondan ayrı, ₺ fiyatlı ilan kartları gösteren bölüm) `and LANGUAGE_CODE ==
+  'tr'` ile sarıldı; (3) "Gündemdeki Tartışmalar" (S2) aynı şekilde; (4)
+  sayaç şeridinde (S3) 6 kalem (`total_users`, `total_topics`, `total_posts`,
+  `open_jobs_count`, `weekly_new_users`, `online_experts`) `and
+  LANGUAGE_CODE == 'tr'` ile sarıldı, `completed_jobs`/`completed_analyses`
+  dokunulmadan kaldı (K9). "FAZ 3: UZMAN VİTRİNİ" (uzman profil kartları,
+  fiyat/ilan içermiyor) ve zaten 16 Ekim akşam düzeltilmiş `home_market`
+  kartları kullanıcı kararıyla **değiştirilmedi** (EN/DE'de görünmeye devam
+  ediyor).
+  **Doğrulama:** `transaction.atomic()` içinde açık bir `FreelanceJob`
+  (status='open', approved_at dolu — yeniden yayın tetiklemeden) + bir forum
+  `Topic`/`Post` oluşturulup Test Client ile `/`, `/en/`, `/de/` render
+  edildi, rollback yapıldı (nesneler DB'de kalmadı, doğrulandı). Sonuç: TR'de
+  beklenen içerik (pazaryeri/forum linkleri, "Gündemdeki", "Uzman Arayan
+  Projeler") aynen duruyor; **EN ve DE'de sıfır sızıntı** (`/market/`,
+  `/forum/`, `/topic/`, "Gündemdeki", "Uzman Arayan Projeler" aramalarının
+  hepsi 0). `docker compose exec web python -m pytest forum/tests.py` →
+  **90/90 yeşil**, regresyon yok.
+  **Deploy etkisi:** migration yok, collectstatic gerekmez, `--build` yok;
+  yalnız `docker compose restart web` (zaten yapıldı, lokalde doğrulandı).
+  **ADIM 1 commit + push edildi** (`70e363d`, `dev`'e gitti, Render'a
+  otomatik deploy tetiklendi).
+
+  **ADIM 2 TAMAMLANDI (16 Ekim 2026) — EN/DE yanlış vaat ifadeleri msgstr
+  düzeyinde düzeltildi, henüz commit edilmedi.** İki dosya:
+  `locale/de/LC_MESSAGES/django.po`, `locale/en/LC_MESSAGES/django.po`
+  (+derlenmiş `.mo`'lar), ayrıca `forum/templates/forum/home.html`'de
+  1 ek satır (plan dışı, doğrulama sırasında bulunan gerçek bug). TR hiçbir
+  msgid'de değişmedi (yalnız msgstr). 10 msgid düzeltildi: hero H1 ("du"
+  → "Sie", "jemanden der es tut" → "von Fachleuten erledigen"), aynı ifadenin
+  og/twitter paylaşım başlığı (ek bulgu, plan tablosunda yoktu), hero CTA
+  butonu, hero açıklama cümlesi ("in Minuten/verifizierten Experten" →
+  "wir finden die passende Fachperson", "100% Vertraulichkeit" → "Vertraulicher
+  Umgang... kostenlose Erstbewertung"), "Alanında doğrulanmış uzmanlar" →
+  "Fachleute mit Erfahrung", "Şeffaf fiyatlandırma" → "Unverbindliches
+  Angebot vor Arbeitsbeginn", AI doğrulama bandındaki "24 Stunden/hours"
+  kaldırıldı, hero alt başlığı + footer tagline'daki "verifizierte
+  Experten/verified experts" → "Fachleute/specialists".
+  **Doğrulama sırasında bulunan gerçek bug:** `home.html:772`'de
+  `AI {% trans "Asistan" %}` — "AI" kelimesi şablonda SABİT yazılmış,
+  yalnız "Asistan" çevriliyordu → DE'de "AI Assistent" (karışık dil)
+  çıkıyordu. `{% trans "AI Asistan" %}` olarak düzeltildi (zaten doğru
+  çevrilen mevcut msgid'i kullanıyor, TR'de görünüm value'su aynı kaldı).
+  **Dokunulmadan bırakılan (plan kapsamı dışı, Adım 6'ya ait):**
+  "So arbeiten wir" (Nasıl Çalışıyoruz) adımlarındaki "Verifizierte
+  Analysten unterbreiten Methodik- und Preisangebote" (S4) — bu bölüm
+  Adım 6'da baştan yazılacak süreç adımlarıyla değişecek.
+  **Doğrulama:** `docker compose exec web python manage.py compilemessages`
+  container'da msgfmt bulunamadığı için host'ta `msgfmt -c -o ...` ile
+  derlendi (hata yok, yalnız bilinen header uyarıları). `docker compose
+  restart web` sonrası canlı (lokal) `/`, `/en/`, `/de/` curl ile kontrol
+  edildi: DE/EN'de hedeflenen ifadelerin (in Minuten/in minutes,
+  verifizierte Experten/verified experts, Expert/innen, findest du,
+  AI Assistent) **hepsi 0**; "24 Stunden"/"24 hours" **tam olarak 2**
+  (yalnız Premium, beklenen); TR'de "Analizini yap.", "Yapamıyorsan, yapan
+  burada.", "24 saatte", "AI Asistan" **hiç değişmedi**. `pytest
+  forum/tests.py` → **90/90 yeşil** (home.html'e ikinci dokunuştan sonra
+  tekrar çalıştırıldı).
+  **Deploy etkisi:** migration yok, collectstatic gerekmez. `docker-compose.
+  yml`'de `.:/app` bind-mount var (`Dockerfile` yalnız build anında `COPY . .`
+  yapıyor) — yani `git pull` + `restart web` host dosyalarını (dolayısıyla
+  `.mo`'ları) doğrudan container'a yansıtır, tıpkı şablon değişikliğinde
+  olduğu gibi; `--build` gerekmiyor. GitHub Actions zaten `main`'e push'ta
+  bu akışı otomatik çalıştırıyor.
+  **ADIM 2 commit + push edildi** (`3a0c108`, `dev`'e gitti).
+
+  **ADIM 3 TAMAMLANDI (16 Ekim 2026) — renk/kontrast düzeltmeleri, henüz
+  commit edilmedi.** TR'yi de etkileyen tek adım (dile göre ayrılmamış CSS
+  kuralları). 3 dosya, 11 nokta: `forum/templates/forum/home.html` (inline
+  kritik CSS, 4 satır), `static/css/hero.css` (5 satır), `static/css/
+  home_sections.css` (2 satır).
+  (1) Tanımsız `--ax-color-primary` token'ı (`home.html:45,48` +
+  `hero.css` aynı kuralların tam kopyası) → `--ax-accent-primary-light`
+  (#a5b4fc, gerçek değer hesaplandı: 9.61:1/8.90:1 — plan dosyasının
+  tahmin ettiği #818cf8/6.42:1'den bile iyi).
+  (2) Koyu zeminde düşük kontrastlı linkler ("Alle 18 Tools →",
+  "Ya da bu işi bir uzmana bırak" hover) → aynı token, 4.29/3.97:1'den
+  9.61/8.90:1'e çıktı.
+  (3) "oder analysieren Sie selbst:" (`.ax-hero__or`, yalnız `hero.css`'te
+  tek kopya) `--ax-text-muted` → `--ax-text-secondary` (4.02→7.47:1).
+  (4) **Ek bulgu (plan metninde yoktu):** "oder machen Sie es selbst →" ve
+  yanındaki Cronbach/Normallik/Betimsel/Hangi Test linkleri
+  (`.ax-market-diy__label/__link`, `home_sections.css:206-215`) token bile
+  kullanmıyordu, hardcode `rgba(148,163,184,0.5/0.7)` idi — ölçülen gerçek
+  kontrast **2.68:1 ve 4.04:1** (plandaki tahminden kötü) → `var(--ax-
+  text-secondary)` solid yapıldı, **6.92:1**'e çıktı.
+  **Test edildi, değişiklik GEREKMEDİ:** `.ax-market-visual` kırpılması —
+  Playwright ile 1024/1280/1440px ölçüldü (ilk ölçümde yanlış elementi
+  seçmişim — sayfada aynı class'tan iki tane var, demand+supply kartları;
+  düzeltip doğru elemanı ölçtüm), üç genişlikte de tutarlı ~15px
+  (CSS'teki `right:-16px` tasarım değeriyle birebir), ekran görüntüsü
+  temiz — sorun yok.
+  **Yalnız listelendi, uygulanmadı (ayrı onay gerekir):** `#fbbf24`
+  (artık TR'ye özel "Uzman Arayan Projeler" başlığı), `#f97316`
+  (`trend_topics.css`, forum başlığı, artık TR'ye özel), `#a855f7`,
+  `#818cf8` ×3 (decoratif SVG/gradient) — `#818cf8` tam olarak
+  `--ax-accent-primary-hover`'a eşit (tokenize edilebilir), diğerlerine
+  (amber/turuncu/mor) base.css'te karşılık gelen bir token yok, yeni
+  token eklemeden dokunulmadı.
+  **Kapsam dışı (ayrı not):** global `.ax-btn--primary` beyaz-üzeri-indigo
+  kontrastı (4.47:1, sınırda) — tüm siteyi etkiler, bu turun dışında.
+  **Doğrulama:** `docker compose restart web`; Playwright ile TR/EN/DE ×
+  1280px render edilen `getComputedStyle().color` değerleri doğrulandı
+  (hepsi beklenen yeni token rengine döndü, üç dilde birebir aynı); TR/DE
+  hero ekran görüntüsü karşılaştırıldı (TR değişmemiş, DE okunaklı ve
+  tutarlı "Sie" hitabı). `pytest forum/tests.py` → **90/90 yeşil**.
+  **Deploy etkisi:** migration yok; CSS dosyaları (`hero.css`,
+  `home_sections.css`) değişti — `collectstatic` ileride hash'li adla
+  yeniden üretecek ama bind-mount sayesinde `restart web` yeterli (Adım
+  2'deki gibi), `--build` gerekmiyor.
+  **ADIM 3 commit + push edildi** (`4519fa4`, `dev`'e gitti).
+
+  **ADIM 4 TAMAMLANDI (16 Ekim 2026) — SEO title/description + SSS H2→H3
+  + KRİTİK EK BULGU düzeltmesi, henüz commit edilmedi.**
+  (1) `home.html`'in `{% block title %}`/`{% block meta_description %}`
+  msgid'leri bulundu (tek kullanım, satır 6-7). Planın önerdiği DE/EN
+  metinleri kendi belirlediği sınırı (title ≤60-65, desc ≤155-160) aşıyordu
+  (73-75/182-189 karakter) — kısaltılıp kullanıcıya gösterildi, onaylandı:
+  DE title "Statistikberatung für Forschung & Unternehmen \| Analizus" (56),
+  EN title "Statistics Consulting for Research & Business \| Analizus" (56),
+  DE/EN description sırasıyla 135/148 karakter. TR değişmedi.
+  (2) SSS'deki 5 soru `<h2 class="accordion-header">` → `<h3>` (satır
+  982-1044 aralığı, yalnız bu 5 çift, bölüm başlığı "Sıkça Sorulan Sorular"
+  H2 olarak kaldı) — TR dahil tüm diller etkilendi, JSON-LD FAQPage ayrı
+  script bloğu olduğu için etkilenmedi.
+  (3) **KRİTİK EK BULGU (doğrulama sırasında bulundu, plan dosyasında
+  YOKTU):** SSS bölümünün tamamı (5 soru + JSON-LD FAQPage) hiç dil
+  koşuluna bağlı değildi — DE/EN'de TR pazaryeri içeriğiyle birebir
+  render ediliyordu. Örnek, canlıda DE: "Die Experten auf der Plattform
+  prüfen den Umfang Ihres Projekts und machen Ihnen ihr eigenes
+  Preisangebot" (platformdaki uzmanlar teklif verir) — K3 kararıyla
+  (fiyat sitede gösterilmez) ve "pazaryeri kapalı" pozisyonuyla doğrudan
+  çelişiyordu. Adım 1'in URL/link bazlı sızıntı taraması bunu yakalamamıştı
+  (düz metin, link içermiyor). Kullanıcı onayıyla hemen düzeltildi: SSS
+  başlığı+alt başlığı+5 soru (`home.html:969-1055`)
+  `{% if LANGUAGE_CODE == 'tr' %}` ile sarıldı; altındaki mevcut
+  `{% if LANGUAGE_CODE != 'tr' %}` CTA'sı ("Noch Fragen? Beschreiben Sie
+  Ihr Projekt…", zaten `source=home_faq` ile vardı) dokunulmadan kaldı —
+  EN/DE artık SSS yerine doğrudan bu CTA'yı görüyor. Adım 6'da gerçek
+  danışmanlık SSS'si gelince bu geçici gizleme kaldırılacak.
+  **Ders (lessons.md'ye de eklenebilir):** EN/DE sızıntı taraması yalnız
+  URL/link pattern'i değil, düz metin açıklamalarını da (özellikle
+  "uzman teklif verir/eşleşme" gibi pazaryeri mekaniği anlatan cümleleri)
+  kapsamalı.
+  **Doğrulama:** `docker compose restart web`; curl ile DE/EN/TR `<title>`,
+  meta description, SSS h2/h3 sayımı, FAQPage JSON-LD varlığı (TR'de var,
+  DE/EN'de artık hiç yok — beklenen) kontrol edildi; DE'de CTA metninin
+  ("Noch Fragen?...") gerçekten göründüğü doğrulandı. `pytest
+  forum/tests.py` → **90/90 yeşil**.
+  **Deploy etkisi:** migration yok; `.po`/`.mo` + `home.html` değişti,
+  bind-mount sayesinde `restart web` yeterli.
+  **ADIM 4 commit + push edildi** (`4e4e8b1`, `dev`'e gitti).
+
+  **ADIM 6 TAMAMLANDI (16 Ekim 2026) — yeni danışmanlık odaklı EN/DE ana
+  sayfası (`home_intl.html`) + flag, henüz commit edilmedi. Kullanıcı
+  "6'yı yap" diyerek Adım 5'i atlayıp doğrudan Adım 6'ya geçti — Adım 5
+  (Premium/bağış EUR+IBAN) hâlâ açık, sırada.**
+
+  **Mimari (9 dosya):** `forum/models.py` (+`feature_intl_consulting_home`
+  alanı + `ProjectRequest.SOURCE_CHOICES`'a `home_academic`),
+  `forum/migrations/0179_...py` (migration, root sahipli — chown izni yok
+  ama git/okuma sorunsuz çalışıyor, bilinen kısıt), `forum/
+  context_processors.py` (+`intl_consulting_home` flag'i), `forum/admin.py`
+  (fieldsets'e eklendi), `forum/views.py` (`home()` sonunda flag+dil
+  kontrolüyle şablon seçimi, `SiteSettings.load()` tek sorguya indirildi),
+  **yeni** `forum/templates/forum/home_intl.html` (~300 satır), 2× `.po`
+  + `.mo`.
+
+  **İçerik:** Hero (tek CTA + K7 dropzone aynen) → Güven şeridi (yalnız AB
+  içi veri + TR/EN/DE dil, K1/K5) → Akademik/Kurumsal kart (ikincisi
+  `ai_cozumler`'e de link) → Teslimatlar (bir revizyon turu dahil, onaylı)
+  → 4 adım süreç ("teklif" dendi, "sabit fiyat" DENMEDİ — K3 netleşmemişti)
+  → Sınırlarımız → AI doğrulama bandı (Adım 2'den temiz, agentic/training
+  kartları çıkarıldı — kurumsal kartla çakışmasın diye, training zaten
+  `LANGUAGE_CODE == 'en'` ile sınırlı olurdu K6 gereği) → Araştırma
+  Konsolu (mevcut, birebir, zaten EN/DE filtreli) → 6 soruluk SSS (H3,
+  kendi FAQPage JSON-LD'si, K3/K4/K5/K1 kararlarına dayalı cevaplar).
+
+  **Doğrulama turunda 2 EK SIZINTI bulundu ve kapatıldı (planın kendi S4/S5
+  bulguları, hiç uygulanmamıştı):**
+  1. "Nasıl Çalışıyoruz?" 4 adımlı bölüm (`home.html:535`) — "İlan Aç",
+     "Teklif Al (doğrulamadan geçmiş analistler...)" pazaryeri adımları
+     dil koşulsuzdu → başlık+4 kart `{% if LANGUAGE_CODE == 'tr' %}` ile
+     sarıldı, altındaki mevcut `home_steps` CTA'sı dokunulmadı.
+  2. "GEMINI GÖREV 6: GÜVEN UNSURLARI (Platform Güvencesi)" bölümü
+     (`home.html:648`) — "Güvenli Ödeme", "Uzman Doğrulama" (analistler
+     doğrulamadan geçer), "Şeffaf Değerlendirme" (5 yıldız) — hiçbiri
+     EN/DE için gerçek değildi (ödeme kararı blokajda, doğrulanmış uzman
+     ağı yok), hiç dil koşulu yoktu → tüm bölüm TR'ye özel yapıldı.
+  **Ders:** Bu oturumda toplam 5 kez (Adım1: S1/S3, Adım4: FAQ, Adım6: S4/S5)
+  aynı kalıp tekrarladı — plan dosyası S1-S5'i tanımlamış ama yalnız S1-S3'ü
+  gerçekten kapatmıştı. `analizus.md`/`tasks/lessons.md`'ye not: **EN/DE
+  sızıntı denetimi yalnız URL/link grep'i değil, "ilan", "teklif",
+  "doğrulanmış uzman", "güvenli ödeme" gibi pazaryeri sözcüklerini de
+  taramalı; bir plan dosyasının "bulundu" demesi "düzeltildi" anlamına
+  gelmez, uygulanmadan önce kodda fiilen kontrol et.**
+
+  **Çeviri süreci notu (gelecek oturumlar için önemli):** `makemessages`
+  sonrası yeni msgid'lerin bir kısmı (11/76) metince BENZER eski
+  msgid'lere `#, fuzzy` olarak otomatik eşleşti ve YANLIŞ/eski çeviriyi
+  miras aldı — boş `msgstr ""` taraması bunları YAKALAMAZ (zaten dolu
+  görünürler). Fark edilmesi `node`/curl değil **Playwright ekran
+  görüntüsü** sayesinde oldu (hero CTA'sı ve kurumsal kart başlığı hâlâ
+  Türkçe çıkıyordu). Düzeltme: şablondaki tüm `{% trans %}` msgid'lerini
+  programatik çıkarıp her birini po'da `fuzzy`/`boş`/`eksik` olarak
+  tarayan bir script yazıldı (76/76 temiz çıktı). **Kural:** yeni şablon +
+  toplu çeviri turlarında, "boş msgstr" taraması YETMEZ — fuzzy taraması
+  da şart, en güvenilir doğrulama görsel (Playwright) kontrolüdür.
+
+  **Doğrulama:** `transaction.atomic()` içinde flag açılıp TR/EN/DE
+  render edildi, rollback yapıldı — TR değişmedi (sayı bile aynı), EN/DE
+  `home_intl.html`'i kullandı, sıfır pazaryeri/forum sızıntısı, FAQPage
+  JSON-LD (`json.loads`) geçerli. Flag kapalıyken EN/DE'nin hâlâ
+  `home.html`'i kullandığı ayrıca doğrulandı. Playwright ile EN/DE ×
+  375/1280px tam sayfa ekran görüntüsü — ilk turda 2 metin hâlâ Türkçe
+  çıktı (yukarıdaki fuzzy sorunu), düzeltilip tekrar çekildi, temiz.
+  İki inline JS bloğu `node --check` ile sözdizimi doğrulandı. `pytest
+  forum/tests.py` → **90/90 yeşil** (üç ayrı turda tekrar tekrar
+  çalıştırıldı, hepsi yeşil).
+
+  **Deploy etkisi:** **MIGRATION VAR** (`0179_...py`, no-data — yalnız
+  yeni `BooleanField` + `choices` değişikliği, mevcut satırları etkilemez)
+  → `main`'e push öncesi kullanıcıdan `scripts/yedek_indir.sh --simdi`
+  (kendi bilgisayarında) istenmeli. Flag canlıda **kapalı** gelecek;
+  kullanıcı admin'den `SiteSettings` → Feature Flags → "EN/DE Danışmanlık
+  Ana Sayfası" ile açacak.
+  **ADIM 6 commit + push edildi** (`8d3284e`, `dev`'e gitti).
+
+  **CANLI BUG BULUNDU VE DÜZELTİLDİ (16 Ekim 2026, kullanıcı Render dev
+  ortamında ekran görüntüsüyle bildirdi):** `home.html`'de "Nasıl
+  Çalışıyoruz?" bölümünü (Adım 6 doğrulama turunda) TR'ye özel yaparken,
+  altındaki `{% if LANGUAGE_CODE != 'tr' %}` CTA'sını ("Ücretsiz Proje
+  Talebi Gönder") bilerek dokunmadan bırakmıştım (FAQ'daki desenle aynı).
+  Ama bu CTA'nın hiç bağlamı yoktu (FAQ'daki "Hâlâ sorunuz mu var?" gibi
+  açıklayıcı metni yok) — EN/DE'de "I Want an Analysis Done" kartının
+  hemen altında, boşlukta duran İKİNCİ bir "Send a Free Project Request"
+  butonu olarak görünüyordu, görsel olarak bozuk/tekrarlı duruyordu.
+  **Düzeltme:** Tüm `ax-steps-section` (başlık+4 kart+yetim CTA dahil
+  `<section>` etiketiyle birlikte) `{% if LANGUAGE_CODE == 'tr' %}` ile
+  sarıldı, yetim CTA tamamen kaldırıldı (FAQ'daki gibi bağlamlı bir CTA
+  değil, saf tekrar olduğu için silinmesi doğru karardı).
+  **Ders:** Bir bölümü gizlerken altındaki "kalsın" denen CTA'nın GERÇEKTEN
+  bağlamsız kalıp kalmadığını kontrol et — FAQ'da CTA'nın kendi açıklayıcı
+  metni vardı (çalıştı), Steps'te yoktu (bozdu). Sadece kod tarafı
+  doğrulaması (curl/pytest) bunu yakalamadı, kullanıcının gerçek tarayıcı
+  ekran görüntüsü yakaladı — **büyük sızıntı kapatma turlarından sonra
+  kullanıcıya da canlı/dev ortamı gözden geçirmesi hatırlatılmalı.**
+  **Doğrulama:** Playwright ile EN sayfası tam ekran görüntüsü — tek CTA
+  kart içinde, ikincisi yalnız sayfa sonundaki FAQ'da (bağlamlı). `pytest
+  forum/tests.py` → **90/90 yeşil**. **Commit + push edildi** (`7b155da`,
+  `dev`'e gitti).
+
+  **Sıradaki adım sırası — kullanıcı kararı (16 Ekim 2026):** Adım 5
+  (Premium/bağış EUR+IBAN) hâlâ bekliyor (atlandı); kalan adımlar için
+  sıra **10 → 7 → 9 → 8 → 11** olarak belirlendi.
+
+  **ADIM 10 TAMAMLANDI (16 Ekim 2026) — proje talebi formuna "aşama" +
+  "hedef teslim tarihi" + isteğe bağlı randevu linki eklendi, henüz
+  commit edilmedi. MIGRATION VAR (0180).**
+  **Mimari (7 dosya):** `forum/models.py` (+`ProjectRequest.STAGE_CHOICES`
+  ve `stage`/`deadline` alanları; +`SiteSettings.meeting_booking_url`),
+  `forum/migrations/0180_...py`, `forum/admin.py` (ikisi de fieldsets/
+  list_display/list_filter'a eklendi), `forum/views.py` (`proje_talebi()`
+  — `stage` zorunlu doğrulamaya eklendi, `deadline` isteğe bağlı parse
+  edilir, admin bildirim e-postasına ikisi de eklendi), `forum/templates/
+  forum/proje_talebi.html` (yeni form satırı: Aşama [zorunlu select] +
+  Hedef Teslim Tarihi [isteğe bağlı date input]; "Randevu Planla" linki
+  yalnız `meeting_booking_url` doluysa görünür), 2× `.po`+`.mo`.
+  **Kullanıcı kararları:** bütçe aralığı alanı EKLENMEDİ (fiyat/para
+  birimi belirsizliği nedeniyle); aşama zorunlu, tarih isteğe bağlı;
+  randevu linki şimdilik boş (admin daha sonra dolduracak, kod değişikliği
+  gerekmeyecek).
+  **Ek bulgu — kullanıcı onayıyla hemen düzeltildi:** proje_talebi
+  sayfasındaki "Neden Analizus?" kutusunda "Python, R, SQL, Tableau
+  uzmanlarından oluşan doğrulanmış analist ağı" ifadesi K1 kararıyla
+  (admin kendisi/ekibi TR/EN/DE danışmanlık veriyor, ağ/pazaryeri modeli
+  değil) çelişiyordu — yalnız bu msgid'in DE/EN msgstr'ı "Direkte
+  Betreuung durch unser Team..."/"Direct support from our team..." olarak
+  değiştirildi (tek kullanım yeri, başka sayfayı etkilemedi).
+  **AÇIK BULGU — kullanıcı karar vermeden oturum kapandı, bir sonraki
+  oturumda sorulmalı:** Aynı sayfanın H1/alt başlığı da aynı sorunu
+  taşıyor: "Tell Us About Your Project, We'll Find the Right Expert" /
+  "...we'll match you with expert analysts and offer a free initial
+  assessment." — "uzman bulma/eşleştirme" vaadi K1 ile çelişiyor ama
+  kapsamı daha geniş (H1 + alt başlık + muhtemelen "Finans, perakende,
+  sağlık ve üretim sektörlerinde kanıtlanmış proje deneyimi" gibi
+  doğrulanmamış iddialar da var) — **dokunulmadı, ayrı onay gerekir.**
+  **Doğrulama:** `transaction.atomic()` içinde TR/EN/DE × GET (form
+  alanları render) + POST (stage+deadline ile başarılı kayıt, stage boşken
+  reddedilme) test edildi, rollback temiz. Playwright ile EN form ekran
+  görüntüsü — yeni alanlar doğru yerleşmiş, "Randevu Planla" linki doğru
+  şekilde gizli (link boş olduğu için). `pytest forum/tests.py` →
+  **90/90 yeşil**.
+  **Deploy etkisi:** **MIGRATION VAR** (`0180_...py`, no-data — iki yeni
+  alan, mevcut satırlar etkilenmez) → `main`'e push öncesi
+  `scripts/yedek_indir.sh --simdi` (kullanıcının kendi bilgisayarında)
+  gerekiyor.
+  **Sıradaki:** Adım 7 (EN/DE navigasyon), sonra 9 (hizmet sayfaları
+  tasarım dokümanı), 8 (Impressum), 11 (ölçüm) — bu oturumda başlanmadı,
+  bir sonraki oturumda devam edilecek. Yukarıdaki açık bulgu (proje_talebi
+  H1/alt başlık) da bir sonraki oturumun başında kullanıcıya sorulmalı.
+
 - [x] **(16 Ekim 2026, kullanıcı bulgusu → aynı gün düzeltildi) EDU doğrulama
   DM'i admin'in kişisel hesabından gönderiliyordu, sistem/bot hesabından değil.**
   `forum/views.py:1361` (`_handle_edu_user`) artık diğer otomatik DM'lerle aynı

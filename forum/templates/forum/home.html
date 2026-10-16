@@ -35,17 +35,17 @@
 .ax-hero-dropzone__error{max-width:560px;margin:0 auto var(--ax-space-3);text-align:center;color:var(--ax-accent-danger,#ef4444);font-size:var(--ax-text-sm)}
 .ax-hero-dropzone__trust{margin:0 0 var(--ax-space-1);text-align:center;color:var(--ax-text-secondary);font-size:var(--ax-text-sm)}
 .ax-hero-dropzone__examples{margin:0 0 var(--ax-space-3);text-align:center;color:var(--ax-text-secondary);font-size:var(--ax-text-xs)}
-.ax-hero-dropzone__examples a{color:var(--ax-accent-primary);text-decoration:none}
+.ax-hero-dropzone__examples a{color:var(--ax-accent-primary-light);text-decoration:none}
 .ax-hero-dropzone__examples a:hover{text-decoration:underline}
 @media (max-width:479px){.ax-hero-dropzone{flex-direction:column;padding:var(--ax-space-4)}.ax-hero-dropzone__btn{width:100%;justify-content:center}}
 .ax-hero__secondary-cta{text-align:center;margin:0 0 var(--ax-space-6)}
 .ax-hero__secondary-cta a{color:var(--ax-text-secondary);font-size:var(--ax-text-sm);text-decoration:none;transition:color var(--ax-transition-fast)}
-.ax-hero__secondary-cta a:hover{color:var(--ax-accent-primary)}
+.ax-hero__secondary-cta a:hover{color:var(--ax-accent-primary-light)}
 .ax-hero__personal{display:flex;align-items:center;flex-wrap:wrap;gap:var(--ax-space-2);justify-content:center;padding:var(--ax-space-3) var(--ax-space-6);background:rgba(99,102,241,0.08);border:1px solid rgba(99,102,241,0.2);border-radius:var(--ax-radius-full);font-size:var(--ax-text-sm)}
-.ax-hero__personal-badge{font-weight:var(--ax-font-semibold);color:var(--ax-color-primary)}
+.ax-hero__personal-badge{font-weight:var(--ax-font-semibold);color:var(--ax-accent-primary-light)}
 .ax-hero__personal-text{color:var(--ax-text-muted)}
 .ax-hero__personal-link{color:var(--ax-text-secondary);text-decoration:none;font-weight:var(--ax-font-medium);transition:color var(--ax-transition-fast)}
-.ax-hero__personal-link:hover{color:var(--ax-color-primary)}
+.ax-hero__personal-link:hover{color:var(--ax-accent-primary-light)}
 .ax-hero__personal-sep{color:var(--ax-border-hover)}
 </style>
 <link rel="stylesheet" href="{% static 'css/hero.css' %}?v=0108" media="print" onload="this.media='all'">
@@ -296,7 +296,7 @@ atıfları) → yalnız TR. EN/DE'ye dile uygun tek WebSite bloğu (27 Eylül 20
                     <a href="{% url 'trdizin:landing' %}" class="ax-hero__personal-link">TR Dizin</a>
                     <span class="ax-hero__personal-sep">·</span>
                     <a href="{% url 'bibliometrics:landing' %}" class="ax-hero__personal-link">{% trans "Bibliometrik Analiz" %}</a>
-                    {% elif user_profile.segment == 'expert' %}
+                    {% elif user_profile.segment == 'expert' and LANGUAGE_CODE == 'tr' %}
                     <span class="ax-hero__personal-badge">💼 {% trans "Uzman" %}</span>
                     <span class="ax-hero__personal-text">{% trans "Fırsatlar:" %} </span>
                     <a href="{% url 'job_list' %}" class="ax-hero__personal-link">{% trans "Açık İlanlar" %}</a>
@@ -532,6 +532,7 @@ atıfları) → yalnız TR. EN/DE'ye dile uygun tek WebSite bloğu (27 Eylül 20
 <!-- =====================================================
      NASIL ÇALIŞIYORUZ? (Büyütülmüş adım kartları)
      ===================================================== -->
+{% if LANGUAGE_CODE == 'tr' %}
 <section class="ax-steps-section py-5">
     <div class="container">
         <h2 class="ax-section-title text-center mb-2">{% trans "Nasıl Çalışıyoruz?" %}</h2>
@@ -570,13 +571,9 @@ atıfları) → yalnız TR. EN/DE'ye dile uygun tek WebSite bloğu (27 Eylül 20
                 </div>
             </div>
         </div>
-        {% if LANGUAGE_CODE != 'tr' %}
-        <div class="ax-section-cta">
-            <a href="{% url 'proje_talebi' %}?source=home_steps" class="ax-btn ax-btn--primary ax-btn--lg">{% trans "Ücretsiz Proje Talebi Gönder" %}</a>
-        </div>
-        {% endif %}
     </div>
 </section>
+{% endif %}
 
 <!-- =====================================================
      PLATFORM İSTATİSTİKLERİ BANDI
@@ -585,19 +582,19 @@ atıfları) → yalnız TR. EN/DE'ye dile uygun tek WebSite bloğu (27 Eylül 20
 <section class="ax-stats-section">
     <div class="container">
         <div class="row text-center justify-content-center">
-            {% if total_users >= stat_min_display %}
+            {% if total_users >= stat_min_display and LANGUAGE_CODE == 'tr' %}
             <div class="col-6 col-md-2 mb-4 mb-md-0">
                 <div class="ax-stat-item" data-target="{{ total_users }}" data-suffix="">0</div>
                 <div class="ax-stat-label">{% trans "Aktif Üye" %}</div>
             </div>
             {% endif %}
-            {% if total_topics >= stat_min_display %}
+            {% if total_topics >= stat_min_display and LANGUAGE_CODE == 'tr' %}
             <div class="col-6 col-md-2 mb-4 mb-md-0">
                 <div class="ax-stat-item" data-target="{{ total_topics }}" data-suffix="">0</div>
                 <div class="ax-stat-label">{% trans "Akademik Konu" %}</div>
             </div>
             {% endif %}
-            {% if total_posts >= stat_min_display %}
+            {% if total_posts >= stat_min_display and LANGUAGE_CODE == 'tr' %}
             <div class="col-6 col-md-2 mb-4 mb-md-0">
                 <div class="ax-stat-item" data-target="{{ total_posts }}" data-suffix="">0</div>
                 <div class="ax-stat-label">{% trans "Forum Gönderisi" %}</div>
@@ -615,7 +612,7 @@ atıfları) → yalnız TR. EN/DE'ye dile uygun tek WebSite bloğu (27 Eylül 20
                 <div class="ax-stat-label">{% trans "Tamamlanan Analiz" %}</div>
             </div>
             {% endif %}
-            {% if open_jobs_count >= stat_min_display %}
+            {% if open_jobs_count >= stat_min_display and LANGUAGE_CODE == 'tr' %}
             <div class="col-6 col-md-2 mb-4 mb-md-0">
                 <a href="{% url 'job_list' %}" style="text-decoration:none;">
                     <div class="ax-stat-item">{{ open_jobs_count }}</div>
@@ -623,13 +620,13 @@ atıfları) → yalnız TR. EN/DE'ye dile uygun tek WebSite bloğu (27 Eylül 20
                 </a>
             </div>
             {% endif %}
-            {% if weekly_new_users >= stat_min_display %}
+            {% if weekly_new_users >= stat_min_display and LANGUAGE_CODE == 'tr' %}
             <div class="col-6 col-md-2 mb-4 mb-md-0">
                 <div class="ax-stat-item">{{ weekly_new_users }}</div>
                 <div class="ax-stat-label">{% trans "Bu Hafta Yeni Üye" %}</div>
             </div>
             {% endif %}
-            {% if online_experts >= 2 %}
+            {% if online_experts >= 2 and LANGUAGE_CODE == 'tr' %}
             <div class="col-6 col-md-2">
                 <div class="ax-stat-item" style="color:var(--ax-accent-secondary);">{{ online_experts }}</div>
                 <div class="ax-stat-label">{% trans "Şu An Çevrimiçi Uzman" %}</div>
@@ -643,6 +640,7 @@ atıfları) → yalnız TR. EN/DE'ye dile uygun tek WebSite bloğu (27 Eylül 20
 <!-- =====================================================
      GEMINI GÖREV 6: GÜVEN UNSURLARI (Platform Güvencesi)
      ===================================================== -->
+{% if LANGUAGE_CODE == 'tr' %}
 <section class="ax-trust-section py-5 my-4" style="background: rgba(16, 185, 129, 0.05); border-top: 1px solid rgba(16, 185, 129, 0.1); border-bottom: 1px solid rgba(16, 185, 129, 0.1);">
     <div class="container">
         <div class="row text-center justify-content-center g-4">
@@ -676,6 +674,7 @@ atıfları) → yalnız TR. EN/DE'ye dile uygun tek WebSite bloğu (27 Eylül 20
         </div>
     </div>
 </section>
+{% endif %}
 
 <!-- =====================================================
      FAZ 3: UZMAN VİTRİNİ
@@ -702,7 +701,7 @@ atıfları) → yalnız TR. EN/DE'ye dile uygun tek WebSite bloğu (27 Eylül 20
 </section>
 {% endif %}
 
-{% if showcase_jobs %}
+{% if showcase_jobs and LANGUAGE_CODE == 'tr' %}
 <section style="padding-bottom: var(--ax-space-8, 32px);">
     <div class="container">
         <div class="ax-section-card">
@@ -769,7 +768,7 @@ atıfları) → yalnız TR. EN/DE'ye dile uygun tek WebSite bloğu (27 Eylül 20
             <div class="col-12 col-md-6 col-lg-3">
                 <div class="ax-tool-card" role="link" tabindex="0" data-card-url="{% url 'ai_assistant' %}">
                     <div class="ax-tool-icon">🤖</div>
-                    <h3 class="ax-tool-title">AI {% trans "Asistan" %}</h3>
+                    <h3 class="ax-tool-title">{% trans "AI Asistan" %}</h3>
                     <p class="ax-tool-desc">{% trans "Literatür taramada ve araştırmanın her aşamasında yapay zeka destekli rehberiniz." %}</p>
                     <a href="{% url 'ai_assistant' %}" class="ax-tool-link">{% trans "Kullan →" %}</a>
                 </div>
@@ -949,7 +948,7 @@ AI Asistan da kapalıysa bölüm hiç çıkmaz (26 Eylül 2026){% endcomment %}
 <!-- =====================================================
      GÜNDEMDEKİ TARTIŞMALAR
      ===================================================== -->
-{% if popular_topics %}
+{% if popular_topics and LANGUAGE_CODE == 'tr' %}
 <section class="ax-wide-section">
     <div class="container">
         <div class="row g-4">
@@ -966,6 +965,7 @@ AI Asistan da kapalıysa bölüm hiç çıkmaz (26 Eylül 2026){% endcomment %}
      ===================================================== -->
 <section class="ax-faq-section py-5">
     <div class="container">
+        {% if LANGUAGE_CODE == 'tr' %}
         <div class="row justify-content-center mb-5">
             <div class="col-lg-8 text-center">
                 <span class="ax-badge-outline mb-3">{% trans "Soru İşaretlerini Giderin" %}</span>
@@ -979,11 +979,11 @@ AI Asistan da kapalıysa bölüm hiç çıkmaz (26 Eylül 2026){% endcomment %}
 
                     <!-- Soru 1 -->
                     <div class="accordion-item">
-                        <h2 class="accordion-header" id="faqOne">
+                        <h3 class="accordion-header" id="faqOne">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
                                 {% trans "Analiz verilerim güvende mi? Başkalarıyla paylaşılır mı?" %}
                             </button>
-                        </h2>
+                        </h3>
                         <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="faqOne" data-bs-parent="#faqAccordion">
                             <div class="accordion-body">
                                 {% trans "Verileriniz KVKK'ya uygun şekilde şifreli sunucularda saklanır. Dosyalarınız yalnızca eşleştiğiniz uzmanla, ilgili iş kapsamında paylaşılır; bunun dışında üçüncü taraflarla veya ilgisiz kişilerle asla paylaşılmaz." %}
@@ -993,11 +993,11 @@ AI Asistan da kapalıysa bölüm hiç çıkmaz (26 Eylül 2026){% endcomment %}
 
                     <!-- Soru 2 -->
                     <div class="accordion-item">
-                        <h2 class="accordion-header" id="faqTwo">
+                        <h3 class="accordion-header" id="faqTwo">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
                                 {% trans "Fiyatlandırma politikanız nasıl? Gizli veya ek ücret çıkar mı?" %}
                             </button>
-                        </h2>
+                        </h3>
                         <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="faqTwo" data-bs-parent="#faqAccordion">
                             <div class="accordion-body">
                                 {% trans "Platformdaki uzmanlar, projenizin kapsamını değerlendirdikten sonra size kendi fiyat tekliflerini sunar; anlaştığınız tutarın dışında platform üzerinden gizli bir ücret veya komisyon yansıtılmaz. Kendi başınıza kullandığınız istatistik araçlarının fiyatı ise ilgili araç sayfasında açıkça belirtilir." %}
@@ -1008,11 +1008,11 @@ AI Asistan da kapalıysa bölüm hiç çıkmaz (26 Eylül 2026){% endcomment %}
 
                     <!-- Soru 3 -->
                     <div class="accordion-item">
-                        <h2 class="accordion-header" id="faqThree">
+                        <h3 class="accordion-header" id="faqThree">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
                                 {% trans "Danışman hocam veya jüri revizyon (düzeltme) isterse ne olacak?" %}
                             </button>
-                        </h2>
+                        </h3>
                         <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="faqThree" data-bs-parent="#faqAccordion">
                             <div class="accordion-body">
                                 {% trans "Revizyon koşulları, çalışmaya başlamadan önce uzmanınızla aranızda netleştirdiğiniz kapsamın bir parçasıdır. Çoğu uzman, danışman veya jüriden gelen metodolojik geri bildirimler doğrultusunda ilk anlaşılan kapsam dahilinde revizyon desteği sunar — bu detayı iş başlamadan önce uzmanınızla teyit etmenizi öneririz." %}
@@ -1022,11 +1022,11 @@ AI Asistan da kapalıysa bölüm hiç çıkmaz (26 Eylül 2026){% endcomment %}
 
                     <!-- Soru 4 -->
                     <div class="accordion-item">
-                        <h2 class="accordion-header" id="faqFour">
+                        <h3 class="accordion-header" id="faqFour">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
                                 {% trans "Analiz sonuçlarım ne kadar sürede teslim edilir?" %}
                             </button>
-                        </h2>
+                        </h3>
                         <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="faqFour" data-bs-parent="#faqAccordion">
                             <div class="accordion-body">
                                 {% trans "Kendi başınıza kullandığınız istatistik araçlarında sonuçlar saniyeler içinde hesaplanır. Bir uzmanla birlikte yürüttüğünüz projelerde ise teslim süresi, verinin karmaşıklığına ve kapsama göre değişir; net süreyi iş başlamadan önce uzmanınızla birlikte belirlersiniz." %}
@@ -1036,11 +1036,11 @@ AI Asistan da kapalıysa bölüm hiç çıkmaz (26 Eylül 2026){% endcomment %}
 
                     <!-- Soru 5 -->
                     <div class="accordion-item">
-                        <h2 class="accordion-header" id="faqFive">
+                        <h3 class="accordion-header" id="faqFive">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
                                 {% trans "Süreç bittikten sonra verilerime ve dosyalarıma ne oluyor?" %}
                             </button>
-                        </h2>
+                        </h3>
                         <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="faqFive" data-bs-parent="#faqAccordion">
                             <div class="accordion-body">
                                 {% trans "Verileriniz ve sonuç raporlarınız, olası revizyon talepleriniz için hesabınızda saklanır. KVKK kapsamındaki haklarınız gereği dosyalarınızın silinmesini her zaman talep edebilirsiniz; talebiniz üzerine ilgili veriler sistemlerimizden kaldırılır." %}
@@ -1051,6 +1051,7 @@ AI Asistan da kapalıysa bölüm hiç çıkmaz (26 Eylül 2026){% endcomment %}
                 </div>
             </div>
         </div>
+        {% endif %}
         {% if LANGUAGE_CODE != 'tr' %}
         <div class="ax-section-cta">
             <p class="ax-section-cta__text">{% trans "Sorunuz mu kaldı? Projenizi anlatın, ücretsiz değerlendirelim." %}</p>

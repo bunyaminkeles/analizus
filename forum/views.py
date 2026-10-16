@@ -226,7 +226,8 @@ def home(request):
     completed_analyses = home_stats['completed_analyses']
     online_experts = home_stats['online_experts']
 
-    stat_min_display = SiteSettings.load().stat_min_display
+    site_settings = SiteSettings.load()
+    stat_min_display = site_settings.stat_min_display
     # online_experts genel stat_min_display eşiğinden (varsayılan 25) muaf —
     # "şu an çevrimiçi uzman" küçük ölçekli anlık bir metrik, 25 eşiği bu sayaç
     # için gerçekçi değil (neredeyse hiç görünmezdi). Kendi eşiği: en az 2.
@@ -331,7 +332,10 @@ def home(request):
         'recent_reviews': recent_reviews,
         'showcase_jobs': showcase_jobs,
     }
-    return render(request, 'forum/home.html', context)
+    template_name = 'forum/home.html'
+    if site_settings.feature_intl_consulting_home and request.LANGUAGE_CODE != 'tr':
+        template_name = 'forum/home_intl.html'
+    return render(request, template_name, context)
 
 # --- BAŞARI HİKAYELERİ ---
 class SuccessStoryForm(forms.ModelForm):
@@ -2224,11 +2228,21 @@ def proje_talebi(request):
         description = request.POST.get('description', '').strip()
         data_size = request.POST.get('data_size', '')
         timeline = request.POST.get('timeline', '')
+        stage = request.POST.get('stage', '')
+        deadline_str = request.POST.get('deadline', '').strip()
         source = request.POST.get('source', 'direct')
 
-        if not all([name, email, analysis_type, description, data_size, timeline]):
+        if not all([name, email, analysis_type, description, data_size, timeline, stage]):
             messages.error(request, gettext('Lütfen zorunlu alanları doldurunuz.'))
             return redirect('proje_talebi')
+
+        deadline = None
+        if deadline_str:
+            from datetime import date
+            try:
+                deadline = date.fromisoformat(deadline_str)
+            except ValueError:
+                deadline = None
 
         try:
             valid_sources = {c[0] for c in ProjectRequest.SOURCE_CHOICES}
@@ -2238,7 +2252,7 @@ def proje_talebi(request):
             req = ProjectRequest.objects.create(
                 name=name, email=email, company=company, language=lang,
                 analysis_type=analysis_type, description=description,
-                data_size=data_size, timeline=timeline,
+                data_size=data_size, timeline=timeline, stage=stage, deadline=deadline,
                 source=source if source in valid_sources else 'direct',
             )
 
@@ -2248,6 +2262,7 @@ def proje_talebi(request):
             analysis_label = dict(ProjectRequest.ANALYSIS_CHOICES).get(analysis_type, analysis_type)
             size_label = dict(ProjectRequest.DATA_SIZE_CHOICES).get(data_size, data_size)
             timeline_label = dict(ProjectRequest.TIMELINE_CHOICES).get(timeline, timeline)
+            stage_label = dict(ProjectRequest.STAGE_CHOICES).get(stage, stage)
             source_label = dict(ProjectRequest.SOURCE_CHOICES).get(req.source, req.source)
             lang_tag = f" [{lang.upper()}]" if lang != 'tr' else ''
             with admin_language():
@@ -2261,6 +2276,8 @@ def proje_talebi(request):
                 f"<p><b>Analiz Türü:</b> {analysis_label}</p>"
                 f"<p><b>Veri Boyutu:</b> {size_label}</p>"
                 f"<p><b>Süre Beklentisi:</b> {timeline_label}</p>"
+                f"<p><b>Aşama:</b> {stage_label}</p>"
+                f"<p><b>Hedef Teslim Tarihi:</b> {deadline.strftime('%d.%m.%Y') if deadline else '—'}</p>"
                 f"<p><b>Açıklama:</b></p>{linebreaks(escape(description))}"
               )
               admin_subject = f"[Analizus]{lang_tag} Yeni Proje Talebi: {name} ({analysis_label})"

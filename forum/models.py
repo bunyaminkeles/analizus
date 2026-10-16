@@ -1485,6 +1485,19 @@ class SiteSettings(models.Model):
                   "(bkz. Limitler: AI Yorumu günlük hakkı). Canlıda denenip kalite/maliyet görüldükten "
                   "sonra açın (ANTHROPIC_API_KEY env var şart).",
     )
+    feature_intl_consulting_home = models.BooleanField(
+        default=False,
+        verbose_name="EN/DE Danışmanlık Ana Sayfası",
+        help_text="Açıkken EN/DE ziyaretçileri mevcut home.html yerine danışmanlık odaklı "
+                  "home_intl.html'i görür (TR her zaman home.html). Kapalıyken EN/DE de "
+                  "home.html'i görmeye devam eder.",
+    )
+    meeting_booking_url = models.URLField(
+        blank=True,
+        verbose_name="Görüşme Randevu Linki",
+        help_text="Doluysa proje talebi sayfasında bir 'Randevu Planla' bağlantısı gösterilir "
+                  "(ör. Calendly). Boşsa bu bağlantı hiç gösterilmez.",
+    )
     feature_multilingual = models.BooleanField(
         default=False,
         verbose_name="Çok Dilli Yayın (EN/DE)",
@@ -2005,6 +2018,12 @@ class ProjectRequest(models.Model):
         ('short', gettext_lazy('1 ay içinde')),
         ('flexible', gettext_lazy('Esnek')),
     ]
+    STAGE_CHOICES = [
+        ('planning', gettext_lazy('Planlama aşamasındayım')),
+        ('data_collected', gettext_lazy('Verim toplandı, analiz bekliyor')),
+        ('analysis_done', gettext_lazy('Analiz bitti, rapor/yorumlama lazım')),
+        ('reviewer_feedback', gettext_lazy('Hakem/danışman geri bildirimi aldım')),
+    ]
     STATUS_CHOICES = [
         ('new', 'Yeni'),
         ('in_review', 'İnceleniyor'),
@@ -2019,6 +2038,7 @@ class ProjectRequest(models.Model):
         ('tool', 'Analiz Aracı'),
         ('hero', 'Ana Sayfa Hero'),
         ('home_corporate', 'Ana Sayfa Kurumsal'),
+        ('home_academic', 'Ana Sayfa Akademik (EN/DE)'),
         ('verification', 'AI Doğrulama Bandı'),
         ('agentic', 'AI Çözümler Sayfası'),
         ('tableau', 'Tableau Sayfası'),
@@ -2040,6 +2060,8 @@ class ProjectRequest(models.Model):
     description = models.TextField(verbose_name="Proje Açıklaması")
     data_size = models.CharField(max_length=20, choices=DATA_SIZE_CHOICES, verbose_name="Veri Boyutu")
     timeline = models.CharField(max_length=20, choices=TIMELINE_CHOICES, verbose_name="Süre Beklentisi")
+    stage = models.CharField(max_length=20, choices=STAGE_CHOICES, blank=True, verbose_name="Aşama")
+    deadline = models.DateField(null=True, blank=True, verbose_name="Hedef Teslim Tarihi")
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='new', verbose_name="Durum")
     source = models.CharField(max_length=20, choices=SOURCE_CHOICES, default='direct', blank=True, verbose_name="Kaynak")
     # Formun gönderildiği sayfanın dili (tr/en/de) — ekip hangi dilde dönüş yapacağını bilsin,

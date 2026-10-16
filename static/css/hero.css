@@ -180,7 +180,7 @@
 }
 
 .ax-hero-dropzone__examples a {
-    color: var(--ax-accent-primary);
+    color: var(--ax-accent-primary-light);
     text-decoration: none;
 }
 
@@ -213,7 +213,7 @@
 }
 
 .ax-hero__secondary-cta a:hover {
-    color: var(--ax-accent-primary);
+    color: var(--ax-accent-primary-light);
 }
 
 /* -------------------------------------------------------------
@@ -387,7 +387,7 @@
 }
 .ax-hero__personal-badge {
     font-weight: var(--ax-font-semibold);
-    color: var(--ax-color-primary);
+    color: var(--ax-accent-primary-light);
 }
 .ax-hero__personal-text {
     color: var(--ax-text-muted);
@@ -399,7 +399,7 @@
     transition: color var(--ax-transition-fast);
 }
 .ax-hero__personal-link:hover {
-    color: var(--ax-color-primary);
+    color: var(--ax-accent-primary-light);
 }
 .ax-hero__personal-sep {
     color: var(--ax-border-hover);
@@ -453,5 +453,5 @@
 .ax-hero__or {
     margin: 0 0 var(--ax-space-3);
     font-size: var(--ax-text-sm);
-    color: var(--ax-text-muted);
+    color: var(--ax-text-secondary);
 }
