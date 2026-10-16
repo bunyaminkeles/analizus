@@ -10,6 +10,18 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
+- [ ] **(16 Ekim 2026, kullanıcı bulgusu) EDU doğrulama DM'i admin'in kişisel
+  hesabından gönderiliyor, sistem/bot hesabından değil.** `forum/views.py:1361`
+  (`_handle_edu_user`) `admin_user = User.objects.filter(is_superuser=True).first()`
+  kullanıyor — bu da dev DB'de ilk superuser olan gerçek kişisel hesabı
+  (`bunyamin`) döndürüyor. Kullanıcı ekran görüntüsünde "Doğrulanmış Akademisyen"
+  rozeti/3 günlük teklif hakkı DM'inin gönderen alanında kişisel admin adının
+  göründüğünü fark etti; göndermesi gereken admin değil, sistem olmalı. Projede
+  zaten bu amaç için kurulmuş bir desen var: diğer tüm otomatik DM'ler (ör.
+  `forum/views.py:577,668,952,2936`) `User.objects.get(username='AnalizBot')`
+  kullanıyor. Düzeltme: `_handle_edu_user` içindeki `admin_user` sorgusunu da
+  `AnalizBot` kullanıcısına çevirmek (yoksa fallback olarak superuser).
+
 - [ ] **(15 Ekim 2026, ÜRÜN KARARI BEKLİYOR)** YÖK Tez'de (muhtemelen diğer tarama
   araçlarında da) kullanıcılar "Başlık"/"Özet" alanına virgülle ayrılmış birden
   fazla kelime giriyor (ör. "islam, tefsir, hadis, tasavvuf, Kur'an, fıkıh,
@@ -51,6 +63,12 @@ maddelerde.
   farklı olarak Unfold değil düz Django `ModelAdmin` kullanıyor, ayrıca
   `get_query_summary` sütunu yok (sadece ham `status/total_results/created_at`
   görünüyor) — görsel/işlevsel tutarsızlık, ayrı görev olarak ele alınmalı.
+- [x] **TAMAMLANDI (15 Ekim 2026) — Admin dashboard analitik turu: arama kelime
+  grafiği + 0-sonuç ikazı + YÖK Tez/OAI-PMH üniversite canlı tespiti, `main`'de
+  canlı (production'da uçtan uca doğrulandı — İTÜ + Dokuz Eylül Ü. gerçekten
+  flagged oldu, admin e-postası geldi).** Detaylı anlatım: `analizus.md` §27
+  "Geçmiş Turlar" en üstteki madde. Yukarıdaki 4 açık madde bu turda bulundu,
+  henüz çözülmedi.
 - [x] **TAMAMLANDI (13 Ekim 2026) — Claude AI Yorumu Faz C: OpenAlex ve PubMed
   tarama sonuçlarına AI yorumu eklendi, `main`'de canlı.** Faz A/B (istatistik
   araçları) ile aynı desen: `AlexSearchJob`/`PubMedSearchJob`'a `ai_comment`
