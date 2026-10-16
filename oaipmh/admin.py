@@ -9,10 +9,18 @@ from trdizin.models import DizinSearchJobProxy
 class UniversityAdmin(ModelAdmin):
     warn_unsaved_changes = True
     compressed_fields = True
-    list_display = ['name', 'domain', 'oai_url', 'is_active', 'last_checked_at', 'last_result_count', 'flagged_for_review']
+    list_display = ['name', 'domain', 'oai_url', 'is_active', 'last_checked_at', 'last_result_display', 'flagged_for_review']
     list_filter = ['is_active', 'flagged_for_review']
     search_fields = ['name', 'domain']
     list_editable = ['is_active']
+
+    def last_result_display(self, obj):
+        if obj.last_result_count is None:
+            return '—'
+        if obj.last_result_count < 0:
+            return '🔌 Bağlantı Hatası'
+        return obj.last_result_count
+    last_result_display.short_description = "Son Test Sonucu"
 
 
 @admin.register(OAIPMHSearchJob)

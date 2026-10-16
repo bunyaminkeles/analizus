@@ -577,24 +577,38 @@ def notify_admin_analysis_completed(job):
 
 
 @_in_admin_language
-def notify_admin_oaipmh_flagged_universities(universities):
-    """OAI-PMH üniversite canlı testi (check_oaipmh_universities) 0 sonuç dönen
-    (yeni işaretlenen) üniversiteleri bulduğunda admin'e e-posta gönderir."""
+def notify_admin_oaipmh_flagged_universities(empty_result_universities, connection_error_universities=None):
+    """OAI-PMH üniversite canlı testi (check_oaipmh_universities) yeni işaretlenen
+    üniversiteleri bulduğunda admin'e e-posta gönderir. İki ayrı neden var:
+    - empty_result_universities: sunucu yanıt veriyor ama gerçekten 0 kayıt döndü
+    - connection_error_universities: sunucuya hiç ulaşılamadı / sunucu hatası (5xx, SSL, connection refused)
+    Bunlar aynı "0 sonuç" değil — ayrı etiketlerle gösterilir."""
     try:
+        empty_result_universities = empty_result_universities or []
+        connection_error_universities = connection_error_universities or []
+        universities = list(empty_result_universities) + list(connection_error_universities)
         if not universities:
             return
         site = getattr(settings, 'SITE_URL', 'https://www.analizus.com')
         color = _COLORS['alert']
-        rows = [(u.name, u.oai_url) for u in universities]
+        rows = (
+            [(f"🔌 Bağlantı Hatası — {u.name}", u.oai_url) for u in connection_error_universities]
+            + [(f"📭 0 Sonuç — {u.name}", u.oai_url) for u in empty_result_universities]
+        )
         html = _build_admin_html(
             '⚠ OAI-PMH Üniversite Uyarısı', color,
-            f"{len(universities)} üniversite 0 sonuç döndü — incelenmesi gerekiyor",
+            f"{len(universities)} üniversite incelenmesi gerekiyor "
+            f"({len(connection_error_universities)} bağlantı hatası, {len(empty_result_universities)} 0 sonuç)",
             rows,
             f"{site}/admin/oaipmh/university/?flagged_for_review__exact=1",
             'Admin Panelde İncele'
         )
-        names = ', '.join(u.name for u in universities)
-        plain = f"OAI-PMH canlı testinde 0 sonuç dönen üniversiteler: {names}"
+        plain_parts = []
+        if connection_error_universities:
+            plain_parts.append(f"Bağlantı hatası: {', '.join(u.name for u in connection_error_universities)}")
+        if empty_result_universities:
+            plain_parts.append(f"0 sonuç: {', '.join(u.name for u in empty_result_universities)}")
+        plain = "OAI-PMH canlı testi — " + " | ".join(plain_parts)
         _send_admin(f"[Analizus] ⚠ OAI-PMH: {len(universities)} üniversite incelenmeli", html, plain)
     except Exception as e:
         logger.error(f"Admin OAI-PMH üniversite uyarısı gönderilemedi: {e}")

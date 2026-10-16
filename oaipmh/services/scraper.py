@@ -213,7 +213,11 @@ class OAIPMHScraper:
         except NoRecordsMatch:
             logger.info(f"OAI-PMH browse [{university.name}]: Kayıt yok")
         except Exception as e:
+            # Bağlantı/sunucu hatası (connection refused, SSL, HTTP 5xx vb.) — gerçek
+            # "0 sonuç" (NoRecordsMatch) değil, çağırana bildirilmesi gerekir; yutup
+            # sessizce 0 döndürmek "repository boş" ile "sunucuya ulaşılamadı"yı karıştırır.
             logger.error(f"OAI-PMH browse [{university.name}] bağlantı hatası: {e}")
+            raise
 
         logger.info(f"OAI-PMH browse [{university.name}]: {len(all_results)} tez / {count} toplam kayıt")
 
