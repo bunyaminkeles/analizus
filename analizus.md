@@ -2745,6 +2745,99 @@ with connection.cursor() as c:
 
 > Önceki düz-yazı günlük biçiminden madde listesine dönüştürülmüştür; cümleler değişmeden taşınmıştır.
 
+- **16 Ekim 2026 (gece) — EN/DE Danışmanlık Dönüşümü, Adım 1-4+6+10 (kaynak:
+  `en_de_danismanlik_donusumu_prompt.md`).** Altı ayrı `dev`→`main` `--no-ff`
+  merge + push (her birinde kullanıcı onayı; migration'lı olanlardan önce
+  "yedek ok" alındı). Önce K1-K9 iş kararları netleştirildi (admin TR/EN/DE
+  danışmanlık veriyor; Impressum bilgisi gelene kadar footer'a linklenmez;
+  fiyat sitede gösterilmez, proje talebi sonrası verilir; yanıt süresi
+  "5-7 gün"; veri S3 `eu-north-1` Stockholm + Hetzner Helsinki — **AB içinde,
+  Almanya'da DEĞİL**, ikisi de doğrulandı; eğitimler yalnız EN'de; hero
+  dropzone kalıyor; Premium EN/DE'de kalıyor, EUR+ayrı IBAN'a geçecek — ayrı
+  görev; sayaç şeridinden Açık İlan/Bu Hafta Yeni Üye/Şu An Çevrimiçi Uzman
+  kalkıyor).
+  **Adım 1 — pazaryeri/forum sızıntıları kapatıldı:** plan dosyasının S1
+  kanıtı aslında "FAZ 3: UZMAN VİTRİNİ" değil, ondan ayrı **"Uzman Arayan
+  Projeler"** bölümüymüş (TL fiyatlı ilan kartları) — bulunup TR'ye özel
+  yapıldı; "Gündemdeki Tartışmalar" (S2) aynı şekilde; sayaç şeridinde 6
+  kalem TR'ye özel yapıldı (K9). `home_market` kartları zaten 16 Ekim akşam
+  turunda düzeltilmişti, dokunulmadı. Doğrulama: `transaction.atomic()`
+  içinde açık ilan+forum konusu oluşturulup TR/EN/DE render edildi, rollback.
+  **Adım 2 — yanlış vaat ifadeleri:** hero "du" hitabı → "Sie"; "dakikalar
+  içinde eşleşme"/"%100 gizlilik" → "ücretsiz ön değerlendirme"; AI doğrulama
+  bandındaki "24 saat" kaldırıldı; "verifizierte Experten"/"verified
+  experts" → "Fachleute"/"specialists" (henüz doğrulanmış uzman ağı
+  olmadığından). Ayrı bug: `home.html:772`'de `AI {% trans "Asistan" %}`
+  — "AI" kelimesi şablonda sabit yazılıp yalnız "Asistan" çevriliyordu,
+  DE'de "AI Assistent" (karışık dil) çıkıyordu → tek msgid'e birleştirildi.
+  **Adım 3 — renk/kontrast:** tanımsız `--ax-color-primary` token'ının
+  **kalan iki kullanımı** (`.ax-hero__personal-badge`,
+  `.ax-hero__personal-link:hover` — 12 Ekim turunda kapsam dışı
+  bırakılmıştı, bkz. yukarı) artık `--ax-accent-primary-light` (#a5b4fc,
+  9.6:1 kontrast) ile düzeltildi, `home.html` + `hero.css`'teki iki kopya
+  birlikte. Ek bulgu: `.ax-market-diy__label/__link` (home_sections.css)
+  token bile kullanmıyordu, hardcode `rgba(148,163,184,0.5/0.7)` — gerçek
+  kontrast ölçüldü (**2.68:1**, AA'nın çok altında) → `var(--ax-text-
+  secondary)` ile 6.92:1'e çıkarıldı. `.ax-market-visual` kırpılma şikayeti
+  Playwright ile test edildi, 3 genişlikte tutarlı ~15px (CSS `right:-16px`
+  tasarım değeriyle birebir) — sorun çıkmadı, değişiklik yapılmadı.
+  **Adım 4 — SEO + kritik ek sızıntı:** `<title>`/meta description EN/DE
+  msgstr'ları kısaltılıp (plan taslağı kendi sınırını aşıyordu) danışmanlık
+  odaklı hale getirildi; SSS'deki 5 soru `<h2>`→`<h3>`. **Doğrulama
+  sırasında bulunan kritik sızıntı:** SSS'nin TAMAMI (5 soru + o zamanki
+  FAQPage JSON-LD — meğer JSON-LD zaten 27 Eylül'den beri TR'ye özeldi,
+  yalnız görünür accordion sızıyordu) hiç dil koşuluna bağlı değildi, DE'de
+  canlı olarak "Die Experten auf der Plattform... machen Ihnen ihr eigenes
+  Preisangebot" (pazaryeri teklif modeli) yazıyordu → tüm SSS TR'ye özel
+  yapıldı, EN/DE'de yerine zaten var olan "Noch Fragen?" CTA'sı kalıyor.
+  **Adım 6 — yeni EN/DE ana sayfası (`home_intl.html`):** yeni
+  `SiteSettings.feature_intl_consulting_home` flag'i (üç yerde: model +
+  `feature_flags()` + `SiteSettingsAdmin.fieldsets`, migration `0179`),
+  `home()` view'ı flag açık+dil≠tr ise yeni şablonu render ediyor (TR
+  yolu bit-bit aynı). Yeni şablon: hero (tek CTA + dropzone K7) → güven
+  şeridi (yalnız AB içi veri + 3 dil, sayı yok) → Akademik/Kurumsal kart
+  (`ProjectRequest.SOURCE_CHOICES`'a `home_academic` eklendi) → teslimatlar
+  (revizyon turu dahil) → 4 adım süreç ("teklif" dendi, "sabit fiyat"
+  DENMEDİ) → sınırlarımız → mevcut AI doğrulama bandı (training kartı
+  yalnız EN) → mevcut Araştırma Konsolu (zaten filtreli) → 6 soruluk yeni
+  SSS (kendi FAQPage şeması). **Doğrulama turunda planın kendi S4/S5
+  bulguları da (hiç uygulanmamıştı) bulunup kapatıldı:** "Nasıl
+  Çalışıyoruz?" 4 adımı ("İlan Aç"/"Teklif Al — doğrulamadan geçmiş
+  analistler...") ve "GEMINI GÖREV 6: GÜVEN UNSURLARI" (Güvenli Ödeme/
+  Uzman Doğrulama/5 yıldız) — ikisi de dil koşulsuzdu, TR'ye özel yapıldı.
+  **Çeviri süreci dersi:** `makemessages` sonrası 11 yeni msgid metince
+  benzer eski msgid'lere `#, fuzzy` olarak yanlış eşleşip eski/yanlış
+  çeviriyi miras aldı — **boş `msgstr ""` taraması bunu YAKALAMAZ**
+  (zaten dolu görünür); fark edilmesi Playwright ekran görüntüsüyle oldu
+  (hero CTA + kurumsal kart başlığı hâlâ Türkçe çıkıyordu). Düzeltme:
+  şablondaki tüm `{% trans %}` msgid'lerini çıkarıp po'da fuzzy/boş/eksik
+  olarak tarayan bir script yazıldı (76/76 → 0 sorun). **Canlı bug (Render
+  dev ortamında kullanıcı tarafından bulundu):** "Nasıl Çalışıyoruz?"
+  gizlenirken altındaki CTA bilerek bırakılmıştı ama bağlamsız kaldığı
+  için EN/DE'de pazar kartının hemen altında ikinci, anlamsız bir "Send
+  a Free Project Request" butonu olarak görünüyordu — tüm bölüm (CTA
+  dahil) TR'ye özel yapılarak düzeltildi. **Ders:** bir bölümü gizlerken
+  altında "kalsın" denen CTA'nın gerçekten bağlamsız kalıp kalmadığı
+  kontrol edilmeli; FAQ'daki CTA'nın kendi açıklayıcı metni vardı
+  (çalıştı), Steps'te yoktu (bozdu).
+  **Adım 10 — proje talebi formu:** `ProjectRequest`'e zorunlu `stage`
+  (aşama: planlama/veri toplandı/analiz bitti/hakem geri bildirimi) ve
+  isteğe bağlı `deadline` (hedef teslim tarihi) eklendi; `SiteSettings`'e
+  isteğe bağlı `meeting_booking_url` (doluysa "Randevu Planla" linki
+  gösterilir, admin'den girilir — migration `0180`). Bütçe aralığı alanı
+  kullanıcı kararıyla EKLENMEDİ (para birimi belirsizliği). Ek bulgu,
+  kullanıcı onayıyla hemen düzeltildi: "Python, R, SQL, Tableau
+  uzmanlarından oluşan doğrulanmış analist ağı" (K1 ile çelişen ağ/
+  pazaryeri vaadi) → yalnız DE/EN msgstr "ekibimizden doğrudan destek"ye
+  çevrildi. **Açık kalan, bir sonraki oturuma devreden bulgu:** aynı
+  sayfanın H1/alt başlığı ("We'll Find the Right Expert" / "match you
+  with expert analysts") aynı sorunu taşıyor, henüz dokunulmadı.
+  Her adımda `pytest forum/tests.py` 90/90 yeşil (çok sayıda tekrar
+  çalıştırıldı), Playwright ile TR/EN/DE × mobil/masaüstü görsel
+  doğrulama yapıldı. Adım 5 (Premium/bağış EUR+IBAN) atlandı, bekliyor;
+  kalan sıra kullanıcı kararıyla **Adım 7 (navigasyon) → 9 (hizmet
+  sayfaları tasarım dokümanı) → 8 (Impressum) → 11 (ölçüm)**, bir sonraki
+  oturumda devam edilecek.
 - **16 Ekim 2026 (gündüz):** OAI-PMH "0 sonuç" yanlış sınıflandırma düzeltmesi + 44 yeni
   üniversite keşfi + admin sidebar sadeleştirmesi — **üç ayrı `dev`→`main` `--no-ff` merge**
   (ilk ikisinde migration vardı, kullanıcı her ikisinde de önceden "yedek ok" demişti; üçüncüsü
