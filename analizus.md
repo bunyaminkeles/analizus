@@ -2092,6 +2092,7 @@ with connection.cursor() as c:
 | `main`'e push sonrası Hetzner'de kimse `git pull`/`restart` yapmadığı hâlde production güncelleniyor | `.github/workflows/deploy.yml` push→main'de GitHub Actions üzerinden otomatik SSH ile `cd /app && git pull origin main && docker compose restart web` çalıştırıyor — CLAUDE.md'deki "main → Hetzner (manuel deploy)" notu YANLIŞTI (muhtemelen workflow sonradan eklenip doküman güncellenmemiş). **Kural:** `main`'e her `git push`, ayrı bir deploy adımına gerek kalmadan doğrudan production'ı günceller; migration içeren bir push'tan ÖNCE mutlaka kullanıcıdan yedek iste (`scripts/yedek_indir.sh --simdi`, kendi bilgisayarında). Workflow yalnız `restart` yapıyor (`recreate`/`build` değil) — container IP'si değişmediği için ayrıca `nginx` restart'ına gerek kalmıyor (8 Ekim 2026, Uzman Dizini deploy'unda doğrulandı). |
 | Yeni bir `ANTHROPIC_API_KEY`/`anthropic` paketi + `feature_ai_summary` flag'i main'e deploy edildi ama canlıda özellik hâlâ çalışmıyor (hatasız, sessizce) | Üç ayrı eksik aynı anda çıktı (11 Ekim 2026): (1) `requirements.txt`'e `anthropic` eklenip merge edildi ama GitHub Actions `restart` yaptığı için image hiç rebuild olmadı → `ModuleNotFoundError: No module named 'anthropic'` (ama `claude_service.py` bunu `except Exception` ile yutuyor, kullanıcıya hata göstermiyor — sadece AI kutusu hiç çıkmıyor); çözüm `docker compose up -d --build web`. (2) `ANTHROPIC_API_KEY` production `.env`'de hiç yoktu (kod `.env`'e yeni bir satır eklenmesini bekliyordu, kimse eklememişti) → `echo 'ANTHROPIC_API_KEY=...' >> /app/.env` + yine `--build`. (3) `feature_ai_summary` flag'i admin'den açılmadan sessizce kapalı kalıyor. **Kural:** yeni bir AI/API sağlayıcı entegrasyonu deploy edilince üçünü de (env var + image rebuild + flag) tek tek SSH'dan doğrula — `docker compose exec web python -c "import X"` + `grep KEY .env` + admin shell'den flag kontrolü. |
 | `dev`'de (Render) AI özelliği çalışıyor ama `main`'de (Hetzner) çalışmıyor, ya da tam tersi | Render ve Hetzner **tamamen bağımsız ortamlar** — Render `.env` dosyasını hiç okumaz, env var'lar Render'ın kendi web dashboard'undan ("Environment" sekmesi) ayrıca girilmeli; muhtemelen ayrı bir Postgres de kullandıklarından `SiteSettings` flag'leri (ör. `feature_ai_summary`) de her ortamda AYRI AYRI admin panelinden açılmalı — biri açıldı diye diğeri otomatik açılmaz (11 Ekim 2026). |
+| Render (`analizus-dev`) "exceeded its memory limit" ile saatlerce/günlerce sonra OOM restart yiyor, kod/trafikte belirgin bir sıçrama yok | Hetzner `root` crontab'ındaki harici bakım cron'ları (`cleanup-session-datasets`, `cleanup-pageviews`, `cleanup-s3`, `cleanup-attachments` — `forum/urls.py` `api/cron/*`) yalnızca `https://www.analizus.com`'u hedefliyor; Render **tamamen ayrı bir URL/ortam** olduğundan bu cron'lar oraya hiç gitmiyor. RAM'de session/TTL'e dayalı bir temizliğin (ör. `istatistik/services/job_runner.py`'deki `_session_datasets`) SADECE bu harici cron'a bağlı olması, tek process (Daphne) uzun süre ayakta kaldıkça dict'in sınırsız büyümesine ve OOM'a yol açar (16 Ekim 2026). **Kural:** session/TTL'li bir RAM deposu eklerken temizliği yalnızca harici crona bırakma — `save_*`/`store_*` gibi yazma noktasına fırsatçı bir `cleanup_expired_*()` çağrısı da ekle (her ortamda, cron kurulu olsun olmasın çalışır); ayrıca yeni bir `api/cron/*` endpoint'i eklenince onu hem Hetzner'e HEM Render'a (ayrı bir zamanlayıcıyla, ayrı `CRON_SECRET_KEY` ile) bağlamayı unutma. |
 
 ### Veritabanı / Migration
 
@@ -2744,7 +2745,7 @@ with connection.cursor() as c:
 
 > Önceki düz-yazı günlük biçiminden madde listesine dönüştürülmüştür; cümleler değişmeden taşınmıştır.
 
-- **En son (16 Ekim 2026):** OAI-PMH "0 sonuç" yanlış sınıflandırma düzeltmesi + 44 yeni
+- **16 Ekim 2026 (gündüz):** OAI-PMH "0 sonuç" yanlış sınıflandırma düzeltmesi + 44 yeni
   üniversite keşfi + admin sidebar sadeleştirmesi — **üç ayrı `dev`→`main` `--no-ff` merge**
   (ilk ikisinde migration vardı, kullanıcı her ikisinde de önceden "yedek ok" demişti; üçüncüsü
   saf admin UI, migration yok). **0) Render deploy teşhisi (kod değişikliği yok):** `analizus-dev`
@@ -2812,7 +2813,47 @@ with connection.cursor() as c:
   yapılmadı):** EDU mail ile giriş yapan kullanıcıya gönderilen "Doğrulanmış Akademisyen" rozeti
   DM'i `forum/views.py:1361` (`_handle_edu_user`) `User.objects.filter(is_superuser=True).first()`
   kullanıyor — dev DB'de bu kişisel admin hesabını döndürüyor, diğer tüm otomatik DM'lerin
-  (`forum/views.py:577,668,952,2936`) kullandığı `AnalizBot` deseniyle tutarsız.
+  (`forum/views.py:577,668,952,2936`) kullandığı `AnalizBot` deseniyle tutarsız. (Aynı gün
+  ilerleyen saatlerde düzeltildi — bkz. aşağıdaki "En son" tur.)
+
+- **En son (16 Ekim 2026, devam):** Üç bağımsız küçük iş — EDU DM düzeltmesi, Render OOM kök
+  neden analizi + düzeltme, yedekleme sistemi netleştirmesi (kod değişikliği yok).
+  **1) EDU doğrulama DM'i düzeltmesi:** yukarıdaki bulgu giderildi — `_handle_edu_user`
+  (`forum/views.py:1360-1365`) artık önce `User.objects.get(username='AnalizBot')` deniyor,
+  yoksa (ör. `AnalizBot` seed edilmemiş bir ortamda) fallback olarak ilk superuser'a düşüyor —
+  diğer otomatik DM'lerle (577/668/952/2936) aynı desen. Migration yok; `dev`'e commit edilip
+  push edildi, ardından `dev`→`main` `--no-ff` merge + push (production'a GitHub Actions ile
+  otomatik deploy tetiklendi).
+  **2) Render (`analizus-dev`) "memory limit exceeded" OOM restart'ı — kök neden analizi:**
+  kullanıcı Render'ın "exceeded its memory limit" bildirimini paylaştı. `istatistik/services/
+  job_runner.py`'deki `_session_datasets: dict[str, tuple[bytes, str, float]]` — istatistik
+  araçlarına (Cronbach/Normallik/Betimsel vb.) yüklenen dosyanın ham içeriğini session_key'e göre
+  RAM'de tutan global dict — yalnızca iki yolla temizleniyor: kullanıcı "temizle" butonuna basarsa
+  (`clear_session_dataset`, `istatistik/views.py:828-840`) veya saatlik harici cron
+  `api/cron/cleanup-session-datasets/?secret=...` (`forum/api_views.py:286-302`) çağrılırsa.
+  Kullanıcı onayıyla Hetzner crontab'ı salt-okunur incelendi (`crontab -l`): bu cron **yalnızca**
+  `https://www.analizus.com` hedefliyor (`0 * * * * curl ... www.analizus.com/api/cron/
+  cleanup-session-datasets/...`), Render'a (`analizus-dev.onrender.com` — tamamen ayrı bir URL/
+  ortam) hiçbir satırda işaret etmiyor. Sonuç: Render'da bu dict hiç temizlenmeden, her yeni
+  istatistik dosya testinde/session'da büyüyor, tek process (Daphne) günlerce ayakta kaldıkça
+  birikip OOM'a yol açıyor. **Düzeltme:** `save_session_dataset()` (`job_runner.py:27-30`) artık
+  her yeni kayıtta `cleanup_expired_session_datasets()`'i de çağırıyor — harici cron hangi
+  ortamda hiç kurulu olmasa bile dict süresiz büyüyemiyor. Migration yok; `dev`'e push edildi
+  (henüz `main`'e merge edilmedi — yalnız staging'i etkiliyor). **Açık kalan (kullanıcı
+  tarafında, `tasks/todo.md`'de):** isteğe bağlı ek güvence olarak Render dashboard'da
+  `CRON_SECRET_KEY` doğrulanıp aynı endpoint'e saatlik harici bir cron (Render Cron Job veya
+  cron-job.org) kurulabilir — Hetzner'in production secret'ı Render için kullanılmamalı.
+  **3) Yedekleme sistemi netleştirmesi (kod değişikliği yok):** kullanıcı Hetzner Cloud
+  konsolundaki native "Backups" sekmesinin ("No backups have been enabled yet") kapalı olduğunu
+  görünce bizim `pg_dump` cron'umuzun da çalışmadığını düşündü — ikisi tamamen bağımsız: Hetzner
+  "Backups" tüm sunucu diskinin ücretli snapshot'ı (kapalı, hiç ücret ödenmiyor), bizimki ise
+  `root` crontab'ındaki ücretsiz günlük `pg_dump` (§3, `/root/backup_analizus_*.sql`, 7 gün
+  `mtime` rotasyonu) + kullanıcının kendi bilgisayarındaki ayrı bir crontab'ın (`bunyamin`
+  kullanıcısı, saatlik, `scripts/yedek_indir.sh`) bunu lokale indirip kendi retention'ını (son 14
+  günlük + son 14 anlık) uygulaması. Hetzner tarafı salt-okunur doğrulandı: 9 güncel
+  `backup_analizus_*.sql` dosyası + syslog'da her gece tam 02:00'de `pg_dump`'ın çalıştığı
+  teyit edildi. Kullanıcı kararıyla Hetzner'in native Backups'ı **açılmadı**, mevcut mekanizma
+  (`pg_dump` + lokal indirme) olduğu gibi bırakıldı.
 - **Önceki (15 Ekim 2026):** Admin dashboard analitik turu — **iki ayrı `dev`→`main` `--no-ff`
   merge** (ikisi de migration içerdi, her ikisinde de push öncesi kullanıcıdan
   `scripts/yedek_indir.sh --simdi` istendi). **1) Kelime grafiği + 0-sonuç ikazı:**
