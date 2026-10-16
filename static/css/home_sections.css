@@ -205,12 +205,12 @@
 }
 .ax-market-diy__label {
     font-size: 0.72rem;
-    color: rgba(148, 163, 184, 0.5);
+    color: var(--ax-text-secondary);
     white-space: nowrap;
 }
 .ax-market-diy__link {
     font-size: 0.72rem;
-    color: rgba(148, 163, 184, 0.7);
+    color: var(--ax-text-secondary);
     text-decoration: none;
     transition: color 0.2s;
 }

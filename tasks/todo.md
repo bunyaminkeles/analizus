@@ -153,9 +153,54 @@ maddelerde.
   `.mo`'ları) doğrudan container'a yansıtır, tıpkı şablon değişikliğinde
   olduğu gibi; `--build` gerekmiyor. GitHub Actions zaten `main`'e push'ta
   bu akışı otomatik çalıştırıyor.
-  **Sıradaki:** kullanıcı onayı ile commit + push; sonra Adım 3 (renk/
-  kontrast, TR'yi de etkiler) veya Adım 4 (SEO title/description) — plan
-  sırasına göre Adım 3.
+  **ADIM 2 commit + push edildi** (`3a0c108`, `dev`'e gitti).
+
+  **ADIM 3 TAMAMLANDI (16 Ekim 2026) — renk/kontrast düzeltmeleri, henüz
+  commit edilmedi.** TR'yi de etkileyen tek adım (dile göre ayrılmamış CSS
+  kuralları). 3 dosya, 11 nokta: `forum/templates/forum/home.html` (inline
+  kritik CSS, 4 satır), `static/css/hero.css` (5 satır), `static/css/
+  home_sections.css` (2 satır).
+  (1) Tanımsız `--ax-color-primary` token'ı (`home.html:45,48` +
+  `hero.css` aynı kuralların tam kopyası) → `--ax-accent-primary-light`
+  (#a5b4fc, gerçek değer hesaplandı: 9.61:1/8.90:1 — plan dosyasının
+  tahmin ettiği #818cf8/6.42:1'den bile iyi).
+  (2) Koyu zeminde düşük kontrastlı linkler ("Alle 18 Tools →",
+  "Ya da bu işi bir uzmana bırak" hover) → aynı token, 4.29/3.97:1'den
+  9.61/8.90:1'e çıktı.
+  (3) "oder analysieren Sie selbst:" (`.ax-hero__or`, yalnız `hero.css`'te
+  tek kopya) `--ax-text-muted` → `--ax-text-secondary` (4.02→7.47:1).
+  (4) **Ek bulgu (plan metninde yoktu):** "oder machen Sie es selbst →" ve
+  yanındaki Cronbach/Normallik/Betimsel/Hangi Test linkleri
+  (`.ax-market-diy__label/__link`, `home_sections.css:206-215`) token bile
+  kullanmıyordu, hardcode `rgba(148,163,184,0.5/0.7)` idi — ölçülen gerçek
+  kontrast **2.68:1 ve 4.04:1** (plandaki tahminden kötü) → `var(--ax-
+  text-secondary)` solid yapıldı, **6.92:1**'e çıktı.
+  **Test edildi, değişiklik GEREKMEDİ:** `.ax-market-visual` kırpılması —
+  Playwright ile 1024/1280/1440px ölçüldü (ilk ölçümde yanlış elementi
+  seçmişim — sayfada aynı class'tan iki tane var, demand+supply kartları;
+  düzeltip doğru elemanı ölçtüm), üç genişlikte de tutarlı ~15px
+  (CSS'teki `right:-16px` tasarım değeriyle birebir), ekran görüntüsü
+  temiz — sorun yok.
+  **Yalnız listelendi, uygulanmadı (ayrı onay gerekir):** `#fbbf24`
+  (artık TR'ye özel "Uzman Arayan Projeler" başlığı), `#f97316`
+  (`trend_topics.css`, forum başlığı, artık TR'ye özel), `#a855f7`,
+  `#818cf8` ×3 (decoratif SVG/gradient) — `#818cf8` tam olarak
+  `--ax-accent-primary-hover`'a eşit (tokenize edilebilir), diğerlerine
+  (amber/turuncu/mor) base.css'te karşılık gelen bir token yok, yeni
+  token eklemeden dokunulmadı.
+  **Kapsam dışı (ayrı not):** global `.ax-btn--primary` beyaz-üzeri-indigo
+  kontrastı (4.47:1, sınırda) — tüm siteyi etkiler, bu turun dışında.
+  **Doğrulama:** `docker compose restart web`; Playwright ile TR/EN/DE ×
+  1280px render edilen `getComputedStyle().color` değerleri doğrulandı
+  (hepsi beklenen yeni token rengine döndü, üç dilde birebir aynı); TR/DE
+  hero ekran görüntüsü karşılaştırıldı (TR değişmemiş, DE okunaklı ve
+  tutarlı "Sie" hitabı). `pytest forum/tests.py` → **90/90 yeşil**.
+  **Deploy etkisi:** migration yok; CSS dosyaları (`hero.css`,
+  `home_sections.css`) değişti — `collectstatic` ileride hash'li adla
+  yeniden üretecek ama bind-mount sayesinde `restart web` yeterli (Adım
+  2'deki gibi), `--build` gerekmiyor.
+  **Sıradaki:** kullanıcı onayı ile commit + push; sonra Adım 4 (SEO
+  title/description + SSS H2→H3).
 
 - [x] **(16 Ekim 2026, kullanıcı bulgusu → aynı gün düzeltildi) EDU doğrulama
   DM'i admin'in kişisel hesabından gönderiliyordu, sistem/bot hesabından değil.**
