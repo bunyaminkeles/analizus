@@ -25,6 +25,9 @@ def store_file_content(job_id: str, content: bytes):
 
 
 def save_session_dataset(session_key: str, content: bytes, filename: str):
+    # Fırsatçı temizlik — harici (saatlik) cron bir ortamda (ör. Render) hiç
+    # çalışmasa bile bu dict her yeni yüklemede süresi geçmiş girdilerden arınır.
+    cleanup_expired_session_datasets()
     _session_datasets[session_key] = (content, filename, time.time())
 
 
