@@ -7068,9 +7068,7 @@ msgstr ""
 msgid ""
 "İstatistik danışmanlığı ve veri analizi — yöntemsel olarak sağlam, "
 "izlenebilir biçimde raporlanmış."
-msgstr ""
-"Statistische Beratung und Datenanalyse – methodisch sauber, nachvollziehbar "
-"dokumentiert."
+msgstr "Statistikberatung, die standhält."
 
 #: forum/templates/forum/home_intl.html:97
 msgid ""
