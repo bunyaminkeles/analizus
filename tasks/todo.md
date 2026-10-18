@@ -511,6 +511,29 @@ maddelerde.
   linklenmedi (Adım 7'de bilinçli olarak kapsam dışı bırakılmıştı) —
   yalnız doğrudan URL veya `service_page_list` üzerinden erişilebilir.
 
+  **ADIM 11 TAMAMLANDI (18 Ekim 2026) — başlangıç ölçümü alındı, kullanıcı
+  komutu production'da (Hetzner) çalıştırdı.** Sonuç: `[{'language': '',
+  'source': 'direct', 'n': 3}]` — toplam 3 `ProjectRequest` kaydı, hepsi
+  eski (dil/kaynak alanı boş), EN/DE'den hiç talep yok. `analizus.md`
+  §28.7'ye işlendi. **Tekrar tarihi: ~15 Kasım 2026** (Adım 6/7/9 canlıya
+  çıkışından 4 hafta sonra).
+
+  **Kullanıcı ayrıca production'da canlı ekran görüntüsüyle doğruladı
+  (18 Ekim 2026):** flag'ler (`feature_intl_consulting_home`,
+  `feature_training`) production admin'den ayrıca açıldı (dev'den
+  bağımsız, ayrı DB); yeni nav (Leistungen/So arbeiten wir, EN'de Training
+  DE'de yok) canlıda doğru çalışıyor. **Ek bulgu (kullanıcı gözlemi,
+  aynı gün düzeltildi):** `home_intl.html` hero'sunda CTA sonrası 3 ayrı
+  metin satırı (güven cümlesi + araç listesi + AI sloganı) fazla kalabalık
+  duruyordu → tek kısa cümleye indirildi ("Ücretsiz, kayıt gerekmeden APA
+  formatında rapor alın. 18 aracın tümü →"), AI sloganı kaldırıldı (aşağıda
+  zaten tekrar ediyordu). Yeni 1 msgid (`locale/{en,de}`), `pytest` 90/90
+  yeşil. **Henüz commit edilmedi** (bu değişiklik + Adım 11 ölçüm notu).
+
+  **11 ADIMLIK PLANIN TAMAMI TAMAMLANDI** (Adım 5 — Premium/bağış EUR+IBAN
+  — kullanıcı kararıyla atlandı/ertelendi; Adım 8 — Impressum — şirket
+  bilgisi gelene kadar beklemede).
+
 - [x] **(16 Ekim 2026, kullanıcı bulgusu → aynı gün düzeltildi) EDU doğrulama
   DM'i admin'in kişisel hesabından gönderiliyordu, sistem/bot hesabından değil.**
   `forum/views.py:1361` (`_handle_edu_user`) artık diğer otomatik DM'lerle aynı

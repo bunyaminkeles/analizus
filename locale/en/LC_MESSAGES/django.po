@@ -6089,6 +6089,10 @@ msgstr "Get your analysis done by an expert"
 msgid "Ücretsiz ön değerlendirme · Yükümlülük yok"
 msgstr "Free initial assessment · No obligation"
 
+#: forum/templates/forum/home_intl.html:115
+msgid "Ücretsiz, kayıt gerekmeden APA formatında rapor alın."
+msgstr "Get a free, no-signup APA-style report."
+
 #: forum/templates/forum/home.html:263 forum/templates/forum/home_intl.html:104
 msgid "ya da kendiniz analiz edin:"
 msgstr "or analyse it yourself:"

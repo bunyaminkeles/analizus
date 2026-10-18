@@ -6210,6 +6210,10 @@ msgstr "Analyse von Fachleuten erstellen lassen"
 msgid "Ücretsiz ön değerlendirme · Yükümlülük yok"
 msgstr "Kostenlose Erstbewertung · Unverbindlich"
 
+#: forum/templates/forum/home_intl.html:115
+msgid "Ücretsiz, kayıt gerekmeden APA formatında rapor alın."
+msgstr "Kostenloser Bericht im APA-Format – ganz ohne Registrierung."
+
 #: forum/templates/forum/home.html:263 forum/templates/forum/home_intl.html:104
 msgid "ya da kendiniz analiz edin:"
 msgstr "oder analysieren Sie selbst:"
@@ -7064,9 +7068,7 @@ msgstr ""
 msgid ""
 "İstatistik danışmanlığı ve veri analizi — yöntemsel olarak sağlam, "
 "izlenebilir biçimde raporlanmış."
-msgstr ""
-"Statistische Beratung und Datenanalyse – methodisch sauber, nachvollziehbar "
-"dokumentiert."
+msgstr "Statistikberatung, die standhält."
 
 #: forum/templates/forum/home_intl.html:97
 msgid ""

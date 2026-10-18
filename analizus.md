@@ -3226,3 +3226,14 @@ with connection.cursor() as c:
   proje talebi (her dilde); bibliometride atıf analizleri yok, ülke/kurum tahmini (Kısıtlar'da yazar). BASE yalnız DE —
   API koşulu "non-commercial"; kullanım modeli kararı bekliyor. Tarama sipariş + vitrin fiyatları admin'den (hard-code yok).
 - YouTube Transcript: TR dahil kaldırılıyor (menü kaldırıldı; kod/DB aşama 2 todo'da).
+- **Ölçüm (Adım 11, EN/DE Danışmanlık Dönüşümü, 18 Ekim 2026) — BAŞLANGIÇ DEĞERİ:**
+  `docker compose exec web python manage.py shell -c "from forum.models import
+  ProjectRequest as P; from django.db.models import Count; print(list(P.objects.
+  values('language','source').annotate(n=Count('id')).order_by('language','-n')))"`
+  → `[{'language': '', 'source': 'direct', 'n': 3}]`. Yani production'da toplam
+  **3 `ProjectRequest`** kaydı var, hepsi `language=''` (boş, alan eklenmeden önceki
+  eski kayıtlar) ve `source='direct'` — EN/DE'den gelen hiçbir talep henüz yok,
+  `?source=` bazlı ayrım (nav/footer/hero/home_academic vb.) henüz hiç
+  tetiklenmemiş. Adım 6/7/9'un (EN/DE danışmanlık ana sayfası + nav + hizmet
+  sayfası) canlıya çıkışından ~4 hafta sonra (yaklaşık **15 Kasım 2026**) aynı
+  komut tekrar çalıştırılıp buraya ikinci ölçüm olarak eklenmeli.
