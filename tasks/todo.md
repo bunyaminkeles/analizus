@@ -10,6 +10,18 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
+- [x] **(18 Ekim 2026) Admin dashboard — İlan Onayı tek-tık onay/red.**
+  Şikayet: bildirimdeki "Onayla / Reddet →" linki Django'nun standart
+  değiştirme formuna gidiyordu, orada buton olmadığı için kullanıcı tekrar
+  İş İlanları listesine dönüp checkbox + action seçmek zorunda kalıyordu
+  (3 adım). Çözüm: `JobPaymentAdmin`'deki mevcut tek-tık onay deseni
+  (`get_urls()` + özel view + `confirm()` dialoglu link) `FreelanceJobAdmin`'e
+  de uygulandı — `forum/admin.py` `quick_approve_view`/`quick_reject_view`
+  (3 ret sebebi: service_ad/incomplete/rules), `templates/admin/index.html`
+  İlan Onayı satırı artık "Onayla →" + 3 ayrı "Reddet: ..." linki + nadir
+  durumlar için "Detaylı →" (changeform) içeriyor. Test client ile
+  onay/red/geçersiz-sebep-guard'ı doğrulandı, `forum/tests.py` 90/90 yeşil.
+  Migration yok. **Henüz push edilmedi**, kullanıcı onayı bekleniyor.
 - [ ] **(18 Ekim 2026) EN/DE pazaryeri sızıntısı — kalıntı link düzeltmesi
   UYGULANDI, doğrulanmadı + 2 açık karar kaldı.** Kaynak: bir admin "Navigasyon
   Grafiği" kaydında EN'de login olan bir kullanıcının onboarding sonrası

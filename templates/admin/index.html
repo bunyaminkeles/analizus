@@ -284,9 +284,21 @@
             <em>{{ j.title|truncatechars:40 }}</em> — {{ j.owner.username }}
             <span style="color:#6b7280;font-size:.75rem;">· {{ j.created_at|timesince }} önce</span>
           </span>
-          <span style="display:flex;gap:.75rem;flex-shrink:0;">
+          <span style="display:flex;gap:.75rem;flex-shrink:0;align-items:center;flex-wrap:wrap;">
             <a href="{% url 'job_detail' pk=j.pk %}" target="_blank" rel="noopener" style="font-size:.75rem;color:#94a3b8;text-decoration:none;">Gör</a>
-            <a href="{% url 'admin:forum_freelancejob_change' j.pk %}" style="font-size:.75rem;color:#818cf8;text-decoration:none;">Onayla / Reddet →</a>
+            <a href="/admin/forum/freelancejob/{{ j.pk }}/quick-approve/"
+               onclick="return confirm('İLAN ONAYI\n\nSahip: {{ j.owner.username }}\nBaşlık: {{ j.title }}\n\nOnaylayıp yayına almak istiyor musunuz?')"
+               style="font-size:.75rem;color:#22c55e;text-decoration:none;">Onayla →</a>
+            <a href="/admin/forum/freelancejob/{{ j.pk }}/quick-reject/service_ad/"
+               onclick="return confirm('REDDET: Hizmet tanıtımı\n\n\"{{ j.title }}\" ilanı reddedilsin mi?')"
+               style="font-size:.75rem;color:#f87171;text-decoration:none;">Reddet: Hizmet</a>
+            <a href="/admin/forum/freelancejob/{{ j.pk }}/quick-reject/incomplete/"
+               onclick="return confirm('REDDET: Eksik içerik\n\n\"{{ j.title }}\" ilanı reddedilsin mi?')"
+               style="font-size:.75rem;color:#f87171;text-decoration:none;">Reddet: Eksik</a>
+            <a href="/admin/forum/freelancejob/{{ j.pk }}/quick-reject/rules/"
+               onclick="return confirm('REDDET: Kural ihlali\n\n\"{{ j.title }}\" ilanı reddedilsin mi?')"
+               style="font-size:.75rem;color:#f87171;text-decoration:none;">Reddet: Kural</a>
+            <a href="{% url 'admin:forum_freelancejob_change' j.pk %}" style="font-size:.75rem;color:#64748b;text-decoration:none;">Detaylı →</a>
           </span>
         </div>
         {% endfor %}

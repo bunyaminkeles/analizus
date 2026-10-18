@@ -704,6 +704,36 @@ class FreelanceJobAdmin(ModelAdmin):
             )
         return '—'
 
+    def get_urls(self):
+        from django.urls import path
+        urls = super().get_urls()
+        custom = [
+            path('<int:pk>/quick-approve/', self.admin_site.admin_view(self.quick_approve_view), name='forum_freelancejob_quick_approve'),
+            path('<int:pk>/quick-reject/<str:reason>/', self.admin_site.admin_view(self.quick_reject_view), name='forum_freelancejob_quick_reject'),
+        ]
+        return custom + urls
+
+    def quick_approve_view(self, request, pk):
+        from django.shortcuts import redirect
+        job = FreelanceJob.objects.filter(pk=pk, status='pending').select_related('owner__profile').first()
+        if job:
+            job.status = 'open'
+            job.save()
+            self.message_user(request, f'"{job.title}" ilanı onaylandı ve yayına alındı.')
+        return redirect('/admin/')
+
+    def quick_reject_view(self, request, pk, reason):
+        from django.shortcuts import redirect
+        if reason not in ('service_ad', 'incomplete', 'rules'):
+            return redirect('/admin/')
+        job = FreelanceJob.objects.filter(pk=pk, status__in=('pending', 'open')).select_related('owner').first()
+        if job:
+            job.status = 'rejected'
+            job.rejection_reason = reason
+            job.save()
+            self.message_user(request, f'"{job.title}" ilanı reddedildi, sahibine e-posta gönderildi.')
+        return redirect('/admin/')
+
 
 @admin.register(JobProposal)
 class JobProposalAdmin(ModelAdmin):
