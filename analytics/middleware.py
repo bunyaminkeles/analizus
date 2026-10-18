@@ -31,6 +31,7 @@ class PageViewMiddleware:
                     user=request.user,
                     path=request.path[:200],
                     tab_name=resolve_tab_name(request.path),
+                    referrer=request.META.get('HTTP_REFERER', '')[:500],
                 )
             except Exception:
                 pass

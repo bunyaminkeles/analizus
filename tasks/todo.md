@@ -10,6 +10,49 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
+- [ ] **(18 Ekim 2026) EN/DE pazaryeri sızıntısı — kalıntı link düzeltmesi
+  UYGULANDI, doğrulanmadı + 2 açık karar kaldı.** Kaynak: bir admin "Navigasyon
+  Grafiği" kaydında EN'de login olan bir kullanıcının onboarding sonrası
+  `/en/market/` ve `/en/market/job/191/`'i ziyaret ettiği görüldü (16 Ekim
+  turunda navbar/footer/home'dan kaldırılmıştı ama URL hâlâ tamamen açık).
+  Kod incelemesi: `job_list`/`job_detail` view/URL seviyesinde hiçbir dil
+  kısıtlaması yok (yalnız navigasyon gizlenmiş); `PageView` referrer/UTM
+  tutmadığı için kullanıcının oraya nasıl geldiği (URL'i elle yazdı mı,
+  daha önce TR'de görüp dil değiştirip path korundu mu) kesin tespit
+  edilemedi. **Bulunup düzeltilen (bu oturumda, onaylandı):**
+  `openalex/templates/openalex/landing.html:31` ("Premium üyelik" →
+  `job_list` linki, dil koşulsuzdu) ve `forum/templates/forum/
+  profile_detail.html` 3 nokta (satır ~378 portföy kartı, ~445 "İlanlar",
+  ~498 "Verdiğim Teklifler" — `job_detail` linkleri dil koşulsuzdu) artık
+  EN/DE'de ya tıklanamaz (`href`siz) ya da düz `<div>`. **Doğrulandı (18
+  Ekim 2026):** `docker compose restart web`+`nginx` sonrası `curl` ile
+  openalex landing'de TR'de "Premium üyelik" var/EN-DE'de `job_list`
+  referansı yok; `profile_detail.html`'de geçici test ilanı (`FreelanceJob`,
+  sonra silindi) ile TR'de `job_detail` href=1, EN/DE'de href=0 doğrulandı;
+  portföy kartı mantığı izole template render testiyle (EN+in_progress→
+  `<div>`, TR+in_progress→`<a href>`) doğrulandı, syntax hatası yok, her
+  dilde sayfa 200 dönüyor. **Bilinen kozmetik
+  tutarsızlık (kullanıcı kararıyla ERTELENDİ):** "İlanlar"/"Verdiğim
+  Teklifler" satırlarında `.ax-profile-job-item:hover` CSS kuralı `href`
+  olmasa da hâlâ tetikleniyor (kenarlık/arka plan rengi değişiyor) —
+  tıklanamaz olduğu halde tıklanabilir görünüyor; düzeltilmedi, kullanıcı
+  "kalsın" dedi. **Karar (18 Ekim 2026, kullanıcı):** `/market/` ve
+  `/market/job/<id>/` URL'lerine EN/DE'de route seviyesinde dokunulmayacak
+  — "sadece navigasyondan gizli" mevcut durum yeterli kabul edildi, kod
+  değişikliği yapılmadı (dil değiştiricinin aynı path'i koruyarak
+  `/en/market/...`'e taşıması da bu kararın kapsamında — ayrı bir kod yolu
+  değil, zaten açık olan URL'e farklı bir giriş; tutarlılık için ayrıca
+  engellenmedi). **TAMAMLANDI (18 Ekim 2026):** `PageView`'a `referrer`
+  alanı eklendi (`analytics/models.py`, migration
+  `0003_pageview_referrer`, `analytics/middleware.py`'de `HTTP_REFERER`
+  yakalanıyor, `analytics/admin.py` changelist'te görünür). Yerelde
+  migration uygulandı, referrer yakalama canlı test client ile doğrulandı,
+  `forum/tests.py` 90/90 yeşil. **Migration dosyası container'da root
+  sahipli oluştu, `docker compose exec -u root` ile `chown 1000:1000`
+  yapılarak düzeltildi** (bilinen §26 sorunu). **Henüz yapılmadı: `dev`'e
+  commit + push ve production'a (`main`) migration'lı deploy** — kullanıcı
+  push isteğinde bulunmadı, bekleniyor. Push öncesi `scripts/yedek_indir.sh
+  --simdi` hatırlatması geçerli (migration içeriyor).
 - [ ] **(16 Ekim 2026) EN/DE Ana Sayfa — Danışmanlık Dönüşümü: 11 adımlı plan
   hazır, henüz hiçbir adıma başlanmadı.** Kaynak: proje kökündeki
   `en_de_danismanlik_donusumu_prompt.md` (ayrı bir dosya, tasks/todo.md'de
