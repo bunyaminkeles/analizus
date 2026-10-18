@@ -563,6 +563,15 @@ maddelerde.
   Premium/bağış EUR+IBAN — kullanıcı kararıyla atlandı/ertelendi; Adım 8
   — Impressum — şirket bilgisi gelene kadar beklemede).
 
+  **KARAR (kullanıcı sordu, 18 Ekim 2026): `/hizmetler/` sayfasına EN/DE'de
+  BİLİNÇLİ OLARAK hiçbir nav/footer linki eklenmeyecek.** Kullanıcı
+  "dokunma, böyle kalsın" dedi — sayfa yalnız Google/dış arama trafiği
+  için var (TR'deki "market'e yeni şerit eklenmez" ilkesine benzer),
+  footer'daki "Hizmetler" linki hâlâ `LANGUAGE_CODE == 'tr'` şartına bağlı
+  kalacak. EN/DE'de sayfaya ulaşmanın tek yolu doğrudan URL veya Google
+  sonucu — bu bir bug/eksiklik DEĞİL, bilerek bırakıldı. İleride tekrar
+  gündeme gelirse bu karar hatırlanmalı.
+
 - [x] **(16 Ekim 2026, kullanıcı bulgusu → aynı gün düzeltildi) EDU doğrulama
   DM'i admin'in kişisel hesabından gönderiliyordu, sistem/bot hesabından değil.**
   `forum/views.py:1361` (`_handle_edu_user`) artık diğer otomatik DM'lerle aynı
