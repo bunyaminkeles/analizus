@@ -6,6 +6,7 @@ class PageView(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='page_views', db_index=True)
     path = models.CharField(max_length=200)
     tab_name = models.CharField(max_length=100)
+    referrer = models.CharField(max_length=500, blank=True, default='')
     timestamp = models.DateTimeField(auto_now_add=True, db_index=True)
 
     class Meta:

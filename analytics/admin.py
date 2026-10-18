@@ -63,7 +63,7 @@ def top_transitions(sessions, n=8):
 
 @admin.register(PageView)
 class PageViewAdmin(ModelAdmin):
-    list_display = ['timestamp', 'get_username', 'tab_name', 'path']
+    list_display = ['timestamp', 'get_username', 'tab_name', 'path', 'referrer']
     search_fields = ['user__username', 'user__email', 'tab_name', 'path']
     list_filter = ['tab_name']
     date_hierarchy = 'timestamp'
