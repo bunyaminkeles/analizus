@@ -391,8 +391,7 @@ maddelerde.
   bir sonraki oturumda devam edilecek. Yukarıdaki açık bulgu (proje_talebi
   H1/alt başlık) da bir sonraki oturumun başında kullanıcıya sorulmalı.
 
-  **ADIM 7 TAMAMLANDI (18 Ekim 2026) — EN/DE navigasyon, henüz commit
-  edilmedi.** 4 dosya: `templates/base.html` (masaüstü + mobil drawer),
+  **ADIM 7 TAMAMLANDI (18 Ekim 2026) — EN/DE navigasyon.** 4 dosya: `templates/base.html` (masaüstü + mobil drawer),
   `templates/partials/footer.html`, `forum/templates/forum/home_intl.html`,
   `locale/{en,de}/LC_MESSAGES/django.po`+`.mo`.
   **Kapsam (kullanıcı kararıyla daraltıldı — tam yeniden tasarım değil):**
@@ -481,9 +480,36 @@ maddelerde.
     `hreflang_alternates`/`translate_url` değişmeden çalışır.
   - Karar 2 (içerik modeli): ayrı `ServicePageTranslation` tablosu (JSON
     alanı değil), pilot kapsamı yalnız `nicel-analiz`.
-  **İkisi de onaylandı — Adım 9 artık kod aşamasına hazır (ayrı görev
-  olarak başlatılmalı, bu oturumda kapsam dışında kaldı; migration'lı
-  olacak, push öncesi yedek gerekecek).**
+  **İkisi de onaylandı, AYNI OTURUMDA KOD YAZILDI (18 Ekim 2026):** yeni
+  `ServicePageTranslation`/`ServicePageSectionTranslation`/
+  `ServicePageFAQTranslation` modelleri (migration 0181), `/hizmetler/`
+  URL'leri `i18n_patterns`'e taşındı (`forum/urls_i18n.py`), admin'e
+  çeviri inline'ı + 2 ayrı admin kaydı + sidebar girdileri eklendi.
+  **Ek bulgu (kod yazarken ortaya çıktı, kullanıcı onayıyla kapsam
+  genişletildi):** `service_list.html`/`service_detail.html` şablonları
+  ve `nicel-analiz` pilot içeriği (intro/süreç/etik/FAQ) pazaryeri
+  modeline göre yazılmıştı ("İlan Aç", "Pazaryerine Git", "Uzmanları Gör",
+  bölüm başına uzman eşleştirme kartları) — K1'e aykırıydı. Şablonlardaki
+  tüm pazaryeri CTA/kart/breadcrumb'ları EN/DE'de `proje_talebi` CTA'sına
+  çevrildi, uzman eşleştirme EN/DE'de hiç hesaplanmıyor. `nicel-analiz`
+  için EN/DE intro/süreç/etik/FAQ K1/K3/K4 kararlarına göre YENİDEN
+  YAZILDI (birebir çevrilmedi); 7 metodoloji bölümü (pazaryeri ifadesi
+  içermiyordu) doğrudan çevrildi (migration 0182, korumalı/idempotent).
+  Çevirisi olmayan sayfa (diğer 3 TR sayfası) EN/DE'de 404 döner — TR ham
+  içerik fallback olarak gösterilmez.
+  **Doğrulama:** `override_settings(ALLOWED_HOSTS=['*'])` ile Test Client,
+  nicel-analiz TR/EN/DE render edildi (TR: pazaryeri CTA var; EN/DE:
+  proje_talebi CTA var, pazaryeri sıfır), akademik-danismanlik EN/DE'de
+  404 (TR'de 200), hreflang etiketleri doğru 4 dil/URL üretti (`translate_
+  url` slug'a dokunmadan çalıştı), SSS/bölüm başlıkları doğru dilde
+  geldi. `pytest forum/tests.py` → **90/90 yeşil**.
+  **Deploy etkisi: MIGRATION VAR (0181 yapısal, 0182 veri/korumalı)** —
+  main'e push öncesi `scripts/yedek_indir.sh --simdi` gerekir.
+  **COMMIT + PUSH EDİLDİ (`20942ac`, `dev`'e gitti, Adım 7 ile birlikte
+  tek commit'te).**
+  **Not:** Yeni `/hizmetler/` sayfası henüz hiçbir EN/DE nav/footer'a
+  linklenmedi (Adım 7'de bilinçli olarak kapsam dışı bırakılmıştı) —
+  yalnız doğrudan URL veya `service_page_list` üzerinden erişilebilir.
 
 - [x] **(16 Ekim 2026, kullanıcı bulgusu → aynı gün düzeltildi) EDU doğrulama
   DM'i admin'in kişisel hesabından gönderiliyordu, sistem/bot hesabından değil.**
