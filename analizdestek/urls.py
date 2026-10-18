@@ -8,7 +8,7 @@ from django.http import HttpResponse
 from django.views.generic import RedirectView
 from django.conf import settings
 from django.conf.urls.static import static
-from forum.sitemaps import StaticViewSitemap, StaticI18nSitemap, TopicSitemap, CategorySitemap, JobSitemap, BlogPostSitemap, IstatistikSitemap, ToolsSitemap, ToolsI18nSitemap, StudyRoomSitemap, TrainingSitemap, ServicePageSitemap
+from forum.sitemaps import StaticViewSitemap, StaticI18nSitemap, TopicSitemap, CategorySitemap, JobSitemap, BlogPostSitemap, IstatistikSitemap, ToolsSitemap, ToolsI18nSitemap, StudyRoomSitemap, TrainingSitemap, ServicePageSitemap, ServicePageTranslatedSitemap
 from forum.views import custom_login, tarama_hub, set_language
 
 sitemaps = {
@@ -24,6 +24,7 @@ sitemaps = {
     'studyrooms': StudyRoomSitemap,
     'training': TrainingSitemap,
     'hizmetler': ServicePageSitemap,
+    'hizmetler-i18n': ServicePageTranslatedSitemap,
 }
 
 # Çok dilli (tr/en/de) kapsam — bkz. tasks/todo.md "Çok Dilli Yayın (EN/DE)".

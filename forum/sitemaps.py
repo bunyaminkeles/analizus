@@ -1,7 +1,7 @@
 from django.contrib.sitemaps import Sitemap
 from django.urls import reverse
 from django.db.models import Count, Q
-from .models import Topic, Category, FreelanceJob, BlogPost, StudyRoom, ServicePage
+from .models import Topic, Category, FreelanceJob, BlogPost, StudyRoom, ServicePage, ServicePageTranslation
 
 
 class MultilingualSitemapMixin:
@@ -27,9 +27,6 @@ class StaticViewSitemap(Sitemap):
 
     def items(self):
         pages = ['forum_index', 'uzman_dizini', 'blog_list']
-        from .models import SiteSettings
-        if SiteSettings.load().feature_hizmet_sayfalari:
-            pages.append('service_page_list')
         return pages
 
     def location(self, item):
@@ -49,6 +46,9 @@ class StaticI18nSitemap(MultilingualSitemapMixin, Sitemap):
             pages.append('ai_cozumler')
         if site.feature_training:
             pages.append('egitim')
+        # Adım 9 (18 Ekim 2026): /hizmetler/ i18n_patterns'e taşındı — artık TR/EN/DE'de var
+        if site.feature_hizmet_sayfalari:
+            pages.append('service_page_list')
         return pages
 
     def location(self, item):
@@ -152,6 +152,33 @@ class ServicePageSitemap(Sitemap):
 
     def location(self, obj):
         return reverse('service_page_detail', kwargs={'slug': obj.slug})
+
+
+class ServicePageTranslatedSitemap(Sitemap):
+    """Hizmet sayfası detaylarının EN/DE URL'leri (Adım 9, 18 Ekim 2026) — yalnız
+    gerçekten çevirisi olan (sayfa, dil) çiftleri için. MultilingualSitemapMixin
+    kullanılmadı: Django'nun otomatik i18n= mekanizması TÜM diller × TÜM sayfalar
+    kombinasyonunu üretir, bu da çevirisi olmayan sayfalar için (EN/DE'de 404
+    dönen) URL üretir — items() bu yüzden doğrudan (sayfa, dil) çiftlerini döner."""
+    changefreq = 'monthly'
+    priority = 0.9
+
+    def items(self):
+        from .models import SiteSettings
+        if not SiteSettings.load().feature_hizmet_sayfalari:
+            return []
+        translations = (
+            ServicePageTranslation.objects
+            .filter(service_page__is_active=True)
+            .select_related('service_page')
+        )
+        return [(t.service_page, t.language) for t in translations]
+
+    def location(self, item):
+        from django.utils import translation
+        page, lang = item
+        with translation.override(lang):
+            return reverse('service_page_detail', kwargs={'slug': page.slug})
 
 
 class IstatistikSitemap(MultilingualSitemapMixin, Sitemap):
