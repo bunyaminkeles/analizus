@@ -24,7 +24,7 @@ from datetime import timedelta
 import uuid
 from django_ratelimit.decorators import ratelimit
 from django_ratelimit.exceptions import Ratelimited
-from .models import Section, Category, Topic, Post, Profile, PrivateMessage, PostLike, Notification, EmailVerification, DailyTip, QuizQuestion, QuizScore, SuccessStory, FreelanceJob, JobCategory, JobProposal, JobReview, Skill, Badge, UserQuizAttempt, JobPayment, SiteSettings, BlogCategory, BlogPost, BlogTag, DonationTier, StudyRoom, StudyRoomMembership, StudyRoomPost, StudyRoomWaitlist, STUDYROOM_TERMS, ReferralCode, ReferralUse, ServicePage
+from .models import Section, Category, Topic, Post, Profile, PrivateMessage, PostLike, Notification, EmailVerification, DailyTip, QuizQuestion, QuizScore, SuccessStory, FreelanceJob, JobCategory, JobProposal, JobReview, Skill, Badge, UserQuizAttempt, JobPayment, SiteSettings, BlogCategory, BlogPost, BlogTag, DonationTier, StudyRoom, StudyRoomMembership, StudyRoomPost, StudyRoomWaitlist, STUDYROOM_TERMS, ReferralCode, ReferralUse, ServicePage, ServicePageTranslation, ServicePageSectionTranslation, ServicePageFAQTranslation
 from .forms import RegisterForm, NewTopicForm, PostForm, JobPostForm, ProposalForm
 from .email_utils import send_topic_reply_notification, send_private_message_notification
 from django.template.loader import render_to_string
@@ -3434,39 +3434,105 @@ def blog_detail(request, slug):
 
 @feature_required('hizmet_sayfalari')
 def service_page_list(request):
-    """SEO Faz 4: /hizmetler/ indeksi — footer tek bu linke işaret eder, sayfa sayısı büyüse de footer büyümez."""
-    pages = ServicePage.objects.filter(is_active=True).order_by('order', 'title')
-    return render(request, 'forum/hizmetler/service_list.html', {'pages': pages})
+    """SEO Faz 4: /hizmetler/ indeksi — footer tek bu linke işaret eder, sayfa sayısı büyüse de footer büyümez.
+    Adım 9 (18 Ekim 2026): EN/DE'de yalnız çevirisi olan sayfalar listelenir (TR içerik pazaryeri modeline göre
+    yazıldığı için ham haliyle gösterilmez, K1)."""
+    from django.utils.translation import get_language
+    lang = (get_language() or 'tr').split('-')[0]
+    if lang == 'tr':
+        pages = ServicePage.objects.filter(is_active=True).order_by('order', 'title')
+        page_data = [{'slug': p.slug, 'title': p.title, 'intro': p.intro} for p in pages]
+    else:
+        translations = (
+            ServicePageTranslation.objects
+            .filter(language=lang, service_page__is_active=True)
+            .select_related('service_page')
+            .order_by('service_page__order', 'service_page__title')
+        )
+        page_data = [{'slug': t.service_page.slug, 'title': t.title, 'intro': t.intro} for t in translations]
+    return render(request, 'forum/hizmetler/service_list.html', {'page_data': page_data})
 
 
 @feature_required('hizmet_sayfalari')
 def service_page_detail(request, slug):
     """SEO Faz 4: /hizmetler/<slug>/ — dış (Google) trafiği için iniş sayfası.
-    Platform içi gezinmeye (/market/, /uzmanlar/) dokunmaz, yalnız oralara tek tık uzaklıkta CTA verir."""
+    Platform içi gezinmeye (/market/, /uzmanlar/) dokunmaz, yalnız oralara tek tık uzaklıkta CTA verir (yalnız TR).
+    Adım 9 (18 Ekim 2026): EN/DE'de çevirisi olmayan sayfa 404 döner (TR ham içerik pazaryeri modeline göre
+    yazıldığı için fallback olarak gösterilmez, K1); uzman eşleştirme kartları yalnız TR'de hesaplanır."""
+    from django.utils.translation import get_language
     page = get_object_or_404(ServicePage, slug=slug, is_active=True)
-    sections = page.sections.prefetch_related('related_job_categories').order_by('order')
+    lang = (get_language() or 'tr').split('-')[0]
 
-    section_data = []
-    for section in sections:
-        cats = list(section.related_job_categories.all())
-        experts = []
-        single_category = cats[0] if len(cats) == 1 else None
-        if cats:
-            experts = list(
-                Profile.objects.select_related('user')
-                .filter(is_public=True, skills__in=cats)
-                .distinct()[:3]
-            )
-        section_data.append({
-            'section': section,
-            'experts': experts if len(experts) >= 2 else [],
-            'single_category': single_category,
-        })
+    if lang == 'tr':
+        display = {
+            'title': page.title,
+            'meta_title': page.meta_title,
+            'meta_description': page.meta_description,
+            'intro': page.intro,
+            'process_text': page.process_text,
+            'ethics_text': page.ethics_text,
+        }
+        sections = page.sections.prefetch_related('related_job_categories').order_by('order')
+        section_data = []
+        for section in sections:
+            cats = list(section.related_job_categories.all())
+            experts = []
+            single_category = cats[0] if len(cats) == 1 else None
+            if cats:
+                experts = list(
+                    Profile.objects.select_related('user')
+                    .filter(is_public=True, skills__in=cats)
+                    .distinct()[:3]
+                )
+            section_data.append({
+                'anchor': section.anchor,
+                'title': section.title,
+                'body': section.body,
+                'experts': experts if len(experts) >= 2 else [],
+                'single_category': single_category,
+            })
+        faq_data = [{'question': f.question, 'answer': f.answer} for f in page.faqs.order_by('order')]
+    else:
+        translation = page.translations.filter(language=lang).first()
+        if not translation:
+            raise Http404
+        display = {
+            'title': translation.title,
+            'meta_title': translation.meta_title,
+            'meta_description': translation.meta_description,
+            'intro': translation.intro,
+            'process_text': translation.process_text,
+            'ethics_text': translation.ethics_text,
+        }
+        section_translations = {
+            st.section_id: st for st in
+            ServicePageSectionTranslation.objects.filter(language=lang, section__service_page=page)
+        }
+        section_data = []
+        for section in page.sections.order_by('order'):
+            st = section_translations.get(section.id)
+            if not st:
+                continue
+            section_data.append({
+                'anchor': section.anchor,
+                'title': st.title,
+                'body': st.body,
+                'experts': [],
+                'single_category': None,
+            })
+        faq_translations = (
+            ServicePageFAQTranslation.objects
+            .filter(language=lang, faq__service_page=page)
+            .select_related('faq')
+            .order_by('faq__order')
+        )
+        faq_data = [{'question': ft.question, 'answer': ft.answer} for ft in faq_translations]
 
     context = {
         'page': page,
+        'display': display,
         'section_data': section_data,
-        'faqs': page.faqs.order_by('order'),
+        'faq_data': faq_data,
     }
     return render(request, 'forum/hizmetler/service_detail.html', context)
 

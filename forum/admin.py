@@ -8,7 +8,7 @@ from django.shortcuts import render
 from django.utils.html import format_html
 from unfold.admin import ModelAdmin, TabularInline, StackedInline
 from broadcast.models import EmailBroadcast
-from .models import Section, Category, Topic, Post, Profile, ContactMessage, PrivateMessage, Badge, Skill, DailyTip, QuizQuestion, QuizScore, FreelanceJob, JobCategory, JobProposal, JobReview, UserQuizAttempt, DonationTier, Donation, JobPayment, TopicTag, SiteSettings, BlogCategory, BlogPost, BlogTag, SuccessStory, StudyRoom, ProjectRequest, ReferralCode, ReferralUse, TrainingRequest, ServicePage, ServicePageSection, ServicePageFAQ
+from .models import Section, Category, Topic, Post, Profile, ContactMessage, PrivateMessage, Badge, Skill, DailyTip, QuizQuestion, QuizScore, FreelanceJob, JobCategory, JobProposal, JobReview, UserQuizAttempt, DonationTier, Donation, JobPayment, TopicTag, SiteSettings, BlogCategory, BlogPost, BlogTag, SuccessStory, StudyRoom, ProjectRequest, ReferralCode, ReferralUse, TrainingRequest, ServicePage, ServicePageSection, ServicePageFAQ, ServicePageTranslation, ServicePageSectionTranslation, ServicePageFAQTranslation
 from .models import TeamMember
 from .models import AIUsageLog
 
@@ -606,13 +606,36 @@ class ServicePageFAQInline(TabularInline):
     fields = ('order', 'question', 'answer')
 
 
+class ServicePageTranslationInline(StackedInline):
+    # Adım 9 (18 Ekim 2026): EN/DE çevirisi — slug TR ile aynı kalır, yalnız içerik çevrilir.
+    model = ServicePageTranslation
+    extra = 0
+    max_num = 2
+    fields = ('language', 'title', 'meta_title', 'meta_description', 'intro', 'process_text', 'ethics_text')
+
+
 @admin.register(ServicePage)
 class ServicePageAdmin(ModelAdmin):
     list_display = ('title', 'slug', 'is_active', 'order')
     list_editable = ('is_active', 'order')
     prepopulated_fields = {'slug': ('title',)}
     fields = ('title', 'slug', 'meta_title', 'meta_description', 'intro', 'process_text', 'ethics_text', 'is_active', 'order')
-    inlines = [ServicePageSectionInline, ServicePageFAQInline]
+    inlines = [ServicePageSectionInline, ServicePageFAQInline, ServicePageTranslationInline]
+
+
+@admin.register(ServicePageSectionTranslation)
+class ServicePageSectionTranslationAdmin(ModelAdmin):
+    # Bölüm, ServicePage altında nested inline olamadığı için (Django admin desteklemiyor) ayrı kayıt.
+    list_display = ('section', 'language')
+    list_filter = ('language', 'section__service_page')
+    fields = ('section', 'language', 'title', 'body')
+
+
+@admin.register(ServicePageFAQTranslation)
+class ServicePageFAQTranslationAdmin(ModelAdmin):
+    list_display = ('faq', 'language')
+    list_filter = ('language', 'faq__service_page')
+    fields = ('faq', 'language', 'question', 'answer')
 
 
 @admin.register(FreelanceJob)

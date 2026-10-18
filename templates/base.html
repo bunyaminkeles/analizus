@@ -494,8 +494,14 @@
                 {% comment %}EN/DE hedefi proje talebi → öne çıkan buton; TR görünümü aynı{% endcomment %}
                 <a href="{% url 'proje_talebi' %}?source=nav" class="site-nav__link{% if LANGUAGE_CODE != 'tr' %} site-nav__link--cta{% endif %}">{% trans "Proje Talebi" %}</a>
 
-                {% if features.training %}
+                {% comment %}K6: Eğitimler yalnız TR ve EN'de veriliyor, DE'de yok{% endcomment %}
+                {% if features.training and LANGUAGE_CODE != 'de' %}
                 <a href="{% url 'egitim' %}" class="site-nav__link {% if '/egitim' in request.path %}is-active{% endif %}">{% trans "Eğitim" %}</a>
+                {% endif %}
+
+                {% if features.intl_consulting_home and LANGUAGE_CODE != 'tr' %}
+                <a href="{% url 'home' %}#leistungen" class="site-nav__link">{% trans "Hizmetlerimiz" %}</a>
+                <a href="{% url 'home' %}#ablauf" class="site-nav__link">{% trans "Nasıl Çalışıyoruz?" %}</a>
                 {% endif %}
 
                 <!-- Kurumsal Dropdown -->
@@ -696,8 +702,13 @@
 
             <a href="{% url 'proje_talebi' %}?source=nav" class="nav-drawer__link">{% trans "Proje Talebi" %}</a>
 
-            {% if features.training %}
+            {% if features.training and LANGUAGE_CODE != 'de' %}
             <a href="{% url 'egitim' %}" class="nav-drawer__link">{% trans "Eğitim" %}</a>
+            {% endif %}
+
+            {% if features.intl_consulting_home and LANGUAGE_CODE != 'tr' %}
+            <a href="{% url 'home' %}#leistungen" class="nav-drawer__link">{% trans "Hizmetlerimiz" %}</a>
+            <a href="{% url 'home' %}#ablauf" class="nav-drawer__link">{% trans "Nasıl Çalışıyoruz?" %}</a>
             {% endif %}
 
             <div>

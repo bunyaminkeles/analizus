@@ -6149,6 +6149,10 @@ msgstr "Beschreiben Sie die gewünschte Arbeit, Experten senden Ihnen Angebote"
 msgid "Hizmetler"
 msgstr "Dienstleistungen"
 
+#: templates/base.html
+msgid "Hizmetlerimiz"
+msgstr "Leistungen"
+
 #: forum/templates/forum/hizmetler/service_list.html:5
 #: forum/templates/forum/hizmetler/service_list.html:18
 msgid ""
@@ -6364,6 +6368,10 @@ msgstr "Expertenverzeichnis durchsuchen"
 #: templates/service_promo.html:192
 msgid "Ücretsiz Proje Talebi Gönder"
 msgstr "Kostenlose Projektanfrage senden"
+
+#: forum/templates/forum/hizmetler/service_detail.html
+msgid "Projenizi anlatın, size dönelim."
+msgstr "Beschreiben Sie Ihr Projekt, wir melden uns bei Ihnen."
 
 #: forum/templates/forum/home.html:458
 msgid "Uzman Olarak Katılmak İstiyorum"

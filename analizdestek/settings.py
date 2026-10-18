@@ -512,6 +512,7 @@ UNFOLD = {
             "models": [
                 "forum.freelancejob", "forum.jobcategory", "forum.jobproposal",
                 "forum.jobreview", "forum.jobpayment", "forum.servicepage",
+                "forum.servicepagesectiontranslation", "forum.servicepagefaqtranslation",
             ],
             "items": [
                 {
@@ -543,6 +544,16 @@ UNFOLD = {
                     "title": "Hizmet Sayfaları",
                     "icon": "design_services",
                     "link": reverse_lazy("admin:forum_servicepage_changelist"),
+                },
+                {
+                    "title": "Hizmet Sayfası Bölüm Çevirileri (EN/DE)",
+                    "icon": "translate",
+                    "link": reverse_lazy("admin:forum_servicepagesectiontranslation_changelist"),
+                },
+                {
+                    "title": "Hizmet Sayfası SSS Çevirileri (EN/DE)",
+                    "icon": "translate",
+                    "link": reverse_lazy("admin:forum_servicepagefaqtranslation_changelist"),
                 },
             ],
         },

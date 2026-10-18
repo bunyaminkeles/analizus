@@ -987,6 +987,62 @@ class ServicePageFAQ(models.Model):
         return self.question
 
 
+# Adım 9 (18 Ekim 2026): EN/DE hizmet sayfası çevirileri. Slug ve URL öneki TR ile
+# aynı kalır (yalnız dil prefix'i değişir, bkz. tasks/todo.md Karar 1) — içerik TR'den
+# satır bazlı çeviriyle ayrılır çünkü ServicePage içeriği pazaryeri modeline göre
+# yazılmıştır (K1: EN/DE'de doğrudan danışmanlık, pazaryeri yok), birebir çeviri uygun değil.
+SERVICE_TRANSLATION_LANGUAGES = [('en', 'English'), ('de', 'Deutsch')]
+
+
+class ServicePageTranslation(models.Model):
+    service_page = models.ForeignKey(ServicePage, on_delete=models.CASCADE, related_name='translations')
+    language = models.CharField(max_length=2, choices=SERVICE_TRANSLATION_LANGUAGES, verbose_name="Dil")
+    title = models.CharField(max_length=150, verbose_name="Başlık (H1)")
+    meta_title = models.CharField(max_length=70, blank=True, default="", verbose_name="SEO Başlığı")
+    meta_description = models.CharField(max_length=160, blank=True, default="", verbose_name="SEO Açıklaması")
+    intro = models.TextField(verbose_name="Giriş (vaat)")
+    process_text = models.TextField(blank=True, default="", verbose_name="Süreç")
+    ethics_text = models.TextField(blank=True, default="", verbose_name="Etik sınırlar")
+
+    class Meta:
+        verbose_name = "Hizmet Sayfası Çevirisi"
+        verbose_name_plural = "Hizmet Sayfası Çevirileri"
+        unique_together = ('service_page', 'language')
+
+    def __str__(self):
+        return f"{self.service_page.slug} ({self.language})"
+
+
+class ServicePageSectionTranslation(models.Model):
+    section = models.ForeignKey(ServicePageSection, on_delete=models.CASCADE, related_name='translations')
+    language = models.CharField(max_length=2, choices=SERVICE_TRANSLATION_LANGUAGES, verbose_name="Dil")
+    title = models.CharField(max_length=120, verbose_name="Başlık")
+    body = models.TextField(blank=True, default="", verbose_name="Açıklama")
+
+    class Meta:
+        verbose_name = "Hizmet Sayfası Bölüm Çevirisi"
+        verbose_name_plural = "Hizmet Sayfası Bölüm Çevirileri"
+        unique_together = ('section', 'language')
+
+    def __str__(self):
+        return f"{self.section.anchor} ({self.language})"
+
+
+class ServicePageFAQTranslation(models.Model):
+    faq = models.ForeignKey(ServicePageFAQ, on_delete=models.CASCADE, related_name='translations')
+    language = models.CharField(max_length=2, choices=SERVICE_TRANSLATION_LANGUAGES, verbose_name="Dil")
+    question = models.CharField(max_length=200, verbose_name="Soru")
+    answer = models.TextField(verbose_name="Cevap")
+
+    class Meta:
+        verbose_name = "Hizmet Sayfası SSS Çevirisi"
+        verbose_name_plural = "Hizmet Sayfası SSS Çevirileri"
+        unique_together = ('faq', 'language')
+
+    def __str__(self):
+        return f"{self.faq.question[:30]} ({self.language})"
+
+
 class FreelanceJob(models.Model):
     """Kullanıcıların verdiği iş ilanları (Freelance Market)"""
     STATUS_CHOICES = (
@@ -2051,6 +2107,7 @@ class ProjectRequest(models.Model):
         ('home_steps', 'Ana Sayfa Nasıl Çalışır'),
         ('home_faq', 'Ana Sayfa SSS'),
         ('market_page', 'Pazar Yeri Sayfası'),
+        ('service_page', 'Hizmet Sayfası (EN/DE)'),
     ]
 
     name = models.CharField(max_length=150, verbose_name="Ad Soyad")
