@@ -528,11 +528,40 @@ maddelerde.
   duruyordu → tek kısa cümleye indirildi ("Ücretsiz, kayıt gerekmeden APA
   formatında rapor alın. 18 aracın tümü →"), AI sloganı kaldırıldı (aşağıda
   zaten tekrar ediyordu). Yeni 1 msgid (`locale/{en,de}`), `pytest` 90/90
-  yeşil. **Henüz commit edilmedi** (bu değişiklik + Adım 11 ölçüm notu).
+  yeşil. **Commit + push + merge edildi** (`8f26686`, main'e alındı).
 
-  **11 ADIMLIK PLANIN TAMAMI TAMAMLANDI** (Adım 5 — Premium/bağış EUR+IBAN
-  — kullanıcı kararıyla atlandı/ertelendi; Adım 8 — Impressum — şirket
-  bilgisi gelene kadar beklemede).
+  **Ek bulgu (kullanıcı canlı DE/EN karşılaştırmasında fark etti, aynı gün
+  düzeltildi):** DE hero başlığı TR kaynağın uzun/açıklayıcı birebir
+  çevirisiydi, EN için ise ayrı kısa bir slogan yazılmıştı (Adım 6'dan
+  kalma bilinçli tercih, ama iki dil arasında tutarsız tondu). DE msgstr
+  "Statistikberatung, die standhält." olarak EN ile aynı tona getirildi
+  (TR msgid/EN değişmedi). **Commit + push + merge edildi** (`67c04df`).
+
+  **Ek bulgu (kullanıcının "GSC'de yapacak bir şey var mı?" sorusu
+  üzerine bulundu, aynı gün düzeltildi):** `forum/sitemaps.py`'deki
+  `ServicePageSitemap` yalnız TR URL üretiyordu, `service_page_list` de
+  TR-only `StaticViewSitemap`'teydi — Adım 9'da `/hizmetler/`
+  `i18n_patterns`'e taşındığı halde sitemap güncellenmemiş, yeni EN/DE
+  sayfaları Google'a hiç bildirilmiyordu. `service_page_list` →
+  `StaticI18nSitemap`'e taşındı (TR+EN+DE); yeni
+  `ServicePageTranslatedSitemap` eklendi — yalnız gerçekten çevirisi olan
+  (sayfa, dil) çiftlerini listeler (404 riski yok). Doğrulama:
+  `/sitemap.xml`'de beklenen 9 URL tam çıktı, `pytest` 90/90 yeşil.
+  **Commit + push + merge edildi** (`b840490`).
+
+  **KULLANICIYA KALAN GSC ADIMLARI (sitemap düzeltmesi main'e gittikten
+  sonra, Hetzner deploy olunca):**
+  1. Google Search Console'da `sitemap.xml`'i yeniden gönder.
+  2. `/en/` ve `/de/` ana sayfa için URL denetimi + "Dizine Ekleme İste"
+     (içerik önemli ölçüde değişti).
+  3. `/en/hizmetler/nicel-analiz/` ve `/de/hizmetler/nicel-analiz/` için
+     aynısı (yeni sayfalar).
+  4. hreflang'in canlı HTML'de doğru çıktığını sayfa kaynağından kontrol
+     et (GSC'de ayrı hreflang raporu yok).
+
+  **11 ADIMLIK PLANIN TAMAMI TAMAMLANDI, main'e alındı** (Adım 5 —
+  Premium/bağış EUR+IBAN — kullanıcı kararıyla atlandı/ertelendi; Adım 8
+  — Impressum — şirket bilgisi gelene kadar beklemede).
 
 - [x] **(16 Ekim 2026, kullanıcı bulgusu → aynı gün düzeltildi) EDU doğrulama
   DM'i admin'in kişisel hesabından gönderiliyordu, sistem/bot hesabından değil.**
