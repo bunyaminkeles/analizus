@@ -391,6 +391,126 @@ maddelerde.
   bir sonraki oturumda devam edilecek. Yukarıdaki açık bulgu (proje_talebi
   H1/alt başlık) da bir sonraki oturumun başında kullanıcıya sorulmalı.
 
+  **ADIM 7 TAMAMLANDI (18 Ekim 2026) — EN/DE navigasyon.** 4 dosya: `templates/base.html` (masaüstü + mobil drawer),
+  `templates/partials/footer.html`, `forum/templates/forum/home_intl.html`,
+  `locale/{en,de}/LC_MESSAGES/django.po`+`.mo`.
+  **Kapsam (kullanıcı kararıyla daraltıldı — tam yeniden tasarım değil):**
+  (1) K6 düzeltmesi: "Eğitim" linki (`features.training` koşuluna ek
+  `LANGUAGE_CODE != 'de'`) artık TR+EN'de görünür, DE'de gizli — önceden
+  dil şartsızdı (flag açıkken DE'de de görünüyordu, K6'ya aykırıydı).
+  (2) Yeni "Hizmetlerimiz" (`#leistungen`) ve "Nasıl Çalışıyoruz?"
+  (`#ablauf`) nav linkleri — yalnız `features.intl_consulting_home` flag'i
+  açık **ve** `LANGUAGE_CODE != 'tr'` iken görünür; `home_intl.html`'deki
+  ilgili iki bölüme (`İki İş Kolu`, `Nasıl Çalışıyoruz?`) id eklendi.
+  Flag kapalıyken (şu an canlı durum) hiçbir görünür değişiklik yok — ölü
+  link riski yok (linkler zaten flag'e bağlı render oluyor).
+  **Yapılmayan (plandaki tam öneri, kullanıcı kararıyla ertelendi):**
+  Leistungen/Services ▾ ve Ablauf/Process ▾ dropdown'ları, "Free tools ▾"
+  yeniden gruplama — mevcut Analizler/Akademik Tarama/Kurumsal yapısı
+  EN/DE için zaten pazaryeri/forum sızdırmıyor, yeniden tasarım flag
+  açıldıktan sonra ayrı bir turda değerlendirilebilir.
+  **Doğrulama:** `transaction.atomic()` içinde iki flag (training,
+  intl_consulting_home) açılıp TR/EN/DE × flag-açık/kapalı render edildi
+  (`override_settings(ALLOWED_HOSTS=['*'])` ile Test Client), rollback
+  yapıldı: Eğitim href sayısı TR=4, EN=4, DE=0 (beklenen); Leistungen/
+  Ablauf linkleri yalnız flag açıkken EN/DE'de, flag kapalıyken hiçbir
+  dilde yok. `pytest forum/tests.py` → **90/90 yeşil**.
+  **Deploy etkisi:** migration yok, `--build` yok; `docker compose restart
+  web` lokalde yapıldı ve doğrulandı.
+
+  **ADIM 9 — TASARIM DOKÜMANI (18 Ekim 2026, kod YOK, kullanıcı kararı
+  bekliyor).** Araştırma bulguları ve plan:
+  **Mevcut durum (doğrulandı):**
+  - `ServicePage`/`ServicePageSection`/`ServicePageFAQ` (`forum/models.py:
+    936-987`) dil alanı yok, TR-only (model docstring'inde zaten yazıyor).
+  - 4 aktif TR sayfası (DB'den doğrulandı): `nicel-analiz`,
+    `akademik-danismanlik`, `nitel-analiz`, `veri-ve-yapay-zeka`.
+  - `/hizmetler/` ve `/hizmetler/<slug>/` (`forum/urls.py:16-17`)
+    `i18n_patterns` BLOĞUNUN DIŞINDA (`analizdestek/urls.py:127`) — dil
+    prefix'i almıyor, EN/DE'den hiç erişilemiyor.
+  - `feature_hizmet_sayfalari` flag'inin kendi help_text'i zaten "Pilot:
+    önce yalnız Nicel Analiz sayfasını açın" diyor — EN/DE pilotu da aynı
+    sayfayla (`nicel-analiz`) başlamalı.
+  - `hreflang_alternates` (`forum/context_processors.py:95-124`)
+    `translate_url()` ile yalnız dil PREFİX'ini değiştirir, slug'ı
+    çevirmez; path tüm dillerde aynı değilse (bugün zaten öyle, sayfa
+    i18n_patterns dışında) hreflang hiç üretilmiyor (sessizce atlanıyor).
+    Sayfa i18n_patterns içine alınır ve EN/DE'de FARKLI slug kullanılırsa
+    (`quantitative-analysis` gibi) bu mekanizma kırılır → 404.
+  - `set_language` view'ı (`forum/views.py:4342-4360`) TR-only bir sayfada
+    dil değiştirmeyi karşılık bulamadığı için ana sayfaya düşürüyor —
+    hizmet sayfası i18n'e taşınırsa bu sarmalayıcının da güncellenmesi
+    gerekir (karşılık path varsa oraya, yoksa ana sayfaya).
+  - `ai_cozumler` (`forum/urls_i18n.py:29`) zaten i18n_patterns içinde ve
+    EN/DE'de çalışıyor AMA tamamen farklı bir model: statik şablon +
+    gettext çevirisi, DB içerik yok. ServicePage'in admin-düzenlenebilir
+    içerik modeliyle doğrudan karşılaştırılamaz, emsal değil.
+  - Projede DB satırı bazlı çok dilli içerik modeli (`language` alanlı,
+    çeviri taşıyan) hiç yok — tüm EN/DE içerik ya gettext/.po (şablon
+    metni) ya da `home_intl.html` gibi ayrı şablon. ServicePage içeriği
+    (admin'in serbest yazdığı `intro`/`process_text`/bölümler) gettext'e
+    uygun değil (msgid sistemi statik metin içindir).
+  **İki tasarım kararı — kod yazmadan önce kullanıcı onayı gerekir:**
+  1. **URL/slug stratejisi** — Öneri (A, daha düşük riskli): sayfayı
+     `i18n_patterns` içine taşı, SLUG'I TÜM DİLLERDE AYNI tut, yalnız
+     `path()` önekini `gettext_lazy` ile çevir (`/en/services/nicel-analiz/`,
+     `/de/leistungen/nicel-analiz/`, `/hizmetler/nicel-analiz/` TR) →
+     mevcut `hreflang_alternates`/`translate_url` hiçbir özel kod
+     gerektirmeden doğru çalışır. Alternatif (B, plandaki orijinal öneri):
+     dile göre FARKLI slug + grup anahtarı — daha "doğal" EN/DE URL'leri
+     verir ama hreflang'i context processor'da özel eşlemeyle bypass etmek
+     ve `set_language`'ı override etmek gerekir (yeni, test edilmemiş
+     kod yolu). **A önerilir** (YALIN ilkesiyle tutarlı, mevcut i18n
+     altyapısını bozmadan kullanır).
+  2. **İçerik modeli** — Öneri: yeni `ServicePageTranslation` modeli
+     (FK → `ServicePage`, `language` seçimi `en`/`de`, çevrilen alanlar:
+     `title`, `meta_title`, `meta_description`, `intro`, `process_text`,
+     `ethics_text`); `ServicePageSection`/`ServicePageFAQ` için de benzer
+     küçük çeviri modelleri (veya tek JSON alanı — ikisi arasında seçim
+     kullanıcıya sorulmalı). Admin'de TR sayfasının altında inline EN/DE
+     çeviri formu (`StackedInline`) öner. **Pilot kapsamı:** yalnız
+     `nicel-analiz` çevrilir, diğer 3 sayfa TR-only kalmaya devam eder
+     (flag zaten bunu öngörüyor).
+  **Migration etkisi (kod yazılırsa):** yeni model(ler) + varsa URL/view
+  değişikliği — no-data migration, mevcut TR kayıtlarını etkilemez.
+  **KARAR 1 ve 2 ONAYLANDI (18 Ekim 2026, kullanıcı):**
+  - Karar 1 (URL/slug): **Öneri A** — slug tüm dillerde aynı kalır, yalnız
+    URL öneki `gettext_lazy` ile çevrilir (`/en/services/nicel-analiz/`,
+    `/de/leistungen/nicel-analiz/`, TR `/hizmetler/nicel-analiz/`); mevcut
+    `hreflang_alternates`/`translate_url` değişmeden çalışır.
+  - Karar 2 (içerik modeli): ayrı `ServicePageTranslation` tablosu (JSON
+    alanı değil), pilot kapsamı yalnız `nicel-analiz`.
+  **İkisi de onaylandı, AYNI OTURUMDA KOD YAZILDI (18 Ekim 2026):** yeni
+  `ServicePageTranslation`/`ServicePageSectionTranslation`/
+  `ServicePageFAQTranslation` modelleri (migration 0181), `/hizmetler/`
+  URL'leri `i18n_patterns`'e taşındı (`forum/urls_i18n.py`), admin'e
+  çeviri inline'ı + 2 ayrı admin kaydı + sidebar girdileri eklendi.
+  **Ek bulgu (kod yazarken ortaya çıktı, kullanıcı onayıyla kapsam
+  genişletildi):** `service_list.html`/`service_detail.html` şablonları
+  ve `nicel-analiz` pilot içeriği (intro/süreç/etik/FAQ) pazaryeri
+  modeline göre yazılmıştı ("İlan Aç", "Pazaryerine Git", "Uzmanları Gör",
+  bölüm başına uzman eşleştirme kartları) — K1'e aykırıydı. Şablonlardaki
+  tüm pazaryeri CTA/kart/breadcrumb'ları EN/DE'de `proje_talebi` CTA'sına
+  çevrildi, uzman eşleştirme EN/DE'de hiç hesaplanmıyor. `nicel-analiz`
+  için EN/DE intro/süreç/etik/FAQ K1/K3/K4 kararlarına göre YENİDEN
+  YAZILDI (birebir çevrilmedi); 7 metodoloji bölümü (pazaryeri ifadesi
+  içermiyordu) doğrudan çevrildi (migration 0182, korumalı/idempotent).
+  Çevirisi olmayan sayfa (diğer 3 TR sayfası) EN/DE'de 404 döner — TR ham
+  içerik fallback olarak gösterilmez.
+  **Doğrulama:** `override_settings(ALLOWED_HOSTS=['*'])` ile Test Client,
+  nicel-analiz TR/EN/DE render edildi (TR: pazaryeri CTA var; EN/DE:
+  proje_talebi CTA var, pazaryeri sıfır), akademik-danismanlik EN/DE'de
+  404 (TR'de 200), hreflang etiketleri doğru 4 dil/URL üretti (`translate_
+  url` slug'a dokunmadan çalıştı), SSS/bölüm başlıkları doğru dilde
+  geldi. `pytest forum/tests.py` → **90/90 yeşil**.
+  **Deploy etkisi: MIGRATION VAR (0181 yapısal, 0182 veri/korumalı)** —
+  main'e push öncesi `scripts/yedek_indir.sh --simdi` gerekir.
+  **COMMIT + PUSH EDİLDİ (`20942ac`, `dev`'e gitti, Adım 7 ile birlikte
+  tek commit'te).**
+  **Not:** Yeni `/hizmetler/` sayfası henüz hiçbir EN/DE nav/footer'a
+  linklenmedi (Adım 7'de bilinçli olarak kapsam dışı bırakılmıştı) —
+  yalnız doğrudan URL veya `service_page_list` üzerinden erişilebilir.
+
 - [x] **(16 Ekim 2026, kullanıcı bulgusu → aynı gün düzeltildi) EDU doğrulama
   DM'i admin'in kişisel hesabından gönderiliyordu, sistem/bot hesabından değil.**
   `forum/views.py:1361` (`_handle_edu_user`) artık diğer otomatik DM'lerle aynı

@@ -1,20 +1,20 @@
 {% extends 'base.html' %}
 {% load i18n %}
 
-{% block title %}{{ page.meta_title|default:page.title }} | Analizus{% endblock %}
-{% block meta_description %}{{ page.meta_description|default:page.intro|striptags|truncatechars:155 }}{% endblock %}
+{% block title %}{{ display.meta_title|default:display.title }} | Analizus{% endblock %}
+{% block meta_description %}{{ display.meta_description|default:display.intro|striptags|truncatechars:155 }}{% endblock %}
 
 {% block og_type %}website{% endblock %}
-{% block og_title %}{{ page.title }}{% endblock %}
-{% block og_description %}{{ page.meta_description|default:page.intro|striptags|truncatechars:155 }}{% endblock %}
+{% block og_title %}{{ display.title }}{% endblock %}
+{% block og_description %}{{ display.meta_description|default:display.intro|striptags|truncatechars:155 }}{% endblock %}
 
 {% block extra_head %}
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "Service",
-  "name": "{{ page.title|escapejs }}",
-  "description": "{{ page.meta_description|default:page.intro|striptags|escapejs }}",
+  "name": "{{ display.title|escapejs }}",
+  "description": "{{ display.meta_description|default:display.intro|striptags|escapejs }}",
   "provider": {
     "@type": "Organization",
     "name": "Analizus",
@@ -30,19 +30,23 @@
   "@type": "BreadcrumbList",
   "itemListElement": [
     {"@type": "ListItem", "position": 1, "name": "Ana Sayfa", "item": "{{ request.scheme }}://{{ request.get_host }}{% url 'home' %}"},
+    {% if LANGUAGE_CODE == 'tr' %}
     {"@type": "ListItem", "position": 2, "name": "Pazaryeri", "item": "{{ request.scheme }}://{{ request.get_host }}{% url 'job_list' %}"},
-    {"@type": "ListItem", "position": 3, "name": "{{ page.title|escapejs }}", "item": "{{ request.build_absolute_uri }}"}
+    {"@type": "ListItem", "position": 3, "name": "{{ display.title|escapejs }}", "item": "{{ request.build_absolute_uri }}"}
+    {% else %}
+    {"@type": "ListItem", "position": 2, "name": "{{ display.title|escapejs }}", "item": "{{ request.build_absolute_uri }}"}
+    {% endif %}
   ]
 }
 </script>
 
-{% if faqs %}
+{% if faq_data %}
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "FAQPage",
   "mainEntity": [
-    {% for faq in faqs %}
+    {% for faq in faq_data %}
     {
       "@type": "Question",
       "name": "{{ faq.question|escapejs }}",
@@ -61,17 +65,22 @@
     <!-- Breadcrumb -->
     <nav aria-label="breadcrumb" class="mb-4">
         <ol class="breadcrumb" style="--bs-breadcrumb-divider: '›'; font-size: 0.875rem;">
+            {% if LANGUAGE_CODE == 'tr' %}
             <li class="breadcrumb-item"><a href="{% url 'job_list' %}" class="text-decoration-none">{% trans "Pazaryeri" %}</a></li>
-            <li class="breadcrumb-item active text-muted" aria-current="page">{{ page.title }}</li>
+            {% else %}
+            <li class="breadcrumb-item"><a href="{% url 'service_page_list' %}" class="text-decoration-none">{% trans "Hizmetler" %}</a></li>
+            {% endif %}
+            <li class="breadcrumb-item active text-muted" aria-current="page">{{ display.title }}</li>
         </ol>
     </nav>
 
     <!-- Hero -->
     <div class="row mb-5">
         <div class="col-lg-9">
-            <h1 class="text-white fw-bold mb-3">{{ page.title }}</h1>
-            <p class="text-secondary mb-4" style="font-size: 1.05rem; line-height: 1.7; max-width: 720px;">{{ page.intro }}</p>
+            <h1 class="text-white fw-bold mb-3">{{ display.title }}</h1>
+            <p class="text-secondary mb-4" style="font-size: 1.05rem; line-height: 1.7; max-width: 720px;">{{ display.intro }}</p>
             <div class="d-flex gap-2 flex-wrap">
+                {% if LANGUAGE_CODE == 'tr' %}
                 <a href="{% url 'post_job' %}" class="ax-btn ax-btn--primary fw-semibold px-4 py-2">
                     <i class="bi bi-plus-circle me-2"></i>{% trans "İlan Aç" %}
                 </a>
@@ -81,6 +90,11 @@
                 <a href="{% url 'uzman_dizini' %}" class="ax-btn ax-btn--sm" style="border:1px solid var(--ax-border-default); color: var(--ax-text-secondary);">
                     <i class="bi bi-people me-1"></i>{% trans "Uzmanları Gör" %}
                 </a>
+                {% else %}
+                <a href="{% url 'proje_talebi' %}?source=service_page" class="ax-btn ax-btn--primary fw-semibold px-4 py-2">
+                    <i class="bi bi-send me-2"></i>{% trans "Ücretsiz Proje Talebi Gönder" %}
+                </a>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -89,10 +103,10 @@
     <div class="row g-3 mb-4">
     {% for item in section_data %}
     <div class="col-md-6">
-    <div class="ax-card h-100" id="{{ item.section.anchor }}">
-        <h2 class="text-white fw-semibold mb-2" style="font-size: 1.25rem;">{{ item.section.title }}</h2>
-        {% if item.section.body %}
-        <p class="text-secondary mb-3" style="line-height: 1.7;">{{ item.section.body }}</p>
+    <div class="ax-card h-100" id="{{ item.anchor }}">
+        <h2 class="text-white fw-semibold mb-2" style="font-size: 1.25rem;">{{ item.title }}</h2>
+        {% if item.body %}
+        <p class="text-secondary mb-3" style="line-height: 1.7;">{{ item.body }}</p>
         {% endif %}
 
         {% if item.experts %}
@@ -122,26 +136,26 @@
     </div>
 
     <!-- Süreç -->
-    {% if page.process_text %}
+    {% if display.process_text %}
     <div class="mb-4">
         <h2 class="text-white fw-semibold mb-2" style="font-size: 1.15rem;">{% trans "Nasıl Çalışır" %}</h2>
-        <p class="text-secondary" style="line-height: 1.7;">{{ page.process_text }}</p>
+        <p class="text-secondary" style="line-height: 1.7;">{{ display.process_text }}</p>
     </div>
     {% endif %}
 
     <!-- Etik sınırlar -->
-    {% if page.ethics_text %}
+    {% if display.ethics_text %}
     <div class="mb-4">
         <h2 class="text-white fw-semibold mb-2" style="font-size: 1.15rem;">{% trans "Sınırlarımız" %}</h2>
-        <p class="text-secondary" style="line-height: 1.7;">{{ page.ethics_text }}</p>
+        <p class="text-secondary" style="line-height: 1.7;">{{ display.ethics_text }}</p>
     </div>
     {% endif %}
 
     <!-- SSS -->
-    {% if faqs %}
+    {% if faq_data %}
     <div class="mb-4">
         <h2 class="text-white fw-semibold mb-3" style="font-size: 1.15rem;">{% trans "Sık Sorulan Sorular" %}</h2>
-        {% for faq in faqs %}
+        {% for faq in faq_data %}
         <div class="ax-card mb-2">
             <span class="text-white fw-semibold d-block mb-1">{{ faq.question }}</span>
             <span class="text-secondary small">{{ faq.answer }}</span>
@@ -153,12 +167,21 @@
     <!-- CTA -->
     <div class="ax-tool-guide" style="margin-top:0;background:linear-gradient(135deg,rgba(99,102,241,.1),rgba(34,197,94,.06));border:1px solid rgba(99,102,241,.2);">
         <div class="ax-tool-guide-intro" style="text-align:center;">
+            {% if LANGUAGE_CODE == 'tr' %}
             <p style="font-size:1.05rem;font-weight:600;color:#f1f5f9;margin-bottom:.5rem;">
                 {% trans "Yaptırmak istediğiniz işi anlatın, uzmanlar teklif versin" %}
             </p>
             <a href="{% url 'post_job' %}" class="ax-btn ax-btn--primary fw-semibold px-4 py-2">
                 <i class="bi bi-send me-2"></i>{% trans "İlan Aç" %}
             </a>
+            {% else %}
+            <p style="font-size:1.05rem;font-weight:600;color:#f1f5f9;margin-bottom:.5rem;">
+                {% trans "Projenizi anlatın, size dönelim." %}
+            </p>
+            <a href="{% url 'proje_talebi' %}?source=service_page" class="ax-btn ax-btn--primary fw-semibold px-4 py-2">
+                <i class="bi bi-send me-2"></i>{% trans "Ücretsiz Proje Talebi Gönder" %}
+            </a>
+            {% endif %}
         </div>
     </div>
 

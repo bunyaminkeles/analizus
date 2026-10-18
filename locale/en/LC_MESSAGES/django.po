@@ -6030,6 +6030,10 @@ msgstr "Describe the work you need done, and experts will send proposals"
 msgid "Hizmetler"
 msgstr "Services"
 
+#: templates/base.html
+msgid "Hizmetlerimiz"
+msgstr "Our Services"
+
 #: forum/templates/forum/hizmetler/service_list.html:5
 #: forum/templates/forum/hizmetler/service_list.html:18
 msgid ""
@@ -6243,6 +6247,10 @@ msgstr "Browse the Expert Directory"
 #: templates/service_promo.html:192
 msgid "Ücretsiz Proje Talebi Gönder"
 msgstr "Send a Free Project Request"
+
+#: forum/templates/forum/hizmetler/service_detail.html
+msgid "Projenizi anlatın, size dönelim."
+msgstr "Tell us about your project, we'll get back to you."
 
 #: forum/templates/forum/home.html:458
 msgid "Uzman Olarak Katılmak İstiyorum"

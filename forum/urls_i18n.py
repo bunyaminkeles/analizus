@@ -27,6 +27,9 @@ urlpatterns = [
     path('gizlilik-politikasi/', views.gizlilik_politikasi, name='gizlilik_politikasi'),
     path('proje-talebi/', views.proje_talebi, name='proje_talebi'),
     path('ai-cozumler/', views.ai_cozumler, name='ai_cozumler'),
+    # Hizmet Sayfaları (Adım 9, 18 Ekim 2026) — slug TR ile aynı, yalnız dil prefix'i değişir
+    path('hizmetler/', views.service_page_list, name='service_page_list'),
+    path('hizmetler/<slug:slug>/', views.service_page_detail, name='service_page_detail'),
     path('egitim/', views.egitim, name='egitim'),
     path('egitim-talebi/', views.egitim_talebi, name='egitim_talebi'),
     path('egitim/<slug:slug>/', views.egitim_detay, name='egitim_detay'),
