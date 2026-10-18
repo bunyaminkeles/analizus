@@ -22,7 +22,7 @@ maddelerde.
   durumlar için "Detaylı →" (changeform) içeriyor. Test client ile
   onay/red/geçersiz-sebep-guard'ı doğrulandı, `forum/tests.py` 90/90 yeşil.
   Migration yok. **Henüz push edilmedi**, kullanıcı onayı bekleniyor.
-- [ ] **(18 Ekim 2026) EN/DE pazaryeri sızıntısı — kalıntı link düzeltmesi
+- [x] **(18 Ekim 2026) EN/DE pazaryeri sızıntısı — kalıntı link düzeltmesi
   UYGULANDI, doğrulanmadı + 2 açık karar kaldı.** Kaynak: bir admin "Navigasyon
   Grafiği" kaydında EN'de login olan bir kullanıcının onboarding sonrası
   `/en/market/` ve `/en/market/job/191/`'i ziyaret ettiği görüldü (16 Ekim

@@ -2745,6 +2745,59 @@ with connection.cursor() as c:
 
 > Önceki düz-yazı günlük biçiminden madde listesine dönüştürülmüştür; cümleler değişmeden taşınmıştır.
 
+- **18 Ekim 2026 (akşam, ikinci oturum) — EN/DE pazaryeri sızıntısı soruşturması
+  + referrer takibi + admin ilan onayı tek-tık.** Üç commit `dev`→`main`
+  (`285003d`, `c1727c1`, `8a87afa`; `main` zaten `dev`'in atası olduğu için
+  merge fast-forward oldu), `c1727c1` migration içerdiği için push öncesi
+  kullanıcı `scripts/yedek_indir.sh --simdi`'yi çalıştırdı.
+  **1) Tetikleyici:** admin "Navigasyon Grafiği" kaydında EN dilinde login
+  olan bir kullanıcının onboarding sonrası `/en/market/` ve
+  `/en/market/job/191/`'i ziyaret ettiği görüldü — 16 Ekim turunda
+  navbar/footer/ana sayfadan kaldırılmıştı. İnceleme: `job_list`/`job_detail`
+  (`forum/urls_i18n.py`, `forum/views.py`) URL/view seviyesinde hiçbir dil
+  kısıtlaması yapmıyor, yalnız şablon seviyesinde navigasyon gizlenmişti;
+  dil değiştirici (`templates/base.html` `next=request.get_full_path` +
+  Django `set_language`/`translate_url`) aynı path'i koruyarak diller arası
+  taşıdığı için TR'de görülen bir sayfa EN'e geçişte de açık kalıyor —
+  ayrı bir hata değil, mimarinin doğal sonucu. `PageView` hiç referrer/UTM
+  tutmadığından kullanıcının oraya tam olarak nasıl geldiği (elle URL/
+  bookmark mı, dil değiştirme mi) kesin tespit edilemedi.
+  **2) Bulunup düzeltilen kalıntı linkler** (16 Ekim taramasının kaçırdığı,
+  navbar/footer/home dışında kalan 2 nokta): `openalex/templates/openalex/
+  landing.html:31` ("Premium üyelik" → `job_list`, dil koşulsuzdu) ve
+  `forum/templates/forum/profile_detail.html` 3 nokta (portföy kartı ~378,
+  "İlanlar" ~445, "Verdiğim Teklifler" ~498) — artık EN/DE'de ya `href`siz
+  (tıklanamaz `<a>`) ya da düz `<div>`. Doğrulama: `docker compose restart
+  web`+`nginx` sonrası `curl`'le TR'de "Premium üyelik" var/EN-DE'de
+  `job_list` referansı yok; `profile_detail.html`'de geçici test ilanı
+  (oluşturulup silindi) ile TR href=1/EN-DE href=0; portföy kartı mantığı
+  izole template render testiyle doğrulandı; `forum/tests.py` 90/90 yeşil.
+  **Bilinen, ertelenen kozmetik tutarsızlık:** `.ax-profile-job-item:hover`
+  CSS'i `href` olmasa da tetikleniyor (tıklanamaz kart hâlâ "hover" efekti
+  veriyor) — kullanıcı kararıyla düzeltilmedi.
+  **3) Ürün kararı (kullanıcı, iki kez — canlıda görünce de teyit etti):**
+  `/market/` ve `/market/job/<id>/` EN/DE'de **route seviyesinde kapatılmayacak**;
+  "yalnız navigasyondan gizli" mevcut durum yeterli kabul edildi (dil
+  değiştiricinin aynı path'i koruması da bu kararın kapsamında).
+  **4) `PageView`'a `referrer` alanı eklendi** (`analytics/models.py`,
+  migration `0003_pageview_referrer`, `analytics/middleware.py`
+  `HTTP_REFERER`'ı yakalıyor, `analytics/admin.py` changelist'te gösteriyor)
+  — gelecekte benzer "kullanıcı bir sayfaya nereden geldi" sorularını
+  loglardan cevaplayabilmek için. Migration dosyası container'da root
+  sahipli oluştu, `docker compose exec -u root ... chown 1000:1000` ile
+  düzeltildi (bilinen §26 sorunu).
+  **5) Ayrı bir şikayet üzerine — admin dashboard "İlan Onayı" tek-tık
+  onay/red:** bildirimdeki "Onayla / Reddet →" linki standart Django
+  değiştirme formuna gidiyordu (orada buton yok), kullanıcı tekrar İş
+  İlanları listesine dönüp checkbox + action seçmek zorunda kalıyordu (3
+  adım). `JobPaymentAdmin`'deki mevcut tek-tık onay deseni (`get_urls()` +
+  `confirm()` dialoglu özel view) `FreelanceJobAdmin`'e de uygulandı:
+  `forum/admin.py` `quick_approve_view`/`quick_reject_view` (3 ret sebebi:
+  service_ad/incomplete/rules), `templates/admin/index.html` dashboard
+  satırı artık "Onayla →" + 3 ayrı "Reddet: ..." linki + nadir/notlu red
+  durumları için "Detaylı →" (changeform) içeriyor. Test client ile onay/
+  red/geçersiz-sebep-guard doğrulandı, migration yok, `forum/tests.py`
+  90/90 yeşil.
 - **18 Ekim 2026 — EN/DE Danışmanlık Dönüşümü, Adım 7+9+11 (planın geri kalanı,
   Adım 5 ve 8 hariç — kaynak: `en_de_danismanlik_donusumu_prompt.md`).** Üç
   ayrı `dev`→`main` `--no-ff` merge + push (kullanıcı "yedek alındı" dedikten
