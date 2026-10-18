@@ -28,7 +28,9 @@
                     </p>
                     <p class="text-muted">
                         {% blocktrans %}Arama sonuçlarınızı ücretsiz indirebilirsiniz. Günlük <strong>{{ daily_limit }}</strong> arama hakkınız bulunmaktadır. Kalan: <strong>{{ remaining }}</strong>.{% endblocktrans %}
+                        {% if LANGUAGE_CODE == 'tr' %}
                         <a href="{% url 'job_list' %}" class="text-warning">{% trans "Premium üyelik" %}</a> {% trans "ile günlük 7 aramaya yükseltebilirsiniz." %}
+                        {% endif %}
                     </p>
                 </div>
             </div>

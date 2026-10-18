@@ -374,7 +374,7 @@
                 {% if completed_projects %}
                 <div class="ax-profile-portfolio-grid">
                     {% for project in completed_projects %}
-                    {% if project.job.status == 'in_progress' %}
+                    {% if project.job.status == 'in_progress' and LANGUAGE_CODE == 'tr' %}
                     <a href="{% url 'job_detail' pk=project.job.pk %}" class="ax-profile-portfolio-card ax-profile-portfolio-card--link">
                     {% else %}
                     <div class="ax-profile-portfolio-card">
@@ -390,7 +390,7 @@
                             </span>
                             {% endif %}
                         </div>
-                    {% if project.job.status == 'in_progress' %}
+                    {% if project.job.status == 'in_progress' and LANGUAGE_CODE == 'tr' %}
                     </a>
                     {% else %}
                     </div>
@@ -442,7 +442,7 @@
                 {% if posted_jobs %}
                 <div class="ax-profile-job-list">
                     {% for job in posted_jobs %}
-                    <a href="{% url 'job_detail' pk=job.pk %}" class="ax-profile-job-item">
+                    <a {% if LANGUAGE_CODE == 'tr' %}href="{% url 'job_detail' pk=job.pk %}"{% endif %} class="ax-profile-job-item">
                         <div>
                             <div class="ax-profile-job-item__title">{{ job.title }}</div>
                             <div class="ax-profile-job-item__meta">
@@ -495,7 +495,7 @@
                 {% if given_proposals %}
                 <div class="ax-profile-job-list">
                     {% for proposal in given_proposals %}
-                    <a href="{% url 'job_detail' pk=proposal.job.pk %}" class="ax-profile-job-item{% if forloop.counter > 5 %} ax-profile-proposal-extra d-none{% endif %}">
+                    <a {% if LANGUAGE_CODE == 'tr' %}href="{% url 'job_detail' pk=proposal.job.pk %}"{% endif %} class="ax-profile-job-item{% if forloop.counter > 5 %} ax-profile-proposal-extra d-none{% endif %}">
                         <div>
                             <div class="ax-profile-job-item__title">{{ proposal.job.title }}</div>
                             <div class="ax-profile-job-item__meta">
