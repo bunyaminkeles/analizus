@@ -2745,6 +2745,75 @@ with connection.cursor() as c:
 
 > Önceki düz-yazı günlük biçiminden madde listesine dönüştürülmüştür; cümleler değişmeden taşınmıştır.
 
+- **18 Ekim 2026 — EN/DE Danışmanlık Dönüşümü, Adım 7+9+11 (planın geri kalanı,
+  Adım 5 ve 8 hariç — kaynak: `en_de_danismanlik_donusumu_prompt.md`).** Üç
+  ayrı `dev`→`main` `--no-ff` merge + push (kullanıcı "yedek alındı" dedikten
+  sonra migration'lı olanlar push edildi).
+  **Adım 7 — EN/DE navigasyon (kapsam kullanıcı kararıyla daraltıldı,
+  plandaki tam Leistungen/Ablauf dropdown yeniden tasarımı yapılmadı):** K6
+  düzeltmesi — "Eğitim" linki (`features.training`) dil şartsızdı, flag
+  açıkken DE'de de görünüyordu → `LANGUAGE_CODE != 'de'` eklendi (TR+EN'de
+  kalır). Yeni "Hizmetlerimiz"/"Nasıl Çalışıyoruz?" linkleri yalnız
+  `feature_intl_consulting_home` açıkken EN/DE'de görünür, `home_intl.html`'e
+  `#leistungen`/`#ablauf` çapaları eklendi.
+  **Adım 9 — ServicePage EN/DE çevirisi (tasarım dokümanından kod aşamasına
+  aynı oturumda geçildi, kullanıcı onayıyla).** İki tasarım kararı: (1) URL —
+  slug tüm dillerde AYNI kalır, yalnız `i18n_patterns` prefix'i değişir
+  (`translate_url`/hreflang hiç özel kod gerektirmeden çalışır); (2) içerik —
+  ayrı `ServicePageTranslation`/`ServicePageSectionTranslation`/
+  `ServicePageFAQTranslation` modelleri (JSON alanı değil), migration `0181`.
+  **Kod yazarken kritik sızıntı bulundu:** `nicel-analiz` pilot sayfasının
+  TR içeriği (intro/süreç/etik/FAQ) VE `service_list.html`/
+  `service_detail.html` şablonları baştan sona pazaryeri moduna göre
+  yazılmış ("İlan Aç", "Pazaryerine Git", "Uzmanları Gör", bölüm başına
+  uzman eşleştirme kartı) — K1'e (admin doğrudan danışmanlık verir) aykırı.
+  Kullanıcı onayıyla kapsam genişletildi: şablonlardaki tüm pazaryeri
+  CTA/kart/breadcrumb EN/DE'de `proje_talebi` CTA'sına çevrildi, uzman
+  eşleştirme EN/DE'de hiç hesaplanmıyor; `nicel-analiz`'in EN/DE
+  intro/süreç/etik/FAQ'ı K1/K3/K4'e göre YENİDEN YAZILDI (birebir çevrilmedi,
+  migration `0182`, korumalı/idempotent); 7 metodoloji bölümü (pazaryeri
+  ifadesi içermiyordu) doğrudan çevrildi. Çevirisi olmayan sayfa (diğer 3 TR
+  sayfası) EN/DE'de **404** döner — TR ham içerik fallback olarak
+  gösterilmez. Yeni `/hizmetler/` sayfası henüz hiçbir EN/DE nav/footer'a
+  linklenmedi (bilinçli, Adım 7 kapsamı dışında bırakıldı).
+  **Adım 11 — ölçüm:** kullanıcı production'da salt okunur komutu çalıştırdı,
+  başlangıç değeri `[{'language': '', 'source': 'direct', 'n': 3}]` (toplam 3
+  `ProjectRequest`, hepsi eski/EN-DE'den talep yok) — §28.7'ye işlendi, tekrar
+  tarihi ~15 Kasım 2026.
+  **Canlı inceleme sırasında kullanıcı 2 ek bulgu buldu, aynı oturumda
+  düzeltildi:** (1) `home_intl.html` hero'sunda CTA sonrası 3 ayrı metin
+  satırı (güven cümlesi + t-testi/ANOVA/Cronbach araç listesi + AI sloganı)
+  kalabalıktı → tek kısa cümleye indirildi, AI sloganı kaldırıldı (aşağıda
+  zaten tekrarlanıyordu). (2) DE hero başlığı TR kaynağın uzun/açıklayıcı
+  birebir çevirisiydi ("Statistische Beratung und Datenanalyse – methodisch
+  sauber, nachvollziehbar dokumentiert.") halbuki EN için ayrı, kısa bir
+  slogan yazılmıştı ("Statistical consulting you can defend.", Adım 6'dan
+  kalma bilinçli tercih) — DE msgstr "Statistikberatung, die standhält."
+  olarak EN ile aynı tona getirildi, TR msgid ve EN değişmedi.
+  **Önemli mimari not (dev/production ayrımı):** dev (Render) ve main
+  (Hetzner) TAMAMEN ayrı veritabanı kullanıyor (yalnız S3 bucket ortak) —
+  dev admin'den açılan bir feature flag production'ı ETKİLEMEZ, ikisinin de
+  kendi admin panelinden ayrı ayrı açılması gerekir; kullanıcı bunu canlı
+  ekran görüntüsü karşılaştırmasıyla keşfetti.
+  Her adımda `pytest forum/tests.py` 90/90 yeşil. **11 adımlık planın
+  tamamı tamamlandı** — yalnız Adım 5 (Premium/bağış EUR+IBAN) ve Adım 8
+  (Impressum, şirket bilgisi gelene kadar) bilinçli olarak ertelendi.
+  **Ek bulgu (kullanıcının "GSC'de yapacak bir şey var mı?" sorusu
+  üzerine bulundu, aynı gün düzeltildi):** `forum/sitemaps.py`'deki
+  `ServicePageSitemap` yalnız TR URL üretiyordu, `service_page_list` de
+  TR-only `StaticViewSitemap`'teydi — Adım 9'da `/hizmetler/`
+  `i18n_patterns`'e taşındığı halde sitemap güncellenmemiş, yeni
+  `/en/hizmetler/`, `/de/hizmetler/`, `/en/hizmetler/nicel-analiz/`,
+  `/de/hizmetler/nicel-analiz/` URL'leri Google'a hiç bildirilmiyordu.
+  Düzeltme: `service_page_list` → `StaticI18nSitemap`'e taşındı (TR+EN+DE);
+  yeni `ServicePageTranslatedSitemap` eklendi — yalnız gerçekten çevirisi
+  olan (sayfa, dil) çiftlerini listeler (Django'nun otomatik `i18n=`
+  mekanizması tüm dil×sayfa kombinasyonunu üretip çevirisi olmayan 3
+  sayfa için EN/DE'de 404 veren URL üretirdi, bu yüzden
+  `MultilingualSitemapMixin` kullanılmadı, `items()` doğrudan (sayfa, dil)
+  çiftleri döner). Doğrulama: `/sitemap.xml` çıktısında beklenen 9 URL
+  (TR 4 detay + TR/EN/DE index + nicel-analiz EN/DE) tam olarak çıktı,
+  başka hiçbir 404 veren URL yok. `pytest` 90/90 yeşil.
 - **16 Ekim 2026 (gece) — EN/DE Danışmanlık Dönüşümü, Adım 1-4+6+10 (kaynak:
   `en_de_danismanlik_donusumu_prompt.md`).** Altı ayrı `dev`→`main` `--no-ff`
   merge + push (her birinde kullanıcı onayı; migration'lı olanlardan önce
