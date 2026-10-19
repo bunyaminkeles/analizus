@@ -453,30 +453,35 @@ class Profile(models.Model):
         """İlan açma yetkisi kontrolü - Tüm kayıtlı kullanıcılar ilan açabilir"""
         return True, gettext("Kayıtlı üye")
 
-    def get_weekly_job_limit(self):
-        """Haftalık ilan limiti: admin'deki SiteSettings değeri (Premium / normal); her 5 geçerli referans +1 (maks +2)"""
+    def get_weekly_job_limit(self, scope='tr'):
+        """Haftalık ilan limiti: admin'deki SiteSettings değeri (Premium / normal).
+        'tr' kapsamında her 5 geçerli referans +1 (maks +2) eklenir; 'intl' (EN/DE) kapsamında
+        referans bonusu uygulanmaz — bu bonus TR forum/quiz büyüme döngüsüne özgüdür."""
         site = SiteSettings.load()
+        if scope != 'tr':
+            return site.job_weekly_limit_intl_premium if self.account_type == 'Premium' else site.job_weekly_limit_intl_free
         base = site.job_weekly_limit_premium if self.account_type == 'Premium' else site.job_weekly_limit_free
         ref_count = ReferralUse.objects.filter(referrer=self.user, rewarded=True).count()
         bonus = min(ref_count // 5, 2)
         return base + bonus
 
-    def get_weekly_job_count(self):
-        """Bu hafta açılan ilan sayısı"""
+    def get_weekly_job_count(self, scope='tr'):
+        """Bu hafta açılan ilan sayısı (kapsama göre: TR ya da EN/DE ortak havuz)"""
         from datetime import timedelta
         from django.utils import timezone
         week_ago = timezone.now() - timedelta(days=7)
-        return self.user.posted_jobs.filter(created_at__gte=week_ago).count()
+        langs = ['tr'] if scope == 'tr' else ['en', 'de']
+        return self.user.posted_jobs.filter(created_at__gte=week_ago, language__in=langs).count()
 
-    def can_post_job_now(self):
+    def can_post_job_now(self, scope='tr'):
         """Kullanıcı şu an ilan açabilir mi? (limit + e-posta kontrolü)"""
         if not self.email_verified:
             return False, gettext("İlan açmak için e-posta doğrulaması gerekli")
         # Admin/Staff haftalık limitten muaf (can_propose ile aynı kural; admin onayı yine uygulanır)
         if self.user.is_superuser or self.user.is_staff:
             return True, gettext("İlan açabilirsiniz")
-        if self.get_weekly_job_count() >= self.get_weekly_job_limit():
-            limit = self.get_weekly_job_limit()
+        if self.get_weekly_job_count(scope) >= self.get_weekly_job_limit(scope):
+            limit = self.get_weekly_job_limit(scope)
             return False, gettext("Haftalık ilan limitinize (%(limit)s) ulaştınız") % {'limit': limit}
         return True, gettext("İlan açabilirsiniz")
 
@@ -1068,7 +1073,14 @@ class FreelanceJob(models.Model):
     budget_max = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Max Bütçe (TL)")
     expected_duration = models.CharField(max_length=100, blank=True, verbose_name="Beklenen Teslim Süresi")
     category = models.ForeignKey(JobCategory, on_delete=models.SET_NULL, null=True, blank=True, related_name='jobs', verbose_name="Kategori")
-    
+    language = models.CharField(
+        max_length=2,
+        choices=[('tr', 'Türkçe'), ('en', 'English'), ('de', 'Deutsch')],
+        default='tr', db_index=True,
+        verbose_name="İlan Dili (Pazaryeri kapsamı)",
+        help_text="İlan hangi pazar kapsamında yayınlandı: TR, yoksa EN/DE (ortak 'intl' havuz). Kullanıcı seçmez, aktif arayüz diline göre otomatik atanır.",
+    )
+
     likes = models.ManyToManyField(User, related_name='liked_jobs', blank=True, verbose_name="Beğenenler")
     saved_by = models.ManyToManyField(User, related_name='saved_jobs', blank=True, verbose_name="Kaydedenler")
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='open', verbose_name="Durum")
@@ -1185,6 +1197,13 @@ class FreelanceJob(models.Model):
         can_post, _ = user.profile.can_post_job()
         return can_post
 
+    @classmethod
+    def in_market_scope(cls, scope):
+        """'tr' ya da 'intl' (EN+DE ortak havuz) kapsamındaki ilanlar."""
+        if scope == 'tr':
+            return cls.objects.filter(language='tr')
+        return cls.objects.filter(language__in=['en', 'de'])
+
 class JobProposal(models.Model):
     """Uzmanların iş ilanlarına verdiği teklifler"""
     STATUS_CHOICES = (
@@ -1218,6 +1237,15 @@ class JobProposal(models.Model):
             return False
         can_prop, _ = user.profile.can_propose()
         return can_prop
+
+    @staticmethod
+    def can_propose_for_job(user, job):
+        """İlanın kapsamına göre teklif yetkisi: EN/DE (intl) ilanlarda yalnız staff teklif verebilir."""
+        if not user.is_authenticated:
+            return False
+        if job.language != 'tr':
+            return bool(user.is_staff or user.is_superuser)
+        return JobProposal.can_propose(user)
 
 
 class JobReview(models.Model):
@@ -1548,6 +1576,14 @@ class SiteSettings(models.Model):
                   "home_intl.html'i görür (TR her zaman home.html). Kapalıyken EN/DE de "
                   "home.html'i görmeye devam eder.",
     )
+    feature_market_intl = models.BooleanField(
+        default=False,
+        verbose_name="Uluslararası Pazaryeri (EN/DE)",
+        help_text="Açıkken EN/DE ziyaretçileri /en/market/ ve /de/market/'de TR'den tamamen ayrı, "
+                  "ortak bir EN+DE havuzunu görür ve ilan açabilir (kriter yok; teklif vermek "
+                  "yalnız staff'a açık). Kapalıyken bu URL'ler EN/DE'de 404 döner — TR pazar yeri "
+                  "feature_market ile ayrı yönetilir, bundan etkilenmez.",
+    )
     meeting_booking_url = models.URLField(
         blank=True,
         verbose_name="Görüşme Randevu Linki",
@@ -1609,6 +1645,12 @@ class SiteSettings(models.Model):
         default=2, verbose_name="Haftalık ilan hakkı: normal kullanıcı")
     job_weekly_limit_premium = models.PositiveIntegerField(
         default=5, verbose_name="Haftalık ilan hakkı: Premium")
+
+    # Uluslararası Pazar (EN/DE, TR'den ayrı havuz): haftalık ilan hakkı — referans bonusu uygulanmaz
+    job_weekly_limit_intl_free = models.PositiveIntegerField(
+        default=1, verbose_name="Haftalık ilan hakkı (EN/DE): normal kullanıcı")
+    job_weekly_limit_intl_premium = models.PositiveIntegerField(
+        default=3, verbose_name="Haftalık ilan hakkı (EN/DE): Premium (bağış ile kazanılır)")
 
     # AI Yorumu (Claude) günlük hakkı — yalnız giriş yapmış kullanıcılar
     ai_summary_daily_limit_free = models.PositiveIntegerField(

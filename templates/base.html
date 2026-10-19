@@ -465,7 +465,10 @@
                 {% if LANGUAGE_CODE == 'tr' %}{% if features.oaipmh or features.yoktez or features.openalex or features.trdizin or features.semanticscholar or features.pubmed %}{% include 'partials/_nav_tarama_link.html' %}{% endif %}
                 {% elif features.openalex or features.semanticscholar or features.pubmed %}{% include 'partials/_nav_tarama_link.html' %}{% endif %}
 
-                {% if features.market and LANGUAGE_CODE == 'tr' %}
+                <!-- Pazaryeri: TR ve EN/DE tamamen ayrı iki havuz, ayrı feature flag ile yönetilir -->
+                {% if LANGUAGE_CODE == 'tr' %}{% if features.market %}
+                <a href="{% url 'job_list' %}" class="site-nav__link">{% trans "Pazaryeri" %}</a>
+                {% endif %}{% elif features.market_intl %}
                 <a href="{% url 'job_list' %}" class="site-nav__link">{% trans "Pazaryeri" %}</a>
                 {% endif %}
 
@@ -683,7 +686,7 @@
             <a href="{% url 'tarama_hub' %}" class="nav-drawer__link">{% trans "Akademik Tarama" %}</a>
             {% endif %}
 
-            {% if features.market and LANGUAGE_CODE == 'tr' %}<a href="{% url 'job_list' %}" class="nav-drawer__link">{% trans "Pazaryeri" %}</a>{% endif %}
+            {% if LANGUAGE_CODE == 'tr' %}{% if features.market %}<a href="{% url 'job_list' %}" class="nav-drawer__link">{% trans "Pazaryeri" %}</a>{% endif %}{% elif features.market_intl %}<a href="{% url 'job_list' %}" class="nav-drawer__link">{% trans "Pazaryeri" %}</a>{% endif %}
 
             {% if LANGUAGE_CODE == 'tr' %}
             <div>

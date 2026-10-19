@@ -1332,3 +1332,191 @@ def test_uzman_dizini_top_10_split(client):
     assert len(featured_usernames) == 10
     assert 'sirali10' not in featured_usernames  # en düşük puanlı (990)
     assert 'sirali10' in other_usernames
+
+
+# ─── Uluslararası Pazaryeri (EN/DE, TR'den ayrı havuz) ────────────────────────
+
+@pytest.fixture
+def intl_market_on(db):
+    """feature_multilingual da açık olmalı — kapalıyken MultilingualFeatureMiddleware
+    /en/ ve /de/ altındaki HER yolu (market dahil) view'a hiç ulaşmadan 404 keser."""
+    from forum.models import SiteSettings
+    s = SiteSettings.load()
+    s.feature_multilingual = True
+    s.feature_market_intl = True
+    s.save()
+    return s
+
+
+@pytest.mark.django_db
+def test_feature_market_intl_off_404s_intl_market_pages(client, job_owner):
+    """feature_market_intl kapalıyken (feature_multilingual açık olsa bile) /en/market/ ve
+    /en/market/new/ 404; TR pazar yeri bundan etkilenmez."""
+    from forum.models import SiteSettings
+    s = SiteSettings.load()
+    s.feature_multilingual = True
+    s.feature_market_intl = False
+    s.save()
+    assert client.get('/en/market/').status_code == 404
+    client.force_login(job_owner)  # login_required 302'sini elemek için giriş yapmış kullanıcıyla test et
+    assert client.get('/en/market/new/').status_code == 404
+    assert client.get('/market/').status_code == 200
+
+
+@pytest.mark.django_db
+def test_post_job_assigns_language_from_url_scope(client, job_owner, intl_market_on):
+    """/en/market/new/ ile açılan ilan otomatik language='en' alır; kullanıcı seçemez (form'da alan yok)."""
+    from forum.models import FreelanceJob, SiteSettings
+    s = SiteSettings.load()
+    s.job_approval_required = False
+    s.save()
+    client.force_login(job_owner)
+    client.post('/en/market/new/', {'title': 'EN iş ilanı', 'description': 'd' * 20,
+                                    'budget_max': '100', 'expected_duration': '1 week',
+                                    'category_choice': 'other'})
+    job = FreelanceJob.objects.get(owner=job_owner)
+    assert job.language == 'en' and job.status == 'open'
+
+
+@pytest.mark.django_db
+def test_intl_job_visible_under_en_and_de_not_under_tr(client, job_owner, intl_market_on):
+    """Ortak EN+DE havuzu: bir dilde açılan ilan diğer dilde de görünür, TR'de hiç görünmez."""
+    from forum.models import FreelanceJob
+    FreelanceJob.objects.create(owner=job_owner, title='EN görünür ilan', description='x' * 20,
+                                budget_max=100, language='en', status='open')
+    assert 'EN görünür ilan' in client.get('/en/market/').content.decode()
+    assert 'EN görünür ilan' in Client().get('/de/market/').content.decode()
+    assert 'EN görünür ilan' not in Client().get('/market/').content.decode()
+
+
+@pytest.mark.django_db
+def test_tr_job_invisible_under_intl_market(client, job_owner, intl_market_on):
+    """TR ilanı EN/DE pazarında asla görünmez."""
+    from forum.models import FreelanceJob
+    FreelanceJob.objects.create(owner=job_owner, title='TR gizli ilan', description='x' * 20,
+                                budget_max=100, language='tr', status='open')
+    assert 'TR gizli ilan' not in client.get('/en/market/').content.decode()
+    assert 'TR gizli ilan' not in Client().get('/de/market/').content.decode()
+
+
+@pytest.mark.django_db
+def test_cross_scope_job_detail_404_for_regular_user(client, job_owner, user, intl_market_on):
+    """Normal kullanıcı karşı kapsamdaki ilanı pk ile de açamaz (TR↔intl, iki yönde de)."""
+    from forum.models import FreelanceJob
+    tr_job = FreelanceJob.objects.create(owner=job_owner, title='TR ilan', description='x' * 20,
+                                         budget_max=100, language='tr', status='open')
+    en_job = FreelanceJob.objects.create(owner=job_owner, title='EN iş', description='x' * 20,
+                                         budget_max=100, language='en', status='open')
+    assert client.get(f'/market/job/{en_job.pk}/').status_code == 404
+    assert Client().get(f'/en/market/job/{tr_job.pk}/').status_code == 404
+    assert client.get(f'/market/job/{tr_job.pk}/').status_code == 200
+    assert Client().get(f'/en/market/job/{en_job.pk}/').status_code == 200
+
+
+@pytest.mark.django_db
+def test_cross_scope_job_detail_ok_for_staff(client, job_owner, staff_user, intl_market_on):
+    """Staff/superuser kapsam farkı olmadan her ilanı açabilir."""
+    from forum.models import FreelanceJob, Profile
+    Profile.objects.get_or_create(user=staff_user)
+    tr_job = FreelanceJob.objects.create(owner=job_owner, title='TR ilan 2', description='x' * 20,
+                                         budget_max=100, language='tr', status='open')
+    en_job = FreelanceJob.objects.create(owner=job_owner, title='EN iş 2', description='x' * 20,
+                                         budget_max=100, language='en', status='open')
+    client.force_login(staff_user)
+    assert client.get(f'/market/job/{en_job.pk}/').status_code == 200
+    assert client.get(f'/en/market/job/{tr_job.pk}/').status_code == 200
+
+
+@pytest.mark.django_db
+def test_intl_weekly_limit_defaults_applied(job_owner):
+    """Varsayılan: EN/DE'de normal kullanıcı haftada 1, Premium 3 — TR limitlerinden bağımsız."""
+    profile = job_owner.profile
+    assert profile.get_weekly_job_limit('intl') == 1
+    profile.account_type = 'Premium'
+    assert profile.get_weekly_job_limit('intl') == 3
+
+
+@pytest.mark.django_db
+def test_donation_premium_raises_intl_limit(job_owner, bronze_tier):
+    """Bağış tamamlanıp Premium olununca EN/DE haftalık limiti de yükselir (ayrı bir mekanizma gerekmez)."""
+    from forum.models import Donation
+    d = Donation.objects.create(user=job_owner, email='owner@example.com', amount=50, payment_id='T-intl',
+                                premium_days_promised=7, status='pending_confirmation')
+    d.status = 'completed'
+    d.save()
+    profile = job_owner.profile
+    profile.refresh_from_db()
+    assert profile.account_type == 'Premium'
+    assert profile.get_weekly_job_limit('intl') == 3
+
+
+@pytest.mark.django_db
+def test_tr_and_intl_weekly_counts_isolated(job_owner):
+    """Aynı haftada açılan TR ve EN/DE ilanları ayrı sayılır, birbirine karışmaz."""
+    from forum.models import FreelanceJob
+    FreelanceJob.objects.create(owner=job_owner, title='TR sayaç', description='x' * 20,
+                                budget_max=100, language='tr', status='open')
+    FreelanceJob.objects.create(owner=job_owner, title='EN sayaç', description='x' * 20,
+                                budget_max=100, language='en', status='open')
+    profile = job_owner.profile
+    assert profile.get_weekly_job_count('tr') == 1
+    assert profile.get_weekly_job_count('intl') == 1
+
+
+@pytest.mark.django_db
+def test_referral_bonus_not_applied_to_intl_limit(job_owner):
+    """TR limitine referans bonusu eklenir (maks +2); EN/DE limiti bundan etkilenmez."""
+    from forum.models import ReferralUse
+    for i in range(10):
+        referred = User.objects.create_user(username=f'introref{i}', password='x')
+        ReferralUse.objects.create(referrer=job_owner, referred=referred, ip_address='127.0.0.1', rewarded=True)
+    profile = job_owner.profile
+    assert profile.get_weekly_job_limit('tr') == 2 + 2  # varsayılan 2 + maks bonus 2
+    assert profile.get_weekly_job_limit('intl') == 1   # bonus uygulanmaz
+
+
+@pytest.mark.django_db
+def test_non_staff_cannot_submit_proposal_on_intl_job(client, job_owner, user, intl_market_on):
+    """Yüksek rütbeli/rozetli normal kullanıcı bile EN/DE ilanına teklif veremez — yalnız staff."""
+    from forum.models import FreelanceJob, JobProposal, Profile
+    job = FreelanceJob.objects.create(owner=job_owner, title='EN iş 3', description='x' * 20,
+                                      budget_max=100, language='en', status='open')
+    profile, _ = Profile.objects.get_or_create(user=user)
+    profile.account_type = 'Premium'  # TR'de teklif vermesine yeten bir koşul
+    profile.email_verified = True
+    profile.save()
+    client.force_login(user)
+    r = client.get(f'/en/market/job/{job.pk}/')
+    assert r.context['is_expert'] is False
+    client.post(f'/en/market/job/{job.pk}/', {'price': '100', 'duration': '2 gün', 'message': 'deneme'})
+    assert not JobProposal.objects.filter(job=job).exists()
+
+
+@pytest.mark.django_db
+def test_staff_can_submit_proposal_on_intl_job(client, job_owner, staff_user, intl_market_on, sent_job_emails):
+    """Staff kullanıcı EN/DE ilanına teklif verebilir."""
+    from forum.models import FreelanceJob, JobProposal, Profile
+    Profile.objects.get_or_create(user=staff_user)
+    job = FreelanceJob.objects.create(owner=job_owner, title='EN iş 4', description='x' * 20,
+                                      budget_max=100, language='en', status='open')
+    client.force_login(staff_user)
+    client.post(f'/en/market/job/{job.pk}/', {'price': '150', 'duration': '3 gün', 'message': 'staff teklifi'})
+    assert JobProposal.objects.filter(job=job, expert=staff_user).exists()
+
+
+@pytest.mark.django_db
+def test_tr_bidding_rules_unchanged(client, job_owner, user):
+    """TR ilanında mevcut rütbe/rozet/puan bazlı teklif verme kuralı değişmedi (regresyon)."""
+    from forum.models import FreelanceJob, JobProposal, Profile
+    job = FreelanceJob.objects.create(owner=job_owner, title='TR iş', description='x' * 20,
+                                      budget_max=100, language='tr', status='open')
+    profile, _ = Profile.objects.get_or_create(user=user, defaults={'email_verified': True})
+    profile.email_verified = True
+    profile.save()  # rütbe/rozet/Premium yok → teklif veremez
+    client.force_login(user)
+    r = client.get(f'/market/job/{job.pk}/')
+    assert r.context['is_expert'] is False
+    profile.account_type = 'Premium'
+    profile.save()
+    r = client.get(f'/market/job/{job.pk}/')
+    assert r.context['is_expert'] is True

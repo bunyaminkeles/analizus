@@ -184,6 +184,34 @@
 </section>
 
 <!-- =====================================================
+     PAZARYERİ (EN/DE) — ayrı, TR'den tamamen bağımsız havuz
+     ===================================================== -->
+{% if features.market_intl %}
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="ax-market-card h-100 d-flex flex-column">
+                    <div class="ax-market-header mb-3">
+                        <div class="ax-market-icon">
+                            <i class="bi bi-briefcase" style="font-size:28px;"></i>
+                        </div>
+                        <h2 class="ax-market-title">{% trans "Pazaryeri" %}</h2>
+                    </div>
+                    <div class="ax-market-body flex-grow-1">
+                        <p class="ax-market-desc">{% trans "İhtiyacınızı anlatan bir ilan açın, uzmanlarımızdan teklif alın." %}</p>
+                    </div>
+                    <div class="ax-market-footer mt-4">
+                        <a href="{% url 'job_list' %}" class="ax-btn ax-btn--primary ax-btn--lg ax-block ax-w-full">{% trans "Pazaryerine Git" %}</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- =====================================================
      TESLİMATLAR
      ===================================================== -->
 <section class="py-5">

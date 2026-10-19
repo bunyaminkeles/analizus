@@ -642,8 +642,8 @@ class ServicePageFAQTranslationAdmin(ModelAdmin):
 class FreelanceJobAdmin(ModelAdmin):
     warn_unsaved_changes = True
     compressed_fields = True
-    list_display = ('title', 'owner', 'category', 'status', 'teklif_sayisi', 'kabul_edilen_uzman', 'views', 'created_at', 'updated_at')
-    list_filter = ('status', 'is_featured', 'category', 'created_at')
+    list_display = ('title', 'owner', 'language', 'category', 'status', 'teklif_sayisi', 'kabul_edilen_uzman', 'views', 'created_at', 'updated_at')
+    list_filter = ('language', 'status', 'is_featured', 'category', 'created_at')
     search_fields = ('title', 'description', 'owner__username')
     date_hierarchy = 'created_at'
     filter_horizontal = ('likes', 'saved_by')
@@ -740,7 +740,7 @@ class JobProposalAdmin(ModelAdmin):
     warn_unsaved_changes = True
     compressed_fields = True
     list_display = ('job', 'ilan_sahibi', 'ilan_durumu', 'teklif_veren', 'price', 'duration', 'status', 'created_at')
-    list_filter = ('status', 'job__status', 'created_at')
+    list_filter = ('status', 'job__status', 'job__language', 'created_at')
     search_fields = ('job__title', 'job__owner__username', 'expert__username', 'message')
 
     @admin.display(description='İlan Sahibi')
@@ -968,6 +968,7 @@ class SiteSettingsAdmin(ModelAdmin):
                 'feature_semanticscholar', 'feature_pubmed', 'feature_istatistik', 'feature_transcript',
                 'feature_agentic_landing', 'feature_training', 'feature_multilingual',
                 'feature_hizmet_sayfalari', 'feature_ai_summary', 'feature_intl_consulting_home',
+                'feature_market_intl',
             ),
             'classes': ('collapse',),
         }),
@@ -982,8 +983,9 @@ class SiteSettingsAdmin(ModelAdmin):
             'classes': ('collapse',),
         }),
         ('Limitler', {
-            'description': 'Scraping: TR Dizin, OpenAlex, OAI-PMH scraperlarının çekebileceği maks. kayıt (default 5000). Analiz: Tez & Makale Analizi için işlenecek maks. kayıt (Render için 500, Hetzner için 2000–5000 önerilir). Haftalık ilan hakkı: son 7 günde açılabilecek ilan sayısı; her 5 geçerli referans +1 (en fazla +2) ayrıca eklenir. İlan onayı: açıkken yeni ilan admin onayından sonra yayınlanır (İş İlanları → Onayla/Reddet). Uzman Dizini: /uzmanlar/ sayfasına girmek için gereken en az puan (ayrıca en az 3 uzmanlık alanı + e-posta doğrulaması şart, admin/staff hesapları otomatik dışarıda — tekil istisna Profil → Uzman Dizini: Zorla Göster/Gizle alanından).',
+            'description': 'Scraping: TR Dizin, OpenAlex, OAI-PMH scraperlarının çekebileceği maks. kayıt (default 5000). Analiz: Tez & Makale Analizi için işlenecek maks. kayıt (Render için 500, Hetzner için 2000–5000 önerilir). Haftalık ilan hakkı: son 7 günde açılabilecek ilan sayısı; her 5 geçerli referans +1 (en fazla +2) ayrıca eklenir. Haftalık ilan hakkı (EN/DE): TR\'den tamamen ayrı pazar — kriter yok, referans bonusu uygulanmaz; Premium (bağış ile kazanılır) daha yüksek hak verir. İlan onayı: açıkken yeni ilan admin onayından sonra yayınlanır (İş İlanları → Onayla/Reddet). Uzman Dizini: /uzmanlar/ sayfasına girmek için gereken en az puan (ayrıca en az 3 uzmanlık alanı + e-posta doğrulaması şart, admin/staff hesapları otomatik dışarıda — tekil istisna Profil → Uzman Dizini: Zorla Göster/Gizle alanından).',
             'fields': ('scrap_max_records', 'analiz_max_records', 'job_weekly_limit_free', 'job_weekly_limit_premium',
+                       'job_weekly_limit_intl_free', 'job_weekly_limit_intl_premium',
                        'job_approval_required', 'job_title_max_chars', 'job_description_max_chars',
                        'uzman_dizini_min_puan', 'ai_summary_daily_limit_free', 'ai_summary_daily_limit_premium'),
             'classes': ('collapse',),
