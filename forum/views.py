@@ -48,6 +48,31 @@ def feature_required(flag_name):
     return decorator
 
 
+def market_scope(request):
+    """Aktif arayüz diline göre pazar kapsamı: 'tr' ya da 'intl' (EN+DE ortak havuz)."""
+    from django.utils.translation import get_language
+    lang = (get_language() or 'tr')[:2]
+    return 'tr' if lang == 'tr' else 'intl'
+
+
+def job_scope(job):
+    return 'tr' if job.language == 'tr' else 'intl'
+
+
+def market_intl_enabled():
+    return SiteSettings.load().feature_market_intl
+
+
+def get_job_or_404_for_scope(request, pk, **extra_filters):
+    """Cross-scope ilan erişimini engeller: staff/superuser her kapsamı görebilir,
+    normal kullanıcı yalnız request'in kapsamındaki (TR ya da EN/DE) ilana erişebilir."""
+    job = get_object_or_404(FreelanceJob, pk=pk, **extra_filters)
+    if not (request.user.is_authenticated and (request.user.is_staff or request.user.is_superuser)):
+        if job_scope(job) != market_scope(request):
+            raise Http404
+    return job
+
+
 # --- HEALTH CHECK (Cron ping için) ---
 @require_GET
 def health_check(request):
@@ -417,6 +442,10 @@ def job_list(request):
     now = tz.now()
     three_months_ago = now - timedelta(days=90)
 
+    scope = market_scope(request)
+    if scope == 'intl' and not market_intl_enabled():
+        raise Http404
+
     # Süresi dolan açık ilanları otomatik kapat; bekleyen teklifleri de reddet
     expired_qs = FreelanceJob.objects.filter(status='open', expires_at__lt=now)
     JobProposal.objects.filter(job__in=expired_qs, status='pending').update(status='rejected')
@@ -427,13 +456,15 @@ def job_list(request):
     old_qs.update(status='cancelled')
 
     sort = request.GET.get('sort', 'newest')
-    jobs = FreelanceJob.objects.filter(status='open').select_related('owner', 'category').annotate(
+    jobs = FreelanceJob.in_market_scope(scope).filter(status='open').select_related('owner', 'category').annotate(
         p_count=Count('proposals', distinct=True)
     )
 
     # Kategori Gezinmesi — chip listesi, filtre uygulanmadan önceki açık ilanlardan
     # çıkarılır (seçili kategori değişince chip'ler daralmasın)
-    market_categories = JobCategory.objects.filter(jobs__status='open').distinct().order_by('order', 'title')
+    market_categories = JobCategory.objects.filter(
+        jobs__in=FreelanceJob.in_market_scope(scope).filter(status='open')
+    ).distinct().order_by('order', 'title')
     selected_category = None
     category_id = request.GET.get('category')
     if category_id and category_id.isdigit():
@@ -447,11 +478,11 @@ def job_list(request):
     else:
         jobs = jobs.order_by('-created_at')
 
-    # İstatistikler
-    completed_qs = FreelanceJob.objects.filter(status='completed')
+    # İstatistikler (yalnız bu kapsamdaki ilanlardan)
+    completed_qs = FreelanceJob.in_market_scope(scope).filter(status='completed')
     recent_completed_qs = completed_qs.filter(updated_at__gte=three_months_ago)
     avg_budget = completed_qs.aggregate(avg=Avg('budget_max'))['avg'] or 0
-    total_experts = JobProposal.objects.values('expert').distinct().count()
+    total_experts = JobProposal.objects.filter(job__language__in=(['tr'] if scope == 'tr' else ['en', 'de'])).values('expert').distinct().count()
 
     market_stats = {
         'total_completed': completed_qs.count(),
@@ -507,9 +538,14 @@ def job_list(request):
 def post_job(request):
     from datetime import timedelta
     from django.utils import timezone
+    from django.utils.translation import get_language
+
+    scope = market_scope(request)
+    if scope == 'intl' and not market_intl_enabled():
+        raise Http404
 
     profile = request.user.profile
-    can_post, reason = profile.can_post_job_now()
+    can_post, reason = profile.can_post_job_now(scope)
     if not can_post:
         messages.error(request, reason)
         return redirect('job_list')
@@ -519,6 +555,7 @@ def post_job(request):
         if form.is_valid():
             job = form.save(commit=False)
             job.owner = request.user
+            job.language = 'tr' if scope == 'tr' else (get_language() or 'tr')[:2]
             if SiteSettings.load().job_approval_required:
                 # Admin onayından sonra yayınlanır; süre ve ilk ilan hediyesi onay anından başlar (FreelanceJob.save)
                 job.status = 'pending'
@@ -544,7 +581,7 @@ def post_job(request):
 
 @login_required
 def toggle_job_like(request, pk):
-    job = get_object_or_404(FreelanceJob, pk=pk)
+    job = get_job_or_404_for_scope(request, pk)
     if request.user in job.likes.all():
         job.likes.remove(request.user)
         messages.info(request, gettext("Beğeni geri alındı."))
@@ -555,7 +592,7 @@ def toggle_job_like(request, pk):
 
 @login_required
 def toggle_job_bookmark(request, pk):
-    job = get_object_or_404(FreelanceJob, pk=pk)
+    job = get_job_or_404_for_scope(request, pk)
     if request.user in job.saved_by.all():
         job.saved_by.remove(request.user)
         messages.info(request, gettext("İlan kaydedilenlerden çıkarıldı."))
@@ -567,7 +604,7 @@ def toggle_job_bookmark(request, pk):
 @login_required
 @require_POST
 def close_job(request, pk):
-    job = get_object_or_404(FreelanceJob, pk=pk, owner=request.user)
+    job = get_job_or_404_for_scope(request, pk, owner=request.user)
 
     if job.status == 'pending':
         # Onay bekleyen ilan geri çekilir (teklif alamadığı için bildirim yok)
@@ -605,7 +642,7 @@ def close_job(request, pk):
 
 @login_required
 def edit_job(request, pk):
-    job = get_object_or_404(FreelanceJob, pk=pk, owner=request.user)
+    job = get_job_or_404_for_scope(request, pk, owner=request.user)
 
     if job.status not in ('open', 'pending'):
         messages.error(request, gettext('Yalnızca açık ilanlar düzenlenebilir.'))
@@ -644,7 +681,7 @@ def edit_job(request, pk):
 @require_POST
 def accept_proposal(request, pk, proposal_id):
     """Teklifi kabul et, ilanı askıya al"""
-    job = get_object_or_404(FreelanceJob, pk=pk, owner=request.user)
+    job = get_job_or_404_for_scope(request, pk, owner=request.user)
     proposal = get_object_or_404(JobProposal, pk=proposal_id, job=job)
 
     if job.status != 'open':
@@ -713,7 +750,7 @@ def admin_manage_proposal(request, job_pk, proposal_id):
         messages.error(request, gettext("Bu işlem için yetkiniz yok."))
         return redirect('job_detail', pk=job_pk)
 
-    job = get_object_or_404(FreelanceJob, pk=job_pk)
+    job = get_job_or_404_for_scope(request, job_pk)
     proposal = get_object_or_404(JobProposal, pk=proposal_id, job=job)
     
     action = request.POST.get('action') # 'delete' or 'reject'
@@ -790,7 +827,10 @@ def admin_manage_proposal(request, job_pk, proposal_id):
 
 @feature_required('market')
 def job_detail(request, pk):
-    job = get_object_or_404(FreelanceJob, pk=pk)
+    scope = market_scope(request)
+    if scope == 'intl' and not market_intl_enabled():
+        raise Http404
+    job = get_job_or_404_for_scope(request, pk)
 
     # Onay bekleyen / reddedilen ilanı yalnız sahibi ve admin görür
     if job.status in ('pending', 'rejected') and not (
@@ -810,13 +850,15 @@ def job_detail(request, pk):
     user_proposal = None
     proposal_form = None
 
-    # Teklif verme yetkisi kontrolü
-    is_expert = JobProposal.can_propose(request.user)
+    # Teklif verme yetkisi kontrolü (intl ilanlarda yalnız staff teklif verebilir)
+    is_expert = JobProposal.can_propose_for_job(request.user, job)
     can_propose_reason = ""
-    if request.user.is_authenticated and hasattr(request.user, 'profile'):
-        _, can_propose_reason = request.user.profile.can_propose()
-    elif not request.user.is_authenticated:
+    if not request.user.is_authenticated:
         can_propose_reason = gettext("Teklif verebilmek için giriş yapmalısınız.")
+    elif job.language != 'tr':
+        can_propose_reason = gettext("Bu ilan türünde teklif yalnızca Analizus ekibi tarafından verilebilir.")
+    elif hasattr(request.user, 'profile'):
+        _, can_propose_reason = request.user.profile.can_propose()
 
     # 1. Teklifleri görme yetkisi
     if request.user == job.owner or request.user.is_superuser or request.user.is_staff:
@@ -874,8 +916,8 @@ def job_detail(request, pk):
         is_liked = job.likes.filter(id=request.user.id).exists()
         is_saved = job.saved_by.filter(id=request.user.id).exists()
 
-    # Benzer İlanlar (Aynı kategorideki diğer açık ilanlar)
-    similar_jobs = FreelanceJob.objects.filter(
+    # Benzer İlanlar (Aynı kategorideki diğer açık ilanlar, aynı pazar kapsamında)
+    similar_jobs = FreelanceJob.in_market_scope(scope).filter(
         category=job.category,
         status='open'
     ).exclude(pk=pk).order_by('-created_at')[:3]
@@ -915,7 +957,7 @@ def job_detail(request, pk):
 @login_required
 @require_POST
 def add_job_review(request, pk):
-    job = get_object_or_404(FreelanceJob, pk=pk)
+    job = get_job_or_404_for_scope(request, pk)
     accepted_proposal = job.proposals.filter(status='accepted').first()
 
     if not accepted_proposal:

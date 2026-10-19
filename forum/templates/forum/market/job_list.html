@@ -249,8 +249,8 @@
     </div>
     {% endif %}
 
-    <!-- Uzman Vitrini -->
-    {% if featured_experts %}
+    <!-- Uzman Vitrini — yalnız TR (uzman_dizini EN/DE'de hiç çevrilmedi, i18n_patterns dışında) -->
+    {% if featured_experts and LANGUAGE_CODE == 'tr' %}
     <div class="mt-5 pt-2">
         <h5 class="text-white fw-semibold mb-1">{% trans "Uzmanlarla Tanış" %}</h5>
         <p class="text-muted small mb-4">{% trans "Alanında doğrulanmış uzmanlarımızdan birkaçı." %}</p>

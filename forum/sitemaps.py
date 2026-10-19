@@ -107,11 +107,11 @@ class CategorySitemap(Sitemap):
 
 
 class JobSitemap(Sitemap):
-    """İş ilanları için sitemap"""
+    """TR pazar yeri ilanları için sitemap (bare prefix). EN/DE ilanları ayrı — bkz. JobIntlSitemap."""
     changefreq = 'daily'
 
     def items(self):
-        return FreelanceJob.objects.filter(status='open').order_by('-created_at')
+        return FreelanceJob.objects.filter(status='open', language='tr').order_by('-created_at')
 
     def priority(self, obj):
         """Vitrin ilanlarına (1.0) standart ilanlardan (0.8) daha yüksek öncelik ver"""
@@ -122,6 +122,28 @@ class JobSitemap(Sitemap):
 
     def location(self, obj):
         return reverse('job_detail', args=[obj.pk])
+
+
+class JobIntlSitemap(Sitemap):
+    """Uluslararası pazar yeri ilanları (EN+DE ortak havuz) için sitemap — yalnız feature_market_intl açıkken."""
+    changefreq = 'daily'
+    priority = 0.8
+
+    def items(self):
+        from .models import SiteSettings
+        if not SiteSettings.load().feature_market_intl:
+            return []
+        jobs = FreelanceJob.objects.filter(status='open', language__in=['en', 'de']).order_by('-created_at')
+        return [(job, job.language) for job in jobs]
+
+    def lastmod(self, item):
+        return item[0].created_at
+
+    def location(self, item):
+        from django.utils import translation
+        job, lang = item
+        with translation.override(lang):
+            return reverse('job_detail', args=[job.pk])
 
 
 class BlogPostSitemap(Sitemap):

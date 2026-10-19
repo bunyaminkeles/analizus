@@ -79,6 +79,7 @@ def feature_flags(request):
             'hizmet_sayfalari': site.feature_hizmet_sayfalari,
             'ai_summary': site.feature_ai_summary,
             'intl_consulting_home': site.feature_intl_consulting_home,
+            'market_intl': site.feature_market_intl,
         },
         'meeting_booking_url': site.meeting_booking_url,
         # Sipariş sayfalarındaki fiyat tablosu + JS tahmini (sunucu tutarı modelde aynı ayardan hesaplar)
@@ -90,6 +91,8 @@ def feature_flags(request):
         'job_limits': {
             'free': site.job_weekly_limit_free,
             'premium': site.job_weekly_limit_premium,
+            'intl_free': site.job_weekly_limit_intl_free,
+            'intl_premium': site.job_weekly_limit_intl_premium,
         },
     }
 

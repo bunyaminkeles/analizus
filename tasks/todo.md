@@ -10,6 +10,64 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
+- [x] **(19 Ekim 2026) EN/DE için ayrı pazaryeri — TR'den tamamen ayrı
+  havuz, kriter yok, haftalık 1 ücretsiz + bağışla yükselen limit —
+  UYGULANDI (dev'de), henüz canlıya alınmadı.** Üç paralel araştırma +
+  bir tasarım ajanıyla kod tabanı taranıp plan onaylandı (plan dosyası:
+  `quizzical-crunching-eagle.md`), sonra sırayla uygulandı. Kararlar:
+  EN+DE tek ortak "intl" havuzda birleşiyor (ayrı iki pazar değil);
+  fazladan ilan hakkı mevcut bağış→Premium mekanizmasıyla otomatik
+  işliyor (yeni mekanizma icat edilmedi, yalnız yeni limit sayıları
+  eklendi); teklif vermek (bidding) intl ilanlarda yalnız `is_staff`
+  kullanıcılara açık (kullanıcı kararı: "kim görüp teklif verecek...
+  sadece admin yetkisine sahip olanlara açık olsun"). **Değişiklik
+  özeti:** `FreelanceJob.language` alanı (migration `0183`, varsayılan
+  `tr`, mevcut kayıtlar etkilenmez) + `FreelanceJob.in_market_scope()`;
+  `SiteSettings.feature_market_intl` + `job_weekly_limit_intl_free/
+  premium` (varsayılan 1/3, admin'den değiştirilebilir); `Profile.
+  get_weekly_job_limit/get_weekly_job_count/can_post_job_now` artık
+  `scope='tr'|'intl'` parametresi alıyor (referans bonusu yalnız TR'de);
+  `JobProposal.can_propose_for_job()` intl ilanlarda `is_staff` kontrolü
+  yapıyor; `forum/views.py`'de `market_scope()`/`get_job_or_404_for_scope()`
+  helper'ları tüm pk'li market view'larını (job_list, post_job,
+  job_detail, toggle_like/bookmark, close/edit/accept_proposal,
+  admin_manage_proposal, add_job_review) kapsam bazlı 404'e bağlıyor —
+  normal kullanıcı pk tahminiyle bile karşı kapsama (TR↔intl) giremiyor,
+  staff/superuser her ikisini de görebiliyor; `my_jobs`/`promote_job`/
+  `mark_payment_transferred` bilinçli olarak dokunulmadı (zaten
+  `owner=request.user` filtreli, sızıntı riski yok). Navbar/footer/
+  `proje_talebi.html` linkleri TR→`features.market`, EN/DE→
+  `features.market_intl` ikili yapıya ayrıldı; `home_intl.html`'e yeni
+  pazaryeri CTA'sı eklendi. **Gerçek bug bulundu ve düzeltildi:**
+  `job_list.html`'deki "Uzmanlarla Tanış" → `uzman_dizini` linki
+  (bu URL hiç çevrilmedi, i18n_patterns dışında) EN/DE'de de
+  render ediliyordu, kırık link veriyordu — artık TR-only.
+  `job_detail.html`'deki "Nasıl Yetki Kazanılır? (1000+ puan kazan...)"
+  ipucu kutusu intl ilanlarda yanlış/alakasız olduğu için TR-only yapıldı.
+  Admin: `FreelanceJobAdmin`/`JobProposalAdmin`'e `language` filtresi,
+  `SiteSettingsAdmin`'e yeni flag+limit alanları (3 nokta kuralı
+  uygulandı: model + `feature_flags()` context processor + fieldsets).
+  SEO: `JobSitemap` artık yalnız `language='tr'` filtreli (önceden
+  filtresizdi, şans eseri sorun çıkmamıştı), yeni `JobIntlSitemap`
+  eklendi (`ServicePageTranslatedSitemap` deseniyle); `robots.txt`'te
+  değişiklik gerekmedi (EN/DE action-endpoint disallow'ları zaten vardı).
+  **13 yeni pytest testi** eklendi (`forum/tests.py`), toplam 103/103
+  yeşil (`docker compose exec web python -m pytest forum/tests.py`).
+  Manuel doğrulama (gerçek request/response ile): ortak havuz görünürlüğü,
+  çapraz kapsam 404'ü (iki yönde), staff bypass, teklif formu gizleme —
+  hepsi beklenen gibi çalıştı. **Henüz yapılmayanlar / canlıya almadan
+  önce:** (1) yeni EN/DE metinleri (`gettext`/`{% trans %}` ile
+  işaretlendi ama) `locale/en|de/LC_MESSAGES/django.po`'ya henüz
+  çevrilmedi — `makemessages`+çeviri+`compilemessages` ayrı bir tur
+  gerekir; (2) `job_weekly_limit_intl_premium` varsayılanı (3) kullanıcı
+  tarafından teyit edilmedi, admin'den değiştirilebilir; (3) bütçe alanı
+  hâlâ yalnızca TL (₺ sembolü şablonlarda sabit) — mevcut tasarımda
+  bilinçli olarak korundu, istenirse ayrı görev; (4) **"Go-live" adımı
+  kullanıcıya ait**: admin panelinden `feature_market_intl`'i açmak —
+  henüz açılmadı, hiçbir EN/DE kullanıcısına görünmüyor. Migration
+  yalnızca lokalde uygulandı; `main`'e push öncesi `scripts/
+  yedek_indir.sh --simdi` (kullanıcının kendi bilgisayarında) istenmeli.
+
 - [x] **(18 Ekim 2026) Admin dashboard — İlan Onayı tek-tık onay/red.**
   Şikayet: bildirimdeki "Onayla / Reddet →" linki Django'nun standart
   değiştirme formuna gidiyordu, orada buton olmadığı için kullanıcı tekrar
@@ -22,7 +80,7 @@ maddelerde.
   durumlar için "Detaylı →" (changeform) içeriyor. Test client ile
   onay/red/geçersiz-sebep-guard'ı doğrulandı, `forum/tests.py` 90/90 yeşil.
   Migration yok. **Henüz push edilmedi**, kullanıcı onayı bekleniyor.
-- [ ] **(18 Ekim 2026) EN/DE pazaryeri sızıntısı — kalıntı link düzeltmesi
+- [x] **(18 Ekim 2026) EN/DE pazaryeri sızıntısı — kalıntı link düzeltmesi
   UYGULANDI, doğrulanmadı + 2 açık karar kaldı.** Kaynak: bir admin "Navigasyon
   Grafiği" kaydında EN'de login olan bir kullanıcının onboarding sonrası
   `/en/market/` ve `/en/market/job/191/`'i ziyaret ettiği görüldü (16 Ekim
