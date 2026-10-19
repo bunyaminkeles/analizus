@@ -5,7 +5,8 @@ from django.contrib.auth.models import User
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.core.mail import send_mail
 from django.shortcuts import render
-from django.utils.html import format_html
+from django.template.loader import render_to_string
+from django.utils.html import format_html, strip_tags
 from unfold.admin import ModelAdmin, TabularInline, StackedInline
 from broadcast.models import EmailBroadcast
 from .models import Section, Category, Topic, Post, Profile, ContactMessage, PrivateMessage, Badge, Skill, DailyTip, QuizQuestion, QuizScore, FreelanceJob, JobCategory, JobProposal, JobReview, UserQuizAttempt, DonationTier, Donation, JobPayment, TopicTag, SiteSettings, BlogCategory, BlogPost, BlogTag, SuccessStory, StudyRoom, ProjectRequest, ReferralCode, ReferralUse, TrainingRequest, ServicePage, ServicePageSection, ServicePageFAQ, ServicePageTranslation, ServicePageSectionTranslation, ServicePageFAQTranslation
@@ -55,11 +56,21 @@ class UserAdmin(BaseUserAdmin, ModelAdmin):
                 self.message_user(request, 'Konu ve mesaj alanları boş olamaz.', level=messages.ERROR)
                 return None
 
+            html_message = render_to_string('forum/emails/admin_broadcast.html', {
+                'subject': subject,
+                'body': body,
+                'site_name': 'Analizus',
+            })
+            plain_message = strip_tags(body)
+
             users = list(queryset.exclude(email=''))
             sent = failed = 0
             for user in users:
                 try:
-                    send_mail(subject, body, settings.DEFAULT_FROM_EMAIL, [user.email], fail_silently=False)
+                    send_mail(
+                        subject, plain_message, settings.DEFAULT_FROM_EMAIL, [user.email],
+                        html_message=html_message, fail_silently=False,
+                    )
                     sent += 1
                 except Exception:
                     failed += 1
