@@ -1018,6 +1018,7 @@
     {% endblock %}
 
     {% if GOOGLE_ANALYTICS_ID %}{% include 'partials/cookie_consent.html' %}{% endif %}
+    {% if show_marketing_consent_popup %}{% include 'partials/marketing_consent_popup.html' %}{% endif %}
 
 {% if features.ai_assistant %}
 <!-- AI Sohbet Widget -->

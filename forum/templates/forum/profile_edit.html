@@ -195,6 +195,10 @@
                                 <input class="ax-form-check-input" type="checkbox" name="email_on_private_message" {% if profile.email_on_private_message %}checked{% endif %}>
                                 <span class="ax-form-check-label">{% trans "Özel mesaj geldiğinde e-posta gönder" %}</span>
                             </label>
+                            <label class="ax-form-check">
+                                <input class="ax-form-check-input" type="checkbox" name="marketing_email_consent" {% if profile.marketing_email_consent %}checked{% endif %}>
+                                <span class="ax-form-check-label">{% trans "Analiz davranışıma göre öneri e-postaları al" %}</span>
+                            </label>
                         </div>
 
                         <h2 class="ax-profile-edit__section">{% trans "Gizlilik" %}</h2>

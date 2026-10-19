@@ -283,6 +283,29 @@ def cron_cleanup_pageviews(request):
 
 
 @require_GET
+def cron_send_nurture_emails(request):
+    """
+    Son 3 gün içinde 2+ farklı analiz/tarama aracı ziyaret eden, onay vermiş
+    kullanıcılara otomatik öneri e-postası gönderir (14 gün cooldown).
+
+    Kullanım:
+    - GET /api/cron/send-nurture-emails/?secret=YOUR_SECRET
+    - Günlük (Pazar hariç, gündüz saatinde) cron job olarak çalıştırılmalıdır.
+    """
+    if not _verify_cron_secret(request):
+        return JsonResponse({'success': False, 'error': 'Unauthorized'}, status=403)
+
+    from broadcast.nurture import send_nurture_emails
+
+    try:
+        result = send_nurture_emails()
+        return JsonResponse({'success': True, **result})
+    except Exception as e:
+        logger.error(f"Nurture e-posta gönderim hatası: {e}", exc_info=True)
+        return JsonResponse({'success': False, 'error': str(e)}, status=500)
+
+
+@require_GET
 def cron_cleanup_session_datasets(request):
     """
     2 saatten eski, RAM'de duran istatistik araçları session veri setlerini siler.

@@ -1,0 +1,78 @@
+{% load i18n %}
+{% comment %}
+Pazarlama/öneri e-postaları onay popup'ı (opt-in, KVKK). "Hayır"/kapat
+denirse 15 gün sonra tekrar sorulur (forum/context_processors.py
+profile_context: show_marketing_consent_popup). Cookie banner'dan farklı
+olarak sunucuya (Profile.marketing_email_consent) yazılır — tarayıcıda
+tutulmaz.
+{% endcomment %}
+<div id="ax-mkt-consent" class="ax-mkt-consent" role="dialog" aria-live="polite"
+     aria-label="{% trans 'Öneri e-postası onayı' %}">
+    <p class="ax-mkt-consent__text">
+        {% trans "Analizus'u daha etkin kullanabilmek için uygun uzman/ipucu önerilerini e-posta ile almak ister misiniz?" %}
+    </p>
+    <div class="ax-mkt-consent__actions">
+        <button type="button" class="ax-btn ax-btn--ghost" data-ax-mkt-consent="no">{% trans "Şimdi değil" %}</button>
+        <button type="button" class="ax-btn ax-btn--primary" data-ax-mkt-consent="yes">{% trans "Evet, isterim" %}</button>
+    </div>
+</div>
+<style>
+.ax-mkt-consent {
+    position: fixed;
+    top: var(--ax-space-3);
+    right: var(--ax-space-3);
+    left: var(--ax-space-3);
+    z-index: 10001; /* çerez banner'ının (10000) üstünde */
+    background: var(--ax-bg-secondary);
+    border: 1px solid var(--ax-border-hover);
+    border-radius: var(--ax-radius-lg);
+    box-shadow: var(--ax-shadow-lg);
+    padding: var(--ax-space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--ax-space-2);
+}
+.ax-mkt-consent__text {
+    margin: 0;
+    color: var(--ax-text-secondary);
+    font-size: var(--ax-text-sm);
+    line-height: 1.5;
+}
+.ax-mkt-consent__actions {
+    display: flex;
+    gap: var(--ax-space-2);
+}
+.ax-mkt-consent__actions .ax-btn { flex: 1 1 0; justify-content: center; }
+@media (min-width: 768px) {
+    .ax-mkt-consent {
+        left: auto;
+        width: min(380px, calc(100% - 2 * var(--ax-space-6)));
+    }
+}
+</style>
+<script>
+(function () {
+    var box = document.getElementById('ax-mkt-consent');
+    if (!box) return;
+
+    function getCsrf() {
+        var m = document.cookie.match(/csrftoken=([^;]+)/);
+        return m ? m[1] : '';
+    }
+
+    box.querySelectorAll('[data-ax-mkt-consent]').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var response = btn.getAttribute('data-ax-mkt-consent');
+            box.remove();
+            fetch('{% url "set_marketing_consent" %}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': getCsrf(),
+                },
+                body: 'response=' + encodeURIComponent(response),
+            }).catch(function () {});
+        });
+    });
+})();
+</script>
