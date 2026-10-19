@@ -2483,6 +2483,14 @@ with connection.cursor() as c:
     de zorunlu yönlendirme (`EmailVerificationMiddleware` / e-posta doğrulaması sonrası tek seferlik onboarding),
     organik ziyaret değil; ham `PageView` kaydı ve kullanıcı bazlı Navigasyon Akışı etkilenmedi (destek/debug
     amaçlı orada görünmeye devam ediyor). Sentetik kayıt + `transaction.atomic()` rollback ile doğrulandı.
+- **19 Ekim 2026 (gece) — Toplu e-posta HTML'e taşındı + sayfa gezintisine göre otomatik "nurture"
+  e-postası sistemi (canlıda; main — üç merge, iki migration: `forum.0184`, `broadcast.0002`):**
+  Admin toplu e-posta artık `[isim](url)` sözdizimini tıklanabilir linke çeviren markalı HTML şablonla
+  gidiyor (`forum/emails/admin_broadcast.html`, `forum/templatetags/email_extras.py` `broadcast_body`).
+  Ayrıca son 3 gün içinde 2+ farklı analiz/tarama aracı ziyaret eden, popup'tan opt-in onay vermiş
+  kullanıcılara otomatik öneri e-postası gönderen bir cron sistemi kuruldu (`broadcast/nurture.py`,
+  `Profile.marketing_email_consent`, `broadcast.NurtureEmailLog` — 14 gün cooldown). Detay: §27
+  Geçmiş Turlar.
 
 #### AI Asistan
 
@@ -2744,6 +2752,57 @@ with connection.cursor() as c:
 #### Geçmiş Turlar (Kronoloji)
 
 > Önceki düz-yazı günlük biçiminden madde listesine dönüştürülmüştür; cümleler değişmeden taşınmıştır.
+
+- **19 Ekim 2026 (gece) — Toplu e-posta HTML'e taşındı + sayfa gezintisine göre otomatik "nurture"
+  e-postası sistemi kuruldu.** Kullanıcı admin panelden, tekrar tekrar aynı analiz sayfalarına dönen
+  bir kullanıcıya manuel e-posta taslağı istemesiyle başladı; konuşma ilerledikçe kalıcı bir otomasyona
+  dönüştü. Beş `dev`→`main` `--no-ff` merge (`c1bd0da`, `c37cf77`, `3592b23`).
+  **1) Admin toplu e-posta → HTML + isim-link (`c1bd0da`, `c37cf77`, migration yok):** `forum/admin.py`
+  `_compose_and_send` artık `send_mail`'i `html_message` ile çağırıyor; yeni `forum/emails/
+  admin_broadcast.html` mevcut `welcome_email.html` marka diliyle (indigo/mor gradient başlık, beyaz
+  kart, footer). Admin hâlâ düz metin textarea'ya yazıyor ama yeni bir template filtresi
+  (`forum/templatetags/email_extras.py` `broadcast_body`) markdown tarzı `[isim](https://...)`
+  sözdizimini gerçek `<a>` etiketine çeviriyor, çıplak http(s) linklerini de ayrıca otomatik linkliyor;
+  `send_email.html` form açıklaması güncellendi.
+  **2) Otomatik nurture e-postası (`3592b23`, migration `forum.0184`+`broadcast.0002`):** Kullanıcı
+  "bunu ben elle mi yapacağım" diye sorunca plan moduna geçildi — 3 paralel Explore ajanı (PageView/cron
+  mekanizması; Profile/SiteSettings/onay deseni; e-posta şablonları + araç URL haritası), plan dosyası
+  (`~/.claude/plans/floating-sauteeing-volcano.md`) onaylandı.
+  **Kullanıcı kararları/düzeltmeleri:** ilk önerilen segmentasyon eşiği "aynı gün 2+ farklı araç"
+  kullanıcı tarafından düzeltildi — **takvim gününe kısıtlı değil, 3 günlük kayan pencere** (gerçek
+  örnekte ziyaretler 17→19 Ekim gibi iki ayrı gündeydi, "aynı gün" şartı bu örüntüyü kaçırırdı); sıklık
+  sınırı 14 günde 1; kapsam İstatistik analiz araçları (18) + Akademik tarama araçları (6, bibliometri
+  hariç); onay mekanizması kayıt formu checkbox'ı değil **site geneli popup** (kullanıcı önerisi) —
+  "Şimdi değil" denirse 15 günde bir tekrar sorulur.
+  **Mimari:** `Profile.marketing_email_consent` + `marketing_consent_asked_at` (opt-in, varsayılan
+  kapalı, KVKK); popup mantığı ayrı bir context processor yerine mevcut `profile_context`'e eklendi +
+  `templates/partials/marketing_consent_popup.html` (`cookie_consent.html`'den esinlenilen fixed-card
+  deseni ama DB-backed, cookie kullanmıyor) + `POST /api/marketing-consent/`
+  (`forum.views.set_marketing_consent`); `broadcast.NurtureEmailLog` (gönderim kaydı + 14 gün cooldown,
+  admin'de salt-okunur); `broadcast/nurture.py` — segmentasyon `PageView.tab_name` üzerinden
+  (`ArrayAgg`+`Count(distinct)`, N+1 yok), içerik üretimi (ziyaret edilen araç adları cümleye dinamik
+  yerleştiriliyor, gerisi sabit şablon — admin panelinden düzenlenemiyor, değiştirmek kod düzenlemesi
+  gerektiriyor), gönderim mevcut `admin_broadcast.html`+`broadcast_body` aynen tekrar kullanılarak;
+  `forum/api_views.py` `cron_send_nurture_emails` mevcut `cron_*` secret doğrulama deseniyle.
+  **Yan düzeltme:** `analytics/utils.py` `resolve_tab_name()`'de `/pubmed` ve `/trdizin` için etiket
+  eksikti (6 tarama aracından 4'ü düzgün etiketleniyordu) — segmentasyon bu etikete dayandığı için
+  tamamlandı, mevcut analitik panoları için de düzeltme.
+  **Doğrulama:** segmentasyon (2 farklı günde 2 farklı araç ziyareti simüle edildi, cross-day pencere
+  doğru çalıştı), 14 gün cooldown (ikinci çağrıda 0 aday), cron secret (yanlış→403/doğru→200), popup
+  göster/gizle mantığı (hiç sorulmamış→True, "Hayır"→False, 16 gün sonra→True, "Evet"→hep False) — hepsi
+  shell'den birim test edildi; **gerçek uçtan uca test:** admin kullanıcısına geçici onay + 2 farklı
+  günde `PageView` verildi, gerçek cron endpoint'i tetiklendi, gerçek SMTP üzerinden `bkeles74@gmail.com`
+  adresine e-posta gitti ve kullanıcı tarafından teslim alındığı doğrulandı; test verisi sonra
+  temizlendi. `pytest forum/tests.py` 103/103 yeşil.
+  **Admin görünürlüğü (sonradan eklendi):** `ProfileAdmin.list_filter`'a `marketing_email_consent`
+  eklendi (kullanıcı "onay verenleri nereden görürüm" diye sorunca fark edildi, önceden admin'de hiç
+  görünmüyordu) — not: Unfold'un filtre panelinde aktif filtre bir rozet/chip olarak görünmüyor, yalnız
+  URL query param'dan (`?marketing_email_consent__exact=1`) anlaşılıyor; bu, yeni alana özgü değil,
+  mevcut tüm filtrelerin genel davranışı.
+  **Sırada:** crontab satırı kullanıcı tarafından Hetzner'e eklendi (`0 10 * * 1-6`, Pazartesi–Cumartesi
+  10:00) — sistem şu an **hazır ama sessiz**: hiçbir mevcut kullanıcı henüz onay vermediği için
+  (migration varsayılanı `False`, 97 profilin 97'si "hiç sorulmamış") otomatik gönderim başlamayacak,
+  kullanıcılar popup'a "Evet" dedikçe devreye girecek.
 
 - **19 Ekim 2026 — EN/DE için TR'den tamamen ayrı yeni bir pazaryeri
   ("intl market") planlandı ve uygulandı; `dev`→`main` zinciri (iki ek,
