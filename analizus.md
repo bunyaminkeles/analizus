@@ -2745,6 +2745,88 @@ with connection.cursor() as c:
 
 > Önceki düz-yazı günlük biçiminden madde listesine dönüştürülmüştür; cümleler değişmeden taşınmıştır.
 
+- **19 Ekim 2026 — EN/DE için TR'den tamamen ayrı yeni bir pazaryeri
+  ("intl market") planlandı ve uygulandı; `dev`→`main` zinciri (iki ek,
+  bu oturumla ilgisiz commit dahil) push edildi.**
+  **0) İstek:** 18 Ekim'de alınan "EN/DE'de pazaryeri navigasyondan
+  gizli kalsın, route açılmasın" kararının TERSİ — kullanıcı bu kez
+  EN/DE için TR'ye kapalı, kriter/puanlama şartı olmayan, haftalık 1
+  ücretsiz ilan + fazlası bağışa bağlı yeni/ayrı bir pazaryeri istedi.
+  **1) Planlama:** 3 paralel Explore araştırma ajanı (veri modeli/view/
+  admin akışı; i18n gizleme altyapısı + tüm link noktaları; bağış akışı
+  + şablon/CSS kapsamı) + 1 Plan tasarım ajanı ile kod tabanı tam
+  tarandı, plan dosyası (`~/.claude/plans/quizzical-crunching-eagle.md`)
+  onaylandı. Üç kullanıcı kararı: (a) EN+DE **tek ortak havuzda**
+  birleşir (ayrı iki pazar değil); (b) fazladan ilan hakkı **mevcut
+  bağış→Premium mekanizmasıyla** otomatik işler (yeni mekanizma icat
+  edilmedi, yalnız yeni limit sayıları eklendi); (c) teklif vermek
+  (bidding) intl ilanlarda **yalnız `is_staff`** kullanıcılara açık
+  ("kim görüp teklif verecek... sadece admin yetkisine sahip olanlara
+  açık olsun" — normal kullanıcı ilan açabilir ama teklif veremez).
+  Önemli bulgu: TR'de ilan vermenin bugüne kadar zaten hiçbir puanlama
+  kriteri yoktu (`Profile.can_post_job()` koşulsuz `True`; TR'deki
+  "kriter" aslında Uzman Dizini giriş eşiği, ilan vermeyle ilgisizdi) —
+  yani "EN/DE'ye kriter konulmayacak" isteği için ek bir şey gerekmedi.
+  **2) Uygulama (sırayla, her adım sonrası pytest ile doğrulanarak):**
+  `FreelanceJob.language` alanı (migration `0183`, varsayılan `tr`,
+  mevcut kayıtlar etkilenmez) + `FreelanceJob.in_market_scope()`;
+  `SiteSettings.feature_market_intl` + `job_weekly_limit_intl_free/
+  premium` (varsayılan 1/3); `Profile.get_weekly_job_limit/
+  get_weekly_job_count/can_post_job_now` artık `scope='tr'|'intl'`
+  parametresi alıyor (referans bonusu yalnız TR'de uygulanıyor);
+  `JobProposal.can_propose_for_job()` intl ilanlarda `is_staff`
+  kontrolü yapıyor. `forum/views.py`'de `market_scope()`/`job_scope()`/
+  `get_job_or_404_for_scope()` helper'ları tüm pk'li market view'larını
+  (job_list, post_job, job_detail, toggle_like/bookmark, close/edit/
+  accept_proposal, admin_manage_proposal, add_job_review) kapsam bazlı
+  404'e bağlıyor — normal kullanıcı pk tahminiyle bile karşı kapsama
+  (TR↔intl) giremiyor, staff/superuser her ikisini de görebiliyor;
+  `my_jobs`/`promote_job`/`mark_payment_transferred` bilinçli olarak
+  dokunulmadı (zaten `owner=request.user` filtreli, sızıntı riski yok).
+  Navbar/footer/`proje_talebi.html` linkleri TR→`features.market`,
+  EN/DE→`features.market_intl` ikili yapıya ayrıldı; `home_intl.html`'e
+  yeni pazaryeri CTA'sı eklendi. **Gerçek bug bulunup düzeltildi:**
+  `job_list.html`'deki "Uzmanlarla Tanış" → `uzman_dizini` linki (bu URL
+  hiç çevrilmedi, `i18n_patterns` dışında) EN/DE'de de render ediliyordu,
+  kırık link veriyordu — artık TR-only; `job_detail.html`'deki "Nasıl
+  Yetki Kazanılır? (1000+ puan kazan...)" ipucu kutusu intl ilanlarda
+  yanlış/alakasız olduğu için TR-only yapıldı. Admin: `FreelanceJobAdmin`/
+  `JobProposalAdmin`'e `language` filtresi, `SiteSettingsAdmin`'e yeni
+  flag+limit alanları (3 nokta kuralı: model + `feature_flags()` context
+  processor + fieldsets, hepsi birlikte). SEO: `JobSitemap` artık yalnız
+  `language='tr'` filtreli (önceden filtresizdi, şans eseri sorun
+  çıkmamıştı), yeni `JobIntlSitemap` eklendi (`ServicePageTranslatedSitemap`
+  deseniyle); `robots.txt`'te değişiklik gerekmedi (EN/DE action-endpoint
+  disallow'ları zaten vardı). **13 yeni pytest testi** eklendi (ortak havuz
+  görünürlüğü, çapraz kapsam 404'ü iki yönde + staff bypass, haftalık
+  limit varsayılanları + bağış→Premium'un intl limiti yükseltmesi, TR/intl
+  sayaç izolasyonu, referans bonusunun intl'e uygulanmaması, staff-only
+  teklif verme + TR bidding kurallarının değişmediği regresyon testi),
+  toplam 103/103 yeşil.
+  **3) Commit/push:** `4388762` (`dev`, "yedek ok" onayı sonrası). Push
+  sonrası kontrol edilince `main`'in zaten (bu oturum dışında, muhtemelen
+  kullanıcı tarafından) `dev` ile merge edilip `origin/main`'e push
+  edilmiş olduğu görüldü — zincirde bu oturumla ilgisiz 2 commit daha
+  vardı (`9ab2891` toplu e-posta HTML şablonu, `397aa75` toplu e-postada
+  `[isim](url)` link sözdizimi); `origin/main`==`origin/dev`==`397aa75`
+  doğrulandı. `feature_market_intl` production'da da varsayılan **kapalı**
+  olduğu için kod canlıda olsa bile hiçbir kullanıcıya görünmüyor —
+  "go-live" admin panelinden elle flag açmakla gerçekleşecek.
+  **4) Kendi hatamı düzeltme:** manuel doğrulama için yazdığım bir
+  debug script'te `feature_market_intl=True` + `job_approval_required=
+  False` ayarlarını lokal dev veritabanında geri almayı unutmuşum;
+  kullanıcı "açılan ilanları kim görebilecek" diye sorunca fark edip
+  ikisini de eski haline döndürdüm (yalnız lokal Docker DB'yi etkiliyordu,
+  Render/Hetzner'e dokunmadı). **Ders:** manuel doğrulama için SiteSettings
+  flag'i geçici değiştiren shell script'lerin sonunda **mutlaka** eski
+  değere döndürüldüğü ayrıca kontrol edilmeli (script içi `finally` bloğu
+  ya da script sonunda ayrı bir doğrulama satırı).
+  **5) Kalan işler (go-live öncesi):** yeni EN/DE metinleri (`gettext`/
+  `{% trans %}` ile işaretlendi) henüz `locale/en|de/LC_MESSAGES/
+  django.po`'ya çevrilmedi — ayrı bir çeviri turu gerekiyor;
+  `job_weekly_limit_intl_premium` varsayılanı (3) kullanıcı tarafından
+  teyit edilmedi; bütçe alanı hâlâ yalnızca TL (bilinçli olarak korundu).
+
 - **18 Ekim 2026 (akşam, ikinci oturum) — EN/DE pazaryeri sızıntısı soruşturması
   + referrer takibi + admin ilan onayı tek-tık.** Üç commit `dev`→`main`
   (`285003d`, `c1727c1`, `8a87afa`; `main` zaten `dev`'in atası olduğu için
