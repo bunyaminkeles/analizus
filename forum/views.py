@@ -1475,6 +1475,24 @@ def _normalize_tr_phone(raw):
     return '0' + m.group(1) if m else None
 
 
+@login_required
+@require_POST
+def set_marketing_consent(request):
+    """Analiz davranışına göre öneri e-postası onay popup'ının cevabını kaydeder.
+
+    'yes' → onay verildi, bir daha sorulmaz. 'no'/diğer → onay verilmedi ama
+    15 gün sonra tekrar sorulabilsin diye `marketing_consent_asked_at` yine de
+    güncellenir (forum/context_processors.py:profile_context popup gösterim
+    kuralını buna göre hesaplar).
+    """
+    profile, _ = Profile.objects.get_or_create(user=request.user)
+    if request.POST.get('response') == 'yes':
+        profile.marketing_email_consent = True
+    profile.marketing_consent_asked_at = timezone.now()
+    profile.save(update_fields=['marketing_email_consent', 'marketing_consent_asked_at'])
+    return JsonResponse({'success': True})
+
+
 # --- PROFİL DÜZENLE ---
 @login_required
 def profile_edit(request):
@@ -1550,6 +1568,7 @@ def profile_edit(request):
         # Ayarlar
         profile.email_on_reply = request.POST.get('email_on_reply') == 'on'
         profile.email_on_private_message = request.POST.get('email_on_private_message') == 'on'
+        profile.marketing_email_consent = request.POST.get('marketing_email_consent') == 'on'
         profile.is_public = request.POST.get('is_public') == 'on'
         profile.show_email = request.POST.get('show_email') == 'on'
 

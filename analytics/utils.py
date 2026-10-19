@@ -39,6 +39,10 @@ def resolve_tab_name(path: str) -> str:
         return 'Makale Analizi'
     if p.startswith('/openalex'):
         return 'OpenAlex'
+    if p.startswith('/pubmed'):
+        return 'PubMed'
+    if p.startswith('/trdizin'):
+        return 'TR Dizin'
     if p.startswith('/bibliometrics'):
         return 'Bibliometrik Analiz'
     if p.startswith('/semanticscholar'):

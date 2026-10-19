@@ -1,7 +1,7 @@
 from django.contrib import admin
 from unfold.admin import ModelAdmin
 
-from .models import EmailBroadcast
+from .models import EmailBroadcast, NurtureEmailLog
 
 
 @admin.register(EmailBroadcast)
@@ -19,6 +19,28 @@ class EmailBroadcastAdmin(ModelAdmin):
         return obj.sent_by.username if obj.sent_by else '—'
     get_sender.short_description = 'Gönderen'
     get_sender.admin_order_field = 'sent_by__username'
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+
+@admin.register(NurtureEmailLog)
+class NurtureEmailLogAdmin(ModelAdmin):
+    list_display = ['sent_at', 'get_username', 'trigger_date', 'tool_labels']
+    list_filter = ['sent_at']
+    search_fields = ['user__username', 'user__email', 'tool_labels']
+    date_hierarchy = 'sent_at'
+    ordering = ['-sent_at']
+    list_per_page = 50
+    readonly_fields = ['user', 'trigger_date', 'tool_labels', 'sent_at']
+
+    def get_username(self, obj):
+        return obj.user.username
+    get_username.short_description = 'Kullanıcı'
+    get_username.admin_order_field = 'user__username'
 
     def has_add_permission(self, request):
         return False

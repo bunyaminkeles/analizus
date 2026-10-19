@@ -98,6 +98,7 @@ urlpatterns = [
     path('api/widgets/rates/', api_views.widget_market_rates, name='widget_rates'),
     path('api/widgets/proposals/', api_views.widget_latest_proposals, name='widget_proposals'),
     path('api/follow/<str:username>/', api_views.toggle_follow_user, name='api_toggle_follow'),
+    path('api/marketing-consent/', views.set_marketing_consent, name='set_marketing_consent'),
 
     # Kullanıcı Arama (@mention autocomplete)
     path('api/users/search/', views.user_search_api, name='user_search_api'),
@@ -111,6 +112,7 @@ urlpatterns = [
     path('api/cron/cleanup-s3/', api_views.cron_cleanup_s3_files, name='cron_cleanup_s3'),
     path('api/cron/cleanup-attachments/', api_views.cron_cleanup_attachments, name='cron_cleanup_attachments'),
     path('api/cron/cleanup-pageviews/', api_views.cron_cleanup_pageviews, name='cron_cleanup_pageviews'),
+    path('api/cron/send-nurture-emails/', api_views.cron_send_nurture_emails, name='cron_send_nurture_emails'),
     path('api/cron/cleanup-session-datasets/', api_views.cron_cleanup_session_datasets, name='cron_cleanup_session_datasets'),
     path('api/cron/health/', api_views.cron_health_check, name='cron_health'),
     path('api/cron/process-account-deletions/', api_views.cron_process_account_deletions, name='cron_process_account_deletions'),

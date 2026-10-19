@@ -239,6 +239,10 @@ class Profile(models.Model):
     email_on_reply = models.BooleanField(default=True, verbose_name="Konuma cevap geldiğinde email gönder")
     email_on_private_message = models.BooleanField(default=True, verbose_name="Özel mesaj geldiğinde email gönder")
 
+    # Pazarlama/öneri e-postaları (nurture) — opt-in, varsayılan kapalı (KVKK)
+    marketing_email_consent = models.BooleanField(default=False, verbose_name="Analiz davranışına göre öneri e-postaları al")
+    marketing_consent_asked_at = models.DateTimeField(null=True, blank=True, verbose_name="Onay popup'ı en son ne zaman soruldu")
+
     # Profil görünürlüğü
     is_public = models.BooleanField(default=True, verbose_name="Profil Herkese Açık")
     show_email = models.BooleanField(default=False, verbose_name="Email Adresini Göster")

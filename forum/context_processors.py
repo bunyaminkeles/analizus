@@ -15,11 +15,23 @@ def profile_context(request):
             profile, created = Profile.objects.get_or_create(user=request.user)
             unread_notifications = Notification.objects.filter(recipient=request.user, is_read=False).count()
             unread_private_messages = PrivateMessage.objects.filter(receiver=request.user, is_read=False).count()
-            
+
+            show_marketing_consent_popup = False
+            if not profile.marketing_email_consent:
+                if not profile.marketing_consent_asked_at:
+                    show_marketing_consent_popup = True
+                else:
+                    from datetime import timedelta
+                    from django.utils import timezone
+                    show_marketing_consent_popup = (
+                        timezone.now() - profile.marketing_consent_asked_at > timedelta(days=15)
+                    )
+
             context.update({
                 'user_profile': profile,
                 'unread_notifications_count': unread_notifications,
                 'unread_private_messages_count': unread_private_messages,
+                'show_marketing_consent_popup': show_marketing_consent_popup,
             })
         except Profile.DoesNotExist:
             pass
