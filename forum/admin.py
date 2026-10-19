@@ -352,7 +352,7 @@ class ProfileAdmin(ModelAdmin):
     list_display = ('user', 'avatar_preview', 'rank_display', 'reputation', 'account_type', 'email_status', 'university_info', 'stats_display')
     list_editable = ('account_type',)
     search_fields = ('user__username', 'title', 'university', 'department')
-    list_filter = ('account_type', 'rank', 'is_public', 'email_verified', 'directory_override')
+    list_filter = ('account_type', 'rank', 'is_public', 'email_verified', 'directory_override', 'marketing_email_consent')
     filter_horizontal = ('badges', 'skills')
     actions = ['update_all_ranks', 'update_all_stats', 'verify_emails']
 
@@ -376,7 +376,8 @@ class ProfileAdmin(ModelAdmin):
             'classes': ('collapse',)
         }),
         ('Tercihler', {
-            'fields': ('email_on_reply', 'email_on_private_message', 'is_public', 'show_email', 'email_verified',
+            'fields': ('email_on_reply', 'email_on_private_message', 'marketing_email_consent',
+                       'marketing_consent_asked_at', 'is_public', 'show_email', 'email_verified',
                        'directory_override'),
             'classes': ('collapse',)
         }),
