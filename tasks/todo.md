@@ -10,6 +10,20 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
+- [ ] **(21 Ekim 2026) Bootstrap Kaldırma Migrasyonu — bu TEK LİSTE'de hiç
+  yoktu, eklendi (kullanıcı talebiyle).** Bugünkü ana sayfa CLS/performans
+  turunda Lighthouse "`bootstrap.min.css`'in %92'si kullanılmıyor (30,5 KiB)"
+  bulgusu çıktı; CDN'den tam Bootstrap yerine yalnızca grid içeren bir
+  sürüme geçmek cazip göründü ama site geneli tarama bunun **güvenli
+  olmadığını** doğruladı — `btn` 464, `card` 184, `badge` 150, `accordion`
+  146, `form-control` 49 kez gerçek (ax- önekisiz) Bootstrap bileşen
+  class'ı olarak hâlâ kullanılıyor (migrasyon henüz tamamlanmadığı için).
+  Dolayısıyla bugün dokunulmadı. Ayrıntılı envanter + faz planı aşağıda
+  "Bootstrap Kaldırma — Kademeli Migration Planı" başlığında (12 Ekim 2026
+  durumu: Faz 1-2 tamam, Faz 3 sürüyor, 55 dosyada ~760 component class
+  kaldı) — bu maddenin amacı yalnızca onu TEK LİSTE'ye bağlamak, plan
+  kendi başlığında devam ediyor.
+
 - [x] **(19 Ekim 2026) EN/DE için ayrı pazaryeri — TR'den tamamen ayrı
   havuz, kriter yok, haftalık 1 ücretsiz + bağışla yükselen limit —
   UYGULANDI (dev'de), henüz canlıya alınmadı.** Üç paralel araştırma +
@@ -1328,6 +1342,8 @@ maddelerde.
   mevcut bu türden ilanlar için admin kararı (189 dahil). Admin onayı maddesine bağlı.
 
 **Ödeme talepleri (kullanıcı, 2 Ekim 2026):**
+- [ ] **EN/DE PARA BİRİMİ + PAYPAL ENTEGRASYONU** — taslak aşağıda ("EN/DE PARA BİRİMİ + PAYPAL — TASLAK"); kod yok,
+  Faz 0 öncesi 6 açık karar (§D) netleşmeli.
 - [ ] **GÜVENLİ ÖDEME (emanet) + DAVET KAZANCI (%5)** — taslak hemen aşağıda ("GÜVENLİ ÖDEME — TASLAK"); kod yok,
   önce §F kararları + mali müşavir görüşü (§B1). `feature_secure_payment` kapalı başlar.
 - [ ] **GELİR MODELİ — AÇIK KONU (kullanıcı, 2 Ekim 2026): "platform paraya hiç dokunmasın"** (pazaryeri/ödeme kuruluşu
@@ -1450,6 +1466,65 @@ tutar ay sonu bildirilir, IBAN istenip ödenir. (3) Tüm adımlar ilgili kişini
 - [ ] Faz 5 — Uzman ödeme bilgisi + "ödendi" + döküm e-postası; panel "Güvenli Ödeme" sekmesi
 - [ ] Faz 6 — Davet kazancı + aylık cron + talep formu + dashboard tablosu
 - [ ] Faz 7 — Testler (durum geçişleri, yetki, tutar yuvarlama, kötüye kullanım), TR/EN/DE çeviri, `analizus.md`
+
+### EN/DE PARA BİRİMİ + PAYPAL — TASLAK (19 Ekim 2026; BEKLEMEDE — §D kararları netleşmeden kod yok)
+
+**Kaynak:** Kullanıcı EN/DE "Create a New Job Listing" formunda (`/en/market/new/`) "Budget (TRY)" etiketini fark etti
+(ekran görüntüsü); ardından "Become a Premium Member" bağış modalındaki TL fiyatların da aynı sorunu taşıdığını belirtip
+EN/DE kullanıcılar için PayPal entegrasyonunu gündeme getirdi.
+
+#### A. Bulunan sorunlar (koddan, 19 Ekim 2026)
+1. **`budget_max` etiketi yanlış çevrilmiş, gerçek dönüşüm yok.** `forum/forms.py:152`
+   `JobPostForm.Meta.labels['budget_max'] = gettext_lazy('Bütçe (TL)')` — EN/DE `.po` çevirileri
+   (`locale/en/LC_MESSAGES/django.po:2089`, `locale/de/...:2136`) "TL" yerine yanlışlıkla "TRY" yazmış ama para birimi
+   hâlâ Türk Lirası; tek `JobPostForm` her dilde aynı alanı kullanıyor, dil bazlı currency ayrımı/dönüşüm yok (benzer
+   sorun: "Teklifiniz (TL)" `forms.py:210`, "Teklif Tutarı (TL)" `forms.py:215`). `FreelanceJob.language` alanı
+   (4388762 commit, intl market) yalnız ilan havuzunu ayırıyor, currency kavramı hiç eklenmemiş.
+2. **Bağış/Premium modalında da aynı sorun.** "Become a Premium Member" (`DonationTier`: 500/1250/2500/5000 TL
+   paketleri, `forum/models.py:1286`) EN/DE kullanıcıya da TL gösteriyor. `Donation.amount` (`forum/models.py:1323`)
+   yalnız TL alanı, currency alanı yok.
+3. Kapsam dışı ama ilişkili not: `job_detail.html:36` JSON-LD `"currency": "TRY"` sabit; `job_list.html`/
+   `job_detail.html`'de tutar gösterilirken `₺{{ amount }}` sembolü dil fark etmeksizin sabit basılıyor.
+
+#### B. Kullanıcı kararı — ödeme yöntemi
+- EN/DE kullanıcılar için **PayPal tam API entegrasyonu** (Checkout + webhook, otomatik premium aktivasyonu) —
+  manuel PayPal.me değil.
+- Alıcı (merchant) hesabı **Türkiye'deki Analizus şirketine değil, Almanya'da yaşayan bir kişiye ait PayPal Business
+  hesabına** bağlı olacak — bu, PayPal'ın Türkiye'deki lisans engelini (2016 BDDK reddi, bkz. TechCrunch/FinTech
+  Futures haberleri) devre dışı bırakıyor; alıcı taraf zaten AB'de olduğu için bu engel geçerli değil.
+- Admin panelinde bağış gelirlerini **EUR olarak ayrı takip** edecek bir ekleme istendi.
+- Kapsam: en azından "Become a Premium Member" bağış/premium akışı. İş ilanı bütçesi (`budget_max`) alanının aynı
+  turda ele alınıp alınmayacağı netleşmedi (açık karar, §D.3).
+
+#### C. Maliyet notu (doğrulanmamış, üçüncü parti kaynaklara dayalı — resmi PayPal sayfasından teyit edilmedi)
+- PayPal API/SDK/sandbox kullanımı ücretsiz; yalnızca gerçekleşen işlemlerden komisyon kesilir.
+- Almanya merchant hesabı tahmini oranlar: AB içi alıcı ~%2.49 + 0.35€; AB dışı alıcı (ör. ABD/UK) +%1.29 sürşarj;
+  EUR dışı para birimiyle ödemede +%3–4 döviz çevrim ücreti. Kesin oran, Almanya'daki hesap sahibinin PayPal
+  panelinden ("Satıcı Ücretleri") doğrulanmalı.
+
+#### D. Açık kararlar (kullanıcı)
+1. Almanya'daki hesap sahibi kim olacak, PayPal Business hesabı zaten var mı yoksa yeni mi açılacak?
+2. EUR paket fiyatları ne olacak — mevcut TL tutarların (500/1250/2500/5000) sabit bir kurla çevrimi mi, yoksa
+   ayrı/yuvarlak EUR fiyatlar mı (ör. 15€/35€/70€/140€) belirlenecek?
+3. Bu tur yalnız Premium/bağış modalını mı kapsayacak, yoksa iş ilanı `budget_max` (Bütçe) alanı da aynı anda mı
+   ele alınacak?
+4. Almanya'daki kişiden API kimlik bilgileri (Client ID + Secret, webhook URL kurulumu) ne zaman temin edilecek —
+   Faz 0'ın ön koşulu.
+5. Admin'deki "EUR bağış geliri" raporu nasıl görünsün (ayrı tablo/filtre mi, toplam kartı mı)?
+6. EN/DE kullanıcıya hâlâ TL seçeneği (banka havalesi) gösterilsin mi, yoksa PayPal tek seçenek mi olacak?
+
+#### E. Uygulama fazları (her faz ayrı onay; migration'lı fazlar canlı DB'yi etkiler)
+- [ ] Faz 0 — Kararlar (§D) netleşir; Almanya'daki hesaptan PayPal Business + Client ID/Secret/webhook URL alınır;
+  `.env`'e `PAYPAL_*` eklenir (commit'e dahil edilmez)
+- [ ] Faz 1 — Model: `Donation`'a `currency` alanı (TRY/EUR) + `DonationTier`'a EUR karşılığı alanı (migration)
+- [ ] Faz 2 — PayPal Checkout entegrasyonu (EN/DE'de "Become a Premium Member" modalında PayPal butonu; TR'de
+  mevcut IBAN akışı değişmez)
+- [ ] Faz 3 — Webhook endpoint (ödeme onayında `Donation.status` → `completed`, mevcut sinyal/e-posta akışı
+  tetiklenir — `premium_days_promised` deseni korunur, tutar talep anında kayda sabitlenir)
+- [ ] Faz 4 — Admin: `DonationAdmin`'e currency filtresi + EUR toplam raporu
+- [ ] Faz 5 — Testler (webhook imza doğrulama, durum geçişleri, yuvarlama), TR/EN/DE çeviri, `analizus.md` güncelleme
+- [ ] (Ayrı karar bekliyor, §D.3) — kapsam genişlerse: `budget_max` dile göre doğru etiket/currency (forms.py +
+  migration, ayrı görev olarak ele alınmalı)
 
 ### AI AJAN İLE SİTE YÖNETİMİ — TASLAK (2 Ekim 2026; BEKLEMEDE — §E kararları netleşmeden kod yok)
 
