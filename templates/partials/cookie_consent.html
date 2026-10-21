@@ -8,7 +8,7 @@ base.html <head>'deki axLoadAnalytics(). Tercih ax_cookie_consent çerezinde
 boyutta ve aynı adımda — reddetmek kabul etmek kadar kolay olmalı.
 {% endcomment %}
 <div id="ax-cookie" class="ax-cookie" role="dialog" aria-live="polite"
-     aria-label="{% trans 'Çerez tercihleri' %}" hidden>
+     aria-label="{% trans 'Çerez tercihleri' %}" aria-hidden="true">
     <p class="ax-cookie__text">
         {% url 'gizlilik_politikasi' as privacy_url %}{% blocktrans trimmed %}
         Zorunlu çerezlerin yanı sıra, siteyi iyileştirmek için yalnızca onay vermeniz hâlinde analiz çerezleri (Google Analytics) kullanıyoruz. Ayrıntılar için <a href="{{ privacy_url }}">Gizlilik Politikası</a>.
@@ -34,8 +34,18 @@ boyutta ve aynı adımda — reddetmek kabul etmek kadar kolay olmalı.
     display: flex;
     flex-direction: column;
     gap: var(--ax-space-3);
+    /* CLS: display:none yerine visibility/opacity — kutu ilk render'dan itibaren
+       layout'ta yer kaplar, açılış/kapanış yalnızca boyama değişimi olur (21 Ekim 2026) */
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .2s ease;
 }
-.ax-cookie[hidden] { display: none; }
+.ax-cookie.is-visible {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+}
 .ax-cookie__text {
     margin: 0;
     color: var(--ax-text-secondary);
@@ -95,7 +105,8 @@ boyutta ve aynı adımda — reddetmek kabul etmek kadar kolay olmalı.
         var prev = current();
         document.cookie = NAME + '=' + value + '; Max-Age=' + (180 * 86400) +
             '; path=/; SameSite=Lax' + (location.protocol === 'https:' ? '; Secure' : '');
-        banner.hidden = true;
+        banner.classList.remove('is-visible');
+        banner.setAttribute('aria-hidden', 'true');
         if (value === 'granted') {
             if (window.axLoadAnalytics) window.axLoadAnalytics();
         } else {
@@ -112,10 +123,14 @@ boyutta ve aynı adımda — reddetmek kabul etmek kadar kolay olmalı.
     document.querySelectorAll('[data-ax-cookie-settings]').forEach(function (el) {
         el.addEventListener('click', function (e) {
             e.preventDefault();
-            banner.hidden = false;
+            banner.classList.add('is-visible');
+            banner.setAttribute('aria-hidden', 'false');
         });
     });
 
-    if (!current()) banner.hidden = false;
+    if (!current()) {
+        banner.classList.add('is-visible');
+        banner.setAttribute('aria-hidden', 'false');
+    }
 })();
 </script>
