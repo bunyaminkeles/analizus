@@ -15,6 +15,15 @@
          (layout shift) yol açıyor (Lighthouse: body 0.102 CLS, "Web yazı tipi") -->
     <link rel="preload" as="font" type="font/woff2" crossorigin
           href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/fonts/bootstrap-icons.woff2?dd67030699838ea613ee6dbda90effa6">
+
+    <!-- CLS: Inter webfont'u erkenden preload et — inter.css deferred yüklendiği için
+         font geç gelip yedek sistem fontundan Inter'e geçişte metin yeniden akıyor
+         (ör. #ax-cookie banter'ı bottom'a sabit, yükseklik değişince kayıyor;
+         Lighthouse: "Web font loaded", 21 Ekim 2026). latin + latin-ext (TR/DE karakterleri) -->
+    <link rel="preload" as="font" type="font/woff2" crossorigin
+          href="{% static 'fonts/inter/inter-latin.woff2' %}">
+    <link rel="preload" as="font" type="font/woff2" crossorigin
+          href="{% static 'fonts/inter/inter-latin-ext.woff2' %}">
     <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
     <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
     <link rel="dns-prefetch" href="https://www.googletagmanager.com">
