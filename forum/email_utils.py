@@ -657,3 +657,27 @@ Bu bir otomatik bildirimdir.
 Analizus - Akademik Veri Üssü"""
 
     send_email_async(subject, plain, [user.email])
+
+
+def notify_room_member_joined(room, new_member):
+    """Odaya yeni biri katılınca mevcut üyelere (yeni katılan hariç) e-posta gönderir."""
+    site = getattr(settings, 'SITE_URL', 'https://www.analizus.com')
+    room_url = f"{site}/odalar/{room.slug}/"
+    members = room.memberships.select_related('user').exclude(user=new_member)
+    for membership in members:
+        recipient = membership.user
+        if not recipient.email:
+            continue
+        subject = f"'{room.title}' odasına yeni bir üye katıldı"
+        plain = f"""Merhaba {recipient.username},
+
+{new_member.username}, "{room.title}" çalışma odasına katıldı.
+
+Odaya gitmek için:
+{room_url}
+
+---
+Bu bir otomatik bildirimdir.
+Analizus - Akademik Veri Üssü"""
+
+        send_email_async(subject, plain, [recipient.email])
