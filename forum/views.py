@@ -4265,6 +4265,8 @@ def studyroom_join(request, slug):
             return JsonResponse({'error': 'Oda kapasitesi doldu.'}, status=400)
         StudyRoomMembership.objects.create(room=room, user=request.user, role='member')
         StudyRoomWaitlist.objects.filter(room=room, user=request.user).delete()
+        from .email_utils import notify_room_member_joined
+        notify_room_member_joined(room, request.user)
         return JsonResponse({'action': 'joined', 'member_count': room.member_count})
 
 
