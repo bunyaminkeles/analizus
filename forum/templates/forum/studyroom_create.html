@@ -50,17 +50,17 @@
 
       <div class="mb-3">
         <label class="form-label text-white-50 small">Açıklama <span class="text-danger">*</span></label>
-        <textarea name="description" class="form-control bg-dark text-white border-secondary" rows="3"
+        <textarea name="description" class="form-control bg-dark text-white border-secondary auto-grow" rows="3"
                   placeholder="Bu oda ne için? Kimler katılabilir? Nasıl bir çalışma yürütülecek?"
-                  minlength="50" maxlength="1000" required>{{ post.description|default:'' }}</textarea>
+                  minlength="50" maxlength="1000" required style="overflow-y:hidden;resize:none;">{{ post.description|default:'' }}</textarea>
         <div class="form-text text-white-50">En az 50 karakter.</div>
       </div>
 
       <div class="mb-3">
         <label class="form-label text-white-50 small">Hedef <span class="text-danger">*</span></label>
-        <textarea name="goal" class="form-control bg-dark text-white border-secondary" rows="2"
+        <textarea name="goal" class="form-control bg-dark text-white border-secondary auto-grow" rows="2"
                   placeholder="Örn: Dönem sonuna kadar 3 makale inceleyip SEM modelini uygulamak"
-                  minlength="20" maxlength="500" required>{{ post.goal|default:'' }}</textarea>
+                  minlength="20" maxlength="500" required style="overflow-y:hidden;resize:none;">{{ post.goal|default:'' }}</textarea>
       </div>
 
       <div class="mb-3">
@@ -143,4 +143,14 @@
   </form>
 
 </div>
+<script>
+document.querySelectorAll('textarea.auto-grow').forEach(function (el) {
+  function resize() {
+    el.style.height = 'auto';
+    el.style.height = el.scrollHeight + 'px';
+  }
+  el.addEventListener('input', resize);
+  resize();
+});
+</script>
 {% endblock %}
