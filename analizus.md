@@ -2744,7 +2744,10 @@ with connection.cursor() as c:
 - Admin analytics dashboard — navigasyon takibi tamamlandı; gelişmiş kullanıcı segmentasyonu/funnel analizi eklenebilir
 - **Semantic Scholar → Bibliometrik Analiz entegrasyonu** — kullanıcı kararı (27 Eylül 2026): eklenecek. OpenAlex köprüsü (`/bibliometrics/from-openalex/<id>/` → `parse_openalex_json`) örnek alınır; S2 veri yapısı uygun; `BibliometricJob`'a S2 FK → **migration gerekir**. Bibliometri EN/DE işinin (b) adımı.
 - ~~Gamification genişletmesi~~ → Referral sistemi tamamlandı (temmuz 2026)
-- **Bootstrap CDN kaldırma** (temmuz 2026 — devam ediyor, kademeli migration) — Lighthouse'ta "kullanılmayan CSS" (111 KiB) + "kullanılmayan JS" (164 KiB) bulgusunun kaynağı. **Faz 1** (tamamlandı): eksik `ax-` bileşenleri (`.ax-alert`, `.ax-modal`, `.ax-dropdown`, `.ax-form-control`/`select`/`check`) `base.css`'e eklendi. **Faz 2** (tamamlandı): `static/js/ax-modal.js` + `ax-dropdown.js` vanilla controller'ları eklendi; `base.html` (4 modal: search/quiz/profile/story) + `success_stories.html` (1 modal) `.ax-modal` yapısına taşındı, `bootstrap.Modal` JS çağrıları kaldırıldı. **Faz 3** (başladı, dosya dosya): `account_delete.html`, `donation_success.html` migrate edildi (btn/card class'ları). **Bulgu:** component class'lardan (btn/card/badge/modal) bağımsız olarak Bootstrap **utility** class'ları (`d-flex`, `text-*`, `fw-*`, `mb-*`/`py-*`/`px-*`, `gap-*`, `rounded-*`, `shadow-*`, `bg-*`, `border-*`) hâlâ neredeyse her template'te yaygın — bunlar CLAUDE.md'nin "yalnızca grid" kuralına da aykırı ve Faz 4'te (CDN kaldırma) ayrıca migrate edilmeleri gerekiyor, henüz envanteri çıkarılmadı. Detaylı dosya bazlı ilerleme ve bulgular: `tasks/todo.md`.
+- **Bootstrap CDN kaldırma** (temmuz 2026 — devam ediyor, kademeli migration) — Lighthouse'ta "kullanılmayan CSS" (111 KiB) + "kullanılmayan JS" (164 KiB) bulgusunun kaynağı. **Faz 1** (tamamlandı): eksik `ax-` bileşenleri (`.ax-alert`, `.ax-modal`, `.ax-dropdown`, `.ax-form-control`/`select`/`check`) `base.css`'e eklendi. **Faz 2** (tamamlandı): `static/js/ax-modal.js` + `ax-dropdown.js` vanilla controller'ları eklendi; `base.html` (4 modal: search/quiz/profile/story) + `success_stories.html` (1 modal) `.ax-modal` yapısına taşındı, `bootstrap.Modal` JS çağrıları kaldırıldı. **Faz 3** (sürüyor — 12 Ekim 2026 durumu: 12 dosya migre edildi, 55 dosyada ~760 component class kaldı;
+21 Ekim 2026 CLS turunda yeniden teyit edildi — `btn` 464, `card` 184, `badge` 150, `accordion` 146,
+`form-control` 49 kez hâlâ kullanılıyor, bu yüzden `bootstrap.min.css`'i ana sayfadaki "%92 kullanılmıyor"
+bulgusuna dayanarak kısaltmak/CDN'den kaldırmak ERTELENDİ — site geneli kırılma riski var). **Bulgu:** component class'lardan (btn/card/badge/modal) bağımsız olarak Bootstrap **utility** class'ları (`d-flex`, `text-*`, `fw-*`, `mb-*`/`py-*`/`px-*`, `gap-*`, `rounded-*`, `shadow-*`, `bg-*`, `border-*`) hâlâ neredeyse her template'te yaygın — bunlar CLAUDE.md'nin "yalnızca grid" kuralına da aykırı ve Faz 4'te (CDN kaldırma) ayrıca migrate edilmeleri gerekiyor, henüz envanteri çıkarılmadı. Detaylı dosya bazlı ilerleme ve bulgular: `tasks/todo.md`.
 - **Erişilebilirlik bulguları** (Lighthouse skoru 91, düşük öncelik) — `nav-drawer` düzeltildi (temmuz 2026, `inert` eklendi); `aria-hidden="true"` taşıyan modal'lar (`searchModal` vb.) hâlâ kapalıyken içlerinde odaklanabilir `<a>`/`<button>` var, aynı `inert` çözümü uygulanabilir; bazı metin/arkaplan kontrast oranları yetersiz; başlık (`h1`-`h6`) sırası bazı sayfalarda azalan düzende değil; **pasif bekliyor**
 
 ---
@@ -2752,6 +2755,40 @@ with connection.cursor() as c:
 #### Geçmiş Turlar (Kronoloji)
 
 > Önceki düz-yazı günlük biçiminden madde listesine dönüştürülmüştür; cümleler değişmeden taşınmıştır.
+
+- **21 Ekim 2026 — Ana sayfa CLS (düzen kayması) turu: 3 ayrı kök neden bulunup düzeltildi, hepsi
+  main'de canlı.** Kullanıcının PageSpeed Insights ekran görüntüsü paylaşmasıyla başladı (mobil CLS
+  0.243, masaüstü 1.246 — ikisi de kırmızı). Dört `dev`→`main` merge ile sırayla düzeltildi:
+  **1) `b9a33b0` — async CSS'in layout-kritik dosyalara da uygulanması.** `templates/base.html` ve
+  `forum/templates/forum/home.html`'de **tüm** stylesheet'ler (`bundle.css`, `bootstrap.min.css`,
+  `hero.css`, `cards.css`, `home_sections.css`, `brand_visuals.css` dahil)
+  `media="print" onload="this.media='all'"` ile deferred yükleniyordu ama critical-CSS inline bloğu
+  yalnızca `.ax-hero`'yu kapsıyordu — sayfa stilsiz boyanıp sonra tüm düzen birden zıplıyordu.
+  Above-the-fold'u etkileyen 6 dosya render-blocking'e çevrildi, fold-altı 7 dosya + fontlar deferred
+  kaldı (masaüstü CLS 1.246 → 0.007'ye düştü, ama mobil hâlâ run'dan run'a 0↔0.189 dalgalanmaya devam
+  etti). **2) `8e9a6d1` — çerez onayı banner'ı.** `templates/partials/cookie_consent.html`'deki
+  `#ax-cookie` `hidden` (`display:none`) ile başlayıp JS'te aniden görünür oluyordu — kutu ilk render'da
+  hiç yoktu. `visibility:hidden;opacity:0` + `.is-visible` class'ına çevrildi (gösterim mekanizması
+  dışında onay/red davranışı/metni değişmedi). **3) `ff77878` — asıl kalıcı kök neden: Inter font-swap.**
+  Prod'a karşı bağımsız `npx lighthouse` koşumu (PSI'nin UI'sına güvenmek yerine) CLS'i ham JSON'da
+  `layout-shifts` audit'inin `cause: "Web font loaded"` alanına kadar izledi — `inter.css` deferred
+  olduğu için Inter geç geliyor, yedek sistem fontundan geçişte `bottom:`e sabit `#ax-cookie` banner'ının
+  yüksekliği değişip kayıyordu. `templates/base.html`'e (bootstrap-icons için zaten var olan örüntüyle
+  birebir) Inter'in iki woff2 alt kümesi için `<link rel="preload" as="font">` eklendi — `inter.css`
+  deferred kalsa da font indirmesi first paint'ten önce başlıyor. Sonuç: PSI'da hem mobil hem masaüstü
+  CLS **0**, Performans mobil 72→93, masaüstü 72→99. **4) `5003cc6` — ayrı küçük bulgu: zorunlu yeniden
+  düzenleme (214ms).** AI asistan popup'ının `updateKeyboardOffset()` fonksiyonu (`base.html`) popup
+  **kapalıyken bile** her `visualViewport` resize/scroll olayında layout okuyup CSS değişkeni
+  yazıyordu — `isOpen` guard'ı eklendi. **Ayrıca incelenip ERTELENDİ:** Lighthouse "`bootstrap.min.css`
+  %92 kullanılmıyor (30,5 KiB)" + "`bootstrap-icons.css` %98 kullanılmıyor (13,3 KiB)" bulguları yalnızca
+  ana sayfaya göre — site geneli tarama bunun güvenli olmadığını gösterdi (`btn` 464, `card` 184,
+  `badge` 150, `accordion` 146, `form-control` 49 kez gerçek Bootstrap class'ı hâlâ kullanılıyor, bkz.
+  Bootstrap Kaldırma Migrasyonu, Faz 3 sürüyor); bu nedenle dokunulmadı, mevcut kademeli migrasyon planına
+  bırakıldı (`tasks/todo.md` TEK LİSTE'ye madde olarak eklendi — daha önce orada yoktu).
+  **Doğrulama yöntemi notu (gelecek turlar için):** PSI'nin ekran görüntüsü/UI'sı CLS'in gerçek nedenini
+  her zaman net göstermiyor (ve run'dan run'a dalgalanabiliyor); kesin teşhis için lokalde
+  `npx lighthouse <url> --output=json` çalıştırıp `audits['layout-shifts'].details.items[].subItems.cause`
+  alanına bakmak çok daha güvenilir.
 
 - **19 Ekim 2026 (gece) — Toplu e-posta HTML'e taşındı + sayfa gezintisine göre otomatik "nurture"
   e-postası sistemi kuruldu.** Kullanıcı admin panelden, tekrar tekrar aynı analiz sayfalarına dönen
