@@ -1334,7 +1334,7 @@ body.ax-no-scroll #ax-ai-widget { display: none; }
   const vv = window.visualViewport;
   const mqMobile = window.matchMedia('(max-width: 575px)');
   function updateKeyboardOffset() {
-    if (!vv) return;
+    if (!vv || !isOpen) return;
     const offset = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
     document.documentElement.style.setProperty('--ax-ai-kb-offset', offset + 'px');
     // iOS Safari'de fixed popup'ın height:72dvh'i klavye açıldığında küçülmüyor,
