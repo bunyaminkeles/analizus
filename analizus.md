@@ -2573,9 +2573,9 @@ with connection.cursor() as c:
     git'te izlenmeyen bir `frontend/` klasörü (`node_modules` içinde Next.js 16.1.5 — kimlik
     doğrulamasız RCE CVE-2026-75604 CRITICAL) ve bir private key (`nginx/local-ssl/selfsigned.key`)
     giriyordu. `.dockerignore`'a dört satır eklendi, imaj 3.84GB→2.61GB düştü; lokal `cookies.txt`
-    ve sunucudaki `/app/youtube_cookies.txt` (aynı türden, kullanılmayan) silindi. **Kullanıcıya
-    açık, bu oturumda teyit edilmedi:** hosting paneli/EBSCO/Google hesap şifrelerinin çerez
-    container'da durduğu süre boyunca ihtiyaten değiştirilmesi gerekiyor.
+    ve sunucudaki `/app/youtube_cookies.txt` (aynı türden, kullanılmayan) silindi. **Kullanıcı
+    tarafı TAMAMLANDI (22 Ekim 2026):** hosting paneli ve Gmail şifreleri değiştirildi; EBSCO
+    hesabı zaten kullanılmıyor, gerek görülmedi.
   - **[Yüksek] Stored XSS — blog yazıları:** `forum/templatetags/markdown_extras.py`'deki
     `markdown` filtresi `mark_safe()`'i sanitizasyonsuz kullanıyordu; `can_write_blog` rozetli
     herhangi bir kullanıcı admin onayından `<script>`/`onerror` payload'ı geçirip tüm blog
