@@ -10,6 +10,16 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
+- [ ] **(22 Ekim 2026) `onboarding.html` ax- tasarım sistemine aykırı:**
+  Bootstrap UI bileşenleri (`card`, `btn btn-primary/outline-secondary/
+  success/link`, `text-muted`, `text-danger`) doğrudan kullanılıyor
+  (olması gereken `ax-` prefix'li sınıflar) + CSS bloğunda hardcode hex
+  renkler (`#f0f0ff`, `#6366f1`, `#eef2ff`, `#4f46e5`, `#1e293b`,
+  `var(--text-main, #e2e8f0)` fallback'i) `var(--ax-*)` değişkeni yerine
+  yazılmış. Düzeltme: dosyayı ax sistemine taşımadan önce mevcut `ax-`
+  sınıf/değişken karşılıklarını (`bundle.css`) kontrol et, JS'teki
+  `.segment-card`/`.selected` davranışını bozma.
+
 - [ ] **(22 Ekim 2026) Güvenlik taraması — bulgular (CVE-2026-109618/109619
   PHP duyurusu vesilesiyle istendi; proje PHP değil, Django — sunucuda PHP
   olmadığı SSH ile teyit edildi, bu iki CVE geçersiz).** pip-audit +
