@@ -19,7 +19,7 @@ from django.utils import timezone, translation
 from django.utils.html import strip_tags
 from django.http import JsonResponse, Http404
 from django.views.decorators.http import require_GET, require_POST
-from django.views.decorators.csrf import csrf_exempt, ensure_csrf_cookie
+from django.views.decorators.csrf import ensure_csrf_cookie
 from datetime import timedelta
 import uuid
 from django_ratelimit.decorators import ratelimit
@@ -3153,7 +3153,6 @@ def api_get_quiz_question(request):
     except Exception as e:
         return JsonResponse({'success': False, 'error': f'Bir hata oluştu: {str(e)}'})
 
-@csrf_exempt
 def api_submit_quiz_answer(request):
     """Quiz cevabını kontrol eder ve puan/rozet verir"""
     if not request.user.is_authenticated:

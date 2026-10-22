@@ -1520,3 +1520,41 @@ def test_tr_bidding_rules_unchanged(client, job_owner, user):
     profile.save()
     r = client.get(f'/market/job/{job.pk}/')
     assert r.context['is_expert'] is True
+
+
+@pytest.mark.django_db
+def test_quiz_answer_requires_csrf_token(user):
+    """api_submit_quiz_answer artık csrf_exempt değil — token'sız POST reddedilir,
+    gerçek (cookie + X-CSRFToken header eşleşen) token'la kabul edilir."""
+    import json
+    from django.http import HttpRequest
+    from django.middleware.csrf import get_token
+    from forum.models import Profile, QuizQuestion
+
+    Profile.objects.get_or_create(user=user)
+    question = QuizQuestion.objects.create(
+        question='2+2?', option_a='3', option_b='4', option_c='5', option_d='6',
+        correct_answer='B', category='statistics',
+    )
+
+    url = reverse('api_submit_quiz_answer')
+    csrf_client = Client(enforce_csrf_checks=True)
+    csrf_client.force_login(user)
+
+    no_token = csrf_client.post(
+        url,
+        data=json.dumps({'question_id': question.id, 'answer': 'B'}),
+        content_type='application/json',
+    )
+    assert no_token.status_code == 403
+
+    token = get_token(HttpRequest())
+    csrf_client.cookies['csrftoken'] = token
+    with_token = csrf_client.post(
+        url,
+        data=json.dumps({'question_id': question.id, 'answer': 'B'}),
+        content_type='application/json',
+        HTTP_X_CSRFTOKEN=token,
+    )
+    assert with_token.status_code == 200
+    assert with_token.json()['success'] is True
