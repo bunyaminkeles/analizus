@@ -10,7 +10,7 @@ import secrets
 from django.utils import timezone
 from django.utils.translation import get_language, gettext, gettext_lazy, gettext_noop, pgettext_lazy
 from datetime import timedelta
-from forum.storage import get_storage
+from forum.storage import get_storage, get_attachment_storage
 
 class Section(models.Model):
     title = models.CharField(max_length=100)
@@ -589,7 +589,7 @@ class PrivateMessage(models.Model):
     sender = models.ForeignKey(User, related_name='sent_messages', on_delete=models.CASCADE)
     receiver = models.ForeignKey(User, related_name='received_messages', on_delete=models.CASCADE)
     message = models.TextField(blank=True)  # Opsiyonel - sadece dosya da gönderilebilir
-    attachment = models.FileField(upload_to='chat_attachments/%Y/%m/', storage=get_storage, blank=True, null=True, verbose_name="Dosya Eki")
+    attachment = models.FileField(upload_to='chat_attachments/%Y/%m/', storage=get_attachment_storage, blank=True, null=True, verbose_name="Dosya Eki")
     attachment_name = models.CharField(max_length=255, blank=True, verbose_name="Dosya Adı")
     created_at = models.DateTimeField(auto_now_add=True)
     is_read = models.BooleanField(default=False)
@@ -2053,7 +2053,7 @@ class StudyRoomPost(models.Model):
     room = models.ForeignKey(StudyRoom, on_delete=models.CASCADE, related_name='room_posts')
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='room_posts')
     message = models.TextField(verbose_name="Mesaj")
-    file = models.FileField(upload_to='studyrooms/', storage=get_storage, null=True, blank=True, verbose_name="Dosya")
+    file = models.FileField(upload_to='studyrooms/', storage=get_attachment_storage, null=True, blank=True, verbose_name="Dosya")
     created_at = models.DateTimeField(auto_now_add=True)
     edited_at = models.DateTimeField(null=True, blank=True, verbose_name="Düzenleme Zamanı")
 
