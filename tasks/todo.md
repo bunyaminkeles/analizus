@@ -49,8 +49,9 @@ maddelerde.
      Gerçek şiddeti prod `AWS_S3_CUSTOM_DOMAIN` değerine bağlı — **bu
      değer kullanıcı tarafından teyit edilmeli** (analizus.com alt alan
      adıysa şiddet yükselir).
-  5) **[ ] `pillow` 12.3.0 → 13.0.0 güncellemesi** (requirements.txt,
-     CVE-2026-112393, trivy'den).
+  5) **[x] `pillow` 12.3.0 → 13.0.0 — DÜZELTİLDİ** (CVE-2026-112393,
+     trivy'den; bleach ile aynı `--build` sırasında requirements.txt'teki
+     sürümsüz `Pillow` zaten güncel sürümü çekti, production'da canlı).
   6) **[ ] Düşük — `api_submit_quiz_answer` gerekçesiz `@csrf_exempt`**
      (`forum/views.py:3156`); etkisi düşük (itibar puanı), `SameSite=Lax`
      zaten büyük ölçüde koruyor.
