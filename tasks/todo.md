@@ -63,16 +63,29 @@ maddelerde.
   5) **[x] `pillow` 12.3.0 → 13.0.0 — DÜZELTİLDİ** (CVE-2026-112393,
      trivy'den; bleach ile aynı `--build` sırasında requirements.txt'teki
      sürümsüz `Pillow` zaten güncel sürümü çekti, production'da canlı).
-  6) **[ ] Düşük — `api_submit_quiz_answer` gerekçesiz `@csrf_exempt`**
-     (`forum/views.py:3156`); etkisi düşük (itibar puanı), `SameSite=Lax`
-     zaten büyük ölçüde koruyor.
-  7) **[ ] Düşük — `oaipmh` scraper'da `verify=False`** (SSL doğrulaması
-     tamamen kapalı, üniversite sunucularına MITM riski, düşük olasılık).
+  6) **[x] Düşük — `api_submit_quiz_answer` gerekçesiz `@csrf_exempt` —
+     DÜZELTİLDİ (22 Ekim 2026):** Decorator kaldırıldı (`forum/views.py`);
+     frontend (`templates/base.html`) zaten `X-CSRFToken` header'ı
+     gönderiyordu, JS değişikliği gerekmedi. Yeni regresyon testi
+     eklendi (`test_quiz_answer_requires_csrf_token`, `forum/tests.py`):
+     token'sız POST 403, doğru token'lı POST 200 — 104/104 pytest yeşil.
+  7) **[x] Düşük — `oaipmh` scraper'da `verify=False` — İNCELENDİ,
+     KASITLI OLARAK BIRAKILDI (22 Ekim 2026):** git geçmişi (`91186f1`,
+     19 Şubat 2026) bunun gözden kaçma değil, bilinçli bir düzeltme
+     olduğunu gösterdi — Ordu Üniversitesi gibi bozuk SSL sertifikalı
+     üniversitelerin OAI-PMH bağlantısı bu olmadan başarısız oluyordu.
+     Düz `verify=True`'ya çevirmek o zaman çözülen sorunu geri getirir.
+     Risk zaten düşük/düşük-güvenilirlik (4/10) olarak işaretliydi —
+     kullanıcı kararıyla olduğu gibi bırakıldı. "Doğru" çözüm
+     (üniversite bazlı opt-out: yeni model alanı + migration + admin +
+     hangi üniversitelerin gerçekten sorunlu olduğunu tespit etmek)
+     orantısız bulundu, istenirse ayrı görev.
   SQL injection, SSRF, command injection, insecure deserialization,
   kullanıcı tetikleyebileceği XXE, diğer IDOR'lar (DM, oda, 6 tarama
   aracı, pazar, profil), hardcoded secret — temiz, sağlam sahiplik
-  kontrolleri doğrulandı. Sıradaki adım kullanıcı önceliğine göre
-  belirlenecek (2 ve 3 numaralı Yüksek bulgular önerilir).
+  kontrolleri doğrulandı. **22 Ekim 2026 güvenlik turu TAMAMLANDI** —
+  7 bulgunun 6'sı düzeltildi ve production'da canlı, 1'i (oaipmh SSL)
+  bilinçli olarak mevcut haliyle bırakıldı.
 
 - [ ] **(21 Ekim 2026) Bootstrap Kaldırma Migrasyonu — bu TEK LİSTE'de hiç
   yoktu, eklendi (kullanıcı talebiyle).** Bugünkü ana sayfa CLS/performans
