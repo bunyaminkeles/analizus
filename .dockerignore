@@ -4,3 +4,7 @@ __pycache__
 .git
 *.sqlite3
 staticfiles/
+frontend/
+cookies.txt
+youtube_cookies.txt
+nginx/local-ssl/
