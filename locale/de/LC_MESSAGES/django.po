@@ -21351,6 +21351,26 @@ msgstr ""
 "Datenerfassung ohne Code aus internationalen wissenschaftlichen Datenbanken. "
 "Keine Python- oder Selenium-Kenntnisse nötig."
 
+#: templates/partials/marketing_consent_popup.html:10
+msgid "Öneri e-postası onayı"
+msgstr "Zustimmung für Empfehlungs-E-Mails"
+
+#: templates/partials/marketing_consent_popup.html:12
+msgid ""
+"Analizus'u daha etkin kullanabilmek için uygun uzman/ipucu önerilerini e-"
+"posta ile almak ister misiniz?"
+msgstr ""
+"Möchten Sie passende Experten-/Tipp-Empfehlungen per E-Mail erhalten, um "
+"Analizus effektiver nutzen zu können?"
+
+#: templates/partials/marketing_consent_popup.html:15
+msgid "Şimdi değil"
+msgstr "Nicht jetzt"
+
+#: templates/partials/marketing_consent_popup.html:16
+msgid "Evet, isterim"
+msgstr "Ja, gerne"
+
 #, fuzzy
 #~| msgid "Analizus - Akademik Veri Üssü"
 #~ msgid "Akademik Veri Üssü"

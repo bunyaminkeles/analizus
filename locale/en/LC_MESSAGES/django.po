@@ -20991,6 +20991,26 @@ msgstr ""
 "No-code data scraping from international academic databases. No Python or "
 "Selenium skills needed."
 
+#: templates/partials/marketing_consent_popup.html:10
+msgid "Öneri e-postası onayı"
+msgstr "Recommendation email consent"
+
+#: templates/partials/marketing_consent_popup.html:12
+msgid ""
+"Analizus'u daha etkin kullanabilmek için uygun uzman/ipucu önerilerini e-"
+"posta ile almak ister misiniz?"
+msgstr ""
+"Would you like to receive suitable expert/tip recommendations by email to "
+"use Analizus more effectively?"
+
+#: templates/partials/marketing_consent_popup.html:15
+msgid "Şimdi değil"
+msgstr "Not now"
+
+#: templates/partials/marketing_consent_popup.html:16
+msgid "Evet, isterim"
+msgstr "Yes, I'd like that"
+
 #, fuzzy
 #~| msgid "Analizus - Akademik Veri Üssü"
 #~ msgid "Akademik Veri Üssü"
