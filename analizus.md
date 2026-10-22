@@ -1347,6 +1347,19 @@ def _broadcast_chat(uid1, uid2, event):
   2. `email_utils.notify_room_mention()` ile async e-posta gönderilir
 - Tüm üyelere değil — **yalnızca etiketlenen kişiye** gider
 
+### Yeni Üye Katılma E-postası (21 Ekim 2026)
+- `studyroom_join` (serbest katılım, oda `status='active'` olmalı) üyelik oluşturulduktan hemen sonra
+  `email_utils.notify_room_member_joined(room, new_member)` çağırır — **yeni katılan hariç tüm mevcut
+  üyelere** (kurucu dahil) async e-posta gider.
+- Kapsam dışı bırakıldı (kullanıcı kararı): davet akışı (`studyroom_invite` — davet edilene zaten
+  in-app `Notification` gidiyor, e-posta yok) ve oda onayı.
+- **Oda onayı (`pending`→`active`) hâlâ hiçbir e-posta/sinyal tetiklemiyor:** `StudyRoomAdmin.approve_rooms`
+  (`forum/admin.py`) toplu `queryset.update()` kullanıyor — `save()` çalışmaz, `post_save` sinyali yok
+  (CLAUDE.md'deki "queryset.update değil kayıt kayıt save()" kuralına aykırı örnek). Ayrıca `pending`
+  odaya kurucudan başka kimse katılamaz (`studyroom_join`/`studyroom_waitlist_join` ikisi de
+  `status='active'` şartı arıyor) — yani "onay anında mevcut üyelere toplu bildirim" senaryosu yapısal
+  olarak hiç mevcut değil; kurucuya "odanız açıldı" e-postası da YOK. İstenirse ayrı görev.
+
 ---
 
 ## 14. BİBLİOMETRİK ANALİZ
@@ -2326,6 +2339,8 @@ with connection.cursor() as c:
 
 - **Çalışma Odası mesaj düzenleme / silme** (haziran 2026) — `StudyRoomPost`'a `edited_at` alanı (migration 0120); `/api/room-post/<id>/edit|delete/`; hover ile ✏️/🗑️ ikonları, inline textarea; hard delete (S3 signal); `(düzenlendi)` etiketi
 - **Çalışma Odası @mention e-postası** (haziran 2026) — `email_utils.notify_room_mention()`; etiketlenen oda üyesine async e-posta; tüm üyelere değil
+- **Çalışma Odası — yeni üye katılma e-postası** (21 Ekim 2026) — `email_utils.notify_room_member_joined()`; `studyroom_join` ile serbest katılımda mevcut tüm üyelere (yeni katılan hariç) async e-posta; davet/oda onayı akışları kapsam dışı bırakıldı (§13b)
+- **Çalışma Odası Aç formu — otomatik büyüyen metin alanları** (21 Ekim 2026) — Açıklama (`description`, max 1000) ve Hedef (`goal`, max 500 — karakter sınırları zaten doğruydu) `textarea`'ları `scrollHeight` tabanlı JS ile içerik arttıkça otomatik yükseklik kazanıyor (`send_message.html`'deki mevcut auto-resize deseniyle tutarlı)
 - **Forum @mention — yeni konu formu** (haziran 2026) — `new_topic.html`'e yanıt formundakiyle aynı @mention autocomplete eklendi (`/api/users/search/` endpoint, ok/tab/esc klavye navigasyonu, avatar dropdown)
 - **Forum topic_detail DM stili** (haziran 2026) — "Cevap Yaz" büyük bölümü → compact inline input (DM'deki gibi tek satır textarea + send butonu); mesaj balonları solid renk → gradient+border stiline güncellendi; AI Yanıt Öner butonu alt satıra taşındı; `#chat-kutusu` sabit yükseklik (`calc(100vh-340px)`) kaldırıldı — mesajlar doğal yükseklikte akıyor
 - **Forum index kompakt kartlar + aktivite sıralaması** (haziran 2026) — Section içinde kategoriler `last_post_at` azalan sırada (en son yazışma önce, hiç konu olmayanlar sona); kart yüksekliği ~50% azaltıldı: ikon + başlık + sinyaller tek satırda, açıklama 2. satıra küçük font; sinyal sayıları kısaltıldı (rakam+ikon, etiket yok); `django.utils.timezone.utc` → `datetime.timezone.utc` (Django 5.2 uyumluluğu)
@@ -2755,6 +2770,23 @@ bulgusuna dayanarak kısaltmak/CDN'den kaldırmak ERTELENDİ — site geneli kı
 #### Geçmiş Turlar (Kronoloji)
 
 > Önceki düz-yazı günlük biçiminden madde listesine dönüştürülmüştür; cümleler değişmeden taşınmıştır.
+
+- **21 Ekim 2026 (akşam) — Çalışma Odaları: form UX düzeltmesi + yeni üye katılma e-postası (main'de
+  canlı, 2 ayrı `dev`→`main` merge).** Kullanıcı "oda aç" formunun ekran görüntüsünü paylaşıp
+  Açıklama/Hedef metin kutularının içerik uzadıkça kaymasından (sabit `rows` + iç scroll) şikayet etti ve
+  karakter üst sınırının doğru olup olmadığını sordu. **1)** `forum/templates/forum/studyroom_create.html`
+  — iki `textarea`'ya (`description` max 1000, `goal` max 500 — ikisi de zaten doğruydu, değişmedi)
+  `scrollHeight` tabanlı otomatik yükseklik JS'i eklendi (`overflow-y:hidden;resize:none`),
+  `send_message.html`'deki mevcut auto-resize deseniyle tutarlı. **2)** Ayrı bir istekle: "oda açılınca
+  katılanlara e-posta gitmesi gerekiyor, kontrol et" denince kod incelendi — oda onayının (`pending`→
+  `active`) `forum/admin.py`'de toplu `queryset.update()` ile yapıldığı ve hiçbir e-posta/sinyal
+  tetiklemediği, ayrıca `pending` odaya kurucudan başka kimsenin katılamadığı (dolayısıyla "onay anında
+  toplu bildirim" senaryosunun yapısal olarak hiç var olmadığı) ortaya çıktı. Kullanıcıya 3 seçenek
+  soruldu, **"birisi zaten açık bir odaya katılınca mevcut tüm üyelere e-posta"** seçildi:
+  `email_utils.notify_room_member_joined(room, new_member)` eklendi, `studyroom_join`'de üyelik
+  oluşturulduktan hemen sonra çağrılıyor — yeni katılan hariç tüm mevcut üyelere (kurucu dahil) async
+  e-posta gider. Davet (`studyroom_invite`) ve onay (`pending→active`) akışları kullanıcı kararıyla
+  kapsam dışı bırakıldı. Detay: §13b.
 
 - **21 Ekim 2026 — Ana sayfa CLS (düzen kayması) turu: 3 ayrı kök neden bulunup düzeltildi, hepsi
   main'de canlı.** Kullanıcının PageSpeed Insights ekran görüntüsü paylaşmasıyla başladı (mobil CLS

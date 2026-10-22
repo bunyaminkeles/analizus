@@ -10,6 +10,52 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
+- [ ] **(22 Ekim 2026) Güvenlik taraması — bulgular (CVE-2026-109618/109619
+  PHP duyurusu vesilesiyle istendi; proje PHP değil, Django — sunucuda PHP
+  olmadığı SSH ile teyit edildi, bu iki CVE geçersiz).** pip-audit +
+  `manage.py check --deploy` + trivy (base imajlar + uygulama imajı) +
+  OWASP kod taraması (subagent) yapıldı. Bulgular şiddet sırasına göre:
+  1) **[x] Docker imajına sızan gizli dosyalar — DÜZELTİLDİ:**
+     `.dockerignore` eksikti, `COPY . .` ile production imajına
+     `cookies.txt` (450KB, hosting paneli gerçek oturum çerezi +
+     scraping araçları çerezleri), `frontend/` (git'te izlenmeyen/yerel
+     Next.js denemesi, `node_modules` içinde Next.js 16.1.5 — kimlik
+     doğrulamasız RCE CVE-2026-75604 CRITICAL) ve
+     `nginx/local-ssl/selfsigned.key` (private key) giriyordu.
+     `.dockerignore`'a `frontend/`, `cookies.txt`, `youtube_cookies.txt`,
+     `nginx/local-ssl/` eklendi, imaj yeniden build edildi.
+     **Kullanıcıya açık:** hosting paneli şifresi/oturumu ihtiyaten
+     değiştirilmeli (çerez çalışan container içinde durmuştu).
+  2) **[ ] Stored XSS — blog yazıları** (`forum/templatetags/
+     markdown_extras.py:8-18`, `blog_detail.html:138`): `markdown`
+     filtresi sanitizasyonsuz `mark_safe()` kullanıyor; `can_write_blog`
+     rozetli herhangi bir kullanıcı admin onayından script geçirip
+     `/blog/<slug>/` ziyaretçilerinde kod çalıştırabilir. Öneri:
+     `bleach.clean()` ile izinli etiket listesi.
+  3) **[ ] IDOR — istatistik analiz sonuçları** (`istatistik/
+     views.py:945-962`, `job_status`): anonim istekte sahiplik filtresi
+     hiç uygulanmıyor, UUID ele geçirilirse (link paylaşımı, referrer
+     sızıntısı) başkasının analiz sonucu görüntülenebiliyor. Öneri:
+     anonim job'larda `request.session.session_key` eşleşmesi.
+  4) **[ ] Orta — DM/çalışma odası eki MIME doğrulaması
+     client-controlled** (`forum/views.py:1757, 4183`): `Content-Type`
+     header'ına güveniliyor, gerçek içerik (magic number) kontrolü yok.
+     Gerçek şiddeti prod `AWS_S3_CUSTOM_DOMAIN` değerine bağlı — **bu
+     değer kullanıcı tarafından teyit edilmeli** (analizus.com alt alan
+     adıysa şiddet yükselir).
+  5) **[ ] `pillow` 12.3.0 → 13.0.0 güncellemesi** (requirements.txt,
+     CVE-2026-112393, trivy'den).
+  6) **[ ] Düşük — `api_submit_quiz_answer` gerekçesiz `@csrf_exempt`**
+     (`forum/views.py:3156`); etkisi düşük (itibar puanı), `SameSite=Lax`
+     zaten büyük ölçüde koruyor.
+  7) **[ ] Düşük — `oaipmh` scraper'da `verify=False`** (SSL doğrulaması
+     tamamen kapalı, üniversite sunucularına MITM riski, düşük olasılık).
+  SQL injection, SSRF, command injection, insecure deserialization,
+  kullanıcı tetikleyebileceği XXE, diğer IDOR'lar (DM, oda, 6 tarama
+  aracı, pazar, profil), hardcoded secret — temiz, sağlam sahiplik
+  kontrolleri doğrulandı. Sıradaki adım kullanıcı önceliğine göre
+  belirlenecek (2 ve 3 numaralı Yüksek bulgular önerilir).
+
 - [ ] **(21 Ekim 2026) Bootstrap Kaldırma Migrasyonu — bu TEK LİSTE'de hiç
   yoktu, eklendi (kullanıcı talebiyle).** Bugünkü ana sayfa CLS/performans
   turunda Lighthouse "`bootstrap.min.css`'in %92'si kullanılmıyor (30,5 KiB)"
