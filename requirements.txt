@@ -43,6 +43,7 @@ factor-analyzer==0.5.1
 # --- ARAÇLAR & GÜVENLİK ---
 python-dotenv
 django-ratelimit
+bleach
 requests
 httpx
 urllib3

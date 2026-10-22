@@ -26,17 +26,23 @@ maddelerde.
      `nginx/local-ssl/` eklendi, imaj yeniden build edildi.
      **Kullanıcıya açık:** hosting paneli şifresi/oturumu ihtiyaten
      değiştirilmeli (çerez çalışan container içinde durmuştu).
-  2) **[ ] Stored XSS — blog yazıları** (`forum/templatetags/
-     markdown_extras.py:8-18`, `blog_detail.html:138`): `markdown`
-     filtresi sanitizasyonsuz `mark_safe()` kullanıyor; `can_write_blog`
-     rozetli herhangi bir kullanıcı admin onayından script geçirip
-     `/blog/<slug>/` ziyaretçilerinde kod çalıştırabilir. Öneri:
-     `bleach.clean()` ile izinli etiket listesi.
-  3) **[ ] IDOR — istatistik analiz sonuçları** (`istatistik/
-     views.py:945-962`, `job_status`): anonim istekte sahiplik filtresi
-     hiç uygulanmıyor, UUID ele geçirilirse (link paylaşımı, referrer
-     sızıntısı) başkasının analiz sonucu görüntülenebiliyor. Öneri:
-     anonim job'larda `request.session.session_key` eşleşmesi.
+  2) **[x] Stored XSS — blog yazıları — DÜZELTİLDİ (22 Ekim 2026):**
+     (`forum/templatetags/markdown_extras.py`) `markdown` filtresi artık
+     `md.markdown()` çıktısını `bleach.clean()` ile (izinli etiket/öznitelik
+     listesi, yalnız http/https/mailto link şeması, `strip=True`) temizledikten
+     sonra `mark_safe()` yapıyor. `bleach` requirements.txt'e eklendi.
+     Test: `<script>`/`onerror` payload'ı temizlendi, başlık/kalın/italik/
+     liste/kod bloğu (codehilite)/tablo/link normal render oldu; 103/103
+     pytest yeşil. **Deploy notu:** requirements.txt değişti, deploy
+     öncesi `--build` gerekir (otomatik akışa yansımaz).
+  3) **[x] IDOR — istatistik analiz sonuçları — DÜZELTİLDİ (22 Ekim 2026):**
+     (`istatistik/views.py`, `job_status` + iki job-oluşturma noktası)
+     anonim (demo) job'lar artık `request.session['demo_job_ids']`
+     listesiyle eşleştiriliyor (migration gerekmedi — mevcut DB-backed
+     session kullanıldı); giriş yapmış kullanıcı job'ları `user_id`
+     eşleşmesiyle korunuyor, eşleşmeyen her durumda `Http404`. Shell
+     testiyle doğrulandı: sahip (anonim + girişli) erişebiliyor, yabancı
+     anonim oturum ve başka kullanıcı 404 alıyor; 103/103 pytest yeşil.
   4) **[ ] Orta — DM/çalışma odası eki MIME doğrulaması
      client-controlled** (`forum/views.py:1757, 4183`): `Content-Type`
      header'ına güveniliyor, gerçek içerik (magic number) kontrolü yok.

@@ -474,6 +474,10 @@ def _handle_group_tool_post(request, tool):
             is_demo=not request.user.is_authenticated,
             options=options,
         )
+        if not request.user.is_authenticated:
+            demo_job_ids = request.session.get('demo_job_ids', [])
+            demo_job_ids.append(str(job.id))
+            request.session['demo_job_ids'] = demo_job_ids[-20:]
         from .services.job_runner import run_job
         store_file_content(str(job.id), content)
         run_job(str(job.id))
@@ -945,11 +949,13 @@ def _handle_orneklem_calc(request):
 @require_GET
 def job_status(request, job_id):
     """AJAX polling: job durumu + sonuç."""
-    filters = {'id': job_id}
-    if request.user.is_authenticated:
-        filters['user'] = request.user
+    job = get_object_or_404(IstatistikJob, id=job_id)
 
-    job = get_object_or_404(IstatistikJob, **filters)
+    if job.user_id is not None:
+        if not request.user.is_authenticated or request.user.pk != job.user_id:
+            raise Http404
+    elif str(job.id) not in request.session.get('demo_job_ids', []):
+        raise Http404
 
     resp = {'status': job.status}
     if job.status == 'completed':
@@ -1010,6 +1016,11 @@ def _handle_upload(request, tool, options=None):
         is_demo=not request.user.is_authenticated,
         options=options or {},
     )
+
+    if not request.user.is_authenticated:
+        demo_job_ids = request.session.get('demo_job_ids', [])
+        demo_job_ids.append(str(job.id))
+        request.session['demo_job_ids'] = demo_job_ids[-20:]
 
     from .services.job_runner import store_file_content, run_job
     store_file_content(str(job.id), content)
