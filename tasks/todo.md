@@ -43,12 +43,23 @@ maddelerde.
      eşleşmesiyle korunuyor, eşleşmeyen her durumda `Http404`. Shell
      testiyle doğrulandı: sahip (anonim + girişli) erişebiliyor, yabancı
      anonim oturum ve başka kullanıcı 404 alıyor; 103/103 pytest yeşil.
-  4) **[ ] Orta — DM/çalışma odası eki MIME doğrulaması
-     client-controlled** (`forum/views.py:1757, 4183`): `Content-Type`
-     header'ına güveniliyor, gerçek içerik (magic number) kontrolü yok.
-     Gerçek şiddeti prod `AWS_S3_CUSTOM_DOMAIN` değerine bağlı — **bu
-     değer kullanıcı tarafından teyit edilmeli** (analizus.com alt alan
-     adıysa şiddet yükselir).
+  4) **[x] Orta — DM/çalışma odası eki MIME doğrulaması client-controlled
+     — DÜZELTİLDİ (22 Ekim 2026):** `AWS_S3_CUSTOM_DOMAIN` teyit edildi:
+     `analizus-files.s3.eu-north-1.amazonaws.com` — analizus.com alt alan
+     adı DEĞİL, cross-origin, yani CSRF token çalınması senaryosu zaten
+     geçersizdi (şiddet Orta'da kaldı, yükselmedi). Gerçek içerik
+     doğrulaması (`python-magic`) yeni sistem kütüphanesi + Dockerfile
+     değişikliği gerektirdiği için orantısız bulundu; bunun yerine
+     `forum/storage.py`'ye `get_attachment_storage()` eklendi
+     (`PrivateMessage.attachment`, `StudyRoomPost.file` — yalnız bu iki
+     alan, avatar/diğer dosyalar etkilenmedi) — S3'te
+     `ContentDisposition: attachment` zorlanıyor, tarayıcı içerik tipi
+     ne olursa olsun (sahte olsa dahi) inline render etmiyor, yalnızca
+     indiriyor. Migration `0185` (state-only `AlterField`, DB şeması
+     değişmedi) uygulandı. Doğrulama: `override_settings` ile storage
+     nesnesinin `object_parameters` değeri kontrol edildi (gerçek S3'e
+     dosya yazmadan — prod/dev S3 bucket paylaşımlı, test verisi
+     bulaştırılmadı), 103/103 pytest yeşil.
   5) **[x] `pillow` 12.3.0 → 13.0.0 — DÜZELTİLDİ** (CVE-2026-112393,
      trivy'den; bleach ile aynı `--build` sırasında requirements.txt'teki
      sürümsüz `Pillow` zaten güncel sürümü çekti, production'da canlı).
