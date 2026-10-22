@@ -2560,6 +2560,57 @@ with connection.cursor() as c:
   - Sayfa geneli gövde metni `text-secondary` (`#94a3b8`, soluk) yerine `text-light`/`--ax-text-primary` ile daha belirgin hale getirildi — baypass.net'in datenschutz sayfası referans alındı
   - **Veri saklama süresi tutarsızlığı bulundu ve kısmen giderildi:** sitede aynı konuda 3 farklı süre iddiası vardı — KVKK taslağı "7 gün", `home.html` FAQ'i "30 gün" (Hizmetler Pazarı teslim sonrası), `about.html` "hemen silinir" (aynı konu); kodda ise `cron_cleanup_s3_files` (`forum/api_views.py`) + `trdizin`/`openalex`/`oaipmh` `job_runner.py`'deki `cleanup_expired_*_s3_files()` fonksiyonları **3 gün** hardcode idi. Tarama araçları (YÖK Tez/OpenAlex/TR Dizin/OAI-PMH) için hepsi **7 güne** eşitlendi (kod + `openalex/management/commands/cleanup_openalex_files.py` + KVKK metni). **Hizmetler Pazarı tarafı kullanıcı kararıyla dokunulmadı** — ayrı görev (aşağıda).
   - **Bulgu, düzeltilmedi:** `analizus.md` §23'e göre yalnızca `cleanup-pageviews` cron'unun Hetzner crontab'ında gerçekten kayıtlı olduğu dokümante edilmiş; `cleanup-s3` "Aktif" işaretli ama crontab satırı doğrulanmamış — crontab repo'da tutulmadığından buradan teyit edilemedi, sunucuda `crontab -l` ile kontrol edilmeli.
+- **22 Ekim 2026 — Güvenlik taraması turu (main'de canlı).** Tetikleyici: CVE-2026-109618/
+  109619 (PHP çekirdeği, CVSS 9.2, kimlik doğrulamasız RCE) kamuoyuna duyurulmuştu; SSH ile
+  sunucuda PHP kurulu olmadığı doğrulandı (`dpkg`/`which php` boş, tüm container'lar Django/
+  gunicorn) — bu iki CVE projeyi etkilemiyor. Bunun üzerine genel bir tarama yapıldı: pip-audit
+  (`requirements.txt`), `manage.py check --deploy`, trivy (base imajlar nginx/postgres/redis +
+  uygulama imajı), ve bir subagent ile tüm kod tabanının OWASP Top 10 taraması. 7 bulgudan 6'sı
+  düzeltildi, main'e tek tek merge+push edildi:
+  - **[Kritik] Docker imajına sızan gizli dosyalar:** `.dockerignore` eksikti, `COPY . .` ile
+    production imajına `cookies.txt` (450KB — gerçek bir hosting paneli oturum çerezi + EBSCO/
+    Google hesap çerezleri dahil geniş bir tarayıcı çerez dışa aktarımı, kodda hiç kullanılmıyordu),
+    git'te izlenmeyen bir `frontend/` klasörü (`node_modules` içinde Next.js 16.1.5 — kimlik
+    doğrulamasız RCE CVE-2026-75604 CRITICAL) ve bir private key (`nginx/local-ssl/selfsigned.key`)
+    giriyordu. `.dockerignore`'a dört satır eklendi, imaj 3.84GB→2.61GB düştü; lokal `cookies.txt`
+    ve sunucudaki `/app/youtube_cookies.txt` (aynı türden, kullanılmayan) silindi. **Kullanıcıya
+    açık, bu oturumda teyit edilmedi:** hosting paneli/EBSCO/Google hesap şifrelerinin çerez
+    container'da durduğu süre boyunca ihtiyaten değiştirilmesi gerekiyor.
+  - **[Yüksek] Stored XSS — blog yazıları:** `forum/templatetags/markdown_extras.py`'deki
+    `markdown` filtresi `mark_safe()`'i sanitizasyonsuz kullanıyordu; `can_write_blog` rozetli
+    herhangi bir kullanıcı admin onayından `<script>`/`onerror` payload'ı geçirip tüm blog
+    ziyaretçilerinde kod çalıştırabilirdi. `bleach.clean()` (izinli etiket/öznitelik listesi,
+    yalnız http/https/mailto, `strip=True`) eklendi — `bleach` yeni bağımlılık.
+  - **[Yüksek] IDOR — istatistik analiz sonuçları:** `istatistik/views.py`'deki `job_status`
+    anonim istekte sahiplik filtresi uygulamıyordu; UUID ele geçirilirse (link paylaşımı,
+    referrer sızıntısı) başkasının analiz sonucu kimlik doğrulamasız görüntülenebiliyordu.
+    Anonim job'lar artık `request.session['demo_job_ids']` ile eşleştiriliyor (migration
+    gerekmedi, mevcut DB-backed session kullanıldı).
+  - **[Orta] DM/çalışma odası eki MIME doğrulaması client-controlled:** `Content-Type`
+    header'ına güveniliyordu (gerçek baytlar kontrol edilmiyordu). `AWS_S3_CUSTOM_DOMAIN`'in
+    analizus.com alt alanı olmadığı (cross-origin, `analizus-files.s3.eu-north-1.amazonaws.com`)
+    teyit edildiğinden CSRF-token-çalma senaryosu zaten geçersizdi. Gerçek içerik doğrulaması
+    (`python-magic`) yeni sistem bağımlılığı gerektirdiğinden orantısız bulundu; bunun yerine
+    `forum/storage.py`'ye yalnız bu iki alana özel `get_attachment_storage()` eklendi — S3'te
+    `ContentDisposition: attachment` zorlanıyor (migration `0185`, state-only `AlterField`).
+  - **[Düşük] `pillow` 12.3.0→13.0.0** (CVE-2026-112393) — bleach ile aynı `--build`'de
+    sürümsüz `Pillow` zaten güncel sürümü çekti.
+  - **[Düşük] `api_submit_quiz_answer`'daki gerekçesiz `@csrf_exempt` kaldırıldı** — frontend
+    zaten `X-CSRFToken` header'ı gönderiyordu; regresyon testi eklendi
+    (`test_quiz_answer_requires_csrf_token`, `forum/tests.py`).
+  - **[Düşük, kasıtlı bırakıldı] `oaipmh` scraper'ında `verify=False`:** git geçmişi
+    (`91186f1`, 19 Şubat 2026) bunun gözden kaçma değil, Ordu Üniversitesi gibi bozuk SSL
+    sertifikalı üniversitelerin OAI-PMH bağlantısını çalışır tutmak için bilinçli bir düzeltme
+    olduğunu gösterdi; düz `verify=True` o zaman çözülen sorunu geri getirir. Risk zaten düşük/
+    düşük-güvenilirlikti (üçüncü taraf üniversite sunucusu ele geçirilmeden sömürülemez);
+    kullanıcı kararıyla olduğu gibi bırakıldı. "Doğru" çözüm (üniversite bazlı opt-out) ayrı görev.
+  - Taranıp **temiz** bulunanlar: SQL injection, SSRF, command injection, insecure
+    deserialization, kullanıcı tetikleyebileceği XXE, diğer IDOR'lar (DM, oda, 6 tarama aracı,
+    pazar, profil), hardcoded secret.
+  - 104/104 pytest yeşil (1 yeni test eklendi). Tüm düzeltmeler `dev`→`main` tek tek merge+push
+    edildi, GitHub Actions ile Hetzner'e otomatik deploy oldu (requirements.txt değişen iki
+    commit'te deploy sonrası elle `docker compose up -d --build web` gerekti — otomatik akış
+    yalnız `restart` yapıyor). Detay: `tasks/todo.md` "AÇIK İŞLER — TEK LİSTE", 22 Ekim maddesi.
 
 #### Altyapı / DevOps / Deploy
 
