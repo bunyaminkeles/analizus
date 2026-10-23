@@ -2214,6 +2214,7 @@ with connection.cursor() as c:
 | Kullanıcıya/log'a `… for url: https://api…?api_key=XXXX` yazılıyor | API anahtarı query parametresi olarak gidiyorsa `requests` HTTPError/ConnectionError metni tam URL'yi (anahtar dahil) taşır; `str(e)` → `mark_failed`, `logger.error(… {e})` ve `exc_info=True` traceback'i anahtarı yazar. **Kural:** kullanıcıya sabit çevrili mesaj; scraper'da son denemede `raise type(e)(redact(e), response=e.response, request=e.request) from None` (OpenAlex `redact_api_key`, PubMed `_redact_api_key`; 29 Eylül 2026). Yeni API istemcisinde de aynı kalıp. |
 | SEO başlığını şablonda değiştirdim, Google eskisini gösteriyor / `curl` eski başlık | Anonim ziyaretçi (Googlebot) tarama ve analiz araçlarında `service_promo.html` görür; başlık view'daki `promo_title`/`promo_description`. Önce **oturumsuz** `curl` ile hangi şablonun render edildiğini bul, doğrulamayı da oturumsuz yap (30 Eylül 2026). |
 | Ortak şablon değişikliği bir araçta doğru, diğerlerinde bozuk / kullanıcı "hepsinde bozukluk" | Tüm sayfaları aynı ölçütle karşılaştır (Playwright: sıra, kartlar arası = bölümler arası boşluk, sol/sağ hiza, boş değişken ör. `tool_title`, mobil taşma). İstisna listesi yerine eksik parçayı tamamla, tek düzen kur (1 Ekim 2026). |
+| GSC "Blocked by robots.txt" raporunda beklenmedik bir URL (ör. `/profile/<kullanıcı>/`) görünüyor | URL'nin kendisi değil, view'daki `@login_required` sebep: anonim/Googlebot `/login/?next=...`'e 302 olur, `/login/` zaten haklı olarak robots.txt'te engelli — GSC zinciri orijinal URL'ye atfediyor. Teşhis: `curl -A "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)" <url>` ile gerçek yönlenmeyi gör (oturumsuz `curl` ile aynı kalıp, bkz. yukarıdaki satır). `profile_detail`'da bulundu — tüm uzman profilleri (Uzman Dizini dahil) hiç indekslenemiyordu; `@login_required` kaldırılıp yerine `Profile.is_directory_eligible()` ile yalnız anonim ziyaretçi için ek kriter eklendi (giriş yapmış üyelerin görüşü değişmedi), KVKK açısından `is_public` (varsayılan `True`, üye-arası görünürlük) tek başına arama motoruna açmaya yetmez — dizin kriterine (açık rıza/eşik) bağlandı (23 Ekim 2026). |
 
 ### Güvenlik / Bot Koruması
 
@@ -2821,6 +2822,33 @@ bulgusuna dayanarak kısaltmak/CDN'den kaldırmak ERTELENDİ — site geneli kı
 #### Geçmiş Turlar (Kronoloji)
 
 > Önceki düz-yazı günlük biçiminden madde listesine dönüştürülmüştür; cümleler değişmeden taşınmıştır.
+
+- **23 Ekim 2026 — GSC "Neden indekslenmiyor" raporu taraması + uzman profili SEO düzeltmesi (main'de
+  canlı).** Kullanıcı Google Search Console'un indekslenmeme raporundan sırayla ekran görüntüleri
+  paylaştı (Blocked by robots.txt 198, Alternatif sayfa/canonical 100, Redirect hatası 2, Yönlendirmeli
+  sayfa 32, Crawled-indekslenmedi 4). Her kategori canlıda Googlebot UA'sıyla `curl` ile doğrulandı:
+  redirect hatası, yönlendirmeli sayfa ve "crawled-indekslenmedi" kategorilerindeki örnekler ya kasıtlı
+  (`/tezanaliz/`→`/yoktez/`, `/neden-biz/`→`/hakkimizda/`, blog filtre parametresi normalizasyonu,
+  `/accounts/password_reset/` zaten robots.txt'te engelli) ya da eski/stale GSC verisiydi, aksiyon
+  gerekmedi. **Tek gerçek bulgu:** "Blocked by robots.txt" listesindeki `/profile/<kullanıcı>/`
+  örnekleri (`joseph`, `dr_ayse_kaya` vb.) — `forum/views.py`'deki `profile_detail` view'ı
+  `@login_required` ile korunuyordu, bu yüzden TÜM kullanıcı profilleri (Uzman Dizini'ndekiler dahil)
+  anonim/Googlebot için `/login/?next=...`'e 302 olup orada robots.txt tarafından engelleniyordu —
+  tek bir profil sayfası bile asla indekslenemiyordu, oysa `analizus.md` §8-9'daki Uzman Dizini
+  özelliğinin amacı tam da uzman profillerinin Google'da bulunabilir olması. SEO ile KVKK arasındaki
+  gerilim kullanıcıya soruldu (`is_public` varsayılanı `True` — bu üye-arası görünürlük için makul ama
+  tüm interneti/arama motorunu kapsamaz) ve "yalnız Uzman Dizini kriterini karşılayanlar herkese/bota
+  açık olsun" kararı alındı. **Uygulama:** `forum/models.py` → `Profile.is_directory_eligible()`
+  eklendi (uzman_dizini view'ındaki toplu sorguyla [`forum/views.py`] aynı kriter — 3+ uzmanlık alanı,
+  min. puan, e-posta doğrulaması, staff hariç, `directory_override` ile tekil istisna — tek kaynaktan
+  okunuyor); `profile_detail`'dan `@login_required` kaldırıldı, gizlilik bloğuna anonim ziyaretçi için
+  ek kontrol eklendi (giriş yapmış üyelerin davranışı değişmedi — eskisi gibi her `is_public=True`
+  profili görürler); `forum/templates/forum/profile_private.html`'e `noindex, nofollow` meta eklendi
+  (dizin-dışı profillerin placeholder'ı ince/tekrarlı içerik olarak indekslenmesin). Telefon numarası
+  şablonda zaten maskeli, e-posta `show_email=False` iken zaten boşaltılıyor — ek KVKK riski yok, 13
+  ilgili pytest testi (`-k "profile or uzman_dizini"`) geçti. Migration yok, tek `dev`→`main` `--no-ff`
+  merge ile push edildi, GitHub Actions ile Hetzner'e otomatik deploy tetiklendi. §8-9, §26
+  ("Tarama / Analiz Araçları").
 
 - **21 Ekim 2026 (akşam) — Çalışma Odaları: form UX düzeltmesi + yeni üye katılma e-postası (main'de
   canlı, 2 ayrı `dev`→`main` merge).** Kullanıcı "oda aç" formunun ekran görüntüsünü paylaşıp
