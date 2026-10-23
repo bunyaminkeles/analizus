@@ -1901,7 +1901,6 @@ def _check_and_award_profile_complete_badge(request, profile):
         messages.success(request, gettext('TEBRİKLER! Profilinizi %100 tamamladığınız için "Profili Tamamladı" rozeti ve 50 Puan kazandınız.'))
 
 # --- PROFİL DETAY ---
-@login_required
 def profile_detail(request, username):
     profile_user = get_object_or_404(User, username=username)
     is_owner = request.user == profile_user
@@ -1911,6 +1910,12 @@ def profile_detail(request, username):
     if not is_owner and not is_staff:
         profile = getattr(profile_user, 'profile', None)
         if profile and not profile.is_public:
+            return render(request, 'forum/profile_private.html', {
+                'profile_user': profile_user,
+            })
+        # Anonim ziyaretçi (ör. Google): yalnız Uzman Dizini'ne giren profiller görünür —
+        # is_public tek başına yeterli değil (varsayılanı True, üyeler-arası görünürlük içindir)
+        if not request.user.is_authenticated and (not profile or not profile.is_directory_eligible()):
             return render(request, 'forum/profile_private.html', {
                 'profile_user': profile_user,
             })

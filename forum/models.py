@@ -363,6 +363,18 @@ class Profile(models.Model):
             quiz_points = quiz_score.total_points
         return self.reputation + quiz_points
 
+    def is_directory_eligible(self):
+        """Uzman Dizini giriş kriteri — uzman_dizini view'ındaki (forum/views.py) toplu sorguyla aynı mantık."""
+        if self.directory_override is not None:
+            return self.directory_override
+        if self.user.is_staff or self.user.is_superuser:
+            return False
+        if not self.email_verified:
+            return False
+        if self.skills.count() < 3:
+            return False
+        return self.total_score >= SiteSettings.load().uzman_dizini_min_puan
+
     def public_links(self):
         """Profil 'Hakkında' kartındaki dış bağlantılar: (anahtar, etiket, url).
 
