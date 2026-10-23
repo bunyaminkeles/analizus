@@ -34,8 +34,9 @@ maddelerde.
      `nginx/local-ssl/selfsigned.key` (private key) giriyordu.
      `.dockerignore`'a `frontend/`, `cookies.txt`, `youtube_cookies.txt`,
      `nginx/local-ssl/` eklendi, imaj yeniden build edildi.
-     **Kullanıcıya açık:** hosting paneli şifresi/oturumu ihtiyaten
-     değiştirilmeli (çerez çalışan container içinde durmuştu).
+     **Kullanıcı tarafı TAMAMLANDI (22 Ekim 2026):** hosting paneli ve
+     Gmail şifreleri değiştirildi; EBSCO hesabı zaten kullanılmıyor,
+     gerek görülmedi.
   2) **[x] Stored XSS — blog yazıları — DÜZELTİLDİ (22 Ekim 2026):**
      (`forum/templatetags/markdown_extras.py`) `markdown` filtresi artık
      `md.markdown()` çıktısını `bleach.clean()` ile (izinli etiket/öznitelik
