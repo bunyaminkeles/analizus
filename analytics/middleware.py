@@ -9,6 +9,9 @@ _SKIP_PREFIXES = (
 # /analiz/cronbach/status/uuid/ veya /transcript/status/3/api/ gibi polling URL'leri atla
 _STATUS_RE = re.compile(r'/status/([0-9a-f\-]{36}|\d+)(/api)?/')
 
+# /odalar/<slug>/poll/ gibi /poll/ ile biten tüm polling URL'leri atla
+_POLL_RE = re.compile(r'/poll/$')
+
 
 class PageViewMiddleware:
     def __init__(self, get_response):
@@ -23,6 +26,7 @@ class PageViewMiddleware:
             and response.status_code == 200
             and not any(request.path.startswith(p) for p in _SKIP_PREFIXES)
             and not _STATUS_RE.search(request.path)
+            and not _POLL_RE.search(request.path)
         ):
             try:
                 from analytics.models import PageView

@@ -76,6 +76,17 @@ class PageViewAdmin(ModelAdmin):
     get_username.short_description = 'Kullanıcı'
     get_username.admin_order_field = 'user__username'
 
+    def get_queryset(self, request):
+        # Navigasyon Grafiği'ndeki _chart_context ile aynı mantık: staff ve
+        # SiteSettings.navigasyon_haric_grup üyeleri ham listede de gizlenir.
+        qs = super().get_queryset(request)
+        qs = qs.exclude(user__is_staff=True)
+        from forum.models import SiteSettings
+        haric_grup = SiteSettings.load().navigasyon_haric_grup
+        if haric_grup:
+            qs = qs.exclude(user__groups=haric_grup)
+        return qs
+
     def has_add_permission(self, request):
         return False
 
