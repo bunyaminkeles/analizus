@@ -636,6 +636,10 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   textarea.addEventListener('input', () => {
+    // Auto-resize
+    textarea.style.height = 'auto';
+    textarea.style.height = Math.min(textarea.scrollHeight, 120) + 'px';
+
     const before = textarea.value.slice(0, textarea.selectionStart);
     const match = before.match(/@(\w+)$/);          // en az 1 harf şart
     if (!match) { dropdown.style.display = 'none'; mentionStart = -1; return; }
