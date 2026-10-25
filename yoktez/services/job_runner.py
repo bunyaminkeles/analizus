@@ -216,7 +216,9 @@ def send_demo_email_async(job_id: str) -> None:
 
 
 def cleanup_expired_yoktez_s3_files(days=3):
-    """3 günden eski yoktez/demo/ altındaki tüm dosyaları S3'den siler.
+    """3 günden eski yoktez/ altındaki tüm dosyaları S3'den siler (demo/ + eski
+    "analiz" özelliğinden kalan full/orders/ — 23 Mayıs 2026'da kaldırıldı ama
+    o tarihten önceki dosyalar hiç taranmıyordu, bkz. 25 Ekim 2026 S3 temizlik denetimi).
     DB'ye değil, S3'deki dosya tarihine bakar (trdizin/openalex/oaipmh/pubmed ile aynı kalıp)."""
     from django.utils import timezone
     from datetime import timedelta
@@ -224,7 +226,10 @@ def cleanup_expired_yoktez_s3_files(days=3):
     from forum.s3_utils import cleanup_s3_prefix
 
     cutoff = timezone.now() - timedelta(days=days)
-    deleted_count = cleanup_s3_prefix('yoktez/demo/', days)
+    deleted_count = sum(
+        cleanup_s3_prefix(prefix, days)
+        for prefix in ['yoktez/demo/', 'yoktez/full/', 'yoktez/orders/']
+    )
 
     # DB'deki URL referansını da temizle
     try:

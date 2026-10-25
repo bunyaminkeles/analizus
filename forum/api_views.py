@@ -129,7 +129,7 @@ def _verify_cron_secret(request):
 def cron_cleanup_s3_files(request):
     """
     7 günden eski TR Dizin, OpenAlex, OAI-PMH, PubMed, Bibliometri, Semantic Scholar,
-    Makale Analizi, Tez Analizi ve 3 günden eski YÖK Tez dosyalarını S3'den siler.
+    Makale Analizi, Tez Analizi, İstatistik ve 3 günden eski YÖK Tez dosyalarını S3'den siler.
 
     Kullanım:
     - GET /api/cron/cleanup-s3/?secret=YOUR_SECRET
@@ -147,6 +147,7 @@ def cron_cleanup_s3_files(request):
     from semanticscholar.services.job_runner import cleanup_expired_semanticscholar_s3_files as cleanup_semanticscholar
     from makaleanaliz.services.job_runner import cleanup_expired_makaleanaliz_s3_files as cleanup_makaleanaliz
     from tezanaliz.services.job_runner import cleanup_expired_tezanaliz_s3_files as cleanup_tezanaliz
+    from istatistik.services.job_runner import cleanup_expired_istatistik_s3_files as cleanup_istatistik
 
     # Her araç kendi try/except'inde — biri patlarsa diğerleri yine de çalışır
     cleanups = [
@@ -159,6 +160,7 @@ def cron_cleanup_s3_files(request):
         ('semanticscholar', cleanup_semanticscholar, 7),
         ('makaleanaliz', cleanup_makaleanaliz, 7),
         ('tezanaliz', cleanup_tezanaliz, 7),
+        ('istatistik', cleanup_istatistik, 7),
     ]
     deleted_files = {}
     for tool_name, cleanup_func, days in cleanups:
