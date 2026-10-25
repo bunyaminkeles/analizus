@@ -13,11 +13,11 @@
     </div>
 
     <!-- İlan Ödemeleri -->
-    <div class="card bg-dark border-secondary shadow-sm mb-5">
-        <div class="card-header border-secondary bg-transparent py-3">
+    <div class="bg-dark border-secondary shadow-sm mb-5" style="border-radius: var(--ax-radius-sm);">
+        <div class="border-secondary bg-transparent py-3" style="border-bottom-width: 1px; border-bottom-style: solid;">
             <h5 class="text-white mb-0"><i class="bi bi-briefcase me-2 text-info"></i>İlan Vitrin Ödemeleri</h5>
         </div>
-        <div class="card-body p-0">
+        <div class="p-0">
             <div class="table-responsive">
                 <table class="table table-dark table-hover mb-0 align-middle">
                     <thead class="table-secondary text-dark">
@@ -43,16 +43,16 @@
                             <td class="small text-muted font-monospace">{{ payment.payment_id }}</td>
                             <td>
                                 {% if payment.status == 'success' %}
-                                <span class="badge bg-success bg-opacity-25 text-success border border-success border-opacity-25">Başarılı</span>
+                                <span class="ax-badge ax-badge--success border border-success border-opacity-25">Başarılı</span>
                                 {% elif payment.status == 'pending' %}
-                                <span class="badge bg-warning bg-opacity-25 text-warning border border-warning border-opacity-25">Bekliyor</span>
+                                <span class="ax-badge ax-badge--warning border border-warning border-opacity-25">Bekliyor</span>
                                 {% else %}
-                                <span class="badge bg-danger bg-opacity-25 text-danger border border-danger border-opacity-25">Başarısız</span>
+                                <span class="ax-badge ax-badge--danger border border-danger border-opacity-25">Başarısız</span>
                                 {% endif %}
                             </td>
                             <td>
                                 {% if payment.status == 'success' %}
-                                <button class="btn btn-sm btn-outline-light" title="Fatura Görüntüle (Demo)" onclick="alert('Fatura sistemi yakında aktif olacaktır.')">
+                                <button class="ax-btn ax-btn--sm ax-btn--outline-light" title="Fatura Görüntüle (Demo)" onclick="alert('Fatura sistemi yakında aktif olacaktır.')">
                                     <i class="bi bi-receipt"></i>
                                 </button>
                                 {% endif %}

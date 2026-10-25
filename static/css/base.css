@@ -299,6 +299,17 @@
     border-color: var(--ax-accent-primary-hover);
 }
 
+.ax-btn--outline-info {
+    background-color: transparent;
+    color: var(--ax-accent-info-hover);
+    border-color: var(--ax-accent-info);
+}
+.ax-btn--outline-info:hover {
+    background-color: color-mix(in srgb, var(--ax-accent-info) 10%, transparent);
+    color: var(--ax-accent-info-hover);
+    border-color: var(--ax-accent-info-hover);
+}
+
 .ax-btn--outline-light {
     background-color: transparent;
     color: var(--ax-text-primary);
@@ -497,6 +508,12 @@
 .ax-alert--info {
     background-color: rgba(99, 102, 241, 0.1);
     border-color: var(--ax-accent-primary);
+}
+.ax-alert--cyan {
+    /* Bootstrap'ın camgöbeği `alert-info`'suna gerçek karşılık — `.ax-alert--info`
+       adına rağmen mor/primary renkli, cyan için ayrı varyant gerekiyor. */
+    background-color: rgba(6, 182, 212, 0.1);
+    border-color: var(--ax-accent-info);
 }
 
 /* -------------------------------------------------------------

@@ -20,7 +20,7 @@
                     <p class="text-muted mb-0">Aramak için bir kelime girin</p>
                     {% endif %}
                 </div>
-                <button class="btn btn-outline-info rounded-pill px-4" data-ax-toggle="modal" data-ax-target="#searchModal">
+                <button class="ax-btn ax-btn--outline-info px-4" data-ax-toggle="modal" data-ax-target="#searchModal">
                     <i class="bi bi-search me-1"></i> Yeni Arama
                 </button>
             </div>
@@ -65,9 +65,9 @@
                 <div class="row g-3">
                     {% for user in users %}
                     <div class="col-md-4">
-                        <a href="{% url 'profile_detail' user.username %}" class="card h-100 text-decoration-none user-result"
-                           style="background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(255, 255, 255, 0.08);">
-                            <div class="card-body d-flex align-items-center gap-3">
+                        <a href="{% url 'profile_detail' user.username %}" class="h-100 text-decoration-none user-result"
+                           style="display: flex; background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: var(--ax-radius-sm);">
+                            <div class="d-flex align-items-center gap-3" style="width: 100%; padding: 1rem;">
                                 <div class="user-avatar">
                                     <i class="bi bi-person-circle fs-2 text-info"></i>
                                 </div>
@@ -89,7 +89,7 @@
                 <i class="bi bi-search display-1 text-muted opacity-25 mb-4"></i>
                 <h3 class="text-white">Sonuç Bulunamadı</h3>
                 <p class="text-muted">"{{ query }}" ile eşleşen konu veya kullanıcı bulunamadı.</p>
-                <button class="btn btn-info rounded-pill px-4 mt-3" data-ax-toggle="modal" data-ax-target="#searchModal">
+                <button class="ax-btn ax-btn--info px-4 mt-3" data-ax-toggle="modal" data-ax-target="#searchModal">
                     <i class="bi bi-search me-1"></i> Farklı Bir Şey Ara
                 </button>
             </div>
@@ -101,7 +101,7 @@
                 <i class="bi bi-keyboard display-1 text-muted opacity-25 mb-4"></i>
                 <h3 class="text-white">Arama Yapmak İçin</h3>
                 <p class="text-muted">En az 2 karakter girmeniz gerekiyor.</p>
-                <button class="btn btn-info rounded-pill px-4 mt-3" data-ax-toggle="modal" data-ax-target="#searchModal">
+                <button class="ax-btn ax-btn--info px-4 mt-3" data-ax-toggle="modal" data-ax-target="#searchModal">
                     <i class="bi bi-search me-1"></i> Aramaya Başla
                 </button>
             </div>

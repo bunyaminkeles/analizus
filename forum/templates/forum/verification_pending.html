@@ -9,8 +9,8 @@
     <div class="col-lg-6">
 
         <!-- Verification Card -->
-        <div class="card border-0 shadow-lg" style="background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(99, 102, 241, 0.3) !important; border-radius: 16px;">
-            <div class="card-body p-5 text-center">
+        <div class="border-0 shadow-lg" style="background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(99, 102, 241, 0.3) !important; border-radius: 16px;">
+            <div class="p-5 text-center">
 
                 <!-- Icon -->
                 <div class="mb-4">
@@ -27,9 +27,9 @@
                     {% blocktrans trimmed with email=user.email %}Hesabınızı aktifleştirmek için <strong class="text-info">{{ email }}</strong> adresine bir doğrulama e-postası gönderdik.{% endblocktrans %}
                 </p>
 
-                <div class="alert border-0 rounded-3 mb-4" style="background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.3) !important;">
-                    <i class="bi bi-info-circle me-2 text-info"></i>
-                    <span class="text-light">{% trans "E-postanızdaki linke tıklayarak hesabınızı doğrulayın. Link 24 saat geçerlidir." %}</span>
+                <div class="ax-alert ax-alert--info mb-4">
+                    <i class="bi bi-info-circle ax-alert__icon" style="color: var(--ax-accent-info);"></i>
+                    <span class="ax-alert__body">{% trans "E-postanızdaki linke tıklayarak hesabınızı doğrulayın. Link 24 saat geçerlidir." %}</span>
                 </div>
 
                 <!-- Features While Waiting -->
@@ -45,11 +45,11 @@
 
                 <!-- Actions -->
                 <div class="d-flex flex-column gap-3">
-                    <a href="{% url 'resend_verification' %}" class="btn btn-primary btn-lg rounded-pill">
+                    <a href="{% url 'resend_verification' %}" class="ax-btn ax-btn--primary ax-btn--lg">
                         <i class="bi bi-arrow-repeat me-2"></i>
                         {% trans "Doğrulama E-postasını Tekrar Gönder" %}
                     </a>
-                    <a href="{% url 'home' %}" class="btn btn-outline-secondary rounded-pill">
+                    <a href="{% url 'home' %}" class="ax-btn ax-btn--ghost">
                         <i class="bi bi-house me-2"></i>
                         {% trans "Ana Sayfaya Dön" %}
                     </a>

@@ -3694,8 +3694,8 @@ Yok — sertifika üretimi de (bkz. yukarı "nginx düzeltmesi" bölümü, 23 Te
 
 # Bootstrap Kaldırma — Kademeli Migration Planı
 
-**Durum (12 Ekim 2026):** Faz 1-2 TAMAMLANDI. Faz 3 sürüyor — 12 dosya
-migre edildi, **54 dosyada hâlâ gerçek Bootstrap component class'ı var**
+**Durum (25 Ekim 2026):** Faz 1-2 TAMAMLANDI. Faz 3 sürüyor — 19 dosya
+migre edildi, **48 dosyada hâlâ gerçek Bootstrap component class'ı var**
 (bkz. "Güncel envanter" altı). Faz 4-5 henüz başlamadı.
 
 ## Neden gerekli
@@ -3733,12 +3733,28 @@ toplam ~760 gerçek Bootstrap component class eşleşmesi** (`btn`, `card`,
 `form-select`) kaldı. Yoğunluğa göre (düşükten yükseğe, Faz 3'ün kendi
 önceliklendirme kuralına uygun):
 
-**Düşük (4-10 class, ~23 dosya) — sıradaki adaylar:**
+**Not (25 Ekim 2026) — "Düşük" grubun gerçek sayıları bu aralıktan yüksek
+çıktı:** 11 Ekim'deki "4-10 class" tahmini yine iyimserdi (bkz.
+[[feedback_verify_inventory_counts]]); bugünkü tam token eşleşmesiyle
+yeniden sayımda grup aslında 8-19 class arasında. Üç dosya (aşağıda
+işaretli) bu turda migre edildi, grup 20 dosyaya indi.
+
+**Yetim dosya bulgusu (25 Ekim 2026):** `forum/templates/forum/section_detail.html`
+hiç render edilmiyor — `views.section_detail` artık yalnızca
+`forum_index`'e kalıcı yönlendirme (`redirect(..., permanent=True)`) yapıyor
+(GSC "taranmış, indekslenmemiş" sorunu için), template hiçbir `render()`
+çağrısında kullanılmıyor. Migrasyon kapsamından çıkarıldı (zaman kaybı,
+dosya hiç kullanıcıya görünmüyor), silinmedi — ayrı bir karar.
+
+**Düşük (~8-19 class, ~16 dosya) — sıradaki adaylar:**
 `forum_index.html`, `footer.html` (partials),
-`edit_job.html`, `post_job.html`, `search_results.html`,
-`verification_pending.html`, `my_payments.html`, `section_detail.html`,
+~~`edit_job.html`~~ (✅ 25 Ekim), ~~`post_job.html`~~ (✅ 25 Ekim),
+~~`search_results.html`~~ (✅ 25 Ekim), ~~`verification_pending.html`~~
+(✅ 25 Ekim), ~~`my_payments.html`~~ (✅ 25 Ekim), ~~`section_detail.html`~~
+(yetim dosya, kapsam dışı — yukarı bkz.),
 `bibliometrics/order.html`, `my_jobs.html`, `new_topic.html`,
-`studyroom_edit.html`, `category_topics.html`, `_review_section.html`,
+`studyroom_edit.html`, ~~`category_topics.html`~~ (✅ 25 Ekim),
+~~`_review_section.html`~~ (✅ 25 Ekim),
 `promote_job_iban.html`, `success_stories.html` (modal JS Faz 2'de taşındı,
 component class'ları kaldı), `oaipmh/order.html`, `semanticscholar/order.html`,
 `service_promo.html`, `trdizin/order.html`, `how_it_works.html`,
@@ -4102,6 +4118,215 @@ kök neden dosyası bulunmadı. Ayrı bir görev olarak ele alınacak.
     (yalnızca ilgisiz PWA service-worker scope uyarısı, bu dosyadan bağımsız).
     `forum/tests.py` 90/90 yeşil.
 
+- [x] `forum/templates/forum/search_results.html` (13. dosya, 25 Ekim 2026) —
+  gerçek envanter: 3× `btn` + 1× `card`/`card-body`.
+  - 23: `btn btn-outline-info rounded-pill px-4` → `ax-btn ax-btn--outline-info
+    px-4`. **Kullanıcı kararıyla yeni `.ax-btn--outline-info` eklendi**
+    (`base.css`, `outline-primary` formülüyle aynı: şeffaf zemin + camgöbeği
+    metin/kenarlık, hover'da `color-mix` ile %10 dolgu) — solid `ax-btn--info`
+    (12 Ekim) zaten vardı ama outline hali yoktu, bu dosyada 3 kez aynı
+    semantik renk kullanıldığı için ghost'a düşmek yerine kalıcı varyant
+    tercih edildi.
+  - 92 + 104: `btn btn-info rounded-pill px-4 mt-3` → `ax-btn ax-btn--info
+    px-4 mt-3` (birebir karşılık, zaten vardı).
+  - 68-70: kullanıcı kartı (`card h-100 text-decoration-none user-result` +
+    `card-body d-flex align-items-center gap-3`) — `.ax-card` kullanılmadı
+    (job_list.html'deki ilan kartı kararıyla aynı gerekçe: `.ax-card`'ın
+    kendi padding/hover-transform'u `.user-result`'ın bespoke inline
+    arka plan/kenarlık + hover stiliyle çakışır, ayrıca statik bir kart
+    olmasına rağmen istenmeyen bir "tıklanabilir" hover efekti eklerdi).
+    Düz `div`/`a`'ya indirildi: `<a>`'ya kaybolan `.card`'ın `display:flex`
+    davranışı elle eklendi (yoksa `h-100` ve grid hizası bozulurdu),
+    `border-radius:var(--ax-radius-sm)` (founder-card kararındaki gibi
+    Bootstrap'ın gerçek 6px varsayılanına sadık), `card-body`'nin kaybettiği
+    `width:100%`/`padding:1rem`'i manuel eklendi.
+  - `base.css`→`bundle.css` yeniden üretildi (`.ax-btn--outline-info` için),
+    `collectstatic` + `web`/`nginx` restart edildi, `base.html`'deki
+    `bundle.css?v=0014`→`?v=0015`. **Not:** 27 Eylül'den beri whitenoise
+    manifest hash'li dosya adı ürettiği için `?v=` artık zorunlu değil
+    (zararsız alışkanlık, analizus.md §26).
+  - Görsel doğrulama: gerçek seed'li kullanıcılarla (`?q=fatma` eşleşen
+    kullanıcı, `?q=zzz...` sonuç yok, boş sorgu min-karakter uyarısı — 3
+    farklı buton dalı) Playwright 375px/1280px, konsol hatası yok.
+    `forum/tests.py` 104/104 yeşil.
+- [x] `forum/templates/forum/verification_pending.html` (14. dosya,
+  25 Ekim 2026) — gerçek envanter: 2× `btn` + 1× `card`/`card-body` +
+  1× `alert`. Yeni CSS gerekmedi (tüm hedef ax- class'lar zaten vardı).
+  - `card border-0 shadow-lg` (tamamen inline bg/border/radius 16px ile
+    boyalı) → `card` kaldırıldı, `border-0 shadow-lg` (utility, kapsam
+    dışı) + mevcut inline stil aynen kaldı; `.ax-card` kullanılmadı (statik,
+    tıklanamayan bir kart, `.ax-card`'ın hover transform'u anlamsız olurdu).
+  - `card-body p-5 text-center` → `card-body` kaldırıldı, `p-5` zaten
+    Bootstrap'ın card-body padding'ine eşdeğer boşluğu sağlıyordu
+    (donation_success.html'deki aynı desen).
+  - `alert border-0 rounded-3` (inline `rgba(99,102,241,.1)` bg) →
+    `ax-alert ax-alert--info` (renk tonu birebir eşleşiyor, yeni varyant
+    gerekmedi); ikon `ax-alert__icon` + metin `ax-alert__body`'e sarıldı
+    (order_payment.html'deki flex-kayması bug'ının tekrarını önlemek için);
+    ikonun özgün camgöbeği rengi inline `color:var(--ax-accent-info)` ile
+    korundu (ax-alert'in varsayılan gövde rengi `--ax-text-primary`, ikonu
+    da aynı renge düşürürdü).
+  - `btn btn-primary btn-lg rounded-pill` → `ax-btn ax-btn--primary
+    ax-btn--lg`; `btn btn-outline-secondary rounded-pill` → `ax-btn
+    ax-btn--ghost` (ikisi de birebir kurulu karşılık, `rounded-pill`
+    önceki dosyalarda olduğu gibi düşürüldü).
+  - Görsel doğrulama: view `@login_required` + e-posta doğrulanmamış
+    profil gerektiriyor — geçici bir test kullanıcısı (`Client.force_login`
+    + `Profile(email_verified=False)`) ile gerçek URL render edilip
+    `staticfiles/` altına yazıldı, nginx üzerinden (`https://localhost/
+    static/preview_verification.html`, self-signed sertifika) Playwright
+    375px/1280px ile kontrol edildi, sonra hem test kullanıcısı hem önizleme
+    dosyası silindi (DB'ye kalıcı iz bırakılmadı). Kart/alert/butonlar
+    birebir orijinal görünümde, konsol hatası yok. `forum/tests.py`
+    104/104 yeşil.
+  - **Yan not (araç/ortam):** localhost:8000'de bağımsız bir
+    `manage.py runserver` sürecinin (Docker dışı) çalıştığı görüldü —
+    §26'daki "hangi süreç hangi DB'yi kullanıyor" tuzağına girmemek için
+    tüm doğrulama `docker compose` + nginx'in gerçek portu (443, self-signed
+    https) üzerinden yapıldı, o bağımsız sürece dokunulmadı.
+
+- [x] `forum/templates/forum/category_topics.html` (15. dosya, 25 Ekim 2026) —
+  gerçek envanter: 1× `btn` + 5× `badge` + 1× `card`/`card-body`. Yeni CSS
+  gerekmedi (tüm hedef ax- class'lar zaten vardı).
+  - `btn btn-primary rounded-pill px-4 py-2 fw-bold shadow-lg border-0`
+    (inline gradient) → `ax-btn ax-btn--primary` + aynı utility'ler
+    (`rounded-pill` düşürüldü, `ax-btn` zaten büyük radius).
+  - Çalışma odası rozeti (`badge fw-normal py-2 px-3`, inline amber) →
+    `ax-badge` + aynı utility'ler.
+  - `card border-0 shadow-lg` (tamamen inline glassmorphism — `--glass-bg`,
+    `backdrop-filter`, `border-radius:20px`) + `card-body p-0` → ikisi de
+    kaldırıldı, düz `div`'e indirildi (`.ax-card` kullanılmadı — zaten
+    tüm görsel kimlik inline stilden geliyordu, `.ax-card`'ın kendi
+    padding/hover'ı anlamsız çakışma yaratırdı).
+  - "Sabit" rozeti (`badge bg-warning text-dark`) → `ax-badge
+    ax-badge--warning-solid` (home.html/category_topics ailesinde kurulu
+    karşılık).
+  - Etiket rozetleri (`badge rounded-pill`, inline `tag.color`) → `ax-badge`
+    (`rounded-pill` düşürüldü, `.ax-badge` zaten tam pil şekilli).
+  - Kullanıcı adı rozeti (`badge bg-secondary bg-opacity-25 text-info`) →
+    `ax-badge ax-badge--neutral` (kabul edilen küçük sapma: metin rengi
+    camgöbeğinden nötr griye döndü).
+  - "Kilitli" rozeti (`badge bg-danger`, solid kırmızı) → `ax-badge
+    ax-badge--danger` (kabul edilen küçük sapma: solid kırmızı zemin
+    yarı saydam kırmızı zemine döndü — job_list.html'deki
+    `bg-danger bg-opacity-25` örneğinden farklı olarak bu zaten saydam
+    DEĞİLDİ, ama etki çok küçük/düşük görünürlüklü bir etiket olduğu için
+    kabul edildi).
+  - **Not:** `table table-hover table-dark table-borderless` dokunulmadı —
+    migrasyonun izlenen envanter listesinde (`btn`/`card`/`badge`/
+    `dropdown`/`modal`/`alert`/`form-control`/`form-select`) `table` hiç
+    yer almıyor, kapsam dışı.
+  - Görsel doğrulama: geçici `Section`/`Category`/2 `Topic` (biri sabit+
+    etiketli, biri kilitli) + 1 aktif `StudyRoom` oluşturulup gerçek URL
+    (`/forum/<slug>/`) render edildi, Playwright 375px/1280px ile kontrol
+    edildi (tüm 5 rozet + buton + kart doğru görünüyor), sonra `Section`
+    cascade silme ile tüm geçici veri (kategori/konu/oda) + test kullanıcısı
+    temizlendi. `forum/tests.py` 104/104 yeşil.
+  - **Yetim dosya bulgusu:** aynı düşük grup listesindeki
+    `forum/templates/forum/section_detail.html` hiç render edilmiyor
+    (`views.section_detail` artık yalnızca kalıcı yönlendirme yapıyor) —
+    migrasyon kapsamından çıkarıldı, yukarıdaki envanter notuna işlendi.
+
+- [x] `forum/templates/forum/market/edit_job.html` +
+  `forum/templates/forum/market/post_job.html` (16-17. dosyalar,
+  25 Ekim 2026) — **kullanıcı onayıyla birlikte ele alındı** çünkü ikisi de
+  `forum/forms.py`'deki aynı `JobPostForm`'u kullanıyor; formun
+  `form-control`/`form-select` class'ları şablonda değil Python'da tanımlı.
+  - `forum/forms.py` — `JobPostForm.Meta.widgets` (title/description/
+    budget_max/expected_duration) `form-control` → `ax-form-control`,
+    `category_choice` alanının `form-select` → `ax-form-select` (ikisi de
+    `bg-dark text-light border-secondary` utility'lerini korudu). Aynı
+    dosyadaki `ProposalForm` (job_detail.html'in teklif formu, "Ağır" grup,
+    henüz migre edilmedi) kasıtlı olarak dokunulmadı.
+  - Her iki şablonda da `card border-0 shadow-sm` (inline bg/border) +
+    `card-header bg-transparent ...` + `card-body p-4` → `card`/`card-header`/
+    `card-body` kaldırıldı, düz `div`'lere indirildi. **Not:** `card-header`
+    migrasyonun izlenen envanter listesinde (`btn`/`card`/`card-body`/
+    `badge`/`dropdown`/`modal`/`alert`/`form-control`/`form-select`) hiç
+    yer almıyordu ama aynı mantıkla `card-body` gibi ele alındı. Bootstrap'ın
+    kaybolan varsayılan radius'u (~6px) `border-radius:var(--ax-radius-sm)`
+    ile elle eklendi (ikisinde de inline'da yoktu, founder-card kararındaki
+    gibi); header+body tek çocuklu değil iki çocuklu ama ikisi de blok
+    (div), `display:flex` gerekmedi (arama kartındaki `<a>` durumundan
+    farklı).
+  - **Gerçek bug bulundu ve düzeltildi:** `forum/templates/forum/market/
+    _job_rules.html` (her iki dosyada da include) `ax-alert ax-alert--warn`
+    kullanıyordu — doğrusu `ax-alert--warning`, `--warn` hiçbir CSS'te
+    tanımlı değildi, kutu tamamen stilsiz (şeffaf zemin, görünmez kenarlık)
+    render oluyordu. Düzeltildi. **Aynı yazım hatası
+    `forum/templates/forum/market/job_detail.html:83`'te de var** ("Ağır"
+    grup, bu turda dokunulmadı) — ayrı not olarak işlendi, aşağıda.
+  - `edit_job.html`'deki form hata kutusu (`alert alert-danger`) →
+    post_job.html'de zaten kurulu olan `ax-alert ax-alert--danger` +
+    `ax-alert__icon`/`ax-alert__body` yapısına taşındı (işlevsel fark
+    eklenmedi, yalnızca görsel).
+  - `edit_job.html`: `btn btn-warning` → `ax-btn ax-btn--warning`;
+    `btn btn-outline-secondary` → `ax-btn ax-btn--ghost`.
+  - `post_job.html`: `btn btn-outline-light` → `ax-btn ax-btn--outline-light`;
+    `btn btn-info` → `ax-btn ax-btn--info`.
+  - **Kullanıcı kararıyla yeni `.ax-alert--cyan` eklendi:** post_job.html'deki
+    süre bilgi kutusu (`alert alert-info`, gerçek Bootstrap camgöbeği
+    `#0dcaf0`) mevcut `.ax-alert--info`'ya taşınsaydı renk MORA (`--ax-accent-primary`)
+    dönerdi — o varyant adına rağmen primary renkli (verification_pending.html'deki
+    gibi zaten indigo olan kutularla eşleşmek üzere tasarlanmış). Yeni
+    `.ax-alert--cyan` (`--ax-accent-info` token'ı) eklendi, orijinal
+    camgöbeği birebir korundu. **Aynı camgöbeği `alert-info` kalıbı
+    `my_jobs.html` (düşük grup, sırada) ve `referral_dashboard.html` (orta
+    grup) içinde de var** — oralarda da bu yeni varyant kullanılacak.
+  - `base.css`→`bundle.css` yeniden üretildi (`.ax-alert--cyan` için,
+    `.ax-btn--outline-info` önceki turdan zaten vardı), `collectstatic` +
+    `web`/`nginx` restart, `bundle.css?v=0015`→`?v=0016`.
+  - Görsel doğrulama: geçici test kullanıcısı (e-posta doğrulanmış) +
+    geçici `FreelanceJob` (`approved_at` verilerek — [[feedback_...]]
+    FreelanceJob.save() yeniden-yayın tuzağına girilmedi) ile her iki
+    gerçek URL (`/market/new/`, `/market/job/<pk>/edit/`) render edilip
+    Playwright 375px/1280px ile kontrol edildi (kart radius, uyarı/bilgi
+    kutuları, form alanları, butonlar hepsi doğru), sonra kullanıcı+ilan
+    silindi (cascade). `forum/tests.py` 104/104 yeşil.
+
+- [ ] **(25 Ekim 2026) Yan bulgu — `ax-alert--warn` yazım hatası, kapsam dışı:**
+  `forum/templates/forum/market/job_detail.html:83` aynı `ax-alert
+  ax-alert--warn` hatasını taşıyor (tanımsız varyant, kutu stilsiz
+  görünüyor). `job_detail.html` "Ağır" migrasyon grubunda (48 class,
+  en ağır dosya), o dosyaya geçilince düzeltilecek; o zamana kadar canlıda
+  stilsiz kalmaya devam edecek (düşük önemli, görünür ama kritik değil).
+
+- [x] `forum/templates/forum/my_payments.html` +
+  `forum/templates/forum/market/_review_section.html` (18-19. dosyalar,
+  25 Ekim 2026) — yeni CSS gerekmedi.
+  - `my_payments.html`: `card bg-dark border-secondary shadow-sm` → `card`
+    kaldırıldı (`bg-dark`/`border-secondary`/`shadow-sm` utility, kapsam
+    dışı, aynen kaldı), kaybolan radius `border-radius:var(--ax-radius-sm)`
+    ile eklendi. `card-header border-secondary bg-transparent py-3` →
+    `card-header` kaldırıldı — **bulgu:** `.border-secondary` yalnız
+    border-color verir, `card-header`'ın sağladığı border-width olmadan
+    görünmez kalırdı (founder-card'daki aynı tuzak), elle
+    `border-bottom-width:1px;border-bottom-style:solid` eklendi.
+    `card-body p-0` → kaldırıldı (zaten sıfır dolgu, kayıp yok). 3 durum
+    rozeti (`badge bg-success/warning/danger bg-opacity-25 text-* border
+    border-* border-opacity-25`) → `ax-badge ax-badge--success/warning/
+    danger` + **`border border-* border-opacity-25` utility'leri bilerek
+    korundu** (ax-badge--* kendi border'ını tanımlamıyor, Bootstrap utility
+    hâlâ yüklü olduğu için halka aynen kaldı, yeni CSS gerekmedi).
+    `btn btn-sm btn-outline-light` → `ax-btn ax-btn--sm ax-btn--outline-light`.
+  - `_review_section.html`: 3 kart (`card border-0 shadow-sm`, tamamı
+    inline bg'li) → `card` kaldırıldı + `border-radius:var(--ax-radius-sm)`
+    eklendi; ikisi `card-body py-2 px-3` (utility zaten vardı, kayıpsız
+    kaldırıldı), biri çıplak `card-body` (hiç padding utility'si yoktu) →
+    kaldırılıp yerine `padding:1rem` eklendi (search_results.html'deki
+    kullanıcı kartı kararıyla aynı mantık). `form-control bg-dark text-white
+    border-secondary` → `ax-form-control ...`. `btn btn-warning btn-sm` →
+    `ax-btn ax-btn--warning ax-btn--sm`.
+  - Görsel doğrulama: `my_payments.html` için geçici kullanıcı + 3 durumlu
+    (başarılı/bekliyor/başarısız) `JobPayment` ile gerçek URL (`/my-payments/`)
+    render edildi; `_review_section.html` `job_detail.html`'in include'u
+    olduğu ve o dosya henüz migre edilmediği için `render_to_string` ile
+    bağımsız (Bootstrap CDN + bundle.css bağlı) önizleme sayfasında iki
+    senaryo (onaylı değerlendirme listesi + değerlendirme formu) kontrol
+    edildi. Playwright 375px/1280px, konsol hatası yok, sonra tüm geçici
+    kullanıcı/ilan/ödeme/değerlendirme kayıtları silindi. `forum/tests.py`
+    104/104 yeşil.
+
 **11 Ekim 2026 oturumu kapandı — `main`'e alındı:** Yukarıdaki 7 commit
 (`87c8e26`..`58f52d7`) `dev`'den `main`'e `--no-ff` merge edildi (merge
 commit `1e54739`), `origin/main`'e push edildi — GitHub Actions otomatik
@@ -4151,16 +4376,23 @@ Kullanılmayan geçiş dönemi shim'leri varsa kaldır.
 - 100+ dosyalık migration tek PR'da değil, birden fazla oturuma yayılmalı
 
 ## Sıradaki adım
-Faz 1 ve 2 TAMAMLANDI. Faz 3 sürüyor — 12 dosya migre edildi (yukarı bkz.
-"Dosya bazlı ilerleme"). **Güncel envanter yukarıda** ("Güncel envanter —
-11 Ekim 2026 taraması") — 54 dosya, ~756 eşleşme kaldı. Sıradaki adaylar
-düşük yoğunluklu grup (`forum_index.html`, `footer.html` partial'ı,
-`edit_job.html`/`post_job.html` vb., 4-10 class). Her dosya için: gerçek
-Bootstrap class'larını
+Faz 1 ve 2 TAMAMLANDI. Faz 3 sürüyor — 19 dosya migre edildi (yukarı bkz.
+"Dosya bazlı ilerleme"; son yedisi 25 Ekim 2026: `search_results.html`,
+`verification_pending.html`, `category_topics.html`, `edit_job.html`,
+`post_job.html`, `my_payments.html`, `_review_section.html`). **Güncel
+envanter yukarıda** ("Güncel envanter — 11 Ekim 2026 taraması", 25 Ekim
+notuyla güncellendi) — düşük grup 16 dosyaya indi (1'i, `section_detail.html`,
+yetim/render edilmeyen dosya olduğu için kapsam dışına alındı). Sıradaki
+adaylar aynı düşük yoğunluklu grup (`forum_index.html`, `footer.html`
+partial'ı, `bibliometrics/order.html` vb., gerçek ~8-19 class). **Dikkat:**
+`my_jobs.html` ve `referral_dashboard.html` (orta grup) aynı camgöbeği
+`alert-info` kalıbını taşıyor — oraya geçildiğinde bugün eklenen
+`.ax-alert--cyan` kullanılacak. Her dosya için: gerçek Bootstrap class'larını
 oku → ax- karşılığı yoksa (yeni renk/varyant vb.) kullanıcıya sor → uygula
-→ `bundle.css` gerekiyorsa yeniden üret + versiyon artır → Playwright ile
-mobil+masaüstü görsel doğrula → pytest çalıştır → `todo.md` güncelle →
-commit. Faz 4 (CDN kaldırma) için önce (1) bu 56 dosya bitmeli, (2) hiç
+→ `bundle.css` gerekiyorsa yeniden üret (whitenoise hash'li ad ürettiği
+için `?v=` artırmak artık kozmetik, ama alışkanlık korunuyor) → Playwright
+ile mobil+masaüstü görsel doğrula → pytest çalıştır → `todo.md` güncelle →
+commit. Faz 4 (CDN kaldırma) için önce (1) bu dosyalar bitmeli, (2) hiç
 başlanmamış Bootstrap **utility class** envanteri çıkarılıp ayrı ele
 alınmalı.
 

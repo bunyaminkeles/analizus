@@ -7,8 +7,8 @@
 <div class="container py-4">
     <div class="row justify-content-center">
         <div class="col-lg-8">
-            <div class="card border-0 shadow-sm" style="background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(255, 255, 255, 0.08) !important;">
-                <div class="card-header bg-transparent border-bottom border-secondary border-opacity-25 py-3">
+            <div class="border-0 shadow-sm" style="background: rgba(30, 41, 59, 0.6); border: 1px solid rgba(255, 255, 255, 0.08) !important; border-radius: var(--ax-radius-sm);">
+                <div class="bg-transparent border-bottom border-secondary border-opacity-25 py-3">
                     <h4 class="text-white mb-0">
                         <i class="bi bi-pencil-square text-warning me-2"></i>{% trans "İlanı Düzenle" %}
                     </h4>
@@ -17,7 +17,7 @@
                         {% trans "Bu hakkı yalnızca bir kez kullanabilirsiniz. Teklif alındıktan sonra düzenleme yapılamaz." %}
                     </p>
                 </div>
-                <div class="card-body p-4">
+                <div class="p-4">
                     {% include 'forum/market/_job_rules.html' %}
                     <form method="post">
                         {% csrf_token %}
@@ -52,16 +52,19 @@
                         </div>
 
                         {% if form.errors %}
-                        <div class="alert alert-danger">
-                            {% for field in form %}{% for error in field.errors %}<div>{{ error }}</div>{% endfor %}{% endfor %}
+                        <div class="ax-alert ax-alert--danger">
+                            <i class="bi bi-exclamation-triangle ax-alert__icon" aria-hidden="true"></i>
+                            <div class="ax-alert__body">
+                                {% for field in form %}{% for error in field.errors %}<div>{{ error }}</div>{% endfor %}{% endfor %}
+                            </div>
                         </div>
                         {% endif %}
 
                         <div class="d-flex gap-2">
-                            <button type="submit" class="btn btn-warning fw-semibold">
+                            <button type="submit" class="ax-btn ax-btn--warning fw-semibold">
                                 <i class="bi bi-check-circle me-1"></i>{% trans "Güncelle (Son Hakkım)" %}
                             </button>
-                            <a href="{% url 'job_detail' job.pk %}" class="btn btn-outline-secondary">{% trans "İptal" %}</a>
+                            <a href="{% url 'job_detail' job.pk %}" class="ax-btn ax-btn--ghost">{% trans "İptal" %}</a>
                         </div>
                     </form>
                 </div>

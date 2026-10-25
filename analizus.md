@@ -2285,8 +2285,44 @@ with connection.cursor() as c:
   17 istatistik aracına (`orneklem` hariç) Claude ile üretilen ücretsiz akademik yorum eklendi; APA Formatında
   Raporlama kutusunun içine, APA cümlesinin altına yerleştirildi (ayrı kutu değil — kullanıcı isteğiyle revize
   edildi). Detay: §12, §17. Deploy'da 3 eksik (API key, image rebuild, flag) tek tek giderildi — §26. Render
-  (dev/staging) henüz ayrıca yapılandırılmadı. Faz C (OpenAlex+PubMed) ve Faz D (Bibliometrics) sırada; PDF'e
-  dahil etme ayrı açık görev (`tasks/todo.md`).
+  (dev/staging) henüz ayrıca yapılandırılmadı. Faz C (OpenAlex+PubMed) ve Faz D (Bibliometrics) sırada;
+  **PDF'e dahil etme 25 Ekim 2026'da yapıldı (aşağıdaki denetim turu kapsamında).**
+
+- **İstatistik Araçları Denetimi ve Düzeltmeleri** (25 Ekim 2026, main'de canlı — merge commit `88e6c85`,
+  Hetzner'e otomatik deploy tetiklendi, migration YOK) — 18 aracın tamamı (hesaplama doğruluğu + rapor/konsol
+  kalitesi) 7 paralel subagent ile salt-okunur denetlendi, ardından kullanıcı önceliklendirmesiyle 3 turda
+  düzeltildi. Her adım Docker'da gerçek sayfa render (force_login ile — anonim istek `service_promo`'ya düşer)
+  + JS sözdizimi (`node --check`) + 104 testlik pytest paketiyle doğrulandı.
+  - **Tur 1 (hesaplama/vaat-gerçek uyumsuzlukları):** `normallik.py` n>5000'de aslında D'Agostino K² testi
+    çalıştırıp sonucu "Shapiro-Wilk" diye raporluyordu + var olmayan bir Kolmogorov-Smirnov testi vaat
+    ediyordu → `test_name`/`test_stat_label` alanlarıyla düzeltildi, KS vaadi title/meta/SSS'ten kaldırıldı.
+    `betimsel.py` Mod/Varyans/Çarpıklık/Basıklık'ı vaat edip hiç hesaplamıyordu → gerçekten eklendi (PDF'e yeni
+    "Dağılım Şekli ve Ek Ölçüler" tablosu). `cronbach.html`'deki statik yorum eşik tablosu kodun gerçek 6
+    bandıyla (.50/.60/.70/.80/.90) eşitlendi. `ttesti.py`'ye kullanıcı kararıyla **Tek Örneklem t-Testi gerçekten
+    eklendi** (`_one_sample()`, yeni UI seçeneği, PDF bölümü) — önceden sayfa vaat ediyordu ama kodda yoktu.
+    Ayrıca `pdf_fonts.py`'ye ortak `append_ai_comment()` eklenip 17 aracın PDF'ine AI Yorumu entegre edildi.
+  - **Tur 2 (veri kaybı + güvenlik):** `lineer_regresyon.html`/`lojistik_regresyon.html`/`ki_kare.html`'de
+    kullanıcı dosyasından gelen sütun/kategori adları escape'siz `innerHTML`'e yazılıyordu (self-XSS) →
+    projenin zaten kullandığı `_esc()` deseniyle düzeltildi. `ki_kare.py`'de PDF çapraz tablo sabit sütun
+    genişliği (7+ kategoride sütunlar sayfa dışına taşıp sessizce kayboluyordu) → kategori sayısına göre
+    dinamik genişlik/font; 2×2 tablolarda scipy'nin otomatik uyguladığı Yates düzeltmesi artık APA metninde
+    belirtiliyor. `korelasyon.py` ısı haritası metin rengi sabit `|r|` eşiği yerine gerçek renk parlaklığına
+    (luminance) göre seçiliyor — önceden en sık görülen zayıf korelasyonlar beyaz metinle görünmezdi.
+  - **Tur 3 (ekranda eksik çıktı + yanlış metrik vaatleri):** `seo_content.py`'deki karar_agaci/svm/
+    lojistik_regresyon'un hiç hesaplamadığı AUC-ROC referansları (4 yer) gerçek metriklerle değiştirildi.
+    `karar_agaci.html`/`svm.html` ekranına confusion matrix tablosu (+ karar ağacına ağaç yapısı, PDF ile aynı
+    ilk-5-seviye sınırıyla) eklendi — önceden yalnız PDF'te vardı. `afa.py`'ye matplotlib scree plot (Kaiser
+    kriteri çizgili, base64 PNG) eklendi; `afa.html` ekranına scree plot + faktör yük matrisi + açıklanan
+    varyans tablosu eklendi — önceden ekranda yalnız 5 özet sayı vardı. `tekrarli_anova.py`'nin küresellik
+    (Mauchly) testi uygulanmadığına dair notu (`sphericity_note`) önceden yalnız PDF'teydi, ekrana da taşındı
+    (kullanıcı kararı: gerçek Mauchly testi eklenmedi, kapsam büyük). Bu turda ayrıca denetim dışı bulunan
+    ek XSS noktaları (karar_agaci/svm/afa/tekrarli_anova şablonlarında `f.name`, `classes.join`, `ph.col1/2`
+    gibi kullanıcı verisi alanları) da `_esc()` ile düzeltildi.
+  - Tüm yeni/değişen metinler için EN/DE çevirileri eklendi, `compilemessages` hatasız derlendi (gettext
+    araçları container'da geçici kuruldu — imajda yok, bkz. §26 benzer not).
+  - **Kapsam dışı bırakıldı:** ax- tasarım sistemi migrasyonu (11 şablonda hâlâ ham Bootstrap) — ayrı, zaten
+    bilinen "Bootstrap CDN kaldırma" projesinin kapsamında (yukarıda Teknik Borç), bu denetime dahil edilmedi.
+  - Commit'ler (`dev` → `main` merge): `f497510`, `7c06205`, `a088ffa`, `e4d14b8` → merge `88e6c85`.
 
 #### Pazaryeri / Freelance / Bağış
 
