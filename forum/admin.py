@@ -9,7 +9,7 @@ from django.template.loader import render_to_string
 from django.utils.html import format_html, strip_tags
 from unfold.admin import ModelAdmin, TabularInline, StackedInline
 from broadcast.models import EmailBroadcast
-from .models import Section, Category, Topic, Post, Profile, ContactMessage, PrivateMessage, Badge, Skill, DailyTip, QuizQuestion, QuizScore, FreelanceJob, JobCategory, JobProposal, JobReview, UserQuizAttempt, DonationTier, Donation, JobPayment, TopicTag, SiteSettings, BlogCategory, BlogPost, BlogTag, SuccessStory, StudyRoom, ProjectRequest, ReferralCode, ReferralUse, TrainingRequest, ServicePage, ServicePageSection, ServicePageFAQ, ServicePageTranslation, ServicePageSectionTranslation, ServicePageFAQTranslation
+from .models import Section, Category, Topic, Post, Profile, ContactMessage, PrivateMessage, Badge, Skill, DailyTip, QuizQuestion, QuizScore, FreelanceJob, JobCategory, JobProposal, JobReview, UserQuizAttempt, DonationTier, Donation, JobPayment, TopicTag, SiteSettings, BlogCategory, BlogPost, BlogTag, SuccessStory, StudyRoom, StudyRoomPost, ProjectRequest, ReferralCode, ReferralUse, TrainingRequest, ServicePage, ServicePageSection, ServicePageFAQ, ServicePageTranslation, ServicePageSectionTranslation, ServicePageFAQTranslation
 from .models import TeamMember
 from .models import AIUsageLog
 
@@ -1218,6 +1218,15 @@ class StudyRoomAdmin(ModelAdmin):
     def reject_rooms(self, request, queryset):
         updated = queryset.filter(status='pending').update(status='rejected', reviewed_by=request.user)
         self.message_user(request, f'{updated} oda reddedildi.')
+
+
+@admin.register(StudyRoomPost)
+class StudyRoomPostAdmin(ModelAdmin):
+    list_display = ('room', 'author', 'flagged', 'created_at', 'edited_at')
+    list_filter = ('flagged', 'room')
+    search_fields = ('message', 'author__username', 'room__title')
+    readonly_fields = ('room', 'author', 'message', 'file', 'created_at', 'edited_at')
+    ordering = ('-created_at',)
 
 # ═══════════════════════════════════════════════════════════════════════════════
 # EKİP ÜYELERİ (UZMAN KADROMUZ) YÖNETİMİ
