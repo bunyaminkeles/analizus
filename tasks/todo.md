@@ -345,9 +345,22 @@ maddelerde.
       yanlış sonuç raporlanıyordu. EN/DE çevirileri eklendi, Docker'da
       düşük/normal frekans senaryoları + PDF üretimi + render test edildi,
       104/104 pytest yeşil.
-  25. [ ] `requirements.txt` — `scipy` sürümü sabitlenmemiş; mann_whitney/
-      kruskal_wallis/wilcoxon/friedman doğrudan `scipy.stats`'a bağlı
-      (CLAUDE.md kuralı: API'ye doğrudan bağlı paketler sabitlenmeli).
+  25. [x] **(25 Ekim 2026 düzeltildi)** `requirements.txt` — `scipy` sürümü
+      sabitlenmemişti; mann_whitney/kruskal_wallis/wilcoxon/friedman
+      doğrudan `scipy.stats`'a bağlı (CLAUDE.md kuralı: API'ye doğrudan
+      bağlı paketler sabitlenmeli). **Düzeltme:** çalışan Docker imajındaki
+      mevcut/test edilmiş sürüme (`scipy==1.17.1`) sabitlendi, kısa açıklama
+      yorumu eklendi (`bibtexparser==1.4.4`/`anthropic==1.13.0` ile aynı
+      desen). **DEPLOY NOTU:** bu `requirements.txt` değişikliği `main`'e
+      push sonrası otomatik akışa yansımaz, Hetzner'de elle `--build`
+      gerekir. **Not (ayrı, çözülmedi — todo'ya eklendi):** `numpy`/
+      `pandas`/`scikit-learn`/`statsmodels` de istatistik araçlarının
+      birçoğunda doğrudan kullanılıyor ama bu maddenin kapsamı (yalnız
+      scipy) dışında bırakıldı, sabitlenmedi.
+  25b. [ ] **(25 Ekim 2026, madde 25 sırasında bulundu)** `requirements.txt`
+      — `numpy`, `pandas`, `scikit-learn`, `statsmodels` de madde 25'teki
+      scipy ile aynı gerekçeyle (istatistik araçlarının API'sine doğrudan
+      bağlı) sabitlenmemiş durumda, henüz değerlendirilmedi.
 
   **DÜŞÜK (toplu not, tek tek takip gerekmez ama bilinsin):** ttesti.py'de
   bağımsız örneklem CI formülü ile t-istatistiği tutarsız (SE pooled/unpooled

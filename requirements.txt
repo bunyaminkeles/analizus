@@ -36,7 +36,7 @@ statsmodels
 nltk
 zeyrek
 Babel>=2.12,<3.0  # OpenAlex ülke kodu (US) → rapor dilinde ülke adı
-scipy
+scipy==1.17.1  # istatistik araçları doğrudan scipy.stats'a bağlı (mann_whitney, kruskal_wallis, wilcoxon, friedman, vb.)
 openpyxl
 factor-analyzer==0.5.1
 
