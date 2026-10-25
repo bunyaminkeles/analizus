@@ -418,10 +418,12 @@ SEO_CONTENT = {
         ),
         'when_to_use': (
             gettext_lazy('Parametrik bir test uygulamadan önce varsayım kontrolü olarak kullanın. '
-            'Shapiro-Wilk n ≤ 2000 için en güçlü testtir. Büyük örneklemlerde '
-            '(n > 200) küçük sapmalar bile anlamlı çıkabileceğinden histogram ve '
-            'Q-Q grafiğine de bakın. n ≥ 30 olduğunda merkezi limit teoremi gereği '
-            'hafif sapmaları görmezden gelmek genellikle kabul edilebilir.')
+            'Shapiro-Wilk testi n ≤ 5000 için uygulanır; n > 5000 olan örneklemlerde '
+            'Shapiro-Wilk güvenilirliğini yitirdiğinden otomatik olarak D\'Agostino K² '
+            'testine geçilir. Büyük örneklemlerde (n > 200) küçük sapmalar bile anlamlı '
+            'çıkabileceğinden histogram ve Q-Q grafiğine de bakın. n ≥ 30 olduğunda '
+            'merkezi limit teoremi gereği hafif sapmaları görmezden gelmek genellikle '
+            'kabul edilebilir.')
         ),
         'assumptions': (
             gettext_lazy('Bağımsızlık: Gözlemler birbirinden bağımsız olmalıdır. '
@@ -669,8 +671,8 @@ SEO_CONTENT = {
             {
                 'q': gettext_lazy('Sınıflandırma doğruluğu yeterli bir ölçüt mü?'),
                 'a': (gettext_lazy('Dengesiz veri setlerinde doğruluk yanıltıcı olabilir. '
-                      'AUC-ROC, duyarlılık (sensitivity) ve özgüllük (specificity) '
-                      'birlikte değerlendirilmelidir.')),
+                      'Sınıflandırma tablosundaki duyarlılık (sensitivity) ve özgüllük '
+                      '(specificity) birlikte değerlendirilmelidir.')),
             },
         ],
         'related_tools': [
@@ -813,8 +815,8 @@ SEO_CONTENT = {
         ),
         'apa_example': (
             gettext_lazy('Karar ağacı modeli (max_depth = 4) test setinde %82 doğruluk, '
-            'AUC = .88 elde etmiştir. En önemli yordayıcı değişken X1 '
-            'olarak belirlenmiştir (önem = .41).')
+            '%79 kesinlik (precision) ve %81 duyarlılık (recall) elde etmiştir. '
+            'En önemli yordayıcı değişken X1 olarak belirlenmiştir (önem = .41).')
         ),
         'faq': [
             {
@@ -861,14 +863,15 @@ SEO_CONTENT = {
             'karmaşık ilişkiler için RBF çekirdeği önerilir.')
         ),
         'how_to_interpret': (
-            gettext_lazy('Doğruluk, F1 skoru, AUC-ROC: Sınıflandırma başarısının temel ölçütleri. '
+            gettext_lazy('Doğruluk, Kesinlik (Precision), Duyarlılık (Recall), F1 skoru: '
+            'Sınıflandırma başarısının temel ölçütleri. '
             'Destek vektörleri: Karar sınırını belirleyen, marjine en yakın '
             'eğitim örnekleri. '
             'Karmaşıklık matrisi: Hangi sınıfların daha sık karıştırıldığını gösterir.')
         ),
         'apa_example': (
             gettext_lazy('RBF çekirdekli SVM modeli (C = 1.0, γ = "scale") test setinde '
-            'F1 = .84, AUC = .91 değerlerine ulaşmıştır.')
+            '%86 doğruluk ve F1 = .84 değerlerine ulaşmıştır.')
         ),
         'faq': [
             {

@@ -1274,9 +1274,11 @@ dokunulmadı. "Kopyala" butonu artık APA cümlesi + AI yorumunu birlikte panoya
 fonksiyonları güncellendi — iki farklı varyant: canlı DOM'dan okuyan `ax-apa-box` ailesi (9 araç) ve hazır bir
 gizli `<span>`'e yazan `cronbach-report-text` tarzı aile (8 araç), her ikisinde de aynı birleştirme mantığı).
 
-**PDF'e dahil DEĞİL** (bilinçli bir hariç tutma değil, kapsam dışı kaldı) — her aracın kendi
-`istatistik/services/<tool>.py` `build_pdf()` fonksiyonu `result_data['ai_comment']`'i hiç yazdırmıyor;
-istenirse ayrı bir görev (`tasks/todo.md`'de açık madde).
+**PDF'e de dahil (25 Ekim 2026'dan itibaren)** — `istatistik/services/pdf_fonts.py`'deki ortak
+`append_ai_comment(story, result, style, bg_hex, box_color)` yardımcı fonksiyonu, varsa `result_data['ai_comment']`'i
+her aracın kendi `build_pdf()`'inde APA kutusunun hemen altına, ekrandaki gibi ayrı kutu/ikon olmadan ince bir üst
+çizgiyle ve aracın kendi marka rengiyle (navy/teal/mor/amber vb.) yazdırıyor. 17 araç dosyasının her birine 2
+satırlık (import + çağrı) ekleme yapıldı; `orneklem` kapsam dışı (senkron form, AI yorumu hiç çalışmıyor).
 
 **Production deploy tuzağı (11 Ekim 2026) — bkz. §26:** Faz A `requirements.txt`'e `anthropic` ekledi ve
 main'e merge edildi, ama GitHub Actions deploy'u yalnız `git pull + restart` yaptığı için Hetzner container'ında

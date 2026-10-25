@@ -121,6 +121,7 @@ def _execute_job_in_language(job_id: str):
                 dep_col=opts.get('dep_col'),
                 col1=opts.get('col1'),
                 col2=opts.get('col2'),
+                test_value=opts.get('test_value'),
             )
         elif job.tool == 'anova':
             from .anova import analyze, build_pdf
@@ -285,8 +286,9 @@ def _upload_pdf(pdf_bytes: bytes, job) -> str:
 
 
 _AI_PROMPT_EXCLUDE_KEYS = {
-    'tree_text',     # karar_agaci: uzun ASCII ağaç çıktısı, yorum için gereksiz
-    'heatmap_b64',   # korelasyon: base64 PNG, metin yoruma hiç katkı sağlamıyor
+    'tree_text',       # karar_agaci: uzun ASCII ağaç çıktısı, yorum için gereksiz
+    'heatmap_b64',     # korelasyon: base64 PNG, metin yoruma hiç katkı sağlamıyor
+    'scree_plot_b64',  # afa: base64 PNG, metin yoruma hiç katkı sağlamıyor
 }
 
 

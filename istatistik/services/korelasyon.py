@@ -102,7 +102,14 @@ def _build_heatmap(corr_matrix, cols, method: str) -> str:
     for i in range(n):
         for j in range(n):
             val = corr_matrix[i][j]
-            color = 'black' if 0.3 <= abs(val) <= 0.7 else 'white'
+            # Metin rengini sabit |r| eşiğiyle değil, o hücrenin GERÇEK renk
+            # parlaklığına (luminance) göre seç — önceki eşik (0.3-0.7 arası
+            # siyah, dışı beyaz) tersti: RdYlGn'de en sık görülen zayıf
+            # korelasyonlar (|r|<0.3) açık sarı zemine düşüyor ve beyaz metin
+            # neredeyse görünmez oluyordu.
+            rr, gg, bb, _ = cmap((val + 1) / 2)
+            luminance = 0.299 * rr + 0.587 * gg + 0.114 * bb
+            color = 'black' if luminance > 0.6 else 'white'
             ax.text(j, i, f'{val:.2f}', ha='center', va='center',
                     color=color, fontsize=max(6, 10 - n // 3))
 
@@ -133,7 +140,7 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
     from reportlab.platypus import (
         SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image,
     )
-    from .pdf_fonts import register_fonts
+    from .pdf_fonts import register_fonts, append_ai_comment
     register_fonts()
 
     buf = io.BytesIO()
@@ -258,6 +265,7 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
         ('PADDING', (0, 0), (-1, -1), 8),
     ]))
     story.append(apa_tbl)
+    append_ai_comment(story, result, normal, '#f0f4ff', '#1e3a5f')
 
     doc.build(story)
     return buf.getvalue()

@@ -8,6 +8,8 @@ import numpy as np
 
 
 def analyze(df, columns=None) -> dict:
+    from scipy import stats as sp_stats
+
     if columns:
         valid = [c for c in columns if c in df.columns]
         if valid:
@@ -44,23 +46,52 @@ def analyze(df, columns=None) -> dict:
             numeric = series.astype(float)
             q1 = float(numeric.quantile(0.25))
             q3 = float(numeric.quantile(0.75))
+            skew = float(sp_stats.skew(numeric))
+            kurt = float(sp_stats.kurtosis(numeric))  # excess kurtosis
+            mode_val = _mode_or_none(numeric)
             results.append({
                 'variable': str(col),
                 'type': 'continuous',
                 'n': n,
                 'mean': round(float(numeric.mean()), 3),
                 'std': round(float(numeric.std(ddof=1)), 3),
+                'variance': round(float(numeric.var(ddof=1)), 3),
+                'mode': mode_val,
                 'min': round(float(numeric.min()), 3),
                 'max': round(float(numeric.max()), 3),
                 'median': round(float(numeric.median()), 3),
                 'q1': round(q1, 3),
                 'q3': round(q3, 3),
+                'skewness': round(skew, 3),
+                'kurtosis': round(kurt, 3),
+                'shape_interpretation': _interpret_shape(skew, kurt),
             })
 
     if not results:
         raise ValueError(gettext('Analiz edilecek sütun bulunamadı.'))
 
     return {'variables': results, 'n_rows': len(df)}
+
+
+def _mode_or_none(numeric):
+    """En sık tekrar eden değer (>1 kez); tüm değerler tekilse (gerçek sürekli
+    veri) mod anlamsız olduğundan None döner."""
+    counts = numeric.value_counts()
+    if counts.empty or counts.iloc[0] <= 1:
+        return None
+    top_count = counts.iloc[0]
+    return round(float(counts[counts == top_count].index.min()), 3)
+
+
+def _interpret_shape(skew: float, kurt: float) -> str:
+    if abs(skew) <= 1:
+        skew_label = gettext('Normal')
+    elif abs(skew) <= 2:
+        skew_label = gettext('Hafif çarpık')
+    else:
+        skew_label = gettext('Belirgin çarpık')
+    kurt_label = gettext('Normal') if abs(kurt) <= 2 else gettext('Aşırı')
+    return gettext('Çarpıklık: %(s)s · Basıklık: %(k)s') % {'s': skew_label, 'k': kurt_label}
 
 
 def build_pdf(result: dict, filename: str, df=None) -> bytes:
@@ -74,7 +105,7 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
     from reportlab.platypus import (
         SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image,
     )
-    from .pdf_fonts import register_fonts
+    from .pdf_fonts import register_fonts, append_ai_comment
     register_fonts()
 
     buf = io.BytesIO()
@@ -120,6 +151,26 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
         tbl = Table(rows, colWidths=col_w)
         tbl.setStyle(_base_table_style())
         story.append(tbl)
+        story.append(Spacer(1, 0.4*cm))
+
+        # Dağılım şekli ve ek ölçüler (Mod, Varyans, Çarpıklık, Basıklık)
+        story.append(Paragraph(gettext('Dağılım Şekli ve Ek Ölçüler'), h2_style))
+        shape_headers = [gettext('Değişken'), gettext('Mod'), gettext('Varyans'),
+                          gettext('Çarpıklık'), gettext('Basıklık'), gettext('Yorum')]
+        shape_rows = [shape_headers]
+        for v in cont_vars:
+            shape_rows.append([
+                str(v['variable']),
+                f"{v['mode']:.3f}" if v['mode'] is not None else '—',
+                f"{v['variance']:.3f}",
+                f"{v['skewness']:.3f}",
+                f"{v['kurtosis']:.3f}",
+                v['shape_interpretation'],
+            ])
+        shape_col_w = [3*cm, 1.8*cm, 2*cm, 2*cm, 2*cm, 6*cm]
+        shape_tbl = Table(shape_rows, colWidths=shape_col_w)
+        shape_tbl.setStyle(_base_table_style())
+        story.append(shape_tbl)
         story.append(Spacer(1, 0.4*cm))
 
         # Histogram'lar (ilk 4)
@@ -168,6 +219,7 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
         ('PADDING', (0, 0), (-1, -1), 8),
     ]))
     story.append(apa_tbl)
+    append_ai_comment(story, result, normal, '#f0f4ff', '#1e3a5f')
 
     doc.build(story)
     return buf.getvalue()

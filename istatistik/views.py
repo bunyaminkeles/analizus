@@ -406,6 +406,7 @@ def _handle_group_tool_post(request, tool):
                 'dep_col': request.POST.get('dep_col', ''),
                 'col1': request.POST.get('col1', ''),
                 'col2': request.POST.get('col2', ''),
+                'test_value': request.POST.get('test_value', ''),
             }
         elif tool == 'anova':
             options = {

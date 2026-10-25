@@ -35,6 +35,10 @@ def analyze(df, col1: str, col2: str) -> dict:
     low_expected = int((expected < 5).sum())
     total_cells = int(expected.size)
 
+    # scipy chi2_contingency varsayılanı (correction=True) yalnızca 2x2
+    # tablolarda Yates süreklilik düzeltmesini otomatik uygular.
+    yates_applied = bool(r == 2 and c == 2)
+
     # Fisher's Exact Test — yalnızca 2×2 tablolar için geçerlidir
     if r == 2 and c == 2:
         odds_ratio, fisher_p = stats.fisher_exact(ct.values)
@@ -99,6 +103,7 @@ def analyze(df, col1: str, col2: str) -> dict:
         'total_cells': total_cells,
         'low_expected_warning': low_expected > 0,
         'fisher': fisher_result,
+        'yates_applied': yates_applied,
     }
 
 
@@ -109,7 +114,7 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
     from reportlab.lib.units import cm
     from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
 
-    from .pdf_fonts import register_fonts
+    from .pdf_fonts import register_fonts, append_ai_comment
     register_fonts()
 
     buf = io.BytesIO()
@@ -145,7 +150,9 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
             result['effect_label'],
         ],
     ]
-    col_w = [3*cm, 3*cm, 1.5*cm, 2*cm, 1.2*cm, 2*cm, 2.5*cm, 3*cm]
+    # Toplam 18.2cm idi — A4'teki kullanılabilir 17cm'i aşıp sağ kenar boşluğunu
+    # daraltıyordu (taşma sınırı); 16.5cm'e düşürüldü.
+    col_w = [3*cm, 3*cm, 1.3*cm, 1.8*cm, 1*cm, 1.8*cm, 2.2*cm, 2.4*cm]
     tbl = Table(summary_data, colWidths=col_w)
     tbl.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, 0), PURPLE),
@@ -212,8 +219,21 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
     total_row = [pgettext('tablo', 'Toplam')] + [str(v) for v in ct['col_totals']] + [str(ct['grand_total'])]
     rows.append(total_row)
 
+    # A4'te kullanılabilir genişlik ~17cm — sabit 2cm/sütun çok kategorili
+    # değişkenlerde (ör. 8+ kategori) tabloyu sayfa dışına taşırıp sütunları
+    # sessizce kaybettiriyordu; genişlik ve font artık sütun sayısına göre uyarlanıyor.
+    usable_width = 17 * cm
     n_cols = len(header)
-    col_w2 = [3*cm] + [2*cm] * (n_cols - 1)
+    n_data_cols = n_cols - 1  # kategori sütunları + "Toplam" sütunu
+    first_col_w = 2.2 * cm if n_data_cols > 6 else 3 * cm
+    default_data_w = 2 * cm
+    avail_for_data = usable_width - first_col_w
+    if n_data_cols * default_data_w <= avail_for_data:
+        data_col_w = default_data_w
+    else:
+        data_col_w = max(avail_for_data / n_data_cols, 0.9 * cm)
+    col_w2 = [first_col_w] + [data_col_w] * n_data_cols
+    font_size2 = 8 if n_data_cols <= 6 else (7 if n_data_cols <= 10 else 6)
     tbl2 = Table(rows, colWidths=col_w2)
     tbl2.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#ede9fe')),
@@ -223,7 +243,7 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
         ('FONTNAME', (0, 0), (-1, -1), 'DejaVuSans'),
         ('FONTNAME', (0, 0), (-1, 0), 'DejaVuSans-Bold'),
         ('FONTNAME', (0, 0), (0, -1), 'DejaVuSans-Bold'),
-        ('FONTSIZE', (0, 0), (-1, -1), 8),
+        ('FONTSIZE', (0, 0), (-1, -1), font_size2),
         ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
         ('PADDING', (0, 0), (-1, -1), 4),
         ('ALIGN', (1, 0), (-1, -1), 'CENTER'),
@@ -242,6 +262,8 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
     else:
         apa_text = gettext('Ki-kare bağımsızlık testi sonucunda {c1} ile {c2} arasında anlamlı bir ilişki '
                            'bulunmamıştır, χ²({dof}, N = {n}) = {chi2}, {p}, V = {v} ({effect}).').format(**v)
+    if result['yates_applied']:
+        apa_text += ' ' + gettext("2×2 tablo olduğu için χ² hesaplamasında Yates süreklilik düzeltmesi uygulanmıştır.")
     apa_tbl = Table([[Paragraph(apa_text, normal)]], colWidths=[16*cm])
     apa_tbl.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, -1), colors.HexColor('#f5f0ff')),
@@ -249,6 +271,7 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
         ('PADDING', (0, 0), (-1, -1), 8),
     ]))
     story.append(apa_tbl)
+    append_ai_comment(story, result, normal, '#f5f0ff', PURPLE)
 
     doc.build(story)
     return buf.getvalue()

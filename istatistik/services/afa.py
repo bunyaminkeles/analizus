@@ -112,12 +112,15 @@ def analyze(df, columns=None, n_factors=None, rotation='varimax', method='minres
 
     # Eigenvalue tablosu (ilk 10 veya k tane)
     eigen_table = []
-    for i, ev in enumerate(eigenvalues[:min(k, 15)]):
+    eigen_values_for_plot = eigenvalues[:min(k, 15)]
+    for i, ev in enumerate(eigen_values_for_plot):
         eigen_table.append({
             'factor': i + 1,
             'eigenvalue': round(float(ev), 3),
             'pct_variance': round(float(ev / k) * 100, 2),
         })
+
+    scree_plot_b64 = _build_scree_plot(eigen_values_for_plot)
 
     kmo_interpretation = _interpret_kmo(kmo_model)
     bartlett_sig = 'p < 0.001' if p_bartlett < 0.001 else f'p = {p_bartlett:.3f}'
@@ -138,9 +141,44 @@ def analyze(df, columns=None, n_factors=None, rotation='varimax', method='minres
         'loading_table': loading_table,
         'variance_table': variance_table,
         'eigen_table': eigen_table,
+        'scree_plot_b64': scree_plot_b64,
         'total_variance_explained': round(float(variance[2][-1]) * 100, 2),
         'warnings': warnings,
     }
+
+
+def _build_scree_plot(eigenvalues) -> str:
+    """Özdeğer (scree) grafiği → base64 PNG. Kaiser kriteri (özdeğer=1) çizgisiyle
+    birlikte, kaç faktörün tutulacağına karar vermede görsel kırılma noktası sağlar."""
+    import base64
+    import matplotlib
+    matplotlib.use('Agg')
+    import matplotlib.pyplot as plt
+
+    fig, ax = plt.subplots(figsize=(7, 4.2))
+    fig.patch.set_facecolor('#0f0f23')
+    ax.set_facecolor('#0f0f23')
+
+    x = list(range(1, len(eigenvalues) + 1))
+    ax.plot(x, eigenvalues, 'o-', color='#2dd4bf', linewidth=2, markersize=5)
+    ax.axhline(y=1, color='#f87171', linestyle='--', linewidth=1,
+               label=gettext('Kaiser kriteri (özdeğer = 1)'))
+    ax.set_xlabel(gettext('Faktör Numarası'), color='white', fontsize=9)
+    ax.set_ylabel(gettext('Özdeğer'), color='white', fontsize=9)
+    ax.set_title(gettext('Scree Plot (Özdeğer Grafiği)'), color='white', fontsize=11, pad=10)
+    ax.set_xticks(x)
+    ax.tick_params(colors='white', labelsize=8)
+    for spine in ax.spines.values():
+        spine.set_color('#444444')
+    ax.legend(facecolor='#1a1a2e', edgecolor='#444444', labelcolor='white', fontsize=8)
+    ax.grid(True, alpha=0.15, color='white')
+    plt.tight_layout()
+
+    buf = io.BytesIO()
+    fig.savefig(buf, format='png', dpi=110, facecolor=fig.get_facecolor())
+    plt.close(fig)
+    buf.seek(0)
+    return base64.b64encode(buf.read()).decode('utf-8')
 
 
 def _interpret_kmo(kmo: float) -> str:
@@ -199,8 +237,8 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
     from reportlab.lib import colors
     from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
     from reportlab.lib.units import cm
-    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
-    from .pdf_fonts import register_fonts
+    from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image
+    from .pdf_fonts import register_fonts, append_ai_comment
     register_fonts()
 
     buf = io.BytesIO()
@@ -246,6 +284,35 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
     ]))
     story.append(t)
     story.append(Spacer(1, 0.5*cm))
+
+    # Özdeğer tablosu + Scree Plot (faktör sayısı belirleme)
+    story.append(Paragraph(gettext('Özdeğerler ve Scree Plot'), h2))
+    eigen_headers = [gettext('Faktör'), gettext('Özdeğer'), gettext('% Varyans')]
+    eigen_rows = [eigen_headers] + [
+        [str(e['factor']), f"{e['eigenvalue']:.3f}", gettext('%%%(value)s') % {'value': f"{e['pct_variance']:.2f}"}]
+        for e in result['eigen_table']
+    ]
+    eigen_tbl = Table(eigen_rows, colWidths=[3*cm, 3*cm, 3*cm])
+    eigen_tbl.setStyle(TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor(TEAL)),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+        ('FONTNAME', (0, 0), (-1, 0), 'DejaVuSans-Bold'),
+        ('FONTNAME', (0, 1), (-1, -1), 'DejaVuSans'),
+        ('FONTSIZE', (0, 0), (-1, -1), 8),
+        ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.whitesmoke, colors.white]),
+        ('GRID', (0, 0), (-1, -1), 0.5, colors.grey),
+        ('PADDING', (0, 0), (-1, -1), 4),
+        ('ALIGN', (1, 0), (-1, -1), 'CENTER'),
+    ]))
+    story.append(eigen_tbl)
+    story.append(Spacer(1, 0.4*cm))
+
+    if result.get('scree_plot_b64'):
+        import base64
+        img_data = base64.b64decode(result['scree_plot_b64'])
+        img_buf = io.BytesIO(img_data)
+        story.append(Image(img_buf, width=14*cm, height=8.4*cm))
+        story.append(Spacer(1, 0.5*cm))
 
     # Faktör yükleri tablosu
     story.append(Paragraph(gettext('Faktör Yük Matrisi (Rotasyonlu)'), h2))
@@ -308,6 +375,7 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
         ('PADDING', (0, 0), (-1, -1), 8),
     ]))
     story.append(apa_tbl)
+    append_ai_comment(story, result, normal, '#f0fff4', TEAL)
 
     doc.build(story)
     return buf.getvalue()

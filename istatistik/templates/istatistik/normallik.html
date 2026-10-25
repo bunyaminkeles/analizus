@@ -2,8 +2,8 @@
 {% load static i18n %}
 {% block canonical %}{% url 'analiz_console' 'normallik' %}{% endblock %}
 
-{% block title %}{% trans "Normallik Testi (Shapiro-Wilk, Kolmogorov-Smirnov)" %} - Analizus{% endblock %}
-{% block meta_description %}{% trans "Verilerinizin normal dağılıma uygunluğunu Shapiro-Wilk ve Kolmogorov-Smirnov testleriyle online analiz edin. Raporlamaya hazır APA metni ile PDF çıktısı." %}{% endblock %}
+{% block title %}{% trans "Normallik Testi (Shapiro-Wilk)" %} - Analizus{% endblock %}
+{% block meta_description %}{% trans "Verilerinizin normal dağılıma uygunluğunu Shapiro-Wilk testiyle online analiz edin. Raporlamaya hazır APA metni ile PDF çıktısı." %}{% endblock %}
 
 {% block tool_area %}
 <div class="container py-4">
@@ -14,7 +14,7 @@
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ax-text-accent me-2"><path d="M2 20h20"/><path d="M5 20s1-8 7-8 7 8 7 8"/></svg>
         {% trans "Normallik Testi" %}
       </h2>
-      <p class="ax-text-muted mb-0">{% trans "Shapiro-Wilk ve Kolmogorov-Smirnov testleri ile verilerinizin normal dağılıma uygunluğunu sınayın." %}</p>
+      <p class="ax-text-muted mb-0">{% trans "Shapiro-Wilk testi ile verilerinizin normal dağılıma uygunluğunu sınayın." %}</p>
     </div>
     {% if user.is_authenticated %}
     <div class="col-auto">
@@ -66,7 +66,7 @@
           <h5 class="ax-text-muted fw-semibold mb-3">{% trans "Sonuçlar burada görünecek" %}</h5>
           <ul class="ax-text-muted ax-text-sm ps-3">
             <li class="mb-1">{% trans "Her sütun ayrı bir değişken olarak test edilir." %}</li>
-            <li class="mb-1">{% trans "n &lt; 2000 için Shapiro-Wilk, n ≥ 2000 için Kolmogorov-Smirnov önerilir." %}</li>
+            <li class="mb-1">{% trans "n ≤ 5000 için Shapiro-Wilk, n &gt; 5000 için D'Agostino K² testi uygulanır." %}</li>
             <li class="mb-1">{% trans "p &gt; .05 → normal dağılım kabul edilir." %}</li>
             <li class="mb-1">{% trans "Metin sütunları otomatik atlanır." %}</li>
           </ul>
@@ -166,12 +166,12 @@
     <div class="row g-4 mb-4">
       <div class="col-md-6">
         <h6 class="ax-text-muted text-uppercase ax-text-sm fw-bold mb-2">{% trans "Shapiro-Wilk Testi" %}</h6>
-        <p class="ax-text-muted ax-text-sm mb-2">{% trans "Shapiro-Wilk testi, bir veri setinin normal dağılıma uyup uymadığını sınar. Küçük ve orta örneklem boyutlarında (n &lt; 2000) tercih edilir. H₀: Veri normal dağılmaktadır." %}</p>
+        <p class="ax-text-muted ax-text-sm mb-2">{% trans "Shapiro-Wilk testi, bir veri setinin normal dağılıma uyup uymadığını sınar. n ≤ 5000 olan örneklemlerde kullanılır. H₀: Veri normal dağılmaktadır." %}</p>
         <p class="ax-text-muted ax-text-sm mb-0"><strong class="ax-text-secondary">{% trans "Karar:" %}</strong> {% trans "p &gt; .05 → Normal dağılım kabul edilir." %}<br>{% trans "p ≤ .05 → Normal dağılım reddedilir; parametrik olmayan testler önerilir." %}</p>
       </div>
       <div class="col-md-6">
-        <h6 class="ax-text-muted text-uppercase ax-text-sm fw-bold mb-2">{% trans "Kolmogorov-Smirnov Testi" %}</h6>
-        <p class="ax-text-muted ax-text-sm mb-0">{% trans "Büyük örneklemlerde (n ≥ 2000) Kolmogorov-Smirnov testi kullanılır. Ancak bu test büyük örneklemlerde aşırı duyarlı olabilir; histogram ve Q-Q grafiği ile birlikte değerlendirilmesi önerilir." %}</p>
+        <h6 class="ax-text-muted text-uppercase ax-text-sm fw-bold mb-2">{% trans "D'Agostino K² Testi" %}</h6>
+        <p class="ax-text-muted ax-text-sm mb-0">{% trans "n &gt; 5000 olan büyük örneklemlerde Shapiro-Wilk güvenilirliğini yitirdiğinden, çarpıklık ve basıklığı birlikte değerlendiren D'Agostino K² testi otomatik olarak kullanılır; histogram ve Q-Q grafiği ile birlikte değerlendirilmesi önerilir." %}</p>
       </div>
     </div>
 
@@ -201,6 +201,7 @@
 
     <h6 class="ax-text-secondary fw-semibold mb-2">{% trans "Akademik Kaynaklar" %}</h6>
     <p class="ax-text-muted ax-text-sm mb-1">Shapiro, S. S., &amp; Wilk, M. B. (1965). An analysis of variance test for normality. <em>Biometrika, 52</em>(3/4), 591–611.</p>
+    <p class="ax-text-muted ax-text-sm mb-1">D'Agostino, R. B., &amp; Pearson, E. S. (1973). Tests for departure from normality. <em>Biometrika, 60</em>(3), 613–622.</p>
     <p class="ax-text-muted ax-text-sm mb-0">Field, A. (2018). <em>Discovering statistics using IBM SPSS statistics</em> (5th ed.). SAGE Publications.</p>
   </div>
 
@@ -208,7 +209,7 @@
   <div class="ax-card mt-4 p-4">
     <h5 class="ax-text-primary fw-semibold mb-3">{% trans "Normallik Testi Nedir?" %}</h5>
     <p class="ax-text-muted ax-text-sm mb-3">{% trans "Normallik testi, bir veri setinin normal (Gaussian) dağılıma uyup uymadığını istatistiksel olarak sınar. t-Testi, ANOVA, Pearson korelasyon ve doğrusal regresyon gibi parametrik testlerin varsayımı, verilerin yaklaşık olarak normal dağılmasıdır." %}</p>
-    <p class="ax-text-muted ax-text-sm mb-3"><strong class="ax-text-secondary">{% trans "Shapiro-Wilk testi" %}</strong> {% trans "küçük ve orta örneklemler için (n &lt; 50) güçlü bir seçimdir." %} <strong class="ax-text-secondary">{% trans "Kolmogorov-Smirnov testi" %}</strong> {% trans "büyük örneklemlerde kullanılır. Her iki testte p &gt; .05 ise normallik varsayımının reddedilmediği kabul edilir." %}</p>
+    <p class="ax-text-muted ax-text-sm mb-3"><strong class="ax-text-secondary">{% trans "Shapiro-Wilk testi" %}</strong> {% trans "n ≤ 5000 olan örneklemler için güçlü bir seçimdir." %} <strong class="ax-text-secondary">{% trans "D'Agostino K² testi" %}</strong> {% trans "n &gt; 5000 olan büyük örneklemlerde otomatik olarak kullanılır. Her iki testte de p &gt; .05 ise normallik varsayımının reddedilmediği kabul edilir." %}</p>
     <p class="ax-text-muted ax-text-sm mb-0">{% trans "Normallik varsayımı karşılanmıyorsa Mann-Whitney U (2 grup), Kruskal-Wallis (3+ grup) veya Wilcoxon (eşleştirilmiş grup) gibi non-parametrik alternatiflere geçilmesi önerilir." %}</p>
   </div>
 
@@ -226,10 +227,10 @@ const T = {
   s6: '{% trans "Günlük: " as t %}{{ t|escapejs }}',
   s7: '{% trans " analiz hakkı" as t %}{{ t|escapejs }}',
   s8: '{% trans "Kopyalandı" as t %}{{ t|escapejs }}',
-  // APA cümleleri — PDF (normallik.py) ile aynı msgid'ler, {süslü} yer tutucular
-  apaIntro: '{% trans "Verilerin normal dağılım gösterip göstermediği Shapiro-Wilk testi ile incelenmiştir." as t %}{{ t|escapejs }}',
-  apaNormal: '{% trans "{var} değişkeninin normal dağılım gösterdiği belirlenmiştir (W = {w}, {p})." as t %}{{ t|escapejs }}',
-  apaNotNormal: '{% trans "{var} değişkeninin normal dağılım göstermediği belirlenmiştir (W = {w}, {p})." as t %}{{ t|escapejs }}',
+  // APA cümleleri — PDF (normallik.py) ile aynı msgid'ler, {süslü} yer tutucular.
+  // {test}/{stat} gerçekte uygulanan yönteme göre değişir (n<=5000 Shapiro-Wilk, n>5000 D'Agostino K²)
+  apaNormal: '{% trans "{var} değişkeni {test} testi ile incelenmiş ve normal dağılım gösterdiği belirlenmiştir ({stat} = {w}, {p})." as t %}{{ t|escapejs }}',
+  apaNotNormal: '{% trans "{var} değişkeni {test} testi ile incelenmiş ve normal dağılım göstermediği belirlenmiştir ({stat} = {w}, {p})." as t %}{{ t|escapejs }}',
 };
 const fmt = (s, o) => s.replace(/\{(\w+)\}/g, (m, k) => (k in o ? o[k] : m));
 const STATUS_BASE = '{% url "istatistik:normallik_status" job_id="00000000-0000-0000-0000-000000000000" %}';
@@ -355,9 +356,9 @@ function onCompleted(data) {
       badges.innerHTML += `<span class="ax-var-badge ${isNormal ? 'ax-var-badge-success' : 'ax-var-badge-danger'}">${v.variable} <span class="ax-var-p">p=${v.shapiro_p}</span></span>`;
     });
     const lines = r.variables.map(v => {
-      return fmt(v.is_normal ? T.apaNormal : T.apaNotNormal, {var: v.variable, w: v.shapiro_stat, p: v.shapiro_p < 0.001 ? 'p < .001' : 'p = ' + v.shapiro_p});
+      return fmt(v.is_normal ? T.apaNormal : T.apaNotNormal, {var: v.variable, test: v.test_name, stat: v.test_stat_label, w: v.shapiro_stat, p: v.shapiro_p < 0.001 ? 'p < .001' : 'p = ' + v.shapiro_p});
     });
-    const apaText = `${T.apaIntro} ${lines.join(' ')}`;
+    const apaText = lines.join(' ');
     document.getElementById('normallik-apa-display').textContent = apaText;
 
     const aiBox = document.getElementById('ai-yorum-box');

@@ -238,6 +238,7 @@
             <div class="d-flex gap-2" id="test-type-btns">
               <button type="button" class="ax-method-btn active" data-tt="independent">{% trans "Bağımsız" %}</button>
               <button type="button" class="ax-method-btn" data-tt="paired">{% trans "Bağımlı" %}</button>
+              <button type="button" class="ax-method-btn" data-tt="one_sample">{% trans "Tek Örneklem" %}</button>
             </div>
             <input type="hidden" id="test-type-val" value="independent">
           </div>
@@ -266,6 +267,18 @@
             </div>
           </div>
 
+          <!-- Tek Örneklem -->
+          <div id="one-sample-opts" class="d-none">
+            <div class="mb-2">
+              <label class="ax-text-secondary ax-text-sm mb-1 d-block">{% trans "Değişken (sayısal)" %}</label>
+              <select id="onesample-dep-col" class="ax-form-control ax-text-sm"></select>
+            </div>
+            <div class="mb-3">
+              <label class="ax-text-secondary ax-text-sm mb-1 d-block">{% trans "Test Değeri (teorik/referans ortalama)" %}</label>
+              <input type="number" step="any" id="test-value" class="ax-form-control ax-text-sm" placeholder="{% trans "örn. 50" %}">
+            </div>
+          </div>
+
           <button id="run-btn" class="ax-btn ax-btn-accent w-100 fw-semibold">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
             {% trans "Analizi Başlat" %}
@@ -285,6 +298,7 @@
           <ul class="ax-text-muted ax-text-sm ps-3">
             <li class="mb-1"><strong class="ax-text-secondary">{% trans "Bağımsız t-testi:" %}</strong> {% trans "Her satır bir kişi, bir sütun grup etiketi (ör. Erkek/Kadın), bir sütun ölçüm değeri." %}</li>
             <li class="mb-1"><strong class="ax-text-secondary">{% trans "Bağımlı t-testi:" %}</strong> {% trans "Her satır bir kişi, iki sütun farklı ölçüm zamanları (öntest/sontest)." %}</li>
+            <li class="mb-1"><strong class="ax-text-secondary">{% trans "Tek örneklem t-testi:" %}</strong> {% trans "Bir sütunun ortalamasını belirttiğiniz teorik/referans bir değerle karşılaştırır." %}</li>
             <li class="mb-1">{% trans "Başlık satırı otomatik algılanır." %}</li>
             <li class="mb-1">{% trans "Boş hücreler ilgili satırdan çıkarılır." %}</li>
           </ul>
@@ -421,9 +435,11 @@ const T = {
   sigNo: '{% trans "✗ İstatistiksel olarak anlamlı fark yok (p ≥ .05)" as t %}{{ t|escapejs }}',
   copied: '{% trans "Kopyalandı" as t %}{{ t|escapejs }}',
   maxSize: '{{ t_max_size|escapejs }}',
+  needTestValue: '{% trans "Test değeri sayısal olmalıdır." as t %}{{ t|escapejs }}',
   // APA / sonuç metinleri — servis (PDF) ile aynı msgid'ler, {süslü} yer tutucular
   apaInd: '{% trans "{group} grupları ({g1} ve {g2}) arasındaki {dep} farkı {test} ile test edilmiştir: t({df}) = {t}, {p}, d = {d} ({g1}: M = {m1}, SS = {s1}; {g2}: M = {m2}, SS = {s2})." as t %}{{ t|escapejs }}',
   apaPaired: '{% trans "{c1} ve {c2} arasındaki fark {test} ile test edilmiştir: t({df}) = {t}, {p}, d = {d}." as t %}{{ t|escapejs }}',
+  apaOneSample: '{% trans "{dep} değişkeninin ortalaması, test değeri olan {value} ile {test} kullanılarak karşılaştırılmıştır: t({df}) = {t}, {p}, d = {d} (M = {mean}, SS = {sd})." as t %}{{ t|escapejs }}',
 };
 const fmt = (s, o) => s.replace(/\{(\w+)\}/g, (m, k) => (k in o ? o[k] : m));
 const pStr = (p) => p < 0.001 ? 'p < .001' : 'p = ' + p.toFixed(3);
@@ -488,10 +504,10 @@ function showConfigStep(cols, numCols, nRows, fname) {
   document.getElementById('step-config').classList.remove('d-none');
   document.getElementById('config-file-info').textContent = `${fname} — ${T.fileInfo.replace('{rows}', nRows).replace('{cols}', cols.length)}`;
 
-  ['group-col', 'dep-col', 'col1', 'col2'].forEach(id => {
+  ['group-col', 'dep-col', 'col1', 'col2', 'onesample-dep-col'].forEach(id => {
     const sel = document.getElementById(id);
     sel.innerHTML = '';
-    const src = (id === 'dep-col' || id === 'col1' || id === 'col2') ? numCols : cols;
+    const src = (id === 'group-col') ? cols : numCols;
     src.forEach(c => { const o = document.createElement('option'); o.value = c; o.textContent = c; sel.appendChild(o); });
     if (id === 'col2' && src.length > 1) sel.selectedIndex = 1;
   });
@@ -501,21 +517,32 @@ document.querySelectorAll('[data-tt]').forEach(btn => {
   btn.addEventListener('click', function() {
     document.querySelectorAll('[data-tt]').forEach(b => b.classList.remove('active'));
     this.classList.add('active');
-    document.getElementById('test-type-val').value = this.dataset.tt;
-    const isIndep = this.dataset.tt === 'independent';
-    document.getElementById('independent-opts').classList.toggle('d-none', !isIndep);
-    document.getElementById('paired-opts').classList.toggle('d-none', isIndep);
+    const tt = this.dataset.tt;
+    document.getElementById('test-type-val').value = tt;
+    document.getElementById('independent-opts').classList.toggle('d-none', tt !== 'independent');
+    document.getElementById('paired-opts').classList.toggle('d-none', tt !== 'paired');
+    document.getElementById('one-sample-opts').classList.toggle('d-none', tt !== 'one_sample');
   });
 });
 
 document.getElementById('run-btn').addEventListener('click', function() {
   const errEl = document.getElementById('run-error');
   errEl.classList.add('d-none');
+
+  const tt = document.getElementById('test-type-val').value;
+  if (tt === 'one_sample') {
+    const tv = document.getElementById('test-value').value.trim();
+    if (tv === '' || isNaN(Number(tv))) {
+      errEl.textContent = T.needTestValue;
+      errEl.classList.remove('d-none');
+      return;
+    }
+  }
+
   this.disabled = true;
   this.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="animation:ax-spin 1s linear infinite"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> ' + T.starting;
   showPanel('loading');
 
-  const tt = document.getElementById('test-type-val').value;
   const fd = new FormData();
   fd.append('csrfmiddlewaretoken', '{{ csrf_token }}');
   fd.append('step', 'run');
@@ -525,9 +552,12 @@ document.getElementById('run-btn').addEventListener('click', function() {
   if (tt === 'independent') {
     fd.append('group_col', document.getElementById('group-col').value);
     fd.append('dep_col', document.getElementById('dep-col').value);
-  } else {
+  } else if (tt === 'paired') {
     fd.append('col1', document.getElementById('col1').value);
     fd.append('col2', document.getElementById('col2').value);
+  } else {
+    fd.append('dep_col', document.getElementById('onesample-dep-col').value);
+    fd.append('test_value', document.getElementById('test-value').value.trim());
   }
 
   fetch(TTESTI_URL, { method: 'POST', headers: {'X-Requested-With': 'XMLHttpRequest'}, body: fd })
@@ -585,8 +615,10 @@ function onCompleted(data) {
   let apa;
   if (r.test_type === 'independent') {
     apa = fmt(T.apaInd, {group: r.group_col, g1: r.g1_label, g2: r.g2_label, dep: r.dep_col, test: r.test_label, df: r.df, t: r.t_stat.toFixed(3), p: pStr(r.p_value), d: r.cohens_d.toFixed(3), m1: r.g1_mean.toFixed(3), s1: r.g1_std.toFixed(3), m2: r.g2_mean.toFixed(3), s2: r.g2_std.toFixed(3)});
-  } else {
+  } else if (r.test_type === 'paired') {
     apa = fmt(T.apaPaired, {c1: r.col1, c2: r.col2, test: r.test_label, df: r.df, t: r.t_stat.toFixed(3), p: pStr(r.p_value), d: r.cohens_d.toFixed(3)});
+  } else {
+    apa = fmt(T.apaOneSample, {dep: r.dep_col, value: r.test_value.toFixed(3), test: r.test_label, df: r.df, t: r.t_stat.toFixed(3), p: pStr(r.p_value), d: r.cohens_d.toFixed(3), mean: r.mean.toFixed(3), sd: r.std.toFixed(3)});
   }
   document.getElementById('res-apa').textContent = apa;
   document.getElementById('pdf-btn').href = data.pdf_url;
@@ -615,6 +647,7 @@ function resetToUpload() {
   if (pollInterval) clearInterval(pollInterval);
   previewId = null; previewFilename = null; currentJobId = null;
   fileInput.value = ''; fileInput._file = null;
+  document.getElementById('test-value').value = '';
   document.getElementById('file-name').textContent = T.maxSize;
   const prevBtn = document.getElementById('preview-btn');
   prevBtn.disabled = true;

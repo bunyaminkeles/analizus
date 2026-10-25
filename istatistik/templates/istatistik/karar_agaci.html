@@ -207,6 +207,17 @@
               </table>
             </div>
 
+            <!-- Karmaşıklık matrisi -->
+            <h6 class="text-white fw-semibold mb-2">{% trans "Karmaşıklık Matrisi (Confusion Matrix)" %}</h6>
+            <div class="table-responsive mb-3">
+              <table class="table table-dark table-sm table-bordered text-center mb-0" style="font-size:0.78rem;" id="cm-table"></table>
+            </div>
+            <p class="text-white-50" style="font-size:0.75rem;">{% trans "Satırlar: gerçek sınıf — Sütunlar: tahmin edilen sınıf." %}</p>
+
+            <!-- Ağaç yapısı -->
+            <h6 class="text-white fw-semibold mb-2">{% trans "Ağaç Yapısı (ilk 5 seviye)" %}</h6>
+            <pre class="rounded-3 p-3 mb-3 text-white-50" style="background:rgba(255,255,255,0.04);font-size:0.7rem;max-height:260px;overflow:auto;white-space:pre-wrap;" id="tree-text"></pre>
+
             <!-- APA -->
             <div class="rounded-3 p-3 mb-2" style="background:rgba(167,139,250,0.08);border:1px solid rgba(167,139,250,0.2);">
               <p class="text-white-50 small fw-semibold mb-2">{% trans "APA Formatında Raporlama" %}</p>
@@ -260,6 +271,7 @@ const T = {
 const fmt = (s, o) => s.replace(/\{(\w+)\}/g, (m, k) => (k in o ? o[k] : m));
 const pStr = (p) => p < 0.001 ? 'p < .001' : 'p = ' + p.toFixed(3);
 const pc = (v) => fmt(T.pct, {value: v});
+const _esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
 const TOOL_URL = '{% url "istatistik:karar_agaci" %}';
 const STATUS_TEMPLATE = '{% url "istatistik:karar_agaci_status" "00000000-0000-0000-0000-000000000000" %}';
 
@@ -417,7 +429,7 @@ function showResults(data) {
     `${T.criterion} <strong>${criterionTr}</strong> &nbsp;|&nbsp; ` +
     `{% filter escapejs %}{% trans "Maks. derinlik:" %}{% endfilter %} <strong>${r.max_depth_param}</strong> ({% filter escapejs %}{% trans "gerçek:" %}{% endfilter %} ${r.max_depth_actual}) &nbsp;|&nbsp; ` +
     `${T.leaves} <strong>${r.n_leaves}</strong> &nbsp;|&nbsp; ` +
-    `{% filter escapejs %}{% trans "Sınıflar:" %}{% endfilter %} <strong>${r.classes.join(', ')}</strong> &nbsp;|&nbsp; ` +
+    `{% filter escapejs %}{% trans "Sınıflar:" %}{% endfilter %} <strong>${r.classes.map(_esc).join(', ')}</strong> &nbsp;|&nbsp; ` +
     `{% filter escapejs %}{% trans "Eğitim:" %}{% endfilter %} ${r.n_train} &nbsp;|&nbsp; {% filter escapejs %}{% trans "Test:" %}{% endfilter %} ${r.n_test}`;
 
   // Feature importance tablosu
@@ -427,7 +439,7 @@ function showResults(data) {
     const barWidth = total > 0 ? Math.round(f.importance / total * 100) : 0;
     return `<tr>
       <td class="text-white-50">${f.rank}</td>
-      <td class="fw-semibold">${f.name}</td>
+      <td class="fw-semibold">${_esc(f.name)}</td>
       <td>${f.importance.toFixed(4)}</td>
       <td>${pc(pct)}</td>
       <td style="min-width:80px;">
@@ -437,6 +449,16 @@ function showResults(data) {
       </td>
     </tr>`;
   }).join('');
+
+  // Karmaşıklık matrisi
+  const cmHead = '<thead><tr><th></th>' + r.classes.map(c => `<th>${_esc(c)}</th>`).join('') + '</tr></thead>';
+  const cmBody = '<tbody>' + r.confusion_matrix.map((row, i) =>
+    `<tr><td class="fw-semibold">${_esc(r.classes[i])}</td>` + row.map(v => `<td>${v}</td>`).join('') + '</tr>'
+  ).join('') + '</tbody>';
+  document.getElementById('cm-table').innerHTML = cmHead + cmBody;
+
+  // Ağaç yapısı (PDF ile aynı sınır: ilk 40 satır / ilk 5 seviye)
+  document.getElementById('tree-text').textContent = r.tree_text.split('\n').slice(0, 40).join('\n');
 
   // APA cümlesi
   const criterionLong = r.criterion === 'gini' ? T.gini : T.entropy;

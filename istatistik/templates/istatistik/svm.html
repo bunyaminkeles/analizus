@@ -213,6 +213,13 @@
               </table>
             </div>
 
+            <!-- Karmaşıklık matrisi -->
+            <h6 class="text-white fw-semibold mb-2">{% trans "Karmaşıklık Matrisi (Confusion Matrix)" %}</h6>
+            <div class="table-responsive mb-3">
+              <table class="table table-dark table-sm table-bordered text-center mb-0" style="font-size:0.78rem;" id="cm-table"></table>
+            </div>
+            <p class="text-white-50" style="font-size:0.75rem;">{% trans "Satırlar: gerçek sınıf — Sütunlar: tahmin edilen sınıf." %}</p>
+
             <!-- APA -->
             <div class="rounded-3 p-3 mb-2" style="background:rgba(45,212,191,0.08);border:1px solid rgba(45,212,191,0.2);">
               <p class="text-white-50 small fw-semibold mb-2">{% trans "APA Formatında Raporlama" %}</p>
@@ -266,6 +273,7 @@ const T = {
 const fmt = (s, o) => s.replace(/\{(\w+)\}/g, (m, k) => (k in o ? o[k] : m));
 const pStr = (p) => p < 0.001 ? 'p < .001' : 'p = ' + p.toFixed(3);
 const pc = (v) => fmt(T.pct, {value: v});
+const _esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
 const TOOL_URL = '{% url "istatistik:svm" %}';
 const STATUS_TEMPLATE = '{% url "istatistik:svm_status" "00000000-0000-0000-0000-000000000000" %}';
 
@@ -434,7 +442,7 @@ function showResults(data) {
     `Kernel: <strong>${kernelMap[r.kernel] || r.kernel}</strong> &nbsp;|&nbsp; ` +
     `C: <strong>${r.C}</strong> &nbsp;|&nbsp; ` +
     `{% filter escapejs %}{% trans "Destek Vektörü:" %}{% endfilter %} <strong>${r.n_support_vectors}</strong> &nbsp;|&nbsp; ` +
-    `{% filter escapejs %}{% trans "Sınıflar:" %}{% endfilter %} <strong>${r.classes.join(', ')}</strong> &nbsp;|&nbsp; ` +
+    `{% filter escapejs %}{% trans "Sınıflar:" %}{% endfilter %} <strong>${r.classes.map(_esc).join(', ')}</strong> &nbsp;|&nbsp; ` +
     `{% filter escapejs %}{% trans "Eğitim:" %}{% endfilter %} ${r.n_train} &nbsp;|&nbsp; {% filter escapejs %}{% trans "Test:" %}{% endfilter %} ${r.n_test}`;
 
   const total = r.feature_importances.reduce((s, f) => s + f.importance, 0);
@@ -443,7 +451,7 @@ function showResults(data) {
     const barWidth = total > 0 ? Math.round(f.importance / total * 100) : 0;
     return `<tr>
       <td class="text-white-50">${f.rank}</td>
-      <td class="fw-semibold">${f.name}</td>
+      <td class="fw-semibold">${_esc(f.name)}</td>
       <td>${f.importance.toFixed(4)}</td>
       <td>${pc(pct)}</td>
       <td style="min-width:80px;">
@@ -453,6 +461,13 @@ function showResults(data) {
       </td>
     </tr>`;
   }).join('');
+
+  // Karmaşıklık matrisi
+  const cmHead = '<thead><tr><th></th>' + r.classes.map(c => `<th>${_esc(c)}</th>`).join('') + '</tr></thead>';
+  const cmBody = '<tbody>' + r.confusion_matrix.map((row, i) =>
+    `<tr><td class="fw-semibold">${_esc(r.classes[i])}</td>` + row.map(v => `<td>${v}</td>`).join('') + '</tr>'
+  ).join('') + '</tbody>';
+  document.getElementById('cm-table').innerHTML = cmHead + cmBody;
 
   const kernelLong = {linear: T.linearLong, rbf: T.rbfLong, poly: T.poly}[r.kernel] || r.kernel;
   let apa = fmt(T.apa, {kernel: kernelLong, c: r.C, acc: pc((r.accuracy*100).toFixed(1)), ntrain: r.n_train, ntest: r.n_test, prec: pc((r.precision*100).toFixed(1)), rec: pc((r.recall*100).toFixed(1)), f1: pc((r.f1*100).toFixed(1)), nsv: r.n_support_vectors});

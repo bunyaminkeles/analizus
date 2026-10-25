@@ -229,6 +229,7 @@ const T = {
 const fmt = (s, o) => s.replace(/\{(\w+)\}/g, (m, k) => (k in o ? o[k] : m));
 const pStr = (p) => p < 0.001 ? 'p < .001' : 'p = ' + p.toFixed(3);
 const pc = (v) => fmt(T.pct, {value: v});
+const _esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
 const TOOL_URL = '{% url "istatistik:lojistik_regresyon" %}';
 const STATUS_TEMPLATE = '{% url "istatistik:lojistik_regresyon_status" "00000000-0000-0000-0000-000000000000" %}';
 
@@ -280,7 +281,7 @@ function previewFile() {
 function buildDepSelect(cols) {
   const sel = document.getElementById('dep-col');
   sel.innerHTML = '<option value="">— {% filter escapejs %}{% trans "Seçiniz" %}{% endfilter %} —</option>';
-  cols.forEach(c => { sel.innerHTML += `<option value="${c}">${c}</option>`; });
+  cols.forEach(c => { sel.innerHTML += `<option value="${_esc(c)}">${_esc(c)}</option>`; });
 }
 
 function updateIndepList() {
@@ -300,8 +301,8 @@ function updateIndepList() {
   }
   container.innerHTML = available.map(c =>
     `<div class="form-check mb-1">
-      <input class="form-check-input indep-cb" type="checkbox" value="${c}" id="cb_${c}" onchange="countIndep()">
-      <label class="form-check-label text-white-50 small" for="cb_${c}">${c}</label>
+      <input class="form-check-input indep-cb" type="checkbox" value="${_esc(c)}" id="cb_${_esc(c)}" onchange="countIndep()">
+      <label class="form-check-label text-white-50 small" for="cb_${_esc(c)}">${_esc(c)}</label>
     </div>`
   ).join('');
   countIndep();
@@ -398,7 +399,7 @@ function showResults(data) {
       ? `<td style="color:#4ade80;font-weight:bold;">${pCellTxt}</td>`
       : `<td>${pCellTxt}</td>`;
     return `<tr>
-      <td class="fw-semibold">${c.name}</td>
+      <td class="fw-semibold">${_esc(c.name)}</td>
       <td>${c.B.toFixed(4)}</td>
       <td>${c.se.toFixed(4)}</td>
       <td>${c.wald.toFixed(3)}</td>
@@ -413,16 +414,16 @@ function showResults(data) {
   const cl = r.classification;
   const n0 = cl.tn + cl.fp, n1 = cl.fn + cl.tp;
   document.getElementById('cl-table').innerHTML = `
-    <thead><tr><th></th><th>{% filter escapejs %}{% trans "Tahmin:" %}{% endfilter %} ${cl.cat0}</th><th>{% filter escapejs %}{% trans "Tahmin:" %}{% endfilter %} ${cl.cat1}</th><th>{% filter escapejs %}{% trans "Doğruluk" %}{% endfilter %}</th></tr></thead>
+    <thead><tr><th></th><th>{% filter escapejs %}{% trans "Tahmin:" %}{% endfilter %} ${_esc(cl.cat0)}</th><th>{% filter escapejs %}{% trans "Tahmin:" %}{% endfilter %} ${_esc(cl.cat1)}</th><th>{% filter escapejs %}{% trans "Doğruluk" %}{% endfilter %}</th></tr></thead>
     <tbody>
       <tr>
-        <td class="fw-semibold">{% filter escapejs %}{% trans "Gerçek:" %}{% endfilter %} ${cl.cat0}</td>
+        <td class="fw-semibold">{% filter escapejs %}{% trans "Gerçek:" %}{% endfilter %} ${_esc(cl.cat0)}</td>
         <td style="color:#4ade80;">${cl.tn}</td>
         <td style="color:#f87171;">${cl.fp}</td>
         <td>${n0 > 0 ? pc((cl.tn/n0*100).toFixed(1)) : '—'}</td>
       </tr>
       <tr>
-        <td class="fw-semibold">{% filter escapejs %}{% trans "Gerçek:" %}{% endfilter %} ${cl.cat1}</td>
+        <td class="fw-semibold">{% filter escapejs %}{% trans "Gerçek:" %}{% endfilter %} ${_esc(cl.cat1)}</td>
         <td style="color:#f87171;">${cl.fn}</td>
         <td style="color:#4ade80;">${cl.tp}</td>
         <td>${n1 > 0 ? pc((cl.tp/n1*100).toFixed(1)) : '—'}</td>

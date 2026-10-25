@@ -238,9 +238,11 @@ const T = {
   total: '{% trans "Toplam" context "tablo" as t %}{{ t|escapejs }}',
   apaSig: '{% trans "Ki-kare bağımsızlık testi sonucunda {c1} ile {c2} arasında istatistiksel olarak anlamlı bir ilişki bulunmuştur, χ²({dof}, N = {n}) = {chi2}, {p}, V = {v} ({effect})." as t %}{{ t|escapejs }}',
   apaNs: '{% trans "Ki-kare bağımsızlık testi sonucunda {c1} ile {c2} arasında anlamlı bir ilişki bulunmamıştır, χ²({dof}, N = {n}) = {chi2}, {p}, V = {v} ({effect})." as t %}{{ t|escapejs }}',
+  apaYates: '{% trans "2×2 tablo olduğu için χ² hesaplamasında Yates süreklilik düzeltmesi uygulanmıştır." as t %}{{ t|escapejs }}',
 };
 const fmt = (s, o) => s.replace(/\{(\w+)\}/g, (m, k) => (k in o ? o[k] : m));
 const pStr = (p) => p < 0.001 ? 'p < .001' : 'p = ' + p.toFixed(3);
+const _esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
 const TOOL_URL    = '{% url "istatistik:ki_kare" %}';
 const STATUS_BASE = '{% url "istatistik:ki_kare_status" job_id="00000000-0000-0000-0000-000000000000" %}';
 let previewId = null, previewFilename = null, pollInterval = null;
@@ -352,16 +354,17 @@ function onCompleted(data) {
   // Çapraz tablo
   const ct = r.contingency_table;
   document.getElementById('ct-col-label').textContent = `{% filter escapejs %}{% trans "Sütunlar:" %}{% endfilter %} ${r.col2}`;
-  let head = `<thead><tr><th>${r.col1}</th>` + ct.columns.map(c => `<th>${c}</th>`).join('') + `<th>${T.total}</th></tr></thead>`;
+  let head = `<thead><tr><th>${_esc(r.col1)}</th>` + ct.columns.map(c => `<th>${_esc(c)}</th>`).join('') + `<th>${T.total}</th></tr></thead>`;
   let body = '<tbody>';
   ct.index.forEach((idx, i) => {
-    body += `<tr><td><strong>${idx}</strong></td>` + ct.values[i].map(v => `<td>${v}</td>`).join('') + `<td><strong>${ct.row_totals[i]}</strong></td></tr>`;
+    body += `<tr><td><strong>${_esc(idx)}</strong></td>` + ct.values[i].map(v => `<td>${v}</td>`).join('') + `<td><strong>${ct.row_totals[i]}</strong></td></tr>`;
   });
   body += `<tr><td><strong>${T.total}</strong></td>` + ct.col_totals.map(v => `<td><strong>${v}</strong></td>`).join('') + `<td><strong>${ct.grand_total}</strong></td></tr>`;
   body += '</tbody>';
   document.getElementById('ct-table').innerHTML = head + body;
 
-  const apa = fmt(r.is_significant ? T.apaSig : T.apaNs, {c1: r.col1, c2: r.col2, dof: r.dof, n: r.n, chi2: r.chi2.toFixed(3), p: pStr(r.p_value), v: r.cramers_v.toFixed(3), effect: r.effect_label.toLowerCase()});
+  let apa = fmt(r.is_significant ? T.apaSig : T.apaNs, {c1: r.col1, c2: r.col2, dof: r.dof, n: r.n, chi2: r.chi2.toFixed(3), p: pStr(r.p_value), v: r.cramers_v.toFixed(3), effect: r.effect_label.toLowerCase()});
+  if (r.yates_applied) { apa += ' ' + T.apaYates; }
   document.getElementById('res-apa').textContent = apa;
   document.getElementById('pdf-btn').href = data.pdf_url;
 
