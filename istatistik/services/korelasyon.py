@@ -102,7 +102,14 @@ def _build_heatmap(corr_matrix, cols, method: str) -> str:
     for i in range(n):
         for j in range(n):
             val = corr_matrix[i][j]
-            color = 'black' if 0.3 <= abs(val) <= 0.7 else 'white'
+            # Metin rengini sabit |r| eşiğiyle değil, o hücrenin GERÇEK renk
+            # parlaklığına (luminance) göre seç — önceki eşik (0.3-0.7 arası
+            # siyah, dışı beyaz) tersti: RdYlGn'de en sık görülen zayıf
+            # korelasyonlar (|r|<0.3) açık sarı zemine düşüyor ve beyaz metin
+            # neredeyse görünmez oluyordu.
+            rr, gg, bb, _ = cmap((val + 1) / 2)
+            luminance = 0.299 * rr + 0.587 * gg + 0.114 * bb
+            color = 'black' if luminance > 0.6 else 'white'
             ax.text(j, i, f'{val:.2f}', ha='center', va='center',
                     color=color, fontsize=max(6, 10 - n // 3))
 

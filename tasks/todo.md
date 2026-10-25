@@ -76,21 +76,44 @@ maddelerde.
      sunmuyor. Ayrıca faktör yük matrisi + varyans tablosu PDF'e yazılıyor
      ama ekranda yalnız 5 özet sayı var — AFA'nın asıl çıktısı tarayıcıda
      görünmüyor.
-  7. [ ] `istatistik/services/korelasyon.py:105` — Isı haritası hücre metin
-     rengi mantığı TERS: `'black' if 0.3<=|r|<=0.7 else 'white'`. RdYlGn
-     skalasında en sık görülen zayıf korelasyonlar (|r|<0.3) açık/krem renkte
-     ama bunlara beyaz metin atanıyor → sayılar neredeyse görünmez (gerçek
-     render ile doğrulanmış).
-  8. [ ] `istatistik/services/ki_kare.py:216-217` (build_pdf, çapraz tablo) —
-     Sabit sütun genişliği (`[3cm]+[2cm]*(n_cols-1)`), A4'te kullanılabilir
-     alan 17cm. 2. değişkenin kategori sayısı 7'yi aşınca (şehir/bölüm/fakülte
-     gibi sık rastlanan değişkenler) fazla sütunlar ve "Toplam" sütunu
-     sayfadan taşıp PDF'te TAMAMEN KAYBOLUYOR (hata vermeden, gerçek render
-     ile doğrulandı) — sessiz veri kaybı.
-  9. [ ] `istatistik/services/ki_kare.py:30` — `chi2_contingency(ct)`
-     parametresiz çağrılıyor → scipy varsayılanı 2×2 tabloda Yates süreklilik
-     düzeltmesini otomatik uyguluyor, ama ne ekranda ne PDF'te ne APA
-     cümlesinde bu düzeltmenin uygulandığı belirtiliyor.
+  7. [x] **(25 Ekim 2026 düzeltildi)** `istatistik/services/korelasyon.py:105`
+     — Isı haritası hücre metin rengi mantığı TERS: `'black' if
+     0.3<=|r|<=0.7 else 'white'`. RdYlGn skalasında en sık görülen zayıf
+     korelasyonlar (|r|<0.3) açık/krem renkte ama bunlara beyaz metin
+     atanıyor → sayılar neredeyse görünmez (gerçek render ile doğrulanmış).
+     **Düzeltme:** Sabit eşik yerine o hücrenin matplotlib colormap'ten
+     gelen gerçek renk parlaklığı (luminance) hesaplanıp kontrast rengi ona
+     göre seçiliyor; val=0 (en sık durum) artık siyah metinle okunaklı,
+     val=±1 uçları beyaz metinle kalıyor. Docker'da luminance/renk eşlemesi
+     ve gerçek ısı haritası + PDF üretimi test edildi.
+  8. [x] **(25 Ekim 2026 düzeltildi)** `istatistik/services/ki_kare.py:216-217`
+     (build_pdf, çapraz tablo) — Sabit sütun genişliği (`[3cm]+[2cm]*(n_cols-1)`),
+     A4'te kullanılabilir alan 17cm. 2. değişkenin kategori sayısı 7'yi
+     aşınca (şehir/bölüm/fakülte gibi sık rastlanan değişkenler) fazla
+     sütunlar ve "Toplam" sütunu sayfadan taşıp PDF'te TAMAMEN KAYBOLUYOR
+     (hata vermeden, gerçek render ile doğrulandı) — sessiz veri kaybı.
+     **Düzeltme:** Sütun genişliği + font boyutu kategori sayısına göre
+     dinamik hesaplanıyor (taban 0.9cm, toplam ≤17cm garantili); ayrıca aynı
+     dosyadaki özet tablo da (18.2cm → 16.5cm) taşma sınırından çıkarıldı.
+     Docker'da 12+ kategorili senaryoda (eski yöntemle 29cm çıkacak tablo)
+     PDF'in artık 17cm sınırını aşmadığı doğrulandı.
+  9. [x] **(25 Ekim 2026 düzeltildi)** `istatistik/services/ki_kare.py:30` —
+     `chi2_contingency(ct)` parametresiz çağrılıyor → scipy varsayılanı 2×2
+     tabloda Yates süreklilik düzeltmesini otomatik uyguluyor, ama ne
+     ekranda ne PDF'te ne APA cümlesinde bu düzeltmenin uygulandığı
+     belirtiliyordu. **Düzeltme:** `yates_applied` alanı eklendi (yalnızca
+     2×2 tabloda True); APA cümlesine ve ekran JS'ine "2×2 tablo olduğu için
+     Yates düzeltmesi uygulanmıştır" notu koşullu olarak ekleniyor. EN/DE
+     çevirileri eklendi.
+  9b. [x] **(25 Ekim 2026, denetim sırasında ek bulgu — kullanıcı onayıyla
+      düzeltildi)** `lineer_regresyon.html`, `lojistik_regresyon.html` +
+      `ki_kare.html` — kullanıcı dosyasından gelen sütun/kategori adları
+      (`c.name`, `cl.cat0/cat1`, çapraz tablo satır/sütun başlıkları)
+      escape'siz `innerHTML`'e yazılıyordu (self-XSS riski, CLAUDE.md
+      güvenlik kuralına aykırı). **Düzeltme:** Projede zaten var olan
+      `_esc()` deseni (openalex/tezanaliz/trdizin vb. landing şablonlarında
+      kullanılan) bu üç şablona da eklendi, tüm ilgili interpolasyonlar
+      kaçışlandı.
   10. [ ] `karar_agaci.html` + `svm.html` — Sayfa açıklaması "confusion
       matrix"/"ağaç yapısı" gösterileceğini vaat ediyor ama ekran JS'i
       (`showResults()`) bunları hiç render etmiyor, yalnızca PDF'te var.
@@ -99,9 +122,10 @@ maddelerde.
       yapıyor (ne karar_agaci ne svm AUC/ROC hesaplıyor).
 
   **ORTA — doğruluk nüansı / tutarsızlık:**
-  11. [ ] `lineer_regresyon.html` + `lojistik_regresyon.html` — kullanıcı
-      dosyasından gelen sütun/kategori adları (`c.name`, `cl.cat0/cat1`)
-      escape'siz `innerHTML`'e yazılıyor → CLAUDE.md güvenlik kuralına aykırı
+  11. [x] **(25 Ekim 2026 düzeltildi — bkz. madde 9b)** `lineer_regresyon.html`
+      + `lojistik_regresyon.html` — kullanıcı dosyasından gelen sütun/kategori
+      adları (`c.name`, `cl.cat0/cat1`) escape'siz `innerHTML`'e yazılıyor
+      → CLAUDE.md güvenlik kuralına aykırı
       self-XSS riski (kötü niyetli sütun adıyla `<img onerror=...>` vb.).
   12. [ ] `normallik.py` — çoklu sütun seçiminde satır-bazlı (listwise)
       `dropna()` kullanılıyor; bir sütundaki eksik veri diğer dolu sütunların

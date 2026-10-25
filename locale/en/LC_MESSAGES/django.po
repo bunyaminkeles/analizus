@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-25 15:14+0300\n"
+"POT-Creation-Date: 2026-10-25 15:24+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -12850,7 +12850,7 @@ msgstr "Exploratory Factor Analysis Report"
 #: istatistik/services/afa.py:221 istatistik/services/anova.py:138
 #: istatistik/services/betimsel.py:127 istatistik/services/cronbach.py:128
 #: istatistik/services/friedman.py:119 istatistik/services/karar_agaci.py:142
-#: istatistik/services/ki_kare.py:131 istatistik/services/korelasyon.py:155
+#: istatistik/services/ki_kare.py:136 istatistik/services/korelasyon.py:155
 #: istatistik/services/kruskal_wallis.py:138
 #: istatistik/services/lineer_regresyon.py:149
 #: istatistik/services/lojistik_regresyon.py:159
@@ -12922,7 +12922,7 @@ msgstr "Cumulative %"
 #: istatistik/services/afa.py:302 istatistik/services/anova.py:224
 #: istatistik/services/betimsel.py:203 istatistik/services/cronbach.py:182
 #: istatistik/services/friedman.py:201 istatistik/services/karar_agaci.py:225
-#: istatistik/services/ki_kare.py:234 istatistik/services/korelasyon.py:249
+#: istatistik/services/ki_kare.py:254 istatistik/services/korelasyon.py:249
 #: istatistik/services/kruskal_wallis.py:222
 #: istatistik/services/lineer_regresyon.py:224
 #: istatistik/services/lojistik_regresyon.py:267
@@ -13189,7 +13189,7 @@ msgstr "p (adjusted)"
 msgid "Anlamlı"
 msgstr "Significant"
 
-#: istatistik/services/anova.py:198 istatistik/services/ki_kare.py:184
+#: istatistik/services/anova.py:198 istatistik/services/ki_kare.py:191
 #: istatistik/services/kruskal_wallis.py:196
 #: istatistik/services/normallik.py:142
 #: istatistik/templates/istatistik/friedman.html:444
@@ -13198,7 +13198,7 @@ msgid "Evet"
 msgstr "Yes"
 
 #: istatistik/services/anova.py:198 istatistik/services/friedman.py:179
-#: istatistik/services/ki_kare.py:184
+#: istatistik/services/ki_kare.py:191
 #: istatistik/services/kruskal_wallis.py:196
 #: istatistik/services/normallik.py:142
 #: istatistik/services/tekrarli_anova.py:229
@@ -13210,7 +13210,7 @@ msgstr "No"
 
 #: istatistik/services/anova.py:220 istatistik/services/betimsel.py:159
 #: istatistik/services/cronbach.py:137 istatistik/services/friedman.py:197
-#: istatistik/services/ki_kare.py:166
+#: istatistik/services/ki_kare.py:173
 #: istatistik/services/kruskal_wallis.py:218
 #: istatistik/services/mann_whitney.py:174
 #: istatistik/services/tekrarli_anova.py:247 istatistik/services/ttesti.py:339
@@ -13567,7 +13567,7 @@ msgstr "Measurement"
 msgid "Med."
 msgstr "Med."
 
-#: istatistik/services/friedman.py:147 istatistik/services/ki_kare.py:135
+#: istatistik/services/friedman.py:147 istatistik/services/ki_kare.py:140
 #: istatistik/services/kruskal_wallis.py:165
 #: istatistik/services/mann_whitney.py:150 istatistik/services/ttesti.py:335
 #: istatistik/services/wilcoxon.py:163
@@ -13878,30 +13878,30 @@ msgstr "At least 5 valid rows are required."
 msgid "Her değişkenin en az 2 farklı kategorisi olmalıdır."
 msgstr "Each variable must have at least 2 different categories."
 
-#: istatistik/services/ki_kare.py:50 istatistik/services/orneklem.py:137
+#: istatistik/services/ki_kare.py:54 istatistik/services/orneklem.py:137
 #: istatistik/services/orneklem.py:146 istatistik/services/orneklem.py:155
 msgid "Çok küçük etki"
 msgstr "Very small effect"
 
-#: istatistik/services/ki_kare.py:53
+#: istatistik/services/ki_kare.py:57
 #: istatistik/templates/istatistik/friedman.html:211
 #: istatistik/templates/istatistik/tekrarli_anova.html:209
 #: istatistik/templates/istatistik/wilcoxon.html:190
 msgid "Küçük etki"
 msgstr "Small effect"
 
-#: istatistik/services/ki_kare.py:56
+#: istatistik/services/ki_kare.py:60
 msgid "Orta etki"
 msgstr "Medium effect"
 
-#: istatistik/services/ki_kare.py:59
+#: istatistik/services/ki_kare.py:63
 #: istatistik/templates/istatistik/friedman.html:213
 #: istatistik/templates/istatistik/tekrarli_anova.html:211
 #: istatistik/templates/istatistik/wilcoxon.html:192
 msgid "Büyük etki"
 msgstr "Large effect"
 
-#: istatistik/services/ki_kare.py:65
+#: istatistik/services/ki_kare.py:69
 #, python-format
 msgid ""
 "%(col1)s ile %(col2)s arasında istatistiksel olarak anlamlı bir ilişki "
@@ -13910,7 +13910,7 @@ msgstr ""
 "A statistically significant association was found between %(col1)s and "
 "%(col2)s (p < .05). Cramér's V = %(v)s (%(v2)s)."
 
-#: istatistik/services/ki_kare.py:69
+#: istatistik/services/ki_kare.py:73
 #, python-format
 msgid ""
 "%(col1)s ile %(col2)s arasında istatistiksel olarak anlamlı bir ilişki "
@@ -13919,27 +13919,27 @@ msgstr ""
 "No statistically significant association was found between %(col1)s and "
 "%(col2)s (p ≥ .05)."
 
-#: istatistik/services/ki_kare.py:130
+#: istatistik/services/ki_kare.py:135
 msgid "Ki-Kare Bağımsızlık Testi Raporu"
 msgstr "Chi-Square Test of Independence Report"
 
-#: istatistik/services/ki_kare.py:137
+#: istatistik/services/ki_kare.py:142
 msgid "Değişken 1"
 msgstr "Variable 1"
 
-#: istatistik/services/ki_kare.py:137
+#: istatistik/services/ki_kare.py:142
 msgid "Değişken 2"
 msgstr "Variable 2"
 
-#: istatistik/services/ki_kare.py:137 istatistik/views.py:566
+#: istatistik/services/ki_kare.py:142 istatistik/views.py:566
 msgid "Cramér's V"
 msgstr "Cramér's V"
 
-#: istatistik/services/ki_kare.py:137
+#: istatistik/services/ki_kare.py:142
 msgid "Etki"
 msgstr "Effect"
 
-#: istatistik/services/ki_kare.py:172
+#: istatistik/services/ki_kare.py:179
 #, python-format
 msgid ""
 "⚠ Uyarı: %(low_expected_count)s hücrede beklenen frekans 5'in altındadır "
@@ -13950,50 +13950,50 @@ msgstr ""
 " (out of %(total_cells)s). The chi-square test may be unreliable in this "
 "case; consider Fisher's exact test."
 
-#: istatistik/services/ki_kare.py:180
+#: istatistik/services/ki_kare.py:187
 msgid "anlamlı"
 msgstr "significant"
 
-#: istatistik/services/ki_kare.py:180
+#: istatistik/services/ki_kare.py:187
 msgid "anlamlı değil"
 msgstr "not significant"
 
-#: istatistik/services/ki_kare.py:181
+#: istatistik/services/ki_kare.py:188
 msgid "Fisher's Exact Test (2×2 tablo)"
 msgstr "Fisher's Exact Test (2×2 table)"
 
-#: istatistik/services/ki_kare.py:183 istatistik/views.py:627
+#: istatistik/services/ki_kare.py:190 istatistik/views.py:627
 msgid "Odds Ratio"
 msgstr "Odds Ratio"
 
-#: istatistik/services/ki_kare.py:183
+#: istatistik/services/ki_kare.py:190
 msgid "p (Fisher)"
 msgstr "p (Fisher)"
 
-#: istatistik/services/ki_kare.py:183
+#: istatistik/services/ki_kare.py:190
 #: istatistik/services/tekrarli_anova.py:226
 #: istatistik/templates/istatistik/friedman.html:174
 #: istatistik/templates/istatistik/tekrarli_anova.html:172
 msgid "Anlamlı?"
 msgstr "Significant?"
 
-#: istatistik/services/ki_kare.py:203
+#: istatistik/services/ki_kare.py:210
 #: istatistik/templates/istatistik/ki_kare.html:153
 msgid "Çapraz Tablo (Gözlenen Frekanslar)"
 msgstr "Cross-Tabulation (Observed Frequencies)"
 
-#: istatistik/services/ki_kare.py:204
+#: istatistik/services/ki_kare.py:211
 #, python-format
 msgid "Sütunlar: %(col2)s"
 msgstr "Columns: %(col2)s"
 
-#: istatistik/services/ki_kare.py:207 istatistik/services/ki_kare.py:212
+#: istatistik/services/ki_kare.py:214 istatistik/services/ki_kare.py:219
 #: istatistik/templates/istatistik/ki_kare.html:238
 msgctxt "tablo"
 msgid "Toplam"
 msgstr "Total"
 
-#: istatistik/services/ki_kare.py:240
+#: istatistik/services/ki_kare.py:260
 #: istatistik/templates/istatistik/ki_kare.html:239
 #, python-brace-format
 msgid ""
@@ -14005,7 +14005,7 @@ msgstr ""
 "association between {c1} and {c2}, χ²({dof}, N = {n}) = {chi2}, {p}, V = {v}"
 " ({effect})."
 
-#: istatistik/services/ki_kare.py:243
+#: istatistik/services/ki_kare.py:263
 #: istatistik/templates/istatistik/ki_kare.html:240
 #, python-brace-format
 msgid ""
@@ -14014,6 +14014,15 @@ msgid ""
 msgstr ""
 "A chi-square test of independence revealed no significant association "
 "between {c1} and {c2}, χ²({dof}, N = {n}) = {chi2}, {p}, V = {v} ({effect})."
+
+#: istatistik/services/ki_kare.py:266
+#: istatistik/templates/istatistik/ki_kare.html:241
+msgid ""
+"2×2 tablo olduğu için χ² hesaplamasında Yates süreklilik düzeltmesi "
+"uygulanmıştır."
+msgstr ""
+"As this is a 2×2 table, the Yates continuity correction has been applied to "
+"the χ² calculation."
 
 #: istatistik/services/korelasyon.py:33
 msgid "En az 2 sayısal sütun (değişken) gereklidir."
@@ -14209,7 +14218,7 @@ msgstr "Coefficients"
 
 #: istatistik/services/lineer_regresyon.py:183
 #: istatistik/services/lojistik_regresyon.py:197
-#: istatistik/templates/istatistik/lineer_regresyon.html:392
+#: istatistik/templates/istatistik/lineer_regresyon.html:393
 #, python-format
 msgid "%%95 GA Alt"
 msgstr "95%% CI Lower"
@@ -14311,7 +14320,7 @@ msgstr "p-value (model)"
 #: istatistik/services/lojistik_regresyon.py:240
 #: istatistik/templates/istatistik/karar_agaci.html:167
 #: istatistik/templates/istatistik/lojistik_regresyon.html:159
-#: istatistik/templates/istatistik/lojistik_regresyon.html:416
+#: istatistik/templates/istatistik/lojistik_regresyon.html:417
 #: istatistik/templates/istatistik/svm.html:173
 msgid "Doğruluk"
 msgstr "Accuracy"
@@ -14346,7 +14355,7 @@ msgid "Gerçek: %(cat)s"
 msgstr "Actual: %(cat)s"
 
 #: istatistik/services/lojistik_regresyon.py:245
-#: istatistik/templates/istatistik/lojistik_regresyon.html:431
+#: istatistik/templates/istatistik/lojistik_regresyon.html:432
 msgid "Genel Doğruluk"
 msgstr "Overall Accuracy"
 
@@ -16824,22 +16833,22 @@ msgid "Yaprak:"
 msgstr "Leaves:"
 
 #: istatistik/templates/istatistik/karar_agaci.html:275
-#: istatistik/templates/istatistik/lineer_regresyon.html:237
-#: istatistik/templates/istatistik/lojistik_regresyon.html:244
+#: istatistik/templates/istatistik/lineer_regresyon.html:238
+#: istatistik/templates/istatistik/lojistik_regresyon.html:245
 #: istatistik/templates/istatistik/svm.html:289
 #, python-format
 msgid "Dosya boyutu %(mb)s MB sınırını aşıyor."
 msgstr "The file exceeds the %(mb)s MB size limit."
 
 #: istatistik/templates/istatistik/karar_agaci.html:312
-#: istatistik/templates/istatistik/lineer_regresyon.html:274
-#: istatistik/templates/istatistik/lojistik_regresyon.html:282
+#: istatistik/templates/istatistik/lineer_regresyon.html:275
+#: istatistik/templates/istatistik/lojistik_regresyon.html:283
 #: istatistik/templates/istatistik/svm.html:326
 msgid "Seçiniz"
 msgstr "Select"
 
 #: istatistik/templates/istatistik/karar_agaci.html:327
-#: istatistik/templates/istatistik/lojistik_regresyon.html:297
+#: istatistik/templates/istatistik/lojistik_regresyon.html:298
 #: istatistik/templates/istatistik/svm.html:341
 msgid "Başka sütun yok."
 msgstr "No other columns."
@@ -16991,14 +17000,14 @@ msgid "✗ İki değişken arasında anlamlı ilişki yok (p ≥ .05)"
 msgstr ""
 "✗ There is no significant relationship between the two variables (p ≥ .05)"
 
-#: istatistik/templates/istatistik/ki_kare.html:336
+#: istatistik/templates/istatistik/ki_kare.html:338
 msgid ""
 "hücrede beklenen frekans 5'in altında. Ki-kare güvenilirliği azalabilir."
 msgstr ""
 "cells have an expected frequency below 5. The reliability of the chi-square "
 "test may be reduced."
 
-#: istatistik/templates/istatistik/ki_kare.html:354
+#: istatistik/templates/istatistik/ki_kare.html:356
 msgid "Sütunlar:"
 msgstr "Columns:"
 
@@ -17300,9 +17309,9 @@ msgid "Bağımsız Değişkenler (X — en az 1)"
 msgstr "Independent Variables (X — at least 1)"
 
 #: istatistik/templates/istatistik/lineer_regresyon.html:76
-#: istatistik/templates/istatistik/lineer_regresyon.html:283
+#: istatistik/templates/istatistik/lineer_regresyon.html:284
 #: istatistik/templates/istatistik/lojistik_regresyon.html:77
-#: istatistik/templates/istatistik/lojistik_regresyon.html:291
+#: istatistik/templates/istatistik/lojistik_regresyon.html:292
 msgid "Önce bağımlı değişkeni seçin."
 msgstr "Select the dependent variable first."
 
@@ -17392,17 +17401,17 @@ msgstr "Select at least 1 independent variable."
 msgid "Sonuç gösterilirken hata: "
 msgstr "Error while displaying results: "
 
-#: istatistik/templates/istatistik/lineer_regresyon.html:289
+#: istatistik/templates/istatistik/lineer_regresyon.html:290
 msgid "Başka sayısal sütun yok."
 msgstr "No other numeric columns."
 
-#: istatistik/templates/istatistik/lineer_regresyon.html:378
-#: istatistik/templates/istatistik/lojistik_regresyon.html:380
+#: istatistik/templates/istatistik/lineer_regresyon.html:379
+#: istatistik/templates/istatistik/lojistik_regresyon.html:381
 msgid "✓ Model istatistiksel olarak anlamlı (p < .05)"
 msgstr "✓ The model is statistically significant (p < .05)"
 
-#: istatistik/templates/istatistik/lineer_regresyon.html:381
-#: istatistik/templates/istatistik/lojistik_regresyon.html:383
+#: istatistik/templates/istatistik/lineer_regresyon.html:382
+#: istatistik/templates/istatistik/lojistik_regresyon.html:384
 msgid "✗ Model istatistiksel olarak anlamlı değil (p ≥ .05)"
 msgstr "✗ The model is not statistically significant (p ≥ .05)"
 
@@ -17514,17 +17523,17 @@ msgstr ""
 msgid "%%95 GA Üst OR"
 msgstr "95%% CI Upper OR"
 
-#: istatistik/templates/istatistik/lojistik_regresyon.html:394
+#: istatistik/templates/istatistik/lojistik_regresyon.html:395
 #, python-format
 msgid "%%95 GA Alt OR"
 msgstr "95%% CI Lower OR"
 
-#: istatistik/templates/istatistik/lojistik_regresyon.html:416
+#: istatistik/templates/istatistik/lojistik_regresyon.html:417
 msgid "Tahmin:"
 msgstr "Predicted:"
 
-#: istatistik/templates/istatistik/lojistik_regresyon.html:419
-#: istatistik/templates/istatistik/lojistik_regresyon.html:425
+#: istatistik/templates/istatistik/lojistik_regresyon.html:420
+#: istatistik/templates/istatistik/lojistik_regresyon.html:426
 msgid "Gerçek:"
 msgstr "Actual:"
 
