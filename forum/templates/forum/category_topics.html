@@ -24,7 +24,7 @@
     </div>
     
     <div>
-        <a href="{% url 'new_topic' category.slug %}" class="btn btn-primary rounded-pill px-4 py-2 fw-bold shadow-lg border-0" style="background: linear-gradient(45deg, #00d2ff, #3a7bd5);">
+        <a href="{% url 'new_topic' category.slug %}" class="ax-btn ax-btn--primary px-4 py-2 fw-bold shadow-lg border-0" style="background: linear-gradient(45deg, #00d2ff, #3a7bd5);">
             <i class="bi bi-plus-lg me-1"></i> Yeni Konu Aç
         </a>
     </div>
@@ -39,7 +39,7 @@
   <div class="d-flex flex-wrap gap-2">
     {% for room in active_rooms %}
     <a href="{{ room.get_absolute_url }}" class="text-decoration-none">
-      <span class="badge fw-normal py-2 px-3" style="background:rgba(234,179,8,.12);color:#fde68a;border:1px solid rgba(234,179,8,.25);font-size:.75rem;">
+      <span class="ax-badge fw-normal py-2 px-3" style="background:rgba(234,179,8,.12);color:#fde68a;border:1px solid rgba(234,179,8,.25);font-size:.75rem;">
         {{ room.title|truncatechars:45 }}
         <span class="ms-2 opacity-75">{{ room.member_cnt }} üye · {{ room.days_remaining }}g kaldı</span>
       </span>
@@ -49,8 +49,8 @@
 </div>
 {% endif %}
 
-<div class="card border-0 shadow-lg" style="background: var(--glass-bg); backdrop-filter: blur(10px); border-radius: 20px; overflow: hidden;">
-    <div class="card-body p-0">
+<div class="border-0 shadow-lg" style="background: var(--glass-bg); backdrop-filter: blur(10px); border-radius: 20px; overflow: hidden;">
+    <div class="p-0">
         <div class="table-responsive">
             <table class="table table-hover table-dark table-borderless align-middle mb-0" style="background: transparent;">
                 <thead class="border-bottom border-secondary text-muted small text-uppercase" style="background: rgba(255,255,255,0.02);">
@@ -74,21 +74,21 @@
                         <td>
                             <h6 class="mb-1">
                                 <a href="{% url 'topic_detail' pk=topic.pk %}" class="text-decoration-none text-white fw-bold d-block stretched-link hover-neon">
-                                    {% if topic.is_pinned %}<span class="badge bg-warning text-dark me-2"><i class="bi bi-pin-fill"></i> Sabit</span>{% endif %}
+                                    {% if topic.is_pinned %}<span class="ax-badge ax-badge--warning-solid me-2"><i class="bi bi-pin-fill"></i> Sabit</span>{% endif %}
                                     {{ topic.subject }}
                                 </a>
                             </h6>
                             <div class="d-flex align-items-center flex-wrap gap-1 mb-1">
                                 {% for tag in topic.tags.all %}
-                                    <span class="badge rounded-pill" style="background: {{ tag.color }}; font-size: 0.7rem;">
+                                    <span class="ax-badge" style="background: {{ tag.color }}; font-size: 0.7rem;">
                                         <i class="{{ tag.icon }} me-1"></i>{{ tag.name }}
                                     </span>
                                 {% endfor %}
                             </div>
                             <small class="text-muted d-flex align-items-center">
-                                <span class="badge bg-secondary bg-opacity-25 text-info me-2">{{ topic.starter.username }}</span>
+                                <span class="ax-badge ax-badge--neutral me-2">{{ topic.starter.username }}</span>
                                 <i class="bi bi-calendar3 me-1"></i> {{ topic.created_at|date:"d M Y" }}
-                                {% if topic.is_closed %}<span class="badge bg-danger ms-2"><i class="bi bi-lock-fill"></i> Kilitli</span>{% endif %}
+                                {% if topic.is_closed %}<span class="ax-badge ax-badge--danger ms-2"><i class="bi bi-lock-fill"></i> Kilitli</span>{% endif %}
                             </small>
                         </td>
 

@@ -3736,16 +3736,25 @@ toplam ~760 gerçek Bootstrap component class eşleşmesi** (`btn`, `card`,
 **Not (25 Ekim 2026) — "Düşük" grubun gerçek sayıları bu aralıktan yüksek
 çıktı:** 11 Ekim'deki "4-10 class" tahmini yine iyimserdi (bkz.
 [[feedback_verify_inventory_counts]]); bugünkü tam token eşleşmesiyle
-yeniden sayımda grup aslında 8-19 class arasında. İki dosya (aşağıda
-işaretli) bu turda migre edildi, grup 21 dosyaya indi.
+yeniden sayımda grup aslında 8-19 class arasında. Üç dosya (aşağıda
+işaretli) bu turda migre edildi, grup 20 dosyaya indi.
 
-**Düşük (~8-19 class, ~21 dosya) — sıradaki adaylar:**
+**Yetim dosya bulgusu (25 Ekim 2026):** `forum/templates/forum/section_detail.html`
+hiç render edilmiyor — `views.section_detail` artık yalnızca
+`forum_index`'e kalıcı yönlendirme (`redirect(..., permanent=True)`) yapıyor
+(GSC "taranmış, indekslenmemiş" sorunu için), template hiçbir `render()`
+çağrısında kullanılmıyor. Migrasyon kapsamından çıkarıldı (zaman kaybı,
+dosya hiç kullanıcıya görünmüyor), silinmedi — ayrı bir karar.
+
+**Düşük (~8-19 class, ~20 dosya) — sıradaki adaylar:**
 `forum_index.html`, `footer.html` (partials),
 `edit_job.html`, `post_job.html`,
 ~~`search_results.html`~~ (✅ 25 Ekim), ~~`verification_pending.html`~~
-(✅ 25 Ekim), `my_payments.html`, `section_detail.html`,
+(✅ 25 Ekim), `my_payments.html`, ~~`section_detail.html`~~ (yetim dosya,
+kapsam dışı — yukarı bkz.),
 `bibliometrics/order.html`, `my_jobs.html`, `new_topic.html`,
-`studyroom_edit.html`, `category_topics.html`, `_review_section.html`,
+`studyroom_edit.html`, ~~`category_topics.html`~~ (✅ 25 Ekim),
+`_review_section.html`,
 `promote_job_iban.html`, `success_stories.html` (modal JS Faz 2'de taşındı,
 component class'ları kaldı), `oaipmh/order.html`, `semanticscholar/order.html`,
 `service_promo.html`, `trdizin/order.html`, `how_it_works.html`,
@@ -4176,6 +4185,48 @@ kök neden dosyası bulunmadı. Ayrı bir görev olarak ele alınacak.
     tüm doğrulama `docker compose` + nginx'in gerçek portu (443, self-signed
     https) üzerinden yapıldı, o bağımsız sürece dokunulmadı.
 
+- [x] `forum/templates/forum/category_topics.html` (15. dosya, 25 Ekim 2026) —
+  gerçek envanter: 1× `btn` + 5× `badge` + 1× `card`/`card-body`. Yeni CSS
+  gerekmedi (tüm hedef ax- class'lar zaten vardı).
+  - `btn btn-primary rounded-pill px-4 py-2 fw-bold shadow-lg border-0`
+    (inline gradient) → `ax-btn ax-btn--primary` + aynı utility'ler
+    (`rounded-pill` düşürüldü, `ax-btn` zaten büyük radius).
+  - Çalışma odası rozeti (`badge fw-normal py-2 px-3`, inline amber) →
+    `ax-badge` + aynı utility'ler.
+  - `card border-0 shadow-lg` (tamamen inline glassmorphism — `--glass-bg`,
+    `backdrop-filter`, `border-radius:20px`) + `card-body p-0` → ikisi de
+    kaldırıldı, düz `div`'e indirildi (`.ax-card` kullanılmadı — zaten
+    tüm görsel kimlik inline stilden geliyordu, `.ax-card`'ın kendi
+    padding/hover'ı anlamsız çakışma yaratırdı).
+  - "Sabit" rozeti (`badge bg-warning text-dark`) → `ax-badge
+    ax-badge--warning-solid` (home.html/category_topics ailesinde kurulu
+    karşılık).
+  - Etiket rozetleri (`badge rounded-pill`, inline `tag.color`) → `ax-badge`
+    (`rounded-pill` düşürüldü, `.ax-badge` zaten tam pil şekilli).
+  - Kullanıcı adı rozeti (`badge bg-secondary bg-opacity-25 text-info`) →
+    `ax-badge ax-badge--neutral` (kabul edilen küçük sapma: metin rengi
+    camgöbeğinden nötr griye döndü).
+  - "Kilitli" rozeti (`badge bg-danger`, solid kırmızı) → `ax-badge
+    ax-badge--danger` (kabul edilen küçük sapma: solid kırmızı zemin
+    yarı saydam kırmızı zemine döndü — job_list.html'deki
+    `bg-danger bg-opacity-25` örneğinden farklı olarak bu zaten saydam
+    DEĞİLDİ, ama etki çok küçük/düşük görünürlüklü bir etiket olduğu için
+    kabul edildi).
+  - **Not:** `table table-hover table-dark table-borderless` dokunulmadı —
+    migrasyonun izlenen envanter listesinde (`btn`/`card`/`badge`/
+    `dropdown`/`modal`/`alert`/`form-control`/`form-select`) `table` hiç
+    yer almıyor, kapsam dışı.
+  - Görsel doğrulama: geçici `Section`/`Category`/2 `Topic` (biri sabit+
+    etiketli, biri kilitli) + 1 aktif `StudyRoom` oluşturulup gerçek URL
+    (`/forum/<slug>/`) render edildi, Playwright 375px/1280px ile kontrol
+    edildi (tüm 5 rozet + buton + kart doğru görünüyor), sonra `Section`
+    cascade silme ile tüm geçici veri (kategori/konu/oda) + test kullanıcısı
+    temizlendi. `forum/tests.py` 104/104 yeşil.
+  - **Yetim dosya bulgusu:** aynı düşük grup listesindeki
+    `forum/templates/forum/section_detail.html` hiç render edilmiyor
+    (`views.section_detail` artık yalnızca kalıcı yönlendirme yapıyor) —
+    migrasyon kapsamından çıkarıldı, yukarıdaki envanter notuna işlendi.
+
 **11 Ekim 2026 oturumu kapandı — `main`'e alındı:** Yukarıdaki 7 commit
 (`87c8e26`..`58f52d7`) `dev`'den `main`'e `--no-ff` merge edildi (merge
 commit `1e54739`), `origin/main`'e push edildi — GitHub Actions otomatik
@@ -4225,13 +4276,18 @@ Kullanılmayan geçiş dönemi shim'leri varsa kaldır.
 - 100+ dosyalık migration tek PR'da değil, birden fazla oturuma yayılmalı
 
 ## Sıradaki adım
-Faz 1 ve 2 TAMAMLANDI. Faz 3 sürüyor — 14 dosya migre edildi (yukarı bkz.
-"Dosya bazlı ilerleme"; son ikisi 25 Ekim 2026: `search_results.html`,
-`verification_pending.html`). **Güncel envanter yukarıda** ("Güncel
-envanter — 11 Ekim 2026 taraması", 25 Ekim notuyla güncellendi) — düşük
-grup 21 dosyaya indi. Sıradaki adaylar aynı düşük yoğunluklu grup
-(`forum_index.html`, `footer.html` partial'ı, `edit_job.html`/`post_job.html`
-vb., gerçek ~8-19 class). Her dosya için: gerçek Bootstrap class'larını
+Faz 1 ve 2 TAMAMLANDI. Faz 3 sürüyor — 15 dosya migre edildi (yukarı bkz.
+"Dosya bazlı ilerleme"; son üçü 25 Ekim 2026: `search_results.html`,
+`verification_pending.html`, `category_topics.html`). **Güncel envanter
+yukarıda** ("Güncel envanter — 11 Ekim 2026 taraması", 25 Ekim notuyla
+güncellendi) — düşük grup 20 dosyaya indi (1'i, `section_detail.html`,
+yetim/render edilmeyen dosya olduğu için kapsam dışına alındı). Sıradaki
+adaylar aynı düşük yoğunluklu grup (`forum_index.html`, `footer.html`
+partial'ı, `edit_job.html`/`post_job.html` vb., gerçek ~8-19 class) —
+**dikkat:** `edit_job.html`/`post_job.html` ikisi de aynı `JobPostForm`'u
+kullanıyor, formun `form-control`/`form-select` class'ları `forum/forms.py`
+içinde tanımlı (template'te değil) — bu ikisine geçildiğinde forms.py da
+kapsama girecek, ayrı onay gerekir. Her dosya için: gerçek Bootstrap class'larını
 oku → ax- karşılığı yoksa (yeni renk/varyant vb.) kullanıcıya sor → uygula
 → `bundle.css` gerekiyorsa yeniden üret (whitenoise hash'li ad ürettiği
 için `?v=` artırmak artık kozmetik, ama alışkanlık korunuyor) → Playwright
