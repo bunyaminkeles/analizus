@@ -2,9 +2,10 @@
 Kruskal-Wallis H Testi.
 3 veya daha fazla bağımsız grubun dağılımını karşılaştıran non-parametrik test.
 Tek yönlü ANOVA'nın parametrik olmayan alternatifi.
-Post-hoc: çiftli Mann-Whitney U + Bonferroni düzeltmesi.
+Post-hoc: Dunn testi (bağlı sıralama düzeltmeli z-istatistiği) + Bonferroni.
 """
 import io
+import math
 from django.utils.translation import gettext
 import numpy as np
 from scipy import stats
@@ -18,7 +19,11 @@ def analyze(df, group_col: str, dep_col: str) -> dict:
         raise ValueError(gettext('"%(dep_col)s" sütunu bulunamadı.') % {'dep_col': dep_col})
 
     sub = df[[group_col, dep_col]].dropna()
-    group_labels = sorted(sub[group_col].unique(), key=str)
+    raw_labels = sub[group_col].unique().tolist()
+    try:
+        group_labels = sorted(raw_labels, key=float)
+    except (TypeError, ValueError):
+        group_labels = sorted(raw_labels, key=str)
 
     if len(group_labels) < 2:
         raise ValueError(gettext('En az 2 grup gereklidir.'))
@@ -57,19 +62,27 @@ def analyze(df, group_col: str, dep_col: str) -> dict:
             'mean_rank': round(float(g_ranks.mean()), 3),
         })
 
-    # Post-hoc: çiftli Mann-Whitney U + Bonferroni
+    # Post-hoc: Dunn testi (pooled sıra varyansı + bağlı değer düzeltmesi) + Bonferroni
     posthoc_results = []
     if float(p_val) < 0.05:
+        _, tie_counts = np.unique(all_vals, return_counts=True)
+        tie_correction = 1 - (tie_counts ** 3 - tie_counts).sum() / (n_total ** 3 - n_total)
+        mean_ranks = [s['mean_rank'] for s in group_stats]
+        group_ns = [len(g) for g in groups]
+
         pairs = list(combinations(range(k), 2))
         n_comparisons = len(pairs)
         for i, j in pairs:
-            u_s, p_pair = stats.mannwhitneyu(groups[i], groups[j], alternative='two-sided')
-            p_adj = min(float(p_pair) * n_comparisons, 1.0)
+            se = math.sqrt(tie_correction * (n_total * (n_total + 1) / 12) *
+                           (1 / group_ns[i] + 1 / group_ns[j]))
+            z = (mean_ranks[i] - mean_ranks[j]) / se if se > 0 else 0.0
+            p_pair = float(2 * (1 - stats.norm.cdf(abs(z))))
+            p_adj = min(p_pair * n_comparisons, 1.0)
             posthoc_results.append({
                 'g1': str(group_labels[i]),
                 'g2': str(group_labels[j]),
                 'median_diff': round(float(np.median(groups[i]) - np.median(groups[j])), 3),
-                'u_stat': round(float(u_s), 3),
+                'z_stat': round(float(z), 3),
                 'p_value': round(float(p_pair), 4),
                 'p_adj': round(float(p_adj), 4),
                 'significant': float(p_adj) < 0.05,
@@ -89,7 +102,7 @@ def analyze(df, group_col: str, dep_col: str) -> dict:
         'significant': float(p_val) < 0.05,
         'group_stats': group_stats,
         'posthoc': posthoc_results,
-        'posthoc_method': 'Mann-Whitney U + Bonferroni' if float(p_val) < 0.05 else '—',
+        'posthoc_method': 'Dunn + Bonferroni' if float(p_val) < 0.05 else '—',
         'conclusion': _conclusion(p_val, group_col, dep_col, posthoc_results),
     }
 
@@ -190,9 +203,9 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
     if result['posthoc']:
         story.append(Spacer(1, 0.5*cm))
         story.append(Paragraph(gettext('Post-Hoc Testler (%(posthoc_method)s)') % {'posthoc_method': result['posthoc_method']}, h2_s))
-        ph_header = [gettext('Grup 1'), gettext('Grup 2'), gettext('Med. Fark'), 'U', 'p', gettext('p (Bonf.)'), gettext('Anlamlı')]
+        ph_header = [gettext('Grup 1'), gettext('Grup 2'), gettext('Med. Fark'), 'z', 'p', gettext('p (Bonf.)'), gettext('Anlamlı')]
         ph_rows = [ph_header] + [
-            [r['g1'], r['g2'], f"{r['median_diff']:.3f}", f"{r['u_stat']:.1f}",
+            [r['g1'], r['g2'], f"{r['median_diff']:.3f}", f"{r['z_stat']:.3f}",
              f"{r['p_value']:.4f}", f"{r['p_adj']:.4f}", gettext('Evet') if r['significant'] else gettext('Hayır')]
             for r in result['posthoc']
         ]

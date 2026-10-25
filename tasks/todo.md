@@ -148,32 +148,76 @@ maddelerde.
       adları (`c.name`, `cl.cat0/cat1`) escape'siz `innerHTML`'e yazılıyor
       → CLAUDE.md güvenlik kuralına aykırı
       self-XSS riski (kötü niyetli sütun adıyla `<img onerror=...>` vb.).
-  12. [ ] `normallik.py` — çoklu sütun seçiminde satır-bazlı (listwise)
-      `dropna()` kullanılıyor; bir sütundaki eksik veri diğer dolu sütunların
-      satırlarını da siliyor (betimsel.py'deki sütun-bazlı yaklaşımla
-      tutarsız), N'i gereksiz düşürebilir.
-  13. [ ] `normallik.py` — skewness/kurtosis için ±1.96 eşiği ham değere
-      uygulanıyor; bu z-kritik değeridir, ham çarpıklık/basıklığa değil
-      SE'ye bölünmüş z-skoruna uygulanması gerekir — iki farklı yöntem
-      karışmış.
-  14. [ ] `orneklem.py` — korelasyon testi için r≥1 girilirse
-      `math.atanh` "math domain error" ile çöküyor, kullanıcıya ham Python
-      hata metni gösteriliyor; ayrıca t-testi gücü noncentral-t yerine normal
-      yaklaşımla (Laubscher) hesaplanıyor ama sayfa "G*Power alternatifi"
-      vaat ediyor, bu yaklaşıklık belirtilmiyor.
-  15. [ ] `anova.py` — Levene testi hesaplanıp gösteriliyor ama (ttesti.py'nin
-      aksine) varyans homojen değilse Welch düzeltmesine otomatik geçiş yok;
-      ayrıca "Tukey" post-hoc'u aslında Bonferroni ile aynı formülü kullanıyor
+  12. [x] **(25 Ekim 2026 düzeltildi)** `normallik.py` — çoklu sütun seçiminde
+      satır-bazlı (listwise) `dropna()` kullanılıyordu; bir sütundaki eksik
+      veri diğer dolu sütunların satırlarını da siliyordu (betimsel.py'deki
+      sütun-bazlı yaklaşımla tutarsız), N'i gereksiz düşürüyordu.
+      **Düzeltme:** `analyze()`'daki listwise `df_num.dropna()` satırı
+      kaldırıldı; döngü içindeki sütun-bazlı `df_num[col].dropna()` zaten
+      yeterli ve doğru.
+  13. [x] **(25 Ekim 2026 düzeltildi)** `normallik.py` — skewness/kurtosis
+      için ±1.96 eşiği ham değere uygulanıyordu; bu z-kritik değeridir, ham
+      çarpıklık/basıklığa değil SE'ye bölünmüş z-skoruna uygulanması
+      gerekirdi — iki farklı yöntem karışmıştı. **Düzeltme:** standart hata
+      (SES/SEK) hesaplanıp `skew/SES`, `kurt/SEK` z-skorları ±1.96 ile
+      karşılaştırılıyor (`views.py:149`'daki açıklamayla tutarlı); n≤3'te
+      SEK tanımsız olduğu için kurtosis kontrolü o durumda atlanıyor.
+  14. [x] **(25 Ekim 2026 düzeltildi)** `orneklem.py` — korelasyon testi için
+      r≥1 girilirse `math.atanh` "math domain error" ile çöküyordu, kullanıcıya
+      ham Python hata metni gösteriliyordu; ayrıca t-testi gücü noncentral-t
+      yerine normal yaklaşımla (Laubscher) hesaplanıyor ama sayfa "G*Power
+      alternatifi" vaat ediyordu, bu yaklaşıklık belirtilmiyordu. **Düzeltme:**
+      `calculate()`'e `test_type == 'correlation' and effect_size >= 1`
+      kontrolü eklendi (net Türkçe `ValueError`, view zaten 400 ile yakalıyor);
+      `orneklem.html` Metodoloji bölümüne t-testi gücünün normal yaklaşımla
+      (Laubscher) hesaplandığını ve G*Power ile pratikte uyumlu olduğunu
+      belirten bir not eklendi.
+  15. [x] **(25 Ekim 2026 düzeltildi)** `anova.py` — Levene testi hesaplanıp
+      gösteriliyordu ama (ttesti.py'nin aksine) varyans homojen değilse Welch
+      düzeltmesine otomatik geçiş yoktu (oysa `seo_content.py` "ihlal
+      durumunda Welch ANOVA kullanılır" diye zaten vaat ediyordu); ayrıca
+      "Tukey" post-hoc'u aslında Bonferroni ile aynı formülü kullanıyor
       (kodda dürüstçe "Tukey (Bonferroni yaklaşımı)" etiketli ve sonuç
       ekranında bu şekilde görünüyor — TEMİZ), ama analiz ÖNCESİ sayfa
-      metni/buton/SEO açıklaması gerçek Tukey HSD izlenimi veriyor.
-  16. [ ] `anova.html:220` — "Tukey HSD"/"Bonferroni"/"Games-Howell" terimleri
-      ayrı `{% trans %}` parçalarına bölünmüş — CLAUDE.md'nin "parça
-      birleştirme yok, tam cümle msgid" i18n kuralına aykırı.
-  17. [ ] `kruskal_wallis.py:21` — Grup etiketleri `sorted(..., key=str)` ile
-      STRING olarak sıralanıyor (1,10,2,20 gibi görünebilir); post-hoc
-      gerçek Dunn testi değil, Bonferroni+ikili Mann-Whitney (dokümante
-      edilmiş ama farklı yöntem).
+      metni/buton/SEO açıklaması gerçek Tukey HSD izlenimi veriyordu.
+      **Düzeltme:** `_welch_anova()` eklendi — Levene p<0.05 olunca gerçek
+      Welch F/p/df hesabı devreye giriyor, post-hoc ikili karşılaştırmalar da
+      `equal_var=not used_welch` ile tutarlı hale getirildi; `test_label`'a
+      "(Welch)" eki PDF başlığı + ekran etiketine yansıtıldı (ttesti.py
+      pattern'i). `anova.html` title/meta + post-hoc buton altına "Tukey
+      etiketi Bonferroni yaklaşımıdır" notu eklendi; `seo_content.py`'deki
+      "Tukey daha güçlüdür" SSS cevabı, iki seçeneğin aslında aynı formülü
+      kullandığını ve Welch'e otomatik geçişi doğru anlatacak şekilde
+      düzeltildi. Docker'da homojen/heterojen varyans senaryoları + r≥1
+      (madde 14) + template render + 104/104 pytest doğrulandı.
+  16. [x] **(25 Ekim 2026 düzeltildi)** `anova.html:220` — "Tukey HSD"/
+      "Bonferroni"/"Games-Howell" terimleri ayrı `{% trans %}` parçalarına
+      bölünmüştü — CLAUDE.md'nin "parça birleştirme yok, tam cümle msgid"
+      i18n kuralına aykırıydı. **Düzeltme:** tek cümle `{% blocktrans %}`
+      bloğuna birleştirildi (`<strong>` etiketleri gömülü — projede zaten
+      var olan `analiz_console_base.html:114` deseniyle aynı); render testiyle
+      HTML'in kaçışsız ve tam cümle olarak çıktığı doğrulandı.
+  17. [x] **(25 Ekim 2026 düzeltildi)** `kruskal_wallis.py:21` — Grup
+      etiketleri `sorted(..., key=str)` ile STRING olarak sıralanıyordu
+      (1,10,2,20 gibi görünebiliyordu); post-hoc gerçek Dunn testi değildi,
+      Bonferroni+ikili Mann-Whitney hesaplanıyordu — oysa hem kod yorumu hem
+      `seo_content.py` (intro/how_to_interpret/apa_example/FAQ) zaten "Dunn
+      post-hoc testi uygulanır" diye vaat ediyordu. **Düzeltme:** sayısal
+      etiketler için `key=float` denenip olmazsa `key=str`'ye düşülüyor;
+      post-hoc artık gerçek Dunn testi (pooled sıra varyansı + bağlı değer
+      düzeltmeli z-istatistiği) + Bonferroni — `seo_content.py`'ye hiç
+      dokunmaya gerek kalmadı, zaten doğruydu. `kruskal_wallis.py` PDF'i ve
+      `kruskal_wallis.html` ekranı `u_stat`/"U" yerine `z_stat`/"z" ve
+      "Dunn + Bonferroni" etiketini gösteriyor. EN/DE çevirisi eklendi,
+      Docker'da ters sayısal sıra + bağlı (tied) değer senaryoları test
+      edildi, 104/104 pytest yeşil. **Not (ayrı, çözülmedi — todo'ya
+      eklendi):** `anova.py`/`lojistik_regresyon.py` aynı `key=str` sıralama
+      desenini taşıyor ama bu maddenin kapsamı dışında bırakıldı.
+  17b. [ ] **(25 Ekim 2026, madde 17 sırasında bulundu)** `anova.py:18` ve
+      `lojistik_regresyon.py:36` — `kruskal_wallis.py`'de düzeltilen aynı
+      `sorted(..., key=str)` grup/kategori etiketi sıralama sorunu (numerik
+      etiketler 1,10,2,20 gibi yanlış sıralanır) bu iki dosyada da var,
+      henüz düzeltilmedi.
   18. [ ] `mann_whitney.html` + `kruskal_wallis.html` — `views.py`
       `active_job_id`'yi context'e koyuyor ama şablonlar
       wilcoxon.html/friedman.html'deki gibi bunu okuyup `startPolling()`

@@ -3,6 +3,7 @@ Normallik Testi — Shapiro-Wilk, çarpıklık/basıklık, Q-Q plot
 Girdi: pandas DataFrame (her sütun bir değişken)
 """
 import io
+import math
 import numpy as np
 from django.utils.translation import gettext
 
@@ -16,7 +17,6 @@ def analyze(df, columns=None) -> dict:
         if not valid:
             raise ValueError(gettext('Seçilen sütunlar sayısal değil veya bulunamadı.'))
         df_num = df_num[valid]
-    df_num = df_num.dropna()
     if df_num.empty:
         raise ValueError(gettext('Hiç sayısal sütun bulunamadı.'))
 
@@ -42,8 +42,16 @@ def analyze(df, columns=None) -> dict:
 
         is_normal = bool(p >= 0.05)
 
-        skew_ok = abs(skew) < 1.96
-        kurt_ok = abs(kurt) < 1.96
+        # ±1.96 kritik değer çarpıklık/basıklığın standart hatasına bölünmüş
+        # z-skoruna uygulanır, ham değere değil (views.py "Çarpıklık &
+        # Basıklık" açıklamasıyla tutarlı)
+        ses = math.sqrt(6 * n * (n - 1) / ((n - 2) * (n + 1) * (n + 3)))
+        skew_ok = abs(skew / ses) < 1.96
+        if n > 3:
+            sek = 2 * ses * math.sqrt((n * n - 1) / ((n - 3) * (n + 5)))
+            kurt_ok = abs(kurt / sek) < 1.96
+        else:
+            kurt_ok = True
 
         if is_normal and skew_ok and kurt_ok:
             recommendation = gettext('Parametrik test kullanılabilir')
