@@ -218,7 +218,7 @@
           <tbody>
             <tr><td class="ax-text-accent">Pearson</td><td class="ax-text-muted">{% trans "Normal dağılımlı sürekli veriler" %}</td></tr>
             <tr><td class="ax-text-accent">Spearman</td><td class="ax-text-muted">{% trans "Sıralı veri, normallik sağlanmıyor" %}</td></tr>
-            <tr><td class="ax-text-accent">Kendall</td><td class="ax-text-muted">{% trans "Küçük örneklem, çok sayıda eşik" %}</td></tr>
+            <tr><td class="ax-text-accent">Kendall</td><td class="ax-text-muted">{% trans "Küçük örneklem, çok sayıda bağlı (eşit) gözlem" %}</td></tr>
           </tbody>
         </table>
       </div>
@@ -269,7 +269,7 @@
   <div class="ax-card mt-4 p-4">
     <h5 class="ax-text-primary fw-semibold mb-3">{% trans "Korelasyon Analizi Nedir?" %}</h5>
     <p class="ax-text-muted ax-text-sm mb-3">{% trans "Korelasyon analizi, iki veya daha fazla sayısal değişken arasındaki ilişkinin yönünü ve gücünü ölçer. Katsayı −1 ile +1 arasında değer alır: +1 mükemmel pozitif, −1 mükemmel negatif, 0 ise ilişki olmadığı anlamına gelir." %}</p>
-    <p class="ax-text-muted ax-text-sm mb-3"><strong class="ax-text-secondary">Pearson r:</strong> {% trans "Her iki değişkenin de normal dağılım gösterdiği ve sürekli ölçekte olduğu durumlarda kullanılır." %} <strong class="ax-text-secondary">Spearman ρ:</strong> {% trans "Sıralı (Likert) veriler veya normallik varsayımının karşılanamadığı durumlarda tercih edilir." %} <strong class="ax-text-secondary">Kendall τ:</strong> {% trans "Küçük örneklemlerde daha sağlam sonuçlar verir." %}</p>
+    <p class="ax-text-muted ax-text-sm mb-3"><strong class="ax-text-secondary">Pearson r:</strong> {% trans "Her iki değişkenin de normal dağılım gösterdiği ve sürekli ölçekte olduğu durumlarda kullanılır." %} <strong class="ax-text-secondary">Spearman ρ:</strong> {% trans "Sıralı (Likert) veriler veya normallik varsayımının karşılanamadığı durumlarda tercih edilir." %} <strong class="ax-text-secondary">Kendall τ:</strong> {% trans "Küçük örneklemlerde ve çok sayıda bağlı (eşit) gözlem içeren verilerde Spearman'a göre daha sağlam sonuçlar verir." %}</p>
     <p class="ax-text-muted ax-text-sm mb-0">{% trans "Korelasyon nedensellik kanıtlamaz; yalnızca birlikte değişim örüntüsünü ortaya koyar. İki değişken arasında güçlü bir korelasyon bulunsa da bu, birinin diğerine neden olduğu anlamına gelmez." %}</p>
   </div>
 

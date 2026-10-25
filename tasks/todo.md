@@ -387,15 +387,35 @@ edildi. Geriye yalnız ayrı/büyük kapsamlı notlar kaldı: "DÜŞÜK" toplu n
 (küçük tutarsızlıklar) ve "TASARIM (ax- sistemi)" — bkz. aşağıdaki ilgili
 başlıklar (Bootstrap Kaldırma Migrasyonu'na bağlı, ayrı iş).
 
-  **DÜŞÜK (toplu not, tek tek takip gerekmez ama bilinsin):** ttesti.py'de
-  bağımsız örneklem CI formülü ile t-istatistiği tutarsız (SE pooled/unpooled
-  karışık); anova.py anlamsız sonuçta F değerini "—" yazıyor (hesaplı olmasına
-  rağmen); afa.py'de eğik rotasyonda varyans tablosu varimax mantığıyla
-  raporlanıyor + KMO terimi "Düşük"/"Zayıf" tutarsız; korelasyon.html'de
-  Kendall açıklaması iki yerde farklı terim kullanıyor; kruskal_wallis 2
-  grupla da çalışmaya izin veriyor (Mann-Whitney'e yönlendirme yok);
-  karar_agaci.py'de `export_text(max_depth=5)` hardcoded; seo_content.py'de
-  "Essensiyal" yazım hatası (doğrusu "Esansiyel").
+  **DÜŞÜK — TAMAMLANDI (26 Ekim 2026).** Hepsi düzeltildi, EN/DE çevirileri
+  eklendi, Docker'da test edildi, 104/104 pytest yeşil:
+  - [x] `ttesti.py` — bağımsız örneklem CI formülü (`se_diff`) her zaman
+    unpooled (Welch) varyans kullanıyordu, pooled t-istatistiğiyle tutarsızdı
+    → artık `used_welch`'e göre pooled/unpooled SE seçiliyor; `diff/t_stat`
+    ile `(CI genişliği/2)/implied_SE` oranının t-kritik değerine eşit çıktığı
+    doğrulandı.
+  - [x] `anova.py` — anlamsız sonuçta F değerini "—" yazıyordu (hesaplı
+    olmasına rağmen) → `_conclusion()`'a gerçek `f_stat` geçiriliyor.
+  - [x] `afa.py` — eğik (promax/oblimin) rotasyonda varyans tablosu
+    ortogonal mantığıyla raporlanıyordu, hiç uyarı yoktu → `oblique_variance_note`
+    eklendi (ekran + PDF, yalnız promax/oblimin'de görünüyor). KMO terimi
+    tutarsızlığı (`afa.html` tablosu "Zayıf" diyordu, kod `_interpret_kmo()`
+    "Düşük" döndürüyordu) → tabloya `_interpret_kmo()` ile birebir aynı
+    "Düşük" yazıldı.
+  - [x] `korelasyon.html` — Kendall açıklaması iki yerde farklı (ve biri
+    istatistiksel olarak anlamsız: "çok sayıda eşik") terim kullanıyordu →
+    doğru terim "bağlı (eşit) gözlem" (tied observations) ile her iki yerde
+    de tutarlı hale getirildi.
+  - [x] `kruskal_wallis` — 2 grupla da çalışmaya izin veriyordu, Mann-Whitney'e
+    yönlendirme yoktu → `two_group_note` eklendi (k=2 olunca ekran+PDF'te
+    Mann-Whitney önerisi gösteriliyor, analiz engellenmiyor).
+  - [x] `karar_agaci.py` — `export_text(max_depth=5)` hardcoded idi, kullanıcı
+    daha derin bir ağaç seçse bile görüntü sessizce 5 seviyede kesiliyordu →
+    gerçek `max_depth` parametresi kullanılıyor (zaten var olan ayrı 40 satır
+    sınırı güvenlik ağı olarak kalıyor); max_depth=10 ile tree_text'in artık
+    daha fazla satır ürettiği doğrulandı.
+  - [x] `seo_content.py` — "Essensiyal" yazım hatası → "Esansiyel" (EN/DE
+    çevirileri zaten doğruydu, yalnız TR kaynak metin hatalıydı).
 
   **TASARIM (ax- sistemi) — geniş çaplı, bilinen Bootstrap Kaldırma
   Migrasyonu Faz 3 borcu, yeni/izole hata değil ama envantere eklendi.**

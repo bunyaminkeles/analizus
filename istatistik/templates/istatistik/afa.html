@@ -206,9 +206,10 @@
 
           <!-- Açıklanan Varyans -->
           <h6 class="ax-text-secondary fw-semibold mb-2">{% trans "Açıklanan Varyans" %}</h6>
-          <div class="table-responsive mb-3">
+          <div class="table-responsive mb-2">
             <table class="ax-table mb-0" id="variance-table"></table>
           </div>
+          <p class="ax-text-muted ax-text-sm mb-3 d-none" id="oblique-variance-note"></p>
 
           <div class="d-flex gap-2 flex-wrap">
             <a id="pdf-download-btn" href="#" target="_blank" class="ax-btn ax-btn-danger fw-semibold ax-btn-sm">
@@ -243,7 +244,7 @@
         <table class="ax-table mb-0">
           <tbody>
             <tr><td>KMO &lt; .50</td><td class="ax-text-danger">{% trans "Kabul edilemez" %}</td></tr>
-            <tr><td>.50 – .60</td><td class="ax-text-warning">{% trans "Zayıf" %}</td></tr>
+            <tr><td>.50 – .60</td><td class="ax-text-warning">{% trans "Düşük" %}</td></tr>
             <tr><td>.60 – .70</td><td class="ax-text-accent">{% trans "Orta" context "etki büyüklüğü" %}</td></tr>
             <tr><td>.70 – .80</td><td class="ax-text-accent">{% trans "İyi" %}</td></tr>
             <tr><td>.80 – .90</td><td class="ax-text-success">{% trans "Çok İyi" %}</td></tr>
@@ -474,6 +475,14 @@ function onCompleted(data) {
       `<td>${fmt(T.pct, {value: v.pct_variance.toFixed(2)})}</td><td>${fmt(T.pct, {value: v.cumulative_pct.toFixed(2)})}</td></tr>`
     ).join('') + '</tbody>';
     document.getElementById('variance-table').innerHTML = vtHead + vtBody;
+
+    const obliqueNoteEl = document.getElementById('oblique-variance-note');
+    if (r.oblique_variance_note) {
+      obliqueNoteEl.textContent = r.oblique_variance_note;
+      obliqueNoteEl.classList.remove('d-none');
+    } else {
+      obliqueNoteEl.classList.add('d-none');
+    }
 
     const rotation = document.getElementById('rotation-select').value;
     const rotationLabel = {'varimax': 'Varimax', 'promax': 'Promax', 'oblimin': 'Oblimin'}[rotation] || rotation;

@@ -63,9 +63,14 @@ def _independent(df, group_col: str, dep_col: str) -> dict:
                          (len(g1) + len(g2) - 2))
     cohens_d = (g1.mean() - g2.mean()) / pooled_std if pooled_std > 0 else 0.0
 
-    # %95 güven aralığı
+    # %95 güven aralığı — SE, t-istatistiğiyle aynı varsayımı kullanmalı
+    # (Welch ise unpooled, değilse pooled; önceden her zaman unpooled kullanılıp
+    # pooled t-istatistiğiyle tutarsız kalıyordu)
     diff = g1.mean() - g2.mean()
-    se_diff = np.sqrt(g1.var(ddof=1) / len(g1) + g2.var(ddof=1) / len(g2))
+    if used_welch:
+        se_diff = np.sqrt(g1.var(ddof=1) / len(g1) + g2.var(ddof=1) / len(g2))
+    else:
+        se_diff = pooled_std * np.sqrt(1 / len(g1) + 1 / len(g2))
     t_crit = stats.t.ppf(0.975, df=df_val)
     ci_low = diff - t_crit * se_diff
     ci_high = diff + t_crit * se_diff

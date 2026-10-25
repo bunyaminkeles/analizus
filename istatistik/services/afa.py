@@ -125,6 +125,16 @@ def analyze(df, columns=None, n_factors=None, rotation='varimax', method='minres
     kmo_interpretation = _interpret_kmo(kmo_model)
     bartlett_sig = 'p < 0.001' if p_bartlett < 0.001 else f'p = {p_bartlett:.3f}'
 
+    # Eğik rotasyonda (promax/oblimin) faktörler birbiriyle korelelidir; varyans
+    # tablosu yine de varimax (ortogonal) mantığıyla hesaplanıp raporlanıyor —
+    # kümülatif yüzde bu durumda bağımsız/ek varyans anlamına gelmez
+    oblique_variance_note = (
+        gettext('Eğik (promax/oblimin) rotasyonda faktörler birbiriyle ilişkili olabilir; '
+                'bu nedenle aşağıdaki varyans yüzdeleri ortogonal (varimax) rotasyondaki gibi '
+                'bağımsız/toplanabilir değildir, yaklaşık bir gösterge olarak yorumlayın.')
+        if rotation in ('promax', 'oblimin') else ''
+    )
+
     return {
         'n_items': k,
         'n_cases': n,
@@ -143,6 +153,7 @@ def analyze(df, columns=None, n_factors=None, rotation='varimax', method='minres
         'eigen_table': eigen_table,
         'scree_plot_b64': scree_plot_b64,
         'total_variance_explained': round(float(variance[2][-1]) * 100, 2),
+        'oblique_variance_note': oblique_variance_note,
         'warnings': warnings,
     }
 
@@ -363,6 +374,12 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
         ('ALIGN', (1, 0), (-1, -1), 'CENTER'),
     ]))
     story.append(var_tbl)
+    if result['oblique_variance_note']:
+        story.append(Spacer(1, 0.2*cm))
+        story.append(Paragraph(
+            '<font color="#666666" size="8">' + result['oblique_variance_note'] + '</font>',
+            normal
+        ))
     story.append(Spacer(1, 0.5*cm))
 
     # APA raporlama

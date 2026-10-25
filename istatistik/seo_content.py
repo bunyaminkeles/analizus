@@ -368,7 +368,7 @@ SEO_CONTENT = {
             'ölçekler için alt boyutları ayrı ayrı analiz edin.')
         ),
         'assumptions': (
-            gettext_lazy('Essensiyal tau-eşdeğerliği: Maddeler aynı yapıyı ölçmeli, '
+            gettext_lazy('Esansiyel tau-eşdeğerliği: Maddeler aynı yapıyı ölçmeli, '
             'hata varyansları birbirinden bağımsız olmalıdır. '
             'Ölçek düzeyi: Maddeler en az aralık ölçeğinde olmalıdır '
             '(Likert maddeler bu koşulu karşılar). '
