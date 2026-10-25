@@ -159,6 +159,7 @@ def send_demo_email(job):
     if job.all_results_file_url:
         body_lines.append(f"Tüm sonuçlarınızı aşağıdaki linkten indirebilirsiniz (geçici link):")
         body_lines.append(f"  {job.all_results_file_url}\n")
+        body_lines.append(f"Not: İndirme linki 7 gün geçerlidir.\n")
 
     body_lines.append(f"\n---\nAnalizus - {site_url}")
 
@@ -213,6 +214,7 @@ def send_order_results_email(order):
     if s3_url:
         lines.append(f"Sonuçları aşağıdaki linkten indirebilirsiniz:")
         lines.append(f"  {s3_url}\n")
+        lines.append(f"Not: İndirme linki 7 gün geçerlidir.\n")
     lines.append("Sonuçlar ayrıca bu e-postaya txt dosyası olarak eklenmiştir.")
     lines.append(f"\n---\nAnalizus - {site_url}")
 

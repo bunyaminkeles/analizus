@@ -163,7 +163,7 @@ def send_completion_email_async(job_id: str, pdf_url: str = '') -> None:
                         gettext('PDF raporunuzu doğrudan indirmek için:'),
                         f'  {pdf_url}',
                         '',
-                        gettext('Not: İndirme linki 3 gün geçerlidir.'),
+                        gettext('Not: İndirme linki 7 gün geçerlidir.'),
                         '',
                     ]
                 body_lines += [

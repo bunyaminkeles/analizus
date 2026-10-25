@@ -1,0 +1,11 @@
+{% load i18n %}
+{#
+  Ortak S3 saklama süresi uyarısı — bir aracın sonuç/indirme alanına eklenir.
+  Tüm tarama/analiz araçları 7 gün sonra S3'den otomatik siliniyor (yoktez hariç, o 3 gün).
+#}
+<div class="ax-alert ax-alert--info small mb-3">
+  <i class="bi bi-clock-history ax-alert__icon"></i>
+  <span class="ax-alert__body">
+    {% blocktrans %}Sonuç dosyanız bu sayfadan 7 gün boyunca indirilebilir; bu sürenin sonunda otomatik olarak silinir.{% endblocktrans %}
+  </span>
+</div>

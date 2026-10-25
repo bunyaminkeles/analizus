@@ -209,6 +209,7 @@ def send_order_results_email(order):
         if job.all_results_file_url:
             lines.append(gettext("Sonuçlarınızı aşağıdaki linkten indirebilirsiniz:"))
             lines.append(f"  {job.all_results_file_url}\n")
+            lines.append(gettext("Not: İndirme linki 7 gün geçerlidir.") + "\n")
     lines.append("\n---\nAnalizus - www.analizus.com")
 
     try:

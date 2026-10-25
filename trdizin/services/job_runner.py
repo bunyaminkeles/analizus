@@ -205,6 +205,7 @@ def send_order_results_email(order):
     if download_url:
         lines.append(f"Sonuçlarınızı aşağıdaki linkten indirebilirsiniz:")
         lines.append(f"  {download_url}\n")
+        lines.append(f"Not: İndirme linki 7 gün geçerlidir.\n")
 
     lines.append(f"\n---\nAnalizus - www.analizus.com")
 

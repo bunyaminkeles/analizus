@@ -149,6 +149,8 @@
           {% if LANGUAGE_CODE == 'tr' %}{% trans "Bibliometrik analiziniz tamamlandı. Demo raporu (3 grafik) ücretsiz alabilirsiniz. Tam rapor (17 analize kadar) için sipariş oluşturunuz." %}{% else %}{% trans "Bibliometrik analiziniz tamamlandı. Demo raporu (3 grafik) ücretsiz alabilirsiniz. Tam rapor için proje talebi bırakın." %}{% endif %}
         </p>
 
+        {% include "partials/_s3_retention_notice.html" %}
+
         <div class="row g-3">
           {# Demo Email Butonu #}
           <div class="col-md-6">
@@ -230,6 +232,9 @@
         <h6 class="text-white mb-0"><i class="bi bi-clock-history me-2 text-warning"></i>{% trans "Geçmiş Analizlerim" %}</h6>
       </div>
       <div class="card-body p-0">
+        <div class="px-3 pt-3">
+          {% include "partials/_s3_retention_notice.html" %}
+        </div>
         <div class="table-responsive">
           <table class="table table-dark table-hover mb-0 align-middle">
             <thead>
