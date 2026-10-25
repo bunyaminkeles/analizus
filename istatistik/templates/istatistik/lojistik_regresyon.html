@@ -68,6 +68,12 @@
               <p class="text-white-50 small mt-1 mb-0">{% trans "Tam 2 farklı değer içermelidir (ör. 0/1, Evet/Hayır)." %}</p>
             </div>
 
+            <div class="mb-3 d-none" id="target-cat-wrapper">
+              <label class="text-white-50 small mb-1 d-block">{% trans "Hedef Kategori (Y = 1)" %}</label>
+              <select id="target-category" class="form-select form-select-sm bg-dark text-white border-secondary"></select>
+              <p class="text-white-50 small mt-1 mb-0">{% trans "Exp(B) yönü bu kategoriye göre yorumlanır. Seçmezseniz ikinci değer (alfabetik/sayısal sırada) otomatik hedef kabul edilir." %}</p>
+            </div>
+
             <div class="mb-3">
               <div class="d-flex justify-content-between align-items-center mb-1">
                 <label class="text-white-50 small mb-0">{% trans "Bağımsız Değişkenler (X — en az 1)" %}</label>
@@ -100,6 +106,7 @@
               <li class="mb-1">{% trans "Bağımlı değişken tam 2 kategorili olmalıdır." %}</li>
               <li class="mb-1">{% trans "Kategorik yordayıcılar otomatik dummy'e dönüştürülür." %}</li>
               <li class="mb-1">{% trans "Exp(B) = Odds Ratio; 1'den büyükse pozitif, küçükse negatif ilişki." %}</li>
+              <li class="mb-1">{% trans "VIF &gt; 10 çoklu bağlantı sorununa işaret edebilir." %}</li>
               <li class="mb-1">{% trans "Nagelkerke R² modelin varyans açıklama oranını gösterir." %}</li>
               <li class="mb-1">{% trans "Sınıflandırma tablosu model doğruluğunu gösterir." %}</li>
             </ul>
@@ -169,7 +176,7 @@
                 <tbody id="coef-body"></tbody>
               </table>
             </div>
-            <p class="text-white-50 small mb-3">{% trans "* Yeşil hücre p &lt; .05 | Exp(B) = Odds Ratio" %}</p>
+            <p class="text-white-50 small mb-3">{% trans "* Yeşil hücre p &lt; .05 | Exp(B) = Odds Ratio | VIF &gt; 10 çoklu bağlantı riski" %}</p>
 
             <!-- Sınıflandırma tablosu -->
             <h6 class="text-white fw-semibold mb-2">{% trans "Sınıflandırma Tablosu" %}</h6>
@@ -233,7 +240,7 @@ const _esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&': '&amp;', '<'
 const TOOL_URL = '{% url "istatistik:lojistik_regresyon" %}';
 const STATUS_TEMPLATE = '{% url "istatistik:lojistik_regresyon_status" "00000000-0000-0000-0000-000000000000" %}';
 
-let previewId = null, previewFilename = null, allCols = [], allNumCols = [], pollInterval = null;
+let previewId = null, previewFilename = null, allCols = [], allNumCols = [], categoryValues = {}, pollInterval = null;
 
 const fileInput = document.getElementById('file-input');
 const previewBtn = document.getElementById('preview-btn');
@@ -269,6 +276,7 @@ function previewFile() {
       previewId = data.preview_id; previewFilename = data.filename;
       allCols = data.columns || [];
       allNumCols = data.numeric_cols || [];
+      categoryValues = data.category_values || {};
       document.getElementById('config-file-info').textContent = data.filename + ' — ' + data.n_rows + T.s1 + data.columns.length + T.s2;
       buildDepSelect(allCols);
       updateIndepList();
@@ -284,8 +292,24 @@ function buildDepSelect(cols) {
   cols.forEach(c => { sel.innerHTML += `<option value="${_esc(c)}">${_esc(c)}</option>`; });
 }
 
+function updateTargetCategory() {
+  const depVal = document.getElementById('dep-col').value;
+  const wrapper = document.getElementById('target-cat-wrapper');
+  const sel = document.getElementById('target-category');
+  const values = categoryValues[depVal];
+  if (!values || values.length !== 2) {
+    wrapper.classList.add('d-none');
+    sel.innerHTML = '';
+    return;
+  }
+  wrapper.classList.remove('d-none');
+  // Varsayılan: backend'in mevcut davranışıyla aynı (sıralı ikinci değer = hedef)
+  sel.innerHTML = values.map((v, i) => `<option value="${_esc(v)}"${i === 1 ? ' selected' : ''}>${_esc(v)}</option>`).join('');
+}
+
 function updateIndepList() {
   const depVal = document.getElementById('dep-col').value;
+  updateTargetCategory();
   const container = document.getElementById('indep-list');
   const available = allCols.filter(c => c !== depVal);
   if (!depVal) {
@@ -338,6 +362,8 @@ function runAnalysis() {
   fd.append('filename', previewFilename);
   fd.append('dep_col', depVal);
   indepVals.forEach(v => fd.append('indep_cols', v));
+  const targetCatVal = document.getElementById('target-category').value;
+  if (targetCatVal) fd.append('target_category', targetCatVal);
   fd.append('csrfmiddlewaretoken', '{{ csrf_token }}');
 
   fetch(TOOL_URL, {method:'POST', body:fd, headers:{'X-Requested-With':'XMLHttpRequest'}})
@@ -392,12 +418,15 @@ function showResults(data) {
 
   // Katsayılar tablosu
   document.getElementById('coef-head').innerHTML = '<tr>' +
-    [T.s8,'B','SE','Wald','p','Exp(B)','{% filter escapejs %}{% trans "%95 GA Alt OR" %}{% endfilter %}',T.s9].map(h => `<th>${h}</th>`).join('') + '</tr>';
+    [T.s8,'B','SE','Wald','p','Exp(B)','{% filter escapejs %}{% trans "%95 GA Alt OR" %}{% endfilter %}',T.s9,'VIF'].map(h => `<th>${h}</th>`).join('') + '</tr>';
   document.getElementById('coef-body').innerHTML = r.coefficients.map(c => {
     const pCellTxt = c.p < 0.001 ? '&lt; .001' : c.p.toFixed(4);
     const pCell = c.significant && !c.is_const
       ? `<td style="color:#4ade80;font-weight:bold;">${pCellTxt}</td>`
       : `<td>${pCellTxt}</td>`;
+    const vifStr = c.vif === '—' ? '—' : (typeof c.vif === 'number' ? c.vif.toFixed(3) : c.vif);
+    const vifCell = (c.vif !== '—' && c.vif > 10)
+      ? `<td style="color:#fb923c;">${vifStr}</td>` : `<td>${vifStr}</td>`;
     return `<tr>
       <td class="fw-semibold">${_esc(c.name)}</td>
       <td>${c.B.toFixed(4)}</td>
@@ -407,6 +436,7 @@ function showResults(data) {
       <td class="fw-semibold">${c.exp_b.toFixed(4)}</td>
       <td>${c.ci_low_or.toFixed(4)}</td>
       <td>${c.ci_high_or.toFixed(4)}</td>
+      ${vifCell}
     </tr>`;
   }).join('');
 

@@ -238,10 +238,23 @@ maddelerde.
       context'e koyuyor ama şablonlar bunu okuyup sayfa yenilenince
       `startPolling()`'i devam ettirmiyor (madde 18'deki ile aynı sorun),
       henüz düzeltilmedi.
-  19. [ ] `lojistik_regresyon.py` — VIF/çoklu bağlantı kontrolü hiç yok ama
-      SEO metni ve "Nedir?" kartı VIF'den bahsediyor; hedef kategori
-      (y=1) otomatik alfabetik sıralamayla seçiliyor, kullanıcı seçemiyor —
-      Exp(B) yönü beklenenin tersi okunabilir.
+  19. [x] **(25 Ekim 2026 düzeltildi)** `lojistik_regresyon.py` — VIF/çoklu
+      bağlantı kontrolü hiç yoktu ama SEO metni ve "Nedir?" kartı VIF'den
+      bahsediyordu; hedef kategori (y=1) otomatik alfabetik sıralamayla
+      seçiliyordu, kullanıcı seçemiyordu — Exp(B) yönü beklenenin tersi
+      okunabiliyordu. **Düzeltme (kullanıcı kararı: tam özellik):**
+      `lojistik_regresyon.py`'ye `lineer_regresyon.py` ile aynı desende VIF
+      hesabı eklendi (ekran tablosu + PDF + footnote); `analyze()`'a opsiyonel
+      `target_category` parametresi eklendi (boşsa eski davranış — sıralı
+      2. değer — korunuyor). UI: preview adımı artık 2-kategorili sütunların
+      değerlerini (`category_values`) döndürüyor, `lojistik_regresyon.html`'de
+      bağımlı değişken seçilince "Hedef Kategori (Y=1)" seçici beliriyor
+      (varsayılan seçili değer mevcut davranışla aynı); `views.py` options +
+      `job_runner.py` parametreyi uçtan uca taşıyor. EN/DE çevirileri
+      eklendi, Docker'da varsayılan/ters hedef kategori senaryoları
+      (`B` katsayısının işareti doğru tersine dönüyor) + gerçek job pipeline
+      (preview→run→job_runner→PDF/S3) uçtan uca test edildi, 104/104 pytest
+      yeşil.
   20. [ ] `lineer_regresyon.html`/`lojistik_regresyon.html` — ekranda
       Bootstrap'ın varsayılan mavisi kullanılıyor, PDF'te ise marka rengi
       (navy/teal) — ekran/PDF renk tutarsızlığı.

@@ -171,6 +171,7 @@ def _execute_job_in_language(job_id: str):
                 df,
                 dep_col=opts.get('dep_col', ''),
                 indep_cols=opts.get('indep_cols', []),
+                target_category=opts.get('target_category', ''),
             )
         elif job.tool == 'afa':
             from .afa import analyze, build_pdf

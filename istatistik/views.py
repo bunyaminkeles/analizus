@@ -374,14 +374,21 @@ def _handle_group_tool_post(request, tool):
         numeric_cols = list(df.select_dtypes(include='number').columns)
         all_cols = list(df.columns)
 
-        return JsonResponse({
+        response_data = {
             'success': True,
             'preview_id': preview_id,
             'filename': original_filename,
             'columns': all_cols,
             'numeric_cols': numeric_cols,
             'n_rows': len(df),
-        })
+        }
+        if tool == 'lojistik_regresyon':
+            # Kullanıcının hedef kategoriyi (y=1) seçebilmesi için binary sütunların değerleri
+            response_data['category_values'] = {
+                col: sorted(str(v) for v in df[col].dropna().unique())
+                for col in all_cols if df[col].nunique() == 2
+            }
+        return JsonResponse(response_data)
 
     elif step == 'run':
         if request.user.is_authenticated:
@@ -443,6 +450,8 @@ def _handle_group_tool_post(request, tool):
                 'dep_col': request.POST.get('dep_col', ''),
                 'indep_cols': request.POST.getlist('indep_cols'),
             }
+            if tool == 'lojistik_regresyon':
+                options['target_category'] = request.POST.get('target_category', '')
         elif tool == 'afa':
             cols = request.POST.getlist('columns')
             n_factors_raw = request.POST.get('n_factors', '').strip()
