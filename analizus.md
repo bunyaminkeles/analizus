@@ -2391,6 +2391,26 @@ with connection.cursor() as c:
     ham Bootstrap bileşen sınıfı) — bu sonuç, §27'deki ayrı "Bootstrap Kaldırma — Kademeli Migration Planı"
     bölümünün "Güncel envanter (11 Ekim 2026)" kısmıyla birebir örtüşüyor (o zaten doğruydu), henüz
     uygulanmadı.
+  - **Tur 6 — "DÜŞÜK" toplu not, 7 madde (26 Ekim 2026, main'de canlı, merge commit `cd9fc2f` civarı,
+    migration YOK):** `ttesti.py`'de bağımsız örneklem güven aralığı (`se_diff`) her zaman unpooled (Welch)
+    varyans formülünü kullanıyordu, `used_welch=False` iken pooled t-istatistiğiyle tutarsızdı — artık
+    `used_welch`'e göre pooled/unpooled SE seçiliyor (doğrulama: `diff/t_stat` ile `(CI genişliği/2)/
+    implied_SE` oranı t-kritik değerine eşitleniyor). `anova.py` anlamsız sonuçta F değerini her zaman
+    "—" yazıyordu (hesaplı olmasına rağmen) → gerçek `f_stat` geçiriliyor. `afa.py`'de eğik (promax/oblimin)
+    rotasyonda varyans tablosu hiçbir uyarı olmadan ortogonal mantıkla raporlanıyordu → yeni
+    `oblique_variance_note` (ekran+PDF, yalnız promax/oblimin'de görünür); ayrıca `afa.html`'deki statik
+    KMO yorum tablosu ".50–.60" bandı için "Zayıf" diyordu, kod `_interpret_kmo()` "Düşük" döndürüyordu →
+    tabloya kodun birebir aynı etiketi yazıldı (`cronbach.html`'deki aynı sınıf hatanın tekrarı). `korelasyon.html`'de
+    Kendall açıklaması iki ayrı yerde farklı (ve biri istatistiksel olarak anlamsız: "çok sayıda eşik")
+    terim kullanıyordu → doğru terim "bağlı (eşit) gözlem" (tied observations) ile her iki yerde tutarlı
+    hale getirildi. `kruskal_wallis` tam 2 grupla da çalışmaya izin veriyordu, Mann-Whitney'e yönlendirme
+    yoktu → yeni `two_group_note` (k=2 olunca ekran+PDF'te öneri gösteriliyor, analiz engellenmiyor).
+    `karar_agaci.py`'de `export_text(max_depth=5)` hardcoded idi — kullanıcı daha derin bir ağaç seçse bile
+    metin çıktısı sessizce 5 seviyede kesiliyordu → gerçek `max_depth` parametresi kullanılıyor (ayrı var
+    olan 40 satırlık genel sınır güvenlik ağı olarak kalıyor, PDF/ekranda zaten vardı). `seo_content.py`'deki
+    "Essensiyal" yazım hatası "Esansiyel" ile düzeltildi (EN/DE çevirileri zaten doğruydu, yalnız TR kaynak
+    metin hatalıydı). Tüm yeni metinler için EN/DE çevirileri eklendi, Docker'da her madde ayrı test edildi,
+    104/104 pytest yeşil.
 
 #### Pazaryeri / Freelance / Bağış
 
@@ -2768,6 +2788,12 @@ with connection.cursor() as c:
   - DM WebSocket: `@ . + -` içeren kullanıcı adları (ba9560b). §11.
   - 500 hata e-postası + sel koruması (8393eec). §16.
   - Sunucu: Docker log sınırı (daemon.json), disk temizliği (%65→%45), yerel yedek indirme betiği + cron (95c35d0). §3.
+- **S3 temizlik cron'u genişletildi** (25 Ekim 2026, main'de canlı, commit `4233aeb`, bu oturumdan bağımsız
+  kullanıcı tarafından yapıldı) — `istatistik/` (betimsel dahil tüm araçlar) için hiç S3 temizlik fonksiyonu
+  yoktu; `yoktez/services/job_runner.py` yalnızca `demo/` klasörünü tarıyordu, `full/` ve `orders/` (23 Mayıs
+  2026'da kaldırılan "analiz" özelliğinden kalan dosyalar) hiç kapsanmıyordu — bu yüzden bazı PDF/txt
+  dosyaları S3'te 8+ ay birikmişti. `istatistik/services/job_runner.py`'ye temizlik fonksiyonu eklendi,
+  `yoktez/services/job_runner.py` genişletildi, `forum/api_views.py`'de ilgili cron endpoint'i güncellendi.
 
 #### CSS / Frontend / Navbar / Ana Sayfa Tasarımı
 

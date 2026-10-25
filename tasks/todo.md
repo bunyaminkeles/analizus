@@ -10,6 +10,27 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
+- [ ] **(25 Ekim 2026) S3 Dosya Saklama Süresi — Kullanıcı Bildirimi Eksik
+  (S3 cron denetimi sırasında bulundu, bkz. sohbet). 9/10 araçta kullanıcı
+  dosyasının ne zaman silineceğini hiç bilmiyor, 3 aracın e-postası yanlış
+  süre söylüyor, gizlilik politikası 4 aracı hiç kapsamıyor. Ayrı onay
+  gereken 3 iş (KIRMIZI ÇİZGİ ilkesi — tek tek uygulanacak):**
+  1. [ ] **Metin hatası düzeltmesi:** `bibliometrics/services/job_runner.py:366,424`,
+     `makaleanaliz/services/job_runner.py:166`, `tezanaliz/services/job_runner.py:175`
+     e-postalarındaki "indirme linki 3 gün geçerlidir" → kod gerçekte 7 gün
+     saklıyor (`cleanup_expired_*_s3_files(days=7)`), metni "7 gün" olarak düzelt.
+  2. [ ] **Eksik UI/e-posta uyarısı:** trdizin, openalex, oaipmh, pubmed,
+     semanticscholar, bibliometrics, makaleanaliz, tezanaliz, istatistik
+     (yoktez hariç — o zaten `yoktez/templates/yoktez/landing.html:40,97,147`'de
+     "3 gün boyunca erişebilirsiniz" diyor, örnek alınacak kalıp) sonuç
+     sayfasına/e-postasına saklama süresi uyarısı eklenmeli — yeni metin
+     olduğu için çeviriye (EN/DE) işaretlenmeli (§28 i18n kuralı).
+  3. [ ] **Gizlilik politikası güncellemesi:** `forum/templates/forum/
+     gizlilik_politikasi.html:96,135` şu an sadece trdizin/openalex/oaipmh/
+     pubmed/semanticscholar (7g) + yoktez (3g) için saklama süresi taahhüdü
+     veriyor; bibliometrics/makaleanaliz/tezanaliz/istatistik (7g) hiç
+     geçmiyor — madde eklenmeli (KVKK metni, dikkatli yazılmalı).
+
 - [ ] **(25 Ekim 2026) Çalışma Odaları — Kötüye Kullanım Tespiti + KVKK Uyumu
   (kullanıcı talebi: kötü niyetli yazışmaların tespiti, adli makamlara
   verilebilmesi; "admin görünmeden girsin mi" soruldu → KARAR: hayır, ayrıntı
