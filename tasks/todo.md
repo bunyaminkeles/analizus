@@ -3694,8 +3694,8 @@ Yok — sertifika üretimi de (bkz. yukarı "nginx düzeltmesi" bölümü, 23 Te
 
 # Bootstrap Kaldırma — Kademeli Migration Planı
 
-**Durum (25 Ekim 2026):** Faz 1-2 TAMAMLANDI. Faz 3 sürüyor — 14 dosya
-migre edildi, **53 dosyada hâlâ gerçek Bootstrap component class'ı var**
+**Durum (25 Ekim 2026):** Faz 1-2 TAMAMLANDI. Faz 3 sürüyor — 17 dosya
+migre edildi, **50 dosyada hâlâ gerçek Bootstrap component class'ı var**
 (bkz. "Güncel envanter" altı). Faz 4-5 henüz başlamadı.
 
 ## Neden gerekli
@@ -3746,9 +3746,9 @@ hiç render edilmiyor — `views.section_detail` artık yalnızca
 çağrısında kullanılmıyor. Migrasyon kapsamından çıkarıldı (zaman kaybı,
 dosya hiç kullanıcıya görünmüyor), silinmedi — ayrı bir karar.
 
-**Düşük (~8-19 class, ~20 dosya) — sıradaki adaylar:**
+**Düşük (~8-19 class, ~18 dosya) — sıradaki adaylar:**
 `forum_index.html`, `footer.html` (partials),
-`edit_job.html`, `post_job.html`,
+~~`edit_job.html`~~ (✅ 25 Ekim), ~~`post_job.html`~~ (✅ 25 Ekim),
 ~~`search_results.html`~~ (✅ 25 Ekim), ~~`verification_pending.html`~~
 (✅ 25 Ekim), `my_payments.html`, ~~`section_detail.html`~~ (yetim dosya,
 kapsam dışı — yukarı bkz.),
@@ -4227,6 +4227,70 @@ kök neden dosyası bulunmadı. Ayrı bir görev olarak ele alınacak.
     (`views.section_detail` artık yalnızca kalıcı yönlendirme yapıyor) —
     migrasyon kapsamından çıkarıldı, yukarıdaki envanter notuna işlendi.
 
+- [x] `forum/templates/forum/market/edit_job.html` +
+  `forum/templates/forum/market/post_job.html` (16-17. dosyalar,
+  25 Ekim 2026) — **kullanıcı onayıyla birlikte ele alındı** çünkü ikisi de
+  `forum/forms.py`'deki aynı `JobPostForm`'u kullanıyor; formun
+  `form-control`/`form-select` class'ları şablonda değil Python'da tanımlı.
+  - `forum/forms.py` — `JobPostForm.Meta.widgets` (title/description/
+    budget_max/expected_duration) `form-control` → `ax-form-control`,
+    `category_choice` alanının `form-select` → `ax-form-select` (ikisi de
+    `bg-dark text-light border-secondary` utility'lerini korudu). Aynı
+    dosyadaki `ProposalForm` (job_detail.html'in teklif formu, "Ağır" grup,
+    henüz migre edilmedi) kasıtlı olarak dokunulmadı.
+  - Her iki şablonda da `card border-0 shadow-sm` (inline bg/border) +
+    `card-header bg-transparent ...` + `card-body p-4` → `card`/`card-header`/
+    `card-body` kaldırıldı, düz `div`'lere indirildi. **Not:** `card-header`
+    migrasyonun izlenen envanter listesinde (`btn`/`card`/`card-body`/
+    `badge`/`dropdown`/`modal`/`alert`/`form-control`/`form-select`) hiç
+    yer almıyordu ama aynı mantıkla `card-body` gibi ele alındı. Bootstrap'ın
+    kaybolan varsayılan radius'u (~6px) `border-radius:var(--ax-radius-sm)`
+    ile elle eklendi (ikisinde de inline'da yoktu, founder-card kararındaki
+    gibi); header+body tek çocuklu değil iki çocuklu ama ikisi de blok
+    (div), `display:flex` gerekmedi (arama kartındaki `<a>` durumundan
+    farklı).
+  - **Gerçek bug bulundu ve düzeltildi:** `forum/templates/forum/market/
+    _job_rules.html` (her iki dosyada da include) `ax-alert ax-alert--warn`
+    kullanıyordu — doğrusu `ax-alert--warning`, `--warn` hiçbir CSS'te
+    tanımlı değildi, kutu tamamen stilsiz (şeffaf zemin, görünmez kenarlık)
+    render oluyordu. Düzeltildi. **Aynı yazım hatası
+    `forum/templates/forum/market/job_detail.html:83`'te de var** ("Ağır"
+    grup, bu turda dokunulmadı) — ayrı not olarak işlendi, aşağıda.
+  - `edit_job.html`'deki form hata kutusu (`alert alert-danger`) →
+    post_job.html'de zaten kurulu olan `ax-alert ax-alert--danger` +
+    `ax-alert__icon`/`ax-alert__body` yapısına taşındı (işlevsel fark
+    eklenmedi, yalnızca görsel).
+  - `edit_job.html`: `btn btn-warning` → `ax-btn ax-btn--warning`;
+    `btn btn-outline-secondary` → `ax-btn ax-btn--ghost`.
+  - `post_job.html`: `btn btn-outline-light` → `ax-btn ax-btn--outline-light`;
+    `btn btn-info` → `ax-btn ax-btn--info`.
+  - **Kullanıcı kararıyla yeni `.ax-alert--cyan` eklendi:** post_job.html'deki
+    süre bilgi kutusu (`alert alert-info`, gerçek Bootstrap camgöbeği
+    `#0dcaf0`) mevcut `.ax-alert--info`'ya taşınsaydı renk MORA (`--ax-accent-primary`)
+    dönerdi — o varyant adına rağmen primary renkli (verification_pending.html'deki
+    gibi zaten indigo olan kutularla eşleşmek üzere tasarlanmış). Yeni
+    `.ax-alert--cyan` (`--ax-accent-info` token'ı) eklendi, orijinal
+    camgöbeği birebir korundu. **Aynı camgöbeği `alert-info` kalıbı
+    `my_jobs.html` (düşük grup, sırada) ve `referral_dashboard.html` (orta
+    grup) içinde de var** — oralarda da bu yeni varyant kullanılacak.
+  - `base.css`→`bundle.css` yeniden üretildi (`.ax-alert--cyan` için,
+    `.ax-btn--outline-info` önceki turdan zaten vardı), `collectstatic` +
+    `web`/`nginx` restart, `bundle.css?v=0015`→`?v=0016`.
+  - Görsel doğrulama: geçici test kullanıcısı (e-posta doğrulanmış) +
+    geçici `FreelanceJob` (`approved_at` verilerek — [[feedback_...]]
+    FreelanceJob.save() yeniden-yayın tuzağına girilmedi) ile her iki
+    gerçek URL (`/market/new/`, `/market/job/<pk>/edit/`) render edilip
+    Playwright 375px/1280px ile kontrol edildi (kart radius, uyarı/bilgi
+    kutuları, form alanları, butonlar hepsi doğru), sonra kullanıcı+ilan
+    silindi (cascade). `forum/tests.py` 104/104 yeşil.
+
+- [ ] **(25 Ekim 2026) Yan bulgu — `ax-alert--warn` yazım hatası, kapsam dışı:**
+  `forum/templates/forum/market/job_detail.html:83` aynı `ax-alert
+  ax-alert--warn` hatasını taşıyor (tanımsız varyant, kutu stilsiz
+  görünüyor). `job_detail.html` "Ağır" migrasyon grubunda (48 class,
+  en ağır dosya), o dosyaya geçilince düzeltilecek; o zamana kadar canlıda
+  stilsiz kalmaya devam edecek (düşük önemli, görünür ama kritik değil).
+
 **11 Ekim 2026 oturumu kapandı — `main`'e alındı:** Yukarıdaki 7 commit
 (`87c8e26`..`58f52d7`) `dev`'den `main`'e `--no-ff` merge edildi (merge
 commit `1e54739`), `origin/main`'e push edildi — GitHub Actions otomatik
@@ -4276,18 +4340,18 @@ Kullanılmayan geçiş dönemi shim'leri varsa kaldır.
 - 100+ dosyalık migration tek PR'da değil, birden fazla oturuma yayılmalı
 
 ## Sıradaki adım
-Faz 1 ve 2 TAMAMLANDI. Faz 3 sürüyor — 15 dosya migre edildi (yukarı bkz.
-"Dosya bazlı ilerleme"; son üçü 25 Ekim 2026: `search_results.html`,
-`verification_pending.html`, `category_topics.html`). **Güncel envanter
-yukarıda** ("Güncel envanter — 11 Ekim 2026 taraması", 25 Ekim notuyla
-güncellendi) — düşük grup 20 dosyaya indi (1'i, `section_detail.html`,
-yetim/render edilmeyen dosya olduğu için kapsam dışına alındı). Sıradaki
-adaylar aynı düşük yoğunluklu grup (`forum_index.html`, `footer.html`
-partial'ı, `edit_job.html`/`post_job.html` vb., gerçek ~8-19 class) —
-**dikkat:** `edit_job.html`/`post_job.html` ikisi de aynı `JobPostForm`'u
-kullanıyor, formun `form-control`/`form-select` class'ları `forum/forms.py`
-içinde tanımlı (template'te değil) — bu ikisine geçildiğinde forms.py da
-kapsama girecek, ayrı onay gerekir. Her dosya için: gerçek Bootstrap class'larını
+Faz 1 ve 2 TAMAMLANDI. Faz 3 sürüyor — 17 dosya migre edildi (yukarı bkz.
+"Dosya bazlı ilerleme"; son beşi 25 Ekim 2026: `search_results.html`,
+`verification_pending.html`, `category_topics.html`, `edit_job.html`,
+`post_job.html`). **Güncel envanter yukarıda** ("Güncel envanter —
+11 Ekim 2026 taraması", 25 Ekim notuyla güncellendi) — düşük grup 18
+dosyaya indi (1'i, `section_detail.html`, yetim/render edilmeyen dosya
+olduğu için kapsam dışına alındı). Sıradaki adaylar aynı düşük yoğunluklu
+grup (`forum_index.html`, `footer.html` partial'ı, `my_payments.html` vb.,
+gerçek ~8-19 class). **Dikkat:** `my_jobs.html` ve `referral_dashboard.html`
+(orta grup) aynı camgöbeği `alert-info` kalıbını taşıyor — oraya
+geçildiğinde bugün eklenen `.ax-alert--cyan` kullanılacak. Her dosya için:
+gerçek Bootstrap class'larını
 oku → ax- karşılığı yoksa (yeni renk/varyant vb.) kullanıcıya sor → uygula
 → `bundle.css` gerekiyorsa yeniden üret (whitenoise hash'li ad ürettiği
 için `?v=` artırmak artık kozmetik, ama alışkanlık korunuyor) → Playwright

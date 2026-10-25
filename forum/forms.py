@@ -134,17 +134,17 @@ class JobPostForm(forms.ModelForm):
     OTHER = 'other'
     category_choice = forms.ChoiceField(
         label=gettext_lazy('Kategori'),
-        widget=forms.Select(attrs={'class': 'form-select bg-dark text-light border-secondary'}),  # formdaki diğer alanlarla aynı aile
+        widget=forms.Select(attrs={'class': 'ax-form-select bg-dark text-light border-secondary'}),  # formdaki diğer alanlarla aynı aile
     )
 
     class Meta:
         model = FreelanceJob
         fields = ['title', 'description', 'budget_max', 'expected_duration']
         widgets = {
-            'title': forms.TextInput(attrs={'class': 'form-control bg-dark text-light border-secondary', 'placeholder': gettext_lazy('Örn: SPSS Veri Analizi')}),
-            'description': forms.Textarea(attrs={'class': 'form-control bg-dark text-light border-secondary', 'rows': 5, 'placeholder': gettext_lazy('Yaptırmak istediğiniz işi anlatın: veri, yöntem, beklenen çıktı, teslim tarihi...')}),
-            'budget_max': forms.NumberInput(attrs={'class': 'form-control bg-dark text-light border-secondary', 'placeholder': gettext_lazy('Örn: 500')}),
-            'expected_duration': forms.TextInput(attrs={'class': 'form-control bg-dark text-light border-secondary', 'placeholder': gettext_lazy('Örn: 3 gün')}),
+            'title': forms.TextInput(attrs={'class': 'ax-form-control bg-dark text-light border-secondary', 'placeholder': gettext_lazy('Örn: SPSS Veri Analizi')}),
+            'description': forms.Textarea(attrs={'class': 'ax-form-control bg-dark text-light border-secondary', 'rows': 5, 'placeholder': gettext_lazy('Yaptırmak istediğiniz işi anlatın: veri, yöntem, beklenen çıktı, teslim tarihi...')}),
+            'budget_max': forms.NumberInput(attrs={'class': 'ax-form-control bg-dark text-light border-secondary', 'placeholder': gettext_lazy('Örn: 500')}),
+            'expected_duration': forms.TextInput(attrs={'class': 'ax-form-control bg-dark text-light border-secondary', 'placeholder': gettext_lazy('Örn: 3 gün')}),
         }
         labels = {
             'title': gettext_lazy('İlan Başlığı'),
