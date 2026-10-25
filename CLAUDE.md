@@ -1,6 +1,6 @@
 # Analizus.com — Claude Çalışma Kuralları
 
-Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~3129 satır; offset'ler 16 Ekim 2026'da doğrulandı). Tamamını okuma — ihtiyaca göre offset ile ilgili bölümü oku:
+Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~3734 satır; offset'ler 25 Ekim 2026'da doğrulandı). Tamamını okuma — ihtiyaca göre offset ile ilgili bölümü oku:
 
 | Bölüm | offset | Konu |
 |---|---|---|
@@ -8,15 +8,15 @@ Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~3129 satır; offset
 | §3–5 | 69 | Sunucu mimarisi + bakım (log sınırı, disk, yedek → yerel, deploy öncesi `yedek_indir.sh --simdi` — SADECE lokalde çalıştır, Hetzner SSH oturumu İÇİNDEN değil), deploy (`main`'e push GitHub Actions ile OTOMATİK Hetzner deploy eder — `.github/workflows/deploy.yml`; `requirements.txt` değişikliği otomatik akışa yansımaz, elle `--build` gerekir; deploy.sh açılışta migrate+collectstatic; `setup_all`/`create_badges` yalnız DB boşsa), env vars (NCBI_API_KEY dahil) |
 | §6–7 | 299 | Dizin yapısı, URL mimarisi (i18n_patterns; `/section/` 301, `/uzmanlar/?cat=` kuralı, `/hizmetler/` + `/hizmetler/<slug>/`) |
 | §8–9 | 481 | Veri modelleri (`JobCategory.intro`, `Category.INDEX_MIN_TOPICS`, BlogPost SEO alanları, pazar: ilan onayı / haftalık hak / form sınırları, `ServicePage`/`ServicePageSection`/`ServicePageFAQ`, `Profile.completion_status()`/`total_score`, profil "Hakkında", bağış `premium_days_promised`, Uzman Dizini giriş kriteri — `Profile.directory_override`, `SiteSettings.uzman_dizini_min_puan`), feature flag'ler (`feature_hizmet_sayfalari`) |
-| §10–11 | 817 | CSS/tasarım sistemi, WebSocket (route'lar) — Bootstrap Kaldırma Migrasyonu alt bölümü (Faz 3 sürüyor); CSS Değişkenleri notu — **yeni: tanımsız `--ax-color-primary` token'ı bulundu (`home.html:45,48`, henüz düzeltilmedi, bkz. §10 "CSS Değişkenleri")**, ayrıca ana sayfanın (`home.html`) `bundle.css` DIŞINDA 11 ayrı CSS dosyası (`hero.css`, `home_sections.css` vb.) yüklediği not edildi |
-| §12 | 1072 | İstatistik araçları (akış, PDF, polling, konsol düzeni: Nedir kartı → SSS → CTA, `tool_title`) |
-| §13–15 | 1287 | DM/oda mesajlaşma, bibliometri, akademik tarama (Google'ın gördüğü başlık = view `promo_title`; YÖK Tez üniversite filtresi, iş-spesifik `?job=<uuid>` link, "Son Aramalarım") |
-| §16–19 | 1556 | E-posta (500 hata e-postası), AnalizBot/AI Asistan, S3, güvenlik (çerez onayı, cron anahtarı) |
-| §20–23 | 1813 | Admin (sipariş akışı, Fiyatlandırma, Limitler, İlan onayı/ret aksiyonları, bağış onayı aksiyonu, İş Kategorisi tanıtım metni, blog SEO, `UserAdmin` toplu e-posta aksiyonları, Navigasyon Grafiği, `ProfileAdmin` "Uzman Dizini: Zorla Göster/Gizle"), pazar akışı (pending → open), session, cron |
-| §24–25 | 2017 | Geliştirme ortamı (pytest 90 test + test notları, çeviri komutları), değişmez kurallar |
-| §26 | 2060 | Sık yapılan hatalar ve çözümleri — konuya göre 11 alt başlığa gruplandı (Sunucu/Docker/Deploy, Veritabanı/Migration, S3/Depolama, E-posta, Çeviri, CSS/Frontend/JS, AI Asistan, Admin Paneli, Tarama/Analiz Araçları, Güvenlik/Bot, Genel Süreç) |
-| §27 | 2238 | Görev listesi — "Tamamlananlar" + "Sıradaki Görevler" + "Geçmiş Turlar (Kronoloji)" (**en son: 16 Ekim 2026 akşam, EN/DE ana sayfa pazar kartı + navigasyon turu — pazaryeri EN/DE'de kart+navbar+footer'dan kaldırıldı, iki `dev`→`main` merge ile push edildi**) |
-| §28 | 3032 | Çok dilli yapı (TR/EN/DE) ve gizlilik — mimari, çeviri kuralları, iş akışı, EN/DE ürün kararları (§28.7) |
+| §10–11 | 817 | CSS/tasarım sistemi, WebSocket (route'lar) — Bootstrap Kaldırma Migrasyonu alt bölümü (Faz 3 sürüyor, 25 Ekim 2026: 19 dosya + `JobPostForm` migre edildi, yeni `.ax-btn--outline-info`/`.ax-alert--cyan`); CSS Değişkenleri notu — **tanımsız `--ax-color-primary` token'ı bulundu (`home.html:45,48`, henüz düzeltilmedi, bkz. §10 "CSS Değişkenleri")**, ayrıca ana sayfanın (`home.html`) `bundle.css` DIŞINDA 11 ayrı CSS dosyası (`hero.css`, `home_sections.css` vb.) yüklediği not edildi |
+| §12 | 1100 | İstatistik araçları (akış, PDF, polling, konsol düzeni: Nedir kartı → SSS → CTA, `tool_title`) |
+| §13–15 | 1317 | DM/oda mesajlaşma, bibliometri, akademik tarama (Google'ın gördüğü başlık = view `promo_title`; YÖK Tez üniversite filtresi, iş-spesifik `?job=<uuid>` link, "Son Aramalarım") |
+| §16–19 | 1599 | E-posta (500 hata e-postası), AnalizBot/AI Asistan, S3, güvenlik (çerez onayı, cron anahtarı) |
+| §20–23 | 1856 | Admin (sipariş akışı, Fiyatlandırma, Limitler, İlan onayı/ret aksiyonları, bağış onayı aksiyonu, İş Kategorisi tanıtım metni, blog SEO, `UserAdmin` toplu e-posta aksiyonları, Navigasyon Grafiği, `ProfileAdmin` "Uzman Dizini: Zorla Göster/Gizle"), pazar akışı (pending → open), session, cron |
+| §24–25 | 2016 | Geliştirme ortamı (pytest 90 test + test notları, çeviri komutları), değişmez kurallar |
+| §26 | 2103 | Sık yapılan hatalar ve çözümleri — konuya göre 11 alt başlığa gruplandı (Sunucu/Docker/Deploy, Veritabanı/Migration, S3/Depolama, E-posta, Çeviri, CSS/Frontend/JS, AI Asistan, Admin Paneli, Tarama/Analiz Araçları, Güvenlik/Bot, Genel Süreç) |
+| §27 | 2283 | Görev listesi — "Tamamlananlar" + "Sıradaki Görevler" + "Geçmiş Turlar (Kronoloji)" (**en son: 25 Ekim 2026, Bootstrap Kaldırma Migrasyonu Faz 3 turu — 7 dosya + `JobPostForm` migre edildi, `dev`→`main` merge ile push edildi**) |
+| §28 | 3620 | Çok dilli yapı (TR/EN/DE) ve gizlilik — mimari, çeviri kuralları, iş akışı, EN/DE ürün kararları (§28.7) |
 
 ---
 
