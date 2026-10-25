@@ -2115,6 +2115,29 @@ class StudyRoomPost(models.Model):
         super().save(*args, **kwargs)
 
 
+class StudyRoomPostReport(models.Model):
+    """Faz 2 — kullanıcı tarafından bildirilen oda mesajları (sonradan admin incelemesi için)."""
+    REASON_CHOICES = (
+        ('harassment', gettext_lazy('Taciz / Hakaret')),
+        ('spam', gettext_lazy('Spam / Reklam')),
+        ('external_contact', gettext_lazy('Platform Dışına Yönlendirme')),
+        ('inappropriate', gettext_lazy('Uygunsuz İçerik')),
+        ('other', gettext_lazy('Diğer')),
+    )
+    post = models.ForeignKey(StudyRoomPost, on_delete=models.CASCADE, related_name='reports')
+    reporter = models.ForeignKey(User, on_delete=models.CASCADE, related_name='room_post_reports')
+    reason = models.CharField(max_length=20, choices=REASON_CHOICES, verbose_name=gettext_lazy('Bildirim Sebebi'))
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = gettext_lazy('Oda Mesajı Bildirimi')
+        verbose_name_plural = gettext_lazy('Oda Mesajı Bildirimleri')
+
+    def __str__(self):
+        return f"{self.reporter.username} → post #{self.post_id} ({self.reason})"
+
+
 class TeamMember(models.Model):
     name = models.CharField(max_length=100, verbose_name="İsim Soyisim")
     title = models.CharField(max_length=100, verbose_name="Ünvan/Görev")

@@ -100,9 +100,25 @@ maddelerde.
      normal mesaj senaryoları ve update_fields ile düzenleme testi yapıldı,
      104/104 pytest yeşil, `manage.py check` temiz, `docker compose restart web`
      yapıldı.
-  2. [ ] **Faz 2 — Kullanıcı "bildir" özelliği:** yeni `StudyRoomPostReport`
-     modeli (reporter, post, reason, created_at); oda arayüzünde mesaj
-     altına "Bildir" aksiyonu; admin paneline düşen ayrı kuyruk.
+  2. [x] **(26 Ekim 2026 düzeltildi) Faz 2 — Kullanıcı "bildir" özelliği.**
+     `StudyRoomPostReport` modeli (post, reporter, reason — önceden tanımlı
+     5 seçenek: Taciz/Hakaret, Spam/Reklam, Platform Dışına Yönlendirme,
+     Uygunsuz İçerik, Diğer — kullanıcı kararı: `unique_together` YOK, aynı
+     mesaj tekrar tekrar bildirilebilir), migration `0187_studyroompostreport`.
+     `studyroom_detail.html`'de başkasının mesajına (`rm-karsi`) hover'da
+     görünen "Bildir" butonu + sebep seçim paneli (mevcut `rm-edit-area`
+     deseniyle tutarlı inline panel), hem server-render hem polling ile
+     eklenen (`appendRoomPost`) mesajlarda çalışıyor. `api_report_room_post`
+     view'ı: giriş+POST zorunlu, geçersiz sebep ve kendi mesajını bildirme
+     reddediliyor. Admin: `StudyRoomPostReportAdmin` (reason filtresi) +
+     sidebar'a "Oda Bildirimleri" girdisi. **Not:** `forum/urls.py`
+     `i18n_patterns` DIŞINDA (çalışma odaları TR-only kapsam) — bu yüzden
+     şablonda `{% trans %}` kullanılmadı, dosyadaki mevcut (çevrilmemiş)
+     Türkçe metin deseniyle tutarlı bırakıldı, EN/DE çeviri adımı atlandı.
+     Docker'da: iki farklı kullanıcıyla rapor/tekrar-rapor/geçersiz-sebep/
+     kendi-mesajını-bildirme senaryoları `Client` ile uçtan uca test edildi,
+     104/104 pytest yeşil, `docker compose restart web` + `restart nginx`
+     yapıldı.
   3. [ ] **Faz 3 — Saklama süresi + "legal hold":** oda arşivlendikten N ay
      sonra otomatik silme politikası tanımla (N için kullanıcıya sor);
      flagged/report edilmiş kayıtlar bu otomatik silmeden muaf (olası adli

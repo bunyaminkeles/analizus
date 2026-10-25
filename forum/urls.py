@@ -26,6 +26,7 @@ urlpatterns = [
     path('api/chat/<str:username>/delete-conversation/', views.api_delete_conversation, name='api_delete_conversation'),
     path('api/room-post/<int:post_id>/edit/', views.api_edit_room_post, name='api_edit_room_post'),
     path('api/room-post/<int:post_id>/delete/', views.api_delete_room_post, name='api_delete_room_post'),
+    path('api/room-post/<int:post_id>/report/', views.api_report_room_post, name='api_report_room_post'),
 
     # Araçlar
     path('uzmanlar/', views.uzman_dizini, name='uzman_dizini'),
