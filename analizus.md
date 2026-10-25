@@ -2342,9 +2342,55 @@ with connection.cursor() as c:
     gibi kullanıcı verisi alanları) da `_esc()` ile düzeltildi.
   - Tüm yeni/değişen metinler için EN/DE çevirileri eklendi, `compilemessages` hatasız derlendi (gettext
     araçları container'da geçici kuruldu — imajda yok, bkz. §26 benzer not).
-  - **Kapsam dışı bırakıldı:** ax- tasarım sistemi migrasyonu (11 şablonda hâlâ ham Bootstrap) — ayrı, zaten
-    bilinen "Bootstrap CDN kaldırma" projesinin kapsamında (yukarıda Teknik Borç), bu denetime dahil edilmedi.
+  - **Kapsam dışı bırakıldı (ilk not — 25 Ekim sonradan düzeltildi, aşağıya bkz.):** ax- tasarım sistemi
+    migrasyonu — ayrı, zaten bilinen "Bootstrap CDN kaldırma" projesinin kapsamında (yukarıda Teknik Borç),
+    bu denetime dahil edilmedi.
   - Commit'ler (`dev` → `main` merge): `f497510`, `7c06205`, `a088ffa`, `e4d14b8` → merge `88e6c85`.
+  - **Tur 4 — kalan 14 madde (25 Ekim 2026, main'de canlı, merge commit `d38661f`, migration YOK):**
+    `normallik.py`'de çoklu sütun seçiminde listwise `dropna()` (bir sütundaki eksik veri diğer dolu
+    sütunların satırını da siliyordu) kaldırıldı + skewness/kurtosis ±1.96 eşiği artık ham değere değil
+    standart hataya bölünmüş z-skoruna uygulanıyor. `orneklem.py`'de korelasyon testinde r≥1 girilince
+    `math.atanh` ile çöküyordu → net `ValueError`; t-testi gücünün normal yaklaşımla (Laubscher, gerçek
+    non-central t değil) hesaplandığı artık sayfada belirtiliyor. `anova.py`'ye gerçek **Welch ANOVA**
+    eklendi (Levene p<0.05 olunca otomatik devreye giriyor — `seo_content.py` bunu zaten vaat ediyordu
+    ama kod yapmıyordu); "Tukey" post-hoc'un aslında Bonferroni formülü olduğu sayfada/SSS'te açıkça
+    belirtildi. `kruskal_wallis.py`'nin post-hoc'u Mann-Whitney+Bonferroni yerine gerçek **Dunn testi**
+    (pooled sıra varyansı + bağlı değer düzeltmesi) ile değiştirildi — yine `seo_content.py` zaten "Dunn"
+    vaat ediyordu; grup etiketleri artık sayısal sıralanıyor (`sorted(..., key=str)` yerine `key=float`
+    dene/düş deseni, `anova.py`/`lojistik_regresyon.py`'ye de uygulandı — ek bulgu 17b).
+  - **Tur 5 — madde 18-25 + ek bulgular (25 Ekim 2026, main'de canlı, merge commit `dea51e6`, migration
+    YOK, `requirements.txt` değişti ama production'daki sürümlerle birebir eşleştiği doğrulandı):**
+    `mann_whitney.html`/`kruskal_wallis.html`/`anova.html`/`ttesti.html`'de sayfa yenilenince job polling'in
+    kopması düzeltildi (`active_job_id` okuyup `startPolling()`'i devam ettiren blok — ek bulgu 18b).
+    `lojistik_regresyon.py`'ye `lineer_regresyon.py` ile aynı desende **VIF** eklendi + kullanıcının
+    hedef kategoriyi (y=1) seçebildiği yeni UI (önceden otomatik alfabetik seçiliyordu, Exp(B) yönü ters
+    okunabiliyordu). `lineer_regresyon.html`'deki Bootstrap varsayılan mavisi PDF'in navy rengiyle
+    (`#1e3a5f`) uyumlu hale getirildi. Projede hiç tanımlanmamış `var(--ax-primary)` token'ı (`analiz_console.css`
+    + `profiles.css` — ek bulgu 21b) doğru token `var(--ax-accent-primary)` ile değiştirildi. `svm.py`'de
+    n>5000 durumunda düz rastgele yerine **stratified örnekleme** (sınıf oranlarını koruyor) + `svm.py`/
+    `karar_agaci.py`'ye sınıf dengesizliği uyarısı (oran ≥3 → ekran+PDF'te turuncu not) eklendi.
+    `cronbach.py`'de 2 maddelik ölçekte "madde silinince alfa" hesabı `ZeroDivisionError` ile çöküyordu
+    (ayrıca eski `float('nan')` sentinel'i JSON'da geçersiz token üretip polling'i sessizce bozabilirdi) →
+    `None` + PDF'te "—". **`ki_kare.py`'de en önemli düzeltme:** beklenen frekans düşük 2×2 tablolarda
+    nihai sonuç/APA artık ki-kare yerine Fisher's Exact Test'e dayanıyor (`seo_content.py` zaten "Fisher
+    otomatik devreye girer" diyordu) — gerçek bir ayrışma senaryosuyla (`[[0,2],[6,0]]`: ki-kare p=.059
+    "anlamsız" vs Fisher p=.036 "anlamlı") doğrulandı, düzeltme öncesi yanlış sonuç raporlanıyordu.
+    `requirements.txt`'te scipy/numpy/pandas/scikit-learn/statsmodels sabitlendi (`bibtexparser` ile aynı
+    desen) — **deploy notu:** bu değişiklik `main`'e push sonrası otomatik akışa yansımaz, elle `--build`
+    gerekir (henüz yapılmadı, kullanıcı kararıyla ertelendi — production zaten aynı sürümleri çalıştırıyor).
+  - **Yeni kural (25 Ekim 2026, CLAUDE.md'ye eklendi):** `main`'e merge öncesi production'da admin olmayan
+    online kullanıcı var mı otomatik kontrol ediliyor (Hetzner SSH + `Profile.last_seen`, 300 sn eşiği) —
+    varsa kullanıcıya haber verilip onay bekleniyor, otomatik merge yapılmıyor.
+  - **ax- tasarım migrasyonu envanteri düzeltmesi (26 Ekim 2026, kullanıcı sorusu üzerine):** yukarıdaki
+    "11 şablon hiç ax-'e geçmemiş" notu hatalıydı — gerçek dosyalar `class="..."` token bazında (ax- önekini
+    hariç tutarak) yeniden sayıldı. `ttesti.html` (118 ax- sınıfı), `anova.html` (135), `tekrarli_anova.html`
+    (139) aslında ZATEN migre edilmiş (kalan Bootstrap sınıfları yalnız izin verilen grid/utility türünden:
+    `d-flex`/`d-none`/`row`/`container`). Gerçek migrasyon işi yalnız **8 dosyada** kalmış: `orneklem.html`,
+    `ki_kare.html`, `mann_whitney.html`, `kruskal_wallis.html`, `lineer_regresyon.html`,
+    `lojistik_regresyon.html`, `karar_agaci.html`, `svm.html` (her birinde ~8 ax- sınıfına karşılık 59-79
+    ham Bootstrap bileşen sınıfı) — bu sonuç, §27'deki ayrı "Bootstrap Kaldırma — Kademeli Migration Planı"
+    bölümünün "Güncel envanter (11 Ekim 2026)" kısmıyla birebir örtüşüyor (o zaten doğruydu), henüz
+    uygulanmadı.
 
 #### Pazaryeri / Freelance / Bağış
 

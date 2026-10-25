@@ -36,6 +36,15 @@ def analyze(df, group_col: str, dep_col: str) -> dict:
         if len(g) < 3:
             raise ValueError(gettext('"%(lbl)s" grubunda en az 3 gözlem olmalıdır.') % {'lbl': lbl})
 
+    # Tam 2 grup için özel tasarlanmış Mann-Whitney U Testi daha standarttır;
+    # Kruskal-Wallis bunu engellemez (matematiksel olarak geçerlidir) ama uyarır
+    two_group_note = (
+        gettext('Yalnızca 2 grup karşılaştırıyorsunuz. Bu durum için özel olarak tasarlanmış '
+                'Mann-Whitney U Testi kullanmanız önerilir; sonuçlar yakın olsa da Kruskal-Wallis '
+                'iki grup karşılaştırması için optimize edilmemiştir.')
+        if len(group_labels) == 2 else ''
+    )
+
     h_stat, p_val = stats.kruskal(*groups)
 
     # Eta-kare (η²_H) etki büyüklüğü
@@ -104,6 +113,7 @@ def analyze(df, group_col: str, dep_col: str) -> dict:
         'posthoc': posthoc_results,
         'posthoc_method': 'Dunn + Bonferroni' if float(p_val) < 0.05 else '—',
         'conclusion': _conclusion(p_val, group_col, dep_col, posthoc_results),
+        'two_group_note': two_group_note,
     }
 
 
@@ -198,6 +208,13 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
         ('PADDING', (0, 0), (-1, -1), 6),
     ]))
     story.append(res_tbl)
+
+    if result['two_group_note']:
+        story.append(Spacer(1, 0.3*cm))
+        story.append(Paragraph(
+            '<font color="#666666" size="8">' + result['two_group_note'] + '</font>',
+            norm_s
+        ))
 
     # Post-hoc
     if result['posthoc']:

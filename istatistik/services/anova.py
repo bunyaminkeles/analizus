@@ -104,7 +104,7 @@ def analyze(df, group_col: str, dep_col: str, posthoc: str = 'tukey') -> dict:
         'group_stats': group_stats,
         'posthoc': posthoc_results,
         'posthoc_method': method if float(p_val) < 0.05 else '—',
-        'conclusion': _conclusion(p_val, group_col, dep_col, posthoc_results),
+        'conclusion': _conclusion(p_val, f_stat, group_col, dep_col, posthoc_results),
     }
 
 
@@ -139,9 +139,9 @@ def _interpret_eta(eta: float) -> str:
     return gettext('Büyük etki (η² ≥ .14)')
 
 
-def _conclusion(p, group_col, dep_col, posthoc) -> str:
+def _conclusion(p, f_stat, group_col, dep_col, posthoc) -> str:
     if p >= 0.05:
-        return (gettext('Gruplar arasında %(dep_col)s açısından istatistiksel olarak anlamlı bir fark bulunmamaktadır [F = —, %(p)s].') % {'dep_col': dep_col, 'p': ('p < .001' if p < 0.001 else f'p = {p:.4f}')})
+        return (gettext('Gruplar arasında %(dep_col)s açısından istatistiksel olarak anlamlı bir fark bulunmamaktadır [F = %(f)s, %(p)s].') % {'dep_col': dep_col, 'f': f'{f_stat:.3f}', 'p': ('p < .001' if p < 0.001 else f'p = {p:.4f}')})
     sig_pairs = [f'{r["g1"]} – {r["g2"]}' for r in posthoc if r['significant']]
     base = (gettext('Gruplar arasında %(dep_col)s açısından istatistiksel olarak anlamlı bir fark bulunmaktadır (%(p)s).') % {'dep_col': dep_col, 'p': ('p < .001' if p < 0.001 else f'p = {p:.4f}')})
     if sig_pairs:

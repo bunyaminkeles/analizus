@@ -95,7 +95,10 @@ def analyze(df, target_col: str, feature_cols: list,
     for i, item in enumerate(fi_sorted, 1):
         item['rank'] = i
 
-    tree_text = export_text(clf, feature_names=feature_names, max_depth=5)
+    # Kullanıcının seçtiği max_depth kullanılıyor (önceden hardcoded 5'ti, daha
+    # derin ağaçlarda gerçek yapıyı sessizce kısaltıyordu); metin çıktısı zaten
+    # ayrıca 40 satırla sınırlanıyor (build_pdf + ekran JS), bu yüzden güvenli
+    tree_text = export_text(clf, feature_names=feature_names, max_depth=max_depth)
 
     return {
         'target_col': target_col,
