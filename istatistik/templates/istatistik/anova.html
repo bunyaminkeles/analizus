@@ -398,6 +398,11 @@ function copyApa(btn) {
     setTimeout(() => { btn.innerHTML = orig; btn.classList.remove('ax-btn--success'); }, 2000);
   });
 }
+
+{% if active_job_id %}
+showPanel('loading');
+startPolling('{{ active_job_id }}');
+{% endif %}
 </script>
 
 <style>

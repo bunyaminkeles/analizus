@@ -258,11 +258,15 @@ maddelerde.
       104/104 pytest doğrulandı. **Not (ayrı, çözülmedi — todo'ya eklendi):**
       `anova.html` ve `ttesti.html` de aynı `active_job_id` okumama sorununu
       taşıyor.
-  18b. [ ] **(25 Ekim 2026, madde 18 sırasında bulundu)** `anova.html` ve
-      `ttesti.html` — `views.py` bu iki araç için de `active_job_id`'yi
-      context'e koyuyor ama şablonlar bunu okuyup sayfa yenilenince
-      `startPolling()`'i devam ettirmiyor (madde 18'deki ile aynı sorun),
-      henüz düzeltilmedi.
+  18b. [x] **(25 Ekim 2026 düzeltildi)** `anova.html` ve `ttesti.html` —
+      `views.py` bu iki araç için de `active_job_id`'yi context'e
+      koyuyordu ama şablonlar bunu okuyup sayfa yenilenince
+      `startPolling()`'i devam ettirmiyordu (madde 18'deki ile aynı sorun).
+      **Düzeltme:** `anova.html`'e `showPanel('loading'); startPolling('{{
+      active_job_id }}');` eklendi (jobId parametre alıyor); `ttesti.html`
+      zaten var olan `currentJobId` değişkenini kullanıyor (wilcoxon.html
+      deseniyle aynı). Docker'da her iki şablonun render testiyle
+      doğrulandı, 104/104 pytest yeşil.
   19. [x] **(25 Ekim 2026 düzeltildi)** `lojistik_regresyon.py` — VIF/çoklu
       bağlantı kontrolü hiç yoktu ama SEO metni ve "Nedir?" kartı VIF'den
       bahsediyordu; hedef kategori (y=1) otomatik alfabetik sıralamayla

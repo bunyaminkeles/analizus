@@ -668,5 +668,11 @@ function copyApa(btn) {
     setTimeout(() => { btn.innerHTML = orig; }, 2000);
   });
 }
+
+{% if active_job_id %}
+currentJobId = '{{ active_job_id }}';
+showPanel('loading');
+startPolling(currentJobId);
+{% endif %}
 </script>
 {% endblock %}
