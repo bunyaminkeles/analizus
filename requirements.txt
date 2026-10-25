@@ -20,8 +20,8 @@ django-storages
 openai
 google-generativeai
 anthropic==1.13.0
-numpy
-pandas
+numpy==2.4.6  # istatistik araçlarının tamamı doğrudan numpy'a bağlı
+pandas==3.1.0  # istatistik araçlarının tamamı doğrudan pandas DataFrame'e bağlı
 # sqlparse Django ile gelir ama biz yine de ekleyelim
 sqlparse
 
@@ -31,8 +31,8 @@ wordcloud
 networkx
 reportlab
 bibtexparser==1.4.4  # parser v1 API (bparser) kullanıyor — 2.x uyumsuz
-scikit-learn
-statsmodels
+scikit-learn==1.9.1  # karar_agaci, svm, lineer/lojistik regresyon doğrudan sklearn API'sine bağlı
+statsmodels==0.15.0  # lineer/lojistik regresyon, anova (Welch) doğrudan statsmodels API'sine bağlı
 nltk
 zeyrek
 Babel>=2.12,<3.0  # OpenAlex ülke kodu (US) → rapor dilinde ülke adı

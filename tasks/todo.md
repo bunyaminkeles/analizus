@@ -369,10 +369,23 @@ maddelerde.
       `pandas`/`scikit-learn`/`statsmodels` de istatistik araçlarının
       birçoğunda doğrudan kullanılıyor ama bu maddenin kapsamı (yalnız
       scipy) dışında bırakıldı, sabitlenmedi.
-  25b. [ ] **(25 Ekim 2026, madde 25 sırasında bulundu)** `requirements.txt`
-      — `numpy`, `pandas`, `scikit-learn`, `statsmodels` de madde 25'teki
-      scipy ile aynı gerekçeyle (istatistik araçlarının API'sine doğrudan
-      bağlı) sabitlenmemiş durumda, henüz değerlendirilmedi.
+  25b. [x] **(25 Ekim 2026 düzeltildi)** `requirements.txt` — `numpy`,
+      `pandas`, `scikit-learn`, `statsmodels` de madde 25'teki scipy ile
+      aynı gerekçeyle (istatistik araçlarının API'sine doğrudan bağlı)
+      sabitlenmemişti. **Düzeltme:** çalışan Docker imajındaki test
+      edilmiş sürümlere sabitlendi: `numpy==2.4.6`, `pandas==3.1.0`,
+      `scikit-learn==1.9.1`, `statsmodels==0.15.0` — her birine hangi
+      araçların bağlı olduğunu belirten kısa yorum eklendi. **DEPLOY
+      NOTU:** madde 25 gibi, `main`'e push sonrası otomatik akışa
+      yansımaz, Hetzner'de elle `--build` gerekir. 104/104 pytest yeşil.
+
+---
+
+**İstatistik Araçları Denetimi (25 Ekim 2026) — TAMAMLANDI.** 25 ana
+madde + 4 ek bulgu (17b/18b/21b/25b) hepsi düzeltildi, `dev`'e commit+push
+edildi. Geriye yalnız ayrı/büyük kapsamlı notlar kaldı: "DÜŞÜK" toplu not
+(küçük tutarsızlıklar) ve "TASARIM (ax- sistemi)" — bkz. aşağıdaki ilgili
+başlıklar (Bootstrap Kaldırma Migrasyonu'na bağlı, ayrı iş).
 
   **DÜŞÜK (toplu not, tek tek takip gerekmez ama bilinsin):** ttesti.py'de
   bağımsız örneklem CI formülü ile t-istatistiği tutarsız (SE pooled/unpooled
