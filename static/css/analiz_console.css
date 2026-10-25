@@ -251,7 +251,7 @@
 .ax-tool-guide-detail summary::before {
   content: '+';
   font-size: 1.1rem;
-  color: var(--ax-primary);
+  color: var(--ax-accent-primary);
   width: 1rem;
   text-align: center;
   flex-shrink: 0;
@@ -270,7 +270,7 @@
 
 .ax-tool-guide-apa {
   font-style: italic;
-  border-left: 3px solid var(--ax-primary) !important;
+  border-left: 3px solid var(--ax-accent-primary) !important;
   background: var(--ax-bg-secondary);
 }
 
@@ -315,7 +315,7 @@
   border: 1px solid var(--ax-border-default);
   border-radius: 20px;
   font-size: 0.82rem;
-  color: var(--ax-primary);
+  color: var(--ax-accent-primary);
   text-decoration: none;
   transition: background 0.15s;
 }

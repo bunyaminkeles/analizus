@@ -268,11 +268,20 @@ maddelerde.
       (`#60a5fa`) — diğer araçlardaki "koyu buton + açık ikon" deseniyle
       tutarlı (ör. kruskal-wallis teal `#065f46`/`#34d399`). Docker'da
       render doğrulandı (2 buton + 7 ikon/metin), 104/104 pytest yeşil.
-  21. [ ] `static/css/analiz_console.css` (254, 273, 318 satırları) —
-      `var(--ax-primary)` token'ı projede HİÇ tanımlanmamış (CLAUDE.md'deki
-      bilinen `--ax-color-primary` hatasından farklı, ayrı bir eksik token);
-      SSS accordion oku, "İlgili Araçlar" çip rengi, APA kutusu kenarlığı
-      tarayıcıda varsayılana düşüyor.
+  21. [x] **(25 Ekim 2026 düzeltildi)** `static/css/analiz_console.css`
+      (254, 273, 318 satırları) — `var(--ax-primary)` token'ı projede HİÇ
+      tanımlanmamıştı (CLAUDE.md'deki bilinen `--ax-color-primary`
+      hatasından farklı, ayrı bir eksik token); SSS accordion oku, "İlgili
+      Araçlar" çip rengi, APA kutusu kenarlığı tarayıcıda varsayılana
+      düşüyordu. **Düzeltme:** üç kullanım da `base.css`'de zaten tanımlı
+      olan doğru değişken `var(--ax-accent-primary)` ile değiştirildi (proje
+      genelinde `.ax-link`/`.ax-badge--primary` vb. için kullanılan standart
+      token). **Not (ayrı, çözülmedi — todo'ya eklendi):**
+      `static/css/profiles.css:690`'da da aynı tanımsız `--ax-primary`
+      kullanımı var, bu maddenin kapsamı dışında bırakıldı.
+  21b. [ ] **(25 Ekim 2026, madde 21 sırasında bulundu)**
+      `static/css/profiles.css:690` — madde 21'de düzeltilen aynı tanımsız
+      `var(--ax-primary)` token'ı burada da kullanılıyor, henüz düzeltilmedi.
   22. [ ] `svm.py:34-36` — n>5000'de iddia edilen/beklenen stratified
       örnekleme aslında düz rastgele (`sample()`'da `stratify` yok); ayrıca
       hem karar_agaci hem svm'de class imbalance uyarısı hiç yok.
