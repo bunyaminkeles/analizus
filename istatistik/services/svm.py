@@ -31,9 +31,6 @@ def analyze(df, target_col: str, feature_cols: list,
     n = len(sub)
     if n < 10:
         raise ValueError(gettext('En az 10 satır gereklidir, %(n)s satır bulundu.') % {'n': n})
-    if n > 5000:
-        sub = sub.sample(5000, random_state=42)
-        n = 5000
 
     classes = sorted(sub[target_col].astype(str).unique())
     n_classes = len(classes)
@@ -41,6 +38,31 @@ def analyze(df, target_col: str, feature_cols: list,
         raise ValueError(gettext('Hedef sütunun en az 2 farklı kategorisi olmalıdır.'))
     if n_classes > 20:
         raise ValueError(gettext('Hedef sütunda %(n_classes)s farklı değer var. SVM en fazla 20 sınıfla çalışır.') % {'n_classes': n_classes})
+
+    if n > 5000:
+        try:
+            sub, _ = train_test_split(
+                sub, train_size=5000, stratify=sub[target_col], random_state=42
+            )
+        except ValueError:
+            # Bazı sınıflar stratified örneklem için yetersiz — düz rastgele örnekleme
+            sub = sub.sample(5000, random_state=42)
+        n = len(sub)
+        # Örnekleme sonrası sınıf sayısı değişmiş olabilir (ör. çok nadir bir sınıf düşmüş olabilir)
+        classes = sorted(sub[target_col].astype(str).unique())
+        n_classes = len(classes)
+        if n_classes < 2:
+            raise ValueError(gettext('5000 satırlık örneklemede hedef sütunun en az 2 farklı kategorisi kalmadı.'))
+
+    # Sınıf dengesizliği (en büyük/en küçük sınıf oranı) — accuracy yanıltıcı olabilir
+    class_counts = sub[target_col].astype(str).value_counts()
+    imbalance_ratio = float(class_counts.max() / class_counts.min())
+    class_imbalance_warning = (
+        gettext('Sınıflar dengesiz dağılmış (en büyük/en küçük sınıf oranı = %(ratio)s). '
+                'Doğruluk (accuracy) tek başına yanıltıcı olabilir; kesinlik, duyarlılık ve '
+                'F1 skorlarına da bakın.') % {'ratio': f'{imbalance_ratio:.1f}'}
+        if imbalance_ratio >= 3 else ''
+    )
 
     le = LabelEncoder()
     y = le.fit_transform(sub[target_col].astype(str))
@@ -105,6 +127,8 @@ def analyze(df, target_col: str, feature_cols: list,
         'n': n,
         'n_train': len(X_train),
         'n_test': len(X_test),
+        'class_imbalance_ratio': round(imbalance_ratio, 2),
+        'class_imbalance_warning': class_imbalance_warning,
         'kernel': kernel,
         'C': C,
         'test_size': test_size,
@@ -175,6 +199,13 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
     ]))
     story.append(sum_tbl)
     story.append(Spacer(1, 0.5*cm))
+
+    if result['class_imbalance_warning']:
+        story.append(Paragraph(
+            '<font color="#b45309"><b>⚠ ' + gettext('Uyarı:') + '</b> ' + result['class_imbalance_warning'] + '</font>',
+            norm_s
+        ))
+        story.append(Spacer(1, 0.4*cm))
 
     story.append(Paragraph(gettext('Karmaşıklık Matrisi (Confusion Matrix)'), h2_s))
     cm_arr = np.array(result['confusion_matrix'])

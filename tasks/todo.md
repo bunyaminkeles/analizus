@@ -10,6 +10,27 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
+- [ ] **(25 Ekim 2026) Yeni Ücretsiz İstatistik Araçları Fikirleri — henüz
+  başlanmadı, öncelik sırasıyla:**
+  1. [ ] **Aracılık/Düzenleyici Değişken Analizi (Mediation/Moderation)** —
+     SPSS Process/Hayes'e karşılık; TR sosyal bilimler/işletme tezlerinde en
+     çok talep edilen, bizde hiç karşılığı yok.
+  2. [ ] **Kümeleme Analizi (K-means / Hiyerarşik Cluster)** — pazarlama/
+     işletme/eğitim tezlerinde yaygın; mevcut sklearn altyapısına (karar_agaci,
+     svm) yakın, görece düşük efor.
+  3. [ ] **MANOVA (Çok Değişkenli Varyans Analizi)** — mevcut ANOVA
+     altyapısının doğal uzantısı.
+  4. [ ] **Sağkalım Analizi (Kaplan-Meier / Cox Regresyon)** — sağlık bilimleri
+     tezlerinde çok aranıyor; `survival-analizi-101-kaplan-meier-cox-regresyon-...`
+     blog yazısı zaten iyi SEO alıyor (bkz. aşağıda ~satır 2197) ama karşılığında
+     araç yok.
+  5. [ ] **ROC Eğrisi / Tanısal Tarama Analizi** — lojistik regresyon FAQ'ı
+     zaten AUC-ROC'tan bahsediyor ama hesaplayan araç yok (bu tutarsızlık
+     aşağıda ~satır 134-135'te zaten not edilmiş).
+  - Düşük öncelik / sonra değerlendirilebilir: diskriminant analizi, ordinal/
+    multinomial lojistik regresyon, basit path analizi/SEM, güç analizi
+    (post-hoc power).
+
 - [ ] **(25 Ekim 2026) İstatistik Araçları Denetimi — 18 aracın tamamı (hesaplama +
   rapor kalitesi) 7 paralel subagent ile salt-okunur incelendi. Hiçbir dosya
   değiştirilmedi. Bulgular şiddete göre (en kritik üstte):**
@@ -213,39 +234,158 @@ maddelerde.
       edildi, 104/104 pytest yeşil. **Not (ayrı, çözülmedi — todo'ya
       eklendi):** `anova.py`/`lojistik_regresyon.py` aynı `key=str` sıralama
       desenini taşıyor ama bu maddenin kapsamı dışında bırakıldı.
-  17b. [ ] **(25 Ekim 2026, madde 17 sırasında bulundu)** `anova.py:18` ve
+  17b. [x] **(25 Ekim 2026 düzeltildi)** `anova.py:18` ve
       `lojistik_regresyon.py:36` — `kruskal_wallis.py`'de düzeltilen aynı
       `sorted(..., key=str)` grup/kategori etiketi sıralama sorunu (numerik
-      etiketler 1,10,2,20 gibi yanlış sıralanır) bu iki dosyada da var,
-      henüz düzeltilmedi.
-  18. [ ] `mann_whitney.html` + `kruskal_wallis.html` — `views.py`
-      `active_job_id`'yi context'e koyuyor ama şablonlar
+      etiketler 1,10,2,20 gibi yanlış sıralanıyordu) bu iki dosyada da
+      vardı. **Düzeltme:** aynı `key=float` dene, olmazsa `key=str`'ye düş
+      deseni uygulandı (`lojistik_regresyon.py`'de binary kategori
+      sıralaması — varsayılan referans/hedef ataması — için). Docker'da
+      ters sayısal sıralı grup/kategori senaryoları (1,10,2 → 1,2,10;
+      2,10 → 2,10) test edildi, 104/104 pytest yeşil.
+  18. [x] **(25 Ekim 2026 düzeltildi)** `mann_whitney.html` + `kruskal_wallis.html`
+      — `views.py` `active_job_id`'yi context'e koyuyordu ama şablonlar
       wilcoxon.html/friedman.html'deki gibi bunu okuyup `startPolling()`
-      çağırmıyor; analiz sürerken sayfa yenilenirse job takibi kopuyor.
-  19. [ ] `lojistik_regresyon.py` — VIF/çoklu bağlantı kontrolü hiç yok ama
-      SEO metni ve "Nedir?" kartı VIF'den bahsediyor; hedef kategori
-      (y=1) otomatik alfabetik sıralamayla seçiliyor, kullanıcı seçemiyor —
-      Exp(B) yönü beklenenin tersi okunabilir.
-  20. [ ] `lineer_regresyon.html`/`lojistik_regresyon.html` — ekranda
-      Bootstrap'ın varsayılan mavisi kullanılıyor, PDF'te ise marka rengi
-      (navy/teal) — ekran/PDF renk tutarsızlığı.
-  21. [ ] `static/css/analiz_console.css` (254, 273, 318 satırları) —
-      `var(--ax-primary)` token'ı projede HİÇ tanımlanmamış (CLAUDE.md'deki
-      bilinen `--ax-color-primary` hatasından farklı, ayrı bir eksik token);
-      SSS accordion oku, "İlgili Araçlar" çip rengi, APA kutusu kenarlığı
-      tarayıcıda varsayılana düşüyor.
-  22. [ ] `svm.py:34-36` — n>5000'de iddia edilen/beklenen stratified
-      örnekleme aslında düz rastgele (`sample()`'da `stratify` yok); ayrıca
-      hem karar_agaci hem svm'de class imbalance uyarısı hiç yok.
-  23. [ ] `cronbach.py:58` — 2 maddelik ölçekte "madde silinince alfa"
-      hesabı ZeroDivisionError ile çöküyor (genel except belirsiz hata
-      mesajı veriyor).
-  24. [ ] `ki_kare.py` — Beklenen frekans düşük 2×2 durumlarda bile ana
-      sonuç/APA cümlesi her zaman ki-kare p-değerine dayanıyor, Fisher
-      sonucu ayrıca gösterilse de öncelenmiyor.
-  25. [ ] `requirements.txt` — `scipy` sürümü sabitlenmemiş; mann_whitney/
-      kruskal_wallis/wilcoxon/friedman doğrudan `scipy.stats`'a bağlı
-      (CLAUDE.md kuralı: API'ye doğrudan bağlı paketler sabitlenmeli).
+      çağırmıyordu; analiz sürerken sayfa yenilenirse job takibi kopuyordu.
+      **Düzeltme:** her iki şablonun script sonuna `{% if active_job_id %}`
+      bloğu eklendi (`showPanel('loading')` + `startPolling('{{ active_job_id }}')`
+      — bu iki araçta `startPolling(jobId)` parametre alıyor, wilcoxon'daki
+      gibi ayrı bir `currentJobId` değişkenine gerek yok). **Ayrıca madde
+      17'den kalan iki unutulan metin de düzeltildi:** `views.py:534`
+      (kruskal-wallis promo "Post-Hoc" özelliği) ve `kruskal_wallis.html:89`
+      hâlâ "Mann-Whitney + Bonferroni" diyordu, "Dunn + Bonferroni" ile
+      güncellendi. EN/DE çevirileri eklendi, Docker'da template render +
+      104/104 pytest doğrulandı. **Not (ayrı, çözülmedi — todo'ya eklendi):**
+      `anova.html` ve `ttesti.html` de aynı `active_job_id` okumama sorununu
+      taşıyor.
+  18b. [x] **(25 Ekim 2026 düzeltildi)** `anova.html` ve `ttesti.html` —
+      `views.py` bu iki araç için de `active_job_id`'yi context'e
+      koyuyordu ama şablonlar bunu okuyup sayfa yenilenince
+      `startPolling()`'i devam ettirmiyordu (madde 18'deki ile aynı sorun).
+      **Düzeltme:** `anova.html`'e `showPanel('loading'); startPolling('{{
+      active_job_id }}');` eklendi (jobId parametre alıyor); `ttesti.html`
+      zaten var olan `currentJobId` değişkenini kullanıyor (wilcoxon.html
+      deseniyle aynı). Docker'da her iki şablonun render testiyle
+      doğrulandı, 104/104 pytest yeşil.
+  19. [x] **(25 Ekim 2026 düzeltildi)** `lojistik_regresyon.py` — VIF/çoklu
+      bağlantı kontrolü hiç yoktu ama SEO metni ve "Nedir?" kartı VIF'den
+      bahsediyordu; hedef kategori (y=1) otomatik alfabetik sıralamayla
+      seçiliyordu, kullanıcı seçemiyordu — Exp(B) yönü beklenenin tersi
+      okunabiliyordu. **Düzeltme (kullanıcı kararı: tam özellik):**
+      `lojistik_regresyon.py`'ye `lineer_regresyon.py` ile aynı desende VIF
+      hesabı eklendi (ekran tablosu + PDF + footnote); `analyze()`'a opsiyonel
+      `target_category` parametresi eklendi (boşsa eski davranış — sıralı
+      2. değer — korunuyor). UI: preview adımı artık 2-kategorili sütunların
+      değerlerini (`category_values`) döndürüyor, `lojistik_regresyon.html`'de
+      bağımlı değişken seçilince "Hedef Kategori (Y=1)" seçici beliriyor
+      (varsayılan seçili değer mevcut davranışla aynı); `views.py` options +
+      `job_runner.py` parametreyi uçtan uca taşıyor. EN/DE çevirileri
+      eklendi, Docker'da varsayılan/ters hedef kategori senaryoları
+      (`B` katsayısının işareti doğru tersine dönüyor) + gerçek job pipeline
+      (preview→run→job_runner→PDF/S3) uçtan uca test edildi, 104/104 pytest
+      yeşil.
+  20. [x] **(25 Ekim 2026 düzeltildi)** `lineer_regresyon.html`/
+      `lojistik_regresyon.html` — ekranda Bootstrap'ın varsayılan mavisi
+      kullanılıyordu, PDF'te ise marka rengi (navy/teal) — ekran/PDF renk
+      tutarsızlığı. **İnceleme:** `lojistik_regresyon.html` zaten PDF'teki
+      teal (`#065f46`) ailesinden hex renkler kullanıyordu (sorun yoktu);
+      asıl sorun yalnız `lineer_regresyon.html`'deydi — tüm `btn-primary`/
+      `text-primary` (Bootstrap varsayılan mavisi `#0d6efd`) kullanımları,
+      PDF'in navy'siyle (`#1e3a5f`) aynı aileden renklerle değiştirildi:
+      dolgu butonlarda tam navy (`#1e3a5f`, üstünde beyaz metin), ikon/metin
+      vurgularında koyu arka plan üzerinde okunaklı açık mavi tonu
+      (`#60a5fa`) — diğer araçlardaki "koyu buton + açık ikon" deseniyle
+      tutarlı (ör. kruskal-wallis teal `#065f46`/`#34d399`). Docker'da
+      render doğrulandı (2 buton + 7 ikon/metin), 104/104 pytest yeşil.
+  21. [x] **(25 Ekim 2026 düzeltildi)** `static/css/analiz_console.css`
+      (254, 273, 318 satırları) — `var(--ax-primary)` token'ı projede HİÇ
+      tanımlanmamıştı (CLAUDE.md'deki bilinen `--ax-color-primary`
+      hatasından farklı, ayrı bir eksik token); SSS accordion oku, "İlgili
+      Araçlar" çip rengi, APA kutusu kenarlığı tarayıcıda varsayılana
+      düşüyordu. **Düzeltme:** üç kullanım da `base.css`'de zaten tanımlı
+      olan doğru değişken `var(--ax-accent-primary)` ile değiştirildi (proje
+      genelinde `.ax-link`/`.ax-badge--primary` vb. için kullanılan standart
+      token). **Not (ayrı, çözülmedi — todo'ya eklendi):**
+      `static/css/profiles.css:690`'da da aynı tanımsız `--ax-primary`
+      kullanımı var, bu maddenin kapsamı dışında bırakıldı.
+  21b. [x] **(25 Ekim 2026 düzeltildi)** `static/css/profiles.css:690` —
+      madde 21'de düzeltilen aynı tanımsız `var(--ax-primary)` token'ı
+      burada da kullanılıyordu (portfolyo kartı hover kenarlığı; hemen
+      yanındaki `box-shadow` zaten `rgba(99,102,241,...)` — `--ax-accent-
+      primary`'nin hex karşılığı — kullanıyordu, bu da doğru tokenı
+      doğruladı). **Düzeltme:** `var(--ax-accent-primary)` ile değiştirildi.
+      Proje genelinde artık hiçbir yerde tanımsız `--ax-primary` kalmadı.
+  22. [x] **(25 Ekim 2026 düzeltildi)** `svm.py:34-36` — n>5000'de beklenen
+      stratified örnekleme aslında düz rastgele idi (`sample()`'da `stratify`
+      yok); ayrıca hem karar_agaci hem svm'de class imbalance uyarısı hiç
+      yoktu. **Düzeltme:** `svm.py`'de n>5000 durumunda artık
+      `train_test_split(..., stratify=...)` ile sınıf oranlarını koruyan
+      örnekleme yapılıyor (nadir sınıf stratified'ı imkansız kılarsa düz
+      rastgele örneklemeye düşülüyor, `try/except`); örnekleme sonrası sınıf
+      sayısı yeniden hesaplanıyor. Her iki dosyaya da (`svm.py`,
+      `karar_agaci.py`) sınıf dengesizliği oranı (en büyük/en küçük sınıf)
+      hesabı eklendi; oran ≥3 olunca ekranda (`alert-warning`) ve PDF'te
+      turuncu uyarı metni gösteriliyor — "Doğruluk tek başına yanıltıcı
+      olabilir, precision/recall/F1'e de bakın." EN/DE çevirileri eklendi,
+      Docker'da stratified örnekleme oran koruması + dengeli/dengesiz veri
+      senaryoları + PDF üretimi test edildi, 104/104 pytest yeşil.
+  23. [x] **(25 Ekim 2026 düzeltildi)** `cronbach.py:58` — 2 maddelik
+      ölçekte "madde silinince alfa" hesabı ZeroDivisionError ile
+      çöküyordu (k2=1 olunca Spearman-Brown düzeltme katsayısı
+      `k2/(k2-1)` = `1/0`; genel except belirsiz hata mesajı veriyordu).
+      **Düzeltme:** `k2 < 2` (2 maddelik ölçekte kaçınılmaz) veya `tv2 <= 0`
+      durumunda `alpha_if_deleted` artık `None` dönüyor (önceki `float('nan')`
+      sentinel'i JSON'da geçersiz `NaN` token'ı üretip polling response'unu
+      sessizce bozabilirdi — bu potansiyel ikinci hata da önlendi); PDF
+      tablosu `None` için `'—'` gösteriyor. Ekranda bu alan zaten
+      gösterilmiyor (yalnız PDF'te var), JS değişikliği gerekmedi. Docker'da
+      2 maddelik (çökme yok, `None` + JSON serialize + PDF OK) ve 4 maddelik
+      (regresyon yok) senaryolar test edildi, 104/104 pytest yeşil.
+  24. [x] **(25 Ekim 2026 düzeltildi)** `ki_kare.py` — Beklenen frekans
+      düşük 2×2 durumlarda bile ana sonuç/APA cümlesi her zaman ki-kare
+      p-değerine dayanıyordu, Fisher sonucu ayrıca gösterilse de
+      öncelenmiyordu — oysa `seo_content.py` (intro + FAQ) zaten "küçük
+      örneklemlerde Fisher's Exact Test otomatik devreye girer... Analizus
+      bunu otomatik kontrol eder" diye vaat ediyordu. **Düzeltme:** 2×2 +
+      en az 1 hücrede beklenen frekans <5 olunca `fisher_is_primary=True`
+      hesaplanıyor; `is_significant`, `conclusion` (PDF) ve APA cümlesi
+      (hem PDF hem ekran JS, ortak msgid) artık bu durumda ki-kare yerine
+      Fisher p-değerine dayanıyor — ham ki-kare/Fisher değerleri tabloda
+      hâlâ ayrı ayrı görünüyor, yalnızca "nihai karar" değişti. Gerçek bir
+      ayrışma senaryosuyla (`[[0,2],[6,0]]`: ki-kare p=.059 "anlamsız" vs
+      Fisher p=.036 "anlamlı") doğrulandı — düzeltme öncesi bu durumda
+      yanlış sonuç raporlanıyordu. EN/DE çevirileri eklendi, Docker'da
+      düşük/normal frekans senaryoları + PDF üretimi + render test edildi,
+      104/104 pytest yeşil.
+  25. [x] **(25 Ekim 2026 düzeltildi)** `requirements.txt` — `scipy` sürümü
+      sabitlenmemişti; mann_whitney/kruskal_wallis/wilcoxon/friedman
+      doğrudan `scipy.stats`'a bağlı (CLAUDE.md kuralı: API'ye doğrudan
+      bağlı paketler sabitlenmeli). **Düzeltme:** çalışan Docker imajındaki
+      mevcut/test edilmiş sürüme (`scipy==1.17.1`) sabitlendi, kısa açıklama
+      yorumu eklendi (`bibtexparser==1.4.4`/`anthropic==1.13.0` ile aynı
+      desen). **DEPLOY NOTU:** bu `requirements.txt` değişikliği `main`'e
+      push sonrası otomatik akışa yansımaz, Hetzner'de elle `--build`
+      gerekir. **Not (ayrı, çözülmedi — todo'ya eklendi):** `numpy`/
+      `pandas`/`scikit-learn`/`statsmodels` de istatistik araçlarının
+      birçoğunda doğrudan kullanılıyor ama bu maddenin kapsamı (yalnız
+      scipy) dışında bırakıldı, sabitlenmedi.
+  25b. [x] **(25 Ekim 2026 düzeltildi)** `requirements.txt` — `numpy`,
+      `pandas`, `scikit-learn`, `statsmodels` de madde 25'teki scipy ile
+      aynı gerekçeyle (istatistik araçlarının API'sine doğrudan bağlı)
+      sabitlenmemişti. **Düzeltme:** çalışan Docker imajındaki test
+      edilmiş sürümlere sabitlendi: `numpy==2.4.6`, `pandas==3.1.0`,
+      `scikit-learn==1.9.1`, `statsmodels==0.15.0` — her birine hangi
+      araçların bağlı olduğunu belirten kısa yorum eklendi. **DEPLOY
+      NOTU:** madde 25 gibi, `main`'e push sonrası otomatik akışa
+      yansımaz, Hetzner'de elle `--build` gerekir. 104/104 pytest yeşil.
+
+---
+
+**İstatistik Araçları Denetimi (25 Ekim 2026) — TAMAMLANDI.** 25 ana
+madde + 4 ek bulgu (17b/18b/21b/25b) hepsi düzeltildi, `dev`'e commit+push
+edildi. Geriye yalnız ayrı/büyük kapsamlı notlar kaldı: "DÜŞÜK" toplu not
+(küçük tutarsızlıklar) ve "TASARIM (ax- sistemi)" — bkz. aşağıdaki ilgili
+başlıklar (Bootstrap Kaldırma Migrasyonu'na bağlı, ayrı iş).
 
   **DÜŞÜK (toplu not, tek tek takip gerekmez ama bilinsin):** ttesti.py'de
   bağımsız örneklem CI formülü ile t-istatistiği tutarsız (SE pooled/unpooled
@@ -258,17 +398,39 @@ maddelerde.
   "Essensiyal" yazım hatası (doğrusu "Esansiyel").
 
   **TASARIM (ax- sistemi) — geniş çaplı, bilinen Bootstrap Kaldırma
-  Migrasyonu Faz 3 borcu, yeni/izole hata değil ama envantere eklendi:**
-  ax- sistemine HİÇ geçmemiş şablonlar: `orneklem.html`, `ki_kare.html`,
-  `mann_whitney.html`, `kruskal_wallis.html`, `lineer_regresyon.html`,
-  `lojistik_regresyon.html`, `ttesti.html`, `anova.html`, `tekrarli_anova.html`,
-  `karar_agaci.html`, `svm.html` — hepsinde ham Bootstrap bileşenleri
-  (`card`/`btn`/`badge`/`alert`/`form-select`/`table table-dark`) + hardcode
-  hex/rgba renkler. `korelasyon.html`/`cronbach.html`/`afa.html`/
-  `wilcoxon.html`/`friedman.html` büyük ölçüde ax-'e geçmiş ama hâlâ
-  Bootstrap utility sınıfı (`d-flex`, `fw-bold`, `g-4` vb.) veya birkaç
-  hardcode renk kalıntısı taşıyor. `ki_kare.html` özellikle göze batıyor çünkü
-  aynı kategorideki `korelasyon.html` zaten geçmiş durumda.
+  Migrasyonu Faz 3 borcu, yeni/izole hata değil ama envantere eklendi.**
+  **(26 Ekim 2026 DÜZELTME — bu envanter 25 Ekim'de hatalıydı, kullanıcı
+  sorusu üzerine gerçek dosyalar `class="..."` token bazında kontrol
+  edildi, raw substring arama `ax-btn` gibi isimlerde yanlış pozitif/
+  negatif veriyordu):**
+  - **ax- sistemine HİÇ geçmemiş (gerçekten doğrulandı, 8 dosya):**
+    `orneklem.html`, `ki_kare.html`, `mann_whitney.html`,
+    `kruskal_wallis.html`, `lineer_regresyon.html`, `lojistik_regresyon.html`,
+    `karar_agaci.html`, `svm.html` — her birinde yalnızca ~8 `ax-` sınıfına
+    karşılık 59-79 ham Bootstrap bileşen sınıfı (`btn` 7-11, `card` 2,
+    `badge` 0-1, `alert` 1-5, `form-select` 1-3, `table-dark` 1-3,
+    `text-white`/`text-white-50` 8-29) + hardcode hex/rgba renkler.
+  - **Önceki envanterde "hiç geçmemiş" denilen ama ASLINDA ZATEN GEÇMİŞ
+    olduğu doğrulanan 3 dosya (düzeltme):** `ttesti.html` (118 ax- sınıfı),
+    `anova.html` (135 ax- sınıfı), `tekrarli_anova.html` (139 ax- sınıfı)
+    — bunlarda kalan Bootstrap sınıfları yalnızca izin verilen grid/utility
+    türünden (`d-flex`, `d-none`, `row`, `container` — CLAUDE.md'nin
+    "Bootstrap yalnızca grid" kuralına uygun), UI bileşenleri (`btn`/`card`/
+    `badge`/`alert`) zaten `ax-` prefix'li. Bu üçü migrasyon kapsamından
+    çıkarılabilir.
+  - **Büyük ölçüde ax-'e geçmiş (doğrulandı, 5 dosya):** `korelasyon.html`
+    (141 ax-), `cronbach.html` (124 ax-), `afa.html` (155 ax-),
+    `wilcoxon.html` (123 ax-), `friedman.html` (137 ax-) — kalan Bootstrap
+    sınıfları da yalnızca grid/utility türünden (~23-29 adet, `d-flex`/
+    `d-none`/`row`/`container`), gerçek migrasyon sorunu yok.
+  - **Sonuç: gerçek migrasyon işi yalnız 8 dosyada kalmış** (önceki
+    envanterdeki 11 değil), bu 8'i Bootstrap Kaldırma Migrasyonu Faz 3'ün
+    güncel hedef listesi olarak kullan. **Çapraz kontrol:** aşağıdaki
+    "Bootstrap Kaldırma — Kademeli Migration Planı" başlığının "Güncel
+    envanter (11 Ekim 2026 taraması)" bölümü bu 8 dosyayı zaten doğru
+    şekilde "Orta (10-20 class)" grubunda listeliyor — bugünkü bağımsız
+    doğrulama o envanterle birebir örtüşüyor, 25 Ekim denetiminin kendi
+    notu (bu bölümün başı) ise hatalıydı.
 
   **Düzeltme sırası kullanıcı onayına bağlı** — CLAUDE.md kırmızı çizgisi
   gereği hiçbir madde otomatik uygulanmadı; kullanıcı hangilerini

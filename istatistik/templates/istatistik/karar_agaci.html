@@ -187,6 +187,8 @@
               </div>
             </div>
 
+            <div id="imbalance-warning" class="alert alert-warning mb-3 small d-none"></div>
+
             <!-- Model özet bilgisi -->
             <div id="model-info" class="rounded-3 p-3 mb-3 text-white-50 small" style="background:rgba(255,255,255,0.04);"></div>
 
@@ -418,6 +420,14 @@ function startPolling(jobId) {
 
 function showResults(data) {
   const r = data.result_data;
+
+  const imbalanceEl = document.getElementById('imbalance-warning');
+  if (r.class_imbalance_warning) {
+    imbalanceEl.textContent = r.class_imbalance_warning;
+    imbalanceEl.classList.remove('d-none');
+  } else {
+    imbalanceEl.classList.add('d-none');
+  }
 
   document.getElementById('res-accuracy').textContent = pc((r.accuracy * 100).toFixed(1));
   document.getElementById('res-precision').textContent = pc((r.precision * 100).toFixed(1));

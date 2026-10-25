@@ -50,19 +50,23 @@ def analyze(df, columns=None) -> dict:
         # Düzeltilmiş madde-toplam korelasyonu
         corr = float(np.corrcoef(item, rest)[0, 1])
 
-        # Madde silindiğinde alpha
+        # Madde silindiğinde alpha — k2<2 (2 maddelik ölçekte 1 madde kalır)
+        # veya tv2=0 (kalan maddeler sabit) durumunda tanımsız (None)
         rest_data = np.delete(data, i, axis=1)
         k2 = k - 1
         iv2 = rest_data.var(axis=0, ddof=1).sum()
         tv2 = rest_data.sum(axis=1).var(ddof=1)
-        alpha_if_deleted = float((k2 / (k2 - 1)) * (1 - iv2 / tv2)) if tv2 > 0 else float('nan')
+        if k2 < 2 or tv2 <= 0:
+            alpha_if_deleted = None
+        else:
+            alpha_if_deleted = round(float((k2 / (k2 - 1)) * (1 - iv2 / tv2)), 3)
 
         item_stats.append({
             'item': str(col),
             'mean': round(float(item.mean()), 3),
             'std': round(float(item.std(ddof=1)), 3),
             'corrected_itc': round(corr, 3),
-            'alpha_if_deleted': round(alpha_if_deleted, 3),
+            'alpha_if_deleted': alpha_if_deleted,
         })
 
     return {
@@ -160,7 +164,7 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
             f"{s['mean']:.3f}",
             f"{s['std']:.3f}",
             f"{s['corrected_itc']:.3f}",
-            f"{s['alpha_if_deleted']:.3f}",
+            f"{s['alpha_if_deleted']:.3f}" if s['alpha_if_deleted'] is not None else '—',
         ])
 
     col_w = [5*cm, 2.5*cm, 2.5*cm, 3.5*cm, 3*cm]

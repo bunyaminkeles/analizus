@@ -7,10 +7,11 @@ from django.utils.translation import gettext
 import numpy as np
 
 
-def analyze(df, dep_col: str, indep_cols: list) -> dict:
+def analyze(df, dep_col: str, indep_cols: list, target_category: str = '') -> dict:
     import pandas as pd
     import statsmodels.api as sm
     from scipy import stats
+    from statsmodels.stats.outliers_influence import variance_inflation_factor
 
     if dep_col not in df.columns:
         raise ValueError(gettext('"%(dep_col)s" bağımlı değişken sütunu bulunamadı.') % {'dep_col': dep_col})
@@ -33,9 +34,20 @@ def analyze(df, dep_col: str, indep_cols: list) -> dict:
     if n < len(indep_cols) + 5:
         raise ValueError(gettext('Yetersiz gözlem sayısı (n = %(n)s). En az %(v)s satır gereklidir.') % {'n': n, 'v': len(indep_cols) + 5})
 
-    sorted_vals = sorted(unique_vals, key=str)
-    cat0, cat1 = str(sorted_vals[0]), str(sorted_vals[1])
-    y = (dep_series == sorted_vals[1]).astype(int).values
+    unique_vals_list = unique_vals.tolist()
+    try:
+        sorted_vals = sorted(unique_vals_list, key=float)
+    except (TypeError, ValueError):
+        sorted_vals = sorted(unique_vals_list, key=str)
+    target_match = next((v for v in unique_vals if str(v) == str(target_category)), None) if target_category else None
+    if target_match is not None:
+        # Kullanıcı hedef kategoriyi (y=1) seçti — Exp(B) yönü buna göre belirlenir
+        other_val = next(v for v in unique_vals if str(v) != str(target_match))
+        cat0, cat1 = str(other_val), str(target_match)
+        y = (dep_series == target_match).astype(int).values
+    else:
+        cat0, cat1 = str(sorted_vals[0]), str(sorted_vals[1])
+        y = (dep_series == sorted_vals[1]).astype(int).values
 
     # Bağımsız değişkenler: kategorik → dummy
     X_df = pd.DataFrame(index=sub.index)
@@ -61,6 +73,12 @@ def analyze(df, dep_col: str, indep_cols: list) -> dict:
     except Exception as e:
         raise ValueError(gettext('Model yakınsama hatası: %(e)s') % {'e': e})
 
+    # VIF (çoklu bağlantı) — lineer_regresyon.py'deki desenle aynı
+    try:
+        vifs = [variance_inflation_factor(X_sm.astype(float), i + 1) for i in range(X_np.shape[1])]
+    except Exception:
+        vifs = [None] * X_np.shape[1]
+
     # Model fit
     llf = float(model.llf)
     ll0 = float(model.llnull)
@@ -85,9 +103,11 @@ def analyze(df, dep_col: str, indep_cols: list) -> dict:
         'exp_b': round(float(np.exp(model.params[0])), 4),
         'ci_low_or': round(float(np.exp(ci[0, 0])), 4),
         'ci_high_or': round(float(np.exp(ci[0, 1])), 4),
+        'vif': '—',
         'significant': bool(model.pvalues[0] < 0.05),
     }]
     for i, name in enumerate(predictor_names):
+        vif_val = vifs[i]
         coefficients.append({
             'name': name,
             'B': round(float(model.params[i + 1]), 4),
@@ -97,6 +117,7 @@ def analyze(df, dep_col: str, indep_cols: list) -> dict:
             'exp_b': round(float(np.exp(model.params[i + 1])), 4),
             'ci_low_or': round(float(np.exp(ci[i + 1, 0])), 4),
             'ci_high_or': round(float(np.exp(ci[i + 1, 1])), 4),
+            'vif': (round(float(vif_val), 3) if (vif_val is not None and not np.isnan(vif_val) and not np.isinf(vif_val)) else '—'),
             'significant': bool(model.pvalues[i + 1] < 0.05),
         })
 
@@ -194,18 +215,19 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
 
     # Katsayılar
     story.append(Paragraph(gettext('Değişkenlerin Denklemdeki Değerleri'), h2_s))
-    coef_header = [gettext('Değişken'), 'B', 'SE', 'Wald', 'p', 'Exp(B)', gettext('%%95 GA Alt') % {}, gettext('%%95 GA Üst') % {}]
+    coef_header = [gettext('Değişken'), 'B', 'SE', 'Wald', 'p', 'Exp(B)', gettext('%%95 GA Alt') % {}, gettext('%%95 GA Üst') % {}, 'VIF']
     coef_rows = [coef_header]
     for c in result['coefficients']:
+        vif_str = str(c['vif']) if c['vif'] == '—' else f"{c['vif']:.3f}"
         p_c = c['p']
         p_c_str = '< .001' if p_c < 0.001 else f"{p_c:.4f}"
         coef_rows.append([
             c['name'], f"{c['B']:.4f}", f"{c['se']:.4f}",
             f"{c['wald']:.3f}", p_c_str,
-            f"{c['exp_b']:.4f}", f"{c['ci_low_or']:.4f}", f"{c['ci_high_or']:.4f}",
+            f"{c['exp_b']:.4f}", f"{c['ci_low_or']:.4f}", f"{c['ci_high_or']:.4f}", vif_str,
         ])
 
-    col_w = [3.5*cm, 2*cm, 2*cm, 2*cm, 2*cm, 2*cm, 2.2*cm, 2.2*cm]
+    col_w = [3.3*cm, 1.7*cm, 1.7*cm, 1.7*cm, 1.7*cm, 1.7*cm, 1.9*cm, 1.9*cm, 1.4*cm]
     coef_tbl = Table(coef_rows, colWidths=col_w)
     coef_style = [
         ('BACKGROUND', (0, 0), (-1, 0), TEAL),
@@ -226,7 +248,7 @@ def build_pdf(result: dict, filename: str, df=None) -> bytes:
 
     story.append(Spacer(1, 0.3*cm))
     story.append(Paragraph(
-        '<font color="#666666" size="8">' + gettext('Not: Exp(B) = Odds Ratio. Exp(B) &gt; 1 pozitif ilişki, Exp(B) &lt; 1 negatif ilişki anlamına gelir.') + '</font>',
+        '<font color="#666666" size="8">' + gettext('Not: Exp(B) = Odds Ratio. Exp(B) &gt; 1 pozitif ilişki, Exp(B) &lt; 1 negatif ilişki anlamına gelir. VIF &gt; 10 çoklu bağlantı sorununa işaret edebilir.') + '</font>',
         ParagraphStyle('note', parent=styles['Normal'], fontName='DejaVuSans', fontSize=8)
     ))
 

@@ -106,6 +106,18 @@ Tam sistem dokümantasyonu: `analizus.md` (proje kökünde, ~3734 satır; offset
 - Tüm geliştirme `dev` branch'inde — `main`'e kullanıcı "merge et" demeden dokunma
 - `dev` → **Render** (push'ta otomatik deploy — staging/preview)
 - `main` → **Hetzner** (push'ta OTOMATİK deploy — GitHub Actions `.github/workflows/deploy.yml`, production; 8 Ekim 2026'da keşfedildi, eskiden "manuel" sanılıyordu); merge: `git merge --no-ff dev` ("Merge branch 'dev': …"), sonra `dev`'e dön. Migration içeren bir değişiklik main'e push edilmeden önce kullanıcıdan yedek istenmeli (`scripts/yedek_indir.sh --simdi`, kendi bilgisayarında)
+- **Merge öncesi ZORUNLU kontrol (her seferinde, otomatik — sorulmadan uygula):** `main`'e push = production'da `web` container'ı restart eder (deploy.sh), bu da o an siteyi kullanan kullanıcıların oturumunu/işlemini kesebilir. Merge etmeden hemen önce **production (Hetzner) DB'sinde** — lokal değil, lokal DB'de gerçek kullanıcı yok — admin olmayan (staff değil) online kullanıcı var mı kontrol et (bkz. `reference_hetzner_access.md`: `ssh root@89.167.5.224`, proje klasörü `/app`):
+  ```
+  ssh root@89.167.5.224 "cd /app && docker compose exec -T web python manage.py shell -c \"
+  from forum.models import Profile
+  from django.utils import timezone
+  from datetime import timedelta
+  cutoff = timezone.now() - timedelta(seconds=300)
+  qs = Profile.objects.filter(last_seen__gte=cutoff, user__is_staff=False).select_related('user')
+  print(list(qs.values_list('user__username', flat=True)))
+  \""
+  ```
+  (`is_online` eşiği `Profile.is_online` ile aynı: son 300 saniye.) Liste boş değilse kullanıcıya bildir ve merge'i otomatik yapma — devam edip etmeyeceğini sor (ör. deploy restart'ı kısa sürer ama kullanıcı o an bir analiz/form işlemi ortasında olabilir).
 - Commit mesajları: `feat:`, `fix:`, `refactor:` prefix (Türkçe veya İngilizce)
 - `.env` değerlerini commit'e dahil etme
 
