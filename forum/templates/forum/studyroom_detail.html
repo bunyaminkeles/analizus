@@ -273,8 +273,13 @@
           <div class="rm-zaman rm-zaman--sag"><span class="msg-ts" data-ts="{{ post.created_at|date:'c' }}"></span>{% if post.edited_at %} <span class="rm-edited">(düzenlendi)</span>{% endif %}</div>
         </div>
         {% else %}
-        <div class="rm-wrap rm-karsi">
+        <div class="rm-wrap rm-karsi" data-post-id="{{ post.id }}">
           <div class="rm-meta">
+            <div class="rm-actions">
+              <button class="rm-action-btn rm-report-btn" data-post-id="{{ post.id }}" title="Bildir">
+                <i class="bi bi-flag"></i>
+              </button>
+            </div>
             <a href="{% url 'profile_detail' post.author.username %}" class="rm-yazar">{{ post.author.username }}</a>
           </div>
           <div class="rm-balon rm-balon--karsi">
@@ -445,6 +450,7 @@
   margin-right: .3rem;
 }
 .rm-benim:hover .rm-actions { display: flex; }
+.rm-karsi:hover .rm-actions { display: flex; }
 .rm-action-btn {
   background: none;
   border: none;
@@ -458,6 +464,46 @@
 .rm-edit-btn:hover { background: rgba(56,189,248,0.15); }
 .rm-delete-btn { color: #f87171; }
 .rm-delete-btn:hover { background: rgba(248,113,113,0.15); }
+.rm-report-btn { color: #fbbf24; }
+.rm-report-btn:hover { background: rgba(251,191,36,0.15); }
+.rm-report-area {
+  margin-top: 4px;
+}
+.rm-report-select {
+  background: rgba(0,0,0,0.35);
+  border: 1px solid rgba(251,191,36,0.4);
+  color: #f1f5f9;
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: .8rem;
+}
+.rm-report-actions {
+  display: flex;
+  gap: 4px;
+  margin-top: 4px;
+}
+.rm-report-btn-send, .rm-report-btn-cancel {
+  border-radius: 4px;
+  font-size: .75rem;
+  padding: 3px 8px;
+  cursor: pointer;
+}
+.rm-report-btn-send {
+  background: rgba(251,191,36,0.2);
+  color: #fbbf24;
+  border: 1px solid rgba(251,191,36,0.4);
+}
+.rm-report-btn-cancel {
+  background: rgba(255,255,255,0.05);
+  color: #94a3b8;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.rm-report-feedback {
+  display: none;
+  font-size: .7rem;
+  color: #4ade80;
+  margin-top: 4px;
+}
 .rm-edit-area {
   margin-top: 4px;
   display: none;
@@ -524,11 +570,13 @@ function appendRoomPost(post) {
          <button class="rm-action-btn rm-edit-btn" data-post-id="${msgId}" title="Düzenle"><i class="bi bi-pencil"></i></button>
          <button class="rm-action-btn rm-delete-btn" data-post-id="${msgId}" title="Sil"><i class="bi bi-trash"></i></button>
        </div>`
-    : '';
+    : `<div class="rm-actions">
+         <button class="rm-action-btn rm-report-btn" data-post-id="${msgId}" title="Bildir"><i class="bi bi-flag"></i></button>
+       </div>`;
 
   const div = document.createElement('div');
   div.className = `rm-wrap ${benim ? 'rm-benim' : 'rm-karsi'}`;
-  if (benim) div.dataset.postId = msgId;
+  div.dataset.postId = msgId;
   div.innerHTML = `
     <div class="rm-meta ${benim ? 'rm-meta--sag' : ''}">
       ${actionsHtml}
@@ -686,10 +734,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // ── Oda mesaj düzenle / sil ───────────────────────────────────────────────
 document.addEventListener('click', function(e) {
-  const editBtn = e.target.closest('.rm-edit-btn');
-  const delBtn  = e.target.closest('.rm-delete-btn');
-  if (editBtn) openRoomEditArea(editBtn.dataset.postId);
-  if (delBtn)  deleteRoomPost(delBtn.dataset.postId);
+  const editBtn   = e.target.closest('.rm-edit-btn');
+  const delBtn    = e.target.closest('.rm-delete-btn');
+  const reportBtn = e.target.closest('.rm-report-btn');
+  if (editBtn)   openRoomEditArea(editBtn.dataset.postId);
+  if (delBtn)    deleteRoomPost(delBtn.dataset.postId);
+  if (reportBtn) openRoomReportArea(reportBtn.dataset.postId);
 });
 
 function openRoomEditArea(postId) {
@@ -746,6 +796,56 @@ function saveRoomEdit(postId, area) {
       area.remove();
     })
     .catch(() => alert('Sunucu hatası.'));
+}
+
+function openRoomReportArea(postId) {
+  document.querySelectorAll('.rm-report-area').forEach(el => el.remove());
+  const wrap = document.querySelector(`.rm-karsi[data-post-id="${postId}"]`);
+  if (!wrap) return;
+  const balon = wrap.querySelector('.rm-balon');
+  const area = document.createElement('div');
+  area.className = 'rm-report-area';
+  area.innerHTML = `
+    <select class="rm-report-select">
+      <option value="harassment">Taciz / Hakaret</option>
+      <option value="spam">Spam / Reklam</option>
+      <option value="external_contact">Platform Dışına Yönlendirme</option>
+      <option value="inappropriate">Uygunsuz İçerik</option>
+      <option value="other">Diğer</option>
+    </select>
+    <div class="rm-report-actions">
+      <button class="rm-report-btn-send">Gönder</button>
+      <button class="rm-report-btn-cancel">İptal</button>
+    </div>
+    <div class="rm-report-feedback"></div>`;
+  balon.after(area);
+  area.querySelector('.rm-report-btn-cancel').addEventListener('click', () => area.remove());
+  area.querySelector('.rm-report-btn-send').addEventListener('click', () => submitRoomReport(postId, area));
+}
+
+function submitRoomReport(postId, area) {
+  const reason = area.querySelector('.rm-report-select').value;
+  const sendBtn = area.querySelector('.rm-report-btn-send');
+  sendBtn.disabled = true;
+  const fd = new FormData();
+  fd.append('reason', reason);
+  fd.append('csrfmiddlewaretoken', csrfToken);
+  fetch(`/api/room-post/${postId}/report/`, { method: 'POST', body: fd })
+    .then(r => r.json())
+    .then(data => {
+      if (!data.ok) {
+        alert(data.error === 'own_post' ? 'Kendi mesajınızı bildiremezsiniz.' : 'Bildirilemedi.');
+        area.remove();
+        return;
+      }
+      area.querySelector('.rm-report-select').style.display = 'none';
+      area.querySelector('.rm-report-actions').style.display = 'none';
+      const fb = area.querySelector('.rm-report-feedback');
+      fb.textContent = 'Bildirildi, teşekkürler.';
+      fb.style.display = 'block';
+      setTimeout(() => area.remove(), 2000);
+    })
+    .catch(() => { alert('Sunucu hatası.'); sendBtn.disabled = false; });
 }
 
 function deleteRoomPost(postId) {

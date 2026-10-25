@@ -24,7 +24,7 @@ from datetime import timedelta
 import uuid
 from django_ratelimit.decorators import ratelimit
 from django_ratelimit.exceptions import Ratelimited
-from .models import Section, Category, Topic, Post, Profile, PrivateMessage, PostLike, Notification, EmailVerification, DailyTip, QuizQuestion, QuizScore, SuccessStory, FreelanceJob, JobCategory, JobProposal, JobReview, Skill, Badge, UserQuizAttempt, JobPayment, SiteSettings, BlogCategory, BlogPost, BlogTag, DonationTier, StudyRoom, StudyRoomMembership, StudyRoomPost, StudyRoomWaitlist, STUDYROOM_TERMS, ReferralCode, ReferralUse, ServicePage, ServicePageTranslation, ServicePageSectionTranslation, ServicePageFAQTranslation
+from .models import Section, Category, Topic, Post, Profile, PrivateMessage, PostLike, Notification, EmailVerification, DailyTip, QuizQuestion, QuizScore, SuccessStory, FreelanceJob, JobCategory, JobProposal, JobReview, Skill, Badge, UserQuizAttempt, JobPayment, SiteSettings, BlogCategory, BlogPost, BlogTag, DonationTier, StudyRoom, StudyRoomMembership, StudyRoomPost, StudyRoomPostReport, StudyRoomWaitlist, STUDYROOM_TERMS, ReferralCode, ReferralUse, ServicePage, ServicePageTranslation, ServicePageSectionTranslation, ServicePageFAQTranslation
 from .forms import RegisterForm, NewTopicForm, PostForm, JobPostForm, ProposalForm
 from .email_utils import send_topic_reply_notification, send_private_message_notification
 from django.template.loader import render_to_string
@@ -1873,6 +1873,20 @@ def api_delete_room_post(request, post_id):
     if post.room.status != 'active':
         return JsonResponse({'ok': False, 'error': 'Bu oda artık düzenlemeye kapalı.'}, status=403)
     post.delete()  # post_delete signal S3 dosyasını temizler
+    return JsonResponse({'ok': True})
+
+
+@login_required
+@require_POST
+def api_report_room_post(request, post_id):
+    post = get_object_or_404(StudyRoomPost, id=post_id)
+    if post.author_id == request.user.id:
+        return JsonResponse({'ok': False, 'error': 'own_post'}, status=400)
+    reason = request.POST.get('reason')
+    valid_reasons = dict(StudyRoomPostReport.REASON_CHOICES)
+    if reason not in valid_reasons:
+        return JsonResponse({'ok': False, 'error': 'invalid_reason'}, status=400)
+    StudyRoomPostReport.objects.create(post=post, reporter=request.user, reason=reason)
     return JsonResponse({'ok': True})
 
 
