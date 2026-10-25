@@ -255,9 +255,19 @@ maddelerde.
       (`B` katsayısının işareti doğru tersine dönüyor) + gerçek job pipeline
       (preview→run→job_runner→PDF/S3) uçtan uca test edildi, 104/104 pytest
       yeşil.
-  20. [ ] `lineer_regresyon.html`/`lojistik_regresyon.html` — ekranda
-      Bootstrap'ın varsayılan mavisi kullanılıyor, PDF'te ise marka rengi
-      (navy/teal) — ekran/PDF renk tutarsızlığı.
+  20. [x] **(25 Ekim 2026 düzeltildi)** `lineer_regresyon.html`/
+      `lojistik_regresyon.html` — ekranda Bootstrap'ın varsayılan mavisi
+      kullanılıyordu, PDF'te ise marka rengi (navy/teal) — ekran/PDF renk
+      tutarsızlığı. **İnceleme:** `lojistik_regresyon.html` zaten PDF'teki
+      teal (`#065f46`) ailesinden hex renkler kullanıyordu (sorun yoktu);
+      asıl sorun yalnız `lineer_regresyon.html`'deydi — tüm `btn-primary`/
+      `text-primary` (Bootstrap varsayılan mavisi `#0d6efd`) kullanımları,
+      PDF'in navy'siyle (`#1e3a5f`) aynı aileden renklerle değiştirildi:
+      dolgu butonlarda tam navy (`#1e3a5f`, üstünde beyaz metin), ikon/metin
+      vurgularında koyu arka plan üzerinde okunaklı açık mavi tonu
+      (`#60a5fa`) — diğer araçlardaki "koyu buton + açık ikon" deseniyle
+      tutarlı (ör. kruskal-wallis teal `#065f46`/`#34d399`). Docker'da
+      render doğrulandı (2 buton + 7 ikon/metin), 104/104 pytest yeşil.
   21. [ ] `static/css/analiz_console.css` (254, 273, 318 satırları) —
       `var(--ax-primary)` token'ı projede HİÇ tanımlanmamış (CLAUDE.md'deki
       bilinen `--ax-color-primary` hatasından farklı, ayrı bir eksik token);
