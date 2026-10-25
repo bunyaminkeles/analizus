@@ -10,6 +10,39 @@ Kullanıcı kuralı: **bütün eksiklikler mutlaka bu listede olmalı.** Yeni
 bulgu çıktığında buraya ekle; bitince [x] yap. Ayrıntılar alttaki ilgili
 maddelerde.
 
+- [ ] **(25 Ekim 2026) Çalışma Odaları — Kötüye Kullanım Tespiti + KVKK Uyumu
+  (kullanıcı talebi: kötü niyetli yazışmaların tespiti, adli makamlara
+  verilebilmesi; "admin görünmeden girsin mi" soruldu → KARAR: hayır, ayrıntı
+  için bkz. sohbet notu). Henüz başlanmadı, faz faz (her faz önce onay bekler,
+  KIRMIZI ÇİZGİ ilkesi):**
+  1. [ ] **Faz 1 — Otomatik işaretleme (flagged):** `StudyRoomPost`'a
+     `FreelanceJob.flagged` deseninde bir `flagged` alanı; telefon/e-posta/
+     dış platform (WhatsApp/Instagram handle)/IBAN-kripto cüzdan/hakaret-
+     tehdit kelime listesi regex taraması `save()` veya sinyalde çalışır,
+     eşleşirse işaretler. Admin panelinde ayrı filtre. Canlı izleme değil,
+     sonradan inceleme.
+  2. [ ] **Faz 2 — Kullanıcı "bildir" özelliği:** yeni `StudyRoomPostReport`
+     modeli (reporter, post, reason, created_at); oda arayüzünde mesaj
+     altına "Bildir" aksiyonu; admin paneline düşen ayrı kuyruk.
+  3. [ ] **Faz 3 — Saklama süresi + "legal hold":** oda arşivlendikten N ay
+     sonra otomatik silme politikası tanımla (N için kullanıcıya sor);
+     flagged/report edilmiş kayıtlar bu otomatik silmeden muaf (olası adli
+     talep için ayrı tutulur).
+  4. [ ] **Faz 4 — Adli makam talebi / export audit log:** mahkeme kararı/
+     savcılık yazısı geldiğinde kullanılacak export akışı; hangi admin, ne
+     zaman, hangi kaydı export etti bilgisi loglanır (chain of custody).
+  5. [ ] **Faz 5 — Aydınlatma metni güncellemesi:** Gizlilik Politikası/
+     Kullanım Şartları'na "mesajlarınız kötüye kullanımın önlenmesi ve yasal
+     yükümlülükler çerçevesinde saklanır, gerektiğinde yetkili makamlarla
+     paylaşılabilir" açıklaması eklenir — KVKK danışmanı/avukat onayı
+     ŞART, metni tek başına yazıp yayınlama.
+  6. [ ] **Faz 6 — Admin erişim logu:** bir admin bir odanın mesaj dökümünü
+     panelden görüntülediğinde bunun loglanması (kim, hangi oda, ne zaman) —
+     "görünmeden girme" yerine şeffaf ama izlenebilir erişim.
+  - **Reddedilen fikir:** Admin'in canlı odaya görünmeden/stealth presence
+    ile girmesi — gereksiz (mesajlar zaten DB'de, admin paneli yeterli) ve
+    KVKK şeffaflık ilkesi + kullanıcı güveni açısından riskli; uygulanmayacak.
+
 - [ ] **(25 Ekim 2026) Yeni Ücretsiz İstatistik Araçları Fikirleri — henüz
   başlanmadı, öncelik sırasıyla:**
   1. [ ] **Aracılık/Düzenleyici Değişken Analizi (Mediation/Moderation)** —
