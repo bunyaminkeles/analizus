@@ -15,7 +15,11 @@ def analyze(df, group_col: str, dep_col: str, posthoc: str = 'tukey') -> dict:
         raise ValueError(gettext('"%(dep_col)s" sütunu bulunamadı.') % {'dep_col': dep_col})
 
     sub = df[[group_col, dep_col]].dropna()
-    group_labels = sorted(sub[group_col].unique(), key=str)
+    raw_labels = sub[group_col].unique().tolist()
+    try:
+        group_labels = sorted(raw_labels, key=float)
+    except (TypeError, ValueError):
+        group_labels = sorted(raw_labels, key=str)
 
     if len(group_labels) < 2:
         raise ValueError(gettext('En az 2 grup gereklidir.'))

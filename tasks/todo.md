@@ -234,11 +234,15 @@ maddelerde.
       edildi, 104/104 pytest yeşil. **Not (ayrı, çözülmedi — todo'ya
       eklendi):** `anova.py`/`lojistik_regresyon.py` aynı `key=str` sıralama
       desenini taşıyor ama bu maddenin kapsamı dışında bırakıldı.
-  17b. [ ] **(25 Ekim 2026, madde 17 sırasında bulundu)** `anova.py:18` ve
+  17b. [x] **(25 Ekim 2026 düzeltildi)** `anova.py:18` ve
       `lojistik_regresyon.py:36` — `kruskal_wallis.py`'de düzeltilen aynı
       `sorted(..., key=str)` grup/kategori etiketi sıralama sorunu (numerik
-      etiketler 1,10,2,20 gibi yanlış sıralanır) bu iki dosyada da var,
-      henüz düzeltilmedi.
+      etiketler 1,10,2,20 gibi yanlış sıralanıyordu) bu iki dosyada da
+      vardı. **Düzeltme:** aynı `key=float` dene, olmazsa `key=str`'ye düş
+      deseni uygulandı (`lojistik_regresyon.py`'de binary kategori
+      sıralaması — varsayılan referans/hedef ataması — için). Docker'da
+      ters sayısal sıralı grup/kategori senaryoları (1,10,2 → 1,2,10;
+      2,10 → 2,10) test edildi, 104/104 pytest yeşil.
   18. [x] **(25 Ekim 2026 düzeltildi)** `mann_whitney.html` + `kruskal_wallis.html`
       — `views.py` `active_job_id`'yi context'e koyuyordu ama şablonlar
       wilcoxon.html/friedman.html'deki gibi bunu okuyup `startPolling()`

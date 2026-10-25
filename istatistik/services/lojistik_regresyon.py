@@ -34,7 +34,11 @@ def analyze(df, dep_col: str, indep_cols: list, target_category: str = '') -> di
     if n < len(indep_cols) + 5:
         raise ValueError(gettext('Yetersiz gözlem sayısı (n = %(n)s). En az %(v)s satır gereklidir.') % {'n': n, 'v': len(indep_cols) + 5})
 
-    sorted_vals = sorted(unique_vals, key=str)
+    unique_vals_list = unique_vals.tolist()
+    try:
+        sorted_vals = sorted(unique_vals_list, key=float)
+    except (TypeError, ValueError):
+        sorted_vals = sorted(unique_vals_list, key=str)
     target_match = next((v for v in unique_vals if str(v) == str(target_category)), None) if target_category else None
     if target_match is not None:
         # Kullanıcı hedef kategoriyi (y=1) seçti — Exp(B) yönü buna göre belirlenir
